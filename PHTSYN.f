@@ -7,6 +7,7 @@ C    ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
      5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG)
 C
 C
+C
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
 C                       PHOTOSYNTHESIS SUBROUTINE
 C
