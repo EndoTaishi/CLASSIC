@@ -46,7 +46,7 @@ C     INPUTS
 C
 C     AILCG     - GREEN LEAF AREA INDEX FOR USE BY PHOTOSYNTHESIS, M^2/M^2
 C     FCANC     - FRACTIONAL COVERAGE OF CTEM's 9 PFTs
-C     TCAN      - CANOPTY TEMPERATURE, KELVIN
+C     TCAN      - CANOPY TEMPERATURE, KELVIN
 C     CO2CONC   - ATMOS. CO2 IN PPM, AND THEN CONVERT IT TO
 C                 PARTIAL PRESSURE, PASCALS, CO2A, FOR USE IN THIS SUBROUTINE
 C     PRESSG    - ATMOS. PRESSURE, PASCALS
@@ -274,11 +274,26 @@ C
      &             0.0, 0.0, 0.0/
 C
 C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
+
+C     FLAG - there is a problem at the moment with
+C     the TCAN and CFLUX giving us low GPP.  JM 06.03.2012
+C     ORIGINAL values:
       DATA VMAX/42.0E-06,  70.0E-06, 0.00E-06,
 c      DATA VMAX/50.0E-06,  70.0E-06, 0.00E-06,
      &          35.0E-06,  65.0E-06, 65.0E-06,
      &          80.0E-06,  40.0E-06, 0.00E-06,
      &          70.0E-06,  30.0E-06, 0.00E-06/
+C     values to test from Kattge et al. 2009:
+C      DATA VMAX/63.0E-06,  40.0E-06, 0.00E-06,
+C     &          40.0E-06,  55.0E-06, 55.0E-06,
+C     &          100.0E-06, 100.0E-06, 0.00E-06,
+C     &          80.0E-06,  80.0E-06, 0.00E-06/
+
+C     NEEDLE LEAF |  EVG       DCD       ---
+C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
+C     CROPS       |   C3        C4       ---
+C     GRASSES     |   C3        C4       ---
+
 C
 C     NO. OF ITERATIONS FOR CALCULATING INTERCELLULAR CO2 CONCENTRATION
       DATA  REQITER/4/
@@ -345,7 +360,8 @@ C
       MIN3=.FALSE.
 C
 C     --------------------------------------------------------------
-c     test by replacing TCAN with TA
+
+c     FLAG replacing TCAN with TA
 c
       DO I=IL1,IL2
        TTEMP(I)=TCAN(I)
@@ -576,11 +592,13 @@ C
               CA=21.874
               CB=7.66
           ENDIF
+
           EA(I)  = QA(I)*PRESSG(I)/(0.622+0.378*QA(I))
           EASAT(I)=611.0*EXP(CA*(TA(I)-TFREZ)/(TA(I)-CB))
           RH(I)=EA(I)/EASAT(I)
           VPD(I)=EASAT(I)-EA(I)
           VPD(I)=MAX(0.0,VPD(I))
+
 420     CONTINUE
 C
         K1C = 0
@@ -977,6 +995,7 @@ C
 C
 C     ESTIMATE PHOTOSYNTHETIC RATE LIMITED BY TRANSPORT CAPACITY
 C
+
       DO 640 J = 1,ICC
         DO 650 I = IL1, IL2
         IF(FCANC(I,J).GT.ZERO)THEN
@@ -1180,7 +1199,10 @@ C
         IF(FCANC(I,J).GT.ZERO)THEN
 C
           GB(I)=CFLUX(I)*(TFREZ/TA(I))*(PRESSG(I)/STD_PRESS)*(1/0.0224)
-C         GB(I)= MIN(0.224, MAX(2.24E-03, GB(I)) )
+
+C          GB(I)= MIN(0.224, MAX(2.24E-03, GB(I)) )
+C	The above formulation was likely an error. The correct bounding is
+C 	implimented below. JM 06.03.2012
           GB(I)= MIN(10.0, MAX(0.1, GB(I)) )
 C
           IF(LEAFOPT.EQ.1)THEN
@@ -1433,7 +1455,7 @@ C
 870   CONTINUE
 C
 c
-c     test by replacing TCAN with TA (restore TCAN)
+c     FLAG replacing TCAN with TA (restore TCAN)
 c     
       DO I=IL1,IL2
        TCAN(I)=TTEMP(I)

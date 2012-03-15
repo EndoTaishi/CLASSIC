@@ -18,7 +18,7 @@
      H                 IEVAPC,TRTOP,QSTOR,CFSENS,CFEVAP,QSGADD,A,B,
      I                 ZOMS,ZOHS,LZZ0,LZZ0T,FM,FH,ITER,NITER,KF1,KF2,
 C===================== CTEM =====================================\
-     J                  AILCG,  FCANC,   RH, CO2CONC,  RMATCTEM,
+     J                  AILCG,  FCANC, CO2CONC,  RMATCTEM,
      K                  THLIQ,   SAND, CLAY,      IG,     COSZS,
      L                XDIFFUS,    ICC,   IC,   CO2I1,     CO2I2,
      M                  CTEM1,  CTEM2, SLAI, FCANCMX,     L2MAX,
@@ -28,7 +28,6 @@ C    --------------- CTEM INPUTS ABOVE THIS LINE, OUTPUTS BELOW --------|
 C
 C     * AILCG    - GREEN LAI FOR CARBON PURPOSES
 C     * FCANC    - FRACTIONAL COVERAGE OF 8 CARBON PFTs
-C     * RH       - RELATIVE HUMIDITY
 C     * CO2CONC  - ATMOS. CO2 CONC. IN PPM
 C     * RMATCTEM - FRACTION OF ROOTS IN EACH SOIL LAYER FOR EACH OF THE 8 PFTs
 C                  FOR CARBON RELATED PURPOSES.
@@ -203,7 +202,7 @@ C
      3     TZEROT,YEVAP,RAGCO,EZERO
 C
 C===================== CTEM =====================================\
-      REAL  AILCG(ILG,ICC),  FCANC(ILG,ICC),   CO2CONC(ILG),    RH(ILG),
+      REAL  AILCG(ILG,ICC),  FCANC(ILG,ICC),   CO2CONC(ILG),
      1       THLIQ(ILG,IG),    SAND(ILG,IG),   CLAY(ILG,IG), COSZS(ILG),
      2        XDIFFUS(ILG),   RCPHTSYN(ILG), ANVEG(ILG,ICC),
      3      CO2I1(ILG,ICC),  CO2I2(ILG,ICC),       RMATCTEM(ILG,ICC,IG),
@@ -326,7 +325,7 @@ C
      2                    TA,  CLAY, RMATCTEM,   COSZS, XDIFFUS,   ILG,
      3                   IL1,   IL2,       IG,     ICC,   ISNOW,  SLAI,
      4               FCANCMX,  CTEM1,   CTEM2,   L2MAX, NOL2PFTS,
-     5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG)
+     5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG )
 C
 C
         DO 70 I =IL1,IL2
@@ -619,6 +618,7 @@ C
      2                    TAC,QAC,H,ZOM,ZOH,
      3                    LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
         ENDIF
+
 C
 C     * CALCULATE CANOPY AIR TEMPERATURE AND SPECIFIC HUMIDITY OF 
 C     * CANOPY AIR (FIRST WITHOUT RC TO CHECK FOR CONDENSATION; 
@@ -1156,15 +1156,11 @@ C===================== CTEM =====================================\
 C
 C     STORE AERODYNAMIC CONDUCTANCE FOR USE IN NEXT TIME STEP
 C
-      IF (CTEM1) THEN
       DO 710 I = IL1, IL2
       IF(FI(I).GT.0.)    THEN    
        CFLUXV(I) = CFLUX(I)
-      ELSE
-       CFLUXV(I) = 0.0
       ENDIF  
 710   CONTINUE
-      ENDIF
 C
 C===================== CTEM =====================================/                           
       RETURN                                                                      
