@@ -472,12 +472,10 @@ C
      1                   (LOG(ZRSLDM(I))-ZOMLCS(I))
                   TACCS(I)=TAC(I)
                   QACCS(I)=QAC(I)
+              ENDIF 
 C===================== CTEM =====================================\
                   ISNOW(I)=1      
-              ELSE               
-                  ISNOW(I)=0      
 C===================== CTEM =====================================/
-              ENDIF
   100     CONTINUE        
 C                                    
           CALL CWCALC(TCANS,RAICNS,SNOCNS,FRAICS,FSNOCS,CHCAPS,
@@ -491,7 +489,6 @@ C
      1                FCS,ZSNOW,TSNOW,TCSNOW,
      2                ILG,IL1,IL2,JL      )
 C     
-
           CALL TSOLVC(ISNOW,FCS,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPCS,
@@ -654,12 +651,10 @@ C
                   CRIB(I)=-GRAV*ZRSLDM(I)/(TVIRTA(I)*VA(I)**2)
                   DRAG(I)=DRAG(I)+FGS(I)*(VKC/(LOG(ZRSLDM(I))-
      1                    ZOMLNS(I)))**2
+              ENDIF
 C===================== CTEM =====================================\
                   ISNOW(I)=1         
-              ELSE                
-                  ISNOW(I)=0      
 C===================== CTEM =====================================/
-              ENDIF
   200     CONTINUE
 C
           CALL TNPREP(A1,A2,B1,B2,C2,GDENOM,GCOEFF,
@@ -801,12 +796,10 @@ C
      1                (LOG(ZRSLDM(I))-ZOMLNC(I))
                   TACCO(I)=TAC(I)
                   QACCO(I)=QAC(I)
+              ENDIF
 C===================== CTEM =====================================\
-                  ISNOW(I)=0        
-              ELSE                
                   ISNOW(I)=0      
 C===================== CTEM =====================================/
-              ENDIF
   300     CONTINUE
 C
           CALL CWCALC(TCANO,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP,
@@ -970,12 +963,10 @@ C
                   CRIB(I)=-GRAV*ZRSLDM(I)/(TVIRTA(I)*VA(I)**2)
                   DRAG(I)=DRAG(I)+FG(I)*(VKC/(LOG(ZRSLDM(I))-
      1                    ZOMLNG(I)))**2
-C===================== CTEM =====================================\
-                  ISNOW(I)=0       
-              ELSE                
-                  ISNOW(I)=1      
-C===================== CTEM =====================================/
               ENDIF
+C===================== CTEM =====================================\
+                  ISNOW(I)=0      
+C===================== CTEM =====================================/
   400     CONTINUE
 C
           CALL TNPREP(A1,A2,B1,B2,C2,GDENOM,GCOEFF,
