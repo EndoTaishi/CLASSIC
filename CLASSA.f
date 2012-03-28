@@ -287,7 +287,7 @@ C
      9            TCAN,GROWTH,ZSNOW,TSNOW,FSNOW,RHOSNO,SNO,Z0ORO,
      A            ZBLEND,ZPLMG0,ZPLMS0,
      B            TA,RHOAIR,RADJ,DLON,RHOSNI,DELZ,DELZW,ZBOTW,
-     C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,
+     C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,N,
      D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
      E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,
      F            RRESID,SRESID,FRTOT,
@@ -298,7 +298,7 @@ C===================== CTEM =====================================\
 C    ------------- CTEM INPUTS ABOVE THIS LINE, OUTPUTS BELOW -----|
      J             AILCGS,  FCANCS, FCANC)
 C===================== CTEM =====================================/
-C
+C 
 C     * SNOW ALBEDOS AND TRANSMISSIVITY.
 C 
       CALL SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,TRSNOW,

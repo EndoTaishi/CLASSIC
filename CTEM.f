@@ -453,7 +453,7 @@ C     AND CROPS, AND 1.2 FOR GRASSES.
      &           1.2, 1.2, 0.0/
 C
 C     LEAF LIFE SPAN (IN YEARS) FOR CTEM's 9 PFTs
-      DATA  LFESPANY/2.5, 1.00, 0.00,
+      DATA  LFESPANY/1.5, 1.00, 0.00,
      &              1.75, 1.00, 1.00,
      &              1.75, 1.75, 0.00,
      &              1.00, 1.00, 0.00/

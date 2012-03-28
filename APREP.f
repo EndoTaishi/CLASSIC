@@ -10,7 +10,7 @@
      9            TCAN,GROWTH,ZSNOW,TSNOW,FSNOW,RHOSNO,SNO,Z0ORO,
      A            ZBLEND,ZPLMG0,ZPLMS0,
      B            TA,RHOAIR,RADJ,DLON,RHOSNI,DELZ,DELZW,ZBOTW,
-     C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,
+     C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,N,
      D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
      E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,
      F            RRESID,SRESID,FRTOT,                
@@ -464,8 +464,11 @@ C     *        BARE SOIL:            0.002 M.
 C     *        LOW VEGETATION:       0.003 M.
 C     *        FOREST:               0.01  M.
 C     * FOR NOW, ASSIGN WETLANDS A VALUE OF 0.10 M.
-C                                                                                 
-      DO 175 I=IL1,IL2                                                            
+C                                                                             
+      DO 175 I=IL1,IL2
+c      write(*,"(A20,2I4,5F8.2)") "APREP1: ",
+c     &         N,I,FC(I),FG(I),FCS(I),FGS(I),FSNOW(I)  
+c         write(*,"(I4,4F8.2)") I,(FCAN(I,K),K=1,4)                                                          
           FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))                                    
           FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))                                    
           IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
@@ -605,7 +608,13 @@ C
               ZPLIMC(I)=ZPLMG0(I)
               ZPLIMG(I)=ZPLMG0(I)
           ENDIF
-  175 CONTINUE                                                                       
+c      write(*,"(A20,2I4,5F8.2)") "after APREP1: ",
+c     &         N,I,FC(I),FG(I),FCS(I),FGS(I),FSNOW(I)  
+c       write(*,"(I4,4F8.2)") I,(FCAN(I,K),K=1,4)       
+c      if (N.eq.40) then
+c       STOP
+c      endif              
+  175 CONTINUE                                                          
 C                                                                                 
 C     * PARTITION INTERCEPTED LIQUID AND FROZEN MOISTURE BETWEEN
 C     * CANOPY OVERLYING BARE GROUND AND CANOPY OVERLYING SNOW,
