@@ -25,13 +25,13 @@
      O   ISAND,  ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
      P   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
 C===================== CTEM =====================================\
-     P    AILCG,   AILCGS,    FCANC,   FCANCS,   CO2CONC,   CO2I1CG,
-     Q  CO2I1CS,  CO2I2CG,  CO2I2CS,    COSZS,   XDIFFUS,      SLAI,
+     P   AILCG,   AILCGS,    FCANC,   FCANCS,   CO2CONC,   CO2I1CG,
+     Q   CO2I1CS,  CO2I2CG,  CO2I2CS,    COSZS,   XDIFFUS,      SLAI,
      R      ICC,    CTEM1,    CTEM2, RMATCTEM,   FCANCMX,     L2MAX,
-     S NOL2PFTS,  CFLUXCG,  CFLUXCS,
+     S   NOL2PFTS,  CFLUXCG,  CFLUXCS,
 C    ------------ CTEM INPUTS ABOVE THIS LINE, OUTPUTS BELOW -----------|
      T  ANCSVEG,  ANCGVEG, RMLCSVEG, RMLCGVEG,    CANRES,
-     U  RH,SAND,CLAY,ORGM,PRESGAT ) 
+     U  SAND,CLAY,ORGM,PRESGAT ) 
 C
 C    AILCG    - GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR
 C               CANOPY OVER GROUND SUBAREA
@@ -307,7 +307,7 @@ C
 C
 C===================== CTEM =====================================\
 C
-      REAL        RH(ILG),       AILCG(ILG,ICC),      FCANCS(ILG,ICC),
+      REAL        AILCG(ILG,ICC),      FCANCS(ILG,ICC),
      1     FCANC(ILG,ICC),         CO2CONC(ILG),           COSZS(ILG),
      2       XDIFFUS(ILG),     CO2I1CS(ILG,ICC),
      4   CO2I1CG(ILG,ICC),      AILCGS(ILG,ICC),     CO2I2CS(ILG,ICC),
@@ -472,11 +472,10 @@ C
      1                   (LOG(ZRSLDM(I))-ZOMLCS(I))
                   TACCS(I)=TAC(I)
                   QACCS(I)=QAC(I)
-              ENDIF
+              ENDIF 
 C===================== CTEM =====================================\
                   ISNOW(I)=1      
 C===================== CTEM =====================================/
-C
   100     CONTINUE        
 C                                    
           CALL CWCALC(TCANS,RAICNS,SNOCNS,FRAICS,FSNOCS,CHCAPS,
@@ -510,7 +509,7 @@ C
      H                TRTOP,QSTOR,CFSENS,CFEVAP,QSGADD,AC,BC,ZOMS,ZOHS,
      I                LZZ0,LZZ0T,FM,FH,ITER,NITER,KF1,KF2,
 C===================== CTEM =====================================\
-     J                AILCGS,   FCANCS,   RH, CO2CONC,  RMATCTEM,
+     J                AILCGS,   FCANCS, CO2CONC,  RMATCTEM,
      K                THLIQC,     SAND, CLAY,      IG,     COSZS,
      L               XDIFFUS,      ICC,   IC, CO2I1CS,   CO2I2CS,
      M                 CTEM1,    CTEM2, SLAI, FCANCMX,     L2MAX,
@@ -654,7 +653,7 @@ C
      1                    ZOMLNS(I)))**2
               ENDIF
 C===================== CTEM =====================================\
-                  ISNOW(I)=1      
+                  ISNOW(I)=1         
 C===================== CTEM =====================================/
   200     CONTINUE
 C
@@ -831,7 +830,7 @@ C
      H                TRTOP,QSTOR,CFSENS,CFEVAP,QSGADD,AC,BC,ZOMS,ZOHS,
      I                LZZ0,LZZ0T,FM,FH,ITER,NITER,KF1,KF2,
 C===================== CTEM =====================================\
-     J                AILCG,     FCANC,   RH, CO2CONC,  RMATCTEM,
+     J                AILCG,     FCANC,    CO2CONC,  RMATCTEM,
      K               THLIQC,      SAND, CLAY,      IG,     COSZS,
      L               XDIFFUS,      ICC,   IC, CO2I1CG,   CO2I2CG,
      M                 CTEM1,    CTEM2, SLAI, FCANCMX,     L2MAX,
