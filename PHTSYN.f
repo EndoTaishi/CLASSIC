@@ -278,16 +278,16 @@ C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 C     FLAG - there is a problem at the moment with
 C     the TCAN and CFLUX giving us low GPP.  JM 06.03.2012
 C     ORIGINAL values:
-      DATA VMAX/42.0E-06,  70.0E-06, 0.00E-06,
+C      DATA VMAX/42.0E-06,  70.0E-06, 0.00E-06,
 c      DATA VMAX/50.0E-06,  70.0E-06, 0.00E-06,
-     &          35.0E-06,  65.0E-06, 65.0E-06,
-     &          80.0E-06,  40.0E-06, 0.00E-06,
-     &          70.0E-06,  30.0E-06, 0.00E-06/
+C     &          35.0E-06,  65.0E-06, 65.0E-06,
+C     &          80.0E-06,  40.0E-06, 0.00E-06,
+C     &          70.0E-06,  30.0E-06, 0.00E-06/
 C     values to test from Kattge et al. 2009:
-C      DATA VMAX/63.0E-06,  40.0E-06, 0.00E-06,
-C     &          40.0E-06,  55.0E-06, 55.0E-06,
-C     &          100.0E-06, 100.0E-06, 0.00E-06,
-C     &          80.0E-06,  80.0E-06, 0.00E-06/
+      DATA VMAX/63.0E-06,  40.0E-06, 0.00E-06,
+     &          40.0E-06,  60.0E-06, 55.0E-06,
+     &          100.0E-06, 100.0E-06, 0.00E-06,
+     &          80.0E-06,  80.0E-06, 0.00E-06/
 
 C     NEEDLE LEAF |  EVG       DCD       ---
 C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
@@ -312,8 +312,14 @@ C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
      &              0.65, 0.37, 0.00/
 C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
-      DATA  RMLCOEFF/0.015, 0.015, 0.000,
-     &               0.015, 0.015, 0.015,
+C     ORIGINAL VALUES:
+C      DATA  RMLCOEFF/0.015, 0.015, 0.000,
+C     &               0.015, 0.015, 0.015,
+C     &               0.015, 0.025, 0.000,
+C     &               0.015, 0.025, 0.000/
+C     testing values
+      DATA  RMLCOEFF/0.015, 0.050, 0.000,
+     &               0.070, 0.015, 0.025,
      &               0.015, 0.025, 0.000,
      &               0.015, 0.025, 0.000/
 C
