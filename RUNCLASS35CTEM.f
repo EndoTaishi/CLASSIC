@@ -802,7 +802,7 @@ C     JK=5 (all pfts now outputted) CHOOSE CTEM PFT FOR WHICH WE WANT TO WRITE
 C                    ! SOME SELECTED RESULTS
 C     ------------------------------------------------------
 C
-      NCYEAR = 21    ! NO. OF YEARS OF THE .MET FILE. FOR PREVIOUS TEST RUNS,
+      NCYEAR = 109    ! NO. OF YEARS OF THE .MET FILE. FOR PREVIOUS TEST RUNS,
 C                    ! IT IS 21 YEARS. FOR BC PROJECT RUN, IT IS 32 YEARS.
 
       LNDUSEON=0     ! SET THIS TO 1 IF LAND USE CHANGE IS TO BE
