@@ -1,7 +1,8 @@
 subroutine read_from_job_options(ARGBUFF,CTEMLOOP,CTEM1,CTEM2,NCYEAR,LNDUSEON,SPINFAST,CYCLEMET, &
                   NUMMETCYLYRS,METCYLYRST,CO2ON,SETCO2CONC,POPDON,PARALLELRUN, &
                   COMPETE,RSFILE,IDISP,IZREF,ISLFD,IPCP,ITC,ITCG,ITG,IWF,IPAI, &
-                  IHGT,IALC,IALS,IALG)
+                  IHGT,IALC,IALS,IALG,JHHSTD,JHHENDD,JDSTD,JDENDD,JHHSTY, &
+                  JHHENDY,JDSTY,JDENDY)
 
 #ifdef NAGf95
 use F90_UNIX
@@ -9,6 +10,7 @@ use F90_UNIX
 
 implicit none
 
+! -------------
 ! CTEM Model Switches
 
 character(80), intent(out) :: ARGBUFF !prefix of file names
@@ -72,6 +74,7 @@ logical, intent(out) :: RSFILE   ! SET THIS TO TRUE IF RESTART FILES (.INI_RS AN
  				 ! SET THIS TO FALSE IF RESTART FILES ARE NOT NEEDED 
  				 ! (KNOWN HOW MANY YEARS THE MODEL WILL RUN)
 
+! -------------
 ! CLASS Model Switches
 
 integer, intent(out) :: IDISP    ! IF IDISP=0, VEGETATION DISPLACEMENT HEIGHTS ARE IGNORED,
@@ -125,6 +128,23 @@ integer, intent(out) :: IALC
 integer, intent(out) :: IALS
 integer, intent(out) :: IALG
 
+! -------------
+! CLASS35CTEM OUTPUT SWITCHES
+
+! >>>> NOTE: If you wish to use the values in the .INI file, set all to -9999 in the job options file
+!            and the .INI file will be used.
+
+integer, intent(out) :: JHHSTD    ! DAY OF THE YEAR TO START WRITING THE HALF-HOURLY OUTPUT
+integer, intent(out) :: JHHENDD   ! DAY OF THE YEAR TO STOP WRITING THE HALF-HOURLY OUTPUT
+integer, intent(out) :: JDSTD     ! DAY OF THE YEAR TO START WRITING THE DAILY OUTPUT
+integer, intent(out) :: JDENDD    ! DAY OF THE YEAR TO STOP WRITING THE DAILY OUTPUT
+integer, intent(out) :: JHHSTY    ! SIMULATION YEAR (IYEAR) TO START WRITING THE HALF-HOURLY OUTPUT
+integer, intent(out) :: JHHENDY   ! SIMULATION YEAR (IYEAR) TO STOP WRITING THE HALF-HOURLY OUTPUT
+integer, intent(out) :: JDSTY     ! SIMULATION YEAR (IYEAR) TO START WRITING THE DAILY OUTPUT
+integer, intent(out) :: JDENDY    ! SIMULATION YEAR (IYEAR) TO STOP WRITING THE DAILY OUTPUT
+
+! -------------
+
 namelist /joboptions/ &
   CTEMLOOP,           &
   CTEM1,	      &
@@ -153,9 +173,17 @@ namelist /joboptions/ &
   IHGT,               &
   IALC,               &
   IALS,               &
-  IALG
+  IALG,               &
+  JHHSTD,             &
+  JHHENDD,            &
+  JDSTD,              &
+  JDENDD,             &
+  JHHSTY,             &
+  JHHENDY,            &
+  JDSTY,              &
+  JDENDY
 
-character(100) :: jobfile
+character(140) :: jobfile
 integer :: argcount, IARGC 
 
 !-------------------------
