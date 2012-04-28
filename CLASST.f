@@ -491,7 +491,6 @@ C
      1                FCS,ZSNOW,TSNOW,TCSNOW,
      2                ILG,IL1,IL2,JL      )
 C     
-
           CALL TSOLVC(ISNOW,FCS,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPCS,
@@ -768,7 +767,7 @@ C
       ENDIF                                                               
 C
 C     * CALCULATIONS FOR CANOPY OVER BARE GROUND.
-C                                                                             
+C           
       IF(NLANDC.GT.0)                                               THEN
           DO 300 I=IL1,IL2                                    
               IF(FC(I).GT.0.)                                       THEN
@@ -808,15 +807,17 @@ C===================== CTEM =====================================\
 C===================== CTEM =====================================/
               ENDIF
   300     CONTINUE
+
 C
           CALL CWCALC(TCANO,RAICAN,SNOCAN,FRAINC,FSNOWC,CHCAP,
      1                HMFC,HTCC,FC,CMASSC,ILG,IL1,IL2,JL)
+   
           CALL TNPREP(A1,A2,B1,B2,C2,GDENOM,GCOEFF,
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPC,TCBOTC,
      +                FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
      3                ISAND,ILG,IL1,IL2,JL,IG                      )
-C
+C   
           CALL TSOLVC(ISNOW,FC,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPC,

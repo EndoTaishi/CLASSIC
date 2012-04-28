@@ -316,7 +316,7 @@ C
               GROWB(I)=MAX(0.0,(ABS(GROWTH(I))*2.0-1.0))                        
           ENDIF                                                                   
           GROWG=1.0                                                               
-C                                                                                 
+C                
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C    IF USING CTEM's STRUCTURAL ATTRIBUTES OVERWRITE ZOLN
 C
@@ -387,7 +387,6 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------/
           ENDIF                                                                   
 C
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
-
           IF (CTEM2) THEN
              AIL(I,1)=MAX(AILC(I,1), SLAIC(I,1))
              AIL(I,2)=MAX(AILC(I,2), SLAIC(I,2))
@@ -449,7 +448,7 @@ C
             ENDIF
           ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
-  150 CONTINUE                                                                 
+  150 CONTINUE         
 C
 C     * ADJUST FRACTIONAL COVERAGE OF GRID CELL FOR CROPS AND
 C     * GRASS IF LAI FALLS BELOW 1.0 DUE TO GROWTH STAGE OR
@@ -492,6 +491,7 @@ C         IF(PAI(I,4).LT.1.0) THEN
               FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))*PAI(I,4)                       
 C             PAI (I,4)=1.0                                                       
               PAI (I,4)=THR_LAI
+
 C    ----------------- CTEM MODIFICATIONS ------------------------/
           ELSE                                                                    
               FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))                                
@@ -606,7 +606,7 @@ C
               ZPLIMG(I)=ZPLMG0(I)
           ENDIF
   175 CONTINUE                                                                       
-C                                                                                 
+C                  
 C     * PARTITION INTERCEPTED LIQUID AND FROZEN MOISTURE BETWEEN
 C     * CANOPY OVERLYING BARE GROUND AND CANOPY OVERLYING SNOW,
 C     * USING DIFFERENT EFFECTIVE LEAF AREAS FOR EACH.  ADD
@@ -785,7 +785,7 @@ C
   190     CONTINUE
 C
   200 CONTINUE                                                                    
-C                                                                                 
+C                          
 C     * CALCULATION OF ROUGHNESS LENGTHS FOR HEAT AND MOMENTUM AND
 C     * ZERO-PLANE DISPLACEMENT FOR CANOPY OVERLYING BARE SOIL AND
 C     * CANOPY OVERLYING SNOW.
@@ -809,7 +809,7 @@ C
      1                  (0.01*HS(I,J)*HS(I,J)/ZORAT(IC))**FCANS(I,J)
           ENDIF                                                                   
   250 CONTINUE                                                                    
-C                                                                                 
+C                  
       DO 275 I=IL1,IL2                                                            
           IF(FC(I).GT.0.)                                        THEN             
               IF(IDISP.EQ.1)   DISP(I)=EXP(DISP(I)/FC(I))                                        
@@ -824,7 +824,7 @@ C
               ZOMLCS(I)=LOG(ZOMLCS(I))
           ENDIF                                                                   
   275 CONTINUE                                                                    
-C                                                                                 
+C                    
 C     * ADJUST ROUGHNESS LENGTHS OF BARE SOIL AND SNOW-COVERED BARE
 C     * SOIL FOR URBAN ROUGHNESS IF PRESENT.
 C                                                                                 
@@ -929,7 +929,7 @@ C
           HTCC  (I)=HTCC(I)+SPHVEG*CMAI(I)*TCAN(I)/DELT
           RBCOEF(I)=0.0
   350 CONTINUE                                                                   
-C                                                                                 
+C                           
 C     * CALCULATE VEGETATION ROOTING DEPTH AND FRACTION OF ROOTS 
 C     * IN EACH SOIL LAYER (SAME FOR SNOW/BARE SOIL CASES).
 C     * ALSO CALCULATE LEAF BOUNDARY RESISTANCE PARAMETER RBCOEF.
@@ -974,9 +974,9 @@ C
      3                  FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                  (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
      5                  (FC(I)+FCS(I))                                          
-          ENDIF                                                                   
+          ENDIF                                                              
   450 CONTINUE                                                                   
-C                                                                                 
+C           
       DO 500 J=1,IG                                                               
       DO 500 I=IL1,IL2                                                            
           IF((FC(I)+FCS(I)).GT.0.)                               THEN             
@@ -989,7 +989,7 @@ C
               FROOT(I,J)=0.0                                                      
           ENDIF                                                                   
   500 CONTINUE                                                                    
-C                                                                                 
+C                   
 C     * CALCULATE SKY-VIEW FACTORS FOR BARE GROUND AND SNOW 
 C     * UNDERLYING CANOPY.                                                         
 C                                                                                 
@@ -1011,7 +1011,7 @@ C
               FSVFS(I)=0.                                                         
           ENDIF                                                                   
   600 CONTINUE                                         
-C                                                                                  
+C                
 C     * CALCULATE BULK SOIL MOISTURE SUCTION FOR STOMATAL RESISTANCE.
 C     * CALCULATE FRACTIONAL TRANSPIRATION EXTRACTED FROM SOIL LAYERS.
 C
@@ -1031,7 +1031,7 @@ C
               ENDIF                                                               
           ENDIF                                                                   
   650 CONTINUE                                                               
-C                                                                                 
+C                      
       DO 700 J=1,IG                                                               
       DO 700 I=IL1,IL2                                                            
           IF(FRTOT(I).GT.0.)                                       THEN           
@@ -1057,7 +1057,7 @@ C
           ENDIF                                                                   
   800 CONTINUE
 
-C                                                                                 
+C              
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C
 C     ESTIMATE FCANC AND FCANCS FOR USE BY PHTSYN SUBROUTINE BASED ON

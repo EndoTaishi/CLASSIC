@@ -289,7 +289,7 @@ C
                   QAC(I)=QA(I)
               ENDIF
               TVRTAC(I)=TAC(I)*(1.0+0.61*QAC(I))   
-C                                                                                 
+C                         
               IF(SNOCAN(I).GT.0.)             THEN
                   CPHCHC(I)=CLHVAP+CLHMLT
               ELSE                                                                        

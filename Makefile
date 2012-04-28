@@ -13,10 +13,10 @@ BDIR = ../bin
 FC=pgf90
 
 # General running of model
-#FFLAGS = -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
+FFLAGS = -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 
 # Debugging of model
-FFLAGS = -r8 -O0 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
+#FFLAGS = -r8 -O0 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 
 export PGIMACH=-64
 
