@@ -618,7 +618,6 @@ C
      2                    TAC,QAC,H,ZOM,ZOH,
      3                    LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
         ENDIF
-
 C
 C     * CALCULATE CANOPY AIR TEMPERATURE AND SPECIFIC HUMIDITY OF 
 C     * CANOPY AIR (FIRST WITHOUT RC TO CHECK FOR CONDENSATION; 
@@ -1156,11 +1155,15 @@ C===================== CTEM =====================================\
 C
 C     STORE AERODYNAMIC CONDUCTANCE FOR USE IN NEXT TIME STEP
 C
+      IF (CTEM1) THEN
       DO 710 I = IL1, IL2
       IF(FI(I).GT.0.)    THEN    
        CFLUXV(I) = CFLUX(I)
+      ELSE
+       CFLUXV(I) = 0.0
       ENDIF  
 710   CONTINUE
+      ENDIF
 C
 C===================== CTEM =====================================/                           
       RETURN                                                                      

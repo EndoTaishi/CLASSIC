@@ -566,7 +566,8 @@ C
      B     HMFCROW_G(NLAT),            HMFNROW_G(NLAT), 
      C     HTCSROW_G(NLAT),            HTCCROW_G(NLAT),
      D     FSGGROW_G(NLAT),            FLGGROW_G(NLAT),
-     E     HFSGROW_G(NLAT),            HEVGROW_G(NLAT)
+     E     HFSGROW_G(NLAT),            HEVGROW_G(NLAT),
+     F     FC_G(NLAT),FG_G(NLAT),FCS_G(NLAT),FGS_G(NLAT)
 C
        REAL  PCFCROW_G(NLAT),          PCLCROW_G(NLAT),
      1     PCPGROW_G(NLAT),            QFCFROW_G(NLAT),
@@ -784,6 +785,7 @@ C     THRESHOLD OF POPULATION DENSITY (people/km^2) [Kloster et al., BioGeoSci. 
 C
       DATA POPDTHRSHLD/300./
 C
+
        LOPCOUNT = 1   ! INITIALIZE LOOP COUNT TO 1.
 C
 C===================== CTEM CONSTANTS DONE=====================================/
@@ -2810,6 +2812,23 @@ C6601  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),10F9.4,2(A5,I1))
 6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A5,I1))   
 6900  FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A5,I1))   
 C
+C  NOTE THAT FC,FG,FCS AND FGS WERE ONE_DIMENSIONAL IN CLASS SUBROUTINES
+C  THE TRANSFORMATIONS HERE TO GRID_CELL MEAN FC_G,FG_G,FCS_G AND FGS_G  
+C  ARE ONLY APPLICABLE WHEN NLTEST=1 (E.G., ONE LATITUDE)
+C
+       DO I=1,NLTEST
+        FC_G(I)=0.0
+        FG_G(I)=0.0
+        FCS_G(I)=0.0
+        FGS_G(I)=0.0 
+        DO M=1,NMTEST
+         FC_G(I)=FC_G(I)+FC(M)
+         FG_G(I)=FG_G(I)+FG(M)
+         FCS_G(I)=FCS_G(I)+FCS(M)
+         FGS_G(I)=FGS_G(I)+FGS(M)
+        ENDDO
+       ENDDO
+C
       IF (.NOT. PARALLELRUN) THEN ! STAND ALONE MODE, INCLUDES HALF-HOURLY OUTPUT FOR CLASS & CTEM
 C
       DO 450 I=1,NLTEST
@@ -2910,8 +2929,8 @@ C
           FLSTAR=FDLGRD(I)-SBC*GTROW(I,M)**4
           QH=HFSROW(I,M)
           QE=QEVPROW(I,M)
-C          BEG=FSSTAR+FLSTAR-QH-QE
-          BEG=GFLXGAT(1,1)
+          BEG=FSSTAR+FLSTAR-QH-QE
+C          BEG=GFLXGAT(1,1)
           SNOMLT=HMFNROW(I,M)
           IF(RHOSROW(I,M).GT.0.0) THEN
               ZSN=SNOROW(I,M)/RHOSROW(I,M)
@@ -2963,7 +2982,7 @@ C
      1                   TROFROW(I,M),TROOROW(I,M),TROSROW(I,M),
      2                   TROBROW(I,M),ROFROW(I,M),ROFOROW(I,M),
      3                   ROFSROW(I,M),ROFBROW(I,M),
-     4                   FCS(I),FGS(I),FC(I),FG(I),'TILE',M
+     4                   FCS(M),FGS(M),FC(M),FG(M),'TILE',M
           WRITE(68,6800) IHOUR,IMIN,IDAY,IYEAR,                    
      1                   FSGVROW(I,M),FSGSROW(I,M),FSGGROW(I,M),
      2                   FLGVROW(I,M),FLGSROW(I,M),FLGGROW(I,M),
@@ -3125,7 +3144,7 @@ C
      &                   TROFROW_G(I),TROOROW_G(I),TROSROW_G(I),
      1                   TROBROW_G(I),ROFROW_G(I),ROFOROW_G(I),
      2                   ROFSROW_G(I),ROFBROW_G(I),
-     3                   FCS(I),FGS(I),FC(I),FG(I)
+     3                   FCS_G(I),FGS_G(I),FC_G(I),FG_G(I)
       WRITE(681,6800) IHOUR,IMIN,IDAY,IYEAR,                   
      &                   FSGVROW_G(I),FSGSROW_G(I),FSGGROW_G(I),
      1                   FLGVROW_G(I),FLGSROW_G(I),FLGGROW_G(I),
@@ -4478,6 +4497,7 @@ C
         AVGMNNPP_MN(I)=AVGMNNPP_MN(I)+AVGMNNPP_MN_M(I,M)*FAREROW(I,M)   
         AVGMNGPP_MN(I)=AVGMNGPP_MN(I)+AVGMNGPP_MN_M(I,M)*FAREROW(I,M)    
         AVGMNNEP_MN(I)=AVGMNNEP_MN(I)+AVGMNNEP_MN_M(I,M)*FAREROW(I,M)
+
         AVGMNNPP_MN(I)=AVGMNNPP_MN(I)*1.0368                         ! CONVERT UNIT TO gC/M2.MONTH
         AVGMNGPP_MN(I)=AVGMNGPP_MN(I)*1.0368 
         AVGMNNEP_MN(I)=AVGMNNEP_MN(I)*1.0368 
@@ -4535,6 +4555,9 @@ C
 C
 863   CONTINUE ! M
 C
+        AVGMNNPP_MN(I)=AVGMNNPP_MN(I)*1.0368                         ! CONVERT UNIT TO gC/M2.MONTH
+        AVGMNGPP_MN(I)=AVGMNGPP_MN(I)*1.0368 
+        AVGMNNEP_MN(I)=AVGMNNEP_MN(I)*1.0368 
        DO NT=1,NMON
        IF(IDAY.EQ.MDAY(NT+1))THEN
         IMONTH=NT
@@ -4638,10 +4661,6 @@ C
         AVGYRE_BC_YR(I)=AVGYRE_BC_YR(I)+AVGYRE_BC_YR_M(I,M)
      &                   *FAREROW(I,M)   
 C
-        AVGYRNPP_YR(I)=AVGYRNPP_YR(I)*1.0368                         ! CONVERT UNIT TO gC/M2.YEAR
-        AVGYRGPP_YR(I)=AVGYRGPP_YR(I)*1.0368
-        AVGYRNEP_YR(I)=AVGYRNEP_YR(I)*1.0368 
-C
 C      INITIALIZATION FOR YEARLY ACCUMULATED ARRAYS
 C
         AVGYRNPP_YR_M(I,M)=0.0
@@ -4667,6 +4686,10 @@ C
       ENDIF ! IDAY 365
 C
 883   CONTINUE ! M
+C
+        AVGYRNPP_YR(I)=AVGYRNPP_YR(I)*1.0368                         ! CONVERT UNIT TO gC/M2.YEAR
+        AVGYRGPP_YR(I)=AVGYRGPP_YR(I)*1.0368
+        AVGYRNEP_YR(I)=AVGYRNEP_YR(I)*1.0368 
 C
       IF (IDAY.EQ.365) THEN
               WRITE(85,8105)IYEAR,LAIMAXG_YR(I),VGBIOMAS_YR(I),
