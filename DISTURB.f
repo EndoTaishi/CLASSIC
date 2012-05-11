@@ -8,12 +8,20 @@
 C    7 ------------------ INPUTS ABOVE THIS LINE ----------------------   
      8                    STEMLTDT, ROOTLTDT, GLFLTRDT, BLFLTRDT,
      9                    PFTAREAA, GLCAEMLS, RTCAEMLS, STCAEMLS,
-     A                    BLCAEMLS, LTRCEMLS, BURNFRAC, PROBFIRE)
+     A                    BLCAEMLS, LTRCEMLS, BURNFRAC, PROBFIRE,
+     B                    EMIT_CO2, EMIT_CO,  EMIT_CH4, EMIT_NMHC,
+     C                    EMIT_H2,  EMIT_NOX, EMIT_N2O, EMIT_PM25,
+     D                    EMIT_TPM, EMIT_TC,  EMIT_OC,  EMIT_BC)
+
 C    B ------------------OUTPUTS ABOVE THIS LINE ----------------------
 C
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
 C                           DISTURBANCE SUBROUTINE
 C
+C     09  MAY 2012  - ADDITION OF EMISSION FACTORS AND REVISING OF THE
+C     J. MELTON       FIRE SCHEME
+
+
 C     15  MAY 2003  - THIS SUBROUTINE CALCULATES THE LITTER GENERATED
 C     V. ARORA        AND C EMISSIONS FROM LEAVES, STEM, AND ROOT 
 C                     COMPONENTS DUE TO FIRE. C EMISSIONS FROM BURNED
@@ -61,14 +69,49 @@ C     BURNFRAC  - TOTAL AREAL FRACTION BURNED, (%)
 C     PROBFIRE  - PROBABILITY OF FIRE
 C     PFTAREAA  - AREAS OF DIFFERENT PFTs IN A GRID CELL, AFTER FIRE, KM^2
 C
-C     NOTE THE FOLLOWING C EMISSIONS CAN BE EASILY CONVERTED INTO CO2
-C     EMISSIONS BY MULTIPLYING WITH A CONSTANT.
+C     NOTE THE FOLLOWING C BURNED WILL BE CONVERTED TO A TRACE GAS 
+C     EMISSION OR AEROSOL ON THE BASIS OF EMISSION FACTORS.
 C
 C     GLCAEMLS  - GREEN LEAF CARBON EMISSION LOSSES, Kg C/M2
 C     BLCAEMLS  - BROWN LEAF CARBON EMISSION LOSSES, Kg C/M2
 C     RTCAEMLS  - ROOT CARBON EMISSION LOSSES, Kg C/M2
 C     STCAEMLS  - STEM CARBON EMISSION LOSSES, Kg C/M2
 C     LTRCEMLS  - LITTER CARBON EMISSION LOSSES, Kg C/M2
+
+C     EMISSION FACTORS FOR TRACE GASES AND AEROSOLS. UNITS ARE
+C     g OF COMPOUND EMITTED PER Kg OF DRY ORGANIC MATTER.
+C     VALUES ARE TAKEN FROM LI ET AL. 2012 BIOGEOSCI 
+C     EMIF_CO2  - CARBON DIOXIDE
+C     EMIF_CO   - CARBON MONOXIDE
+C     EMIF_CH4  - METHANE
+C     EMIF_NMHC - NON-METHANE HYDROCARBONS
+C     EMIF_H2   - HYDROGEN GAS
+C     EMIF_NOX  - NITROGEN OXIDES
+C     EMIF_N2O  - NITROUS OXIDE
+C     EMIF_PM25 - PARTICULATE MATTER LESS THAN 2.5 uM IN DIAMETER
+C     EMIF_TPM  - TOTAL PARTICULATE MATTER
+C     EMIF_TC   - TOTAL CARBON
+C     EMIF_OC   - ORGANIC CARBON
+C     EMIF_BC   - BLACK CARBON
+
+C     EMITTED COMPOUNDS FROM BIOMASS BURNING IN g OF COMPOUND
+C     EMIT_CO2  - CARBON DIOXIDE
+C     EMIT_CO   - CARBON MONOXIDE
+C     EMIT_CH4  - METHANE
+C     EMIT_NMHC - NON-METHANE HYDROCARBONS
+C     EMIT_H2   - HYDROGEN GAS
+C     EMIT_NOX  - NITROGEN OXIDES
+C     EMIT_N2O  - NITROUS OXIDE
+C     EMIT_PM25 - PARTICULATE MATTER LESS THAN 2.5 uM IN DIAMETER
+C     EMIT_TPM  - TOTAL PARTICULATE MATTER
+C     EMIT_TC   - TOTAL CARBON
+C     EMIT_OC   - ORGANIC CARBON
+C     EMIT_BC   - BLACK CARBON
+
+C     TOT_EMIT  - SUM OF ALL POOLS TO BE CONVERTED TO EMISSIONS/AEROSOLS (g C/M2)
+C     TOT_EMIT_DOM - TOT_EMIT CONVERTED TO Kg DOM / M2
+
+
 C
       IMPLICIT NONE
 C
@@ -90,14 +133,23 @@ C
       REAL  STEMLTDT(ILG,ICC), ROOTLTDT(ILG,ICC), GLFLTRDT(ILG,ICC),
      1          BURNAREA(ILG), PFTAREAA(ILG,ICC), GLCAEMLS(ILG,ICC),
      2      RTCAEMLS(ILG,ICC), STCAEMLS(ILG,ICC), LTRCEMLS(ILG,ICC),
-     3      BLFLTRDT(ILG,ICC), BLCAEMLS(ILG,ICC), BURNFRAC(ILG) 
+     3      BLFLTRDT(ILG,ICC), BLCAEMLS(ILG,ICC),     BURNFRAC(ILG),
+     4          EMIT_CO2(ILG),      EMIT_CO(ILG),     EMIT_CH4(ILG),
+     5         EMIT_NMHC(ILG),      EMIT_H2(ILG),     EMIT_NOX(ILG),
+     6          EMIT_N2O(ILG),    EMIT_PM25(ILG),     EMIT_TPM(ILG),
+     7           EMIT_TC(ILG),      EMIT_OC(ILG),      EMIT_BC(ILG)
 C
       REAL        BMASTHRS(2),                                ZERO,
      1               EXTNMOIS,          LWRLTHRS,         HGRLTHRS,
      2               PARMLGHT,          PARBLGHT,            ALPHA,
      3                     F0,           MAXSPRD,      FRCO2LF(KK),
      4            FRLTRLF(KK),      FRCO2STM(KK),     FRLTRSTM(KK),
-     5            FRCO2RT(KK),       FRLTRRT(KK),     FRLTRBRN(KK)
+     5            FRCO2RT(KK),       FRLTRRT(KK),     FRLTRBRN(KK),
+     6                  C2DOM,
+     7           EMIF_CO2(KK),       EMIF_CO(KK),     EMIF_CH4(KK),
+     8          EMIF_NMHC(KK),       EMIF_H2(KK),     EMIF_NOX(KK),
+     9           EMIF_N2O(KK),     EMIF_PM25(KK),     EMIF_TPM(KK),
+     A            EMIF_TC(KK),       EMIF_OC(KK),      EMIF_BC(KK)
 C
       REAL   BIOMASS(ILG,ICC),        BTERM(ILG), DRGTSTRS(ILG,ICC),
      1       BETADRGT(ILG,IG),     AVGDRYNS(ILG),        FCSUM(ILG),
@@ -109,7 +161,7 @@ C
      7              WIND(ILG),      WNDFUNC(ILG),     SPRDRATE(ILG),
      8           LBRATIO(ILG),     ARBN1DAY(ILG),     AREAMULT(ILG),
      9       BURNVEG(ILG,ICC),      VEGAREA(ILG),     GRCLAREA(ILG),
-     A                REPAREA
+     A                REPAREA,          TOT_EMIT,      TOT_EMIT_DOM
 C
 C     ------------------------------------------------------------------
 C                     CONSTANTS USED IN THE MODEL
@@ -152,7 +204,7 @@ C
 C     MAX. FIRE SPREAD RATE, KM/HR
       DATA MAXSPRD/0.45/
 C
-C     FRACTION OF LEAF BIOMASS CONVERTED TO CO2 DUE TO COMBUSTION
+C     FRACTION OF LEAF BIOMASS CONVERTED TO GASES DUE TO COMBUSTION
       DATA FRCO2LF/0.70, 0.70, 0.00,
      &             0.70, 0.70, 0.70,
      &             0.00, 0.00, 0.00,
@@ -164,7 +216,7 @@ C     FRACTION OF LEAF BIOMASS BECOMING LITTER AFTER COMBUSTION
      &             0.00, 0.00, 0.00,
      &             0.10, 0.10, 0.00/
 C
-C     FRACTION OF STEM BIOMASS CONVERTED TO CO2 DUE TO COMBUSTION
+C     FRACTION OF STEM BIOMASS CONVERTED TO GASES DUE TO COMBUSTION
       DATA FRCO2STM/0.20, 0.20, 0.00,
      &              0.20, 0.10, 0.10,
      &              0.00, 0.00, 0.00,
@@ -176,7 +228,7 @@ C     FRACTION OF STEM BIOMASS BECOMING LITTER AFTER COMBUSTION
      &              0.00, 0.00, 0.00,
      &              0.00, 0.00, 0.00/
 C
-C     FRACTION OF ROOT BIOMASS CONVERTED TO CO2 DUE TO COMBUSTION
+C     FRACTION OF ROOT BIOMASS CONVERTED TO GASES DUE TO COMBUSTION
       DATA FRCO2RT/0.0, 0.0, 0.0,
      &             0.0, 0.0, 0.0, 
      &             0.0, 0.0, 0.0, 
@@ -188,12 +240,105 @@ C     FRACTION OF ROOT BIOMASS BECOMING LITTER AFTER COMBUSTION
      &             0.00, 0.00, 0.00,
      &             0.25, 0.25, 0.00/
 C
-C     FRACTION OF LITTER BURNED DURING FIRE AND EMITTED AS CO2
+C     FRACTION OF LITTER BURNED DURING FIRE AND EMITTED AS GASES
       DATA FRLTRBRN/0.50, 0.50, 0.00,
      &              0.60, 0.60, 0.60,
      &              0.00, 0.00, 0.00,
      &              0.70, 0.70, 0.00/
 C
+C     ========================
+
+C     EMISSIONS FACTORS BY CHEMICAL SPECIES
+C     
+C     VALUES ARE FROM ANDREAE 2011 AS DESCRIBED IN LI ET AL. 2012
+C     BIOGEOSCI.
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR CO2 
+      DATA EMIF_CO2/1576.0, 1576.0,   0.00,
+     &              1604.0, 1576.0, 1654.0,
+     &              1576.0, 1654.0,   0.00,
+     &              1576.0, 1654.0,   0.00/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR CO 
+      DATA EMIF_CO /106.0, 106.0, 0.00,
+     &              103.0, 106.0, 64.0,
+     &              106.0,  64.0, 0.00,
+     &              106.0,  64.0, 0.00/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR CH4 
+      DATA EMIF_CH4/ 4.8, 4.8, 0.0,
+     &               5.8, 4.8, 2.4,
+     &               4.8, 2.4, 0.0,
+     &               4.8, 2.4, 0.0/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR NMHC
+      DATA EMIF_NMHC/ 5.7, 5.7, 0.0,
+     &                6.4, 5.7, 3.7,
+     &                5.7, 3.7, 0.0,
+     &                5.7, 3.7, 0.0/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR H2
+      DATA EMIF_H2/ 1.80, 1.80, 0.00,
+     &              2.54, 1.80, 0.98,
+     &              1.80, 0.98, 0.00,
+     &              1.80, 0.98, 0.00/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR NOX
+      DATA EMIF_NOX/3.24, 3.24, 0.00,
+     &              2.90, 3.24, 2.49,
+     &              3.24, 2.49, 0.00,
+     &              3.24, 2.49, 0.00/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR N2O 
+      DATA EMIF_N2O/0.26, 0.26, 0.00,
+     &              0.23, 0.26, 0.20,
+     &              0.26, 0.20, 0.00,
+     &              0.26, 0.20, 0.00/
+
+C     EMISSION FACTORS FOR AEROSOLS
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR PM2.5
+C     (PARTICLES LESS THAN 2.5 MICROMETERS IN 
+C      DIAMETER)
+      DATA EMIF_PM25/12.7, 12.7, 0.0,
+     &               10.5, 12.7, 5.2,
+     &               12.7,  5.2, 0.0,
+     &               12.7,  5.2, 0.0/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR TPM 
+C     (TOTAL PARTICULATE MATTER)
+      DATA EMIF_TPM/17.6, 17.6, 0.0,
+     &              14.7, 17.6, 8.5,
+     &              17.6,  8.5, 0.0,
+     &              17.6,  8.5, 0.0/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR TC
+C     (TOTAL CARBON)
+      DATA EMIF_TC/ 8.3, 8.3, 0.0,
+     &              7.2, 8.3, 3.4,
+     &              8.3, 3.4, 0.0,
+     &              8.3, 3.4, 0.0/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR OC 
+C     (ORGANIC CARBON)
+      DATA EMIF_OC/ 9.1, 9.1, 0.0,
+     &              6.7, 9.1, 3.2,
+     &              9.1, 3.2, 0.0,
+     &              9.1, 3.2, 0.0/
+
+C     PFT-SPECIFIC EMISSION FACTORS FOR BC
+C     (BLACK CARBON)
+      DATA EMIF_BC/ 0.56, 0.56, 0.00,
+     &              0.56, 0.56, 0.47,
+     &              0.56, 0.47, 0.00,
+     &              0.56, 0.47, 0.00/
+
+C     CONVERSION FACTOR FROM CARBON TO DRY ORGANIC MATTER
+C     VALUE IS FROM LI ET AL. 2012 BIOGEOSCI
+      DATA C2DOM/450.0/ !gC / Kg DRY ORGANIC MATTER
+
+C     ========================
+
 C     TYPICAL AREA REPRESENTING CTEM's FIRE PARAMETERIZATION
       DATA REPAREA/1000.0/ ! KM^2
 C
@@ -254,6 +399,20 @@ C                               !OF GRID CELL
         ARBN1DAY(I)=0.0         !AREA BURNED IN 1 DAY, KM^2
         AREAMULT(I)=0.0         !MULTIPLIER TO FIND AREA BURNED
         VEGAREA(I)=0.0          !TOTAL VEGETATED AREA IN A GRID CELL
+
+        EMIT_CO2(I) = 0.0
+        EMIT_CO(I) = 0.0
+        EMIT_CH4(I) = 0.0
+        EMIT_NMHC(I) = 0.0
+        EMIT_H2(I) = 0.0
+        EMIT_NOX(I) = 0.0
+        EMIT_N2O(I) = 0.0
+        EMIT_PM25(I) = 0.0
+        EMIT_TPM(I) = 0.0
+        EMIT_TC(I) = 0.0
+        EMIT_OC(I) = 0.0
+        EMIT_BC(I) = 0.0
+
 180   CONTINUE
 C
       DO 190 I = IL1, IL2
@@ -558,7 +717,49 @@ C
 C
             LTRCEMLS(I,J)=FRLTRBRN(N)*LITRMASS(I,J)*
      &       (BURNVEG(I,J)/PFTAREAB(I,J))
+
+C          CALCULATE THE EMISSIONS OF TRACE GASES AND AEROSOLS BASED UPON HOW
+C          MUCH PLANT MATTER WAS BURNT
+
+C          SUM ALL POOLS THAT WILL BE CONVERTED TO EMISSIONS/AEROSOLS (g C/M2)
+           TOT_EMIT = (GLCAEMLS(I,J) + BLCAEMLS(I,J) + RTCAEMLS(I,J)
+     &            + STCAEMLS(I,J) + LTRCEMLS(I,J)) * 1000.0
+
+C          CONVERT BURNT PLANT MATTER FROM CARBON TO DRY ORGANIC MATTER USING 
+C          A CONVERSION FACTOR, ASSUME ALL PARTS OF THE PLANT HAS THE SAME
+C          RATIO OF CARBON TO DRY ORGANIC MATTER. UNITS: Kg DOM / M2
+           TOT_EMIT_DOM = TOT_EMIT / C2DOM
+
+C          CONVERT THE DOM TO EMISSIONS/AEROSOLS USING EMISSIONS FACTORS
+C          UNITS: g COMPOUND / M2
+
+           EMIT_CO2(I) = EMIT_CO2(I) + EMIF_CO2(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_CO(I) = EMIT_CO(I) + EMIF_CO(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_CH4(I) = EMIT_CH4(I) + EMIF_CH4(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_NMHC(I) = EMIT_NMHC(I) + EMIF_NMHC(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_H2(I) = EMIT_H2(I) + EMIF_H2(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_NOX(I) = EMIT_NOX(I) + EMIF_NOX(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_N2O(I) = EMIT_N2O(I) + EMIF_N2O(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_PM25(I) = EMIT_PM25(I) + EMIF_PM25(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_TPM(I) = EMIT_TPM(I) + EMIF_TPM(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_TC(I) = EMIT_TC(I) + EMIF_TC(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_OC(I) = EMIT_OC(I) + EMIF_OC(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+           EMIT_BC(I) = EMIT_BC(I) + EMIF_BC(J) * 
+     &                   TOT_EMIT_DOM * FCANCMX(I,J)
+
           ELSE
+
             GLFLTRDT(I,J)=0.0
             BLFLTRDT(I,J)=0.0
             STEMLTDT(I,J)=0.0
@@ -568,11 +769,13 @@ C
             STCAEMLS(I,J)=0.0
             RTCAEMLS(I,J)=0.0
             LTRCEMLS(I,J)=0.0
+
           ENDIF
 C
 530     CONTINUE
 520   CONTINUE
 C
+
       RETURN
       END
 

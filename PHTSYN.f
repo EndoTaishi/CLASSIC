@@ -313,13 +313,8 @@ C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
 C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
 C     ORIGINAL VALUES:
-C      DATA  RMLCOEFF/0.015, 0.015, 0.000,
-C     &               0.015, 0.015, 0.015,
-C     &               0.015, 0.025, 0.000,
-C     &               0.015, 0.025, 0.000/
-C     testing values
-      DATA  RMLCOEFF/0.015, 0.050, 0.000,
-     &               0.070, 0.015, 0.025,
+      DATA  RMLCOEFF/0.015, 0.015, 0.000,
+     &               0.015, 0.015, 0.015,
      &               0.015, 0.025, 0.000,
      &               0.015, 0.025, 0.000/
 C
