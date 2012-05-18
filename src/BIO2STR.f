@@ -12,6 +12,10 @@ C     ----------------------------------------------------------------
 C
 C           CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 C        BIOMASS TO STRUCTURAL ATTRIBUTES CONVERSION SUBROUTINE 
+
+C     18  MAY  2012 - FIX BUG FOR SOILS WITH THE DEPTH CLOSE TO THE
+C     J. MELTON       BOUNDARY BETWEEN LAYERS, WAS RESULTING IN ROOTS 
+C                     BEING PLACED INCORRECTLY.
 C
 C     28  NOV. 2011 - MAKE CHANGES FOR COUPLING WITH CLASS 3.5
 C     Y. PENG
@@ -483,8 +487,10 @@ C           ALSO FIND "A" (PARAMETER DETERMINING ROOT PROFILE). THIS IS
 C           THE "A" WHICH DEPENDS ON TIME VARYING ROOT BIOMASS 
 C
 C
-            IF(ROOTDPTH(I,M).GT.MIN(SOILDPTH(I),MXRTDPTH(SORT(M))))THEN
-              ROOTDPTH(I,M) = MIN(SOILDPTH(I),MXRTDPTH(SORT(M)))
+            IF(ROOTDPTH(I,M).GT.MIN(SOILDPTH(I),ZBOTW(I,IG),
+     1                                MXRTDPTH(SORT(M))))THEN
+              ROOTDPTH(I,M) = MIN(SOILDPTH(I),ZBOTW(I,IG),
+     1                                  MXRTDPTH(SORT(M)))
               IF(ROOTDPTH(I,M).LE.ZERO)THEN
                 A(I,M)=100.0
               ELSE
@@ -504,11 +510,14 @@ C
 C
       DO 400 J = 1,ICC
         DO 410 I = IL1, IL2
+
+          KEND=9999  ! INITIALIZE WITH A DUMMY VALUE
 C
 C         USING PARAMETER "A" WE CAN FIND FRACTION OF ROOTS IN EACH SOIL LAYER
 C         JUST LIKE CLASS
 C
-          ZROOT=ROOTDPTH(I,J)
+         ZROOT=ROOTDPTH(I,J)
+
 c          DO 413 K = 1,IG
 c          IF(ZROOT.LE.ZBOTW(I,1)) THEN
 c              RMATCTEM(I,J,1)=1.0
@@ -526,6 +535,7 @@ c              ENDIF
 c413       CONTINUE
 C
            TOTALA(I,J) = 1.0-EXP(-A(I,J)*ZROOT)
+
            IF(ZROOT.LE.ZBOTW(I,1))THEN
 C           IF ROOTDEPTH IS SHALLOWER THAN THE BOTTOM OF THE FIRST LAYER
             RMATCTEM(I,J,1)=1.0
@@ -543,6 +553,14 @@ C             IS DEEPER THAN BOTTOM OF THE PREVIOUS TOP LAYER
              ENDIF
 415         CONTINUE
 C
+            IF (KEND .EQ. 9999) THEN
+           WRITE(6,2100) I,J,K,KEND
+2100       FORMAT(' AT (I) = (',I3,'), PFT=',I2,', DEPTH=',I2,' KEND IS
+     & NOT ASSIGNED. KEND  = ',I5)
+           CALL XIT('BIO2STR',-3)
+        
+            END IF
+
             ETMP(I,J,1)=EXP(-A(I,J)*ZBOTW(I,1))
             RMATCTEM(I,J,1)=(1.0-ETMP(I,J,1))/TOTALA(I,J)
             IF (KEND .EQ. 2) THEN

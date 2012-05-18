@@ -97,6 +97,7 @@ C
                   DELZW(I,M,J)=SDEPTH(I,M)-(ZBOT(J)-DELZ(J))
               ENDIF
               ZBOTW(I,M,J)=MAX(0.0,ZBOT(J)-DELZ(J))+DELZW(I,M,J)
+
 150       CONTINUE
           IF(SAND(I,M,1).GE.0.0) THEN
               ALGWET(I,M)=0.08+0.0006*SAND(I,M,1)

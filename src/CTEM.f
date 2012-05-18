@@ -9,7 +9,7 @@
      9                    EXTNPROB,   STDALN,     TBAR,     L2MAX,
      A                    NOL2PFTS, PFCANCMX, NFCANCMX,  LNDUSEON,
      B                      THICEC, SOILDPTH, SPINFAST,   TODFRAC,
-     &                     COMPETE,  
+     &                     COMPETE,   POPDIN,
      &                     FAREGAT, 
 C
 C    -------------- INPUTS USED BY CTEM ARE ABOVE THIS LINE ---------
@@ -142,6 +142,7 @@ C     TODFRAC  - MAX. FRACTIONAL COVERAGE OF CTEM's 9 PFTs BY THE END
 C                OF THE DAY, FOR USE BY LAND USE SUBROUTINE
 C     COMPETE  - LOGICAL BOOLEAN TELLING IF COMPETITION BETWEEN PFTs IS
 C                ON OR NOT
+C     POPDIN   - POPULATION DENSITY (PEOPLE / KM^2)
 C
 C     UPDATES
 C
@@ -399,7 +400,7 @@ C
      3          EMIT_TC(ILG),        EMIT_OC(ILG),        EMIT_BC(ILG)
 C
       REAL TLTRLEAF(ILG,ICC),   TLTRSTEM(ILG,ICC),   TLTRROOT(ILG,ICC),
-     1                    PI,            EARTHRAD
+     1                    PI,            EARTHRAD,              POPDIN
 C
       REAL  FAREGAT(ILG), PAICGAT(ILG,IC),SLAICGAT(ILG,IC)  
       REAL  VGBIOMAS_VEG(ILG,ICC)
@@ -652,11 +653,11 @@ C
             YESFRAC(I,J)=FCANCMX(I,J)
           ENDDO
         ENDDO
-         
+
          CALL       LUC(     ICC,      ILG,      IL1,      IL2,
      1                        IC, NOL2PFTS,    L2MAX,  
      2                  GRCLAREA, PFCANCMX, NFCANCMX,     IDAY,
-     3                   TODFRAC,  YESFRAC, 0,
+     3                   TODFRAC,  YESFRAC, .TRUE.,
      4                  GLEAFMAS, BLEAFMAS, STEMMASS, ROOTMASS,
      5                  LITRMASS, SOILCMAS, VGBIOMAS, GAVGLTMS,
      6                  GAVGSCMS,  FCANCMX,   FCANMX,
@@ -1485,14 +1486,14 @@ C
      3                    PRBFRHUC, RMATCTEM, EXTNPROB, PFTAREAB,
      4                         IL1,      IL2,       IG,      ICC,
      5                         ILG,     SORT, NOL2PFTS,       IC,
-     6                    GRCLAREA,   THICEC,
+     6                    GRCLAREA,   THICEC,   POPDIN, LUCEMCOM,
+C    IN ABOVE, OUT BELOW 
      7                    STEMLTDT, ROOTLTDT, GLFLTRDT, BLFLTRDT,
      8                    PFTAREAA, GLCAEMLS, RTCAEMLS, STCAEMLS,
      9                    BLCAEMLS, LTRCEMLS, BURNFRAC, PROBFIRE,
      A                    EMIT_CO2, EMIT_CO,  EMIT_CH4, EMIT_NMHC,
      B                    EMIT_H2,  EMIT_NOX, EMIT_N2O, EMIT_PM25,
      C                    EMIT_TPM, EMIT_TC,  EMIT_OC,  EMIT_BC)
-
 C
 C    ------------------------------------------------------------------
 C
@@ -1539,6 +1540,7 @@ C
 1040    CONTINUE
 1030  CONTINUE
 C
+
       DO 1041 I = IL1, IL2
         NBP(I)=NEP(I)-DSTCEMLS2(I)
         DSTCEMLS3(I)=DSTCEMLS2(I)-DSTCEMLS1(I)

@@ -58,7 +58,8 @@ C
      2        IHOUR,IMIN,IDAY,IYEAR,NML,NMW,NWAT,NICE,JLAT,
      3        NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,I,J,K,L,M,
      4        NCYEAR,CO2YR,POPYR,NUMMETCYLYRS,METCYLYRST,
-     5        METCYCENDYR,CLIMIYEAR,POPCYCLEYR,CYPOPYR 
+     5        METCYCENDYR,CLIMIYEAR,POPCYCLEYR,CYPOPYR,
+     6        LUCYR,CYLUCYR 
 C
       INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11
 C
@@ -393,7 +394,7 @@ C
      1           FLSTAR_G,  QH_G,    QE_G,        SNOMLT_G,
      2           BEG_G,     GTOUT_G, TPN_G,       ALTOT_G,
      3           TCN_G,     TSN_G,   ZSN_G,       CO2CONCIN,
-     4           POPDIN,    POPDTHRSHLD,          SETCO2CONC 
+     4           POPDIN,  SETCO2CONC 
 
       REAL TCANRS(NLAT,NMOS), TSNORS(NLAT,NMOS), TPNDRS(NLAT,NMOS)
 
@@ -781,11 +782,6 @@ C     CTEM's TIME STEP IN DAYS
 C
       DATA ABSZERO/1E-12/
 C
-C     THRESHOLD OF POPULATION DENSITY (people/km^2) [Kloster et al., BioGeoSci. 2010]
-C
-      DATA POPDTHRSHLD/300./
-C
-
        LOPCOUNT = 1   ! INITIALIZE LOOP COUNT TO 1.
 C
 C===================== CTEM CONSTANTS DONE=====================================/
@@ -988,11 +984,16 @@ C
 C     FIND THE FINAL YEAR OF THE CYCLING MET
       METCYCENDYR = METCYLYRST + NUMMETCYLYRS - 1
 
-C     IF CYCLING MET, FIND THE POPD YEAR TO CYCLE WITH
+C     IF CYCLING MET, FIND THE POPD AND LUC YEAR TO CYCLE WITH
        IF (CYCLEMET .AND. POPCYCLEYR .NE. -9999) THEN
-       CYPOPYR =  POPCYCLEYR
+       CYPOPYR = POPCYCLEYR
+       CYLUCYR = POPCYCLEYR
        ELSE IF (CYCLEMET) THEN
        CYPOPYR = METCYLYRST
+       CYLUCYR = METCYLYRST
+       ELSE  ! GIVE DUMMY VALUE
+       CYPOPYR = -9999
+       CYLUCYR = -9999
        END IF
 
 C===================== CTEM INITIALIZATION DONE=====================================/
@@ -1320,9 +1321,9 @@ C
      &'  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O',
      &'   ANN_PM25 ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC')
 7101  FORMAT('          m2/m2    Kg C/m2  Kg C/m2    Kg C/m2   Kg C/m2',
-     &'gC/m2.yr  gC/m2.yr  gC/m2.yr    W/m2  gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  ')
+     &'gC/m2.yr  gC/m2.yr  gC/m2.yr    W/m2  g/m2.yr ',
+     &'  g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr ',
+     &'  g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   ')
 7110  FORMAT('  DAY YEAR   BURNFRAC   PROBFIRE   LUCEMCOM   LUCLTRIN
      &LUCSOCIN  GRCLAREA')
 7111  FORMAT('               %           -    uMOL-CO2/M2.S KgC/M2.DAY
@@ -1429,9 +1430,9 @@ C
      &'        CO        CH4      NMHC       H2       NOX       N2O',
      &'       PM25       TPM        TC        OC        BC')
 6224  FORMAT('                 m2/m2  Kg C/m2  Kg C/m2   Kg C/m2  ',
-     &       'gC/m2.mon  gC/m2.mon  gC/m2.mon  gC/m2.mon  gC/m2.mon',
-     &'  gC/m2.mon  gC/m2.mon  gC/m2.mon  gC/m2.mon  gC/m2.mon',
-     &'  gC/m2.mon  gC/m2.mon  gC/m2.mon  gC/m2.mon  gC/m2.mon')   
+     &       'gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon ',
+     &'  g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon ',
+     &'  g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon')   
 6025  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
      &'RESULTS')
 6125  FORMAT('  YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS' 
@@ -1793,6 +1794,108 @@ C
 114     CONTINUE
 113   CONTINUE
 C
+C     >>>>>JM EDIT
+C     I CHANGED THIS SO IT ALSO WILL ONLY CYCLE ON 
+C     ONE YEAR OF LUC DATA, SO WHEN CYCLING MET
+C     YOU WILL CYCLE ON ONE YEAR OF BOTH POPD AND LUC
+
+C     IF LAND USE CHANGE SWITCH IS ON THEN READ THE FRACTIONAL COVERAGES 
+C     OF CTEM's 9 PFTs FOR THE FIRST YEAR AND SET THEM TO PREVIOUS YEAR's 
+C     COVERAGES, SKIP THIS IF YOU ARE CYCLING OVER THE MET AND LOPCOUNT
+C     IS MORE THAN 1.
+C
+      IF (LNDUSEON .AND. (LOPCOUNT .EQ. 1 .OR. .NOT. CYCLEMET)) THEN
+
+        READ (90,7010) TITLEC1
+        READ (90,7010) TITLEC2
+        READ (90,7010) TITLEC3
+c        DO I = 1, NLAND
+
+C       GET FIRST YEAR OF LUC DATA
+        DO I = 1, NLTEST
+         DO M = 1, NMTEST
+          READ (90,*) LUCYR,(PFCANCMXROW(I,M,J),J=1,ICC)
+         ENDDO
+        ENDDO
+
+      IF (CYCLEMET .AND. LUCYR .EQ. CYLUCYR) THEN  
+C       WE ALREADY HAVE THE LUC DATA FOR THE CYLUCYR
+C       SO WE WILL JUST KEEP CYCLING OVER THAT
+        GO TO 1110  
+      END IF
+
+1100   CONTINUE
+
+        DO I = 1, NLTEST
+         DO M = 1, NMTEST
+          READ (90,*,END=1050) LUCYR,(PFCANCMXROW(I,M,J),J=1,ICC)
+         ENDDO
+        ENDDO
+
+      IF (CYCLEMET .AND. LUCYR .LT. CYLUCYR) THEN
+C     THE LUC DATA IS NOT FOR THE CORRECT YEAR, TRY AGAIN!
+        GO TO 1100 
+      END IF
+       
+      
+1110       CONTINUE
+C     <<<<<JM EDIT
+
+C       GET FCANMXs FOR USE BY CLASS USING THE PFCANCMXs JUST READ IN
+C
+        DO J = 1, ICAN
+c          DO I = 1, NLAND
+          DO I = 1, NLTEST
+          DO M = 1, NMTEST
+            FCANROW(I,M,J)=0.0
+          ENDDO
+          ENDDO
+        ENDDO
+C
+        K1=0
+        DO 997 J = 1, ICAN
+          IF(J.EQ.1) THEN
+            K1 = K1 + 1
+          ELSE
+            K1 = K1 + NOL2PFTS(J-1)
+          ENDIF
+          K2 = K1 + NOL2PFTS(J) - 1
+          DO 998 N = K1, K2
+c            DO 996 I = 1, NLAND
+            DO I = 1, NLTEST
+            DO M = 1, NMTEST
+              FCANROW(I,M,J)=FCANROW(I,M,J)+PFCANCMXROW(I,M,N)
+            ENDDO
+            ENDDO
+998       CONTINUE
+997     CONTINUE
+C
+C       BACK UP ONE YEAR IN THE LUC FILE
+
+C     >>>>>JM EDIT
+        DO I = 1, NLTEST
+         DO M = 1, NMTEST
+           BACKSPACE(90)  
+         ENDDO
+        ENDDO
+C        CLOSE(90)
+C        OPEN(UNIT=90,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.LUC')
+C        READ (90,7010) TITLEC1
+C        READ (90,7010) TITLEC2
+C        READ (90,7010) TITLEC3
+C     <<<<<MJ EDIT
+
+        DO J = 1, ICC
+c          DO I = 1, NLAND
+          DO I = 1, NLTEST
+          DO M = 1, NMTEST
+            FCANCMXROW(I,M,J)=PFCANCMXROW(I,M,J)
+          ENDDO
+          ENDDO
+        ENDDO
+
+      ENDIF
+C
 C
 C     WITH FCANCMX CALCULATED ABOVE AND INITIALIZED VALUES OF ALL CTEM POOLS,
 C     FIND MOSAIC TILE (GRID) AVERAGE VEGETATION BIOMASS, LITTER MASS, AND SOIL C MASS. 
@@ -1977,7 +2080,6 @@ C
       
 C     THIS READS IN ONE 30 MIN SLICE OF MET DATA, WHEN IT REACHES THE END OF FILE
 C     IT WILL GO TO 999. 
-
           READ(51,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSDOWN,FDLGRD(I),
      1         PREGRD(I),TAGRD(I),QAGRD(I),UVGRD(I),PRESGRD(I)
 
@@ -2071,17 +2173,20 @@ C     THE POPN DATA IS NOT FOR THE CORRECT YEAR, TRY AGAIN!
         GO TO 310 
       END IF
 
-C     <<<<<MJ EDIT         
-C 
-          DO 325 I=1,NLTEST
-          IF (POPDIN.EQ.0.0) THEN
-           EXTNPROBGRD(I)=0.5
-           PRBFRHUCGRD(I)=0.0
-          ELSE
-           EXTNPROBGRD(I)=MAX(0.0,0.9-EXP(-0.025*POPDIN))
-           EXTNPROBGRD(I)=0.5+EXTNPROBGRD(I)/2.0
-           PRBFRHUCGRD(I)=MIN(1.0,(POPDIN/POPDTHRSHLD)**0.43)
-          ENDIF
+C     <<<<<JM EDIT         
+C        THESE ARE MOVED TO DISTURB!
+C          DO 325 I=1,NLTEST
+C          IF (POPDIN.EQ.0.0) THEN
+C           EXTNPROBGRD(I)=0.5
+C           PRBFRHUCGRD(I)=0.0
+C          ELSE
+C           EXTNPROBGRD(I)=MAX(0.0,0.9-EXP(-0.025*POPDIN))
+C           EXTNPROBGRD(I)=0.5+EXTNPROBGRD(I)/2.0
+C           PRBFRHUCGRD(I)=MIN(1.0,(POPDIN/POPDTHRSHLD)**0.43)
+C          ENDIF
+
+C     >>>>>MJ EDIT   
+      
 325       CONTINUE
 C
        ENDIF  !POPDON     
@@ -2586,18 +2691,42 @@ C     SIMULATED BY CLASS.
 C
       IF (CTEM2) THEN
 C
-         CALL CTEM ( FCANCMXGAT, FSNOWACC_M, SANDGAT, CLAYGAT,   
-     2                       ICAN,       ILG,         1,     NML,
-     3                       IGND,       ICC,      IDAY,   RADJGAT,
-     4          TCANOACCGAT_M, TCANSACC_M,  TBARCACC_M, TBARCSACC_M,
+C     FOR READING FROM LUC FILE  
+         IF ((LNDUSEON).AND.(IDAY.EQ.1)) THEN
+          IF (.NOT. CYCLEMET .AND. LUCYR .LT. CLIMIYEAR) THEN  
+           K =0
+           DO I = 1, NLTEST
+            DO M = 1, NMTEST
+             K = K + 1
+             READ (90,*,END=1050) LUCYR,(NFCANCMXGAT(K,J),J=1,ICC)
+            ENDDO
+           ENDDO
+          ELSE 
+C           ASSIGN THE SAME VALUES (ROW) TO GAT
+           K =0
+           DO I = 1, NLTEST
+            DO M = 1, NMTEST
+             K = K + 1
+             DO J = 1,ICC
+               NFCANCMXGAT(K,J)=PFCANCMXROW(I,M,J)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDIF
+         ENDIF
+
+        CALL CTEM ( FCANCMXGAT, FSNOWACC_M,    SANDGAT,    CLAYGAT,   
+     2                   ICAN,         ILG,          1,        NML,
+     3                   IGND,         ICC,       IDAY,    RADJGAT,
+     4          TCANOACCGAT_M,  TCANSACC_M, TBARCACC_M,TBARCSACC_M,
      5             TBARGACC_M, TBARGSACC_M, TAACCGAT_M,    DLZWGAT,
-     6           ANCSVGAC_M,  ANCGVGAC_M,  RMLCSVGA_M,  RMLCGVGA_M,
-     7               ZBTWGAT, THLIQCACC_M, THLIQGACC_M,    DELTAT,
-     8           UVACCGAT_M,  VVACCGAT_M,   LIGHTNG,  PRBFRHUCGAT,
-     9         EXTNPROBGAT,  STDALNGAT,   TBARACCGAT_M,     L2MAX,
-     A            NOL2PFTS,  PFCANCMXGAT,  NFCANCMXGAT,  LNDUSEON,
-     B            THICECACC_M,  SDEPGAT,  SPINFAST,   TODFRAC,  
-     &            COMPETE,   
+     6             ANCSVGAC_M,  ANCGVGAC_M, RMLCSVGA_M, RMLCGVGA_M,
+     7                ZBTWGAT, THLIQCACC_M,THLIQGACC_M,     DELTAT,
+     8             UVACCGAT_M,  VVACCGAT_M,    LIGHTNG,PRBFRHUCGAT,
+     9            EXTNPROBGAT,   STDALNGAT,TBARACCGAT_M,     L2MAX,
+     A               NOL2PFTS, PFCANCMXGAT, NFCANCMXGAT,  LNDUSEON,
+     B            THICECACC_M,     SDEPGAT,    SPINFAST,   TODFRAC,  
+     &                COMPETE,      POPDIN,  
 C===================== CTEM =====================================\
      &                FAREGAT,
 C===================== CTEM =====================================/
@@ -4860,6 +4989,15 @@ C     REMOVED ALL THE OPENING AND CLOSING HERE. JM 04.19.2012
        ENDIF
        IF(CO2ON) THEN
 	 REWIND(99)
+       ENDIF
+       IF(LNDUSEON) THEN
+C        REWIND THE FILE AND TOSS OUT THE HEADER TO PREPARE TO BE
+C        RE-READ.         
+         REWIND(90)
+         READ (90,*) 
+         READ (90,*) 
+         READ (90,*)     
+         LUCYR=0    
        ENDIF
         GO TO 200 
       ENDIF
