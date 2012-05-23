@@ -9,8 +9,8 @@
      9                    EXTNPROB,   STDALN,     TBAR,     L2MAX,
      A                    NOL2PFTS, PFCANCMX, NFCANCMX,  LNDUSEON,
      B                      THICEC, SOILDPTH, SPINFAST,   TODFRAC,
-     &                     COMPETE,   POPDIN,
-     &                     FAREGAT, 
+     &                     COMPETE,   POPDIN,   DOFIRE,
+     &                     FAREGAT,
 C
 C    -------------- INPUTS USED BY CTEM ARE ABOVE THIS LINE ---------
 C
@@ -274,6 +274,7 @@ C       EMIT_TPM  - TOTAL PARTICULATE MATTER
 C       EMIT_TC   - TOTAL CARBON
 C       EMIT_OC   - ORGANIC CARBON
 C       EMIT_BC   - BLACK CARBON
+C     DOFIRE    - BOOLEAN, IF TRUE ALLOW FIRE, IF FALSE NO FIRE.
 C
 C  ADD FOR COMPETE:  BIOCLIMATIC PARAMETERS
 C
@@ -302,7 +303,7 @@ C
       PARAMETER(LON=96)
       PARAMETER(KK=12)  ! PRODUCT OF CLASS PFTs AND L2MAX (4 x 3 = 12)
 C
-      LOGICAL   LNDUSEON
+      LOGICAL   LNDUSEON,  DOFIRE
 
       INTEGER      IC,      ICC,      ILG,      IL1,       IL2,      IG, 
      1           IDAY,        I,        J,        K,    STDALN,    LATH,
@@ -1487,13 +1488,14 @@ C
      4                         IL1,      IL2,       IG,      ICC,
      5                         ILG,     SORT, NOL2PFTS,       IC,
      6                    GRCLAREA,   THICEC,   POPDIN, LUCEMCOM,
+     7                      DOFIRE,
 C    IN ABOVE, OUT BELOW 
-     7                    STEMLTDT, ROOTLTDT, GLFLTRDT, BLFLTRDT,
-     8                    PFTAREAA, GLCAEMLS, RTCAEMLS, STCAEMLS,
-     9                    BLCAEMLS, LTRCEMLS, BURNFRAC, PROBFIRE,
-     A                    EMIT_CO2, EMIT_CO,  EMIT_CH4, EMIT_NMHC,
-     B                    EMIT_H2,  EMIT_NOX, EMIT_N2O, EMIT_PM25,
-     C                    EMIT_TPM, EMIT_TC,  EMIT_OC,  EMIT_BC)
+     8                    STEMLTDT, ROOTLTDT, GLFLTRDT, BLFLTRDT,
+     9                    PFTAREAA, GLCAEMLS, RTCAEMLS, STCAEMLS,
+     A                    BLCAEMLS, LTRCEMLS, BURNFRAC, PROBFIRE,
+     B                    EMIT_CO2, EMIT_CO,  EMIT_CH4, EMIT_NMHC,
+     C                    EMIT_H2,  EMIT_NOX, EMIT_N2O, EMIT_PM25,
+     D                    EMIT_TPM, EMIT_TC,  EMIT_OC,  EMIT_BC)
 C
 C    ------------------------------------------------------------------
 C

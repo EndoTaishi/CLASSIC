@@ -5,13 +5,14 @@
      4                         IL1,      IL2,       IG,      ICC,      
      5                         ILG,     SORT, NOL2PFTS,       IC,
      6                    GRCLAREA,    THICE,   POPDIN, LUCEMCOM,
-C    7 ------------------ INPUTS ABOVE THIS LINE ----------------------   
-     8                    STEMLTDT, ROOTLTDT, GLFLTRDT, BLFLTRDT,
-     9                    PFTAREAA, GLCAEMLS, RTCAEMLS, STCAEMLS,
-     A                    BLCAEMLS, LTRCEMLS, BURNFRAC, PROBFIRE,
-     B                    EMIT_CO2, EMIT_CO,  EMIT_CH4, EMIT_NMHC,
-     C                    EMIT_H2,  EMIT_NOX, EMIT_N2O, EMIT_PM25,
-     D                    EMIT_TPM, EMIT_TC,  EMIT_OC,  EMIT_BC)
+     7                      DOFIRE,
+C    8 ------------------ INPUTS ABOVE THIS LINE ----------------------   
+     9                    STEMLTDT, ROOTLTDT, GLFLTRDT, BLFLTRDT,
+     A                    PFTAREAA, GLCAEMLS, RTCAEMLS, STCAEMLS,
+     B                    BLCAEMLS, LTRCEMLS, BURNFRAC, PROBFIRE,
+     C                    EMIT_CO2, EMIT_CO,  EMIT_CH4, EMIT_NMHC,
+     D                    EMIT_H2,  EMIT_NOX, EMIT_N2O, EMIT_PM25,
+     E                    EMIT_TPM, EMIT_TC,  EMIT_OC,  EMIT_BC)
 
 C    B ------------------OUTPUTS ABOVE THIS LINE ----------------------
 C
@@ -60,6 +61,7 @@ C     THICE     - FROZEN SOIL MOISTURE CONTENT OVER CANOPY FRACTION
 C     POPDIN    - POPULATION DENSITY (PEOPLE / KM^2)
 C     LUCEMCOM  - LAND USE CHANGE (LUC) RELATED COMBUSTION EMISSION LOSSES,
 C                 u-MOL CO2/M2.SEC 
+C     DOFIRE    - BOOLEAN, IF TRUE ALLOW FIRE, IF FALSE NO FIRE.
 C
 C     OUTPUTS
 C
@@ -128,6 +130,8 @@ C
       PARAMETER (KK=12)  ! PRODUCT OF CLASS PFTs AND L2MAX
 C
       INTEGER       SORT(ICC),      NOL2PFTS(IC)
+
+      LOGICAL DOFIRE
 C
       REAL  STEMMASS(ILG,ICC), ROOTMASS(ILG,ICC), GLEAFMAS(ILG,ICC),
      1      BLEAFMAS(ILG,ICC),     THLIQ(ILG,IG),    WILTSM(ILG,IG),
@@ -434,6 +438,10 @@ C                               !OF GRID CELL
         EMIT_BC(I) = 0.0
 
 180   CONTINUE
+
+C     IF NOT SIMULATING FIRE, LEAVE THE SUBROUTINE NOW.
+      IF (.NOT. DOFIRE) GOTO 600
+
 C
       DO 190 I = IL1, IL2
         IF(EXTNPROB(I).LE.ZERO) THEN
@@ -836,23 +844,24 @@ C          UNITS: g COMPOUND / M2
            EMIT_BC(I) = EMIT_BC(I) + EMIF_BC(J) * 
      &                   TOT_EMIT_DOM * FCANCMX(I,J)
 
-          ELSE
+C          ELSE
 
-            GLFLTRDT(I,J)=0.0
-            BLFLTRDT(I,J)=0.0
-            STEMLTDT(I,J)=0.0
-            ROOTLTDT(I,J)=0.0
-            GLCAEMLS(I,J)=0.0
-            BLCAEMLS(I,J)=0.0
-            STCAEMLS(I,J)=0.0
-            RTCAEMLS(I,J)=0.0
-            LTRCEMLS(I,J)=0.0
+C            GLFLTRDT(I,J)=0.0
+C            BLFLTRDT(I,J)=0.0
+C            STEMLTDT(I,J)=0.0
+C            ROOTLTDT(I,J)=0.0
+C            GLCAEMLS(I,J)=0.0
+C            BLCAEMLS(I,J)=0.0
+C            STCAEMLS(I,J)=0.0
+C            RTCAEMLS(I,J)=0.0
+C            LTRCEMLS(I,J)=0.0
 
           ENDIF
 C
 530     CONTINUE
 520   CONTINUE
 C
+600   CONTINUE
 
       RETURN
       END

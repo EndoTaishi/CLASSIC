@@ -50,7 +50,7 @@ C     JM EDIT: CHANGED NLAT TO 1.
       INTEGER,PARAMETER :: ICAN=4,IGND=3,ICP1=ICAN+1
 C      INTEGER,PARAMETER :: ICAN=4,IGND=9,ICP1=ICAN+1
 
-      LOGICAL CYCLEMET
+      LOGICAL CYCLEMET, DOFIRE
 C
       INTEGER IDISP,IZREF,ISLFD,IPCP,IWF,IPAI,IHGT,IALC,
      1        IALS,IALG,N,ITG,ITC,ITCG,NLTEST,NMTEST,NCOUNT,NDAY,
@@ -471,7 +471,9 @@ C
      2     AVGYRE_H2_M(NLAT,NMOS),     AVGYRE_NOX_M(NLAT,NMOS),
      3     AVGYRE_N2O_M(NLAT,NMOS),    AVGYRE_PM25_M(NLAT,NMOS),
      4     AVGYRE_TPM_M(NLAT,NMOS),    AVGYRE_TC_M(NLAT,NMOS),
-     5     AVGYRE_OC_M(NLAT,NMOS),     AVGYRE_BC_M(NLAT,NMOS)
+     5     AVGYRE_OC_M(NLAT,NMOS),     AVGYRE_BC_M(NLAT,NMOS),
+     6     AVGYR_PROBFIRE_M(NLAT,NMOS),AVGYR_LUC_EMC_M(NLAT,NMOS),
+     7     AVGYR_BURNFRAC_M(NLAT,NMOS)
 
       REAL RMATCROW(NLAT,NMOS,ICAN,IGND), 
      1     RMATCTEMROW(NLAT,NMOS,ICC,IGND),
@@ -631,7 +633,9 @@ C      * MONTHLY OUTPUT FOR CTEM GRID-MEAN
      7      AVGMNE_H2_MN(NLAT),        AVGMNE_NOX_MN(NLAT),
      8      AVGMNE_N2O_MN(NLAT),       AVGMNE_PM25_MN(NLAT),
      9      AVGMNE_TPM_MN(NLAT),       AVGMNE_TC_MN(NLAT), 
-     A      AVGMNE_OC_MN(NLAT),        AVGMNE_BC_MN(NLAT) 
+     A      AVGMNE_OC_MN(NLAT),        AVGMNE_BC_MN(NLAT),
+     B      AVGMN_PROBFIRE_MN(NLAT),   AVGMN_LUC_EMC_MN(NLAT),
+     C      AVGMN_BURNFRAC_MN(NLAT)
 
        REAL LAIMAXG_MN_M(NLAT,NMOS),   STEMMASS_MN_M(NLAT,NMOS),
      1      ROOTMASS_MN_M(NLAT,NMOS),  LITRMASS_MN_M(NLAT,NMOS),
@@ -645,7 +649,10 @@ C      * MONTHLY OUTPUT FOR CTEM GRID-MEAN
      2      AVGMNE_H2_MN_M(NLAT,NMOS), AVGMNE_NOX_MN_M(NLAT,NMOS),
      3      AVGMNE_N2O_MN_M(NLAT,NMOS),AVGMNE_PM25_MN_M(NLAT,NMOS),
      4      AVGMNE_TPM_MN_M(NLAT,NMOS),AVGMNE_TC_MN_M(NLAT,NMOS),
-     5      AVGMNE_OC_MN_M(NLAT,NMOS), AVGMNE_BC_MN_M(NLAT,NMOS)
+     5      AVGMNE_OC_MN_M(NLAT,NMOS), AVGMNE_BC_MN_M(NLAT,NMOS),
+     6      AVGMN_PROBFIRE_MN_M(NLAT,NMOS),
+     7      AVGMN_LUC_EMC_MN_M(NLAT,NMOS),
+     8      AVGMN_BURNFRAC_MN_M(NLAT,NMOS)
 
 C      * YEARLY OUTPUT FOR CTEM GRID-MEAN
        REAL LAIMAXG_YR(NLAT),          STEMMASS_YR(NLAT),            
@@ -658,7 +665,9 @@ C      * YEARLY OUTPUT FOR CTEM GRID-MEAN
      7      AVGYRE_H2_YR(NLAT),        AVGYRE_NOX_YR(NLAT),
      8      AVGYRE_N2O_YR(NLAT),       AVGYRE_PM25_YR(NLAT),
      9      AVGYRE_TPM_YR(NLAT),       AVGYRE_TC_YR(NLAT),
-     A      AVGYRE_OC_YR(NLAT),        AVGYRE_BC_YR(NLAT)
+     A      AVGYRE_OC_YR(NLAT),        AVGYRE_BC_YR(NLAT),
+     B      AVGYR_PROBFIRE_YR(NLAT),   AVGYR_LUC_EMC_YR(NLAT),
+     C      AVGYR_BURNFRAC_YR(NLAT)
 
        REAL LAIMAXG_YR_M(NLAT,NMOS),   STEMMASS_YR_M(NLAT,NMOS),
      1      ROOTMASS_YR_M(NLAT,NMOS),  LITRMASS_YR_M(NLAT,NMOS),
@@ -671,7 +680,10 @@ C      * YEARLY OUTPUT FOR CTEM GRID-MEAN
      8      AVGYRE_N2O_YR_M(NLAT,NMOS),AVGYRE_PM25_YR_M(NLAT,NMOS),
      9      AVGYRE_TPM_YR_M(NLAT,NMOS),AVGYRE_TC_YR_M(NLAT,NMOS),
      A      AVGYRE_OC_YR_M(NLAT,NMOS), AVGYRE_BC_YR_M(NLAT,NMOS),
-     B      LAIMAXGVEG_YR_M(NLAT,NMOS,ICC)            
+     B      AVGYR_PROBFIRE_YR_M(NLAT,NMOS),
+     C      AVGYR_LUC_EMC_YR_M(NLAT,NMOS),
+     D      AVGYR_BURNFRAC_YR_M(NLAT,NMOS),
+     E      LAIMAXGVEG_YR_M(NLAT,NMOS,ICC)            
 C
 
        REAL AFRLEAF_G(NLAT,ICC),       AFRSTEM_G(NLAT,ICC),
@@ -751,7 +763,7 @@ C     ALL MODEL SWITCHES ARE READ IN FROM A NAMELIST FILE
       CALL read_from_job_options(ARGBUFF,CTEMLOOP,CTEM1,CTEM2,
      1             NCYEAR,LNDUSEON,SPINFAST,CYCLEMET,NUMMETCYLYRS,
      2             METCYLYRST,CO2ON,SETCO2CONC,POPDON,POPCYCLEYR,
-     3             PARALLELRUN,COMPETE,RSFILE,IDISP,IZREF,ISLFD,
+     3             PARALLELRUN,DOFIRE,COMPETE,RSFILE,IDISP,IZREF,ISLFD,
      4             IPCP,ITC,ITCG,ITG,IWF,IPAI,IHGT,IALC,IALS,IALG,
      5             JHHSTD,JHHENDD,JDSTD,JDENDD,JHHSTY,JHHENDY,
      6             JDSTY,JDENDY)
@@ -1319,11 +1331,13 @@ C
 7100  FORMAT('  YEAR   LAIMAXG  STEMMASS  ROOTMASS  LITRMASS  SOILCMAS',
      &' ANNUALNPP ANNUALGPP ANNUALNEP   AVGYRLE ANNUALCO2',
      &'  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O',
-     &'   ANN_PM25 ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC')
+     &'   ANN_PM25 ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC ',
+     &'ANNUAL_PROB_FIRE ANNUAL_LUC_C_EMIT')
 7101  FORMAT('          m2/m2    Kg C/m2  Kg C/m2    Kg C/m2   Kg C/m2',
      &'gC/m2.yr  gC/m2.yr  gC/m2.yr    W/m2  g/m2.yr ',
      &'  g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr ',
-     &'  g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   ')
+     &'  g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr',
+     &'               g/m2.yr KgCO2/m2.yr')
 7110  FORMAT('  DAY YEAR   BURNFRAC   PROBFIRE   LUCEMCOM   LUCLTRIN
      &LUCSOCIN  GRCLAREA')
 7111  FORMAT('               %           -    uMOL-CO2/M2.S KgC/M2.DAY
@@ -1428,21 +1442,25 @@ C
 6124  FORMAT('  MONTH  YEAR  LAIMAXG  VGBIOMAS  LITTER    SOIL C  ', 
      &'  NPP       GPP        NEP       CO2',
      &'        CO        CH4      NMHC       H2       NOX       N2O',
-     &'       PM25       TPM        TC        OC        BC')
+     &'       PM25       TPM        TC        OC        BC  ',
+     &'PROBFIRE LUC_CO2_E  BURNFRAC')
 6224  FORMAT('                 m2/m2  Kg C/m2  Kg C/m2   Kg C/m2  ',
      &       'gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon ',
      &'  g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon ',
-     &'  g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon')   
+     &'  g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon          ',
+     &'  g C/m2    %       ')   
 6025  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
      &'RESULTS')
 6125  FORMAT('  YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS' 
      &'  SOILCMAS  TOTCMASS  ANNUALNPP ANNUALGPP ANNUALNEP ANNUALCO2',
      &'  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O',
-     &'   ANN_PM25 ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC')
+     &'   ANN_PM25 ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE',
+     &' ANNLUCCO2 ABURNFRAC')
 6225  FORMAT('          m2/m2   Kg C/m2   Kg C/m2   Kg C/m2    Kg C/m2'
      &'  Kg C/m2   Kg C/m2   gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
      &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  ')
+     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr          ',
+     &'  gC/m2.yr    %     ')
 C
 C=======================CTEM FILE TITLES DONE=================================== /
 C
@@ -1929,6 +1947,9 @@ C
           AVGYRE_TC_M(I,M) =0.0     !ANNUAL AVERAGED TOTAL CARBON FIRE AEROSOLS
           AVGYRE_OC_M(I,M) =0.0     !ANNUAL AVERAGED ORGANIC CARBON FIRE AEROSOLS
           AVGYRE_BC_M(I,M) =0.0     !ANNUAL AVERAGED BLACK CARBON FIRE AEROSOLS
+          AVGYR_PROBFIRE_M(I,M)=0.0!ANNUAL AVERAGED FIRE PROBABILITY
+          AVGYR_LUC_EMC_M(I,M)=0.0 !ANNUAL AVERAGED LUC CO2 EMISSIONS
+          AVGYR_BURNFRAC_M(I,M)=0.0!ANNUAL AVERAGED BURNED PERCENT OF GRID
 
           DO 116 J = 1, ICC
             VGBIOMASROW(I,M)=VGBIOMASROW(I,M)+FCANCMXROW(I,M,J)*
@@ -1983,6 +2004,9 @@ C
           AVGMNE_TC_MN_M(I,M) =0.0
           AVGMNE_OC_MN_M(I,M) =0.0
           AVGMNE_BC_MN_M(I,M) =0.0
+          AVGMN_PROBFIRE_MN_M(I,M) =0.0
+          AVGMN_LUC_EMC_MN_M(I,M) =0.0
+          AVGMN_BURNFRAC_MN_M(I,M) =0.0
 C
           DO J=1,ICC
            LAIMAXGVEG_YR_M(I,M,J)=0.0
@@ -2726,7 +2750,7 @@ C           ASSIGN THE SAME VALUES (ROW) TO GAT
      9            EXTNPROBGAT,   STDALNGAT,TBARACCGAT_M,     L2MAX,
      A               NOL2PFTS, PFCANCMXGAT, NFCANCMXGAT,  LNDUSEON,
      B            THICECACC_M,     SDEPGAT,    SPINFAST,   TODFRAC,  
-     &                COMPETE,      POPDIN,  
+     &                COMPETE,      POPDIN,      DOFIRE,
 C===================== CTEM =====================================\
      &                FAREGAT,
 C===================== CTEM =====================================/
@@ -4335,6 +4359,13 @@ C
             AVGYRE_TC_M(I,M) =AVGYRE_TC_M(I,M)+EMIT_TCROW(I,M)
             AVGYRE_OC_M(I,M) =AVGYRE_OC_M(I,M)+EMIT_OCROW(I,M)
             AVGYRE_BC_M(I,M) =AVGYRE_BC_M(I,M)+EMIT_BCROW(I,M)
+            AVGYR_PROBFIRE_M(I,M) =AVGYR_PROBFIRE_M(I,M)
+     &                            +PROBFIREROW(I,M)
+            AVGYR_LUC_EMC_M(I,M) =AVGYR_LUC_EMC_M(I,M)
+     &                             +LUCEMCOMROW(I,M) 
+            AVGYR_BURNFRAC_M(I,M) =AVGYR_BURNFRAC_M(I,M)
+     &                            +BURNFRACROW(I,M)
+
 C
             DO 930 J = 1, ICC
               ANNPPVEG_M(I,M,J)=ANNPPVEG_M(I,M,J)+NPPVEGROW(I,M,J)
@@ -4355,6 +4386,8 @@ C
             AVGYRNPP_M(I,M)=AVGYRNPP_M(I,M)*1.0368 ! CONVERT TO gC/M2.YEAR
             AVGYRGPP_M(I,M)=AVGYRGPP_M(I,M)*1.0368 ! CONVERT TO gC/M2.YEAR
             AVGYRNEP_M(I,M)=AVGYRNEP_M(I,M)*1.0368 ! CONVERT TO gC/M2.YEAR
+            AVGYR_LUC_EMC_M(I,M)=AVGYR_LUC_EMC_M(I,M)*1.0368 ! CONVERT TO gC/M2.YEAR
+
             AVGYRLE_M(I,M)=AVGYRLE_M(I,M)/365.0
             LAIMAXG_M(I,M)=0.0
             STEMMASS_M(I,M)=0.0
@@ -4404,7 +4437,9 @@ C
      7                 AVGYRE_NOX_M(I,M),AVGYRE_N2O_M(I,M),
      8                 AVGYRE_PM25_M(I,M),AVGYRE_TPM_M(I,M),
      9                 AVGYRE_TC_M(I,M),AVGYRE_OC_M(I,M),
-     A                 AVGYRE_BC_M(I,M),'TILE',M,'AVGE'
+     A                 AVGYRE_BC_M(I,M),AVGYR_PROBFIRE_M(I,M),
+     B                 AVGYR_LUC_EMC_M(I,M),AVGYR_BURNFRAC_M(I,M),
+     C                 'TILE',M,'AVGE'
 
               ENDIF  !IF (IFCANCMX_M(I,M) .GT. 0) THEN
 C
@@ -4447,7 +4482,9 @@ C
         AVGYRE_TC_M(I,M) =0.0    
         AVGYRE_OC_M(I,M) =0.0    
         AVGYRE_BC_M(I,M) =0.0    
-
+        AVGYR_PROBFIRE_M(I,M) =0.0
+        AVGYR_LUC_EMC_M(I,M) =0.0
+        AVGYR_BURNFRAC_M(I,M) =0.0
 C
           DO 950 J = 1, ICC
               LAIMAXGVEG_M(I,M,J)=0.0
@@ -4456,7 +4493,7 @@ C
               ANNNEPVEG_M(I,M,J)=0.0 
 950       CONTINUE
 C
-8700        FORMAT(1X,I5,21F10.3,2(A5,I1))
+8700        FORMAT(1X,I5,24F10.3,2(A5,I1))
 8702        FORMAT(1X,I5,8F10.3,10X,2(A5,I1))   
 8701        FORMAT(1X,I5,50X,4F10.3,2(A5,I1))   
 8710        FORMAT(A9,I5,9F10.3,2(A5,I1))
@@ -4535,7 +4572,9 @@ C
         AVGMNE_TC_MN(I) =0.0
         AVGMNE_OC_MN(I) =0.0
         AVGMNE_BC_MN(I) =0.0
-
+        AVGMN_PROBFIRE_MN(I) =0.0
+        AVGMN_LUC_EMC_MN(I) =0.0
+        AVGMN_BURNFRAC_MN(I) =0.0
 C
         LAIMAXG_YR(I)=0.0
         STEMMASS_YR(I)=0.0
@@ -4559,6 +4598,9 @@ C
         AVGYRE_TC_YR(I)=0.0
         AVGYRE_OC_YR(I)=0.0
         AVGYRE_BC_YR(I)=0.0
+        AVGYR_PROBFIRE_YR(I)=0.0
+        AVGYR_LUC_EMC_YR(I)=0.0
+        AVGYR_BURNFRAC_YR(I)=0.0
 
 861   CONTINUE
 C
@@ -4588,6 +4630,13 @@ C
         AVGMNE_TC_MN_M(I,M) =AVGMNE_TC_MN_M(I,M)+EMIT_TCROW(I,M)
         AVGMNE_OC_MN_M(I,M) =AVGMNE_OC_MN_M(I,M)+EMIT_OCROW(I,M)
         AVGMNE_BC_MN_M(I,M) =AVGMNE_BC_MN_M(I,M)+EMIT_BCROW(I,M)
+        AVGMN_PROBFIRE_MN_M(I,M) =AVGMN_PROBFIRE_MN_M(I,M)
+     &                          +PROBFIREROW(I,M)
+        AVGMN_LUC_EMC_MN_M(I,M) =AVGMN_LUC_EMC_MN_M(I,M)
+     &                          +LUCEMCOMROW(I,M)
+        AVGMN_BURNFRAC_MN_M(I,M) =AVGMN_BURNFRAC_MN_M(I,M)
+     &                          +BURNFRACROW(I,M)
+
 C
        DO 865 NT=1,NMON
 C
@@ -4655,6 +4704,13 @@ C
      &                   *FAREROW(I,M)   
         AVGMNE_BC_MN(I) =AVGMNE_BC_MN(I)+AVGMNE_BC_MN_M(I,M)
      &                   *FAREROW(I,M)   
+        AVGMN_PROBFIRE_MN(I)=AVGMN_PROBFIRE_MN(I)
+     &                   +AVGMN_PROBFIRE_MN_M(I,M)*FAREROW(I,M)   
+        AVGMN_LUC_EMC_MN(I) =AVGMN_LUC_EMC_MN(I)+AVGMN_LUC_EMC_MN_M(I,M)
+     &                   *FAREROW(I,M)   
+        AVGMN_BURNFRAC_MN(I)=AVGMN_BURNFRAC_MN(I)
+     &                   +AVGMN_BURNFRAC_MN_M(I,M)
+
 
 C
 C      INITIALIZATION FOR MONTHLY ACCUMULATED ARRAYS
@@ -4674,6 +4730,9 @@ C
         AVGMNE_TC_MN_M(I,M) =0.0
         AVGMNE_OC_MN_M(I,M) =0.0
         AVGMNE_BC_MN_M(I,M) =0.0
+        AVGMN_PROBFIRE_MN_M(I,M) =0.0
+        AVGMN_LUC_EMC_MN_M(I,M) =0.0
+        AVGMN_BURNFRAC_MN_M(I,M) =0.0
 
         DO J=1,ICC
          LAIMAXGVEG_MN_M(I,M,J)=0.0
@@ -4687,6 +4746,7 @@ C
         AVGMNNPP_MN(I)=AVGMNNPP_MN(I)*1.0368                         ! CONVERT UNIT TO gC/M2.MONTH
         AVGMNGPP_MN(I)=AVGMNGPP_MN(I)*1.0368 
         AVGMNNEP_MN(I)=AVGMNNEP_MN(I)*1.0368 
+        AVGMN_LUC_EMC_MN(I)=AVGMN_LUC_EMC_MN(I)*1.0368 
        DO NT=1,NMON
        IF(IDAY.EQ.MDAY(NT+1))THEN
         IMONTH=NT
@@ -4696,7 +4756,9 @@ C
      3               AVGMNE_CO_MN(I),AVGMNE_CH4_MN(I),AVGMNE_NMHC_MN(I),
      4               AVGMNE_H2_MN(I),AVGMNE_NOX_MN(I),AVGMNE_N2O_MN(I),
      5               AVGMNE_PM25_MN(I),AVGMNE_TPM_MN(I),AVGMNE_TC_MN(I),
-     6               AVGMNE_OC_MN(I),AVGMNE_BC_MN(I)
+     6               AVGMNE_OC_MN(I),AVGMNE_BC_MN(I),
+     7               AVGMN_PROBFIRE_MN(I),AVGMN_LUC_EMC_MN(I),
+     8               AVGMN_BURNFRAC_MN(I)
 
        ENDIF ! MDAY
        ENDDO ! NMON
@@ -4729,6 +4791,12 @@ C
         AVGYRE_TC_YR_M(I,M)=AVGYRE_TC_YR_M(I,M)+EMIT_TCROW(I,M)
         AVGYRE_OC_YR_M(I,M)=AVGYRE_OC_YR_M(I,M)+EMIT_OCROW(I,M)
         AVGYRE_BC_YR_M(I,M)=AVGYRE_BC_YR_M(I,M)+EMIT_BCROW(I,M)
+        AVGYR_PROBFIRE_YR_M(I,M)=AVGYR_PROBFIRE_YR_M(I,M)
+     &                     +PROBFIREROW(I,M)
+        AVGYR_LUC_EMC_YR_M(I,M)=AVGYR_LUC_EMC_YR_M(I,M)
+     &                     +LUCEMCOMROW(I,M)
+        AVGYR_BURNFRAC_YR_M(I,M)=AVGYR_BURNFRAC_YR_M(I,M)
+     &                     +BURNFRACROW(I,M)
 
       IF (IDAY.EQ.365) THEN
        LAIMAXG_YR_M(I,M)=0.0
@@ -4789,6 +4857,14 @@ C
      &                   *FAREROW(I,M)   
         AVGYRE_BC_YR(I)=AVGYRE_BC_YR(I)+AVGYRE_BC_YR_M(I,M)
      &                   *FAREROW(I,M)   
+        AVGYR_PROBFIRE_YR(I)=AVGYR_PROBFIRE_YR(I)
+     &                   +AVGYR_PROBFIRE_YR_M(I,M)*FAREROW(I,M)   
+        AVGYR_LUC_EMC_YR(I)=AVGYR_LUC_EMC_YR(I)
+     &                   +AVGYR_LUC_EMC_YR_M(I,M)*FAREROW(I,M)   
+        AVGYR_BURNFRAC_YR(I)=AVGYR_BURNFRAC_YR(I)
+     &                   +AVGYR_BURNFRAC_YR_M(I,M)
+
+
 C
 C      INITIALIZATION FOR YEARLY ACCUMULATED ARRAYS
 C
@@ -4807,6 +4883,9 @@ C
         AVGYRE_TC_YR_M(I,M)=0.0
         AVGYRE_OC_YR_M(I,M)=0.0
         AVGYRE_BC_YR_M(I,M)=0.0
+        AVGYR_PROBFIRE_YR_M(I,M)=0.0
+        AVGYR_LUC_EMC_YR_M(I,M)=0.0
+        AVGYR_BURNFRAC_YR_M(I,M)=0.0
 
         DO J=1,ICC
          LAIMAXGVEG_YR_M(I,M,J)=0.0
@@ -4819,6 +4898,7 @@ C
         AVGYRNPP_YR(I)=AVGYRNPP_YR(I)*1.0368                         ! CONVERT UNIT TO gC/M2.YEAR
         AVGYRGPP_YR(I)=AVGYRGPP_YR(I)*1.0368
         AVGYRNEP_YR(I)=AVGYRNEP_YR(I)*1.0368 
+        AVGYR_LUC_EMC_YR(I)=AVGYR_LUC_EMC_YR(I)*1.0368
 C
       IF (IDAY.EQ.365) THEN
               WRITE(85,8105)IYEAR,LAIMAXG_YR(I),VGBIOMAS_YR(I),
@@ -4828,7 +4908,8 @@ C
      4          AVGYRE_CO_YR(I),AVGYRE_CH4_YR(I),AVGYRE_NMHC_YR(I),
      5          AVGYRE_H2_YR(I),AVGYRE_NOX_YR(I),AVGYRE_N2O_YR(I),
      6          AVGYRE_PM25_YR(I),AVGYRE_TPM_YR(I),AVGYRE_TC_YR(I),
-     7          AVGYRE_OC_YR(I),AVGYRE_BC_YR(I)
+     7          AVGYRE_OC_YR(I),AVGYRE_BC_YR(I),AVGYR_PROBFIRE_YR(I),
+     8          AVGYR_LUC_EMC_YR(I),AVGYR_BURNFRAC_YR(I)
 
       ENDIF
 C
@@ -4837,8 +4918,8 @@ C
       ENDIF !NCOUNT,NDAY 
       ENDIF !CTEM2  
 C
-8104  FORMAT(1X,I4,I5,19F10.3,2(A5,I1))
-8105  FORMAT(1X,I5,22F10.3,2(A5,I1))
+8104  FORMAT(1X,I4,I5,22F10.3,2(A5,I1))
+8105  FORMAT(1X,I5,25F10.3,2(A5,I1))
 C
 C===================== CTEM =====================================/
 C=======================================================================
