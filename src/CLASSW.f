@@ -577,7 +577,14 @@ C
               TCAN(I)=(FCS(I)*TCANS(I)*CHCAPS(I)+FC(I)*TCANO(I)*              
      1                CHCAP(I))/(FCS(I)*CHCAPS(I)+FC(I)*CHCAP(I))                 
               RCAN(I)= FCS(I)*RAICNS(I) + FC (I)*RAICAN(I)                            
-              IF(TCAN(I).LT.173.16 .OR. TCAN(I).GT.373.16) JPTBAD=I
+
+              IF(TCAN(I).LT.173.16 .OR. TCAN(I).GT.373.16) THEN
+C             TEMPORARY BUG FIX, THIS IS BECAUSE THE TCAN CAN GO
+C             HAYWIRE. JM AND VA 24.05.2012 FLAG
+              TCAN(I)=TA(I)
+C             JPTBAD=I
+              ENDIF
+
               IF(RCAN(I).LT.0.0) RCAN(I)=0.0
               IF(RCAN(I).LT.1.0E-5 .AND. RCAN(I).GT.0.0) THEN
                   TOVRFL(I)=(TOVRFL(I)*OVRFLW(I)+TCAN(I)*RCAN(I)/

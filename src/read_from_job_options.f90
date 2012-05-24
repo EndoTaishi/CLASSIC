@@ -213,7 +213,7 @@ argcount = IARGC()
          WRITE(*,*)'RUNCLASS35CTEM joboptions_file SITE_NAME'
          WRITE(*,*)' '
          WRITE(*,*)'- joboptions_file - an example can be found '
-         WRITE(*,*)'  in the joboptions folder - jobtest.txt.'
+         WRITE(*,*)'  in the joboptions folder - template_job_options_file.txt.'
          WRITE(*,*)'  Descriptions of the various variables '
          WRITE(*,*)'  can be found in read_from_job_options.f90 '
          WRITE(*,*)' '

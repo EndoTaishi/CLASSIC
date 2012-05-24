@@ -1340,7 +1340,7 @@ C
      &'               g/m2.yr KgCO2/m2.yr')
 7110  FORMAT('  DAY YEAR   BURNFRAC   PROBFIRE   LUCEMCOM   LUCLTRIN
      &LUCSOCIN  GRCLAREA')
-7111  FORMAT('               %           -    uMOL-CO2/M2.S KgC/M2.DAY
+7111  FORMAT('               %     avg prob/day    uMOL-CO2/M2.S KgC/M2.DAY
      &KgC/M2.DAY    KM^2')
 7112  FORMAT(' YEAR END POOLS, AVERAGE ANNUAL NPP, & MAX. ANNUAL LAI FOR
      & 9 PFTs')
@@ -1459,7 +1459,7 @@ C
 6225  FORMAT('          m2/m2   Kg C/m2   Kg C/m2   Kg C/m2    Kg C/m2'
      &'  Kg C/m2   Kg C/m2   gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
      &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr          ',
+     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  avgprob/d ',
      &'  gC/m2.yr    %     ')
 C
 C=======================CTEM FILE TITLES DONE=================================== /
@@ -1947,9 +1947,9 @@ C
           AVGYRE_TC_M(I,M) =0.0     !ANNUAL AVERAGED TOTAL CARBON FIRE AEROSOLS
           AVGYRE_OC_M(I,M) =0.0     !ANNUAL AVERAGED ORGANIC CARBON FIRE AEROSOLS
           AVGYRE_BC_M(I,M) =0.0     !ANNUAL AVERAGED BLACK CARBON FIRE AEROSOLS
-          AVGYR_PROBFIRE_M(I,M)=0.0!ANNUAL AVERAGED FIRE PROBABILITY
-          AVGYR_LUC_EMC_M(I,M)=0.0 !ANNUAL AVERAGED LUC CO2 EMISSIONS
-          AVGYR_BURNFRAC_M(I,M)=0.0!ANNUAL AVERAGED BURNED PERCENT OF GRID
+          AVGYR_PROBFIRE_M(I,M)=0.0 !ANNUAL AVERAGED FIRE PROBABILITY
+          AVGYR_LUC_EMC_M(I,M)=0.0  !ANNUAL AVERAGED LUC CO2 EMISSIONS
+          AVGYR_BURNFRAC_M(I,M)=0.0 !ANNUAL AVERAGED BURNED PERCENT OF GRID
 
           DO 116 J = 1, ICC
             VGBIOMASROW(I,M)=VGBIOMASROW(I,M)+FCANCMXROW(I,M,J)*
@@ -4298,7 +4298,11 @@ C
         GAVGSCMS_G(I) =GAVGSCMS_G(I) + GAVGSCMSROW(I,M)*FAREROW(I,M)
         TCANOACC_OUT_G(I) =TCANOACC_OUT_G(I)+
      1                     TCANOACCROW_OUT(I,M)*FAREROW(I,M)
-        BURNFRAC_G(I) =BURNFRAC_G(I)+BURNFRACROW(I,M)              
+
+C       FLAG this originally did not have farerow, but I think it 
+C       makes more sense JM. 24.05.2012        
+        BURNFRAC_G(I) =BURNFRAC_G(I)+BURNFRACROW(I,M)*FAREROW(I,M)              
+
         PROBFIRE_G(I) =PROBFIRE_G(I)+PROBFIREROW(I,M)*FAREROW(I,M)
         LUCEMCOM_G(I) =LUCEMCOM_G(I)+LUCEMCOMROW(I,M)*FAREROW(I,M)
         LUCLTRIN_G(I) =LUCLTRIN_G(I)+LUCLTRINROW(I,M)*FAREROW(I,M)
@@ -4359,8 +4363,11 @@ C
             AVGYRE_TC_M(I,M) =AVGYRE_TC_M(I,M)+EMIT_TCROW(I,M)
             AVGYRE_OC_M(I,M) =AVGYRE_OC_M(I,M)+EMIT_OCROW(I,M)
             AVGYRE_BC_M(I,M) =AVGYRE_BC_M(I,M)+EMIT_BCROW(I,M)
-            AVGYR_PROBFIRE_M(I,M) =AVGYR_PROBFIRE_M(I,M)
-     &                            +PROBFIREROW(I,M)
+
+C           test !FLAG
+            AVGYR_PROBFIRE_M(I,M) =AVGYR_PROBFIRE_M(I,M)  
+     &                            +(PROBFIREROW(I,M)) * (1./365.)
+
             AVGYR_LUC_EMC_M(I,M) =AVGYR_LUC_EMC_M(I,M)
      &                             +LUCEMCOMROW(I,M) 
             AVGYR_BURNFRAC_M(I,M) =AVGYR_BURNFRAC_M(I,M)
@@ -4631,7 +4638,7 @@ C
         AVGMNE_OC_MN_M(I,M) =AVGMNE_OC_MN_M(I,M)+EMIT_OCROW(I,M)
         AVGMNE_BC_MN_M(I,M) =AVGMNE_BC_MN_M(I,M)+EMIT_BCROW(I,M)
         AVGMN_PROBFIRE_MN_M(I,M) =AVGMN_PROBFIRE_MN_M(I,M)
-     &                          +PROBFIREROW(I,M)
+     &                          +(PROBFIREROW(I,M) * (1./365.))  !FLAG
         AVGMN_LUC_EMC_MN_M(I,M) =AVGMN_LUC_EMC_MN_M(I,M)
      &                          +LUCEMCOMROW(I,M)
         AVGMN_BURNFRAC_MN_M(I,M) =AVGMN_BURNFRAC_MN_M(I,M)
@@ -4706,8 +4713,8 @@ C
      &                   *FAREROW(I,M)   
         AVGMN_PROBFIRE_MN(I)=AVGMN_PROBFIRE_MN(I)
      &                   +AVGMN_PROBFIRE_MN_M(I,M)*FAREROW(I,M)   
-        AVGMN_LUC_EMC_MN(I) =AVGMN_LUC_EMC_MN(I)+AVGMN_LUC_EMC_MN_M(I,M)
-     &                   *FAREROW(I,M)   
+        AVGMN_LUC_EMC_MN(I) =AVGMN_LUC_EMC_MN(I)
+     &                   +AVGMN_LUC_EMC_MN_M(I,M)*FAREROW(I,M)   
         AVGMN_BURNFRAC_MN(I)=AVGMN_BURNFRAC_MN(I)
      &                   +AVGMN_BURNFRAC_MN_M(I,M)
 
@@ -4792,7 +4799,7 @@ C
         AVGYRE_OC_YR_M(I,M)=AVGYRE_OC_YR_M(I,M)+EMIT_OCROW(I,M)
         AVGYRE_BC_YR_M(I,M)=AVGYRE_BC_YR_M(I,M)+EMIT_BCROW(I,M)
         AVGYR_PROBFIRE_YR_M(I,M)=AVGYR_PROBFIRE_YR_M(I,M)
-     &                     +PROBFIREROW(I,M)
+     &                     +(PROBFIREROW(I,M) * (1./365.))  !FLAG
         AVGYR_LUC_EMC_YR_M(I,M)=AVGYR_LUC_EMC_YR_M(I,M)
      &                     +LUCEMCOMROW(I,M)
         AVGYR_BURNFRAC_YR_M(I,M)=AVGYR_BURNFRAC_YR_M(I,M)
