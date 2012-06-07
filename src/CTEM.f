@@ -481,7 +481,9 @@ C     AND CROPS, AND 1.2 FOR GRASSES.
      &           1.2, 1.2, 0.0/
 C
 C     LEAF LIFE SPAN (IN YEARS) FOR CTEM's 9 PFTs
-      DATA  LFESPANY/1.5, 1.00, 0.00,
+C       FLAG testing new parameter values Needle EVG JM 07.06.2012
+C      DATA  LFESPANY/1.5, 1.00, 0.00,
+      DATA  LFESPANY/5.0, 1.00, 0.00,
      &              1.75, 1.00, 1.00,
      &              1.75, 1.75, 0.00,
      &              1.00, 1.00, 0.00/
