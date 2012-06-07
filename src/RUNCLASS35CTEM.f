@@ -990,7 +990,7 @@ C
 C
       IF (CTEMLOOP .GT. 100) THEN
        WRITE(*,*)'The # of loops is larger than 100'
-       STOP
+       CALL EXIT
       ENDIF
 
 C     FIND THE FINAL YEAR OF THE CYCLING MET
@@ -5101,7 +5101,7 @@ c      WRITE(*,1001) TODAY(2), TODAY(1), 2000+TODAY(3), NOW
 c 1001 FORMAT( 'END DATE: ', I2.2, '/', I2.2, '/', I4.4, 
 c     &      '; END TIME: ', I2.2, ':', I2.2, ':', I2.2 )
 C
-      STOP
+      CALL EXIT
       END
 C================== CTEM ======================\
       INTEGER FUNCTION STRLEN(ST)
