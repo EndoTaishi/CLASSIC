@@ -18,7 +18,7 @@ FFLAGS = -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktra
 # Debugging of model
 #FFLAGS = -r8 -O0 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 
-export PGIMACH=-64
+export PGIMACH=linux86-64
 
 # These are the rules to make the targets
 #
