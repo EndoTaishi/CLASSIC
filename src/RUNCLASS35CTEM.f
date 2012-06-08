@@ -394,7 +394,8 @@ C
      1           FLSTAR_G,  QH_G,    QE_G,        SNOMLT_G,
      2           BEG_G,     GTOUT_G, TPN_G,       ALTOT_G,
      3           TCN_G,     TSN_G,   ZSN_G,       CO2CONCIN,
-     4           POPDIN,  SETCO2CONC 
+     4           POPDIN,    POPDTHRSHLD,          SETCO2CONC,
+     5           TEMP_VAR, BAREFRAC
 
       REAL TCANRS(NLAT,NMOS), TSNORS(NLAT,NMOS), TPNDRS(NLAT,NMOS)
 
@@ -4616,11 +4617,23 @@ C
       DO 862 I=1,NLTEST
       DO 863 M=1,NMTEST
 C
-       DO 864 J=1,ICC
-        IF (AILCGROW(I,M,J).GT.LAIMAXGVEG_MN_M(I,M,J)) THEN
-         LAIMAXGVEG_MN_M(I,M,J)=AILCGROW(I,M,J)
-        ENDIF
-864    CONTINUE
+C      DO 864 J=1,ICC
+C       IF (AILCGROW(I,M,J).GT.LAIMAXGVEG_MN_M(I,M,J)) THEN
+C        LAIMAXGVEG_MN_M(I,M,J)=AILCGROW(I,M,J)
+C       ENDIF
+C864    CONTINUE
+
+C      Vivek --\\
+        TEMP_VAR=0.0
+        DO 864 J=1,ICC          
+         TEMP_VAR=TEMP_VAR+AILCGROW(I,M,J)*FCANCMXROW(I,M,J)
+864     CONTINUE
+C      
+        IF (TEMP_VAR.GT.LAIMAXG_MN_M(I,M)) THEN
+          LAIMAXG_MN_M(I,M)=TEMP_VAR
+        ENDIF 
+C      Vivek --//
+
         AVGMNNPP_MN_M(I,M)=AVGMNNPP_MN_M(I,M)+NPPROW(I,M)
         AVGMNGPP_MN_M(I,M)=AVGMNGPP_MN_M(I,M)+GPPROW(I,M) 
         AVGMNNEP_MN_M(I,M)=AVGMNNEP_MN_M(I,M)+NEPROW(I,M) 
@@ -4653,17 +4666,24 @@ C
         LITRMASS_MN_M(I,M)=0.0
         SOILCMAS_MN_M(I,M)=0.0
         VGBIOMAS_MN_M(I,M)=0.0
+        BAREFRAC=1.0
        DO 867 J=1,ICC
         STEMMASS_MN_M(I,M)=STEMMASS_MN_M(I,M)+
      &                     STEMMASSROW(I,M,J)*FCANCMXROW(I,M,J)
         ROOTMASS_MN_M(I,M)=ROOTMASS_MN_M(I,M)+
      &                     ROOTMASSROW(I,M,J)*FCANCMXROW(I,M,J)
-        LITRMASS_MN_M(I,M)=LITRMASS_MN_M(I,M)+
+         LITRMASS_MN_M(I,M)=LITRMASS_MN_M(I,M)+
      &                     LITRMASSROW(I,M,J)*FCANCMXROW(I,M,J)
-        SOILCMAS_MN_M(I,M)=SOILCMAS_MN_M(I,M)+
+         SOILCMAS_MN_M(I,M)=SOILCMAS_MN_M(I,M)+
      &                     SOILCMASROW(I,M,J)*FCANCMXROW(I,M,J)
-        VGBIOMAS_MN_M(I,M)=VGBIOMASROW(I,M)
-867    CONTINUE
+         VGBIOMAS_MN_M(I,M)=VGBIOMASROW(I,M)
+         BAREFRAC=BAREFRAC-FCANCMXROW(I,M,J)
+867     CONTINUE
+        LITRMASS_MN_M(I,M)=LITRMASS_MN_M(I,M)+
+     &                     LITRMASSROW(I,M,ICCP1)*BAREFRAC
+        SOILCMAS_MN_M(I,M)=SOILCMAS_MN_M(I,M)+
+     &                     SOILCMASROW(I,M,ICCP1)*BAREFRAC
+
         STEMMASS_MN(I)=STEMMASS_MN(I)+STEMMASS_MN_M(I,M)*FAREROW(I,M)
         ROOTMASS_MN(I)=ROOTMASS_MN(I)+ROOTMASS_MN_M(I,M)*FAREROW(I,M)
         LITRMASS_MN(I)=LITRMASS_MN(I)+LITRMASS_MN_M(I,M)*FAREROW(I,M)
@@ -4673,11 +4693,11 @@ C
 C
        IF(IDAY.EQ.MDAY(NT+1))THEN
         NDMONTH=(MDAY(NT+1)-MDAY(NT))*NDAY
-       LAIMAXG_MN_M(I,M)=0.0
-       DO 866 J=1,ICC
-        LAIMAXG_MN_M(I,M)=LAIMAXG_MN_M(I,M)+
-     &                    LAIMAXGVEG_MN_M(I,M,J)*FCANCMXROW(I,M,J) 
-866    CONTINUE
+C      LAIMAXG_MN_M(I,M)=0.0
+C      DO 866 J=1,ICC
+C       LAIMAXG_MN_M(I,M)=LAIMAXG_MN_M(I,M)+
+C    &                    LAIMAXGVEG_MN_M(I,M,J)*FCANCMXROW(I,M,J) 
+C866    CONTINUE
         LAIMAXG_MN(I)=LAIMAXG_MN(I)+LAIMAXG_MN_M(I,M)*FAREROW(I,M) 
         AVGMNNPP_MN(I)=AVGMNNPP_MN(I)+AVGMNNPP_MN_M(I,M)*FAREROW(I,M)   
         AVGMNGPP_MN(I)=AVGMNGPP_MN(I)+AVGMNGPP_MN_M(I,M)*FAREROW(I,M)    
@@ -4741,9 +4761,9 @@ C
         AVGMN_LUC_EMC_MN_M(I,M) =0.0
         AVGMN_BURNFRAC_MN_M(I,M) =0.0
 
-        DO J=1,ICC
-         LAIMAXGVEG_MN_M(I,M,J)=0.0
-        ENDDO
+C        DO J=1,ICC
+C         LAIMAXGVEG_MN_M(I,M,J)=0.0
+C        ENDDO
        ENDIF ! MDAY (MAX LAI AND ACCUMULATED NPP/GPP/NEP OVER THE WHOLE MONTH)
 C
 865    CONTINUE ! NMON
@@ -4767,6 +4787,14 @@ C
      7               AVGMN_PROBFIRE_MN(I),AVGMN_LUC_EMC_MN(I),
      8               AVGMN_BURNFRAC_MN(I)
 
+C       Vivek --\\
+C        AFTER WRITING SET LAIMAXG_YR_M TO ZERO
+         DO 963 M=1,NMTEST
+          LAIMAXG_MN_M(I,M)=0.0
+963      CONTINUE
+C       Vivek --//
+C
+
        ENDIF ! MDAY
        ENDDO ! NMON
 C
@@ -4777,11 +4805,17 @@ C
       DO 882 I=1,NLTEST
       DO 883 M=1,NMTEST
 C
+C     Vivek --\\
+       TEMP_VAR=0.0
        DO 884 J=1,ICC          
-        IF (AILCGROW(I,M,J).GT.LAIMAXGVEG_YR_M(I,M,J)) THEN
-         LAIMAXGVEG_YR_M(I,M,J)=AILCGROW(I,M,J)
-        ENDIF 
+        TEMP_VAR=TEMP_VAR+AILCGROW(I,M,J)*FCANCMXROW(I,M,J)
 884    CONTINUE
+C      
+       IF (TEMP_VAR.GT.LAIMAXG_YR_M(I,M)) THEN
+         LAIMAXG_YR_M(I,M)=TEMP_VAR
+       ENDIF 
+C     Vivek --//
+
         AVGYRNPP_YR_M(I,M)=AVGYRNPP_YR_M(I,M)+NPPROW(I,M)
         AVGYRGPP_YR_M(I,M)=AVGYRGPP_YR_M(I,M)+GPPROW(I,M) 
         AVGYRNEP_YR_M(I,M)=AVGYRNEP_YR_M(I,M)+NEPROW(I,M) 
@@ -4806,16 +4840,17 @@ C
      &                     +BURNFRACROW(I,M)
 
       IF (IDAY.EQ.365) THEN
-       LAIMAXG_YR_M(I,M)=0.0
+C      LAIMAXG_YR_M(I,M)=0.0
        STEMMASS_YR_M(I,M)=0.0
        ROOTMASS_YR_M(I,M)=0.0
        LITRMASS_YR_M(I,M)=0.0
        SOILCMAS_YR_M(I,M)=0.0
        VGBIOMAS_YR_M(I,M)=0.0
 C
+       BAREFRAC=1.0
        DO 885 J=1,ICC
-        LAIMAXG_YR_M(I,M)=LAIMAXG_YR_M(I,M)+
-     &                    LAIMAXGVEG_YR_M(I,M,J)*FCANCMXROW(I,M,J)
+C       LAIMAXG_YR_M(I,M)=LAIMAXG_YR_M(I,M)+
+C    &                    LAIMAXGVEG_YR_M(I,M,J)*FCANCMXROW(I,M,J)
         STEMMASS_YR_M(I,M)=STEMMASS_YR_M(I,M)+
      &                     STEMMASSROW(I,M,J)*FCANCMXROW(I,M,J)
         ROOTMASS_YR_M(I,M)=ROOTMASS_YR_M(I,M)+
@@ -4824,7 +4859,13 @@ C
      &                     LITRMASSROW(I,M,J)*FCANCMXROW(I,M,J)
         SOILCMAS_YR_M(I,M)=SOILCMAS_YR_M(I,M)+
      &                     SOILCMASROW(I,M,J)*FCANCMXROW(I,M,J)
+        BAREFRAC=BAREFRAC-FCANCMXROW(I,M,J)
 885    CONTINUE
+       SOILCMAS_YR_M(I,M)=SOILCMAS_YR_M(I,M)+
+     &                     SOILCMASROW(I,M,ICCP1)*BAREFRAC
+       LITRMASS_YR_M(I,M)=LITRMASS_YR_M(I,M)+
+     &                     LITRMASSROW(I,M,ICCP1)*BAREFRAC
+
         VGBIOMAS_YR_M(I,M)=VGBIOMASROW(I,M)
 C
         LAIMAXG_YR(I)=LAIMAXG_YR(I)+LAIMAXG_YR_M(I,M)*FAREROW(I,M)
@@ -4894,9 +4935,9 @@ C
         AVGYR_LUC_EMC_YR_M(I,M)=0.0
         AVGYR_BURNFRAC_YR_M(I,M)=0.0
 
-        DO J=1,ICC
-         LAIMAXGVEG_YR_M(I,M,J)=0.0
-        ENDDO
+C       DO J=1,ICC
+C        LAIMAXGVEG_YR_M(I,M,J)=0.0
+C       ENDDO
 C
       ENDIF ! IDAY 365
 C
@@ -4917,8 +4958,13 @@ C
      6          AVGYRE_PM25_YR(I),AVGYRE_TPM_YR(I),AVGYRE_TC_YR(I),
      7          AVGYRE_OC_YR(I),AVGYRE_BC_YR(I),AVGYR_PROBFIRE_YR(I),
      8          AVGYR_LUC_EMC_YR(I),AVGYR_BURNFRAC_YR(I)
-
-      ENDIF
+C       Vivek --\\
+C        AFTER WRITING SET LAIMAXG_YR_M TO ZERO
+         DO 985 M=1,NMTEST
+          LAIMAXG_YR_M(I,M)=0.0
+985      CONTINUE
+        ENDIF ! IDAY=365
+C       Vivek --//
 C
 882   CONTINUE ! I
 C
