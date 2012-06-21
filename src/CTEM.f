@@ -940,6 +940,7 @@ C
             GPPVEG(I,J)= 0.0
             PHEANVEG(I,J)= 0.0
           ENDIF
+
 C         
           IF(LFSTATUS(I,J).EQ.4)THEN
             GPPVEG(I,J) = ANVEG(I,J) + RMLVEG(I,J)
