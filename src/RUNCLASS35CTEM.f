@@ -4022,13 +4022,13 @@ C
          QH_YR=HFSACC_YR(I)
          QE_YR=QEVPACC_YR(I)
 C
-         WRITE(*,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
-C         WRITE(*,*)'STEMmass',STEMMASSROW(1,2,2)
-         WRITE(*,*)'ROOTmass',ROOTMASSROW(1,3,9)
-         WRITE(*,*)'LEAFmass',GLEAFMASROW(1,3,9)
-C         WRITE(*,*)'STEM',RMSVEGROW(1,2,2)/STEMMASSROW(1,2,2)
-         WRITE(*,*)'ROOT',RMRVEGROW(1,3,9)/ROOTMASSROW(1,3,9)
-         WRITE(*,*)'LEAF', RGVEGROW(1,3,9)/GLEAFMASROW(1,3,9)
+C         WRITE(*,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
+C         WRITE(*,*)'STEMmass',STEMMASSROW(1,3,4)
+C         WRITE(*,*)'ROOTmass',ROOTMASSROW(1,3,4)
+C         WRITE(*,*)'LEAFmass',GLEAFMASROW(1,3,4)
+C         WRITE(*,*)'STEM',RMSVEGROW(1,3,4)/STEMMASSROW(1,3,4)
+C         WRITE(*,*)'ROOT',RMRVEGROW(1,3,4)/ROOTMASSROW(1,3,4)
+C         WRITE(*,*)'LEAF', RGVEGROW(1,3,4)/GLEAFMASROW(1,3,4)
 
          WRITE(83,8103),IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,
      1                  QE_YR,ROFACC_YR(I),PREACC_YR(I),
@@ -4437,12 +4437,12 @@ C
             ENDDO
 C
 C        FLAG
-         IF (I.EQ.1 .AND. M.EQ.3) THEN
-         WRITE(*,*)'NPP',ANNPPVEG_M(1,3,9)
-         WRITE(*,*)'GPP',ANNGPPVEG_M(1,3,9)
-         WRITE(*,*)'CUE',ANNPPVEG_M(1,3,9)/ANNGPPVEG_M(1,3,9)
-         WRITE(*,*)'LAI',LAIMAXGVEG_M(1,3,9)
-         ENDIF
+C         IF (I.EQ.1 .AND. M.EQ.3) THEN
+C         WRITE(*,*)'NPP',ANNPPVEG_M(1,3,4)
+C         WRITE(*,*)'GPP',ANNGPPVEG_M(1,3,4)
+C         WRITE(*,*)'CUE',ANNPPVEG_M(1,3,4)/ANNGPPVEG_M(1,3,4)
+C         WRITE(*,*)'LAI',LAIMAXGVEG_M(1,3,4)
+C         ENDIF
 
               DO 854 J=1,ICC
 C

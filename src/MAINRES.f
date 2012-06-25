@@ -86,7 +86,7 @@ C     &              0.0365, 0.0365, 0.0000,
 C     &              0.0000, 0.0000, 0.0000/ ! NO STEM COMPONENT FOR GRASSES
 
       DATA BSRTSTEM/0.1140, 0.0550, 0.0000,
-     &              0.0500, 0.0535, 0.0300,
+     &              0.0600, 0.0335, 0.0300,
      &              0.0365, 0.0365, 0.0000,
      &              0.0000, 0.0000, 0.0000/ ! NO STEM COMPONENT FOR GRASSES
 
@@ -97,9 +97,9 @@ C     &              0.1600, 0.1600, 0.0000,
 C     &              0.8000, 0.8000, 0.0000/
 
       DATA BSRTROOT/0.2650, 0.2850, 0.0000,
-     &              0.4700, 0.4950, 0.0550,
+     &              0.6500, 0.2250, 0.0550,
      &              0.1600, 0.1600, 0.0000,
-     &              0.1000, 0.8000, 0.0000/
+     &              0.1000, 0.08000, 0.0000/
 C
 C     SET THE FOLLOWING SWITCH TO .TRUE. FOR USING CONSTANT TEMPERATURE
 C     INDEPEDENT Q10 SPECIFIED BELOW

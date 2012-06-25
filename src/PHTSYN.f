@@ -259,7 +259,7 @@ C     NOT START DECREASING UNTIL ABOUT SOIL MOISTURE IS HALF WAY BETWEEN
 C     WILTING POINT AND FIELD CAPACITY.
 C
       DATA SN/2.0, 2.0, 0.0,
-     &        2.0, 2.0, 2.0,
+     &        20.0, 2.0, 2.0,
      &        2.0, 2.0, 0.0,
      &        2.0, 2.0, 0.0/
 C
@@ -281,11 +281,11 @@ C     &          35.0E-06,  65.0E-06, 65.0E-06,
 C     &          80.0E-06,  40.0E-06, 0.00E-06,
 C     &          70.0E-06,  30.0E-06, 0.00E-06/
 C     values to test from Kattge et al. 2009
-C     (trees only):
+C     (Kattge does not include C4):
       DATA VMAX/63.0E-06,  40.0E-06, 0.00E-06,
-     &          40.0E-06,  60.0E-06, 40.0E-06,
-     &          100.0E-06, 100.0E-06, 0.00E-06,
-     &          100.0E-06, 100.0E-06, 0.00E-06/
+     &          55.0E-06,  75.0E-06, 40.0E-06,
+     &          100.0E-06, 40.0E-06, 0.00E-06,
+     &          80.0E-06, 5.0E-06, 0.00E-06/
 
 C     NEEDLE LEAF |  EVG       DCD       ---
 C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
@@ -312,7 +312,7 @@ C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
 C     ORIGINAL VALUES:
       DATA  RMLCOEFF/0.015, 0.017, 0.000,
-     &               0.019, 0.015, 0.015,
+     &               0.020, 0.015, 0.015,
      &               0.015, 0.025, 0.000,
      &               0.013, 0.025, 0.000/
 C
