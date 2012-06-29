@@ -481,7 +481,9 @@ C     AND CROPS, AND 1.2 FOR GRASSES.
      &           1.2, 1.2, 0.0/
 C
 C     LEAF LIFE SPAN (IN YEARS) FOR CTEM's 9 PFTs
-      DATA  LFESPANY/1.5, 1.00, 0.00,
+C       FLAG testing new parameter values Needle EVG JM 07.06.2012
+C      DATA  LFESPANY/1.5, 1.00, 0.00,
+      DATA  LFESPANY/5.0, 1.00, 0.00,
      &              1.75, 1.00, 1.00,
      &              1.75, 1.75, 0.00,
      &              1.00, 1.00, 0.00/
@@ -861,17 +863,23 @@ C
 C     FIND MAINETANCE RESPIRATION FOR CANOPY OVER SNOW SUB-AREA
 C     in uMOL CO2/M2/SEC
 C
+C     FLAG - TCANS IS SUBSTITUTED HERE BY TA SINCE TCAN IS NOT 
+C      TRUSTWORTHY AT PRESENT. JM 06.06.2012
       CALL   MAINRES (FCANCS,      FCS,     STEMMASS,   ROOTMASS,        
      1                   ICC,       IG,          ILG,        IL1,
-     2                   IL2,    TCANS,       TBARCS,   RMATCTEM,
+C     2                   IL2,    TCANS,       TBARCS,   RMATCTEM,
+     2                   IL2,       TA,       TBARCS,   RMATCTEM,
      3                  SORT, NOL2PFTS,           IC,       SAND,
      4              RMSCSVEG, RMRCSVEG,     RTTEMPCS)
 C
 C     FIND MAINETANCE RESPIRATION FOR CANOPY OVER GROUND SUB-AREA
 C
+C     FLAG - TCANS IS SUBSTITUTED HERE BY TA SINCE TCAN IS NOT 
+C      TRUSTWORTHY AT PRESENT. JM 06.06.2012
       CALL   MAINRES ( FCANC,       FC,     STEMMASS,   ROOTMASS,        
      1                   ICC,       IG,          ILG,        IL1,
-     2                   IL2,    TCANO,        TBARC,   RMATCTEM,
+C     2                   IL2,    TCANO,        TBARC,   RMATCTEM,
+     2                   IL2,       TA,        TBARC,   RMATCTEM,
      3                  SORT, NOL2PFTS,           IC,       SAND,
      4              RMSCGVEG, RMRCGVEG,     RTTEMPCG)
 C
@@ -932,6 +940,7 @@ C
             GPPVEG(I,J)= 0.0
             PHEANVEG(I,J)= 0.0
           ENDIF
+
 C         
           IF(LFSTATUS(I,J).EQ.4)THEN
             GPPVEG(I,J) = ANVEG(I,J) + RMLVEG(I,J)

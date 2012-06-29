@@ -201,11 +201,13 @@ C                             -1, 10, --/
      &          272.1, 283.1, 0.000/
 C
 C     UPPER LIMIT IN CELCIUS /34, 34, --,
-C                             37, 37, 37,
+C                             45, 37, 37,
 C                             42, 42, --,
 C                             40, 50, --/
+C    JM CHANGED PFT 3 TO 45 DEG FOLLOWING
+C    ITO AND OIKAWA 2000. 
       DATA  TUP/307.1, 307.1, 0.000,
-     &          310.1, 310.1, 310.1,
+     &          318.1, 310.1, 310.1,
      &          315.1, 315.1, 0.000,
      &          313.1, 323.1, 0.000/
 C
@@ -258,8 +260,10 @@ C     FOR VALUES HIGHER THAN 1. WHEN SN IS ABOUT 10, PHOTOSYNTHESIS DOES
 C     NOT START DECREASING UNTIL ABOUT SOIL MOISTURE IS HALF WAY BETWEEN
 C     WILTING POINT AND FIELD CAPACITY.
 C
+C     PFT 3 HAS A HIGHER VALUE TO EMULATE DEEP ROOTS GIVING ACCESS TO
+C     GROUND WATER. JM 26.06.2012
       DATA SN/2.0, 2.0, 0.0,
-     &        2.0, 2.0, 2.0,
+     &        20.0, 2.0, 2.0,
      &        2.0, 2.0, 0.0,
      &        2.0, 2.0, 0.0/
 C
@@ -273,19 +277,13 @@ C
 C
 C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 
-C     FLAG - there is a problem at the moment with
-C     the TCAN and CFLUX giving us low GPP.  JM 06.03.2012
 C     ORIGINAL values:
-C      DATA VMAX/42.0E-06,  70.0E-06, 0.00E-06,
-c      DATA VMAX/50.0E-06,  70.0E-06, 0.00E-06,
-C     &          35.0E-06,  65.0E-06, 65.0E-06,
-C     &          80.0E-06,  40.0E-06, 0.00E-06,
-C     &          70.0E-06,  30.0E-06, 0.00E-06/
-C     values to test from Kattge et al. 2009:
+C     Values are prinicipally derived from Kattge et al. 2009
+C     (Kattge does not include C4):
       DATA VMAX/63.0E-06,  40.0E-06, 0.00E-06,
-     &          40.0E-06,  60.0E-06, 55.0E-06,
-     &          100.0E-06, 100.0E-06, 0.00E-06,
-     &          80.0E-06,  80.0E-06, 0.00E-06/
+     &          46.0E-06,  67.0E-06, 40.0E-06,
+     &          100.0E-06, 40.0E-06, 0.00E-06,
+     &          80.0E-06, 5.0E-06, 0.00E-06/
 
 C     NEEDLE LEAF |  EVG       DCD       ---
 C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
@@ -311,10 +309,10 @@ C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
 C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
 C     ORIGINAL VALUES:
-      DATA  RMLCOEFF/0.015, 0.015, 0.000,
-     &               0.015, 0.015, 0.015,
+      DATA  RMLCOEFF/0.015, 0.017, 0.000,
+     &               0.020, 0.015, 0.015,
      &               0.015, 0.025, 0.000,
-     &               0.015, 0.025, 0.000/
+     &               0.013, 0.025, 0.000/
 C
 C     FREEZING TEMPERATURE
       DATA TFREZ/273.16/
@@ -1163,19 +1161,21 @@ C
           Q10_FUNCD = 1.30**(0.1*(TCAN(I)-298.16))
 C
           IF(LEAFOPT.EQ.1)THEN
+C      FLAG!
            IF(COSZS(I).GT.0.0)THEN
             RML_VEG(I,J) = RMLCOEFF(SORT(J))*VMAXC(I,J)*Q10_FUNCD
            ELSE
-            RML_VEG(I,J) = RMLCOEFF(SORT(J))*VMAXC(I,J)*Q10_FUNCN* 0.5
+            RML_VEG(I,J) = RMLCOEFF(SORT(J))*VMAXC(I,J)*Q10_FUNCN !* 0.5
            ENDIF
+C      END FLAG.
            AN_VEG(I,J) = A_VEG(I,J) - RML_VEG(I,J)
           ELSE IF(LEAFOPT.EQ.2)THEN
            IF(COSZS(I).GT.0.0)THEN
             RML_SUN(I,J) = RMLCOEFF(SORT(J))*VMAXC_SUN(I,J)*Q10_FUNCD
             RML_SHA(I,J) = RMLCOEFF(SORT(J))*VMAXC_SHA(I,J)*Q10_FUNCD
            ELSE
-            RML_SUN(I,J)=RMLCOEFF(SORT(J))*VMAXC_SUN(I,J)*Q10_FUNCN*0.5
-            RML_SHA(I,J)=RMLCOEFF(SORT(J))*VMAXC_SHA(I,J)*Q10_FUNCN*0.5
+            RML_SUN(I,J)=RMLCOEFF(SORT(J))*VMAXC_SUN(I,J)*Q10_FUNCN !*0.5 !FLAG
+            RML_SHA(I,J)=RMLCOEFF(SORT(J))*VMAXC_SHA(I,J)*Q10_FUNCN !*0.5 !FLAG
            ENDIF
            AN_SUN(I,J) = A_VEG_SUN(I,J) - RML_SUN(I,J)
            AN_SHA(I,J) = A_VEG_SHA(I,J) - RML_SHA(I,J)

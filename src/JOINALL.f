@@ -238,5 +238,5 @@ C
 
       GO TO 200
 
-      STOP
+      CALL EXIT
       END

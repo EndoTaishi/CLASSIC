@@ -59,7 +59,7 @@ C
 C
 C----------------------------------------------------------------------
       DO 100 K=1,NML
-	  SDEPROW(ILMOS(K),JLMOS(K))=SDEPGAT(k)
+	  SDEPROW(ILMOS(K),JLMOS(K))=SDEPGAT(K)
 100   CONTINUE
 C
       DO 101 L=1,ICC

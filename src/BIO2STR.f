@@ -261,6 +261,7 @@ C
           ALNIRC(I,J)=0.0
           CMASVEGC(I,J)=0.0
           SFCANCMX(I,J)=0.0    ! SUM OF FCANCMXs
+
 70      CONTINUE
 60    CONTINUE
 C

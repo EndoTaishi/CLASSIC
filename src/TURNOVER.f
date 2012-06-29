@@ -73,13 +73,17 @@ C     CROPS       |   C3        C4       ---
 C     GRASSES     |   C3        C4       ---
 C
 C     STEMLIFE, TURNOVER TIME SCALE FOR STEM FOR DIFFERENT PFTs
-      DATA  STEMLIFE/60.0, 75.0, 0.00,
+C       FLAG testing new parameter values Needle EVG JM 07.06.2012
+C      DATA  STEMLIFE/60.0, 75.0, 0.00,
+      DATA  STEMLIFE/65.0, 75.0, 0.00,
      &               45.0, 40.0, 45.0,
      &               20.0, 20.0, 0.00,
      &               0.00, 0.00, 0.00/
 C
 C     ROOTLIFE, TURNOVER TIME SCALE FOR ROOT FOR DIFFERENT PFTs
-      DATA  ROOTLIFE/8.5,11.5, 0.0,
+C       FLAG testing new parameter values Needle EVG JM 07.06.2012
+C      DATA  ROOTLIFE/8.5,11.5, 0.0,
+      DATA  ROOTLIFE/10.0,11.5, 0.0,
      &               5.5, 5.5, 5.5,
      &               3.0, 3.0, 0.0,
      &               2.5, 2.5, 0.0/

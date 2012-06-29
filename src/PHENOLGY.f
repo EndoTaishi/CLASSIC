@@ -124,14 +124,17 @@ C     CROPS       |   C3        C4       ---
 C     GRASSES     |   C3        C4       ---
 C
 C     MAX. LOSS RATE FOR COLD STRESS FOR ALL 8 PFTs, (1/DAY)
-      DATA CDLSRTMX/0.30, 0.30, 0.00,
-c      DATA CDLSRTMX/0.15, 0.30, 0.00,
+C       FLAG testing new parameter values Needle EVG JM 07.06.2012
+C      DATA CDLSRTMX/0.30, 0.30, 0.00,
+      DATA CDLSRTMX/0.15, 0.30, 0.00,
      &              0.30, 0.15, 0.15,
      &              0.15, 0.15, 0.00,
      &              0.15, 0.15, 0.00/
 C
 C     MAX. LOSS RATE FOR DROUGHT STRESS FOR ALL 9 PFTs, (1/DAY)
-      DATA DRLSRTMX/0.005, 0.005, 0.000,
+C       FLAG testing new parameter values  Needle EVG JM 07.06.2012
+C      DATA DRLSRTMX/0.005, 0.005, 0.000,
+      DATA DRLSRTMX/0.0025, 0.005, 0.000,
      &              0.005, 0.005, 0.025,
      &              0.005, 0.005, 0.000,
      &              0.050, 0.050, 0.000/    
