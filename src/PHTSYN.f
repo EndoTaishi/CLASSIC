@@ -705,8 +705,8 @@ C         LEAF MODEL
 C
           VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
           IF(LEAFOPT.EQ.2)THEN
-             VMAXC_SUN(I,M) = =VMAX(SORT(M)) * FPAR_SUN(I,M)
-             VMAXC_SHA(I,M) = =VMAX(SORT(M)) * FPAR_SHA(I,M)
+             VMAXC_SUN(I,M) = VMAX(SORT(M)) * FPAR_SUN(I,M)
+             VMAXC_SHA(I,M) = VMAX(SORT(M)) * FPAR_SHA(I,M)
           ENDIF
 C
 C         FIND Vm,unstressed (DUE TO WATER) BUT STRESSED DUE TO TEMPERATURE
