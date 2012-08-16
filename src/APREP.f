@@ -351,7 +351,7 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------/
           HS(I,2)=H(I,2)                                                          
           HS(I,3)=MAX(H(I,3)-ZSNOW(I),1.0E-3)                                       
           HS(I,4)=MAX(H(I,4)-ZSNOW(I),1.0E-3)                                       
-C                                                                                 
+C               
           IF(IPAI.EQ.0) THEN
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
@@ -494,7 +494,6 @@ C         IF(PAI(I,4).LT.1.0) THEN
               FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))*PAI(I,4)                       
 C             PAI (I,4)=1.0                                                       
               PAI (I,4)=THR_LAI
-
 C    ----------------- CTEM MODIFICATIONS ------------------------/
           ELSE                                                                    
               FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))                                
@@ -848,7 +847,7 @@ C
               ZOELNS(I)=ZOMLNS(I)-LOG(ZORATG)                                    
           ENDIF                                                                   
   300 CONTINUE                                                                    
-C                                                                                 
+C                
 C     * ADD CONTRIBUTION OF OROGRAPHY TO MOMENTUM ROUGNESS LENGTH
 C
       DO 325 I=IL1,IL2
@@ -1115,4 +1114,4 @@ C
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
       RETURN                                                                      
-      END 
+      END                        

@@ -4,9 +4,9 @@ subroutine read_from_job_options(ARGBUFF,CTEMLOOP,CTEM1,CTEM2,NCYEAR,LNDUSEON,SP
                   ITG,IWF,IPAI,IHGT,IALC,IALS,IALG,JHHSTD,JHHENDD,JDSTD, & 
                   JDENDD,JHHSTY,JHHENDY,JDSTY,JDENDY)
 
-#ifdef NAGf95
-use F90_UNIX
-#endif
+!#ifdef NAGf95
+!use F90_UNIX
+!#endif
 
 !           CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 !                    JOBOPTIONS READ-IN SUBROUTINE 
@@ -163,7 +163,7 @@ integer, intent(out) :: JDENDY    ! SIMULATION YEAR (IYEAR) TO STOP WRITING THE 
 
 namelist /joboptions/ &
   CTEMLOOP,           &
-  CTEM1,	      &
+  CTEM1,              &
   CTEM2,              &
   NCYEAR,             &
   LNDUSEON,           &

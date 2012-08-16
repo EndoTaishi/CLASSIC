@@ -10,15 +10,18 @@ BDIR = ../bin
 
 # This is our compiler
 #
-FC=pgf90
+#FC=pgf90
+FC=gfortran
 
 # General running of model
-FFLAGS = -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
+#FFLAGS = -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 
 # Debugging of model
-#FFLAGS = -r8 -O0 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
+#FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds 
+#GNU
+FFLAGS = -g -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow,denormal -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow -Wunused
 
-export PGIMACH=linux86-64
+#export PGIMACH=linux86-64
 
 # These are the rules to make the targets
 #
