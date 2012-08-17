@@ -10,6 +10,7 @@ C
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
 C                       PHOTOSYNTHESIS SUBROUTINE
 C
+C     * AUG 16/12 - J. MELTON  MADE CONSISTENT WITH REAL AND INTS
 C     * 7 SEP.  2001 - PROGRAM TO CALCULATE STOMATAL CONDUCTANCE, TO BE
 C     * V. ARORA       USED BY CLASS, BY ESTIMATING PHOTOSYNTHESIS AND THEN
 C     *                RELATING PHOTOSYNTHESIS TO STOMATAL CONDUCTANCE.
@@ -102,13 +103,13 @@ C
       INTEGER       ILG,        IC,          I,         J,        IL1,
      1              IL2,  IT_COUNT,    REQITER,        IG,        ICC,
      2          LEAFOPT,   PS_COUP,   ISC4(KK),     ISNOW(ILG),   K1C,   
-     3 USESLAI(ILG,ICC),        K2C,     ICOUNT, SORT(ICC), USEBB(ICC),
+     3 USESLAI(ILG,ICC),        K2C,     ICOUNT, SORT(ICC),
      4     NOL2PFTS(IC),         M,      L2MAX,        N, ISAND(ILG,IG)
 C
       REAL FCANC(ILG,ICC),  AILCG(ILG,ICC),    TCAN(ILG),      FC(ILG),
      1         CFLUX(ILG),    SAND(ILG,IG), CLAY(ILG,IG), FC_TEST(ILG),
      2  USEAILCG(ILG,ICC),   SLAI(ILG,ICC),      QA(ILG),  INICO2I(KK),
-     3         TTEMP(ILG),         RH(ILG)
+     3         TTEMP(ILG),         RH(ILG),  USEBB(ICC)
 C
       REAL   CO2CONC(ILG),       ALPHA(KK),    OMEGA(KK),  SMSCALE(KK),
      1              TFREZ,       STD_PRESS,
@@ -660,7 +661,7 @@ C
             KB(I,M) = KB(I,M) * (SQRT(1.-OMEGA(SORT(M)) ))
 C
 C           ALSO FIND SUNLIT AND SHADED LAI
-            AILCG_SUN(I,M)=(1/KB(I,M)) *
+            AILCG_SUN(I,M)=(1.0/KB(I,M)) *
      &        ( 1.0-EXP( -1.0*KB(I,M)*USEAILCG(I,M) ) )
             AILCG_SHA(I,M)=USEAILCG(I,M) - AILCG_SUN(I,M)
 C
@@ -684,10 +685,11 @@ C         LEAF TO CANOPY) INSTEAD OF ONE, AND THUS PERFORM CALCULATIONS
 C         TWICE, AND IN THE END ADD CONDUCTANCE AND NET PHOTOSYNTHESIS
 C         FROM THE TWO LEAVES TO GET THE TOTAL.
 C
-          FPAR(I,M)=(1/KN(SORT(M)))*(1-EXP(-KN(SORT(M))*USEAILCG(I,M)))
+          FPAR(I,M)=(1.0/KN(SORT(M)))*(1.0-EXP(-KN(SORT(M))
+     &               *USEAILCG(I,M)))
           IF(LEAFOPT.EQ.2)THEN
-            FPAR_SUN(I,M) = ( 1/(KN(SORT(M))+KB(I,M)) )*
-     &        ( 1-EXP( -1.*(KN(SORT(M))+KB(I,M))*USEAILCG(I,M) ) )
+            FPAR_SUN(I,M) = ( 1.0/(KN(SORT(M))+KB(I,M)) )*
+     &        ( 1.0-EXP( -1.*(KN(SORT(M))+KB(I,M))*USEAILCG(I,M) ) )
             FPAR_SHA(I,M) = FPAR(I,M) - FPAR_SUN(I,M)
 C
 C           IF ALL RADIATION IS DIFFUSED, THEN ALL LEAVES ARE SHADED,
@@ -725,8 +727,8 @@ C
 C
 C         ASSUMING THAT SUNLIT AND SHADED TEMEPERATURES ARE SAME
 C
-          VMUNS2(I,M) = (1 + EXP(0.3*(TCAN(I)-TUP(SORT(M)))))
-          VMUNS3(I,M) = (1 + EXP(0.3*(TLOW(SORT(M))-TCAN(I))))
+          VMUNS2(I,M) = (1. + EXP(0.3*(TCAN(I)-TUP(SORT(M)))))
+          VMUNS3(I,M) = (1. + EXP(0.3*(TLOW(SORT(M))-TCAN(I))))
 C
           IF(LEAFOPT.EQ.1)THEN
             VMUNS(I,M)=VMUNS1(I,M)/
@@ -769,11 +771,11 @@ C
            THPOR(I,J) = (-0.126*SAND(I,J)+48.9)/100.0
            B(I,J)     = 0.159*CLAY(I,J)+2.91
 C
-           WILTSM(I,J) = (150./PSISAT(I,J))**(-1/B(I,J))
+           WILTSM(I,J) = (150./PSISAT(I,J))**(-1.0/B(I,J))
            WILTSM(I,J) = THPOR(I,J) * WILTSM(I,J)
 C
            FIELDSM(I,J) = (1.157E-09/GRKSAT(I,J))**
-     &      (1/(2*B(I,J)+3))
+     &      (1.0/(2.0*B(I,J)+3.0))
            FIELDSM(I,J) = THPOR(I,J) *  FIELDSM(I,J)
 C
            IF(THLIQ(I,J).LE.WILTSM(I,J)) THEN
@@ -801,9 +803,23 @@ C
        K2C = K1C + NOL2PFTS(J) - 1
        DO 525 M = K1C, K2C
         DO 530 I = IL1, IL2
-         SM_FUNC(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**SN(SORT(M)) )
-         SM_FUNC(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**SN(SORT(M)) )
-         SM_FUNC(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**SN(SORT(M)) )
+C        ADDED IN CONSTRAINT HERE FOR NUMERICAL STABILITY
+C        IT WAS DOING 0 TO EXP MATH BEFORE-JM AUG 17 2012
+         IF (1.0 - ABS(SM_FUNC(I,1)) .GT. 1E-6) THEN
+         SM_FUNC(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**INT(SN(SORT(M))) )
+         ELSE
+         SM_FUNC(I,1)= 1.0
+         ENDIF
+         IF (1.0 - ABS(SM_FUNC(I,2)) .GT. 1E-6) THEN
+         SM_FUNC(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**INT(SN(SORT(M))) )
+         ELSE
+         SM_FUNC(I,2)= 1.0
+         ENDIF
+         IF (1.0 - ABS(SM_FUNC(I,3)) .GT. 1E-6) THEN
+         SM_FUNC(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**INT(SN(SORT(M))) )
+         ELSE
+         SM_FUNC(I,3)= 1.0
+         ENDIF
 
          SM_FUNC(I,1)=SM_FUNC(I,1)+(1.0-SM_FUNC(I,1))*SMSCALE(SORT(M))
          SM_FUNC(I,2)=SM_FUNC(I,2)+(1.0-SM_FUNC(I,2))*SMSCALE(SORT(M))
@@ -873,7 +889,7 @@ C       KEEP IN MIND THAT CO2 COMPENSATION POINT FOR C4 PLANTS IS ZERO,
 C       SO THE FOLLOWING VALUE IS RELEVANT FOR C3 PLANTS ONLY
 C
         O2_CONC(I) = .2095 * PRESSG(I)
-        TGAMMA(I) = O2_CONC(I) / (2*SIGMA(I))
+        TGAMMA(I) = O2_CONC(I) / (2.0*SIGMA(I))
 C
 C       ESTIMATE MICHELIS-MENTON CONSTANTS FOR CO2 (Kc) and O2 (Ko) TO
 C       BE USED LATER FOR ESTIMATING RUBISCO LIMITED PHOTOSYNTHETIC RATE
@@ -925,7 +941,7 @@ C
           IF(COSZS(I).GT.0.0)THEN
            IF(LEAFOPT.EQ.1)THEN
             JC1(I,J) = CO2I(I,J) - TGAMMA(I)
-            JC2(I,J) = KC(I) * (1 + (O2_CONC(I)/KO(I)) )
+            JC2(I,J) = KC(I) * (1.0 + (O2_CONC(I)/KO(I)) )
             JC3(I,J) = CO2I(I,J) + JC2(I,J)
 C
             IF (ISC4(SORT(J)).EQ.1) THEN
@@ -936,7 +952,7 @@ C
            ELSE IF(LEAFOPT.EQ.2)THEN
             JC1_SUN(I,J) = CO2I_SUN(I,J) - TGAMMA(I)
             JC1_SHA(I,J) = CO2I_SHA(I,J) - TGAMMA(I)
-            JC2(I,J) = KC(I) * (1 + (O2_CONC(I)/KO(I)) )
+            JC2(I,J) = KC(I) * (1.0 + (O2_CONC(I)/KO(I)) )
             JC3_SUN(I,J) = CO2I_SUN(I,J) + JC2(I,J)
             JC3_SHA(I,J) = CO2I_SHA(I,J) + JC2(I,J)
 C
@@ -962,9 +978,9 @@ C
 C
           IF(COSZS(I).GT.0.0)THEN
            IF(LEAFOPT.EQ.1)THEN
-            JE1(I,J)= FPAR(I,J)*ALPHA(SORT(J))*(1-OMEGA(SORT(J)))
+            JE1(I,J)= FPAR(I,J)*ALPHA(SORT(J))*(1.0-OMEGA(SORT(J)))
             JE2(I,J)=( CO2I(I,J)-TGAMMA(I) ) /
-     &        ( CO2I(I,J)+ (2*TGAMMA(I)) )
+     &        ( CO2I(I,J)+ (2.0*TGAMMA(I)) )
 C
             IF (ISC4(SORT(J)).EQ.1) THEN
               JE(I,J) = IPAR(I) * JE1(I,J)
@@ -975,9 +991,9 @@ C
             JE1_SUN(I,J)= FPAR_SUN(I,J)*ALPHA(SORT(J))
             JE1_SHA(I,J)= FPAR_SHA(I,J)*ALPHA(SORT(J))
             JE2_SUN(I,J)=( CO2I_SUN(I,J)-TGAMMA(I) ) /
-     &        ( CO2I_SUN(I,J)+ (2*TGAMMA(I)) )
+     &        ( CO2I_SUN(I,J)+ (2.0*TGAMMA(I)) )
             JE2_SHA(I,J)=( CO2I_SHA(I,J)-TGAMMA(I) ) /
-     &        ( CO2I_SHA(I,J)+ (2*TGAMMA(I)) )
+     &        ( CO2I_SHA(I,J)+ (2.0*TGAMMA(I)) )
 
             IF (ISC4(SORT(J)).EQ.1) THEN
               JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J)
@@ -1057,15 +1073,15 @@ C
               TEMP_B  = JC(I,J) + JE(I,J)
               TEMP_C  = JC(I,J) * JE(I,J)
               TEMP_R  = MAX( (TEMP_B**2 - 4. * BETA1 * TEMP_C), 0.0)
-              TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2 * BETA1)
-              TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2 * BETA1)
+              TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA1)
+              TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA1)
               TEMP_JP = MIN(TEMP_Q1, TEMP_Q2)
 C
               TEMP_B  = TEMP_JP + JS(I,J)
               TEMP_C  = TEMP_JP * JS(I,J)
               TEMP_R  = MAX( (TEMP_B**2 - 4. * BETA2 * TEMP_C), 0.0)
-              TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2 * BETA2)
-              TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2 * BETA2)
+              TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA2)
+              TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA2)
               A_VEG(I,J) = MIN(TEMP_Q1, TEMP_Q2)
             ELSEIF(MIN2) THEN
               A_VEG(I,J)=MIN(JC(I,J), JE(I,J))
@@ -1091,15 +1107,15 @@ C
                TEMP_B  = JC_SUN(I,J) + JE_SUN(I,J)
                TEMP_C  = JC_SUN(I,J) * JE_SUN(I,J)
                TEMP_R  = MAX( (TEMP_B**2 - 4. * BETA1 * TEMP_C), 0.0)
-               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2 * BETA1)
-               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2 * BETA1)
+               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA1)
+               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA1)
                TEMP_JP = MIN(TEMP_Q1, TEMP_Q2)
 
                TEMP_B  = TEMP_JP + JS_SUN(I,J)
                TEMP_C  = TEMP_JP * JS_SUN(I,J)
                TEMP_R  = MAX( (TEMP_B**2 - 4. * BETA2 * TEMP_C), 0.0)
-               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2 * BETA2)
-               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2 * BETA2)
+               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA2)
+               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA2)
                A_VEG_SUN(I,J) = MIN(TEMP_Q1, TEMP_Q2)
              ELSEIF(MIN2) THEN
                A_VEG_SUN(I,J)=MIN(JC_SUN(I,J), JE_SUN(I,J))
@@ -1124,15 +1140,15 @@ C
                TEMP_B  = JC_SHA(I,J) + JE_SHA(I,J)
                TEMP_C  = JC_SHA(I,J) * JE_SHA(I,J)
                TEMP_R  = MAX( (TEMP_B**2 - 4. * BETA1 * TEMP_C), 0.0)
-               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2 * BETA1)
-               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2 * BETA1)
+               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA1)
+               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA1)
                TEMP_JP = MIN(TEMP_Q1, TEMP_Q2)
 C
                TEMP_B  = TEMP_JP + JS_SHA(I,J)
                TEMP_C  = TEMP_JP * JS_SHA(I,J)
                TEMP_R  = MAX( (TEMP_B**2 - 4. * BETA2 * TEMP_C), 0.0)
-               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2 * BETA2)
-               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2 * BETA2)
+               TEMP_Q1 = (TEMP_B + SQRT(TEMP_R)) / (2. * BETA2)
+               TEMP_Q2 = (TEMP_B - SQRT(TEMP_R)) / (2. * BETA2)
                A_VEG_SHA(I,J) = MIN(TEMP_Q1, TEMP_Q2)
              ELSEIF(MIN2) THEN
                A_VEG_SHA(I,J)=MIN(JC_SHA(I,J), JE_SHA(I,J))
@@ -1201,11 +1217,11 @@ C
         DO 710 I = IL1, IL2
         IF(FCANC(I,J).GT.ZERO)THEN
 C
-          GB(I)=CFLUX(I)*(TFREZ/TA(I))*(PRESSG(I)/STD_PRESS)*(1/0.0224)
+          GB(I)=CFLUX(I)*(TFREZ/TA(I))*(PRESSG(I)/STD_PRESS)*(1./0.0224)
 
 C          GB(I)= MIN(0.224, MAX(2.24E-03, GB(I)) )
-C	The above formulation was likely an error. The correct bounding is
-C 	implimented below. JM 06.03.2012
+C       The above formulation was likely an error. The correct bounding is
+C       implimented below. JM 06.03.2012
           GB(I)= MIN(10.0, MAX(0.1, GB(I)) )
 C
           IF(LEAFOPT.EQ.1)THEN
@@ -1365,7 +1381,7 @@ C
           IF(LEAFOPT.EQ.1)THEN
             GCTU(I,J)=GC(I,J)*(TCAN(I)/TFREZ)*
      &        (STD_PRESS/PRESSG(I))*0.0224
-            RC_VEG(I,J) = 1/GCTU(I,J)
+            RC_VEG(I,J) = 1./GCTU(I,J)
           ELSE IF(LEAFOPT.EQ.2)THEN
             GCTU_SUN(I,J)=GC_SUN(I,J)*(TCAN(I)/TFREZ)*
      &        (STD_PRESS/PRESSG(I))*0.0224
@@ -1380,7 +1396,7 @@ C             OUR MAX. VALUE OF AROUND 5000 S/M
               GCTU(I,J)=GCTU_SUN(I,J)+GCTU_SHA(I,J)
             ENDIF
 C
-            RC_VEG(I,J) = 1/GCTU(I,J)
+            RC_VEG(I,J) = 1./GCTU(I,J)
             AN_VEG(I,J)=AN_SUN(I,J)+AN_SHA(I,J)
             RML_VEG(I,J)=RML_SUN(I,J)+RML_SHA(I,J)
           ENDIF

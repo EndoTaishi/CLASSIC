@@ -702,8 +702,8 @@ C         OLD:
 C          ARBN1DAY(I)=(PI*0.36*24*24*SPRDRATE(I)**2)/LBRATIO(I)
 
 C         NEW:
-          ARBN1DAY(I)=(PI*24*24*SPRDRATE(I)**2)/(4.0 * LBRATIO(I)) * 
-     &                 (1.0 + 1.0 / HBRATIO(I))**2
+          ARBN1DAY(I)=(PI*24.0*24.0*SPRDRATE(I)**2)/(4.0 * LBRATIO(I)) 
+     &                  *(1.0 + 1.0 / HBRATIO(I))**2
 
 C
 C         BASED ON FIRE EXTINGUISHING PROBABILITY WE ESTIMATE THE NUMBER 

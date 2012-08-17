@@ -19,7 +19,7 @@ FC=gfortran
 # Debugging of model
 #FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds 
 #GNU
-FFLAGS = -g -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow,denormal -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow -Wunused
+FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
 
 #export PGIMACH=linux86-64
 

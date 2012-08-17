@@ -83,7 +83,7 @@
       FJ_GT_0 : IF(F(J).GT.0.0)                           THEN
 
       LZZ0T=LOG((ZT(J)+Z0(J))/Z0T(J))
-      LZZ0=LOG(ZU(J)/Z0(J)+1)
+      LZZ0=LOG(ZU(J)/Z0(J)+1.0)
       IF(ILMO(J).LE.0.) THEN
 *---------------------------------------------------------------------
 *                      UNSTABLE CASE
@@ -96,8 +96,8 @@
       ELSE
 *---------------------------------------------------------------------
 *                        STABLE CASE
-         hi=1/MAX(HMIN,H(J),(ZA(J)+10*Z0(J))*factn,factn/
-     1        (4*AS*BETA*ilmo(j)))
+         hi=1.0/MAX(HMIN,H(J),(ZA(J)+10.0*Z0(J))*factn,factn/
+     1        (4.0*AS*BETA*ilmo(j)))
 *CDIR IEXPAND
          fh=BETA*(LZZ0T+min( psi(ZT(J)+Z0(J),HI,ILMO(J))
      1                      -psi(Z0T(J),HI,ILMO(J)),
@@ -148,12 +148,12 @@ C
       REAL, INTENT(IN ) :: Z2,Z02,LZZ02,ILMO2
       REAL, INTENT(OUT) :: X,X0
 c
-      X =(1-CI*Z2 *BETA*ILMO2)**(0.16666666)
-      X0=(1-CI*Z02*BETA*ILMO2)**(0.16666666)
-      FMI=LZZ02+LOG((X0+1)**2*SQRT(X0**2-X0+1)*(X0**2+X0+1)**1.5
-     %               /((X+1)**2*SQRT(X**2-X+1)*(X**2+X+1)**1.5))
-     %              +RAC3*ATAN(RAC3*((X**2-1)*X0-(X0**2-1)*X)/
-     %              ((X0**2-1)*(X**2-1)+3*X*X0))
+      X =(1.0-CI*Z2 *BETA*ILMO2)**(0.16666666)
+      X0=(1.0-CI*Z02*BETA*ILMO2)**(0.16666666)
+      FMI=LZZ02+LOG((X0+1.0)**2*SQRT(X0**2-X0+1.0)*(X0**2+X0+1.0)**1.5
+     %               /((X+1.0)**2*SQRT(X**2-X+1.0)*(X**2+X+1.0)**1.5))
+     %              +RAC3*ATAN(RAC3*((X**2-1.0)*X0-(X0**2-1.0)*X)/
+     %              ((X0**2-1.0)*(X**2-1.0)+3.0*X*X0))
 c
       RETURN
       END FUNCTION FMI
@@ -168,10 +168,10 @@ C
       REAL, INTENT(IN ) :: Z2,Z0T2,LZZ0T2,ILMO2
       REAL, INTENT(OUT) :: Y,Y0
 c
-      Y =(1-CI*Z2  *BETA*ILMO2)**(0.33333333)
-      Y0=(1-CI*Z0T2*BETA*ILMO2)**(0.33333333)
-      FHI=BETA*(LZZ0T2+1.5*LOG((Y0**2+Y0+1)/(Y**2+Y+1))+RAC3*
-     %        ATAN(RAC3*2*(Y-Y0)/((2*Y0+1)*(2*Y+1)+3)))
+      Y =(1.0-CI*Z2  *BETA*ILMO2)**(0.33333333)
+      Y0=(1.0-CI*Z0T2*BETA*ILMO2)**(0.33333333)
+      FHI=BETA*(LZZ0T2+1.5*LOG((Y0**2+Y0+1.0)/(Y**2+Y+1.0))+RAC3*
+     %        ATAN(RAC3*2.0*(Y-Y0)/((2.0*Y0+1.0)*(2.0*Y+1.0)+3.0)))
 c
       RETURN
       END FUNCTION FHI
@@ -186,12 +186,12 @@ C
       REAL a,b,c,d
       REAL, INTENT(IN ) :: ILMO2,Z2,HI2
 c
-      d = 4*AS*BETA*ILMO2
+      d = 4.0*AS*BETA*ILMO2
       c = d*hi2 - hi2**2
-      b = d - 2*hi2
-      a = sqrt(1 + b*z2 - c*z2**2)
-      psi = 0.5 * (a-z2*hi2-log(1+b*z2*0.5+a)-
-     +            b/(2*sqrt(c))*asin((b-2*c*z2)/d))
+      b = d - 2.0*hi2
+      a = sqrt(1.0 + b*z2 - c*z2**2)
+      psi = 0.5 * (a-z2*hi2-log(1.0+b*z2*0.5+a)-
+     +            b/(2.0*sqrt(c))*asin((b-2.0*c*z2)/d))
 c
       RETURN
       END FUNCTION PSI

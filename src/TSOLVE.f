@@ -317,12 +317,12 @@ C
               ELSE
                   DCFLUX=0.
               ENDIF
-              DRDT0= -4*SBC*TZERO(I)**3
+              DRDT0= -4.*SBC*TZERO(I)**3
      1           -RHOAIR(I)*SPHAIR*(CFLUX(I)+MAX(0.,TZERO(I)-TPOTA(I))
      2           *DCFLUX) -GCOEFF(I)
      3           +CPHCH(I)*RHOAIR(I)*(CFLUX(I)*WZERO(I)*A(I)
      4           *EVBETA(I)*(B(I)-TFREZ)/((TZERO(I)-B(I))*
-     5           (1+WZERO(I)))**2-(QZERO(I)-QA(I))*DCFLUX)
+     5           (1.+WZERO(I)))**2-(QZERO(I)-QA(I))*DCFLUX)
               TSTEP(I)=-RESID(I)/DRDT0
               TSTEP(I)=MAX(-10.,MIN(5.,TSTEP(I)))
               TZERO(I)=TZERO(I)+TSTEP(I)
@@ -354,7 +354,7 @@ C
                   WZERO(I)=0.622*611.0*EXP(A(I)*(TZERO(I)-TFREZ)/
      1                (TZERO(I)-B(I)))/PADRY(I)
                   Q0SAT(I)=WZERO(I)/(1.0+WZERO(I))
-                  QZERO(I)=EVBETA(I)*Q0SAT(I)+(1-EVBETA(I))*QA(I)
+                  QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QA(I)
                   QLWOUT(I)=SBC*TZERO(I)*TZERO(I)*TZERO(I)*TZERO(I)
                   GZERO(I)=GCOEFF(I)*TZERO(I)+GCONST(I)
                   RESID(I)=QSWNET(I)+QLWIN(I)-QLWOUT(I)-GZERO(I)

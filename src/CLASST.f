@@ -975,7 +975,7 @@ C
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPG,TCBOTG,
      +                FG,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     3                ISAND,ILG,IL1,IL2,JL,IG                      )
+     3                ISAND,ILG,IL1,IL2,IG                      )
 C
           CALL TSOLVE(ISNOW,FG,
      1                QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPG,

@@ -7,6 +7,8 @@
      6                  ILG,IL1,IL2,JL,IC,ICP1,IG,IALC,
      7                  CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC) 
 C
+C     * AUG 17/12 - J.MELTON    ADD CONSTRAINT TO TRCLRV AT LOW COSZS
+C                               OTHERWISE IT HAS NUMERICAL PROBLEMS.
 C     * OCT 16/08 - R.HARVEY.   ADD LARGE LIMIT FOR EFFECTIVE
 C     *                         EXTINCTION COEFFICIENT (CXTEFF) IN
 C     *                         (RARE) CASES WHEN CANOPY TRANSMISSIVITY
@@ -86,7 +88,7 @@ C
 C     * TEMPORARY VARIABLES.
 C
       REAL SVF,ALVSCX,ALIRCX,ALVSN,ALIRN,ALVSS,ALIRS,
-     1     TRTOT,FRMAX
+     1     TRTOT,FRMAX,TMP
 C
 C     * COMMON BLOCK AND OTHER PARAMETERS.
 C
@@ -122,11 +124,18 @@ C     * NEEDLELEAF TREES.
 C
       J=1
       DO 150 I=IL1,IL2                                                                                  
-          IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN 
-              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))                                    
+          IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN               
+C              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))   
+              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  !JM EDIT
+              TRCLRV=EXP(TMP)    
+                                 
               TRCLDV=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*               
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)   
-              TRCLRT=EXP(-0.3*PAI(I,J)/COSZS(I))                                    
+
+C              TRCLRT=EXP(-0.3*PAI(I,J)/COSZS(I))   
+              TMP=MAX(-50.0,(-0.3*PAI(I,J)/COSZS(I)))    !JM EDIT
+              TRCLRT = EXP(TMP)
+                                 
               TRCLDT=0.30*EXP(-0.3*PAI(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.3*PAI(I,J)/0.2588)   
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
@@ -213,13 +222,21 @@ C
       DO 350 J=3,IC
       DO 350 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN
-              TRCLRV=EXP(-0.5*PAI(I,J)/COSZS(I))                                    
+C             TRCLRV=EXP(-0.5*PAI(I,J)/COSZS(I))   
+              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  !JM EDIT
+              TRCLRV=EXP(TMP)    
+
               TRCLDV=0.30*EXP(-0.5*PAI(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.5*PAI(I,J)/0.2588)
-              TRCLRT=EXP(-0.4*PAI(I,J)/COSZS(I))                                    
+
+C              TRCLRT=EXP(-0.4*PAI(I,J)/COSZS(I))  
+              TMP=MAX(-50.0,(-0.4*PAI(I,J)/COSZS(I)))    !JM EDIT
+              TRCLRT = EXP(TMP)
+                               
               TRCLDT=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)                
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
+
               IF(TRVS(I).GT.0.0001)                           THEN
                   CXTEFF(I,J)=-LOG(TRVS(I))/MAX(PAI(I,J),1.0E-5)
               ELSE
@@ -299,10 +316,17 @@ C
       J=1
       DO 500 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I))                                    
+C              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I)) 
+              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
+              TRCLRV=EXP(TMP)    
+                                   
               TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)   
-              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))                                    
+
+C              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))                       
+              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    !JM EDIT
+              TRCLRT = EXP(TMP)
+             
               TRCLDT=0.30*EXP(-0.3*PAIS(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.3*PAIS(I,J)/0.2588)   
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
@@ -336,7 +360,8 @@ C
       J=2
       DO 600 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-              TRCLRV=MIN(EXP(-0.7*PAIS(I,J)),EXP(-0.4/COSZS(I)))                   
+              TRCLRV=MIN(EXP(-0.7*PAIS(I,J)),EXP(-0.4/COSZS(I))) 
+                  
               TRCLDV=0.30*MIN(EXP(-0.7*PAIS(I,J)),EXP(-0.4/0.9659))             
      1              +0.50*MIN(EXP(-0.7*PAIS(I,J)),EXP(-0.4/0.7071))              
      2              +0.20*MIN(EXP(-0.7*PAIS(I,J)),EXP(-0.4/0.2588))              
@@ -375,10 +400,17 @@ C
       DO 700 J=3,IC
       DO 700 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-              TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I))                                    
+C              TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I)) 
+              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  !JM EDIT
+              TRCLRV=EXP(TMP)    
+                                   
               TRCLDV=0.30*EXP(-0.5*PAIS(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.5*PAIS(I,J)/0.2588)
-              TRCLRT=EXP(-0.4*PAIS(I,J)/COSZS(I))                                    
+
+C              TRCLRT=EXP(-0.4*PAIS(I,J)/COSZS(I))
+              TMP=MAX(-50.0,(-0.4*PAIS(I,J)/COSZS(I)))    !JM EDIT
+              TRCLRT = EXP(TMP)
+                                    
               TRCLDT=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)                
               TRVS(I)=FCLOUD(I)*TRCLDV+(1.0-FCLOUD(I))*TRCLRV
@@ -537,7 +569,7 @@ C
                   RC(I)=5000.0  
               ELSE                                                                
                   RCS(I)=5000.0
-                  IF(RC(I).GT.0) THEN
+                  IF(RC(I).GT.0.) THEN
                       RC(I)=FC(I)/RC(I)
                   ELSE
                       RC(I)=5000.0

@@ -46,14 +46,14 @@ c
       
 c     * STABILITY FUNCTIONS FOR THE STABLE CASE
 
-      PSM(X)= -X -.667*(X-5/.35)*EXP(-.35*X)
-      PSE(X)= -(1+.667*X)**1.5 -.667*(X-5/.35)*EXP(-.35*X)
+      PSM(X)= -X -.667*(X-5.0/.35)*EXP(-.35*X)
+      PSE(X)= -(1.0+.667*X)**1.5 -.667*(X-5.0/.35)*EXP(-.35*X)
 
 c     * STABILITY FUNCTIONS FOR THE UNSTABLE CASE
 
-      Y(X)=(1-16*X)**.25
-      PIM(X)= LOG((1+X)**2*(1+X**2)) -2*ATAN(X)
-      PIE(X)= 2*LOG(1+X**2)
+      Y(X)=(1.0-16.0*X)**.25
+      PIM(X)= LOG((1.0+X)**2*(1.0+X**2)) -2.0*ATAN(X)
+      PIE(X)= 2.0*LOG(1.0+X**2)
 
       PR=1.0
       DO 100 I=IL1,IL2
@@ -66,7 +66,7 @@ C     * CALCULATION OF SURFACE FLUXES AND MONIN-OBUKHOV LENGTH
         US=CM*WSPD
         TS=CDH(I)*(TA(I)-T0(I))/CM
         QS=CDH(I)*(QA(I)-Q0(I))/CM
-        L=TA(I)*US**2/(VKC*GRAV*(TS*(1+.61*QA(I))+.61*TA(I)*QS))
+        L=TA(I)*US**2/(VKC*GRAV*(TS*(1.0+.61*QA(I))+.61*TA(I)*QS))
       
 C     * CALCULATE CORRECTION FACTORS TO TAKE INTO ACCOUNT THE APPROXIMATIONS
 C     * IN DRCOEF

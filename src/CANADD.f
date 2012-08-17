@@ -1,7 +1,7 @@
       SUBROUTINE CANADD(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP,
      1                  HTCC,ROFC,ROVG,PCPN,PCPG,FI,FSVF,
      2                  CWLCAP,CWFCAP,CMASS,RHOSNI,TSURX,RDRIP,SDRIP,
-     3                  ILG,IL1,IL2,JL)
+     3                  ILG,IL1,IL2)
 C                                                                                 
 C     * NOV 22/06 - E.CHAN/D.VERSEGHY. UNCONDITIONALLY SET TR AND TS.
 C     * JAN 05/05 - P.BARTLETT. CORRECT/REFINE SNOW INTERCEPTION
@@ -30,7 +30,7 @@ C
 C                                                                
 C     * INTEGER CONSTANTS.
 C
-      INTEGER IWATER,ILG,IL1,IL2,JL,I
+      INTEGER IWATER,ILG,IL1,IL2,I
 C 
 C     * INPUT/OUTPUT ARRAYS.
 C

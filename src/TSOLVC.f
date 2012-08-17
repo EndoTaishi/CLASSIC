@@ -268,7 +268,7 @@ C===================== CTEM =====================================\
 C===================== CTEM =====================================/  
               QSWNIC=QSWINI(I)*(1.0-ALNIRC(I))-QSWNIG    
 C===================== CTEM =====================================\
-             QSWNC(I)=QSWNVC(I)+QSWNIC
+              QSWNC(I)=QSWNVC(I)+QSWNIC
 C===================== CTEM =====================================/
               IF(ABS(TCAN(I)).LT.1.0E-3)        TCAN(I)=TPOTA(I)
               QLWOC(I)=SBC*TCAN(I)*TCAN(I)*TCAN(I)*TCAN(I)
@@ -311,9 +311,15 @@ C
                   KF1(I)=4
                   KF2(I)=5
               ENDIF
+
           ENDIF
+C         FLAG TEST!!  JM
+              ITER(I)=1
+              NITER(I)=1
+
    50 CONTINUE
 C 
+
 C===================== CTEM =====================================\
 C    CALL PHOTOSYNTHESIS SUBROUTINE HERE TO GET A NEW ESTIMATE OF
 C    RC BASED ON PHOTOSYNTHESIS
@@ -425,8 +431,8 @@ C
       DO 175 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN    
               DQ0DT=-WZERO(I)*A(I)*(B(I)-TFREZ)/((TZERO(I)-B(I))*
-     1               (1+WZERO(I)))**2*EVBETA(I)
-              DRDT0=-4*SBC*TZERO(I)**3
+     1               (1.+WZERO(I)))**2*EVBETA(I)
+              DRDT0=-4.*SBC*TZERO(I)**3
      1               -GCOEFF(I)-RHOAIR(I)*SPHAIR*
      2              (RAGINV(I)+(TPOTG(I)-TAC(I))*DRAGIN(I))-
      3               CPHCHG(I)*RHOAIR(I)*(DQ0DT*RAGINV(I)
@@ -464,7 +470,7 @@ C
                 WZERO(I)=0.622*611.0*EXP(A(I)*(TZERO(I)-TFREZ)/
      1              (TZERO(I)-B(I)))/PADRY(I)
                 Q0SAT(I)=WZERO(I)/(1.0+WZERO(I))
-                QZERO(I)=EVBETA(I)*Q0SAT(I)+(1-EVBETA(I))*QAC(I)
+                QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.-EVBETA(I))*QAC(I)
                 QLWOG(I)=SBC*TZERO(I)*TZERO(I)*TZERO(I)*TZERO(I)
                 GZERO(I)=GCOEFF(I)*TZERO(I)+GCONST(I)
                 RESID(I)=QSWNG(I)+FSVF(I)*QLWIN(I)+(1.0-FSVF(I))*
@@ -472,7 +478,7 @@ C
                 QEVAPT=CPHCHG(I)*(QZERO(I)-QAC(I))
                 BOWEN=SPHAIR*(TZERO(I)-TAC(I))/
      1             SIGN(MAX(ABS(QEVAPT),1.E-6),QEVAPT)
-                QEVAPG(I)=RESID(I)/SIGN(MAX(ABS(1+BOWEN),0.1),1+BOWEN)
+                QEVAPG(I)=RESID(I)/SIGN(MAX(ABS(1.+BOWEN),0.1),1.+BOWEN)
                 QSENSG(I)=RESID(I)-QEVAPG(I)
                 RESID(I)=0.
                 EVAPG(I)=QEVAPG(I)/CPHCHG(I)
@@ -567,6 +573,10 @@ C
               CFLUXM(I)=0.0
               DCFLXM(I)=0.0
           ENDIF
+C       FLAG TEST JM
+              ITER(I)=1
+              NITER(I)=1      
+
   300 CONTINUE
 C
       IF(ITC.LT.2) THEN
@@ -782,11 +792,11 @@ C
               XEVAPM(I)=XEVAP(I)
               CFLUXM(I)=CFLX(I)
               DCFLXM(I)=DCFLUX
-              DRDT0=-4*SBC*TCAN(I)*TCAN(I)*TCAN(I)*(1.0-FSVF(I))*
+              DRDT0=-4.0*SBC*TCAN(I)*TCAN(I)*TCAN(I)*(1.0-FSVF(I))*
      1              2.0-RHOAIR(I)*SPHAIR*(CFLX(I)+MAX(0.,
-     2              TCAN(I)-TPOTA(I))*DCFLUX)+IEVAPC(I)*CPHCHC(I)*
+     2              TCAN(I)-TPOTA(I))*DCFLUX)+REAL(IEVAPC(I))*CPHCHC(I)*
      3              RHOAIR(I)*(XEVAP(I)*WC(I)*A(I)*(B(I)-TFREZ)/
-     4              ((TCAN(I)-B(I))*(1+WC(I)))**2-(QCAN(I)-QA(I))*
+     4              ((TCAN(I)-B(I))*(1.+WC(I)))**2-(QCAN(I)-QA(I))*
      5              DXEVAP)-CHCAP(I)/DELT
               TSTEP(I)=-RESID(I)/DRDT0
               TSTEP(I)=MAX(-10.,MIN(5.,TSTEP(I)))
@@ -832,7 +842,7 @@ C
                ELSE
                    YEVAP=FRAINC(I)+(1.0-FRAINC(I))*10./(10.+RC(I))
                ENDIF
-               QCAN(I)=YEVAP*QCAN(I)+(1-YEVAP)*QA(I)
+               QCAN(I)=YEVAP*QCAN(I)+(1.-YEVAP)*QA(I)
                QSTOR(I)=CHCAP(I)*(TCAN(I)-TCANO(I))/DELT
                QLWOC(I)=SBC*TCAN(I)*TCAN(I)*TCAN(I)*TCAN(I)
                RESID(I)=QSWNC(I)+(QLWIN(I)+QLWOG(I)-2.0*QLWOC(I))*
@@ -867,6 +877,28 @@ c
 C
       ENDIF
 C
+C     TEST!
+!      DO 624 I=IL1,IL2
+!      IF(TCAN(I) .NE. 0. .AND. ABS(TCAN(I)-TA(I)) .GT. 1.0) THEN 
+!       WRITE(*,*)I,ABS(TCAN(I)-TA(I)),TCAN(I),FI(I),NITER(I),ITER(I)
+!      IF (I .EQ. 2) THEN
+!       WRITE(*,'(2E12.3)')AILCG(I,1),AILCG(I,2)
+!      ELSEIF (I .EQ. 3) THEN
+!       WRITE(*,'(3E12.3)')AILCG(I,3),AILCG(I,4),AILCG(I,5)
+!      ELSEIF (I .EQ. 4) THEN
+!       WRITE(*,'(3E12.3)')AILCG(I,6),AILCG(I,7)
+!      ELSEIF (I .EQ. 5) THEN
+!       WRITE(*,'(3E12.3)')AILCG(I,8),AILCG(I,9)
+!      endif      
+!          WRITE(6,6380) QSWNC(I),QLWIN(I),QLWOG(I),
+!     1                  QLWOC(I),QSENSG(I),QSENSC(I),
+!     2                  QEVAPC(I),QSTOR(I),QMELTC(I)
+!        write(*,*)'---'
+!       IF(TCAN(I) .NE. 0. .AND. ABS(TCAN(I)-TA(I)) .GT. 10.0) READ(*,*)
+
+!      ENDIF
+!  624 CONTINUE
+
       IBAD=0
 C
       DO 625 I=IL1,IL2

@@ -104,7 +104,7 @@ C-----------------------------------------------------------------------
 C
       DO 200 I=IL1,IL2
           IF(FI(I).GT.0.)                                          THEN
-              IF(QMELT(I).GT.0. AND. ISAND(I,1).GT.-4)      THEN
+              IF(QMELT(I).GT.0.0 .AND. ISAND(I,1).GT.-4)      THEN
                   GZERO(I)=GZERO(I)+QMELT(I)
                   HTCS (I)=HTCS(I)-FI(I)*QMELT(I)
                   HTC(I,1)=HTC(I,1)+FI(I)*QMELT(I)

@@ -146,7 +146,7 @@ C     * ADJUST THPOR FOR PRESENCE OF ICE.
 C
       DO 100 J=1,IG
       DO 100 I=IL1,IL2
-          IF(IGRD(I).GT.0. .AND. ISAND(I,J).GT.-3)             THEN
+          IF(IGRD(I).GT.0 .AND. ISAND(I,J).GT.-3)             THEN
               THLMAX(I,J)=MAX((THPOR(I,J)-THICE(I,J)-0.00001),
      1            THLIQ(I,J),THLMIN(I,J))                
               GRKSATF(I,J)=GRKSAT(I,J)*(1.0-MAX(0.0,MIN((THPOR(I,J)-
@@ -219,8 +219,8 @@ C     2                (DELZW(I,J)+DELZW(I,J+1)))
               ENDIF
               IF(ABS(THLIQ(I,J)-THLIQ(I,J+1)).LT.0.05 .AND. 
      1            FDT(I,J).LT.0.0) FDT(I,J+1)=0.0
-              IF(LZF(I).GT.0. .AND. J.LT.LZF(I)) FDT(I,J+1)=0.0
-              IF(LZF(I).GT.0. .AND. J.EQ.LZF(I) .AND. FDT(I,J+1)
+              IF(LZF(I).GT.0 .AND. J.LT.LZF(I)) FDT(I,J+1)=0.0
+              IF(LZF(I).GT.0 .AND. J.EQ.LZF(I) .AND. FDT(I,J+1)
      1                 .LT.0.0) FDT(I,J+1)=0.0
           ENDIF
   200 CONTINUE 
@@ -274,7 +274,7 @@ C
                   FDT(I,J)=0.0    
               ENDIF
           ENDIF   
-          IF(IGRD(I).GT.0. .AND. ISAND(I,J).EQ.-2 .AND. 
+          IF(IGRD(I).GT.0 .AND. ISAND(I,J).EQ.-2 .AND. 
      1                           THLIQ(I,J).LE.THLRET(I,J))    THEN
               IF(FDT(I,J+1).GT.0.0) FDT(I,J+1)=0.0
           ENDIF

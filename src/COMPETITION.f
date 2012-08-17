@@ -73,7 +73,7 @@ C
      1       EXIST1(ILG,ICC-2),      USEEXIST(ILG,ICC-2),    SORT(ICC)
 C
       INTEGER    NOL2PFTS(IC),              L2MAX,             SDFRACIN,
-     1      FRACIORD(ILG,ICC),      BAREIORD(ILG)
+     1      FRACIORD(ILG,ICC),      BAREIORD(ILG),         A,   B,  G
 C
       REAL  GEREMORT(ILG,ICC),  INTRMORT(ILG,ICC),        GRCLAREA(ILG),
      1        NPPVEG(ILG,ICC),   BMASVEG(ILG,ICC),     BURNVEG(ILG,ICC),
@@ -87,7 +87,7 @@ C
      &               TOLRANC2
 C
       REAL    LAMBDA(ILG,ICC),          C(ILG,ICC),          M(ILG,ICC),
-     1      MRTBOCLM(ILG,ICC),         A,   B,  G,    USENPPVG(ILG,ICC),
+     1      MRTBOCLM(ILG,ICC),    USENPPVG(ILG,ICC),
      2              TEMP(ILG),  USEFRAC(ILG,ICC-2),     USEC(ILG,ICC-2),
      3        USEM(ILG,ICC-2),     FRAC(ILG,ICC-2),       C1(ILG,ICC-2),
      4          M1(ILG,ICC-2),    SUM1, SUM2, SUM3,    TERM2(ILG,ICC-2),
@@ -223,7 +223,7 @@ C
           PBAREFRA(I)=PBAREFRA(I)-FCANCMX(I,J)
           PFTAREAB(I,J)=(FCANCMX(I,J)*GRCLAREA(I))
           PFTAREAA(I,J)=(FCANCMX(I,J)*GRCLAREA(I))-BURNVEG(I,J)
-          FCANCMX(I,J)=MAX( SEEDFRAC(SDFRACIN)*PFTEXIST(I,J), 
+          FCANCMX(I,J)=MAX(SEEDFRAC(SDFRACIN)*REAL(PFTEXIST(I,J)), 
      &                      (PFTAREAA(I,J)/GRCLAREA(I)) )
           PFTAREAA(I,J)=FCANCMX(I,J)*GRCLAREA(I)
           BAREFRAC(I)=BAREFRAC(I)-FCANCMX(I,J)
@@ -445,7 +445,7 @@ C     RANK THE TREE PFTs ACCORDING TO THEIR COLONIZATION RATES
 C
       DO 250 J = 1, ICC
         DO 251 I = IL1, IL2
-          USENPPVG(I,J)=C(I,J)*PFTEXIST(I,J)
+          USENPPVG(I,J)=C(I,J)*REAL(PFTEXIST(I,J))
 251     CONTINUE
 250   CONTINUE
 C
@@ -498,7 +498,8 @@ C
           N=J+2
         ENDIF 
         DO 340 I = IL1, IL2
-          FRAC(I,J)=MAX(SEEDFRAC(SDFRACIN)*PFTEXIST(I,N), FCANCMX(I,N))
+          FRAC(I,J)=MAX(SEEDFRAC(SDFRACIN)*REAL(PFTEXIST(I,N)),
+     &              FCANCMX(I,N))
           EXIST1(I,J)=PFTEXIST(I,N)
           C1(I,J)=C(I,N)
           M1(I,J)=M(I,N)
@@ -562,7 +563,7 @@ C
      &      N
             CALL XIT('COMPETITION',-5)
           ENDIF
-          USEFRAC(I,N)=MAX(SEEDFRAC(SDFRACIN)*USEEXIST(I,N), 
+          USEFRAC(I,N)=MAX(SEEDFRAC(SDFRACIN)*REAL(USEEXIST(I,N)), 
      &                     USEFRAC(I,N))
 510     CONTINUE
 500   CONTINUE
@@ -580,7 +581,8 @@ C
       DO 540 N = 1, ICC-2
         DO 541 I = IL1, IL2
           VEGFRAC(I)=VEGFRAC(I)+USEFRAC(I,N)
-          IF(ABS(USEFRAC(I,N)-SEEDFRAC(SDFRACIN))*USEEXIST(I,N).LE.ZERO)
+          IF(ABS(USEFRAC(I,N)-SEEDFRAC(SDFRACIN))
+     &              *REAL(USEEXIST(I,N)).LE.ZERO)
      &    THEN
             MINCFRAC(I)= MINCFRAC(I)+ USEFRAC(I,N)
           ENDIF 
@@ -590,7 +592,8 @@ C
       DO 550 N = 1, ICC-2
         DO 551 I = IL1, IL2
           IF(VEGFRAC(I).GT.1.0.AND.
-     &    ABS(USEFRAC(I,N)-SEEDFRAC(SDFRACIN)*USEEXIST(I,N)).GT.ZERO)
+     &    ABS(USEFRAC(I,N)-SEEDFRAC(SDFRACIN)*
+     &    REAL(USEEXIST(I,N))).GT.ZERO)
      &    THEN
             TERM =(1.-MINCFRAC(I))/(VEGFRAC(I)-MINCFRAC(I)) 
             USEFRAC(I,N)=USEFRAC(I,N)*TERM

@@ -2,7 +2,7 @@
      1                  GCONST,CPHCHG,IWATER, 
      2                  TBAR,TCTOP,TCBOT,
      3                  FI,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     4                  ISAND,ILG,IL1,IL2,JL,IG                     )
+     4                  ISAND,ILG,IL1,IL2,IG                     )
 C
 C     * MAR 03/08 - D.VERSEGHY. ASSIGN TCTOP3 AND TCBOT3 ON THE BASIS
 C     *                         OF SUBAREA VALUES FROM TPREP; REPLACE
@@ -52,7 +52,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ILG,IL1,IL2,JL,IG,I,J
+      INTEGER ILG,IL1,IL2,IG,I
 C
 C     * OUTPUT ARRAYS.
 C

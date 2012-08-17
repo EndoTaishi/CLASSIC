@@ -138,7 +138,8 @@ c     +            b(hi)/(2*sqrt(c(hi)))*asin((b(hi)-2*c(hi)*z)/d(unsl)))
 *
 *   Reference :  Y. Delage, BLM, 82 (p23-48) (Eq.33-37)
 ************************************************************************
-      DF(ZZ)=(1-ZZ*UNSH)*sqrt(1+(4*AS*BETA*ilmo(j))*ZZ/(1-ZZ*UNSH))
+      DF(ZZ)=(1.0-ZZ*UNSH)*sqrt(1.0+(4.0*AS*BETA*ilmo(j))
+     &         *ZZ/(1.0-ZZ*UNSH))
 *
       RAC3=sqrt(3.0)
       CS=AS*2.5
@@ -149,8 +150,8 @@ c     +            b(hi)/(2*sqrt(c(hi)))*asin((b(hi)-2*c(hi)*z)/d(unsl)))
 *  CALCULATE THE RICHARDSON NUMBER
         ZP=ZU(J)**2/(ZT(J)+Z0(J)-Z0T(J))
         u=max(vamin,va(j))
-        tva=(1+DELTA*QA(J))*TA(J)
-        tvs=(1+DELTA*QG(J))*TG(J)
+        tva=(1.0+DELTA*QA(J))*TA(J)
+        tvs=(1.0+DELTA*QG(J))*TG(J)
         dthv=tva-tvs
         RIB(J)=GRAV/(tvs+0.5*dthv)*ZP*dthv/u**2
         if (rib(j).ge.0.0) rib(j) = max(rib(j), EPSLN)
@@ -160,15 +161,15 @@ c     +            b(hi)/(2*sqrt(c(hi)))*asin((b(hi)-2*c(hi)*z)/d(unsl)))
         LZZ0(J)=LOG(Z0(J)+ZU(J))-LOG(Z0(J))
         LZZ0T(J)=LOG(ZT(J)+Z0(J))-LOG(Z0T(J))
         IF(RIB(J).GT.0.)  THEN
-           FM(J)=LZZ0(J)+CS*RIB(J)/max(2*z0(j),1.0)
+           FM(J)=LZZ0(J)+CS*RIB(J)/max(2.0*z0(j),1.0)
            FH(J)=BETA*(LZZ0T(J)+CS*RIB(J))/
      1           max(sqrt(z0(j)*z0t(j)),1.0)
            ILMO(J)=RIB(J)*FM(J)**2/(ZP*FH(J))
            F=MAX(ABS(FCOR(J)),CORMIN)
            H(J)=BS*sqrt(KARMAN*u/(ILMO(J)*F*fm(j)))
         ELSE
-           FM(J)=LZZ0(J)-min(0.7+log(1-rib(j)),LZZ0(J)-1)
-           FH(J)=BETA*(LZZ0T(J)-min(0.7+log(1-rib(j)),LZZ0T(J)-1))
+           FM(J)=LZZ0(J)-min(0.7+log(1.0-rib(j)),LZZ0(J)-1.0)
+           FH(J)=BETA*(LZZ0T(J)-min(0.7+log(1.0-rib(j)),LZZ0T(J)-1.0))
         ENDIF
         ILMO(J)=RIB(J)*FM(J)**2/(ZP*FH(J))
       ENDIF
@@ -183,19 +184,19 @@ c     +            b(hi)/(2*sqrt(c(hi)))*asin((b(hi)-2*c(hi)*z)/d(unsl)))
 *----------------------------------------------------------------------
 *  STABLE CASE
        	ILMO(J)=max(EPSLN,ILMO(J))
-        hl=(ZU(J)+10*Z0(J))*FACTN
+        hl=(ZU(J)+10.0*Z0(J))*FACTN
         F=MAX(ABS(FCOR(J)),CORMIN)
         hs=BS*sqrt(KARMAN*u/(ILMO(J)*F*fm(j)))
-        H(J)=MAX(HMIN,hs,hl,factn/(4*AS*BETA*ILMO(J)))
-        UNSH=1/H(J)
+        H(J)=MAX(HMIN,hs,hl,factn/(4.0*AS*BETA*ILMO(J)))
+        UNSH=1.0/H(J)
         unsl=ILMO(J)
 *CDIR IEXPAND
         fm(J)=LZZ0(J)+psi(ZU(J)+Z0(J),unsh,unsl)-psi(Z0(J),unsh,unsl)
 *CDIR IEXPAND
         fh(J)=BETA*(LZZ0T(J)+psi(ZT(J)+Z0(J),unsh,unsl)-psi(Z0T(J),unsh,
      %unsl))
-        DG=-ZP*FH(J)/FM(J)**2*(1+beta*(DF(ZT(J)+Z0(J))-DF(Z0T(J)))/
-     1          (2*FH(J))-(DF(ZU(J)+Z0(J))-DF(Z0(J)))/FM(J))
+        DG=-ZP*FH(J)/FM(J)**2*(1.0+beta*(DF(ZT(J)+Z0(J))-DF(Z0T(J)))/
+     1          (2.0*FH(J))-(DF(ZU(J)+Z0(J))-DF(Z0(J)))/FM(J))
 *----------------------------------------------------------------------
 *  UNSTABLE CASE
       ELSE
@@ -214,8 +215,8 @@ c         Y0=(1-CI*Z0T(J)*BETA*ILMO(J))**(1./3)
 c         FH(J)=BETA*(LZZ0T(J)+1.5*LOG((Y0**2+Y0+1)/(Y**2+Y+1))+RAC3*
 c     %        ATAN(RAC3*2*(Y-Y0)/((2*Y0+1)*(2*Y+1)+3)))
          FH(J)=fhi(zt(j)+z0(j),z0t(j),lzz0t(j),ilmo(j),y,y0)
-         DG=-ZP*FH(J)/FM(J)**2*(1+beta/FH(J)*(1/Y-1/Y0)-2/FM(J)*
-     %                (1/X-1/X0))
+         DG=-ZP*FH(J)/FM(J)**2*(1.0+beta/FH(J)*(1.0/Y-1.0/Y0)-2.0/FM(J)*
+     %                (1.0/X-1.0/X0))
       ENDIF
 *----------------------------------------------------------------------
       IF(IT.LT.ITMAX) THEN
@@ -231,11 +232,11 @@ c     %        ATAN(RAC3*2*(Y-Y0)/((2*Y0+1)*(2*Y+1)+3)))
 *----------------------------------------------------------------------
 *  CALCULATE ILMO AND STABILITY FUNCTIONS FROM LOG-LINEAR PROFILE
         zb=zu(j)/(zt(j)+z0(j)-z0t(j))
-        dd=(beta*lzz0t(j)*zb)**2-4*rib(j)*asx*lzz0(j)*beta*
+        dd=(beta*lzz0t(j)*zb)**2-4.0*rib(j)*asx*lzz0(j)*beta*
      1        (lzz0t(j)*zb-lzz0(j))
         if(rib(j).gt.0..and.rib(j).lt.beta/asx.and.dd.ge.0.) then
-         ilmox=(beta*lzz0t(j)*zb-2*rib(j)*asx*lzz0(j)-sqrt(dd))
-     1          /(2*zu(j)*(asx**2*rib(j)-beta*asx))
+         ilmox=(beta*lzz0t(j)*zb-2.0*rib(j)*asx*lzz0(j)-sqrt(dd))
+     1          /(2.0*zu(j)*(asx**2*rib(j)-beta*asx))
          if(ilmox.lt.ilmo(j)) then
             ilmo(j)=ilmox
             fm(j)=lzz0(j)+asx*zu(j)*ilmox
@@ -278,12 +279,12 @@ C
       REAL, INTENT(IN ) :: Z2,Z02,LZZ02,ILMO2
       REAL, INTENT(OUT) :: X,X0
 c
-      X =(1-CI*Z2 *BETA*ILMO2)**(0.16666666)
-      X0=(1-CI*Z02*BETA*ILMO2)**(0.16666666)
-      FMI=LZZ02+LOG((X0+1)**2*SQRT(X0**2-X0+1)*(X0**2+X0+1)**1.5
-     %               /((X+1)**2*SQRT(X**2-X+1)*(X**2+X+1)**1.5))
-     %              +RAC3*ATAN(RAC3*((X**2-1)*X0-(X0**2-1)*X)/
-     %              ((X0**2-1)*(X**2-1)+3*X*X0))
+      X =(1.0-CI*Z2 *BETA*ILMO2)**(0.16666666)
+      X0=(1.0-CI*Z02*BETA*ILMO2)**(0.16666666)
+      FMI=LZZ02+LOG((X0+1.0)**2*SQRT(X0**2-X0+1.0)*(X0**2+X0+1.0)**1.5
+     %               /((X+1.0)**2*SQRT(X**2-X+1.0)*(X**2+X+1.0)**1.5))
+     %              +RAC3*ATAN(RAC3*((X**2-1.0)*X0-(X0**2-1.0)*X)/
+     %              ((X0**2-1.0)*(X**2-1.0)+3.0*X*X0))
 c
       RETURN
       END FUNCTION FMI
@@ -298,10 +299,10 @@ C
       REAL, INTENT(IN ) :: Z2,Z0T2,LZZ0T2,ILMO2
       REAL, INTENT(OUT) :: Y,Y0
 c
-      Y =(1-CI*Z2  *BETA*ILMO2)**(0.33333333)
-      Y0=(1-CI*Z0T2*BETA*ILMO2)**(0.33333333)
-      FHI=BETA*(LZZ0T2+1.5*LOG((Y0**2+Y0+1)/(Y**2+Y+1))+RAC3*
-     %        ATAN(RAC3*2*(Y-Y0)/((2*Y0+1)*(2*Y+1)+3)))
+      Y =(1.0-CI*Z2  *BETA*ILMO2)**(0.33333333)
+      Y0=(1.0-CI*Z0T2*BETA*ILMO2)**(0.33333333)
+      FHI=BETA*(LZZ0T2+1.5*LOG((Y0**2+Y0+1.0)/(Y**2+Y+1.0))+RAC3*
+     %        ATAN(RAC3*2.0*(Y-Y0)/((2.0*Y0+1.0)*(2.0*Y+1.0)+3.0)))
 c
       RETURN
       END FUNCTION FHI
@@ -316,12 +317,12 @@ C
       REAL a,b,c,d
       REAL, INTENT(IN ) :: ILMO2,Z2,HI2
 c
-      d = 4*AS*BETA*ILMO2
+      d = 4.0*AS*BETA*ILMO2
       c = d*hi2 - hi2**2
-      b = d - 2*hi2
-      a = sqrt(1 + b*z2 - c*z2**2)
-      psi = 0.5 * (a-z2*hi2-log(1+b*z2*0.5+a)-
-     +            b/(2*sqrt(c))*asin((b-2*c*z2)/d))
+      b = d - 2.0*hi2
+      a = sqrt(1.0 + b*z2 - c*z2**2)
+      psi = 0.5 * (a-z2*hi2-log(1.0+b*z2*0.5+a)-
+     +            b/(2.0*sqrt(c))*asin((b-2.0*c*z2)/d))
 c
       RETURN
       END FUNCTION PSI

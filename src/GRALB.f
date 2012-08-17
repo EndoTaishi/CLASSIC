@@ -1,5 +1,5 @@
       SUBROUTINE GRALB(ALVSG,ALIRG,ALVSGC,ALIRGC,
-     1                 ALGWET,ALGDRY,THLIQ,FSNOW,ALVSU,ALIRU,FCMXU,
+     1                 ALGWET,ALGDRY,THLIQ,ALVSU,ALIRU,FCMXU,
      2                 AGVDAT,AGIDAT,ISAND,
      3                 ILG,IG,IL1,IL2,JL,IALG)
 C
@@ -51,7 +51,7 @@ C
 C     * INPUT ARRAYS.
 C
       REAL ALGWET(ILG),   ALGDRY(ILG),   THLIQ (ILG,IG),
-     2     FSNOW (ILG),   ALVSU (ILG),   ALIRU (ILG),   FCMXU (ILG),
+     2     ALVSU (ILG),   ALIRU (ILG),   FCMXU (ILG),
      1     AGVDAT(ILG),   AGIDAT(ILG)
 C
       INTEGER    ISAND  (ILG,IG)

@@ -184,7 +184,7 @@ C
      2     FCANS (ILG,IC),  CXTEFF(ILG,IC),  AIL   (ILG,IC),
      3     RCACC (ILG,IC),  RCG   (ILG,IC),  RCV   (ILG,IC)
 C
-      REAL PSIGND(ILG),     CWCPAV(ILG),     
+      REAL PSIGND(ILG),     
      1     GROWA (ILG),     GROWN (ILG),     GROWB (ILG),     
      2     RRESID(ILG),     SRESID(ILG),     FRTOT (ILG),
      3     TRVS  (ILG),     TRIR  (ILG),     RCT   (ILG),     
@@ -287,13 +287,13 @@ C
      9            TCAN,GROWTH,ZSNOW,TSNOW,FSNOW,RHOSNO,SNO,Z0ORO,
      A            ZBLEND,ZPLMG0,ZPLMS0,
      B            TA,RHOAIR,RADJ,DLON,RHOSNI,DELZ,DELZW,ZBOTW,
-     C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,N,
-     D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
-     E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,
+     C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,
+     D            ILG,IL1,IL2,IC,ICP1,IG,IDISP,IZREF,IWF,
+     E            IPAI,IHGT,RMAT,H,HS,GROWA,GROWN,GROWB,
      F            RRESID,SRESID,FRTOT,
 C===================== CTEM =====================================\
      G            FCANCMX, ICC, CTEM1, CTEM2, RMATC, ZOLNC,  PAIC,
-     H               AILC, AILCG, CMASVEGC, L2MAX, NOL2PFTS, SLAIC,
+     H               AILC, AILCG, CMASVEGC, NOL2PFTS, SLAIC,
      I               AILCMIN,  AILCMAX,
 C    ------------- CTEM INPUTS ABOVE THIS LINE, OUTPUTS BELOW -----|
      J             AILCGS,  FCANCS, FCANC)
@@ -303,12 +303,12 @@ C     * SNOW ALBEDOS AND TRANSMISSIVITY.
 C 
       CALL SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,TRSNOW,
      1             ZSNOW,FSNOW,ASVDAT,ASIDAT,
-     2             ILG,IG,IL1,IL2,JL,IALS)
+     2             ILG,IL1,IL2,JL,IALS)
 C
 C     * BARE SOIL ALBEDOS.
 C
       CALL GRALB(ALVSG,ALIRG,ALVSGC,ALIRGC,
-     1            ALGWET,ALGDRY,THLIQ,FSNOW,ALVSC(1,5),ALIRC(1,5),
+     1            ALGWET,ALGDRY,THLIQ,ALVSC(1,5),ALIRC(1,5),
      2            FCANMX(1,5),AGVDAT,AGIDAT,ISAND,
      3            ILG,IG,IL1,IL2,JL,IALG) 
 C

@@ -10,14 +10,14 @@
      9            TCAN,GROWTH,ZSNOW,TSNOW,FSNOW,RHOSNO,SNO,Z0ORO,
      A            ZBLEND,ZPLMG0,ZPLMS0,
      B            TA,RHOAIR,RADJ,DLON,RHOSNI,DELZ,DELZW,ZBOTW,
-     C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,N,
-     D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
-     E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,
+     C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,
+     D            ILG,IL1,IL2,IC,ICP1,IG,IDISP,IZREF,IWF,
+     E            IPAI,IHGT,RMAT,H,HS,GROWA,GROWN,GROWB,
      F            RRESID,SRESID,FRTOT,                
 C    ----------------- CTEM MODIFICATIONS ------------------------\
 C
      G            FCANCMX, ICC, CTEM1, CTEM2, RMATC, ZOLNC,  PAIC,
-     H               AILC, AILCG, CMASVEGC, L2MAX, NOL2PFTS, SLAIC,
+     H               AILC, AILCG, CMASVEGC, NOL2PFTS, SLAIC,
      I               AILCMIN,  AILCMAX,
 C    ------------- CTEM INPUTS ABOVE THIS LINE, OUTPUTS BELOW -----|
      J             AILCGS,  FCANCS, FCANC)
@@ -25,7 +25,6 @@ C
 C     * CTEM2  - LOGICAL BOOLEAN FOR SWITCHING CTEM ON/OFF
 C     * AILCG  - GREEN LAI FOR USE WITH PHTSYN SUBROUTINE
 C     * AILCGS - GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
-C     * L2MAX  - MAXIMUM NUMBER OF LEVEL 2 CTEM PFTs
 C     * NOL2PFTS - NUMBER OF LEVEL 2 CTEM PFTs
 C     * FCANC  - FRACTION OF CANOPY OVER GROUND FOR CTEM's 9 PFTs
 C     * FCANCS - FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
@@ -142,7 +141,7 @@ C
 C                                                                                 
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
+      INTEGER ILG,IL1,IL2,IC,ICP1,IG,IDISP,IZREF,IWF,
      1        IPAI,IHGT,I,J,K,IN,NL
 C                                                                                 
 C     * OUTPUT ARRAYS USED ELSEWHERE IN CLASS.                                    
@@ -170,7 +169,7 @@ C CTEM: replaced K1 and K2 with K1C and K2C, respectively
      3       SFCANCMX(ILG,IC),       PAIC(ILG,IC),      SLAIC(ILG,IC),
      4       THR_LAI,            AILCMIN(ILG,ICC),   AILCMAX(ILG,ICC)
 C
-      INTEGER ICC, M, N, K1C, K2C, L2MAX, NOL2PFTS(IC)
+      INTEGER ICC, M, K1C, K2C, NOL2PFTS(IC)
 C
       LOGICAL CTEM1, CTEM2
 C
@@ -211,14 +210,14 @@ C
 C     * WORK ARRAYS NOT USED ELSEWHERE IN CLASSA.                          
 C                                                                                 
       REAL RMAT (ILG,IC,IG),H     (ILG,IC),  HS    (ILG,IC),                      
-     1     CWCPAV(ILG),     GROWA (ILG),     GROWN (ILG),     
+     1     GROWA (ILG),     GROWN (ILG),     
      2     GROWB (ILG),     RRESID(ILG),     SRESID(ILG),
      3     FRTOT (ILG) 
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL DAY,DEGLON,GROWG,FSUM,SNOI,ZSNADD,THSUM,THICEI,THLIQI,ZROOT,
-     1     ZROOTG,FCOEFF,PSII,LZ0ORO
+      REAL DAY,GROWG,FSUM,SNOI,ZSNADD,THSUM,THICEI,THLIQI,ZROOT,
+     1     ZROOTG,PSII,LZ0ORO
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -269,7 +268,7 @@ C     * DETERMINE GROWTH INDEX FOR CROPS (VEGETATION TYPE 3).
 C     * MUST USE UN-GATHERED LONGITUDES TO COMPUTE ACTUAL LONGITUDE/
 C     * LATITUDE VALUES.  
 C                                                                                 
-C      DAY=FLOAT(IDAY)                                                               DAY=REAL(IDAY) 
+C      DAY=FLOAT(IDAY)  DAY=REAL(IDAY) 
       DO 120 I=IL1,IL2
           IN = INT( (RADJ(I)+PI/2.0)*18.0/PI ) + 1
           IF(DLON(I).GT.190. .AND. DLON(I).LT.330.)            THEN           

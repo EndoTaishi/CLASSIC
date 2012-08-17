@@ -1,7 +1,7 @@
       SUBROUTINE WFILL(WMOVE,TMOVE,LZF,NINF,ZF,TRMDR,R,TR,
      1                 PSIF,GRKINF,THLINF,THLIQX,TBARWX,
      2                 DELZX,ZBOTX,DZF,TIMPND,WADJ,WADD,
-     3                 IFILL,IFIND,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N )
+     3                 IFILL,IFIND,IGP1,IGP2,ILG,IL1,IL2 )
 
 C     * JAN 06/09 - D.VERSEGHY. CORRECT LZF AND ZF ASSIGNMENTS IN LOOP 
 C     *                         100; ADDITIONAL DZF CHECK IN LOOP 400.
@@ -28,7 +28,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER IG,IGP1,IGP2,ILG,IL1,IL2,JL,I,J,N
+      INTEGER IGP1,IGP2,ILG,IL1,IL2,I,J
 C
 C     * OUTPUT FIELDS.
 C                      
@@ -74,7 +74,7 @@ C
           IF(IFILL(I).GT.0 .AND. IFIND(I).EQ.0)                     THEN
              IF(GRKINF(I,J).GT.1.0E-12 .AND.
      1                            GRKINF(I,J).LT.(R(I)-1.0E-8))  THEN
-                  ZF(I)=PSIF(I,J)/(R(I)/GRKINF(I,J)-1)                                  
+                  ZF(I)=PSIF(I,J)/(R(I)/GRKINF(I,J)-1.0)                                  
                   IF(ZF(I).LT.(ZBOTX(I,J)-DELZX(I,J))) THEN                          
                       ZF(I)=MAX(ZBOTX(I,J)-DELZX(I,J),0.0)
                       LZF(I)=J                                                   

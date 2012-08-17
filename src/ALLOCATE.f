@@ -204,11 +204,11 @@ C
           THPOR(I,J) = (-0.126*SAND(I,J)+48.9)/100.0
           B(I,J)     = 0.159*CLAY(I,J)+2.91
 C
-          WILTSM(I,J) = (150./PSISAT(I,J))**(-1/B(I,J))
+          WILTSM(I,J) = (150./PSISAT(I,J))**(-1.0/B(I,J))
           WILTSM(I,J) = THPOR(I,J) * WILTSM(I,J)
 C
           FIELDSM(I,J) = (1.157E-09/GRKSAT(I,J))**
-     &      (1/(2*B(I,J)+3))
+     &      (1./(2.*B(I,J)+3.))
           FIELDSM(I,J) = THPOR(I,J) *  FIELDSM(I,J)
 C
 170     CONTINUE
@@ -318,7 +318,7 @@ C
      &                     DENOM  
             AFRROOT(I,M)=( EPSILONR(N)+OMEGA(N)*(1.0-WNSTATUS(I,M)) )/
      &                     DENOM  
-            AFRLEAF(I,M)=  EPSILONL(N)/DENOM  
+            AFRLEAF(I,M)=  EPSILONL(N)/DENOM 
           ELSE IF (J.EQ.4) THEN     !GRASSES
             DENOM = 1.0 + (OMEGA(N)*( 1.0+LTSTATUS(I,M)-WNSTATUS(I,M) ))
             AFRLEAF(I,M)=( EPSILONL(N) + OMEGA(N)*LTSTATUS(I,M) ) /DENOM  
@@ -352,7 +352,7 @@ C
            WRITE(6,2000) I,J,(AFRSTEM(I,J)+AFRROOT(I,J)+AFRLEAF(I,J))
 2000       FORMAT(' AT (I) = (',I3,'), PFT=',I2,'  ALLOCATION FRACTIONS
      &NOT ADDING TO ONE. SUM  = ',F12.7)
-           CALL XIT('ALLOCATE',-2)
+          CALL XIT('ALLOCATE',-2)
           ENDIF
 440     CONTINUE
 430   CONTINUE
