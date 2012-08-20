@@ -1,4 +1,4 @@
-# Make file for intel fortran
+# Make file for PGI or GNU fortran
 #
 # Objects that must be created, now they get created in ODIR
 #
@@ -8,20 +8,26 @@ OBJ = APREP.o CLASSBD.o GRALB.o SNOALBA.o TNPREP.o WFILL.o CANADD.o CLASSD.o GRD
 #
 BDIR = ../bin
 
-# This is our compiler
-#
+# PGI
 #FC=pgf90
+
+# GNU Fortran
 FC=gfortran
 
-# General running of model
+# General running of model (PGI)
+
 #FFLAGS = -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 
-# Debugging of model
+# Debugging of model ----------------
+
+# PGI
 #FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds 
+#export PGIMACH=linux86-64
+
 #GNU
 FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
 
-#export PGIMACH=linux86-64
+#-----------------------
 
 # These are the rules to make the targets
 #

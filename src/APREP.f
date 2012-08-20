@@ -416,8 +416,8 @@ C
             AILCG(I,5)=AILCMIN(I,5)+GROWB(I)*(AILCMAX(I,5)-AILCMIN(I,5))!BDL DCD DRY
             AILCG(I,6)=AIL(I,3)                           !C3 CROP
             AILCG(I,7)=AIL(I,3)                           !C4 CROP
-            AILCG(I,8)=MAX(0.0, GROWB(I)*AILCMAX(I,4))    !C3 GRASS
-            AILCG(I,9)=MAX(0.0, GROWB(I)*AILCMAX(I,4))    !C4 GRASS
+            AILCG(I,8)=MAX(0.0, GROWB(I)*AILCMAX(I,8))    !C3 GRASS
+            AILCG(I,9)=MAX(0.0, GROWB(I)*AILCMAX(I,9))    !C4 GRASS
           ENDIF
 C
 C=====================CTEM ====================================== /
