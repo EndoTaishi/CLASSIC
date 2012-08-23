@@ -348,8 +348,8 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------/
           ENDIF
           HS(I,1)=H(I,1)                                                          
           HS(I,2)=H(I,2)                                                          
-          HS(I,3)=MAX(H(I,3)-ZSNOW(I),1.0E-3)                                       
-          HS(I,4)=MAX(H(I,4)-ZSNOW(I),1.0E-3)                                       
+          HS(I,3)=MAX(H(I,3)-ZSNOW(I),1.0E-3)
+          HS(I,4)=MAX(H(I,4)-ZSNOW(I),1.0E-3)
 C               
           IF(IPAI.EQ.0) THEN
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
@@ -400,6 +400,7 @@ CRLi            AIL(I,2)=MIN((PAI(I,2)-PAIMIN(I,2)),0.0)
             AIL(I,4)=PAI(I,4)
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
           ENDIF
+
 C=====================CTEM ====================================== \
 C         IF ONLY PHOTOSYNTHESIS AND STOMATAL RESISTANCE PART OF CTEM IS
 C         USED, AND CTEM's STRUCTURAL ATTRIBUTES ARE NOT BEING USED THEN
@@ -506,7 +507,8 @@ C
           IF(FCANS(I,2).LT.1.0E-5) FCANS(I,2)=0.0
 C    ----------------- CTEM MODIFICATIONS ------------------------\
 C         IF(PAIS(I,3).LT.1.0) THEN                                               
-          IF(PAIS(I,3).LT.THR_LAI) THEN                                               
+          IF(PAIS(I,3).LT.THR_LAI) THEN   
+C           write(*,*)'adjust PAIS3',PAIS(I,3),FCANMX(I,3)                                            
               FCANS(I,3)=FCANMX(I,3)*FSNOW(I)*PAIS(I,3)                           
 C             PAIS (I,3)=1.0                                                      
               PAIS (I,3)=THR_LAI
@@ -514,7 +516,8 @@ C             PAIS (I,3)=1.0
               FCANS(I,3)=FCANMX(I,3)*FSNOW(I)                                     
           ENDIF                                                                   
 C         IF(PAIS(I,4).LT.1.0) THEN                                               
-          IF(PAIS(I,4).LT.THR_LAI) THEN                                               
+          IF(PAIS(I,4).LT.THR_LAI) THEN  
+C            write(*,*)'adjust PAIS4',PAIS(I,4)                                             
               FCANS(I,4)=FCANMX(I,4)*FSNOW(I)*PAIS(I,4)                           
 C             PAIS (I,4)=1.0                                                      
               PAIS (I,4)=THR_LAI
@@ -563,7 +566,14 @@ C
           FGS(I)=FGS(I)/FSUM
           IF(ABS(1.0-FCS(I)-FGS(I)-FC(I)-FG(I)).GT.1.0E-5) 
      1                                   CALL XIT('APREP',-1)
-C
+C         FLAG
+C          write(*,'(i4,a4,f12.3,a4,f12.3,a4,f12.3,a4,f12.3)')
+C     1      i,'fc',fc(i),'fg',fg(i),'fcs',fcs(i),'fgs',fgs(i)
+C          write(*,'(a6,f12.3,a6,f12.3,a6,f12.3,a6,f12.3,
+C     1    a6,f12.3,a6,f12.3,a6,f12.3,a6,f12.3)')'fcan4',fcan(i,4),
+c     2  'fcans4',fcans(i,4),'fcan3',fcan(i,3),'fcans3',fcans(i,3)
+c     3   ,'fsno',fsnow(i),'hs3',HS(I,3),'h3',H(I,3),'zsnow',zsnow(i)
+
           IF(IWF.EQ.0) THEN
               IF(ISAND(I,2).EQ.-2) THEN
                   ZPLIMG(I)=0.10
@@ -793,8 +803,8 @@ C     * ZERO-PLANE DISPLACEMENT FOR CANOPY OVERLYING BARE SOIL AND
 C     * CANOPY OVERLYING SNOW.
 C                                                                                 
       DO 250 J=1,IC                                                               
-      DO 250 I=IL1,IL2                                                            
-          IF(FC(I).GT.0. .AND. H(I,J).GT.0.)                     THEN             
+      DO 250 I=IL1,IL2                                                                   
+          IF(FC(I).GT.0. .AND. H(I,J).GT.0.)                     THEN 
               IF(IDISP.EQ.1)   DISP(I)=DISP(I)+FCAN (I,J)*
      1                                 LOG(0.7*H(I,J))                     
               ZOMLNC(I)=ZOMLNC(I)+FCAN (I,J)/
@@ -802,7 +812,7 @@ C
               ZOELNC(I)=ZOELNC(I)*
      1                  (0.01*H(I,J)*H(I,J)/ZORAT(IC))**FCAN(I,J)
           ENDIF                                                                   
-          IF(FCS(I).GT.0. .AND. HS(I,J).GT.0.)                   THEN             
+          IF(FCS(I).GT.0. .AND. HS(I,J).GT.0.)                   THEN
               IF(IDISP.EQ.1)   DISPS(I)=DISPS (I)+FCANS(I,J)*
      1                         LOG(0.7*HS(I,J))                    
               ZOMLCS(I)=ZOMLCS(I)+FCANS(I,J)/

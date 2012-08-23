@@ -2,8 +2,9 @@
      1                      ICC,       IG,      ILG,      IL1,
      2                      IL2,     TBAR,    THLIQ,     SAND,     
      3                     CLAY, ROOTTEMP,    ZBOTW,     SORT,
+     4                     ISAND,
 C    -------------- INPUTS ABOVE THIS LINE, OUTPUTS BELOW -------------
-     4                 LTRESVEG, SCRESVEG)  
+     5                 LTRESVEG, SCRESVEG)  
 C
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
 C           HETEROTROPHIC RESPIRATION SUBTOUTINE FOR VEGETATED FRACTION
@@ -12,6 +13,12 @@ C     16  OCT. 2001 - THIS SUBROUTINE CALCULATES HETEROTROPHIC RESPIRATION
 C     V. ARORA        FOR A GIVEN SUB-AREA, FROM LITTER AND SOIL CARBON
 C                     POOLS. 
 C
+C     CHANGE HISTORY:
+
+C     J. MELTON 23 AUG 2012 - BRING IN ISAND, CONVERTING SAND TO
+C                             INT WAS MISSING SOME GRIDCELLS ASSIGNED
+C                             TO BEDROCK IN CLASSB
+C     ------
 C     INPUTS 
 C
 C     FCAN      - FRACTIONAL COVERAGE OF CTEM's 9 PFTs
@@ -132,7 +139,9 @@ C
           THPOR(I,J) = 0.0        ! POROSITY
           B(I,J) = 0.0            ! PARAMETER B OF CLAPP AND HORNBERGER
           SCMOTRM(I,J)=0.0        ! SOIL CARBON MOISTURE TERM
-          ISAND(I,J)=NINT(SAND(I,J))
+
+C          ISAND(I,J)=NINT(SAND(I,J)) !NOW PASSED IN. JM. AUG 23 2012
+
 130     CONTINUE
 120   CONTINUE
 

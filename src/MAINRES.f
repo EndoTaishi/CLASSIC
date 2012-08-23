@@ -1,7 +1,7 @@
       SUBROUTINE MAINRES (  FCAN,      FCT,     STEMMASS,   ROOTMASS, 
      1                       ICC,       IG,          ILG,        IL1,
      2                       IL2,     TCAN,         TBAR,   RMATCTEM,
-     3                      SORT, NOL2PFTS,           IC,       SAND,
+     3                      SORT, NOL2PFTS,           IC,      ISAND,
 C    -------------- INPUTS ABOVE THIS LINE, OUTPUTS BELOW ----------
      4                      RMSVEG, RMRVEG,     ROOTTEMP)
 C
@@ -13,6 +13,13 @@ C     20  SEP. 2001 - THIS SUBROUTINE CALCULATES MAINTENANCE RESPIRATION,
 C     V. ARORA        OVER A GIVEN SUB-AREA, FOR STEM AND ROOT COMPONENTS.
 C                     LEAF RESPIRATION IS ESTIMATED WITHIN THE PHTSYN
 C                     SUBROUTINE.
+
+C     CHANGE HISTORY:
+
+C     J. MELTON 23 AUG 2012 - CHANGE SAND TO ISAND, CONVERTING SAND TO
+C                             INT WAS MISSING SOME GRIDCELLS ASSIGNED
+C                             TO BEDROCK IN CLASSB
+
 C
 C     INPUTS 
 C
@@ -34,7 +41,7 @@ C     SORT      - INDEX FOR CORRESPONDENCE BETWEEN 9 PFTs AND 12 VALUES
 C                 IN THE PARAMETER VECTORS
 C     NOL2PFTS  - NUMBER OF LEVEL 2 CTEM PFTs
 C     IC        - NUMBER OF CLASS PFTs, CURRENTLY 4
-C     SAND      - PERCENTAGE SAND IN SOIL LAYERS
+C     ISAND      - FLAG FOR BEDROCK OR ICE IN A SOIL LAYER
 C
 C     OUTPUTS 
 C
@@ -52,8 +59,7 @@ C
 C
       REAL  FCAN(ILG,ICC),         FCT(ILG),      STEMMASS(ILG,ICC), 
      1          TCAN(ILG),     TBAR(ILG,IG),      ROOTMASS(ILG,ICC),   
-     2    RMSVEG(ILG,ICC),  RMRVEG(ILG,ICC),   RMATCTEM(ILG,ICC,IG),
-     3       SAND(ILG,IG)   
+     2    RMSVEG(ILG,ICC),  RMRVEG(ILG,ICC),   RMATCTEM(ILG,ICC,IG)   
 C
       REAL  BSRTSTEM(KK),      BSRTROOT(KK),      TEMPQ10R(ILG,ICC), 
      3     TEMPQ10S(ILG), ROOTTEMP(ILG,ICC),                    Q10, 
@@ -149,11 +155,11 @@ C
 125    CONTINUE 
 120   CONTINUE 
 C
-      DO 140 J = 1, IG
-       DO 141 I = IL1, IL2
-         ISAND(I,J)=NINT(SAND(I,J))
-141    CONTINUE
-140   CONTINUE
+C      DO 140 J = 1, IG
+C       DO 141 I = IL1, IL2
+C         ISAND(I,J)=NINT(SAND(I,J)) !NOW PASSED IN. JM. AUG 23 2012
+C141    CONTINUE
+C140   CONTINUE
 C
 C     FRACTION OF ROOTS FOR EACH VEGETATION TYPE, FOR EACH SOIL LAYER, 
 C     IN EACH GRID CELL IS GIVEN BY RMATCTEM (grid cell, veg type, soil layer) 
