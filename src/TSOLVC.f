@@ -877,50 +877,52 @@ c
 C
       ENDIF
 C
-C     TEST!
+C     FLAG! SET TCAN TO TA 
+C     THIS IS BECAUSE TCAN IS NOT REASONABLE RIGHT NOW.
+C     JM, AUG 23 2012.
       DO 624 I=IL1,IL2
-      IF(TCAN(I) .NE. 0. .AND. ABS(TCAN(I)-TA(I)) .GT. 20.0) THEN 
-       WRITE(*,'(i4,4f8.3,2i4)')I,ABS(TCAN(I)-TA(I)),TCAN(I)-273.15,
-     1              TA(I)-273.15,FI(I),NITER(I),ITER(I)
-          WRITE(6,6380) QSWNC(I),QLWIN(I),QLWOG(I),
-     1                  QLWOC(I),QSENSG(I),QSENSC(I),
-     2                  QEVAPC(I),QSTOR(I),QMELTC(I)
-        write(*,*)'---'
-C       IF(TCAN(I) .NE. 0. .AND. ABS(TCAN(I)-TA(I)) .GT. 35.0) READ(*,*)
-      ENDIF
+       IF(ABS(TCAN(I)-TA(I)) .GT. 3.0) THEN
+           TCAN(I)=TA(I)
+       END IF
   624 CONTINUE
 
       IBAD=0
-C
-      DO 625 I=IL1,IL2
+
+C      SKIP THIS NEXT BIT AS WE ALREADY SET TCAN TO TA
+C      JM AUG 23 2012
+C       >>>>>>
+C      DO 625 I=IL1,IL2
 C         IF(FI(I).GT.0. .AND. ITER(I).EQ.-1)                      THEN 
 C             WRITE(6,6350) I,JL,NITER(I),RESID(I),TCAN(I),RIB(I)
 C6350         FORMAT('0CANOPY ITERATION LIMIT',3X,3I3,3(F8.2,E12.4))            
 C         ENDIF                                            
-          IF(FI(I).GT.0. .AND. (TCAN(I).LT.173.16 .OR.
-     1                           TCAN(I).GT.373.16))                THEN
-              IBAD=I
-          ENDIF  
-  625 CONTINUE
+C          IF(FI(I).GT.0. .AND. (TCAN(I).LT.173.16 .OR.
+C     1                           TCAN(I).GT.373.16))                THEN
+C              IBAD=I
+C          ENDIF  
+C  625 CONTINUE
 C  
-      IF(IBAD.NE.0)                                                 THEN
-          WRITE(6,6375) IBAD,JL,TCAN(IBAD),NITER(IBAD),ISNOW(IBAD),
-     &                  TA(IBAD)
+C      IF(IBAD.NE.0)                                                 THEN
+C          WRITE(6,6375) IBAD,JL,TCAN(IBAD),NITER(IBAD),ISNOW(IBAD),
+C     &                  TA(IBAD)
  6375     FORMAT('0BAD CANOPY ITERATION TEMPERATURE',3X,2I3,F16.2,2I4,
      &           F16.2)
-          WRITE(6,6380) QSWNC(IBAD),QLWIN(IBAD),QLWOG(IBAD),
-     1                  QLWOC(IBAD),QSENSG(IBAD),QSENSC(IBAD),
-     2                  QEVAPC(IBAD),QSTOR(IBAD),QMELTC(IBAD)
-          WRITE(6,6380) TCAN(IBAD),TPOTA(IBAD),TZERO(IBAD)          
+C          WRITE(6,6380) QSWNC(IBAD),QLWIN(IBAD),QLWOG(IBAD),
+C     1                  QLWOC(IBAD),QSENSG(IBAD),QSENSC(IBAD),
+C     2                  QEVAPC(IBAD),QSTOR(IBAD),QMELTC(IBAD)
+C          WRITE(6,6380) TCAN(IBAD),TPOTA(IBAD),TZERO(IBAD)          
  6380     FORMAT(2X,9F10.2)
 C
 CCTEM REPLACES TCAN(IBAD) WITH TA(IBAD) IN CASE TCAN IS TOO HIGH 
 C
-          TCAN(IBAD)=TA(IBAD)
+C          TCAN(IBAD)=TA(IBAD)
 C          CALL XIT('TSOLVC',-2)
 C          READ(*,*)
-      ENDIF
+C      ENDIF
 C
+C     <<<<<<<<<<<<<<<<<<
+
+
 C     * POST-ITERATION CLEAN-UP.
 C
       NIT=0

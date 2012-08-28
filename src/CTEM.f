@@ -870,22 +870,16 @@ C
 C     FIND MAINETANCE RESPIRATION FOR CANOPY OVER SNOW SUB-AREA
 C     in uMOL CO2/M2/SEC
 C
-C     FLAG - TCANS IS SUBSTITUTED HERE BY TA SINCE TCAN IS NOT 
-C      TRUSTWORTHY AT PRESENT. JM 06.06.2012
       CALL   MAINRES (FCANCS,      FCS,     STEMMASS,   ROOTMASS,        
      1                   ICC,       IG,          ILG,        IL1,
-C     2                   IL2,    TCANS,       TBARCS,   RMATCTEM,
-     2                   IL2,       TA,       TBARCS,   RMATCTEM,
+     2                   IL2,    TCANS,       TBARCS,   RMATCTEM,
      3                  SORT, NOL2PFTS,           IC,      ISAND,
      4              RMSCSVEG, RMRCSVEG,     RTTEMPCS)
 C
 C     FIND MAINETANCE RESPIRATION FOR CANOPY OVER GROUND SUB-AREA
 C
-C     FLAG - TCANS IS SUBSTITUTED HERE BY TA SINCE TCAN IS NOT 
-C      TRUSTWORTHY AT PRESENT. JM 06.06.2012
       CALL   MAINRES ( FCANC,       FC,     STEMMASS,   ROOTMASS,        
      1                   ICC,       IG,          ILG,        IL1,
-C     2                   IL2,    TCANO,        TBARC,   RMATCTEM,
      2                   IL2,       TA,        TBARC,   RMATCTEM,
      3                  SORT, NOL2PFTS,           IC,      ISAND,
      4              RMSCGVEG, RMRCGVEG,     RTTEMPCG)
