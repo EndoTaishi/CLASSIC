@@ -144,7 +144,8 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ISNOW(ILG),ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,I,N   !CTEM changed ISNOW
+C      INTEGER ISNOW(ILG),ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,I,N   !CTEM changed ISNOW
+      INTEGER ISNOW,ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,I,N   !JM TEST
 C
       INTEGER NUMIT,IBAD,NIT,ITERMX
 C
@@ -253,7 +254,8 @@ C      ENDIF
 C
       DO 50 I=IL1,IL2
           IF(FI(I).GT.0.)                            THEN
-              IF(ISNOW(I).EQ.0)                      THEN
+C              IF(ISNOW(I).EQ.0)                      THEN
+              IF(ISNOW.EQ.0)                      THEN ! JM TEST
                   TRTOP(I)=0.
               ELSE
                   TRTOP(I)=TRSNOW(I)
@@ -304,7 +306,8 @@ C
               NITER(I)=1
               QMELTC(I)=0.0    
               QMELTG(I)=0.0   
-              IF(ISNOW(I).EQ.1)                         THEN   !CTEM
+C              IF(ISNOW(I).EQ.1)                         THEN   !CTEM
+              IF(ISNOW.EQ.1)                         THEN   !JM TEST
                   KF1(I)=1
                   KF2(I)=2
               ELSE
@@ -503,7 +506,8 @@ C          ENDIF
  225  CONTINUE
 C
       IF(IBAD.NE.0)                                                 THEN
-          WRITE(6,6370) IBAD,N,TZERO(IBAD),NITER(IBAD),ISNOW(IBAD)
+C          WRITE(6,6370) IBAD,N,TZERO(IBAD),NITER(IBAD),ISNOW(IBAD)
+          WRITE(6,6370) IBAD,N,TZERO(IBAD),NITER(IBAD),ISNOW
  6370     FORMAT('0BAD GROUND ITERATION TEMPERATURE',3X,2I8,F16.2,2I4)
           WRITE(6,6380) QSWNG(IBAD),FSVF(IBAD),QLWIN(IBAD),QLWOC(IBAD),
      1        QLWOG(IBAD),QSENSG(IBAD),QEVAPG(IBAD),GZERO(IBAD)

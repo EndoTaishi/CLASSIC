@@ -178,7 +178,8 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,ISNOW(ILG),N  !CTEM changed ISNOW 
+C      INTEGER NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,ISNOW(ILG),N  !CTEM changed ISNOW 
+      INTEGER NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,ISNOW,N  !JM TEST
 C
       INTEGER ITC,ITCG,ITG,ILG,IL1,IL2,JL,IC,IG,IZREF,ISLFD,I,J
 C
@@ -474,7 +475,8 @@ C
                   QACCS(I)=QAC(I)
               ENDIF 
 C===================== CTEM =====================================\
-                  ISNOW(I)=1      
+C                  ISNOW(I)=1      
+
 C===================== CTEM =====================================/
   100     CONTINUE        
 C                                    
@@ -489,6 +491,7 @@ C
      1                FCS,ZSNOW,TSNOW,TCSNOW,
      2                ILG,IL1,IL2,JL      )
 C     
+                  ISNOW=1      !JM TEST
           CALL TSOLVC(ISNOW,FCS,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPCS,
@@ -653,7 +656,8 @@ C
      1                    ZOMLNS(I)))**2
               ENDIF
 C===================== CTEM =====================================\
-                  ISNOW(I)=1         
+C                  ISNOW(I)=1
+
 C===================== CTEM =====================================/
   200     CONTINUE
 C
@@ -666,6 +670,7 @@ C
      1                FGS,ZSNOW,TSNOW,TCSNOW,
      2                ILG,IL1,IL2,JL      )
 C 
+                  ISNOW=1       !JM TEST     
           CALL TSOLVE(ISNOW,FGS,
      1                QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPGS,
      2                TSURX,QSURX,GSNOWG,QMELTG,CDHX,CDMX,RIBX,CFLUX,
@@ -798,7 +803,8 @@ C
                   QACCO(I)=QAC(I)
               ENDIF
 C===================== CTEM =====================================\
-                  ISNOW(I)=0      
+C                  ISNOW(I)=0      
+
 C===================== CTEM =====================================/
   300     CONTINUE
 
@@ -812,6 +818,7 @@ C
      +                FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
      3                ISAND,ILG,IL1,IL2,JL,IG                      )
 C   
+                  ISNOW=0  !JM TEST    
           CALL TSOLVC(ISNOW,FC,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPC,
@@ -967,7 +974,8 @@ C
      1                    ZOMLNG(I)))**2
               ENDIF
 C===================== CTEM =====================================\
-                  ISNOW(I)=0      
+C                  ISNOW(I)=0      
+
 C===================== CTEM =====================================/
   400     CONTINUE
 C
@@ -977,6 +985,7 @@ C
      +                FG,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
      3                ISAND,ILG,IL1,IL2,IG                      )
 C
+                  ISNOW=0      !JM TEST
           CALL TSOLVE(ISNOW,FG,
      1                QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPG,
      2                TSURX,QSURX,GZEROG,QFREZG,CDHX,CDMX,RIBX,CFLUX,

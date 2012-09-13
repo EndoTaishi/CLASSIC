@@ -112,7 +112,8 @@ C
 C
       INTEGER       ILG,        IC,          I,         J,        IL1,
      1              IL2,  IT_COUNT,    REQITER,        IG,        ICC,
-     2          LEAFOPT,   PS_COUP,   ISC4(KK),     ISNOW(ILG),   K1C,   
+C     2          LEAFOPT,   PS_COUP,   ISC4(KK),     ISNOW(ILG),   K1C,   
+     2          LEAFOPT,   PS_COUP,   ISC4(KK),     ISNOW,   K1C, !JM TEST   
      3 USESLAI(ILG,ICC),        K2C,     ICOUNT, SORT(ICC),
      4     NOL2PFTS(IC),         M,      L2MAX,        N, ISAND(ILG,IG)
 C

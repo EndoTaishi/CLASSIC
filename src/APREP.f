@@ -978,7 +978,7 @@ C
      2                  (1.0-EXP(-0.75*SQRT(PAI(I,J))))+
      3                  FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                  (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
-     5                  (FC(I)+FCS(I))                                          
+     5                  (FC(I)+FCS(I))        
           ENDIF                                                              
   450 CONTINUE                                                                   
 C           
