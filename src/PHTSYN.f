@@ -120,7 +120,7 @@ C
       REAL FCANC(ILG,ICC),  AILCG(ILG,ICC),    TCAN(ILG),      FC(ILG),
      1         CFLUX(ILG),    SAND(ILG,IG), CLAY(ILG,IG), FC_TEST(ILG),
      2  USEAILCG(ILG,ICC),   SLAI(ILG,ICC),      QA(ILG),  INICO2I(KK),
-     3            RH(ILG),  USEBB(ICC)
+     3         TTEMP(ILG),         RH(ILG),  USEBB(ICC)
 C
       REAL   CO2CONC(ILG),       ALPHA(KK),    OMEGA(KK),  SMSCALE(KK),
      1              TFREZ,       STD_PRESS,
@@ -370,6 +370,14 @@ C
 C
 C     --------------------------------------------------------------
 
+c     FLAG replacing TCAN with TA
+c
+      DO I=IL1,IL2
+       TTEMP(I)=TCAN(I)
+       TCAN(I)=TA(I)
+      ENDDO
+c
+C
 C     INITIALIZATION
 C
       IF(LEAFOPT.EQ.1)THEN
@@ -1475,7 +1483,14 @@ C
           RML_VEG(I,J)=RML_VEG(I,J)*1.0E+06
 880     CONTINUE
 870   CONTINUE
-
+C
+c
+c     FLAG replacing TCAN with TA (restore TCAN)
+c     
+      DO I=IL1,IL2
+       TCAN(I)=TTEMP(I)
+      ENDDO
+c
       RETURN
       END
 

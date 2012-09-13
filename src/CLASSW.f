@@ -578,12 +578,12 @@ C
      1                CHCAP(I))/(FCS(I)*CHCAPS(I)+FC(I)*CHCAP(I))                 
               RCAN(I)= FCS(I)*RAICNS(I) + FC (I)*RAICAN(I)                            
 
-C              IF(TCAN(I).LT.173.16 .OR. TCAN(I).GT.373.16) THEN
+              IF(TCAN(I).LT.173.16 .OR. TCAN(I).GT.373.16) THEN
 C             TEMPORARY BUG FIX, THIS IS BECAUSE THE TCAN CAN GO
 C             HAYWIRE. JM AND VA 24.05.2012 FLAG
-C              TCAN(I)=TA(I)
+              TCAN(I)=TA(I)
 C             JPTBAD=I
-C              ENDIF
+              ENDIF
 
               IF(RCAN(I).LT.0.0) RCAN(I)=0.0
               IF(RCAN(I).LT.1.0E-5 .AND. RCAN(I).GT.0.0) THEN

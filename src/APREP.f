@@ -566,6 +566,13 @@ C
           FGS(I)=FGS(I)/FSUM
           IF(ABS(1.0-FCS(I)-FGS(I)-FC(I)-FG(I)).GT.1.0E-5) 
      1                                   CALL XIT('APREP',-1)
+C         FLAG
+C          write(*,'(i4,a4,f12.3,a4,f12.3,a4,f12.3,a4,f12.3)')
+C     1      i,'fc',fc(i),'fg',fg(i),'fcs',fcs(i),'fgs',fgs(i)
+C          write(*,'(a6,f12.3,a6,f12.3,a6,f12.3,a6,f12.3,
+C     1    a6,f12.3,a6,f12.3,a6,f12.3,a6,f12.3)')'fcan4',fcan(i,4),
+c     2  'fcans4',fcans(i,4),'fcan3',fcan(i,3),'fcans3',fcans(i,3)
+c     3   ,'fsno',fsnow(i),'hs3',HS(I,3),'h3',H(I,3),'zsnow',zsnow(i)
 
           IF(IWF.EQ.0) THEN
               IF(ISAND(I,2).EQ.-2) THEN
