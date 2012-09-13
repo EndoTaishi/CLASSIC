@@ -151,14 +151,15 @@ C
           DO 250 J=1,IG
               WSUMG=WSUMG-QFC(I,J)*DELT
 250       CONTINUE
-          IF(ABS(CTVSTP(I)-QSUMV).GT.1.0) THEN
-              WRITE(6,6441) N,CTVSTP(I),QSUMV
+C        FLAG jm - turn off while setting tcan to ta.
+C          IF(ABS(CTVSTP(I)-QSUMV).GT.1.0) THEN
+C              WRITE(6,6441) N,CTVSTP(I),QSUMV
 6441          FORMAT(2X,'CANOPY ENERGY BALANCE  ',I8,2F20.8)
-              WRITE(6,6450) FSGV(I),FLGV(I),HFSC(I),
-     1             HEVC(I),HMFC(I),HTCC(I)
-              WRITE(6,6450) RCAN(I),SCAN(I),TCAN(I)
-              CALL EXIT
-          ENDIF
+C              WRITE(6,6450) FSGV(I),FLGV(I),HFSC(I),
+C     1             HEVC(I),HMFC(I),HTCC(I)
+C              WRITE(6,6450) RCAN(I),SCAN(I),TCAN(I)
+C              CALL EXIT
+C          ENDIF
           IF(ABS(CTSSTP(I)-QSUMS).GT.7.0) THEN
               WRITE(6,6442) N,I,CTSSTP(I),QSUMS
 6442          FORMAT(2X,'SNOW ENERGY BALANCE  ',2I8,2F20.8)
