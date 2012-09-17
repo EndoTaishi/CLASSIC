@@ -908,7 +908,7 @@ C         ENDIF
   625 CONTINUE
 C  
       IF(IBAD.NE.0)                                                 THEN
-          WRITE(6,6375) IBAD,JL,TCAN(IBAD),NITER(IBAD),ISNOW(IBAD),
+          WRITE(6,6375) IBAD,JL,TCAN(IBAD),NITER(IBAD),ISNOW,
      &                  TA(IBAD)
  6375     FORMAT('0BAD CANOPY ITERATION TEMPERATURE',3X,2I3,F16.2,2I4,
      &           F16.2)
