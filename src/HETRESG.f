@@ -11,7 +11,6 @@ C
 C     11  APR. 2003 - THIS SUBROUTINE CALCULATES HETEROTROPHIC RESPIRATION
 C     V. ARORA        OVER THE BARE SUBAREA OF A GRID CELL (I.E. GROUND ONLY
 C                     AND SNOW OVER GROUND SUBAREAS).
-<<<<<<< HEAD
 
 C     CHANGE HISTORY:
 
@@ -21,9 +20,6 @@ C                             INT WAS MISSING SOME GRIDCELLS ASSIGNED
 C                             TO BEDROCK IN CLASSB
 
 C     ------
-=======
-C
->>>>>>> parent of 87ba42b... found bug with isand and sand. sand was being used in place of isand and they are
 C     INPUTS 
 C
 C     LITRMASS  - LITTER MASS FOR THE 8 PFTs + BARE IN KG C/M2

@@ -9,32 +9,26 @@ OBJ = APREP.o CLASSBD.o GRALB.o SNOALBA.o TNPREP.o WFILL.o CANADD.o CLASSD.o GRD
 BDIR = ../bin
 
 # PGI
-#FC=pgf90
+FC=pgf90
 
 # GNU Fortran
-FC=gfortran
+#FC=gfortran
 
 # General running of model (PGI)
 
 #FFLAGS = -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
-<<<<<<< HEAD
 
 #export PGIMACH=linux86-64
-=======
->>>>>>> parent of 87ba42b... found bug with isand and sand. sand was being used in place of isand and they are
 
 # Debugging of model ----------------
 
 # PGI
-#FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds 
-<<<<<<< HEAD
+FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds 
 
-=======
->>>>>>> parent of 87ba42b... found bug with isand and sand. sand was being used in place of isand and they are
-#export PGIMACH=linux86-64
+export PGIMACH=linux86-64
 
 #GNU
-FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
+#FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
 
 #-----------------------
 
