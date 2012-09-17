@@ -838,7 +838,6 @@ C
           COLDLOSS(I,J) = 0.0
 C         WE ASSUME LIFE SPAN OF BROWN GRASS IS 10% THAT OF GREEN GRASS
 C         BUT THIS IS AN ADJUSTABLE PARAMETER.
-       write(*,*)i,j,n,bleafmas(i,j),gleafmas(i,j),lfespany(n)
           NRMLLOSS(I,J) = BLEAFMAS(I,J)*
      &      (1.0-EXP(-1.0/(0.10*365.0*LFESPANY(N))))       
 630     CONTINUE
