@@ -516,7 +516,7 @@ C===================== CTEM =====================================\
      K                THLIQC,     SAND, CLAY,      IG,     COSZS,
      L               XDIFFUS,      ICC,   IC, CO2I1CS,   CO2I2CS,
      M                 CTEM1,    CTEM2, SLAI, FCANCMX,     L2MAX,
-     N              NOL2PFTS,  CFLUXCS, ISAND,
+     N              NOL2PFTS,  CFLUXCS,
      O               ANCSVEG, RMLCSVEG,PRESGAT,TA )
 C===================== CTEM =====================================/
 C
@@ -843,7 +843,7 @@ C===================== CTEM =====================================\
      K               THLIQC,      SAND, CLAY,      IG,     COSZS,
      L               XDIFFUS,      ICC,   IC, CO2I1CG,   CO2I2CG,
      M                 CTEM1,    CTEM2, SLAI, FCANCMX,     L2MAX,
-     N              NOL2PFTS,  CFLUXCG, ISAND,
+     N              NOL2PFTS,  CFLUXCG,
      O               ANCGVEG, RMLCGVEG,PRESGAT,TA )
 C===================== CTEM =====================================/
 C

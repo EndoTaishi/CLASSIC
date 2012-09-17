@@ -1,7 +1,7 @@
       SUBROUTINE HETRESG (LITRMASS, SOILCMAS,      ICC,       IG,      
      1                         ILG,      IL1,      IL2,     TBAR,    
      2                       THLIQ,     SAND,      CLAY,   ZBOTW,   
-     3                        FRAC,    ISNOW,      ISAND,
+     3                        FRAC,    ISNOW,
 C    -------------- INPUTS ABOVE THIS LINE, OUTPUTS BELOW -------------
      4                      LITRES,   SOCRES)  
 C
@@ -11,6 +11,7 @@ C
 C     11  APR. 2003 - THIS SUBROUTINE CALCULATES HETEROTROPHIC RESPIRATION
 C     V. ARORA        OVER THE BARE SUBAREA OF A GRID CELL (I.E. GROUND ONLY
 C                     AND SNOW OVER GROUND SUBAREAS).
+<<<<<<< HEAD
 
 C     CHANGE HISTORY:
 
@@ -20,6 +21,9 @@ C                             INT WAS MISSING SOME GRIDCELLS ASSIGNED
 C                             TO BEDROCK IN CLASSB
 
 C     ------
+=======
+C
+>>>>>>> parent of 87ba42b... found bug with isand and sand. sand was being used in place of isand and they are
 C     INPUTS 
 C
 C     LITRMASS  - LITTER MASS FOR THE 8 PFTs + BARE IN KG C/M2
@@ -117,9 +121,7 @@ C
           GRKSAT(I,J) = 0.0       ! SATURATION HYD. CONDUCTIVITY
           THPOR(I,J) = 0.0        ! POROSITY
           B(I,J) = 0.0            ! PARAMETER B OF CLAPP AND HORNBERGER
-
-C          ISAND(I,J)=NINT(SAND(I,J)) !NOW PASSED IN. JM. AUG 23 2012
-
+          ISAND(I,J)=NINT(SAND(I,J))
 130     CONTINUE
 120   CONTINUE
 C

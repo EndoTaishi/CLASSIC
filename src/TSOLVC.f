@@ -22,7 +22,7 @@ C===================== CTEM =====================================\
      K                  THLIQ,   SAND, CLAY,      IG,     COSZS,
      L                XDIFFUS,    ICC,   IC,   CO2I1,     CO2I2,
      M                  CTEM1,  CTEM2, SLAI, FCANCMX,     L2MAX,
-     N               NOL2PFTS, CFLUXV, ISAND,
+     N               NOL2PFTS, CFLUXV,
 C    --------------- CTEM INPUTS ABOVE THIS LINE, OUTPUTS BELOW --------|
      O                  ANVEG, RMLVEG,PRESGAT,TA)
 C
@@ -211,7 +211,7 @@ C===================== CTEM =====================================\
 C
       REAL    CFLUXV(ILG)
 
-      INTEGER IC, IG, ICC, L2MAX, NOL2PFTS(IC), ISAND(ILG,IG)
+      INTEGER IC, IG, ICC, L2MAX, NOL2PFTS(IC)
 
       LOGICAL CTEM1, CTEM2
       REAL  PRESGAT(ILG),TA(ILG)
@@ -333,7 +333,7 @@ C
      1                CFLUXV,    QA,   QSWNVC,      IC,   THLIQ,  SAND,
      2                    TA,  CLAY, RMATCTEM,   COSZS, XDIFFUS,   ILG,
      3                   IL1,   IL2,       IG,     ICC,   ISNOW,  SLAI,
-     4               FCANCMX,  CTEM1,   CTEM2,   L2MAX, NOL2PFTS,ISAND,
+     4               FCANCMX,  CTEM1,   CTEM2,   L2MAX, NOL2PFTS,
      5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG )
 C
 C
@@ -882,17 +882,26 @@ C
       ENDIF
 C
 C     TEST!
-      DO 624 I=IL1,IL2
-      IF(TCAN(I) .NE. 0. .AND. ABS(TCAN(I)-TA(I)) .GT. 20.0) THEN 
-       WRITE(*,'(i4,4f8.3,2i4)')I,ABS(TCAN(I)-TA(I)),TCAN(I)-273.15,
-     1              TA(I)-273.15,FI(I),NITER(I),ITER(I)
-          WRITE(6,6380) QSWNC(I),QLWIN(I),QLWOG(I),
-     1                  QLWOC(I),QSENSG(I),QSENSC(I),
-     2                  QEVAPC(I),QSTOR(I),QMELTC(I)
-        write(*,*)'---'
-C       IF(TCAN(I) .NE. 0. .AND. ABS(TCAN(I)-TA(I)) .GT. 35.0) READ(*,*)
-      ENDIF
-  624 CONTINUE
+!      DO 624 I=IL1,IL2
+!      IF(TCAN(I) .NE. 0. .AND. ABS(TCAN(I)-TA(I)) .GT. 1.0) THEN 
+!       WRITE(*,*)I,ABS(TCAN(I)-TA(I)),TCAN(I),FI(I),NITER(I),ITER(I)
+!      IF (I .EQ. 2) THEN
+!       WRITE(*,'(2E12.3)')AILCG(I,1),AILCG(I,2)
+!      ELSEIF (I .EQ. 3) THEN
+!       WRITE(*,'(3E12.3)')AILCG(I,3),AILCG(I,4),AILCG(I,5)
+!      ELSEIF (I .EQ. 4) THEN
+!       WRITE(*,'(3E12.3)')AILCG(I,6),AILCG(I,7)
+!      ELSEIF (I .EQ. 5) THEN
+!       WRITE(*,'(3E12.3)')AILCG(I,8),AILCG(I,9)
+!      endif      
+!          WRITE(6,6380) QSWNC(I),QLWIN(I),QLWOG(I),
+!     1                  QLWOC(I),QSENSG(I),QSENSC(I),
+!     2                  QEVAPC(I),QSTOR(I),QMELTC(I)
+!        write(*,*)'---'
+!       IF(TCAN(I) .NE. 0. .AND. ABS(TCAN(I)-TA(I)) .GT. 10.0) READ(*,*)
+
+!      ENDIF
+!  624 CONTINUE
 
       IBAD=0
 C
@@ -915,14 +924,13 @@ C
           WRITE(6,6380) QSWNC(IBAD),QLWIN(IBAD),QLWOG(IBAD),
      1                  QLWOC(IBAD),QSENSG(IBAD),QSENSC(IBAD),
      2                  QEVAPC(IBAD),QSTOR(IBAD),QMELTC(IBAD)
-          WRITE(6,6380) TCAN(IBAD),TPOTA(IBAD),TZERO(IBAD)          
+          WRITE(6,6380) TCAN(IBAD),TPOTA(IBAD),TZERO(IBAD)
  6380     FORMAT(2X,9F10.2)
 C
 CCTEM REPLACES TCAN(IBAD) WITH TA(IBAD) IN CASE TCAN IS TOO HIGH 
 C
           TCAN(IBAD)=TA(IBAD)
 C          CALL XIT('TSOLVC',-2)
-C          READ(*,*)
       ENDIF
 C
 C     * POST-ITERATION CLEAN-UP.

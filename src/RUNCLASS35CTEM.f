@@ -1610,7 +1610,6 @@ C
           TSFSROW(I,M,4)=TBARROW(I,M,1)
           TACROW (I,M)=TCANROW(I,M)
           QACROW (I,M)=0.5E-2
-
           IF(IGND.GT.3)                                 THEN
               DO 65 J=4,IGND,-1
                   TBARROW(I,M,J)=TBARROW(I,M,3)
@@ -1630,7 +1629,6 @@ C
                   ENDIF
 65            CONTINUE
           ENDIF
-
           DO 75 K=1,6
           DO 75 L=1,50
               ITCTROW(I,M,K,L)=0
@@ -2066,7 +2064,6 @@ C
      D      PAICROW,    SLAICROW )
 C
 C
-
       CALL  BIO2STR( GLEAFMASGAT,BLEAFMASGAT,STEMMASSGAT,ROOTMASSGAT, 
      1                           ICC,      ILG,        1,      NML,
      2                           IGND,     ICAN,FCANCMXGAT, ZBTWGAT,
@@ -2075,6 +2072,7 @@ C
      5                       RMATCGAT, RMATCTEMGAT,SLAIGAT,BMASVEGGAT,
      6                 CMASVEGCGAT, VEGHGHTGAT, ROOTDPTHGAT,ALVSCTMGAT,
      7                     ALIRCTMGAT, PAICGAT,  SLAICGAT)
+C
 C
       CALL CTEMS1(GLEAFMASROW,BLEAFMASROW,STEMMASSROW,ROOTMASSROW,
      1      FCANCMXROW,ZBTWROW,DLZWROW,SDEPROW,AILCGROW,AILCBROW,
@@ -2774,7 +2772,7 @@ C           ASSIGN THE SAME VALUES (ROW) TO GAT  FLAG
      9            EXTNPROBGAT,   STDALNGAT,TBARACCGAT_M,     L2MAX,
      A               NOL2PFTS, PFCANCMXGAT, NFCANCMXGAT,  LNDUSEON,
      B            THICECACC_M,     SDEPGAT,    SPINFAST,   TODFRAC,  
-     &                COMPETE,      POPDIN,      DOFIRE,   ISNDGAT,
+     &                COMPETE,      POPDIN,      DOFIRE,
 C===================== CTEM =====================================\
      &                FAREGAT,
 C===================== CTEM =====================================/

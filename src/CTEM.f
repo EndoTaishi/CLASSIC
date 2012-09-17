@@ -9,7 +9,7 @@
      9                    EXTNPROB,   STDALN,     TBAR,     L2MAX,
      A                    NOL2PFTS, PFCANCMX, NFCANCMX,  LNDUSEON,
      B                      THICEC, SOILDPTH, SPINFAST,   TODFRAC,
-     &                     COMPETE,   POPDIN,   DOFIRE,     ISAND,
+     &                     COMPETE,   POPDIN,   DOFIRE,
      &                     FAREGAT,
 C
 C    -------------- INPUTS USED BY CTEM ARE ABOVE THIS LINE ---------
@@ -52,9 +52,6 @@ C    ---------------- OUTPUTS ARE LISTED ABOVE THIS LINE ------------
 C
 C
 C             CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) - V1.1
-C     AUG 23   2012
-C     * J. MELTON: PASS IN ISAND TO ENSURE SOIL LEVELS ARE PROPERLY
-C                  LABELLED AS BEDROCK IF ASSIGNED SO IN CLASSB
 C
 C     JAN 10   2012 
 C     * YIRAN: RE-TEST COMPETITION
@@ -88,7 +85,6 @@ C                MODIFIED BY LAND-USE CHANGE, AND COMPETITION BETWEEN PFTs
 C     FSNOW    - FRACTION OF SNOW SIMULATED BY CLASS
 C     SAND     - PERCENTAGE SAND
 C     CLAY     - PERCENTAGE CLAY
-C     ISAND    - FLAG FOR CELL SOIL LEVELS THAT ARE BEDROCK OR ICE
 C     ICC      - NO OF PFTs FOR USE BY CTEM, CURRENTLY 9
 C     IC       - NO OF PFTs FOR USE BY CLASS, CURRENTLY 4
 C     IG       - NO. OF SOIL LAYERS, 3
@@ -315,7 +311,7 @@ C
      3   NOL2PFTS(IC),       K1,       K2,  SPINFAST
 C
       INTEGER       PANDAYS(ILG,ICC), CURLATNO(ILG),    COLDDAYS(ILG,2),
-     1             LFSTATUS(ILG,ICC), ISAND(ILG,IG)                 
+     1             LFSTATUS(ILG,ICC)                 
 C
       REAL FSNOW(ILG),  SAND(ILG,IG),  CLAY(ILG,IG),     THLIQC(ILG,IG),
      1     TCANO(ILG),    TCANS(ILG), TBARC(ILG,IG),   RMATC(ILG,IC,IG),
@@ -876,7 +872,7 @@ C      TRUSTWORTHY AT PRESENT. JM 06.06.2012
      1                   ICC,       IG,          ILG,        IL1,
 C     2                   IL2,    TCANS,       TBARCS,   RMATCTEM,
      2                   IL2,       TA,       TBARCS,   RMATCTEM,
-     3                  SORT, NOL2PFTS,           IC,      ISAND,
+     3                  SORT, NOL2PFTS,           IC,       SAND,
      4              RMSCSVEG, RMRCSVEG,     RTTEMPCS)
 C
 C     FIND MAINETANCE RESPIRATION FOR CANOPY OVER GROUND SUB-AREA
@@ -887,7 +883,7 @@ C      TRUSTWORTHY AT PRESENT. JM 06.06.2012
      1                   ICC,       IG,          ILG,        IL1,
 C     2                   IL2,    TCANO,        TBARC,   RMATCTEM,
      2                   IL2,       TA,        TBARC,   RMATCTEM,
-     3                  SORT, NOL2PFTS,           IC,      ISAND,
+     3                  SORT, NOL2PFTS,           IC,       SAND,
      4              RMSCGVEG, RMRCGVEG,     RTTEMPCG)
 C
 C
@@ -1000,8 +996,7 @@ C
      1                      ICC,       IG,      ILG,      IL1,
      2                      IL2,   TBARCS,   THLIQC,     SAND,
      3                     CLAY, RTTEMPCS,    ZBOTW,     SORT,
-     4                     ISAND,
-     5                 LTRSVGCS, SCRSVGCS) 
+     4                 LTRSVGCS, SCRSVGCS) 
 C
 C     FIND HETEROTROPHIC RESPIRATION RATES FOR CANOPY OVER GROUND 
 C     SUBAREA
@@ -1010,9 +1005,7 @@ C
      1                      ICC,       IG,      ILG,      IL1,
      2                      IL2,    TBARC,   THLIQC,     SAND,
      3                     CLAY, RTTEMPCG,    ZBOTW,     SORT,
-     4                     ISAND,
-     5                 LTRSVGCG, SCRSVGCG) 
-
+     4                 LTRSVGCG, SCRSVGCG)
 C
 C     FIND HETEROTROPHIC RESPIRATION RATES FROM BARE GROUND SUBAREA
 C
@@ -1020,8 +1013,7 @@ C
      1                      ILG,      IL1,      IL2,    TBARG,   
      2                   THLIQG,     SAND,      CLAY,   ZBOTW,   
      3                       FG,        0,
-     4                     ISAND,
-     5                   LTRSBRG,  SCRSBRG)
+     4                   LTRSBRG,  SCRSBRG)
 C
 C     FIND HETEROTROPHIC RESPIRATION RATES FROM SNOW OVER GROUND 
 C     SUBAREA
@@ -1030,8 +1022,7 @@ C
      1                      ILG,      IL1,      IL2,   TBARGS,   
      2                   THLIQG,     SAND,      CLAY,   ZBOTW,   
      3                      FGS,        1,
-     4                     ISAND,
-     5                   LTRSBRGS, SCRSBRGS)
+     4                   LTRSBRGS, SCRSBRGS)
 C
 C
 C     FIND VEGETATION AVERAGED LITTER AND SOIL C RESPIRATION RATES
