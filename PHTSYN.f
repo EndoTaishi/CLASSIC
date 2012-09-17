@@ -330,8 +330,8 @@ C     NO. OF ITERATIONS FOR CALCULATING INTERCELLULAR CO2 CONCENTRATION
       DATA  REQITER/4/
 C
 C     MAX. INTERCELLULAR CO2 CONCENTRATION, PASCALS
-      DATA CO2IMAX/200.00/  !FLAG - This values was in class3.6 code
-C      DATA CO2IMAX/2000.00/ ! this value was in class35ctem code
+C      DATA CO2IMAX/200.00/  !FLAG - This values was in class3.6 code
+      DATA CO2IMAX/2000.00/ ! this value was in class35ctem code
 C
 C     PHOTOSYNTHESIS COUPLING OR CURVATURE COEFFICIENTS
       DATA BETA1/0.950/
@@ -367,8 +367,8 @@ C     LEAF ANGLE DISTRIBUTION
 C
 C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
-C      DATA GAMMA_W/0.45/  !FLAG value in class35ctem code
-      DATA GAMMA_W/0.25/   !value in class36 code
+      DATA GAMMA_W/0.45/  !FLAG value in class35ctem code
+C      DATA GAMMA_W/0.25/   !value in class36 code
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT MODEL ACTUALLY GIVES
 C     WITHOUT ANY PHOTOSYNTHESIS DOWN-REGULATION
       DATA GAMMA_M/0.95/
@@ -666,9 +666,9 @@ C
 C
         DO 420 I = IL1, IL2
           VPD(I)=0.0
-C         CHANGE TO TCAN TO BE CONSISTENT WITH REST OF SUBROUTINE jm 11/08/12
-C          IF(TA(I).GE.TFREZ) THEN
-          IF(TCAN(I).GE.TFREZ) THEN
+C     FLAG    CHANGE TO TCAN TO BE CONSISTENT WITH REST OF SUBROUTINE jm 11/08/12
+          IF(TA(I).GE.TFREZ) THEN
+C          IF(TCAN(I).GE.TFREZ) THEN
               CA=17.269
               CB=35.86
           ELSE
@@ -676,9 +676,9 @@ C          IF(TA(I).GE.TFREZ) THEN
               CB=7.66
           ENDIF
           EA     = QA(I)*PRESSG(I)/(0.622+0.378*QA(I))  
-C         CHANGE TO TCAN TO BE CONSISTENT WITH REST OF SUBROUTINE jm 11/08/12                            
-c          EASAT  = 611.0*EXP(CA*(TA(I)-TFREZ)/(TA(I)-CB))
-          EASAT  = 611.0*EXP(CA*(TCAN(I)-TFREZ)/(TCAN(I)-CB))
+C         FLAG CHANGE TO TCAN TO BE CONSISTENT WITH REST OF SUBROUTINE jm 11/08/12                            
+          EASAT  = 611.0*EXP(CA*(TA(I)-TFREZ)/(TA(I)-CB))
+C          EASAT  = 611.0*EXP(CA*(TCAN(I)-TFREZ)/(TCAN(I)-CB))
           RH(I)  = EA/EASAT
           VPD(I) = EASAT-EA
           VPD(I)=MAX(0.0,VPD(I))
@@ -1070,13 +1070,13 @@ C
      &        ( CO2I_SHA(I,J)+ (2.0*TGAMMA(I)) )
 
             IF (ISC4(SORT(J)).EQ.1) THEN
-              JE_SUN(I,J)=IPAR_SUN(I)*JE1_SUN(I,J)  !CLASS36
-c              JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J) !FLAG class35CTEM VERSION
+C              JE_SUN(I,J)=IPAR_SUN(I)*JE1_SUN(I,J)  !CLASS36
+              JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J) !FLAG class35CTEM VERSION
               JE_SHA(I,J)=IPAR_SHA(I)*JE1_SHA(I,J)
             ELSE IF (ISC4(SORT(J)).EQ.0) THEN
-              JE_SUN(I,J)=IPAR_SUN(I)*JE1_SUN(I,J)*JE2_SUN(I,J)    !CLASS36 FLAG
-C              JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J)*  !CLASS35CTEM VERSION
-C     &                    JE2_SUN(I,J)
+C              JE_SUN(I,J)=IPAR_SUN(I)*JE1_SUN(I,J)*JE2_SUN(I,J)    !CLASS36 FLAG
+              JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J)*  !CLASS35CTEM VERSION
+     &                    JE2_SUN(I,J)
 
               JE_SHA(I,J)=IPAR_SHA(I)*JE1_SHA(I,J)*JE2_SHA(I,J)    
             ENDIF
@@ -1126,7 +1126,7 @@ C
         TEMP_C = 1.0 + TEMP_R * (GAMMA_M)
         N_EFFECT(I) = TEMP_B / TEMP_C
 C       LIMIT N_EFFECT TO MAX OF 1.0 SO THAT NO UP-REGULATION OCCURS
-        N_EFFECT(I) = MIN(1.0, N_EFFECT(I)) !FLAG NEW FROM CLASS36
+C        N_EFFECT(I) = MIN(1.0, N_EFFECT(I)) !FLAG NEW FROM CLASS36
 641   CONTINUE
 C
 C     FIND THE SMOOTHED AVERAGE OF THREE PHOTOSYNTHETIC RATES JC, JE,
@@ -1294,10 +1294,10 @@ C
         DO 710 I = IL1, IL2
         IF(FCANC(I,J).GT.ZERO)THEN
 
-C         CHANGE TO TCAN TO BE CONSISTENT WITH REST OF SUBROUTINE jm 11/08/12
-C          GB(I)=CFLUX(I)*(TFREZ/TA(I))*(PRESSG(I)/STD_PRESS)*(1./0.0224)
-          GB(I)=CFLUX(I)*(TFREZ/TCAN(I))*(PRESSG(I)/STD_PRESS)
-     &          *(1./0.0224)
+C      FLAG   CHANGE TO TCAN TO BE CONSISTENT WITH REST OF SUBROUTINE jm 11/08/12
+          GB(I)=CFLUX(I)*(TFREZ/TA(I))*(PRESSG(I)/STD_PRESS)*(1./0.0224)
+C          GB(I)=CFLUX(I)*(TFREZ/TCAN(I))*(PRESSG(I)/STD_PRESS)
+C     &          *(1./0.0224)
 
 C          GB(I)= MIN(0.224, MAX(2.24E-03, GB(I)) )
 C       The above formulation was likely an error. The correct bounding is
