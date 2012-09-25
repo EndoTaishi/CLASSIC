@@ -29,8 +29,6 @@
      S                  IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
      T                  ALVSCTM, ALIRCTM )
 
-c   AILCMIN,  AILCMAX -FLAG NO LONGER PASSED JM
-
 C===================== CTEM =====================================/
 C
 C     * SEP 05/12 - J.MELTON.   REMOVED UNUSED VAR, CWCPAV

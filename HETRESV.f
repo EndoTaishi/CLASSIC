@@ -15,6 +15,8 @@ C                     POOLS.
 C
 C     CHANGE HISTORY:
 
+C     J. MELTON AND V.ARORA - CHANGED TANHQ10 VALUES, THEY WERE INCORRECT
+C               25 SEP 2012
 C     J. MELTON 23 AUG 2012 - BRING IN ISAND, CONVERTING SAND TO
 C                             INT WAS MISSING SOME GRIDCELLS ASSIGNED
 C                             TO BEDROCK IN CLASSB
@@ -102,7 +104,7 @@ C
 C
 C     PARAMETERS OF THE HYPERBOLIC TAN Q10 FORMULATION
 C
-      DATA TANHQ10/0.56, 1.44, 0.075, 46.0/
+      DATA TANHQ10/1.44, 0.56, 0.075, 46.0/
 C                     A     B      C     D
 C     Q10 = A + B * TANH[ C (D-Temperature) ]
 C     WHEN A = 2, B = 0, WE GET THE CONSTANT Q10 OF 2. IF B IS NON
