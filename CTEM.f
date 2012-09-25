@@ -542,6 +542,7 @@ C
       IF(DELTAT.NE.1.0)                       CALL XIT('CTEM',-3)
       IF(L2MAX.NE.3)                          CALL XIT('CTEM',-4)
 C
+
 C     FIND AREA OF THE GCM GRID CELLS. THIS IS NEEDED FOR LAND USE CHANGE
 C     AND DISTURBANCE SUBROUTINES
 C
@@ -872,7 +873,7 @@ C     SEPARATELY BECAUSE STEM TEMPERATURE (FOR WHICH WE USE CANOPY
 C     TEMPERATURE AS A SURROGATE) CAN BE DIFFERENT FOR THESE TWO
 C     SUBAREAS.
 C
-C     FIND MAINETANCE RESPIRATION FOR CANOPY OVER SNOW SUB-AREA
+C     FIND MAINTENANCE RESPIRATION FOR CANOPY OVER SNOW SUB-AREA
 C     in uMOL CO2/M2/SEC
 C
       CALL   MAINRES (FCANCS,      FCS,     STEMMASS,   ROOTMASS,        
@@ -881,7 +882,7 @@ C
      3                  SORT, NOL2PFTS,           IC,      ISAND,
      4              RMSCSVEG, RMRCSVEG,     RTTEMPCS)
 C
-C     FIND MAINETANCE RESPIRATION FOR CANOPY OVER GROUND SUB-AREA
+C     FIND MAINTENANCE RESPIRATION FOR CANOPY OVER GROUND SUB-AREA
 C
       CALL   MAINRES ( FCANC,       FC,     STEMMASS,   ROOTMASS,        
      1                   ICC,       IG,          ILG,        IL1,
@@ -1158,8 +1159,8 @@ C
      1                         ICC,       IG,      ILG,       IL1,
      2                         IL2,     SAND,     CLAY,  RMATCTEM,
      3                    GLEAFMAS, STEMMASS, ROOTMASS,      SORT,
-     4                       L2MAX, NOL2PFTS,       IC,
-     5                     AFRLEAF,  AFRSTEM,  AFRROOT,  WILTSM,
+     4                       L2MAX, NOL2PFTS,       IC,   FCANCMX,
+     5                     AFRLEAF,  AFRSTEM,  AFRROOT,    WILTSM,
      6                     FIELDSM, WTSTATUS, LTSTATUS)
 C  ADD FOR COMPETE
 C     ESTIMATE FRACTION OF NPP THAT IS TO BE USED FOR HORIZONTAL
@@ -1356,7 +1357,7 @@ C
      2                      THLIQC,   WILTSM,  FIELDSM,       TA,
      3                    PHEANVEG,     IDAY,     RADJ, ROOTTEMP,
      4                    RMATCTEM, STEMMASS, ROOTMASS,     SORT,
-     5                       L2MAX, NOL2PFTS,       IC,
+     5                       L2MAX, NOL2PFTS,       IC,  FCANCMX,
      6                    FLHRLOSS, LEAFLITR, LFSTATUS,  PANDAYS,
      7                    COLDDAYS)
 C
@@ -1367,7 +1368,7 @@ C     AND ROOT TURNOVER IS CALCULATED IN THE TURNOVER SUBROUTINE.
 C
             CALL TURNOVER (STEMMASS, ROOTMASS,  LFSTATUS,    AILCG,
      1                          ICC,      ILG,       IL1,      IL2,
-     2                         SORT, NOL2PFTS,        IC,
+     2                         SORT, NOL2PFTS,        IC,  FCANCMX,
      3                     STMHRLOS, ROTHRLOS,
      4                     STEMLITR, ROOTLITR)
 C
@@ -1449,9 +1450,9 @@ C
       CALL       MORTALTY (STEMMASS, ROOTMASS,    AILCG, GLEAFMAS,
      1                     BLEAFMAS,      ICC,      ILG,      IL1, 
      2                          IL2,     IDAY,   ICHECK,     SORT,
-     3                     LYSTMMAS, LYROTMAS, TYMAXLAI, GRWTHEFF,
-     4                     STEMLTRM, ROOTLTRM, GLEALTRM, GEREMORT,
-     5                     INTRMORT)
+     3                      FCANCMX, LYSTMMAS, LYROTMAS, TYMAXLAI,
+     4                     GRWTHEFF, STEMLTRM, ROOTLTRM, GLEALTRM,
+     5                     GEREMORT, INTRMORT)
 C
 C    ------------------------------------------------------------------
 C
@@ -1631,7 +1632,7 @@ C
      5                    PGLFMASS, PBLFMASS, PSTEMASS,  PROTMASS,
      6                    PLITMASS, PSOCMASS,   DELTAT,  VGBIOMAS,
      7                    PVGBIOMS, GAVGLTMS, PGAVLTMS,  GAVGSCMS,
-     8                    PGAVSCMS, GALTCELS,
+     8                    PGAVSCMS, GALTCELS,  FCANCMX,
      9                         NPP,  AUTORES, HETRORES,       GPP,
      A                         NEP,   LITRES,   SOCRES, DSTCEMLS1,
      B                         NBP, LITRFALL, HUMIFTRS,

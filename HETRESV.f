@@ -166,7 +166,9 @@ C     LITTER POOL IS MADE OF LEAF, STEM, AND ROOT LITTER.
 C     
       DO 200 J = 1,ICC
         DO 210 I = IL1, IL2
+         IF (FCAN(I,J) .GT. 0.) THEN
           LITRTEMP(I,J)=ALPHA*TBAR(I,1)+ROOTTEMP(I,J)*(1.0-ALPHA)
+         ENDIF
 210     CONTINUE
 200   CONTINUE
 C
@@ -181,6 +183,7 @@ C     DISTRIBUTION WE USE FIXED VEGETATION-DEPENDENT PARAMETERS.
 C
       DO 230 J = 1, ICC
         DO 240 I = IL1, IL2
+         IF (FCAN(I,J) .GT. 0.) THEN
 C
           ZCARBON=3.0/ABAR(SORT(J))                ! 95% DEPTH
           IF(ZCARBON.LE.ZBOTW(I,1)) THEN
@@ -219,7 +222,7 @@ C
           IF(ISAND(I,2).EQ.-3)THEN ! SECOND LAYER BED ROCK
             SOLCTEMP(I,J)=TBAR(I,1)
           ENDIF
-
+        ENDIF
 240     CONTINUE     
 230   CONTINUE     
 C
@@ -265,6 +268,7 @@ C
 C
       DO 280 J = 1, ICC
         DO 290 I = IL1, IL2
+         IF (FCAN(I,J) .GT. 0.) THEN
           SOCMOSCL(I,J) = SCMOTRM(I,1)*FRACARB(I,J,1) + 
      &                    SCMOTRM(I,2)*FRACARB(I,J,2) +
      &                    SCMOTRM(I,3)*FRACARB(I,J,3)
@@ -284,6 +288,7 @@ C
             SOCMOSCL(I,J) = SCMOTRM(I,1)
           ENDIF
           SOCMOSCL(I,J)=MAX(0.2,MIN(1.0,SOCMOSCL(I,J)))
+         ENDIF
 290     CONTINUE     
 280   CONTINUE     
 C
@@ -313,6 +318,7 @@ C     MOISTURE SCALARS TO FIND RESPIRATION RATES FROM THESE POOLS
 C
       DO 320 J = 1, ICC
         DO 330 I = IL1, IL2
+         IF (FCAN(I,J) .GT. 0.) THEN
 C
 C         FIRST FIND THE Q10 RESPONSE FUNCTION TO SCALE BASE RESPIRATION
 C         RATE FROM 15 C TO CURRENT TEMPERATURE, WE DO LITTER FIRST
@@ -336,6 +342,7 @@ C
      &      BSRATESC(SORT(J))*2.64*Q10FUNC  ! 2.64 CONVERTS BSRATESC FROM KG C/KG C.YEAR 
 C                                           ! TO u-MOL CO2/KG C.S
 C
+         ENDIF
 330     CONTINUE
 320   CONTINUE
 C

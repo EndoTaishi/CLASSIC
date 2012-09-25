@@ -2,7 +2,7 @@
      1                         ICC,       IG,      ILG,       IL1,     
      2                         IL2,     SAND,     CLAY,  RMATCTEM,    
      3                    GLEAFMAS, STEMMASS, ROOTMASS,      SORT,
-     4                       L2MAX, NOL2PFTS,       IC,
+     4                       L2MAX, NOL2PFTS,       IC,   FCANCMX,
 C    5 ------------------ INPUTS ABOVE THIS LINE ----------------------   
      6                     AFRLEAF,  AFRSTEM,  AFRROOT,  WILTSM,
      7                     FIELDSM, WTSTATUS, LTSTATUS)
@@ -10,6 +10,9 @@ C    8 ------------------OUTPUTS  ABOVE THIS LINE ---------------------
 C
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
 C                            ALLOCATION SUBROUTINE
+C
+C     24  SEP 2012  - ADD IN CHECKS TO PREVENT CALCULATION OF NON-PRESENT
+C     J. MELTON       PFTS
 C
 C     05  MAY 2003  - THIS SUBROUTINE CALCULATES THE ALLOCATION FRACTIONS
 C     V. ARORA        FOR LEAF, STEM, AND ROOT COMPONENTS FOR CTEM's PFTs 
@@ -38,6 +41,8 @@ C                 12 VALUES IN PARAMETERS VECTORS
 C     L2MAX     - MAXIMUM NUMBER OF LEVEL 2 CTEM PFTs
 C     NOL2PFTS  - NUMBER OF LEVEL 2 CTEM PFTs
 C     IC        - NUMBER OF CLASS PFTs
+C     FCANCMX   - MAX. FRACTIONAL COVERAGE OF CTEM's 9 PFTs, BUT THIS CAN BE
+C                MODIFIED BY LAND-USE CHANGE, AND COMPETITION BETWEEN PFTs
 C
 C     OUTPUTS
 C
@@ -66,7 +71,8 @@ C
      3           SAND(ILG,IG),      CLAY(ILG,IG),        THPOR(ILG,IG),
      4         PSISAT(ILG,IG),         B(ILG,IG),       GRKSAT(ILG,IG)
 C
-      REAL   AFRLEAF(ILG,ICC),  AFRSTEM(ILG,ICC),     AFRROOT(ILG,ICC)
+      REAL   AFRLEAF(ILG,ICC),  AFRSTEM(ILG,ICC),     AFRROOT(ILG,ICC),
+     1       FCANCMX(ILG,ICC)
 C
       REAL          OMEGA(KK),      EPSILONL(KK),         EPSILONS(KK),
      1           EPSILONR(KK),            KN(KK),                 ZERO,
@@ -223,6 +229,7 @@ C     PFT BECAUSE OF DIFFERENT FRACTION OF ROOTS PRESENT IN EACH SOIL LAYER.
 C
       DO 200 J = 1, ICC
         DO 210 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN 
          AVWILTSM(I,J) =  WILTSM(I,1)*RMATCTEM(I,J,1) +
      &                    WILTSM(I,2)*RMATCTEM(I,J,2) +
      &                    WILTSM(I,3)*RMATCTEM(I,J,3)
@@ -240,6 +247,7 @@ C
      &                    THLIQ(I,3)*RMATCTEM(I,J,3)
          AVTHLIQ(I,J)  = AVTHLIQ(I,J) /
      &    (RMATCTEM(I,J,1)+RMATCTEM(I,J,2)+RMATCTEM(I,J,3))
+         ENDIF
 210     CONTINUE
 200   CONTINUE
 C
@@ -249,7 +257,7 @@ C     SOIL WATER STATUS.
 C
       DO 230 J = 1, ICC
         DO 240 I = IL1, IL2
-C
+         IF (FCANCMX(I,J).GT.0.0) THEN 
           IF(AVTHLIQ(I,J).LE.AVWILTSM(I,J))THEN
             WTSTATUS(I,J)=0.0
           ELSE IF(AVTHLIQ(I,J).GT.AVWILTSM(I,J).AND.
@@ -259,7 +267,7 @@ C
           ELSE
             WTSTATUS(I,J)=1.0
           ENDIF
-C
+         ENDIF
 240     CONTINUE
 230   CONTINUE
 C
@@ -292,7 +300,9 @@ C     STATUS
 C
       DO 380 J = 1,ICC
         DO 390 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN 
           WNSTATUS(I,J)=MIN(NSTATUS(I,J),WTSTATUS(I,J))
+         ENDIF
 390     CONTINUE
 380   CONTINUE
 C
@@ -336,9 +346,11 @@ C
       IF(CONSALLO)THEN
         DO 420 J = 1, ICC
           DO 421 I = IL1, IL2
+           IF (FCANCMX(I,J).GT.0.0) THEN 
             AFRLEAF(I,J)=CALEAF(SORT(J))
             AFRSTEM(I,J)=CASTEM(SORT(J))
             AFRROOT(I,J)=CAROOT(SORT(J))
+           ENDIF
 421       CONTINUE
 420     CONTINUE
       ENDIF
@@ -347,6 +359,7 @@ C     MAKE SURE ALLOCATION FRACTIONS ADD TO ONE
 C
       DO 430 J = 1, ICC
         DO 440 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN 
           IF( ABS(AFRSTEM(I,J)+AFRROOT(I,J)+AFRLEAF(I,J)-1.0).GT.ZERO ) 
      &    THEN  
            WRITE(6,2000) I,J,(AFRSTEM(I,J)+AFRROOT(I,J)+AFRLEAF(I,J))
@@ -354,6 +367,7 @@ C
      &NOT ADDING TO ONE. SUM  = ',F12.7)
           CALL XIT('ALLOCATE',-2)
           ENDIF
+         ENDIF
 440     CONTINUE
 430   CONTINUE
 C
@@ -375,6 +389,7 @@ C
        K2 = K1 + NOL2PFTS(J) - 1
        DO 505 M = K1, K2
         DO 510 I = IL1, IL2
+         IF (FCANCMX(I,M).GT.0.0) THEN 
           IF(LFSTATUS(I,M).EQ.1) THEN
             ALEAF(I,M)=ALDRLFON(SORT(M))
 C
@@ -413,6 +428,7 @@ C
             AFRSTEM(I,M)=ASTEM(I,M)
             AFRROOT(I,M)=AROOT(I,M)
           ENDIF
+         ENDIF
 510     CONTINUE
 505    CONTINUE
 500   CONTINUE
@@ -430,6 +446,7 @@ C
       DO 530 J = 1, ICC
         N=SORT(J)
         DO 540 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN 
 C         FIND MIN. STEM+ROOT BIOMASS NEEDED TO SUPPORT THE GREEN LEAF 
 C         BIOMASS.
           MNSTRTMS(I,J)=ETA(N)*(GLEAFMAS(I,J)**KAPPA(N))
@@ -453,6 +470,7 @@ C
               AFRROOT(I,J)=DIFF*0.5 + AFRROOT(I,J)
             ENDIF
           ENDIF
+         ENDIF
 540     CONTINUE
 530   CONTINUE
 C
@@ -462,6 +480,7 @@ C
       DO 541 J = 1, ICC
         N=SORT(J)
         DO 542 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN 
           IF( (STEMMASS(I,J)+GLEAFMAS(I,J)).GT.0.05)THEN
             IF( (ROOTMASS(I,J)/(STEMMASS(I,J)+GLEAFMAS(I,J))).
      &      LT.RTSRMIN(N) ) THEN  
@@ -471,6 +490,7 @@ C
               AFRROOT(I,J)=AFRROOT(I,J)+DIFF
             ENDIF
           ENDIF
+         ENDIF
 542     CONTINUE
 541   CONTINUE
 C
@@ -479,6 +499,7 @@ C     AGAIN THEY ALL ADD TO ONE.
 C
       DO 550 J = 1, ICC
         DO 560 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN 
           IF( (AFRLEAF(I,J).LT.0.0).OR.(AFRSTEM(I,J).LT.0.0).OR.
      &    (AFRROOT(I,J).LT.0.0))THEN
            WRITE(6,2200) I,J
@@ -488,11 +509,13 @@ C
 2100       FORMAT(' ALEAF = ',F12.9,' ASTEM = ',F12.9,' AROOT = ',F12.9)
            CALL XIT('ALLOCATE',-3)
           ENDIF
+         ENDIF
 560     CONTINUE
 550   CONTINUE
 C
       DO 580 J = 1, ICC
         DO 590 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN 
           IF( ABS(AFRSTEM(I,J)+AFRROOT(I,J)+AFRLEAF(I,J)-1.0).GT.ZERO ) 
      &    THEN  
            WRITE(6,2300) I,J,(AFRSTEM(I,J)+AFRROOT(I,J)+AFRLEAF(I,J))
@@ -500,6 +523,7 @@ C
      &NOT ADDING TO ONE. SUM  = ',F12.7)
            CALL XIT('ALLOCATE',-4)
           ENDIF
+         ENDIF
 590     CONTINUE
 580   CONTINUE
 C

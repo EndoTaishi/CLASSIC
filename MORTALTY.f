@@ -1,15 +1,19 @@
       SUBROUTINE MORTALTY (STEMMASS, ROOTMASS,    AILCG, GLEAFMAS,
      1                     BLEAFMAS,      ICC,      ILG,      IL1, 
      2                          IL2,     IDAY,   ICHECK,     SORT,
-C    3 ------------------ INPUTS ABOVE THIS LINE ----------------------   
+     3                      FCANCMX,
+C    + ------------------ INPUTS ABOVE THIS LINE ----------------------   
      4                     LYSTMMAS, LYROTMAS, TYMAXLAI, GRWTHEFF,
-C    5 -------------- INPUTS UPDATED ABOVE THIS LINE ------------------
-     6                     STEMLTRM, ROOTLTRM, GLEALTRM, GEREMORT,
-     7                     INTRMORT)
-C    8 ------------------OUTPUTS ABOVE THIS LINE ----------------------
+C    + -------------- INPUTS UPDATED ABOVE THIS LINE ------------------
+     5                     STEMLTRM, ROOTLTRM, GLEALTRM, GEREMORT,
+     6                     INTRMORT)
+C    + ------------------OUTPUTS ABOVE THIS LINE ----------------------
 C
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
 C                             MORTALITY SUBROUTINE
+C
+C     24  SEP 2012  - ADD IN CHECKS TO PREVENT CALCULATION OF NON-PRESENT
+C     J. MELTON       PFTS
 C
 C     07  MAY 2003  - THIS SUBROUTINE CALCULATES THE LITTER GENERATED
 C     V. ARORA        FROM LEAVES, STEM, AND ROOT COMPONENTS AFTER
@@ -57,7 +61,7 @@ C
      2      LYROTMAS(ILG,ICC), TYMAXLAI(ILG,ICC), BLEAFMAS(ILG,ICC)
 C
       REAL  STEMLTRM(ILG,ICC), ROOTLTRM(ILG,ICC), GLEALTRM(ILG,ICC),
-     1      GEREMORT(ILG,ICC), INTRMORT(ILG,ICC)
+     1      GEREMORT(ILG,ICC), INTRMORT(ILG,ICC), FCANCMX(ILG,ICC)
 C
       REAL       MXMORTGE(KK),            KMORT1,             ZERO,
      1             MAXAGE(KK)
@@ -122,7 +126,7 @@ C
       DO 200 J = 1, ICC
         N = SORT(J)
         DO 210 I = IL1, IL2
-C
+         IF (FCANCMX(I,J).GT.0.0) THEN
           IF(IDAY.EQ.1)THEN
             TYMAXLAI(I,J) =0.0
           ENDIF
@@ -151,7 +155,7 @@ C
 C
 C         CONVERT (1/YEAR) RATE INTO (1/DAY) RATE   
           GEREMORT(I,J)=GEREMORT(I,J)/365.0
-C
+         ENDIF
 210     CONTINUE
 200   CONTINUE
 C
@@ -164,6 +168,7 @@ C
       DO 250 J = 1, ICC
         N = SORT(J)
         DO 260 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN
           IF(MAXAGE(N).GT.ZERO)THEN
             INTRMORT(I,J)=1.0-EXP(-4.605/MAXAGE(N))
           ELSE
@@ -171,15 +176,18 @@ C
           ENDIF
 C         CONVERT (1/YEAR) RATE INTO (1/DAY) RATE   
           INTRMORT(I,J)=INTRMORT(I,J)/365.0
+         ENDIF
 260     CONTINUE
 250   CONTINUE 
 C
       DO 270 J = 1,ICC
         DO 280 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN
           IF(ICHECK.EQ.1)THEN
             GEREMORT(I,J)=0.0
             INTRMORT(I,J)=0.0
           ENDIF
+         ENDIF
 280     CONTINUE
 270   CONTINUE
 C
@@ -188,12 +196,14 @@ C     LETS COMBINE THESE RATES FOR EVERY PFT AND ESTIMATE LITTER GENERATED
 C
       DO 300 J = 1, ICC
         DO 310 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN
           STEMLTRM(I,J)=STEMMASS(I,J)*
      &    ( 1.0-EXP(-1.0*(GEREMORT(I,J)+INTRMORT(I,J))) )
           ROOTLTRM(I,J)=ROOTMASS(I,J)*
      &    ( 1.0-EXP(-1.0*(GEREMORT(I,J)+INTRMORT(I,J))) )
           GLEALTRM(I,J)=GLEAFMAS(I,J)*
      &    ( 1.0-EXP(-1.0*(GEREMORT(I,J)+INTRMORT(I,J))) )
+         ENDIF
 310     CONTINUE
 300   CONTINUE
 C

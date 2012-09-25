@@ -2920,7 +2920,6 @@ C===================== CTEM =====================================/
 C
 C    ---------------- OUTPUTS ARE LISTED ABOVE THIS LINE ------------
 C
-
       ENDIF  
 C
 C     * RESET MOSAIC ACCUMULATOR ARRAYS.

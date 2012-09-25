@@ -13,6 +13,9 @@ C
 C           CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 C        BIOMASS TO STRUCTURAL ATTRIBUTES CONVERSION SUBROUTINE 
 
+C     24  SEP 2012  - ADD IN CHECKS TO PREVENT CALCULATION OF NON-PRESENT
+C     J. MELTON       PFTS. CLEANED UP INITIALIZATION
+C
 C     18  MAY  2012 - FIX BUG FOR SOILS WITH THE DEPTH CLOSE TO THE
 C     J. MELTON       BOUNDARY BETWEEN LAYERS, WAS RESULTING IN ROOTS 
 C                     BEING PLACED INCORRECTLY.
@@ -223,65 +226,44 @@ C
 C
 C     INITIALIZATION
 C
-      DO 30 J = 1,ICC
-        DO 40 K = 1,IG
-          DO 50 I = IL1,IL2
-            RMATCTEM(I,J,K)=0.0
-            ETMP(I,J,K)    =0.0
-50        CONTINUE
-40      CONTINUE
-30    CONTINUE
-C
-      DO 31 J = 1,IC
-        DO 41 K = 1,IG
-          DO 51 I = IL1,IL2
-            RMATC(I,J,K)=0.0
-51        CONTINUE
-41      CONTINUE
-31    CONTINUE
-C
       ICOUNT=0
-      DO 52 J = 1, IC
-        DO 53 M = 1, NOL2PFTS(J)
+      DO J = 1, IC
+        DO M = 1, NOL2PFTS(J)
           N = (J-1)*L2MAX + M
           ICOUNT = ICOUNT + 1
           SORT(ICOUNT)=N
-53      CONTINUE
-52    CONTINUE
-C
-      DO 60 J = 1,IC
-        DO 70 I =  IL1, IL2
-          AILC(I,J)=0.0
-          SAIC(I,J)=0.0
-          PAIC(I,J)=0.0
-          SLAIC(I,J)=0.0
-          ZOLNC(I,J)=0.0
-          AVEROUGH(I,J)=0.0
-          ALVISC(I,J)=0.0
-          ALNIRC(I,J)=0.0
-          CMASVEGC(I,J)=0.0
-          SFCANCMX(I,J)=0.0    ! SUM OF FCANCMXs
+        END DO ! M LOOP
+      END DO  ! J LOOP
 
-70      CONTINUE
-60    CONTINUE
-C
-      DO 80 J = 1,ICC
-        SLA(J)=0.0
-        DO 90 I =  IL1, IL2
-          USEALPHA(I,J)=ALPHA(SORT(J))
-          USEB(I,J)=0.0
-          AILCG(I,J)=0.0
-          AILCB(I,J)=0.0
-          VEGHGHT(I,J)=0.0
-          LNRGHLTH(I,J)=0.0
-          A(I,J)=0.0
-          SLAI(I,J)=0.0
-          SAI(I,J)=0.0
-          BMASVEG(I,J)=0.0
-          PAI(I,J)=0.0
-90      CONTINUE
-80    CONTINUE
-C
+        RMATCTEM(IL1:IL2,1:ICC,1:IG)=0.0
+        ETMP(IL1:IL2,1:ICC,1:IG)    =0.0
+        RMATC(1:ICC,1:IG,IL1:IL2)=0.0
+        AILC(IL1:IL2,1:IC)=0.0
+        SAIC(IL1:IL2,1:IC)=0.0
+        PAIC(IL1:IL2,1:IC)=0.0
+        SLAIC(IL1:IL2,1:IC)=0.0
+        ZOLNC(IL1:IL2,1:IC)=0.0
+        AVEROUGH(IL1:IL2,1:IC)=0.0
+        ALVISC(IL1:IL2,1:IC)=0.0
+        ALNIRC(IL1:IL2,1:IC)=0.0
+        CMASVEGC(IL1:IL2,1:IC)=0.0
+        SFCANCMX(IL1:IL2,1:IC)=0.0    ! SUM OF FCANCMXs
+        SLA(1:ICC)=0.0
+        USEB(IL1:IL2,1:ICC)=0.0
+        AILCG(IL1:IL2,1:ICC)=0.0
+        AILCB(IL1:IL2,1:ICC)=0.0
+        VEGHGHT(IL1:IL2,1:ICC)=0.0
+        LNRGHLTH(IL1:IL2,1:ICC)=0.0
+        A(IL1:IL2,1:ICC)=0.0
+        SLAI(IL1:IL2,1:ICC)=0.0
+        SAI(IL1:IL2,1:ICC)=0.0
+        BMASVEG(IL1:IL2,1:ICC)=0.0
+        PAI(IL1:IL2,1:ICC)=0.0
+
+        DO I =  IL1, IL2
+          USEALPHA(I,1:ICC)=ALPHA(SORT(1:ICC))
+        END DO
+
 C
 C     ------ 1. CONVERSION OF LEAF BIOMASS INTO LEAF AREA INDEX -------
 C
@@ -306,6 +288,7 @@ C     ALSO FIND STEM AREA INDEX AS A FUNCTION OF STEM BIOMASS
 C
       DO 150 J = 1,ICC
         DO 160 I = IL1,IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN
           AILCG(I,J)=SLA(J)*GLEAFMAS(I,J)
           AILCB(I,J)=SLA(J)*BLEAFMAS(I,J)*FRACBOFG
           SAI(I,J)=0.55*(1.0-EXP(-0.175*STEMMASS(I,J))) !STEM AREA INDEX
@@ -313,11 +296,11 @@ C         PLANT AREA INDEX IS SUM OF GREEN AND BROWN LEAF AREA INDICES
 C         AND STEM AREA INDEX
           PAI(I,J)=AILCG(I,J)+AILCB(I,J)+SAI(I,J)
 
-C       THIS IS A (TEMPORARY)BUG FIX. CLASS WAS CRASHING WITH THE LOWER PAI. 
-C       FEB 27 2012 V. ARORA AND J. MELTON FLAG
-         PAI(I,J)=MAX(0.3,PAI(I,J))
+C         THIS IS A (TEMPORARY)BUG FIX. CLASS WAS CRASHING WITH THE LOWER PAI. 
+C         FEB 27 2012 V. ARORA AND J. MELTON FLAG
+           PAI(I,J)=MAX(0.3,PAI(I,J))
 C          PAI(I,J)=MAX(2.0,PAI(I,J))
-
+         ENDIF
 160     CONTINUE
 150   CONTINUE
 C
@@ -603,7 +586,7 @@ C    MAKE SURE ALL FRACTIONS (OF ROOTS IN EACH LAYER) ADD TO ONE.
 C
       DO 411 J = 1, ICC
         DO 412 I = IL1, IL2
-C
+         IF (FCANCMX(I,J).GT.0.0) THEN
           RMAT_SUM = 0.0
           DO 413 K = 1, IG
             RMAT_SUM = RMAT_SUM + RMATCTEM(I,J,K)
@@ -615,7 +598,7 @@ C
      &NOT ADDING TO ONE. SUM  = ',F12.7)
            CALL XIT('BIO2STR',-3)
           ENDIF
-C
+         ENDIF
 412     CONTINUE
 411   CONTINUE
 C
@@ -662,6 +645,7 @@ C     -------------------  4. CALCULATE STORAGE LAI  --------------------
 C
       DO 500 J = 1, ICC
         DO 510 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN
           SLAI(I,J)=((STEMMASS(I,J)+ROOTMASS(I,J))/ETA(SORT(J)))
      &     **(1./KAPPA(SORT(J)))
           SLAI(I,J)=(PRCNSLAI(SORT(J))/100.0)*SLA(J)*SLAI(I,J)
@@ -669,6 +653,7 @@ C
 C         NEED A MINIMUM SLAI TO BE ABLE TO GROW FROM SCRATCH. CONSIDER
 C         THIS AS MODEL SEEDS.
           SLAI(I,J)=MAX(SLAI(I,J),MINSLAI(SORT(J)))
+         ENDIF
 510     CONTINUE
 500   CONTINUE
 C
@@ -678,7 +663,9 @@ C     ---------------- CANOPY MASS FOR EACH CLASS PFT ------------------
 C
       DO 550 J = 1, ICC
         DO 560 I = IL1, IL2
+         IF (FCANCMX(I,J).GT.0.0) THEN
           BMASVEG(I,J)=GLEAFMAS(I,J)+STEMMASS(I,J)+ROOTMASS(I,J)
+         ENDIF
 560     CONTINUE
 550   CONTINUE
 C
