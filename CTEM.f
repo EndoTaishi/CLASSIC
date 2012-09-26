@@ -623,7 +623,7 @@ C
      4                      ANNPCP,  ANPOTEVP,
      5                    PFTEXIST)
         ENDIF
-C
+C     Is this supposed to be here????? JM 26 sep 12.
       PFTEXIST(1,1)=1
       PFTEXIST(1,2)=0
       PFTEXIST(1,3)=0

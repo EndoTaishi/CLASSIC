@@ -332,6 +332,7 @@ C
             SAIC(I,J)=SAIC(I,J)+(FCANCMX(I,M)*SAI(I,M))
             PAIC(I,J)=PAIC(I,J)+(FCANCMX(I,M)*PAI(I,M))
             SLAIC(I,J)=SLAIC(I,J)+(FCANCMX(I,M)*SLAI(I,M))
+          write(*,*)'first',paic(i,j),i,j
 220       CONTINUE
 210     CONTINUE
 200   CONTINUE
@@ -350,7 +351,7 @@ C
              PAIC(I,J)=0.0
              SLAIC(I,J)=0.0
           ENDIF
-
+          write(*,*)'second',paic(i,j),i,j
 C         FOR CROPS AND GRASSES SET THE MINIMUM LAI TO A SMALL NUMBER, OTHER
 C         WISE CLASS WILL NEVER RUN TSOLVC AND THUS PHTSYN AND CTEM WILL NOT
 C         BE ABLE TO GROW CROPS OR GRASSES.

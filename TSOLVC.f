@@ -283,7 +283,7 @@ C
               QSWNC(I)=QSWNVC(I)+QSWNIC
               IF(ABS(TCAN(I)).LT.1.0E-3)        TCAN(I)=TPOTA(I)
               QLWOC(I)=SBC*TCAN(I)*TCAN(I)*TCAN(I)*TCAN(I)
-C
+C      
               IF(TCAN(I).GE.TFREZ)                         THEN
                   A(I)=17.269      
                   B(I)=35.86      
@@ -299,7 +299,7 @@ C
                   TAC(I)=TCAN(I)
                   QAC(I)=QA(I)
               ENDIF
-              TVRTAC(I)=TAC(I)*(1.0+0.61*QAC(I))   
+              TVRTAC(I)=TAC(I)*(1.0+0.61*QAC(I))  
 C                         
               IF(SNOCAN(I).GT.0.)             THEN
                   CPHCHC(I)=CLHVAP+CLHMLT
@@ -307,7 +307,10 @@ C
                   CPHCHC(I)=CLHVAP                                                           
               ENDIF                    
               RBINV(I)=RBCOEF(I)*SQRT(VAC(I))
+       write(*,*)'bull',RBCOEF
+       write(*,*)'f me4',i,RBINV(I),RBCOEF(I),SQRT(VAC(I))
               RB(I)=1.0/RBINV(I)
+       write(*,*)'f me5'
               TZERO(I)=TGND(I)
               TCANO(I)=TCAN(I)
               TSTEP(I)=1.0

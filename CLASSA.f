@@ -224,7 +224,8 @@ C     * CALCULATION OF SNOW DEPTH ZSNOW AND FRACTIONAL SNOW COVER
 C     * FSNOW; INITIALIZATION OF COMPUTATIONAL ARRAYS. 
 C                                                                                  
       DO 100 I=IL1,IL2                                                            
-          IF(SNO(I).GT.0.0) THEN                                              
+          IF(SNO(I).GT.0.0) THEN  
+        write(*,*)sno(i),rhosno(i),i                                            
               ZSNOW(I)=SNO(I)/RHOSNO(I)                                       
               IF(ZSNOW(I).GE.(SNOLIM(I)-0.00001)) THEN                                     
                   FSNOW(I)=1.0                                                   

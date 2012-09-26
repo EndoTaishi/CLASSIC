@@ -922,13 +922,16 @@ C
 400       CONTINUE
         ENDIF
 C
+         write(*,'(2i4,3f12.4)')i,j,(FC(I)+FCS(I)),fcan(i,j),fcans(i,j)
+         write(*,'(a5,2f12.4)')'pai',pai(i,j),pais(i,j)
         IF((FC(I)+FCS(I)).GT.0.)                               THEN             
             RBCOEF(I)=RBCOEF(I)+
      1                (FCAN(I,J)*XLEAF(J)*(SQRT(PAI(I,J))/0.75)*
      2                (1.0-EXP(-0.75*SQRT(PAI(I,J))))+
      3                FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
-     5                (FC(I)+FCS(I))                                          
+     5                (FC(I)+FCS(I))   
+        write(*,*)'rb',i,rbcoef(i)                                       
         ENDIF                                                                   
   450 CONTINUE                                                                    
 C                                                                                 

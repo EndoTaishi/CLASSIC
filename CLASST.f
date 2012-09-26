@@ -813,6 +813,7 @@ C
      +                FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
      3                ISAND,ILG,IL1,IL2,IG                      )
           ISNOW=0
+        write(*,*)'can over bare'
           CALL TSOLVC(ISNOW,FC,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPC,
@@ -837,6 +838,7 @@ C
      L                XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG,
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
      N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG)
+
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
      1                GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSURX,
      2                TBASE,TBAR1P,A1,A2,B1,B2,C2,FC,IWATER,
@@ -938,7 +940,7 @@ C
       ENDIF                                                               
 C
 C     * CALCULATIONS FOR BARE GROUND.
-C                                                                                  
+C                     
       IF(NLANDG.GT.0)                                               THEN
           DO 400 I=IL1,IL2                                    
               IF(FG(I).GT.0.)                                       THEN

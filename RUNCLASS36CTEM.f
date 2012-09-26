@@ -2299,6 +2299,7 @@ C
      1             NML,NMW,GCGRD,FAREROW,MIDROW,
      2             NLAT,NMOS,ILG,1,NLTEST,NMTEST)
 C
+          write(*,*)'1a',rhosgat(1)
       CALL CLASSG (TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT,
      1             TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT, 
      2             TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT, 
@@ -2342,6 +2343,7 @@ C
      +             SPCPGRD,TSPCGRD,RHSIGRD,FCLOGRD,DLONGRD,
      +             GGEOGRD  )
 C
+          write(*,*)'2a',rhosgat(1)
 C    * INITIALIZATION OF DIAGNOSTIC VARIABLES SPLIT OUT OF CLASSG
 C    * FOR CONSISTENCY WITH GCM APPLICATIONS.
 C
@@ -2558,6 +2560,7 @@ C
      O                IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
      P                ALVSCTMGAT, ALIRCTMGAT )
 C
+          write(*,*)'a',rhosgat(1)
 C     IF ONLY CTEM1 IS ON THEN USE FRACTION OF ROOT IN EACH SOIL LAYER
 C     FOR EACH OF CTEM PFT FROM CLASS.
 C
@@ -2587,6 +2590,7 @@ C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
 C          * ADAPTED TO COUPLING OF CLASS3.5 AND CTEM
 C
+       write(*,*)'fail?'
       CALL  CLASST     (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1  THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG, 
      2  GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS,  
@@ -2617,7 +2621,7 @@ C
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
      S  FIELDSM,WILTSM,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,   
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI) 
- 
+           write(*,*)'b',rhosgat(1)
 C
 C===================== CTEM =====================================/
 C-----------------------------------------------------------------------
@@ -2652,6 +2656,7 @@ C
      Q                  IWF,    ILG,    1,      NML,    N,
      R                  JLAT,   ICAN,   IGND,   IGND+1, IGND+2,
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
+          write(*,*)'c',rhosgat(1)
 C========================================================================
 C
       CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, 
@@ -2865,7 +2870,7 @@ C           ASSIGN THE SAME VALUES (ROW) TO GAT  FLAG
           ENDIF
 
         ENDIF
-
+          write(*,*)'wha',rhosgat(1)
         CALL CTEM ( FCANCMXGAT, FSNOWACC_M,    SANDGAT,    CLAYGAT,   
      2                   ICAN,         ILG,          1,        NML,
      3                   IGND,         ICC,       IDAY,    RADJGAT,
@@ -2917,8 +2922,10 @@ C===================== CTEM =====================================/
 C
 C    ---------------- OUTPUTS ARE LISTED ABOVE THIS LINE ------------
 C
+          write(*,*)'t3',rhosgat(1)
       ENDIF  
 C
+          write(*,*)'the',rhosgat(1)
 C     * RESET MOSAIC ACCUMULATOR ARRAYS.
 C
       DO 655 I=1,NML
@@ -2956,6 +2963,7 @@ C
       ENDIF   
       ENDIF  
 C
+          write(*,*)'d',rhosgat(1)
       CALL CLASSS (TBARROW,THLQROW,THICROW,GFLXROW,TSFSROW,
      1             TPNDROW,ZPNDROW,TBASROW,ALBSROW,TSNOROW,
      2             RHOSROW,SNOROW, TCANROW,RCANROW,SCANROW,
@@ -2966,7 +2974,7 @@ C
      7             TPNDGAT,ZPNDGAT,TBASGAT,ALBSGAT,TSNOGAT,
      8             RHOSGAT,SNOGAT, TCANGAT,RCANGAT,SCANGAT,
      9             GROGAT, CMAIGAT,TACGAT, QACGAT, WSNOGAT)
-
+          write(*,*)'e',rhosgat(1)
 C    * SCATTER OPERATION ON DIAGNOSTIC VARIABLES SPLIT OUT OF 
 C    * CLASSS FOR CONSISTENCY WITH GCM APPLICATIONS.
 C

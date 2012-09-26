@@ -340,7 +340,7 @@ C
   300 CONTINUE                                                                    
 C                                                                                 
 C     * THERMAL PROPERTIES OF SNOW.
-C                                                                                 
+C              
       DO 400 I=IL1,IL2                                                            
           IF(ZSNOW(I).GT.0.)                                        THEN          
               HCPSCS(I)=HCPICE*RHOSNO(I)/RHOICE+HCPW*WSNOW(I)/
@@ -381,7 +381,7 @@ C             TCSNOW(I)=2.576E-6*RHOSNO(I)*RHOSNO(I)+0.074
               TCSNOW(I)=0.0
           ENDIF                                                                   
   400 CONTINUE                                                                    
-C                                                                                 
+C                
 C     * THERMAL CONDUCTIVITIES OF SOIL LAYERS AND DEPTH OF WATER
 C     * TABLE IN ORGANIC SOILS.                                         
 C                                                                                 
