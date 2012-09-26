@@ -3,11 +3,7 @@
      2                  FI,CMASS,TSNOW,HCPSNO,RHOSNO,FROOT,THPOR,
      3                  THLMIN,DELZW,EVLOST,RLOST,IROOT,
      4                  IG,ILG,IL1,IL2,JL,N   )
-C           
-C     Purpose: Update liquid and frozen water stores on canopy and in soil in 
-C              response to calculated sublimation, evaporation and transpiration
-C              rates.
-C                                                                     
+C                                                                                 
 C     * SEP 15/05 - D.VERSEGHY. REMOVE HARD CODING OF IG=3.
 C     * SEP 13/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
 C     * JUN 20/02 - D.VERSEGHY. TIDY UP SUBROUTINE CALL; SHORTENED
@@ -44,57 +40,22 @@ C
 C
 C     * INPUT/OUTPUT ARRAYS.
 C
-      REAL THLIQ (ILG,IG)   !Volumetric liquid water content of soil 
-                            !layer [m3 m-3] (theta_l) 
-      REAL TBAR  (ILG,IG)   !Temperature of soil layer [K] (Tg) 
-      REAL QFC   (ILG,IG)   !Transpired water removed from soil layer 
-                            ![kg m-2 s-1]
-      REAL HTC   (ILG,IG)   !Internal energy change of soil layer due to 
-                            !conduction and/or change in mass [W m-2] 
-                            !(Ig)
+      REAL THLIQ (ILG,IG), TBAR  (ILG,IG), QFC   (ILG,IG),
+     1     HTC   (ILG,IG)
 C
-      REAL EVAP  (ILG)  !Evapotranspiration rate from vegetation canopy 
-                        ![m s-1]
-      REAL SUBL  (ILG)  !Calculated sublimation rate from vegetation 
-                        !canopy [m s-1]  
-      REAL RAICAN(ILG)  !Intercepted liquid water stored on the canopy 
-                        ![kg m-2]  
-      REAL SNOCAN(ILG)  !Intercepted frozen water stored on the canopy 
-                        ![kg m-2]
-      REAL TCAN  (ILG)  !Temperature of vegetation canopy [K] (Tc)  
-      REAL ZSNOW (ILG)  !Depth of snow pack [m] (zg)
-      REAL WLOST (ILG)  !Residual amount of water that cannot be 
-                        !supplied by surface stores [kg m-2]
-      REAL CHCAP (ILG)  !Heat capacity of vegetation canopy [J m-2 K-1] 
-                        !(Cc)
-      REAL QFCF  (ILG)  !Sublimation from frozen water in canopy 
-                        !interception store [kg m-2 s-1]
-      REAL QFCL  (ILG)  !Evaporation from liquid water in canopy 
-                        !interception store [kg m-2 s-1 ]
-      REAL QFN   (ILG)  !Sublimation from snow pack [kg m-2 s-1]  
-      REAL HTCC  (ILG)  !Internal energy change of canopy due to changes 
-                        !in temperature and/or mass [W m-2] (Ic) 
-      REAL HTCS  (ILG)  !Internal energy change of snow pack due to 
-                        !conduction and/or change in mass [W m-2] (Is)
-  
+      REAL EVAP  (ILG),    SUBL  (ILG),    RAICAN(ILG),    SNOCAN(ILG),
+     1     TCAN  (ILG),    ZSNOW (ILG),    WLOST (ILG),    CHCAP (ILG),    
+     2     QFCF  (ILG),    QFCL  (ILG),    QFN   (ILG),    
+     3     HTCC  (ILG),    HTCS  (ILG)    
+     3     
 C
 C     * INPUT ARRAYS.
 C
-      REAL FROOT (ILG,IG)   !Fractional contribution of soil layer to 
-                            !transpiration [ ] 
-      REAL THPOR(ILG,IG)    !Pore volume in soil layer [m3 m-3]
-      REAL THLMIN(ILG,IG)   !Residual soil liquid water content 
-                            !remaining after freezing or evaporation 
-                            ![m3 m-3]
-      REAL DELZW (ILG,IG)   !Permeable depth of soil layer [m] 
-                            !(delta_zg,w)
+      REAL FROOT (ILG,IG), THPOR(ILG,IG),  THLMIN(ILG,IG),
+     1     DELZW (ILG,IG)
 C
-      REAL FI    (ILG)  !Fractional coverage of subarea in question on 
-                        !modelled area [ ] (Xi)
-      REAL CMASS (ILG)  !Mass of vegetation canopy [kg m-2]  
-      REAL TSNOW (ILG)  !Temperature of the snow pack [C]  
-      REAL HCPSNO(ILG)  !Heat capacity of snow pack [J m-3 K-1] (Cs) 
-      REAL RHOSNO(ILG)  !Density of snow pack [kg m-3]
+      REAL FI    (ILG),    CMASS (ILG),    TSNOW (ILG),    
+     1     HCPSNO(ILG),    RHOSNO(ILG)
 C
 C     * WORK ARRAYS.
 C
@@ -108,68 +69,14 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
-      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
-                    !(2.25*10^6) [J m-3 K-1]
-      REAL HCPOM    !Volumetric heat capacity of organic matter 
-                    !(2.50*10^6) [J m-3 K-1]
-      REAL HCPSND   !Volumetric heat capacity of sand particles 
-                    !(2.13*10^6) [J m-3 K-1]
-      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
-                    !(2.38*10^6) [J m-3 K-1]
-      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
-      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
-      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
-                    ![J kg-1 K-1]
-      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
-      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
-      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
-      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
-                    ![W m-1 K-1]
-      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
-                    ![J kg-1]
-      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
-                    ![J kg-1]
+      REAL DELT,TFREZ,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,
+     1     SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
 C
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
-      !
-      !The calculated fluxes of liquid and frozen water from the canopy 
-      !to the overlying air, obtained as outputs of WPREP, are applied 
-      !to the liquid and frozen intercepted water stores on the 
-      !vegetation canopy, and to the liquid and frozen moisture stores 
-      !at the surface and in the soil. Since there may not be sufficient 
-      !water in one or more of these stores to sustain the calculated 
-      !rate over the whole time step, a hierarchy of operations is 
-      !followed as described below. The change of internal energy HTC in 
-      !the canopy, snow and soil layers as a result of these processes 
-      !is calculated as the difference in HTC between the beginning and 
-      !end of the subroutine:
-      !
-      !delta_HTCC = FI*delta(Cc*Tc )/DELT
-      !delta_HTCS = FI*delta(Cs*Ts*zs)/DELT
-      !
-      !where the C terms represent volumetric heat capacities and the T 
-      !terms temperatures of the canopy and snow pack, DELT is the 
-      !length of the time step, zs the snow depth, and FI the fractional 
-      !coverage of the subarea under consideration relative to the 
-      !modelled area. For the soil layers, since only the liquid water 
-      !content is affected by these calculations, the change in internal 
-      !energy of each layer is calculated from the change in liquid 
-      !water content THLIQ as:
-      !
-      !delta_HTC = FI*Cw*DELZW*delta(Tg*THLIQ)/DELT
-      !
-
-
 C     * INITIALIZE ARRAYS.
 C     * (THE WORK ARRAY "IROOT" INDICATES POINTS WHERE TRANSPIRATION
 C     * CAN OCCUR.)
@@ -193,27 +100,6 @@ C
               IF(FROOT(I,J).GT.1.0E-5) IROOT(I)=1
           ENDIF
   100 CONTINUE
-      !
-      !Sublimation is addressed first. The predicted mass of sublimated 
-      !water SLOST is calculated and compared to the frozen water in the 
-      !canopy interception store, SNOCAN. If SLOST <= SNOCAN, all of the 
-      !sublimated water is subtracted from SNOCAN. If not, the excess 
-      !sublimation is calculated as SLOST-SNOCAN, QFCF is corrected for 
-      !the canopy sublimation difference, and SNOCAN is set to zero. 
-      !Next, the new value of SLOST is compared to the snowpack mass, 
-      !calculated as ZSNOW*RHOSNO. If SLOST <= ZSNOW*RHOSNO, all of the 
-      !remaining sublimated water is taken from the snow pack, and QFN 
-      !is modified to reflect this loss. Otherwise, the excess 
-      !sublimation is calculated as SLOST - ZSNOW*RHOSNO, QFN is 
-      !adjusted accordingly, and ZSNOW is set to zero. There now remain 
-      !no further frozen moisture stores from which sublimated water can 
-      !be taken (frozen water in the soil is assumed to be immobile), so 
-      !the remaining energy that had been assigned to sublimation is 
-      !assigned to canopy evaporation instead, and QFCL is duly 
-      !recalculated. This means, however, that a small imbalance will 
-      !arise in the water budget owing to the difference between the 
-      !latent heats of sublimation and evaporation. This imbalance is 
-      !assigned to the housekeeping variable WLOST.
 C
 C     * SUBLIMATION CASE.  IF SNOW ON CANOPY IS INSUFFICIENT TO SUPPLY
 C     * DEMAND, RESIDUAL IS TAKEN FIRST FROM SNOW UNDERLYING CANOPY AND
@@ -246,23 +132,6 @@ C
               ENDIF                                                                   
           ENDIF
   200 CONTINUE
-      !
-      !Now canopy evaporation is addressed. It is assumed that all 
-      !intercepted liquid water evaporates before transpiration begins, 
-      !since there is a canopy stomatal resistance associated with 
-      !transpiration and there is none associated with evaporation. The 
-      !predicted mass of evaporated water RLOST is calculated and 
-      !compared to the liquid water in the canopy interception store, 
-      !RAICAN. If RLOST <= RAICAN, all of the evaporated water is 
-      !subtracted from RAICAN. If not, the excess evaporation is 
-      !calculated as RLOST - RAICAN, and QFCL is corrected for the 
-      !canopy evaporation difference. This excess evaporation is now 
-      !treated as transpiration. An initial check is done by referring 
-      !to the diagnostic flag IROOT, which was set to 1 at the beginning 
-      !of the subroutine if there was water available for transpiration 
-      !in any of the soil layers. If IROOT is zero, no transpiration can 
-      !occur and the excess evaporation is stored in the temporary 
-      !variable EVLOST.
 C
 C     * EVAPORATION.  IF WATER ON CANOPY IS INSUFFICIENT TO SUPPLY
 C     * DEMAND, ASSIGN RESIDUAL TO TRANSPIRATION.
@@ -283,19 +152,6 @@ C
               ENDIF
           ENDIF
   300 CONTINUE
-      !
-      !The next loop is performed if IROOT=1, i.e. if transpiration is 
-      !possible. For each soil layer, the volumetric water content that 
-      !is removed by transpiration, THTRAN, is calculated from RLOST 
-      !(converted to a volumetric content by dividing by the density of 
-      !water and the permeable thickness of the soil layer), and the 
-      !fractional contribution of the soil layer FROOT. If there is 
-      !enough liquid water in the soil layer to supply THTRAN, the 
-      !diagnostic transpiration flux QFC for the layer is updated using 
-      !THTRAN, and the liquid water content of the layer is updated as 
-      !THLIQ-THTRAN. If not, QFC is updated using the available water in 
-      !the soil layer, THLIQ is set to THLMIN, and the residual 
-      !untranspired water is added to EVLOST.
 C
 C     * TRANSPIRATION.
 C
@@ -324,10 +180,6 @@ C
               ENDIF                                                       
           ENDIF
   400 CONTINUE                                                        
-      !
-      !In the final cleanup, the canopy heat capacity is recalculated, 
-      !the contents of EVLOST are added to WLOST, and the remaining 
-      !internal energy calculations are completed.
 C
 C     * CLEANUP.
 C
