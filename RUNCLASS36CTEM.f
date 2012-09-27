@@ -2086,7 +2086,6 @@ C
      D      PAICROW,    SLAICROW, SANDROW,CLAYROW )
 C
 C
-         write(*,*)'here!!!',FCANCMXGAT(2,2)
       CALL  BIO2STR( GLEAFMASGAT,BLEAFMASGAT,STEMMASSGAT,ROOTMASSGAT, 
      1                           ICC,      ILG,        1,      NML,
      2                           IGND,     ICAN,FCANCMXGAT, ZBTWGAT,
@@ -2096,7 +2095,6 @@ C
      6                 CMASVEGCGAT, VEGHGHTGAT, ROOTDPTHGAT,ALVSCTMGAT,
      7                     ALIRCTMGAT, PAICGAT,  SLAICGAT)
 C
-         write(*,*)'here2!!',FCANCMXGAT(2,2)
 C    FIND THE WILTING POINT AND FIELD CAPACITY FOR CLASST
 C    JM SEP 06/12
         DO 119 I = 1,ILG

@@ -623,16 +623,6 @@ C
      4                      ANNPCP,  ANPOTEVP,
      5                    PFTEXIST)
         ENDIF
-C     Is this supposed to be here????? JM 26 sep 12.
-      PFTEXIST(1,1)=1
-      PFTEXIST(1,2)=0
-      PFTEXIST(1,3)=0
-      PFTEXIST(1,4)=1
-      PFTEXIST(1,5)=0
-      PFTEXIST(1,6)=0
-      PFTEXIST(1,7)=0
-      PFTEXIST(1,8)=1
-      PFTEXIST(1,9)=0
 C
 C     CALL COMPETITION SUBROUTINE WHICH ON THE BASIS OF PREVIOUS DAY'S
 C     NPP ESTIMATES CHANGES IN FRACTIONAL COVERAGE OF PFTs
@@ -876,16 +866,20 @@ C
 C     FIND MAINTENANCE RESPIRATION FOR CANOPY OVER SNOW SUB-AREA
 C     in uMOL CO2/M2/SEC
 C
+C     FLAG! temporary fix! Since we can't use TCANS, use TA. JM Sep 2012
       CALL   MAINRES (FCANCS,      FCS,     STEMMASS,   ROOTMASS,        
      1                   ICC,       IG,          ILG,        IL1,
-     2                   IL2,    TCANS,       TBARCS,   RMATCTEM,
+C     2                   IL2,    TCANS,       TBARCS,   RMATCTEM,
+     2                   IL2,       TA,       TBARCS,   RMATCTEM,
      3                  SORT, NOL2PFTS,           IC,      ISAND,
      4              RMSCSVEG, RMRCSVEG,     RTTEMPCS)
 C
 C     FIND MAINTENANCE RESPIRATION FOR CANOPY OVER GROUND SUB-AREA
 C
+C     FLAG! temporary fix! Since we can't use TCAN, use TA. JM Sep 2012
       CALL   MAINRES ( FCANC,       FC,     STEMMASS,   ROOTMASS,        
      1                   ICC,       IG,          ILG,        IL1,
+C     2                   IL2,     TCAN,        TBARC,   RMATCTEM,
      2                   IL2,       TA,        TBARC,   RMATCTEM,
      3                  SORT, NOL2PFTS,           IC,      ISAND,
      4              RMSCGVEG, RMRCGVEG,     RTTEMPCG)
