@@ -267,6 +267,7 @@ C
 C
 C     ------ 1. CONVERSION OF LEAF BIOMASS INTO LEAF AREA INDEX -------
 C
+       write(*,*)'inside',FCANCMX(2,2)
 C     FIND SPECIFIC LEAF AREA (SLA, M2/KG) USING LEAF LIFE SPAN
 C
       ICOUNT=0
@@ -288,7 +289,7 @@ C     ALSO FIND STEM AREA INDEX AS A FUNCTION OF STEM BIOMASS
 C
       DO 150 J = 1,ICC
         DO 160 I = IL1,IL2
-         IF (FCANCMX(I,J).GT.0.0) THEN
+!         IF (FCANCMX(I,J).GT.0.0) THEN !flag
           AILCG(I,J)=SLA(J)*GLEAFMAS(I,J)
           AILCB(I,J)=SLA(J)*BLEAFMAS(I,J)*FRACBOFG
           SAI(I,J)=0.55*(1.0-EXP(-0.175*STEMMASS(I,J))) !STEM AREA INDEX
@@ -298,9 +299,9 @@ C         AND STEM AREA INDEX
 
 C         THIS IS A (TEMPORARY)BUG FIX. CLASS WAS CRASHING WITH THE LOWER PAI. 
 C         FEB 27 2012 V. ARORA AND J. MELTON FLAG
-C           PAI(I,J)=MAX(0.3,PAI(I,J))
-          PAI(I,J)=MAX(2.0,PAI(I,J))
-         ENDIF
+           PAI(I,J)=MAX(0.3,PAI(I,J))
+C         PAI(I,J)=MAX(2.0,PAI(I,J))
+!         ENDIF
 160     CONTINUE
 150   CONTINUE
 C
@@ -332,7 +333,6 @@ C
             SAIC(I,J)=SAIC(I,J)+(FCANCMX(I,M)*SAI(I,M))
             PAIC(I,J)=PAIC(I,J)+(FCANCMX(I,M)*PAI(I,M))
             SLAIC(I,J)=SLAIC(I,J)+(FCANCMX(I,M)*SLAI(I,M))
-          write(*,*)'first',paic(i,j),i,j
 220       CONTINUE
 210     CONTINUE
 200   CONTINUE
@@ -351,7 +351,6 @@ C
              PAIC(I,J)=0.0
              SLAIC(I,J)=0.0
           ENDIF
-          write(*,*)'second',paic(i,j),i,j
 C         FOR CROPS AND GRASSES SET THE MINIMUM LAI TO A SMALL NUMBER, OTHER
 C         WISE CLASS WILL NEVER RUN TSOLVC AND THUS PHTSYN AND CTEM WILL NOT
 C         BE ABLE TO GROW CROPS OR GRASSES.
@@ -587,7 +586,7 @@ C    MAKE SURE ALL FRACTIONS (OF ROOTS IN EACH LAYER) ADD TO ONE.
 C
       DO 411 J = 1, ICC
         DO 412 I = IL1, IL2
-         IF (FCANCMX(I,J).GT.0.0) THEN
+!         IF (FCANCMX(I,J).GT.0.0) THEN !flag
           RMAT_SUM = 0.0
           DO 413 K = 1, IG
             RMAT_SUM = RMAT_SUM + RMATCTEM(I,J,K)
@@ -599,7 +598,7 @@ C
      &NOT ADDING TO ONE. SUM  = ',F12.7)
            CALL XIT('BIO2STR',-3)
           ENDIF
-         ENDIF
+ !        ENDIF
 412     CONTINUE
 411   CONTINUE
 C
@@ -646,7 +645,7 @@ C     -------------------  4. CALCULATE STORAGE LAI  --------------------
 C
       DO 500 J = 1, ICC
         DO 510 I = IL1, IL2
-         IF (FCANCMX(I,J).GT.0.0) THEN
+!         IF (FCANCMX(I,J).GT.0.0) THEN !flag
           SLAI(I,J)=((STEMMASS(I,J)+ROOTMASS(I,J))/ETA(SORT(J)))
      &     **(1./KAPPA(SORT(J)))
           SLAI(I,J)=(PRCNSLAI(SORT(J))/100.0)*SLA(J)*SLAI(I,J)
@@ -654,7 +653,7 @@ C
 C         NEED A MINIMUM SLAI TO BE ABLE TO GROW FROM SCRATCH. CONSIDER
 C         THIS AS MODEL SEEDS.
           SLAI(I,J)=MAX(SLAI(I,J),MINSLAI(SORT(J)))
-         ENDIF
+!         ENDIF
 510     CONTINUE
 500   CONTINUE
 C
@@ -664,9 +663,9 @@ C     ---------------- CANOPY MASS FOR EACH CLASS PFT ------------------
 C
       DO 550 J = 1, ICC
         DO 560 I = IL1, IL2
-         IF (FCANCMX(I,J).GT.0.0) THEN
+!         IF (FCANCMX(I,J).GT.0.0) THEN !flag
           BMASVEG(I,J)=GLEAFMAS(I,J)+STEMMASS(I,J)+ROOTMASS(I,J)
-         ENDIF
+!         ENDIF
 560     CONTINUE
 550   CONTINUE
 C

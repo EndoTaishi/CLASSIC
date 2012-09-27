@@ -307,10 +307,7 @@ C
                   CPHCHC(I)=CLHVAP                                                           
               ENDIF                    
               RBINV(I)=RBCOEF(I)*SQRT(VAC(I))
-       write(*,*)'bull',RBCOEF
-       write(*,*)'f me4',i,RBINV(I),RBCOEF(I),SQRT(VAC(I))
               RB(I)=1.0/RBINV(I)
-       write(*,*)'f me5'
               TZERO(I)=TGND(I)
               TCANO(I)=TCAN(I)
               TSTEP(I)=1.0
