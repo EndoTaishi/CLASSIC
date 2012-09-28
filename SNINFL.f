@@ -1,6 +1,9 @@
       SUBROUTINE SNINFL(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW,
      1                  HTCS,HMFN,PCPG,ROFN,FI,ILG,IL1,IL2,JL)                      
 C
+C     Purpose: Address infiltration of rain and meltwater into snow 
+C     pack, and snow ripening.
+C
 C     * DEC 23/09 - D.VERSEGHY. RESET WSNOW TO ZERO WHEN SNOW
 C     *                         PACK DISAPPEARS.
 C     * SEP 23/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
@@ -28,13 +31,23 @@ C
 C
 C     * INPUT/OUTPUT ARRAYS.
 C
-      REAL R     (ILG),    TR    (ILG),    ZSNOW (ILG),    TSNOW (ILG),
-     1     RHOSNO(ILG),    HCPSNO(ILG),    WSNOW (ILG),    HTCS  (ILG),    
-     2     HMFN  (ILG),    PCPG  (ILG),    ROFN  (ILG)
+      REAL R     (ILG)  !Rainfall rate incident on snow pack [m s -1]
+      REAL TR    (ILG)  !Temperature of rainfall [C]  
+      REAL ZSNOW (ILG)  !Depth of snow pack [m] (zg)
+      REAL TSNOW (ILG)  !Temperature of the snow pack [C] (Ts)
+      REAL RHOSNO(ILG)  !Density of snow pack [kg m-3] (ρs )  
+      REAL HCPSNO(ILG)  !Heat capacity of snow pack [J m-3 K-1] (Cs)  
+      REAL WSNOW (ILG)  !Liquid water content of snow pack [kg m-2] (ws) 
+      REAL HTCS  (ILG)  !Internal energy change of snow pack due to conduction and/or change in mass [W m-2] (Is)  
+      REAL HMFN  (ILG)  !Energy associated with freezing or thawing of water in the snow pack [W m -2]  
+      REAL PCPG  (ILG)  !Precipitation incident on ground [kg m-2 s-1]  
+      REAL ROFN  (ILG)  !Runoff reaching the ground surface from the bottom of the snow pack [kg m-2 s-1]
+
 C
 C     * INPUT ARRAYS.
 C
-      REAL FI    (ILG)
+      REAL FI    (ILG)  !Fractional coverage of subarea in question on modelled area [ ] (Xi)
+
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -42,8 +55,23 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT,TFREZ,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,
-     1     SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
+      REAL DELT     !Time step [s]
+      REAL TFREZ    !Freezing point of water [K]
+      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) [J m-3 K-1]
+      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) [J m-3 K-1]
+      REAL HCPSOL   !Volumetric heat capacity of mineral matter (2.25*10^6) [J m-3 K-1]
+      REAL HCPOM    !Volumetric heat capacity of organic matter (2.50*10^6) [J m-3 K-1]
+      REAL HCPSND   !Volumetric heat capacity of sand particles (2.13*10^6) [J m-3 K-1]
+      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles (2.38*10^6) [J m-3 K-1]
+      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
+      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
+      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) [J kg-1 K-1]
+      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
+      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
+      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
+      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) [W m-1 K-1]
+      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) [J kg-1]
+      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) [J kg-1]
 C                                                                                    
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
@@ -53,16 +81,68 @@ C
       WSNCAP=0.04
 C      WSNCAP=0.0
 C-----------------------------------------------------------------------
+      !
+      !The rainfall rate, i.e. the liquid water precipitation rate 
+      !incident on the snow pack from the atmosphere,
+      !from canopy drip and/or from melting of the top of the snow pack, 
+      !may cause warming and/or melting
+      !of the snow pack as a whole. The overall change of internal 
+      !energy of the snow pack as a result of the
+      !rainfall added to it, Is or HTCS, is calculated as the difference 
+      !in Is between the beginning and end of the
+      !subroutine:
+      !
+      !delta_Is = FI*delta[HCPSNO*zs*TSNOW]/DELT
+      !
+      !where HCPSNO represents the volumetric heat capacity of the snow 
+      !pack, TSNOW its temperature, DELT the length of the
+      !time step, and Xi the fractional coverage of the subarea under 
+      !consideration relative to the modelled area.  
+      !
       DO 100 I=IL1,IL2
           IF(FI(I).GT.0. .AND. R(I).GT.0. .AND. ZSNOW(I).GT.0.)
-     1                                                              THEN    
+     1                                                              THEN
               HTCS(I)=HTCS(I)-FI(I)*HCPSNO(I)*(TSNOW(I)+TFREZ)*
      1                ZSNOW(I)/DELT
-              RAIN=R(I)*DELT                                                                 
+              RAIN=R(I)*DELT
+              !
+              !Four diagnostic variables are evaluated at the outset. 
+              !HRCOOL, the energy sink required to cool the
+              !whole rainfall amount to 0 C, is calculated from the 
+              !rainfall rate and temperature, and the heat capacity of
+              !water. HRFREZ, the energy sink required to freeze all the 
+              !rainfall, is obtained from the latent heat of
+              !melting, the density of water and the rainfall rate. 
+              !HSNWRM, the energy required to warm the whole
+              !snow pack to 0 C, is calculated from the temperature, 
+              !heat capacity and depth of the snow pack.
+              !HSNMLT, the energy required to melt all the snow, is 
+              !obtained from the latent heat of melting and the
+              !heat capacity and depth of the snow pack.
+              !                                                                 
               HRCOOL=TR(I)*HCPW*RAIN                                                         
               HRFREZ=CLHMLT*RHOW*RAIN                                                     
               HSNWRM=(0.0-TSNOW(I))*HCPSNO(I)*ZSNOW(I)                                             
-              HSNMLT=CLHMLT*RHOSNO(I)*ZSNOW(I)                                                  
+              HSNMLT=CLHMLT*RHOSNO(I)*ZSNOW(I)
+              !
+              !If HRCOOL >= (HSNWRM + HSNMLT), the energy contributed by 
+              !the temperature of the rainfall is
+              !sufficient to warm to 0 C and melt the whole snow pack. 
+              !HRCOOL is recalculated as the difference
+              !between HRCOOL and (HSNWRM + HSNMLT), and the snow depth 
+              !is converted to a water depth
+              !ZMELT. The energy used to melt the snow is added to the 
+              !diagnostic variables HMFN, representing the
+              !energy associated with water phase changes in the snow 
+              !pack, and HTCS. The new temperature of the
+              !rainfall is calculated by applying HRCOOL over the new 
+              !rainfall rate reaching the soil, which now
+              !includes the original rainfall rate, the melted snow pack 
+              !and the liquid water that was contained in the
+              !snow pack. The depth, temperature, density, heat capacity 
+              !and liquid water content of the snow pack are
+              !set to zero.
+              !                                                  
               IF(HRCOOL.GE.(HSNWRM+HSNMLT))                 THEN                                          
                   HRCOOL=HRCOOL-(HSNWRM+HSNMLT)                                           
                   ZMELT=ZSNOW(I)*RHOSNO(I)/RHOW                                                 
@@ -75,6 +155,32 @@ C-----------------------------------------------------------------------
                   RHOSNO(I)=0.0                                                              
                   HCPSNO(I)=0.0                                                              
                   WSNOW(I)=0.0
+              !
+              !If HRCOOL >= HSNWRM but HRCOOL < (HSNWRM + HSNMLT), the 
+              !energy contributed by the
+              !temperature of the rainfall is sufficient to warm the 
+              !whole snowpack to 0 C but not to melt all of it.
+              !HSNMLT is therefore recalculated as HRCOOL - HSNWRM, and 
+              !used to determine a melted depth of
+              !the snowpack ZMELT, which is subtracted from the snow 
+              !depth ZSNOW. The energy used to melt this
+              !depth of snow is added to HMFN and HTCS. The total water 
+              !now available for retention in the
+              !snowpack, WAVAIL, is obtained as the sum of the mass of 
+              !melted water and the mass of water originally
+              !retained in the snow pack, WSNOW. This amount is compared 
+              !to the water retention capacity of the
+              !snow pack, calculated from the maximum retention 
+              !percentage by weight, WSNCAP (currently set to
+              !4%). If WAVAIL is greater than the water retention 
+              !capacity, WSNOW is set to the capacity value and
+              !the excess is reassigned to ZMELT. Otherwise WSNOW is set 
+              !to WAVAIL and ZMELT is set to zero.
+              !The temperature of the snow and the temperature TR of the 
+              !rainfall reaching the ground surface are each
+              !set to 0 C, HCPSNO is recalculated, and ZMELT is added to 
+              !the rainfall rate R.
+              !
               ELSE IF(HRCOOL.GE.HSNWRM .AND. HRCOOL.LT.(HSNWRM+HSNMLT))
      1                                                      THEN
                   HSNMLT=HRCOOL-HSNWRM                                                    
@@ -94,7 +200,22 @@ C-----------------------------------------------------------------------
                   HCPSNO(I)=HCPICE*RHOSNO(I)/RHOICE+HCPW*WSNOW(I)/
      1                (RHOW*ZSNOW(I))
                   TR(I)=0.0                                                                  
-                  R(I)=R(I)+ZMELT/DELT                                                          
+                  R(I)=R(I)+ZMELT/DELT   
+              !
+              !If HSNWRM >= (HRCOOL + HRFREZ), the energy sink of the 
+              !snow pack is sufficient to cool to 0 C
+              !and freeze all of the rainfall. HSNWRM is recalculated 
+              !as the difference between HSNWRM and
+              !(HRCOOL + HRFREZ). The energy used in the freezing, 
+              !HRFREZ, is added to HMFN and HTCS.
+              !The rainfall is applied to increasing the density of the 
+              !snow pack RHOSNO; if the new density is greater
+              !than the density of ice, RHOSNO is reset to the ice 
+              !density and ZSNOW is recalculated. HCPSNO is
+              !also recalculated, and the new snow temperature is 
+              !obtained from HSNWRM, HCPSNO and ZSNOW.
+              !R and TR are set to zero.
+              !                                                       
               ELSE IF(HSNWRM.GE.(HRCOOL+HRFREZ))            THEN                                      
                   HSNWRM=(HRCOOL+HRFREZ)-HSNWRM                                           
                   HMFN(I)=HMFN(I)-FI(I)*HRFREZ/DELT
@@ -108,7 +229,29 @@ C-----------------------------------------------------------------------
      1                (RHOW*ZSNOW(I))
                   TSNOW(I)=HSNWRM/(HCPSNO(I)*ZSNOW(I))                                             
                   TR(I)=0.0                                                                  
-                  R(I)=0.0                                                                   
+                  R(I)=0.0   
+              !
+              !If HSNWRM > HRCOOL and HSNWRM < (HRCOOL + HRFREZ), the 
+              !energy sink of the snow pack
+              !is sufficient to cool the rainfall to 0 C, but not to 
+              !freeze all of it. HRFREZ is therefore recalculated as
+              !HSNWRM – HRCOOL, and used to determine a depth of rain to 
+              !be frozen, ZFREZ. The energy used
+              !in the freezing is added to HMFN and HTCS. The frozen 
+              !rainfall is applied to increasing the density of
+              !the snow pack as above; if the calculated density exceeds 
+              !that of ice, RHOSNO and ZSNOW are
+              !recalculated. The water available for retention in the 
+              !snow pack, WAVAIL, is obtained as the sum of the
+              !unfrozen rainfall and WSNOW, and compared to the water 
+              !retention capacity of the snow pack. If
+              !WAVAIL is greater than the water retention capacity, 
+              !WSNOW is set to the capacity value and WAVAIL
+              !is recalculated. Otherwise WSNOW is set to WAVAIL and 
+              !WAVAIL is set to zero. The heat capacity of
+              !the snow is recalculated, R is calculated from WAVAIL, 
+              !and TR and TSNOW are set to zero.
+              !                                                                
               ELSE IF(HSNWRM.GE.HRCOOL .AND. HSNWRM.LT.(HRCOOL+HRFREZ)) 
      1                                                      THEN
                   HRFREZ=HSNWRM-HRCOOL                                                    
@@ -133,7 +276,13 @@ C-----------------------------------------------------------------------
                   R(I)=WAVAIL/(RHOW*DELT)
                   TR(I)=0.0                                                                  
                   TSNOW(I)=0.0                                                               
-              ENDIF                                                                       
+              ENDIF 
+              !
+              !Finally, the calculation of the change in internal energy 
+              !is completed, and the rainfall rate leaving the
+              !bottom of the snow pack and reaching the soil is added to 
+              !the diagnostic variables PCPG and ROFN.
+              !                                                                      
               HTCS(I)=HTCS(I)+FI(I)*HCPSNO(I)*(TSNOW(I)+TFREZ)*
      1                ZSNOW(I)/DELT
               PCPG(I)=PCPG(I)+FI(I)*R(I)*RHOW

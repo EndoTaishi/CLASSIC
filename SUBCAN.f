@@ -1,6 +1,9 @@
       SUBROUTINE SUBCAN(IWATER,R,TR,S,TS,RHOSNI,EVAPG,QFN,QFG,
      1                  PCPN,PCPG,FI,ILG,IL1,IL2,JL)
 C
+C     Purpose: Assess water flux elements at the ground surface under 
+C     the vegetation canopy.
+C
 C     * SEP 23/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
 C     * JUL 21/04 - D.VERSEGHY. NEW LOWER LIMITS ON RADD AND SADD,
 C     *                         CONSISTENT WITH WPREP.
@@ -32,13 +35,20 @@ C
 C
 C     * INPUT/OUTPUT ARRAYS.
 C
-      REAL R     (ILG),    TR    (ILG),    S     (ILG),    TS    (ILG),
-     1     RHOSNI(ILG),    EVAPG (ILG),    QFN   (ILG),    QFG   (ILG),
-     2     PCPN  (ILG),    PCPG  (ILG)
+      REAL R     (ILG)  !Rainfall rate incident on ground [m s-1]
+      REAL TR    (ILG)  !Temperature of rainfall [C]  
+      REAL S     (ILG)  !Snowfall rate incident on ground [m -1s ]  
+      REAL TS    (ILG)  !Temperature of snowfall [C]
+      REAL RHOSNI(ILG)  !Density of fresh snow [kg m-3]  
+      REAL EVAPG (ILG)  !Evaporation rate from surface [m s-1]  
+      REAL QFN   (ILG)  !Sublimation from snow pack [kg m-2 s-1]  
+      REAL QFG   (ILG)  !Evaporation from ground [kg m-2 s-1]
+      REAL PCPN  (ILG)  !Precipitation incident on ground [kg m-2 s-1]  
+      REAL PCPG  (ILG)  !Precipitation incident on ground [kg m-2 s-1]
 C
 C     * INPUT ARRAYS.
 C
-      REAL FI    (ILG)
+      REAL FI    (ILG)  !Fractional coverage of subarea in question on modelled area [ ]
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -46,15 +56,51 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT,TFREZ,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,
-     1     SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
+      REAL DELT     !Time step [s]
+      REAL TFREZ    !Freezing point of water [K]
+      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) [J m-3 K-1]
+      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) [J m-3 K-1]
+      REAL HCPSOL   !Volumetric heat capacity of mineral matter (2.25*10^6) [J m-3 K-1]
+      REAL HCPOM    !Volumetric heat capacity of organic matter (2.50*10^6) [J m-3 K-1]
+      REAL HCPSND   !Volumetric heat capacity of sand particles (2.13*10^6) [J m-3 K-1]
+      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles (2.38*10^6) [J m-3 K-1]
+      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
+      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
+      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) [J kg-1 K-1]
+      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
+      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
+      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
+      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) [W m-1 K-1]
+      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) [J kg-1]
+      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) [J kg-1]
 C                                                                                 
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
+      !
+      !This subroutine starts with the precipitation rate under the 
+      !canopy (a result of throughfall and unloading)
+      !and calculates the resulting overall evaporation or deposition 
+      !rates.
+      !
       DO 100 I=IL1,IL2
+          !
+          !For IWATER = 2 (snow on the ground under the canopy), the 
+          !water vapour flux EVAPG at the ground
+          !surface is in the first instance assumed to be sublimation. 
+          !Thus the first step is to compare it to the
+          !snowfall rate. The sum of the snowfall rate and the 
+          !evaporation rate, SADD, is calculated as S – EVAPG,
+          !with EVAPG converted from a liquid water flux (the standard 
+          !output from TSOLVC) to a snow flux. If
+          !SADD is greater than zero (indicating a downward flux) the 
+          !snowfall rate is set to SADD and EVAPG is
+          !set to zero. Otherwise EVAPG is set to -SADD (converted back 
+          !to a liquid water flux), and S and TS are
+          !set to zero.
+          !
           IF(FI(I).GT.0. .AND. IWATER.EQ.2)                        THEN
               IF(S(I).GT.0. .OR. EVAPG(I).LT.0.)             THEN  
                   SADD=S(I)-EVAPG(I)*RHOW/RHOSNI(I)
@@ -72,6 +118,13 @@ C-----------------------------------------------------------------------
                   TS(I)=0.0                                                                  
               ENDIF
 C
+              !After this section, any remaining evaporative flux is 
+              !compared to the rainfall rate. The sum RADD is
+              !calculated as R – EVAPG. If RADD is greater than zero, 
+              !the rainfall rate is set to RADD and EVAPG is
+              !set to zero. Otherwise EVAPG is set to –RADD, and R and 
+              !TR are set to zero.
+              !
               IF(R(I).GT.0. .OR. EVAPG(I).LT.0.)            THEN  
                   RADD=R(I)-EVAPG(I)                                                            
                   IF(ABS(RADD).LT.1.0E-12) RADD=0.0
@@ -89,7 +142,23 @@ C
               ENDIF                                                               
           ENDIF                                                                       
   100 CONTINUE
-C                                                                                  
+C 
+      !Analogous calculations are done for IWATER = 1 (bare ground under
+      !the canopy). In this case EVAPG
+      !is assumed in the first instance to be evaporation or 
+      !condensation. Thus the first step is to compare it to
+      !the rainfall rate, and the same steps are followed as in the 
+      !paragraph above. Afterwards, any remaining
+      !vapour flux is compared to the snowfall rate. If SADD is positive 
+      !(downward), EVAPG, which is now
+      !considered to be absorbed into the snowfall rate, is subtracted 
+      !from the ground vapour flux QFG and
+      !added to the snow vapour flux QFN. If SADD is negative (upward), 
+      !S, which has now been absorbed
+      !into the evaporative flux, is subtracted from the snow 
+      !precipitation flux PCPN and added to the ground
+      !precipitation flux PCPG.
+      !                                                                                 
       DO 200 I=IL1,IL2
           IF(FI(I).GT.0. .AND. IWATER.EQ.1)                        THEN
               IF(R(I).GT.0. .OR. EVAPG(I).LT.0.)            THEN  

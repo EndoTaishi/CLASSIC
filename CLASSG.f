@@ -41,6 +41,10 @@
      +                  SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,
      +                  GGEOROW  )
 C
+C     Purpose: Gather variables from two-dimensional arrays (latitude 
+C     circle x mosaic tiles) onto long vectors for optimum processing 
+C     efficiency on vector supercomputers.
+C
 C     * OCT 18/11 - M.LAZARE.  ADD IGDR.
 C     * OCT 07/11 - M.LAZARE.  ADD VMODL->VMODGAT.
 C     * OCT 05/11 - M.LAZARE.  PUT BACK IN PRESGROW->PRESGAT
@@ -65,19 +69,42 @@ C     *                         VARIABLES.
 C 
       IMPLICIT NONE
 C
+C     (Suffix GAT refers to variables on gathered long vectors; suffix 
+C     ROT refers to variables on original two-dimensional arrays.)
+C
 C     * INTEGER CONSTANTS.
 C
       INTEGER  NML,NL,NM,ILG,IG,IC,ICP1,K,L,M
 C
 C     * LAND SURFACE PROGNOSTIC VARIABLES.
 C
-      REAL    TBARROT(NL,NM,IG), THLQROT(NL,NM,IG), THICROT(NL,NM,IG), 
-     1        TPNDROT(NL,NM),    ZPNDROT(NL,NM),    TBASROT(NL,NM),   
-     2        ALBSROT(NL,NM),    TSNOROT(NL,NM),    RHOSROT(NL,NM),   
-     3        SNOROT (NL,NM),    TCANROT(NL,NM),    RCANROT(NL,NM),   
-     4        SCANROT(NL,NM),    GROROT (NL,NM),    CMAIROT(NL,NM),
-     5        TSFSROT(NL,NM,4),  TACROT (NL,NM),    QACROT (NL,NM),
-     6        WSNOROT(NL,NM)
+      REAL TBARROT(NL,NM,IG)    !Temperature of soil layers [K]
+      REAL THLQROT(NL,NM,IG)    !Volumetric liquid water content of soil 
+                                !layers [m3 m-3]
+      REAL THICROT(NL,NM,IG)    !Frozen water content of soil layers 
+                                !under vegetation [m3 m-3]
+      REAL TPNDROT(NL,NM)   !Temperature of ponded water [K]    
+      REAL ZPNDROT(NL,NM)   !Depth of ponded water on surface [m]
+      REAL TBASROT(NL,NM)   !Temperature of bedrock in third soil layer 
+                            ![K]
+      REAL ALBSROT(NL,NM)   !Snow albedo [ ]
+      REAL TSNOROT(NL,NM)   !Snowpack temperature [K]
+      REAL RHOSROT(NL,NM)   !Density of snow [kg m-3]
+      REAL SNOROT (NL,NM)   !Mass of snow pack [kg m-2] 
+      REAL TCANROT(NL,NM)   !Vegetation canopy temperature [K] 
+      REAL RCANROT(NL,NM)   !Intercepted liquid water stored on canopy 
+                            ![kg m-2]
+      REAL SCANROT(NL,NM)   !Intercepted frozen water stored on canopy 
+                            ![kg m-2]
+      REAL GROROT (NL,NM)   !Vegetation growth index [ ] 
+      REAL CMAIROT(NL,NM)   !Aggregated mass of vegetation canopy 
+                            ![kg m-2]
+      REAL TSFSROT(NL,NM,4) !Ground surface temperature over subarea [K] 
+      REAL TACROT (NL,NM)   !Temperature of air within vegetation canopy 
+                            ![K]
+      REAL QACROT (NL,NM)   !Specific humidity of air within vegetation 
+                            !canopy [kg kg-1]
+      REAL WSNOROT(NL,NM)   !Liquid water content of snow pack [kg m-2]
 C
       REAL    TBARGAT(ILG,IG),   THLQGAT(ILG,IG),   THICGAT(ILG,IG), 
      1        TPNDGAT(ILG),      ZPNDGAT(ILG),      TBASGAT(ILG),   
@@ -89,22 +116,71 @@ C
 C
 C     * GATHER-SCATTER INDEX ARRAYS.
 C
-      INTEGER  ILMOS (ILG),  JLMOS  (ILG),  IWMOS  (ILG),  JWMOS (ILG)
+      INTEGER  ILMOS (ILG)  !Index of latitude grid cell corresponding 
+                            !to current element of gathered vector of 
+                            !land surface variables [ ]
+      INTEGER  JLMOS (ILG)  !Index of mosaic tile corresponding to 
+                            !current element of gathered vector of land 
+                            !surface variables [ ]
+      INTEGER  IWMOS (ILG)  !Index of latitude grid cell corresponding 
+                            !to current element of gathered vector of 
+                            !inland water body variables [ ]
+      INTEGER  JWMOS (ILG)  !Index of mosaic tile corresponding to 
+                            !current element of gathered vector of 
+                            !inland water body variables [ ]
+
 C
 C     * CANOPY AND SOIL INFORMATION ARRAYS.
 C     * (THE LENGTH OF THESE ARRAYS IS DETERMINED BY THE NUMBER
 C     * OF SOIL LAYERS (3) AND THE NUMBER OF BROAD VEGETATION
 C     * CATEGORIES (4, OR 5 INCLUDING URBAN AREAS).)
 C
-      REAL          FCANROT(NL,NM,ICP1), LNZ0ROT(NL,NM,ICP1),
-     1              ALVCROT(NL,NM,ICP1), ALICROT(NL,NM,ICP1),
-     2              PAMXROT(NL,NM,IC),   PAMNROT(NL,NM,IC),
-     3              CMASROT(NL,NM,IC),   ROOTROT(NL,NM,IC),
-     4              RSMNROT(NL,NM,IC),   QA50ROT(NL,NM,IC),
-     5              VPDAROT(NL,NM,IC),   VPDBROT(NL,NM,IC),
-     6              PSGAROT(NL,NM,IC),   PSGBROT(NL,NM,IC),
-     7              PAIDROT(NL,NM,IC),   HGTDROT(NL,NM,IC),
-     8              ACVDROT(NL,NM,IC),   ACIDROT(NL,NM,IC)
+      REAL FCANROT(NL,NM,ICP1)  !Maximum fractional coverage of modelled 
+                                !area by vegetation category [ ]
+      REAL LNZ0ROT(NL,NM,ICP1)  !Natural logarithm of maximum roughness 
+                                !length of vegetation category [ ]
+      REAL ALVCROT(NL,NM,ICP1)  !Background average visible albedo of 
+                                !vegetation category [ ]
+      REAL ALICROT(NL,NM,ICP1)  !Background average near-infrared albedo 
+                                !of vegetation category [ ]
+      REAL PAMXROT(NL,NM,IC)    !Maximum plant area index of vegetation 
+                                !category [ ]
+      REAL PAMNROT(NL,NM,IC)    !Minimum plant area index of vegetation 
+                                !category [ ]
+      REAL CMASROT(NL,NM,IC)    !Maximum canopy mass for vegetation 
+                                !category [kg m-2]
+      REAL ROOTROT(NL,NM,IC)    !Maximum rooting depth of vegetation 
+                                !category [m]
+      REAL RSMNROT(NL,NM,IC)    !Minimum stomatal resistance of 
+                                !vegetation category [s m-1]
+      REAL QA50ROT(NL,NM,IC)    !Reference value of incoming shortwave 
+                                !radiation for vegetation category (used 
+                                !in stomatal resistance calculation) 
+                                ![W m-2]
+      REAL VPDAROT(NL,NM,IC)    !Vapour pressure deficit coefficient for 
+                                !vegetation category (used in stomatal 
+                                !resistance calculation) [ ]
+      REAL VPDBROT(NL,NM,IC)    !Vapour pressure deficit coefficient for 
+                                !vegetation category (used in stomatal 
+                                !resistance calculation) [ ]
+      REAL PSGAROT(NL,NM,IC)    !Soil moisture suction coefficient for 
+                                !vegetation category (used in stomatal 
+                                !resistance calculation) [ ]
+      REAL PSGBROT(NL,NM,IC)    !Soil moisture suction coefficient for 
+                                !vegetation category (used in stomatal 
+                                !resistance calculation) [ ]
+      REAL PAIDROT(NL,NM,IC)    !Optional user-specified value of plant 
+                                !area indices of vegetation categories 
+                                !to override CLASS-calculated values [ ]
+      REAL HGTDROT(NL,NM,IC)    !Optional user-specified values of 
+                                !height of vegetation categories to 
+                                !override CLASS-calculated values [m]
+      REAL ACVDROT(NL,NM,IC)    !Optional user-specified value of canopy 
+                                !visible albedo to override CLASS-
+                                !calculated value [ ]
+      REAL ACIDROT(NL,NM,IC)    !Optional user-specified value of canopy 
+                                !near-infrared albedo to override CLASS-
+                                !calculated value [ ]
 C
       REAL          FCANGAT(ILG,ICP1),   LNZ0GAT(ILG,ICP1),
      1              ALVCGAT(ILG,ICP1),   ALICGAT(ILG,ICP1),
@@ -116,16 +192,61 @@ C
      7              PAIDGAT(ILG,IC),     HGTDGAT(ILG,IC),
      8              ACVDGAT(ILG,IC),     ACIDGAT(ILG,IC)
 C
-      REAL    THPROT (NL,NM,IG), THRROT (NL,NM,IG), THMROT (NL,NM,IG),
-     1        BIROT  (NL,NM,IG), PSISROT(NL,NM,IG), GRKSROT(NL,NM,IG),   
-     2        THRAROT(NL,NM,IG), HCPSROT(NL,NM,IG), 
-     3        TCSROT (NL,NM,IG), THFCROT(NL,NM,IG), PSIWROT(NL,NM,IG),  
-     4        DLZWROT(NL,NM,IG), ZBTWROT(NL,NM,IG), 
-     5        DRNROT (NL,NM),    XSLPROT(NL,NM),    GRKFROT(NL,NM),
-     6        WFSFROT(NL,NM),    WFCIROT(NL,NM),    ALGWROT(NL,NM),   
-     7        ALGDROT(NL,NM),    ASVDROT(NL,NM),    ASIDROT(NL,NM),   
-     8        AGVDROT(NL,NM),    AGIDROT(NL,NM),    ZSNLROT(NL,NM),
-     9        ZPLGROT(NL,NM),    ZPLSROT(NL,NM)
+      REAL THPROT (NL,NM,IG)    !Pore volume in soil layer [m3 m-3] 
+      REAL THRROT (NL,NM,IG)    !Liquid water retention capacity for 
+                                !organic soil [m3 m-3 ]
+      REAL THMROT (NL,NM,IG)    !Residual soil liquid water content 
+                                !remaining after freezing or evaporation 
+                                ![m3 m-3]
+      REAL BIROT  (NL,NM,IG)    !Clapp and Hornberger empirical “b” 
+                                !parameter [ ]
+      REAL PSISROT(NL,NM,IG)    !Soil moisture suction at saturation [m]
+      REAL GRKSROT(NL,NM,IG)    !Saturated hydraulic conductivity of 
+                                !soil layers [m s-1]
+      REAL THRAROT(NL,NM,IG)    !Fractional saturation of soil behind 
+                                !the wetting front [ ]
+      REAL HCPSROT(NL,NM,IG)    !Volumetric heat capacity of soil 
+                                !particles [J m-3]
+      REAL TCSROT (NL,NM,IG)    !Thermal conductivity of soil particles 
+                                ![W m-1 K-1]
+      REAL THFCROT(NL,NM,IG)    !Field capacity [m3 m-3]
+      REAL PSIWROT(NL,NM,IG)    !Soil moisture suction at wilting point 
+                                ![m]
+      REAL DLZWROT(NL,NM,IG)    !Permeable thickness of soil layer [m]
+      REAL ZBTWROT(NL,NM,IG)    !Depth to permeable bottom of soil layer 
+                                ![m]
+      REAL DRNROT (NL,NM)       !Drainage index at bottom of soil 
+                                !profile [ ]
+      REAL XSLPROT(NL,NM)       !Surface slope (used when running MESH 
+                                !code) [degrees]
+      REAL GRKFROT(NL,NM)       !WATROF parameter used when running MESH 
+                                !code [ ]
+      REAL WFSFROT(NL,NM)       !WATROF parameter used when running MESH 
+                                !code [ ]
+      REAL WFCIROT(NL,NM)       !WATROF parameter used when running MESH 
+                                !code [ ]
+      REAL ALGWROT(NL,NM)       !Reference albedo for saturated soil [ ]
+      REAL ALGDROT(NL,NM)       !Reference albedo for dry soil [ ]
+      REAL ASVDROT(NL,NM)       !Optional user-specified value of snow 
+                                !visible albedo to override CLASS-
+                                !calculated value [ ]
+      REAL ASIDROT(NL,NM)       !Optional user-specified value of snow 
+                                !near-infrared albedo to override CLASS-
+                                !calculated value [ ]
+      REAL AGVDROT(NL,NM)       !Optional user-specified value of ground 
+                                !visible albedo to override CLASS-
+                                !calculated value [ ]
+      REAL AGIDROT(NL,NM)       !Optional user-specified value of ground 
+                                !near-infrared albedo to override CLASS-
+                                !calculated value [ ]
+      REAL ZSNLROT(NL,NM)       !Limiting snow depth below which 
+                                !coverage is < 100% [m]
+      REAL ZPLGROT(NL,NM)       !Maximum water ponding depth for snow-
+                                !free subareas (user-specified when 
+                                !running MESH code) [m]
+      REAL ZPLSROT(NL,NM)       !Maximum water ponding depth for snow-
+                                !covered subareas (user-specified when 
+                                !running MESH code) [m]
 C
 
       REAL    THPGAT (ILG,IG),   THRGAT (ILG,IG),   THMGAT (ILG,IG),
@@ -139,19 +260,54 @@ C
      8        AGVDGAT(ILG),      AGIDGAT(ILG),      ZSNLGAT(ILG),
      9        ZPLGGAT(ILG),      ZPLSGAT(ILG)
 C
-      INTEGER ISNDROT(NL,NM,IG), ISNDGAT(ILG,IG)
-      INTEGER IGDRROT(NL,NM),    IGDRGAT(ILG)
-
+      INTEGER ISNDROT(NL,NM,IG), ISNDGAT(ILG,IG)    !Sand content flag
+      INTEGER IGDRROT(NL,NM),    IGDRGAT(ILG)   !Index of soil layer in 
+                                                !which bedrock is 
+                                                !encountered
+C
 C     * ATMOSPHERIC AND GRID-CONSTANT INPUT VARIABLES.
 C
-      REAL  ZRFMROW( NL), ZRFHROW( NL), ZDMROW ( NL), ZDHROW ( NL),
-     1      FSVHROW( NL), FSIHROW( NL), CSZROW ( NL), FDLROW ( NL), 
-     2      ULROW  ( NL), VLROW  ( NL), TAROW  ( NL), QAROW  ( NL), 
-     3      PRESROW( NL), PREROW ( NL), PADRROW( NL), VPDROW ( NL), 
-     4      TADPROW( NL), RHOAROW( NL), ZBLDROW( NL), Z0ORROW( NL),
-     5      RPCPROW( NL), TRPCROW( NL), SPCPROW( NL), TSPCROW( NL),
-     6      RHSIROW( NL), FCLOROW( NL), DLONROW( NL), GGEOROW( NL),
-     7      RADJ   ( NL), VMODL  ( NL)
+      REAL ZRFMROW( NL) !Reference height associated with forcing wind 
+                        !speed [m]
+      REAL ZRFHROW( NL) !Reference height associated with forcing air 
+                        !temperature and humidity [m]
+      REAL ZDMROW ( NL) !User-specified height associated with diagnosed 
+                        !anemometer-level wind speed [m]
+      REAL ZDHROW ( NL) !User-specified height associated with diagnosed 
+                        !screen-level variables [m]
+      REAL FSVHROW( NL) !Visible radiation incident on horizontal 
+                        !surface [W m-2]
+      REAL FSIHROW( NL) !Near-infrared radiation incident on horizontal 
+                        !surface [W m -2]
+      REAL CSZROW ( NL) !Cosine of solar zenith angle [ ]
+      REAL FDLROW ( NL) !Downwelling longwave radiation at bottom of 
+                        !atmosphere [W m-2]
+      REAL ULROW  ( NL) !Zonal component of wind speed [m s-1]
+      REAL VLROW  ( NL) !Meridional component of wind speed [m s-1]
+      REAL TAROW  ( NL) !Air temperature at reference height [K]
+      REAL QAROW  ( NL) !Specific humidity at reference height [kg kg-1]
+      REAL PRESROW( NL) !Surface air pressure [Pa]
+      REAL PREROW ( NL) !Surface precipitation rate [kg m-2 s-1]
+      REAL PADRROW( NL) !Partial pressure of dry air [Pa]
+      REAL VPDROW ( NL) !Vapour pressure deficit [mb]
+      REAL TADPROW( NL) !Dew point temperature of air [K]
+      REAL RHOAROW( NL) !Density of air [kg m-3]
+      REAL ZBLDROW( NL) !Atmospheric blending height for surface 
+                        !roughness length averaging [m]
+      REAL Z0ORROW( NL) !Orographic roughness length [m]
+      REAL RPCPROW( NL) !Rainfall rate over modelled area [m s-1]
+      REAL TRPCROW( NL) !Rainfall temperature [K]
+      REAL SPCPROW( NL) !Snowfall rate over modelled area [m s-1]
+      REAL TSPCROW( NL) !Snowfall temperature [K]
+      REAL RHSIROW( NL) !Density of fresh snow [kg m-3]
+      REAL FCLOROW( NL) !Fractional cloud cover [ ]
+      REAL DLONROW( NL) !Longitude of grid cell (east of Greenwich) 
+                        ![degrees]
+      REAL GGEOROW( NL) !Geothermal heat flux at bottom of soil profile 
+                        ![W m-2]
+      REAL RADJ   ( NL) !Latitude of grid cell (positive north of 
+                        !equator) [rad]
+      REAL VMODL  ( NL) !Wind speed at reference height [m s-1]
 C
       REAL  ZRFMGAT(ILG), ZRFHGAT(ILG), ZDMGAT (ILG), ZDHGAT (ILG),
      1      FSVHGAT(ILG), FSIHGAT(ILG), CSZGAT (ILG), FDLGAT (ILG), 
@@ -162,7 +318,12 @@ C
      6      RHSIGAT(ILG), FCLOGAT(ILG), DLONGAT(ILG), GGEOGAT(ILG),
      7      RADJGAT(ILG), VMODGAT(ILG)
 C----------------------------------------------------------------------
-
+      !
+      !The prognostic, background and input variables are gathered into 
+      !long arrays (collapsing the latitude and mosaic dimensions into 
+      !one, but retaining the soil level and canopy category dimensions) 
+      !using the pointer vectors generated in GATPREP.
+      !
       DO 100 K=1,NML
           TPNDGAT(K)=TPNDROT(ILMOS(K),JLMOS(K))  
           ZPNDGAT(K)=ZPNDROT(ILMOS(K),JLMOS(K))  
