@@ -6,7 +6,7 @@
      5                     PGLFMASS, PBLFMASS, PSTEMASS, PROTMASS,
      6                     PLITMASS, PSOCMASS,   DELTAT, VGBIOMAS,
      7                     PVGBIOMS, GAVGLTMS, PGAVLTMS, GAVGSCMS,
-     8                     PGAVSCMS, GALTCELS,  FCANCMX,
+     8                     PGAVSCMS, GALTCELS, EXPNBALN,
      9                          NPP,  AUTORES, HETRORES,      GPP,
      A                          NEP,   LITRES,   SOCRES, DSTCEMLS,
      B                          NBP, LITRFALL, HUMIFTRS,
@@ -36,7 +36,7 @@ C     BLEAFMAS  - BROWN LEAF MASS FOR EACH OF THE 9 CTEM PFTs
 C     LITRMASS  - LITTER MASS OVER THE 9 PFTs AND THE BARE FRACTION
 C                 OF THE GRID CELL
 C     SOILCMAS  - SOIL CARBON MASS OVER THE 9 PFTs AND THE BARE FRACTION
-C                 OF THE CELL GRID
+C                 OF THE GRID CELL
 C
 C                 GRID AVERAGED POOLS
 C     VGBIOMAS  - VEGETATION BIOMASS
@@ -95,6 +95,7 @@ C     LITRES    - LITTER RESPIRATION
 C     SOCRES    - SOIL CARBON RESPIRATION
 C     DSTCEMLS  - CARBON EMISSION LOSSES DUE TO DISTURBANCE, MAINLY FIRE
 C     GALTCELS  - CARBON EMISSION LOSSES FROM LITTER
+C     EXPNBALN  - AMOUNT OF C RELATED TO SPATIAL EXPANSION
 C     NBP       - NET BIOME PRODUCTIVITY
 C     LITRFALL  - COMBINED (LEAVES, STEM, AND ROOT) TOTAL LITTER FALL RATE   
 C     HUMIFTRS  - HUMIFICATION
@@ -128,7 +129,7 @@ C
      A              NEP(ILG),         LITRES(ILG),         SOCRES(ILG),
      B         DSTCEMLS(ILG),            NBP(ILG),       LITRFALL(ILG),
      C         HUMIFTRS(ILG),                ZERO,            TOLRANCE,
-     D                DELTAT,       GALTCELS(ILG),    FCANCMX(ILG,ICC)
+     D                DELTAT,       GALTCELS(ILG),       EXPNBALN(ILG)
 C
       REAL             DIFF1,               DIFF2
 C
@@ -152,7 +153,7 @@ C     GREEN AND BROWN LEAVES
 C
       DO 100 J = 1, ICC
         DO 110 I = IL1, IL2
-         IF (FCANCMX(I,J).GT.0.0) THEN
+C         IF (FCANCMX(I,J).GT.0.0) THEN  !flag jm. lv out...
           DIFF1=(GLEAFMAS(I,J)+BLEAFMAS(I,J)- PGLFMASS(I,J)-
      &     PBLFMASS(I,J))
           DIFF2=(NTCHLVEG(I,J)- TLTRLEAF(I,J)- GLCAEMLS(I,J)- 
@@ -163,7 +164,7 @@ C
      & THAN OUR TOLERANCE OF ',F12.6,' FOR LEAVES')  
             CALL XIT('BALCAR',-2)
           ENDIF
-         ENDIF
+C         ENDIF
 110     CONTINUE
 100   CONTINUE     
 C
@@ -171,7 +172,7 @@ C     STEM
 C
       DO 150 J = 1, ICC
         DO 160 I = IL1, IL2
-         IF (FCANCMX(I,J).GT.0.0) THEN
+C         IF (FCANCMX(I,J).GT.0.0) THEN  !flag jm. lv out...
           DIFF1=STEMMASS(I,J) - PSTEMASS(I,J)
           DIFF2=(NTCHSVEG(I,J)- TLTRSTEM(I,J)- 
      &     STCAEMLS(I,J))*(DELTAT/963.62)
@@ -181,7 +182,7 @@ C
      & THAN OUR TOLERANCE OF ',F12.6,' FOR STEM')
             CALL XIT('BALCAR',-3)
           ENDIF
-         ENDIF
+C         ENDIF
 160     CONTINUE
 150   CONTINUE    
 C
@@ -189,7 +190,7 @@ C     ROOT
 C
       DO 200 J = 1, ICC
         DO 210 I = IL1, IL2
-         IF (FCANCMX(I,J).GT.0.0) THEN
+C         IF (FCANCMX(I,J).GT.0.0) THEN  !flag jm. lv out...
           DIFF1=ROOTMASS(I,J) - PROTMASS(I,J)
           DIFF2=(NTCHRVEG(I,J)- TLTRROOT(I,J)- 
      &     RTCAEMLS(I,J))*(DELTAT/963.62)
@@ -199,7 +200,7 @@ C
      & THAN OUR TOLERANCE OF ',F12.6,' FOR ROOT')
             CALL XIT('BALCAR',-4)
           ENDIF
-         ENDIF
+C         ENDIF
 210     CONTINUE
 200   CONTINUE    
 C
@@ -207,7 +208,7 @@ C     LITTER OVER ALL PFTs
 C
       DO 250 J = 1, ICC
         DO 260 I = IL1, IL2
-         IF (FCANCMX(I,J).GT.0.0) THEN
+C         IF (FCANCMX(I,J).GT.0.0) THEN !flag jm. lv out...
           DIFF1=LITRMASS(I,J) - PLITMASS(I,J)
           DIFF2=( TLTRLEAF(I,J)+TLTRSTEM(I,J)+TLTRROOT(I,J)-
      &      LTRESVEG(I,J)-HUMTRSVG(I,J)-LTRCEMLS(I,J))*(DELTAT/963.62)  
@@ -217,7 +218,7 @@ C
      & THAN OUR TOLERANCE OF ',F12.6,' FOR LITTER')
             CALL XIT('BALCAR',-5)
           ENDIF
-         ENDIF
+C         ENDIF
 260     CONTINUE
 250   CONTINUE    
 C
@@ -236,12 +237,12 @@ C
 270   CONTINUE    
 C
 C
-C     SOIL CARBON
+C     SOIL CARBON OVER THE BARE FRACTION
 C
       DO 300 J = 1, ICC+1
         DO 310 I = IL1, IL2
-        IF (J .LT. ICC+1) THEN
-         IF (FCANCMX(I,J).GT.0.0) THEN
+C        IF (J .LT. ICC+1) THEN  !flag jm. lv out...
+C         IF (FCANCMX(I,J).GT.0.0) THEN
           DIFF1=SOILCMAS(I,J) - PSOCMASS(I,J)
           DIFF2=( HUMTRSVG(I,J)-SCRESVEG(I,J) )*(DELTAT/963.62)  
           IF((ABS(DIFF1-DIFF2)).GT.TOLRANCE)THEN
@@ -250,17 +251,17 @@ C
      & THAN OUR TOLERANCE OF ',F12.6,' FOR SOIL C')
             CALL XIT('BALCAR',-7)
           ENDIF
-         ENDIF
-        ELSE  ! BARE
-          DIFF1=SOILCMAS(I,J) - PSOCMASS(I,J)
-          DIFF2=( HUMTRSVG(I,J)-SCRESVEG(I,J) )*(DELTAT/963.62)  
-          IF((ABS(DIFF1-DIFF2)).GT.TOLRANCE)THEN
-            WRITE(6,2005)I,J,ABS(DIFF1-DIFF2),TOLRANCE
-2005        FORMAT('AT (I)= (',I3,'), PFT=',I2,', ',F12.6,' IS GREATER
-     & THAN OUR TOLERANCE OF ',F12.6,' FOR SOIL C')
-            CALL XIT('BALCAR',-7)
-          ENDIF
-        ENDIF
+C         ENDIF
+C        ELSE  ! BARE
+C          DIFF1=SOILCMAS(I,J) - PSOCMASS(I,J)
+C          DIFF2=( HUMTRSVG(I,J)-SCRESVEG(I,J) )*(DELTAT/963.62)  
+C          IF((ABS(DIFF1-DIFF2)).GT.TOLRANCE)THEN
+C            WRITE(6,2005)I,J,ABS(DIFF1-DIFF2),TOLRANCE
+C2005        FORMAT('AT (I)= (',I3,'), PFT=',I2,', ',F12.6,' IS GREATER
+C     & THAN OUR TOLERANCE OF ',F12.6,' FOR SOIL C')
+C            CALL XIT('BALCAR',-7)
+C          ENDIF
+C        ENDIF
 310     CONTINUE
 300   CONTINUE   
 C
@@ -273,7 +274,7 @@ C
       DO 350 I = IL1, IL2
         DIFF1=VGBIOMAS(I)-PVGBIOMS(I)
         DIFF2=(GPP(I)-AUTORES(I)-LITRFALL(I)-
-     &   DSTCEMLS(I) )*(DELTAT/963.62)
+     &   DSTCEMLS(I)+EXPNBALN(I))*(DELTAT/963.62)
         IF((ABS(DIFF1-DIFF2)).GT.TOLRANCE)THEN
           WRITE(6,3001)'VGBIOMAS(',I,')=',VGBIOMAS(I)
           WRITE(6,3001)'PVGBIOMS(',I,')=',PVGBIOMS(I)
@@ -281,9 +282,10 @@ C
           WRITE(6,3001)' AUTORES(',I,')=',AUTORES(I)
           WRITE(6,3001)'LITRFALL(',I,')=',LITRFALL(I)
           WRITE(6,3001)'DSTCEMLS(',I,')=',DSTCEMLS(I)
+          WRITE(6,3001)'EXPNBALN(',I,')=',EXPNBALN(I)
 3001      FORMAT(A9,I2,A2,F14.9) 
-          WRITE(6,2010)I,ABS(DIFF1-DIFF2),TOLRANCE
-2010      FORMAT('AT (I)= (',I3,'),',F12.6,' IS GREATER
+          WRITE(6,2005)I,ABS(DIFF1-DIFF2),TOLRANCE
+2005      FORMAT('AT (I)= (',I3,'),',F12.6,' IS GREATER
      & THAN OUR TOLERANCE OF ',F12.6,' FOR VEGETATION BIOMASS')
           CALL XIT('BALCAR',-8)
         ENDIF
@@ -302,8 +304,8 @@ C
           WRITE(6,3001)'  LITRES(',I,')=',LITRES(I)
           WRITE(6,3001)'HUMIFTRS(',I,')=',HUMIFTRS(I)
           WRITE(6,3001)'GALTCELS(',I,')=',GALTCELS(I)
-          WRITE(6,2015)I,ABS(DIFF1-DIFF2),TOLRANCE
-2015      FORMAT('AT (I)= (',I3,'),',F12.6,' IS GREATER
+          WRITE(6,2006)I,ABS(DIFF1-DIFF2),TOLRANCE
+2006      FORMAT('AT (I)= (',I3,'),',F12.6,' IS GREATER
      & THAN OUR TOLERANCE OF ',F12.6,' FOR LITTER MASS')
           CALL XIT('BALCAR',-9)
         ENDIF
@@ -319,8 +321,8 @@ C
           WRITE(6,3001)'GAVGSCMS(',I,')=',GAVGSCMS(I)
           WRITE(6,3001)'HUMIFTRS(',I,')=',HUMIFTRS(I)
           WRITE(6,3001)'  SOCRES(',I,')=',SOCRES(I)
-          WRITE(6,2020)I,ABS(DIFF1-DIFF2),TOLRANCE
-2020      FORMAT('AT (I)= (',I3,'),',F12.6,' IS GREATER
+          WRITE(6,2007)I,ABS(DIFF1-DIFF2),TOLRANCE
+2007      FORMAT('AT (I)= (',I3,'),',F12.6,' IS GREATER
      & THAN OUR TOLERANCE OF ',F12.6,' FOR SOIL C MASS')
           CALL XIT('BALCAR',-10)
         ENDIF

@@ -9,8 +9,8 @@
      9                    EXTNPROB,   STDALN,     TBAR,     L2MAX,
      A                    NOL2PFTS, PFCANCMX, NFCANCMX,  LNDUSEON,
      B                      THICEC, SOILDPTH, SPINFAST,   TODFRAC,
-     &                     COMPETE,   POPDIN,   DOFIRE,     ISAND,
-     &                     FAREGAT,
+     &                     COMPETE,   NETRAD,   PRECIP,   
+     &                      POPDIN,   DOFIRE,     ISAND,  FAREGAT,
 C
 C    -------------- INPUTS USED BY CTEM ARE ABOVE THIS LINE ---------
 C
@@ -22,9 +22,13 @@ C
      H                    GAVGLTMS, GAVGSCMS, STMHRLOS,      SLAI, 
      I                     BMASVEG, CMASVEGC, COLDDAYS,  ROTHRLOS,
      J                      FCANMX,   ALVISC,   ALNIRC,   GAVGLAI,
-C  ADD FOR COMPETE
+C ADD FOR COMPETE BY PENG \\
+     &                       TCURM, SRPCURYR, DFTCURYR,  INIBOCLM,
+     &                      TMONTH, ANPCPCUR,  ANPECUR,   GDD5CUR,
+     &                    SURMNCUR, DEFMNCUR, SRPLSCUR,  DEFCTCUR,
      &                    GEREMORT, INTRMORT,   LAMBDA,  LYGLFMAS,
      &                    PFTEXIST,
+C ADD FOR COMPETE BY PENG //
 C
 C    -------------- INPUTS UPDATED BY CTEM ARE ABOVE THIS LINE ------
 C
@@ -37,7 +41,7 @@ C
      Q                    AFRLEAF,   AFRSTEM,  AFRROOT,  WTSTATUS,
      R                   LTSTATUS,  BURNFRAC, PROBFIRE,  LUCEMCOM,
      S                   LUCLTRIN,  LUCSOCIN,   NPPVEG,  GRCLAREA,
-     T                   DSTCEMLS3, PAICGAT,  SLAICGAT,
+     T                   DSTCEMLS3, PAICGAT,  SLAICGAT,    
 C    NEW FIRE EMISSIONS/AEROSOLS
      U                    EMIT_CO2, EMIT_CO,  EMIT_CH4, EMIT_NMHC,
      V                    EMIT_H2,  EMIT_NOX, EMIT_N2O, EMIT_PM25,
@@ -46,13 +50,19 @@ C    NEW FIRE EMISSIONS/AEROSOLS
 C  ADD FOR COMPETE
      &                   BURNVEG,      CC, MM,
      &                   RMLVEG,       RMSVEG,   RMRVEG,  RGVEG,
-     &                   VGBIOMAS_VEG, GPPVEG,   NEPVEG )
+     &                   VGBIOMAS_VEG, GPPVEG,   NEPVEG, 
+C  ADD FOR COMPETE BY PENG \\
+     &                   NLAT, NMOS, NML, ILMOS, JLMOS)
+C  ADD FOR COMPETE BY PENG //
 C
 C    ---------------- OUTPUTS ARE LISTED ABOVE THIS LINE ------------ 
 C
 C
 C             CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) - V1.1
 C
+C     SEP 25   2012
+C     * Y. PENG:   ADD COMPETITION_MAP AND COMPETITION_UNMAP
+
 C     SEP 12   2012
 C     * J. MELTON: ADD IN BOTTOM LIMIT TO BLEAFMAS TO ENSURE IT DOES NOT
 C                  SLOWLY DECAY TO INFINTESIMALY SMALL NUMBER.
@@ -62,7 +72,7 @@ C     * J. MELTON: PASS IN ISAND TO ENSURE SOIL LEVELS ARE PROPERLY
 C                  LABELLED AS BEDROCK IF ASSIGNED SO IN CLASSB
 C
 C     JAN 10   2012 
-C     * YIRAN: RE-TEST COMPETITION
+C     * YIRAN: RE-TEST BIOCLIM AND EXISTENCE FOR COMPETITION
 C
 C     NOV 28   2011
 C     * YIRAN PENG AND VIVEK ARORA: COUPLED CLASS3.5 AND CTEM
@@ -93,7 +103,6 @@ C                MODIFIED BY LAND-USE CHANGE, AND COMPETITION BETWEEN PFTs
 C     FSNOW    - FRACTION OF SNOW SIMULATED BY CLASS
 C     SAND     - PERCENTAGE SAND
 C     CLAY     - PERCENTAGE CLAY
-C     ISAND    - FLAG FOR CELL SOIL LEVELS THAT ARE BEDROCK OR ICE
 C     ICC      - NO OF PFTs FOR USE BY CTEM, CURRENTLY 9
 C     IC       - NO OF PFTs FOR USE BY CLASS, CURRENTLY 4
 C     IG       - NO. OF SOIL LAYERS, 3
@@ -151,6 +160,8 @@ C     TODFRAC  - MAX. FRACTIONAL COVERAGE OF CTEM's 9 PFTs BY THE END
 C                OF THE DAY, FOR USE BY LAND USE SUBROUTINE
 C     COMPETE  - LOGICAL BOOLEAN TELLING IF COMPETITION BETWEEN PFTs IS
 C                ON OR NOT
+C     NETRAD   - DAILY NET RADIATION (W/M2)
+C     PRECIP   - DAILY PRECIPITATION (MM/DAY)
 C     POPDIN   - POPULATION DENSITY (PEOPLE / KM^2)
 C
 C     UPDATES
@@ -317,7 +328,10 @@ C
       INTEGER      IC,      ICC,      ILG,      IL1,       IL2,      IG, 
      1           IDAY,        I,        J,        K,    STDALN,    LATH,
      2         ICHECK,   ICOUNT,        N,        M, SORT(ICC),   L2MAX,
-     3   NOL2PFTS(IC),       K1,       K2,  SPINFAST
+     3   NOL2PFTS(IC),       K1,       K2,            SPINFAST,
+C  ADD FOR COMPETE BY PENG \\
+     4           NLAT,     NMOS,      NML,        ILMOS(ILG), JLMOS(ILG)
+C  ADD FOR COMPETE BY PENG //
 C
       INTEGER       PANDAYS(ILG,ICC), CURLATNO(ILG),    COLDDAYS(ILG,2),
      1             LFSTATUS(ILG,ICC), ISAND(ILG,IG)                 
@@ -329,6 +343,33 @@ C
      4      RADJ(ILG),       TA(ILG),        DELTAT,      DELZW(ILG,IG),
      5   TBAR(ILG,IG),THICEC(ILG,IG), SOILDPTH(ILG),   TODFRAC(ILG,ICC),
      6              YESFRAC(ILG,ICC)
+C
+C  ADD FOR COMPETE BY PENG \\
+      REAL FCANCMX_CMP(NLAT,ICC), NPPVEG_CMP(NLAT,ICC),
+     1     GEREMORT_CMP(NLAT,ICC),INTRMORT_CMP(NLAT,ICC),
+     2     GLEAFMAS_CMP(NLAT,ICC),BLEAFMAS_CMP(NLAT,ICC),
+     3     STEMMASS_CMP(NLAT,ICC),ROOTMASS_CMP(NLAT,ICC),
+     4     LITRMASS_CMP(NLAT,ICC+1),SOILCMAS_CMP(NLAT,ICC+1),
+     5     LAMBDA_CMP(NLAT,ICC),
+     6     BMASVEG_CMP(NLAT,ICC),   BURNVEG_CMP(NLAT,ICC),
+     7     ADD2ALLO_CMP(NLAT,ICC),  CC_CMP(NLAT,ICC),MM_CMP(NLAT,ICC),
+     8     FCANMX_CMP(NLAT,IC),     
+     9     GRCLAREA_CMP(NLAT),      VGBIOMAS_CMP(NLAT),    
+     1     GAVGLTMS_CMP(NLAT),      GAVGSCMS_CMP(NLAT)
+      INTEGER PFTEXIST_CMP(NLAT,ICC)
+      REAL GRCLAREAROW(NLAT,NMOS),      VGBIOMASROW(NLAT,NMOS),    
+     1     GAVGLTMSROW(NLAT,NMOS),      GAVGSCMSROW(NLAT,NMOS),
+     2     NETRADROW(NLAT,NMOS)
+C
+      REAL TA_CMP(NLAT),       PRECIP_CMP(NLAT),  NETRAD_CMP(NLAT), 
+     1     TCURM_CMP(NLAT),    SRPCURYR_CMP(NLAT),DFTCURYR_CMP(NLAT),
+     2     TMONTH_CMP(12,NLAT),ANPCPCUR_CMP(NLAT),ANPECUR_CMP(NLAT), 
+     3     GDD5CUR_CMP(NLAT),  SURMNCUR_CMP(NLAT),DEFMNCUR_CMP(NLAT),
+     4     SRPLSCUR_CMP(NLAT), DEFCTCUR_CMP(NLAT),TWARMM_CMP(NLAT), 
+     5     TCOLDM_CMP(NLAT),   GDD5_CMP(NLAT),    ARIDITY_CMP(NLAT),
+     6     SRPLSMON_CMP(NLAT), DEFCTMON_CMP(NLAT),ANNDEFCT_CMP(NLAT),
+     7     ANNSRPLS_CMP(NLAT), ANNPCP_CMP(NLAT),  ANPOTEVP_CMP(NLAT)
+C  ADD FOR COMPETE BY PENG //
 C
       REAL  STEMMASS(ILG,ICC),   ROOTMASS(ILG,ICC), LITRMASS(ILG,ICC+1),
      1      GLEAFMAS(ILG,ICC),   BLEAFMAS(ILG,ICC), SOILCMAS(ILG,ICC+1),
@@ -599,52 +640,202 @@ C
 C
 C     ---------------------------------------------------------------
 C
+C     GENERATE THE SORT INDEX FOR CORRESPONDENCE BETWEEN 9 PFTs AND THE
+C     12 VALUES IN THE PARAMETER VECTORS
+C
+      ICOUNT=0
+      DO 95 J = 1, IC
+        DO 96 M = 1, NOL2PFTS(J)
+          N = (J-1)*L2MAX + M
+          ICOUNT = ICOUNT + 1
+          SORT(ICOUNT)=N
+ 96    CONTINUE
+ 95   CONTINUE
+C
+C     ---------------------------------------------------------------
+C
       IF(COMPETE)THEN
+C
+C  ADD FOR COMPETE BY PENG \\
+C
+C       CHECK IF NUMBER OF MOSAICS IS EQUAL TO THE NUMBER OF PFTS PLUS ONE
+C       BARE, E.G., NMOS=ICC+1
+C
+        IF (NMOS.NE.ICC+1) THEN 
+         WRITE(*,2050) 'NUMBER OF MOSAICS, NMOS= ',NMOS,
+     &                 ' IS NOT EQUAL TO THE NUMBER OF PFTS PLUS',
+     &                 ' ONE BARE, ICC+1= ',ICC+1
+         WRITE(*,2051) 'COMPETITION WORKS PROPERLY ONLY WHEN ALL PFTS',
+     &                 ' AND BARE ARE CONSIDERED.                    '
+         CALL XIT ('CTEM',-11)
+        ENDIF 
+2050   FORMAT(A25,I2,A40,A18,I2,A1)
+2051   FORMAT(A45,A40)
+C
+C       INITIALIZE INIBOCLM FOR COMPETITION
+C
+        INIBOCLM = .TRUE.  !WAS 1, JM. FLAG
+C
+C       CHECK FOR FCANCMX(I,J). THIS SHOULD BE EITHER 0 OR 1 FOR COMPETITION
+C       TO WORK.
+C
+        DO J=1, ICC
+         DO I=IL1, IL2
+          IF(FCANCMX(I,J).NE.1.0 .AND. FCANCMX(I,J).NE.0.0) THEN
+           WRITE(*,2100) 
+     &                'MOSAIC ',I,' HAS PFT FRACTION: ', 
+     &                'FCANCMX(',I,',',J,')=',FCANCMX(I,J)
+           WRITE(*,2101) 
+     &                'COMPETITION WORKS ONLY WHEN EACH MOSAIC',
+     &                'IS 100% OCCUPIED WITH ONE PFT'
+           CALL XIT ('CTEM',-12)
+          ENDIF
+         ENDDO
+        ENDDO
+2100   FORMAT(A7,I2,A19,A8,I2,A1,I2,A2,F8.3)
+2101   FORMAT(A40,A40)
+C   
+C      COMPITITION_MAP IS TO SCATTERING AND MAPPING THE ARRAY WITH INDICES 
+C      OF (ILG,ICC) TO (NLAT,ICC) FOR PREPARATION TO COMPETITION
+C  
+          CALL COMPETITION_MAP(NLAT, NMOS, ILG, IL1, IL2, 
+     1                         NML, ILMOS, JLMOS, ICC, IC,
+     2                         FAREGAT,  FCANCMX,  NPPVEG,GEREMORT,
+     3                         INTRMORT,GLEAFMAS,BLEAFMAS,STEMMASS,
+     4                         ROOTMASS,LITRMASS,SOILCMAS,
+     5                         PFTEXIST,  LAMBDA, BMASVEG, BURNVEG,
+     6                         ADD2ALLO,      CC,      MM,  FCANMX,
+     7                         GRCLAREA,VGBIOMAS,GAVGLTMS,GAVGSCMS,
+     8                         TA,PRECIP, NETRAD,   TCURM,SRPCURYR,
+     9                         DFTCURYR,  TMONTH,ANPCPCUR, ANPECUR, 
+     1                          GDD5CUR,SURMNCUR,DEFMNCUR,SRPLSCUR,  
+     2                         DEFCTCUR,  TWARMM,  TCOLDM,    GDD5, 
+     3                          ARIDITY,SRPLSMON,DEFCTMON,ANNDEFCT,
+     4                         ANNSRPLS,  ANNPCP,ANPOTEVP,
+C    ------------------- INPUTS ABOVE THIS LINE ---------------------
+     A                            NETRADROW,
+C    ------------------- INTERMEDIATE AND SAVED ABOVE THIS LINE -----
+     a                          FCANCMX_CMP,  NPPVEG_CMP,GEREMORT_CMP,
+     b                         INTRMORT_CMP,GLEAFMAS_CMP,BLEAFMAS_CMP,
+     c                         STEMMASS_CMP,ROOTMASS_CMP,LITRMASS_CMP,
+     d                         SOILCMAS_CMP,PFTEXIST_CMP,  LAMBDA_CMP,
+     e                          BMASVEG_CMP, BURNVEG_CMP,ADD2ALLO_CMP,
+     f                               CC_CMP,      MM_CMP,  FCANMX_CMP,
+     g                         GRCLAREA_CMP,VGBIOMAS_CMP,
+     h                         GAVGLTMS_CMP,GAVGSCMS_CMP,
+     i                               TA_CMP,  PRECIP_CMP,  NETRAD_CMP, 
+     j                            TCURM_CMP,SRPCURYR_CMP,DFTCURYR_CMP,
+     k                           TMONTH_CMP,ANPCPCUR_CMP, ANPECUR_CMP, 
+     l                          GDD5CUR_CMP,SURMNCUR_CMP,DEFMNCUR_CMP,
+     m                         SRPLSCUR_CMP,DEFCTCUR_CMP,  TWARMM_CMP, 
+     n                           TCOLDM_CMP,    GDD5_CMP, ARIDITY_CMP,
+     o                         SRPLSMON_CMP,DEFCTMON_CMP,ANNDEFCT_CMP,
+     p                         ANNSRPLS_CMP,  ANNPCP_CMP,ANPOTEVP_CMP)
+C    ------------------- OUTPUTS ABOVE THIS LINE --------------------
+C
+C  ADD FOR COMPETE BY PENG //
 C
 C       CALCULATE BIOCLIMATIC PARAMETERS FOR ESTIMATING PFTs EXISTENCE
 C
-        CALL      BIOCLIM (   IDAY,        TA,   PRECIP,   NETRAD,
-     1                         IL1,       IL2,      ILG,
-     2                       TCURM,  SRPCURYR, DFTCURYR,  INIBOCLM,
-     3                      TMONTH,  ANPCPCUR,  ANPECUR,   GDD5CUR,
-     4                    SURMNCUR,  DEFMNCUR, SRPLSCUR,  DEFCTCUR,
-     5                      TWARMM,    TCOLDM,     GDD5,  ARIDITY,
-     6                    SRPLSMON,  DEFCTMON, ANNDEFCT, ANNSRPLS,
-     7                      ANNPCP,  ANPOTEVP)
+        CALL      BIOCLIM (IDAY,      TA_CMP,  PRECIP_CMP,  NETRAD_CMP,
+     1                        1,        NLAT,        NLAT,
+     2                TCURM_CMP,SRPCURYR_CMP,DFTCURYR_CMP,    INIBOCLM,
+     3               TMONTH_CMP,ANPCPCUR_CMP, ANPECUR_CMP, GDD5CUR_CMP,
+     4             SURMNCUR_CMP,DEFMNCUR_CMP,SRPLSCUR_CMP,DEFCTCUR_CMP,
+     5               TWARMM_CMP,  TCOLDM_CMP,    GDD5_CMP, ARIDITY_CMP,
+     6             SRPLSMON_CMP,DEFCTMON_CMP,ANNDEFCT_CMP,ANNSRPLS_CMP,
+     7               ANNPCP_CMP,ANPOTEVP_CMP)
 C
 C       IF FIRST DAY OF YEAR THEN BASED ON UPDATED BIOCLIMATIC PARAMETERS
 C       FIND IF PFTs CAN EXIST OR NOT
 C
-        IF(INIBOCLM)THEN
-          CALL    EXISTENCE(  IDAY,       IL1,      IL2,      ILG,
-     1                         ICC,     SORT,  NOL2PFTS,       IC,
-     2                      TWARMM,    TCOLDM,     GDD5,  ARIDITY,
-     3                    SRPLSMON,  DEFCTMON, ANNDEFCT, ANNSRPLS,
-     4                      ANNPCP,  ANPOTEVP,
-     5                    PFTEXIST)
-        ENDIF
+C        IF(INIBOCLM)THEN
+          CALL    EXISTENCE(IDAY,           1,        NLAT,        NLAT,
+     1                       ICC,        SORT,    NOL2PFTS,          IC,
+     2                TWARMM_CMP,  TCOLDM_CMP,    GDD5_CMP, ARIDITY_CMP,
+     3              SRPLSMON_CMP,DEFCTMON_CMP,ANNDEFCT_CMP,ANNSRPLS_CMP,
+     4                ANNPCP_CMP,ANPOTEVP_CMP,
+     5              PFTEXIST_CMP)
+C     
+C     ENDIF
+
+C     THE FOLLOWING CAN BE USED FOR TESTING TO SET WHICH PFTS ARE THERE
+C     OTHERWISE COMMENT OUT!     JM OCT 15 2012
+C      PFTEXIST_CMP(1,1)=0
+C      PFTEXIST_CMP(1,2)=0
+C      PFTEXIST_CMP(1,3)=0
+C      PFTEXIST_CMP(1,4)=1
+C      PFTEXIST_CMP(1,5)=0
+C      PFTEXIST_CMP(1,6)=0
+C      PFTEXIST_CMP(1,7)=0
+C      PFTEXIST_CMP(1,8)=0
+C      PFTEXIST_CMP(1,9)=0
+C      PFTEXIST_CMP(1,10)=1
 C
 C     CALL COMPETITION SUBROUTINE WHICH ON THE BASIS OF PREVIOUS DAY'S
 C     NPP ESTIMATES CHANGES IN FRACTIONAL COVERAGE OF PFTs
 C
-C     The PFTEXIST var here is not connect to the one in RUNCLASSCTEM...JM
-C     Aug 17 2012.
+        CALL COMPETITION(  IDAY,           1,        NLAT,        NLAT,
+     1                      ICC,    NOL2PFTS,          IC,  NPPVEG_CMP,      
+     2                    L2MAX,PFTEXIST_CMP,GEREMORT_CMP,INTRMORT_CMP,
+     3             GLEAFMAS_CMP,BLEAFMAS_CMP,STEMMASS_CMP,ROOTMASS_CMP,
+     4             LITRMASS_CMP,SOILCMAS_CMP,GRCLAREA_CMP,  LAMBDA_CMP,
+     5              BMASVEG_CMP,      DELTAT, BURNVEG_CMP,        SORT,
+C    ------------------- INPUTS ABOVE THIS LINE -------------------
+     6              FCANCMX_CMP,  FCANMX_CMP,VGBIOMAS_CMP,GAVGLTMS_CMP,
+     7             GAVGSCMS_CMP,
+C    ------------------- UPDATES ABOVE THIS LINE ------------------
+     8             ADD2ALLO_CMP,      CC_CMP,      MM_CMP)
+C    ------------------- OUTPUTS ABOVE THIS LINE ------------------
 C
-C        CALL     COMPETITION(  IDAY,      IL1,       IL2,      ILG,
-C     1                          ICC, NOL2PFTS,       IC,    NPPVEG,
-C     2                        L2MAX, PFTEXIST,  GEREMORT, INTRMORT,
-C     3                     GLEAFMAS, BLEAFMAS,  STEMMASS, ROOTMASS,
-C     4                     LITRMASS, SOILCMAS,  GRCLAREA,   LAMBDA,
-C     5                      BMASVEG,   DELTAT,   BURNVEG,     SORT,
-C     6                      FCANCMX,   FCANMX,  VGBIOMAS, GAVGLTMS,
-C     8                     GAVGSCMS, ADD2ALLO,        CC,       MM)
-C      ELSE
+C  ADD FOR COMPETE BY PENG \\ 
+C      COMPETITION_UNMAP IS TO UNMAPPING AND GATHERING THE ARRAY WITH  
+C      INDICES OF (NLAT,ICC) BACK TO (ILG,ICC) AFTER COMPETITION IS DONE 
+C
+          CALL COMPETITION_UNMAP(NLAT, NMOS, ILG, IL1, IL2, 
+     1                           NML, ILMOS, JLMOS, ICC, IC, NOL2PFTS,
+     2                          FCANCMX_CMP,  NPPVEG_CMP,GEREMORT_CMP,
+     3                         INTRMORT_CMP,GLEAFMAS_CMP,BLEAFMAS_CMP,
+     4                         STEMMASS_CMP,ROOTMASS_CMP,LITRMASS_CMP,
+     5                         SOILCMAS_CMP,PFTEXIST_CMP,  LAMBDA_CMP,
+     6                          BMASVEG_CMP, BURNVEG_CMP,ADD2ALLO_CMP,
+     7                               CC_CMP,      MM_CMP,  FCANMX_CMP,
+     8                         GRCLAREA_CMP,VGBIOMAS_CMP,
+     9                         GAVGLTMS_CMP,GAVGSCMS_CMP,
+     1                               TA_CMP,  PRECIP_CMP,  NETRAD_CMP, 
+     2                            TCURM_CMP,SRPCURYR_CMP,DFTCURYR_CMP,
+     3                           TMONTH_CMP,ANPCPCUR_CMP, ANPECUR_CMP, 
+     4                          GDD5CUR_CMP,SURMNCUR_CMP,DEFMNCUR_CMP,
+     5                         SRPLSCUR_CMP,DEFCTCUR_CMP,  TWARMM_CMP, 
+     6                           TCOLDM_CMP,    GDD5_CMP, ARIDITY_CMP,
+     7                         SRPLSMON_CMP,DEFCTMON_CMP,ANNDEFCT_CMP,
+     8                         ANNSRPLS_CMP,  ANNPCP_CMP,ANPOTEVP_CMP,
+C    ------------------- INPUTS ABOVE THIS LINE ---------------------
+     A                            NETRADROW,
+C    ------------------- SAVED FOR INTERMEDIATE ABOVE THIS LINE -----
+     a                            FAREGAT, FCANCMX,  NPPVEG,GEREMORT,  
+     b                           INTRMORT,GLEAFMAS,BLEAFMAS,STEMMASS,
+     c                           ROOTMASS,LITRMASS,SOILCMAS,
+     d                           PFTEXIST,  LAMBDA, BMASVEG, BURNVEG,
+     e                           ADD2ALLO,      CC,      MM,  FCANMX,
+     f                           GRCLAREA,VGBIOMAS,GAVGLTMS,GAVGSCMS,
+     g                           TA,PRECIP, NETRAD,   TCURM,SRPCURYR,
+     h                           DFTCURYR,  TMONTH,ANPCPCUR, ANPECUR, 
+     i                            GDD5CUR,SURMNCUR,DEFMNCUR,SRPLSCUR,  
+     j                           DEFCTCUR,  TWARMM,  TCOLDM,    GDD5, 
+     k                            ARIDITY,SRPLSMON,DEFCTMON,ANNDEFCT,
+     l                           ANNSRPLS,  ANNPCP,ANPOTEVP)
+C    ------------------- UPDATES ABOVE THIS LINE --------------------
+C
+C  ADD FOR COMPETE BY PENG //
+C
+      ELSE
         DO J = 1, ICC
           DO I = IL1, IL2
             ADD2ALLO(I,J)=0.0
           ENDDO
         ENDDO
-      ENDIF
+      ENDIF  ! IF (COMPETE)
 C
 C     -----------------------------------------------------------------
 C
@@ -689,18 +880,6 @@ C
 92      CONTINUE
       ENDIF
 C
-C     GENERATE THE SORT INDEX FOR CORRESPONDENCE BETWEEN 9 PFTs AND THE
-C     12 VALUES IN THE PARAMETER VECTORS
-C
-      ICOUNT=0
-      DO 95 J = 1, IC
-        DO 96 M = 1, NOL2PFTS(J)
-          N = (J-1)*L2MAX + M
-          ICOUNT = ICOUNT + 1
-          SORT(ICOUNT)=N
-96      CONTINUE
-95    CONTINUE
-
 C     INITIALIZE REQUIRED ARRAYS TO ZERO
 C
       DO 100 I = IL1, IL2
@@ -1201,8 +1380,15 @@ C
 C         CONVERT NPP AND MAINTENANCE RESPIRATION FROM DIFFERENT COMPONENTS
 C         FROM UNITS OF u MOL CO2/M2.SEC -> Kg C/M2 SEQUESTERED OR RESPIRED
 C         OVER THE MODEL TIME STEP          
-          GPPVGSTP(I,J)=GPPVEG(I,J)*(1.0/963.62)*DELTAT
-          NPPVGSTP(I,J)=NPPVEG(I,J)*(1.0/963.62)*DELTAT
+          GPPVGSTP(I,J)=GPPVEG(I,J)*(1.0/963.62)*DELTAT + ADD2ALLO(I,J)
+          NPPVGSTP(I,J)=NPPVEG(I,J)*(1.0/963.62)*DELTAT*(1.-LAMBDA(I,J))
+     &                  + ADD2ALLO(I,J)
+C
+C         AMOUNT OF C RELATED TO HORIZONTAL EXPANSION
+C
+          EXPBALVG(I,J)=-1.0*NPPVEG(I,J)*DELTAT*LAMBDA(I,J)
+     &                  + ADD2ALLO(I,J)*(963.62/1.0)
+C
           RMLVGSTP(I,J)=RMLVEG(I,J)*(1.0/963.62)*DELTAT
           RMSVGSTP(I,J)=RMSVEG(I,J)*(1.0/963.62)*DELTAT
           RMRVGSTP(I,J)=RMRVEG(I,J)*(1.0/963.62)*DELTAT
@@ -1292,7 +1478,7 @@ C
 600   CONTINUE
 C  ADD FOR COMPETE
 C     CALCULATE GRID AVERAGED VALUE OF C RELATED TO SPATIAL EXPANSION
-C
+C     FLAG- KEEP THE IF LOOP? JM
       IF (COMPETE) THEN
       DO 620 J = 1,ICC
         DO 621 I = IL1, IL2
@@ -1626,7 +1812,7 @@ C
      5                    PGLFMASS, PBLFMASS, PSTEMASS,  PROTMASS,
      6                    PLITMASS, PSOCMASS,   DELTAT,  VGBIOMAS,
      7                    PVGBIOMS, GAVGLTMS, PGAVLTMS,  GAVGSCMS,
-     8                    PGAVSCMS, GALTCELS,  FCANCMX,
+     8                    PGAVSCMS, GALTCELS, EXPNBALN,
      9                         NPP,  AUTORES, HETRORES,       GPP,
      A                         NEP,   LITRES,   SOCRES, DSTCEMLS1,
      B                         NBP, LITRFALL, HUMIFTRS,
