@@ -1,6 +1,6 @@
       SUBROUTINE MORTALTY (STEMMASS, ROOTMASS,    AILCG, GLEAFMAS,
      1                     BLEAFMAS,      ICC,      ILG,      IL1, 
-     2                          IL2,     IDAY,   ICHECK,     SORT,
+     2                          IL2,     IDAY,   DO_AGE_MORT, SORT,
      3                      FCANCMX,
 C    + ------------------ INPUTS ABOVE THIS LINE ----------------------   
      4                     LYSTMMAS, LYROTMAS, TYMAXLAI, GRWTHEFF,
@@ -36,7 +36,7 @@ C     ICC       - NO. OF CTEM PLANT FUNCTION TYPES, CURRENTLY 8
 C     ILG       - NO. OF GRID CELLS IN LATITUDE CIRCLE
 C     IL1,IL2   - IL1=1, IL2=ILG
 C     IDAY      - DAY OF THE YEAR
-C     ICHECK    - SWITCH TO TURNOFF MORTALITY BY SETTING ITS VALUE TO 1.
+C     DO_AGE_MORT - SWITCH TO CONTROL CALC OF AGE MORTALITY (FALSE=NOT DONE)
 C     SORT      - INDEX FOR CORRESPONDENCE BETWEEN CTEM 9 PFTs AND SIZE
 C                 12 OF PARAMETERS VECTORS
 C
@@ -50,11 +50,13 @@ C     INTRMORT  - INTRINSIC MORTALITY (1/DAY)
 C
       IMPLICIT NONE
 C
-      INTEGER ILG, ICC, IL1, IL2, I, J, K, IDAY, ICHECK, KK, N
+      INTEGER ILG, ICC, IL1, IL2, I, J, K, IDAY, KK, N
 C
       PARAMETER (KK=12)  ! PRODUCT OF CLASS PFTs AND L2MAX
 C
       INTEGER       SORT(ICC)
+C
+      LOGICAL      DO_AGE_MORT
 C
       REAL  STEMMASS(ILG,ICC), ROOTMASS(ILG,ICC), GLEAFMAS(ILG,ICC),
      1         AILCG(ILG,ICC), GRWTHEFF(ILG,ICC), LYSTMMAS(ILG,ICC),
@@ -183,7 +185,7 @@ C
       DO 270 J = 1,ICC
         DO 280 I = IL1, IL2
          IF (FCANCMX(I,J).GT.0.0) THEN
-          IF(ICHECK.EQ.1)THEN
+          IF(.NOT. DO_AGE_MORT)THEN
             GEREMORT(I,J)=0.0
             INTRMORT(I,J)=0.0
           ENDIF

@@ -323,11 +323,11 @@ C
       PARAMETER(LON=96)
       PARAMETER(KK=12)  ! PRODUCT OF CLASS PFTs AND L2MAX (4 x 3 = 12)
 C
-      LOGICAL   LNDUSEON,  DOFIRE
+      LOGICAL   LNDUSEON,  DOFIRE, DO_AGE_MORT
 
       INTEGER      IC,      ICC,      ILG,      IL1,       IL2,      IG, 
      1           IDAY,        I,        J,        K,    STDALN,    LATH,
-     2         ICHECK,   ICOUNT,        N,        M, SORT(ICC),   L2MAX,
+     2         ICOUNT,        N,        M, SORT(ICC),   L2MAX,
      3   NOL2PFTS(IC),       K1,       K2,            SPINFAST,
 C  ADD FOR COMPETE BY PENG \\
      4           NLAT,     NMOS,      NML,        ILMOS(ILG), JLMOS(ILG)
@@ -1620,13 +1620,13 @@ C     REDUCED GROWTH AND AGING. EXOGENOUS MORTALITY DUE TO FIRE AND OTHER
 C     DISTURBANCES AND THE SUBSEQUENT LITTER THAT IS GENERATED IS 
 C     CALCULATED IN THE DISTURB SUBROUTINE.
 C    
-C     SET ICHECK TO 1 TO SWITCH OFF MORTALITY DUE TO AGE AND REDUCED GROWTH. 
+C     SET DO_AGE_MORT=.FALSE. TO SWITCH OFF MORTALITY DUE TO AGE AND REDUCED GROWTH. 
 C
-      ICHECK=1   !FLAG THIS IS SET TO 0 in Yiran's verion of the code! JM
+      DO_AGE_MORT=.TRUE.
 C
       CALL       MORTALTY (STEMMASS, ROOTMASS,    AILCG, GLEAFMAS,
      1                     BLEAFMAS,      ICC,      ILG,      IL1, 
-     2                          IL2,     IDAY,   ICHECK,     SORT,
+     2                          IL2,     IDAY, DO_AGE_MORT,  SORT,
      3                      FCANCMX, LYSTMMAS, LYROTMAS, TYMAXLAI,
      4                     GRWTHEFF, STEMLTRM, ROOTLTRM, GLEALTRM,
      5                     GEREMORT, INTRMORT)
