@@ -8,8 +8,10 @@ C
 C     REVISION HISTORY:
 C
 C     * OCT 2012
-C     * YIRAN PENG AND JOE MELTON: BRING IN COMPETITION TO 3.6
-
+C     * YIRAN PENG AND JOE MELTON: BRING IN COMPETITION TO 3.6 AND MAKE IT
+C                                  SO THE MODEL CAN START FROM BARE GROUND
+C                                  OR FROM THE INI AND CTM FILES INPUTS
+C
 C     * SEP 2012
 C     * JOE MELTON: COUPLED CLASS3.6 AND CTEM
 C
@@ -53,7 +55,6 @@ C     JM EDIT: CHANGED NLAT TO 1.
 
       INTEGER,PARAMETER :: NLAT=1,NMOS=10,ILG=NLAT*NMOS,NMON=12
       INTEGER,PARAMETER :: ICAN=4,IGND=3,ICP1=ICAN+1
-C      INTEGER,PARAMETER :: ICAN=4,IGND=9,ICP1=ICAN+1
 
       LOGICAL CYCLEMET, DOFIRE
 C
@@ -387,7 +388,7 @@ C
 C
       LOGICAL    CTEM1, CTEM2, PARALLELRUN
 C
-      LOGICAL    COMPETE, RSFILE, LNDUSEON, CO2ON, POPDON
+      LOGICAL    COMPETE, START_BARE, RSFILE, LNDUSEON, CO2ON, POPDON
 C
        INTEGER,PARAMETER :: ICC=9, ICCP1=ICC+1
        INTEGER   LOPCOUNT,  ISUMC,   NOL2PFTS(4), L2MAX,  
@@ -731,16 +732,6 @@ C
      4     ANNGPPVEG_M(NLAT,NMOS,ICC), SOILCMAS_M(NLAT,NMOS),
      5     LAIMAXG_M(NLAT,NMOS),       STEMMASS_M(NLAT,NMOS),
      6     ROOTMASS_M(NLAT,NMOS),      LITRMASS_M(NLAT,NMOS)   
-C     FLAG OLD! JM  ADD FOR COMPETE
-C       REAL LYGLFMASROW(NLAT,NMOS,ICC), LYGLFMASGAT(ILG,ICC),
-C     1      GEREMORTROW(NLAT,NMOS,ICC), GEREMORTGAT(ILG,ICC),
-C     2      INTRMORTROW(NLAT,NMOS,ICC), INTRMORTGAT(ILG,ICC),
-C     3      LAMBDAROW(NLAT,NMOS,ICC), LAMBDAGAT(ILG,ICC),
-C     5      BURNVEGROW(NLAT,NMOS,ICC), BURNVEGGAT(ILG,ICC),
-C     6      CCROW(NLAT,NMOS,ICC), CCGAT(ILG,ICC),
-C     7      MMROW(NLAT,NMOS,ICC), MMGAT(ILG,ICC)
-
-C       INTEGER PFTEXISTROW(NLAT,NMOS,ICC), PFTEXISTGAT(ILG,ICC)
 
 C WILTING AND FIELD CAPACITIES VARS
       REAL     FIELDSM(ILG,IGND),     WILTSM(ILG,IGND)
@@ -757,7 +748,7 @@ C
      1      TMONTHGAT(12,ILG),ANPCPCURGAT(ILG), ANPECURGAT(ILG),
      2      GDD5CURGAT(ILG),  SURMNCURGAT(ILG), DEFMNCURGAT(ILG),
      3      SRPLSCURGAT(ILG), DEFCTCURGAT(ILG)     
-       INTEGER INIBOCLM
+       LOGICAL INIBOCLM
        REAL LYGLFMASGAT(ILG,ICC),   GEREMORTGAT(ILG,ICC),
      1      INTRMORTGAT(ILG,ICC),     LAMBDAGAT(ILG,ICC),
      2      PFTEXISTGAT(ILG,ICC),    BURNVEGGAT(ILG,ICC),
@@ -807,10 +798,10 @@ C     ALL MODEL SWITCHES ARE READ IN FROM A NAMELIST FILE
       CALL read_from_job_options(ARGBUFF,CTEMLOOP,CTEM1,CTEM2,
      1             NCYEAR,LNDUSEON,SPINFAST,CYCLEMET,NUMMETCYLYRS,
      2             METCYLYRST,CO2ON,SETCO2CONC,POPDON,POPCYCLEYR,
-     3             PARALLELRUN,DOFIRE,COMPETE,RSFILE,IDISP,IZREF,ISLFD,
-     4             IPCP,ITC,ITCG,ITG,IWF,IPAI,IHGT,IALC,IALS,IALG,
-     5             JHHSTD,JHHENDD,JDSTD,JDENDD,JHHSTY,JHHENDY,
-     6             JDSTY,JDENDY)
+     3             PARALLELRUN,DOFIRE,COMPETE,START_BARE,RSFILE,IDISP,
+     4             IZREF,ISLFD,IPCP,ITC,ITCG,ITG,IWF,IPAI,IHGT,IALC,
+     5             IALS,IALG,JHHSTD,JHHENDD,JDSTD,JDENDD,JHHSTY,
+     6             JHHENDY,JDSTY,JDENDY)
 C     <<<<<MJ EDIT
 
 C     SET ICTEMOD, WHICH IS THE CLASS SWITCH FOR COUPLING TO CTEM
@@ -1552,23 +1543,25 @@ C
      &'RESULTS')
 6126  FORMAT(' MONTH YEAR  FRAC #1   FRAC #2   FRAC #3   FRAC #4   ',
      &'FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9   FRAC #10   ',
-     &'FRAC #11  SUMCHECK') 
+     &'SUMCHECK') 
 6226  FORMAT('             %         %         %         %         ',
      &'%         %         %         %         %         %          ',
-     &'%              ')   
+     &'     ')   
 6027  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
      &'RESULTS')
 6127  FORMAT('  YEAR   FRAC #1   FRAC #2   FRAC #3   FRAC #4   ',
      &'FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9   FRAC #10   ',
-     &'FRAC #11  SUMCHECK ')
+     &'SUMCHECK ')
 6227  FORMAT('         %         %         %         %         ',
      &'%         %         %         %         %         %          ',
-     &'%              ') 
+     &'     ') 
 C
 C=======================CTEM FILE TITLES DONE=================================== /
 C
 C=======================================================================
-C      
+
+C     BEGIN READ IN OF THE .INI FILE
+      
       READ(50,5020) DEGLAT,DEGLON,ZRFMGRD(1),ZRFHGRD(1),ZBLDGRD(1),
      1              GCGRD(1),NLTEST,NMTEST
       JLAT=NINT(DEGLAT)
@@ -1633,7 +1626,7 @@ C     <<<<<MJ EDIT
 C
 C=======================CTEM FILE READIN=================================== \
 C
-C     READ FROM CTEM INITIALIZATION FILE
+C     READ FROM CTEM INITIALIZATION FILE (.CTM)
 C
       IF (CTEM1) THEN
       DO 71 I=1,NLTEST
@@ -1684,6 +1677,127 @@ C
 C
 C=====================CTEM FILE READIN DONE====================================== /
 C
+C     IF THIS RUN USES THE COMPETITION PARAMETERIZATION AND STARTS FROM
+C     BARE GROUND, SET UP THE MODEL STATE HERE. THIS OVERWRITES WHAT WAS
+C     READ IN FROM THE .INI AND .CTM FILES.
+      IF (COMPETE .AND. START_BARE) THEN 
+
+C      CHECK THE NUMBER OF MOSAICS THAT CAME FROM THE .INI FILE
+       IF (NMTEST .NE. NMOS) THEN
+
+C       WE NEED TO TRANSFER SOME INITIAL PARAMETERIZATION INFO TO ALL
+C       MOSAICS. SET ALL VALUES TO THAT OF THE FIRST MOSAIC.
+        DO I=1,NLTEST
+         DO M=NMTEST+1,NMOS
+
+          DO J=1,ICAN
+           RSMNROW(I,M,J)=RSMNROW(I,1,J)
+           QA50ROW(I,M,J)=QA50ROW(I,1,J)
+           VPDAROW(I,M,J)=VPDAROW(I,1,J)
+           VPDBROW(I,M,J)=VPDBROW(I,1,J)
+           PSGAROW(I,M,J)=PSGAROW(I,1,J)
+           PSGBROW(I,M,J)=PSGBROW(I,1,J)
+          ENDDO
+
+          DRNROW(I,M)=DRNROW(I,1)
+          SDEPROW(I,M)=SDEPROW(I,1)
+          FAREROW(I,M)=FAREROW(I,1)
+          XSLPROW(I,M)=XSLPROW(I,1)
+          GRKFROW(I,M)=GRKFROW(I,1)
+          WFSFROW(I,M)=WFSFROW(I,1)
+          WFCIROW(I,M)=WFCIROW(I,1)
+          MIDROW(I,M)=MIDROW(I,1)
+
+          DO J=1,3
+           SANDROW(I,M,J)=SANDROW(I,1,J)
+           CLAYROW(I,M,J)=CLAYROW(I,1,J)
+           ORGMROW(I,M,J)=ORGMROW(I,1,J)
+           TBARROW(I,M,J)=TBARROW(I,1,J)
+           THLQROW(I,M,J)=THLQROW(I,1,J)
+           THICROW(I,M,J)=THICROW(I,1,J)
+          ENDDO
+
+          TCANROW(I,M)=TCANROW(I,1)
+          TSNOROW(I,M)=TSNOROW(I,1)
+          TPNDROW(I,M)=TPNDROW(I,1)
+          ZPNDROW(I,M)=ZPNDROW(I,1)
+          RCANROW(I,M)=RCANROW(I,1)
+          SCANROW(I,M)=SCANROW(I,1)
+          SNOROW(I,M)=SNOROW(I,1)
+          ALBSROW(I,M)=ALBSROW(I,1)
+          RHOSROW(I,M)=RHOSROW(I,1)
+          GROROW(I,M)=GROROW(I,1)
+          DO J=1,ICC
+            LFSTATUSROW(I,M,J) = 4
+          ENDDO !J
+         ENDDO !m
+        ENDDO !i
+       ENDIF  !nmtest .ne. nmos
+
+C       SET THE NUMBER OF MOSAICS TO ICC+1        
+        NMTEST=NMOS
+
+C       SET THE INITIAL CONDITIONS FOR THE PFTS
+c       (BAH, THIS IS SUCH AN INELEGANT WAY TO DO THIS, BUT OH WELL...)
+
+C       INITALIZE TO ZERO
+         FCANROW=0.0
+         DVDFCANROW=0.0
+         FAREROW=0.0
+
+       DO I=1,NLTEST
+        DO M=1,NMTEST
+
+C       SET THE SEED AMOUNT FOR EACH PFT IN ITS MOSAIC
+        IF (M .LT. ICC+1) THEN
+         FAREROW(I,M)=0.001
+        ELSE
+         FAREROW(I,M)=1.0 - (ICC * 0.001)
+        ENDIF
+
+C        INITIAL CONDITIONS ALWAYS REQUIRED
+         DVDFCANROW(I,M,1)=1.0   !NDL
+         DVDFCANROW(I,M,3)=1.0  !BDL
+         DVDFCANROW(I,M,6)=1.0  !CROP
+         DVDFCANROW(I,M,8)=1.0    !GRASSES
+
+C        THEN ADJUSTED BELOW FOR THE ACTUAL MOSAIC MAKEUP
+         IF (M .LE. 2) THEN                     !NDL
+          FCANROW(I,M,1)=1.0
+          IF (M .EQ. 2) THEN
+            DVDFCANROW(I,M,1)=0.0
+            DVDFCANROW(I,M,2)=1.0        
+          ENDIF
+         ELSEIF (M .GE. 3 .AND. M .LE. 5) THEN  !BDL
+          FCANROW(I,M,2)=1.0
+          IF (M .EQ. 4) THEN
+            DVDFCANROW(I,M,3)=0.0
+            DVDFCANROW(I,M,4)=1.0        
+          ENDIF
+          IF (M .EQ. 5) THEN
+            DVDFCANROW(I,M,3)=0.0
+            DVDFCANROW(I,M,5)=1.0        
+          ENDIF
+         ELSEIF (M .EQ. 6 .OR. M .EQ. 7) THEN  !CROP
+          FCANROW(I,M,3)=1.0
+          IF (M .EQ. 7) THEN
+            DVDFCANROW(I,M,6)=0.0
+            DVDFCANROW(I,M,7)=1.0        
+          ENDIF
+         ELSEIF (M .EQ. 8 .OR. M .EQ. 9) THEN  !GRASSES
+          FCANROW(I,M,4)=1.0
+          IF (M .EQ. 9) THEN
+            DVDFCANROW(I,M,8)=0.0
+            DVDFCANROW(I,M,9)=1.0        
+          ENDIF
+         ELSE                                  !BARE 
+          FCANROW(I,M,5)=1.0
+         ENDIF !mosaic adjustments
+        ENDDO  !M
+       ENDDO  !I
+
+      END IF !compete and start_bare loop
+
 C=======================================================================
 C
       DO 100 I=1,NLTEST
@@ -1706,7 +1820,7 @@ C
           QACROW (I,M)=0.5E-2
 
           IF(IGND.GT.3)                                 THEN
-              DO 65 J=4,IGND,-1  !FLAG, WHY BY -1? JM.
+              DO 65 J=4,IGND,-1
                   TBARROW(I,M,J)=TBARROW(I,M,3)
                   IF(SDEPROW(I,M).LT.(ZBOT(J-1)+0.001) .AND.
      1                  SANDROW(I,M,3).GT.-2.5)     THEN
@@ -2266,7 +2380,6 @@ C      WRITE(*,*)'YEAR=',IYEAR,'DAY=',IDAY,' HOUR=',IHOUR,' MIN=',IMIN
           TAGRD(I)=TAGRD(I)+TFREZ
           ULGRD(I)=UVGRD(I)
           VLGRD(I)=0.0
-C       !FLAG, THE MIN WITH VMIN IS DONE IN CLASST. JM.
           VMODGRD(I)=UVGRD(I) 
 250   CONTINUE
 C
@@ -5379,8 +5492,8 @@ C
 C
 8104  FORMAT(1X,I4,I5,27F10.3,F10.4,4F10.3,2(A5,I2))
 8105  FORMAT(1X,I5,30F10.3,F10.4,4F10.3,2(A5,I2))
-8106  FORMAT(1X,I4,I5,12F10.5,2(A5,I2))
-8107  FORMAT(1X,I5,12F10.5,2(A5,I2))
+8106  FORMAT(1X,I4,I5,11F10.5,2(A5,I2))
+8107  FORMAT(1X,I5,11F10.5,2(A5,I2))
 C
 C===================== CTEM =====================================/
 C=======================================================================

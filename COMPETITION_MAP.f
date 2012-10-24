@@ -488,7 +488,7 @@ C
       DO 200 I=1,NLAT
       DO 210 M=1,NMOS
        DO L=1,ICC
-        IF (FCANCMXROW(I,M,L) .EQ. 1) THEN
+        IF (FCANCMXROW(I,M,L) .EQ. 1.0) THEN
          FCANCMX_CMP(I,L) =FAREROW(I,M)
          NPPVEG_CMP(I,L)  =NPPVEGROW(I,M,L)
          GEREMORT_CMP(I,L)=GEREMORTROW(I,M,L)
@@ -513,7 +513,7 @@ C
         ENDIF
        ENDDO 
        DO L=1,IC
-        IF (FCANMXROW(I,M,L) .EQ. 1) THEN
+        IF (FCANMXROW(I,M,L) .EQ. 1.0) THEN
          FCANMX_CMP(I,L)  =FCANMXROW(I,M,L)
         ENDIF
        ENDDO     
