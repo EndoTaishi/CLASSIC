@@ -359,7 +359,7 @@ C
         DO 70 I =IL1,IL2
 C          IF(RC(I).LE.10000.) THEN !FLAG, TURNING ON CAUSES A MAJOR PROBLEM
 C                                    WHEN THERE IS VEG WITH NO ROOTS. VA & JM OCT2012
-            RC(I)=RCPHTSYN(I)
+            RC(I)=MIN(RCPHTSYN(I),4999.999)
 C          ENDIF
    70   CONTINUE
       ENDIF
