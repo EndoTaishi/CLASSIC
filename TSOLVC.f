@@ -23,7 +23,10 @@
      M                 ICTEMMOD,SLAI,FCANCMX,L2MAX,
      N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG)
 C
-
+C     * OCT 30/12 - V. ARORA  - CFLUXV WAS BEING INITIALIZED TO ZERO INAPPROPRIATELY
+C     *                         FOR MOSAIC RUNS. NOT A PROBLEM WITH COMPOSITE 
+C     *                         RUNS. CREATED A TEMPORARY STORAGE VAR TO ALLOW
+C     *                         AN APPROPRIATE VALUE FOR THE INITIALIZATION
 C     * SEP 05/12 - J.MELTON. - MADE AN IMPLICIT INT TO REAL CONVERSION
 C     *                         EXPLICIT. ALSO PROBLEM WITH TAC, SEE NOTE
 C     *                         IN THE CODE BEFORE CALL TO PHTSYN.           
@@ -135,7 +138,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ISNOW,ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,I,N
+      INTEGER ISNOW,ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,I,N,KK
 C
       INTEGER NUMIT,IBAD,NIT,ITERMX
 C
@@ -197,7 +200,8 @@ C
      3          PRESSG(ILG),         XDIFFUS(ILG),     SLAI(ILG,ICTEM),
      4                     RMATCTEM(ILG,ICTEM,IG),  FCANCMX(ILG,ICTEM),
      5     ANVEG(ILG,ICTEM),    RMLVEG(ILG,ICTEM),       THLIQ(ILG,IG),
-     6      FIELDSM(ILG,IG),       WILTSM(ILG,IG),      CFLUXV(ILG)
+     6      FIELDSM(ILG,IG),       WILTSM(ILG,IG),      CFLUXV(ILG),
+     7       CFLUXV_IN(ILG)
  
       INTEGER ISAND(ILG,IG)
 C
@@ -245,6 +249,8 @@ C
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
 C
+
+
 C-----------------------------------------------------------------------
 C     * INITIALIZATION AND PRE-ITERATION SEQUENCE.
 C===================== CTEM =====================================\
@@ -330,6 +336,11 @@ C     * RC BASED ON PHOTOSYNTHESIS.
 C
       IF(ICTEMMOD.EQ.1) THEN
 
+C       STORE CFLUXV NUMBERS IN A TEMPORARY ARRAY
+        DO I = IL1, IL2
+          CFLUXV_IN(I)=CFLUXV(I)
+        ENDDO 
+C
 C       NOTE: WE DO NOT USE TAC HERE. TAC IS INTENDED FOR USE WHEN ITC=2
 C             HOWEVER, AS SET UP TAC CAN BE USED UNSET IN THE CALCULATION
 C             OF QSENSG EVEN IF ITC/=2. TO ENSURE THE PHTSYN WORKS, WE THEN
@@ -341,7 +352,7 @@ C             USE TA. JM 11/09/12
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
      4               FIELDSM,WILTSM,  FCANCMX,   L2MAX,NOL2PFTS,
      5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG)
-
+C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
@@ -897,6 +908,9 @@ C         ENDIF
 C  
       IF(IBAD.NE.0)                                                 THEN
           WRITE(6,6375) IBAD,JL,TCAN(IBAD),NITER(IBAD),ISNOW
+          write(*,*)'AILCG = ',AILCG(IBAD,6),AILCG(IBAD,7)
+          write(*,*)'RC= ',RC(IBAD)
+          write(*,*)'ISNOW = ',ISNOW
  6375     FORMAT('0BAD CANOPY ITERATION TEMPERATURE',3X,2I3,F16.2,2I4)
           WRITE(6,6380) QSWNC(IBAD),QLWIN(IBAD),QLWOG(IBAD),
      1                  QLWOC(IBAD),QSENSG(IBAD),QSENSC(IBAD),
@@ -1162,16 +1176,17 @@ C
       IF (ICTEMMOD.EQ.1) THEN
 C
 C       * STORE AERODYNAMIC CONDUCTANCE FOR USE IN NEXT TIME STEP
+C       * OVERWRITE OLDER NUMBERS ONLY WHEN FRACTION OF CANOPY
+C       * OR FRACTION OF CANOPY OVER SNOW (AKA FI) IS > 0.
 C
         DO 900 I = IL1, IL2
           IF(FI(I).GT.0.)                                          THEN 
             CFLUXV(I) = CFLUX(I)
           ELSE
-            CFLUXV(I) = 0.
+            CFLUXV(I) = CFLUXV_IN(I)
           ENDIF
   900   CONTINUE
       ENDIF
 C                                                                                  
-C                                           
       RETURN                                                                      
       END
