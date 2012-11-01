@@ -908,9 +908,6 @@ C         ENDIF
 C  
       IF(IBAD.NE.0)                                                 THEN
           WRITE(6,6375) IBAD,JL,TCAN(IBAD),NITER(IBAD),ISNOW
-          write(*,*)'AILCG = ',AILCG(IBAD,6),AILCG(IBAD,7)
-          write(*,*)'RC= ',RC(IBAD)
-          write(*,*)'ISNOW = ',ISNOW
  6375     FORMAT('0BAD CANOPY ITERATION TEMPERATURE',3X,2I3,F16.2,2I4)
           WRITE(6,6380) QSWNC(IBAD),QLWIN(IBAD),QLWOG(IBAD),
      1                  QLWOC(IBAD),QSENSG(IBAD),QSENSC(IBAD),
