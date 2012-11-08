@@ -24,7 +24,7 @@
  ISLFD = 2 ,
  IPCP = 1 ,
  ITC = 2 ,
- ITCG = 2 ,
+ ITCG = 1 ,
  ITG = 2 ,
  IWF = 0 ,
  IPAI = 0 ,

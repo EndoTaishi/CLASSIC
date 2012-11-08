@@ -1518,24 +1518,28 @@ C
 6024  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ',
      &'RESULTS')
 6124  FORMAT('  MONTH  YEAR  LAIMAXG  VGBIOMAS  LITTER    SOIL C  ', 
-     &'  NPP       GPP        NEP       CO2',
+     &'  NPP       GPP        NEP       NBP    HETRES',
+     &'   AUTORES    LITRES   SOILRES       CO2',
      &'        CO        CH4      NMHC       H2       NOX       N2O',
      &'       PM25       TPM        TC        OC        BC  ',
      &'PROBFIRE LUC_CO2_E  BURNFRAC')
 6224  FORMAT('                 m2/m2  Kg C/m2  Kg C/m2   Kg C/m2  ',
      &       'gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon ',
+     &       'gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon',
      &'  g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon ',
      &'  g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon          ',
      &'  g C/m2    %       ')   
 6025  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
      &'RESULTS')
 6125  FORMAT('  YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS', 
-     &'  SOILCMAS  TOTCMASS  ANNUALNPP ANNUALGPP ANNUALNEP ANNUALCO2',
+     &'  SOILCMAS  TOTCMASS  ANNUALNPP ANNUALGPP ANNUALNEP ANNUALNBP',
+     &' ANNHETRSP ANAUTORSP ANNLITRES ANSOILRES ANNUALCO2',
      &'  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O',
      &'   ANN_PM25 ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE',
      &' ANNLUCCO2 ABURNFRAC')
 6225  FORMAT('          m2/m2   Kg C/m2   Kg C/m2   Kg C/m2    Kg C/m2',
      &'  Kg C/m2   Kg C/m2   gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
+     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
      &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
      &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  avgprob/d ',
      &'  gC/m2.yr    %     ')
