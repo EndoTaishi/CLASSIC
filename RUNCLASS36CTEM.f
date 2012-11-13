@@ -1504,9 +1504,9 @@ C
       ENDIF
 C
 6021  FORMAT(2X,'MONTH YEAR  SW     LW      QH      QE    SNOACC    ',  
-     &        'WSNOACC    ROFACC      PCP      EVAP')
+     &        'WSNOACC    ROFACC      PCP      EVAP       TAIR')
 6121  FORMAT(2X,'           W/m2    W/m2    W/m2    W/m2    kg/m2   ',
-     &        'kg/m2      mm.mon    mm.mon    mm.mon') 
+     &        'kg/m2      mm.mon    mm.mon    mm.mon      degC') 
 6022  FORMAT(2X,'MONTH  YEAR  TG1  THL1  THI1     TG2  THL2  THI2',
      &      '     TG3  THL3  THI3')
 6122  FORMAT(2X,'             deg  m3/m3  m3/m3   deg  m3/m3  ',

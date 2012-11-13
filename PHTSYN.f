@@ -316,7 +316,7 @@ C     ORIGINAL values:
 C     Values are prinicipally derived from Kattge et al. 2009
 C     (Kattge does not include C4):
       DATA VMAX/35.0E-06,  40.0E-06, 0.00E-06,
-     &          44.0E-06,  67.0E-06, 40.0E-06,
+     &          51.0E-06,  67.0E-06, 40.0E-06,
      &          100.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
 
