@@ -12,7 +12,12 @@ C     ----------------------------------------------------------------
 C
 C           CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 C        BIOMASS TO STRUCTURAL ATTRIBUTES CONVERSION SUBROUTINE 
-
+C
+C     22  NOV 2012  - CALLING THIS VERSION 1.1 SINCE A FAIR BIT OF CTEM
+C     V. ARORA        SUBROUTINES WERE CHANGED FOR COMPATIBILITY WITH CLASS
+C                     VERSION 3.6 INCLUDING THE CAPABILITY TO RUN CTEM IN
+C                     MOSAIC/TILE VERSION ALONG WITH CLASS.
+C
 C     24  SEP 2012  - ADD IN CHECKS TO PREVENT CALCULATION OF NON-PRESENT
 C     J. MELTON       PFTS. CLEANED UP INITIALIZATION
 C
@@ -318,10 +323,9 @@ C         PLANT AREA INDEX IS SUM OF GREEN AND BROWN LEAF AREA INDICES
 C         AND STEM AREA INDEX
           PAI(I,J)=AILCG(I,J)+AILCB(I,J)+SAI(I,J)
 
-C         THIS IS A (TEMPORARY)BUG FIX. CLASS WAS CRASHING WITH THE LOWER PAI. 
-C         FEB 27 2012 V. ARORA AND J. MELTON FLAG
-           PAI(I,J)=MAX(0.3,PAI(I,J))
-C         PAI(I,J)=MAX(2.0,PAI(I,J))
+C         MAKE CLASS SEE SOME MINIMUM PAI, OTHERWISE IT RUNS INTO NUMERICAL
+C         PROBLEMS
+          PAI(I,J)=MAX(0.3,PAI(I,J))
          ENDIF
 160     CONTINUE
 150   CONTINUE
@@ -516,29 +520,13 @@ C
       DO 400 J = 1,ICC
         DO 410 I = IL1, IL2
 
-          KEND=9999  ! INITIALIZE WITH A DUMMY VALUE
+           KEND=9999  ! INITIALIZE WITH A DUMMY VALUE
 C
-C         USING PARAMETER "A" WE CAN FIND FRACTION OF ROOTS IN EACH SOIL LAYER
-C         JUST LIKE CLASS
+C          USING PARAMETER "A" WE CAN FIND FRACTION OF ROOTS IN EACH SOIL LAYER
+C          JUST LIKE CLASS
 C
-         ZROOT=ROOTDPTH(I,J)
+           ZROOT=ROOTDPTH(I,J)
 
-c          DO 413 K = 1,IG
-c          IF(ZROOT.LE.ZBOTW(I,1)) THEN
-c              RMATCTEM(I,J,1)=1.0
-c              RMATCTEM(I,J,2)=0.0   !:these two lines can be removed since they were initialized to 0;
-c              RMATCTEM(I,J,3)=0.0   !:or other deeper layers can also be set to zero here
-c          ELSEIF(ZROOT.LE.(ZBOTW(I,K)-DELZW(I,K)))                 THEN
-c                 RMATCTEM(I,J,K)=0.0
-c              ELSEIF(ZROOT.LE.ZBOTW(I,K))                          THEN
-c                 RMATCTEM(I,J,K)=(EXP(-A(I,J)*(ZBOTW(I,K)-DELZW(I,K)))-   
-c     1               EXP(-A(I,J)*ZROOT))/(1.0-EXP(-A(I,J)*ZROOT))
-c              ELSE
-c                 RMATCTEM(I,J,K)=(EXP(-A(I,J)*(ZBOTW(I,K)-DELZW(I,K)))-
-c     1               EXP(-A(I,J)*ZBOTW(I,K)))/(1.0-EXP(-A(I,J)*ZROOT))
-c              ENDIF
-c413       CONTINUE
-C
            TOTALA(I,J) = 1.0-EXP(-A(I,J)*ZROOT)
 
            IF(ZROOT.LE.ZBOTW(I,1))THEN
@@ -559,49 +547,36 @@ C             IS DEEPER THAN BOTTOM OF THE PREVIOUS TOP LAYER
 415         CONTINUE
 C
             IF (KEND .EQ. 9999) THEN
-           WRITE(6,2100) I,J,K,KEND
-2100       FORMAT(' AT (I) = (',I3,'), PFT=',I2,', DEPTH=',I2,' KEND IS
-     & NOT ASSIGNED. KEND  = ',I5)
-           CALL XIT('BIO2STR',-3)
-        
+              WRITE(6,2100) I,J,K,KEND
+2100          FORMAT(' AT (I) = (',I3,'), PFT=',I2,', DEPTH=',I2,' KEND 
+     & IS NOT ASSIGNED. KEND  = ',I5)
+              CALL XIT('BIO2STR',-3)
             END IF
 
             ETMP(I,J,1)=EXP(-A(I,J)*ZBOTW(I,1))
             RMATCTEM(I,J,1)=(1.0-ETMP(I,J,1))/TOTALA(I,J)
             IF (KEND .EQ. 2) THEN
 C             IF ROOTDEPTH IS SHALLOWER THAN THE BOTTOM OF 2ND LAYER
-             ETMP(I,J,KEND)=EXP(-A(I,J)*ZROOT)
-             RMATCTEM(I,J,KEND)=(ETMP(I,J,KEND-1)-ETMP(I,J,KEND))
+               ETMP(I,J,KEND)=EXP(-A(I,J)*ZROOT)
+               RMATCTEM(I,J,KEND)=(ETMP(I,J,KEND-1)-ETMP(I,J,KEND))
      1                          /TOTALA(I,J)
             ELSEIF (KEND .GT. 2) THEN
 C             IF ROOTDEPTH IS SHALLOWER THAN THE BOTTOM OF 3RD LAYER 
 C             OR EVEN THE DEEPER LAYER (IG>3)
 
-             DO 416 K=2,KEND-1
-              ETMP(I,J,K)=EXP(-A(I,J)*ZBOTW(I,K))
-              RMATCTEM(I,J,K)=(ETMP(I,J,K-1)-ETMP(I,J,K))/TOTALA(I,J)
-416          CONTINUE
+              DO 416 K=2,KEND-1
+                ETMP(I,J,K)=EXP(-A(I,J)*ZBOTW(I,K))
+                RMATCTEM(I,J,K)=(ETMP(I,J,K-1)-ETMP(I,J,K))/TOTALA(I,J)
+416           CONTINUE
 
-             ETMP(I,J,KEND)=EXP(-A(I,J)*ZROOT)
-             RMATCTEM(I,J,KEND)=(ETMP(I,J,KEND-1)-ETMP(I,J,KEND))
+              ETMP(I,J,KEND)=EXP(-A(I,J)*ZROOT)
+              RMATCTEM(I,J,KEND)=(ETMP(I,J,KEND-1)-ETMP(I,J,KEND))
      1                          /TOTALA(I,J)
             ENDIF
            ENDIF
 C
-c           RMAT_SUM=0.0
-c           DO K=1,IG
-c            RMAT_SUM=RMAT_SUM+RMATCTEM(I,J,K)
-c           ENDDO
-c           IF( ABS(RMAT_SUM-1.0).GT.1E-10) THEN
-c           WRITE(6,*) ZROOT,A(I,J),TOTALA(I,J),KEND
-c           WRITE(6,*) (RMATCTEM(I,J,K),K=1,IG)
-c           WRITE(6,*) (ZBOTW(I,K),K=1,IG),(ETMP(I,J,K),K=1,IG)
-c           ENDIF
-C
 410     CONTINUE
 400   CONTINUE
-
-
 C
 C    MAKE SURE ALL FRACTIONS (OF ROOTS IN EACH LAYER) ADD TO ONE.
 C
@@ -725,10 +700,7 @@ C         ESSENTIALLY MEAN MORE BARE GROUND, BUT SINCE WE ARE NOT CHANGING
 C         FRACTIONAL COVERAGES AT PRESENT, WE PASS A MINIMUM CANOPY MASS
 C         TO CLASS SO THAT IT DOESN'T RUN INTO NUMERICAL PROBLEMS.
 C
-C         TEST APR 25 JM, RAISE MIN VALUE TO TRY AND PREVENT 
-C         INSTABILITY ISSUES FLAG
           CMASVEGC(I,J)=MAX(CMASVEGC(I,J),3.0)
-C         CMASVEGC(I,J)=MAX(CMASVEGC(I,J),10.0) 
 C
 640     CONTINUE
 630   CONTINUE

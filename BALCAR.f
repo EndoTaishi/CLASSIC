@@ -13,8 +13,13 @@
      C                          ICC,      ILG,      IL1,      IL2)    
 C     -----------------------------------------------------------------      
 C
-C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
+C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 C                          CARBON BALANCE SUBROUTINE
+C
+C     22  NOV 2012  - CALLING THIS VERSION 1.1 SINCE A FAIR BIT OF CTEM
+C     V. ARORA        SUBROUTINES WERE CHANGED FOR COMPATIBILITY WITH CLASS
+C                     VERSION 3.6 INCLUDING THE CAPABILITY TO RUN CTEM IN
+C                     MOSAIC/TILE VERSION ALONG WITH CLASS.
 C
 C     24  SEP 2012  - ADD IN CHECKS TO PREVENT CALCULATION OF NON-PRESENT
 C     J. MELTON       PFTS
@@ -251,17 +256,6 @@ C         IF (FCANCMX(I,J).GT.0.0) THEN
      & THAN OUR TOLERANCE OF ',F12.6,' FOR SOIL C')
             CALL XIT('BALCAR',-7)
           ENDIF
-C         ENDIF
-C        ELSE  ! BARE
-C          DIFF1=SOILCMAS(I,J) - PSOCMASS(I,J)
-C          DIFF2=( HUMTRSVG(I,J)-SCRESVEG(I,J) )*(DELTAT/963.62)  
-C          IF((ABS(DIFF1-DIFF2)).GT.TOLRANCE)THEN
-C            WRITE(6,2005)I,J,ABS(DIFF1-DIFF2),TOLRANCE
-C2005        FORMAT('AT (I)= (',I3,'), PFT=',I2,', ',F12.6,' IS GREATER
-C     & THAN OUR TOLERANCE OF ',F12.6,' FOR SOIL C')
-C            CALL XIT('BALCAR',-7)
-C          ENDIF
-C        ENDIF
 310     CONTINUE
 300   CONTINUE   
 C
