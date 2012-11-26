@@ -649,7 +649,9 @@ C      * MONTHLY OUTPUT FOR CTEM GRID-MEAN
      9      AVGMNE_TPM_MN(NLAT),       AVGMNE_TC_MN(NLAT), 
      A      AVGMNE_OC_MN(NLAT),        AVGMNE_BC_MN(NLAT),
      B      AVGMN_PROBFIRE_MN(NLAT),   AVGMN_LUC_EMC_MN(NLAT),
-     C      AVGMN_BURNFRAC_MN(NLAT)
+     C      AVGMN_LUCLTRIN_MN(NLAT),   AVGMN_LUCSOCIN_MN(NLAT),
+     D      AVGMN_BURNFRAC_MN(NLAT)
+
 
        REAL LAIMAXG_MN_M(NLAT,NMOS),   STEMMASS_MN_M(NLAT,NMOS),
      1      ROOTMASS_MN_M(NLAT,NMOS),  LITRMASS_MN_M(NLAT,NMOS),
@@ -668,7 +670,9 @@ C      * MONTHLY OUTPUT FOR CTEM GRID-MEAN
      5      AVGMNE_OC_MN_M(NLAT,NMOS), AVGMNE_BC_MN_M(NLAT,NMOS),
      6      AVGMN_PROBFIRE_MN_M(NLAT,NMOS),
      7      AVGMN_LUC_EMC_MN_M(NLAT,NMOS),
-     8      AVGMN_BURNFRAC_MN_M(NLAT,NMOS)
+     8      AVGMN_LUCSOCIN_MN_M(NLAT,NMOS),
+     9      AVGMN_LUCLTRIN_MN_M(NLAT,NMOS),
+     A      AVGMN_BURNFRAC_MN_M(NLAT,NMOS)
 
 C      * YEARLY OUTPUT FOR CTEM GRID-MEAN
        REAL LAIMAXG_YR(NLAT),          STEMMASS_YR(NLAT),            
@@ -686,7 +690,8 @@ C      * YEARLY OUTPUT FOR CTEM GRID-MEAN
      9      AVGYRE_TPM_YR(NLAT),       AVGYRE_TC_YR(NLAT),
      A      AVGYRE_OC_YR(NLAT),        AVGYRE_BC_YR(NLAT),
      B      AVGYR_PROBFIRE_YR(NLAT),   AVGYR_LUC_EMC_YR(NLAT),
-     C      AVGYR_BURNFRAC_YR(NLAT)
+     C      AVGYR_LUCLTRIN_YR(NLAT),    AVGYR_LUCSOCIN_YR(NLAT),
+     D      AVGYR_BURNFRAC_YR(NLAT)
 
        REAL LAIMAXG_YR_M(NLAT,NMOS),   STEMMASS_YR_M(NLAT,NMOS),
      1      ROOTMASS_YR_M(NLAT,NMOS),  LITRMASS_YR_M(NLAT,NMOS),
@@ -703,8 +708,10 @@ C      * YEARLY OUTPUT FOR CTEM GRID-MEAN
      A      AVGYRE_OC_YR_M(NLAT,NMOS), AVGYRE_BC_YR_M(NLAT,NMOS),
      B      AVGYR_PROBFIRE_YR_M(NLAT,NMOS),
      C      AVGYR_LUC_EMC_YR_M(NLAT,NMOS),
-     D      AVGYR_BURNFRAC_YR_M(NLAT,NMOS),
-     E      LAIMAXGVEG_YR_M(NLAT,NMOS,ICC)            
+     D      AVGYR_LUCSOCIN_YR_M(NLAT,NMOS),
+     E      AVGYR_LUCLTRIN_YR_M(NLAT,NMOS),
+     F      AVGYR_BURNFRAC_YR_M(NLAT,NMOS),
+     G      LAIMAXGVEG_YR_M(NLAT,NMOS,ICC)            
 C
 
        REAL AFRLEAF_G(NLAT,ICC),       AFRSTEM_G(NLAT,ICC),
@@ -712,7 +719,13 @@ C
      2     TCANOACC_OUT_G(NLAT),       ANNPPVEG_G(NLAT,ICC),
      3     BURNFRAC_G(NLAT),           PROBFIRE_G(NLAT),
      4     LUCEMCOM_G(NLAT),           LUCLTRIN_G(NLAT),
-     5     LUCSOCIN_G(NLAT),           GRCLAREA_G(NLAT)
+     5     LUCSOCIN_G(NLAT),           GRCLAREA_G(NLAT),
+     6     EMIT_CO2_G(NLAT),           EMIT_CO_G(NLAT),
+     7     EMIT_CH4_G(NLAT),           EMIT_NMHC_G(NLAT),
+     8     EMIT_H2_G(NLAT),            EMIT_NOX_G(NLAT),
+     9     EMIT_N2O_G(NLAT),           EMIT_PM25_G(NLAT),
+     A     EMIT_TPM_G(NLAT),           EMIT_TC_G(NLAT),
+     B     EMIT_OC_G(NLAT),            EMIT_BC_G(NLAT)
 
        INTEGER IFCANCMX_G(NLAT,ICC),   IFCANCMX_M(NLAT,NMOS)
        REAL LEAFLITR_M(NLAT,NMOS),     TLTRLEAF_M(NLAT,NMOS),
@@ -1119,38 +1132,67 @@ C
           CALL XIT('RUNCLASS36CTEM', -1)
         ENDIF
        ENDIF
+
+
+C      THE CTEM OUTPUT FILE SUFFIX NAMING CONVENTION IS AS FOLLOWS:
+C                       ".CT##{TIME}_{MOSAIC/GRID}"
+C      WHERE THE ## IS A NUMERICAL IDENTIFIER, {TIME} IS ANY OF H, D, M,
+C      OR Y FOR HALF HOURLY, DAILY, MONTHLY, OR YEARLY, RESPECTIVELY. 
+C      AFTER THE UNDERSCORE A M OR G IS USED TO DENOTE MOSAIC OR GRID 
+C      -AVERAGED VALUES, RESPECTIVELY.   
+
        IF (CTEM1) THEN
-        OPEN(UNIT=71,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT1_M')  ! HALF-HOURLY OUTPUT FOR CTEM
-        OPEN(UNIT=711,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT1_G')
+C          CTEM HALF HOURLY OUTPUT FILES
+        OPEN(UNIT=71, FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT01H_M')  
+        OPEN(UNIT=711,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT01H_G')
        ENDIF
        IF (CTEM2) THEN
-        OPEN(UNIT=72,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT2_M')  ! DAILY OUTPUT FOR CTEM
-        OPEN(UNIT=73,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT3_M')
-        OPEN(UNIT=74,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT4_M')
-        OPEN(UNIT=75,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT5_M')
-        OPEN(UNIT=76,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT6_M')
-        OPEN(UNIT=78,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT8_M')
-        OPEN(UNIT=77,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT7_M')  ! YEARLY OUTPUT FOR ALL CTEM PFTs, MOSAIC-MEAN
-        OPEN(UNIT=79,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT9_M')  
-        OPEN(UNIT=721,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT2_G') ! DAILY OUTPUT FOR CTEM
-        OPEN(UNIT=731,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT3_G')
-        OPEN(UNIT=741,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT4_G')
-        OPEN(UNIT=751,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT5_G')
-        OPEN(UNIT=761,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT6_G')
-        OPEN(UNIT=781,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT8_G')
+C          CTEM DAILY OUTPUT FILES (MOSAIC)
+        OPEN(UNIT=72,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT01D_M')  
+        OPEN(UNIT=73,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT02D_M')
+        OPEN(UNIT=74,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT03D_M')
+        OPEN(UNIT=75,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT04D_M')
+        OPEN(UNIT=76,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT05D_M')
+        OPEN(UNIT=78,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT06D_M') ! DISTURBANCE VARS
+C          CTEM YEARLY OUTPUT FILES (MOSAIC)
+        OPEN(UNIT=77,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT01Y_M') ! MOSAIC-MEAN
+        OPEN(UNIT=79,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT09Y_M')
+  
+C          CTEM DAILY OUTPUT FILES (GRID-AVERAGE)
+        OPEN(UNIT=721,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT01D_G') 
+        OPEN(UNIT=731,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT02D_G')
+        OPEN(UNIT=741,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT03D_G')
+        OPEN(UNIT=751,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT04D_G')
+        IF (COMPETE) THEN
+         OPEN(UNIT=761,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT07D_G') ! COMPETITION
+        END IF
+        OPEN(UNIT=781,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT06D_G') ! DISTURBANCE VARS
+
        ENDIF
 C
-      ENDIF 
+      ENDIF ! PARALLELRUN
 
-C       ! MONTHLY & YEARLY OUTPUT FOR BOTH PARALLEL MODE AND STAND ALONE MODE 
-        OPEN(UNIT=81,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1M_G') ! MONTHLY OUTPUT FOR CLASS
+C       ! MONTHLY & YEARLY OUTPUT FOR BOTH PARALLEL MODE AND STAND ALONE MODE
+C          CLASS MONTHLY OUTPUT FILES 
+        OPEN(UNIT=81,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1M_G') 
         OPEN(UNIT=82,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF2M_G')
-        OPEN(UNIT=83,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1Y_G') ! YEARLY OUTPUT FOR CLASS
+C          CLASS YEARLY OUTPUT FILESclose
+
+        OPEN(UNIT=83,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1Y_G')
+
        IF (CTEM2) THEN
-        OPEN(UNIT=84,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT1M_G') ! MONTHLY OUTPUT FOR CTEM
-        OPEN(UNIT=85,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT1Y_G') ! YEARLY OUTPUT FOR CTEM
-        OPEN(UNIT=86,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT2M_G') ! MONTHLY OUTPUT FOR CTEM PFT FRACTIONS
-        OPEN(UNIT=87,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT2Y_G') ! YEARLY OUTPUT FOR CTEM PFT FRACTIONS
+C          CTEM MONTHLY OUTPUT FILES
+        OPEN(UNIT=84,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT01M_G')
+        OPEN(UNIT=85,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT06M_G') ! DISTURBANCE
+        IF (COMPETE) THEN
+         OPEN(UNIT=88,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT07M_G')! CTEM PFT FRACTIONS
+        ENDIF
+C          CTEM YEARLY OUTPUT FILES
+        OPEN(UNIT=86,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT01Y_G') 
+        OPEN(UNIT=87,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT06Y_G') ! DISTURBANCE
+        IF (COMPETE) THEN
+         OPEN(UNIT=89,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.CT07Y_G')! CTEM PFT FRACTIONS
+        ENDIF
        ENDIF
 C
 C=======================================================================
@@ -1352,7 +1394,7 @@ C
         WRITE(78,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
         WRITE(78,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
         WRITE(78,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
-        WRITE(78,7020)
+        WRITE(78,7021)
         WRITE(78,7110)
         WRITE(78,7111)
 C
@@ -1362,47 +1404,52 @@ C
         WRITE(79,7090)
         WRITE(79,7112)
         WRITE(79,7113)
-      ENDIF
+C
+      ENDIF !CTEM2
+
 7010  FORMAT(A80)
 7020  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) DAILY RESULTS'
      &)
+7021  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) DAILY '
+     &' DISTURBANCE RESULTS')
 7030  FORMAT('HOUR MIN  DAY, An FOR 9 PFTs, RmL FOR 9 PFTs')
-7040  FORMAT('  DAY YEAR       GPP       NPP       NEP       NBP   AUTOR
-     &ES  HETRORES    LITRES    SOCRES  DSTCEMLS  LITRFALL  HUMIFTRS')
-7050  FORMAT('  DAY YEAR       RML       RMS       RMR        RG  LEAFLI
-     &TR  TLTRLEAF  TLTRSTEM  TLTRROOT ')
+7040  FORMAT('  DAY YEAR       GPP       NPP       NEP       NBP'
+     &'   AUTORES  HETRORES    LITRES    SOCRES  DSTCEMLS  LITRFALL'
+     &'  HUMIFTRS')
+7050  FORMAT('  DAY YEAR       RML       RMS       RMR        RG'
+     &'  LEAFLITR  TLTRLEAF  TLTRSTEM  TLTRROOT ')
 7060  FORMAT('  DAY YEAR  VGBIOMAS   GAVGLAI  GAVGLTMS  GAVGSCMS  '
      &'TOTCMASS  GLEAFMAS   BLEAFMAS STEMMASS   ROOTMASS  LITRMASS '
      &' SOILCMAS')
-7061  FORMAT('  DAY YEAR  VGBIOMAS   GAVGLAI  GLEAFMAS   BLEAFMAS ',
+7061  FORMAT('  DAY YEAR  VGBIOMAS   GAVGLAI  GLEAFMAS   BLEAFMAS '
      & 'STEMMASS   ROOTMASS  LITRMASS SOILCMAS')
-7070  FORMAT('  DAY YEAR     AILCG     AILCB    RMATCTEM LAYER 1, 2, & 3
-     &     VEGHGHT  ROOTDPTH  ROOTTEMP      SLAI')
-7075  FORMAT('  DAY YEAR   FRAC #1   FRAC #2   FRAC #3   FRAC #4   ',
-     &'FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9  ',
+7070  FORMAT('  DAY YEAR     AILCG     AILCB    RMATCTEM LAYER 1,2, & 3'
+     &'     VEGHGHT  ROOTDPTH  ROOTTEMP      SLAI')
+7075  FORMAT('  DAY YEAR   FRAC #1   FRAC #2   FRAC #3   FRAC #4   '
+     &'FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9  '
      &'FRAC #10[%] SUMCHECK')
-7080  FORMAT('  DAY YEAR   AFRLEAF   AFRSTEM   AFRROOT  TCANOACC  LFSTAT
-     &US')
-7090  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS
-     &')
-7100  FORMAT('  YEAR   LAIMAXG  STEMMASS  ROOTMASS  LITRMASS  SOILCMAS',
-     &' ANNUALNPP ANNUALGPP ANNUALNEP   AVGYRLE ANNUALCO2',
-     &'  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O',
-     &'   ANN_PM25 ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC ',
-     &'ANNUAL_PROB_FIRE ANNUAL_LUC_C_EMIT')
-7101  FORMAT('          m2/m2    Kg C/m2  Kg C/m2    Kg C/m2   Kg C/m2',
-     &'gC/m2.yr  gC/m2.yr  gC/m2.yr    W/m2  g/m2.yr ',
-     &'  g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr ',
-     &'  g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr   g/m2.yr',
-     &'               g/m2.yr KgCO2/m2.yr')
-7110  FORMAT('  DAY YEAR   BURNFRAC   PROBFIRE   LUCEMCOM   LUCLTRIN
-     &LUCSOCIN  GRCLAREA')
-7111  FORMAT('               %     avg prob/day    uMOL-CO2/M2.S KgC/M2.DAY
-     &KgC/M2.DAY    KM^2')
-7112  FORMAT(' YEAR END POOLS, AVERAGE ANNUAL NPP, & MAX. ANNUAL LAI FOR
-     & 9 PFTs')
-7113  FORMAT(' POOLS (Kg C/M2), NPP (gC/M2), LAI (M2/M2), LFSTATUSROW (-),
-     & +ve PHYSYN DAYS (DAY)')
+7080  FORMAT('  DAY YEAR   AFRLEAF   AFRSTEM   AFRROOT  TCANOACC'
+     &'  LFSTATUS')
+7090  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY'
+     &' RESULTS')
+7100  FORMAT('  YEAR   LAIMAXG  STEMMASS  ROOTMASS  LITRMASS  SOILCMAS'
+     &' ANNUALNPP ANNUALGPP ANNUALNEP ANNUALNBP   AVGYRLE')
+7101  FORMAT('          m2/m2    Kg C/m2  Kg C/m2    Kg C/m2   Kg C/m2'
+     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr       W/m2')
+7110  FORMAT('  DAY YEAR   EMIT_CO2',
+     &'    EMIT_CO   EMIT_CH4  EMIT_NMHC    EMIT_H2   EMIT_NOX',
+     &'   EMIT_N2O  EMIT_PM25   EMIT_TPM    EMIT_TC    EMIT_OC'
+     &'    EMIT_BC   BURNFRAC   PROBFIRE   LUCEMCOM   LUCLTRIN'
+     &'   LUCSOCIN   GRCLAREA')
+7111  FORMAT('               g/m2.D     g/m2.d',
+     &'     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d',
+     &'     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d   ',
+     &'       %  avgprob/d uMOL-CO2/M2.S KgC/M2.D'
+     &'   KgC/M2.D      KM^2')
+7112  FORMAT(' YEAR END POOLS, AVERAGE ANNUAL NPP, & MAX ANNUAL LAI FOR'
+     &' 9 PFTs')
+7113  FORMAT(' POOLS (Kg C/M2), NPP (gC/M2), LAI (M2/M2), LFSTATUSROW'
+     &' (-), +ve PHYSYN DAYS (DAY)')
 C
       IF (CTEM1) THEN
         WRITE(711,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
@@ -1449,6 +1496,7 @@ C
         WRITE(781,7020)
         WRITE(781,7110)
         WRITE(781,7111)
+C
       ENDIF
 C
       ENDIF
@@ -1501,12 +1549,28 @@ C
         WRITE(87,6027)
         WRITE(87,6127)
         WRITE(87,6227)
-      ENDIF
+C
+       IF (COMPETE) THEN
+        WRITE(88,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+        WRITE(88,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+        WRITE(88,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
+        WRITE(88,6028)
+        WRITE(88,6128)
+        WRITE(88,6228)
+C
+        WRITE(89,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+        WRITE(89,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+        WRITE(89,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
+        WRITE(89,6029)
+        WRITE(89,6129)
+        WRITE(89,6229)
+       ENDIF !COMPETE
+      ENDIF !CTEM2
 C
 6021  FORMAT(2X,'MONTH YEAR  SW     LW      QH      QE    SNOACC    ',  
-     &        'WSNOACC    ROFACC      PCP      EVAP')
+     &        'WSNOACC    ROFACC      PCP      EVAP       TAIR')
 6121  FORMAT(2X,'           W/m2    W/m2    W/m2    W/m2    kg/m2   ',
-     &        'kg/m2      mm.mon    mm.mon    mm.mon') 
+     &        'kg/m2      mm.mon    mm.mon    mm.mon      degC') 
 6022  FORMAT(2X,'MONTH  YEAR  TG1  THL1  THI1     TG2  THL2  THI2',
      &      '     TG3  THL3  THI3')
 6122  FORMAT(2X,'             deg  m3/m3  m3/m3   deg  m3/m3  ',
@@ -1519,44 +1583,54 @@ C
      &'RESULTS')
 6124  FORMAT('  MONTH  YEAR  LAIMAXG  VGBIOMAS  LITTER    SOIL C  ', 
      &'  NPP       GPP        NEP       NBP    HETRES',
-     &'   AUTORES    LITRES   SOILRES       CO2',
-     &'        CO        CH4      NMHC       H2       NOX       N2O',
-     &'       PM25       TPM        TC        OC        BC  ',
-     &'PROBFIRE LUC_CO2_E  BURNFRAC')
+     &'   AUTORES    LITRES   SOILRES')
 6224  FORMAT('                 m2/m2  Kg C/m2  Kg C/m2   Kg C/m2  ',
      &       'gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon ',
-     &       'gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon',
-     &'  g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon ',
-     &'  g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon   g/m2.mon          ',
-     &'  g C/m2    %       ')   
-6025  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
+     &       'gC/m2.mon  gC/m2.mon  gC/m2.mon')   
+6025  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ',
+     &'RESULTS FOR DISTURBANCES')
+6125  FORMAT('  MONTH  YEAR  CO2',
+     &'        CO        CH4      NMHC       H2       NOX       N2O',
+     &'       PM25       TPM        TC        OC        BC  ',
+     &' PROBFIRE  LUC_CO2_E  LUC_SOCIN  LUC_LTRIN   BURNFRAC')
+6225  FORMAT('            g/m2.mon  g/m2.mon',
+     &'  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon',
+     &'  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon',
+     &'  prod/mon    g C/m2    g C/m2    g C/m2         %')  
+6026  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
      &'RESULTS')
-6125  FORMAT('  YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS', 
+6126  FORMAT('  YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS', 
      &'  SOILCMAS  TOTCMASS  ANNUALNPP ANNUALGPP ANNUALNEP ANNUALNBP',
-     &' ANNHETRSP ANAUTORSP ANNLITRES ANSOILRES ANNUALCO2',
-     &'  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O',
-     &'   ANN_PM25 ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE',
-     &' ANNLUCCO2 ABURNFRAC')
-6225  FORMAT('          m2/m2   Kg C/m2   Kg C/m2   Kg C/m2    Kg C/m2',
+     &' ANNHETRSP ANAUTORSP ANNLITRES ANSOILRES')
+6226  FORMAT('          m2/m2   Kg C/m2   Kg C/m2   Kg C/m2    Kg C/m2',
      &'  Kg C/m2   Kg C/m2   gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
+     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr')
+6027  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
+     &'RESULTS FOR DISTURBANCES')
+
+6127  FORMAT('  YEAR   ANNUALCO2',
+     &'  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O',
+     &'  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE',
+     &' ANNLUCCO2  ANNLUCSOC ANNLUCLTR ABURNFRAC')
+6227  FORMAT('         gC/m2.yr',
      &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
      &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  avgprob/d ',
-     &'  gC/m2.yr    %     ')
-6026  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ',
+     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr    %     ')
+
+6028  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ',
      &'RESULTS')
-6126  FORMAT(' MONTH YEAR  FRAC #1   FRAC #2   FRAC #3   FRAC #4   ',
+6128  FORMAT(' MONTH YEAR  FRAC #1   FRAC #2   FRAC #3   FRAC #4   ',
      &'FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9   FRAC #10   ',
      &'SUMCHECK') 
-6226  FORMAT('             %         %         %         %         ',
+6228  FORMAT('             %         %         %         %         ',
      &'%         %         %         %         %         %          ',
      &'     ')   
-6027  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
+6029  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
      &'RESULTS')
-6127  FORMAT('  YEAR   FRAC #1   FRAC #2   FRAC #3   FRAC #4   ',
+6129  FORMAT('  YEAR   FRAC #1   FRAC #2   FRAC #3   FRAC #4   ',
      &'FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9   FRAC #10   ',
      &'SUMCHECK ')
-6227  FORMAT('         %         %         %         %         ',
+6229  FORMAT('         %         %         %         %         ',
      &'%         %         %         %         %         %          ',
      &'     ') 
 C
@@ -1660,6 +1734,8 @@ C
           READ(70,*) (BLEAFMASROW(I,M,J),J=1,ICC)
           READ(70,*) (STEMMASSROW(I,M,J),J=1,ICC)
           READ(70,*) (ROOTMASSROW(I,M,J),J=1,ICC)
+C          READ(70,*) (LITRMASSROW(I,M,J),J=1,ICCP1)
+C          READ(70,*) (SOILCMASROW(I,M,J),J=1,ICCP1)
           READ(70,*) (LITRMASSROW(I,M,J),J=1,ICC)
           READ(70,*) (SOILCMASROW(I,M,J),J=1,ICC)
           READ(70,*) (LFSTATUSROW(I,M,J),J=1,ICC)
@@ -2216,6 +2292,7 @@ C
           AVGMNGPP_MN_M(I,M)=0.0
           AVGMNNEP_MN_M(I,M)=0.0
           AVGMNNBP_MN_M(I,M)=0.0
+          LAIMAXG_MN_M(I,M)=0.0   !ADDED BY JM. NOV 21 2012.     
 
           AVGMNE_CO2_MN_M(I,M)=0.0
           AVGMNE_CO_MN_M(I,M) =0.0
@@ -2231,6 +2308,8 @@ C
           AVGMNE_BC_MN_M(I,M) =0.0
           AVGMN_PROBFIRE_MN_M(I,M) =0.0
           AVGMN_LUC_EMC_MN_M(I,M) =0.0
+          AVGMN_LUCSOCIN_MN_M(I,M) =0.0
+          AVGMN_LUCLTRIN_MN_M(I,M) =0.0
           AVGMN_BURNFRAC_MN_M(I,M) =0.0
 C
           DO J=1,ICC
@@ -2240,6 +2319,7 @@ C
           AVGYRGPP_YR_M(I,M)=0.0
           AVGYRNEP_YR_M(I,M)=0.0
           AVGYRNBP_YR_M(I,M)=0.0
+          LAIMAXG_YR_M(I,M)=0.0   !ADDED BY JM. NOV 21 2012.     
 C
          ENDIF ! CTEM2
 C
@@ -3566,7 +3646,7 @@ C===================== CTEM =====================================\
 C
           ENDIF ! IYD 
 C
-C         WRITE HALF-HOURLY CTEM RESULTS TO FILE *.CT1
+C         WRITE HALF-HOURLY CTEM RESULTS TO FILE *.CT01H
 C
 C         NET PHOTOSYNTHETIC RATES AND LEAF MAINTENANCE RESPIRATION FOR
 C         EACH PFT. HOWEVER, IF CTEM2 OPTION IS ON THEN PHYSYN SUBROUTINE
@@ -4523,6 +4603,18 @@ C
         LUCLTRIN_G(I) =0.0
         LUCSOCIN_G(I) =0.0
         GRCLAREA_G(I) =0.0
+        EMIT_CO2_G(I) =0.0
+        EMIT_CO_G(I)  =0.0
+        EMIT_CH4_G(I) =0.0  
+        EMIT_NMHC_G(I) =0.0
+        EMIT_H2_G(I) =0.0
+        EMIT_NOX_G(I) =0.0
+        EMIT_N2O_G(I) =0.0 
+        EMIT_PM25_G(I) =0.0
+        EMIT_TPM_G(I) =0.0 
+        EMIT_TC_G(I) =0.0
+        EMIT_OC_G(I) =0.0  
+        EMIT_BC_G(I) =0.0
 C
           DO J=1,ICC        
             LEAFLITR_G(I,J)=0.0
@@ -4603,13 +4695,14 @@ C
              IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND)) THEN   
 C
 C               WRITE GRID-AVERAGED FLUXES OF BASIC QUANTITIES TO 
-C               FILE *.CT2
+C               FILE *.CT01D_M
 C
                 WRITE(72,8200)IDAY,IYEAR,GPPROW(I,M),NPPROW(I,M),
      1                NEPROW(I,M),NBPROW(I,M),AUTORESROW(I,M),
      2                HETRORESROW(I,M),LITRESROW(I,M),SOCRESROW(I,M),
      3                (DSTCEMLSROW(I,M)+DSTCEMLS3ROW(I,M)),
      4                LITRFALLROW(I,M),HUMIFTRSROW(I,M),'TILE',M,'AVGE'
+
 C               WRITE BREAKDOWN OF SOME OF BASIC FLUXES TO FILE *.CT3 
 C               AND SELECTED LITTER FLUXES FOR SELECTED PFT
 C
@@ -4617,11 +4710,12 @@ C
 C
                 IF (FCANCMXROW(I,M,J) .GT.0.0) THEN
 C
- 
+C               WRITE TO FILE .CT01D_M 
                 WRITE(72,8201)IDAY,IYEAR,GPPVEGROW(I,M,J),
      1          NPPVEGROW(I,M,J),NEPVEGROW(I,M,J),
      2          'TILE',M,'PFT',J
 
+C               WRITE TO FILE .CT02D_M 
                 WRITE(73,8300)IDAY,IYEAR,RMLVEGACCROW(I,M,J), 
      1          RMSVEGROW(I,M,J),RMRVEGROW(I,M,J),RGVEGROW(I,M,J),
      2          LEAFLITRROW(I,M,J),TLTRLEAFROW(I,M,J),
@@ -4629,7 +4723,7 @@ C
 C
 C
 C               WRITE GRID-AVERAGED POOL SIZES AND COMPONENT SIZES FOR
-C               SELECED CTEM PFT TO FILE *.CT4
+C               SELECED CTEM PFT TO FILE *.CT03D_M
 C
                 WRITE(74,8401)IDAY,IYEAR,VGBIOMAS_VEGROW(I,M,J),
      1               AILCGROW(I,M,J),GLEAFMASROW(I,M,J),
@@ -4638,14 +4732,15 @@ C
      5               SOILCMASROW(I,M,J),'TILE',M,'PFT',J
 C
 C               WRITE LAI, RMATCTEM, & STRUCTURAL ATTRIBUTES FOR SELECTED 
-C               PFT TO FILE *.CT5
+C               PFT TO FILE *.CT04D_M
 C
                 WRITE(75,8500)IDAY,IYEAR, AILCGROW(I,M,J), 
      1                AILCBROW(I,M,J),(RMATCTEMROW(I,M,J,K),K=1,3),
      2                VEGHGHTROW(I,M,J),ROOTDPTHROW(I,M,J),
      3                ROOTTEMPROW(I,M,J),SLAIROW(I,M,J),'TILE',M,'PFT',J
 C
-C               WRITE ALLOCATION FRACTIONS FOR SELECTED PFT TO FILE *.CT6
+C               WRITE ALLOCATION FRACTIONS FOR SELECTED PFT TO 
+C               FILE *.CT05D_M
 C
                 WRITE(76,8600)IDAY,IYEAR, AFRLEAFROW(I,M,J), 
      1                AFRSTEMROW(I,M,J),AFRROOTROW(I,M,J), 
@@ -4658,19 +4753,23 @@ C
 C
                 IF (IFCANCMX_M(I,M) .GT. 0) THEN
 C
+C               WRITE TO FILE .CT02D_M 
                 WRITE(73,8300)IDAY,IYEAR,RMLROW(I,M),RMSROW(I,M),
      1          RMRROW(I,M),RGROW(I,M),LEAFLITR_M(I,M),TLTRLEAF_M(I,M),
      2          TLTRSTEM_M(I,M),TLTRROOT_M(I,M),'TILE',M,'AVGE'
 C
+C               WRITE TO FILE .CT03D_M 
                 WRITE(74,8402)IDAY,IYEAR,VGBIOMASROW(I,M),
      1               GAVGLAIROW(I,M),GAVGLTMSROW(I,M),
      2               GAVGSCMSROW(I,M),'TILE',M, 'AVGE'
 C
+C               WRITE TO FILE .CT04D_M
                 WRITE(75,8500)IDAY,IYEAR,AILCG_M(I,M),
      1                AILCB_M(I,M),(RMATCTEM_M(I,M,K),K=1,3),
      2                VEGHGHT_M(I,M),ROOTDPTH_M(I,M),
      3                ROOTTEMP_M(I,M),SLAI_M(I,M),'TILE',M, 'AVGE'
 C
+C               WRITE TO FILE .CT05D_M
                 WRITE(76,8601)IDAY,IYEAR, AFRLEAF_M(I,M), 
      1                AFRSTEM_M(I,M),AFRROOT_M(I,M), 
      2                TCANOACCROW_OUT(I,M), 
@@ -4678,16 +4777,16 @@ C
 C
                 ENDIF !IF (IFCANCMX_M(I,M) .GT.0.0) THEN
 C
-C               WRITE FIRE AND LUC RESULTS TO FILE *.CT8
+C               WRITE FIRE AND LUC RESULTS TO FILE *.CT06D_M
 C
-                WRITE(78,8800)IDAY,IYEAR, BURNFRACROW(I,M), 
-     1                PROBFIREROW(I,M),LUCEMCOMROW(I,M), 
-     2                LUCLTRINROW(I,M), LUCSOCINROW(I,M),
-     3                GRCLAREAROW(I,M),'TILE',M
-C
-C                WRITE(78,8800)IDAY,IYEAR, BURNFRAC(I), PROBFIRE(I),
-C     1                        LUCEMCOM(I), LUCLTRIN(I), LUCSOCIN(I),
-C     2                        GRCLAREA(I)
+                WRITE(78,8800)IDAY,IYEAR,
+     1            EMIT_CO2ROW(I,M),EMIT_COROW(I,M),EMIT_CH4ROW(I,M),
+     2            EMIT_NMHCROW(I,M),EMIT_H2ROW(I,M),EMIT_NOXROW(I,M),
+     3            EMIT_N2OROW(I,M),EMIT_PM25ROW(I,M),EMIT_TPMROW(I,M),
+     4            EMIT_TCROW(I,M),EMIT_OCROW(I,M),EMIT_BCROW(I,M),
+     5            BURNFRACROW(I,M), PROBFIREROW(I,M),LUCEMCOMROW(I,M), 
+     6            LUCLTRINROW(I,M), LUCSOCINROW(I,M),
+     7            GRCLAREAROW(I,M),'TILE',M
 C
              ENDIF ! IYD
 C
@@ -4702,7 +4801,7 @@ C
 8501          FORMAT(1X,I4,I5,2F10.5,2(A5,I2))
 8600          FORMAT(1X,I4,I5,4F10.5,I8,2(A5,I2))
 8601          FORMAT(1X,I4,I5,4F10.5,8x,2(A5,I2))   
-8800          FORMAT(1X,I4,I5,5F11.4,2X,F9.2,2(A5,I2))
+8800          FORMAT(1X,I4,I5,17F11.4,2X,F9.2,2(A5,I2))
 C
 C  CALCULATION OF GRID VARIABLES
 C
@@ -4733,7 +4832,19 @@ C
         TOTCMASS_G(I) =VGBIOMAS_G(I) + GAVGLTMS_G(I) + GAVGSCMS_G(I)
 C       FLAG this originally did not have farerow, but I think it 
 C       makes more sense JM. 24.05.2012        
-        BURNFRAC_G(I) =BURNFRAC_G(I)+BURNFRACROW(I,M)*FAREROW(I,M)              
+        BURNFRAC_G(I) =BURNFRAC_G(I)+ BURNFRACROW(I,M)*FAREROW(I,M)              
+        EMIT_CO2_G(I) =EMIT_CO2_G(I)+ EMIT_CO2ROW(I,M)*FAREROW(I,M)
+        EMIT_CO_G(I)  =EMIT_CO_G(I) + EMIT_COROW(I,M)*FAREROW(I,M)
+        EMIT_CH4_G(I) =EMIT_CH4_G(I)+ EMIT_CH4ROW(I,M)*FAREROW(I,M)
+        EMIT_NMHC_G(I)=EMIT_NMHC_G(I)+EMIT_NMHCROW(I,M)*FAREROW(I,M)
+        EMIT_H2_G(I)  =EMIT_H2_G(I) + EMIT_H2ROW(I,M)*FAREROW(I,M)
+        EMIT_NOX_G(I) =EMIT_NOX_G(I)+ EMIT_NOXROW(I,M)*FAREROW(I,M)
+        EMIT_N2O_G(I) =EMIT_N2O_G(I)+ EMIT_N2OROW(I,M)*FAREROW(I,M)
+        EMIT_PM25_G(I)=EMIT_PM25_G(I)+EMIT_PM25ROW(I,M)*FAREROW(I,M)
+        EMIT_TPM_G(I) =EMIT_TPM_G(I)+ EMIT_TPMROW(I,M)*FAREROW(I,M)
+        EMIT_TC_G(I)  =EMIT_TC_G(I) + EMIT_TCROW(I,M)*FAREROW(I,M)
+        EMIT_OC_G(I)  =EMIT_OC_G(I) + EMIT_OCROW(I,M)*FAREROW(I,M)
+        EMIT_BC_G(I)  =EMIT_BC_G(I) + EMIT_BCROW(I,M)*FAREROW(I,M)
 
         PROBFIRE_G(I) =PROBFIRE_G(I)+PROBFIREROW(I,M)*FAREROW(I,M)
         LUCEMCOM_G(I) =LUCEMCOM_G(I)+LUCEMCOMROW(I,M)*FAREROW(I,M)
@@ -4845,6 +4956,7 @@ C
 C
               IF (FCANCMXROW(I,M,J) .GT.0.0) THEN
 C
+C             WRITE TO FILE .CT01Y_M
               WRITE(77,8702)IYEAR,LAIMAXGVEG_M(I,M,J),
      1                 STEMMASSROW(I,M,J),ROOTMASSROW(I,M,J), 
      2                 LITRMASSROW(I,M,J),SOILCMASROW(I,M,J),
@@ -4868,20 +4980,14 @@ C
 854          CONTINUE
 C
               IF (IFCANCMX_M(I,M) .GT. 0) THEN
+
+C             WRITE TO FILE .CT01Y_M
               WRITE(77,8700)IYEAR,LAIMAXG_M(I,M),STEMMASS_M(I,M),
      1                 ROOTMASS_M(I,M), LITRMASS_M(I,M),
      2                 SOILCMAS_M(I,M),AVGYRNPP_M(I,M),
      3                 AVGYRGPP_M(I,M),AVGYRNEP_M(I,M),
-     a                 AVGYRNBP_M(I,M),
-     4                 AVGYRLE_M(I,M),AVGYRE_CO2_M(I,M),
-     5                 AVGYRE_CO_M(I,M),AVGYRE_CH4_M(I,M),
-     6                 AVGYRE_NMHC_M(I,M),AVGYRE_H2_M(I,M),
-     7                 AVGYRE_NOX_M(I,M),AVGYRE_N2O_M(I,M),
-     8                 AVGYRE_PM25_M(I,M),AVGYRE_TPM_M(I,M),
-     9                 AVGYRE_TC_M(I,M),AVGYRE_OC_M(I,M),
-     A                 AVGYRE_BC_M(I,M),AVGYR_PROBFIRE_M(I,M),
-     B                 AVGYR_LUC_EMC_M(I,M),AVGYR_BURNFRAC_M(I,M),
-     C                 'TILE',M,'AVGE'
+     4                 AVGYRNBP_M(I,M),
+     5                 AVGYRLE_M(I,M),'TILE',M,'AVGE'
 
               ENDIF  !IF (IFCANCMX_M(I,M) .GT. 0) THEN
 C
@@ -4936,50 +5042,61 @@ C
               ANNNEPVEG_M(I,M,J)=0.0 
 950       CONTINUE
 C
-8700        FORMAT(1X,I5,25F10.3,2(A5,I2))
+8700        FORMAT(1X,I5,10F10.3,2(A5,I2))
 8702        FORMAT(1X,I5,8F10.3,10X,2(A5,I2))   
 8701        FORMAT(1X,I5,50X,4F10.3,2(A5,I2))   
 8710        FORMAT(A9,I5,9F10.3,2(A5,I2))
 8720        FORMAT(A9,I5,9I10,2(A5,I2))
+8703        FORMAT(1X,I5,15F10.3,2(A5,I2))
+
           ENDIF   ! IDAY .EQ. 365
 C
 852    CONTINUE
 C
              IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND)) THEN   
+C               WRITE TO FILE .CT01D_G               
                 WRITE(721,8200)IDAY,IYEAR,GPP_G(I),NPP_G(I),
      1                NEP_G(I),NBP_G(I),AUTORES_G(I),
      2                HETRORES_G(I),LITRES_G(I),SOCRES_G(I),
      3                (DSTCEMLS_G(I)+DSTCEMLS3_G(I)),
      4                LITRFALL_G(I),HUMIFTRS_G(I)
-C               WRITE BREAKDOWN OF SOME OF BASIC FLUXES TO FILE *.CT3 
-C               AND SELECTED LITTER FLUXES FOR SELECTED PFT
+
+C               WRITE BREAKDOWN OF SOME OF BASIC FLUXES TO FILE  
+C               *.CT02D_G AND SELECTED LITTER FLUXES FOR SELECTED PFT
                 WRITE(731,8300)IDAY,IYEAR,RML_G(I),RMS_G(I),
      1          RMR_G(I),RG_G(I)
 C
+C               WRITE TO FILE .CT03D_G
                 WRITE(741,8400)IDAY,IYEAR,VGBIOMAS_G(I),
      1               GAVGLAI_G(I),GAVGLTMS_G(I),
      2               GAVGSCMS_G(I), TOTCMASS_G(I)
 C
+C               WRITE TO FILE .CT04D_G
                 WRITE(751,8501)IDAY,IYEAR, AILCG_G(I), 
      1                AILCB_G(I)
 C
-CCC ADD FRACTION OF EACH PFT AND BARE \\
+C               WRITE FIRE AND LUC RESULTS TO FILE *.CT06D_G
 C
-                SUMFARE=0.0
-                DO M=1,NMOS
-                 SUMFARE=SUMFARE+FAREROW(I,M)
-                ENDDO
-                WRITE(761,8200)IDAY,IYEAR,(FAREROW(I,M)*100.,M=1,NMOS),
-     &                         SUMFARE
+                WRITE(781,8800)IDAY,IYEAR, 
+     1            EMIT_CO2_G(I), EMIT_CO_G(I), EMIT_CH4_G(I),
+     2            EMIT_NMHC_G(I), EMIT_H2_G(I), EMIT_NOX_G(I),
+     3            EMIT_N2O_G(I), EMIT_PM25_G(I), EMIT_TPM_G(I),
+     4            EMIT_TC_G(I), EMIT_OC_G(I), EMIT_BC_G(I),
+     5            BURNFRAC_G(I), PROBFIRE_G(I),LUCEMCOM_G(I), 
+     6            LUCLTRIN_G(I), LUCSOCIN_G(I),
+     7            GRCLAREA_G(I)
+
+                IF (COMPETE) THEN 
+                  SUMFARE=0.0
+                  DO N=1,NMOS
+C                  ADD FRACTION OF EACH PFT AND BARE
+                   SUMFARE=SUMFARE+FAREROW(I,M)
+                  ENDDO
+C                 WRITE TO FILE .CT07D_G
+                  WRITE(761,8200)IDAY,IYEAR,(FAREROW(I,M)*100.,M=1,
+     &                          NMOS),SUMFARE
+                ENDIF !COMPETE
 C
-CCC ADD FRACTION OF EACH PFT AND BARE //
-C
-C               WRITE FIRE AND LUC RESULTS TO FILE *.CT8
-C
-                WRITE(781,8800)IDAY,IYEAR, BURNFRAC_G(I), 
-     1                PROBFIRE_G(I),LUCEMCOM_G(I), 
-     2                LUCLTRIN_G(I), LUCSOCIN_G(I),
-     3                GRCLAREA_G(I)
              ENDIF !IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND)) THEN  
 C
 851    CONTINUE
@@ -5032,7 +5149,10 @@ C
         AVGMNE_BC_MN(I) =0.0
         AVGMN_PROBFIRE_MN(I) =0.0
         AVGMN_LUC_EMC_MN(I) =0.0
+        AVGMN_LUCSOCIN_MN(I) =0.0
+        AVGMN_LUCLTRIN_MN(I) =0.0
         AVGMN_BURNFRAC_MN(I) =0.0
+
 C
         LAIMAXG_YR(I)=0.0
         STEMMASS_YR(I)=0.0
@@ -5063,6 +5183,8 @@ C
         AVGYRE_BC_YR(I)=0.0
         AVGYR_PROBFIRE_YR(I)=0.0
         AVGYR_LUC_EMC_YR(I)=0.0
+        AVGYR_LUCSOCIN_YR(I)=0.0
+        AVGYR_LUCLTRIN_YR(I)=0.0
         AVGYR_BURNFRAC_YR(I)=0.0
 
 861   CONTINUE
@@ -5114,6 +5236,10 @@ C      Vivek --//
      &                          +(PROBFIREROW(I,M) * (1./365.))  !FLAG
         AVGMN_LUC_EMC_MN_M(I,M) =AVGMN_LUC_EMC_MN_M(I,M)
      &                          +LUCEMCOMROW(I,M)
+        AVGMN_LUCSOCIN_MN_M(I,M) =AVGMN_LUCSOCIN_MN_M(I,M)
+     &                          +LUCSOCINROW(I,M)
+        AVGMN_LUCLTRIN_MN_M(I,M) =AVGMN_LUCLTRIN_MN_M(I,M)
+     &                          +LUCEMCOMROW(I,M)
         AVGMN_BURNFRAC_MN_M(I,M) =AVGMN_BURNFRAC_MN_M(I,M)
      &                          +BURNFRACROW(I,M)
 
@@ -5154,12 +5280,7 @@ C     &                     SOILCMASROW(I,M,ICCP1)*BAREFRAC
 C
        IF(IDAY.EQ.MDAY(NT+1))THEN
         NDMONTH=(MDAY(NT+1)-MDAY(NT))*NDAY
-C      FLAG, THIS IS NOT COMMENTED OUT IN YIRAN'S CODE...
-C      LAIMAXG_MN_M(I,M)=0.0
-C      DO 866 J=1,ICC
-C       LAIMAXG_MN_M(I,M)=LAIMAXG_MN_M(I,M)+
-C    &                    LAIMAXGVEG_MN_M(I,M,J)*FCANCMXROW(I,M,J) 
-C866    CONTINUE
+
         LAIMAXG_MN(I)=LAIMAXG_MN(I)+LAIMAXG_MN_M(I,M)*FAREROW(I,M) 
         AVGMNNPP_MN(I)=AVGMNNPP_MN(I)+AVGMNNPP_MN_M(I,M)*FAREROW(I,M)   
         AVGMNGPP_MN(I)=AVGMNGPP_MN(I)+AVGMNGPP_MN_M(I,M)*FAREROW(I,M)    
@@ -5200,6 +5321,10 @@ C
      &                   +AVGMN_PROBFIRE_MN_M(I,M)*FAREROW(I,M)   
         AVGMN_LUC_EMC_MN(I) =AVGMN_LUC_EMC_MN(I)
      &                   +AVGMN_LUC_EMC_MN_M(I,M)*FAREROW(I,M)   
+        AVGMN_LUCSOCIN_MN(I) =AVGMN_LUCSOCIN_MN(I)
+     &                   +AVGMN_LUCSOCIN_MN_M(I,M)*FAREROW(I,M)   
+        AVGMN_LUCLTRIN_MN(I) =AVGMN_LUCLTRIN_MN(I)
+     &                   +AVGMN_LUCLTRIN_MN_M(I,M)*FAREROW(I,M)   
         AVGMN_BURNFRAC_MN(I)=AVGMN_BURNFRAC_MN(I)
      &                   +AVGMN_BURNFRAC_MN_M(I,M)
 
@@ -5229,6 +5354,8 @@ C
         AVGMNE_BC_MN_M(I,M) =0.0
         AVGMN_PROBFIRE_MN_M(I,M) =0.0
         AVGMN_LUC_EMC_MN_M(I,M) =0.0
+        AVGMN_LUCSOCIN_MN_M(I,M) =0.0
+        AVGMN_LUCLTRIN_MN_M(I,M) =0.0
         AVGMN_BURNFRAC_MN_M(I,M) =0.0
 
 C        FLAG THIS IS NOT COMMENTED OUT IN YIRAN'S CODE...
@@ -5248,20 +5375,27 @@ C
        DO NT=1,NMON
        IF(IDAY.EQ.MDAY(NT+1))THEN
         IMONTH=NT
+
+C      WRITE TO FILE .CT01M_G
        WRITE(84,8104)IMONTH,IYEAR,LAIMAXG_MN(I),VGBIOMAS_MN(I),
      1               LITRMASS_MN(I),SOILCMAS_MN(I),AVGMNNPP_MN(I),
      2               AVGMNGPP_MN(I),AVGMNNEP_MN(I),
      a               AVGMNNBP_MN(I),HETRORES_MN(I),AUTORES_MN(I),
-     b               LITRES_MN(I),SOILRES_MN(I),AVGMNE_CO2_MN(I),
+     b               LITRES_MN(I),SOILRES_MN(I)
+
+C      WRITE TO FILE .CT06M_G
+       WRITE(85,8109)IMONTH,IYEAR,AVGMNE_CO2_MN(I),
      3               AVGMNE_CO_MN(I),AVGMNE_CH4_MN(I),AVGMNE_NMHC_MN(I),
      4               AVGMNE_H2_MN(I),AVGMNE_NOX_MN(I),AVGMNE_N2O_MN(I),
      5               AVGMNE_PM25_MN(I),AVGMNE_TPM_MN(I),AVGMNE_TC_MN(I),
      6               AVGMNE_OC_MN(I),AVGMNE_BC_MN(I),
      7               AVGMN_PROBFIRE_MN(I),AVGMN_LUC_EMC_MN(I),
+     8               AVGMN_LUCSOCIN_MN(I),AVGMN_LUCLTRIN_MN(I),
      8               AVGMN_BURNFRAC_MN(I)
 
 C       Vivek --\\
 C        AFTER WRITING SET LAIMAXG_YR_M TO ZERO
+C        flag- but this is laimaxg_mn_m? JM.
          DO 963 M=1,NMTEST
           LAIMAXG_MN_M(I,M)=0.0
 963      CONTINUE
@@ -5269,11 +5403,13 @@ C       Vivek --//
 C
 CCC ADD FRACTION OF EACH PFT AND BARE \\
 C
+      IF (COMPETE) THEN
        SUMFARE=0.0
        DO M=1,NMOS
         SUMFARE=SUMFARE+FAREROW(I,M)
        ENDDO
-       WRITE(86,8106)IMONTH,IYEAR,(FAREROW(I,M)*100.,M=1,NMOS),SUMFARE
+       WRITE(88,8106)IMONTH,IYEAR,(FAREROW(I,M)*100.,M=1,NMOS),SUMFARE
+      ENDIF !COMPETE
 C
 CCC ADD FRACTION OF EACH PFT AND BARE //
 C
@@ -5310,7 +5446,7 @@ C     Vivek --//
         AVGYRGPP_YR_M(I,M)=AVGYRGPP_YR_M(I,M)+GPPROW(I,M) 
         AVGYRNEP_YR_M(I,M)=AVGYRNEP_YR_M(I,M)+NEPROW(I,M) 
         AVGYRNBP_YR_M(I,M)=AVGYRNBP_YR_M(I,M)+NBPROW(I,M) 
-  
+
         HETRORES_YR_M(I,M)=HETRORES_YR_M(I,M)+HETRORESROW(I,M) 
         AUTORES_YR_M(I,M) =AUTORES_YR_M(I,M) +AUTORESROW(I,M) 
         LITRES_YR_M(I,M)  =LITRES_YR_M(I,M)  +LITRESROW(I,M) 
@@ -5331,6 +5467,10 @@ C     Vivek --//
      &                     +(PROBFIREROW(I,M) * (1./365.))  !FLAG
         AVGYR_LUC_EMC_YR_M(I,M)=AVGYR_LUC_EMC_YR_M(I,M)
      &                     +LUCEMCOMROW(I,M)
+        AVGYR_LUCSOCIN_YR_M(I,M)=AVGYR_LUCSOCIN_YR_M(I,M)
+     &                     +LUCSOCINROW(I,M)
+        AVGYR_LUCLTRIN_YR_M(I,M)=AVGYR_LUCLTRIN_YR_M(I,M)
+     &                     +LUCLTRINROW(I,M)
         AVGYR_BURNFRAC_YR_M(I,M)=AVGYR_BURNFRAC_YR_M(I,M)
      &                     +BURNFRACROW(I,M)
 
@@ -5348,6 +5488,7 @@ C   FLAG THIS IS NOT IN YIRAN'S CODE...
 C      FLAG, WHY COMMENT OUT? JM.
 C       LAIMAXG_YR_M(I,M)=LAIMAXG_YR_M(I,M)+
 C    &                    LAIMAXGVEG_YR_M(I,M,J)*FCANCMXROW(I,M,J)
+
         STEMMASS_YR_M(I,M)=STEMMASS_YR_M(I,M)+
      &                     STEMMASSROW(I,M,J)*FCANCMXROW(I,M,J)
         ROOTMASS_YR_M(I,M)=ROOTMASS_YR_M(I,M)+
@@ -5357,6 +5498,7 @@ C    &                    LAIMAXGVEG_YR_M(I,M,J)*FCANCMXROW(I,M,J)
         SOILCMAS_YR_M(I,M)=SOILCMAS_YR_M(I,M)+
      &                     SOILCMASROW(I,M,J)*FCANCMXROW(I,M,J)
         BAREFRAC=BAREFRAC-FCANCMXROW(I,M,J)
+
 885    CONTINUE
        SOILCMAS_YR_M(I,M)=SOILCMAS_YR_M(I,M)+
      &                     SOILCMASROW(I,M,ICCP1)*BAREFRAC
@@ -5374,7 +5516,6 @@ C
 C       FLAG SHOULD  THE ONE BELOW BE:
 C        TOTCMASS_YR(I)=VGBIOMAS_YR(I)+LITRMASS_YR(I)+SOILCMAS_YR(I)
 C       ? JM.
-
         TOTCMASS_YR(I)=STEMMASS_YR(I)+ROOTMASS_YR(I)+LITRMASS_YR(I)
      &                +SOILCMAS_YR(I)
 C
@@ -5415,6 +5556,10 @@ C
      &                   +AVGYR_PROBFIRE_YR_M(I,M)*FAREROW(I,M)   
         AVGYR_LUC_EMC_YR(I)=AVGYR_LUC_EMC_YR(I)
      &                   +AVGYR_LUC_EMC_YR_M(I,M)*FAREROW(I,M)   
+        AVGYR_LUCSOCIN_YR(I)=AVGYR_LUCSOCIN_YR(I)
+     &                   +AVGYR_LUCSOCIN_YR_M(I,M)*FAREROW(I,M)   
+        AVGYR_LUCLTRIN_YR(I)=AVGYR_LUCLTRIN_YR(I)
+     &                   +AVGYR_LUCLTRIN_YR_M(I,M)*FAREROW(I,M)   
         AVGYR_BURNFRAC_YR(I)=AVGYR_BURNFRAC_YR(I)
      &                   +AVGYR_BURNFRAC_YR_M(I,M)
 
@@ -5444,6 +5589,8 @@ C
         AVGYRE_BC_YR_M(I,M)=0.0
         AVGYR_PROBFIRE_YR_M(I,M)=0.0
         AVGYR_LUC_EMC_YR_M(I,M)=0.0
+        AVGYR_LUCSOCIN_YR_M(I,M)=0.0
+        AVGYR_LUCLTRIN_YR_M(I,M)=0.0
         AVGYR_BURNFRAC_YR_M(I,M)=0.0
 
 C       DO J=1,ICC
@@ -5454,23 +5601,31 @@ C
 C
 883   CONTINUE ! M
 C
-        AVGYRNPP_YR(I)=AVGYRNPP_YR(I)*1.0368                         ! CONVERT UNIT TO gC/M2.YEAR
+        AVGYRNPP_YR(I)=AVGYRNPP_YR(I)*1.0368  ! CONVERT UNIT TO gC/M2.YEAR
         AVGYRGPP_YR(I)=AVGYRGPP_YR(I)*1.0368
         AVGYRNEP_YR(I)=AVGYRNEP_YR(I)*1.0368 
         AVGYR_LUC_EMC_YR(I)=AVGYR_LUC_EMC_YR(I)*1.0368
+        AVGYR_LUCSOCIN_YR(I)=AVGYR_LUCSOCIN_YR(I)*1.0368
+        AVGYR_LUCLTRIN_YR(I)=AVGYR_LUCLTRIN_YR(I)*1.0368
 C
       IF (IDAY.EQ.365) THEN
-              WRITE(85,8105)IYEAR,LAIMAXG_YR(I),VGBIOMAS_YR(I),
+C      WRITE TO FILE .CT01Y_G
+              WRITE(86,8105)IYEAR,LAIMAXG_YR(I),VGBIOMAS_YR(I),
      1          STEMMASS_YR(I),ROOTMASS_YR(I),LITRMASS_YR(I),
      2          SOILCMAS_YR(I),TOTCMASS_YR(I),AVGYRNPP_YR(I),
      3          AVGYRGPP_YR(I),AVGYRNEP_YR(I),
-     a          AVGYRNBP_YR(I),HETRORES_YR(I),AUTORES_YR(I),
-     b          LITRES_YR(I),SOILRES_YR(I),AVGYRE_CO2_YR(I),
+     4          AVGYRNBP_YR(I),HETRORES_YR(I),AUTORES_YR(I),
+     5          LITRES_YR(I),SOILRES_YR(I)
+
+C      WRITE TO FILE .CT06Y_G
+              WRITE(87,8108)IYEAR,AVGYRE_CO2_YR(I),
      4          AVGYRE_CO_YR(I),AVGYRE_CH4_YR(I),AVGYRE_NMHC_YR(I),
      5          AVGYRE_H2_YR(I),AVGYRE_NOX_YR(I),AVGYRE_N2O_YR(I),
      6          AVGYRE_PM25_YR(I),AVGYRE_TPM_YR(I),AVGYRE_TC_YR(I),
      7          AVGYRE_OC_YR(I),AVGYRE_BC_YR(I),AVGYR_PROBFIRE_YR(I),
-     8          AVGYR_LUC_EMC_YR(I),AVGYR_BURNFRAC_YR(I)
+     8          AVGYR_LUCSOCIN_YR(I),AVGYR_LUCLTRIN_YR(I),
+     9          AVGYR_LUC_EMC_YR(I),AVGYR_BURNFRAC_YR(I)
+
 C       Vivek --\\
 C        AFTER WRITING SET LAIMAXG_YR_M TO ZERO
          DO 985 M=1,NMTEST
@@ -5481,12 +5636,14 @@ C       Vivek --//
 
 CCC ADD FRACTION OF EACH PFT AND BARE \\
 C
+        IF (COMPETE) THEN
                 SUMFARE=0.0
                 DO M=1,NMOS
                  SUMFARE=SUMFARE+FAREROW(I,M)
                 ENDDO
-              WRITE(87,8107)IYEAR,(FAREROW(I,M)*100.,M=1,NMOS),
+              WRITE(89,8107)IYEAR,(FAREROW(I,M)*100.,M=1,NMOS),
      &                      SUMFARE
+        ENDIF !COMPETE
 C
 CCC ADD FRACTION OF EACH PFT AND BARE //C
 882   CONTINUE ! I
@@ -5494,10 +5651,12 @@ C
       ENDIF !NCOUNT,NDAY 
       ENDIF !CTEM2  
 C
-8104  FORMAT(1X,I4,I5,27F10.3,F10.4,4F10.3,2(A5,I2))
-8105  FORMAT(1X,I5,30F10.3,F10.4,4F10.3,2(A5,I2))
+8104  FORMAT(1X,I4,I5,12F10.3,2(A5,I2))
+8105  FORMAT(1X,I5,15F10.3,2(A5,I2))
 8106  FORMAT(1X,I4,I5,11F10.5,2(A5,I2))
 8107  FORMAT(1X,I5,11F10.5,2(A5,I2))
+8108  FORMAT(1X,I5,17F10.3,2(A5,I2))
+8109  FORMAT(1X,I4,I5,17F10.3,2(A5,I2))
 C
 C===================== CTEM =====================================/
 C=======================================================================
@@ -5587,8 +5746,8 @@ C
           WRITE(101,7011) (BLEAFMASROW(I,M,J),J=1,ICC)
           WRITE(101,7011) (STEMMASSROW(I,M,J),J=1,ICC)
           WRITE(101,7011) (ROOTMASSROW(I,M,J),J=1,ICC)
-          WRITE(101,7011) (LITRMASSROW(I,M,J),J=1,ICC)
-          WRITE(101,7011) (SOILCMASROW(I,M,J),J=1,ICC)
+          WRITE(101,7013) (LITRMASSROW(I,M,J),J=1,ICCP1)
+          WRITE(101,7013) (SOILCMASROW(I,M,J),J=1,ICCP1)
           WRITE(101,7012) (LFSTATUSROW(I,M,J),J=1,ICC)
           WRITE(101,7012) (PANDAYSROW(I,M,J),J=1,ICC)
          ENDDO
@@ -5610,6 +5769,7 @@ c7011  FORMAT(9F15.9)
 c7011  FORMAT(9F12.6)
 7011  FORMAT(9F8.2)
 7012  FORMAT(9I8)
+7013  FORMAT(10F8.2)
 C
 C===================== CTEM =====================================/
 C
@@ -5670,11 +5830,59 @@ c     &      '; END TIME: ', I2.2, ':', I2.2, ':', I2.2 )
 C
         
 C     CLOSE THE OUTPUT FILES
+
+      IF (.NOT. PARALLELRUN) THEN
+C     FIRST ANY CLASS OUTPUT FILES
+       CLOSE(61)
+       CLOSE(62)
+       CLOSE(63)
+       CLOSE(64)
+       CLOSE(65)
+       CLOSE(66)
+       CLOSE(67)
+       CLOSE(68)
+       CLOSE(69)
+       CLOSE(611)
+       CLOSE(621)
+       CLOSE(631)
+       CLOSE(641)
+       CLOSE(651)
+       CLOSE(661)
+       CLOSE(671)
+       CLOSE(681)
+       CLOSE(691)
+C     THEN CTEM ONES
+       CLOSE(71)
+       CLOSE(711)
+       CLOSE(72)
+       CLOSE(721)
+       CLOSE(73)
+       CLOSE(731)
+       CLOSE(74)
+       CLOSE(741)
+       CLOSE(75)
+       CLOSE(751)
+       CLOSE(76)
+       IF (COMPETE) THEN
+        CLOSE(761)
+       ENDIF
+       CLOSE(78)
+       CLOSE(781)
+      ENDIF
+
+C     CLOSE CLASS OUTPUT FILES      
       CLOSE(81)
       CLOSE(82)
       CLOSE(83)
+C     THEN CTEM ONES
       CLOSE(84)
       CLOSE(85)
+      CLOSE(86)
+      CLOSE(87)
+      IF (COMPETE) THEN
+       CLOSE(88)
+       CLOSE(89)
+      ENDIF
       CALL EXIT
 
 
