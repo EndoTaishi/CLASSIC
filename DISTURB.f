@@ -16,7 +16,7 @@ C    8 ------------------ INPUTS ABOVE THIS LINE ----------------------
 
 C    B ------------------OUTPUTS ABOVE THIS LINE ----------------------
 C
-C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
+C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 C                           DISTURBANCE SUBROUTINE
 C
 C     24  SEP 2012  - ADD IN CHECKS TO PREVENT CALCULATION OF NON-PRESENT
