@@ -11,7 +11,7 @@ C    ----------- UPDATES ABOVE THIS LINE, OUTPUTS BELOW ---------
 C
 C     ----------------------------------------------------------------
 C
-C           CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
+C           CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 C                       LAND USE CHANGE SUBROUTINE 
 C
 C     02  JAN. 2004 - THIS SUBROUTINE DEALS WITH THE CHANGES IN THE LAND
