@@ -9,7 +9,7 @@ C    + -------------- INPUTS UPDATED ABOVE THIS LINE ------------------
      6                     INTRMORT)
 C    + ------------------OUTPUTS ABOVE THIS LINE ----------------------
 C
-C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
+C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 C                             MORTALITY SUBROUTINE
 C
 C     24  SEP 2012  - ADD IN CHECKS TO PREVENT CALCULATION OF NON-PRESENT

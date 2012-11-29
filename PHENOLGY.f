@@ -9,7 +9,7 @@ C    6 ------------------ INPUTS ABOVE THIS LINE ----------------------
      8                    COLDDAYS)  
 C    9 --- VARIABLES WHICH ARE UPDATED AND OUTPUTS ABOVE THIS LINE ----
 C
-C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.0
+C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 C               PHENOLOGY, LEAF TURNOVER & MORTALITY SUBROUTINE
 C
 C     24  SEP 2012  - ADD IN CHECKS TO PREVENT CALCULATION OF NON-PRESENT
@@ -129,16 +129,16 @@ C     CROPS       |   C3        C4       ---
 C     GRASSES     |   C3        C4       ---
 C
 C     MAX. LOSS RATE FOR COLD STRESS FOR ALL 8 PFTs, (1/DAY)
-C       FLAG testing new parameter values Needle EVG JM 07.06.2012
-C      DATA CDLSRTMX/0.30, 0.30, 0.00,
+C     FLAG testing new parameter values Needle EVG JM 07.06.2012
+C     DATA CDLSRTMX/0.30, 0.30, 0.00,
       DATA CDLSRTMX/0.15, 0.30, 0.00,
      &              0.30, 0.15, 0.15,
      &              0.15, 0.15, 0.00,
      &              0.15, 0.15, 0.00/
 C
 C     MAX. LOSS RATE FOR DROUGHT STRESS FOR ALL 9 PFTs, (1/DAY)
-C       FLAG testing new parameter values  Needle EVG JM 07.06.2012
-C      DATA DRLSRTMX/0.005, 0.005, 0.000,
+C     FLAG testing new parameter values  Needle EVG JM 07.06.2012
+C     DATA DRLSRTMX/0.005, 0.005, 0.000,
       DATA DRLSRTMX/0.0025, 0.005, 0.000,
      &              0.005, 0.005, 0.025,
      &              0.005, 0.005, 0.000,
@@ -201,7 +201,6 @@ C     THRESHOLD FOR DETERMINING LEAF PHENOLOGY STATUS
 C
 C     ROOT TEMPERATURE THRESHOLD FOR INITIATING LEAF ONSET FOR COLD
 C     BROADLEAF DECIDUOUS PFT, DEGREES CELCIUS
-c      DATA ROOTHRSH/2.0/
       DATA ROOTHRSH/15.0/
 C
 C     ZERO
@@ -870,8 +869,6 @@ C
          ENDIF
 660     CONTINUE
 650   CONTINUE
-c      write(*,'(I4,4F14.6)') IDAY,NRMLLOSS(1,1),DRGTLOSS(1,1),
-c     1                       COLDLOSS(1,1),FLHRLOSS(1,1)
 C
       RETURN
       END
