@@ -330,8 +330,8 @@ C
      2  ZBOTW(ILG,IG),      RML(ILG),      GPP(ILG),   FCANCMX(ILG,ICC),
      3 TBARCS(ILG,IG), TBARG(ILG,IG),TBARGS(ILG,IG),     THLIQG(ILG,IG),
      4      RADJ(ILG),       TA(ILG),        DELTAT,      DELZW(ILG,IG),
-     5   TBAR(ILG,IG),THICEC(ILG,IG), SOILDPTH(ILG),   TODFRAC(ILG,ICC),
-     6              YESFRAC(ILG,ICC)
+     5   TBAR(ILG,IG),THICEC(ILG,IG), SOILDPTH(ILG),   TODFRAC(ILG,ICC)
+
 C
       REAL FCANCMX_CMP(NLAT,ICC), NPPVEG_CMP(NLAT,ICC),
      1     GEREMORT_CMP(NLAT,ICC),INTRMORT_CMP(NLAT,ICC),
@@ -343,7 +343,9 @@ C
      7     ADD2ALLO_CMP(NLAT,ICC),  CC_CMP(NLAT,ICC),MM_CMP(NLAT,ICC),
      8     FCANMX_CMP(NLAT,IC),     
      9     GRCLAREA_CMP(NLAT),      VGBIOMAS_CMP(NLAT),    
-     1     GAVGLTMS_CMP(NLAT),      GAVGSCMS_CMP(NLAT)
+     1     GAVGLTMS_CMP(NLAT),      GAVGSCMS_CMP(NLAT),
+     2     YESFRAC_CMP(NLAT,ICC),   TODFRAC_CMP(NLAT),
+     3     PFCANCMX_CMP(NLAT,ICC),  NFCANCMX_CMP(NLAT,ICC)
 C
       INTEGER PFTEXIST_CMP(NLAT,ICC)
 C
@@ -358,7 +360,8 @@ C
      4     SRPLSCUR_CMP(NLAT), DEFCTCUR_CMP(NLAT),TWARMM_CMP(NLAT), 
      5     TCOLDM_CMP(NLAT),   GDD5_CMP(NLAT),    ARIDITY_CMP(NLAT),
      6     SRPLSMON_CMP(NLAT), DEFCTMON_CMP(NLAT),ANNDEFCT_CMP(NLAT),
-     7     ANNSRPLS_CMP(NLAT), ANNPCP_CMP(NLAT),  ANPOTEVP_CMP(NLAT)
+     7     ANNSRPLS_CMP(NLAT), ANNPCP_CMP(NLAT),  ANPOTEVP_CMP(NLAT),
+     8     LUCEMCOM_CMP(NLAT),  LUCLTRIN_CMP(NLAT), LUCSOCIN_CMP(NLAT)
 C
       REAL  STEMMASS(ILG,ICC),   ROOTMASS(ILG,ICC), LITRMASS(ILG,ICC+1),
      1      GLEAFMAS(ILG,ICC),   BLEAFMAS(ILG,ICC), SOILCMAS(ILG,ICC+1),
@@ -641,7 +644,9 @@ C
 C
 C     ---------------------------------------------------------------
 C
-      IF(COMPETE)THEN
+      IF(COMPETE .OR. LNDUSEON)THEN
+
+        write(*,*)nfcancmx(1,1),pfcancmx(1,1)
 C
 C       CHECK IF NUMBER OF MOSAICS IS EQUAL TO THE NUMBER OF PFTS PLUS ONE
 C       BARE, E.G., NMOS=ICC+1
@@ -657,6 +662,7 @@ C
 2050   FORMAT(A25,I2,A40,A18,I2,A1)
 2051   FORMAT(A45,A40)
 C
+       IF (COMPETE) THEN
 C       INITIALIZE INIBOCLM FOR COMPETITION
 C
         INIBOCLM = .TRUE.  !WAS 1, JM. FLAG
@@ -679,11 +685,13 @@ C
         ENDDO
 2100   FORMAT(A7,I2,A19,A8,I2,A1,I2,A2,F8.3)
 2101   FORMAT(A40,A40)
+
+       ENDIF  !COMPETE CHECK
 C   
-C      COMPITITION_MAP SCATTERS AND MAPS THE ARRAY WITH INDICES 
+C      COMPETITION_MAP SCATTERS AND MAPS THE ARRAY WITH INDICES 
 C      OF (ILG,ICC) TO (NLAT,ICC) FOR PREPARATION FOR COMPETITION
 C  
-          CALL COMPETITION_MAP(   NLAT,      NMOS,     ILG,  IL1, IL2, 
+          CALL COMPETITION_MAP(   NLAT,      NMOS,     ILG, 
      A                             NML,     ILMOS,   JLMOS,   ICC, IC,
      B                         FAREGAT,   FCANCMX,  NPPVEG,  GEREMORT,
      C                         INTRMORT, GLEAFMAS, BLEAFMAS, STEMMASS,
@@ -697,6 +705,8 @@ C
      K                         SRPLSCUR, DEFCTCUR,   TWARMM,   TCOLDM,
      L                             GDD5,  ARIDITY, SRPLSMON, DEFCTMON,
      M                         ANNDEFCT, ANNSRPLS,   ANNPCP, ANPOTEVP,
+     &                         LUCEMCOM, LUCLTRIN, LUCSOCIN, PFCANCMX,
+     &                         NFCANCMX,
 C    ------------------- INPUTS ABOVE THIS LINE ---------------------
      N                        NETRADROW,
 C    ------------------- INTERMEDIATE AND SAVED ABOVE THIS LINE -----
@@ -715,9 +725,17 @@ C    ------------------- INTERMEDIATE AND SAVED ABOVE THIS LINE -----
      1                     SRPLSCUR_CMP,  DEFCTCUR_CMP,    TWARMM_CMP, 
      2                       TCOLDM_CMP,      GDD5_CMP,   ARIDITY_CMP,
      3                     SRPLSMON_CMP,  DEFCTMON_CMP,  ANNDEFCT_CMP,
-     4                     ANNSRPLS_CMP,    ANNPCP_CMP,  ANPOTEVP_CMP)
+     4                     ANNSRPLS_CMP,    ANNPCP_CMP,  ANPOTEVP_CMP,
+     5                     LUCEMCOM_CMP,  LUCLTRIN_CMP,  LUCSOCIN_CMP,
+     6                     PFCANCMX_CMP,   NFCANCMX_CMP )
 C    ------------------- OUTPUTS ABOVE THIS LINE --------------------
 C
+      END IF !LNDUSEON OR COMPETE CHECK
+
+        write(*,*)'aft map',nfcancmx_cmp(1,1),pfcancmx_cmp(1,1) 
+   
+      IF (COMPETE) THEN
+
 C       CALCULATE BIOCLIMATIC PARAMETERS FOR ESTIMATING PFTs EXISTENCE
 C
         CALL  BIOCLIM (IDAY,       TA_CMP,    PRECIP_CMP,  NETRAD_CMP,
@@ -760,10 +778,43 @@ C
 C
 C    ------------------- OUTPUTS ABOVE THIS LINE ------------------
 C
+      ELSE
+
+        DO J = 1, ICC
+          DO I = IL1, IL2
+            ADD2ALLO(I,J)=0.0
+          ENDDO
+        ENDDO
+
+      ENDIF !COMPETE CHECK
+C     -----------------------------------------------------------------
+
+      IF(LNDUSEON)THEN
+         
+        DO J = 1, ICC
+          DO I = IL1, NLAT  
+            YESFRAC_CMP(I,J)=FCANCMX_CMP(I,J)
+          ENDDO
+        ENDDO
+
+         CALL LUC(ICC,      NLAT,      IL1,      NLAT,
+     1           IC, NOL2PFTS,    L2MAX,  
+     2           GRCLAREA_CMP, PFCANCMX_CMP, NFCANCMX_CMP,     IDAY,
+     3           TODFRAC_CMP,  YESFRAC_CMP,   .TRUE.,
+     4           GLEAFMAS_CMP, BLEAFMAS_CMP, STEMMASS_CMP, ROOTMASS_CMP,
+     5           LITRMASS_CMP, SOILCMAS_CMP, VGBIOMAS_CMP, GAVGLTMS_CMP,
+     6           GAVGSCMS_CMP,  FCANCMX_CMP,   FCANMX_CMP,
+     7           LUCEMCOM_CMP, LUCLTRIN_CMP, LUCSOCIN_CMP)
+
+      ENDIF !LNDUSEON CHECK
+
+C     -----------------------------------------------------------------
+
+      IF (COMPETE .OR. LNDUSEON) THEN
 C      COMPETITION_UNMAP UNMAPS AND GATHERS THE ARRAY WITH  
 C      INDICES (NLAT,ICC) BACK TO (ILG,ICC) AFTER COMPETITION IS DONE 
 C
-          CALL COMPETITION_UNMAP(NLAT, NMOS, ILG, IL1, IL2, 
+          CALL COMPETITION_UNMAP(NLAT, NMOS, ILG, 
      A                           NML, ILMOS, JLMOS, ICC, IC, NOL2PFTS,
      B                        FCANCMX_CMP,   NPPVEG_CMP, GEREMORT_CMP,
      C                       INTRMORT_CMP, GLEAFMAS_CMP, BLEAFMAS_CMP,
@@ -781,6 +832,8 @@ C
      O                         TCOLDM_CMP,     GDD5_CMP,  ARIDITY_CMP,
      P                       SRPLSMON_CMP, DEFCTMON_CMP, ANNDEFCT_CMP,
      Q                       ANNSRPLS_CMP,   ANNPCP_CMP, ANPOTEVP_CMP,
+     &                     LUCEMCOM_CMP,  LUCLTRIN_CMP,  LUCSOCIN_CMP,
+     &                     PFCANCMX_CMP,   NFCANCMX_CMP,
 C
 C    ------------------- INPUTS ABOVE THIS LINE ---------------------
 C
@@ -799,19 +852,22 @@ C
      1                         GDD5CUR, SURMNCUR, DEFMNCUR, SRPLSCUR,  
      2                        DEFCTCUR,   TWARMM,   TCOLDM,     GDD5, 
      3                         ARIDITY, SRPLSMON, DEFCTMON, ANNDEFCT,
-     4                        ANNSRPLS,   ANNPCP, ANPOTEVP)
+     4                        ANNSRPLS,   ANNPCP, ANPOTEVP,
+     5                         LUCEMCOM, LUCLTRIN, LUCSOCIN, PFCANCMX,
+     6                         NFCANCMX )
 C    ------------------- UPDATES ABOVE THIS LINE --------------------
 C
+      ENDIF !LNDUSEON .OR. COMPETE CHECK
 C
-      ELSE
+C      ELSE
 C
-        DO J = 1, ICC
-          DO I = IL1, IL2
-            ADD2ALLO(I,J)=0.0
-          ENDDO
-        ENDDO
+C        DO J = 1, ICC
+C          DO I = IL1, IL2
+C            ADD2ALLO(I,J)=0.0
+C          ENDDO
+C        ENDDO
 C
-      ENDIF  ! IF (COMPETE)
+C      ENDIF  ! IF (COMPETE .OR. LNDUSEON)
 C
 C     -----------------------------------------------------------------
 C
@@ -819,23 +875,23 @@ C     IF LANDUSE IS ON, THEN IMPLELEMENT LUC, CHANGE FRACTIONAL COVERAGES,
 C     MOVE BIOMASSES AROUND, AND ESTIMATE LUC RELATED COMBUSTION EMISSION 
 C     LOSSES.
 C
-      IF(LNDUSEON)THEN
+C      IF(LNDUSEON)THEN
          
-        DO J = 1, ICC
-          DO I = IL1, IL2  
-            YESFRAC(I,J)=FCANCMX(I,J)
-          ENDDO
-        ENDDO
+C        DO J = 1, ICC
+C          DO I = IL1, IL2  
+C            YESFRAC(I,J)=FCANCMX(I,J)
+C          ENDDO
+C        ENDDO
 
-         CALL       LUC(     ICC,      ILG,      IL1,      IL2,
-     1                        IC, NOL2PFTS,    L2MAX,  
-     2                  GRCLAREA, PFCANCMX, NFCANCMX,     IDAY,
-     3                   TODFRAC,  YESFRAC,   .TRUE.,
-     4                  GLEAFMAS, BLEAFMAS, STEMMASS, ROOTMASS,
-     5                  LITRMASS, SOILCMAS, VGBIOMAS, GAVGLTMS,
-     6                  GAVGSCMS,  FCANCMX,   FCANMX,
-     7                  LUCEMCOM, LUCLTRIN, LUCSOCIN)
-      ENDIF
+C         CALL       LUC(     ICC,      ILG,      IL1,      IL2,
+C     1                        IC, NOL2PFTS,    L2MAX,  
+C     2                  GRCLAREA, PFCANCMX, NFCANCMX,     IDAY,
+C     3                   TODFRAC,  YESFRAC,   .TRUE.,
+C     4                  GLEAFMAS, BLEAFMAS, STEMMASS, ROOTMASS,
+C     5                  LITRMASS, SOILCMAS, VGBIOMAS, GAVGLTMS,
+C     6                  GAVGSCMS,  FCANCMX,   FCANMX,
+C     7                  LUCEMCOM, LUCLTRIN, LUCSOCIN)
+C      ENDIF
 C
 C     ---------------------------------------------------------------
 C
