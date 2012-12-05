@@ -645,8 +645,6 @@ C
 C     ---------------------------------------------------------------
 C
       IF(COMPETE .OR. LNDUSEON)THEN
-
-        write(*,*)nfcancmx(1,1),pfcancmx(1,1)
 C
 C       CHECK IF NUMBER OF MOSAICS IS EQUAL TO THE NUMBER OF PFTS PLUS ONE
 C       BARE, E.G., NMOS=ICC+1
@@ -731,8 +729,6 @@ C    ------------------- INTERMEDIATE AND SAVED ABOVE THIS LINE -----
 C    ------------------- OUTPUTS ABOVE THIS LINE --------------------
 C
       END IF !LNDUSEON OR COMPETE CHECK
-
-        write(*,*)'aft map',nfcancmx_cmp(1,1),pfcancmx_cmp(1,1) 
    
       IF (COMPETE) THEN
 

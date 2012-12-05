@@ -560,7 +560,6 @@ C
       DO 210 M=1,NMOS
 C
        DO L=1,ICC
-         WRITE(*,*)i,m,l,FCANCMXROW(I,M,L),PFCANCMXROW(I,M,L)
         IF (FCANCMXROW(I,M,L) .EQ. 1.0) THEN
          FCANCMX_CMP(I,L) = FAREROW(I,M)
          NPPVEG_CMP(I,L)  = NPPVEGROW(I,M,L)
