@@ -445,11 +445,11 @@ C     * FOR NOW, ASSIGN WETLANDS A VALUE OF 0.10 M.
 C     * LAI THRESHOLD VALUE FOR CTEM IS SET TO 0.05; STANDARD
 C     * CLASS VALUE IS SET TO 1.0.  
 C
-      IF (ICTEMMOD.EQ.1) THEN
-         THR_LAI=0.05
-      ELSE
+C      IF (ICTEMMOD.EQ.1) THEN
+C         THR_LAI=0.05
+C      ELSE
          THR_LAI=1.0
-      ENDIF
+C      ENDIF
 C
       DO 175 I=IL1,IL2                                                            
           FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))                                    
