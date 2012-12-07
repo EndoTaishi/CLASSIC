@@ -1,4 +1,4 @@
-      SUBROUTINE    LUC(     ICC,      NLAT,      IL1,       IL2,   
+      SUBROUTINE    LUC(     ICC,      ILG,      IL1,       IL2,   
      1                        IC, NOL2PFTS,    L2MAX,   
      2                  GRCLAREA, PFCANCMX, NFCANCMX,      IDAY,
      3                   TODFRAC,  YESFRAC, INTERPOL,  
@@ -13,11 +13,6 @@ C     ----------------------------------------------------------------
 C
 C           CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
 C                       LAND USE CHANGE SUBROUTINE 
-C
-C     04  DEC. 2012 - ADAPTED SUBROUTINE FOR MOSAIC MODE. SIMPLE CHANGES 
-C     J. MELTON       ALLOW THE MODEL TO TAKE IN THE MAPPED VARIABLES, CHANGE
-C                     ILG TO NLAT. AFTER THE SUBROUTINE ENDS, VARIABLES 
-C                     NEED TO BE UNMAPPED.
 C
 C     02  JAN. 2004 - THIS SUBROUTINE DEALS WITH THE CHANGES IN THE LAND
 C     V. ARORA        COVER AND ESTIMATES LAND USE CHANGE (LUC)
@@ -37,9 +32,8 @@ C     INPUTS
 C
 C     ICC       - NO OF PFTs FOR USE BY CTEM, CURRENTLY 9
 C     IC        - NO OF PFTs FOR USE BY CLASS, CURRENTLY 4
-C     NLAT    - MAX. NUMBER OF GRID CELLS IN THE LATITUDE CIRCLE, WHICH
-C               IS PRESCRIBED IN RUNCLASS36CTEM.F
-C     IL1, IL2  - IL1=1, IL2=NLAT
+C     ILG      - NO. OF GRID CELLS IN LATITUDE CIRCLE
+C     IL1, IL2  - IL1=1, IL2=ILG
 C     NOL2PFTS  - NUMBER OF LEVEL 2 PFTs
 C     L2MAX     - MAXIMUM NUMBER OF LEVEL 2 PFTs
 C     FCANCMX   - MAX. FRACTIONAL COVERAGES OF CTEM's 9 PFTs. 
@@ -78,36 +72,36 @@ C     ----------------------------------------------------------------
 C
       IMPLICIT NONE
 
-      INTEGER ICC,  NLAT, IL1, IL2, IC, I, J, K, M, N, KK, K1, K2, IDAY
-      INTEGER    NOL2PFTS(IC),             L2MAX,       LUCTKPLC(NLAT),
-     1      FRACIORD(NLAT,ICC), TREATIND(NLAT,ICC),       BAREIORD(NLAT)
+      INTEGER ICC,  ILG, IL1, IL2, IC, I, J, K, M, N, KK, K1, K2, IDAY
+      INTEGER    NOL2PFTS(IC),             L2MAX,       LUCTKPLC(ILG),
+     1      FRACIORD(ILG,ICC), TREATIND(ILG,ICC),       BAREIORD(ILG)
 
       LOGICAL  INTERPOL 
 C      
-      REAL  GLEAFMAS(NLAT,ICC), BLEAFMAS(NLAT,ICC),  STEMMASS(NLAT,ICC),
-     1      ROOTMASS(NLAT,ICC),  FCANCMX(NLAT,ICC),  PFCANCMX(NLAT,ICC),
-     2          VGBIOMAS(NLAT),             ZERO,  SOILCMAS(NLAT,ICC+1),
-     3    LITRMASS(NLAT,ICC+1),     GAVGLTMS(NLAT),      GAVGSCMS(NLAT),
-     4      NFCANCMX(NLAT,ICC),  FCANCMY(NLAT,ICC),   TODFRAC(NLAT,ICC),
-     5       YESFRAC(NLAT,ICC)
+      REAL  GLEAFMAS(ILG,ICC), BLEAFMAS(ILG,ICC),  STEMMASS(ILG,ICC),
+     1      ROOTMASS(ILG,ICC),  FCANCMX(ILG,ICC),  PFCANCMX(ILG,ICC),
+     2          VGBIOMAS(ILG),             ZERO,  SOILCMAS(ILG,ICC+1),
+     3    LITRMASS(ILG,ICC+1),     GAVGLTMS(ILG),      GAVGSCMS(ILG),
+     4      NFCANCMX(ILG,ICC),  FCANCMY(ILG,ICC),   TODFRAC(ILG,ICC),
+     5       YESFRAC(ILG,ICC)
 C
-      REAL     FCANMX(NLAT,IC),  DELFRAC(NLAT,ICC),          COMBUST(3),
-     1               PAPER(3),      FURNITURE(3),   ABVGMASS(NLAT,ICC),
-     2            BMASTHRS(2),     GRCLAREA(NLAT),   COMBUSTC(NLAT,ICC), 
-     3        PAPERC(NLAT,ICC), FURNTURC(NLAT,ICC),  INCRLITR(NLAT,ICC),
-     4      INCRSOLC(NLAT,ICC),          TOLRNCE1,            TOLRNCE2,
-     5          CHOPEDBM(NLAT),           KM2TOM2
+      REAL     FCANMX(ILG,IC),  DELFRAC(ILG,ICC),          COMBUST(3),
+     1               PAPER(3),      FURNITURE(3),   ABVGMASS(ILG,ICC),
+     2            BMASTHRS(2),     GRCLAREA(ILG),   COMBUSTC(ILG,ICC), 
+     3        PAPERC(ILG,ICC), FURNTURC(ILG,ICC),  INCRLITR(ILG,ICC),
+     4      INCRSOLC(ILG,ICC),          TOLRNCE1,            TOLRNCE2,
+     5          CHOPEDBM(ILG),           KM2TOM2
 C
-      REAL          REDUBMAS1,              TERM,       BAREFRAC(NLAT),  
-     1          GRSUMCOM(NLAT),     GRSUMPAP(NLAT),      GRSUMFUR(NLAT),
-     2          GRSUMLIT(NLAT),     GRSUMSOC(NLAT),      PBAREFRA(NLAT),
-     3          GRDENCOM(NLAT),     GRDENPAP(NLAT),      GRDENFUR(NLAT),
-     4          GRDENLIT(NLAT),     GRDENSOC(NLAT),      TOTCMASS(NLAT),
-     5          TOTLMASS(NLAT),     TOTDMAS1(NLAT),      NTOTCMAS(NLAT),
-     6          NTOTLMAS(NLAT),     NTOTDMS1(NLAT),      LUCEMCOM(NLAT),
-     7          PVGBIOMS(NLAT),     PGAVLTMS(NLAT),      PGAVSCMS(NLAT),
-     8              REDUBMAS2,     LUCLTRIN(NLAT),       LUCSOCIN(NLAT),
-     9          TOTDMAS2(NLAT),     NTOTDMS2(NLAT)
+      REAL          REDUBMAS1,              TERM,       BAREFRAC(ILG),  
+     1          GRSUMCOM(ILG),     GRSUMPAP(ILG),      GRSUMFUR(ILG),
+     2          GRSUMLIT(ILG),     GRSUMSOC(ILG),      PBAREFRA(ILG),
+     3          GRDENCOM(ILG),     GRDENPAP(ILG),      GRDENFUR(ILG),
+     4          GRDENLIT(ILG),     GRDENSOC(ILG),      TOTCMASS(ILG),
+     5          TOTLMASS(ILG),     TOTDMAS1(ILG),      NTOTCMAS(ILG),
+     6          NTOTLMAS(ILG),     NTOTDMS1(ILG),      LUCEMCOM(ILG),
+     7          PVGBIOMS(ILG),     PGAVLTMS(ILG),      PGAVSCMS(ILG),
+     8              REDUBMAS2,     LUCLTRIN(ILG),       LUCSOCIN(ILG),
+     9          TOTDMAS2(ILG),     NTOTDMS2(ILG)
 
 C
 C     HOW MUCH DEFORESTED/CHOPPED OFF BIOMASS IS COMBUSTED
