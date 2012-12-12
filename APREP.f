@@ -446,7 +446,7 @@ C     * LAI THRESHOLD VALUE FOR CTEM IS SET TO 0.05; STANDARD
 C     * CLASS VALUE IS SET TO 1.0.  
 C
       IF (ICTEMMOD.EQ.1) THEN
-         THR_LAI=0.05
+         THR_LAI=1.0
       ELSE
          THR_LAI=1.0
       ENDIF
