@@ -338,7 +338,7 @@ C
      5   TBAR(ILG,IG),THICEC(ILG,IG), SOILDPTH(ILG),   TODFRAC(ILG,ICC)
 
 C
-      REAL FCANCMX_CMP(NLAT,ICC), NPPVEG_CMP(NLAT,ICC),
+      REAL FARE_CMP(NLAT,ICC), NPPVEG_CMP(NLAT,ICC),
      1     GEREMORT_CMP(NLAT,ICC),INTRMORT_CMP(NLAT,ICC),
      2     GLEAFMAS_CMP(NLAT,ICC),BLEAFMAS_CMP(NLAT,ICC),
      3     STEMMASS_CMP(NLAT,ICC),ROOTMASS_CMP(NLAT,ICC),
@@ -349,7 +349,7 @@ C
      8     FCANMX_CMP(NLAT,IC),     
      9     GRCLAREA_CMP(NLAT),      VGBIOMAS_CMP(NLAT),    
      1     GAVGLTMS_CMP(NLAT),      GAVGSCMS_CMP(NLAT),
-     2     YESFRAC_CMP(NLAT,ICC),   TODFRAC_CMP(NLAT),
+     2     YESFRAC_MOS(NLAT,ICC),   TODFRAC_CMP(NLAT),
      3     PFCANCMX_CMP(NLAT,ICC),  NFCANCMX_CMP(NLAT,ICC)
 C
       INTEGER PFTEXIST_CMP(NLAT,ICC)
@@ -378,7 +378,7 @@ C
      7       VEGHGHT(ILG,ICC),   ROOTDPTH(ILG,ICC),   GPPCSVEG(ILG,ICC),
      8      GPPCGVEG(ILG,ICC),   PFCANCMX(ILG,ICC),      FCANMX(ILG,IC),
      9      NFCANCMX(ILG,ICC),      ALVISC(ILG,IC),      ALNIRC(ILG,IC),
-     A           GAVGLAI(ILG),    YESFRAC(ILG,ICC)
+     A           GAVGLAI(ILG),    YESFRAC_COMP(ILG,ICC)
 C
       REAL   NPP(ILG),      NEP(ILG),  HETRORES(ILG),      AUTORES(ILG),
      1  SOILRESP(ILG),       RM(ILG),        RG(ILG),          NBP(ILG),
@@ -649,14 +649,13 @@ C
 C
 C     ---------------------------------------------------------------
      
-C       INITIALIZE INIBOCLM FOR COMPETITION
-C
+C     INITIALIZE INIBOCLM FOR COMPETITION
       IF (COMPETE) INIBOCLM = .TRUE.
 
       IF (MOSAIC) THEN
 C
-C     LAND USE CHANGE AND COMPETITION FOR MOSAICS NEEDS MAPPING AND
-C     UNMAPPING OF THE PFTS. COMPOSITE DOES NOT REQUIRE THESE EXTRA STEPS.
+C      LAND USE CHANGE AND COMPETITION FOR MOSAICS NEEDS MAPPING AND
+C      UNMAPPING OF THE PFTS. COMPOSITE DOES NOT REQUIRE THESE EXTRA STEPS.
 
        IF(COMPETE .OR. LNDUSEON)THEN
 C
@@ -671,10 +670,8 @@ C
      &                 ' AND BARE ARE CONSIDERED.                    '
          CALL XIT ('CTEM',-11)
         ENDIF 
-2050   FORMAT(A25,I2,A40,A18,I2,A1)
-2051   FORMAT(A45,A40)
-C
-        IF (COMPETE) THEN
+2050    FORMAT(A25,I2,A40,A18,I2,A1)
+2051    FORMAT(A45,A40)
 C
 C       CHECK FOR FCANCMX(I,J). THIS SHOULD BE EITHER 0 OR 1 FOR COMPETITION
 C       TO WORK.
@@ -686,19 +683,17 @@ C
      &                'MOSAIC ',I,' HAS PFT FRACTION: ', 
      &                'FCANCMX(',I,',',J,')=',FCANCMX(I,J)
            WRITE(*,2101) 
-     &                'COMPETITION WORKS ONLY WHEN EACH MOSAIC',
-     &                'IS 100% OCCUPIED WITH ONE PFT'
+     &                'MOSAIC COMPETITION AND LUC WORK ONLY WHEN ',
+     &                'EACH MOSAIC IS 100% OCCUPIED WITH ONE PFT'
            CALL XIT ('CTEM',-12)
           ENDIF
          ENDDO
         ENDDO
-2100   FORMAT(A7,I2,A19,A8,I2,A1,I2,A2,F8.3)
-2101   FORMAT(A40,A40)
-
-        ENDIF  !COMPETE CHECK
+2100    FORMAT(A7,I2,A19,A8,I2,A1,I2,A2,F8.3)
+2101    FORMAT(A40,A40)
 C   
-C      COMPETITION_MAP SCATTERS AND MAPS THE ARRAY WITH INDICES 
-C      OF (ILG,ICC) TO (NLAT,ICC) FOR PREPARATION FOR COMPETITION
+C       COMPETITION_MAP SCATTERS AND MAPS THE ARRAY WITH INDICES 
+C       OF (ILG,ICC) TO (NLAT,ICC) FOR PREPARATION FOR COMPETITION
 C  
           CALL COMPETITION_MAP(   NLAT,      NMOS,     ILG, 
      A                             NML,     ILMOS,   JLMOS,   ICC, IC,
@@ -719,7 +714,7 @@ C
 C    ------------------- INPUTS ABOVE THIS LINE ---------------------
      N                        NETRADROW,
 C    ------------------- INTERMEDIATE AND SAVED ABOVE THIS LINE -----
-     O                      FCANCMX_CMP,    NPPVEG_CMP,  GEREMORT_CMP,
+     O                         FARE_CMP,    NPPVEG_CMP,  GEREMORT_CMP,
      P                     INTRMORT_CMP,  GLEAFMAS_CMP,  BLEAFMAS_CMP,
      Q                     STEMMASS_CMP,  ROOTMASS_CMP,  LITRMASS_CMP,
      R                     SOILCMAS_CMP,  PFTEXIST_CMP,    LAMBDA_CMP,
@@ -738,14 +733,12 @@ C    ------------------- INTERMEDIATE AND SAVED ABOVE THIS LINE -----
      5                     LUCEMCOM_CMP,  LUCLTRIN_CMP,  LUCSOCIN_CMP,
      6                     PFCANCMX_CMP,   NFCANCMX_CMP )
 C    ------------------- OUTPUTS ABOVE THIS LINE --------------------
-C
-       END IF !LNDUSEON OR COMPETE CHECK FOR MOSAIC CELLS
-   
-       IF (COMPETE) THEN
+C   
+        IF (COMPETE) THEN
 
-C       CALCULATE BIOCLIMATIC PARAMETERS FOR ESTIMATING PFTs EXISTENCE
+C        CALCULATE BIOCLIMATIC PARAMETERS FOR ESTIMATING PFTs EXISTENCE
 C
-        CALL  BIOCLIM (IDAY,       TA_CMP,    PRECIP_CMP,  NETRAD_CMP,
+         CALL  BIOCLIM (IDAY,       TA_CMP,    PRECIP_CMP,  NETRAD_CMP,
      1                    1,         NLAT,          NLAT,
      2            TCURM_CMP, SRPCURYR_CMP,  DFTCURYR_CMP,    INIBOCLM,
      3           TMONTH_CMP, ANPCPCUR_CMP,   ANPECUR_CMP, GDD5CUR_CMP,
@@ -754,8 +747,8 @@ C
      6         SRPLSMON_CMP, DEFCTMON_CMP, ANNDEFCT_CMP, ANNSRPLS_CMP,
      7           ANNPCP_CMP, ANPOTEVP_CMP)
 C
-C       IF FIRST DAY OF YEAR THEN BASED ON UPDATED BIOCLIMATIC PARAMETERS
-C       FIND IF PFTs CAN EXIST OR NOT
+C        IF FIRST DAY OF YEAR THEN BASED ON UPDATED BIOCLIMATIC PARAMETERS
+C        FIND IF PFTs CAN EXIST OR NOT
 C
           CALL EXISTENCE(IDAY,            1,         NLAT,         NLAT,
      1                    ICC,         SORT,     NOL2PFTS,           IC,
@@ -764,10 +757,10 @@ C
      4             ANNPCP_CMP, ANPOTEVP_CMP, PFTEXIST_CMP)
 C     
 C
-C     CALL COMPETITION SUBROUTINE WHICH ON THE BASIS OF PREVIOUS DAY'S
-C     NPP ESTIMATES CHANGES IN FRACTIONAL COVERAGE OF PFTs
+C        CALL COMPETITION SUBROUTINE WHICH ON THE BASIS OF PREVIOUS DAY'S
+C        NPP ESTIMATES CHANGES IN FRACTIONAL COVERAGE OF PFTs
 C
-        CALL COMPETITION (IDAY,          1,          NLAT,         NLAT,
+         CALL COMPETITION (IDAY,          1,          NLAT,        NLAT,
      1                    ICC,    NOL2PFTS,            IC,   NPPVEG_CMP,
      2                  L2MAX, PFTEXIST_CMP, GEREMORT_CMP, INTRMORT_CMP,
      3           GLEAFMAS_CMP, BLEAFMAS_CMP, STEMMASS_CMP, ROOTMASS_CMP,
@@ -776,7 +769,7 @@ C
 C
 C    ------------------- INPUTS ABOVE THIS LINE -------------------
 C
-     6            FCANCMX_CMP,   FCANMX_CMP, VGBIOMAS_CMP, GAVGLTMS_CMP,
+     6               FARE_CMP,   FCANMX_CMP, VGBIOMAS_CMP, GAVGLTMS_CMP,
      7           GAVGSCMS_CMP,
 C
 C    ------------------- UPDATES ABOVE THIS LINE ------------------
@@ -785,45 +778,44 @@ C
 C
 C    ------------------- OUTPUTS ABOVE THIS LINE ------------------
 C
-       ELSE !COMPETE = FALSE
+        ELSE !COMPETE = FALSE
 
-        DO J = 1, ICC
-          DO I = IL1, IL2
-            ADD2ALLO(I,J)=0.0
-          ENDDO
-        ENDDO
+           DO I = IL1, NLAT
+             DO J = 1, ICC
+              ADD2ALLO_CMP(I,J)=0.0
+             ENDDO
+           ENDDO
 
-       ENDIF !COMPETE CHECK
+        ENDIF !COMPETE CHECK
 C     -----------------------------------------------------------------
 
-       IF(LNDUSEON)THEN
+        IF(LNDUSEON)THEN
          
-        DO J = 1, ICC
-          DO I = IL1, NLAT  
-            YESFRAC_CMP(I,J)=FCANCMX_CMP(I,J)
-          ENDDO
-        ENDDO
+         DO J = 1, ICC
+           DO I = IL1, NLAT  
+            YESFRAC_MOS(I,J)=FARE_CMP(I,J)
+           ENDDO
+         ENDDO
 
          CALL LUC(ICC,      NLAT,      IL1,      NLAT,
      1           IC, NOL2PFTS,    L2MAX,  
      2           GRCLAREA_CMP, PFCANCMX_CMP, NFCANCMX_CMP,     IDAY,
-     3           TODFRAC_CMP,  YESFRAC_CMP,   .TRUE.,
+     3           TODFRAC_CMP,  YESFRAC_MOS,   .TRUE.,
      4           GLEAFMAS_CMP, BLEAFMAS_CMP, STEMMASS_CMP, ROOTMASS_CMP,
      5           LITRMASS_CMP, SOILCMAS_CMP, VGBIOMAS_CMP, GAVGLTMS_CMP,
-     6           GAVGSCMS_CMP,  FCANCMX_CMP,   FCANMX_CMP,
+     6           GAVGSCMS_CMP,     FARE_CMP,   FCANMX_CMP,
      7           LUCEMCOM_CMP, LUCLTRIN_CMP, LUCSOCIN_CMP)
 
-       ENDIF !LNDUSEON CHECK
+        ENDIF !LNDUSEON CHECK
 
 C     -----------------------------------------------------------------
 
-       IF (COMPETE .OR. LNDUSEON) THEN
-C      COMPETITION_UNMAP UNMAPS AND GATHERS THE ARRAY WITH  
-C      INDICES (NLAT,ICC) BACK TO (ILG,ICC) AFTER COMPETITION IS DONE 
+C       COMPETITION_UNMAP UNMAPS AND GATHERS THE ARRAY WITH  
+C       INDICES (NLAT,ICC) BACK TO (ILG,ICC) AFTER COMPETITION IS DONE 
 C
-          CALL COMPETITION_UNMAP(NLAT, NMOS, ILG, 
+        CALL COMPETITION_UNMAP(NLAT, NMOS, ILG, 
      A                           NML, ILMOS, JLMOS, ICC, IC, NOL2PFTS,
-     B                        FCANCMX_CMP,   NPPVEG_CMP, GEREMORT_CMP,
+     B                           FARE_CMP,   NPPVEG_CMP, GEREMORT_CMP,
      C                       INTRMORT_CMP, GLEAFMAS_CMP, BLEAFMAS_CMP,
      D                       STEMMASS_CMP, ROOTMASS_CMP, LITRMASS_CMP,
      E                       SOILCMAS_CMP, PFTEXIST_CMP,   LAMBDA_CMP,
@@ -884,15 +876,15 @@ C
 C       IF FIRST DAY OF YEAR THEN BASED ON UPDATED BIOCLIMATIC PARAMETERS
 C       FIND IF PFTs CAN EXIST OR NOT
 C
-          CALL EXISTENCE(IDAY,            1,         IL2,         ILG,
+        CALL EXISTENCE(IDAY,            1,         IL2,         ILG,
      1                   ICC,         SORT,     NOL2PFTS,           IC,
      2                   TWARMM,   TCOLDM,     GDD5,  ARIDITY,
      3                   SRPLSMON, DEFCTMON, ANNDEFCT, ANNSRPLS,
      4                   ANNPCP, ANPOTEVP, PFTEXIST )
 C     
 C
-C     CALL COMPETITION SUBROUTINE WHICH ON THE BASIS OF PREVIOUS DAY'S
-C     NPP ESTIMATES CHANGES IN FRACTIONAL COVERAGE OF PFTs
+C       CALL COMPETITION SUBROUTINE WHICH ON THE BASIS OF PREVIOUS DAY'S
+C       NPP ESTIMATES CHANGES IN FRACTIONAL COVERAGE OF PFTs
 C
         CALL COMPETITION (IDAY,          1,          IL2,         ILG,
      1                    ICC,    NOL2PFTS,            IC,   NPPVEG,
@@ -912,7 +904,7 @@ C
 C
 C    ------------------- OUTPUTS ABOVE THIS LINE ------------------
 C
-      ELSE  ! COMPETITION IS NOT ON
+       ELSE  ! COMPETITION IS NOT ON
 
         DO J = 1, ICC
           DO I = IL1, IL2
@@ -920,31 +912,32 @@ C
           ENDDO
         ENDDO
 
-      ENDIF  ! IF (COMPETE)
+       ENDIF  ! IF (COMPETE)
 C
 C     -----------------------------------------------------------------
 C
-C     IF LANDUSE IS ON, THEN IMPLELEMENT LUC, CHANGE FRACTIONAL COVERAGES, 
-C     MOVE BIOMASSES AROUND, AND ESTIMATE LUC RELATED COMBUSTION EMISSION 
-C     LOSSES.
+C      IF LANDUSE IS ON, THEN IMPLELEMENT LUC, CHANGE FRACTIONAL COVERAGES, 
+C      MOVE BIOMASSES AROUND, AND ESTIMATE LUC RELATED COMBUSTION EMISSION 
+C      LOSSES.
 C
-        IF(LNDUSEON)THEN
+       IF(LNDUSEON)THEN
          
-        DO J = 1, ICC
-          DO I = IL1, IL2  
-            YESFRAC(I,J)=FCANCMX(I,J)
-          ENDDO
-        ENDDO
+         DO J = 1, ICC
+           DO I = IL1, IL2  
+             YESFRAC_COMP(I,J)=FCANCMX(I,J)
+           ENDDO
+         ENDDO
 
-         CALL       LUC(     ICC,      ILG,      IL1,      IL2,
+         CALL LUC(     ICC,      ILG,      IL1,      IL2,
      1                        IC, NOL2PFTS,    L2MAX,  
      2                  GRCLAREA, PFCANCMX, NFCANCMX,     IDAY,
-     3                   TODFRAC,  YESFRAC,   .TRUE.,
+     3                   TODFRAC,YESFRAC_COMP,.TRUE.,
      4                  GLEAFMAS, BLEAFMAS, STEMMASS, ROOTMASS,
      5                  LITRMASS, SOILCMAS, VGBIOMAS, GAVGLTMS,
      6                  GAVGSCMS,  FCANCMX,   FCANMX,
      7                  LUCEMCOM, LUCLTRIN, LUCSOCIN)
-        ENDIF
+
+       ENDIF !LNDUSEON
 C
       ENDIF ! MOSAIC VS. COMPOSITE FOR LUC AND COMPETITION
 
@@ -1425,31 +1418,33 @@ C     ESTIMATE FRACTION OF NPP THAT IS TO BE USED FOR HORIZONTAL
 C     EXPANSION (LAMBDA) DURING THE NEXT DAY. THE REMAINING FRACTION (1
 C     - LAMBDA) IS WHAT WE WILL USE FOR VERTICAL EXPANSION. 
 C
-      DO 500 J = 1, ICC
-       IF(J.NE.6.AND.J.NE.7) THEN   ! NOT FOR CROPS
-        DO 501 I = IL1, IL2
+      IF (COMPETE) THEN
+       DO 500 J = 1, ICC
+        IF(J.NE.6.AND.J.NE.7) THEN   ! NOT FOR CROPS
+         DO 501 I = IL1, IL2
 C
-          N = SORT(J)
-          IF(AILCG(I,J).LE.LAIMIN(N))THEN
+           N = SORT(J)
+           IF(AILCG(I,J).LE.LAIMIN(N))THEN
+              LAMBDA(I,J)=0.0
+           ELSE IF(AILCG(I,J).GE.LAIMAX(N))THEN
+              LAMBDA(I,J)=LAMBDAMAX
+           ELSE
+              LAMBDA(I,J)=((AILCG(I,J)-LAIMIN(N))*LAMBDAMAX)/
+     &                    (LAIMAX(N)-LAIMIN(N))
+           ENDIF
+           LAMBDA(I,J)=MAX(0.0, MIN(LAMBDAMAX, LAMBDA(I,J)))
+C
+C          IF TREE AND LEAVES STILL COMING OUT, OR IF NPP IS NEGATIVE, THEN
+C          DO NOT EXPAND
+           IF((J.LE.5.AND.LFSTATUS(I,J).EQ.1).OR.NPPVEG(I,J).LT.0.0
+     &     .OR.PFTEXIST(I,J).EQ.0)THEN
              LAMBDA(I,J)=0.0
-          ELSE IF(AILCG(I,J).GE.LAIMAX(N))THEN
-             LAMBDA(I,J)=LAMBDAMAX
-          ELSE
-             LAMBDA(I,J)=((AILCG(I,J)-LAIMIN(N))*LAMBDAMAX)/
-     &                   (LAIMAX(N)-LAIMIN(N))
-          ENDIF
-          LAMBDA(I,J)=MAX(0.0, MIN(LAMBDAMAX, LAMBDA(I,J)))
+           ENDIF
 C
-C         IF TREE AND LEAVES STILL COMING OUT, OR IF NPP IS NEGATIVE, THEN
-C         DO NOT EXPAND
-          IF((J.LE.5.AND.LFSTATUS(I,J).EQ.1).OR.NPPVEG(I,J).LT.0.0
-     &    .OR.PFTEXIST(I,J).EQ.0.OR.(.NOT.COMPETE))THEN
-            LAMBDA(I,J)=0.0
-          ENDIF
-C
-501     CONTINUE
-       ENDIF
-500   CONTINUE
+501      CONTINUE
+        ENDIF
+500    CONTINUE
+      ENDIF !COMPETE       
 C
 C    ------------------------------------------------------------------
 C
