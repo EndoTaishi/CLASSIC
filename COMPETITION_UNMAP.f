@@ -546,6 +546,10 @@ C
            MMROW(I,MCOUNT,L)      = MM_CMP(I,L)
            VGBIOMASROW(I,MCOUNT)  = GLEAFMAS_CMP(I,L)+BLEAFMAS_CMP(I,L)+
      &                              STEMMASS_CMP(I,L)+ROOTMASS_CMP(I,L)
+           LUCEMCOMROW(I,MCOUNT) = LUCEMCOM_CMP(I) 
+           LUCLTRINROW(I,MCOUNT) = LUCLTRIN_CMP(I) 
+           LUCSOCINROW(I,MCOUNT) = LUCSOCIN_CMP(I) 
+
           ENDIF 
          ENDDO
 C
@@ -555,6 +559,7 @@ C
            TCURMROW(I,M)     = TCURM_CMP(I)
            SRPCURYRROW(I,M ) = SRPCURYR_CMP(I)
            DFTCURYRROW(I,M)  = DFTCURYR_CMP(I)
+           GRCLAREAROW(I,M)  = GRCLAREA_CMP(I)
 C
            DO MN=1,12
             TMONTHROW(MN,I,M) = TMONTH_CMP(MN,I)
@@ -577,10 +582,6 @@ C
            ANNSRPLSROW(I,M)  = ANNSRPLS_CMP(I)   
            ANNPCPROW(I,M)    = ANNPCP_CMP(I) 
            ANPOTEVPROW(I,M)  = ANPOTEVP_CMP(I)
-
-           LUCEMCOMROW(I,M) = LUCEMCOM_CMP(I) 
-           LUCLTRINROW(I,M) = LUCLTRIN_CMP(I) 
-           LUCSOCINROW(I,M) = LUCSOCIN_CMP(I) 
 
          ENDDO
 C

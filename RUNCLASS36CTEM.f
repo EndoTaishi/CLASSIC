@@ -490,6 +490,7 @@ C
      4     AVGYRE_TPM_M(NLAT,NMOS),    AVGYRE_TC_M(NLAT,NMOS),
      5     AVGYRE_OC_M(NLAT,NMOS),     AVGYRE_BC_M(NLAT,NMOS),
      6     AVGYR_PROBFIRE_M(NLAT,NMOS),AVGYR_LUC_EMC_M(NLAT,NMOS),
+     7     AVGYR_LUCLTRIN_M(NLAT,NMOS),AVGYR_LUCSOCIN_M(NLAT,NMOS),
      7     AVGYR_BURNFRAC_M(NLAT,NMOS)
 C
       REAL RMATCROW(NLAT,NMOS,ICAN,IGND), 
@@ -948,27 +949,29 @@ C
         RMSROW(I,M)              = 0.0
         RMRROW(I,M)              = 0.0  
         LUCEMCOMROW(I,M)         = 0.0
+        LUCLTRINROW(I,M)         = 0.0
+        LUCSOCINROW(I,M)         = 0.0
         BURNFRACROW(I,M)         = 0.0
         PROBFIREROW(I,M)         = 0.0
         CFLUXCGROW(I,M)          = 0.0
         CFLUXCSROW(I,M)          = 0.0 
-        EMIT_CO2ROW(I,M)=0.0
-        EMIT_COROW(I,M)=0.0
-        EMIT_CH4ROW(I,M)=0.0
-        EMIT_NMHCROW(I,M)=0.0
-        EMIT_H2ROW(I,M)=0.0
-        EMIT_NOXROW(I,M)=0.0
-        EMIT_N2OROW(I,M)=0.0
-        EMIT_PM25ROW(I,M)=0.0
-        EMIT_TPMROW(I,M)=0.0
-        EMIT_TCROW(I,M)=0.0
-        EMIT_OCROW(I,M)=0.0
-        EMIT_BCROW(I,M)=0.0
+        EMIT_CO2ROW(I,M)         =0.0
+        EMIT_COROW(I,M)          =0.0
+        EMIT_CH4ROW(I,M)         =0.0
+        EMIT_NMHCROW(I,M)        =0.0
+        EMIT_H2ROW(I,M)          =0.0
+        EMIT_NOXROW(I,M)         =0.0
+        EMIT_N2OROW(I,M)         =0.0
+        EMIT_PM25ROW(I,M)        =0.0
+        EMIT_TPMROW(I,M)         =0.0
+        EMIT_TCROW(I,M)          =0.0
+        EMIT_OCROW(I,M)          =0.0
+        EMIT_BCROW(I,M)          =0.0
 C 
         TCANOACCROW_M(I,M)       = 0.0
-        UVACCROW_M(I,M)         = 0.0
-        VVACCROW_M(I,M)         = 0.0
-        TCANOACCROW_OUT(I,M)    = 0.0
+        UVACCROW_M(I,M)          = 0.0
+        VVACCROW_M(I,M)          = 0.0
+        TCANOACCROW_OUT(I,M)     = 0.0
 C
         DO J = 1, IGND
            TBARACCROW_M(I,M,J)  = 0.0
@@ -1632,7 +1635,7 @@ C
 6125  FORMAT('  MONTH  YEAR  CO2',
      &'        CO        CH4      NMHC       H2       NOX       N2O',
      &'       PM25       TPM        TC        OC        BC  ',
-     &' PROBFIRE  LUC_CO2_E  LUC_SOCIN  LUC_LTRIN   BURNFRAC')
+     &' PROBFIRE  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC')
 6225  FORMAT('            g/m2.mon  g/m2.mon',
      &'  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon',
      &'  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon',
@@ -1651,7 +1654,7 @@ C
 6127  FORMAT('  YEAR   ANNUALCO2',
      &'  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O',
      &'  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE',
-     &' ANNLUCCO2  ANNLUCSOC ANNLUCLTR ABURNFRAC')
+     &' ANNLUCCO2  ANNLUCLTR ANNLUCSOC ABURNFRAC')
 6227  FORMAT('         gC/m2.yr',
      &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
      &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  avgprob/d ',
@@ -2358,6 +2361,8 @@ C
           AVGYRE_BC_M(I,M) =0.0     !ANNUAL AVERAGED BLACK CARBON FIRE AEROSOLS
           AVGYR_PROBFIRE_M(I,M)=0.0 !ANNUAL AVERAGED FIRE PROBABILITY
           AVGYR_LUC_EMC_M(I,M)=0.0  !ANNUAL AVERAGED LUC CO2 EMISSIONS
+          AVGYR_LUCLTRIN_M(I,M)=0.0 !ANNUAL AVERAGED LUC LITTER INPUTS
+          AVGYR_LUCSOCIN_M(I,M)=0.0 !ANNUAL AVERAGED LUC SOIL C INPUTS
           AVGYR_BURNFRAC_M(I,M)=0.0 !ANNUAL AVERAGED BURNED PERCENT OF GRID
 
           DO 116 J = 1, ICC
@@ -2421,7 +2426,28 @@ C
           AVGYRGPP_YR_M(I,M)=0.0
           AVGYRNEP_YR_M(I,M)=0.0
           AVGYRNBP_YR_M(I,M)=0.0
-          LAIMAXG_YR_M(I,M)=0.0      
+          LAIMAXG_YR_M(I,M)=0.0    
+          HETRORES_YR_M(I,M)=0.0
+          AUTORES_YR_M(I,M)=0.0
+          LITRES_YR_M(I,M)=0.0
+          SOILRES_YR_M(I,M)=0.0
+          AVGYRE_CO2_YR_M(I,M)=0.0
+          AVGYRE_CO_YR_M(I,M)=0.0
+          AVGYRE_CH4_YR_M(I,M)=0.0
+          AVGYRE_NMHC_YR_M(I,M)=0.0
+          AVGYRE_H2_YR_M(I,M)=0.0
+          AVGYRE_NOX_YR_M(I,M)=0.0
+          AVGYRE_N2O_YR_M(I,M)=0.0
+          AVGYRE_PM25_YR_M(I,M)=0.0
+          AVGYRE_TPM_YR_M(I,M)=0.0
+          AVGYRE_TC_YR_M(I,M)=0.0
+          AVGYRE_OC_YR_M(I,M)=0.0
+          AVGYRE_BC_YR_M(I,M)=0.0
+          AVGYR_PROBFIRE_YR_M(I,M)=0.0
+          AVGYR_LUC_EMC_YR_M(I,M)=0.0
+          AVGYR_LUCSOCIN_YR_M(I,M)=0.0
+          AVGYR_LUCLTRIN_YR_M(I,M)=0.0
+          AVGYR_BURNFRAC_YR_M(I,M)=0.0
 C
         ENDIF ! CTEM2
 C
@@ -4773,16 +4799,18 @@ C
              ENDDO
            ENDDO
 C
-           NPPROW(I,M)=NPPROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
-           GPPROW(I,M)=GPPROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
-           NEPROW(I,M)=NEPROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
-           NBPROW(I,M)=NBPROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
+           NPPROW(I,M)     =NPPROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
+           GPPROW(I,M)     =GPPROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
+           NEPROW(I,M)     =NEPROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
+           NBPROW(I,M)     =NBPROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
            LUCEMCOMROW(I,M)=LUCEMCOMROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
+           LUCLTRINROW(I,M)=LUCLTRINROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
+           LUCSOCINROW(I,M)=LUCSOCINROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
 C
            HETRORESROW(I,M)=HETRORESROW(I,M)*1.0377 ! CONVERT TO gC/M2.DAY
            AUTORESROW(I,M) =AUTORESROW(I,M)*1.0377  ! CONVERT TO gC/M2.DAY
            LITRESROW(I,M)  =LITRESROW(I,M)*1.0377   ! CONVERT TO gC/M2.DAY
-           SOCRESROW(I,M)  =SOCRESROW(I,M)*1.0377  ! CONVERT TO gC/M2.DAY
+           SOCRESROW(I,M)  =SOCRESROW(I,M)*1.0377   ! CONVERT TO gC/M2.DAY
 C
 C          WRITE DAILY CTEM RESULTS
 C
@@ -4808,7 +4836,6 @@ C
                  NPPVEGROW(I,M,J)=NPPVEGROW(I,M,J)*1.0377 ! CONVERT TO gC/M2.DAY
                  NEPVEGROW(I,M,J)=NEPVEGROW(I,M,J)*1.0377 ! CONVERT TO gC/M2.DAY
  
-
 C                WRITE TO FILE .CT01D_M 
                  WRITE(72,8201)IDAY,IYEAR,GPPVEGROW(I,M,J),
      1           NPPVEGROW(I,M,J),NEPVEGROW(I,M,J),
@@ -4928,9 +4955,6 @@ C
      1                        TCANOACCROW_OUT(I,M)*FAREROW(I,M)
            TOTCMASS_G(I) =VGBIOMAS_G(I) + GAVGLTMS_G(I) + GAVGSCMS_G(I)
 C
-C          FLAG JM. 24.05.2012        
-C          FAREROW MAKES MORE SENSE
-C
            BURNFRAC_G(I) =BURNFRAC_G(I)+ BURNFRACROW(I,M)*FAREROW(I,M) 
            EMIT_CO2_G(I) =EMIT_CO2_G(I)+ EMIT_CO2ROW(I,M)*FAREROW(I,M)
            EMIT_CO_G(I)  =EMIT_CO_G(I) + EMIT_COROW(I,M)*FAREROW(I,M)
@@ -4949,7 +4973,7 @@ C
            LUCEMCOM_G(I) =LUCEMCOM_G(I)+LUCEMCOMROW(I,M)*FAREROW(I,M)
            LUCLTRIN_G(I) =LUCLTRIN_G(I)+LUCLTRINROW(I,M)*FAREROW(I,M)
            LUCSOCIN_G(I) =LUCSOCIN_G(I)+LUCSOCINROW(I,M)*FAREROW(I,M)
-           GRCLAREA_G(I) =GRCLAREA_G(I)+GRCLAREAROW(I,M)           
+           GRCLAREA_G(I) =GRCLAREA_G(I)+GRCLAREAROW(I,M)*FAREROW(I,M)           
 C
            DO J=1,ICC    
              LEAFLITR_G(I,J)=LEAFLITR_G(I,J)+
@@ -5023,6 +5047,10 @@ C
      &                             +(PROBFIREROW(I,M)) * (1./365.)
              AVGYR_LUC_EMC_M(I,M) =AVGYR_LUC_EMC_M(I,M)
      &                              +LUCEMCOMROW(I,M) 
+             AVGYR_LUCLTRIN_M(I,M) =AVGYR_LUCLTRIN_M(I,M)
+     &                              +LUCLTRINROW(I,M) 
+             AVGYR_LUCSOCIN_M(I,M) =AVGYR_LUCSOCIN_M(I,M)
+     &                              +LUCSOCINROW(I,M) 
              AVGYR_BURNFRAC_M(I,M) =AVGYR_BURNFRAC_M(I,M)
      &                             +BURNFRACROW(I,M)
 C
@@ -5041,18 +5069,12 @@ C          END OF EVERY YEAR, FOR SELECTED PFT, AND GRID AVERAGED ANNUAL
 C          NPP, TO THE YEARLY RESULTS FILE.
 C
            IF(IDAY.EQ.365) THEN
-             AVGYRLE_M(I,M)=AVGYRLE_M(I,M)/365.0
+             AVGYRLE_M(I,M)=AVGYRLE_M(I,M)/365.0 !FLAG, isn't this not really an avg then? JM.
              LAIMAXG_M(I,M)=0.0
              STEMMASS_M(I,M)=0.0
              ROOTMASS_M(I,M)=0.0
              LITRMASS_M(I,M)=0.0
              SOILCMAS_M(I,M)=0.0
-C
-             DO J = 1, ICC
-               ANNPPVEG_M(I,M,J)=ANNPPVEG_M(I,M,J)*1.0377 ! CONVERT TO gC/M2.DAY
-               ANNGPPVEG_M(I,M,J)=ANNGPPVEG_M(I,M,J)*1.0377 ! CONVERT TO gC/M2.DAY
-               ANNNEPVEG_M(I,M,J)=ANNNEPVEG_M(I,M,J)*1.0377 ! CONVERT TO gC/M2.DAY
-             ENDDO
 C
              DO 854 J=1,ICC
 C
@@ -5131,6 +5153,8 @@ C
              AVGYRE_BC_M(I,M) =0.0    
              AVGYR_PROBFIRE_M(I,M) =0.0
              AVGYR_LUC_EMC_M(I,M) =0.0
+             AVGYR_LUCLTRIN_M(I,M) =0.0
+             AVGYR_LUCSOCIN_M(I,M) =0.0
              AVGYR_BURNFRAC_M(I,M) =0.0
 C
              DO 950 J = 1, ICC
@@ -5213,6 +5237,10 @@ C
 C=======================================================================
 C     CALCULATE MONTHLY & YEARLY OUTPUT FOR CTEM
 C     
+
+C     FIRST INITIALIZE SOME OUTPUT VARIABLES
+C     INITIALIZATION IS DONE JUST BEFORE USE.
+
       IF (CTEM2) THEN
       IF(NCOUNT.EQ.NDAY) THEN
 C
@@ -5229,66 +5257,70 @@ C
            ENDIF
           ENDDO
 C
-          LAIMAXG_MN(I)=0.0
-          AVGMNNPP_MN(I)=0.0
-          AVGMNGPP_MN(I)=0.0
-          AVGMNNEP_MN(I)=0.0
-          AVGMNNBP_MN(I)=0.0
-          HETRORES_MN(I)=0.0
-          AUTORES_MN(I)=0.0
-          LITRES_MN(I)=0.0
-          SOILRES_MN(I)=0.0
-          AVGMNE_CO2_MN(I)=0.0
-          AVGMNE_CO_MN(I) =0.0
-          AVGMNE_CH4_MN(I) =0.0
-          AVGMNE_NMHC_MN(I) =0.0
-          AVGMNE_H2_MN(I) =0.0
-          AVGMNE_NOX_MN(I) =0.0
-          AVGMNE_N2O_MN(I) =0.0
-          AVGMNE_PM25_MN(I) =0.0
-          AVGMNE_TPM_MN(I) =0.0
-          AVGMNE_TC_MN(I) =0.0
-          AVGMNE_OC_MN(I) =0.0
-          AVGMNE_BC_MN(I) =0.0
-          AVGMN_PROBFIRE_MN(I) =0.0
-          AVGMN_LUC_EMC_MN(I) =0.0
-          AVGMN_LUCSOCIN_MN(I) =0.0
-          AVGMN_LUCLTRIN_MN(I) =0.0
-          AVGMN_BURNFRAC_MN(I) =0.0
+          IF(IDAY.EQ.MDAY(IMONTH+1))THEN
+           LAIMAXG_MN(I)=0.0
+           AVGMNNPP_MN(I)=0.0
+           AVGMNGPP_MN(I)=0.0
+           AVGMNNEP_MN(I)=0.0
+           AVGMNNBP_MN(I)=0.0
+           HETRORES_MN(I)=0.0
+           AUTORES_MN(I)=0.0
+           LITRES_MN(I)=0.0
+           SOILRES_MN(I)=0.0
+           AVGMNE_CO2_MN(I)=0.0
+           AVGMNE_CO_MN(I) =0.0
+           AVGMNE_CH4_MN(I) =0.0
+           AVGMNE_NMHC_MN(I) =0.0
+           AVGMNE_H2_MN(I) =0.0
+           AVGMNE_NOX_MN(I) =0.0
+           AVGMNE_N2O_MN(I) =0.0
+           AVGMNE_PM25_MN(I) =0.0
+           AVGMNE_TPM_MN(I) =0.0
+           AVGMNE_TC_MN(I) =0.0
+           AVGMNE_OC_MN(I) =0.0
+           AVGMNE_BC_MN(I) =0.0
+           AVGMN_PROBFIRE_MN(I) =0.0
+           AVGMN_LUC_EMC_MN(I) =0.0
+           AVGMN_LUCSOCIN_MN(I) =0.0
+           AVGMN_LUCLTRIN_MN(I) =0.0
+           AVGMN_BURNFRAC_MN(I) =0.0
+          ENDIF 
 
 C
-          LAIMAXG_YR(I)=0.0
-          STEMMASS_YR(I)=0.0
-          ROOTMASS_YR(I)=0.0
-          LITRMASS_YR(I)=0.0
-          SOILCMAS_YR(I)=0.0 
-          VGBIOMAS_YR(I)=0.0 
-          TOTCMASS_YR(I)=0.0 
-          AVGYRNPP_YR(I)=0.0
-          AVGYRGPP_YR(I)=0.0
-          AVGYRNEP_YR(I)=0.0 
-          AVGYRNBP_YR(I)=0.0
-          HETRORES_YR(I)=0.0
-          AUTORES_YR(I)=0.0
-          LITRES_YR(I)=0.0
-          SOILRES_YR(I)=0.0
-          AVGYRE_CO2_YR(I)=0.0
-          AVGYRE_CO_YR(I)=0.0
-          AVGYRE_CH4_YR(I)=0.0
-          AVGYRE_NMHC_YR(I)=0.0
-          AVGYRE_H2_YR(I)=0.0
-          AVGYRE_NOX_YR(I)=0.0
-          AVGYRE_N2O_YR(I)=0.0
-          AVGYRE_PM25_YR(I)=0.0
-          AVGYRE_TPM_YR(I)=0.0
-          AVGYRE_TC_YR(I)=0.0
-          AVGYRE_OC_YR(I)=0.0
-          AVGYRE_BC_YR(I)=0.0
-          AVGYR_PROBFIRE_YR(I)=0.0
-          AVGYR_LUC_EMC_YR(I)=0.0
-          AVGYR_LUCSOCIN_YR(I)=0.0
-          AVGYR_LUCLTRIN_YR(I)=0.0
-          AVGYR_BURNFRAC_YR(I)=0.0
+          IF (IDAY .EQ. 365) THEN
+           LAIMAXG_YR(I)=0.0
+           STEMMASS_YR(I)=0.0
+           ROOTMASS_YR(I)=0.0
+           LITRMASS_YR(I)=0.0
+           SOILCMAS_YR(I)=0.0 
+           VGBIOMAS_YR(I)=0.0 
+           TOTCMASS_YR(I)=0.0 
+           AVGYRNPP_YR(I)=0.0
+           AVGYRGPP_YR(I)=0.0
+           AVGYRNEP_YR(I)=0.0 
+           AVGYRNBP_YR(I)=0.0
+           HETRORES_YR(I)=0.0
+           AUTORES_YR(I)=0.0
+           LITRES_YR(I)=0.0
+           SOILRES_YR(I)=0.0
+           AVGYRE_CO2_YR(I)=0.0
+           AVGYRE_CO_YR(I)=0.0
+           AVGYRE_CH4_YR(I)=0.0
+           AVGYRE_NMHC_YR(I)=0.0
+           AVGYRE_H2_YR(I)=0.0
+           AVGYRE_NOX_YR(I)=0.0
+           AVGYRE_N2O_YR(I)=0.0
+           AVGYRE_PM25_YR(I)=0.0
+           AVGYRE_TPM_YR(I)=0.0
+           AVGYRE_TC_YR(I)=0.0
+           AVGYRE_OC_YR(I)=0.0
+           AVGYRE_BC_YR(I)=0.0
+           AVGYR_PROBFIRE_YR(I)=0.0
+           AVGYR_LUC_EMC_YR(I)=0.0
+           AVGYR_LUCSOCIN_YR(I)=0.0
+           AVGYR_LUCLTRIN_YR(I)=0.0
+           AVGYR_BURNFRAC_YR(I)=0.0
+          ENDIF
 
 861     CONTINUE
 C
@@ -5334,7 +5366,7 @@ C
            AVGMN_LUCSOCIN_MN_M(I,M) =AVGMN_LUCSOCIN_MN_M(I,M)
      &                             +LUCSOCINROW(I,M)
            AVGMN_LUCLTRIN_MN_M(I,M) =AVGMN_LUCLTRIN_MN_M(I,M)
-     &                             +LUCEMCOMROW(I,M)
+     &                             +LUCLTRINROW(I,M)
            AVGMN_BURNFRAC_MN_M(I,M) =AVGMN_BURNFRAC_MN_M(I,M)
      &                             +BURNFRACROW(I,M)
 
@@ -5437,8 +5469,9 @@ C
                AVGMN_BURNFRAC_MN(I)=AVGMN_BURNFRAC_MN(I)
      &                          +AVGMN_BURNFRAC_MN_M(I,M)
 C
-C              INITIALIZATION FOR MONTHLY ACCUMULATED ARRAYS
-C 
+C              INITIALIZE MONTHLY ACCUMULATED ARRAYS
+C              FOR THE NEXT ROUND
+ 
                AVGMNNPP_MN_M(I,M)=0.0
                AVGMNGPP_MN_M(I,M)=0.0
                AVGMNNEP_MN_M(I,M)=0.0
@@ -5470,11 +5503,6 @@ C                  ! IF(IDAY.EQ.MDAY(NT+1))
 865        CONTINUE ! NMON
 863      CONTINUE ! M
 C
-         AVGMNNPP_MN(I)=AVGMNNPP_MN(I)*1.0377  !CONVERT UNIT TO gC/M2.MONTH
-         AVGMNGPP_MN(I)=AVGMNGPP_MN(I)*1.0377 
-         AVGMNNEP_MN(I)=AVGMNNEP_MN(I)*1.0377 
-         AVGMN_LUC_EMC_MN(I)=AVGMN_LUC_EMC_MN(I)*1.0377 
-C
          DO NT=1,NMON
            IF(IDAY.EQ.MDAY(NT+1))THEN
              IMONTH=NT
@@ -5493,7 +5521,7 @@ C            WRITE TO FILE .CT06M_G
      5               AVGMNE_PM25_MN(I),AVGMNE_TPM_MN(I),AVGMNE_TC_MN(I),
      6               AVGMNE_OC_MN(I),AVGMNE_BC_MN(I),
      7               AVGMN_PROBFIRE_MN(I),AVGMN_LUC_EMC_MN(I),
-     8               AVGMN_LUCSOCIN_MN(I),AVGMN_LUCLTRIN_MN(I),
+     8               AVGMN_LUCLTRIN_MN(I),AVGMN_LUCSOCIN_MN(I),
      8               AVGMN_BURNFRAC_MN(I)
 
 C           AFTER WRITING SET LAIMAXG_YR_M TO ZERO
@@ -5664,8 +5692,9 @@ C
               AVGYR_BURNFRAC_YR(I)=AVGYR_BURNFRAC_YR(I)
      &                         +AVGYR_BURNFRAC_YR_M(I,M)
 C
-C             INITIALIZATION FOR YEARLY ACCUMULATED ARRAYS
-C
+C             INITIALIZE YEARLY ACCUMULATED ARRAYS
+C             FOR THE NEXT ROUND
+
               AVGYRNPP_YR_M(I,M)=0.0
               AVGYRGPP_YR_M(I,M)=0.0
               AVGYRNEP_YR_M(I,M)=0.0
@@ -5696,13 +5725,6 @@ C
 C
 883       CONTINUE ! M
 C
-          AVGYRNPP_YR(I)=AVGYRNPP_YR(I)*1.0368  ! CONVERT UNIT TO gC/M2.YEAR
-          AVGYRGPP_YR(I)=AVGYRGPP_YR(I)*1.0368
-          AVGYRNEP_YR(I)=AVGYRNEP_YR(I)*1.0368 
-          AVGYR_LUC_EMC_YR(I)=AVGYR_LUC_EMC_YR(I)*1.0368
-          AVGYR_LUCSOCIN_YR(I)=AVGYR_LUCSOCIN_YR(I)*1.0368
-          AVGYR_LUCLTRIN_YR(I)=AVGYR_LUCLTRIN_YR(I)*1.0368
-C
           IF (IDAY.EQ.365) THEN
 C            WRITE TO FILE .CT01Y_G
              WRITE(86,8105)IYEAR,LAIMAXG_YR(I),VGBIOMAS_YR(I),
@@ -5717,8 +5739,8 @@ C            WRITE TO FILE .CT06Y_G
      5            AVGYRE_H2_YR(I),AVGYRE_NOX_YR(I),AVGYRE_N2O_YR(I),
      6            AVGYRE_PM25_YR(I),AVGYRE_TPM_YR(I),AVGYRE_TC_YR(I),
      7            AVGYRE_OC_YR(I),AVGYRE_BC_YR(I),AVGYR_PROBFIRE_YR(I),
-     8            AVGYR_LUCSOCIN_YR(I),AVGYR_LUCLTRIN_YR(I),
-     9            AVGYR_LUC_EMC_YR(I),AVGYR_BURNFRAC_YR(I)
+     8            AVGYR_LUC_EMC_YR(I),AVGYR_LUCLTRIN_YR(I),
+     9            AVGYR_LUCSOCIN_YR(I),AVGYR_BURNFRAC_YR(I)
 
 C            AFTER WRITING SET LAIMAXG_YR_M TO ZERO
              DO 985 M=1,NMTEST
