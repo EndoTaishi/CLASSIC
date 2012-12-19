@@ -1964,7 +1964,7 @@ C        THEN ADJUSTED BELOW FOR THE ACTUAL MOSAIC MAKEUP
         ENDDO  !M
        ENDDO  !I
 
-      END IF !IF (COMPETE .AND. START_BARE) 
+      END IF !IF (COMPETE/LANDUSEON .AND. START_BARE) 
 
 C===================== CTEM =============================================== /
 C
