@@ -492,6 +492,7 @@ C
      1                FCS,ZSNOW,TSNOW,TCSNOW,
      2                ILG,IL1,IL2,JL      )
           ISNOW=1
+      write(*,*)'b4tsolvc',tcano(1),tcans(1)
           CALL TSOLVC(ISNOW,FCS,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPCS,
@@ -516,6 +517,7 @@ C
      L                XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS,
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
      N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG)
+      write(*,*)'b4tspost',tcano(1),tcans(1)
           CALL TSPOST(GSNOWC,TSNOCS,WSNOCS,RHOSCS,QMELTC,
      1                GZROCS,TSNBOT,HTCS,HMFN,
      2                GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR,

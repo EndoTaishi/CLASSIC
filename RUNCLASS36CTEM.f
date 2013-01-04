@@ -2601,7 +2601,7 @@ C
             END IF
           ENDIF   ! LOPCOUNT .GT. 1
 C
-C         WRITE(*,*)'YEAR=',IYEAR,'DAY=',IDAY,' HOUR=',IHOUR,' MIN=',IMIN
+         WRITE(*,*)'YEAR=',IYEAR,'DAY=',IDAY,' HOUR=',IHOUR,' MIN=',IMIN
 C
 C===================== CTEM ============================================ /
           FSVHGRD(I)=0.5*FSDOWN
@@ -2677,7 +2677,7 @@ C
 C      IF LNDUSEON IS TRUE AND WE ARE NOT CYCLING THE MET DATA
 C      READ IN THE LUC DATA NOW
 
-       IF (LNDUSEON .AND. .NOT. CYCLEMET) THEN
+       IF (CTEM2 .AND. LNDUSEON .AND. .NOT. CYCLEMET) THEN
  
            K =0
            DO WHILE (LUCYR .LT. IYEAR) 
@@ -3033,6 +3033,7 @@ C
 C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.
+      write(*,*)'b4classw',tcano(1),tcans(1)
 C
           CALL CLASSW  (THLQGAT,THICGAT,TBARGAT,TCANGAT,RCANGAT,SCANGAT,
      1                  ROFGAT, TROFGAT,SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,
@@ -3065,6 +3066,7 @@ C
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
 
 C-----------------------------------------------------------------------
+      write(*,*)'b4classz',tcano(1),tcans(1)
 C
       CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, 
      1             WTVSTP, WTSSTP, WTGSTP,

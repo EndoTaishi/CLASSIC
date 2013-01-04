@@ -370,6 +370,7 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------/
               PAI(I,3)=PAIDAT(I,3)
               PAI(I,4)=PAIDAT(I,4)
           ENDIF
+          write(*,*)PAI(i,1),PAI(i,2),PAI(i,3),PAI(i,4)
           PAIS(I,1)=PAI(I,1)                                                      
           PAIS(I,2)=PAI(I,2)                                                      
           IF(H(I,3).GT.0.0) THEN                                                  
@@ -445,6 +446,9 @@ C     * FOR NOW, ASSIGN WETLANDS A VALUE OF 0.10 M.
 C     * LAI THRESHOLD VALUE FOR CTEM IS SET TO 0.05; STANDARD
 C     * CLASS VALUE IS SET TO 1.0.  
 C
+c     * THE DIFFERENT CTEM LAI THRESHOLD VALUE LED TO INSTABILITIES
+C     * WE ALSO QUESTIONED THE BASIS BEHIND CHANGING IT, UPON RECONSIDERING
+C     * WE NOW USE THE DEFAULT CLASS VALUE. JM. DEC 2012.
 C      IF (ICTEMMOD.EQ.1) THEN
 C         THR_LAI=0.05
 C      ELSE
@@ -744,7 +748,7 @@ C
   190     CONTINUE
 C
   200 CONTINUE                                                                    
-C                          
+C                 
 C     * CALCULATION OF ROUGHNESS LENGTHS FOR HEAT AND MOMENTUM AND
 C     * ZERO-PLANE DISPLACEMENT FOR CANOPY OVERLYING BARE SOIL AND
 C     * CANOPY OVERLYING SNOW.
@@ -882,15 +886,32 @@ C
           ENDIF             
                                                       
           CHCAP (I)=SPHVEG*CMASSC(I)+SPHW*RAICAN(I)+SPHICE*SNOCAN(I)              
-          CHCAPS(I)=SPHVEG*CMASCS(I)+SPHW*RAICNS(I)+SPHICE*SNOCNS(I)              
+          CHCAPS(I)=SPHVEG*CMASCS(I)+SPHW*RAICNS(I)+SPHICE*SNOCNS(I) 
+           
           HTCC  (I)=HTCC(I)-SPHVEG*CMAI(I)*TCAN(I)/DELT
-          IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
+
+C     ---------------- CTEM MODIFICATIONS -----------------------------\
+
+C         THIS, BELOW, WAS MAKING IT SO THAT OUR READ-IN TCAN WAS BEING
+C         OVERWRITTEN BY TA FOR THE FIRST TIME STEP. JM JAN 2013
+c          IF (ICTEMMOD.EQ.1) THEN
+
+c            CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
+c            IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
+c     1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
+c          ELSE
+
+            IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
      1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
-          CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
+            CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
+
+c          ENDIF 
+C    ----------------- CTEM MODIFICATIONS -----------------------------/
+
           HTCC  (I)=HTCC(I)+SPHVEG*CMAI(I)*TCAN(I)/DELT
           RBCOEF(I)=0.0
   350 CONTINUE                                                                   
-C                           
+C             
 C     * CALCULATE VEGETATION ROOTING DEPTH AND FRACTION OF ROOTS 
 C     * IN EACH SOIL LAYER (SAME FOR SNOW/BARE SOIL CASES).
 C     * ALSO CALCULATE LEAF BOUNDARY RESISTANCE PARAMETER RBCOEF.
@@ -928,7 +949,9 @@ C
      2                (1.0-EXP(-0.75*SQRT(PAI(I,J))))+
      3                FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
-     5                (FC(I)+FCS(I))   
+     5                (FC(I)+FCS(I)) 
+           write(*,'(a,2i4,5f8.3)')'enter',i,j,rbcoef(i),FCAN(I,J),
+     &               FCANS(I,J),XLEAF(J),PAI(I,J)  
         ENDIF                                                                   
   450 CONTINUE                                                                    
 C                                                                                 

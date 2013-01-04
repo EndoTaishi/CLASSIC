@@ -445,7 +445,7 @@ C
 C     * INITIALIZE 1-D INTERNAL WORK FIELDS AND DIAGNOSTIC ARRAYS.
 C                                                                                 
       DO 100 I=IL1,IL2                                                            
-          FVEG  (I)=FC(I)+FCS(I)                                                  
+          FVEG  (I)=FC(I)+FCS(I)                                                
           IF(TCAN(I).GT.5.0) THEN
               TCANS (I)=TCAN(I)  
               TCANO (I)=TCAN(I) 
