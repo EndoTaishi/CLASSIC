@@ -361,7 +361,7 @@ C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
                 PAI(I,1)=PAIMIN(I,1)+GROWN(I)*(PAIMAX(I,1)-PAIMIN(I,1))                 
                 PAI(I,2)=PAIMIN(I,2)+GROWB(I)*(PAIMAX(I,2)-PAIMIN(I,2))                 
                 PAI(I,3)=PAIMIN(I,3)+GROWA(I)*(PAIMAX(I,3)-PAIMIN(I,3))                 
-                PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4))                 
+                PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4))   
               ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
           ELSE
@@ -370,7 +370,7 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------/
               PAI(I,3)=PAIDAT(I,3)
               PAI(I,4)=PAIDAT(I,4)
           ENDIF
-          write(*,*)PAI(i,1),PAI(i,2),PAI(i,3),PAI(i,4)
+
           PAIS(I,1)=PAI(I,1)                                                      
           PAIS(I,2)=PAI(I,2)                                                      
           IF(H(I,3).GT.0.0) THEN                                                  
@@ -887,25 +887,25 @@ C
                                                       
           CHCAP (I)=SPHVEG*CMASSC(I)+SPHW*RAICAN(I)+SPHICE*SNOCAN(I)              
           CHCAPS(I)=SPHVEG*CMASCS(I)+SPHW*RAICNS(I)+SPHICE*SNOCNS(I) 
-           
+
           HTCC  (I)=HTCC(I)-SPHVEG*CMAI(I)*TCAN(I)/DELT
 
 C     ---------------- CTEM MODIFICATIONS -----------------------------\
 
 C         THIS, BELOW, WAS MAKING IT SO THAT OUR READ-IN TCAN WAS BEING
 C         OVERWRITTEN BY TA FOR THE FIRST TIME STEP. JM JAN 2013
-c          IF (ICTEMMOD.EQ.1) THEN
+          IF (ICTEMMOD.EQ.1) THEN
 
-c            CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
-c            IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
-c     1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
-c          ELSE
+            CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
+            IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
+     1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
+          ELSE
 
             IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
      1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
             CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
 
-c          ENDIF 
+          ENDIF 
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 
           HTCC  (I)=HTCC(I)+SPHVEG*CMAI(I)*TCAN(I)/DELT
@@ -950,8 +950,6 @@ C
      3                FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
      5                (FC(I)+FCS(I)) 
-           write(*,'(a,2i4,5f8.3)')'enter',i,j,rbcoef(i),FCAN(I,J),
-     &               FCANS(I,J),XLEAF(J),PAI(I,J)  
         ENDIF                                                                   
   450 CONTINUE                                                                    
 C                                                                                 

@@ -1980,8 +1980,18 @@ C
           CMAIROW(I,M)=0.
           WSNOROW(I,M)=0.
           ZSNLROW(I,M)=0.10
-          TSFSROW(I,M,1)=TFREZ
-          TSFSROW(I,M,2)=TFREZ
+
+C         THIS FIX BELOW IS TO CORRECT A BUG THAT CAUSES A CRASH DUE
+C         TO UNREASONABLE CANOPY TEMPERATURES IN THE FIRST YEAR OF A RESTART
+C         WITH SNOW ON THE GROUND. NOTE: RUNCLASS.f HAS THIS SAME PROBLEM. JM JAN 2013
+          IF (SNOROW(I,M) .GT. 0.) THEN !THERE IS SNOW ON THE GROUND
+           TSFSROW(I,M,1)=TBARROW(I,M,1)
+           TSFSROW(I,M,2)=TBARROW(I,M,1)
+          ELSE ! NO SNOW SO JUST SET THESE TO FREEZING POINT
+           TSFSROW(I,M,1)=TFREZ  
+           TSFSROW(I,M,2)=TFREZ
+          ENDIF
+
           TSFSROW(I,M,3)=TBARROW(I,M,1)
           TSFSROW(I,M,4)=TBARROW(I,M,1)
           TACROW (I,M)=TCANROW(I,M)
@@ -2601,7 +2611,7 @@ C
             END IF
           ENDIF   ! LOPCOUNT .GT. 1
 C
-         WRITE(*,*)'YEAR=',IYEAR,'DAY=',IDAY,' HOUR=',IHOUR,' MIN=',IMIN
+C         WRITE(*,*)'YEAR=',IYEAR,'DAY=',IDAY,' HOUR=',IHOUR,' MIN=',IMIN
 C
 C===================== CTEM ============================================ /
           FSVHGRD(I)=0.5*FSDOWN
@@ -3000,7 +3010,7 @@ C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
 C          * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM
 C
-      CALL  CLASST     (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
+      CALL CLASST     (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1  THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG, 
      2  GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS,  
      3  G23C,   G23G,   G23CS,  G23GS,  QFREZC, QFREZG, QMELTC, QMELTG, 
@@ -3033,7 +3043,6 @@ C
 C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.
-      write(*,*)'b4classw',tcano(1),tcans(1)
 C
           CALL CLASSW  (THLQGAT,THICGAT,TBARGAT,TCANGAT,RCANGAT,SCANGAT,
      1                  ROFGAT, TROFGAT,SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,
@@ -3066,7 +3075,6 @@ C
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
 
 C-----------------------------------------------------------------------
-      write(*,*)'b4classz',tcano(1),tcans(1)
 C
       CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, 
      1             WTVSTP, WTSSTP, WTGSTP,
