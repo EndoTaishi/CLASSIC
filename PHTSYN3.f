@@ -1,4 +1,4 @@
-      SUBROUTINE PHTSYN(  AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC,  
+      SUBROUTINE PHTSYN3(  AILCG,  FCANC, TCAN, CO2CONC,  PRESSG,   FC,  
      1                     CFLUX,     QA, QSWV,      IC,   THLIQ,ISAND, 
      2                        TA,   RMAT,   COSZS, XDIFFUS,  ILG,
      3                       IL1,    IL2,   IG,     ICC,   ISNOW, SLAI,
