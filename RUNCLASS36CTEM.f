@@ -780,7 +780,7 @@ C
      1      INTRMORTGAT(ILG,ICC),     LAMBDAGAT(ILG,ICC),
      2      PFTEXISTGAT(ILG,ICC),    BURNVEGGAT(ILG,ICC),
      3            CCGAT(ILG,ICC),         MMGAT(ILG,ICC),
-     4            TEMPARRAY(ICC)
+     4            TEMPARRAY(ICC),            TEMP
 C
 C============= CTEM ARRAY DECLARATION DONE =============================/
 C
@@ -1058,7 +1058,7 @@ C
       RLIM                = ABSZERO
 C
       IF (CTEMLOOP .GT. 100) THEN
-       WRITE(*,*)'The # of loops is larger than 100'
+       WRITE(0,*)'The # of loops is larger than 100'
        CALL EXIT
       ENDIF
 
@@ -1894,9 +1894,13 @@ C      INITALIZE TO ZERO
         DO M=1,NMTEST
 C
 C        SET THE SEED AMOUNT FOR EACH PFT IN ITS MOSAIC
-         IF (COMPETE .OR. LNDUSEON) THEN
-            FAREROW(I,M)=1.0
-         ELSE !NO COMPETITION OR LUC
+C         IF (COMPETE .OR. LNDUSEON) THEN
+C            FAREROW(I,M)=1.0
+C         ELSE !COMPETITION OR LUC
+C         FLAG! TESTING.
+         IF (LNDUSEON) THEN
+            FAREROW(I,M)=0.0
+         ELSE !COMPETITION
            IF (M .LT. ICC+1) THEN
             FAREROW(I,M)=0.001
            ELSE
@@ -1965,7 +1969,10 @@ C        THEN ADJUSTED BELOW FOR THE ACTUAL MOSAIC MAKEUP
        ENDDO  !I
 
       END IF !IF (COMPETE/LANDUSEON .AND. START_BARE) 
-
+        WRITE(*,'(10F8.3)')FAREROW
+          WRITE(*,*)'------------FLAG'
+               WRITE(*,'(10F8.3)')FCANROW
+         READ(*,*)
 C===================== CTEM =============================================== /
 C
       DO 100 I=1,NLTEST
@@ -2259,7 +2266,7 @@ C       YEAR
            READ (90,*) LUCYR,(TEMPARRAY(J),J=1,ICC)
            DO M = 1, NMTEST-1 !AS NMTEST-1 = ICC
              J = M
-             NFCANCMXROW(I,M,J) = TEMPARRAY(M) 
+             NFCANCMXROW(I,M,J) = TEMPARRAY(M)
            ENDDO !M LOOP
          ENDIF
         ENDDO !NLTEST
@@ -2293,30 +2300,57 @@ C
 C       GET FCANMXs FOR USE BY CLASS USING THE NFCANCMXs JUST READ IN
 C
         DO J = 1, ICAN
-          DO I = 1, NLTEST
-           DO M = 1, NMTEST
-            FCANROW(I,M,J)=0.0
-           ENDDO
+         DO I = 1, NLTEST
+          DO M = 1, NMTEST
+           FCANROW(I,M,J)=0.0
           ENDDO
-        ENDDO
-C
+         ENDDO
+         ENDDO    
+
         K1=0
+         DO I = 1, NLTEST
+          DO M = 1, NMTEST
         DO 997 J = 1, ICAN
-          IF(J.EQ.1) THEN
+C          FIRST INITIALIZE FCANROW TO 0.0
+C           FCANROW(I,M,J)=0.0
+           IF(J.EQ.1) THEN
             K1 = K1 + 1
-          ELSE
+           ELSE
             K1 = K1 + NOL2PFTS(J-1)
-          ENDIF
-          K2 = K1 + NOL2PFTS(J) - 1
-          DO 998 N = K1, K2
-            DO I = 1, NLTEST
-             DO M = 1, NMTEST
-              FCANROW(I,M,J)=FCANROW(I,M,J)+NFCANCMXROW(I,M,N)
-             ENDDO
-            ENDDO
-998       CONTINUE
+           ENDIF
+           K2 = K1 + NOL2PFTS(J) - 1
+           DO 998 N = K1, K2
+
+             FCANROW(I,M,J)=FCANROW(I,M,J)+NFCANCMXROW(I,M,N)  !FLAG test.
+            IF (NFCANCMXROW(I,M,N) .GT. 0.) THEN
+             FAREROW(I,M)=NFCANCMXROW(I,M,N)
+            ENDIF
+998        CONTINUE
 997     CONTINUE
+          ENDDO
+         ENDDO
+
 C
+C       FIND THE BARE FRACTION FOR FAREROW(I,ICC+1)
+         TEMP = 0.
+         DO I = 1, NLTEST
+          DO M = 1, NMTEST-1
+           TEMP = TEMP + FAREROW(I,M)
+          ENDDO
+          FAREROW(I,NMTEST) = 1.0 - TEMP
+          TEMP = 0.
+         ENDDO
+
+        WRITE(*,*)'TRY2'
+        WRITE(*,'(10F8.3)')FAREROW
+          WRITE(*,*)'------------FLAG'
+               WRITE(*,'(10F8.3)')FCANROW(1,:,1)
+               WRITE(*,'(10F8.3)')FCANROW(1,:,2)
+               WRITE(*,'(10F8.3)')FCANROW(1,:,3)
+               WRITE(*,'(10F8.3)')FCANROW(1,:,4)
+         READ(*,*)
+
+
 C       BACK UP ONE YEAR IN THE LUC FILE 
 C
         DO I = 1, NLTEST
@@ -3333,6 +3367,8 @@ C    -------------- INPUTS UPDATED BY CTEM ARE ABOVE THIS LINE ------
      &           NLAT, NMOS, NML, ILMOS, JLMOS )
 C    ---------------- OUTPUTS ARE LISTED ABOVE THIS LINE ------------
 C
+      write(*,*)'CTEM'
+      write(*,'(10f8.3)')fcangat
       ENDIF  !IF(CTEM2)
 C
 C     RESET MOSAIC ACCUMULATOR ARRAYS.

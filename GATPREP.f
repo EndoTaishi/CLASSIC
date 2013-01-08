@@ -40,7 +40,7 @@ C---------------------------------------------------------------------
       DO 200 I=IL1,IL2
           IF(GCROW(I).LE.-0.5)                               THEN
               DO 100 J=1,IM
-                  IF(FAREA(I,J).GT.0.0)              THEN
+c  FLAG@!                IF(FAREA(I,J).GT.0.0)              THEN
                       IF(MOSID(I,J).GT.0)    THEN
                           NML=NML+1
                           ILMOS(NML)=I
@@ -50,7 +50,7 @@ C---------------------------------------------------------------------
                           IWMOS(NMW)=I
                           JWMOS(NMW)=J
                       ENDIF
-                  ENDIF
+c                  ENDIF
   100         CONTINUE
           ENDIF
   200 CONTINUE

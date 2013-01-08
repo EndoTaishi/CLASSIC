@@ -455,7 +455,7 @@ C      ELSE
          THR_LAI=1.0
 C      ENDIF
 C
-      DO 175 I=IL1,IL2                                                            
+      DO 175 I=IL1,IL2 
           FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))                                    
           FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))                                    
           IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
