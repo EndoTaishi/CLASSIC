@@ -599,14 +599,15 @@ C
          DO L=1,IC
           IF(FCANMX_CMP(I,L) .GT. 0.0) THEN
 C
-           DO M=MCOUNT2,MCOUNT2+NOL2PFTS(L)-1
+           DO M=MCOUNT2,MCOUNT2+NOL2PFTS(L)-1                          
             FCANMXROW(I,M,L)=1.
+
            ENDDO
 C
            MCOUNT2=MCOUNT2+NOL2PFTS(L)
           ENDIF
          ENDDO
-C
+
  100  CONTINUE
 C
 C     GATHERING THE PFT INDEX IN EACH MOSAIC OF EACH GRID CELL (FCANCMXROW) 

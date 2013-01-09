@@ -1894,13 +1894,7 @@ C      INITALIZE TO ZERO
         DO M=1,NMTEST
 C
 C        SET THE SEED AMOUNT FOR EACH PFT IN ITS MOSAIC
-C         IF (COMPETE .OR. LNDUSEON) THEN
-C            FAREROW(I,M)=1.0
-C         ELSE !COMPETITION OR LUC
-C         FLAG! TESTING.
-         IF (LNDUSEON) THEN
-            FAREROW(I,M)=0.0
-         ELSE !COMPETITION
+         IF (COMPETE .OR. LNDUSEON) THEN
            IF (M .LT. ICC+1) THEN
             FAREROW(I,M)=0.001
            ELSE
@@ -1969,10 +1963,6 @@ C        THEN ADJUSTED BELOW FOR THE ACTUAL MOSAIC MAKEUP
        ENDDO  !I
 
       END IF !IF (COMPETE/LANDUSEON .AND. START_BARE) 
-        WRITE(*,'(10F8.3)')FAREROW
-          WRITE(*,*)'------------FLAG'
-               WRITE(*,'(10F8.3)')FCANROW
-         READ(*,*)
 C===================== CTEM =============================================== /
 C
       DO 100 I=1,NLTEST
@@ -2199,6 +2189,7 @@ C
               ICOUNTROW(I,M) = ICOUNTROW(I,M) + 1
               CSUM(I,M,J) = CSUM(I,M,J) + 
      &         DVDFCANROW(I,M,ICOUNTROW(I,M))
+
               FCANCMXROW(I,M,ICOUNTROW(I,M))=FCANROW(I,M,J)*
      &         DVDFCANROW(I,M,ICOUNTROW(I,M))
             ENDIF
@@ -2297,75 +2288,64 @@ C           GET THE LUC DATA
             ENDDO !NLTEST
         ENDDO  !WHILE LOOP
 C
-C       GET FCANMXs FOR USE BY CLASS USING THE NFCANCMXs JUST READ IN
+C       GET FCANs FOR USE BY CLASS USING THE NFCANCMXs JUST READ IN
 C
-        DO J = 1, ICAN
-         DO I = 1, NLTEST
-          DO M = 1, NMTEST
-           FCANROW(I,M,J)=0.0
-          ENDDO
-         ENDDO
-         ENDDO    
-
         K1=0
-         DO I = 1, NLTEST
-          DO M = 1, NMTEST
         DO 997 J = 1, ICAN
-C          FIRST INITIALIZE FCANROW TO 0.0
-C           FCANROW(I,M,J)=0.0
-           IF(J.EQ.1) THEN
+          IF(J.EQ.1) THEN
             K1 = K1 + 1
-           ELSE
+          ELSE
             K1 = K1 + NOL2PFTS(J-1)
-           ENDIF
-           K2 = K1 + NOL2PFTS(J) - 1
-           DO 998 N = K1, K2
+          ENDIF
+          K2 = K1 + NOL2PFTS(J) - 1
+          DO 998 N = K1, K2
+            DO I = 1, NLTEST
+             DO M = 1, NMTEST
+              IF (.NOT. MOSAIC) THEN
 
-             FCANROW(I,M,J)=FCANROW(I,M,J)+NFCANCMXROW(I,M,N)  !FLAG test.
-            IF (NFCANCMXROW(I,M,N) .GT. 0.) THEN
-             FAREROW(I,M)=NFCANCMXROW(I,M,N)
-            ENDIF
-998        CONTINUE
+               FCANROW(I,M,J)=FCANROW(I,M,J)+NFCANCMXROW(I,M,N) 
+
+              ELSE IF (MOSAIC .AND. NFCANCMXROW(I,M,N) .GT. 0.) THEN
+C              THIS TILE HAS SOME PLANTS SO OVERWRITE THE SEED FRACTION WITH
+C              AN ACTUAL FRACTION
+
+               FAREROW(I,M)=NFCANCMXROW(I,M,N)    
+      
+              ENDIF
+             ENDDO
+            ENDDO
+998       CONTINUE
 997     CONTINUE
-          ENDDO
-         ENDDO
-
 C
-C       FIND THE BARE FRACTION FOR FAREROW(I,ICC+1)
-         TEMP = 0.
-         DO I = 1, NLTEST
-          DO M = 1, NMTEST-1
-           TEMP = TEMP + FAREROW(I,M)
-          ENDDO
-          FAREROW(I,NMTEST) = 1.0 - TEMP
+C
+C       (RE)FIND THE BARE FRACTION FOR FAREROW(I,ICC+1)
+         IF (MOSAIC) THEN
           TEMP = 0.
-         ENDDO
-
-        WRITE(*,*)'TRY2'
-        WRITE(*,'(10F8.3)')FAREROW
-          WRITE(*,*)'------------FLAG'
-               WRITE(*,'(10F8.3)')FCANROW(1,:,1)
-               WRITE(*,'(10F8.3)')FCANROW(1,:,2)
-               WRITE(*,'(10F8.3)')FCANROW(1,:,3)
-               WRITE(*,'(10F8.3)')FCANROW(1,:,4)
-         READ(*,*)
-
-
-C       BACK UP ONE YEAR IN THE LUC FILE 
+          DO I = 1, NLTEST
+           DO M = 1, NMTEST-1
+            TEMP = TEMP + FAREROW(I,M)
+           ENDDO
+           FAREROW(I,NMTEST) = 1.0 - TEMP
+           TEMP = 0.
+          ENDDO
+         ENDIF
 C
-        DO I = 1, NLTEST
-           BACKSPACE(90)  
-        ENDDO
-C
+C       ASSIGN THE PRESENT PFT FRACTIONS FROM THOSE JUST READ IN
         DO J = 1, ICC
           DO I = 1, NLTEST
            DO M = 1, NMTEST
             IF (.NOT. MOSAIC) THEN 
-              FCANCMXROW(I,M,J)=NFCANCMXROW(I,M,J)
+             FCANCMXROW(I,M,J)=NFCANCMXROW(I,M,J)
             ENDIF
             PFCANCMXROW(I,M,J)=NFCANCMXROW(I,M,J)
            ENDDO
           ENDDO
+        ENDDO
+C
+C       BACK UP ONE YEAR IN THE LUC FILE 
+C
+        DO I = 1, NLTEST
+           BACKSPACE(90)  
         ENDDO
 C
       ENDIF ! IF (LNDUSEON)
@@ -2934,7 +2914,6 @@ C
      Q      FAREGAT,     GAVGSCMSGAT, RMLVEGACCGAT,
      &      RMSVEGGAT,   RMRVEGGAT,   RGVEGGAT,    VGBIOMAS_VEGGAT,
      &      GPPVEGGAT,   NEPVEGGAT,   AILCMINGAT,   AILCMAXGAT,
-C           FIRE EMISSION VARIABLES
      &      EMIT_CO2GAT,  EMIT_COGAT, EMIT_CH4GAT,  EMIT_NMHCGAT,
      &      EMIT_H2GAT,   EMIT_NOXGAT,EMIT_N2OGAT,  EMIT_PM25GAT,
      &      EMIT_TPMGAT,  EMIT_TCGAT, EMIT_OCGAT,   EMIT_BCGAT,
@@ -2971,7 +2950,6 @@ C
      L      FAREROW,     GAVGSCMSROW, RMLVEGACCROW,
      &      RMSVEGROW,   RMRVEGROW,   RGVEGROW,    VGBIOMAS_VEGROW,
      &      GPPVEGROW,   NEPVEGROW,   AILCMINROW,   AILCMAXROW,
-C           FIRE EMISSION VARIABLES
      &      EMIT_CO2ROW,  EMIT_COROW, EMIT_CH4ROW,  EMIT_NMHCROW,
      &      EMIT_H2ROW,   EMIT_NOXROW,EMIT_N2OROW,  EMIT_PM25ROW,
      &      EMIT_TPMROW,  EMIT_TCROW, EMIT_OCROW,   EMIT_BCROW )
@@ -3044,6 +3022,7 @@ C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
 C          * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM
 C
+
       CALL CLASST     (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1  THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG, 
      2  GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS,  
@@ -3367,8 +3346,7 @@ C    -------------- INPUTS UPDATED BY CTEM ARE ABOVE THIS LINE ------
      &           NLAT, NMOS, NML, ILMOS, JLMOS )
 C    ---------------- OUTPUTS ARE LISTED ABOVE THIS LINE ------------
 C
-      write(*,*)'CTEM'
-      write(*,'(10f8.3)')fcangat
+
       ENDIF  !IF(CTEM2)
 C
 C     RESET MOSAIC ACCUMULATOR ARRAYS.
@@ -3547,10 +3525,11 @@ C
      Q      FAREROW,     GAVGSCMSROW, TCANOACCROW_OUT,
      &      RMLVEGACCROW, RMSVEGROW,  RMRVEGROW,    RGVEGROW,
      &      VGBIOMAS_VEGROW,GPPVEGROW,NEPVEGROW,AILCMINROW,AILCMAXROW,
-C           FIRE EMISSION VARIABLES
+     &      FCANROW,  
      &      EMIT_CO2ROW,  EMIT_COROW, EMIT_CH4ROW,  EMIT_NMHCROW,
      &      EMIT_H2ROW,   EMIT_NOXROW,EMIT_N2OROW,  EMIT_PM25ROW,
      &      EMIT_TPMROW,  EMIT_TCROW, EMIT_OCROW,   EMIT_BCROW,
+C    ----
      R      ILMOS,       JLMOS,       IWMOS,        JWMOS,
      S      NML,         NLAT,        NMOS,         ILG, 
      T      IGND,        ICAN,        ICP1,         ICC,
@@ -3583,7 +3562,7 @@ C           FIRE EMISSION VARIABLES
      L      FAREGAT,     GAVGSCMSGAT, TCANOACCGAT_OUT,
      &      RMLVEGACCGAT, RMSVEGGAT,  RMRVEGGAT,    RGVEGGAT,
      &      VGBIOMAS_VEGGAT,GPPVEGGAT,NEPVEGGAT,AILCMINGAT,AILCMAXGAT,
-C           FIRE EMISSION VARIABLES
+     &      FCANGAT,
      &      EMIT_CO2GAT,  EMIT_COGAT, EMIT_CH4GAT,  EMIT_NMHCGAT,
      &      EMIT_H2GAT,   EMIT_NOXGAT,EMIT_N2OGAT,  EMIT_PM25GAT,
      &      EMIT_TPMGAT,  EMIT_TCGAT, EMIT_OCGAT,   EMIT_BCGAT)

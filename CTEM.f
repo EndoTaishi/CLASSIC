@@ -346,7 +346,7 @@ C
      5     LAMBDA_CMP(NLAT,ICC),
      6     BMASVEG_CMP(NLAT,ICC),   BURNVEG_CMP(NLAT,ICC),
      7     ADD2ALLO_CMP(NLAT,ICC),  CC_CMP(NLAT,ICC),MM_CMP(NLAT,ICC),
-     8     FCANMX_CMP(NLAT,IC+1),     
+     8     FCANMX_CMP(NLAT,IC),     
      9     GRCLAREA_CMP(NLAT),      VGBIOMAS_CMP(NLAT),    
      1     GAVGLTMS_CMP(NLAT),      GAVGSCMS_CMP(NLAT),
      2     YESFRAC_MOS(NLAT,ICC),   TODFRAC_CMP(NLAT),
@@ -376,7 +376,7 @@ C
      5          VGBIOMAS(ILG),       GAVGLTMS(ILG),       GAVGSCMS(ILG),
      6          SLAI(ILG,ICC),    BMASVEG(ILG,ICC),    CMASVEGC(ILG,IC),
      7       VEGHGHT(ILG,ICC),   ROOTDPTH(ILG,ICC),   GPPCSVEG(ILG,ICC),
-     8      GPPCGVEG(ILG,ICC),   PFCANCMX(ILG,ICC),    FCANMX(ILG,IC+1),
+     8      GPPCGVEG(ILG,ICC),   PFCANCMX(ILG,ICC),    FCANMX(ILG,IC),
      9      NFCANCMX(ILG,ICC),      ALVISC(ILG,IC),      ALNIRC(ILG,IC),
      A           GAVGLAI(ILG),    YESFRAC_COMP(ILG,ICC)
 C
@@ -696,8 +696,6 @@ C
 C       COMPETITION_MAP SCATTERS AND MAPS THE ARRAY WITH INDICES 
 C       OF (ILG,ICC) TO (NLAT,ICC) FOR PREPARATION FOR COMPETITION
 C  
-          write(*,*)'b4 map'
-            write(*,'(10f8.3)')fcanmx
           CALL COMPETITION_MAP(   NLAT,      NMOS,     ILG, 
      A                             NML,     ILMOS,   JLMOS,   ICC, IC,
      B                         FAREGAT,   FCANCMX,  NPPVEG,  GEREMORT,
@@ -737,9 +735,6 @@ C    ------------------- INTERMEDIATE AND SAVED ABOVE THIS LINE -----
      6                     PFCANCMX_CMP,   NFCANCMX_CMP )
 C    ------------------- OUTPUTS ABOVE THIS LINE --------------------
 C   
-          write(*,*)'aft map'
-          write(*,*)fcanmx_cmp
-
         IF (COMPETE) THEN
 
 C        CALCULATE BIOCLIMATIC PARAMETERS FOR ESTIMATING PFTs EXISTENCE
@@ -803,9 +798,6 @@ C     -----------------------------------------------------------------
            ENDDO
          ENDDO
 
-          write(*,*)'b4 luc'
-          write(*,*)fcanmx_cmp
-
          CALL LUC(ICC,      NLAT,      IL1,      NLAT,
      1           IC, NOL2PFTS,    L2MAX,  
      2           GRCLAREA_CMP, PFCANCMX_CMP, NFCANCMX_CMP,     IDAY,
@@ -816,9 +808,6 @@ C     -----------------------------------------------------------------
      7           LUCEMCOM_CMP, LUCLTRIN_CMP, LUCSOCIN_CMP)
 
         ENDIF !LNDUSEON CHECK
-
-          write(*,*)'aft luc'
-          write(*,*)fcanmx_cmp
 
 C     -----------------------------------------------------------------
 C       COMPETITION_UNMAP UNMAPS AND GATHERS THE ARRAY WITH  
@@ -867,8 +856,6 @@ C
      6                         NFCANCMX )
 C    ------------------- UPDATES ABOVE THIS LINE --------------------
 C
-            write(*,*)'aft unmap'
-            write(*,'(10f8.3)')fcanmx
       ELSE !COMPOSITE
 C
        IF (COMPETE) THEN

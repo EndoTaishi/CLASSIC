@@ -513,8 +513,6 @@ C
        DO 120 K=1,NML
          FCANMXROW(ILMOS(K),JLMOS(K),L) = FCANMX(K,L)
  120  CONTINUE
-       write(*,*)'in map'
-       write(*,'(10f8.3)')fcanmxrow(1,:,:)
 C
       DO 130 K=1,NML
          FAREROW(ILMOS(K),JLMOS(K))     = FAREGAT(K)
