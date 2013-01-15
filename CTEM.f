@@ -88,6 +88,10 @@ C                     COLONIZATION. OTHER CHANGES ARE ALSO MADE TO KEEP
 C                     EVERYTHING CONSISTENT WITH CHANGING VEGETATION
 C                     FRACTIONS. 
 C    -----------------------------------------------------------------
+
+C     USE STATEMENTS FOR MODULES:
+      USE LANDUSE_CHANGE,     ONLY : LUC
+
 C
 C     INPUTS
 C
