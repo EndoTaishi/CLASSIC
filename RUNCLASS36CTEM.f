@@ -5824,7 +5824,7 @@ C
 
 C         IF LANDUSEON OR COMPETITION, THEN WE NEED TO RECREATE THE 
 C         DVDFCANROW SO DO SO NOW
-          IF (LNDUSEON .OR. COMPETE) THEN 
+          IF (LNDUSEON .OR. COMPETE .AND. MOSAIC) THEN 
            ICOUNTROW=0
            DO J = 1, ICAN
             DO I=1,NLTEST
@@ -5835,8 +5835,12 @@ C
                 DO N = K1C, K2C
                  IF(MODELPFT(N).EQ.1)THEN
                   ICOUNTROW(I,M) = ICOUNTROW(I,M) + 1
-                  DVDFCANROW(I,M,ICOUNTROW(I,M))=
+                  IF (FCANROW(I,M,J) .GT. 0.) THEN
+                   DVDFCANROW(I,M,ICOUNTROW(I,M))=
      1                 FCANCMXROW(I,M,ICOUNTROW(I,M))/FCANROW(I,M,J)
+                  ELSE
+                   DVDFCANROW(I,M,ICOUNTROW(I,M))=0.
+                  END IF
                  ENDIF !MODELPFT
                 ENDDO !N
              ENDDO !M
@@ -5849,7 +5853,6 @@ C
               WRITE(101,7011) (AILCMINROW(I,M,J),J=1,ICC)
               WRITE(101,7011) (AILCMAXROW(I,M,J),J=1,ICC)
               WRITE(101,7011) (DVDFCANROW(I,M,J),J=1,ICC)
-              WRITE(*,*) (DVDFCANROW(I,M,J),J=1,ICC)
 C
               WRITE(101,7011) (GLEAFMASROW(I,M,J),J=1,ICC)
               WRITE(101,7011) (BLEAFMASROW(I,M,J),J=1,ICC)
