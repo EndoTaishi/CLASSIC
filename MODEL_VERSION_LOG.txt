@@ -1,0 +1,50 @@
+
+             CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) 
+                           VERSION LOG
+
+Please place most recent changes at the top. Denote new model versions
+with a line of '='
+
+=========================================
+V. X.X
+XXX XX XXXX. 
+
+1. 
+
+=========================================
+V. 1.2
+Jan. 15 2013. JM
+
+Changes from v. 1.1 include:
+
+5. Restart fixes. Previously restarts had a jump in the annual values
+this was coming from an uninitialized variable set in RUNCLASSCTEM
+
+4. Instability fix when restarting from snowy ground. CMAI and TSFS were
+being set to either 0, in the case of CMAI, or TFREZ in the case of TSFS
+when the model was reset with snowy ground. These problems were fixed in 
+RUNCLASSCTEM
+
+3. Added in new module to deal with the LUC reading in from .LUC files.
+This new module also allows for a seed fraction since the LUC subroutine 
+is similar to competition in requiring a seed fraction on each tile in
+mosaic mode. This new module also allows the model to be started from 
+bare ground in both composite and mosaic modes. (luc_mod.f90) Also this
+module brought in using f90 syntax to test how well it would work. Seems
+good so could use this to allow sharing of constant parameters between 
+modules more simply.
+
+2. PHTSYN renamed to PHTSYN3.
+
+1. Miscellaneous small bug fixes.
+
+
+=========================================
+V. 1.1
+
+Included composite and mosaic functionality
+
+
+
+
+
