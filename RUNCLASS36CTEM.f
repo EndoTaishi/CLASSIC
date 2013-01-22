@@ -53,7 +53,7 @@ C     * THE PRODUCT OF THE FIRST TWO DIMENSION ELEMENTS IN THE
 C     * "ROW" VARIABLES.
 
 C     USE STATEMENTS FOR MODULES:
-      USE LANDUSE_CHANGE,     ONLY : INITIALIZE_LUC, READIN_LUC
+      USE LANDUSE_CHANGE,     ONLY : INITIALIZE_LUC, READIN_LUC, SEED
 C
       IMPLICIT NONE
 C
@@ -876,7 +876,7 @@ C     CHECKING THE TIME SPENT FOR RUNNING MODEL
 C
 C      CALL IDATE(TODAY)
 C      CALL ITIME(NOW)
-C      WRITE(0,1000)   TODAY(2), TODAY(1), 2000+TODAY(3), NOW
+C      WRITE(*,1000)   TODAY(2), TODAY(1), 2000+TODAY(3), NOW
 C 1000 FORMAT( 'START DATE: ', I2.2, '/', I2.2, '/', I4.4, 
 C     &      '; START TIME: ', I2.2, ':', I2.2, ':', I2.2 )
 C
@@ -1899,9 +1899,9 @@ C
 C        SET THE SEED AMOUNT FOR EACH PFT IN ITS MOSAIC
          IF (COMPETE .OR. LNDUSEON) THEN
            IF (M .LT. ICC+1) THEN
-            FAREROW(I,M)=0.001
+            FAREROW(I,M)=SEED
            ELSE
-            FAREROW(I,M)=1.0 - (REAL(ICC) * 0.001)
+            FAREROW(I,M)=1.0 - (REAL(ICC) * SEED)
            ENDIF
          ENDIF
 
@@ -1922,7 +1922,6 @@ C        SET THE SEED AMOUNT FOR EACH PFT IN ITS MOSAIC
            LITRMASSROW(I,M,J)=0. 
            SOILCMASROW(I,M,J)=0. 
          ENDDO
-
 
 C        INITIAL CONDITIONS ALWAYS REQUIRED
          DVDFCANROW(I,M,1)=1.0  !NDL
@@ -1959,7 +1958,7 @@ C        THEN ADJUSTED BELOW FOR THE ACTUAL MOSAIC MAKEUP
             DVDFCANROW(I,M,8)=0.0
             DVDFCANROW(I,M,9)=1.0        
           ENDIF
-         ELSE                                  !BARE 
+         ELSE                                  !BARE/urban? 
           FCANROW(I,M,5)=1.0
          ENDIF !MOSAIC ADJUSTMENTS
         ENDDO  !M
@@ -1995,8 +1994,8 @@ C      INITIAL CONDITIONS ALWAYS REQUIRED
          LFSTATUSROW(I,1,1)=2
 
          DO J = 1,ICCP1
-           LITRMASSROW(I,1,J)=0. 
-           SOILCMASROW(I,1,J)=0. 
+           LITRMASSROW(I,1,J)=0.0 
+           SOILCMASROW(I,1,J)=0.0 
          ENDDO
        ENDDO !NLTEST
 
@@ -2565,7 +2564,7 @@ C
             END IF
           ENDIF   ! LOPCOUNT .GT. 1
 C
-C         WRITE(0,*)'YEAR=',IYEAR,'DAY=',IDAY,' HOUR=',IHOUR,' MIN=',IMIN
+C         WRITE(*,*)'YEAR=',IYEAR,'DAY=',IDAY,' HOUR=',IHOUR,' MIN=',IMIN
 C
 C===================== CTEM ============================================ /
           FSVHGRD(I)=0.5*FSDOWN
@@ -2638,10 +2637,9 @@ C
 
        ENDIF !CO2ON 
 
-C      IF LNDUSEON IS TRUE AND WE ARE NOT CYCLING THE MET DATA
-C      READ IN THE LUC DATA NOW
+C      IF LNDUSEON IS TRUE, READ IN THE LUC DATA NOW
 
-       IF (CTEM2 .AND. LNDUSEON .AND. .NOT. CYCLEMET) THEN
+       IF (CTEM2 .AND. LNDUSEON) THEN
 
          CALL READIN_LUC(NLAT,NMOS,IYEAR,NMTEST,NLTEST,MOSAIC,ICC,LUCYR,   
      &                   NFCANCMXROW,REACH_EOF)
@@ -4579,7 +4577,7 @@ C
          QH_YR=HFSACC_YR(I)
          QE_YR=QEVPACC_YR(I)
 C
-         WRITE(0,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
+         WRITE(*,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
          WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,
      1                  QE_YR,ROFACC_YR(I),PREACC_YR(I),
      2                  EVAPACC_YR(I) 
@@ -5843,9 +5841,31 @@ C
                   END IF
                  ENDIF !MODELPFT
                 ENDDO !N
+              
+C            CHECK TO ENSURE THAT THE DVDFCANROW'S ADD UP TO 1 ACROSS A 
+C            CLASS-LEVEL PFT
+             IF(DVDFCANROW(I,M,1) .EQ. 0. .AND. DVDFCANROW(I,M,2) 
+     1                                              .EQ. 0.) THEN
+                  DVDFCANROW(I,M,1)=1.0
+             ELSEIF(DVDFCANROW(I,M,3) .EQ. 0. .AND. DVDFCANROW(I,M,4) 
+     1                     .EQ. 0. .AND. DVDFCANROW(I,M,5) .EQ. 0.) THEN
+                  DVDFCANROW(I,M,3)=1.0
+             ELSEIF(DVDFCANROW(I,M,6) .EQ. 0. .AND. DVDFCANROW(I,M,7) 
+     1                                              .EQ. 0.) THEN
+                  DVDFCANROW(I,M,6)=1.0
+             ELSEIF(DVDFCANROW(I,M,8) .EQ. 0. .AND. DVDFCANROW(I,M,9) 
+     1                                              .EQ. 0.) THEN
+                  DVDFCANROW(I,M,8)=1.0
+             ENDIF
+  
              ENDDO !M
             ENDDO !I 
            ENDDO !J
+
+           
+
+
+
           ENDIF !LNUSE/COMPETE
 C
           DO I=1,NLTEST
@@ -5942,7 +5962,7 @@ C      CHECKING THE TIME SPENT FOR RUNNING MODEL
 C
 C      CALL IDATE(TODAY) 
 C      CALL ITIME(NOW)
-C      WRITE(0,1001) TODAY(2), TODAY(1), 2000+TODAY(3), NOW
+C      WRITE(*,1001) TODAY(2), TODAY(1), 2000+TODAY(3), NOW
 C 1001 FORMAT( 'END DATE: ', I2.2, '/', I2.2, '/', I4.4, 
 C     &      '; END TIME: ', I2.2, ':', I2.2, ':', I2.2 )
 C

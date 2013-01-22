@@ -136,7 +136,7 @@ INTEGER :: K2,K1,STRLEN
           DO 998 N = K1, K2
             DO I = 1, NLTEST
              DO M = 1, NMTEST
-              IF (.NOT. MOSAIC) THEN
+              IF (.NOT. MOSAIC) THEN !COMPOSITE
 
                FCANROW(I,M,J)=FCANROW(I,M,J)+NFCANCMXROW(I,M,N) 
 
@@ -146,7 +146,6 @@ INTEGER :: K2,K1,STRLEN
 
 !              NOTE: THE SEED FRACTION HAS ALREADY BEEN ASSIGNED IN RUNCLASSCTEM
 !              PRIOR TO ENTERING THIS SUBROUTINE.
-                
                FAREROW(I,M)=NFCANCMXROW(I,M,N)    
 
               ENDIF
@@ -197,10 +196,11 @@ INTEGER :: K2,K1,STRLEN
         DO J = 1, ICC
           DO I = 1, NLTEST
            DO M = 1, NMTEST
-            IF (.NOT. MOSAIC) THEN 
+            IF (.NOT. MOSAIC) THEN  !COMPOSITE 
              FCANCMXROW(I,M,J)=NFCANCMXROW(I,M,J)
-            ENDIF
-            PFCANCMXROW(I,M,J)=NFCANCMXROW(I,M,J)
+            ENDIF !MOSAIC
+C            ENSURE THAT THE FRACTION IS >= SEED
+             PFCANCMXROW(I,M,J)=MAX(SEED,NFCANCMXROW(I,M,J))
            ENDDO
           ENDDO
         ENDDO
