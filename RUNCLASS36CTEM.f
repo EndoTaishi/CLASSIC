@@ -784,7 +784,8 @@ C
      1      INTRMORTGAT(ILG,ICC),     LAMBDAGAT(ILG,ICC),
      2      PFTEXISTGAT(ILG,ICC),    BURNVEGGAT(ILG,ICC),
      3            CCGAT(ILG,ICC),         MMGAT(ILG,ICC),
-     4            TEMPARRAY(ICC),            TEMP
+     4            TEMPARRAY(ICC),                   TEMP,
+     5            RNDED_PFT(ICC)
 C
 C============= CTEM ARRAY DECLARATION DONE =============================/
 C
@@ -5822,7 +5823,7 @@ C
 
 C         IF LANDUSEON OR COMPETITION, THEN WE NEED TO RECREATE THE 
 C         DVDFCANROW SO DO SO NOW
-          IF (LNDUSEON .OR. COMPETE .AND. MOSAIC) THEN 
+          IF (LNDUSEON .OR. COMPETE .AND. MOSAIC) THEN !FLAG! MOSAIC SHOULD BE HERE?
            ICOUNTROW=0
            DO J = 1, ICAN
             DO I=1,NLTEST
@@ -5862,8 +5863,35 @@ C            CLASS-LEVEL PFT
             ENDDO !I 
            ENDDO !J
 
-           
+           DO I=1,NLTEST
+            DO M=1,NMTEST 
+             DO J = 1, ICC
+C            LASTLY CHECK IF THE DIFFERENT PFTS ACCIDENTLY ADD UP > 1.0
+C            AFTER ROUNDING TO THE NUMBER OF SIG FIGS USED IN THE OUTPUT
+C            THIS ROUNDS TO 2 DECIMAL PLACES. IF YOU ARE FOUND TO BE OVER
+C            OR UNDER, ARBITRARILY REDUCE ONE OF THE PFTS. THE AMOUNT OF
+C            THE CHANGE WILL BE INCONSEQUENTIAL. 
+              RNDED_PFT(J) =REAL(INT(DVDFCANROW(I,M,J) * 100.0 + 0.5))
+     1                                                         / 100.0
+             ENDDO
 
+             IF (RNDED_PFT(1) + RNDED_PFT(2) .NE. 1.0) THEN
+              DVDFCANROW(I,M,1) = 1.0 - RNDED_PFT(2)
+              DVDFCANROW(I,M,2) = RNDED_PFT(2)
+             ELSE IF (RNDED_PFT(3) + RNDED_PFT(4) + RNDED_PFT(5) 
+     1                                                 .NE. 1.0) THEN
+              DVDFCANROW(I,M,3) = 1.0 - RNDED_PFT(4) - RNDED_PFT(5)
+              DVDFCANROW(I,M,4) = RNDED_PFT(4)
+              DVDFCANROW(I,M,5) = RNDED_PFT(5)
+             ELSE IF (RNDED_PFT(6) + RNDED_PFT(7) .NE. 1.0) THEN
+              DVDFCANROW(I,M,6) = 1.0 - RNDED_PFT(7)
+              DVDFCANROW(I,M,7) = RNDED_PFT(7)
+             ELSE IF (RNDED_PFT(8) + RNDED_PFT(9) .NE. 1.0) THEN
+              DVDFCANROW(I,M,8) = 1.0 - RNDED_PFT(9)
+              DVDFCANROW(I,M,9) = RNDED_PFT(9)
+             ENDIF
+            ENDDO
+           ENDDO
 
 
           ENDIF !LNUSE/COMPETE
