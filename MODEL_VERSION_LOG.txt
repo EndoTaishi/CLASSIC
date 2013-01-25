@@ -13,9 +13,16 @@ XXX XX XXXX.
 
 =========================================
 V. 1.2
-Jan. 15 2013. JM
+Jan. 25 2013. JM
 
 Changes from v. 1.1 include:
+
+7. In RUNCLASSCTEM, the EOF condition flag of 999 for the input files is handled
+differently to allow the model to work on xlf compilers. 
+
+6. We unchanged the THR_LAI. It was set to the CLASS value of 1.0, we now
+revert back to the v1.0 option of CTEM (0.05) or CLASS alone (1.0) as it
+dramatically curtailed our grasslands.
 
 5. Restart fixes. Previously restarts had a jump in the annual values
 this was coming from an uninitialized variable set in RUNCLASSCTEM
