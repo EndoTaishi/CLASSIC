@@ -65,10 +65,12 @@ C     JM EDIT: CHANGED NLAT TO 1.
       INTEGER,PARAMETER :: ICAN=4,IGND=3,ICP1=ICAN+1
 C
       INTEGER IDISP,IZREF,ISLFD,IPCP,IWF,IPAI,IHGT,IALC,
-     1        IALS,IALG,N,ITG,ITC,ITCG,NLTEST,NMTEST,NCOUNT,NDAY,
-     2        MDAY(NMON+1),MMDAY(NMON),IMONTH,NDMONTH,NT,
-     3        IHOUR,IMIN,IDAY,IYEAR,NML,NMW,NWAT,NICE,JLAT,
-     4        NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,I,J,K,L,M
+     1        IALS,IALG,N,ITG,ITC,ITCG
+
+      INTEGER NLTEST,NMTEST,NCOUNT,NDAY,
+     1        MDAY(NMON+1),MMDAY(NMON),IMONTH,NDMONTH,NT,
+     2        IHOUR,IMIN,IDAY,IYEAR,NML,NMW,NWAT,NICE,JLAT,
+     3        NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,I,J,K,L,M
 C
       INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11
 C
@@ -395,6 +397,7 @@ C
       LOGICAL    COMPETE, START_BARE, RSFILE, LNDUSEON, CO2ON, POPDON
 C
        INTEGER,PARAMETER :: ICC=9, ICCP1=ICC+1
+
        INTEGER   LOPCOUNT,  ISUMC,   NOL2PFTS(4), L2MAX,  
      1           K1C,       K2C,     IYD,         JHHSTD,
      2           JHHENDD,   JDSTD,   JDENDD,      JHHSTY,
@@ -2511,6 +2514,8 @@ C===================== CTEM ============================================ \
 
       RUN_MODEL=.TRUE.
       MET_REWOUND=.FALSE.
+
+200   CONTINUE !TEST
 
 C     START UP THE MAIN MODEL LOOP
       
@@ -5040,7 +5045,7 @@ C                WRITE TO FILE .CT01Y_M
      2                  LITRMASSROW(I,M,J),SOILCMASROW(I,M,J),
      3                  ANNPPVEG_M(I,M,J),ANNGPPVEG_M(I,M,J),
      4                  ANNNEPVEG_M(I,M,J),'TILE',M,'PFT',J
-               ENDIF  ! IF (FCANCMXROW(I,M,J) .GT.0.0) THEN
+               ENDIF  ! FCANCMXROW > 0
 C
                LAIMAXG_M(I,M)=LAIMAXG_M(I,M)+
      &                  LAIMAXGVEG_M(I,M,J)*FCANCMXROW(I,M,J)
@@ -5934,9 +5939,6 @@ C      CHECK IF THE MODEL IS DONE RUNNING.
 
           IF (CYCLEMET .AND. CLIMIYEAR .GE. METCYCENDYR) THEN
 
-C         THE 999 LABEL BELOW IS HIT WHEN AN INPUT FILE REACHES ITS END.       
-999       CONTINUE
-
             LOPCOUNT = LOPCOUNT+1           
 
              IF(LOPCOUNT.LE.CTEMLOOP)THEN
@@ -6062,6 +6064,38 @@ C     CLOSE THE INPUT FILES TOO
            
       CALL EXIT
 C
+C         THE 999 LABEL BELOW IS HIT WHEN AN INPUT FILE REACHES ITS END.       
+999       CONTINUE
+
+            LOPCOUNT = LOPCOUNT+1           
+
+             IF(LOPCOUNT.LE.CTEMLOOP)THEN
+
+              REWIND(51)   ! REWIND MET FILE
+              MET_REWOUND = .TRUE.
+              IYEAR=-9999
+
+               IF(POPDON) THEN
+                 REWIND(91) !REWIND POPD FILE
+               ENDIF
+               IF(CO2ON) THEN
+                 REWIND(99) !REWIND CO2 FILE
+               ENDIF
+
+             ELSE
+
+              RUN_MODEL = .FALSE.
+
+             ENDIF
+
+C     RETURN TO THE TIME STEPPING LOOP
+      IF (RUN_MODEL) THEN
+         GOTO 200
+      ELSE
+         CALL EXIT
+      END IF
+C ============================= CTEM =========================/
+
       END
 
       INTEGER FUNCTION STRLEN(ST)
@@ -6074,6 +6108,3 @@ C
       STRLEN = I
       RETURN
       END
-C
-C ============================= CTEM =========================/
-C

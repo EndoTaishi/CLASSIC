@@ -42,13 +42,13 @@ export PGIMACH=linux86-64
 %.mod : %.f90
 	$(FC) $(FFLAGS) -c $< -mod $@
 
-CLASS36CTEM: $(OBJ)
-	 $(FC) $(FFLAGS) -o $(BDIR)/CLASS36CTEM $(OBJ)
+CLASS36CTEM_test: $(OBJ)
+	 $(FC) $(FFLAGS) -o $(BDIR)/CLASS36CTEM_test $(OBJ)
 
 .PHONY: clean
 
 clean:
-	rm -f *.o *.mod *~ core CLASS36CTEM
+	rm -f *.o *.mod *~ core CLASS36CTEM_test
 
 $(ODIR):
 	mkdir $(ODIR)	
