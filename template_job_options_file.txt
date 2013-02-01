@@ -1,5 +1,6 @@
 &joboptions
 
+ MOSAIC = .TRUE.,
  CTEMLOOP = 7 ,
  CTEM1 = .TRUE. ,
  CTEM2 = .TRUE. ,

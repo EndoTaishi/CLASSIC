@@ -1,4 +1,4 @@
-subroutine read_from_job_options(ARGBUFF,CTEMLOOP,CTEM1,CTEM2,NCYEAR,LNDUSEON,SPINFAST,CYCLEMET, &
+subroutine read_from_job_options(ARGBUFF,MOSAIC,CTEMLOOP,CTEM1,CTEM2,NCYEAR,LNDUSEON,SPINFAST,CYCLEMET, &
                   NUMMETCYLYRS,METCYLYRST,CO2ON,SETCO2CONC,POPDON,POPCYCLEYR, &
                   PARALLELRUN,DOFIRE,COMPETE,START_BARE,RSFILE,IDISP,IZREF,ISLFD,IPCP,ITC,ITCG, &
                   ITG,IWF,IPAI,IHGT,IALC,IALS,IALG,JHHSTD,JHHENDD,JDSTD, & 
@@ -24,6 +24,9 @@ implicit none
 ! CTEM Model Switches
 
 character(80), intent(out) :: ARGBUFF !prefix of file names
+
+logical, intent(out) :: MOSAIC   ! TRUE IF THE RUN IS IN MOSAIC MODE, OTHERWISE IT
+                                 ! IS A COMPOSITE RUN
 
 integer, intent(out) :: CTEMLOOP ! NO. OF TIMES THE .MET FILE IS TO BE READ. THIS
                     	         ! OPTION IS USEFUL TO SEE HOW CTEM's C POOLS
@@ -170,6 +173,7 @@ integer, intent(out) :: JDENDY    ! SIMULATION YEAR (IYEAR) TO STOP WRITING THE 
 ! -------------
 
 namelist /joboptions/ &
+  MOSAIC,             &
   CTEMLOOP,           &
   CTEM1,              &
   CTEM2,              &
