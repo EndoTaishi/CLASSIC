@@ -2530,7 +2530,7 @@ C===================== CTEM ============================================ \
       RUN_MODEL=.TRUE.
       MET_REWOUND=.FALSE.
 
-200   CONTINUE !TEST
+200   CONTINUE
 
 C     START UP THE MAIN MODEL LOOP
       
