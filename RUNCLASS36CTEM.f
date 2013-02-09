@@ -2028,6 +2028,19 @@ C
           TBARROW(I,M,3)=TBARROW(I,M,3)+TFREZ
           TSNOROW(I,M)=TSNOROW(I,M)+TFREZ
           TCANROW(I,M)=TCANROW(I,M)+TFREZ
+
+C         FLAG! TEMP FIX. ON RESTART A SMALL NUMBER OF CELLS (<10) WILL HAVE
+C         A RELATIVELY LARGE DIFFERENCE BETWEEN THE CANOPY TEMP AND SNOW TEMP
+C         THIS WILL CAUSE THE MODEL TO FAIL RIGHT AWAY. TO PREVENT THIS CHECK
+C         IF THE CANOPY TEMP IS WITHIN 5 DEGREES OF THE SNOW TEMP (IF THERE IS
+C         SNOW), AND IF SO THEN OVERWRITE THE TCAN WITH 1 DEGREE COLDER THAN THE SNOW TEMP.
+C         JM FEB 5 2013
+          IF (SNOROW(I,M) .GT. 0.0) then
+           IF ( ABS(TCANROW(I,M)-TSNOROW(I,M)) .GT. 5. ) THEN
+              TCANROW(I,M)=TSNOROW(I,M) - 0.5
+           ENDIF
+          ENDIF
+ 
           TPNDROW(I,M)=TPNDROW(I,M)+TFREZ
           TBASROW(I,M)=TBARROW(I,M,3)
           CMAIROW(I,M)=0.
@@ -6119,6 +6132,77 @@ C     RETURN TO THE TIME STEPPING LOOP
       IF (RUN_MODEL) THEN
          GOTO 200
       ELSE
+
+C     CLOSE THE OUTPUT FILES
+C
+      IF (.NOT. PARALLELRUN) THEN
+C       FIRST ANY CLASS OUTPUT FILES
+        CLOSE(61)
+        CLOSE(62)
+        CLOSE(63)
+        CLOSE(64)
+        CLOSE(65)
+        CLOSE(66)
+        CLOSE(67)
+        CLOSE(68)
+        CLOSE(69)
+        CLOSE(611)
+        CLOSE(621)
+        CLOSE(631)
+        CLOSE(641)
+        CLOSE(651)
+        CLOSE(661)
+        CLOSE(671)
+        CLOSE(681)
+        CLOSE(691)
+C       THEN CTEM ONES
+        CLOSE(71)
+        CLOSE(711)
+        CLOSE(72)
+        CLOSE(721)
+        CLOSE(73)
+        CLOSE(731)
+        CLOSE(74)
+        CLOSE(741)
+        CLOSE(75)
+        CLOSE(751)
+        CLOSE(76)
+C
+        IF (COMPETE .OR. LNDUSEON) THEN
+          CLOSE(761)
+        ENDIF
+C
+       IF (DOFIRE) THEN
+        CLOSE(78)
+        CLOSE(781)
+       ENDIF
+      ENDIF ! IF (.NOT. PARALLELRUN) 
+C
+C     CLOSE CLASS OUTPUT FILES      
+      CLOSE(81)
+      CLOSE(82)
+      CLOSE(83)
+C
+C     THEN CTEM ONES
+      CLOSE(84)
+      IF (DOFIRE) THEN
+       CLOSE(85)
+       CLOSE(87)
+      ENDIF
+      CLOSE(86)
+C
+      IF (COMPETE .OR. LNDUSEON) THEN
+       CLOSE(88)
+       CLOSE(89)
+      ENDIF
+C
+C     CLOSE THE INPUT FILES TOO
+      CLOSE(50)
+      CLOSE(70)
+      CLOSE(51)
+      CLOSE(91)
+      CLOSE(99)
+
          CALL EXIT
       END IF
 C ============================= CTEM =========================/
