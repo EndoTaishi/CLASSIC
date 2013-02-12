@@ -76,11 +76,11 @@ INTEGER :: K2,K1,STRLEN
 
         ! OPEN THE LUC FILE
 
-        OPEN(UNIT=90,FILE=LUCDAT(1:STRLEN(LUCDAT))//'.LUC')
+        OPEN(UNIT=15,FILE=LUCDAT(1:STRLEN(LUCDAT))//'.LUC')
 
-        READ (90,*) 
-        READ (90,*)
-        READ (90,*)
+        READ (15,*) 
+        READ (15,*)
+        READ (15,*)
 
 !       GET FIRST YEAR OF LUC DATA
 !       NOTE WE LOAD THE NFCANCMX, NOT PFCANCMX ARRAY. THIS IS BECAUSE THIS
@@ -89,9 +89,9 @@ INTEGER :: K2,K1,STRLEN
 
         DO I = 1, NLTEST
          IF (.NOT. MOSAIC) THEN  !COMPOSITE
-           READ (90,*) LUCYR,(NFCANCMXROW(I,1,J),J=1,ICC)
+           READ (15,*) LUCYR,(NFCANCMXROW(I,1,J),J=1,ICC)
          ELSE                    !MOSAIC
-           READ (90,*) LUCYR,(TEMPARRAY(J),J=1,ICC)
+           READ (15,*) LUCYR,(TEMPARRAY(J),J=1,ICC)
            DO M = 1, NMTEST-1 !AS NMTEST-1 = ICC
              J = M
              NFCANCMXROW(I,M,J) = TEMPARRAY(M)
@@ -114,9 +114,9 @@ INTEGER :: K2,K1,STRLEN
 !           GET THE LUC DATA
             DO I = 1, NLTEST
              IF (.NOT. MOSAIC) THEN  !COMPOSITE
-               READ (90,*,END=999) LUCYR,(NFCANCMXROW(I,1,J),J=1,ICC)
+               READ (15,*,END=999) LUCYR,(NFCANCMXROW(I,1,J),J=1,ICC)
              ELSE                    !MOSAIC
-               READ (90,*,END=999) LUCYR,(TEMPARRAY(J),J=1,ICC)
+               READ (15,*,END=999) LUCYR,(TEMPARRAY(J),J=1,ICC)
                DO M = 1, NMTEST-1 !NMTEST-1 SAME AS ICC
                 J = M
                 NFCANCMXROW(I,M,J) = TEMPARRAY(M) 
@@ -199,9 +199,11 @@ INTEGER :: K2,K1,STRLEN
            DO M = 1, NMTEST
             IF (.NOT. MOSAIC) THEN  !COMPOSITE 
              FCANCMXROW(I,M,J)=NFCANCMXROW(I,M,J)
-            ENDIF !MOSAIC
+             PFCANCMXROW(I,M,J)=NFCANCMXROW(I,M,J)
+            ELSE !MOSAIC
 !            ENSURE THAT THE FRACTION IS >= SEED
              PFCANCMXROW(I,M,J)=MAX(SEED,NFCANCMXROW(I,M,J))
+            ENDIF
            ENDDO
           ENDDO
         ENDDO
@@ -209,7 +211,7 @@ INTEGER :: K2,K1,STRLEN
 !       BACK UP ONE YEAR IN THE LUC FILE 
 
         DO I = 1, NLTEST
-           BACKSPACE(90)  
+           BACKSPACE(15)  
         ENDDO
 
 RETURN
@@ -217,7 +219,7 @@ RETURN
 999    CONTINUE
   
 ! END OF THE LUC FILE IS REACHED. CLOSE AND TELL MAIN PROGRAM TO EXIT
-        CLOSE(90)
+        CLOSE(15)
         REACH_EOF = .TRUE.
 
 END SUBROUTINE INITIALIZE_LUC
@@ -268,9 +270,9 @@ REAL :: BARE_GROUND_FRAC
          DO WHILE (LUCYR <= IYEAR) 
            DO I = 1, NLTEST
             IF (.NOT. MOSAIC) THEN  !COMPOSITE
-              READ (90,*,END=999) LUCYR,(NFCANCMXROW(I,1,J),J=1,ICC)
+              READ (15,*,END=999) LUCYR,(NFCANCMXROW(I,1,J),J=1,ICC)
             ELSE                    !MOSAIC
-              READ (90,*,END=999) LUCYR,(TEMPARRAY(J),J=1,ICC)
+              READ (15,*,END=999) LUCYR,(TEMPARRAY(J),J=1,ICC)
               DO M = 1, NMTEST-1    !NMTEST-1 SAME AS ICC
                J = M
                NFCANCMXROW(I,M,J) = MAX(SEED,TEMPARRAY(M)) 
@@ -278,7 +280,7 @@ REAL :: BARE_GROUND_FRAC
             ENDIF
            ENDDO !NLTEST
          ENDDO !LUCYR<IYEAR
-
+  
 !       (RE)FIND THE BARE FRACTION FOR FAREROW(I,ICC+1)
          IF (MOSAIC) THEN
           DO I = 1, NLTEST
@@ -307,7 +309,7 @@ RETURN
 999 CONTINUE
 
 ! END OF THE LUC FILE IS REACHED. CLOSE AND TELL MAIN PROGRAM TO EXIT
-        CLOSE(90)
+        CLOSE(15)
         REACH_EOF = .TRUE.
 
 END SUBROUTINE READIN_LUC
