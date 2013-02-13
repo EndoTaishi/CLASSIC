@@ -158,6 +158,7 @@ c  FIRST APPROXIMATION TO ILMO
         ILMO(J)=RIB(J)*FM(J)*FM(J)/(ZP*FH(J))
       ENDIF
       ENDDO
+
 c - - - - - - - - -  BEGINNING OF ITERATION LOOP - - - - - - - - - - - 
       DO 35 IT=1,ITMAX
       DO 35 J=IL1,IL2
