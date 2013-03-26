@@ -308,7 +308,7 @@ C     VALUES ARE MAINLY DERIVED FROM KATTHE ET AL. 2009 WHICH
 C     DOESN'T INCLUDE C4
       DATA VMAX/35.0E-06,  40.0E-06, 0.00E-06,
      &          51.0E-06,  67.0E-06, 40.0E-06,
-     &          100.0E-06, 40.0E-06, 0.00E-06,
+     &          55.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
 
 C     NEEDLE LEAF |  EVG       DCD       ---

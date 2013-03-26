@@ -85,13 +85,15 @@ C
 C     LITTER RESPIRATION RATES AT 15 C IN IN KG C/KG C.Year 
       DATA BSRATELT/0.4453, 0.5986, 0.0000,
      &              0.6339, 0.7576, 0.6957,
-     &              0.4020, 0.4020, 0.0000,
+C     &              0.4020, 0.4020, 0.0000,
+     &              0.6000, 0.6000, 0.0000,
      &              0.5260, 0.5260, 0.0000/ 
 C
 C     SOIL CARBON RESPIRATION RATES AT 15 C IN KG C/KG C.YEAR
       DATA BSRATESC/0.0260, 0.0260, 0.0000, 
      &              0.0208, 0.0208, 0.0208,
-     &              0.0310, 0.0310, 0.0000,
+C     &              0.0310, 0.0310, 0.0000,
+     &              0.0350, 0.0350, 0.0000, 
      &              0.0125, 0.0125, 0.0000/ 
 C
 C     PARAMETER DETERMINING AVERAGE CARBON PROFILE, SAME AS IN BIO2STR F0R
