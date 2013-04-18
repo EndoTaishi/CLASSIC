@@ -1,0 +1,11 @@
+The following are known issues/bugs with the offline version of CLASS coupled to CTEM.
+Please put the date the bug was noted and your name when you add the comment. If you fix the bug/issue
+please remove the bug from this list.
+
+1. CLASS output file '.OF1M_G' will occassionally produce an output that is 'NaNQ'. This comes from the EVAP variable. From what we can tell, it does not cause a problem for the model run. It appears to be just an output issue. JM. Apr 2 2013.
+
+2. The model produces far too much snow for certain locations (generally 75_45, 73_46, and 72_46 on the T47grid). These sites effectively build glaciers when the model is forced with the CRU-NCEP MET forcings. JM Apr 2 2013
+
+3. The CLASS canopy temperature is prone to fluctuations that make its use problematic. The difference between the air and canopy temperature can easily surpass 30 deg C. We have not been able to get this fixed. JM Apr 2 2013
+
+4.  
