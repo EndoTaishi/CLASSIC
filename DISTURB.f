@@ -234,15 +234,15 @@ C     FLAG TRY HAVING A PFT-DEPENDENT MAX SPREAD RATE
 C     OLD:
 c     DATA MAXSPRD/0.45/
 C     LI ET AL. VALUES:
-C     DATA MAXSPRD/0.54, 0.54, 0.00,
-C     &             0.40, 0.40, 0.40,
-C     &             0.00, 0.00, 0.00,
-C     &             0.72, 0.72, 0.00/
-C     FLAG TESTING:
-      DATA MAXSPRD/0.32, 0.32, 0.00,
-     &             0.22, 0.22, 0.22,
+      DATA MAXSPRD/0.54, 0.54, 0.00,
+     &             0.40, 0.40, 0.40,
      &             0.00, 0.00, 0.00,
-     &             0.40, 0.40, 0.00/
+     &             0.72, 0.72, 0.00/
+C     FLAG TESTING:
+C      DATA MAXSPRD/0.32, 0.32, 0.00,
+C     &             0.22, 0.22, 0.22,
+C     &             0.00, 0.00, 0.00,
+C     &             0.40, 0.40, 0.00/
 
 C     FRACTION OF LEAF BIOMASS CONVERTED TO GASES DUE TO COMBUSTION
       DATA FRCO2LF/0.70, 0.70, 0.00,
@@ -594,7 +594,7 @@ C     FIRE DUE TO MOISTURE.
 C
       DO 380 I = IL1, IL2
         IF(FCSUM(I).GT.ZERO)THEN
-C          MTERM(I)=EXP( -1.0*PI*(AVGDRYNS(I)/EXTNMOIS)**2 )
+C          MTERM(I)=EXP( -1.0*PI*(AVGDRYNS(I)/EXTNMOIS)**2 ) !OLD VERSION assumedly changed by Vivek? JM Jun13 2013.
           MTERM(I)=1.0-TANH((1.75*AVGDRYNS(I)/EXTNMOIS)**2)
         ELSE
           MTERM(I)=0.0   !NO FIRE LIKELIHOOD DUE TO MOISTURE IF NO VEGETATION
@@ -636,8 +636,10 @@ C     READ-IN FILE
 400   CONTINUE
 C
 C     MULTIPLY THE BTERM, MTERM, AND THE LTERM TO FIND PROBABILITY OF
-C     FIRE. ALSO GENERATE A RANDOM NUMBER TO SEE IF WE ARE GOING TO
-C     START A FIRE OR NOT.
+C     FIRE.
+
+C     ALSO GENERATE A RANDOM NUMBER TO SEE IF WE ARE GOING TO
+C     START A FIRE OR NOT. --Not needed. JM Jun13 2013
 C
       DO 420 I = IL1, IL2
         PROBFIRE(I)=BTERM(I)*MTERM(I)*LTERM(I)
@@ -695,7 +697,7 @@ C         OLD:
 C          SPRDRATE(I)=MAXSPRD* SMFUNC(I)* WNDFUNC(I)
 C         NEW:
       DO 435 J = 1, ICC
-            N = SORT(J)
+            N = SORT(J)  
           SPRDRATE(I)=SPRDRATE(I) + MAXSPRD(N) * SMFUNC(I)
      &                          * WNDFUNC(I) * FCANCMX(I,J)
 435     CONTINUE
