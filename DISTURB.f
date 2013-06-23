@@ -234,15 +234,15 @@ C     FLAG TRY HAVING A PFT-DEPENDENT MAX SPREAD RATE
 C     OLD:
 c     DATA MAXSPRD/0.45/
 C     LI ET AL. VALUES:
-      DATA MAXSPRD/0.54, 0.54, 0.00,
-     &             0.40, 0.40, 0.40,
+C      DATA MAXSPRD/0.54, 0.54, 0.00,
+C     &             0.40, 0.40, 0.40,
+C     &             0.00, 0.00, 0.00,
+C     &             0.72, 0.72, 0.00/
+C     FLAG TESTING:
+      DATA MAXSPRD/0.54, 0.32, 0.00,
+     &             0.22, 0.22, 0.22,
      &             0.00, 0.00, 0.00,
      &             0.72, 0.72, 0.00/
-C     FLAG TESTING:
-C      DATA MAXSPRD/0.32, 0.32, 0.00,
-C     &             0.22, 0.22, 0.22,
-C     &             0.00, 0.00, 0.00,
-C     &             0.40, 0.40, 0.00/
 
 C     FRACTION OF LEAF BIOMASS CONVERTED TO GASES DUE TO COMBUSTION
       DATA FRCO2LF/0.70, 0.70, 0.00,

@@ -53,7 +53,10 @@ C     * THE PRODUCT OF THE FIRST TWO DIMENSION ELEMENTS IN THE
 C     * "ROW" VARIABLES.
 
 C     USE STATEMENTS FOR MODULES:
+      USE CTEM_PARAMS,        ONLY : NLAT, NMOS, ILG, NMON, ICAN, IGND,
+     1                               ICP1, ICC, ICCP1
       USE LANDUSE_CHANGE,     ONLY : INITIALIZE_LUC, READIN_LUC, SEED
+      
 C
       IMPLICIT NONE
 C
@@ -61,8 +64,8 @@ C     * INTEGER CONSTANTS.
 
 C     JM EDIT: CHANGED NLAT TO 1.
 
-      INTEGER,PARAMETER :: NLAT=1,NMOS=10,ILG=NLAT*NMOS,NMON=12
-      INTEGER,PARAMETER :: ICAN=4,IGND=3,ICP1=ICAN+1
+c      INTEGER,PARAMETER :: NLAT=1,NMOS=10,ILG=NLAT*NMOS,NMON=12
+c      INTEGER,PARAMETER :: ICAN=4,IGND=3,ICP1=ICAN+1
 C
       INTEGER IDISP,IZREF,ISLFD,IPCP,IWF,IPAI,IHGT,IALC,
      1        IALS,IALG,N,ITG,ITC,ITCG
@@ -394,9 +397,10 @@ C
       LOGICAL CYCLEMET, DOFIRE, RUN_MODEL, MET_REWOUND
       LOGICAL REACH_EOF
 C
-      LOGICAL    COMPETE, START_BARE, RSFILE, LNDUSEON, CO2ON, POPDON
+      LOGICAL    COMPETE, START_BARE, RSFILE, LNDUSEON, CO2ON, POPDON,
+     1           INIBIOCLIM
 C
-       INTEGER,PARAMETER :: ICC=9, ICCP1=ICC+1
+c       INTEGER,PARAMETER :: ICC=9, ICCP1=ICC+1
 
        INTEGER   LOPCOUNT,  ISUMC,   NOL2PFTS(4), L2MAX,  
      1           K1C,       K2C,     IYD,         JHHSTD,
@@ -776,12 +780,23 @@ C
      2      ALTOT_GAT,  FSSTAR_GAT, FLSTAR_GAT,
      3      NETRAD_GAT(ILG),  PREACC_GAT(ILG)
 C
-       REAL TCURMGAT(ILG),    SRPCURYRGAT(ILG), DFTCURYRGAT(ILG),
-     1      TMONTHGAT(12,ILG),ANPCPCURGAT(ILG), ANPECURGAT(ILG),
-     2      GDD5CURGAT(ILG),  SURMNCURGAT(ILG), DEFMNCURGAT(ILG),
-     3      SRPLSCURGAT(ILG), DEFCTCURGAT(ILG)     
-C
-       LOGICAL INIBOCLM
+       REAL TCURM(ILG),       SRPCURYR   (ILG), DFTCURYR(ILG),
+     1      TMONTH(12,ILG),      ANPCPCUR(ILG),  ANPECUR(ILG),
+     2      GDD5CUR(ILG),        SURMNCUR(ILG), DEFMNCUR(ILG),
+     3      SRPLSCUR(ILG),       DEFCTCUR(ILG)
+  
+       REAL, DIMENSION(ILG) :: TWARMM    ! TEMPERATURE OF THE WARMEST MONTH (C)
+       REAL, DIMENSION(ILG) :: TCOLDM    ! TEMPERATURE OF THE COLDEST MONTH (C)
+       REAL, DIMENSION(ILG) :: GDD5      ! GROWING DEGREE DAYS ABOVE 5 C
+       REAL, DIMENSION(ILG) :: ARIDITY   ! ARIDITY INDEX, RATIO OF POTENTIAL EVAPORATION TO PRECIPITATION
+       REAL, DIMENSION(ILG) :: SRPLSMON  ! NUMBER OF MONTHS IN A YEAR WITH SURPLUS WATER I.E.
+                                                  !  PRECIPITATION MORE THAN POTENTIAL EVAPORATION
+       REAL, DIMENSION(ILG) :: DEFCTMON  ! NUMBER OF MONTHS IN A YEAR WITH WATER DEFICIT I.E.
+                                                  ! PRECIPITATION LESS THAN POTENTIAL EVAPORATION
+       REAL, DIMENSION(ILG) :: ANNDEFCT  ! ANNUAL WATER DEFICIT (MM) 
+       REAL, DIMENSION(ILG) :: ANNSRPLS  ! ANNUAL WATER SURPLUS (MM)
+       REAL, DIMENSION(ILG) :: ANNPCP    ! ANNUAL PRECIPITATION (MM)
+       REAL, DIMENSION(ILG) :: ANPOTEVP  ! ANNUAL POTENTIAL EVAPORATION (MM)
 C
        REAL LYGLFMASGAT(ILG,ICC),   GEREMORTGAT(ILG,ICC),
      1      INTRMORTGAT(ILG,ICC),     LAMBDAGAT(ILG,ICC),
@@ -832,10 +847,10 @@ C     ALL MODEL SWITCHES ARE READ IN FROM A NAMELIST FILE
       CALL read_from_job_options(ARGBUFF,MOSAIC,CTEMLOOP,CTEM1,CTEM2,
      1             NCYEAR,LNDUSEON,SPINFAST,CYCLEMET,NUMMETCYLYRS,
      2             METCYLYRST,CO2ON,SETCO2CONC,POPDON,POPCYCLEYR,
-     3             PARALLELRUN,DOFIRE,COMPETE,START_BARE,RSFILE,IDISP,
-     4             IZREF,ISLFD,IPCP,ITC,ITCG,ITG,IWF,IPAI,IHGT,IALC,
-     5             IALS,IALG,JHHSTD,JHHENDD,JDSTD,JDENDD,JHHSTY,
-     6             JHHENDY,JDSTY,JDENDY)
+     3             PARALLELRUN,DOFIRE,COMPETE,INIBIOCLIM,START_BARE,
+     4             RSFILE,IDISP,IZREF,ISLFD,IPCP,ITC,ITCG,ITG,IWF,IPAI,
+     5             IHGT,IALC,IALS,IALG,JHHSTD,JHHENDD,JDSTD,JDENDD,
+     6             JHHSTY,JHHENDY,JDSTY,JDENDY)
 C
 C     SET ICTEMOD, WHICH IS THE CLASS SWITCH FOR COUPLING TO CTEM
 C     EITHER TO 1 (CTEM IS COUPLED TO CLASS) OR 0 (CLASS RUNS ALONE)
@@ -1870,6 +1885,13 @@ C
          READ(11,*) EXTNPROBGRD(I)
          READ(11,*) PRBFRHUCGRD(I)
          READ(11,*) STDALNGRD(I)
+
+         IF (COMPETE .AND. INIBIOCLIM) THEN  !READ IN THE BIOCLIMATIC PARAMETERS
+          READ(11,*) TWARMM(I), TCOLDM(I), GDD5(I), ARIDITY(I),
+     1              SRPLSMON(I)
+          READ(11,*) DEFCTMON(I), ANNDEFCT(I), ANNSRPLS(I), 
+     1              ANNPCP(I), ANPOTEVP(I)
+         ENDIF
 
 71    CONTINUE
       CLOSE(11)
@@ -3339,11 +3361,13 @@ C    -------------- INPUTS USED BY CTEM ARE ABOVE THIS LINE ---------
      H            GAVGLTMSGAT, GAVGSCMSGAT, STMHRLOSGAT,     SLAIGAT,
      I             BMASVEGGAT, CMASVEGCGAT,  COLDDAYSGAT, ROTHRLOSGAT,
      J                FCANGAT,  ALVSCTMGAT,   ALIRCTMGAT,  GAVGLAIGAT,
-     &               TCURMGAT, SRPCURYRGAT,  DFTCURYRGAT,    INIBOCLM,
-     &              TMONTHGAT, ANPCPCURGAT,   ANPECURGAT,  GDD5CURGAT,
-     &            SURMNCURGAT, DEFMNCURGAT,  SRPLSCURGAT, DEFCTCURGAT,
-     &            GEREMORTGAT, INTRMORTGAT,   LAMBDAGAT,  LYGLFMASGAT,
-     &            PFTEXISTGAT,
+     &                  TCURM,    SRPCURYR,     DFTCURYR,  INIBIOCLIM,
+     &                 TMONTH,    ANPCPCUR,      ANPECUR,     GDD5CUR,
+     &               SURMNCUR,    DEFMNCUR,     SRPLSCUR,    DEFCTCUR,
+     &            GEREMORTGAT, INTRMORTGAT,    LAMBDAGAT, LYGLFMASGAT,
+     &            PFTEXISTGAT,      TWARMM,       TCOLDM,        GDD5,
+     1                ARIDITY,    SRPLSMON,     DEFCTMON,    ANNDEFCT,
+     2               ANNSRPLS,      ANNPCP,     ANPOTEVP,
 C    -------------- INPUTS UPDATED BY CTEM ARE ABOVE THIS LINE ------
      K                 NPPGAT,      NEPGAT, HETRORESGAT, AUTORESGAT,
      L            SOILRESPGAT,       RMGAT,       RGGAT,      NBPGAT,
@@ -3354,7 +3378,7 @@ C    -------------- INPUTS UPDATED BY CTEM ARE ABOVE THIS LINE ------
      Q             AFRLEAFGAT,  AFRSTEMGAT,  AFRROOTGAT, WTSTATUSGAT,
      R            LTSTATUSGAT, BURNFRACGAT, PROBFIREGAT, LUCEMCOMGAT,
      S            LUCLTRINGAT, LUCSOCINGAT,   NPPVEGGAT, GRCLAREAGAT,
-     T            DSTCEMLS3GAT,PAICGAT,  SLAICGAT,
+     T            DSTCEMLS3GAT,    PAICGAT,    SLAICGAT,
      U            EMIT_CO2GAT,  EMIT_COGAT,  EMIT_CH4GAT, EMIT_NMHCGAT,
      V             EMIT_H2GAT, EMIT_NOXGAT,  EMIT_N2OGAT, EMIT_PM25GAT,
      W            EMIT_TPMGAT,  EMIT_TCGAT,   EMIT_OCGAT,   EMIT_BCGAT,
@@ -3757,20 +3781,20 @@ C===================== CTEM =====================================/
           WRITE(64,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,
      1                   SNOMLT,BEG,GTOUT,SNOROW(I,M),RHOSROW(I,M),
      2                   WSNOROW(I,M),ALTOT,ROFROW(I,M),
-     3                   TPN,ZPNDROW(I,M),CANRESROW(I,M),'TILE',M
+     3                   TPN,ZPNDROW(I,M),CANRESROW(I,M),'TILE ',M
           IF(IGND.GT.3) THEN
 C===================== CTEM =====================================\
               WRITE(65,6500) IHOUR,IMIN,IDAY,IYEAR,(TBARROW(I,M,J)-
      1                   TFREZ,THLQROW(I,M,J),THICROW(I,M,J),J=1,3),
-     2                   TCN,RCANROW(I,M),SCANROW(I,M),TSN,ZSN,'TILE',M
+     2                   TCN,RCANROW(I,M),SCANROW(I,M),TSN,ZSN,'TILE ',M
               WRITE(66,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROW(I,M,J)-
      1                   TFREZ,THLQROW(I,M,J),THICROW(I,M,J),J=4,10),
      2                   (GFLXROW(I,M,J),J=1,10),
-     3                   'TILE',M
+     3                   'TILE ',M
           ELSE
               WRITE(65,6500) IHOUR,IMIN,IDAY,IYEAR,(TBARROW(I,M,J)-
      1                   TFREZ,THLQROW(I,M,J),THICROW(I,M,J),J=1,3),
-     2                   TCN,RCANROW(I,M),SCANROW(I,M),TSN,ZSN,'TILE',M
+     2                   TCN,RCANROW(I,M),SCANROW(I,M),TSN,ZSN,'TILE ',M
 C===================== CTEM =====================================/
           ENDIF
 C
@@ -3778,7 +3802,7 @@ C
      1                   TROFROW(I,M),TROOROW(I,M),TROSROW(I,M),
      2                   TROBROW(I,M),ROFROW(I,M),ROFOROW(I,M),
      3                   ROFSROW(I,M),ROFBROW(I,M),
-     4                   FCS(M),FGS(M),FC(M),FG(M),'TILE',M
+     4                   FCS(M),FGS(M),FC(M),FG(M),'TILE ',M
           WRITE(68,6800) IHOUR,IMIN,IDAY,IYEAR,                    
      1                   FSGVROW(I,M),FSGSROW(I,M),FSGGROW(I,M),
      2                   FLGVROW(I,M),FLGSROW(I,M),FLGGROW(I,M),
@@ -3787,14 +3811,14 @@ C
      5                   HMFCROW(I,M),HMFNROW(I,M),
      6                   (HMFGROW(I,M,J),J=1,3),
      7                   HTCCROW(I,M),HTCSROW(I,M),
-     8                   (HTCROW(I,M,J),J=1,3),'TILE',M
+     8                   (HTCROW(I,M,J),J=1,3),'TILE ',M
           WRITE(69,6900) IHOUR,IMIN,IDAY,IYEAR,                   
      1                   PCFCROW(I,M),PCLCROW(I,M),PCPNROW(I,M),
      2                   PCPGROW(I,M),QFCFROW(I,M),QFCLROW(I,M),
      3                   QFNROW(I,M),QFGROW(I,M),(QFCROW(I,M,J),J=1,3),
      4                   ROFCROW(I,M),ROFNROW(I,M),ROFOROW(I,M),
      5                   ROFROW(I,M),WTRCROW(I,M),WTRSROW(I,M),
-     6                   WTRGROW(I,M),'TILE',M
+     6                   WTRGROW(I,M),'TILE ',M
 C===================== CTEM =====================================\
 C
           ENDIF ! IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND))
@@ -3823,7 +3847,7 @@ C
               IYD=IYEAR*1000+IDAY                  
               IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND)) THEN 
               WRITE(71,7200)IHOUR,IMIN,IDAY,(ANVEGROW(I,M,J),J=1,ICC),
-     1                    (RMLVEGROW(I,M,J),J=1,ICC),'TILE',M
+     1                    (RMLVEGROW(I,M,J),J=1,ICC),'TILE ',M
               ENDIF
           ENDIF  ! IF(CTEM1) 
 C
@@ -4426,23 +4450,23 @@ C         WRITE TO OUTPUT FILES
 C
           WRITE(611,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,
      1                    BEG,GTOUT,SNOACC_M(I,M),RHOSACC_M(I,M),
-     2                    WSNOACC_M(I,M),ALTOT,ROFACC_M(I,M),'TILE',M
+     2                    WSNOACC_M(I,M),ALTOT,ROFACC_M(I,M),'TILE ',M
             IF(IGND.GT.3) THEN
                WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
      1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,5),
-     2                  'TILE',M
+     2                  'TILE ',M
                WRITE(631,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
      1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=6,10),
-     2                  'TILE',M
+     2                  'TILE ',M
             ELSE
                WRITE(621,6200) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
      1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,3),
      2                  TCN,RCANACC_M(I,M),SCANACC_M(I,M),TSN,ZSN,
-     3                  'TILE',M
+     3                  'TILE ',M
                WRITE(631,6300) IDAY,IYEAR,FSINACC_M(I,M),FLINACC_M(I,M),
      1                  TAACC_M(I,M)-TFREZ,UVACC_M(I,M),PRESACC_M(I,M),
      2                  QAACC_M(I,M),PREACC_M(I,M),EVAPACC_M(I,M),
-     3                  'TILE',M 
+     3                  'TILE ',M 
             ENDIF
 C
            ENDIF ! IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND))
@@ -4865,7 +4889,7 @@ C
      1                NEPROW(I,M),NBPROW(I,M),AUTORESROW(I,M),
      2                HETRORESROW(I,M),LITRESROW(I,M),SOCRESROW(I,M),
      3                (DSTCEMLSROW(I,M)+DSTCEMLS3ROW(I,M)),
-     4                LITRFALLROW(I,M),HUMIFTRSROW(I,M),'TILE',M,'AVGE'
+     4                LITRFALLROW(I,M),HUMIFTRSROW(I,M),'TILE ',M,'AVGE'
 
 C             WRITE BREAKDOWN OF SOME OF BASIC FLUXES TO FILE *.CT3 
 C             AND SELECTED LITTER FLUXES FOR SELECTED PFT
@@ -4881,13 +4905,13 @@ C
 C                WRITE TO FILE .CT01D_M 
                  WRITE(72,8201)IDAY,IYEAR,GPPVEGROW(I,M,J),
      1           NPPVEGROW(I,M,J),NEPVEGROW(I,M,J),
-     2           'TILE',M,'PFT',J
+     2           'TILE ',M,'PFT',J
 
 C                WRITE TO FILE .CT02D_M 
                  WRITE(73,8300)IDAY,IYEAR,RMLVEGACCROW(I,M,J), 
      1           RMSVEGROW(I,M,J),RMRVEGROW(I,M,J),RGVEGROW(I,M,J),
      2           LEAFLITRROW(I,M,J),TLTRLEAFROW(I,M,J),
-     3           TLTRSTEMROW(I,M,J),TLTRROOTROW(I,M,J),'TILE',M,'PFT',J
+     3           TLTRSTEMROW(I,M,J),TLTRROOTROW(I,M,J),'TILE ',M,'PFT',J
 C
 C
 C                WRITE GRID-AVERAGED POOL SIZES AND COMPONENT SIZES FOR
@@ -4897,7 +4921,7 @@ C
      1               AILCGROW(I,M,J),GLEAFMASROW(I,M,J),
      3               BLEAFMASROW(I,M,J), STEMMASSROW(I,M,J),
      4               ROOTMASSROW(I,M,J), LITRMASSROW(I,M,J), 
-     5               SOILCMASROW(I,M,J),'TILE',M,'PFT',J
+     5               SOILCMASROW(I,M,J),'TILE ',M,'PFT',J
 C
 C                WRITE LAI, RMATCTEM, & STRUCTURAL ATTRIBUTES FOR SELECTED 
 C                PFT TO FILE *.CT04D_M
@@ -4905,7 +4929,7 @@ C
                  WRITE(75,8500)IDAY,IYEAR, AILCGROW(I,M,J), 
      1                AILCBROW(I,M,J),(RMATCTEMROW(I,M,J,K),K=1,3),
      2                VEGHGHTROW(I,M,J),ROOTDPTHROW(I,M,J),
-     3                ROOTTEMPROW(I,M,J),SLAIROW(I,M,J),'TILE',M,'PFT',J
+     3               ROOTTEMPROW(I,M,J),SLAIROW(I,M,J),'TILE ',M,'PFT',J
 C
 C                WRITE ALLOCATION FRACTIONS FOR SELECTED PFT TO 
 C                FILE *.CT05D_M
@@ -4913,7 +4937,7 @@ C
                  WRITE(76,8600)IDAY,IYEAR, AFRLEAFROW(I,M,J), 
      1                AFRSTEMROW(I,M,J),AFRROOTROW(I,M,J), 
      2                TCANOACCROW_OUT(I,M), LFSTATUSROW(I,M,J),
-     3                'TILE',M,'PFT',J
+     3                'TILE ',M,'PFT',J
 C
                 ENDIF  !IF (FCANCMXROW(I,M,J) .GT.0.0) THEN
 C
@@ -4923,24 +4947,24 @@ C
 C               WRITE TO FILE .CT02D_M 
                 WRITE(73,8300)IDAY,IYEAR,RMLROW(I,M),RMSROW(I,M),
      1          RMRROW(I,M),RGROW(I,M),LEAFLITR_M(I,M),TLTRLEAF_M(I,M),
-     2          TLTRSTEM_M(I,M),TLTRROOT_M(I,M),'TILE',M,'AVGE'
+     2          TLTRSTEM_M(I,M),TLTRROOT_M(I,M),'TILE ',M,'AVGE'
 C
 C               WRITE TO FILE .CT03D_M 
                 WRITE(74,8402)IDAY,IYEAR,VGBIOMASROW(I,M),
      1               GAVGLAIROW(I,M),GAVGLTMSROW(I,M),
-     2               GAVGSCMSROW(I,M),'TILE',M, 'AVGE'
+     2               GAVGSCMSROW(I,M),'TILE ',M, 'AVGE'
 C
 C               WRITE TO FILE .CT04D_M
                 WRITE(75,8500)IDAY,IYEAR,AILCG_M(I,M),
      1                AILCB_M(I,M),(RMATCTEM_M(I,M,K),K=1,3),
      2                VEGHGHT_M(I,M),ROOTDPTH_M(I,M),
-     3                ROOTTEMP_M(I,M),SLAI_M(I,M),'TILE',M, 'AVGE'
+     3                ROOTTEMP_M(I,M),SLAI_M(I,M),'TILE ',M, 'AVGE'
 C
 C               WRITE TO FILE .CT05D_M
                 WRITE(76,8601)IDAY,IYEAR, AFRLEAF_M(I,M), 
      1                AFRSTEM_M(I,M),AFRROOT_M(I,M), 
      2                TCANOACCROW_OUT(I,M), 
-     3                'TILE',M,'AVGE'
+     3                'TILE ',M,'AVGE'
               ENDIF !IF (IFCANCMX_M(I,M) .GT.0.0) THEN
 C
 C             WRITE FIRE AND LUC RESULTS TO FILE *.CT06D_M
@@ -4953,7 +4977,7 @@ C
      4          EMIT_TCROW(I,M),EMIT_OCROW(I,M),EMIT_BCROW(I,M),
      5          BURNFRACROW(I,M), PROBFIREROW(I,M),LUCEMCOMROW(I,M), 
      6          LUCLTRINROW(I,M), LUCSOCINROW(I,M),
-     7          GRCLAREAROW(I,M),'TILE',M
+     7          GRCLAREAROW(I,M),'TILE ',M
              ENDIF
 C
            ENDIF ! IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND))
@@ -5128,7 +5152,7 @@ C                WRITE TO FILE .CT01Y_M
      1                  STEMMASSROW(I,M,J),ROOTMASSROW(I,M,J), 
      2                  LITRMASSROW(I,M,J),SOILCMASROW(I,M,J),
      3                  ANNPPVEG_M(I,M,J),ANNGPPVEG_M(I,M,J),
-     4                  ANNNEPVEG_M(I,M,J),'TILE',M,'PFT',J
+     4                  ANNNEPVEG_M(I,M,J),'TILE ',M,'PFT',J
                ENDIF  ! FCANCMXROW > 0
 C
                LAIMAXG_M(I,M)=LAIMAXG_M(I,M)+
@@ -5152,30 +5176,30 @@ C              WRITE TO FILE .CT01Y_M
      2                 SOILCMAS_M(I,M),AVGYRNPP_M(I,M),
      3                 AVGYRGPP_M(I,M),AVGYRNEP_M(I,M),
      4                 AVGYRNBP_M(I,M),
-     5                 AVGYRLE_M(I,M),'TILE',M,'AVGE'
+     5                 AVGYRLE_M(I,M),'TILE ',M,'AVGE'
              ENDIF  !IF (IFCANCMX_M(I,M) .GT. 0) THEN
 C
 C
              WRITE(79,8710)'GLEAFMAS ',IYEAR, 
-     1                (GLEAFMASROW(I,M,J),J=1,ICC),'TILE',M
+     1                (GLEAFMASROW(I,M,J),J=1,ICC),'TILE ',M
              WRITE(79,8710)'BLEAFMAS ',IYEAR, 
-     1                (BLEAFMASROW(I,M,J),J=1,ICC),'TILE',M
+     1                (BLEAFMASROW(I,M,J),J=1,ICC),'TILE ',M
              WRITE(79,8710)'STEMMASS ',IYEAR, 
-     1                (STEMMASSROW(I,M,J),J=1,ICC),'TILE',M
+     1                (STEMMASSROW(I,M,J),J=1,ICC),'TILE ',M
              WRITE(79,8710)'ROOTMASS ',IYEAR, 
-     1                (ROOTMASSROW(I,M,J),J=1,ICC),'TILE',M
+     1                (ROOTMASSROW(I,M,J),J=1,ICC),'TILE ',M
              WRITE(79,8710)'LITRMASS ',IYEAR, 
-     1                (LITRMASSROW(I,M,J),J=1,ICC),'TILE',M
+     1                (LITRMASSROW(I,M,J),J=1,ICC),'TILE ',M
              WRITE(79,8710)'SOILCMAS ',IYEAR, 
-     1                (SOILCMASROW(I,M,J),J=1,ICC),'TILE',M
+     1                (SOILCMASROW(I,M,J),J=1,ICC),'TILE ',M
              WRITE(79,8710)'LAIMAXG  ',IYEAR, 
-     1                (LAIMAXGVEG_M(I,M,J),J=1,ICC),'TILE',M
+     1                (LAIMAXGVEG_M(I,M,J),J=1,ICC),'TILE ',M
              WRITE(79,8710)'ANNPPVEG ',IYEAR, 
-     1                (ANNPPVEG_M(I,M,J),J=1,ICC),'TILE',M
+     1                (ANNPPVEG_M(I,M,J),J=1,ICC),'TILE ',M
              WRITE(79,8720)'LFSTATUS ',IYEAR, 
-     1                (LFSTATUSROW(I,M,J),J=1,ICC),'TILE',M
+     1                (LFSTATUSROW(I,M,J),J=1,ICC),'TILE ',M
              WRITE(79,8720)'PANDAYS  ',IYEAR, 
-     1                (PANDAYSROW(I,M,J),J=1,ICC),'TILE',M
+     1                (PANDAYSROW(I,M,J),J=1,ICC),'TILE ',M
 C
              AVGYRNPP_M(I,M)=0.0
              AVGYRGPP_M(I,M)=0.0
@@ -5564,7 +5588,7 @@ C            WRITE TO FILE .CT01M_M (MOSAIC)
      3               AVGMNGPP_MN_M(I,M),AVGMNNEP_MN_M(I,M),
      4               AVGMNNBP_MN_M(I,M),HETRORES_MN_M(I,M),
      5               AUTORES_MN_M(I,M),LITRES_MN_M(I,M),
-     6               SOILRES_MN_M(I,M),'TILE',M
+     6               SOILRES_MN_M(I,M),'TILE ',M
               ENDIF
              ENDDO
             ENDIF
@@ -5591,7 +5615,7 @@ C            WRITE TO FILE .CT06M_M
      6               AVGMNE_BC_MN_M(I,M),AVGMN_PROBFIRE_MN_M(I,M),
      7               AVGMN_LUC_EMC_MN_M(I,M),AVGMN_LUCLTRIN_MN_M(I,M),
      8               AVGMN_LUCSOCIN_MN_M(I,M),AVGMN_BURNFRAC_MN_M(I,M),
-     9               'TILE',M
+     9               'TILE ',M
                ENDIF
               ENDDO
             ENDIF
@@ -5823,7 +5847,7 @@ C            WRITE TO FILE .CT01Y_M
      4            AVGYRGPP_YR_M(I,M),AVGYRNEP_YR_M(I,M),
      5            AVGYRNBP_YR_M(I,M),HETRORES_YR_M(I,M),
      6            AUTORES_YR_M(I,M),LITRES_YR_M(I,M),SOILRES_YR_M(I,M),
-     7            'TILE',M
+     7            'TILE ',M
              ENDIF
             ENDDO
            ELSE !COMPOSITE (JOE) !FLAG FLAG
@@ -5863,7 +5887,7 @@ C            WRITE TO FILE .CT06Y_M
      6            AVGYRE_BC_YR_M(I,M),AVGYR_PROBFIRE_YR_M(I,M),
      7            AVGYR_LUC_EMC_YR_M(I,M),AVGYR_LUCLTRIN_YR_M(I,M),
      8            AVGYR_LUCSOCIN_YR_M(I,M),AVGYR_BURNFRAC_YR_M(I,M),
-     9            'TILE',M
+     9            'TILE ',M
               ENDIF
              ENDDO
            ENDIF
@@ -5899,6 +5923,9 @@ C
                  ENDDO
                 WRITE(89,8107)IYEAR,(FCANCMXROW(I,1,J)*100.,
      1                       J=1,ICC),(1.0-SUMFARE)*100.,SUMFARE
+                WRITE(*,8107)IYEAR,(FCANCMXROW(I,1,J)*100.,
+     1                       J=1,ICC),(1.0-SUMFARE)*100.,SUMFARE
+
                ENDIF
              ENDIF !COMPETE/LNDUSEON
 
@@ -6098,6 +6125,13 @@ C
             WRITE(101,"(F8.2)") EXTNPROBGRD(I)
             WRITE(101,"(F8.2)") PRBFRHUCGRD(I)
             WRITE(101,"(I4)") STDALNGRD(I)
+
+            IF (COMPETE) THEN
+             WRITE(101,"(4F8.2,I4)")TWARMM(I),TCOLDM(I),GDD5(I),
+     1                            ARIDITY(I),SRPLSMON(I)
+             WRITE(101,"(I4,4F8.2)")DEFCTMON(I),ANNDEFCT(I),ANNSRPLS(I),
+     1                            ANNPCP(I),ANPOTEVP(I)
+            ENDIF
           ENDDO
 C
           CLOSE(101)

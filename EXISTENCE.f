@@ -198,6 +198,7 @@ C       C4 GRASS
         ELSE
            PFTEXIST(I,J)=0
         ENDIF
+
 C
 100   CONTINUE
 C
