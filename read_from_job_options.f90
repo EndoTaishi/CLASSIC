@@ -1,202 +1,205 @@
-subroutine read_from_job_options(ARGBUFF,MOSAIC,CTEMLOOP,CTEM1,CTEM2,NCYEAR,LNDUSEON,SPINFAST,CYCLEMET, &
-                  NUMMETCYLYRS,METCYLYRST,CO2ON,SETCO2CONC,POPDON,POPCYCLEYR, &
-                  PARALLELRUN,DOFIRE,COMPETE,INIBIOCLIM,START_BARE,RSFILE,IDISP,IZREF,ISLFD,IPCP,ITC,ITCG, &
-                  ITG,IWF,IPAI,IHGT,IALC,IALS,IALG,JHHSTD,JHHENDD,JDSTD, & 
-                  JDENDD,JHHSTY,JHHENDY,JDSTY,JDENDY)
+subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem1,ctem2,ncyear,lnduseon,spinfast,cyclemet, &
+                  nummetcylyrs,metcylyrst,co2on,setco2conc,popdon,popcycleyr, &
+                  parallelrun,dofire,compete,inibioclim,start_bare,rsfile,idisp,izref,islfd,ipcp,itc,itcg, &
+                  itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,jhhendd,jdstd, & 
+                  jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
-!#ifdef NAGf95
-!use F90_UNIX
+!#ifdef nagf95
+!use f90_unix
 !#endif
 
-!           CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) V1.1
-!                    JOBOPTIONS READ-IN SUBROUTINE 
+!           Canadian Terrestrial Ecosystem Model (CTEM) V1.1
+!                    Joboptions Read-In Subroutine 
 !
-!     17  OCT. 2012 - ADDED THE START_BARE SWITCH FOR COMPETE RUNS
-!     J. MELTON
-
-!     25  APR. 2012 - THIS SUBROUTINE TAKES IN MODEL SWITCHES FROM
-!     J. MELTON       A JOB FILE AND PUSHES THEM TO RUNCLASS35CTEM
+!     25  Jul. 2013 - Added inibioclim switch for compete runs
+!     J. Melton
+!
+!     17  Oct. 2012 - Added the start_bare switch for compete runs
+!     J. Melton
+!
+!     25  Apr. 2012 - This subroutine takes in model switches from
+!     J. Melton       a job file and pushes them to RUNCLASS35CTEM
 !		      
 
 implicit none
 
 ! -------------
-! CTEM Model Switches
+! ctem model switches
 
-character(80), intent(out) :: ARGBUFF !prefix of file names
+character(80), intent(out) :: argbuff !prefix of file names
 
-logical, intent(out) :: MOSAIC   ! TRUE IF THE RUN IS IN MOSAIC MODE, OTHERWISE IT
-                                 ! IS A COMPOSITE RUN
+logical, intent(out) :: mosaic   ! true if the run is in mosaic mode, otherwise it
+                                 ! is a composite run
 
-integer, intent(out) :: CTEMLOOP ! NO. OF TIMES THE .MET FILE IS TO BE READ. THIS
-                    	         ! OPTION IS USEFUL TO SEE HOW CTEM's C POOLS
-                    	         ! EQUILIBRATE WHEN DRIVEN WITH SAME CLIMATE DATA
-                    	         ! OVER AND OVER AGAIN.
+integer, intent(out) :: ctemloop ! no. of times the .met file is to be read. this
+                    	         ! option is useful to see how ctem's c pools
+                    	         ! equilibrate when driven with same climate data
+                    	         ! over and over again.
 
-logical, intent(out) :: CTEM1    ! AS OF CLASS36CTEM, THIS IS NO LONGER USED! KEEP AS TRUE.
-                                 ! SET THIS TO TRUE FOR USING STOMATAL CONDUCTANCE
-				 ! CALCULATED BY PHTSYN SUBROUTINE, ELSE THE STANDARD
- 				 ! JARVIS TYPE FORMULATION OF CLASS 2.7 IS USED. WITH
- 				 ! ONLY THIS SWITCH ON CLASS' LAI IS USED.
+logical, intent(out) :: ctem1    ! as of class36ctem, this is no longer used! keep as true.
+                                 ! set this to true for using stomatal conductance
+				 ! calculated by phtsyn subroutine, else the standard
+ 				 ! jarvis type formulation of class 2.7 is used. with
+ 				 ! only this switch on class' lai is used.
 				 
-logical, intent(out) :: CTEM2    ! SET THIS TO TRUE FOR USING CTEM SIMULATED DYNAMIC
- 				 ! LAI AND CANOPY MASS, ELSE CLASS SIMULATED SPECIFIED
- 				 ! LAI AND CANOPY MASS ARE USED. WITH THIS SWITCH ON,
- 				 ! ALL CTEM SUBROUTINES ARE RUN.
+logical, intent(out) :: ctem2    ! set this to true for using ctem simulated dynamic
+ 				 ! lai and canopy mass, else class simulated specified
+ 				 ! lai and canopy mass are used. with this switch on,
+ 				 ! all ctem subroutines are run.
 
-integer, intent(out) :: NCYEAR   ! NO. OF YEARS IN THE .MET FILE. 
+integer, intent(out) :: ncyear   ! no. of years in the .met file. 
 
-logical, intent(out) :: LNDUSEON ! SET THIS TO 1 IF LAND USE CHANGE IS TO BE
- 				 ! IMPLIMENTED BY READING IN THE FRACTIONS OF 9 CTEM
- 				 ! PFTs FROM A FILE. KEEP IN MIND THAT ONCE ON, LUC READ-IN IS
-                                 ! ALSO INFLUENCED BY THE CYCLEMET AND POPCYCLEYR
-                                 ! SWITCHES
+logical, intent(out) :: lnduseon ! set this to 1 if land use change is to be
+ 				 ! implimented by reading in the fractions of 9 ctem
+ 				 ! pfts from a file. keep in mind that once on, luc read-in is
+                                 ! also influenced by the cyclemet and popcycleyr
+                                 ! switches
 
-integer, intent(out) :: SPINFAST ! SET THIS TO A HIGHER NUMBER UP TO 10 TO SPIN UP
- 				 ! SOIL CARBON POOL FASTER
+integer, intent(out) :: spinfast ! set this to a higher number up to 10 to spin up
+ 				 ! soil carbon pool faster
 
-logical, intent(out) :: CYCLEMET ! TO CYCLE OVER ONLY A FIXED NUMBER OF YEARS 
- 				 ! (NUMMETCYLYRS) STARTING AT A CERTAIN YEAR (METCYLYRST)
- 				 ! IF CYCLEMET, THEN PUT CO2ON = FALSE AND SET AN APPOPRIATE SETCO2CONC, ALSO
- 				 ! IF POPDON IS TRUE, IT WILL CHOOSE THE POPN AND LUC DATA FOR YEAR
- 				 ! METCYLYRST AND CYCLE ON THAT.
+logical, intent(out) :: cyclemet ! to cycle over only a fixed number of years 
+ 				 ! (nummetcylyrs) starting at a certain year (metcylyrst)
+ 				 ! if cyclemet, then put co2on = false and set an appopriate setco2conc, also
+ 				 ! if popdon is true, it will choose the popn and luc data for year
+ 				 ! metcylyrst and cycle on that.
 
-integer, intent(out) :: NUMMETCYLYRS ! YEARS OF THE CLIMATE FILE TO SPIN UP ON REPEATEDLY
- 				 ! IGNORED IF CYCLEMET IS FALSE
+integer, intent(out) :: nummetcylyrs ! years of the climate file to spin up on repeatedly
+ 				 ! ignored if cyclemet is false
 
-integer, intent(out) :: METCYLYRST   ! CLIMATE YEAR TO START THE SPIN UP ON
- 				 ! IGNORED IF CYCLEMET IS FALSE
+integer, intent(out) :: metcylyrst   ! climate year to start the spin up on
+ 				 ! ignored if cyclemet is false
 
-logical, intent(out) :: CO2ON    ! USE CO2 TIME SERIES, SET TO FALSE IF CYCLEMET IS TRUE
+logical, intent(out) :: co2on    ! use co2 time series, set to false if cyclemet is true
 
-real, intent(out) :: SETCO2CONC  ! SET THE VALUE OF ATMOSPHERIC CO2 IF CO2ON IS FALSE.
+real, intent(out) :: setco2conc  ! set the value of atmospheric co2 if co2on is false.
 
-logical, intent(out) :: POPDON   ! IF SET TRUE USE POPULATION DENSITY DATA TO CALCULATE FIRE EXTINGUISHING 
- 				 ! PROBABILITY AND PROBABILITY OF FIRE DUE TO HUMAN CAUSES, 
- 				 ! OR IF FALSE, READ DIRECTLY FROM .CTM FILE
+logical, intent(out) :: popdon   ! if set true use population density data to calculate fire extinguishing 
+ 				 ! probability and probability of fire due to human causes, 
+ 				 ! or if false, read directly from .ctm file
 
-integer, intent(out) :: POPCYCLEYR ! POPD AND LUC YEAR TO CYCLE ON WHEN CYCLEMET IS TRUE, SET TO -9999
-				 ! TO CYCLE ON METCYLYRST FOR BOTH POPD AND LUC. IF CYCLEMET IS FALSE
-                                 ! THIS DEFAULTS TO -9999, WHICH WILL THEN CAUSE THE MODEL TO CYCLE ON
-                                 ! WHATEVER IS THE FIRST YEAR IN THE POPD AND LUC DATASETS
+integer, intent(out) :: popcycleyr ! popd and luc year to cycle on when cyclemet is true, set to -9999
+				 ! to cycle on metcylyrst for both popd and luc. if cyclemet is false
+                                 ! this defaults to -9999, which will then cause the model to cycle on
+                                 ! whatever is the first year in the popd and luc datasets
 
-logical, intent(out) :: PARALLELRUN ! SET THIS TO BE TRUE IF MODEL IS RUN IN PARALLEL MODE FOR 
- 				 ! MULTIPLE GRID CELLS, OUTPUT IS LIMITED TO MONTHLY & YEARLY 
- 				 ! GRID-MEAN ONLY. ELSE THE RUN IS IN STAND ALONE MODE, IN WHICH 
- 				 ! OUTPUT INCLUDES HALF-HOURLY AND DAILY AND MOSAIC-MEAN AS WELL.
+logical, intent(out) :: parallelrun ! set this to be true if model is run in parallel mode for 
+ 				 ! multiple grid cells, output is limited to monthly & yearly 
+ 				 ! grid-mean only. else the run is in stand alone mode, in which 
+ 				 ! output includes half-hourly and daily and mosaic-mean as well.
 
-logical, intent(out) :: DOFIRE   ! IF TRUE THE FIRE/DISTURBANCE SUBROUTINE WILL BE USED.
+logical, intent(out) :: dofire   ! if true the fire/disturbance subroutine will be used.
 
-logical, intent(out) :: COMPETE  ! SET THIS TO TRUE IF COMPETITION BETWEEN PFTs IS
- 				 ! TO BE IMPLIMENTED
+logical, intent(out) :: compete  ! set this to true if competition between pfts is
+ 				 ! to be implimented
 
-logical, intent(out) :: INIBIOCLIM  ! SET THIS TO TRUE IF COMPETITION BETWEEN PFTs IS
- 				    ! TO BE IMPLIMENTED AND YOU HAVE THE MEAN CLIMATE VALUES
-                                    ! IN THE CTM FILES.
+logical, intent(out) :: inibioclim  ! set this to true if competition between pfts is
+ 				    ! to be implimented and you have the mean climate values
+                                    ! in the ctm files.
 
-logical, intent(out) :: START_BARE !SET THIS TO TRUE IF COMPETITION IS TRUE, AND IF YOU WISH
-                                 ! TO START FROM BARE GROUND. IF THIS IS SET TO FALSE, THE 
-                                 ! INI AND CTM FILE INFO WILL BE USED TO SET UP THE RUN.
+logical, intent(out) :: start_bare !set this to true if competition is true, and if you wish
+                                 ! to start from bare ground. if this is set to false, the 
+                                 ! ini and ctm file info will be used to set up the run.
 
-logical, intent(out) :: RSFILE   ! SET THIS TO TRUE IF RESTART FILES (.INI_RS AND .CTM_RS)   
- 				 ! ARE WRITTEN AT THE END OF EACH YEAR. THESE FILES ARE  
- 				 ! NECESSARY FOR CHECKING WHETHER THE MODEL REACHES 
- 				 ! EQUILIBRIUM AFTER RUNNING FOR A CERTAIN YEARS. 
- 				 ! SET THIS TO FALSE IF RESTART FILES ARE NOT NEEDED 
- 				 ! (KNOWN HOW MANY YEARS THE MODEL WILL RUN)
+logical, intent(out) :: rsfile   ! set this to true if restart files (.ini_rs and .ctm_rs)   
+ 				 ! are written at the end of each year. these files are  
+ 				 ! necessary for checking whether the model reaches 
+ 				 ! equilibrium after running for a certain years. 
+ 				 ! set this to false if restart files are not needed 
+ 				 ! (known how many years the model will run)
 
 ! -------------
-! CLASS Model Switches
+! class model switches
 
-integer, intent(out) :: IDISP    ! IF IDISP=0, VEGETATION DISPLACEMENT HEIGHTS ARE IGNORED,
-				 ! BECAUSE THE ATMOSPHERIC MODEL CONSIDERS THESE TO BE PART
-				 ! OF THE "TERRAIN".
-				 ! IF IDISP=1, VEGETATION DISPLACEMENT HEIGHTS ARE CALCULATED.
+integer, intent(out) :: idisp    ! if idisp=0, vegetation displacement heights are ignored,
+				 ! because the atmospheric model considers these to be part
+				 ! of the "terrain".
+				 ! if idisp=1, vegetation displacement heights are calculated.
 
-integer, intent(out) :: IZREF    ! IF IZREF=1, THE BOTTOM OF THE ATMOSPHERIC MODEL IS TAKEN
-				 ! TO LIE AT THE GROUND SURFACE.
-				 ! IF IZREF=2, THE BOTTOM OF THE ATMOSPHERIC MODEL IS TAKEN
-				 ! TO LIE AT THE LOCAL ROUGHNESS HEIGHT.
+integer, intent(out) :: izref    ! if izref=1, the bottom of the atmospheric model is taken
+				 ! to lie at the ground surface.
+				 ! if izref=2, the bottom of the atmospheric model is taken
+				 ! to lie at the local roughness height.
 
-integer, intent(out) :: ISLFD    ! IF ISLFD=0, DRCOEF IS CALLED FOR SURFACE STABILITY CORRECTIONS
-				 ! AND THE ORIGINAL GCM SET OF SCREEN-LEVEL DIAGNOSTIC CALCULATIONS 
-				 ! IS DONE.
-				 ! IF ISLFD=1, DRCOEF IS CALLED FOR SURFACE STABILITY CORRECTIONS
-				 ! AND SLDIAG IS CALLED FOR SCREEN-LEVEL DIAGNOSTIC CALCULATIONS. 
-				 ! IF ISLFD=2, FLXSURFZ IS CALLED FOR SURFACE STABILITY CORRECTIONS
-				 ! AND DIASURF IS CALLED FOR SCREEN-LEVEL DIAGNOSTIC CALCULATIONS. 
+integer, intent(out) :: islfd    ! if islfd=0, drcoef is called for surface stability corrections
+				 ! and the original gcm set of screen-level diagnostic calculations 
+				 ! is done.
+				 ! if islfd=1, drcoef is called for surface stability corrections
+				 ! and sldiag is called for screen-level diagnostic calculations. 
+				 ! if islfd=2, flxsurfz is called for surface stability corrections
+				 ! and diasurf is called for screen-level diagnostic calculations. 
 
-integer, intent(out) :: IPCP     ! IF IPCP=1, THE RAINFALL-SNOWFALL CUTOFF IS TAKEN TO LIE AT 0 C.
-				 ! IF IPCP=2, A LINEAR PARTITIONING OF PRECIPITATION BETWEEEN 
-				 ! RAINFALL AND SNOWFALL IS DONE BETWEEN 0 C AND 2 C.
-				 ! IF IPCP=3, RAINFALL AND SNOWFALL ARE PARTITIONED ACCORDING TO
-				 ! A POLYNOMIAL CURVE BETWEEN 0 C AND 6 C.
+integer, intent(out) :: ipcp     ! if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
+				 ! if ipcp=2, a linear partitioning of precipitation betweeen 
+				 ! rainfall and snowfall is done between 0 c and 2 c.
+				 ! if ipcp=3, rainfall and snowfall are partitioned according to
+				 ! a polynomial curve between 0 c and 6 c.
 
-integer, intent(out) :: IWF     ! IF IWF=0, ONLY OVERLAND FLOW AND BASEFLOW ARE MODELLED, AND
-				! THE GROUND SURFACE SLOPE IS NOT MODELLED.
-				! IF IWF=n (0<n<4), THE WATFLOOD CALCULATIONS OF OVERLAND FLOW 
-				! AND INTERFLOW ARE PERFORMED; INTERFLOW IS DRAWN FROM THE TOP 
-				! n SOIL LAYERS.
+integer, intent(out) :: iwf     ! if iwf=0, only overland flow and baseflow are modelled, and
+				! the ground surface slope is not modelled.
+				! if iwf=n (0<n<4), the watflood calculations of overland flow 
+				! and interflow are performed; interflow is drawn from the top 
+				! n soil layers.
 
-! ITC, ITCG AND ITG ARE SWITCHES TO CHOOSE THE ITERATION SCHEME TO
-! BE USED IN CALCULATING THE CANOPY OR GROUND SURFACE TEMPERATURE
-! RESPECTIVELY.  IF THE SWITCH IS SET TO 1, A BISECTION METHOD IS
-! USED; IF TO 2, THE NEWTON-RAPHSON METHOD IS USED.
-integer, intent(out) :: ITC
-integer, intent(out) :: ITCG
-integer, intent(out) :: ITG
+! itc, itcg and itg are switches to choose the iteration scheme to
+! be used in calculating the canopy or ground surface temperature
+! respectively.  if the switch is set to 1, a bisection method is
+! used; if to 2, the newton-raphson method is used.
+INTEGER, INTENT(OUT) :: ITC
+INTEGER, INTENT(OUT) :: ITCG
+INTEGER, INTENT(OUT) :: ITG
 
-! IF IPAI, IHGT, IALC, IALS AND IALG ARE ZERO, THE VALUES OF 
-! PLANT AREA INDEX, VEGETATION HEIGHT, CANOPY ALBEDO, SNOW ALBEDO
-! AND SOIL ALBEDO RESPECTIVELY CALCULATED BY CLASS ARE USED.
-! IF ANY OF THESE SWITCHES IS SET TO 1, THE VALUE OF THE
-! CORRESPONDING PARAMETER CALCULATED BY CLASS IS OVERRIDDEN BY
-! A USER-SUPPLIED INPUT VALUE.
+! if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+! plant area index, vegetation height, canopy albedo, snow albedo
+! and soil albedo respectively calculated by class are used.
+! if any of these switches is set to 1, the value of the
+! corresponding parameter calculated by class is overridden by
+! a user-supplied input value.
 !      
-integer, intent(out) :: IPAI
-integer, intent(out) :: IHGT
-integer, intent(out) :: IALC
-integer, intent(out) :: IALS
-integer, intent(out) :: IALG
+INTEGER, INTENT(OUT) :: IPAI
+INTEGER, INTENT(OUT) :: IHGT
+INTEGER, INTENT(OUT) :: IALC
+INTEGER, INTENT(OUT) :: IALS
+INTEGER, INTENT(OUT) :: IALG
 
 ! -------------
-! CLASS35CTEM OUTPUT SWITCHES
+! classctem output switches
 
-! >>>> NOTE: If you wish to use the values in the .INI file, set all to -9999 in the job options file
-!            and the .INI file will be used.
+! >>>> note: if you wish to use the values in the .ini file, set all to -9999 in the job options file
+!            and the .ini file will be used.
 
-integer, intent(out) :: JHHSTD    ! DAY OF THE YEAR TO START WRITING THE HALF-HOURLY OUTPUT
-integer, intent(out) :: JHHENDD   ! DAY OF THE YEAR TO STOP WRITING THE HALF-HOURLY OUTPUT
-integer, intent(out) :: JDSTD     ! DAY OF THE YEAR TO START WRITING THE DAILY OUTPUT
-integer, intent(out) :: JDENDD    ! DAY OF THE YEAR TO STOP WRITING THE DAILY OUTPUT
-integer, intent(out) :: JHHSTY    ! SIMULATION YEAR (IYEAR) TO START WRITING THE HALF-HOURLY OUTPUT
-integer, intent(out) :: JHHENDY   ! SIMULATION YEAR (IYEAR) TO STOP WRITING THE HALF-HOURLY OUTPUT
-integer, intent(out) :: JDSTY     ! SIMULATION YEAR (IYEAR) TO START WRITING THE DAILY OUTPUT
-integer, intent(out) :: JDENDY    ! SIMULATION YEAR (IYEAR) TO STOP WRITING THE DAILY OUTPUT
+integer, intent(out) :: jhhstd    ! day of the year to start writing the half-hourly output
+integer, intent(out) :: jhhendd   ! day of the year to stop writing the half-hourly output
+integer, intent(out) :: jdstd     ! day of the year to start writing the daily output
+integer, intent(out) :: jdendd    ! day of the year to stop writing the daily output
+integer, intent(out) :: jhhsty    ! simulation year (iyear) to start writing the half-hourly output
+integer, intent(out) :: jhhendy   ! simulation year (iyear) to stop writing the half-hourly output
+integer, intent(out) :: jdsty     ! simulation year (iyear) to start writing the daily output
+integer, intent(out) :: jdendy    ! simulation year (iyear) to stop writing the daily output
 
 ! -------------
 
 namelist /joboptions/ &
-  MOSAIC,             &
-  CTEMLOOP,           &
-  CTEM1,              &
-  CTEM2,              &
-  NCYEAR,             &
-  LNDUSEON,           &
-  SPINFAST,           &
-  CYCLEMET,           &
-  NUMMETCYLYRS,       &
-  METCYLYRST,         &
-  CO2ON,              &
-  SETCO2CONC,         &
-  POPDON,             &
-  POPCYCLEYR,         &
-  PARALLELRUN,        &
-  DOFIRE,             &
-  COMPETE,            &
-  INIBIOCLIM,         &
-  START_BARE,         &
-  RSFILE,             &
+  mosaic,             &
+  ctemloop,           &
+  ctem1,              &
+  ctem2,              &
+  ncyear,             &
+  lnduseon,           &
+  spinfast,           &
+  cyclemet,           &
+  nummetcylyrs,       &
+  metcylyrst,         &
+  co2on,              &
+  setco2conc,         &
+  popdon,             &
+  popcycleyr,         &
+  parallelrun,        &
+  dofire,             &
+  compete,            &
+  inibioclim,         &
+  start_bare,         &
+  rsfile,             &
   IDISP,              &
   IZREF,              &
   ISLFD,              &
@@ -210,37 +213,37 @@ namelist /joboptions/ &
   IALC,               &
   IALS,               &
   IALG,               &
-  JHHSTD,             &
-  JHHENDD,            &
-  JDSTD,              &
-  JDENDD,             &
-  JHHSTY,             &
-  JHHENDY,            &
-  JDSTY,              &
-  JDENDY
+  jhhstd,             &
+  jhhendd,            &
+  jdstd,              &
+  jdendd,             &
+  jhhsty,             &
+  jhhendy,            &
+  jdsty,              &
+  jdendy
 
 character(140) :: jobfile
-integer :: argcount, IARGC 
+integer :: argcount, iargc 
 
 !-------------------------
 !read the joboptions
 
-argcount = IARGC()
+argcount = iargc()
 
-       IF(argcount .NE. 2)THEN
-         WRITE(*,*)'Usage is as follows'
-         WRITE(*,*)' '
-         WRITE(*,*)'RUNCLASS36CTEM joboptions_file SITE_NAME'
-         WRITE(*,*)' '
-         WRITE(*,*)'- joboptions_file - an example can be found '
-         WRITE(*,*)'  in the src folder - template_job_options_file.txt.'
-         WRITE(*,*)'  Descriptions of the various variables '
-         WRITE(*,*)'  can be found in read_from_job_options.f90 '
-         WRITE(*,*)' '
-         WRITE(*,*)'- SITE_NAME is the prefix of your input files '
-         WRITE(*,*)' '
-         STOP
-      END IF
+       if(argcount .ne. 2)then
+         write(*,*)'usage is as follows'
+         write(*,*)' '
+         write(*,*)'runclass36ctem joboptions_file site_name'
+         write(*,*)' '
+         write(*,*)'- joboptions_file - an example can be found '
+         write(*,*)'  in the src folder - template_job_options_file.txt.'
+         write(*,*)'  descriptions of the various variables '
+         write(*,*)'  can be found in read_from_job_options.f90 '
+         write(*,*)' '
+         write(*,*)'- site_name is the prefix of your input files '
+         write(*,*)' '
+         stop
+      end if
 
 
 call getarg(1,jobfile)
@@ -251,7 +254,7 @@ read(10,nml = joboptions)
 
 close(10)
 
-call getarg(2,ARGBUFF)
+call getarg(2,argbuff)
 
 
 end subroutine read_from_job_options

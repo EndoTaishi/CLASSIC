@@ -1891,6 +1891,18 @@ C
      1              SRPLSMON(I)
           READ(11,*) DEFCTMON(I), ANNDEFCT(I), ANNSRPLS(I), 
      1              ANNPCP(I), ANPOTEVP(I)
+         ELSE IF (COMPETE .AND. .NOT. INIBIOCLIM) THEN ! SET THEM TO ZERO
+           TWARMM(I)=0.0
+           TCOLDM(I)=0.0
+           GDD5(I)=0.0
+           ARIDITY(I)=0.0
+           SRPLSMON(I)=0.0
+           DEFCTMON(I)=0.0
+           ANNDEFCT(I)=0.0
+           ANNSRPLS(I)=0.0
+           ANNPCP(I)=0.0
+           ANPOTEVP(I)=0.0
+
          ENDIF
 
 71    CONTINUE
@@ -2607,7 +2619,6 @@ C
       ENDIF   ! IF (CTEM1)
 C
 C     CTEM INITIAL PREPARATION DONE
-
 
 C===================== CTEM ============================================ /
 C
@@ -6127,9 +6138,9 @@ C
             WRITE(101,"(I4)") STDALNGRD(I)
 
             IF (COMPETE) THEN
-             WRITE(101,"(4F8.2,I4)")TWARMM(I),TCOLDM(I),GDD5(I),
+             WRITE(101,"(5F8.2)")TWARMM(I),TCOLDM(I),GDD5(I),
      1                            ARIDITY(I),SRPLSMON(I)
-             WRITE(101,"(I4,4F8.2)")DEFCTMON(I),ANNDEFCT(I),ANNSRPLS(I),
+             WRITE(101,"(5F8.2)")DEFCTMON(I),ANNDEFCT(I),ANNSRPLS(I),
      1                            ANNPCP(I),ANPOTEVP(I)
             ENDIF
           ENDDO

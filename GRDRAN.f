@@ -148,7 +148,7 @@ C
               IGRD(I)=0
           ENDIF
    50 CONTINUE
-C
+C                                                                     
 C     * CALCULATE MAXIMUM LIQUID WATER CONTENT OF EACH SOIL LAYER;
 C     * ADJUST GRKSAT FOR VISCOSITY OF WATER AND PRESENCE OF ICE;
 C     * ADJUST THPOR FOR PRESENCE OF ICE.
@@ -237,7 +237,7 @@ C     2                (DELZW(I,J)+DELZW(I,J+1)))
             ENDIF
           ENDIF
   200 CONTINUE 
-C                               
+C                              
 C     * CHECK FOR SUSTAINABLE EVAPORATION RATE FROM TOP SOIL LAYER; IF
 C     * LIQUID WATER SUPPLY IS INSUFFICIENT, TRY TO REMOVE WATER FROM 
 C     * FROZEN SOIL MOISTURE.
@@ -291,6 +291,7 @@ C
           ENDIF   
           IF(IGRD(I).GT.0 .AND. ISAND(I,J).EQ.-2 .AND. 
      1                           THLIQ(I,J).LE.THLRET(I,J))    THEN
+               write(*,*)i,j,FDT(I,J+1)
               IF(FDT(I,J+1).GT.0.0) FDT(I,J+1)=0.0
           ENDIF
   250 CONTINUE    
@@ -461,6 +462,6 @@ C
             ENDIF                                                      
           ENDIF                                                      
   700 CONTINUE                                                                    
-C                                                                                  
+C                                                                               
       RETURN                                                                      
       END        
