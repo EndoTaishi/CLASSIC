@@ -92,7 +92,7 @@ c                     fractions.
 c    -----------------------------------------------------------------
 
       use ctem_params,        only : kk, lon, lat, pi, earthrad, zero,
-     1                               edgelat
+     1                               edgelat, kn
       use landuse_change,     only : luc
       use competition_scheme, only : bioclim, existence, competition
 
@@ -329,14 +329,6 @@ c     anpotevp  - annual potential evaporation (mm)
 c     burnveg   - areas burned, km^2, for 9 ctem pfts
 c
       implicit none
-c     
-c     specify gcm resolution. this info is used to find area of gcm grid
-c     cells which is used in disturbance subroutine.
-c
-c      integer     lon,      lat,      kk
-c      parameter(lat=48)
-c      parameter(lon=96)
-c      parameter(kk=12)  ! product of class pfts and l2max (4 x 3 = 12)
 c
       logical   lnduseon,  dofire, do_mortality, mosaic
 
@@ -371,8 +363,9 @@ c
      2     yesfrac_mos(nlat,icc),   todfrac_cmp(nlat),
      3     pfcancmx_cmp(nlat,icc),  nfcancmx_cmp(nlat,icc)
 c
-      integer pftexist_cmp(nlat,icc),surmncur_cmp(nlat),
-     1     defmncur_cmp(nlat)
+      integer surmncur_cmp(nlat), defmncur_cmp(nlat)
+
+      logical pftexist_cmp(nlat,icc)
 c
       real grclarearow(nlat,nmos),      vgbiomasrow(nlat,nmos),    
      1     gavgltmsrow(nlat,nmos),      gavgscmsrow(nlat,nmos),
@@ -409,9 +402,7 @@ c
       real    fc(ilg),       fg(ilg),       fcs(ilg),         fgs(ilg),
      1  fcans(ilg,ic),  fcan(ilg,ic),         rms(ilg),
      2       rmr(ilg),  grescoef(kk),    litres(ilg),      socres(ilg),
-     3   humicfac(kk),                                          kn(kk),
-     4           term,       eta(kk),      kappa(kk),     lfespany(kk),
-     5       fracbofg,   specsla(kk),     laimin(kk),       laimax(kk)
+     3   humicfac(kk),        term,       laimin(kk),       laimax(kk)
 c
       real pglfmass(ilg,icc),   pblfmass(ilg,icc),   pstemass(ilg,icc),
      1     protmass(ilg,icc), plitmass(ilg,icc+1), psocmass(ilg,icc+1),
@@ -488,12 +479,10 @@ c
      2     expbalvg(ilg,icc),       expnbaln(ilg), ltrflcom(ilg,icc+1),
      3             lambdamax,         cc(ilg,icc),         mm(ilg,icc)
 c
-      integer   pftexist(ilg,icc),  surmncur(ilg),       defmncur(ilg)
+      integer   surmncur(ilg),       defmncur(ilg)
 c
-      logical compete, inibioclim
+      logical compete, inibioclim, pftexist(ilg,icc)
 c
-      common /ctem1/ eta, kappa, kn
-      common /ctem2/ lfespany, fracbofg, specsla
 c     ---------------------------------------------------------------
 c                     constants and parameters 
 c
@@ -504,17 +493,6 @@ c     needle leaf |  evg       dcd       ---
 c     broad leaf  |  evg   dcd-cld   dcd-dry
 c     crops       |   c3        c4       ---
 c     grasses     |   c3        c4       ---
-c
-c     latitudes of the edges of the gcm grid cells for 96x48 resolution
-c      data edgelat/ -90.0000, -85.3190, -81.6280, -77.9236, -74.2159,
-c     &    -70.5068, -66.7970, -63.0868, -59.3763, -55.6657, -51.9549,
-c     &    -48.2441, -44.5331, -40.8221, -37.1111, -33.4001, -29.6890,
-c     &    -25.9779, -22.2668, -18.5557, -14.8446, -11.1335,  -7.4223,
-c     &     -3.7112,   0.0000,   3.7112,   7.4223,  11.1335,  14.8446,
-c     &     18.5557,  22.2668,  25.9779,  29.6890,  33.4001,  37.1111,
-c     &     40.8221,  44.5331,  48.2441,  51.9549,  55.6657,  59.3763,
-c     &     63.0868,  66.7970,  70.5068,  74.2159,  77.9236,  81.6280,
-c     &     85.3190,  90.0000/
 c
 c     growth respiration coefficient
       data grescoef/0.15, 0.15, 0.00,
@@ -528,39 +506,6 @@ c     soil c pool
      &              0.53, 0.48, 0.48,
      &              0.42, 0.42, 0.00,
      &              0.42, 0.42, 0.00/
-c
-c     canopy light/nitrogen extinction coefficient 
-      data   kn/0.50, 0.50, 0.00,
-     &          0.50, 0.50, 0.50,
-     &          0.40, 0.48, 0.00,
-     &          0.46, 0.44, 0.00/
-c
-c     eta and kappa, parameters for estimating min. stem+root biomass
-c     required to support green leaf biomass. kappa is 1.6 for trees
-c     and crops, and 1.2 for grasses.
-      data eta/10.0, 30.8, 0.00,
-     &         31.0, 50.0, 30.0,
-     &          7.0,  7.0, 0.00,
-     &          3.0,  3.0, 0.00/
-
-      data kappa/1.6, 1.6, 0.0,
-     &           1.6, 1.6, 1.6,
-     &           1.6, 1.6, 0.0,
-     &           1.2, 1.2, 0.0/
-c
-c     leaf life span (in years) for ctem's 9 pfts
-      data  lfespany/5.0, 1.00, 0.00,
-     &              1.75, 1.00, 1.00,
-     &              1.75, 1.75, 0.00,
-     &              1.00, 1.00, 0.00/
-c
-c     ctem can use user-specified specific leaf areas (sla) if the
-c     following specified values are greater than zero
-c
-      data specsla/11.0, 0.0, 0.0,
-     &              0.0, 0.0, 0.0,
-     &              0.0, 0.0, 0.0,
-     &              0.0, 0.0, 0.0/
 c
 c     minimum lai below which a pft doesn't expand
       data laimin/1.0, 1.0, 0.0,
@@ -578,27 +523,7 @@ c
 c     max. fraction of npp that is allocated for reproduction/colonization
       data lambdamax/0.10/
 c
-c     fracbofg, parameter used to estimate lai of brown leaves. we
-c     assume that sla of brown leaves is this fraction of sla of
-c     green leaves
-      data fracbofg/0.55/
-c
-c      data pi/3.1415926535898d0/
-c
-c     radius of earth, km
-c      data earthrad/6371.22/
-c
-c     zero
-c      data zero/1e-20/
-c
 c     -----------------------------------------------------------------
-c
-      if(icc.ne.9)                            call xit('ctem',-1)
-      if(ic.ne.4)                             call xit('ctem',-2)
-      if(deltat.ne.1.0)                       call xit('ctem',-3)
-      if(l2max.ne.3)                          call xit('ctem',-4)
-c
-
 c     find area of the gcm grid cells. this is needed for land use change
 c     and disturbance subroutines
 c
@@ -797,7 +722,10 @@ c    ------------------- updates above this line ------------------
 c
      8           add2allo_cmp,      cc_cmp,      mm_cmp)
 
-        else !inibioclim = false flag
+         else  ! It is the first year of a run that you do not have the 
+              ! climatological means already in the CTM file. After one
+              ! year inibioclim is set to true and the climatological means
+              ! are used from the first year.
 
            do i = il1, nlat
              do j = 1, icc
@@ -805,7 +733,7 @@ c
              enddo
            enddo
 
-      end if
+         end if !inibioclim
 c
 c    ------------------- outputs above this line ------------------
 c      
@@ -934,12 +862,15 @@ c
 c
 c    ------------------- outputs above this line ------------------
 c
-        else  !flag
-        do j = 1, icc
-          do i = il1, il2
-            add2allo(i,j)=0.0
+        else  ! It is the first year of a run that you do not have the 
+              ! climatological means already in the CTM file. After one
+              ! year inibioclim is set to true and the climatological means
+              ! are used from the first year.
+          do j = 1, icc
+            do i = il1, il2
+              add2allo(i,j)=0.0
+            enddo
           enddo
-        enddo
         end if
 
        else  ! competition is not on
@@ -1489,7 +1420,7 @@ c
 c          if tree and leaves still coming out, or if npp is negative, then
 c          do not expand
            if((j.le.5.and.lfstatus(i,j).eq.1).or.nppveg(i,j).lt.0.0
-     &     .or.pftexist(i,j).eq.0)then
+     &     .or..not.pftexist(i,j))then
              lambda(i,j)=0.0
            endif
 c
@@ -1988,15 +1919,14 @@ c
 c     finally find vegetation structural attributes which can be passed
 c     to the land surface scheme using leaf, stem, and root biomass. 
 c
-              call  bio2str( gleafmas, bleafmas, stemmass, rootmass,
-     1                            icc,      ilg,      il1,      il2,
-     2                             ig,       ic,  fcancmx,    zbotw,
-     3                          delzw, nol2pfts,    l2max, soildpth,
+              call bio2str( gleafmas, bleafmas, stemmass, rootmass,
+     1                            il1,      il2, fcancmx,    zbotw,
+     3                          delzw, nol2pfts,  soildpth,
      4                          ailcg,    ailcb,     ailc,    zolnc,
      5                          rmatc, rmatctem,     slai,  bmasveg,
      6                       cmasvegc,  veghght, rootdpth,   alvisc,
-     8                         alnirc,
-     9                         paicgat,slaicgat  )
+     8                         alnirc,  paicgat,  slaicgat  )
+
 c
 c    calculation of gavglai is moved from loop 1100 to here 
 c    since ailcg is updated by bio2str

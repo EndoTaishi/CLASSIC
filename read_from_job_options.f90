@@ -1,4 +1,4 @@
-subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem1,ctem2,ncyear,lnduseon,spinfast,cyclemet, &
+subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,ncyear,lnduseon,spinfast,cyclemet, &
                   nummetcylyrs,metcylyrst,co2on,setco2conc,popdon,popcycleyr, &
                   parallelrun,dofire,compete,inibioclim,start_bare,rsfile,idisp,izref,islfd,ipcp,itc,itcg, &
                   itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,jhhendd,jdstd, & 
@@ -8,17 +8,20 @@ subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem1,ctem2,ncyear,lndu
 !use f90_unix
 !#endif
 
-!           Canadian Terrestrial Ecosystem Model (CTEM) V1.1
+!           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    Joboptions Read-In Subroutine 
 !
-!     25  Jul. 2013 - Added inibioclim switch for compete runs
+!     2   Jul. 2013 - Removed ctem1 and ctem2, replaced with ctem_on
+!     J. Melton
+!
+!     25  Jun. 2013 - Added inibioclim switch for compete runs
 !     J. Melton
 !
 !     17  Oct. 2012 - Added the start_bare switch for compete runs
 !     J. Melton
 !
 !     25  Apr. 2012 - This subroutine takes in model switches from
-!     J. Melton       a job file and pushes them to RUNCLASS35CTEM
+!     J. Melton       a job file and pushes them to RUNCLASSCTEM
 !		      
 
 implicit none
@@ -36,13 +39,7 @@ integer, intent(out) :: ctemloop ! no. of times the .met file is to be read. thi
                     	         ! equilibrate when driven with same climate data
                     	         ! over and over again.
 
-logical, intent(out) :: ctem1    ! as of class36ctem, this is no longer used! keep as true.
-                                 ! set this to true for using stomatal conductance
-				 ! calculated by phtsyn subroutine, else the standard
- 				 ! jarvis type formulation of class 2.7 is used. with
- 				 ! only this switch on class' lai is used.
-				 
-logical, intent(out) :: ctem2    ! set this to true for using ctem simulated dynamic
+logical, intent(out) :: ctem_on  ! set this to true for using ctem simulated dynamic
  				 ! lai and canopy mass, else class simulated specified
  				 ! lai and canopy mass are used. with this switch on,
  				 ! all ctem subroutines are run.
@@ -182,8 +179,7 @@ integer, intent(out) :: jdendy    ! simulation year (iyear) to stop writing the 
 namelist /joboptions/ &
   mosaic,             &
   ctemloop,           &
-  ctem1,              &
-  ctem2,              &
+  ctem_on,            &
   ncyear,             &
   lnduseon,           &
   spinfast,           &

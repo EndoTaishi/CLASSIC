@@ -58,6 +58,8 @@ C     WILTSM    - WILTING POINT SOIL MOISTURE CONTENT
 C     FIELDSM   - FIELD CAPACITY SOIL MOISTURE CONTENT
 C     WTSTATUS  - SOIL WATER STATUS (0 DRY -> 1 WET)
 C     LTSTATUS  - LIGHT STATUS
+
+      use ctem_params,        only : eta, kappa, kn, zero
 C
       IMPLICIT NONE
 C
@@ -80,8 +82,8 @@ C
      1       FCANCMX(ILG,ICC)
 C
       REAL          OMEGA(KK),      EPSILONL(KK),         EPSILONS(KK),
-     1           EPSILONR(KK),            KN(KK),                 ZERO,
-     2                ETA(KK),         KAPPA(KK),           CALEAF(KK),
+     1           EPSILONR(KK),
+     2                CALEAF(KK),
      3             CASTEM(KK),        CAROOT(KK),          RTSRMIN(KK),
      4           ALDRLFON(KK)
 C
@@ -92,7 +94,6 @@ C
      4         ALEAF(ILG,ICC),     ASTEM(ILG,ICC),      AROOT(ILG,ICC)
 C
 C
-      COMMON /CTEM1/ ETA, KAPPA, KN
 C     ------------------------------------------------------------------
 C                     CONSTANTS AND PARAMETERS
 C
@@ -163,12 +164,8 @@ C     ALLOCATION TO LEAVES DURING LEAF ONSET
      &              1.00, 1.00, 0.00,
      &              1.00, 1.00, 0.00/
 C
-C     ZERO
-      DATA ZERO/1E-12/
-C
 C     ---------------------------------------------------------------
 C
-      IF(ICC.NE.9)                            CALL XIT('ALLOCATE',-1)
 C
 C     INITIALIZE REQUIRED ARRAYS TO ZERO
 C
@@ -369,7 +366,8 @@ C
      &    THEN  
            WRITE(6,2000) I,J,(AFRSTEM(I,J)+AFRROOT(I,J)+AFRLEAF(I,J))
 2000       FORMAT(' AT (I) = (',I3,'), PFT=',I2,'  ALLOCATION FRACTIONS
-     &NOT ADDING TO ONE. SUM  = ',F12.7)
+     &NOT ADDING TO ONE. SUM  = ',E12.7)
+        write(*,*)ABS(AFRSTEM(I,J)+AFRROOT(I,J)+AFRLEAF(I,J)-1.0)-ZERO
           CALL XIT('ALLOCATE',-2)
           ENDIF
          ENDIF

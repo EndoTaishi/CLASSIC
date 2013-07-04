@@ -76,6 +76,10 @@ C                 DROUGHT STRESS, AND LEAF FALL/HARVEST, Kg C/M2
 C
 C     ------------------------------------------------------------------    
 C
+      use ctem_params,        only : kn, pi, zero, kappa, eta, lfespany,
+     1                               fracbofg, specsla
+
+
       IMPLICIT NONE
 C
       INTEGER ILG, ICC, IG, IL1, IL2, I, J, K, IDAY, KK, N, M, IC, K1,
@@ -92,18 +96,14 @@ C
      4      STEMMASS(ILG,ICC), ROOTMASS(ILG,ICC),     FCANCMX(ILG,ICC)
 C
 C
-      REAL     LFESPANY(KK),       DRLSRTMX(KK),          CDLSRTMX(KK), 
-     1            DRGTA(KK),          COLDA(KK),                  ZERO, 
-     2         LWRTHRSH(KK),       HARVTHRS(KK),           COLDTHRS(2), 
-     3          FLHRSPAN(2),       THRPRCNT(KK),               ETA(KK),
-     4            KAPPA(KK),             KN(KK),           SPECSLA(KK),
-     5             ROOTHRSH
+      REAL     DRLSRTMX(KK),       CDLSRTMX(KK),   DRGTA(KK), COLDA(KK), 
+     1         LWRTHRSH(KK),       HARVTHRS(KK),           COLDTHRS(2), 
+     2          FLHRSPAN(2),       THRPRCNT(KK),              ROOTHRSH      
 
       INTEGER  DAYSCHK(KK),    PANDAYS(ILG,ICC),     LFSTATUS(ILG,ICC),
      1    CHKMODE(ILG,ICC),     COLDDAYS(ILG,2),            COLDLMT(2)
 C
       REAL        SLA(ICC),      AILCG(ILG,ICC),        AILCB(ILG,ICC)
-     
 C
       REAL                      FIELDSM(ILG,IG),        WILTSM(ILG,IG),
      1                DAY,            RADL(ILG),                 THETA,
@@ -111,10 +111,8 @@ C
      3  NRMLLOSS(ILG,ICC),     BETADRGT(ILG,IG),     DRGTSTRS(ILG,ICC),
      4  DRGTLSRT(ILG,ICC),    DRGTLOSS(ILG,ICC),     COLDLOSS(ILG,ICC),
      5  COLDSTRS(ILG,ICC),    COLDLSRT(ILG,ICC),     FLHRLOSS(ILG,ICC),
-     6    LFTHRS(ILG,ICC),             FRACBOFG
+     6    LFTHRS(ILG,ICC)      
 C
-      COMMON /CTEM1/ ETA, KAPPA, KN
-      COMMON /CTEM2/ LFESPANY, FRACBOFG, SPECSLA
 C
 C     ------------------------------------------------------------------
 C                     CONSTANTS AND PARAMETERS USED 
@@ -203,10 +201,6 @@ C     ROOT TEMPERATURE THRESHOLD FOR INITIATING LEAF ONSET FOR COLD
 C     BROADLEAF DECIDUOUS PFT, DEGREES CELCIUS
       DATA ROOTHRSH/15.0/
 C
-C     ZERO
-      DATA ZERO/1E-20/
-
-      REAL, PARAMETER :: PI=3.1415926535898d0
 C
 C     ---------------------------------------------------------------
 C

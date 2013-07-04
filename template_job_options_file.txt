@@ -2,8 +2,7 @@
 
  MOSAIC = .TRUE.,
  CTEMLOOP = 7 ,
- CTEM1 = .TRUE. ,
- CTEM2 = .TRUE. ,
+ CTEM_ON = .TRUE. ,
  NCYEAR = 109 ,
  LNDUSEON = .FALSE. ,   
  SPINFAST = 10 ,

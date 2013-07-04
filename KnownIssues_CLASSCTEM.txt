@@ -9,3 +9,12 @@ please remove the bug from this list.
 3. The CLASS canopy temperature is prone to fluctuations that make its use problematic. The difference between the air and canopy temperature can easily surpass 30 deg C. We have not been able to get this fixed. JM Apr 2 2013
 
 4. LUC subroutine can cause problems in desert regions when there is no actual LUC going on (but it is turned on). The densities don't balance at the end. To fix, I simply made it exit the subroutine if there is no actual change in the fractions. This should speed it up too. I don't think this 'bug' is worth worrying about but I note it here. JM. Apr 18 2013.  
+
+5. I was looking for a bug in a different area, but i got a seg fault when I changed it to the debugging pgfortran options. the fault was apparently in grdran.f. It was not obvious the problem, but i note that using normal pgfortran flags and gfortran compiler options does not cause a problem. jm jul 2 2013.
+
+6. Around loop 100 in RUNCLASSCTEM I have this note: flag! temp fix. on restart a small number of cells (<10) will havea relatively large difference between the canopy temp and snow temp this will cause the model to fail right away. To prevent this check if the canopy temp is within 5 degrees of the snow temp (if there is snow), and if so then overwrite the tcan with 1 degree colder than the snow temp. jm feb 5 2013
+
+7. Also in loop 100 in RUNCLASSCTEM I have: This fix below is to correct a bug that causes a crash due to unreasonable canopy temperatures in the first year of a restart with snow on the ground. note: runclass.f has this same problem. jm jan 2013
+
+8.
+

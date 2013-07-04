@@ -300,7 +300,7 @@ real, dimension(ilg), intent(in) :: annsrpls  ! annual water surplus (mm)
 real, dimension(ilg), intent(in) :: annpcp    ! annual precipitation (mm)
 real, dimension(ilg), intent(in) :: anpotevp  ! annual potential evaporation (mm)
 
-integer, dimension(ilg,icc), intent(out) :: pftexist(ilg,icc) !binary array indicating pfts exist (=1) or not (=0)
+logical, dimension(ilg,icc), intent(out) :: pftexist(ilg,icc) !binary array indicating pfts exist (=1) or not (=0)
 
 ! local variables
 integer :: i,j
@@ -366,64 +366,64 @@ real, dimension(kk), parameter :: aridlmt = [ 9.9,  9.9,    0.0, &
         j=1
         if(tcoldm(i).ge.tcoldmin(sort(j)).and. tcoldm(i).le.tcoldmax(sort(j)).and. &
            gdd5(i).ge.gdd5lmt(sort(j)))then
-           pftexist(i,j)=1
+           pftexist(i,j)=.true.
         else
-           pftexist(i,j)=0
+           pftexist(i,j)=.false.
         endif
 
 !       needleleaf deciduous
         j=2
         if(tcoldm(i).le.tcoldmax(sort(j)).and.twarmm(i).le.twarmmax(sort(j)).and. &
            gdd5(i).ge.gdd5lmt(sort(j)))then
-           pftexist(i,j)=1
+           pftexist(i,j)=.true.
         else
-           pftexist(i,j)=0
+           pftexist(i,j)=.false.
         endif
 
 !       broadleaf evergreen
         j=3
         if(tcoldm(i).ge.tcoldmin(sort(j)).and. &
            gdd5(i).ge.gdd5lmt(sort(j)))then
-           pftexist(i,j)=1
+           pftexist(i,j)=.true.
         else
-           pftexist(i,j)=0
+           pftexist(i,j)=.false.
         endif
 
 !       broadleaf deciduous cold
         j=4
         if(tcoldm(i).le.tcoldmax(sort(j)).and. &
            gdd5(i).ge.gdd5lmt(sort(j)))then
-           pftexist(i,j)=1
+           pftexist(i,j)=.true.
         else
-           pftexist(i,j)=0
+           pftexist(i,j)=.false.
         endif
 
 !       broadleaf deciduous dry
         j=5
         if(tcoldm(i).ge.tcoldmin(sort(j)).and. aridity(i).ge.aridlmt(sort(j)))then
-           pftexist(i,j)=1
+           pftexist(i,j)=.true.
         else
-           pftexist(i,j)=0
+           pftexist(i,j)=.false.
         endif
 
 !       c3 and c4 crops
-        pftexist(i,6)=1
-        pftexist(i,7)=1
+        pftexist(i,6)=.true.
+        pftexist(i,7)=.true.
 
 !       c3 grass
         j=8
         if(tcoldm(i).le.tcoldmax(sort(j)))then
-           pftexist(i,j)=1
+           pftexist(i,j)=.true.
         else
-           pftexist(i,j)=0
+           pftexist(i,j)=.false.
         endif
 
 !       c4 grass
         j=9
         if(tcoldm(i).ge.tcoldmin(sort(j)))then
-           pftexist(i,j)=1
+           pftexist(i,j)=.true.
         else
-           pftexist(i,j)=0
+           pftexist(i,j)=.false.
         endif
 
 
@@ -488,7 +488,7 @@ real,    intent(in) :: deltat    ! ctem time step, 1 day
 integer, dimension(icc), intent(in) :: sort ! index for correspondence between 9 ctem pfts and
                                             ! size 12 of parameter vectors
 integer, dimension(ic), intent(in) :: nol2pfts ! number of level 2 ctem pfts
-integer, dimension(ilg,icc), intent(in) :: pftexist(ilg,icc) !binary array indicating pfts exist (=1) or not (=0)
+logical, dimension(ilg,icc), intent(in) :: pftexist(ilg,icc) !indicating pfts exist (T) or not (F)
 real, dimension(ilg),     intent(in) :: grclarea  ! grid cell area, km^2
 real, dimension(ilg,icc), intent(in) :: nppveg    ! npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
 real, dimension(ilg,icc), intent(in) :: geremort  ! growth related mortality (1/day)
@@ -883,9 +883,9 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !         unfavourable for a pft. this last term is based on the
 !         binary array pftexist.
 
-          if(pftexist(i,j).eq.0)then
+          if(.not. pftexist(i,j))then
             mrtboclm(i,j)=bioclimrt/365.0
-          else if(pftexist(i,j).eq.1)then
+          else if(pftexist(i,j))then
             mrtboclm(i,j)=0.0
           endif
 
@@ -917,10 +917,13 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 220   continue
 
 !     rank the tree pfts according to their colonization rates 
-
+       
       do 250 j = 1, icc
         do 251 i = il1, il2
-          usenppvg(i,j)=colrate(i,j)*real(pftexist(i,j))
+          usenppvg(i,j)=0.0 !assign to zero then check
+          if (pftexist(i,j)) then
+          usenppvg(i,j)=colrate(i,j)
+          end if
 251     continue
 250   continue
 
@@ -974,8 +977,13 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
         endif 
         do 340 i = il1, il2
           frac(i,j)=max(seedfrac(sdfracin),fcancmx(i,n)) 
-          exist1(i,j)=pftexist(i,n)
-          c1(i,j)=colrate(i,n)*real(pftexist(i,n))  
+          if (pftexist(i,n)) then
+           exist1(i,j)=1
+           c1(i,j)=colrate(i,n)
+          else
+           exist1(i,j)=0
+           c1(i,j)=0.0
+          end if
           m1(i,j)=mortrate(i,n)
 340     continue
 330   continue
@@ -1287,7 +1295,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
       do 690 j = 1, icc
         do 691 i = il1, il2
-          if(pftexist(i,j).eq.0.and.fcancmx(i,j).lt.1.0e-05)then
+          if(.not. pftexist(i,j).and.fcancmx(i,j).lt.1.0e-05)then
 
             term = fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j) &
               +stemmass(i,j)+rootmass(i,j)+litrmass(i,j))
