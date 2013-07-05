@@ -426,7 +426,6 @@ real, dimension(kk), parameter :: aridlmt = [ 9.9,  9.9,    0.0, &
            pftexist(i,j)=.false.
         endif
 
-
 100   continue
 
       return

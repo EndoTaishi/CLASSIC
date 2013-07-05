@@ -1389,10 +1389,9 @@ c
 c     estimate allocation fractions for leaf, stem, and root components.
 c
            call allocate (lfstatus,   thliqc,    ailcg,     ailcb,
-     1                         icc,       ig,      ilg,       il1,
-     2                         il2,     sand,     clay,  rmatctem,
-     3                    gleafmas, stemmass, rootmass,      sort,
-     4                       l2max, nol2pfts,       ic,   fcancmx,
+     1                     il1, il2,     sand,     clay,  
+     3                    rmatctem,   gleafmas, stemmass, rootmass,      
+     4                       sort,    nol2pfts,  fcancmx,
      5                     afrleaf,  afrstem,  afrroot,    wiltsm,
      6                     fieldsm, wtstatus, ltstatus)
 c  
@@ -1762,8 +1761,7 @@ c
      1                      thliqc,   wiltsm,  fieldsm,    uwind,
      2                       vwind,  lightng,  fcancmx, litrmass,
      3                    prbfrhuc, rmatctem, extnprob, pftareab,
-     4                         il1,      il2,       ig,      icc,
-     5                         ilg,     sort, nol2pfts,       ic,
+     4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,   thicec,   popdin, lucemcom,
      7                      dofire,
 c    in above, out below 

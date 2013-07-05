@@ -290,15 +290,15 @@ C     WILTING POINT AND FIELD CAPACITY.
 C
 C     PFT 3 HAS A HIGHER VALUE TO EMULATE DEEP ROOTS GIVING ACCESS TO
 C     GROUND WATER. JM 26.06.2012
-      DATA SN/2.0, 2.0, 0.0,
-     &        20.0, 2.0, 2.0,
-     &        2.0, 2.0, 0.0,
-     &        2.0, 2.0, 0.0/
+C      DATA SN/2.0, 2.0, 0.0,
+C     &        20.0, 2.0, 2.0,
+C     &        2.0, 2.0, 0.0,
+C     &        2.0, 2.0, 0.0/
 C     TEST VALS! JM JUN 11.
-C      DATA SN/5.0, 5.0, 0.0,
-C     &        10.0, 5.0, 5.0,
-C     &        5.0, 5.0, 0.0,
-C     &        5.0, 5.0, 0.0/
+      DATA SN/5.0, 5.0, 0.0,
+     &        10.0, 5.0, 5.0,
+     &        5.0, 5.0, 0.0,
+     &        5.0, 5.0, 0.0/
 
 C
 C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.

@@ -771,7 +771,6 @@ C     WILTING AND FIELD CAPACITIES VARS
       real     fieldsm(ilg,ignd),     wiltsm(ilg,ignd)
       real     psisat(ilg,ignd),      grksat(ilg,ignd)
       real     thpor(ilg,ignd),       bterm(ilg,ignd)
-
 C
 C    COMPETITION RELATED VARIABLES
 C
@@ -5854,7 +5853,7 @@ C
                     SUMFARE=SUMFARE+FAREROW(I,M)
                  ENDDO
                  WRITE(89,8107)IYEAR,(FAREROW(I,M)*100.,M=1,NMOS),
-     &                         SUMFARE,(PFTEXISTGAT(I,J),J=1,ICC)
+     &                         SUMFARE,(PFTEXISTGAT(J,J),J=1,ICC)
                ELSE  !COMPOSITE
                  DO J=1,ICC   !M = 1
                     SUMFARE=SUMFARE+FCANCMXROW(I,1,J)

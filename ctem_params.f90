@@ -9,7 +9,7 @@ implicit none
 
 ! constants
 
-real, parameter :: zero = 1.0e-12 !20
+real, parameter :: zero = 1.0e-20
 real, parameter :: pi =3.1415926535898d0
 real, parameter :: earthrad = 6371.22   ! radius of earth, km
 real, parameter :: deltat =1.0  !CTEM's time step in days
@@ -32,6 +32,9 @@ real, parameter, dimension(lat+1) :: edgelat = [ -90.0000, -85.3190, -81.6280, -
                                          40.8221,  44.5331,  48.2441,  51.9549,  55.6657,  59.3763, &
                                          63.0868,  66.7970,  70.5068,  74.2159,  77.9236,  81.6280, &
                                          85.3190,  90.0000 ]
+
+! conversion factor from carbon to dry organic matter value is from li et al. 2012 biogeosci
+real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
 
 ! ----
 ! model state

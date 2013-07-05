@@ -109,8 +109,8 @@ c                 conductance calculations.
 c 
 c     ---------------------------------------------------------------- 
 
-      use ctem_params,        only : ignd, icc, ilg, ican, zero, l2max,
-     1                               kk, eta, kappa, kn, lfespany, 
+      use ctem_params,        only : ignd, icc, ilg, ican, abszero,
+     1                               l2max,kk, eta, kappa, kn, lfespany, 
      2                               fracbofg, specsla     
 c
       implicit none
@@ -288,7 +288,7 @@ c
           n = (j-1)*l2max + m
           icount = icount + 1
           sla(icount) = 25.0*(lfespany(n)**(-0.50))
-          if(specsla(n).gt.zero) sla(icount)=specsla(n)  
+          if(specsla(n).gt.abszero) sla(icount)=specsla(n)  
 101     continue
 100   continue
 c
@@ -352,7 +352,7 @@ c
       do 230 j = 1, ican
         do 240 i = il1, il2
 c
-          if(sfcancmx(i,j).gt.zero)then
+          if(sfcancmx(i,j).gt.abszero)then
              ailc(i,j)=ailc(i,j)/sfcancmx(i,j)
              saic(i,j)=saic(i,j)/sfcancmx(i,j)
              paic(i,j)=paic(i,j)/sfcancmx(i,j)
@@ -406,7 +406,6 @@ c
 260     continue
 250   continue
 c
-
       k1c=0
       do 300 j = 1, ican
         if(j.eq.1) then
@@ -425,7 +424,7 @@ c
       do 330 j = 1, ican
         do 340 i = il1, il2
 c
-          if(sfcancmx(i,j).gt.zero)then
+          if(sfcancmx(i,j).gt.abszero)then
              averough(i,j)=averough(i,j)/sfcancmx(i,j)
           else
             averough(i,j)=-4.605
@@ -487,13 +486,13 @@ c
      1                                mxrtdpth(sort(m))))then
               rootdpth(i,m) = min(soildpth(i),zbotw(i,ignd),
      1                                  mxrtdpth(sort(m)))
-              if(rootdpth(i,m).le.zero)then
+              if(rootdpth(i,m).le.abszero)then
                 a(i,m)=100.0
               else
                 a(i,m)=4.605/rootdpth(i,m)
               endif
             else
-              if(rootmass(i,m).le.zero)then
+              if(rootmass(i,m).le.abszero)then
                 a(i,m)=100.0
               else
                 a(i,m)=useb(i,m)/(rootmass(i,m)**usealpha(i,m))
@@ -609,7 +608,7 @@ c
       do 450 j = 1, ican
         do 460 i = il1, il2
 c
-          if(sfcancmx(i,j).gt.zero)then
+          if(sfcancmx(i,j).gt.abszero)then
              do 461 k = 1, ignd
                rmatc(i,j,k)=rmatc(i,j,k)/sfcancmx(i,j)
 461          continue
@@ -675,14 +674,14 @@ c
       do 630 j = 1, ican
         do 640 i = il1, il2
 c
-          if(sfcancmx(i,j).gt.zero)then
+          if(sfcancmx(i,j).gt.abszero)then
             cmasvegc(i,j)=cmasvegc(i,j)/sfcancmx(i,j)
             cmasvegc(i,j)=cmasvegc(i,j)*(1.0/0.50) !assuming biomass is 50% c
           else
             cmasvegc(i,j)=0.0
           endif
 c       
-c         if there is no vegetation canopy mass will be zero. this should 
+c         if there is no vegetation canopy mass will be abszero. this should 
 c         essentially mean more bare ground, but since we are not changing
 c         fractional coverages at present, we pass a minimum canopy mass
 c         to class so that it doesn't run into numerical problems.
@@ -714,7 +713,7 @@ c
       do 730 j = 1, ican
         do 740 i = il1, il2
 
-          if(sfcancmx(i,j).gt.zero)then
+          if(sfcancmx(i,j).gt.abszero)then
             alvisc(i,j)=(alvisc(i,j)/sfcancmx(i,j))/100.0
             alnirc(i,j)=(alnirc(i,j)/sfcancmx(i,j))/100.0
           else
