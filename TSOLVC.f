@@ -841,6 +841,7 @@ C
 C
         NUMIT=0
         DO 600 I=IL1,IL2
+          if (tvirta(i) .gt. 100.) then !flag! TEMP FIX! JM July 8 2013.
           IEVAPC(I)=0
           IF(ITER(I).EQ.-1)                   THEN
             TCANT=TVIRTA(I)/(1.0+0.61*QCAN(I))
@@ -879,6 +880,7 @@ C
                IEVAPC(I)=1
             ENDIF
           ENDIF
+         end if
   600   CONTINUE
 c
       IF(NUMIT.GT.0) THEN

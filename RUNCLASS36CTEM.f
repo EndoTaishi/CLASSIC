@@ -2639,7 +2639,7 @@ C
             END IF
           ENDIF   ! LOPCOUNT .GT. 1
 C
-C         WRITE(*,*)'YEAR=',IYEAR,'DAY=',IDAY,' HOUR=',IHOUR,' MIN=',IMIN
+c         WRITE(*,*)'YEAR=',IYEAR,'DAY=',IDAY,' HOUR=',IHOUR,' MIN=',IMIN
 C
 C===================== CTEM ============================================ /
           FSVHGRD(I)=0.5*FSDOWN
@@ -3274,6 +3274,7 @@ C     SIMULATED BY CLASS.
 C
       IF (CTEM_ON) THEN
 C
+
         CALL CTEM ( FCANCMXGAT, FSNOWACC_M,    SANDGAT,    CLAYGAT,   
      2                   ICAN,         ILG,          1,        NML,
      3                   IGND,         ICC,       IDAY,    RADJGAT,
