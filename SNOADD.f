@@ -1,6 +1,8 @@
       SUBROUTINE SNOADD(ALBSNO,TSNOW,RHOSNO,ZSNOW,HCPSNO,HTCS,
      1                  FI,S,TS,RHOSNI,WSNOW,ILG,IL1,IL2,JL)
 C
+C     Purpose: Add snow incident on the ground surface to the snow pack.
+C
 C     * NOV 17/11 - M.LAZARE.   CHANGE SNOW ALBEDO REFRESHMENT 
 C     *                         THRESHOLD (SNOWFALL IN CURRENT
 C     *                         TIMESTEP) FROM 0.005 TO 1.E-4 M. 
@@ -32,13 +34,22 @@ C
 C
 C     * INPUT/OUTPUT ARRAYS.
 C
-      REAL ALBSNO(ILG),   TSNOW (ILG),   RHOSNO(ILG),   ZSNOW (ILG),
-     1     HCPSNO(ILG),   HTCS  (ILG)
+      REAL ALBSNO(ILG)  !Albedo of snow [ ]   
+      REAL TSNOW (ILG)  !Temperature of the snow pack [C] (Ts) 
+      REAL RHOSNO(ILG)  !Density of snow pack [kg m-3] (rho_s ) 
+      REAL ZSNOW (ILG)  !Depth of snow pack [m] (zs)
+      REAL HCPSNO(ILG)  !Heat capacity of snow pack [J m-3 K-1] (Cs) 
+      REAL HTCS  (ILG)  !Internal energy change of snow pack due to 
+                        !conduction and/or change in mass [W m-2] (Is)
 C
 C     * INPUT ARRAYS.
 C
-      REAL FI    (ILG),   S     (ILG),   TS    (ILG),   RHOSNI(ILG),
-     1     WSNOW (ILG)
+      REAL FI    (ILG)  !Fractional coverage of subarea in question on 
+                        !modelled area [ ] (Xi)
+      REAL S     (ILG)  !Snowfall rate incident on snow pack [m s-1] 
+      REAL TS    (ILG)  !Temperature of snowfall [C] 
+      REAL RHOSNI(ILG)  !Density of fresh snow [kg m-3]
+      REAL WSNOW (ILG)  !Liquid water content of snow pack [kg m-2] (ws)
 
 C     * TEMPORARY VARIABLES.
 C
@@ -46,15 +57,72 @@ C
 C                                                                                 
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT,TFREZ,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1     SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,
-     2     CLHVAP
+      REAL DELT     !Time step [s]
+      REAL TFREZ    !Freezing point of water [K]
+      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
+                    ![J m-3 K-1]
+      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
+                    ![J m-3 K-1]
+      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
+                    !(2.25*10^6) [J m-3 K-1]
+      REAL HCPOM    !Volumetric heat capacity of organic matter 
+                    !(2.50*10^6) [J m-3 K-1]
+      REAL HCPSND   !Volumetric heat capacity of sand particles 
+                    !(2.13*10^6) [J m-3 K-1]
+      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
+                    !(2.38*10^6) [J m-3 K-1]
+      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
+      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
+      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
+                    ![J kg-1 K-1]
+      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
+      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
+      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
+      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
+                    ![W m-1 K-1]
+      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
+                    ![J kg-1]
+      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
+                    ![J kg-1]
 C
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
+      !
+      !The change of internal energy HTCS of the snow pack as a result of 
+      !the snowfall added to it is calculated as the difference in Is 
+      !between the beginning and end of the subroutine:
+      !
+      !delta(HTCS) = FI*delta[HCPSNO*ZSNOW*TSNOW]/DELT
+      !
+      !where HCPSNO represents the volumetric heat capacity of the snow 
+      !pack, TSNOW its temperature, DELT the length of the time step, 
+      !and FI the fractional coverage of the subarea under consideration 
+      !relative to the modelled area.
+      !
+      !The amount of snow incident at the given time step, SNOFAL, is 
+      !calculated from S and the timestep length DELT. If 
+      !SNOFAL >= 0.1 mm, the snow albedo is set to the fresh snow value 
+      !of 0.84. Otherwise, if the snow is falling on bare ground, its 
+      !initial albedo is set to the old snow value of 0.50. The heat 
+      !capacity of the precipitating snow, HCPSNP, is calculated from 
+      !the fresh snow density RHOSNI and the heat capacity and density 
+      !of ice. The new temperature of the snow pack is calculated as a 
+      !weighted average of its old temperature, weighted by the snow 
+      !depth ZSNOW and heat capacity HCPSNO, and the snowfall 
+      !temperature, weighted by SNOFAL and HCPSNP. The new density of 
+      !snow is calculated as a weighted average of the original density 
+      !RHOSNO and RHOSNI, and the new snow depth is calculated as 
+      !ZSNOW + SNOFAL. Finally, the new heat capacity of the snow pack 
+      !is obtained from the heat capacities of ice and water HCPICE and 
+      !HCPW, the snow, ice and water densities RHOSNO RHOICE, and RHOW, 
+      !and the water content and depth of the snow pack WSNOW and ZSNOW, 
+      !as:
+      !
+      !HCPSNO = HCPICE[RHOSNO/RHOICE] + HCPW*WSNOW/[RHOW*ZSNOW]
+      !
       DO 100 I=IL1,IL2
           IF(FI(I).GT.0. .AND. S(I).GT.0.)                         THEN
               HTCS  (I)=HTCS(I)-FI(I)*HCPSNO(I)*(TSNOW(I)+TFREZ)*

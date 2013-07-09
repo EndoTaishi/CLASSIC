@@ -12,6 +12,9 @@
      B                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
      C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF)
 C
+C     Purpose: Solution of surface energy balance for non-vegetated 
+C     subareas.
+C
 C     * OCT 14/11 - D.VERSEGHY. FOR POST-ITERATION CLEANUP WITH N-R SCHEME,
 C     *                         REMOVE CONDITION INVOLVING LAST ITERATION
 C     *                         TEMPERATURE.
@@ -89,31 +92,96 @@ C
 
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ISNOW,ISLFD,ITG,ILG,IG,IL1,IL2,JL,I
+      INTEGER ISNOW !Flag indicating presence or absence of snow
+      INTEGER ISLFD,ITG,ILG,IG,IL1,IL2,JL,I
 C
       INTEGER NUMIT,NIT,IBAD,ITERMX
 C
 C     * OUTPUT ARRAYS.
 C
-      REAL QSWNET(ILG),    QLWOUT(ILG),    QTRANS(ILG),    QSENS (ILG),    
-     1     QEVAP (ILG),    EVAP  (ILG),    TZERO (ILG),    QZERO (ILG),    
-     2     GZERO (ILG),    QMELT (ILG),    CDH   (ILG),    CDM   (ILG),    
-     3     RIB   (ILG),    CFLUX (ILG),    FTEMP (ILG),    FVAP  (ILG),    
-     4     ILMO  (ILG),    UE    (ILG),    H     (ILG)
+      REAL QSWNET(ILG)  !Net shortwave radiation at surface [W m-2]    
+      REAL QLWOUT(ILG)  !Upwelling longwave radiation at surface [W m-2]
+                        ! (L)  
+      REAL QTRANS(ILG)  !Shortwave radiation transmitted into surface 
+                        ![W m-2]
+      REAL QSENS (ILG)  !Sensible heat flux from surface [W m-2] (QH )  
+      REAL QEVAP (ILG)  !Latent heat flux from surface [W m-2] (QE)  
+      REAL EVAP  (ILG)  !Evaporation rate at surface [kg m-2 s-1] (E(0))  
+      REAL TZERO (ILG)  !Temperature at surface [K] (T(0))  
+      REAL QZERO (ILG)  !Specific humidity at surface [kg kg-1] (q(0)) 
+      REAL GZERO (ILG)  !Heat flux into surface [W m-2] (G(0))  
+      REAL QMELT (ILG)  !Heat available for melting snow or freezing 
+                        !water at the surface [W m-2]
+      REAL CDH   (ILG)  !Surface drag coefficient for heat [ ] (CDH)  
+      REAL CDM   (ILG)  !Surface drag coefficient for momentum [ ]  
+      REAL RIB   (ILG)  !Bulk Richardson number at surface [ ]  
+      REAL CFLUX (ILG)  !Product of surface drag coefficient and wind 
+                        !speed [m s-1]
+      REAL FTEMP (ILG)  !Product of surface-air temperature gradient, 
+                        !drag coefficient and wind speed [K m s-1]
+      REAL FVAP  (ILG)  !Product of surface-air humidity gradient, drag 
+                        !coefficient and wind speed [kg kg-1 m s-1]
+      REAL ILMO  (ILG)  !Inverse of Monin-Obukhov roughness length (m-1]  
+      REAL UE    (ILG)  !Friction velocity of air [m s-1]  
+      REAL H     (ILG)  !Height of the atmospheric boundary layer [m]
 C
 C     * INPUT ARRAYS.
 C
-      REAL FI    (ILG),    QSWINV(ILG),    QSWINI(ILG),    QLWIN (ILG),   
-     1     TPOTA (ILG),    QA    (ILG),    VA    (ILG),    PADRY (ILG),    
-     2     RHOAIR(ILG),    ALVISG(ILG),    ALNIRG(ILG),    CRIB  (ILG),    
-     3     CPHCH (ILG),    CEVAP (ILG),    TVIRTA(ILG),    
-     4     ZOSCLH(ILG),    ZOSCLM(ILG),    ZRSLFH(ILG),    ZRSLFM(ILG),
-     5     ZOH   (ILG),    ZOM   (ILG),    GCONST(ILG),    GCOEFF(ILG),
-     6     TSTART(ILG),    TRSNOW(ILG),    FCOR  (ILG),    PCPR  (ILG)
+      REAL FI    (ILG)  !Fractional coverage of subarea in question on 
+                        !modelled area [ ]
+      REAL QSWINV(ILG)  !Visible radiation incident on horizontal 
+                        !surface [W m-2]
+      REAL QSWINI(ILG)  !Near-infrared radiation incident on horizontal 
+                        !surface [W m -2]
+      REAL QLWIN (ILG)  !Downwelling longwave radiation at bottom of 
+                        !atmosphere [W m-2]
+      REAL TPOTA (ILG)  !Potential temperature of air at reference 
+                        !height [K] (Ta,pot)
+      REAL QA    (ILG)  !Specific humidity at reference height [kg kg-1] 
+                        !(qa)
+      REAL VA    (ILG)  !Wind speed at reference height [m s-1] (va)  
+      REAL PADRY (ILG)  !Partial pressure of dry air [Pa] (pdry)  
+      REAL RHOAIR(ILG)  !Density of air [kg m-3] (rho_a)  
+      REAL ALVISG(ILG)  !Visible albedo of ground surface [ ]  
+      REAL ALNIRG(ILG)  !Near-IR albedo of ground surface [ ]  
+      REAL CRIB  (ILG)  !Richardson number coefficient [K-1]  
+      REAL CPHCH (ILG)  !Latent heat of vaporization at surface [J kg-1]  
+      REAL CEVAP (ILG)  !Soil evaporation efficiency coefficient [ ] 
+                        !(beta)
+      REAL TVIRTA(ILG)  !Virtual potential temperature of air at 
+                        !reference height [K]
+      REAL ZOSCLH(ILG)  !Ratio of roughness length for heat to reference 
+                        !height for temperature and humidity [ ]
+      REAL ZOSCLM(ILG)  !Ratio of roughness length for momentum to 
+                        !reference height for wind speed [ ]
+      REAL ZRSLFH(ILG)  !Difference between reference height for 
+                        !temperature and humidity and height at which 
+                        !extrapolated wind speed goes to zero [m]
+      REAL ZRSLFM(ILG)  !Difference between reference height for wind 
+                        !speed and height at which extrapolated wind 
+                        !speed goes to zero [m]
+      REAL ZOH   (ILG)  !Surface roughness length for heat [m]  
+      REAL ZOM   (ILG)  !Surface roughness length for momentum [m]  
+      REAL GCONST(ILG)  !Intercept used in equation relating surface 
+                        !heat flux to surface temperature [W m-2 ]
+      REAL GCOEFF(ILG)  !Multiplier used in equation relating surface 
+                        !heat flux to surface temperature [W m-2 K-1]
+      REAL TSTART(ILG)  !Starting point for surface temperature 
+                        !iteration [K]  
+      REAL TRSNOW(ILG)  !Short-wave transmissivity of snow pack [ ]  
+      REAL FCOR  (ILG)  !Coriolis parameter [s-1]  
+      REAL PCPR  (ILG)  !Surface precipitation rate [kg m-2 s-1]
 
 C
-      INTEGER          IWATER(ILG),        IEVAP (ILG)   
-      INTEGER          ITERCT(ILG,6,50),   ISAND(ILG,IG)
+      INTEGER          IWATER(ILG)  !Flag indicating condition of 
+                                    !surface (dry, water-covered or 
+                                    !snow-covered)
+      INTEGER          IEVAP (ILG)  !Flag indicating whether surface 
+                                    !evaporation is occurring or not
+      INTEGER          ITERCT(ILG,6,50) !Counter of number of iterations 
+                                        !required to solve energy 
+                                        !balance for four subareas
+      INTEGER          ISAND(ILG,IG)    !Sand content flag
 C
 C     * INTERNAL WORK ARRAYS.
 C
@@ -132,10 +200,41 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT,TFREZ,RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,HCPW,HCPICE,
-     1     HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,
-     2     RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP,DELTA,CGRAV,CKARM,CPD,
-     3     AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+      REAL DELT     !Time step [s]
+      REAL TFREZ    !Freezing point of water [K]
+      REAL RGAS     !Gas Constant [J kg-1 K-1]
+      REAL RGASV    !Gas constant for water vapour [J kg-1 K-1]
+      REAL GRAV     !Acceleration due to gravity [m s-1]
+      REAL SBC      !Stefan-Boltzmann constant [W m-2 K-4]
+      REAL VKC      !Von Karman constant (0.40)
+      REAL CT       !Drag coefficient for water (1.15*10^-3)
+      REAL VMIN     !Minimum wind speed (0.1) [m s-1]
+      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
+                    ![J m-3 K-1]
+      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
+                    ![J m-3 K-1]
+      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
+                    !(2.25*10^6) [J m-3 K-1]
+      REAL HCPOM    !Volumetric heat capacity of organic matter 
+                    !(2.50*10^6) [J m-3 K-1]
+      REAL HCPSND   !Volumetric heat capacity of sand particles 
+                    !(2.13*10^6) [J m-3 K-1]
+      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
+                    !(2.38*10^6) [J m-3 K-1]
+      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
+      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
+      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
+                    ![J kg-1 K-1]
+      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
+      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
+      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
+      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
+                    ![W m-1 K-1]
+      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
+                    ![J kg-1]
+      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
+                    ![J kg-1]
+      REAL DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
 C
       COMMON /CLASS1/ DELT,TFREZ                                                  
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
@@ -145,6 +244,19 @@ C
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
 C-----------------------------------------------------------------------
+      !
+      !For the surface temperature iteration, two alternative schemes 
+      !are offered: the bisection method (selected if the flag ITG = 1) 
+      !and the Newton-Raphson method (selected if ITG = 2). In the first 
+      !case, the maximum number of iterations ITERMX is set to 12, and 
+      !in the second case it is set to 5. An optional windless transfer 
+      !coefficient EZERO is available, which can be used, following the 
+      !recommendations of Brown et al. (2006), to prevent the sensible 
+      !heat flux over snow packs from becoming vanishingly small under 
+      !highly stable conditions. If the snow cover flag ISNOW is zero 
+      !(indicating bare ground), EZERO is set to zero; if ISNOW=1, EZERO 
+      !is set to 2.0 W m -2 K-1.
+      !
 C     * INITIALIZATION AND PRE-ITERATION SEQUENCE.
 C
       IF(ITG.LT.2) THEN
@@ -160,6 +272,24 @@ C          EZERO=2.0
 C      ENDIF
        EZERO=0.0
 C
+      !
+      !In the 50 loop, some preliminary calculations are done. The 
+      !shortwave transmissivity at the surface, TRTOP, is set to zero in 
+      !the absence of a snow pack, and to the transmissivity of snow 
+      !TRSNOW otherwise. The net shortwave radiation at the surface, 
+      !QSWNET, is calculated as the sum of the incoming visible and 
+      !near-infrared shortwave radiation, weighted according to one 
+      !minus their respective albedos. This average value is corrected 
+      !for the amount of radiation transmitted into the surface, 
+      !obtained using TRTOP. The initial value of the surface 
+      !temperature TZERO is set to TSTART, which contains the value of 
+      !TZERO from the previous time step, and the first step in the 
+      !iteration sequence, TSTEP, is set to 1.0 K. The flag ITER is set 
+      !to 1 for each element of the set of modelled areas, indicating 
+      !that its surface temperature has not yet been found. The 
+      !iteration counter NITER is initialized to 1 for each element. 
+      !Initial values are assigned to several other variables.
+      !
       DO 50 I=IL1,IL2
           IF(FI(I).GT.0.)                                          THEN
               IF(ISNOW.EQ.0)                      THEN
@@ -188,6 +318,57 @@ C
               ENDIF
           ENDIF
    50 CONTINUE
+      !
+      !The 100 continuation line marks the beginning of the surface 
+      !temperature iteration sequence. First the flags NIT (indicating 
+      !that there are still locations at the beginning of the current 
+      !iteration step for which the surface temperature has not yet been 
+      !found) and NUMIT (indicating that there are still locations at 
+      !the end of the current iteration step for which the surface 
+      !temperature has not yet been found) are set to zero. Loop 150 is 
+      !then performed over the set of modelled areas. If ITER=1, NIT is 
+      !incremented by one, and the initial value of the surface transfer 
+      !coefficient CFLUXM for this iteration pass is set to its value 
+      !from the previous pass. The virtual temperature at the surface, 
+      !T(0)v, is obtained using the standard expression (see 
+      !documentation for subroutine CLASST):
+      !
+      !T(0)v = TZERO*[1 + 0.61*QZERO]
+      !
+      !where TZERO is the surface temperature and QZERO is the specific 
+      !humidity at the surface. The surface humidity can be obtained 
+      !from the saturated specific humidity q(0)sat by making use of the 
+      !definition of the surface evaporation efficiency CEVAP:
+      !
+      !CEVAP = [QZERO – QA]/[q(0)sat - QA]
+      !
+      !where QA is the specific humidity of the air at the reference 
+      !height. This expression is inverted to obtain an expression for 
+      !QZERO. The saturated specific humidity q(0)sat is determined from 
+      !the mixing ratio at saturation, w(0)sat:
+      !
+      !q(0)sat = w(0)sat/[1 + w(0) sat]
+      !
+      !The saturation mixing ratio is a function of the saturation 
+      !vapour pressure e(0)sat at the surface:
+      !
+      !w(0)sat = 0.622*e(0)sat/(PADRY)
+      !
+      !where PADRY is the partial pressure of dry air. A standard 
+      !empirical equation for the saturation vapour pressure dependence 
+      !on the temperature T is used:
+      !
+      !esat = 611.0*exp[17.269*(T – Tf)/(T – 35.86)]    T >= Tf
+      !esat = 611.0*exp[21.874*(T – Tf)/(T – 7.66)]     T < Tf
+      !
+      !where Tf is the freezing point. If there is a snow cover or 
+      !ponded water present on the surface (IWATER > 0), the surface 
+      !evaporation efficiency EVBETA is set to 1 and QZERO is set to 
+      !q(0)sat. Otherwise EVBETA is set to CEVAP, the value obtained in 
+      !subroutine TPREP on the basis of ambient conditions, and QZERO is 
+      !calculated as above. If QZERO > QA and the evaporation flag IEVAP 
+      !has been set to zero, EVBETA is reset to zero and QZERO is reset 
+      !to QA. Finally, T(0)v is determined using the equation above.
 C
 C     * ITERATION SECTION.
 C     * LOOP IS REPEATED UNTIL SOLUTIONS HAVE BEEN FOUND FOR ALL POINTS 
@@ -226,6 +407,14 @@ C
           ENDIF
   150 CONTINUE      
 C
+      !If NIT > 0, a subroutine is called to evaluate the stability-
+      !corrected surface drag coefficients for heat and momentum. The 
+      !subroutine selection is made on the basis of the flag ISLFD. If 
+      !ISLFD=1, indicating that the calculations are to be consistent 
+      !with CCCma conventions, subroutine DRCOEF is called; if ISLFD=2, 
+      !indicating that the calculations are to be consistent with RPN 
+      !conventions, subroutine FLXSURFZ is called.
+      !
       IF(NIT.GT.0)                                                  THEN
 C
 C     * CALCULATE SURFACE DRAG COEFFICIENTS (STABILITY-DEPENDENT) AND
@@ -244,6 +433,54 @@ C
 C
 C     * REMAINING CALCULATIONS.
 C
+        !In loop 175, the terms of the surface energy balance are 
+        !evaluated. The energy balance equation is written as:
+        !
+        !K* + L* - QSENS – QEVAP – GZERO = 0
+        !
+        !where K* is the net shortwave radiation, L* is the net longwave 
+        !radiation, QSENS is the sensible heat flux, QEVAP is the latent 
+        !heat flux, and GZERO is the conduction into the surface. K* was 
+        !evaluated earlier in loop 50. L* is obtained as the difference 
+        !between the downwelling radiation QLWIN and the upwelling 
+        !radiation QLWOUT, which in turn is determined using the Stefan-
+        !Boltzmann equation:
+        !
+        !QLWOUT = SBC*TZERO^4
+        !
+        !where SBC is the Stefan-Boltzmann constant. (It is assumed that 
+        !natural surfaces, because of their radiative complexity, act as 
+        !effective black bodies, so that their emissivity can be taken 
+        !to be 1.) The sensible heat flux is given by
+        !
+        !QH = [RHOAIR*SPHAIR*CDH*VA + epsilon_0]*[TZERO – TPOTA]
+        !
+        !where RHOAIR is the density of the air, SPHAIR is its specific 
+        !heat, CDH is the surface drag coefficient for heat, and VA and 
+        !TPOTA are the wind speed and potential temperature respectively 
+        !at the reference height. (Note in the code that the variable 
+        !CFLUX, evaluated in subroutine DRCOEF or FLXSURFZ, represents 
+        !the product of CDH and va.) The windless transfer coefficient 
+        !epsilon_0, evaluated at the beginning of the subroutine, is 
+        !used only under stable conditions, i.e. if TZERO < TPOTA. The 
+        !evaporation rate at the surface, EVAP, is calculated as
+        !
+        !EVAP = RHOAIR*CDH*VA [QZERO – QA]
+        !
+        !QE is obtained by multiplying EVAP by the latent heat of 
+        !vaporization at the surface. The ground heat flux GZERO is 
+        !determined as a linear function of TZERO (see documentation for 
+        !subroutines TNPREP and TSPREP). It can be seen that each of the 
+        !terms of the surface energy balance is a function of a single 
+        !unknown, TZERO. The residual RESID of the energy balance is now 
+        !evaluated on the basis of the current estimation for TZERO. If 
+        !the absolute value of RESID is less than 5.0 W m-2, or if the 
+        !absolute value of the iteration step TSTEP most recently used 
+        !is less than 0.01 K, the surface temperature is deemed to have 
+        !been found and ITER is set to 0. If the iteration counter NITER 
+        !is equal to the maximum number and ITER is still 1, ITER is set 
+        !to -1.
+        !
         DO 175 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN    
               QLWOUT(I)=SBC*TZERO(I)*TZERO(I)*TZERO(I)*TZERO(I)
@@ -266,6 +503,37 @@ C
 175     CONTINUE
       ENDIF
 C
+      !
+      !If ITG = 2, then if NIT > 0 and if ITER for the array element in 
+      !question is 1, the calculations for the Newton-Raphson method of 
+      !iteration are performed. In this approach, the value xn+1 used at 
+      !each iteration step is obtained from the value xn at the previous 
+      !step as follows:
+      !
+      !xn+1 = xn – f(xn)/f′(xn)
+      !
+      !Identifying xn with TZERO and f(xn) with the surface energy 
+      !balance equation, it can be seen that the second term on the 
+      !right-hand side corresponds to TSTEP; the numerator is equal to 
+      !RESID and the denominator to the first derivative of the energy 
+      !balance equation evaluated at TZERO, which in turn is equal to 
+      !the sum of the derivatives of the individual terms:
+      !
+      !d(QLWOUT)/dT = -4*SBC*TZERO^3
+      !
+      !d(QSENS)/dT = RHOAIR*SPHAIR*{CDH*VA + 
+      !                             [TZERO – TPOTA]*d(CDH*VA)/dT}
+      !
+      !d(QEVAP)/dT = Lv*RHOAIR{CDH*VA*d(QZERO)/dT+ 
+      !                        [QZERO – QA]*d(CDH*VA)/dT}
+      !
+      !and dG(0)/dT is equal to the coefficient multiplying TZERO in the 
+      !equation for G(0). (Lv is the latent heat of vaporization at the 
+      !surface.) At the end of the calculations the iteration counter 
+      !NITER and the flag NUMIT are each incremented by one, and upon 
+      !exiting the loop, if NUMIT > 0, the iteration cycle is repeated 
+      !from line 100 on.
+      !
       IF(ITG.LT.2) THEN
 C
 C     * OPTION #1: BISECTION ITERATION METHOD.
@@ -336,6 +604,28 @@ C
       ENDIF
 C
       IF(NUMIT.GT.0)                                    GO TO 100
+      !
+      !After the iteration has been completed, NUMIT is reset to zero 
+      !and a check is carried out to ascertain whether convergence has 
+      !not been reached (i.e. whether ITER = -1) for any location. In 
+      !such cases it is assumed that conditions of near-neutral 
+      !stability at the surface are the cause of the difficulty in 
+      !finding a solution. A trial value of TZERO is calculated using 
+      !the virtual potential temperature of the air. If 
+      !RESID > 50 W m-2, TZERO is set to this trial value. The values of 
+      !QZERO and the components of the surface energy balance are 
+      !recalculated as above, except that QSENS and QEVAP are assumed as 
+      !a first approximation to be zero. RESID is determined on this 
+      !basis. If RESID is positive, it is assigned to QEVAP; otherwise 
+      !RESID is divided equally between QSENS and QEVAP, except in the 
+      !case of an absolutely dry surface, in which case QEVAP is set to 
+      !zero and QSENS to RESID. RESID is reset to zero, EVAP is obtained 
+      !from QEVAP, and T(0)v is recalculated. The flag JEVAP for the 
+      !location is set to 1, and NUMIT is incremented by 1. If NUMIT > 0 
+      !at the end of this loop, DRCOEF or FLXSURF are called again, and 
+      !their calculations are performed for any location where JEVAP is 
+      !1, to ensure consistency with the new surface temperature and 
+      !humidity.
 C
 C     * IF CONVERGENCE HAS NOT BEEN REACHED, CALCULATE TEMPERATURE AND
 C     * FLUXES ASSUMING NEUTRAL STABILITY.
@@ -390,6 +680,11 @@ C
       ENDIF
 C
       ENDIF
+      !
+      !At this point a check is performed for unphysical values of the 
+      !surface temperature, i.e. for values greater than 100 C or less 
+      !than -100 C. If such values are encountered, an error message is 
+      !printed and a call to abort is carried out.
 C
 C     * CHECK FOR BAD ITERATION TEMPERATURES.
 C
@@ -409,6 +704,21 @@ C
  6280     FORMAT(2X,7F12.4)
           CALL XIT('TSOLVE',-1)
       ENDIF 
+      !
+      !Finally, a check is performed to ensure that TZERO is not less 
+      !than 0 C if ponded water is present on the surface (IWATER = 1) 
+      !or greater than 0 C if snow is present on the surface 
+      !(IWATER = 2), or greater than zero if the surface is an ice sheet 
+      !(ISAND = -4). If any of these cases is true, TZERO is reset to 
+      !the freezing point, and QZERO and T(0)v are recalculated. DRCOEF 
+      !or FLXSURFZ are called, and their calculations are performed for 
+      !all locations meeting these criteria. The components of the 
+      !surface energy balance are recalculated; the residual amount is 
+      !assigned to the energy associated with phase change of water at 
+      !the surface, QMELT, and RESID is set to zero. If QMELT < 0, i.e. 
+      !if there is freezing taking place, the evaporation flux QEVAP is 
+      !added to it and then reset to zero (since if ponded water is 
+      !freezing, it is unavailable for evaporation).
 C
 C     * POST-ITERATION CLEAN-UP. 
 C
@@ -446,6 +756,19 @@ C
      3                    LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
         ENDIF
       ENDIF
+      !
+      !In the last half of the loop, some final adjustments are made to 
+      !a few variables. If the evaporation flux is vanishingly small, it 
+      !is added to RESID and reset to zero. If an anomalous case has 
+      !arisen in which QMELT < 0 over a snow-covered surface or 
+      !QMELT > 0 over a snow-free surface, QMELT is added to the heat 
+      !flux into the surface and then reset to zero. Any remaining 
+      !residual flux is added to QH. The shortwave radiation transmitted 
+      !into the surface is added back to the net shortwave radiation for 
+      !diagnostic purposes. The surface vapour flux is converted into 
+      !units of m s-1. Lastly, the iteration counter ITERCT is updated 
+      !for the level corresponding to the subarea type and the value of 
+      !NITER.
 C
 C     * REMAINING CALCULATIONS.
 C

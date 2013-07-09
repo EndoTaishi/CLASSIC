@@ -2,6 +2,10 @@
      1                   TRSNOW,ZSNOW,FSNOW,ASVDAT,ASIDAT,
      2                   ILG,IG,IL1,IL2,JL,IALS)
 C
+C     Purpose: Diagnose snowpack visible and near-IR albedos given the 
+C     all-wave albedo at the current time step. Calculate snowpack 
+C     transmissivity for shortwave radiation.
+C
 C     * FEB 05/07 - D.VERSEGHY. STREAMLINE CALCULATIONS OF
 C     *                         ALVSSN AND ALIRSN.
 C     * APR 13/06 - D.VERSEGHY. SEPARATE ALBEDOS FOR OPEN AND 
@@ -36,15 +40,89 @@ C
 C
 C     * OUTPUT ARRAYS.
 C
-      REAL   ALVSSN(ILG),  ALIRSN(ILG),  ALVSSC(ILG),  ALIRSC(ILG),
-     1       TRSNOW(ILG)
+      REAL ALVSSN(ILG)  ! Visible albedo of snow pack on bare ground [ ] 
+                        !(alpha_s,VIS)
+      REAL ALIRSN(ILG)  !Near-IR albedo of snow pack on bare ground [ ] 
+                        !(alpha_s,NIR)
+      REAL ALVSSC(ILG)  !Visible albedo of snow on ground under 
+                        !vegetation canopy [ ]
+      REAL ALIRSC(ILG)  !Near-IR albedo of snow on ground under 
+                        !vegetation canopy [ ]
+      REAL TRSNOW(ILG)  !Transmissivity of snow to shortwave radiation 
+                        ![ ] (tau_s)
+
 C
 C     * INPUT ARRAYS.
 C
-      REAL   ALBSNO(ILG),  ZSNOW (ILG),  FSNOW (ILG),
-     1       ASVDAT(ILG),  ASIDAT(ILG)
+      REAL ALBSNO(ILG)  !All-wave albedo of snow pack [ ] (alpha_s,T)  
+      REAL ZSNOW (ILG)  !Depth of snow [m] (zs )
+      REAL FSNOW (ILG)  !Fractional coverage of snow on grid cell [ ]
+      REAL ASVDAT(ILG)  !Assigned value of visible albedo of snow pack – 
+                        !optional [ ]
+      REAL ASIDAT(ILG)  !Assigned value of near-IR albedo of snow pack – 
+                        !optional [ ]
 C
 C------------------------------------------------------------------
+      !
+      !In subroutine SNOALBW, called at the end of CLASSW, the change of 
+      !total snow albedo over the current time step is calculated using 
+      !an empirical exponential decay function, which has different 
+      !coefficients depending on whether the snow is dry or melting. In 
+      !this subroutine, the visible and near-IR components of the snow 
+      !albedo are diagnosed from the total albedo. According to the 
+      !literature (Aguado, 1985; Robinson and Kukla, 1984; Dirmhirn and 
+      !Eaton, 1975), the following represent typical snow albedos for 
+      !fresh snow, old dry snow and melting snow:
+      !
+      !----------------------------------------------------------------|
+      !              | Total albedo  | Visible albedo | Near-IR albedo |
+      !----------------------------------------------------------------|
+      ! Fresh snow   |      0.84     |      0.95      |      0.73      |
+      !----------------------------------------------------------------|
+      ! Old dry snow |      0.70     |      0.84      |      0.56      |
+      !----------------------------------------------------------------|
+      ! Melting snow |      0.50     |      0.62      |      0.38      |
+      !----------------------------------------------------------------|
+      !
+      !The same decay function is assumed to apply to all three albedo 
+      !ranges, so the relative location of the visible and near-IR 
+      !albedos, ALVSSN and ALIRSN, on the decay curve will be analogous 
+      !to that of the total albedo, ALBSNO. Thus, for dry snow:
+      !
+      ![ALVSSN - 0.84]/[0.95-0.84] = [ALBSNO - 0.70]/[0.84-0.70]
+      ![ALIRSN - 0.56]/[0.73-0.56] = [ALBSNO - 0.70]/[0.84-0.70]
+      !
+      !or, simplifying:
+      !
+      !ALVSSN = 0.79[ALBSNO - 0.70] + 0.84
+      !ALIRSN = 1.21[ALBSNO - 0.70] + 0.56
+      !
+      !For melting snow:
+      !
+      ![ALVSSN - 0.62]/[0.95-0.62] = [ALBSNO - 0.50]/[0.84-0.50]
+      ![ALIRSN - 0.38]/[0.73-0.38] = [ALBSNO - 0.50]/[0.84-0.50]
+      !
+      !or, simplifying:
+      !
+      !ALVSSN = 0.97[ALBSNO - 0.50] + 0.62
+      !ALIRSN = 1.03[ALBSNO - 0.50] + 0.38
+      !
+      !The above calculations are performed if the flag IALS is set to 
+      !zero. If IALS is set to one, indicating that assigned snow 
+      !albedos are to be used instead of calculated values, ALVSSN and 
+      !ALIRSN are set to the assigned values ASVDAT and ASIDAT 
+      !respectively. The sub-canopy values of visible and near-IR albedo 
+      !are currently set equal to the open snowpack values (this is 
+      !expected to change if a canopy litterfall parametrization is 
+      !developed).
+      !
+      !The transmissivity of snow τs is calculated from the snow depth 
+      !ZSNOW using Beer’s law, with an empirical extinction coefficient 
+      !of 25.0 m-1 derived from the literature (Grenfell and Maykut, 
+      !1977; Thomas, 1963):
+      !
+      !TRSNOW = exp[-25.0*ZSNOW]
+      !
       IPTBAD=0
       DO 100 I=IL1,IL2                                           
          IF(ALBSNO(I).LT.0.50.AND.ALBSNO(I).GT.0.499) ALBSNO(I)=0.50                      

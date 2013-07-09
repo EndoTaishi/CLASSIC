@@ -4,6 +4,9 @@
      3                  TSURF,ZSNOW,TCSNOW,HCPSNO,QTRANS,
      4                  FI,DELZ,ILG,IL1,IL2,JL,IG            )
 C
+C     Purpose: Snow temperature calculations and cleanup after surface 
+C     energy budget calculations.
+C
 C     * AUG 16/06 - D.VERSEGHY. MAJOR REVISION TO IMPLEMENT THERMAL
 C     *                         SEPARATION OF SNOW AND SOIL.
 C     * MAR 23/06 - D.VERSEGHY. ADD CALCULATIONS TO ALLOW FOR WATER 
@@ -52,18 +55,49 @@ C
 C
 C     * OUTPUT ARRAYS.
 C
-      REAL GZERO (ILG),    TSNBOT(ILG)
+      REAL GZERO (ILG)  !Heat conduction into soil surface [W m-2 ] 
+                        !(G(delta_zs))    
+      REAL TSNBOT(ILG)  !Temperature at bottom of snow pack [K]
 C
 C     * INPUT/OUTPUT ARRAYS.
 C
-      REAL GSNOW (ILG),    TSNOW (ILG),    WSNOW (ILG),    RHOSNO(ILG),
-     1     QMELTG(ILG),    HTCS  (ILG),    HMFN  (ILG)
+      REAL GSNOW (ILG)  !Heat conduction into surface of snow pack 
+                        ![W m-2 ] (G(0))    
+      REAL TSNOW (ILG)  !Snowpack temperature [K/C] (Ts)  
+      REAL WSNOW (ILG)  !Liquid water content of snow pack [kg m-2] (ws)  
+      REAL RHOSNO(ILG)  !Density of snow [kg m-3] (rho_s)
+      REAL QMELTG(ILG)  !Available energy to be applied to melting of 
+                        !snow [W m-2 ]
+      REAL HTCS  (ILG)  !Internal energy change of snow pack due to 
+                        !conduction and/or change in mass [W m-2 ] (Is) 
+      REAL HMFN  (ILG)  !Energy associated with phase change of water in 
+                        !snow pack [W m-2]
 C
 C     * INPUT ARRAYS.
 C
-      REAL TSURF (ILG),    ZSNOW (ILG),    TCSNOW(ILG),    HCPSNO(ILG),    
-     1     QTRANS(ILG),    GCONST(ILG),    GCOEFF(ILG),    FI    (ILG),
-     2     GCONSTS(ILG),   GCOEFFS(ILG),   TBAR(ILG,IG),   DELZ  (IG)
+      REAL TSURF (ILG)  !Snow surface temperature [K]    
+      REAL ZSNOW (ILG)  !Depth of snow pack [m] (delta_zs) 
+      REAL TCSNOW(ILG)  !Thermal conductivity of snow [W m-1 K-1]  
+      REAL HCPSNO(ILG)  !Heat capacity of snow [J m-3 K1] (Cs)  
+      REAL QTRANS(ILG)  !Shortwave radiation transmitted through the 
+                        !snow pack [W m-2 ]
+      REAL GCONST(ILG)  !Intercept used in equation relating snow 
+                        !surface heat flux to snow surface temperature 
+                        ![W m-2 ]
+      REAL GCOEFF(ILG)  !Multiplier used in equation relating snow 
+                        !surface heat flux to snow surface temperature 
+                        ![W m-2 K-1]
+      REAL FI    (ILG)  !Fractional coverage of subarea in question on 
+                        !modelled area [ ] (Xi)
+      REAL GCONSTS(ILG) !Intercept used in equation relating snow 
+                        !surface heat flux to snow surface temperature 
+                        ![W m-2 ]
+      REAL GCOEFFS(ILG) !Multiplier used in equation relating snow 
+                        !surface heat flux to snow surface temperature 
+                        ![W m-2 K-1]
+      REAL TBAR(ILG,IG) !Temperatures of soil layers, averaged over 
+                        !modelled area [K]
+      REAL DELZ  (IG)   !Overall thickness of soil layer [m]
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -71,8 +105,33 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT,TFREZ,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
-     1     SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
+      REAL DELT     !Time step [s]
+      REAL TFREZ    !Freezing point of water [K]
+      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
+                    ![J m-3 K-1]
+      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
+                    ![J m-3 K-1]
+      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
+                    !(2.25*10^6) [J m-3 K-1]
+      REAL HCPOM    !Volumetric heat capacity of organic matter 
+                    !(2.50*10^6) [J m-3 K-1]
+      REAL HCPSND   !Volumetric heat capacity of sand particles 
+                    !(2.13*10^6) [J m-3 K-1]
+      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
+                    !(2.38*10^6) [J m-3 K-1]
+      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
+      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
+      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
+                    ![J kg-1 K-1]
+      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
+      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
+      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
+      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
+                    ![W m-1 K-1]
+      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
+                    ![J kg-1]
+      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
+                    ![J kg-1]
 C
       COMMON /CLASS1/ DELT,TFREZ                                                  
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
@@ -80,6 +139,33 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
 C
+      !In the 100 loop, the heat flux into the snow surface (without 
+      !adjustments that may have been applied relating to partitioning 
+      !of the residual of the surface energy balance among the surface 
+      !flux terms) is calculated from the snow surface temperature 
+      !TSURF, using the GCOEFFS and GCONSTS terms (see documentation of 
+      !subroutine TSPREP). The temperature at the bottom of the snow 
+      !pack, TSNBOT, is then calculated. Currently TSNBOT is determined 
+      !as a simple average of the temperatures of the snow and the first 
+      !soil layer, weighted according to their respective depths (and 
+      !constrained to be <= 0 C), but this is under review. The heat 
+      !flux into the soil surface is then evaluated from TSNBOT and the 
+      !GCOEFF and GCONST terms (see documentation of subroutine TNPREP). 
+      !If the energy to be applied to the melting of snow, QMELTG, is 
+      !negative (indicating an energy sink), QMELTG is added to the heat 
+      !flux into the ground, GZERO, and reset to zero. The temperature 
+      !of the snow pack is then stepped forward using the heat fluxes at 
+      !the top and bottom of the snow pack, GSNOW and GZERO:
+      !
+      !ΔTs = [GSNOW - GZERO]*DELT/(HCPSNO*ZSNOW)
+      !
+      !where HCPSNO is the snow heat capacity, DELT the time step and 
+      !ZSNOW the snow depth. If the new snow temperature is greater than 
+      !zero, the excess amount of heat is calculated and added to QMELTG 
+      !and subtracted from GSNOW, and TSNOW is reset to 0 C. Finally, 
+      !the shortwave radiation transmitted through the snow pack, 
+      !QTRANS, is added to GZERO.
+      !
       DO 100 I=IL1,IL2
           IF(FI(I).GT.0.)                                          THEN
               GSNOLD=GCOEFFS(I)*TSURF(I)+GCONSTS(I)
@@ -104,6 +190,39 @@ C              TSNBOT(I)=TSURF(I)-GSNOLD*ZSNOW(I)/(2.0*TCSNOW(I))
           ENDIF
   100 CONTINUE
 C 
+      !In the 200 loop, since liquid water is assumed only to exist in 
+      !the snow pack if it is at 0 C, a check is carried out to 
+      !determine whether the liquid water content WSNOW > 0 at the same 
+      !time as the snow temperature TSNOW < 0. If so, the change of 
+      !internal energy HTCS of the snow pack as a result of this phase 
+      !change is calculated as the difference in Is between the 
+      !beginning and end of the loop:
+      !
+      !delta(HTCS) = FI*delta[HCPSNO*TSNOW]/DELT
+      !
+      !where Xi represents the fractional coverage of the subarea under 
+      !consideration relative to the modelled area. The total energy 
+      !sink HADD available to freeze liquid water in the snow pack is 
+      !calculated from TSNOW, and the amount of energy HCONV required to 
+      !freeze all the available water is calculated from WSNOW. If 
+      !HADD < HCONV, only part of WSNOW is frozen; this amount WFREZ is 
+      !calculated from HADD and subtracted from WSNOW, the snow 
+      !temperature is reset to 0 C, the frozen water is used to update 
+      !the snow density, and the snow heat capacity is recalculated:
+      !
+      !HCPSNO = HCPICE*[RHOSNO/RHOICE] + HCPW*WSNOW/[RHOW*ZSNOW]
+      !
+      !where HCPICE and HCPW are the heat capacities of ice and water 
+      !respectively, WSNOW is the snow water content and RHOSNO, RHOICE 
+      !and RHOW are the densities of snow, ice and water respectively. 
+      !If HADD > HCONV, the available energy sink is sufficient to 
+      !freeze all of WSNOW. HADD is recalculated as HADD – HCONV, WFREZ 
+      !is set to WSNOW and added to the snow density, WSNOW is set to 
+      !zero, the snow heat capacity is recalculated and HADD is used to 
+      !determine a new value of TSNOW. Finally, WFREZ is used to update 
+      !the diagnostic variables HMFN describing phase changes of water 
+      !in the snow pack, and the change in internal energy HTCS.
+      !
       DO 200 I=IL1,IL2
            IF(FI(I).GT.0. .AND. TSNOW(I).LT.0. .AND. WSNOW(I).GT.0.)
      1                                                              THEN

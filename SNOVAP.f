@@ -38,15 +38,32 @@ C
 C
 C     * INPUT/OUTPUT ARRAYS.
 C
-      REAL RHOSNO(ILG),   ZSNOW (ILG),   HCPSNO(ILG),   TSNOW (ILG), 
-     1     EVAP  (ILG),   QFN   (ILG),   QFG   (ILG),   HTCS  (ILG),
-     2     WLOST (ILG),   TRUNOF(ILG),   RUNOFF(ILG),   TOVRFL(ILG),
-     3     OVRFLW(ILG)
+      REAL RHOSNO(ILG)  !Density of snow pack [kg m-3] (rho_s )   
+      REAL ZSNOW (ILG)  !Depth of snow pack [m] (zg) 
+      REAL HCPSNO(ILG)  !Heat capacity of snow pack [J m-3 K-1] (Cs) 
+      REAL TSNOW (ILG)  !Temperature of the snow pack [C] (Ts)
+      REAL EVAP  (ILG)  !Sublimation rate from snow surface at start of 
+                        !subroutine [m s-1]
+      REAL QFN   (ILG)  !Sublimation from snow pack [kg m-2 s-1] 
+      REAL QFG   (ILG)  !Evaporation from ground [kg m-2 s-1] 
+      REAL HTCS  (ILG)  !Internal energy change of snow pack due to 
+                        !conduction and/or change in mass [W m-2] (Is)
+      REAL WLOST (ILG)  !Residual amount of water that cannot be 
+                        !supplied by surface stores [kg m-2]
+      REAL TRUNOF(ILG)  !Temperature of total runoff [K] 
+      REAL RUNOFF(ILG)  !Total runoff [m s-1] 
+      REAL TOVRFL(ILG)  !Temperature of overland flow [K]
+      REAL OVRFLW(ILG)  !Overland flow from top of soil column [m s-1]
 C
 C     * INPUT ARRAYS.
 C
-      REAL FI    (ILG),   R     (ILG),   S     (ILG),   RHOSNI(ILG),
-     1     WSNOW (ILG)   
+      REAL FI    (ILG)  !Fractional coverage of subarea in question on 
+                        !modelled area [ ] (Xi)
+      REAL R     (ILG)  !Rainfall rate incident on snow pack [m -1s ] 
+      REAL S     (ILG)  !Snowfall rate incident on snow pack 
+                        ![kg m-2 s-1]
+      REAL RHOSNI(ILG)  !Density of fresh snow [kg m-3]
+      REAL WSNOW (ILG)  !Liquid water content of snow pack [kg m-2] (ws) 
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -54,14 +71,93 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT,TFREZ,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,
-     1     SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
+      REAL DELT     !Time step [s]
+      REAL TFREZ    !Freezing point of water [K]
+      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
+                    ![J m-3 K-1]
+      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
+                    ![J m-3 K-1]
+      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
+                    !(2.25*10^6) [J m-3 K-1]
+      REAL HCPOM    !Volumetric heat capacity of organic matter 
+                    !(2.50*10^6) [J m-3 K-1]
+      REAL HCPSND   !Volumetric heat capacity of sand particles 
+                    !(2.13*10^6) [J m-3 K-1]
+      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
+                    !(2.38*10^6) [J m-3 K-1]
+      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
+      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
+      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
+                    ![J kg-1 K-1]
+      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
+      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
+      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
+      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
+                    ![W m-1 K-1]
+      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
+                    ![J kg-1]
+      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
+                    ![J kg-1]
 C                                       
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
+      !
+      !These calculations are done if a snowpack is present and there is 
+      !no rainfall or snowfall occurring. The change of internal energy 
+      !HTCS of the snow pack as a result of the change in its mass is 
+      !calculated as the difference in Is between the beginning and end 
+      !of the subroutine:
+      !
+      !HTCS = FI*delta[HCPSNO*ZSNOW*TSNOW]/DELT
+      !
+      !where HCPSNO represents the volumetric heat capacity of the snow 
+      !pack, TSNOW its temperature, DELT the length of the time step, 
+      !and FI the fractional coverage of the subarea under consideration 
+      !relative to the modelled area.
+      !
+      !If the sublimation rate EVAP over the snow pack is negative 
+      !(downward), the deposited depth of snow ZADD is calculated from 
+      !EVAP by converting it from a liquid water flux to a fresh snow 
+      !depth using RHOSNI, the fresh snow density. The snowpack density 
+      !is updated as a weighted average of the original snow density 
+      !RHOSNO and RHOSNI. The new snow depth is calculated as the sum of 
+      !the old snow depth ZSNOW and ZADD. The new volumetric heat 
+      !capacity of the snow pack is obtained from the heat capacities of 
+      !ice and water HCPICE and HCPW, the snow, ice and water densities 
+      !RHOSNO RHOICE, and RHOW, and the water content and depth of the 
+      !snow pack WSNOW and ZSNOW, as:
+      !
+      !HCPSNO = HCPICE*[RHOSNO/RHOICE] + HCPW*WSNOW/[RHOW*ZSNOW]
+      !
+      !If the sublimation rate is positive, the depth of the snow pack 
+      !ZLOST that is sublimated over the time step is calculated from 
+      !EVAP using RHOSNO. If ZLOST <= ZSNOW, the snow depth is reduced 
+      !and HCPSNO is recalculated. Otherwise the deficit amount ZREM is 
+      !calculated from ZLOST – ZSNOW and converted to a depth of water. 
+      !This amount is further converted to an evaporation rate by 
+      !applying a correction factor of (Lm+ Lv)/Lv, where Lm is the 
+      !latent heat of melting and Lv is the latent heat of vaporization 
+      !(to account for the fact that the energy is now being used to 
+      !evaporate water instead of sublimate snow). This necessarily 
+      !leads to a small discrepancy between the overall vapour flux for 
+      !the subarea that was originally calculated in CLASST, and the 
+      !actual change of water storage in the subarea, and therefore this 
+      !discrepancy is added to the housekeeping variable WLOST for use 
+      !in the water balance checks done later in CHKWAT. If there was 
+      !liquid water in the snow pack, WSNOW, it is assigned to overall 
+      !runoff RUNOFF, and to overland flow OVRFLW. The resulting 
+      !temperatures of the runoff and overland flow, TRUNOF and TOVRFL, 
+      !are recalculated as weighted averages using the original runoff 
+      !amounts and temperatures, and the original snow temperature TSNOW 
+      !for WSNOW. The snow depth, heat capacity, temperature and water 
+      !content are all set to zero. Finally, since ZREM now becomes soil 
+      !evaporation rather than snow sublimation, the diagnostic 
+      !variables QFN and QFG, representing the vapour flux from snow and 
+      !soil respectively, are adjusted to reflect this.
+      !
       DO 100 I=IL1,IL2
           IF(FI(I).GT.0. .AND. (S(I).LT.1.0E-11 .OR. R(I).LT.1.0E-11)
      1                .AND. ZSNOW(I).GT.0.)                       THEN
