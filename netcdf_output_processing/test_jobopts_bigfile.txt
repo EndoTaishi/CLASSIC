@@ -1,0 +1,23 @@
+ &joboptions
+
+ PARALLELRUN = .TRUE. ,
+ CTEM =.TRUE. , 
+ MAKEMONTHLY = .TRUE. ,    
+ DOFIRE = .FALSE. ,
+ MOSAIC = .TRUE. ,
+ COMPETE_LNDUSE= .FALSE. ,
+ totyrs = 7 ,
+ yrst = 1 ,            
+ realyrst = 2174 ,    
+ long_path = '/home/rjm/Documents/CTEM/code/run/netcdf_programs' ,
+ file_to_write = 'test'
+
+/
+
+This area is for comments about the netcdfs or the run. 
+
+For mosaic, unless needed, it is suggested to not include the monthly
+outputs in the netcdf file as they increase the file size greatly (and
+also the slow the speed of file creation).
+ 
+

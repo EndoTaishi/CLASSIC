@@ -3718,20 +3718,20 @@ C===================== CTEM =====================================/
           WRITE(64,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,
      1                   SNOMLT,BEG,GTOUT,SNOROW(I,M),RHOSROW(I,M),
      2                   WSNOROW(I,M),ALTOT,ROFROW(I,M),
-     3                   TPN,ZPNDROW(I,M),CANRESROW(I,M),'TILE ',M
+     3                   TPN,ZPNDROW(I,M),CANRESROW(I,M),' TILE ',M
           IF(IGND.GT.3) THEN
 C===================== CTEM =====================================\
               WRITE(65,6500) IHOUR,IMIN,IDAY,IYEAR,(TBARROW(I,M,J)-
      1                   TFREZ,THLQROW(I,M,J),THICROW(I,M,J),J=1,3),
-     2                   TCN,RCANROW(I,M),SCANROW(I,M),TSN,ZSN,'TILE ',M
+     2                  TCN,RCANROW(I,M),SCANROW(I,M),TSN,ZSN,' TILE ',M
               WRITE(66,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROW(I,M,J)-
      1                   TFREZ,THLQROW(I,M,J),THICROW(I,M,J),J=4,10),
      2                   (GFLXROW(I,M,J),J=1,10),
-     3                   'TILE ',M
+     3                   ' TILE ',M
           ELSE
               WRITE(65,6500) IHOUR,IMIN,IDAY,IYEAR,(TBARROW(I,M,J)-
      1                   TFREZ,THLQROW(I,M,J),THICROW(I,M,J),J=1,3),
-     2                   TCN,RCANROW(I,M),SCANROW(I,M),TSN,ZSN,'TILE ',M
+     2                  TCN,RCANROW(I,M),SCANROW(I,M),TSN,ZSN,' TILE ',M
 C===================== CTEM =====================================/
           ENDIF
 C
@@ -3739,7 +3739,7 @@ C
      1                   TROFROW(I,M),TROOROW(I,M),TROSROW(I,M),
      2                   TROBROW(I,M),ROFROW(I,M),ROFOROW(I,M),
      3                   ROFSROW(I,M),ROFBROW(I,M),
-     4                   FCS(M),FGS(M),FC(M),FG(M),'TILE ',M
+     4                   FCS(M),FGS(M),FC(M),FG(M),' TILE ',M
           WRITE(68,6800) IHOUR,IMIN,IDAY,IYEAR,                    
      1                   FSGVROW(I,M),FSGSROW(I,M),FSGGROW(I,M),
      2                   FLGVROW(I,M),FLGSROW(I,M),FLGGROW(I,M),
@@ -3748,14 +3748,14 @@ C
      5                   HMFCROW(I,M),HMFNROW(I,M),
      6                   (HMFGROW(I,M,J),J=1,3),
      7                   HTCCROW(I,M),HTCSROW(I,M),
-     8                   (HTCROW(I,M,J),J=1,3),'TILE ',M
+     8                   (HTCROW(I,M,J),J=1,3),' TILE ',M
           WRITE(69,6900) IHOUR,IMIN,IDAY,IYEAR,                   
      1                   PCFCROW(I,M),PCLCROW(I,M),PCPNROW(I,M),
      2                   PCPGROW(I,M),QFCFROW(I,M),QFCLROW(I,M),
      3                   QFNROW(I,M),QFGROW(I,M),(QFCROW(I,M,J),J=1,3),
      4                   ROFCROW(I,M),ROFNROW(I,M),ROFOROW(I,M),
      5                   ROFROW(I,M),WTRCROW(I,M),WTRSROW(I,M),
-     6                   WTRGROW(I,M),'TILE ',M
+     6                   WTRGROW(I,M),' TILE ',M
 C===================== CTEM =====================================\
 C
           ENDIF ! IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND))
@@ -3784,7 +3784,7 @@ C
               IYD=IYEAR*1000+IDAY                  
               IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND)) THEN 
               WRITE(71,7200)IHOUR,IMIN,IDAY,(ANVEGROW(I,M,J),J=1,ICC),
-     1                    (RMLVEGROW(I,M,J),J=1,ICC),'TILE ',M
+     1                    (RMLVEGROW(I,M,J),J=1,ICC),' TILE ',M
               ENDIF
           ENDIF  ! IF(CTEM_ON) 
 C
@@ -4387,23 +4387,23 @@ C         WRITE TO OUTPUT FILES
 C
           WRITE(611,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,
      1                    BEG,GTOUT,SNOACC_M(I,M),RHOSACC_M(I,M),
-     2                    WSNOACC_M(I,M),ALTOT,ROFACC_M(I,M),'TILE ',M
+     2                    WSNOACC_M(I,M),ALTOT,ROFACC_M(I,M),' TILE ',M
             IF(IGND.GT.3) THEN
                WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
      1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,5),
-     2                  'TILE ',M
+     2                  ' TILE ',M
                WRITE(631,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
      1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=6,10),
-     2                  'TILE ',M
+     2                  ' TILE ',M
             ELSE
                WRITE(621,6200) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
      1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,3),
      2                  TCN,RCANACC_M(I,M),SCANACC_M(I,M),TSN,ZSN,
-     3                  'TILE ',M
+     3                  ' TILE ',M
                WRITE(631,6300) IDAY,IYEAR,FSINACC_M(I,M),FLINACC_M(I,M),
      1                  TAACC_M(I,M)-TFREZ,UVACC_M(I,M),PRESACC_M(I,M),
      2                  QAACC_M(I,M),PREACC_M(I,M),EVAPACC_M(I,M),
-     3                  'TILE ',M 
+     3                  ' TILE ',M 
             ENDIF
 C
            ENDIF ! IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND))
@@ -4826,7 +4826,7 @@ C
      1                NEPROW(I,M),NBPROW(I,M),AUTORESROW(I,M),
      2                HETRORESROW(I,M),LITRESROW(I,M),SOCRESROW(I,M),
      3                (DSTCEMLSROW(I,M)+DSTCEMLS3ROW(I,M)),
-     4                LITRFALLROW(I,M),HUMIFTRSROW(I,M),'TILE ',M,'AVGE'
+     4               LITRFALLROW(I,M),HUMIFTRSROW(I,M),' TILE ',M,'AVGE'
 
 C             WRITE BREAKDOWN OF SOME OF BASIC FLUXES TO FILE *.CT3 
 C             AND SELECTED LITTER FLUXES FOR SELECTED PFT
@@ -4842,13 +4842,13 @@ C
 C                WRITE TO FILE .CT01D_M 
                  WRITE(72,8201)IDAY,IYEAR,GPPVEGROW(I,M,J),
      1           NPPVEGROW(I,M,J),NEPVEGROW(I,M,J),
-     2           'TILE ',M,'PFT',J
+     2           ' TILE ',M,'PFT',J
 
 C                WRITE TO FILE .CT02D_M 
                  WRITE(73,8300)IDAY,IYEAR,RMLVEGACCROW(I,M,J), 
      1           RMSVEGROW(I,M,J),RMRVEGROW(I,M,J),RGVEGROW(I,M,J),
      2           LEAFLITRROW(I,M,J),TLTRLEAFROW(I,M,J),
-     3           TLTRSTEMROW(I,M,J),TLTRROOTROW(I,M,J),'TILE ',M,'PFT',J
+     3          TLTRSTEMROW(I,M,J),TLTRROOTROW(I,M,J),' TILE ',M,'PFT',J
 C
 C
 C                WRITE GRID-AVERAGED POOL SIZES AND COMPONENT SIZES FOR
@@ -4858,7 +4858,7 @@ C
      1               AILCGROW(I,M,J),GLEAFMASROW(I,M,J),
      3               BLEAFMASROW(I,M,J), STEMMASSROW(I,M,J),
      4               ROOTMASSROW(I,M,J), LITRMASSROW(I,M,J), 
-     5               SOILCMASROW(I,M,J),'TILE ',M,'PFT',J
+     5               SOILCMASROW(I,M,J),' TILE ',M,'PFT',J
 C
 C                WRITE LAI, RMATCTEM, & STRUCTURAL ATTRIBUTES FOR SELECTED 
 C                PFT TO FILE *.CT04D_M
@@ -4866,7 +4866,7 @@ C
                  WRITE(75,8500)IDAY,IYEAR, AILCGROW(I,M,J), 
      1                AILCBROW(I,M,J),(RMATCTEMROW(I,M,J,K),K=1,3),
      2                VEGHGHTROW(I,M,J),ROOTDPTHROW(I,M,J),
-     3               ROOTTEMPROW(I,M,J),SLAIROW(I,M,J),'TILE ',M,'PFT',J
+     3              ROOTTEMPROW(I,M,J),SLAIROW(I,M,J),' TILE ',M,'PFT',J
 C
 C                WRITE ALLOCATION FRACTIONS FOR SELECTED PFT TO 
 C                FILE *.CT05D_M
@@ -4874,7 +4874,7 @@ C
                  WRITE(76,8600)IDAY,IYEAR, AFRLEAFROW(I,M,J), 
      1                AFRSTEMROW(I,M,J),AFRROOTROW(I,M,J), 
      2                TCANOACCROW_OUT(I,M), LFSTATUSROW(I,M,J),
-     3                'TILE ',M,'PFT',J
+     3                ' TILE ',M,'PFT',J
 C
                 ENDIF  !IF (FCANCMXROW(I,M,J) .GT.0.0) THEN
 C
@@ -4884,24 +4884,24 @@ C
 C               WRITE TO FILE .CT02D_M 
                 WRITE(73,8300)IDAY,IYEAR,RMLROW(I,M),RMSROW(I,M),
      1          RMRROW(I,M),RGROW(I,M),LEAFLITR_M(I,M),TLTRLEAF_M(I,M),
-     2          TLTRSTEM_M(I,M),TLTRROOT_M(I,M),'TILE ',M,'AVGE'
+     2          TLTRSTEM_M(I,M),TLTRROOT_M(I,M),' TILE ',M,'AVGE'
 C
 C               WRITE TO FILE .CT03D_M 
                 WRITE(74,8402)IDAY,IYEAR,VGBIOMASROW(I,M),
      1               GAVGLAIROW(I,M),GAVGLTMSROW(I,M),
-     2               GAVGSCMSROW(I,M),'TILE ',M, 'AVGE'
+     2               GAVGSCMSROW(I,M),' TILE ',M, 'AVGE'
 C
 C               WRITE TO FILE .CT04D_M
                 WRITE(75,8500)IDAY,IYEAR,AILCG_M(I,M),
      1                AILCB_M(I,M),(RMATCTEM_M(I,M,K),K=1,3),
      2                VEGHGHT_M(I,M),ROOTDPTH_M(I,M),
-     3                ROOTTEMP_M(I,M),SLAI_M(I,M),'TILE ',M, 'AVGE'
+     3                ROOTTEMP_M(I,M),SLAI_M(I,M),' TILE ',M, 'AVGE'
 C
 C               WRITE TO FILE .CT05D_M
                 WRITE(76,8601)IDAY,IYEAR, AFRLEAF_M(I,M), 
      1                AFRSTEM_M(I,M),AFRROOT_M(I,M), 
      2                TCANOACCROW_OUT(I,M), 
-     3                'TILE ',M,'AVGE'
+     3                ' TILE ',M,'AVGE'
               ENDIF !IF (IFCANCMX_M(I,M) .GT.0.0) THEN
 C
 C             WRITE FIRE AND LUC RESULTS TO FILE *.CT06D_M
@@ -4914,7 +4914,7 @@ C
      4          EMIT_TCROW(I,M),EMIT_OCROW(I,M),EMIT_BCROW(I,M),
      5          BURNFRACROW(I,M), PROBFIREROW(I,M),LUCEMCOMROW(I,M), 
      6          LUCLTRINROW(I,M), LUCSOCINROW(I,M),
-     7          GRCLAREAROW(I,M),'TILE ',M
+     7          GRCLAREAROW(I,M),' TILE ',M
              ENDIF
 C
            ENDIF ! IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND))
@@ -5089,7 +5089,7 @@ C                WRITE TO FILE .CT01Y_M
      1                  STEMMASSROW(I,M,J),ROOTMASSROW(I,M,J), 
      2                  LITRMASSROW(I,M,J),SOILCMASROW(I,M,J),
      3                  ANNPPVEG_M(I,M,J),ANNGPPVEG_M(I,M,J),
-     4                  ANNNEPVEG_M(I,M,J),'TILE ',M,'PFT',J
+     4                  ANNNEPVEG_M(I,M,J),' TILE ',M,'PFT',J
                ENDIF  ! FCANCMXROW > 0
 C
                LAIMAXG_M(I,M)=LAIMAXG_M(I,M)+
@@ -5113,30 +5113,30 @@ C              WRITE TO FILE .CT01Y_M
      2                 SOILCMAS_M(I,M),AVGYRNPP_M(I,M),
      3                 AVGYRGPP_M(I,M),AVGYRNEP_M(I,M),
      4                 AVGYRNBP_M(I,M),
-     5                 AVGYRLE_M(I,M),'TILE ',M,'AVGE'
+     5                 AVGYRLE_M(I,M),' TILE ',M,'AVGE'
              ENDIF  !IF (IFCANCMX_M(I,M) .GT. 0) THEN
 C
 C
              WRITE(79,8710)'GLEAFMAS ',IYEAR, 
-     1                (GLEAFMASROW(I,M,J),J=1,ICC),'TILE ',M
+     1                (GLEAFMASROW(I,M,J),J=1,ICC),' TILE ',M
              WRITE(79,8710)'BLEAFMAS ',IYEAR, 
-     1                (BLEAFMASROW(I,M,J),J=1,ICC),'TILE ',M
+     1                (BLEAFMASROW(I,M,J),J=1,ICC),' TILE ',M
              WRITE(79,8710)'STEMMASS ',IYEAR, 
-     1                (STEMMASSROW(I,M,J),J=1,ICC),'TILE ',M
+     1                (STEMMASSROW(I,M,J),J=1,ICC),' TILE ',M
              WRITE(79,8710)'ROOTMASS ',IYEAR, 
-     1                (ROOTMASSROW(I,M,J),J=1,ICC),'TILE ',M
+     1                (ROOTMASSROW(I,M,J),J=1,ICC),' TILE ',M
              WRITE(79,8710)'LITRMASS ',IYEAR, 
-     1                (LITRMASSROW(I,M,J),J=1,ICC),'TILE ',M
+     1                (LITRMASSROW(I,M,J),J=1,ICC),' TILE ',M
              WRITE(79,8710)'SOILCMAS ',IYEAR, 
-     1                (SOILCMASROW(I,M,J),J=1,ICC),'TILE ',M
+     1                (SOILCMASROW(I,M,J),J=1,ICC),' TILE ',M
              WRITE(79,8710)'LAIMAXG  ',IYEAR, 
-     1                (LAIMAXGVEG_M(I,M,J),J=1,ICC),'TILE ',M
+     1                (LAIMAXGVEG_M(I,M,J),J=1,ICC),' TILE ',M
              WRITE(79,8710)'ANNPPVEG ',IYEAR, 
-     1                (ANNPPVEG_M(I,M,J),J=1,ICC),'TILE ',M
+     1                (ANNPPVEG_M(I,M,J),J=1,ICC),' TILE ',M
              WRITE(79,8720)'LFSTATUS ',IYEAR, 
-     1                (LFSTATUSROW(I,M,J),J=1,ICC),'TILE ',M
+     1                (LFSTATUSROW(I,M,J),J=1,ICC),' TILE ',M
              WRITE(79,8720)'PANDAYS  ',IYEAR, 
-     1                (PANDAYSROW(I,M,J),J=1,ICC),'TILE ',M
+     1                (PANDAYSROW(I,M,J),J=1,ICC),' TILE ',M
 C
              AVGYRNPP_M(I,M)=0.0
              AVGYRGPP_M(I,M)=0.0
@@ -5525,7 +5525,7 @@ C            WRITE TO FILE .CT01M_M (MOSAIC)
      3               AVGMNGPP_MN_M(I,M),AVGMNNEP_MN_M(I,M),
      4               AVGMNNBP_MN_M(I,M),HETRORES_MN_M(I,M),
      5               AUTORES_MN_M(I,M),LITRES_MN_M(I,M),
-     6               SOILRES_MN_M(I,M),'TILE ',M
+     6               SOILRES_MN_M(I,M),' TILE ',M
               ENDIF
              ENDDO
             ENDIF
@@ -5552,7 +5552,7 @@ C            WRITE TO FILE .CT06M_M
      6               AVGMNE_BC_MN_M(I,M),AVGMN_PROBFIRE_MN_M(I,M),
      7               AVGMN_LUC_EMC_MN_M(I,M),AVGMN_LUCLTRIN_MN_M(I,M),
      8               AVGMN_LUCSOCIN_MN_M(I,M),AVGMN_BURNFRAC_MN_M(I,M),
-     9               'TILE ',M
+     9               ' TILE ',M
                ENDIF
               ENDDO
             ENDIF
@@ -5785,7 +5785,7 @@ C            WRITE TO FILE .CT01Y_M
      4            AVGYRGPP_YR_M(I,M),AVGYRNEP_YR_M(I,M),
      5            AVGYRNBP_YR_M(I,M),HETRORES_YR_M(I,M),
      6            AUTORES_YR_M(I,M),LITRES_YR_M(I,M),SOILRES_YR_M(I,M),
-     7            'TILE ',M
+     7            ' TILE ',M
              ENDIF
             ENDDO
            ELSE !COMPOSITE (JOE) !FLAG FLAG
@@ -5825,7 +5825,7 @@ C            WRITE TO FILE .CT06Y_M
      6            AVGYRE_BC_YR_M(I,M),AVGYR_PROBFIRE_YR_M(I,M),
      7            AVGYR_LUC_EMC_YR_M(I,M),AVGYR_LUCLTRIN_YR_M(I,M),
      8            AVGYR_LUCSOCIN_YR_M(I,M),AVGYR_BURNFRAC_YR_M(I,M),
-     9            'TILE ',M
+     9            ' TILE ',M
               ENDIF
              ENDDO
            ENDIF
