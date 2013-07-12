@@ -49,7 +49,7 @@ c
      2                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
      3                     burnveg,      cc,       mm,
      4                      rmlveg,  rmsveg,   rmrveg,    rgveg,
-     5                vgbiomas_veg,  gppveg,   nepveg, 
+     5                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,
      6                  nlat, nmos,     nml,    ilmos, jlmos)
 c
 c    ---------------- outputs are listed above this line ------------ 

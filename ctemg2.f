@@ -34,9 +34,7 @@
      &      nbpveggat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
-     s      nml,         nlat,        nmos,         ilg, 
-     t      ignd,        ican,        icp1,         icc,
-     u      fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
+     s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
      v      ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,
      w      ailcgsrow,   fcancsrow,   fcancrow,     rmatctemrow,
      x      co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,
@@ -72,15 +70,20 @@ c
 c
 c              Canadian Terrestrial Ecosystem Model (CTEM)
 c
+C     July 12 2013    Bring in the ctem params use statement
+c     J. Melton
+ 
 c     July 28 2009    Gather operation on CTEM variables.
 c     Rong Li
 c 
+      use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1,
+     1                               icc
+
       implicit none
 c
 c     * integer constants.
 c
-      integer  nml, nlat, nmos, ilg, ignd, ican, icp1, k, l, m
-      integer  icc
+      integer  nml, k, l, m
 c
 c     * gather-scatter index arrays.
 c

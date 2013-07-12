@@ -292,7 +292,7 @@ allocate(pft_tot(totyrs))
    close(92)
 
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Annual', grpid)
+  status = nf90_inq_ncid(ncid,'CTEM-Annual GridAvg', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -337,7 +337,7 @@ end if
 
 !============================CTEM COMPOSITE ANNUAL FILES=========================================\
 
-if (.NOT. MOSAIC) then
+!if (.NOT. MOSAIC) then
 
 ! Allocate the arrays in preparation for CT01Y_G, CT06Y_G, CT01Y_GM
 
@@ -379,7 +379,7 @@ end if
 ! ANNUAL 
 
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Annual', grpid)
+  status = nf90_inq_ncid(ncid,'CTEM-Annual GridAvg', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -397,7 +397,7 @@ end if
  if (DOFIRE) then
 
 if (net4) then
-  status = nf90_inq_ncid(ncid,'Annual-Disturbance', grpid)
+  status = nf90_inq_ncid(ncid,'Annual-Disturbance GridAvg', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -420,7 +420,8 @@ if (DOFIRE) then
  deallocate(ctem_d_a)
 endif
 
-else ! MOSAIC MODE ====================================================
+if (MOSAIC) then
+!else ! MOSAIC MODE ====================================================
 
 ! Allocate the arrays in preparation for CT01Y_M and CT06Y_M
 
@@ -502,7 +503,7 @@ end if
 
 ! ANNUAL
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Annual', grpid)
+  status = nf90_inq_ncid(ncid,'CTEM-Annual Tiled', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -521,7 +522,7 @@ end if
 if (DOFIRE) then
 
 if (net4) then
-  status = nf90_inq_ncid(ncid,'Annual-Disturbance', grpid)
+  status = nf90_inq_ncid(ncid,'Annual-Disturbance Tiled', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -573,7 +574,7 @@ allocate(mpft_tot(totyrs,12))
    close(91)
 
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Monthly', grpid)
+  status = nf90_inq_ncid(ncid,'CTEM-Monthly GridAvg', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -621,7 +622,7 @@ deallocate(mpft_tot)
 
 end if !compete/lnduse
 
-if (.NOT. MOSAIC) then
+!if (.NOT. MOSAIC) then
 
 !==============================Start Monthly COMPOSITE CTEM=============================
 
@@ -662,7 +663,7 @@ end if
 
 ! MONTHLY
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Monthly', grpid)
+  status = nf90_inq_ncid(ncid,'CTEM-Monthly GridAvg', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -680,7 +681,7 @@ end if
 if (DOFIRE) then
 
 if (net4) then
-  status = nf90_inq_ncid(ncid,'Monthly-Disturbance', grpid)
+  status = nf90_inq_ncid(ncid,'Monthly-Disturbance GridAvg', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -705,7 +706,7 @@ if (DOFIRE) then
   deallocate(ctem_d_m)
 end if
 
-else  
+if (MOSAIC) then !else  
 
 !===================MOSAIC===CTEM Monthly===MOSAIC========================
 
@@ -775,7 +776,7 @@ end if
 
 ! MONTHLY
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Monthly', grpid)
+  status = nf90_inq_ncid(ncid,'CTEM-Monthly Tiled', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -795,7 +796,7 @@ end if
 if (DOFIRE) then
 
 if (net4) then
-  status = nf90_inq_ncid(ncid,'Monthly-Disturbance', grpid)
+  status = nf90_inq_ncid(ncid,'Monthly-Disturbance Tiled', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -822,7 +823,7 @@ if (DOFIRE) then
  deallocate(ctem_d_m_mos)
 end if
 
-end if ! composite vs. mosaic
+end if ! mosaic
 
 end if ! makemonthly
 

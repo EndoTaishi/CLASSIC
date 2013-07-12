@@ -4,6 +4,15 @@ program netcdf_create_bf
 ! into (using netcdf_writer). The creator_module.f90 contains a module 
 ! where any parameters must be defined. A simple joboptions file is also required.
 
+! If MOSAIC=.true., you will write both the composite and mosaic variables to the 
+! netcdf, in this case MAKEMONTHLY=.false. is likely a good idea to avoid a massive
+! file size.
+
+! If the run has many years, also MAKEMONTHLY=.false. could be a good idea
+
+! DOFIRE=.true. turns on the disturbance vars, while COMPETE_LNDUSE=.true. will
+! write the competition and luc PFT fractions
+
 ! This netcdf generations scheme is designed to be used with master_parallel.sh
 ! or quick_remake_netcdf.sh
 
@@ -111,6 +120,12 @@ integer :: grpid_mon_ctem
 integer :: grpid_mon_class
 integer :: grpid_mon_dist
 integer :: grpid_ann_dist
+
+integer :: grpid_ann_ctem_t
+integer :: grpid_mon_ctem_t
+integer :: grpid_mon_dist_t
+integer :: grpid_ann_dist_t
+
 
 real, allocatable, dimension(:,:,:) :: threevar
 real, allocatable, dimension(:,:,:,:) :: fourvar
@@ -313,25 +328,46 @@ if (net4) then
 
   if (CTEM) then
 
-    status = nf90_def_grp(ncid,'CTEM-Annual', grpid_ann_ctem)
+    status = nf90_def_grp(ncid,'CTEM-Annual GridAvg', grpid_ann_ctem)
     if (status /= nf90_noerr) call handle_err(status)
 
     if (DOFIRE) then
-        status = nf90_def_grp(grpid_ann_ctem,'Annual-Disturbance', grpid_ann_dist)
+        status = nf90_def_grp(grpid_ann_ctem,'Annual-Disturbance GridAvg', grpid_ann_dist)
         if (status /= nf90_noerr) call handle_err(status)
     end if
 
     if (MAKEMONTHLY) then
-     status = nf90_def_grp(ncid,'CTEM-Monthly', grpid_mon_ctem)
+     status = nf90_def_grp(ncid,'CTEM-Monthly GridAvg', grpid_mon_ctem)
      if (status /= nf90_noerr) call handle_err(status)
 
      if (DOFIRE) then
-        status = nf90_def_grp(grpid_mon_ctem,'Monthly-Disturbance', grpid_mon_dist)
+        status = nf90_def_grp(grpid_mon_ctem,'Monthly-Disturbance GridAvg', grpid_mon_dist)
         if (status /= nf90_noerr) call handle_err(status)
      end if
     end if !makemonthly
 
-  end if 
+   if (MOSAIC) then
+
+    status = nf90_def_grp(ncid,'CTEM-Annual Tiled', grpid_ann_ctem_t)
+    if (status /= nf90_noerr) call handle_err(status)
+
+    if (DOFIRE) then
+        status = nf90_def_grp(grpid_ann_ctem_t,'Annual-Disturbance Tiled', grpid_ann_dist_t)
+        if (status /= nf90_noerr) call handle_err(status)
+    end if
+
+    if (MAKEMONTHLY) then
+     status = nf90_def_grp(ncid,'CTEM-Monthly Tiled', grpid_mon_ctem_t)
+     if (status /= nf90_noerr) call handle_err(status)
+
+     if (DOFIRE) then
+        status = nf90_def_grp(grpid_mon_ctem_t,'Monthly-Disturbance Tiled', grpid_mon_dist_t)
+        if (status /= nf90_noerr) call handle_err(status)
+     end if
+    end if !makemonthly
+
+   end if ! mosaic
+  end if  !ctem
 
 else ! netcf3
 
@@ -342,6 +378,12 @@ else ! netcf3
         grpid_mon_class=ncid
         grpid_mon_dist=ncid
         grpid_ann_dist=ncid
+    if (MOSAIC) then
+        grpid_ann_ctem_t=ncid
+        grpid_mon_ctem_t=ncid
+        grpid_mon_dist_t=ncid
+        grpid_ann_dist_t=ncid
+    end if
 end if
 
 status = nf90_enddef(ncid) 
@@ -415,37 +457,37 @@ if (CTEM) then
 
   do i=lbound(CTEM_M_VAR,1), ubound(CTEM_M_VAR,1)
   
-   status = nf90_redef(grpid_mon_ctem) 
+   status = nf90_redef(grpid_mon_ctem_t) 
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_VAR(i)),nf90_float,[lon,lat,tile,month,time],varid)
+   status = nf90_def_var(grpid_mon_ctem_t,trim(CTEM_M_VAR(i)),nf90_float,[lon,lat,tile,month,time],varid)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_mon_ctem,varid,'long_name',trim(CTEM_M_NAME(i)))
+   status = nf90_put_att(grpid_mon_ctem_t,varid,'long_name',trim(CTEM_M_NAME(i)))
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_mon_ctem,varid,'units',trim(CTEM_M_UNIT(i)))
+   status = nf90_put_att(grpid_mon_ctem_t,varid,'units',trim(CTEM_M_UNIT(i)))
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_mon_ctem,varid,'_FillValue',fill_value)
+   status = nf90_put_att(grpid_mon_ctem_t,varid,'_FillValue',fill_value)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_mon_ctem,varid,'missing_value',fill_value)
+   status = nf90_put_att(grpid_mon_ctem_t,varid,'missing_value',fill_value)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_mon_ctem,varid,'_Storage',"chunked")
+   status = nf90_put_att(grpid_mon_ctem_t,varid,'_Storage',"chunked")
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_mon_ctem,varid,'_Chunksizes',[cnty,cntx,ntile,12,1])
+   status = nf90_put_att(grpid_mon_ctem_t,varid,'_Chunksizes',[cnty,cntx,ntile,12,1])
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_mon_ctem,varid,'_DeflateLevel',1)
+   status = nf90_put_att(grpid_mon_ctem_t,varid,'_DeflateLevel',1)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_enddef(grpid_mon_ctem)
+   status = nf90_enddef(grpid_mon_ctem_t)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid_mon_ctem,varid,fivevar,start=[1,1,1,1,1],count=[cntx,cnty,ntile,12,totyrs])
+   status = nf90_put_var(grpid_mon_ctem_t,varid,fivevar,start=[1,1,1,1,1],count=[cntx,cnty,ntile,12,totyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
   end do
@@ -456,37 +498,37 @@ if (CTEM) then
 
     do i=lbound(CTEM_M_D_VAR,1), ubound(CTEM_M_D_VAR,1)
 
-     status = nf90_redef(grpid_mon_dist) 
+     status = nf90_redef(grpid_mon_dist_t) 
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_def_var(grpid_mon_dist,trim(CTEM_M_D_VAR(i)),nf90_float,[lon,lat,tile,month,time],varid)
+     status = nf90_def_var(grpid_mon_dist_t,trim(CTEM_M_D_VAR(i)),nf90_float,[lon,lat,tile,month,time],varid)
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'long_name',trim(CTEM_M_D_NAME(i)))
+     status = nf90_put_att(grpid_mon_dist_t,varid,'long_name',trim(CTEM_M_D_NAME(i)))
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'units',trim(CTEM_M_D_UNIT(i)))
+     status = nf90_put_att(grpid_mon_dist_t,varid,'units',trim(CTEM_M_D_UNIT(i)))
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'_FillValue',fill_value)
+     status = nf90_put_att(grpid_mon_dist_t,varid,'_FillValue',fill_value)
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'missing_value',fill_value)
+     status = nf90_put_att(grpid_mon_dist_t,varid,'missing_value',fill_value)
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'_Storage',"chunked")
+     status = nf90_put_att(grpid_mon_dist_t,varid,'_Storage',"chunked")
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'_Chunksizes',[cnty,cntx,ntile,12,1])
+     status = nf90_put_att(grpid_mon_dist_t,varid,'_Chunksizes',[cnty,cntx,ntile,12,1])
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'_DeflateLevel',1)
+     status = nf90_put_att(grpid_mon_dist_t,varid,'_DeflateLevel',1)
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_enddef(grpid_mon_dist)
+     status = nf90_enddef(grpid_mon_dist_t)
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_var(grpid_mon_dist,varid,fivevar,start=[1,1,1,1,1],count=[cntx,cnty,ntile,12,totyrs])
+     status = nf90_put_var(grpid_mon_dist_t,varid,fivevar,start=[1,1,1,1,1],count=[cntx,cnty,ntile,12,totyrs])
      if (status/=nf90_noerr) call handle_err(status)
 
     end do
@@ -499,37 +541,37 @@ if (CTEM) then
 
   do i=lbound(CTEM_Y_VAR,1), ubound(CTEM_Y_VAR,1)
 
-   status = nf90_redef(grpid_ann_ctem) 
+   status = nf90_redef(grpid_ann_ctem_t) 
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_def_var(grpid_ann_ctem,trim(CTEM_Y_VAR(i)),nf90_float,[lon,lat,tile,time],varid)
+   status = nf90_def_var(grpid_ann_ctem_t,trim(CTEM_Y_VAR(i)),nf90_float,[lon,lat,tile,time],varid)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_ann_ctem,varid,'long_name',trim(CTEM_Y_NAME(i)))
+   status = nf90_put_att(grpid_ann_ctem_t,varid,'long_name',trim(CTEM_Y_NAME(i)))
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_ann_ctem,varid,'units',trim(CTEM_Y_UNIT(i)))
+   status = nf90_put_att(grpid_ann_ctem_t,varid,'units',trim(CTEM_Y_UNIT(i)))
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_ann_ctem,varid,'_FillValue',fill_value)
+   status = nf90_put_att(grpid_ann_ctem_t,varid,'_FillValue',fill_value)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_ann_ctem,varid,'missing_value',fill_value)
+   status = nf90_put_att(grpid_ann_ctem_t,varid,'missing_value',fill_value)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_ann_ctem,varid,'_Storage',"chunked")
+   status = nf90_put_att(grpid_ann_ctem_t,varid,'_Storage',"chunked")
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_ann_ctem,varid,'_Chunksizes',[cnty,cntx,ntile,1])
+   status = nf90_put_att(grpid_ann_ctem_t,varid,'_Chunksizes',[cnty,cntx,ntile,1])
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_att(grpid_ann_ctem,varid,'_DeflateLevel',1)
+   status = nf90_put_att(grpid_ann_ctem_t,varid,'_DeflateLevel',1)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_enddef(grpid_ann_ctem)
+   status = nf90_enddef(grpid_ann_ctem_t)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid_ann_ctem,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,ntile,totyrs])
+   status = nf90_put_var(grpid_ann_ctem_t,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,ntile,totyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
   enddo
@@ -540,37 +582,37 @@ if (CTEM) then
 
     do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
 
-     status = nf90_redef(grpid_ann_dist) 
+     status = nf90_redef(grpid_ann_dist_t) 
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_def_var(grpid_ann_dist,trim(CTEM_Y_D_VAR(i)),nf90_float,[lon,lat,tile,time],varid)
+     status = nf90_def_var(grpid_ann_dist_t,trim(CTEM_Y_D_VAR(i)),nf90_float,[lon,lat,tile,time],varid)
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_ann_dist,varid,'long_name',trim(CTEM_Y_D_NAME(i)))
+     status = nf90_put_att(grpid_ann_dist_t,varid,'long_name',trim(CTEM_Y_D_NAME(i)))
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_ann_dist,varid,'units',trim(CTEM_Y_D_UNIT(i)))
+     status = nf90_put_att(grpid_ann_dist_t,varid,'units',trim(CTEM_Y_D_UNIT(i)))
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_ann_dist,varid,'_FillValue',fill_value)
+     status = nf90_put_att(grpid_ann_dist_t,varid,'_FillValue',fill_value)
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_ann_dist,varid,'missing_value',fill_value)
+     status = nf90_put_att(grpid_ann_dist_t,varid,'missing_value',fill_value)
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_ann_dist,varid,'_Storage',"chunked")
+     status = nf90_put_att(grpid_ann_dist_t,varid,'_Storage',"chunked")
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_ann_dist,varid,'_Chunksizes',[cnty,cntx,ntile,1])
+     status = nf90_put_att(grpid_ann_dist_t,varid,'_Chunksizes',[cnty,cntx,ntile,1])
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_ann_dist,varid,'_DeflateLevel',1)
+     status = nf90_put_att(grpid_ann_dist_t,varid,'_DeflateLevel',1)
      if (status/=nf90_noerr) call handle_err(status)
 
-    status = nf90_enddef(grpid_ann_dist)
+    status = nf90_enddef(grpid_ann_dist_t)
     if (status/=nf90_noerr) call handle_err(status)
  
-    status = nf90_put_var(grpid_ann_dist,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,ntile,totyrs])
+    status = nf90_put_var(grpid_ann_dist_t,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,ntile,totyrs])
     if (status/=nf90_noerr) call handle_err(status)
 
     end do
@@ -582,8 +624,9 @@ if (CTEM) then
     deallocate(fivevar)
    end if
 
-else if (.NOT. MOSAIC) then
-
+!else if (.NOT. MOSAIC) then
+ end if !mosaic
+ 
    allocate(threevar(cntx,cnty,totyrs))
    threevar=fill_value
 
@@ -761,7 +804,7 @@ else if (.NOT. MOSAIC) then
     deallocate(fourvar)
    end if
 
-end if !mosaic/composite
+!end if !mosaic/composite
 
 if (COMPETE_LNDUSE) then
 

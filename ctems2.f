@@ -72,12 +72,14 @@ c
 c
 C              Canadian Terrestrial Ecosystem Model (CTEM)
 c
+C     July 12 2013    Bring in the ctem params use statement
+c     J. Melton
+
 c      August 4, 2009 scatter operation on CTEM variables.
 c      Rong Li
 c 
       use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1,
      1                               icc
-
 
       implicit none
 c
