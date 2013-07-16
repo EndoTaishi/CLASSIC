@@ -31,7 +31,8 @@
      t      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      u      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      v      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
-     &      nbpveggat,
+     &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
+     &      soilcresveggat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -66,7 +67,8 @@ c
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
-     &      nbpvegrow )
+     &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
+     &      soilcresvegrow )
 c
 c              Canadian Terrestrial Ecosystem Model (CTEM)
 c
@@ -77,7 +79,7 @@ c     July 28 2009    Gather operation on CTEM variables.
 c     Rong Li
 c 
       use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1,
-     1                               icc
+     1                               icc,iccp1
 
       implicit none
 c
@@ -171,7 +173,9 @@ c
       real vgbiomas_veggat(ilg,icc)
 c
       real gppveggat(ilg,icc),        nepveggat(ilg,icc),
-     1     nbpveggat(ilg,icc) 
+     1     nbpveggat(ilg,icc),    hetroresveggat(ilg,iccp1),
+     2      autoresveggat(ilg,icc),litresveggat(ilg,iccp1),
+     3      soilcresveggat(ilg,iccp1) 
 c
       real  fcancmxrow(nlat,nmos,icc),   rmatcrow(nlat,nmos,ican,ignd),
      1      zolncrow(nlat,nmos,ican),    paicrow(nlat,nmos,ican),
@@ -257,7 +261,9 @@ c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
       real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,icc),
-     1     nbpvegrow(nlat,nmos,icc)
+     1     nbpvegrow(nlat,nmos,icc), hetroresvegrow(nlat,nmos,iccp1),
+     2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp1),
+     3      soilcresvegrow(nlat,nmos,iccp1)
 c
 c----------------------------------------------------------------------
       do 100 k=1,nml
@@ -374,16 +380,21 @@ c
           gppveggat(k,l)   = gppvegrow(ilmos(k),jlmos(k),l)
           nepveggat(k,l)   = nepvegrow(ilmos(k),jlmos(k),l)
           nbpveggat(k,l)   = nbpvegrow(ilmos(k),jlmos(k),l)
+          autoresveggat(k,l)= autoresvegrow(ilmos(k),jlmos(k),l)
           ailcmingat(k,l)  = ailcminrow(ilmos(k),jlmos(k),l)
           ailcmaxgat(k,l)  = ailcmaxrow(ilmos(k),jlmos(k),l)
           vgbiomas_veggat(k,l) = vgbiomas_vegrow(ilmos(k),jlmos(k),l)
 c
 101   continue
 c
-      do 102 l=1,icc+1
+      do 102 l=1,iccp1
        do 102 k=1,nml
           litrmassgat(k,l)=litrmassrow(ilmos(k),jlmos(k),l)
           soilcmasgat(k,l)=soilcmasrow(ilmos(k),jlmos(k),l)
+          hetroresveggat(k,l)= hetroresvegrow(ilmos(k),jlmos(k),l)
+          litresveggat(k,l)= litresvegrow(ilmos(k),jlmos(k),l)
+          soilcresveggat(k,l)= soilcresvegrow(ilmos(k),jlmos(k),l)
+
 102   continue
 c
       do 105 l=1,12     !12 months

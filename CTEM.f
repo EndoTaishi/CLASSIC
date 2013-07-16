@@ -1,12 +1,11 @@
       subroutine     ctem( fcancmx,    fsnow,     sand,      clay,  
-     2                          ic,      ilg,      il1,       il2,
-     3                          ig,      icc,     iday,      radj, 
+     2                      il1,       il2,      iday,      radj, 
      4                       tcano,    tcans,    tbarc,    tbarcs,    
      5                       tbarg,   tbargs,       ta,     delzw,
      6                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,    
      7                       zbotw,   thliqc,   thliqg,    deltat,
      8                       uwind,    vwind,  lightng,  prbfrhuc, 
-     9                    extnprob,   stdaln,     tbar,     l2max,
+     9                    extnprob,   stdaln,     tbar,    
      a                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,
      b                      thicec, soildpth, spinfast,   todfrac,
      &                     compete,   netrad,   precip,   
@@ -50,13 +49,14 @@ c
      3                     burnveg,      cc,       mm,
      4                      rmlveg,  rmsveg,   rmrveg,    rgveg,
      5                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,
-     6                  nlat, nmos,     nml,    ilmos, jlmos)
+     6                  hetrsveg,autoresveg, ltresveg, scresveg,
+     7                 nml,    ilmos, jlmos)
 c
 c    ---------------- outputs are listed above this line ------------ 
 c
 c
-c             Canadian Terrestrial Ecosystem Model (CTEM) - V1.1
-C             Main Ctem Subroutine Compatible With CLASS V3.6
+c             Canadian Terrestrial Ecosystem Model (CTEM) 
+C             Main Ctem Subroutine Compatible With CLASS 
 C
 c     Dec 6   2012   Make it so competition and luc can function in both
 c     J. Melton      composite and mosaic modes.
@@ -92,7 +92,8 @@ c                     fractions.
 c    -----------------------------------------------------------------
 
       use ctem_params,        only : kk, lon, lat, pi, earthrad, zero,
-     1                               edgelat, kn
+     1                               edgelat, kn,iccp1, ican, ilg, nlat,
+     2                               ignd, icc, nmos, l2max
       use landuse_change,     only : luc
       use competition_scheme, only : bioclim, existence, competition
 
@@ -105,7 +106,7 @@ c     fsnow    - fraction of snow simulated by class
 c     sand     - percentage sand
 c     clay     - percentage clay
 c     icc      - no of pfts for use by ctem, currently 9
-c     ic       - no of pfts for use by class, currently 4
+c     ican       - no of pfts for use by class, currently 4
 c     ig       - no. of soil layers, 3
 c     ilg      - no. of grid cells in latitude circle
 c     il1,il2  - il1=1, il2=ilg
@@ -332,32 +333,32 @@ c
 c
       logical   lnduseon,  dofire, do_mortality, mosaic
 
-      integer      ic,      icc,      ilg,      il1,       il2,      ig, 
+      integer      il1,       il2,
      1           iday,        i,        j,        k,    stdaln,    lath,
-     2         icount,        n,        m, sort(icc),   l2max,
-     3   nol2pfts(ic),       k1,       k2,            spinfast,
-     4           nlat,     nmos,      nml,        ilmos(ilg), jlmos(ilg)
+     2         icount,        n,        m,  sort(icc),
+     3   nol2pfts(ican),       k1,       k2,            spinfast,
+     4           nml,    ilmos(ilg), jlmos(ilg)
 c
       integer       pandays(ilg,icc), curlatno(ilg),    colddays(ilg,2),
-     1             lfstatus(ilg,icc), isand(ilg,ig)                 
+     1             lfstatus(ilg,icc), isand(ilg,ignd)                 
 c
-      real fsnow(ilg),  sand(ilg,ig),  clay(ilg,ig),     thliqc(ilg,ig),
-     1     tcano(ilg),    tcans(ilg), tbarc(ilg,ig),   rmatc(ilg,ic,ig),
-     2  zbotw(ilg,ig),      rml(ilg),      gpp(ilg),   fcancmx(ilg,icc),
-     3 tbarcs(ilg,ig), tbarg(ilg,ig),tbargs(ilg,ig),     thliqg(ilg,ig),
-     4      radj(ilg),       ta(ilg),        deltat,      delzw(ilg,ig),
-     5   tbar(ilg,ig),thicec(ilg,ig), soildpth(ilg),   todfrac(ilg,icc)
+      real fsnow(ilg),  sand(ilg,ignd), clay(ilg,ignd),thliqc(ilg,ignd),
+     1     tcano(ilg), tcans(ilg),tbarc(ilg,ignd),rmatc(ilg,ican,ignd),
+     2  zbotw(ilg,ignd),      rml(ilg),   gpp(ilg),   fcancmx(ilg,icc),
+     3 tbarcs(ilg,ignd),tbarg(ilg,ignd),tbargs(ilg,ignd),
+     4   radj(ilg),   ta(ilg), deltat, delzw(ilg,ignd),thliqg(ilg,ignd),
+     5   tbar(ilg,ignd),thicec(ilg,ignd), soildpth(ilg),todfrac(ilg,icc)
 
 c
       real fare_cmp(nlat,icc), nppveg_cmp(nlat,icc),
      1     geremort_cmp(nlat,icc),intrmort_cmp(nlat,icc),
      2     gleafmas_cmp(nlat,icc),bleafmas_cmp(nlat,icc),
      3     stemmass_cmp(nlat,icc),rootmass_cmp(nlat,icc),
-     4     litrmass_cmp(nlat,icc+1),soilcmas_cmp(nlat,icc+1),
+     4     litrmass_cmp(nlat,iccp1),soilcmas_cmp(nlat,iccp1),
      5     lambda_cmp(nlat,icc),
      6     bmasveg_cmp(nlat,icc),   burnveg_cmp(nlat,icc),
      7     add2allo_cmp(nlat,icc),  cc_cmp(nlat,icc),mm_cmp(nlat,icc),
-     8     fcanmx_cmp(nlat,ic),     
+     8     fcanmx_cmp(nlat,ican),     
      9     grclarea_cmp(nlat),      vgbiomas_cmp(nlat),    
      1     gavgltms_cmp(nlat),      gavgscms_cmp(nlat),
      2     yesfrac_mos(nlat,icc),   todfrac_cmp(nlat),
@@ -381,16 +382,16 @@ c
      7     annsrpls_cmp(nlat), annpcp_cmp(nlat),  anpotevp_cmp(nlat),
      8     lucemcom_cmp(nlat),  lucltrin_cmp(nlat), lucsocin_cmp(nlat)
 c
-      real  stemmass(ilg,icc),   rootmass(ilg,icc), litrmass(ilg,icc+1),
-     1      gleafmas(ilg,icc),   bleafmas(ilg,icc), soilcmas(ilg,icc+1),
+      real  stemmass(ilg,icc),   rootmass(ilg,icc), litrmass(ilg,iccp1),
+     1      gleafmas(ilg,icc),   bleafmas(ilg,icc), soilcmas(ilg,iccp1),
      2       ancsveg(ilg,icc),    ancgveg(ilg,icc),   rmlcsveg(ilg,icc),
-     3      rmlcgveg(ilg,icc),      ailcg(ilg,icc),        ailc(ilg,ic),
-     4   rmatctem(ilg,icc,ig),       zolnc(ilg,ic),      ailcb(ilg,icc),
+     3      rmlcgveg(ilg,icc),      ailcg(ilg,icc),     ailc(ilg,ican),
+     4   rmatctem(ilg,icc,ignd),       zolnc(ilg,ican),  ailcb(ilg,icc),
      5          vgbiomas(ilg),       gavgltms(ilg),       gavgscms(ilg),
-     6          slai(ilg,icc),    bmasveg(ilg,icc),    cmasvegc(ilg,ic),
+     6          slai(ilg,icc),    bmasveg(ilg,icc),  cmasvegc(ilg,ican),
      7       veghght(ilg,icc),   rootdpth(ilg,icc),   gppcsveg(ilg,icc),
-     8      gppcgveg(ilg,icc),   pfcancmx(ilg,icc),    fcanmx(ilg,ic),
-     9      nfcancmx(ilg,icc),      alvisc(ilg,ic),      alnirc(ilg,ic),
+     8      gppcgveg(ilg,icc),   pfcancmx(ilg,icc),    fcanmx(ilg,ican),
+     9      nfcancmx(ilg,icc),      alvisc(ilg,ican),  alnirc(ilg,ican),
      a           gavglai(ilg),    yesfrac_comp(ilg,icc)
 c
       real   npp(ilg),      nep(ilg),  hetrores(ilg),      autores(ilg),
@@ -400,12 +401,12 @@ c
      4 dstcemls3(ilg)
 c
       real    fc(ilg),       fg(ilg),       fcs(ilg),         fgs(ilg),
-     1  fcans(ilg,ic),  fcan(ilg,ic),         rms(ilg),
+     1  fcans(ilg,ican),  fcan(ilg,ican),         rms(ilg),
      2       rmr(ilg),  grescoef(kk),    litres(ilg),      socres(ilg),
      3   humicfac(kk),        term,       laimin(kk),       laimax(kk)
 c
       real pglfmass(ilg,icc),   pblfmass(ilg,icc),   pstemass(ilg,icc),
-     1     protmass(ilg,icc), plitmass(ilg,icc+1), psocmass(ilg,icc+1),
+     1     protmass(ilg,icc), plitmass(ilg,iccp1), psocmass(ilg,iccp1),
      2         pvgbioms(ilg),       pgavltms(ilg),       pgavscms(ilg)
 c
       real   fcancs(ilg,icc),      fcanc(ilg,icc),   rmscgveg(ilg,icc),
@@ -417,15 +418,15 @@ c
      6     pheanveg(ilg,icc),   pancsveg(ilg,icc),   pancgveg(ilg,icc)
 c
       real ltrsvgcs(ilg,icc),   ltrsvgcg(ilg,icc),   scrsvgcs(ilg,icc),
-     1     scrsvgcg(ilg,icc), ltresveg(ilg,icc+1), scresveg(ilg,icc+1),
+     1     scrsvgcg(ilg,icc), ltresveg(ilg,iccp1), scresveg(ilg,iccp1),
      2          ltrsbrg(ilg),        scrsbrg(ilg),       ltrsbrgs(ilg),
-     3         scrsbrgs(ilg), hetrsveg(ilg,icc+1), humtrsvg(ilg,icc+1),
-     4   soilrsvg(ilg,icc+1)             
+     3         scrsbrgs(ilg), hetrsveg(ilg,iccp1), humtrsvg(ilg,iccp1),
+     4   soilrsvg(ilg,iccp1), autoresveg(ilg,icc)             
 c
-      real ltrestep(ilg,icc+1),screstep(ilg,icc+1), hutrstep(ilg,icc+1) 
+      real ltrestep(ilg,iccp1),screstep(ilg,iccp1), hutrstep(ilg,iccp1) 
 c
-      real roottemp(ilg,icc),     tbarccs(ilg,ig),   leaflitr(ilg,icc),
-     1       fieldsm(ilg,ig),   flhrloss(ilg,icc),      wiltsm(ilg,ig)
+      real roottemp(ilg,icc),     tbarccs(ilg,ignd),leaflitr(ilg,icc),
+     1       fieldsm(ilg,ignd),   flhrloss(ilg,icc),   wiltsm(ilg,ignd)
 c
       real rootlitr(ilg,icc),   stemlitr(ilg,icc),   stmhrlos(ilg,icc),
      1     rothrlos(ilg,icc)
@@ -461,7 +462,7 @@ c
       real tltrleaf(ilg,icc),   tltrstem(ilg,icc),   tltrroot(ilg,icc),
      1                popdin
 c
-      real  faregat(ilg), paicgat(ilg,ic),slaicgat(ilg,ic)  
+      real  faregat(ilg), paicgat(ilg,ican),slaicgat(ilg,ican)  
 c
       real  vgbiomas_veg(ilg,icc)
 c  
@@ -476,7 +477,7 @@ c
 c     
       real     barefrac(ilg),       pbarefrc(ilg),           tolrance,
      1       lambda(ilg,icc),   add2allo(ilg,icc),  lyglfmas(ilg,icc),
-     2     expbalvg(ilg,icc),       expnbaln(ilg), ltrflcom(ilg,icc+1),
+     2     expbalvg(ilg,icc),       expnbaln(ilg), ltrflcom(ilg,iccp1),
      3             lambdamax,         cc(ilg,icc),         mm(ilg,icc)
 c
       integer   surmncur(ilg),       defmncur(ilg)
@@ -586,7 +587,7 @@ c     generate the sort index for correspondence between 9 pfts and the
 c     12 values in the parameter vectors
 c
       icount=0
-      do 95 j = 1, ic
+      do 95 j = 1, ican
         do 96 m = 1, nol2pfts(j)
           n = (j-1)*l2max + m
           icount = icount + 1
@@ -604,12 +605,12 @@ c      unmapping of the pfts. composite does not require these extra steps.
        if (mosaic) then
 c
 c       check if number of mosaics is equal to the number of pfts plus one
-c       bare, e.g., nmos=icc+1
+c       bare, e.g., nmos=iccp1
 c
-        if (nmos.ne.icc+1) then 
+        if (nmos.ne.iccp1) then 
          write(*,2050) 'number of mosaics, nmos= ',nmos,
      &                 ' is not equal to the number of pfts plus',
-     &                 ' one bare, icc+1= ',icc+1
+     &                 ' one bare, iccp1= ',iccp1
          write(*,2051) 'competition works properly only when all pfts',
      &                 ' and bare are considered.                    '
          call xit ('ctem',-11)
@@ -640,7 +641,7 @@ c       competition_map scatters and maps the array with indices
 c       of (ilg,icc) to (nlat,icc) for preparation for competition
 c  
           call competition_map(   nlat,      nmos,     ilg, 
-     a                             nml,     ilmos,   jlmos,   icc, ic,
+     a                             nml,    ilmos,   jlmos,   icc, ican,
      b                         faregat,   fcancmx,  nppveg,  geremort,
      c                         intrmort, gleafmas, bleafmas, stemmass,
      d                         rootmass, litrmass, soilcmas,
@@ -697,7 +698,7 @@ c        if first day of year then based on updated bioclimatic parameters
 c        find if pfts can exist or not
 c
           call existence(iday,            1,         nlat,         nlat,
-     1                    icc,         sort,     nol2pfts,           ic,
+     1                    icc,         sort,     nol2pfts,       ican,
      2             twarmm_cmp,   tcoldm_cmp,     gdd5_cmp,  aridity_cmp,
      3           srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,
      4             annpcp_cmp, anpotevp_cmp, pftexist_cmp)
@@ -707,7 +708,7 @@ c        call competition subroutine which on the basis of previous day's
 c        npp estimates changes in fractional coverage of pfts
 c
          call competition (iday,          1,          nlat,        nlat,
-     1                    icc,    nol2pfts,            ic,   nppveg_cmp,
+     1                    icc,    nol2pfts,            ican, nppveg_cmp,
      2                  l2max, pftexist_cmp, geremort_cmp, intrmort_cmp,
      3           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
      4           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,
@@ -757,7 +758,7 @@ c     -----------------------------------------------------------------
          enddo
 
          call luc(icc,      nlat,      il1,      nlat,
-     1           ic, nol2pfts,    l2max,  
+     1           ican, nol2pfts,    l2max,  
      2           grclarea_cmp, pfcancmx_cmp, nfcancmx_cmp,     iday,
      3           todfrac_cmp,  yesfrac_mos,   .true.,
      4           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
@@ -772,7 +773,7 @@ c       competition_unmap unmaps and gathers the array with
 c       indices (nlat,icc) back to (ilg,icc) after competition is done 
 c
         call competition_unmap(nlat, nmos, ilg, 
-     a                           nml, ilmos, jlmos, icc, ic, nol2pfts,
+     a                           nml, ilmos, jlmos, icc, ican, nol2pfts,
      b                           fare_cmp,   nppveg_cmp, geremort_cmp,
      c                       intrmort_cmp, gleafmas_cmp, bleafmas_cmp,
      d                       stemmass_cmp, rootmass_cmp, litrmass_cmp,
@@ -835,7 +836,7 @@ c       if first day of year then based on updated bioclimatic parameters
 c       find if pfts can exist or not
 c
         call existence(iday,            1,         il2,         ilg,
-     1                   icc,         sort,     nol2pfts,           ic,
+     1                   icc,         sort,     nol2pfts,         ican,
      2                   twarmm,   tcoldm,     gdd5,  aridity,
      3                   srplsmon, defctmon, anndefct, annsrpls,
      4                   annpcp, anpotevp, pftexist )
@@ -845,11 +846,11 @@ c       call competition subroutine which on the basis of previous day's
 c       npp estimates changes in fractional coverage of pfts
 c
         call competition (iday,          1,          il2,         ilg,
-     1                    icc,    nol2pfts,            ic,   nppveg,
+     1                    icc,    nol2pfts,            ican,   nppveg,
      2                    l2max, pftexist, geremort, intrmort,
      3                    gleafmas, bleafmas, stemmass, rootmass,
      4                    litrmass, soilcmas, grclarea,   lambda,
-     5                    bmasveg,       deltat,  burnveg,         sort,
+     5                    bmasveg,       deltat,  burnveg,        sort,
 c
 c    ------------------- inputs above this line -------------------
 c
@@ -898,7 +899,7 @@ c
          enddo
 
          call luc(     icc,      ilg,      il1,      il2,
-     1                        ic, nol2pfts,    l2max,  
+     1                        ican, nol2pfts,    l2max,  
      2                  grclarea, pfcancmx, nfcancmx,     iday,
      3                   todfrac,yesfrac_comp,.true.,
      4                  gleafmas, bleafmas, stemmass, rootmass,
@@ -974,14 +975,14 @@ c
         tbarccs(i,3)=0.0     
 c
 c                              over bare fraction of the grid cell
-        screstep(i,icc+1)=0.0  !soil c respiration in kg c/m2 over the time step
-        ltrestep(i,icc+1)=0.0  !litter c respiration in kg c/m2 over the time step
-        soilrsvg(i,icc+1)=0.0  !soil respiration over the bare fraction
-        humtrsvg(i,icc+1)=0.0  !humified rate the bare fraction
+        screstep(i,iccp1)=0.0  !soil c respiration in kg c/m2 over the time step
+        ltrestep(i,iccp1)=0.0  !litter c respiration in kg c/m2 over the time step
+        soilrsvg(i,iccp1)=0.0  !soil respiration over the bare fraction
+        humtrsvg(i,iccp1)=0.0  !humified rate the bare fraction
 c
-        ltresveg(i,icc+1)=0.0  !litter respiration rate over bare fraction
-        scresveg(i,icc+1)=0.0  !soil c respiration rate over bare fraction
-        hetrsveg(i,icc+1)=0.0  !heterotrophic resp. rate over bare fraction
+        ltresveg(i,iccp1)=0.0  !litter respiration rate over bare fraction
+        scresveg(i,iccp1)=0.0  !soil c respiration rate over bare fraction
+        hetrsveg(i,iccp1)=0.0  !heterotrophic resp. rate over bare fraction
 c       expnbaln  is used for competition
         expnbaln(i)=0.0        !amount of c related to spatial expansion
 
@@ -1071,8 +1072,8 @@ c
         litrfall(i)=0.0                  !combined total litter fall rate
         gavglai (i)=0.0                  !grid averaged green lai
 c
-        plitmass(i,icc+1)=litrmass(i,icc+1)  !litter mass over bare fraction
-        psocmass(i,icc+1)=soilcmas(i,icc+1)  !soil c mass over bare fraction
+        plitmass(i,iccp1)=litrmass(i,iccp1)  !litter mass over bare fraction
+        psocmass(i,iccp1)=soilcmas(i,iccp1)  !soil c mass over bare fraction
 145   continue
 c
 c     initialization ends
@@ -1109,17 +1110,17 @@ c     Find maintenance respiration for canopy over snow sub-area
 c     in umol co2/m2/sec
 c
       call   mainres (fcancs,      fcs,     stemmass,   rootmass,        
-     1                   icc,       ig,          ilg,        il1,
+     1                   icc,       ignd,          ilg,        il1,
      2                   il2,       ta,       tbarcs,   rmatctem,
-     3                  sort, nol2pfts,           ic,      isand,
+     3                  sort, nol2pfts,           ican,      isand,
      4              rmscsveg, rmrcsveg,     rttempcs)
 c
 c     Find maintenance respiration for canopy over ground sub-area
 c
       call   mainres ( fcanc,       fc,     stemmass,   rootmass,        
-     1                   icc,       ig,          ilg,        il1,
+     1                   icc,       ignd,          ilg,        il1,
      2                   il2,       ta,        tbarc,   rmatctem,
-     3                  sort, nol2pfts,           ic,      isand,
+     3                  sort, nol2pfts,           ican,      isand,
      4              rmscgveg, rmrcgveg,     rttempcg)
 c
 c
@@ -1216,6 +1217,7 @@ c
           npp(i)=npp(i)+fcancmx(i,j)*nppveg(i,j)
           gpp(i)=gpp(i)+fcancmx(i,j)*gppveg(i,j)
           autores(i)=rg(i)+rm(i)
+          autoresveg(i,j)=rmveg(i,j) + rgveg(i,j)
 330     continue
 320   continue
 c
@@ -1230,7 +1232,7 @@ c     find heterotrophic respiration rates (umol co2/m2/sec) for canopy
 c     over snow subarea
 c
        call    hetresv ( fcancs,      fcs, litrmass, soilcmas,
-     1                      icc,       ig,      ilg,      il1,
+     1                      icc,       ignd,      ilg,      il1,
      2                      il2,   tbarcs,   thliqc,     sand,
      3                     clay, rttempcs,    zbotw,     sort,
      4                     isand,
@@ -1240,7 +1242,7 @@ c     find heterotrophic respiration rates for canopy over ground
 c     subarea
 c
        call    hetresv (  fcanc,       fc, litrmass, soilcmas,
-     1                      icc,       ig,      ilg,      il1,
+     1                      icc,       ignd,      ilg,      il1,
      2                      il2,    tbarc,   thliqc,     sand,
      3                     clay, rttempcg,    zbotw,     sort,
      4                     isand,
@@ -1249,7 +1251,7 @@ c
 c
 c     find heterotrophic respiration rates from bare ground subarea
 c
-       call  hetresg  (litrmass, soilcmas,      icc,       ig,      
+       call  hetresg  (litrmass, soilcmas,      icc,       ignd,      
      1                      ilg,      il1,      il2,    tbarg,   
      2                   thliqg,     sand,      clay,   zbotw,   
      3                       fg,        0,
@@ -1259,7 +1261,7 @@ c
 c     find heterotrophic respiration rates from snow over ground 
 c     subarea
 c
-       call  hetresg  (litrmass, soilcmas,      icc,       ig,      
+       call  hetresg  (litrmass, soilcmas,      icc,       ignd,      
      1                      ilg,      il1,      il2,   tbargs,   
      2                   thliqg,     sand,      clay,   zbotw,   
      3                      fgs,        1,
@@ -1293,15 +1295,15 @@ c     ground sub-areas.
 c
       do 355 i = il1, il2
         if( (fg(i)+fgs(i)).gt.zero) then
-          ltresveg(i,icc+1)= (fg(i)*ltrsbrg(i) + 
+          ltresveg(i,iccp1)= (fg(i)*ltrsbrg(i) + 
      &      fgs(i)*ltrsbrgs(i)) / ( fg(i) + fgs(i) )     
-          scresveg(i,icc+1)= (fg(i)*scrsbrg(i) + 
+          scresveg(i,iccp1)= (fg(i)*scrsbrg(i) + 
      &      fgs(i)*scrsbrgs(i)) / ( fg(i) + fgs(i) )     
-          hetrsveg(i,icc+1) =  ltresveg(i,icc+1) + scresveg(i,icc+1)
+          hetrsveg(i,iccp1) =  ltresveg(i,iccp1) + scresveg(i,iccp1)
         else
-          ltresveg(i,icc+1)= 0.0
-          scresveg(i,icc+1)= 0.0
-          hetrsveg(i,icc+1)= 0.0
+          ltresveg(i,iccp1)= 0.0
+          scresveg(i,iccp1)= 0.0
+          hetrsveg(i,iccp1)= 0.0
         endif
 355   continue
 c
@@ -1315,8 +1317,8 @@ c
 360   continue
 c
       do 380 i = il1, il2
-        litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,icc+1))
-        socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,icc+1))
+        litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,iccp1))
+        socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,iccp1))
         hetrores(i)= litres(i)+socres(i)
         nep(i)=npp(i)-hetrores(i)
 380   continue
@@ -1327,7 +1329,7 @@ c     update the litter and soil c pools based on litter and soil c
 c     respiration rates found above. also transfer humidified litter 
 c     to the soil c pool.
 c
-      do 420 j = 1, icc+1
+      do 420 j = 1, iccp1
         do 430 i = il1, il2
 c         convert u mol co2/m2.sec -> kg c/m2 respired over the model
 c         time step
@@ -1335,7 +1337,7 @@ c         time step
           screstep(i,j)=scresveg(i,j)*(1.0/963.62)*deltat
 c
 c         update litter and soil c pools
-          if (j .ne. icc+1) then
+          if (j .ne. iccp1) then
            litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*
      &                   (1.0+humicfac(sort(j))))
            hutrstep(i,j)=(humicfac(sort(j))* ltrestep(i,j))
@@ -1365,7 +1367,7 @@ c
 c     but over the bare fraction there is no live root.
 c
       do 460 i = il1, il2
-        soilrsvg(i,icc+1)=ltresveg(i,icc+1)+scresveg(i,icc+1)
+        soilrsvg(i,iccp1)=ltresveg(i,iccp1)+scresveg(i,iccp1)
 460   continue
 c
 c     find grid averaged humification and soil respiration rates
@@ -1378,8 +1380,8 @@ c
 470   continue
 c
       do 490 i = il1, il2
-        soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,icc+1))
-        humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,icc+1))
+        soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
+        humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
 490   continue
 c
 c     heterotrophic respiration part ends
@@ -1580,7 +1582,7 @@ c
 660     continue
 650   continue
 c
-      do 680 j = 1, ig
+      do 680 j = 1, ignd
         do 690 i = il1, il2
           if( (fc(i)+fcs(i)).gt.zero) then
             tbarccs(i,j)= (fc(i)*tbarc(i,j) + 
@@ -1597,12 +1599,12 @@ c     call the phenology subroutine, which determines the leaf growth
 c     status, calculates leaf litter, and converts green grass into
 c     brown.
 c
-            call phenolgy(gleafmas, bleafmas,      icc,       ig,
+            call phenolgy(gleafmas, bleafmas,      icc,       ignd,
      1                         ilg,      il1,      il2,  tbarccs,
      2                      thliqc,   wiltsm,  fieldsm,       ta,
      3                    pheanveg,     iday,     radj, roottemp,
      4                    rmatctem, stemmass, rootmass,     sort,
-     5                       l2max, nol2pfts,       ic,  fcancmx,
+     5                       l2max, nol2pfts,       ican,  fcancmx,
      6                    flhrloss, leaflitr, lfstatus,  pandays,
      7                    colddays)
 c
@@ -1614,7 +1616,7 @@ c     and root turnover is calculated in the turnover subroutine.
 c
             call turnover (stemmass, rootmass,  lfstatus,    ailcg,
      1                          icc,      ilg,       il1,      il2,
-     2                         sort, nol2pfts,        ic,  fcancmx,
+     2                         sort, nol2pfts,        ican,  fcancmx,
      3                     stmhrlos, rothrlos,
      4                     stemlitr, rootlitr)
 c
@@ -1624,7 +1626,7 @@ c     update green leaf biomass for trees and crops and brown leaf biomass
 c     for grasses
 c
       k1=0
-      do 700 j = 1, ic 
+      do 700 j = 1, ican 
        if(j.eq.1) then
          k1 = k1 + 1
        else
@@ -1714,7 +1716,7 @@ c     mortality for green grasses doesn't generate litter, instead
 c     they turn brown.
 c
       k1=0
-      do 830 j = 1, ic 
+      do 830 j = 1, ican 
        if(j.eq.1) then
          k1 = k1 + 1
        else
@@ -1862,8 +1864,8 @@ c          gavglai (i)=gavglai (i)+fcancmx(i,j)*ailcg(i,j)
 1100  continue
 c
       do 1020 i = il1, il2
-        gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,icc+1))
-        gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,icc+1))
+        gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
+        gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
 1020  continue
 c
 c     -----------------------------------------------------------------

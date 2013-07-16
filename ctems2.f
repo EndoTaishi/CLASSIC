@@ -31,7 +31,8 @@
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
-     &      nbpvegrow,
+     &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
+     &      soilcresvegrow, 
 c --
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,   fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -67,7 +68,8 @@ c --
      &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
-     &      nbpveggat )
+     &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
+     &      soilcresveggat )
 c
 c
 C              Canadian Terrestrial Ecosystem Model (CTEM)
@@ -79,7 +81,7 @@ c      August 4, 2009 scatter operation on CTEM variables.
 c      Rong Li
 c 
       use ctem_params,        only : nlat, nmos, ilg, ignd, ican, icp1,
-     1                               icc
+     1                               icc,iccp1
 
       implicit none
 c
@@ -122,8 +124,8 @@ c
      1      tbaraccrow_m(nlat,nmos,ignd),
      2      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc),
      3      stemmassrow(nlat,nmos,icc), rootmassrow(nlat,nmos,icc),
-     4      litrmassrow(nlat,nmos,icc+1),gleafmasrow(nlat,nmos,icc),
-     5      bleafmasrow(nlat,nmos,icc), soilcmasrow(nlat,nmos,icc+1),
+     4      litrmassrow(nlat,nmos,iccp1),gleafmasrow(nlat,nmos,icc),
+     5      bleafmasrow(nlat,nmos,icc), soilcmasrow(nlat,nmos,iccp1),
      6      ailcbrow(nlat,nmos,icc),    flhrlossrow(nlat,nmos,icc)
 c
       integer  pandaysrow(nlat,nmos,icc), lfstatusrow(nlat,nmos,icc),
@@ -176,7 +178,9 @@ c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
       real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,icc),
-     1      nbpvegrow(nlat,nmos,icc)
+     1      nbpvegrow(nlat,nmos,icc),hetroresvegrow(nlat,nmos,iccp1),
+     2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp1),
+     3      soilcresvegrow(nlat,nmos,iccp1)
 c
       real  fcancmxgat(ilg,icc),        rmatcgat(ilg,ican,ignd),
      1      zolncgat(ilg,ican),         paicgat(ilg,ican),
@@ -207,8 +211,8 @@ c
      1      tbaraccgat_m(ilg,ignd),
      2      pfcancmxgat(ilg,icc),       nfcancmxgat(ilg,icc),
      3      stemmassgat(ilg,icc),       rootmassgat(ilg,icc),  
-     4      litrmassgat(ilg,icc+1),     gleafmasgat(ilg,icc),
-     5      bleafmasgat(ilg,icc),       soilcmasgat(ilg,icc+1),
+     4      litrmassgat(ilg,iccp1),     gleafmasgat(ilg,icc),
+     5      bleafmasgat(ilg,icc),       soilcmasgat(ilg,iccp1),
      6      ailcbgat(ilg,icc),          flhrlossgat(ilg,icc)
 c
       integer pandaysgat(ilg,icc),      lfstatusgat(ilg,icc),
@@ -259,7 +263,9 @@ c
       real vgbiomas_veggat(ilg,icc)
 c
       real gppveggat(ilg,icc),        nepveggat(ilg,icc),
-     1     nbpveggat(ilg,icc)
+     1     nbpveggat(ilg,icc), hetroresveggat(ilg,iccp1),
+     2      autoresveggat(ilg,icc),litresveggat(ilg,iccp1),
+     3      soilcresveggat(ilg,iccp1)
 c
 c----------------------------------------------------------------------
       do 100 k=1,nml
@@ -371,16 +377,20 @@ c
           nepvegrow(ilmos(k),jlmos(k),l)    = nepveggat(k,l)
           nbpvegrow(ilmos(k),jlmos(k),l)    = nbpveggat(k,l)
           vgbiomas_vegrow(ilmos(k),jlmos(k),l)=vgbiomas_veggat(k,l)
-c
+          autoresvegrow(ilmos(k),jlmos(k),l) = autoresveggat(k,l)
           ailcminrow(ilmos(k),jlmos(k),l)=ailcmingat(k,l)
           ailcmaxrow(ilmos(k),jlmos(k),l)=ailcmaxgat(k,l)
 c
 101   continue
 c
-      do 102 l=1,icc+1
+      do 102 l=1,iccp1
        do 102 k=1,nml
           litrmassrow(ilmos(k),jlmos(k),l) = litrmassgat(k,l)
           soilcmasrow(ilmos(k),jlmos(k),l) = soilcmasgat(k,l)
+          hetroresvegrow(ilmos(k),jlmos(k),l) = hetroresveggat(k,l)
+          litresvegrow(ilmos(k),jlmos(k),l) = litresveggat(k,l)
+          soilcresvegrow(ilmos(k),jlmos(k),l) = soilcresveggat(k,l)
+
 102   continue
 c
       do 105 l=1,12     !12 months
