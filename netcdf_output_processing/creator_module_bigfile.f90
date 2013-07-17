@@ -11,7 +11,7 @@ implicit none
 ! June 19, 2013
 
 ! Parameters
-integer, parameter :: ntile = 10  	! maximum number of mosiac tiles
+integer, parameter :: ntile = 10  	! maximum number of mosiac tiles (9 PFTs + 1 bare)
 integer, parameter :: ctemnpft = 9      ! number of CTEM pfts 
 integer, parameter :: classnpft = 4     ! number of CLASS pfts
 integer, parameter :: nl = 3		! number of soil layers
@@ -137,6 +137,9 @@ integer, parameter :: numctemvars_m = 12  !number of annual CTEM vars to write
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR=['LAIMAXG','VGBIOMAS','LITTER','SOIL_C','NPP','GPP','NEP',   &
                                                                    'NBP','HETRESP','AUTORESP','LITRESP','SOILCRESP' ]
 
+character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR_GA=['LAIMAXG_GA','VGBIOMAS_GA','LITTER_GA','SOIL_C_GA','NPP_GA','GPP_GA','NEP_GA',   &
+                                                                   'NBP_GA','HETRESP_GA','AUTORESP_GA','LITRESP_GA','SOILCRESP_GA' ]
+
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_NAME=['Maximum LAI from month','Grid averaged vegetation biomass','Litter mass',                              &
                                                                     'Soil C mass','Grid averaged monthly net primary productivity',                                         &
                                                                     'Monthly gross primary productivity','Monthly net ecosystem productivity',                              &
@@ -200,6 +203,11 @@ character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_VAR=['LAIMAXG_A','
                                                                    'LITRMASS_A','SOILCMAS_A','TOTCMASS','ANNUALNPP',                &
                                                                    'ANNUALGPP','ANNUALNEP','ANNUALNBP','ANNUALHETRESP',         &
                                                                    'ANNUALAUTORESP','ANNUALLITRESP','ANNUALSOILCRESP' ]
+
+character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_VAR_GA=['LAIMAXG_A_GA','VGBIOMAS_A_GA','STEMMASS_A_GA','ROOTMASS_A_GA',   &
+                                                                   'LITRMASS_A_GA','SOILCMAS_A_GA','TOTCMASS_GA','ANNUALNPP_GA',                &
+                                                                   'ANNUALGPP_GA','ANNUALNEP_GA','ANNUALNBP_GA','ANNUALHETRESP_GA',         &
+                                                                   'ANNUALAUTORESP_GA','ANNUALLITRESP_GA','ANNUALSOILCRESP_GA' ]
  
 character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_NAME=['Maximum LAI from month','Grid averaged vegetation biomass',        &
                                                                     'Grid averaged stem biomass', 'Grid averaged root biomass',         &

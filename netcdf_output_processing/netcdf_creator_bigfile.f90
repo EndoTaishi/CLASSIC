@@ -160,6 +160,14 @@ if (status/=nf90_noerr) call handle_err(status)
 status = nf90_put_att(ncid,nf90_global,'Conventions','COARDS')
 if (status/=nf90_noerr) call handle_err(status)
 
+if (MOSAIC) then 
+  status = nf90_put_att(ncid,nf90_global,'history','This was a Mosaic run')
+  if (status/=nf90_noerr) call handle_err(status)
+else
+  status = nf90_put_att(ncid,nf90_global,'history','This was a Composite run')
+  if (status/=nf90_noerr) call handle_err(status)
+end if
+
 status = nf90_put_att(ncid,nf90_global,'node_offset',1)
 if (status/=nf90_noerr) call handle_err(status)
 
@@ -378,12 +386,12 @@ else ! netcf3
         grpid_mon_class=ncid
         grpid_mon_dist=ncid
         grpid_ann_dist=ncid
-    if (MOSAIC) then
+
         grpid_ann_ctem_t=ncid
         grpid_mon_ctem_t=ncid
         grpid_mon_dist_t=ncid
         grpid_ann_dist_t=ncid
-    end if
+
 end if
 
 status = nf90_enddef(ncid) 
@@ -444,8 +452,7 @@ deallocate(timenum)
 ! CTEM first
 if (CTEM) then
  
- !Monthly CTEM MOSAIC==============================
- if (MOSAIC) then 
+ !Monthly CTEM per PFT/tile==============================
 
    allocate(fourvar(cntx,cnty,ntile,totyrs))
    fourvar=fill_value
@@ -493,7 +500,7 @@ if (CTEM) then
   end do
 
  ! MONTHLY MOSAIC DISTURBANCE VARIABLES
-
+ if (MOSAIC) then  
   if (DOFIRE) then
 
     do i=lbound(CTEM_M_D_VAR,1), ubound(CTEM_M_D_VAR,1)
@@ -534,10 +541,10 @@ if (CTEM) then
     end do
 
   end if !dofire
- 
   end if !makemonthly
-  
-  !Annual CTEM MOSAIC====================================
+  end if ! mosaic
+
+  !Annual CTEM per PFT/tile====================================
 
   do i=lbound(CTEM_Y_VAR,1), ubound(CTEM_Y_VAR,1)
 
@@ -577,7 +584,7 @@ if (CTEM) then
   enddo
 
  ! Annual DISTURBANCE MOSAIC VARIABLES
-
+  if (MOSAIC) then
    if (DOFIRE) then
 
     do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
@@ -624,7 +631,6 @@ if (CTEM) then
     deallocate(fivevar)
    end if
 
-!else if (.NOT. MOSAIC) then
  end if !mosaic
  
    allocate(threevar(cntx,cnty,totyrs))
@@ -635,14 +641,14 @@ if (CTEM) then
    allocate(fourvar(cntx,cnty,12,totyrs))
    fourvar=fill_value
 
- !Monthly CTEM COMPOSITE===================================================================================
+ !Monthly CTEM Grid-Averaged===================================================================================
 
   do i=lbound(CTEM_M_VAR,1), ubound(CTEM_M_VAR,1)
 
    status = nf90_redef(grpid_mon_ctem) 
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_VAR(i)),nf90_float,[lon,lat,month,time],varid)
+   status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_VAR_GA(i)),nf90_float,[lon,lat,month,time],varid)
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_put_att(grpid_mon_ctem,varid,'long_name',trim(CTEM_M_NAME(i)))
@@ -724,7 +730,7 @@ if (CTEM) then
    status = nf90_redef(grpid_ann_ctem) 
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_def_var(grpid_ann_ctem,trim(CTEM_Y_VAR(i)),nf90_float,[lon,lat,time],varid)
+   status = nf90_def_var(grpid_ann_ctem,trim(CTEM_Y_VAR_GA(i)),nf90_float,[lon,lat,time],varid)
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_put_att(grpid_ann_ctem,varid,'long_name',trim(CTEM_Y_NAME(i)))

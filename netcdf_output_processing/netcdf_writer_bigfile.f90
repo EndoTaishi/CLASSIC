@@ -56,6 +56,8 @@ character(140) :: file_to_write_extended
 character(120) :: folder
 character(120) :: long_path
 character(120) :: jobfile
+character(512) :: command
+character(160) :: infile
 character(4) :: dummy
 logical :: CTEM
 logical :: MAKEMONTHLY
@@ -64,6 +66,7 @@ logical :: MOSAIC
 logical :: PARALLELRUN
 logical :: COMPETE_LNDUSE
 integer :: realyrst
+character(1) :: tic
 
 real, allocatable, dimension(:) :: tmp
 real, allocatable, dimension(:) :: tmpd
@@ -136,6 +139,51 @@ folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
 
        END IF
 
+
+! Prepare the composite CTEM files for read-in. These files have a value per PFT for 
+! each variable (plus one for the bare fraction) and then one for the grid
+! cell average across all fractions (GRDAV). It seems to be easiest for the 
+! netcdf creation to create separate files for the grid-averaged values.
+! Do this using sed.
+
+  ! Annual CTEM
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01Y_G'
+  tic=char(39)
+  command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a.dat'
+
+  call system(command)
+
+  if (.NOT. MOSAIC) then
+   ! Make a file of the PFT info, removing the grdav.
+   command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_a_p.dat'
+
+   call system(command)
+  end if
+
+   ! Monthly CTEM
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01M_G'
+  command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m.dat'
+
+  call system(command)
+
+  if (.NOT. MOSAIC) then
+   ! Make a file of the PFT info, removing the grdav.
+   command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p.dat'
+
+   call system(command)
+  end if
+
+  CLOSE(84)
+  CLOSE(85)
+
+  OPEN(74,FILE='tmp_m.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
+  OPEN(75,FILE='tmp_a.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
+
+  if (.NOT. MOSAIC) then
+   OPEN(741,FILE='tmp_m_p.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
+   OPEN(751,FILE='tmp_a_p.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
+  end if
+ 
 ! Open the netcdf file for writing
 
 file_to_write_extended = trim(file_to_write)//'_CLASSCTEM.nc'
@@ -335,9 +383,7 @@ deallocate(tmpa)
 
 end if
 
-!============================CTEM COMPOSITE ANNUAL FILES=========================================\
-
-!if (.NOT. MOSAIC) then
+!============================CTEM Grid Average ANNUAL FILES=========================================\
 
 ! Allocate the arrays in preparation for CT01Y_G, CT06Y_G, CT01Y_GM
 
@@ -351,16 +397,15 @@ end if
 ! Read in from the ascii file
 
 !  first throw out header
-   do h = 1,6
-	read(85,*)
     if (DOFIRE) then 
+     do h = 1,6
 	read(87,*)
-    endif
-   end do
+     end do
+    end if
 
-   do y = 1,totyrs
-    
-     read(85,*)dummy_year,ctem_a(1:numctemvars_a,y)
+  do y = 1,totyrs
+
+     read(75,*)dummy_year,ctem_a(1:numctemvars_a,y)
 
     if (DOFIRE) then
 
@@ -370,7 +415,7 @@ end if
 
    end do
 
-    close(85)
+    close(75)
     if (DOFIRE) then
         close(87)
     endif
@@ -385,7 +430,7 @@ end if
 
  do v = 1,numctemvars_a ! begin vars loop
 
-   status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id)
+   status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR_GA(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_put_var(grpid,var_id,ctem_a(v,:),start=[xlon,ylat,yrst],count=[1,1,totyrs])
@@ -396,10 +441,10 @@ end if
 
  if (DOFIRE) then
 
-if (net4) then
-  status = nf90_inq_ncid(ncid,'Annual-Disturbance GridAvg', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+   if (net4) then
+    status = nf90_inq_ncid(ncid,'Annual-Disturbance GridAvg', grpid)
+    if (status /= nf90_noerr) call handle_err(status)
+  end if
 
   do v = 1,nctemdistvars_a ! begin vars loop
 
@@ -420,8 +465,8 @@ if (DOFIRE) then
  deallocate(ctem_d_a)
 endif
 
-if (MOSAIC) then
-!else ! MOSAIC MODE ====================================================
+
+!now per PFT/Tile MODE ====================================================
 
 ! Allocate the arrays in preparation for CT01Y_M and CT06Y_M
 
@@ -437,7 +482,11 @@ end if
 
 !  first throw out header
    do h = 1,6
+     if (MOSAIC) then
 	read(851,*)
+     else
+        read(751,*)
+     end if
     if (DOFIRE) then 
 	read(871,*)
     endif
@@ -454,7 +503,11 @@ end if
 
       do while (yrin == yr_now)
 
-        read(851,*,end=90) yrin,tmp(1:numctemvars_a),dummy,tilnum
+        if (MOSAIC) then
+          read(851,*,end=90) yrin,tmp(1:numctemvars_a),dummy,tilnum
+        else
+          read(751,*,end=90) yrin,tmp(1:numctemvars_a),dummy,tilnum
+        end if  
 
         if (yrin == yr_now) then
           ! Assign that just read in to its vars 
@@ -462,7 +515,11 @@ end if
             ctem_a_mos(v,tilnum,y)=tmp(v)
           end do
         else
-          backspace(851)  ! go back one line in the file
+          if (MOSAIC) then
+            backspace(851)  ! go back one line in the file
+          else
+            backspace(751)
+          end if
         end if
        end do ! while loop
      end do ! y loop
@@ -492,10 +549,14 @@ end if
 
 ! done with ascii file, close it.
 
-    close(851)
+    if (MOSAIC) then
+      close(851)
+    else
+      close(751)
+    end if
     if (DOFIRE) then
         close(871)
-    deallocate(tmpd)
+        deallocate(tmpd)
     endif
 
   deallocate(tmp)
@@ -521,10 +582,10 @@ end if
 
 if (DOFIRE) then
 
-if (net4) then
-  status = nf90_inq_ncid(ncid,'Annual-Disturbance Tiled', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+  if (net4) then
+    status = nf90_inq_ncid(ncid,'Annual-Disturbance Tiled', grpid)
+    if (status /= nf90_noerr) call handle_err(status)
+  end if
 
  do l=1,ntile
   do v = 1,nctemdistvars_a ! begin vars loop
@@ -545,8 +606,6 @@ deallocate(ctem_a_mos)
 if (DOFIRE) then
   deallocate(ctem_d_a_mos)
 endif
-
-end if ! Annual CTEM composite vs. mosaic
 
 ! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Now MONTHLY CTEM outputs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -622,17 +681,14 @@ deallocate(mpft_tot)
 
 end if !compete/lnduse
 
-!if (.NOT. MOSAIC) then
-
-!==============================Start Monthly COMPOSITE CTEM=============================
+!==============================Start Monthly Grid Average Vals CTEM=============================
 
 !  first throw out header
-   do h = 1,6
-	read(84,*)
     if (DOFIRE) then
+     do h = 1,6
 	read(86,*)
+     end do
     end if
-   end do
 
 !Allocate Arrays
 allocate(ctem_m(numctemvars_m,totyrs,12))
@@ -644,7 +700,8 @@ end if
 !---Read in Variables
    do y = 1,totyrs
     do m=1,12
-     read(84,*)dummy_month,dummy_year,ctem_m(1:numctemvars_m,y,m)
+
+     read(74,*)dummy_month,dummy_year,ctem_m(1:numctemvars_m,y,m)
 
      if (DOFIRE) then
 
@@ -655,7 +712,7 @@ end if
     end do !m loop
    end do !y loop
 
-    close(84)
+    close(74)
     if (DOFIRE) then
       close(86)
     end if
@@ -669,7 +726,7 @@ end if
 
  do v = 1,numctemvars_m ! begin vars loop
   do m=1,12  !Begin Month Loop
-   status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
+   status = nf90_inq_varid(grpid,trim(CTEM_M_VAR_GA(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_put_var(grpid,var_id,ctem_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,totyrs])
@@ -680,10 +737,10 @@ end if
 
 if (DOFIRE) then
 
-if (net4) then
-  status = nf90_inq_ncid(ncid,'Monthly-Disturbance GridAvg', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+ if (net4) then
+   status = nf90_inq_ncid(ncid,'Monthly-Disturbance GridAvg', grpid)
+   if (status /= nf90_noerr) call handle_err(status)
+ end if
 
  do v = 1,nctemdistvars_m ! begin vars loop
   do m=1,12  !Begin Month Loop
@@ -706,13 +763,15 @@ if (DOFIRE) then
   deallocate(ctem_d_m)
 end if
 
-if (MOSAIC) then !else  
-
-!===================MOSAIC===CTEM Monthly===MOSAIC========================
+!===================per PFT/Tile===CTEM Monthly==========================
 
 !  first throw out header
    do h = 1,6
+       if (MOSAIC) then
 	read(841,*)
+       else
+        read(741,*)
+       end if
     if (DOFIRE) then
 	read(861,*)
     end if
@@ -738,15 +797,23 @@ end if
 
       do while (mo == m) 
     
-        read(841,*) mo,yrin,tmp(1:numctemvars_m),dummy,tilnum
-
+        if (MOSAIC) then
+          read(841,*) mo,yrin,tmp(1:numctemvars_m),dummy,tilnum
+        else
+          read(741,*) mo,yrin,tmp(1:numctemvars_m),dummy,tilnum
+        end if  
+  
         if (mo == m) then
         ! Assign that just read in to its vars
           do v = 1,numctemvars_a ! begin vars loop
             ctem_m_mos(v,tilnum,y,m)=tmp(v)
           end do
         else
-          backspace(841)  ! go back one line in the file
+          if (MOSAIC) then
+            backspace(841)  ! go back one line in the file
+          else
+            backspace(741)  ! go back one line in the file
+          end if
         end if
 
        if (DOFIRE) then
@@ -766,7 +833,12 @@ end if
     end do !months
    end do ! years
 
-    close(841)
+    if (MOSAIC) then
+     close(841)
+    else 
+     close(741)
+    end if
+
     if (DOFIRE) then
       close(861)
       deallocate(tmpd)
@@ -795,9 +867,9 @@ end if
 
 if (DOFIRE) then
 
-if (net4) then
-  status = nf90_inq_ncid(ncid,'Monthly-Disturbance Tiled', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
+  if (net4) then
+    status = nf90_inq_ncid(ncid,'Monthly-Disturbance Tiled', grpid)
+    if (status /= nf90_noerr) call handle_err(status)
 end if
 
  do v = 1,numctemvars_a ! begin vars loop
@@ -823,8 +895,6 @@ if (DOFIRE) then
  deallocate(ctem_d_m_mos)
 end if
 
-end if ! mosaic
-
 end if ! makemonthly
 
 end if ! check CTEM
@@ -832,6 +902,20 @@ end if ! check CTEM
 !close the netcdf
 status = nf90_close(ncid)
 if (status/=nf90_noerr) call handle_err(status)
+
+! remove the tmp files
+
+command='rm tmp_a.dat tmp_m.dat'
+
+call system(command)
+
+if (.NOT. MOSAIC) then
+
+ command='rm tmp_a_p.dat tmp_m_p.dat'
+
+ call system(command)
+
+end if
 
 end program netcdf_writer_bf
 
