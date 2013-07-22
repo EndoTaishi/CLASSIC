@@ -24,7 +24,7 @@ subroutine  bioclim (   iday,        ta,   precip,   netrad, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
                            annpcp,  anpotevp)    
 
-!               Canadian Terrestrial Ecosystem Model (CTEM) V1.1
+!               Canadian Terrestrial Ecosystem Model (CTEM)
 !                Bioclimatic Parameters Estimation Subroutine 
 !
 !     25  Jun 2013  - Convert to f90.
@@ -249,11 +249,12 @@ subroutine  existence(  iday,       il1,      il2,      ilg, &
                            annpcp,  anpotevp,      &
                          pftexist) 
 
-!               Canadian Terrestrial Ecosystem Model (CTEM) V1.1
+!               Canadian Terrestrial Ecosystem Model (CTEM)
 !                          PFT Existence Subroutine 
 !
 !     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
 !     J. Melton         
+
 !     27  May 2004  - This subroutine calculates the existence of
 !     V. Arora        pfts in grid cells based on a set of bioclimatic
 !                     parameters that are estimated in a running average
@@ -327,7 +328,7 @@ integer :: i,j
 
 ! minimum coldest month temperature
 real, dimension(kk), parameter :: tcoldmin = [ -32.5, -999.9,   0.0, &
-                                                15.5, -999.9,  15.5, &
+                                                15.5, -999.9,   5.5, & !test pft was 15.5
                                               -999.9, -999.9,   0.0, &
                                               -999.9,   15.5,   0.0 ]
 
@@ -484,11 +485,11 @@ integer, intent(in) :: ic        ! number of class pfts
 
 integer, intent(in) :: l2max     ! maximum no. of level 2 pfts
 real,    intent(in) :: deltat    ! ctem time step, 1 day 
+real,    intent(in) :: grclarea  ! grid cell area, km^2
 integer, dimension(icc), intent(in) :: sort ! index for correspondence between 9 ctem pfts and
                                             ! size 12 of parameter vectors
 integer, dimension(ic), intent(in) :: nol2pfts ! number of level 2 ctem pfts
 logical, dimension(ilg,icc), intent(in) :: pftexist(ilg,icc) !indicating pfts exist (T) or not (F)
-real, dimension(ilg),     intent(in) :: grclarea  ! grid cell area, km^2
 real, dimension(ilg,icc), intent(in) :: nppveg    ! npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
 real, dimension(ilg,icc), intent(in) :: geremort  ! growth related mortality (1/day)
 real, dimension(ilg,icc), intent(in) :: intrmort  ! intrinsic (age related) mortality (1/day)
@@ -686,10 +687,10 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
        if(.not. crop(j))then  ! do not run for crops
         do 1230 i = il1, il2
           pbarefra(i)=pbarefra(i)-fcancmx(i,j)
-          pftareab(i,j)=(fcancmx(i,j)*grclarea(i))
-          pftareaa(i,j)=(fcancmx(i,j)*grclarea(i))-burnveg(i,j)
-          fcancmx(i,j)=max(seedfrac(sdfracin),(pftareaa(i,j)/grclarea(i)) )
-          pftareaa(i,j)=fcancmx(i,j)*grclarea(i)
+          pftareab(i,j)=(fcancmx(i,j)*grclarea)
+          pftareaa(i,j)=(fcancmx(i,j)*grclarea)-burnveg(i,j)
+          fcancmx(i,j)=max(seedfrac(sdfracin),(pftareaa(i,j)/grclarea) )
+          pftareaa(i,j)=fcancmx(i,j)*grclarea
           barefrac(i)=barefrac(i)-fcancmx(i,j)
           if(fcancmx(i,j).gt.zero)then
             term = pftareab(i,j)/pftareaa(i,j)
@@ -1230,9 +1231,9 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !           all biomass from fraction that dies due to mortality is 
 !           also distributed over the litter pool of whole grid cell.
 
-            term = abs(chngfrac(i,j))*grclarea(i)*1.0e06*(gleafmas(i,j)+ &
+            term = abs(chngfrac(i,j))*grclarea*1.0e06*(gleafmas(i,j)+ &
                bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)+litrmass(i,j))
-            term = term/(grclarea(i)*1.0e06)
+            term = term/(grclarea*1.0e06)
 
             incrlitr(i,j)=term
 
@@ -1244,8 +1245,8 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !           chop off soil c from the fraction that goes down and
 !           spread it uniformly over the soil c pool of entire grid cell
 
-            term = abs(chngfrac(i,j))*grclarea(i)*1.0e06*soilcmas(i,j)
-            term = term/(grclarea(i)*1.0e06)
+            term = abs(chngfrac(i,j))*grclarea*1.0e06*soilcmas(i,j)
+            term = term/(grclarea*1.0e06)
             incrsolc(i,j)=term
             grsumsoc(i)=grsumsoc(i)+incrsolc(i,j)
 
@@ -1396,34 +1397,34 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
        if (.not. crop(j)) then  !flag! this shouldn't check for crops right? jm
         do 831 i = il1, il2
 
-          biomasvg(i,j)=fcancmx(i,j)*grclarea(i)*1.0e06* &
+          biomasvg(i,j)=fcancmx(i,j)*grclarea*1.0e06* &
            (gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)) 
-          pbiomasvg(i,j)=pfcancmx(i,j)*grclarea(i)*1.0e06* &
+          pbiomasvg(i,j)=pfcancmx(i,j)*grclarea*1.0e06* &
            (pglfmass(i,j)+pblfmass(i,j)+protmass(i,j)+pstmmass(i,j)) 
 
 !         part of npp that we will use later for allocation
-          putaside(i,j)=add2allo(i,j)*fcancmx(i,j)*grclarea(i)*1.0e06
+          putaside(i,j)=add2allo(i,j)*fcancmx(i,j)*grclarea*1.0e06
 
           gavgputa(i) = gavgputa(i) + putaside(i,j)
 
 !         litter added to bare
-          barelitr(i,j)=grsumlit(i)*grclarea(i)*1.0e06*fcancmx(i,j)
-          ownlitr(i,j)=incrlitr(i,j)*grclarea(i)*1.0e06
+          barelitr(i,j)=grsumlit(i)*grclarea*1.0e06*fcancmx(i,j)
+          ownlitr(i,j)=incrlitr(i,j)*grclarea*1.0e06
 
 !         soil c added to bare
-          baresolc(i,j)=grsumsoc(i)*grclarea(i)*1.0e06*fcancmx(i,j)
-          ownsolc(i,j)=incrsolc(i,j)*grclarea(i)*1.0e06
+          baresolc(i,j)=grsumsoc(i)*grclarea*1.0e06*fcancmx(i,j)
+          ownsolc(i,j)=incrsolc(i,j)*grclarea*1.0e06
 
           add2dead(i) = add2dead(i) + barelitr(i,j) + baresolc(i,j)
 
 !         npp we had in first place to expand
           nppvegar(i,j)=max(0.0,nppveg(i,j))*(deltat/963.62)* &
-           lambda(i,j)*grclarea(i)*1.0e06*pfcancmx(i,j) 
+           lambda(i,j)*grclarea*1.0e06*pfcancmx(i,j) 
 
           gavgnpp(i) = gavgnpp(i) + nppvegar(i,j)
 
-          deadmass(i,j)=fcancmx(i,j)*grclarea(i)*1.0e06*(litrmass(i,j)+soilcmas(i,j))
-          pdeadmas(i,j)=pfcancmx(i,j)*grclarea(i)*1.0e06*(pltrmass(i,j)+psocmass(i,j))
+          deadmass(i,j)=fcancmx(i,j)*grclarea*1.0e06*(litrmass(i,j)+soilcmas(i,j))
+          pdeadmas(i,j)=pfcancmx(i,j)*grclarea*1.0e06*(pltrmass(i,j)+psocmass(i,j))
 
 !         total mass before competition
           befrmass=pbiomasvg(i,j)+nppvegar(i,j)+pdeadmas(i,j)
@@ -1457,7 +1458,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
             write(6,*)'ownlitr(',i,',',j,')=',ownlitr(i,j)
             write(6,*)'ownsolc(',i,',',j,')=',ownsolc(i,j)
             write(6,*)' '
-            write(6,*)'grclarea(',i,')=',grclarea(i)
+            write(6,*)'grclarea(',i,')=',grclarea
             write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
             write(6,*)'pfcancmx(',i,',',j,')=',pfcancmx(i,j)
             write(6,*)' '
@@ -1473,13 +1474,13 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
       do 850 j = icc+1, icc+1
         do 851 i = il1, il2
-          deadmass(i,j)=barefrac(i)*grclarea(i)*1.0e06*(litrmass(i,j)+soilcmas(i,j))
-          pdeadmas(i,j)=pbarefra(i)*grclarea(i)*1.0e06*(pltrmass(i,j)+psocmass(i,j))
+          deadmass(i,j)=barefrac(i)*grclarea*1.0e06*(litrmass(i,j)+soilcmas(i,j))
+          pdeadmas(i,j)=pbarefra(i)*grclarea*1.0e06*(pltrmass(i,j)+psocmass(i,j))
 
-          add2dead(i)=(grsumlit(i)+grsumsoc(i))*barefrac(i)*grclarea(i)*1.0e06
+          add2dead(i)=(grsumlit(i)+grsumsoc(i))*barefrac(i)*grclarea*1.0e06
 
-          ownlitr(i,j)=incrlitr(i,j)*grclarea(i)*1.0e06
-          ownsolc(i,j)=incrsolc(i,j)*grclarea(i)*1.0e06
+          ownlitr(i,j)=incrlitr(i,j)*grclarea*1.0e06
+          ownsolc(i,j)=incrsolc(i,j)*grclarea*1.0e06
 
           befrmass=pdeadmas(i,j)+add2dead(i)
           aftrmass=deadmass(i,j)+ownlitr(i,j)+ownsolc(i,j)
@@ -1506,20 +1507,20 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     grid averaged densities must also balance
 
       do 870 i = il1, il2
-        befrmass=(pvgbioms(i)+pgavltms(i)+pgavscms(i))+gavgnpp(i)/(grclarea(i)*1.0e06)
-        aftrmass=(vgbiomas(i)+gavgltms(i)+gavgscms(i))+gavgputa(i)/(grclarea(i)*1.0e06)
+        befrmass=(pvgbioms(i)+pgavltms(i)+pgavscms(i))+gavgnpp(i)/(grclarea*1.0e06)
+        aftrmass=(vgbiomas(i)+gavgltms(i)+gavgscms(i))+gavgputa(i)/(grclarea*1.0e06)
         if(abs(befrmass-aftrmass).gt.tolranc2)then
           write(6,*)'total (live+dead) mass for grid cell =',i,'does not balance' 
           write(6,*)'abs(befrmass-aftrmass)',abs(befrmass-aftrmass),'is gt our tolerance of',tolranc2
-          write(6,*)'pvgbioms(',i,')=',pvgbioms(i)*grclarea(i)*1.0e06
-          write(6,*)'pgavltms(',i,')=',pgavltms(i)*grclarea(i)*1.0e06
-          write(6,*)'pgavscms(',i,')=',pgavscms(i)*grclarea(i)*1.0e06
+          write(6,*)'pvgbioms(',i,')=',pvgbioms(i)*grclarea*1.0e06
+          write(6,*)'pgavltms(',i,')=',pgavltms(i)*grclarea*1.0e06
+          write(6,*)'pgavscms(',i,')=',pgavscms(i)*grclarea*1.0e06
           write(6,*)'gavgnpp(',i,')=',gavgnpp(i)
           write(6,*)'befrmass*1.0e06 =',befrmass*1.0e06
           write(6,*)' '
-          write(6,*)'vgbiomas(',i,')=',vgbiomas(i)*grclarea(i)*1.0e06
-          write(6,*)'gavgltms(',i,')=',gavgltms(i)*grclarea(i)*1.0e06
-          write(6,*)'gavgscms(',i,')=',gavgscms(i)*grclarea(i)*1.0e06
+          write(6,*)'vgbiomas(',i,')=',vgbiomas(i)*grclarea*1.0e06
+          write(6,*)'gavgltms(',i,')=',gavgltms(i)*grclarea*1.0e06
+          write(6,*)'gavgscms(',i,')=',gavgscms(i)*grclarea*1.0e06
           write(6,*)'gavgputa(',i,')=',gavgputa(i)
           write(6,*)'aftrmass*1.0e06=',aftrmass*1.0e06
           call xit('competition',-10)

@@ -11,7 +11,8 @@ c    8 ------------------ inputs above this line ----------------------
      b                    blcaemls, ltrcemls, burnfrac, probfire,
      c                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      d                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
-     e                    emit_tpm, emit_tc,  emit_oc,  emit_bc)
+     e                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
+     f                    burnvegfrac )
 
 c    b ------------------outputs above this line ----------------------
 c
@@ -116,6 +117,7 @@ c     tot_emit_dom - tot_emit converted to kg dom / m2
 
 c     hb_interm - interm calculation
 c     hbratio   - head to back ratio of ellipse
+c     burnvegfrac - total per PFT areal fraction burned, (%)
 
       use ctem_params,        only : ignd, icc, ilg, ican, zero,
      1                               kk, pi, c2dom
@@ -142,10 +144,10 @@ c
      1          burnarea(ilg), pftareaa(ilg,icc), glcaemls(ilg,icc),
      2      rtcaemls(ilg,icc), stcaemls(ilg,icc), ltrcemls(ilg,icc),
      3      blfltrdt(ilg,icc), blcaemls(ilg,icc),     burnfrac(ilg),
-     4          emit_co2(ilg),      emit_co(ilg),     emit_ch4(ilg),
-     5         emit_nmhc(ilg),      emit_h2(ilg),     emit_nox(ilg),
-     6          emit_n2o(ilg),    emit_pm25(ilg),     emit_tpm(ilg),
-     7           emit_tc(ilg),      emit_oc(ilg),      emit_bc(ilg)
+     4     emit_co2(ilg,icc),   emit_co(ilg,icc), emit_ch4(ilg,icc),
+     5    emit_nmhc(ilg,icc),   emit_h2(ilg,icc), emit_nox(ilg,icc),
+     6     emit_n2o(ilg,icc), emit_pm25(ilg,icc), emit_tpm(ilg,icc),
+     7      emit_tc(ilg,icc),   emit_oc(ilg,icc),  emit_bc(ilg,icc)
 c
       real        bmasthrs(2),                              
      1               extnmois,          lwrlthrs,         hgrlthrs,
@@ -167,8 +169,9 @@ c
      6                   temp,     betmsprd(ilg),       smfunc(ilg),
      7              wind(ilg),      wndfunc(ilg),     sprdrate(ilg),
      8           lbratio(ilg),     arbn1day(ilg),     areamult(ilg),
-     9       burnveg(ilg,icc),      vegarea(ilg),     grclarea(ilg),
-     a                reparea,          tot_emit,      tot_emit_dom
+     9       burnveg(ilg,icc),      vegarea(ilg),          grclarea,
+     a                reparea,          tot_emit,      tot_emit_dom,
+     b       burnvegfrac(ilg,icc)   
 
       real          hb_interm,      hbratio(ilg),       popdthrshld,
      1                 fden_m
@@ -393,6 +396,21 @@ c
           stcaemls(i,j)=0.0     !stem carbon fire emissions
           rtcaemls(i,j)=0.0     !root carbon fire emissions
           ltrcemls(i,j)=0.0     !litter carbon fire emissions
+
+          emit_co2(i,j) = 0.0
+          emit_co(i,j) = 0.0
+          emit_ch4(i,j) = 0.0
+          emit_nmhc(i,j) = 0.0
+          emit_h2(i,j) = 0.0
+          emit_nox(i,j) = 0.0
+          emit_n2o(i,j) = 0.0
+          emit_pm25(i,j) = 0.0
+          emit_tpm(i,j) = 0.0
+          emit_tc(i,j) = 0.0
+          emit_oc(i,j) = 0.0
+          emit_bc(i,j) = 0.0
+          burnvegfrac(i,j)=0.0
+
 150     continue                  
 140   continue
 c
@@ -426,19 +444,6 @@ c                               !of grid cell
         arbn1day(i)=0.0         !area burned in 1 day, km^2
         areamult(i)=0.0         !multiplier to find area burned
         vegarea(i)=0.0          !total vegetated area in a grid cell
-
-        emit_co2(i) = 0.0
-        emit_co(i) = 0.0
-        emit_ch4(i) = 0.0
-        emit_nmhc(i) = 0.0
-        emit_h2(i) = 0.0
-        emit_nox(i) = 0.0
-        emit_n2o(i) = 0.0
-        emit_pm25(i) = 0.0
-        emit_tpm(i) = 0.0
-        emit_tc(i) = 0.0
-        emit_oc(i) = 0.0
-        emit_bc(i) = 0.0
 
 180   continue
 
@@ -721,8 +726,8 @@ c         should this be per mosiac or per gridcell?? i think per
 c         gridcell but this would make the mosiacs all higher...
 c         problem? -nothing implimented yet.
 c
-          burnarea(i)=burnarea(i)*(grclarea(i)/reparea)*probfire(i) 
-          burnfrac(i)=100.*burnarea(i)/grclarea(i)
+          burnarea(i)=burnarea(i)*(grclarea/reparea)*probfire(i) 
+          burnfrac(i)=100.*burnarea(i)/grclarea
 c
         endif
 430   continue
@@ -736,7 +741,7 @@ c
      &             pftareab(i,7)+pftareab(i,8)+pftareab(i,9)  
         if(burnarea(i) .gt. vegarea(i)) then
           burnarea(i)=vegarea(i)
-          burnfrac(i)=100.*burnarea(i)/grclarea(i)
+          burnfrac(i)=100.*burnarea(i)/grclarea
         endif
 460   continue
 c
@@ -769,7 +774,7 @@ c
        burnarea(i)=burnveg(i,1)+burnveg(i,2)+burnveg(i,3)+burnveg(i,4)+  
      &             burnveg(i,5)+burnveg(i,6)+burnveg(i,7)+burnveg(i,8)+  
      &             burnveg(i,9)
-       burnfrac(i)=100.*burnarea(i)/grclarea(i)
+       burnfrac(i)=100.*burnarea(i)/grclarea
 490   continue
 c
 c     check that the sum of fraction of leaves, stem, and root 
@@ -793,7 +798,6 @@ c     a given pft, and this essentially thins the vegetation biomass.
 c     at this stage we do not make the burn area bare, and therefore
 c     fire doesn't change the fractional coverage of pfts.  
 c
-
       do 520 j = 1, icc
         n = sort(j)
         do 530 i = il1, il2
@@ -836,8 +840,7 @@ c          sum all pools that will be converted to emissions/aerosols (g c/m2)
 
 c          add in the emissions due to luc fires (deforestation)
 c          the luc emissions are converted from umol co2 m-2 s-1
-c          to g c m-2 (day-1) before adding to tot_emit
-c          FLAG 963.62 needs to be put in ctem_params! jm.           
+c          to g c m-2 (day-1) before adding to tot_emit         
            tot_emit = tot_emit + (lucemcom(i) / 963.62 * 1000.0)
 
 c          convert burnt plant matter from carbon to dry organic matter using 
@@ -848,30 +851,47 @@ c          ratio of carbon to dry organic matter. units: kg dom / m2
 c          convert the dom to emissions/aerosols using emissions factors
 c          units: g compound / m2
 
-           emit_co2(i) = emit_co2(i) + emif_co2(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_co(i) = emit_co(i) + emif_co(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_ch4(i) = emit_ch4(i) + emif_ch4(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_nmhc(i) = emit_nmhc(i) + emif_nmhc(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_h2(i) = emit_h2(i) + emif_h2(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_nox(i) = emit_nox(i) + emif_nox(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_n2o(i) = emit_n2o(i) + emif_n2o(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_pm25(i) = emit_pm25(i) + emif_pm25(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_tpm(i) = emit_tpm(i) + emif_tpm(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_tc(i) = emit_tc(i) + emif_tc(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_oc(i) = emit_oc(i) + emif_oc(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
-           emit_bc(i) = emit_bc(i) + emif_bc(j) * 
-     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_co2(i) = emit_co2(i) + emif_co2(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_co(i) = emit_co(i) + emif_co(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_ch4(i) = emit_ch4(i) + emif_ch4(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_nmhc(i) = emit_nmhc(i) + emif_nmhc(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_h2(i) = emit_h2(i) + emif_h2(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_nox(i) = emit_nox(i) + emif_nox(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_n2o(i) = emit_n2o(i) + emif_n2o(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_pm25(i) = emit_pm25(i) + emif_pm25(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_tpm(i) = emit_tpm(i) + emif_tpm(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_tc(i) = emit_tc(i) + emif_tc(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_oc(i) = emit_oc(i) + emif_oc(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+!           emit_bc(i) = emit_bc(i) + emif_bc(j) * 
+!     &                   tot_emit_dom * fcancmx(i,j)
+
+           emit_co2(i,j)  = emif_co2(j) * tot_emit_dom
+           emit_co(i,j)   = emif_co(j)  * tot_emit_dom
+           emit_ch4(i,j)  = emif_ch4(j) * tot_emit_dom
+           emit_nmhc(i,j) = emif_nmhc(j) * tot_emit_dom
+           emit_h2(i,j)   = emif_h2(j) * tot_emit_dom
+           emit_nox(i,j)  = emif_nox(j) * tot_emit_dom
+           emit_n2o(i,j)  = emif_n2o(j) * tot_emit_dom
+           emit_pm25(i,j) = emif_pm25(j) * tot_emit_dom
+           emit_tpm(i,j)  = emif_tpm(j) * tot_emit_dom
+           emit_tc(i,j)   = emif_tc(j) * tot_emit_dom
+           emit_oc(i,j)   = emif_oc(j) * tot_emit_dom
+           emit_bc(i,j)   = emif_bc(j) * tot_emit_dom
+
+!         Output the burned area per PFT
+          burnvegfrac(i,j)=100.*burnveg(i,j)/grclarea
+
           endif
 c
          endif

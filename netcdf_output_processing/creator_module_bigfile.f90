@@ -71,7 +71,7 @@ real, allocatable, dimension(:) :: latvect
 ! netcdf_creator and writer subroutines. We do distinguish between disturbance
 ! and competition here.
 
-! The order that the variables are written below **must** correspond to the same order 
+! The order that the variables are written below **MUST** correspond to the same order 
 ! they appear in the CLASSCTEM output file (ignoring the month and year).
 
 !====================== Declare arrays for monthly CLASS =============
@@ -137,6 +137,7 @@ integer, parameter :: numctemvars_m = 12  !number of annual CTEM vars to write
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR=['LAIMAXG','VGBIOMAS','LITTER','SOIL_C','NPP','GPP','NEP',   &
                                                                    'NBP','HETRESP','AUTORESP','LITRESP','SOILCRESP' ]
 
+! We respecify them here for the Grid-Averaged values
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR_GA=['LAIMAXG_GA','VGBIOMAS_GA','LITTER_GA','SOIL_C_GA','NPP_GA','GPP_GA','NEP_GA',   &
                                                                    'NBP_GA','HETRESP_GA','AUTORESP_GA','LITRESP_GA','SOILCRESP_GA' ]
 
@@ -204,6 +205,7 @@ character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_VAR=['LAIMAXG_A','
                                                                    'ANNUALGPP','ANNUALNEP','ANNUALNBP','ANNUALHETRESP',         &
                                                                    'ANNUALAUTORESP','ANNUALLITRESP','ANNUALSOILCRESP' ]
 
+! We respecify them here for the Grid-Averaged values
 character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_VAR_GA=['LAIMAXG_A_GA','VGBIOMAS_A_GA','STEMMASS_A_GA','ROOTMASS_A_GA',   &
                                                                    'LITRMASS_A_GA','SOILCMAS_A_GA','TOTCMASS_GA','ANNUALNPP_GA',                &
                                                                    'ANNUALGPP_GA','ANNUALNEP_GA','ANNUALNBP_GA','ANNUALHETRESP_GA',         &

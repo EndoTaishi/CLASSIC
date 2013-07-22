@@ -29,7 +29,7 @@ c    ------- following 5 lines are competition related variables ----
      n                    geremort, intrmort,   lambda,  lyglfmas,
      o                    pftexist, twarmm,    tcoldm,       gdd5,
      1                     aridity, srplsmon, defctmon,  anndefct,
-     2                    annsrpls,  annpcp,  anpotevp,
+     2                    annsrpls,  annpcp,  anpotevp,   burnveg,
 c
 c    -------------- inputs updated by ctem are above this line ------
 c
@@ -46,7 +46,7 @@ c
      z                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      1                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      2                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
-     3                     burnveg,      cc,       mm,
+     3                         cc,       mm,
      4                      rmlveg,  rmsveg,   rmrveg,    rgveg,
      5                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,
      6                  hetrsveg,autoresveg, ltresveg, scresveg,
@@ -359,7 +359,7 @@ c
      6     bmasveg_cmp(nlat,icc),   burnveg_cmp(nlat,icc),
      7     add2allo_cmp(nlat,icc),  cc_cmp(nlat,icc),mm_cmp(nlat,icc),
      8     fcanmx_cmp(nlat,ican),     
-     9     grclarea_cmp(nlat),      vgbiomas_cmp(nlat),    
+     9     vgbiomas_cmp(nlat),    
      1     gavgltms_cmp(nlat),      gavgscms_cmp(nlat),
      2     yesfrac_mos(nlat,icc),   todfrac_cmp(nlat),
      3     pfcancmx_cmp(nlat,icc),  nfcancmx_cmp(nlat,icc)
@@ -368,9 +368,8 @@ c
 
       logical pftexist_cmp(nlat,icc)
 c
-      real grclarearow(nlat,nmos),      vgbiomasrow(nlat,nmos),    
-     1     gavgltmsrow(nlat,nmos),      gavgscmsrow(nlat,nmos),
-     2     netradrow(nlat,nmos)
+      real vgbiomasrow(nlat,nmos),      netradrow(nlat,nmos),
+     1     gavgltmsrow(nlat,nmos),      gavgscmsrow(nlat,nmos)
 c
       real ta_cmp(nlat),       precip_cmp(nlat),  netrad_cmp(nlat), 
      1     tcurm_cmp(nlat),    srpcuryr_cmp(nlat),dftcuryr_cmp(nlat),
@@ -444,7 +443,7 @@ c
 c
       real      currlat(ilg),            wl(lat),
      1             radl(lat),          wossl(lat),             sl(lat),
-     2               cl(lat),             ml(ilg),       grclarea(ilg)
+     2               cl(lat),             ml(ilg),       grclarea
 c
       real        uwind(ilg),          vwind(ilg),        lightng(ilg),
      1         prbfrhuc(ilg),       extnprob(ilg),   pftareab(ilg,icc),
@@ -563,19 +562,19 @@ c
           ml(i) = 1.0/real(lon)
 80      continue 
 c
-        do 81 i = il1, il2
-          grclarea(i) = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)
+C        do 81 i = il1, il2
+          grclarea = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)
      &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic
 c               !flag- should this faregat be here? jm 18.12.2012.
 c         dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
-81      continue  
+C81      continue  
 c
       else if(stdaln.eq.1)then    ! i.e. when operated at point scale
 c
         do 90 j = 1, icc
-          do 91 i = il1, il2
-            grclarea(i)=1.0
-91        continue
+C          do 91 i = il1, il2
+            grclarea=1.0
+C91        continue
 90      continue
 c
       endif
@@ -647,7 +646,7 @@ c
      d                         rootmass, litrmass, soilcmas,
      e                         pftexist,   lambda,  bmasveg,  burnveg,
      f                         add2allo,       cc,       mm,   fcanmx,
-     g                         grclarea, vgbiomas, gavgltms, gavgscms,
+     g                         vgbiomas, gavgltms, gavgscms,
      h                               ta,   precip,   netrad,    tcurm,
      i                         srpcuryr, dftcuryr,   tmonth, anpcpcur, 
      j                          anpecur,  gdd5cur, surmncur, defmncur,
@@ -665,7 +664,7 @@ c    ------------------- intermediate and saved above this line -----
      r                     soilcmas_cmp,  pftexist_cmp,    lambda_cmp,
      s                      bmasveg_cmp,   burnveg_cmp,  add2allo_cmp,
      t                           cc_cmp,        mm_cmp,    fcanmx_cmp,
-     u                     grclarea_cmp,  vgbiomas_cmp,
+     u                     vgbiomas_cmp,
      v                     gavgltms_cmp,  gavgscms_cmp,
      w                           ta_cmp,    precip_cmp,    netrad_cmp, 
      x                        tcurm_cmp,  srpcuryr_cmp,  dftcuryr_cmp,
@@ -711,7 +710,7 @@ c
      1                    icc,    nol2pfts,            ican, nppveg_cmp,
      2                  l2max, pftexist_cmp, geremort_cmp, intrmort_cmp,
      3           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
-     4           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,
+     4           litrmass_cmp, soilcmas_cmp, grclarea,   lambda_cmp,
      5            bmasveg_cmp,       deltat,  burnveg_cmp,         sort,
 c
 c    ------------------- inputs above this line -------------------
@@ -759,7 +758,7 @@ c     -----------------------------------------------------------------
 
          call luc(icc,      nlat,      il1,      nlat,
      1           ican, nol2pfts,    l2max,  
-     2           grclarea_cmp, pfcancmx_cmp, nfcancmx_cmp,     iday,
+     2           grclarea, pfcancmx_cmp, nfcancmx_cmp,     iday,
      3           todfrac_cmp,  yesfrac_mos,   .true.,
      4           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
      5           litrmass_cmp, soilcmas_cmp, vgbiomas_cmp, gavgltms_cmp,
@@ -780,7 +779,7 @@ c
      e                       soilcmas_cmp, pftexist_cmp,   lambda_cmp,
      f                        bmasveg_cmp,  burnveg_cmp, add2allo_cmp,
      g                             cc_cmp,       mm_cmp,   fcanmx_cmp,
-     h                       grclarea_cmp, vgbiomas_cmp,
+     h                       vgbiomas_cmp,
      i                       gavgltms_cmp, gavgscms_cmp,
      j                             ta_cmp,   precip_cmp,   netrad_cmp, 
      k                          tcurm_cmp, srpcuryr_cmp, dftcuryr_cmp,
@@ -804,7 +803,7 @@ c
      u                       rootmass, litrmass,  soilcmas,
      v                        pftexist,  lambda,   bmasveg,  burnveg,
      w                        add2allo,      cc,        mm,   fcanmx,
-     x                        grclarea, vgbiomas, gavgltms, gavgscms,
+     x                        vgbiomas, gavgltms, gavgscms,
      y                     ta,  precip,   netrad,    tcurm, srpcuryr,
      z                        dftcuryr ,  tmonth, anpcpcur,  anpecur, 
      1                         gdd5cur, surmncur, defmncur, srplscur,  
@@ -928,13 +927,13 @@ c
       if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
         do 82 j = 1, icc
           do  83 i = il1, il2
-            pftareab(i,j)=grclarea(i)*fcancmx(i,j)   ! area in km^2
+            pftareab(i,j)=grclarea*fcancmx(i,j)   ! area in km^2
 83        continue
 82      continue
       else if(stdaln.eq.1)then    ! i.e. when operated at point scale
         do 92 j = 1, icc
           do 93 i = il1, il2
-            grclarea(i)=0.01
+            grclarea=0.01
             pftareab(i,j)=0.01*fcancmx(i,j)      ! 0.01 km2 = 1 hectare
 93        continue
 92      continue
@@ -1772,7 +1771,8 @@ c    in above, out below
      a                    blcaemls, ltrcemls, burnfrac, probfire,
      b                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      c                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
-     d                    emit_tpm, emit_tc,  emit_oc,  emit_bc)
+     d                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
+     e                    burnveg )
 c
 c    ------------------------------------------------------------------
 c

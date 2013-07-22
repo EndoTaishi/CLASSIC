@@ -24,15 +24,15 @@
      m      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,
      n      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,
      o      burnfracgat, probfiregat, lucemcomgat,  lucltringat,
-     p      lucsocingat, nppveggat,   grclareagat,  dstcemls3gat,
-     q      faregat,     gavgscmsgat, rmlvegaccgat,
+     p      lucsocingat, nppveggat,   dstcemls3gat,
+     q      faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,
      r      rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,
      s      gppveggat,   nepveggat,   ailcmingat,   ailcmaxgat,
      t      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      u      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      v      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat,
+     &      soilcresveggat,burnveggat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -60,15 +60,15 @@ c
      h      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,
      i      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,
      j      burnfracrow, probfirerow, lucemcomrow,  lucltrinrow,
-     k      lucsocinrow, nppvegrow,   grclarearow,  dstcemls3row,
-     l      farerow,     gavgscmsrow, rmlvegaccrow,
+     k      lucsocinrow, nppvegrow,   dstcemls3row,
+     l      farerow,     gavgscmsrow, rmlvegaccrow, pftexistrow,
      &      rmsvegrow,   rmrvegrow,   rgvegrow,   vgbiomas_vegrow,
      &      gppvegrow,   nepvegrow,  ailcminrow,   ailcmaxrow,
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow )
+     &      soilcresvegrow, burnvegrow )
 c
 c              Canadian Terrestrial Ecosystem Model (CTEM)
 c
@@ -127,6 +127,8 @@ c
 c
       integer  pandaysgat(ilg,icc),   lfstatusgat(ilg,icc),
      1         stdalngat(ilg),       colddaysgat(ilg,2)
+     
+      logical pftexistgat(ilg,icc)
 c
       real  grwtheffgat(ilg,icc),    lystmmasgat(ilg,icc),
      9      lyrotmasgat(ilg,icc),    tymaxlaigat(ilg,icc),
@@ -153,15 +155,16 @@ c
      e      burnfracgat(ilg),       probfiregat(ilg),
      f      lucemcomgat(ilg),       lucltringat(ilg),
      g      lucsocingat(ilg),       nppveggat(ilg,icc),
-     h      grclareagat(ilg),       dstcemls3gat(ilg)
+     h      dstcemls3gat(ilg)
 c
 c      fire emission variables
-       real emit_co2gat(ilg),  emit_cogat(ilg), 
-     1      emit_ch4gat(ilg),  emit_nmhcgat(ilg),
-     2      emit_h2gat(ilg),   emit_noxgat(ilg),
-     3      emit_n2ogat(ilg),  emit_pm25gat(ilg),
-     4      emit_tpmgat(ilg),  emit_tcgat(ilg),
-     5      emit_ocgat(ilg),   emit_bcgat(ilg)
+       real emit_co2gat(ilg,icc),  emit_cogat(ilg,icc), 
+     1      emit_ch4gat(ilg,icc),  emit_nmhcgat(ilg,icc),
+     2      emit_h2gat(ilg,icc),   emit_noxgat(ilg,icc),
+     3      emit_n2ogat(ilg,icc),  emit_pm25gat(ilg,icc),
+     4      emit_tpmgat(ilg,icc),  emit_tcgat(ilg,icc),
+     5      emit_ocgat(ilg,icc),   emit_bcgat(ilg,icc),
+     6      burnveggat(ilg,icc)
 c
       real  faregat(ilg)
       real  gavgscmsgat(ilg)
@@ -211,8 +214,9 @@ c
      6      ailcbrow(nlat,nmos,icc),      flhrlossrow(nlat,nmos,icc)
 c
       integer pandaysrow(nlat,nmos,icc),  lfstatusrow(nlat,nmos,icc),
-     1      stdalngrd(nlat),colddaysrow(nlat,nmos,2)
+     1      stdalngrd(nlat),               colddaysrow(nlat,nmos,2)
 
+      logical pftexistrow(nlat,nmos,icc)
 c
       real  grwtheffrow(nlat,nmos,icc),    lystmmasrow(nlat,nmos,icc),
      9      lyrotmasrow(nlat,nmos,icc),    tymaxlairow(nlat,nmos,icc),
@@ -240,15 +244,16 @@ c
      e      burnfracrow(nlat,nmos),        probfirerow(nlat,nmos),
      f      lucemcomrow(nlat,nmos),        lucltrinrow(nlat,nmos),
      g      lucsocinrow(nlat,nmos),        nppvegrow(nlat,nmos,icc),
-     h      grclarearow(nlat,nmos),        dstcemls3row(nlat,nmos)
+     h      dstcemls3row(nlat,nmos)
 c
-c     fire emission variables
-      real emit_co2row(nlat,nmos),  emit_corow(nlat,nmos), 
-     1     emit_ch4row(nlat,nmos),  emit_nmhcrow(nlat,nmos),
-     2     emit_h2row(nlat,nmos),   emit_noxrow(nlat,nmos),
-     3     emit_n2orow(nlat,nmos),  emit_pm25row(nlat,nmos),
-     4     emit_tpmrow(nlat,nmos),  emit_tcrow(nlat,nmos),
-     5     emit_ocrow(nlat,nmos),   emit_bcrow(nlat,nmos)
+c     fire variables
+      real emit_co2row(nlat,nmos,icc),  emit_corow(nlat,nmos,icc), 
+     1     emit_ch4row(nlat,nmos,icc),  emit_nmhcrow(nlat,nmos,icc),
+     2     emit_h2row(nlat,nmos,icc),   emit_noxrow(nlat,nmos,icc),
+     3     emit_n2orow(nlat,nmos,icc),  emit_pm25row(nlat,nmos,icc),
+     4     emit_tpmrow(nlat,nmos,icc),  emit_tcrow(nlat,nmos,icc),
+     5     emit_ocrow(nlat,nmos,icc),   emit_bcrow(nlat,nmos,icc),
+     6     burnvegrow(nlat,nmos,icc)
 c
       real  farerow(nlat,nmos)
 c
@@ -304,25 +309,10 @@ c----------------------------------------------------------------------
           lucemcomgat(k)  = lucemcomrow(ilmos(k),jlmos(k))
           lucltringat(k)  = lucltrinrow(ilmos(k),jlmos(k))
           lucsocingat(k)  = lucsocinrow(ilmos(k),jlmos(k))
-          grclareagat(k)  = grclarearow(ilmos(k),jlmos(k))
           dstcemls3gat(k) = dstcemls3row(ilmos(k),jlmos(k))
           faregat(k)      = farerow(ilmos(k),jlmos(k))
           gavgscmsgat(k)  = gavgscmsrow(ilmos(k),jlmos(k))
-c 
-c         fire emission variables
-          emit_co2gat(k)  = emit_co2row(ilmos(k),jlmos(k))  
-          emit_cogat(k)   = emit_corow(ilmos(k),jlmos(k))   
-          emit_ch4gat(k)  = emit_ch4row(ilmos(k),jlmos(k))  
-          emit_nmhcgat(k) = emit_nmhcrow(ilmos(k),jlmos(k)) 
-          emit_h2gat(k)   = emit_h2row(ilmos(k),jlmos(k))   
-          emit_noxgat(k)  = emit_noxrow(ilmos(k),jlmos(k))  
-          emit_n2ogat(k)  = emit_n2orow(ilmos(k),jlmos(k))  
-          emit_pm25gat(k) = emit_pm25row(ilmos(k),jlmos(k)) 
-          emit_tpmgat(k)  = emit_tpmrow(ilmos(k),jlmos(k))  
-          emit_tcgat(k)   = emit_tcrow(ilmos(k),jlmos(k))   
-          emit_ocgat(k)   = emit_ocrow(ilmos(k),jlmos(k))   
-          emit_bcgat(k)   = emit_bcrow(ilmos(k),jlmos(k))  
- 
+c  
 100   continue
 c
       do 101 l=1,icc
@@ -384,6 +374,22 @@ c
           ailcmingat(k,l)  = ailcminrow(ilmos(k),jlmos(k),l)
           ailcmaxgat(k,l)  = ailcmaxrow(ilmos(k),jlmos(k),l)
           vgbiomas_veggat(k,l) = vgbiomas_vegrow(ilmos(k),jlmos(k),l)
+          pftexistgat(k,l) = pftexistrow(ilmos(k),jlmos(k),l)
+
+c         fire emission variables
+          emit_co2gat(k,l)  = emit_co2row(ilmos(k),jlmos(k),l)  
+          emit_cogat(k,l)   = emit_corow(ilmos(k),jlmos(k),l)   
+          emit_ch4gat(k,l)  = emit_ch4row(ilmos(k),jlmos(k),l)  
+          emit_nmhcgat(k,l) = emit_nmhcrow(ilmos(k),jlmos(k),l) 
+          emit_h2gat(k,l)   = emit_h2row(ilmos(k),jlmos(k),l)   
+          emit_noxgat(k,l)  = emit_noxrow(ilmos(k),jlmos(k),l)  
+          emit_n2ogat(k,l)  = emit_n2orow(ilmos(k),jlmos(k),l)  
+          emit_pm25gat(k,l) = emit_pm25row(ilmos(k),jlmos(k),l) 
+          emit_tpmgat(k,l)  = emit_tpmrow(ilmos(k),jlmos(k),l)  
+          emit_tcgat(k,l)   = emit_tcrow(ilmos(k),jlmos(k),l)   
+          emit_ocgat(k,l)   = emit_ocrow(ilmos(k),jlmos(k),l)   
+          emit_bcgat(k,l)   = emit_bcrow(ilmos(k),jlmos(k),l) 
+          burnveggat(k,l)   = burnvegrow(ilmos(k),jlmos(k),l) 
 c
 101   continue
 c

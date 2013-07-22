@@ -6,7 +6,7 @@
      5                         SOILCMAS_CMP,PFTEXIST_CMP,  LAMBDA_CMP,
      6                          BMASVEG_CMP, BURNVEG_CMP,ADD2ALLO_CMP,
      7                               CC_CMP,      MM_CMP,  FCANMX_CMP,
-     8                         GRCLAREA_CMP,VGBIOMAS_CMP,
+     8                         VGBIOMAS_CMP,
      9                         GAVGLTMS_CMP,GAVGSCMS_CMP,
      1                               TA_CMP,  PRECIP_CMP,  NETRAD_CMP, 
      2                            TCURM_CMP,SRPCURYR_CMP,DFTCURYR_CMP,
@@ -26,7 +26,7 @@ C    ------------------- SAVED FOR INTERMEDIATE ABOVE THIS LINE ------
      c                             ROOTMASS,LITRMASS,SOILCMAS,
      d                             PFTEXIST,  LAMBDA, BMASVEG, BURNVEG,
      e                             ADD2ALLO,      CC,      MM,  FCANMX,
-     f                             GRCLAREA,VGBIOMAS,GAVGLTMS,GAVGSCMS,
+     f                             VGBIOMAS,GAVGLTMS,GAVGSCMS,
      g                             TA,PRECIP, NETRAD,   TCURM,SRPCURYR,
      h                             DFTCURYR,  TMONTH,ANPCPCUR, ANPECUR, 
      i                              GDD5CUR,SURMNCUR,DEFMNCUR,SRPLSCUR,  
@@ -109,7 +109,6 @@ C     CC,MM_CMP   - COLONIZATION RATE & MORTALITY RATE IN EACH
 C                   LATITUDINAL GRID CELL  
 C     FCANMX_CMP  - FRACTIONAL COVERAGE OF CLASS' 4 PFTs IN EACH 
 C                   LATITUDINAL GRID CELL 
-C     GRCLAREA_CMP- AREA OF THE GRID CELL, KM^2
 C     VGBIOMAS_CMP- GRID AVERAGED VEGETATION BIOMASS, Kg C/M2
 C     GAVGLTMS_CMP- GRID AVERAGED LITTER MASS, Kg C/M2
 C     GAVGSCMS_CMP- GRID AVERAGED SOIL C MASS, Kg C/M2
@@ -181,7 +180,6 @@ C               SUBSEQUENTLY ALLOCATED TO LEAVES, STEM, AND ROOT VIA
 C               THE ALLOCATION PART OF THE MODEL.
 C     CC,MM   - COLONIZATION RATE & MORTALITY RATE 
 C     FCANMX  - FRACTIONAL COVERAGE OF CLASS' 4 PFTs
-C     GRCLAREA- AREA OF THE GRID CELL, KM^2
 C     VGBIOMAS- GRID AVERAGED VEGETATION BIOMASS, Kg C/M2
 C     GAVGLTMS- GRID AVERAGED LITTER MASS, Kg C/M2
 C     GAVGSCMS- GRID AVERAGED SOIL C MASS, Kg C/M2
@@ -238,7 +236,7 @@ C
      6      BMASVEG_CMP(NLAT,ICC),   BURNVEG_CMP(NLAT,ICC),
      7      ADD2ALLO_CMP(NLAT,ICC),  CC_CMP(NLAT,ICC),MM_CMP(NLAT,ICC),
      8      FCANMX_CMP(NLAT,IC),     
-     9      GRCLAREA_CMP(NLAT),      VGBIOMAS_CMP(NLAT),    
+     9      VGBIOMAS_CMP(NLAT),    
      1      GAVGLTMS_CMP(NLAT),      GAVGSCMS_CMP(NLAT),
      2      LUCEMCOM_CMP(NLAT),  LUCLTRIN_CMP(NLAT), LUCSOCIN_CMP(NLAT),
      3      PFCANCMX_CMP(NLAT,ICC), NFCANCMX_CMP(NLAT,ICC)
@@ -266,7 +264,7 @@ C
      7      ADD2ALLOROW(NLAT,NMOS,ICC),  CCROW(NLAT,NMOS,ICC),
      8      MMROW(NLAT,NMOS,ICC),        FCANMXROW(NLAT,NMOS,IC),
      9      FAREROW(NLAT,NMOS),
-     1      GRCLAREAROW(NLAT,NMOS),      VGBIOMASROW(NLAT,NMOS),    
+     1      VGBIOMASROW(NLAT,NMOS),    
      2      GAVGLTMSROW(NLAT,NMOS),      GAVGSCMSROW(NLAT,NMOS),
      3      LUCEMCOMROW(NLAT,NMOS),      LUCLTRINROW(NLAT,NMOS),
      4      LUCSOCINROW(NLAT,NMOS),
@@ -305,7 +303,7 @@ C
      6      LAMBDA(ILG,ICC),  TODFRAC(ILG,ICC),
      7      BMASVEG(ILG,ICC), BURNVEG(ILG,ICC),
      8      ADD2ALLO(ILG,ICC),CC(ILG,ICC),MM(ILG,ICC),
-     9      FCANMX(ILG,IC),   GRCLAREA(ILG),
+     9      FCANMX(ILG,IC),   
      1      VGBIOMAS(ILG),    GAVGLTMS(ILG),
      2      GAVGSCMS(ILG),
      3      LUCEMCOM(ILG),  LUCLTRIN(ILG), LUCSOCIN(ILG),
@@ -381,7 +379,6 @@ C
         ENDDO
 C
          FAREROW(I,M)      = 0.0
-         GRCLAREAROW(I,M)  = 0.0
          VGBIOMASROW(I,M)  = 0.0
          GAVGLTMSROW(I,M)  = 0.0
          GAVGSCMSROW(I,M)  = 0.0  
@@ -454,7 +451,6 @@ C
        ENDDO
 C
        FAREGAT(I)   = 0.0
-       GRCLAREA(I)  = 0.0
        VGBIOMAS(I)  = 0.0
        GAVGLTMS(I)  = 0.0
        GAVGSCMS(I)  = 0.0 
@@ -559,7 +555,6 @@ C
            TCURMROW(I,M)     = TCURM_CMP(I)
            SRPCURYRROW(I,M ) = SRPCURYR_CMP(I)
            DFTCURYRROW(I,M)  = DFTCURYR_CMP(I)
-           GRCLAREAROW(I,M)  = GRCLAREA_CMP(I)
 C
            DO MN=1,12
             TMONTHROW(MN,I,M) = TMONTH_CMP(MN,I)
@@ -649,7 +644,6 @@ C
 C
       DO 230 K=1,NML
         FAREGAT(K)  = FAREROW(ILMOS(K),JLMOS(K))
-        GRCLAREA(K) = GRCLAREAROW(ILMOS(K),JLMOS(K))
         VGBIOMAS(K) = VGBIOMASROW(ILMOS(K),JLMOS(K))
         GAVGLTMS(K) = GAVGLTMSROW(ILMOS(K),JLMOS(K))
         GAVGSCMS(K) = GAVGSCMSROW(ILMOS(K),JLMOS(K))

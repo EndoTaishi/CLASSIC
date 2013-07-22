@@ -23,6 +23,12 @@ program netcdf_create_bf
 !       disturbance and competition/land use vars. Also to make netcdf4 files, but
 !       presently cview can not handle them.
 
+! Joe Melton - July 17, 2013
+!       Changed how composite files are handled. Now I output them from CLASS-CTEM
+!       with per PFT values as well as grid averaged. This code now can deal with that.
+
+!----------------
+
 use netcdf
 use creator_module_bf
 
@@ -681,46 +687,47 @@ if (CTEM) then
   end do
 
  ! DISTURBANCE VARIABLES
+   if (.NOT. MOSAIC) then
+    if (DOFIRE) then
 
-   if (DOFIRE) then
+     do i=lbound(CTEM_M_D_VAR,1), ubound(CTEM_M_D_VAR,1)
 
-    do i=lbound(CTEM_M_D_VAR,1), ubound(CTEM_M_D_VAR,1)
+      status = nf90_redef(grpid_mon_dist) 
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_redef(grpid_mon_dist) 
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_def_var(grpid_mon_dist,trim(CTEM_M_D_VAR(i)),nf90_float,[lon,lat,month,time],varid)
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_def_var(grpid_mon_dist,trim(CTEM_M_D_VAR(i)),nf90_float,[lon,lat,month,time],varid)
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_put_att(grpid_mon_dist,varid,'long_name',trim(CTEM_M_D_NAME(i)))
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'long_name',trim(CTEM_M_D_NAME(i)))
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_put_att(grpid_mon_dist,varid,'units',trim(CTEM_M_D_UNIT(i)))
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'units',trim(CTEM_M_D_UNIT(i)))
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_put_att(grpid_mon_dist,varid,'_FillValue',fill_value)
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'_FillValue',fill_value)
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_put_att(grpid_mon_dist,varid,'missing_value',fill_value)
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'missing_value',fill_value)
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_put_att(grpid_mon_dist,varid,'_Storage',"chunked")
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'_Storage',"chunked")
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_put_att(grpid_mon_dist,varid,'_Chunksizes',[cnty,cntx,12,1])
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'_Chunksizes',[cnty,cntx,12,1])
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_put_att(grpid_mon_dist,varid,'_DeflateLevel',1)
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_att(grpid_mon_dist,varid,'_DeflateLevel',1)
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_enddef(grpid_mon_dist)
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_enddef(grpid_mon_dist)
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_put_var(grpid_mon_dist,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,12,totyrs])
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_var(grpid_mon_dist,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,12,totyrs])
-     if (status/=nf90_noerr) call handle_err(status)
-
-    end do
-   end if !dofire
+     end do
+    end if !dofire
+   end if !mosaic
   end if ! makemonthly
 
  !=============Annual CTEM COMPOSITE=================================================
@@ -763,7 +770,7 @@ if (CTEM) then
   enddo
 
  ! DISTURBANCE VARIABLES
-
+  if (.NOT. MOSAIC) then
    if (DOFIRE) then
 
     do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
@@ -804,6 +811,7 @@ if (CTEM) then
     end do
 
    end if !dofire
+  end if
 
    deallocate(threevar)
    if (MAKEMONTHLY) then

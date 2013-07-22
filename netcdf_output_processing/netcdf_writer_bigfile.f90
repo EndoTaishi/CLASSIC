@@ -113,19 +113,14 @@ folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
         OPEN(82,FILE=trim(folder)//trim(ARGBUFF)//'.OF2M_G',status='old',form='formatted')
         OPEN(83,FILE=trim(folder)//trim(ARGBUFF)//'.OF1Y_G',status='old',form='formatted') ! YEARLY OUTPUT FOR CLASS
 
-       IF (CTEM) THEN
+       if (CTEM) then
 
-        OPEN(84,FILE=trim(folder)//trim(ARGBUFF)//'.CT01M_G',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
-        OPEN(85,FILE=trim(folder)//trim(ARGBUFF)//'.CT01Y_G',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
         if (DOFIRE) then
          OPEN(86,FILE=trim(folder)//trim(ARGBUFF)//'.CT06M_G',status='old',form='formatted') ! MONTHLY disturbance OUTPUT FOR CTEM
          OPEN(87,FILE=trim(folder)//trim(ARGBUFF)//'.CT06Y_G',status='old',form='formatted') ! YEARLY disturbance OUTPUT FOR CTEM
         end if
 
        if (MOSAIC) then
-        OPEN(841,FILE=trim(folder)//trim(ARGBUFF)//'.CT01M_M',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
-        OPEN(851,FILE=trim(folder)//trim(ARGBUFF)//'.CT01Y_M',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
-
         if (DOFIRE) then
          OPEN(861,FILE=trim(folder)//trim(ARGBUFF)//'.CT06M_M',status='old',form='formatted') ! MONTHLY disturbance OUTPUT FOR CTEM
          OPEN(871,FILE=trim(folder)//trim(ARGBUFF)//'.CT06Y_M',status='old',form='formatted') ! YEARLY disturbance OUTPUT FOR CTEM
@@ -140,49 +135,51 @@ folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
        END IF
 
 
-! Prepare the composite CTEM files for read-in. These files have a value per PFT for 
+! Prepare the composite/mosaic CTEM files for read-in. These files have a value per PFT for 
 ! each variable (plus one for the bare fraction) and then one for the grid
 ! cell average across all fractions (GRDAV). It seems to be easiest for the 
 ! netcdf creation to create separate files for the grid-averaged values.
 ! Do this using sed.
 
   ! Annual CTEM
+  if (MOSAIC) then
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01Y_M'
+  else
   infile=trim(folder)//trim(ARGBUFF)//'.CT01Y_G'
+  end if
+
   tic=char(39)
   command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a.dat'
 
   call system(command)
 
-  if (.NOT. MOSAIC) then
    ! Make a file of the PFT info, removing the grdav.
+
    command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_a_p.dat'
 
    call system(command)
-  end if
 
    ! Monthly CTEM
+  if (MOSAIC) then
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01M_M'
+  else
   infile=trim(folder)//trim(ARGBUFF)//'.CT01M_G'
+  end if
+
   command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m.dat'
 
   call system(command)
 
-  if (.NOT. MOSAIC) then
    ! Make a file of the PFT info, removing the grdav.
    command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p.dat'
 
    call system(command)
-  end if
-
-  CLOSE(84)
-  CLOSE(85)
 
   OPEN(74,FILE='tmp_m.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
   OPEN(75,FILE='tmp_a.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
 
-  if (.NOT. MOSAIC) then
-   OPEN(741,FILE='tmp_m_p.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
-   OPEN(751,FILE='tmp_a_p.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
-  end if
+  OPEN(741,FILE='tmp_m_p.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
+  OPEN(751,FILE='tmp_a_p.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
  
 ! Open the netcdf file for writing
 
@@ -482,11 +479,7 @@ end if
 
 !  first throw out header
    do h = 1,6
-     if (MOSAIC) then
-	read(851,*)
-     else
         read(751,*)
-     end if
     if (DOFIRE) then 
 	read(871,*)
     endif
@@ -496,18 +489,14 @@ end if
 
 ! We have to keep track of the year that is read in as it is the only way we know that we are done the tiles for a gridcell.
     yrin=realyrst
-    
+
     do y = 1,totyrs
 
       yr_now = realyrst + y - 1
 
       do while (yrin == yr_now)
 
-        if (MOSAIC) then
-          read(851,*,end=90) yrin,tmp(1:numctemvars_a),dummy,tilnum
-        else
           read(751,*,end=90) yrin,tmp(1:numctemvars_a),dummy,tilnum
-        end if  
 
         if (yrin == yr_now) then
           ! Assign that just read in to its vars 
@@ -515,11 +504,7 @@ end if
             ctem_a_mos(v,tilnum,y)=tmp(v)
           end do
         else
-          if (MOSAIC) then
-            backspace(851)  ! go back one line in the file
-          else
             backspace(751)
-          end if
         end if
        end do ! while loop
      end do ! y loop
@@ -549,11 +534,8 @@ end if
 
 ! done with ascii file, close it.
 
-    if (MOSAIC) then
-      close(851)
-    else
       close(751)
-    end if
+
     if (DOFIRE) then
         close(871)
         deallocate(tmpd)
@@ -579,6 +561,7 @@ end if
 
   end do ! vars loop
  end do !tiles loop
+
 
 if (DOFIRE) then
 
@@ -606,6 +589,7 @@ deallocate(ctem_a_mos)
 if (DOFIRE) then
   deallocate(ctem_d_a_mos)
 endif
+
 
 ! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Now MONTHLY CTEM outputs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -767,11 +751,7 @@ end if
 
 !  first throw out header
    do h = 1,6
-       if (MOSAIC) then
-	read(841,*)
-       else
         read(741,*)
-       end if
     if (DOFIRE) then
 	read(861,*)
     end if
@@ -797,11 +777,7 @@ end if
 
       do while (mo == m) 
     
-        if (MOSAIC) then
-          read(841,*) mo,yrin,tmp(1:numctemvars_m),dummy,tilnum
-        else
           read(741,*) mo,yrin,tmp(1:numctemvars_m),dummy,tilnum
-        end if  
   
         if (mo == m) then
         ! Assign that just read in to its vars
@@ -809,11 +785,7 @@ end if
             ctem_m_mos(v,tilnum,y,m)=tmp(v)
           end do
         else
-          if (MOSAIC) then
-            backspace(841)  ! go back one line in the file
-          else
             backspace(741)  ! go back one line in the file
-          end if
         end if
 
        if (DOFIRE) then
@@ -833,11 +805,7 @@ end if
     end do !months
    end do ! years
 
-    if (MOSAIC) then
-     close(841)
-    else 
      close(741)
-    end if
 
     if (DOFIRE) then
       close(861)
@@ -905,17 +873,9 @@ if (status/=nf90_noerr) call handle_err(status)
 
 ! remove the tmp files
 
-command='rm tmp_a.dat tmp_m.dat'
+command='rm tmp_a.dat tmp_m.dat tmp_a_p.dat tmp_m_p.dat'
 
 call system(command)
-
-if (.NOT. MOSAIC) then
-
- command='rm tmp_a_p.dat tmp_m_p.dat'
-
- call system(command)
-
-end if
 
 end program netcdf_writer_bf
 
