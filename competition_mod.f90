@@ -16,7 +16,7 @@ contains
 !-------------------------------------------------------------------------------------------------------------
 
 subroutine  bioclim (   iday,        ta,   precip,   netrad, &
-                              il1,       il2,      ilg, &
+                              il1,       il2,      nilg, &
                             tcurm,  srpcuryr, dftcuryr,  inibioclim, &
                            tmonth,  anpcpcur,  anpecur,   gdd5cur, &
                          surmncur,  defmncur, srplscur,  defctcur, &
@@ -58,47 +58,47 @@ implicit none
 ! arguments
 
 integer, intent(in) :: iday      ! day of the year
-integer, intent(in) :: ilg       ! no. of grid cells in latitude circle
+integer, intent(in) :: nilg       ! no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
 integer, intent(in) :: il1       ! il1=1
-integer, intent(in) :: il2       ! il2=ilg
-real, dimension(ilg), intent(in)    :: ta        ! mean daily temperature, k
-real, dimension(ilg), intent(in)    :: precip    ! daily precipitation (mm/day)
-real, dimension(ilg), intent(in)    :: netrad    ! daily net radiation (w/m2)
+integer, intent(in) :: il2       ! il2=nilg
+real, dimension(nilg), intent(in)    :: ta        ! mean daily temperature, k
+real, dimension(nilg), intent(in)    :: precip    ! daily precipitation (mm/day)
+real, dimension(nilg), intent(in)    :: netrad    ! daily net radiation (w/m2)
 
 logical, intent(inout) :: inibioclim  ! switch telling if bioclimatic parameters are being
                                     ! initialized from scratch (false) or being initialized
                                     ! from some spun up values(true).
-real, dimension(ilg), intent(inout) :: tcurm     ! temperature of the current month (c)
-real, dimension(ilg), intent(inout) :: srpcuryr  ! water surplus for the current year
-real, dimension(ilg), intent(inout) :: dftcuryr  ! water deficit for the current year
-real, dimension(12,ilg), intent(inout) :: tmonth    ! monthly temperatures
-real, dimension(ilg), intent(inout) :: anpcpcur  ! annual precipitation for current year (mm)
-real, dimension(ilg), intent(inout) :: anpecur   ! annual potential evaporation for current year (mm)
-real, dimension(ilg), intent(inout) :: gdd5cur   ! growing degree days above 5 c for current year
-integer, dimension(ilg), intent(inout) :: surmncur  ! number of months with surplus water for current year
-integer, dimension(ilg), intent(inout) :: defmncur  ! number of months with water deficit for current year
-real, dimension(ilg), intent(inout) :: srplscur  ! water surplus for the current month
-real, dimension(ilg), intent(inout) :: defctcur  ! water deficit for the current month
+real, dimension(nilg), intent(inout) :: tcurm     ! temperature of the current month (c)
+real, dimension(nilg), intent(inout) :: srpcuryr  ! water surplus for the current year
+real, dimension(nilg), intent(inout) :: dftcuryr  ! water deficit for the current year
+real, dimension(12,nilg), intent(inout) :: tmonth    ! monthly temperatures
+real, dimension(nilg), intent(inout) :: anpcpcur  ! annual precipitation for current year (mm)
+real, dimension(nilg), intent(inout) :: anpecur   ! annual potential evaporation for current year (mm)
+real, dimension(nilg), intent(inout) :: gdd5cur   ! growing degree days above 5 c for current year
+integer, dimension(nilg), intent(inout) :: surmncur  ! number of months with surplus water for current year
+integer, dimension(nilg), intent(inout) :: defmncur  ! number of months with water deficit for current year
+real, dimension(nilg), intent(inout) :: srplscur  ! water surplus for the current month
+real, dimension(nilg), intent(inout) :: defctcur  ! water deficit for the current month
 
 ! the following are running averages in an e-folding sense
 
-real, dimension(ilg), intent(inout) :: twarmm    ! temperature of the warmest month (c)
-real, dimension(ilg), intent(inout) :: tcoldm    ! temperature of the coldest month (c)
-real, dimension(ilg), intent(inout) :: gdd5      ! growing degree days above 5 c
-real, dimension(ilg), intent(inout) :: aridity   ! aridity index, ratio of potential evaporation to precipitation
-real, dimension(ilg), intent(inout) :: srplsmon  ! number of months in a year with surplus water i.e.
+real, dimension(nilg), intent(inout) :: twarmm    ! temperature of the warmest month (c)
+real, dimension(nilg), intent(inout) :: tcoldm    ! temperature of the coldest month (c)
+real, dimension(nilg), intent(inout) :: gdd5      ! growing degree days above 5 c
+real, dimension(nilg), intent(inout) :: aridity   ! aridity index, ratio of potential evaporation to precipitation
+real, dimension(nilg), intent(inout) :: srplsmon  ! number of months in a year with surplus water i.e.
                                                   !  precipitation more than potential evaporation
-real, dimension(ilg), intent(inout) :: defctmon  ! number of months in a year with water deficit i.e.
+real, dimension(nilg), intent(inout) :: defctmon  ! number of months in a year with water deficit i.e.
                                                   ! precipitation less than potential evaporation
-real, dimension(ilg), intent(inout) :: anndefct  ! annual water deficit (mm) 
-real, dimension(ilg), intent(inout) :: annsrpls  ! annual water surplus (mm)
-real, dimension(ilg), intent(inout) :: annpcp    ! annual precipitation (mm)
-real, dimension(ilg), intent(inout) :: anpotevp  ! annual potential evaporation (mm)
+real, dimension(nilg), intent(inout) :: anndefct  ! annual water deficit (mm) 
+real, dimension(nilg), intent(inout) :: annsrpls  ! annual water surplus (mm)
+real, dimension(nilg), intent(inout) :: annpcp    ! annual precipitation (mm)
+real, dimension(nilg), intent(inout) :: anpotevp  ! annual potential evaporation (mm)
  
 ! local variables
-real, dimension(ilg) :: tccuryr
-real, dimension(ilg) :: twcuryr
-real, dimension(ilg) :: aridcur
+real, dimension(nilg) :: tccuryr
+real, dimension(nilg) :: twcuryr
+real, dimension(nilg) :: aridcur
 real :: wtrbal
 integer :: month, atmonthend, i, j, k,curmonth
 
@@ -242,8 +242,8 @@ end subroutine bioclim
 
 !-------------------------------------------------------------------------------------------------------------
 
-subroutine  existence(  iday,       il1,      il2,      ilg, &
-                              icc,     sort,  nol2pfts,       ic, &
+subroutine  existence(  iday,       il1,      il2,      nilg, &
+                             sort,  nol2pfts,                 &
                            twarmm,    tcoldm,     gdd5,  aridity, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
                            annpcp,  anpotevp,      &
@@ -273,35 +273,34 @@ subroutine  existence(  iday,       il1,      il2,      ilg, &
 !                     pfts will decide if they are present in a grid cell or
 !                     not.
 
-use ctem_params, only : zero, kk
+use ctem_params, only : zero, kk, icc, ican
 
 implicit none
 
 ! arguments
 
 integer, intent(in) :: iday      ! day of the year
-integer, intent(in) :: ilg       ! no. of grid cells in latitude circle
+integer, intent(in) :: nilg       ! no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
 integer, intent(in) :: il1       ! il1=1
-integer, intent(in) :: il2       ! il2=ilg
-integer, intent(in) :: icc       ! number of ctem pfts
-integer, intent(in) :: ic        ! number of class pfts
+integer, intent(in) :: il2       ! il2=nilg
+
 integer, dimension(icc), intent(in) :: sort ! index for correspondence between 9 ctem pfts and
                                             ! size 12 of parameter vectors
-integer, dimension(ic), intent(in) :: nol2pfts ! number of level 2 ctem pfts
-real, dimension(ilg), intent(in) :: twarmm    ! temperature of the warmest month (c)
-real, dimension(ilg), intent(in) :: tcoldm    ! temperature of the coldest month (c)
-real, dimension(ilg), intent(in) :: gdd5      ! growing degree days above 5 c
-real, dimension(ilg), intent(in) :: aridity   ! aridity index, ratio of potential evaporation to precipitation
-real, dimension(ilg), intent(in) :: srplsmon  ! number of months in a year with surplus water i.e.
+integer, dimension(ican), intent(in) :: nol2pfts ! number of level 2 ctem pfts
+real, dimension(nilg), intent(in) :: twarmm    ! temperature of the warmest month (c)
+real, dimension(nilg), intent(in) :: tcoldm    ! temperature of the coldest month (c)
+real, dimension(nilg), intent(in) :: gdd5      ! growing degree days above 5 c
+real, dimension(nilg), intent(in) :: aridity   ! aridity index, ratio of potential evaporation to precipitation
+real, dimension(nilg), intent(in) :: srplsmon  ! number of months in a year with surplus water i.e.
                                                   !  precipitation more than potential evaporation
-real, dimension(ilg), intent(in) :: defctmon  ! number of months in a year with water deficit i.e.
+real, dimension(nilg), intent(in) :: defctmon  ! number of months in a year with water deficit i.e.
                                                   ! precipitation less than potential evaporation
-real, dimension(ilg), intent(in) :: anndefct  ! annual water deficit (mm) 
-real, dimension(ilg), intent(in) :: annsrpls  ! annual water surplus (mm)
-real, dimension(ilg), intent(in) :: annpcp    ! annual precipitation (mm)
-real, dimension(ilg), intent(in) :: anpotevp  ! annual potential evaporation (mm)
+real, dimension(nilg), intent(in) :: anndefct  ! annual water deficit (mm) 
+real, dimension(nilg), intent(in) :: annsrpls  ! annual water surplus (mm)
+real, dimension(nilg), intent(in) :: annpcp    ! annual precipitation (mm)
+real, dimension(nilg), intent(in) :: anpotevp  ! annual potential evaporation (mm)
 
-logical, dimension(ilg,icc), intent(out) :: pftexist(ilg,icc) !binary array indicating pfts exist (=1) or not (=0)
+logical, dimension(nilg,icc), intent(out) :: pftexist(nilg,icc) !binary array indicating pfts exist (=1) or not (=0)
 
 ! local variables
 integer :: i,j
@@ -435,12 +434,12 @@ end subroutine existence
 
 !-------------------------------------------------------------------------------------------------------------
 
-subroutine competition(  iday,      il1,       il2,      ilg, &
-                               icc, nol2pfts,       ic,    nppveg, &
-                             l2max, pftexist,  geremort, intrmort, &
+subroutine competition(  iday,      il1,       il2,      nilg, &
+                          nol2pfts,   nppveg, &
+                          pftexist,  geremort, intrmort, &
                           gleafmas, bleafmas,  stemmass, rootmass, &
                           litrmass, soilcmas,  grclarea,   lambda, &
-                           bmasveg,   deltat,   burnveg,     sort, &
+                           bmasveg,  burnveg,     sort, &
                            fcancmx,   fcanmx,  vgbiomas, gavgltms, &
                           gavgscms, &
                           add2allo,        colrate,        mortrate) 
@@ -467,7 +466,8 @@ subroutine competition(  iday,      il1,       il2,      ilg, &
 !                     are slowly killed by increasing their mortality.               
 !
 
-use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts
+use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
+                        icc, ican, deltat, iccp1, seed
 
 implicit none
 
@@ -475,45 +475,40 @@ implicit none
 
 integer, intent(in) :: iday      ! day of the year
 
-integer, intent(in) :: ilg       ! no. of grid cells in latitude circle
+integer, intent(in) :: nilg       ! no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
 
 integer, intent(in) :: il1       ! il1=1
-integer, intent(in) :: il2       ! il2=ilg
+integer, intent(in) :: il2       ! il2=nilg
 
-integer, intent(in) :: icc       ! number of ctem pfts
-integer, intent(in) :: ic        ! number of class pfts
-
-integer, intent(in) :: l2max     ! maximum no. of level 2 pfts
-real,    intent(in) :: deltat    ! ctem time step, 1 day 
 real,    intent(in) :: grclarea  ! grid cell area, km^2
 integer, dimension(icc), intent(in) :: sort ! index for correspondence between 9 ctem pfts and
                                             ! size 12 of parameter vectors
-integer, dimension(ic), intent(in) :: nol2pfts ! number of level 2 ctem pfts
-logical, dimension(ilg,icc), intent(in) :: pftexist(ilg,icc) !indicating pfts exist (T) or not (F)
-real, dimension(ilg,icc), intent(in) :: nppveg    ! npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
-real, dimension(ilg,icc), intent(in) :: geremort  ! growth related mortality (1/day)
-real, dimension(ilg,icc), intent(in) :: intrmort  ! intrinsic (age related) mortality (1/day)
-real, dimension(ilg,icc), intent(in) :: lambda    ! fraction of npp that is used for spatial expansion
-real, dimension(ilg,icc), intent(in) :: bmasveg   ! total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-real, dimension(ilg,icc), intent(in) :: burnveg   ! areas burned, km^2, for 9 ctem pfts
+integer, dimension(ican), intent(in) :: nol2pfts ! number of level 2 ctem pfts
+logical, dimension(nilg,icc), intent(in) :: pftexist(nilg,icc) !indicating pfts exist (T) or not (F)
+real, dimension(nilg,icc), intent(in) :: nppveg    ! npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
+real, dimension(nilg,icc), intent(in) :: geremort  ! growth related mortality (1/day)
+real, dimension(nilg,icc), intent(in) :: intrmort  ! intrinsic (age related) mortality (1/day)
+real, dimension(nilg,icc), intent(in) :: lambda    ! fraction of npp that is used for spatial expansion
+real, dimension(nilg,icc), intent(in) :: bmasveg   ! total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
+real, dimension(nilg,icc), intent(in) :: burnveg   ! areas burned, km^2, for 9 ctem pfts
 
-real, dimension(ilg,icc), intent(inout) :: gleafmas  ! green leaf mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(ilg,icc), intent(inout) :: bleafmas  ! brown leaf mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(ilg,icc), intent(inout) :: stemmass  ! stem mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(ilg,icc), intent(inout) :: rootmass  ! root mass for each of the 9 ctem pfts, kg c/m2
-real, dimension(ilg,icc+1), intent(inout) :: litrmass  ! litter mass for each of the 9 ctem pfts + bare, kg c/m2
-real, dimension(ilg,icc+1), intent(inout) :: soilcmas  ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
-real, dimension(ilg,icc), intent(inout) :: fcancmx  ! fractional coverage of ctem's 9 pfts
-real, dimension(ilg,ic), intent(inout)  :: fcanmx   ! fractional coverage of class' 4 pfts
-real, dimension(ilg),     intent(inout) :: vgbiomas ! grid averaged vegetation biomass, kg c/m2
-real, dimension(ilg),     intent(inout) :: gavgltms ! grid averaged litter mass, kg c/m2
-real, dimension(ilg),     intent(inout) :: gavgscms ! grid averaged soil c mass, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: gleafmas  ! green leaf mass for each of the 9 ctem pfts, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: bleafmas  ! brown leaf mass for each of the 9 ctem pfts, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: stemmass  ! stem mass for each of the 9 ctem pfts, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: rootmass  ! root mass for each of the 9 ctem pfts, kg c/m2
+real, dimension(nilg,iccp1), intent(inout) :: litrmass  ! litter mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(nilg,iccp1), intent(inout) :: soilcmas  ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: fcancmx  ! fractional coverage of ctem's 9 pfts
+real, dimension(nilg,ican), intent(inout)  :: fcanmx   ! fractional coverage of class' 4 pfts
+real, dimension(nilg),     intent(inout) :: vgbiomas ! grid averaged vegetation biomass, kg c/m2
+real, dimension(nilg),     intent(inout) :: gavgltms ! grid averaged litter mass, kg c/m2
+real, dimension(nilg),     intent(inout) :: gavgscms ! grid averaged soil c mass, kg c/m2
 
-real, dimension(ilg,icc), intent(out) :: add2allo   ! npp kg c/m2.day that is used for expansion and
+real, dimension(nilg,icc), intent(out) :: add2allo   ! npp kg c/m2.day that is used for expansion and
                                                     ! subsequently allocated to leaves, stem, and root via 
                                                     ! the allocation part of the model.
-real, dimension(ilg,icc), intent(out) :: colrate    ! colonization rate (1/day)    
-real, dimension(ilg,icc), intent(out) :: mortrate   ! mortality rate
+real, dimension(nilg,icc), intent(out) :: colrate    ! colonization rate (1/day)    
+real, dimension(nilg,icc), intent(out) :: mortrate   ! mortality rate
 
 
 ! local variables
@@ -522,13 +517,13 @@ integer :: i, j
 integer :: n, k, k1, k2, l, a, b, g
 integer :: sdfracin
 integer, dimension(numgrass) :: grass_ind ! index of the grass pfts (only 2 grass pfts at present)
-integer, dimension(ilg) :: t1
+integer, dimension(nilg) :: t1
 integer, dimension(icc-numcrops) :: inirank
-integer, dimension(ilg,icc-numcrops) :: rank
-integer, dimension(ilg,icc-numcrops) :: exist1
-integer, dimension(ilg,icc-numcrops) :: useexist
-integer, dimension(ilg,icc) :: fraciord
-integer, dimension(ilg) :: bareiord  
+integer, dimension(nilg,icc-numcrops) :: rank
+integer, dimension(nilg,icc-numcrops) :: exist1
+integer, dimension(nilg,icc-numcrops) :: useexist
+integer, dimension(nilg,icc) :: fraciord
+integer, dimension(nilg) :: bareiord  
 
 logical, dimension(icc) :: crop
 logical, dimension(icc) :: grass
@@ -536,46 +531,46 @@ logical, dimension(icc) :: grass
 real :: befrmass, aftrmass
 real :: sum1, sum2, sum3,term,sum4 
 real :: colmult
-real, dimension(ilg,icc) :: mrtboclm
-real, dimension(ilg,icc) :: usenppvg
-real, dimension(ilg) :: temp
-real, dimension(ilg,icc-numcrops) :: usefrac, usec, usem
-real, dimension(ilg,icc-numcrops) :: frac
-real, dimension(ilg,icc-numcrops) :: c1
-real, dimension(ilg,icc-numcrops) :: m1
-real, dimension(ilg,icc-numcrops) :: term2, term3, term4, colterm, deathterm
-real, dimension(ilg,icc-numcrops) :: delfrac
-real, dimension(ilg) :: cropfrac, vegfrac    
-real, dimension(ilg,icc) :: chngfrac
-real, dimension(ilg,icc) :: expnterm, mortterm  
-real, dimension(ilg,icc) :: pglfmass  
-real, dimension(ilg,icc) :: pblfmass
-real, dimension(ilg,icc) :: protmass
-real, dimension(ilg,icc) :: pstmmass 
-real, dimension(ilg,icc) :: pfcancmx
-real, dimension(ilg) :: mincfrac  
-real, dimension(ilg,icc) :: pbiomasvg, biomasvg
-real, dimension(ilg,icc) :: putaside
-real, dimension(ilg,icc) :: nppvegar 
-real, dimension(ilg,icc+1) :: pltrmass
-real, dimension(ilg,icc+1) :: psocmass
-real, dimension(ilg,icc+1) :: deadmass 
-real, dimension(ilg,icc+1) :: pdeadmas
-real, dimension(ilg) :: barefrac   
-real, dimension(ilg,icc) :: usebmsvg  
-real, dimension(ilg,icc+1) ::ownsolc, ownlitr
-real, dimension(ilg,icc) :: baresolc
-real, dimension(ilg,icc) :: barelitr, baresoilc                
-real, dimension(ilg,icc+1) :: incrlitr, incrsolc
-real, dimension(ilg) :: pvgbioms
-real, dimension(ilg) :: pgavltms
-real, dimension(ilg) :: pgavscms
-real, dimension(ilg) :: add2dead
-real, dimension(ilg) :: gavgputa
-real, dimension(ilg) :: gavgnpp       
-real, dimension(ilg) :: pbarefra
-real, dimension(ilg) :: grsumlit, grsumsoc
-real, dimension(ilg,icc) :: pftareab, pftareaa
+real, dimension(nilg,icc) :: mrtboclm
+real, dimension(nilg,icc) :: usenppvg
+real, dimension(nilg) :: temp
+real, dimension(nilg,icc-numcrops) :: usefrac, usec, usem
+real, dimension(nilg,icc-numcrops) :: frac
+real, dimension(nilg,icc-numcrops) :: c1
+real, dimension(nilg,icc-numcrops) :: m1
+real, dimension(nilg,icc-numcrops) :: term2, term3, term4, colterm, deathterm
+real, dimension(nilg,icc-numcrops) :: delfrac
+real, dimension(nilg) :: cropfrac, vegfrac    
+real, dimension(nilg,icc) :: chngfrac
+real, dimension(nilg,icc) :: expnterm, mortterm  
+real, dimension(nilg,icc) :: pglfmass  
+real, dimension(nilg,icc) :: pblfmass
+real, dimension(nilg,icc) :: protmass
+real, dimension(nilg,icc) :: pstmmass 
+real, dimension(nilg,icc) :: pfcancmx
+real, dimension(nilg) :: mincfrac  
+real, dimension(nilg,icc) :: pbiomasvg, biomasvg
+real, dimension(nilg,icc) :: putaside
+real, dimension(nilg,icc) :: nppvegar 
+real, dimension(nilg,iccp1) :: pltrmass
+real, dimension(nilg,iccp1) :: psocmass
+real, dimension(nilg,iccp1) :: deadmass 
+real, dimension(nilg,iccp1) :: pdeadmas
+real, dimension(nilg) :: barefrac   
+real, dimension(nilg,icc) :: usebmsvg  
+real, dimension(nilg,iccp1) ::ownsolc, ownlitr
+real, dimension(nilg,icc) :: baresolc
+real, dimension(nilg,icc) :: barelitr, baresoilc                
+real, dimension(nilg,iccp1) :: incrlitr, incrsolc
+real, dimension(nilg) :: pvgbioms
+real, dimension(nilg) :: pgavltms
+real, dimension(nilg) :: pgavscms
+real, dimension(nilg) :: add2dead
+real, dimension(nilg) :: gavgputa
+real, dimension(nilg) :: gavgnpp       
+real, dimension(nilg) :: pbarefra
+real, dimension(nilg) :: grsumlit, grsumsoc
+real, dimension(nilg,icc) :: pftareab, pftareaa
 
 ! local parameters
 
@@ -595,9 +590,6 @@ real, dimension(kk), parameter :: bio2sap = [ 0.10, 0.10, 0.00, &
 
 ! mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
 real, parameter :: bioclimrt = 0.25
-
-! seeding fraction for lotka-volterra and arora-boer scheme
-real, dimension(2), parameter :: seedfrac = [ 0.001, 0.001 ]
 
 ! error tolerance for c balance for each pft over gcm grid cell
 real, parameter :: tolranc1 = 0.150  ! kg c
@@ -626,8 +618,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     ---------------------------------------------------------------
 
       if(icc.ne.9)                      call xit('competition',-1)
-      if(ic.ne.4)                       call xit('competition',-2)
-      if(l2max.ne.3)                    call xit('competition',-3)
+      if(ican.ne.4)                       call xit('competition',-2)
 
 !    set competition parameters according to the model chosen
 !
@@ -636,19 +627,19 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
         b=1 ! beta
         g=0 ! gamma
         colmult=4.00  ! multiplier for colonization rate
-        sdfracin=1   ! seed fraction index
+       ! sdfracin=1   ! seed fraction index ! All seed values set to 'seed'
       else if(arora .and. (.not.lotvol) .and. (.not.boer))then
         a=0 ! alpha
         b=1 ! beta
         g=0 ! gamma
         colmult=1.00 ! multiplier for colonization rate
-        sdfracin=2   ! seed fraction index
+      !  sdfracin=2   ! seed fraction index ! All seed values set to 'seed'
       else if(boer .and. (.not.lotvol) .and. (.not.arora))then
         a=0 ! alpha
         b=1 ! beta
         g=1 ! gamma
         colmult=1.00 ! multiplier for colonization rate
-        sdfracin=2   ! seed fraction index
+        !sdfracin=2   ! seed fraction index ! All seed values set to 'seed'
       else
         write(6,*)'fool! choose competition model properly'
         call xit('competition',-4)
@@ -689,7 +680,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
           pbarefra(i)=pbarefra(i)-fcancmx(i,j)
           pftareab(i,j)=(fcancmx(i,j)*grclarea)
           pftareaa(i,j)=(fcancmx(i,j)*grclarea)-burnveg(i,j)
-          fcancmx(i,j)=max(seedfrac(sdfracin),(pftareaa(i,j)/grclarea) )
+          fcancmx(i,j)=max(seed,(pftareaa(i,j)/grclarea) )
           pftareaa(i,j)=fcancmx(i,j)*grclarea
           barefrac(i)=barefrac(i)-fcancmx(i,j)
           if(fcancmx(i,j).gt.zero)then
@@ -721,11 +712,11 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 1250   continue 
         if(barefrac(i).gt.zero)then
           term=pbarefra(i)/barefrac(i)
-          litrmass(i,icc+1) = litrmass(i,icc+1)*term
-          soilcmas(i,icc+1) = soilcmas(i,icc+1)*term
+          litrmass(i,iccp1) = litrmass(i,iccp1)*term
+          soilcmas(i,iccp1) = soilcmas(i,iccp1)*term
         else
-          litrmass(i,icc+1) = 0.0
-          soilcmas(i,icc+1) = 0.0
+          litrmass(i,iccp1) = 0.0
+          soilcmas(i,iccp1) = 0.0
         endif
 1240  continue
 
@@ -741,8 +732,8 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 1260  continue
 
       do 1280 i = il1, il2
-        gavgltms(i)=gavgltms(i)+ barefrac(i)*litrmass(i,icc+1)
-        gavgscms(i)=gavgscms(i)+ barefrac(i)*soilcmas(i,icc+1)
+        gavgltms(i)=gavgltms(i)+ barefrac(i)*litrmass(i,iccp1)
+        gavgscms(i)=gavgscms(i)+ barefrac(i)*soilcmas(i,iccp1)
 1280  continue
 
       do 1300 i = il1, il2
@@ -826,20 +817,20 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
         vgbiomas(i)=0.0
         gavgltms(i)=0.0
         gavgscms(i)=0.0
-        pltrmass(i,icc+1)=litrmass(i,icc+1)
-        psocmass(i,icc+1)=soilcmas(i,icc+1)
-        deadmass(i,icc+1)=0.0
-        pdeadmas(i,icc+1)=0.0
+        pltrmass(i,iccp1)=litrmass(i,iccp1)
+        psocmass(i,iccp1)=soilcmas(i,iccp1)
+        deadmass(i,iccp1)=0.0
+        pdeadmas(i,iccp1)=0.0
         add2dead(i)=0.0
         gavgputa(i)=0.0 ! grid averaged value of c put aside for allocation
         gavgnpp(i)=0.0  ! grid averaged npp kg c/m2 for balance purposes
         bareiord(i)=0
         grsumlit(i)=0.0
         grsumsoc(i)=0.0
-        ownlitr(i,icc+1)=0.0
-        ownsolc(i,icc+1)=0.0
-        incrlitr(i,icc+1)=0.0
-        incrsolc(i,icc+1)=0.0
+        ownlitr(i,iccp1)=0.0
+        ownsolc(i,iccp1)=0.0
+        incrlitr(i,iccp1)=0.0
+        incrsolc(i,iccp1)=0.0
 170   continue
 
       do 180 j = 1, icc-numcrops
@@ -976,7 +967,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
           n=j+numcrops
         endif 
         do 340 i = il1, il2
-          frac(i,j)=max(seedfrac(sdfracin),fcancmx(i,n)) 
+          frac(i,j)=max(seed,fcancmx(i,n)) 
           if (pftexist(i,n)) then
            exist1(i,j)=1
            c1(i,j)=colrate(i,n)
@@ -1043,7 +1034,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
             write(6,*)'fractional coverage -ve for cell ',i,' and pft',n
             call xit('competition',-5)
           endif
-          usefrac(i,n)=max(seedfrac(sdfracin),usefrac(i,n))
+          usefrac(i,n)=max(seed,usefrac(i,n))
 510     continue
 500   continue
 
@@ -1053,14 +1044,14 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     pfts that do not have the minimum fraction.
 
       do 530 i = il1, il2
-        vegfrac(i)=cropfrac(i)+ seedfrac(sdfracin)  !total vegetation fraction
-        mincfrac(i)=cropfrac(i)+ seedfrac(sdfracin) !sum of mininum prescribed & crop fractions
+        vegfrac(i)=cropfrac(i)+ seed  !total vegetation fraction
+        mincfrac(i)=cropfrac(i)+ seed !sum of mininum prescribed & crop fractions
 530   continue
 
       do 540 n = 1, icc-numcrops
         do 541 i = il1, il2
           vegfrac(i)=vegfrac(i)+usefrac(i,n)
-          if(abs(usefrac(i,n)-seedfrac(sdfracin)).le.zero) then
+          if(abs(usefrac(i,n)-seed).le.zero) then
             mincfrac(i)= mincfrac(i)+ usefrac(i,n)
           endif 
 541     continue
@@ -1069,7 +1060,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
       do 550 n = 1, icc-numcrops
         do 551 i = il1, il2
           if(vegfrac(i).gt.1.0.and. &
-          abs(usefrac(i,n)-seedfrac(sdfracin)).gt.zero) then
+          abs(usefrac(i,n)-seed).gt.zero) then
             term =(1.-mincfrac(i))/(vegfrac(i)-mincfrac(i)) 
             usefrac(i,n)=usefrac(i,n)*term
           endif
@@ -1079,7 +1070,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     check again that total veg frac doesn't exceed 1.
 
       do 560 i = il1, il2
-        vegfrac(i)=cropfrac(i)+ seedfrac(sdfracin)  !total vegetation fraction
+        vegfrac(i)=cropfrac(i)+ seed  !total vegetation fraction
 560   continue
 
       do 570 n = 1, icc-numcrops
@@ -1272,19 +1263,19 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
       do 680 i = il1, il2
         if(bareiord(i).eq.-1)then
 
-          term =(pbarefra(i)-barefrac(i))*litrmass(i,icc+1)
-          incrlitr(i,icc+1)=term
+          term =(pbarefra(i)-barefrac(i))*litrmass(i,iccp1)
+          incrlitr(i,iccp1)=term
           grsumlit(i)=grsumlit(i)+term
 
-          term =(pbarefra(i)-barefrac(i))*soilcmas(i,icc+1)
-          incrsolc(i,icc+1)=term
+          term =(pbarefra(i)-barefrac(i))*soilcmas(i,iccp1)
+          incrsolc(i,iccp1)=term
           grsumsoc(i)=grsumsoc(i)+term
 
         else if(bareiord(i).eq.1)then
 
           term = pbarefra(i)/barefrac(i)
-          litrmass(i,icc+1)=litrmass(i,icc+1)*term
-          soilcmas(i,icc+1)=soilcmas(i,icc+1)*term
+          litrmass(i,iccp1)=litrmass(i,iccp1)*term
+          soilcmas(i,iccp1)=soilcmas(i,iccp1)*term
 
         endif
 680   continue
@@ -1312,8 +1303,8 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !           barefrac over the bare fraction.
 
             term = (barefrac(i)-fcancmx(i,j))/barefrac(i)
-            litrmass(i,icc+1) = litrmass(i,icc+1)*term
-            soilcmas(i,icc+1) = soilcmas(i,icc+1)*term
+            litrmass(i,iccp1) = litrmass(i,iccp1)*term
+            soilcmas(i,iccp1) = soilcmas(i,iccp1)*term
 
             fcancmx(i,j)=0.0
           endif
@@ -1340,24 +1331,24 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
       do 720 i = il1, il2
         if(barefrac(i).gt.zero)then
-          litrmass(i,icc+1)=litrmass(i,icc+1)+grsumlit(i)
-          soilcmas(i,icc+1)=soilcmas(i,icc+1)+grsumsoc(i)
+          litrmass(i,iccp1)=litrmass(i,iccp1)+grsumlit(i)
+          soilcmas(i,iccp1)=soilcmas(i,iccp1)+grsumsoc(i)
         else
-          litrmass(i,icc+1)=0.0
-          soilcmas(i,icc+1)=0.0
+          litrmass(i,iccp1)=0.0
+          soilcmas(i,iccp1)=0.0
         endif
 720   continue
 
 !     get fcanmxs for use by class based on the new fcancmxs
 
-      do 740 j = 1, ic
+      do 740 j = 1, ican
         do 741 i = il1, il2
            fcanmx(i,j)=0.0 ! fractional coverage of class' pfts
 741     continue
 740   continue
 
       k1=0
-      do 750 j = 1, ic
+      do 750 j = 1, ican
         if(j.eq.1) then
           k1 = k1 + 1
         else
@@ -1383,8 +1374,8 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 800   continue
 
       do 810 i = il1, il2
-        gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,icc+1) )
-        gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,icc+1) )
+        gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
+        gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
 810   continue
 
 !     and finally we check the c balance. we were suppose to use a
@@ -1472,7 +1463,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
 !     check balance over the bare fraction
 
-      do 850 j = icc+1, icc+1
+      j = iccp1
         do 851 i = il1, il2
           deadmass(i,j)=barefrac(i)*grclarea*1.0e06*(litrmass(i,j)+soilcmas(i,j))
           pdeadmas(i,j)=pbarefra(i)*grclarea*1.0e06*(pltrmass(i,j)+psocmass(i,j))
@@ -1502,7 +1493,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
             call xit('competition',-9)
           endif
 851     continue
-850   continue
+
 
 !     grid averaged densities must also balance
 

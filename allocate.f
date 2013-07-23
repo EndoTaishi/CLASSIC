@@ -45,7 +45,6 @@ c     stemmass  - stem mass for each of the 9 ctem pfts, kg c/m2
 c     rootmass  - root mass for each of the 9 ctem pfts, kg c/m2
 c     sort      - index for correspondence between 9 pfts and the
 c                 12 values in parameters vectors
-c     l2max     - maximum number of level 2 ctem pfts
 c     nol2pfts  - number of level 2 ctem pfts
 c     ican        - number of class pfts
 c     fcancmx   - max. fractional coverage of ctem's 9 pfts, but this can be
@@ -62,7 +61,7 @@ c     wtstatus  - soil water status (0 dry -> 1 wet)
 c     ltstatus  - light status
 
       use ctem_params,        only : eta, kappa, kn, abszero, icc, ilg,
-     1                               ignd, kk, l2max, ican
+     1                               ignd, kk, ican
 c
       implicit none
 c
@@ -168,7 +167,7 @@ c
 c     ---------------------------------------------------------------
 c
 c
-c     initialize required arrays to abszero
+c     initialize required arrays to 0
 c
       do 140 j = 1,icc
         do 150 i = il1, il2
@@ -361,7 +360,7 @@ c
 c     make sure allocation fractions add to one
 c
       do 430 j = 1, icc
-        do 440 i = il1, il2
+        do 440 i = il1, il2 
          if (fcancmx(i,j).gt.0.0) then 
           if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero) 
      &    then  

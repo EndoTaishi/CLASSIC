@@ -1,6 +1,12 @@
 module ctem_params
 
 ! This module holds ctem globally accessible parameters
+! These parameters are used in all CTEM subroutines
+! via use statements pointing to this module EXCEPT PHTSYN3.f 
+! which has the information passed in via arguments.
+
+! Remember that changes to this module will usually only take effect
+! after you have done a make clean then a make.
 
 ! J. Melton
 ! Jun 23 2013
@@ -10,10 +16,15 @@ implicit none
 ! constants
 
 real, parameter :: zero = 1.0e-20
+real, parameter :: abszero=1e-12 ! this one is for runclassctem.f and allocate.f 
+
 real, parameter :: pi =3.1415926535898d0
 real, parameter :: earthrad = 6371.22   ! radius of earth, km
+real, parameter :: km2tom2 = 1.0e+06 ! changes from km2 to m2
 real, parameter :: deltat =1.0  !CTEM's time step in days
-real, parameter :: abszero=1e-12 ! this one is from RUNCLASSCTEM, replace with zero?? JM Jul 2 2013.
+
+
+real, parameter :: tolrance = 0.00001d0 ! our tolerance for balancing c budget in kg c/m2 in one day, this is 1/100th of a gram of c
 
 integer, parameter, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] ! days in each month
 integer, parameter, dimension(13) :: monthend = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] ! calender day at end of each month
@@ -32,9 +43,6 @@ real, parameter, dimension(lat+1) :: edgelat = [ -90.0000, -85.3190, -81.6280, -
                                          40.8221,  44.5331,  48.2441,  51.9549,  55.6657,  59.3763, &
                                          63.0868,  66.7970,  70.5068,  74.2159,  77.9236,  81.6280, &
                                          85.3190,  90.0000 ]
-
-! conversion factor from carbon to dry organic matter value is from li et al. 2012 biogeosci
-real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
 
 ! ----
 ! model state
@@ -71,6 +79,9 @@ integer, parameter, dimension(kk) :: modelpft= [ 1,     1,     0,  &  ! CLASS PF
 real, parameter :: seed = 0.001 ! seed pft fraction, same as in competition
                                 ! in mosaic mode, all tiles are given this
                                 ! as a minimum
+
+! conversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
+real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
 
 ! ----
 ! PFT parameters

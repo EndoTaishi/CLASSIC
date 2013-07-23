@@ -851,31 +851,6 @@ c          ratio of carbon to dry organic matter. units: kg dom / m2
 c          convert the dom to emissions/aerosols using emissions factors
 c          units: g compound / m2
 
-!           emit_co2(i) = emit_co2(i) + emif_co2(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_co(i) = emit_co(i) + emif_co(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_ch4(i) = emit_ch4(i) + emif_ch4(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_nmhc(i) = emit_nmhc(i) + emif_nmhc(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_h2(i) = emit_h2(i) + emif_h2(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_nox(i) = emit_nox(i) + emif_nox(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_n2o(i) = emit_n2o(i) + emif_n2o(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_pm25(i) = emit_pm25(i) + emif_pm25(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_tpm(i) = emit_tpm(i) + emif_tpm(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_tc(i) = emit_tc(i) + emif_tc(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_oc(i) = emit_oc(i) + emif_oc(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-!           emit_bc(i) = emit_bc(i) + emif_bc(j) * 
-!     &                   tot_emit_dom * fcancmx(i,j)
-
            emit_co2(i,j)  = emif_co2(j) * tot_emit_dom
            emit_co(i,j)   = emif_co(j)  * tot_emit_dom
            emit_ch4(i,j)  = emif_ch4(j) * tot_emit_dom

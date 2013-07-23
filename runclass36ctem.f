@@ -61,9 +61,9 @@ c     use statements for modules:
       use ctem_params,        only : nlat, nmos, ilg, nmon, ican, ignd,
      1                               icp1, icc, iccp1, monthend, mmday,
      2                               modelpft, l2max, deltat, abszero,
-     3                               monthdays
+     3                               monthdays,seed
      
-      use landuse_change,     only : initialize_luc, readin_luc, seed
+      use landuse_change,     only : initialize_luc, readin_luc
       
 c
       implicit none
@@ -2316,8 +2316,8 @@ c
 
          reach_eof=.false.  !flag for when read to end of luc input file
 
-         call initialize_luc(nlat,nmos,iyear,argbuff,nmtest,nltest, 
-     1                     mosaic,icc,ican,icp1,nol2pfts,cyclemet,   
+         call initialize_luc(iyear,argbuff,nmtest,nltest, 
+     1                     mosaic,nol2pfts,cyclemet,   
      2                     cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,     
      3                     pfcancmxrow,fcancmxrow,reach_eof)
 
@@ -2457,7 +2457,7 @@ c
      4      rootdpthgat,alvsctmgat,alirctmgat,
      5      paicgat,    slaicgat, 
      6      ilmos,jlmos,iwmos,jwmos,
-     7      nml,nlat,nmos,ilg,ignd,ican,icp1,icc,
+     7      nml,
      8      gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,
      9      fcancmxrow,zbtwrow,dlzwrow,sdeprow,ailcgrow,ailcbrow,
      a      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
@@ -2502,7 +2502,7 @@ c
      4      rootdpthrow,alvsctmrow,alirctmrow,
      5      paicrow,    slaicrow,
      6      ilmos,jlmos,iwmos,jwmos,
-     7      nml,nlat,nmos,ilg,ignd,ican,icp1,icc,
+     7      nml,
      8      gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,  
      9      fcancmxgat,zbtwgat,dlzwgat,sdepgat,ailcggat,ailcbgat,
      a      ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,
@@ -2659,7 +2659,7 @@ c      if lnduseon is true, read in the luc data now
 
        if (ctem_on .and. lnduseon) then
 
-         call readin_luc(nlat,nmos,iyear,nmtest,nltest,mosaic,icc,lucyr,   
+         call readin_luc(iyear,nmtest,nltest,mosaic,lucyr,   
      &                   nfcancmxrow,reach_eof)
          if (reach_eof) goto 999
 
@@ -5256,6 +5256,8 @@ c
                 litrmass_mo_m(i,m,iccp1)=litrmassrow(i,m,iccp1)
                 soilcmas_mo_m(i,m,iccp1)=soilcmasrow(i,m,iccp1)
 
+                barefrac=1.0
+
                do j=1,icc
                 vgbiomas_mo_g(i)=vgbiomas_mo_g(i)+vgbiomas_mo_m(i,m,j)
      &                          *farerow(i,m)*fcancmxrow(i,m,j) 
@@ -5269,20 +5271,23 @@ c
      &                          *farerow(i,m)*fcancmxrow(i,m,j) 
                 totcmass_mo_g(i)=totcmass_mo_g(i)+totcmass_mo_m(i,m,j)
      &                          *farerow(i,m)*fcancmxrow(i,m,j) 
+                barefrac=barefrac-farerow(i,m)*fcancmxrow(i,m,j) 
 
                end do
 
 !             Also add in the bare fraction contributions.        
               litrmass_mo_g(i)=litrmass_mo_g(i)+litrmass_mo_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,iccp1) 
+     &                          *barefrac
               soilcmas_mo_g(i)=soilcmas_mo_g(i)+soilcmas_mo_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,j) 
+     &                          *barefrac
 
              endif ! mmday (mid-month instantaneous value)
 c
              if(iday.eq.monthend(nt+1))then
 
                ndmonth=(monthend(nt+1)-monthend(nt))*nday
+
+               barefrac=1.0
 c
                do j=1,icc
 
@@ -5331,15 +5336,17 @@ c
                 emit_bc_mo_g(i) =emit_bc_mo_g(i)+emit_bc_mo_m(i,m,j)
      &                          *farerow(i,m)*fcancmxrow(i,m,j)  
                burnfrac_mo_g(i)=burnfrac_mo_g(i)+burnfrac_mo_m(i,m,j)
-     &                          *farerow(i,m)*fcancmxrow(i,m,j) 
-               end do
+     &                          *farerow(i,m)*fcancmxrow(i,m,j)
+                barefrac=barefrac-farerow(i,m)*fcancmxrow(i,m,j) 
+ 
+               end do !j
 
               hetrores_mo_g(i)=hetrores_mo_g(i)+hetrores_mo_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,iccp1)
+     &                          *barefrac
               litres_mo_g(i)  =litres_mo_g(i) +litres_mo_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,iccp1)
+     &                          *barefrac
               soilcres_mo_g(i)=soilcres_mo_g(i)+soilcres_mo_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,iccp1)
+     &                          *barefrac
 
                luc_emc_mo_g(i) =luc_emc_mo_g(i)
      &                          +luc_emc_mo_m(i,m)*farerow(i,m)   
@@ -5446,7 +5453,7 @@ c
                do m=1,nmos
                  sumfare=sumfare+farerow(i,m)
                enddo
-               write(88,8106)imonth,iyear,(farerow(i,m)*100.,m=1,nmos-1)
+               write(88,8106)imonth,iyear,(farerow(i,m)*100.,m=1,nmos)
      1                      ,sumfare,(pftexistrow(i,j,j),j=1,icc)
               else !composite
                m=1 
@@ -5578,6 +5585,8 @@ c
                 litrmass_yr_m(i,m,iccp1)=litrmassrow(i,m,iccp1)
                 soilcmas_yr_m(i,m,iccp1)=soilcmasrow(i,m,iccp1)
 
+                barefrac=1.0
+
               do j=1,icc
                 laimaxg_yr_g(i)=laimaxg_yr_g(i)+ laimaxg_yr_m(i,m,j)
      &                          *farerow(i,m)*fcancmxrow(i,m,j) 
@@ -5637,18 +5646,20 @@ c
                 burnfrac_yr_g(i)=burnfrac_yr_g(i)+burnfrac_yr_m(i,m,j)
      &                          *farerow(i,m)*fcancmxrow(i,m,j)
 
+                barefrac=barefrac-farerow(i,m)*fcancmxrow(i,m,j) 
+
               end do !j
 
               litrmass_yr_g(i)=litrmass_yr_g(i)+litrmass_yr_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,iccp1) 
+     &                          *barefrac
               soilcmas_yr_g(i)=soilcmas_yr_g(i)+soilcmas_yr_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,iccp1)
+     &                          *barefrac
               hetrores_yr_g(i)=hetrores_yr_g(i)+hetrores_yr_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,j)
+     &                          *barefrac
               litres_yr_g(i)  =litres_yr_g(i)  +litres_yr_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,j)
+     &                          *barefrac
               soilcres_yr_g(i)=soilcres_yr_g(i)+soilcres_yr_m(i,m,iccp1)
-     &                          *farerow(i,m)*fcancmxrow(i,m,j)
+     &                          *barefrac
    
 
               probfire_yr_g(i)=probfire_yr_g(i)
@@ -5752,7 +5763,7 @@ c
                  do m=1,nmos
                     sumfare=sumfare+farerow(i,m)
                  enddo
-                 write(89,8107)iyear,(farerow(i,m)*100.,m=1,nmos-1),
+                 write(89,8107)iyear,(farerow(i,m)*100.,m=1,nmos),
      &                         sumfare,(pftexistrow(i,j,j),j=1,icc)
                else  !composite
                  m=1 
@@ -5814,8 +5825,8 @@ c
 C
 8104  FORMAT(1X,I4,I5,12F10.3,2(A6,I2),A6,F8.2)
 8105  FORMAT(1X,I5,15F10.3,2(A6,I2),A6,F8.2)
-8106  FORMAT(1X,I4,I5,10F10.5,9L5,2(A6,I2))
-8107  FORMAT(1X,I5,10F10.5,9L5,2(A6,I2))
+8106  FORMAT(1X,I4,I5,11F10.5,9L5,2(A6,I2))
+8107  FORMAT(1X,I5,11F10.5,9L5,2(A6,I2))
 8108  FORMAT(1X,I5,17F10.3,2(A6,I2),A6,F8.2)
 8109  FORMAT(1X,I4,I5,17F10.3,2(A6,I2),A6,F8.2)
 C

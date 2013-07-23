@@ -565,7 +565,6 @@ c
 C        do 81 i = il1, il2
           grclarea = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)
      &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic
-c               !flag- should this faregat be here? jm 18.12.2012.
 c         dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
 C81      continue  
 c
@@ -639,8 +638,7 @@ c
 c       competition_map scatters and maps the array with indices 
 c       of (ilg,icc) to (nlat,icc) for preparation for competition
 c  
-          call competition_map(   nlat,      nmos,     ilg, 
-     a                             nml,    ilmos,   jlmos,   icc, ican,
+          call competition_map(    nml,    ilmos,   jlmos,  
      b                         faregat,   fcancmx,  nppveg,  geremort,
      c                         intrmort, gleafmas, bleafmas, stemmass,
      d                         rootmass, litrmass, soilcmas,
@@ -697,7 +695,7 @@ c        if first day of year then based on updated bioclimatic parameters
 c        find if pfts can exist or not
 c
           call existence(iday,            1,         nlat,         nlat,
-     1                    icc,         sort,     nol2pfts,       ican,
+     1                   sort,     nol2pfts,      
      2             twarmm_cmp,   tcoldm_cmp,     gdd5_cmp,  aridity_cmp,
      3           srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,
      4             annpcp_cmp, anpotevp_cmp, pftexist_cmp)
@@ -707,11 +705,11 @@ c        call competition subroutine which on the basis of previous day's
 c        npp estimates changes in fractional coverage of pfts
 c
          call competition (iday,          1,          nlat,        nlat,
-     1                    icc,    nol2pfts,            ican, nppveg_cmp,
-     2                  l2max, pftexist_cmp, geremort_cmp, intrmort_cmp,
+     1               nol2pfts,   nppveg_cmp,
+     2           pftexist_cmp, geremort_cmp, intrmort_cmp,
      3           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
      4           litrmass_cmp, soilcmas_cmp, grclarea,   lambda_cmp,
-     5            bmasveg_cmp,       deltat,  burnveg_cmp,         sort,
+     5            bmasveg_cmp,  burnveg_cmp,         sort,
 c
 c    ------------------- inputs above this line -------------------
 c
@@ -721,6 +719,7 @@ c
 c    ------------------- updates above this line ------------------
 c
      8           add2allo_cmp,      cc_cmp,      mm_cmp)
+
 
          else  ! It is the first year of a run that you do not have the 
               ! climatological means already in the CTM file. After one
@@ -756,9 +755,8 @@ c     -----------------------------------------------------------------
            enddo
          enddo
 
-         call luc(icc,      nlat,      il1,      nlat,
-     1           ican, nol2pfts,    l2max,  
-     2           grclarea, pfcancmx_cmp, nfcancmx_cmp,     iday,
+         call luc(il1,      nlat,     nlat,     nol2pfts, 
+     2           grclarea,    pfcancmx_cmp, nfcancmx_cmp,     iday,
      3           todfrac_cmp,  yesfrac_mos,   .true.,
      4           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
      5           litrmass_cmp, soilcmas_cmp, vgbiomas_cmp, gavgltms_cmp,
@@ -771,8 +769,7 @@ c     -----------------------------------------------------------------
 c       competition_unmap unmaps and gathers the array with  
 c       indices (nlat,icc) back to (ilg,icc) after competition is done 
 c
-        call competition_unmap(nlat, nmos, ilg, 
-     a                           nml, ilmos, jlmos, icc, ican, nol2pfts,
+        call competition_unmap( nml,      ilmos,    jlmos,   nol2pfts,
      b                           fare_cmp,   nppveg_cmp, geremort_cmp,
      c                       intrmort_cmp, gleafmas_cmp, bleafmas_cmp,
      d                       stemmass_cmp, rootmass_cmp, litrmass_cmp,
@@ -835,21 +832,20 @@ c       if first day of year then based on updated bioclimatic parameters
 c       find if pfts can exist or not
 c
         call existence(iday,            1,         il2,         ilg,
-     1                   icc,         sort,     nol2pfts,         ican,
+     1                     sort,     nol2pfts,        
      2                   twarmm,   tcoldm,     gdd5,  aridity,
      3                   srplsmon, defctmon, anndefct, annsrpls,
      4                   annpcp, anpotevp, pftexist )
-
 c     
 c       call competition subroutine which on the basis of previous day's
 c       npp estimates changes in fractional coverage of pfts
 c
         call competition (iday,          1,          il2,         ilg,
-     1                    icc,    nol2pfts,            ican,   nppveg,
-     2                    l2max, pftexist, geremort, intrmort,
+     1                    nol2pfts,       nppveg,
+     2                    pftexist, geremort, intrmort,
      3                    gleafmas, bleafmas, stemmass, rootmass,
      4                    litrmass, soilcmas, grclarea,   lambda,
-     5                    bmasveg,       deltat,  burnveg,        sort,
+     5                    bmasveg,  burnveg,        sort,
 c
 c    ------------------- inputs above this line -------------------
 c
@@ -897,8 +893,7 @@ c
            enddo
          enddo
 
-         call luc(     icc,      ilg,      il1,      il2,
-     1                        ican, nol2pfts,    l2max,  
+         call luc(    il1,      il2,   ilg,  nol2pfts, 
      2                  grclarea, pfcancmx, nfcancmx,     iday,
      3                   todfrac,yesfrac_comp,.true.,
      4                  gleafmas, bleafmas, stemmass, rootmass,
@@ -1109,17 +1104,17 @@ c     Find maintenance respiration for canopy over snow sub-area
 c     in umol co2/m2/sec
 c
       call   mainres (fcancs,      fcs,     stemmass,   rootmass,        
-     1                   icc,       ignd,          ilg,        il1,
+     1                  il1,
      2                   il2,       ta,       tbarcs,   rmatctem,
-     3                  sort, nol2pfts,           ican,      isand,
+     3                  sort, nol2pfts,        isand,
      4              rmscsveg, rmrcsveg,     rttempcs)
 c
 c     Find maintenance respiration for canopy over ground sub-area
 c
       call   mainres ( fcanc,       fc,     stemmass,   rootmass,        
-     1                   icc,       ignd,          ilg,        il1,
+     1                   il1,
      2                   il2,       ta,        tbarc,   rmatctem,
-     3                  sort, nol2pfts,           ican,      isand,
+     3                  sort, nol2pfts,        isand,
      4              rmscgveg, rmrcgveg,     rttempcg)
 c
 c
@@ -1231,7 +1226,7 @@ c     find heterotrophic respiration rates (umol co2/m2/sec) for canopy
 c     over snow subarea
 c
        call    hetresv ( fcancs,      fcs, litrmass, soilcmas,
-     1                      icc,       ignd,      ilg,      il1,
+     1                      il1,
      2                      il2,   tbarcs,   thliqc,     sand,
      3                     clay, rttempcs,    zbotw,     sort,
      4                     isand,
@@ -1241,7 +1236,7 @@ c     find heterotrophic respiration rates for canopy over ground
 c     subarea
 c
        call    hetresv (  fcanc,       fc, litrmass, soilcmas,
-     1                      icc,       ignd,      ilg,      il1,
+     1                      il1,
      2                      il2,    tbarc,   thliqc,     sand,
      3                     clay, rttempcg,    zbotw,     sort,
      4                     isand,
@@ -1250,8 +1245,8 @@ c
 c
 c     find heterotrophic respiration rates from bare ground subarea
 c
-       call  hetresg  (litrmass, soilcmas,      icc,       ignd,      
-     1                      ilg,      il1,      il2,    tbarg,   
+       call  hetresg  (litrmass, soilcmas,            
+     1                      il1,      il2,     tbarg,   
      2                   thliqg,     sand,      clay,   zbotw,   
      3                       fg,        0,
      4                     isand,
@@ -1260,8 +1255,8 @@ c
 c     find heterotrophic respiration rates from snow over ground 
 c     subarea
 c
-       call  hetresg  (litrmass, soilcmas,      icc,       ignd,      
-     1                      ilg,      il1,      il2,   tbargs,   
+       call  hetresg  (litrmass, soilcmas,            
+     1                      il1,      il2,    tbargs,   
      2                   thliqg,     sand,      clay,   zbotw,   
      3                      fgs,        1,
      4                     isand,
@@ -1598,12 +1593,12 @@ c     call the phenology subroutine, which determines the leaf growth
 c     status, calculates leaf litter, and converts green grass into
 c     brown.
 c
-            call phenolgy(gleafmas, bleafmas,      icc,       ignd,
-     1                         ilg,      il1,      il2,  tbarccs,
+            call phenolgy(gleafmas, bleafmas, 
+     1                         il1,      il2,  tbarccs,
      2                      thliqc,   wiltsm,  fieldsm,       ta,
      3                    pheanveg,     iday,     radj, roottemp,
      4                    rmatctem, stemmass, rootmass,     sort,
-     5                       l2max, nol2pfts,       ican,  fcancmx,
+     5                    nol2pfts,  fcancmx,
      6                    flhrloss, leaflitr, lfstatus,  pandays,
      7                    colddays)
 c
@@ -1614,8 +1609,8 @@ c     while leaf litter is calculated in the phenology subroutine, stem
 c     and root turnover is calculated in the turnover subroutine.
 c
             call turnover (stemmass, rootmass,  lfstatus,    ailcg,
-     1                          icc,      ilg,       il1,      il2,
-     2                         sort, nol2pfts,        ican,  fcancmx,
+     1                          il1,      il2,
+     2                         sort, nol2pfts,  fcancmx,
      3                     stmhrlos, rothrlos,
      4                     stemlitr, rootlitr)
 c
@@ -1701,7 +1696,7 @@ c
       end if  
 c
       call       mortalty (stemmass, rootmass,        ailcg, gleafmas,
-     1                     bleafmas,      icc,          ilg,      il1, 
+     1                     bleafmas,      il1, 
      2                          il2,     iday, do_mortality,     sort,
      3                      fcancmx, lystmmas,     lyrotmas, tymaxlai,
      4                     grwtheff, stemltrm,     rootltrm, glealtrm,
@@ -1883,13 +1878,13 @@ c
      3                    glcaemls, blcaemls, stcaemls,  rtcaemls,
      4                    ltrcemls, ltresveg, scresveg,  humtrsvg,
      5                    pglfmass, pblfmass, pstemass,  protmass,
-     6                    plitmass, psocmass,   deltat,  vgbiomas,
+     6                    plitmass, psocmass, vgbiomas,
      7                    pvgbioms, gavgltms, pgavltms,  gavgscms,
      8                    pgavscms, galtcels, expnbaln,
      9                         npp,  autores, hetrores,       gpp,
      a                         nep,   litres,   socres, dstcemls1,
      b                         nbp, litrfall, humiftrs,
-     c                         icc,      ilg,      il1,       il2)
+     c                         il1,       il2)
       endif
 c
 c     -----------------------------------------------------------------

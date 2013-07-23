@@ -16,5 +16,5 @@ please remove the bug from this list.
 
 7. Also in loop 100 in RUNCLASSCTEM I have: This fix below is to correct a bug that causes a crash due to unreasonable canopy temperatures in the first year of a restart with snow on the ground. note: runclass.f has this same problem. jm jan 2013
 
-8.
+8. Allocation requires abszero, not the more strict zero. With zero, it doesn't pass some checks. The main driver also uses abszero, not zero. JM Jul 2013.
 

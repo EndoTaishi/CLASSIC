@@ -3,12 +3,9 @@ module landuse_change
 ! Central module for all land use change operations
 
 ! J. Melton. Jan 11, 2013
+use ctem_params
 
 implicit none
-
-real, parameter :: seed = 0.001 ! seed pft fraction, same as in competition
-                                ! in mosaic mode, all tiles are given this
-                                ! as a minimum
 
 ! subroutines contained in this module:
 public  :: initialize_luc
@@ -19,8 +16,8 @@ private :: adjust_luc_fracs
 contains
 
 !-------------------------------------------------------------------------------------------------------------
-subroutine initialize_luc(nlat,nmos,iyear,lucdat,nmtest,nltest,&
-                          mosaic,icc,ican,icp1,nol2pfts,cyclemet,   &
+subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
+                          mosaic,nol2pfts,cyclemet,   &
                           cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,  &
                           pfcancmxrow,fcancmxrow,reach_eof)
 
@@ -33,22 +30,19 @@ subroutine initialize_luc(nlat,nmos,iyear,lucdat,nmtest,nltest,&
 !                     model timestepping begins.
 !		      
 
+use ctem_params,        only : nmos,nlat,icc,ican,icp1,seed
+
 implicit none
 
 ! arguments:
 
 ! inputs
-integer, intent(in) :: nmos
-integer, intent(in) :: nlat
 integer, intent(in) :: iyear
 character(80), intent(in) :: lucdat
 logical, intent(in) :: mosaic
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
-integer, intent(in) :: icc
-integer, intent(in) :: ican
 integer, dimension(ican), intent(in) :: nol2pfts
-integer, intent(in) :: icp1
 logical, intent(in) :: cyclemet
 integer, intent(in) :: cylucyr 
 
@@ -158,7 +152,7 @@ integer :: k2,k1,strlen
 998       continue
 997     continue
 
-!       (re)find the bare fraction for farerow(i,icc+1)
+!       (re)find the bare fraction for farerow(i,iccp1)
          if (mosaic) then
           do i = 1, nltest
           temp = 0.
@@ -180,7 +174,7 @@ integer :: k2,k1,strlen
            if (mosaic) then
             if (farerow(i,nmtest) < seed) then
 
-             nfcancmxrow= adjust_luc_fracs(nlat,nmos,i,nmtest,nltest,icc, &
+             nfcancmxrow= adjust_luc_fracs(i,nmtest,nltest,&
                                           nfcancmxrow,farerow(i,nmtest))
 
              do m = 1, nmtest
@@ -229,7 +223,7 @@ end subroutine initialize_luc
 
 !=======================================================================
 
-subroutine readin_luc(nlat,nmos,iyear,nmtest,nltest,mosaic,icc,lucyr, &
+subroutine readin_luc(iyear,nmtest,nltest,mosaic,lucyr, &
                       nfcancmxrow,reach_eof)
 
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
@@ -238,19 +232,18 @@ subroutine readin_luc(nlat,nmos,iyear,nmtest,nltest,mosaic,icc,lucyr, &
 !     9  Jan. 2013  - this subroutine takes in luc information from
 !     J. Melton       a luc file annually and adapts them for runclassctem
 !		      
+use ctem_params,        only : nmos,nlat,icc,seed
 
 implicit none
 
 ! arguments
 
 ! inputs
-integer, intent(in) :: nmos
-integer, intent(in) :: nlat
 integer, intent(in) :: iyear
 logical, intent(in) :: mosaic
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
-integer, intent(in) :: icc
+
 
 ! updates
 integer, intent(inout) :: lucyr
@@ -284,7 +277,7 @@ real :: bare_ground_frac
            enddo !nltest
          enddo !lucyr<iyear
   
-!       (re)find the bare fraction for farerow(i,icc+1)
+!       (re)find the bare fraction for farerow(i,iccp1)
          if (mosaic) then
           do i = 1, nltest
           temp = 0.0
@@ -300,7 +293,7 @@ real :: bare_ground_frac
           do i = 1, nltest
            if (bare_ground_frac < seed) then
 
-             nfcancmxrow= adjust_luc_fracs(nlat,nmos,i,nmtest,nltest,icc, &
+             nfcancmxrow= adjust_luc_fracs(i,nmtest,nltest, &
                                            nfcancmxrow,bare_ground_frac)
 
            endif !bare_ground_frac<seed
@@ -319,8 +312,7 @@ end subroutine readin_luc
 
 !=======================================================================
 
-subroutine    luc(     icc,      ilg,      il1,       il2,  & 
-                              ic, nol2pfts,    l2max,               & !1    
+subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1    
                         grclarea, pfcancmx, nfcancmx,      iday,    & !2    
                          todfrac,  yesfrac, interpol,               & !3    
 !    ----------------------- inputs above this line -------------       
@@ -355,11 +347,10 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
 !     inputs
 !
 !     icc       - no of pfts for use by ctem, currently 9
-!     ic        - no of pfts for use by class, currently 4
-!     ilg      - no. of grid cells in latitude circle
-!     il1, il2  - il1=1, il2=ilg
+!     ican        - no of pfts for use by class, currently 4
+!     nilg      - no. of grid cells in latitude circle(this is passed in as either ilg or nlat depending on comp/mos)
+!     il1, il2  - il1=1, il2=nilg
 !     nol2pfts  - number of level 2 pfts
-!     l2max     - maximum number of level 2 pfts
 !     fcancmx   - max. fractional coverages of ctem's 9 pfts. 
 !     grclarea  - gcm grid cell area, km2
 !     pfcancmx  - previous max. fractional coverages of ctem's 9 pfts. 
@@ -393,40 +384,42 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
 !     lucsocin - luc related input to soil carbon pool, u-mol co2/m2.sec
 
 !     ----------------------------------------------------------------    
+      use ctem_params,        only : icc, ican, zero, &
+                                    km2tom2, iccp1
 
       implicit none
 
-      integer icc,  ilg, il1, il2, ic, i, j, k, m, n, kk, k1, k2, q 
-      integer    iday, nol2pfts(ic),         l2max       
-      integer fraciord(ilg,icc), treatind(ilg,icc),       bareiord(ilg)
+      integer il1, il2, nilg, i, j, k, m, n,k1, k2, q 
+      integer    iday, nol2pfts(ican)      
+      integer fraciord(nilg,icc), treatind(nilg,icc),       bareiord(nilg)
       integer lrgstpft(1)
 
-      logical  interpol, luctkplc(ilg) 
+      logical  interpol, luctkplc(nilg) 
 !      
-      real  gleafmas(ilg,icc), bleafmas(ilg,icc),  stemmass(ilg,icc), & !1
-            rootmass(ilg,icc),  fcancmx(ilg,icc),  pfcancmx(ilg,icc), & !2
-                vgbiomas(ilg),             zero,  soilcmas(ilg,icc+1),& !3 
-          litrmass(ilg,icc+1),     gavgltms(ilg),      gavgscms(ilg), & !4
-            nfcancmx(ilg,icc),  fcancmy(ilg,icc),   todfrac(ilg,icc), & !5
-             yesfrac(ilg,icc)
+      real  gleafmas(nilg,icc), bleafmas(nilg,icc),stemmass(nilg,icc), & !1
+            rootmass(nilg,icc),  fcancmx(nilg,icc),pfcancmx(nilg,icc), & !2
+                vgbiomas(nilg),                   soilcmas(nilg,iccp1),& !3 
+          litrmass(nilg,iccp1),     gavgltms(nilg),    gavgscms(nilg), & !4
+            nfcancmx(nilg,icc),  fcancmy(nilg,icc), todfrac(nilg,icc), & !5
+             yesfrac(nilg,icc)
 
-      real    fcanmx(ilg,ic),  delfrac(ilg,icc),          combust(3), & !1
-                    paper(3),      furniture(3),   abvgmass(ilg,icc), & !2
-                 bmasthrs(2),          grclarea,   combustc(ilg,icc),  & !3
-             paperc(ilg,icc), furnturc(ilg,icc),  incrlitr(ilg,icc),  & !4
-           incrsolc(ilg,icc),          tolrnce1,            tolrnce2, & !5
-               chopedbm(ilg),           km2tom2
+      real    fcanmx(nilg,ican),  delfrac(nilg,icc),       combust(3), & !1
+                    paper(3),      furniture(3),   abvgmass(nilg,icc), & !2
+                 bmasthrs(2),          grclarea,   combustc(nilg,icc), & !3
+             paperc(nilg,icc), furnturc(nilg,icc),incrlitr(nilg,icc),  & !4
+           incrsolc(nilg,icc),          tolrnce1,            tolrnce2, & !5
+               chopedbm(nilg)           
 
-      real         redubmas1,              term,       barefrac(ilg), & 
-                grsumcom(ilg),     grsumpap(ilg),      grsumfur(ilg), & !1
-                grsumlit(ilg),     grsumsoc(ilg),      pbarefra(ilg), & !2
-                grdencom(ilg),     grdenpap(ilg),      grdenfur(ilg), & !3
-                grdenlit(ilg),     grdensoc(ilg),      totcmass(ilg), & !4
-                totlmass(ilg),     totdmas1(ilg),      ntotcmas(ilg), & !5
-                ntotlmas(ilg),     ntotdms1(ilg),      lucemcom(ilg), & !6
-                pvgbioms(ilg),     pgavltms(ilg),      pgavscms(ilg), & !7
-                    redubmas2,     lucltrin(ilg),       lucsocin(ilg),& !7
-                totdmas2(ilg),     ntotdms2(ilg)
+      real         redubmas1,              term,       barefrac(nilg), & 
+                grsumcom(nilg),     grsumpap(nilg),    grsumfur(nilg), & !1
+                grsumlit(nilg),     grsumsoc(nilg),    pbarefra(nilg), & !2
+                grdencom(nilg),     grdenpap(nilg),    grdenfur(nilg), & !3
+                grdenlit(nilg),     grdensoc(nilg),    totcmass(nilg), & !4
+                totlmass(nilg),     totdmas1(nilg),    ntotcmas(nilg), & !5
+                ntotlmas(nilg),     ntotdms1(nilg),    lucemcom(nilg), & !6
+                pvgbioms(nilg),     pgavltms(nilg),    pgavscms(nilg), & !7
+                    redubmas2,     lucltrin(nilg),     lucsocin(nilg), & !7
+                totdmas2(nilg),     ntotdms2(nilg)
 
 
 !     how much deforested/chopped off biomass is combusted
@@ -445,16 +438,14 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
 !     a shrubland, or a bush kg c/m2
       data bmasthrs/4.0, 1.0/
 
-      data zero/1.0e-20/
-
       data tolrnce1/0.50/  ! kg c, tolerance of total c balance 
       data tolrnce2/0.005/ ! kg c/m2, tolerance for total c density
 
-      data km2tom2/1.0e+06/ ! changes from km2 to m2
+
 !     ---------------------------------------------------------------
 
       if(icc.ne.9)                               call xit('luc',-1)  
-      if(ic.ne.4)                                call xit('luc',-2)  
+      if(ican.ne.4)                              call xit('luc',-2)  
 
 !     ------------------------------------------------------------------
 
@@ -463,7 +454,6 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
       if(interpol) then ! perform interpolation 
        do 110 j = 1, icc
         do 111 i = il1, il2
-
           delfrac(i,j)=nfcancmx(i,j)-pfcancmx(i,j) !change in fraction
           delfrac(i,j)=delfrac(i,j)/365.0
           fcancmx(i,j)=pfcancmx(i,j)+(real(iday)*delfrac(i,j)) !  current day
@@ -541,7 +531,7 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
  
 !     initialization
 
-      do 260 j = 1, ic
+      do 260 j = 1, ican
         do 261 i = il1, il2
             fcanmx(i,j)=0.0 ! fractional coverage of class' pfts
 261     continue      
@@ -613,7 +603,7 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
 !     class based on the new fcancmxs
 
       k1=0
-      do 300 j = 1, ic
+      do 300 j = 1, ican
         if(j.eq.1) then
           k1 = k1 + 1
         else
@@ -668,11 +658,11 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
 321     continue
 320   continue
 
-      do 340 j = 1, icc+1
+      do 340 j = 1, iccp1
         do 341 i = il1, il2
-          if(j.lt.icc+1) then
+          if(j.lt.iccp1) then
             term = fcancmy(i,j)
-          else if(j.eq.icc+1) then
+          else if(j.eq.iccp1) then
             term = pbarefra(i)
           endif
           totdmas1(i)=totdmas1(i)+ &
@@ -711,7 +701,7 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
 !     and furniture
 
       k1=0
-      do 500 j = 1, ic
+      do 500 j = 1, ican
         if(j.eq.1) then
           k1 = k1 + 1
         else
@@ -798,8 +788,8 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
       do 580 i = il1, il2
         if(bareiord(i).eq.1)then
           term = pbarefra(i)/barefrac(i)
-          litrmass(i,icc+1)=litrmass(i,icc+1)*term
-          soilcmas(i,icc+1)=soilcmas(i,icc+1)*term
+          litrmass(i,iccp1)=litrmass(i,iccp1)*term
+          soilcmas(i,iccp1)=soilcmas(i,iccp1)*term
         endif
 580   continue
 
@@ -812,7 +802,7 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
 !     soil c of all existing pfts as well.
 
       k1=0
-      do 600 j = 1, ic
+      do 600 j = 1, ican
         if(j.eq.1) then
           k1 = k1 + 1
         else
@@ -886,10 +876,10 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
         if(bareiord(i).eq.-1)then
 
           redubmas1=(pbarefra(i)-barefrac(i))*grclarea &
-                   *litrmass(i,icc+1)*km2tom2
+                   *litrmass(i,iccp1)*km2tom2
 
           redubmas2=(pbarefra(i)-barefrac(i))*grclarea &
-                   *soilcmas(i,icc+1)*km2tom2
+                   *soilcmas(i,iccp1)*km2tom2
 
           grsumlit(i)=grsumlit(i)+redubmas1
           grsumsoc(i)=grsumsoc(i)+redubmas2
@@ -947,11 +937,11 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
  
       do 660 i = il1, il2
         if(barefrac(i).gt.zero)then
-          litrmass(i,icc+1)=litrmass(i,icc+1)+grdenpap(i)+grdenlit(i)
-          soilcmas(i,icc+1)=soilcmas(i,icc+1)+grdenfur(i)+grdensoc(i)
+          litrmass(i,iccp1)=litrmass(i,iccp1)+grdenpap(i)+grdenlit(i)
+          soilcmas(i,iccp1)=soilcmas(i,iccp1)+grdenfur(i)+grdensoc(i)
         else
-          litrmass(i,icc+1)=0.0
-          soilcmas(i,icc+1)=0.0
+          litrmass(i,iccp1)=0.0
+          soilcmas(i,iccp1)=0.0
         endif
 660   continue
 
@@ -985,11 +975,11 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
 701     continue
 700   continue
 
-      do 710 j = 1, icc+1
+      do 710 j = 1, iccp1
         do 711 i = il1, il2
-          if(j.lt.icc+1) then
+          if(j.lt.iccp1) then
             term = fcancmx(i,j)
-          else if(j.eq.icc+1) then
+          else if(j.eq.iccp1) then
             term = barefrac(i)
           endif
           ntotdms1(i)=ntotdms1(i)+ &
@@ -1046,8 +1036,8 @@ subroutine    luc(     icc,      ilg,      il1,       il2,  &
 750   continue
 
       do 760 i = il1, il2
-        gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,icc+1) )
-        gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,icc+1) )
+        gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
+        gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
 760   continue
 
 !     just like total amount of carbon must balance, the grid averagred
@@ -1099,23 +1089,22 @@ end subroutine luc
 
 !=======================================================================
 
-function adjust_luc_fracs(nlat,nmos,i,nmtest,nltest,icc,nfcancmxrow, &
+function adjust_luc_fracs(i,nmtest,nltest,nfcancmxrow, &
                           bare_ground_frac) result(outnfcrow)
 
 ! this function adjusts the amount of each pft to ensure that the fraction
 ! of gridcell bare ground is >0.
 
 ! j. melton, jan 11 2013
+use ctem_params,        only : nlat,nmos,icc,seed
+
 
   implicit none
 
 ! arguments:
-integer, intent(in) :: nmos
-integer, intent(in) :: nlat
 integer, intent(in) :: i
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
-integer, intent(in) :: icc
 real, dimension(nlat,nmos,icc), intent(in) :: nfcancmxrow
 real, intent(in) :: bare_ground_frac
 
