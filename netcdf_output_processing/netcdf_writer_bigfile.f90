@@ -49,6 +49,7 @@ integer :: yrin
 integer :: yr_now
 integer :: mo
 integer :: tilnum
+integer :: dummynum
 integer :: var_id,v,p,grpid
 character(120) :: ARGBUFF 
 character(120) :: file_to_write
@@ -496,7 +497,7 @@ end if
 
       do while (yrin == yr_now)
 
-          read(751,*,end=90) yrin,tmp(1:numctemvars_a),dummy,tilnum
+          read(751,*,end=90) yrin,tmp(1:numctemvars_a),dummy,dummynum,dummy,tilnum
 
         if (yrin == yr_now) then
           ! Assign that just read in to its vars 
@@ -517,7 +518,7 @@ end if
         yr_now = realyrst + y - 1
         do while (yrin == yr_now)
 
-          read(871,*,end=91) yrin,tmpd(1:nctemdistvars_a),dummy,tilnum
+          read(871,*,end=91) yrin,tmpd(1:nctemdistvars_a),dummy,dummynum,dummy,tilnum
  
           if (yrin == yr_now) then
            do v = 1,nctemdistvars_a ! begin vars loop
@@ -777,7 +778,7 @@ end if
 
       do while (mo == m) 
     
-          read(741,*) mo,yrin,tmp(1:numctemvars_m),dummy,tilnum
+          read(741,*) mo,yrin,tmp(1:numctemvars_m),dummy,dummynum,dummy,tilnum
   
         if (mo == m) then
         ! Assign that just read in to its vars
@@ -790,7 +791,7 @@ end if
 
        if (DOFIRE) then
 
-        read(861,*) mo,yrin,tmpd(1:nctemdistvars_m),dummy,tilnum
+        read(861,*) mo,yrin,tmpd(1:nctemdistvars_m),dummy,dummynum,dummy,tilnum
 
         if (mo == m) then
           do v = 1,nctemdistvars_a ! begin vars loop
