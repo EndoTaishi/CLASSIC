@@ -162,6 +162,10 @@ character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR=['CO2','CO
                                                                    'N2O','PM25','TPM','TC','OC','BC','PROBFIRE','LUC_CO2',&
                                                                    'LUC_LITR','LUC_SOC','BURNFRAC' ]
 
+character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR_GA=['CO2_GA','CO_GA','CH4_GA','NMHC_GA','H2_GA','NOX_GA',                         &
+                                                                   'N2O_GA','PM25_GA','TPM_GA','TC_GA','OC_GA','BC_GA','PROBFIRE_GA','LUC_CO2_GA',&
+                                                                   'LUC_LITR_GA','LUC_SOC_GA','BURNFRAC_GA' ]
+
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_NAME=['Monthly disturbance CO2 emissions','Monthly disturbance CO emissions',                                 &
                                                                     'Monthly disturbance CH4 emissions','Monthly disturbance non-CH4 hydrocarbons emissions',               &
                                                                     'Monthly disturbance H2 gas emissions','Monthly disturbance nitrogen oxides emissions',                 &
@@ -239,6 +243,13 @@ character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_VAR=['ANNUALCO
                                                                    'ANNUALN2O','ANN_PM25','ANNUALTPM','ANNUAL_TC',              &
                                                                    'ANNUAL_OC','ANNUAL_BC','ANNUAL_PROBFIRE','ANNUAL_LUC_CO2',  &
                                                                    'ANNUAL_LUC_LITTER','ANNUAL_LUC_SOILC','ANNUAL_BURNFRAC' ]
+
+character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_VAR_GA=['ANNUALCO2_GA','ANNUALCO_GA',                                      &
+                                                                   'ANNUALCH4_GA','ANN_NMHC_GA','ANNUAL_H2_GA','ANNUALNOX_GA',              &
+                                                                   'ANNUALN2O_GA','ANN_PM25_GA','ANNUALTPM_GA','ANNUAL_TC_GA',              &
+                                                                   'ANNUAL_OC_GA','ANNUAL_BC_GA','ANNUAL_PROBFIRE_GA','ANNUAL_LUC_CO2_GA',  &
+                                                                   'ANNUAL_LUC_LITTER_GA','ANNUAL_LUC_SOILC_GA','ANNUAL_BURNFRAC_GA' ]
+
  
 character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_NAME=['Annual disturbance CO2 emissions',                                 &
                                                                     'Annual disturbance CO emissions',                                  &

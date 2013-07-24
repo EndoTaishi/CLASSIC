@@ -360,8 +360,6 @@ if (net4) then
      end if
     end if !makemonthly
 
-   if (MOSAIC) then
-
     status = nf90_def_grp(ncid,'CTEM-Annual Tiled', grpid_ann_ctem_t)
     if (status /= nf90_noerr) call handle_err(status)
 
@@ -380,7 +378,6 @@ if (net4) then
      end if
     end if !makemonthly
 
-   end if ! mosaic
   end if  !ctem
 
 else ! netcf3
@@ -590,7 +587,6 @@ if (CTEM) then
   enddo
 
  ! Annual DISTURBANCE MOSAIC VARIABLES
-  if (MOSAIC) then
    if (DOFIRE) then
 
     do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
@@ -636,8 +632,6 @@ if (CTEM) then
    if (MAKEMONTHLY) then
     deallocate(fivevar)
    end if
-
- end if !mosaic
  
    allocate(threevar(cntx,cnty,totyrs))
    threevar=fill_value
@@ -687,7 +681,6 @@ if (CTEM) then
   end do
 
  ! DISTURBANCE VARIABLES
-   if (.NOT. MOSAIC) then
     if (DOFIRE) then
 
      do i=lbound(CTEM_M_D_VAR,1), ubound(CTEM_M_D_VAR,1)
@@ -695,7 +688,7 @@ if (CTEM) then
       status = nf90_redef(grpid_mon_dist) 
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_def_var(grpid_mon_dist,trim(CTEM_M_D_VAR(i)),nf90_float,[lon,lat,month,time],varid)
+      status = nf90_def_var(grpid_mon_dist,trim(CTEM_M_D_VAR_GA(i)),nf90_float,[lon,lat,month,time],varid)
       if (status/=nf90_noerr) call handle_err(status)
 
       status = nf90_put_att(grpid_mon_dist,varid,'long_name',trim(CTEM_M_D_NAME(i)))
@@ -727,7 +720,6 @@ if (CTEM) then
 
      end do
     end if !dofire
-   end if !mosaic
   end if ! makemonthly
 
  !=============Annual CTEM COMPOSITE=================================================
@@ -770,7 +762,6 @@ if (CTEM) then
   enddo
 
  ! DISTURBANCE VARIABLES
-  if (.NOT. MOSAIC) then
    if (DOFIRE) then
 
     do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
@@ -778,7 +769,7 @@ if (CTEM) then
      status = nf90_redef(grpid_ann_dist) 
      if (status/=nf90_noerr) call handle_err(status)
  
-     status = nf90_def_var(grpid_ann_dist,trim(CTEM_Y_D_VAR(i)),nf90_float,[lon,lat,time],varid)
+     status = nf90_def_var(grpid_ann_dist,trim(CTEM_Y_D_VAR_GA(i)),nf90_float,[lon,lat,time],varid)
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_put_att(grpid_ann_dist,varid,'long_name',trim(CTEM_Y_D_NAME(i)))
@@ -811,14 +802,11 @@ if (CTEM) then
     end do
 
    end if !dofire
-  end if
 
    deallocate(threevar)
    if (MAKEMONTHLY) then
     deallocate(fourvar)
    end if
-
-!end if !mosaic/composite
 
 if (COMPETE_LNDUSE) then
 
@@ -1122,8 +1110,6 @@ end if !CTEMboolean
   deallocate(fourvar)
 
   end if !makemonthly
-
-!end if !mosaic/composite
 
 !=============Annual CLASS MOSAIC==================
 
