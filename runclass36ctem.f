@@ -400,7 +400,8 @@ c
      1        cyclemet,   dofire,         run_model,
      2     met_rewound,   reach_eof,      compete, 
      3      start_bare,   rsfile,         lnduseon, 
-     4           co2on,   popdon,         inibioclim
+     4           co2on,   popdon,         inibioclim,
+     5     constant_climate
 c
        integer   lopcount,  isumc,   nol2pfts(4),  
      1           k1c,       k2c,     iyd,         jhhstd,
@@ -410,7 +411,7 @@ c
      5           spinfast,  month1,  month2,      xday, 
      6           ncyear, co2yr, popyr, nummetcylyrs,
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
-     8           cypopyr, lucyr, cylucyr 
+     8           cypopyr, lucyr, cylucyr, increment 
 c
        real      rlim,        fsstar_g,
      1           flstar_g,  qh_g,    qe_g,        snomlt_g,
@@ -868,11 +869,11 @@ C===================== CTEM ==============================================\
 c     all model switches are read in from a namelist file
       call read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,
      1             ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,
-     2             metcylyrst,co2on,setco2conc,popdon,popcycleyr,
-     3             parallelrun,dofire,compete,inibioclim,start_bare,
-     4             rsfile,idisp,izref,islfd,ipcp,itc,itcg,itg,iwf,ipai,
-     5             ihgt,ialc,ials,ialg,jhhstd,jhhendd,jdstd,jdendd,
-     6             jhhsty,jhhendy,jdsty,jdendy)
+     2             metcylyrst,constant_climate,co2on,setco2conc,popdon,
+     3             popcycleyr,parallelrun,dofire,compete,inibioclim,
+     4             start_bare,rsfile,idisp,izref,islfd,ipcp,itc,itcg,
+     5             itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,jhhendd,
+     6             jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 c
 c     set ictemmod, which is the class switch for coupling to ctem
 c     either to 1 (ctem is coupled to class) or 0 (class runs alone)
@@ -885,6 +886,7 @@ c
       end if
 c
       lopcount = 1   ! initialize loop count to 1.
+      increment = 0  ! used if constant_climate = T
 c
 c     checking the time spent for running model
 c
@@ -2566,10 +2568,18 @@ C
       DO 250 I=1,NLTEST
 C         THIS READS IN ONE 30 MIN SLICE OF MET DATA, WHEN IT REACHES 
 C         THE END OF FILE IT WILL GO TO 999. 
+
+C===================== CTEM ============================================ \
+         if (.not. constant_climate) then
+C===================== CTEM ============================================ /
           READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSDOWN,FDLGRD(I),
      1         PREGRD(I),TAGRD(I),QAGRD(I),UVGRD(I),PRESGRD(I)
 
 C===================== CTEM ============================================ \
+         else
+          READ(12,5300) IHOUR,IMIN,IDAY,IYEAR,FSDOWN,FDLGRD(I),
+     1         PREGRD(I),TAGRD(I),QAGRD(I),UVGRD(I),PRESGRD(I)
+         end if  
 
 c         assign the met climate year to climiyear      
           climiyear = iyear
@@ -2580,6 +2590,11 @@ c
             else 
               iyear=iyear + ncyear*(lopcount-1)
             end if
+          end if
+
+!         If looping MET but evolving other forcings, we increment iyear here.
+          if (constant_climate) then 
+              iyear=iyear + increment              
           endif   ! lopcount .gt. 1
 c
 c         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
@@ -2670,7 +2685,7 @@ c          pfcancmx value is also the nfcancmx value.
 c        
            nfcancmxrow=pfcancmxrow
 
-       endif ! lnduseon/cyclemet
+       endif ! lnduseon/ctemon
 c 
       endif   ! at the first day of each year i.e.
 c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) 
@@ -6057,6 +6072,16 @@ c      check if the model is done running.
 
              endif
           endif !if cyclemet and iyear > metcycendyr
+
+         if (constant_climate) then
+           if (increment .lt. ncyear) then
+             increment = increment + 1
+             rewind(12)   ! rewind met file
+           else
+             run_model = .false.
+           end if 
+         end if !constclim
+
        endif !last day of year check
 
 C===================== CTEM =====================================/
