@@ -565,6 +565,7 @@ c
 C        do 81 i = il1, il2
           grclarea = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)
      &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic
+
 c         dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
 C81      continue  
 c
@@ -919,20 +920,20 @@ c     ---------------------------------------------------------------
 c
 c     find pft areas before (these are required for disturb subroutine)
 c
-      if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
+!      if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
         do 82 j = 1, icc
           do  83 i = il1, il2
-            pftareab(i,j)=grclarea*fcancmx(i,j)   ! area in km^2
+            pftareab(i,j)=fcancmx(i,j) * faregat(i)  !*grclarea ! area in km^2
 83        continue
 82      continue
-      else if(stdaln.eq.1)then    ! i.e. when operated at point scale
-        do 92 j = 1, icc
-          do 93 i = il1, il2
-            grclarea=0.01
-            pftareab(i,j)=0.01*fcancmx(i,j)      ! 0.01 km2 = 1 hectare
-93        continue
-92      continue
-      endif
+!      else if(stdaln.eq.1)then    ! i.e. when operated at point scale
+!        do 92 j = 1, icc
+!          do 93 i = il1, il2
+!            grclarea=0.01
+!            pftareab(i,j)=0.01*fcancmx(i,j)      ! 0.01 km2 = 1 hectare
+!93        continue
+!92      continue
+!      endif
 c
 c     initialize required arrays to zero
 c
@@ -1758,17 +1759,17 @@ c
      2                       vwind,  lightng,  fcancmx, litrmass,
      3                    prbfrhuc, rmatctem, extnprob, pftareab,
      4                         il1,      il2,     sort, nol2pfts,
-     6                    grclarea,   thicec,   popdin, lucemcom,
-     7                      dofire,
+     6                    thicec,   popdin, lucemcom,  dofire,
 c    in above, out below 
-     8                    stemltdt, rootltdt, glfltrdt, blfltrdt,
-     9                    pftareaa, glcaemls, rtcaemls, stcaemls,
-     a                    blcaemls, ltrcemls, burnfrac, probfire,
-     b                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
-     c                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
-     d                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
-     e                    burnveg )
+     7                    stemltdt, rootltdt, glfltrdt, blfltrdt,
+     8                    pftareaa, glcaemls, rtcaemls, stcaemls,
+     9                    blcaemls, ltrcemls, burnfrac, probfire,
+     a                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
+     b                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
+     c                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
+     d                    burnveg )
 c
+
 c    ------------------------------------------------------------------
 c
 c     update litter pool and reduce leaf, stem, and root biomass to
