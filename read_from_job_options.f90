@@ -1,5 +1,5 @@
 subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,ncyear,lnduseon,spinfast,cyclemet, &
-                  nummetcylyrs,metcylyrst,constant_climate,co2on,setco2conc,popdon,popcycleyr, &
+                  nummetcylyrs,metcylyrst,co2on,setco2conc,popdon,popcycleyr, &
                   parallelrun,dofire,compete,inibioclim,start_bare,rsfile,idisp,izref,islfd,ipcp,itc,itcg, &
                   itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,jhhendd,jdstd, & 
                   jdendd,jhhsty,jhhendy,jdsty,jdendy)
@@ -11,9 +11,6 @@ subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,ncyear,lnduseon
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    Joboptions Read-In Subroutine 
 !
-!     24  Jul. 2013 - Added constant_climate to allow runs with constant climate but evolving other forcing
-!     J. Melton
-
 !     2   Jul. 2013 - Removed ctem1 and ctem2, replaced with ctem_on
 !     J. Melton
 !
@@ -69,12 +66,6 @@ integer, intent(out) :: nummetcylyrs ! years of the climate file to spin up on r
 
 integer, intent(out) :: metcylyrst   ! climate year to start the spin up on
  				 ! ignored if cyclemet is false
-
-logical, intent(out) :: constant_climate ! set to true if you wish to cycle over one year of MET data
-                                         ! repeatedly, while the other forcings are allowed to evolve.
-                                         ! Note that the MET file should then only contain 1 year of data
-                                         ! and that the ncyear will control how long the simulation is in total
-                                         ! (that or your other input files will reach their end causing the simulation to finish.
 
 logical, intent(out) :: co2on    ! use co2 time series, set to false if cyclemet is true
 
@@ -195,7 +186,6 @@ namelist /joboptions/ &
   cyclemet,           &
   nummetcylyrs,       &
   metcylyrst,         &
-  constant_climate,   & 
   co2on,              &
   setco2conc,         &
   popdon,             &
