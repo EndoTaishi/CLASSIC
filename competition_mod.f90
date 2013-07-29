@@ -439,7 +439,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
                           pftexist,  geremort, intrmort, &
                           gleafmas, bleafmas,  stemmass, rootmass, &
                           litrmass, soilcmas,  grclarea,   lambda, &
-                           bmasveg,  burnveg,            sort, &
+                           bmasveg,  burnveg,     sort, &
                            fcancmx,   fcanmx,  vgbiomas, gavgltms, &
                           gavgscms, &
                           add2allo,        colrate,        mortrate) 
@@ -490,7 +490,7 @@ real, dimension(nilg,icc), intent(in) :: geremort  ! growth related mortality (1
 real, dimension(nilg,icc), intent(in) :: intrmort  ! intrinsic (age related) mortality (1/day)
 real, dimension(nilg,icc), intent(in) :: lambda    ! fraction of npp that is used for spatial expansion
 real, dimension(nilg,icc), intent(in) :: bmasveg   ! total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-real, dimension(nilg,icc), intent(in) :: burnveg   ! fractional areas burned for each ctem pfts
+real, dimension(nilg,icc), intent(in) :: burnveg   ! areas burned, km^2, for 9 ctem pfts
 
 real, dimension(nilg,icc), intent(inout) :: gleafmas  ! green leaf mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: bleafmas  ! brown leaf mass for each of the 9 ctem pfts, kg c/m2
@@ -678,10 +678,10 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
        if(.not. crop(j))then  ! do not run for crops
         do 1230 i = il1, il2
           pbarefra(i)=pbarefra(i)-fcancmx(i,j)
-          pftareab(i,j)=fcancmx(i,j)                             
-          pftareaa(i,j)=fcancmx(i,j)-burnveg(i,j)
-          fcancmx(i,j)=max(seed,pftareaa(i,j) )
-          pftareaa(i,j)=fcancmx(i,j)
+          pftareab(i,j)=(fcancmx(i,j)*grclarea)
+          pftareaa(i,j)=(fcancmx(i,j)*grclarea)-burnveg(i,j)
+          fcancmx(i,j)=max(seed,(pftareaa(i,j)/grclarea) )
+          pftareaa(i,j)=fcancmx(i,j)*grclarea
           barefrac(i)=barefrac(i)-fcancmx(i,j)
           if(fcancmx(i,j).gt.zero)then
             term = pftareab(i,j)/pftareaa(i,j)
