@@ -1,6 +1,6 @@
 subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,ncyear,lnduseon,spinfast,cyclemet, &
                   nummetcylyrs,metcylyrst,co2on,setco2conc,popdon,popcycleyr, &
-                  parallelrun,dofire,compete,inibioclim,start_bare,rsfile,idisp,izref,islfd,ipcp,itc,itcg, &
+                  parallelrun,dofire,compete,inibioclim,start_bare,rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,itcg, &
                   itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,jhhendd,jdstd, & 
                   jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
@@ -104,6 +104,10 @@ logical, intent(out) :: rsfile   ! set this to true if restart files (.ini_rs an
  				 ! equilibrium after running for a certain years. 
  				 ! set this to false if restart files are not needed 
  				 ! (known how many years the model will run)
+logical, intent(out) :: start_from_rs ! if true, this option copies the _RS INI and CTM files
+                                 ! to be the .INI and .CTM files and then starts the run as per normal.
+                                 ! it is handy when spinning up so you don't have to do a complicated copying of the
+                                 ! RS files to restart from them.
 
 ! -------------
 ! class model switches
@@ -196,6 +200,7 @@ namelist /joboptions/ &
   inibioclim,         &
   start_bare,         &
   rsfile,             &
+  start_from_rs,      &
   IDISP,              &
   IZREF,              &
   ISLFD,              &

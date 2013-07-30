@@ -405,7 +405,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
       real    fcanmx(nilg,ican),  delfrac(nilg,icc),       combust(3), & !1
                     paper(3),      furniture(3),   abvgmass(nilg,icc), & !2
-                 bmasthrs(2),          grclarea,   combustc(nilg,icc), & !3
+                 bmasthrs(2),    grclarea(nilg),   combustc(nilg,icc), & !3
              paperc(nilg,icc), furnturc(nilg,icc),incrlitr(nilg,icc),  & !4
            incrsolc(nilg,icc),          tolrnce1,            tolrnce2, & !5
                chopedbm(nilg)           
@@ -653,7 +653,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         do 321 i = il1, il2
           totlmass(i)=totlmass(i)+ &
                      (fcancmy(i,j)*(gleafmas(i,j)+bleafmas(i,j)+ &
-                      stemmass(i,j)+rootmass(i,j))*grclarea &
+                      stemmass(i,j)+rootmass(i,j))*grclarea(i) &
                       *km2tom2)
 321     continue
 320   continue
@@ -666,9 +666,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             term = pbarefra(i)
           endif
           totdmas1(i)=totdmas1(i)+ &
-                     (term*litrmass(i,j)*grclarea*km2tom2)
+                     (term*litrmass(i,j)*grclarea(i)*km2tom2)
           totdmas2(i)=totdmas2(i)+ & 
-                     (term*soilcmas(i,j)*grclarea*km2tom2)
+                     (term*soilcmas(i,j)*grclarea(i)*km2tom2)
 
 341     continue
 340   continue
@@ -815,7 +815,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             if(fraciord(i,m).eq.-1)then
 
 !             chop off above ground biomass 
-              redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea &
+              redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                        *abvgmass(i,m)*km2tom2
 
               if(redubmas1.lt.0.0)then
@@ -829,7 +829,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !             rootmass needs to be chopped as well and all of it goes to
 !             the litter/paper pool
 
-              redubmas2=(fcancmy(i,m)-fcancmx(i,m))*grclarea  &
+              redubmas2=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i)  &
                        *rootmass(i,m)*km2tom2
 
 !             keep adding chopped off biomass for each pft to get the total
@@ -852,11 +852,11 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !             off pft needs to be assimilated, and so does soil c from
 !             the chopped off fraction of the chopped pft
 
-              redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea &
+              redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                        *litrmass(i,m)*km2tom2
               incrlitr(i,m)=redubmas1
 
-              redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea &
+              redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                        *soilcmas(i,m)*km2tom2
               incrsolc(i,m)=redubmas1
 
@@ -875,10 +875,10 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       do 630 i = il1, il2
         if(bareiord(i).eq.-1)then
 
-          redubmas1=(pbarefra(i)-barefrac(i))*grclarea &
+          redubmas1=(pbarefra(i)-barefrac(i))*grclarea(i) &
                    *litrmass(i,iccp1)*km2tom2
 
-          redubmas2=(pbarefra(i)-barefrac(i))*grclarea &
+          redubmas2=(pbarefra(i)-barefrac(i))*grclarea(i) &
                    *soilcmas(i,iccp1)*km2tom2
 
           grsumlit(i)=grsumlit(i)+redubmas1
@@ -911,11 +911,11 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     convert the available c into density 
 
       do 640 i = il1, il2
-        grdencom(i)=grsumcom(i)/(grclarea*km2tom2)
-        grdenpap(i)=grsumpap(i)/(grclarea*km2tom2)
-        grdenfur(i)=grsumfur(i)/(grclarea*km2tom2)
-        grdenlit(i)=grsumlit(i)/(grclarea*km2tom2)
-        grdensoc(i)=grsumsoc(i)/(grclarea*km2tom2)
+        grdencom(i)=grsumcom(i)/(grclarea(i)*km2tom2)
+        grdenpap(i)=grsumpap(i)/(grclarea(i)*km2tom2)
+        grdenfur(i)=grsumfur(i)/(grclarea(i)*km2tom2)
+        grdenlit(i)=grsumlit(i)/(grclarea(i)*km2tom2)
+        grdensoc(i)=grsumsoc(i)/(grclarea(i)*km2tom2)
 
 640   continue
 
@@ -970,7 +970,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         do 701 i = il1, il2
           ntotlmas(i)=ntotlmas(i)+ &
                      (fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j)+&
-                     stemmass(i,j)+rootmass(i,j))*grclarea &
+                     stemmass(i,j)+rootmass(i,j))*grclarea(i) &
                      *km2tom2)
 701     continue
 700   continue
@@ -983,9 +983,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             term = barefrac(i)
           endif
           ntotdms1(i)=ntotdms1(i)+ &
-                     (term*litrmass(i,j)*grclarea*km2tom2) 
+                     (term*litrmass(i,j)*grclarea(i)*km2tom2) 
           ntotdms2(i)=ntotdms2(i)+ & 
-                     (term*soilcmas(i,j)*grclarea*km2tom2)
+                     (term*soilcmas(i,j)*grclarea(i)*km2tom2)
 711     continue
 710   continue
 

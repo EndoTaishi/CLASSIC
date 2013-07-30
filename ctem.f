@@ -29,7 +29,7 @@ c    ------- following 5 lines are competition related variables ----
      n                    geremort, intrmort,   lambda,  lyglfmas,
      o                    pftexist, twarmm,    tcoldm,       gdd5,
      1                     aridity, srplsmon, defctmon,  anndefct,
-     2                    annsrpls,  annpcp,  anpotevp,   burnveg,
+     2                    annsrpls,  annpcp, anpotevp,burnvegf,
 c
 c    -------------- inputs updated by ctem are above this line ------
 c
@@ -327,7 +327,7 @@ c     anndefct  - annual water deficit (mm)
 c     annsrpls  - annual water surplus (mm)
 c     annpcp    - annual precipitation (mm)
 c     anpotevp  - annual potential evaporation (mm)
-c     burnveg   - areas burned, km^2, for 9 ctem pfts
+c     burnvegf- fractiona areas burned for 9 ctem pfts
 c
       implicit none
 c
@@ -356,10 +356,10 @@ c
      3     stemmass_cmp(nlat,icc),rootmass_cmp(nlat,icc),
      4     litrmass_cmp(nlat,iccp1),soilcmas_cmp(nlat,iccp1),
      5     lambda_cmp(nlat,icc),
-     6     bmasveg_cmp(nlat,icc),   burnveg_cmp(nlat,icc),
+     6     bmasveg_cmp(nlat,icc),   burnvegf_cmp(nlat,icc),
      7     add2allo_cmp(nlat,icc),  cc_cmp(nlat,icc),mm_cmp(nlat,icc),
      8     fcanmx_cmp(nlat,ican),     
-     9     vgbiomas_cmp(nlat),    
+     9     vgbiomas_cmp(nlat),      grclarea_cmp(nlat),
      1     gavgltms_cmp(nlat),      gavgscms_cmp(nlat),
      2     yesfrac_mos(nlat,icc),   todfrac_cmp(nlat),
      3     pfcancmx_cmp(nlat,icc),  nfcancmx_cmp(nlat,icc)
@@ -443,7 +443,7 @@ c
 c
       real      currlat(ilg),            wl(lat),
      1             radl(lat),          wossl(lat),             sl(lat),
-     2               cl(lat),             ml(ilg),       grclarea
+     2               cl(lat),             ml(ilg),       grclarea(ilg)
 c
       real        uwind(ilg),          vwind(ilg),        lightng(ilg),
      1         prbfrhuc(ilg),       extnprob(ilg),   pftareab(ilg,icc),
@@ -451,7 +451,7 @@ c
      3     blfltrdt(ilg,icc),   glcaemls(ilg,icc),   blcaemls(ilg,icc),
      4     rtcaemls(ilg,icc),   stcaemls(ilg,icc),   ltrcemls(ilg,icc),
      5     pftareaa(ilg,icc),       burnfrac(ilg),   dscemlv1(ilg,icc),
-     6     dscemlv2(ilg,icc),       probfire(ilg),    burnveg(ilg,icc)
+     6     dscemlv2(ilg,icc),       probfire(ilg), burnvegf(ilg,icc)
 c
       real     emit_co2(ilg),        emit_co(ilg),       emit_ch4(ilg),
      1        emit_nmhc(ilg),        emit_h2(ilg),       emit_nox(ilg),
@@ -526,8 +526,12 @@ c
 c     -----------------------------------------------------------------
 c     find area of the gcm grid cells. this is needed for land use change
 c     and disturbance subroutines
+
+C     FLAG: set stdaln always to equal 0 for testing fire. JM Jul 29 2013
+      stdaln=0
+
 c
-      if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
+      if(stdaln.eq.0)then         ! i.e. when operated in a GCM mode 
 c
         do 50 i = il1, il2
           currlat(i)=radj(i)*180.0/pi                             
@@ -562,18 +566,22 @@ c
           ml(i) = 1.0/real(lon)
 80      continue 
 c
-C        do 81 i = il1, il2
-          grclarea = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)
+        do 81 i = il1, il2
+C     FLAG: Some of the earlier calcs should be moved up to runclassctem. However, the actual final calc must be done
+C     daily since faregat can change daily in competition model. Perhaps a good way would be to have a tot_grclarea that
+c     is then multiplied by faregat each day. JM.
+
+          grclarea(i) = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)
      &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic
-c         dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
-C81      continue  
+C         dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
+81      continue  
 c
       else if(stdaln.eq.1)then    ! i.e. when operated at point scale
 c
         do 90 j = 1, icc
-C          do 91 i = il1, il2
-            grclarea=1.0
-C91        continue
+          do 91 i = il1, il2
+            grclarea(i)=1000.0  !same value as reparea in disturb.
+91        continue
 90      continue
 c
       endif
@@ -638,11 +646,11 @@ c
 c       competition_map scatters and maps the array with indices 
 c       of (ilg,icc) to (nlat,icc) for preparation for competition
 c  
-          call competition_map(    nml,    ilmos,   jlmos,  
+          call competition_map(    nml,    ilmos,   jlmos,   grclarea,
      b                         faregat,   fcancmx,  nppveg,  geremort,
      c                         intrmort, gleafmas, bleafmas, stemmass,
      d                         rootmass, litrmass, soilcmas,
-     e                         pftexist,   lambda,  bmasveg,  burnveg,
+     e                         pftexist,   lambda,  bmasveg,burnvegf,
      f                         add2allo,       cc,       mm,   fcanmx,
      g                         vgbiomas, gavgltms, gavgscms,
      h                               ta,   precip,   netrad,    tcurm,
@@ -652,7 +660,7 @@ c
      l                             gdd5,  aridity, srplsmon, defctmon,
      m                         anndefct, annsrpls,   annpcp, anpotevp,
      &                         lucemcom, lucltrin, lucsocin, pfcancmx,
-     &                         nfcancmx,
+     &                         nfcancmx, 
 c    ------------------- inputs above this line ---------------------
      n                        netradrow,
 c    ------------------- intermediate and saved above this line -----
@@ -660,9 +668,9 @@ c    ------------------- intermediate and saved above this line -----
      p                     intrmort_cmp,  gleafmas_cmp,  bleafmas_cmp,
      q                     stemmass_cmp,  rootmass_cmp,  litrmass_cmp,
      r                     soilcmas_cmp,  pftexist_cmp,    lambda_cmp,
-     s                      bmasveg_cmp,   burnveg_cmp,  add2allo_cmp,
+     s                      bmasveg_cmp,burnvegf_cmp,  add2allo_cmp,
      t                           cc_cmp,        mm_cmp,    fcanmx_cmp,
-     u                     vgbiomas_cmp,
+     u                     vgbiomas_cmp,  grclarea_cmp,
      v                     gavgltms_cmp,  gavgscms_cmp,
      w                           ta_cmp,    precip_cmp,    netrad_cmp, 
      x                        tcurm_cmp,  srpcuryr_cmp,  dftcuryr_cmp,
@@ -708,8 +716,8 @@ c
      1               nol2pfts,   nppveg_cmp,
      2           pftexist_cmp, geremort_cmp, intrmort_cmp,
      3           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
-     4           litrmass_cmp, soilcmas_cmp, grclarea,   lambda_cmp,
-     5            bmasveg_cmp,  burnveg_cmp,         sort,
+     4           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,
+     5            bmasveg_cmp,  burnvegf_cmp,         sort,
 c
 c    ------------------- inputs above this line -------------------
 c
@@ -756,7 +764,7 @@ c     -----------------------------------------------------------------
          enddo
 
          call luc(il1,      nlat,     nlat,     nol2pfts, 
-     2           grclarea,    pfcancmx_cmp, nfcancmx_cmp,     iday,
+     2           grclarea_cmp,    pfcancmx_cmp, nfcancmx_cmp,     iday,
      3           todfrac_cmp,  yesfrac_mos,   .true.,
      4           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
      5           litrmass_cmp, soilcmas_cmp, vgbiomas_cmp, gavgltms_cmp,
@@ -774,9 +782,9 @@ c
      c                       intrmort_cmp, gleafmas_cmp, bleafmas_cmp,
      d                       stemmass_cmp, rootmass_cmp, litrmass_cmp,
      e                       soilcmas_cmp, pftexist_cmp,   lambda_cmp,
-     f                        bmasveg_cmp,  burnveg_cmp, add2allo_cmp,
+     f                        bmasveg_cmp,burnvegf_cmp, add2allo_cmp,
      g                             cc_cmp,       mm_cmp,   fcanmx_cmp,
-     h                       vgbiomas_cmp,
+     h                       vgbiomas_cmp, grclarea_cmp, 
      i                       gavgltms_cmp, gavgscms_cmp,
      j                             ta_cmp,   precip_cmp,   netrad_cmp, 
      k                          tcurm_cmp, srpcuryr_cmp, dftcuryr_cmp,
@@ -797,8 +805,8 @@ c    ------------------- saved for intermediate above this line -----
 c
      s                        faregat,  fcancmx,    nppveg, geremort,  
      t                       intrmort, gleafmas,  bleafmas, stemmass,
-     u                       rootmass, litrmass,  soilcmas,
-     v                        pftexist,  lambda,   bmasveg,  burnveg,
+     u                       rootmass, litrmass,  soilcmas, grclarea,
+     v                        pftexist,  lambda,   bmasveg,burnvegf,
      w                        add2allo,      cc,        mm,   fcanmx,
      x                        vgbiomas, gavgltms, gavgscms,
      y                     ta,  precip,   netrad,    tcurm, srpcuryr,
@@ -845,7 +853,7 @@ c
      2                    pftexist, geremort, intrmort,
      3                    gleafmas, bleafmas, stemmass, rootmass,
      4                    litrmass, soilcmas, grclarea,   lambda,
-     5                    bmasveg,  burnveg,        sort,
+     5                    bmasveg,  burnvegf,        sort,
 c
 c    ------------------- inputs above this line -------------------
 c
@@ -919,20 +927,20 @@ c     ---------------------------------------------------------------
 c
 c     find pft areas before (these are required for disturb subroutine)
 c
-      if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
+c      if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
         do 82 j = 1, icc
           do  83 i = il1, il2
-            pftareab(i,j)=grclarea*fcancmx(i,j)   ! area in km^2
+            pftareab(i,j)=fcancmx(i,j)*grclarea(i)  ! area in km^2
 83        continue
 82      continue
-      else if(stdaln.eq.1)then    ! i.e. when operated at point scale
-        do 92 j = 1, icc
-          do 93 i = il1, il2
-            grclarea=0.01
-            pftareab(i,j)=0.01*fcancmx(i,j)      ! 0.01 km2 = 1 hectare
-93        continue
-92      continue
-      endif
+c      else if(stdaln.eq.1)then    ! i.e. when operated at point scale
+c        do 92 j = 1, icc
+c          do 93 i = il1, il2
+c            grclarea=0.01
+c            pftareab(i,j)=0.01*fcancmx(i,j)      ! 0.01 km2 = 1 hectare
+c93        continue
+c92      continue
+c      endif
 c
 c     initialize required arrays to zero
 c
@@ -1759,7 +1767,7 @@ c
      3                    prbfrhuc, rmatctem, extnprob, pftareab,
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,   thicec,   popdin, lucemcom,
-     7                      dofire,
+     7                      dofire, 
 c    in above, out below 
      8                    stemltdt, rootltdt, glfltrdt, blfltrdt,
      9                    pftareaa, glcaemls, rtcaemls, stcaemls,
@@ -1767,7 +1775,7 @@ c    in above, out below
      b                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      c                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      d                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
-     e                    burnveg )
+     e                    burnvegf )
 c
 c    ------------------------------------------------------------------
 c

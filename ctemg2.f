@@ -32,7 +32,7 @@
      u      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      v      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat,burnveggat,
+     &      soilcresveggat,burnvegfgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -68,7 +68,7 @@ c
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegrow )
+     &      soilcresvegrow, burnvegfrow )
 c
 c              Canadian Terrestrial Ecosystem Model (CTEM)
 c
@@ -164,7 +164,7 @@ c      fire emission variables
      3      emit_n2ogat(ilg,icc),  emit_pm25gat(ilg,icc),
      4      emit_tpmgat(ilg,icc),  emit_tcgat(ilg,icc),
      5      emit_ocgat(ilg,icc),   emit_bcgat(ilg,icc),
-     6      burnveggat(ilg,icc)
+     6      burnvegfgat(ilg,icc)
 c
       real  faregat(ilg)
       real  gavgscmsgat(ilg)
@@ -253,7 +253,7 @@ c     fire variables
      3     emit_n2orow(nlat,nmos,icc),  emit_pm25row(nlat,nmos,icc),
      4     emit_tpmrow(nlat,nmos,icc),  emit_tcrow(nlat,nmos,icc),
      5     emit_ocrow(nlat,nmos,icc),   emit_bcrow(nlat,nmos,icc),
-     6     burnvegrow(nlat,nmos,icc)
+     6     burnvegfrow(nlat,nmos,icc)
 c
       real  farerow(nlat,nmos)
 c
@@ -389,7 +389,7 @@ c         fire emission variables
           emit_tcgat(k,l)   = emit_tcrow(ilmos(k),jlmos(k),l)   
           emit_ocgat(k,l)   = emit_ocrow(ilmos(k),jlmos(k),l)   
           emit_bcgat(k,l)   = emit_bcrow(ilmos(k),jlmos(k),l) 
-          burnveggat(k,l)   = burnvegrow(ilmos(k),jlmos(k),l) 
+          burnvegfgat(k,l)  = burnvegfrow(ilmos(k),jlmos(k),l) 
 c
 101   continue
 c

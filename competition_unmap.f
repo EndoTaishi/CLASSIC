@@ -3,9 +3,9 @@
      3                         intrmort_cmp,gleafmas_cmp,bleafmas_cmp,
      4                         stemmass_cmp,rootmass_cmp,litrmass_cmp,
      5                         soilcmas_cmp,pftexist_cmp,  lambda_cmp,
-     6                          bmasveg_cmp, burnveg_cmp,add2allo_cmp,
+     6                       bmasveg_cmp,burnvegf_cmp,add2allo_cmp,
      7                               cc_cmp,      mm_cmp,  fcanmx_cmp,
-     8                         vgbiomas_cmp,
+     8                         vgbiomas_cmp, grclarea_cmp,
      9                         gavgltms_cmp,gavgscms_cmp,
      1                               ta_cmp,  precip_cmp,  netrad_cmp, 
      2                            tcurm_cmp,srpcuryr_cmp,dftcuryr_cmp,
@@ -22,8 +22,8 @@ c    ------------------- inputs above this line ----------------------
 c    ------------------- saved for intermediate above this line ------
      a                              faregat, fcancmx,  nppveg,geremort,  
      b                             intrmort,gleafmas,bleafmas,stemmass,
-     c                             rootmass,litrmass,soilcmas,
-     d                             pftexist,  lambda, bmasveg, burnveg,
+     c                             rootmass,litrmass,soilcmas,grclarea,
+     d                             pftexist,lambda,bmasveg,burnvegf,
      e                             add2allo,      cc,      mm,  fcanmx,
      f                             vgbiomas,gavgltms,gavgscms,
      g                             ta,precip, netrad,   tcurm,srpcuryr,
@@ -102,7 +102,7 @@ c     lambda_cmp  - fraction of npp that is used for horizontal expansion in eac
 c                   latitudinal grid cell 
 c     bmasveg_cmp - total (gleaf + stem + root) biomass for each ctem pft, kg c/m2 in each 
 c                   latitudinal grid cell 
-c     burnveg_cmp - areas burned, km^2, for 10 ctem pfts in each 
+c     burnvegf_cmp - fractional areas burned, for ctem pfts in each 
 c                   latitudinal grid cell 
 c     add2allo_cmp- npp kg c/m2.day in each latitudinal grid cell that is used 
 c                   for expansion and subsequently allocated to leaves, stem,  
@@ -114,6 +114,7 @@ c                   latitudinal grid cell
 c     vgbiomas_cmp- grid averaged vegetation biomass, kg c/m2
 c     gavgltms_cmp- grid averaged litter mass, kg c/m2
 c     gavgscms_cmp- grid averaged soil c mass, kg c/m2
+c     grclarea_cmp- area of the grid cell, km^2
 c
 c     ta_cmp      - mean daily temperature (k) in each latitudinal grid cell 
 c     precip_cmp  - daily precipitation (mm/day) in each latitudinal grid cell 
@@ -176,7 +177,7 @@ c     soilcmas- soil carbon mass for each of the 10 ctem pfts + bare, kg c/m2
 c     pftexist- logical array indicating pfts exist (t) or not (f)
 c     lambda  - fraction of npp that is used for horizontal expansion
 c     bmasveg - total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-c     burnveg - areas burned, km^2, for 10 ctem pfts
+c     burnvegf - fractional areas burned,for ctem pfts
 c     add2allo- npp kg c/m2.day that is used for expansion and
 c               subsequently allocated to leaves, stem, and root via 
 c               the allocation part of the model.
@@ -193,7 +194,7 @@ c     todfrac  - max. fractional coverage of ctem's 9 pfts by the end
 c                of the day, for use by land use subroutine
 c     pfcancmx - previous year's fractional coverages of pfts
 c     nfcancmx - next year's fractional coverages of pfts
-c
+c     grclarea - area of the grid cell, km^2
 c     ta      - mean daily temperature, k
 c     precip  - daily precipitation (mm/day)
 c     netrad  - daily net radiation (w/m2)
@@ -237,9 +238,9 @@ c
      3      stemmass_cmp(nlat,icc),rootmass_cmp(nlat,icc),
      4      litrmass_cmp(nlat,iccp1),soilcmas_cmp(nlat,iccp1),
      5      lambda_cmp(nlat,icc),    todfrac_cmp(nlat,icc),
-     6      bmasveg_cmp(nlat,icc),   burnveg_cmp(nlat,icc),
+     6      bmasveg_cmp(nlat,icc),   burnvegf_cmp(nlat,icc),
      7      add2allo_cmp(nlat,icc),  cc_cmp(nlat,icc),mm_cmp(nlat,icc),
-     8      fcanmx_cmp(nlat,ican),     
+     8      fcanmx_cmp(nlat,ican),   grclarea_cmp(nlat),  
      9      vgbiomas_cmp(nlat),    
      1      gavgltms_cmp(nlat),      gavgscms_cmp(nlat),
      2      lucemcom_cmp(nlat),  lucltrin_cmp(nlat), lucsocin_cmp(nlat),
@@ -264,10 +265,10 @@ c
      3      stemmassrow(nlat,nmos,icc),rootmassrow(nlat,nmos,icc),
      4      litrmassrow(nlat,nmos,iccp1),soilcmasrow(nlat,nmos,iccp1),
      5      lambdarow(nlat,nmos,icc),    todfracrow(nlat,nmos,icc),
-     6      bmasvegrow(nlat,nmos,icc),   burnvegrow(nlat,nmos,icc),
+     6      bmasvegrow(nlat,nmos,icc),   burnvegfrow(nlat,nmos,icc),
      7      add2allorow(nlat,nmos,icc),  ccrow(nlat,nmos,icc),
      8      mmrow(nlat,nmos,icc),        fcanmxrow(nlat,nmos,ican),
-     9      farerow(nlat,nmos),
+     9      farerow(nlat,nmos),          grclarearow(nlat,nmos),
      1      vgbiomasrow(nlat,nmos),    
      2      gavgltmsrow(nlat,nmos),      gavgscmsrow(nlat,nmos),
      3      lucemcomrow(nlat,nmos),      lucltrinrow(nlat,nmos),
@@ -305,11 +306,11 @@ c
      4      rootmass(ilg,icc),litrmass(ilg,iccp1),
      5      soilcmas(ilg,iccp1),
      6      lambda(ilg,icc),  todfrac(ilg,icc),
-     7      bmasveg(ilg,icc), burnveg(ilg,icc),
+     7      bmasveg(ilg,icc), burnvegf(ilg,icc),
      8      add2allo(ilg,icc),cc(ilg,icc),mm(ilg,icc),
      9      fcanmx(ilg,ican),   
      1      vgbiomas(ilg),    gavgltms(ilg),
-     2      gavgscms(ilg),
+     2      gavgscms(ilg),  grclarea(ilg),
      3      lucemcom(ilg),  lucltrin(ilg), lucsocin(ilg),
      4      pfcancmx(ilg,icc), nfcancmx(ilg,icc)
 c
@@ -367,7 +368,7 @@ c
          pfcancmxrow(i,m,l)= 0.0
          nfcancmxrow(i,m,l)= 0.0
          bmasvegrow(i,m,l) = 0.0
-         burnvegrow(i,m,l) = 0.0
+         burnvegfrow(i,m,l) = 0.0
          add2allorow(i,m,l)= 0.0
          ccrow(i,m,l)      = 0.0
          mmrow(i,m,l)      = 0.0
@@ -383,6 +384,7 @@ c
         enddo
 c
          farerow(i,m)      = 0.0
+         grclarearow(i,m)  = 0.0
          vgbiomasrow(i,m)  = 0.0
          gavgltmsrow(i,m)  = 0.0
          gavgscmsrow(i,m)  = 0.0  
@@ -439,7 +441,7 @@ c
         pfcancmx(i,l)= 0.0
         nfcancmx(i,l)= 0.0
         bmasveg(i,l) = 0.0
-        burnveg(i,l) = 0.0
+        burnvegf(i,l) = 0.0
         add2allo(i,l)= 0.0
         cc(i,l)      = 0.0
         mm(i,l)      = 0.0
@@ -455,6 +457,7 @@ c
        enddo
 c
        faregat(i)   = 0.0
+       grclarea(i)  = 0.0
        vgbiomas(i)  = 0.0
        gavgltms(i)  = 0.0
        gavgscms(i)  = 0.0 
@@ -540,7 +543,7 @@ c
            pfcancmxrow(i,mcount,l)= pfcancmx_cmp(i,l)
            nfcancmxrow(i,mcount,l)= nfcancmx_cmp(i,l)
            bmasvegrow(i,mcount,l) = bmasveg_cmp(i,l)
-           burnvegrow(i,mcount,l) = burnveg_cmp(i,l)
+           burnvegfrow(i,mcount,l) = burnvegf_cmp(i,l)
            add2allorow(i,mcount,l)= add2allo_cmp(i,l)
            ccrow(i,mcount,l)      = cc_cmp(i,l)
            mmrow(i,mcount,l)      = mm_cmp(i,l)
@@ -559,6 +562,7 @@ c
            tcurmrow(i,m)     = tcurm_cmp(i)
            srpcuryrrow(i,m ) = srpcuryr_cmp(i)
            dftcuryrrow(i,m)  = dftcuryr_cmp(i)
+           grclarearow(i,m)  = grclarea_cmp(i)
 c
            do mn=1,12
             tmonthrow(mn,i,m) = tmonth_cmp(mn,i)
@@ -629,7 +633,7 @@ c
          pfcancmx(k,l) = pfcancmxrow(ilmos(k),jlmos(k),l)
          nfcancmx(k,l) = nfcancmxrow(ilmos(k),jlmos(k),l)
          bmasveg(k,l)  = bmasvegrow(ilmos(k),jlmos(k),l)
-         burnveg(k,l)  = burnvegrow(ilmos(k),jlmos(k),l)
+         burnvegf(k,l)  = burnvegfrow(ilmos(k),jlmos(k),l)
          add2allo(k,l) = add2allorow(ilmos(k),jlmos(k),l)
          cc(k,l)       = ccrow(ilmos(k),jlmos(k),l)
          mm(k,l)       = mmrow(ilmos(k),jlmos(k),l)
@@ -648,6 +652,7 @@ c
 c
       do 230 k=1,nml
         faregat(k)  = farerow(ilmos(k),jlmos(k))
+        grclarea(k) = grclarearow(ilmos(k),jlmos(k))
         vgbiomas(k) = vgbiomasrow(ilmos(k),jlmos(k))
         gavgltms(k) = gavgltmsrow(ilmos(k),jlmos(k))
         gavgscms(k) = gavgscmsrow(ilmos(k),jlmos(k))

@@ -4,7 +4,7 @@
      3                    prbfrhuc, rmatctem, extnprob, pftareab,
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,    thice,   popdin, lucemcom,
-     7                      dofire,
+     7                      dofire,   
 c    8 ------------------ inputs above this line ----------------------   
      9                    stemltdt, rootltdt, glfltrdt, blfltrdt,
      a                    pftareaa, glcaemls, rtcaemls, stcaemls,
@@ -12,13 +12,15 @@ c    8 ------------------ inputs above this line ----------------------
      c                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      d                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      e                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
-     f                    burnvegfrac )
-
-c    b ------------------outputs above this line ----------------------
+     f                    burnvegf )
+c    g ------------------outputs above this line ----------------------
 c
-C               Canadian Terrestrial Ecosystem Model (Ctem) V1.1
+C               Canadian Terrestrial Ecosystem Model (CTEM)
 C                           Disturbance Subroutine
 c
+c
+c     25  Jul 2013  - Add in module for common params, cleaned up code 
+c     J. Melton       
 c
 c     24  Sep 2012  - add in checks to prevent calculation of non-present
 c     J. Melton       pfts
@@ -117,7 +119,7 @@ c     tot_emit_dom - tot_emit converted to kg dom / m2
 
 c     hb_interm - interm calculation
 c     hbratio   - head to back ratio of ellipse
-c     burnvegfrac - total per PFT areal fraction burned, (%)
+c     burnvegf - total per PFT areal fraction burned, (%)
 
       use ctem_params,        only : ignd, icc, ilg, ican, zero,
      1                               kk, pi, c2dom
@@ -125,12 +127,12 @@ c
       implicit none
 c
       integer    il1,        il2,      i,      j,    
-     1             k,      iseed,  fire(ilg),     m,
+     1             k,      iseed,   m,
      2            k1,      k2,        n
 c
       integer       sort(icc),      nol2pfts(ican)
 
-      logical dofire
+      logical dofire, fire(ilg)
 c
       real  stemmass(ilg,icc), rootmass(ilg,icc), gleafmas(ilg,icc),
      1      bleafmas(ilg,icc),     thliq(ilg,ignd),    wiltsm(ilg,ignd),
@@ -138,7 +140,7 @@ c
      3       fcancmx(ilg,icc),      lightng(ilg),litrmass(ilg,icc+1),
      4          prbfrhuc(ilg),     extnprob(ilg), pftareab(ilg,icc),
      5   rmatctem(ilg,icc,ignd),     thice(ilg,ignd),            popdin,
-     6          lucemcom(ilg)
+     6          lucemcom(ilg) 
 c
       real  stemltdt(ilg,icc), rootltdt(ilg,icc), glfltrdt(ilg,icc),
      1          burnarea(ilg), pftareaa(ilg,icc), glcaemls(ilg,icc),
@@ -169,9 +171,9 @@ c
      6                   temp,     betmsprd(ilg),       smfunc(ilg),
      7              wind(ilg),      wndfunc(ilg),     sprdrate(ilg),
      8           lbratio(ilg),     arbn1day(ilg),     areamult(ilg),
-     9       burnveg(ilg,icc),      vegarea(ilg),          grclarea,
+     9       burnveg(ilg,icc),      vegarea(ilg),     grclarea(ilg),
      a                reparea,          tot_emit,      tot_emit_dom,
-     b       burnvegfrac(ilg,icc)   
+     b       burnvegf(ilg,icc)   
 
       real          hb_interm,      hbratio(ilg),       popdthrshld,
      1                 fden_m
@@ -193,9 +195,9 @@ c
 c     extinction moisture content for estimating fire likeliness due
 c     to soil moisture
 c     orig:
-c     data extnmois/0.35/
+      data extnmois/0.5/ !0.35 !FLAG!!
 c     flag testing:
-      data extnmois/0.21/
+c      data extnmois/0.21/
 c
 c     lower cloud-to-ground lightning threshold for fire likelihood
 c     flashes/km^2.year
@@ -285,7 +287,7 @@ c     ========================
 c     emissions factors by chemical species
 c     
 c     values are from andreae 2011 as described in li et al. 2012
-c     biogeosci.
+c     biogeosci. Units: g species / (kg DOM)
 
 c     pft-specific emission factors for co2 
       data emif_co2/1576.0, 1576.0,   0.00,
@@ -409,7 +411,7 @@ c
           emit_tc(i,j) = 0.0
           emit_oc(i,j) = 0.0
           emit_bc(i,j) = 0.0
-          burnvegfrac(i,j)=0.0
+          burnvegf(i,j)=0.0
 
 150     continue                  
 140   continue
@@ -432,7 +434,7 @@ c                               !of grid cell
         y(i)=0.0                !logistic dist. for fire prob. due to lightning
         lterm(i)=0.0            !lightning fire probability term
         probfire(i)=0.0         !probability of fire
-        fire(i)=0               !fire, 1 means yes, 0 means no
+        fire(i)=.false.         !fire occuring 
         burnarea(i)=0.0         !total area burned due to fire
         burnfrac(i)=0.0         !total areal fraction burned due to fire
         betmsprd(i)=0.0         !beta moisture for calculating fire spread rate
@@ -479,11 +481,8 @@ c         the last fire burned all grass leaves, and some of the roots
 c         were left, its unlikely these roots could catch fire. 
           biomass(i,j)=gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+
      &                 litrmass(i,j)
-         endif
 
 c        Find average biomass over the vegetated fraction
-
-         if (fcancmx(i,j) .gt. 0.0) then
           avgbmass(i) = avgbmass(i)+biomass(i,j)*fcancmx(i,j)
          endif
 
@@ -491,9 +490,9 @@ c        Find average biomass over the vegetated fraction
 200   continue
 c
       do 250 i = il1, il2
-        fcsum(i)=fcancmx(i,1)+fcancmx(i,2)+fcancmx(i,3)+fcancmx(i,4)+  
-     &           fcancmx(i,5)+fcancmx(i,6)+fcancmx(i,7)+fcancmx(i,8)+
-     &           fcancmx(i,9)
+        do j = 1, icc
+         fcsum(i)=fcsum(i) + fcancmx(i,j)
+        end do        
 
         if(fcsum(i) .gt. zero)then
           avgbmass(i)=avgbmass(i)/fcsum(i)
@@ -554,36 +553,22 @@ c
           drgtstrs(i,j) = drgtstrs(i,j) /
      &     (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
           drgtstrs(i,j)=max(0.0, min(drgtstrs(i,j),1.0))
+c        next find this dryness factor averaged over the vegetated fraction
+          avgdryns(i) = avgdryns(i)+drgtstrs(i,j)*fcancmx(i,j)
          endif
 330     continue
 320   continue
-c
-c     next find this dryness factor averaged over the vegetated fraction
-c
-      do 350 j = 1, icc
-        do 360 i = il1, il2
-         if (fcancmx(i,j) .gt. 0.0) then
-          avgdryns(i) = avgdryns(i)+drgtstrs(i,j)*fcancmx(i,j)
-         endif
-360     continue
-350   continue 
-c
-      do 370 i = il1, il2
-        if(fcsum(i) .gt. zero)then
-          avgdryns(i)=avgdryns(i)/fcsum(i)
-        else
-          avgdryns(i)=0.0
-        endif
-370   continue 
-c
+
 c     use average root zone vegetation dryness to find likelihood of
 c     fire due to moisture. 
 c
       do 380 i = il1, il2
         if(fcsum(i) .gt. zero)then
+          avgdryns(i)=avgdryns(i)/fcsum(i)
           mterm(i)=1.0-tanh((1.75*avgdryns(i)/extnmois)**2)
         else
           mterm(i)=0.0   !no fire likelihood due to moisture if no vegetation
+          avgdryns(i)=0.0
         endif
         mterm(i)=max(0.0, min(mterm(i),1.0))
 380   continue
@@ -626,14 +611,15 @@ c     fire.
 
       do 420 i = il1, il2
         probfire(i)=bterm(i)*mterm(i)*lterm(i)
-        if (probfire(i) .gt. zero) fire(i)=1
+        if (probfire(i) .gt. zero) fire(i)=.true.
+
 420   continue
 c
 c     if fire is to be started then estimate burn area and litter generated
 c     by the fire, else do nothing.
 
       do 430 i = il1, il2
-        if(fire(i).eq.1)then
+        if(fire(i))then
 c
 c         find spread rate as a function of wind speed and soil moisture in the
 c         root zone (as found above) which we use as a surrogate for moisture
@@ -726,8 +712,8 @@ c         should this be per mosiac or per gridcell?? i think per
 c         gridcell but this would make the mosiacs all higher...
 c         problem? -nothing implimented yet.
 c
-          burnarea(i)=burnarea(i)*(grclarea/reparea)*probfire(i) 
-          burnfrac(i)=100.*burnarea(i)/grclarea
+          burnarea(i)=burnarea(i)*(grclarea(i)/reparea)*probfire(i)
+          burnfrac(i)=100.*burnarea(i)/grclarea(i)
 c
         endif
 430   continue
@@ -736,12 +722,14 @@ c     make sure area burned is not greater than the vegetated area.
 c     distribute burned area equally amongst pfts present in the grid cell.
 c 
       do 460 i = il1, il2
-        vegarea(i)=pftareab(i,1)+pftareab(i,2)+pftareab(i,3)+
-     &             pftareab(i,4)+pftareab(i,5)+pftareab(i,6)+
-     &             pftareab(i,7)+pftareab(i,8)+pftareab(i,9)  
+
+        do j = 1,icc
+        vegarea(i)= vegarea(i) + pftareab(i,j)
+        end do  
+ 
         if(burnarea(i) .gt. vegarea(i)) then
           burnarea(i)=vegarea(i)
-          burnfrac(i)=100.*burnarea(i)/grclarea
+          burnfrac(i)=100.*burnarea(i)/grclarea(i)
         endif
 460   continue
 c
@@ -771,10 +759,13 @@ c
 470   continue 
 c
       do 490 i = il1, il2
-       burnarea(i)=burnveg(i,1)+burnveg(i,2)+burnveg(i,3)+burnveg(i,4)+  
-     &             burnveg(i,5)+burnveg(i,6)+burnveg(i,7)+burnveg(i,8)+  
-     &             burnveg(i,9)
-       burnfrac(i)=100.*burnarea(i)/grclarea
+       burnarea(i) = 0.0
+       do j = 1,icc
+         burnarea(i)= burnarea(i) + burnveg(i,j)
+       end do
+       burnfrac(i)=100.*burnarea(i)/grclarea(i)
+
+
 490   continue
 c
 c     check that the sum of fraction of leaves, stem, and root 
@@ -804,6 +795,7 @@ c
          if (fcancmx(i,j) .gt. 0.0) then
 c
           if(pftareab(i,j) .gt. zero)then
+
             glfltrdt(i,j)=frltrlf(n) *gleafmas(i,j)*
      &       (burnveg(i,j)/pftareab(i,j))
 c
@@ -865,7 +857,7 @@ c          units: g compound / m2
            emit_bc(i,j)   = emif_bc(j) * tot_emit_dom
 
 !         Output the burned area per PFT
-          burnvegfrac(i,j)=100.*burnveg(i,j)/grclarea
+          burnvegf(i,j)=100.*burnveg(i,j)/grclarea(i)
 
           endif
 c

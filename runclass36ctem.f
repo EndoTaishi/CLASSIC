@@ -395,12 +395,14 @@ c
 c
       character*80   titlec1, titlec2, titlec3
       character*80   argbuff
+      character*160  command
 c
       logical ctem_on,    parallelrun,    mosaic,
      1        cyclemet,   dofire,         run_model,
      2     met_rewound,   reach_eof,      compete, 
      3      start_bare,   rsfile,         lnduseon, 
-     4           co2on,   popdon,         inibioclim
+     4           co2on,   popdon,         inibioclim,
+     5    start_from_rs
 c
        integer   lopcount,  isumc,   nol2pfts(4),  
      1           k1c,       k2c,     iyd,         jhhstd,
@@ -420,7 +422,7 @@ c
        real      co2concin,  popdin,    setco2conc, sumfare,
      1           temp_var, barefrac,  todfrac(ilg,icc)
 
-      real grclarea
+      real grclarea(ilg)
 c
       real tcanrs(nlat,nmos), tsnors(nlat,nmos), tpndrs(nlat,nmos),
      1     csum(nlat,nmos,ican),       tbaraccrow_m(nlat,nmos,ignd),
@@ -546,7 +548,7 @@ c     Fire-related variables
      a     emit_ocrow(nlat,nmos,icc),  emit_ocgat(ilg,icc),
      b     emit_bcrow(nlat,nmos,icc),  emit_bcgat(ilg,icc),
      c     burnfracrow(nlat,nmos),     burnfracgat(ilg),
-     d     burnvegrow(nlat,nmos,icc),  burnveggat(ilg,icc),
+     d     burnvegfrow(nlat,nmos,icc), burnvegfgat(ilg,icc),
      e     probfirerow(nlat,nmos),     probfiregat(ilg)
 
        real extnprobgrd(nlat),          extnprobgat(ilg),
@@ -870,9 +872,9 @@ c     all model switches are read in from a namelist file
      1             ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,
      2             metcylyrst,co2on,setco2conc,popdon,popcycleyr,
      3             parallelrun,dofire,compete,inibioclim,start_bare,
-     4             rsfile,idisp,izref,islfd,ipcp,itc,itcg,itg,iwf,ipai,
-     5             ihgt,ialc,ials,ialg,jhhstd,jhhendd,jdstd,jdendd,
-     6             jhhsty,jhhendy,jdsty,jdendy)
+     4             rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,
+     5             itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,
+     6             jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 c
 c     set ictemmod, which is the class switch for coupling to ctem
 c     either to 1 (ctem is coupled to class) or 0 (class runs alone)
@@ -1062,7 +1064,7 @@ c
           emit_tcrow(i,m,j)          =0.0
           emit_ocrow(i,m,j)          =0.0
           emit_bcrow(i,m,j)          =0.0
-          burnvegrow(i,m,j)          =0.0
+          burnvegfrow(i,m,j)         =0.0
 
 c
           do k = 1, ignd
@@ -1123,6 +1125,18 @@ c     these are for coupled model (class_ctem)
 c     we added both grid and mosaic output files
 c
 c     * input files
+
+c         If we wish to restart from the .CTM_RS and .INI_RS files, then
+c         we move the original RS files into place and start from them.
+          if (start_from_rs) then
+             command='mv '//argbuff(1:strlen(argbuff))//'.INI_RS '
+     &                    //argbuff(1:strlen(argbuff))//'.INI'
+             call system(command)
+             command='mv '//argbuff(1:strlen(argbuff))//'.CTM_RS '
+     &                    //argbuff(1:strlen(argbuff))//'.CTM'
+             call system(command)
+          end if  
+
 
         open(unit=10,file=argbuff(1:strlen(argbuff))//'.INI',
      &       status='old')
@@ -2864,7 +2878,7 @@ C
      &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat, burnveggat,
+     &      soilcresveggat, burnvegfgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,      fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -2900,7 +2914,7 @@ c
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegrow )
+     &      soilcresvegrow, burnvegfrow )
 c
 C===================== CTEM ============================================ /
 C
@@ -3247,7 +3261,7 @@ c    -------------- inputs used by ctem are above this line ---------
      &            geremortgat, intrmortgat,    lambdagat, lyglfmasgat,
      &            pftexistgat,      twarmm,       tcoldm,        gdd5,
      1                aridity,    srplsmon,     defctmon,    anndefct,
-     2               annsrpls,      annpcp,     anpotevp,  burnveggat,   
+     2               annsrpls,      annpcp,     anpotevp,  burnvegfgat,   
 c    -------------- inputs updated by ctem are above this line ------
      k                 nppgat,      nepgat, hetroresgat, autoresgat,
      l            soilcrespgat,       rmgat,       rggat,      nbpgat,
@@ -3452,7 +3466,7 @@ C
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegrow,
+     &      soilcresvegrow, burnvegfrow,
 c    ----
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -3489,7 +3503,7 @@ c    ----
      &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat, burnveggat )
+     &      soilcresveggat, burnvegfgat )
 c
 C===================== CTEM ============================================ /
 C
@@ -4789,11 +4803,13 @@ c
 c             write grid-averaged fluxes of basic quantities to 
 c             file *.CT01D_M
 c
+             if (mosaic) then
               write(72,8200)iday,iyear,gpprow(i,m),npprow(i,m),
      1                neprow(i,m),nbprow(i,m),autoresrow(i,m),
      2                hetroresrow(i,m),litresrow(i,m),socresrow(i,m),
      3                (dstcemlsrow(i,m)+dstcemls3row(i,m)),
      4               litrfallrow(i,m),humiftrsrow(i,m),' TILE ',m,'AVGE'
+             end if
 
 c             write breakdown of some of basic fluxes to file *.CT3 
 c             and selected litter fluxes for selected pft
@@ -4819,9 +4835,11 @@ c
 
  
 c                write to file .CT01D_M 
-                 write(72,8201)iday,iyear,gppvegrow(i,m,j),
-     1           nppvegrow(i,m,j),nepvegrow(i,m,j),
-     2           ' TILE ',m,'PFT',j
+                 if (mosaic) then
+                  write(72,8201)iday,iyear,gppvegrow(i,m,j),
+     1            nppvegrow(i,m,j),nepvegrow(i,m,j),
+     2            ' TILE ',m,'PFT',j
+                 
 
 c                write to file .CT02D_M 
                  write(73,8300)iday,iyear,rmlvegaccrow(i,m,j), 
@@ -4857,22 +4875,27 @@ c
 
 c             write fire and luc results to file *.CT06D_M
 c
-             if (dofire .or. lnduseon) then   !FLAG FIX THIS
-              write(78,8800)iday,iyear,
+              if (dofire .or. lnduseon) then   !FLAG FIX THIS
+               write(78,8800)iday,iyear,
      1         emit_co2row(i,m,j),emit_corow(i,m,j),emit_ch4row(i,m,j),
      2         emit_nmhcrow(i,m,j),emit_h2row(i,m,j),emit_noxrow(i,m,j),
      3         emit_n2orow(i,m,j),emit_pm25row(i,m,j),
      4         emit_tpmrow(i,m,j),emit_tcrow(i,m,j),emit_ocrow(i,m,j),
-     5         emit_bcrow(i,m,j),burnvegrow(i,m,j),probfirerow(i,m), 
+     5         emit_bcrow(i,m,j),burnvegfrow(i,m,j),probfirerow(i,m), 
      6         lucemcomrow(i,m),lucltrinrow(i,m), lucsocinrow(i,m),
-     7         grclarea,' TILE ',m,'PFT',j
-             endif
-c
-                endif  !if (fcancmxrow(i,m,j) .gt.0.0) then
+     7         grclarea(i),' TILE ',m,'PFT',j
+               endif
+
+              end if !mosaic
+
+              endif  !if (fcancmxrow(i,m,j) .gt.0.0) then
 c
 853           continue
 c
-              if (ifcancmx_m(i,m) .gt. 0) then
+              if (mosaic) then
+               if (ifcancmx_m(i,m) .gt. 0) then
+
+
 c               write to file .CT02D_M 
                 write(73,8300)iday,iyear,rmlrow(i,m),rmsrow(i,m),
      1          rmrrow(i,m),rgrow(i,m),leaflitr_m(i,m),tltrleaf_m(i,m),
@@ -4897,7 +4920,9 @@ c               write to file .CT05D_M
      1                afrstem_m(i,m),afrroot_m(i,m), 
      2                tcanoaccrow_out(i,m), 
      3                ' TILE ',m,'AVGE'
-              endif !if (ifcancmx_m(i,m) .gt.0.0) then
+
+               end if !if (ifcancmx_m(i,m) .gt.0.0) then
+              endif !mosaic
 c
            endif ! if ((iyd.ge.jdst).and.(iyd.le.jdend))
 c
@@ -5045,7 +5070,7 @@ c
      4          emit_tc_g(i), emit_oc_g(i), emit_bc_g(i),
      5          burnfrac_g(i), probfire_g(i),lucemcom_g(i), 
      6          lucltrin_g(i), lucsocin_g(i),
-     7          grclarea
+     7          grclarea(i)
            endif
 
             if (compete .or. lnduseon) then 
@@ -5204,7 +5229,7 @@ c
            emit_tc_mo_m(i,m,j) =emit_tc_mo_m(i,m,j)+emit_tcrow(i,m,j)
            emit_oc_mo_m(i,m,j) =emit_oc_mo_m(i,m,j)+emit_ocrow(i,m,j)
            emit_bc_mo_m(i,m,j) =emit_bc_mo_m(i,m,j)+emit_bcrow(i,m,j)
-           burnfrac_mo_m(i,m,j) =burnfrac_mo_m(i,m,j)+burnvegrow(i,m,j)
+           burnfrac_mo_m(i,m,j) =burnfrac_mo_m(i,m,j)+burnvegfrow(i,m,j)
 
           end do
 
@@ -5550,7 +5575,7 @@ c
             litres_yr_m(i,m,j)=litres_yr_m(i,m,j)+litresvegrow(i,m,j) 
             soilcres_yr_m(i,m,j)=soilcres_yr_m(i,m,j)
      &                                +soilcresvegrow(i,m,j) 
-            burnfrac_yr_m(i,m,j)=burnfrac_yr_m(i,m,j)+burnvegrow(i,m,j)
+            burnfrac_yr_m(i,m,j)=burnfrac_yr_m(i,m,j)+burnvegfrow(i,m,j)
 
 884         continue
 
@@ -6118,22 +6143,27 @@ C       FIRST ANY CLASS OUTPUT FILES
 c       then ctem ones
         close(71)
         close(711)
-        close(72)
         close(721)
-        close(73)
         close(731)
-        close(74)
         close(741)
-        close(75)
         close(751)
-        close(76)
+
+        if (mosaic) then
+         close(72)
+         close(73)
+         close(74)
+         close(75)
+         close(76)
+         if (dofire .or. lnduseon) then
+          close(78)
+         end if
+        end if
 c
         if (compete .or. lnduseon) then
           close(761)
         endif
 c
        if (dofire .or. lnduseon) then
-        close(78)
         close(781)
        endif
       endif ! if (.not. parallelrun) 
@@ -6215,22 +6245,28 @@ C       FIRST ANY CLASS OUTPUT FILES
 c       then ctem ones
         close(71)
         close(711)
-        close(72)
         close(721)
-        close(73)
         close(731)
-        close(74)
         close(741)
-        close(75)
         close(751)
-        close(76)
+
+        if (mosaic) then
+         close(72)
+         close(73)
+         close(74)
+         close(75)
+         close(76)
+         if (dofire .or. lnduseon) then
+          close(78)
+         end if
+        end if
+
 c
         if (compete .or. lnduseon) then
           close(761)
         endif
 c
        if (dofire .or. lnduseon) then
-        close(78)
         close(781)
        endif
       endif ! if (.not. parallelrun) 
