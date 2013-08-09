@@ -47,5 +47,8 @@
 /
 
 This area is for comments about the run. 
+
+Note: START_FROM_RS must be .false. on spica/hadar. The system call does not work when
+operating in the open_mp script.
  
 

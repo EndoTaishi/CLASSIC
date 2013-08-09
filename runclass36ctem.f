@@ -1755,6 +1755,7 @@ C     GGEOGRD(1)=-0.035
      1                  J=1,3),ZPNDROW(I,M)
           READ(10,5070) RCANROW(I,M),SCANROW(I,M),SNOROW(I,M),
      1                  ALBSROW(I,M),RHOSROW(I,M),GROROW(I,M)
+c         DRNROW(I,M)=0.1 !!!!!FLAG !!!!!!!
 50    CONTINUE
 C
       DO 25 J=1,IGND                     

@@ -180,8 +180,8 @@ c
 c
 c     ------------------------------------------------------------------
 c                     constants used in the model
-c     note the structure of vectors which clearly shows the class
-c     pfts (along rows) and ctem sub-pfts (along columns)
+c     Note the structure of vectors which shows the CLASS
+c     PFTs (along rows) and CTEM sub-PFTs (along columns)
 c
 c     needle leaf |  evg       dcd       ---
 c     broad leaf  |  evg   dcd-cld   dcd-dry
@@ -189,15 +189,15 @@ c     crops       |   c3        c4       ---
 c     grasses     |   c3        c4       ---
 c
 c     min. and max. vegetation biomass thresholds to initiate fire, kg c/m^2
-c     data bmasthrs/0.2, 1.0/
-      data bmasthrs/0.25, 1.0/
+c      data bmasthrs/0.2, 1.0/ !ORIG
+      data bmasthrs/0.25, 1.0/ !testing
 c
 c     extinction moisture content for estimating fire likeliness due
 c     to soil moisture
 c     orig:
-      data extnmois/0.5/ !0.35 !FLAG!!
+c      data extnmois/0.30/ !ORIG
 c     flag testing:
-c      data extnmois/0.21/
+      data extnmois/0.35/
 c
 c     lower cloud-to-ground lightning threshold for fire likelihood
 c     flashes/km^2.year
@@ -221,7 +221,7 @@ c     the fire spread rate in the absence of wind, now a derived
 c     quantity from the formulation of the wind speed fire spread
 c     rate scalar
 c     old:
-c     data f0/0.1/
+c      data f0/0.1/ !ORIG
 c     new:
       data f0/0.05/
 c
@@ -230,15 +230,15 @@ c     flag try having a pft-dependent max spread rate
 c     old:
 c     data maxsprd/0.45/
 c     li et al. values:
-c      data maxsprd/0.54, 0.54, 0.00,
-c     &             0.40, 0.40, 0.40,
-c     &             0.00, 0.00, 0.00,
-c     &             0.72, 0.72, 0.00/
-c     flag testing:
-      data maxsprd/0.54, 0.32, 0.00,
-     &             0.22, 0.22, 0.22,
+      data maxsprd/0.54, 0.54, 0.00,
+     &             0.40, 0.40, 0.40,
      &             0.00, 0.00, 0.00,
      &             0.72, 0.72, 0.00/
+c     flag testing:
+c      data maxsprd/0.45, 0.45, 0.00, !ORIG
+c     &             0.45, 0.45, 0.45,
+c     &             0.00, 0.00, 0.00,
+c     &             0.45, 0.45, 0.00/
 
 c     fraction of leaf biomass converted to gases due to combustion
       data frco2lf/0.70, 0.70, 0.00,
@@ -286,46 +286,89 @@ c     ========================
 
 c     emissions factors by chemical species
 c     
-c     values are from andreae 2011 as described in li et al. 2012
-c     biogeosci. Units: g species / (kg DOM)
+c     Values are from Andreae 2011 as described in Li et al. 2012
+c     Biogeosci. Units: g species / (kg DOM)
 
-c     pft-specific emission factors for co2 
-      data emif_co2/1576.0, 1576.0,   0.00,
-     &              1604.0, 1576.0, 1654.0,
-     &              1576.0, 1654.0,   0.00,
-     &              1576.0, 1654.0,   0.00/
+c     pft-specific emission factors for CO2 
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_co2/1576.0, 1576.0,   0.00,
+c     &              1604.0, 1576.0, 1654.0,
+c     &              1576.0, 1654.0,   0.00,
+c     &              1576.0, 1654.0,   0.00/
 
-c     pft-specific emission factors for co 
-      data emif_co /106.0, 106.0, 0.00,
-     &              103.0, 106.0, 64.0,
-     &              106.0,  64.0, 0.00,
-     &              106.0,  64.0, 0.00/
+c    values from Wiedinmyer et al. 2011
+      data emif_co2/1514.0, 1514.0,   0.00,
+     &              1643.0, 1630.0, 1716.0,
+     &              1537.0, 1537.0,   0.00,
+     &              1692.0, 1692.0,   0.00/
 
-c     pft-specific emission factors for ch4 
-      data emif_ch4/ 4.8, 4.8, 0.0,
-     &               5.8, 4.8, 2.4,
-     &               4.8, 2.4, 0.0,
-     &               4.8, 2.4, 0.0/
+c     pft-specific emission factors for CO 
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_co /106.0, 106.0, 0.00,
+c     &              103.0, 106.0, 64.0,
+c     &              106.0,  64.0, 0.00,
+c     &              106.0,  64.0, 0.00/
 
-c     pft-specific emission factors for nmhc
+c    values from Wiedinmyer et al. 2011
+      data emif_co /118.0, 118.0, 0.00,
+     &               92.0, 102.0, 68.0,
+     &              111.0, 111.0, 0.00,
+     &               59.0,  59.0, 0.00/
+
+c     pft-specific emission factors for CH4 
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_ch4/ 4.8, 4.8, 0.0,
+c     &               5.8, 4.8, 2.4,
+c     &               4.8, 2.4, 0.0,
+c     &               4.8, 2.4, 0.0/
+
+c    values from Wiedinmyer et al. 2011
+      data emif_ch4/ 6.0, 6.0, 0.0,
+     &               5.1, 5.0, 2.6,
+     &               6.0, 6.0, 0.0,
+     &               1.5, 1.5, 0.0/
+
+c     pft-specific emission factors for NMHC
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_nmhc/ 5.7, 5.7, 0.0,
+c     &                6.4, 5.7, 3.7,
+c     &                5.7, 3.7, 0.0,
+c     &                5.7, 3.7, 0.0/
+
+c    values from Wiedinmyer et al. 2011
       data emif_nmhc/ 5.7, 5.7, 0.0,
-     &                6.4, 5.7, 3.7,
-     &                5.7, 3.7, 0.0,
-     &                5.7, 3.7, 0.0/
+     &                1.7, 5.7, 3.4,
+     &                7.0, 7.0, 0.0,
+     &                3.4, 3.4, 0.0/
 
-c     pft-specific emission factors for h2
-      data emif_h2/ 1.80, 1.80, 0.00,
-     &              2.54, 1.80, 0.98,
-     &              1.80, 0.98, 0.00,
-     &              1.80, 0.98, 0.00/
+c     pft-specific emission factors for H2
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_h2/ 1.80, 1.80, 0.00,
+c     &              2.54, 1.80, 0.98,
+c     &              1.80, 0.98, 0.00,
+c     &              1.80, 0.98, 0.00/
 
-c     pft-specific emission factors for nox
-      data emif_nox/3.24, 3.24, 0.00,
-     &              2.90, 3.24, 2.49,
-     &              3.24, 2.49, 0.00,
-     &              3.24, 2.49, 0.00/
+c    values from Wiedinmyer et al. 2011
+      data emif_h2/ 2.30, 2.30, 0.00,
+     &              3.20, 1.80, 0.97,
+     &              2.40, 2.40, 0.00,
+     &              0.97, 0.97, 0.00/
 
-c     pft-specific emission factors for n2o 
+c     pft-specific emission factors for NOx
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_nox/3.24, 3.24, 0.00,
+c     &              2.90, 3.24, 2.49,
+c     &              3.24, 2.49, 0.00,
+c     &              3.24, 2.49, 0.00/
+
+c    values from Wiedinmyer et al. 2011 (species: "NOx (as NO)" from Table 1)
+      data emif_nox/1.80, 2.30, 0.00,
+     &              2.60, 1.30, 3.90,
+     &              3.50, 3.50, 0.00,
+     &              2.80, 2.80, 0.00/
+
+c     pft-specific emission factors for N2O
+c     Andreae 2011 as described in Li et al. 2012 
       data emif_n2o/0.26, 0.26, 0.00,
      &              0.23, 0.26, 0.20,
      &              0.26, 0.20, 0.00,
@@ -333,41 +376,77 @@ c     pft-specific emission factors for n2o
 
 c     emission factors for aerosols
 
-c     pft-specific emission factors for pm2.5
+c     pft-specific emission factors for PM2.5
 c     (particles less than 2.5 micrometers in 
 c     diameter)
-      data emif_pm25/12.7, 12.7, 0.0,
-     &               10.5, 12.7, 5.2,
-     &               12.7,  5.2, 0.0,
-     &               12.7,  5.2, 0.0/
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_pm25/12.7, 12.7, 0.0,
+c     &               10.5, 12.7, 5.2,
+c     &               12.7,  5.2, 0.0,
+c     &               12.7,  5.2, 0.0/
 
-c     pft-specific emission factors for tpm 
+c    values from Wiedinmyer et al. 2011
+      data emif_pm25/13.0, 13.0, 0.0,
+     &                9.7, 13.0, 9.3,
+     &                5.8,  5.8, 0.0,
+     &                5.4,  5.4, 0.0/
+
+c     pft-specific emission factors for TPM 
 c     (total particulate matter)
-      data emif_tpm/17.6, 17.6, 0.0,
-     &              14.7, 17.6, 8.5,
-     &              17.6,  8.5, 0.0,
-     &              17.6,  8.5, 0.0/
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_tpm/17.6, 17.6, 0.0,
+c     &              14.7, 17.6, 8.5,
+c     &              17.6,  8.5, 0.0,
+c     &              17.6,  8.5, 0.0/
 
-c     pft-specific emission factors for tc
+c    values from Wiedinmyer et al. 2011
+      data emif_tpm/18.0, 18.0, 0.0,
+     &              13.0, 18.0,15.4,
+     &              13.0, 13.0, 0.0,
+     &               8.3,  8.3, 0.0/
+
+c     pft-specific emission factors for TC
 c     (total carbon)
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_tc/ 8.3, 8.3, 0.0,
+c     &              7.2, 8.3, 3.4,
+c     &              8.3, 3.4, 0.0,
+c     &              8.3, 3.4, 0.0/
+
+c    values from Wiedinmyer et al. 2011 (TPC in Table 1)
       data emif_tc/ 8.3, 8.3, 0.0,
-     &              7.2, 8.3, 3.4,
-     &              8.3, 3.4, 0.0,
-     &              8.3, 3.4, 0.0/
+     &              5.2, 9.7, 7.1,
+     &              4.0, 4.0, 0.0,
+     &              3.0, 3.0, 0.0/
 
-c     pft-specific emission factors for oc 
+c     pft-specific emission factors for OC 
 c     (organic carbon)
-      data emif_oc/ 9.1, 9.1, 0.0,
-     &              6.7, 9.1, 3.2,
-     &              9.1, 3.2, 0.0,
-     &              9.1, 3.2, 0.0/
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_oc/ 9.1, 9.1, 0.0,
+c     &              6.7, 9.1, 3.2,
+c     &              9.1, 3.2, 0.0,
+c     &              9.1, 3.2, 0.0/
 
-c     pft-specific emission factors for bc
+c    values from Wiedinmyer et al. 2011 
+      data emif_oc/ 7.8, 7.8, 0.0,
+     &              4.7, 9.2, 6.6,
+     &              3.3, 3.3, 0.0,
+     &              2.6, 2.6, 0.0/
+
+c     pft-specific emission factors for BC
 c     (black carbon)
-      data emif_bc/ 0.56, 0.56, 0.00,
-     &              0.56, 0.56, 0.47,
-     &              0.56, 0.47, 0.00,
-     &              0.56, 0.47, 0.00/
+c     Andreae 2011 as described in Li et al. 2012
+c      data emif_bc/ 0.56, 0.56, 0.00,
+c     &              0.56, 0.56, 0.47,
+c     &              0.56, 0.47, 0.00,
+c     &              0.56, 0.47, 0.00/
+
+c    values from Wiedinmyer et al. 2011
+      data emif_bc/ 0.20, 0.20, 0.00,
+     &              0.52, 0.56, 0.50,
+     &              0.69, 0.69, 0.00,
+     &              0.37, 0.37, 0.00/
+
 
 c     typical area representing ctem's fire parameterization
       data reparea/1000.0/ ! km^2
@@ -537,7 +616,7 @@ c
             betadrgt(i,j)=1.0
           endif
           betadrgt(i,j)=max(0.0, min(betadrgt(i,j),1.0))
-c
+
 310     continue
 300   continue
 c
@@ -564,8 +643,10 @@ c     fire due to moisture.
 c
       do 380 i = il1, il2
         if(fcsum(i) .gt. zero)then
+
           avgdryns(i)=avgdryns(i)/fcsum(i)
           mterm(i)=1.0-tanh((1.75*avgdryns(i)/extnmois)**2)
+
         else
           mterm(i)=0.0   !no fire likelihood due to moisture if no vegetation
           avgdryns(i)=0.0
@@ -599,7 +680,8 @@ c     flag testing:
 c     determine the probability of fire due to human causes
 c     this is based upon the population density from the .popd
 c     read-in file
-        prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43)
+        prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !new way
+c        prbfrhuc(i)=0.5 !ORIG (more or less) 
 
         lterm(i)=temp+(1.0-temp)*prbfrhuc(i)
         lterm(i)=max(0.0, min(lterm(i),1.0))
@@ -636,9 +718,9 @@ c         content of vegetation.
 c         length to breadth ratio of fire
 c         flag testing: note, li et al. use a value of -0.06
 c         orig a&b paper value:
-          lbratio(i)=1.0+10.0*(1.0-exp(-0.017*wind(i)))
+c          lbratio(i)=1.0+10.0*(1.0-exp(-0.017*wind(i))) !ORIG
 c         li et al. value:
-c          lbratio(i)=1.0+10.0*(1.0-exp(-0.06*wind(i)))
+          lbratio(i)=1.0+10.0*(1.0-exp(-0.06*wind(i)))
 
 c         flag testing:
 c         calculate the head to back ratio of the fire
@@ -646,14 +728,14 @@ c         calculate the head to back ratio of the fire
           hbratio(i) = (lbratio(i) + hb_interm)/(lbratio(i) - hb_interm)
 
 c         flag testing:
-c         following li et al. 2012 this function has been derived
+c         Following Li et al. 2012 this function has been derived
 c         from the fire rate spread perpendicular to the wind 
 c         direction, in the downwind direction, the head to back
 c         ratio and the length to breadth ratio. f0 is also now
 c         a derived quantity (0.05)
 
 c         old:
-c          wndfunc(i)=1.0 - ( (1.0-f0)*exp(-1.0*alpha*wind(i)**2) )
+c          wndfunc(i)=1.0 - ( (1.0-f0)*exp(-1.0*alpha*wind(i)**2) ) !ORIG
 
 c         new:
           wndfunc(i)= (2.0 * lbratio(i)) / (1.0 + 1.0 
@@ -664,9 +746,9 @@ c         old:
 c          sprdrate(i)=maxsprd* smfunc(i)* wndfunc(i)
 c         new:
       do 435 j = 1, icc
-            n = sort(j)  
-          sprdrate(i)=sprdrate(i) + maxsprd(n) * smfunc(i)
-     &                          * wndfunc(i) * fcancmx(i,j)
+          n = sort(j)  
+          sprdrate(i)=sprdrate(i) + maxsprd(n)* fcancmx(i,j) * smfunc(i)
+     &                            * wndfunc(i) 
 435     continue
 
 c
@@ -678,8 +760,7 @@ c         as was pointed out in li et al. 2012 biogeosci. We
 c         adopt the calculated version below
 c         flag testing:
 c         old:
-c          arbn1day(i)=(pi*0.36*24*24*sprdrate(i)**2)/lbratio(i)
-C          FLAG why does the new not have 0.36?
+c          arbn1day(i)=(pi*0.36*24*24*sprdrate(i)**2)/lbratio(i) !ORIG
 c         new:
           arbn1day(i)=(pi*24.0*24.0*sprdrate(i)**2)/(4.0 * lbratio(i)) 
      &                  *(1.0 + 1.0 / hbratio(i))**2
@@ -693,26 +774,14 @@ c         flag testing:
 c         fire extinction is based upon population density
            extnprob(i)=max(0.0,0.9-exp(-0.025*popdin))
            extnprob(i)=0.5+extnprob(i)/2.0
+c          extnprob(i)=0.5 !ORIG
 
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/
-     &      extnprob(i)**2                   
+     &      extnprob(i)**2                              
 c
 c         area burned, km^2
-          burnarea(i)=arbn1day(i)*areamult(i)
-c
-c         flag testing:
-c         some regions can have multiple fires in our representative 
-c         area, to accomodate this we have a fire density multiplier
-c         in most regions this is unity. in regions with high fire
-c         density this becomes dependent upon the amount of grass in 
-c         the gridcell, the logic is that grasslands more rapidly
-c         respond to drying conditions, rapidly refresh the c stocks
-c         and do not have long lasting, smouldering fires
-c         should this be per mosiac or per gridcell?? i think per
-c         gridcell but this would make the mosiacs all higher...
-c         problem? -nothing implimented yet.
-c
-          burnarea(i)=burnarea(i)*(grclarea(i)/reparea)*probfire(i)
+          burnarea(i)=arbn1day(i)*areamult(i)*(grclarea(i)/reparea)
+     &                                                 *probfire(i)
           burnfrac(i)=100.*burnarea(i)/grclarea(i)
 c
         endif
@@ -768,8 +837,8 @@ c
 
 490   continue
 c
-c     check that the sum of fraction of leaves, stem, and root 
-c     that needs to be burned and converted into co2, and fraction that 
+c     Check that the sum of fraction of leaves, stem, and root 
+c     that needs to be burned and converted into CO2, and fraction that 
 c     needs to become litter doesn't exceed one.
 c
       do 500 j = 1, icc
@@ -780,7 +849,7 @@ c
         if(  frltrbrn(n) .gt. 1.0 )               call xit('disturb',-6)
 500   continue
 c
-c     and finally estimate amount of litter generated from each pft, and
+c     Finally estimate amount of litter generated from each pft, and
 c     each vegetation component (leaves, stem, and root) based on their
 c     resistance to combustion. we also estimate co2 emissions from each
 c     of these components. note that the litter which is generated due 
@@ -843,18 +912,18 @@ c          ratio of carbon to dry organic matter. units: kg dom / m2
 c          convert the dom to emissions/aerosols using emissions factors
 c          units: g compound / m2
 
-           emit_co2(i,j)  = emif_co2(j) * tot_emit_dom
-           emit_co(i,j)   = emif_co(j)  * tot_emit_dom
-           emit_ch4(i,j)  = emif_ch4(j) * tot_emit_dom
-           emit_nmhc(i,j) = emif_nmhc(j) * tot_emit_dom
-           emit_h2(i,j)   = emif_h2(j) * tot_emit_dom
-           emit_nox(i,j)  = emif_nox(j) * tot_emit_dom
-           emit_n2o(i,j)  = emif_n2o(j) * tot_emit_dom
-           emit_pm25(i,j) = emif_pm25(j) * tot_emit_dom
-           emit_tpm(i,j)  = emif_tpm(j) * tot_emit_dom
-           emit_tc(i,j)   = emif_tc(j) * tot_emit_dom
-           emit_oc(i,j)   = emif_oc(j) * tot_emit_dom
-           emit_bc(i,j)   = emif_bc(j) * tot_emit_dom
+           emit_co2(i,j)  = emif_co2(n) * tot_emit_dom
+           emit_co(i,j)   = emif_co(n)  * tot_emit_dom
+           emit_ch4(i,j)  = emif_ch4(n) * tot_emit_dom
+           emit_nmhc(i,j) = emif_nmhc(n) * tot_emit_dom
+           emit_h2(i,j)   = emif_h2(n) * tot_emit_dom
+           emit_nox(i,j)  = emif_nox(n) * tot_emit_dom
+           emit_n2o(i,j)  = emif_n2o(n) * tot_emit_dom
+           emit_pm25(i,j) = emif_pm25(n) * tot_emit_dom
+           emit_tpm(i,j)  = emif_tpm(n) * tot_emit_dom
+           emit_tc(i,j)   = emif_tc(n) * tot_emit_dom
+           emit_oc(i,j)   = emif_oc(n) * tot_emit_dom
+           emit_bc(i,j)   = emif_bc(n) * tot_emit_dom
 
 !         Output the burned area per PFT
           burnvegf(i,j)=100.*burnveg(i,j)/grclarea(i)

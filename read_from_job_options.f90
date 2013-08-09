@@ -107,7 +107,8 @@ logical, intent(out) :: rsfile   ! set this to true if restart files (.ini_rs an
 logical, intent(out) :: start_from_rs ! if true, this option copies the _RS INI and CTM files
                                  ! to be the .INI and .CTM files and then starts the run as per normal.
                                  ! it is handy when spinning up so you don't have to do a complicated copying of the
-                                 ! RS files to restart from them.
+                                 ! RS files to restart from them. NOTE! This will not work on hadar or spica, instead
+                                 ! you have to manually move the files and set this to .false.
 
 ! -------------
 ! class model switches

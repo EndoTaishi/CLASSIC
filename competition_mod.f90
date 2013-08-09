@@ -157,7 +157,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           tcurm(i)=tcurm(i)+(ta(i)-273.16)*(1.0/real(monthdays(curmonth)))
           gdd5cur(i)=gdd5cur(i)+max(0.0, (ta(i)-273.16-5.0))
           anpcpcur(i)=anpcpcur(i) + precip(i)
-!         net radiation (w/m2) x 12.87 = potential evap (mm)
+!         net radiation (W/m2) x 12.87 = potential evap (mm)
           anpecur(i)=anpecur(i) + netrad(i)*12.87*(1.0/365.0)
           wtrbal=precip(i)-(netrad(i)*12.87*(1.0/365.0))
           if(wtrbal.ge.0.0)then
@@ -322,12 +322,12 @@ integer :: i,j
 ! crops       |   c3        c4       ---
 ! grasses     |   c3        c4       ---
 !
-! numbers such as 999.9, 99.9 and 9.9 are meant to imply no constrain and
+! numbers such as 999.9, 99.9 and 9.9 are meant to imply no constraint and
 ! not used 
 
 ! minimum coldest month temperature
-real, dimension(kk), parameter :: tcoldmin = [ -32.5, -999.9,   0.0, &
-                                                15.5, -999.9,   5.5, & !test pft was 15.5
+real, dimension(kk), parameter :: tcoldmin = [ -36.0, -999.9,   0.0, & !test pft 1 was -32.5
+                                                15.5, -999.9,   4.0, & !test pft 5 was 15.5
                                               -999.9, -999.9,   0.0, &
                                               -999.9,   15.5,   0.0 ]
 
@@ -338,14 +338,14 @@ real, dimension(kk), parameter :: tcoldmax = [ 22.0,   -2.0,   0.0, &
                                                15.0,  999.9,   0.0 ]
 
 ! maximum warmest month temperature
-real, dimension(kk), parameter :: twarmmax = [ 99.9,  23.0,  0.0, &
+real, dimension(kk), parameter :: twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 was 23.0
                                                99.9,  99.9, 99.9, &       
                                                99.9,  99.9,  0.0, &
                                                99.9,  99.9,  0.0 ]
 
 ! minimum gdd above 5 c required to exist
 real, dimension(kk), parameter :: gdd5lmt = [ 600.0,  350.0,  0.0, &
-                                             1200.0,  350.0,  9.9, &       
+                                             1200.0,  300.0,  9.9, &  ! test pft 4 was 350.0     
                                                 9.9,    9.9,  0.0, &
                                                 9.9,    9.9,  0.0 ]
 
