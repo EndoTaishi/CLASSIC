@@ -326,16 +326,16 @@ integer :: i,j
 ! not used 
 
 ! minimum coldest month temperature
-real, dimension(kk), parameter :: tcoldmin = [ -36.0, -999.9,   0.0, & !test pft 1 was -32.5
-                                                15.5, -999.9,   4.0, & !test pft 5 was 15.5
+real, dimension(kk), parameter :: tcoldmin = [ -45.0, -999.9,   0.0, & !test pft 1 was -32.5
+                                                 9.0, -999.9,   4.0, & !test pft 3 and 5 was 15.5
                                               -999.9, -999.9,   0.0, &
-                                              -999.9,   15.5,   0.0 ]
+                                              -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
 
 ! maximum coldest month temperature
 real, dimension(kk), parameter :: tcoldmax = [ 22.0,   -2.0,   0.0, &
                                               999.9,   15.5, 900.0, &       
                                               999.9,  999.9,   0.0, &
-                                               15.0,  999.9,   0.0 ]
+                                              999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0
 
 ! maximum warmest month temperature
 real, dimension(kk), parameter :: twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 was 23.0
@@ -344,14 +344,14 @@ real, dimension(kk), parameter :: twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 
                                                99.9,  99.9,  0.0 ]
 
 ! minimum gdd above 5 c required to exist
-real, dimension(kk), parameter :: gdd5lmt = [ 600.0,  350.0,  0.0, &
-                                             1200.0,  300.0,  9.9, &  ! test pft 4 was 350.0     
+real, dimension(kk), parameter :: gdd5lmt = [ 300.0,  300.0,  0.0, &
+                                             1200.0,  300.0,  9.9, &  ! test pft 4 was 350.0, pft 1 was 600. pft 2 was 350    
                                                 9.9,    9.9,  0.0, &
                                                 9.9,    9.9,  0.0 ]
 
 ! aridity index limit for broadleaf drought/dry deciduous trees
 real, dimension(kk), parameter :: aridlmt = [ 9.9,  9.9,    0.0, &
-                                              9.9,  9.9,    1.5, &       
+                                              9.9,  9.9,    1.2, & ! PFT 5 was 1.5.       
                                               9.9,  9.9,    0.0, &
                                               9.9,  9.9,    0.0 ]
 
@@ -596,7 +596,7 @@ real, parameter :: tolranc1 = 0.150  ! kg c
 real, parameter :: tolranc2 = 0.0050 ! kg c/m2
 
 ! minimum bare fraction
-real, parameter :: minbare = 0.001  
+!real, parameter :: minbare = 0.001  !replace minbare with seed (ctem_params.f90)
 
 ! set desired model to be used to .true. and all other to .false.
 logical, parameter :: lotvol=.false. ! original lotka-volterra eqns.
@@ -678,11 +678,6 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
        if(.not. crop(j))then  ! do not run for crops
         do 1230 i = il1, il2
           pbarefra(i)=pbarefra(i)-fcancmx(i,j)
-!          pftareab(i,j)=(fcancmx(i,j)*grclarea(i))
-!          pftareaa(i,j)=(fcancmx(i,j)*grclarea(i))-burnvegf(i,j)
-!          fcancmx(i,j)=max(seed,(pftareaa(i,j)/grclarea(i)) )
-!          pftareaa(i,j)=fcancmx(i,j)*grclarea(i)
-!          burnvegffrac is fractional so remove the dependence on grclarea - jm jul 29 2013.
           pftareab(i,j)=fcancmx(i,j)
           pftareaa(i,j)=fcancmx(i,j)-burnvegf(i,j)
           fcancmx(i,j)=max(seed,pftareaa(i,j))
@@ -1002,7 +997,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
           colterm(i,n)=usec(i,n)*(usefrac(i,n)**a) ! colonization term
 
-          sum1 = cropfrac(i)+minbare
+          sum1 = cropfrac(i)+seed !minbare
           do 420 k = 1, n-1, 1
             sum1 = sum1 + usefrac(i,k)
 420       continue          

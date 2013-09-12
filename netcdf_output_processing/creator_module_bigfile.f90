@@ -152,7 +152,7 @@ character(100), parameter, dimension(numctemvars_m) :: CTEM_M_UNIT=['m^2/m^2','K
 
 !====DISTURBANCE================== Declare arrays for monthly CTEM COMPOSITE AND MOSAIC =============
 
-integer, parameter :: nctemdistvars_m = 17  !number of annual CTEM disturbance vars to write
+integer, parameter :: nctemdistvars_m = 20  !number of annual CTEM disturbance vars to write
 
 ! .CT06M_G
 !  MONTH  YEAR  CO2        CO        CH4      NMHC       H2       NOX       N2O       PM25       TPM        TC        OC        BC   PROBFIRE  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC
@@ -160,11 +160,11 @@ integer, parameter :: nctemdistvars_m = 17  !number of annual CTEM disturbance v
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR=['CO2','CO','CH4','NMHC','H2','NOX',                         &
                                                                    'N2O','PM25','TPM','TC','OC','BC','PROBFIRE','LUC_CO2',&
-                                                                   'LUC_LITR','LUC_SOC','BURNFRAC' ]
+                                                                   'LUC_LITR','LUC_SOC','BURNFRAC','BTERM','LTERM','MTERM' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR_GA=['CO2_GA','CO_GA','CH4_GA','NMHC_GA','H2_GA','NOX_GA',                         &
                                                                    'N2O_GA','PM25_GA','TPM_GA','TC_GA','OC_GA','BC_GA','PROBFIRE_GA','LUC_CO2_GA',&
-                                                                   'LUC_LITR_GA','LUC_SOC_GA','BURNFRAC_GA' ]
+                                                                   'LUC_LITR_GA','LUC_SOC_GA','BURNFRAC_GA','BTERM_GA','LTERM_GA','MTERM_GA' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_NAME=['Monthly disturbance CO2 emissions','Monthly disturbance CO emissions',                                 &
                                                                     'Monthly disturbance CH4 emissions','Monthly disturbance non-CH4 hydrocarbons emissions',               &
@@ -173,12 +173,13 @@ character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_NAME=['Monthly
                                                                     'Monthly disturbance total particulate matter emissions','Monthly disturbance total C emissions',       &
                                                                     'Monthly disturbance organic C emissions','Monthly disturbance black C emissions',                      &
                                                                     'Monthly fire probability','Monthly land use CO2 emissions','Monthly land use litter additions',        &
-                                                                    'Monthly land use soil C additions','Monthly burned fraction' ]
+                                                                    'Monthly land use soil C additions','Monthly burned fraction','Monthly fire probability-Biomass',       &
+                                                                    'Monthly fire probability-Lightning','Monthly fire probability-Moisture' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_UNIT=['g/m^2.month','g/m^2.month','g/m^2.month','g/m^2.month',                   &
                                                                     'g/m^2.month','g/m^2.month','g/m^2.month','g/m^2.month',                                 &
                                                                     'g/m^2.month','g/m^2.month','g/m^2.month','g/m^2.month',                                 &
-                                                                    'Kg CO2/m^2','% ','Kg C/m^2.mo','Kg C/m^2.mo','           ' ]
+                                                                    'Kg CO2/m^2','% ','Kg C/m^2.mo','Kg C/m^2.mo','           ','% ','% ','% ' ]
 
 !====COMPETITION/LUC================== Declare arrays for monthly CTEM COMPOSITE AND MOSAIC =============
 
@@ -232,7 +233,7 @@ character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_UNIT = ['m^2/m^2',
 
 !====DISTURBANCE==================== Declare arrays for annual CTEM COMPOSITE AND MOSAIC=============
 
-integer, parameter :: nctemdistvars_a = 17  !number of annual CTEM vars to write
+integer, parameter :: nctemdistvars_a = 20  !number of annual CTEM vars to write
 
 ! .CT06Y_G
 ! YEAR   ANNUALCO2  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE ANNLUCCO2  ANNLUCLTR ANNLUCSOC ABURNFRAC
@@ -242,13 +243,15 @@ character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_VAR=['ANNUALCO
                                                                    'ANNUALCH4','ANN_NMHC','ANNUAL_H2','ANNUALNOX',              &
                                                                    'ANNUALN2O','ANN_PM25','ANNUALTPM','ANNUAL_TC',              &
                                                                    'ANNUAL_OC','ANNUAL_BC','ANNUAL_PROBFIRE','ANNUAL_LUC_CO2',  &
-                                                                   'ANNUAL_LUC_LITTER','ANNUAL_LUC_SOILC','ANNUAL_BURNFRAC' ]
+                                                                   'ANNUAL_LUC_LITTER','ANNUAL_LUC_SOILC','ANNUAL_BURNFRAC',    &
+                                                                   'ANN_BTERM','ANN_LTERM','ANN_MTERM' ]
 
 character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_VAR_GA=['ANNUALCO2_GA','ANNUALCO_GA',                                      &
                                                                    'ANNUALCH4_GA','ANN_NMHC_GA','ANNUAL_H2_GA','ANNUALNOX_GA',              &
                                                                    'ANNUALN2O_GA','ANN_PM25_GA','ANNUALTPM_GA','ANNUAL_TC_GA',              &
                                                                    'ANNUAL_OC_GA','ANNUAL_BC_GA','ANNUAL_PROBFIRE_GA','ANNUAL_LUC_CO2_GA',  &
-                                                                   'ANNUAL_LUC_LITTER_GA','ANNUAL_LUC_SOILC_GA','ANNUAL_BURNFRAC_GA' ]
+                                                                   'ANNUAL_LUC_LITTER_GA','ANNUAL_LUC_SOILC_GA','ANNUAL_BURNFRAC_GA',       &
+                                                                   'ANNUAL_BTERM_GA','ANNUAL_LTERM_GA','ANNUAL_MTERM_GA'  ]
 
  
 character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_NAME=['Annual disturbance CO2 emissions',                                 &
@@ -265,11 +268,14 @@ character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_NAME=['Annual 
                                                                     'Annual disturbance black C emissions',                             &
                                                                     'Annual fire probability','Annual land use CO2 emissions',          &
                                                                     'Annual land use litter additions',                                 &
-                                                                    'Annual land use soil C additions','Annual burned frac' ]
+                                                                    'Annual land use soil C additions','Annual burned frac',            &
+                                                                    'Annual fire probability-Biomass','Annual fire probability-Lightning',&
+                                                                    'Annual fire probability-Moisture' ]
 
 character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_UNIT = ['g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr',& 
                                                                       'g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr',      &
-                                                                      'g/m2.yr','g/m2.yr','Kg CO2/m2.yr','%.yr','Kg C/m2.yr','Kg C/m2.yr',' ' ] 
+                                                                      'g/m2.yr','g/m2.yr','Kg CO2/m2.yr','%.yr','Kg C/m2.yr','Kg C/m2.yr',' ',&
+                                                                      '%.yr','%.yr','%.yr' ] 
 
 !====COMPETITION================== Declare arrays for annual CTEM COMPOSITE AND MOSAIC =============
 

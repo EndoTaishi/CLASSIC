@@ -46,6 +46,7 @@ c
      z                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      1                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      2                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
+     a                      bterm,    lterm,    mterm,
      3                         cc,       mm,
      4                      rmlveg,  rmsveg,   rmrveg,    rgveg,
      5                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,
@@ -311,6 +312,9 @@ c      emit_tc   - total carbon
 c      emit_oc   - organic carbon
 c      emit_bc   - black carbon
 c      dofire    - boolean, if true allow fire, if false no fire.
+c      bterm     - biomass term for fire probabilty calc
+c      lterm     - lightning term for fire probabilty calc
+c      mterm     - moisture term for fire probabilty calc
 c
 c     competition related variables
 c
@@ -456,7 +460,8 @@ c
       real     emit_co2(ilg),        emit_co(ilg),       emit_ch4(ilg),
      1        emit_nmhc(ilg),        emit_h2(ilg),       emit_nox(ilg),
      2         emit_n2o(ilg),      emit_pm25(ilg),       emit_tpm(ilg),
-     3          emit_tc(ilg),        emit_oc(ilg),        emit_bc(ilg)
+     3          emit_tc(ilg),        emit_oc(ilg),        emit_bc(ilg),
+     4           bterm(ilg),           lterm(ilg),          mterm(ilg)
 c
       real tltrleaf(ilg,icc),   tltrstem(ilg,icc),   tltrroot(ilg,icc),
      1                popdin
@@ -527,16 +532,17 @@ c     -----------------------------------------------------------------
 c     find area of the gcm grid cells. this is needed for land use change
 c     and disturbance subroutines
 
+        do 50 i = il1, il2  !needed by disturb so taken out of if loop below (JM Aug 30 2013)
+          currlat(i)=radj(i)*180.0/pi                             
+          curlatno(i)=0
+50     continue
+
+
 C     FLAG: set stdaln always to equal 0 for testing fire. JM Jul 29 2013
       stdaln=0
 
 c
       if(stdaln.eq.0)then         ! i.e. when operated in a GCM mode 
-c
-        do 50 i = il1, il2
-          currlat(i)=radj(i)*180.0/pi                             
-          curlatno(i)=0
-50     continue
 c
 c       find current latitude number
         do 60 k = 1, lat
@@ -1767,7 +1773,7 @@ c
      3                    prbfrhuc, rmatctem, extnprob, pftareab,
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,   thicec,   popdin, lucemcom,
-     7                      dofire, 
+     7                      dofire,  currlat,
 c    in above, out below 
      8                    stemltdt, rootltdt, glfltrdt, blfltrdt,
      9                    pftareaa, glcaemls, rtcaemls, stcaemls,
@@ -1775,7 +1781,7 @@ c    in above, out below
      b                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      c                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      d                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
-     e                    burnvegf )
+     e                    burnvegf, bterm,    mterm,    lterm )
 c
 c    ------------------------------------------------------------------
 c

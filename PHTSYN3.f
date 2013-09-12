@@ -294,11 +294,11 @@ C      DATA SN/2.0, 2.0, 0.0,
 C     &        20.0, 2.0, 2.0,
 C     &        2.0, 2.0, 0.0,
 C     &        2.0, 2.0, 0.0/
-C     TEST VALS! JM JUN 11.
-      DATA SN/5.0, 5.0, 0.0,
-     &        10.0, 5.0, 5.0,
-     &        5.0, 5.0, 0.0,
-     &        5.0, 5.0, 0.0/
+C     TEST VALS! JM AUG 19.
+      DATA SN/4.0, 4.0, 0.0,
+     &        7.0, 4.0, 4.0,
+     &        4.0, 4.0, 0.0,
+     &        4.0, 4.0, 0.0/
 
 C
 C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.

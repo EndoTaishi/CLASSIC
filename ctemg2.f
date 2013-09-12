@@ -31,6 +31,7 @@
      t      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      u      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      v      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
+     &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat,burnvegfgat,
 c
@@ -67,6 +68,7 @@ c
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
+     &      btermrow,     ltermrow,   mtermrow, 
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow )
 c
@@ -164,7 +166,8 @@ c      fire emission variables
      3      emit_n2ogat(ilg,icc),  emit_pm25gat(ilg,icc),
      4      emit_tpmgat(ilg,icc),  emit_tcgat(ilg,icc),
      5      emit_ocgat(ilg,icc),   emit_bcgat(ilg,icc),
-     6      burnvegfgat(ilg,icc)
+     6      burnvegfgat(ilg,icc),  btermgat(ilg),
+     7      ltermgat(ilg),         mtermgat(ilg)
 c
       real  faregat(ilg)
       real  gavgscmsgat(ilg)
@@ -253,7 +256,8 @@ c     fire variables
      3     emit_n2orow(nlat,nmos,icc),  emit_pm25row(nlat,nmos,icc),
      4     emit_tpmrow(nlat,nmos,icc),  emit_tcrow(nlat,nmos,icc),
      5     emit_ocrow(nlat,nmos,icc),   emit_bcrow(nlat,nmos,icc),
-     6     burnvegfrow(nlat,nmos,icc)
+     6     burnvegfrow(nlat,nmos,icc),  btermrow(nlat,nmos),
+     7     ltermrow(nlat,nmos),         mtermrow(nlat,nmos)
 c
       real  farerow(nlat,nmos)
 c
@@ -309,6 +313,9 @@ c----------------------------------------------------------------------
           lucemcomgat(k)  = lucemcomrow(ilmos(k),jlmos(k))
           lucltringat(k)  = lucltrinrow(ilmos(k),jlmos(k))
           lucsocingat(k)  = lucsocinrow(ilmos(k),jlmos(k))
+          btermgat(k)     = btermrow(ilmos(k),jlmos(k))
+          ltermgat(k)     = ltermrow(ilmos(k),jlmos(k))
+          mtermgat(k)     = mtermrow(ilmos(k),jlmos(k))
           dstcemls3gat(k) = dstcemls3row(ilmos(k),jlmos(k))
           faregat(k)      = farerow(ilmos(k),jlmos(k))
           gavgscmsgat(k)  = gavgscmsrow(ilmos(k),jlmos(k))

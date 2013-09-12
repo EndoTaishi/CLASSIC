@@ -549,7 +549,10 @@ c     Fire-related variables
      b     emit_bcrow(nlat,nmos,icc),  emit_bcgat(ilg,icc),
      c     burnfracrow(nlat,nmos),     burnfracgat(ilg),
      d     burnvegfrow(nlat,nmos,icc), burnvegfgat(ilg,icc),
-     e     probfirerow(nlat,nmos),     probfiregat(ilg)
+     e     probfirerow(nlat,nmos),     probfiregat(ilg),
+     f     btermrow(nlat,nmos),        btermgat(ilg),
+     g     ltermrow(nlat,nmos),        ltermgat(ilg),
+     h     mtermrow(nlat,nmos),        mtermgat(ilg)
 
        real extnprobgrd(nlat),          extnprobgat(ilg),
      1      prbfrhucgrd(nlat),          prbfrhucgat(ilg), 
@@ -738,7 +741,9 @@ c
      8     emit_h2_g(nlat),            emit_nox_g(nlat),
      9     emit_n2o_g(nlat),           emit_pm25_g(nlat),
      a     emit_tpm_g(nlat),           emit_tc_g(nlat),
-     b     emit_oc_g(nlat),            emit_bc_g(nlat)
+     b     emit_oc_g(nlat),            emit_bc_g(nlat),
+     c     bterm_g(nlat),              lterm_g(nlat),
+     d     mterm_g(nlat)
 
 !     -----------------------
 !      Grid averaged monthly variables (denoted by name ending in "_mo_g")
@@ -760,7 +765,8 @@ c
      d      emit_oc_mo_g(nlat),        emit_bc_mo_g(nlat),
      e      probfire_mo_g(nlat),       luc_emc_mo_g(nlat),
      f      lucltrin_mo_g(nlat),       lucsocin_mo_g(nlat),
-     g      burnfrac_mo_g(nlat)
+     g      burnfrac_mo_g(nlat),       bterm_mo_g(nlat),
+     h      lterm_mo_g(nlat),          mterm_mo_g(nlat)  
 
 !      Mosaic monthly variables (denoted by name ending in "_mo_m")
 
@@ -779,9 +785,9 @@ c
      3      emit_n2o_mo_m(nlat,nmos,icc),emit_pm25_mo_m(nlat,nmos,icc),
      4      emit_tpm_mo_m(nlat,nmos,icc),emit_tc_mo_m(nlat,nmos,icc),
      5      emit_oc_mo_m(nlat,nmos,icc), emit_bc_mo_m(nlat,nmos,icc),
-     6      probfire_mo_m(nlat,nmos),
-     7      luc_emc_mo_m(nlat,nmos),
-     8      lucsocin_mo_m(nlat,nmos),
+     6      probfire_mo_m(nlat,nmos),    bterm_mo_m(nlat,nmos),
+     7      luc_emc_mo_m(nlat,nmos),     lterm_mo_m(nlat,nmos),
+     8      lucsocin_mo_m(nlat,nmos),    mterm_mo_m(nlat,nmos),
      9      lucltrin_mo_m(nlat,nmos),
      a      burnfrac_mo_m(nlat,nmos,icc)
 c
@@ -805,7 +811,8 @@ c      (denoted by name ending in "_yr_g")
      a      emit_oc_yr_g(nlat),        emit_bc_yr_g(nlat),
      b      probfire_yr_g(nlat),       luc_emc_yr_g(nlat),
      c      lucltrin_yr_g(nlat),       lucsocin_yr_g(nlat),
-     d      burnfrac_yr_g(nlat)
+     d      burnfrac_yr_g(nlat),       bterm_yr_g(nlat),
+     e      lterm_yr_g(nlat),          mterm_yr_g(nlat)
 
 c      Annual output for CTEM mosaic variables:
 c      (denoted by name ending in "_yr_m")
@@ -823,10 +830,10 @@ c      (denoted by name ending in "_yr_m")
      8      emit_n2o_yr_m(nlat,nmos,icc),emit_pm25_yr_m(nlat,nmos,icc),
      9      emit_tpm_yr_m(nlat,nmos,icc),emit_tc_yr_m(nlat,nmos,icc),
      a      emit_oc_yr_m(nlat,nmos,icc), emit_bc_yr_m(nlat,nmos,icc),
-     b      probfire_yr_m(nlat,nmos),
+     b      probfire_yr_m(nlat,nmos),    bterm_yr_m(nlat,nmos),
      c      luc_emc_yr_m(nlat,nmos),     totcmass_yr_m(nlat,nmos,icc),
-     d      lucsocin_yr_m(nlat,nmos),
-     e      lucltrin_yr_m(nlat,nmos),
+     d      lucsocin_yr_m(nlat,nmos),    lterm_yr_m(nlat,nmos),   
+     e      lucltrin_yr_m(nlat,nmos),    mterm_yr_m(nlat,nmos),
      f      burnfrac_yr_m(nlat,nmos,icc)   
 c
 c============= CTEM array declaration done =============================/
@@ -972,6 +979,9 @@ c
         lucsocinrow(i,m)         = 0.0
         burnfracrow(i,m)         = 0.0
         probfirerow(i,m)         = 0.0
+        btermrow(i,m)            = 0.0
+        ltermrow(i,m)            = 0.0
+        mtermrow(i,m)            = 0.0
         cfluxcgrow(i,m)          = 0.0
         cfluxcsrow(i,m)          = 0.0 
 c 
@@ -1515,12 +1525,12 @@ C
      &'    EMIT_CO   EMIT_CH4  EMIT_NMHC    EMIT_H2   EMIT_NOX',
      &'   EMIT_N2O  EMIT_PM25   EMIT_TPM    EMIT_TC    EMIT_OC',
      &'    EMIT_BC   BURNFRAC   PROBFIRE   LUCEMCOM   LUCLTRIN',
-     &'   LUCSOCIN   GRCLAREA')
+     &'   LUCSOCIN   GRCLAREA   BTERM   LTERM   MTERM')
 7111  FORMAT('               g/m2.D     g/m2.d',
      &'     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d',
      &'     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d   ',
      &'       %  avgprob/d uMOL-CO2/M2.S KgC/M2.D',
-     &'   KgC/M2.D      KM^2')
+     &'   KgC/M2.D      KM^2    prob/d       prob/d       prob/d')
 C
         WRITE(711,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
         WRITE(711,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
@@ -1668,11 +1678,13 @@ C
 6125  FORMAT('  MONTH  YEAR  CO2',
      &'        CO        CH4      NMHC       H2       NOX       N2O',
      &'       PM25       TPM        TC        OC        BC  ',
-     &' PROBFIRE  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC')
+     &' PROBFIRE  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC    BTERM',
+     &' LTERM   MTERM')
 6225  FORMAT('            g/m2.mon  g/m2.mon',
      &'  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon',
      &'  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon',
-     &'  prod/mon    g C/m2    g C/m2    g C/m2         %')  
+     &'  prob/mon    g C/m2    g C/m2    g C/m2         %  prob/mon',
+     &'  prob/mon  prob/mon')  
 6026  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ',
      &'RESULTS')
 6126  FORMAT('  YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS', 
@@ -1687,12 +1699,13 @@ C
 6127  FORMAT('  YEAR   ANNUALCO2',
      &'  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O',
      &'  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE',
-     &' ANNLUCCO2  ANNLUCLTR ANNLUCSOC ABURNFRAC')
+     &' ANNLUCCO2  ANNLUCLTR ANNLUCSOC ABURNFRAC ANNBTERM ANNLTERM',
+     &' ANNMTERM')
 6227  FORMAT('         gC/m2.yr',
      &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  avgprob/d ',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr    %     ')
-
+     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  prob/yr ',
+     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr    %     prob/yr  prob/yr',
+     &'  prob/yr')
 6028  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ',
      &'RESULTS')
 6128  FORMAT(' MONTH YEAR  FRAC #1   FRAC #2   FRAC #3   FRAC #4   ',
@@ -1755,7 +1768,7 @@ C     GGEOGRD(1)=-0.035
      1                  J=1,3),ZPNDROW(I,M)
           READ(10,5070) RCANROW(I,M),SCANROW(I,M),SNOROW(I,M),
      1                  ALBSROW(I,M),RHOSROW(I,M),GROROW(I,M)
-c         DRNROW(I,M)=0.1 !!!!!FLAG !!!!!!!
+         DRNROW(I,M)=0.1 !!!!!FLAG !!!!!!!
 50    CONTINUE
 C
       DO 25 J=1,IGND                     
@@ -2435,11 +2448,17 @@ c
           luc_emc_mo_m(i,m) =0.0
           lucsocin_mo_m(i,m) =0.0
           lucltrin_mo_m(i,m) =0.0
+          bterm_mo_m(i,m)=0.0
+          lterm_mo_m(i,m)=0.0
+          mterm_mo_m(i,m)=0.0
 
           probfire_yr_m(i,m)=0.0
           luc_emc_yr_m(i,m)=0.0
           lucsocin_yr_m(i,m)=0.0
           lucltrin_yr_m(i,m)=0.0
+          bterm_yr_m(i,m)=0.0 
+          lterm_yr_m(i,m)=0.0
+          mterm_yr_m(i,m)=0.0
 c
         endif ! ctem_on
 c
@@ -2878,6 +2897,7 @@ C
      &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
+     &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat,
 c
@@ -2914,6 +2934,7 @@ c
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
+     &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow )
 c
@@ -3277,6 +3298,7 @@ c    -------------- inputs updated by ctem are above this line ------
      u            emit_co2gat,  emit_cogat,  emit_ch4gat, emit_nmhcgat,
      v             emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,
      w            emit_tpmgat,  emit_tcgat,   emit_ocgat,   emit_bcgat,
+     &               btermgat,    ltermgat,     mtermgat,
      &            ccgat,             mmgat,
      &          rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,
      &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,
@@ -3466,6 +3488,7 @@ C
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
+     &      btermrow,     ltermrow,   mtermrow,  
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow,
 c    ----
@@ -3503,6 +3526,7 @@ c    ----
      &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
+     &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat )
 c
@@ -4710,6 +4734,9 @@ c
           emit_tc_g(i) =0.0
           emit_oc_g(i) =0.0  
           emit_bc_g(i) =0.0
+          bterm_g(i)   =0.0
+          lterm_g(i)   =0.0
+          mterm_g(i)   =0.0
           leaflitr_g(i)=0.0  
           tltrleaf_g(i)=0.0
           tltrstem_g(i)=0.0
@@ -4884,7 +4911,8 @@ c
      4         emit_tpmrow(i,m,j),emit_tcrow(i,m,j),emit_ocrow(i,m,j),
      5         emit_bcrow(i,m,j),burnvegfrow(i,m,j),probfirerow(i,m), 
      6         lucemcomrow(i,m),lucltrinrow(i,m), lucsocinrow(i,m),
-     7         grclarea(i),' TILE ',m,'PFT',j
+     7         grclarea(i),btermrow(i,m),ltermrow(i,m),mtermrow(i,m),
+     8         ' TILE ',m,'PFT',j
                endif
 
               end if !mosaic
@@ -4938,7 +4966,7 @@ c
 8500       format(1x,i4,i5,9f10.5,2(a6,i2))
 8600       format(1x,i4,i5,4f10.5,i8,2(a6,i2))
 8601       format(1x,i4,i5,4f10.5,8x,2(a6,i2))   
-8800       format(1x,i4,i5,17f11.4,2x,f9.2,2(a6,i2))
+8800       format(1x,i4,i5,20f11.4,2x,f9.2,2(a6,i2))
 c
 c          Calculation of grid averaged variables
 c
@@ -4984,6 +5012,9 @@ c
            lucemcom_g(i) =lucemcom_g(i)+lucemcomrow(i,m)*farerow(i,m)
            lucltrin_g(i) =lucltrin_g(i)+lucltrinrow(i,m)*farerow(i,m)
            lucsocin_g(i) =lucsocin_g(i)+lucsocinrow(i,m)*farerow(i,m) 
+           bterm_g(i)    =bterm_g(i)   +btermrow(i,m)*farerow(i,m) 
+           lterm_g(i)    =lterm_g(i)   +ltermrow(i,m)*farerow(i,m) 
+           mterm_g(i)    =mterm_g(i)   +mtermrow(i,m)*farerow(i,m) 
 
            do k=1,ignd
              rmatctem_g(i,k)=rmatctem_g(i,k)+rmatctemrow(i,m,j,k)
@@ -5071,7 +5102,7 @@ c
      4          emit_tc_g(i), emit_oc_g(i), emit_bc_g(i),
      5          burnfrac_g(i), probfire_g(i),lucemcom_g(i), 
      6          lucltrin_g(i), lucsocin_g(i),
-     7          grclarea(i)
+     7          grclarea(i), bterm_g(i), lterm_g(i), mterm_g(i)
            endif
 
             if (compete .or. lnduseon) then 
@@ -5154,6 +5185,9 @@ c
            lucsocin_mo_g(i) =0.0
            lucltrin_mo_g(i) =0.0
            burnfrac_mo_g(i) =0.0
+           bterm_mo_g(i)    =0.0
+           lterm_mo_g(i)    =0.0
+           mterm_mo_g(i)    =0.0
 
           endif !mid-month
 c
@@ -5190,6 +5224,10 @@ c
            lucsocin_yr_g(i)=0.0
            lucltrin_yr_g(i)=0.0
            burnfrac_yr_g(i)=0.0
+           bterm_yr_g(i)=0.0 
+           lterm_yr_g(i)=0.0
+           mterm_yr_g(i)=0.0
+
           endif
 
 861     continue
@@ -5248,8 +5286,10 @@ c
            lucltrin_mo_m(i,m) =lucltrin_mo_m(i,m)
      &                             +lucltrinrow(i,m)
 !          Sum the probfire now, later we will make it a per day value. 
-           probfire_mo_m(i,m) =probfire_mo_m(i,m) + probfirerow(i,m) !* (1./365.)  !flag
-
+           probfire_mo_m(i,m) =probfire_mo_m(i,m) + probfirerow(i,m) 
+           bterm_mo_m(i,m) = bterm_mo_m(i,m) + btermrow(i,m)
+           lterm_mo_m(i,m) = lterm_mo_m(i,m) + ltermrow(i,m)
+           mterm_mo_m(i,m) = mterm_mo_m(i,m) + mtermrow(i,m)
 c
            do 865 nt=1,nmon
 c
@@ -5385,6 +5425,13 @@ c
                probfire_mo_m(i,m)=probfire_mo_m(i,m)*(1./monthdays(nt))
                probfire_mo_g(i)=probfire_mo_g(i)
      &                          +probfire_mo_m(i,m)*farerow(i,m)   
+               bterm_mo_m(i,m)=bterm_mo_m(i,m)*(1./monthdays(nt))
+               bterm_mo_g(i) =bterm_mo_g(i)+bterm_mo_m(i,m)*farerow(i,m)  
+               lterm_mo_m(i,m)=lterm_mo_m(i,m)*(1./monthdays(nt))
+               lterm_mo_g(i) =lterm_mo_g(i)+lterm_mo_m(i,m)*farerow(i,m)  
+               mterm_mo_m(i,m)=mterm_mo_m(i,m)*(1./monthdays(nt))
+               mterm_mo_g(i) =mterm_mo_g(i)+mterm_mo_m(i,m)*farerow(i,m)  
+
 
              endif ! monthend (max lai and accumulated npp/gpp/nep over the whole month)
 c                  ! if(iday.eq.monthend(nt+1))
@@ -5454,8 +5501,9 @@ c            write to file .CT06M_M/.CT06M_G
      6               emit_bc_mo_m(i,m,j),probfire_mo_m(i,m),
      7               luc_emc_mo_m(i,m),lucltrin_mo_m(i,m),
      8               lucsocin_mo_m(i,m),burnfrac_mo_m(i,m,j),
-     9               ' TILE ',m,' PFT ',j,' FRAC ',farerow(i,m)*
-     a               fcancmxrow(i,m,j)
+     9               bterm_mo_m(i,m),lterm_mo_m(i,m),mterm_mo_m(i,m),
+     &               ' TILE ',m,' PFT ',j,' FRAC ',farerow(i,m)*
+     &               fcancmxrow(i,m,j)
                 end if
                end do
               end do
@@ -5467,7 +5515,8 @@ c            write to file .CT06M_M/.CT06M_G
      6               emit_oc_mo_g(i),emit_bc_mo_g(i),
      7               probfire_mo_g(i),luc_emc_mo_g(i),
      8               lucltrin_mo_g(i),lucsocin_mo_g(i),
-     8               burnfrac_mo_g(i),' GRDAV '
+     8               burnfrac_mo_g(i),bterm_mo_g(i),lterm_mo_g(i),
+     9               mterm_mo_g(i),' GRDAV '
 
             endif  !dofire/lnduseon
 
@@ -5501,6 +5550,9 @@ c              for the next round
                luc_emc_mo_m(i,m) =0.0
                lucsocin_mo_m(i,m) =0.0
                lucltrin_mo_m(i,m) =0.0
+               bterm_mo_m(i,m) =0.0
+               lterm_mo_m(i,m) =0.0
+               mterm_mo_m(i,m) =0.0 
 
              do j=1,icc
 
@@ -5589,7 +5641,10 @@ c
      &                                  soilcresvegrow(i,m,iccp1) 
 
             probfire_yr_m(i,m)=probfire_yr_m(i,m)
-     &                         +(probfirerow(i,m) * (1./365.))  
+     &                         +(probfirerow(i,m) * (1./365.))
+            bterm_yr_m(i,m)=bterm_yr_m(i,m)+(btermrow(i,m)*(1./365.))  
+            lterm_yr_m(i,m)=lterm_yr_m(i,m)+(ltermrow(i,m)*(1./365.))
+            mterm_yr_m(i,m)=mterm_yr_m(i,m)+(mtermrow(i,m)*(1./365.))
             luc_emc_yr_m(i,m)=luc_emc_yr_m(i,m)+lucemcomrow(i,m)
             lucsocin_yr_m(i,m)=lucsocin_yr_m(i,m)+lucsocinrow(i,m)
             lucltrin_yr_m(i,m)=lucltrin_yr_m(i,m)+lucltrinrow(i,m)
@@ -5690,6 +5745,9 @@ c
 
               probfire_yr_g(i)=probfire_yr_g(i)
      &                         +probfire_yr_m(i,m)*farerow(i,m)   
+              bterm_yr_g(i)=bterm_yr_g(i)+bterm_yr_m(i,m)*farerow(i,m)   
+              lterm_yr_g(i)=lterm_yr_g(i)+lterm_yr_m(i,m)*farerow(i,m)   
+              mterm_yr_g(i)=mterm_yr_g(i)+mterm_yr_m(i,m)*farerow(i,m)   
               luc_emc_yr_g(i)=luc_emc_yr_g(i)
      &                         +luc_emc_yr_m(i,m)*farerow(i,m)   
               lucsocin_yr_g(i)=lucsocin_yr_g(i)
@@ -5765,6 +5823,7 @@ c            Write to file .CT06Y_M/.CT06Y_G
      6            emit_bc_yr_m(i,m,j),probfire_yr_m(i,m),
      7            luc_emc_yr_m(i,m),lucltrin_yr_m(i,m),
      8            lucsocin_yr_m(i,m),burnfrac_yr_m(i,m,j),
+     9            bterm_yr_m(i,m),lterm_yr_m(i,m),mterm_yr_m(i,m),
      9            ' TILE ',m,' PFT ',j,' FRAC '
      a            ,farerow(i,m)*fcancmxrow(i,m,j)
              end if
@@ -5777,7 +5836,8 @@ c            Write to file .CT06Y_M/.CT06Y_G
      6            emit_pm25_yr_g(i),emit_tpm_yr_g(i),emit_tc_yr_g(i),
      7            emit_oc_yr_g(i),emit_bc_yr_g(i),probfire_yr_g(i),
      8            luc_emc_yr_g(i),lucltrin_yr_g(i),
-     9            lucsocin_yr_g(i),burnfrac_yr_g(i),' GRDAV'
+     9            lucsocin_yr_g(i),burnfrac_yr_g(i),bterm_yr_g(i),
+     a            lterm_yr_g(i),mterm_yr_g(i), ' GRDAV'
 
            endif !dofire,lnduseon
 
@@ -5811,6 +5871,9 @@ c             for the next round
               luc_emc_yr_m(i,m)=0.0
               lucsocin_yr_m(i,m)=0.0
               lucltrin_yr_m(i,m)=0.0
+              bterm_yr_m(i,m)=0.0
+              lterm_yr_m(i,m)=0.0
+              mterm_yr_m(i,m)=0.0
 
                do j = 1, icc 
                 laimaxg_yr_m(i,m,j)=0.0
@@ -5853,8 +5916,8 @@ C
 8105  FORMAT(1X,I5,15F10.3,2(A6,I2),A6,F8.2)
 8106  FORMAT(1X,I4,I5,11F10.5,9L5,2(A6,I2))
 8107  FORMAT(1X,I5,11F10.5,9L5,2(A6,I2))
-8108  FORMAT(1X,I5,17F10.3,2(A6,I2),A6,F8.2)
-8109  FORMAT(1X,I4,I5,17F10.3,2(A6,I2),A6,F8.2)
+8108  FORMAT(1X,I5,20F10.3,2(A6,I2),A6,F8.2)
+8109  FORMAT(1X,I4,I5,20F10.3,2(A6,I2),A6,F8.2)
 C
 C     OPEN AND WRITE TO THE RESTART FILES
 C

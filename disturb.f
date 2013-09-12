@@ -4,7 +4,7 @@
      3                    prbfrhuc, rmatctem, extnprob, pftareab,
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,    thice,   popdin, lucemcom,
-     7                      dofire,   
+     7                      dofire,   currlat,
 c    8 ------------------ inputs above this line ----------------------   
      9                    stemltdt, rootltdt, glfltrdt, blfltrdt,
      a                    pftareaa, glcaemls, rtcaemls, stcaemls,
@@ -12,7 +12,7 @@ c    8 ------------------ inputs above this line ----------------------
      c                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      d                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      e                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
-     f                    burnvegf )
+     f                    burnvegf, bterm,    mterm,    lterm )
 c    g ------------------outputs above this line ----------------------
 c
 C               Canadian Terrestrial Ecosystem Model (CTEM)
@@ -140,7 +140,7 @@ c
      3       fcancmx(ilg,icc),      lightng(ilg),litrmass(ilg,icc+1),
      4          prbfrhuc(ilg),     extnprob(ilg), pftareab(ilg,icc),
      5   rmatctem(ilg,icc,ignd),     thice(ilg,ignd),            popdin,
-     6          lucemcom(ilg) 
+     6          lucemcom(ilg),    tmpprob(ilg),  currlat(ilg) 
 c
       real  stemltdt(ilg,icc), rootltdt(ilg,icc), glfltrdt(ilg,icc),
      1          burnarea(ilg), pftareaa(ilg,icc), glcaemls(ilg,icc),
@@ -179,7 +179,7 @@ c
      1                 fden_m
 c
 c     ------------------------------------------------------------------
-c                     constants used in the model
+c                     Constants used in the model
 c     Note the structure of vectors which shows the CLASS
 c     PFTs (along rows) and CTEM sub-PFTs (along columns)
 c
@@ -190,14 +190,13 @@ c     grasses     |   c3        c4       ---
 c
 c     min. and max. vegetation biomass thresholds to initiate fire, kg c/m^2
 c      data bmasthrs/0.2, 1.0/ !ORIG
-      data bmasthrs/0.25, 1.0/ !testing
-c
+      data bmasthrs/0.4, 1.2/ ! testing
+!     **Lowering the bmasthrs gets too much burning outside of the tropics, 
+!     however maybe this higher value prevents the savannahs from burning more? -JM
+
 c     extinction moisture content for estimating fire likeliness due
 c     to soil moisture
-c     orig:
-c      data extnmois/0.30/ !ORIG
-c     flag testing:
-      data extnmois/0.35/
+      data extnmois/0.30/ !ORIG
 c
 c     lower cloud-to-ground lightning threshold for fire likelihood
 c     flashes/km^2.year
@@ -205,46 +204,53 @@ c     flashes/km^2.year
 c
 c     higher cloud-to-ground lightning threshold for fire likelihood
 c     flashes/km^2.year
-      data hgrlthrs/10.0/
+      data hgrlthrs/10.0/ !ORIG
 c
 c     parameter m (mean) and b of logistic distribution used for 
 c     estimating fire likelihood due to lightning
-      data parmlght/0.4/
+      data parmlght/0.8/  !ORIG 0.4
       data parblght/0.1/
+!     **Parmlght was increased to 0.8 to make it so areas with higher amounts of
+!     lightning have higher lterm. The saturation is still the same, but the 
+!     increase is more gradual at low lightning density. JM
+
+!     **These values were being calculated each time, they shouldn't be as they
+!     are just parameters. JM
+      data ymin/0.01798621/     !=1.0/( 1.0+exp((parmlght-0.0)/parblght) )
+      data ymax/0.9975273768/   !=1.0/( 1.0+exp((parmlght-1.0)/parblght) )
+      data slope/0.0204588331/  !=abs(0.0-ymin)+abs(1.0-ymax)
 c
 c     parameter alpha and f0 used for estimating wind function for
 c     fire spread rate
       data alpha/8.16326e-04/
 
-c     flag testing: 
-c     the fire spread rate in the absence of wind, now a derived 
-c     quantity from the formulation of the wind speed fire spread
-c     rate scalar
-c     old:
+c     Fire spread rate in the absence of wind
 c      data f0/0.1/ !ORIG
-c     new:
+c     new: 
+c     **Now a derived quantity from the formulation of the wind speed fire spread
+c     rate scalar
       data f0/0.05/
 c
 c     max. fire spread rate, km/hr
-c     flag try having a pft-dependent max spread rate
 c     old:
 c     data maxsprd/0.45/
-c     li et al. values:
+c     **Li et al. values:
       data maxsprd/0.54, 0.54, 0.00,
      &             0.40, 0.40, 0.40,
      &             0.00, 0.00, 0.00,
      &             0.72, 0.72, 0.00/
-c     flag testing:
-c      data maxsprd/0.45, 0.45, 0.00, !ORIG
-c     &             0.45, 0.45, 0.45,
-c     &             0.00, 0.00, 0.00,
-c     &             0.45, 0.45, 0.00/
 
 c     fraction of leaf biomass converted to gases due to combustion
-      data frco2lf/0.70, 0.70, 0.00,
-     &             0.70, 0.70, 0.70,
+c      data frco2lf/0.70, 0.70, 0.00, !ORIG
+c     &             0.70, 0.70, 0.70,
+c     &             0.00, 0.00, 0.00,
+c     &             0.80, 0.80, 0.00/
+
+      data frco2lf/0.60, 0.60, 0.00, !TEST
+     &             0.60, 0.60, 0.60,
      &             0.00, 0.00, 0.00,
-     &             0.80, 0.80, 0.00/
+     &             0.70, 0.70, 0.00/
+
 c
 c     fraction of leaf biomass becoming litter after combustion
       data frltrlf/0.20, 0.20, 0.00,
@@ -253,16 +259,28 @@ c     fraction of leaf biomass becoming litter after combustion
      &             0.10, 0.10, 0.00/
 c
 c     fraction of stem biomass converted to gases due to combustion
-      data frco2stm/0.20, 0.20, 0.00,
-     &              0.20, 0.10, 0.10,
+c      data frco2stm/0.20, 0.20, 0.00, !ORIG
+c     &              0.20, 0.10, 0.10,
+c     &              0.00, 0.00, 0.00,
+c     &              0.00, 0.00, 0.00/
+
+      data frco2stm/0.15, 0.15, 0.00, !TEST
+     &              0.15, 0.05, 0.05,
      &              0.00, 0.00, 0.00,
      &              0.00, 0.00, 0.00/
+
 c
 c     fraction of stem biomass becoming litter after combustion
-      data frltrstm/0.60, 0.60, 0.00,
-     &              0.60, 0.40, 0.40,
+c      data frltrstm/0.60, 0.60, 0.00,  !ORIG
+c     &              0.60, 0.40, 0.40,
+c     &              0.00, 0.00, 0.00,
+c     &              0.00, 0.00, 0.00/
+
+      data frltrstm/0.50, 0.50, 0.00,  !TEST
+     &              0.50, 0.30, 0.30,
      &              0.00, 0.00, 0.00,
      &              0.00, 0.00, 0.00/
+
 c
 c     fraction of root biomass converted to gases due to combustion
       data frco2rt/0.0, 0.0, 0.0,
@@ -632,13 +650,13 @@ c
           drgtstrs(i,j) = drgtstrs(i,j) /
      &     (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
           drgtstrs(i,j)=max(0.0, min(drgtstrs(i,j),1.0))
-c        next find this dryness factor averaged over the vegetated fraction
+c        Next find this dryness factor averaged over the vegetated fraction
           avgdryns(i) = avgdryns(i)+drgtstrs(i,j)*fcancmx(i,j)
          endif
 330     continue
 320   continue
 
-c     use average root zone vegetation dryness to find likelihood of
+c     Use average root zone vegetation dryness to find likelihood of
 c     fire due to moisture. 
 c
       do 380 i = il1, il2
@@ -661,7 +679,12 @@ c     a large no. of lightning flashes are more likely to cause fire than
 c     few lightning flashes.
 c
       do 400 i = il1, il2
-        c2glgtng(i)=0.25*lightng(i)   
+
+        !c2glgtng(i)=0.25*lightng(i)   !ORIG
+        !c2glgtng(i)=(1./(4.16+2.16*cos(currlat(i)*pi/180)))*lightng(i) !From Prentice and Mackerras
+!       ** New version from Price and Rind. More complete dataset than Prentice and Mackerras.          
+        c2glgtng(i)=0.219913*exp(0.0058899*abs(currlat(i)))*lightng(i)  ! approximation of Price and Rind equation.
+
         if( c2glgtng(i) .le. lwrlthrs) then
            betalght(i)=0.0
         else if ( c2glgtng(i) .gt. lwrlthrs .and.
@@ -670,21 +693,62 @@ c
         else if (c2glgtng(i) .ge. hgrlthrs) then
            betalght(i)=1.0
         endif
+
         y(i)=1.0/( 1.0+exp((parmlght-betalght(i))/parblght) )
-        ymin=1.0/( 1.0+exp((parmlght-0.0)/parblght) )
-        ymax=1.0/( 1.0+exp((parmlght-1.0)/parblght) )
-        slope=abs(0.0-ymin)+abs(1.0-ymax)
+!        No need to calculate each time, moved to parameters. JM. Sep 4 2013.
+!        ymin=1.0/( 1.0+exp((parmlght-0.0)/parblght) )
+!        ymax=1.0/( 1.0+exp((parmlght-1.0)/parblght) )
+!        slope=abs(0.0-ymin)+abs(1.0-ymax)
         temp=y(i)+(0.0-ymin)+betalght(i)*slope
 
-c     flag testing:
-c     determine the probability of fire due to human causes
+c     Determine the probability of fire due to human causes
 c     this is based upon the population density from the .popd
 c     read-in file
-        prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !new way
-c        prbfrhuc(i)=0.5 !ORIG (more or less) 
 
-        lterm(i)=temp+(1.0-temp)*prbfrhuc(i)
-        lterm(i)=max(0.0, min(lterm(i),1.0))
+!       FLAG testing. See old way below.
+
+!       ** Attempt to raise the probability of ignition for the tropics.
+        if (currlat(i) < 30. .and. currlat(i) > -30.) then
+
+         tmpprob(i)=0.
+!        ** First try - increase prbfrhuc to 1 always for grasslands.
+         do j = 1, icc 
+          if (j .eq. 8 .or. j .eq. 9) then !grass
+            tmpprob(i)=tmpprob(i) + 1.0  * fcancmx(i,j)
+          else  ! not grass - treat as per normal.
+            tmpprob(i)=tmpprob(i) + min(1.0,(popdin/popdthrshld)**0.43)
+     &                * fcancmx(i,j)
+          end if !grass/tree
+         end do !j loop
+
+          prbfrhuc(i) = tmpprob(i)
+
+          lterm(i)=temp+(1.0-temp)*prbfrhuc(i)
+          lterm(i)=max(0.0, min(lterm(i),1.0))
+
+!         ** Now we try to also raise lterm for grasslands (>50% grass cover)
+!         and during the dry season.  
+          if (fcancmx(i,8)+fcancmx(i,9) .gt. 0.50 .and. mterm(i) 
+     &                                   .gt. 0.8) then
+            lterm(i)=max(0.8,min(lterm(i),1.0))
+          end if 
+
+        else !extratropics. Treat as per normal.
+
+          prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !new way
+
+          lterm(i)=temp+(1.0-temp)*prbfrhuc(i)
+          lterm(i)=max(0.0, min(lterm(i),1.0))
+
+        end if
+
+!       OLD WAY:
+!        prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !Kloster way
+!        prbfrhuc(i)=0.5 !ORIG (more or less) 
+
+!        lterm(i)=temp+(1.0-temp)*prbfrhuc(i)
+!        lterm(i)=max(0.0, min(lterm(i),1.0))
+
 
 400   continue
 c
@@ -716,14 +780,13 @@ c         content of vegetation.
           wind(i)=wind(i)*3.60     ! change m/s to km/hr
 
 c         length to breadth ratio of fire
-c         flag testing: note, li et al. use a value of -0.06
 c         orig a&b paper value:
 c          lbratio(i)=1.0+10.0*(1.0-exp(-0.017*wind(i))) !ORIG
-c         li et al. value:
+c         Li et al. value, derived quantity:
           lbratio(i)=1.0+10.0*(1.0-exp(-0.06*wind(i)))
 
 c         flag testing:
-c         calculate the head to back ratio of the fire
+c         **New. Calculate the head to back ratio of the fire
           hb_interm = (lbratio(i)**2 - 1.0)**0.5
           hbratio(i) = (lbratio(i) + hb_interm)/(lbratio(i) - hb_interm)
 
@@ -755,8 +818,8 @@ c
 c         Area burned in 1 day, km^2
 
 c         The assumed ratio of the head to back ratio was 5.0 in 
-c         arora and boer 2005 jgr, this value can be calculated
-c         as was pointed out in li et al. 2012 biogeosci. We 
+c         Arora and Boer 2005 JGR, this value can be calculated
+c         as was pointed out in Li et al. 2012 Biogeosci. We 
 c         adopt the calculated version below
 c         flag testing:
 c         old:
@@ -770,10 +833,11 @@ c         based on fire extinguishing probability we estimate the number
 c         which needs to be multiplied with arbn1day to estimate average 
 c         area burned
 
-c         flag testing:
+c         flag testing: Kloster way
 c         fire extinction is based upon population density
            extnprob(i)=max(0.0,0.9-exp(-0.025*popdin))
            extnprob(i)=0.5+extnprob(i)/2.0
+
 c          extnprob(i)=0.5 !ORIG
 
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/
