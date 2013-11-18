@@ -29,7 +29,8 @@ c    ------- following 5 lines are competition related variables ----
      n                    geremort, intrmort,   lambda,  lyglfmas,
      o                    pftexist, twarmm,    tcoldm,       gdd5,
      1                     aridity, srplsmon, defctmon,  anndefct,
-     2                    annsrpls,  annpcp, anpotevp,burnvegf,
+     2                    annsrpls,  annpcp, anpotevp,dry_season_length,
+     3                    burnvegf,
 c
 c    -------------- inputs updated by ctem are above this line ------
 c
@@ -45,7 +46,7 @@ c
      y                   dstcemls3, paicgat,  slaicgat,    
      z                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      1                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
-     2                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
+     2                    emit_tpm, emit_tc,  emit_oc,    emit_bc,
      a                      bterm,    lterm,    mterm,
      3                         cc,       mm,
      4                      rmlveg,  rmsveg,   rmrveg,    rgveg,
@@ -273,6 +274,7 @@ c     anndefct  - annual water deficit (mm)
 c     annsrpls  - annual water surplus (mm)
 c     annpcp    - annual precipitation (mm)
 c     anpotevp  - annual potential evaporation (mm)
+c     dry_season_length - length of the dry season (months)
 c
 c                other quantities
 c
@@ -337,7 +339,7 @@ c
 c
       logical   lnduseon,  dofire, do_mortality, mosaic
 
-      integer      il1,       il2,
+      integer      il1,       il2,     
      1           iday,        i,        j,        k,    stdaln,    lath,
      2         icount,        n,        m,  sort(icc),
      3   nol2pfts(ican),       k1,       k2,            spinfast,
@@ -383,6 +385,7 @@ c
      5     tcoldm_cmp(nlat),   gdd5_cmp(nlat),    aridity_cmp(nlat),
      6     srplsmon_cmp(nlat), defctmon_cmp(nlat),anndefct_cmp(nlat),
      7     annsrpls_cmp(nlat), annpcp_cmp(nlat),  anpotevp_cmp(nlat),
+     &    dry_season_length_cmp(nlat),
      8     lucemcom_cmp(nlat),  lucltrin_cmp(nlat), lucsocin_cmp(nlat)
 c
       real  stemmass(ilg,icc),   rootmass(ilg,icc), litrmass(ilg,iccp1),
@@ -471,7 +474,8 @@ c
       real  vgbiomas_veg(ilg,icc)
 c  
       real       precip(ilg),         netrad(ilg),         tcurm(ilg),
-     1           annpcp(ilg),       anpotevp(ilg),        twarmm(ilg),
+     1           annpcp(ilg),      anpotevp(ilg),dry_season_length(ilg),
+     &           twarmm(ilg),
      2           tcoldm(ilg),           gdd5(ilg),       aridity(ilg),
      3         srplsmon(ilg),       defctmon(ilg),     tmonth(12,ilg),
      4         anpcpcur(ilg),        anpecur(ilg),       gdd5cur(ilg),
@@ -514,16 +518,16 @@ c     soil c pool
 c
 c     minimum lai below which a pft doesn't expand
       data laimin/1.0, 1.0, 0.0,
-     &            2.0, 1.5, 1.0,
+     &            2.0, 1.0, 1.0,  ! flag test PFT 4 was 1.5
      &            1.0, 1.0, 0.0,
-     &            0.5, 0.5, 0.0/
+     &            0.5, 0.5, 0.0/  
 c
 c     maximum lai above which a pft always expands and lambdamax fraction
 c     of npp is used for expansion
       data laimax/3.0, 3.0, 0.0,
-     &            8.0, 8.0, 5.0,
+     &            8.0, 5.0, 5.0,  ! flag test. PFT 4 was 8.0
      &            8.0, 8.0, 0.0,
-     &            4.0, 4.0, 0.0/
+     &            4.0, 4.0, 0.0/  
 c
 c     max. fraction of npp that is allocated for reproduction/colonization
       data lambdamax/0.10/
@@ -665,6 +669,7 @@ c
      k                         srplscur, defctcur,   twarmm,   tcoldm,
      l                             gdd5,  aridity, srplsmon, defctmon,
      m                         anndefct, annsrpls,   annpcp, anpotevp,
+     &                      dry_season_length,
      &                         lucemcom, lucltrin, lucsocin, pfcancmx,
      &                         nfcancmx, 
 c    ------------------- inputs above this line ---------------------
@@ -686,6 +691,7 @@ c    ------------------- intermediate and saved above this line -----
      2                       tcoldm_cmp,      gdd5_cmp,   aridity_cmp,
      3                     srplsmon_cmp,  defctmon_cmp,  anndefct_cmp,
      4                     annsrpls_cmp,    annpcp_cmp,  anpotevp_cmp,
+     &                     dry_season_length_cmp,
      5                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,
      6                     pfcancmx_cmp,   nfcancmx_cmp )
 c    ------------------- outputs above this line --------------------
@@ -701,7 +707,7 @@ c
      4         surmncur_cmp, defmncur_cmp,  srplscur_cmp,defctcur_cmp,
      5           twarmm_cmp,   tcoldm_cmp,      gdd5_cmp, aridity_cmp,
      6         srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,
-     7           annpcp_cmp, anpotevp_cmp)
+     7           annpcp_cmp, anpotevp_cmp, dry_season_length_cmp)
 
        if (inibioclim) then
 c
@@ -712,7 +718,8 @@ c
      1                   sort,     nol2pfts,      
      2             twarmm_cmp,   tcoldm_cmp,     gdd5_cmp,  aridity_cmp,
      3           srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,
-     4             annpcp_cmp, anpotevp_cmp, pftexist_cmp)
+     4             annpcp_cmp, anpotevp_cmp, pftexist_cmp,
+     5             dry_season_length_cmp)
 c     
 c
 c        call competition subroutine which on the basis of previous day's
@@ -800,6 +807,7 @@ c
      o                         tcoldm_cmp,     gdd5_cmp,  aridity_cmp,
      p                       srplsmon_cmp, defctmon_cmp, anndefct_cmp,
      q                       annsrpls_cmp,   annpcp_cmp, anpotevp_cmp,
+     &                     dry_season_length_cmp,
      &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,
      &                     pfcancmx_cmp,   nfcancmx_cmp,
 c
@@ -821,6 +829,7 @@ c
      2                        defctcur,   twarmm,   tcoldm,     gdd5, 
      3                         aridity, srplsmon, defctmon, anndefct,
      4                        annsrpls,   annpcp, anpotevp,
+     &                         dry_season_length,
      5                         lucemcom, lucltrin, lucsocin, pfcancmx,
      6                         nfcancmx )
 c    ------------------- updates above this line --------------------
@@ -838,7 +847,7 @@ c
      4                 surmncur, defmncur,  srplscur,defctcur,
      5                 twarmm,   tcoldm,      gdd5, aridity,
      6                 srplsmon, defctmon, anndefct, annsrpls,
-     7                 annpcp, anpotevp )
+     7                 annpcp, anpotevp, dry_season_length )
 c
         if (inibioclim) then
 
@@ -849,7 +858,7 @@ c
      1                     sort,     nol2pfts,        
      2                   twarmm,   tcoldm,     gdd5,  aridity,
      3                   srplsmon, defctmon, anndefct, annsrpls,
-     4                   annpcp, anpotevp, pftexist )
+     4                   annpcp, anpotevp, pftexist, dry_season_length )
 c     
 c       call competition subroutine which on the basis of previous day's
 c       npp estimates changes in fractional coverage of pfts

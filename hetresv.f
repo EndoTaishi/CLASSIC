@@ -96,9 +96,9 @@ c     soil carbon respiration rates at 15 c in kg c/kg c.year
      &              0.0208, 0.0208, 0.0208,
 c     &              0.0310, 0.0310, 0.0000,
      &              0.0350, 0.0350, 0.0000, 
-     &              0.0125, 0.0125, 0.0000/ 
+     &              0.0205, 0.0205, 0.0000/  !flag JM test Oct 9 2013. was 0.0125 for both
 c
-c     parameter determining average carbon profile, same as in bio2str f0r
+c     parameter determining average carbon profile, same as in bio2str for
 c     average root profile
 c
       data abar/4.70, 5.86, 0.00,

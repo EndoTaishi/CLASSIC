@@ -119,7 +119,7 @@ c     tot_emit_dom - tot_emit converted to kg dom / m2
 
 c     hb_interm - interm calculation
 c     hbratio   - head to back ratio of ellipse
-c     burnvegf - total per PFT areal fraction burned, (%)
+c     burnvegf - total per PFT areal fraction burned
 
       use ctem_params,        only : ignd, icc, ilg, ican, zero,
      1                               kk, pi, c2dom
@@ -176,7 +176,7 @@ c
      b       burnvegf(ilg,icc)   
 
       real          hb_interm,      hbratio(ilg),       popdthrshld,
-     1                 fden_m
+     1                 fden_m,      proptotb(ilg) !test var flag
 c
 c     ------------------------------------------------------------------
 c                     Constants used in the model
@@ -238,18 +238,18 @@ c     **Li et al. values:
       data maxsprd/0.54, 0.54, 0.00,
      &             0.40, 0.40, 0.40,
      &             0.00, 0.00, 0.00,
-     &             0.72, 0.72, 0.00/
+     &             2.00, 2.00, 0.00/  !was 0.72 for both. JM Oct2
 
 c     fraction of leaf biomass converted to gases due to combustion
-c      data frco2lf/0.70, 0.70, 0.00, !ORIG
-c     &             0.70, 0.70, 0.70,
-c     &             0.00, 0.00, 0.00,
-c     &             0.80, 0.80, 0.00/
-
-      data frco2lf/0.60, 0.60, 0.00, !TEST
-     &             0.60, 0.60, 0.60,
+      data frco2lf/0.70, 0.70, 0.00, !ORIG
+     &             0.70, 0.70, 0.70,
      &             0.00, 0.00, 0.00,
-     &             0.70, 0.70, 0.00/
+     &             0.80, 0.80, 0.00/
+
+c      data frco2lf/0.60, 0.60, 0.00, !TEST
+c     &             0.60, 0.60, 0.60,
+c     &             0.00, 0.00, 0.00,
+c     &             0.70, 0.70, 0.00/
 
 c
 c     fraction of leaf biomass becoming litter after combustion
@@ -259,15 +259,15 @@ c     fraction of leaf biomass becoming litter after combustion
      &             0.10, 0.10, 0.00/
 c
 c     fraction of stem biomass converted to gases due to combustion
-c      data frco2stm/0.20, 0.20, 0.00, !ORIG
-c     &              0.20, 0.10, 0.10,
-c     &              0.00, 0.00, 0.00,
-c     &              0.00, 0.00, 0.00/
-
-      data frco2stm/0.15, 0.15, 0.00, !TEST
-     &              0.15, 0.05, 0.05,
+      data frco2stm/0.20, 0.20, 0.00, !ORIG
+     &              0.20, 0.10, 0.10,
      &              0.00, 0.00, 0.00,
      &              0.00, 0.00, 0.00/
+
+c      data frco2stm/0.15, 0.15, 0.00, !TEST
+c     &              0.15, 0.05, 0.05,
+c     &              0.00, 0.00, 0.00,
+c     &              0.00, 0.00, 0.00/
 
 c
 c     fraction of stem biomass becoming litter after combustion
@@ -713,12 +713,12 @@ c     read-in file
          tmpprob(i)=0.
 !        ** First try - increase prbfrhuc to 1 always for grasslands.
          do j = 1, icc 
-          if (j .eq. 8 .or. j .eq. 9) then !grass
-            tmpprob(i)=tmpprob(i) + 1.0  * fcancmx(i,j)
-          else  ! not grass - treat as per normal.
+   !       if (j .eq. 8 .or. j .eq. 9) then !grass
+   !         tmpprob(i)=tmpprob(i) + 1.0  * fcancmx(i,j)
+   !       else  ! not grass - treat as per normal.
             tmpprob(i)=tmpprob(i) + min(1.0,(popdin/popdthrshld)**0.43)
      &                * fcancmx(i,j)
-          end if !grass/tree
+    !      end if !grass/tree
          end do !j loop
 
           prbfrhuc(i) = tmpprob(i)
@@ -835,7 +835,8 @@ c         area burned
 
 c         flag testing: Kloster way
 c         fire extinction is based upon population density
-           extnprob(i)=max(0.0,0.9-exp(-0.025*popdin))
+!           extnprob(i)=max(0.0,0.9-exp(-0.025*popdin)) !orig
+           extnprob(i)=0.9 * (1.0 - exp(-0.025*popdin)) ! test JM Oct 7 2013
            extnprob(i)=0.5+extnprob(i)/2.0
 
 c          extnprob(i)=0.5 !ORIG
@@ -855,9 +856,14 @@ c     make sure area burned is not greater than the vegetated area.
 c     distribute burned area equally amongst pfts present in the grid cell.
 c 
       do 460 i = il1, il2
-
+        proptotb(i) = 0.
         do j = 1,icc
         vegarea(i)= vegarea(i) + pftareab(i,j)
+
+        !flag testing.
+          n = sort(j) 
+        proptotb(i) = proptotb(i) + maxsprd(n)*maxsprd(n) * fcancmx(i,j) 
+
         end do  
  
         if(burnarea(i) .gt. vegarea(i)) then
@@ -879,6 +885,11 @@ c
          if (fcancmx(i,m) .gt. 0.0) then
           if(vegarea(i) .gt. zero)then
             burnveg(i,m)= (burnarea(i)*pftareab(i,m)/vegarea(i))
+!            write(*,*)'old',i,m,burnveg(i,m)
+            n = sort(m)
+            burnveg(i,m)=burnarea(i)*maxsprd(n)*maxsprd(n)*fcancmx(i,m)
+     &                   /proptotb(i)
+!            write(*,*)'new',i,m,burnveg(i,m)
             if(j .eq. 3)then  !crops not allowed to burn
               burnveg(i,m)= 0.0
             endif
@@ -990,7 +1001,7 @@ c          units: g compound / m2
            emit_bc(i,j)   = emif_bc(n) * tot_emit_dom
 
 !         Output the burned area per PFT
-          burnvegf(i,j)=100.*burnveg(i,j)/grclarea(i)
+          burnvegf(i,j)=burnveg(i,j)/grclarea(i)
 
           endif
 c

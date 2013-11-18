@@ -22,7 +22,7 @@ subroutine  bioclim (   iday,        ta,   precip,   netrad, &
                          surmncur,  defmncur, srplscur,  defctcur, &
                            twarmm,    tcoldm,     gdd5,  aridity, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
-                           annpcp,  anpotevp)    
+                           annpcp,  anpotevp, dry_season_length)    
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                Bioclimatic Parameters Estimation Subroutine 
@@ -93,14 +93,20 @@ real, dimension(nilg), intent(inout) :: defctmon  ! number of months in a year w
 real, dimension(nilg), intent(inout) :: anndefct  ! annual water deficit (mm) 
 real, dimension(nilg), intent(inout) :: annsrpls  ! annual water surplus (mm)
 real, dimension(nilg), intent(inout) :: annpcp    ! annual precipitation (mm)
-real, dimension(nilg), intent(inout) :: anpotevp  ! annual potential evaporation (mm)
+real, dimension(nilg), intent(inout) :: anpotevp  ! annual potential evaporation (mm) 
+real, dimension(nilg), intent(inout) :: dry_season_length ! annual maximum dry month length   !Rudra
  
 ! local variables
 real, dimension(nilg) :: tccuryr
 real, dimension(nilg) :: twcuryr
 real, dimension(nilg) :: aridcur
 real :: wtrbal
-integer :: month, atmonthend, i, j, k,curmonth
+integer :: month, atmonthend, temp, nmax, i, j, k, curmonth, m, n, l
+integer, save, dimension(:,:), allocatable :: wet_dry_mon_index   !Rudra
+integer, save, dimension(:,:), allocatable :: wet_dry_mon_index2   !Rudra
+real, dimension(:), allocatable, save :: dry_season_length_curyr !current year's maximum dry month length 
+
+
 
 ! local parameters
 real, parameter :: eftime = 25.00 ! e-folding time scale for updating bioclimatic parameters (years)
@@ -111,6 +117,12 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
 !     initializations
 
       if(iday.eq.1)then
+
+        ! Allocate the arrays to find the length of dry season
+          allocate(wet_dry_mon_index(nilg,12))
+          allocate(wet_dry_mon_index2(nilg,24))
+          allocate(dry_season_length_curyr(nilg))
+
         do 100 i = il1, il2
           gdd5cur(i)=0.0    ! gdd5 for the current year
           anpcpcur(i)=0.0   ! annual precip. for the current year
@@ -123,6 +135,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           tcurm(i)=0.0      ! temperature of current month
           srplscur(i)=0.0   ! current month's water surplus
           defctcur(i)=0.0   ! current month's water deficit
+          dry_season_length_curyr(i) = 0   !current year's maximum dry month length    !Rudra
 
          do month = 1,12
           tmonth(month,i)=0.0
@@ -176,8 +189,10 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           tmonth(curmonth,i)=tcurm(i)
           if( srplscur(i).ge.defctcur(i) )then
             surmncur(i) = surmncur(i) + 1
+            wet_dry_mon_index(i,curmonth) = 1    !Rudra
           else if(srplscur(i).lt.defctcur(i) )then
             defmncur(i) = defmncur(i) + 1
+            wet_dry_mon_index(i,curmonth) = -1   !Rudra
           endif
           srpcuryr(i)=srpcuryr(i)+srplscur(i)
           dftcuryr(i)=dftcuryr(i)+defctcur(i)
@@ -187,6 +202,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           defctcur(i)=0.0 ! current month's water deficit
 
         endif
+
         if(iday.eq.365)then
           twcuryr(i)=-9000.0
           tccuryr(i)=9000.0
@@ -195,7 +211,32 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           else
             aridcur(i)=100.0
           endif
-        endif
+!................................../Rudra
+                             
+            do j = 1,12          !this loop double up the size of the "wet_dry_mon_index" matrix 
+                do k = 1,2
+                   m = (k-1)*12 + j
+                   wet_dry_mon_index2(i,m) = wet_dry_mon_index(i,j)
+                end do
+            end do
+!...................MAXIMUM LENGTH OF DRY MONTH.................................
+
+            n = 0       !number of dry month
+            nmax = 0    !maximum length of dry month
+               do l = 1, 24
+                   temp = wet_dry_mon_index2(i,l) 
+                   if(temp.eq.-1)then
+                      n = n+1
+                      nmax = max(nmax, n) 
+                   else 
+                      n = 0
+                   end if 
+                end do 
+            nmax = min(nmax, 12)
+            dry_season_length_curyr(i) = nmax
+!..................................\Rudra
+        endif     !iday=365
+
 250   continue
 
 !     If its the end of year, then find the temperature of the warmest
@@ -220,6 +261,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
             anndefct(i)=dftcuryr(i)
             annpcp(i)=anpcpcur(i)
             anpotevp(i)=anpecur(i)
+            dry_season_length(i)=dry_season_length_curyr(i)    !Rudra
             inibioclim=.true.
           else
             twarmm(i)=twarmm(i)*factor + twcuryr(i)*(1.0-factor)
@@ -232,8 +274,15 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
             anndefct(i)=anndefct(i)*factor + dftcuryr(i)*(1.0-factor)
             annpcp(i)=annpcp(i)*factor + anpcpcur(i)*(1.0-factor)
             anpotevp(i)=anpotevp(i)*factor + anpecur(i)*(1.0-factor)
+            dry_season_length(i)=dry_season_length(i)*factor + dry_season_length_curyr(i)*(1.0-factor)    !Rudra
           endif
 280     continue
+
+         ! Deallocate the arrays for dry season length
+          deallocate(wet_dry_mon_index)
+          deallocate(wet_dry_mon_index2)
+          deallocate(dry_season_length_curyr)
+
       endif
 
       return
@@ -246,8 +295,7 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
                              sort,  nol2pfts,                 &
                            twarmm,    tcoldm,     gdd5,  aridity, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
-                           annpcp,  anpotevp,      &
-                         pftexist) 
+                           annpcp,  anpotevp,pftexist,dry_season_length) 
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                          PFT Existence Subroutine 
@@ -299,6 +347,7 @@ real, dimension(nilg), intent(in) :: anndefct  ! annual water deficit (mm)
 real, dimension(nilg), intent(in) :: annsrpls  ! annual water surplus (mm)
 real, dimension(nilg), intent(in) :: annpcp    ! annual precipitation (mm)
 real, dimension(nilg), intent(in) :: anpotevp  ! annual potential evaporation (mm)
+real, dimension(nilg), intent(in) :: dry_season_length ! length of dry season (months)
 
 logical, dimension(nilg,icc), intent(out) :: pftexist(nilg,icc) !binary array indicating pfts exist (=1) or not (=0)
 
@@ -326,13 +375,13 @@ integer :: i,j
 ! not used 
 
 ! minimum coldest month temperature
-real, dimension(kk), parameter :: tcoldmin = [ -45.0, -999.9,   0.0, & !test pft 1 was -32.5
+real, dimension(kk), parameter :: tcoldmin = [ -40.0, -999.9,   0.0, & !test pft 1 was -32.5
                                                  9.0, -999.9,   4.0, & !test pft 3 and 5 was 15.5
                                               -999.9, -999.9,   0.0, &
                                               -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
 
 ! maximum coldest month temperature
-real, dimension(kk), parameter :: tcoldmax = [ 22.0,   -2.0,   0.0, &
+real, dimension(kk), parameter :: tcoldmax = [ 22.0,  -17.0,   0.0, &  ! PFT 2 was -2
                                               999.9,   15.5, 900.0, &       
                                               999.9,  999.9,   0.0, &
                                               999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0
@@ -351,9 +400,16 @@ real, dimension(kk), parameter :: gdd5lmt = [ 300.0,  300.0,  0.0, &
 
 ! aridity index limit for broadleaf drought/dry deciduous trees
 real, dimension(kk), parameter :: aridlmt = [ 9.9,  9.9,    0.0, &
-                                              9.9,  9.9,    1.2, & ! PFT 5 was 1.5.       
+                                              9.9,  9.9,    1.0, & ! PFT 5 was 1.5.       
                                               9.9,  9.9,    0.0, &
                                               9.9,  9.9,    0.0 ]
+
+! aridity index limit for broadleaf drought/dry deciduous trees
+real, dimension(kk), parameter :: dryseasonlmt=[ 99.9,  99.9,    0.0, &
+                                              99.9,  99.9,    5.0, & 
+                                              99.9,  99.9,    0.0, &
+                                              99.9,  99.9,    0.0 ]
+
 
 !     ---------------------------------------------------------------
 
@@ -400,7 +456,8 @@ real, dimension(kk), parameter :: aridlmt = [ 9.9,  9.9,    0.0, &
 
 !       broadleaf deciduous dry
         j=5
-        if(tcoldm(i).ge.tcoldmin(sort(j)).and. aridity(i).ge.aridlmt(sort(j)))then
+        if(tcoldm(i).ge.tcoldmin(sort(j)).and. aridity(i).ge.aridlmt(sort(j)) &
+           .and.dry_season_length(i).ge.dryseasonlmt(sort(j)))then
            pftexist(i,j)=.true.
         else
            pftexist(i,j)=.false.
@@ -490,7 +547,7 @@ real, dimension(nilg,icc), intent(in) :: geremort  ! growth related mortality (1
 real, dimension(nilg,icc), intent(in) :: intrmort  ! intrinsic (age related) mortality (1/day)
 real, dimension(nilg,icc), intent(in) :: lambda    ! fraction of npp that is used for spatial expansion
 real, dimension(nilg,icc), intent(in) :: bmasveg   ! total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-real, dimension(nilg,icc), intent(in) :: burnvegf   ! areas burned, km^2, for 9 ctem pfts
+real, dimension(nilg,icc), intent(in) :: burnvegf   ! fractional areas burned, for 9 ctem pfts
 
 real, dimension(nilg,icc), intent(inout) :: gleafmas  ! green leaf mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: bleafmas  ! brown leaf mass for each of the 9 ctem pfts, kg c/m2
@@ -632,7 +689,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
         a=0 ! alpha
         b=1 ! beta
         g=0 ! gamma
-        colmult=1.00 ! multiplier for colonization rate
+        colmult=1.00  ! multiplier for colonization rate
       !  sdfracin=2   ! seed fraction index ! All seed values set to 'seed'
       else if(boer .and. (.not.lotvol) .and. (.not.arora))then
         a=0 ! alpha

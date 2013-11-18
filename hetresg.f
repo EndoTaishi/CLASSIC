@@ -6,7 +6,7 @@ c    -------------- inputs above this line, outputs below -------------
      4                      litres,   socres)  
 c
 C               Canadian Terrestrial Ecosystem Model (CTEM) 
-C           Heterotrophic Respiration Subtoutine For Bare Fraction
+C           Heterotrophic Respiration Subroutine For Bare Fraction
 c
 c     11  Apr. 2003 - this subroutine calculates heterotrophic respiration
 c     V. Arora        over the bare subarea of a grid cell (i.e. ground only

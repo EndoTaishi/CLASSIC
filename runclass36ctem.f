@@ -459,6 +459,7 @@ c
        real, dimension(ilg) :: annsrpls  ! annual water surplus (mm)
        real, dimension(ilg) :: annpcp    ! annual precipitation (mm)
        real, dimension(ilg) :: anpotevp  ! annual potential evaporation (mm)
+       real, dimension(ilg) :: dry_season_length  ! length of dry season (months)
 c
        real lyglfmasgat(ilg,icc),   geremortgat(ilg,icc),
      1      intrmortgat(ilg,icc),     lambdagat(ilg,icc),
@@ -1667,7 +1668,7 @@ C
      &     'mm.yr    mm.yr')
 6024  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ',
      &'RESULTS')
-6124  FORMAT('  MONTH  YEAR  LAIMAXG  VGBIOMAS  LITTER    SOIL C  ', 
+6124  FORMAT('  MONTH  YEAR  LAIMAXG  VGBIOMAS  LITTER    SOIL_C  ', 
      &'  NPP       GPP        NEP       NBP    HETRES',
      &'   AUTORES    LITRES   SOILCRES')
 6224  FORMAT('                 m2/m2  Kg C/m2  Kg C/m2   Kg C/m2  ',
@@ -1842,7 +1843,7 @@ c
           read(11,*) twarmm(i), tcoldm(i), gdd5(i), aridity(i),
      1              srplsmon(i)
           read(11,*) defctmon(i), anndefct(i), annsrpls(i), 
-     1              annpcp(i), anpotevp(i)
+     1              annpcp(i), anpotevp(i), dry_season_length(i)
          else if (compete .and. .not. inibioclim) then ! set them to zero
            twarmm(i)=0.0
            tcoldm(i)=0.0
@@ -1854,6 +1855,7 @@ c
            annsrpls(i)=0.0
            annpcp(i)=0.0
            anpotevp(i)=0.0
+           dry_season_length(i) = 0.0
          endif
 
 71    continue
@@ -3283,7 +3285,8 @@ c    -------------- inputs used by ctem are above this line ---------
      &            geremortgat, intrmortgat,    lambdagat, lyglfmasgat,
      &            pftexistgat,      twarmm,       tcoldm,        gdd5,
      1                aridity,    srplsmon,     defctmon,    anndefct,
-     2               annsrpls,      annpcp,     anpotevp,  burnvegfgat,   
+     2               annsrpls,      annpcp,  anpotevp,dry_season_length,
+     &              burnvegfgat,   
 c    -------------- inputs updated by ctem are above this line ------
      k                 nppgat,      nepgat, hetroresgat, autoresgat,
      l            soilcrespgat,       rmgat,       rggat,      nbpgat,
@@ -4555,9 +4558,9 @@ C
        ENDIF ! IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)
       ENDDO ! NMON
 C
-8100  FORMAT(1X,I4,I5,5F8.2,F8.3,F12.4,3E12.3,2(A6,I2))
-8101  FORMAT(1X,I4,I5,5(F7.2,2F6.3),2(A6,I2))
-8102  FORMAT(1X,I4,I5,3(F8.2,2F6.3),2(A6,I2))
+8100  FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,3(E12.3,1X),2(A6,I2))
+8101  FORMAT(1X,I4,I5,5(F7.2,1X,2F6.3,1X),2(A6,I2))
+8102  FORMAT(1X,I4,I5,3(F8.2,1X,2F6.3,1X),2(A6,I2))
 C
 C     ACCUMULATE OUTPUT DATA FOR YEARLY AVERAGED FIELDS FOR CLASS GRID-MEAN.
 C     FOR BOTH PARALLEL MODE AND STAND ALONE MODE
@@ -4635,7 +4638,7 @@ C
 C
       ENDIF ! IDAY.EQ.365 .AND. NDAY
 C
-8103  FORMAT(1X,I5,4F8.2,F12.4,2F12.3,2(A5,I1))
+8103  FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,2(F12.3,1X),2(A5,I1))
 C
 c     CTEM output and write out
 c
@@ -5100,7 +5103,7 @@ c
      2          emit_nmhc_g(i), emit_h2_g(i), emit_nox_g(i),
      3          emit_n2o_g(i), emit_pm25_g(i), emit_tpm_g(i),
      4          emit_tc_g(i), emit_oc_g(i), emit_bc_g(i),
-     5          burnfrac_g(i), probfire_g(i),lucemcom_g(i), 
+     5          burnfrac_g(i)*100., probfire_g(i),lucemcom_g(i), 
      6          lucltrin_g(i), lucsocin_g(i),
      7          grclarea(i), bterm_g(i), lterm_g(i), mterm_g(i)
            endif
@@ -5500,7 +5503,7 @@ c            write to file .CT06M_M/.CT06M_G
      5               emit_tc_mo_m(i,m,j),emit_oc_mo_m(i,m,j),
      6               emit_bc_mo_m(i,m,j),probfire_mo_m(i,m),
      7               luc_emc_mo_m(i,m),lucltrin_mo_m(i,m),
-     8               lucsocin_mo_m(i,m),burnfrac_mo_m(i,m,j),
+     8               lucsocin_mo_m(i,m),burnfrac_mo_m(i,m,j)*100.,
      9               bterm_mo_m(i,m),lterm_mo_m(i,m),mterm_mo_m(i,m),
      &               ' TILE ',m,' PFT ',j,' FRAC ',farerow(i,m)*
      &               fcancmxrow(i,m,j)
@@ -5515,7 +5518,7 @@ c            write to file .CT06M_M/.CT06M_G
      6               emit_oc_mo_g(i),emit_bc_mo_g(i),
      7               probfire_mo_g(i),luc_emc_mo_g(i),
      8               lucltrin_mo_g(i),lucsocin_mo_g(i),
-     8               burnfrac_mo_g(i),bterm_mo_g(i),lterm_mo_g(i),
+     8               burnfrac_mo_g(i)*100.,bterm_mo_g(i),lterm_mo_g(i),
      9               mterm_mo_g(i),' GRDAV '
 
             endif  !dofire/lnduseon
@@ -5822,7 +5825,7 @@ c            Write to file .CT06Y_M/.CT06Y_G
      5            emit_tc_yr_m(i,m,j),emit_oc_yr_m(i,m,j),
      6            emit_bc_yr_m(i,m,j),probfire_yr_m(i,m),
      7            luc_emc_yr_m(i,m),lucltrin_yr_m(i,m),
-     8            lucsocin_yr_m(i,m),burnfrac_yr_m(i,m,j),
+     8            lucsocin_yr_m(i,m),burnfrac_yr_m(i,m,j)*100.,
      9            bterm_yr_m(i,m),lterm_yr_m(i,m),mterm_yr_m(i,m),
      9            ' TILE ',m,' PFT ',j,' FRAC '
      a            ,farerow(i,m)*fcancmxrow(i,m,j)
@@ -5836,7 +5839,7 @@ c            Write to file .CT06Y_M/.CT06Y_G
      6            emit_pm25_yr_g(i),emit_tpm_yr_g(i),emit_tc_yr_g(i),
      7            emit_oc_yr_g(i),emit_bc_yr_g(i),probfire_yr_g(i),
      8            luc_emc_yr_g(i),lucltrin_yr_g(i),
-     9            lucsocin_yr_g(i),burnfrac_yr_g(i),bterm_yr_g(i),
+     9            lucsocin_yr_g(i),burnfrac_yr_g(i)*100.,bterm_yr_g(i),
      a            lterm_yr_g(i),mterm_yr_g(i), ' GRDAV'
 
            endif !dofire,lnduseon
@@ -5912,12 +5915,12 @@ c
       endif ! if(ncount.eq.nday)
       endif ! if(ctem_on) 
 C
-8104  FORMAT(1X,I4,I5,12F10.3,2(A6,I2),A6,F8.2)
-8105  FORMAT(1X,I5,15F10.3,2(A6,I2),A6,F8.2)
-8106  FORMAT(1X,I4,I5,11F10.5,9L5,2(A6,I2))
-8107  FORMAT(1X,I5,11F10.5,9L5,2(A6,I2))
-8108  FORMAT(1X,I5,20F10.3,2(A6,I2),A6,F8.2)
-8109  FORMAT(1X,I4,I5,20F10.3,2(A6,I2),A6,F8.2)
+8104  FORMAT(1X,I4,I5,12(F10.3,1X),2(A6,I2),A6,F8.2)
+8105  FORMAT(1X,I5,15(F10.3,1X),2(A6,I2),A6,F8.2)
+8106  FORMAT(1X,I4,I5,11(F10.5,1X),9L5,2(A6,I2))
+8107  FORMAT(1X,I5,11(F10.5,1X),9L5,2(A6,I2))
+8108  FORMAT(1X,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
+8109  FORMAT(1X,I4,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
 C
 C     OPEN AND WRITE TO THE RESTART FILES
 C
@@ -6105,8 +6108,8 @@ c
             if (compete) then
              write(101,"(5f8.2)")twarmm(i),tcoldm(i),gdd5(i),
      1                            aridity(i),srplsmon(i)
-             write(101,"(5f8.2)")defctmon(i),anndefct(i),annsrpls(i),
-     1                            annpcp(i),anpotevp(i)
+             write(101,"(6f8.2)")defctmon(i),anndefct(i),annsrpls(i),
+     1                        annpcp(i),anpotevp(i),dry_season_length(i)
             endif
           enddo
 c
