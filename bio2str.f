@@ -169,7 +169,7 @@ c     alpha, parameter determining how the roots grow
      &           0.80, 0.80, 0.00/
 c
 c     prcnslai - storage/imaginary lai is this percentage of maximum 
-c     leaf area index that a given root+stem biomass can supoort 
+c     leaf area index that a given root+stem biomass can support 
       data prcnslai/7.5, 7.5, 0.0,
      &              7.5, 7.5, 7.5, 
      &              7.5, 7.5, 0.0,

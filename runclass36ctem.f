@@ -2024,6 +2024,18 @@ c      competition subroutines.
        fcanrow=0.0
        dvdfcanrow=0.0
 
+       ! FLAG: Added this as start_bare runs were not properly assigning 
+       ! a TCAN on the very first day since the fcanrow was 0. JM Jan 14 2014. 
+       do i=1,nltest
+        do j=1,iccp1
+           if (j .lt. icc+1) then
+            fcanrow(i,1,j)=seed
+           else
+            fcanrow(i,1,j)=1.0 - (real(icc) * seed)
+           endif
+        end do
+       end do
+
        do i=1,nltest
 
 c      initial conditions always required
@@ -2056,6 +2068,7 @@ C===================== CTEM =============================================== /
 C
       DO 100 I=1,NLTEST
       DO 100 M=1,NMTEST
+
           TBARROW(I,M,1)=TBARROW(I,M,1)+TFREZ
           TBARROW(I,M,2)=TBARROW(I,M,2)+TFREZ
           TBARROW(I,M,3)=TBARROW(I,M,3)+TFREZ

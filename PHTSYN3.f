@@ -253,7 +253,7 @@ C     C4 PLANTS, RESPECTIVELY
      &            0.08, 0.04, 0.00,
      &            0.08, 0.04, 0.00/
 C
-C     LEAF SCATERRING COEFFICIENTS, VALUES OF 0.15 & 0.17 ARE USED
+C     LEAF SCATTERING COEFFICIENTS, VALUES OF 0.15 & 0.17 ARE USED
 C     FOR C3 AND C4 PLANTS, RESPECTIVELY
       DATA  OMEGA/0.15, 0.15, 0.00,
      &            0.15, 0.15, 0.15,
@@ -290,11 +290,6 @@ C     WILTING POINT AND FIELD CAPACITY.
 C
 C     PFT 3 HAS A HIGHER VALUE TO EMULATE DEEP ROOTS GIVING ACCESS TO
 C     GROUND WATER. JM 26.06.2012
-C      DATA SN/2.0, 2.0, 0.0,
-C     &        20.0, 2.0, 2.0,
-C     &        2.0, 2.0, 0.0,
-C     &        2.0, 2.0, 0.0/
-C     TEST VALS! JM AUG 19.
       DATA SN/4.0, 4.0, 0.0,
      &        7.0, 4.0, 4.0,
      &        4.0, 4.0, 0.0,
@@ -312,8 +307,8 @@ C
 C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 C     VALUES ARE MAINLY DERIVED FROM KATTGE ET AL. 2009 WHICH 
 C     DOESN'T INCLUDE C4
-      DATA VMAX/35.0E-06,  40.0E-06, 0.00E-06,
-     &          51.0E-06,  67.0E-06, 40.0E-06,
+      DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, !FLAG test Dec 3 PFT 1 was 35.(was 50, dec 18) TEST PFT 2 was 40.
+     &          45.0E-06, 67.0E-06, 55.0E-06, !FLAG test Dec 3 PFT 4 was 67. PFT 5 was 40
      &          55.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
 
@@ -340,8 +335,8 @@ C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
      &              0.65, 0.37, 0.00/
 C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
-      DATA  RMLCOEFF/0.015, 0.017, 0.000,
-     &               0.020, 0.015, 0.015,
+      DATA  RMLCOEFF/0.020, 0.021, 0.000,  !flag pft 1 was 0.015 JM Jan 10 2014
+     &               0.015, 0.015, 0.015,
      &               0.015, 0.025, 0.000,
      &               0.013, 0.025, 0.000/
 C

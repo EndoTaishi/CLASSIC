@@ -108,28 +108,34 @@ c
 c     ------------------------------------------------------------------
 c
 c     omega, parameter used in allocation formulae
-      data  omega/0.80, 0.50, 0.00,
-     &            0.80, 0.80, 0.80,
+      data  omega/0.80, 0.50, 0.00, 
+     &            0.80, 0.50, 0.80,
      &            0.05, 0.05, 0.00,
      &            1.00, 1.00, 0.00/
+
+c      Parameterization values based on comparison mostly with LUYSSAERT, S.et al. CO2 balance
+c      of boreal, temperate, and tropical forests derived from a global database,
+c      Glob. Chang. Biol., 13(12), 2509–2537, 2007. and informed by LITTON, et al. Carbon
+c      allocation in forest ecosystems, Glob. Chang. Biol., 13(10), 2089–2109, 2007. Further
+c      tuning was performed on these basic values. JM Dec 20 2013.
 c
 c     epsilon leaf, parameter used in allocation formulae
-      data epsilonl/0.20, 0.06, 0.00,
-     &              0.35, 0.35, 0.25,
+      data epsilonl/0.19, 0.45, 0.00,  !pft 2 was 0.06 JM Dec 17 2013
+     &              0.42, 0.50, 0.30,  !pft 5 was 0.25
      &              0.80, 0.80, 0.00,
-     &              0.01, 0.01, 0.00/
+     &              0.10, 0.10, 0.00/
 c
 c     epsilon stem, parameter used in allocation formulae
-      data epsilons/0.15, 0.05, 0.00,
-     &              0.05, 0.10, 0.10,
+      data epsilons/0.40, 0.34, 0.00, 
+     &              0.18, 0.35, 0.10, !pft 3 was 0.05
      &              0.15, 0.15, 0.00,
      &              0.00, 0.00, 0.00/
 c
 c     epsilon root, parameter used in allocation formulae
-      data epsilonr/0.65, 0.89, 0.00,
-     &              0.60, 0.55, 0.65,
+      data epsilonr/0.41, 0.21, 0.00,  !pft 2 was 0.89 JM Dec 17 2013
+     &              0.40, 0.15, 0.60,  !pft 5 was 0.65
      &              0.05, 0.05, 0.00,
-     &              0.99, 0.99, 0.00/
+     &              0.90, 0.90, 0.00/
 c
 c     constant allocation fractions if not using dynamic allocation.
 c     the following values haven't been thoroughly tested, and using
@@ -160,7 +166,7 @@ c     minimum root:shoot ratio mostly for support and stability
 c
 c     allocation to leaves during leaf onset
       data aldrlfon/1.00, 1.00, 0.00,
-     &              1.00, 1.00, 0.50,
+     &              1.00, 1.00, 1.00,
      &              1.00, 1.00, 0.00,
      &              1.00, 1.00, 0.00/
 c

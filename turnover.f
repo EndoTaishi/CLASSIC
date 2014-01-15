@@ -84,7 +84,7 @@ c     stemlife, turnover time scale for stem for different pfts
 c       flag testing new parameter values needle evg jm 07.06.2012
 c      data  stemlife/60.0, 75.0, 0.00,
       data  stemlife/65.0, 75.0, 0.00,
-     &               45.0, 40.0, 45.0,
+     &               45.0, 70.0, 65.0,  !flag pft 4 was 40.0, pft 5 was 45.0
      &               20.0, 20.0, 0.00,
      &               0.00, 0.00, 0.00/
 c
@@ -92,7 +92,7 @@ c     rootlife, turnover time scale for root for different pfts
 c       flag testing new parameter values needle evg jm 07.06.2012
 c      data  rootlife/8.5,11.5, 0.0,
       data  rootlife/10.0,11.5, 0.0,
-     &               5.5, 5.5, 5.5,
+     &               8.5, 9.5, 8.5,     ! flag pft 4 and 5 were 5.5
      &               3.0, 3.0, 0.0,
      &               2.5, 2.5, 0.0/
 c

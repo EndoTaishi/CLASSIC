@@ -518,14 +518,14 @@ c     soil c pool
 c
 c     minimum lai below which a pft doesn't expand
       data laimin/1.0, 1.0, 0.0,
-     &            2.0, 1.0, 1.0,  ! flag test PFT 4 was 1.5
+     &            1.5, 1.0, 0.7,  ! flag test PFT 4 was 1.5
      &            1.0, 1.0, 0.0,
-     &            0.5, 0.5, 0.0/  
+     &            0.25, 0.25, 0.0/  ! flag test PFT 8&9 were 0.5
 c
 c     maximum lai above which a pft always expands and lambdamax fraction
 c     of npp is used for expansion
-      data laimax/3.0, 3.0, 0.0,
-     &            8.0, 5.0, 5.0,  ! flag test. PFT 4 was 8.0
+      data laimax/6.0, 3.0, 0.0,  ! flag test pft 1 was 3.0
+     &            6.0, 5.0, 5.0,  
      &            8.0, 8.0, 0.0,
      &            4.0, 4.0, 0.0/  
 c
@@ -1005,7 +1005,7 @@ c       expnbaln  is used for competition
 
 100   continue 
 c
-      do 110 j = i,icc
+      do 110 j = 1,icc
         do 120 i = il1, il2
           fcanc(i,j) =0.0
           fcancs(i,j)=0.0
@@ -1782,7 +1782,7 @@ c
      3                    prbfrhuc, rmatctem, extnprob, pftareab,
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,   thicec,   popdin, lucemcom,
-     7                      dofire,  currlat,
+     7                      dofire,  currlat,     iday,
 c    in above, out below 
      8                    stemltdt, rootltdt, glfltrdt, blfltrdt,
      9                    pftareaa, glcaemls, rtcaemls, stcaemls,

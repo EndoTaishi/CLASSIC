@@ -141,7 +141,7 @@ c     data drlsrtmx/0.005, 0.005, 0.000,
       data drlsrtmx/0.0025, 0.005, 0.000,
      &              0.005, 0.005, 0.025,
      &              0.005, 0.005, 0.000,
-     &              0.050, 0.050, 0.000/    
+     &              0.025, 0.025, 0.000/    !PFT 8 and 9 were 0.05 
 c
 c     parameter determining how fast soil dryness causes leaves to fall
       data drgta/3.0, 3.0, 0.0,

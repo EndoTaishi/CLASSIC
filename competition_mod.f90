@@ -106,8 +106,6 @@ integer, save, dimension(:,:), allocatable :: wet_dry_mon_index   !Rudra
 integer, save, dimension(:,:), allocatable :: wet_dry_mon_index2   !Rudra
 real, dimension(:), allocatable, save :: dry_season_length_curyr !current year's maximum dry month length 
 
-
-
 ! local parameters
 real, parameter :: eftime = 25.00 ! e-folding time scale for updating bioclimatic parameters (years)
 real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at compile time.
@@ -135,7 +133,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           tcurm(i)=0.0      ! temperature of current month
           srplscur(i)=0.0   ! current month's water surplus
           defctcur(i)=0.0   ! current month's water deficit
-          dry_season_length_curyr(i) = 0   !current year's maximum dry month length    !Rudra
+          dry_season_length_curyr(i) = 0.   !current year's maximum dry month length    !Rudra
 
          do month = 1,12
           tmonth(month,i)=0.0
@@ -233,7 +231,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
                    end if 
                 end do 
             nmax = min(nmax, 12)
-            dry_season_length_curyr(i) = nmax
+            dry_season_length_curyr(i) = real(nmax)
 !..................................\Rudra
         endif     !iday=365
 
@@ -299,6 +297,9 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                          PFT Existence Subroutine 
+!
+!     26  Nov 2013  - Update parameters for global off-line runs
+!     J. Melton
 !
 !     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
 !     J. Melton         
@@ -375,13 +376,13 @@ integer :: i,j
 ! not used 
 
 ! minimum coldest month temperature
-real, dimension(kk), parameter :: tcoldmin = [ -40.0, -999.9,   0.0, & !test pft 1 was -32.5
-                                                 9.0, -999.9,   4.0, & !test pft 3 and 5 was 15.5
+real, dimension(kk), parameter :: tcoldmin = [ -40.0, -999.9,   0.0, & !test pft 1 was -32.5, test Dec 19 JM add in pft 2 lim.
+                                                 9.0,  -35.0,   4.0, & !test pft 3 and 5 was 15.5, TEST PFT 4 add in temp.
                                               -999.9, -999.9,   0.0, &
                                               -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
 
 ! maximum coldest month temperature
-real, dimension(kk), parameter :: tcoldmax = [ 22.0,  -17.0,   0.0, &  ! PFT 2 was -2
+real, dimension(kk), parameter :: tcoldmax = [ 18.0,  -28.0,   0.0, &  ! PFT 2 was -2
                                               999.9,   15.5, 900.0, &       
                                               999.9,  999.9,   0.0, &
                                               999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0
@@ -393,8 +394,8 @@ real, dimension(kk), parameter :: twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 
                                                99.9,  99.9,  0.0 ]
 
 ! minimum gdd above 5 c required to exist
-real, dimension(kk), parameter :: gdd5lmt = [ 300.0,  300.0,  0.0, &
-                                             1200.0,  300.0,  9.9, &  ! test pft 4 was 350.0, pft 1 was 600. pft 2 was 350    
+real, dimension(kk), parameter :: gdd5lmt = [ 400.0,  600.0,  0.0, &  ! test pft 2 was 300
+                                             1200.0,  500.0,  9.9, & 
                                                 9.9,    9.9,  0.0, &
                                                 9.9,    9.9,  0.0 ]
 
@@ -406,7 +407,7 @@ real, dimension(kk), parameter :: aridlmt = [ 9.9,  9.9,    0.0, &
 
 ! aridity index limit for broadleaf drought/dry deciduous trees
 real, dimension(kk), parameter :: dryseasonlmt=[ 99.9,  99.9,    0.0, &
-                                              99.9,  99.9,    5.0, & 
+                                              99.9,  99.9,    6.0, & 
                                               99.9,  99.9,    0.0, &
                                               99.9,  99.9,    0.0 ]
 
@@ -445,10 +446,11 @@ real, dimension(kk), parameter :: dryseasonlmt=[ 99.9,  99.9,    0.0, &
            pftexist(i,j)=.false.
         endif
 
-!       broadleaf deciduous cold
+!       broadleaf deciduous cold  (see note below pft 5 too)
         j=4
         if(tcoldm(i).le.tcoldmax(sort(j)).and. &
-           gdd5(i).ge.gdd5lmt(sort(j)))then
+           gdd5(i).ge.gdd5lmt(sort(j)).and. tcoldm(i).ge.tcoldmin &  !TEST FLAG added in this new constraint. JM Dec 17 2013.
+           (sort(j)))then
            pftexist(i,j)=.true.
         else
            pftexist(i,j)=.false.
@@ -459,6 +461,9 @@ real, dimension(kk), parameter :: dryseasonlmt=[ 99.9,  99.9,    0.0, &
         if(tcoldm(i).ge.tcoldmin(sort(j)).and. aridity(i).ge.aridlmt(sort(j)) &
            .and.dry_season_length(i).ge.dryseasonlmt(sort(j)))then
            pftexist(i,j)=.true.
+!       We don't want both broadleaf species co-existing so if it has PFT 5
+!       remove PFT 4. TEST JM flag Dec 6 2013.
+           pftexist(i,j-1)=.false.
         else
            pftexist(i,j)=.false.
         endif
@@ -482,6 +487,13 @@ real, dimension(kk), parameter :: dryseasonlmt=[ 99.9,  99.9,    0.0, &
         else
            pftexist(i,j)=.false.
         endif
+   ! FLAG!! ----------------------
+!   do j = 1,9
+!                 pftexist(i,j)=.false.
+!   end do
+!                 pftexist(i,4)=.true.
+
+   ! FLAG!! --------------
 
 100   continue
 
@@ -643,7 +655,7 @@ real, dimension(nilg,icc) :: pftareab, pftareaa
 real, dimension(kk), parameter :: bio2sap = [ 0.10, 0.10, 0.00, &
                                               0.10, 0.10, 0.10, &
                                               0.10, 0.10, 0.00, &
-                                              0.10, 0.10, 0.00 ]
+                                              0.10, 0.10, 0.00 ] 
 
 ! mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
 real, parameter :: bioclimrt = 0.25
@@ -653,7 +665,7 @@ real, parameter :: tolranc1 = 0.150  ! kg c
 real, parameter :: tolranc2 = 0.0050 ! kg c/m2
 
 ! minimum bare fraction
-!real, parameter :: minbare = 0.001  !replace minbare with seed (ctem_params.f90)
+!real, parameter :: minbare = 0.001  !replaced minbare with seed (ctem_params.f90) - JM
 
 ! set desired model to be used to .true. and all other to .false.
 logical, parameter :: lotvol=.false. ! original lotka-volterra eqns.
@@ -911,7 +923,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 181     continue
 180   continue
 
-!     estimate colonization and mortality rate for each pft, except for
+!    Estimate colonization and mortality rate for each pft, except for
 !    crops whose fractional coverage is prescribed.
 
       do 200 j = 1, icc
