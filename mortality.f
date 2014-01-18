@@ -12,6 +12,9 @@ c
 c               Canadian Terrestrial Ecosystem Model (CTEM) 
 C                             Mortality Subroutine
 c
+c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     J. Melton
+c
 c     22  Jul 2013  - Add in module for parameters
 C     J. Melton
 c
@@ -51,7 +54,8 @@ c     glealtrm  - green leaf litter generated due to mortality (kg c/m2)
 c     geremort  - growth efficiency related mortality (1/day)
 c     intrmort  - intrinsic mortality (1/day)
 
-      use ctem_params,        only : icc, ilg, kk, zero
+      use ctem_params,        only : icc, ilg, kk, zero, mxmortge, 
+     1                               kmort1, maxage
 c
       implicit none
 c
@@ -68,37 +72,8 @@ c
       real  stemltrm(ilg,icc), rootltrm(ilg,icc), glealtrm(ilg,icc),
      1      geremort(ilg,icc), intrmort(ilg,icc), fcancmx(ilg,icc)
 c
-      real       mxmortge(kk),            kmort1,    maxage(kk)
-c
 c     ------------------------------------------------------------------
-c                     parameter used in the model
-c
-c     also note the structure of parameter vectors which clearly shows
-c     the class pfts (along rows) and ctem sub-pfts (along columns)
-c
-c     needle leaf |  evg       dcd       ---
-c     broad leaf  |  evg   dcd-cld   dcd-dry
-c     crops       |   c3        c4       ---
-c     grasses     |   c3        c4       ---
-c
-c     kmort1, parameter used in growth efficiency mortality formulation
-      data  kmort1/0.3/
-c
-c     maximum plant age. used to calculate intrinsic mortality rate.
-c     maximum age for crops is set to zero since they will be harvested
-c     anyway. grasses are treated the same way since the turnover time
-c     for grass leaves is ~1 year and for roots is ~2 year. 
-      data maxage/250.0, 250.0,   0.0,
-     &            250.0, 250.0, 250.0,
-     &              0.0,   0.0,   0.0,
-     &              0.0,   0.0,   0.0/
-c
-c     maximum mortality when growth efficiency is zero (1/year)
-      data  mxmortge/0.01, 0.01, 0.00,
-     &               0.01, 0.01, 0.01,
-     &               0.00, 0.00, 0.00,
-     &               0.00, 0.00, 0.00/
-c
+c     Constants and parameters are located in ctem_params.f90
 c     ---------------------------------------------------------------
 c
 c     initialize required arrays to zero

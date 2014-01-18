@@ -382,7 +382,7 @@ real, dimension(kk), parameter :: tcoldmin = [ -40.0, -999.9,   0.0, & !test pft
                                               -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
 
 ! maximum coldest month temperature
-real, dimension(kk), parameter :: tcoldmax = [ 18.0,  -28.0,   0.0, &  ! PFT 2 was -2
+real, dimension(kk), parameter :: tcoldmax = [ 18.0,  -23.0,   0.0, &  ! PFT 2 was -28.0 JM Jan 14.
                                               999.9,   15.5, 900.0, &       
                                               999.9,  999.9,   0.0, &
                                               999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0

@@ -10,6 +10,9 @@ c
 c               Canadian Terrestrial Ecosystem Model (CTEM) 
 C                       Stem And Root Turnover Subroutine
 c
+c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     J. Melton
+c
 c     22  Jul 2013  - Add in module for parameters
 C     J. Melton
 c
@@ -52,7 +55,8 @@ c
 c     stemlitr  - stem litter (kg c/m2)
 c     rootlitr  - root litter (kg c/m2)
 
-      use ctem_params,        only : icc, ilg, ican, kk, zero
+      use ctem_params,        only : icc, ilg, ican, kk, zero, stemlife,
+     1                               rootlife, stmhrspn
 c
       implicit none
 c
@@ -67,39 +71,8 @@ c
       real  stemlitr(ilg,icc), rootlitr(ilg,icc), nrmlsmlr(ilg,icc),
      1      nrmlrtlr(ilg,icc), rothrlos(ilg,icc), stmhrlos(ilg,icc)
 c
-      real       stemlife(kk),      rootlife(kk),   stmhrspn
-c
 c     ------------------------------------------------------------------
-c
-c     parameters used. also note the structure of parameter vectors
-c     which clearly shows the class pfts (along rows) and ctem
-c     sub-pfts (along columns)
-c
-c     needle leaf |  evg       dcd       ---
-c     broad leaf  |  evg   dcd-cld   dcd-dry
-c     crops       |   c3        c4       ---
-c     grasses     |   c3        c4       ---
-c
-c     stemlife, turnover time scale for stem for different pfts
-c       flag testing new parameter values needle evg jm 07.06.2012
-c      data  stemlife/60.0, 75.0, 0.00,
-      data  stemlife/65.0, 75.0, 0.00,
-     &               45.0, 70.0, 65.0,  !flag pft 4 was 40.0, pft 5 was 45.0
-     &               20.0, 20.0, 0.00,
-     &               0.00, 0.00, 0.00/
-c
-c     rootlife, turnover time scale for root for different pfts
-c       flag testing new parameter values needle evg jm 07.06.2012
-c      data  rootlife/8.5,11.5, 0.0,
-      data  rootlife/10.0,11.5, 0.0,
-     &               8.5, 9.5, 8.5,     ! flag pft 4 and 5 were 5.5
-     &               3.0, 3.0, 0.0,
-     &               2.5, 2.5, 0.0/
-c
-c     stem harvest span. same as crop harvest span. period in days
-c     over which crops are harvested. 
-      data stmhrspn/17.0/
-c
+c     Constants and parameters are located in ctem_params.f90
 c     ---------------------------------------------------------------
 c
 c     initialize required arrays to zero

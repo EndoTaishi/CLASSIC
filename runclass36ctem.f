@@ -58,10 +58,10 @@ C     * THE PRODUCT OF THE FIRST TWO DIMENSION ELEMENTS IN THE
 C     * "ROW" VARIABLES.
 
 c     use statements for modules:
-      use ctem_params,        only : nlat, nmos, ilg, nmon, ican, ignd,
-     1                               icp1, icc, iccp1, monthend, mmday,
-     2                               modelpft, l2max, deltat, abszero,
-     3                               monthdays,seed
+      use ctem_params,        only : initpftpars, nlat, nmos, ilg, nmon, 
+     1                               ican, ignd,icp1, icc, iccp1, 
+     2                               monthend, mmday,modelpft, l2max,
+     3                                deltat, abszero, monthdays,seed
      
       use landuse_change,     only : initialize_luc, readin_luc
       
@@ -875,6 +875,10 @@ C
       CUMSNO=0.0
 C
 C===================== CTEM ==============================================\
+
+c     Initialize the CTEM parameters
+      call initpftpars()
+
 c     all model switches are read in from a namelist file
       call read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,
      1             ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,

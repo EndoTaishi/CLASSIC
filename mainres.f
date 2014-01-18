@@ -7,7 +7,7 @@ c    -------------- inputs above this line, outputs below ----------
 c
 c
 C               Canadian Terrestrial Ecosystem Model (CTEM)
-C                    Maintenance Respiration Subtoutine
+C                    Maintenance Respiration Subroutine
 c
 c     20  sep. 2001 - this subroutine calculates maintenance respiration,
 c     V. Arora        over a given sub-area, for stem and root components.
@@ -16,6 +16,8 @@ c                     subroutine.
 
 c     change history:
 
+c     J. Melton 17  Jan 2014 - Moved parameters to global file (ctem_params.f90)
+c
 c     J. Melton 22  Jul 2013 - Add in module for parameters
 C     
 c     J. Melton 20 sep 2012 - made it so does not do calcs for pfts with
@@ -54,7 +56,8 @@ c     rmrveg    - maintenance respiration for root for the 9 pfts
 c                 both in u mol co2/m2. sec
 c     roottemp  - root temperature (k)
 c
-      use ctem_params,        only : icc, ilg, ignd, ican, kk, zero
+      use ctem_params,        only : icc, ilg, ignd, ican, kk, zero, 
+     1                               bsrtstem, bsrtroot, minlvfr 
 
       implicit none
 c
@@ -65,44 +68,14 @@ c
      1          tcan(ilg),     tbar(ilg,ignd),      rootmass(ilg,icc),   
      2    rmsveg(ilg,icc),  rmrveg(ilg,icc),   rmatctem(ilg,icc,ignd)   
 c
-      real  bsrtstem(kk),      bsrtroot(kk),      tempq10r(ilg,icc), 
-     3     tempq10s(ilg), roottemp(ilg,icc),                    q10, 
-     4           q10func, livstmfr(ilg,icc),
-     5 livrotfr(ilg,icc),           minlvfr
+      real tempq10r(ilg,icc), tempq10s(ilg), roottemp(ilg,icc),  q10, 
+     1     q10func, livstmfr(ilg,icc), livrotfr(ilg,icc)
 c
       logical consq10
 c
-c     constants and parameters 
-c
-c     note the structure of vectors which clearly shows the class
-c     pfts (along rows) and ctem sub-pfts (along columns)
-c
-c     needle leaf |  evg       dcd       ---
-c     broad leaf  |  evg   dcd-cld   dcd-dry
-c     crops       |   c3        c4       ---
-c     grasses     |   c3        c4       ---
-c
 c     ---------------------------------------------------
-c
-c     base respiration rates for stem and root for ctem pfts in
-c     kg c/kg c.year at 15 degrees celcius. note that maintenance
-c     respiration rates of root are higher because they contain
-c     both wood (coarse roots) and fine roots.
+c     Constants and parameters are located in ctem_params.f90
 
-c    new parameter values to produce carbon use efficiencies more in
-c    line with literature (zhang et al. 2009, luyssaert et al. gcb 2007)
-c    values changed for bsrtstem and bsrtroot. jm 06.2012
-
-      data bsrtstem/0.0900, 0.0550, 0.0000,
-     &              0.0600, 0.0335, 0.0300,
-     &              0.0365, 0.0365, 0.0000,
-     &              0.0000, 0.0000, 0.0000/ ! no stem component for grasses
-
-      data bsrtroot/0.5000, 0.2850, 0.0000,
-     &              0.6500, 0.2250, 0.0550,
-     &              0.1600, 0.1600, 0.0000,
-     &              0.1000, 0.1000, 0.0000/
-c
 c     set the following switch to .true. for using constant temperature
 c     indepedent q10 specified below
       data consq10 /.false./
@@ -110,9 +83,6 @@ c
 c     q10 - if using a constant temperature independent value, i.e.
 c     if consq10 is set to true
       data q10/2.00/
-c
-c     minimum live wood fraction
-      data minlvfr/0.05/
 c
 c     ---------------------------------------------------
 c
@@ -210,11 +180,11 @@ c
         do 210 j = 1, icc
          if (fcan(i,j) .gt. 0.) then
 
-c         this q10 value is then used with the base rate of respiration
-c         (commonly taken at some reference temperature (15 deg c), see tjoelker et
-c         al. 2009 new phytologist or atkin et al. 2000 new phyto for 
-c         an example.). long-term acclimation to temperature could be occuring 
-c         see king et al. 2006 nature som for a possible approach. jm.
+c         This q10 value is then used with the base rate of respiration
+c         (commonly taken at some reference temperature (15 deg c), see Tjoelker et
+c         al. 2009 New Phytologist or Atkin et al. 2000 New Phyto for 
+c         an example.). Long-term acclimation to temperature could be occuring 
+c         see King et al. 2006 Nature SOM for a possible approach. JM.
 
           rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*
      &     (bsrtstem(sort(j))/365.0)

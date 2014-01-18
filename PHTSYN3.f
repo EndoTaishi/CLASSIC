@@ -11,6 +11,9 @@ C                       PHOTOSYNTHESIS SUBROUTINE
 
 C     HISTORY:
 C
+C     * JAN 15/14 - J. Melton      Fixed bug in SM_FUNC calculation that prevented
+C     *                            higher number PFTs from feeling water stress.
+C     *                            Also have new parameter values in Vmax, SN, and RMLcoef        
 C     * AUG 16/12 - J. MELTON      Fixed GB constraint, removed incorrect
 C     *                            scaling of RML, made reals being treated
 C     *                            as ints more explicit, changed declaration 
@@ -139,7 +142,7 @@ C
      1     KC, KO, IPAR, GB, RH, VPD, O2_CONC, CO2A, USEBB
 
       REAL, DIMENSION(:,:), ALLOCATABLE     :: USEAILCG, SM_FUNC,
-     1     AVE_SM_FUNC, VMAXC, JE3,
+     1     AVE_SM_FUNC, VMAXC, JE3,SM_FUNC2,
      2     VMUNS1, VMUNS2, VMUNS3, VMUNS, VM, CO2I, PREV_CO2I, 
      3     FPAR, JC,  JC1, JC2, JC3, JE, JE1, JE2, JS, A_VEG,
      4     RC_VEG, GCTU, GCMIN, GCMAX, VPD_TERM, CO2LS, GC
@@ -290,10 +293,15 @@ C     WILTING POINT AND FIELD CAPACITY.
 C
 C     PFT 3 HAS A HIGHER VALUE TO EMULATE DEEP ROOTS GIVING ACCESS TO
 C     GROUND WATER. JM 26.06.2012
-      DATA SN/4.0, 4.0, 0.0,
-     &        7.0, 4.0, 4.0,
-     &        4.0, 4.0, 0.0,
-     &        4.0, 4.0, 0.0/
+c      DATA SN/4.0, 4.0, 0.0,
+c     &        7.0, 4.0, 4.0,
+c     &        4.0, 4.0, 0.0,
+c     &        4.0, 4.0, 0.0/
+
+      DATA SN/20.0, 20.0, 0.0,
+     &        20.0, 20.0, 20.0,
+     &        20.0, 20.0, 0.0,
+     &        20.0, 20.0, 0.0/
 
 C
 C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.
@@ -394,6 +402,7 @@ C
       ALLOCATE(FC_TEST(ILG))
       ALLOCATE(USEAILCG(ILG,ICC))
       ALLOCATE(SM_FUNC(ILG,IG))
+      ALLOCATE(SM_FUNC2(ILG,IG))
       ALLOCATE(AVE_SM_FUNC(ILG,ICC))
 
       ALLOCATE(VMAXC(ILG,ICC))
@@ -573,6 +582,7 @@ C     FOLLOWING VARIABLES AND CONSTANTS ARE COMMON TO BOTH SINGLE AND TWO-LEAF M
       DO 240 J = 1, IG
         DO 250 I = IL1, IL2
           SM_FUNC(I,J) = 0.0
+          SM_FUNC2(I,J) = 0.0
 250     CONTINUE
 240   CONTINUE
 C
@@ -871,30 +881,33 @@ C        ADDED IN CONSTRAINT HERE FOR NUMERICAL STABILITY
 C        IT WAS DOING 0 TO EXP MATH BEFORE-JM AUG 17 2012
 C
          IF (1.0 - ABS(SM_FUNC(I,1)) .GT. 1E-6) THEN
-          SM_FUNC(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**INT(SN(SORT(M))) )
+          SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**INT(SN(SORT(M))) )
          ELSE
-          SM_FUNC(I,1)= 1.0
+          SM_FUNC2(I,1)= 1.0
          ENDIF
 C
          IF (1.0 - ABS(SM_FUNC(I,2)) .GT. 1E-6) THEN
-          SM_FUNC(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**INT(SN(SORT(M))) )
+          SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**INT(SN(SORT(M))) )
          ELSE
-          SM_FUNC(I,2)= 1.0
+          SM_FUNC2(I,2)= 1.0
          ENDIF
 C
          IF (1.0 - ABS(SM_FUNC(I,3)) .GT. 1E-6) THEN
-          SM_FUNC(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**INT(SN(SORT(M))) )
+          SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**INT(SN(SORT(M))) )
          ELSE
-          SM_FUNC(I,3)= 1.0
+          SM_FUNC2(I,3)= 1.0
          ENDIF
 C
-         SM_FUNC(I,1)=SM_FUNC(I,1)+(1.0-SM_FUNC(I,1))*SMSCALE(SORT(M))
-         SM_FUNC(I,2)=SM_FUNC(I,2)+(1.0-SM_FUNC(I,2))*SMSCALE(SORT(M))
-         SM_FUNC(I,3)=SM_FUNC(I,3)+(1.0-SM_FUNC(I,3))*SMSCALE(SORT(M))
+         SM_FUNC2(I,1)=SM_FUNC2(I,1)+(1.0-SM_FUNC2(I,1))
+     &                 *SMSCALE(SORT(M))
+         SM_FUNC2(I,2)=SM_FUNC2(I,2)+(1.0-SM_FUNC2(I,2))
+     &                 *SMSCALE(SORT(M))
+         SM_FUNC2(I,3)=SM_FUNC2(I,3)+(1.0-SM_FUNC2(I,3))
+     &                 *SMSCALE(SORT(M))
 
-         AVE_SM_FUNC(I,M)=SM_FUNC(I,1)*RMAT(I,M,1) +
-     &                    SM_FUNC(I,2)*RMAT(I,M,2) +
-     &                    SM_FUNC(I,3)*RMAT(I,M,3)
+         AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)*RMAT(I,M,1) +
+     &                    SM_FUNC2(I,2)*RMAT(I,M,2) +
+     &                    SM_FUNC2(I,3)*RMAT(I,M,3)
          AVE_SM_FUNC(I,M)= AVE_SM_FUNC(I,M) /
      &    (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
 C
@@ -902,15 +915,15 @@ C        MAKE SURE THAT I DO NOT USE SM_FUNC FROM 2nd AND 3rd LAYERS
 C        IF THEY ARE BED ROCK
 C
          IF(ISAND(I,3) .EQ. -3)THEN ! THIRD LAYER BED ROCK
-           AVE_SM_FUNC(I,M)=SM_FUNC(I,1)*RMAT(I,M,1) +
-     &                      SM_FUNC(I,2)*RMAT(I,M,2)
+           AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)*RMAT(I,M,1) +
+     &                      SM_FUNC2(I,2)*RMAT(I,M,2)
 C
            AVE_SM_FUNC(I,M)= AVE_SM_FUNC(I,M) /
      &      (RMAT(I,M,1)+RMAT(I,M,2))
          ENDIF
 C
          IF(ISAND(I,2) .EQ. -3)THEN ! SECOND LAYER BED ROCK
-           AVE_SM_FUNC(I,M)=SM_FUNC(I,1)
+           AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)
          ENDIF
 C
          IF( (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3)).LT.0.9) THEN
@@ -1521,6 +1534,7 @@ C     PUT TCAN BACK TO ITS ORIGINAL VALUE FROM THE TEMP VAR
       DEALLOCATE(FC_TEST)
       DEALLOCATE(USEAILCG)
       DEALLOCATE(SM_FUNC)
+      DEALLOCATE(SM_FUNC2)
       DEALLOCATE(AVE_SM_FUNC)
 
       DEALLOCATE(VMAXC)

@@ -10,6 +10,9 @@ c
 C               Canadian Terrestrial Ecosystem Model (CTEM)
 C                            Allocation Subroutine
 C
+c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     J. Melton
+c   
 c     5   Jul 2013  - Fixed bug with initializing the variables. Brought in
 c     J. Melton       the modules for global parameters
 c
@@ -61,14 +64,14 @@ c     wtstatus  - soil water status (0 dry -> 1 wet)
 c     ltstatus  - light status
 
       use ctem_params,        only : eta, kappa, kn, abszero, icc, ilg,
-     1                               ignd, kk, ican
+     1                               ignd, kk, ican, omega, epsilonl,
+     2                               epsilons, epsilonr, caleaf, castem,
+     3                               caroot, consallo, rtsrmin, aldrlfon
 c
       implicit none
 c
       integer il1, il2, i, j, k,  lfstatus(ilg,icc), 
      1         n, k1,  k2,   m
-c
-      logical consallo
 c
       integer       sort(icc),      nol2pfts(ican)
 c
@@ -81,12 +84,6 @@ c
       real   afrleaf(ilg,icc),  afrstem(ilg,icc),     afrroot(ilg,icc),
      1       fcancmx(ilg,icc)
 c
-      real          omega(kk),      epsilonl(kk),         epsilons(kk),
-     1           epsilonr(kk),
-     2                caleaf(kk),
-     3             castem(kk),        caroot(kk),          rtsrmin(kk),
-     4           aldrlfon(kk)
-c
       real  avwiltsm(ilg,icc),  afieldsm(ilg,icc),    avthliq(ilg,icc),
      1      wtstatus(ilg,icc),  ltstatus(ilg,icc),    nstatus(ilg,icc),
      2      wnstatus(ilg,icc),              denom,   mnstrtms(ilg,icc),
@@ -95,83 +92,8 @@ c
 c
 c
 c     ------------------------------------------------------------------
-c                     constants and parameters
-c
-c     note the structure of vectors which clearly shows the class
-c     pfts (along rows) and ctem sub-pfts (along columns)
-c
-c     needle leaf |  evg       dcd       ---
-c     broad leaf  |  evg   dcd-cld   dcd-dry
-c     crops       |   c3        c4       ---
-c     grasses     |   c3        c4       ---
-c
-c     ------------------------------------------------------------------
-c
-c     omega, parameter used in allocation formulae
-      data  omega/0.80, 0.50, 0.00, 
-     &            0.80, 0.50, 0.80,
-     &            0.05, 0.05, 0.00,
-     &            1.00, 1.00, 0.00/
-
-c      Parameterization values based on comparison mostly with LUYSSAERT, S.et al. CO2 balance
-c      of boreal, temperate, and tropical forests derived from a global database,
-c      Glob. Chang. Biol., 13(12), 2509–2537, 2007. and informed by LITTON, et al. Carbon
-c      allocation in forest ecosystems, Glob. Chang. Biol., 13(10), 2089–2109, 2007. Further
-c      tuning was performed on these basic values. JM Dec 20 2013.
-c
-c     epsilon leaf, parameter used in allocation formulae
-      data epsilonl/0.19, 0.45, 0.00,  !pft 2 was 0.06 JM Dec 17 2013
-     &              0.42, 0.50, 0.30,  !pft 5 was 0.25
-     &              0.80, 0.80, 0.00,
-     &              0.10, 0.10, 0.00/
-c
-c     epsilon stem, parameter used in allocation formulae
-      data epsilons/0.40, 0.34, 0.00, 
-     &              0.18, 0.35, 0.10, !pft 3 was 0.05
-     &              0.15, 0.15, 0.00,
-     &              0.00, 0.00, 0.00/
-c
-c     epsilon root, parameter used in allocation formulae
-      data epsilonr/0.41, 0.21, 0.00,  !pft 2 was 0.89 JM Dec 17 2013
-     &              0.40, 0.15, 0.60,  !pft 5 was 0.65
-     &              0.05, 0.05, 0.00,
-     &              0.90, 0.90, 0.00/
-c
-c     constant allocation fractions if not using dynamic allocation.
-c     the following values haven't been thoroughly tested, and using
-c     dynamic allocation is preferable.
-      data caleaf/0.275, 0.300, 0.000,
-     &            0.200, 0.250, 0.250,
-     &            0.400, 0.400, 0.000,
-     &            0.450, 0.450, 0.000/
-c
-      data castem/0.475, 0.450, 0.000,
-     &            0.370, 0.400, 0.400,
-     &            0.150, 0.150, 0.000,
-     &            0.000, 0.000, 0.000/
-c
-      data caroot/0.250, 0.250, 0.000,
-     &            0.430, 0.350, 0.350,
-     &            0.450, 0.450, 0.000,
-     &            0.550, 0.550, 0.000/
-c
-c     logical switch for using constant allocation factors         
-      data consallo /.false./     ! default value is false
-c
-c     minimum root:shoot ratio mostly for support and stability
-      data rtsrmin /0.16, 0.16, 0.00,
-     &              0.16, 0.16, 0.32,
-     &              0.16, 0.16, 0.00,
-     &              0.50, 0.50, 0.00/
-c
-c     allocation to leaves during leaf onset
-      data aldrlfon/1.00, 1.00, 0.00,
-     &              1.00, 1.00, 1.00,
-     &              1.00, 1.00, 0.00,
-     &              1.00, 1.00, 0.00/
-c
+c     Constants and parameters are located in ctem_params.f90
 c     ---------------------------------------------------------------
-c
 c
 c     initialize required arrays to 0
 c
@@ -204,9 +126,9 @@ c
 c     initialization ends    
 c
 c     ------------------------------------------------------------------
-c     estimate field capacity and wilting point soil moisture contents
+c     Estimate field capacity and wilting point soil moisture contents
 c
-c     wilting point corresponds to matric potential of 150 m
+c     Wilting point corresponds to matric potential of 150 m
 c     field capacity corresponds to hydarulic conductivity of
 c     0.10 mm/day -> 1.157x1e-09 m/s
 c
@@ -229,7 +151,7 @@ c
 160   continue
 c
 c
-c     calculate liquid soil moisture content, and wilting and field capacity 
+c     Calculate liquid soil moisture content, and wilting and field capacity 
 c     soil moisture contents averaged over the root zone. note that while
 c     the soil moisture content is same under the entire gcm grid cell,
 c     soil moisture averaged over the rooting depth is different for each
@@ -259,7 +181,7 @@ c
 210     continue
 200   continue
 c
-c     using liquid soil moisture content together with wilting and field 
+c     Using liquid soil moisture content together with wilting and field 
 c     capacity soil moisture contents averaged over the root zone, find
 c     soil water status.
 c
@@ -279,7 +201,7 @@ c
 240     continue
 230   continue
 c
-c     calculate light status as a function of lai and light extinction
+c     Calculate light status as a function of lai and light extinction
 c     parameter. for now set nitrogen status equal to 1, which means 
 c     nitrogen is non-limiting.
 c

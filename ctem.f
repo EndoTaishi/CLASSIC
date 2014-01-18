@@ -60,6 +60,9 @@ c
 c             Canadian Terrestrial Ecosystem Model (CTEM) 
 C             Main Ctem Subroutine Compatible With CLASS 
 C
+c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     J. Melton
+c
 c     Dec 6   2012   Make it so competition and luc can function in both
 c     J. Melton      composite and mosaic modes.
 c
@@ -95,7 +98,8 @@ c    -----------------------------------------------------------------
 
       use ctem_params,        only : kk, lon, lat, pi, earthrad, zero,
      1                               edgelat, kn,iccp1, ican, ilg, nlat,
-     2                               ignd, icc, nmos, l2max
+     2                               ignd, icc, nmos, l2max, grescoef,
+     3                               humicfac,laimin,laimax,lambdamax
       use landuse_change,     only : luc
       use competition_scheme, only : bioclim, existence, competition
 
@@ -408,8 +412,7 @@ c
 c
       real    fc(ilg),       fg(ilg),       fcs(ilg),         fgs(ilg),
      1  fcans(ilg,ican),  fcan(ilg,ican),         rms(ilg),
-     2       rmr(ilg),  grescoef(kk),    litres(ilg),      socres(ilg),
-     3   humicfac(kk),        term,       laimin(kk),       laimax(kk)
+     2       rmr(ilg),   litres(ilg),      socres(ilg), term
 c
       real pglfmass(ilg,icc),   pblfmass(ilg,icc),   pstemass(ilg,icc),
      1     protmass(ilg,icc), plitmass(ilg,iccp1), psocmass(ilg,iccp1),
@@ -486,53 +489,16 @@ c
       real     barefrac(ilg),       pbarefrc(ilg),           tolrance,
      1       lambda(ilg,icc),   add2allo(ilg,icc),  lyglfmas(ilg,icc),
      2     expbalvg(ilg,icc),       expnbaln(ilg), ltrflcom(ilg,iccp1),
-     3             lambdamax,         cc(ilg,icc),         mm(ilg,icc)
+     3          cc(ilg,icc),         mm(ilg,icc)  
 c
       integer   surmncur(ilg),       defmncur(ilg)
 c
       logical compete, inibioclim, pftexist(ilg,icc)
 c
 c     ---------------------------------------------------------------
-c                     constants and parameters 
-c
-c     note the structure of vectors which clearly shows the class
-c     pfts (along rows) and ctem sub-pfts (along columns)
-c
-c     needle leaf |  evg       dcd       ---
-c     broad leaf  |  evg   dcd-cld   dcd-dry
-c     crops       |   c3        c4       ---
-c     grasses     |   c3        c4       ---
-c
-c     growth respiration coefficient
-      data grescoef/0.15, 0.15, 0.00,
-     &              0.15, 0.15, 0.15,
-     &              0.15, 0.15, 0.00,
-     &              0.15, 0.15, 0.00/
-c
-c     humification factor - used for transferring carbon from litter into 
-c     soil c pool
-      data humicfac/0.42, 0.42, 0.00,
-     &              0.53, 0.48, 0.48,
-     &              0.42, 0.42, 0.00,
-     &              0.42, 0.42, 0.00/
-c
-c     minimum lai below which a pft doesn't expand
-      data laimin/1.0, 1.0, 0.0,
-     &            1.5, 1.0, 0.7,  ! flag test PFT 4 was 1.5
-     &            1.0, 1.0, 0.0,
-     &            0.25, 0.25, 0.0/  ! flag test PFT 8&9 were 0.5
-c
-c     maximum lai above which a pft always expands and lambdamax fraction
-c     of npp is used for expansion
-      data laimax/6.0, 3.0, 0.0,  ! flag test pft 1 was 3.0
-     &            6.0, 5.0, 5.0,  
-     &            8.0, 8.0, 0.0,
-     &            4.0, 4.0, 0.0/  
-c
-c     max. fraction of npp that is allocated for reproduction/colonization
-      data lambdamax/0.10/
-c
+c     Constants and parameters are located in ctem_params.f90
 c     -----------------------------------------------------------------
+
 c     find area of the gcm grid cells. this is needed for land use change
 c     and disturbance subroutines
 
@@ -541,10 +507,8 @@ c     and disturbance subroutines
           curlatno(i)=0
 50     continue
 
-
 C     FLAG: set stdaln always to equal 0 for testing fire. JM Jul 29 2013
       stdaln=0
-
 c
       if(stdaln.eq.0)then         ! i.e. when operated in a GCM mode 
 c
@@ -1433,6 +1397,7 @@ c
               lambda(i,j)=((ailcg(i,j)-laimin(n))*lambdamax)/
      &                    (laimax(n)-laimin(n))
            endif
+
            lambda(i,j)=max(0.0, min(lambdamax, lambda(i,j)))
 c
 c          if tree and leaves still coming out, or if npp is negative, then

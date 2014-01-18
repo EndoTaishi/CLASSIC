@@ -12,6 +12,9 @@ c
 c               Canadian Terrestrial Ecosystem Model (CTEM)
 C               Phenology, Leaf Turnover & Mortality Subroutine
 c
+c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     J. Melton
+c
 c     22  Jul 2013  - Add in module for parameters
 C     J. Melton
 c
@@ -81,7 +84,10 @@ c     ------------------------------------------------------------------
 c
       use ctem_params,        only : kn, pi, zero, kappa, eta, lfespany,
      1                               fracbofg, specsla,ilg,ignd,icc,kk,
-     2                               ican
+     2                               ican, cdlsrtmx, drlsrtmx, drgta,
+     3                               colda, lwrthrsh, dayschk, coldlmt,
+     4                               coldthrs, harvthrs, flhrspan,
+     5                               thrprcnt, roothrsh     
 
 
       implicit none
@@ -96,13 +102,8 @@ c
      3      roottemp(ilg,icc),                   rmatctem(ilg,icc,ignd),
      4      stemmass(ilg,icc), rootmass(ilg,icc),     fcancmx(ilg,icc)
 c
-c
-      real     drlsrtmx(kk),       cdlsrtmx(kk),   drgta(kk), colda(kk), 
-     1         lwrthrsh(kk),       harvthrs(kk),           coldthrs(2), 
-     2          flhrspan(2),       thrprcnt(kk),              roothrsh      
-
-      integer  dayschk(kk),    pandays(ilg,icc),     lfstatus(ilg,icc),
-     1    chkmode(ilg,icc),     colddays(ilg,2),            coldlmt(2)
+      integer pandays(ilg,icc),     lfstatus(ilg,icc),   
+     1    chkmode(ilg,icc),     colddays(ilg,2) 
 c
       real        sla(icc),      ailcg(ilg,icc),        ailcb(ilg,icc)
 c
@@ -116,92 +117,7 @@ c
 c
 c
 c     ------------------------------------------------------------------
-c                     constants and parameters used 
-c
-c     also note the structure of parameter vectors which clearly 
-c     shows the class pfts (along rows) and ctem sub-pfts (along 
-c     columns)
-c
-c     needle leaf |  evg       dcd       ---
-c     broad leaf  |  evg   dcd-cld   dcd-dry
-c     crops       |   c3        c4       ---
-c     grasses     |   c3        c4       ---
-c
-c     max. loss rate for cold stress for all 8 pfts, (1/day)
-c     flag testing new parameter values needle evg jm 07.06.2012
-c     data cdlsrtmx/0.30, 0.30, 0.00,
-      data cdlsrtmx/0.15, 0.30, 0.00,
-     &              0.30, 0.15, 0.15,
-     &              0.15, 0.15, 0.00,
-     &              0.15, 0.15, 0.00/
-c
-c     max. loss rate for drought stress for all 9 pfts, (1/day)
-c     flag testing new parameter values  needle evg jm 07.06.2012
-c     data drlsrtmx/0.005, 0.005, 0.000,
-      data drlsrtmx/0.0025, 0.005, 0.000,
-     &              0.005, 0.005, 0.025,
-     &              0.005, 0.005, 0.000,
-     &              0.025, 0.025, 0.000/    !PFT 8 and 9 were 0.05 
-c
-c     parameter determining how fast soil dryness causes leaves to fall
-      data drgta/3.0, 3.0, 0.0,
-     &           3.0, 3.0, 3.0,
-     &           3.0, 3.0, 0.0,
-     &           3.0, 3.0, 0.0/
-c
-c     parameter determining how fast cold temperatures causes leaves to fall
-      data colda/3.0, 3.0, 0.0,
-c      data colda/1.5, 3.0, 0.0,
-     &           3.0, 3.0, 3.0,
-     &           3.0, 3.0, 0.0,
-     &           3.0, 3.0, 0.0/
-c
-c     lower temperature threshold for ctem's 9 pfts. these are used
-c     to estimate cold stress related leaf loss rate (degree c)
-      data lwrthrsh/-45.0, -5.0, 0.0,
-c      data lwrthrsh/-25.0, -5.0, 0.0,
-     &                5.0,  5.0, 5.0,
-     &                5.0,  5.0, 0.0,
-     &                0.1,  5.0, 0.0/
-c
-c     number of days over which to check if net photosynthetic rate is
-c     positive before initiating leaf onset
-      data dayschk/7, 7, 0,
-     &             7, 7, 7,
-     &             7, 7, 0,
-     &             7, 7, 0/
-c
-c     no. of days for which some temperature has to remain below 
-c     a given threshold for initiating a process
-c     1. -5 c threshold for initiating "leaf fall" mode for ndl dcd trees
-c     2.  8 c threshold for initiating "harvest" mode for crops
-c     the array colddays(i,2) tracks days corresponding to these thresholds
-      data coldlmt /7,5/   ! days
-      data coldthrs/-5.0,8.0/
-c
-c     lai threshold for harvesting crops. values are zero for all pfts
-c     other than c3 and c4 crops.
-      data harvthrs/0.0, 0.0, 0.0,
-     &              0.0, 0.0, 0.0,
-     &              4.5, 3.5, 0.0,
-     &              0.0, 0.0, 0.0/
-c
-c     harvest span (time in days over which crops are harvested, ~15 days), 
-c     and  fall span (time in days over which bdl cold dcd plants shed 
-c     their leaves, ~30 days)
-      data flhrspan/17.0, 45.0/
-c
-c     percentage of max. lai that can be supported which is used as a
-c     threshold for determining leaf phenology status
-      data thrprcnt/40.0, 40.0,  0.0,
-     &              40.0, 50.0, 50.0,
-     &              50.0, 50.0,  0.0,
-     &              40.0, 40.0,  0.0/
-c
-c     root temperature threshold for initiating leaf onset for cold
-c     broadleaf deciduous pft, degrees celcius
-      data roothrsh/15.0/
-c
+c     Constants and parameters are located in ctem_params.f90
 c
 c     ---------------------------------------------------------------
 c
