@@ -14,6 +14,9 @@ c                     and snow over ground subareas).
 c
 c     change history:
 c
+c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     J. Melton
+c
 c     23  Jul 2013  - add in module for parameters
 c     J. Melton
 c     J. Melton and V.Arora - changed tanhq10 parameters, they were switched
@@ -47,7 +50,8 @@ c                 in umol co2/m2.s
 c     socres    - soil c respiration over the given unvegetated sub-area
 c                 in umol co2/m2.s
 c
-      use ctem_params,        only : icc, ilg, ignd, zero
+      use ctem_params,        only : icc, ilg, ignd, zero, tanhq10, a,
+     1                               bsratelt_g, bsratesc_g
 
       implicit none
 c
@@ -60,39 +64,18 @@ c
      1           tbar(ilg,ignd),    thliq(ilg,ignd),    sand(ilg,ignd), 
      2          zbotw(ilg,ignd),      litres(ilg),          socres(ilg),
      3           clay(ilg,ignd),        frac(ilg)
-
-      real      bsratelt(1),        bsratesc(1),         
-     1              litrq10,           soilcq10,               
+      
+      real              litrq10,           soilcq10,               
      2        litrtemp(ilg),      solctemp(ilg),             q10func,
      3       psisat(ilg,ignd),     grksat(ilg,ignd),        b(ilg,ignd),
      4        thpor(ilg,ignd),               beta,
-     5      fracarb(ilg,ignd),               a(1),             zcarbon,
+     5      fracarb(ilg,ignd),         zcarbon,
      6        tempq10l(ilg),      socmoscl(ilg),     scmotrm(ilg,ignd),
      7        ltrmoscl(ilg),        psi(ilg,ignd),       tempq10s(ilg),
-     8               fcoeff,         tanhq10(4)
-
+     8               fcoeff
 
 c     ------------------------------------------------------------------
-c                     constants used in the model
-
-c     litter respiration rate at 15 c in kg c/kg c.year
-      data bsratelt/0.5605/
-c
-c     soil c respiration rates at 15 c in kg c/kg c.year
-      data bsratesc/0.02258/
-c
-c     parameters of the hyperbolic tan q10 formulation
-c
-      data tanhq10/1.44, 0.56, 0.075, 46.0/
-c                     a     b      c     d
-c     q10 = a + b * tanh[ c (d-temperature) ]
-c     when a = 2, b = 0, we get the constant q10 of 2. if b is non
-c     zero then q10 becomes temperature dependent
-c
-c     a, parameter describing exponential soil carbon profile. used for 
-c     estimating temperature of the carbon pool
-      data a/4.0/
-c
+c     Constants and parameters are located in ctem_params.f90
 c     ---------------------------------------------------------------
 c
 c     initialize required arrays to zero
@@ -146,21 +129,21 @@ c     parameter.
 c
       do 240 i = il1, il2
 c
-        zcarbon=3.0/a(1)                 ! 95% depth
+        zcarbon=3.0/a                 ! 95% depth
         if(zcarbon.le.zbotw(i,1)) then
             fracarb(i,1)=1.0             ! fraction of carbon in
             fracarb(i,2)=0.0             ! soil layers
             fracarb(i,3)=0.0
         else
-            fcoeff=exp(-a(1)*zcarbon)
+            fcoeff=exp(-a*zcarbon)
             fracarb(i,1)=
-     &        1.0-(exp(-a(1)*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
+     &        1.0-(exp(-a*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
             if(zcarbon.le.zbotw(i,2)) then
                 fracarb(i,2)=1.0-fracarb(i,1)
                 fracarb(i,3)=0.0
             else
                 fracarb(i,3)=
-     &            (exp(-a(1)*zbotw(i,2))-fcoeff)/(1.0-fcoeff)
+     &            (exp(-a*zbotw(i,2))-fcoeff)/(1.0-fcoeff)
                 fracarb(i,2)=1.0-fracarb(i,1)-fracarb(i,3)
             endif
         endif
@@ -285,7 +268,7 @@ c
 c
         q10func = litrq10**(0.1*(litrtemp(i)-273.16-15.0))
         litres(i)= ltrmoscl(i) * litrmass(i,icc+1)*
-     &    bsratelt(1)*2.64*q10func ! 2.64 converts bsratelt from kg c/kg c.year
+     &    bsratelt_g*2.64*q10func ! 2.64 converts bsratelt_g from kg c/kg c.year
 c                                  ! to u-mol co2/kg c.s
 c
 c       respiration from soil c pool
@@ -296,7 +279,7 @@ c
 c
         q10func = soilcq10**(0.1*(solctemp(i)-273.16-15.0))
         socres(i)= socmoscl(i)* soilcmas(i,icc+1)*
-     &    bsratesc(1)*2.64*q10func ! 2.64 converts bsratesc from kg c/kg c.year
+     &    bsratesc_g*2.64*q10func ! 2.64 converts bsratesc_g from kg c/kg c.year
 c                                  ! to u-mol co2/kg c.s
 c
       endif

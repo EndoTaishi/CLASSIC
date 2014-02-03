@@ -14,7 +14,10 @@ c     v. arora        for a given sub-area, from litter and soil carbon
 c                     pools. 
 c
 c     change history:
-
+c
+c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+c     J. Melton
+c
 c     22  Jul 2013  - Add in module for parameters
 C     J. Melton
 c
@@ -52,7 +55,9 @@ c                 umol co2/m2.s, for ctem's 9 pfts
 c     scresveg  - soil carbon respiration for the given sub-area in
 c                 umol co2/m2.s, for ctem's 9 pfts
 c
-      use ctem_params,        only : icc, ilg, ignd, kk, zero
+      use ctem_params,        only : icc, ilg, ignd, kk, zero, bsratelt, 
+     1                               bsratesc, abar, tanhq10, 
+     2                               alpha_hetres
 
       implicit none
 
@@ -63,60 +68,21 @@ c
      2         sand(ilg,ignd),       clay(ilg,ignd),  roottemp(ilg,icc),  
      3        zbotw(ilg,ignd),  ltresveg(ilg,icc),    scresveg(ilg,icc)
 
-      real     bsratelt(kk),       bsratesc(kk), 
-     1              litrq10,           soilcq10,               alpha,
+      
+      real           litrq10,           soilcq10,       
      2    litrtemp(ilg,icc),  solctemp(ilg,icc),             q10func,
      3       psisat(ilg,ignd),     grksat(ilg,ignd),        b(ilg,ignd),
      4        thpor(ilg,ignd),       
-     5  fracarb(ilg,icc,ignd),           abar(kk),             zcarbon,
+     5  fracarb(ilg,icc,ignd),                       zcarbon,
      6    tempq10l(ilg,icc),  socmoscl(ilg,icc),     scmotrm(ilg,ignd),
      7        ltrmoscl(ilg),        psi(ilg,ignd),   tempq10s(ilg,icc),
-     8               fcoeff,         tanhq10(4)  
+     8               fcoeff
 c
 c     ------------------------------------------------------------------
-c                     constants and parameters
-c
-c     note the structure of vectors which clearly shows the class
-c     pfts (along rows) and ctem sub-pfts (along columns)
-c
-c     needle leaf |  evg       dcd       ---
-c     broad leaf  |  evg   dcd-cld   dcd-dry
-c     crops       |   c3        c4       ---
-c     grasses     |   c3        c4       ---
-c
-c     litter respiration rates at 15 c in in kg c/kg c.year 
-      data bsratelt/0.4453, 0.5986, 0.0000,
-     &              0.6339, 0.7576, 0.6957,
-c     &              0.4020, 0.4020, 0.0000,
-     &              0.6000, 0.6000, 0.0000,
-     &              0.5260, 0.5260, 0.0000/ 
-c
-c     soil carbon respiration rates at 15 c in kg c/kg c.year
-      data bsratesc/0.0260, 0.0260, 0.0000, 
-     &              0.0208, 0.0208, 0.0208,
-c     &              0.0310, 0.0310, 0.0000,
-     &              0.0350, 0.0350, 0.0000, 
-     &              0.0205, 0.0205, 0.0000/  !flag JM test Oct 9 2013. was 0.0125 for both
-c
-c     parameter determining average carbon profile, same as in bio2str for
-c     average root profile
-c
-      data abar/4.70, 5.86, 0.00,
-     &          3.87, 3.46, 3.97,
-     &          3.97, 3.97, 0.00,
-     &          5.86, 4.92, 0.00/
-c
+c     Constants and parameters are located in ctem_params.f90
+
 c     parameters of the hyperbolic tan q10 formulation
 c
-      data tanhq10/1.44, 0.56, 0.075, 46.0/
-c                     a     b      c     d
-c     q10 = a + b * tanh[ c (d-temperature) ]
-c     when a = 2, b = 0, we get the constant q10 of 2. if b is non
-c     zero then q10 becomes temperature dependent
-c
-c     alpha, parameter for finding litter temperature as a weighted average 
-c     of top soil layer temperature and root temperature
-      data alpha/0.7/
 c
 c     ---------------------------------------------------------------
 c
@@ -167,7 +133,8 @@ c
       do 200 j = 1,icc
         do 210 i = il1, il2
          if (fcan(i,j) .gt. 0.) then
-          litrtemp(i,j)=alpha*tbar(i,1)+roottemp(i,j)*(1.0-alpha)
+          litrtemp(i,j)=alpha_hetres*tbar(i,1)+roottemp(i,j)*
+     1                                    (1.0-alpha_hetres)
          endif
 210     continue
 200   continue

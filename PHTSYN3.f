@@ -291,13 +291,6 @@ C     FOR VALUES HIGHER THAN 1. WHEN SN IS ABOUT 10, PHOTOSYNTHESIS DOES
 C     NOT START DECREASING UNTIL ABOUT SOIL MOISTURE IS HALF WAY BETWEEN
 C     WILTING POINT AND FIELD CAPACITY.
 C
-C     PFT 3 HAS A HIGHER VALUE TO EMULATE DEEP ROOTS GIVING ACCESS TO
-C     GROUND WATER. JM 26.06.2012
-c      DATA SN/4.0, 4.0, 0.0,
-c     &        7.0, 4.0, 4.0,
-c     &        4.0, 4.0, 0.0,
-c     &        4.0, 4.0, 0.0/
-
       DATA SN/20.0, 20.0, 0.0,
      &        20.0, 20.0, 20.0,
      &        20.0, 20.0, 0.0,
@@ -344,7 +337,7 @@ C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
 C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
       DATA  RMLCOEFF/0.020, 0.021, 0.000,  !flag pft 1 was 0.015 JM Jan 10 2014
-     &               0.015, 0.015, 0.015,
+     &               0.012, 0.015, 0.015,  ! test pft 3 was 0.015 JM Jan 31 2014
      &               0.015, 0.025, 0.000,
      &               0.013, 0.025, 0.000/
 C

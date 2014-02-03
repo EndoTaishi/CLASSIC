@@ -50,17 +50,6 @@ c                     the log of roughness length over the bare fraction
 c                     of the grid cell. only roughness lengths over the
 c                     vegetated fraction are updated
 c 
-c              ctem 1.0                 class 2.7
-c         -----------------            -------------
-c        1. needle leaf evg
-c        2. needle leaf dcd           1. needle leaf
-c        3. broad leaf evg
-c        4. broad leaf cold dcd       2. broad leaf
-c        5. broad leaf dry dcd            
-c        6. c3 crop
-c        7. c4 crop                   3. crop
-c        8. c3 grass
-c        9. c4 grass                  4. grass
 c
 c     ----------------------------------------------------------------
 c     inputs
@@ -111,8 +100,10 @@ c     ----------------------------------------------------------------
 
       use ctem_params,        only : ignd, icc, ilg, ican, abszero,
      1                               l2max,kk, eta, kappa, kn, lfespany, 
-     2                               fracbofg, specsla     
-c
+     2                               fracbofg, specsla, abar, avertmas,
+     3                               alpha, prcnslai, minslai, mxrtdpth,
+     4                               albvis, albnir           
+
       implicit none
 
       integer il1, il2, i, j, k, m, n, k1c, k2c
@@ -130,79 +121,14 @@ c
      7         alvisc(ilg,ican),     alnirc(ilg,ican),  pai(ilg,icc),
      8          slaic(ilg,ican)
 
-      real           sla(icc),   veghght(ilg,icc),
-     1      lnrghlth(ilg,icc),   averough(ilg,ican),           abar(kk),
-     2           avertmas(kk),          alpha(kk),             b(icc),
+      real           sla(icc),   veghght(ilg,icc),        fcoeff, 
+     1      lnrghlth(ilg,icc),   averough(ilg,ican),      b(icc),   
      3      rootdpth(ilg,icc),  usealpha(ilg,icc),         a(ilg,icc),
      4          useb(ilg,icc),              zroot,      soildpth(ilg),
-     5           prcnslai(kk),         minslai(kk),        fcoeff,            
-     7           mxrtdpth(kk),         albvis(kk),         albnir(kk),
      8       etmp(ilg,icc,ignd),    totala(ilg,icc),       rmat_sum
 c
 c     ---------------------------------------------------------------
-c     parameters used. also note the structure of parameter vectors
-c     which clearly shows the class pfts (along rows) and ctem sub-pfts
-c     (along columns) 
-c
-c     needle leaf |  evg       dcd       ---    
-c     broad leaf  |  evg   dcd-cld   dcd-dry   
-c     crops       |   c3        c4       ---  
-c     grasses     |   c3        c4       --- 
-c
-c     parameter determining average root profile
-      data abar/4.70, 5.86, 0.00,
-     &          3.87, 3.46, 3.97,
-     &          3.97, 3.97, 0.00,
-     &          5.86, 4.92, 0.00/
-c
-c     average root biomass (kg c/m2) for ctem's 8 pfts used for
-c     estimating rooting profile
-      data avertmas/1.85, 1.45, 0.00,
-     &              2.45, 2.10, 2.10,
-     &              0.10, 0.10, 0.00,
-     &              0.70, 0.70, 0.00/
-c
-c     alpha, parameter determining how the roots grow
-      data alpha/0.80, 0.80, 0.00,
-     &           0.80, 0.80, 0.80,
-     &           0.80, 0.80, 0.00,
-     &           0.80, 0.80, 0.00/
-c
-c     prcnslai - storage/imaginary lai is this percentage of maximum 
-c     leaf area index that a given root+stem biomass can support 
-      data prcnslai/7.5, 7.5, 0.0,
-     &              7.5, 7.5, 7.5, 
-     &              7.5, 7.5, 0.0,
-     &              2.5, 2.5, 0.0/
-c
-c     minslai - minimum storage lai. this is what the model uses as
-c     lai when growing vegetation for scratch. consider these as model
-c     seeds.
-      data minslai/0.3, 0.3, 0.0,
-     &             0.3, 0.3, 0.3,
-     &             0.2, 0.2, 0.0,
-     &             0.2, 0.2, 0.0/
-c
-c      maximum rooting depth. this is used so that the rooting depths
-c      simulated by ctem's variable rooting depth parameterzation are
-c      constrained to realistic values
-c
-       data mxrtdpth/3.00, 3.00, 0.00,
-     &               5.00, 5.00, 3.00,
-     &               2.00, 2.00, 0.00,
-     &               1.00, 1.00, 0.00/
-c
-c     visible and near ir albedos of the 9 ctem pfts
-c
-       data albvis/3.00, 3.00, 0.00,
-     &             3.00, 5.00, 5.00,
-     &             5.50, 5.50, 0.00,
-     &             5.00, 6.00, 0.00/
-c
-       data albnir/19.0, 19.0, 0.00,
-     &             23.0, 29.0, 29.0,
-     &             34.0, 34.0, 0.00,
-     &             30.0, 34.0, 0.00/
+c     Constants and parameters are located in ctem_params.f90
 c
 c     class' original root parameterization has deeper roots than ctem's
 c     default values based on literature. in the coupled model this leads

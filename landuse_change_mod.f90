@@ -327,6 +327,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                       Land Use Change Subroutine 
 !
+!     31  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     J. Melton
+!
 !     18  Apr. 2013 - made it so that you will exit luc if the grid cell has
 !     J. Melton       no actual luc in this timestep. removed some extraneous checks.
 !
@@ -384,8 +387,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     lucsocin - luc related input to soil carbon pool, u-mol co2/m2.sec
 
 !     ----------------------------------------------------------------    
-      use ctem_params,        only : icc, ican, zero, &
-                                    km2tom2, iccp1
+      use ctem_params,        only : icc, ican, zero, km2tom2, iccp1, &
+                                     combust, paper, furniture, bmasthrs, &
+                                     tolrnce1, tolrnce2   
 
       implicit none
 
@@ -403,13 +407,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             nfcancmx(nilg,icc),  fcancmy(nilg,icc), todfrac(nilg,icc), & !5
              yesfrac(nilg,icc)
 
-      real    fcanmx(nilg,ican),  delfrac(nilg,icc),       combust(3), & !1
-                    paper(3),      furniture(3),   abvgmass(nilg,icc), & !2
-                 bmasthrs(2),    grclarea(nilg),   combustc(nilg,icc), & !3
+      real    fcanmx(nilg,ican),  delfrac(nilg,icc),abvgmass(nilg,icc),& !       combust(3), & !1
+                  !  paper(3),      furniture(3),    bmasthrs(2), !2
+                                 grclarea(nilg),   combustc(nilg,icc), & !3
              paperc(nilg,icc), furnturc(nilg,icc),incrlitr(nilg,icc),  & !4
-           incrsolc(nilg,icc),          tolrnce1,            tolrnce2, & !5
-               chopedbm(nilg)           
-
+           incrsolc(nilg,icc),   chopedbm(nilg)   !    tolrnce1,            tolrnce2, & !5
+                          
       real         redubmas1,              term,       barefrac(nilg), & 
                 grsumcom(nilg),     grsumpap(nilg),    grsumfur(nilg), & !1
                 grsumlit(nilg),     grsumsoc(nilg),    pbarefra(nilg), & !2
@@ -422,27 +425,28 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                 totdmas2(nilg),     ntotdms2(nilg)
 
 
-!     how much deforested/chopped off biomass is combusted
-!     (these absolutely must add to 1.0!)
-      data combust/0.15, 0.30, 0.45/ 
+!!     how much deforested/chopped off biomass is combusted
+!!     (these absolutely must add to 1.0!)
+!      data combust/0.15, 0.30, 0.45/ 
 
-!     how much deforested/chopped off biomass goes into short term
-!     storage such as paper
-      data paper/0.70, 0.70, 0.55/
+!!     how much deforested/chopped off biomass goes into short term
+!!     storage such as paper
+!      data paper/0.70, 0.70, 0.55/
 
-!     how much deforested/chopped off biomass goes into long term
-!     storage such as furniture
-      data furniture/0.15, 0.0, 0.0/
+!!     how much deforested/chopped off biomass goes into long term
+!!     storage such as furniture
+!      data furniture/0.15, 0.0, 0.0/
 
-!     biomass thresholds for determining if deforested area is a forest,
-!     a shrubland, or a bush kg c/m2
-      data bmasthrs/4.0, 1.0/
+!!     biomass thresholds for determining if deforested area is a forest,
+!!     a shrubland, or a bush kg c/m2
+!      data bmasthrs/4.0, 1.0/
 
-      data tolrnce1/0.50/  ! kg c, tolerance of total c balance 
-      data tolrnce2/0.005/ ! kg c/m2, tolerance for total c density
-
+!      data tolrnce1/0.50/  ! kg c, tolerance of total c balance 
+!      data tolrnce2/0.005/ ! kg c/m2, tolerance for total c density
 
 !     ---------------------------------------------------------------
+!     Constants and parameters are located in ctem_params.f90
+!     -----------------------------------------------------------------
 
       if(icc.ne.9)                               call xit('luc',-1)  
       if(ican.ne.4)                              call xit('luc',-2)  
@@ -1096,10 +1100,10 @@ function adjust_luc_fracs(i,nmtest,nltest,nfcancmxrow, &
 ! of gridcell bare ground is >0.
 
 ! j. melton, jan 11 2013
+
 use ctem_params,        only : nlat,nmos,icc,seed
 
-
-  implicit none
+implicit none
 
 ! arguments:
 integer, intent(in) :: i

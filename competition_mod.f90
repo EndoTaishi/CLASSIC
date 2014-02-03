@@ -298,6 +298,9 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                          PFT Existence Subroutine 
 !
+!     27  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     J. Melton
+!
 !     26  Nov 2013  - Update parameters for global off-line runs
 !     J. Melton
 !
@@ -322,7 +325,8 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 !                     pfts will decide if they are present in a grid cell or
 !                     not.
 
-use ctem_params, only : zero, kk, icc, ican
+use ctem_params, only : zero, kk, icc, ican, tcoldmin, tcoldmax, twarmmax, &
+                        gdd5lmt, aridlmt, dryseasonlmt
 
 implicit none
 
@@ -355,64 +359,9 @@ logical, dimension(nilg,icc), intent(out) :: pftexist(nilg,icc) !binary array in
 ! local variables
 integer :: i,j
 
-! local parameters
-!     
-! the model basically uses the temperature of the coldest month as
-! the major constraint for pft distribution. a range of the coldest
-! month temperature is prescribed for each pft within which pfts are
-! allowed to exist. in addition for tropical broadleaf drought 
-! deciduous trees measure(s) of aridity (function of precipitation
-! and potential evaporation) are used.
-!
-! note the structure of parameter vectors which clearly shows the 
-! class pfts (along rows) and ctem sub-pfts (along columns)
-!
-! needle leaf |  evg       dcd       ---
-! broad leaf  |  evg   dcd-cld   dcd-dry
-! crops       |   c3        c4       ---
-! grasses     |   c3        c4       ---
-!
-! numbers such as 999.9, 99.9 and 9.9 are meant to imply no constraint and
-! not used 
-
-! minimum coldest month temperature
-real, dimension(kk), parameter :: tcoldmin = [ -40.0, -999.9,   0.0, & !test pft 1 was -32.5, test Dec 19 JM add in pft 2 lim.
-                                                 9.0,  -35.0,   4.0, & !test pft 3 and 5 was 15.5, TEST PFT 4 add in temp.
-                                              -999.9, -999.9,   0.0, &
-                                              -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
-
-! maximum coldest month temperature
-real, dimension(kk), parameter :: tcoldmax = [ 18.0,  -23.0,   0.0, &  ! PFT 2 was -28.0 JM Jan 14.
-                                              999.9,   15.5, 900.0, &       
-                                              999.9,  999.9,   0.0, &
-                                              999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0
-
-! maximum warmest month temperature
-real, dimension(kk), parameter :: twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 was 23.0
-                                               99.9,  99.9, 99.9, &       
-                                               99.9,  99.9,  0.0, &
-                                               99.9,  99.9,  0.0 ]
-
-! minimum gdd above 5 c required to exist
-real, dimension(kk), parameter :: gdd5lmt = [ 400.0,  600.0,  0.0, &  ! test pft 2 was 300
-                                             1200.0,  500.0,  9.9, & 
-                                                9.9,    9.9,  0.0, &
-                                                9.9,    9.9,  0.0 ]
-
-! aridity index limit for broadleaf drought/dry deciduous trees
-real, dimension(kk), parameter :: aridlmt = [ 9.9,  9.9,    0.0, &
-                                              9.9,  9.9,    1.0, & ! PFT 5 was 1.5.       
-                                              9.9,  9.9,    0.0, &
-                                              9.9,  9.9,    0.0 ]
-
-! aridity index limit for broadleaf drought/dry deciduous trees
-real, dimension(kk), parameter :: dryseasonlmt=[ 99.9,  99.9,    0.0, &
-                                              99.9,  99.9,    6.0, & 
-                                              99.9,  99.9,    0.0, &
-                                              99.9,  99.9,    0.0 ]
-
-
-!     ---------------------------------------------------------------
+! ----------------------------------------------------------------------
+!     Constants and parameters are located in ctem_params.f90
+! ----------------------------------------------------------------------
 
 !     go through all grid cells and based on bioclimatic parameters
 !     decide if a given pft should exist or not. 
@@ -487,13 +436,6 @@ real, dimension(kk), parameter :: dryseasonlmt=[ 99.9,  99.9,    0.0, &
         else
            pftexist(i,j)=.false.
         endif
-   ! FLAG!! ----------------------
-!   do j = 1,9
-!                 pftexist(i,j)=.false.
-!   end do
-!                 pftexist(i,4)=.true.
-
-   ! FLAG!! --------------
 
 100   continue
 
@@ -516,6 +458,9 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 !               Canadian Terrestrial Ecosystem Model (CTEM) V1.1
 !                          PFT Competition Subroutine 
 
+!     27  Jan 2014  - Moved parameters to global file (ctem_params.f90)
+!     J. Melton
+
 !     25  Jun 2013  - Convert to f90, incorporate modules, and into larger module.
 !     J. Melton
  
@@ -536,7 +481,8 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 !
 
 use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
-                        icc, ican, deltat, iccp1, seed
+                        icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
+                        tolranc1, tolranc2 
 
 implicit none
 
@@ -641,31 +587,11 @@ real, dimension(nilg) :: pbarefra
 real, dimension(nilg) :: grsumlit, grsumsoc
 real, dimension(nilg,icc) :: pftareab, pftareaa
 
-! local parameters
+!     ---------------------------------------------------------------
+!     Constants and parameters are located in ctem_params.f90
+!     ---------------------------------------------------------------
 
-!     note the structure of parameter vectors which clearly shows the
-!     class pfts (along rows) and ctem sub-pfts (along columns)
-!
-!     needle leaf |  evg       dcd       ---
-!     broad leaf  |  evg   dcd-cld   dcd-dry
-!     crops       |   c3        c4       ---
-!     grasses     |   c3        c4       ---
-
-! multiplying factor for converting biomass density to sapling density
-real, dimension(kk), parameter :: bio2sap = [ 0.10, 0.10, 0.00, &
-                                              0.10, 0.10, 0.10, &
-                                              0.10, 0.10, 0.00, &
-                                              0.10, 0.10, 0.00 ] 
-
-! mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
-real, parameter :: bioclimrt = 0.25
-
-! error tolerance for c balance for each pft over gcm grid cell
-real, parameter :: tolranc1 = 0.150  ! kg c
-real, parameter :: tolranc2 = 0.0050 ! kg c/m2
-
-! minimum bare fraction
-!real, parameter :: minbare = 0.001  !replaced minbare with seed (ctem_params.f90) - JM
+! Model switches:
 
 ! set desired model to be used to .true. and all other to .false.
 logical, parameter :: lotvol=.false. ! original lotka-volterra eqns.
