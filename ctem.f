@@ -742,7 +742,7 @@ c     -----------------------------------------------------------------
 
          call luc(il1,      nlat,     nlat,     nol2pfts, 
      2           grclarea_cmp,    pfcancmx_cmp, nfcancmx_cmp,     iday,
-     3           todfrac_cmp,  yesfrac_mos,   .true.,
+     3           todfrac_cmp,  yesfrac_mos,   .true.,      compete,
      4           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
      5           litrmass_cmp, soilcmas_cmp, vgbiomas_cmp, gavgltms_cmp,
      6           gavgscms_cmp,     fare_cmp,   fcanmx_cmp,
@@ -882,7 +882,7 @@ c
 
          call luc(    il1,      il2,   ilg,  nol2pfts, 
      2                  grclarea, pfcancmx, nfcancmx,     iday,
-     3                   todfrac,yesfrac_comp,.true.,
+     3                   todfrac,yesfrac_comp,.true.,  compete,
      4                  gleafmas, bleafmas, stemmass, rootmass,
      5                  litrmass, soilcmas, vgbiomas, gavgltms,
      6                  gavgscms,  fcancmx,   fcanmx,

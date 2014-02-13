@@ -101,6 +101,8 @@ real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
 ! Parameters used in more than one subroutine:
 
 real, dimension(kk) :: kn               ! Canopy light/nitrogen extinction coefficient
+logical, dimension(icc) :: crop         ! simple crop matrix, define the number and position of the crops
+logical, dimension(icc) :: grass        ! simple grass matric, define the number and position of grass
 
 ! allocate.f parameters: ---------------------------------
 
@@ -259,12 +261,20 @@ subroutine initpftpars()
 implicit none
 
 ! Parameters used in more than one subroutine:
+! (also separate set used in PHTSYN3.f!!)
 
 kn= [ 0.50, 0.50, 0.00, &
       0.50, 0.50, 0.50, &
       0.40, 0.48, 0.00, &
       0.46, 0.44, 0.00 ]
 
+crop=.false.
+crop(6)=.true.
+crop(7)=.true.   
+
+grass=.false.
+grass(8)=.true.
+grass(9)=.true.
 
 ! allocate.f parameters: --------------
 
@@ -361,13 +371,13 @@ albnir = [ 19.0, 19.0, 0.00, &
 
   ! existence subroutine:
 
-tcoldmin = [ -40.0, -999.9,   0.0, & !test pft 1 was -32.5, test Dec 19 JM add in pft 2 lim.
-               9.0,  -35.0,   4.0, & !test pft 3 and 5 was 15.5, TEST PFT 4 add in temp.
+tcoldmin = [ -99.0, -999.9,   0.0, & !test pft 1 was -32.5, 
+               7.0,  -35.0,   4.0, & !test pft 3 and 5 was 15.5, TEST PFT 4 add in temp.
             -999.9, -999.9,   0.0, &
             -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
 
-tcoldmax = [ 18.0,  -23.0,   0.0, &  ! PFT 2 was -28.0 JM Jan 14.
-            999.9,   15.5, 900.0, &       
+tcoldmax = [ 18.0,  -27.0,   0.0, &  ! PFT 2 was -28.0 JM Jan 14.
+            999.9,   16.0, 900.0, &       
             999.9,  999.9,   0.0, &
             999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0
 
@@ -377,7 +387,7 @@ twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 was 23.0
              99.9,  99.9,  0.0 ]
 
 gdd5lmt = [ 400.0,  600.0,  0.0, &  ! test pft 2 was 300
-           1200.0,  500.0,  9.9, & 
+           1200.0,  350.0,  9.9, &  ! test pft 4 was 500
               9.9,    9.9,  0.0, &
               9.9,    9.9,  0.0 ]
 
@@ -394,7 +404,7 @@ dryseasonlmt=[ 99.9,  99.9,    0.0, &
   ! competition subroutine
 
 bio2sap = [ 0.10, 0.10, 0.00, &
-            0.05, 0.10, 0.10, &
+            0.05, 0.10, 0.10, & !flag test, pft 3,4 were 0.1 JM Feb 3 2014.
             0.10, 0.10, 0.00, &
             0.10, 0.10, 0.00 ] 
 
@@ -521,28 +531,28 @@ specsla =[ 11.0, 0.0, 0.0, &
 
 fracbofg = 0.55
 
-cdlsrtmx = [ 0.15, 0.30, 0.00, &
+cdlsrtmx = [ 0.10, 0.30, 0.00, &  ! test PFT 1 was 0.15 JM Feb 3 2014
              0.30, 0.15, 0.15, &
              0.15, 0.15, 0.00, &
              0.15, 0.15, 0.00 ]
 
 drlsrtmx = [ 0.0025, 0.005, 0.000, &
-             0.005, 0.005, 0.025, & !pft 5 was 0.005
+             0.005, 0.003, 0.025, & !pft 5 was 0.005, pft 4 was 0.005 jm feb 3 2014
              0.005, 0.005, 0.000, &
              0.025, 0.025, 0.000 ]  !PFT 8 and 9 were 0.05 
 
 drgta = [ 3.0, 3.0, 0.0, &
           3.0, 3.0, 3.0, &
           3.0, 3.0, 0.0, &
-          3.0, 3.0, 0.0 ]   !pft 8 and 9 were 3
+          3.0, 3.0, 0.0 ]   
 
 colda = [ 3.0, 3.0, 0.0, &
           3.0, 3.0, 3.0, &
           3.0, 3.0, 0.0, &
           3.0, 3.0, 0.0 ]
 
-lwrthrsh = [ -45.0, -5.0, 0.0, &
-               5.0,  5.0, 5.0, &
+lwrthrsh = [ -50.0, -5.0, 0.0, &  !flag pft 1 was -45 JM Feb 3 2014
+               5.0,  5.0, 5.0, &  ! pft 4 was 5.0 JM Feb 6 2014
                5.0,  5.0, 0.0, &
                0.1,  5.0, 0.0 ]
 
@@ -567,7 +577,7 @@ thrprcnt = [ 40.0, 40.0,  0.0, &
              50.0, 50.0,  0.0, &
              40.0, 40.0,  0.0 ]
 
-roothrsh = 15.0
+roothrsh = 8.0
 
 
 ! turnover.f parameters: --------------

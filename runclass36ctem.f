@@ -412,7 +412,7 @@ c
      5           spinfast,  month1,  month2,      xday, 
      6           ncyear, co2yr, popyr, nummetcylyrs,
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
-     8           cypopyr, lucyr, cylucyr 
+     8           cypopyr, lucyr, cylucyr, endyr 
 c
        real      rlim,        fsstar_g,
      1           flstar_g,  qh_g,    qe_g,        snomlt_g,
@@ -2344,8 +2344,11 @@ c
 c      back up one space in the met file so it is ready for the next readin  
        backspace(12)
 
-c      find the popd data to cycle over, popd is only cycled over when the met is cycled.
+c      If you are not cycling over the MET, you can still specify to end on a
+c      year that is shorter than the total climate file length.
+       if (.not. cyclemet) endyr = iyear + ncyear
 
+c      find the popd data to cycle over, popd is only cycled over when the met is cycled.
        popyr=-99999  ! initialization, forces entry to loop below
 
        if (cyclemet .and. popdon) then
@@ -2366,7 +2369,7 @@ c
          call initialize_luc(iyear,argbuff,nmtest,nltest, 
      1                     mosaic,nol2pfts,cyclemet,   
      2                     cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,     
-     3                     pfcancmxrow,fcancmxrow,reach_eof)
+     3                     pfcancmxrow,fcancmxrow,reach_eof,start_bare)
 
          if (reach_eof) goto 999
 
@@ -2710,10 +2713,10 @@ c
 
 c      if lnduseon is true, read in the luc data now
 
-       if (ctem_on .and. lnduseon) then
+       if (ctem_on .and. lnduseon .and. .not. cyclemet) then
 
          call readin_luc(iyear,nmtest,nltest,mosaic,lucyr,   
-     &                   nfcancmxrow,reach_eof)
+     &                   nfcancmxrow,pfcancmxrow,reach_eof,compete)
          if (reach_eof) goto 999
 
        else ! lnduseon = false or met is cycling
@@ -6027,7 +6030,7 @@ c
 
 c         if landuseon or competition, then we need to recreate the 
 c         dvdfcanrow so do so now
-          if (lnduseon .or. compete .and. mosaic) then !flag! mosaic should be here?
+          if (lnduseon .or. compete ) then
            icountrow=0
            do j = 1, ican
             do i=1,nltest
@@ -6162,9 +6165,13 @@ c      check if the model is done running.
 
              else
 
-              run_model = .false.
+               run_model = .false.
 
              endif
+          else if (iyear .eq. endyr .and. .not. cyclemet) then
+
+             run_model = .false.
+        
           endif !if cyclemet and iyear > metcycendyr
        endif !last day of year check
 

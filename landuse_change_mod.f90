@@ -12,6 +12,7 @@ public  :: initialize_luc
 public  :: readin_luc
 public  :: luc
 private :: adjust_luc_fracs
+private :: adjust_fracs_comp
 
 contains
 
@@ -19,7 +20,7 @@ contains
 subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
                           mosaic,nol2pfts,cyclemet,   &
                           cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,  &
-                          pfcancmxrow,fcancmxrow,reach_eof)
+                          pfcancmxrow,fcancmxrow,reach_eof,start_bare)
 
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    LUC Initial Read-In Subroutine 
@@ -29,8 +30,11 @@ subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
 !                     it is run once to set up the luc info before the 
 !                     model timestepping begins.
 !		      
+!     7  Feb. 2014  - Adapt it to work with competition and start_bare
+!     J. Melton 
+!
 
-use ctem_params,        only : nmos,nlat,icc,ican,icp1,seed
+use ctem_params,        only : nmos,nlat,icc,ican,icp1,seed,crop
 
 implicit none
 
@@ -45,7 +49,7 @@ integer, intent(in) :: nltest
 integer, dimension(ican), intent(in) :: nol2pfts
 logical, intent(in) :: cyclemet
 integer, intent(in) :: cylucyr 
-
+logical, intent(in) :: start_bare
 
 ! updates
 real, dimension(nlat,nmos,icp1), intent(inout) :: fcanrow
@@ -96,6 +100,7 @@ integer :: k2,k1,strlen
          endif
         enddo !nltest
 
+
 !       next update our luc data if either of the following conditions are met:
 !       1) we are cycling the met data and the luc year we just read in is less
 !       than the year we want to cycle over (assuming it is not defaulted to 
@@ -121,6 +126,20 @@ integer :: k2,k1,strlen
              endif
             enddo !nltest
         enddo  !while loop
+
+!       If you are running with start_bare on, take in only the 
+!       crop fractions, rest are seed.
+        if (start_bare) then
+         do j = 1, icc
+          do i = 1, nltest
+           do m = 1, nmtest
+            if (.not. crop(j)) then
+              nfcancmxrow(i,m,j)=seed
+            end if
+           end do
+          end do
+         end do
+        end if
 
 !       get fcans for use by class using the nfcancmxs just read in
         k1=0
@@ -189,7 +208,6 @@ integer :: k2,k1,strlen
            endif !mosaic
           enddo !nltest
 
-
 !       assign the present pft fractions from those just read in
         do j = 1, icc
           do i = 1, nltest
@@ -224,15 +242,18 @@ end subroutine initialize_luc
 !=======================================================================
 
 subroutine readin_luc(iyear,nmtest,nltest,mosaic,lucyr, &
-                      nfcancmxrow,reach_eof)
+                      nfcancmxrow,pfcancmxrow,reach_eof,compete)
 
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
-!                    Luc Annual Read-In Subroutine 
+!                    LUC Annual Read-In Subroutine 
 !
 !     9  Jan. 2013  - this subroutine takes in luc information from
 !     J. Melton       a luc file annually and adapts them for runclassctem
-!		      
-use ctem_params,        only : nmos,nlat,icc,seed
+!	
+!     7  Feb. 2014  - Adapt it to work with competition
+!     J. Melton 
+	      
+use ctem_params,        only : nmos,nlat,icc,seed,crop
 
 implicit none
 
@@ -243,6 +264,7 @@ integer, intent(in) :: iyear
 logical, intent(in) :: mosaic
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
+logical, intent(in) :: compete
 
 
 ! updates
@@ -251,6 +273,7 @@ logical, intent(inout) :: reach_eof
 
 ! outputs
 real, dimension(nlat,nmos,icc), intent(out) :: nfcancmxrow
+real, dimension(nlat,nmos,icc), intent(in)  :: pfcancmxrow
 
 ! local variables
 real, dimension(icc) :: temparray
@@ -277,6 +300,21 @@ real :: bare_ground_frac
            enddo !nltest
          enddo !lucyr<iyear
   
+!     If compete is on, then only take in the crop fraction. Set the other fractions
+!     to the same as before. These will be adjusted in adjust_luc_fracs.
+        if (compete) then
+         do j = 1, icc
+          do i = 1, nltest
+           do m = 1, nmtest
+            if (.not. crop(j)) then
+              nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)
+            end if
+           end do
+          end do
+         end do
+        end if
+
+
 !       (re)find the bare fraction for farerow(i,iccp1)
          if (mosaic) then
           do i = 1, nltest
@@ -314,7 +352,7 @@ end subroutine readin_luc
 
 subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1    
                         grclarea, pfcancmx, nfcancmx,      iday,    & !2    
-                         todfrac,  yesfrac, interpol,               & !3    
+                         todfrac,  yesfrac, interpol,   compete,    & !3    
 !    ----------------------- inputs above this line -------------       
                          gleafmas, bleafmas, stemmass, rootmass,    & !4  
                          litrmass, soilcmas, vgbiomas, gavgltms,    & !5   
@@ -389,7 +427,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     ----------------------------------------------------------------    
       use ctem_params,        only : icc, ican, zero, km2tom2, iccp1, &
                                      combust, paper, furniture, bmasthrs, &
-                                     tolrnce1, tolrnce2   
+                                     tolrnce1, tolrnce2, crop   
 
       implicit none
 
@@ -398,7 +436,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       integer fraciord(nilg,icc), treatind(nilg,icc),       bareiord(nilg)
       integer lrgstpft(1)
 
-      logical  interpol, luctkplc(nilg) 
+      logical  interpol         
+      logical  luctkplc(nilg)
+      logical  compete          !true if the competition subroutine is on.
 !      
       real  gleafmas(nilg,icc), bleafmas(nilg,icc),stemmass(nilg,icc), & !1
             rootmass(nilg,icc),  fcancmx(nilg,icc),pfcancmx(nilg,icc), & !2
@@ -407,11 +447,11 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             nfcancmx(nilg,icc),  fcancmy(nilg,icc), todfrac(nilg,icc), & !5
              yesfrac(nilg,icc)
 
-      real    fcanmx(nilg,ican),  delfrac(nilg,icc),abvgmass(nilg,icc),& !       combust(3), & !1
-                  !  paper(3),      furniture(3),    bmasthrs(2), !2
+      real    fcanmx(nilg,ican),  delfrac(nilg,icc),abvgmass(nilg,icc),& 
                                  grclarea(nilg),   combustc(nilg,icc), & !3
              paperc(nilg,icc), furnturc(nilg,icc),incrlitr(nilg,icc),  & !4
-           incrsolc(nilg,icc),   chopedbm(nilg)   !    tolrnce1,            tolrnce2, & !5
+           incrsolc(nilg,icc),   chopedbm(nilg)
+      real      compdelfrac(nilg,icc)  !with competition on, this is the change in pft frac per timestep   
                           
       real         redubmas1,              term,       barefrac(nilg), & 
                 grsumcom(nilg),     grsumpap(nilg),    grsumfur(nilg), & !1
@@ -424,26 +464,6 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                     redubmas2,     lucltrin(nilg),     lucsocin(nilg), & !7
                 totdmas2(nilg),     ntotdms2(nilg)
 
-
-!!     how much deforested/chopped off biomass is combusted
-!!     (these absolutely must add to 1.0!)
-!      data combust/0.15, 0.30, 0.45/ 
-
-!!     how much deforested/chopped off biomass goes into short term
-!!     storage such as paper
-!      data paper/0.70, 0.70, 0.55/
-
-!!     how much deforested/chopped off biomass goes into long term
-!!     storage such as furniture
-!      data furniture/0.15, 0.0, 0.0/
-
-!!     biomass thresholds for determining if deforested area is a forest,
-!!     a shrubland, or a bush kg c/m2
-!      data bmasthrs/4.0, 1.0/
-
-!      data tolrnce1/0.50/  ! kg c, tolerance of total c balance 
-!      data tolrnce2/0.005/ ! kg c/m2, tolerance for total c density
-
 !     ---------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
 !     -----------------------------------------------------------------
@@ -454,6 +474,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     ------------------------------------------------------------------
 
 !     find/use provided current and previous day's fractional coverage 
+!     if competition is on, we will adjust these later.
 
       if(interpol) then ! perform interpolation 
        do 110 j = 1, icc
@@ -511,6 +532,23 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 116     continue
 115    continue
       endif
+
+!     If competition is on, we need to adjust the other fractions for the increase/decrease
+!     in cropland as only the crops areas is now specified.
+      if (compete) then
+
+         compdelfrac= adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac)
+
+         do j = 1, icc
+          do i = 1, il1, il2
+            if (.not. crop(j)) then
+             fcancmx(i,j)=yesfrac(i,j)+compdelfrac(i,j) !  current day
+             fcancmy(i,j)=yesfrac(i,j) ! previous day
+            end if
+          end do
+         end do
+
+      end if
 
 !     check if this year's fractional coverages have changed or not
 !     for any pft
@@ -1146,5 +1184,88 @@ do j = 1,nmtest-1
 enddo
 
 end function adjust_luc_fracs
+
+!=======================================================================
+
+function adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac) result(outdelfrac)
+
+! This function is used when compete = true. It adjusts the amount of 
+! each pft to allow expansion of cropland.
+
+! J. Melton, Feb 13 2014
+
+use ctem_params,        only : icc,crop,zero,seed
+
+implicit none
+
+! arguments:
+integer, intent(in) :: il1
+integer, intent(in) :: il2
+integer, intent(in) :: nilg
+integer, intent(in) :: iday
+real, dimension(nilg,icc), intent(in) :: pfcancmx
+real, dimension(nilg,icc), intent(in) :: yesfrac
+real, dimension(nilg,icc), intent(in) :: delfrac
+
+real, dimension(nilg,icc) :: outdelfrac
+
+! local variables:
+integer :: i, j
+real, dimension(nilg) :: chgcrop, cropfrac
+real, dimension(nilg,icc) :: adjus_fracs,fmx,fmy
+
+real, parameter :: smallnumber = 1.0e-12
+
+!-------------------------
+
+! Some initializations
+chgcrop = 0.
+cropfrac = 0.
+adjus_fracs = 0.
+outdelfrac = 0.
+
+! Find how much the crop area changes this timestep. We only care about the total
+! change, not the per crop PFT change.
+do i = il1, il2
+  do j = 1, icc
+     if (crop(j)) then
+          fmx(i,j)=pfcancmx(i,j)+(real(iday)*delfrac(i,j)) !  current day
+          fmy(i,j)=pfcancmx(i,j)+(real(iday-1)*delfrac(i,j)) ! previous day
+          chgcrop(i) = chgcrop(i) + (fmx(i,j) - fmy(i,j))
+          cropfrac(i) = cropfrac(i) + fmx(i,j)
+     else 
+        ! add the seed fracs to the cropfrac for use below since we can't take
+        ! area from a pft that only has a seed fraction.
+        if (yesfrac(i,j) .eq. seed) then 
+          cropfrac(i) = cropfrac(i) + seed
+        end if 
+
+     end if     
+  end do
+end do 
+
+! If the crop area changed we have to reduce the other PFT proportional to their 
+! area (if we gained crop area). We don't presently assume anything like grasslands
+! are converted first. We assume that on the scale of our gridcells, area 
+! is simply converted proportional to the total.
+do i = il1, il2
+
+  if (chgcrop(i) .gt. smallnumber) then
+
+    ! Adjust the non-crop PFT fractions to find their proportional fraction that does not include crops.
+    do j = 1, icc
+     if (.not. crop(j) .and. yesfrac(i,j) .gt. seed) then
+     
+       adjus_fracs(i,j) = yesfrac(i,j) / (1. - cropfrac(i))
+       outdelfrac(i,j) = chgcrop(i) * adjus_fracs(i,j)
+
+     end if
+    end do
+
+  end if
+
+end do
+
+end function adjust_fracs_comp
 
 end module

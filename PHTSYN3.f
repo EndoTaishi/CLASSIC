@@ -294,7 +294,7 @@ C
       DATA SN/20.0, 20.0, 0.0,
      &        20.0, 20.0, 20.0,
      &        20.0, 20.0, 0.0,
-     &        20.0, 20.0, 0.0/
+     &        13.0, 13.0, 0.0/
 
 C
 C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.
@@ -309,7 +309,7 @@ C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 C     VALUES ARE MAINLY DERIVED FROM KATTGE ET AL. 2009 WHICH 
 C     DOESN'T INCLUDE C4
       DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, !FLAG test Dec 3 PFT 1 was 35.(was 50, dec 18) TEST PFT 2 was 40.
-     &          45.0E-06, 67.0E-06, 55.0E-06, !FLAG test Dec 3 PFT 4 was 67. PFT 5 was 40
+     &          40.0E-06, 67.0E-06, 55.0E-06, !FLAG test Dec 3 PFT 4 was 67. PFT 5 was 40
      &          55.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
 
@@ -337,7 +337,7 @@ C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
 C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
       DATA  RMLCOEFF/0.020, 0.021, 0.000,  !flag pft 1 was 0.015 JM Jan 10 2014
-     &               0.012, 0.015, 0.015,  ! test pft 3 was 0.015 JM Jan 31 2014
+     &               0.012, 0.015, 0.015, 
      &               0.015, 0.025, 0.000,
      &               0.013, 0.025, 0.000/
 C
@@ -805,7 +805,7 @@ C
             ENDIF
           ENDIF
 C
-C         ASSUMING THAT SUNLIT AND SHADED TEMEPERATURES ARE SAME
+C         ASSUMING THAT SUNLIT AND SHADED TEMPERATURES ARE SAME
 C
           VMUNS2(I,M) = (1. + EXP(0.3*(TCAN(I)-TUP(SORT(M)))))
           VMUNS3(I,M) = (1. + EXP(0.3*(TLOW(SORT(M))-TCAN(I))))
@@ -841,7 +841,7 @@ C     0.10 MM/DAY -> 1.157x1E-09 M/S
 C 
       DO 500 J = 1, IG
         DO 510 I = IL1, IL2
-C
+C         
           IF(ISAND(I,J) .EQ. -3 .OR. ISAND(I,J) .EQ. -4)THEN
             SM_FUNC(I,J)=0.01
           ELSE ! I.E., ISAND.NE.-3 OR -4
@@ -901,6 +901,7 @@ C
          AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)*RMAT(I,M,1) +
      &                    SM_FUNC2(I,2)*RMAT(I,M,2) +
      &                    SM_FUNC2(I,3)*RMAT(I,M,3)
+
          AVE_SM_FUNC(I,M)= AVE_SM_FUNC(I,M) /
      &    (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
 C

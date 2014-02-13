@@ -482,7 +482,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 
 use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                         icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
-                        tolranc1, tolranc2 
+                        tolranc1, tolranc2, crop, grass 
 
 implicit none
 
@@ -540,9 +540,6 @@ integer, dimension(nilg,icc-numcrops) :: useexist
 integer, dimension(nilg,icc) :: fraciord
 integer, dimension(nilg) :: bareiord  
 
-logical, dimension(icc) :: crop
-logical, dimension(icc) :: grass
-
 real :: befrmass, aftrmass
 real :: sum1, sum2, sum3,term,sum4 
 real :: colmult
@@ -598,17 +595,9 @@ logical, parameter :: lotvol=.false. ! original lotka-volterra eqns.
 logical, parameter :: arora =.true.  ! modified form of lv eqns with f missing
 logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing and a modified self-thinning term
 
-! simple crop matrix, define the number and position of the crops
-      crop=.false.
-      crop(6)=.true.
-      crop(7)=.true.   
-
-! simple grass matric, define the number and position of grass
-      grass=.false.
-      grass(8)=.true.
-      grass(9)=.true.
-      grass_ind(1)=8
-      grass_ind(2)=9
+! Set the indices that are grass.
+grass_ind(1)=8
+grass_ind(2)=9
 
 !     ---------------------------------------------------------------
 
