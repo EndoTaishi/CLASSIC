@@ -1747,7 +1747,7 @@ c
      3                    prbfrhuc, rmatctem, extnprob, pftareab,
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,   thicec,   popdin, lucemcom,
-     7                      dofire,  currlat,     iday,
+     7                      dofire,  currlat,     iday, fsnow,
 c    in above, out below 
      8                    stemltdt, rootltdt, glfltrdt, blfltrdt,
      9                    pftareaa, glcaemls, rtcaemls, stcaemls,

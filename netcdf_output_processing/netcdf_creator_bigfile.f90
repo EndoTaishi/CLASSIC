@@ -144,6 +144,7 @@ integer, allocatable, dimension(:) :: timenum
 character(8)  :: today
 character(10) :: now
 character(20) :: yrssince
+character(22) :: daysince
 integer :: z
 character(4) :: zchar
 
@@ -305,7 +306,8 @@ end if
 !----7
 z=realyrst-1
 write (zchar, '(I4)') z
-yrssince='years since '//zchar//' AD'
+!yrssince='years since '//zchar//' AD'
+daysince='days since '//zchar//'-01-01'
 
 status = nf90_def_dim(ncid,'time',totyrs,time)
 if (status/=nf90_noerr) call handle_err(status)
@@ -316,7 +318,8 @@ if (status/=nf90_noerr) call handle_err(status)
 status = nf90_put_att(ncid,varid,'long_name','time')
 if (status/=nf90_noerr) call handle_err(status)
 
-status = nf90_put_att(ncid,varid,'units',yrssince)
+!status = nf90_put_att(ncid,varid,'units',yrssince)
+status = nf90_put_att(ncid,varid,'units',daysince)
 if (status/=nf90_noerr) call handle_err(status)
 
 status = nf90_put_att(ncid,varid,'_Storage',"chunked")
@@ -420,7 +423,7 @@ forall (i=1:nl)
 end forall
 
 forall (i=yrst:totyrs)
-   timenum(i) = i
+   timenum(i) = i * 365
 end forall
 
 status = nf90_put_var(ncid,lon,lonvect)  !longitudes
