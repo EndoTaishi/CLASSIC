@@ -26,6 +26,9 @@ program netcdf_create_bf
 ! Joe Melton - July 17, 2013
 !       Changed how composite files are handled. Now I output them from CLASS-CTEM
 !       with per PFT values as well as grid averaged. This code now can deal with that.
+!
+! Joe Melton - Feb 26 2014
+!       Add in lat and lon bounds to the netcdf files
 
 !----------------
 
@@ -37,6 +40,7 @@ implicit none
 integer :: totyrs
 integer :: yrst
 integer :: realyrst
+integer :: i
 character(120) :: file_to_write
 character(120) :: long_path
 character(180) :: file_to_write_extended
@@ -78,9 +82,39 @@ namelist /joboptions/ &
 allocate(lonvect(cntx))
 allocate(latvect(cnty))
 
+allocate(latboundsvect(cnty+1))
+allocate(lonboundsvect(cntx+1))
+
+allocate(latbound(cnty+1,2))
+allocate(lonbound(cntx+1,2))
+
 !pass the lon/lat values to the vector
 lonvect=valslons
 latvect=valslats
+
+!create the bounds vectors
+latboundsvect(1)=-90.
+do i = 1,cnty-1
+  latboundsvect(i+1)=valslats(i)-(valslats(i)-valslats(i+1))*0.5   
+end do
+latboundsvect(cnty+1)=90.
+
+do i = 2,cnty+1
+   latbound(i-1,1)=latboundsvect(i-1)
+   latbound(i-1,2)=latboundsvect(i)
+end do
+
+
+lonboundsvect(1)=0.
+do i = 1,cntx-1
+  lonboundsvect(i+1)=valslons(i)-(valslons(i)-valslons(i+1))*0.5
+end do
+lonboundsvect(cntx+1)=360.
+
+do i = 2,cntx+1
+   lonbound(i-1,1)=lonboundsvect(i-1)
+   lonbound(i-1,2)=lonboundsvect(i)
+end do
 
 ! these are not set accurately!
 xrange(1) = minval(lonvect)
@@ -97,6 +131,12 @@ call create_netcdf(totyrs,yrst,realyrst,file_to_write_extended,CTEM,MOSAIC,MAKEM
 
 deallocate(lonvect)
 deallocate(latvect)
+
+deallocate(latboundsvect)
+deallocate(lonboundsvect)
+
+deallocate(latbound)
+deallocate(lonbound)
 
 end program netcdf_create_bf
 
@@ -205,6 +245,8 @@ if (status/=nf90_noerr) call handle_err(status)
 status = nf90_put_att(ncid,varid,'_Storage',"contiguous")
 if (status/=nf90_noerr) call handle_err(status)
 
+!status = nf90_put_att(ncid,varid,'bounds','lon_bnds')
+!if (status/=nf90_noerr) call handle_err(status)
 
 !----2
 status = nf90_def_dim(ncid,'lat',cnty,lat)
@@ -224,6 +266,14 @@ if (status/=nf90_noerr) call handle_err(status)
 
 status = nf90_put_att(ncid,varid,'_Storage',"contiguous")
 if (status/=nf90_noerr) call handle_err(status)
+
+!status = nf90_put_att(ncid,varid,'bounds','lat_bnds')
+!if (status/=nf90_noerr) call handle_err(status)
+
+!----3
+
+!status = nf90_def_dim(ncid,'bnds',2,bnds)
+!if (status/=nf90_noerr) call handle_err(status)
 
 !----3
 status = nf90_def_dim(ncid,'tile',ntile,tile)
@@ -320,6 +370,9 @@ if (status/=nf90_noerr) call handle_err(status)
 
 !status = nf90_put_att(ncid,varid,'units',yrssince)
 status = nf90_put_att(ncid,varid,'units',daysince)
+if (status/=nf90_noerr) call handle_err(status)
+
+status = nf90_put_att(ncid,varid,'calendar',"365_day")
 if (status/=nf90_noerr) call handle_err(status)
 
 status = nf90_put_att(ncid,varid,'_Storage',"chunked")
@@ -453,6 +506,39 @@ deallocate(tilesnum)
 deallocate(pftnum)
 deallocate(layersnum)
 deallocate(timenum)
+
+
+! Put in the bounds
+
+!status = nf90_redef(ncid) 
+!if (status/=nf90_noerr) call handle_err(status)
+
+!status = nf90_def_var(ncid,'lon_bnds',nf90_float,[lon,bnds],varid)
+!if (status/=nf90_noerr) call handle_err(status)
+
+!status = nf90_enddef(ncid) 
+!if (status/=nf90_noerr) call handle_err(status)
+
+!status = nf90_put_var(ncid,lon_bnds,lonbound,start=[1,1],count=[cntx+1,2])  !lon bounds
+!if (status/=nf90_noerr) call handle_err(status)
+
+
+!write(*,*)'here'
+
+!status = nf90_redef(ncid) 
+!if (status/=nf90_noerr) call handle_err(status)
+
+!status = nf90_def_var(ncid,'lat_bnds',nf90_float,[lat,bnds],varid)
+!if (status/=nf90_noerr) call handle_err(status)
+
+!status = nf90_enddef(ncid) 
+!if (status/=nf90_noerr) call handle_err(status)
+
+!status = nf90_put_var(ncid,lat_bnds,latbound,start=[1,1],count=[cnty+1,2])  !lat bounds
+!if (status/=nf90_noerr) call handle_err(status)
+
+!write(*,*)'there'
+
 
 !================ Now define the variables===========
 ! CTEM first

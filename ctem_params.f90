@@ -16,9 +16,10 @@ module ctem_params
 
 ! Change History:
 
-! Jan 17 2014 - JM - Add in more parameters from ctem.f, phenology.f, and allocate.f. We
-!                    are going to carry different parameters for the model run in competition and
-!                    prescribed fraction mode (for now at least).
+! Mar 12 2014 - JM - Allow for two sets of paramters (competition and prescribed PFT fractions).
+!                    all ctem subroutines except PHTSYN3 keep their parameters here.   
+!
+! Jan 17 2014 - JM - Add in more parameters from ctem.f, phenology.f, and allocate.f. 
 
 implicit none
 
@@ -94,6 +95,14 @@ real, parameter :: seed = 0.001 ! seed pft fraction, same as in competition
 ! conversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
 
+! simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
+logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false. ]   
+
+! simple grass matric, define the number and position of grass 
+logical, parameter, dimension(icc) :: grass = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true. ] 
+
+integer, parameter, dimension(numgrass) :: grass_ind = [ 8, 9 ] ! index of the grass pfts (only 2 grass pfts at present)        
+
 ! ==========================================================================================================================
 
 ! PFT specific parameters:
@@ -101,8 +110,6 @@ real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
 ! Parameters used in more than one subroutine:
 
 real, dimension(kk) :: kn               ! Canopy light/nitrogen extinction coefficient
-logical, dimension(icc) :: crop         ! simple crop matrix, define the number and position of the crops
-logical, dimension(icc) :: grass        ! simple grass matric, define the number and position of grass
 
 ! allocate.f parameters: ---------------------------------
 
@@ -157,10 +164,10 @@ real, dimension(kk) :: dryseasonlmt     ! minimum length of dry season for PFT t
 
    ! competition subroutine:
 
-real, dimension(kk) :: bio2sap  ! multiplying factor for converting biomass density to sapling density
-real :: bioclimrt               ! mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
-real :: tolranc1                ! error tolerance for c balance for each pft over gcm grid cell (kg c)
-real :: tolranc2                ! (kg c/m2)
+real, dimension(kk) :: bio2sap          ! multiplying factor for converting biomass density to sapling density
+real :: bioclimrt                       ! mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
+real :: tolranc1                        ! error tolerance for c balance for each pft over gcm grid cell (kg c)
+real :: tolranc2                        ! (kg c/m2)
 
 ! ctem.f parameters: ----------
 
@@ -169,6 +176,55 @@ real, dimension(kk) :: humicfac         ! Humification factor - used for transfe
 real, dimension(kk) :: laimin           ! Minimum lai below which a pft doesn't expand
 real, dimension(kk) :: laimax           ! Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
 real :: lambdamax                       ! Max. fraction of npp that is allocated for reproduction/colonization
+
+! disturb.f90 parameters: -------------
+
+real, dimension(2) :: bmasthrs_fire     ! min. and max. vegetation biomass thresholds to initiate fire, kg c/m^2
+real :: extnmois                        ! extinction moisture content for estimating fire likeliness due to soil moisture
+real :: duff_dry                        ! extinction moisture content for estimating fire likeliness due to moisture in the duff layer
+real :: lwrlthrs                        ! lower cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
+real :: hgrlthrs                        ! higher cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
+real :: parmlght                        ! parameter m (mean) and b of logistic distribution used for 
+real :: parblght                        !     estimating fire likelihood due to lightning
+real :: reparea                         ! typical area representing ctem's fire parameterization (km2)
+real :: popdthrshld                     ! threshold of population density (people/km2) [Kloster et al., biogeosci. 2010]
+
+!     **These values were being calculated each time, they shouldn't be as they
+!     are just parameters. JM
+!      real, parameter :: ymin = 0.01798621     !=1.0/( 1.0+exp((parmlght-0.0)/parblght) )
+!      real, parameter :: ymax = 0.9975273768   !=1.0/( 1.0+exp((parmlght-1.0)/parblght) )
+!      real, parameter :: slope = 0.0204588331  !=abs(0.0-ymin)+abs(1.0-ymax)
+!      real :: ymin, ymax, slope
+
+real :: alpha_fire                      ! parameter alpha_fire and f0 used for estimating wind function for fire spread rate
+real :: f0                              ! Fire spread rate in the absence of wind
+real, dimension(kk) :: standreplace     ! pft prevalence for stand replacing fire events (based on resistance to fire damage, ie. cambial kill)(unitless)
+real, dimension(kk) :: maxsprd          ! max. fire spread rate, km/hr
+real, dimension(kk) :: frco2glf         ! fraction of green leaf biomass converted to gases due to combustion
+real, dimension(kk) :: frco2blf         ! fraction of brown leaf biomass converted to gases due to combustion
+real, dimension(kk) :: frltrglf         ! fraction of green leaf biomass becoming litter after combustion
+real, dimension(kk) :: frltrblf         ! fraction of brown leaf biomass becoming litter after combustion
+real, dimension(kk) :: frco2stm         ! fraction of stem biomass converted to gases due to combustion
+real, dimension(kk) :: frltrstm         ! fraction of stem biomass becoming litter after combustion
+real, dimension(kk) :: frco2rt          ! fraction of root biomass converted to gases due to combustion
+real, dimension(kk) :: frltrrt          ! fraction of root biomass becoming litter after combustion
+real, dimension(kk) :: frltrbrn         ! fraction of litter burned during fire and emitted as gases
+
+!     emissions factors by chemical species
+real, dimension(kk) :: emif_co2         ! pft-specific emission factors for CO2,g species / (kg DOM)
+real, dimension(kk) :: emif_co          ! pft-specific emission factors for CO,g species / (kg DOM)
+real, dimension(kk) :: emif_ch4         ! pft-specific emission factors for CH4,g species / (kg DOM)
+real, dimension(kk) :: emif_nmhc        ! pft-specific emission factors for non-methane hydrocarbons,g species / (kg DOM)
+real, dimension(kk) :: emif_h2          ! pft-specific emission factors for H2,g species / (kg DOM)
+real, dimension(kk) :: emif_nox         ! pft-specific emission factors for NOx,g species / (kg DOM)
+real, dimension(kk) :: emif_n2o         ! pft-specific emission factors for N2O,g species / (kg DOM)
+
+!     emission factors for aerosols
+real, dimension(kk) :: emif_pm25        ! pft-specific emission factors for particles <2.5 micrometers in diameter,g species / (kg DOM)
+real, dimension(kk) :: emif_tpm         ! pft-specific emission factors for total particulate matter,g species / (kg DOM)
+real, dimension(kk) :: emif_tc          ! pft-specific emission factors for total carbon,g species / (kg DOM)
+real, dimension(kk) :: emif_oc          ! pft-specific emission factors for organic carbon,g species / (kg DOM)
+real, dimension(kk) :: emif_bc          ! pft-specific emission factors for black carbon,g species / (kg DOM)
 
 ! hetres parameters: -------------
 
@@ -245,7 +301,7 @@ contains
 
 ! ----=====-------=========-----------========---------=========--------========-----------==========---------=======---========**
 
-subroutine initpftpars()
+subroutine initpftpars(compete)
 
 ! PFT parameters
 
@@ -260,45 +316,31 @@ subroutine initpftpars()
 
 implicit none
 
+logical, intent(in) :: compete   !true if the competition scheme is on.
+
+! The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
+! first, then the remaining variables are assigned different variables if competition is on, or not.
+
+
+
+!   ********************************************************************************************
+!   =============                                                     ==========================
+!   =============                   PARAMETERS COMMON TO BOTH         ==========================
+!   ============   COMPETITION-ON AND PRESCRIBED PFT FRACTIONAL COVER MODEL MODES    ===========
+!   =============                                                     ==========================
+!   ********************************************************************************************
+
 ! Parameters used in more than one subroutine:
-! (also separate set used in PHTSYN3.f!!)
+! (CAREFUL: Separate set defined in PHTSYN3.f!!)
 
 kn= [ 0.50, 0.50, 0.00, &
       0.50, 0.50, 0.50, &
       0.40, 0.48, 0.00, &
       0.46, 0.44, 0.00 ]
 
-crop=.false.
-crop(6)=.true.
-crop(7)=.true.   
-
-grass=.false.
-grass(8)=.true.
-grass(9)=.true.
-
 ! allocate.f parameters: --------------
 
-omega = [ 0.80, 0.50, 0.00, & 
-          0.80, 0.50, 0.80, &
-          0.05, 0.05, 0.00, &
-          1.00, 1.00, 0.00 ]
-
 consallo = .false.
-
-epsilonl = [ 0.19, 0.45, 0.00, &  !pft 2 was 0.06 JM Dec 17 2013
-             0.39, 0.50, 0.30, &  !pft 5 was 0.25
-             0.80, 0.80, 0.00, &
-             0.10, 0.10, 0.00 ]
-
-epsilons = [ 0.40, 0.34, 0.00, &
-             0.21, 0.35, 0.10, & !pft 3 was 0.05
-             0.15, 0.15, 0.00, &
-             0.00, 0.00, 0.00 ]
-
-epsilonr = [ 0.41, 0.21, 0.00, &  !pft 2 was 0.89 JM Dec 17 2013
-             0.40, 0.15, 0.60, &  !pft 5 was 0.65
-             0.05, 0.05, 0.00, &
-             0.90, 0.90, 0.00 ]
 
 rtsrmin  = [ 0.16, 0.16, 0.00, &
              0.16, 0.16, 0.32, &
@@ -367,53 +409,6 @@ albnir = [ 19.0, 19.0, 0.00, &
            34.0, 34.0, 0.00, &
            30.0, 34.0, 0.00 ] 
 
-! competition_mod.f90 parameters
-
-  ! existence subroutine:
-
-tcoldmin = [ -99.0, -999.9,   0.0, & !test pft 1 was -32.5, 
-               7.0,  -35.0,   4.0, & !test pft 3 and 5 was 15.5, TEST PFT 4 add in temp.
-            -999.9, -999.9,   0.0, &
-            -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
-
-tcoldmax = [ 18.0,  -27.0,   0.0, &  ! PFT 2 was -28.0 JM Jan 14.
-            999.9,   16.0, 900.0, &       
-            999.9,  999.9,   0.0, &
-            999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0
-
-twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 was 23.0
-             99.9,  99.9, 99.9, &       
-             99.9,  99.9,  0.0, &
-             99.9,  99.9,  0.0 ]
-
-gdd5lmt = [ 400.0,  600.0,  0.0, &  ! test pft 2 was 300
-           1200.0,  350.0,  9.9, &  ! test pft 4 was 500
-              9.9,    9.9,  0.0, &
-              9.9,    9.9,  0.0 ]
-
-aridlmt = [ 9.9,  9.9,    0.0, &
-            9.9,  9.9,    1.0, & ! PFT 5 was 1.5.       
-            9.9,  9.9,    0.0, &
-            9.9,  9.9,    0.0 ]
-
-dryseasonlmt=[ 99.9,  99.9,    0.0, &
-               99.9,  99.9,    6.0, & 
-               99.9,  99.9,    0.0, &
-               99.9,  99.9,    0.0 ]
- 
-  ! competition subroutine
-
-bio2sap = [ 0.10, 0.10, 0.00, &
-            0.05, 0.10, 0.10, & !flag test, pft 3,4 were 0.1 JM Feb 3 2014.
-            0.10, 0.10, 0.00, &
-            0.10, 0.10, 0.00 ] 
-
-bioclimrt = 0.25                
-
-tolranc1 = 0.150                
-
-tolranc2 = 0.0050               
-
 ! ctem.f parameters: ----------
 
 grescoef = [ 0.15, 0.15, 0.00, &
@@ -426,17 +421,233 @@ humicfac = [ 0.42, 0.42, 0.00, &
              0.42, 0.42, 0.00, &
              0.42, 0.42, 0.00 ]
 
-laimin = [ 1.0, 1.0, 0.0, &
-           1.5, 1.0, 0.7, &  ! flag test PFT 4 was 1.5
-           1.0, 1.0, 0.0, &
-           0.1, 0.1, 0.0 ]  ! flag test PFT 8&9 were 0.5
+lambdamax = 0.10 
 
-laimax = [ 6.0, 3.0, 0.0, &  ! flag test pft 1 was 3.0
-           6.0, 5.0, 5.0, &  ! Jan 31 2014 JM PFT 3 was 6.0
-           8.0, 8.0, 0.0, &
-           4.0, 4.0, 0.0 ] 
+! disturbance parameters: ------------
 
-lambdamax = 0.15 !flag test was 0.10 JM Jan 31 2014
+reparea = 1000.0
+
+popdthrshld = 300.
+
+alpha_fire = 8.16326e-04  !FLAG, no longer needed???? JM Feb 20 2014.
+
+f0 = 0.05
+
+bmasthrs_fire = [ 0.4, 1.2 ] ! testing
+!bmasthrs_fire = [ 0.2, 1.0 ] ! ORIG
+!     **Lowering the bmasthrs_fire gets too much burning outside of the tropics, 
+!     however maybe this higher value prevents the savannahs from burning more? -JM
+
+extnmois = 0.30 
+
+lwrlthrs = 0.25
+
+hgrlthrs = 10.0 
+
+duff_dry = 0.15
+
+
+!     **Parmlght was increased to 0.8 to make it so areas with higher amounts of
+!     lightning have higher lterm. The saturation is still the same, but the 
+!     increase is more gradual at low lightning density. JM
+parmlght = 0.8  !TESTING 0.8
+parblght = 0.1
+
+! Li et al vals (except grass)
+maxsprd = [  0.54, 0.54, 0.00, &
+             0.40, 0.40, 0.40, &
+             0.00, 0.00, 0.00, &
+             2.00, 2.00, 0.00 ]
+
+frco2glf = [ 0.70, 0.70, 0.00, & 
+             0.70, 0.70, 0.70, & 
+             0.00, 0.00, 0.00, &
+             0.80, 0.80, 0.00 ]   
+
+frco2blf = [ 0.00, 0.00, 0.00, & 
+             0.00, 0.00, 0.00, & 
+             0.00, 0.00, 0.00, &
+             0.90, 0.90, 0.00 ]
+
+frltrglf = [ 0.20, 0.20, 0.00, &
+             0.20, 0.20, 0.20, & 
+             0.00, 0.00, 0.00, &
+             0.10, 0.10, 0.00 ]  
+
+frltrblf = [ 0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00, & 
+             0.00, 0.00, 0.00, &
+             0.05, 0.05, 0.00 ]
+
+frco2stm = [ 0.20, 0.20, 0.00, &
+             0.20, 0.10, 0.10, &
+             0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00 ]
+
+frltrstm = [ 0.50, 0.50, 0.00, &
+             0.50, 0.30, 0.30, &
+             0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00 ]
+
+frco2rt = [ 0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0 ]
+
+frltrrt = [ 0.10, 0.10, 0.00, &
+            0.10, 0.10, 0.10, &
+            0.00, 0.00, 0.00, &
+            0.25, 0.25, 0.00 ]
+
+frltrbrn = [ 0.50, 0.50, 0.00, &
+             0.60, 0.60, 0.60, &
+             0.00, 0.00, 0.00, &
+             0.70, 0.70, 0.00 ]
+
+!     emissions factors by chemical species
+!     
+!     Values are from Andreae 2011 as described in Li et al. 2012
+!     Biogeosci. Units: g species / (kg DOM)
+ 
+!     Andreae 2011 as described in Li et al. 2012
+emif_co2 = [ 1576.0, 1576.0,   0.00, &
+             1604.0, 1576.0, 1654.0, &
+             1576.0, 1654.0,   0.00, &
+             1576.0, 1654.0,   0.00 ]
+
+!    values from Wiedinmyer et al. 2011
+!emif_co2 = [ 1514.0, 1514.0,   0.00, &
+!             1643.0, 1630.0, 1716.0, &
+!             1537.0, 1537.0,   0.00, & 
+!             1692.0, 1692.0,   0.00 ]
+ 
+!     Andreae 2011 as described in Li et al. 2012
+emif_co = [ 106.0, 106.0, 0.00, &
+            103.0, 106.0, 64.0, &
+            106.0,  64.0, 0.00, &
+            106.0,  64.0, 0.00 ]
+
+!    values from Wiedinmyer et al. 2011
+!emif_co = [ 118.0, 118.0, 0.00, &
+!             92.0, 102.0, 68.0, &
+!            111.0, 111.0, 0.00, &
+!             59.0,  59.0, 0.00 ]
+
+!     Andreae 2011 as described in Li et al. 2012
+emif_ch4 = [ 4.8, 4.8, 0.0, &
+             5.8, 4.8, 2.4, &
+             4.8, 2.4, 0.0, &
+             4.8, 2.4, 0.0 ]
+
+!    values from Wiedinmyer et al. 2011
+!emif_ch4 = [ 6.0, 6.0, 0.0, &
+!             5.1, 5.0, 2.6, &
+!             6.0, 6.0, 0.0, &
+!             1.5, 1.5, 0.0 ]
+
+!     Andreae 2011 as described in Li et al. 2012
+emif_nmhc = [ 5.7, 5.7, 0.0, &
+              6.4, 5.7, 3.7, &
+              5.7, 3.7, 0.0, &
+              5.7, 3.7, 0.0 ] 
+
+!    values from Wiedinmyer et al. 2011
+!emif_nmhc = [ 5.7, 5.7, 0.0, &
+!              1.7, 5.7, 3.4, &
+!              7.0, 7.0, 0.0, &
+!              3.4, 3.4, 0.0 ]
+
+!     Andreae 2011 as described in Li et al. 2012
+emif_h2 = [ 1.80, 1.80, 0.00, &
+            2.54, 1.80, 0.98, &
+            1.80, 0.98, 0.00, &
+            1.80, 0.98, 0.00 ]
+
+!    values from Wiedinmyer et al. 2011
+!emif_h2 = [ 2.30, 2.30, 0.00, &
+!            3.20, 1.80, 0.97, &
+!            2.40, 2.40, 0.00, &
+!            0.97, 0.97, 0.00 ]
+
+!     Andreae 2011 as described in Li et al. 2012
+emif_nox = [ 3.24, 3.24, 0.00, &
+             2.90, 3.24, 2.49, &
+             3.24, 2.49, 0.00, &
+             3.24, 2.49, 0.00 ]
+
+!    values from Wiedinmyer et al. 2011 (species: "NOx (as NO)" from Table 1)
+!emif_nox = [ 1.80, 2.30, 0.00, &
+!             2.60, 1.30, 3.90, &
+!             3.50, 3.50, 0.00, &
+!             2.80, 2.80, 0.00 ]
+
+!     Andreae 2011 as described in Li et al. 2012 
+emif_n2o = [ 0.26, 0.26, 0.00, &
+             0.23, 0.26, 0.20, &
+             0.26, 0.20, 0.00, &
+             0.26, 0.20, 0.00 ]
+
+!     emission factors for aerosols
+
+!     Andreae 2011 as described in Li et al. 2012
+emif_pm25 = [ 12.7, 12.7, 0.0, &
+              10.5, 12.7, 5.2, &
+              12.7,  5.2, 0.0, &
+              12.7,  5.2, 0.0 ]
+
+!    values from Wiedinmyer et al. 2011
+!emif_pm25 = [ 13.0, 13.0, 0.0, &
+!               9.7, 13.0, 9.3, &
+!               5.8,  5.8, 0.0, &
+!               5.4,  5.4, 0.0 ] 
+
+!     Andreae 2011 as described in Li et al. 2012
+emif_tpm = [ 17.6, 17.6, 0.0, &
+             14.7, 17.6, 8.5, &
+             17.6,  8.5, 0.0, &
+             17.6,  8.5, 0.0 ]
+
+!    values from Wiedinmyer et al. 2011
+!emif_tpm = [ 18.0, 18.0, 0.0, &
+!             13.0, 18.0,15.4, &
+!             13.0, 13.0, 0.0, &
+!              8.3,  8.3, 0.0 ]
+
+!     Andreae 2011 as described in Li et al. 2012
+emif_tc = [ 8.3, 8.3, 0.0, &
+            7.2, 8.3, 3.4, &
+            8.3, 3.4, 0.0, &
+            8.3, 3.4, 0.0 ]
+
+!    values from Wiedinmyer et al. 2011 (TPC in Table 1)
+!emif_tc = [ 8.3, 8.3, 0.0, &
+!            5.2, 9.7, 7.1, &
+!            4.0, 4.0, 0.0, &
+!            3.0, 3.0, 0.0 ]
+
+!     Andreae 2011 as described in Li et al. 2012
+emif_oc = [ 9.1, 9.1, 0.0, &
+            6.7, 9.1, 3.2, & 
+            9.1, 3.2, 0.0, &
+            9.1, 3.2, 0.0 ] 
+
+!    values from Wiedinmyer et al. 2011 
+!emif_oc = [ 7.8, 7.8, 0.0, &
+!            4.7, 9.2, 6.6, &
+!            3.3, 3.3, 0.0, &
+!            2.6, 2.6, 0.0 ]
+
+!     Andreae 2011 as described in Li et al. 2012
+emif_bc = [ 0.56, 0.56, 0.00, &
+            0.56, 0.56, 0.47, &
+            0.56, 0.47, 0.00, &
+            0.56, 0.47, 0.00 ]
+
+!    values from Wiedinmyer et al. 2011
+!emif_bc = [ 0.20, 0.20, 0.00, &
+!            0.52, 0.56, 0.50, &
+!            0.69, 0.69, 0.00, &
+!            0.37, 0.37, 0.00 ]
 
 ! hetres parameters: ----------
 
@@ -469,7 +680,7 @@ a = 4.0
 
 ! landuse_change_mod.f90 parameters: --------------
 
-!          combust, paper, furniture ABSOLUTELY MUST add to 1.0!
+! NOTE: combust, paper, furniture ABSOLUTELY MUST add to 1.0!
 combust =   [ 0.15, 0.30, 0.45 ] 
 paper =     [ 0.70, 0.70, 0.55 ]
 furniture = [ 0.15, 0.00, 0.00 ]
@@ -480,16 +691,6 @@ tolrnce1 = 0.50
 tolrnce2 = 0.005
 
 ! mainres.f parameters: ---------
-
-bsrtstem = [ 0.0900, 0.0550, 0.0000, &
-             0.0500, 0.0335, 0.0300, &  ! PFT 3 was 0.06 JM Jan 31 2014 
-             0.0365, 0.0365, 0.0000, & 
-             0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
-
-bsrtroot = [ 0.5000, 0.2850, 0.0000, &
-             0.4000, 0.2250, 0.0550, & ! pft 3 was 0.65 JM Jan 31 2014
-             0.1600, 0.1600, 0.0000, & 
-             0.1000, 0.1000, 0.0000 ]
 
 minlvfr = 0.05
 
@@ -502,12 +703,26 @@ mxmortge = [ 0.01, 0.01, 0.00, &
              0.00, 0.00, 0.00, & 
              0.00, 0.00, 0.00 ]
 
-maxage = [ 250.0, 250.0,   0.0, &
-           250.0, 250.0, 250.0, &
-             0.0,   0.0,   0.0, &
-             0.0,   0.0,   0.0 ]
-
 ! phenology.f parameters: ---------
+
+colda = [ 3.0, 3.0, 0.0, &
+          3.0, 3.0, 3.0, &
+          3.0, 3.0, 0.0, &
+          3.0, 3.0, 0.0 ]
+
+coldlmt = [ 7 , 5 ]   ! days
+
+coldthrs = [ -5.0 , 8.0 ]
+
+dayschk = [ 7, 7, 0, &
+            7, 7, 7, &
+            7, 7, 0, &
+            7, 7, 0 ]
+
+drgta = [ 3.0, 3.0, 0.0, &
+          3.0, 3.0, 3.0, &
+          3.0, 3.0, 0.0, &
+          3.0, 3.0, 0.0 ] 
 
 eta = [ 10.0, 30.8, 0.00, &
         31.0, 50.0, 30.0, &
@@ -518,81 +733,290 @@ kappa =[ 1.6, 1.6, 0.0, &
          1.6, 1.6, 1.6, &
          1.6, 1.6, 0.0, &
          1.2, 1.2, 0.0 ]
-
-lfespany  =   [ 5.0, 1.00, 0.00, &
-                1.75, 1.00, 1.00, &
-                1.75, 1.75, 0.00, &
-                1.00, 1.00, 0.00 ]
-
-specsla =[ 11.0, 0.0, 0.0, &
-            0.0, 0.0, 0.0, &
-            0.0, 0.0, 0.0, &
-            0.0, 0.0, 0.0 ]
+  
+flhrspan = [ 17.0, 45.0 ]
 
 fracbofg = 0.55
-
-cdlsrtmx = [ 0.10, 0.30, 0.00, &  ! test PFT 1 was 0.15 JM Feb 3 2014
-             0.30, 0.15, 0.15, &
-             0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
-
-drlsrtmx = [ 0.0025, 0.005, 0.000, &
-             0.005, 0.003, 0.025, & !pft 5 was 0.005, pft 4 was 0.005 jm feb 3 2014
-             0.005, 0.005, 0.000, &
-             0.025, 0.025, 0.000 ]  !PFT 8 and 9 were 0.05 
-
-drgta = [ 3.0, 3.0, 0.0, &
-          3.0, 3.0, 3.0, &
-          3.0, 3.0, 0.0, &
-          3.0, 3.0, 0.0 ]   
-
-colda = [ 3.0, 3.0, 0.0, &
-          3.0, 3.0, 3.0, &
-          3.0, 3.0, 0.0, &
-          3.0, 3.0, 0.0 ]
-
-lwrthrsh = [ -50.0, -5.0, 0.0, &  !flag pft 1 was -45 JM Feb 3 2014
-               5.0,  5.0, 5.0, &  ! pft 4 was 5.0 JM Feb 6 2014
-               5.0,  5.0, 0.0, &
-               0.1,  5.0, 0.0 ]
-
-dayschk = [ 7, 7, 0, &
-            7, 7, 7, &
-            7, 7, 0, &
-            7, 7, 0 ]
-
-coldlmt = [ 7 , 5 ]   ! days
-
-coldthrs = [ -5.0 , 8.0 ]
 
 harvthrs = [ 0.0, 0.0, 0.0, &
              0.0, 0.0, 0.0, &
              4.5, 3.5, 0.0, &
              0.0, 0.0, 0.0 ]
 
-flhrspan = [ 17.0, 45.0 ]
-
 thrprcnt = [ 40.0, 40.0,  0.0, &
              40.0, 50.0, 50.0, &
              50.0, 50.0,  0.0, &
-             40.0, 40.0,  0.0 ]
+             40.0, 40.0,  0.0 ]  
+
+specsla =[  0.0, 0.0, 0.0, &  !pft 1 was 11.0. With lfspany of 5.0, it is calculated to be 11.18. JM Mar 12 2014
+            0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0 ]
+
+! turnover.f parameters: --------------
+
+stmhrspn = 17.0
+
+!   ********************************************************************************************
+!   =============                                                     ==========================
+!   =============DYNAMIC PFT FRACTIONAL COVER PARAMETERS=(COMPETITION)==========================
+!   =============                                                     ==========================
+!   ********************************************************************************************
+
+if (compete) then 
+
+! These parameters are used when competition is on. If you are using
+! prescribed PFT fractional cover, then the parameters after this section
+! are used. Parameters that are the same in both are above this if loop.
+
+! allocate.f parameters: --------------
+
+omega = [ 0.80, 0.50, 0.00, & 
+          0.80, 0.50, 0.80, &  !pft 4 was 0.8
+          0.05, 0.05, 0.00, &
+          1.00, 1.00, 0.00 ]
+
+epsilonl = [ 0.19, 0.45, 0.00, &  !pft 2 was 0.06 JM Dec 17 2013
+             0.39, 0.50, 0.30, &  !pft 5 was 0.25
+             0.80, 0.80, 0.00, &
+             0.10, 0.10, 0.00 ]
+
+epsilons = [ 0.40, 0.34, 0.00, &
+             0.21, 0.35, 0.10, & !pft 3 was 0.05
+             0.15, 0.15, 0.00, &
+             0.00, 0.00, 0.00 ]
+
+epsilonr = [ 0.41, 0.21, 0.00, &  !pft 2 was 0.89 JM Dec 17 2013
+             0.40, 0.15, 0.60, &  !pft 5 was 0.65
+             0.05, 0.05, 0.00, &
+             0.90, 0.90, 0.00 ]
+
+! competition_mod.f90 parameters
+
+  ! existence subroutine:
+
+tcoldmin = [ -99.0, -999.9,   0.0, & !test pft 1 was -32.5, 
+               2.5,  -35.0,   4.0, & !test pft 3 and 5 was 15.5, TEST PFT 4 add in temp., (Mar 5 - PFT 3 was 7)
+            -999.9, -999.9,   0.0, &
+            -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
+
+tcoldmax = [ 18.0,  -27.0,   0.0, &  ! PFT 2 was -28.0 JM Jan 14.
+            999.9,   16.0, 900.0, &       
+            999.9,  999.9,   0.0, &
+            999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0
+
+twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 was 23.0
+             99.9,  99.9, 99.9, &       
+             99.9,  99.9,  0.0, &
+             99.9,  99.9,  0.0 ]
+
+gdd5lmt = [ 375.0,  500.0,  0.0, &  
+           1200.0,  300.0,  9.9, &  ! test pft 4 was 500
+              9.9,    9.9,  0.0, &
+              9.9,    9.9,  0.0 ]
+
+aridlmt = [ 9.9,  9.9,  0.0, &
+            9.9,  9.9,  0.9, & ! PFT 5 was 1.5.       
+            9.9,  9.9,  0.0, &
+            9.9,  9.9,  0.0 ]
+
+dryseasonlmt=[ 99.9,  99.9,    0.0, &
+               99.9,  99.9,    5.5, & 
+               99.9,  99.9,    0.0, &
+               99.9,  99.9,    0.0 ]
+ 
+  ! competition subroutine
+
+! Flag all values have been changed from 0.1 JM Mar 10 2014
+! smaller numbers give faster colonization rates.
+bio2sap = [ 0.20, 0.20, 0.00, &
+            0.10, 0.12, 0.15, & 
+            0.00, 0.00, 0.00, &
+            0.40, 0.40, 0.00 ]  
+
+bioclimrt = 0.25                
+
+tolranc1 = 0.150                
+
+tolranc2 = 0.0050    
+           
+! ctem.f parameters: ----------
+
+laimin = [ 1.0, 1.0, 0.0, &
+           1.5, 1.0, 1.0, &  ! flag test PFT 4 was 1.5, 5 was 0.7
+           1.0, 1.0, 0.0, &
+           0.5, 0.5, 0.0 ]  
+
+laimax = [ 3.7, 3.0, 0.0, & ! flag pft 1 was 6.0 JM Mar 11 2014
+           6.0, 5.0, 5.0, & 
+           8.0, 8.0, 0.0, &
+           4.0, 4.0, 0.0 ] 
+
+! disturbance parameters: ------------
+
+standreplace = [ 0.20, 0.20, 0.00, &
+                 0.40, 0.20, 0.10, & 
+                 0.00, 0.00, 0.00, &
+                 1.00, 1.00, 0.00 ] 
+
+! mainres.f parameters: ---------
+
+bsrtstem = [ 0.0700, 0.0550, 0.0000, &
+             0.0500, 0.0335, 0.0350, &  ! PFT 3 was 0.06 JM Jan 31 2014, PFT 5 was 0.03 Mar 6 2014
+             0.0365, 0.0365, 0.0000, & 
+             0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
+
+bsrtroot = [ 0.5000, 0.2850, 0.0000, &
+             0.4000, 0.2250, 0.2500, & ! pft 3 was 0.65 JM Jan 31 2014, pft 5 was 0.15 Mar 11 2014.
+             0.1600, 0.1600, 0.0000, & 
+             0.1000, 0.2000, 0.0000 ]
+
+! mortality.f parameters: ---------
+
+maxage = [ 450.0, 250.0,   0.0, &  !flag, test pft 1 was 250. JM Mar 10 2014.
+           350.0, 200.0, 250.0, &  !flag, test pft 4 was 250. pft 3 was 250 JM Mar 10 2014.
+             0.0,   0.0,   0.0, &
+             0.0,   0.0,   0.0 ]
+
+! phenology.f parameters: ---------
+
+lfespany  =   [ 5.00, 1.00, 0.00, &
+                1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+                1.75, 1.75, 0.00, &
+                1.00, 1.00, 0.00 ]
+
+cdlsrtmx = [ 0.10, 0.30, 0.00, &  ! test PFT 1 was 0.15 JM Feb 3 2014
+             0.30, 0.40, 0.15, &
+             0.15, 0.15, 0.00, &
+             0.15, 0.15, 0.00 ]
+
+drlsrtmx = [ 0.004 , 0.005, 0.000, & !pft 1 was 0.0025 JM Mar 6 2014.
+             0.010 , 0.025, 0.050, & !pft 5 was 0.005, pft 4 was 0.005 jm feb 3 2014, pft 3 was 0.005
+             0.005 , 0.005, 0.000, &
+             0.050 , 0.050, 0.000 ]  !PFT 8 and 9 were 0.05 
+
+
+lwrthrsh = [ -50.0, -5.0, 0.0, &  !flag pft 1 was -45 JM Feb 3 2014
+               5.0,  8.0, 5.0, &  ! pft 4 was 5.0 Mar 11 2014
+               5.0,  5.0, 0.0, &
+               0.1,  5.0, 0.0 ]
 
 roothrsh = 8.0
 
+! turnover.f parameters: --------------
+
+stemlife = [ 75.0, 75.0, 0.00, &   ! flag pft 1 was 65.0 JM Mar 10 2014
+             70.0, 70.0, 65.0, &  !flag pft 4 was 40.0, pft 5 was 45.0, Jan31 2014 JM pft 3 was 45.0
+             20.0, 20.0, 0.00, &
+              0.00, 0.00, 0.00 ]
+
+rootlife = [ 12.0,11.5, 0.0, &
+             11.0, 9.5, 8.5, &     ! flag pft 4 and 5 were 5.5, Jan31 2014 JM pft 3 was 8.5
+              3.0, 3.0, 0.0, &
+              2.5, 2.5, 0.0 ]
+
+
+!   ********************************************************************************************
+!   =============                                                     ==========================
+!   ============================== PRESCRIBED COVER PARAMETERS =================================
+!   =============                                                     ==========================
+!   ********************************************************************************************
+
+else ! Prescribed PFT fractional cover
+
+! These parameters are used when the PFT fractional cover is read in from the 
+! CTM and INI files, or when LUC is on, the LUC file.
+
+! allocate.f parameters: --------------
+
+omega = [ 0.80, 0.50, 0.00, & 
+          0.80, 0.80, 0.80, &
+          0.05, 0.05, 0.00, &
+          1.00, 1.00, 0.00 ]
+
+epsilonl = [ 0.20, 0.06, 0.00, &  
+             0.39, 0.35, 0.25, &  
+             0.80, 0.80, 0.00, &
+             0.01, 0.01, 0.00 ]
+
+epsilons = [ 0.15, 0.05, 0.00, &
+             0.05, 0.10, 0.10, & !pft 3 was 0.05
+             0.15, 0.15, 0.00, &
+             0.00, 0.00, 0.00 ]
+
+epsilonr = [ 0.65, 0.89, 0.00, &  !pft 2 was 0.89 JM Dec 17 2013
+             0.60, 0.55, 0.65, &  !pft 5 was 0.65
+             0.05, 0.05, 0.00, &
+             0.99, 0.99, 0.00 ]
+
+! ctem.f parameters: ----------
+
+laimin = [ 1.0, 1.0, 0.0, &
+           1.5, 1.0, 1.0, & 
+           1.0, 1.0, 0.0, &
+           0.5, 0.5, 0.0 ]
+
+laimax = [ 3.0, 3.0, 0.0, &
+           8.0, 5.0, 5.0, &
+           8.0, 8.0, 0.0, &
+           4.0, 4.0, 0.0 ] 
+
+! mainres.f parameters: ---------
+
+bsrtstem = [ 0.0900, 0.0550, 0.0000, &
+             0.0600, 0.0335, 0.0300, &
+             0.0365, 0.0365, 0.0000, &
+             0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
+
+bsrtroot = [ 0.5000, 0.2850, 0.0000, &
+             0.6500, 0.2250, 0.0550, &
+             0.1600, 0.1600, 0.0000, &
+             0.1000, 0.1000, 0.0000 ]
+
+! mortality.f parameters: ---------
+
+maxage = [ 250.0, 250.0,   0.0, &
+           250.0, 250.0, 250.0, &
+             0.0,   0.0,   0.0, &
+             0.0,   0.0,   0.0 ]
+
+! phenology.f parameters: ---------
+
+cdlsrtmx = [ 0.15, 0.30, 0.00, &
+             0.30, 0.15, 0.15, &
+             0.15, 0.15, 0.00, &
+             0.15, 0.15, 0.00 ]
+
+drlsrtmx = [ 0.0025, 0.005, 0.000, &
+             0.005, 0.005, 0.025, &
+             0.005, 0.005, 0.000, &
+             0.050, 0.050, 0.000 ]    
+
+lwrthrsh = [ -45.0, -5.0, 0.0, &
+               5.0,  5.0, 5.0, &
+               5.0,  5.0, 0.0, &
+               0.1,  5.0, 0.0 ] 
+
+lfespany  =   [ 5.00, 1.00, 0.00, &
+                1.75, 1.00, 1.00, &  
+                1.75, 1.75, 0.00, &
+                1.00, 1.00, 0.00 ]
+
+roothrsh = 15.0
 
 ! turnover.f parameters: --------------
 
 stemlife = [ 65.0, 75.0, 0.00, &
-             65.0, 70.0, 65.0, &  !flag pft 4 was 40.0, pft 5 was 45.0, Jan31 2014 JM pft 3 was 45.0
+             45.0, 40.0, 45.0, &
              20.0, 20.0, 0.00, &
               0.00, 0.00, 0.00 ]
 
 rootlife = [ 10.0,11.5, 0.0, &
-             10.5, 9.5, 8.5, &     ! flag pft 4 and 5 were 5.5, Jan31 2014 JM pft 3 was 8.5
+              5.5, 5.5, 5.5, &
               3.0, 3.0, 0.0, &
               2.5, 2.5, 0.0 ]
 
-stmhrspn = 17.0
+end if
 
 
 end subroutine initpftpars

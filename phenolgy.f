@@ -275,6 +275,8 @@ c       broad leaf dcd cld & dry
           if(roottemp(i,4).lt.(roothrsh+273.16).or.
      &    (daylngth(i).lt.11.0.and.roottemp(i,4).lt.(11.15+273.16)))then
             lfstatus(i,4)=4
+!       write(*,'(a5,2i4,3f10.3)')'lf1=',lfstatus(i,4),iday,roottemp(i,4)
+!     & ,daylngth(i),ailcg(i,4)
           endif
         endif
        endif
@@ -461,7 +463,7 @@ c       we use daylength and roottemp to initiate leaf offset
             lfstatus(i,4)=3         ! go into "leaf fall" mode
             chkmode(i,4)=1         
             flhrloss(i,4)=gleafmas(i,4)*(1.0/flhrspan(2))
-          else if(ailcg(i,4).gt.zero.and.ailcg(i,4).lt.lfthrs(i,4))then   
+          else if(ailcg(i,4).gt.zero.and.ailcg(i,4).lt.lfthrs(i,4))then 
             lfstatus(i,4)=1         ! switch to "max. growth" mode
             chkmode(i,4)=1         
           else if(ailcg(i,4).le.zero) then
@@ -605,13 +607,19 @@ c
      &            ((roottemp(i,4).gt.(roothrsh+273.16)).and.
      &             (daylngth(i).gt.11.0) ) )then 
                     if(ailcg(i,j).lt.lfthrs(i,j))then
+!       write(*,'(a5,2i4,3f10.3)')'lf6=',lfstatus(i,4),iday,roottemp(i,4)
+!     & ,daylngth(i),ailcg(i,4)
                       lfstatus(i,j)=1      ! go into "max. growth" mode
                       chkmode(i,j)=1
                     else
+!       write(*,'(a5,2i4,3f10.3)')'lf7=',lfstatus(i,4),iday,roottemp(i,4)
+!     & ,daylngth(i),ailcg(i,4)
                       lfstatus(i,j)=2      ! go into "normal growth" mode
                       chkmode(i,j)=1
                     endif
                   else  
+!       write(*,'(a5,2i4,3f10.3)')'lf8=',lfstatus(i,4),iday,roottemp(i,4)
+!     & ,daylngth(i),ailcg(i,4)
                     lfstatus(i,j)=3        ! stay in "fall/harvest" mode 
                     chkmode(i,j)=1
                   endif

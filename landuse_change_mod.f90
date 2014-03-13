@@ -20,7 +20,8 @@ contains
 subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
                           mosaic,nol2pfts,cyclemet,   &
                           cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,  &
-                          pfcancmxrow,fcancmxrow,reach_eof,start_bare)
+                          pfcancmxrow,fcancmxrow,reach_eof,start_bare,&
+                          compete)
 
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    LUC Initial Read-In Subroutine 
@@ -50,6 +51,7 @@ integer, dimension(ican), intent(in) :: nol2pfts
 logical, intent(in) :: cyclemet
 integer, intent(in) :: cylucyr 
 logical, intent(in) :: start_bare
+logical, intent(in) :: compete
 
 ! updates
 real, dimension(nlat,nmos,icp1), intent(inout) :: fcanrow
@@ -128,18 +130,24 @@ integer :: k2,k1,strlen
         enddo  !while loop
 
 !       If you are running with start_bare on, take in only the 
-!       crop fractions, rest are seed.
-        if (start_bare) then
+!       crop fractions, set rest to seed. If compete, but not start bare, then
+!       just make sure you have at least seed for each pft.
+        if (compete) then
          do j = 1, icc
           do i = 1, nltest
            do m = 1, nmtest
             if (.not. crop(j)) then
+             if (start_bare) then
               nfcancmxrow(i,m,j)=seed
+             else !not starting bare, but still make sure you have at least seed
+              nfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))
+             end if
             end if
            end do
           end do
          end do
         end if
+
 
 !       get fcans for use by class using the nfcancmxs just read in
         k1=0

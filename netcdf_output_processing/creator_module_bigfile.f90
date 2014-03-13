@@ -55,7 +55,7 @@ real, parameter, dimension(cntx) :: valslons= &
 
 ! ---------------- VARIABLES ---------------- 
 
-integer :: lon,lat,tile,pft,month,time,layer
+integer :: lon,lat,tile,pft,month,time,layer,lat_bnds,lon_bnds,bnds
 integer :: varid,ncid
 integer :: status
 
@@ -65,6 +65,12 @@ real, dimension(4) :: bounds
 
 real, allocatable, dimension(:) :: lonvect
 real, allocatable, dimension(:) :: latvect
+
+real, allocatable, dimension(:) :: latboundsvect
+real, allocatable, dimension(:) :: lonboundsvect
+
+real, allocatable, dimension(:,:) :: latbound
+real, allocatable, dimension(:,:) :: lonbound
 
 ! When the arrays are declared below, they share commonalities between the
 ! composite and mosaic formats. The distinctions between the two occur in the 
@@ -89,8 +95,8 @@ character(100), parameter, dimension(numclasvars_m) :: CLASS_M_NAME=['Shortwave 
                                                                      'Mass of snow pack','Liquid water content of snow pack','Total runoff from soil',                       &
                                                                      'Precipitation','Evaporation','Air temperature']
 
-character(100), parameter, dimension(numclasvars_m) :: CLASS_M_UNIT=['W/m^2','W/m^2','W/m^2','W/m^2','kg/m^2','kg/m^2','mm.mon',              &
-                                                                     'mm.mon','mm.mon','degC']
+character(100), parameter, dimension(numclasvars_m) :: CLASS_M_UNIT=['W/$m^2$','W/$m^2$','W/$m^2$','W/$m^2$','kg/$m^2$','kg/$m^2$','mm/month',              &
+                                                                     'mm/month','mm/month','$\circ$C']
 
 ! CLASS Soil vars are stored in a separate file.
 
@@ -105,7 +111,7 @@ character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_VAR=['TG','TH
 character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_NAME=['Ground temperature in celsius of soil layer',                                                        &
                                                                      'Volumetric liquid water content of soil layer','Volumetric frozen water content of soil layer']
 
-character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_UNIT=['degC','m^3/m^3','m^3/m^3']
+character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_UNIT=['$\circ$C','$m^3$/$m^3$','$m^3$/$m^3$']
 
 !======================== Declare arrays for annual CLASS =============
 
@@ -121,8 +127,8 @@ character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_NAME=['Shortwave 
                                                                      'Latent heat flux','Total runoff from soil','Precipitation',         &
                                                                      'Evaporation']
 
-character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_UNIT=['W/m^2','W/m^2','W/m^2','W/m^2',&
-                                                                     'mm.year','mm.year','mm.year']
+character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_UNIT=['W/$m^2$','W/$m^2$','W/$m^2$','W/$m^2$',&
+                                                                     'mm/year','mm/year','mm/year']
 
 !====================== Declare arrays for monthly CTEM COMPOSITE AND MOSAIC=============
 
@@ -147,8 +153,8 @@ character(100), parameter, dimension(numctemvars_m) :: CTEM_M_NAME=['Maximum LAI
                                                                     'Monthly net biome productivity','Monthly heterotrophic respiration',                                   &
                                                                     'Monthly autotrophic respiration','Monthly litter respiration','Monthly soil carbon respiration' ]
 
-character(100), parameter, dimension(numctemvars_m) :: CTEM_M_UNIT=['m^2/m^2','Kg C/m^2','Kg C/m^2','Kg C/m^2','gC/m^2.month','gC/m^2.month','gC/m^2.month', &
-                                                                    'g/m^2.month','g/m^2.month','g/m^2.month','g/m^2.month','g/m^2.month' ]
+character(100), parameter, dimension(numctemvars_m) :: CTEM_M_UNIT=['$m^2$/$m^2$','kg C/$m^2$','kg C/$m^2$','kg C/$m^2$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$', &
+                                                                    'gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$' ]
 
 !====DISTURBANCE================== Declare arrays for monthly CTEM COMPOSITE AND MOSAIC =============
 
@@ -176,10 +182,13 @@ character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_NAME=['Monthly
                                                                     'Monthly land use soil C additions','Monthly burned fraction','Monthly fire probability-Biomass',       &
                                                                     'Monthly fire probability-Lightning','Monthly fire probability-Moisture' ]
 
-character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_UNIT=['g/m^2.month','g/m^2.month','g/m^2.month','g/m^2.month',                   &
-                                                                    'g/m^2.month','g/m^2.month','g/m^2.month','g/m^2.month',                                 &
-                                                                    'g/m^2.month','g/m^2.month','g/m^2.month','g/m^2.month',                                 &
-                                                                    'Kg CO2/m^2','% ','Kg C/m^2.mo','Kg C/m^2.mo','           ','% ','% ','% ' ]
+character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_UNIT=['g CO$_2$ $m^{-2}$ month$^{-1}$','g CO $m^{-2}$ month$^{-1}$','g $CH_4$ $m^{-2}$ month$^{-1}$',&
+                                                                    'g NMHC $m^{-2}$ month$^{-1}$',                   &
+                                                                    'g $H_2$ $m^{-2}$ month$^{-1}$','g NOx $m^{-2}$ month$^{-1}$','g $N_2O$ $m^{-2}$ month$^{-1}$',&
+                                                                    'g PM2.5 $m^{-2}$ month$^{-1}$',                                 &
+                                                                    'g TPM $m^{-2}$ month$^{-1}$','g total C $m^{-2}$ month$^{-1}$','g OC $m^{-2}$ month$^{-1}$',&
+                                                                    'g BC $m^{-2}$ month$^{-1}$',                                 &
+                                                                    'kg $CO_2$/m$^2$','% ','kg C $m^{-2}$ month$^{-1}$','kg C $m^{-2}$ month$^{-1}$','fraction   ','% ','% ','% ' ]
 
 !====COMPETITION/LUC================== Declare arrays for monthly CTEM COMPOSITE AND MOSAIC =============
 
@@ -226,10 +235,12 @@ character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_NAME=['Maximum LAI
                                                                     'Annual autotrophic respiration','Annual litter respiration',       &
                                                                     'Annual soil carbon respiration' ]
 
-character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_UNIT = ['m^2/m^2','Kg C/m^2','Kg C/m^2','Kg C/m^2','Kg C/m^2',            &
-                                                                      'Kg C/m^2','Kg C/m^2','gC/m^2.year','gC/m^2.year','gC/m^2.year',  &
-                                                                      'gC/m^2.year','gC/m^2.year','gC/m^2.year','gC/m^2.year',          &
-                                                                      'gC/m^2.year' ] 
+character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_UNIT = ['m$^2$/m$^2$','kg C/m$^2$','kg C/m$^2$','kg C/m$^2$','kg C/m$^2$',            &
+                                                                      'kg C/m$^2$','kg C/m$^2$','g C m$^{-2}$ year$^{-1}$','g C m$^{-2}$ year$^{-1}$',&
+                                                                      'g C m$^{-2}$ year$^{-1}$',  &
+                                                                      'g C m$^{-2}$ year$^{-1}$','g C m$^{-2}$ year$^{-1}$','g C m$^{-2}$ year$^{-1}$',&
+                                                                      'g C m$^{-2}$ year$^{-1}$',          &
+                                                                      'g C m$^{-2}$ year$^{-1}$' ] 
 
 !====DISTURBANCE==================== Declare arrays for annual CTEM COMPOSITE AND MOSAIC=============
 

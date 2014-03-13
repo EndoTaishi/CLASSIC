@@ -456,11 +456,11 @@ c
      2               cl(lat),             ml(ilg),       grclarea(ilg)
 c
       real        uwind(ilg),          vwind(ilg),        lightng(ilg),
-     1         prbfrhuc(ilg),       extnprob(ilg),   pftareab(ilg,icc),
+     1         prbfrhuc(ilg),       extnprob(ilg),
      2     stemltdt(ilg,icc),   rootltdt(ilg,icc),   glfltrdt(ilg,icc),
      3     blfltrdt(ilg,icc),   glcaemls(ilg,icc),   blcaemls(ilg,icc),
      4     rtcaemls(ilg,icc),   stcaemls(ilg,icc),   ltrcemls(ilg,icc),
-     5     pftareaa(ilg,icc),       burnfrac(ilg),   dscemlv1(ilg,icc),
+     5         burnfrac(ilg),   dscemlv1(ilg,icc),
      6     dscemlv2(ilg,icc),       probfire(ilg), burnvegf(ilg,icc)
 c
       real     emit_co2(ilg),        emit_co(ilg),       emit_ch4(ilg),
@@ -904,22 +904,23 @@ c
 
 c     ---------------------------------------------------------------
 c
-c     find pft areas before (these are required for disturb subroutine)
-c
-c      if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
-        do 82 j = 1, icc
-          do  83 i = il1, il2
-            pftareab(i,j)=fcancmx(i,j)*grclarea(i)  ! area in km^2
-83        continue
-82      continue
-c      else if(stdaln.eq.1)then    ! i.e. when operated at point scale
-c        do 92 j = 1, icc
-c          do 93 i = il1, il2
-c            grclarea=0.01
-c            pftareab(i,j)=0.01*fcancmx(i,j)      ! 0.01 km2 = 1 hectare
-c93        continue
-c92      continue
-c      endif
+!      MOVED to disturb - JM Feb 14 2014.
+!c     find pft areas before (these are required for disturb subroutine)
+!c
+!c      if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
+!        do 82 j = 1, icc
+!          do  83 i = il1, il2
+!            pftareab(i,j)=fcancmx(i,j)*grclarea(i)  ! area in km^2
+!83        continue
+!82      continue
+!c      else if(stdaln.eq.1)then    ! i.e. when operated at point scale
+!c        do 92 j = 1, icc
+!c          do 93 i = il1, il2
+!c            grclarea=0.01
+!c            pftareab(i,j)=0.01*fcancmx(i,j)      ! 0.01 km2 = 1 hectare
+!c93        continue
+!c92      continue
+!c      endif
 c
 c     initialize required arrays to zero
 c
@@ -1674,7 +1675,7 @@ c     disturbances and the subsequent litter that is generated is
 c     calculated in the disturb subroutine.
 c    
 c     set do_mortality=.false. to switch off mortality due to age and 
-c     reduced growth. mortality is linked to the competition parameterization 
+c     reduced growth. Mortality is linked to the competition parameterization 
 c     and generates bare fraction.
 c
       if (compete) then
@@ -1692,7 +1693,7 @@ c
 c
 c    ------------------------------------------------------------------
 c
-c     update leaf, stem, and root biomass pools to take into loss
+c     Update leaf, stem, and root biomass pools to take into loss
 c     due to mortality, and put the litter into the litter pool. the 
 c     mortality for green grasses doesn't generate litter, instead
 c     they turn brown.
@@ -1744,33 +1745,34 @@ c
             call disturb (stemmass, rootmass, gleafmas, bleafmas,
      1                      thliqc,   wiltsm,  fieldsm,    uwind,
      2                       vwind,  lightng,  fcancmx, litrmass,
-     3                    prbfrhuc, rmatctem, extnprob, pftareab,
+     3                    prbfrhuc, rmatctem, extnprob, compete ,
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,   thicec,   popdin, lucemcom,
      7                      dofire,  currlat,     iday, fsnow,
 c    in above, out below 
      8                    stemltdt, rootltdt, glfltrdt, blfltrdt,
-     9                    pftareaa, glcaemls, rtcaemls, stcaemls,
+     9                    glcaemls, rtcaemls, stcaemls, pvgbioms,
      a                    blcaemls, ltrcemls, burnfrac, probfire,
      b                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      c                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      d                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
-     e                    burnvegf, bterm,    mterm,    lterm )
+     e                    burnvegf, bterm,    mterm,    lterm ,
+     f                    pgavltms, pgavscms, soilcmas )
 c
 c    ------------------------------------------------------------------
 c
-c     update litter pool and reduce leaf, stem, and root biomass to
-c     take into account losses from disturbance. calculate nbp (net biome
-c     production) for each pft by taking into account c emission losses.
+c
+c     Calculate nbp (net biome production) for each pft by taking into account 
+c     C emission losses. The disturbance routine produces emissions due to fire
+c     and it also calculates emissions due to LUC. These LUC carbon emissions due to
+c     combustion associated with LUC are first estimated in LUC. This flux is spread out over 
+c     the whole year and is therefore subtracted to get NBP of each pft
+c     as well as the grid averaged value of NBP. Also LUC related combustion flux
+c     is assumed to be spread uniformly over the grid cell and thus reduces NBP of each
+c     PFT
 c
       do 1000 j = 1, icc
         do 1010 i = il1, il2
-          gleafmas(i,j)=gleafmas(i,j) - glfltrdt(i,j) - glcaemls(i,j)
-          bleafmas(i,j)=bleafmas(i,j) - blfltrdt(i,j) - blcaemls(i,j)
-          stemmass(i,j)=stemmass(i,j) - stemltdt(i,j) - stcaemls(i,j)
-          rootmass(i,j)=rootmass(i,j) - rootltdt(i,j) - rtcaemls(i,j)
-          litrmass(i,j)=litrmass(i,j) + glfltrdt(i,j) + blfltrdt(i,j) +  
-     &                  stemltdt(i,j) + rootltdt(i,j) - ltrcemls(i,j)
           dscemlv1(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +
      &                  rtcaemls(i,j) 
           dscemlv2(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +
@@ -1781,7 +1783,7 @@ c         subtracting emission losses from nep
 1010    continue
 1000  continue
 c
-c     calculate grid. averaged rate of carbon emissions due to fire in
+c     Calculate grid. averaged rate of carbon emissions due to fire in
 c     u-mol co2/m2.sec. convert all emission losses from kg c/m2
 c     emitted in 1 day to u-mol co2/m2.sec. calculate grid averaged
 c     carbon emission losses from litter.
@@ -1853,10 +1855,10 @@ c
 c
 c     -----------------------------------------------------------------
 c
-c     at this stage we have all required fluxes in u-mol co2/m2.sec and
+c     At this stage we have all required fluxes in u-mol co2/m2.sec and
 c     initial (loop 140 and 145) and updated sizes of all pools 
-c     (in kg c/m2). now we call the balcar subroutine and make sure that
-c     c in leaves, stem, root, litter and soil c pool balances within a
+c     (in kg c/m2). Now we call the balcar subroutine and make sure that
+c     C in leaves, stem, root, litter and soil C pool balances within a
 c     certain tolerance.
 c
       if(spinfast.eq.1)then
@@ -1877,29 +1879,7 @@ c
 c
 c     -----------------------------------------------------------------
 c
-c     the luc subroutine also estimates carbon emissions due to
-c     combustion associated with luc, and this flux is spread out over 
-c     the whole year and is therefore subtracted to get nbp of each pft
-c     as well as the grid averaged value of nbp.
-c
-      if(lnduseon)then
-          do 1150 j = 1, icc
-            do 1151 i = il1, il2
-c             luc related combustion flux is assumed to be spread
-c             uniformly over the grid cell and thus reduces nbp of each
-c             pft
-              nbpveg(i,j)=nbpveg(i,j)-lucemcom(i) 
-1151        continue
-1150      continue
-c
-          do 1160 i = il1, il2
-            nbp(i)=nbp(i)-lucemcom(i)
-1160      continue
-      endif        
-c
-c     -----------------------------------------------------------------
-c
-c     finally find vegetation structural attributes which can be passed
+c     Finally find vegetation structural attributes which can be passed
 c     to the land surface scheme using leaf, stem, and root biomass. 
 c
               call bio2str( gleafmas, bleafmas, stemmass, rootmass,

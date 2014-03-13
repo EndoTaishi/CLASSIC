@@ -876,9 +876,6 @@ C
 C
 C===================== CTEM ==============================================\
 
-c     Initialize the CTEM parameters
-      call initpftpars()
-
 c     all model switches are read in from a namelist file
       call read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,
      1             ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,
@@ -887,6 +884,10 @@ c     all model switches are read in from a namelist file
      4             rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,
      5             itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,
      6             jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
+
+c     Initialize the CTEM parameters
+      call initpftpars(compete)
+
 c
 c     set ictemmod, which is the class switch for coupling to ctem
 c     either to 1 (ctem is coupled to class) or 0 (class runs alone)
@@ -2068,6 +2069,7 @@ c      initial conditions always required
        enddo !nltest
 
       end if !if (compete/landuseon .and. start_bare) 
+
 C===================== CTEM =============================================== /
 C
       DO 100 I=1,NLTEST
@@ -2310,8 +2312,15 @@ c
               csum(i,m,j) = csum(i,m,j) + 
      &         dvdfcanrow(i,m,icountrow(i,m))
 
-              fcancmxrow(i,m,icountrow(i,m))=fcanrow(i,m,j)*
+!              Flag- added in seed here to prevent competition from getting
+!              pfts with no seed fraction.  JM Feb 20 2014.
+              if (compete) then
+               fcancmxrow(i,m,icountrow(i,m))=max(seed,fcanrow(i,m,j)*
+     &         dvdfcanrow(i,m,icountrow(i,m)))
+              else
+               fcancmxrow(i,m,icountrow(i,m))=fcanrow(i,m,j)*
      &         dvdfcanrow(i,m,icountrow(i,m))
+              end if
             endif
           enddo
 c
@@ -2369,7 +2378,8 @@ c
          call initialize_luc(iyear,argbuff,nmtest,nltest, 
      1                     mosaic,nol2pfts,cyclemet,   
      2                     cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,     
-     3                     pfcancmxrow,fcancmxrow,reach_eof,start_bare)
+     3                     pfcancmxrow,fcancmxrow,reach_eof,start_bare,
+     4                     compete)
 
          if (reach_eof) goto 999
 
@@ -2600,6 +2610,7 @@ c         this reads in one 30 min slice of met data, when it reaches
 c         the end of file it will go to label 999. 
           read(12,5300,end=999) ihour,imin,iday,iyear,fsdown,fdlgrd(i),
      1         pregrd(i),tagrd(i),qagrd(i),uvgrd(i),presgrd(i)
+
          enddo
         enddo
 

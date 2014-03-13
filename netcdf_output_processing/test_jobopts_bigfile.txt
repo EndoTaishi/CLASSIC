@@ -2,8 +2,8 @@
 
  PARALLELRUN = .TRUE. ,
  CTEM =.TRUE. , 
- MAKEMONTHLY = .TRUE. ,    
- DOFIRE = .FALSE. ,
+ MAKEMONTHLY = .false. ,    
+ DOFIRE = .true. ,
  MOSAIC = .TRUE. ,
  COMPETE_LNDUSE= .FALSE. ,
  totyrs = 7 ,

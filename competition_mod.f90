@@ -458,6 +458,9 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 !               Canadian Terrestrial Ecosystem Model (CTEM) V1.1
 !                          PFT Competition Subroutine 
 
+!     20  Feb 2014  - Move adjustments due to disturbance out of here and into
+!     J. Melton       disturbance subroutine.
+!
 !     27  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 !     J. Melton
 
@@ -482,7 +485,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 
 use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                         icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
-                        tolranc1, tolranc2, crop, grass 
+                        tolranc1, tolranc2, crop, grass, grass_ind
 
 implicit none
 
@@ -525,13 +528,11 @@ real, dimension(nilg,icc), intent(out) :: add2allo   ! npp kg c/m2.day that is u
 real, dimension(nilg,icc), intent(out) :: colrate    ! colonization rate (1/day)    
 real, dimension(nilg,icc), intent(out) :: mortrate   ! mortality rate
 
-
 ! local variables
 
 integer :: i, j
 integer :: n, k, k1, k2, l, a, b, g
 integer :: sdfracin
-integer, dimension(numgrass) :: grass_ind ! index of the grass pfts (only 2 grass pfts at present)
 integer, dimension(nilg) :: t1
 integer, dimension(icc-numcrops) :: inirank
 integer, dimension(nilg,icc-numcrops) :: rank
@@ -582,7 +583,6 @@ real, dimension(nilg) :: gavgputa
 real, dimension(nilg) :: gavgnpp       
 real, dimension(nilg) :: pbarefra
 real, dimension(nilg) :: grsumlit, grsumsoc
-real, dimension(nilg,icc) :: pftareab, pftareaa
 
 !     ---------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
@@ -591,13 +591,10 @@ real, dimension(nilg,icc) :: pftareab, pftareaa
 ! Model switches:
 
 ! set desired model to be used to .true. and all other to .false.
+!                ** ONLY ONE can be true. **
 logical, parameter :: lotvol=.false. ! original lotka-volterra eqns.
 logical, parameter :: arora =.true.  ! modified form of lv eqns with f missing
 logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing and a modified self-thinning term
-
-! Set the indices that are grass.
-grass_ind(1)=8
-grass_ind(2)=9
 
 !     ---------------------------------------------------------------
 
@@ -606,19 +603,19 @@ grass_ind(2)=9
 
 !    set competition parameters according to the model chosen
 !
-      if(lotvol .and. (.not.arora) .and. (.not.boer))then
+      if (lotvol) then
         a=1 ! alpha. this is the b in the arora & boer (2006) paper
         b=1 ! beta
         g=0 ! gamma
         colmult=4.00  ! multiplier for colonization rate
        ! sdfracin=1   ! seed fraction index ! All seed values set to 'seed'
-      else if(arora .and. (.not.lotvol) .and. (.not.boer))then
+      else if (arora) then
         a=0 ! alpha
         b=1 ! beta
         g=0 ! gamma
         colmult=1.00  ! multiplier for colonization rate
       !  sdfracin=2   ! seed fraction index ! All seed values set to 'seed'
-      else if(boer .and. (.not.lotvol) .and. (.not.arora))then
+      else if (boer) then
         a=0 ! alpha
         b=1 ! beta
         g=1 ! gamma
@@ -630,129 +627,15 @@ grass_ind(2)=9
       endif
 
 !     ---------------------------------------------------------------
-
-!     update fractional coverages of pfts to take into account the area
-!     burnt by fire. adjust all pools with new densities in their new
-!     areas and increase bare fraction.
-
-!     and while we are doing this also run a small check to make sure
-!     grid averaged quantities do not get messed up.
-
-      do 1200 i = il1, il2
-        pvgbioms(i)=vgbiomas(i)
-        pgavltms(i)=gavgltms(i)
-        pgavscms(i)=gavgscms(i)
-        pbarefra(i)=1.0
-        barefrac(i)=1.0
-        vgbiomas(i)=0.0
-        gavgltms(i)=0.0
-        gavgscms(i)=0.0
-1200  continue
-
 !     initial rank/superiority order for simulating competition. since
 !     crops are not in competition their rank doesn't matter and
 !     therefore we only have icc-2 ranks corresponding to the remaining 
 !     pfts. the first icc-4 are tree pfts and the last two are the c3 and c4
 !     grasses.
-      do 1210 j = 1,icc-numcrops
-      inirank(j)=j
-1210  continue
+      do j = 1,icc-numcrops
+         inirank(j)=j
+      end do 
 
-      do 1220 j = 1, icc
-       if(.not. crop(j))then  ! do not run for crops
-        do 1230 i = il1, il2
-          pbarefra(i)=pbarefra(i)-fcancmx(i,j)
-          pftareab(i,j)=fcancmx(i,j)
-          pftareaa(i,j)=fcancmx(i,j)-burnvegf(i,j)
-          fcancmx(i,j)=max(seed,pftareaa(i,j))
-          pftareaa(i,j)=fcancmx(i,j)
-
-          barefrac(i)=barefrac(i)-fcancmx(i,j)
-          if(fcancmx(i,j).gt.zero)then
-            term = pftareab(i,j)/pftareaa(i,j)
-            gleafmas(i,j)=gleafmas(i,j)*term
-            bleafmas(i,j)=bleafmas(i,j)*term
-            stemmass(i,j)=stemmass(i,j)*term
-            rootmass(i,j)=rootmass(i,j)*term
-            litrmass(i,j)=litrmass(i,j)*term
-            soilcmas(i,j)=soilcmas(i,j)*term
-          else
-            gleafmas(i,j)=0.0
-            bleafmas(i,j)=0.0
-            stemmass(i,j)=0.0
-            rootmass(i,j)=0.0
-            litrmass(i,j)=0.0
-            soilcmas(i,j)=0.0
-          endif
-1230    continue
-       endif
-1220  continue
-
-      do 1240 i = il1, il2
-       do 1250 j=1,icc
-         if (crop(j)) then
-          pbarefra(i)=pbarefra(i)-fcancmx(i,j)
-          barefrac(i)=barefrac(i)-fcancmx(i,j)
-         endif
-1250   continue 
-        if(barefrac(i).gt.zero)then
-          term=pbarefra(i)/barefrac(i)
-          litrmass(i,iccp1) = litrmass(i,iccp1)*term
-          soilcmas(i,iccp1) = soilcmas(i,iccp1)*term
-        else
-          litrmass(i,iccp1) = 0.0
-          soilcmas(i,iccp1) = 0.0
-        endif
-1240  continue
-
-!     check if total biomass is same before and after adjusting fractions
-
-      do 1260 j = 1, icc
-        do 1270 i = il1, il2
-          vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+&
-          bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
-          gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
-          gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
-1270    continue
-1260  continue
-
-      do 1280 i = il1, il2
-        gavgltms(i)=gavgltms(i)+ barefrac(i)*litrmass(i,iccp1)
-        gavgscms(i)=gavgscms(i)+ barefrac(i)*soilcmas(i,iccp1)
-1280  continue
-
-      do 1300 i = il1, il2
-
-        if(abs(vgbiomas(i)-pvgbioms(i)).gt.tolranc1)then
-          write(6,*)'grid averaged biomass densities do not balance'
-          write(6,*)'after fractional coverages are changed to take'
-          write(6,*)'into account burn area'
-          write(6,*)'vgbiomas(',i,')=',vgbiomas(i)
-          write(6,*)'pvgbioms(',i,')=',pvgbioms(i)
-          call xit('competition',-11)
-        endif
-
-        if(abs(gavgltms(i)-pgavltms(i)).gt.tolranc1)then
-          write(6,*)'grid averaged biomass densities do not balance'
-          write(6,*)'after fractional coverages are changed to take'
-          write(6,*)'into account burn area'
-          write(6,*)'gavgltms(',i,')=',gavgltms(i)
-          write(6,*)'pgavltms(',i,')=',pgavltms(i)
-          call xit('competition',-12)
-        endif
-
-        if(abs(gavgscms(i)-pgavscms(i)).gt.tolranc1)then
-          write(6,*)'grid averaged biomass densities do not balance'
-          write(6,*)'after fractional coverages are changed to take'
-          write(6,*)'into account burn area'
-          write(6,*)'gavgscms(',i,')=',gavgscms(i)
-          write(6,*)'pgavscms(',i,')=',pgavscms(i)
-          call xit('competition',-13)
-        endif
-
-1300  continue
-
-!     ---------------------------------------------------------------
 !     now we do our usual initialization
 
       do 150 j = 1, icc
@@ -1116,7 +999,7 @@ grass_ind(2)=9
 621     continue
 620   continue
 
-!     check if bare fraction increases of decreases
+!     check if bare fraction increases or decreases
 
       do 640 i = il1, il2
         if( ( barefrac(i).gt.pbarefra(i)) .and. &
