@@ -698,11 +698,6 @@ minlvfr = 0.05
 
 kmort1 = 0.3
 
-mxmortge = [ 0.01, 0.01, 0.00, &
-             0.01, 0.01, 0.01, & 
-             0.00, 0.00, 0.00, & 
-             0.00, 0.00, 0.00 ]
-
 ! phenology.f parameters: ---------
 
 colda = [ 3.0, 3.0, 0.0, &
@@ -743,11 +738,6 @@ harvthrs = [ 0.0, 0.0, 0.0, &
              4.5, 3.5, 0.0, &
              0.0, 0.0, 0.0 ]
 
-thrprcnt = [ 40.0, 40.0,  0.0, &
-             40.0, 50.0, 50.0, &
-             50.0, 50.0,  0.0, &
-             40.0, 40.0,  0.0 ]  
-
 specsla =[  0.0, 0.0, 0.0, &  !pft 1 was 11.0. With lfspany of 5.0, it is calculated to be 11.18. JM Mar 12 2014
             0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0, &
@@ -769,17 +759,24 @@ if (compete) then
 ! prescribed PFT fractional cover, then the parameters after this section
 ! are used. Parameters that are the same in both are above this if loop.
 
+! Parameters used in more than one subroutine:
+
+lfespany  =   [ 5.00, 1.00, 0.00, &
+                1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+                1.75, 1.75, 0.00, &
+                1.00, 1.00, 0.00 ]
+
 ! allocate.f parameters: --------------
 
 omega = [ 0.80, 0.50, 0.00, & 
-          0.80, 0.50, 0.80, &  !pft 4 was 0.8
+          0.80, 0.45, 0.80, &  !pft 4 was 0.8
           0.05, 0.05, 0.00, &
           1.00, 1.00, 0.00 ]
 
 epsilonl = [ 0.19, 0.45, 0.00, &  !pft 2 was 0.06 JM Dec 17 2013
              0.39, 0.50, 0.30, &  !pft 5 was 0.25
              0.80, 0.80, 0.00, &
-             0.10, 0.10, 0.00 ]
+             0.20, 0.10, 0.00 ]
 
 epsilons = [ 0.40, 0.34, 0.00, &
              0.21, 0.35, 0.10, & !pft 3 was 0.05
@@ -789,7 +786,7 @@ epsilons = [ 0.40, 0.34, 0.00, &
 epsilonr = [ 0.41, 0.21, 0.00, &  !pft 2 was 0.89 JM Dec 17 2013
              0.40, 0.15, 0.60, &  !pft 5 was 0.65
              0.05, 0.05, 0.00, &
-             0.90, 0.90, 0.00 ]
+             0.80, 0.90, 0.00 ]
 
 ! competition_mod.f90 parameters
 
@@ -800,7 +797,7 @@ tcoldmin = [ -99.0, -999.9,   0.0, & !test pft 1 was -32.5,
             -999.9, -999.9,   0.0, &
             -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
 
-tcoldmax = [ 18.0,  -27.0,   0.0, &  ! PFT 2 was -28.0 JM Jan 14.
+tcoldmax = [ 18.0,  -28.0,   0.0, & 
             999.9,   16.0, 900.0, &       
             999.9,  999.9,   0.0, &
             999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0
@@ -810,7 +807,7 @@ twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 was 23.0
              99.9,  99.9,  0.0, &
              99.9,  99.9,  0.0 ]
 
-gdd5lmt = [ 375.0,  500.0,  0.0, &  
+gdd5lmt = [ 375.0,  600.0,  0.0, &  
            1200.0,  300.0,  9.9, &  ! test pft 4 was 500
               9.9,    9.9,  0.0, &
               9.9,    9.9,  0.0 ]
@@ -829,8 +826,8 @@ dryseasonlmt=[ 99.9,  99.9,    0.0, &
 
 ! Flag all values have been changed from 0.1 JM Mar 10 2014
 ! smaller numbers give faster colonization rates.
-bio2sap = [ 0.30, 0.20, 0.00, &
-            0.15, 0.12, 0.15, & 
+bio2sap = [ 0.20, 0.20, 0.00, &
+            0.10, 0.12, 0.15, & 
             0.00, 0.00, 0.00, &
             0.40, 0.40, 0.00 ]  
 
@@ -845,9 +842,9 @@ tolranc2 = 0.0050
 laimin = [ 1.0, 1.0, 0.0, &
            1.5, 1.0, 1.0, &  ! flag test PFT 4 was 1.5, 5 was 0.7
            1.0, 1.0, 0.0, &
-           0.5, 0.5, 0.0 ]  
+           0.5, 1.0, 0.0 ]  
 
-laimax = [ 3.7, 3.0, 0.0, & ! flag pft 1 was 6.0 JM Mar 11 2014
+laimax = [ 4.0, 3.0, 0.0, & ! flag pft 1 was 6.0 JM Mar 11 2014
            6.0, 5.0, 5.0, & 
            8.0, 8.0, 0.0, &
            4.0, 4.0, 0.0 ] 
@@ -867,9 +864,9 @@ bsrtstem = [ 0.0700, 0.0550, 0.0000, &
              0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
 
 bsrtroot = [ 0.5000, 0.2850, 0.0000, &
-             0.4000, 0.2250, 0.2500, & ! pft 3 was 0.65 JM Jan 31 2014, pft 5 was 0.15 Mar 11 2014.
+             0.4000, 0.2250, 0.1500, & ! pft 3 was 0.65 JM Jan 31 2014, pft 5 was 0.15 Mar 11 2014.
              0.1600, 0.1600, 0.0000, & 
-             0.1000, 0.2000, 0.0000 ]
+             0.1000, 0.1000, 0.0000 ]
 
 ! mortality.f parameters: ---------
 
@@ -878,19 +875,19 @@ maxage = [ 450.0, 250.0,   0.0, &  !flag, test pft 1 was 250. JM Mar 10 2014.
              0.0,   0.0,   0.0, &
              0.0,   0.0,   0.0 ]
 
-! phenology.f parameters: ---------
+mxmortge = [ 0.01, 0.01, 0.00, &
+             0.01, 0.01, 0.01, & 
+             0.00, 0.00, 0.00, & 
+             0.01, 0.01, 0.00 ]
 
-lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
-                1.75, 1.75, 0.00, &
-                1.00, 1.00, 0.00 ]
+! phenology.f parameters: ---------
 
 cdlsrtmx = [ 0.10, 0.30, 0.00, &  ! test PFT 1 was 0.15 JM Feb 3 2014
              0.30, 0.40, 0.15, &
              0.15, 0.15, 0.00, &
              0.15, 0.15, 0.00 ]
 
-drlsrtmx = [ 0.004 , 0.005, 0.000, & !pft 1 was 0.0025 JM Mar 6 2014.
+drlsrtmx = [ 0.006 , 0.005, 0.000, & !pft 1 was 0.0025 JM Mar 6 2014.
              0.010 , 0.025, 0.050, & !pft 5 was 0.005, pft 4 was 0.005 jm feb 3 2014, pft 3 was 0.005
              0.005 , 0.005, 0.000, &
              0.050 , 0.050, 0.000 ]  !PFT 8 and 9 were 0.05 
@@ -902,6 +899,11 @@ lwrthrsh = [ -50.0, -5.0, 0.0, &  !flag pft 1 was -45 JM Feb 3 2014
                0.1,  5.0, 0.0 ]
 
 roothrsh = 8.0
+
+thrprcnt = [ 40.0, 40.0,  0.0, &
+             40.0, 50.0, 50.0, &
+             50.0, 50.0,  0.0, &
+             40.0, 40.0,  0.0 ]  
 
 ! turnover.f parameters: --------------
 
@@ -927,6 +929,13 @@ else ! Prescribed PFT fractional cover
 ! These parameters are used when the PFT fractional cover is read in from the 
 ! CTM and INI files, or when LUC is on, the LUC file.
 
+! Parameters used in more than one subroutine:
+
+lfespany  =   [ 5.00, 1.00, 0.00, &
+                1.75, 1.00, 1.00, &  
+                1.75, 1.75, 0.00, &
+                1.00, 1.00, 0.00 ]
+
 ! allocate.f parameters: --------------
 
 omega = [ 0.80, 0.50, 0.00, & 
@@ -949,18 +958,6 @@ epsilonr = [ 0.65, 0.89, 0.00, &  !pft 2 was 0.89 JM Dec 17 2013
              0.05, 0.05, 0.00, &
              0.99, 0.99, 0.00 ]
 
-! ctem.f parameters: ----------
-
-laimin = [ 1.0, 1.0, 0.0, &
-           1.5, 1.0, 1.0, & 
-           1.0, 1.0, 0.0, &
-           0.5, 0.5, 0.0 ]
-
-laimax = [ 3.0, 3.0, 0.0, &
-           8.0, 5.0, 5.0, &
-           8.0, 8.0, 0.0, &
-           4.0, 4.0, 0.0 ] 
-
 ! mainres.f parameters: ---------
 
 bsrtstem = [ 0.0900, 0.0550, 0.0000, &
@@ -975,10 +972,10 @@ bsrtroot = [ 0.5000, 0.2850, 0.0000, &
 
 ! mortality.f parameters: ---------
 
-maxage = [ 250.0, 250.0,   0.0, &
-           250.0, 250.0, 250.0, &
-             0.0,   0.0,   0.0, &
-             0.0,   0.0,   0.0 ]
+mxmortge = [ 0.01, 0.01, 0.00, &
+             0.01, 0.01, 0.01, & 
+             0.00, 0.00, 0.00, & 
+             0.00, 0.00, 0.00 ]
 
 ! phenology.f parameters: ---------
 
@@ -997,10 +994,10 @@ lwrthrsh = [ -45.0, -5.0, 0.0, &
                5.0,  5.0, 0.0, &
                0.1,  5.0, 0.0 ] 
 
-lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.75, 1.00, 1.00, &  
-                1.75, 1.75, 0.00, &
-                1.00, 1.00, 0.00 ]
+thrprcnt = [ 40.0, 40.0,  0.0, &
+             40.0, 50.0, 50.0, &
+             50.0, 50.0,  0.0, &
+             40.0, 40.0,  0.0 ]  
 
 roothrsh = 15.0
 

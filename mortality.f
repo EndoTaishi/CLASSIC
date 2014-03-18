@@ -143,27 +143,25 @@ c
         n = sort(j)
         do 260 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
-          if(maxage(n).gt.zero)then
-            intrmort(i,j)=1.0-exp(-4.605/maxage(n))
+
+          if(do_age_mort)then
+
+             if(maxage(n).gt.zero)then
+               intrmort(i,j)=1.0-exp(-4.605/maxage(n))
+             else
+               intrmort(i,j)=0.0
+             endif
+
           else
+            geremort(i,j)=0.0
             intrmort(i,j)=0.0
-          endif
+          end if
+
 c         convert (1/year) rate into (1/day) rate   
           intrmort(i,j)=intrmort(i,j)/365.0
          endif
 260     continue
 250   continue 
-c
-      do 270 j = 1,icc
-        do 280 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then
-          if(.not. do_age_mort)then
-            geremort(i,j)=0.0
-            intrmort(i,j)=0.0
-          endif
-         endif
-280     continue
-270   continue
 c
 c     now that we have both growth related and intrinsic mortality rates,
 c     lets combine these rates for every pft and estimate litter generated
