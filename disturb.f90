@@ -664,15 +664,15 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
          if (fcancmx(i,j) .gt. seed) then
           if(pftareab(i,j) .gt. zero)then
 
-            glfltrdt(i,j)= 0.4*frltrglf(n) *gleafmas(i,j) *(burnveg(i,j) /pftareab(i,j)) 
-            blfltrdt(i,j)= 0.4*frltrblf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
-            stemltdt(i,j)= 0.4*frltrstm(n) *stemmass(i,j) *(burnveg(i,j) /pftareab(i,j))
-            rootltdt(i,j)= 0.4*frltrrt(n)  *rootmass(i,j) *(burnveg(i,j) /pftareab(i,j))
-            glcaemls(i,j)= 0.4*frco2glf(n) *gleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
-            blcaemls(i,j)= 0.4*frco2blf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
-            stcaemls(i,j)= 0.4*frco2stm(n) *stemmass(i,j) *(burnveg(i,j) /pftareab(i,j))
-            rtcaemls(i,j)= 0.4*frco2rt(n)  *rootmass(i,j) *(burnveg(i,j) /pftareab(i,j))
-            ltrcemls(i,j)= 0.4*frltrbrn(n) *litrmass(i,j) *(burnveg(i,j) /pftareab(i,j))
+            glfltrdt(i,j)= frltrglf(n) *gleafmas(i,j) *(burnveg(i,j) /pftareab(i,j)) 
+            blfltrdt(i,j)= frltrblf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
+            stemltdt(i,j)= frltrstm(n) *stemmass(i,j) *(burnveg(i,j) /pftareab(i,j))
+            rootltdt(i,j)= frltrrt(n)  *rootmass(i,j) *(burnveg(i,j) /pftareab(i,j))
+            glcaemls(i,j)= frco2glf(n) *gleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
+            blcaemls(i,j)= frco2blf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
+            stcaemls(i,j)= frco2stm(n) *stemmass(i,j) *(burnveg(i,j) /pftareab(i,j))
+            rtcaemls(i,j)= frco2rt(n)  *rootmass(i,j) *(burnveg(i,j) /pftareab(i,j))
+            ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j) *(burnveg(i,j) /pftareab(i,j))
 
 !           Update the pools:
             gleafmas(i,j)=gleafmas(i,j) - glfltrdt(i,j) - glcaemls(i,j)

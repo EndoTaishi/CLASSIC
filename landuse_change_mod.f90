@@ -140,7 +140,7 @@ integer :: k2,k1,strlen
              if (start_bare) then
               nfcancmxrow(i,m,j)=seed
              else !not starting bare, but still make sure you have at least seed
-              nfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))
+              nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
              end if
             end if
            end do
