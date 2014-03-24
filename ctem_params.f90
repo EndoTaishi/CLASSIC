@@ -27,6 +27,13 @@ public :: initpftpars
 
 ! Constants
 
+integer, parameter :: sp = selected_real_kind(6)
+integer, parameter :: dp = selected_real_kind(13)  
+
+!integer, parameter ::                              &
+!    sp = kind(1.0),                                &
+!    dp = selected_real_kind(2*precision(1.0_sp))
+
 real, parameter :: zero = 1.0e-20
 real, parameter :: abszero=1e-12 ! this one is for runclassctem.f and allocate.f 
 
@@ -34,9 +41,6 @@ real, parameter :: pi =3.1415926535898d0
 real, parameter :: earthrad = 6371.22   ! radius of earth, km
 real, parameter :: km2tom2 = 1.0e+06 ! changes from km2 to m2
 real, parameter :: deltat =1.0  !CTEM's time step in days
-
-
-real, parameter :: tolrance = 0.00001d0 ! our tolerance for balancing c budget in kg c/m2 in one day, this is 1/100th of a gram of c
 
 integer, parameter, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] ! days in each month
 integer, parameter, dimension(13) :: monthend = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] ! calender day at end of each month
@@ -109,6 +113,8 @@ integer, parameter, dimension(numgrass) :: grass_ind = [ 8, 9 ] ! index of the g
 
 ! Parameters used in more than one subroutine:
 
+real :: tolrance ! our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
+
 real, dimension(kk) :: kn               ! Canopy light/nitrogen extinction coefficient
 
 ! allocate.f parameters: ---------------------------------
@@ -167,7 +173,6 @@ real, dimension(kk) :: dryseasonlmt     ! minimum length of dry season for PFT t
 real, dimension(kk) :: bio2sap          ! multiplying factor for converting biomass density to sapling density
 real :: bioclimrt                       ! mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
 real :: tolranc1                        ! error tolerance for c balance for each pft over gcm grid cell (kg c)
-real :: tolranc2                        ! (kg c/m2)
 
 ! ctem.f parameters: ----------
 
@@ -244,7 +249,6 @@ real, dimension(3) :: furniture         ! how much deforested/chopped off biomas
 real, dimension(2) :: bmasthrs          ! biomass thresholds for determining if deforested area is a forest, a shrubland, or a bush kg c/m2
 
 real :: tolrnce1 !/0.50/  ! kg c, tolerance of total c balance  !FLAG
-real :: tolrnce2 !/0.005/ ! kg c/m2, tolerance for total c density
 
 ! mainres.f parameters: ----------
 
@@ -281,7 +285,7 @@ real, dimension(kk) :: drgta            ! Parameter determining how fast soil dr
 real, dimension(kk) :: colda            ! Parameter determining how fast cold temperatures causes leaves to fall
 real, dimension(kk) :: lwrthrsh         ! Lower temperature threshold for ctem's 9 pfts. these are used to estimate cold stress related leaf loss rate (degree c)
 integer, dimension(kk) :: dayschk       ! Number of days over which to check if net photosynthetic rate is positive before initiating leaf onset
-real, dimension(2) :: coldlmt           ! No. of days for which some temperature has to remain below a given threshold for initiating a process
+integer, dimension(2) :: coldlmt        ! No. of days for which some temperature has to remain below a given threshold for initiating a process
 real, dimension(2) :: coldthrs          !     1. -5 c threshold for initiating "leaf fall" mode for ndl dcd trees
                                         !     2.  8 c threshold for initiating "harvest" mode for crops the array colddays(i,2)
                                         !     tracks days corresponding to these thresholds
@@ -689,7 +693,6 @@ furniture = [ 0.15, 0.00, 0.00 ]
 bmasthrs = [ 4.0, 1.0 ]
 
 tolrnce1 = 0.50
-tolrnce2 = 0.005
 
 ! mainres.f parameters: ---------
 
@@ -761,6 +764,8 @@ if (compete) then
 ! are used. Parameters that are the same in both are above this if loop.
 
 ! Parameters used in more than one subroutine:
+
+tolrance = 0.001d0 
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
@@ -840,8 +845,6 @@ bio2sap = [ 0.25, 0.25, 0.00, &
 bioclimrt = 0.25                
 
 tolranc1 = 0.150                
-
-tolranc2 = 0.0050    
            
 ! ctem.f parameters: ----------
 
@@ -937,6 +940,8 @@ else ! Prescribed PFT fractional cover
 
 ! Parameters used in more than one subroutine:
 
+tolrance = 0.00001d0 
+
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.75, 1.00, 1.00, &  
                 1.75, 1.75, 0.00, &
@@ -950,7 +955,7 @@ omega = [ 0.80, 0.50, 0.00, &
           1.00, 1.00, 0.00 ]
 
 epsilonl = [ 0.20, 0.06, 0.00, &  
-             0.39, 0.35, 0.25, &  
+             0.35, 0.35, 0.25, &  
              0.80, 0.80, 0.00, &
              0.01, 0.01, 0.00 ]
 

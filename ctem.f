@@ -506,11 +506,6 @@ c     and disturbance subroutines
           currlat(i)=radj(i)*180.0/pi                             
           curlatno(i)=0
 50     continue
-
-C     FLAG: set stdaln always to equal 0 for testing fire. JM Jul 29 2013
-      stdaln=0
-c
-      if(stdaln.eq.0)then         ! i.e. when operated in a GCM mode 
 c
 c       find current latitude number
         do 60 k = 1, lat
@@ -530,9 +525,13 @@ c
           endif
 70      continue
 c
+      stdaln=1 ! for off-line mode 
+
+      if(stdaln.eq.0)then         ! i.e. when operated in a GCM mode 
+
         lath = lat/2
-        call gaussg(lath,sl,wl,cl,radl,wossl)
-        call trigl(lath,sl,wl,cl,radl,wossl)
+        !call gaussg(lath,sl,wl,cl,radl,wossl)
+        !call trigl(lath,sl,wl,cl,radl,wossl)
 c
 c       wl contains zonal weights, lets find meridional weights
 c
@@ -547,16 +546,40 @@ c     is then multiplied by faregat each day. JM.
 
           grclarea(i) = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)
      &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic
+        write(*,'(2f12.3,i5)')grclarea(i),wl(curlatno(i)),curlatno(i)
 C         dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
 81      continue  
-c
+
       else if(stdaln.eq.1)then    ! i.e. when operated at point scale
+
+        do i = il1,il2
+          lath = curlatno(i)/2
+          call gaussg(lath,sl,wl,cl,radl,wossl)
+          call trigl(lath,sl,wl,cl,radl,wossl)
+        enddo
 c
-        do 90 j = 1, icc
-          do 91 i = il1, il2
-            grclarea(i)=1000.0  !same value as reparea in disturb.
-91        continue
-90      continue
+c       wl contains zonal weights, lets find meridional weights
+c
+        do i = il1,il2
+          ml(i) = 1.0/real(lon)
+        end do
+c
+        do i = il1, il2
+C     FLAG: Some of the earlier calcs should be moved up to runclassctem. However, the actual final calc must be done
+C     daily since faregat can change daily in competition model. Perhaps a good way would be to have a tot_grclarea that
+c     is then multiplied by faregat each day. JM.
+
+          grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)
+     &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic
+C         dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
+        end do
+c
+c
+!        do 90 j = 1, icc
+!          do 91 i = il1, il2
+!            grclarea(i)=1000.0  !same value as reparea in disturb.
+!91        continue
+!90      continue
 c
       endif
 c

@@ -911,6 +911,7 @@ c     &      '; start time: ', i2.2, ':', i2.2, ':', i2.2 )
 c
 C     INITIALIZATION FOR COUPLING CLASS AND CTEM
 C
+      IMONTH = 0   
       DO I=1,NLAT
         DO M=1,NMOS
           PREACC_M(I,M)=0.
@@ -5456,14 +5457,15 @@ c
      &                          +lucltrin_mo_m(i,m)*farerow(i,m)   
 c
 !              Make the probability of fire a per day value
-               probfire_mo_m(i,m)=probfire_mo_m(i,m)*(1./monthdays(nt))
+               probfire_mo_m(i,m)=probfire_mo_m(i,m)*
+     &                                (1./real(monthdays(nt)))
                probfire_mo_g(i)=probfire_mo_g(i)
      &                          +probfire_mo_m(i,m)*farerow(i,m)   
-               bterm_mo_m(i,m)=bterm_mo_m(i,m)*(1./monthdays(nt))
+               bterm_mo_m(i,m)=bterm_mo_m(i,m)*(1./real(monthdays(nt)))
                bterm_mo_g(i) =bterm_mo_g(i)+bterm_mo_m(i,m)*farerow(i,m)  
-               lterm_mo_m(i,m)=lterm_mo_m(i,m)*(1./monthdays(nt))
+               lterm_mo_m(i,m)=lterm_mo_m(i,m)*(1./real(monthdays(nt)))
                lterm_mo_g(i) =lterm_mo_g(i)+lterm_mo_m(i,m)*farerow(i,m)  
-               mterm_mo_m(i,m)=mterm_mo_m(i,m)*(1./monthdays(nt))
+               mterm_mo_m(i,m)=mterm_mo_m(i,m)*(1./real(monthdays(nt)))
                mterm_mo_g(i) =mterm_mo_g(i)+mterm_mo_m(i,m)*farerow(i,m)  
 
 

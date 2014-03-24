@@ -435,7 +435,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     ----------------------------------------------------------------    
       use ctem_params,        only : icc, ican, zero, km2tom2, iccp1, &
                                      combust, paper, furniture, bmasthrs, &
-                                     tolrnce1, tolrnce2, crop   
+                                     tolrnce1, tolrance, crop   
 
       implicit none
 
@@ -1096,7 +1096,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       do 780 i = il1, il2
        if( abs(pvgbioms(i)+pgavltms(i)+pgavscms(i)- &
               vgbiomas(i)-gavgltms(i)-gavgscms(i)- &
-              grdencom(i)).gt.tolrnce2 ) then
+              grdencom(i)).gt.tolrance ) then
            write(6,*)'iday = ',iday
            write(6,*)'at grid cell = ',i
            write(6,*)'pbarefra(i) = ',pbarefra(i)
@@ -1117,7 +1117,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
          (vgbiomas(i)+gavgltms(i)+gavgscms(i)+ grdencom(i))
          write(6,*)'diff = ',abs((pvgbioms(i)+pgavltms(i)+pgavscms(i)) &
           -(vgbiomas(i)+gavgltms(i)+gavgscms(i)+ grdencom(i)))
-           write(6,*)'tolrnce2 = ',tolrnce2
+           write(6,*)'tolrance = ',tolrance
            call xit('luc',-14)
        endif
 780   continue

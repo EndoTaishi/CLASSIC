@@ -7,8 +7,11 @@ C     * GAUSSG FILLS ONLY THE N HEM ORDERED N TO S.
 C     * THIS ROUTINE MAKES THE ARRAYS GLOBAL AND ORDERED FROM S TO N. 
 C     *      SR=SIN(LAT),  CR=COS(LAT),  RADR=LATITUDE IN RADIANS.
 C     *      WR = GAUSSIAN WEIGHTS,  WOSQ = WR/(SR**2). 
+
+      use ctem_params, only: lat
 C 
-      REAL*8 SR(1),WR(1),CR(1),RADR(1),WOSQ(1)
+      REAL*8 SR(lat),WR(lat),CR(lat)
+      REAL*8 RADR(lat),WOSQ(lat)
 C-------------------------------------------------------------------- 
 C     * CR,WR,WOSQ ARE SYMMETRIC ABOUT THE EQUATOR. 
 C     * SR AND RAD ARE ANTISYMMETRIC. 

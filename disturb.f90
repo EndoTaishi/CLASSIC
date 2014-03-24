@@ -426,7 +426,7 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
          ! TESTING:
           soilterm = 1.0-tanh((1.75*avgdryns(i)/extnmois)**2)
           duffterm = 1.0-tanh(20.*(thliq(i,1)/duff_dry)**4)  !FLAG
-          mterm(i) = soilterm * (1-surface_duff_f(i)) + duffterm * surface_duff_f(i)
+          mterm(i) = soilterm * (1.0-surface_duff_f(i)) + duffterm * surface_duff_f(i)
 
         else
           mterm(i)=0.0   !no fire likelihood due to moisture if no vegetation
@@ -438,7 +438,7 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
         ! Save the soil moisture term to help determine when the lightning
         ! previously burned area reduction of efficiency (ief) can be reset. JM
         dryspell(i,:) = eoshift(dryspell(i,:),1,soilterm)
-        meandry(i) = sum(dryspell(i,:))/10
+        meandry(i) = sum(dryspell(i,:))/10.0
 
 380   continue
 
@@ -513,7 +513,7 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
 
 !         TESTING:
 
-          betmsprd(i)= max(0.0,min(1.0, avgdryns(i)/extnmois * (1-surface_duff_f(i)) &
+          betmsprd(i)= max(0.0,min(1.0, avgdryns(i)/extnmois * (1.0-surface_duff_f(i)) &
                                        + (thliq(i,1)/duff_dry) * surface_duff_f(i)))
 
           smfunc(i)=(1.0-betmsprd(i))**2.0

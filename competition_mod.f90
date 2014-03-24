@@ -485,7 +485,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 
 use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                         icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
-                        tolranc1, tolranc2, crop, grass, grass_ind
+                        tolranc1, tolrance, crop, grass, grass_ind
 
 implicit none
 
@@ -1368,9 +1368,9 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
       do 870 i = il1, il2
         befrmass=(pvgbioms(i)+pgavltms(i)+pgavscms(i))+gavgnpp(i)/(grclarea(i)*1.0e06)
         aftrmass=(vgbiomas(i)+gavgltms(i)+gavgscms(i))+gavgputa(i)/(grclarea(i)*1.0e06)
-        if(abs(befrmass-aftrmass).gt.tolranc2)then
+        if(abs(befrmass-aftrmass).gt.tolrance)then
           write(6,*)'total (live+dead) mass for grid cell =',i,'does not balance' 
-          write(6,*)'abs(befrmass-aftrmass)',abs(befrmass-aftrmass),'is gt our tolerance of',tolranc2
+          write(6,*)'abs(befrmass-aftrmass)',abs(befrmass-aftrmass),'is gt our tolerance of',tolrance
           write(6,*)'pvgbioms(',i,')=',pvgbioms(i)*grclarea(i)*1.0e06
           write(6,*)'pgavltms(',i,')=',pgavltms(i)*grclarea(i)*1.0e06
           write(6,*)'pgavscms(',i,')=',pgavscms(i)*grclarea(i)*1.0e06
