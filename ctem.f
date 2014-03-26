@@ -99,9 +99,11 @@ c    -----------------------------------------------------------------
       use ctem_params,        only : kk, lon, lat, pi, earthrad, zero,
      1                               edgelat, kn,iccp1, ican, ilg, nlat,
      2                               ignd, icc, nmos, l2max, grescoef,
-     3                               humicfac,laimin,laimax,lambdamax
+     3                               humicfac,laimin,laimax,lambdamax,
+     4                               crop
       use landuse_change,     only : luc
       use competition_scheme, only : bioclim, existence, competition
+      use disturbance_scheme, only : disturb
 
 c
 c     inputs
@@ -489,7 +491,7 @@ c
       real     barefrac(ilg),       pbarefrc(ilg),           tolrance,
      1       lambda(ilg,icc),   add2allo(ilg,icc),  lyglfmas(ilg,icc),
      2     expbalvg(ilg,icc),       expnbaln(ilg), ltrflcom(ilg,iccp1),
-     3          cc(ilg,icc),         mm(ilg,icc)  
+     3          cc(ilg,icc),         mm(ilg,icc),    barefrac_tmp(ilg)  
 c
       integer   surmncur(ilg),       defmncur(ilg)
 c
@@ -530,8 +532,8 @@ c
       if(stdaln.eq.0)then         ! i.e. when operated in a GCM mode 
 
         lath = lat/2
-        !call gaussg(lath,sl,wl,cl,radl,wossl)
-        !call trigl(lath,sl,wl,cl,radl,wossl)
+        call gaussg(lath,sl,wl,cl,radl,wossl)
+        call trigl(lath,sl,wl,cl,radl,wossl)
 c
 c       wl contains zonal weights, lets find meridional weights
 c
@@ -540,14 +542,14 @@ c
 80      continue 
 c
         do 81 i = il1, il2
-C     FLAG: Some of the earlier calcs should be moved up to runclassctem. However, the actual final calc must be done
-C     daily since faregat can change daily in competition model. Perhaps a good way would be to have a tot_grclarea that
-c     is then multiplied by faregat each day. JM.
+C        FLAG: Some of the earlier calcs should be moved up to runclassctem. However, the actual final calc must be done
+C        daily since faregat can change daily in competition model. Perhaps a good way would be to have a tot_grclarea that
+c        is then multiplied by faregat each day. JM.
 
           grclarea(i) = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)
      &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic
-        write(*,'(2f12.3,i5)')grclarea(i),wl(curlatno(i)),curlatno(i)
 C         dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
+
 81      continue  
 
       else if(stdaln.eq.1)then    ! i.e. when operated at point scale
@@ -565,21 +567,14 @@ c
         end do
 c
         do i = il1, il2
-C     FLAG: Some of the earlier calcs should be moved up to runclassctem. However, the actual final calc must be done
-C     daily since faregat can change daily in competition model. Perhaps a good way would be to have a tot_grclarea that
-c     is then multiplied by faregat each day. JM.
+C         FLAG: Some of the earlier calcs should be moved up to runclassctem. However, the actual final calc must be done
+C         daily since faregat can change daily in competition model. Perhaps a good way would be to have a tot_grclarea that
+c         is then multiplied by faregat each day. JM.
 
           grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)
      &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic
 C         dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
         end do
-c
-c
-!        do 90 j = 1, icc
-!          do 91 i = il1, il2
-!            grclarea(i)=1000.0  !same value as reparea in disturb.
-!91        continue
-!90      continue
 c
       endif
 c
@@ -713,7 +708,7 @@ c        call competition subroutine which on the basis of previous day's
 c        npp estimates changes in fractional coverage of pfts
 c
          call competition (iday,          1,          nlat,        nlat,
-     1               nol2pfts,   nppveg_cmp,
+     1               nol2pfts,   nppveg_cmp, dofire, 
      2           pftexist_cmp, geremort_cmp, intrmort_cmp,
      3           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
      4           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,
@@ -850,12 +845,12 @@ c
 c       call competition subroutine which on the basis of previous day's
 c       npp estimates changes in fractional coverage of pfts
 c
-        call competition (iday,          1,          il2,         ilg,
-     1                    nol2pfts,       nppveg,
+        call competition (iday,     1,        il2,      ilg,
+     1                    nol2pfts, nppveg,   dofire,
      2                    pftexist, geremort, intrmort,
      3                    gleafmas, bleafmas, stemmass, rootmass,
      4                    litrmass, soilcmas, grclarea,   lambda,
-     5                    bmasveg,  burnvegf,        sort,
+     5                    bmasveg,  burnvegf, sort,
 c
 c    ------------------- inputs above this line -------------------
 c
@@ -1375,19 +1370,20 @@ c
         soilrsvg(i,iccp1)=ltresveg(i,iccp1)+scresveg(i,iccp1)
 460   continue
 c
-c     find grid averaged humification and soil respiration rates
-c
-      do 470 j = 1,icc
-        do 480 i = il1, il2
-          soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)
-          humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j)
-480     continue
-470   continue
-c
-      do 490 i = il1, il2
-        soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
-        humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
-490   continue
+! MOVED TO ABOVE BALCAR. JM Mar 25 2014
+!c     find grid averaged humification and soil respiration rates
+!c
+!      do 470 j = 1,icc
+!        do 480 i = il1, il2
+!          soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)
+!          humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j)
+!480     continue
+!470   continue
+!c
+!      do 490 i = il1, il2
+!        soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
+!        humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
+!490   continue
 c
 c     heterotrophic respiration part ends
 c
@@ -1409,7 +1405,7 @@ c
 
       if (compete) then
        do 500 j = 1, icc
-        if(j.ne.6.and.j.ne.7) then   ! not for crops
+        if(.not. crop(j)) then   ! not for crops
          do 501 i = il1, il2
 c
            n = sort(j)
@@ -1768,19 +1764,19 @@ c
             call disturb (stemmass, rootmass, gleafmas, bleafmas,
      1                      thliqc,   wiltsm,  fieldsm,    uwind,
      2                       vwind,  lightng,  fcancmx, litrmass,
-     3                    prbfrhuc, rmatctem, extnprob, compete ,
+     3                    prbfrhuc, rmatctem, extnprob, 
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,   thicec,   popdin, lucemcom,
      7                      dofire,  currlat,     iday, fsnow,
 c    in above, out below 
      8                    stemltdt, rootltdt, glfltrdt, blfltrdt,
-     9                    glcaemls, rtcaemls, stcaemls, pvgbioms,
+     9                    glcaemls, rtcaemls, stcaemls,
      a                    blcaemls, ltrcemls, burnfrac, probfire,
      b                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      c                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      d                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
-     e                    burnvegf, bterm,    mterm,    lterm ,
-     f                    pgavltms, pgavscms, soilcmas )
+     e                    burnvegf, bterm,    mterm,    lterm )
+
 c
 c    ------------------------------------------------------------------
 c
@@ -1865,16 +1861,30 @@ c
      &     tltrstem(i,j)+tltrroot(i,j))
           gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
           gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
-c          gavglai (i)=gavglai (i)+fcancmx(i,j)*ailcg(i,j)
           vgbiomas_veg(i,j)=gleafmas(i,j)+
      &     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j) !vegetation biomass for each pft
 1110    continue
 1100  continue
 c
+c     refind barefraction based on updated fcancmx (it could have changed in disturb)
+      if (compete .and. dofire) then
+        do i = il1, il2
+        barefrac_tmp(i)=1.0
+          do j = 1, icc
+            barefrac_tmp(i) = barefrac_tmp(i) - fcancmx(i,j) 
+          end do
+        end do 
+      end if
+
       do 1020 i = il1, il2
-        gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
-        gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
+        gavgltms(i)=gavgltms(i)+( barefrac_tmp(i)*litrmass(i,iccp1))
+        gavgscms(i)=gavgscms(i)+( barefrac_tmp(i)*soilcmas(i,iccp1))
+!        gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
+!        gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
+
 1020  continue
+
+
 c
 c     -----------------------------------------------------------------
 c

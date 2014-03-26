@@ -27,8 +27,8 @@ public :: initpftpars
 
 ! Constants
 
-integer, parameter :: sp = selected_real_kind(6)
-integer, parameter :: dp = selected_real_kind(13)  
+!integer, parameter :: sp = selected_real_kind(6)
+!integer, parameter :: dp = selected_real_kind(13)  
 
 !integer, parameter ::                              &
 !    sp = kind(1.0),                                &
@@ -765,7 +765,7 @@ if (compete) then
 
 ! Parameters used in more than one subroutine:
 
-tolrance = 0.001d0 
+tolrance = 0.00001d0 
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.

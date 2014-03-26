@@ -446,7 +446,7 @@ end subroutine existence
 !-------------------------------------------------------------------------------------------------------------
 
 subroutine competition(  iday,      il1,       il2,      nilg, &
-                          nol2pfts,   nppveg, &
+                          nol2pfts,   nppveg,   dofire, &
                           pftexist,  geremort, intrmort, &
                           gleafmas, bleafmas,  stemmass, rootmass, &
                           litrmass, soilcmas,  grclarea,   lambda, &
@@ -458,6 +458,9 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 !               Canadian Terrestrial Ecosystem Model (CTEM) V1.1
 !                          PFT Competition Subroutine 
 
+!     26  Mar 2014  - Move disturbance adjustments back via a subroutine called
+!     J. Melton       burntobare
+!
 !     20  Feb 2014  - Move adjustments due to disturbance out of here and into
 !     J. Melton       disturbance subroutine.
 !
@@ -487,17 +490,18 @@ use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                         icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
                         tolranc1, tolrance, crop, grass, grass_ind
 
+use disturbance_scheme, only : burntobare
+
+
 implicit none
 
 ! arguments
 
 integer, intent(in) :: iday      ! day of the year
-
 integer, intent(in) :: nilg       ! no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
-
 integer, intent(in) :: il1       ! il1=1
 integer, intent(in) :: il2       ! il2=nilg
-
+logical ,intent(in) :: dofire    ! if true then we have disturbance on.
 real,  dimension(nilg),  intent(in) :: grclarea  ! grid cell area, km^2
 integer, dimension(icc), intent(in) :: sort ! index for correspondence between 9 ctem pfts and
                                             ! size 12 of parameter vectors
@@ -626,17 +630,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
         call xit('competition',-4)
       endif
 
-!     ---------------------------------------------------------------
-!     initial rank/superiority order for simulating competition. since
-!     crops are not in competition their rank doesn't matter and
-!     therefore we only have icc-2 ranks corresponding to the remaining 
-!     pfts. the first icc-4 are tree pfts and the last two are the c3 and c4
-!     grasses.
-      do j = 1,icc-numcrops
-         inirank(j)=j
-      end do 
-
-!     now we do our usual initialization
+!     Do our usual initialization
 
       do 150 j = 1, icc
         do 160 i = il1, il2
@@ -720,6 +714,26 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
           useexist(i,j)=0
 181     continue
 180   continue
+
+!     ---------------------------------------------------------------
+
+!   First, let's adjust the fractions if fire is turned on.
+
+    if (dofire) then
+
+        call burntobare(il1, il2, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
+                      rootmass, gleafmas, bleafmas, litrmass, soilcmas)
+
+     end if
+
+!     initial rank/superiority order for simulating competition. since
+!     crops are not in competition their rank doesn't matter and
+!     therefore we only have icc-2 ranks corresponding to the remaining 
+!     pfts. the first icc-4 are tree pfts and the last two are the c3 and c4
+!     grasses.
+      do j = 1,icc-numcrops
+         inirank(j)=j
+      end do 
 
 !    Estimate colonization and mortality rate for each pft, except for
 !    crops whose fractional coverage is prescribed.

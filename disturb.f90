@@ -1,23 +1,42 @@
-      subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
+module disturbance_scheme
+
+! Central module for all disturbance scheme-related operations
+
+! J. Melton. Mar 26, 2014
+
+implicit none
+
+! Subroutines contained in this module:
+public  :: disturb
+public  :: burntobare
+
+contains
+
+! ------------------------------------------------------------------
+
+subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
                             thliq,   wiltsm,  fieldsm,    uwind, &
                             vwind,  lightng,  fcancmx, litrmass, &    
-                         prbfrhuc, rmatctem, extnprob, compete,  &
+                         prbfrhuc, rmatctem, extnprob, &
                               il1,      il2,     sort, nol2pfts, &
                          grclarea,    thice,   popdin, lucemcom, &
                            dofire,   currlat,   iday,  fsnow,    &
 !     ------------------ inputs above this line ----------------------          
                          stemltdt, rootltdt, glfltrdt, blfltrdt, &
-                         glcaemls, rtcaemls, stcaemls, vgbiomas,  &
+                         glcaemls, rtcaemls, stcaemls, & 
                          blcaemls, ltrcemls, burnfrac, probfire, &
                          emit_co2, emit_co,  emit_ch4, emit_nmhc, &
                          emit_h2,  emit_nox, emit_n2o, emit_pm25, &
                          emit_tpm, emit_tc,  emit_oc,  emit_bc, &
-                         burnvegf, bterm,    mterm,    lterm ,  &
-                         gavgltms, gavgscms, soilcmas )
+                         burnvegf, bterm,    mterm,    lterm ) 
+
 !    g ------------------outputs above this line ----------------------
 !
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                           Disturbance Subroutine
+!
+!     26  Mar 2014  - Split subroutine into two and create module. Move all fcancmx
+!     J. Melton       adjustments into subroutine burntobare and call from competition
 !
 !     20  Feb 2014  - Adapt to deal with competition on. Bring in code that makes
 !     J. Melton       bare fractions from competition module. Moved parameters to
@@ -129,7 +148,7 @@
 !     burnvegf - total per PFT areal fraction burned
 
 use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, seed, crop, &
-                        iccp1, standreplace, tolranc1, bmasthrs_fire, extnmois, &
+                        iccp1, standreplace, tolrance, bmasthrs_fire, extnmois, &
                         lwrlthrs, hgrlthrs, parmlght, parblght, reparea, popdthrshld, & 
                         alpha_fire, f0, maxsprd, frco2glf, frco2blf, &
                         frltrglf, frltrblf, frco2stm, frltrstm, frco2rt, frltrrt, &
@@ -139,19 +158,13 @@ use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, seed, crop, &
 
 implicit none
 
-real, dimension(ilg),     intent(in) :: vgbiomas ! grid averaged vegetation biomass, kg c/m2
-real, dimension(ilg),     intent(in) :: gavgltms ! grid averaged litter mass, kg c/m2
-real, dimension(ilg),     intent(in) :: gavgscms ! grid averaged soil c mass, kg c/m2
-real, dimension(ilg,iccp1), intent(inout) :: soilcmas  ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
-logical, intent(in) :: compete                   ! true if competition is turned on.
+integer :: il1,il2,i,j,k,m,k1,k2,n
 
-      integer :: il1,il2,i,j,k,m,k1,k2,n
+integer :: sort(icc), nol2pfts(ican), iday
 
-      integer :: sort(icc), nol2pfts(ican), iday
+logical :: dofire, fire(ilg)
 
-      logical :: dofire, fire(ilg)
-
-      real :: stemmass(ilg,icc), rootmass(ilg,icc), gleafmas(ilg,icc),      &
+real :: stemmass(ilg,icc), rootmass(ilg,icc), gleafmas(ilg,icc),      &
            bleafmas(ilg,icc),     thliq(ilg,ignd),    wiltsm(ilg,ignd),  &
              fieldsm(ilg,ignd),        uwind(ilg),        vwind(ilg),    &
             fcancmx(ilg,icc),      lightng(ilg),litrmass(ilg,icc+1),     &
@@ -159,7 +172,7 @@ logical, intent(in) :: compete                   ! true if competition is turned
         rmatctem(ilg,icc,ignd),     thice(ilg,ignd),            popdin,  &
                lucemcom(ilg),    tmpprob(ilg),  currlat(ilg), fsnow(ilg) 
 
-      real ::  stemltdt(ilg,icc), rootltdt(ilg,icc), glfltrdt(ilg,icc), &
+real ::  stemltdt(ilg,icc), rootltdt(ilg,icc), glfltrdt(ilg,icc), &
                burnarea(ilg), glcaemls(ilg,icc),    &
            rtcaemls(ilg,icc), stcaemls(ilg,icc), ltrcemls(ilg,icc),    &
            blfltrdt(ilg,icc), blcaemls(ilg,icc),     burnfrac(ilg),    &
@@ -168,7 +181,7 @@ logical, intent(in) :: compete                   ! true if competition is turned
           emit_n2o(ilg,icc), emit_pm25(ilg,icc), emit_tpm(ilg,icc),    &
            emit_tc(ilg,icc),   emit_oc(ilg,icc),  emit_bc(ilg,icc)    
 
-      real ::  biomass(ilg,icc),        bterm(ilg), drgtstrs(ilg,icc), &
+real ::  biomass(ilg,icc),        bterm(ilg), drgtstrs(ilg,icc), &
             betadrgt(ilg,ignd),     avgdryns(ilg),        fcsum(ilg),  &
                avgbmass(ilg),        mterm(ilg),     c2glgtng(ilg),    &
                betalght(ilg),            y(ilg),        lterm(ilg),    &
@@ -179,32 +192,16 @@ logical, intent(in) :: compete                   ! true if competition is turned
             burnveg(ilg,icc),      vegarea(ilg),     grclarea(ilg),    &
                      tot_emit,      tot_emit_dom,     burnvegf(ilg,icc)   
 
-real :: hb_interm, hbratio(ilg), fden_m 
-
+real :: hb_interm, hbratio(ilg)
 real, save, dimension(ilg) :: cumulative_burnedf  ! flag test
 real, save, dimension(ilg,10) :: dryspell  ! flag test
-
 real, dimension(ilg) :: meandry  ! flag test
 real :: ief ! flag test
-
 real, dimension(ilg) :: surface_duff_f  ! fraction of biomass that is in the surface duff (grass brown leaves + litter) 
-
-real, dimension(ilg) :: pvgbioms        ! veg biomass prior to fire
-real, dimension(ilg) :: pgavltms        ! litter mass prior to fire
-real, dimension(ilg) :: pgavscms        ! soil c mass prior to fire
-real, dimension(ilg,icc) :: pftfracb, pftfraca ! pft fractional area before and after fire
 real, dimension(ilg,icc) :: pftareab    ! pft area before fire (km2)
-real, dimension(ilg) :: pbarefra        ! barefraction prior to fire
-real, dimension(ilg) :: barefrac        ! bare fraction
-real :: term                            ! temp variable for change in fraction due to fire
-real, dimension(ilg) :: vgbiomas_temp   ! grid averaged vegetation biomass for internal checks, kg c/m2
-real, dimension(ilg) :: gavgltms_temp   ! grid averaged litter mass for internal checks, kg c/m2
-real, dimension(ilg) :: gavgscms_temp   ! grid averaged soil c mass for internal checks, kg c/m2
 
 real :: ymin, ymax, slope
 real :: soilterm, duffterm              ! temporary variables
-real, dimension(ilg,icc) :: pstemmass   ! grid averaged stemmass prior to disturbance, kg c/m2
-real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to disturbance, kg c/m2
 
 !     ------------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
@@ -244,9 +241,6 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
           emit_oc(i,j) = 0.0
           emit_bc(i,j) = 0.0
           burnvegf(i,j)=0.0
-
-          pstemmass(i,j) = stemmass(i,j)
-          prootmass(i,j) = rootmass(i,j)
 
 150     continue                  
 140   continue
@@ -301,22 +295,12 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
 
 !     initialization ends    
 
-!     Find pft areas before (FLAG: don't presently take stdaln into this subroutine) JM Feb 2014.
-!
-!      if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
+!     Find pft areas before
         do 82 j = 1, icc
           do  83 i = il1, il2
             pftareab(i,j)=fcancmx(i,j)*grclarea(i)  ! area in km^2
 83        continue
 82      continue
-!      else if(stdaln.eq.1)then    ! i.e. when operated at point scale
-!       do 92 j = 1, icc
-!          do 93 i = il1, il2
-!            grclarea=0.01
-!            pftareab(i,j)=0.01*fcancmx(i,j)      ! 0.01 km2 = 1 hectare
-!93        continue
-!92      continue
-!      endif
 
 !     ------------------------------------------------------------------
 
@@ -698,14 +682,13 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
 !     to disturbance is uniformly distributed over the entire area of 
 !     a given pft, and this essentially thins the vegetation biomass. 
 !     If compete is not on, this does not change the vegetation fractions,
-!     if competition is on a fraction will become bare.
+!     if competition is on a fraction will become bare. That is handled in
+!     burntobare subroutine called from competition subroutine.
 
       do 620 j = 1, icc
        n = sort(j)
         do 630 i = il1, il2
          if (fcancmx(i,j) .gt. seed) then
-          if(pftareab(i,j) .gt. zero)then
-
 
 !          Calculate the emissions of trace gases and aerosols based upon how
 !          much plant matter was burnt
@@ -738,12 +721,16 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
            emit_oc(i,j)   = emif_oc(n) * tot_emit_dom
            emit_bc(i,j)   = emif_bc(n) * tot_emit_dom
 
-          endif
          endif
 630     continue
 620   continue
 
-      if (compete .and. dofire) then
+end subroutine disturb
+
+! ------------------------------------------------------------------------------------
+
+subroutine burntobare(il1, il2, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
+                      rootmass, gleafmas, bleafmas, litrmass, soilcmas)
 
 !     Update fractional coverages of pfts to take into account the area
 !     burnt by fire. Adjust all pools with new densities in their new
@@ -752,48 +739,130 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
 !     And while we are doing this also run a small check to make sure
 !     grid averaged quantities do not get messed up.
 
-      do 1200 i = il1, il2
-        pvgbioms(i)=vgbiomas(i)
-        pgavltms(i)=gavgltms(i)
-        pgavscms(i)=gavgscms(i)
+!     J. Melton. Mar 26 2014  - Create subroutine
+
+
+use ctem_params, only : ilg, crop, icc, seed, standreplace, grass, zero, &
+                        iccp1, tolrance
+
+implicit none
+
+integer, intent(in) :: il1
+integer, intent(in) :: il2
+real, dimension(ilg), intent(in) :: pvgbioms     ! initial veg biomass
+real, dimension(ilg), intent(in) :: pgavltms     ! initial litter mass
+real, dimension(ilg), intent(in) :: pgavscms     ! initial soil c mass
+real, dimension(ilg,icc), intent(inout) :: fcancmx  ! initial fractions of the ctem pfts
+real, dimension(ilg,icc), intent(in) :: burnvegf
+real, dimension(ilg,icc), intent(inout) :: gleafmas
+real, dimension(ilg,icc), intent(inout) :: bleafmas
+real, dimension(ilg,icc), intent(inout) :: stemmass
+real, dimension(ilg,icc), intent(inout) :: rootmass
+real, dimension(ilg,icc), intent(inout) :: litrmass
+real, dimension(ilg,icc), intent(inout) :: soilcmas   ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+
+
+integer :: i, j
+real :: pftfraca_old
+real :: term                                 ! temp variable for change in fraction due to fire
+real, dimension(ilg) :: pbarefra             ! bare fraction prior to fire              
+real, dimension(ilg) :: barefrac             ! bare fraction of grid cell
+real, dimension(ilg) :: totcov               ! total land cover fractions (should add to 1)
+real, dimension(ilg) :: vgbiomas_temp        ! grid averaged vegetation biomass for internal checks, kg c/m2
+real, dimension(ilg) :: gavgltms_temp        ! grid averaged litter mass for internal checks, kg c/m2
+real, dimension(ilg) :: gavgscms_temp        ! grid averaged soil c mass for internal checks, kg c/m2
+real, dimension(ilg,icc) :: pftfracb
+real, dimension(ilg,icc) :: pftfraca
+real, dimension(ilg,icc) :: pstemmass        ! grid averaged stemmass prior to disturbance, kg c/m2
+real, dimension(ilg,icc) :: prootmass        ! grid averaged rootmass prior to disturbance, kg c/m2
+
+
+! -----------------------------------------
+
+! Do some initializations
+do 10 i = il1, il2
         pbarefra(i)=1.0
         barefrac(i)=1.0
+        totcov(i)=0.        
         vgbiomas_temp(i)=0.0
         gavgltms_temp(i)=0.0
         gavgscms_temp(i)=0.0
-1200  continue
+        do 15 j = 1, icc
+            pstemmass(i,j) = stemmass(i,j)
+            prootmass(i,j) = rootmass(i,j)
+15 continue
+10  continue
 
-      do 1220 j = 1, icc
+       do 20 i = il1, il2
+          do 25 j = 1, icc
+            if(.not. crop(j))then  
+
+              pbarefra(i)=pbarefra(i)-fcancmx(i,j)
+              pftfracb(i,j)=fcancmx(i,j)
+
+!             Account for disturbance creation of bare ground. This occurs with relatively low
+!             frequency and is PFT dependent. We must adjust the amount of bare ground created
+!             to ensure that we do not increase the density of the remaining vegetation. JM Feb 19 2014.
+
+              pftfraca(i,j) = max(seed,fcancmx(i,j) - burnvegf(i,j) * standreplace(j))
+
+              fcancmx(i,j) = pftfraca(i,j)
+              barefrac(i)=barefrac(i)-fcancmx(i,j)
+              totcov(i) = totcov(i) + fcancmx(i,j)
+
+            else  !crops
+
+              pbarefra(i)=pbarefra(i)-fcancmx(i,j)
+              barefrac(i)=barefrac(i)-fcancmx(i,j)
+              totcov(i) = totcov(i) + fcancmx(i,j)
+
+            endif
+
+25      continue
+
+          totcov(i) = totcov(i) + barefrac(i)
+
+20   continue
+
+!         Check that we have not gone over 1.0 for pft cover. If so, then 
+!         take the needed amount from bare.
+          if (totcov(i) .gt. 1.d0) then
+             barefrac(i) = barefrac(i) - (1.d0 - totcov(i))
+             if (barefrac(i) .lt. 0.) then
+               write(6,*)'barefrac < 0 in disturb'
+               call xit('disturb','-7')
+             end if
+          end if
+
+      do 40 j = 1, icc
        if(.not. crop(j))then  
-        do 1230 i = il1, il2
-
-          pbarefra(i)=pbarefra(i)-fcancmx(i,j)
-
-          pftfracb(i,j)=fcancmx(i,j)
-
-!         Account for disturbance creation of bare ground. This occurs with relatively low
-!         frequency and is PFT dependent. We must adjust the amount of bare ground created
-!         to ensure that we do not increase the density of the remaining vegetation. JM Feb 19 2014.
-
-          pftfraca(i,j) = max(seed,fcancmx(i,j) - burnvegf(i,j) * standreplace(j))
+        do 50 i = il1, il2
 
           ! Test the pftfraca to ensure it does not cause densification of the exisiting biomass  !FLAG TEST
           ! Trees compare the stemmass while grass compares the root mass. 
-          if (burnvegf(i,j) .gt. 0.) then
+          if (pftfraca(i,j) .ne. pftfracb(i,j)) then
             if (.not. grass(j)) then
                if (stemmass(i,j)*pftfracb(i,j)/pftfraca(i,j) .gt. pstemmass(i,j) .and. pstemmass(i,j) .gt. 0.) then
+
+                 pftfraca_old = pftfraca(i,j)
                  pftfraca(i,j) = max(seed,stemmass(i,j) * pftfracb(i,j) / pstemmass(i,j))
+
+                 ! adjust the bare frac to accomodate for the changes 
+                 barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
+
                end if
             else !grasses
                if (rootmass(i,j)*pftfracb(i,j)/pftfraca(i,j) .gt. prootmass(i,j) .and. prootmass(i,j) .gt. 0.) then
+
+                 pftfraca_old = pftfraca(i,j)
                  pftfraca(i,j) = max(seed,rootmass(i,j) * pftfracb(i,j) / prootmass(i,j))
+
+                 ! adjust the bare frac to accomodate for the changes 
+                 barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
+
                end if
             end if
-          end if
 
-          fcancmx(i,j) = pftfraca(i,j)
-          barefrac(i)=barefrac(i)-fcancmx(i,j)
-          if(fcancmx(i,j).gt.zero)then
             term = pftfracb(i,j)/pftfraca(i,j)
             gleafmas(i,j)=gleafmas(i,j)*term
             bleafmas(i,j)=bleafmas(i,j)*term
@@ -801,24 +870,13 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
             rootmass(i,j)=rootmass(i,j)*term
             litrmass(i,j)=litrmass(i,j)*term
             soilcmas(i,j)=soilcmas(i,j)*term
-          else
-            gleafmas(i,j)=0.0
-            bleafmas(i,j)=0.0
-            stemmass(i,j)=0.0
-            rootmass(i,j)=0.0
-            litrmass(i,j)=0.0
-            soilcmas(i,j)=0.0
-          endif
-1230    continue
+
+          end if
+50    continue
        endif
-1220  continue
-      do 1240 i = il1, il2
-       do 1250 j=1,icc
-         if (crop(j)) then
-          pbarefra(i)=pbarefra(i)-fcancmx(i,j)
-          barefrac(i)=barefrac(i)-fcancmx(i,j)
-         endif
-1250   continue 
+40  continue
+
+      do 100 i = il1, il2
         if(barefrac(i).gt.zero)then
           term=pbarefra(i)/barefrac(i)
           litrmass(i,iccp1) = litrmass(i,iccp1)*term
@@ -827,27 +885,27 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
           litrmass(i,iccp1) = 0.0
           soilcmas(i,iccp1) = 0.0
         endif
-1240  continue
+100  continue
 
 !     check if total biomass is same before and after adjusting fractions
 
-      do 1260 j = 1, icc
-        do 1270 i = il1, il2
+      do 200 j = 1, icc
+        do 250 i = il1, il2
           vgbiomas_temp(i)=vgbiomas_temp(i)+fcancmx(i,j)*(gleafmas(i,j)+&
           bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
           gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i,j)*litrmass(i,j)
           gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i,j)*soilcmas(i,j)
-1270    continue
-1260  continue
+250    continue
+200  continue
 
-      do 1280 i = il1, il2
+      do 300 i = il1, il2
         gavgltms_temp(i)=gavgltms_temp(i)+ barefrac(i)*litrmass(i,iccp1)
         gavgscms_temp(i)=gavgscms_temp(i)+ barefrac(i)*soilcmas(i,iccp1)
-1280  continue
+300  continue
 
-      do 1300 i = il1, il2
+      do 400 i = il1, il2
 
-        if(abs(vgbiomas_temp(i)-pvgbioms(i)).gt.tolranc1)then
+        if(abs(vgbiomas_temp(i)-pvgbioms(i)).gt.tolrance)then
           write(6,*)'grid averaged biomass densities do not balance'
           write(6,*)'after fractional coverages are changed to take'
           write(6,*)'into account burn area'
@@ -856,7 +914,7 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
           call xit('disturb',-7)
         endif
 
-        if(abs(gavgltms_temp(i)-pgavltms(i)).gt.tolranc1)then
+        if(abs(gavgltms_temp(i)-pgavltms(i)).gt.tolrance)then
           write(6,*)'grid averaged biomass densities do not balance'
           write(6,*)'after fractional coverages are changed to take'
           write(6,*)'into account burn area'
@@ -865,7 +923,7 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
           call xit('disturb',-8)
         endif
 
-        if(abs(gavgscms_temp(i)-pgavscms(i)).gt.tolranc1)then
+        if(abs(gavgscms_temp(i)-pgavscms(i)).gt.tolrance)then
           write(6,*)'grid averaged biomass densities do not balance'
           write(6,*)'after fractional coverages are changed to take'
           write(6,*)'into account burn area'
@@ -874,10 +932,11 @@ real, dimension(ilg,icc) :: prootmass   ! grid averaged rootmass prior to distur
           call xit('disturb',-9)
         endif
 
-1300  continue
-
-      end if  !if compete and dofire
+400  continue
 
       return
-      end
+
+end subroutine burntobare
+
+end module
 
