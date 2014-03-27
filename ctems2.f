@@ -33,7 +33,7 @@
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegfrow,
+     &      soilcresvegrow, burnvegfrow, pstemmassrow, prootmassrow,
 c --
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,   fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -71,7 +71,7 @@ c --
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat, burnvegfgat )
+     &      soilcresveggat, burnvegfgat, pstemmassgat, prootmassgat )
 c
 c
 C              Canadian Terrestrial Ecosystem Model (CTEM)
@@ -126,6 +126,7 @@ c
      1      tbaraccrow_m(nlat,nmos,ignd),
      2      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc),
      3      stemmassrow(nlat,nmos,icc), rootmassrow(nlat,nmos,icc),
+     &      pstemmassrow(nlat,nmos,icc), prootmassrow(nlat,nmos,icc),
      4      litrmassrow(nlat,nmos,iccp1),gleafmasrow(nlat,nmos,icc),
      5      bleafmasrow(nlat,nmos,icc), soilcmasrow(nlat,nmos,iccp1),
      6      ailcbrow(nlat,nmos,icc),    flhrlossrow(nlat,nmos,icc)
@@ -217,6 +218,7 @@ c
      1      tbaraccgat_m(ilg,ignd),
      2      pfcancmxgat(ilg,icc),       nfcancmxgat(ilg,icc),
      3      stemmassgat(ilg,icc),       rootmassgat(ilg,icc),  
+     &      pstemmassgat(ilg,icc),      prootmassgat(ilg,icc),  
      4      litrmassgat(ilg,iccp1),     gleafmasgat(ilg,icc),
      5      bleafmasgat(ilg,icc),       soilcmasgat(ilg,iccp1),
      6      ailcbgat(ilg,icc),          flhrlossgat(ilg,icc)
@@ -342,6 +344,8 @@ c
           fcancmxrow(ilmos(k),jlmos(k),l)   = fcancmxgat(k,l)
           stemmassrow(ilmos(k),jlmos(k),l)  = stemmassgat(k,l)
           rootmassrow(ilmos(k),jlmos(k),l)  = rootmassgat(k,l)
+          pstemmassrow(ilmos(k),jlmos(k),l)  = pstemmassgat(k,l)
+          prootmassrow(ilmos(k),jlmos(k),l)  = prootmassgat(k,l)
           gleafmasrow(ilmos(k),jlmos(k),l)  = gleafmasgat(k,l)
           bleafmasrow(ilmos(k),jlmos(k),l)  = bleafmasgat(k,l)
           ailcbrow(ilmos(k),jlmos(k),l)     = ailcbgat(k,l)   

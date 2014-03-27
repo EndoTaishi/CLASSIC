@@ -13,7 +13,8 @@
      4                           annsrpls,  annpcp,anpotevp,
      &                           dry_season_length,
      5                           lucemcom,  lucltrin, lucsocin,
-     6                           pfcancmx,  nfcancmx,
+     6                           pfcancmx,  nfcancmx, pstemmass,
+     7                           prootmass,
 c    ------------------- inputs above this line ---------------------
      a                             netradrow,
 c    ------------------- intermediate and to save above this line ---
@@ -35,7 +36,8 @@ c    ------------------- intermediate and to save above this line ---
      p                          annsrpls_cmp,  annpcp_cmp,anpotevp_cmp,
      &                         dry_season_length_cmp,
      q                         lucemcom_cmp, lucltrin_cmp, lucsocin_cmp,
-     r                           pfcancmx_cmp,  nfcancmx_cmp)      
+     r                           pfcancmx_cmp,  nfcancmx_cmp,
+     s                        pstemmass_cmp,  prootmass_cmp )      
 c    ------------------- outputs above this line----------------------   
 c
 c
@@ -225,6 +227,9 @@ c     todfrac_cmp - max. fractional coverage of ctem's 9 pfts by the end
 c                   of the dayin each latitudinal grid cell, for use by land use subroutine
 c     pfcancmx_cmp- previous year's fractional coverages of pfts in each latitudinal grid cell
 c     nfcancmx_cmp- next year's fractional coverages of pfts in each latitudinal grid cell
+c     pstemmass_cmp - stem mass from previous timestep, is value before fire. used by burntobare subroutine
+c     prootmass_cmp - root mass from previous timestep, is value before fire. used by burntobare subroutine
+
 c
       use ctem_params,        only : nlat,nmos,icc, ilg, ican,iccp1
 
@@ -248,7 +253,8 @@ c
      1      vgbiomas(ilg),    gavgltms(ilg),
      2      gavgscms(ilg),
      3      lucemcom(ilg),  lucltrin(ilg), lucsocin(ilg),
-     4      pfcancmx(ilg,icc), nfcancmx(ilg,icc)
+     4      pfcancmx(ilg,icc), nfcancmx(ilg,icc),
+     5      pstemmass(ilg,icc), prootmass(ilg,icc)
 c
       logical pftexist(ilg,icc)
 c
@@ -279,7 +285,8 @@ c
      2      gavgltmsrow(nlat,nmos),      gavgscmsrow(nlat,nmos),
      3      lucemcomrow(nlat,nmos),      lucltrinrow(nlat,nmos),
      4      lucsocinrow(nlat,nmos),
-     5      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc)
+     5      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc),
+     6      pstemmassrow(nlat,nmos,icc), prootmassrow(nlat,nmos,icc)
 c
       logical pftexistrow(nlat,nmos,icc)
 c
@@ -317,7 +324,8 @@ c
      9      vgbiomas_cmp(nlat),    
      1      gavgltms_cmp(nlat),      gavgscms_cmp(nlat),
      2      lucemcom_cmp(nlat),  lucltrin_cmp(nlat), lucsocin_cmp(nlat),
-     3      pfcancmx_cmp(nlat,icc), nfcancmx_cmp(nlat,icc)
+     3      pfcancmx_cmp(nlat,icc), nfcancmx_cmp(nlat,icc),
+     4      pstemmass_cmp(nlat,icc), prootmass_cmp(nlat,icc)
       logical pftexist_cmp(nlat,icc)
       real  ta_cmp(nlat),       precip_cmp(nlat),  netrad_cmp(nlat), 
      1      tcurm_cmp(nlat),    srpcuryr_cmp(nlat),dftcuryr_cmp(nlat),
@@ -364,6 +372,8 @@ c
          todfracrow(i,m,l) = 0.0
          pfcancmxrow(i,m,l)= 0.0
          nfcancmxrow(i,m,l)= 0.0
+         pstemmassrow(i,m,l)= 0.0
+         prootmassrow(i,m,l)= 0.0
          bmasvegrow(i,m,l) = 0.0
          burnvegfrow(i,m,l) = 0.0
          add2allorow(i,m,l)= 0.0
@@ -432,6 +442,8 @@ c
         todfrac_cmp(i,l) = 0.0
         pfcancmx_cmp(i,l)= 0.0
         nfcancmx_cmp(i,l)= 0.0
+        pstemmass_cmp(i,l)= 0.0
+        prootmass_cmp(i,l)= 0.0
         bmasveg_cmp(i,l) = 0.0
         burnvegf_cmp(i,l) = 0.0
         add2allo_cmp(i,l)= 0.0
@@ -505,6 +517,8 @@ c
          todfracrow(ilmos(k),jlmos(k),l)  = todfrac(k,l)
          pfcancmxrow(ilmos(k),jlmos(k),l) = pfcancmx(k,l)
          nfcancmxrow(ilmos(k),jlmos(k),l) = nfcancmx(k,l)
+         pstemmassrow(ilmos(k),jlmos(k),l) = pstemmass(k,l)
+         prootmassrow(ilmos(k),jlmos(k),l) = prootmass(k,l)
          bmasvegrow(ilmos(k),jlmos(k),l)  = bmasveg(k,l)
          burnvegfrow(ilmos(k),jlmos(k),l)  = burnvegf(k,l)
          add2allorow(ilmos(k),jlmos(k),l) = add2allo(k,l)
@@ -584,6 +598,8 @@ c
          todfrac_cmp(i,l) = todfracrow(i,m,l)
          pfcancmx_cmp(i,l)= pfcancmxrow(i,m,l)
          nfcancmx_cmp(i,l)= nfcancmxrow(i,m,l)
+         pstemmass_cmp(i,l)= pstemmassrow(i,m,l)
+         prootmass_cmp(i,l)= prootmassrow(i,m,l)
          bmasveg_cmp(i,l) = bmasvegrow(i,m,l)
          burnvegf_cmp(i,l) = burnvegfrow(i,m,l)
          add2allo_cmp(i,l)= add2allorow(i,m,l)

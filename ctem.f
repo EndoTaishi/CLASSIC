@@ -30,7 +30,7 @@ c    ------- following 5 lines are competition related variables ----
      o                    pftexist, twarmm,    tcoldm,       gdd5,
      1                     aridity, srplsmon, defctmon,  anndefct,
      2                    annsrpls,  annpcp, anpotevp,dry_season_length,
-     3                    burnvegf,
+     3                    burnvegf, pstemmass, prootmass,
 c
 c    -------------- inputs updated by ctem are above this line ------
 c
@@ -269,7 +269,8 @@ c     nppveg   - npp for individual pfts,  u-mol co2/m2.sec
 c     grclarea - area of the grid cell, km^2
 c     dstcemls3- carbon emission losses due to disturbance (fire at present)
 c                from litter pool
-
+c     pstemmass - stem mass from previous timestep, is value before fire. used by burntobare subroutine
+c     prootmass - root mass from previous timestep, is value before fire. used by burntobare subroutine
 c     twarmm    - temperature of the warmest month (c)
 c     tcoldm    - temperature of the coldest month (c)
 c     gdd5      - growing degree days above 5 c
@@ -374,7 +375,8 @@ c
      9     vgbiomas_cmp(nlat),      grclarea_cmp(nlat),
      1     gavgltms_cmp(nlat),      gavgscms_cmp(nlat),
      2     yesfrac_mos(nlat,icc),   todfrac_cmp(nlat),
-     3     pfcancmx_cmp(nlat,icc),  nfcancmx_cmp(nlat,icc)
+     3     pfcancmx_cmp(nlat,icc),  nfcancmx_cmp(nlat,icc),
+     4     pstemmass_cmp(nlat,icc), prootmass_cmp(nlat,icc)
 c
       integer surmncur_cmp(nlat), defmncur_cmp(nlat)
 
@@ -404,7 +406,8 @@ c
      7       veghght(ilg,icc),   rootdpth(ilg,icc),   gppcsveg(ilg,icc),
      8      gppcgveg(ilg,icc),   pfcancmx(ilg,icc),    fcanmx(ilg,ican),
      9      nfcancmx(ilg,icc),      alvisc(ilg,ican),  alnirc(ilg,ican),
-     a           gavglai(ilg),    yesfrac_comp(ilg,icc)
+     a           gavglai(ilg),    yesfrac_comp(ilg,icc),
+     b     pstemmass(ilg,icc),     prootmass(ilg,icc)
 c
       real   npp(ilg),      nep(ilg),  hetrores(ilg),      autores(ilg),
      1  soilresp(ilg),       rm(ilg),        rg(ilg),          nbp(ilg),
@@ -653,7 +656,7 @@ c
      m                         anndefct, annsrpls,   annpcp, anpotevp,
      &                      dry_season_length,
      &                         lucemcom, lucltrin, lucsocin, pfcancmx,
-     &                         nfcancmx, 
+     &                         nfcancmx, pstemmass, prootmass,
 c    ------------------- inputs above this line ---------------------
      n                        netradrow,
 c    ------------------- intermediate and saved above this line -----
@@ -675,7 +678,8 @@ c    ------------------- intermediate and saved above this line -----
      4                     annsrpls_cmp,    annpcp_cmp,  anpotevp_cmp,
      &                     dry_season_length_cmp,
      5                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,
-     6                     pfcancmx_cmp,   nfcancmx_cmp )
+     6                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,
+     7                     prootmass_cmp )
 c    ------------------- outputs above this line --------------------
 c   
         if (compete) then
@@ -712,12 +716,12 @@ c
      2           pftexist_cmp, geremort_cmp, intrmort_cmp,
      3           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
      4           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,
-     5            bmasveg_cmp,  burnvegf_cmp,         sort,
-c
+     5            bmasveg_cmp,  burnvegf_cmp,       sort, pstemmass_cmp,
+     a            prootmass_cmp,    
 c    ------------------- inputs above this line -------------------
 c
      6               fare_cmp,   fcanmx_cmp, vgbiomas_cmp, gavgltms_cmp,
-     7           gavgscms_cmp,
+     7           gavgscms_cmp,   
 c
 c    ------------------- updates above this line ------------------
 c
@@ -791,7 +795,8 @@ c
      q                       annsrpls_cmp,   annpcp_cmp, anpotevp_cmp,
      &                     dry_season_length_cmp,
      &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,
-     &                     pfcancmx_cmp,   nfcancmx_cmp,
+     &                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,
+     &                      prootmass_cmp,
 c
 c    ------------------- inputs above this line ---------------------
 c
@@ -813,7 +818,7 @@ c
      4                        annsrpls,   annpcp, anpotevp,
      &                         dry_season_length,
      5                         lucemcom, lucltrin, lucsocin, pfcancmx,
-     6                         nfcancmx )
+     6                         nfcancmx, pstemmass, prootmass )
 c    ------------------- updates above this line --------------------
 c
       else !composite
@@ -850,7 +855,8 @@ c
      2                    pftexist, geremort, intrmort,
      3                    gleafmas, bleafmas, stemmass, rootmass,
      4                    litrmass, soilcmas, grclarea,   lambda,
-     5                    bmasveg,  burnvegf, sort,
+     5                    bmasveg,  burnvegf, sort,  pstemmass, 
+     &                    prootmass,
 c
 c    ------------------- inputs above this line -------------------
 c
@@ -1370,20 +1376,19 @@ c
         soilrsvg(i,iccp1)=ltresveg(i,iccp1)+scresveg(i,iccp1)
 460   continue
 c
-! MOVED TO ABOVE BALCAR. JM Mar 25 2014
-!c     find grid averaged humification and soil respiration rates
-!c
-!      do 470 j = 1,icc
-!        do 480 i = il1, il2
-!          soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)
-!          humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j)
-!480     continue
-!470   continue
-!c
-!      do 490 i = il1, il2
-!        soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
-!        humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
-!490   continue
+c     find grid averaged humification and soil respiration rates
+c
+      do 470 j = 1,icc
+        do 480 i = il1, il2
+          soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)
+          humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j)
+480     continue
+470   continue
+c
+      do 490 i = il1, il2
+        soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
+        humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
+490   continue
 c
 c     heterotrophic respiration part ends
 c
@@ -1775,7 +1780,8 @@ c    in above, out below
      b                    emit_co2, emit_co,  emit_ch4, emit_nmhc,
      c                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      d                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
-     e                    burnvegf, bterm,    mterm,    lterm )
+     e                    burnvegf, bterm,    mterm,    lterm,
+     f                    pstemmass, prootmass )  
 
 c
 c    ------------------------------------------------------------------
@@ -1866,25 +1872,11 @@ c
 1110    continue
 1100  continue
 c
-c     refind barefraction based on updated fcancmx (it could have changed in disturb)
-      if (compete .and. dofire) then
-        do i = il1, il2
-        barefrac_tmp(i)=1.0
-          do j = 1, icc
-            barefrac_tmp(i) = barefrac_tmp(i) - fcancmx(i,j) 
-          end do
-        end do 
-      end if
-
       do 1020 i = il1, il2
-        gavgltms(i)=gavgltms(i)+( barefrac_tmp(i)*litrmass(i,iccp1))
-        gavgscms(i)=gavgscms(i)+( barefrac_tmp(i)*soilcmas(i,iccp1))
-!        gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
-!        gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
+        gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
+        gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
 
 1020  continue
-
-
 c
 c     -----------------------------------------------------------------
 c

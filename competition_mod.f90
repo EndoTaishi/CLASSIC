@@ -450,7 +450,8 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
                           pftexist,  geremort, intrmort, &
                           gleafmas, bleafmas,  stemmass, rootmass, &
                           litrmass, soilcmas,  grclarea,   lambda, &
-                           bmasveg,  burnvegf,     sort, &
+                           bmasveg,  burnvegf,     sort, pstemmass, &
+                           prootmass, &
                            fcancmx,   fcanmx,  vgbiomas, gavgltms, &
                           gavgscms, &
                           add2allo,        colrate,        mortrate) 
@@ -531,6 +532,8 @@ real, dimension(nilg,icc), intent(out) :: add2allo   ! npp kg c/m2.day that is u
                                                     ! the allocation part of the model.
 real, dimension(nilg,icc), intent(out) :: colrate    ! colonization rate (1/day)    
 real, dimension(nilg,icc), intent(out) :: mortrate   ! mortality rate
+real, dimension(nilg,icc), intent(in) :: pstemmass   ! stem mass from previous timestep, is value before fire. used by burntobare subroutine
+real, dimension(nilg,icc), intent(in) :: prootmass   ! root mass from previous timestep, is value before fire. used by burntobare subroutine
 
 ! local variables
 
@@ -722,7 +725,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
     if (dofire) then
 
         call burntobare(il1, il2, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
-                      rootmass, gleafmas, bleafmas, litrmass, soilcmas)
+                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, prootmass)
 
      end if
 
@@ -1267,7 +1270,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     must all add up to the same value as before competition.
 
       do 830 j = 1, icc
-       if (.not. crop(j)) then  !flag! this shouldn't check for crops right? jm
+       if (.not. crop(j)) then  
         do 831 i = il1, il2
 
           biomasvg(i,j)=fcancmx(i,j)*grclarea(i)*1.0e06* &
@@ -1317,7 +1320,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
             write(6,*)'pdeadmas(',i,',',j,')=',pdeadmas(i,j)
             write(6,*)'nppvegar(',i,',',j,')=',nppvegar(i,j)
             write(6,*)' '
-            write(6,*)'biomasvg(',i,',',j,')=',biomasvg(i,j)
+            write(6,*)' biomasvg(',i,',',j,')=',biomasvg(i,j)
             write(6,*)'deadmass(',i,',',j,')=',deadmass(i,j)
             write(6,*)'putaside(',i,',',j,')=',putaside(i,j)
             write(6,*)' '

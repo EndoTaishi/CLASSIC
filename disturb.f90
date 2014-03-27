@@ -28,9 +28,9 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
                          emit_co2, emit_co,  emit_ch4, emit_nmhc, &
                          emit_h2,  emit_nox, emit_n2o, emit_pm25, &
                          emit_tpm, emit_tc,  emit_oc,  emit_bc, &
-                         burnvegf, bterm,    mterm,    lterm ) 
-
-!    g ------------------outputs above this line ----------------------
+                         burnvegf, bterm,    mterm,    lterm, &
+                         pstemmass, prootmass )  
+!     ------------------outputs above this line ----------------------
 !
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                           Disturbance Subroutine
@@ -154,9 +154,13 @@ use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, seed, crop, &
                         frltrglf, frltrblf, frco2stm, frltrstm, frco2rt, frltrrt, &
                         frltrbrn, emif_co2, emif_co, emif_ch4, emif_nmhc, emif_h2, &
                         emif_nox, emif_n2o, emif_pm25, emif_tpm, emif_tc, emif_oc, emif_bc, &
-                        duff_dry, grass   
+                        duff_dry, grass
 
 implicit none
+
+
+real, dimension(ilg,icc), intent(inout) :: pstemmass 
+real, dimension(ilg,icc), intent(inout) :: prootmass
 
 integer :: il1,il2,i,j,k,m,k1,k2,n
 
@@ -648,6 +652,11 @@ real :: soilterm, duffterm              ! temporary variables
          if (fcancmx(i,j) .gt. seed) then
           if(pftareab(i,j) .gt. zero)then
 
+            !Set aside these pre-disturbance stem and root masses for use
+            !in burntobare subroutine.
+            pstemmass(i,j)=stemmass(i,j)
+            prootmass(i,j)=rootmass(i,j)
+
             glfltrdt(i,j)= frltrglf(n) *gleafmas(i,j) *(burnveg(i,j) /pftareab(i,j)) 
             blfltrdt(i,j)= frltrblf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
             stemltdt(i,j)= frltrstm(n) *stemmass(i,j) *(burnveg(i,j) /pftareab(i,j))
@@ -730,7 +739,7 @@ end subroutine disturb
 ! ------------------------------------------------------------------------------------
 
 subroutine burntobare(il1, il2, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
-                      rootmass, gleafmas, bleafmas, litrmass, soilcmas)
+                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, prootmass)
 
 !     Update fractional coverages of pfts to take into account the area
 !     burnt by fire. Adjust all pools with new densities in their new
@@ -760,6 +769,8 @@ real, dimension(ilg,icc), intent(inout) :: stemmass
 real, dimension(ilg,icc), intent(inout) :: rootmass
 real, dimension(ilg,icc), intent(inout) :: litrmass
 real, dimension(ilg,icc), intent(inout) :: soilcmas   ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(ilg,icc), intent(in)    :: pstemmass  ! grid averaged stemmass prior to disturbance, kg c/m2
+real, dimension(ilg,icc), intent(in)    :: prootmass  ! grid averaged rootmass prior to disturbance, kg c/m2
 
 
 integer :: i, j
@@ -767,15 +778,11 @@ real :: pftfraca_old
 real :: term                                 ! temp variable for change in fraction due to fire
 real, dimension(ilg) :: pbarefra             ! bare fraction prior to fire              
 real, dimension(ilg) :: barefrac             ! bare fraction of grid cell
-real, dimension(ilg) :: totcov               ! total land cover fractions (should add to 1)
 real, dimension(ilg) :: vgbiomas_temp        ! grid averaged vegetation biomass for internal checks, kg c/m2
 real, dimension(ilg) :: gavgltms_temp        ! grid averaged litter mass for internal checks, kg c/m2
 real, dimension(ilg) :: gavgscms_temp        ! grid averaged soil c mass for internal checks, kg c/m2
 real, dimension(ilg,icc) :: pftfracb
 real, dimension(ilg,icc) :: pftfraca
-real, dimension(ilg,icc) :: pstemmass        ! grid averaged stemmass prior to disturbance, kg c/m2
-real, dimension(ilg,icc) :: prootmass        ! grid averaged rootmass prior to disturbance, kg c/m2
-
 
 ! -----------------------------------------
 
@@ -783,15 +790,14 @@ real, dimension(ilg,icc) :: prootmass        ! grid averaged rootmass prior to d
 do 10 i = il1, il2
         pbarefra(i)=1.0
         barefrac(i)=1.0
-        totcov(i)=0.        
         vgbiomas_temp(i)=0.0
         gavgltms_temp(i)=0.0
         gavgscms_temp(i)=0.0
-        do 15 j = 1, icc
-            pstemmass(i,j) = stemmass(i,j)
-            prootmass(i,j) = rootmass(i,j)
-15 continue
 10  continue
+
+!  Account for disturbance creation of bare ground. This occurs with relatively low
+!  frequency and is PFT dependent. We must adjust the amount of bare ground created
+!  to ensure that we do not increase the density of the remaining vegetation. 
 
        do 20 i = il1, il2
           do 25 j = 1, icc
@@ -800,49 +806,34 @@ do 10 i = il1, il2
               pbarefra(i)=pbarefra(i)-fcancmx(i,j)
               pftfracb(i,j)=fcancmx(i,j)
 
-!             Account for disturbance creation of bare ground. This occurs with relatively low
-!             frequency and is PFT dependent. We must adjust the amount of bare ground created
-!             to ensure that we do not increase the density of the remaining vegetation. JM Feb 19 2014.
-
               pftfraca(i,j) = max(seed,fcancmx(i,j) - burnvegf(i,j) * standreplace(j))
 
               fcancmx(i,j) = pftfraca(i,j)
+
               barefrac(i)=barefrac(i)-fcancmx(i,j)
-              totcov(i) = totcov(i) + fcancmx(i,j)
 
             else  !crops
 
               pbarefra(i)=pbarefra(i)-fcancmx(i,j)
               barefrac(i)=barefrac(i)-fcancmx(i,j)
-              totcov(i) = totcov(i) + fcancmx(i,j)
 
             endif
 
 25      continue
-
-          totcov(i) = totcov(i) + barefrac(i)
-
 20   continue
 
-!         Check that we have not gone over 1.0 for pft cover. If so, then 
-!         take the needed amount from bare.
-          if (totcov(i) .gt. 1.d0) then
-             barefrac(i) = barefrac(i) - (1.d0 - totcov(i))
-             if (barefrac(i) .lt. 0.) then
-               write(6,*)'barefrac < 0 in disturb'
-               call xit('disturb','-7')
-             end if
-          end if
-
-      do 40 j = 1, icc
-       if(.not. crop(j))then  
-        do 50 i = il1, il2
-
+      do 40 i = il1, il2
+       do 50 j = 1, icc
+        if(.not. crop(j))then 
+ 
           ! Test the pftfraca to ensure it does not cause densification of the exisiting biomass  !FLAG TEST
           ! Trees compare the stemmass while grass compares the root mass. 
           if (pftfraca(i,j) .ne. pftfracb(i,j)) then
+
+            term = pftfracb(i,j)/pftfraca(i,j)
+
             if (.not. grass(j)) then
-               if (stemmass(i,j)*pftfracb(i,j)/pftfraca(i,j) .gt. pstemmass(i,j) .and. pstemmass(i,j) .gt. 0.) then
+               if (stemmass(i,j)*term .gt. pstemmass(i,j) .and. pstemmass(i,j) .gt. 0.) then
 
                  pftfraca_old = pftfraca(i,j)
                  pftfraca(i,j) = max(seed,stemmass(i,j) * pftfracb(i,j) / pstemmass(i,j))
@@ -852,7 +843,7 @@ do 10 i = il1, il2
 
                end if
             else !grasses
-               if (rootmass(i,j)*pftfracb(i,j)/pftfraca(i,j) .gt. prootmass(i,j) .and. prootmass(i,j) .gt. 0.) then
+               if (rootmass(i,j)*term .gt. prootmass(i,j) .and. prootmass(i,j) .gt. 0.) then
 
                  pftfraca_old = pftfraca(i,j)
                  pftfraca(i,j) = max(seed,rootmass(i,j) * pftfracb(i,j) / prootmass(i,j))
@@ -871,9 +862,14 @@ do 10 i = il1, il2
             litrmass(i,j)=litrmass(i,j)*term
             soilcmas(i,j)=soilcmas(i,j)*term
 
+        ! else  
+
+        !    no changes to the pools so don't adjust
+ 
           end if
-50    continue
-       endif
+
+        endif  !crop
+50     continue
 40  continue
 
       do 100 i = il1, il2
@@ -887,7 +883,8 @@ do 10 i = il1, il2
         endif
 100  continue
 
-!     check if total biomass is same before and after adjusting fractions
+!     check if total grid average biomass density is 
+!           same before and after adjusting fractions
 
       do 200 j = 1, icc
         do 250 i = il1, il2

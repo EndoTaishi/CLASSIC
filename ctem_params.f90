@@ -27,13 +27,6 @@ public :: initpftpars
 
 ! Constants
 
-!integer, parameter :: sp = selected_real_kind(6)
-!integer, parameter :: dp = selected_real_kind(13)  
-
-!integer, parameter ::                              &
-!    sp = kind(1.0),                                &
-!    dp = selected_real_kind(2*precision(1.0_sp))
-
 real, parameter :: zero = 1.0e-20
 real, parameter :: abszero=1e-12 ! this one is for runclassctem.f and allocate.f 
 
@@ -301,9 +294,8 @@ real, dimension(kk) :: stemlife         ! Stemlife, turnover time scale for stem
 real, dimension(kk) :: rootlife         ! Rootlife, turnover time scale for root for different pfts
 real :: stmhrspn                        ! Stem harvest span. same as crop harvest span. period in days over which crops are harvested. 
 
-contains
-
 ! ----=====-------=========-----------========---------=========--------========-----------==========---------=======---========**
+contains
 
 subroutine initpftpars(compete)
 
@@ -324,8 +316,6 @@ logical, intent(in) :: compete   !true if the competition scheme is on.
 
 ! The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
 ! first, then the remaining variables are assigned different variables if competition is on, or not.
-
-
 
 !   ********************************************************************************************
 !   =============                                                     ==========================
@@ -765,7 +755,7 @@ if (compete) then
 
 ! Parameters used in more than one subroutine:
 
-tolrance = 0.00001d0 
+tolrance = 0.0001d0 
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.

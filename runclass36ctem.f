@@ -495,7 +495,9 @@ c
      3     gleafmasrow(nlat,nmos,icc),  gleafmasgat(ilg,icc),
      4     bleafmasrow(nlat,nmos,icc),  bleafmasgat(ilg,icc),
      5     stemmassrow(nlat,nmos,icc),  stemmassgat(ilg,icc),
-     3     rootmassrow(nlat,nmos,icc),  rootmassgat(ilg,icc)
+     6     rootmassrow(nlat,nmos,icc),  rootmassgat(ilg,icc),
+     7     pstemmassrow(nlat,nmos,icc), pstemmassgat(ilg,icc),
+     8     prootmassrow(nlat,nmos,icc), prootmassgat(ilg,icc)
 c
       real fcancmxrow(nlat,nmos,icc),  fcancmxgat(ilg,icc),
      1     gavglairow(nlat,nmos),      gavglaigat(ilg),
@@ -1832,6 +1834,16 @@ c
           read(11,*) (bleafmasrow(i,m,j),j=1,icc)
           read(11,*) (stemmassrow(i,m,j),j=1,icc)
           read(11,*) (rootmassrow(i,m,j),j=1,icc)
+
+c           If fire and competition are on, save the stemmass and rootmass for
+c           use in burntobare subroutine on the first timestep.
+            if (dofire .and. compete) then
+             do j =1,icc
+              pstemmassrow(i,m,j)=stemmassrow(i,m,j)
+              prootmassrow(i,m,j)=rootmassrow(i,m,j)    
+             end do           
+            end if
+
           read(11,*) (litrmassrow(i,m,j),j=1,iccp1)
           read(11,*) (soilcmasrow(i,m,j),j=1,iccp1)
           read(11,*) (lfstatusrow(i,m,j),j=1,icc)
@@ -2933,7 +2945,7 @@ C
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat, burnvegfgat,
+     &      soilcresveggat, burnvegfgat, pstemmassgat, prootmassgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,      fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -2970,7 +2982,7 @@ c
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegfrow )
+     &      soilcresvegrow, burnvegfrow, pstemmassrow, prootmassrow)
 c
 C===================== CTEM ============================================ /
 C
@@ -3318,7 +3330,7 @@ c    -------------- inputs used by ctem are above this line ---------
      &            pftexistgat,      twarmm,       tcoldm,        gdd5,
      1                aridity,    srplsmon,     defctmon,    anndefct,
      2               annsrpls,      annpcp,  anpotevp,dry_season_length,
-     &              burnvegfgat,   
+     &              burnvegfgat, pstemmassgat, prootmassgat,  
 c    -------------- inputs updated by ctem are above this line ------
      k                 nppgat,      nepgat, hetroresgat, autoresgat,
      l            soilcrespgat,       rmgat,       rggat,      nbpgat,
@@ -3525,7 +3537,7 @@ C
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      btermrow,     ltermrow,   mtermrow,  
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegfrow,
+     &      soilcresvegrow, burnvegfrow, pstemmassrow, prootmassrow,
 c    ----
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -3563,7 +3575,7 @@ c    ----
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat, burnvegfgat )
+     &      soilcresveggat, burnvegfgat, pstemmassgat, prootmassgat )
 c
 C===================== CTEM ============================================ /
 C
