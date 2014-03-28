@@ -33,7 +33,7 @@
      v      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat,burnvegfgat, pstemmassgat, prootmassgat,
+     &      soilcresveggat,burnvegfgat, pstemmassgat, pgleafmassgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -70,7 +70,7 @@ c
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      btermrow,     ltermrow,   mtermrow, 
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegfrow, pstemmassrow,prootmassrow )
+     &      soilcresvegrow, burnvegfrow, pstemmassrow,pgleafmassrow )
 c
 c              Canadian Terrestrial Ecosystem Model (CTEM)
 c
@@ -123,7 +123,7 @@ c
      1      tbaraccgat_m(ilg,ignd),
      2      pfcancmxgat(ilg,icc),     nfcancmxgat(ilg,icc),
      3      stemmassgat(ilg,icc),     rootmassgat(ilg,icc),
-     a      pstemmassgat(ilg,icc),    prootmassgat(ilg,icc),  
+     a      pstemmassgat(ilg,icc),    pgleafmassgat(ilg,icc),  
      4      litrmassgat(ilg,icc+1),   gleafmasgat(ilg,icc),
      5      bleafmasgat(ilg,icc),     soilcmasgat(ilg,icc+1),
      6      ailcbgat(ilg,icc),        flhrlossgat(ilg,icc)
@@ -213,7 +213,7 @@ c
      1      tbaraccrow_m(nlat,nmos,ignd),
      2      pfcancmxrow(nlat,nmos,icc),   nfcancmxrow(nlat,nmos,icc),
      3      stemmassrow(nlat,nmos,icc),   rootmassrow(nlat,nmos,icc),
-     3      pstemmassrow(nlat,nmos,icc),   prootmassrow(nlat,nmos,icc),
+     3      pstemmassrow(nlat,nmos,icc),   pgleafmassrow(nlat,nmos,icc),
      4      litrmassrow(nlat,nmos,icc+1), gleafmasrow(nlat,nmos,icc),
      5      bleafmasrow(nlat,nmos,icc),   soilcmasrow(nlat,nmos,icc+1),
      6      ailcbrow(nlat,nmos,icc),      flhrlossrow(nlat,nmos,icc)
@@ -347,7 +347,7 @@ c
           stemmassgat(k,l) = stemmassrow(ilmos(k),jlmos(k),l)
           rootmassgat(k,l) = rootmassrow(ilmos(k),jlmos(k),l)
           pstemmassgat(k,l) = pstemmassrow(ilmos(k),jlmos(k),l)
-          prootmassgat(k,l) = prootmassrow(ilmos(k),jlmos(k),l)
+          pgleafmassgat(k,l) = pgleafmassrow(ilmos(k),jlmos(k),l)
           gleafmasgat(k,l) = gleafmasrow(ilmos(k),jlmos(k),l)
           bleafmasgat(k,l) = bleafmasrow(ilmos(k),jlmos(k),l)
           ailcbgat(k,l)    = ailcbrow(ilmos(k),jlmos(k),l)

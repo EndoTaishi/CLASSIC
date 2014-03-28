@@ -34,6 +34,9 @@ subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
 !     7  Feb. 2014  - Adapt it to work with competition and start_bare
 !     J. Melton 
 !
+!     28 Mar. 2014  - Add in check to ensure we don't make a negative bare
+!     J. Melton       fraction when we add in seed fractions.
+!
 
 use ctem_params,        only : nmos,nlat,icc,ican,icp1,seed,crop
 
@@ -66,11 +69,15 @@ integer, intent(out) :: lucyr
 
 ! local variables:
 real, dimension(icc) :: temparray
+real, dimension(nlat) :: barf
+integer, dimension(2) :: bigpftc
 real :: temp
 integer :: j,m,i,n
 integer :: k2,k1,strlen
 
 !-------------------------
+! Initialize barefraction to 1.0
+barf=1.0
 
 !       reset the composite fcanrow as it is appended on later in a loop
         if (.not. mosaic) fcanrow = 0.0
@@ -138,16 +145,29 @@ integer :: k2,k1,strlen
            do m = 1, nmtest
             if (.not. crop(j)) then
              if (start_bare) then
-              nfcancmxrow(i,m,j)=seed
+              nfcancmxrow(i,m,j)=seed              
              else !not starting bare, but still make sure you have at least seed
               nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
              end if
+             barf(i) = barf(i) - nfcancmxrow(i,m,j)
             end if
            end do
           end do
          end do
         end if
 
+!      check that in making these seed fraction we haven't made our total fraction
+!      more than 1.0.
+       do i=1,nltest
+        if (barf(i) .lt. 0.) then
+         bigpftc=maxloc(nfcancmxrow(i,:,:))
+         ! Reduce the most dominant PFT by barf and 1.0e-5. The extra 
+         ! amount is to ensure we don't have trouble later with an extremely
+         ! small bare fraction.
+         nfcancmxrow(i,bigpftc(1),bigpftc(2))=nfcancmxrow &
+                     (i,bigpftc(1),bigpftc(2))+barf(i) - 1.0e-5
+        end if
+       end do 
 
 !       get fcans for use by class using the nfcancmxs just read in
         k1=0

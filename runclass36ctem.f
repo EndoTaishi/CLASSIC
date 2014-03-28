@@ -412,7 +412,7 @@ c
      5           spinfast,  month1,  month2,      xday, 
      6           ncyear, co2yr, popyr, nummetcylyrs,
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
-     8           cypopyr, lucyr, cylucyr, endyr 
+     8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2) 
 c
        real      rlim,        fsstar_g,
      1           flstar_g,  qh_g,    qe_g,        snomlt_g,
@@ -420,7 +420,7 @@ c
      3           tcn_g,     tsn_g,   zsn_g       
 
        real      co2concin,  popdin,    setco2conc, sumfare,
-     1           temp_var, barefrac,  todfrac(ilg,icc)
+     1           temp_var, barefrac,  todfrac(ilg,icc), barf(nlat)
 
       real grclarea(ilg)
 c
@@ -497,7 +497,7 @@ c
      5     stemmassrow(nlat,nmos,icc),  stemmassgat(ilg,icc),
      6     rootmassrow(nlat,nmos,icc),  rootmassgat(ilg,icc),
      7     pstemmassrow(nlat,nmos,icc), pstemmassgat(ilg,icc),
-     8     prootmassrow(nlat,nmos,icc), prootmassgat(ilg,icc)
+     8     pgleafmassrow(nlat,nmos,icc), pgleafmassgat(ilg,icc)
 c
       real fcancmxrow(nlat,nmos,icc),  fcancmxgat(ilg,icc),
      1     gavglairow(nlat,nmos),      gavglaigat(ilg),
@@ -956,6 +956,7 @@ C
       do 11 i=1,nlat  
        prbfrhucgrd(i)         = 0.0
        extnprobgrd(i)         = 0.0
+       barf(i)                = 1.0
 c
        do j =1,12  
          mlightnggrd(i,j)=0.0
@@ -1840,7 +1841,7 @@ c           use in burntobare subroutine on the first timestep.
             if (dofire .and. compete) then
              do j =1,icc
               pstemmassrow(i,m,j)=stemmassrow(i,m,j)
-              prootmassrow(i,m,j)=rootmassrow(i,m,j)    
+              pgleafmassrow(i,m,j)=rootmassrow(i,m,j)    
              end do           
             end if
 
@@ -2330,6 +2331,7 @@ c
               if (compete) then
                fcancmxrow(i,m,icountrow(i,m))=max(seed,fcanrow(i,m,j)*
      &         dvdfcanrow(i,m,icountrow(i,m)))
+               barf(i) = barf(i) - fcancmxrow(i,m,icountrow(i,m))
               else
                fcancmxrow(i,m,icountrow(i,m))=fcanrow(i,m,j)*
      &         dvdfcanrow(i,m,icountrow(i,m))
@@ -2338,7 +2340,6 @@ c
           enddo
 c
           if( abs(csum(i,m,j)-1.0).gt.abszero ) then
-c            write(6,1130)i,j
            write(6,1130)i,m,j
 1130       format('dvdfcans for (',i1,',',i1,',',i1,') must add to 1.0')
             call xit('runclass36ctem', -3)
@@ -2346,6 +2347,19 @@ c            write(6,1130)i,j
 c
 114     continue
 113   continue
+
+!     Now make sure that you aren´t over 1.0 for a grid cell (i.e. with a negative 
+!     bare ground fraction due to the seed fractions being added in.) JM Mar 27 2014
+      do i=1,nltest
+       if (barf(i) .lt. 0.) then
+        bigpftc=maxloc(fcancmxrow(i,:,:))
+        ! reduce the most predominant PFT by barf and 1.0e-5,
+        ! which ensures that our barefraction is non-zero to avoid
+        ! problems later.  
+        fcancmxrow(i,bigpftc(1),bigpftc(2))=fcancmxrow
+     &                (i,bigpftc(1),bigpftc(2))+barf(i) - 1.0e-5
+       end if
+      end do 
 c
 c     ----------
 
@@ -2945,7 +2959,7 @@ C
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat, burnvegfgat, pstemmassgat, prootmassgat,
+     &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,      fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -2982,7 +2996,7 @@ c
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegfrow, pstemmassrow, prootmassrow)
+     &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow)
 c
 C===================== CTEM ============================================ /
 C
@@ -3330,7 +3344,7 @@ c    -------------- inputs used by ctem are above this line ---------
      &            pftexistgat,      twarmm,       tcoldm,        gdd5,
      1                aridity,    srplsmon,     defctmon,    anndefct,
      2               annsrpls,      annpcp,  anpotevp,dry_season_length,
-     &              burnvegfgat, pstemmassgat, prootmassgat,  
+     &              burnvegfgat, pstemmassgat, pgleafmassgat,  
 c    -------------- inputs updated by ctem are above this line ------
      k                 nppgat,      nepgat, hetroresgat, autoresgat,
      l            soilcrespgat,       rmgat,       rggat,      nbpgat,
@@ -3537,7 +3551,7 @@ C
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      btermrow,     ltermrow,   mtermrow,  
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegfrow, pstemmassrow, prootmassrow,
+     &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
 c    ----
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -3575,7 +3589,7 @@ c    ----
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat, burnvegfgat, pstemmassgat, prootmassgat )
+     &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat )
 c
 C===================== CTEM ============================================ /
 C

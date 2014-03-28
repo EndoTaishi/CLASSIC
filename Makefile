@@ -18,7 +18,7 @@ FC=pgf90
 
 FFLAGS = -Bstatic -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 
-#export PGIMACH=linux86-64
+export PGIMACH=linux86-64
 
 # Debugging of model ----------------
 

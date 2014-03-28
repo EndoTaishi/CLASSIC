@@ -165,7 +165,6 @@ real, dimension(kk) :: dryseasonlmt     ! minimum length of dry season for PFT t
 
 real, dimension(kk) :: bio2sap          ! multiplying factor for converting biomass density to sapling density
 real :: bioclimrt                       ! mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
-real :: tolranc1                        ! error tolerance for c balance for each pft over gcm grid cell (kg c)
 
 ! ctem.f parameters: ----------
 
@@ -755,7 +754,7 @@ if (compete) then
 
 ! Parameters used in more than one subroutine:
 
-tolrance = 0.0001d0 
+tolrance = 0.001d0 
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
@@ -822,20 +821,13 @@ dryseasonlmt=[ 99.9,  99.9,    0.0, &
 
 ! Flag all values have been changed from 0.1 JM Mar 10 2014
 ! smaller numbers give faster colonization rates.
-!bio2sap = [ 0.20, 0.20, 0.00, &
-!            0.10, 0.12, 0.15, & 
-!            0.00, 0.00, 0.00, &
-!            0.40, 0.40, 0.00 ]  
-! Test vals Mar 18
 bio2sap = [ 0.25, 0.25, 0.00, &
             0.125, 0.15, 0.19, & 
             0.00, 0.00, 0.00, &
             0.40, 0.40, 0.00 ]  
 
 bioclimrt = 0.25                
-
-tolranc1 = 0.150                
-           
+                     
 ! ctem.f parameters: ----------
 
 laimin = [ 1.0, 1.0, 0.0, &
@@ -889,7 +881,7 @@ cdlsrtmx = [ 0.10, 0.30, 0.00, &  ! test PFT 1 was 0.15 JM Feb 3 2014
 drlsrtmx = [ 0.006 , 0.005, 0.000, & !pft 1 was 0.0025 JM Mar 6 2014.
              0.010 , 0.025, 0.050, & !pft 5 was 0.005, pft 4 was 0.005 jm feb 3 2014, pft 3 was 0.005
              0.005 , 0.005, 0.000, &
-             0.050 , 0.050, 0.000 ]  !PFT 8 and 9 were 0.05 
+             0.01 , 0.050, 0.000 ]  !PFT 8 and 9 were 0.05 
 
 
 lwrthrsh = [ -50.0, -5.0, 0.0, &  !flag pft 1 was -45 JM Feb 3 2014
@@ -930,7 +922,7 @@ else ! Prescribed PFT fractional cover
 
 ! Parameters used in more than one subroutine:
 
-tolrance = 0.00001d0 
+tolrance = 0.0001d0 
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.75, 1.00, 1.00, &  

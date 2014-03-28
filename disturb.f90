@@ -29,7 +29,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
                          emit_h2,  emit_nox, emit_n2o, emit_pm25, &
                          emit_tpm, emit_tc,  emit_oc,  emit_bc, &
                          burnvegf, bterm,    mterm,    lterm, &
-                         pstemmass, prootmass )  
+                         pstemmass, pgleafmass )  
 !     ------------------outputs above this line ----------------------
 !
 !               Canadian Terrestrial Ecosystem Model (CTEM)
@@ -159,8 +159,8 @@ use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, seed, crop, &
 implicit none
 
 
-real, dimension(ilg,icc), intent(inout) :: pstemmass 
-real, dimension(ilg,icc), intent(inout) :: prootmass
+real, dimension(ilg,icc), intent(out) :: pstemmass 
+real, dimension(ilg,icc), intent(out) :: pgleafmass
 
 integer :: il1,il2,i,j,k,m,k1,k2,n
 
@@ -655,7 +655,7 @@ real :: soilterm, duffterm              ! temporary variables
             !Set aside these pre-disturbance stem and root masses for use
             !in burntobare subroutine.
             pstemmass(i,j)=stemmass(i,j)
-            prootmass(i,j)=rootmass(i,j)
+            pgleafmass(i,j)=gleafmas(i,j)
 
             glfltrdt(i,j)= frltrglf(n) *gleafmas(i,j) *(burnveg(i,j) /pftareab(i,j)) 
             blfltrdt(i,j)= frltrblf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
@@ -739,7 +739,8 @@ end subroutine disturb
 ! ------------------------------------------------------------------------------------
 
 subroutine burntobare(il1, il2, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
-                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, prootmass)
+                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass,&
+                      nppveg)
 
 !     Update fractional coverages of pfts to take into account the area
 !     burnt by fire. Adjust all pools with new densities in their new
@@ -758,41 +759,50 @@ implicit none
 
 integer, intent(in) :: il1
 integer, intent(in) :: il2
-real, dimension(ilg), intent(in) :: pvgbioms     ! initial veg biomass
-real, dimension(ilg), intent(in) :: pgavltms     ! initial litter mass
-real, dimension(ilg), intent(in) :: pgavscms     ! initial soil c mass
-real, dimension(ilg,icc), intent(inout) :: fcancmx  ! initial fractions of the ctem pfts
-real, dimension(ilg,icc), intent(in) :: burnvegf
+real, dimension(ilg), intent(in) :: pvgbioms          ! initial veg biomass
+real, dimension(ilg), intent(in) :: pgavltms          ! initial litter mass
+real, dimension(ilg), intent(in) :: pgavscms          ! initial soil c mass
+real, dimension(ilg,icc), intent(inout) :: fcancmx    ! initial fractions of the ctem pfts
+real, dimension(ilg,icc), intent(in) :: burnvegf      ! total per PFT areal fraction burned
 real, dimension(ilg,icc), intent(inout) :: gleafmas
 real, dimension(ilg,icc), intent(inout) :: bleafmas
 real, dimension(ilg,icc), intent(inout) :: stemmass
 real, dimension(ilg,icc), intent(inout) :: rootmass
-real, dimension(ilg,icc), intent(inout) :: litrmass
-real, dimension(ilg,icc), intent(inout) :: soilcmas   ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(ilg,icc), intent(inout) :: nppveg     ! npp for individual pfts,  u-mol co2/m2.sec
+real, dimension(ilg,iccp1), intent(inout) :: soilcmas   ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(ilg,iccp1), intent(inout) :: litrmass
 real, dimension(ilg,icc), intent(in)    :: pstemmass  ! grid averaged stemmass prior to disturbance, kg c/m2
-real, dimension(ilg,icc), intent(in)    :: prootmass  ! grid averaged rootmass prior to disturbance, kg c/m2
+real, dimension(ilg,icc), intent(in)    :: pgleafmass  ! grid averaged rootmass prior to disturbance, kg c/m2
 
-
+logical, dimension(ilg) :: shifts_occur      ! true if any fractions changed
 integer :: i, j
 real :: pftfraca_old
 real :: term                                 ! temp variable for change in fraction due to fire
 real, dimension(ilg) :: pbarefra             ! bare fraction prior to fire              
 real, dimension(ilg) :: barefrac             ! bare fraction of grid cell
+real, dimension(ilg) :: litr_lost            ! litter that is transferred to bare 
+real, dimension(ilg) :: soilc_lost           ! soilc that is transferred to bare
 real, dimension(ilg) :: vgbiomas_temp        ! grid averaged vegetation biomass for internal checks, kg c/m2
 real, dimension(ilg) :: gavgltms_temp        ! grid averaged litter mass for internal checks, kg c/m2
 real, dimension(ilg) :: gavgscms_temp        ! grid averaged soil c mass for internal checks, kg c/m2
-real, dimension(ilg,icc) :: pftfracb
-real, dimension(ilg,icc) :: pftfraca
-
+real, dimension(ilg,icc) :: pftfracb         ! pft fractions before accounting for creation of bare ground
+real, dimension(ilg,icc) :: pftfraca         ! pft fractions after accounting for creation of bare ground
+real, dimension(ilg,icc) :: frac_chang       ! pftfracb - pftfraca
 ! -----------------------------------------
 
 ! Do some initializations
 do 10 i = il1, il2
+        shifts_occur(i) = .false.
         pbarefra(i)=1.0
         barefrac(i)=1.0
         vgbiomas_temp(i)=0.0
         gavgltms_temp(i)=0.0
         gavgscms_temp(i)=0.0
+        litr_lost(i)=0.0
+        soilc_lost(i)=0.0
+      do j = 1,icc
+        frac_chang(i,j)=0.0
+      end do
 10  continue
 
 !  Account for disturbance creation of bare ground. This occurs with relatively low
@@ -807,7 +817,7 @@ do 10 i = il1, il2
               pftfracb(i,j)=fcancmx(i,j)
 
               pftfraca(i,j) = max(seed,fcancmx(i,j) - burnvegf(i,j) * standreplace(j))
-
+        
               fcancmx(i,j) = pftfraca(i,j)
 
               barefrac(i)=barefrac(i)-fcancmx(i,j)
@@ -830,6 +840,8 @@ do 10 i = il1, il2
           ! Trees compare the stemmass while grass compares the root mass. 
           if (pftfraca(i,j) .ne. pftfracb(i,j)) then
 
+            shifts_occur(i) = .true.
+
             term = pftfracb(i,j)/pftfraca(i,j)
 
             if (.not. grass(j)) then
@@ -840,32 +852,42 @@ do 10 i = il1, il2
 
                  ! adjust the bare frac to accomodate for the changes 
                  barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
-
+           ! write(*,*)'readjust',j,pftfraca_old-pftfraca(i,j)
                end if
             else !grasses
-               if (rootmass(i,j)*term .gt. prootmass(i,j) .and. prootmass(i,j) .gt. 0.) then
+               if (gleafmas(i,j)*term .gt. pgleafmass(i,j) .and. pgleafmass(i,j) .gt. 0.) then
 
                  pftfraca_old = pftfraca(i,j)
-                 pftfraca(i,j) = max(seed,rootmass(i,j) * pftfracb(i,j) / prootmass(i,j))
+                 pftfraca(i,j) = max(seed,gleafmas(i,j) * pftfracb(i,j) / pgleafmass(i,j))
 
                  ! adjust the bare frac to accomodate for the changes 
                  barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
-
+          !  write(*,*)'readjust',j,pftfraca_old-pftfraca(i,j)
                end if
             end if
 
+         !   write(*,*)'adjust',j,term
             term = pftfracb(i,j)/pftfraca(i,j)
             gleafmas(i,j)=gleafmas(i,j)*term
             bleafmas(i,j)=bleafmas(i,j)*term
             stemmass(i,j)=stemmass(i,j)*term
             rootmass(i,j)=rootmass(i,j)*term
-            litrmass(i,j)=litrmass(i,j)*term
-            soilcmas(i,j)=soilcmas(i,j)*term
+            nppveg(i,j)  =nppveg(i,j)*term
 
+!           Soil and litter carbon are treated such that we actually transfer the carbon
+!           to the bare fraction since it would remain in place as a location was devegetated
+!           In doing so we do not ajust the litter or soilc density on the 
+!           remaining vegetated fraction. But we do adjust it on the bare fraction to ensure
+!           our carbon balance works out.
+            frac_chang(i,j) = pftfracb(i,j) - pftfraca(i,j)
+     
+            litr_lost(i)= litr_lost(i) + litrmass(i,j) * frac_chang(i,j)
+            soilc_lost(i)= soilc_lost(i) + soilcmas(i,j) * frac_chang(i,j)
+  
         ! else  
 
-        !    no changes to the pools so don't adjust
- 
+        !    no changes
+
           end if
 
         endif  !crop
@@ -873,10 +895,14 @@ do 10 i = il1, il2
 40  continue
 
       do 100 i = il1, il2
-        if(barefrac(i).gt.zero)then
-          term=pbarefra(i)/barefrac(i)
-          litrmass(i,iccp1) = litrmass(i,iccp1)*term
-          soilcmas(i,iccp1) = soilcmas(i,iccp1)*term
+        if(barefrac(i).gt.zero .and. barefrac(i) .ne. pbarefra(i))then
+        !  write(*,*)barefrac(i),pbarefra(i),soilcmas(i,iccp1),(soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i)
+          litrmass(i,iccp1) = (litrmass(i,iccp1)*pbarefra(i) + litr_lost(i)) / barefrac(i)
+          soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i)
+        else if (barefrac(i) .lt. 0.) then
+          write(6,*)' In burntobare you have negative bare area'
+          write(6,*)' bare is',barefrac(i),' original was',pbarefra(i)
+          call xit('disturb-burntobare',-6)
         else
           litrmass(i,iccp1) = 0.0
           soilcmas(i,iccp1) = 0.0
@@ -886,21 +912,21 @@ do 10 i = il1, il2
 !     check if total grid average biomass density is 
 !           same before and after adjusting fractions
 
-      do 200 j = 1, icc
-        do 250 i = il1, il2
+    do 200 i = il1, il2
+
+      if (shifts_occur(j)) then !only do checks if we actually shifted fractions here. 
+
+       do 250 j = 1, icc
+
           vgbiomas_temp(i)=vgbiomas_temp(i)+fcancmx(i,j)*(gleafmas(i,j)+&
           bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
           gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i,j)*litrmass(i,j)
           gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i,j)*soilcmas(i,j)
 250    continue
-200  continue
 
-      do 300 i = il1, il2
+        !then add the bare ground in.
         gavgltms_temp(i)=gavgltms_temp(i)+ barefrac(i)*litrmass(i,iccp1)
         gavgscms_temp(i)=gavgscms_temp(i)+ barefrac(i)*soilcmas(i,iccp1)
-300  continue
-
-      do 400 i = il1, il2
 
         if(abs(vgbiomas_temp(i)-pvgbioms(i)).gt.tolrance)then
           write(6,*)'grid averaged biomass densities do not balance'
@@ -929,7 +955,9 @@ do 10 i = il1, il2
           call xit('disturb',-9)
         endif
 
-400  continue
+      end if
+
+200  continue
 
       return
 

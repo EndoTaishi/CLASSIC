@@ -30,7 +30,7 @@ c    ------- following 5 lines are competition related variables ----
      o                    pftexist, twarmm,    tcoldm,       gdd5,
      1                     aridity, srplsmon, defctmon,  anndefct,
      2                    annsrpls,  annpcp, anpotevp,dry_season_length,
-     3                    burnvegf, pstemmass, prootmass,
+     3                    burnvegf, pstemmass, pgleafmass,
 c
 c    -------------- inputs updated by ctem are above this line ------
 c
@@ -270,7 +270,7 @@ c     grclarea - area of the grid cell, km^2
 c     dstcemls3- carbon emission losses due to disturbance (fire at present)
 c                from litter pool
 c     pstemmass - stem mass from previous timestep, is value before fire. used by burntobare subroutine
-c     prootmass - root mass from previous timestep, is value before fire. used by burntobare subroutine
+c     pgleafmass - root mass from previous timestep, is value before fire. used by burntobare subroutine
 c     twarmm    - temperature of the warmest month (c)
 c     tcoldm    - temperature of the coldest month (c)
 c     gdd5      - growing degree days above 5 c
@@ -376,7 +376,7 @@ c
      1     gavgltms_cmp(nlat),      gavgscms_cmp(nlat),
      2     yesfrac_mos(nlat,icc),   todfrac_cmp(nlat),
      3     pfcancmx_cmp(nlat,icc),  nfcancmx_cmp(nlat,icc),
-     4     pstemmass_cmp(nlat,icc), prootmass_cmp(nlat,icc)
+     4     pstemmass_cmp(nlat,icc), pgleafmass_cmp(nlat,icc)
 c
       integer surmncur_cmp(nlat), defmncur_cmp(nlat)
 
@@ -407,7 +407,7 @@ c
      8      gppcgveg(ilg,icc),   pfcancmx(ilg,icc),    fcanmx(ilg,ican),
      9      nfcancmx(ilg,icc),      alvisc(ilg,ican),  alnirc(ilg,ican),
      a           gavglai(ilg),    yesfrac_comp(ilg,icc),
-     b     pstemmass(ilg,icc),     prootmass(ilg,icc)
+     b     pstemmass(ilg,icc),     pgleafmass(ilg,icc)
 c
       real   npp(ilg),      nep(ilg),  hetrores(ilg),      autores(ilg),
      1  soilresp(ilg),       rm(ilg),        rg(ilg),          nbp(ilg),
@@ -468,11 +468,11 @@ c
      5         burnfrac(ilg),   dscemlv1(ilg,icc),
      6     dscemlv2(ilg,icc),       probfire(ilg), burnvegf(ilg,icc)
 c
-      real     emit_co2(ilg),        emit_co(ilg),       emit_ch4(ilg),
-     1        emit_nmhc(ilg),        emit_h2(ilg),       emit_nox(ilg),
-     2         emit_n2o(ilg),      emit_pm25(ilg),       emit_tpm(ilg),
-     3          emit_tc(ilg),        emit_oc(ilg),        emit_bc(ilg),
-     4           bterm(ilg),           lterm(ilg),          mterm(ilg)
+      real emit_co2(ilg,icc),    emit_co(ilg,icc),    emit_ch4(ilg,icc),
+     1    emit_nmhc(ilg,icc),    emit_h2(ilg,icc),    emit_nox(ilg,icc),
+     2     emit_n2o(ilg,icc),  emit_pm25(ilg,icc),    emit_tpm(ilg,icc),
+     3      emit_tc(ilg,icc),    emit_oc(ilg,icc),     emit_bc(ilg,icc),
+     4            bterm(ilg),          lterm(ilg),          mterm(ilg)
 c
       real tltrleaf(ilg,icc),   tltrstem(ilg,icc),   tltrroot(ilg,icc),
      1                popdin
@@ -656,7 +656,7 @@ c
      m                         anndefct, annsrpls,   annpcp, anpotevp,
      &                      dry_season_length,
      &                         lucemcom, lucltrin, lucsocin, pfcancmx,
-     &                         nfcancmx, pstemmass, prootmass,
+     &                         nfcancmx, pstemmass, pgleafmass,
 c    ------------------- inputs above this line ---------------------
      n                        netradrow,
 c    ------------------- intermediate and saved above this line -----
@@ -679,7 +679,7 @@ c    ------------------- intermediate and saved above this line -----
      &                     dry_season_length_cmp,
      5                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,
      6                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,
-     7                     prootmass_cmp )
+     7                     pgleafmass_cmp )
 c    ------------------- outputs above this line --------------------
 c   
         if (compete) then
@@ -716,12 +716,12 @@ c
      2           pftexist_cmp, geremort_cmp, intrmort_cmp,
      3           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,
      4           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,
-     5            bmasveg_cmp,  burnvegf_cmp,       sort, pstemmass_cmp,
-     a            prootmass_cmp,    
+     5             burnvegf_cmp,       sort, pstemmass_cmp,
+     a            pgleafmass_cmp,    
 c    ------------------- inputs above this line -------------------
 c
      6               fare_cmp,   fcanmx_cmp, vgbiomas_cmp, gavgltms_cmp,
-     7           gavgscms_cmp,   
+     7           gavgscms_cmp,   bmasveg_cmp,
 c
 c    ------------------- updates above this line ------------------
 c
@@ -796,7 +796,7 @@ c
      &                     dry_season_length_cmp,
      &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,
      &                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,
-     &                      prootmass_cmp,
+     &                      pgleafmass_cmp,
 c
 c    ------------------- inputs above this line ---------------------
 c
@@ -818,7 +818,7 @@ c
      4                        annsrpls,   annpcp, anpotevp,
      &                         dry_season_length,
      5                         lucemcom, lucltrin, lucsocin, pfcancmx,
-     6                         nfcancmx, pstemmass, prootmass )
+     6                         nfcancmx, pstemmass, pgleafmass )
 c    ------------------- updates above this line --------------------
 c
       else !composite
@@ -850,18 +850,19 @@ c
 c       call competition subroutine which on the basis of previous day's
 c       npp estimates changes in fractional coverage of pfts
 c
+!         write(*,*)'precomp',gavgscms(1),gavgltms(1),vgbiomas(1)
         call competition (iday,     1,        il2,      ilg,
      1                    nol2pfts, nppveg,   dofire,
      2                    pftexist, geremort, intrmort,
      3                    gleafmas, bleafmas, stemmass, rootmass,
      4                    litrmass, soilcmas, grclarea,   lambda,
-     5                    bmasveg,  burnvegf, sort,  pstemmass, 
-     &                    prootmass,
+     5                    burnvegf, sort,  pstemmass, 
+     &                    pgleafmass,
 c
 c    ------------------- inputs above this line -------------------
 c
      6                    fcancmx,   fcanmx, vgbiomas, gavgltms,
-     7                    gavgscms,
+     7                    gavgscms, bmasveg,  
 c
 c    ------------------- updates above this line ------------------
 c
@@ -869,6 +870,7 @@ c
 c
 c    ------------------- outputs above this line ------------------
 c
+ !        write(*,*)'postcomp',gavgscms(1),gavgltms(1),vgbiomas(1)
         else  ! It is the first year of a run that you do not have the 
               ! climatological means already in the CTM file. After one
               ! year inibioclim is set to true and the climatological means
@@ -1781,7 +1783,7 @@ c    in above, out below
      c                    emit_h2,  emit_nox, emit_n2o, emit_pm25,
      d                    emit_tpm, emit_tc,  emit_oc,  emit_bc,
      e                    burnvegf, bterm,    mterm,    lterm,
-     f                    pstemmass, prootmass )  
+     f                    pstemmass, pgleafmass )  
 
 c
 c    ------------------------------------------------------------------

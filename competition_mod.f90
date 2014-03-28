@@ -450,10 +450,10 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
                           pftexist,  geremort, intrmort, &
                           gleafmas, bleafmas,  stemmass, rootmass, &
                           litrmass, soilcmas,  grclarea,   lambda, &
-                           bmasveg,  burnvegf,     sort, pstemmass, &
-                           prootmass, &
+                           burnvegf,     sort, pstemmass, &
+                           pgleafmass, &
                            fcancmx,   fcanmx,  vgbiomas, gavgltms, &
-                          gavgscms, &
+                          gavgscms,  bmasveg,   &
                           add2allo,        colrate,        mortrate) 
 
 !               Canadian Terrestrial Ecosystem Model (CTEM) V1.1
@@ -489,7 +489,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 
 use ctem_params, only : zero, kk, numcrops, numgrass, numtreepfts, &
                         icc, ican, deltat, iccp1, seed, bio2sap, bioclimrt, &
-                        tolranc1, tolrance, crop, grass, grass_ind
+                        tolrance, crop, grass, grass_ind
 
 use disturbance_scheme, only : burntobare
 
@@ -508,11 +508,11 @@ integer, dimension(icc), intent(in) :: sort ! index for correspondence between 9
                                             ! size 12 of parameter vectors
 integer, dimension(ican), intent(in) :: nol2pfts ! number of level 2 ctem pfts
 logical, dimension(nilg,icc), intent(in) :: pftexist(nilg,icc) !indicating pfts exist (T) or not (F)
-real, dimension(nilg,icc), intent(in) :: nppveg    ! npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
+real, dimension(nilg,icc), intent(inout) :: nppveg ! npp for each pft type /m2 of vegetated area u-mol co2-c/m2.sec
 real, dimension(nilg,icc), intent(in) :: geremort  ! growth related mortality (1/day)
 real, dimension(nilg,icc), intent(in) :: intrmort  ! intrinsic (age related) mortality (1/day)
 real, dimension(nilg,icc), intent(in) :: lambda    ! fraction of npp that is used for spatial expansion
-real, dimension(nilg,icc), intent(in) :: bmasveg   ! total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: bmasveg   ! total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
 real, dimension(nilg,icc), intent(in) :: burnvegf   ! fractional areas burned, for 9 ctem pfts
 
 real, dimension(nilg,icc), intent(inout) :: gleafmas  ! green leaf mass for each of the 9 ctem pfts, kg c/m2
@@ -533,7 +533,7 @@ real, dimension(nilg,icc), intent(out) :: add2allo   ! npp kg c/m2.day that is u
 real, dimension(nilg,icc), intent(out) :: colrate    ! colonization rate (1/day)    
 real, dimension(nilg,icc), intent(out) :: mortrate   ! mortality rate
 real, dimension(nilg,icc), intent(in) :: pstemmass   ! stem mass from previous timestep, is value before fire. used by burntobare subroutine
-real, dimension(nilg,icc), intent(in) :: prootmass   ! root mass from previous timestep, is value before fire. used by burntobare subroutine
+real, dimension(nilg,icc), intent(in) :: pgleafmass   ! root mass from previous timestep, is value before fire. used by burntobare subroutine
 
 ! local variables
 
@@ -633,6 +633,27 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
         call xit('competition',-4)
       endif
 
+!     ---------------------------------------------------------------
+
+!   First, let's adjust the fractions if fire is turned on.
+
+    if (dofire) then
+
+        call burntobare(il1, il2, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
+                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
+                      nppveg)
+
+      ! Since the biomass pools could have changed, update bmasveg.
+      do 190 i = il1, il2
+        do 195 j = 1, icc
+         if (fcancmx(i,j).gt.0.0) then
+          bmasveg(i,j)=gleafmas(i,j)+stemmass(i,j)+rootmass(i,j)
+         endif
+195     continue
+190   continue
+
+    end if
+
 !     Do our usual initialization
 
       do 150 j = 1, icc
@@ -717,17 +738,6 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
           useexist(i,j)=0
 181     continue
 180   continue
-
-!     ---------------------------------------------------------------
-
-!   First, let's adjust the fractions if fire is turned on.
-
-    if (dofire) then
-
-        call burntobare(il1, il2, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
-                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, prootmass)
-
-     end if
 
 !     initial rank/superiority order for simulating competition. since
 !     crops are not in competition their rank doesn't matter and
@@ -1269,38 +1279,39 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     so for each pft the total c mass in vegetation and litter pools
 !     must all add up to the same value as before competition.
 
+!     JM: I changed this to deal with density, not kg/gridcell.
+
       do 830 j = 1, icc
        if (.not. crop(j)) then  
         do 831 i = il1, il2
 
-          biomasvg(i,j)=fcancmx(i,j)*grclarea(i)*1.0e06* &
+          biomasvg(i,j)=fcancmx(i,j)* & !grclarea(i)*1.0e06* &
            (gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)) 
-          pbiomasvg(i,j)=pfcancmx(i,j)*grclarea(i)*1.0e06* &
+          pbiomasvg(i,j)=pfcancmx(i,j)* & !grclarea(i)*1.0e06* &
            (pglfmass(i,j)+pblfmass(i,j)+protmass(i,j)+pstmmass(i,j)) 
 
 !         part of npp that we will use later for allocation
-          putaside(i,j)=add2allo(i,j)*fcancmx(i,j)*grclarea(i)*1.0e06
+          putaside(i,j)=add2allo(i,j)*fcancmx(i,j) !*grclarea(i)*1.0e06
 
           gavgputa(i) = gavgputa(i) + putaside(i,j)
 
 !         litter added to bare
-          barelitr(i,j)=grsumlit(i)*grclarea(i)*1.0e06*fcancmx(i,j)
-          ownlitr(i,j)=incrlitr(i,j)*grclarea(i)*1.0e06
+          barelitr(i,j)=grsumlit(i)*fcancmx(i,j) !*grclarea(i)*1.0e06
+          ownlitr(i,j)=incrlitr(i,j) !*grclarea(i)*1.0e06
 
 !         soil c added to bare
-          baresolc(i,j)=grsumsoc(i)*grclarea(i)*1.0e06*fcancmx(i,j)
-          ownsolc(i,j)=incrsolc(i,j)*grclarea(i)*1.0e06
+          baresolc(i,j)=grsumsoc(i)*fcancmx(i,j) !*grclarea(i)*1.0e06
+          ownsolc(i,j)=incrsolc(i,j) ! *grclarea(i)*1.0e06
 
           add2dead(i) = add2dead(i) + barelitr(i,j) + baresolc(i,j)
 
 !         npp we had in first place to expand
-          nppvegar(i,j)=max(0.0,nppveg(i,j))*(deltat/963.62)* &
-           lambda(i,j)*grclarea(i)*1.0e06*pfcancmx(i,j) 
+          nppvegar(i,j)=max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j) !*grclarea(i)*1.0e06
 
           gavgnpp(i) = gavgnpp(i) + nppvegar(i,j)
 
-          deadmass(i,j)=fcancmx(i,j)*grclarea(i)*1.0e06*(litrmass(i,j)+soilcmas(i,j))
-          pdeadmas(i,j)=pfcancmx(i,j)*grclarea(i)*1.0e06*(pltrmass(i,j)+psocmass(i,j))
+          deadmass(i,j)=fcancmx(i,j)*(litrmass(i,j)+soilcmas(i,j)) !*grclarea(i)*1.0e06
+          pdeadmas(i,j)=pfcancmx(i,j)*(pltrmass(i,j)+psocmass(i,j)) !*grclarea(i)*1.0e06
 
 !         total mass before competition
           befrmass=pbiomasvg(i,j)+nppvegar(i,j)+pdeadmas(i,j)
@@ -1309,7 +1320,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
           aftrmass=biomasvg(i,j)+putaside(i,j)+deadmass(i,j)- &
                   barelitr(i,j)-baresolc(i,j)+ownlitr(i,j)+ownsolc(i,j)
 
-          if(abs(befrmass-aftrmass).gt.tolranc1)then
+          if(abs(befrmass-aftrmass).gt.tolrance)then
             write(6,*)'total biomass for pft',j,', and grid cell =',i 
             write(6,*)'does not balance before and after competition'
             write(6,*)' '
@@ -1334,7 +1345,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
             write(6,*)'ownlitr(',i,',',j,')=',ownlitr(i,j)
             write(6,*)'ownsolc(',i,',',j,')=',ownsolc(i,j)
             write(6,*)' '
-            write(6,*)'grclarea(',i,')=',grclarea(i)
+           ! write(6,*)'grclarea(',i,')=',grclarea(i)
             write(6,*)'fcancmx(',i,',',j,')=',fcancmx(i,j)
             write(6,*)'pfcancmx(',i,',',j,')=',pfcancmx(i,j)
             write(6,*)' '
@@ -1350,18 +1361,18 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
       j = iccp1
         do 851 i = il1, il2
-          deadmass(i,j)=barefrac(i)*grclarea(i)*1.0e06*(litrmass(i,j)+soilcmas(i,j))
-          pdeadmas(i,j)=pbarefra(i)*grclarea(i)*1.0e06*(pltrmass(i,j)+psocmass(i,j))
+          deadmass(i,j)=barefrac(i)*(litrmass(i,j)+soilcmas(i,j)) !*grclarea(i)*1.0e06
+          pdeadmas(i,j)=pbarefra(i)*(pltrmass(i,j)+psocmass(i,j)) !*grclarea(i)*1.0e06
 
-          add2dead(i)=(grsumlit(i)+grsumsoc(i))*barefrac(i)*grclarea(i)*1.0e06
+          add2dead(i)=(grsumlit(i)+grsumsoc(i))*barefrac(i) !*grclarea(i)*1.0e06
 
-          ownlitr(i,j)=incrlitr(i,j)*grclarea(i)*1.0e06
-          ownsolc(i,j)=incrsolc(i,j)*grclarea(i)*1.0e06
+          ownlitr(i,j)=incrlitr(i,j) !*grclarea(i)*1.0e06
+          ownsolc(i,j)=incrsolc(i,j) !*grclarea(i)*1.0e06
 
           befrmass=pdeadmas(i,j)+add2dead(i)
           aftrmass=deadmass(i,j)+ownlitr(i,j)+ownsolc(i,j)
 
-          if(abs(befrmass-aftrmass).gt.tolranc1)then
+          if(abs(befrmass-aftrmass).gt.tolrance)then
             write(6,*)'total dead mass for grid cell =',i,'does not balance over bare' 
             write(6,*)'pdeadmas(',i,',',j,')=',pdeadmas(i,j)
             write(6,*)'add2dead(',i,') term=',add2dead(i)
@@ -1382,26 +1393,28 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
 !     grid averaged densities must also balance
 
-      do 870 i = il1, il2
-        befrmass=(pvgbioms(i)+pgavltms(i)+pgavscms(i))+gavgnpp(i)/(grclarea(i)*1.0e06)
-        aftrmass=(vgbiomas(i)+gavgltms(i)+gavgscms(i))+gavgputa(i)/(grclarea(i)*1.0e06)
-        if(abs(befrmass-aftrmass).gt.tolrance)then
-          write(6,*)'total (live+dead) mass for grid cell =',i,'does not balance' 
-          write(6,*)'abs(befrmass-aftrmass)',abs(befrmass-aftrmass),'is gt our tolerance of',tolrance
-          write(6,*)'pvgbioms(',i,')=',pvgbioms(i)*grclarea(i)*1.0e06
-          write(6,*)'pgavltms(',i,')=',pgavltms(i)*grclarea(i)*1.0e06
-          write(6,*)'pgavscms(',i,')=',pgavscms(i)*grclarea(i)*1.0e06
-          write(6,*)'gavgnpp(',i,')=',gavgnpp(i)
-          write(6,*)'befrmass*1.0e06 =',befrmass*1.0e06
-          write(6,*)' '
-          write(6,*)'vgbiomas(',i,')=',vgbiomas(i)*grclarea(i)*1.0e06
-          write(6,*)'gavgltms(',i,')=',gavgltms(i)*grclarea(i)*1.0e06
-          write(6,*)'gavgscms(',i,')=',gavgscms(i)*grclarea(i)*1.0e06
-          write(6,*)'gavgputa(',i,')=',gavgputa(i)
-          write(6,*)'aftrmass*1.0e06=',aftrmass*1.0e06
-          call xit('competition',-10)
-        endif
-870   continue
+!     JM: Now done above.
+
+!      do 870 i = il1, il2
+!        befrmass=(pvgbioms(i)+pgavltms(i)+pgavscms(i))+gavgnpp(i) /(grclarea(i)*1.0e06)
+!        aftrmass=(vgbiomas(i)+gavgltms(i)+gavgscms(i))+gavgputa(i)/(grclarea(i)*1.0e06)
+!        if(abs(befrmass-aftrmass).gt.tolrance)then
+!          write(6,*)'total (live+dead) mass for grid cell =',i,'does not balance' 
+!          write(6,*)'abs(befrmass-aftrmass)',abs(befrmass-aftrmass),'is gt our tolerance of',tolrance
+!          write(6,*)'pvgbioms(',i,')=',pvgbioms(i)*grclarea(i)*1.0e06
+!          write(6,*)'pgavltms(',i,')=',pgavltms(i)*grclarea(i)*1.0e06
+!          write(6,*)'pgavscms(',i,')=',pgavscms(i)*grclarea(i)*1.0e06
+!          write(6,*)'gavgnpp(',i,')=',gavgnpp(i)
+!          write(6,*)'befrmass*1.0e06 =',befrmass*1.0e06
+!          write(6,*)' '
+!          write(6,*)'vgbiomas(',i,')=',vgbiomas(i)*grclarea(i)*1.0e06
+!          write(6,*)'gavgltms(',i,')=',gavgltms(i)*grclarea(i)*1.0e06
+!          write(6,*)'gavgscms(',i,')=',gavgscms(i)*grclarea(i)*1.0e06
+!          write(6,*)'gavgputa(',i,')=',gavgputa(i)
+!          write(6,*)'aftrmass*1.0e06=',aftrmass*1.0e06
+!          call xit('competition',-10)
+!        endif
+!870   continue
 
       return
 
