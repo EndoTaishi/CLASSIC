@@ -61,7 +61,8 @@ c     use statements for modules:
       use ctem_params,        only : initpftpars, nlat, nmos, ilg, nmon, 
      1                               ican, ignd,icp1, icc, iccp1, 
      2                               monthend, mmday,modelpft, l2max,
-     3                                deltat, abszero, monthdays,seed
+     3                                deltat, abszero, monthdays,seed,
+     4                                crop
      
       use landuse_change,     only : initialize_luc, readin_luc
       
@@ -1906,14 +1907,17 @@ c       we need to transfer some initial parameterization info to all
 c       mosaics, so set all values to that of the first mosaic.
         do i=1,nltest
          do m=nmtest+1,nmos
+          if (m .ne. 6 .or. m .ne. 7) then !don't do crops!
 c
           do j=1,ican
+           if (j .ne. 3) then ! don't do crops
             rsmnrow(i,m,j)=rsmnrow(i,1,j)
             qa50row(i,m,j)=qa50row(i,1,j)
             vpdarow(i,m,j)=vpdarow(i,1,j)
             vpdbrow(i,m,j)=vpdbrow(i,1,j)
             psgarow(i,m,j)=psgarow(i,1,j)
             psgbrow(i,m,j)=psgbrow(i,1,j)
+           end if
           enddo
 c
           drnrow(i,m)=drnrow(i,1)
@@ -1945,9 +1949,12 @@ c
           rhosrow(i,m)=rhosrow(i,1)
           grorow(i,m)=grorow(i,1)
           do j=1,icc
+           if (.not. crop(j)) then !don't do crops!
             lfstatusrow(i,m,j) = 4
+           end if
           enddo !j
 c
+          end if ! crops
          enddo !m
         enddo !i
 
@@ -1967,6 +1974,8 @@ c      initalize to zero
        do i=1,nltest
         do m=1,nmtest
 c
+         if (m .ne. 6 .or. m .ne. 7) then !don't do crops!
+
 c        set the seed amount for each pft in its mosaic
          if (compete .or. lnduseon) then
            if (m .lt. icc+1) then
@@ -1977,6 +1986,7 @@ c        set the seed amount for each pft in its mosaic
          endif
 
          do j = 1,icc
+          if (.not. crop(j)) then !don't do crops
            ailcminrow(i,m,j)=0.0
            ailcmaxrow(i,m,j)=0.0
            gleafmasrow(i,m,j)=0.0
@@ -1985,13 +1995,16 @@ c        set the seed amount for each pft in its mosaic
            rootmassrow(i,m,j)=0.0
            lfstatusrow(i,m,j)=4
            pandaysrow(i,m,j)=0
+          endif
          enddo
-
+  
          lfstatusrow(i,m,1)=2
 
          do j = 1,iccp1
+          if (.not. crop(j)) then !don't do crops
            litrmassrow(i,m,j)=0. 
            soilcmasrow(i,m,j)=0. 
+          end if
          enddo
 
 c        initial conditions always required
@@ -2032,6 +2045,7 @@ c        then adjusted below for the actual mosaic makeup
          else                                  !bare/urban? 
           fcanrow(i,m,5)=1.0
          endif !mosaic adjustments
+        endif !crops
         enddo  !m
        enddo  !i
 
@@ -2047,11 +2061,13 @@ c      competition subroutines.
        ! a TCAN on the very first day since the fcanrow was 0. JM Jan 14 2014. 
        do i=1,nltest
         do j=1,iccp1
+          if (.not. crop(j)) then !don't do crops         
            if (j .lt. icc+1) then
             fcanrow(i,1,j)=seed
            else
             fcanrow(i,1,j)=1.0 - (real(icc) * seed)
            endif
+          end if
         end do
        end do
 
@@ -2064,6 +2080,7 @@ c      initial conditions always required
          dvdfcanrow(i,1,8)=1.0  !grasses
 
          do j = 1,icc
+          if (.not. crop(j)) then !don't do crops
            ailcminrow(i,1,j)=0.0
            ailcmaxrow(i,1,j)=0.0
            gleafmasrow(i,1,j)=0.0
@@ -2072,13 +2089,16 @@ c      initial conditions always required
            rootmassrow(i,1,j)=0.0
            lfstatusrow(i,1,j)=4
            pandaysrow(i,1,j)=0
+          end if
          enddo
 
          lfstatusrow(i,1,1)=2
 
          do j = 1,iccp1
+          if (.not. crop(j)) then !don't do crops
            litrmassrow(i,1,j)=0.0 
            soilcmasrow(i,1,j)=0.0 
+          end if
          enddo
        enddo !nltest
 

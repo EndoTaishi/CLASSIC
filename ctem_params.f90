@@ -812,7 +812,7 @@ aridlmt = [ 9.9,  9.9,  0.0, &
             9.9,  9.9,  0.0, &
             9.9,  9.9,  0.0 ]
 
-dryseasonlmt=[ 99.9,  99.9,    0.0, &
+dryseasonlmt=[  9.5,  99.9,    0.0, &
                99.9,  99.9,    5.5, & 
                99.9,  99.9,    0.0, &
                99.9,  99.9,    0.0 ]
@@ -821,8 +821,8 @@ dryseasonlmt=[ 99.9,  99.9,    0.0, &
 
 ! Flag all values have been changed from 0.1 JM Mar 10 2014
 ! smaller numbers give faster colonization rates.
-bio2sap = [ 0.25, 0.25, 0.00, &
-            0.125, 0.15, 0.19, & 
+bio2sap = [ 0.25, 0.20, 0.00, & ! apr 1 pft 2 was 0.25 JM
+            0.13, 0.15, 0.13, & ! april 1 JM, 5 was 0.15
             0.00, 0.00, 0.00, &
             0.40, 0.40, 0.00 ]  
 
@@ -879,9 +879,9 @@ cdlsrtmx = [ 0.10, 0.30, 0.00, &  ! test PFT 1 was 0.15 JM Feb 3 2014
              0.15, 0.15, 0.00 ]
 
 drlsrtmx = [ 0.006 , 0.005, 0.000, & !pft 1 was 0.0025 JM Mar 6 2014.
-             0.010 , 0.025, 0.050, & !pft 5 was 0.005, pft 4 was 0.005 jm feb 3 2014, pft 3 was 0.005
+             0.010 , 0.025, 0.030, & !pft 5 was 0.05, pft 4 was 0.005 jm feb 3 2014, pft 3 was 0.005
              0.005 , 0.005, 0.000, &
-             0.01 , 0.050, 0.000 ]  !PFT 8 and 9 were 0.05 
+             0.025 , 0.050, 0.000 ]  !PFT 8 and 9 were 0.05 
 
 
 lwrthrsh = [ -50.0, -5.0, 0.0, &  !flag pft 1 was -45 JM Feb 3 2014

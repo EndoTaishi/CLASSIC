@@ -370,8 +370,8 @@ integer :: i,j
 
 !       needleleaf evergreen
         j=1
-        if(tcoldm(i).ge.tcoldmin(sort(j)).and. tcoldm(i).le.tcoldmax(sort(j)).and. &
-           gdd5(i).ge.gdd5lmt(sort(j)))then
+        if(tcoldm(i).le.tcoldmax(sort(j)).and.gdd5(i).ge.gdd5lmt(sort(j)) &
+           .and.dry_season_length(i).le.dryseasonlmt(sort(j)))then
            pftexist(i,j)=.true.
         else
            pftexist(i,j)=.false.
