@@ -152,7 +152,6 @@ c     green and brown leaves
 c
       do 100 j = 1, icc
         do 110 i = il1, il2
-c         if (fcancmx(i,j).gt.0.0) then  !flag jm. lv out...
           diff1=(gleafmas(i,j)+bleafmas(i,j)- pglfmass(i,j)-
      &     pblfmass(i,j))
           diff2=(ntchlveg(i,j)- tltrleaf(i,j)- glcaemls(i,j)- 
@@ -171,7 +170,6 @@ c     stem
 c
       do 150 j = 1, icc
         do 160 i = il1, il2
-c         if (fcancmx(i,j).gt.0.0) then  !flag jm. lv out...
           diff1=stemmass(i,j) - pstemass(i,j)
           diff2=(ntchsveg(i,j)- tltrstem(i,j)- 
      &     stcaemls(i,j))*(deltat/963.62)
@@ -189,7 +187,6 @@ c     root
 c
       do 200 j = 1, icc
         do 210 i = il1, il2
-c         if (fcancmx(i,j).gt.0.0) then  !flag jm. lv out...
           diff1=rootmass(i,j) - protmass(i,j)
           diff2=(ntchrveg(i,j)- tltrroot(i,j)- 
      &     rtcaemls(i,j))*(deltat/963.62)
@@ -207,7 +204,6 @@ c     litter over all pfts
 c
       do 250 j = 1, icc
         do 260 i = il1, il2
-c         if (fcancmx(i,j).gt.0.0) then !flag jm. lv out...
           diff1=litrmass(i,j) - plitmass(i,j)
           diff2=( tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j)-
      &      ltresveg(i,j)-humtrsvg(i,j)-ltrcemls(i,j))*(deltat/963.62)  
@@ -223,25 +219,21 @@ c         endif
 c
 c     litter over the bare fraction
 c
-      do 270 j = icc+1, icc+1
         do 280 i = il1, il2
-          diff1=litrmass(i,j) - plitmass(i,j)
-          diff2=( -ltresveg(i,j)-humtrsvg(i,j))*
+          diff1=litrmass(i,icc+1) - plitmass(i,icc+1)
+          diff2=( -ltresveg(i,icc+1)-humtrsvg(i,icc+1))*
      &          ( deltat/963.62 )  
           if((abs(diff1-diff2)).gt.tolrance)then
-            write(6,2003)i,j,abs(diff1-diff2),tolrance
+            write(6,2003)i,icc+1,abs(diff1-diff2),tolrance
             call xit('balcar',-6)
           endif
 280     continue
-270   continue    
 c
 c
 c     soil carbon over the bare fraction
 c
       do 300 j = 1, icc+1
         do 310 i = il1, il2
-c        if (j .lt. icc+1) then  !flag jm. lv out...
-c         if (fcancmx(i,j).gt.0.0) then
           diff1=soilcmas(i,j) - psocmass(i,j)
           diff2=( humtrsvg(i,j)-scresveg(i,j) )*(deltat/963.62)  
           if((abs(diff1-diff2)).gt.tolrance)then

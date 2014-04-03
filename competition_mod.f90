@@ -639,7 +639,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
     if (dofire) then
 
-        call burntobare(il1, il2, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
+        call burntobare(il1, il2, nilg, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
                       rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
                       nppveg)
 

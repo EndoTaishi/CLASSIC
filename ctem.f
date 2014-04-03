@@ -545,9 +545,6 @@ c
 80      continue 
 c
         do 81 i = il1, il2
-C        FLAG: Some of the earlier calcs should be moved up to runclassctem. However, the actual final calc must be done
-C        daily since faregat can change daily in competition model. Perhaps a good way would be to have a tot_grclarea that
-c        is then multiplied by faregat each day. JM.
 
           grclarea(i) = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)
      &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic
@@ -570,9 +567,6 @@ c
         end do
 c
         do i = il1, il2
-C         FLAG: Some of the earlier calcs should be moved up to runclassctem. However, the actual final calc must be done
-C         daily since faregat can change daily in competition model. Perhaps a good way would be to have a tot_grclarea that
-c         is then multiplied by faregat each day. JM.
 
           grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)
      &                   *faregat(i)/2.0  !km^2, faregat is areal fraction of each mosaic

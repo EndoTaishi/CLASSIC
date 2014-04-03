@@ -738,7 +738,7 @@ end subroutine disturb
 
 ! ------------------------------------------------------------------------------------
 
-subroutine burntobare(il1, il2, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
+subroutine burntobare(il1, il2, nilg, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
                       rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass,&
                       nppveg)
 
@@ -752,42 +752,43 @@ subroutine burntobare(il1, il2, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, st
 !     J. Melton. Mar 26 2014  - Create subroutine
 
 
-use ctem_params, only : ilg, crop, icc, seed, standreplace, grass, zero, &
+use ctem_params, only : crop, icc, seed, standreplace, grass, zero, &
                         iccp1, tolrance
 
 implicit none
 
 integer, intent(in) :: il1
 integer, intent(in) :: il2
-real, dimension(ilg), intent(in) :: pvgbioms          ! initial veg biomass
-real, dimension(ilg), intent(in) :: pgavltms          ! initial litter mass
-real, dimension(ilg), intent(in) :: pgavscms          ! initial soil c mass
-real, dimension(ilg,icc), intent(inout) :: fcancmx    ! initial fractions of the ctem pfts
-real, dimension(ilg,icc), intent(in) :: burnvegf      ! total per PFT areal fraction burned
-real, dimension(ilg,icc), intent(inout) :: gleafmas
-real, dimension(ilg,icc), intent(inout) :: bleafmas
-real, dimension(ilg,icc), intent(inout) :: stemmass
-real, dimension(ilg,icc), intent(inout) :: rootmass
-real, dimension(ilg,icc), intent(inout) :: nppveg     ! npp for individual pfts,  u-mol co2/m2.sec
-real, dimension(ilg,iccp1), intent(inout) :: soilcmas   ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
-real, dimension(ilg,iccp1), intent(inout) :: litrmass
-real, dimension(ilg,icc), intent(in)    :: pstemmass  ! grid averaged stemmass prior to disturbance, kg c/m2
-real, dimension(ilg,icc), intent(in)    :: pgleafmass  ! grid averaged rootmass prior to disturbance, kg c/m2
+integer, intent(in) :: nilg       ! no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
+real, dimension(nilg), intent(in) :: pvgbioms          ! initial veg biomass
+real, dimension(nilg), intent(in) :: pgavltms          ! initial litter mass
+real, dimension(nilg), intent(in) :: pgavscms          ! initial soil c mass
+real, dimension(nilg,icc), intent(inout) :: fcancmx    ! initial fractions of the ctem pfts
+real, dimension(nilg,icc), intent(in) :: burnvegf      ! total per PFT areal fraction burned
+real, dimension(nilg,icc), intent(inout) :: gleafmas
+real, dimension(nilg,icc), intent(inout) :: bleafmas
+real, dimension(nilg,icc), intent(inout) :: stemmass
+real, dimension(nilg,icc), intent(inout) :: rootmass
+real, dimension(nilg,icc), intent(inout) :: nppveg     ! npp for individual pfts,  u-mol co2/m2.sec
+real, dimension(nilg,iccp1), intent(inout) :: soilcmas   ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(nilg,iccp1), intent(inout) :: litrmass
+real, dimension(nilg,icc), intent(in)    :: pstemmass  ! grid averaged stemmass prior to disturbance, kg c/m2
+real, dimension(nilg,icc), intent(in)    :: pgleafmass  ! grid averaged rootmass prior to disturbance, kg c/m2
 
-logical, dimension(ilg) :: shifts_occur      ! true if any fractions changed
+logical, dimension(nilg) :: shifts_occur      ! true if any fractions changed
 integer :: i, j
 real :: pftfraca_old
 real :: term                                 ! temp variable for change in fraction due to fire
-real, dimension(ilg) :: pbarefra             ! bare fraction prior to fire              
-real, dimension(ilg) :: barefrac             ! bare fraction of grid cell
-real, dimension(ilg) :: litr_lost            ! litter that is transferred to bare 
-real, dimension(ilg) :: soilc_lost           ! soilc that is transferred to bare
-real, dimension(ilg) :: vgbiomas_temp        ! grid averaged vegetation biomass for internal checks, kg c/m2
-real, dimension(ilg) :: gavgltms_temp        ! grid averaged litter mass for internal checks, kg c/m2
-real, dimension(ilg) :: gavgscms_temp        ! grid averaged soil c mass for internal checks, kg c/m2
-real, dimension(ilg,icc) :: pftfracb         ! pft fractions before accounting for creation of bare ground
-real, dimension(ilg,icc) :: pftfraca         ! pft fractions after accounting for creation of bare ground
-real, dimension(ilg,icc) :: frac_chang       ! pftfracb - pftfraca
+real, dimension(nilg) :: pbarefra             ! bare fraction prior to fire              
+real, dimension(nilg) :: barefrac             ! bare fraction of grid cell
+real, dimension(nilg) :: litr_lost            ! litter that is transferred to bare 
+real, dimension(nilg) :: soilc_lost           ! soilc that is transferred to bare
+real, dimension(nilg) :: vgbiomas_temp        ! grid averaged vegetation biomass for internal checks, kg c/m2
+real, dimension(nilg) :: gavgltms_temp        ! grid averaged litter mass for internal checks, kg c/m2
+real, dimension(nilg) :: gavgscms_temp        ! grid averaged soil c mass for internal checks, kg c/m2
+real, dimension(nilg,icc) :: pftfracb         ! pft fractions before accounting for creation of bare ground
+real, dimension(nilg,icc) :: pftfraca         ! pft fractions after accounting for creation of bare ground
+real, dimension(nilg,icc) :: frac_chang       ! pftfracb - pftfraca
 ! -----------------------------------------
 
 ! Do some initializations
@@ -852,7 +853,7 @@ do 10 i = il1, il2
 
                  ! adjust the bare frac to accomodate for the changes 
                  barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
-           ! write(*,*)'readjust',j,pftfraca_old-pftfraca(i,j)
+
                end if
             else !grasses
                if (gleafmas(i,j)*term .gt. pgleafmass(i,j) .and. pgleafmass(i,j) .gt. 0.) then
@@ -862,11 +863,11 @@ do 10 i = il1, il2
 
                  ! adjust the bare frac to accomodate for the changes 
                  barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
-          !  write(*,*)'readjust',j,pftfraca_old-pftfraca(i,j)
+
                end if
             end if
 
-         !   write(*,*)'adjust',j,term
+
             term = pftfracb(i,j)/pftfraca(i,j)
             gleafmas(i,j)=gleafmas(i,j)*term
             bleafmas(i,j)=bleafmas(i,j)*term
@@ -896,7 +897,6 @@ do 10 i = il1, il2
 
       do 100 i = il1, il2
         if(barefrac(i).gt.zero .and. barefrac(i) .ne. pbarefra(i))then
-        !  write(*,*)barefrac(i),pbarefra(i),soilcmas(i,iccp1),(soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i)
           litrmass(i,iccp1) = (litrmass(i,iccp1)*pbarefra(i) + litr_lost(i)) / barefrac(i)
           soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i)
         else if (barefrac(i) .lt. 0.) then

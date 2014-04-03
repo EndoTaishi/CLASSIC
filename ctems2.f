@@ -456,7 +456,7 @@ c
 c
  
 c     this class variable is scattered here, but it gathered in classg,
-c     not in ctemg2. flag jm jan 8 2013.
+c     not in ctemg2. jm jan 8 2013.
       do 300 l=1,icp1
        do 300 k=1,nml
           fcanrow(ilmos(k),jlmos(k),l)     = fcangat(k,l)  

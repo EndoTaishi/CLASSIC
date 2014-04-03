@@ -2057,7 +2057,7 @@ c      competition subroutines.
        fcanrow=0.0
        dvdfcanrow=0.0
 
-       ! FLAG: Added this as start_bare runs were not properly assigning 
+       ! Added this as start_bare runs were not properly assigning 
        ! a TCAN on the very first day since the fcanrow was 0. JM Jan 14 2014. 
        do i=1,nltest
         do j=1,iccp1
@@ -2346,9 +2346,9 @@ c
               csum(i,m,j) = csum(i,m,j) + 
      &         dvdfcanrow(i,m,icountrow(i,m))
 
-!              Flag- added in seed here to prevent competition from getting
+!              Added in seed here to prevent competition from getting
 !              pfts with no seed fraction.  JM Feb 20 2014.
-              if (compete) then
+              if (compete .and. .not. mosaic) then
                fcancmxrow(i,m,icountrow(i,m))=max(seed,fcanrow(i,m,j)*
      &         dvdfcanrow(i,m,icountrow(i,m)))
                barf(i) = barf(i) - fcancmxrow(i,m,icountrow(i,m))
@@ -5376,7 +5376,7 @@ c
 c
              if(iday.eq.mmday(nt))then
 
-               do j=1,icc !perhaps not needed? flag?
+               do j=1,icc 
                 vgbiomas_mo_m(i,m,j)=0.0
                 litrmass_mo_m(i,m,j)=0.0
                 soilcmas_mo_m(i,m,j)=0.0
