@@ -423,7 +423,7 @@ c
        real      co2concin,  popdin,    setco2conc, sumfare,
      1           temp_var, barefrac,  todfrac(ilg,icc), barf(nlat)
 
-      real grclarea(ilg)
+      real grclarea(ilg), crop_temp_frac(ilg,2)
 c
       real tcanrs(nlat,nmos), tsnors(nlat,nmos), tpndrs(nlat,nmos),
      1     csum(nlat,nmos,ican),       tbaraccrow_m(nlat,nmos,ignd),
@@ -1897,160 +1897,168 @@ c
 c     if this run uses the competition or lnduseon parameterization and
 c     starts from bare ground, set up the model state here. this 
 c     overwrites what was read in from the .ini and .ctm files. 
-c     for composite runs, the set up is after this one for mosaics
-      if ((compete .or. lnduseon) .and. start_bare .and. mosaic) then 
+c     for composite runs (the composite set up is after this one for mosaics)
+      if ((compete .or. lnduseon) .and. start_bare) then
 
-c      check the number of mosaics that came from the .ini file
-       if (nmtest .ne. nmos) then
+       if (mosaic) then 
 
-c       we need to transfer some initial parameterization info to all
-c       mosaics, so set all values to that of the first mosaic.
-        do i=1,nltest
-         do m=nmtest+1,nmos
-          if (m .ne. 6 .or. m .ne. 7) then !don't do crops!
+c       store the read-in crop fractions as we keep them even when we start bare. 
+c       FLAG: this is setup assuming that crops are in mosaics 6 and 7. JM Apr 9 2014.
+         do i=1,nltest
+          crop_temp_frac(i,1)=farerow(i,6)
+          crop_temp_frac(i,2)=farerow(i,7)
+         end do
+
+c       check the number of mosaics that came from the .ini file
+        if (nmtest .ne. nmos) then
+
+c        we need to transfer some initial parameterization info to all
+c        mosaics, so set all values to that of the first mosaic.
+         do i=1,nltest
+          do m=nmtest+1,nmos
 c
-          do j=1,ican
-           if (j .ne. 3) then ! don't do crops
-            rsmnrow(i,m,j)=rsmnrow(i,1,j)
-            qa50row(i,m,j)=qa50row(i,1,j)
-            vpdarow(i,m,j)=vpdarow(i,1,j)
-            vpdbrow(i,m,j)=vpdbrow(i,1,j)
-            psgarow(i,m,j)=psgarow(i,1,j)
-            psgbrow(i,m,j)=psgbrow(i,1,j)
-           end if
-          enddo
+           do j=1,ican
+             rsmnrow(i,m,j)=rsmnrow(i,1,j)
+             qa50row(i,m,j)=qa50row(i,1,j)
+             vpdarow(i,m,j)=vpdarow(i,1,j)
+             vpdbrow(i,m,j)=vpdbrow(i,1,j)
+             psgarow(i,m,j)=psgarow(i,1,j)
+             psgbrow(i,m,j)=psgbrow(i,1,j)
+           enddo
 c
-          drnrow(i,m)=drnrow(i,1)
-          sdeprow(i,m)=sdeprow(i,1)
-          farerow(i,m)=farerow(i,1)
-          xslprow(i,m)=xslprow(i,1)
-          grkfrow(i,m)=grkfrow(i,1)
-          wfsfrow(i,m)=wfsfrow(i,1)
-          wfcirow(i,m)=wfcirow(i,1)
-          midrow(i,m)=midrow(i,1)
+           drnrow(i,m)=drnrow(i,1)
+           sdeprow(i,m)=sdeprow(i,1)
+           farerow(i,m)=farerow(i,1)
+           xslprow(i,m)=xslprow(i,1)
+           grkfrow(i,m)=grkfrow(i,1)
+           wfsfrow(i,m)=wfsfrow(i,1)
+           wfcirow(i,m)=wfcirow(i,1)
+           midrow(i,m)=midrow(i,1)
 c
-          do j=1,3
+           do j=1,3
             sandrow(i,m,j)=sandrow(i,1,j)
             clayrow(i,m,j)=clayrow(i,1,j)
             orgmrow(i,m,j)=orgmrow(i,1,j)
             tbarrow(i,m,j)=tbarrow(i,1,j)
             thlqrow(i,m,j)=thlqrow(i,1,j)
             thicrow(i,m,j)=thicrow(i,1,j)
+           enddo
+c
+           tcanrow(i,m)=tcanrow(i,1)
+           tsnorow(i,m)=tsnorow(i,1)
+           tpndrow(i,m)=tpndrow(i,1)
+           zpndrow(i,m)=zpndrow(i,1)
+           rcanrow(i,m)=rcanrow(i,1)
+           scanrow(i,m)=scanrow(i,1)
+           snorow(i,m)=snorow(i,1)
+           albsrow(i,m)=albsrow(i,1)
+           rhosrow(i,m)=rhosrow(i,1)
+           grorow(i,m)=grorow(i,1)
+           do j=1,icc
+             lfstatusrow(i,m,j) = 4
+           enddo !j
+c
+          enddo !m
+         enddo !i
+
+c       set the number of mosaics to icc+1        
+        nmtest=nmos
+
+        endif  !if (nmtest .ne. nmos)
+c
+c       set the initial conditions for the pfts
+c       (bah, this is such an inelegant way to do this, but oh well...)
+c
+c       initalize to zero
+        fcanrow=0.0
+        dvdfcanrow=0.0
+        farerow=0.0
+
+        do i=1,nltest
+         do m=1,nmtest
+c
+c         set the seed amount for each pft in its mosaic
+          if (compete .or. lnduseon) then
+            if (m .lt. icc+1) then
+             farerow(i,m)=seed
+            else
+             farerow(i,m)=1.0 - (real(icc) * seed)
+            endif
+          endif
+
+          do j = 1,icc
+            ailcminrow(i,m,j)=0.0
+            ailcmaxrow(i,m,j)=0.0
+            gleafmasrow(i,m,j)=0.0
+            bleafmasrow(i,m,j)=0.0
+            stemmassrow(i,m,j)=0.0
+            rootmassrow(i,m,j)=0.0
+            lfstatusrow(i,m,j)=4
+            pandaysrow(i,m,j)=0
           enddo
-c
-          tcanrow(i,m)=tcanrow(i,1)
-          tsnorow(i,m)=tsnorow(i,1)
-          tpndrow(i,m)=tpndrow(i,1)
-          zpndrow(i,m)=zpndrow(i,1)
-          rcanrow(i,m)=rcanrow(i,1)
-          scanrow(i,m)=scanrow(i,1)
-          snorow(i,m)=snorow(i,1)
-          albsrow(i,m)=albsrow(i,1)
-          rhosrow(i,m)=rhosrow(i,1)
-          grorow(i,m)=grorow(i,1)
-          do j=1,icc
-           if (.not. crop(j)) then !don't do crops!
-            lfstatusrow(i,m,j) = 4
-           end if
-          enddo !j
-c
-          end if ! crops
-         enddo !m
-        enddo !i
-
-c      set the number of mosaics to icc+1        
-       nmtest=nmos
-
-       endif  !if (nmtest .ne. nmos)
-c
-c      set the initial conditions for the pfts
-c      (bah, this is such an inelegant way to do this, but oh well...)
-c
-c      initalize to zero
-       fcanrow=0.0
-       dvdfcanrow=0.0
-       farerow=0.0
-
-       do i=1,nltest
-        do m=1,nmtest
-c
-         if (m .ne. 6 .or. m .ne. 7) then !don't do crops!
-
-c        set the seed amount for each pft in its mosaic
-         if (compete .or. lnduseon) then
-           if (m .lt. icc+1) then
-            farerow(i,m)=seed
-           else
-            farerow(i,m)=1.0 - (real(icc) * seed)
-           endif
-         endif
-
-         do j = 1,icc
-          if (.not. crop(j)) then !don't do crops
-           ailcminrow(i,m,j)=0.0
-           ailcmaxrow(i,m,j)=0.0
-           gleafmasrow(i,m,j)=0.0
-           bleafmasrow(i,m,j)=0.0
-           stemmassrow(i,m,j)=0.0
-           rootmassrow(i,m,j)=0.0
-           lfstatusrow(i,m,j)=4
-           pandaysrow(i,m,j)=0
-          endif
-         enddo
   
-         lfstatusrow(i,m,1)=2
+          lfstatusrow(i,m,1)=2
 
-         do j = 1,iccp1
-          if (.not. crop(j)) then !don't do crops
-           litrmassrow(i,m,j)=0. 
-           soilcmasrow(i,m,j)=0. 
-          end if
-         enddo
+          do j = 1,iccp1
+            litrmassrow(i,m,j)=0. 
+            soilcmasrow(i,m,j)=0. 
+          enddo
 
-c        initial conditions always required
-         dvdfcanrow(i,m,1)=1.0  !ndl
-         dvdfcanrow(i,m,3)=1.0  !bdl
-         dvdfcanrow(i,m,6)=1.0  !crop
-         dvdfcanrow(i,m,8)=1.0  !grasses
+c         initial conditions always required
+          dvdfcanrow(i,m,1)=1.0  !ndl
+          dvdfcanrow(i,m,3)=1.0  !bdl
+          dvdfcanrow(i,m,6)=1.0  !crop
+          dvdfcanrow(i,m,8)=1.0  !grasses
 
-c        then adjusted below for the actual mosaic makeup
-         if (m .le. 2) then                     !ndl
-          fcanrow(i,m,1)=1.0
-          if (m .eq. 2) then
-            dvdfcanrow(i,m,1)=0.0
-            dvdfcanrow(i,m,2)=1.0        
-          endif
-         elseif (m .ge. 3 .and. m .le. 5) then  !bdl
-          fcanrow(i,m,2)=1.0
-          if (m .eq. 4) then
-            dvdfcanrow(i,m,3)=0.0
-            dvdfcanrow(i,m,4)=1.0        
-          endif
-          if (m .eq. 5) then
-            dvdfcanrow(i,m,3)=0.0
-            dvdfcanrow(i,m,5)=1.0        
-          endif
-         elseif (m .eq. 6 .or. m .eq. 7) then  !crop
-          fcanrow(i,m,3)=1.0
-          if (m .eq. 7) then
-            dvdfcanrow(i,m,6)=0.0
-            dvdfcanrow(i,m,7)=1.0        
-          endif
-         elseif (m .eq. 8 .or. m .eq. 9) then  !grasses
-          fcanrow(i,m,4)=1.0
-          if (m .eq. 9) then
-            dvdfcanrow(i,m,8)=0.0
-            dvdfcanrow(i,m,9)=1.0        
-          endif
-         else                                  !bare/urban? 
-          fcanrow(i,m,5)=1.0
-         endif !mosaic adjustments
-        endif !crops
-        enddo  !m
-       enddo  !i
+c         then adjusted below for the actual mosaic makeup
+          if (m .le. 2) then                     !ndl
+           fcanrow(i,m,1)=1.0
+           if (m .eq. 2) then
+             dvdfcanrow(i,m,1)=0.0
+             dvdfcanrow(i,m,2)=1.0        
+           endif
+          elseif (m .ge. 3 .and. m .le. 5) then  !bdl
+           fcanrow(i,m,2)=1.0
+           if (m .eq. 4) then
+             dvdfcanrow(i,m,3)=0.0
+             dvdfcanrow(i,m,4)=1.0        
+           endif
+           if (m .eq. 5) then
+             dvdfcanrow(i,m,3)=0.0
+             dvdfcanrow(i,m,5)=1.0        
+           endif
+          elseif (m .eq. 6 .or. m .eq. 7) then  !crop
+           fcanrow(i,m,3)=1.0
+           if (m .eq. 7) then
+             dvdfcanrow(i,m,6)=0.0
+             dvdfcanrow(i,m,7)=1.0        
+           endif
+          elseif (m .eq. 8 .or. m .eq. 9) then  !grasses
+           fcanrow(i,m,4)=1.0
+           if (m .eq. 9) then
+             dvdfcanrow(i,m,8)=0.0
+             dvdfcanrow(i,m,9)=1.0        
+           endif
+          else                                  !bare/urban? 
+           fcanrow(i,m,5)=1.0
+           endif !mosaic adjustments
+         enddo  !m
+        enddo  !i
 
-      else if ((compete .or. lnduseon) .and. start_bare 
-     1         .and. .not. mosaic) then  !set up for composite runs
+
+         do i=1,nltest
+          farerow(i,6)=crop_temp_frac(i,1)
+          farerow(i,7)=crop_temp_frac(i,2)
+         end do
+
+      else if (.not. mosaic) then  !set up for composite runs when start_bare is on and compete or landuseon
+
+c       store the read-in crop fractions as we keep them even when we start bare. 
+c       FLAG: this is setup assuming that crops are in pft number 6 and 7. JM Apr 9 2014.
+         do i=1,nltest
+          crop_temp_frac(i,1)=fcanrow(i,1,3)*dvdfcanrow(i,1,6)
+          crop_temp_frac(i,2)=fcanrow(i,1,3)*dvdfcanrow(i,1,7)
+         end do
 
 c      initalize to zero, these will be filled in by the luc or 
 c      competition subroutines.
@@ -2060,14 +2068,12 @@ c      competition subroutines.
        ! Added this as start_bare runs were not properly assigning 
        ! a TCAN on the very first day since the fcanrow was 0. JM Jan 14 2014. 
        do i=1,nltest
-        do j=1,iccp1
-          if (.not. crop(j)) then !don't do crops         
+        do j=1,iccp1       
            if (j .lt. icc+1) then
             fcanrow(i,1,j)=seed
            else
             fcanrow(i,1,j)=1.0 - (real(icc) * seed)
            endif
-          end if
         end do
        end do
 
@@ -2080,7 +2086,6 @@ c      initial conditions always required
          dvdfcanrow(i,1,8)=1.0  !grasses
 
          do j = 1,icc
-          if (.not. crop(j)) then !don't do crops
            ailcminrow(i,1,j)=0.0
            ailcmaxrow(i,1,j)=0.0
            gleafmasrow(i,1,j)=0.0
@@ -2089,19 +2094,28 @@ c      initial conditions always required
            rootmassrow(i,1,j)=0.0
            lfstatusrow(i,1,j)=4
            pandaysrow(i,1,j)=0
-          end if
          enddo
 
          lfstatusrow(i,1,1)=2
 
          do j = 1,iccp1
-          if (.not. crop(j)) then !don't do crops
            litrmassrow(i,1,j)=0.0 
            soilcmasrow(i,1,j)=0.0 
-          end if
          enddo
        enddo !nltest
 
+         do i=1,nltest
+          fcanrow(i,1,3) = crop_temp_frac(i,1) + crop_temp_frac(i,2)
+          if (fcanrow(i,1,3) .gt. abszero) then
+           dvdfcanrow(i,1,6) = crop_temp_frac(i,1) / fcanrow(i,1,3)
+           dvdfcanrow(i,1,7) = crop_temp_frac(i,2) / fcanrow(i,1,3)
+          else
+           dvdfcanrow(i,1,6) = 1.0
+           dvdfcanrow(i,1,7) = 0.0
+          end if
+         end do
+
+      end if ! mosaic / composite
       end if !if (compete/landuseon .and. start_bare) 
 
 C===================== CTEM =============================================== /
@@ -5097,10 +5111,12 @@ c
            lterm_g(i)    =lterm_g(i)   +ltermrow(i,m)*farerow(i,m) 
            mterm_g(i)    =mterm_g(i)   +mtermrow(i,m)*farerow(i,m) 
 
-           do k=1,ignd
+           do j=1,icc  
+
+            do k=1,ignd
              rmatctem_g(i,k)=rmatctem_g(i,k)+rmatctemrow(i,m,j,k)
      1                            *farerow(i,m)*fcancmxrow(i,m,j)
-           end do
+            end do
 
            veghght_g(i) = veghght_g(i) + veghghtrow(i,m,j)
      1                            *farerow(i,m)*fcancmxrow(i,m,j)
@@ -5110,8 +5126,6 @@ c
      1                            *farerow(i,m)*fcancmxrow(i,m,j)
            slai_g(i) = slai_g(i) + slairow(i,m,j)
      1                            *farerow(i,m)*fcancmxrow(i,m,j)
-
-           do j=1,icc  
 
            emit_co2_g(i) =emit_co2_g(i)+ emit_co2row(i,m,j)
      1                            *farerow(i,m)*fcancmxrow(i,m,j)

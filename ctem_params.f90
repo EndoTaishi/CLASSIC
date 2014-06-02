@@ -154,10 +154,10 @@ real, dimension(kk) :: albnir           ! near IR albedos of the 9 ctem pfts
 
    ! existence subroutine:
 
-real, dimension(kk) :: tcoldmin         ! maximum coldest month temperature
-real, dimension(kk) :: tcoldmax         ! maximum warmest month temperature
-real, dimension(kk) :: twarmmax         ! minimum gdd above 5 c required to exist
-real, dimension(kk) :: gdd5lmt          ! aridity index limit for broadleaf drought/dry deciduous trees
+real, dimension(kk) :: tcoldmin         ! minimum coldest month temperature
+real, dimension(kk) :: tcoldmax         ! maximum coldest month temperature
+real, dimension(kk) :: twarmmax         ! maximum warmest month temperature
+real, dimension(kk) :: gdd5lmt          ! minimum gdd above 5 c required to exist
 real, dimension(kk) :: aridlmt          ! aridity index limit for broadleaf drought/dry deciduous trees
 real, dimension(kk) :: dryseasonlmt     ! minimum length of dry season for PFT to exist
 
@@ -173,6 +173,7 @@ real, dimension(kk) :: humicfac         ! Humification factor - used for transfe
 real, dimension(kk) :: laimin           ! Minimum lai below which a pft doesn't expand
 real, dimension(kk) :: laimax           ! Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
 real :: lambdamax                       ! Max. fraction of npp that is allocated for reproduction/colonization
+real :: repro_fraction                  ! Fraction of NPP that is used to create reproductive tissues
 
 ! disturb.f90 parameters: -------------
 
@@ -404,17 +405,19 @@ albnir = [ 19.0, 19.0, 0.00, &
 
 ! ctem.f parameters: ----------
 
-grescoef = [ 0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.15, &
-             0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
-
 humicfac = [ 0.42, 0.42, 0.00, &
              0.53, 0.48, 0.48, &
              0.42, 0.42, 0.00, &
              0.42, 0.42, 0.00 ]
 
+grescoef = [ 0.15, 0.15, 0.00, &
+             0.15, 0.15, 0.15, &
+             0.15, 0.15, 0.00, &
+             0.15, 0.15, 0.00 ]
+
 lambdamax = 0.10 
+
+repro_fraction = 0.10
 
 ! disturbance parameters: ------------
 
@@ -426,8 +429,8 @@ alpha_fire = 8.16326e-04  !FLAG, no longer needed???? JM Feb 20 2014.
 
 f0 = 0.05
 
-bmasthrs_fire = [ 0.4, 1.2 ] ! testing
-!bmasthrs_fire = [ 0.2, 1.0 ] ! ORIG
+!bmasthrs_fire = [ 0.4, 1.2 ] ! testing 
+bmasthrs_fire = [ 0.2, 1.0 ] ! ORIG JM May 1
 !     **Lowering the bmasthrs_fire gets too much burning outside of the tropics, 
 !     however maybe this higher value prevents the savannahs from burning more? -JM
 
@@ -443,7 +446,7 @@ duff_dry = 0.15
 !     **Parmlght was increased to 0.8 to make it so areas with higher amounts of
 !     lightning have higher lterm. The saturation is still the same, but the 
 !     increase is more gradual at low lightning density. JM
-parmlght = 0.8  !TESTING 0.8
+parmlght = 0.8  
 parblght = 0.1
 
 ! Li et al vals (except grass)
@@ -656,7 +659,7 @@ bsratesc = [ 0.0260, 0.0260, 0.0000, &
              0.0208, 0.0208, 0.0208, &
 !c     &              0.0310, 0.0310, 0.0000,
              0.0350, 0.0350, 0.0000, &
-             0.0205, 0.0205, 0.0000 ]  !flag JM test Oct 9 2013. was 0.0125 for both
+             0.0125, 0.0125, 0.0000 ]  !flag JM test Oct 9 2013. was 0.0125 for both (test val was 0.0205)
 
 tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ]
            !   a     b      c     d
@@ -771,7 +774,7 @@ omega = [ 0.80, 0.50, 0.00, &
 epsilonl = [ 0.19, 0.45, 0.00, &  !pft 2 was 0.06 JM Dec 17 2013
              0.39, 0.50, 0.30, &  !pft 5 was 0.25
              0.80, 0.80, 0.00, &
-             0.20, 0.10, 0.00 ]
+             0.10, 0.10, 0.00 ]
 
 epsilons = [ 0.40, 0.34, 0.00, &
              0.21, 0.35, 0.10, & !pft 3 was 0.05
@@ -781,7 +784,7 @@ epsilons = [ 0.40, 0.34, 0.00, &
 epsilonr = [ 0.41, 0.21, 0.00, &  !pft 2 was 0.89 JM Dec 17 2013
              0.40, 0.15, 0.60, &  !pft 5 was 0.65
              0.05, 0.05, 0.00, &
-             0.80, 0.90, 0.00 ]
+             0.90, 0.90, 0.00 ]
 
 ! competition_mod.f90 parameters
 
@@ -821,10 +824,10 @@ dryseasonlmt=[  9.0,  99.9,    0.0, &
 
 ! Flag all values have been changed from 0.1 JM Mar 10 2014
 ! smaller numbers give faster colonization rates.
-bio2sap = [ 0.25, 0.20, 0.00, & ! apr 1 pft 2 was 0.25 JM
-            0.13, 0.15, 0.13, & ! april 1 JM, 5 was 0.15
+bio2sap = [ 0.28, 0.20, 0.00, & ! apr 1 pft 2 was 0.25 JM
+            0.10, 0.14, 0.13, & ! april 1 JM, 5 was 0.15
             0.00, 0.00, 0.00, &
-            0.40, 0.40, 0.00 ]  
+            0.20, 0.20, 0.00 ]  ! were 0.4 for both JM Apr 14 2014.
 
 bioclimrt = 0.25                
                      
@@ -833,7 +836,7 @@ bioclimrt = 0.25
 laimin = [ 1.0, 1.0, 0.0, &
            1.5, 1.0, 1.0, &  ! flag test PFT 4 was 1.5, 5 was 0.7
            1.0, 1.0, 0.0, &
-           0.5, 1.0, 0.0 ]  
+           0.01, 0.01, 0.0 ]  !PFT 8 was 0.5 and 9 was 1.0 JM Apr 11 
 
 laimax = [ 4.0, 3.0, 0.0, & ! flag pft 1 was 6.0 JM Mar 11 2014
            6.0, 5.0, 5.0, & 
@@ -861,15 +864,26 @@ bsrtroot = [ 0.5000, 0.2850, 0.0000, &
 
 ! mortality.f parameters: ---------
 
-maxage = [ 450.0, 250.0,   0.0, &  !flag, test pft 1 was 250. JM Mar 10 2014.
-           350.0, 200.0, 250.0, &  !flag, test pft 4 was 250. pft 3 was 250 JM Mar 10 2014.
+!maxage = [ 450.0, 250.0,   0.0, &  !flag, test pft 1 was 250. JM Mar 10 2014.
+!           350.0, 200.0, 250.0, &  !flag, test pft 4 was 250. pft 3 was 250 JM Mar 10 2014.
+!             0.0,   0.0,   0.0, &
+!             0.0,   0.0,   0.0 ]
+
+! flag test May 1 JM
+maxage = [ 800.0, 500.0,   0.0, &  !flag, test pft 1 was 250. JM Mar 10 2014.
+           700.0, 450.0, 500.0, &  !flag, test pft 4 was 250. pft 3 was 250 JM Mar 10 2014.
              0.0,   0.0,   0.0, &
              0.0,   0.0,   0.0 ]
 
-mxmortge = [ 0.01, 0.01, 0.00, &
-             0.01, 0.01, 0.01, & 
+!mxmortge = [ 0.01, 0.01, 0.00, &
+!             0.01, 0.01, 0.01, & 
+!             0.00, 0.00, 0.00, & 
+!             0.05, 0.10, 0.00 ] 
+
+mxmortge = [ 0.005, 0.005, 0.00, &  ! JM test Apr 15.
+             0.005, 0.005, 0.005, & 
              0.00, 0.00, 0.00, & 
-             0.005, 0.01, 0.00 ]
+             0.05, 0.10, 0.00 ] 
 
 ! phenology.f parameters: ---------
 
@@ -881,7 +895,7 @@ cdlsrtmx = [ 0.10, 0.30, 0.00, &  ! test PFT 1 was 0.15 JM Feb 3 2014
 drlsrtmx = [ 0.006 , 0.005, 0.000, & !pft 1 was 0.0025 JM Mar 6 2014.
              0.010 , 0.025, 0.030, & !pft 5 was 0.05, pft 4 was 0.005 jm feb 3 2014, pft 3 was 0.005
              0.005 , 0.005, 0.000, &
-             0.025 , 0.050, 0.000 ]  !PFT 8 and 9 were 0.05 
+             0.040 , 0.040, 0.000 ]  !PFT 8 and 9 were 0.05 
 
 
 lwrthrsh = [ -50.0, -5.0, 0.0, &  !flag pft 1 was -45 JM Feb 3 2014
@@ -898,15 +912,25 @@ thrprcnt = [ 40.0, 40.0,  0.0, &
 
 ! turnover.f parameters: --------------
 
-stemlife = [ 75.0, 75.0, 0.00, &   ! flag pft 1 was 65.0 JM Mar 10 2014
-             70.0, 70.0, 65.0, &  !flag pft 4 was 40.0, pft 5 was 45.0, Jan31 2014 JM pft 3 was 45.0
+!stemlife = [ 75.0, 75.0, 0.00, &   ! flag pft 1 was 65.0 JM Mar 10 2014
+!             70.0, 70.0, 65.0, &  !flag pft 4 was 40.0, pft 5 was 45.0, Jan31 2014 JM pft 3 was 45.0
+!             20.0, 20.0, 0.00, &
+!              0.00, 0.00, 0.00 ]
+
+!rootlife = [ 12.0,11.5, 0.0, &
+!             11.0, 9.5, 8.5, &     ! flag pft 4 and 5 were 5.5, Jan31 2014 JM pft 3 was 8.5
+!              3.0, 3.0, 0.0, &
+!              2.5, 2.5, 0.0 ]
+! FLAG test increase all turnovers by 15% (except crop) JM Apr 21 2014.
+stemlife = [ 86.3, 86.3, 0.00, &   ! flag pft 1 was 65.0 JM Mar 10 2014
+             80.5, 80.5, 75.8, &  !flag pft 4 was 40.0, pft 5 was 45.0, Jan31 2014 JM pft 3 was 45.0
              20.0, 20.0, 0.00, &
               0.00, 0.00, 0.00 ]
 
-rootlife = [ 12.0,11.5, 0.0, &
-             11.0, 9.5, 8.5, &     ! flag pft 4 and 5 were 5.5, Jan31 2014 JM pft 3 was 8.5
+rootlife = [ 13.8,13.2, 0.0, &
+             12.7,10.9, 9.8, &     ! flag pft 4 and 5 were 5.5, Jan31 2014 JM pft 3 was 8.5
               3.0, 3.0, 0.0, &
-              2.5, 2.5, 0.0 ]
+              3.0, 3.0, 0.0 ]
 
 
 !   ********************************************************************************************

@@ -170,11 +170,14 @@ c
         do 310 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
           stemltrm(i,j)=stemmass(i,j)*
-     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
+!     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
+     &    ( 1.0-exp(-1.0*(intrmort(i,j))) )
           rootltrm(i,j)=rootmass(i,j)*
-     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
+!     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
+     &    ( 1.0-exp(-1.0*(intrmort(i,j))) )
           glealtrm(i,j)=gleafmas(i,j)*
-     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
+!     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
+     &    ( 1.0-exp(-1.0*(intrmort(i,j))) )
          endif
 310     continue
 300   continue

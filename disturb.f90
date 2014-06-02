@@ -147,7 +147,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !     hbratio   - head to back ratio of ellipse
 !     burnvegf - total per PFT areal fraction burned
 
-use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, seed, crop, &
+use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
                         iccp1, standreplace, tolrance, bmasthrs_fire, extnmois, &
                         lwrlthrs, hgrlthrs, parmlght, parblght, reparea, popdthrshld, & 
                         alpha_fire, f0, maxsprd, frco2glf, frco2blf, &
@@ -316,7 +316,7 @@ real :: soilterm, duffterm              ! temporary variables
       do 200 j = 1, icc
         do 210 i = il1, il2
 
-         if (fcancmx(i,j) .gt. seed .and. .not. crop(j)) then !don't allow it to bring in crops since they are not allowed to burn. JM
+         if (.not. crop(j)) then !don't allow it to bring in crops since they are not allowed to burn. JM
 
 !           Root biomass is not used to initiate fire. For example if
 !           the last fire burned all grass leaves, and some of the roots
@@ -375,7 +375,7 @@ real :: soilterm, duffterm              ! temporary variables
 
       do 320 j = 1, icc
         do 330 i = il1, il2
-         if (fcancmx(i,j) .gt. seed .and. .not. crop(j)) then
+         if (.not. crop(j)) then
      
           drgtstrs(i,j) =  (betadrgt(i,1))*rmatctem(i,j,1) + (betadrgt(i,2))*rmatctem(i,j,2) + &
                          (betadrgt(i,3))*rmatctem(i,j,3)
@@ -599,7 +599,6 @@ real :: soilterm, duffterm              ! temporary variables
        k2 = k1 + nol2pfts(j) - 1
        do 475 m = k1, k2
         do 480 i = il1, il2
-         if (fcancmx(i,m) .gt. seed) then
           if(vegarea(i) .gt. zero)then
             burnveg(i,m)= burnarea(i) * pftareab(i,m)/vegarea(i) !in km^2
             if(j .eq. 3)then  !crops not allowed to burn
@@ -608,7 +607,6 @@ real :: soilterm, duffterm              ! temporary variables
           else
             burnveg(i,m)= 0.0
           endif
-         endif
 480     continue
 475    continue 
 470   continue 
@@ -649,7 +647,6 @@ real :: soilterm, duffterm              ! temporary variables
       do 520 j = 1, icc
        n = sort(j)
         do 530 i = il1, il2
-         if (fcancmx(i,j) .gt. seed) then
           if(pftareab(i,j) .gt. zero)then
 
             !Set aside these pre-disturbance stem and root masses for use
@@ -678,7 +675,6 @@ real :: soilterm, duffterm              ! temporary variables
             burnvegf(i,j)=burnveg(i,j)/grclarea(i)
 
           endif
-         endif
 530     continue
 520   continue
 
@@ -697,7 +693,6 @@ real :: soilterm, duffterm              ! temporary variables
       do 620 j = 1, icc
        n = sort(j)
         do 630 i = il1, il2
-         if (fcancmx(i,j) .gt. seed) then
 
 !          Calculate the emissions of trace gases and aerosols based upon how
 !          much plant matter was burnt
@@ -730,7 +725,6 @@ real :: soilterm, duffterm              ! temporary variables
            emit_oc(i,j)   = emif_oc(n) * tot_emit_dom
            emit_bc(i,j)   = emif_bc(n) * tot_emit_dom
 
-         endif
 630     continue
 620   continue
 

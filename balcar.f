@@ -5,9 +5,10 @@
      3                     glcaemls, blcaemls, stcaemls, rtcaemls,
      4                     ltrcemls, ltresveg, scresveg, humtrsvg,
      5                     pglfmass, pblfmass, pstemass, protmass,
-     6                     plitmass, psocmass, vgbiomas,
+     6                     plitmass, psocmass, vgbiomas, repro_cost,
      7                     pvgbioms, gavgltms, pgavltms, gavgscms,
-     8                     pgavscms, galtcels, expnbaln,
+!     8                     pgavscms, galtcels, expnbaln,
+     8                     pgavscms, galtcels, repro_cost_g, !FLAG
      9                          npp,  autores, hetrores,      gpp,
      a                          nep,   litres,   socres, dstcemls,
      b                          nbp, litrfall, humiftrs,
@@ -43,6 +44,7 @@ c     litrmass  - litter mass over the 9 pfts and the bare fraction
 c                 of the grid cell
 c     soilcmas  - soil carbon mass over the 9 pfts and the bare fraction
 c                 of the grid cell
+c     repro_cost - amount of C transferred to litter due to reproductive tissues
 c
 c                 grid averaged pools
 c     vgbiomas  - vegetation biomass
@@ -102,6 +104,7 @@ c     socres    - soil carbon respiration
 c     dstcemls  - carbon emission losses due to disturbance, mainly fire
 c     galtcels  - carbon emission losses from litter
 c     expnbaln  - amount of c related to spatial expansion
+c     repro_cost_g - amount of C used to generate reproductive tissues
 c     nbp       - net biome productivity
 c     litrfall  - combined (leaves, stem, and root) total litter fall rate   
 c     humiftrs  - humification
@@ -135,8 +138,9 @@ c
      9          autores(ilg),       hetrores(ilg),            gpp(ilg),
      a              nep(ilg),         litres(ilg),         socres(ilg),
      b         dstcemls(ilg),            nbp(ilg),       litrfall(ilg),
-     c         humiftrs(ilg),                
-     d         galtcels(ilg),       expnbaln(ilg)
+     c         humiftrs(ilg),       repro_cost(ilg,icc),          
+!     d         galtcels(ilg),       expnbaln(ilg),   
+     d         galtcels(ilg),    repro_cost_g(ilg)
 c
       real             diff1,               diff2
 c
@@ -206,7 +210,8 @@ c
         do 260 i = il1, il2
           diff1=litrmass(i,j) - plitmass(i,j)
           diff2=( tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j)-
-     &      ltresveg(i,j)-humtrsvg(i,j)-ltrcemls(i,j))*(deltat/963.62)  
+     &      ltresveg(i,j)-humtrsvg(i,j)-(ltrcemls(i,j))
+     &      + repro_cost(i,j))*(deltat/963.62) !FLAG!!  
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2003)i,j,abs(diff1-diff2),tolrance
 2003        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
@@ -254,7 +259,8 @@ c
       do 350 i = il1, il2
         diff1=vgbiomas(i)-pvgbioms(i)
         diff2=(gpp(i)-autores(i)-litrfall(i)-
-     &   dstcemls(i)+expnbaln(i))*(deltat/963.62)
+     &   dstcemls(i)-repro_cost_g(i))*(deltat/963.62)
+!     &   dstcemls(i)+expnbaln(i))*(deltat/963.62) !FLAG
         if((abs(diff1-diff2)).gt.tolrance)then
           write(6,3001)'vgbiomas(',i,')=',vgbiomas(i)
           write(6,3001)'pvgbioms(',i,')=',pvgbioms(i)
@@ -262,7 +268,8 @@ c
           write(6,3001)' autores(',i,')=',autores(i)
           write(6,3001)'litrfall(',i,')=',litrfall(i)
           write(6,3001)'dstcemls(',i,')=',dstcemls(i)
-          write(6,3001)'expnbaln(',i,')=',expnbaln(i)
+!          write(6,3001)'expnbaln(',i,')=',expnbaln(i) !FLAG
+          write(6,3001)'repro_cost_g(',i,')=',repro_cost_g(i)
 3001      format(a9,i2,a2,f14.9) 
           write(6,2005)i,abs(diff1-diff2),tolrance
 2005      format('at (i)= (',i3,'),',f12.6,' is greater

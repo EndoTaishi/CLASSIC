@@ -96,7 +96,9 @@ logical, intent(out) :: inibioclim  ! set this to true if competition between pf
 
 logical, intent(out) :: start_bare !set this to true if competition is true, and if you wish
                                  ! to start from bare ground. if this is set to false, the 
-                                 ! ini and ctm file info will be used to set up the run.
+                                 ! ini and ctm file info will be used to set up the run. 
+                                 ! NOTE: This still keeps the crop fractions (while setting all pools to
+                                 ! zero)
 
 logical, intent(out) :: rsfile   ! set this to true if restart files (.ini_rs and .ctm_rs)   
  				 ! are written at the end of each year. these files are  

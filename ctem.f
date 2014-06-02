@@ -100,7 +100,7 @@ c    -----------------------------------------------------------------
      1                               edgelat, kn,iccp1, ican, ilg, nlat,
      2                               ignd, icc, nmos, l2max, grescoef,
      3                               humicfac,laimin,laimax,lambdamax,
-     4                               crop
+     4                               crop,repro_fraction
       use landuse_change,     only : luc
       use competition_scheme, only : bioclim, existence, competition
       use disturbance_scheme, only : disturb
@@ -493,12 +493,16 @@ c
 c     
       real     barefrac(ilg),       pbarefrc(ilg),           tolrance,
      1       lambda(ilg,icc),   add2allo(ilg,icc),  lyglfmas(ilg,icc),
-     2     expbalvg(ilg,icc),       expnbaln(ilg), ltrflcom(ilg,iccp1),
-     3          cc(ilg,icc),         mm(ilg,icc),    barefrac_tmp(ilg)  
+!     2     expbalvg(ilg,icc),       expnbaln(ilg), ltrflcom(ilg,iccp1), !FLAG
+     2   ltrflcom(ilg,iccp1),
+     3          cc(ilg,icc),         mm(ilg,icc),    barefrac_tmp(ilg),
+     4     reprocost(ilg,icc),  repro_cost_g(ilg)
 c
       integer   surmncur(ilg),       defmncur(ilg)
 c
       logical compete, inibioclim, pftexist(ilg,icc)
+
+       real lambdaalt !FLAG testing JM Apr 8 2014
 c
 c     ---------------------------------------------------------------
 c     Constants and parameters are located in ctem_params.f90
@@ -591,6 +595,12 @@ c
  95   continue
 c
 c     ---------------------------------------------------------------
+!     Initialize add2allo to 0.0   !FLAG JM Test May 8 2014. 
+        do j = 1, icc
+          do i = il1, il2
+            add2allo(i,j)=0.0
+          enddo
+        enddo
 c
       if(compete .or. lnduseon)then
 
@@ -689,10 +699,15 @@ c
      6         srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,
      7           annpcp_cmp, anpotevp_cmp, dry_season_length_cmp)
 
+
        if (inibioclim) then
 c
 c        if first day of year then based on updated bioclimatic parameters
-c        find if pfts can exist or not
+c        find if pfts can exist or not. 
+c        If .not. inibioclim then it is the first year of a run that you do not have the 
+!        climatological means already in the CTM file. After one
+!        year inibioclim is set to true and the climatological means
+!        are used from the first year.
 c
           call existence(iday,            1,         nlat,         nlat,
      1                   sort,     nol2pfts,      
@@ -720,30 +735,9 @@ c
 c    ------------------- updates above this line ------------------
 c
      8           add2allo_cmp,      cc_cmp,      mm_cmp)
-
-
-         else  ! It is the first year of a run that you do not have the 
-              ! climatological means already in the CTM file. After one
-              ! year inibioclim is set to true and the climatological means
-              ! are used from the first year.
-
-           do i = il1, nlat
-             do j = 1, icc
-              add2allo_cmp(i,j)=0.0
-             enddo
-           enddo
+c    ------------------- outputs above this line ------------------
 
          end if !inibioclim
-c
-c    ------------------- outputs above this line ------------------
-c      
-        else !compete = false
-
-           do i = il1, nlat
-             do j = 1, icc
-              add2allo_cmp(i,j)=0.0
-             enddo
-           enddo
 
         endif !compete check
 c     -----------------------------------------------------------------
@@ -831,9 +825,13 @@ c
      7                 annpcp, anpotevp, dry_season_length )
 c
         if (inibioclim) then
-
-c       if first day of year then based on updated bioclimatic parameters
-c       find if pfts can exist or not
+c
+c        if first day of year then based on updated bioclimatic parameters
+c        find if pfts can exist or not. 
+c        If .not. inibioclim then it is the first year of a run that you do not have the 
+!        climatological means already in the CTM file. After one
+!        year inibioclim is set to true and the climatological means
+!        are used from the first year.
 c
         call existence(iday,            1,         il2,         ilg,
      1                     sort,     nol2pfts,        
@@ -844,7 +842,6 @@ c
 c       call competition subroutine which on the basis of previous day's
 c       npp estimates changes in fractional coverage of pfts
 c
-!         write(*,*)'precomp',gavgscms(1),gavgltms(1),vgbiomas(1)
         call competition (iday,     1,        il2,      ilg,
      1                    nol2pfts, nppveg,   dofire,
      2                    pftexist, geremort, intrmort,
@@ -864,25 +861,7 @@ c
 c
 c    ------------------- outputs above this line ------------------
 c
- !        write(*,*)'postcomp',gavgscms(1),gavgltms(1),vgbiomas(1)
-        else  ! It is the first year of a run that you do not have the 
-              ! climatological means already in the CTM file. After one
-              ! year inibioclim is set to true and the climatological means
-              ! are used from the first year.
-          do j = 1, icc
-            do i = il1, il2
-              add2allo(i,j)=0.0
-            enddo
-          enddo
         end if
-
-       else  ! competition is not on
-
-        do j = 1, icc
-          do i = il1, il2
-            add2allo(i,j)=0.0
-          enddo
-        enddo
 
        endif  ! if (compete)
 c
@@ -909,38 +888,12 @@ c
      7                  lucemcom, lucltrin, lucsocin)
 
         endif !lnduseon
-c
+
        endif ! mosaic vs. composite
-
-       else  !not compete/lnduseon
-
-        do j = 1, icc
-          do i = il1, il2
-            add2allo(i,j)=0.0
-          enddo
-        enddo
 
       endif !compete/lnduseon
 
 c     ---------------------------------------------------------------
-c
-!      MOVED to disturb - JM Feb 14 2014.
-!c     find pft areas before (these are required for disturb subroutine)
-!c
-!c      if(stdaln.eq.0)then         ! i.e. when operated in a gcm mode 
-!        do 82 j = 1, icc
-!          do  83 i = il1, il2
-!            pftareab(i,j)=fcancmx(i,j)*grclarea(i)  ! area in km^2
-!83        continue
-!82      continue
-!c      else if(stdaln.eq.1)then    ! i.e. when operated at point scale
-!c        do 92 j = 1, icc
-!c          do 93 i = il1, il2
-!c            grclarea=0.01
-!c            pftareab(i,j)=0.01*fcancmx(i,j)      ! 0.01 km2 = 1 hectare
-!c93        continue
-!c92      continue
-!c      endif
 c
 c     initialize required arrays to zero
 c
@@ -985,8 +938,9 @@ c
         ltresveg(i,iccp1)=0.0  !litter respiration rate over bare fraction
         scresveg(i,iccp1)=0.0  !soil c respiration rate over bare fraction
         hetrsveg(i,iccp1)=0.0  !heterotrophic resp. rate over bare fraction
-c       expnbaln  is used for competition
-        expnbaln(i)=0.0        !amount of c related to spatial expansion
+!c       expnbaln  is used for competition
+!        expnbaln(i)=0.0        !amount of c related to spatial expansion  !FLAG
+        repro_cost_g(i)=0.0    !amount of C for production of reproductive tissues
 
 100   continue 
 c
@@ -1041,9 +995,8 @@ c
 c
 c         following are competition related
           lambda(i,j)=0.0    !fraction of npp that is used for horizontal expansion
-          expbalvg(i,j)=0.0  !amount of c related to spatial expansion
-          add2allo(i,j)=0.0
- 
+!          expbalvg(i,j)=0.0  !amount of c related to spatial expansion  !FLAG
+          reprocost(i,j) = 0.0 ! cost of producing reproductive tissues (ymold !FLAG
 c
 120     continue
 110   continue
@@ -1132,6 +1085,7 @@ c     equal to zero so that we don't use these numbers in carbon budget.
 c
       do 180 j = 1, icc
         do 190 i = il1, il2
+
           gppcsveg(i,j)=ancsveg(i,j)+rmlcsveg(i,j)
           gppcgveg(i,j)=ancgveg(i,j)+rmlcgveg(i,j)
 c
@@ -1190,10 +1144,11 @@ c
 c
           rmveg(i,j)  = rmlveg(i,j) + rmrveg(i,j) + rmsveg(i,j)
           nppveg(i,j) = gppveg(i,j) - rmveg(i,j)
+
 280     continue 
 270   continue 
 c
-c     now that we know maintenance respiration from leaf, stem, and root,
+c     Now that we know maintenance respiration from leaf, stem, and root,
 c     and gpp, we can find growth respiration for each vegetation 
 c
       do 300 j = 1, icc
@@ -1204,10 +1159,11 @@ c
             rgveg(i,j)=0.0
           endif
           nppveg(i,j) = nppveg(i,j) - rgveg(i,j)
+
 310     continue
 300   continue
 c
-c     calculate grid-averaged rates of rm, rg, npp, and gpp
+c     Calculate grid-averaged rates of rm, rg, npp, and gpp
 c
       do 320 j = 1,icc
         do 330 i = il1, il2
@@ -1282,6 +1238,7 @@ c
             scresveg(i,j)= (fcanc(i,j)*scrsvgcg(i,j) + 
      &        fcancs(i,j)*scrsvgcs(i,j)) / ( fcanc(i,j) + fcancs(i,j))
             hetrsveg(i,j) =  ltresveg(i,j) + scresveg(i,j)
+
           else
             ltresveg(i,j)= 0.0
             scresveg(i,j)= 0.0
@@ -1399,7 +1356,7 @@ c
      5                     afrleaf,  afrstem,  afrroot,    wiltsm,
      6                     fieldsm, wtstatus, ltstatus)
 c  
-c     estimate fraction of npp that is to be used for horizontal
+c     Estimate fraction of npp that is to be used for horizontal
 c     expansion (lambda) during the next day. the remaining fraction (1
 c     - lambda) is what we will use for vertical expansion. 
 c
@@ -1418,6 +1375,16 @@ c
               lambda(i,j)=((ailcg(i,j)-laimin(n))*lambdamax)/
      &                    (laimax(n)-laimin(n))
            endif
+
+!              FLAG testing Apr 8 JM
+           if (ailcg(i,j) .gt. laimin(n)*0.25) then
+            lambdaalt = cosh((ailcg(i,j) - laimin(n)*0.25) * 0.115) - 1.
+           else
+            lambdaalt=0.
+           end if
+
+           lambda(i,j)=max(lambda(i,j),lambdaalt)
+!             test end.
 
            lambda(i,j)=max(0.0, min(lambdamax, lambda(i,j)))
 c
@@ -1446,16 +1413,29 @@ c
 c
 c         convert npp and maintenance respiration from different components
 c         from units of u mol co2/m2.sec -> kg c/m2 sequestered or respired
-c         over the model time step          
-          gppvgstp(i,j)=gppveg(i,j)*(1.0/963.62)*deltat + add2allo(i,j)
-          nppvgstp(i,j)=nppveg(i,j)*(1.0/963.62)*deltat*(1.-lambda(i,j))
-     &                  + add2allo(i,j)
+c         over the model time step (deltat)    
+      
+          gppvgstp(i,j)=gppveg(i,j)*(1.0/963.62)*deltat !+ add2allo(i,j)
+
+!          nppvgstp(i,j)=nppveg(i,j)*(1.0/963.62)*deltat*(1.-lambda(i,j))
+!     &                  + add2allo(i,j)
+
+!         Remove the cost of making reproductive tissues. This cost can only
+!         be removed when NPP is positive.
+          if (compete) then 
+            reprocost(i,j) =max(0.,nppveg(i,j)*repro_fraction)
+          else
+            reprocost(i,j) = 0.
+          end if   
+
+          nppvgstp(i,j)=(nppveg(i,j)-reprocost(i,j))*(1.0/963.62)*deltat !FLAG test jm may 12
 c
 c         amount of c related to horizontal expansion
 c
-          expbalvg(i,j)=-1.0*nppveg(i,j)*deltat*lambda(i,j)
-     &                  + add2allo(i,j)*(963.62/1.0)
-c
+!          expbalvg(i,j)=-1.0*nppveg(i,j)*deltat*lambda(i,j)
+!     &                  + add2allo(i,j)*(963.62/1.0)
+
+c        
           rmlvgstp(i,j)=rmlveg(i,j)*(1.0/963.62)*deltat
           rmsvgstp(i,j)=rmsveg(i,j)*(1.0/963.62)*deltat
           rmrvgstp(i,j)=rmrveg(i,j)*(1.0/963.62)*deltat
@@ -1548,14 +1528,12 @@ c     calculate grid averaged value of c related to spatial expansion
 c
       do 620 j = 1,icc
         do 621 i = il1, il2
-c      if (compete .or. lnduseon) then
-          expnbaln(i)=expnbaln(i)+fcancmx(i,j)*expbalvg(i,j)
-c      else
-c          expnbaln(i)=0.0
-c      endif
+         if (compete .or. lnduseon) then  
+!           expnbaln(i)=expnbaln(i)+fcancmx(i,j)*expbalvg(i,j)
+            repro_cost_g(i)=repro_cost_g(i)+fcancmx(i,j)*reprocost(i,j)      
+         endif
 621     continue
 620   continue
-c
 c
 c    ------------------------------------------------------------------
 c
@@ -1677,12 +1655,13 @@ c
 c
 c     update litter pool with leaf litter calculated in the phenology 
 c     subroutine and stem and root litter calculated in the turnover
-c     subroutine.
+c     subroutine. Also add the reproduction carbon directly to the litter pool
 c
       do 800 j = 1, icc
         do 810 i = il1, il2
-          litrmass(i,j)=litrmass(i,j)+leaflitr(i,j)+stemlitr(i,j)+
-     &                  rootlitr(i,j)
+          litrmass(i,j)=litrmass(i,j) + leaflitr(i,j) + stemlitr(i,j) +
+     &                  rootlitr(i,j) + reprocost(i,j)*(1.0/963.62)
+     &                       *deltat
 810     continue
 800   continue
 c
@@ -1699,7 +1678,7 @@ c     reduced growth. Mortality is linked to the competition parameterization
 c     and generates bare fraction.
 c
       if (compete) then
-        do_mortality=.true.
+        do_mortality=.true. 
       else
         do_mortality=.false.
       end if  
@@ -1882,16 +1861,17 @@ c     (in kg c/m2). Now we call the balcar subroutine and make sure that
 c     C in leaves, stem, root, litter and soil C pool balances within a
 c     certain tolerance.
 c
-      if(spinfast.eq.1)then
+      if(spinfast.eq.1)then 
              call  balcar(gleafmas, stemmass, rootmass,  bleafmas,
      1                    litrmass, soilcmas, ntchlveg,  ntchsveg,
      2                    ntchrveg, tltrleaf, tltrstem,  tltrroot,
      3                    glcaemls, blcaemls, stcaemls,  rtcaemls,
      4                    ltrcemls, ltresveg, scresveg,  humtrsvg,
      5                    pglfmass, pblfmass, pstemass,  protmass,
-     6                    plitmass, psocmass, vgbiomas,
+     6                    plitmass, psocmass, vgbiomas,  reprocost,
      7                    pvgbioms, gavgltms, pgavltms,  gavgscms,
-     8                    pgavscms, galtcels, expnbaln,
+!     8                    pgavscms, galtcels, expnbaln,  !FLAG
+     8                    pgavscms, galtcels, repro_cost_g,
      9                         npp,  autores, hetrores,       gpp,
      a                         nep,   litres,   socres, dstcemls1,
      b                         nbp, litrfall, humiftrs,
@@ -1899,7 +1879,7 @@ c
       endif
 c
 c     -----------------------------------------------------------------
-c
+
 c     Finally find vegetation structural attributes which can be passed
 c     to the land surface scheme using leaf, stem, and root biomass. 
 c

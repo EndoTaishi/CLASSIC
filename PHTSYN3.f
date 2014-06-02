@@ -11,6 +11,7 @@ C                       PHOTOSYNTHESIS SUBROUTINE
 
 C     HISTORY:
 C
+C     * APR 11/14 - J. Melton      When at wilting point SM_FUNC should be 0. Was incorrectly set to 0.01
 C     * JAN 15/14 - J. Melton      Fixed bug in SM_FUNC calculation that prevented
 C     *                            higher number PFTs from feeling water stress.
 C     *                            Also have new parameter values in Vmax, SN, and RMLcoef        
@@ -843,10 +844,10 @@ C
         DO 510 I = IL1, IL2
 C         
           IF(ISAND(I,J) .EQ. -3 .OR. ISAND(I,J) .EQ. -4)THEN
-            SM_FUNC(I,J)=0.01
+            SM_FUNC(I,J)=0.0 !0.01  !FLAG this should not be >0. JM Apr 11 2014.
           ELSE ! I.E., ISAND.NE.-3 OR -4
            IF(THLIQ(I,J).LE.WILTSM(I,J)) THEN
-            SM_FUNC(I,J)=0.01
+            SM_FUNC(I,J)=0.0   !0.01  !FLAG this should not be >0. JM Apr 11 2014.
            ELSE IF(THLIQ(I,J).GT.WILTSM(I,J) .AND.
      &      THLIQ(I,J).LT.FIELDSM(I,J)) THEN
             SM_FUNC(I,J)=(THLIQ(I,J)-WILTSM(I,J))/
@@ -870,26 +871,23 @@ C
        DO 525 M = K1, K2
         DO 530 I = IL1, IL2
 C
-C        ADDED IN CONSTRAINT HERE FOR NUMERICAL STABILITY
-C        IT WAS DOING 0 TO EXP MATH BEFORE-JM AUG 17 2012
-C
-         IF (1.0 - ABS(SM_FUNC(I,1)) .GT. 1E-6) THEN
+!         IF (1.0 - ABS(SM_FUNC(I,1)) .GT. 1E-6) THEN
           SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**INT(SN(SORT(M))) )
-         ELSE
-          SM_FUNC2(I,1)= 1.0
-         ENDIF
+!         ELSE
+!          SM_FUNC2(I,1)= 1.0
+!         ENDIF
 C
-         IF (1.0 - ABS(SM_FUNC(I,2)) .GT. 1E-6) THEN
+!         IF (1.0 - ABS(SM_FUNC(I,2)) .GT. 1E-6) THEN
           SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**INT(SN(SORT(M))) )
-         ELSE
-          SM_FUNC2(I,2)= 1.0
-         ENDIF
+!         ELSE
+!          SM_FUNC2(I,2)= 1.0
+!         ENDIF
 C
-         IF (1.0 - ABS(SM_FUNC(I,3)) .GT. 1E-6) THEN
+!         IF (1.0 - ABS(SM_FUNC(I,3)) .GT. 1E-6) THEN
           SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**INT(SN(SORT(M))) )
-         ELSE
-          SM_FUNC2(I,3)= 1.0
-         ENDIF
+!         ELSE
+!          SM_FUNC2(I,3)= 1.0
+!         ENDIF
 C
          SM_FUNC2(I,1)=SM_FUNC2(I,1)+(1.0-SM_FUNC2(I,1))
      &                 *SMSCALE(SORT(M))
