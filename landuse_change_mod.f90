@@ -221,8 +221,7 @@ barf=1.0
            if (mosaic) then
             if (farerow(i,nmtest) < seed) then
 
-             nfcancmxrow= adjust_luc_fracs(i,nmtest,nltest,&
-                                          nfcancmxrow,farerow(i,nmtest))
+             call adjust_luc_fracs(i,mosaic,nfcancmxrow,farerow(i,nmtest))
 
              do m = 1, nmtest
                 n = m
@@ -308,7 +307,7 @@ real, dimension(icc) :: temparray
 real :: temp
 integer :: j,m,i
 integer :: k1,k2,n
-real :: bare_ground_frac
+real, dimension(nltest) :: bare_ground_frac
 
 !-------------------------
 
@@ -332,39 +331,44 @@ real :: bare_ground_frac
 !     to the same as before. These will be adjusted in adjust_luc_fracs.
         if (compete) then
          do j = 1, icc
-          do i = 1, nltest
-           do m = 1, nmtest
-            if (.not. crop(j)) then
-              nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)
+          if (.not. crop(j)) then
+           do i = 1, nltest
+            if (.not. mosaic) then  !composite
+                m = 1
+            else !mosaic
+                m = j
             end if
+                nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)           
            end do
-          end do
+          end if
          end do
         end if
 
 
 !       (re)find the bare fraction for farerow(i,iccp1)
-         if (mosaic) then
+          bare_ground_frac=0.
           do i = 1, nltest
           temp = 0.0
-           do m = 1, nmtest-1
-            j = m
+           do j = 1, icc
+            if (mosaic) then !flag
+              m = j
+            else !composite
+              m = 1
+            end if 
             temp = temp + nfcancmxrow(i,m,j)
            enddo
 
-            bare_ground_frac = 1.0- temp
+            bare_ground_frac(i) = 1.0- temp
 
           enddo
           
           do i = 1, nltest
-           if (bare_ground_frac < seed) then
+           if (bare_ground_frac(i) < seed) then
 
-             nfcancmxrow= adjust_luc_fracs(i,nmtest,nltest, &
-                                           nfcancmxrow,bare_ground_frac)
+             call adjust_luc_fracs(i,mosaic,nfcancmxrow,bare_ground_frac(i))
 
            endif !bare_ground_frac<seed
           enddo !nltest
-         endif !mosaic
 
 return
 
@@ -507,6 +511,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       if(interpol) then ! perform interpolation 
        do 110 j = 1, icc
         do 111 i = il1, il2
+
           delfrac(i,j)=nfcancmx(i,j)-pfcancmx(i,j) !change in fraction
           delfrac(i,j)=delfrac(i,j)/365.0
           fcancmx(i,j)=pfcancmx(i,j)+(real(iday)*delfrac(i,j)) !  current day
@@ -565,17 +570,18 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     in cropland as only the crops areas is now specified.
       if (compete) then
 
-         compdelfrac= adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac)
-
+         call adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,compdelfrac)
+                                        
          do j = 1, icc
           do i = 1, il1, il2
+
             if (.not. crop(j)) then
              fcancmx(i,j)=yesfrac(i,j)+compdelfrac(i,j) !  current day
              fcancmy(i,j)=yesfrac(i,j) ! previous day
             end if
           end do
-         end do
 
+         end do
       end if
 
 !     check if this year's fractional coverages have changed or not
@@ -598,7 +604,6 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       do 255 q = il1, il2
         if (luctkplc(q)) then
 !     -------------------------------------------------------------------
- 
 !     initialization
 
       do 260 j = 1, ican
@@ -697,8 +702,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             barefrac(i) = 0.0
          endif
 304   continue
-!     find previous day's bare fraction using previous day's fcancmxs
 
+!     find previous day's bare fraction using previous day's fcancmxs
       do 310 j = 1, icc
         do 311 i = il1, il2
           pbarefra(i)=pbarefra(i)-fcancmy(i,j)
@@ -818,6 +823,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                   (abs(fcancmy(i,j)-fcancmx(i,j)).gt.zero) ) then
               fraciord(i,j)=-1 ! decreasing
           endif
+
 551     continue
 550   continue
 
@@ -833,7 +839,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         endif
 560   continue
 
-      
+
 !     if the fractional coverage of pfts increases then spread their
 !     live & dead biomass uniformly over the new fraction. this 
 !     effectively reduces their per m2 c density. 
@@ -1159,10 +1165,10 @@ end subroutine luc
 
 !=======================================================================
 
-function adjust_luc_fracs(i,nmtest,nltest,nfcancmxrow, &
-                          bare_ground_frac) result(outnfcrow)
+subroutine adjust_luc_fracs(i,mosaic,nfcancmxrow, &
+                          bare_ground_frac)
 
-! this function adjusts the amount of each pft to ensure that the fraction
+! this subroutine adjusts the amount of each pft to ensure that the fraction
 ! of gridcell bare ground is >0.
 
 ! j. melton, jan 11 2013
@@ -1173,10 +1179,9 @@ implicit none
 
 ! arguments:
 integer, intent(in) :: i
-integer, intent(in) :: nmtest
-integer, intent(in) :: nltest
-real, dimension(nlat,nmos,icc), intent(in) :: nfcancmxrow
+real, dimension(nlat,nmos,icc), intent(inout) :: nfcancmxrow
 real, intent(in) :: bare_ground_frac
+logical, intent(in) :: mosaic
 
 real, dimension(nlat,nmos,icc) :: outnfcrow
 
@@ -1193,10 +1198,16 @@ tot = 0.0
 needed_bare=(-bare_ground_frac) + seed
 
 ! get the proportionate amounts of each pft above the seed lower limit
-do j = 1,nmtest-1
-  m = j
+do j = 1,icc
+  if (mosaic) then
+    m = j
+  else
+    m = 1
+  end if
+
   frac_abv_seed(j)=max(0.0,nfcancmxrow(i,m,j)-seed)
   tot = tot + frac_abv_seed(j)
+
 enddo
 
 ! add in the bare ground min fraction of seed.
@@ -1205,19 +1216,24 @@ enddo
 ! now reduce the pfts proportional to their fractional area to make
 ! the bare ground fraction be the seed amount and no other pft be less than
 ! seed
-do j = 1,nmtest-1
-  m = j
+do j = 1,icc
+  if (mosaic) then
+    m = j
+  else
+    m = 1
+  end if
   outnfcrow(i,m,j)=max(seed,nfcancmxrow(i,m,j) - needed_bare * &
                        frac_abv_seed(j) / tot)
+  nfcancmxrow(i,m,j) = outnfcrow(i,m,j)
 enddo
 
-end function adjust_luc_fracs
+end subroutine adjust_luc_fracs
 
 !=======================================================================
 
-function adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac) result(outdelfrac)
+subroutine adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,outdelfrac)
 
-! This function is used when compete = true. It adjusts the amount of 
+! This subroutine is used when compete = true. It adjusts the amount of 
 ! each pft to allow expansion of cropland.
 
 ! J. Melton, Feb 13 2014
@@ -1235,12 +1251,14 @@ real, dimension(nilg,icc), intent(in) :: pfcancmx
 real, dimension(nilg,icc), intent(in) :: yesfrac
 real, dimension(nilg,icc), intent(in) :: delfrac
 
-real, dimension(nilg,icc) :: outdelfrac
+real, dimension(nilg,icc), intent(out) :: outdelfrac
 
 ! local variables:
 integer :: i, j
 real, dimension(nilg) :: chgcrop, cropfrac
 real, dimension(nilg,icc) :: adjus_fracs,fmx,fmy
+real, dimension(nilg) :: barefrac
+real, dimension(nilg,1,icc) :: tmpfcancmx
 
 real, parameter :: smallnumber = 1.0e-12
 
@@ -1251,6 +1269,7 @@ chgcrop = 0.
 cropfrac = 0.
 adjus_fracs = 0.
 outdelfrac = 0.
+barefrac=1.0
 
 ! Find how much the crop area changes this timestep. We only care about the total
 ! change, not the per crop PFT change.
@@ -1268,7 +1287,7 @@ do i = il1, il2
           cropfrac(i) = cropfrac(i) + seed
         end if 
 
-     end if     
+     end if   
   end do
 end do 
 
@@ -1288,12 +1307,29 @@ do i = il1, il2
        outdelfrac(i,j) = chgcrop(i) * adjus_fracs(i,j)
 
      end if
+
+     if (.not. crop(j)) then
+       barefrac(i) = barefrac(i) - (yesfrac(i,j) + outdelfrac(i,j))
+       tmpfcancmx(i,1,j) = yesfrac(i,j) + outdelfrac(i,j)
+     else  ! crops
+       barefrac(i) = barefrac(i) - fmx(i,j) 
+       tmpfcancmx(i,1,j) = fmx(i,j)
+     end if
     end do
+
+    if (barefrac(i) .lt. 0.0) then
+       ! tmpfcancmx has a nilg,1,icc dimension as adjust_luc_fracs expects
+       ! a 'row' structure of the array.
+       call adjust_luc_fracs(i,.false.,tmpfcancmx,barefrac(i))
+       do j = 1, icc
+          outdelfrac(i,j) = tmpfcancmx(i,1,j) - yesfrac(i,j)
+       end do
+    end if
 
   end if
 
 end do
 
-end function adjust_fracs_comp
+end subroutine adjust_fracs_comp
 
 end module

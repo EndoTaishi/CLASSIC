@@ -732,7 +732,7 @@ end subroutine disturb
 
 ! ------------------------------------------------------------------------------------
 
-subroutine burntobare(il1, il2, nilg, pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
+subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, burnvegf, stemmass, &
                       rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass,&
                       nppveg)
 
@@ -754,6 +754,8 @@ implicit none
 integer, intent(in) :: il1
 integer, intent(in) :: il2
 integer, intent(in) :: nilg       ! no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
+integer, dimension(icc), intent(in) :: sort             ! index for correspondence between 9 ctem pfts and
+                                                        ! size 12 of parameter vectors
 real, dimension(nilg), intent(in) :: pvgbioms          ! initial veg biomass
 real, dimension(nilg), intent(in) :: pgavltms          ! initial litter mass
 real, dimension(nilg), intent(in) :: pgavscms          ! initial soil c mass
@@ -770,7 +772,7 @@ real, dimension(nilg,icc), intent(in)    :: pstemmass  ! grid averaged stemmass 
 real, dimension(nilg,icc), intent(in)    :: pgleafmass  ! grid averaged rootmass prior to disturbance, kg c/m2
 
 logical, dimension(nilg) :: shifts_occur      ! true if any fractions changed
-integer :: i, j
+integer :: i, j, n
 real :: pftfraca_old
 real :: term                                 ! temp variable for change in fraction due to fire
 real, dimension(nilg) :: pbarefra             ! bare fraction prior to fire              
@@ -808,13 +810,15 @@ do 10 i = il1, il2
           do 25 j = 1, icc
             if(.not. crop(j))then  
 
+              n = sort(j)
+
               pbarefra(i)=pbarefra(i)-fcancmx(i,j)
               pftfracb(i,j)=fcancmx(i,j)
 
-              pftfraca(i,j) = max(seed,fcancmx(i,j) - burnvegf(i,j) * standreplace(j))
+              pftfraca(i,j) = max(seed,fcancmx(i,j) - burnvegf(i,j) * standreplace(n))
         
               fcancmx(i,j) = pftfraca(i,j)
-
+   
               barefrac(i)=barefrac(i)-fcancmx(i,j)
 
             else  !crops
@@ -840,27 +844,29 @@ do 10 i = il1, il2
             term = pftfracb(i,j)/pftfraca(i,j)
 
             if (.not. grass(j)) then
-               if (stemmass(i,j)*term .gt. pstemmass(i,j) .and. pstemmass(i,j) .gt. 0.) then
+               if (stemmass(i,j)*term .gt. pstemmass(i,j) .and. pstemmass(i,j) .gt. 0.) then  !the pstemmass is from before the fire occurred, i.e. no thinning!
 
                  pftfraca_old = pftfraca(i,j)
                  pftfraca(i,j) = max(seed,stemmass(i,j) * pftfracb(i,j) / pstemmass(i,j))
+                 fcancmx(i,j) = pftfraca(i,j)
 
                  ! adjust the bare frac to accomodate for the changes 
                  barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
 
                end if
             else !grasses
-               if (gleafmas(i,j)*term .gt. pgleafmass(i,j) .and. pgleafmass(i,j) .gt. 0.) then
+
+               if (gleafmas(i,j)*term .gt. pgleafmass(i,j) .and. pgleafmass(i,j) .gt. 0.) then !the pgleafmass is from before the fire occurred, i.e. no thinning!
 
                  pftfraca_old = pftfraca(i,j)
                  pftfraca(i,j) = max(seed,gleafmas(i,j) * pftfracb(i,j) / pgleafmass(i,j))
+                 fcancmx(i,j) = pftfraca(i,j)
 
                  ! adjust the bare frac to accomodate for the changes 
                  barefrac(i) = barefrac(i) + pftfraca_old - pftfraca(i,j)
 
                end if
             end if
-
 
             term = pftfracb(i,j)/pftfraca(i,j)
             gleafmas(i,j)=gleafmas(i,j)*term
@@ -875,10 +881,9 @@ do 10 i = il1, il2
 !           remaining vegetated fraction. But we do adjust it on the bare fraction to ensure
 !           our carbon balance works out.
             frac_chang(i,j) = pftfracb(i,j) - pftfraca(i,j)
-     
-            litr_lost(i)= litr_lost(i) + litrmass(i,j) * frac_chang(i,j)
-            soilc_lost(i)= soilc_lost(i) + soilcmas(i,j) * frac_chang(i,j)
-  
+            litr_lost(i)= litr_lost(i) + (litrmass(i,j) * frac_chang(i,j))
+            soilc_lost(i)= soilc_lost(i) + (soilcmas(i,j) * frac_chang(i,j))
+
         ! else  
 
         !    no changes
@@ -890,16 +895,16 @@ do 10 i = il1, il2
 40  continue
 
       do 100 i = il1, il2
-        if(barefrac(i).gt.zero .and. barefrac(i) .ne. pbarefra(i))then
-          litrmass(i,iccp1) = (litrmass(i,iccp1)*pbarefra(i) + litr_lost(i)) / barefrac(i)
-          soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i)
+        if(barefrac(i).gt.zero .and. barefrac(i) .gt. pbarefra(i))then
+          litrmass(i,iccp1) = litrmass(i,iccp1) + litr_lost(i)
+          soilcmas(i,iccp1) = soilcmas(i,iccp1) + soilc_lost(i)
+        else if (barefrac(i) .eq. 0.) then
+          litrmass(i,iccp1) = 0.0
+          soilcmas(i,iccp1) = 0.0
         else if (barefrac(i) .lt. 0.) then
           write(6,*)' In burntobare you have negative bare area'
           write(6,*)' bare is',barefrac(i),' original was',pbarefra(i)
           call xit('disturb-burntobare',-6)
-        else
-          litrmass(i,iccp1) = 0.0
-          soilcmas(i,iccp1) = 0.0
         endif
 100  continue
 
@@ -916,6 +921,7 @@ do 10 i = il1, il2
           bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
           gavgltms_temp(i)=gavgltms_temp(i)+fcancmx(i,j)*litrmass(i,j)
           gavgscms_temp(i)=gavgscms_temp(i)+fcancmx(i,j)*soilcmas(i,j)
+
 250    continue
 
         !then add the bare ground in.
@@ -932,7 +938,7 @@ do 10 i = il1, il2
         endif
 
         if(abs(gavgltms_temp(i)-pgavltms(i)).gt.tolrance)then
-          write(6,*)'grid averaged biomass densities do not balance'
+          write(6,*)'grid averaged litter densities do not balance'
           write(6,*)'after fractional coverages are changed to take'
           write(6,*)'into account burn area'
           write(6,*)'gavgltms_temp(',i,')=',gavgltms_temp(i)
@@ -941,7 +947,7 @@ do 10 i = il1, il2
         endif
 
         if(abs(gavgscms_temp(i)-pgavscms(i)).gt.tolrance)then
-          write(6,*)'grid averaged biomass densities do not balance'
+          write(6,*)'grid averaged soilc densities do not balance'
           write(6,*)'after fractional coverages are changed to take'
           write(6,*)'into account burn area'
           write(6,*)'gavgscms_temp(',i,')=',gavgscms_temp(i)

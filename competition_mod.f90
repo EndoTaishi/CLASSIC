@@ -639,7 +639,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
     if (dofire) then
 
-        call burntobare(il1, il2, nilg, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
+        call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
                       rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
                       nppveg)
 
@@ -1154,6 +1154,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     fractional coverage is really small then get rid of the pft all
 !     together and spread its live and dead biomass over the grid cell.
 
+! FLAG - I don't think this code loop below can happen since we have a min frac of seed. JM
       do 690 j = 1, icc
         do 691 i = il1, il2
           if(.not. pftexist(i,j).and.fcancmx(i,j).lt.1.0e-05)then
