@@ -2432,7 +2432,7 @@ c
 c     if land use change switch is on then read the fractional coverages 
 c     of ctem's 9 pfts for the first year.
 c
-      if (lnduseon) then
+      if (lnduseon .and. .not. cyclemet) then
 
          reach_eof=.false.  !flag for when read to end of luc input file
 
@@ -6358,7 +6358,8 @@ C
 c         the 999 label below is hit when an input file reaches its end.       
 999       continue
 
-            lopcount = lopcount+1           
+            lopcount = lopcount+1   
+
 
              if(lopcount.le.ctemloop)then
 

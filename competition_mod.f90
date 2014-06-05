@@ -636,7 +636,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     ---------------------------------------------------------------
 
 !   First, let's adjust the fractions if fire is turned on.
-
+goto 141
     if (dofire) then
 
         call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
@@ -653,7 +653,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 190   continue
 
     end if
-
+141 continue
 !     Do our usual initialization
 
       do 150 i = il1, il2 
@@ -798,7 +798,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
            cropfrac(i)=cropfrac(i)+fcancmx(i,j)
          endif
 
-!        rank the tree pfts according to their colonization rates 
+!        prepare to rank the tree pfts according to their colonization rates 
          if (pftexist(i,j)) then
            usenppvg(i,j)=colrate(i,j)
          end if
@@ -807,7 +807,9 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 220   continue
 
 !     bubble sort according to colonization rates
-
+!     FLAG - this only works if no tree species are index at positions
+!     > numtreepfts, i.e. the trees must be contiguous unit at the start
+!     of the indexes. JM.
       do 270 j = 1, numtreepfts
         do 280 n = 1, numtreepfts
           do 290 i = il1, il2
@@ -1204,6 +1206,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
           litrmass(i,iccp1)=litrmass(i,iccp1)+grsumlit(i)
           soilcmas(i,iccp1)=soilcmas(i,iccp1)+grsumsoc(i)
         else
+          write(*,*)'FLAG barefrac is ',barefrac(i),'in loop 720 of comp' !FLAG  
           litrmass(i,iccp1)=0.0
           soilcmas(i,iccp1)=0.0
         endif

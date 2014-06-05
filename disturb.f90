@@ -747,7 +747,7 @@ subroutine burntobare(il1, il2, nilg, sort,pvgbioms,pgavltms,pgavscms,fcancmx, b
 
 
 use ctem_params, only : crop, icc, seed, standreplace, grass, zero, &
-                        iccp1, tolrance
+                        iccp1, tolrance, numcrops
 
 implicit none
 
@@ -772,7 +772,7 @@ real, dimension(nilg,icc), intent(in)    :: pstemmass  ! grid averaged stemmass 
 real, dimension(nilg,icc), intent(in)    :: pgleafmass  ! grid averaged rootmass prior to disturbance, kg c/m2
 
 logical, dimension(nilg) :: shifts_occur      ! true if any fractions changed
-integer :: i, j, n
+integer :: i, j, n, k
 real :: pftfraca_old
 real :: term                                 ! temp variable for change in fraction due to fire
 real, dimension(nilg) :: pbarefra             ! bare fraction prior to fire              
@@ -785,6 +785,12 @@ real, dimension(nilg) :: gavgscms_temp        ! grid averaged soil c mass for in
 real, dimension(nilg,icc) :: pftfracb         ! pft fractions before accounting for creation of bare ground
 real, dimension(nilg,icc) :: pftfraca         ! pft fractions after accounting for creation of bare ground
 real, dimension(nilg,icc) :: frac_chang       ! pftfracb - pftfraca
+
+integer, dimension(1) :: lrgstpft
+real, dimension(nilg,icc-numcrops) :: pftarrays ! temp variable
+integer, dimension(nilg,icc-numcrops) :: indexpos ! temp var
+
+
 ! -----------------------------------------
 
 ! Do some initializations
@@ -895,16 +901,39 @@ do 10 i = il1, il2
 40  continue
 
       do 100 i = il1, il2
-        if(barefrac(i).gt.zero .and. barefrac(i) .gt. pbarefra(i))then
+        if(barefrac(i).ge.zero .and. barefrac(i) .gt. pbarefra(i))then
           litrmass(i,iccp1) = litrmass(i,iccp1) + litr_lost(i)
           soilcmas(i,iccp1) = soilcmas(i,iccp1) + soilc_lost(i)
-        else if (barefrac(i) .eq. 0.) then
-          litrmass(i,iccp1) = 0.0
-          soilcmas(i,iccp1) = 0.0
-        else if (barefrac(i) .lt. 0.) then
+    !      litrmass(i,iccp1) = (litrmass(i,iccp1)*pbarefra(i) + litr_lost(i)) / barefrac(i)  old.
+    !      soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i) old.
+        else if (barefrac(i) .lt. 0.) then  
+           !FLAG new addition below! JM Jun 3 2014.
+           k=1
+           do j = 1,icc
+            if (.not. crop(j)) then
+             indexpos(i,k) = j
+             pftarrays(i,k)=fcancmx(i,j)
+             k=k+1 
+            end if          
+           end do   
+!            lrgstpft = maxloc(fcancmx(i,1:icc))
+            lrgstpft = maxloc(pftarrays(i,:))
+            j = indexpos(i,lrgstpft(1))  !FLAG test
+
+            fcancmx(i,j) = fcancmx(i,j) + barefrac(i)
+!            fcancmx(i,lrgstpft(1)) = fcancmx(i,lrgstpft(1)) + barefrac(i)
+            barefrac(i) = 0.0
+            term = pftfracb(i,j)/fcancmx(i,j)
+            gleafmas(i,j)=gleafmas(i,j)*term
+            bleafmas(i,j)=bleafmas(i,j)*term
+            stemmass(i,j)=stemmass(i,j)*term
+            rootmass(i,j)=rootmass(i,j)*term
+            nppveg(i,j)  =nppveg(i,j)*term
+
           write(6,*)' In burntobare you have negative bare area'
           write(6,*)' bare is',barefrac(i),' original was',pbarefra(i)
-          call xit('disturb-burntobare',-6)
+          !call xit('disturb-burntobare',-6)
+
         endif
 100  continue
 
@@ -950,6 +979,15 @@ do 10 i = il1, il2
           write(6,*)'grid averaged soilc densities do not balance'
           write(6,*)'after fractional coverages are changed to take'
           write(6,*)'into account burn area'
+          do j = 1,icc
+            write(*,*)j,'be',pftfracb(i,j)*soilcmas(i,j),pftfracb(i,j),soilcmas(i,j)
+            write(*,*)j,'af',fcancmx(i,j)*soilcmas(i,j),fcancmx(i,j),soilcmas(i,j)
+            write(*,*)j,'diff',pftfracb(i,j)*soilcmas(i,j)-fcancmx(i,j)*soilcmas(i,j)
+          end do
+            write(*,*)'prebare',pbarefra(i)*soilcmas(i,iccp1),pbarefra(i),soilcmas(i,iccp1)
+            write(*,*)'postbare',barefrac(i)*soilcmas(i,iccp1),barefrac(i),soilcmas(i,iccp1)
+            write(*,*)'diffbare',pbarefra(i)*soilcmas(i,iccp1)- barefrac(i)*soilcmas(i,iccp1)
+
           write(6,*)'gavgscms_temp(',i,')=',gavgscms_temp(i)
           write(6,*)'pgavscms(',i,')=',pgavscms(i)
           call xit('disturb',-9)

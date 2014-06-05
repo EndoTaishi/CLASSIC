@@ -1422,7 +1422,7 @@ c         over the model time step (deltat)
 
 !         Remove the cost of making reproductive tissues. This cost can only
 !         be removed when NPP is positive.
-          if (compete) then 
+          if (compete) then   !FLAG - set up now so only compete on has a reproductive cost. JM
             reprocost(i,j) =max(0.,nppveg(i,j)*repro_fraction)
           else
             reprocost(i,j) = 0.

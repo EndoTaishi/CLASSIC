@@ -89,6 +89,8 @@ real, parameter :: seed = 0.001 ! seed pft fraction, same as in competition
                                 ! in mosaic mode, all tiles are given this
                                 ! as a minimum
 
+real, parameter :: minbare = 1.0e-5 ! minimum bare fraction when running competition on to prevent numerical problems.
+
 ! conversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
 
@@ -757,7 +759,7 @@ if (compete) then
 
 ! Parameters used in more than one subroutine:
 
-tolrance = 0.005d0 
+tolrance = 0.001d0  ! FLAG increase from 0.001. JM Jun 3 2014. 
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.

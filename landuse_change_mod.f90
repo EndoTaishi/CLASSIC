@@ -38,7 +38,7 @@ subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
 !     J. Melton       fraction when we add in seed fractions.
 !
 
-use ctem_params,        only : nmos,nlat,icc,ican,icp1,seed,crop
+use ctem_params,        only : nmos,nlat,icc,ican,icp1,seed,crop,numcrops,minbare
 
 implicit none
 
@@ -71,13 +71,17 @@ integer, intent(out) :: lucyr
 real, dimension(icc) :: temparray
 real, dimension(nlat) :: barf
 integer, dimension(2) :: bigpftc
+real, dimension(nlat,nmos,icc-numcrops) :: pftarrays ! temp variable
+integer, dimension(nlat,nmos,icc-numcrops) :: indexposj ! temp var
+integer, dimension(nlat,nmos,icc-numcrops) :: indexposm ! temp var
 real :: temp
-integer :: j,m,i,n
+integer :: j,m,i,n,k
 integer :: k2,k1,strlen
 
 !-------------------------
 ! Initialize barefraction to 1.0
 barf=1.0
+pftarrays=0.
 
 !       reset the composite fcanrow as it is appended on later in a loop
         if (.not. mosaic) fcanrow = 0.0
@@ -139,6 +143,8 @@ barf=1.0
 !       If you are running with start_bare on, take in only the 
 !       crop fractions, set rest to seed. If compete, but not start bare, then
 !       just make sure you have at least seed for each pft.
+        n=1
+        k=1 
         if (compete) then
          do j = 1, icc
           do i = 1, nltest
@@ -150,6 +156,12 @@ barf=1.0
               nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
              end if
              barf(i) = barf(i) - nfcancmxrow(i,m,j)
+             ! Keep track of the non-crop nfcancmx for use in loop below.              
+             pftarrays(i,n,k) = nfcancmxrow(i,m,j)   !FLAG test
+             indexposj(i,n,k) = j  !FLAG test
+             indexposm(i,n,k) = m  !FLAG test
+             n = n+1  !FLAG test
+             k = k+1  !FLAG test
             end if
            end do
           end do
@@ -160,12 +172,20 @@ barf=1.0
 !      more than 1.0.
        do i=1,nltest
         if (barf(i) .lt. 0.) then
-         bigpftc=maxloc(nfcancmxrow(i,:,:))
+
+!         bigpftc=maxloc(nfcancmxrow(i,:,:))  !FLAG test
+         bigpftc=maxloc(pftarrays(i,:,:))
+
+         j = indexposj(i,bigpftc(1),bigpftc(2))  !FLAG test
+         m = indexposj(i,bigpftc(1),bigpftc(2))  !FLAG test
          ! Reduce the most dominant PFT by barf and 1.0e-5. The extra 
          ! amount is to ensure we don't have trouble later with an extremely
          ! small bare fraction.
-         nfcancmxrow(i,bigpftc(1),bigpftc(2))=nfcancmxrow &
-                     (i,bigpftc(1),bigpftc(2))+barf(i) - 1.0e-5
+!         nfcancmxrow(i,bigpftc(1),bigpftc(2))=nfcancmxrow &
+!                     (i,bigpftc(1),bigpftc(2))+barf(i) - 1.0e-5
+         nfcancmxrow(i,m,j)=nfcancmxrow &
+                     (i,m,j)+barf(i) - minbare   !FLAG test
+
         end if
        end do 
 
@@ -459,7 +479,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     ----------------------------------------------------------------    
       use ctem_params,        only : icc, ican, zero, km2tom2, iccp1, &
                                      combust, paper, furniture, bmasthrs, &
-                                     tolrnce1, tolrance, crop   
+                                     tolrnce1, tolrance, crop, numcrops, &
+                                     minbare      
 
       implicit none
 
@@ -495,6 +516,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                 pvgbioms(nilg),     pgavltms(nilg),    pgavscms(nilg), & !7
                     redubmas2,     lucltrin(nilg),     lucsocin(nilg), & !7
                 totdmas2(nilg),     ntotdms2(nilg)
+      real      pftarrays(nilg,icc-numcrops)
+      integer   indexpos(nilg,icc-numcrops) 
 
 !     ---------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
@@ -695,11 +718,25 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
 !     check if the interpol didn't mess up the barefrac. if so, take the
 !     extra amount from the pft with the largest area. jm apr 24 2013.
+!     but you can't take it from crops!
+      pftarrays=0.
       do 304 i = il1, il2
-         if (barefrac(i).lt.0.0.and.abs(barefrac(i)).ge.1.0e-05) then
-            lrgstpft = maxloc(fcancmx(i,1:icc))
-            fcancmx(i,lrgstpft(1)) = fcancmx(i,lrgstpft(1)) + barefrac(i)
-            barefrac(i) = 0.0
+         if (barefrac(i).lt.0.0) then !and.abs(barefrac(i)).ge.1.0e-05) then  !FLAG - should this be minbare? jM Jun 4 
+           k=1
+           do j = 1,icc
+            if (.not. crop(j)) then
+             indexpos(i,k) = j
+             pftarrays(i,k)=fcancmx(i,j)
+             k=k+1 
+            end if          
+           end do   
+!            lrgstpft = maxloc(fcancmx(i,1:icc))
+            lrgstpft = maxloc(pftarrays(i,:))
+            j = indexpos(i,lrgstpft(1))  !FLAG test
+             
+!            fcancmx(i,lrgstpft(1)) = fcancmx(i,lrgstpft(1)) + barefrac(i)
+            fcancmx(i,j) = fcancmx(i,j) + barefrac(i) - minbare !flag
+            barefrac(i) = minbare !flag !0.0
          endif
 304   continue
 
@@ -712,14 +749,26 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
 !     check if the interpol didn't mess up the pbarefra. if so, take the
 !     extra amount from the pft with the largest area. jm apr 24 2013.
+!     but you can't take it from crops!
       do 314 i = il1, il2
-         if (pbarefra(i).lt.0.0.and.abs(pbarefra(i)).ge.1.0e-05) then
-            lrgstpft = maxloc(fcancmy(i,1:icc))
-            fcancmy(i,lrgstpft(1)) = fcancmy(i,lrgstpft(1)) + pbarefra(i)
-            pbarefra(i) = 0.0
+         if (pbarefra(i).lt.0.0) then !.and.abs(pbarefra(i)).ge.1.0e-05) then
+           k=1
+           do j = 1,icc
+            if (.not. crop(j)) then
+             indexpos(i,k) = j
+             pftarrays(i,k)=fcancmy(i,j)
+             k=k+1 
+            end if          
+           end do   
+           ! lrgstpft = maxloc(fcancmy(i,1:icc))
+            lrgstpft = maxloc(pftarrays(i,:))
+            j = indexpos(i,lrgstpft(1))  !FLAG test
+             
+!            fcancmy(i,lrgstpft(1)) = fcancmy(i,lrgstpft(1)) + pbarefra(i)
+            fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare !flag
+            pbarefra(i) = minbare !flag !0.0
          endif
 314   continue
-
 
 !     based on sizes of 3 live pools and 2 dead pools we estimate the
 !     total amount of c in each grid cell.
@@ -764,6 +813,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         endif
 
         if( barefrac(i).lt.0.0.and.abs(barefrac(i)).lt.1.0e-05 )then
+          write(*,*)'setting bare to zero',barefrac(i)
           barefrac(i)=0.0
         else if(barefrac(i).lt.0.0.and.abs(barefrac(i)).ge.1.0e-05 )then
           write(6,*)'bare fractions cannot be negative'
@@ -839,7 +889,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         endif
 560   continue
 
-
+        
 !     if the fractional coverage of pfts increases then spread their
 !     live & dead biomass uniformly over the new fraction. this 
 !     effectively reduces their per m2 c density. 
