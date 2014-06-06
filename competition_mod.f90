@@ -615,19 +615,16 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
         b=1 ! beta
         g=0 ! gamma
         colmult=4.00  ! multiplier for colonization rate
-       ! sdfracin=1   ! seed fraction index ! All seed values set to 'seed'
       else if (arora) then
         a=0 ! alpha
         b=1 ! beta
         g=0 ! gamma
         colmult=1.00  ! multiplier for colonization rate
-      !  sdfracin=2   ! seed fraction index ! All seed values set to 'seed'
       else if (boer) then
         a=0 ! alpha
         b=1 ! beta
         g=1 ! gamma
         colmult=1.00 ! multiplier for colonization rate
-        !sdfracin=2   ! seed fraction index ! All seed values set to 'seed'
       else
         write(6,*)'fool! choose competition model properly'
         call xit('competition',-4)
@@ -636,24 +633,26 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     ---------------------------------------------------------------
 
 !   First, let's adjust the fractions if fire is turned on.
-goto 141
-    if (dofire) then
 
-        call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
-                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
-                      nppveg)
+! FLAG: this is not used at present due to problem with C closure in the code. JM.
 
-      ! Since the biomass pools could have changed, update bmasveg.
-      do 190 i = il1, il2
-        do 195 j = 1, icc
-         if (fcancmx(i,j).gt.0.0) then
-          bmasveg(i,j)=gleafmas(i,j)+stemmass(i,j)+rootmass(i,j)
-         endif
-195     continue
-190   continue
+!    if (dofire) then
 
-    end if
-141 continue
+!        call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
+!                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
+!                      nppveg)
+
+!      ! Since the biomass pools could have changed, update bmasveg.
+!      do 190 i = il1, il2
+!        do 195 j = 1, icc
+!         if (fcancmx(i,j).gt.0.0) then
+!          bmasveg(i,j)=gleafmas(i,j)+stemmass(i,j)+rootmass(i,j)
+!         endif
+!195     continue
+!190   continue
+
+!    end if
+
 !     Do our usual initialization
 
       do 150 i = il1, il2 
@@ -1026,7 +1025,7 @@ goto 141
               bareiord(i)=-1 ! decrease in bare area
         endif
 640   continue
-      
+
 !     now that we know the change in fraction for every pft we use its
 !     npp for spatial expansion and litter generation. we also spread
 !     vegetation biomass uniformly over the new fractions, and generate

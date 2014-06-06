@@ -784,12 +784,11 @@ real, dimension(nilg) :: gavgltms_temp        ! grid averaged litter mass for in
 real, dimension(nilg) :: gavgscms_temp        ! grid averaged soil c mass for internal checks, kg c/m2
 real, dimension(nilg,icc) :: pftfracb         ! pft fractions before accounting for creation of bare ground
 real, dimension(nilg,icc) :: pftfraca         ! pft fractions after accounting for creation of bare ground
-real, dimension(nilg,icc) :: frac_chang       ! pftfracb - pftfraca
+real :: frac_chang                            ! pftfracb - pftfraca
 
 integer, dimension(1) :: lrgstpft
 real, dimension(nilg,icc-numcrops) :: pftarrays ! temp variable
 integer, dimension(nilg,icc-numcrops) :: indexpos ! temp var
-
 
 ! -----------------------------------------
 
@@ -803,9 +802,6 @@ do 10 i = il1, il2
         gavgscms_temp(i)=0.0
         litr_lost(i)=0.0
         soilc_lost(i)=0.0
-      do j = 1,icc
-        frac_chang(i,j)=0.0
-      end do
 10  continue
 
 !  Account for disturbance creation of bare ground. This occurs with relatively low
@@ -886,9 +882,9 @@ do 10 i = il1, il2
 !           In doing so we do not ajust the litter or soilc density on the 
 !           remaining vegetated fraction. But we do adjust it on the bare fraction to ensure
 !           our carbon balance works out.
-            frac_chang(i,j) = pftfracb(i,j) - pftfraca(i,j)
-            litr_lost(i)= litr_lost(i) + (litrmass(i,j) * frac_chang(i,j))
-            soilc_lost(i)= soilc_lost(i) + (soilcmas(i,j) * frac_chang(i,j))
+            frac_chang = pftfracb(i,j) - pftfraca(i,j)
+            litr_lost(i)= litr_lost(i) + litrmass(i,j) * frac_chang
+            soilc_lost(i)= soilc_lost(i) + soilcmas(i,j) * frac_chang
 
         ! else  
 
@@ -901,8 +897,11 @@ do 10 i = il1, il2
 40  continue
 
       do 100 i = il1, il2
+       if (shifts_occur(i)) then !only do checks if we actually shifted fractions here. 
+ !       write(*,*)barefrac(i),barefrac(i) .gt. pbarefra(i),pbarefra(i)
         if(barefrac(i).ge.zero .and. barefrac(i) .gt. pbarefra(i))then
           litrmass(i,iccp1) = litrmass(i,iccp1) + litr_lost(i)
+!                       write(*,*)'add',soilcmas(i,iccp1) + soilc_lost(i),soilcmas(i,iccp1),soilc_lost(i)
           soilcmas(i,iccp1) = soilcmas(i,iccp1) + soilc_lost(i)
     !      litrmass(i,iccp1) = (litrmass(i,iccp1)*pbarefra(i) + litr_lost(i)) / barefrac(i)  old.
     !      soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i) old.
@@ -935,6 +934,7 @@ do 10 i = il1, il2
           !call xit('disturb-burntobare',-6)
 
         endif
+       end if
 100  continue
 
 !     check if total grid average biomass density is 
@@ -942,7 +942,7 @@ do 10 i = il1, il2
 
     do 200 i = il1, il2
 
-      if (shifts_occur(j)) then !only do checks if we actually shifted fractions here. 
+      if (shifts_occur(i)) then !only do checks if we actually shifted fractions here. 
 
        do 250 j = 1, icc
 
@@ -965,7 +965,7 @@ do 10 i = il1, il2
           write(6,*)'pvgbioms(',i,')=',pvgbioms(i)
           call xit('disturb',-7)
         endif
-
+         write(*,*)'litter',gavgltms_temp(i)-pgavltms(i)
         if(abs(gavgltms_temp(i)-pgavltms(i)).gt.tolrance)then
           write(6,*)'grid averaged litter densities do not balance'
           write(6,*)'after fractional coverages are changed to take'
@@ -974,7 +974,7 @@ do 10 i = il1, il2
           write(6,*)'pgavltms(',i,')=',pgavltms(i)
           call xit('disturb',-8)
         endif
-
+          write(*,*)'soilc',gavgscms_temp(i)-pgavscms(i)
         if(abs(gavgscms_temp(i)-pgavscms(i)).gt.tolrance)then
           write(6,*)'grid averaged soilc densities do not balance'
           write(6,*)'after fractional coverages are changed to take'

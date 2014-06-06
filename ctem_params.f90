@@ -759,7 +759,7 @@ if (compete) then
 
 ! Parameters used in more than one subroutine:
 
-tolrance = 0.001d0  ! FLAG increase from 0.001. JM Jun 3 2014. 
+tolrance = 0.0001d0  ! FLAG increase from 0.001. JM Jun 3 2014. 
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.

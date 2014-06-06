@@ -210,7 +210,7 @@ c
         do 260 i = il1, il2
           diff1=litrmass(i,j) - plitmass(i,j)
           diff2=( tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j)-
-     &      ltresveg(i,j)-humtrsvg(i,j)-(ltrcemls(i,j))
+     &      ltresveg(i,j)-humtrsvg(i,j)-ltrcemls(i,j)
      &      + repro_cost(i,j))*(deltat/963.62) !FLAG!!  
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2003)i,j,abs(diff1-diff2),tolrance
@@ -282,7 +282,8 @@ c     litter
 c
       do 380 i = il1, il2
         diff1=gavgltms(i)-pgavltms(i)
-        diff2=(litrfall(i)-litres(i)-humiftrs(i)-galtcels(i))*
+        diff2=(litrfall(i)-litres(i)-humiftrs(i)-galtcels(i)
+     &   +repro_cost_g(i))*
      &   (deltat/963.62)
         if((abs(diff1-diff2)).gt.tolrance)then
           write(6,3001)'pgavltms(',i,')=',pgavltms(i)
