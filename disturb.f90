@@ -898,40 +898,15 @@ do 10 i = il1, il2
 
       do 100 i = il1, il2
        if (shifts_occur(i)) then !only do checks if we actually shifted fractions here. 
- !       write(*,*)barefrac(i),barefrac(i) .gt. pbarefra(i),pbarefra(i)
+
         if(barefrac(i).ge.zero .and. barefrac(i) .gt. pbarefra(i))then
-          litrmass(i,iccp1) = litrmass(i,iccp1) + litr_lost(i)
-!                       write(*,*)'add',soilcmas(i,iccp1) + soilc_lost(i),soilcmas(i,iccp1),soilc_lost(i)
-          soilcmas(i,iccp1) = soilcmas(i,iccp1) + soilc_lost(i)
-    !      litrmass(i,iccp1) = (litrmass(i,iccp1)*pbarefra(i) + litr_lost(i)) / barefrac(i)  old.
-    !      soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i) old.
+          litrmass(i,iccp1) = (litrmass(i,iccp1)*pbarefra(i) + litr_lost(i)) / barefrac(i) 
+          soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i) 
         else if (barefrac(i) .lt. 0.) then  
-           !FLAG new addition below! JM Jun 3 2014.
-           k=1
-           do j = 1,icc
-            if (.not. crop(j)) then
-             indexpos(i,k) = j
-             pftarrays(i,k)=fcancmx(i,j)
-             k=k+1 
-            end if          
-           end do   
-!            lrgstpft = maxloc(fcancmx(i,1:icc))
-            lrgstpft = maxloc(pftarrays(i,:))
-            j = indexpos(i,lrgstpft(1))  !FLAG test
-
-            fcancmx(i,j) = fcancmx(i,j) + barefrac(i)
-!            fcancmx(i,lrgstpft(1)) = fcancmx(i,lrgstpft(1)) + barefrac(i)
-            barefrac(i) = 0.0
-            term = pftfracb(i,j)/fcancmx(i,j)
-            gleafmas(i,j)=gleafmas(i,j)*term
-            bleafmas(i,j)=bleafmas(i,j)*term
-            stemmass(i,j)=stemmass(i,j)*term
-            rootmass(i,j)=rootmass(i,j)*term
-            nppveg(i,j)  =nppveg(i,j)*term
-
-          write(6,*)' In burntobare you have negative bare area'
+          
+          write(6,*)' In burntobare you have negative bare area, should be impossible...'
           write(6,*)' bare is',barefrac(i),' original was',pbarefra(i)
-          !call xit('disturb-burntobare',-6)
+          call xit('disturb-burntobare',-6)
 
         endif
        end if
@@ -965,7 +940,6 @@ do 10 i = il1, il2
           write(6,*)'pvgbioms(',i,')=',pvgbioms(i)
           call xit('disturb',-7)
         endif
-         write(*,*)'litter',gavgltms_temp(i)-pgavltms(i)
         if(abs(gavgltms_temp(i)-pgavltms(i)).gt.tolrance)then
           write(6,*)'grid averaged litter densities do not balance'
           write(6,*)'after fractional coverages are changed to take'
@@ -974,20 +948,10 @@ do 10 i = il1, il2
           write(6,*)'pgavltms(',i,')=',pgavltms(i)
           call xit('disturb',-8)
         endif
-          write(*,*)'soilc',gavgscms_temp(i)-pgavscms(i)
         if(abs(gavgscms_temp(i)-pgavscms(i)).gt.tolrance)then
           write(6,*)'grid averaged soilc densities do not balance'
           write(6,*)'after fractional coverages are changed to take'
           write(6,*)'into account burn area'
-          do j = 1,icc
-            write(*,*)j,'be',pftfracb(i,j)*soilcmas(i,j),pftfracb(i,j),soilcmas(i,j)
-            write(*,*)j,'af',fcancmx(i,j)*soilcmas(i,j),fcancmx(i,j),soilcmas(i,j)
-            write(*,*)j,'diff',pftfracb(i,j)*soilcmas(i,j)-fcancmx(i,j)*soilcmas(i,j)
-          end do
-            write(*,*)'prebare',pbarefra(i)*soilcmas(i,iccp1),pbarefra(i),soilcmas(i,iccp1)
-            write(*,*)'postbare',barefrac(i)*soilcmas(i,iccp1),barefrac(i),soilcmas(i,iccp1)
-            write(*,*)'diffbare',pbarefra(i)*soilcmas(i,iccp1)- barefrac(i)*soilcmas(i,iccp1)
-
           write(6,*)'gavgscms_temp(',i,')=',gavgscms_temp(i)
           write(6,*)'pgavscms(',i,')=',pgavscms(i)
           call xit('disturb',-9)

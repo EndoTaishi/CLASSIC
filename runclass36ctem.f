@@ -602,8 +602,8 @@ c
      d     humiftrsrow(nlat,nmos),     humiftrsgat(ilg)
 
       real  gppvegrow(nlat,nmos,icc),   gppveggat(ilg,icc),
-     1      nepvegrow(nlat,nmos,icc),   nepveggat(ilg,icc),
-     2      nbpvegrow(nlat,nmos,icc),   nbpveggat(ilg,icc),
+     1      nepvegrow(nlat,nmos,iccp1),   nepveggat(ilg,iccp1),
+     2      nbpvegrow(nlat,nmos,iccp1),   nbpveggat(ilg,iccp1),
      3      nppvegrow(nlat,nmos,icc),   nppveggat(ilg,icc), 
      4      hetroresvegrow(nlat,nmos,iccp1),hetroresveggat(ilg,iccp1),
      5      autoresvegrow(nlat,nmos,icc),autoresveggat(ilg,icc),
@@ -777,8 +777,8 @@ c
        real laimaxg_mo_m(nlat,nmos,icc),   stemmass_mo_m(nlat,nmos,icc),
      1      rootmass_mo_m(nlat,nmos,icc),litrmass_mo_m(nlat,nmos,iccp1),
      2      soilcmas_mo_m(nlat,nmos,iccp1),  npp_mo_m(nlat,nmos,icc),
-     3      gpp_mo_m(nlat,nmos,icc),       nep_mo_m(nlat,nmos,icc), 
-     4      nbp_mo_m(nlat,nmos,icc),       vgbiomas_mo_m(nlat,nmos,icc),  
+     3      gpp_mo_m(nlat,nmos,icc),       nep_mo_m(nlat,nmos,iccp1), 
+     4      nbp_mo_m(nlat,nmos,iccp1),     vgbiomas_mo_m(nlat,nmos,icc),  
      a      hetrores_mo_m(nlat,nmos,iccp1), autores_mo_m(nlat,nmos,icc), 
      b      litres_mo_m(nlat,nmos,iccp1),soilcres_mo_m(nlat,nmos,iccp1),
      c      totcmass_mo_m(nlat,nmos,icc)
@@ -824,8 +824,8 @@ c      (denoted by name ending in "_yr_m")
        real laimaxg_yr_m(nlat,nmos,icc), stemmass_yr_m(nlat,nmos,icc),
      1      rootmass_yr_m(nlat,nmos,icc),litrmass_yr_m(nlat,nmos,iccp1),
      2      soilcmas_yr_m(nlat,nmos,iccp1),npp_yr_m(nlat,nmos,icc),
-     3      gpp_yr_m(nlat,nmos,icc),       nep_yr_m(nlat,nmos,icc),
-     4      nbp_yr_m(nlat,nmos,icc),       vgbiomas_yr_m(nlat,nmos,icc),
+     3      gpp_yr_m(nlat,nmos,icc),       nep_yr_m(nlat,nmos,iccp1),
+     4      nbp_yr_m(nlat,nmos,iccp1),     vgbiomas_yr_m(nlat,nmos,icc),
      a      hetrores_yr_m(nlat,nmos,iccp1),autores_yr_m(nlat,nmos,icc),
      b      litres_yr_m(nlat,nmos,iccp1),soilcres_yr_m(nlat,nmos,iccp1),  
      5      emit_co2_yr_m(nlat,nmos,icc), emit_co_yr_m(nlat,nmos,icc),
@@ -1069,8 +1069,6 @@ c
           vgbiomas_vegrow(i,m,j) = 0.0
 c
           gppvegrow(i,m,j) = 0.0 
-          nepvegrow(i,m,j) = 0.0 
-          nbpvegrow(i,m,j) = 0.0
           autoresvegrow(i,m,j) = 0.0
 
           emit_co2row(i,m,j)         =0.0
@@ -1099,6 +1097,8 @@ c
           hetroresvegrow(i,m,j) = 0.0
           litresvegrow(i,m,j) = 0.0
           soilcresvegrow(i,m,j) = 0.0
+          nepvegrow(i,m,j) = 0.0 
+          nbpvegrow(i,m,j) = 0.0
 
         enddo
 
@@ -2533,9 +2533,13 @@ c
 
          end do
 
+          nep_mo_m(i,m,iccp1)=0.0
+          nbp_mo_m(i,m,iccp1)=0.0
           hetrores_yr_m(i,m,iccp1)=0.0
           litres_yr_m(i,m,iccp1)=0.0
           soilcres_yr_m(i,m,iccp1)=0.0
+          nep_yr_m(i,m,iccp1)=0.0
+          nbp_yr_m(i,m,iccp1)=0.0
 
           probfire_mo_m(i,m) =0.0
           luc_emc_mo_m(i,m) =0.0
@@ -5367,6 +5371,8 @@ c
 
           end do
 
+           nep_mo_m(i,m,iccp1)=nep_mo_m(i,m,iccp1)+nepvegrow(i,m,iccp1) 
+           nbp_mo_m(i,m,iccp1)=nbp_mo_m(i,m,iccp1)+nbpvegrow(i,m,iccp1) 
            hetrores_mo_m(i,m,iccp1)=hetrores_mo_m(i,m,iccp1)
      1                               +hetroresvegrow(i,m,iccp1)
            litres_mo_m(i,m,iccp1)  =litres_mo_m(i,m,iccp1) 
@@ -5502,6 +5508,10 @@ c
  
                end do !j
 
+                nep_mo_g(i)=nep_mo_g(i)+nep_mo_m(i,m,iccp1)
+     &                          *barefrac
+                nbp_mo_g(i)=nbp_mo_g(i)+nbp_mo_m(i,m,iccp1)
+     &                          *barefrac
               hetrores_mo_g(i)=hetrores_mo_g(i)+hetrores_mo_m(i,m,iccp1)
      &                          *barefrac
               litres_mo_g(i)  =litres_mo_g(i) +litres_mo_m(i,m,iccp1)
@@ -5680,6 +5690,9 @@ c              for the next round
               hetrores_mo_m(i,m,iccp1)=0.0
               litres_mo_m(i,m,iccp1)=0.0
               soilcres_mo_m(i,m,iccp1)=0.0
+              nep_mo_m(i,m,iccp1)=0.0
+              nbp_mo_m(i,m,iccp1)=0.0
+
 
             enddo !m
 
@@ -5735,6 +5748,8 @@ c
      &                                  litresvegrow(i,m,iccp1) 
             soilcres_yr_m(i,m,iccp1)=soilcres_yr_m(i,m,iccp1)+
      &                                  soilcresvegrow(i,m,iccp1) 
+            nep_yr_m(i,m,iccp1)=nep_yr_m(i,m,iccp1)+nepvegrow(i,m,iccp1) 
+            nbp_yr_m(i,m,iccp1)=nbp_yr_m(i,m,iccp1)+nbpvegrow(i,m,iccp1) 
 
             probfire_yr_m(i,m)=probfire_yr_m(i,m)
      &                         +(probfirerow(i,m) * (1./365.))
@@ -5836,6 +5851,10 @@ c
               litres_yr_g(i)  =litres_yr_g(i)  +litres_yr_m(i,m,iccp1)
      &                          *barefrac
               soilcres_yr_g(i)=soilcres_yr_g(i)+soilcres_yr_m(i,m,iccp1)
+     &                          *barefrac
+                nep_yr_g(i)=nep_yr_g(i)+nep_yr_m(i,m,j)
+     &                          *barefrac
+                nbp_yr_g(i)=nbp_yr_g(i)+nbp_yr_m(i,m,j)
      &                          *barefrac
    
 
@@ -5999,6 +6018,8 @@ c             for the next round
                 hetrores_yr_m(i,m,iccp1)=0.0  
                 litres_yr_m(i,m,iccp1)=0.0 
                 soilcres_yr_m(i,m,iccp1)=0.0 
+                nep_yr_m(i,m,iccp1)=0.0 
+                nbp_yr_m(i,m,iccp1)=0.0 
              enddo
 
             endif ! if iday=365

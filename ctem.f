@@ -427,8 +427,8 @@ c
      1     rmscsveg(ilg,icc),   rmrcgveg(ilg,icc),   rmrcsveg(ilg,icc),
      2       rmsveg(ilg,icc),     rmrveg(ilg,icc),      anveg(ilg,icc),
      3       rmlveg(ilg,icc),     gppveg(ilg,icc),     nppveg(ilg,icc),
-     4        rgveg(ilg,icc),      rmveg(ilg,icc),     nepveg(ilg,icc),
-     5     rttempcs(ilg,icc),   rttempcg(ilg,icc),     nbpveg(ilg,icc),
+     4        rgveg(ilg,icc),      rmveg(ilg,icc),    nepveg(ilg,iccp1),
+     5     rttempcs(ilg,icc),   rttempcg(ilg,icc),    nbpveg(ilg,iccp1),
      6     pheanveg(ilg,icc),   pancsveg(ilg,icc),   pancgveg(ilg,icc)
 c
       real ltrsvgcs(ilg,icc),   ltrsvgcg(ilg,icc),   scrsvgcs(ilg,icc),
@@ -938,6 +938,9 @@ c
         ltresveg(i,iccp1)=0.0  !litter respiration rate over bare fraction
         scresveg(i,iccp1)=0.0  !soil c respiration rate over bare fraction
         hetrsveg(i,iccp1)=0.0  !heterotrophic resp. rate over bare fraction
+        nbpveg(i,iccp1) = 0.0  !net biome productity for bare fraction
+        nepveg(i,iccp1) = 0.0  !net ecosystem productity for bare fraction
+
 !c       expnbaln  is used for competition
 !        expnbaln(i)=0.0        !amount of c related to spatial expansion  !FLAG
         repro_cost_g(i)=0.0    !amount of C for production of reproductive tissues
@@ -1259,6 +1262,7 @@ c
           scresveg(i,iccp1)= (fg(i)*scrsbrg(i) + 
      &      fgs(i)*scrsbrgs(i)) / ( fg(i) + fgs(i) )     
           hetrsveg(i,iccp1) =  ltresveg(i,iccp1) + scresveg(i,iccp1)
+          nepveg(i,iccp1)=0.-hetrsveg(i,iccp1)
         else
           ltresveg(i,iccp1)= 0.0
           scresveg(i,iccp1)= 0.0
@@ -1778,7 +1782,9 @@ c
           dscemlv2(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +
      &                  rtcaemls(i,j) + ltrcemls(i,j)
 c         convert kg c/m2 emitted in one day into u mol co2/m2.sec before
-c         subtracting emission losses from nep
+c         subtracting emission losses from nep. Since we don't burn on the 
+c         bare fraction, we don't need to account for that area and it is left
+c         at the initialized value of 0. JM Jun 10 2014.
           nbpveg(i,j)  =nepveg(i,j)   - dscemlv2(i,j)*(963.62/deltat)
 1010    continue
 1000  continue

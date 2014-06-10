@@ -636,22 +636,26 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
 ! FLAG: this is not used at present due to problem with C closure in the code. JM.
 
-!    if (dofire) then
+    if (dofire) then
 
-!        call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
-!                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
+        call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
+                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
+                      nppveg)
+!        call burntobare(il1, il2, nilg, sort, fcancmx, burnvegf, stemmass, &
+!                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, &
 !                      nppveg)
 
-!      ! Since the biomass pools could have changed, update bmasveg.
-!      do 190 i = il1, il2
-!        do 195 j = 1, icc
-!         if (fcancmx(i,j).gt.0.0) then
-!          bmasveg(i,j)=gleafmas(i,j)+stemmass(i,j)+rootmass(i,j)
-!         endif
-!195     continue
-!190   continue
 
-!    end if
+      ! Since the biomass pools could have changed, update bmasveg.
+      do 190 i = il1, il2
+        do 195 j = 1, icc
+         if (fcancmx(i,j).gt.0.0) then
+          bmasveg(i,j)=gleafmas(i,j)+stemmass(i,j)+rootmass(i,j)
+         endif
+195     continue
+190   continue
+
+    end if
 
 !     Do our usual initialization
 

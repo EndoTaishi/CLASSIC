@@ -179,7 +179,7 @@ c
 c
       real vgbiomas_veggat(ilg,icc)
 c
-      real gppveggat(ilg,icc),        nepveggat(ilg,icc),
+      real gppveggat(ilg,icc),        nepveggat(ilg,iccp1),
      1     nbpveggat(ilg,icc),    hetroresveggat(ilg,iccp1),
      2      autoresveggat(ilg,icc),litresveggat(ilg,iccp1),
      3      soilcresveggat(ilg,iccp1) 
@@ -271,7 +271,7 @@ c
 c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
-      real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,icc),
+      real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp1),
      1     nbpvegrow(nlat,nmos,icc), hetroresvegrow(nlat,nmos,iccp1),
      2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp1),
      3      soilcresvegrow(nlat,nmos,iccp1)
@@ -379,8 +379,6 @@ c
           rmrveggat(k,l)   = rmrvegrow(ilmos(k),jlmos(k),l)
           rgveggat(k,l)    = rgvegrow(ilmos(k),jlmos(k),l)
           gppveggat(k,l)   = gppvegrow(ilmos(k),jlmos(k),l)
-          nepveggat(k,l)   = nepvegrow(ilmos(k),jlmos(k),l)
-          nbpveggat(k,l)   = nbpvegrow(ilmos(k),jlmos(k),l)
           autoresveggat(k,l)= autoresvegrow(ilmos(k),jlmos(k),l)
           ailcmingat(k,l)  = ailcminrow(ilmos(k),jlmos(k),l)
           ailcmaxgat(k,l)  = ailcmaxrow(ilmos(k),jlmos(k),l)
@@ -411,6 +409,8 @@ c
           hetroresveggat(k,l)= hetroresvegrow(ilmos(k),jlmos(k),l)
           litresveggat(k,l)= litresvegrow(ilmos(k),jlmos(k),l)
           soilcresveggat(k,l)= soilcresvegrow(ilmos(k),jlmos(k),l)
+          nepveggat(k,l)   = nepvegrow(ilmos(k),jlmos(k),l)
+          nbpveggat(k,l)   = nbpvegrow(ilmos(k),jlmos(k),l)
 
 102   continue
 c
