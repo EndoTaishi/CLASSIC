@@ -150,7 +150,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
                         iccp1, standreplace, tolrance, bmasthrs_fire, extnmois, &
                         lwrlthrs, hgrlthrs, parmlght, parblght, reparea, popdthrshld, & 
-                        alpha_fire, f0, maxsprd, frco2glf, frco2blf, &
+                        f0, maxsprd, frco2glf, frco2blf, &
                         frltrglf, frltrblf, frco2stm, frltrstm, frco2rt, frltrrt, &
                         frltrbrn, emif_co2, emif_co, emif_ch4, emif_nmhc, emif_h2, &
                         emif_nox, emif_n2o, emif_pm25, emif_tpm, emif_tc, emif_oc, emif_bc, &
@@ -197,10 +197,10 @@ real ::  biomass(ilg,icc),        bterm(ilg), drgtstrs(ilg,icc), &
                      tot_emit,      tot_emit_dom,     burnvegf(ilg,icc)   
 
 real :: hb_interm, hbratio(ilg)
-real, save, dimension(ilg) :: cumulative_burnedf  ! flag test
-real, save, dimension(ilg,10) :: dryspell  ! flag test
-real, dimension(ilg) :: meandry  ! flag test
-real :: ief ! flag test
+!real, save, dimension(ilg) :: cumulative_burnedf  ! Not used. JM Jun 2014
+!real, save, dimension(ilg,10) :: dryspell         ! Not used. JM Jun 2014
+!real, dimension(ilg) :: meandry                   ! Not used. JM Jun 2014
+real :: ief                                        ! Not used. JM Jun 2014
 real, dimension(ilg) :: surface_duff_f  ! fraction of biomass that is in the surface duff (grass brown leaves + litter) 
 real, dimension(ilg,icc) :: pftareab    ! pft area before fire (km2)
 
@@ -318,10 +318,10 @@ real :: soilterm, duffterm              ! temporary variables
 
          if (.not. crop(j)) then !don't allow it to bring in crops since they are not allowed to burn. JM
 
-!           Root biomass is not used to initiate fire. For example if
-!           the last fire burned all grass leaves, and some of the roots
-!           were left, its unlikely these roots could catch fire. 
-            biomass(i,j)=gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+ &
+!          Root biomass is not used to initiate fire. For example if
+!          the last fire burned all grass leaves, and some of the roots
+!          were left, its unlikely these roots could catch fire. 
+           biomass(i,j)=gleafmas(i,j)+bleafmas(i,j)+stemmass(i,j)+ &
                       litrmass(i,j)
 
 !          Find average biomass over the vegetated fraction
@@ -409,11 +409,11 @@ real :: soilterm, duffterm              ! temporary variables
        
           avgdryns(i)=avgdryns(i)/fcsum(i)
 
-         ! ORIG: 
-!          mterm(i)=1.0-tanh((1.75*avgdryns(i)/extnmois)**2) 
-         ! TESTING:
           soilterm = 1.0-tanh((1.75*avgdryns(i)/extnmois)**2)
-          duffterm = 1.0-tanh(20.*(thliq(i,1)/duff_dry)**4)  !FLAG
+
+!         We incorporate a new term here to account for the dryness of the duff layer. JM Jun 2014.
+          duffterm = 1.0-tanh(20.*(thliq(i,1)/duff_dry)**4)  
+
           mterm(i) = soilterm * (1.0-surface_duff_f(i)) + duffterm * surface_duff_f(i)
 
         else
@@ -424,9 +424,10 @@ real :: soilterm, duffterm              ! temporary variables
         mterm(i)=max(0.0, min(mterm(i),1.0))
 
         ! Save the soil moisture term to help determine when the lightning
-        ! previously burned area reduction of efficiency (ief) can be reset. JM
-        dryspell(i,:) = eoshift(dryspell(i,:),1,soilterm)
-        meandry(i) = sum(dryspell(i,:))/10.0
+        ! previously burned area reduction of efficiency (ief) can be reset. 
+        ! Not used. JM Jun 2014
+        ! dryspell(i,:) = eoshift(dryspell(i,:),1,soilterm)
+        ! meandry(i) = sum(dryspell(i,:))/10.0
 
 380   continue
 
@@ -435,43 +436,38 @@ real :: soilterm, duffterm              ! temporary variables
 !     Dependence on lightning is modelled in a simple way which implies that
 !     a large no. of lightning flashes are more likely to cause fire than
 !     few lightning flashes.
-!     Update: There is a saturating effect here- flag jm.
 
       do 400 i = il1, il2
 
-        !c2glgtng(i)=0.25*lightng(i)   !ORIG
-!        c2glgtng(i)=(1./(4.16+2.16*cos(currlat(i)*pi/180)))*lightng(i) !From Prentice and Mackerras
+        !c2glgtng(i)=0.25*lightng(i)   !Original from Arora and Boer 2005
+        !c2glgtng(i)=(1./(4.16+2.16*cos(currlat(i)*pi/180)))*lightng(i) !Relation From Prentice and Mackerras
 
-!       New equation from Price and Rind. More complete dataset than Prentice and Mackerras.          
-        c2glgtng(i)=0.219913*exp(0.0058899*abs(currlat(i)))*lightng(i)  ! approximation of Price and Rind equation.
+!       New approximation of Price and Rind equation. It was developed from a more complete dataset than Prentice and Mackerras.          
+        c2glgtng(i)=0.219913*exp(0.0058899*abs(currlat(i)))*lightng(i)  
 
         betalght(i)=min(1.0,max(0.0,(c2glgtng(i)-lwrlthrs)/(hgrlthrs-lwrlthrs)))
+        y(i)=1.0/( 1.0+exp((parmlght-betalght(i))/parblght) )
 
 !       No need to calculate each time, once settled on parameters, precalc and moved into a parameter. JM. Feb 19 2014.
-        y(i)=1.0/( 1.0+exp((parmlght-betalght(i))/parblght) )
         ymin=1.0/( 1.0+exp((parmlght-0.0)/parblght) )
         ymax=1.0/( 1.0+exp((parmlght-1.0)/parblght) )
         slope=abs(0.0-ymin)+abs(1.0-ymax)
+
         temp=y(i)+(0.0-ymin)+betalght(i)*slope
 
-!       FLAG test Jan 3 2014. JM
 !        Reduce the liklihood of lightning strike causing fire due to autocorrelation
 !        of spatial distribution of lightning strikes. From Pfeiffer & Kaplan 2013 GMD eqn 3
-         ief = (1. - cumulative_burnedf(i)) / (1.+ 25.* cumulative_burnedf(i))
-         temp = max(0., temp*ief)
+!        Not used. JM Jun 2014
+!        ief = (1. - cumulative_burnedf(i)) / (1.+ 25.* cumulative_burnedf(i))
+!        temp = max(0., temp*ief)
 
 !       Determine the probability of fire due to human causes
 !       this is based upon the population density from the .popd
 !       read-in file
 
-!       TESTING:
-        prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !Kloster way
-
-!        prbfrhuc(i)=0.5 !ORIG (more or less)  !FLAG!!
+        prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !From Kloster et al. (2010)
 
         lterm(i)=max(0.0, min(1.0, temp+(1.0-temp)*prbfrhuc(i) ))
-
-      !  write(*,'(4f12.4,1E12.3)')lterm(i),temp,prbfrhuc(i),ief,meandry(i)
 
 400   continue
 
@@ -496,11 +492,9 @@ real :: soilterm, duffterm              ! temporary variables
 !         root zone (as found above) which we use as a surrogate for moisture
 !         content of vegetation.
 
-!         ORIG:
-!           betmsprd(i)= max(0.0,min(1.0,avgdryns(i)/extnmois))   !flag test!
-
-!         TESTING:
-
+!         Original way from Arora & Boer 2005
+!           betmsprd(i)= max(0.0,min(1.0,avgdryns(i)/extnmois)) 
+!         New way that includes contribution of duff layer. JM Jun 2014
           betmsprd(i)= max(0.0,min(1.0, avgdryns(i)/extnmois * (1.0-surface_duff_f(i)) &
                                        + (thliq(i,1)/duff_dry) * surface_duff_f(i)))
 
@@ -509,28 +503,28 @@ real :: soilterm, duffterm              ! temporary variables
           wind(i)=wind(i)*3.60     ! change m/s to km/hr
 
 !         length to breadth ratio of fire
-!         orig a&b paper value:
-!          lbratio(i)=1.0+10.0*(1.0-exp(-0.017*wind(i))) !ORIG
-!         Li et al. value, derived quantity:
+!         Original way from Arora & Boer 2005
+!         lbratio(i)=1.0+10.0*(1.0-exp(-0.017*wind(i))) 
+!         New way from Li et al. (2012), it is now a derived quantity:
           lbratio(i)=1.0+10.0*(1.0-exp(-0.06*wind(i)))
 
-!         flag testing:
-!         **New. Calculate the head to back ratio of the fire
+!         New way from Li et al. (2012). Calculate the head to back ratio of the fire
           hb_interm = (lbratio(i)**2 - 1.0)**0.5
           hbratio(i) = (lbratio(i) + hb_interm)/(lbratio(i) - hb_interm)
 
-!         flag testing:
 !         Following Li et al. 2012 this function has been derived
 !         from the fire rate spread perpendicular to the wind 
 !         direction, in the downwind direction, the head to back
 !         ratio and the length to breadth ratio. f0 is also now
 !         a derived quantity (0.05)
 
-!         old:
-!          wndfunc(i)=1.0 - ( (1.0-f0)*exp(-1.0*alpha*wind(i)**2) ) !ORIG
-!         new:
+!         Original way from Arora & Boer 2005
+!          wndfunc(i)=1.0 - ( (1.0-f0)*exp(-1.0*alpha*wind(i)**2) ) 
+!         New way from Li et al. (2012)
           wndfunc(i)= (2.0 * lbratio(i)) / (1.0 + 1.0 / hbratio(i)) * f0 
 
+!         New, now find the per PFT spread rate rather than the same one per
+!         the whole gridcell.
       do 435 j = 1, icc
           n = sort(j)  
           sprdrate(i)=sprdrate(i) + maxsprd(n)*fcancmx(i,j) * smfunc(i) * wndfunc(i) 
@@ -542,27 +536,23 @@ real :: soilterm, duffterm              ! temporary variables
 !         Arora and Boer 2005 JGR, this value can be calculated
 !         as was pointed out in Li et al. 2012 Biogeosci. We 
 !         adopt the calculated version below
-!         flag testing:
-!         old:
-!          arbn1day(i)=(pi*0.36*24*24*sprdrate(i)**2)/lbratio(i) !ORIG
-!         new:
+
+!         Original way from Arora & Boer 2005
+!          arbn1day(i)=(pi*0.36*24*24*sprdrate(i)**2)/lbratio(i)
+!         New way from Li et al. (2012)
           arbn1day(i)=(pi*24.0*24.0*sprdrate(i)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
 
 !         Based on fire extinguishing probability we estimate the number 
 !         which needs to be multiplied with arbn1day to estimate average 
 !         area burned
 
-!         Fire extinction is based upon population density
+!         Fire extinction is now based upon population density
 
-!         Kloster way:
-           extnprob(i)=max(0.0,0.9-exp(-0.025*popdin)) !orig
-
-!         TESTING:
-!           extnprob(i)=0.9 * (1.0 - exp(-0.025*popdin)) ! test JM Oct 7 2013
-
-           extnprob(i)=0.5+extnprob(i)/2.0
-
+!         Original way from Arora & Boer 2005
 !          extnprob(i)=0.5 !ORIG
+!         Kloster et al. 2010 way:
+          extnprob(i)=max(0.0,0.9-exp(-0.025*popdin)) 
+          extnprob(i)=0.5+extnprob(i)/2.0
 
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
 
@@ -623,22 +613,10 @@ real :: soilterm, duffterm              ! temporary variables
 
 490   continue
 
-!     Check that the sum of fraction of leaves, stem, and root 
-!     that needs to be burned and converted into CO2, and fraction that 
-!     needs to become litter doesn't exceed one.
-
-!      do 500 j = 1, icc
-!        n = sort(j)
-       ! if( (frco2lf(n)+frltrlf(n)) .gt. 1.0 )    call xit('disturb',-3)
-       ! if( (frco2stm(n)+frltrstm(n)) .gt. 1.0 )  call xit('disturb',-4)
-       ! if( (frco2rt(n)+frltrrt(n)) .gt. 1.0 )    call xit('disturb',-5)
-       ! if(  frltrbrn(n) .gt. 1.0 )               call xit('disturb',-6)
-!500   continue
-
-      ! Reset cumulative_burnedf if needed. FLAG.
-      do i = il1, il2
-        if (meandry(i) .lt. 1e-3) cumulative_burnedf(i) = 0.
-      end do
+      ! Reset cumulative_burnedf if needed. Not used. JM Jun 2014
+      ! do i = il1, il2
+      !   if (meandry(i) .lt. 1e-3) cumulative_burnedf(i) = 0.
+      ! end do
 
 !     Finally estimate amount of litter generated from each pft, and
 !     each vegetation component (leaves, stem, and root) based on their
@@ -756,25 +734,25 @@ integer, intent(in) :: il2
 integer, intent(in) :: nilg       ! no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
 integer, dimension(icc), intent(in) :: sort             ! index for correspondence between 9 ctem pfts and
                                                         ! size 12 of parameter vectors
-real, dimension(nilg), intent(in) :: pvgbioms          ! initial veg biomass
-real, dimension(nilg), intent(in) :: pgavltms          ! initial litter mass
-real, dimension(nilg), intent(in) :: pgavscms          ! initial soil c mass
-real, dimension(nilg,icc), intent(inout) :: fcancmx    ! initial fractions of the ctem pfts
-real, dimension(nilg,icc), intent(in) :: burnvegf      ! total per PFT areal fraction burned
-real, dimension(nilg,icc), intent(inout) :: gleafmas
-real, dimension(nilg,icc), intent(inout) :: bleafmas
-real, dimension(nilg,icc), intent(inout) :: stemmass
-real, dimension(nilg,icc), intent(inout) :: rootmass
-real, dimension(nilg,icc), intent(inout) :: nppveg     ! npp for individual pfts,  u-mol co2/m2.sec
-real, dimension(nilg,iccp1), intent(inout) :: soilcmas   ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
-real, dimension(nilg,iccp1), intent(inout) :: litrmass
-real, dimension(nilg,icc), intent(in)    :: pstemmass  ! grid averaged stemmass prior to disturbance, kg c/m2
+real, dimension(nilg), intent(in) :: pvgbioms           ! initial veg biomass
+real, dimension(nilg), intent(in) :: pgavltms           ! initial litter mass
+real, dimension(nilg), intent(in) :: pgavscms           ! initial soil c mass
+real, dimension(nilg,icc), intent(inout) :: fcancmx     ! initial fractions of the ctem pfts
+real, dimension(nilg,icc), intent(in) :: burnvegf       ! total per PFT areal fraction burned
+real, dimension(nilg,icc), intent(inout) :: gleafmas    ! green leaf carbon mass for each of the 9 ctem pfts, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: bleafmas    ! brown leaf carbon mass for each of the 9 ctem pfts, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: stemmass    ! stem carbon mass for each of the 9 ctem pfts, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: rootmass    ! roots carbon mass for each of the 9 ctem pfts, kg c/m2
+real, dimension(nilg,icc), intent(inout) :: nppveg      ! npp for individual pfts,  u-mol co2/m2.sec
+real, dimension(nilg,iccp1), intent(inout) :: soilcmas  ! soil carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(nilg,iccp1), intent(inout) :: litrmass  ! litter carbon mass for each of the 9 ctem pfts + bare, kg c/m2
+real, dimension(nilg,icc), intent(in)    :: pstemmass   ! grid averaged stemmass prior to disturbance, kg c/m2
 real, dimension(nilg,icc), intent(in)    :: pgleafmass  ! grid averaged rootmass prior to disturbance, kg c/m2
 
 logical, dimension(nilg) :: shifts_occur      ! true if any fractions changed
 integer :: i, j, n, k
 real :: pftfraca_old
-real :: term                                 ! temp variable for change in fraction due to fire
+real :: term                                  ! temp variable for change in fraction due to fire
 real, dimension(nilg) :: pbarefra             ! bare fraction prior to fire              
 real, dimension(nilg) :: barefrac             ! bare fraction of grid cell
 real, dimension(nilg) :: litr_lost            ! litter that is transferred to bare 
@@ -785,10 +763,6 @@ real, dimension(nilg) :: gavgscms_temp        ! grid averaged soil c mass for in
 real, dimension(nilg,icc) :: pftfracb         ! pft fractions before accounting for creation of bare ground
 real, dimension(nilg,icc) :: pftfraca         ! pft fractions after accounting for creation of bare ground
 real :: frac_chang                            ! pftfracb - pftfraca
-
-integer, dimension(1) :: lrgstpft
-real, dimension(nilg,icc-numcrops) :: pftarrays ! temp variable
-integer, dimension(nilg,icc-numcrops) :: indexpos ! temp var
 
 ! -----------------------------------------
 
@@ -837,7 +811,7 @@ do 10 i = il1, il2
        do 50 j = 1, icc
         if(.not. crop(j))then 
  
-          ! Test the pftfraca to ensure it does not cause densification of the exisiting biomass  !FLAG TEST
+          ! Test the pftfraca to ensure it does not cause densification of the exisiting biomass  
           ! Trees compare the stemmass while grass compares the root mass. 
           if (pftfraca(i,j) .ne. pftfracb(i,j)) then
 
@@ -879,7 +853,7 @@ do 10 i = il1, il2
 
 !           Soil and litter carbon are treated such that we actually transfer the carbon
 !           to the bare fraction since it would remain in place as a location was devegetated
-!           In doing so we do not ajust the litter or soilc density on the 
+!           In doing so we do not adjust the litter or soilc density on the 
 !           remaining vegetated fraction. But we do adjust it on the bare fraction to ensure
 !           our carbon balance works out.
             frac_chang = pftfracb(i,j) - pftfraca(i,j)
@@ -904,7 +878,7 @@ do 10 i = il1, il2
           soilcmas(i,iccp1) = (soilcmas(i,iccp1)*pbarefra(i) + soilc_lost(i)) / barefrac(i) 
         else if (barefrac(i) .lt. 0.) then  
           
-          write(6,*)' In burntobare you have negative bare area, should be impossible...'
+          write(6,*)' In burntobare you have negative bare area, which should be impossible...'
           write(6,*)' bare is',barefrac(i),' original was',pbarefra(i)
           call xit('disturb-burntobare',-6)
 

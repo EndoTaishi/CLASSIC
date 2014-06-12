@@ -327,8 +327,10 @@ logical, intent(in) :: compete   !true if the competition scheme is on.
 !   ********************************************************************************************
 
 ! Parameters used in more than one subroutine:
-! (CAREFUL: Separate set defined in PHTSYN3.f!!)
 
+tolrance = 0.0001d0 
+
+! (kn -> CAREFUL: Separate set defined in PHTSYN3.f!!)
 kn= [ 0.50, 0.50, 0.00, &
       0.50, 0.50, 0.50, &
       0.40, 0.48, 0.00, &
@@ -427,14 +429,9 @@ reparea = 1000.0
 
 popdthrshld = 300.
 
-alpha_fire = 8.16326e-04  !FLAG, no longer needed???? JM Feb 20 2014.
-
 f0 = 0.05
 
-!bmasthrs_fire = [ 0.4, 1.2 ] ! testing 
-bmasthrs_fire = [ 0.2, 1.0 ] ! ORIG JM May 1
-!     **Lowering the bmasthrs_fire gets too much burning outside of the tropics, 
-!     however maybe this higher value prevents the savannahs from burning more? -JM
+bmasthrs_fire = [ 0.2, 1.0 ] 
 
 extnmois = 0.30 
 
@@ -442,8 +439,7 @@ lwrlthrs = 0.25
 
 hgrlthrs = 10.0 
 
-duff_dry = 0.15
-
+duff_dry = 0.25
 
 !     **Parmlght was increased to 0.8 to make it so areas with higher amounts of
 !     lightning have higher lterm. The saturation is still the same, but the 
@@ -457,34 +453,35 @@ maxsprd = [  0.54, 0.54, 0.00, &
              0.00, 0.00, 0.00, &
              2.00, 2.00, 0.00 ]
 
-! These frco2/ltr factors are all multiplied by 0.4 from the original CTEM values. JM Mar 2014.
-frco2glf = [ 0.28, 0.28, 0.00, & 
-             0.28, 0.28, 0.28, & 
+! These frco2/ltr factors are all multiplied by 0.2 from the original CTEM values. JM Mar 2014.
+
+frco2glf = [ 0.14, 0.14, 0.00, & 
+             0.14, 0.14, 0.14, & 
              0.00, 0.00, 0.00, &
-             0.32, 0.32, 0.00 ]   
+             0.16, 0.16, 0.00 ]   
 
 frco2blf = [ 0.00, 0.00, 0.00, & 
              0.00, 0.00, 0.00, & 
              0.00, 0.00, 0.00, &
-             0.36, 0.36, 0.00 ]
+             0.18, 0.18, 0.00 ]
 
-frltrglf = [ 0.08, 0.08, 0.00, &
-             0.08, 0.08, 0.08, & 
+frltrglf = [ 0.04, 0.04, 0.00, &
+             0.04, 0.04, 0.04, & 
              0.00, 0.00, 0.00, &
-             0.04, 0.04, 0.00 ]  
+             0.02, 0.02, 0.00 ]  
 
 frltrblf = [ 0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00, & 
              0.00, 0.00, 0.00, &
-             0.02, 0.02, 0.00 ]
+             0.01, 0.01, 0.00 ]
 
-frco2stm = [ 0.08, 0.08, 0.00, &
-             0.08, 0.04, 0.04, &  
+frco2stm = [ 0.04, 0.04, 0.00, &
+             0.04, 0.02, 0.02, &  
              0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00 ]
 
-frltrstm = [ 0.20, 0.20, 0.00, &
-             0.20, 0.12, 0.12, & 
+frltrstm = [ 0.10, 0.10, 0.00, &
+             0.10, 0.06, 0.06, & 
              0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00 ]
 
@@ -493,15 +490,15 @@ frco2rt = [ 0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0 ]
 
-frltrrt = [ 0.04, 0.04, 0.00, &
-            0.04, 0.04, 0.04, &
+frltrrt = [ 0.02, 0.02, 0.00, &
+            0.02, 0.02, 0.02, &
             0.00, 0.00, 0.00, &
-            0.10, 0.10, 0.00 ]
+            0.05, 0.05, 0.00 ]
 
-frltrbrn = [ 0.20, 0.20, 0.00, &
-             0.24, 0.24, 0.24, &
+frltrbrn = [ 0.10, 0.10, 0.00, &
+             0.12, 0.12, 0.12, &
              0.00, 0.00, 0.00, &
-             0.28, 0.28, 0.00 ]
+             0.14, 0.14, 0.00 ]
 
 !     emissions factors by chemical species
 !     
@@ -653,15 +650,13 @@ emif_bc = [ 0.56, 0.56, 0.00, &
 
 bsratelt = [ 0.4453, 0.5986, 0.0000, &
              0.6339, 0.7576, 0.6957, &
-!     &              0.4020, 0.4020, 0.0000,
              0.6000, 0.6000, 0.0000, &
              0.5260, 0.5260, 0.0000 ] 
 
 bsratesc = [ 0.0260, 0.0260, 0.0000, &
              0.0208, 0.0208, 0.0208, &
-!c     &              0.0310, 0.0310, 0.0000,
              0.0350, 0.0350, 0.0000, &
-             0.0125, 0.0125, 0.0000 ]  !flag JM test Oct 9 2013. was 0.0125 for both (test val was 0.0205)
+             0.0125, 0.0125, 0.0000 ]  
 
 tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ]
            !   a     b      c     d
@@ -736,7 +731,7 @@ harvthrs = [ 0.0, 0.0, 0.0, &
              4.5, 3.5, 0.0, &
              0.0, 0.0, 0.0 ]
 
-specsla =[  0.0, 0.0, 0.0, &  !pft 1 was 11.0. With lfspany of 5.0, it is calculated to be 11.18. JM Mar 12 2014
+specsla =[  0.0, 0.0, 0.0, &  ! Not used.
             0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0 ]
@@ -759,32 +754,30 @@ if (compete) then
 
 ! Parameters used in more than one subroutine:
 
-tolrance = 0.0001d0  ! FLAG increase from 0.001. JM Jun 3 2014. 
-
 lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.50, 1.00, 1.00, &  !FLAG test. PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]
 
 ! allocate.f parameters: --------------
 
 omega = [ 0.80, 0.50, 0.00, & 
-          0.80, 0.45, 0.80, &  !pft 4 was 0.8
+          0.80, 0.45, 0.80, &  
           0.05, 0.05, 0.00, &
           1.00, 1.00, 0.00 ]
 
-epsilonl = [ 0.19, 0.45, 0.00, &  !pft 2 was 0.06 JM Dec 17 2013
-             0.39, 0.50, 0.30, &  !pft 5 was 0.25
+epsilonl = [ 0.19, 0.45, 0.00, &  
+             0.39, 0.50, 0.30, &  
              0.80, 0.80, 0.00, &
              0.10, 0.10, 0.00 ]
 
 epsilons = [ 0.40, 0.34, 0.00, &
-             0.21, 0.35, 0.10, & !pft 3 was 0.05
+             0.21, 0.35, 0.10, & 
              0.15, 0.15, 0.00, &
              0.00, 0.00, 0.00 ]
 
-epsilonr = [ 0.41, 0.21, 0.00, &  !pft 2 was 0.89 JM Dec 17 2013
-             0.40, 0.15, 0.60, &  !pft 5 was 0.65
+epsilonr = [ 0.41, 0.21, 0.00, &  
+             0.40, 0.15, 0.60, &  
              0.05, 0.05, 0.00, &
              0.90, 0.90, 0.00 ]
 
@@ -792,28 +785,28 @@ epsilonr = [ 0.41, 0.21, 0.00, &  !pft 2 was 0.89 JM Dec 17 2013
 
   ! existence subroutine:
 
-tcoldmin = [ -99.0, -999.9,   0.0, & !test pft 1 was -32.5, 
-               2.5,  -35.0,   4.0, & !test pft 3 and 5 was 15.5, TEST PFT 4 add in temp., (Mar 5 - PFT 3 was 7)
+tcoldmin = [-999.9, -999.9,   0.0, & 
+               2.5,  -35.0,   4.0, & 
             -999.9, -999.9,   0.0, &
-            -999.9, -999.9,   0.0 ]  ! test pft 9 was 15.5
+            -999.9, -999.9,   0.0 ]  
 
 tcoldmax = [ 18.0,  -28.0,   0.0, & 
             999.9,   16.0, 900.0, &       
             999.9,  999.9,   0.0, &
-            999.9,  999.9,   0.0 ]  ! test PFT 8 was 15.0
+            999.9,  999.9,   0.0 ]  
 
-twarmmax = [ 99.9,  25.0,  0.0, & !test pft 2 was 23.0
+twarmmax = [ 99.9,  25.0,  0.0, & 
              99.9,  99.9, 99.9, &       
              99.9,  99.9,  0.0, &
              99.9,  99.9,  0.0 ]
 
 gdd5lmt = [ 375.0,  600.0,  0.0, &  
-           1200.0,  300.0,  9.9, &  ! test pft 4 was 500
+           1200.0,  300.0,  9.9, & 
               9.9,    9.9,  0.0, &
               9.9,    9.9,  0.0 ]
 
 aridlmt = [ 9.9,  9.9,  0.0, &
-            9.9,  9.9,  0.9, & ! PFT 5 was 1.5.       
+            9.9,  9.9,  0.9, & 
             9.9,  9.9,  0.0, &
             9.9,  9.9,  0.0 ]
 
@@ -824,23 +817,22 @@ dryseasonlmt=[  9.0,  99.9,    0.0, &
  
   ! competition subroutine
 
-! Flag all values have been changed from 0.1 JM Mar 10 2014
-! smaller numbers give faster colonization rates.
-bio2sap = [ 0.28, 0.20, 0.00, & ! apr 1 pft 2 was 0.25 JM
-            0.10, 0.14, 0.13, & ! april 1 JM, 5 was 0.15
+  ! smaller numbers give faster colonization rates.
+bio2sap = [ 0.32, 0.20, 0.00, & 
+            0.08, 0.14, 0.13, & 
             0.00, 0.00, 0.00, &
-            0.20, 0.20, 0.00 ]  ! were 0.4 for both JM Apr 14 2014.
+            0.20, 0.20, 0.00 ] 
 
 bioclimrt = 0.25                
                      
 ! ctem.f parameters: ----------
 
 laimin = [ 1.0, 1.0, 0.0, &
-           1.5, 1.0, 1.0, &  ! flag test PFT 4 was 1.5, 5 was 0.7
+           1.5, 1.0, 1.0, &  
            1.0, 1.0, 0.0, &
-           0.01, 0.01, 0.0 ]  !PFT 8 was 0.5 and 9 was 1.0 JM Apr 11 
+           0.01, 0.01, 0.0 ] 
 
-laimax = [ 4.0, 3.0, 0.0, & ! flag pft 1 was 6.0 JM Mar 11 2014
+laimax = [ 4.0, 3.0, 0.0, & 
            6.0, 5.0, 5.0, & 
            8.0, 8.0, 0.0, &
            4.0, 4.0, 0.0 ] 
@@ -848,60 +840,49 @@ laimax = [ 4.0, 3.0, 0.0, & ! flag pft 1 was 6.0 JM Mar 11 2014
 ! disturbance parameters: ------------
 
 standreplace = [ 0.20, 0.20, 0.00, &
-                 0.60, 0.20, 0.10, & 
+                 0.50, 0.20, 0.15, &  
                  0.00, 0.00, 0.00, &
-                 1.00, 1.00, 0.00 ] 
+                 0.25, 0.25, 0.00 ] 
 
 ! mainres.f parameters: ---------
 
 bsrtstem = [ 0.0700, 0.0550, 0.0000, &
-             0.0500, 0.0335, 0.0350, &  ! PFT 3 was 0.06 JM Jan 31 2014, PFT 5 was 0.03 Mar 6 2014
+             0.0500, 0.0335, 0.0350, &  
              0.0365, 0.0365, 0.0000, & 
              0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
 
 bsrtroot = [ 0.5000, 0.2850, 0.0000, &
-             0.4000, 0.2250, 0.1500, & ! pft 3 was 0.65 JM Jan 31 2014, pft 5 was 0.15 Mar 11 2014.
+             0.4000, 0.2250, 0.1500, & 
              0.1600, 0.1600, 0.0000, & 
              0.1000, 0.1000, 0.0000 ]
 
 ! mortality.f parameters: ---------
 
-!maxage = [ 450.0, 250.0,   0.0, &  !flag, test pft 1 was 250. JM Mar 10 2014.
-!           350.0, 200.0, 250.0, &  !flag, test pft 4 was 250. pft 3 was 250 JM Mar 10 2014.
-!             0.0,   0.0,   0.0, &
-!             0.0,   0.0,   0.0 ]
-
-! flag test May 1 JM
-maxage = [ 800.0, 500.0,   0.0, &  !flag, test pft 1 was 250. JM Mar 10 2014.
-           700.0, 450.0, 500.0, &  !flag, test pft 4 was 250. pft 3 was 250 JM Mar 10 2014.
+maxage = [ 800.0, 500.0,   0.0, &  
+           700.0, 450.0, 500.0, &  
              0.0,   0.0,   0.0, &
              0.0,   0.0,   0.0 ]
 
-!mxmortge = [ 0.01, 0.01, 0.00, &
-!             0.01, 0.01, 0.01, & 
-!             0.00, 0.00, 0.00, & 
-!             0.05, 0.10, 0.00 ] 
-
-mxmortge = [ 0.005, 0.005, 0.00, &  ! JM test Apr 15.
+mxmortge = [ 0.005, 0.005, 0.00, & 
              0.005, 0.005, 0.005, & 
              0.00, 0.00, 0.00, & 
              0.05, 0.10, 0.00 ] 
 
 ! phenology.f parameters: ---------
 
-cdlsrtmx = [ 0.10, 0.30, 0.00, &  ! test PFT 1 was 0.15 JM Feb 3 2014
+cdlsrtmx = [ 0.10, 0.30, 0.00, &  
              0.30, 0.40, 0.15, &
              0.15, 0.15, 0.00, &
              0.15, 0.15, 0.00 ]
 
-drlsrtmx = [ 0.006 , 0.005, 0.000, & !pft 1 was 0.0025 JM Mar 6 2014.
-             0.010 , 0.025, 0.030, & !pft 5 was 0.05, pft 4 was 0.005 jm feb 3 2014, pft 3 was 0.005
+drlsrtmx = [ 0.006 , 0.005, 0.000, &
+             0.010 , 0.025, 0.030, & 
              0.005 , 0.005, 0.000, &
-             0.040 , 0.040, 0.000 ]  !PFT 8 and 9 were 0.05 
+             0.020 , 0.020, 0.000 ] 
 
 
-lwrthrsh = [ -50.0, -5.0, 0.0, &  !flag pft 1 was -45 JM Feb 3 2014
-               5.0,  8.0, 5.0, &  ! pft 4 was 5.0 Mar 11 2014
+lwrthrsh = [ -50.0, -5.0, 0.0, & 
+               5.0,  8.0, 5.0, &  
                5.0,  5.0, 0.0, &
                0.1,  5.0, 0.0 ]
 
@@ -914,26 +895,15 @@ thrprcnt = [ 40.0, 40.0,  0.0, &
 
 ! turnover.f parameters: --------------
 
-!stemlife = [ 75.0, 75.0, 0.00, &   ! flag pft 1 was 65.0 JM Mar 10 2014
-!             70.0, 70.0, 65.0, &  !flag pft 4 was 40.0, pft 5 was 45.0, Jan31 2014 JM pft 3 was 45.0
-!             20.0, 20.0, 0.00, &
-!              0.00, 0.00, 0.00 ]
-
-!rootlife = [ 12.0,11.5, 0.0, &
-!             11.0, 9.5, 8.5, &     ! flag pft 4 and 5 were 5.5, Jan31 2014 JM pft 3 was 8.5
-!              3.0, 3.0, 0.0, &
-!              2.5, 2.5, 0.0 ]
-! FLAG test increase all turnovers by 15% (except crop) JM Apr 21 2014.
-stemlife = [ 86.3, 86.3, 0.00, &   ! flag pft 1 was 65.0 JM Mar 10 2014
-             80.5, 80.5, 75.8, &  !flag pft 4 was 40.0, pft 5 was 45.0, Jan31 2014 JM pft 3 was 45.0
+stemlife = [ 86.3, 86.3, 0.00, &  
+             80.5, 80.5, 75.8, &  
              20.0, 20.0, 0.00, &
               0.00, 0.00, 0.00 ]
 
 rootlife = [ 13.8,13.2, 0.0, &
-             12.7,10.9, 9.8, &     ! flag pft 4 and 5 were 5.5, Jan31 2014 JM pft 3 was 8.5
+             12.7,10.9, 9.8, &    
               3.0, 3.0, 0.0, &
               3.0, 3.0, 0.0 ]
-
 
 !   ********************************************************************************************
 !   =============                                                     ==========================
@@ -947,8 +917,6 @@ else ! Prescribed PFT fractional cover
 ! CTM and INI files, or when LUC is on, the LUC file.
 
 ! Parameters used in more than one subroutine:
-
-tolrance = 0.0001d0 
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.75, 1.00, 1.00, &  
@@ -968,12 +936,12 @@ epsilonl = [ 0.20, 0.06, 0.00, &
              0.01, 0.01, 0.00 ]
 
 epsilons = [ 0.15, 0.05, 0.00, &
-             0.05, 0.10, 0.10, & !pft 3 was 0.05
+             0.05, 0.10, 0.10, & 
              0.15, 0.15, 0.00, &
              0.00, 0.00, 0.00 ]
 
-epsilonr = [ 0.65, 0.89, 0.00, &  !pft 2 was 0.89 JM Dec 17 2013
-             0.60, 0.55, 0.65, &  !pft 5 was 0.65
+epsilonr = [ 0.65, 0.89, 0.00, &  
+             0.60, 0.55, 0.65, &  
              0.05, 0.05, 0.00, &
              0.99, 0.99, 0.00 ]
 

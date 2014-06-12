@@ -59,6 +59,10 @@ c
 c
 c             Canadian Terrestrial Ecosystem Model (CTEM) 
 C             Main Ctem Subroutine Compatible With CLASS 
+
+c     12  Jun 2014  - Bring in a constant reproductive cost, remove expnbaln,
+c     J. Melton       add a smoothing function for lambda calculation for competition,
+c                     made it so NEP and NBP work with competition on.
 C
 c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 c     J. Melton
@@ -595,21 +599,21 @@ c
  95   continue
 c
 c     ---------------------------------------------------------------
-!     Initialize add2allo to 0.0   !FLAG JM Test May 8 2014. 
-        do j = 1, icc
-          do i = il1, il2
-            add2allo(i,j)=0.0
-          enddo
-        enddo
+!     Initialize add2allo to 0.0   !Not in use. JM Jun 2014. 
+      !  do j = 1, icc
+      !    do i = il1, il2
+      !      add2allo(i,j)=0.0
+      !    enddo
+      !  enddo
 c
       if(compete .or. lnduseon)then
 
-c      land use change and competition for mosaics needs mapping and
-c      unmapping of the pfts. composite does not require these extra steps.
+c      Land use change and competition for mosaics needs mapping and
+c      unmapping of the pfts. Composite does not require these extra steps.
 
        if (mosaic) then
 c
-c       check if number of mosaics is equal to the number of pfts plus one
+c       Check if number of mosaics is equal to the number of pfts plus one
 c       bare, e.g., nmos=iccp1
 c
         if (nmos.ne.iccp1) then 
@@ -941,8 +945,7 @@ c
         nbpveg(i,iccp1) = 0.0  !net biome productity for bare fraction
         nepveg(i,iccp1) = 0.0  !net ecosystem productity for bare fraction
 
-!c       expnbaln  is used for competition
-!        expnbaln(i)=0.0        !amount of c related to spatial expansion  !FLAG
+!        expnbaln(i)=0.0        !amount of c related to spatial expansion  !Not used. JM Jun 2014
         repro_cost_g(i)=0.0    !amount of C for production of reproductive tissues
 
 100   continue 
@@ -997,9 +1000,10 @@ c
           vgbiomas_veg(i,j)=0.0 !vegetation biomass for each pft
 c
 c         following are competition related
-          lambda(i,j)=0.0    !fraction of npp that is used for horizontal expansion
-!          expbalvg(i,j)=0.0  !amount of c related to spatial expansion  !FLAG
-          reprocost(i,j) = 0.0 ! cost of producing reproductive tissues (ymold !FLAG
+          lambda(i,j)=0.0    ! Used to determine the colonization rate
+          reprocost(i,j) = 0.0 ! cost of producing reproductive tissues 
+
+!          expbalvg(i,j)=0.0  !amount of c related to spatial expansion  !Not used. JM Jun 2014
 c
 120     continue
 110   continue
@@ -1361,9 +1365,8 @@ c
      6                     fieldsm, wtstatus, ltstatus)
 c  
 c     Estimate fraction of npp that is to be used for horizontal
-c     expansion (lambda) during the next day. the remaining fraction (1
-c     - lambda) is what we will use for vertical expansion. 
-c
+c     expansion (lambda) during the next day (i.e. this will be determining
+c     the colonization rate in competition).
 
       if (compete) then
        do 500 j = 1, icc
@@ -1380,15 +1383,14 @@ c
      &                    (laimax(n)-laimin(n))
            endif
 
-!              FLAG testing Apr 8 JM
+!          We use the following new function to smooth the transition for lambda as
+!          a abrupt linear increase does not give good results. JM Jun 2014
            if (ailcg(i,j) .gt. laimin(n)*0.25) then
             lambdaalt = cosh((ailcg(i,j) - laimin(n)*0.25) * 0.115) - 1.
            else
             lambdaalt=0.
            end if
-
            lambda(i,j)=max(lambda(i,j),lambdaalt)
-!             test end.
 
            lambda(i,j)=max(0.0, min(lambdamax, lambda(i,j)))
 c
@@ -1421,9 +1423,6 @@ c         over the model time step (deltat)
       
           gppvgstp(i,j)=gppveg(i,j)*(1.0/963.62)*deltat !+ add2allo(i,j)
 
-!          nppvgstp(i,j)=nppveg(i,j)*(1.0/963.62)*deltat*(1.-lambda(i,j))
-!     &                  + add2allo(i,j)
-
 !         Remove the cost of making reproductive tissues. This cost can only
 !         be removed when NPP is positive.
           if (compete) then   !FLAG - set up now so only compete on has a reproductive cost. JM
@@ -1432,13 +1431,15 @@ c         over the model time step (deltat)
             reprocost(i,j) = 0.
           end if   
 
-          nppvgstp(i,j)=(nppveg(i,j)-reprocost(i,j))*(1.0/963.62)*deltat !FLAG test jm may 12
+!         Not in use. We now use a constant reproductive cost as the prior formulation
+!         produces perturbations that do not allow closing of the C balance. JM Jun 2014.
+!          nppvgstp(i,j)=nppveg(i,j)*(1.0/963.62)*deltat*(1.-lambda(i,j))
+!     &                  + add2allo(i,j)
+          nppvgstp(i,j)=(nppveg(i,j)-reprocost(i,j))*(1.0/963.62)*deltat 
 c
-c         amount of c related to horizontal expansion
-c
-!          expbalvg(i,j)=-1.0*nppveg(i,j)*deltat*lambda(i,j)
-!     &                  + add2allo(i,j)*(963.62/1.0)
-
+c         Amount of c related to horizontal expansion
+c         Not in use. JM Jun 2014
+!         expbalvg(i,j)=-1.0*nppveg(i,j)*deltat*lambda(i,j)+ add2allo(i,j)*(963.62/1.0)
 c        
           rmlvgstp(i,j)=rmlveg(i,j)*(1.0/963.62)*deltat
           rmsvgstp(i,j)=rmsveg(i,j)*(1.0/963.62)*deltat
@@ -1528,11 +1529,12 @@ c
 610     continue
 600   continue
 c  
-c     calculate grid averaged value of c related to spatial expansion
+c     calculate grid averaged value of C related to spatial expansion
 c
       do 620 j = 1,icc
         do 621 i = il1, il2
          if (compete .or. lnduseon) then  
+!           Not in use. We now use the constant reproductive cost below. JM Jun 2014 
 !           expnbaln(i)=expnbaln(i)+fcancmx(i,j)*expbalvg(i,j)
             repro_cost_g(i)=repro_cost_g(i)+fcancmx(i,j)*reprocost(i,j)      
          endif
@@ -1541,7 +1543,7 @@ c
 c
 c    ------------------------------------------------------------------
 c
-c     phenology part starts
+c     Phenology part starts
 c
 c     the phenology subroutine determines leaf status for each pft and 
 c     calculates leaf litter. the phenology subroutine uses soil 
@@ -1775,18 +1777,23 @@ c     as well as the grid averaged value of NBP. Also LUC related combustion flu
 c     is assumed to be spread uniformly over the grid cell and thus reduces NBP of each
 c     PFT
 c
-      do 1000 j = 1, icc
-        do 1010 i = il1, il2
+      do 1000 i = il1, il2
+        do 1010 j = 1, icc
           dscemlv1(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +
      &                  rtcaemls(i,j) 
           dscemlv2(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +
      &                  rtcaemls(i,j) + ltrcemls(i,j)
+
 c         convert kg c/m2 emitted in one day into u mol co2/m2.sec before
-c         subtracting emission losses from nep. Since we don't burn on the 
-c         bare fraction, we don't need to account for that area and it is left
-c         at the initialized value of 0. JM Jun 10 2014.
+c         subtracting emission losses from nep. 
           nbpveg(i,j)  =nepveg(i,j)   - dscemlv2(i,j)*(963.62/deltat)
+
 1010    continue
+
+c       For accounting purposes, we also need to account for the bare fraction NBP
+!       Since there is no fire on the bare, we use 0. 
+          nbpveg(i,iccp1)  =nepveg(i,iccp1)   - 0. 
+
 1000  continue
 c
 c     Calculate grid. averaged rate of carbon emissions due to fire in
@@ -1876,7 +1883,6 @@ c
      5                    pglfmass, pblfmass, pstemass,  protmass,
      6                    plitmass, psocmass, vgbiomas,  reprocost,
      7                    pvgbioms, gavgltms, pgavltms,  gavgscms,
-!     8                    pgavscms, galtcels, expnbaln,  !FLAG
      8                    pgavscms, galtcels, repro_cost_g,
      9                         npp,  autores, hetrores,       gpp,
      a                         nep,   litres,   socres, dstcemls1,

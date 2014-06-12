@@ -27,6 +27,9 @@ subroutine  bioclim (   iday,        ta,   precip,   netrad, &
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                Bioclimatic Parameters Estimation Subroutine 
 !
+!     10  Jun 2014  - Add in new dry_season_length variable
+!     R. Shrestha
+!
 !     25  Jun 2013  - Convert to f90.
 !     J. Melton
 !
@@ -94,7 +97,7 @@ real, dimension(nilg), intent(inout) :: anndefct  ! annual water deficit (mm)
 real, dimension(nilg), intent(inout) :: annsrpls  ! annual water surplus (mm)
 real, dimension(nilg), intent(inout) :: annpcp    ! annual precipitation (mm)
 real, dimension(nilg), intent(inout) :: anpotevp  ! annual potential evaporation (mm) 
-real, dimension(nilg), intent(inout) :: dry_season_length ! annual maximum dry month length   !Rudra
+real, dimension(nilg), intent(inout) :: dry_season_length ! annual maximum dry month length (months)
  
 ! local variables
 real, dimension(nilg) :: tccuryr
@@ -102,8 +105,8 @@ real, dimension(nilg) :: twcuryr
 real, dimension(nilg) :: aridcur
 real :: wtrbal
 integer :: month, atmonthend, temp, nmax, i, j, k, curmonth, m, n, l
-integer, save, dimension(:,:), allocatable :: wet_dry_mon_index   !Rudra
-integer, save, dimension(:,:), allocatable :: wet_dry_mon_index2   !Rudra
+integer, save, dimension(:,:), allocatable :: wet_dry_mon_index   
+integer, save, dimension(:,:), allocatable :: wet_dry_mon_index2  
 real, dimension(:), allocatable, save :: dry_season_length_curyr !current year's maximum dry month length 
 
 ! local parameters
@@ -133,7 +136,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           tcurm(i)=0.0      ! temperature of current month
           srplscur(i)=0.0   ! current month's water surplus
           defctcur(i)=0.0   ! current month's water deficit
-          dry_season_length_curyr(i) = 0.   !current year's maximum dry month length    !Rudra
+          dry_season_length_curyr(i) = 0.   !current year's maximum dry month length  
 
          do month = 1,12
           tmonth(month,i)=0.0
@@ -187,10 +190,10 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           tmonth(curmonth,i)=tcurm(i)
           if( srplscur(i).ge.defctcur(i) )then
             surmncur(i) = surmncur(i) + 1
-            wet_dry_mon_index(i,curmonth) = 1    !Rudra
+            wet_dry_mon_index(i,curmonth) = 1   
           else if(srplscur(i).lt.defctcur(i) )then
             defmncur(i) = defmncur(i) + 1
-            wet_dry_mon_index(i,curmonth) = -1   !Rudra
+            wet_dry_mon_index(i,curmonth) = -1  
           endif
           srpcuryr(i)=srpcuryr(i)+srplscur(i)
           dftcuryr(i)=dftcuryr(i)+defctcur(i)
@@ -209,15 +212,14 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           else
             aridcur(i)=100.0
           endif
-!................................../Rudra
                              
-            do j = 1,12          !this loop double up the size of the "wet_dry_mon_index" matrix 
+         !this loop doubles up the size of the "wet_dry_mon_index" matrix 
+            do j = 1,12          
                 do k = 1,2
                    m = (k-1)*12 + j
                    wet_dry_mon_index2(i,m) = wet_dry_mon_index(i,j)
                 end do
             end do
-!...................MAXIMUM LENGTH OF DRY MONTH.................................
 
             n = 0       !number of dry month
             nmax = 0    !maximum length of dry month
@@ -232,7 +234,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
                 end do 
             nmax = min(nmax, 12)
             dry_season_length_curyr(i) = real(nmax)
-!..................................\Rudra
+
         endif     !iday=365
 
 250   continue
@@ -259,7 +261,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
             anndefct(i)=dftcuryr(i)
             annpcp(i)=anpcpcur(i)
             anpotevp(i)=anpecur(i)
-            dry_season_length(i)=dry_season_length_curyr(i)    !Rudra
+            dry_season_length(i)=dry_season_length_curyr(i)    
             inibioclim=.true.
           else
             twarmm(i)=twarmm(i)*factor + twcuryr(i)*(1.0-factor)
@@ -272,7 +274,7 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
             anndefct(i)=anndefct(i)*factor + dftcuryr(i)*(1.0-factor)
             annpcp(i)=annpcp(i)*factor + anpcpcur(i)*(1.0-factor)
             anpotevp(i)=anpotevp(i)*factor + anpecur(i)*(1.0-factor)
-            dry_season_length(i)=dry_season_length(i)*factor + dry_season_length_curyr(i)*(1.0-factor)    !Rudra
+            dry_season_length(i)=dry_season_length(i)*factor + dry_season_length_curyr(i)*(1.0-factor)   
           endif
 280     continue
 
@@ -297,6 +299,10 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                          PFT Existence Subroutine 
+!
+!     12  Jun 2014  - Broadleaf cold deciduous now have a tcolmin constraint
+!     J. Melton       and it and broadleaf drought/dry deciduous can not longer
+!                     co-exist. Grasses are now able to coexist.
 !
 !     27  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 !     J. Melton
@@ -333,7 +339,7 @@ implicit none
 ! arguments
 
 integer, intent(in) :: iday      ! day of the year
-integer, intent(in) :: nilg       ! no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
+integer, intent(in) :: nilg      ! no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)
 integer, intent(in) :: il1       ! il1=1
 integer, intent(in) :: il2       ! il2=nilg
 
@@ -371,8 +377,6 @@ integer :: i,j
 !       needleleaf evergreen
         j=1
         if(tcoldm(i).le.tcoldmax(sort(j)).and.gdd5(i).ge.gdd5lmt(sort(j)) ) then
-!           .and.dry_season_length(i).le.dryseasonlmt(sort(j)))then !flag remove this new constraint. JM Apr 15.
-
            pftexist(i,j)=.true.
         else
            pftexist(i,j)=.false.
@@ -399,7 +403,7 @@ integer :: i,j
 !       broadleaf deciduous cold  (see note below pft 5 too)
         j=4
         if(tcoldm(i).le.tcoldmax(sort(j)).and. &
-           gdd5(i).ge.gdd5lmt(sort(j)).and. tcoldm(i).ge.tcoldmin &  !TEST FLAG added in this new constraint. JM Dec 17 2013.
+           gdd5(i).ge.gdd5lmt(sort(j)).and. tcoldm(i).ge.tcoldmin &  
            (sort(j)))then
            pftexist(i,j)=.true.
         else
@@ -412,7 +416,7 @@ integer :: i,j
            .and.dry_season_length(i).ge.dryseasonlmt(sort(j)))then
            pftexist(i,j)=.true.
 !       We don't want both broadleaf species co-existing so if it has PFT 5
-!       remove PFT 4. TEST JM flag Dec 6 2013.
+!       remove PFT 4. 
            pftexist(i,j-1)=.false.
         else
            pftexist(i,j)=.false.
@@ -424,19 +428,19 @@ integer :: i,j
 
 !       c3 grass
         j=8
-        if(tcoldm(i).le.tcoldmax(sort(j)))then
+!        if(tcoldm(i).le.tcoldmax(sort(j)))then
            pftexist(i,j)=.true.
-        else
-           pftexist(i,j)=.false.
-        endif
+!        else
+!           pftexist(i,j)=.false.
+!        endif
 
 !       c4 grass
         j=9
-        if(tcoldm(i).ge.tcoldmin(sort(j)))then
+!        if(tcoldm(i).ge.tcoldmin(sort(j)))then
            pftexist(i,j)=.true.
-        else
-           pftexist(i,j)=.false.
-        endif
+!        else
+!           pftexist(i,j)=.false.
+!        endif
 
 
 100   continue
@@ -452,8 +456,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
                           pftexist,  geremort, intrmort, &
                           gleafmas, bleafmas,  stemmass, rootmass, &
                           litrmass, soilcmas,  grclarea,   lambda, &
-                           burnvegf,     sort, pstemmass, &
-                           pgleafmass, &
+                           burnvegf,     sort, pstemmass, pgleafmass, &
                            fcancmx,   fcanmx,  vgbiomas, gavgltms, &
                           gavgscms,  bmasveg,   &
                           add2allo,        colrate,        mortrate) 
@@ -461,6 +464,9 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 !               Canadian Terrestrial Ecosystem Model (CTEM) 
 !                          PFT Competition Subroutine 
 
+!     12  Jun 2014  - Change how carbon used in horizontal expansion is dealt with. We 
+!     J. Melton       now have a constant reproductive cost
+!
 !     26  Mar 2014  - Move disturbance adjustments back via a subroutine called
 !     J. Melton       burntobare
 !
@@ -598,7 +604,7 @@ real, dimension(nilg) :: grsumlit, grsumsoc
 ! Model switches:
 
 ! set desired model to be used to .true. and all other to .false.
-!                ** ONLY ONE can be true. **
+!                ** ONLY ONE (1) can be true!! **
 logical, parameter :: lotvol=.false. ! original lotka-volterra eqns.
 logical, parameter :: arora =.true.  ! modified form of lv eqns with f missing
 logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing and a modified self-thinning term
@@ -625,26 +631,17 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
         b=1 ! beta
         g=1 ! gamma
         colmult=1.00 ! multiplier for colonization rate
-      else
-        write(6,*)'fool! choose competition model properly'
-        call xit('competition',-4)
       endif
 
 !     ---------------------------------------------------------------
 
 !   First, let's adjust the fractions if fire is turned on.
 
-! FLAG: this is not used at present due to problem with C closure in the code. JM.
-
     if (dofire) then
 
         call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
                       rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
                       nppveg)
-!        call burntobare(il1, il2, nilg, sort, fcancmx, burnvegf, stemmass, &
-!                      rootmass, gleafmas, bleafmas, litrmass, soilcmas, &
-!                      nppveg)
-
 
       ! Since the biomass pools could have changed, update bmasveg.
       do 190 i = il1, il2
@@ -810,9 +807,9 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 220   continue
 
 !     bubble sort according to colonization rates
-!     FLAG - this only works if no tree species are index at positions
-!     > numtreepfts, i.e. the trees must be contiguous unit at the start
-!     of the indexes. JM.
+!     NOTE - this only works if no tree species are indexed at positions
+!     > numtreepfts, i.e. the trees must be a contiguous unit at the start
+!     of the indexes. JM Jun 2014
       do 270 j = 1, numtreepfts
         do 280 n = 1, numtreepfts
           do 290 i = il1, il2
@@ -1090,14 +1087,15 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !           the factor (deltat/963.62) converts npp from u-mol co2-c/m2.sec 
 !           -> kg c/m2.deltat
 
-            incrlitr(i,j) = 0.! term*max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j) !FLAG test. JM
+            ! Not in use. JM Jun 2014.
+            !incrlitr(i,j) = term*max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j) 
+            incrlitr(i,j) = 0. 
             grsumlit(i)=grsumlit(i)+incrlitr(i,j)
 
-!           rest put aside for allocation
-
-!            add2allo(i,j) = add2allo(i,j)* max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*&
+!           ! Not in use. JM Jun 2014. -rest put aside for allocation
+!           add2allo(i,j) = add2allo(i,j)* max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*&
 !                          (pfcancmx(i,j)/fcancmx(i,j))
-            add2allo(i,j) = 0. !FLAG test JM may 12
+            add2allo(i,j) = 0.
 
           else if(fraciord(i,j).eq.-1)then ! Contract
 
@@ -1110,7 +1108,9 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
             incrlitr(i,j) = abs(chngfrac(i,j))*(gleafmas(i,j)+ &  
                bleafmas(i,j)+stemmass(i,j)+rootmass(i,j)+litrmass(i,j))
 
-            incrlitr(i,j) = incrlitr(i,j) !+max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)  ! FLAG test jm may 12
+            ! Not in use. JM Jun 2014.
+            !incrlitr(i,j) = incrlitr(i,j)+max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)  
+            incrlitr(i,j) = incrlitr(i,j) 
             grsumlit(i)=grsumlit(i)+incrlitr(i,j)
 
 !           Chop off soil c from the fraction that goes down and
@@ -1121,8 +1121,10 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
           else if(fraciord(i,j).eq.0)then
 
+            ! Not in use. JM Jun 2014.
 !           all npp used for expansion becomes litter
-            incrlitr(i,j) =0. ! max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)* pfcancmx(i,j) ! FLAG test jm may 12
+            !incrlitr(i,j) =max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)* pfcancmx(i,j) 
+            incrlitr(i,j) =0. 
             grsumlit(i)=grsumlit(i)+incrlitr(i,j)
 
           endif
@@ -1159,7 +1161,6 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !     fractional coverage is really small then get rid of the pft all
 !     together and spread its live and dead biomass over the grid cell.
 
-! FLAG - I don't think this code loop below can happen since we have a min frac of seed. JM
       do 690 j = 1, icc
         do 691 i = il1, il2
           if(.not. pftexist(i,j).and.fcancmx(i,j).lt.1.0e-05)then
@@ -1180,7 +1181,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
             litrmass(i,iccp1) = litrmass(i,iccp1)*term
             soilcmas(i,iccp1) = soilcmas(i,iccp1)*term
 
-            fcancmx(i,j)=0.0   !FLAG does this cause problems since it is 0 and not seed? JM May 27 
+            fcancmx(i,j)=0.0 !FLAG could this cause problems since it is 0 and not seed? JM May 27 
 
           endif
 691     continue
@@ -1209,7 +1210,6 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
           litrmass(i,iccp1)=litrmass(i,iccp1)+grsumlit(i)
           soilcmas(i,iccp1)=soilcmas(i,iccp1)+grsumsoc(i)
         else
-          write(*,*)'FLAG barefrac is ',barefrac(i),'in loop 720 of comp' !FLAG  
           litrmass(i,iccp1)=0.0
           soilcmas(i,iccp1)=0.0
         endif
@@ -1284,9 +1284,10 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
           add2dead(i) = add2dead(i) + barelitr(i,j) + baresolc(i,j)
 
+!         Not in use. JM Jun 2014.
 !         npp we had in first place to expand
-!          nppvegar(i,j)=max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
-          nppvegar(i,j)=0. !FLAG test jm may 12
+!         nppvegar(i,j)=max(0.0,nppveg(i,j))*(deltat/963.62)*lambda(i,j)*pfcancmx(i,j)
+          nppvegar(i,j)=0.
 
           gavgnpp(i) = gavgnpp(i) + nppvegar(i,j)
 
