@@ -609,7 +609,7 @@ real :: soilterm, duffterm              ! temporary variables
        end do
        burnfrac(i)=100.*burnarea(i)/grclarea(i)
 
-       cumulative_burnedf(i) = cumulative_burnedf(i) + burnarea(i)/grclarea(i) 
+!       cumulative_burnedf(i) = cumulative_burnedf(i) + burnarea(i)/grclarea(i) 
 
 490   continue
 
