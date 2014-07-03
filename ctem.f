@@ -9,8 +9,8 @@
      a                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,
      b                      thicec, soildpth, spinfast,   todfrac,
      &                     compete,   netrad,   precip,   
-     &                      popdin,   dofire,     isand,  faregat,
-     &                      mosaic,
+     &                    popdin, dofire,  dowetlands,obswetf,isand,  
+     &                       faregat,  mosaic, wetfrac, wetfrac_s,
 c
 c    -------------- inputs used by ctem are above this line ---------
 c
@@ -52,7 +52,8 @@ c
      4                      rmlveg,  rmsveg,   rmrveg,    rgveg,
      5                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,
      6                  hetrsveg,autoresveg, ltresveg, scresveg,
-     7                 nml,    ilmos, jlmos)
+     7                 nml,    ilmos, jlmos,  ch4wet1,  ch4wet2,  
+     8                 wetfdyn, ch4dyn1, ch4dyn2)
 c
 c    ---------------- outputs are listed above this line ------------ 
 c
@@ -60,6 +61,9 @@ c
 c             Canadian Terrestrial Ecosystem Model (CTEM) 
 C             Main Ctem Subroutine Compatible With CLASS 
 
+c     3   Jul 2014  - Bring in wetland and wetland methane code
+c     R. Shrestha
+c
 c     12  Jun 2014  - Bring in a constant reproductive cost, remove expnbaln,
 c     J. Melton       add a smoothing function for lambda calculation for competition,
 c                     made it so NEP and NBP work with competition on.
@@ -325,6 +329,8 @@ c      emit_tc   - total carbon
 c      emit_oc   - organic carbon
 c      emit_bc   - black carbon
 c      dofire    - boolean, if true allow fire, if false no fire.
+c      dowetlands- if true allow wetland methane emission
+c      obswetf   - observed wetland fraction 
 c      bterm     - biomass term for fire probabilty calc
 c      lterm     - lightning term for fire probabilty calc
 c      mterm     - moisture term for fire probabilty calc
@@ -348,7 +354,8 @@ c     burnvegf- fractiona areas burned for 9 ctem pfts
 c
       implicit none
 c
-      logical   lnduseon,  dofire, do_mortality, mosaic
+      logical   lnduseon,  dofire, do_mortality, mosaic,
+     1          dowetlands, obswetf 
 
       integer      il1,       il2,     
      1           iday,        i,        j,        k,    stdaln,    lath,
@@ -505,6 +512,10 @@ c
       integer   surmncur(ilg),       defmncur(ilg)
 c
       logical compete, inibioclim, pftexist(ilg,icc)
+C 
+      real      wetfrac(ilg),        ch4wet1(ilg),        ch4wet2(ilg)
+      real    wetfrac_s(ilg),        wetfdyn(ilg)
+      real      ch4dyn1(ilg),        ch4dyn2(ilg)
 
        real lambdaalt !FLAG testing JM Apr 8 2014
 c
@@ -1355,6 +1366,20 @@ c     heterotrophic respiration part ends
 c
 c     ------------------------------------------------------------------
 c
+
+c     ch4 wetland emissions !rudra added on 02/12/2013                               
+c
+      if (dowetlands .or. obswetf) then
+      call  ch4wetland (hetrores, il1, il2, ilg, ta, wetfrac,
+     1                        ignd, npp, tbar, thliqg, currlat,
+     2                     sand,  wetfrac_s,
+     3                  ch4wet1,    ch4wet2,    wetfdyn,
+     4                  ch4dyn1,    ch4dyn2)
+      endif 
+
+c    --------------------------------------------------------------------
+
+
 c     estimate allocation fractions for leaf, stem, and root components.
 c
            call allocate (lfstatus,   thliqc,    ailcg,     ailcb,

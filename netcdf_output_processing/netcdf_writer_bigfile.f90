@@ -10,6 +10,7 @@ implicit none
 ! Annual COMPOSITE 
 real, allocatable, dimension(:,:) :: ctem_a
 real, allocatable, dimension(:,:) :: ctem_d_a
+real, allocatable, dimension(:,:) :: ctem_w_a  !Rudra
 
 ! Annual MOSAIC
 real, allocatable, dimension(:,:,:) :: ctem_a_mos
@@ -23,6 +24,7 @@ real, allocatable, dimension(:) :: pft_tot
 ! Monthly COMPOSITE
 real, allocatable, dimension(:,:,:) :: ctem_m
 real, allocatable, dimension(:,:,:) :: ctem_d_m
+real, allocatable, dimension(:,:,:) :: ctem_w_m  !Rudra
 
 ! Monthly MOSAIC
 real, allocatable, dimension(:,:,:,:) :: ctem_m_mos
@@ -63,6 +65,7 @@ character(4) :: dummy
 logical :: CTEM
 logical :: MAKEMONTHLY
 logical :: DOFIRE
+logical :: DOWETLANDS   !Rudra
 logical :: MOSAIC
 logical :: PARALLELRUN
 logical :: COMPETE_LNDUSE
@@ -80,6 +83,7 @@ namelist /joboptions/ &
   CTEM, 	      &
   MAKEMONTHLY,        &
   DOFIRE,             &
+  DOWETLANDS,         &   
   MOSAIC,             &
   COMPETE_LNDUSE,     &
   totyrs,             &
@@ -120,7 +124,12 @@ folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
          OPEN(91,FILE=trim(folder)//trim(ARGBUFF)//'.CT07M_GM',status='old',form='formatted') ! MONTHLY PFT FRAC OUTPUT FOR CTEM
          OPEN(92,FILE=trim(folder)//trim(ARGBUFF)//'.CT07Y_GM',status='old',form='formatted') ! YEARLY PFR FRAC OUTPUT FOR CTEM
         end if
-
+      
+        if (DOWETLANDS) then   !Rudra
+         OPEN(900,FILE=trim(folder)//trim(ARGBUFF)//'.CT08Y_G',status='old',form='formatted') ! YEARLY CTEM wetlands Ch4 emission
+         OPEN(910,FILE=trim(folder)//trim(ARGBUFF)//'.CT08M_G',status='old',form='formatted') ! MONTHLY CTEM wetlands Ch4 emission
+        endif
+ 
        END IF
 
 
@@ -418,6 +427,15 @@ if (DOFIRE) then
  allocate(ctem_d_a(nctemdistvars_a,totyrs))
 end if
 
+if (DOWETLANDS) then   !Rudra
+  allocate(ctem_w_a(nctemwetvars_a,totyrs))
+  !  first throw out header
+      do h = 1,6
+        read(900,*)
+      end do
+
+end if 
+
 ! Read in from the ascii file
 
   do y = 1,totyrs
@@ -430,12 +448,20 @@ end if
 
     endif
 
+    if (DOWETLANDS) then     !Rudra
+      read(900,*) dummy_year,ctem_w_a(1:nctemwetvars_a,y)
+    end if 
+
    end do
 
     close(75)
     if (DOFIRE) then
         close(84)
     endif
+    
+    if (DOWETLANDS) then
+       close(900)
+    end if 
 
 !----
 ! ANNUAL 
@@ -475,12 +501,37 @@ end if
 
  end if !dofire
 
+!------------Rudra---------
+ if (DOWETLANDS) then
+
+   if (net4) then
+    status = nf90_inq_ncid(ncid,'Annual-Methane flux GridAvg', grpid)
+    if (status /= nf90_noerr) call handle_err(status)
+   end if
+  do v = 1,nctemwetvars_a ! begin vars loop
+
+    status = nf90_inq_varid(grpid,trim(CTEM_Y_W_VAR(v)), var_id)
+    if (status/=nf90_noerr) call handle_err(status)
+
+    status = nf90_put_var(grpid,var_id,ctem_w_a(v,:),start=[xlon,ylat,yrst],count=[1,1,totyrs])
+    if (status/=nf90_noerr) call handle_err(status)
+
+  end do ! vars loop
+
+ end if !dowetlands
+
+!-----------
+
 ! deallocate arrays
 deallocate(ctem_a)
 
 if (DOFIRE) then
  deallocate(ctem_d_a)
 endif
+
+if (DOWETLANDS) then  !Rudra
+  deallocate(ctem_w_a)
+end if 
 
 !now per PFT/Tile MODE ====================================================
 
@@ -692,6 +743,17 @@ if (DOFIRE) then
   allocate(ctem_d_m(nctemdistvars_m,totyrs,12))
 end if
 
+!======Rudra========
+if (DOWETLANDS) then   
+   allocate(ctem_w_m(nctemwetvars_m,totyrs,12))
+    !  first throw out header
+      do h = 1,6
+        read(910,*)
+      end do
+
+end if
+!==================
+
 !---Read in Variables
    do y = 1,totyrs
     do m=1,12
@@ -703,6 +765,10 @@ end if
       read(84,*)dummy_month,dummy_year,ctem_d_m(1:nctemdistvars_m,y,m)
 
      end if
+     
+     if (DOWETLANDS) then  !Rudra
+        read(910,*) dummy_month,dummy_year,ctem_w_m(1:nctemwetvars_m,y,m)
+     end if !dowetlands
 
     end do !m loop
    end do !y loop
@@ -711,6 +777,9 @@ end if
     if (DOFIRE) then
       close(84)
     end if
+    if (DOWETLANDS) then  !Rudra
+      close(910)
+    end if 
 !----
 
 ! MONTHLY
@@ -750,6 +819,28 @@ if (DOFIRE) then
 
 end if !dofire
 
+!==============Rudra===============
+if (DOWETLANDS) then 
+
+ if (net4) then
+   status = nf90_inq_ncid(ncid,'Monthly-Methane flux GridAvg', grpid)
+   if (status /= nf90_noerr) call handle_err(status)
+ end if
+ 
+ do v = 1,nctemwetvars_m ! begin vars loop
+  do m=1,12  !Begin Month Loop
+   status = nf90_inq_varid(grpid,trim(CTEM_M_W_VAR(v)), var_id)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_put_var(grpid,var_id,ctem_w_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,totyrs])
+   if (status/=nf90_noerr) call handle_err(status)
+
+  end do !months
+ end do ! vars loop
+
+end if !dowetlands
+
+!==================================
 ! deallocate arrays
 
 deallocate(ctem_m)
@@ -758,6 +849,9 @@ if (DOFIRE) then
   deallocate(ctem_d_m)
 end if
 
+if (DOWETLANDS) then   !Rudra
+  deallocate(ctem_w_m)
+end if 
 !===================per PFT/Tile===CTEM Monthly==========================
 
 !  first throw out header

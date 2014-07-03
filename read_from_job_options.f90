@@ -1,6 +1,7 @@
 subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,ncyear,lnduseon,spinfast,cyclemet, &
                   nummetcylyrs,metcylyrst,co2on,setco2conc,popdon,popcycleyr, &
-                  parallelrun,dofire,compete,inibioclim,start_bare,rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,itcg, &
+                  parallelrun,dofire,dowetlands,obswetf,compete,inibioclim,start_bare,&
+                  rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,itcg, &
                   itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,jhhendd,jdstd, & 
                   jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
@@ -86,6 +87,10 @@ logical, intent(out) :: parallelrun ! set this to be true if model is run in par
  				 ! output includes half-hourly and daily and mosaic-mean as well.
 
 logical, intent(out) :: dofire   ! if true the fire/disturbance subroutine will be used.
+
+logical, intent(out) :: dowetlands   ! if true the ch4wetland subroutine will be used.
+
+logical, intent(out) :: obswetf   ! if true the observed wetland fraction will be used.
 
 logical, intent(out) :: compete  ! set this to true if competition between pfts is
  				 ! to be implimented
@@ -199,6 +204,8 @@ namelist /joboptions/ &
   popcycleyr,         &
   parallelrun,        &
   dofire,             &
+  dowetlands,         &
+  obswetf,            &
   compete,            &
   inibioclim,         &
   start_bare,         &

@@ -48,6 +48,7 @@ character(120) :: jobfile
 logical :: CTEM
 logical :: MAKEMONTHLY
 logical :: DOFIRE
+logical :: DOWETLANDS   !Rudra
 logical :: MOSAIC
 logical :: COMPETE_LNDUSE
 logical :: PARALLELRUN
@@ -58,6 +59,7 @@ namelist /joboptions/ &
   CTEM, 	      &
   MAKEMONTHLY,        &
   DOFIRE,             &
+  DOWETLANDS,         &    !Rudra
   MOSAIC,             &
   COMPETE_LNDUSE,     &
   totyrs,             &
@@ -127,7 +129,7 @@ yrange(2) = maxval(latvect)
 ! Create the NetCDF file
 
 file_to_write_extended = trim(file_to_write)//'_CLASSCTEM.nc'
-call create_netcdf(totyrs,yrst,realyrst,file_to_write_extended,CTEM,MOSAIC,MAKEMONTHLY,DOFIRE,COMPETE_LNDUSE)
+call create_netcdf(totyrs,yrst,realyrst,file_to_write_extended,CTEM,MOSAIC,MAKEMONTHLY,DOFIRE,DOWETLANDS,COMPETE_LNDUSE)
 
 deallocate(lonvect)
 deallocate(latvect)
@@ -142,7 +144,7 @@ end program netcdf_create_bf
 
 !=======================================================================
 
-subroutine create_netcdf(totyrs,yrst,realyrst,file_to_write,CTEM,MOSAIC,MAKEMONTHLY,DOFIRE,COMPETE_LNDUSE)
+subroutine create_netcdf(totyrs,yrst,realyrst,file_to_write,CTEM,MOSAIC,MAKEMONTHLY,DOFIRE,DOWETLANDS,COMPETE_LNDUSE)
 
 use creator_module_bf
 use netcdf
@@ -158,6 +160,7 @@ logical,intent(in) :: CTEM
 logical,intent(in) :: MOSAIC
 logical,intent(in) :: MAKEMONTHLY
 logical,intent(in) :: DOFIRE
+logical,intent(in)  :: DOWETLANDS   !Rudra
 logical,intent(in) :: COMPETE_LNDUSE
 
 integer :: grpid_ann_ctem
@@ -166,6 +169,8 @@ integer :: grpid_mon_ctem
 integer :: grpid_mon_class
 integer :: grpid_mon_dist
 integer :: grpid_ann_dist
+integer :: grpid_ann_wet   !Rudra
+integer :: grpid_mon_wet   !Rudra
 
 integer :: grpid_ann_ctem_t
 integer :: grpid_mon_ctem_t
@@ -406,6 +411,13 @@ if (net4) then
         if (status /= nf90_noerr) call handle_err(status)
     end if
 
+!=======Rudra=============
+    if (DOWETLANDS) then
+        status = nf90_def_grp(grpid_ann_ctem,'Annual-Methane flux GridAvg', grpid_ann_wet)
+        if (status /= nf90_noerr) call handle_err(status)
+    end if
+!=========================
+
     if (MAKEMONTHLY) then
      status = nf90_def_grp(ncid,'CTEM-Monthly GridAvg', grpid_mon_ctem)
      if (status /= nf90_noerr) call handle_err(status)
@@ -414,6 +426,13 @@ if (net4) then
         status = nf90_def_grp(grpid_mon_ctem,'Monthly-Disturbance GridAvg', grpid_mon_dist)
         if (status /= nf90_noerr) call handle_err(status)
      end if
+
+!==========Rudra=========
+     if (DOWETLANDS) then
+        status = nf90_def_grp(grpid_mon_ctem,'Monthly-Methane flux GridAvg', grpid_mon_wet)
+        if (status /= nf90_noerr) call handle_err(status)
+     end if 
+!=======================
     end if !makemonthly
 
     status = nf90_def_grp(ncid,'CTEM-Annual Tiled', grpid_ann_ctem_t)
@@ -445,6 +464,8 @@ else ! netcf3
         grpid_mon_class=ncid
         grpid_mon_dist=ncid
         grpid_ann_dist=ncid
+        grpid_ann_wet=ncid    !Rudra
+        grpid_mon_wet=ncid    !Rudra
 
         grpid_ann_ctem_t=ncid
         grpid_mon_ctem_t=ncid
@@ -809,6 +830,48 @@ if (CTEM) then
 
      end do
     end if !dofire
+
+!===========Rudra=========================
+    if (DOWETLANDS) then
+
+     do i=lbound(CTEM_M_W_VAR,1), ubound(CTEM_M_W_VAR,1)
+
+      status = nf90_redef(grpid_mon_wet)
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_def_var(grpid_mon_wet,trim(CTEM_M_W_VAR(i)),nf90_float,[lon,lat,month,time],varid)
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_put_att(grpid_mon_wet,varid,'long_name',trim(CTEM_M_W_NAME(i)))
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_put_att(grpid_mon_wet,varid,'units',trim(CTEM_M_W_UNIT(i)))
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_put_att(grpid_mon_wet,varid,'_FillValue',fill_value)
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_put_att(grpid_mon_wet,varid,'missing_value',fill_value)
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_put_att(grpid_mon_wet,varid,'_Storage',"chunked")
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_put_att(grpid_mon_wet,varid,'_Chunksizes',[cnty,cntx,12,1])
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_put_att(grpid_mon_wet,varid,'_DeflateLevel',1)
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_enddef(grpid_mon_wet)
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_put_var(grpid_mon_wet,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,12,totyrs])
+      if (status/=nf90_noerr) call handle_err(status)
+
+     end do
+    end if !dowetlands
+!=========================================
   end if ! makemonthly
 
  !=============Annual CTEM COMPOSITE=================================================
@@ -891,6 +954,53 @@ if (CTEM) then
     end do
 
    end if !dofire
+
+!   deallocate(threevar)
+!   if (MAKEMONTHLY) then
+!    deallocate(fourvar)
+!   end if
+!===========Rudra==============
+! WETLANDS VARIABLES
+   if (DOWETLANDS) then
+
+    do i=lbound(CTEM_Y_W_VAR,1), ubound(CTEM_Y_W_VAR,1)
+
+     status = nf90_redef(grpid_ann_wet)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_def_var(grpid_ann_wet,trim(CTEM_Y_W_VAR(i)),nf90_float,[lon,lat,time],varid)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_put_att(grpid_ann_wet,varid,'long_name',trim(CTEM_Y_W_NAME(i)))
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_put_att(grpid_ann_wet,varid,'units',trim(CTEM_Y_W_UNIT(i)))
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_put_att(grpid_ann_wet,varid,'_FillValue',fill_value)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_put_att(grpid_ann_wet,varid,'missing_value',fill_value)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_put_att(grpid_ann_wet,varid,'_Storage',"chunked")
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_put_att(grpid_ann_wet,varid,'_Chunksizes',[cnty,cntx,1])
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_put_att(grpid_ann_wet,varid,'_DeflateLevel',1)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_enddef(grpid_ann_wet)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_put_var(grpid_ann_wet,varid,threevar,start=[1,1,1],count=[cntx,cnty,totyrs])
+     if (status/=nf90_noerr) call handle_err(status)
+
+    end do
+
+   end if !dowetlands
 
    deallocate(threevar)
    if (MAKEMONTHLY) then

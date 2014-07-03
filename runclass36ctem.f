@@ -403,7 +403,7 @@ c
      2     met_rewound,   reach_eof,      compete, 
      3      start_bare,   rsfile,         lnduseon, 
      4           co2on,   popdon,         inibioclim,
-     5    start_from_rs
+     5    start_from_rs, dowetlands, obswetf
 c
        integer   lopcount,  isumc,   nol2pfts(4),  
      1           k1c,       k2c,     iyd,         jhhstd,
@@ -413,7 +413,8 @@ c
      5           spinfast,  month1,  month2,      xday, 
      6           ncyear, co2yr, popyr, nummetcylyrs,
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
-     8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2) 
+     8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2),
+     9           obswetyr, cywetldyr  
 c
        real      rlim,        fsstar_g,
      1           flstar_g,  qh_g,    qe_g,        snomlt_g,
@@ -561,6 +562,17 @@ c     Fire-related variables
        real extnprobgrd(nlat),          extnprobgat(ilg),
      1      prbfrhucgrd(nlat),          prbfrhucgat(ilg), 
      1      mlightnggrd(nlat,12),       mlightnggat(ilg,12)
+
+c      Methane(wetland) related variables    !Rudra added on 03/12/2013
+
+       real  WETFRACGRD(nlat),              wetfrac_sgrd(ilg), 
+!     1       WETFRAC_SROW(nlat),            WETFRAC_SGAT(ILG),
+     1       CH4WET1ROW(nlat,nmos),         CH4WET1GAT(ILG),
+     2       CH4WET2ROW(nlat,nmos),         CH4WET2GAT(ILG),
+     3       WETFDYNROW(nlat,nmos),         WETFDYNGAT(ILG),
+     4       CH4DYN1ROW(nlat,nmos),         CH4DYN1GAT(ILG),
+     5       CH4DYN2ROW(nlat,nmos),         CH4DYN2GAT(ILG),
+     6       wetfrac_mon(nlat,12)
 
 !      Land-use related variables
 
@@ -749,6 +761,10 @@ c
      c     bterm_g(nlat),              lterm_g(nlat),
      d     mterm_g(nlat)
 
+       real    CH4WET1_G(nlat),            CH4WET2_G(nlat),        !Rudra addes on 03/12/2013
+     &     WETFDYN_G(nlat),            CH4DYN1_G(nlat),
+     &     CH4DYN2_G(nlat)  
+
 !     -----------------------
 !      Grid averaged monthly variables (denoted by name ending in "_mo_g")
 
@@ -770,7 +786,11 @@ c
      e      probfire_mo_g(nlat),       luc_emc_mo_g(nlat),
      f      lucltrin_mo_g(nlat),       lucsocin_mo_g(nlat),
      g      burnfrac_mo_g(nlat),       bterm_mo_g(nlat),
-     h      lterm_mo_g(nlat),          mterm_mo_g(nlat)  
+     h      lterm_mo_g(nlat),          mterm_mo_g(nlat),
+!    
+     &      ch4wet1_mo_g(nlat),        ch4wet2_mo_g(nlat),     !Rudra added on 03/12/2013
+     &      wetfdyn_mo_g(nlat),        ch4dyn1_mo_g(nlat),
+     &      ch4dyn2_mo_g(nlat)  
 
 !      Mosaic monthly variables (denoted by name ending in "_mo_m")
 
@@ -793,7 +813,11 @@ c
      7      luc_emc_mo_m(nlat,nmos),     lterm_mo_m(nlat,nmos),
      8      lucsocin_mo_m(nlat,nmos),    mterm_mo_m(nlat,nmos),
      9      lucltrin_mo_m(nlat,nmos),
-     a      burnfrac_mo_m(nlat,nmos,icc)
+     a      burnfrac_mo_m(nlat,nmos,icc),
+c                                                            !Rudra CH4 variable
+     &      ch4wet1_mo_m(nlat,nmos), ch4wet2_mo_m(nlat,nmos),
+     &      wetfdyn_mo_m(nlat,nmos), 
+     &      ch4dyn1_mo_m(nlat,nmos), ch4dyn2_mo_m(nlat,nmos) 
 c
 !     -----------------------
 c      Annual output for CTEM grid-averaged variables:
@@ -816,7 +840,10 @@ c      (denoted by name ending in "_yr_g")
      b      probfire_yr_g(nlat),       luc_emc_yr_g(nlat),
      c      lucltrin_yr_g(nlat),       lucsocin_yr_g(nlat),
      d      burnfrac_yr_g(nlat),       bterm_yr_g(nlat),
-     e      lterm_yr_g(nlat),          mterm_yr_g(nlat)
+     e      lterm_yr_g(nlat),          mterm_yr_g(nlat),
+     &      ch4wet1_yr_g(nlat),        ch4wet2_yr_g(nlat),
+     &      wetfdyn_yr_g(nlat),        ch4dyn1_yr_g(nlat),
+     &      ch4dyn2_yr_g(nlat)
 
 c      Annual output for CTEM mosaic variables:
 c      (denoted by name ending in "_yr_m")
@@ -838,7 +865,11 @@ c      (denoted by name ending in "_yr_m")
      c      luc_emc_yr_m(nlat,nmos),     totcmass_yr_m(nlat,nmos,icc),
      d      lucsocin_yr_m(nlat,nmos),    lterm_yr_m(nlat,nmos),   
      e      lucltrin_yr_m(nlat,nmos),    mterm_yr_m(nlat,nmos),
-     f      burnfrac_yr_m(nlat,nmos,icc)   
+     f      burnfrac_yr_m(nlat,nmos,icc),
+     &      ch4wet1_yr_m(nlat,nmos),   ch4wet2_yr_m(nlat,nmos),
+     &      wetfdyn_yr_m(nlat,nmos),   ch4dyn1_yr_m(nlat,nmos),
+     &      ch4dyn2_yr_m(nlat,nmos)
+  
 c
 c============= CTEM array declaration done =============================/
 C
@@ -883,14 +914,14 @@ c     all model switches are read in from a namelist file
       call read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,
      1             ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,
      2             metcylyrst,co2on,setco2conc,popdon,popcycleyr,
-     3             parallelrun,dofire,compete,inibioclim,start_bare,
-     4             rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,
-     5             itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,
-     6             jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
+     3             parallelrun,dofire,dowetlands,obswetf,
+     4             compete,inibioclim,start_bare,
+     5             rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,
+     6             itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,
+     7             jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
 c     Initialize the CTEM parameters
       call initpftpars(compete)
-
 c
 c     set ictemmod, which is the class switch for coupling to ctem
 c     either to 1 (ctem is coupled to class) or 0 (class runs alone)
@@ -1000,6 +1031,13 @@ c
         UVACCROW_M(I,M)          = 0.0
         VVACCROW_M(I,M)          = 0.0
         TCANOACCROW_OUT(I,M)     = 0.0
+c                                         !Rudra addes CH4 related variables on 03/12/2013
+        CH4WET1ROW(i,m)          = 0.0
+        CH4WET2ROW(i,m)          = 0.0
+        WETFDYNROW(i,m)          = 0.0
+        CH4DYN1ROW(i,m)          = 0.0
+        CH4DYN2ROW(i,m)          = 0.0
+        
 c
         do j = 1, ignd
            tbaraccrow_m(i,m,j)  = 0.0
@@ -1131,12 +1169,15 @@ c
       if (cyclemet .and. popcycleyr .ne. -9999) then
         cypopyr = popcycleyr
         cylucyr = popcycleyr
+!        cywetldyr = popcycleyr
       else if (cyclemet) then
         cypopyr = metcylyrst
         cylucyr = metcylyrst
+!        cywetldyr = metcylyrst
       else  ! give dummy value
         cypopyr = -9999
         cylucyr = -9999
+!        cywetldyr = -9999
       end if
 
 c     ctem initialization done
@@ -1178,6 +1219,12 @@ c     luc file is opened in initialize_luc subroutine
         open(unit=14,file=argbuff(1:strlen(argbuff))//'.CO2',
      &         status='old')
       endif
+     
+c     
+      if (obswetf) then 
+        open(unit=16,file=argbuff(1:strlen(argbuff))//'.WETF',
+     &         status='old')
+      endif 
 c
 c     * output files
 c
@@ -1244,6 +1291,10 @@ c
           open(unit=761,file=argbuff(1:strlen(argbuff))//'.CT07D_G') ! competition
          end if
 c
+          if (dowetlands .or. obswetf) then
+          open(unit=762,file=argbuff(1:strlen(argbuff))//'.CT08D_G') ! Methane(Wetland)
+          endif 
+c
        endif ! ctem_on
       endif ! parallelrun
 
@@ -1295,7 +1346,12 @@ c       CTEM yearly output files
 
          open(unit=89,file=argbuff(1:strlen(argbuff))//'.CT07Y_GM')! ctem pft fractions YEARLY
         endif
-
+c
+       if (dowetlands .or. obswetf) then
+        open(unit=91,file=argbuff(1:strlen(argbuff))//'.CT08M_G')  !Methane(wetland) MONTHLY
+c
+        open(unit=92,file=argbuff(1:strlen(argbuff))//'.CT08Y_G')  !Methane(wetland) YEARLY
+       endif !dowetlands
       end if !ctem_on
 c
 C=======================================================================
@@ -1542,6 +1598,11 @@ C
      &'     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d   ',
      &'       %  avgprob/d uMOL-CO2/M2.S KgC/M2.D',
      &'   KgC/M2.D      KM^2    prob/d       prob/d       prob/d')
+7112  FORMAT(' DAY  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
+     & CH4DYN2 ')
+7113  FORMAT('          CH4-C/M2.S    CH4-C/M2.S          CH4-C/M2.S 
+     & CH4-C/M2.S')
+
 C
         WRITE(711,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
         WRITE(711,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
@@ -1589,6 +1650,15 @@ C
         WRITE(781,7110)
         WRITE(781,7111)
        ENDIF
+c             Methane(Wetland) variables !Rudra
+       IF (DOWETLANDS .OR. OBSWETF) THEN     
+        WRITE(762,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+        WRITE(762,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+        WRITE(762,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
+        WRITE(762,7020)
+        WRITE(762,7112)
+        WRITE(762,7113)
+       ENDIF 
 
       ENDIF !CTEM_ON
 C
@@ -1661,6 +1731,24 @@ C
           WRITE(89,6129)
           WRITE(89,6229)
         ENDIF !COMPETE
+   
+         IF (DOWETLANDS .OR. OBSWETF) THEN
+          WRITE(91,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+          WRITE(91,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+          WRITE(91,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
+          WRITE(91,6028)
+          WRITE(91,6230)
+          WRITE(91,6231)
+
+          WRITE(92,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+          WRITE(92,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+          WRITE(92,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
+          WRITE(92,6028)
+          WRITE(92,6232)
+          WRITE(92,6233)
+         ENDIF 
+
+
 C
       ENDIF !CTEM_ON
 C
@@ -1732,7 +1820,17 @@ C
      &'SUMCHECK, PFT existence for each of the 9 pfts')
 6229  FORMAT('         %         %         %         %         ',
      &'%         %         %         %         %         %          ',
-     &'     ') 
+     &'     ')
+     
+6230  FORMAT('MONTH  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
+     & CH4DYN2 ')
+6231  FORMAT('       CH4-C/M2.MON     CH4-C/M2.MON        CH4-C/M2.MON 
+     & CH4-C/M2.MON')
+6232  FORMAT('  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
+     & CH4DYN2 ')
+6233  FORMAT('      CH4-C/M2.MON     CH4-C/M2.MON        CH4-C/M2.MON 
+     & CH4-C/M2.MON')
+ 
 C
 C     CTEM FILE TITLES DONE
 C======================= CTEM ========================================== /
@@ -1878,6 +1976,9 @@ c           use in burntobare subroutine on the first timestep.
            dry_season_length(i) = 0.0
          endif
 
+         if (dowetlands) then      ! Rudra !if true then read wetland fractions
+             read(11,*) wetfrac_sgrd(i)
+         endif   
 71    continue
       close(11)
       endif
@@ -2400,6 +2501,7 @@ c     ----------
 c     preparation with the input datasets prior to launching run:
 
       iyear=-99999  ! initialization, forces entry to loop below
+      obswetyr=-99999 
 
 c     find the first year of met data
 
@@ -2413,6 +2515,26 @@ c
 
 c      back up one space in the met file so it is ready for the next readin  
        backspace(12)
+
+c  /--------------Rudra-------------/
+
+       if(obswetf) then
+         do while (obswetyr .lt. metcylyrst)
+            do i=1,nltest
+              read(16,*) obswetyr,(wetfrac_mon(i,j),j=1,12)     
+            end do
+         end do
+       else
+           do i=1,nltest
+             do j = 1,12
+               wetfrac_mon(i,j) = 0.0
+             enddo
+           enddo
+         
+       end if 
+      backspace(16)
+
+c    \---------------Rudra----------\
 
 c      If you are not cycling over the MET, you can still specify to end on a
 c      year that is shorter than the total climate file length.
@@ -2556,6 +2678,18 @@ c
           bterm_yr_m(i,m)=0.0 
           lterm_yr_m(i,m)=0.0
           mterm_yr_m(i,m)=0.0
+c                                      !CH4(wetland) related variables !Rudra 04/12/2013
+          ch4wet1_mo_m(i,m)  =0.0
+          ch4wet2_mo_m(i,m)  =0.0
+          wetfdyn_mo_m(i,m)  =0.0
+          ch4dyn1_mo_m(i,m)  =0.0
+          ch4dyn2_mo_m(i,m)  =0.0
+
+          ch4wet1_yr_m(i,m)  =0.0
+          ch4wet2_yr_m(i,m)  =0.0
+          wetfdyn_yr_m(i,m)  =0.0
+          ch4dyn1_yr_m(i,m)  =0.0 
+          ch4dyn2_yr_m(i,m)  =0.0     
 c
         endif ! ctem_on
 c
@@ -2683,7 +2817,32 @@ c       back up one space in the met file so it is ready for the next readin
 c       but only if it was read in during the loop above.    
         if (metcylyrst .ne. -9999) backspace(12)
 
-        met_rewound = .false.
+c  /------------------Rudra----------------/
+
+      if (ctem_on) then     
+        if (obswetf) then
+          do while (obswetyr .lt. metcylyrst)
+              do i = 1,nltest
+                read(16,*) obswetyr,(wetfrac_mon(i,j),j=1,12) 
+!                write(*,*) obswetyr,(wetfrac_mon(i,j),j=1,12) 
+                
+              enddo
+          enddo
+
+        else
+           do i=1,nltest
+             do j = 1,12
+               wetfrac_mon(i,j) = 0.0
+             enddo
+           enddo
+        endif !dowetlands .and. obswetf
+       endif ! ctem_on 
+       if (metcylyrst .ne. -9999) backspace(16) 
+
+c  \------------------Rudra---------------\     
+
+
+	met_rewound = .false.
 
       endif
 
@@ -2700,6 +2859,25 @@ C         THIS READS IN ONE 30 MIN SLICE OF MET DATA, WHEN IT REACHES
 C         THE END OF FILE IT WILL GO TO 999. 
           READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSDOWN,FDLGRD(I),
      1         PREGRD(I),TAGRD(I),QAGRD(I),UVGRD(I),PRESGRD(I)
+
+c         /---------------Rudra-----------------/
+         
+          if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
+            if (ctem_on) then     
+              if (obswetf) then
+                  read(16,*,end=1001) obswetyr,(wetfrac_mon(i,j),j=1,12)
+!                  write(*,*) obswetyr,(wetfrac_mon(i,j),j=1,12)
+
+              else
+                   do j = 1,12
+                     wetfrac_mon(i,j) = 0.0
+                   enddo
+              endif !dowetlands .and. obswetf
+            endif ! ctem_on 
+ 
+          endif 
+         
+c         \----------------Rudra---------------\ 
 
 C===================== CTEM ============================================ \
 
@@ -2998,6 +3176,9 @@ C
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
+!     &      WETFRACGAT, WETFRAC_SGAT,
+     &      CH4WET1GAT, CH4WET2GAT, 
+     &      WETFDYNGAT, CH4DYN1GAT,  CH4DYN2GAT,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,      fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -3034,7 +3215,10 @@ c
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
      &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
-     &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow)
+     &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
+!     &      WETFRACROW, WETFRAC_SROW,
+     &      CH4WET1ROW, CH4WET2ROW, 
+     &      WETFDYNROW, CH4DYN1ROW, CH4DYN2ROW)
 c
 C===================== CTEM ============================================ /
 C
@@ -3343,9 +3527,14 @@ c
             lightng(i)=mlightnggat(i,month1)+(real(xday)/30.0)*
      &                 (mlightnggat(i,month2)-mlightnggat(i,month1))
 c
+            if (obswetf) then
+              wetfracgrd(i)=wetfrac_mon(i,month1)+(real(xday)/30.0)*
+     &                 (wetfrac_mon(i,month2)-wetfrac_mon(i,month1))
+            endif !obswetf
+
           endif ! if(ctem_on)  
 c
-855   continue       
+855   continue  
 c 
 c     call canadian terrestrial ecosystem model which operates at a
 c     daily time step, and uses daily accumulated values of variables
@@ -3364,8 +3553,8 @@ c
      a               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,
      b            thicecacc_m,     sdepgat,    spinfast,   todfrac,  
      &                compete,  netrad_gat,  preacc_gat,  
-     &                 popdin,      dofire,   isndgat,
-     &                faregat,      mosaic,
+     &                 popdin,  dofire, dowetlands,obswetf, isndgat,
+     &                faregat,      mosaic, WETFRACGRD, wetfrac_sgrd,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
@@ -3402,7 +3591,8 @@ c    -------------- inputs updated by ctem are above this line ------
      &          rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,
      &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,
      &        hetroresveggat, autoresveggat, litresveggat, 
-     &           soilcresveggat, nml, ilmos, jlmos )
+     &           soilcresveggat, nml, ilmos, jlmos, CH4WET1GAT, 
+     &          CH4WET2GAT, WETFDYNGAT, CH4DYN1GAT, CH4DYN2GAT)
 c    ---------------- outputs are listed above this line ------------
 c
       endif  !if(ctem_on)
@@ -3590,6 +3780,9 @@ C
      &      btermrow,     ltermrow,   mtermrow,  
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
+!     &      WETFRACROW, WETFRAC_SROW, 
+     &      CH4WET1ROW, CH4WET2ROW, 
+     &      WETFDYNROW, CH4DYN1ROW, CH4DYN2ROW,
 c    ----
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -3627,7 +3820,10 @@ c    ----
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat )
+     &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
+!     &      WETFRACGAT, WETFRAC_SGAT, 
+     &      CH4WET1GAT, CH4WET2GAT, 
+     &      WETFDYNGAT, CH4DYN1GAT, CH4DYN2GAT)
 c
 C===================== CTEM ============================================ /
 C
@@ -4850,6 +5046,12 @@ c
           rootdpth_g(i)=0.0
           roottemp_g(i)=0.0
           slai_g(i)=0.0
+c                         !Rudra added CH4 realted variables on 03/12/2013
+          CH4WET1_G(i) = 0.0
+          CH4WET2_G(i) = 0.0
+          WETFDYN_G(i) = 0.0
+          CH4DYN1_G(i) = 0.0
+          CH4DYN2_G(i) = 0.0
 
           do k=1,ignd
            rmatctem_g(i,k)=0.0
@@ -4922,6 +5124,11 @@ c
            autoresrow(i,m) =autoresrow(i,m)*1.0377  ! convert to gc/m2.day
            litresrow(i,m)  =litresrow(i,m)*1.0377   ! convert to gc/m2.day
            socresrow(i,m)  =socresrow(i,m)*1.0377   ! convert to gc/m2.day
+c
+           CH4WET1ROW(i,m) = CH4WET1ROW(i,m)*1.0377   !Rudra 
+           CH4WET2ROW(i,m) = CH4WET2ROW(i,m)*1.0377
+           CH4DYN1ROW(i,m) = CH4DYN1ROW(i,m)*1.0377
+           CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 
 c
 c          write daily ctem results
 c
@@ -5066,6 +5273,7 @@ c
 8600       format(1x,i4,i5,4f10.5,i8,2(a6,i2))
 8601       format(1x,i4,i5,4f10.5,8x,2(a6,i2))   
 8800       format(1x,i4,i5,20f11.4,2x,f9.2,2(a6,i2))
+8810       format(1x,i4,i5,5f11.4,2(a6,i2))
 c
 c          Calculation of grid averaged variables
 c
@@ -5113,7 +5321,13 @@ c
            lucsocin_g(i) =lucsocin_g(i)+lucsocinrow(i,m)*farerow(i,m) 
            bterm_g(i)    =bterm_g(i)   +btermrow(i,m)*farerow(i,m) 
            lterm_g(i)    =lterm_g(i)   +ltermrow(i,m)*farerow(i,m) 
-           mterm_g(i)    =mterm_g(i)   +mtermrow(i,m)*farerow(i,m) 
+           mterm_g(i)    =mterm_g(i)   +mtermrow(i,m)*farerow(i,m)
+c                                                   !Rudra added CH4 related variables on 03/12/2013
+           CH4WET1_G(i) = CH4WET1_G(i) + CH4WET1ROW(i,m)*farerow(i,m)
+           CH4WET2_G(i) = CH4WET2_G(i) + CH4WET2ROW(i,m)*farerow(i,m)
+           WETFDYN_G(i) = WETFDYN_G(i) + WETFDYNROW(i,m)*farerow(i,m)
+           CH4DYN1_G(i) = CH4DYN1_G(i) + CH4DYN1ROW(i,m)*farerow(i,m)
+           CH4DYN2_G(i) = CH4DYN2_G(i) + CH4DYN2ROW(i,m)*farerow(i,m)
 
            do j=1,icc  
 
@@ -5203,6 +5417,16 @@ c
      6          lucltrin_g(i), lucsocin_g(i),
      7          grclarea(i), bterm_g(i), lterm_g(i), mterm_g(i)
            endif
+c      
+c      write CH4 variables to file *.CT08D_G
+c
+           if (dowetlands .or. obswetf) then
+            write(762,8810)iday,iyear, ch4wet1_g(i), 
+     1                 ch4wet2_g(i), wetfdyn_g(i), 
+     2                 ch4dyn1_g(i), ch4dyn2_g(i)
+           endif  
+    
+c
 
             if (compete .or. lnduseon) then 
               sumfare=0.0
@@ -5287,6 +5511,12 @@ c
            bterm_mo_g(i)    =0.0
            lterm_mo_g(i)    =0.0
            mterm_mo_g(i)    =0.0
+c          CH4(wetland) related variables !Rudra 04/12/2013
+           ch4wet1_mo_g(i)  =0.0
+           ch4wet2_mo_g(i)  =0.0
+           wetfdyn_mo_g(i)  =0.0
+           ch4dyn1_mo_g(i)  =0.0
+           ch4dyn2_mo_g(i)  =0.0
 
           endif !mid-month
 c
@@ -5326,6 +5556,13 @@ c
            bterm_yr_g(i)=0.0 
            lterm_yr_g(i)=0.0
            mterm_yr_g(i)=0.0
+c          CH4(wetland) related variables !Rudra 04/12/2013
+           ch4wet1_yr_g(i)  =0.0
+           ch4wet2_yr_g(i)  =0.0
+           wetfdyn_yr_g(i)  =0.0
+           ch4dyn1_yr_g(i)  =0.0
+           ch4dyn2_yr_g(i)  =0.0
+
 
           endif
 
@@ -5386,6 +5623,13 @@ c
      &                             +lucsocinrow(i,m)
            lucltrin_mo_m(i,m) =lucltrin_mo_m(i,m)
      &                             +lucltrinrow(i,m)
+C                         !CH4 related variables !Rudra
+           ch4wet1_mo_m(i,m) = ch4wet1_mo_m(i,m) + CH4WET1ROW(i,m)
+           ch4wet2_mo_m(i,m) = ch4wet2_mo_m(i,m) + CH4WET2ROW(i,m)
+           wetfdyn_mo_m(i,m) = wetfdyn_mo_m(i,m) + WETFDYNROW(i,m)
+           ch4dyn1_mo_m(i,m) = ch4dyn1_mo_m(i,m) + CH4DYN1ROW(i,m) 
+           ch4dyn2_mo_m(i,m) = ch4dyn2_mo_m(i,m) + CH4DYN2ROW(i,m) 
+
 !          Sum the probfire now, later we will make it a per day value. 
            probfire_mo_m(i,m) =probfire_mo_m(i,m) + probfirerow(i,m) 
            bterm_mo_m(i,m) = bterm_mo_m(i,m) + btermrow(i,m)
@@ -5524,8 +5768,23 @@ c
                lucsocin_mo_g(i) =lucsocin_mo_g(i)
      &                          +lucsocin_mo_m(i,m)*farerow(i,m)   
                lucltrin_mo_g(i) =lucltrin_mo_g(i)
-     &                          +lucltrin_mo_m(i,m)*farerow(i,m)   
-c
+     &                          +lucltrin_mo_m(i,m)*farerow(i,m)
+c    CH4(wetland) variables !Rudra 
+
+               ch4wet1_mo_g(i) = ch4wet1_mo_g(i) 
+     &                           +ch4wet1_mo_m(i,m)*farerow(i,m)
+               ch4wet2_mo_g(i) = ch4wet2_mo_g(i)
+     &                           +ch4wet2_mo_m(i,m)*farerow(i,m)
+
+               wetfdyn_mo_m(i,m)=wetfdyn_mo_m(i,m)*(1./monthdays(nt)) !Rudra (why? not clear)
+
+               wetfdyn_mo_g(i) = wetfdyn_mo_g(i)
+     &                           +wetfdyn_mo_m(i,m)*farerow(i,m)
+               ch4dyn1_mo_g(i) = ch4dyn1_mo_g(i)
+     &                           +ch4dyn1_mo_m(i,m)*farerow(i,m)
+               ch4dyn2_mo_g(i) = ch4dyn2_mo_g(i)
+     &                           +ch4dyn2_mo_m(i,m)*farerow(i,m)
+
 !              Make the probability of fire a per day value
                probfire_mo_m(i,m)=probfire_mo_m(i,m)*
      &                                (1./real(monthdays(nt)))
@@ -5646,6 +5905,13 @@ c
      2                        (pftexistrow(i,m,j),j=1,icc)
               endif !mosaic/composite
             endif !compete/lnduseon
+             
+             if (dowetlands .or. obswetf) then
+             write(91,8111)imonth,iyear,ch4wet1_mo_g(i),
+     1                     ch4wet2_mo_g(i),wetfdyn_mo_g(i),
+     2                     ch4dyn1_mo_g(i),ch4dyn2_mo_g(i)
+             endif 
+
 c
 c              initialize monthly accumulated arrays
 c              for the next round
@@ -5658,7 +5924,14 @@ c              for the next round
                lucltrin_mo_m(i,m) =0.0
                bterm_mo_m(i,m) =0.0
                lterm_mo_m(i,m) =0.0
-               mterm_mo_m(i,m) =0.0 
+               mterm_mo_m(i,m) =0.0
+C       !Rudra
+               ch4wet1_mo_m(i,m)  =0.0
+               ch4wet2_mo_m(i,m)  =0.0
+               wetfdyn_mo_m(i,m)  =0.0
+               ch4dyn1_mo_m(i,m)  =0.0
+               ch4dyn2_mo_m(i,m)  =0.0
+ 
 
              do j=1,icc
 
@@ -5759,6 +6032,19 @@ c
             luc_emc_yr_m(i,m)=luc_emc_yr_m(i,m)+lucemcomrow(i,m)
             lucsocin_yr_m(i,m)=lucsocin_yr_m(i,m)+lucsocinrow(i,m)
             lucltrin_yr_m(i,m)=lucltrin_yr_m(i,m)+lucltrinrow(i,m)
+c             CH4(wetland) variables !Rudra 
+
+               ch4wet1_yr_m(i,m) = ch4wet1_yr_m(i,m)
+     &                           +ch4wet1row(i,m)
+               ch4wet2_yr_m(i,m) = ch4wet2_yr_m(i,m)
+     &                           +ch4wet2row(i,m)
+               wetfdyn_yr_m(i,m) = wetfdyn_yr_m(i,m)
+     &                           +(wetfdynrow(i,m)*(1./365.))
+               ch4dyn1_yr_m(i,m) = ch4dyn1_yr_m(i,m)
+     &                           +ch4dyn1row(i,m)
+               ch4dyn2_yr_m(i,m) = ch4dyn2_yr_m(i,m)
+     &                           +ch4dyn2row(i,m)
+
 
             if (iday.eq.365) then
 
@@ -5868,7 +6154,20 @@ c
               lucsocin_yr_g(i)=lucsocin_yr_g(i)
      &                         +lucsocin_yr_m(i,m)*farerow(i,m)   
               lucltrin_yr_g(i)=lucltrin_yr_g(i)
-     &                         +lucltrin_yr_m(i,m)*farerow(i,m)   
+     &                         +lucltrin_yr_m(i,m)*farerow(i,m) 
+c    CH4(wetland) variables !Rudra 
+
+               ch4wet1_yr_g(i) = ch4wet1_yr_g(i)
+     &                           +ch4wet1_yr_m(i,m)*farerow(i,m)
+               ch4wet2_yr_g(i) = ch4wet2_yr_g(i)
+     &                           +ch4wet2_yr_m(i,m)*farerow(i,m)
+               wetfdyn_yr_g(i) = wetfdyn_yr_g(i)
+     &                           +wetfdyn_yr_m(i,m)*farerow(i,m)
+               ch4dyn1_yr_g(i) = ch4dyn1_yr_g(i)
+     &                           +ch4dyn1_yr_m(i,m)*farerow(i,m)
+               ch4dyn2_yr_g(i) = ch4dyn2_yr_g(i)
+     &                           +ch4dyn2_yr_m(i,m)*farerow(i,m)
+  
 c
             endif ! iday 365
 c
@@ -5977,6 +6276,14 @@ c
 
                endif
              endif !compete/lnduseon
+C            
+              if (dowetlands .or. obswetf) then 
+                write(92,8115)iyear,ch4wet1_yr_g(i),
+     1                     ch4wet2_yr_g(i),wetfdyn_yr_g(i),
+     2                     ch4dyn1_yr_g(i),ch4dyn2_yr_g(i)
+              endif 
+
+
 
 c             initialize yearly accumulated arrays
 c             for the next round
@@ -5989,6 +6296,13 @@ c             for the next round
               bterm_yr_m(i,m)=0.0
               lterm_yr_m(i,m)=0.0
               mterm_yr_m(i,m)=0.0
+C       !Rudra
+               ch4wet1_yr_m(i,m)  =0.0
+               ch4wet2_yr_m(i,m)  =0.0
+               wetfdyn_yr_m(i,m)  =0.0
+               ch4dyn1_yr_m(i,m)  =0.0
+               ch4dyn2_yr_m(i,m)  =0.0
+
 
                do j = 1, icc 
                 laimaxg_yr_m(i,m,j)=0.0
@@ -6035,6 +6349,8 @@ C
 8107  FORMAT(1X,I5,11(F10.5,1X),9L5,2(A6,I2))
 8108  FORMAT(1X,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
 8109  FORMAT(1X,I4,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
+8111  FORMAT(1X,I4,I5,5(F10.3,1X),2(A6,I2))
+8115  FORMAT(1X,I5,5(F10.3,1X),2(A6,I2))
 C
 C     OPEN AND WRITE TO THE RESTART FILES
 C
@@ -6247,8 +6563,14 @@ c      check if the model is done running.
              if(lopcount.le.ctemloop)then
 
               rewind(12)   ! rewind met file
+c /---------------------Rudra----------------/
+               if(obswetf) then
+                rewind(16) !rewind obswetf file
+               endif
+c\----------------------Rudra---------------\
               met_rewound = .true.
               iyear=-9999
+              obswetyr=-9999     !Rudra
 
                if(popdon) then
                  rewind(13) !rewind popd file
@@ -6348,6 +6670,10 @@ c
           close(761)
         endif
 c
+        if (dowetlands .or. obswetf) then
+        close(762)
+        endif 
+c
        if (dofire .or. lnduseon) then
         close(781)
        endif
@@ -6368,11 +6694,17 @@ c     then the CTEM ones
        close(88)
        close(89)
       endif
+ 
+      if (dowetlands .or. obswetf) then 
+       close(91)
+       close(92)
+      endif 
 c
 c     close the input files too
       close(12)
       close(13)
       close(14)
+      close(16)  !*.WETF
            
       call exit
 C
@@ -6385,8 +6717,14 @@ c         the 999 label below is hit when an input file reaches its end.
              if(lopcount.le.ctemloop)then
 
               rewind(12)   ! rewind met file
+c /-----------Rudra-----------------/
+                if(obswetf) then
+                  rewind(16) !rewind obswetf file
+                endif
+c \------------Rudra---------------\
               met_rewound = .true.
               iyear=-9999
+              obswetyr=-9999   !Rudra
 
                if(popdon) then
                  rewind(13) !rewind popd file
@@ -6480,6 +6818,14 @@ C     CLOSE THE INPUT FILES TOO
 
          CALL EXIT
       END IF
+
+1001  continue
+
+       write(*,*)'Error while reading WETF file'
+       run_model=.false.
+
+
+
 C ============================= CTEM =========================/
 
       END

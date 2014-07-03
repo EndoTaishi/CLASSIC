@@ -34,6 +34,8 @@
      &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
+     &      CH4WET1ROW, CH4WET2ROW, WETFDYNROW, CH4DYN1ROW,
+     &      CH4DYN2ROW,
 c --
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,   fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -71,7 +73,9 @@ c --
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
-     &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat )
+     &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
+     &      CH4WET1GAT, CH4WET2GAT, WETFDYNGAT, CH4DYN1GAT,
+     &      CH4DYN2GAT)
 c
 c
 C              Canadian Terrestrial Ecosystem Model (CTEM)
@@ -278,7 +282,14 @@ c
      1     nbpveggat(ilg,icc), hetroresveggat(ilg,iccp1),
      2      autoresveggat(ilg,icc),litresveggat(ilg,iccp1),
      3      soilcresveggat(ilg,iccp1)
-c
+
+c   Methane(Wetland) related variables 
+       real  CH4WET1ROW(nlat,nmos),         CH4WET1GAT(ILG),
+     3       CH4WET2ROW(nlat,nmos),         CH4WET2GAT(ILG),
+     4       WETFDYNROW(nlat,nmos),         WETFDYNGAT(ILG),
+     5       CH4DYN1ROW(nlat,nmos),         CH4DYN1GAT(ILG),
+     6       CH4DYN2ROW(nlat,nmos),         CH4DYN2GAT(ILG)
+
 c----------------------------------------------------------------------
       do 100 k=1,nml
           sdeprow(ilmos(k),jlmos(k))        = sdepgat(k)
@@ -325,6 +336,13 @@ c----------------------------------------------------------------------
           farerow(ilmos(k),jlmos(k))        = faregat(k)
           gavgscmsrow(ilmos(k),jlmos(k))    = gavgscmsgat(k)
           tcanoaccrow_out(ilmos(k),jlmos(k))= tcanoaccgat_out(k)
+!          WETFRACROW(ilmos(k))              = WETFRACGAT(k)  
+!          WETFRAC_SROW(ilmos(k))            = WETFRAC_SGAT(k) 
+          CH4WET1ROW(ilmos(k),jlmos(k))     = CH4WET1GAT(k)  
+          CH4WET2ROW(ilmos(k),jlmos(k))     = CH4WET2GAT(k) 
+          WETFDYNROW(ilmos(k),jlmos(k))     = WETFDYNGAT(k)   
+          CH4DYN1ROW(ilmos(k),jlmos(k))     = CH4DYN1GAT(k)   
+          CH4DYN2ROW(ilmos(k),jlmos(k))     = CH4DYN2GAT(k)  
 c
 100   continue
 c
