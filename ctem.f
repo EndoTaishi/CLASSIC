@@ -1370,9 +1370,9 @@ c
 c     ch4 wetland emissions !rudra added on 02/12/2013                               
 c
       if (dowetlands .or. obswetf) then
-      call  ch4wetland (hetrores, il1, il2, ilg, ta, wetfrac,
+      call  wetland_methane (hetrores, il1, il2, ilg, ta, wetfrac,
      1                        ignd, npp, tbar, thliqg, currlat,
-     2                     sand,  wetfrac_s,
+     2                     sand,  wetfrac_s, !obswetf,
      3                  ch4wet1,    ch4wet2,    wetfdyn,
      4                  ch4dyn1,    ch4dyn2)
       endif 
