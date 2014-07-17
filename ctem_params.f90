@@ -150,6 +150,11 @@ real, dimension(kk) :: albnir           ! near IR albedos of the 9 ctem pfts
 real :: ratioch4                        ! methane to carbon dioxide flux scaling factor.
 real :: wtdryres	                ! ratio of wetland to upland respiration 
 real :: factor2                         ! constant value for secondary (ch4wet2) methane emissions calculation
+real :: lat_thrshld1                    ! Northern zone for wetland determination (degrees North)
+real :: lat_thrshld2                    ! Boundary with southern zone for wetland determination (degrees North)
+real :: soilw_thrshN                    ! Soil wetness threshold in the North zone
+real :: soilw_thrshE                    ! Soil wetness threshold in the Equatorial zone
+real :: soilw_thrshS                    ! Soil wetness threshold in the South zone
 
 ! competition_mod.f90 parameters: ------
 
@@ -422,7 +427,7 @@ albnir = [ 19.0, 19.0, 0.00, &
 !	constant for now ratio is mol ch4 to mol co2
 
 !	ratioch4/0.16/
-ratioch4 = 0.21 ! ckw 3051-3060
+ratioch4 = 0.06 !0.21 ! ckw 3051-3060
 
 !	Use the heterotrophic respiration outputs for soil and litter 
 !	as the ecosystem basis.  These were summed as "hetrores".
@@ -431,9 +436,16 @@ ratioch4 = 0.21 ! ckw 3051-3060
 !	based on literature measurements: Dalva et al. 1997 found 0.5 factor; 
 !	Segers 1998 found a 0.4 factor. use 0.5 here (unitless)
 
-wtdryres = 0.5
+wtdryres = 0.45  !0.5
 
 factor2 = 0.02
+
+lat_thrshld1 = 35.0 !50.0   ! degrees North
+lat_thrshld2 = -10.0  ! degrees North
+soilw_thrshN = 0.55 !0.60   ! Soil wetness threshold in the North zone
+soilw_thrshE = 0.80   ! Soil wetness threshold in the Equatorial zone
+soilw_thrshS = 0.70   ! Soil wetness threshold in the South zone
+
 
 ! ctem.f parameters: ----------
 

@@ -1222,7 +1222,7 @@ c     luc file is opened in initialize_luc subroutine
      
 c     
       if (obswetf) then 
-        open(unit=16,file=argbuff(1:strlen(argbuff))//'.WETF',
+        open(unit=16,file=argbuff(1:strlen(argbuff))//'.WET',
      &         status='old')
       endif 
 c
@@ -1367,6 +1367,10 @@ C
         READ (11,7010) TITLEC1
         READ (11,7010) TITLEC2
         READ (11,7010) TITLEC3
+
+       if(obswetf) then
+        read(16,*) TITLEC1
+       end if
       ENDIF
 C
       IF (.NOT. PARALLELRUN) THEN ! STAND ALONE MODE, INCLUDES HALF-HOURLY AND DAILY OUTPUT
@@ -1828,8 +1832,8 @@ C
      & CH4-C/M2.MON')
 6232  FORMAT('  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
      & CH4DYN2 ')
-6233  FORMAT('      CH4-C/M2.MON     CH4-C/M2.MON        CH4-C/M2.MON 
-     & CH4-C/M2.MON')
+6233  FORMAT('      CH4-C/M2.YR      CH4-C/M2.YR         CH4-C/M2.YR  
+     & CH4-C/M2.YR ')
  
 C
 C     CTEM FILE TITLES DONE
@@ -1906,7 +1910,7 @@ C======================= CTEM ========================================== /
 C
 C====================== CTEM =========================================== \
 C
-c     read from ctem initialization file (.ctm)
+c     read from ctem initialization file (.CTM)
 c
       if (ctem_on) then
       do 71 i=1,nltest
@@ -2823,9 +2827,7 @@ c  /------------------Rudra----------------/
         if (obswetf) then
           do while (obswetyr .lt. metcylyrst)
               do i = 1,nltest
-                read(16,*) obswetyr,(wetfrac_mon(i,j),j=1,12) 
-!                write(*,*) obswetyr,(wetfrac_mon(i,j),j=1,12) 
-                
+                read(16,*) obswetyr,(wetfrac_mon(i,j),j=1,12)                 
               enddo
           enddo
 
@@ -2866,8 +2868,6 @@ c         /---------------Rudra-----------------/
             if (ctem_on) then     
               if (obswetf) then
                   read(16,*,end=1001) obswetyr,(wetfrac_mon(i,j),j=1,12)
-!                  write(*,*) obswetyr,(wetfrac_mon(i,j),j=1,12)
-
               else
                    do j = 1,12
                      wetfrac_mon(i,j) = 0.0
@@ -6541,8 +6541,14 @@ c
              write(101,"(6f8.2)")defctmon(i),anndefct(i),annsrpls(i),
      1                        annpcp(i),anpotevp(i),dry_season_length(i)
             endif
+
+            if (dowetlands) then     
+              write(101,"(f8.3)")wetfrac_sgrd(i)
+            endif   
+
           enddo
 c
+
           close(101)
         endif ! ctem_on
 c
@@ -6566,6 +6572,7 @@ c      check if the model is done running.
 c /---------------------Rudra----------------/
                if(obswetf) then
                 rewind(16) !rewind obswetf file
+                read(16,*) ! read in the header
                endif
 c\----------------------Rudra---------------\
               met_rewound = .true.
@@ -6704,7 +6711,7 @@ c     close the input files too
       close(12)
       close(13)
       close(14)
-      close(16)  !*.WETF
+      close(16)  !*.WET
            
       call exit
 C
@@ -6720,6 +6727,7 @@ c         the 999 label below is hit when an input file reaches its end.
 c /-----------Rudra-----------------/
                 if(obswetf) then
                   rewind(16) !rewind obswetf file
+                  read(16,*) ! read in the header
                 endif
 c \------------Rudra---------------\
               met_rewound = .true.

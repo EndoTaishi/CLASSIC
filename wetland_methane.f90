@@ -15,7 +15,9 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, ta, wetfrac, &
 !      9  June. 2010 - this subroutine calculates methane flux
 !     Brian Amiro      from wetlands of a grid cell (i.e. land only)
 
-use ctem_params,        only : wtdryres, ratioch4, factor2
+use ctem_params,        only : wtdryres, ratioch4, factor2,lat_thrshld1, &
+                               lat_thrshld2, soilw_thrshN, soilw_thrshE, &
+                               soilw_thrshS 
 
 implicit none
 
@@ -91,22 +93,22 @@ do 110 i = il1, il2
 !
      wetfdyn(i)=0.0  ! initialize dynamic wetland fraction to zero
 !
-     if (currlat(i).ge.50.0) then ! all area north of 35 n
+     if (currlat(i).ge.lat_thrshld1) then ! all area north of 35 n
 !            if(soil_wetness.gt.0.635)then ! cku
 !            if(soil_wetness.gt.0.55)then ! ckw 3031-3040
-        if(soil_wetness.gt.0.60)then ! ckw 3041-3050
+        if(soil_wetness.gt.soilw_thrshN)then ! ckw 3041-3050
            wetfdyn(i)=wetfrac_s(i)
         endif
-     elseif (currlat(i).lt.50.0.and.currlat(i).ge.-10.0) then ! between 10 s and 35 n
+     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! between 10 s and 35 n
 !            if(soil_wetness.gt.0.84)then   ! cku
 !            if(soil_wetness.gt.0.75)then   ! ckw 3031-3040
-        if(soil_wetness.gt.0.80)then   ! ckw 3041-3050
+        if(soil_wetness.gt.soilw_thrshE)then   ! ckw 3041-3050
             wetfdyn(i)=wetfrac_s(i)
         endif
      else ! everything else below 10 s
 !            if(soil_wetness.gt.0.75)then !cku 
 !            if(soil_wetness.gt.0.68)then ! ckw 3031-3040
-        if(soil_wetness.gt.0.70)then ! ckw 3041-3050
+        if(soil_wetness.gt.soilw_thrshS)then ! ckw 3041-3050
             wetfdyn(i)=wetfrac_s(i)
         endif
      endif           
