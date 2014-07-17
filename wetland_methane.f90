@@ -112,11 +112,11 @@ do 110 i = il1, il2
 ! Testing:  
 
 !     if (currlat(i).ge.lat_thrshld1) then ! all area north of 35 n
-        if(soil_wetness .gt. 0.55) then 
+        if(soil_wetness .gt. 0.55 .and. soil_wetness .le. 0.75) then 
            wetfdyn(i)=wetfrac_s(i,1)  !<2% slope class
 !        endif
 !     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! between 10 s and 35 n
-        elseif (soil_wetness .gt. 0.75) then
+        elseif (soil_wetness .gt. 0.75 .and. soil_wetness .lt. 00.1) then
             wetfdyn(i)=wetfrac_s(i,3) !<3 % slope class
 !        endif
 !     else ! everything else below 10 s
