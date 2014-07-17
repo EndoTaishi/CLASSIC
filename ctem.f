@@ -514,7 +514,7 @@ c
       logical compete, inibioclim, pftexist(ilg,icc)
 C 
       real      wetfrac(ilg),        ch4wet1(ilg),        ch4wet2(ilg)
-      real    wetfrac_s(ilg),        wetfdyn(ilg)
+      real    wetfrac_s(ilg,5),        wetfdyn(ilg)
       real      ch4dyn1(ilg),        ch4dyn2(ilg)
 
        real lambdaalt !FLAG testing JM Apr 8 2014

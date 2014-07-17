@@ -565,7 +565,7 @@ c     Fire-related variables
 
 c      Methane(wetland) related variables    !Rudra added on 03/12/2013
 
-       real  WETFRACGRD(nlat),              wetfrac_sgrd(ilg), 
+       real  WETFRACGRD(nlat),              wetfrac_sgrd(ilg,5), 
 !     1       WETFRAC_SROW(nlat),            WETFRAC_SGAT(ILG),
      1       CH4WET1ROW(nlat,nmos),         CH4WET1GAT(ILG),
      2       CH4WET2ROW(nlat,nmos),         CH4WET2GAT(ILG),
@@ -1981,7 +1981,7 @@ c           use in burntobare subroutine on the first timestep.
          endif
 
          if (dowetlands) then      ! Rudra !if true then read wetland fractions
-             read(11,*) wetfrac_sgrd(i)
+             read(11,*) (wetfrac_sgrd(i,j),j=1,5)
          endif   
 71    continue
       close(11)
@@ -6543,7 +6543,7 @@ c
             endif
 
             if (dowetlands) then     
-              write(101,"(f8.3)")wetfrac_sgrd(i)
+              write(101,"(5f9.6)")(wetfrac_sgrd(i,j),j=1,5)
             endif   
 
           enddo

@@ -31,7 +31,7 @@ real, dimension(ilg), intent(in) :: ta          ! air temperature, k
 real, dimension(ilg), intent(in) :: wetfrac     ! prescribed fraction of wetlands in a grid cell
 real, dimension(ilg), intent(in) :: npp         ! grid-averaged npp from ctem (u-mol co2/m2.s)
 real, dimension(ilg), intent(in) :: currlat     ! centre latitude of grid cells in degrees
-real, dimension(ilg), intent(in) :: wetfrac_s   ! prescribed fraction of wetlands based on slope only
+real, dimension(ilg,5), intent(in) :: wetfrac_s ! prescribed fraction of wetlands based on slope only (2, 2.5, 3, 3.5, 4 %)
 real, dimension(ilg,ignd), intent(in) :: tbar   ! temperature of soil layers
 real, dimension(ilg,ignd), intent(in) :: thliqg ! liquid soil moisture content (fraction)
 real, dimension(ilg,ignd), intent(in) :: sand   ! percentage sand in soil layers
@@ -93,25 +93,38 @@ do 110 i = il1, il2
 !
      wetfdyn(i)=0.0  ! initialize dynamic wetland fraction to zero
 !
-     if (currlat(i).ge.lat_thrshld1) then ! all area north of 35 n
-!            if(soil_wetness.gt.0.635)then ! cku
-!            if(soil_wetness.gt.0.55)then ! ckw 3031-3040
-        if(soil_wetness.gt.soilw_thrshN)then ! ckw 3041-3050
-           wetfdyn(i)=wetfrac_s(i)
+
+! Original way:
+!     if (currlat(i).ge.lat_thrshld1) then ! all area north of 35 n
+!        if(soil_wetness.gt.soilw_thrshN)then ! ckw 3041-3050
+!           wetfdyn(i)=wetfrac_s(i)
+!        endif
+!     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! between 10 s and 35 n
+!        if(soil_wetness.gt.soilw_thrshE)then   ! ckw 3041-3050
+!            wetfdyn(i)=wetfrac_s(i)
+!        endif
+!     else ! everything else below 10 s
+!        if(soil_wetness.gt.soilw_thrshS)then ! ckw 3041-3050
+!            wetfdyn(i)=wetfrac_s(i)
+!        endif
+!     endif    
+
+! Testing:  
+
+!     if (currlat(i).ge.lat_thrshld1) then ! all area north of 35 n
+        if(soil_wetness .gt. 0.55) then 
+           wetfdyn(i)=wetfrac_s(i,1)  !<2% slope class
+!        endif
+!     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! between 10 s and 35 n
+        elseif (soil_wetness .gt. 0.75) then
+            wetfdyn(i)=wetfrac_s(i,3) !<3 % slope class
+!        endif
+!     else ! everything else below 10 s
+        elseif (soil_wetness .eq. 1.00) then 
+            wetfdyn(i)=wetfrac_s(i,5) ! <4% slope class
         endif
-     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! between 10 s and 35 n
-!            if(soil_wetness.gt.0.84)then   ! cku
-!            if(soil_wetness.gt.0.75)then   ! ckw 3031-3040
-        if(soil_wetness.gt.soilw_thrshE)then   ! ckw 3041-3050
-            wetfdyn(i)=wetfrac_s(i)
-        endif
-     else ! everything else below 10 s
-!            if(soil_wetness.gt.0.75)then !cku 
-!            if(soil_wetness.gt.0.68)then ! ckw 3031-3040
-        if(soil_wetness.gt.soilw_thrshS)then ! ckw 3041-3050
-            wetfdyn(i)=wetfrac_s(i)
-        endif
-     endif           
+!     endif    
+     
 
 ! new dynamic calculation
 ! same as ch4wet1 & 2, but wetfrac replaced by wetfdyn
