@@ -2405,8 +2405,8 @@ c     find the first year of met data
 
        do while (iyear .lt. metcylyrst) 
 c
-        do i=1,nltest
-          read(12,5300) ihour,imin,iday,iyear,fsdown,fdlgrd(i),
+        do i=1,nltest  ! formatting was 5300
+          read(12,*) ihour,imin,iday,iyear,fsdown,fdlgrd(i),
      1         pregrd(i),tagrd(i),qagrd(i),uvgrd(i),presgrd(i)
         enddo
        enddo
@@ -2672,8 +2672,8 @@ c     on with the run
         do while (iyear .lt. metcylyrst) 
          do i=1,nltest
 c         this reads in one 30 min slice of met data, when it reaches 
-c         the end of file it will go to label 999. 
-          read(12,5300,end=999) ihour,imin,iday,iyear,fsdown,fdlgrd(i),
+c         the end of file it will go to label 999.  !formatting was 5300
+          read(12,*,end=999) ihour,imin,iday,iyear,fsdown,fdlgrd(i),
      1         pregrd(i),tagrd(i),qagrd(i),uvgrd(i),presgrd(i)
 
          enddo
@@ -2697,8 +2697,8 @@ C
 C
       DO 250 I=1,NLTEST
 C         THIS READS IN ONE 30 MIN SLICE OF MET DATA, WHEN IT REACHES 
-C         THE END OF FILE IT WILL GO TO 999. 
-          READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSDOWN,FDLGRD(I),
+C         THE END OF FILE IT WILL GO TO 999. !formatting was 5300
+          READ(12,*,END=999) IHOUR,IMIN,IDAY,IYEAR,FSDOWN,FDLGRD(I),
      1         PREGRD(I),TAGRD(I),QAGRD(I),UVGRD(I),PRESGRD(I)
 
 C===================== CTEM ============================================ \
@@ -2714,7 +2714,7 @@ c
             end if
           endif   ! lopcount .gt. 1
 c
-c         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
+C         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 c
 C===================== CTEM ============================================ /
           FSVHGRD(I)=0.5*FSDOWN
