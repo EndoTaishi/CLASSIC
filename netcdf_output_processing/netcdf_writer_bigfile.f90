@@ -47,6 +47,7 @@ real :: dummy_var
 integer, dimension(1) :: lyear
 integer :: i,m,xlon,ylat,yrst,h,l
 integer :: totyrs
+integer :: monyrs
 integer :: yrin
 integer :: yr_now
 integer :: mo
@@ -70,7 +71,10 @@ logical :: MOSAIC
 logical :: PARALLELRUN
 logical :: COMPETE_LNDUSE
 integer :: realyrst
+integer :: tailyrs
 character(1) :: tic
+character(len=8) :: fmt ! format descriptor
+character(len=10) :: x1
 
 real, allocatable, dimension(:) :: tmp
 real, allocatable, dimension(:) :: tmpd
@@ -87,6 +91,7 @@ namelist /joboptions/ &
   MOSAIC,             &
   COMPETE_LNDUSE,     &
   totyrs,             &
+  monyrs,             &
   yrst,               &
   realyrst ,          &
   long_path ,         &
@@ -114,23 +119,50 @@ namelist /joboptions/ &
 folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
 
 ! open the input files
-        OPEN(81,FILE=trim(folder)//trim(ARGBUFF)//'.OF1M_G',status='old',form='formatted') ! MONTHLY OUTPUT FOR CLASS
-        OPEN(82,FILE=trim(folder)//trim(ARGBUFF)//'.OF2M_G',status='old',form='formatted')
         OPEN(83,FILE=trim(folder)//trim(ARGBUFF)//'.OF1Y_G',status='old',form='formatted') ! YEARLY OUTPUT FOR CLASS
-
        if (CTEM) then
-        
         if (COMPETE_LNDUSE) then
-         OPEN(91,FILE=trim(folder)//trim(ARGBUFF)//'.CT07M_GM',status='old',form='formatted') ! MONTHLY PFT FRAC OUTPUT FOR CTEM
          OPEN(92,FILE=trim(folder)//trim(ARGBUFF)//'.CT07Y_GM',status='old',form='formatted') ! YEARLY PFR FRAC OUTPUT FOR CTEM
         end if
-      
-        if (DOWETLANDS) then   !Rudra
+        if (DOWETLANDS) then  
          OPEN(900,FILE=trim(folder)//trim(ARGBUFF)//'.CT08Y_G',status='old',form='formatted') ! YEARLY CTEM wetlands Ch4 emission
-         OPEN(910,FILE=trim(folder)//trim(ARGBUFF)//'.CT08M_G',status='old',form='formatted') ! MONTHLY CTEM wetlands Ch4 emission
         endif
- 
        END IF
+
+! Trim the monthly input files so we keep only monyrs (for speed of writing):
+      if (MAKEMONTHLY) then
+        tailyrs=int(realyrst+totyrs-monyrs)
+        fmt = '(I4)' ! an integer of width 4
+        write (x1,fmt) tailyrs ! converting integer to string using a 'internal file'
+        infile=trim(folder)//trim(ARGBUFF)//'.OF1M_G' 
+
+        command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp_m_cls1.dat'
+        call system(command)
+        OPEN(81,FILE='tmp_m_cls1.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CLASS
+
+        infile=trim(folder)//trim(ARGBUFF)//'.OF2M_G'
+        command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp_m_cls2.dat'
+
+        call system(command)
+        OPEN(82,FILE='tmp_m_cls2.dat',status='old',form='formatted')
+
+       if (CTEM) then
+        if (COMPETE_LNDUSE) then
+         infile=trim(folder)//trim(ARGBUFF)//'.CT07M_GM'
+          command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp_m_ctm7.dat'
+
+         call system(command)
+         OPEN(91,FILE='tmp_m_ctm7.dat',status='old',form='formatted') ! MONTHLY PFT FRAC OUTPUT FOR CTEM
+        end if
+        if (DOWETLANDS) then  
+         infile=trim(folder)//trim(ARGBUFF)//'.CT08M_G'
+         command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp_m_ctm8.dat'
+
+         call system(command)
+         OPEN(910,FILE='tmp_m_ctm8.dat',status='old',form='formatted') ! MONTHLY CTEM wetlands 
+        end if
+      end if !ctem
+    end if !monthly
 
 
 ! Prepare the composite/mosaic CTEM files for read-in. These files have a value per PFT for 
@@ -147,31 +179,44 @@ folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
   end if
 
   tic=char(39)
-  command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a.dat'
 
+  command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a.dat'
   call system(command)
+  OPEN(75,FILE='tmp_a.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
 
    ! Make a file of the PFT info, removing the grdav.
 
    command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_a_p.dat'
-
    call system(command)
+   OPEN(751,FILE='tmp_a_p.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
 
-   ! Monthly CTEM
-  if (MOSAIC) then
-  infile=trim(folder)//trim(ARGBUFF)//'.CT01M_M'
-  else
-  infile=trim(folder)//trim(ARGBUFF)//'.CT01M_G'
-  end if
+  if (MAKEMONTHLY) then
+     ! Monthly CTEM
+     if (MOSAIC) then
+       infile=trim(folder)//trim(ARGBUFF)//'.CT01M_M'
+     else
+       infile=trim(folder)//trim(ARGBUFF)//'.CT01M_G'
+     end if
 
-  command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m.dat'
+     ! Trim the unwanted years
+     command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp.dat'
 
-  call system(command)
+     call system(command)
+     infile='tmp.dat'
+     command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m.dat'
+     call system(command)
+
+     ! Open the newly trimmed file
+     OPEN(74,FILE='tmp_m.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
 
    ! Make a file of the PFT info, removing the grdav.
-   command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p.dat'
+     command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p.dat'
+     call system(command)
+  
+   ! Open the newly trimmed file
+     OPEN(741,FILE='tmp_m_p.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
 
-   call system(command)
+  end if !monthly
 
   if (DOFIRE) then
     if (MOSAIC) then
@@ -180,73 +225,69 @@ folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
     infile=trim(folder)//trim(ARGBUFF)//'.CT06Y_G'
     end if
 
-   command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_d.dat'
+     command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_d.dat'
+     call system(command)
+     OPEN(85,FILE='tmp_a_d.dat',status='old',form='formatted') 
 
-   call system(command)
+     command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_a_p_d.dat'
+     call system(command)
+     OPEN(851,FILE='tmp_a_p_d.dat',status='old',form='formatted')
 
-   command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_a_p_d.dat'
+    if (MAKEMONTHLY) then
 
-   call system(command)
+      if (MOSAIC) then
+        infile=trim(folder)//trim(ARGBUFF)//'.CT06M_M'
+      else
+        infile=trim(folder)//trim(ARGBUFF)//'.CT06M_G'
+      end if
 
-    if (MOSAIC) then
-    infile=trim(folder)//trim(ARGBUFF)//'.CT06M_M'
-    else
-    infile=trim(folder)//trim(ARGBUFF)//'.CT06M_G'
-    end if
+     ! Trim the unwanted years
+     command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp.dat'
+     call system(command)
+     infile='tmp.dat'
+     command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m_d.dat'
+     call system(command)
+     OPEN(84,FILE='tmp_m_d.dat',status='old',form='formatted') 
 
-   command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m_d.dat'
+     command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p_d.dat'
+     call system(command)
+     OPEN(841,FILE='tmp_m_p_d.dat',status='old',form='formatted') 
 
-   call system(command)
-
-   command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p_d.dat'
-
-   call system(command)
-
+   endif !monthly
  end if !dofire
 
-  OPEN(74,FILE='tmp_m.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
-  OPEN(75,FILE='tmp_a.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
-
-  OPEN(741,FILE='tmp_m_p.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
-  OPEN(751,FILE='tmp_a_p.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
- 
-  if (DOFIRE) then
-   OPEN(85,FILE='tmp_a_d.dat',status='old',form='formatted') 
-   OPEN(851,FILE='tmp_a_p_d.dat',status='old',form='formatted')
-   OPEN(84,FILE='tmp_m_d.dat',status='old',form='formatted') 
-   OPEN(841,FILE='tmp_m_p_d.dat',status='old',form='formatted') 
-  end if
-
 ! Open the netcdf file for writing
-
-file_to_write_extended = trim(file_to_write)//'_CLASSCTEM.nc'
+! Annual:
+file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_A.nc'
 status = nf90_open(file_to_write_extended,nf90_write,ncid)
 if (status /= nf90_noerr) call handle_err(status)
 
-if (.NOT. net4) then
-   grpid=ncid
-end if
+! Monthly file:
+if (MAKEMONTHLY) then
+file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_M.nc'
+status = nf90_open(file_to_write_extended,nf90_write,ncid_m)
+if (status /= nf90_noerr) call handle_err(status)
+endif
 
 !=====================CLASS_MONTHLY files============================
 
 if (MAKEMONTHLY) then
 
+if (.NOT. net4) then
+   grpid=ncid_m
+end if
+
 ! Do OF1M_G first
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CLASS-Monthly',grpid) 
+  status = nf90_inq_ncid(ncid_m,'CLASS-Monthly',grpid) 
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
-!  first throw out header
-   do h = 1,5
-	read(81,*)
-   end do
-
 !Allocate Arrays
-allocate(class_m(numclasvars_m,totyrs,12))
+allocate(class_m(numclasvars_m,monyrs,12))
 
 ! Read in the ascii file
-   do y = 1,totyrs
+   do y = 1,monyrs
     do m=1,12
      read(81,*)dummy_month,dummy_year,class_m(1:numclasvars_m,y,m)
     end do
@@ -261,7 +302,7 @@ do m=1,12  !Begin Month Loop
    status = nf90_inq_varid(grpid,trim(CLASS_M_VAR(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,class_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,class_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,monyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
   end do !Var loop
@@ -272,15 +313,11 @@ deallocate(class_m)
 
 !=======================================================================
 ! Do OF2M_G
-!  first throw out header
-   do h = 1,5
-	read(82,*)
-   end do
 
         !Allocate Arrays
-        allocate(class_s_m(nclassoilvars_m,nl,totyrs,12))
+        allocate(class_s_m(nclassoilvars_m,nl,monyrs,12))
 
-   do y = 1,totyrs
+   do y = 1,monyrs
     do m=1,12
      read(82,*)dummy_month,dummy_year,class_s_m(1,1,y,m),class_s_m(2,1,y,m),class_s_m(3,1,y,m),class_s_m(1,2,y,m),class_s_m(2,2,y,m),class_s_m(3,2,y,m),class_s_m(1,3,y,m),class_s_m(2,3,y,m),class_s_m(3,3,y,m)
     end do
@@ -297,7 +334,7 @@ do m=1,12   !begin month loop
    status = nf90_inq_varid(grpid,trim(CLASS_M_S_VAR(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,class_s_m(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,class_s_m(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,monyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
   end do ! vars loop
@@ -311,6 +348,10 @@ end if ! makemonthly
 
 !===========================CLASS ANNUAL =========================================
 ! Do OF1Y_G 
+
+if (.NOT. net4) then
+   grpid=ncid
+end if
 
 !  first throw out header
    do h = 1,5
@@ -427,7 +468,7 @@ if (DOFIRE) then
  allocate(ctem_d_a(nctemdistvars_a,totyrs))
 end if
 
-if (DOWETLANDS) then   !Rudra
+if (DOWETLANDS) then  
   allocate(ctem_w_a(nctemwetvars_a,totyrs))
   !  first throw out header
       do h = 1,6
@@ -448,7 +489,7 @@ end if
 
     endif
 
-    if (DOWETLANDS) then     !Rudra
+    if (DOWETLANDS) then    
       read(900,*) dummy_year,ctem_w_a(1:nctemwetvars_a,y)
     end if 
 
@@ -456,7 +497,7 @@ end if
 
     close(75)
     if (DOFIRE) then
-        close(84)
+        close(85)
     endif
     
     if (DOWETLANDS) then
@@ -501,7 +542,6 @@ end if
 
  end if !dofire
 
-!------------Rudra---------
  if (DOWETLANDS) then
 
    if (net4) then
@@ -520,7 +560,6 @@ end if
 
  end if !dowetlands
 
-!-----------
 
 ! deallocate arrays
 deallocate(ctem_a)
@@ -529,7 +568,7 @@ if (DOFIRE) then
  deallocate(ctem_d_a)
 endif
 
-if (DOWETLANDS) then  !Rudra
+if (DOWETLANDS) then  
   deallocate(ctem_w_a)
 end if 
 
@@ -664,20 +703,19 @@ endif
 
 if (MAKEMONTHLY) then
 
+if (.NOT. net4) then
+   grpid=ncid_m
+end if
+
 ! Start with LNDUSECOMPETE vars
 if (COMPETE_LNDUSE) then
 
-allocate(mpftexist(ctemnpft,totyrs,12))
-allocate(tmpm(ctemnpft,totyrs,12))
-allocate(mpftf(ctemnpft,totyrs,12))
-allocate(mpft_tot(totyrs,12))
+allocate(mpftexist(ctemnpft,monyrs,12))
+allocate(tmpm(ctemnpft,monyrs,12))
+allocate(mpftf(ctemnpft,monyrs,12))
+allocate(mpft_tot(monyrs,12))
 
-!  first throw out header
-   do h = 1,6
-        read(91,*)
-   end do
-
-   do y = 1,totyrs
+   do y = 1,monyrs
     do m=1,12
       read(91,*)dummy_month,dummy_year,mpftf(1:ctemnpft,y,m),mpft_tot(y,m),dummy_var,mpftexist(1:ctemnpft,y,m)
     end do
@@ -686,7 +724,7 @@ allocate(mpft_tot(totyrs,12))
    close(91)
 
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Monthly GridAvg', grpid)
+  status = nf90_inq_ncid(ncid_m,'CTEM-Monthly GridAvg', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -697,13 +735,13 @@ end if
    status = nf90_inq_varid(grpid,trim(CTEM_M_C_VAR(2)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,mpftf(p,:,m),start=[xlon,ylat,p,m,yrst],count=[1,1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,mpftf(p,:,m),start=[xlon,ylat,p,m,yrst],count=[1,1,1,1,monyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_inq_varid(grpid,trim(CTEM_M_C_VAR(3)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-     do y = 1,totyrs 
+     do y = 1,monyrs 
       if (mpftexist(p,y,m) == 'F') then
          tmpm(p,y,m)=0.0
       else
@@ -711,7 +749,7 @@ end if
       end if
      end do
   
-   status = nf90_put_var(grpid,var_id,tmpm(p,:,m),start=[xlon,ylat,p,m,yrst],count=[1,1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,tmpm(p,:,m),start=[xlon,ylat,p,m,yrst],count=[1,1,1,1,monyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
 
@@ -723,7 +761,7 @@ end if
    status = nf90_inq_varid(grpid,trim(CTEM_M_C_VAR(1)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,mpft_tot(:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,mpft_tot(:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,monyrs])
    if (status/=nf90_noerr) call handle_err(status)
  end do
 
@@ -737,25 +775,18 @@ end if !compete/lnduse
 !==============================Start Monthly Grid Average Vals CTEM=============================
 
 !Allocate Arrays
-allocate(ctem_m(numctemvars_m,totyrs,12))
+allocate(ctem_m(numctemvars_m,monyrs,12))
 
 if (DOFIRE) then
-  allocate(ctem_d_m(nctemdistvars_m,totyrs,12))
+  allocate(ctem_d_m(nctemdistvars_m,monyrs,12))
 end if
 
-!======Rudra========
 if (DOWETLANDS) then   
-   allocate(ctem_w_m(nctemwetvars_m,totyrs,12))
-    !  first throw out header
-      do h = 1,6
-        read(910,*)
-      end do
-
+   allocate(ctem_w_m(nctemwetvars_m,monyrs,12))
 end if
-!==================
 
 !---Read in Variables
-   do y = 1,totyrs
+   do y = 1,monyrs
     do m=1,12
 
      read(74,*)dummy_month,dummy_year,ctem_m(1:numctemvars_m,y,m)
@@ -766,7 +797,7 @@ end if
 
      end if
      
-     if (DOWETLANDS) then  !Rudra
+     if (DOWETLANDS) then  
         read(910,*) dummy_month,dummy_year,ctem_w_m(1:nctemwetvars_m,y,m)
      end if !dowetlands
 
@@ -777,14 +808,14 @@ end if
     if (DOFIRE) then
       close(84)
     end if
-    if (DOWETLANDS) then  !Rudra
+    if (DOWETLANDS) then 
       close(910)
     end if 
 !----
 
 ! MONTHLY
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Monthly GridAvg', grpid)
+  status = nf90_inq_ncid(ncid_m,'CTEM-Monthly GridAvg', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
@@ -793,7 +824,7 @@ end if
    status = nf90_inq_varid(grpid,trim(CTEM_M_VAR_GA(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,ctem_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,ctem_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,monyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
   end do !months
@@ -802,7 +833,7 @@ end if
 if (DOFIRE) then
 
  if (net4) then
-   status = nf90_inq_ncid(ncid,'Monthly-Disturbance GridAvg', grpid)
+   status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance GridAvg', grpid)
    if (status /= nf90_noerr) call handle_err(status)
  end if
 
@@ -811,7 +842,7 @@ if (DOFIRE) then
    status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR_GA(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,ctem_d_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,ctem_d_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,monyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
   end do !months
@@ -819,11 +850,10 @@ if (DOFIRE) then
 
 end if !dofire
 
-!==============Rudra===============
 if (DOWETLANDS) then 
 
  if (net4) then
-   status = nf90_inq_ncid(ncid,'Monthly-Methane flux GridAvg', grpid)
+   status = nf90_inq_ncid(ncid_m,'Monthly-Methane flux GridAvg', grpid)
    if (status /= nf90_noerr) call handle_err(status)
  end if
  
@@ -832,7 +862,7 @@ if (DOWETLANDS) then
    status = nf90_inq_varid(grpid,trim(CTEM_M_W_VAR(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,ctem_w_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,ctem_w_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,monyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
   end do !months
@@ -840,7 +870,6 @@ if (DOWETLANDS) then
 
 end if !dowetlands
 
-!==================================
 ! deallocate arrays
 
 deallocate(ctem_m)
@@ -849,25 +878,17 @@ if (DOFIRE) then
   deallocate(ctem_d_m)
 end if
 
-if (DOWETLANDS) then   !Rudra
+if (DOWETLANDS) then   
   deallocate(ctem_w_m)
 end if 
 !===================per PFT/Tile===CTEM Monthly==========================
 
-!  first throw out header
-   do h = 1,6
-        read(741,*)
-    if (DOFIRE) then
-	read(841,*)
-    end if
-   end do
-
 !Allocate Arrays
-allocate(ctem_m_mos(numctemvars_m,ntile,totyrs,12))
+allocate(ctem_m_mos(numctemvars_m,ntile,monyrs,12))
 allocate(tmp(numctemvars_m))
 
 if (DOFIRE) then
-  allocate(ctem_d_m_mos(nctemdistvars_m,ntile,totyrs,12))
+  allocate(ctem_d_m_mos(nctemdistvars_m,ntile,monyrs,12))
   allocate(tmpd(nctemdistvars_m))
 end if
 
@@ -875,84 +896,94 @@ end if
 
 ! We have to keep track of the month that is read in as it is the only way we know that we are done the tiles for a gridcell.
 
-   do y = 1,totyrs
+   do y = 1,monyrs
     do m=1,12
 
       mo=m  !initialize the month counter to the month of the outer loop
 
       do while (mo == m) 
-    
-          read(741,*) mo,yrin,tmp(1:numctemvars_m),dummy,dummynum,dummy,tilnum
-  
+
+          read(741,*,END=11) mo,yrin,tmp(1:numctemvars_m),dummy,dummynum,dummy,tilnum
+
         if (mo == m) then
         ! Assign that just read in to its vars
-          do v = 1,numctemvars_a ! begin vars loop
+          do v = 1,numctemvars_m ! begin vars loop
             ctem_m_mos(v,tilnum,y,m)=tmp(v)
           end do
         else
             backspace(741)  ! go back one line in the file
         end if
 
-       if (DOFIRE) then
-
-        read(841,*) mo,yrin,tmpd(1:nctemdistvars_m),dummy,dummynum,dummy,tilnum
-
-        if (mo == m) then
-          do v = 1,nctemdistvars_a ! begin vars loop
-            ctem_d_m_mos(v,tilnum,y,m)=tmpd(v)
-          end do
-        else
-         backspace(841)  ! go back one line in the file
-        end if
-
-      end if !dofire
      end do !mo=m loop
     end do !months
    end do ! years
 
+11 continue
+
      close(741)
 
-    if (DOFIRE) then
+   if (DOFIRE) then
+     do y = 1,monyrs
+      do m=1,12
+
+        mo=m  !initialize the month counter to the month of the outer loop
+
+        do while (mo == m) 
+
+          read(841,*,END=12) mo,yrin,tmpd(1:nctemdistvars_m),dummy,dummynum,dummy,tilnum
+
+          if (mo == m) then
+            do v = 1,nctemdistvars_m ! begin vars loop
+              ctem_d_m_mos(v,tilnum,y,m)=tmpd(v)
+            end do
+          else
+           backspace(841)  ! go back one line in the file
+          end if
+
+       end do !mo=m loop
+      end do !months
+     end do ! years
+12 continue
       close(841)
       deallocate(tmpd)
-    end if
+
+   end if !dofire
+
   deallocate(tmp)
 !----
-
 ! MONTHLY
 if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Monthly Tiled', grpid)
+  status = nf90_inq_ncid(ncid_m,'CTEM-Monthly Tiled', grpid)
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
- do v = 1,numctemvars_a ! begin vars loop
+ do v = 1,numctemvars_m ! begin vars loop
   do m=1,12  !Begin Month Loop
    do l = 1,ntile ! begin tile loop
 
     status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
     if (status/=nf90_noerr) call handle_err(status)
 
-    status = nf90_put_var(grpid,var_id,ctem_m_mos(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,totyrs])
+    status = nf90_put_var(grpid,var_id,ctem_m_mos(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,monyrs])
     if (status/=nf90_noerr) call handle_err(status)
    end do
   end do
  end do
 
 if (DOFIRE) then
-
   if (net4) then
-    status = nf90_inq_ncid(ncid,'Monthly-Disturbance Tiled', grpid)
+    status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance Tiled', grpid)
     if (status /= nf90_noerr) call handle_err(status)
 end if
 
- do v = 1,numctemvars_a ! begin vars loop
+ do v = 1,nctemdistvars_m ! begin vars loop
   do m=1,12  !Begin Month Loop
    do l = 1,ntile ! begin tile loop
 
     status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
     if (status/=nf90_noerr) call handle_err(status)
 
-    status = nf90_put_var(grpid,var_id,ctem_d_m_mos(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,totyrs])
+    status = nf90_put_var(grpid,var_id,ctem_d_m_mos(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,monyrs])
     if (status/=nf90_noerr) call handle_err(status)
    end do
   end do
@@ -976,9 +1007,14 @@ end if ! check CTEM
 status = nf90_close(ncid)
 if (status/=nf90_noerr) call handle_err(status)
 
-! remove the tmp files
-command='rm tmp_a*.dat tmp_m*.dat'
+if (MAKEMONTHLY) then
+!close the netcdf
+status = nf90_close(ncid_m)
+if (status/=nf90_noerr) call handle_err(status)
+end if
 
+! remove the tmp files
+command='rm tmp_a*.dat tmp_m*.dat tmp.dat'
 call system(command)
 
 

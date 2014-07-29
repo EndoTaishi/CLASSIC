@@ -56,7 +56,7 @@ real, parameter, dimension(cntx) :: valslons= &
 ! ---------------- VARIABLES ---------------- 
 
 integer :: lon,lat,tile,pft,month,time,layer,lat_bnds,lon_bnds,bnds
-integer :: varid,ncid
+integer :: varid,ncid,ncid_m
 integer :: status
 
 real, dimension(2) :: xrange

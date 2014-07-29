@@ -6517,7 +6517,7 @@ c
             do m=1,nmtest
               write(101,7011) (ailcminrow(i,m,j),j=1,icc)
               write(101,7011) (ailcmaxrow(i,m,j),j=1,icc)
-              write(101,7011) (dvdfcanrow(i,m,j),j=1,icc)
+              write(101,'(9f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
 c
               write(101,7011) (gleafmasrow(i,m,j),j=1,icc)
               write(101,7011) (bleafmasrow(i,m,j),j=1,icc)

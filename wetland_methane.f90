@@ -47,6 +47,10 @@ real :: porosity
 real :: soil_wetness
 integer :: i
 
+real :: low_mois_lim
+real :: mid_mois_lim
+real :: upp_mois_lim
+
 !     ---------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
 !     -----------------------------------------------------------------
@@ -111,19 +115,27 @@ do 110 i = il1, il2
 
 ! Testing:  
 
-!     if (currlat(i).ge.lat_thrshld1) then ! all area north of 35 n
-        if(soil_wetness .gt. 0.55 .and. soil_wetness .le. 0.75) then 
+     if (currlat(i).ge.lat_thrshld1) then ! high lats all area north of 35 n
+        low_mois_lim=0.45
+        mid_mois_lim=0.65
+        upp_mois_lim=0.90
+     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! tropics  between 10 s and 35 n
+        low_mois_lim=0.65
+        mid_mois_lim=0.85
+        upp_mois_lim=0.99
+     else ! s. hemi,  everything else below 10 s
+        low_mois_lim=0.50
+        mid_mois_lim=0.75
+        upp_mois_lim=0.95
+      end if
+
+        if(soil_wetness .gt. low_mois_lim .and. soil_wetness .le. mid_mois_lim) then 
            wetfdyn(i)=wetfrac_s(i,1)  !<2% slope class
-!        endif
-!     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! between 10 s and 35 n
-        elseif (soil_wetness .gt. 0.75 .and. soil_wetness .lt. 00.1) then
+        elseif (soil_wetness .gt. mid_mois_lim .and. soil_wetness .le. upp_mois_lim) then
             wetfdyn(i)=wetfrac_s(i,3) !<3 % slope class
-!        endif
-!     else ! everything else below 10 s
-        elseif (soil_wetness .eq. 1.00) then 
+        elseif (soil_wetness .gt. upp_mois_lim) then 
             wetfdyn(i)=wetfrac_s(i,5) ! <4% slope class
         endif
-!     endif    
      
 
 ! new dynamic calculation

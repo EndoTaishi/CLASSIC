@@ -8,6 +8,7 @@
  MOSAIC = .TRUE. ,
  COMPETE_LNDUSE= .FALSE. ,
  totyrs = 7 ,
+ monyrs = 7 ,
  yrst = 1 ,            
  realyrst = 2174 ,    
  long_path = '/home/rjm/Documents/CTEM/code/run/netcdf_programs' ,

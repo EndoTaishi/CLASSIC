@@ -427,7 +427,7 @@ albnir = [ 19.0, 19.0, 0.00, &
 !	constant for now ratio is mol ch4 to mol co2
 
 !	ratioch4/0.16/
-ratioch4 = 0.06 !0.21 ! ckw 3051-3060
+ratioch4 = 0.04 !0.06 !0.21 ! test jm july 24 2014
 
 !	Use the heterotrophic respiration outputs for soil and litter 
 !	as the ecosystem basis.  These were summed as "hetrores".
@@ -438,7 +438,7 @@ ratioch4 = 0.06 !0.21 ! ckw 3051-3060
 
 wtdryres = 0.45  !0.5
 
-factor2 = 0.02
+factor2 = 0.005 ! 0.02 test. jm july 22 2014
 
 lat_thrshld1 = 35.0 !50.0   ! degrees North
 lat_thrshld2 = -10.0  ! degrees North
