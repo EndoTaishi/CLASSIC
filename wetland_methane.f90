@@ -31,7 +31,7 @@ real, dimension(ilg), intent(in) :: ta          ! air temperature, k
 real, dimension(ilg), intent(in) :: wetfrac     ! prescribed fraction of wetlands in a grid cell
 real, dimension(ilg), intent(in) :: npp         ! grid-averaged npp from ctem (u-mol co2/m2.s)
 real, dimension(ilg), intent(in) :: currlat     ! centre latitude of grid cells in degrees
-real, dimension(ilg,5), intent(in) :: wetfrac_s ! prescribed fraction of wetlands based on slope only (2, 2.5, 3, 3.5, 4 %)
+real, dimension(ilg,8), intent(in) :: wetfrac_s ! prescribed fraction of wetlands based on slope only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
 real, dimension(ilg,ignd), intent(in) :: tbar   ! temperature of soil layers
 real, dimension(ilg,ignd), intent(in) :: thliqg ! liquid soil moisture content (fraction)
 real, dimension(ilg,ignd), intent(in) :: sand   ! percentage sand in soil layers
@@ -116,9 +116,9 @@ do 110 i = il1, il2
 ! Testing:  
 
      if (currlat(i).ge.lat_thrshld1) then ! high lats all area north of 35 n
-        low_mois_lim=0.45
-        mid_mois_lim=0.65
-        upp_mois_lim=0.90
+        low_mois_lim=0.40
+        mid_mois_lim=0.60
+        upp_mois_lim=0.85
      elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! tropics  between 10 s and 35 n
         low_mois_lim=0.65
         mid_mois_lim=0.85
@@ -130,11 +130,11 @@ do 110 i = il1, il2
       end if
 
         if(soil_wetness .gt. low_mois_lim .and. soil_wetness .le. mid_mois_lim) then 
-           wetfdyn(i)=wetfrac_s(i,1)  !<2% slope class
+           wetfdyn(i)=wetfrac_s(i,1)  !<0.025% slope class
         elseif (soil_wetness .gt. mid_mois_lim .and. soil_wetness .le. upp_mois_lim) then
-            wetfdyn(i)=wetfrac_s(i,3) !<3 % slope class
+            wetfdyn(i)=wetfrac_s(i,3) !<0.1 % slope class
         elseif (soil_wetness .gt. upp_mois_lim) then 
-            wetfdyn(i)=wetfrac_s(i,5) ! <4% slope class
+            wetfdyn(i)=wetfrac_s(i,5) ! <0.2% slope class
         endif
      
 

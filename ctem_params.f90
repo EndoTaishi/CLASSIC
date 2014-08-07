@@ -145,17 +145,6 @@ real, dimension(kk) :: mxrtdpth         ! maximum rooting depth. this is used so
 real, dimension(kk) :: albvis           ! visible albedos of the 9 ctem pfts
 real, dimension(kk) :: albnir           ! near IR albedos of the 9 ctem pfts
 
-! ch4wetland.f parameters: ------------
-
-real :: ratioch4                        ! methane to carbon dioxide flux scaling factor.
-real :: wtdryres	                ! ratio of wetland to upland respiration 
-real :: factor2                         ! constant value for secondary (ch4wet2) methane emissions calculation
-real :: lat_thrshld1                    ! Northern zone for wetland determination (degrees North)
-real :: lat_thrshld2                    ! Boundary with southern zone for wetland determination (degrees North)
-real :: soilw_thrshN                    ! Soil wetness threshold in the North zone
-real :: soilw_thrshE                    ! Soil wetness threshold in the Equatorial zone
-real :: soilw_thrshS                    ! Soil wetness threshold in the South zone
-
 ! competition_mod.f90 parameters: ------
 
 ! the model basically uses the temperature of the coldest month as
@@ -307,6 +296,17 @@ real, dimension(kk) :: stemlife         ! Stemlife, turnover time scale for stem
 real, dimension(kk) :: rootlife         ! Rootlife, turnover time scale for root for different pfts
 real :: stmhrspn                        ! Stem harvest span. same as crop harvest span. period in days over which crops are harvested. 
 
+! wetland_methane.f90 parameters: ------------
+
+real :: ratioch4                        ! methane to carbon dioxide flux scaling factor.
+real :: wtdryres	                ! ratio of wetland to upland respiration 
+real :: factor2                         ! constant value for secondary (ch4wet2) methane emissions calculation
+real :: lat_thrshld1                    ! Northern zone for wetland determination (degrees North)
+real :: lat_thrshld2                    ! Boundary with southern zone for wetland determination (degrees North)
+real :: soilw_thrshN                    ! Soil wetness threshold in the North zone
+real :: soilw_thrshE                    ! Soil wetness threshold in the Equatorial zone
+real :: soilw_thrshS                    ! Soil wetness threshold in the South zone
+
 ! ----=====-------=========-----------========---------=========--------========-----------==========---------=======---========**
 contains
 
@@ -417,35 +417,6 @@ albnir = [ 19.0, 19.0, 0.00, &
            23.0, 29.0, 29.0, &
            34.0, 34.0, 0.00, &
            30.0, 34.0, 0.00 ] 
-
-! ch4wetland.f parameters: -------
-
-!	Rita Wania's thesis suggests about 0.25, but we get a better agreement 
-!	to outputs from the Walter's model if we use 0.16.  Note that this
-!	scaling factor likely is temperature dependent, and increases with
-!	temperature, but it is difficult to know the function, so leave
-!	constant for now ratio is mol ch4 to mol co2
-
-!	ratioch4/0.16/
-ratioch4 = 0.04 !0.06 !0.21 ! test jm july 24 2014
-
-!	Use the heterotrophic respiration outputs for soil and litter 
-!	as the ecosystem basis.  These were summed as "hetrores".
-!	This respiration is for upland soils; we multiply by 
-!	wtdryres as the ratio of wetland to upland respiration 
-!	based on literature measurements: Dalva et al. 1997 found 0.5 factor; 
-!	Segers 1998 found a 0.4 factor. use 0.5 here (unitless)
-
-wtdryres = 0.45  !0.5
-
-factor2 = 0.005 ! 0.02 test. jm july 22 2014
-
-lat_thrshld1 = 35.0 !50.0   ! degrees North
-lat_thrshld2 = -10.0  ! degrees North
-soilw_thrshN = 0.55 !0.60   ! Soil wetness threshold in the North zone
-soilw_thrshE = 0.80   ! Soil wetness threshold in the Equatorial zone
-soilw_thrshS = 0.70   ! Soil wetness threshold in the South zone
-
 
 ! ctem.f parameters: ----------
 
@@ -779,6 +750,36 @@ specsla =[  0.0, 0.0, 0.0, &  ! Not used.
 ! turnover.f parameters: --------------
 
 stmhrspn = 17.0
+
+! wetland_methane.f90 parameters: -------
+
+!	Rita Wania's thesis suggests about 0.25, but we get a better agreement 
+!	to outputs from the Walter's model if we use 0.16.  Note that this
+!	scaling factor likely is temperature dependent, and increases with
+!	temperature, but it is difficult to know the function, so leave
+!	constant for now ratio is mol ch4 to mol co2
+
+!	ratioch4/0.16/
+ratioch4 = 0.11 !0.21 ! test jm july 24 2014
+
+!	Use the heterotrophic respiration outputs for soil and litter 
+!	as the ecosystem basis.  These were summed as "hetrores".
+!	This respiration is for upland soils; we multiply by 
+!	wtdryres as the ratio of wetland to upland respiration 
+!	based on literature measurements: Dalva et al. 1997 found 0.5 factor; 
+!	Segers 1998 found a 0.4 factor. use 0.5 here (unitless)
+
+wtdryres = 0.45  !0.5
+
+factor2 = 0.015 ! 0.02 test. jm july 22 2014
+
+lat_thrshld1 = 25.0 !50.0   ! degrees North
+lat_thrshld2 = -10.0  ! degrees North
+soilw_thrshN = 0.55 !0.60   ! Soil wetness threshold in the North zone
+soilw_thrshE = 0.80   ! Soil wetness threshold in the Equatorial zone
+soilw_thrshS = 0.70   ! Soil wetness threshold in the South zone
+
+
 
 !   ********************************************************************************************
 !   =============                                                     ==========================
