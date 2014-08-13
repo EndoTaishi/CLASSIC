@@ -166,6 +166,8 @@ c
 c     now that we have both growth related and intrinsic mortality rates,
 c     lets combine these rates for every pft and estimate litter generated
 c
+!     FLAG: At present we only use the intrinsic mortality for litter generation.
+!     we do use the geremort in the competition scheme, but not here. JM Aug 2014.
       do 300 j = 1, icc
         do 310 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
