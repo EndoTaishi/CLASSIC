@@ -747,6 +747,11 @@ specsla =[  0.0, 0.0, 0.0, &  ! Not used.
             0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0 ]
 
+thrprcnt = [ 40.0, 40.0,  0.0, &
+             40.0, 50.0, 50.0, &
+             50.0, 50.0,  0.0, &
+             40.0, 40.0,  0.0 ]  
+
 ! turnover.f parameters: --------------
 
 stmhrspn = 17.0
@@ -760,7 +765,7 @@ stmhrspn = 17.0
 !	constant for now ratio is mol ch4 to mol co2
 
 !	ratioch4/0.16/
-ratioch4 = 0.11 !0.21 ! test jm july 24 2014
+ratioch4 = 0.10 !0.21 ! test jm july 24 2014
 
 !	Use the heterotrophic respiration outputs for soil and litter 
 !	as the ecosystem basis.  These were summed as "hetrores".
@@ -929,11 +934,6 @@ lwrthrsh = [ -50.0, -5.0, 0.0, &
 
 roothrsh = 8.0
 
-thrprcnt = [ 40.0, 40.0,  0.0, &
-             40.0, 50.0, 50.0, &
-             50.0, 50.0,  0.0, &
-             40.0, 40.0,  0.0 ]  
-
 ! turnover.f parameters: --------------
 
 stemlife = [ 86.3, 86.3, 0.00, &  
@@ -1021,11 +1021,6 @@ lwrthrsh = [ -45.0, -5.0, 0.0, &
                5.0,  5.0, 5.0, &
                5.0,  5.0, 0.0, &
                0.1,  5.0, 0.0 ] 
-
-thrprcnt = [ 40.0, 40.0,  0.0, &
-             40.0, 50.0, 50.0, &
-             50.0, 50.0,  0.0, &
-             40.0, 40.0,  0.0 ]  
 
 roothrsh = 15.0
 

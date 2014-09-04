@@ -871,24 +871,10 @@ C
        DO 525 M = K1, K2
         DO 530 I = IL1, IL2
 C
-!         IF (1.0 - ABS(SM_FUNC(I,1)) .GT. 1E-6) THEN
-          SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**INT(SN(SORT(M))) )
-!         ELSE
-!          SM_FUNC2(I,1)= 1.0
-!         ENDIF
-C
-!         IF (1.0 - ABS(SM_FUNC(I,2)) .GT. 1E-6) THEN
-          SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**INT(SN(SORT(M))) )
-!         ELSE
-!          SM_FUNC2(I,2)= 1.0
-!         ENDIF
-C
-!         IF (1.0 - ABS(SM_FUNC(I,3)) .GT. 1E-6) THEN
-          SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**INT(SN(SORT(M))) )
-!         ELSE
-!          SM_FUNC2(I,3)= 1.0
-!         ENDIF
-C
+         SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**INT(SN(SORT(M))) )
+         SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**INT(SN(SORT(M))) )
+         SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**INT(SN(SORT(M))) )
+
          SM_FUNC2(I,1)=SM_FUNC2(I,1)+(1.0-SM_FUNC2(I,1))
      &                 *SMSCALE(SORT(M))
          SM_FUNC2(I,2)=SM_FUNC2(I,2)+(1.0-SM_FUNC2(I,2))
