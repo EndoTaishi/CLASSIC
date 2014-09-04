@@ -1881,7 +1881,6 @@ C     GGEOGRD(1)=-0.035
      1                  J=1,3),ZPNDROW(I,M)
           READ(10,5070) RCANROW(I,M),SCANROW(I,M),SNOROW(I,M),
      1                  ALBSROW(I,M),RHOSROW(I,M),GROROW(I,M)
-         DRNROW(I,M)=0.1 !!!!!FLAG !!!!!!!
 50    CONTINUE
 C
       DO 25 J=1,IGND                     
@@ -2390,7 +2389,7 @@ C===================== CTEM =============================================== /
 5200  FORMAT(4I10)
 5300  FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,
      1       F9.4)
-5301  FORMAT(I4,F10.4)
+5301  FORMAT(I5,F10.4)
 6001  FORMAT('CLASS TEST RUN:     ',6A4)
 6002  FORMAT('RESEARCHER:         ',6A4)
 6003  FORMAT('INSTITUTION:        ',6A4)
@@ -2837,7 +2836,7 @@ c  /------------------Rudra----------------/
                wetfrac_mon(i,j) = 0.0
              enddo
            enddo
-        endif !dowetlands .and. obswetf
+        endif !obswetf
        endif ! ctem_on 
        if (metcylyrst .ne. -9999) backspace(16) 
 
@@ -2863,7 +2862,7 @@ C         THE END OF FILE IT WILL GO TO 999.
      1         PREGRD(I),TAGRD(I),QAGRD(I),UVGRD(I),PRESGRD(I)
 
 c         /---------------Rudra-----------------/
-         
+
           if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
             if (ctem_on) then     
               if (obswetf) then
@@ -2872,7 +2871,7 @@ c         /---------------Rudra-----------------/
                    do j = 1,12
                      wetfrac_mon(i,j) = 0.0
                    enddo
-              endif !dowetlands .and. obswetf
+              endif !obswetf
             endif ! ctem_on 
  
           endif 
@@ -2892,7 +2891,7 @@ c
             end if
           endif   ! lopcount .gt. 1
 c
-c         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
+!         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 c
 C===================== CTEM ============================================ /
           FSVHGRD(I)=0.5*FSDOWN
@@ -6818,6 +6817,11 @@ c     then the CTEM ones
        close(88)
        close(89)
       endif
+      if (dowetlands .or. obswetf) then 
+       close(91)
+       close(92)
+      endif 
+
 C
 C     CLOSE THE INPUT FILES TOO
       CLOSE(12)
