@@ -1,6 +1,8 @@
 &joboptions
 
  MOSAIC = .TRUE.,
+ TRANSIENT_RUN = .TRUE.
+ TRANS_STARTYR = 1850
  CTEMLOOP = 7 ,
  CTEM_ON = .TRUE. ,
  NCYEAR = 109 ,

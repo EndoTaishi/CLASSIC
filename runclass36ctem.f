@@ -7,6 +7,9 @@ C     * ECOSYSTEM MODEL.
 C
 C     REVISION HISTORY:
 C
+C     * JUN 2014
+C     * RUDRA SHRESTHA : ADD IN WETLAND CODE
+*
 C     * JUL 2013   
 C     * JOE MELTON : REMOVED CTEM1 AND CTEM2 OPTIONS, REPLACED WITH CTEM_ON. INTRODUCE
 C                                  MODULES. RESTRUCTURE OUTPUTS AND CTEM VARIABLE DECLARATIONS
@@ -403,7 +406,8 @@ c
      2     met_rewound,   reach_eof,      compete, 
      3      start_bare,   rsfile,         lnduseon, 
      4           co2on,   popdon,         inibioclim,
-     5    start_from_rs, dowetlands, obswetf
+     5    start_from_rs, dowetlands,      obswetf,
+     6    transient_run,  trans_startyr
 c
        integer   lopcount,  isumc,   nol2pfts(4),  
      1           k1c,       k2c,     iyd,         jhhstd,
@@ -911,11 +915,11 @@ C
 C===================== CTEM ==============================================\
 
 c     all model switches are read in from a namelist file
-      call read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,
-     1             ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,
-     2             metcylyrst,co2on,setco2conc,popdon,popcycleyr,
-     3             parallelrun,dofire,dowetlands,obswetf,
-     4             compete,inibioclim,start_bare,
+      call read_from_job_options(argbuff,mosaic,transient_run,
+     1             trans_startyr,ctemloop,ctem_on,ncyear,lnduseon,
+     2             spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on,
+     3             setco2conc,popdon,popcycleyr,parallelrun,dofire,
+     4             dowetlands,obswetf,compete,inibioclim,start_bare,
      5             rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,
      6             itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,
      7             jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
@@ -1157,20 +1161,23 @@ c       metcylyrst is defined in the joboptions file
         metcycendyr = metcylyrst + nummetcylyrs - 1
       endif
 
-c     if cycling met, find the popd and luc year to cycle with.
+c     if cycling met (and not doing a transient run), find the popd and luc year to cycle with.
 c     it is assumed that you always want to cycle the popd and luc
 c     on the same year to be consistent. so if you are cycling the 
 c     met data, you can set a popd year (first case), or if cycling 
 c     the met data you can let the popcycleyr default to the met cycling
 c     year by setting popcycleyr to -9999 (second case). if not cycling 
-c     the met data, cypopyr and cylucyr will default to a dummy value
-c     (last case).
+c     the met data or you are doing a transient run that cycles the MET
+c     at the start, cypopyr and cylucyr will default to a dummy value
+c     (last case). (See example at bottom of read_from_job_options.f90
+c     if confused)
 c
-      if (cyclemet .and. popcycleyr .ne. -9999) then
+      if (cyclemet .and. popcycleyr .ne. -9999 .and.  
+     &                                .not. transient_run) then
         cypopyr = popcycleyr
         cylucyr = popcycleyr
 !        cywetldyr = popcycleyr
-      else if (cyclemet) then
+      else if (cyclemet .and. .not. transient_run) then
         cypopyr = metcylyrst
         cylucyr = metcylyrst
 !        cywetldyr = metcylyrst
@@ -2557,7 +2564,7 @@ c
 c     if land use change switch is on then read the fractional coverages 
 c     of ctem's 9 pfts for the first year.
 c
-      if (lnduseon .and. .not. cyclemet) then
+      if (lnduseon .and. transient_run) then
 
          reach_eof=.false.  !flag for when read to end of luc input file
 
@@ -2882,6 +2889,12 @@ C===================== CTEM ============================================ \
 
 c         assign the met climate year to climiyear      
           climiyear = iyear
+          
+!         FLAG: If in a transient_run that has to cycle over MET then change
+!         the iyear here:
+          if (transient_run .and. cyclemet) then
+            iyear = iyear - (metcylyrst - trans_startyr)
+          end if            
 c
           if(lopcount .gt. 1) then
             if (cyclemet) then
@@ -2966,13 +2979,13 @@ c
 
 c      if lnduseon is true, read in the luc data now
 
-       if (ctem_on .and. lnduseon .and. .not. cyclemet) then
+       if (ctem_on .and. lnduseon .and. transient_run) then
 
          call readin_luc(iyear,nmtest,nltest,mosaic,lucyr,   
      &                   nfcancmxrow,pfcancmxrow,reach_eof,compete)
          if (reach_eof) goto 999
 
-       else ! lnduseon = false or met is cycling
+       else ! lnduseon = false or met is cycling in a spin up run
 
 c          land use is not on or the met data is being cycled, so the 
 c          pfcancmx value is also the nfcancmx value. 
@@ -4907,6 +4920,7 @@ C
          QE_YR=QEVPACC_YR(I)
 C
          WRITE(*,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
+         write(*,*)'popyr=',popyr,'co2yr=',co2yr,'lucyr=',lucyr
          WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,
      1                  QE_YR,ROFACC_YR(I),PREACC_YR(I),
      2                  EVAPACC_YR(I) 
@@ -6565,7 +6579,7 @@ c      check if the model is done running.
 
             lopcount = lopcount+1           
 
-             if(lopcount.le.ctemloop)then
+             if(lopcount.le.ctemloop .and. .not. transient_run)then
 
               rewind(12)   ! rewind met file
 c /---------------------Rudra----------------/
@@ -6585,11 +6599,24 @@ c\----------------------Rudra---------------\
                  rewind(14) !rewind co2 file
                endif
 
+             else if (lopcount.le.ctemloop .and. transient_run)then
+             ! rewind only the MET file (since we are looping over the MET  while
+             ! the other inputs continue on.
+               rewind(12)   ! rewind met file
+               
              else
-
+             
+              if (transient_run .and. cyclemet) then
+              ! Now switch from cycling over the MET to running through the file
+              rewind(12)   ! rewind met file
+              cyclemet = .false.
+              lopcount = 1              
+              else
                run_model = .false.
+              endif  
 
              endif
+             
           else if (iyear .eq. endyr .and. .not. cyclemet) then
 
              run_model = .false.
@@ -6719,7 +6746,6 @@ c         the 999 label below is hit when an input file reaches its end.
 
             lopcount = lopcount+1   
 
-
              if(lopcount.le.ctemloop)then
 
               rewind(12)   ! rewind met file
@@ -6739,7 +6765,13 @@ c \------------Rudra---------------\
                if(co2on) then
                  rewind(14) !rewind co2 file
                endif
-
+               
+               if (transient_run) then
+                 write(*,*)'You have hit the end of one of the input'
+                 write(*,*)'files, this should not happen in a '
+                 write(*,*)'transient run! Check options used.'            
+               end if
+                
              else
 
               run_model = .false.
