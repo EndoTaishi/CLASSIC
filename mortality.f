@@ -144,18 +144,18 @@ c
         do 260 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
 
-          if(do_age_mort)then
+!          if(do_age_mort)then
 
-             if(maxage(n).gt.zero)then
+!             if(maxage(n).gt.zero)then
                intrmort(i,j)=1.0-exp(-4.605/maxage(n))
-             else
-               intrmort(i,j)=0.0
-             endif
+!             else
+!               intrmort(i,j)=0.0
+!             endif
 
-          else
-            geremort(i,j)=0.0
-            intrmort(i,j)=0.0
-          end if
+!          else
+!            geremort(i,j)=0.0
+!            intrmort(i,j)=0.0
+!          end if
 
 c         convert (1/year) rate into (1/day) rate   
           intrmort(i,j)=intrmort(i,j)/365.0
@@ -166,20 +166,15 @@ c
 c     now that we have both growth related and intrinsic mortality rates,
 c     lets combine these rates for every pft and estimate litter generated
 c
-!     FLAG: At present we only use the intrinsic mortality for litter generation.
-!     we do use the geremort in the competition scheme, but not here. JM Aug 2014.
       do 300 j = 1, icc
         do 310 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
           stemltrm(i,j)=stemmass(i,j)*
-!     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
-     &    ( 1.0-exp(-1.0*(intrmort(i,j))) )
+     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
           rootltrm(i,j)=rootmass(i,j)*
-!     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
-     &    ( 1.0-exp(-1.0*(intrmort(i,j))) )
+     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
           glealtrm(i,j)=gleafmas(i,j)*
-!     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
-     &    ( 1.0-exp(-1.0*(intrmort(i,j))) )
+     &    ( 1.0-exp(-1.0*(geremort(i,j)+intrmort(i,j))) )
          endif
 310     continue
 300   continue

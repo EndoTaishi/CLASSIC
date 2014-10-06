@@ -407,7 +407,7 @@ c
      3      start_bare,   rsfile,         lnduseon, 
      4           co2on,   popdon,         inibioclim,
      5    start_from_rs, dowetlands,      obswetf,
-     6    transient_run,  trans_startyr
+     6    transient_run
 c
        integer   lopcount,  isumc,   nol2pfts(4),  
      1           k1c,       k2c,     iyd,         jhhstd,
@@ -418,7 +418,7 @@ c
      6           ncyear, co2yr, popyr, nummetcylyrs,
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
      8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2),
-     9           obswetyr, cywetldyr  
+     9           obswetyr, cywetldyr, trans_startyr  
 c
        real      rlim,        fsstar_g,
      1           flstar_g,  qh_g,    qe_g,        snomlt_g,
@@ -1888,6 +1888,7 @@ C     GGEOGRD(1)=-0.035
      1                  J=1,3),ZPNDROW(I,M)
           READ(10,5070) RCANROW(I,M),SCANROW(I,M),SNOROW(I,M),
      1                  ALBSROW(I,M),RHOSROW(I,M),GROROW(I,M)
+
 50    CONTINUE
 C
       DO 25 J=1,IGND                     
@@ -2890,7 +2891,7 @@ C===================== CTEM ============================================ \
 c         assign the met climate year to climiyear      
           climiyear = iyear
           
-!         FLAG: If in a transient_run that has to cycle over MET then change
+!         If in a transient_run that has to cycle over MET then change
 !         the iyear here:
           if (transient_run .and. cyclemet) then
             iyear = iyear - (metcylyrst - trans_startyr)
@@ -2903,6 +2904,7 @@ c
               iyear=iyear + ncyear*(lopcount-1)
             end if
           endif   ! lopcount .gt. 1
+          
 c
 !         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 c
@@ -4920,7 +4922,7 @@ C
          QE_YR=QEVPACC_YR(I)
 C
          WRITE(*,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
-         write(*,*)'popyr=',popyr,'co2yr=',co2yr,'lucyr=',lucyr
+
          WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,
      1                  QE_YR,ROFACC_YR(I),PREACC_YR(I),
      2                  EVAPACC_YR(I) 
@@ -6501,8 +6503,8 @@ c            after rounding to the number of sig figs used in the output
 c            this rounds to 2 decimal places. if you are found to be over
 c            or under, arbitrarily reduce one of the pfts. the amount of
 c            the change will be inconsequential. 
-              rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 100.0 + 0.5))
-     1                                                         / 100.0
+              rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 1000.0 + 5.0))
+     1                                                         / 1000.0
              enddo
 
              if (rnded_pft(1) + rnded_pft(2) .ne. 1.0) then
@@ -6610,7 +6612,9 @@ c\----------------------Rudra---------------\
               ! Now switch from cycling over the MET to running through the file
               rewind(12)   ! rewind met file
               cyclemet = .false.
-              lopcount = 1              
+              lopcount = 1   
+              endyr = iyear + ncyear  !set the new end year
+           
               else
                run_model = .false.
               endif  
@@ -6765,13 +6769,7 @@ c \------------Rudra---------------\
                if(co2on) then
                  rewind(14) !rewind co2 file
                endif
-               
-               if (transient_run) then
-                 write(*,*)'You have hit the end of one of the input'
-                 write(*,*)'files, this should not happen in a '
-                 write(*,*)'transient run! Check options used.'            
-               end if
-                
+                               
              else
 
               run_model = .false.

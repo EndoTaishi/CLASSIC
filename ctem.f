@@ -504,7 +504,6 @@ c
 c     
       real     barefrac(ilg),       pbarefrc(ilg),           tolrance,
      1       lambda(ilg,icc),   add2allo(ilg,icc),  lyglfmas(ilg,icc),
-!     2     expbalvg(ilg,icc),       expnbaln(ilg), ltrflcom(ilg,iccp1), !FLAG
      2   ltrflcom(ilg,iccp1),
      3          cc(ilg,icc),         mm(ilg,icc),    barefrac_tmp(ilg),
      4     reprocost(ilg,icc),  repro_cost_g(ilg)
@@ -517,7 +516,7 @@ C
       real    wetfrac_s(ilg,8),        wetfdyn(ilg)
       real      ch4dyn1(ilg),        ch4dyn2(ilg)
 
-       real lambdaalt !FLAG testing JM Apr 8 2014
+       real lambdaalt 
 c
 c     ---------------------------------------------------------------
 c     Constants and parameters are located in ctem_params.f90
@@ -1433,7 +1432,7 @@ c
 c
 c    ------------------------------------------------------------------
 c
-c     maintenance respiration also reduces leaf, stem, and root biomass.
+c     Maintenance respiration also reduces leaf, stem, and root biomass.
 c     when npp for a given pft is positive then this is taken care by
 c     allocating +ve npp amongst the leaves, stem, and root component.
 c     when npp for a given pft is negative then maintenance respiration
@@ -1442,7 +1441,7 @@ c
       do 600 j = 1, icc
         do 610 i = il1, il2
 c
-c         convert npp and maintenance respiration from different components
+c         Convert npp and maintenance respiration from different components
 c         from units of u mol co2/m2.sec -> kg c/m2 sequestered or respired
 c         over the model time step (deltat)    
       

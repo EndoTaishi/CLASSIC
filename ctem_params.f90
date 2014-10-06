@@ -243,7 +243,7 @@ real, dimension(3) :: paper             ! how much deforested/chopped off biomas
 real, dimension(3) :: furniture         ! how much deforested/chopped off biomass goes into long term storage such as furniture
 real, dimension(2) :: bmasthrs          ! biomass thresholds for determining if deforested area is a forest, a shrubland, or a bush kg c/m2
 
-real :: tolrnce1 !/0.50/  ! kg c, tolerance of total c balance  !FLAG
+real :: tolrnce1                        ! kg c, tolerance of total c balance 
 
 ! mainres.f parameters: ----------
 
@@ -444,7 +444,7 @@ f0 = 0.05
 
 bmasthrs_fire = [ 0.2, 1.0 ] 
 
-extnmois = 0.30 
+extnmois = 0.35 !0.3 Sept 22 2014. JM. 
 
 lwrlthrs = 0.25
 
@@ -464,35 +464,33 @@ maxsprd = [  0.54, 0.54, 0.00, &
              0.00, 0.00, 0.00, &
              2.00, 2.00, 0.00 ]
 
-! These frco2/ltr factors are all multiplied by 0.2 from the original CTEM values. JM Mar 2014.
-
-frco2glf = [ 0.14, 0.14, 0.00, & 
-             0.14, 0.14, 0.14, & 
+frco2glf = [ 0.21, 0.21, 0.00, & 
+             0.21, 0.21, 0.21, & 
              0.00, 0.00, 0.00, &
-             0.16, 0.16, 0.00 ]   
+             0.24, 0.24, 0.00 ]   
 
 frco2blf = [ 0.00, 0.00, 0.00, & 
              0.00, 0.00, 0.00, & 
              0.00, 0.00, 0.00, &
-             0.18, 0.18, 0.00 ]
+             0.27, 0.27, 0.00 ]
 
-frltrglf = [ 0.04, 0.04, 0.00, &
-             0.04, 0.04, 0.04, & 
+frltrglf = [ 0.06, 0.06, 0.00, &
+             0.06, 0.06, 0.06, & 
              0.00, 0.00, 0.00, &
-             0.02, 0.02, 0.00 ]  
+             0.03, 0.03, 0.00 ]  
 
 frltrblf = [ 0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00, & 
              0.00, 0.00, 0.00, &
-             0.01, 0.01, 0.00 ]
+             0.02, 0.02, 0.00 ]
 
-frco2stm = [ 0.04, 0.04, 0.00, &
-             0.04, 0.02, 0.02, &  
+frco2stm = [ 0.06, 0.06, 0.00, &
+             0.06, 0.03, 0.03, &  
              0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00 ]
 
-frltrstm = [ 0.10, 0.10, 0.00, &
-             0.10, 0.06, 0.06, & 
+frltrstm = [ 0.15, 0.15, 0.00, &
+             0.15, 0.09, 0.09, & 
              0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00 ]
 
@@ -501,15 +499,15 @@ frco2rt = [ 0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0 ]
 
-frltrrt = [ 0.02, 0.02, 0.00, &
-            0.02, 0.02, 0.02, &
+frltrrt = [ 0.03, 0.03, 0.00, &
+            0.03, 0.03, 0.03, &
             0.00, 0.00, 0.00, &
-            0.05, 0.05, 0.00 ]
+            0.08, 0.08, 0.00 ]
 
-frltrbrn = [ 0.10, 0.10, 0.00, &
-             0.12, 0.12, 0.12, &
+frltrbrn = [ 0.15, 0.15, 0.00, &
+             0.18, 0.18, 0.18, &
              0.00, 0.00, 0.00, &
-             0.14, 0.14, 0.00 ]
+             0.21, 0.21, 0.00 ]
 
 !     emissions factors by chemical species
 !     
@@ -692,7 +690,7 @@ furniture = [ 0.15, 0.00, 0.00 ]
 
 bmasthrs = [ 4.0, 1.0 ]
 
-tolrnce1 = 0.50
+tolrnce1 = 0.50  !FLAG would be good to make this consistent with global tolerance so only one value.
 
 ! mainres.f parameters: ---------
 
@@ -756,6 +754,17 @@ thrprcnt = [ 40.0, 40.0,  0.0, &
 
 stmhrspn = 17.0
 
+! these are from competition ones.
+stemlife = [ 86.3, 86.3, 0.00, &  
+             80.5, 80.5, 75.8, &  
+             20.0, 20.0, 0.00, &
+              0.00, 0.00, 0.00 ]
+
+rootlife = [ 13.8,13.2, 0.0, &
+             12.7,10.9, 9.8, &    
+              3.0, 3.0, 0.0, &
+              3.0, 3.0, 0.0 ]
+
 ! wetland_methane.f90 parameters: -------
 
 !	Rita Wania's thesis suggests about 0.25, but we get a better agreement 
@@ -765,7 +774,7 @@ stmhrspn = 17.0
 !	constant for now ratio is mol ch4 to mol co2
 
 !	ratioch4/0.16/
-ratioch4 = 0.10 !0.21 ! test jm july 24 2014
+ratioch4 = 0.07 !0.21 ! test jm july 24 2014
 
 !	Use the heterotrophic respiration outputs for soil and litter 
 !	as the ecosystem basis.  These were summed as "hetrores".
@@ -778,8 +787,8 @@ wtdryres = 0.45  !0.5
 
 factor2 = 0.015 ! 0.02 test. jm july 22 2014
 
-lat_thrshld1 = 25.0 !50.0   ! degrees North
-lat_thrshld2 = -10.0  ! degrees North
+lat_thrshld1 = 40.0 !25.0 !50.0   ! degrees North
+lat_thrshld2 = -20.0 !-10.0  ! degrees North
 soilw_thrshN = 0.55 !0.60   ! Soil wetness threshold in the North zone
 soilw_thrshE = 0.80   ! Soil wetness threshold in the Equatorial zone
 soilw_thrshS = 0.70   ! Soil wetness threshold in the South zone
@@ -936,15 +945,15 @@ roothrsh = 8.0
 
 ! turnover.f parameters: --------------
 
-stemlife = [ 86.3, 86.3, 0.00, &  
-             80.5, 80.5, 75.8, &  
-             20.0, 20.0, 0.00, &
-              0.00, 0.00, 0.00 ]
+!stemlife = [ 86.3, 86.3, 0.00, &  
+!             80.5, 80.5, 75.8, &  
+!             20.0, 20.0, 0.00, &
+!              0.00, 0.00, 0.00 ]
 
-rootlife = [ 13.8,13.2, 0.0, &
-             12.7,10.9, 9.8, &    
-              3.0, 3.0, 0.0, &
-              3.0, 3.0, 0.0 ]
+!rootlife = [ 13.8,13.2, 0.0, &
+!             12.7,10.9, 9.8, &    
+!              3.0, 3.0, 0.0, &
+!              3.0, 3.0, 0.0 ]
 
 !   ********************************************************************************************
 !   =============                                                     ==========================
@@ -998,12 +1007,19 @@ bsrtroot = [ 0.5000, 0.2850, 0.0000, &
              0.1600, 0.1600, 0.0000, &
              0.1000, 0.1000, 0.0000 ]
 
+
 ! mortality.f parameters: ---------
 
-mxmortge = [ 0.01, 0.01, 0.00, &
-             0.01, 0.01, 0.01, & 
+maxage = [ 250.0, 400.0,   0.0, &    !same as comp
+           600.0, 250.0, 500.0, &  
+             0.0,   0.0,   0.0, &
+             0.0,   0.0,   0.0 ]
+
+mxmortge = [ 0.005, 0.005, 0.00, &   ! Same as competition except for grasses.
+             0.005, 0.005, 0.005, & 
              0.00, 0.00, 0.00, & 
-             0.00, 0.00, 0.00 ]
+             0.00, 0.00, 0.00 ] 
+
 
 ! phenology.f parameters: ---------
 
@@ -1026,15 +1042,15 @@ roothrsh = 15.0
 
 ! turnover.f parameters: --------------
 
-stemlife = [ 65.0, 75.0, 0.00, &
-             45.0, 40.0, 45.0, &
-             20.0, 20.0, 0.00, &
-              0.00, 0.00, 0.00 ]
+!stemlife = [ 65.0, 75.0, 0.00, &
+!             45.0, 40.0, 45.0, &
+!             20.0, 20.0, 0.00, &
+!              0.00, 0.00, 0.00 ]
 
-rootlife = [ 10.0,11.5, 0.0, &
-              5.5, 5.5, 5.5, &
-              3.0, 3.0, 0.0, &
-              2.5, 2.5, 0.0 ]
+!rootlife = [ 10.0,11.5, 0.0, &
+!              5.5, 5.5, 5.5, &
+!              3.0, 3.0, 0.0, &
+!              2.5, 2.5, 0.0 ]
 
 end if
 

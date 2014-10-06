@@ -7,8 +7,7 @@
      5                     pglfmass, pblfmass, pstemass, protmass,
      6                     plitmass, psocmass, vgbiomas, repro_cost,
      7                     pvgbioms, gavgltms, pgavltms, gavgscms,
-!     8                     pgavscms, galtcels, expnbaln,
-     8                     pgavscms, galtcels, repro_cost_g, !FLAG
+     8                     pgavscms, galtcels, repro_cost_g,
      9                          npp,  autores, hetrores,      gpp,
      a                          nep,   litres,   socres, dstcemls,
      b                          nbp, litrfall, humiftrs,
@@ -211,7 +210,7 @@ c
           diff1=litrmass(i,j) - plitmass(i,j)
           diff2=( tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j)-
      &      ltresveg(i,j)-humtrsvg(i,j)-ltrcemls(i,j)
-     &      + repro_cost(i,j))*(deltat/963.62) !FLAG!!  
+     &      + repro_cost(i,j))*(deltat/963.62)   
           if((abs(diff1-diff2)).gt.tolrance)then
             write(6,2003)i,j,abs(diff1-diff2),tolrance
 2003        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
@@ -260,7 +259,6 @@ c
         diff1=vgbiomas(i)-pvgbioms(i)
         diff2=(gpp(i)-autores(i)-litrfall(i)-
      &   dstcemls(i)-repro_cost_g(i))*(deltat/963.62)
-!     &   dstcemls(i)+expnbaln(i))*(deltat/963.62) !FLAG
         if((abs(diff1-diff2)).gt.tolrance)then
           write(6,3001)'vgbiomas(',i,')=',vgbiomas(i)
           write(6,3001)'pvgbioms(',i,')=',pvgbioms(i)
@@ -268,7 +266,6 @@ c
           write(6,3001)' autores(',i,')=',autores(i)
           write(6,3001)'litrfall(',i,')=',litrfall(i)
           write(6,3001)'dstcemls(',i,')=',dstcemls(i)
-!          write(6,3001)'expnbaln(',i,')=',expnbaln(i) !FLAG
           write(6,3001)'repro_cost_g(',i,')=',repro_cost_g(i)
 3001      format(a9,i2,a2,f14.9) 
           write(6,2005)i,abs(diff1-diff2),tolrance

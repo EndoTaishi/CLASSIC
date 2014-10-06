@@ -11,6 +11,8 @@ C                       PHOTOSYNTHESIS SUBROUTINE
 
 C     HISTORY:
 C
+C     * SEP 15/14 - J. Melton      Since SN is converted to INT, I made the assignment explicitly INT, rather
+C     *                            than a real that gets cast as INT later.
 C     * APR 11/14 - J. Melton      When at wilting point SM_FUNC should be 0. Was incorrectly set to 0.01
 C     * JAN 15/14 - J. Melton      Fixed bug in SM_FUNC calculation that prevented
 C     *                            higher number PFTs from feeling water stress.
@@ -186,15 +188,14 @@ C
      6   FCANCMX(ILG,ICC),  Q10_FUNCD
 C
       REAL         MM(KK),          BB(KK),    VPD0(KK),           Q10, 
-     1            RC(ILG),        SN(KK),
-     2            CO2IMAX,    COSZS(ILG),
-     3       XDIFFUS(ILG),            ZERO,               RMLCOEFF(KK)
+     1            RC(ILG),         CO2IMAX,    COSZS(ILG),
+     2       XDIFFUS(ILG),            ZERO,               RMLCOEFF(KK)
 C        
       REAL         TEMP_B,          TEMP_C,      TEMP_R,       TEMP_Q1,
      1            TEMP_Q2,         TEMP_JP,       BETA1,         BETA2,
      2            TEMP_AN
 C    
-      INTEGER  ISAND(ILG,IG)
+      INTEGER  ISAND(ILG,IG),  SN(KK)
 C
 C     FOR LIMITING CO2 UPTAKE
 C
@@ -264,7 +265,7 @@ C     FOR C3 AND C4 PLANTS, RESPECTIVELY
      &            0.15, 0.17, 0.00,
      &            0.15, 0.17, 0.00/
 C
-C     PARAMETER M USED IN BWB PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
+C     PARAMETER M USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
 C     COUPLING. 
 C
       DATA  MM/9.0, 9.0, 0.0,
@@ -272,7 +273,7 @@ C
      &        12.0, 6.0, 0.0,
      &        12.0, 6.0, 0.0/
 C
-C     PARAMETER B USED IN BWB PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
+C     PARAMETER B USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
 C     COUPLING.
       DATA  BB/0.01, 0.01, 0.00,
      &         0.01, 0.01, 0.01,
@@ -292,10 +293,10 @@ C     FOR VALUES HIGHER THAN 1. WHEN SN IS ABOUT 10, PHOTOSYNTHESIS DOES
 C     NOT START DECREASING UNTIL SOIL MOISTURE IS ABOUT HALF WAY BETWEEN
 C     WILTING POINT AND FIELD CAPACITY.
 C
-      DATA SN/20.0, 20.0, 0.0,
-     &        20.0, 20.0, 20.0,
-     &        15.0, 15.0, 0.0,
-     &        13.0, 13.0, 0.0/
+      DATA SN/2, 2, 0,
+     &        4, 2, 2,
+     &        2, 2, 0,
+     &        2, 2, 0/
 
 C
 C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.
@@ -309,8 +310,8 @@ C
 C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 C     VALUES ARE MAINLY DERIVED FROM KATTGE ET AL. 2009 WHICH 
 C     DOESN'T INCLUDE C4
-      DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, !FLAG test Dec 3 PFT 1 was 35.(was 50, dec 18) TEST PFT 2 was 40.
-     &          48.0E-06, 57.0E-06, 40.0E-06, !FLAG test Mar 3 PFT 4 was 67. PFT 5 was 40
+      DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, 
+     &          48.0E-06, 57.0E-06, 40.0E-06, 
      &          55.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
 
@@ -337,7 +338,7 @@ C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
      &              0.65, 0.37, 0.00/
 C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
-      DATA  RMLCOEFF/0.015, 0.021, 0.000,  !flag pft 1 was 0.015 JM Jan 10 2014
+      DATA  RMLCOEFF/0.015, 0.021, 0.000, 
      &               0.025, 0.015, 0.015,  
      &               0.015, 0.025, 0.000,
      &               0.013, 0.025, 0.000/
@@ -361,7 +362,7 @@ C
 C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
 C      DATA GAMMA_W/0.45/  
-      DATA GAMMA_W/0.30/  ! Tests occurring in April 2013. JM.  
+      DATA GAMMA_W/0.17/  ! Tests occurring in Sept 2014. JM.  
 C
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT MODEL ACTUALLY GIVES
 C     WITHOUT ANY PHOTOSYNTHESIS DOWN-REGULATION
@@ -844,10 +845,10 @@ C
         DO 510 I = IL1, IL2
 C         
           IF(ISAND(I,J) .EQ. -3 .OR. ISAND(I,J) .EQ. -4)THEN
-            SM_FUNC(I,J)=0.0 !0.01  !FLAG this should not be >0. JM Apr 11 2014.
+            SM_FUNC(I,J)=0.0 
           ELSE ! I.E., ISAND.NE.-3 OR -4
            IF(THLIQ(I,J).LE.WILTSM(I,J)) THEN
-            SM_FUNC(I,J)=0.0   !0.01  !FLAG this should not be >0. JM Apr 11 2014.
+            SM_FUNC(I,J)=0.0   
            ELSE IF(THLIQ(I,J).GT.WILTSM(I,J) .AND.
      &      THLIQ(I,J).LT.FIELDSM(I,J)) THEN
             SM_FUNC(I,J)=(THLIQ(I,J)-WILTSM(I,J))/
@@ -871,9 +872,9 @@ C
        DO 525 M = K1, K2
         DO 530 I = IL1, IL2
 C
-         SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**INT(SN(SORT(M))) )
-         SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**INT(SN(SORT(M))) )
-         SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**INT(SN(SORT(M))) )
+         SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**SN(SORT(M)) )
+         SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**SN(SORT(M)) )
+         SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**SN(SORT(M)) )
 
          SM_FUNC2(I,1)=SM_FUNC2(I,1)+(1.0-SM_FUNC2(I,1))
      &                 *SMSCALE(SORT(M))
@@ -1239,21 +1240,19 @@ C
           Q10_FUNCD = 1.30**(0.1*(TCAN(I)-298.16))
 C
           IF(LEAFOPT.EQ.1)THEN
-C      FLAG!
            IF(COSZS(I).GT.0.0)THEN
             RML_VEG(I,J) = RMLCOEFF(SORT(J))*VMAXC(I,J)*Q10_FUNCD
            ELSE
-            RML_VEG(I,J) = RMLCOEFF(SORT(J))*VMAXC(I,J)*Q10_FUNCN !* 0.5
+            RML_VEG(I,J) = RMLCOEFF(SORT(J))*VMAXC(I,J)*Q10_FUNCN 
            ENDIF
-C      END FLAG.
            AN_VEG(I,J) = A_VEG(I,J) - RML_VEG(I,J)
           ELSE IF(LEAFOPT.EQ.2)THEN
            IF(COSZS(I).GT.0.0)THEN
             RML_SUN(I,J) = RMLCOEFF(SORT(J))*VMAXC_SUN(I,J)*Q10_FUNCD
             RML_SHA(I,J) = RMLCOEFF(SORT(J))*VMAXC_SHA(I,J)*Q10_FUNCD
            ELSE
-            RML_SUN(I,J)=RMLCOEFF(SORT(J))*VMAXC_SUN(I,J)*Q10_FUNCN !*0.5 !FLAG
-            RML_SHA(I,J)=RMLCOEFF(SORT(J))*VMAXC_SHA(I,J)*Q10_FUNCN !*0.5 !FLAG
+            RML_SUN(I,J)=RMLCOEFF(SORT(J))*VMAXC_SUN(I,J)*Q10_FUNCN 
+            RML_SHA(I,J)=RMLCOEFF(SORT(J))*VMAXC_SHA(I,J)*Q10_FUNCN 
            ENDIF
            AN_SUN(I,J) = A_VEG_SUN(I,J) - RML_SUN(I,J)
            AN_SHA(I,J) = A_VEG_SHA(I,J) - RML_SHA(I,J)
