@@ -1,8 +1,9 @@
-subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,ncyear,lnduseon,spinfast,cyclemet, &
-                  nummetcylyrs,metcylyrst,co2on,setco2conc,popdon,popcycleyr, &
-                  parallelrun,dofire,compete,inibioclim,start_bare,rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,itcg, &
-                  itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,jhhendd,jdstd, & 
-                  jdendd,jhhsty,jhhendy,jdsty,jdendy)
+subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctemloop,ctem_on, &
+                  ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
+                  setco2conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
+                  compete,inibioclim,start_bare,rsfile,start_from_rs,idisp,izref, &
+                  islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,& 
+                  jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
 !#ifdef nagf95
 !use f90_unix
@@ -10,6 +11,9 @@ subroutine read_from_job_options(argbuff,mosaic,ctemloop,ctem_on,ncyear,lnduseon
 
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    Joboptions Read-In Subroutine 
+!
+!     4   Sep. 2014 - Add in the transient_run flag.
+!     J. Melton
 !
 !     2   Jul. 2013 - Removed ctem1 and ctem2, replaced with ctem_on
 !     J. Melton
@@ -33,6 +37,16 @@ character(80), intent(out) :: argbuff !prefix of file names
 
 logical, intent(out) :: mosaic   ! true if the run is in mosaic mode, otherwise it
                                  ! is a composite run
+                                 
+logical, intent(out) :: transient_run ! true if the run is a transient run. With this flag set
+                                 ! set to .true., you can cycle over nummetcyclyrs of climate a
+                                 ! ctemloop number of times then continue on through the climate
+                                 ! the reason for this is to allow a transient from 1850 on, but 
+                                 ! only having the climate from 1901 while having the other inputs 
+                                 ! from 1850. See the bottom of this subroutine for an example of how to 
+                                 ! set this correctly.  
+                                 
+integer, intent(out) :: trans_startyr ! the year you want the transient run to start (e.g. 1850)                                                                
 
 integer, intent(out) :: ctemloop ! no. of times the .met file is to be read. this
                     	         ! option is useful to see how ctem's c pools
@@ -40,58 +54,62 @@ integer, intent(out) :: ctemloop ! no. of times the .met file is to be read. thi
                     	         ! over and over again.
 
 logical, intent(out) :: ctem_on  ! set this to true for using ctem simulated dynamic
- 				 ! lai and canopy mass, else class simulated specified
- 				 ! lai and canopy mass are used. with this switch on,
- 				 ! all ctem subroutines are run.
+ 				                 ! lai and canopy mass, else class simulated specified
+                 				 ! lai and canopy mass are used. with this switch on,
+                 				 ! all ctem subroutines are run.
 
 integer, intent(out) :: ncyear   ! no. of years in the .met file. 
 
 logical, intent(out) :: lnduseon ! set this to 1 if land use change is to be
- 				 ! implimented by reading in the fractions of 9 ctem
- 				 ! pfts from a file. keep in mind that once on, luc read-in is
+                 				 ! implimented by reading in the fractions of 9 ctem
+                				 ! pfts from a file. keep in mind that once on, luc read-in is
                                  ! also influenced by the cyclemet and popcycleyr
                                  ! switches
 
 integer, intent(out) :: spinfast ! set this to a higher number up to 10 to spin up
- 				 ! soil carbon pool faster
+                 				 ! soil carbon pool faster
 
 logical, intent(out) :: cyclemet ! to cycle over only a fixed number of years 
- 				 ! (nummetcylyrs) starting at a certain year (metcylyrst)
- 				 ! if cyclemet, then put co2on = false and set an appopriate setco2conc, also
- 				 ! if popdon is true, it will choose the popn and luc data for year
- 				 ! metcylyrst and cycle on that.
+                 				 ! (nummetcylyrs) starting at a certain year (metcylyrst)
+                 				 ! if cyclemet, then put co2on = false and set an appopriate setco2conc, also
+                 				 ! if popdon is true, it will choose the popn and luc data for year
+                 				 ! metcylyrst and cycle on that.
 
 integer, intent(out) :: nummetcylyrs ! years of the climate file to spin up on repeatedly
- 				 ! ignored if cyclemet is false
+                 				 ! ignored if cyclemet is false
 
 integer, intent(out) :: metcylyrst   ! climate year to start the spin up on
- 				 ! ignored if cyclemet is false
+                 				 ! ignored if cyclemet is false
 
 logical, intent(out) :: co2on    ! use co2 time series, set to false if cyclemet is true
 
 real, intent(out) :: setco2conc  ! set the value of atmospheric co2 if co2on is false.
 
 logical, intent(out) :: popdon   ! if set true use population density data to calculate fire extinguishing 
- 				 ! probability and probability of fire due to human causes, 
- 				 ! or if false, read directly from .ctm file
+                 				 ! probability and probability of fire due to human causes, 
+                 				 ! or if false, read directly from .ctm file
 
 integer, intent(out) :: popcycleyr ! popd and luc year to cycle on when cyclemet is true, set to -9999
-				 ! to cycle on metcylyrst for both popd and luc. if cyclemet is false
+                				 ! to cycle on metcylyrst for both popd and luc. if cyclemet is false
                                  ! this defaults to -9999, which will then cause the model to cycle on
                                  ! whatever is the first year in the popd and luc datasets
 
 logical, intent(out) :: parallelrun ! set this to be true if model is run in parallel mode for 
- 				 ! multiple grid cells, output is limited to monthly & yearly 
- 				 ! grid-mean only. else the run is in stand alone mode, in which 
- 				 ! output includes half-hourly and daily and mosaic-mean as well.
+                            		! multiple grid cells, output is limited to monthly & yearly 
+                    				! grid-mean only. else the run is in stand alone mode, in which 
+                     				! output includes half-hourly and daily and mosaic-mean as well.
 
 logical, intent(out) :: dofire   ! if true the fire/disturbance subroutine will be used.
 
+logical, intent(out) :: dowetlands   ! if true the ch4wetland subroutine will be used.
+
+logical, intent(out) :: obswetf   ! if true the observed wetland fraction will be used.
+
 logical, intent(out) :: compete  ! set this to true if competition between pfts is
- 				 ! to be implimented
+                 				 ! to be implimented
 
 logical, intent(out) :: inibioclim  ! set this to true if competition between pfts is
- 				    ! to be implimented and you have the mean climate values
+                 				    ! to be implimented and you have the mean climate values
                                     ! in the ctm files.
 
 logical, intent(out) :: start_bare !set this to true if competition is true, and if you wish
@@ -101,11 +119,11 @@ logical, intent(out) :: start_bare !set this to true if competition is true, and
                                  ! zero)
 
 logical, intent(out) :: rsfile   ! set this to true if restart files (.ini_rs and .ctm_rs)   
- 				 ! are written at the end of each year. these files are  
- 				 ! necessary for checking whether the model reaches 
- 				 ! equilibrium after running for a certain years. 
- 				 ! set this to false if restart files are not needed 
- 				 ! (known how many years the model will run)
+                 				 ! are written at the end of each year. these files are  
+                 				 ! necessary for checking whether the model reaches 
+                 				 ! equilibrium after running for a certain years. 
+                 				 ! set this to false if restart files are not needed 
+                 				 ! (known how many years the model will run)
 logical, intent(out) :: start_from_rs ! if true, this option copies the _RS INI and CTM files
                                  ! to be the .INI and .CTM files and then starts the run as per normal.
                                  ! it is handy when spinning up so you don't have to do a complicated copying of the
@@ -185,6 +203,8 @@ integer, intent(out) :: jdendy    ! simulation year (iyear) to stop writing the 
 
 namelist /joboptions/ &
   mosaic,             &
+  transient_run,      &
+  trans_startyr,      &
   ctemloop,           &
   ctem_on,            &
   ncyear,             &
@@ -199,6 +219,8 @@ namelist /joboptions/ &
   popcycleyr,         &
   parallelrun,        &
   dofire,             &
+  dowetlands,         &
+  obswetf,            &
   compete,            &
   inibioclim,         &
   start_bare,         &
@@ -259,6 +281,53 @@ read(10,nml = joboptions)
 close(10)
 
 call getarg(2,argbuff)
+
+! ************************************
+! EXAMPLES:
+
+! To set up a transient run:
+
+! In the example below the model will run from 1851 - 2012 using a climate dataset that
+! spans 1901 - 2012. The LUC, POPD, CO2 files all span 1850 - 2012. The climate dataset will
+! cycle over 25 years of climate (NUMMETCYLYRS; from 1901 - 1925) twice (CTEMLOOP) for the 
+! period 1851 - 1900 while the CO2, POPD, and LUC all run from 1851 - 1900 in their respective
+! files (Each file will search for 1851 at the start so skipping 1850). Once 1901 is hit
+! the MET file no longer cycles and simply runs, like the other input files, until
+! it reaches its end (year 2012).
+
+! (only the relevant switches are shown below)
+! transient_run = .true.
+! trans_startyr = 1851
+! CTEMLOOP = 2 ,  <-- note this is set to the number of loops that NUMMETCYLYRS must make to match up with the other datasets.
+! NCYEAR = 112 ,
+! LNDUSEON = .TRUE. ,
+! CYCLEMET = .TRUE. ,  <-- note this is set to TRUE.
+! NUMMETCYLYRS = 25 ,  <-- note this times ctemloop should allow the datasets to match up (e.g. 1850 + 2*25 yrs ends in 1900)
+! METCYLYRST = 1901 ,
+! CO2ON = .TRUE. ,
+! POPDON = .TRUE. ,
+! OBSWETF = .false. ,
+
+! +++++++++++++++++++++++++++++++
+
+! To set up a spinup run:
+
+! This example runs the model over 125 years. The climate cycles from 1901 - 1925 five times. No LUC happens,
+! the POPD is set at the 1850 value read in from the POPD file and the CO2 concentration is fixed at SETCO2CONC.
+
+! (only the relevant switches are shown below)
+! transient_run = .false.
+! CTEMLOOP = 5 , 
+! NCYEAR = 112 ,  <-- Note this should be just be the length of the climate dataset but could be less if you want.
+! LNDUSEON = .false. ,
+! CYCLEMET = .TRUE. ,  <-- note this is set to TRUE.
+! NUMMETCYLYRS = 25 ,  <-- note this is however many years you want.
+! METCYLYRST = 1901 ,
+! CO2ON = .false. ,
+! SETCO2CONC = 285.00 , <-- set to your own appropriate value.
+! POPDON = .TRUE. , <-- note keep this on uses the POPD file, setting false uses the INI file value
+! POPCYCLEYR = 1850 ,
+! OBSWETF = .false. ,
 
 
 end subroutine read_from_job_options

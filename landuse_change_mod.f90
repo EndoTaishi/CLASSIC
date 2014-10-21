@@ -92,10 +92,6 @@ pftarrays=0.
 
         open(unit=15,file=lucdat(1:strlen(lucdat))//'.LUC')
 
-        read (15,*) 
-        read (15,*)
-        read (15,*)
-
 !       get first year of luc data
 !       note we load the nfcancmx, not pfcancmx array. this is because this
 !       nfcancmx value is passed to the pfcancmx array at the start of each simulation
@@ -125,7 +121,6 @@ pftarrays=0.
         do while ((cyclemet .and. lucyr .lt. cylucyr             &
           .and. cylucyr .ne. -9999) .or. (.not. cyclemet .and.  &
           lucyr .lt. iyear))
-
 !           get the luc data
             do i = 1, nltest
              if (.not. mosaic) then  !composite
@@ -333,7 +328,7 @@ real, dimension(nltest) :: bare_ground_frac
 
 !it is subsequent years so read in and adjust the luc file info.
 
-         do while (lucyr <= iyear) 
+         do while (lucyr < iyear) 
            do i = 1, nltest
             if (.not. mosaic) then  !composite
               read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)

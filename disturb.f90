@@ -279,7 +279,7 @@ real :: soilterm, duffterm              ! temporary variables
         arbn1day(i)=0.0         !area burned in 1 day, km^2
         areamult(i)=0.0         !multiplier to find area burned
         vegarea(i)=0.0          !total vegetated area in a grid cell
-        surface_duff_f(i)=0.0   !FLAG test 
+        surface_duff_f(i)=0.0   
 
 180   continue
 
@@ -361,7 +361,7 @@ real :: soilterm, duffterm              ! temporary variables
 !     First find the dryness factor for each soil layer.
 
 !     If there is snow on the ground, do not allow fire so set betadrgt to
-!     0 for all soil layers otherwise calculate as per normal.  FLAG JM Feb 14/14  
+!     0 for all soil layers otherwise calculate as per normal.  
       do i = il1, il2
         if (fsnow(i) .eq. 0.) then
           do j = 1, ignd
@@ -551,7 +551,7 @@ real :: soilterm, duffterm              ! temporary variables
 !         Original way from Arora & Boer 2005
 !          extnprob(i)=0.5 !ORIG
 !         Kloster et al. 2010 way:
-          extnprob(i)=max(0.0,0.9-exp(-0.025*popdin)) 
+          extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
           extnprob(i)=0.5+extnprob(i)/2.0
 
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
@@ -633,14 +633,14 @@ real :: soilterm, duffterm              ! temporary variables
             pgleafmass(i,j)=gleafmas(i,j)
 
             glfltrdt(i,j)= frltrglf(n) *gleafmas(i,j) *(burnveg(i,j) /pftareab(i,j)) 
-            blfltrdt(i,j)= frltrblf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
-            stemltdt(i,j)= frltrstm(n) *stemmass(i,j) *(burnveg(i,j) /pftareab(i,j))
-            rootltdt(i,j)= frltrrt(n)  *rootmass(i,j) *(burnveg(i,j) /pftareab(i,j))
-            glcaemls(i,j)= frco2glf(n) *gleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
-            blcaemls(i,j)= frco2blf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j))
-            stcaemls(i,j)= frco2stm(n) *stemmass(i,j) *(burnveg(i,j) /pftareab(i,j))
-            rtcaemls(i,j)= frco2rt(n)  *rootmass(i,j) *(burnveg(i,j) /pftareab(i,j))
-            ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j) *(burnveg(i,j) /pftareab(i,j))
+            blfltrdt(i,j)= frltrblf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j)) 
+            stemltdt(i,j)= frltrstm(n) *stemmass(i,j) *(burnveg(i,j) /pftareab(i,j)) 
+            rootltdt(i,j)= frltrrt(n)  *rootmass(i,j) *(burnveg(i,j) /pftareab(i,j)) 
+            glcaemls(i,j)= frco2glf(n) *gleafmas(i,j) *(burnveg(i,j) /pftareab(i,j)) 
+            blcaemls(i,j)= frco2blf(n) *bleafmas(i,j) *(burnveg(i,j) /pftareab(i,j)) 
+            stcaemls(i,j)= frco2stm(n) *stemmass(i,j) *(burnveg(i,j) /pftareab(i,j)) 
+            rtcaemls(i,j)= frco2rt(n)  *rootmass(i,j) *(burnveg(i,j) /pftareab(i,j)) 
+            ltrcemls(i,j)= frltrbrn(n) *litrmass(i,j) *(burnveg(i,j) /pftareab(i,j)) 
 
 !           Update the pools:
             gleafmas(i,j)=gleafmas(i,j) - glfltrdt(i,j) - glcaemls(i,j)
