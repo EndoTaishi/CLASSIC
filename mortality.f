@@ -144,18 +144,11 @@ c
         do 260 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
 
-!          if(do_age_mort)then
-
-!             if(maxage(n).gt.zero)then
-               intrmort(i,j)=1.0-exp(-4.605/maxage(n))
-!             else
-!               intrmort(i,j)=0.0
-!             endif
-
-!          else
-!            geremort(i,j)=0.0
-!            intrmort(i,j)=0.0
-!          end if
+           if(maxage(n).gt.zero)then
+              intrmort(i,j)=1.0-exp(-4.605/maxage(n))
+           else
+              intrmort(i,j)=0.0
+           endif
 
 c         convert (1/year) rate into (1/day) rate   
           intrmort(i,j)=intrmort(i,j)/365.0

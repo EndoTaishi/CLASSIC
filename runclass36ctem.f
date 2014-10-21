@@ -1221,6 +1221,9 @@ c     luc file is opened in initialize_luc subroutine
       if (popdon) then
         open(unit=13,file=argbuff(1:strlen(argbuff))//'.POPD',
      &       status='old')
+        read(13,*)  !Skip 3 lines of header
+        read(13,*) 
+        read(13,*)
       endif
       if (co2on) then
         open(unit=14,file=argbuff(1:strlen(argbuff))//'.CO2',
@@ -2535,6 +2538,7 @@ c  /--------------Rudra-------------/
               read(16,*) obswetyr,(wetfrac_mon(i,j),j=1,12)     
             end do
          end do
+         backspace(16)
        else
            do i=1,nltest
              do j = 1,12
@@ -2543,7 +2547,7 @@ c  /--------------Rudra-------------/
            enddo
          
        end if 
-      backspace(16)
+
 
 c    \---------------Rudra----------\
 
@@ -2837,7 +2841,7 @@ c  /------------------Rudra----------------/
                 read(16,*) obswetyr,(wetfrac_mon(i,j),j=1,12)                 
               enddo
           enddo
-
+         if (metcylyrst .ne. -9999) backspace(16) 
         else
            do i=1,nltest
              do j = 1,12
@@ -2846,12 +2850,12 @@ c  /------------------Rudra----------------/
            enddo
         endif !obswetf
        endif ! ctem_on 
-       if (metcylyrst .ne. -9999) backspace(16) 
+
 
 c  \------------------Rudra---------------\     
 
 
-	met_rewound = .false.
+      met_rewound = .false.
 
       endif
 
@@ -5791,7 +5795,8 @@ c    CH4(wetland) variables !Rudra
                ch4wet2_mo_g(i) = ch4wet2_mo_g(i)
      &                           +ch4wet2_mo_m(i,m)*farerow(i,m)
 
-               wetfdyn_mo_m(i,m)=wetfdyn_mo_m(i,m)*(1./monthdays(nt)) 
+               wetfdyn_mo_m(i,m)=wetfdyn_mo_m(i,m)*(1./
+     &                                      real(monthdays(nt))) 
 
                wetfdyn_mo_g(i) = wetfdyn_mo_g(i)
      &                           +wetfdyn_mo_m(i,m)*farerow(i,m)
@@ -6596,6 +6601,9 @@ c\----------------------Rudra---------------\
 
                if(popdon) then
                  rewind(13) !rewind popd file
+                 read(13,*) ! skip header (3 lines)
+                 read(13,*) ! skip header (3 lines)
+                 read(13,*) ! skip header (3 lines)                                  
                endif
                if(co2on) then
                  rewind(14) !rewind co2 file
@@ -6741,8 +6749,9 @@ c     close the input files too
       close(12)
       close(13)
       close(14)
-      close(16)  !*.WET
-           
+      if (obswetf) then
+        close(16)  !*.WET
+      end if     
       call exit
 C
 c         the 999 label below is hit when an input file reaches its end.       
@@ -6765,6 +6774,9 @@ c \------------Rudra---------------\
 
                if(popdon) then
                  rewind(13) !rewind popd file
+                 read(13,*) ! skip header (3 lines) 
+                 read(13,*) ! skip header 
+                 read(13,*) ! skip header 
                endif
                if(co2on) then
                  rewind(14) !rewind co2 file

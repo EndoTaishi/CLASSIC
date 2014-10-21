@@ -299,7 +299,7 @@ real :: stmhrspn                        ! Stem harvest span. same as crop harves
 ! wetland_methane.f90 parameters: ------------
 
 real :: ratioch4                        ! methane to carbon dioxide flux scaling factor.
-real :: wtdryres	                ! ratio of wetland to upland respiration 
+real :: wtdryres                        ! ratio of wetland to upland respiration 
 real :: factor2                         ! constant value for secondary (ch4wet2) methane emissions calculation
 real :: lat_thrshld1                    ! Northern zone for wetland determination (degrees North)
 real :: lat_thrshld2                    ! Boundary with southern zone for wetland determination (degrees North)
