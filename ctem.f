@@ -526,7 +526,7 @@ c     find area of the gcm grid cells. this is needed for land use change
 c     and disturbance subroutines
 
         do 50 i = il1, il2  !needed by disturb so taken out of if loop below (JM Aug 30 2013)
-          currlat(i)=radj(i)*180.0/pi                             
+          currlat(i)=radj(i)*180.0/pi                            
           curlatno(i)=0
 50     continue
 c

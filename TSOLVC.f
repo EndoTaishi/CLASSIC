@@ -21,7 +21,7 @@
      K                 THLIQ,FIELDSM,WILTSM,ISAND,IG,COSZS,PRESSG,
      L                 XDIFFUS,ICTEM,IC,CO2I1,CO2I2,
      M                 ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG)
+     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS)
 C
 C     * OCT 30/12 - V. ARORA  - CFLUXV WAS BEING INITIALIZED TO ZERO INAPPROPRIATELY
 C     *                         FOR MOSAIC RUNS. NOT A PROBLEM WITH COMPOSITE 
@@ -203,7 +203,7 @@ C
      6      FIELDSM(ILG,IG),       WILTSM(ILG,IG),      CFLUXV(ILG),
      7       CFLUXV_IN(ILG)
  
-      INTEGER ISAND(ILG,IG)
+      INTEGER ISAND(ILG,IG),    LFSTATUS(ILG,ICTEM)
 C
       INTEGER ICTEM, ICTEMMOD, L2MAX, NOL2PFTS(IC), IC, IG
 C
@@ -351,7 +351,8 @@ C             USE TA (THE SUB OCCURS IN PHTSYN). JM 11/09/12
      2                    TA,        RMATCTEM,   COSZS, XDIFFUS,   ILG,
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
      4               FIELDSM,WILTSM,  FCANCMX,   L2MAX,NOL2PFTS,
-     5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG)
+     5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG, 
+     6              LFSTATUS)  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
 C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.

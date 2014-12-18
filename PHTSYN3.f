@@ -4,7 +4,8 @@
      3                       IL1,    IL2,   IG,     ICC,   ISNOW, SLAI,
      4                   FIELDSM, WILTSM, FCANCMX,  L2MAX, NOL2PFTS,
 C    ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
-     5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG)
+     5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG,
+     6                      LFSTATUS)
 C     
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) 
 C                       PHOTOSYNTHESIS SUBROUTINE
@@ -195,7 +196,8 @@ C
      1            TEMP_Q2,         TEMP_JP,       BETA1,         BETA2,
      2            TEMP_AN
 C    
-      INTEGER  ISAND(ILG,IG),  SN(KK)
+      INTEGER  ISAND(ILG,IG),  SN(KK), LFSTATUS(ILG,ICC) !FLAG test LFSTATUS DEC 4 2014. JM.
+      real use_vmax !FLAG test LFSTATUS DEC 4 2014. JM.
 C
 C     FOR LIMITING CO2 UPTAKE
 C
@@ -787,7 +789,17 @@ C
 C         FIND Vmax,canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE
 C         LEAF MODEL
 C
-          VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
+          ! FLAG: test only done for one-leaf model!! JM Dec 4 2014.
+          if (lfstatus(i,m).eq.1 .and. (m .eq. 2 .or. m .eq. 4)) then
+            use_vmax = vmax(sort(m)) * 2.5
+          else if ((lfstatus(i,m).eq.2 .or. lfstatus(i,m).eq.3) .and.
+     &       (m .eq. 2 .or. m .eq. 4)) then
+            use_vmax = vmax(sort(m)) * 0.5            
+          else
+            use_vmax = vmax(sort(m))
+          end if
+          vmaxc(i,m)=use_vmax * fpar(i,m)    
+          !VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
           IF(LEAFOPT.EQ.2)THEN
              VMAXC_SUN(I,M) = VMAX(SORT(M)) * FPAR_SUN(I,M)
              VMAXC_SHA(I,M) = VMAX(SORT(M)) * FPAR_SHA(I,M)
