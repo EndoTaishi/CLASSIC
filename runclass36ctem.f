@@ -1614,8 +1614,8 @@ C
      &'   KgC/M2.D      KM^2    prob/d       prob/d       prob/d')
 7112  FORMAT(' DAY  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
      & CH4DYN2 ')
-7113  FORMAT('          CH4-C/M2.S    CH4-C/M2.S          CH4-C/M2.S 
-     & CH4-C/M2.S')
+7113  FORMAT('          umolCH4/M2.S    umolCH4/M2.S          umolCH4/M2.S 
+     & umolCH4/M2.S')
 
 C
         WRITE(711,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
@@ -1814,10 +1814,10 @@ C
      &'  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE',
      &' ANNLUCCO2  ANNLUCLTR ANNLUCSOC ABURNFRAC ANNBTERM ANNLTERM',
      &' ANNMTERM')
-6227  FORMAT('         gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  prob/yr ',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr    %     prob/yr  prob/yr',
+6227  FORMAT('         g/m2.yr',
+     &'  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr',
+     &'  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  prob/yr ',
+     &'  g/m2.yr  g/m2.yr  g/m2.yr    %     prob/yr  prob/yr',
      &'  prob/yr')
 6028  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ',
      &'RESULTS')
@@ -1838,12 +1838,12 @@ C
      
 6230  FORMAT('MONTH  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
      & CH4DYN2 ')
-6231  FORMAT('       CH4-C/M2.MON     CH4-C/M2.MON        CH4-C/M2.MON 
-     & CH4-C/M2.MON')
+6231  FORMAT('       gCH4/M2.MON     gCH4/M2.MON        gCH4/M2.MON 
+     & gCH4/M2.MON')
 6232  FORMAT('  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
      & CH4DYN2 ')
-6233  FORMAT('      CH4-C/M2.YR      CH4-C/M2.YR         CH4-C/M2.YR  
-     & CH4-C/M2.YR ')
+6233  FORMAT('      gCH4/M2.YR      gCH4/M2.YR         gCH4/M2.YR  
+     & gCH4/M2.YR ')
  
 C
 C     CTEM FILE TITLES DONE
@@ -5144,10 +5144,10 @@ c
            litresrow(i,m)  =litresrow(i,m)*1.0377   ! convert to gc/m2.day
            socresrow(i,m)  =socresrow(i,m)*1.0377   ! convert to gc/m2.day
 c
-           CH4WET1ROW(i,m) = CH4WET1ROW(i,m)*1.0377   !Rudra 
-           CH4WET2ROW(i,m) = CH4WET2ROW(i,m)*1.0377
-           CH4DYN1ROW(i,m) = CH4DYN1ROW(i,m)*1.0377
-           CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 
+           CH4WET1ROW(i,m) = CH4WET1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
+           CH4WET2ROW(i,m) = CH4WET2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
+           CH4DYN1ROW(i,m) = CH4DYN1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
+           CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
 c
 c          write daily ctem results
 c
