@@ -422,7 +422,7 @@ albnir = [ 19.0, 19.0, 0.00, &
 
 humicfac = [ 0.42, 0.42, 0.00, &
              0.53, 0.48, 0.48, &
-             0.42, 0.42, 0.00, &
+             0.10, 0.10, 0.00, &  !FLAG: Test Dec 22 2014 JM. Based on Vivek's test with the couple model these were too high (were 0.42)
              0.42, 0.42, 0.00 ]
 
 grescoef = [ 0.15, 0.15, 0.00, &
