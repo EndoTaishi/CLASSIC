@@ -197,7 +197,7 @@ real :: popdthrshld                     ! threshold of population density (peopl
 !      real :: ymin, ymax, slope
 
 real :: alpha_fire                      ! parameter alpha_fire and f0 used for estimating wind function for fire spread rate
-real :: f0                              ! Fire spread rate in the absence of wind
+real :: f0                              ! Fire spread rate in the absence of wind --- NOT USED IN CTEM v. 2
 real, dimension(kk) :: standreplace     ! pft prevalence for stand replacing fire events (based on resistance to fire damage, ie. cambial kill)(unitless)
 real, dimension(kk) :: maxsprd          ! max. fire spread rate, km/hr
 real, dimension(kk) :: frco2glf         ! fraction of green leaf biomass converted to gases due to combustion
@@ -440,7 +440,7 @@ reparea = 1000.0
 
 popdthrshld = 300.
 
-f0 = 0.05
+f0 = 0.05  !NOT USED IN CTEM v2
 
 bmasthrs_fire = [ 0.2, 1.0 ] 
 
