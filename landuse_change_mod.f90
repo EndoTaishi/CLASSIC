@@ -96,7 +96,7 @@ pftarrays=0.
         read(15,*)
         read(15,*)
         read(15,*)
-
+        
 !       get first year of luc data
 !       note we load the nfcancmx, not pfcancmx array. this is because this
 !       nfcancmx value is passed to the pfcancmx array at the start of each simulation
@@ -279,7 +279,7 @@ pftarrays=0.
 return
 
 999    continue
-  
+
 ! end of the luc file is reached. close and tell main program to exit
         close(15)
         reach_eof = .true.
