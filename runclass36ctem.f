@@ -6566,7 +6566,7 @@ c
             endif
 
             if (dowetlands) then     
-              write(101,"(5f9.5)")(wetfrac_sgrd(i,j),j=1,8)
+              write(101,"(8f9.5)")(wetfrac_sgrd(i,j),j=1,8)
             endif   
 
           enddo
