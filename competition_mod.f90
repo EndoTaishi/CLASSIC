@@ -22,7 +22,7 @@ subroutine  bioclim (   iday,        ta,   precip,   netrad, &
                          surmncur,  defmncur, srplscur,  defctcur, &
                            twarmm,    tcoldm,     gdd5,  aridity, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
-                           annpcp,  anpotevp, dry_season_length)    
+                           annpcp,  dry_season_length)    
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                Bioclimatic Parameters Estimation Subroutine 
@@ -96,7 +96,6 @@ real, dimension(nilg), intent(inout) :: defctmon  ! number of months in a year w
 real, dimension(nilg), intent(inout) :: anndefct  ! annual water deficit (mm) 
 real, dimension(nilg), intent(inout) :: annsrpls  ! annual water surplus (mm)
 real, dimension(nilg), intent(inout) :: annpcp    ! annual precipitation (mm)
-real, dimension(nilg), intent(inout) :: anpotevp  ! annual potential evaporation (mm) 
 real, dimension(nilg), intent(inout) :: dry_season_length ! annual maximum dry month length (months)
  
 ! local variables
@@ -260,7 +259,6 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
             annsrpls(i)=srpcuryr(i)
             anndefct(i)=dftcuryr(i)
             annpcp(i)=anpcpcur(i)
-            anpotevp(i)=anpecur(i)
             dry_season_length(i)=dry_season_length_curyr(i)    
             inibioclim=.true.
           else
@@ -273,7 +271,6 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
             annsrpls(i)=annsrpls(i)*factor + srpcuryr(i)*(1.0-factor)
             anndefct(i)=anndefct(i)*factor + dftcuryr(i)*(1.0-factor)
             annpcp(i)=annpcp(i)*factor + anpcpcur(i)*(1.0-factor)
-            anpotevp(i)=anpotevp(i)*factor + anpecur(i)*(1.0-factor)
             dry_season_length(i)=dry_season_length(i)*factor + dry_season_length_curyr(i)*(1.0-factor)   
           endif
 280     continue
@@ -295,7 +292,7 @@ subroutine  existence(  iday,       il1,      il2,      nilg, &
                              sort,  nol2pfts,                 &
                            twarmm,    tcoldm,     gdd5,  aridity, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
-                           annpcp,  anpotevp,pftexist,dry_season_length) 
+                           annpcp,pftexist,dry_season_length) 
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                          PFT Existence Subroutine 
@@ -357,7 +354,6 @@ real, dimension(nilg), intent(in) :: defctmon  ! number of months in a year with
 real, dimension(nilg), intent(in) :: anndefct  ! annual water deficit (mm) 
 real, dimension(nilg), intent(in) :: annsrpls  ! annual water surplus (mm)
 real, dimension(nilg), intent(in) :: annpcp    ! annual precipitation (mm)
-real, dimension(nilg), intent(in) :: anpotevp  ! annual potential evaporation (mm)
 real, dimension(nilg), intent(in) :: dry_season_length ! length of dry season (months)
 
 logical, dimension(nilg,icc), intent(out) :: pftexist(nilg,icc) !binary array indicating pfts exist (=1) or not (=0)

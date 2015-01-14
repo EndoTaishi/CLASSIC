@@ -464,7 +464,6 @@ c
        real, dimension(ilg) :: anndefct  ! annual water deficit (mm) 
        real, dimension(ilg) :: annsrpls  ! annual water surplus (mm)
        real, dimension(ilg) :: annpcp    ! annual precipitation (mm)
-       real, dimension(ilg) :: anpotevp  ! annual potential evaporation (mm)
        real, dimension(ilg) :: dry_season_length  ! length of dry season (months)
 c
        real lyglfmasgat(ilg,icc),   geremortgat(ilg,icc),
@@ -1975,7 +1974,7 @@ c           use in burntobare subroutine on the first timestep.
           read(11,*) twarmm(i), tcoldm(i), gdd5(i), aridity(i),
      1              srplsmon(i)
           read(11,*) defctmon(i), anndefct(i), annsrpls(i), 
-     1              annpcp(i), anpotevp(i), dry_season_length(i)
+     1              annpcp(i), dry_season_length(i)
          else if (compete .and. .not. inibioclim) then ! set them to zero
            twarmm(i)=0.0
            tcoldm(i)=0.0
@@ -1986,7 +1985,6 @@ c           use in burntobare subroutine on the first timestep.
            anndefct(i)=0.0
            annsrpls(i)=0.0
            annpcp(i)=0.0
-           anpotevp(i)=0.0
            dry_season_length(i) = 0.0
          endif
 
@@ -3588,7 +3586,7 @@ c    -------------- inputs used by ctem are above this line ---------
      &            geremortgat, intrmortgat,    lambdagat, lyglfmasgat,
      &            pftexistgat,      twarmm,       tcoldm,        gdd5,
      1                aridity,    srplsmon,     defctmon,    anndefct,
-     2               annsrpls,      annpcp,  anpotevp,dry_season_length,
+     2               annsrpls,      annpcp,  dry_season_length,
      &              burnvegfgat, pstemmassgat, pgleafmassgat,  
 c    -------------- inputs updated by ctem are above this line ------
      k                 nppgat,      nepgat, hetroresgat, autoresgat,
@@ -6558,8 +6556,8 @@ c
             if (compete) then
              write(101,"(5f8.2)")twarmm(i),tcoldm(i),gdd5(i),
      1                            aridity(i),srplsmon(i)
-             write(101,"(6f8.2)")defctmon(i),anndefct(i),annsrpls(i),
-     1                        annpcp(i),anpotevp(i),dry_season_length(i)
+             write(101,"(5f8.2)")defctmon(i),anndefct(i),annsrpls(i),
+     1                        annpcp(i),dry_season_length(i)
             endif
 
             if (dowetlands) then     
