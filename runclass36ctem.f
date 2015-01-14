@@ -7,9 +7,13 @@ C     * ECOSYSTEM MODEL.
 C
 C     REVISION HISTORY:
 C
+C     * JAN 14 2014
+C     * JOE MELTON : Harmonized the field capacity and wilting point calculations between CLASS and CTEM. 
+C                    took the code out of runclassctem and it is now fully done within CLASSB. Harmonized names too.
+C
 C     * JUN 2014
 C     * RUDRA SHRESTHA : ADD IN WETLAND CODE
-*
+C
 C     * JUL 2013   
 C     * JOE MELTON : REMOVED CTEM1 AND CTEM2 OPTIONS, REPLACED WITH CTEM_ON. INTRODUCE
 C                                  MODULES. RESTRUCTURE OUTPUTS AND CTEM VARIABLE DECLARATIONS
@@ -436,10 +440,10 @@ c
      3     uvaccrow_m(nlat,nmos),      vvaccrow_m(nlat,nmos)
         
 c     wilting and field capacities vars
-
-      real     fieldsm(ilg,ignd),     wiltsm(ilg,ignd)
-      real     psisat(ilg,ignd),      grksat(ilg,ignd)
-      real     thpor(ilg,ignd),       bterm(ilg,ignd)
+       ! FLAG these can be removed soon - as long as the PSIWLT limit gets decided between CLASS and CTEM - JM Jan 14 2015
+c      real     fieldsm(ilg,ignd),     wiltsm(ilg,ignd)
+c      real     psisat(ilg,ignd),      grksat(ilg,ignd)
+c      real     thpor(ilg,ignd),       bterm(ilg,ignd)
 
 c     Competition related variables
 
@@ -2756,22 +2760,23 @@ c    find the wilting point and field capacity for classt
 c    (it would be preferable to have this in a subroutine 
 c    rather than here. jm sep 06/12)
 c
-        do 119 i = 1,ilg
-         do 119 j = 1,ignd
+!       FLAG this can be removed once the wilting point matric pot limit is decided. JM Jan 14 2015.
+!        do 119 i = 1,ilg
+!         do 119 j = 1,ignd
 
-           psisat(i,j)= (10.0**(-0.0131*sandgat(i,j)+1.88))/100.0
-           grksat(i,j)= (10.0**(0.0153*sandgat(i,j)-0.884))*7.0556e-6
-           thpor(i,j) = (-0.126*sandgat(i,j)+48.9)/100.0
-           bterm(i,j)     = 0.159*claygat(i,j)+2.91
+!           psisat(i,j)= (10.0**(-0.0131*sandgat(i,j)+1.88))/100.0
+!           grksat(i,j)= (10.0**(0.0153*sandgat(i,j)-0.884))*7.0556e-6
+!           thpor(i,j) = (-0.126*sandgat(i,j)+48.9)/100.0
+!           bterm(i,j)     = 0.159*claygat(i,j)+2.91
 
-           wiltsm(i,j) = (150./psisat(i,j))**(-1.0/bterm(i,j))
-           wiltsm(i,j) = thpor(i,j) * wiltsm(i,j)
+!           wiltsm(i,j) = (150./psisat(i,j))**(-1.0/bterm(i,j))
+!           wiltsm(i,j) = thpor(i,j) * wiltsm(i,j)
 
-           fieldsm(i,j) = (1.157e-09/grksat(i,j))**
-     &      (1.0/(2.0*bterm(i,j)+3.0))
-           fieldsm(i,j) = thpor(i,j) *  fieldsm(i,j)
+!           fieldsm(i,j) = (1.157e-09/grksat(i,j))**
+!     &      (1.0/(2.0*bterm(i,j)+3.0))
+!           fieldsm(i,j) = thpor(i,j) *  fieldsm(i,j)
 
-119    continue
+!119    continue
 c
       call ctems1(gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,
      1      fcancmxrow,zbtwrow,dlzwrow,sdeprow,ailcgrow,ailcbrow,
@@ -3306,7 +3311,7 @@ C
      P  CO2I1CSGAT,CO2I2CGGAT,CO2I2CSGAT,CSZGAT,XDIFFUSGAT,SLAIGAT,ICC,
      Q  ICTEMMOD,RMATCTEMGAT,FCANCMXGAT,L2MAX,  NOL2PFTS,CFLUXCGGAT,
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
-     S  FIELDSM,WILTSM,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,   
+     S  PSIWGAT,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,   
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI) 
 C
 C-----------------------------------------------------------------------

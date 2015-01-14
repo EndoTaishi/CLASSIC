@@ -200,8 +200,12 @@ C
      1                (PSISAT(I,M,J)*BI(I,M,J)/SDEPTH(I,M))**
      2                (1.0/BI(I,M,J))
               ENDIF
-              PSIWLT(I,M,J)=PSISAT(I,M,J)*(MAX(0.5*THFC(I,M,J),
-     1            THLMIN(I,M,J))/THPOR(I,M,J))**(-BI(I,M,J))
+              ! FLAG: testing code. Using the CTEM version, not the CLASS one. JM Jan 14 2015
+!              PSIWLT(I,M,J)=PSISAT(I,M,J)*(MAX(0.5*THFC(I,M,J),
+!     1            THLMIN(I,M,J))/THPOR(I,M,J))**(-BI(I,M,J))
+              PSIWLT(I,M,J)=(150./PSISAT(I,M,J))**(-1.0/BI(I,M,J))
+     1                      * THPOR(I,M,J)
+     
           ENDIF
 300   CONTINUE
 C

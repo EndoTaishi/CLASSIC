@@ -1385,6 +1385,11 @@ c
      4                       sort,    nol2pfts,  fcancmx,
      5                     afrleaf,  afrstem,  afrroot,    wiltsm,
      6                     fieldsm, wtstatus, ltstatus)
+     
+!     Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the
+!     CLASS part of the model. They are recalculated here in CTEM to avoid passing them through the
+!     coupler in the coupled model. The CTEM calculated versions of fieldsm and wiltsm are also used
+!     in disturb and phenolgy. JM. Jan 14 2015.     
 c  
 c     Estimate fraction of npp that is to be used for horizontal
 c     expansion (lambda) during the next day (i.e. this will be determining
