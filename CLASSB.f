@@ -210,7 +210,7 @@ C
               !FLAG JM Jan 15 2015 
 !              PSIWLT(I,M,J)=PSISAT(I,M,J)*(MAX(0.5*THFC(I,M,J),
 !     1            THLMIN(I,M,J))/THPOR(I,M,J))**(-BI(I,M,J))
-              PSIWLT(I,M,J)=0.0
+              PSIWLT(I,M,J)=150.0
               THLW(I,M,J)=(PSIWLT(I,M,J)/PSISAT(I,M,J))**(-1./BI(I,M,J))
      1                      * THPOR(I,M,J)
      
