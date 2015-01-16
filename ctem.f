@@ -5,7 +5,7 @@
      6                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,    
      7                       zbotw,   thliqc,   thliqg,    deltat,
      8                       uwind,    vwind,  lightng,  prbfrhuc, 
-     9                    extnprob,   stdaln,     tbar,    
+     9                    extnprob,   stdaln,     tbar,    popdon, 
      a                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,
      b                      thicec, soildpth, spinfast,   todfrac,
      &                     compete,   netrad,   precip,   
@@ -509,6 +509,9 @@ c
       integer   surmncur(ilg),       defmncur(ilg)
 c
       logical compete, inibioclim, pftexist(ilg,icc)
+      logical, intent(inout) :: popdon   ! if set true use population density data to calculate fire extinguishing 
+                 				         ! probability and probability of fire due to human causes, 
+                 				         ! or if false, read directly from .ctm file
 C 
       real      wetfrac(ilg),        ch4wet1(ilg),        ch4wet2(ilg)
       real    wetfrac_s(ilg,8),        wetfdyn(ilg)
@@ -1777,7 +1780,7 @@ c
             call disturb (stemmass, rootmass, gleafmas, bleafmas,
      1                      thliqc,   wiltsm,  fieldsm,    uwind,
      2                       vwind,  lightng,  fcancmx, litrmass,
-     3                    prbfrhuc, rmatctem, extnprob, 
+     3                    prbfrhuc, rmatctem, extnprob, popdon,
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,   thicec,   popdin, lucemcom,
      7                      dofire,  currlat,     iday, fsnow,

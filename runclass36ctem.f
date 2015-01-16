@@ -3,7 +3,7 @@ C
 C     * SHELL PROGRAM TO RUN "CLASS" ("CANADIAN LAND SURFACE SCHEME")
 C     * VERSION 3.6 IN STAND-ALONE MODE USING SPECIFIED BOUNDARY 
 C     * CONDITIONS AND ATMOSPHERIC FORCING, COUPLED TO CTEM (CANADIAN TERRESTRIAL 
-C     * ECOSYSTEM MODEL.
+C     * ECOSYSTEM MODEL).
 C
 C     REVISION HISTORY:
 C
@@ -39,6 +39,7 @@ C     * SEPT 8, 2009
 C     * RONG LI AND VIVEK ARORA: COUPLED CLASS3.4 AND CTEM
 C
 C=======================================================================
+
 C     * DIMENSION STATEMENTS.
 
 C     * FIRST SET OF DEFINITIONS:
@@ -64,7 +65,8 @@ C     * DIMENSION ELEMENT IN THE "GAT" VARIABLES IS GIVEN BY
 C     * THE PRODUCT OF THE FIRST TWO DIMENSION ELEMENTS IN THE
 C     * "ROW" VARIABLES.
 
-c     use statements for modules:
+C     The majority of CTEM parameters are stored in ctem_params.f90. We access them 
+c     through use statements for modules:
       use ctem_params,        only : initpftpars, nlat, nmos, ilg, nmon, 
      1                               ican, ignd,icp1, icc, iccp1, 
      2                               monthend, mmday,modelpft, l2max,
@@ -424,7 +426,7 @@ c
      8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2),
      9           obswetyr, cywetldyr, trans_startyr  
 c
-       real      rlim,        fsstar_g,
+       real      fsstar_g,
      1           flstar_g,  qh_g,    qe_g,        snomlt_g,
      2           beg_g,     gtout_g, tpn_g,       altot_g,
      3           tcn_g,     tsn_g,   zsn_g       
@@ -439,12 +441,6 @@ c
      2     tcanoaccrow_m(nlat,nmos),   lightng(ilg),
      3     uvaccrow_m(nlat,nmos),      vvaccrow_m(nlat,nmos)
         
-c     wilting and field capacities vars
-       ! FLAG these can be removed soon - as long as the PSIWLT limit gets decided between CLASS and CTEM - JM Jan 14 2015
-c      real     fieldsm(ilg,ignd),     wiltsm(ilg,ignd)
-c      real     psisat(ilg,ignd),      grksat(ilg,ignd)
-c      real     thpor(ilg,ignd),       bterm(ilg,ignd)
-
 c     Competition related variables
 
        real fsinacc_gat(ilg), flutacc_gat(ilg), flinacc_gat(ilg),
@@ -962,8 +958,6 @@ C
           HMFNACC_M(I,M)=0.
           ROFACC_M(I,M)=0.
           SNOACC_M(I,M)=0.
-C         CANARE(I,M)=0.
-C         SNOARE(I,M)=0.
           OVRACC_M(I,M)=0.
           WTBLACC_M(I,M)=0.
               DO J=1,IGND
@@ -1148,8 +1142,6 @@ c
         enddo
 
 11     continue
-c
-      rlim                = abszero
 c
 c     do some initializations for the reading in of data from files. these
 c     initializations primarily affect how the model does a spinup or transient
@@ -2947,9 +2939,9 @@ c
 c      if popdon=true
 c      calculate fire extinguishing probability and 
 c      probability of fire due to human causes
-c      from population density input data
-c      overwrite extnprobgrd(i) and prbfrhucgrd(i) 
-c      read from .ctm file
+c      from population density input data. In disturb.f90 this will
+c      overwrite extnprobgrd(i) and prbfrhucgrd(i) that are
+c      read in from the .ctm file. Set
 c      cypopyr = -9999 when we don't want to cycle over the popd data
 c      so this allows us to grab a new value each year.
 
@@ -3570,7 +3562,7 @@ c
      6             ancsvgac_m,  ancgvgac_m, rmlcsvga_m, rmlcgvga_m,
      7                zbtwgat, thliqcacc_m,thliqgacc_m,     deltat,
      8             uvaccgat_m,  vvaccgat_m,    lightng,prbfrhucgat,
-     9            extnprobgat,   stdalngat,tbaraccgat_m,   
+     9            extnprobgat,   stdalngat,tbaraccgat_m,  popdon, 
      a               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,
      b            thicecacc_m,     sdepgat,    spinfast,   todfrac,  
      &                compete,  netrad_gat,  preacc_gat,  

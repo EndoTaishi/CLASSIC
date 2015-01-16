@@ -17,7 +17,7 @@ contains
 subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
                             thliq,   wiltsm,  fieldsm,    uwind, &
                             vwind,  lightng,  fcancmx, litrmass, &    
-                         prbfrhuc, rmatctem, extnprob, &
+                         prbfrhuc, rmatctem, extnprob, popdon,   &
                               il1,      il2,     sort, nol2pfts, &
                          grclarea,    thice,   popdin, lucemcom, &
                            dofire,   currlat,   iday,  fsnow,    &
@@ -196,6 +196,9 @@ real ::  biomass(ilg,icc),        bterm(ilg), drgtstrs(ilg,icc), &
             burnveg(ilg,icc),      vegarea(ilg),     grclarea(ilg),    &
                      tot_emit,      tot_emit_dom,     burnvegf(ilg,icc)   
 
+logical, intent(in) :: popdon   ! if set true use population density data to calculate fire extinguishing 
+                 				 ! probability and probability of fire due to human causes, 
+                 				 ! or if false, read directly from .ctm file
 real :: hb_interm, hbratio(ilg)
 !real, save, dimension(ilg) :: cumulative_burnedf  ! Not used. JM Jun 2014
 !real, save, dimension(ilg,10) :: dryspell         ! Not used. JM Jun 2014
@@ -465,7 +468,9 @@ real :: soilterm, duffterm              ! temporary variables
 !       this is based upon the population density from the .popd
 !       read-in file
 
-        prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !From Kloster et al. (2010)
+        if (.not. popdon) then
+            prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !From Kloster et al. (2010)
+        end if
 
         lterm(i)=max(0.0, min(1.0, temp+(1.0-temp)*prbfrhuc(i) ))
 
@@ -486,7 +491,7 @@ real :: soilterm, duffterm              ! temporary variables
 !     by the fire, else do nothing.
 
       do 430 i = il1, il2
-        if(fire(i))then
+        if (fire(i)) then
 
 !         Find spread rate as a function of wind speed and soil moisture in the
 !         root zone (as found above) which we use as a surrogate for moisture
@@ -550,10 +555,13 @@ real :: soilterm, duffterm              ! temporary variables
 
 !         Original way from Arora & Boer 2005
 !          extnprob(i)=0.5 !ORIG
-!         Kloster et al. 2010 way:
-          extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
-          extnprob(i)=0.5+extnprob(i)/2.0
 
+!         Kloster et al. 2010 way:
+          if (.not. popdon) then
+            extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
+            extnprob(i)=0.5+extnprob(i)/2.0
+          end if
+          
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
 
 !         area burned, km^2
