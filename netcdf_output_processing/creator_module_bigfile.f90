@@ -19,6 +19,7 @@ integer, parameter :: nl = 3		! number of soil layers
 !integer, parameter :: cnty = 48		! number of latitudes T47
 integer, parameter :: cntx = 128		! number of longitudes T47
 integer, parameter :: cnty = 64	    	! number of latitudes T47
+integer, parameter :: num_land_cells = 1958 ! number of grid cells run by the model
 
 real :: fill_value = 1.e38         !value given for empty fields in the NetCDF output files
 

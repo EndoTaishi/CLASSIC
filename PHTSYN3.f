@@ -789,14 +789,13 @@ C
 C         FIND Vmax,canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE
 C         LEAF MODEL
 C
-          ! FLAG: test only done for one-leaf model!! JM Dec 4 2014.
+          ! FLAG: test only done for one-leaf model!! JM Dec 4 2014./ Jan 21 2015.
           if (lfstatus(i,m).eq.1 .and. (m .eq. 2 .or. m .eq. 4)) then
-            use_vmax = vmax(sort(m)) * 2.5
-          else if ((lfstatus(i,m).eq.2 .or. lfstatus(i,m).eq.3) .and.
-     &       (m .eq. 2 .or. m .eq. 4)) then
+            use_vmax = vmax(sort(m)) * 2.0
+          else if ((lfstatus(i,m).eq.3).and.(m.eq. 2 .or. m .eq. 4))then  !leaf fall
             use_vmax = vmax(sort(m)) * 0.5            
           else
-            use_vmax = vmax(sort(m))
+            use_vmax = vmax(sort(m)) !normal growth
           end if
           vmaxc(i,m)=use_vmax * fpar(i,m)    
           !VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)

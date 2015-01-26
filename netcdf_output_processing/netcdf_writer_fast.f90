@@ -1,4 +1,4 @@
-program netcdf_writer_bf
+program netcdf_writer_fast
 
 !Program to write CLASS and CTEM output variables to NETCDF files
 
@@ -45,7 +45,7 @@ real, allocatable, dimension(:,:) :: class_a
 integer :: y,dummy_year,dummy_month
 real :: dummy_var
 integer, dimension(1) :: lyear
-integer :: i,m,xlon,ylat,yrst,h,l
+integer :: i,m,xlon,ylat,yrst,h,l,cell
 integer :: totyrs
 integer :: monyrs
 integer :: yrin
@@ -62,7 +62,9 @@ character(120) :: long_path
 character(120) :: jobfile
 character(512) :: command
 character(160) :: infile
+character(160) :: cellsfile
 character(4) :: dummy
+character(6) :: lon_in, lat_in
 logical :: CTEM
 logical :: MAKEMONTHLY
 logical :: DOFIRE
@@ -98,16 +100,11 @@ namelist /joboptions/ &
   file_to_write                
 !----
 
-!read the file coordinates
+tic=char(39)
 
- call getarg(1,ARGBUFF)
-
- call parsecoords(ARGBUFF,bounds)
-
-! get the coordinates
- xlon=bounds(1)
- ylat=bounds(3)
-
+! Open the grid cells file
+ call getarg(1,cellsfile)
+ 
  call getarg(2,jobfile)
 
  open(10,file=jobfile,status='old')
@@ -116,145 +113,13 @@ namelist /joboptions/ &
 
  close(10)
 
-folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
-
-! open the input files
-        OPEN(83,FILE=trim(folder)//trim(ARGBUFF)//'.OF1Y_G',status='old',form='formatted') ! YEARLY OUTPUT FOR CLASS
-       if (CTEM) then
-        if (COMPETE_LNDUSE) then
-         OPEN(92,FILE=trim(folder)//trim(ARGBUFF)//'.CT07Y_GM',status='old',form='formatted') ! YEARLY PFR FRAC OUTPUT FOR CTEM
-        end if
-        if (DOWETLANDS) then  
-         OPEN(900,FILE=trim(folder)//trim(ARGBUFF)//'.CT08Y_G',status='old',form='formatted') ! YEARLY CTEM wetlands Ch4 emission
-        endif
-       END IF
-
-! Trim the monthly input files so we keep only monyrs (for speed of writing):
-      if (MAKEMONTHLY) then
-        tailyrs=int(realyrst+totyrs-monyrs)
-        fmt = '(I4)' ! an integer of width 4
-        write (x1,fmt) tailyrs ! converting integer to string using a 'internal file'
-        infile=trim(folder)//trim(ARGBUFF)//'.OF1M_G' 
-
-        command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp_m_cls1.dat'
-        call system(command)
-        OPEN(81,FILE='tmp_m_cls1.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CLASS
-
-        infile=trim(folder)//trim(ARGBUFF)//'.OF2M_G'
-        command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp_m_cls2.dat'
-
-        call system(command)
-        OPEN(82,FILE='tmp_m_cls2.dat',status='old',form='formatted')
-
-       if (CTEM) then
-        if (COMPETE_LNDUSE) then
-         infile=trim(folder)//trim(ARGBUFF)//'.CT07M_GM'
-          command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp_m_ctm7.dat'
-
-         call system(command)
-         OPEN(91,FILE='tmp_m_ctm7.dat',status='old',form='formatted') ! MONTHLY PFT FRAC OUTPUT FOR CTEM
-        end if
-        if (DOWETLANDS) then  
-         infile=trim(folder)//trim(ARGBUFF)//'.CT08M_G'
-         command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp_m_ctm8.dat'
-
-         call system(command)
-         OPEN(910,FILE='tmp_m_ctm8.dat',status='old',form='formatted') ! MONTHLY CTEM wetlands 
-        end if
-      end if !ctem
-    end if !monthly
 
 
-! Prepare the composite/mosaic CTEM files for read-in. These files have a value per PFT for 
-! each variable (plus one for the bare fraction) and then one for the grid
-! cell average across all fractions (GRDAV). It seems to be easiest for the 
-! netcdf creation to create separate files for the grid-averaged values.
-! Do this using sed.
+!********************************************************************
+! First do all of the annual writes:
 
-  ! Annual CTEM
-  if (MOSAIC) then
-  infile=trim(folder)//trim(ARGBUFF)//'.CT01Y_M'
-  else
-  infile=trim(folder)//trim(ARGBUFF)//'.CT01Y_G'
-  end if
-
-  tic=char(39)
-
-  command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a.dat'
-  call system(command)
-  OPEN(75,FILE='tmp_a.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
-
-   ! Make a file of the PFT info, removing the grdav.
-
-   command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_a_p.dat'
-   call system(command)
-   OPEN(751,FILE='tmp_a_p.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
-
-  if (MAKEMONTHLY) then
-     ! Monthly CTEM
-     if (MOSAIC) then
-       infile=trim(folder)//trim(ARGBUFF)//'.CT01M_M'
-     else
-       infile=trim(folder)//trim(ARGBUFF)//'.CT01M_G'
-     end if
-
-     ! Trim the unwanted years
-     command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp.dat'
-
-     call system(command)
-     infile='tmp.dat'
-     command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m.dat'
-     call system(command)
-
-     ! Open the newly trimmed file
-     OPEN(74,FILE='tmp_m.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
-
-   ! Make a file of the PFT info, removing the grdav.
-     command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p.dat'
-     call system(command)
-  
-   ! Open the newly trimmed file
-     OPEN(741,FILE='tmp_m_p.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
-
-  end if !monthly
-
-  if (DOFIRE) then
-    if (MOSAIC) then
-    infile=trim(folder)//trim(ARGBUFF)//'.CT06Y_M'
-    else
-    infile=trim(folder)//trim(ARGBUFF)//'.CT06Y_G'
-    end if
-
-     command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_d.dat'
-     call system(command)
-     OPEN(85,FILE='tmp_a_d.dat',status='old',form='formatted') 
-
-     command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_a_p_d.dat'
-     call system(command)
-     OPEN(851,FILE='tmp_a_p_d.dat',status='old',form='formatted')
-
-    if (MAKEMONTHLY) then
-
-      if (MOSAIC) then
-        infile=trim(folder)//trim(ARGBUFF)//'.CT06M_M'
-      else
-        infile=trim(folder)//trim(ARGBUFF)//'.CT06M_G'
-      end if
-
-     ! Trim the unwanted years
-     command='awk "/    1 '//trim(x1)//'/,EOF" '//trim(infile)//' >  tmp.dat'
-     call system(command)
-     infile='tmp.dat'
-     command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m_d.dat'
-     call system(command)
-     OPEN(84,FILE='tmp_m_d.dat',status='old',form='formatted') 
-
-     command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p_d.dat'
-     call system(command)
-     OPEN(841,FILE='tmp_m_p_d.dat',status='old',form='formatted') 
-
-   endif !monthly
- end if !dofire
+! open the list of coordinates
+ open(1,FILE=cellsfile,status='old')
 
 ! Open the netcdf file for writing
 ! Annual:
@@ -262,104 +127,35 @@ file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_A.nc'
 status = nf90_open(file_to_write_extended,nf90_write,ncid)
 if (status /= nf90_noerr) call handle_err(status)
 
-! Monthly file:
-if (MAKEMONTHLY) then
-file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_M.nc'
-status = nf90_open(file_to_write_extended,nf90_write,ncid_m)
-if (status /= nf90_noerr) call handle_err(status)
-endif
 
-!=====================CLASS_MONTHLY files============================
+do cell = 1,num_land_cells
 
-if (MAKEMONTHLY) then
+    read(1,*)lon_in,lat_in
+    ARGBUFF = trim(lon_in)//'_'//trim(lat_in)
+    call parsecoords(ARGBUFF,bounds)
+    folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
 
-if (.NOT. net4) then
-   grpid=ncid_m
-end if
+    ! get the coordinates
+    xlon=bounds(1)
+    ylat=bounds(3)
 
-! Do OF1M_G first
-if (net4) then
-  status = nf90_inq_ncid(ncid_m,'CLASS-Monthly',grpid) 
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+!==CLASS ANNUAL =====================================================
 
-!Allocate Arrays
-allocate(class_m(numclasvars_m,monyrs,12))
-
-! Read in the ascii file
-   do y = 1,monyrs
-    do m=1,12
-     read(81,*)dummy_month,dummy_year,class_m(1:numclasvars_m,y,m)
-    end do
-   end do
-
-    close(81)
-
-! Write the inputs to the netcdf
-do m=1,12  !Begin Month Loop
-  do v = 1,numclasvars_m
-
-   status = nf90_inq_varid(grpid,trim(CLASS_M_VAR(v)), var_id)
-   if (status/=nf90_noerr) call handle_err(status)
-
-   status = nf90_put_var(grpid,var_id,class_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,monyrs])
-   if (status/=nf90_noerr) call handle_err(status)
-
-  end do !Var loop
-end do   !End month loop
-
-! deallocate arrays
-deallocate(class_m)
-
-!=======================================================================
-! Do OF2M_G
-
-        !Allocate Arrays
-        allocate(class_s_m(nclassoilvars_m,nl,monyrs,12))
-
-   do y = 1,monyrs
-    do m=1,12
-     read(82,*)dummy_month,dummy_year,class_s_m(1,1,y,m),class_s_m(2,1,y,m),class_s_m(3,1,y,m),class_s_m(1,2,y,m),class_s_m(2,2,y,m),class_s_m(3,2,y,m),class_s_m(1,3,y,m),class_s_m(2,3,y,m),class_s_m(3,3,y,m)
-    end do
-   end do
-
-    close(82)
-
-!----
-! Write to netcdf file
-do m=1,12   !begin month loop
- do l=1,nl   ! begin soil layer loop
-  do v = 1,nclassoilvars_m ! begin vars loop
-
-   status = nf90_inq_varid(grpid,trim(CLASS_M_S_VAR(v)), var_id)
-   if (status/=nf90_noerr) call handle_err(status)
-
-   status = nf90_put_var(grpid,var_id,class_s_m(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,monyrs])
-   if (status/=nf90_noerr) call handle_err(status)
-
-  end do ! vars loop
- end do ! soil layer loop
-end do  !End Month Loop
-
-! deallocate arrays
-deallocate(class_s_m)
-
-end if ! makemonthly
-
-!===========================CLASS ANNUAL =========================================
-! Do OF1Y_G 
+! OF1Y_G 
 
 if (.NOT. net4) then
    grpid=ncid
 end if
+
+OPEN(83,FILE=trim(folder)//trim(ARGBUFF)//'.OF1Y_G',status='old',form='formatted') ! YEARLY OUTPUT FOR CLASS
 
 !  first throw out header
    do h = 1,5
 	read(83,*)
    end do
 
-        !Allocate arrays
-        allocate(class_a(numclasvars_a,totyrs))
+!Allocate arrays
+allocate(class_a(numclasvars_a,totyrs))
 
    do y = 1,totyrs
     
@@ -367,7 +163,7 @@ end if
 
    end do
 
-    close(83)
+ close(83)
 
 ! Find the group id of annual Class
 if (net4) then
@@ -388,7 +184,7 @@ end do ! vars loop
 ! deallocate arrays
 deallocate(class_a)
 
-!============================CTEM COMPETITION ANNUAL FILES===============================
+!===CTEM COMPETITION ANNUAL FILES======================================================
 
 IF (CTEM) THEN
 
@@ -400,6 +196,8 @@ allocate(pftexist(ctemnpft,totyrs))
 allocate(tmpa(ctemnpft,totyrs))
 allocate(pftf(ctemnpft,totyrs))
 allocate(pft_tot(totyrs))
+
+OPEN(92,FILE=trim(folder)//trim(ARGBUFF)//'.CT07Y_GM',status='old',form='formatted') ! YEARLY PFR FRAC OUTPUT FOR CTEM
 
    do h = 1,6
 	read(92,*)
@@ -455,64 +253,38 @@ deallocate(pft_tot)
 deallocate(pftexist)
 deallocate(tmpa)
 
-end if
+end if  !compete/landuse
 
-!============================CTEM Grid Average ANNUAL FILES=========================================\
+!====CTEM Grid Average ANNUAL FILES=========================================
 
 ! Allocate the arrays in preparation for CT01Y_G, CT06Y_G, CT01Y_GM
 
 !allocate the size of the arrays for the output data
 allocate(ctem_a(numctemvars_a,totyrs))
 
-if (DOFIRE) then
- allocate(ctem_d_a(nctemdistvars_a,totyrs))
-end if
+  ! Annual CTEM
+  if (MOSAIC) then
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01Y_M'
+  else
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01Y_G'
+  end if
 
-if (DOWETLANDS) then  
-  allocate(ctem_w_a(nctemwetvars_a,totyrs))
-  !  first throw out header
-      do h = 1,6
-        read(900,*)
-      end do
-
-end if 
-
-! Read in from the ascii file
+  command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a.dat'
+  call system(command)
+  OPEN(75,FILE='tmp_a.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
 
   do y = 1,totyrs
-
      read(75,*)dummy_year,ctem_a(1:numctemvars_a,y)
-
-    if (DOFIRE) then
-
-     read(85,*)dummy_year,ctem_d_a(1:nctemdistvars_a,y) 
-
-    endif
-
-    if (DOWETLANDS) then    
-      read(900,*) dummy_year,ctem_w_a(1:nctemwetvars_a,y)
-    end if 
-
-   end do
-
-    close(75)
-    if (DOFIRE) then
-        close(85)
-    endif
+  end do
+  
+  close(75)
     
-    if (DOWETLANDS) then
-       close(900)
-    end if 
+  if (net4) then
+    status = nf90_inq_ncid(ncid,'CTEM-Annual GridAvg', grpid)
+    if (status /= nf90_noerr) call handle_err(status)
+  end if
 
-!----
-! ANNUAL 
-
-if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Annual GridAvg', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
-
- do v = 1,numctemvars_a ! begin vars loop
+  do v = 1,numctemvars_a ! begin vars loop
 
    status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR_GA(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
@@ -520,11 +292,33 @@ end if
    status = nf90_put_var(grpid,var_id,ctem_a(v,:),start=[xlon,ylat,yrst],count=[1,1,totyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
- end do ! vars loop
+  end do ! vars loop
 
+! deallocate arrays
+deallocate(ctem_a)
 
- if (DOFIRE) then
+! -----Fire --------------
 
+if (DOFIRE) then
+
+  allocate(ctem_d_a(nctemdistvars_a,totyrs))
+  
+    if (MOSAIC) then
+     infile=trim(folder)//trim(ARGBUFF)//'.CT06Y_M'
+    else
+     infile=trim(folder)//trim(ARGBUFF)//'.CT06Y_G'
+    end if
+
+     command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_d.dat'
+     call system(command)
+     OPEN(85,FILE='tmp_a_d.dat',status='old',form='formatted') 
+
+  do y = 1,totyrs
+     read(85,*)dummy_year,ctem_d_a(1:nctemdistvars_a,y)
+  end do      
+  
+  close(85)
+  
    if (net4) then
     status = nf90_inq_ncid(ncid,'Annual-Disturbance GridAvg', grpid)
     if (status /= nf90_noerr) call handle_err(status)
@@ -540,14 +334,31 @@ end if
 
   end do ! vars loop
 
- end if !dofire
+ deallocate(ctem_d_a)
+ 
+endif ! if fire.
 
- if (DOWETLANDS) then
+! -----Wetlands --------------
+if (DOWETLANDS) then 
 
+  allocate(ctem_w_a(nctemwetvars_a,totyrs))
+  OPEN(900,FILE=trim(folder)//trim(ARGBUFF)//'.CT08Y_G',status='old',form='formatted') ! YEARLY CTEM wetlands CH4 emission
+         
+  !  first throw out header
+      do h = 1,6
+        read(900,*)
+      end do
+  do y = 1,totyrs   
+      read(900,*) dummy_year,ctem_w_a(1:nctemwetvars_a,y)
+  end do    
+
+  close(900)
+  
    if (net4) then
     status = nf90_inq_ncid(ncid,'Annual-Methane flux GridAvg', grpid)
     if (status /= nf90_noerr) call handle_err(status)
    end if
+   
   do v = 1,nctemwetvars_a ! begin vars loop
 
     status = nf90_inq_varid(grpid,trim(CTEM_Y_W_VAR(v)), var_id)
@@ -558,19 +369,9 @@ end if
 
   end do ! vars loop
 
- end if !dowetlands
-
-
-! deallocate arrays
-deallocate(ctem_a)
-
-if (DOFIRE) then
- deallocate(ctem_d_a)
-endif
-
-if (DOWETLANDS) then  
   deallocate(ctem_w_a)
-end if 
+  
+end if  !if wetlands. 
 
 !now per PFT/Tile MODE ====================================================
 
@@ -579,19 +380,22 @@ end if
 ! Allocate the size of the arrays for the output data
 allocate(ctem_a_mos(numctemvars_a,ntile,totyrs))
 
-if (DOFIRE) then
- allocate(ctem_d_a_mos(nctemdistvars_a,ntile,totyrs))
- allocate(tmpd(nctemdistvars_a))
-end if
-
 ! Read in from the ascii file
+
+  if (MOSAIC) then
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01Y_M'
+  else
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01Y_G'
+  end if
+
+   ! Make a file of the PFT info, removing the grdav.
+   command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_a_p.dat'
+   call system(command)
+   OPEN(751,FILE='tmp_a_p.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
 
 !  first throw out header
    do h = 1,6
         read(751,*)
-    if (DOFIRE) then 
-	read(851,*)
-    endif
    end do
 
   allocate(tmp(numctemvars_a))
@@ -620,40 +424,10 @@ end if
 
 90     continue
     
-      if (DOFIRE) then
-         yrin=realyrst
-       do y = 1,totyrs
-        yr_now = realyrst + y - 1
-        do while (yrin == yr_now)
-
-          read(851,*,end=91) yrin,tmpd(1:nctemdistvars_a),dummy,dummynum,dummy,tilnum
- 
-          if (yrin == yr_now) then
-           do v = 1,nctemdistvars_a ! begin vars loop
-             ctem_d_a_mos(v,tilnum,y)=tmpd(v)
-           end do
-          else
-           backspace(851)  ! go back one line in the file
-          end if
-        end do ! while loop
-       end do ! y loop
-      end if !dofire
-91     continue
-
-
 ! done with ascii file, close it.
-
-      close(751)
-
-    if (DOFIRE) then
-        close(851)
-        deallocate(tmpd)
-    endif
-
+  close(751)
   deallocate(tmp)
-!----
 
-! ANNUAL
 if (net4) then
   status = nf90_inq_ncid(ncid,'CTEM-Annual Tiled', grpid)
   if (status /= nf90_noerr) call handle_err(status)
@@ -671,16 +445,58 @@ end if
   end do ! vars loop
  end do !tiles loop
 
+! deallocate arrays
+deallocate(ctem_a_mos)
 
+! --Fire----------------------------------------------
 if (DOFIRE) then
+
+ allocate(ctem_d_a_mos(nctemdistvars_a,ntile,totyrs))
+ allocate(tmpd(nctemdistvars_a))
+ 
+    if (MOSAIC) then
+     infile=trim(folder)//trim(ARGBUFF)//'.CT06Y_M'
+    else
+     infile=trim(folder)//trim(ARGBUFF)//'.CT06Y_G'
+    end if
+
+     command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_a_p_d.dat'
+     call system(command)
+     OPEN(851,FILE='tmp_a_p_d.dat',status='old',form='formatted')
+
+ !  first throw out header
+   do h = 1,6
+	read(851,*)
+   end do
+
+   yrin=realyrst
+   do y = 1,totyrs
+     yr_now = realyrst + y - 1
+     do while (yrin == yr_now)
+
+       read(851,*,end=91) yrin,tmpd(1:nctemdistvars_a),dummy,dummynum,dummy,tilnum
+ 
+       if (yrin == yr_now) then
+         do v = 1,nctemdistvars_a ! begin vars loop
+           ctem_d_a_mos(v,tilnum,y)=tmpd(v)
+         end do
+       else
+         backspace(851)  ! go back one line in the file
+       end if
+     end do ! while loop
+   end do ! y loop
+91     continue
+
+  close(851)
+  deallocate(tmpd)
 
   if (net4) then
     status = nf90_inq_ncid(ncid,'Annual-Disturbance Tiled', grpid)
     if (status /= nf90_noerr) call handle_err(status)
   end if
 
- do l=1,ntile
-  do v = 1,nctemdistvars_a ! begin vars loop
+  do l=1,ntile
+   do v = 1,nctemdistvars_a ! begin vars loop
 
     status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id)
     if (status/=nf90_noerr) call handle_err(status)
@@ -688,24 +504,139 @@ if (DOFIRE) then
     status = nf90_put_var(grpid,var_id,ctem_d_a_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totyrs])
     if (status/=nf90_noerr) call handle_err(status)
 
-  end do ! vars loop
- end do !tiles loop
-end if !do fire
+   end do ! vars loop
+  end do !tiles loop
 
-! deallocate arrays
-deallocate(ctem_a_mos)
-
-if (DOFIRE) then
   deallocate(ctem_d_a_mos)
-endif
+  
+endif !if fire.
 
-! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Now MONTHLY CTEM outputs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+end if !if CTEM.
+
+end do !loop over the gridcells
+
+!close the annual netcdf
+status = nf90_close(ncid)
+if (status/=nf90_noerr) call handle_err(status)
+
+! Close the gridcells file
+ close(1)
+
+
+! *******************************************************************
+!=====================CLASS_MONTHLY files============================
+! *******************************************************************
 
 if (MAKEMONTHLY) then
+
+! Open the netcdf file for writing
+
+! Monthly file:
+file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_M.nc'
+status = nf90_open(file_to_write_extended,nf90_write,ncid_m)
+if (status /= nf90_noerr) call handle_err(status)
+
+! open the list of coordinates
+ open(1,FILE=cellsfile,status='old')
+
+do cell = 1,num_land_cells
+    read(1,*)lon_in,lat_in
+    ARGBUFF = trim(lon_in)//'_'//trim(lat_in)
+    call parsecoords(ARGBUFF,bounds)
+    folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
+
+    ! get the coordinates
+    xlon=bounds(1)
+    ylat=bounds(3)
+
 
 if (.NOT. net4) then
    grpid=ncid_m
 end if
+
+! Do OF1M_G first
+if (net4) then
+  status = nf90_inq_ncid(ncid_m,'CLASS-Monthly',grpid) 
+  if (status /= nf90_noerr) call handle_err(status)
+end if
+
+!Allocate Arrays
+allocate(class_m(numclasvars_m,monyrs,12))
+
+! Read in the ascii file
+   OPEN(81,FILE=trim(folder)//trim(ARGBUFF)//'.OF1M_G',status='old',form='formatted') ! MONTHLY OUTPUT FOR CLASS
+
+ !  first throw out header (5 lines)
+   do h = 1,5
+	read(81,*)
+   end do
+   
+   do y = 1,monyrs
+    do m=1,12
+     read(81,*)dummy_month,dummy_year,class_m(1:numclasvars_m,y,m)
+    end do
+   end do
+
+   close(81)
+
+! Write the inputs to the netcdf
+do m=1,12  !Begin Month Loop
+  do v = 1,numclasvars_m
+
+   status = nf90_inq_varid(grpid,trim(CLASS_M_VAR(v)), var_id)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_put_var(grpid,var_id,class_m(v,:,m),start=[xlon,ylat,m,yrst],count=[1,1,1,monyrs])
+   if (status/=nf90_noerr) call handle_err(status)
+
+  end do !Var loop
+end do   !End month loop
+
+! deallocate arrays
+deallocate(class_m)
+
+!=======================================================================
+! Do OF2M_G
+
+   !Allocate Arrays
+   allocate(class_s_m(nclassoilvars_m,nl,monyrs,12))
+
+   OPEN(82,FILE=trim(folder)//trim(ARGBUFF)//'.OF2M_G',status='old',form='formatted')
+   !  first throw out header (5 lines)
+   do h = 1,5
+	read(82,*)
+   end do
+        
+   do y = 1,monyrs
+    do m=1,12
+     read(82,*)dummy_month,dummy_year,class_s_m(1,1,y,m),class_s_m(2,1,y,m),class_s_m(3,1,y,m),class_s_m(1,2,y,m),class_s_m(2,2,y,m),class_s_m(3,2,y,m),class_s_m(1,3,y,m),class_s_m(2,3,y,m),class_s_m(3,3,y,m)
+    end do
+   end do
+
+   close(82)
+
+!----
+! Write to netcdf file
+do m=1,12   !begin month loop
+ do l=1,nl   ! begin soil layer loop
+  do v = 1,nclassoilvars_m ! begin vars loop
+
+   status = nf90_inq_varid(grpid,trim(CLASS_M_S_VAR(v)), var_id)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_put_var(grpid,var_id,class_s_m(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,monyrs])
+   if (status/=nf90_noerr) call handle_err(status)
+
+  end do ! vars loop
+ end do ! soil layer loop
+end do  !End Month Loop
+
+! deallocate arrays
+deallocate(class_s_m)
+
+! %%%%%%Now MONTHLY CTEM outputs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+IF (CTEM) THEN
 
 ! Start with LNDUSECOMPETE vars
 if (COMPETE_LNDUSE) then
@@ -715,6 +646,13 @@ allocate(tmpm(ctemnpft,monyrs,12))
 allocate(mpftf(ctemnpft,monyrs,12))
 allocate(mpft_tot(monyrs,12))
 
+   OPEN(91,FILE=trim(folder)//trim(ARGBUFF)//'.CT07M_GM',status='old',form='formatted') ! MONTHLY PFT FRAC OUTPUT FOR CTEM
+
+   !  first throw out header (6 lines)
+   do h = 1,6
+	read(82,*)
+   end do
+   
    do y = 1,monyrs
     do m=1,12
       read(91,*)dummy_month,dummy_year,mpftf(1:ctemnpft,y,m),mpft_tot(y,m),dummy_var,mpftexist(1:ctemnpft,y,m)
@@ -777,41 +715,25 @@ end if !compete/lnduse
 !Allocate Arrays
 allocate(ctem_m(numctemvars_m,monyrs,12))
 
-if (DOFIRE) then
-  allocate(ctem_d_m(nctemdistvars_m,monyrs,12))
+if (MOSAIC) then
+   infile=trim(folder)//trim(ARGBUFF)//'.CT01M_M'
+else
+   infile=trim(folder)//trim(ARGBUFF)//'.CT01M_G'
 end if
 
-if (DOWETLANDS) then   
-   allocate(ctem_w_m(nctemwetvars_m,monyrs,12))
-end if
+command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m.dat'
+call system(command)
+
+! Open the newly trimmed file
+OPEN(74,FILE='tmp_m.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
 
 !---Read in Variables
    do y = 1,monyrs
     do m=1,12
-
      read(74,*)dummy_month,dummy_year,ctem_m(1:numctemvars_m,y,m)
-
-     if (DOFIRE) then
-
-      read(84,*)dummy_month,dummy_year,ctem_d_m(1:nctemdistvars_m,y,m)
-
-     end if
-     
-     if (DOWETLANDS) then  
-        read(910,*) dummy_month,dummy_year,ctem_w_m(1:nctemwetvars_m,y,m)
-     end if !dowetlands
-
     end do !m loop
    end do !y loop
-
-    close(74)
-    if (DOFIRE) then
-      close(84)
-    end if
-    if (DOWETLANDS) then 
-      close(910)
-    end if 
-!----
+ close(74)
 
 ! MONTHLY
 if (net4) then
@@ -830,7 +752,33 @@ end if
   end do !months
  end do ! vars loop
 
+! deallocate arrays
+
+deallocate(ctem_m)
+
 if (DOFIRE) then
+
+  allocate(ctem_d_m(nctemdistvars_m,monyrs,12))
+  
+      if (MOSAIC) then
+        infile=trim(folder)//trim(ARGBUFF)//'.CT06M_M'
+      else
+        infile=trim(folder)//trim(ARGBUFF)//'.CT06M_G'
+      end if
+
+     command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m_d.dat'
+     call system(command)
+     OPEN(84,FILE='tmp_m_d.dat',status='old',form='formatted') 
+
+  !FLAG header
+!---Read in Variables
+    do y = 1,monyrs
+     do m=1,12
+      read(84,*)dummy_month,dummy_year,ctem_d_m(1:nctemdistvars_m,y,m)
+     end do !m loop
+    end do !y loop
+
+    close(84)
 
  if (net4) then
    status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance GridAvg', grpid)
@@ -839,6 +787,7 @@ if (DOFIRE) then
 
  do v = 1,nctemdistvars_m ! begin vars loop
   do m=1,12  !Begin Month Loop
+  
    status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR_GA(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
@@ -848,9 +797,25 @@ if (DOFIRE) then
   end do !months
  end do ! vars loop
 
-end if !dofire
+ deallocate(ctem_d_m)  
+ 
+end if !if fire.
 
 if (DOWETLANDS) then 
+  
+   allocate(ctem_w_m(nctemwetvars_m,monyrs,12))
+   OPEN(910,FILE=trim(folder)//trim(ARGBUFF)//'.CT08M_G',status='old',form='formatted') ! MONTHLY CTEM wetlands
+   
+   !FLAG header!
+   
+!---Read in Variables
+   do y = 1,monyrs
+    do m=1,12
+        read(910,*) dummy_month,dummy_year,ctem_w_m(1:nctemwetvars_m,y,m)
+    end do !m loop
+   end do !y loop
+   
+   close(910)
 
  if (net4) then
    status = nf90_inq_ncid(ncid_m,'Monthly-Methane flux GridAvg', grpid)
@@ -868,31 +833,31 @@ if (DOWETLANDS) then
   end do !months
  end do ! vars loop
 
-end if !dowetlands
+ deallocate(ctem_w_m) 
+   
+end if !if wetlands
 
-! deallocate arrays
-
-deallocate(ctem_m)
-
-if (DOFIRE) then
-  deallocate(ctem_d_m)
-end if
-
-if (DOWETLANDS) then   
-  deallocate(ctem_w_m)
-end if 
 !===================per PFT/Tile===CTEM Monthly==========================
 
 !Allocate Arrays
 allocate(ctem_m_mos(numctemvars_m,ntile,monyrs,12))
 allocate(tmp(numctemvars_m))
 
-if (DOFIRE) then
-  allocate(ctem_d_m_mos(nctemdistvars_m,ntile,monyrs,12))
-  allocate(tmpd(nctemdistvars_m))
+!---Read in Variables
+
+! Monthly CTEM
+if (MOSAIC) then
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01M_M'
+else
+  infile=trim(folder)//trim(ARGBUFF)//'.CT01M_G'
 end if
 
-!---Read in Variables
+! Make a file of the PFT info, removing the grdav.
+command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p.dat'
+call system(command)
+  
+! Open the newly trimmed file
+OPEN(741,FILE='tmp_m_p.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
 
 ! We have to keep track of the month that is read in as it is the only way we know that we are done the tiles for a gridcell.
 
@@ -920,36 +885,9 @@ end if
 
 11 continue
 
-     close(741)
-
-   if (DOFIRE) then
-     do y = 1,monyrs
-      do m=1,12
-
-        mo=m  !initialize the month counter to the month of the outer loop
-
-        do while (mo == m) 
-
-          read(841,*,END=12) mo,yrin,tmpd(1:nctemdistvars_m),dummy,dummynum,dummy,tilnum
-
-          if (mo == m) then
-            do v = 1,nctemdistvars_m ! begin vars loop
-              ctem_d_m_mos(v,tilnum,y,m)=tmpd(v)
-            end do
-          else
-           backspace(841)  ! go back one line in the file
-          end if
-
-       end do !mo=m loop
-      end do !months
-     end do ! years
-12 continue
-      close(841)
-      deallocate(tmpd)
-
-   end if !dofire
-
-  deallocate(tmp)
+ close(741)
+ deallocate(tmp)
+ 
 !----
 ! MONTHLY
 if (net4) then
@@ -966,15 +904,54 @@ end if
 
     status = nf90_put_var(grpid,var_id,ctem_m_mos(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,monyrs])
     if (status/=nf90_noerr) call handle_err(status)
+    
    end do
   end do
  end do
 
+! deallocate arrays
+
+deallocate(ctem_m_mos)
+
+! ----Fire ----------------------------------
 if (DOFIRE) then
+
+  allocate(ctem_d_m_mos(nctemdistvars_m,ntile,monyrs,12))
+  allocate(tmpd(nctemdistvars_m))
+  
+      if (MOSAIC) then
+        infile=trim(folder)//trim(ARGBUFF)//'.CT06M_M'
+      else
+        infile=trim(folder)//trim(ARGBUFF)//'.CT06M_G'
+      end if
+
+     command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' > tmp_m_p_d.dat'
+     call system(command)
+     OPEN(841,FILE='tmp_m_p_d.dat',status='old',form='formatted') 
+
+  do y = 1,monyrs
+   do m=1,12
+      mo=m  !initialize the month counter to the month of the outer loop
+      do while (mo == m) 
+          read(841,*,END=12) mo,yrin,tmpd(1:nctemdistvars_m),dummy,dummynum,dummy,tilnum
+          if (mo == m) then
+            do v = 1,nctemdistvars_m ! begin vars loop
+              ctem_d_m_mos(v,tilnum,y,m)=tmpd(v)
+            end do
+          else
+           backspace(841)  ! go back one line in the file
+          end if
+       end do !mo=m loop
+    end do !months
+   end do ! years
+12 continue
+   close(841)
+   deallocate(tmpd)
+
   if (net4) then
     status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance Tiled', grpid)
     if (status /= nf90_noerr) call handle_err(status)
-end if
+  end if
 
  do v = 1,nctemdistvars_m ! begin vars loop
   do m=1,12  !Begin Month Loop
@@ -985,40 +962,32 @@ end if
 
     status = nf90_put_var(grpid,var_id,ctem_d_m_mos(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,monyrs])
     if (status/=nf90_noerr) call handle_err(status)
+    
    end do
   end do
  end do
-
+ deallocate(ctem_d_m_mos)
+ 
 end if !dofire
 
-! deallocate arrays
+end if !if ctem. 
 
-deallocate(ctem_m_mos)
+end do !loop over the gridcells
 
-if (DOFIRE) then
- deallocate(ctem_d_m_mos)
-end if
-
-end if ! makemonthly
-
-end if ! check CTEM
-
-!close the netcdf
-status = nf90_close(ncid)
-if (status/=nf90_noerr) call handle_err(status)
-
-if (MAKEMONTHLY) then
 !close the netcdf
 status = nf90_close(ncid_m)
 if (status/=nf90_noerr) call handle_err(status)
-end if
+
+! Close the gridcells file
+ close(1)
+
+end if ! makemonthly
 
 ! remove the tmp files
 command='rm tmp_a*.dat tmp_m*.dat tmp.dat'
 call system(command)
 
-
-end program netcdf_writer_bf
+end program netcdf_writer_fast
 
 !=====================
 

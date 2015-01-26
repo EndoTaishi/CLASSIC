@@ -418,7 +418,7 @@ c
      6           ncyear, co2yr, popyr, nummetcylyrs,
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
      8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2),
-     9           obswetyr, cywetldyr, trans_startyr  
+     9           obswetyr, cywetldyr, trans_startyr, jmosty   
 c
        real      rlim,        fsstar_g,
      1           flstar_g,  qh_g,    qe_g,        snomlt_g,
@@ -920,8 +920,8 @@ c     all model switches are read in from a namelist file
      2             spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on,
      3             setco2conc,popdon,popcycleyr,parallelrun,dofire,
      4             dowetlands,obswetf,compete,inibioclim,start_bare,
-     5             rsfile,start_from_rs,idisp,izref,islfd,ipcp,itc,
-     6             itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,
+     5             rsfile,start_from_rs,jmosty,idisp,izref,islfd,ipcp,
+     6             itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,
      7             jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
 c     Initialize the CTEM parameters
@@ -4753,6 +4753,11 @@ C
 C
 C=======================================================================
 C
+!       CTEM--------------\
+!     Only bother with monthly calculations if we desire those outputs to be written out.
+      if (iyear .ge. jmosty) then 
+!       CTEM--------------/         
+
 C     ACCUMULATE OUTPUT DATA FOR MONTHLY AVERAGED FIELDS FOR CLASS GRID-MEAN.
 C     FOR BOTH PARALLEL MODE AND STAND ALONE MODE
 C
@@ -4829,19 +4834,19 @@ C
          QH_MO=HFSACC_MO(I)
          QE_MO=QEVPACC_MO(I)
 C
-         WRITE(81,8100)IMONTH,IYEAR,FSSTAR_MO,FLSTAR_MO,QH_MO,
+          WRITE(81,8100)IMONTH,IYEAR,FSSTAR_MO,FLSTAR_MO,QH_MO,
      1                 QE_MO,SNOACC_MO(I),WSNOACC_MO(I),
      2                 ROFACC_MO(I),PREACC_MO(I),EVAPACC_MO(I),
      3                 TAACC_MO(I)-TFREZ
-         IF (IGND.GT.3) THEN
-          WRITE(82,8101)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ,
+          IF (IGND.GT.3) THEN
+           WRITE(82,8101)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ,
      1                  THLQACC_MO(I,J),THICACC_MO(I,J),J=1,5)
-          WRITE(82,8101)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ,
+           WRITE(82,8101)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ,
      1                  THLQACC_MO(I,J),THICACC_MO(I,J),J=6,10)
-         ELSE
-          WRITE(82,8102)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ,
+          ELSE
+           WRITE(82,8102)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ,
      1                  THLQACC_MO(I,J),THICACC_MO(I,J),J=1,3)
-         ENDIF     
+          ENDIF   
 C
 C ADD INITIALIZTION FOR MONTHLY ACCUMULATED ARRAYS
 C
@@ -4868,10 +4873,18 @@ C
 C               
        ENDIF ! IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)
       ENDDO ! NMON
+
+!       CTEM--------------\
+
+      end if !skip the monthly calculations/writing unless iyear>=jmosty
+!       CTEM--------------/                    
+
 C
 8100  FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,3(E12.3,1X),2(A6,I2))
 8101  FORMAT(1X,I4,I5,5(F7.2,1X,2F6.3,1X),2(A6,I2))
 8102  FORMAT(1X,I4,I5,3(F8.2,1X,2F6.3,1X),2(A6,I2))
+
+
 C
 C     ACCUMULATE OUTPUT DATA FOR YEARLY AVERAGED FIELDS FOR CLASS GRID-MEAN.
 C     FOR BOTH PARALLEL MODE AND STAND ALONE MODE
@@ -5588,6 +5601,12 @@ c          CH4(wetland) related variables !Rudra 04/12/2013
 
 861     continue
 c
+
+!       CTEM--------------\
+!     Only bother with monthly calculations if we desire those outputs to be written out.
+      if (iyear .ge. jmosty) then 
+!       CTEM--------------/         
+
 c       accumulate monthly outputs
 c
         do 862 i=1,nltest
@@ -5994,6 +6013,8 @@ C       !Rudra
          enddo ! nt=1,nmon
 c
 862     continue ! i
+
+        end if !to write out the monthly outputs or not
 c
 c       accumulate yearly outputs
 c
