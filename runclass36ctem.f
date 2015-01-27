@@ -3,13 +3,17 @@ C
 C     * SHELL PROGRAM TO RUN "CLASS" ("CANADIAN LAND SURFACE SCHEME")
 C     * VERSION 3.6 IN STAND-ALONE MODE USING SPECIFIED BOUNDARY 
 C     * CONDITIONS AND ATMOSPHERIC FORCING, COUPLED TO CTEM (CANADIAN TERRESTRIAL 
-C     * ECOSYSTEM MODEL.
+C     * ECOSYSTEM MODEL).
 C
 C     REVISION HISTORY:
 C
+C     * JAN 14 2014
+C     * JOE MELTON : Harmonized the field capacity and wilting point calculations between CLASS and CTEM. 
+C                    took the code out of runclassctem and it is now fully done within CLASSB. Harmonized names too.
+C
 C     * JUN 2014
 C     * RUDRA SHRESTHA : ADD IN WETLAND CODE
-*
+C
 C     * JUL 2013   
 C     * JOE MELTON : REMOVED CTEM1 AND CTEM2 OPTIONS, REPLACED WITH CTEM_ON. INTRODUCE
 C                                  MODULES. RESTRUCTURE OUTPUTS AND CTEM VARIABLE DECLARATIONS
@@ -35,6 +39,7 @@ C     * SEPT 8, 2009
 C     * RONG LI AND VIVEK ARORA: COUPLED CLASS3.4 AND CTEM
 C
 C=======================================================================
+
 C     * DIMENSION STATEMENTS.
 
 C     * FIRST SET OF DEFINITIONS:
@@ -60,7 +65,8 @@ C     * DIMENSION ELEMENT IN THE "GAT" VARIABLES IS GIVEN BY
 C     * THE PRODUCT OF THE FIRST TWO DIMENSION ELEMENTS IN THE
 C     * "ROW" VARIABLES.
 
-c     use statements for modules:
+C     The majority of CTEM parameters are stored in ctem_params.f90. We access them 
+c     through use statements for modules:
       use ctem_params,        only : initpftpars, nlat, nmos, ilg, nmon, 
      1                               ican, ignd,icp1, icc, iccp1, 
      2                               monthend, mmday,modelpft, l2max,
@@ -153,7 +159,7 @@ C
      2        BIROW  ,  PSISROW,  GRKSROW,    
      3        THRAROW,  HCPSROW,  
      4        TCSROW ,  THFCROW,  PSIWROW,   
-     5        DLZWROW,  ZBTWROW 
+     5        DLZWROW,  ZBTWROW,  THLWROW 
 C
       REAL,DIMENSION(NLAT,NMOS) ::
      1        DRNROW ,   XSLPROW,   GRKFROW,
@@ -167,7 +173,7 @@ C
      2        BIGAT  ,  PSISGAT,  GRKSGAT,    
      3        THRAGAT,  HCPSGAT,  
      4        TCSGAT ,  THFCGAT,  PSIWGAT,   
-     5        DLZWGAT,  ZBTWGAT
+     5        DLZWGAT,  ZBTWGAT,  THLWGAT
 C
       REAL,DIMENSION(ILG) ::
      1        DRNGAT ,   XSLPGAT,   GRKFGAT,
@@ -420,7 +426,7 @@ c
      8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2),
      9           obswetyr, cywetldyr, trans_startyr, jmosty   
 c
-       real      rlim,        fsstar_g,
+       real      fsstar_g,
      1           flstar_g,  qh_g,    qe_g,        snomlt_g,
      2           beg_g,     gtout_g, tpn_g,       altot_g,
      3           tcn_g,     tsn_g,   zsn_g       
@@ -435,12 +441,6 @@ c
      2     tcanoaccrow_m(nlat,nmos),   lightng(ilg),
      3     uvaccrow_m(nlat,nmos),      vvaccrow_m(nlat,nmos)
         
-c     wilting and field capacities vars
-
-      real     fieldsm(ilg,ignd),     wiltsm(ilg,ignd)
-      real     psisat(ilg,ignd),      grksat(ilg,ignd)
-      real     thpor(ilg,ignd),       bterm(ilg,ignd)
-
 c     Competition related variables
 
        real fsinacc_gat(ilg), flutacc_gat(ilg), flinacc_gat(ilg),
@@ -464,7 +464,6 @@ c
        real, dimension(ilg) :: anndefct  ! annual water deficit (mm) 
        real, dimension(ilg) :: annsrpls  ! annual water surplus (mm)
        real, dimension(ilg) :: annpcp    ! annual precipitation (mm)
-       real, dimension(ilg) :: anpotevp  ! annual potential evaporation (mm)
        real, dimension(ilg) :: dry_season_length  ! length of dry season (months)
 c
        real lyglfmasgat(ilg,icc),   geremortgat(ilg,icc),
@@ -959,8 +958,6 @@ C
           HMFNACC_M(I,M)=0.
           ROFACC_M(I,M)=0.
           SNOACC_M(I,M)=0.
-C         CANARE(I,M)=0.
-C         SNOARE(I,M)=0.
           OVRACC_M(I,M)=0.
           WTBLACC_M(I,M)=0.
               DO J=1,IGND
@@ -1145,8 +1142,6 @@ c
         enddo
 
 11     continue
-c
-      rlim                = abszero
 c
 c     do some initializations for the reading in of data from files. these
 c     initializations primarily affect how the model does a spinup or transient
@@ -1614,8 +1609,8 @@ C
      &'   KgC/M2.D      KM^2    prob/d       prob/d       prob/d')
 7112  FORMAT(' DAY  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
      & CH4DYN2 ')
-7113  FORMAT('          CH4-C/M2.S    CH4-C/M2.S          CH4-C/M2.S 
-     & CH4-C/M2.S')
+7113  FORMAT('          umolCH4/M2.S    umolCH4/M2.S          umolCH4/M2.S 
+     & umolCH4/M2.S')
 
 C
         WRITE(711,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
@@ -1814,10 +1809,10 @@ C
      &'  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE',
      &' ANNLUCCO2  ANNLUCLTR ANNLUCSOC ABURNFRAC ANNBTERM ANNLTERM',
      &' ANNMTERM')
-6227  FORMAT('         gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr  prob/yr ',
-     &'  gC/m2.yr  gC/m2.yr  gC/m2.yr    %     prob/yr  prob/yr',
+6227  FORMAT('         g/m2.yr',
+     &'  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr',
+     &'  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  prob/yr ',
+     &'  g/m2.yr  g/m2.yr  g/m2.yr    %     prob/yr  prob/yr',
      &'  prob/yr')
 6028  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ',
      &'RESULTS')
@@ -1838,12 +1833,12 @@ C
      
 6230  FORMAT('MONTH  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
      & CH4DYN2 ')
-6231  FORMAT('       CH4-C/M2.MON     CH4-C/M2.MON        CH4-C/M2.MON 
-     & CH4-C/M2.MON')
+6231  FORMAT('       gCH4/M2.MON     gCH4/M2.MON        gCH4/M2.MON 
+     & gCH4/M2.MON')
 6232  FORMAT('  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1 
      & CH4DYN2 ')
-6233  FORMAT('      CH4-C/M2.YR      CH4-C/M2.YR         CH4-C/M2.YR  
-     & CH4-C/M2.YR ')
+6233  FORMAT('      gCH4/M2.YR      gCH4/M2.YR         gCH4/M2.YR  
+     & gCH4/M2.YR ')
  
 C
 C     CTEM FILE TITLES DONE
@@ -1975,7 +1970,7 @@ c           use in burntobare subroutine on the first timestep.
           read(11,*) twarmm(i), tcoldm(i), gdd5(i), aridity(i),
      1              srplsmon(i)
           read(11,*) defctmon(i), anndefct(i), annsrpls(i), 
-     1              annpcp(i), anpotevp(i), dry_season_length(i)
+     1              annpcp(i), dry_season_length(i)
          else if (compete .and. .not. inibioclim) then ! set them to zero
            twarmm(i)=0.0
            tcoldm(i)=0.0
@@ -1986,7 +1981,6 @@ c           use in burntobare subroutine on the first timestep.
            anndefct(i)=0.0
            annsrpls(i)=0.0
            annpcp(i)=0.0
-           anpotevp(i)=0.0
            dry_season_length(i) = 0.0
          endif
 
@@ -2382,7 +2376,7 @@ C
 C===================== CTEM =============================================== /
 
       CALL CLASSB(THPROW,THRROW,THMROW,BIROW,PSISROW,GRKSROW,
-     1            THRAROW,HCPSROW,TCSROW,THFCROW,PSIWROW,
+     1            THRAROW,HCPSROW,TCSROW,THFCROW,PSIWROW,THLWROW,
      2            DLZWROW,ZBTWROW,ALGWROW,ALGDROW,
      3            SANDROW,CLAYROW,ORGMROW,DELZ,ZBOT,
      4            SDEPROW,ISNDROW,IGDRROW,
@@ -2758,6 +2752,7 @@ c    find the wilting point and field capacity for classt
 c    (it would be preferable to have this in a subroutine 
 c    rather than here. jm sep 06/12)
 c
+!       FLAG this can be removed once the wilting point matric pot limit is decided. JM Jan 14 2015.
         do 119 i = 1,ilg
          do 119 j = 1,ignd
 
@@ -2944,9 +2939,9 @@ c
 c      if popdon=true
 c      calculate fire extinguishing probability and 
 c      probability of fire due to human causes
-c      from population density input data
-c      overwrite extnprobgrd(i) and prbfrhucgrd(i) 
-c      read from .ctm file
+c      from population density input data. In disturb.f90 this will
+c      overwrite extnprobgrd(i) and prbfrhucgrd(i) that are
+c      read in from the .ctm file. Set
 c      cypopyr = -9999 when we don't want to cycle over the popd data
 c      so this allows us to grab a new value each year.
 
@@ -3036,7 +3031,7 @@ C
      G             TAGAT,  QAGAT,  PRESGAT,PREGAT, PADRGAT,
      H             VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,
      I             SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,
-     J             GGEOGAT,
+     J             GGEOGAT,THLWGAT,
      K             ILMOS,JLMOS,IWMOS,JWMOS,
      L             NML,NLAT,NMOS,ILG,IGND,ICAN,ICAN+1,
      M             TBARROW,THLQROW,THICROW,TPNDROW,ZPNDROW,
@@ -3058,7 +3053,7 @@ C
      +             TAGRD,  QAGRD,  PRESGRD,PREGRD, PADRGRD,
      +             VPDGRD, TADPGRD,RHOAGRD,RPCPGRD,TRPCGRD,
      +             SPCPGRD,TSPCGRD,RHSIGRD,FCLOGRD,DLONGRD,
-     +             GGEOGRD  )
+     +             GGEOGRD, THLWROW  )
 C
 C    * INITIALIZATION OF DIAGNOSTIC VARIABLES SPLIT OUT OF CLASSG
 C    * FOR CONSISTENCY WITH GCM APPLICATIONS.
@@ -3568,7 +3563,7 @@ c
      6             ancsvgac_m,  ancgvgac_m, rmlcsvga_m, rmlcgvga_m,
      7                zbtwgat, thliqcacc_m,thliqgacc_m,     deltat,
      8             uvaccgat_m,  vvaccgat_m,    lightng,prbfrhucgat,
-     9            extnprobgat,   stdalngat,tbaraccgat_m,   
+     9            extnprobgat,   stdalngat,tbaraccgat_m,  popdon, 
      a               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,
      b            thicecacc_m,     sdepgat,    spinfast,   todfrac,  
      &                compete,  netrad_gat,  preacc_gat,  
@@ -3589,7 +3584,7 @@ c    -------------- inputs used by ctem are above this line ---------
      &            geremortgat, intrmortgat,    lambdagat, lyglfmasgat,
      &            pftexistgat,      twarmm,       tcoldm,        gdd5,
      1                aridity,    srplsmon,     defctmon,    anndefct,
-     2               annsrpls,      annpcp,  anpotevp,dry_season_length,
+     2               annsrpls,      annpcp,  dry_season_length,
      &              burnvegfgat, pstemmassgat, pgleafmassgat,  
 c    -------------- inputs updated by ctem are above this line ------
      k                 nppgat,      nepgat, hetroresgat, autoresgat,
@@ -5158,10 +5153,10 @@ c
            litresrow(i,m)  =litresrow(i,m)*1.0377   ! convert to gc/m2.day
            socresrow(i,m)  =socresrow(i,m)*1.0377   ! convert to gc/m2.day
 c
-           CH4WET1ROW(i,m) = CH4WET1ROW(i,m)*1.0377   !Rudra 
-           CH4WET2ROW(i,m) = CH4WET2ROW(i,m)*1.0377
-           CH4DYN1ROW(i,m) = CH4DYN1ROW(i,m)*1.0377
-           CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 
+           CH4WET1ROW(i,m) = CH4WET1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
+           CH4WET2ROW(i,m) = CH4WET2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
+           CH4DYN1ROW(i,m) = CH4DYN1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
+           CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
 c
 c          write daily ctem results
 c
@@ -6580,12 +6575,12 @@ c
             if (compete) then
              write(101,"(5f8.2)")twarmm(i),tcoldm(i),gdd5(i),
      1                            aridity(i),srplsmon(i)
-             write(101,"(6f8.2)")defctmon(i),anndefct(i),annsrpls(i),
-     1                        annpcp(i),anpotevp(i),dry_season_length(i)
+             write(101,"(5f8.2)")defctmon(i),anndefct(i),annsrpls(i),
+     1                        annpcp(i),dry_season_length(i)
             endif
 
             if (dowetlands) then     
-              write(101,"(5f9.5)")(wetfrac_sgrd(i,j),j=1,8)
+              write(101,"(8f9.5)")(wetfrac_sgrd(i,j),j=1,8)
             endif   
 
           enddo

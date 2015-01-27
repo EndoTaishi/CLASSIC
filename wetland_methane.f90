@@ -35,11 +35,11 @@ real, dimension(ilg,8), intent(in) :: wetfrac_s ! prescribed fraction of wetland
 real, dimension(ilg,ignd), intent(in) :: tbar   ! temperature of soil layers
 real, dimension(ilg,ignd), intent(in) :: thliqg ! liquid soil moisture content (fraction)
 real, dimension(ilg,ignd), intent(in) :: sand   ! percentage sand in soil layers
-real, dimension(ilg), intent(out) :: ch4wet1    ! methane flux from wetlands calculated using hetrores in umol ch4-c/m2.s
-real, dimension(ilg), intent(out) :: ch4wet2    ! methane flux from wetlands calculated using npp in umol ch4-c/m2.s
+real, dimension(ilg), intent(out) :: ch4wet1    ! methane flux from wetlands calculated using hetrores in umol ch4/m2.s
+real, dimension(ilg), intent(out) :: ch4wet2    ! methane flux from wetlands calculated using npp in umol ch4/m2.s
 real, dimension(ilg), intent(out) :: wetfdyn    ! dynamic gridcell wetland fraction determined using  slope and soil moisture
-real, dimension(ilg), intent(out) :: ch4dyn1    ! methane flux from wetlands calculated using hetrores and wetfdyn, in umol ch4-c/m2.s
-real, dimension(ilg), intent(out) :: ch4dyn2    ! methane flux from wetlands calculated using npp  and wetfdyn, in umol ch4-c/m2.s
+real, dimension(ilg), intent(out) :: ch4dyn1    ! methane flux from wetlands calculated using hetrores and wetfdyn, in umol ch4/m2.s
+real, dimension(ilg), intent(out) :: ch4dyn2    ! methane flux from wetlands calculated using npp  and wetfdyn, in umol ch4/m2.s
     
 ! local variables  
 real, dimension(ilg) :: wetresp
@@ -140,6 +140,7 @@ do 110 i = il1, il2
 
 ! new dynamic calculation
 ! same as ch4wet1 & 2, but wetfrac replaced by wetfdyn
+
            wetresp(i)=hetrores(i)*wtdryres*wetfdyn(i)
            ch4dyn1(i)=ratioch4*wetresp(i)
            ch4dyn2(i)=factor2*wetfdyn(i)*max(0.0,npp(i))*(2**((tbar(i,1)-273.2)/10.0))

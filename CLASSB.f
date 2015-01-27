@@ -1,5 +1,5 @@
       SUBROUTINE CLASSB(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
-     1                  THLRAT,HCPS,TCS,THFC,PSIWLT,
+     1                  THLRAT,HCPS,TCS,THFC,PSIWLT, THLW,
      2                  DELZW,ZBOTW,ALGWET,ALGDRY,
      3                  SAND,CLAY,ORGM,DELZ,ZBOT,SDEPTH,
      4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ICTEMMOD)
@@ -57,7 +57,7 @@ C
      2     THLRAT(NL,NM,IG),  HCPS  (NL,NM,IG),  
      3     TCS   (NL,NM,IG),  THFC  (NL,NM,IG),  PSIWLT(NL,NM,IG),
      4     DELZW (NL,NM,IG),  ZBOTW (NL,NM,IG),
-     4     ALGWET(NL,NM),     ALGDRY(NL,NM)
+     4     ALGWET(NL,NM),     ALGDRY(NL,NM), THLW(NL,NM,IG)
 C
       INTEGER                 ISAND (NL,NM,IG),  IGDR  (NL,NM)
 C
@@ -144,7 +144,9 @@ C
               HCPS(I,M,J)=HCPICE
               TCS(I,M,J)=TCICE
               THFC(I,M,J)=0.0
-              PSIWLT(I,M,J)=0.0
+              !FLAG JM Jan 15 2015
+              PSIWLT(I,M,J)=150.0 !0.0 
+              THLW(I,M,J)=0.0
           ELSEIF(ISAND(I,M,J).EQ.-3) THEN
               THPOR (I,M,J)=0.0
               THLRET(I,M,J)=0.0
@@ -156,7 +158,9 @@ C
               HCPS(I,M,J)=HCPSND
               TCS(I,M,J)=TCSAND
               THFC(I,M,J)=0.0
-              PSIWLT(I,M,J)=0.0
+              !FLAG JM Jan 15 2015
+              PSIWLT(I,M,J)=150.0 !0.0 !FLAG JM Jan 15 2015
+              THLW(I,M,J)=0.0              
           ELSEIF(ISAND(I,M,J).EQ.-2) THEN
               THPOR (I,M,J)=THPORG(MIN(J,3))
               THLRET(I,M,J)=THRORG(MIN(J,3))
@@ -168,8 +172,11 @@ C
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
               THFC(I,M,J)=THLRET(I,M,J)
+              !FLAG JM Jan 15 2015 
+              !Not determined yet if this should also be 150m or different so leave as is.             
               PSIWLT(I,M,J)=PSISAT(I,M,J)*(THLMIN(I,M,J)/
      1            THPOR(I,M,J))**(-BI(I,M,J))
+              THLW(I,M,J)=THLMIN(I,M,J)
           ELSEIF(SAND(I,M,J).GT.0.0) THEN
               THPOR (I,M,J)=(-0.126*SAND(I,M,J)+48.9)/100.0
               THLRET(I,M,J)=0.04
@@ -200,8 +207,13 @@ C
      1                (PSISAT(I,M,J)*BI(I,M,J)/SDEPTH(I,M))**
      2                (1.0/BI(I,M,J))
               ENDIF
-              PSIWLT(I,M,J)=PSISAT(I,M,J)*(MAX(0.5*THFC(I,M,J),
-     1            THLMIN(I,M,J))/THPOR(I,M,J))**(-BI(I,M,J))
+              !FLAG JM Jan 15 2015 
+!              PSIWLT(I,M,J)=PSISAT(I,M,J)*(MAX(0.5*THFC(I,M,J),
+!     1            THLMIN(I,M,J))/THPOR(I,M,J))**(-BI(I,M,J))
+              PSIWLT(I,M,J)=150.0
+              THLW(I,M,J)=(PSIWLT(I,M,J)/PSISAT(I,M,J))**(-1./BI(I,M,J))
+     1                      * THPOR(I,M,J)
+     
           ENDIF
 300   CONTINUE
 C

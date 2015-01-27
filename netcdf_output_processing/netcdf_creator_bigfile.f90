@@ -405,6 +405,7 @@ if (status/=nf90_noerr) call handle_err(status)
 
 !==============Create the groups====================
 
+
 if (net4) then
 
   if (.not. MAKEMONTHLY) then
@@ -422,8 +423,10 @@ if (net4) then
       if (status /= nf90_noerr) call handle_err(status)
 
       if (DOFIRE) then
+
           status = nf90_def_grp(grpid_ann_ctem,'Annual-Disturbance GridAvg', grpid_ann_dist)
           if (status /= nf90_noerr) call handle_err(status)
+
       end if
 
       if (DOWETLANDS) then
@@ -559,8 +562,6 @@ deallocate(timenum)
 !if (status/=nf90_noerr) call handle_err(status)
 
 
-!write(*,*)'here'
-
 !status = nf90_redef(ncid) 
 !if (status/=nf90_noerr) call handle_err(status)
 
@@ -573,20 +574,18 @@ deallocate(timenum)
 !status = nf90_put_var(ncid,lat_bnds,latbound,start=[1,1],count=[cnty+1,2])  !lat bounds
 !if (status/=nf90_noerr) call handle_err(status)
 
-!write(*,*)'there'
-
-
 !================ Now define the variables===========
 ! CTEM first
+write(*,*)'bs'
+
 if (CTEM) then
  
  !Monthly CTEM per PFT/tile==============================
-
    allocate(fourvar(cntx,cnty,ntile,totyrs))
    fourvar=fill_value
-
+  
   if (MAKEMONTHLY) then
-
+   
    allocate(fivevar(cntx,cnty,ntile,12,totyrs))
    fivevar=fill_value
 
@@ -596,6 +595,12 @@ if (CTEM) then
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_def_var(grpid_mon_ctem_t,trim(CTEM_M_VAR(i)),nf90_float,[lon,lat,tile,month,time],varid)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_enddef(grpid_mon_ctem_t)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_redef(grpid_mon_ctem_t)
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_put_att(grpid_mon_ctem_t,varid,'long_name',trim(CTEM_M_NAME(i)))
@@ -626,7 +631,7 @@ if (CTEM) then
    if (status/=nf90_noerr) call handle_err(status)
 
   end do
-
+ 
  ! MONTHLY MOSAIC DISTURBANCE VARIABLES
  !if (MOSAIC) then  
   if (DOFIRE) then
@@ -637,6 +642,12 @@ if (CTEM) then
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_def_var(grpid_mon_dist_t,trim(CTEM_M_D_VAR(i)),nf90_float,[lon,lat,tile,month,time],varid)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_enddef(grpid_mon_dist_t)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_redef(grpid_mon_dist_t)
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_put_att(grpid_mon_dist_t,varid,'long_name',trim(CTEM_M_D_NAME(i)))
@@ -672,9 +683,9 @@ if (CTEM) then
   end if !makemonthly
 !  end if ! mosaic
 
-  !Annual CTEM per PFT/tile====================================
+!Annual CTEM per PFT/tile====================================
   if (.not. MAKEMONTHLY) then
-
+   
    do i=lbound(CTEM_Y_VAR,1), ubound(CTEM_Y_VAR,1)
 
    status = nf90_redef(grpid_ann_ctem_t) 
@@ -682,6 +693,14 @@ if (CTEM) then
 
    status = nf90_def_var(grpid_ann_ctem_t,trim(CTEM_Y_VAR(i)),nf90_float,[lon,lat,tile,time],varid)
    if (status/=nf90_noerr) call handle_err(status)
+
+!test
+   status = nf90_enddef(grpid_ann_ctem_t)
+   if (status/=nf90_noerr) call handle_err(status)
+
+ status = nf90_redef(grpid_ann_ctem_t)
+   if (status/=nf90_noerr) call handle_err(status)
+! tset
 
    status = nf90_put_att(grpid_ann_ctem_t,varid,'long_name',trim(CTEM_Y_NAME(i)))
    if (status/=nf90_noerr) call handle_err(status)
@@ -712,15 +731,22 @@ if (CTEM) then
 
   enddo
 
+write(*,*)'bs2'
  ! Annual DISTURBANCE MOSAIC VARIABLES
     if (DOFIRE) then
-
+write(*,*)'bs3'
      do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
-
+      write(*,*)i
        status = nf90_redef(grpid_ann_dist_t) 
        if (status/=nf90_noerr) call handle_err(status)
 
        status = nf90_def_var(grpid_ann_dist_t,trim(CTEM_Y_D_VAR(i)),nf90_float,[lon,lat,tile,time],varid)
+       if (status/=nf90_noerr) call handle_err(status)
+
+       status = nf90_enddef(grpid_ann_dist_t)
+       if (status/=nf90_noerr) call handle_err(status)
+
+       status = nf90_redef(grpid_ann_dist_t)
        if (status/=nf90_noerr) call handle_err(status)
 
        status = nf90_put_att(grpid_ann_dist_t,varid,'long_name',trim(CTEM_Y_D_NAME(i)))
@@ -749,7 +775,7 @@ if (CTEM) then
  
        status = nf90_put_var(grpid_ann_dist_t,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,ntile,totyrs])
        if (status/=nf90_noerr) call handle_err(status)
-
+write(*,*)'bs4'
      end do
 
     end if !dofire
@@ -776,6 +802,12 @@ if (CTEM) then
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_VAR_GA(i)),nf90_float,[lon,lat,month,time],varid)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_enddef(grpid_mon_ctem)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_redef(grpid_mon_ctem)
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_put_att(grpid_mon_ctem,varid,'long_name',trim(CTEM_M_NAME(i)))
@@ -818,6 +850,12 @@ if (CTEM) then
       status = nf90_def_var(grpid_mon_dist,trim(CTEM_M_D_VAR_GA(i)),nf90_float,[lon,lat,month,time],varid)
       if (status/=nf90_noerr) call handle_err(status)
 
+      status = nf90_enddef(grpid_mon_dist)
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_redef(grpid_mon_dist)
+      if (status/=nf90_noerr) call handle_err(status)
+
       status = nf90_put_att(grpid_mon_dist,varid,'long_name',trim(CTEM_M_D_NAME(i)))
       if (status/=nf90_noerr) call handle_err(status)
 
@@ -856,6 +894,12 @@ if (CTEM) then
       if (status/=nf90_noerr) call handle_err(status)
 
       status = nf90_def_var(grpid_mon_wet,trim(CTEM_M_W_VAR(i)),nf90_float,[lon,lat,month,time],varid)
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_enddef(grpid_mon_wet)
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_redef(grpid_mon_wet)
       if (status/=nf90_noerr) call handle_err(status)
 
       status = nf90_put_att(grpid_mon_wet,varid,'long_name',trim(CTEM_M_W_NAME(i)))
@@ -900,6 +944,12 @@ if (CTEM) then
         status = nf90_def_var(grpid_ann_ctem,trim(CTEM_Y_VAR_GA(i)),nf90_float,[lon,lat,time],varid)
         if (status/=nf90_noerr) call handle_err(status)
 
+        status = nf90_enddef(grpid_ann_ctem)
+        if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_redef(grpid_ann_ctem)
+        if (status/=nf90_noerr) call handle_err(status)
+
         status = nf90_put_att(grpid_ann_ctem,varid,'long_name',trim(CTEM_Y_NAME(i)))
         if (status/=nf90_noerr) call handle_err(status)
 
@@ -933,11 +983,17 @@ if (CTEM) then
    if (DOFIRE) then
 
     do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
-
+write(*,*)'here',i
      status = nf90_redef(grpid_ann_dist) 
      if (status/=nf90_noerr) call handle_err(status)
  
      status = nf90_def_var(grpid_ann_dist,trim(CTEM_Y_D_VAR_GA(i)),nf90_float,[lon,lat,time],varid)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_enddef(grpid_ann_dist)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_redef(grpid_ann_dist)
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_put_att(grpid_ann_dist,varid,'long_name',trim(CTEM_Y_D_NAME(i)))
@@ -980,6 +1036,12 @@ if (CTEM) then
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_def_var(grpid_ann_wet,trim(CTEM_Y_W_VAR(i)),nf90_float,[lon,lat,time],varid)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_enddef(grpid_ann_wet)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_redef(grpid_ann_wet)
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_put_att(grpid_ann_wet,varid,'long_name',trim(CTEM_Y_W_NAME(i)))
@@ -1041,6 +1103,12 @@ if (COMPETE_LNDUSE) then
      status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_C_VAR(i)),nf90_float,[lon,lat,pft,month,time],varid)
      if (status/=nf90_noerr) call handle_err(status)
 
+     status = nf90_enddef(grpid_mon_ctem)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_redef(grpid_mon_ctem)
+     if (status/=nf90_noerr) call handle_err(status)
+
      status = nf90_put_att(grpid_mon_ctem,varid,'long_name',trim(CTEM_M_C_NAME(1)))
      if (status/=nf90_noerr) call handle_err(status)
 
@@ -1076,6 +1144,12 @@ if (COMPETE_LNDUSE) then
      if (status/=nf90_noerr) call handle_err(status)
  
      status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_C_VAR(1)),nf90_float,[lon,lat,month,time],varid)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_enddef(grpid_mon_ctem)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_redef(grpid_mon_ctem)
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_put_att(grpid_mon_ctem,varid,'long_name',trim(CTEM_M_C_NAME(2)))
@@ -1127,6 +1201,12 @@ if (COMPETE_LNDUSE) then
      status = nf90_def_var(grpid_ann_ctem,trim(CTEM_Y_C_VAR(i)),nf90_float,[lon,lat,pft,time],varid)
      if (status/=nf90_noerr) call handle_err(status)
 
+     status = nf90_enddef(grpid_ann_ctem)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_redef(grpid_ann_ctem)
+     if (status/=nf90_noerr) call handle_err(status)
+
      status = nf90_put_att(grpid_ann_ctem,varid,'long_name',trim(CTEM_Y_C_NAME(1)))
      if (status/=nf90_noerr) call handle_err(status)
 
@@ -1161,6 +1241,12 @@ if (COMPETE_LNDUSE) then
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_def_var(grpid_ann_ctem,trim(CTEM_Y_C_VAR(1)),nf90_float,[lon,lat,time],varid)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_enddef(grpid_ann_ctem)
+     if (status/=nf90_noerr) call handle_err(status)
+
+     status = nf90_redef(grpid_ann_ctem)
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_put_att(grpid_ann_ctem,varid,'long_name',trim(CTEM_Y_C_NAME(2)))
@@ -1252,6 +1338,12 @@ end if !CTEMboolean
    status = nf90_def_var(grpid_mon_class,trim(CLASS_M_VAR(i)),nf90_float,[lon,lat,month,time],varid)
    if (status/=nf90_noerr) call handle_err(status)
 
+   status = nf90_enddef(grpid_mon_class)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_redef(grpid_mon_class)
+   if (status/=nf90_noerr) call handle_err(status)
+
    status = nf90_put_att(grpid_mon_class,varid,'_Chunksizes',[cnty,cntx,12,1])
    if (status/=nf90_noerr) call handle_err(status)
 
@@ -1288,6 +1380,12 @@ end if !CTEMboolean
   if (status/=nf90_noerr) call handle_err(status)
 
   status = nf90_def_var(grpid_mon_class,trim(CLASS_M_S_VAR(i)),nf90_float,[lon,lat,layer,month,time],varid)
+  if (status/=nf90_noerr) call handle_err(status)
+
+  status = nf90_enddef(grpid_mon_class)
+  if (status/=nf90_noerr) call handle_err(status)
+
+  status = nf90_redef(grpid_mon_class)
   if (status/=nf90_noerr) call handle_err(status)
 
   status = nf90_put_att(grpid_mon_class,varid,'_Chunksizes',[cnty,cntx,nl,12,1])
@@ -1374,6 +1472,12 @@ end if !CTEMboolean
   if (status/=nf90_noerr) call handle_err(status)
 
   status = nf90_def_var(grpid_ann_class,trim(CLASS_Y_VAR(i)),nf90_float,[lon,lat,time],varid)
+  if (status/=nf90_noerr) call handle_err(status)
+
+  status = nf90_enddef(grpid_ann_class)
+  if (status/=nf90_noerr) call handle_err(status)
+
+  status = nf90_redef(grpid_ann_class)
   if (status/=nf90_noerr) call handle_err(status)
 
   status = nf90_put_att(grpid_ann_class,varid,'long_name',trim(CLASS_Y_NAME(i)))

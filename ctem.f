@@ -5,7 +5,7 @@
      6                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,    
      7                       zbotw,   thliqc,   thliqg,    deltat,
      8                       uwind,    vwind,  lightng,  prbfrhuc, 
-     9                    extnprob,   stdaln,     tbar,    
+     9                    extnprob,   stdaln,     tbar,    popdon, 
      a                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,
      b                      thicec, soildpth, spinfast,   todfrac,
      &                     compete,   netrad,   precip,   
@@ -29,7 +29,7 @@ c    ------- following 5 lines are competition related variables ----
      n                    geremort, intrmort,   lambda,  lyglfmas,
      o                    pftexist, twarmm,    tcoldm,       gdd5,
      1                     aridity, srplsmon, defctmon,  anndefct,
-     2                    annsrpls,  annpcp, anpotevp,dry_season_length,
+     2                    annsrpls,  annpcp,dry_season_length,
      3                    burnvegf, pstemmass, pgleafmass,
 c
 c    -------------- inputs updated by ctem are above this line ------
@@ -288,7 +288,6 @@ c     defctmon  - number of months in a year with water deficit i.e.precipitatio
 c     anndefct  - annual water deficit (mm) 
 c     annsrpls  - annual water surplus (mm)
 c     annpcp    - annual precipitation (mm)
-c     anpotevp  - annual potential evaporation (mm)
 c     dry_season_length - length of the dry season (months)
 c
 c                other quantities
@@ -349,7 +348,6 @@ c                 precipitation less than potential evaporation
 c     anndefct  - annual water deficit (mm)
 c     annsrpls  - annual water surplus (mm)
 c     annpcp    - annual precipitation (mm)
-c     anpotevp  - annual potential evaporation (mm)
 c     burnvegf- fractiona areas burned for 9 ctem pfts
 c
       implicit none
@@ -403,7 +401,7 @@ c
      4     srplscur_cmp(nlat), defctcur_cmp(nlat),twarmm_cmp(nlat), 
      5     tcoldm_cmp(nlat),   gdd5_cmp(nlat),    aridity_cmp(nlat),
      6     srplsmon_cmp(nlat), defctmon_cmp(nlat),anndefct_cmp(nlat),
-     7     annsrpls_cmp(nlat), annpcp_cmp(nlat),  anpotevp_cmp(nlat),
+     7     annsrpls_cmp(nlat), annpcp_cmp(nlat),
      &    dry_season_length_cmp(nlat),
      8     lucemcom_cmp(nlat),  lucltrin_cmp(nlat), lucsocin_cmp(nlat)
 c
@@ -493,7 +491,7 @@ c
       real  vgbiomas_veg(ilg,icc)
 c  
       real       precip(ilg),         netrad(ilg),         tcurm(ilg),
-     1           annpcp(ilg),      anpotevp(ilg),dry_season_length(ilg),
+     1           annpcp(ilg),dry_season_length(ilg),
      &           twarmm(ilg),
      2           tcoldm(ilg),           gdd5(ilg),       aridity(ilg),
      3         srplsmon(ilg),       defctmon(ilg),     tmonth(12,ilg),
@@ -511,6 +509,9 @@ c
       integer   surmncur(ilg),       defmncur(ilg)
 c
       logical compete, inibioclim, pftexist(ilg,icc)
+      logical, intent(inout) :: popdon   ! if set true use population density data to calculate fire extinguishing 
+                 				         ! probability and probability of fire due to human causes, 
+                 				         ! or if false, read directly from .ctm file
 C 
       real      wetfrac(ilg),        ch4wet1(ilg),        ch4wet2(ilg)
       real    wetfrac_s(ilg,8),        wetfdyn(ilg)
@@ -671,7 +672,7 @@ c
      j                          anpecur,  gdd5cur, surmncur, defmncur,
      k                         srplscur, defctcur,   twarmm,   tcoldm,
      l                             gdd5,  aridity, srplsmon, defctmon,
-     m                         anndefct, annsrpls,   annpcp, anpotevp,
+     m                         anndefct, annsrpls,   annpcp,
      &                      dry_season_length,
      &                         lucemcom, lucltrin, lucsocin, pfcancmx,
      &                         nfcancmx, pstemmass, pgleafmass,
@@ -693,7 +694,7 @@ c    ------------------- intermediate and saved above this line -----
      1                     srplscur_cmp,  defctcur_cmp,    twarmm_cmp, 
      2                       tcoldm_cmp,      gdd5_cmp,   aridity_cmp,
      3                     srplsmon_cmp,  defctmon_cmp,  anndefct_cmp,
-     4                     annsrpls_cmp,    annpcp_cmp,  anpotevp_cmp,
+     4                     annsrpls_cmp,    annpcp_cmp,
      &                     dry_season_length_cmp,
      5                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,
      6                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,
@@ -711,7 +712,7 @@ c
      4         surmncur_cmp, defmncur_cmp,  srplscur_cmp,defctcur_cmp,
      5           twarmm_cmp,   tcoldm_cmp,      gdd5_cmp, aridity_cmp,
      6         srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,
-     7           annpcp_cmp, anpotevp_cmp, dry_season_length_cmp)
+     7           annpcp_cmp, dry_season_length_cmp)
 
 
        if (inibioclim) then
@@ -727,7 +728,7 @@ c
      1                   sort,     nol2pfts,      
      2             twarmm_cmp,   tcoldm_cmp,     gdd5_cmp,  aridity_cmp,
      3           srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,
-     4             annpcp_cmp, anpotevp_cmp, pftexist_cmp,
+     4             annpcp_cmp, pftexist_cmp,
      5             dry_season_length_cmp)
 c     
 c
@@ -794,7 +795,7 @@ c
      n                       srplscur_cmp, defctcur_cmp,   twarmm_cmp, 
      o                         tcoldm_cmp,     gdd5_cmp,  aridity_cmp,
      p                       srplsmon_cmp, defctmon_cmp, anndefct_cmp,
-     q                       annsrpls_cmp,   annpcp_cmp, anpotevp_cmp,
+     q                       annsrpls_cmp,   annpcp_cmp,
      &                     dry_season_length_cmp,
      &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,
      &                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,
@@ -817,7 +818,7 @@ c
      1                         gdd5cur, surmncur, defmncur, srplscur,  
      2                        defctcur,   twarmm,   tcoldm,     gdd5, 
      3                         aridity, srplsmon, defctmon, anndefct,
-     4                        annsrpls,   annpcp, anpotevp,
+     4                        annsrpls,   annpcp,
      &                         dry_season_length,
      5                         lucemcom, lucltrin, lucsocin, pfcancmx,
      6                         nfcancmx, pstemmass, pgleafmass )
@@ -836,7 +837,7 @@ c
      4                 surmncur, defmncur,  srplscur,defctcur,
      5                 twarmm,   tcoldm,      gdd5, aridity,
      6                 srplsmon, defctmon, anndefct, annsrpls,
-     7                 annpcp, anpotevp, dry_season_length )
+     7                 annpcp, dry_season_length )
 c
         if (inibioclim) then
 c
@@ -851,7 +852,7 @@ c
      1                     sort,     nol2pfts,        
      2                   twarmm,   tcoldm,     gdd5,  aridity,
      3                   srplsmon, defctmon, anndefct, annsrpls,
-     4                   annpcp, anpotevp, pftexist, dry_season_length )
+     4                   annpcp, pftexist, dry_season_length )
 c     
 c       call competition subroutine which on the basis of previous day's
 c       npp estimates changes in fractional coverage of pfts
@@ -1387,6 +1388,11 @@ c
      4                       sort,    nol2pfts,  fcancmx,
      5                     afrleaf,  afrstem,  afrroot,    wiltsm,
      6                     fieldsm, wtstatus, ltstatus)
+     
+!     Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the
+!     CLASS part of the model. They are recalculated here in CTEM to avoid passing them through the
+!     coupler in the coupled model. The CTEM calculated versions of fieldsm and wiltsm are also used
+!     in disturb and phenolgy. JM. Jan 14 2015.     
 c  
 c     Estimate fraction of npp that is to be used for horizontal
 c     expansion (lambda) during the next day (i.e. this will be determining
@@ -1774,7 +1780,7 @@ c
             call disturb (stemmass, rootmass, gleafmas, bleafmas,
      1                      thliqc,   wiltsm,  fieldsm,    uwind,
      2                       vwind,  lightng,  fcancmx, litrmass,
-     3                    prbfrhuc, rmatctem, extnprob, 
+     3                    prbfrhuc, rmatctem, extnprob, popdon,
      4                         il1,      il2,     sort, nol2pfts,
      6                    grclarea,   thicec,   popdin, lucemcom,
      7                      dofire,  currlat,     iday, fsnow,
