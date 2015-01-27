@@ -123,7 +123,8 @@ tic=char(39)
 
 ! Open the netcdf file for writing
 ! Annual:
-file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_A.nc'
+file_to_write_extended = trim(long_path)//'/'//trim(file_to_write)//'_CLASSCTEM_A.nc'
+write(*,*)'writing to',file_to_write_extended
 status = nf90_open(file_to_write_extended,nf90_write,ncid)
 if (status /= nf90_noerr) call handle_err(status)
 
@@ -532,7 +533,8 @@ if (MAKEMONTHLY) then
 ! Open the netcdf file for writing
 
 ! Monthly file:
-file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_M.nc'
+file_to_write_extended = trim(long_path)//'/'//trim(file_to_write)//'_CLASSCTEM_M.nc'
+write(*,*)'writing to',file_to_write_extended
 status = nf90_open(file_to_write_extended,nf90_write,ncid_m)
 if (status /= nf90_noerr) call handle_err(status)
 

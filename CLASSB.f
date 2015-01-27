@@ -145,7 +145,7 @@ C
               TCS(I,M,J)=TCICE
               THFC(I,M,J)=0.0
               !FLAG JM Jan 15 2015
-              PSIWLT(I,M,J)=150.0 !0.0 
+              PSIWLT(I,M,J)= 0.0 !150.0 !0.0 
               THLW(I,M,J)=0.0
           ELSEIF(ISAND(I,M,J).EQ.-3) THEN
               THPOR (I,M,J)=0.0
@@ -159,7 +159,7 @@ C
               TCS(I,M,J)=TCSAND
               THFC(I,M,J)=0.0
               !FLAG JM Jan 15 2015
-              PSIWLT(I,M,J)=150.0 !0.0 !FLAG JM Jan 15 2015
+              PSIWLT(I,M,J)=0.0 !150.0 !0.0 !FLAG JM Jan 15 2015
               THLW(I,M,J)=0.0              
           ELSEIF(ISAND(I,M,J).EQ.-2) THEN
               THPOR (I,M,J)=THPORG(MIN(J,3))
@@ -208,9 +208,9 @@ C
      2                (1.0/BI(I,M,J))
               ENDIF
               !FLAG JM Jan 15 2015 
-!              PSIWLT(I,M,J)=PSISAT(I,M,J)*(MAX(0.5*THFC(I,M,J),
-!     1            THLMIN(I,M,J))/THPOR(I,M,J))**(-BI(I,M,J))
-              PSIWLT(I,M,J)=150.0
+              PSIWLT(I,M,J)=PSISAT(I,M,J)*(MAX(0.5*THFC(I,M,J),
+     1            THLMIN(I,M,J))/THPOR(I,M,J))**(-BI(I,M,J))
+!              PSIWLT(I,M,J)=150.0
               THLW(I,M,J)=(PSIWLT(I,M,J)/PSISAT(I,M,J))**(-1./BI(I,M,J))
      1                      * THPOR(I,M,J)
      
