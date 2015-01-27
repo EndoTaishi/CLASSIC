@@ -78,6 +78,8 @@ character(1) :: tic
 character(len=8) :: fmt ! format descriptor
 character(len=10) :: x1
 
+integer, allocatable, dimension(:) :: tiles_to_write
+
 real, allocatable, dimension(:) :: tmp
 real, allocatable, dimension(:) :: tmpd
 
@@ -101,6 +103,11 @@ namelist /joboptions/ &
 !----
 
 tic=char(39)
+
+allocate(tiles_to_write(ntile))
+
+tiles_to_write = -1 ! initialize to -1 now.
+
 
 ! Open the grid cells file
  call getarg(1,cellsfile)
@@ -412,6 +419,11 @@ allocate(ctem_a_mos(numctemvars_a,ntile,totyrs))
 
           read(751,*,end=90) yrin,tmp(1:numctemvars_a),dummy,dummynum,dummy,tilnum
 
+          if (yrin == realyrst) then
+             tiles_to_write = eoshift(tiles_to_write,1)
+             tiles_to_write(1) = tilnum
+          end if     
+
         if (yrin == yr_now) then
           ! Assign that just read in to its vars 
           do v = 1,numctemvars_a ! begin vars loop
@@ -437,11 +449,15 @@ end if
  do l=1,ntile
   do v = 1,numctemvars_a ! begin vars loop
 
-   status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id)
-   if (status/=nf90_noerr) call handle_err(status)
-
-   status = nf90_put_var(grpid,var_id,ctem_a_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totyrs])
-   if (status/=nf90_noerr) call handle_err(status)
+   if (tiles_to_write(l) .ne. -1) then
+ 
+     status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id)
+     if (status/=nf90_noerr) call handle_err(status)
+ 
+     status = nf90_put_var(grpid,var_id,ctem_a_mos(v,tiles_to_write(l),:),start=[xlon,ylat,tiles_to_write(l),yrst],count=[1,1,1,totyrs])
+     if (status/=nf90_noerr) call handle_err(status)
+ 
+   end if
 
   end do ! vars loop
  end do !tiles loop
@@ -499,11 +515,13 @@ if (DOFIRE) then
   do l=1,ntile
    do v = 1,nctemdistvars_a ! begin vars loop
 
-    status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id)
-    if (status/=nf90_noerr) call handle_err(status)
-
-    status = nf90_put_var(grpid,var_id,ctem_d_a_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totyrs])
-    if (status/=nf90_noerr) call handle_err(status)
+    if (tiles_to_write(l) .ne. -1) then
+      status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id)
+      if (status/=nf90_noerr) call handle_err(status)
+ 
+      status = nf90_put_var(grpid,var_id,ctem_d_a_mos(v,tiles_to_write(l),:),start=[xlon,ylat,tiles_to_write(l),yrst],count=[1,1,1,totyrs])
+      if (status/=nf90_noerr) call handle_err(status)
+    end if
 
    end do ! vars loop
   end do !tiles loop
@@ -901,11 +919,13 @@ end if
   do m=1,12  !Begin Month Loop
    do l = 1,ntile ! begin tile loop
 
-    status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
-    if (status/=nf90_noerr) call handle_err(status)
-
-    status = nf90_put_var(grpid,var_id,ctem_m_mos(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,monyrs])
-    if (status/=nf90_noerr) call handle_err(status)
+    if (tiles_to_write(l) .ne. -1) then 
+      status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
+      if (status/=nf90_noerr) call handle_err(status)
+ 
+      status = nf90_put_var(grpid,var_id,ctem_m_mos(v,tiles_to_write(l),:,m),start=[xlon,ylat,tiles_to_write(l),m,yrst],count=[1,1,1,1,monyrs])
+      if (status/=nf90_noerr) call handle_err(status)
+    end if
     
    end do
   end do
@@ -959,12 +979,14 @@ if (DOFIRE) then
   do m=1,12  !Begin Month Loop
    do l = 1,ntile ! begin tile loop
 
-    status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
-    if (status/=nf90_noerr) call handle_err(status)
+    if (tiles_to_write(l) .ne. -1) then
+      status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
+      if (status/=nf90_noerr) call handle_err(status)
+ 
+      status = nf90_put_var(grpid,var_id,ctem_d_m_mos(v,tiles_to_write(l),:,m),start=[xlon,ylat,tiles_to_write(l),m,yrst],count=[1,1,1,1,monyrs])
+      if (status/=nf90_noerr) call handle_err(status)
+     end if
 
-    status = nf90_put_var(grpid,var_id,ctem_d_m_mos(v,l,:,m),start=[xlon,ylat,l,m,yrst],count=[1,1,1,1,monyrs])
-    if (status/=nf90_noerr) call handle_err(status)
-    
    end do
   end do
  end do
@@ -984,6 +1006,8 @@ if (status/=nf90_noerr) call handle_err(status)
  close(1)
 
 end if ! makemonthly
+
+deallocate(tiles_to_write)
 
 ! remove the tmp files
 command='rm tmp_a*.dat tmp_m*.dat tmp.dat'
