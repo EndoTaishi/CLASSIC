@@ -472,6 +472,12 @@ c
      3            ccgat(ilg,icc),         mmgat(ilg,icc),
      4            temparray(icc),                   temp
 
+c     wilting and field capacities vars
+
+      real     fieldsm(ilg,ignd),     wiltsm(ilg,ignd)
+      real     psisat(ilg,ignd),      grksat(ilg,ignd)
+      real     thpor(ilg,ignd),       bterm(ilg,ignd)
+
       real  xdiffusgat(ilg) ! the corresponding ROW is CLASS's XDIFFUS    
      
 !     For these below, the corresponding ROWs are defined by CLASS  
@@ -3303,7 +3309,7 @@ C
      P  CO2I1CSGAT,CO2I2CGGAT,CO2I2CSGAT,CSZGAT,XDIFFUSGAT,SLAIGAT,ICC,
      Q  ICTEMMOD,RMATCTEMGAT,FCANCMXGAT,L2MAX,  NOL2PFTS,CFLUXCGGAT,
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
-     S  FIELDSM,WILTSM,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,   
+     S  WILTSM,FIELDSM,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,   
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
      U  lfstatusgat) 
 C

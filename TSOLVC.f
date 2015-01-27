@@ -18,7 +18,7 @@
      H                 IEVAPC,TRTOP,QSTOR,CFSENS,CFEVAP,QSGADD,A,B,
      I                 LZZ0,LZZ0T,FM,FH,ITER,NITER,KF1,KF2,
      J                 AILCG,FCANC,CO2CONC,RMATCTEM,
-     K                 THLIQ,THFC,THLW,ISAND,IG,COSZS,PRESSG,
+     K                 THLIQ,THFC,THLW,ISAND,IG,COSZS,PRESSG,FIELDSM,
      L                 XDIFFUS,ICTEM,IC,CO2I1,CO2I2,
      M                 ICTEMMOD,SLAI,FCANCMX,L2MAX,
      N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS)
@@ -203,7 +203,7 @@ C
      4                     RMATCTEM(ILG,ICTEM,IG),  FCANCMX(ILG,ICTEM),
      5     ANVEG(ILG,ICTEM),    RMLVEG(ILG,ICTEM),       THLIQ(ILG,IG),
      6      THFC(ILG,IG),       THLW(ILG,IG),      CFLUXV(ILG),
-     7       CFLUXV_IN(ILG)
+     7       CFLUXV_IN(ILG), FIELDSM(ILG,IG) !FLAG
  
       INTEGER ISAND(ILG,IG),    LFSTATUS(ILG,ICTEM)
 C
@@ -352,7 +352,7 @@ C
      1                CFLUXV,    QA,   QSWNVC,      IC,   THLIQ, ISAND,
      2                    TA,        RMATCTEM,   COSZS, XDIFFUS,   ILG,
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
-     4               THFC, THLW,  FCANCMX,   L2MAX,NOL2PFTS,
+     4               FIELDSM, THLW,  FCANCMX,   L2MAX,NOL2PFTS, !FLAG!
      5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG,
      6              LFSTATUS)  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
      
