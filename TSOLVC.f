@@ -347,15 +347,15 @@ C       NOTE: WE DO NOT USE TAC HERE. TAC IS INTENDED FOR USE WHEN ITC=2
 C             HOWEVER, AS SET UP TAC CAN BE USED UNSET IN THE CALCULATION
 C             OF QSENSG EVEN IF ITC/=2. TO ENSURE THE PHTSYN WORKS, WE THEN
 C             USE TA (THE SUB OCCURS IN PHTSYN). JM 11/09/12
-
+C
         CALL PHTSYN3(  AILCG, FCANC,     TCAN, CO2CONC,  PRESSG,    FI,
      1                CFLUXV,    QA,   QSWNVC,      IC,   THLIQ, ISAND,
      2                    TA,        RMATCTEM,   COSZS, XDIFFUS,   ILG,
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
-     4               FIELDSM,WILTSM,  FCANCMX,   L2MAX,NOL2PFTS,
-     5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG, 
+     4               THFC, THLW,  FCANCMX,   L2MAX,NOL2PFTS,
+     5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG,
      6              LFSTATUS)  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
-C
+     
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
