@@ -89,7 +89,7 @@ integer :: status
 
 real, dimension(2) :: xrange
 real, dimension(2) :: yrange
-real, dimension(4) :: bounds
+integer, dimension(4) :: bounds
 
 real, allocatable, dimension(:) :: lonvect
 real, allocatable, dimension(:) :: latvect
