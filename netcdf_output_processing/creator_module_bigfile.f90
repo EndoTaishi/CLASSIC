@@ -20,6 +20,8 @@ integer, parameter :: nl = 3		! number of soil layers
 integer, parameter :: cntx = 128		! number of longitudes T47
 integer, parameter :: cnty = 64	    	! number of latitudes T47
 
+integer, parameter :: num_land_cells = 1955 !1958 !Remove one because 110_58, 111_57, 96_61 keeps making a glacier!!
+
 real :: fill_value = 1.e38         !value given for empty fields in the NetCDF output files
 
 logical, parameter :: net4 = .false. ! Set to true if you wish to make a netcdf4 output file.
@@ -88,7 +90,7 @@ integer :: status
 
 real, dimension(2) :: xrange
 real, dimension(2) :: yrange
-real, dimension(4) :: bounds
+integer, dimension(4) :: bounds
 
 real, allocatable, dimension(:) :: lonvect
 real, allocatable, dimension(:) :: latvect

@@ -127,16 +127,16 @@ allocate(tiles_to_write(ntile))
 
 ! Open the netcdf file for writing
 ! Annual:
-file_to_write_extended = trim(long_path)//'/'//trim(file_to_write)//'_CLASSCTEM_A.nc'
+file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_A.nc'
 
-write(*,*)'writing to',file_to_write_extended
+write(*,*)'annual: writing to',file_to_write_extended
 
 status = nf90_open(file_to_write_extended,nf90_write,ncid)
-if (status /= nf90_noerr) call handle_err(status)
+if (status /= nf90_noerr) call handle_major_err(status)
 
 do cell = 1,num_land_cells
 
-    write(*,*)'writing ',cell,' of ',num_land_cells
+    write(*,*)'annual:writing ',cell,' of ',num_land_cells
     read(11,*)lon_in,lat_in
 
     ARGBUFF = trim(lon_in)//'_'//trim(lat_in)
@@ -571,7 +571,7 @@ end if !if CTEM.
 
 end do !loop over the gridcells
 
-!close the annual netcdf
+!!close the annual netcdf
 status = nf90_close(ncid)
 if (status/=nf90_noerr) call handle_err(status)
 
@@ -586,13 +586,13 @@ if (MAKEMONTHLY) then
 
 ! Open the netcdf file for writing
 
-! Monthly file:
-file_to_write_extended = trim(long_path)//'/'//trim(file_to_write)//'_CLASSCTEM_M.nc'
-write(*,*)'writing to',file_to_write_extended
+!! Monthly file:
+file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_M.nc'
+write(*,*)'monthly: writing to',file_to_write_extended
 status = nf90_open(file_to_write_extended,nf90_write,ncid_m)
-if (status /= nf90_noerr) call handle_err(status)
+if (status /= nf90_noerr) call handle_major_err(status)
 
-! open the list of coordinates
+!! open the list of coordinates
  open(12,FILE=cellsfile,status='old')
 
 do cell = 1,num_land_cells
@@ -1093,7 +1093,7 @@ end if !if ctem.
 
 end do !loop over the gridcells
 
-!close the netcdf
+!close the monthly netcdf
 status = nf90_close(ncid_m)
 if (status/=nf90_noerr) call handle_err(status)
 
@@ -1105,7 +1105,7 @@ end if ! makemonthly
 deallocate(tiles_to_write)
 
 ! remove the tmp files
-command='rm tmp_a*.dat tmp_m*.dat tmp.dat'
+command='rm tmp*.dat'
 call system(command)
 
 end program netcdf_writer_fast
@@ -1129,6 +1129,26 @@ subroutine handle_err(status)
   end if
 
 end subroutine handle_err
+
+!====================================
+
+subroutine handle_major_err(status)
+
+  use netcdf
+
+  implicit none
+
+  !Internal subroutine - checks error status after each netcdf call,
+  !prints out text message each time an error code is returned.
+
+  integer, intent(in) :: status
+
+  if(status /= nf90_noerr) then
+    write(0,*)'netCDF error: ',trim(nf90_strerror(status))
+    stop
+  end if
+
+end subroutine handle_major_err
 
 !------------------------------
 subroutine parsecoords(coordstring,val)
