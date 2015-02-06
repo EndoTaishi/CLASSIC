@@ -138,6 +138,8 @@ yrange(2) = maxval(latvect)
 file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_A.nc'
 call create_netcdf(totyrs,yrst,realyrst,file_to_write_extended,CTEM,MOSAIC,.FALSE.,DOFIRE,DOWETLANDS,COMPETE_LNDUSE)
 
+write(*,*)'Done annual file'
+
 if (MAKEMONTHLY) then
   ! Then create the monthly file if you are making one:
   file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_M.nc'
@@ -576,7 +578,6 @@ deallocate(timenum)
 
 !================ Now define the variables===========
 ! CTEM first
-write(*,*)'bs'
 
 if (CTEM) then
  
@@ -731,12 +732,11 @@ if (CTEM) then
 
   enddo
 
-write(*,*)'bs2'
  ! Annual DISTURBANCE MOSAIC VARIABLES
     if (DOFIRE) then
-write(*,*)'bs3'
+
      do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
-      write(*,*)i
+
        status = nf90_redef(grpid_ann_dist_t) 
        if (status/=nf90_noerr) call handle_err(status)
 
@@ -775,7 +775,7 @@ write(*,*)'bs3'
  
        status = nf90_put_var(grpid_ann_dist_t,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,ntile,totyrs])
        if (status/=nf90_noerr) call handle_err(status)
-write(*,*)'bs4'
+       
      end do
 
     end if !dofire
@@ -983,7 +983,7 @@ write(*,*)'bs4'
    if (DOFIRE) then
 
     do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
-write(*,*)'here',i
+
      status = nf90_redef(grpid_ann_dist) 
      if (status/=nf90_noerr) call handle_err(status)
  
