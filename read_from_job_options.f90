@@ -1,7 +1,7 @@
 subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctemloop,ctem_on, &
                   ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
                   setco2conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
-                  compete,inibioclim,start_bare,rsfile,start_from_rs,idisp,izref, &
+                  compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
                   islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,& 
                   jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
@@ -129,6 +129,10 @@ logical, intent(out) :: start_from_rs ! if true, this option copies the _RS INI 
                                  ! it is handy when spinning up so you don't have to do a complicated copying of the
                                  ! RS files to restart from them. NOTE! This will not work on hadar or spica, instead
                                  ! you have to manually move the files and set this to .false.
+                                 
+integer, intent(out) :: jmosty    ! Year to start writing out the monthly output files. If you want to write monthly outputs right 
+                                  ! from the start then put in a negative number (like -9999), if you never want to have monthly
+                                  ! outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR                                 
 
 ! -------------
 ! class model switches
@@ -226,6 +230,7 @@ namelist /joboptions/ &
   start_bare,         &
   rsfile,             &
   start_from_rs,      &
+  jmosty,             &
   IDISP,              &
   IZREF,              &
   ISLFD,              &

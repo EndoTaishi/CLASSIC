@@ -181,12 +181,11 @@ c        using green leaf area index (ailcg) determine the leaf status for
 c        each pft. loops 190 and 200 thus initialize lfstatus, if this
 c        this information is not passed specifically as an initialization
 c        quantity. 
-
           if(lfstatus(i,j).eq.0)then
             if(ailcg(i,j).le.zero)then            
               lfstatus(i,j)=4                      !no leaves
             else if (ailcg(i,j).gt.lfthrs(i,j))then 
-              lfstatus(i,j)=2                      !normal growth
+              lfstatus(i,j)=2                      !normal growth    
             else                                  
               lfstatus(i,j)=4                      !treat this as no leaves
             endif                                  !so that we start growing 
@@ -275,8 +274,6 @@ c       broad leaf dcd cld & dry
           if(roottemp(i,4).lt.(roothrsh+273.16).or.
      &    (daylngth(i).lt.11.0.and.roottemp(i,4).lt.(11.15+273.16)))then
             lfstatus(i,4)=4
-!       write(*,'(a5,2i4,3f10.3)')'lf1=',lfstatus(i,4),iday,roottemp(i,4)
-!     & ,daylngth(i),ailcg(i,4)
           endif
         endif
        endif
@@ -352,7 +349,7 @@ c
               chkmode(i,j)=1         
             endif
 c
-c           for dcd trees we also need to go into "leaf fall" mode
+c           for dcd trees we also need to be able go into "leaf fall" mode
 c           directly from "max. growth" mode.
 c
 c           ndl dcd
@@ -390,6 +387,7 @@ c           bdl dcd dry
          endif
 310     continue
 300   continue
+
 c
 c     if in "normal growth" mode
 c     --------------------------
@@ -607,19 +605,13 @@ c
      &            ((roottemp(i,4).gt.(roothrsh+273.16)).and.
      &             (daylngth(i).gt.11.0) ) )then 
                     if(ailcg(i,j).lt.lfthrs(i,j))then
-!       write(*,'(a5,2i4,3f10.3)')'lf6=',lfstatus(i,4),iday,roottemp(i,4)
-!     & ,daylngth(i),ailcg(i,4)
                       lfstatus(i,j)=1      ! go into "max. growth" mode
                       chkmode(i,j)=1
                     else
-!       write(*,'(a5,2i4,3f10.3)')'lf7=',lfstatus(i,4),iday,roottemp(i,4)
-!     & ,daylngth(i),ailcg(i,4)
                       lfstatus(i,j)=2      ! go into "normal growth" mode
                       chkmode(i,j)=1
                     endif
                   else  
-!       write(*,'(a5,2i4,3f10.3)')'lf8=',lfstatus(i,4),iday,roottemp(i,4)
-!     & ,daylngth(i),ailcg(i,4)
                     lfstatus(i,j)=3        ! stay in "fall/harvest" mode 
                     chkmode(i,j)=1
                   endif
@@ -634,6 +626,31 @@ c
         endif
 400   continue
 c
+
+!       FLAG test done to see impact of no alloc to leaves after 20 days past solstice! JM Dec 5 2014.
+      do i = il1, il2
+         j = 2 !needle dcd
+           if (ailcg(i,j).gt.0.0) then 
+             if (iday > 192 .and. radl(i) > 0. .and. lfstatus(i,j).ne.
+     &             4) then ! north hemi past summer solstice
+                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
+             else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.  !172 is solstice / 355 is austral summer 
+     &               .and. lfstatus(i,j).ne. 4)then  ! southern hemi after austral summer solstice but before austral winter solstice
+                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
+             end if
+           endif
+         j = 4  ! broad dcd
+           if (ailcg(i,j).gt.0.0) then 
+              if (iday > 192  .and.  radl(i) >0. .and. lfstatus(i,j).ne.
+     &             4) then ! north hemi past summer solstice
+                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
+              else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.
+     &               .and. lfstatus(i,j).ne. 4) then  ! southern hemi after austral summer solstice but before austral winter solstice
+                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
+              end if
+           endif
+      end do
+
 c     check that leaf status of all vegetation types in all grid cells has
 c     been updated
 c
@@ -666,8 +683,21 @@ c
         n = sort(j)
         do 430 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
-         nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(365.0*lfespany(n)))) 
-         endif    
+         ! FLAG! TEST Dec 10 2014 JM. Testing the influence of only allowing
+         ! leaf aging turnover when the lfstatus is >1 (so normal alloc or 
+         ! no alloc to leaves). When lfstatus is 1, it is not applied. 
+            if (j == 2 .or. j == 4) then !only deciduous PFTs
+                if (lfstatus(i,j) .ne. 1) then
+                    nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
+     &                          (365.0*lfespany(n))))
+                else
+                    nrmlloss(i,j)=0. ! no loss during leaf out.
+                end if
+            else ! pfts other than deciduous
+                nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
+     &                (365.0*lfespany(n))))
+            end if  !decid/non
+         endif   !fcancmx 
 430     continue
 420   continue
 c

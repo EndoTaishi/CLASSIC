@@ -10,7 +10,7 @@
      1                            gdd5cur,surmncur,defmncur,srplscur,  
      2                           defctcur,  twarmm,  tcoldm,    gdd5, 
      3                            aridity,srplsmon,defctmon,anndefct,
-     4                           annsrpls,  annpcp,anpotevp,
+     4                           annsrpls,  annpcp,
      &                           dry_season_length,
      5                           lucemcom,  lucltrin, lucsocin,
      6                           pfcancmx,  nfcancmx, pstemmass,
@@ -33,7 +33,7 @@ c    ------------------- intermediate and to save above this line ---
      m                          srplscur_cmp,defctcur_cmp,  twarmm_cmp, 
      n                            tcoldm_cmp,    gdd5_cmp, aridity_cmp,
      o                          srplsmon_cmp,defctmon_cmp,anndefct_cmp,
-     p                          annsrpls_cmp,  annpcp_cmp,anpotevp_cmp,
+     p                          annsrpls_cmp,  annpcp_cmp,
      &                         dry_season_length_cmp,
      q                         lucemcom_cmp, lucltrin_cmp, lucsocin_cmp,
      r                           pfcancmx_cmp,  nfcancmx_cmp,
@@ -140,7 +140,6 @@ c               precipitation less than potential evaporation
 c     anndefct- annual water deficit (mm) 
 c     annsrpls- annual water surplus (mm)
 c     annpcp  - annual precipitation (mm)
-c     anpotevp- annual potential evaporation (mm)
 c     dry_season_length - length of dry season (months)
 c
 c    outputs
@@ -215,7 +214,6 @@ c                   latitudinal grid cell
 c     anndefct_cmp- annual water deficit (mm) in each latitudinal grid cell   
 c     annsrpls_cmp- annual water surplus (mm) in each latitudinal grid cell 
 c     annpcp_cmp  - annual precipitation (mm) in each latitudinal grid cell 
-c     anpotevp_cmp- annual potential evaporation (mm) in each latitudinal grid cell 
 c     dry_season_length_cmp - length of dry season (months) in each latitudinal grid cell
 c     lucemcom_cmp- land use change (luc) related combustion emission losses
 c                   in each latitudional grid cell, u-mol co2/m2.sec 
@@ -265,7 +263,7 @@ c
      4      srplscur(ilg),  defctcur(ilg), twarmm(ilg),
      5      tcoldm(ilg),    gdd5(ilg),     aridity(ilg),
      6      srplsmon(ilg),  defctmon(ilg), anndefct(ilg),
-     7      annsrpls(ilg),  annpcp(ilg),   anpotevp(ilg),
+     7      annsrpls(ilg),  annpcp(ilg),
      8      dry_season_length(ilg)
  
 c
@@ -307,7 +305,7 @@ c
      8      gdd5row(nlat,nmos),     aridityrow(nlat,nmos),
      9      srplsmonrow(nlat,nmos), defctmonrow(nlat,nmos), 
      1      anndefctrow(nlat,nmos), annsrplsrow(nlat,nmos),
-     2      annpcprow(nlat,nmos),   anpotevprow(nlat,nmos),
+     2      annpcprow(nlat,nmos),
      3      dry_season_lengthrow(nlat,nmos) 
 c
 c--------output arrays after mapping---------------------------------------
@@ -334,7 +332,7 @@ c
      4      srplscur_cmp(nlat), defctcur_cmp(nlat),twarmm_cmp(nlat), 
      5      tcoldm_cmp(nlat),   gdd5_cmp(nlat),    aridity_cmp(nlat),
      6      srplsmon_cmp(nlat), defctmon_cmp(nlat),anndefct_cmp(nlat),
-     7      annsrpls_cmp(nlat), annpcp_cmp(nlat),  anpotevp_cmp(nlat),
+     7      annsrpls_cmp(nlat), annpcp_cmp(nlat),
      8      dry_season_length_cmp(nlat)
 c
 c     ------------------------------------------------------------------
@@ -424,7 +422,6 @@ c
          anndefctrow(i,m)  = 0.0  
          annsrplsrow(i,m)  = 0.0  
          annpcprow(i,m)    = 0.0  
-         anpotevprow(i,m)  = 0.0  
          dry_season_lengthrow(i,m) = 0.0
 91     continue
 c
@@ -493,7 +490,6 @@ c
         anndefct_cmp(i)  = 0.0  
         annsrpls_cmp(i)  = 0.0  
         annpcp_cmp(i)    = 0.0  
-        anpotevp_cmp(i)  = 0.0
         dry_season_length_cmp(i) = 0.0  
         grclarea_cmp(i)  = 0.0
 90    continue 
@@ -573,7 +569,6 @@ c
          anndefctrow(ilmos(k),jlmos(k)) = anndefct(k) 
          annsrplsrow(ilmos(k),jlmos(k)) = annsrpls(k)   
          annpcprow(ilmos(k),jlmos(k))   = annpcp(k) 
-         anpotevprow(ilmos(k),jlmos(k)) = anpotevp(k)  
          dry_season_lengthrow(ilmos(k),jlmos(k)) = dry_season_length(k)
  130  continue
 c
@@ -659,7 +654,6 @@ c
         anndefct_cmp(i) = anndefctrow(i,m) 
         annsrpls_cmp(i) = annsrplsrow(i,m)   
         annpcp_cmp(i)   = annpcprow(i,m) 
-        anpotevp_cmp(i) = anpotevprow(i,m)
         dry_season_length_cmp(i) = dry_season_lengthrow(i,m)
         grclarea_cmp(i) = grclarearow(i,m)
        enddo 

@@ -20,4 +20,4 @@ xlf90_r -lnetcdff -lnetcdf creator_module_bigfile.f90 netcdf_creator_bigfile.f90
 
 #xlf90_r creator_module_bigfile.f90 netcdf_writer_bigfile.f90 -I /users/tor/acrn/rls/local/aix64/netcdf4.1.3/include -o netcdf_writer_bf  -L/users/tor/acrn/rls/local/aix64/netcdf4.1.3/lib -q64 -O -qarch=auto -qtune=auto -qextname -qrealsize=8 -qfree=f90 -qsuffix=f=f90
 
-xlf90_r -lnetcdff -lnetcdf creator_module_bigfile.f90 netcdf_writer_bigfile.f90 -I/fs/dev/crb/had01/data/sundry/include  -o netcdf_writer_bf  -L/fs/dev/crb/had01/data/sundry/lib -q64 -O -qarch=auto -qtune=auto -qmaxmem=-1 -qrealsize=8 -qfree=f90 -qsuffix=f=f90
+xlf90_r -lnetcdff -lnetcdf creator_module_bigfile.f90 netcdf_writer_fast.f90 -I/fs/dev/crb/had01/data/sundry/include  -o netcdf_writer_fast  -L/fs/dev/crb/had01/data/sundry/lib -q64 -O -qarch=auto -qtune=auto -qmaxmem=-1 -qrealsize=8 -qfree=f90 -qsuffix=f=f90

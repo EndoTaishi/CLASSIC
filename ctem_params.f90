@@ -691,7 +691,6 @@ bsratelt_g = 0.5605
 ! FLAG test new vals, JM Dec 29 2014.
 bsratesc_g = 0.01806
 
-
 a = 4.0
 
 ! landuse_change_mod.f90 parameters: --------------
@@ -822,8 +821,8 @@ if (compete) then
 
 ! Parameters used in more than one subroutine:
 
-lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+lfespany  =   [ 5.00, 0.40, 0.00, &  !FLAG TEST!! JM Dec 10, was 1.0 for PFT2 and 4
+                1.50, 0.40, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]
 
@@ -981,8 +980,8 @@ else ! Prescribed PFT fractional cover
 
 ! Parameters used in more than one subroutine:
 
-lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.75, 1.00, 1.00, &  
+lfespany  =   [ 5.00, 0.40, 0.00, & !FLAG TEST!! JM Dec 10, was 1.0 for PFT2 and 4
+                1.75, 0.40, 1.00, &  
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]
 
@@ -1036,21 +1035,30 @@ mxmortge = [ 0.005, 0.005, 0.00, &   ! Same as competition except for grasses.
 
 ! phenology.f parameters: ---------
 
-cdlsrtmx = [ 0.15, 0.30, 0.00, &
-             0.30, 0.15, 0.15, &
+!cdlsrtmx = [ 0.15, 0.30, 0.00, &
+!             0.30, 0.15, 0.15, &
+!             0.15, 0.15, 0.00, &
+!             0.15, 0.15, 0.00 ]
+! parameters from competition runs: (JM Dec 15 2014. TEST FLAG.)             
+cdlsrtmx = [ 0.10, 0.30, 0.00, &  
+             0.30, 0.40, 0.15, &
              0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
+             0.15, 0.15, 0.00 ]             
 
 drlsrtmx = [ 0.0025, 0.005, 0.000, &
              0.005, 0.005, 0.025, &
              0.005, 0.005, 0.000, &
              0.050, 0.050, 0.000 ]    
 
-lwrthrsh = [ -45.0, -5.0, 0.0, &
-               5.0,  5.0, 5.0, &
+!lwrthrsh = [ -45.0, -5.0, 0.0, &
+!               5.0,  5.0, 5.0, &
+!               5.0,  5.0, 0.0, &
+!               0.1,  5.0, 0.0 ] 
+! parameters from competition runs: (JM Dec 15 2014. TEST FLAG.)    
+lwrthrsh = [ -50.0, -5.0, 0.0, & 
+               5.0,  8.0, 5.0, &  
                5.0,  5.0, 0.0, &
-               0.1,  5.0, 0.0 ] 
-
+               0.1,  5.0, 0.0 ]
 roothrsh = 15.0
 
 ! turnover.f parameters: --------------

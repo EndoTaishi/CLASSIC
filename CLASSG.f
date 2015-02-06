@@ -17,7 +17,7 @@
      G                  TAGAT,  QAGAT,  PRESGAT,PREGAT, PADRGAT,
      H                  VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,
      I                  SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,
-     J                  GGEOGAT,
+     J                  GGEOGAT, THLWGAT,
      K                  ILMOS,JLMOS,IWMOS,JWMOS,
      L                  NML,NL,NM,ILG,IG,IC,ICP1,
      M                  TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,
@@ -39,12 +39,13 @@
      +                  TAROW,  QAROW,  PRESROW,PREROW, PADRROW,
      +                  VPDROW, TADPROW,RHOAROW,RPCPROW,TRPCROW,
      +                  SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,
-     +                  GGEOROW  )
+     +                  GGEOROW, THLWROT  )
 C
 C     Purpose: Gather variables from two-dimensional arrays (latitude 
 C     circle x mosaic tiles) onto long vectors for optimum processing 
 C     efficiency on vector supercomputers.
 C
+C     * JAN 15/15 - J.MELTON.  ADD THLW.
 C     * OCT 18/11 - M.LAZARE.  ADD IGDR.
 C     * OCT 07/11 - M.LAZARE.  ADD VMODL->VMODGAT.
 C     * OCT 05/11 - M.LAZARE.  PUT BACK IN PRESGROW->PRESGAT
@@ -210,6 +211,7 @@ C
       REAL TCSROT (NL,NM,IG)    !Thermal conductivity of soil particles 
                                 ![W m-1 K-1]
       REAL THFCROT(NL,NM,IG)    !Field capacity [m3 m-3]
+      REAL THLWROT(NL,NM,IG)    !Wilting point [m3 m-3]
       REAL PSIWROT(NL,NM,IG)    !Soil moisture suction at wilting point 
                                 ![m]
       REAL DLZWROT(NL,NM,IG)    !Permeable thickness of soil layer [m]
@@ -258,7 +260,7 @@ C
      6        WFSFGAT(ILG),      WFCIGAT(ILG),      ALGWGAT(ILG),     
      7        ALGDGAT(ILG),      ASVDGAT(ILG),      ASIDGAT(ILG),     
      8        AGVDGAT(ILG),      AGIDGAT(ILG),      ZSNLGAT(ILG),
-     9        ZPLGGAT(ILG),      ZPLSGAT(ILG)
+     9        ZPLGGAT(ILG),      ZPLSGAT(ILG),      THLWGAT(ILG,IG)
 C
       INTEGER ISNDROT(NL,NM,IG), ISNDGAT(ILG,IG)    !Sand content flag
       INTEGER IGDRROT(NL,NM),    IGDRGAT(ILG)   !Index of soil layer in 
@@ -402,6 +404,7 @@ C
           HCPSGAT(K,L)=HCPSROT(ILMOS(K),JLMOS(K),L)
           TCSGAT (K,L)=TCSROT (ILMOS(K),JLMOS(K),L)
           THFCGAT(K,L)=THFCROT(ILMOS(K),JLMOS(K),L)
+          THLWGAT(K,L)=THLWROT(ILMOS(K),JLMOS(K),L)          
           PSIWGAT(K,L)=PSIWROT(ILMOS(K),JLMOS(K),L)
           DLZWGAT(K,L)=DLZWROT(ILMOS(K),JLMOS(K),L)
           ZBTWGAT(K,L)=ZBTWROT(ILMOS(K),JLMOS(K),L)

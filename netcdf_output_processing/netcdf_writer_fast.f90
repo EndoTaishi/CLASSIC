@@ -166,7 +166,7 @@ if (lexist) then
 
     !  first throw out header
        do h = 1,5
-    	read(83,*,ERR=111)
+    	read(83,*)
        end do
 
     !Allocate arrays
@@ -174,7 +174,7 @@ if (lexist) then
     
        do y = 1,totyrs
     
-         read(83,*,ERR=111)dummy_year,class_a(1:numclasvars_a,y)
+         read(83,*)dummy_year,class_a(1:numclasvars_a,y)
 
        end do
 
@@ -195,8 +195,6 @@ do v = 1,numclasvars_a ! begin vars loop
    if (status/=nf90_noerr) call handle_err(status)
 
 end do ! vars loop
-
-111 continue !error thrown by file
 
 ! deallocate arrays
 deallocate(class_a)
@@ -222,12 +220,12 @@ if (lexist) then
     allocate(pft_tot(totyrs))
 
    do h = 1,6
-	read(92,*,ERR=112)
+	read(92,*)
    end do
 
    do y = 1,totyrs
 
-    read(92,*,ERR=112)dummy_year,pftf(1:ctemnpft,y),pft_tot(y),dummy_var,pftexist(1:ctemnpft,y)
+    read(92,*)dummy_year,pftf(1:ctemnpft,y),pft_tot(y),dummy_var,pftexist(1:ctemnpft,y)
 
    end do
 
@@ -270,8 +268,6 @@ end do ! pfts loop
    status = nf90_put_var(grpid,var_id,pft_tot(:),start=[xlon,ylat,yrst],count=[1,1,totyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
-112 continue !error thrown by file
-
 deallocate(pftf)
 deallocate(pft_tot)
 deallocate(pftexist)
@@ -304,7 +300,7 @@ if (lexist) then
   allocate(ctem_a(numctemvars_a,totyrs))
 
   do y = 1,totyrs
-     read(75,*,ERR=113)dummy_year,ctem_a(1:numctemvars_a,y)
+     read(75,*)dummy_year,ctem_a(1:numctemvars_a,y)
   end do
   
   close(75)
@@ -323,8 +319,6 @@ if (lexist) then
    if (status/=nf90_noerr) call handle_err(status)
 
   end do ! vars loop
-
-113 continue !error thrown by file
 
 ! deallocate arrays
 deallocate(ctem_a)
@@ -351,7 +345,7 @@ if (DOFIRE) then
   allocate(ctem_d_a(nctemdistvars_a,totyrs))
   
   do y = 1,totyrs
-     read(85,*,ERR=114)dummy_year,ctem_d_a(1:nctemdistvars_a,y)
+     read(85,*)dummy_year,ctem_d_a(1:nctemdistvars_a,y)
   end do      
   
   close(85)
@@ -371,8 +365,6 @@ if (DOFIRE) then
 
   end do ! vars loop
 
-114 continue !error thrown by file
-
  deallocate(ctem_d_a)
 
  end if !lexist
@@ -390,10 +382,10 @@ if (DOWETLANDS) then
   allocate(ctem_w_a(nctemwetvars_a,totyrs))         
   !  first throw out header
       do h = 1,6
-        read(900,*,ERR=115)
+        read(900,*)
       end do
   do y = 1,totyrs   
-      read(900,*, ERR=115) dummy_year,ctem_w_a(1:nctemwetvars_a,y)
+      read(900,*) dummy_year,ctem_w_a(1:nctemwetvars_a,y)
   end do    
 
   close(900)
@@ -412,8 +404,6 @@ if (DOWETLANDS) then
     if (status/=nf90_noerr) call handle_err(status)
 
   end do ! vars loop
-
-115 continue !error thrown by file
 
   deallocate(ctem_w_a)
   
@@ -444,7 +434,7 @@ end if  !if wetlands.
 
 !  first throw out header
    do h = 1,6
-        read(751,*,ERR=116)
+        read(751,*)
    end do
 
   allocate(tmp(numctemvars_a))
@@ -458,7 +448,7 @@ end if  !if wetlands.
 
       do while (yrin == yr_now)
 
-          read(751,*,err=116,end=90) yrin,tmp(1:numctemvars_a),dummy,dummynum,dummy,tilnum
+          read(751,*,end=90) yrin,tmp(1:numctemvars_a),dummy,dummynum,dummy,tilnum
           if (yrin == realyrst) then
              tiles_to_write = cshift(tiles_to_write,1)
              tiles_to_write(1) = tilnum
@@ -502,8 +492,6 @@ end if
   end do ! vars loop
  end do !tiles loop
 
-116 continue !error thrown by file
-
 ! deallocate arrays
 deallocate(ctem_a_mos)
 
@@ -530,7 +518,7 @@ if (DOFIRE) then
 
  !  first throw out header
    do h = 1,6
-	read(851,*,ERR=117)
+	read(851,*)
    end do
 
    yrin=realyrst
@@ -538,7 +526,7 @@ if (DOFIRE) then
      yr_now = realyrst + y - 1
      do while (yrin == yr_now)
 
-       read(851,*,err=117,end=91) yrin,tmpd(1:nctemdistvars_a),dummy,dummynum,dummy,tilnum
+       read(851,*,end=91) yrin,tmpd(1:nctemdistvars_a),dummy,dummynum,dummy,tilnum
  
        if (yrin == yr_now) then
          do v = 1,nctemdistvars_a ! begin vars loop
@@ -572,8 +560,6 @@ if (DOFIRE) then
 
    end do ! vars loop
   end do !tiles loop
-
-117 continue !error thrown by file
 
   deallocate(ctem_d_a_mos)
   
@@ -645,12 +631,12 @@ end if
 
  !  first throw out header (5 lines)
    do h = 1,5
-	read(81,*,err=118)
+	read(81,*)
    end do
    
    do y = 1,monyrs
     do m=1,12
-     read(81,*,err=118)dummy_month,dummy_year,class_m(1:numclasvars_m,y,m)
+     read(81,*)dummy_month,dummy_year,class_m(1:numclasvars_m,y,m)
     end do
    end do
 
@@ -668,8 +654,6 @@ do m=1,12  !Begin Month Loop
 
   end do !Var loop
 end do   !End month loop
-
-118 continue !error thrown by file
 
 ! deallocate arrays
 deallocate(class_m)
@@ -689,12 +673,12 @@ end if !lexist
 
    !  first throw out header (5 lines)
    do h = 1,5
-	read(82,*,err=119)
+	read(82,*)
    end do
         
    do y = 1,monyrs
     do m=1,12
-     read(82,*,err=119)dummy_month,dummy_year,class_s_m(1,1,y,m),class_s_m(2,1,y,m),class_s_m(3,1,y,m),class_s_m(1,2,y,m),class_s_m(2,2,y,m),class_s_m(3,2,y,m),class_s_m(1,3,y,m),class_s_m(2,3,y,m),class_s_m(3,3,y,m)
+     read(82,*)dummy_month,dummy_year,class_s_m(1,1,y,m),class_s_m(2,1,y,m),class_s_m(3,1,y,m),class_s_m(1,2,y,m),class_s_m(2,2,y,m),class_s_m(3,2,y,m),class_s_m(1,3,y,m),class_s_m(2,3,y,m),class_s_m(3,3,y,m)
     end do
    end do
 
@@ -715,8 +699,6 @@ do m=1,12   !begin month loop
   end do ! vars loop
  end do ! soil layer loop
 end do  !End Month Loop
-
-119 continue !error thrown by file
 
 ! deallocate arrays
 deallocate(class_s_m)
@@ -742,12 +724,12 @@ if (COMPETE_LNDUSE) then
 
    !  first throw out header (6 lines)
    do h = 1,6
-	read(91,*,err=120)
+	read(91,*)
    end do
    
    do y = 1,monyrs
     do m=1,12
-      read(91,*,err=120)dummy_month,dummy_year,mpftf(1:ctemnpft,y,m),mpft_tot(y,m),dummy_var,mpftexist(1:ctemnpft,y,m)
+      read(91,*)dummy_month,dummy_year,mpftf(1:ctemnpft,y,m),mpft_tot(y,m),dummy_var,mpftexist(1:ctemnpft,y,m)
     end do
    end do
 
@@ -795,8 +777,6 @@ end if
    if (status/=nf90_noerr) call handle_err(status)
  end do
 
-120 continue !error thrown by file
-
 deallocate(mpftexist)
 deallocate(mpftf)
 deallocate(tmpm)
@@ -830,7 +810,7 @@ allocate(ctem_m(numctemvars_m,monyrs,12))
 !---Read in Variables
    do y = 1,monyrs
     do m=1,12
-     read(74,*,err=121)dummy_month,dummy_year,ctem_m(1:numctemvars_m,y,m)
+     read(74,*)dummy_month,dummy_year,ctem_m(1:numctemvars_m,y,m)
     end do !m loop
    end do !y loop
  close(74)
@@ -851,8 +831,6 @@ end if
 
   end do !months
  end do ! vars loop
-
-121 continue !error thrown by file
 
 ! deallocate arrays
 
@@ -880,7 +858,7 @@ if (lexist) then
 !---Read in Variables
     do y = 1,monyrs
      do m=1,12
-      read(84,*,err=122)dummy_month,dummy_year,ctem_d_m(1:nctemdistvars_m,y,m)
+      read(84,*)dummy_month,dummy_year,ctem_d_m(1:nctemdistvars_m,y,m)
      end do !m loop
     end do !y loop
 
@@ -903,8 +881,6 @@ if (lexist) then
   end do !months
  end do ! vars loop
 
-122 continue !error thrown by file
-
  deallocate(ctem_d_m) 
  
  end if !lexist 
@@ -922,13 +898,13 @@ if (DOWETLANDS) then
    
    !  first throw out header (6 lines)
    do h = 1,6
-	read(910,*,err=123)
+	read(910,*)
    end do
 
 !---Read in Variables
    do y = 1,monyrs
     do m=1,12
-        read(910,*,err=123) dummy_month,dummy_year,ctem_w_m(1:nctemwetvars_m,y,m)
+        read(910,*) dummy_month,dummy_year,ctem_w_m(1:nctemwetvars_m,y,m)
     end do !m loop
    end do !y loop
    
@@ -949,8 +925,6 @@ if (DOWETLANDS) then
 
   end do !months
  end do ! vars loop
-
-123 continue !error thrown by file
 
  deallocate(ctem_w_m) 
  
@@ -985,7 +959,7 @@ allocate(tmp(numctemvars_m))
 
 !  first throw out header (6 lines) as it is there still
 do h = 1,6
- read(741,*,err=124)
+ read(741,*)
 end do
 
 ! We have to keep track of the month that is read in as it is the only way we know that we are done the tiles for a gridcell.
@@ -997,7 +971,7 @@ end do
 
       do while (mo == m) 
 
-          read(741,*,err=124,END=11) mo,yrin,tmp(1:numctemvars_m),dummy,dummynum,dummy,tilnum
+          read(741,*,END=11) mo,yrin,tmp(1:numctemvars_m),dummy,dummynum,dummy,tilnum
 
         if (mo == m) then
         ! Assign that just read in to its vars
@@ -1040,8 +1014,6 @@ end if
   end do
  end do
 
-124 continue !error thrown by file
-
 ! deallocate arrays
 
 deallocate(ctem_m_mos)
@@ -1069,14 +1041,14 @@ if (DOFIRE) then
 
   !  first throw out header (6 lines) as it is there still
   do h = 1,6
-   read(841,*,err=125)
+   read(841,*)
   end do
 
   do y = 1,monyrs
    do m=1,12
       mo=m  !initialize the month counter to the month of the outer loop
       do while (mo == m) 
-          read(841,*,err=125,END=12) mo,yrin,tmpd(1:nctemdistvars_m),dummy,dummynum,dummy,tilnum
+          read(841,*,END=12) mo,yrin,tmpd(1:nctemdistvars_m),dummy,dummynum,dummy,tilnum
           if (mo == m) then
             do v = 1,nctemdistvars_m ! begin vars loop
               ctem_d_m_mos(v,tilnum,y,m)=tmpd(v)
@@ -1111,9 +1083,6 @@ if (DOFIRE) then
    end do
   end do
  end do
- 
- 125 continue !error thrown by file
- 
  deallocate(ctem_d_m_mos)
  
  end if ! lexist

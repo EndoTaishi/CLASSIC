@@ -91,6 +91,11 @@ pftarrays=0.
         ! open the luc file
 
         open(unit=15,file=lucdat(1:strlen(lucdat))//'.LUC')
+        
+        ! Skip first three rows:
+        read(15,*)
+        read(15,*)
+        read(15,*)
 
         ! Skip first three rows:
         read(15,*)
