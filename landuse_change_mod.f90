@@ -92,6 +92,11 @@ pftarrays=0.
 
         open(unit=15,file=lucdat(1:strlen(lucdat))//'.LUC')
 
+        ! Skip first three rows:
+        read(15,*)
+        read(15,*)
+        read(15,*)
+
 !       get first year of luc data
 !       note we load the nfcancmx, not pfcancmx array. this is because this
 !       nfcancmx value is passed to the pfcancmx array at the start of each simulation
