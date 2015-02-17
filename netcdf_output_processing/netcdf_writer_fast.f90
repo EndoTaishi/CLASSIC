@@ -176,6 +176,7 @@ if (lexist) then
     
          read(83,*,iostat=io_set)dummy_year,class_a(1:numclasvars_a,y)
          if (io_set .ne. 0 .and. y < totyrs) then
+            close(83)
             goto 111
          end if   
        end do
@@ -232,6 +233,7 @@ if (lexist) then
 
     read(92,*,iostat=io_set)dummy_year,pftf(1:ctemnpft,y),pft_tot(y),dummy_var,pftexist(1:ctemnpft,y)
     if (io_set .ne. 0 .and. y < totyrs) then
+       close(92)
        goto 112
     end if   
 
@@ -302,6 +304,7 @@ inquire(file=infile,exist=lexist)
 if (lexist) then
 
   command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a.dat'  !this removes any header!
+
   call system(command)
 
   OPEN(75,FILE='tmp_a.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
@@ -312,6 +315,7 @@ if (lexist) then
   do y = 1,totyrs
      read(75,*,iostat=io_set)dummy_year,ctem_a(1:numctemvars_a,y)
      if (io_set .ne. 0 .and. y < totyrs) then
+        close(75)    
         goto 113
      end if   
   end do
@@ -362,6 +366,7 @@ if (DOFIRE) then
   do y = 1,totyrs
      read(85,*,iostat=io_set)dummy_year,ctem_d_a(1:nctemdistvars_a,y)
      if (io_set .ne. 0 .and. y < totyrs) then
+         close(85)
          goto 114
      end if   
   end do      
@@ -407,6 +412,7 @@ if (DOWETLANDS) then
   do y = 1,totyrs   
       read(900,*,iostat=io_set) dummy_year,ctem_w_a(1:nctemwetvars_a,y)
       if (io_set .ne. 0 .and. y < totyrs) then
+         close(900)
          goto 115
       end if   
 
@@ -476,6 +482,7 @@ end if  !if wetlands.
 
           read(751,*,iostat=io_set,end=90) yrin,tmp(1:numctemvars_a),dummy,dummynum,dummy,tilnum
           if (io_set .ne. 0 .and. y < totyrs) then
+            close(751)
             goto 116
           end if   
 
@@ -560,6 +567,7 @@ if (DOFIRE) then
 
        read(851,*,iostat=io_set,end=91) yrin,tmpd(1:nctemdistvars_a),dummy,dummynum,dummy,tilnum
        if (io_set .ne. 0 .and. y < totyrs) then
+          close(851)
           goto 117
        end if   
  
@@ -675,6 +683,7 @@ end if
     do m=1,12
      read(81,*,iostat=io_set)dummy_month,dummy_year,class_m(1:numclasvars_m,y,m)
      if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         close(81)
          goto 118
      end if   
 
@@ -723,6 +732,7 @@ end if !lexist
     do m=1,12
      read(82,*,iostat=io_set)dummy_month,dummy_year,class_s_m(1,1,y,m),class_s_m(2,1,y,m),class_s_m(3,1,y,m),class_s_m(1,2,y,m),class_s_m(2,2,y,m),class_s_m(3,2,y,m),class_s_m(1,3,y,m),class_s_m(2,3,y,m),class_s_m(3,3,y,m)
      if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         close(82)
          goto 119
      end if   
 
@@ -780,6 +790,7 @@ if (COMPETE_LNDUSE) then
     do m=1,12
       read(91,*,iostat=io_set)dummy_month,dummy_year,mpftf(1:ctemnpft,y,m),mpft_tot(y,m),dummy_var,mpftexist(1:ctemnpft,y,m)
       if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         close(91)
          goto 120
       end if   
     end do
@@ -866,6 +877,7 @@ allocate(ctem_m(numctemvars_m,monyrs,12))
     do m=1,12
      read(74,*,iostat=io_set)dummy_month,dummy_year,ctem_m(1:numctemvars_m,y,m)
      if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         close(74)
          goto 121
      end if   
     end do !m loop
@@ -919,6 +931,7 @@ if (lexist) then
      do m=1,12
       read(84,*,iostat=io_set)dummy_month,dummy_year,ctem_d_m(1:nctemdistvars_m,y,m)
       if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         close(84)
          goto 122
       end if   
      end do !m loop
@@ -970,6 +983,7 @@ if (DOWETLANDS) then
     do m=1,12
         read(910,*,iostat=io_set) dummy_month,dummy_year,ctem_w_m(1:nctemwetvars_m,y,m)
         if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         close(910)
          goto 123
         end if   
     end do !m loop
@@ -1042,6 +1056,7 @@ end do
 
           read(741,*,iostat=io_set,END=11) mo,yrin,tmp(1:numctemvars_m),dummy,dummynum,dummy,tilnum
           if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+            close(741)
             goto 124
           end if   
 
@@ -1124,6 +1139,7 @@ if (DOFIRE) then
       do while (mo == m) 
           read(841,*,iostat=io_set,END=12) mo,yrin,tmpd(1:nctemdistvars_m),dummy,dummynum,dummy,tilnum
           if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+             close(841)
              goto 125
           end if   
           if (mo == m) then
