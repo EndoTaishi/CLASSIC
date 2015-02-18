@@ -239,9 +239,9 @@ pftarrays=0.
           do i = 1, nltest
            temp = 0.0
            if (mosaic) then
-            if (farerow(i,nmtest) < seed) then
+            if (farerow(i,nmtest) < seed) then  !FLAG should this include a compete switch that compares to see if true and 0 otherwise? JM Feb 17 2015
 
-             call adjust_luc_fracs(i,mosaic,nfcancmxrow,farerow(i,nmtest))
+             call adjust_luc_fracs(i,mosaic,nfcancmxrow,farerow(i,nmtest),compete)
 
              do m = 1, nmtest
                 n = m
@@ -264,7 +264,7 @@ pftarrays=0.
              pfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
             else !mosaic
 !            ensure that the fraction is >= seed
-             pfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))
+             pfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))!FLAG should this include a compete switch? Can't a mosaic tile be 0 if not in compete mode? JM Feb 17 2015
             endif
            enddo
           enddo
@@ -341,7 +341,7 @@ real, dimension(nltest) :: bare_ground_frac
               read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
               do m = 1, nmtest-1    !nmtest-1 same as icc
                j = m
-               nfcancmxrow(i,m,j) = max(seed,temparray(m)) 
+               nfcancmxrow(i,m,j) = max(seed,temparray(m)) !FLAG Can it actually be 0 if compete not on? JM Feb 17 2015
               enddo !m loop
             endif
            enddo !nltest
@@ -383,11 +383,15 @@ real, dimension(nltest) :: bare_ground_frac
           enddo
           
           do i = 1, nltest
-           if (bare_ground_frac(i) < seed) then
+           if (compete .and. bare_ground_frac(i) < seed) then
 
-             call adjust_luc_fracs(i,mosaic,nfcancmxrow,bare_ground_frac(i))
+             call adjust_luc_fracs(i,mosaic,nfcancmxrow,bare_ground_frac(i),compete)           
 
-           endif !bare_ground_frac<seed
+           else if (.not. compete .and. bare_ground_frac(i) < 0.) then
+           
+             call adjust_luc_fracs(i,mosaic,nfcancmxrow,bare_ground_frac(i),compete)
+           
+           endif 
           enddo !nltest
 
 return
@@ -721,7 +725,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     but you can't take it from crops!
       pftarrays=0.
       do 304 i = il1, il2
-         if (barefrac(i).lt.0.0) then !and.abs(barefrac(i)).ge.1.0e-05) then  !FLAG - should this be minbare? jM Jun 4 
+         if (barefrac(i).lt.0.0) then ! compete only needs minbare but it checks later.
            k=1
            do j = 1,icc
             if (.not. crop(j)) then
@@ -730,13 +734,17 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
              k=k+1 
             end if          
            end do   
-!            lrgstpft = maxloc(fcancmx(i,1:icc))
+           
             lrgstpft = maxloc(pftarrays(i,:))
-            j = indexpos(i,lrgstpft(1))  !FLAG test
+            j = indexpos(i,lrgstpft(1))  
              
-!            fcancmx(i,lrgstpft(1)) = fcancmx(i,lrgstpft(1)) + barefrac(i)
-            fcancmx(i,j) = fcancmx(i,j) + barefrac(i) - minbare !flag
-            barefrac(i) = minbare !flag !0.0
+            if (compete) then
+               fcancmx(i,j) = fcancmx(i,j) + barefrac(i) - minbare 
+               barefrac(i) = minbare 
+            else
+               fcancmx(i,j) = fcancmx(i,j) + barefrac(i)
+               barefrac(i) = 0.0
+            end if
          endif
 304   continue
 
@@ -751,7 +759,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !     extra amount from the pft with the largest area. jm apr 24 2013.
 !     but you can't take it from crops!
       do 314 i = il1, il2
-         if (pbarefra(i).lt.0.0) then !.and.abs(pbarefra(i)).ge.1.0e-05) then
+         if (pbarefra(i).lt.0.0) then 
            k=1
            do j = 1,icc
             if (.not. crop(j)) then
@@ -760,13 +768,18 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
              k=k+1 
             end if          
            end do   
-           ! lrgstpft = maxloc(fcancmy(i,1:icc))
+
             lrgstpft = maxloc(pftarrays(i,:))
-            j = indexpos(i,lrgstpft(1))  !FLAG test
+            j = indexpos(i,lrgstpft(1))  
              
-!            fcancmy(i,lrgstpft(1)) = fcancmy(i,lrgstpft(1)) + pbarefra(i)
-            fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare !flag
-            pbarefra(i) = minbare !flag !0.0
+           if (compete) then
+                fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare 
+                pbarefra(i) = minbare 
+            else
+                fcancmy(i,j) = fcancmy(i,j) + pbarefra(i)
+                pbarefra(i) = 0.0
+            end if
+
          endif
 314   continue
 
@@ -1216,7 +1229,7 @@ end subroutine luc
 !=======================================================================
 
 subroutine adjust_luc_fracs(i,mosaic,nfcancmxrow, &
-                          bare_ground_frac)
+                          bare_ground_frac, compete)
 
 ! this subroutine adjusts the amount of each pft to ensure that the fraction
 ! of gridcell bare ground is >0.
@@ -1232,22 +1245,30 @@ integer, intent(in) :: i
 real, dimension(nlat,nmos,icc), intent(inout) :: nfcancmxrow
 real, intent(in) :: bare_ground_frac
 logical, intent(in) :: mosaic
+logical, intent(in) :: compete
 
 real, dimension(nlat,nmos,icc) :: outnfcrow
 
 ! local variables:
 integer :: m, j
-real, dimension(icc) :: frac_abv_seed
+real, dimension(icc) :: frac_abv_min_val
 real :: needed_bare,reduce_per_pft,tot
+real :: min_val
 
 !-------------------------
 tot = 0.0
 
-! find the amount of needed space in the other pfts
-! need a minimum bare area of seed.
-needed_bare=(-bare_ground_frac) + seed
+if (compete) then
+    min_val = seed
+else
+    min_val = 0.
+end if        
 
-! get the proportionate amounts of each pft above the seed lower limit
+! find the amount of needed space in the other pfts
+! need a minimum bare area of min_val.
+needed_bare=(-bare_ground_frac) + min_val
+
+! get the proportionate amounts of each pft above the min_val lower limit
 do j = 1,icc
   if (mosaic) then
     m = j
@@ -1255,25 +1276,25 @@ do j = 1,icc
     m = 1
   end if
 
-  frac_abv_seed(j)=max(0.0,nfcancmxrow(i,m,j)-seed)
-  tot = tot + frac_abv_seed(j)
+  frac_abv_min_val(j)=max(0.0,nfcancmxrow(i,m,j)-min_val)
+  tot = tot + frac_abv_min_val(j)
 
 enddo
 
-! add in the bare ground min fraction of seed.
-  tot = tot + seed
+! add in the bare ground min fraction of min_val.
+  tot = tot + min_val
 
 ! now reduce the pfts proportional to their fractional area to make
-! the bare ground fraction be the seed amount and no other pft be less than
-! seed
+! the bare ground fraction be the min_val amount and no other pft be less than
+! min_val
 do j = 1,icc
   if (mosaic) then
     m = j
   else
     m = 1
   end if
-  outnfcrow(i,m,j)=max(seed,nfcancmxrow(i,m,j) - needed_bare * &
-                       frac_abv_seed(j) / tot)
+  outnfcrow(i,m,j)=max(min_val,nfcancmxrow(i,m,j) - needed_bare * &
+                       frac_abv_min_val(j) / tot)
   nfcancmxrow(i,m,j) = outnfcrow(i,m,j)
 enddo
 
@@ -1370,7 +1391,7 @@ do i = il1, il2
     if (barefrac(i) .lt. 0.0) then
        ! tmpfcancmx has a nilg,1,icc dimension as adjust_luc_fracs expects
        ! a 'row' structure of the array.
-       call adjust_luc_fracs(i,.false.,tmpfcancmx,barefrac(i))
+       call adjust_luc_fracs(i,.false.,tmpfcancmx,barefrac(i),.true.)
        do j = 1, icc
           outdelfrac(i,j) = tmpfcancmx(i,1,j) - yesfrac(i,j)
        end do

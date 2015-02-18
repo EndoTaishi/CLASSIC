@@ -6527,13 +6527,14 @@ c            after rounding to the number of sig figs used in the output
 c            this rounds to 3 decimal places. if you are found to be over
 c            or under, arbitrarily reduce one of the pfts. the amount of
 c            the change will be inconsequential. 
-              rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 10000.0 + 5.0))
+              rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 10000.0))
      1                                                         / 10000.0
              enddo
 
              if (rnded_pft(1) + rnded_pft(2) .ne. 1.0) then
               dvdfcanrow(i,m,1) = 1.0 - rnded_pft(2)
               dvdfcanrow(i,m,2) = rnded_pft(2)
+              write(*,*)dvdfcanrow(i,m,1),dvdfcanrow(i,m,2) 
              end if 
              if (rnded_pft(3) + rnded_pft(4) + rnded_pft(5) 
      1                                                 .ne. 1.0) then
