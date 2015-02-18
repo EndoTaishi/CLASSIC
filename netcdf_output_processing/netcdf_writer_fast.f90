@@ -166,7 +166,12 @@ if (lexist) then
 
     !  first throw out header
        do h = 1,5
-    	read(83,*)
+    	read(83,*,iostat=io_set)
+    	if (io_set .ne. 0) then
+    	    write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.OF1Y_G'
+    	    close(83)
+    	    goto 111
+    	end if     
        end do
 
     !Allocate arrays
@@ -176,6 +181,7 @@ if (lexist) then
     
          read(83,*,iostat=io_set)dummy_year,class_a(1:numclasvars_a,y)
          if (io_set .ne. 0 .and. y < totyrs) then
+    	    write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.OF1Y_G'         
             close(83)
             goto 111
          end if   
@@ -226,13 +232,19 @@ if (lexist) then
     allocate(pft_tot(totyrs))
 
    do h = 1,6
-	read(92,*)
+	read(92,*,iostat=io_set)
+	if (io_set .ne. 0) then
+      write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.CT07Y_GM'
+      close(92)
+      goto 112
+    end if     
    end do
 
    do y = 1,totyrs
 
     read(92,*,iostat=io_set)dummy_year,pftf(1:ctemnpft,y),pft_tot(y),dummy_var,pftexist(1:ctemnpft,y)
     if (io_set .ne. 0 .and. y < totyrs) then
+       write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.CT07Y_GM'    
        close(92)
        goto 112
     end if   
@@ -307,14 +319,19 @@ if (lexist) then
 
   call system(command)
 
+  ! Check to make sure the file was created
+  !inquire(file='tmp_a.dat',exist=lexist)
+  
+  !if (lexist) then
   OPEN(75,FILE='tmp_a.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
-
+  
   !allocate the size of the arrays for the output data
   allocate(ctem_a(numctemvars_a,totyrs))
 
   do y = 1,totyrs
      read(75,*,iostat=io_set)dummy_year,ctem_a(1:numctemvars_a,y)
      if (io_set .ne. 0 .and. y < totyrs) then
+        write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.CT01Y_G/M'
         close(75)    
         goto 113
      end if   
@@ -339,9 +356,10 @@ if (lexist) then
 
 113 continue !error thrown by file
 
-! deallocate arrays
-deallocate(ctem_a)
-
+  ! deallocate arrays
+  deallocate(ctem_a)
+  
+! endif !lexist (tmp_a file)
 end if !lexist
 
 ! -----Fire --------------
@@ -359,6 +377,7 @@ if (DOFIRE) then
 
      command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_d.dat'
      call system(command)
+     
      OPEN(85,FILE='tmp_a_d.dat',status='old',form='formatted') 
 
   allocate(ctem_d_a(nctemdistvars_a,totyrs))
@@ -366,6 +385,7 @@ if (DOFIRE) then
   do y = 1,totyrs
      read(85,*,iostat=io_set)dummy_year,ctem_d_a(1:nctemdistvars_a,y)
      if (io_set .ne. 0 .and. y < totyrs) then
+         write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.CT06Y_G/M'
          close(85)
          goto 114
      end if   
@@ -407,11 +427,17 @@ if (DOWETLANDS) then
   allocate(ctem_w_a(nctemwetvars_a,totyrs))         
   !  first throw out header
       do h = 1,6
-        read(900,*)
+        read(900,*,iostat=io_set)
+        if (io_set .ne. 0) then
+          write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT08Y_G/M'
+          close(900)
+          goto 115
+        end if     
       end do
   do y = 1,totyrs   
       read(900,*,iostat=io_set) dummy_year,ctem_w_a(1:nctemwetvars_a,y)
       if (io_set .ne. 0 .and. y < totyrs) then
+         write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT08Y_G/M'      
          close(900)
          goto 115
       end if   
@@ -466,7 +492,12 @@ end if  !if wetlands.
 
 !  first throw out header
    do h = 1,6
-        read(751,*)
+        read(751,*,iostat=io_set)
+        if (io_set .ne. 0) then
+          write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT01Y_G/M tiled'
+          close(751)
+          goto 116
+        end if             
    end do
 
   allocate(tmp(numctemvars_a))
@@ -482,6 +513,7 @@ end if  !if wetlands.
 
           read(751,*,iostat=io_set,end=90) yrin,tmp(1:numctemvars_a),dummy,dummynum,dummy,tilnum
           if (io_set .ne. 0 .and. y < totyrs) then
+            write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT01Y_G/M tiled'          
             close(751)
             goto 116
           end if   
@@ -557,7 +589,12 @@ if (DOFIRE) then
 
  !  first throw out header
    do h = 1,6
-	read(851,*)
+	read(851,*,iostat=io_set)
+    if (io_set .ne. 0) then
+      write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT06Y_G/M tiled'
+      close(851)
+      goto 117
+    end if             
    end do
 
    yrin=realyrst
@@ -567,6 +604,7 @@ if (DOFIRE) then
 
        read(851,*,iostat=io_set,end=91) yrin,tmpd(1:nctemdistvars_a),dummy,dummynum,dummy,tilnum
        if (io_set .ne. 0 .and. y < totyrs) then
+          write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT06Y_G/M tiled'       
           close(851)
           goto 117
        end if   
@@ -627,6 +665,7 @@ if (status/=nf90_noerr) call handle_err(status)
 !=====================CLASS_MONTHLY files============================
 ! *******************************************************************
 
+
 if (MAKEMONTHLY) then
 
 ! Open the netcdf file for writing
@@ -676,13 +715,19 @@ end if
 
  !  first throw out header (5 lines)
    do h = 1,5
-	read(81,*)
+	read(81,*,iostat=io_set)
+	if (io_set .ne. 0) then
+      write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'OF1M_G'
+      close(81)
+      goto 118
+    end if             
    end do
    
    do y = 1,monyrs
     do m=1,12
      read(81,*,iostat=io_set)dummy_month,dummy_year,class_m(1:numclasvars_m,y,m)
      if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'OF1M_G'     
          close(81)
          goto 118
      end if   
@@ -725,13 +770,19 @@ end if !lexist
 
    !  first throw out header (5 lines)
    do h = 1,5
-	read(82,*)
+	read(82,*,iostat=io_set)
+	if (io_set .ne. 0) then
+      write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'OF2M_G'
+      close(82)
+      goto 119
+    end if             	
    end do
         
    do y = 1,monyrs
     do m=1,12
      read(82,*,iostat=io_set)dummy_month,dummy_year,class_s_m(1,1,y,m),class_s_m(2,1,y,m),class_s_m(3,1,y,m),class_s_m(1,2,y,m),class_s_m(2,2,y,m),class_s_m(3,2,y,m),class_s_m(1,3,y,m),class_s_m(2,3,y,m),class_s_m(3,3,y,m)
      if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'OF2M_G'     
          close(82)
          goto 119
      end if   
@@ -783,13 +834,19 @@ if (COMPETE_LNDUSE) then
 
    !  first throw out header (6 lines)
    do h = 1,6
-	read(91,*)
+	read(91,*,iostat=io_set)
+	if (io_set .ne. 0) then
+      write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT07M_GM'
+      close(91)
+      goto 120
+    end if   
    end do
    
    do y = 1,monyrs
     do m=1,12
       read(91,*,iostat=io_set)dummy_month,dummy_year,mpftf(1:ctemnpft,y,m),mpft_tot(y,m),dummy_var,mpftexist(1:ctemnpft,y,m)
       if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT07M_GM'
          close(91)
          goto 120
       end if   
@@ -877,6 +934,7 @@ allocate(ctem_m(numctemvars_m,monyrs,12))
     do m=1,12
      read(74,*,iostat=io_set)dummy_month,dummy_year,ctem_m(1:numctemvars_m,y,m)
      if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT01M_G/M'
          close(74)
          goto 121
      end if   
@@ -931,6 +989,7 @@ if (lexist) then
      do m=1,12
       read(84,*,iostat=io_set)dummy_month,dummy_year,ctem_d_m(1:nctemdistvars_m,y,m)
       if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT06M_G/M'
          close(84)
          goto 122
       end if   
@@ -975,7 +1034,12 @@ if (DOWETLANDS) then
    
    !  first throw out header (6 lines)
    do h = 1,6
-	read(910,*)
+	read(910,*,iostat=io_set)
+	if (io_set .ne. 0) then
+      write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT08M_G'
+      close(910)
+      goto 123
+    end if   
    end do
 
 !---Read in Variables
@@ -983,6 +1047,7 @@ if (DOWETLANDS) then
     do m=1,12
         read(910,*,iostat=io_set) dummy_month,dummy_year,ctem_w_m(1:nctemwetvars_m,y,m)
         if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+         write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT08M_G'        
          close(910)
          goto 123
         end if   
@@ -1042,7 +1107,13 @@ allocate(tmp(numctemvars_m))
 
 !  first throw out header (6 lines) as it is there still
 do h = 1,6
- read(741,*)
+ read(741,*,iostat=io_set)
+	if (io_set .ne. 0) then
+      write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT01M_G/M'
+      close(741)
+      deallocate(tmp)
+      goto 124
+    end if   
 end do
 
 ! We have to keep track of the month that is read in as it is the only way we know that we are done the tiles for a gridcell.
@@ -1056,9 +1127,17 @@ end do
 
           read(741,*,iostat=io_set,END=11) mo,yrin,tmp(1:numctemvars_m),dummy,dummynum,dummy,tilnum
           if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+            write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT01M_G/M'          
             close(741)
+            deallocate(tmp)
             goto 124
           end if   
+
+          ! Figure out what tiles to write
+          if (y == 1 .and. mo == 1) then
+             tiles_to_write = cshift(tiles_to_write,1)
+             tiles_to_write(1) = tilnum
+          end if     
 
         if (mo == m) then
         ! Assign that just read in to its vars
@@ -1130,7 +1209,13 @@ if (DOFIRE) then
 
   !  first throw out header (6 lines) as it is there still
   do h = 1,6
-   read(841,*)
+   read(841,*,iostat=io_set)
+	if (io_set .ne. 0) then
+      write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT06M_G/M'
+      close(841)
+      deallocate(tmpd)
+      goto 125
+    end if 
   end do
 
   do y = 1,monyrs
@@ -1139,7 +1224,9 @@ if (DOFIRE) then
       do while (mo == m) 
           read(841,*,iostat=io_set,END=12) mo,yrin,tmpd(1:nctemdistvars_m),dummy,dummynum,dummy,tilnum
           if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
+             write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT06M_G/M'          
              close(841)
+             deallocate(tmpd)
              goto 125
           end if   
           if (mo == m) then
@@ -1166,6 +1253,7 @@ if (DOFIRE) then
    do l = 1,ntile ! begin tile loop
 
     if (tiles_to_write(l) .ne. -1) then
+
       status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
       if (status/=nf90_noerr) call handle_err(status)
  
