@@ -2964,7 +2964,7 @@ c      overwrite co2concrow, otherwise set to constant value
 c
        if(co2on) then
 
-        do while (co2yr .lt. iyear) 
+        do while (co2yr .lt. iyear)        
           do i=1,nltest  
            read(14,*,end=999) co2yr,co2concin
            do m=1,nmtest
@@ -6527,26 +6527,27 @@ c            after rounding to the number of sig figs used in the output
 c            this rounds to 3 decimal places. if you are found to be over
 c            or under, arbitrarily reduce one of the pfts. the amount of
 c            the change will be inconsequential. 
-              rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 10000.0))
-     1                                                         / 10000.0
+              rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 1000.0))
+     1                                                         / 1000.0
+     
+              dvdfcanrow(i,m,j) = rnded_pft(j)
              enddo
 
-             if (rnded_pft(1) + rnded_pft(2) .ne. 1.0) then
+             if (dvdfcanrow(i,m,1) + dvdfcanrow(i,m,2) .ne. 1.0) then
               dvdfcanrow(i,m,1) = 1.0 - rnded_pft(2)
               dvdfcanrow(i,m,2) = rnded_pft(2)
-              write(*,*)dvdfcanrow(i,m,1),dvdfcanrow(i,m,2) 
              end if 
-             if (rnded_pft(3) + rnded_pft(4) + rnded_pft(5) 
-     1                                                 .ne. 1.0) then
+             if (dvdfcanrow(i,m,3) + dvdfcanrow(i,m,4) +  
+     1                                 dvdfcanrow(i,m,5) .ne. 1.0) then
               dvdfcanrow(i,m,3) = 1.0 - rnded_pft(4) - rnded_pft(5)
               dvdfcanrow(i,m,4) = rnded_pft(4)
               dvdfcanrow(i,m,5) = rnded_pft(5)
              end if 
-             if (rnded_pft(6) + rnded_pft(7) .ne. 1.0) then
+             if (dvdfcanrow(i,m,6) + dvdfcanrow(i,m,7) .ne. 1.0) then
               dvdfcanrow(i,m,6) = 1.0 - rnded_pft(7)
               dvdfcanrow(i,m,7) = rnded_pft(7)
              end if 
-             if (rnded_pft(8) + rnded_pft(9) .ne. 1.0) then
+             if (dvdfcanrow(i,m,8) + dvdfcanrow(i,m,9) .ne. 1.0) then
               dvdfcanrow(i,m,8) = 1.0 - rnded_pft(9)
               dvdfcanrow(i,m,9) = rnded_pft(9)
              endif

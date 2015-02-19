@@ -783,7 +783,7 @@ rootlife = [ 13.8,13.2, 0.0, &
 !	constant for now ratio is mol ch4 to mol co2
 
 !	ratioch4/0.16/
-ratioch4 = 0.07 !0.21 ! test jm july 24 2014
+ratioch4 = 0.16 ! 0.07 !0.21 ! test jm july 24 2014
 
 !	Use the heterotrophic respiration outputs for soil and litter 
 !	as the ecosystem basis.  These were summed as "hetrores".
