@@ -189,9 +189,9 @@ c                               ! ltrmoscl becomes 0.2
             thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
             psi(i,j)   = psisat(i,j)*(thliq(i,j)/thpor(i,j))**(-b(i,j)) 
 c   
-            if(psi(i,j).gt.10000.0) then
+            if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2
-            else if( psi(i,j).le.10000.0 .and.  psi(i,j).gt.6.0 ) then
+            else if( psi(i,j).lt.10000.0 .and.  psi(i,j).gt.6.0 ) then
               scmotrm(i,j)=1.0 - 0.8*
      &   ( (log10(psi(i,j)) - log10(6.0))/(log10(10000.0)-log10(6.0)) )         
             else if( psi(i,j).le.6.0 .and.  psi(i,j).ge.4.0 ) then
