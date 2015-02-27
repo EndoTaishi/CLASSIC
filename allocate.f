@@ -58,8 +58,8 @@ c
 c     afrleaf   - allocation fraction for leaves
 c     afrstem   - allocation fraction for stem
 c     afrroot   - allocation fraction for root
-c     wiltsm    - wilting point soil moisture content
-c     fieldsm   - field capacity soil moisture content
+c     wiltsm    - wilting point soil moisture content (called PSIWLT in CLASS, but calculated again here to avoid passing through coupler)
+c     fieldsm   - field capacity soil moisture content (called THFC in CLASS, but calculated again here to avoid passing through coupler)
 c     wtstatus  - soil water status (0 dry -> 1 wet)
 c     ltstatus  - light status
 

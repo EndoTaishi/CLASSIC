@@ -2,7 +2,7 @@
      1                     CFLUX,     QA, QSWV,      IC,   THLIQ,ISAND, 
      2                        TA,   RMAT,   COSZS, XDIFFUS,  ILG,
      3                       IL1,    IL2,   IG,     ICC,   ISNOW, SLAI,
-     4                   FIELDSM, WILTSM, FCANCMX,  L2MAX, NOL2PFTS,
+     4                       THFC, THLW, FCANCMX,  L2MAX, NOL2PFTS,
 C    ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
      5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG)
 C     
@@ -11,6 +11,8 @@ C                       PHOTOSYNTHESIS SUBROUTINE
 
 C     HISTORY:
 C
+C     * FEB 27/15 - J. Melton      Increase REQUITR to 10, it was not converging correctly at 4. Also rename
+C                                  WILTSM and FIELDSM to THLW and THFC, respectively, for consistency with CLASS.
 C     * SEP 15/14 - J. Melton      Since SN is converted to INT, I made the assignment explicitly INT, rather
 C     *                            than a real that gets cast as INT later.
 C     * APR 11/14 - J. Melton      When at wilting point SM_FUNC should be 0. Was incorrectly set to 0.01
@@ -110,8 +112,8 @@ C     SLAI      - STORAGE LAI. THIS LAI IS USED FOR PHTSYN EVEN IF ACTUAL
 C                 LAI IS ZERO. ESTIMATE OF NET PHOTOSYNTHESIS BASED ON
 C                 SLAI IS USED FOR INITIATING LEAF ONSET. SEE PHENOLGY
 C                 SUBROUTINE FOR MORE DETAILS.
-C     FIELDSM   - SOIL FIELD CAPACITY.
-C     WILTSM    - SOIL WILT CAPACITY.
+C     THFC   - SOIL FIELD CAPACITY.
+C     THLW    - SOIL WILT CAPACITY.
 C     FCANCMX   - MAX. FRACTIONAL COVERAGES OF CTEM's 8 PFTs. THIS IS
 C                 DIFFERENT FROM FCANC AND FCANCS (WHICH MAY VARY WITH
 C                 SNOW DEPTH). FCANCMX DOESN'T CHANGE, UNLESS OF
@@ -184,7 +186,7 @@ C
      3            QSWV(ILG),       TA(ILG),           RMAT(ILG,ICC,IG), 
      4     CO2I1(ILG,ICC),  CO2I2(ILG,ICC), 
      5                 CA,              CB,              THLIQ(ILG,IG),          
-     6     FIELDSM(ILG,IG), WILTSM(ILG,IG), 
+     6     THFC(ILG,IG), THLW(ILG,IG), 
      6   FCANCMX(ILG,ICC),  Q10_FUNCD
 C
       REAL         MM(KK),          BB(KK),    VPD0(KK),           Q10, 
@@ -322,7 +324,7 @@ C     GRASSES     |   C3        C4       ---
 
 C
 C     NO. OF ITERATIONS FOR CALCULATING INTERCELLULAR CO2 CONCENTRATION
-      DATA  REQITER/4/ !FLAG test Jan 20 2015. JM
+      DATA  REQITER/10/ !4 FLAG test Jan 20 2015. JM
 C
 C     MAX. INTERCELLULAR CO2 CONCENTRATION, PASCALS
       DATA CO2IMAX/2000.00/ 
@@ -847,13 +849,13 @@ C
           IF(ISAND(I,J) .EQ. -3 .OR. ISAND(I,J) .EQ. -4)THEN
             SM_FUNC(I,J)=0.0 
           ELSE ! I.E., ISAND.NE.-3 OR -4
-           IF(THLIQ(I,J).LE.WILTSM(I,J)) THEN
+           IF(THLIQ(I,J).LE.THLW(I,J)) THEN
             SM_FUNC(I,J)=0.0   
-           ELSE IF(THLIQ(I,J).GT.WILTSM(I,J) .AND.
-     &      THLIQ(I,J).LT.FIELDSM(I,J)) THEN
-            SM_FUNC(I,J)=(THLIQ(I,J)-WILTSM(I,J))/
-     &          (FIELDSM(I,J)-WILTSM(I,J))
-           ELSE IF(THLIQ(I,J).GE.FIELDSM(I,J)) THEN
+           ELSE IF(THLIQ(I,J).GT.THLW(I,J) .AND.
+     &      THLIQ(I,J).LT.THFC(I,J)) THEN
+            SM_FUNC(I,J)=(THLIQ(I,J)-THLW(I,J))/
+     &          (THFC(I,J)-THLW(I,J))
+           ELSE IF(THLIQ(I,J).GE.THFC(I,J)) THEN
             SM_FUNC(I,J)=1.0
            ENDIF
 C
