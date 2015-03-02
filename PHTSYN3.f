@@ -4,7 +4,8 @@
      3                       IL1,    IL2,   IG,     ICC,   ISNOW, SLAI,
      4                       THFC, THLW, FCANCMX,  L2MAX, NOL2PFTS,
 C    ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
-     5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG)
+     5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG,
+     6                        LFSTATUS)
 C     
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) 
 C                       PHOTOSYNTHESIS SUBROUTINE
@@ -197,7 +198,9 @@ C
      1            TEMP_Q2,         TEMP_JP,       BETA1,         BETA2,
      2            TEMP_AN
 C    
-      INTEGER  ISAND(ILG,IG),  SN(KK)
+      INTEGER  ISAND(ILG,IG),  SN(KK), LFSTATUS(ILG,ICC) !FLAG test LFSTATUS DEC 4 2014. JM.
+
+      REAL use_vmax !FLAG test LFSTATUS DEC 4 2014. JM.
 C
 C     FOR LIMITING CO2 UPTAKE
 C
@@ -313,7 +316,7 @@ C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 C     VALUES ARE MAINLY DERIVED FROM KATTGE ET AL. 2009 WHICH 
 C     DOESN'T INCLUDE C4
       DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, 
-     &          48.0E-06, 57.0E-06, 40.0E-06, 
+     &          35.0E-06, 57.0E-06, 40.0E-06, !FLAG test Fri Feb27th JM, was 48 for PFT3
      &          55.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
 
@@ -324,7 +327,7 @@ C     GRASSES     |   C3        C4       ---
 
 C
 C     NO. OF ITERATIONS FOR CALCULATING INTERCELLULAR CO2 CONCENTRATION
-      DATA  REQITER/10/ !4 FLAG test Jan 20 2015. JM
+      DATA  REQITER/10/ 
 C
 C     MAX. INTERCELLULAR CO2 CONCENTRATION, PASCALS
       DATA CO2IMAX/2000.00/ 
@@ -789,6 +792,16 @@ C
 C         FIND Vmax,canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE
 C         LEAF MODEL
 C
+
+          ! FLAG: test only done for one-leaf model!! JM Dec 4 2014./ Jan 21 2015.
+!          if (lfstatus(i,m).eq.1 .and. (m .eq. 2 .or. m .eq. 4)) then
+!            use_vmax = vmax(sort(m)) * 2.0
+!          else if ((lfstatus(i,m).eq.3).and.(m.eq. 2 .or. m .eq. 4))then  !leaf fall
+!            use_vmax = vmax(sort(m)) * 0.5            
+!          else
+!            use_vmax = vmax(sort(m)) !normal growth
+!          end if
+!          vmaxc(i,m)=use_vmax * fpar(i,m)    
           VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
           IF(LEAFOPT.EQ.2)THEN
              VMAXC_SUN(I,M) = VMAX(SORT(M)) * FPAR_SUN(I,M)

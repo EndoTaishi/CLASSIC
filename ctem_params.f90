@@ -197,7 +197,7 @@ real :: popdthrshld                     ! threshold of population density (peopl
 !      real :: ymin, ymax, slope
 
 real :: alpha_fire                      ! parameter alpha_fire and f0 used for estimating wind function for fire spread rate
-real :: f0                              ! Fire spread rate in the absence of wind
+real :: f0                              ! Fire spread rate in the absence of wind  -- Not used in CTEM v 2.0!
 real, dimension(kk) :: standreplace     ! pft prevalence for stand replacing fire events (based on resistance to fire damage, ie. cambial kill)(unitless)
 real, dimension(kk) :: maxsprd          ! max. fire spread rate, km/hr
 real, dimension(kk) :: frco2glf         ! fraction of green leaf biomass converted to gases due to combustion
@@ -441,7 +441,7 @@ reparea = 1000.0
 
 popdthrshld = 300.
 
-f0 = 0.05
+f0 = 0.05  ! NOT used in CTEM v.2.
 
 bmasthrs_fire = [ 0.2, 1.0 ] 
 
@@ -820,6 +820,8 @@ if (compete) then
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+!lfespany  =   [ 5.00, 0.40, 0.00, &
+!                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]
 
@@ -953,7 +955,7 @@ lwrthrsh = [ -50.0, -5.0, 0.0, &
 roothrsh = 8.0
 
 ! turnover.f parameters: --------------
-
+! NOW USING SAME VALUES FOR COMP/PRESC.
 !stemlife = [ 86.3, 86.3, 0.00, &  
 !             80.5, 80.5, 75.8, &  
 !             20.0, 20.0, 0.00, &
@@ -979,6 +981,8 @@ else ! Prescribed PFT fractional cover
 
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.75, 1.00, 1.00, &  
+!lfespany  =   [ 5.00, 0.40, 0.00, &
+!                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015.
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]
 
@@ -1036,6 +1040,12 @@ cdlsrtmx = [ 0.15, 0.30, 0.00, &
              0.30, 0.15, 0.15, &
              0.15, 0.15, 0.00, &
              0.15, 0.15, 0.00 ]
+! these parameters  are from competition runs. FLAG.
+! testing for work with Ray and Bakr! Mar 2015.          
+!cdlsrtmx = [ 0.10, 0.30, 0.00, &  
+!             0.30, 0.40, 0.15, &
+!             0.15, 0.15, 0.00, &
+!             0.15, 0.15, 0.00 ]
 
 drlsrtmx = [ 0.0025, 0.005, 0.000, &
              0.005, 0.005, 0.025, &
@@ -1046,10 +1056,18 @@ lwrthrsh = [ -45.0, -5.0, 0.0, &
                5.0,  5.0, 5.0, &
                5.0,  5.0, 0.0, &
                0.1,  5.0, 0.0 ] 
+! these parameters  are from competition runs. FLAG.
+! testing for work with Ray and Bakr! Mar 2015.          
+!lwrthrsh = [ -50.0, -5.0, 0.0, & 
+!               5.0,  8.0, 5.0, &  
+!               5.0,  5.0, 0.0, &
+!               0.1,  5.0, 0.0 ]
+
 
 roothrsh = 15.0
 
 ! turnover.f parameters: --------------
+! NOW USING SAME VALUES FOR COMP/PRESC.
 
 !stemlife = [ 65.0, 75.0, 0.00, &
 !             45.0, 40.0, 45.0, &
