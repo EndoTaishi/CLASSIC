@@ -673,7 +673,7 @@ bsratesc = [ 0.0208, 0.0208, 0.0000, &
              0.0280, 0.0280, 0.0000, &
              0.0100, 0.0100, 0.0000 ]              
 
-tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ]
+tanhq10  = [ 1.2, 0.2, 0.075, 46.0 ] ! was 1.44/0.56/0.075/46 TEST FLAG mar 3 JM 2015
            !   a     b      c     d
            ! q10 = a + b * tanh[ c (d-temperature) ]
            ! when a = 2, b = 0, we get the constant q10 of 2. if b is non
@@ -818,10 +818,10 @@ if (compete) then
 
 ! Parameters used in more than one subroutine:
 
-lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
-!lfespany  =   [ 5.00, 0.40, 0.00, &
-!                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
+!lfespany  =   [ 5.00, 1.00, 0.00, &
+!                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+lfespany  =   [ 5.00, 0.40, 0.00, &
+                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]
 
@@ -979,10 +979,10 @@ else ! Prescribed PFT fractional cover
 
 ! Parameters used in more than one subroutine:
 
-lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.75, 1.00, 1.00, &  
-!lfespany  =   [ 5.00, 0.40, 0.00, &
-!                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015.
+!lfespany  =   [ 5.00, 1.00, 0.00, &
+!                1.75, 1.00, 1.00, &  
+lfespany  =   [ 5.00, 0.40, 0.00, &
+                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015.
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]
 
@@ -1036,32 +1036,32 @@ mxmortge = [ 0.005, 0.005, 0.00, &   ! Same as competition except for grasses.
 
 ! phenology.f parameters: ---------
 
-cdlsrtmx = [ 0.15, 0.30, 0.00, &
-             0.30, 0.15, 0.15, &
-             0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
-! these parameters  are from competition runs. FLAG.
-! testing for work with Ray and Bakr! Mar 2015.          
-!cdlsrtmx = [ 0.10, 0.30, 0.00, &  
-!             0.30, 0.40, 0.15, &
+!cdlsrtmx = [ 0.15, 0.30, 0.00, &
+!             0.30, 0.15, 0.15, &
 !             0.15, 0.15, 0.00, &
 !             0.15, 0.15, 0.00 ]
+! these parameters  are from competition runs. FLAG.
+! testing for work with Ray and Bakr! Mar 2015.          
+cdlsrtmx = [ 0.10, 0.30, 0.00, &  
+             0.30, 0.40, 0.15, &
+             0.15, 0.15, 0.00, &
+             0.15, 0.15, 0.00 ]
 
 drlsrtmx = [ 0.0025, 0.005, 0.000, &
              0.005, 0.005, 0.025, &
              0.005, 0.005, 0.000, &
              0.050, 0.050, 0.000 ]    
 
-lwrthrsh = [ -45.0, -5.0, 0.0, &
-               5.0,  5.0, 5.0, &
-               5.0,  5.0, 0.0, &
-               0.1,  5.0, 0.0 ] 
+!lwrthrsh = [ -45.0, -5.0, 0.0, &
+!               5.0,  5.0, 5.0, &
+!               5.0,  5.0, 0.0, &
+!               0.1,  5.0, 0.0 ] 
 ! these parameters  are from competition runs. FLAG.
 ! testing for work with Ray and Bakr! Mar 2015.          
-!lwrthrsh = [ -50.0, -5.0, 0.0, & 
-!               5.0,  8.0, 5.0, &  
-!               5.0,  5.0, 0.0, &
-!               0.1,  5.0, 0.0 ]
+lwrthrsh = [ -50.0, -5.0, 0.0, & 
+               5.0,  8.0, 5.0, &  
+               5.0,  5.0, 0.0, &
+               0.1,  5.0, 0.0 ]
 
 
 roothrsh = 15.0
