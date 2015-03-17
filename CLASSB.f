@@ -1,11 +1,18 @@
       SUBROUTINE CLASSB(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
-     1                  THLRAT,HCPS,TCS,THFC,PSIWLT, THLW,
+     1                  THLRAT,HCPS,TCS,THFC,THLW,PSIWLT,
      2                  DELZW,ZBOTW,ALGWET,ALGDRY,
-     3                  SAND,CLAY,ORGM,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ICTEMMOD)
+     +                  ALGWV,ALGWN,ALGDV,ALGDN,            
+     3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,           
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ICTEMMOD)                 
 C
-C     * FEB 26/15 - J.MELTON.   - MAKE WILTING POINT THE SAME AS CTEM 
-C                                 WITH A VALUE OF 150 M.
+C     * JAN 15/15 - D.VERSEGHY. CHANGE PSIWLT FOR MINERAL SOILS
+C     *                         TO A CONSTANT VALUE OF 150 M.
+C     *                         AND ADD NEW VARIABLE THLW.
+C     * AUG 25/14 - M.LAZARE.   PASS IN NEW WET AND DRY SOIL
+C     *                         BRIGHTNESS FIELDS FROM CLM.
+C     * NOV 16/13 - M.LAZARE.   FINAL VERSION FOR GCM17:                
+C     *                         - REVERT BACK TO CLASS2.7               
+C     *                           SPECIFICATION FOR "ALGWET".           
 C     * NOV 11/11 - M.LAZARE.   - IMPLEMENT CTEM CHOICE OF
 C     *                           ALGDRY DETERMINED BY ADDED
 C     *                           PASSED SWITCH "ICTEMMOD". 
@@ -68,11 +75,15 @@ C
       REAL SAND  (NL,NM,IG),  CLAY  (NL,NM,IG),  ORGM  (NL,NM,IG),
      1     DELZ  (IG),        ZBOT  (IG),        SDEPTH(NL,NM) 
 C
+      REAL SOCI  (NL,NM)                                                
+C                                                                       
       REAL THPORG (3),      THRORG (3),      THMORG (3),
      1     BORG   (3),      PSISORG(3),      GRKSORG(3)
 C
 C     * TEMPORARY VARIABLES.
 C
+      REAL ALWV(20), ALWN(20), ALDV(20), ALDN(20)                       
+C                                                                       
       REAL VSAND,VORG,VFINE,VTOT,AEXP,ABC,THSAND,THFINE,THORG
 C
 C     * COMMON BLOCK PARAMETERS.
@@ -87,6 +98,15 @@ C
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
+C                                                                       
+      DATA ALWV /0.25,0.23,0.21,0.20,0.19,0.18,0.17,0.16,0.15,0.14,0.13,
+     1           0.12,0.11,0.10,0.09,0.08,0.07,0.06,0.05,0.04/          
+      DATA ALWN /0.50,0.46,0.42,0.40,0.38,0.36,0.34,0.32,0.30,0.28,0.26,
+     1           0.24,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/          
+      DATA ALDV /0.36,0.34,0.32,0.31,0.30,0.29,0.28,0.27,0.26,0.25,0.24,
+     1           0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/          
+      DATA ALDN /0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,0.37,
+     1           0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16/          
 C---------------------------------------------------------------------
 C
       DO 50 M=1,IM
@@ -120,15 +140,23 @@ C
               ZBOTW(I,M,J)=MAX(0.0,ZBOT(J)-DELZ(J))+DELZW(I,M,J)
 150       CONTINUE
           IF(SAND(I,M,1).GE.0.0) THEN
-              ALGWET(I,M)=0.08+0.0006*SAND(I,M,1)
+              ALGWET(I,M)=0.08+0.0022*SAND(I,M,1)
               IF(ICTEMMOD.EQ.0) THEN
                   ALGDRY(I,M)=MIN(0.14+0.0046*SAND(I,M,1), 0.45) ! FOR GLC2000
               ELSE
                   ALGDRY(I,M)=MIN(0.14+0.0027*SAND(I,M,1), 0.41) ! FOR CTEM   
               ENDIF
+              ALGWV(I,M)=ALWV(NINT(SOCI(I,M)))                          
+              ALGWN(I,M)=ALWN(NINT(SOCI(I,M)))                          
+              ALGDV(I,M)=ALDV(NINT(SOCI(I,M)))                          
+              ALGDN(I,M)=ALDN(NINT(SOCI(I,M)))
           ELSE
               ALGWET(I,M)=0.0
               ALGDRY(I,M)=0.0
+              ALGWV(I,M)=0.0                                            
+              ALGWN(I,M)=0.0                                            
+              ALGDV(I,M)=0.0                                            
+              ALGDN(I,M)=0.0                                            
           ENDIF
 200   CONTINUE
 C
@@ -146,9 +174,8 @@ C
               HCPS(I,M,J)=HCPICE
               TCS(I,M,J)=TCICE
               THFC(I,M,J)=0.0
-              !FLAG JM Jan 15 2015
-              PSIWLT(I,M,J)= 150.0 !0.0 
               THLW(I,M,J)=0.0
+              PSIWLT(I,M,J)=0.0                                         
           ELSEIF(ISAND(I,M,J).EQ.-3) THEN
               THPOR (I,M,J)=0.0
               THLRET(I,M,J)=0.0
@@ -160,9 +187,8 @@ C
               HCPS(I,M,J)=HCPSND
               TCS(I,M,J)=TCSAND
               THFC(I,M,J)=0.0
-              !FLAG JM Jan 15 2015
-              PSIWLT(I,M,J)=150.0 !0.0 
               THLW(I,M,J)=0.0              
+              PSIWLT(I,M,J)=0.0                                         
           ELSEIF(ISAND(I,M,J).EQ.-2) THEN
               THPOR (I,M,J)=THPORG(MIN(J,3))
               THLRET(I,M,J)=THRORG(MIN(J,3))
@@ -173,13 +199,11 @@ C
               THLRAT(I,M,J)=0.5**(1.0/(2.0*BI(I,M,J)+3.0))
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
-              THFC(I,M,J)=THLRET(I,M,J)
-              !FLAG JM Jan 15 2015 
-              !Not determined yet if this should also be 150m or different so leave as is.             
+              THFC(I,M,J)=THLRET(I,M,J)           
               PSIWLT(I,M,J)=PSISAT(I,M,J)*(THLMIN(I,M,J)/
      1            THPOR(I,M,J))**(-BI(I,M,J))
               THLW(I,M,J)=THLMIN(I,M,J)
-          ELSEIF(SAND(I,M,J).GT.0.0) THEN
+          ELSEIF(SAND(I,M,J).GT.0.) THEN
               THPOR (I,M,J)=(-0.126*SAND(I,M,J)+48.9)/100.0
               THLRET(I,M,J)=0.04
               THLMIN(I,M,J)=0.04
@@ -209,12 +233,10 @@ C
      1                (PSISAT(I,M,J)*BI(I,M,J)/SDEPTH(I,M))**
      2                (1.0/BI(I,M,J))
               ENDIF
-              !FLAG JM Jan 15 2015 
-!              PSIWLT(I,M,J)=PSISAT(I,M,J)*(MAX(0.5*THFC(I,M,J),
-!     1            THLMIN(I,M,J))/THPOR(I,M,J))**(-BI(I,M,J))
+
               PSIWLT(I,M,J)=150.0
-              THLW(I,M,J)=(PSIWLT(I,M,J)/PSISAT(I,M,J))**(-1./BI(I,M,J))
-     1                      * THPOR(I,M,J)
+              THLW(I,M,J)=THPOR(I,M,J)*(PSIWLT(I,M,J)/PSISAT(I,M,J))**
+     1                    (-1.0/BI(I,M,J))
      
           ENDIF
 300   CONTINUE

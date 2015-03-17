@@ -6,6 +6,7 @@ C     Some are defined specifically for use in the CLASS code; some are
 C     also shared with the atmospheric model (if running in coupled 
 C     mode).
 C
+C     * JAN 09/15 - E.CHAN/D.VERSEGHY. NEW VALUE FOR ALBRCK.
 C     * MAR 13/09 - D.VERSEGHY. REPLACE SURFCON COMMON BLOCK WITH
 C     *                         CLASSD2; NEW VARIABLE ANGMAX
 C     * FEB 06/07 - D.VERSEGHY. NEW VALUE FOR ALVSO AND ALIRI.
@@ -28,6 +29,9 @@ C
       COMMON /PARAM3/ X12,   X13,   X14,   X15,   SIGMA,  X16
       COMMON  /TIMES/ DELTIM,K1,    K2,    K3,    K4,     K5,
      1                K6,    K7,    K8,    K9,    K10,    K11
+
+      COMMON /EPS/    A,B,EPS1,EPS2
+      COMMON /HTCP/   T1S,T2S,AI,BI,AW,BW,SLP
 
 C     * COMMON BLOCKS DEFINED SPECIFICALLY FOR USE IN CLASS.
 
@@ -146,6 +150,7 @@ C     * COMMON BLOCKS DEFINED SPECIFICALLY FOR USE IN CLASS.
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+      COMMON /ESTWI/  RW1,RW2,RW3,RI1,RI2,RI3
 C
       DATA      VKC,        CT,         VMIN
      1       /  0.40,       1.15E-3,    0.1     /
@@ -170,7 +175,7 @@ C     1       /  0.57,       2.24,       8.0,        2.5,        0.25   /
      1       /  -4.605,     -6.908,     -6.215,     3.0         /
 
       DATA      ALVSI,      ALIRI,      ALVSO,      ALIRO,      ALBRCK
-     1       /  0.95,       0.73,       0.05,       0.30,       0.27  /
+     1       /  0.95,       0.73,       0.05,       0.30,       0.16  /
 
       !Values are also assigned to several non-scalar parameters, as 
       !follows:
@@ -288,6 +293,18 @@ C
 
       DATA      CI,         BS,         BETA,       FACTN,      HMIN 
      1       /  40.0,       1.0,        1.0,        1.2,        40.   /
+
+      DATA      A,          B,          EPS1,       EPS2
+     1       /  21.656,     5418.0,     0.622,      0.378  /
+
+      DATA      T1S,        T2S
+     1       /  273.16,     233.16   /
+
+      DATA      RW1,        RW2,        RW3
+     1       /  53.67957,  -6743.769,  -4.8451   /
+
+      DATA      RI1,        RI2,        RI3
+     1       /  23.33086,  -6111.72784, 0.15215   /
 
       DATA      X1,  X2,  X3,  X4,  X5,  X6,  X7,  X8
      1       /  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0  /

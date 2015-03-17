@@ -2874,8 +2874,6 @@ C         THE END OF FILE IT WILL GO TO 999. !formatting was 5300
           READ(12,*,END=999) IHOUR,IMIN,IDAY,IYEAR,FSDOWN,FDLGRD(I),
      1         PREGRD(I),TAGRD(I),QAGRD(I),UVGRD(I),PRESGRD(I)
 
-c         /---------------Rudra-----------------/
-
           if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
             if (ctem_on) then     
               if (obswetf) then
@@ -2889,7 +2887,6 @@ c         /---------------Rudra-----------------/
  
           endif 
          
-c         \----------------Rudra---------------\ 
 
 C===================== CTEM ============================================ \
 
@@ -3195,7 +3192,6 @@ C
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
-!     &      WETFRACGAT, WETFRAC_SGAT,
      &      CH4WET1GAT, CH4WET2GAT, 
      &      WETFDYNGAT, CH4DYN1GAT,  CH4DYN2GAT,
 c
@@ -3235,7 +3231,6 @@ c
      &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
-!     &      WETFRACROW, WETFRAC_SROW,
      &      CH4WET1ROW, CH4WET2ROW, 
      &      WETFDYNROW, CH4DYN1ROW, CH4DYN2ROW)
 c

@@ -7,34 +7,44 @@
      6                  ZOELNC, ZOELCS, ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, 
      7                  CHCAP,  CHCAPS, CMASSC, CMASCS, CWLCAP, CWFCAP,
      8                  CWLCPS, CWFCPS, RC,     RCS,    RBCOEF, FROOT,  
-     9                  ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, TRSNOW, ZSNOW,  
+     9                  ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, ZSNOW,          
      A                  WSNOW,  ALVS,   ALIR,   HTCC,   HTCS,   HTC,    
-     B                  WTRC,   WTRS,   WTRG,   CMAI,   FSNOW,
-     C                  FCANMX, ZOLN,   ALVSC,  ALIRC,  PAIMAX, PAIMIN, 
-     D                  CWGTMX, ZRTMAX, RSMIN,  QA50,   VPDA,   VPDB,
-     E                  PSIGA,  PSIGB,  PAIDAT, HGTDAT, ACVDAT, ACIDAT, 
-     F                  ASVDAT, ASIDAT, AGVDAT, AGIDAT, ALGWET, ALGDRY, 
-     G                  THLIQ,  THICE,  TBAR,   RCAN,   SNCAN,  TCAN,   
-     H                  GROWTH, SNO,    TSNOW,  RHOSNO, ALBSNO, ZBLEND,
-     I                  Z0ORO,  SNOLIM, ZPLMG0, ZPLMS0, 
-     J                  FCLOUD, TA,     VPD,    RHOAIR, COSZS,  
-     K                  QSWINV, RADJ,   DLON,   RHOSNI, DELZ,   DELZW,  
-     L                  ZBOTW,  THPOR,  THLMIN, PSISAT, BI,     PSIWLT, 
-     M                  HCPS,   ISAND,  
-     N                  FCANCMX,ICTEM,  ICTEMMOD, RMATC, ZOLNC,CMASVEGC,
-     O                  AILC,   PAIC,   L2MAX,  NOL2PFTS, SLAIC,
-     P                  AILCG,  AILCGS, FCANC,  FCANCS,
-     Q                  IDAY,   ILG,    IL1,    IL2,    
-     R                  JL,N,   IC,     ICP1,   IG,     IDISP,  IZREF,
-     S                  IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     T                  ALVSCTM, ALIRCTM )
+     B                  ALTG,   ALSNO,  TRSNOWC,TRSNOWG,
+     C                  WTRC,   WTRS,   WTRG,   CMAI,   FSNOW,
+     D                  FCANMX, ZOLN,   ALVSC,  ALIRC,  PAIMAX, PAIMIN, 
+     E                  CWGTMX, ZRTMAX, RSMIN,  QA50,   VPDA,   VPDB,
+     F                  PSIGA,  PSIGB,  PAIDAT, HGTDAT, ACVDAT, ACIDAT, 
+     G                  ASVDAT, ASIDAT, AGVDAT, AGIDAT, ALGWET, ALGDRY, 
+     +                  ALGWV,  ALGWN,  ALGDV,  ALGDN,  
+     H                  THLIQ,  THICE,  TBAR,   RCAN,   SNCAN,  TCAN,   
+     I                  GROWTH, SNO,    TSNOW,  RHOSNO, ALBSNO, ZBLEND,
+     J                  Z0ORO,  SNOLIM, ZPLMG0, ZPLMS0, 
+     K                  FCLOUD, TA,     VPD,    RHOAIR, COSZS,  
+     L                  FSDB, FSFB, REFSNO, BCSNO,  
+     M                  QSWINV, RADJ,   DLON,   RHOSNI, DELZ,   DELZW,  
+     N                  ZBOTW,  THPOR,  THLMIN, PSISAT, BI,     PSIWLT, 
+     O                  HCPS,   ISAND,  
+     P                  FCANCMX,ICTEM,  ICTEMMOD, RMATC, ZOLNC,CMASVEGC,
+     Q                  AILC,   PAIC,   L2MAX,  NOL2PFTS, SLAIC,
+     R                  AILCG,  AILCGS, FCANC,  FCANCS,
+     S                  IDAY,   ILG,    IL1,    IL2, NBS,   
+     T                  JL,N,   IC,     ICP1,   IG,     IDISP,  IZREF,
+     U                  IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
+     V                  ISNOALB,IGRALB,ALVSCTM, ALIRCTM )
 
 C
 C     Purpose: Organize calculation of radiation-related and other 
 C     surface parameters.
 C
-C===================== CTEM =====================================/
 C
+C     * AUG 25/14 - M.LAZARE.   PASS IN NEW WET AND DRY SOIL BRIGHTNESS
+C     *                         FIELDS FROM CLM.
+C     * NOV 16/13 - J.COLE.     FINAL VERSION FOR GCM17:                
+C     *                         - PASS "RHOSNO"IN TO SNOALBA TO         
+C     *                           CALCULATE THE PROPER BC MIXING RATIO  
+C     *                           IN SNOW.                              
+C     *                         - NEW "ISNOALBA" OPTION, BASED ON 
+C     *                           4-BAND SOLAR.
 C     * SEP 05/12 - J.MELTON.   REMOVED UNUSED VAR, CWCPAV
 C     * NOV 14/11 - M.LAZARE.   IMPLEMENT CTEM SUPPORT, PRIMARILY
 C     *                         INVOLVING ADDITIONAL FIELDS TO PASS
@@ -112,7 +122,7 @@ C
 C     * INTEGER CONSTANTS.
 C
       INTEGER IDAY,ILG,IL1,IL2,JL,IC,ICP1,IG,IDISP,IZREF,IWF,
-     1        IPAI,IHGT,IALC,IALS,IALG,I,J,N
+     1        IPAI,IHGT,IALC,IALS,IALG,I,J,N, NBS, ISNOALB,IGRALB 
 C
 C     * OUTPUT ARRAYS.
 C
@@ -238,6 +248,10 @@ C
       REAL HTC   (ILG,IG)   !Diagnosed internal energy change of soil 
                             !layer due to conduction and/or change in 
                             !mass [W m-2]
+
+      REAL TRSNOWG(ILG,NBS) !
+      REAL ALTG(ILG,NBS)    !
+      REAL ALSNO(ILG,NBS)   !
 C
 C     * INPUT ARRAYS DEPENDENT ON LONGITUDE.
 C  
@@ -302,7 +316,11 @@ C
       REAL AGIDAT(ILG)  !Optional user-specified value of ground near-
                         !infrared albedo to override CLASS-calculated 
                         !value [ ]
-      REAL ALGWET(ILG)  !Reference albedo for saturated soil [ ] 
+      REAL ALGWV(ILG)   !Reference albedo for saturated soil (visible) [ ] 
+      REAL ALGWN(ILG)   !Reference albedo for saturated soil (NIR) [ ]
+      REAL ALGDV(ILG)   !Reference albedo for dry soil (visible) [ ]
+      REAL ALGDN(ILG)   !Reference albedo for dry soil (NIR) [ ] 
+      REAL ALGWET(ILG)  !Reference albedo for saturated soil [ ]
       REAL ALGDRY(ILG)  !Reference albedo for dry soil [ ] 
       REAL RHOSNI(ILG)  !Density of fresh snow [kg m-3] 
       REAL Z0ORO (ILG)  !Orographic roughness length [m]
@@ -337,6 +355,10 @@ C
                         !code) [m]
       REAL RADJ  (ILG)  !Latitude of grid cell (positive north of 
                         !equator) [rad]
+      REAL REFSNO(ILG)  ! 
+      REAL BCSNO(ILG)   ! 
+      REAL FSDB(ILG,NBS) !
+      REAL FSFB(ILG,NBS) !
 C
 C    * SOIL PROPERTY ARRAYS.
 C
@@ -357,7 +379,8 @@ C
 C
 C     * OTHER DATA ARRAYS WITH NON-VARYING VALUES.
 C
-      REAL GROWYR(18,4,2),  DELZ  (IG)  !Soil layer thickness [m]     
+      REAL GROWYR(18,4,2)  
+      REAL DELZ  (IG)  !Soil layer thickness [m]     
       REAL ZORAT (4),       CANEXT(4),       XLEAF (4)
 C
 C     * CTEM-RELATED FIELDS.
@@ -528,7 +551,12 @@ C
           ALIRGC(I)=0.0
           ALVSSC(I)=0.0
           ALIRSC(I)=0.0
-          TRSNOW(I)=0.0                                                       
+          TRSNOWC(I)=0.0                                                
+                                                                        
+          TRSNOWG(I,1:NBS) = 0.0                                        
+          ALTG(I,1:NBS)    = 0.0                                        
+	      ALSNO(I,1:NBS)   = 0.0   
+                                     
   100 CONTINUE
 C
 C ===================== CTEM =====================================\
@@ -567,19 +595,30 @@ C
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC)
 
-C     * SNOW ALBEDOS AND TRANSMISSIVITY.
-C 
-      CALL SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,TRSNOW,
-     1             ZSNOW,FSNOW,ASVDAT,ASIDAT,
-     2             ILG,IG,IL1,IL2,JL,IALS)
+!       CLASS 3.6.1. call this after, not before, GRALB.
+!C     * SNOW ALBEDOS AND TRANSMISSIVITY.
+!C 
+!      CALL SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,TRSNOW,
+!     1             ZSNOW,FSNOW,ASVDAT,ASIDAT,
+!     2             ILG,IG,IL1,IL2,JL,IALS)
 C
 C     * BARE SOIL ALBEDOS.
 C
       CALL GRALB(ALVSG,ALIRG,ALVSGC,ALIRGC,
-     1            ALGWET,ALGDRY,THLIQ,ALVSC(1,5),ALIRC(1,5),
-     2            FCANMX(1,5),AGVDAT,AGIDAT,ISAND,
-     3            ILG,IG,IL1,IL2,JL,IALG) 
+     1            ALGWV,ALGWN,ALGDV,ALGDN,ALGWET,ALGDRY,
+     +            THLIQ,FSNOW,ALVSC(1,5),ALIRC(1,5),                    
+     2            FCANMX(1,5),AGVDAT,AGIDAT,FG,ISAND, 
+     3            ILG,IG,IL1,IL2,JL,IALG,IGRALB)
+                                                                        
+                                                                        
+C     * SNOW ALBEDOS AND TRANSMISSIVITY.                                
 C
+      CALL SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,                  
+     1             TRSNOWC, ALSNO, TRSNOWG, FSDB, FSFB, RHOSNO,         
+     2             REFSNO, BCSNO,SNO,COSZS,ZSNOW,FSNOW,ASVDAT,ASIDAT,   
+     3             ALVSG, ALIRG,                                        
+     4             ILG,IG,IL1,IL2,JL,IALS,NBS,ISNOALB)  
+                
 C     * CANOPY ALBEDOS AND TRANSMISSIVITIES, AND VEGETATION
 C     * STOMATAL RESISTANCE.
 C
@@ -601,5 +640,24 @@ C
      1            FGS(I)*ALIRSN(I)                                                
   500 CONTINUE
 C
+      IF (ISNOALB .EQ. 0) THEN                                          
+         DO I = IL1, IL2                                                
+            ALTG(I,1) = ALVS(I)                                         
+            ALTG(I,2) = ALIR(I)                                         
+            ALTG(I,3) = ALIR(I)                                         
+            ALTG(I,4) = ALIR(I)                                         
+         END DO ! I                                                     
+      ELSEIF (ISNOALB .EQ. 1) THEN                                      
+         DO I = IL1, IL2                                                
+            ALTG(I,1) = FC(I)*ALVSCN(I)+FG(I)*ALVSG(I)+FCS(I)*ALVSCS(I)+
+     1                  FGS(I)*ALSNO(I,1)                               
+            ALTG(I,2) = FC(I)*ALIRCN(I)+FG(I)*ALIRG(I)+FCS(I)*ALIRCS(I)+
+     1                  FGS(I)*ALSNO(I,2)                               
+            ALTG(I,3) = FC(I)*ALIRCN(I)+FG(I)*ALIRG(I)+FCS(I)*ALIRCS(I)+
+     1                  FGS(I)*ALSNO(I,3)                               
+            ALTG(I,4) = FC(I)*ALIRCN(I)+FG(I)*ALIRG(I)+FCS(I)*ALIRCS(I)+
+     1                  FGS(I)*ALSNO(I,4)                               
+         END DO ! I                                                     
+      END IF ! ISNOALB                                                  
       RETURN                                                                      
       END

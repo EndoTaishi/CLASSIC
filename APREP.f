@@ -798,7 +798,7 @@ C
           ENDIF                                                                   
   300 CONTINUE                                                                    
 C                
-C     * ADD CONTRIBUTION OF OROGRAPHY TO MOMENTUM ROUGNESS LENGTH
+C     * ADD CONTRIBUTION OF OROGRAPHY TO MOMENTUM ROUGHNESS LENGTH
 C
       DO 325 I=IL1,IL2
           IF(Z0ORO(I).GT.1.0E-4) THEN
@@ -1057,7 +1057,7 @@ C
           K2 = K1 + NOL2PFTS(J) - 1
           DO 850 M = K1, K2
           DO 850 I = IL1, IL2
-             IF(SFCANCMX(I,J).GT.1E-20) THEN
+             IF(SFCANCMX(I,J).GT.1.E-20) THEN
                FCANC(I,M)  = FCAN(I,J) * (FCANCMX(I,M)/SFCANCMX(I,J))
                FCANCS(I,M) = FCANS(I,J)* (FCANCMX(I,M)/SFCANCMX(I,J))
              ELSE

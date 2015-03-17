@@ -10,6 +10,12 @@ C
 C     Purpose: Calculate vegetation albedos, transmissivities and 
 C     stomatal resistances.
 C
+C     * SEP 05/14 - P.BARTLETT. INCREASED ALBEDO VALUES FOR SNOW-
+C     *                         COVERED CANOPY.
+C     * JUN 27/13 - D.VERSEGHY/ USE LOWER BOUND OF 0.01 INSTEAD OF     
+C     *             M.LAZARE.   0. IN LOOP 900 TO AVOID CRASH          
+C     *                         IN EXTREME CASE OF LOW VISIBLE         
+C     *                         INCIDENT SUN. 
 C     * AUG 17/12 - J.MELTON    ADD CONSTRAINT TO TRCLRV AT LOW COSZS
 C                               OTHERWISE IT HAS NUMERICAL PROBLEMS
 C                               WHEN MODEL IS COMPILED WITH GFORTRAN.
@@ -173,8 +179,8 @@ C
       COMMON /CLASS1/ DELT,TFREZ                                                  
       COMMON /CLASS7/ CANEXT,XLEAF
  
-      DATA ALVSWC,CXTLRG
-     1    /  0.17,1.0E20  /
+      DATA ALVSWC,ALIRWC,CXTLRG
+     1    /  0.27,0.38,1.0E20  /
 C----------------------------------------------------------------------
       !
       !The transmissivity τc of a vegetation canopy to shortwave 
@@ -384,7 +390,6 @@ C
       DO 200 I=IL1,IL2                                               
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
               SVF=EXP(CANEXT(J)*PAI(I,J))
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ALIRC(I,J)
@@ -430,7 +435,6 @@ C
       DO 300 I=IL1,IL2                                               
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
               SVF=EXP(CANEXT(J)*PAI(I,J))
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ALIRC(I,J)
@@ -483,7 +487,6 @@ C
       DO 400 I=IL1,IL2                                                     
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
               SVF=EXP(CANEXT(J)*PAI(I,J))
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ALIRC(I,J)
@@ -569,7 +572,6 @@ C              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))
 C
       DO 550 I=IL1,IL2                                               
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -608,7 +610,6 @@ C
 C
       DO 650 I=IL1,IL2                                               
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -653,7 +654,6 @@ C
       DO 750 J=3,IC
       DO 750 I=IL1,IL2                                                     
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -843,7 +843,7 @@ C
               ELSE
                   RCG(I,J)=1.0
               ENDIF
-              IF(QSWINV(I).GT.0. .AND. COSZS(I).GT.0. .AND.
+              IF(QSWINV(I).GT.0.01 .AND. COSZS(I).GT.0. .AND.           
      1            CXTEFF(I,J).GT.1.0E-5 .AND. RCG(I,J).LT.1.0E5)  THEN
                 RCACC(I,J)=MIN(CXTEFF(I,J)*RSMIN(I,J)/LOG((QSWINV(I)+
      1            QA50(I,J)/CXTEFF(I,J))/(QSWINV(I)*EXP(-CXTEFF(I,J)*

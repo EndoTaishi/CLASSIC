@@ -610,12 +610,6 @@ c
  95   continue
 c
 c     ---------------------------------------------------------------
-!     Initialize add2allo to 0.0   !Not in use. JM Jun 2014. 
-      !  do j = 1, icc
-      !    do i = il1, il2
-      !      add2allo(i,j)=0.0
-      !    enddo
-      !  enddo
 c
       if(compete .or. lnduseon)then
 
