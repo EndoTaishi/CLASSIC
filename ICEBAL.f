@@ -8,6 +8,8 @@ C
 C     Purpose: Perform temperature stepping and surface runoff 
 C     calculations over ice sheets.
 C
+C     * OCT 03/14 - D.VERSEGHY. CHANGE LIMITING VALUE OF SNOW ON ICE
+C     *                         FROM 100 KG/M2 TO 10 M.
 C     * DEC 27/07 - D.VERSEGHY. ADD GEOTHERMAL HEAT FLUX; ADD ICE MASS
 C     *                         LOSS TO RUNOFF.
 C     * NOV 01/06 - D.VERSEGHY. ALLOW PONDING OF WATER ON ICE SHEETS.
@@ -567,14 +569,13 @@ C
               SNOCONV=0.
               HTCS(I)=HTCS(I)-FI(I)*(TSNOW(I)+TFREZ)*HCPSNO(I)*
      1                ZSNOW(I)/DELT
-              IF((RHOSNO(I)*ZSNOW(I)).GT.100.)                THEN                                        
-                  SNOCONV=RHOSNO(I)*ZSNOW(I)-100.
+              IF((ZSNOW(I)).GT.10.)                         THEN        
+                  SNOCONV=(ZSNOW(I)-10.0)*RHOSNO(I)                     
                   WMOVE(I,1)=SNOCONV/RHOICE                                
                   TMOVE(I,1)=TSNOW(I)                                                      
                   WTRS(I)=WTRS(I)-FI(I)*WMOVE(I,1)*RHOICE/DELT
                   WTRG(I)=WTRG(I)+FI(I)*WMOVE(I,1)*RHOICE/DELT
-                  ZSNOW(I)=ZSNOW(I)-WMOVE(I,1)                                                
-                  RHOSNO(I)=100.0/ZSNOW(I)
+                  ZSNOW(I)=10.0                                         
                   HCPSNO(I)=HCPICE*RHOSNO(I)/RHOICE+HCPW*WSNOW(I)/
      1                (RHOW*ZSNOW(I))
                   ICONT(I)=1

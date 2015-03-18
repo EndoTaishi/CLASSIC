@@ -1,11 +1,17 @@
       SUBROUTINE GRALB(ALVSG,ALIRG,ALVSGC,ALIRGC,
-     1                 ALGWET,ALGDRY,THLIQ,ALVSU,ALIRU,FCMXU,
-     2                 AGVDAT,AGIDAT,ISAND,
-     3                 ILG,IG,IL1,IL2,JL,IALG)
+     1                 ALGWV,ALGWN,ALGDV,ALGDN,ALGWET,ALGDRY, 
+     +                 THLIQ,FSNOW,ALVSU,ALIRU,FCMXU,                   
+     2                 AGVDAT,AGIDAT,FG,ISAND,  
+     3                 ILG,IG,IL1,IL2,JL,IALG,IGRALB)        
 C
 C     Purpose: Calculate visible and near-IR ground albedos.
 C
-C     * SEP 05/12 - J.MELTON.   REMOVED UNUSED VAR FSNOW
+C     * JAN 16/15 - D.VERSEGHY. CORRECT ACCOUNTING FOR URBAN ALBEDO.
+C     * AUG 25/14 - M.LAZARE.   PASS IN NEW WET AND DRY SOIL BRIGHTNESS
+C     *                         FIELDS FROM CLM.
+C     * NOV 16/13 - M.LAZARE.   FINAL VERSION FOR GCM17:                
+C     *                         - REMOVE UNNECESSARY LOWER BOUND        
+C     *                           OF 1.E-5 ON "FURB".                   
 C     * APR 13/06 - D.VERSEGHY. SEPARATE ALBEDOS FOR OPEN AND
 C     *                         CANOPY-COVERED GROUND.
 C     * NOV 03/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
@@ -45,7 +51,7 @@ C
 C                
 C     * INTEGER CONSTANTS.
 C
-      INTEGER  ILG,IG,IL1,IL2,JL,IALG,IPTBAD,I
+      INTEGER  ILG,IG,IL1,IL2,JL,IALG,IPTBAD,I,IGRALB 
 C
 C     * OUTPUT ARRAYS.
 C
@@ -62,6 +68,10 @@ C
                             !area [ ] (alpha_g,wet)
       REAL ALGDRY(ILG)      !All-wave albedo of dry soil for modelled 
                             !area [ ] (alpha_g,dry)
+      REAL ALGWV (ILG)      !
+      REAL ALGWN (ILG)      ! 
+      REAL ALGDV (ILG)      !
+      REAL ALGDN(ILG)       !
       REAL THLIQ (ILG,IG)   !Volumetric liquid water content of soil 
                             !layers [m3 m-3]
       REAL ALVSU (ILG)      !Visible albedo of urban part of modelled 
@@ -74,6 +84,7 @@ C
                             !– optional [ ]
       REAL AGIDAT(ILG)      !Assigned value of near-IR albedo of ground 
                             !– optional [ ]
+      REAL FG    (ILG)      !
 C
       INTEGER    ISAND  (ILG,IG)    !Soil type flag based on sand 
                                     !content, assigned in subroutine 
@@ -170,7 +181,8 @@ C---------------------------------------------------------------------
       DO 100 I=IL1,IL2
          IF(IALG.EQ.0)                                          THEN
             IF(ISAND(I,1).GE.0)                          THEN
-                FURB=MAX(FCMXU(I),1.0E-5)                                    
+                FURB=FCMXU(I)*(1.0-FSNOW(I))                        
+                IF(IGRALB.EQ.0) THEN
                 IF(THLIQ(I,1).GE.0.26) THEN  
                    ALBSOL=ALGWET(I)            
                 ELSEIF(THLIQ(I,1).LE.0.22) THEN 
@@ -179,19 +191,40 @@ C---------------------------------------------------------------------
                    ALBSOL=THLIQ(I,1)*(ALGWET(I)-ALGDRY(I))/0.04+
      1                    ALGDRY(I)-5.50*(ALGWET(I)-ALGDRY(I)) 
                 ENDIF                         
-C
                 ALVSG(I)=2.0*ALBSOL/3.0    
                 ALIRG(I)=2.0*ALVSG(I)     
-                ALVSG(I)=(1.0-FURB)*ALVSG(I)+FURB*ALVSU(I)
-                ALIRG(I)=(1.0-FURB)*ALIRG(I)+FURB*ALIRU(I)
+                ELSE
+                   IF(THLIQ(I,1).GE.0.26) THEN                      
+                      ALVSG(I)=ALGWV(I)                            
+                      ALIRG(I)=ALGWN(I)                           
+                   ELSEIF(THLIQ(I,1).LE.0.22) THEN                   
+                      ALVSG(I)=ALGDV(I)                              
+                      ALIRG(I)=ALGDN(I)                              
+                   ELSE                                              
+                      ALVSG(I)=THLIQ(I,1)*(ALGWV(I)-ALGDV(I))/0.04+  
+     1                       ALGDV(I)-5.50*(ALGWV(I)-ALGDV(I))       
+                      ALIRG(I)=THLIQ(I,1)*(ALGWN(I)-ALGDN(I))/0.04+  
+     1                       ALGDN(I)-5.50*(ALGWN(I)-ALGDN(I))       
+                   ENDIF                                             
+                ENDIF
+C                                                                       
+                IF(FG(I).GT.0.001)                          THEN
+                    ALVSG(I)=((FG(I)-FURB)*ALVSG(I)+FURB*ALVSU(I))/FG(I)
+                    ALIRG(I)=((FG(I)-FURB)*ALIRG(I)+FURB*ALIRU(I))/FG(I)
+                ENDIF
                 IF(ALVSG(I).GT.1.0.OR.ALVSG(I).LT.0.0) IPTBAD=I
                 IF(ALIRG(I).GT.1.0.OR.ALIRG(I).LT.0.0) IPTBAD=I
             ELSE IF(ISAND(I,1).EQ.-4)                    THEN
                 ALVSG(I)=ALVSI
                 ALIRG(I)=ALIRI
             ELSE IF(ISAND(I,1).EQ.-3)                    THEN
+                IF(IGRALB.EQ.0) THEN
                 ALVSG(I)=2.0*ALBRCK/3.0                                                        
                 ALIRG(I)=2.0*ALVSG(I)                                                             
+                ELSE
+                    ALVSG(I)=ALGDV(I)
+                    ALIRG(I)=ALGDN(I)
+                ENDIF
             ELSE IF(ISAND(I,1).EQ.-2)                    THEN
                 ALVSG(I)=ALVSO
                 ALIRG(I)=ALIRO

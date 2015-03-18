@@ -1,7 +1,7 @@
       SUBROUTINE WFILL(WMOVE,TMOVE,LZF,NINF,ZF,TRMDR,R,TR,
      1                 PSIF,GRKINF,THLINF,THLIQX,TBARWX,
      2                 DELZX,ZBOTX,DZF,TIMPND,WADJ,WADD,
-     3                 IFILL,IFIND,IGP1,IGP2,ILG,IL1,IL2 )
+     3                 IFILL,IFIND,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N )
 
 C     Purpose: Evaluate infiltration of water into soil under 
 C     unsaturated conditions.
@@ -31,7 +31,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER IGP1,IGP2,ILG,IL1,IL2,I,J
+      INTEGER IG,IGP1,IGP2,ILG,IL1,IL2,JL,I,J,N
 C
 C     * OUTPUT FIELDS.
 C                      

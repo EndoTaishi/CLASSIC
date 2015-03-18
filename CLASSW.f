@@ -5,7 +5,7 @@
      4                  QFN,    QFG,    QFC,    HMFC,   HMFG,   HMFN,
      5                  HTCC,   HTCS,   HTC,    ROFC,   ROFN,   ROVG, 
      6                  WTRS,   WTRG,   OVRFLW, SUBFLW, BASFLW, 
-     7                  TOVRFL, TSUBFL, TBASFL, EVAP,   
+     7                  TOVRFL, TSUBFL, TBASFL, EVAP,   QFLUX,  RHOAIR, 
      8                  TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG, 
      9                  THICEC, THICEG, HCPC,   HCPG,   RPCP,   TRPCP,  
      A                  SPCP,   TSPCP,  PCPR,   TA,     RHOSNI, GGEO,
@@ -31,6 +31,15 @@ C
 C     Purpose: Call subroutines to perform surface water budget 
 C     calculations,
 C
+C     * OCT 03/14 - D.VERSEGHY. CHANGE LIMITING VALUE OF SNOW PACK
+C     *                         FROM 100 KG/M2 TO 10 M.
+C     * AUG 19/13 - M.LAZARE.   ADD CALCULATION OF "QFLUX" (NOW PASSED  
+C     *                         IN ALONG WITH "RHOAIR") PREVIOUSLY DONE 
+C     *                         IN CLASST.                              
+C     * JUN 21/13 - M.LAZARE.   SET ZSNOW=0. IF THERE IS NO             
+C     *                         SNOW IN ANY OF THE 4 SUBCLASSES,        
+C     *                         SIMILAR TO WHAT IS DONE FOR THE         
+C     *                         OTHER SNOW-RELATED FIELDS. 
 C     * OCT 18/11 - M.LAZARE.   PASS IN IGDR THROUGH CALLS TO
 C     *                         GRDRAN/GRINFL (ORIGINATES NOW
 C     *                         IN CLASSB - ONE CONSISTENT
@@ -201,6 +210,8 @@ C
                         !column [K]
       REAL EVAP  (ILG)  !Diagnosed total surface water vapour flux over 
                         !modelled area [kg m -2 s-1]
+      REAL QFLUX (ILG)  !
+      REAL RHOAIR (ILG) !
 C
       REAL QFC   (ILG,IG)   !Water removed from soil layers by 
                             !transpiration [kg m-2 s-1]
@@ -440,6 +451,10 @@ C     * INTERNAL WORK ARRAYS FOR CHKWAT.
 C
       REAL BAL   (ILG)
 C
+C     * INTERNAL SCALARS.                                               
+C                                                                       
+      REAL SNOROF,WSNROF                                                
+C                                                                       
 C     * COMMON BLOCK PARAMETERS.
 C
       REAL DELT     !Time step [s]
@@ -595,7 +610,7 @@ C
           CALL CANADD(2,RPCCS,TRPCCS,SPCCS,TSPCCS,RAICNS,SNOCNS,
      1                TCANS,CHCAPS,HTCC,ROFC,ROVG,PCPN,PCPG,
      2                FCS,FSVFS,CWLCPS,CWFCPS,CMASCS,RHOSNI,
-     3                TSFSAV(1,1),RADD,SADD,ILG,IL1,IL2)
+     3                TSFSAV(1,1),RADD,SADD,ILG,IL1,IL2,JL)             
           CALL CWCALC(TCANS,RAICNS,SNOCNS,RDUMMY,RDUMMY,CHCAPS,
      1                HMFC,HTCC,FCS,CMASCS,ILG,IL1,IL2,JL)
           CALL SUBCAN(2,RPCCS,TRPCCS,SPCCS,TSPCCS,RHOSNI,EVPCSG,
@@ -735,7 +750,7 @@ C
           CALL CANADD(1,RPCC,TRPCC,SPCC,TSPCC,RAICAN,SNOCAN,
      1                TCANO,CHCAP,HTCC,ROFC,ROVG,PCPN,PCPG,
      2                FC,FSVF,CWLCAP,CWFCAP,CMASSC,RHOSNI,
-     3                TSFSAV(1,3),RADD,SADD,ILG,IL1,IL2)    
+     3                TSFSAV(1,3),RADD,SADD,ILG,IL1,IL2,JL)             
           CALL CWCALC(TCANO,RAICAN,SNOCAN,RDUMMY,RDUMMY,CHCAP,
      1                HMFC,HTCC,FC,CMASSC,ILG,IL1,IL2,JL)
           CALL SUBCAN(1,RPCC,TRPCC,SPCC,TSPCC,RHOSNI,EVAPCG,
@@ -912,6 +927,7 @@ C
           BASFLW(I)=BASFLW(I)*RHOW/DELT
           EVAP  (I)=EVAP(I)-(FCS(I)*WLSTCS(I)+FGS(I)*WLSTGS(I)+
      1              FC(I)*WLOSTC(I)+FG(I)*WLOSTG(I))/DELT
+          QFLUX(I)=-EVAP(I)/RHOAIR(I)                                   
           IF((FC(I)+FCS(I)).GT.0.)                                  THEN
               TCAN(I)=(FCS(I)*TCANS(I)*CHCAPS(I)+FC(I)*TCANO(I)*              
      1                CHCAP(I))/(FCS(I)*CHCAPS(I)+FC(I)*CHCAP(I))                 
@@ -967,12 +983,12 @@ C
      1                ZPOND(I)/DELT)/(RUNOFF(I)+RHOW*ZPOND(I)/DELT)
                   RUNOFF(I)=RUNOFF(I)+RHOW*ZPOND(I)/DELT
                   HTC(I,1)=HTC(I,1)-TPOND(I)*HCPW*ZPOND(I)/DELT
-                  TPOND(I)=0.0
+                  TPOND(I)=TFREZ
                   ZPOND(I)=0.0                            
               ENDIF
          ELSE
               ZPOND(I)=0.0
-              TPOND(I)=0.0
+              TPOND(I)=TFREZ
          ENDIF
   600 CONTINUE
 C
@@ -1043,6 +1059,30 @@ C
               WSNOW(I)=FCS(I)*WSNOCS(I) + FGS(I)*WSNOGS(I) 
               SNO(I)=ZSNOW(I)*RHOSNO(I)                                       
               IF(SNO(I).LT.0.0) SNO(I)=0.0
+C                                                                       
+C           * LIMIT SNOW MASS TO A MAXIMUM OF 10 METRES TO AVOID        
+C           * SNOW PILING UP AT EDGES OF GLACIERS AT HIGH ELEVATIONS.   
+C           * THIS IS TARGETTED AS OVERLAND RUNOFF.                     
+C                                                                       
+              IF(ZSNOW(I).GT.10.0) THEN                                 
+                  SNOROF=(ZSNOW(I)-10.0)*RHOSNO(I)                      
+                  WSNROF=WSNOW(I)*SNOROF/SNO(I)                         
+                  TOVRFL(I)=(TOVRFL(I)*OVRFLW(I)+TSNOW(I)*(SNOROF+      
+     1                      WSNROF)/DELT)/(OVRFLW(I)+(SNOROF+WSNROF)/   
+     2                      DELT)                                       
+                  OVRFLW(I)=OVRFLW(I)+(SNOROF+WSNROF)/DELT              
+                  TRUNOF(I)=(TRUNOF(I)*RUNOFF(I)+TSNOW(I)*(SNOROF+      
+     1                      WSNROF)/DELT)/(RUNOFF(I)+(SNOROF+WSNROF)/   
+     2                      DELT)                                       
+                  RUNOFF(I)=RUNOFF(I)+(SNOROF+WSNROF)/DELT              
+                  ROFN(I)=ROFN(I)+(SNOROF+WSNROF)/DELT                  
+                  PCPG(I)=PCPG(I)+(SNOROF+WSNROF)/DELT                  
+                  HTCS(I)=HTCS(I)-TSNOW(I)*(SPHICE*SNOROF+SPHW*         
+     1                    WSNROF)/DELT                                  
+                  SNO(I)=SNO(I)-SNOROF                                  
+                  WSNOW(I)=WSNOW(I)-WSNROF                              
+                  ZSNOW(I)=10.0                                         
+              ENDIF                                                     
               IF(SNO(I).LT.1.0E-2 .AND. SNO(I).GT.0.0) THEN
                   TOVRFL(I)=(TOVRFL(I)*OVRFLW(I)+TSNOW(I)*(SNO(I)+
      1                WSNOW(I))/DELT)/(OVRFLW(I)+(SNO(I)+WSNOW(I))/
@@ -1066,6 +1106,7 @@ C
               RHOSNO(I)=0.0                                                   
               SNO(I)=0.0                                                      
               WSNOW(I)=0.0
+              ZSNOW(I)=0.0                                              
           ENDIF
 C
           IF(TSNOW(I).LT.0.0) KPTBAD=I

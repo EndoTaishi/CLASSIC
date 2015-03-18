@@ -16,6 +16,7 @@ C
 C     Purpose: Quantify movement of liquid water between soil layers 
 C     under conditions of infiltration.
 C
+C     * JUL 06/12 - D.VERSEGHY. FIX FOR EVAPORATION OVER ROCK.
 C     * OCT 18/11 - M.LAZARE.   PASS IN "IGDR" AS AN INPUT FIELD 
 C     *                         (ORIGINATING IN CLASSB) TO
 C     *                         GRDRAN AND WEND.
@@ -210,6 +211,22 @@ C
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
+C
+C     * CHECK FOR SUSTAINABLE EVAPORATION RATE IN CASES OF PONDED
+C     * WATER OVER ROCK.
+C
+      DO 50 I=IL1,IL2
+          IF(ZPOND(I).GT.0. .AND. ISAND(I,1).EQ.-3)     THEN
+              IF(ZPOND(I).GT.(EVAP(I)*DELT)) THEN
+                  ZPOND(I)=ZPOND(I)-EVAP(I)*DELT
+              ELSE
+                  WLOST(I)=WLOST(I)+(EVAP(I)*DELT-ZPOND(I))*RHOW
+                  ZPOND(I)=0.0
+              ENDIF
+              EVAP(I)=0.0
+          ENDIF
+   50 CONTINUE
+C
 C     * DETERMINE POINTS WHICH SATISFY CONDITIONS FOR THESE CALCULATIONS
 C     * AND STORE THEM AS HAVING NON-ZERO VALUES FOR WORK ARRAY "IGRN".
 C
@@ -222,7 +239,7 @@ C
       !greater than zero or that ponded water exists on the surface. If 
       !any of these conditions is not met, IGRN is set to zero.
       !
-      DO 50 I=IL1,IL2
+      DO 75 I=IL1,IL2
           IF(FI(I).GT.0. .AND. 
      1       ISAND(I,1).GT.-4 .AND. DT(I).GT.0. .AND.
      2       (R(I).GT.0. .OR. ZPOND(I).GT.0.))                     THEN
@@ -231,7 +248,7 @@ C
           ELSE
               IGRN(I)=0
           ENDIF
-   50 CONTINUE
+   75 CONTINUE
 C
 C     * ADJUST GRKSAT FOR VISCOSITY OF WATER AND PRESENCE OF ICE;
 C     * ADJUST THPOR FOR PRESENCE OF ICE.
@@ -480,7 +497,7 @@ C
       CALL WFILL(WMOVE,TMOVE,LZF,NINF,ZF,TRMDR,R,TR,
      1           PSIF,GRKINF,THLINF,THLIQX,TBARWX,
      2           DELZX,ZBOTX,DZF,TIMPND,WADJ,WADD,
-     3           IFILL,IFIND,IGP1,IGP2,ILG,IL1,IL2 )
+     3           IFILL,IFIND,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N )
 C
 C     * CALL "WFLOW" TO DO PROCESSING FOR PERIOD OF SATURATED
 C     * INFILTRATION.
