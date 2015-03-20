@@ -357,6 +357,7 @@ real, dimension(nltest) :: bare_ground_frac
                   nfcancmxrow(i,m,j) = max(seed,temparray(m)) 
                else !prescribed run
                   nfcancmxrow(i,m,j) = max(0.,temparray(m)) 
+               end if   
               enddo !m loop
             endif
            enddo !nltest

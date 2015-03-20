@@ -1,11 +1,19 @@
       SUBROUTINE SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,
-     1                   TRSNOW,ZSNOW,FSNOW,ASVDAT,ASIDAT,
-     2                   ILG,IG,IL1,IL2,JL,IALS)
+     1                   TRSNOWC, ALSNO, TRSNOWG, FSDB, FSFB, RHOSNO,   
+     2                   REFSN,BCSN,SNO,CSZ,ZSNOW,FSNOW,ASVDAT,ASIDAT,  
+     3                   ALVSG, ALIRG,                                  
+     4                   ILG,IG,IL1,IL2,JL,IALS,NBS,ISNOALB)            
 C
 C     Purpose: Diagnose snowpack visible and near-IR albedos given the 
 C     all-wave albedo at the current time step. Calculate snowpack 
 C     transmissivity for shortwave radiation.
 C
+C     * NOV 16/13 - J.COLE.     Final version for gcm17:                
+C     *                         - Fixes to get the proper BC mixing ratio in 
+C     *                           snow, which required passing in and using  
+C     *                           the snow density RHON.                
+C     * JUN 22/13 - J.COLE.     ADD CODE FOR "ISNOALB" OPTION,          
+C     *                         WHICH IS BASED ON 4-BAND SOLAR.      
 C     * FEB 05/07 - D.VERSEGHY. STREAMLINE CALCULATIONS OF
 C     *                         ALVSSN AND ALIRSN.
 C     * APR 13/06 - D.VERSEGHY. SEPARATE ALBEDOS FOR OPEN AND 
@@ -36,7 +44,7 @@ C
 C    
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ILG,IG,IL1,IL2,JL,IALS,IPTBAD,I
+      INTEGER ILG,IG,IL1,IL2,JL,IALS,IPTBAD,I,IB,NBS,ISNOALB            
 C
 C     * OUTPUT ARRAYS.
 C
@@ -48,12 +56,19 @@ C
                         !vegetation canopy [ ]
       REAL ALIRSC(ILG)  !Near-IR albedo of snow on ground under 
                         !vegetation canopy [ ]
-      REAL TRSNOW(ILG)  !Transmissivity of snow to shortwave radiation 
+      REAL TRSNOWC(ILG)  !Transmissivity of snow to shortwave radiation 
                         ![ ] (tau_s)
+      REAL ALSNO (ILG,NBS) !
+      REAL TRSNOWG(ILG,NBS)!
+      REAL ALVSG  (ILG)    !
+      REAL ALIRG  (ILG)    !
+      
 
 C
 C     * INPUT ARRAYS.
 C
+      REAL FSDB(ILG,NBS) !
+      REAL FSFB(ILG,NBS) !
       REAL ALBSNO(ILG)  !All-wave albedo of snow pack [ ] (alpha_s,T)  
       REAL ZSNOW (ILG)  !Depth of snow [m] (zs )
       REAL FSNOW (ILG)  !Fractional coverage of snow on grid cell [ ]
@@ -61,7 +76,24 @@ C
                         !optional [ ]
       REAL ASIDAT(ILG)  !Assigned value of near-IR albedo of snow pack – 
                         !optional [ ]
+      REAL REFSN (ILG)  !
+      REAL BCSN  (ILG)  !
+      REAL CSZ   (ILG)  !
+      REAL SNO   (ILG)  !
+      REAL RHOSNO(ILG)  !
+
 C
+C     * LOCAL ARRAYS                                                    
+C                                                                       
+      REAL SALBG(ILG,NBS), ALDIR(ILG,NBS), ALDIF(ILG,NBS),              
+     +                     TRDIR(ILG,NBS), TRDIF(ILG,NBS)               
+      REAL REFSNO(ILG), BCSNO(ILG)                                      
+      INTEGER C_FLAG(ILG)                                               
+C                                                                       
+C     * CONSTANTS.                                                      
+C                                                                       
+      REAL WDIRCT, WDIFF                                                
+      INTEGER SUM_C_FLAG                                                
 C------------------------------------------------------------------
       !
       !In subroutine SNOALBW, called at the end of CLASSW, the change of 
@@ -121,7 +153,7 @@ C------------------------------------------------------------------
       !of 25.0 m-1 derived from the literature (Grenfell and Maykut, 
       !1977; Thomas, 1963):
       !
-      !TRSNOW = exp[-25.0*ZSNOW]
+      !TRSNOWC = exp[-25.0*ZSNOW]
       !
       IPTBAD=0
       DO 100 I=IL1,IL2                                           
@@ -142,7 +174,7 @@ C------------------------------------------------------------------
          ENDIF                                                                   
          ALVSSC(I)=ALVSSN(I)
          ALIRSC(I)=ALIRSN(I)
-         TRSNOW(I)=EXP(-25.0*ZSNOW(I))                                                 
+         TRSNOWC(I)=EXP(-25.0*ZSNOW(I))                                                 
   100 CONTINUE
 C
       IF(IPTBAD.NE.0) THEN
@@ -151,5 +183,104 @@ C
          CALL XIT('SNOALBA',-1)
       ENDIF
 C
+      IF (ISNOALB .EQ. 0) THEN                                          
+         DO I = IL1, IL2                                                
+            ALSNO(I,1) = ALVSSN(I)                                      
+            ALSNO(I,2) = ALIRSN(I)                                      
+            ALSNO(I,3) = ALIRSN(I)                                      
+            ALSNO(I,4) = ALIRSN(I)                                      
+                                                                        
+            TRSNOWG(I,1:NBS) = TRSNOWC(I)                               
+         END DO ! I                                                     
+      ELSE IF (ISNOALB .EQ. 1) THEN                                     
+         DO IB = 1, NBS                                                 
+            DO I = IL1, IL2                                             
+               IF (IB .EQ. 1) THEN                                      
+                  SALBG(I,IB) = ALVSG(I)                                
+                  ALSNO(I,IB) = ALVSSN(I)                               
+               ELSE                                                     
+                  SALBG(I,IB) = ALIRG(I)                                
+                  ALSNO(I,IB) = ALIRSN(I)                               
+               END IF                                                   
+            END DO ! I                                                  
+         END DO ! IB                                                    
+         SUM_C_FLAG = 0                                                 
+         DO I = IL1, IL2                                                
+            IF (ZSNOW(I) .GT. 0.0) THEN                                 
+               C_FLAG(I) = 1                                            
+            ELSE                                                        
+               C_FLAG(I) = 0                                            
+            END IF                                                      
+            SUM_C_FLAG = SUM_C_FLAG + C_FLAG(I)                         
+         END DO ! I                                                     
+                                                                        
+         IF (IALS .EQ. 0) THEN                                          
+            IF (SUM_C_FLAG .GT. 0) THEN                                 
+! Convert the units of the snow grain size and BC mixing ratio          
+! Snow grain size from meters to microns and BC from kg BC/m^3 to ng BC/kg SNOW 
+               DO I = IL1,IL2                                           
+                 IF (C_FLAG(I) .EQ. 1) THEN                             
+                  REFSNO(I) = REFSN(I)*1.0E6                            
+                  BCSNO(I)  = (BCSN(I)/RHOSNO(I))*1.0E12                
+                 END IF                                                 
+               END DO ! I                                               
+                                                                        
+               CALL SNOW_ALBVAL(ALDIF, ! OUTPUT                         
+     +                          ALDIR,                                  
+     +                          CSZ,   ! INPUT                          
+     +                          SALBG,                                  
+     +                          BCSNO,                                  
+     +                          REFSNO,                                 
+     +                          SNO,                                    
+     +                          C_FLAG,                                 
+     +                          IL1,                                    
+     +                          IL2,                                    
+     +                          ILG,                                    
+     +                          NBS)                                    
+                                                                        
+               CALL SNOW_TRANVAL(TRDIF, ! OUTPUT                        
+     +                           TRDIR,                                 
+     +                           CSZ,   ! INPUT                         
+     +                           SALBG,                                 
+     +                           BCSNO,                                 
+     +                           REFSNO,                                
+     +                           SNO,                                   
+     +                           C_FLAG,                                
+     +                           IL1,                                   
+     +                           IL2,                                   
+     +                           ILG,                                   
+     +                           NBS)                                   
+                                                                        
+               DO IB = 1, NBS                                           
+                  DO I = IL1, IL2                                       
+                     IF (C_FLAG(I) .EQ. 1) THEN                         
+                        WDIRCT = FSDB(I,IB)                             
+     +                         /(FSDB(I,IB)+FSFB(I,IB)+1.E-10)          
+                        WDIFF  = 1.0-WDIRCT                             
+                        ALSNO(I,IB) = ALDIF(I,IB)*WDIFF                 
+     +                              + ALDIR(I,IB)*WDIRCT                
+                        TRSNOWG(I,IB) = TRDIF(I,IB)*WDIFF               
+     +                                + TRDIR(I,IB)*WDIRCT              
+                     END IF ! C_FLAG                                    
+                  END DO ! I                                            
+               END DO ! IB                                              
+            ELSE ! SUM_C_FLAG .EQ. 0                                    
+               DO I = IL1, IL2                                          
+                  ALSNO(I,1)     = ALVSSN(I)                            
+                  ALSNO(I,2:NBS) = ALIRSN(I)                            
+                  TRSNOWG(I,1:NBS) = TRSNOWC(I)                         
+               END DO ! I                                               
+            ENDIF ! SUM_C_FLAG                                          
+         ELSE IF (IALS .EQ. 1) THEN                                     
+            DO I = IL1, IL2                                             
+               ALSNO(I,1) = ASVDAT(I)                                   
+               ALSNO(I,2) = ASIDAT(I)                                   
+               ALSNO(I,3) = ASIDAT(I)                                   
+               ALSNO(I,4) = ASIDAT(I)                                   
+                                                                        
+               TRSNOWG(I,1:NBS) = TRSNOWC(I)                            
+            END DO ! I                                                  
+         END IF ! IALS                                                  
+      END IF ! ISNOALB                                                  
       RETURN
       END

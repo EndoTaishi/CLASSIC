@@ -64,9 +64,11 @@ C
       REAL THPOR (NL,NM,IG),  THLRET(NL,NM,IG),  THLMIN(NL,NM,IG),
      1     BI    (NL,NM,IG),  PSISAT(NL,NM,IG),  GRKSAT(NL,NM,IG),  
      2     THLRAT(NL,NM,IG),  HCPS  (NL,NM,IG),  
-     3     TCS   (NL,NM,IG),  THFC  (NL,NM,IG),  PSIWLT(NL,NM,IG),
-     4     DELZW (NL,NM,IG),  ZBOTW (NL,NM,IG),
-     4     ALGWET(NL,NM),     ALGDRY(NL,NM), THLW(NL,NM,IG)
+     3     TCS   (NL,NM,IG),  THFC  (NL,NM,IG),  THLW  (NL,NM,IG),  
+     4     PSIWLT(NL,NM,IG),  DELZW (NL,NM,IG),  ZBOTW (NL,NM,IG), 
+     +     ALGWET(NL,NM),     ALGDRY(NL,NM),
+     +     ALGWV (NL,NM),     ALGWN (NL,NM),                            
+     5     ALGDV (NL,NM),     ALGDN (NL,NM)                             
 C
       INTEGER                 ISAND (NL,NM,IG),  IGDR  (NL,NM)
 C
@@ -200,10 +202,10 @@ C
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
               THFC(I,M,J)=THLRET(I,M,J)           
+              THLW(I,M,J)=THLMIN(I,M,J)
               PSIWLT(I,M,J)=PSISAT(I,M,J)*(THLMIN(I,M,J)/
      1            THPOR(I,M,J))**(-BI(I,M,J))
-              THLW(I,M,J)=THLMIN(I,M,J)
-          ELSEIF(SAND(I,M,J).GT.0.) THEN
+          ELSEIF(SAND(I,M,J).GT.0.) THEN                                 
               THPOR (I,M,J)=(-0.126*SAND(I,M,J)+48.9)/100.0
               THLRET(I,M,J)=0.04
               THLMIN(I,M,J)=0.04

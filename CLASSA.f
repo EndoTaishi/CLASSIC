@@ -222,7 +222,7 @@ C
                         !snow [m]
       REAL RBCOEF(ILG)  !Parameter for calculation of leaf boundary 
                         !resistance
-      REAL TRSNOW(ILG)  !Short-wave transmissivity of snow pack [ ] 
+      REAL TRSNOWC(ILG)  !Short-wave transmissivity of snow pack [ ] 
       REAL ZSNOW (ILG)  !Depth of snow pack [m] (zs) 
       REAL WSNOW (ILG)  !Liquid water content of snow pack [kg m-2]
       REAL ALVS  (ILG)  !Diagnosed total visible albedo of land surface 
@@ -555,7 +555,7 @@ C
                                                                         
           TRSNOWG(I,1:NBS) = 0.0                                        
           ALTG(I,1:NBS)    = 0.0                                        
-	      ALSNO(I,1:NBS)   = 0.0   
+          ALSNO(I,1:NBS)   = 0.0   
                                      
   100 CONTINUE
 C

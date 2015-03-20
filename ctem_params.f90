@@ -74,6 +74,8 @@ integer, parameter :: numcrops = 2      ! number of crop pfts
 integer, parameter :: numtreepfts = 5   ! number of tree pfts
 integer, parameter :: numgrass = 2      ! number of grass pfts
 
+integer, parameter :: nbs = 4           !
+
 ! Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
 integer, parameter, dimension(kk) :: modelpft= [ 1,     1,     0,  &  ! CLASS PFT 1 NDL
                              !                  EVG    DCD

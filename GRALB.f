@@ -85,6 +85,7 @@ C
       REAL AGIDAT(ILG)      !Assigned value of near-IR albedo of ground 
                             !– optional [ ]
       REAL FG    (ILG)      !
+      REAL FSNOW (ILG)      !
 C
       INTEGER    ISAND  (ILG,IG)    !Soil type flag based on sand 
                                     !content, assigned in subroutine 

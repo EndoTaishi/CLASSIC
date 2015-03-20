@@ -24,6 +24,9 @@
      N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS)
 C
 C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
+C     * JUN 27/14 - D.VERSEGHY. CHANGE ITERATION LIMIT BACK TO 50 FOR
+C     *                         BISECTION SCHEME; BUGFIX IN CALCULATION 
+C     *                         OF EVPWET.
 C     * OCT 30/12 - V. ARORA  - CFLUXV WAS BEING INITIALIZED TO ZERO INAPPROPRIATELY
 C     *                         FOR MOSAIC RUNS. NOT A PROBLEM WITH COMPOSITE 
 C     *                         RUNS. CREATED A TEMPORARY STORAGE VAR TO ALLOW
@@ -261,7 +264,7 @@ C===================== CTEM =====================================\
 C===================== CTEM =====================================/
 C
       IF(ITCG.LT.2) THEN
-          ITERMX=12
+          ITERMX=50                                                     
       ELSE
           ITERMX=5
       ENDIF
@@ -342,10 +345,8 @@ C       STORE CFLUXV NUMBERS IN A TEMPORARY ARRAY
           CFLUXV_IN(I)=CFLUXV(I)
         ENDDO 
 C
-C       NOTE: WE DO NOT USE TAC HERE. TAC IS INTENDED FOR USE WHEN ITC=2
-C             HOWEVER, AS SET UP TAC CAN BE USED UNSET IN THE CALCULATION
-C             OF QSENSG EVEN IF ITC/=2. TO ENSURE THE PHTSYN WORKS, WE THEN
-C             USE TA (THE SUB OCCURS IN PHTSYN). JM 11/09/12
+C       NOTE: FOR NOW, CTEM IS USING TA INSTEAD OF TCAN (THE SUB OCCURS 
+C             IN PHTSYN). JM 11/09/12. (THIS IS CURRENTLY UNDER REVIEW.)    
 
         CALL PHTSYN3(  AILCG, FCANC,     TCAN, CO2CONC,  PRESSG,    FI,
      1                CFLUXV,    QA,   QSWNVC,      IC,   THLIQ, ISAND,
@@ -601,7 +602,7 @@ C
   300 CONTINUE
 C
       IF(ITC.LT.2) THEN
-          ITERMX=12
+          ITERMX=50                                                     
       ELSE
           ITERMX=5
       ENDIF
@@ -748,9 +749,9 @@ C
               ENDIF             
               IF(EVAPC(I).LT.0. .AND. TCAN(I).GT.TADP(I)) EVAPC(I)=0.0
               IF(SNOCAN(I).GT.0.)                            THEN
-                  EVPWET(I)=(CLHVAP+CLHMLT)*SNOCAN(I)/DELT
+                  EVPWET(I)=SNOCAN(I)/DELT                              
               ELSE
-                  EVPWET(I)=CLHVAP*RAICAN(I)/DELT
+                  EVPWET(I)=RAICAN(I)/DELT                              
               ENDIF
               IF((FRAINC(I)+FSNOWC(I)).GT.0.50 .AND. 
      1                        EVAPC(I).GT.EVPWET(I))         THEN
@@ -900,6 +901,8 @@ c
 C
       ENDIF
 C
+      IBAD=0                                                            
+C                                                                       
       DO 625 I=IL1,IL2
 C         IF(FI(I).GT.0. .AND. ITER(I).EQ.-1)                      THEN 
 C             WRITE(6,6350) I,JL,NITER(I),RESID(I),TCAN(I),RIB(I)
@@ -1123,9 +1126,9 @@ C
               ENDIF                    
               IF(EVAPC(I).LT.0. .AND. TCAN(I).GE.TADP(I)) EVAPC(I)=0.0
               IF(SNOCAN(I).GT.0.)                            THEN
-                  EVPWET(I)=(CLHVAP+CLHMLT)*SNOCAN(I)/DELT
+                  EVPWET(I)=SNOCAN(I)/DELT                              
               ELSE
-                  EVPWET(I)=CLHVAP*RAICAN(I)/DELT
+                  EVPWET(I)=RAICAN(I)/DELT                              
               ENDIF
               IF((FRAINC(I)+FSNOWC(I)).GT.0.50 .AND. 
      1            EVAPC(I).GT.EVPWET(I)) EVAPC(I)=EVPWET(I)

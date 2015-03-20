@@ -1,4 +1,4 @@
-      SUBROUTINE SLDIAG(SU,SV,ST,SQ,CDM,CDH,UA,VA,TA,QA,T0,Q0,
+      SUBROUTINE SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0,
      1                  Z0M,Z0E,F,ZA,ZU,ZT,ILG,IL1,IL2,JL)
 
 C     * JUN 23/14 - M.LAZARE.   New version for gcm18+:                 

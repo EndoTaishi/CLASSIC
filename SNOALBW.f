@@ -5,6 +5,8 @@ C
 C     Purpose: Calculate decrease in snow albedo and increase in density 
 C     due to aging.
 C
+C     * APR 17/14 - D.VERSEGHY. MAKE SNOW ALBEDO REFRESHMENT VALUE
+C     *                         CONSISTENT WITH SNOADD.
 C     * MAR 07/07 - D.VERSEGHY. STREAMLINE SOME CALCULATIONS.
 C     * MAR 24/06 - D.VERSEGHY. ALLOW FOR PRESENCE OF WATER IN SNOW.
 C     * SEP 23/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
@@ -123,7 +125,7 @@ C----------------------------------------------------------------------
       IPTBAD=0                                                                    
       DO 100 I=IL1,IL2  
           IF(ZSNOW(I).GT.0. .AND. 
-     1            FI  (I).GT.0. .AND. S(I).LT.1.0E-6)             THEN
+     1            FI  (I).GT.0. .AND. S(I)*DELT.LT.1.0E-4)       THEN   
               IF(ALBSNO(I).GT.0.5001 .AND. (RMELT(I).GT.1.0E-7 .OR.
      1                TSNOW(I).GE.-0.01)) THEN
                   ALBSNO(I)=(ALBSNO(I)-0.50)*EXP(-0.01*DELT/3600.0)+
