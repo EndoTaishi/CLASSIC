@@ -197,7 +197,7 @@ C
      7        EMISGAT     
 C
       REAL    SANDROW(NLAT,NMOS,IGND), CLAYROW(NLAT,NMOS,IGND), 
-     1        ORGMROW(NLAT,NMOS,IGND),
+     1        ORGMROW(NLAT,NMOS,IGND), SOCIROW(NLAT,NMOS),
      2        SDEPROW(NLAT,NMOS),      FAREROW(NLAT,NMOS)
 C
       REAL,DIMENSION(ILG,NBS) :: 
@@ -2408,12 +2408,13 @@ C
 C===================== CTEM =============================================== /
 
       CALL CLASSB(THPROW,THRROW,THMROW,BIROW,PSISROW,GRKSROW,
-     1            THRAROW,HCPSROW,TCSROW,THFCROW,PSIWROW,THLWROW,
+     1            THRAROW,HCPSROW,TCSROW,THFCROW,THLWROW,PSIWROW,
      2            DLZWROW,ZBTWROW,ALGWROW,ALGDROW,
-     3            SANDROW,CLAYROW,ORGMROW,DELZ,ZBOT,
+     +            ALGWVROW,ALGWNROW,ALGDVROW,ALGDNROW,
+     3            SANDROW,CLAYROW,ORGMROW,SOCIROW,DELZ,ZBOT,
      4            SDEPROW,ISNDROW,IGDRROW,
      5            NLAT,NMOS,1,NLTEST,NMTEST,IGND,ICTEMMOD)
-
+        
 5010  FORMAT(2X,6A4)
 5020  FORMAT(5F10.2,F7.1,3I5)
 5030  FORMAT(4F8.3,8X,4F8.3)
@@ -3270,7 +3271,7 @@ C-----------------------------------------------------------------------
 C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS; GENERAL VEGETATION
 C     * CHARACTERISTICS.
 C     * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM
-C
+C        
       CALL CLASSA    (FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN,
      1                ALVSG,  ALIRG,  ALVSCS, ALIRCS, ALVSSN, ALIRSN,           
      2                ALVSGC, ALIRGC, ALVSSC, ALIRSC, TRVSCN, TRIRCN, 
@@ -3300,10 +3301,10 @@ C
      P                FCANCMXGAT,ICC,ICTEMMOD,RMATCGAT,ZOLNCGAT, 
      Q                CMASVEGCGAT,AILCGAT,PAICGAT,L2MAX, NOL2PFTS,
      R                SLAICGAT,AILCGGAT,AILCGSGAT,FCANCGAT,FCANCSGAT,
-     R                IDAY,   ILG,    1,      NML,      
+     R                IDAY,   ILG,    1,      NML,  NBS,    
      N                JLAT,N, ICAN,   ICAN+1, IGND,   IDISP,  IZREF,
      O                IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     P                ISNOALB,IGRALB )
+     P                ISNOALB,IGRALB, alvsctmgat,alirctmgat )
 C
 C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.

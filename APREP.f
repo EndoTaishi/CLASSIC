@@ -985,7 +985,8 @@ C
       DO 650 I=IL1,IL2                                                            
           IF(FCS(I).GT.0.0 .OR. FC(I).GT.0.0)                      THEN          
               IF(THLIQ(I,J).GT.(THLMIN(I,J)+0.01) .AND. 
-     1                           FROOT(I,J).GT.0.)             THEN            
+     1                           FROOT(I,J).GT.0.)             THEN  
+              
                   PSII=PSISAT(I,J)*(THLIQ(I,J)/THPOR(I,J))**(-BI(I,J))
                   PSII=MIN(PSII,PSIWLT(I,J))
                   PSIGND(I)=MIN(PSIGND(I),PSII)                                 

@@ -12,6 +12,8 @@ subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctem
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    Joboptions Read-In Subroutine 
 !
+!     20  Mar. 2015 - Add in new CLASS flags for snow albedos -igralb & isnoalb
+!
 !     4   Sep. 2014 - Add in the transient_run flag.
 !     J. Melton
 !

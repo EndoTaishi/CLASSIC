@@ -132,7 +132,7 @@ C     * IN DRCOEF
         IF(L.GT.0.)                                                 THEN
 
 C     * STABLE CASE
-
+          
          UVA=US/VKC*(LOG(ZA(I)/Z0M(I))-PSM(ZA(I)/L)+PSM(Z0M(I)/L))
          RATIO=WSPD/UVA
          UVU=US/VKC*(LOG((ZU(I)+Z0M(I))/Z0M(I))-PSM((ZU(I)+Z0M(I))/L)

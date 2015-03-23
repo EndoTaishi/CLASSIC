@@ -2,23 +2,23 @@
 #
 # Objects that must be created, now they get created in ODIR
 #
-OBJ = ctem_params.o APREP.o CLASSBD.o GRALB.o SNOW_ALBVAL.o SNOW_TRANVAL.o SNOALBA.o  TNPREP.o WFILL.o CANADD.o CLASSD.o GRDRAN.o SNOALBW.o TPREP.o WFLOW.o CANALB.o CLASSG.o GRINFL.o SNOVAP.o TSOLVC.o WPREP.o wetland_methane.o ctemg1.o bio2str.o ctems1.o ctemg2.o PHTSYN3.o CANVAP.o CLASSI.o CWCALC.o ICEBAL.o SUBCAN.o TSOLVE.o XIT.o CGROW.o CLASSS.o DIASURFZ.o SCREENRH.o TFREEZ.o TSPOST.o CHKWAT.o CLASST.o DRCOEF.o SLDIAG.o TMCALC.o TSPREP.o CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o TNPOST.o WEND.o balcar.o GAUSSG.o ORDLEG.o TRIGL.o mainres.o hetresv.o hetresg.o allocate.o phenolgy.o turnover.o mortality.o disturb.o ctems2.o competition_map.o competition_unmap.o read_from_job_options.o landuse_change_mod.o competition_mod.o ctem.o runclass36ctem.o 
+OBJ = ctem_params.o APREP.o CLASSBD.o GRALB.o mvidx.o SNOW_ALBVAL.o SNOW_TRANVAL.o SNOALBA.o  TNPREP.o WFILL.o CANADD.o CLASSD.o GRDRAN.o SNOALBW.o TPREP.o WFLOW.o CANALB.o CLASSG.o GRINFL.o SNOVAP.o TSOLVC.o WPREP.o wetland_methane.o ctemg1.o bio2str.o ctems1.o ctemg2.o PHTSYN3.o CANVAP.o CLASSI.o CWCALC.o ICEBAL.o SUBCAN.o TSOLVE.o XIT.o CGROW.o CLASSS.o DIASURFZ.o SCREENRH.o TFREEZ.o TSPOST.o CHKWAT.o CLASST.o DRCOEF.o SLDIAG.o TMCALC.o TSPREP.o CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o TNPOST.o WEND.o balcar.o GAUSSG.o ORDLEG.o TRIGL.o mainres.o hetresv.o hetresg.o allocate.o phenolgy.o turnover.o mortality.o disturb.o ctems2.o competition_map.o competition_unmap.o read_from_job_options.o landuse_change_mod.o competition_mod.o ctem.o runclass36ctem.o 
 
 # Binary dir
 #
 BDIR = ../bin
 
 # PGI
-FC=pgf90
+#FC=pgf90
 
 # GNU Fortran
-#FC=gfortran
+FC=gfortran
 
 # General running of model (PGI)
 
-FFLAGS = -Bstatic -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
+#FFLAGS = -Bstatic -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 
-export PGIMACH=linux86-64
+#export PGIMACH=linux86-64
 
 # Debugging of model ----------------
 
@@ -28,7 +28,7 @@ export PGIMACH=linux86-64
 #export PGIMACH=linux86-64
 
 #GNU
-#FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
+FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
 
 #-----------------------
 

@@ -499,7 +499,7 @@ C
                   ALIRN=(1.0-SVF)*ALIRCX+SVF*ACIDAT(I,J)
               ENDIF
               ALVSCN(I)=ALVSCN(I)+FCAN(I,J)*ALVSN
-              ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN
+              ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN              
           ENDIF   
   400 CONTINUE
 C
@@ -509,7 +509,7 @@ C
       DO 450 I=IL1,IL2
           IF(FC(I).GT.0. .AND. COSZS(I).GT.0.)                      THEN
               ALVSCN(I)=ALVSCN(I)/FC(I)                                                        
-               ALIRCN(I)=ALIRCN(I)/FC(I)
+              ALIRCN(I)=ALIRCN(I)/FC(I)               
           ENDIF
           IF(ALVSCN(I).GT.1. .OR. ALVSCN(I).LT.0.) IPTBAD=I
           IF(ALIRCN(I).GT.1. .OR. ALIRCN(I).LT.0.) IPTBAD=I

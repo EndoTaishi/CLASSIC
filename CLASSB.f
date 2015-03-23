@@ -3,7 +3,7 @@
      2                  DELZW,ZBOTW,ALGWET,ALGDRY,
      +                  ALGWV,ALGWN,ALGDV,ALGDN,            
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,           
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ICTEMMOD)                 
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ICTEMMOD) 
 C
 C     * JAN 15/15 - D.VERSEGHY. CHANGE PSIWLT FOR MINERAL SOILS
 C     *                         TO A CONSTANT VALUE OF 150 M.
