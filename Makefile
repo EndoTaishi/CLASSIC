@@ -9,16 +9,16 @@ OBJ = ctem_params.o APREP.o CLASSBD.o GRALB.o mvidx.o SNOW_ALBVAL.o SNOW_TRANVAL
 BDIR = ../bin
 
 # PGI
-#FC=pgf90
+FC=pgf90
 
 # GNU Fortran
-FC=gfortran
+#FC=gfortran
 
 # General running of model (PGI)
 
-#FFLAGS = -Bstatic -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
+FFLAGS = -Bstatic -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 
-#export PGIMACH=linux86-64
+export PGIMACH=linux86-64
 
 # Debugging of model ----------------
 
@@ -28,7 +28,7 @@ FC=gfortran
 #export PGIMACH=linux86-64
 
 #GNU
-FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
+#FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
 
 #-----------------------
 
