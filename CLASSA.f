@@ -476,7 +476,7 @@ C
       REAL ALIRI    !Near-infrared albedo of ice (0.73)
       REAL ALVSO    !Visible albedo of organic matter (0.05)
       REAL ALIRO    !Near-infrared albedo of organic matter (0.30)
-      REAL ALBRCK   !Albedo of rock (0.27)
+      REAL ALBRCK   !Albedo of rock 
 
       COMMON /CLASS1/ DELT,TFREZ                                               
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN

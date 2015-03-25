@@ -364,6 +364,7 @@ C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
                 PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4))   
               ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
+C
           ELSE
               PAI(I,1)=PAIDAT(I,1)
               PAI(I,2)=PAIDAT(I,2)
@@ -385,6 +386,7 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------/
           ENDIF                                                                   
 C
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
+C
           IF (ICTEMMOD .EQ. 1) THEN
              AIL(I,1)=MAX(AILC(I,1), SLAIC(I,1))
              AIL(I,2)=MAX(AILC(I,2), SLAIC(I,2))
@@ -392,13 +394,14 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------\
              AIL(I,4)=MAX(AILC(I,4), SLAIC(I,4))
           ELSE
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
+C
             AIL(I,1)=PAI(I,1)*0.90
             AIL(I,2)=MAX((PAI(I,2)-PAIMIN(I,2)),0.0)
             AIL(I,3)=PAI(I,3)
             AIL(I,4)=PAI(I,4)
           ENDIF
     
-C     =================CTEM ====================================== \
+C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C
 C         ESTIMATE GREEN LAI FOR CANOPY OVER SNOW FRACTION FOR CTEM's
 C         9 PFTs, JUST LIKE CLASS DOES.
@@ -425,6 +428,7 @@ C
             ENDIF
           ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
+C
   150 CONTINUE         
 C
 C     * ADJUST FRACTIONAL COVERAGE OF GRID CELL FOR CROPS AND

@@ -21,27 +21,6 @@ C     * JUL 19/96 - Y. DELAGE.
 C     ------------------------------------
 
 C     * CALCULATES NEAR SURFACE OUTPUT VARIABLES
-
-c     * OUTPUT FIELDS ARE:                                              
-C     *   SUT  : U COMPONENT OF THE WIND AT ZU                          
-C     *   SVT  : V COMPONENT OF THE WIND AT ZU                          
-C     *   STT  : TEMPERATURE AT ZT                                      
-C     *   SQT  : SPECIFIC HUMIDITY AT ZT                                
-C     * INPUT FIELDS ARE:                                               
-C     *   CDM : DRAG COEFFICIENT                                        
-C     *   CDH : TRASFER COEFFICIENT FOR HEAT AND MOISTURE               
-C     *   UA  : U COMPONENT OF THE WIND AT ZA                           
-C     *   VA  : V COMPONENT OF THE WIND AT ZA                           
-C     *   TA  : POTENTIAL TEMPERATURE AT ZA                             
-c     *   T0  : TEMPERATURE AT BOTTOM OF SURFACE LAYER                  
-C     *   Q0  : SPECIFIC HUMIDITY AT BOTTOM OF SURFACE LAYER            
-C     *   Z0M : ROUGHNESS LENGTH FOR MOMENTUM                           
-C     *   Z0E : ROUGHNESS LENGTH FOR HEAT AND MOISTURE                  
-C     *   F   : FRACTION OF GRID POINT AFFECTED BY PROCESS              
-C     *   ZA  : TOP OF SURFACE LAYER                                    
-C     *   ZU  : HEIGHT OF OUTPUT WIND                                   
-C     *   ZT  : HEIGHT OF OUTPUT TEMPERATURE AND HUMIDITY               
-C     *   ILG : NUMBER OF POINTS TO BE TREATED                          
 C
       IMPLICIT NONE
 c

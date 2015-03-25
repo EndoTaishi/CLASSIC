@@ -301,7 +301,8 @@ C
       REAL HBLX  (ILG)  !Height of the atmospheric boundary layer over 
                         !each subarea [m]   
 
-      REAL QFCF  (ILG),   QFCL  (ILG)
+      REAL QFCF  (ILG)
+      REAL QFCL  (ILG)
       REAL FTEMP (ILG),   FTEMPX(ILG),   FVAP  (ILG),
      1     FVAPX (ILG),   RIB   (ILG),   RIBX  (ILG)
 
