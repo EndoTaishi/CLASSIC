@@ -33,7 +33,14 @@
      W   THLW,
      X   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
      Y   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     Z   LFSTATUS) 
+     Z   LFSTATUS
+c    peatland variabels in mosspht.f called in TSOLVC and TSOLVE-------\  
+	1	,ipeatland, bi,
+	2	ancsmoss,	angsmoss, ancmoss,	angmoss,
+	3	rmlcsmoss,rmlgsmoss,rmlcmoss,	rmlgmoss,
+	4	Cmossmas, dmoss,iyear, iday, ihour,imin)
+c    YW March 19, 2015 ------------------------------------------------/
+
 C
 C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
 C     * NOV 11/11 - M.LAZARE.   IMPLEMENT CTEM (INITIALIZATION OF FIELDS
@@ -320,6 +327,17 @@ C
      1                     KF    (ILG),    KF1   (ILG),    KF2   (ILG),
      2                     IEVAPC(ILG)
 C
+c    ------------------peatland variables -----------------------------\
+
+	 integer 	ipeatland(ilg),iyear, iday, imin, ihour
+	 real	bi(ig), Cmossmas(ilg), dmoss(ilg)
+c	------input above output below this line---------------------------
+	 real	ancsmoss(ilg),		angsmoss(ilg), 
+	1		ancmoss(ilg), 		angmoss(ilg),
+	2		rmlcsmoss(ilg),	rmlgsmoss(ilg),	
+	3		rmlcmoss(ilg),		rmlgmoss(ilg)
+c    -------------------YW March 19, 2015------------------------------/ 
+c
 C     * TEMPORARY VARIABLES.
 C
       REAL THTOT,ZRUF,ZSCRN,ZANNOM,RATFC,RATFC1,RATFCA,RATFCA1,RATIO,
@@ -399,6 +417,23 @@ C
           RMLCGVEG(I,J)=0.0
    65   CONTINUE
       ENDIF
+C
+c    initialize moss C fluxes YW March 19, 2015 -----------------------\
+C
+	   do 66 i = il1, il2
+		if (ipeatland(i) > 0)	          then		
+			ancsmoss(i) = 0.0
+			angsmoss(i) = 0.0
+			ancmoss(i)  = 0.0
+			angmoss(i)  = 0.0	
+			rmlcsmoss(i) = 0.0
+			rmlgsmoss(i) = 0.0
+			rmlcmoss(i)  = 0.0
+			rmlgmoss(i)  = 0.0
+		endif
+66	   continue		
+c
+C    initialize moss fluxes done---------------------------------------/
 C
 C     * PREPARATION.
 C
@@ -518,7 +553,12 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS,
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS)
+     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS
+c    pass  variables to moss subroutines YW March 19, 2015------------\   
+	1		   ,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss,
+c	------input above, output below-----------------------------------	
+	2		     ancsmoss,rmlcsmoss,iyear, iday, ihour,imin)
+c    Y.Wu ------------------------------------------------------------/
 
           CALL TSPOST(GSNOWC,TSNOCS,WSNOCS,RHOSCS,QMELTC,
      1                GZROCS,TSNBOT,HTCS,HMFN,
@@ -683,7 +723,14 @@ C
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,  
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOP,AC,BC,
-     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  )
+     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF 
+c    ----------pass variables in mosspht.f-----------------------------\  
+	1	,ipeatland, thliqg, tbar, thpor, co2conc,
+	2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
+c	------input above, output below-----------------------------------	
+	3	 ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin)
+C    ---------------YW March 26, 2015 ---------------------------------/      
+c     
           CALL TSPOST(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG,
      1                GZROGS,TSNBOT,HTCS,HMFN,
      2                GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR,
@@ -840,7 +887,13 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG,
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS)
+     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS
+c    pass  variables to moss subroutines YW March 19, 2015------------\   
+	1		   ,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss,
+c	------input above, output below-----------------------------------	
+	2		     ancmoss,rmlcmoss,iyear, iday, ihour,imin)
+c    Y.Wu ------------------------------------------------------------/
+
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
      1                GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSURX,
      2                TBASE,TBAR1P,A1,A2,B1,B2,C2,FC,IWATER,
@@ -992,7 +1045,14 @@ C
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,  
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOP,AC,BC,
-     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF )
+     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF 
+c    ----------pass variables in mosspht.f-----------------------------\  
+	1	,ipeatland, thliqg, tbar, thpor, co2conc,
+	2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
+c	------input above, output below-----------------------------------	
+	3	 ,angmoss,rmlgmoss,iyear, iday, ihour,imin)
+C    ---------------YW March 26, 2015 ---------------------------------/ 
+C
           CALL TNPOST(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST,
      1                GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSURX,
      2                TBASE,TBAR1P,A1,A2,B1,B2,C2,FG,IWATER,
@@ -1109,6 +1169,7 @@ C        ENDIF
 C550   CONTINUE
 C
 C===================== CTEM =====================================/
-C                                                         
+C                
+
       RETURN                                                                      
       END        

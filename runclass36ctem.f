@@ -878,8 +878,84 @@ c      (denoted by name ending in "_yr_m")
      f      burnfrac_yr_m(nlat,nmos,icc),
      &      ch4wet1_yr_m(nlat,nmos),   ch4wet2_yr_m(nlat,nmos),
      &      wetfdyn_yr_m(nlat,nmos),   ch4dyn1_yr_m(nlat,nmos),
-     &      ch4dyn2_yr_m(nlat,nmos)
-  
+     &      ch4dyn2_yr_m(nlat,nmos)  
+c
+c============= CTEM array declaration done =============================/
+C
+c=====peatland related parameter declaration March 18, 2015 YW=========\
+
+      integer:: ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
+
+c   ----CLASS moss variables------- ----------------------------------
+      real  wiltsmrow(nlat,nmos,ignd),  wiltsmgat(ilg,ignd), 	      
+     1	  fieldsmrow(nlat,nmos,ignd), fieldsmgat(ilg,ignd),		 	
+	2      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg),
+     3      thlqaccgat_m(ilg,ignd),     thlqaccrow_m(ilg,ignd),
+     4      hpdrow(nlat,nmos), hpdgat(ilg)
+c	----CTEM moss variables--------------------------------------------
+      real  anmosrow(nlat,nmos)  ,      anmosgat(ilg),
+     1      rmlmosrow(nlat,nmos) ,      rmlmosgat(ilg),  
+     2      gppmosrow(nlat,nmos) ,      gppmosgat(ilg),
+     1      armosrow(nlat,nmos) ,       armosgat(ilg),  
+     2      nppmosrow(nlat,nmos) ,      nppmosgat(ilg),
+     3      litrmassmsrow(nlat,nmos),   litrmassmsgat(ilg),
+     4      Cmossmasrow(nlat,nmos),     Cmossmasgat(ilg),
+     5      dmossrow(nlat,nmos),        dmossgat(ilg),
+     6      ancsmosgat(ilg) ,           angsmosgat(ilg),
+     7      ancmosgat(ilg) ,            angmosgat(ilg),
+     8      rmlcsmosgat(ilg),           rmlgsmosgat(ilg),
+     9      rmlcmosgat(ilg),            rmlgmosgat(ilg),
+     1      anmosac_g(ilg), rmlmosac_g(ilg), gppmosac_g(ilg)
+c	----common block parametes----------------------- -----------------
+      real  zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
+     1         sphms,rhoms,slams
+
+c   definitions of new variables---------------------------------------
+c   -grd = grid average, -acc = daily avarage , 
+c   -gat = after gathering, - row = after scattering
+
+c	ipeatland - peatland flag 0 = no peatland, 1= bog, 2 = fen
+c   g12 - energy flux between soil layer 1 and 2 (W/m2)  
+c   g23 - energy flux between soil layer 2 and 3 (W/m2)  
+c   wiltsm - wilting point for peat soil layers  (m3/m3)
+c   fieldsm - field capacity for peat soil layers (m3/m3)
+C   thliqc - liquid water content of canopy+snow subarea (m3/m3)
+c   thliqg - liquid water content of snow ground subarea (m3/m3) 
+c   hpd - peat depth (m)	
+c   litrmassms - C in moss ltter (kg m-2)
+c   Cmossmas -   C in moss biomass (kg m-2)
+c   dmoss -   depth of living moss (m) 
+c   ----------below are moss C fluxes in umol/m2/s----------------------
+c   anmos  -  net photosynthesis rate of moss
+c   rmlmos -  maintenance respiration rate of moss
+c   armos  -  autotrophic respiration of moss
+c   nppmos -  net primary production of moss
+c   gppmos -  gross primaray production of moss 
+c   ancsmos - moss net photosynthesis in canopy snow subarea 
+c   angsmos - moss net photosynthesis in snow ground subarea 
+c   ancmos  - moss net photosyntehsis in canopy ground subarea
+c   angmos  - moss net photosynthesis in bare ground subarea
+c   rmlcsmos- moss maintenance respiration in canopy snow subarea
+c   rmlgsmos- moss maintenance respiration in snow ground subarea
+c   rmlcmos - moss maintenance respiration in canopy ground subarea
+c   rmlgmos - moss maintenance respiration in bare ground subarea
+c   anmosac_g - daily averaged moss net photosynthesis accumulated  
+c   rmlmosac_g- daily averaged moss maintainence respiration 
+c   gppmosac_g- daily averaged gross primary production 
+c   ----common block parameters for the moss layer below----------------
+c   zolnms	- natual logarithm of roughness length of moss surface
+c   thpms	- pore volume of moss (m3/m3)
+c   thrms	- liquid water retention capacity of moss (m3/m3)
+c   thmms	- residual liquid water content after freezing or 
+c             evaporation of moss (m3/m3) 
+c   bms	    - Clapp and Hornberger empirical "b" parameter of moss
+c   psisms  - soil moisure suction at saturation of moss (m)
+c   grksms	- saturated hydrualic conductivity of moss (m)
+c   hcpms	- heat capacity of moss (m)
+c   sphms	- specific heat of moss layer (J/kg/K)
+c   rhoms	- density of dry moss (kg/m3)
+c   slams	- specific leaf area (m2/kg)
+c=====peatland parameter declaration done March 19, 2015 YW===========/
 c
 c============= CTEM array declaration done =============================/
 C
@@ -912,6 +988,12 @@ C
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
 C
+c     ------peatland common block March 19, 2015 YW--------------------\
+
+      common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
+	1				    hcpms, sphms,rhoms,slams
+c     ------peatland common block March 19, 2015 YW--------------------/
+c
       CALL CLASSD
 C
       ZDMGRD(1)=10.0
@@ -1238,6 +1320,9 @@ c
      &         status='old')
       endif 
 c
+        open(unit=17,file=argbuff(1:strlen(argbuff))//'.PT',
+     &         status='old')            !YW March 23, 2015 
+
 c     * output files
 c
       if (.not. parallelrun) then ! stand alone mode, includes half-hourly and daily output
@@ -1364,6 +1449,18 @@ c
 c
         open(unit=92,file=argbuff(1:strlen(argbuff))//'.CT08Y_G')  !Methane(wetland) YEARLY
        endif !dowetlands
+
+C    peatland output----------------------------------------------\ 
+      open(unit=93,file=argbuff(1:strlen(argbuff))//'.CT11D_G') !peatland GPP components
+      open(unit=94,file=argbuff(1:strlen(argbuff))//'.CT12D_G') !peatland vegetation height & lai 
+      open(unit=95,file=argbuff(1:strlen(argbuff))//'.CT13D_G') !peatland C pools (in ctem.f)  
+      open(unit=96,file=argbuff(1:strlen(argbuff))//'.CT14D_G') !peatland soil resp (in ctem.f)       
+      open(unit=97,file=argbuff(1:strlen(argbuff))//'.CT15D_G') !peatland decompositon components (in decp.f)     
+      open(unit=98,file=argbuff(1:strlen(argbuff))//'.CT16D_G') !peatland moss photosynthesis midday sub-areas(mosspht.f)
+      open(unit=99,file=argbuff(1:strlen(argbuff))//'.CT17D_G') !peatland water balance
+      open(unit=90,file='testing')
+C    YW March 25, 2015 ----------------------------------------------/
+
       end if !ctem_on
 c
 C=======================================================================
@@ -1448,7 +1545,7 @@ C
 6212  FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
      1              'TG3  THL3  THI3  TCN  RCAN  SCAN  TSN  ZSN')
 6013  FORMAT(2X,'DAY  YEAR  TG6  THL6  THI6  TG7  THL7  THI7  ',
-     1              'TG8  THL8  THI8  TG9  THL9  THI9  TG10'  ,
+     1              'TG8  THL8  THI8  TG9  THL9  THI9  TG10   '  ,
      2              'THL10  THI10')
 6313  FORMAT(2X,'DAY YEAR KIN LIN TA UV PRES QA PCP EVAP')
 6014  FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
@@ -1597,8 +1694,8 @@ C
      &' SOILCMAS')
 7061  FORMAT('  DAY YEAR  VGBIOMAS   GAVGLAI  GLEAFMAS   BLEAFMAS ',
      & 'STEMMASS   ROOTMASS  LITRMASS SOILCMAS')
-7070  FORMAT('  DAY YEAR     AILCG     AILCB    RMATCTEM ',
-     &'LAYER 1,2, & 3     VEGHGHT  ROOTDPTH  ROOTTEMP      SLAI')
+7070  FORMAT('  DAY YEAR     AILCG     AILCB    RMATCTEMLAYER1 ',
+     &' LAYER2  LAYER3  VEGHGHT  ROOTDPTH  ROOTTEMP   SLAI')
 7075  FORMAT('  DAY YEAR   FRAC #1   FRAC #2   FRAC #3   FRAC #4   ',
      &'FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9  ',
      &'FRAC #10[%] SUMCHECK')
@@ -1764,7 +1861,59 @@ C
           WRITE(92,6233)
          ENDIF 
 
+c    --------write peatland output-------------------------------------\
 
+          write(93,6903) 
+          write(94,6904)
+          write(95,6905)
+          write(96,6906)
+          write(97,6907) 
+          write(98,6908)
+          write(99,6909)
+          
+6903  format (2X,'iday iyear nppmoss  armoss   gppmoss   ',
+     1    'gppveg1  gppveg2  gppveg3  gppveg4  gppveg5  ',
+     2    'gppveg6  gppveg7  gppveg8  gppveg9  ',
+     3    'nppveg1  nppveg2  nppveg3  nppveg4  nppveg5  ',
+     4    'nppveg6  nppveg7  nppveg8  nppveg9  ',
+     5    'autoresp1  autoresp2  autoresp3  autoresp4  ',   
+     6    'autoresp5  autoresp6  autoresp7  autoresp8  ',
+     7    'autoresp9  heteresp1  heteresp2  heteresp3  ',
+     8    'heteresp4  heteresp5  heteresp6  heteresp7  ',
+     9    'heteresp8  heteresp9  fcancmx1  fcancmx2  fcancmx3  ',
+     1    'fcancmx4  fcancmx5  fcancmx6  fcancmx7  fcancmx8  fcancmx9')
+6904  format (2X,'iday  iyear  veghght1  veghght2  veghght3  ',   
+     1    'veghght4  veghght5  veghght6  veghght7  veghght8  ',
+     2    'veghght9  rootdpt1  rootdpt2  rootdpt3  rootdpt4  ',
+     3    'rootdpt5  rootdpt6  rootdpt7  rootdpt8  rootdpt9  ',
+     4    'ailcg1  ailcg2  ailcg3  ailcg4  ailcg5  ',
+     5    'ailcg6  ailcg7  ailcg8  ailcg9  ',
+     4    'stemmas1  stemmas2  stemmas3  stemmas4  stemmas5  ',
+     5    'stemmas6  stemmas7  stemmas8  stemmas9  ',
+     6    'rootmas1  rootmas2  rootmas3  rootmas4  rootmas5  ',
+     7    'rootmas6  rootmas7  rootmas8  rootmas9  ',
+     8    'litrmas1  litrmas2  litrmas3  litrmas4  litrmas5  ',
+     9    'litrmas6  litrmas7  litrmas8  litrmas9  ',
+     1    'gleafmas1  gleafmas2  gleafmas3  gleafmas4  gleafmas5  ',
+     2    'gleafmas6  gleafmas7  gleafmas8  gleafmas9  ',
+     3    'bleafmas1  bleafmas2  bleafmas3  bleafmas4  bleafmas5  ',
+     4    'bleafmas6  bleafmas7  bleafmas8  bleafmas9')
+6905  format (2X, 'litrmass3  tlreleaf3  tltrstem3  tltrroot3  ',
+     1    'ltresveg3  humtrsvg3  litrmass4  tltrleaf4  tltrstem4  ',
+     2    'tltrroot4  ltresveg4  humtrsvg4  plitrmassms  litrmassms  ',
+     3    'litrfallms  ltrestepms  humicmstep  nppmosstep  nppmoss  ',
+     4    'anmoss  rgmoss  rmlmoss  gppmoss  Cmossmas  ')
+6906  format (2X, 'hpd  gavgscms  hutrstep_g  socrestep  resoxic  ',
+     1    'resanoxic  socresp(umol/m2/s)  resoxic(umol/m2/s)  ',  
+     2    'resanoxic(umol/m2/s)')  
+6907  format (2X, 'litresms  litpsims  psisat1  ltrmosclms   ',
+     1    'litrmassms  tbar1  q10funcms litrtempms  ratescpo  ', 
+     2    'ratescpa  Cso  Csa  fto  fta  resoxic  resanoxic   ',
+     3    'frac  tsoila  toilo  ewtable  lewtable  tbar1  tbar2  tbar3')	
+6908  format(2X, 'iday  tmoss  cevapms  fwmoss  thliq1  dsmoss  ', 
+     1    'g_moss  wmoss  rmlmoss  mwce  q10rmlmos  wmosmax  wmosmin')
+6909  format(2X,'WTBLACC ZSN PREACC EVAPACC ROFACC g12acc g23acc')
+c    --------------YW March 30, 2015 ---------------------------------/
 C
       ENDIF !CTEM_ON
 C
@@ -1900,6 +2049,23 @@ C
           READ(10,5002) DELZ(J),ZBOT(J)  
  25   CONTINUE                            
  5002 FORMAT(2X,2F8.2)                   
+C      
+c    -----------------read peatland input------------------------------\      
+       do  40 i = 1, nltest
+          do 40 m = 1, nmtest
+             read(17,*) ipeatlandrow(i,m),Cmossmasrow(i,m),
+     1                   litrmassmsrow(i,m),dmossrow(i,m)
+40    continue
+      write(6,*) 'NLTEST=',NLTEST
+      write(6,*) 'NMTEST=',NMTEST
+      write(6,*) 'nlat=', nlat
+      write(6,*) 'nmos=' ,nmos
+      write(6,*) 'ignd=', ignd
+      write(6,*) 'ipeatland=',ipeatlandrow
+      write(6,6990) 'Cmossmas=',Cmossmasrow
+      write(6,6990) 'litrmassms=',litrmassmsrow
+      write(6,6990) 'dmoss=',dmossrow 
+c    -----------------YW March 23, 2015 -------------------------------/
 C
 C======================= CTEM ========================================== \
 
@@ -2280,7 +2446,7 @@ C         WITH SNOW ON THE GROUND. NOTE: RUNCLASS.f HAS THIS SAME PROBLEM. JM JA
           QACROW (I,M)=0.5E-2
 
           IF(IGND.GT.3)                                 THEN
-              DO 65 J=4,IGND,-1
+              DO 65 J=4,IGND
                   TBARROW(I,M,J)=TBARROW(I,M,3)
                   IF(SDEPROW(I,M).LT.(ZBOT(J-1)+0.001) .AND.
      1                  SANDROW(I,M,3).GT.-2.5)     THEN
@@ -2387,7 +2553,10 @@ C===================== CTEM =============================================== /
      2            DLZWROW,ZBTWROW,ALGWROW,ALGDROW,
      3            SANDROW,CLAYROW,ORGMROW,DELZ,ZBOT,
      4            SDEPROW,ISNDROW,IGDRROW,
-     5            NLAT,NMOS,1,NLTEST,NMTEST,IGND,ICTEMMOD)
+     5            NLAT,NMOS,1,NLTEST,NMTEST,IGND,ICTEMMOD
+c	 ------------peatland soil properties ----------------------------\ 
+	6		   ,ipeatlandrow)
+c	 -------------------------YW March 19, 2015 ----------------------/ 
 
 5010  FORMAT(2X,6A4)
 5020  FORMAT(5F10.2,F7.1,3I5)
@@ -2711,16 +2880,34 @@ c
 c
 115   continue
 c
+c     initlaized the litter and soil C pool for peatland and non-peatland 
+c     differently. In peatland moss litter and soil C pool willl substitute
+c     bare ground (icc+1). --------------------------------------------\
+c
       do 117 i = 1,nltest
         do 117 m = 1,nmtest
-         gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-fcanrow(i,m,1)-
-     &       fcanrow(i,m,2)-
-     &    fcanrow(i,m,3)-fcanrow(i,m,4))*litrmassrow(i,m,icc+1)
-         gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrow(i,m,1)-
-     &   fcanrow(i,m,2)-
-     &    fcanrow(i,m,3)-fcanrow(i,m,4))*soilcmasrow(i,m,icc+1)
-c
+            if (ipeatlandrow(i,m)==0)           then
+                gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-fcanrow(i,m,1)-
+     &                        fcanrow(i,m,2)-fcanrow(i,m,3)-
+     &                        fcanrow(i,m,4))*litrmassrow(i,m,icc+1)
+                gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrow(i,m,1)-
+     &                        fcanrow(i,m,2)-fcanrow(i,m,3)-
+     &                        fcanrow(i,m,4))*soilcmasrow(i,m,icc+1)
+            else                       !is peatland tile
+                gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmassmsrow(i,m)
+ 		      hpdrow(i,m) = sdeprow(i,m)
+		      gavgscmsrow(i,m) = 0.487*(4056.6*hpdrow(i,m)**2+
+     &                              72067.0*hpdrow(i,m))/1000               
+                vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
+c    also initialize the accumulators for moss daily C fluxes 
+	           anmosac_g(i)  = 0.0
+			 rmlmosac_g(i) = 0.0
+			 gppmosac_g(i) = 0.0
+            endif
+c              
 117   continue
+          write(6,6990)     'gavgscms=', gavgscmsrow
+c    ----------------------------YW March 25, 2015 --------------------/
 c
 C===================== CTEM =============================================== /
 
@@ -2744,7 +2931,9 @@ c
      a      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
      b      bmasvegrow,cmasvegcrow,veghghtrow,
      c      rootdpthrow,alvsctmrow,alirctmrow,
-     d      paicrow,    slaicrow)
+     d      paicrow,    slaicrow
+c	gather peatland variable YW March 19, 2015---------------------- /
+	1      ,ipeatlandrow,   ipeatlandgat)
 c
 c
       call bio2str( gleafmasgat,bleafmasgat,stemmassgat,rootmassgat, 
@@ -2753,8 +2942,14 @@ c
      4                       ailcggat, ailcbgat,  ailcgat, zolncgat,
      5                       rmatcgat, rmatctemgat,slaigat,bmasveggat,
      6                 cmasvegcgat,veghghtgat, rootdpthgat,alvsctmgat,
-     7                     alirctmgat, paicgat,  slaicgat )
+     7                     alirctmgat, paicgat,  slaicgat 
+c	 peatland PFT bio2str YW March 19, 2015---------------------------/ 
+     8				,ipeatlandgat)     
 c
+       write(6,6990)  'veghght =',veghghtgat   !YW
+       write(6,6990)  'rootdpth=',rootdpthgat   !YW
+6990   format(A15,10f7.2)                         
+c           
 c    find the wilting point and field capacity for classt
 c    (it would be preferable to have this in a subroutine 
 c    rather than here. jm sep 06/12)
@@ -2860,6 +3055,17 @@ c  \------------------Rudra---------------\
       met_rewound = .false.
 
       endif
+c	----assign the initial CO2 concentration YW March 19, 2015--------\
+C	add initialization of CO2 concentration at the first time step when 
+C    CO2conc is 0. to fix the floating point problem  
+
+         do i=1,nltest
+          do m=1,nmtest
+           co2concrow(i,m)=setco2conc
+          enddo
+         enddo
+c	----YW March 19, 2015---------------------------------------------/
+
 
 C===================== CTEM ============================================ /
 C
@@ -3238,8 +3444,16 @@ c
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
 !     &      WETFRACROW, WETFRAC_SROW,
      &      CH4WET1ROW, CH4WET2ROW, 
-     &      WETFDYNROW, CH4DYN1ROW, CH4DYN2ROW)
+     &      WETFDYNROW, CH4DYN1ROW, CH4DYN2ROW
+c    ----gathering of peatland variables YW March 19, 2015 ------------\
 c
+     1    ,anmosrow,rmlmosrow,gppmosrow,armosrow,nppmosrow
+     2    ,anmosgat,rmlmosgat,gppmosgat,armosgat,nppmosgat
+	3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
+	4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
+	5    ,thlqaccrow_m, thlqaccgat_m,ipeatlandgat)
+c    ----gathering of peatland variables YW March 19, 2015 ------------/
+
 C===================== CTEM ============================================ /
 C
 C-----------------------------------------------------------------------
@@ -3276,7 +3490,10 @@ C
      R                IDAY,   ILG,    1,      NML,      
      N                JLAT,N, ICAN,   ICAN+1, IGND,   IDISP,  IZREF,
      O                IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     P                ALVSCTMGAT, ALIRCTMGAT )
+     P                ALVSCTMGAT, ALIRCTMGAT 
+c     -----------peatland input YW March 19, 2015----------------------\ 
+     &                ,ipeatlandgat)
+c     ----------------------peatland-----------------------------------/     
 C
 C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
@@ -3312,7 +3529,13 @@ C
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
      S  THLWGAT,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,   
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     U  lfstatusgat) 
+     U  lfstatusgat
+c    ---peatland variabels in mosspht.f called in TSOLVC, TSOLVE----- -\  
+	1	,ipeatlandgat, bigat,
+	2	ancsmosgat,	angsmosgat, 	ancmosgat,	angmosgat,
+	3	rmlcsmosgat,	rmlgsmosgat,	rmlcmosgat,	rmlgmosgat,
+	4	Cmossmasgat,   dmossgat,  iyear,  iday,  ihour,   imin)
+c    --------------------YW March 19, 2015 ----------------------------/
 C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.
@@ -3348,7 +3571,7 @@ C
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
 
 C-----------------------------------------------------------------------
-C
+C       
       CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, 
      1             WTVSTP, WTSSTP, WTGSTP,
      2             FSGVGAT,FLGVGAT,HFSCGAT,HEVCGAT,HMFCGAT,HTCCGAT,
@@ -3386,7 +3609,20 @@ c
             endif
 610       continue
 605     continue
-      endif 
+
+c	--aggregate moss C fluxes oon grids for ctem.f--------------------\ 
+      do 620 i = 1, nml
+		if (ipeatlandgat(i) > 0)	                    then
+              anmosgat(i) = (fcs(i)*ancsmosgat(i)+fgs(i)*angsmosgat(i)
+	1				+fc(i)*ancmosgat(i)+fg(i)*angmosgat(i))
+              rmlmosgat(i)= fcs(i)*rmlcsmosgat(i)+fgs(i)*rmlgsmosgat(i)
+	1				+fc(i)*rmlcmosgat(i)+fg(i)*rmlgmosgat(i)
+		    gppmosgat(i) = anmosgat(i) +rmlmosgat(i)
+		endif
+620   continue
+c    -------------------YW March 20, 2015------------------------------/
+c
+      endif              !if ctem_on
 
 c     * accumulate output data for running ctem.
 c
@@ -3422,6 +3658,7 @@ c
              thliqcacc_m(i,j)=thliqcacc_m(i,j)+thliqc(i,j)
              thliqgacc_m(i,j)=thliqgacc_m(i,j)+thliqg(i,j)
              thicecacc_m(i,j)=thicecacc_m(i,j)+thicec(i,j)
+             thlqaccgat_m(i,j)=thlqaccgat_m(i,j)+thlqgat(i,j)  !YW
 710       continue
 c
           do 713 j = 1, icc
@@ -3430,6 +3667,15 @@ c
             rmlcsvga_m(i,j)=rmlcsvga_m(i,j)+rmlcsveggat(i,j) 
             rmlcgvga_m(i,j)=rmlcgvga_m(i,j)+rmlcgveggat(i,j) 
 713       continue
+c
+c    ------------accumulate moss C fluxes to daily---------------------\
+c
+		if (ipeatlandgat(i) > 0)			          then	
+		    anmosac_g(i) = anmosac_g(i)   + anmosgat(i)
+		    rmlmosac_g(i)= rmlmosac_g(i)  + rmlmosgat(i)
+		    gppmosac_g(i)= gppmosac_g(i)  + gppmosgat(i)
+		endif
+c    -------------------YW March 20, 2015 -----------------------------/
 c
 700     continue
       endif !if (ctem_on)   
@@ -3479,6 +3725,7 @@ c
               thliqcacc_m(i,j)=thliqcacc_m(i,j)/real(nday)
               thliqgacc_m(i,j)=thliqgacc_m(i,j)/real(nday)
               thicecacc_m(i,j)=thicecacc_m(i,j)/real(nday)
+              thlqaccgat_m(i,j)=thlqaccgat_m(i,j)/real(nday)     !YW        
 831         continue   
 c
             do 832 j = 1, icc
@@ -3556,6 +3803,19 @@ c
           endif ! if(ctem_on)  
 c
 855   continue  
+c 	---------daily average moss C fluxes for ctem.f-------------------\  
+c    Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
+c    stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.2004)
+c    the ratio between stem and capitulum = 7.5 and 7.7 
+		do 833 i = 1, nml
+		 if (ipeatlandgat(i) > 0)			then	
+			anmosac_g(i) = anmosac_g(i)/real(nday)
+			rmlmosac_g(i)= rmlmosac_g(i)/real(nday)
+			gppmosac_g(i) = gppmosac_g(i)/real(nday)
+	  	endif	
+833		continue
+c
+c    ----------------YW March 26, 2015 ---------------------------------/
 c 
 c     call canadian terrestrial ecosystem model which operates at a
 c     daily time step, and uses daily accumulated values of variables
@@ -3613,8 +3873,15 @@ c    -------------- inputs updated by ctem are above this line ------
      &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,
      &        hetroresveggat, autoresveggat, litresveggat, 
      &           soilcresveggat, nml, ilmos, jlmos, CH4WET1GAT, 
-     &          CH4WET2GAT, WETFDYNGAT, CH4DYN1GAT, CH4DYN2GAT)
+     &          CH4WET2GAT, WETFDYNGAT, CH4DYN1GAT, CH4DYN2GAT
 c    ---------------- outputs are listed above this line ------------
+c    -------------- moss C in peatlands -------------------------------\
+c
+	1	,ipeatlandgat,iyear,ihour,imin,
+	2	anmosac_g,rmlmosac_g,gppmosac_g,Cmossmasgat,
+	3	litrmassmsgat,wtabgat,thpgat, bigat, psisgat,thlqaccgat_m,
+	4    tfrez,nppmosgat, armosgat,hpdgat)	
+c    ---------------- YW March 26, 2015  -------------------------------/
 c
       endif  !if(ctem_on)
 c
@@ -3844,8 +4111,16 @@ c    ----
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
 !     &      WETFRACGAT, WETFRAC_SGAT, 
      &      CH4WET1GAT, CH4WET2GAT, 
-     &      WETFDYNGAT, CH4DYN1GAT, CH4DYN2GAT)
+     &      WETFDYNGAT, CH4DYN1GAT, CH4DYN2GAT,
+C    --------------------scatter peatland variables-------------------\
 c
+     1	anmosrow, rmlmosrow, gppmosrow, armosrow, nppmosrow, 
+	2	anmosgat, rmlmosgat, gppmosgat, armosgat, nppmosgat,
+	3	hpdrow,		hpdgat,		litrmassmsrow,	litrmassmsgat,
+	4	Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat,
+	5    thlqaccrow_m , thlqaccgat_m,    
+	6    ipeatlandrow, 	ipeatlandgat)
+c    ---------------YW March 23, 2015 ---------------------------------/
 C===================== CTEM ============================================ /
 C
 C=======================================================================
@@ -3855,15 +4130,24 @@ C     * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
 6200  FORMAT(1X,I4,I5,3(F8.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,2(A6,I2))
 6201  FORMAT(1X,I4,I5,5(F7.2,2F6.3),2(A6,I2))
 6300  FORMAT(1X,I4,I5,3F9.2,F8.2,F10.2,E12.3,2F12.3,A6,I2)   
-6400  FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,F9.2,2(A6,I2))
-6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,
+C6400  FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,F9.2,2(A6,I2))
+C6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,
+C     &    2(A6,I2))
+C6600  FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
+C6501  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
+C6601  FORMAT(1X,I2,I3,I5,I6,7(F7.2,2F6.3),10F9.4,2(A6,I2))  
+C6700  FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))       
+C6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))   
+C6900  FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))   
+6400  FORMAT(1X,I2,I5,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,F9.2,2(A6,I2))
+6500  FORMAT(1X,I2,I5,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,
      &    2(A6,I2))
-6600  FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
-6501  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-6601  FORMAT(1X,I2,I3,I5,I6,7(F7.2,2F6.3),10F9.4,2(A6,I2))  
-6700  FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))       
-6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))   
-6900  FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))   
+6600  FORMAT(1X,I2,I5,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
+6501  FORMAT(1X,I2,I5,I5,I6,5(F7.2,2F6.3),2(A6,I2))
+6601  FORMAT(1X,I2,I5,I5,I6,7(F7.2,2F6.3),10F9.4,2(A6,I2))  
+6700  FORMAT(1X,I2,I5,I5,I6,2X,12E11.4,2(A6,I2))       
+6800  FORMAT(1X,I2,I5,I5,I6,2X,22(F10.4,2X),2(A6,I2))   
+6900  FORMAT(1X,I2,I5,I5,I6,2X,18(E12.4,2X),2(A6,I2))   
 C
 C===================== CTEM ============================================ \
 c
@@ -4298,6 +4582,8 @@ C
           ILMOGRD(I)=0.
           UEGRD(I)=0.
           HBLGRD(I)=0.
+          G12GRD(I)= 0.       !YW March 27, 2015  
+		G23GRD(I)= 0.       !YW March 27, 2015 
           DO 500 J=1,IGND
               HMFGGRD(I,J)=0.
               HTCGRD(I,J)=0.
@@ -4367,6 +4653,10 @@ C
           ILMOGRD(I)=ILMOGRD(I)+ILMOROW(I,M)*FAREROW(I,M)
           UEGRD(I)=UEGRD(I)+UEROW(I,M)*FAREROW(I,M)
           HBLGRD(I)=HBLGRD(I)+HBLROW(I,M)*FAREROW(I,M)
+	     G12GRD(I)=G12C(I)*FC(I)+G12G(I)*FG(I)+G12CS(I)*FCS(I)+
+     1		     G12GS(I)*FGS(I)     !YW March 27, 2015 
+	     G23GRD(I)=G23C(I)*FC(I)+G23G(I)*FG(I)+G23CS(I)*FCS(I)+
+     1		     G23GS(I)*FGS(I)     !YW March 27, 2015 
           DO 550 J=1,IGND
               HMFGGRD(I,J)=HMFGGRD(I,J)+HMFGROW(I,M,J)*FAREROW(I,M)        
               HTCGRD(I,J)=HTCGRD(I,J)+HTCROW(I,M,J)*FAREROW(I,M)        
@@ -4427,6 +4717,8 @@ C
           UVACC(I)=UVACC(I)+UVGRD(I)*FAREROW(I,M)
           PRESACC(I)=PRESACC(I)+PRESGRD(I)*FAREROW(I,M)
           QAACC(I)=QAACC(I)+QAGRD(I)*FAREROW(I,M)
+	     G12ACC(I)=G12ACC(I)+G12GRD(I)*FAREROW(I,M)  !YW March 23, 2015 
+	     G23ACC(I)=G23ACC(I)+G23GRD(I)*FAREROW(I,M)  !YW March 23, 2015
 650   CONTINUE
 675   CONTINUE
 C
@@ -4520,6 +4812,11 @@ C
      2                       QAACC(I),PREACC(I),EVAPACC(I)
               ENDIF
              ENDIF
+c    ----peatland output-----------------------------------------------\
+
+	  write(99,6999)  WTBLACC, ZSN,PREACC,EVAPACC,ROFACC,g12acc,g23acc
+6999	  format(10f10.3)
+c    ----YW March 23, 2015 --------------------------------------------/
 C
 C     * RESET ACCUMULATOR ARRAYS.
 C
@@ -5165,6 +5462,13 @@ c
            CH4DYN1ROW(i,m) = CH4DYN1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
            CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
 c
+c     ------convert peatland C fluxes to gC/m2/day for output-----------\
+          if (ipeatlandrow(i,m) >0 )         then
+            nppmosrow(i,m)=nppmosrow(i,m)*1.0377 ! convert to gc/m2.day
+            armosrow(i,m)=armosrow(i,m)*1.0377 ! convert to gc/m2.day
+          endif          
+c    ------------YW March 27, 2015 -------------------------------------/
+
 c          write daily ctem results
 c
            if ((iyd.ge.jdst).and.(iyd.le.jdend)) then   
@@ -5461,7 +5765,35 @@ c
      2                 ch4dyn1_g(i), ch4dyn2_g(i)
            endif  
     
-c
+c	---------------peatland outputs-----------------------------------\
+c    CT11D_G   convert moss flux from umol/m2/s to g/m2/day 
+          write (93,6993) iday,iyear, 
+     1    nppmosrow(1,1),armosrow(1,1), gppmosac_g(1)*1.0377,
+	2    (fcancmxrow(1,1,j)*gppvegrow(1,1,j), j = 1,icc),
+	3    (fcancmxrow(1,1,j)*nppvegrow(1,1,j), j = 1,icc),
+	4	(fcancmxrow(1,1,j)*autoresvegrow(1,1,j),j=1,icc),
+     5    (fcancmxrow(1,1,j)*hetroresvegrow(1,1,j),j=1,icc),
+     6    fcancmxrow
+c    CT12D_G
+	     write (94,6993) iday,iyear,(veghghtgat(1,j),   j = 1, icc),	
+	1    (rootdpthgat(1,j), j = 1,icc), (ailcggat(1,j), j = 1, icc),
+     2    (fcancmxrow(1,1,j)*stemmassrow(1,1,j), j = 1, icc), 	
+     3    (fcancmxrow(1,1,j)*rootmassrow(1,1,j), j = 1, icc), 	
+     4    (fcancmxrow(1,1,j)*litrmassrow(1,1,j), j = 1, icc), 	
+     5    (fcancmxrow(1,1,j)*gleafmasrow(1,1,j),j = 1, icc), 	
+     6    (fcancmxrow(1,1,j)*bleafmasrow(1,1,j),j = 1, icc)     
+6993	 format(2i5,80F10.4)
+c    --------reset peatland accumulators--------- ---------------------
+
+       if (ipeatlandgat(i) > 0)              		then
+		 anmosac_g(i) = 0.0
+		 rmlmosac_g(i)= 0.0
+		 gppmosac_g(i)= 0.0
+	      G12ACC (I) = 0.
+	      G23ACC (I) = 0.
+	  endif
+c    ----------------YW March 27, 2015 -------------------------------/
+
 
             if (compete .or. lnduseon) then 
               sumfare=0.0
@@ -6607,6 +6939,7 @@ c
 7012  format(9i8)
 7013  format(10f8.2)
 c
+c
 c      check if the model is done running.
        if (iday.eq.365.and.ncount.eq.nday) then
 
@@ -6897,6 +7230,18 @@ C     CLOSE THE INPUT FILES TOO
       CLOSE(12)
       CLOSE(13)
       CLOSE(14)
+
+c    ---------------close peatland output and input files--------------\
+
+      close(17)
+      close(93)
+      close(94)
+      close(95)
+      close(96)
+      close(97)
+      close(98)
+      close(99)
+c    ----------------------YW March 27, 2015 -------------------------/
 
          CALL EXIT
       END IF

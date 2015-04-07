@@ -216,7 +216,7 @@ real :: soilterm, duffterm              ! temporary variables
 
 !     * if icc /= 9 or ignd /= 3 this subroutine will need changes.
       IF(ICC.NE.9)      CALL XIT('DISTURB',-1)
-      IF(IGND.NE.3)     CALL XIT('DISTURB',-2)
+!      IF(IGND.NE.3)     CALL XIT('DISTURB',-2)
 
 !     initialize required arrays to zero, or assign value
 

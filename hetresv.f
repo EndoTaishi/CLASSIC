@@ -2,7 +2,7 @@
      1                      il1,
      2                      il2,     tbar,    thliq,     sand,     
      3                     clay, roottemp,    zbotw,     sort,
-     4                     isand,
+     4                     isand, ipeatland,
 c    -------------- inputs above this line, outputs below -------------
      5                 ltresveg, scresveg)  
 c
@@ -62,6 +62,7 @@ c
       implicit none
 
       integer  il1, il2, i, j, k, sort(icc), isand(ilg,ignd) 
+      integer  ipeatland(ilg)
 c
       real    fcan(ilg,icc),           fct(ilg),  litrmass(ilg,icc+1), 
      1         tbar(ilg,ignd),soilcmas(ilg,icc+1),      thliq(ilg,ignd),  
@@ -269,15 +270,35 @@ c     as a surrogate for litter moisture content. so we use only
 c     psi(i,1) calculated in loops 260 and 270 above.
 c
       do 300 i = il1, il2
-        if(psi(i,1).gt.10000.0) then
-          ltrmoscl(i)=0.2
-        else if( psi(i,1).le.10000.0 .and. psi(i,1).gt.6.0 ) then
-          ltrmoscl(i)=1.0 -  0.8*
+c     peatland branch where litter respiration can be limtied by water\
+
+        if (ipeatland(i) == 0)        then           
+          if(psi(i,1).gt.10000.0) then
+            ltrmoscl(i)=0.2
+          else if( psi(i,1).le.10000.0 .and.  psi(i,1).gt.6.0 ) then
+            ltrmoscl(i)=1.0 - 0.8*
      &    ( (log10(psi(i,1)) - log10(6.0))/(log10(10000.0)-log10(6.0)) )
-        else if( psi(i,1).le.6.0 ) then
-          ltrmoscl(i)=1.0 
-        endif
-        ltrmoscl(i)=max(0.2,min(1.0,ltrmoscl(i)))
+          else if( psi(i,1).le.6.0 ) then
+            ltrmoscl(i)=1.0 
+          endif
+          ltrmoscl(i)=max(0.2,min(ltrmoscl(i),1.0))
+        else                       !is peatland
+          if (psi(i,1).ge. 10000.0) then
+	    		ltrmoscl(i) = 0.2
+        	elseif (psi(i,1).le.10000.0 .and.psi(i,1).gt.6.0) then
+	          ltrmoscl(i)=1.0 - 0.8*((log10(psi(i,1))-log10(6.0))
+	1				/(log10(10000.0)-log10(6.0)) )
+         	elseif (psi(i,1).le.6.0 .and. psi(i,1) .ge. 4.0) then
+              	ltrmoscl(i)=1.0
+        	elseif (psi(i,1).lt.4.0 .and. psi(i,1).gt.psisat(i,1))  then 
+              	ltrmoscl(i)=1.0-0.2*((log10(4.0)-log10(psi(i,1)))/   
+     1         		(log10(4.0)-log10(psisat(i,1))))
+         	elseif (psi(i,1) .le. psisat(i,1)) 				then
+             	ltrmoscl(i)=0.2		
+        	endif
+         	ltrmoscl(i)=max(0.0,min(ltrmoscl(i),1.0))
+        endif  !peatland  
+c    -------------------YW March 30, 2015 -----------------------------/          
 300   continue
 c
 c     use temperature of the litter and soil c pools, and their soil

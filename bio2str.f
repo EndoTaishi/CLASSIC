@@ -5,7 +5,9 @@ c    4--------------- inputs above this line, outputs below --------
      5                          ailcg,    ailcb,     ailc,    zolnc,
      6                          rmatc, rmatctem,     slai,  bmasveg,
      7                       cmasvegc,  veghght, rootdpth,   alvisc,
-     8                         alnirc,     paic,    slaic )
+     8                         alnirc,     paic,    slaic 
+c	 -----------------peatland PFT bio2str YW March 19, 2015--------/ 
+     9				,ipeatland)
 c
 c     ----------------------------------------------------------------
 c
@@ -127,6 +129,7 @@ c     ----------------------------------------------------------------
      4          useb(ilg,icc),              zroot,      soildpth(ilg),
      8       etmp(ilg,icc,ignd),    totala(ilg,icc),       rmat_sum
 c
+	 integer		ipeatland(ilg)      !YW March 19, 2015
 c     ---------------------------------------------------------------
 c     Constants and parameters are located in ctem_params.f90
 c
@@ -307,6 +310,18 @@ c        and convert leaf biomass into vegetation height for grass
 c     2. convert vegetation height into roughness length & take its log
 c     3. lump this for ctem's 9 pfts into class' 4 pfts
 c
+
+c    Peatland shrubs vegetation height YW March 19, 2015--------------\ 
+c    shrubs in mbbog maximum 0.3 m average 0.18 m (Bubier et al. 2011)
+c    grass and herbs avg 0.3m, min 0.05 max 0.8
+c    low shrub avg 0.82, min 0.10, max 2.00 
+c    tall shrub avg.3.76, min 2.3, max 5.00 (Hopkinson et al. 2005)
+c    The Canadian wetland vegetation classification
+c    graminoids include grass,rush,reed,sedge
+c    forb is all non-graminoids herbaceous plants
+c    shrubs dwarf <0.1m, low (0.1 to 0.5), medium 0.5 to 1.5, tall >1.5 
+c    trees > 5 m  
+
       k1c=0
       do 250 j = 1, ican
         if(j.eq.1) then
@@ -330,6 +345,22 @@ c
 c
 270       continue
 260     continue
+c     ---------------peatland vegetation-------------------------------\
+
+        do 280 m = k1c, k2c
+          do 290 i = il1, il2
+              if (ipeatland(i) > 0)                    then 
+                  if (j == 2 )  	             then      
+                    veghght(i,m) = min(1.0, 0.25*(stemmass(i,m)**0.2))
+                  elseif (j == 4 )              then
+			     veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
+	1                               *bleafmas(i,m))**0.3)    
+                  endif
+              endif
+290       continue
+280     continue
+c    --------------------YW March 26, 2015 ----------------------------/
+c
 250   continue
 c
       k1c=0
@@ -489,7 +520,7 @@ c             or even the deeper layer (ignd>3)
 c
 410     continue
 400   continue
-c
+
 c    make sure all fractions (of roots in each layer) add to one.
 c
       do 411 j = 1, icc

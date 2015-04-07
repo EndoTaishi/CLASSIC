@@ -146,6 +146,11 @@ C     * COMMON BLOCKS DEFINED SPECIFICALLY FOR USE IN CLASS.
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+c	-----------peatland common block----------------------------------\
+
+	 common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
+	1				hcpms, sphms,rhoms,slams
+c    ----------------YW March 23, 2015 --------------------------------/
 C
       DATA      VKC,        CT,         VMIN
      1       /  0.40,       1.15E-3,    0.1     /
@@ -237,6 +242,41 @@ C
       DATA BORG     /2.7,6.1,12.0/
       DATA PSISORG  /0.0103,0.0102,0.0101/
       DATA GRKSORG  /2.8E-4,2.0E-6,1.0E-7/
+C
+C    --------------------peatland common block data--------------------\
+
+	 data zolnms 	/-6.57/ 	!roughness length as 0.0014 for momentaum
+						!(Oke 1997, Raddatz et al, 2009)
+	 data thpms	/0.98/	!0.89 Price and Whittington 2010
+						!98.2 (Sphagnum) and 98.9 (feather) in 
+						!O'Donnell et al. 2009; 0.90 in Berlinger
+						!et al.2001 
+	 data thrms	/0.20/	!Price and Whittington 2010 for upper 5cm 
+						!moss 0.275/0.6 comparing to 0.39/0.62 in  
+						!fibric for the feather moss.For spahgnum  
+						!moss(O'Donnell et al.2009)
+	 data thmms	/0.01/	!Price and Whittington 2010
+	 data bms		/1.0/	!Berlinger et al.2001(they set 4.0 for peat)
+	 data psisms	/0.0103/	!moss and peat using same values in Berlinger 
+						!et al. 2001)
+	 data grksms	/1.83E-3/	!The saturated hydrualic conductivity is  
+						!much higher in living moss than lower 
+						!layer (Price et al. 2008). 1.83E-3 for 
+						!5cm moss, their value of 10cm moss is 
+						!2.45E-4, similar to fibric here
+	 data hcpms	/2.50E6/	!same as hcp of peat in Beringer et al. 2001
+	 data sphms	/2.70E3/	!same as that specific heat for vegetation 
+						!(Berlinger et al 2001) 	
+	 data rhoms	/40.0/	
+						!=40.0 Price et al. 2008, Price and
+						!Whittington 2010 value for feather moss
+						!is lower than sphagnmum (20 kg/m3 in
+						!O'Donnell et al. 2009)
+	 data slams	/20/		!specific leaf area of moss, 20 m2/kg S
+						!vensson 1995 sphangum value ranges from 
+						!13.5~47.3 m2/kg (Lamberty et al. 2007)
+c    ------------------------YW March 23, 2015 -------------------------/
+
       !
       !Finally, if CLASS is being run offline, values must be assigned 
       !to the parameters listed in the first table which would normally 

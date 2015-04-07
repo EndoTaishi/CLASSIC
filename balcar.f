@@ -11,7 +11,14 @@
      9                          npp,  autores, hetrores,      gpp,
      a                          nep,   litres,   socres, dstcemls,
      b                          nbp, litrfall, humiftrs,
-     c                          il1,      il2)    
+     c                          il1,      il2
+c    --------------moss variables--------------------------------------\
+C
+	1 			,ipeatland, Cmossmas, pCmossmas
+	2			,nppmosstep, litrfallms, litrmassms,plitrmassms,
+	3			ltrestepms,humicmstep,socrestep,hutrstep)    
+c    -----------YW March 20, 2015 -------------------------------------/	
+
 c     -----------------------------------------------------------------      
 c
 c               Canadian Terrestrial Ecosystem Model (CTEM)
@@ -143,8 +150,14 @@ c
 c
       real             diff1,               diff2
 c
-c
-c     -----------------------------------------------------------------  
+c	------peatland variables ----------------------------------------\
+	 integer	ipeatland (ilg)
+	 real	cmossmas(ilg), 	pcmossmas(ilg),
+	1		nppmosstep(ilg), 	litrfallms(ilg), 	
+	2		litrmassms(ilg),	plitrmassms(ilg),
+	3		ltrestepms(ilg),	humicmstep(ilg),
+	4		socrestep(ilg), 	hutrstep(ilg,icc+1)
+c     ------YW March 27, 2015 -----------------------------------------/  
 c
       if(icc.ne.9)                            call xit('balcar',-1)
 c
@@ -249,7 +262,41 @@ c
 310     continue
 300   continue   
 c
-c     -----------------------------------------------------------------
+c    --------------------add moss C balance----------------------------\
+
+	  do 400 i = il1, il2
+		 if (ipeatland(i).gt. 0) 	then
+			diff1 = Cmossmas(i)- pCmossmas(i)
+			diff2 = nppmosstep(i) - litrfallms(i)
+          	if((abs(diff1-diff2)).gt.tolrance)then
+       		    write(6,3001)'Cmossmas(',i,')=',Cmossmas(i)
+       		    write(6,3001)'pCmossmas(',i,')=',pCmossmas(i)
+        		    write(6,3001)'nppmosstep(',i,')=',nppmosstep(i)
+      	  	    write(6,3001)' litrfallms(',i,')=',litrfallms(i)
+      		    write(6,2008)i,abs(diff1-diff2),tolrance
+2008		     format('at (i)= (',i3,'),',f12.6,' is greater'
+     1 		'than our tolerance of ',f12.6,' for moss carbon')
+          	     call xit('balcar',-11)
+               endif
+               
+c    -------------------add moss litter pool C balance-----------------
+               
+               diff1 = litrmassms(i)- plitrmassms(i)
+			diff2 = litrfallms(i)-ltrestepms(i)-humicmstep(i)
+             	if((abs(diff1-diff2)).gt.tolrance)then
+            	    write(6,3001)'litrmassms(',i,')=',litrmassms(i)
+            	    write(6,3001)'plitrmassms(',i,')=',plitrmassms(i)
+             	    write(6,3001)'litrfallms(',i,')=',litrfallms(i)
+           	    write(6,3001)' ltrestepms(',i,')=',ltrestepms(i)
+           	    write(6,3001)' humicmstep(',i,')=',humicmstep(i)
+           	    write(6,2009)i,abs(diff1-diff2),tolrance
+2009		         format('at (i)= (',i3,'),',f12.6,' is greater
+     1 		    than our tolerance of ',f12.6,' for moss litter')
+          	    call xit('balcar',-12)
+        	     endif
+          endif
+400	   continue
+c	-------------------YW March 27, 2015------------------------------/
 c
 c     grid averaged fluxes must also balance
 c

@@ -56,7 +56,7 @@ real, parameter, dimension(lat+1) :: edgelat = [ -90.0000, -85.3190, -81.6280, -
 ! ----
 ! Model state
 integer, parameter :: nlat=1            !
-integer, parameter :: nmos=10           ! Number of mosaic tiles
+integer, parameter :: nmos=1            ! Number of mosaic tiles
 integer, parameter :: ilg = nlat*nmos   !
 integer, parameter :: nmon=12           ! Number of months in a year
 
@@ -64,7 +64,7 @@ integer, parameter :: nmon=12           ! Number of months in a year
 ! Plant-related
 
 integer, parameter :: ican=4            ! Number of CLASS pfts
-integer, parameter :: ignd=3            ! Number of soil layers
+integer, parameter :: ignd=10           ! Number of soil layers
 integer, parameter :: icp1 = ican + 1   !
 integer,parameter  :: icc=9             ! Number of CTEM pfts
 integer,parameter  :: iccp1 = icc + 1   !

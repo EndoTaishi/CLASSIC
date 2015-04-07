@@ -2,7 +2,8 @@
      1                  THLRAT,HCPS,TCS,THFC,PSIWLT, THLW,
      2                  DELZW,ZBOTW,ALGWET,ALGDRY,
      3                  SAND,CLAY,ORGM,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ICTEMMOD)
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ICTEMMOD
+     5                  ,ipeatland)     !YW
 C
 C     * FEB 26/15 - J.MELTON.   - MAKE WILTING POINT THE SAME AS CTEM 
 C                                 WITH A VALUE OF 150 M.
@@ -75,6 +76,12 @@ C     * TEMPORARY VARIABLES.
 C
       REAL VSAND,VORG,VFINE,VTOT,AEXP,ABC,THSAND,THFINE,THORG
 C
+c	--------peatland variables---------------------------------------\ 	
+c
+	 integer ipeatland(nl,nm)
+	 real 	zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
+	1		sphms,rhoms,slams
+c    -----------YW March 23, 2015 -------------------------------------/
 C     * COMMON BLOCK PARAMETERS.
 C
       REAL TCW,TCICE,TCSAND,TCFINE,TCOM,TCDRYS,RHOSOL,RHOOM,
@@ -87,6 +94,11 @@ C
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
+c    moss common block parametes YW March 19, 2015 ---------------------\
+
+      common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
+	1				    hcpms, sphms,rhoms,slams
+c    moss common block parametes YW March 19, 2015 ---------------------/
 C---------------------------------------------------------------------
 C
       DO 50 M=1,IM
@@ -173,6 +185,40 @@ C
               THLRAT(I,M,J)=0.5**(1.0/(2.0*BI(I,M,J)+3.0))
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
+             if (ipeatland(i,m) > 0 )                      then  !YW
+                  if (j .eq. 1)    	                        then
+                      thpor(i,m,j)  = thpms
+                      thlret(i,m,j) = thrms
+                      thlmin(i,m,j) = thmms
+                      bi(i,m,j)     = bms
+                      psisat(i,m,j) = psisms
+                      grksat(i,m,j) = grksms
+                      hcps(i,m,j) = hcpms
+                      tcs(i,m,j) = tcom	
+                  elseif (j .eq. 2    )                     then
+                      thpor(i,m,j)  = thporg(1)
+                      thlret(i,m,j) = throrg(1) 
+                      thlmin(i,m,j) = thmorg(1)
+                      bi(i,m,j)     = borg(1)
+                      psisat(i,m,j) = psisorg(1)
+                      grksat(i,m,j) = grksorg(1)
+                  elseif (j .ge. 3 .and. j .le. 5 )         then
+                      thpor(i,m,j)  = thporg(2)
+                      thlret(i,m,j) = throrg(2) 
+                      thlmin(i,m,j) = thmorg(2)
+                      bi(i,m,j)     = borg(2)
+                      psisat(i,m,j) = psisorg(2)
+                      grksat(i,m,j) = grksorg(2)
+                  else 
+                      thpor(i,m,j)  = thporg(3)
+                      thlret(i,m,j) = throrg(3) 
+                      thlmin(i,m,j) = thmorg(3)
+                      bi(i,m,j)     = borg(3)
+                      psisat(i,m,j) = psisorg(3)
+                      grksat(i,m,j) = grksorg(3)
+                  endif                                      
+                  thlrat(i,m,j) = 0.5**(1.0/(2.0*bi(i,m,j)+3.0))	
+              endif
               THFC(I,M,J)=THLRET(I,M,J)
               !FLAG JM Jan 15 2015 
               !Not determined yet if this should also be 150m or different so leave as is.             
@@ -219,5 +265,17 @@ C
           ENDIF
 300   CONTINUE
 C
+
+C    ------------right to screen for monitoring-----------------------\
+
+      DO 400 J=1,IG
+      DO 400 M=1,IM
+      DO 400 I=IL1,IL2
+       write(6,6990) i,m, j,  thpor(i,m,j), thlret(i,m,j),thlmin(i,m,j),
+     1         bi(i,m,j), zbotw(i,m,j), delzw(i,m,j), GRKSAT(i,m,j)
+400   continue
+6990  format(3I4,6F7.2, E10.3)
+C    ------------right to screen for monitoring-----------------------/
+
       RETURN
       END

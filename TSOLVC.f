@@ -21,7 +21,12 @@
      K                 THLIQ,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                 XDIFFUS,ICTEM,IC,CO2I1,CO2I2,
      M                 ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS)
+     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS
+c    pass  variables to the moss subroutines YW March 19, 2015------------\   
+	1		,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss
+c	------input above, output below-----------------------------------	
+	2		,anmoss,rmlmoss,iyear, iday, ihour,imin)
+c    Y.Wu ------------------------------------------------------------/
 C
 C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
 C     * OCT 30/12 - V. ARORA  - CFLUXV WAS BEING INITIALIZED TO ZERO INAPPROPRIATELY
@@ -230,11 +235,21 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL QSWNVG,QSWNIG,QSWNIC,HFREZ,HCONV,
+      REAL qswnvg(ilg),  !QSWNVG YW 
+     1     QSWNIG,QSWNIC,HFREZ,HCONV,
      1     RCONV,HCOOL,HMELT,SCONV,HWARM,WCAN,DQ0DT,
      2     DRDT0,QEVAPT,BOWEN,DCFLUX,DXEVAP,TCANT,QEVAPCT,
      3     TZEROT,YEVAP,RAGCO,EZERO
 C
+C	 --------define peatland variables--------------------------------\ 
+ 	 integer  ipeatland(ilg),ievapms(ilg),iday,ihour,iyear,imin
+	 real	tbar(ilg,ig),	thmin(ilg,ig), thpor(ilg,ig),	
+	1		bi(ig),		zsnow(ilg),	delzw(ilg,ig),
+	2		Cmossmas(ilg), dmoss(ilg)
+c	------input above output below------------------------------------
+	 real	anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
+C	---------YW March 26, 2015 ---------------------------------------/
+
 C     * COMMON BLOCK PARAMETERS.
 C
       REAL DELT,TFREZ,RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,HCPW,HCPICE,
@@ -255,15 +270,22 @@ C
 C-----------------------------------------------------------------------
 C     * INITIALIZATION AND PRE-ITERATION SEQUENCE.
 C===================== CTEM =====================================\
+
       DO I = 1,ILG
         QSWNVC(I)=0.0
+C    initiate QSWNVG to be used in mosspht.f --------------------------\  
+            if (ipeatland(i) >0)       then
+	          qswnvg(i) = 0.0 
+	       endif
+C	YW March 20, 2015 ------------------------------------------------/  
       ENDDO
+
 C===================== CTEM =====================================/
 C
       IF(ITCG.LT.2) THEN
-          ITERMX=12
+          ITERMX=50      !was 12 YW March 27, 2015 
       ELSE
-          ITERMX=5
+          ITERMX=12      !was 5 YW March 27, 2015 
       ENDIF
 C      IF(ISNOW.EQ.0) THEN
 C          EZERO=0.0
@@ -280,12 +302,21 @@ C
               ELSE
                   TRTOP(I)=TRSNOW(I)
               ENDIF
-              QSWNVG=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I)) 
+c    calcualte visible short wave radiation QSWNVG on the ground for moss
+c    photosynthesis ---------------------------------------------------\
+c              QSWNVG=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I)) 
+c              QSWNIG=QSWINI(I)*TRNIRC(I)*(1.0-ALNIRG(I))
+c              QSWNG(I)=QSWNVG+QSWNIG                    
+c              QTRANS(I)=QSWNG(I)*TRTOP(I)   
+c              QSWNG(I)=QSWNG(I)-QTRANS(I)  
+c              QSWNVC(I)=QSWINV(I)*(1.0-ALVISC(I))-QSWNVG
+              qswnvg(i)=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I)) 
               QSWNIG=QSWINI(I)*TRNIRC(I)*(1.0-ALNIRG(I))
-              QSWNG(I)=QSWNVG+QSWNIG                    
+              QSWNG(i)=qswnvg(i)+QSWNIG                    
               QTRANS(I)=QSWNG(I)*TRTOP(I)   
               QSWNG(I)=QSWNG(I)-QTRANS(I)  
-              QSWNVC(I)=QSWINV(I)*(1.0-ALVISC(I))-QSWNVG
+              QSWNVC(I)=QSWINV(I)*(1.0-ALVISC(I))-qswnvg(i)
+c    QSWNVG is changed to qswnvg(i) YW March 20, 2015 -----------------/
               QSWNIC=QSWINI(I)*(1.0-ALNIRC(I))-QSWNIG    
               QSWNC(I)=QSWNVC(I)+QSWNIC
               IF(ABS(TCAN(I)).LT.1.0E-3)        TCAN(I)=TPOTA(I)
@@ -353,7 +384,8 @@ C             USE TA (THE SUB OCCURS IN PHTSYN). JM 11/09/12
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
      4               THFC,  THLW,  FCANCMX,   L2MAX,NOL2PFTS,
      5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG,
-     6              LFSTATUS)  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
+     6              LFSTATUS  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
+     7              ,iyear,iday,ihour,imin)        !YW for testing
 C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
@@ -364,6 +396,15 @@ C                                    WHEN THERE IS VEG WITH NO ROOTS. VA & JM OC
             RC(I)=MIN(RCPHTSYN(I),4999.999)
 C          ENDIF
    70   CONTINUE
+
+c    -------moss photosynthesis----------------------------------------
+	   call  mosspht(ilg,ig,isand,iday,qswnvg,thliq,tbar,thpor,
+	1		co2conc,tgnd,zsnow,delzw,pressg,qac,coszs,Cmossmas,dmoss,
+c	---------------input above output below-------------------
+	2		anmoss,rmlmoss,cevapms,ievapms,ipeatland
+c    -----------for testing------------------------------------
+	3		,iyear, ihour,imin) 
+c    -------YW March 20, 2015 -----------------------------------------
 
       ENDIF
 C
@@ -390,7 +431,14 @@ C
                   EVBETA(I)=1.0        
                   QZERO(I)=Q0SAT(I)
               ELSE                            
-                  EVBETA(I)=CEVAP(I)
+c	evaporation coefficient is moss-controlled for peatland-----------\  
+                  if (ipeatland(i)==0)               then
+                      EVBETA(I)=CEVAP(I)
+			   else        		           
+				  ievap(i) = ievapms(i)
+				  evbeta(i) = cevapms(i)
+			   endif
+c    YW March 20, 2015 ------------------------------------------------/
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QAC(I)
                   IF(QZERO(I).GT.QAC(I) .AND. IEVAP(I).EQ.0) THEN                   
                       EVBETA(I)=0.0
@@ -424,7 +472,7 @@ C
               IF(NITER(I).EQ.ITERMX .AND. ITER(I).EQ.1)    ITER(I)=-1
           ENDIF
 125   CONTINUE
-C
+C     
       IF(ITCG.LT.2) THEN
 C
 C     * OPTION #1: BISECTION ITERATION METHOD.

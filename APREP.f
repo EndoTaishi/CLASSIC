@@ -16,7 +16,8 @@
      F            RRESID,SRESID,FRTOT,
      G            FCANCMX,ICTEM,ICTEMMOD,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
-     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC )
+     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC 
+     J            ,ipeatland)          !YW March 19, 2015 
 
 C     * SEP 05/12 - J.MELTON.   REMOVED UNUSED VAR, CWCPAV, CHANGED IDAY
 C                               CONVERSION FROM FLOAT TO REAL, REINTEGRATED
@@ -210,6 +211,13 @@ C     * FCANC  - FRACTION OF CANOPY OVER GROUND FOR CTEM's 9 PFTs
 C     * FCANCS - FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
 C     * SEE BIO2STR SUBROUTINE FOR EXPLANATION OF OTHER CTEM VARIABLES
 
+C    ---------------peatland variable  --------------------------------\
+C
+      integer ipeatland (ilg)      
+	 real 	zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
+	1		sphms,rhoms,slams
+C    ------------------YW March 19, 2015  -----------------------------/
+
 C     * INTERNAL WORK FIELD.
 C
       REAL  SFCANCMX(ILG,IC)
@@ -231,6 +239,9 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG     
       COMMON /CLASS7/ CANEXT,XLEAF
+      common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
+	1				hcpms, sphms,rhoms,slams      !YW 
+
 C-----------------------------------------------------------------------          
       IF(IC.NE.4)                               CALL XIT('APREP',-2)
 C
@@ -786,6 +797,13 @@ C
               IF(ISAND(I,1).NE.-4)                   THEN                         
                   ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))*ZOLNG+            
      1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)           
+C     -----------roughness of the surface is z0 moss for peatlands------\
+
+			   if (ipeatland(i) > 0)      then
+			       ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
+     1              *zolnms+FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)          
+			   endif
+c    -------------YW March 19, 2015------------------------------------/
               ELSE                                                                
                   ZOMLNG(I)=ZOLNI                                                 
               ENDIF                                                               

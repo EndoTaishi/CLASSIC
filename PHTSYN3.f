@@ -5,7 +5,8 @@
      4                       THFC, THLW, FCANCMX,  L2MAX, NOL2PFTS,
 C    ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
      5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG,
-     6                        LFSTATUS)
+     6                        LFSTATUS
+     7                        ,iyear, iday, ihour, imin)! YW for testing
 C     
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) 
 C                       PHOTOSYNTHESIS SUBROUTINE
@@ -199,6 +200,7 @@ C
      2            TEMP_AN
 C    
       INTEGER  ISAND(ILG,IG),  SN(KK), LFSTATUS(ILG,ICC) !FLAG test LFSTATUS DEC 4 2014. JM.
+      integer  iyear, iday, ihour, imin      !YW for testing only
 
       REAL use_vmax !FLAG test LFSTATUS DEC 4 2014. JM.
 C
@@ -298,10 +300,20 @@ C     FOR VALUES HIGHER THAN 1. WHEN SN IS ABOUT 10, PHOTOSYNTHESIS DOES
 C     NOT START DECREASING UNTIL SOIL MOISTURE IS ABOUT HALF WAY BETWEEN
 C     WILTING POINT AND FIELD CAPACITY.
 C
+
+c    new values in 2.0.5
       DATA SN/2, 2, 0,
      &        4, 2, 2,
      &        2, 2, 0,
      &        2, 2, 0/
+
+c    ---in 1.6 PEATLAND version less moisture limit ,in original ctem 1.6
+c    version sn = 20.0 for all pfts 
+C      	data sn/20.0, 		20.0, 		0.00,
+C     & 	        20.0, 		20.0, 		0.00,
+C     &          0.00,		0.00, 		0.00,
+C     &          100.0, 		100.0, 		100.00/
+c    ------YW March 27, 2015 -------------------------------------------
 
 C
 C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.
@@ -316,7 +328,8 @@ C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 C     VALUES ARE MAINLY DERIVED FROM KATTGE ET AL. 2009 WHICH 
 C     DOESN'T INCLUDE C4
       DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, 
-     &          35.0E-06, 57.0E-06, 40.0E-06, !FLAG test Fri Feb27th JM, was 48 for PFT3
+C     &          35.0E-06, 57.0E-06, 40.0E-06, !FLAG test Fri Feb27th JM, was 48 for PFT3
+     &          48.0E-06, 57.0E-06, 40.0E-06, !March 30, 2015 YW test with 2.0 values worked for PEAT6
      &          55.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
 
@@ -342,11 +355,18 @@ C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
      &              0.65, 0.37, 0.00,
      &              0.65, 0.37, 0.00/
 C
-C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
+C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS  
       DATA  RMLCOEFF/0.015, 0.021, 0.000, 
-     &               0.025, 0.015, 0.015,  
+     &               0.025, 0.015, 0.015,   
      &               0.015, 0.025, 0.000,
      &               0.013, 0.025, 0.000/
+     
+c    In 1.6 version use the following -------------------------------\
+c	data rmlcoeff	 /0.020, 	0.020,	0.000,
+c     &                0.012, 	0.015, 	0.000, 
+c     &                0.000, 	0.000, 	0.000,
+c     &                0.013,  0.013, 	0.013/
+c    YW March 27, 2015 -----------------------------------------------/
 C
 C     FREEZING TEMPERATURE
       DATA TFREZ/273.16/
@@ -367,7 +387,7 @@ C
 C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
 C      DATA GAMMA_W/0.45/  
-      DATA GAMMA_W/0.17/  ! Tests occurring in Sept 2014. JM.  
+      DATA GAMMA_W/0.17/  ! Tests occurring in Sept 2014. JM.     
 C
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT MODEL ACTUALLY GIVES
 C     WITHOUT ANY PHOTOSYNTHESIS DOWN-REGULATION
@@ -920,11 +940,14 @@ C
            AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)
          ENDIF
 C
-         IF( (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3)).LT.0.9) THEN
-           WRITE(6,*)'PFT = ',M,' I =',I
-           WRITE(6,*)'RMAT ADD =',(RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
-           CALL XIT('PHTSYN', -99)
-         ENDIF
+c    disable this check for peatland because layers are set to 0.1m --\
+c    and some roots are below the 3 layer 
+c         IF( (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3)).LT.0.9) THEN
+c           WRITE(6,*)'PFT = ',M,' I =',I
+c           WRITE(6,*)'RMAT ADD =',(RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
+c           CALL XIT('PHTSYN', -99)
+c         ENDIF
+c    YW March 30, 2015 -----------------------------------------------/
 C
 530     CONTINUE
 525    CONTINUE
@@ -1239,6 +1262,23 @@ C
         ENDIF
 670     CONTINUE
 660   CONTINUE
+C
+c    ---------------testing--------------------------------------------\
+
+C      if  (iyear == 2004 .and. ihour == 12 .and. imin == 1200) then
+C        write(90,6991)        iyear, iday, ihour, imin, 
+c     1    COSZS(1), FCANC(1,3), JE(1,3), JC(1,3), JS(1,3), 
+c     1    A_VEG(1,3),FCANC(1,4), JE(1,4), JC(1,4), JS(1,4), A_VEG(1,4) 
+C     1    VMUNS(1,3), AVE_SM_FUNC(1,3), vmaxc(1,3), fpar(1,3),
+C     2    vmuns(1,4), ave_sm_func(1,4), vmaxc(1,4), fpar(1,4),
+C     1    SM_FUNC2(I,1),SM_FUNC2(I,2),SM_FUNC2(1,3),
+C     2    RMAT(1,3,1),RMAT(1,3,2),RMAT(1,3,3),
+C     3    RMAT(1,4,1),RMAT(1,4,2),RMAT(1,3,3),
+C     4    RMAT(1,8,1),RMAT(1,8,2),RMAT(1,8,3)
+C6991   format(4i5, 20E10.2)
+C      endif
+c    ---------------testing--------------------------------------------/
+
 C
 C     ESTIMATE LEAF MAINTENANCE RESPIRATION RATES AND NET PHOTOSYNTHETIC
 C     RATE. THIS NET PHOSYNTHETIC RATE IS /M^2 OF VEGETATED LAND.

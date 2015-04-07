@@ -12,7 +12,9 @@
      k           ailcgrow,   ailcbrow,     ailcrow,      zolncrow,
      l           rmatcrow,rmatctemrow,     slairow,    bmasvegrow,
      m        cmasvegcrow, veghghtrow, rootdpthrow,    alvsctmrow,
-     n         alirctmrow,    paicrow,    slaicrow )
+     n         alirctmrow,    paicrow,    slaicrow 
+c	  gather peatland variable YW March 19, 2015----------------------/
+     1		,ipeatlandrow, 	ipeatlandgat)
 c
 C              Canadian Terrestrial Ecosystem Model (CTEM) 
 c
@@ -65,11 +67,16 @@ c
      a      rootdpthrow(nlat,nmos,icc),
      b      alvsctmrow(nlat,nmos,ican),     alirctmrow(nlat,nmos,ican),
      c         paicrow(nlat,nmos,ican),       slaicrow(nlat,nmos,ican)
+c    
+c    gather ipeatland here for bio2str  YW March 19, 2015  
+	 integer	ipeatlandgat(ilg), ipeatlandrow(nlat,nmos)
 c
 c----------------------------------------------------------------------
       do 100 k=1,nml
           sdepgat(k)=sdeprow(ilmos(k),jlmos(k))
+          ipeatlandgat(k)=ipeatlandrow(ilmos(k),jlmos(k))     !YW
 100   continue
+          write(6,*) ipeatlandgat, ipeatlandrow
 c
       do 101 l=1,icc
        do 101 k=1,nml
