@@ -256,7 +256,7 @@ C    --------------------peatland common block data--------------------\
 						!fibric for the feather moss.For spahgnum  
 						!moss(O'Donnell et al.2009)
 	 data thmms	/0.01/	!Price and Whittington 2010
-	 data bms		/1.0/	!Berlinger et al.2001(they set 4.0 for peat)
+	 data bms		/2.3/	!Berlinger et al.2001(they set 4.0 for peat)
 	 data psisms	/0.0103/	!moss and peat using same values in Berlinger 
 						!et al. 2001)
 	 data grksms	/1.83E-3/	!The saturated hydrualic conductivity is  

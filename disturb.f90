@@ -215,8 +215,8 @@ real :: soilterm, duffterm              ! temporary variables
 !     -----------------------------------------------------------------
 
 !     * if icc /= 9 or ignd /= 3 this subroutine will need changes.
-      IF(ICC.NE.9)      CALL XIT('DISTURB',-1)
-!      IF(IGND.NE.3)     CALL XIT('DISTURB',-2)
+      IF(ICC.NE.11)      CALL XIT('DISTURB',-1)
+      IF(IGND.NE.10)     CALL XIT('DISTURB',-2)   !YW April 14, 2015 
 
 !     initialize required arrays to zero, or assign value
 
@@ -400,9 +400,11 @@ real :: soilterm, duffterm              ! temporary variables
           end if
 
          endif
-
+       write(6,6990) j, drgtstrs(1,j), avgdryns, surface_duff_f
+6990   format(i3, 10f7.3)
 330     continue
 320   continue
+
 
 !     Use average root zone vegetation dryness to find likelihood of
 !     fire due to moisture. 

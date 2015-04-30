@@ -272,7 +272,7 @@ C    ------------right to screen for monitoring-----------------------\
       DO 400 M=1,IM
       DO 400 I=IL1,IL2
        write(6,6990) i,m, j,  thpor(i,m,j), thlret(i,m,j),thlmin(i,m,j),
-     1         bi(i,m,j), zbotw(i,m,j), delzw(i,m,j), GRKSAT(i,m,j)
+     1         bi(i,m,j), zbotw(i,m,j), thfc(i,m,j), GRKSAT(i,m,j)
 400   continue
 6990  format(3I4,6F7.2, E10.3)
 C    ------------right to screen for monitoring-----------------------/

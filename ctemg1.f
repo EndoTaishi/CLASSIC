@@ -92,6 +92,7 @@ c
           veghghtgat(k,l)  = veghghtrow(ilmos(k),jlmos(k),l)
           rootdpthgat(k,l) = rootdpthrow(ilmos(k),jlmos(k),l)
 101   continue
+
 c
       do 201 l=1,ican
        do 201 k=1,nml

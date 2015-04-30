@@ -183,7 +183,7 @@ c
 c	phenology  water factor on mosses ,grow when temperature > -4.0 
 c	and snowpack < 0.15 m
 	 do 200 i = 1, ilg
-		if (zsnow(i) .gt. 0.15 .or. tsurf (i) .lt. -4.0)  then		
+		if (zsnow(i) .gt. 0.05 .or. tsurf (i) .lt. 0.5)  then		
 			pheno(i) = 0.0
 		else
 			pheno(i) = 1.0
@@ -196,6 +196,7 @@ c    dmoss is an input and site specific. Preferably make dmoss a function
 c    of Cmoss and ipeatland (different species in fens and bogs)
 c 	observed range of wmoss: 5 to 40 in Robrek (2007, 2009), 5 to 25 
 c    (Flanagen and Williams 1998)
+c    dmoss is between 2.5 to 5cm based on the species (Lamberty et al. 2006)
 
 	 do 250 	i = 1, ilg
 		mmoss(i) = Cmossmas(i)/0.46
@@ -346,15 +347,16 @@ c	gross photosynthesis GPP = min(Wc,Wj) = An + Rd
 		    mII(i)= 0.0
 		endif		
 		anmoss(i) = (-mI(i)-(mI(i)*mI(i)-4*mII(i))**0.5)/2	
-		anmoss(i) = min(anmoss(i), ws(i))		
-400		continue
+c		anmoss(i) = min(anmoss(i), ws(i))		
+          anmoss(i) = pheno(i)*min(anmoss(i), ws(i))   !YW April 22, 2015  add phenology of mosses
+400		continue  
 
 c    write to output file midday             CT16D_G 
 	 if (iyear .eq. 2004 .and. ihour==12)        then
 	  	write(98,6998)	iday,tmoss,cevapms,fwmoss,thliq(1,1), 
      1    dsmoss,g_moss, wmoss,rmlmoss,mwce,q10rmlmos,wmosmax,wmosmin
      
-6998   	format(I6,15f12.4) 		
+6998   	format(I6,20f12.4) 		
 	 endif
 
 	 return

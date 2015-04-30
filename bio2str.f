@@ -228,6 +228,7 @@ c     leaves.
 c
 c     also find stem area index as a function of stem biomass
 c
+
       do 150 j = 1,icc
         do 160 i = il1,il2
          if (fcancmx(i,j).gt.0.0) then
@@ -278,6 +279,7 @@ c
 210     continue
 200   continue
 c
+
       do 230 j = 1, ican
         do 240 i = il1, il2
 c
@@ -349,14 +351,16 @@ c     ---------------peatland vegetation-------------------------------\
 
         do 280 m = k1c, k2c
           do 290 i = il1, il2
-              if (ipeatland(i) > 0)                    then 
-                  if (j == 2 )  	             then      
-                    veghght(i,m) = min(1.0, 0.25*(stemmass(i,m)**0.2))
-                  elseif (j == 4 )              then
-			     veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
-	1                               *bleafmas(i,m))**0.3)    
-                  endif
-              endif
+            if (ipeatland(i) > 0)                           then 
+               if (j == 1)                             then
+                 veghght(i,m)=min(3.0*stemmass(i,m)**0.385,10.0)                 
+               elseif (j == 2 .and. m >= (k2c-1))  	     then      
+                 veghght(i,m)=min(1.0, 0.25*(stemmass(i,m)**0.2))  !last 2 pft in ican2 are shrubs 
+               elseif (j == 4 )              then
+			  veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
+	1                               *bleafmas(i,m))**0.3)              
+               endif
+            endif
 290       continue
 280     continue
 c    --------------------YW March 26, 2015 ----------------------------/
@@ -429,8 +433,7 @@ c
             useb(i,m)=b(m)
             usealpha(i,m)=alpha(sort(m))
             rootdpth(i,m) = (4.605*(rootmass(i,m)**alpha(sort(m))))/b(m)
-
-c
+c           
 c           if estimated rooting depth is greater than soil depth, or
 c           the maximum rooting depth then adjust rooting depth and
 c           parameter alpha
@@ -449,6 +452,7 @@ c
                 a(i,m)=4.605/rootdpth(i,m)
               endif
             else
+            
               if(rootmass(i,m).le.abszero)then
                 a(i,m)=100.0
               else
@@ -497,7 +501,8 @@ c
             end if
 
             etmp(i,j,1)=exp(-a(i,j)*zbotw(i,1))
-            rmatctem(i,j,1)=(1.0-etmp(i,j,1))/totala(i,j)
+            rmatctem(i,j,1)=(1.0-etmp(i,j,1))/totala(i,j)            
+          
             if (kend .eq. 2) then
 c             if rootdepth is shallower than the bottom of 2nd layer
                etmp(i,j,kend)=exp(-a(i,j)*zroot)
@@ -515,11 +520,12 @@ c             or even the deeper layer (ignd>3)
               etmp(i,j,kend)=exp(-a(i,j)*zroot)
               rmatctem(i,j,kend)=(etmp(i,j,kend-1)-etmp(i,j,kend))
      1                          /totala(i,j)
-            endif
-           endif
+            endif   !if kend
+           endif    !zroot
 c
 410     continue
 400   continue
+
 
 c    make sure all fractions (of roots in each layer) add to one.
 c
@@ -553,11 +559,9 @@ c
         k2c = k1c + nol2pfts(j) - 1
         do 430 m = k1c, k2c
           do 440 i = il1, il2
-c   
-            do 441 k = 1, ignd
+               do 441 k = 1, ignd
               rmatc(i,j,k)=rmatc(i,j,k)+(fcancmx(i,m)*rmatctem(i,m,k))  
-441         continue
-c
+441            continue
 440       continue
 430     continue
 420   continue
@@ -580,6 +584,7 @@ c
 450   continue
 c
 c
+c
 c     -------------------  4. calculate storage lai  --------------------
 c
       do 500 j = 1, icc
@@ -597,6 +602,7 @@ c         this as model seeds.
 500   continue
 c
 c
+
 c     --- 5. calculate total vegetation biomass for each ctem pft, and --
 c     ---------------- canopy mass for each class pft ------------------
 c
@@ -643,7 +649,8 @@ c         essentially mean more bare ground, but since we are not changing
 c         fractional coverages at present, we pass a minimum canopy mass
 c         to class so that it doesn't run into numerical problems.
 c
-          cmasvegc(i,j)=max(cmasvegc(i,j),3.0)
+c          cmasvegc(i,j)=max(cmasvegc(i,j),3.0)    !YW April 14, 2015 
+          cmasvegc(i,j)=max(cmasvegc(i,j),0.1)     
 c
 640     continue
 630   continue
@@ -666,6 +673,8 @@ c
 720       continue
 710     continue
 700   continue
+c
+
 c
       do 730 j = 1, ican
         do 740 i = il1, il2

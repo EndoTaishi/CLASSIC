@@ -159,7 +159,7 @@ c	------peatland variables ----------------------------------------\
 	4		socrestep(ilg), 	hutrstep(ilg,icc+1)
 c     ------YW March 27, 2015 -----------------------------------------/  
 c
-      if(icc.ne.9)                            call xit('balcar',-1)
+      if(icc.ne.11)                            call xit('balcar',-1)  !YW for peatland
 c
 c     to check c budget we go through each pool for each vegetation
 c     type.

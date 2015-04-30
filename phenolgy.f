@@ -121,7 +121,7 @@ c     Constants and parameters are located in ctem_params.f90
 c
 c     ---------------------------------------------------------------
 c
-      if(icc.ne.9)                            call xit('phenolgy',-1)
+      if(icc.ne.11)                            call xit('phenolgy',-1)     !YW April 14, 2015 
 c
 c     initialize required arrays to zero
 c
@@ -226,6 +226,8 @@ c     if in "no leaves" mode check if an has been positive over last
 c     dayschk(j) days to move into "max. growth" mode. if not we stay
 c     in "no leaves" mode. also set the chkmode(i,j) switch to 1.
 c
+c         write(90,6990) '236', real(lfstatus)
+         
       do 240 j = 1, icc
         n = sort(j)
         do 250 i = il1, il2
@@ -243,6 +245,9 @@ c
 250     continue
 240   continue
 c
+c
+c                write(90,6990) '254', real(lfstatus)
+c                
 c     find day length using day of year and latitude. this is to be used for
 c     initiating leaf offset for broad leaf dcd trees.
 c
@@ -291,6 +296,9 @@ c       broad leaf dcd cld & dry
        endif
 c
 c       crops
+c
+      if (icc==9)        then           !YW April 15, 2015 
+c            
        if (fcancmx(i,6).gt.0.0) then 
         if(lfstatus(i,6).eq.1.and.chkmode(i,6).eq.1)then
           if(ta(i).lt.(coldthrs(2)+273.16))then
@@ -305,6 +313,28 @@ c       crops
           endif
         endif
        endif
+c      
+      else               ! when icc !=9, here icc=11 for peatland  
+c       dcd shrubs
+       if (fcancmx(i,7).gt.0.0) then 
+        if(lfstatus(i,7).eq.1.and.chkmode(i,7).eq.1)then
+          if(ta(i).lt.(coldthrs(1)+273.16))then
+            lfstatus(i,7)=4
+          endif
+        endif
+       endif
+       
+c    crops j = 8, 9 
+      do j = 8, 9 
+       if (fcancmx(i,j).gt.0.0) then 
+        if(lfstatus(i,j).eq.1.and.chkmode(i,j).eq.1)then
+          if(ta(i).lt.(coldthrs(2)+273.16))then
+            lfstatus(i,j)=4
+          endif
+        endif
+       endif
+      enddo
+      endif         !if icc==9
 270   continue
 c
 c     similar to the way we count no. of days when an is positive, we
@@ -326,6 +356,8 @@ c
           endif
 290     continue
 280   continue
+c
+c                write(90,6990) '362', real(lfstatus)          
 c
 c     if in "max growth" mode
 c     ------------------------
@@ -390,6 +422,8 @@ c           bdl dcd dry
          endif
 310     continue
 300   continue
+
+c                write(90,6990) '427', real(lfstatus)
 c
 c     if in "normal growth" mode
 c     --------------------------
@@ -417,6 +451,8 @@ c       needle leaf evg
         endif
        endif 
 c
+c                write(90,6990) '453', real(lfstatus)    
+c
 c       needle leaf dcd
        if (fcancmx(i,2).gt.0.0) then 
         if(chkmode(i,2).eq.0.and.lfstatus(i,2).eq.2)then
@@ -435,6 +471,8 @@ c       needle leaf dcd
           endif
         endif
       endif
+c                write(90,6990) '471', real(lfstatus)
+
 c
 c       broad leaf evg
        if (fcancmx(i,3).gt.0.0) then 
@@ -452,6 +490,8 @@ c       broad leaf evg
           endif
         endif 
        endif
+c
+c          write(90,6990) '489', real(lfstatus)
 c
 c       broad leaf dcd cold
 c       we use daylength and roottemp to initiate leaf offset
@@ -478,6 +518,8 @@ c       we use daylength and roottemp to initiate leaf offset
         endif 
        endif
 c
+c          write(90,6990) '514', real(lfstatus)
+
 c       broad leaf dcd dry
 c       we still use daylength and roottemp to initiate leaf offset,
 c       for the pathological cases of dry dcd trees being further
@@ -505,6 +547,7 @@ c       loss will occur due to drought anyway.
        endif
 c
 320   continue
+c          write(90,6990) '517', real(lfstatus)
 c
 c     "normal growth" to "fall/harvest" transition for crops is based on
 c     specified lai. we harvest if lai of crops reaches a threshold.
@@ -512,6 +555,9 @@ c     if lai doesn't reach this threshold (say due to a bad year)
 c     we harvest anyway if it starts getting cold, otherwise we
 c     don't harvest.
 c
+c    add branch for icc =11, j6, 7 are shrubs YW April 15, 2015 --------\
+c
+      if (icc==9)                           then       
       do 340 j = 6,7
        n = sort(j)
         do 350 i = il1, il2
@@ -562,6 +608,102 @@ c
 380     continue
 370   continue 
 c
+      else          !icc != 9 here icc == 11, 6,7 =shrubs, 8,9 = crops, 
+                    ! 10, 11 = grass 
+c    EVG-SHRUB      treated the same as needel leaf EVG                    
+      do 385 i = il1, il2
+       if (fcancmx(i,6).gt.0.0) then 
+        if(chkmode(i,6).eq.0.and.lfstatus(i,6).eq.2)then
+          if(ailcg(i,6).lt.lfthrs(i,6).and.ailcg(i,6).gt.zero)then  
+            lfstatus(i,6)=1         ! go back to "max. growth" mode
+            chkmode(i,6)=1         
+          else if(ailcg(i,6).le.zero) then
+            lfstatus(i,6)=4         ! switch to "no leaves" mode
+            chkmode(i,6)=1         
+            pandays(i,6)=0
+          else
+            lfstatus(i,6)=2         ! stay in "normal growth" mode
+            chkmode(i,6)=1         
+          endif
+        endif
+       endif        
+c
+c     DCD-SHRUB     treated the same as needle leaf dcd
+       if (fcancmx(i,7).gt.0.0) then 
+        if(chkmode(i,7).eq.0.and.lfstatus(i,7).eq.2)then
+          if(ailcg(i,7).lt.lfthrs(i,7).and.
+     &      colddays(i,1).ge.coldlmt(1).and.
+     &      ailcg(i,7).gt.zero)then
+            lfstatus(i,7)=3         ! go into "leaf fall" mode
+            chkmode(i,7)=1         
+          else if(ailcg(i,7).le.zero) then
+            lfstatus(i,7)=4         ! switch to "no leaves" mode
+            chkmode(i,7)=1         
+            pandays(i,7)=0
+          else
+            lfstatus(i,7)=2         ! stay in "normal growth" mode
+            chkmode(i,7)=1         
+          endif
+        endif
+      endif
+      
+385    continue               !shrubs  
+      
+
+      do 390 j = 8,9
+       n = sort(j)
+        do 391 i = il1, il2
+         if (fcancmx(i,j).gt.0.0) then 
+          if(chkmode(i,j).eq.0.and.lfstatus(i,j).eq.2)then
+            if(ailcg(i,j).ge.harvthrs(n))then
+              lfstatus(i,j)=3        ! go into "harvest" mode
+              chkmode(i,j)=1
+              flhrloss(i,j)=gleafmas(i,j)*(1.0/flhrspan(1))
+            else if( ailcg(i,j).gt.zero.and.
+     &      colddays(i,2).ge.coldlmt(2) ) then
+              lfstatus(i,j)=3        ! go into "harvest" mode
+              chkmode(i,j)=1         ! regardless of lai
+              flhrloss(i,j)=gleafmas(i,j)*(1.0/flhrspan(1))
+            else if(ailcg(i,j).le.zero) then
+              lfstatus(i,j)=4        ! switch to "no leaves" mode
+              chkmode(i,j)=1         
+              pandays(i,j)=0
+              flhrloss(i,j)=0.0
+            else
+              lfstatus(i,j)=2        ! stay in "normal growth" mode
+              chkmode(i,j)=1         
+            endif
+          endif
+         endif
+391     continue
+390   continue
+c
+c     "normal growth" to "max. growth" transition for grasses 
+c
+      do 395 j = 10,11
+        do 396 i = il1, il2
+         if (fcancmx(i,j).gt.0.0) then 
+          if(chkmode(i,j).eq.0.and.lfstatus(i,j).eq.2)then
+            if(ailcg(i,j).lt.lfthrs(i,j).and.ailcg(i,j).gt.zero)then  
+              lfstatus(i,j)=1        ! switch back to "max. growth" mode
+              chkmode(i,j)=1
+            else if(ailcg(i,j).le.zero) then
+              lfstatus(i,j)=4        ! switch to "no leaves" mode
+              chkmode(i,j)=1         
+              pandays(i,j)=0
+            else
+              lfstatus(i,j)=2        ! stay in "normal growth" mode
+              chkmode(i,j)=1
+            endif
+          endif
+         endif
+396     continue
+395   continue 
+
+      endif         !if icc==9
+      
+c          write(90,6990) '680', real(lfstatus)
+
 c     if in "fall/harvest" mode
 c     --------------------------
 c
@@ -578,7 +720,9 @@ c     mode
 c
 
       do 400 j = 1, icc
-        if(j.eq.2.or.j.eq.4.or.j.eq.5.or.j.eq.6.or.j.eq.7)then  !only dcd trees and crops
+c        if(j.eq.2.or.j.eq.4.or.j.eq.5.or.j.eq.6.or.j.eq.7) !YW for icc=11
+        if(j.eq.2.or.j.eq.4.or.j.eq.5.or.j.eq.7.or.j.eq.8.or. j.eq.9)
+     1                                  then  !only dcd trees and crops
           do 410 i = il1, il2
            if (fcancmx(i,j).gt.0.0) then 
             if(chkmode(i,j).eq.0.and.lfstatus(i,j).eq.3)then
@@ -588,8 +732,10 @@ c
                 pandays(i,j)=0
                 flhrloss(i,j)=0.0
               else
-                if(j.eq.2)then             ! ndl dcd trees
-                  if(pandays(i,j).ge.dayschk(j).and.
+c                if(j.eq.2)then             ! ndl dcd trees
+                if(j.eq. 2 .or. j.eq. 7)then !and dcd shrubs YW April 15, 2015   
+c         
+                            if(pandays(i,j).ge.dayschk(j).and.
      &            ta(i).gt.(coldthrs(1)+273.16)) then
                     if(ailcg(i,j).lt.lfthrs(i,j))then
                       lfstatus(i,j)=1      ! go into "max. growth" mode
@@ -617,7 +763,7 @@ c
                       lfstatus(i,j)=2      ! go into "normal growth" mode
                       chkmode(i,j)=1
                     endif
-                  else  
+                  else                                 !crops 
 !       write(*,'(a5,2i4,3f10.3)')'lf8=',lfstatus(i,4),iday,roottemp(i,4)
 !     & ,daylngth(i),ailcg(i,4)
                     lfstatus(i,j)=3        ! stay in "fall/harvest" mode 
@@ -659,6 +805,8 @@ c
            endif
       end do
 
+c          write(90,6990) '789', real(lfstatus)
+6990      format(A5,20F6.2)
 
 c     check that leaf status of all vegetation types in all grid cells has
 c     been updated
@@ -712,6 +860,8 @@ c
 430     continue
 420   continue
 c
+c          write(90,6990) '844', real(lfstatus)
+
 c     for drought stress related mortality we need field capacity 
 c     and wilting point soil moisture contents, which we calculated
 c     in allocate subroutine

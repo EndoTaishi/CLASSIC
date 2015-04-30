@@ -2,10 +2,15 @@
      1                         il1,     il2,     sand,     clay,  
      2                    rmatctem, gleafmas, stemmass, rootmass,
      4                        sort, nol2pfts, fcancmx,
-c    5 ------------------ inputs above this line ----------------------   
-     6                     afrleaf,  afrstem,  afrroot,  wiltsm,
-     7                     fieldsm, wtstatus, ltstatus)
-c    8 ------------------outputs  above this line ---------------------
+c      ------------------ inputs above this line ----------------------   
+     5                     afrleaf,  afrstem,  afrroot,  wiltsm,
+     6                     fieldsm, wtstatus, ltstatus, 
+c      ------------------outputs  above this line ---------------------
+c    add peatland parameters YW April 13, 2015 ------------------------ 
+     7                   ipeatland, thporpt,bipt, psisatpt, grksatpt,
+     8                   thfcpt, thlwpt)      
+
+
 c
 C               Canadian Terrestrial Ecosystem Model (CTEM)
 C                            Allocation Subroutine
@@ -72,6 +77,13 @@ c
 c
       integer il1, il2, i, j, k,  lfstatus(ilg,icc), 
      1         n, k1,  k2,   m
+     
+c    peatland variables-----------------------------------------------\
+
+      integer  ipeatland(ilg)     
+      real     psisatpt(ilg,ignd), thporpt(ilg,ignd), bipt(ilg,ignd),
+     1         grksatpt(ilg,ignd), thfcpt(ilg,ignd) , thlwpt(ilg,ignd)
+c    ----------- YW April 13, 2015-----------------------------------/
 c
       integer       sort(icc),      nol2pfts(ican)
 c
@@ -147,16 +159,28 @@ c
      &      (1./(2.*b(i,j)+3.))
           fieldsm(i,j) = thpor(i,j) *  fieldsm(i,j)
 c
+c    soil property of peatlands---------------------------------------\
+
+            if (ipeatland(i) >0)          then
+                psisat(i,j) =psisatpt(i,j)
+                b(i,j)= bipt(i,j)
+                thpor(i,j) = thporpt(i,j)
+                grksat(i,j) = grksatpt(i,j)
+                fieldsm(i,j)= thfcpt(i,j)
+                wiltsm(i,j) = thlwpt(i,j)
+            endif
+c    --------------YW April 13, 2015-----------------------------------/  
 170     continue
 160   continue
 c
-c
+c`   
 c     Calculate liquid soil moisture content, and wilting and field capacity 
 c     soil moisture contents averaged over the root zone. note that while
 c     the soil moisture content is same under the entire gcm grid cell,
 c     soil moisture averaged over the rooting depth is different for each
 c     pft because of different fraction of roots present in each soil layer.
 c
+      if (ignd ==3)        then              !YW April 16, 2015  
       do 200 j = 1, icc
         do 210 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
@@ -181,6 +205,25 @@ c
 210     continue
 200   continue
 c
+c    ---------------add a branch for ignd is not 3--------------------\
+c
+      else         !when ignd is not 3 
+        do 220 j = 1, icc
+         do 221 i = il1, il2
+           if (fcancmx(i,j).gt.0.0)                  then 
+            do 222 k = 1, ignd
+              if (rmatctem(i,j,k) > 0.)        then 
+                avwiltsm(i,j)=avwiltsm(i,j)+wiltsm(i,k)*rmatctem(i,j,k)
+                afieldsm(i,j)=afieldsm(i,j)+fieldsm(i,k)*rmatctem(i,j,k)
+                avthliq(i,j) =avthliq(i,j) +thliq(i,k)*rmatctem(i,j,k)                                          
+              endif
+222         continue
+           endif
+221      continue
+220     continue
+      endif         !if ignd
+c    -----------YW April 16, 2015--------------------------------------/      
+c
 c     Using liquid soil moisture content together with wilting and field 
 c     capacity soil moisture contents averaged over the root zone, find
 c     soil water status.
@@ -197,7 +240,7 @@ c
           else
             wtstatus(i,j)=1.0
           endif
-         endif
+         endif                
 240     continue
 230   continue
 c

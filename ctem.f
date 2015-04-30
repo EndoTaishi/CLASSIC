@@ -57,10 +57,11 @@ c
 c    -------------- moss C in peatlands -------------------------------\
 c
 	1		,ipeatland,iyear,ihour,imin,
-	2		anmoss,rmlmoss,gppmoss, Cmossmas,
-	3         litrmassms,wtable,thpor,bi, psisat,thliq,tfrez,
+	2		anmoss,rmlmoss,gppmoss, Cmossmas, litrmassms,
+	3         wtable,thpor,bi, psisat,grksat,
+	4         thfc,thlw,thliq,thice,tfrez,
 c    -------------input above, output and updated variables below------
-     4         nppmoss,armoss,hpd)
+     5         nppmoss,armoss,hpd)
 	
 c    ---------------- YW March 20, 2015 -------------------------------/
 c
@@ -531,8 +532,9 @@ c
 c	------------define peatland related variables--------------------\ 
 	 integer  ipeatland (ilg), iyear,ihour,imin
 	 
-	 real     wtable(ilg),thpor(ilg,ignd),bi(ilg,ignd), 
-	1         psisat(ilg,ignd),thliq(ilg,ignd), tfrez
+	 real     wtable(ilg),thpor(ilg,ignd),bi(ilg,ignd),
+	1         grksat(ilg,ignd),thfc(ilg,ignd),thlw(ilg,ignd),  
+	2         psisat(ilg,ignd),thliq(ilg,ignd),thice(ilg,ignd),tfrez
 	
       real     gppmoss(ilg),rmlmoss(ilg),anmoss(ilg),armoss(ilg),
      1         nppmoss(ilg), rgmoss(ilg), litresms(ilg), socresp(ilg),
@@ -543,7 +545,7 @@ c	------------define peatland related variables--------------------\
      6         hpd(ilg)
 
       real::   grescoefms = 0.15
-      real::   rmortms = 1.0
+      real::   rmortms = 0.7
       real::   humicfacms=2.0   
 
 c    hpd - peat depth(m)
@@ -583,7 +585,6 @@ c
 c     ---------------------------------------------------------------
 c     Constants and parameters are located in ctem_params.f90
 c     -----------------------------------------------------------------
-
 c     find area of the gcm grid cells. this is needed for land use change
 c     and disturbance subroutines
 
@@ -1143,6 +1144,7 @@ c
 160     continue 
 150   continue 
 c
+
       do 170 i = il1, il2
         fgs(i)=(1.0-fcs(i)-fc(i))*fsnow(i) 
         fg(i)=(1.0-fcs(i)-fc(i))*(1.0-fsnow(i)) 
@@ -1307,8 +1309,10 @@ c
      1                      il1,
      2                      il2,   tbarcs,   thliqc,     sand,
      3                     clay, rttempcs,    zbotw,     sort,
-     4                     isand,  ipeatland,
-     5                 ltrsvgcs, scrsvgcs) 
+     4                     isand,  
+     5                 ltrsvgcs, scrsvgcs
+     6               ,ipeatland, iday, psisat, thpor, bi, thicec)    !YW
+ 
 c
 c     find heterotrophic respiration rates for canopy over ground 
 c     subarea
@@ -1317,8 +1321,10 @@ c
      1                      il1,
      2                      il2,    tbarc,   thliqc,     sand,
      3                     clay, rttempcg,    zbotw,     sort,
-     4                     isand,  ipeatland,
-     5                 ltrsvgcg, scrsvgcg) 
+     4                     isand,  
+     5                 ltrsvgcg, scrsvgcg
+     6               ,ipeatland, iday, psisat, thpor, bi,thicec)    !YW
+
 
 c
 c     find heterotrophic respiration rates from bare ground subarea
@@ -1327,7 +1333,7 @@ c
      1                      il1,      il2,     tbarg,   
      2                   thliqg,     sand,      clay,   zbotw,   
      3                       fg,        0,
-     4                     isand,  ipeatland,
+     4                     isand,  
      5                   ltrsbrg,  scrsbrg)
 c
 c     find heterotrophic respiration rates from snow over ground 
@@ -1337,13 +1343,13 @@ c
      1                      il1,      il2,    tbargs,   
      2                   thliqg,     sand,      clay,   zbotw,   
      3                      fgs,        1,
-     4                     isand,  ipeatland,
+     4                     isand,  
      5                   ltrsbrgs, scrsbrgs)
 c
 c    ------------peat heterotrophic respiration------------------------\
-
+c
 	  call  decp(il1,il2,iyear,iday,ihour,imin,ipeatland,isand,
-	1	litrmassms,hpd, wtable,tbar, thliq, thpor,bi,zbotw,
+	1	litrmassms,hpd, wtable,tbar, thliq,thice, thpor,bi,zbotw,
 	2    delzw,psisat,tfrez,  
 c    -------------- inputs above this line, outputs below -------------
      3    litresms, socresp, resoxic, resanoxic)  
@@ -1490,7 +1496,7 @@ c	calculate moss time step C fluxes, '/365*deltat' convert year-1
 c    to time step-1, 'deltat/963.62' convert umol/m2/s to kgC/m2/deltat. 
 c    note that hutrstep_g aggregation for icc was done in loop 480
 c 
-		    litrfallms(i)= Cmossmas(i)*rmortms/365*deltat !kgC/m2/day
+		    litrfallms(i)= Cmossmas(i)*rmortms/365*deltat !kgC/m2/day(dt)
      	    ltrestepms(i)= litresms(i)*(1.0/963.62)*deltat   !kgC/m2/dt	
 		    nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
 		    socrestep(i) = socres(i)*(1.0/963.62)*deltat     !kgC/m2/dt
@@ -1518,8 +1524,6 @@ c
       endif 
 
 c    --------------------------------------------------------------------
-
-
 c     estimate allocation fractions for leaf, stem, and root components.
 c
            call allocate (lfstatus,   thliqc,    ailcg,     ailcb,
@@ -1527,8 +1531,9 @@ c
      3                    rmatctem,   gleafmas, stemmass, rootmass,      
      4                       sort,    nol2pfts,  fcancmx,
      5                     afrleaf,  afrstem,  afrroot,    wiltsm,
-     6                     fieldsm, wtstatus, ltstatus)
-     
+     6                     fieldsm, wtstatus, ltstatus, 
+c    add peatland parameters YW April 13, 2015 ------------------------ 
+     7                   ipeatland, thpor,bi, psisat,grksat,thfc, thlw)      
 !     Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the
 !     CLASS part of the model. They are recalculated here in CTEM to avoid passing them through the
 !     coupler in the coupled model. The CTEM calculated versions of fieldsm and wiltsm are also used
@@ -1739,6 +1744,7 @@ c
 660     continue
 650   continue
 c
+c
       do 680 j = 1, ignd
         do 690 i = il1, il2
           if( (fc(i)+fcs(i)).gt.zero) then
@@ -1916,7 +1922,6 @@ c     is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped
 c     from simulating any fire by specifying fire extingushing probability
 c     equal to 1.
 c
-c
             call disturb (stemmass, rootmass, gleafmas, bleafmas,
      1                      thliqc,   wiltsm,  fieldsm,    uwind,
      2                       vwind,  lightng,  fcancmx, litrmass,
@@ -2031,11 +2036,13 @@ c
      &     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j) !vegetation biomass for each pft
 1110    continue
 1100  continue
+          
 c
 c    add peatland branch for grid aggregations-------------------------\
 c    NOTE peatlands soil C is not agregated from plants but updated  
 c    by humification and respiration from the previous stored value
 c
+c         testing floating point 
       do 1020 i = il1, il2
           if (ipeatland(i)==0)                              then
              gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
@@ -2047,11 +2054,28 @@ c
 		   vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
 		   litrfall(i) = litrfall(i) + litrfallms(i)*(963.62/deltat)!umolCO2/m2/s
 	        gavgltms(i) = gavgltms(i) + litrmassms(i)
-		   gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i) 
+		   gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i)		   
              hpd(i)=(-72067.0+sqrt((72067.0**2.0)-(4.0*4056.6*
      1              (-gavgscms(i)*1000/0.487))))/(2*4056.6)
+
           endif          
 1020  continue
+
+c      do 1021 j = 1, icc
+c        WRITE(90,6992) j,vgbiomas_veg(1,j),gppveg(1,j),autoresveg(1,j),
+c     1  tltrleaf(1,j)+tltrstem(1,j)+tltrroot(1,j)
+c6992      format(I5,10F8.4)
+c         gleafmas(1,j), stemmass(1,j), 
+c     1         rootmass(1,j) , bleafmas(1,j), fcancmx(1,j)
+c     1         gppveg(1,j), rmveg(1,j),rgveg(1,j), 
+c     2    tltrleaf(1,j),tltrstem(1,j), tltrroot(1,j)
+c1021      continue      
+c          write(90,6991) gpp, gppmoss, autores, armoss, litrfall,rg,rm, 
+c     1     litrfallms*(963.62/deltat)
+c     1 Cmossmas, vgbiomas
+          
+          
+          
 c    ----------------YW March 26, 2015 ---------------------------------/
 c
 c     At this stage we have all required fluxes in u-mol co2/m2.sec and
@@ -2083,7 +2107,6 @@ c    ---------------------YW March 20, 2015 ---------------------------/
       endif
 c
 c     -----------------------------------------------------------------
-
 c     Finally find vegetation structural attributes which can be passed
 c     to the land surface scheme using leaf, stem, and root biomass. 
 c
@@ -2109,24 +2132,17 @@ c
 c    =============write peatland output files==========================\
 c    CT13D_G
 	 write(95,6991)          
-	1	litrmass(1,3),  tltrleaf(1,3), tltrstem(1,3), tltrroot(1,3), 
-	2	ltresveg(1,3),	 humtrsvg(1,3), litrmass(1,4), tltrleaf(1,4),
-	3	tltrstem(1,4),  tltrroot(1,4), ltresveg(1,4), humtrsvg(1,4),
+	1	litrmass(1,6),  tltrleaf(1,6), tltrstem(1,6), tltrroot(1,6), 
+	2	ltresveg(1,6),	 humtrsvg(1,6), litrmass(1,7), tltrleaf(1,7),
+	3	tltrstem(1,7),  tltrroot(1,7), ltresveg(1,7), humtrsvg(1,7),
 	5	plitrmassms, litrmassms, litrfallms, ltrestepms, humicmstep,
-	6	nppmosstep,nppmoss,anmoss,rgmoss,rmlmoss,gppmoss,Cmossmas
+	6	nppmosstep,nppmoss,anmoss,rgmoss,rmlmoss,gppmoss,Cmossmas,
+	7    rmlveg(1,1),rmsveg(1,1),rmrveg(1,1)
 c    CT14D_G
 	 write(96,6991) hpd, gavgscms,  hutrstep_g, socrestep,
 	1	resoxic*(1.0/963.62)*deltat, resanoxic*(1.0/963.62)*deltat, !kgC/m2/timestep
      2    socresp,resoxic, resanoxic    !umol/m2/s
-6991		format(25F12.6)
-
-c          WRITE(90,6990)      lfstatus(1,3),     lfstatus(1,4), 
-c     1        gppveg(1,3), gppveg(1,4), fcancmx(1,3),fcancmx(1,4),
-c     2         ancsveg(1,3),ancsveg(1,4),rmlcsveg(1,3), rmlcsveg(1,4),
-c     3         fcanc(1,3),fcanc(1,4), fcanc(1,3)*gppcgveg(1,3),
-c     4         fcancs(1,3)*gppcsveg(1,3), fcanc(1,4)*gppcgveg(1,4),
-c     5         fcancs(1,4)*gppcsveg(1,4)
-c6990    format(2i3, 15f10.4)    
+6991		format(30F12.6)
 c    ==========write file done YW=======================================/
 c
       return

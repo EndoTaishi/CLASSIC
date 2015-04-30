@@ -410,8 +410,8 @@ C
      1                          (THLIQG(I,J)+THICEG(I,J)-THLRET(I,J))/
      2                          (THPOR(I,J)-THLRET(I,J)))
                       IWTABL(I)=1
-                  ENDIF
-              ENDIF          
+                  ENDIF          
+              ENDIF    
              IF (THLIQG(I,J).GT.(THLRET(I,J)+0.0001)) THEN
                   SATRAT=MIN((THLRET(I,J)+THICEG(I,J))/
      1                   THPOR(I,J), 1.0)              

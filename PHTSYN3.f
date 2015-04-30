@@ -139,7 +139,8 @@ C
       IMPLICIT NONE
 C
       INTEGER KK
-      PARAMETER (KK=12)  ! PRODUCT OF CLASS PFTs AND L2MAX (4 x 3 = 12)
+C      PARAMETER (KK=12)  ! PRODUCT OF CLASS PFTs AND L2MAX (4 x 3 = 12)
+      PARAMETER (KK=20)  ! PRODUCT OF CLASS PFTs AND L2MAX (4 x 5 = 20) YW April 13, 2015 
 C
 
       INTEGER, DIMENSION(:,:), ALLOCATABLE  :: USESLAI
@@ -200,8 +201,10 @@ C
      2            TEMP_AN
 C    
       INTEGER  ISAND(ILG,IG),  SN(KK), LFSTATUS(ILG,ICC) !FLAG test LFSTATUS DEC 4 2014. JM.
-      integer  iyear, iday, ihour, imin      !YW for testing only
-
+c
+      integer  iyear, iday, ihour, imin, l      !YW for testing only
+      real     rmatsum(ilg,icc)    !accumulated root fraction in sm_func calculations
+c      
       REAL use_vmax !FLAG test LFSTATUS DEC 4 2014. JM.
 C
 C     FOR LIMITING CO2 UPTAKE
@@ -218,7 +221,7 @@ C     NOTE THE STRUCTURE OF VECTORS WHICH CLEARLY SHOWS THE CLASS
 C     PFTs (ALONG ROWS) AND CTEM SUB-PFTs (ALONG COLUMNS)
 C
 C     NEEDLE LEAF |  EVG       DCD       ---
-C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
+C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY   EVG-SHU   DCD-SHU  !!YW April 13, 2015 
 C     CROPS       |   C3        C4       ---
 C     GRASSES     |   C3        C4       ---
 C
@@ -226,20 +229,24 @@ C     CANOPY LIGHT/NITROGEN EXTINCTION COEFFICIENT - THIS BASICALLY
 C     ASSUMES THAT MEAN PROFILE OF NITROGEN IS SAME AS THAT FOR
 C     TIME MEAN PROFILE OF RADIATION - THE ASSUMPTION MADE BY SINGLE
 C     BIG-LEAF MODELS
-      DATA   KN/0.50, 0.50, 0.00,
-     &          0.50, 0.50, 0.50,
-     &          0.40, 0.48, 0.00,
-     &          0.46, 0.44, 0.00/
+C      DATA   KN/0.50, 0.50, 0.00,
+C     &          0.50, 0.50, 0.50,
+C     &          0.40, 0.48, 0.00,
+C     &          0.46, 0.44, 0.00/
+      DATA KN/ 0.50, 0.50, 0.00, 0.00, 0.00, !YW April 13, 2015 add 2 colums for all val matrix  
+     &         0.50, 0.50, 0.50, 0.50, 0.50,    
+     &         0.40, 0.48, 0.00, 0.00, 0.00,
+     &         0.46, 0.44, 0.00, 0.00, 0.00/         
 C
 C     LOWER AND UPPER TEMPERATURE LIMITS FOR PHOTOSYNTHESIS, KELVIN
 C     LOWER LIMIT IN CELCIUS /-5, -5, --,
 C                              0,  0,  0,
 C                             -3,  5, --,
 C                             -1, 10, --/
-      DATA TLOW/268.1, 268.1, 0.000,
-     &          273.1, 273.1, 273.1,
-     &          270.1, 278.1, 0.000,
-     &          272.1, 283.1, 0.000/
+      DATA TLOW/268.1, 268.1, 0.000, 0.000, 0.000, 
+     &          273.1, 273.1, 273.1, 273.1, 273.1,     !(Tanja et al. 2003) 5 days average air T above 4.3   
+     &          270.1, 278.1, 0.000, 0.000, 0.000,     !as the threshold of spring PSN for boreal forests.
+     &          272.1, 283.1, 0.000, 0.000, 0.000/     !YW April 22, 2015  
 C
 C     UPPER LIMIT IN CELCIUS /34, 34, --,
 C                             45, 37, 37,
@@ -247,52 +254,52 @@ C                             42, 42, --,
 C                             40, 50, --/
 C    JM CHANGED PFT 3 TO 45 DEG FOLLOWING
 C    ITO AND OIKAWA 2000. 
-      DATA  TUP/307.1, 307.1, 0.000,
-     &          318.1, 310.1, 310.1,
-     &          315.1, 315.1, 0.000,
-     &          313.1, 323.1, 0.000/
+      DATA  TUP/307.1, 307.1, 0.000, 0.000, 0.000, 
+     &          318.1, 310.1, 310.1, 307.1, 307.1, 
+     &          315.1, 315.1, 0.000, 0.000, 0.000, 
+     &          313.1, 323.1, 0.000, 0.000, 0.000/
 C
 C     ARRAY TELLING WHICH VEGETATION TYPE IS C4
-      DATA  ISC4/0, 0, 0,
-     &           0, 0, 0,
-     &           0, 1, 0,
-     &           0, 1, 0/
+      DATA  ISC4/0, 0, 0, 0, 0,
+     &           0, 0, 0, 0, 0,
+     &           0, 1, 0, 0, 0, 
+     &           0, 1, 0, 0, 0/
 C
 C     QUANTUM EFFICIENCIES, VALUES OF 0.08 & 0.04 ARE USED FOR C3 AND
 C     C4 PLANTS, RESPECTIVELY
-      DATA  ALPHA/0.08, 0.08, 0.00,
-     &            0.08, 0.08, 0.08,
-     &            0.08, 0.04, 0.00,
-     &            0.08, 0.04, 0.00/
+      DATA  ALPHA/0.08, 0.08, 0.00, 0.00, 0.00, 
+     &            0.08, 0.08, 0.08, 0.08, 0.08, 
+     &            0.08, 0.04, 0.00, 0.00, 0.00, 
+     &            0.08, 0.04, 0.00, 0.00, 0.00/
 C
 C     LEAF SCATTERING COEFFICIENTS, VALUES OF 0.15 & 0.17 ARE USED
 C     FOR C3 AND C4 PLANTS, RESPECTIVELY
-      DATA  OMEGA/0.15, 0.15, 0.00,
-     &            0.15, 0.15, 0.15,
-     &            0.15, 0.17, 0.00,
-     &            0.15, 0.17, 0.00/
+      DATA  OMEGA/0.15, 0.15, 0.00, 0.00, 0.00, 
+     &            0.15, 0.15, 0.15, 0.15, 0.15, 
+     &            0.15, 0.17, 0.00, 0.00, 0.00, 
+     &            0.15, 0.17, 0.00, 0.00, 0.00/
 C
 C     PARAMETER M USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
 C     COUPLING. 
 C
-      DATA  MM/9.0, 9.0, 0.0,
-     &        12.0,12.0,12.0,
-     &        12.0, 6.0, 0.0,
-     &        12.0, 6.0, 0.0/
+      DATA  MM/9.0, 9.0, 0.0, 0.0, 0.0, 
+     &        12.0,12.0,12.0, 9.0, 9.0, 
+     &        12.0, 6.0, 0.0, 0.0, 0.0, 
+     &        12.0, 6.0, 0.0, 0.0, 0.0/
 C
 C     PARAMETER B USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
 C     COUPLING.
-      DATA  BB/0.01, 0.01, 0.00,
-     &         0.01, 0.01, 0.01,
-     &         0.01, 0.04, 0.00,
-     &         0.01, 0.04, 0.00/
+      DATA  BB/0.01, 0.01, 0.00, 0.00, 0.00, 
+     &         0.01, 0.01, 0.01, 0.01, 0.01, 
+     &         0.01, 0.04, 0.00, 0.00, 0.00, 
+     &         0.01, 0.04, 0.00, 0.00, 0.00/
 C
 C     PARAMETER VPD0 USED IN LEUNING TYPE PHOTOSYNTHESIS - STOMATAL
 C     CONDUCTANCE COUPLING, IN PASCALS
-      DATA VPD0/2000., 2000., 0.000,
-     &          2000., 2000., 2000.,
-     &          1500., 1500., 0.000,
-     &          1500., 1500., 0.000/
+      DATA VPD0/2000., 2000., 0.000,  0.000, 0.000, 
+     &          2000., 2000., 2000.,  2000., 2000.,
+     &          1500., 1500., 0.000,  0.000, 0.000, 
+     &          1500., 1500., 0.000,  0.000, 0.000/
 C
 C     EXPONENT FOR SOIL MOISTURE STRESS. FOR SN EQUAL TO 1, PHOTOSYNTHESIS
 C     DECREASES LINEARLY WITH SOIL MOISTURE, AND OF COURSE NON-LINEARLY
@@ -302,10 +309,10 @@ C     WILTING POINT AND FIELD CAPACITY.
 C
 
 c    new values in 2.0.5
-      DATA SN/2, 2, 0,
-     &        4, 2, 2,
-     &        2, 2, 0,
-     &        2, 2, 0/
+      DATA SN/2, 2, 0, 0, 0, 
+     &        4, 2, 2, 2, 2, 
+     &        2, 2, 0, 0, 0, 
+     &        2, 2, 0, 0, 0/
 
 c    ---in 1.6 PEATLAND version less moisture limit ,in original ctem 1.6
 c    version sn = 20.0 for all pfts 
@@ -319,19 +326,18 @@ C
 C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.
 C     THIS CAN BE USED TO SIMULATE THE EFFECT OF IRRIGATION FOR CROPS.
 C
-      DATA SMSCALE/0.0, 0.0, 0.0,
-     &             0.0, 0.0, 0.0,
-     &             0.1, 0.1, 0.0,
-     &             0.0, 0.0, 0.0/
+      DATA SMSCALE/0.0, 0.0, 0.0, 0.0, 0.0, 
+     &             0.0, 0.0, 0.0, 0.0, 0.0, 
+     &             0.1, 0.1, 0.0, 0.0, 0.0, 
+     &             0.0, 0.0, 0.0, 0.0, 0.0/
 C
 C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 C     VALUES ARE MAINLY DERIVED FROM KATTGE ET AL. 2009 WHICH 
 C     DOESN'T INCLUDE C4
-      DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, 
-C     &          35.0E-06, 57.0E-06, 40.0E-06, !FLAG test Fri Feb27th JM, was 48 for PFT3
-     &          48.0E-06, 57.0E-06, 40.0E-06, !March 30, 2015 YW test with 2.0 values worked for PEAT6
-     &          55.0E-06, 40.0E-06, 0.00E-06,
-     &          75.0E-06, 15.0E-06, 0.00E-06/
+      DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
+     &          35.0E-06, 57.0E-06, 40.0E-06, 60.0E-06, 50.0E-06,     !YW April 17, 2015 
+     &          55.0E-06, 40.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
+     &          75.0E-06, 15.0E-06, 0.00E-06, 0.00E-06, 0.00E-06/     
 
 C     NEEDLE LEAF |  EVG       DCD       ---
 C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
@@ -350,16 +356,16 @@ C     PHOTOSYNTHESIS COUPLING OR CURVATURE COEFFICIENTS
       DATA BETA2/0.990/
 C
 C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
-      DATA  INICO2I/0.65, 0.65, 0.00,
-     &              0.65, 0.65, 0.65,
-     &              0.65, 0.37, 0.00,
-     &              0.65, 0.37, 0.00/
+      DATA  INICO2I/0.65, 0.65, 0.00, 0.00, 0.00, 
+     &              0.65, 0.65, 0.65, 0.65, 0.65, 
+     &              0.65, 0.37, 0.00, 0.00, 0.00, 
+     &              0.65, 0.37, 0.00, 0.00, 0.00/
 C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS  
-      DATA  RMLCOEFF/0.015, 0.021, 0.000, 
-     &               0.025, 0.015, 0.015,   
-     &               0.015, 0.025, 0.000,
-     &               0.013, 0.025, 0.000/
+      DATA  RMLCOEFF/0.015, 0.021, 0.000, 0.000, 0.000, 
+     &               0.025, 0.015, 0.015, 0.015, 0.021,   
+     &               0.015, 0.025, 0.000, 0.000, 0.000, 
+     &               0.013, 0.025, 0.000, 0.000, 0.000/
      
 c    In 1.6 version use the following -------------------------------\
 c	data rmlcoeff	 /0.020, 	0.020,	0.000,
@@ -379,10 +385,10 @@ C     ZERO
 C
 C     ADDITIONAL PARAMETERS FOR TWO-LEAF MODEL
 C     LEAF ANGLE DISTRIBUTION
-      DATA  CHI/0.01,  0.01, 0.00,
-     &          0.17,  0.17, 0.17,
-     &         -0.30, -0.30, 0.00,
-     &         -0.30, -0.30, 0.00/
+      DATA  CHI/0.01,  0.01, 0.00, 0.00, 0.00, 
+     &          0.17,  0.17, 0.17, 0.01, 0.01, 
+     &         -0.30, -0.30, 0.00, 0.00, 0.00, 
+     &         -0.30, -0.30, 0.00, 0.00, 0.00/
 C
 C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
@@ -526,6 +532,7 @@ C
             RC_VEG(I,J)=5000.0
             USESLAI(I,J)=0
             USEAILCG(I,J)=0.0
+            rmatsum(i,j) = 0.0          !YW April 16, 2015 
 201       CONTINUE
 200     CONTINUE
 C
@@ -907,6 +914,7 @@ C
        DO 525 M = K1, K2
         DO 530 I = IL1, IL2
 C
+        if (ig==3)  then        !add calculations for flexible layers YW  
          SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**SN(SORT(M)) )
          SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**SN(SORT(M)) )
          SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**SN(SORT(M)) )
@@ -940,14 +948,32 @@ C
            AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)
          ENDIF
 C
-c    disable this check for peatland because layers are set to 0.1m --\
-c    and some roots are below the 3 layer 
-c         IF( (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3)).LT.0.9) THEN
-c           WRITE(6,*)'PFT = ',M,' I =',I
-c           WRITE(6,*)'RMAT ADD =',(RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
-c           CALL XIT('PHTSYN', -99)
-c         ENDIF
-c    YW March 30, 2015 -----------------------------------------------/
+         IF( (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3)).LT.0.9) THEN
+           WRITE(6,*)'PFT = ',M,' I =',I
+           WRITE(6,*)'RMAT ADD =',(RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
+           CALL XIT('PHTSYN', -99)
+         ENDIF
+
+c       --------------for multiple layer soil structure----------------\
+
+        else        !when  ig ! = 3 , loop through ig
+          do 535 l = 1, ig
+               if (isand(i,ig) .ne. -3)  then !this replaces the check of bedrocks afterwards
+           sm_func2(i,l) = (1.0-(1.0-sm_func(i,l))**sn(sort(m)) )
+           sm_func2(i,l) = sm_func2(i,l)+(1.0-sm_func2(i,l))
+     1                   *smscale(sort(m))
+          ave_sm_func(i,m)=ave_sm_func(i,m)+sm_func2(i,l)*rmat(i,m,l)
+          rmatsum(i,m) = rmatsum(i,m) + rmat(i,m,l)     !accumulate root proportion 
+               endif     !layer is bedrock
+535       continue
+
+          if(rmatsum(i,m) < 0.9)   then
+           write(6,*)'PFT = ',m,' I =',i
+           write(6,*)'rmat add =',rmatsum(i,m)
+           call XIT('PHTSYN', -99)
+          endif 
+       endif   !if ig 
+c    ----------April 16, 2015 ---------------------------------------/
 C
 530     CONTINUE
 525    CONTINUE
@@ -1265,8 +1291,8 @@ C
 C
 c    ---------------testing--------------------------------------------\
 
-C      if  (iyear == 2004 .and. ihour == 12 .and. imin == 1200) then
-C        write(90,6991)        iyear, iday, ihour, imin, 
+c      if  (iyear == 2004 .and. ihour == 12 .and. imin == 1200) then
+c        write(90,6991)        iyear, iday, ihour, imin,    
 c     1    COSZS(1), FCANC(1,3), JE(1,3), JC(1,3), JS(1,3), 
 c     1    A_VEG(1,3),FCANC(1,4), JE(1,4), JC(1,4), JS(1,4), A_VEG(1,4) 
 C     1    VMUNS(1,3), AVE_SM_FUNC(1,3), vmaxc(1,3), fpar(1,3),
@@ -1275,7 +1301,7 @@ C     1    SM_FUNC2(I,1),SM_FUNC2(I,2),SM_FUNC2(1,3),
 C     2    RMAT(1,3,1),RMAT(1,3,2),RMAT(1,3,3),
 C     3    RMAT(1,4,1),RMAT(1,4,2),RMAT(1,3,3),
 C     4    RMAT(1,8,1),RMAT(1,8,2),RMAT(1,8,3)
-C6991   format(4i5, 20E10.2)
+6991   format(4i5, 20f8.2)
 C      endif
 c    ---------------testing--------------------------------------------/
 

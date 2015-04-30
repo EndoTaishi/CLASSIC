@@ -81,7 +81,8 @@ c
      2    ,anmosgat,rmlmosgat,gppmosgat,armosgat,nppmosgat
 	3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
 	4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
-     5    ,thlqaccrow_m, thlqaccgat_m,ipeatland)
+     5    ,thlqaccrow_m, thlqaccgat_m,thicaccrow_m,thicaccgat_m
+     6    ,ipeatland)
 c    ----gathering of peatland variables YW March 19, 2015 ------------/
 
 c
@@ -308,7 +309,8 @@ c	--peatland variables YW March 19, 2015 ---------------------------
 	6		litrmassmsrow(nlat,nmos),litrmassmsgat(ilg),
 	7		Cmossmasrow(nlat,nmos),	Cmossmasgat(ilg),
 	8         dmossrow(nlat,nmos),dmossgat(ilg),  
-     9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd)
+     9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
+     1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd)
 	 integer	ipeatland(ilg) 
 
 
@@ -486,6 +488,7 @@ c
           orgmgat(k,l) = orgmrow(ilmos(k),jlmos(k),l)
           tbaraccgat_m(k,l) = tbaraccrow_m(ilmos(k),jlmos(k),l)
           thlqaccgat_m(k,l) = thlqaccrow_m(ilmos(k),jlmos(k),l)  !YW
+          thicaccgat_m(k,l) = thicaccrow_m(ilmos(k),jlmos(k),l)  !YW
 250   continue
 c
       do 280 l=1,icc

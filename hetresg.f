@@ -1,7 +1,7 @@
       subroutine hetresg (litrmass, soilcmas,         
      1                         il1,      il2,     tbar,    
      2                       thliq,     sand,      clay,   zbotw,   
-     3                        frac,    isnow,      isand,   ipeatland, !YW
+     3                        frac,    isnow,      isand,   
 c    -------------- inputs above this line, outputs below -------------
      4                      litres,   socres)  
 c
@@ -58,7 +58,7 @@ c
 c     isnow is changed to isnow(ilg) in classt of class version higher 
 c     than 3.4 for coupling with ctem
 c
-      integer il1,il2,i,j,k,isnow,isand(ilg,ignd),ipeatland(ilg)
+      integer il1,il2,i,j,k,isnow,isand(ilg,ignd)
 
       real                  litrmass(ilg,icc+1),  soilcmas(ilg,icc+1), 
      1           tbar(ilg,ignd),    thliq(ilg,ignd),    sand(ilg,ignd), 
@@ -242,10 +242,7 @@ c     as a surrogate for litter moisture content. so we use only
 c     psi(i,1) calculated in loops 260 and 270 above.
 c
       do 300 i = il1, il2
-c     peatland branch where litter respiration can be limtied by water\
-
-        if (ipeatland(i) == 0)        then           
-          if(psi(i,1).gt.10000.0) then
+          if(psi(i,1) .gt. 10000.0) then
             ltrmoscl(i)=0.2
           else if( psi(i,1).le.10000.0 .and.  psi(i,1).gt.6.0 ) then
             ltrmoscl(i)=1.0 - 0.8*
@@ -253,30 +250,13 @@ c     peatland branch where litter respiration can be limtied by water\
           else if( psi(i,1).le.6.0 ) then
             ltrmoscl(i)=1.0 
           endif
-          ltrmoscl(i)=max(0.2,min(ltrmoscl(i),1.0))
-        else                       !is peatland
-          if (psi(i,1).ge. 10000.0) then
-	    		ltrmoscl(i) = 0.2
-        	elseif (psi(i,1).le.10000.0 .and.psi(i,1).gt.6.0) then
-	          ltrmoscl(i)=1.0 - 0.8*((log10(psi(i,1))-log10(6.0))
-	1				/(log10(10000.0)-log10(6.0)) )
-         	elseif (psi(i,1).le.6.0 .and. psi(i,1) .ge. 4.0) then
-              	ltrmoscl(i)=1.0
-        	elseif (psi(i,1).lt.4.0 .and. psi(i,1).gt.psisat(i,1))  then 
-              	ltrmoscl(i)=1.0-0.2*((log10(4.0)-log10(psi(i,1)))/   
-     1         		(log10(4.0)-log10(psisat(i,1))))
-         	elseif (psi(i,1) .le. psisat(i,1)) 				then
-             	ltrmoscl(i)=0.2		
-        	endif
-         	ltrmoscl(i)=max(0.0,min(ltrmoscl(i),1.0))
-        endif  !peatland  
-c    -------------------YW March 30, 2015 -----------------------------/
-          
+          ltrmoscl(i)=max(0.2,min(ltrmoscl(i),1.0))          
 300   continue
 c
 c     use temperature of the litter and soil c pools, and their soil
 c     moisture scalars to find respiration rates from these pools
 c
+
       do 330 i = il1, il2
       if(frac(i).gt.zero)then
 c

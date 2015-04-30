@@ -131,6 +131,7 @@ c     in each grid cell is given by rmatctem (grid cell, veg type, soil layer)
 c     which bio2str subroutine calculates. rmatctem can thus be used 
 c     to find average root temperature for each plant functional type 
 c
+      if (ignd .eq. 3 .)                  then       !YW April 14, 2015 
       do 180 j = 1, icc
         do 190 i = il1, il2
          if (fcan(i,j) .gt. 0.) then
@@ -139,7 +140,6 @@ c
      &       tbar(i,3)*rmatctem(i,j,3)
           roottemp(i,j)=roottemp(i,j) /
      &       (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
-
 c
 c        make sure that i do not use temperatures from 2nd and 3rd layers
 c        if they are bed rock
@@ -156,7 +156,25 @@ c
          endif !fcan check.     
 190     continue 
 180   continue 
+
 c
+c     for ignd != 3 ---------------------------------------------------\      
+      else               !ignd!=3    
+        do j = 1, icc
+          do  i = il1, il2
+            if (fcan(i,j) .gt. 0.) then
+              do  k= 1, ignd
+                if (isand(i,k) .ge. -2)           then 
+                roottemp(i,j)=roottemp(i,j)+tbar(i,k)*rmatctem(i,j,k)
+                endif
+              enddo
+            endif
+          enddo
+        enddo
+      endif 
+c    ---------YW April 14, 2015 ---------------------------------------/
+
+
 c     we assume that stem temperature is same as canopy temperature tcan.
 c     using stem and root temperatures we can find their maintenance 
 c     respirations rates

@@ -82,7 +82,7 @@ c
 	2	,anmosgat, rmlmosgat, gppmosgat,armosgat,nppmosgat
 	3	,hpdrow,	hpdgat,	litrmassmsrow,	litrmassmsgat
 	4	,Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat
-	5	,thlqaccrow_m , thlqaccgat_m  
+	5	,thlqaccrow_m , thlqaccgat_m ,thicaccrow_m,thicaccgat_m 
 	6    ,ipeatlandrow, 	ipeatlandgat)
 c    ---------------YW March 23, 2015 ---------------------------------/
 
@@ -310,7 +310,8 @@ c   Peatland variables   YW March 27, 2015
 	6		litrmassmsrow(nlat,nmos),litrmassmsgat(ilg),
 	7		Cmossmasrow(nlat,nmos),	Cmossmasgat(ilg),
 	8         dmossrow(nlat,nmos) ,dmossgat(ilg),
-	9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd)
+	9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
+	1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd)
 	
 	 integer	ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
 
@@ -483,6 +484,7 @@ c
           orgmrow(ilmos(k),jlmos(k),l)     = orgmgat(k,l)
           tbaraccrow_m(ilmos(k),jlmos(k),l)= tbaraccgat_m(k,l)
           thlqaccrow_m(ilmos(k),jlmos(k),l)= thlqaccgat_m(k,l)   !YW
+          thicaccrow_m(ilmos(k),jlmos(k),l)= thicaccgat_m(k,l)   !YW
 250   continue
 c
       do 280 l=1,icc
@@ -520,6 +522,5 @@ c    scatter peatland variables----------------------------------------\
 		ipeatlandrow(ilmos(k),jlmos(k)) = ipeatlandgat(k)
 400	 continue
 c    -----------YW March 23, 2015 -------------------------------------/
-
       return
       end

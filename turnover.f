@@ -106,6 +106,7 @@ c
        endif
 210    continue
 200   continue
+
 c
 c     if crops are in harvest mode then we start harvesting stem as well.
 c     if stem has already been harvested then we set the stem harvest
