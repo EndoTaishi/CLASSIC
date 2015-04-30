@@ -193,6 +193,7 @@ C     * BAND-DEPENDANT ARRAYS.
 C                                                                       
       REAL TRSNOWG(ILG,NBS), ALSNO(ILG,NBS), FSSB(ILG,NBS),             
      1     TRTOP  (ILG,NBS)    
+C                                                                       
 C     * INTERNAL WORK ARRAYS.
 C
       REAL TSTEP (ILG),    TVIRTS(ILG),    EVBETA(ILG),    Q0SAT (ILG),

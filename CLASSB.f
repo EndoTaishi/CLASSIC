@@ -3,7 +3,7 @@
      2                  DELZW,ZBOTW,ALGWET,ALGDRY,
      +                  ALGWV,ALGWN,ALGDV,ALGDN,            
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,           
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ICTEMMOD) 
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG)                 
 C
 C     * JAN 15/15 - D.VERSEGHY. CHANGE PSIWLT FOR MINERAL SOILS
 C     *                         TO A CONSTANT VALUE OF 150 M.
@@ -57,7 +57,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER NL,NM,IL1,IL2,IM,IG,ICTEMMOD,I,J,M
+      INTEGER NL,NM,IL1,IL2,IM,IG,I,J,M                                 
 C
 C     * OUTPUT ARRAYS.
 C
@@ -143,11 +143,7 @@ C
 150       CONTINUE
           IF(SAND(I,M,1).GE.0.0) THEN
               ALGWET(I,M)=0.08+0.0022*SAND(I,M,1)
-!              IF(ICTEMMOD.EQ.0) THEN ! not needed anymore, both use CLASS value below. JM Mar 24 2015.
-                  ALGDRY(I,M)=MIN(0.14+0.0046*SAND(I,M,1), 0.45) ! FOR GLC2000!
-!              ELSE
-!                  ALGDRY(I,M)=MIN(0.14+0.0027*SAND(I,M,1), 0.41) ! FOR CTEM   
-!              ENDIF
+              ALGDRY(I,M)=MIN(0.14+0.0046*SAND(I,M,1),0.45)
               ALGWV(I,M)=ALWV(NINT(SOCI(I,M)))                          
               ALGWN(I,M)=ALWN(NINT(SOCI(I,M)))                          
               ALGDV(I,M)=ALDV(NINT(SOCI(I,M)))                          

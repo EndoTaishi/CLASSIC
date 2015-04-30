@@ -12,15 +12,14 @@
      B            TA,RHOAIR,RADJ,DLON,RHOSNI,DELZ,DELZW,ZBOTW,
      C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,
      D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
-     E            IPAI,IHGT,RMAT,H,HS,GROWA,GROWN,GROWB,
+     E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,
      F            RRESID,SRESID,FRTOT,
      G            FCANCMX,ICTEM,ICTEMMOD,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC )
 
-C     * SEP 05/12 - J.MELTON.   REMOVED UNUSED VAR, CWCPAV, CHANGED IDAY
-C                               CONVERSION FROM FLOAT TO REAL, REINTEGRATED
-C                               CTEM 
+C     * SEP 05/12 - J.MELTON.   CHANGED IDAY CONVERSION FROM FLOAT TO REAL, 
+C                               REINTEGRATED CTEM 
 C     * NOV 15/11 - M.LAZARE.   CTEM ADDED. CALCULATIONS ARE DIFFERENT
 C     *                         IN SEVERAL AREAS, UNDER CONTROL OF
 C     *                         "ICTEMMOD" SWITCH (ICTEMMOD=0 REVERTS
@@ -184,7 +183,7 @@ C
 C     * WORK ARRAYS NOT USED ELSEWHERE IN CLASSA.                          
 C                                                                                 
       REAL RMAT (ILG,IC,IG),H     (ILG,IC),  HS    (ILG,IC),                      
-     1     GROWA (ILG),     GROWN (ILG),     
+     1     CWCPAV(ILG),     GROWA (ILG),     GROWN (ILG),     
      2     GROWB (ILG),     RRESID(ILG),     SRESID(ILG),
      3     FRTOT (ILG) 
 C
@@ -202,7 +201,6 @@ C
      4      ZOLNC(ILG,IC),       CMASVEGC(ILG,IC),
      5      SLAIC(ILG,IC)
 C
-C     * CTEM2  - LOGICAL BOOLEAN FOR SWITCHING CTEM ON/OFF
 C     * AILCG  - GREEN LAI FOR USE WITH PHTSYN SUBROUTINE
 C     * AILCGS - GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
 C     * NOL2PFTS - NUMBER OF LEVEL 2 CTEM PFTs
@@ -361,7 +359,7 @@ C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
                 PAI(I,1)=PAIMIN(I,1)+GROWN(I)*(PAIMAX(I,1)-PAIMIN(I,1))                 
                 PAI(I,2)=PAIMIN(I,2)+GROWB(I)*(PAIMAX(I,2)-PAIMIN(I,2))                 
                 PAI(I,3)=PAIMIN(I,3)+GROWA(I)*(PAIMAX(I,3)-PAIMIN(I,3))                 
-                PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4))   
+                PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4))                 
               ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
@@ -371,7 +369,6 @@ C
               PAI(I,3)=PAIDAT(I,3)
               PAI(I,4)=PAIDAT(I,4)
           ENDIF
-
           PAIS(I,1)=PAI(I,1)                                                      
           PAIS(I,2)=PAI(I,2)                                                      
           IF(H(I,3).GT.0.0) THEN                                                  
@@ -444,12 +441,10 @@ C     *        IMPERMEABLE SURFACES: 0.001 M.
 C     *        BARE SOIL:            0.002 M.
 C     *        LOW VEGETATION:       0.003 M.
 C     *        FOREST:               0.01  M.
-C   
-C     * FOR NOW, ASSIGN WETLANDS A VALUE OF 0.10 M.
-
-         THR_LAI=1.0
+C                                                                                 
+      THR_LAI=1.0
 C
-      DO 175 I=IL1,IL2 
+      DO 175 I=IL1,IL2                                                            
           FCAN(I,1)=FCANMX(I,1)*(1.0-FSNOW(I))                                    
           FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))                                    
           IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
@@ -742,14 +737,14 @@ C
   190     CONTINUE
 C
   200 CONTINUE                                                                    
-C                 
+C                                                                                 
 C     * CALCULATION OF ROUGHNESS LENGTHS FOR HEAT AND MOMENTUM AND
 C     * ZERO-PLANE DISPLACEMENT FOR CANOPY OVERLYING BARE SOIL AND
 C     * CANOPY OVERLYING SNOW.
 C                                                                                 
       DO 250 J=1,IC                                                               
-      DO 250 I=IL1,IL2                                                                   
-          IF(FC(I).GT.0. .AND. H(I,J).GT.0.)                     THEN 
+      DO 250 I=IL1,IL2                                                            
+          IF(FC(I).GT.0. .AND. H(I,J).GT.0.)                     THEN             
               IF(IDISP.EQ.1)   DISP(I)=DISP(I)+FCAN (I,J)*
      1                                 LOG(0.7*H(I,J))                     
               ZOMLNC(I)=ZOMLNC(I)+FCAN (I,J)/
@@ -757,7 +752,7 @@ C
               ZOELNC(I)=ZOELNC(I)*
      1                  (0.01*H(I,J)*H(I,J)/ZORAT(IC))**FCAN(I,J)
           ENDIF                                                                   
-          IF(FCS(I).GT.0. .AND. HS(I,J).GT.0.)                   THEN
+          IF(FCS(I).GT.0. .AND. HS(I,J).GT.0.)                   THEN             
               IF(IDISP.EQ.1)   DISPS(I)=DISPS (I)+FCANS(I,J)*
      1                         LOG(0.7*HS(I,J))                    
               ZOMLCS(I)=ZOMLCS(I)+FCANS(I,J)/
@@ -766,7 +761,7 @@ C
      1                  (0.01*HS(I,J)*HS(I,J)/ZORAT(IC))**FCANS(I,J)
           ENDIF                                                                   
   250 CONTINUE                                                                    
-C                  
+C                                                                                 
       DO 275 I=IL1,IL2                                                            
           IF(FC(I).GT.0.)                                        THEN             
               IF(IDISP.EQ.1)   DISP(I)=EXP(DISP(I)/FC(I))                                        
@@ -781,7 +776,7 @@ C
               ZOMLCS(I)=LOG(ZOMLCS(I))
           ENDIF                                                                   
   275 CONTINUE                                                                    
-C                    
+C                                                                                 
 C     * ADJUST ROUGHNESS LENGTHS OF BARE SOIL AND SNOW-COVERED BARE
 C     * SOIL FOR URBAN ROUGHNESS IF PRESENT.
 C                                                                                 
@@ -801,7 +796,7 @@ C
               ZOELNS(I)=ZOMLNS(I)-LOG(ZORATG)                                    
           ENDIF                                                                   
   300 CONTINUE                                                                    
-C                
+C                                                                                 
 C     * ADD CONTRIBUTION OF OROGRAPHY TO MOMENTUM ROUGHNESS LENGTH
 C
       DO 325 I=IL1,IL2
@@ -825,6 +820,7 @@ C
 C     ---------------- CTEM MODIFICATIONS -----------------------------\
 
               IF (ICTEMMOD.EQ.1) THEN
+
                 CMASSC(I)=(FCAN(I,1)*CMASVEGC(I,1)+
      1                     FCAN(I,2)*CMASVEGC(I,2)+
      2                     FCAN(I,3)*CMASVEGC(I,3)+
@@ -880,10 +876,8 @@ C
           ENDIF             
                                                       
           CHCAP (I)=SPHVEG*CMASSC(I)+SPHW*RAICAN(I)+SPHICE*SNOCAN(I)              
-          CHCAPS(I)=SPHVEG*CMASCS(I)+SPHW*RAICNS(I)+SPHICE*SNOCNS(I) 
-
+          CHCAPS(I)=SPHVEG*CMASCS(I)+SPHW*RAICNS(I)+SPHICE*SNOCNS(I)              
           HTCC  (I)=HTCC(I)-SPHVEG*CMAI(I)*TCAN(I)/DELT
-
 C     ---------------- CTEM MODIFICATIONS -----------------------------\
 
 C         THIS, BELOW, WAS MAKING IT SO THAT OUR READ-IN TCAN WAS BEING
@@ -894,18 +888,15 @@ C         OVERWRITTEN BY TA FOR THE FIRST TIME STEP. JM JAN 2013
             IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
      1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
           ELSE
-
-            IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
+          IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
      1              CMASCS(I).GT.0.0)) TCAN(I)=TA(I)
-            CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
-
+          CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
           ENDIF 
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
-
           HTCC  (I)=HTCC(I)+SPHVEG*CMAI(I)*TCAN(I)/DELT
           RBCOEF(I)=0.0
-  350 CONTINUE                                                                   
-C             
+  350 CONTINUE                                                                    
+C                                                                                 
 C     * CALCULATE VEGETATION ROOTING DEPTH AND FRACTION OF ROOTS 
 C     * IN EACH SOIL LAYER (SAME FOR SNOW/BARE SOIL CASES).
 C     * ALSO CALCULATE LEAF BOUNDARY RESISTANCE PARAMETER RBCOEF.
@@ -943,8 +934,8 @@ C
      2                (1.0-EXP(-0.75*SQRT(PAI(I,J))))+
      3                FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
-     5                (FC(I)+FCS(I)) 
-        ENDIF                                                                   
+     5                (FC(I)+FCS(I))                                          
+        ENDIF               
   450 CONTINUE                                                                    
 C                                                                                 
       DO 500 J=1,IG                                                               
@@ -959,12 +950,12 @@ C
               FROOT(I,J)=0.0                                                      
           ENDIF                                                                   
   500 CONTINUE                                                                    
-C                   
+C                                                                                 
 C     * CALCULATE SKY-VIEW FACTORS FOR BARE GROUND AND SNOW 
 C     * UNDERLYING CANOPY.                                                         
 C                                                                                 
       DO 600 I=IL1,IL2                                                            
-          IF(FC(I).GT.0.)                                        THEN   
+          IF(FC(I).GT.0.)                                        THEN             
               FSVF (I)=(FCAN (I,1)*EXP(CANEXT(1)*PAI (I,1)) +                          
      1                  FCAN (I,2)*EXP(CANEXT(2)*PAI (I,2)) +                          
      2                  FCAN (I,3)*EXP(CANEXT(3)*PAI (I,3)) +                          
@@ -980,8 +971,8 @@ C
           ELSE                                                                    
               FSVFS(I)=0.                                                         
           ENDIF                                                                   
-  600 CONTINUE                                         
-C                
+  600 CONTINUE                                       
+C                                                                                  
 C     * CALCULATE BULK SOIL MOISTURE SUCTION FOR STOMATAL RESISTANCE.
 C     * CALCULATE FRACTIONAL TRANSPIRATION EXTRACTED FROM SOIL LAYERS.
 C
@@ -989,8 +980,7 @@ C
       DO 650 I=IL1,IL2                                                            
           IF(FCS(I).GT.0.0 .OR. FC(I).GT.0.0)                      THEN          
               IF(THLIQ(I,J).GT.(THLMIN(I,J)+0.01) .AND. 
-     1                           FROOT(I,J).GT.0.)             THEN  
-              
+     1                           FROOT(I,J).GT.0.)             THEN               
                   PSII=PSISAT(I,J)*(THLIQ(I,J)/THPOR(I,J))**(-BI(I,J))
                   PSII=MIN(PSII,PSIWLT(I,J))
                   PSIGND(I)=MIN(PSIGND(I),PSII)                                 
@@ -1001,8 +991,8 @@ C
                   FROOT(I,J)=0.0
               ENDIF                                                               
           ENDIF                                                                   
-  650 CONTINUE                                                               
-C                      
+  650 CONTINUE                                                                    
+C                                                                                 
       DO 700 J=1,IG                                                               
       DO 700 I=IL1,IL2                                                            
           IF(FRTOT(I).GT.0.)                                       THEN           

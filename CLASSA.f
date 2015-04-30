@@ -45,7 +45,6 @@ C     *                           CALCULATE THE PROPER BC MIXING RATIO
 C     *                           IN SNOW.                              
 C     *                         - NEW "ISNOALBA" OPTION, BASED ON 
 C     *                           4-BAND SOLAR.
-C     * SEP 05/12 - J.MELTON.   REMOVED UNUSED VAR, CWCPAV
 C     * NOV 14/11 - M.LAZARE.   IMPLEMENT CTEM SUPPORT, PRIMARILY
 C     *                         INVOLVING ADDITIONAL FIELDS TO PASS
 C     *                         IN/OUT OF NEW APREP ROUTINE. THIS 
@@ -412,7 +411,7 @@ C
      2     FCANS (ILG,IC),  CXTEFF(ILG,IC),  AIL   (ILG,IC),
      3     RCACC (ILG,IC),  RCG   (ILG,IC),  RCV   (ILG,IC)
 C
-      REAL PSIGND(ILG),     
+      REAL PSIGND(ILG),     CWCPAV(ILG),                                
      1     GROWA (ILG),     GROWN (ILG),     GROWB (ILG),     
      2     RRESID(ILG),     SRESID(ILG),     FRTOT (ILG),
      3     TRVS  (ILG),     TRIR  (ILG),     RCT   (ILG),     
@@ -589,18 +588,11 @@ C
      B            TA,RHOAIR,RADJ,DLON,RHOSNI,DELZ,DELZW,ZBOTW,
      C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,
      D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
-     E            IPAI,IHGT,RMAT,H,HS,GROWA,GROWN,GROWB,
+     E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,         
      F            RRESID,SRESID,FRTOT,
      G            FCANCMX,ICTEM,ICTEMMOD,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC)
-
-!       CLASS 3.6.1. call this after, not before, GRALB.
-!C     * SNOW ALBEDOS AND TRANSMISSIVITY.
-!C 
-!      CALL SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,TRSNOW,
-!     1             ZSNOW,FSNOW,ASVDAT,ASIDAT,
-!     2             ILG,IG,IL1,IL2,JL,IALS)
 C
 C     * BARE SOIL ALBEDOS.
 C
