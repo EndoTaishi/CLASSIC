@@ -17,7 +17,7 @@ contains
 subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
                             thliq,   wiltsm,  fieldsm,    uwind, &
                             vwind,  lightng,  fcancmx, litrmass, &    
-                         prbfrhuc, rmatctem, extnprob, &
+                         prbfrhuc, rmatctem, extnprob, popdon,   &
                               il1,      il2,     sort, nol2pfts, &
                          grclarea,    thice,   popdin, lucemcom, &
                            dofire,   currlat,   iday,  fsnow,    &
@@ -164,6 +164,10 @@ implicit none
 
 real, dimension(ilg,icc), intent(out) :: pstemmass 
 real, dimension(ilg,icc), intent(out) :: pgleafmass
+
+logical, intent(in) :: popdon   ! if set true use population density data to calculate fire extinguishing 
+                                            ! probability and probability of fire due to human causes, 
+                                            ! or if false, read directly from .ctm file
 
 integer :: il1,il2,i,j,k,m,k1,k2,n
 
@@ -471,14 +475,16 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
       do 381 j = 1, icc
         do 382 i = il1, il2
            ! duff fraction for each PFT, Vivek
-            duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j))/biomass(i,j)
+            if (biomass(i,j) .gt. 0.) then
+               duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j)) / biomass(i,j)
+            end if
 
            ! drgtstrs(i,j) is phi_root in Melton and Arora GMDD (2015) paper
            soilterm_veg = 1.0-tanh((1.75*drgtstrs(i,j)/extnmois_veg)**2) 
            duffterm_veg = 1.0-tanh((1.75*betadrgt(i,1)/extnmois_duff)**2)
 
            if(fcancmx(i,j) .gt. zero)then
-             mterm_veg(i,j)=soilterm_veg*(1-duff_frac_veg(i,j)) + duffterm_veg*duff_frac_veg(i,j)
+             mterm_veg(i,j)=soilterm_veg*(1.-duff_frac_veg(i,j)) + duffterm_veg*duff_frac_veg(i,j)
            else
              mterm_veg(i,j)=0.0   !no fire likelihood due to moisture if no vegetation
            endif
@@ -520,8 +526,9 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !       Determine the probability of fire due to human causes
 !       this is based upon the population density from the .popd
 !       read-in file
-
-        prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !From Kloster et al. (2010)
+        if (.not. popdon) then
+            prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !From Kloster et al. (2010)
+        end if
 
         lterm(i)=max(0.0, min(1.0, temp+(1.0-temp)*prbfrhuc(i) ))
 
@@ -615,8 +622,10 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !         Original way from Arora & Boer 2005
 !          extnprob(i)=0.5 !ORIG
 !         Kloster et al. 2010 way:
-          extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
-          extnprob(i)=0.5+extnprob(i)/2.0
+          if (.not. popdon) then
+            extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
+            extnprob(i)=0.5+extnprob(i)/2.0
+          end if
 
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
 
@@ -677,7 +686,6 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 490   continue
 
-
 !     calculate area burned for each PFT, make sure it's not greater than the
 !     area available, then find area and fraction burned for the whole gridcell
 !     Vivek, loops 500 and 501
@@ -688,8 +696,8 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
           if (fire_veg(i,j) ) then
 
 !         soil moisture dependence on fire spread rate
-          betmsprd_veg = (1 - min(1, (drgtstrs(i,j)/extnmois_veg) ))**2
-          betmsprd_duff = (1 - min(1, (betadrgt(i,1)/extnmois_duff) ))**2
+          betmsprd_veg = (1. - min(1., (drgtstrs(i,j)/extnmois_veg) ))**2
+          betmsprd_duff = (1. - min(1., (betadrgt(i,1)/extnmois_duff) ))**2
           smfunc_veg(i,j)= betmsprd_veg*(1-duff_frac_veg(i,j)) + betmsprd_duff*duff_frac_veg(i,j)
 
 !         wind speed, which is gridcell specific
@@ -708,10 +716,10 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !         fire spread rate per PFT
           n = sort(j)  
-          sprdrate_veg(i)= maxsprd(n) * smfunc_veg(i,j) * wndfunc(i) 
+          sprdrate_veg(i,j)= maxsprd(n) * smfunc_veg(i,j) * wndfunc(i) 
 
 !         area burned in 1 day for that PFT
-          arbn1day_veg(i)=(pi*24.0*24.0*sprdrate_veg(i,j)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
+          arbn1day_veg(i,j)=(pi*24.0*24.0*sprdrate_veg(i,j)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
 
 !         fire extinguishing probability as a function of grid-cell averaged population density
           extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   
