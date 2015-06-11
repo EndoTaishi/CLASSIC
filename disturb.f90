@@ -17,7 +17,7 @@ contains
 subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
                             thliq,   wiltsm,  fieldsm,    uwind, &
                             vwind,  lightng,  fcancmx, litrmass, &    
-                         prbfrhuc, rmatctem, extnprob, popdon,   &
+                         prbfrhuc, rmatctem, extnprob, &
                               il1,      il2,     sort, nol2pfts, &
                          grclarea,    thice,   popdin, lucemcom, &
                            dofire,   currlat,   iday,  fsnow,    &
@@ -34,6 +34,9 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                           Disturbance Subroutine
+!
+!     11  Jun 2015  - Clean up to make all calculations PFT dependent and consistent
+!     V. Arora        with fire description in 2015 GMDD paper
 !
 !     26  Mar 2014  - Split subroutine into two and create module. Move all fcancmx
 !     J. Melton       adjustments into subroutine burntobare and call from competition
@@ -154,7 +157,7 @@ use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
                         frltrglf, frltrblf, frco2stm, frltrstm, frco2rt, frltrrt, &
                         frltrbrn, emif_co2, emif_co, emif_ch4, emif_nmhc, emif_h2, &
                         emif_nox, emif_n2o, emif_pm25, emif_tpm, emif_tc, emif_oc, emif_bc, &
-                        duff_dry, grass
+                        duff_dry, grass, extnmois_veg, extnmois_duff
 
 implicit none
 
@@ -196,19 +199,29 @@ real ::  biomass(ilg,icc),        bterm(ilg), drgtstrs(ilg,icc), &
             burnveg(ilg,icc),      vegarea(ilg),     grclarea(ilg),    &
                      tot_emit,      tot_emit_dom,     burnvegf(ilg,icc)   
 
-logical, intent(in) :: popdon   ! if set true use population density data to calculate fire extinguishing 
-                 				 ! probability and probability of fire due to human causes, 
-                 				 ! or if false, read directly from .ctm file
+
 real :: hb_interm, hbratio(ilg)
 !real, save, dimension(ilg) :: cumulative_burnedf  ! Not used. JM Jun 2014
 !real, save, dimension(ilg,10) :: dryspell         ! Not used. JM Jun 2014
 !real, dimension(ilg) :: meandry                   ! Not used. JM Jun 2014
-real :: ief                                        ! Not used. JM Jun 2014
+!real :: ief                                        ! Not used. JM Jun 2014
 real, dimension(ilg) :: surface_duff_f  ! fraction of biomass that is in the surface duff (grass brown leaves + litter) 
 real, dimension(ilg,icc) :: pftareab    ! pft area before fire (km2)
 
 real :: ymin, ymax, slope
 real :: soilterm, duffterm              ! temporary variables
+
+
+real, dimension(ilg,icc) :: bterm_veg     
+real, dimension(ilg,icc) :: duff_frac_veg
+real, dimension(ilg,icc) :: mterm_veg
+real, dimension(ilg,icc) :: probfire_veg
+real, dimension(ilg,icc) :: smfunc_veg
+real, dimension(ilg,icc) :: sprdrate_veg
+real, dimension(ilg,icc) :: arbn1day_veg
+real, dimension(ilg,icc) :: burnarea_veg
+logical, dimension(ilg,icc) :: fire_veg
+real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary variables, Vivek
 
 !     ------------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
@@ -249,6 +262,15 @@ real :: soilterm, duffterm              ! temporary variables
           emit_bc(i,j) = 0.0
           burnvegf(i,j)=0.0
 
+          bterm_veg(i,j)=0.0            !biomass fire probability term, Vivek
+          mterm_veg(i,j)=0.0            !moisture fire probability term, Vivek
+          probfire_veg(i,j)=0.0         !PFT fire probability term, Vivek
+          fire_veg(i,j)=.false.         !fire occuring logical, Vivek
+          duff_frac_veg(i,j)=0.0        !duff fraction for each PFT, Vivek
+          smfunc_veg(i,j)=0.0           !soil moisture dependence on fire spread rate, Vivek
+          sprdrate_veg(i,j)=0.0         !per PFT fire spread rate
+          arbn1day_veg(i,j)=0.0         !per PFT area burned in 1 day
+          burnarea_veg(i,j)=0.0         !per PFT area burned over fire duration
 150     continue                  
 140   continue
 
@@ -319,7 +341,7 @@ real :: soilterm, duffterm              ! temporary variables
       do 200 j = 1, icc
         do 210 i = il1, il2
 
-         if (.not. crop(j)) then !don't allow it to bring in crops since they are not allowed to burn. JM
+         if (.not. crop(j)) then !don't allow it to bring in crops since they are not allowed to burn. 
 
 !          Root biomass is not used to initiate fire. For example if
 !          the last fire burned all grass leaves, and some of the roots
@@ -349,6 +371,15 @@ real :: soilterm, duffterm              ! temporary variables
         bterm(i)=min(1.0,max(0.0,(avgbmass(i)-bmasthrs_fire(1))/(bmasthrs_fire(2)-bmasthrs_fire(1))))     
 
 250   continue 
+
+!     calculate bterm for individual PFTs as well, Vivek did loops 251, 252
+
+      do 251 j=1, icc
+       do 252 i = il1, il2
+          bterm_veg(i,j)=min(1.0,max(0.0,(biomass(i,j)-bmasthrs_fire(1))/(bmasthrs_fire(2)-bmasthrs_fire(1))))     
+252    continue
+251   continue
+
 
 !     2. Dependence on soil moisture
 
@@ -385,7 +416,7 @@ real :: soilterm, duffterm              ! temporary variables
 
           drgtstrs(i,j) = min(1.0,max(0.0,drgtstrs(i,j)/(rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))))
 
-!        Next find this dryness factor averaged over the vegetated fraction
+!         Next find this dryness factor averaged over the vegetated fraction
           avgdryns(i) = avgdryns(i) + drgtstrs(i,j)*fcancmx(i,j)
 
           ! The litter and brown leaves are not affected by the soil water potential
@@ -397,6 +428,7 @@ real :: soilterm, duffterm              ! temporary variables
             ! The surface duff calculation ignores the litter on the bare fraction.
             surface_duff_f(i) = surface_duff_f(i) + (bleafmas(i,j)+litrmass(i,j)) &
                                                      /biomass(i,j) * fcancmx(i,j)
+
           end if
 
          endif
@@ -434,6 +466,27 @@ real :: soilterm, duffterm              ! temporary variables
 
 380   continue
 
+!       calculate mterm for each PFT, Vivek, loops 381 and 382 (replaces loop 320,330, 380 -JM)
+
+      do 381 j = 1, icc
+        do 382 i = il1, il2
+           ! duff fraction for each PFT, Vivek
+            duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j))/biomass(i,j)
+
+           ! drgtstrs(i,j) is phi_root in Melton and Arora GMDD (2015) paper
+           soilterm_veg = 1.0-tanh((1.75*drgtstrs(i,j)/extnmois_veg)**2) 
+           duffterm_veg = 1.0-tanh((1.75*betadrgt(i,1)/extnmois_duff)**2)
+
+           if(fcancmx(i,j) .gt. zero)then
+             mterm_veg(i,j)=soilterm_veg*(1-duff_frac_veg(i,j)) + duffterm_veg*duff_frac_veg(i,j)
+           else
+             mterm_veg(i,j)=0.0   !no fire likelihood due to moisture if no vegetation
+           endif
+
+382     continue
+381   continue
+
+
 !     3. dependence on lightning
 
 !     Dependence on lightning is modelled in a simple way which implies that
@@ -468,9 +521,7 @@ real :: soilterm, duffterm              ! temporary variables
 !       this is based upon the population density from the .popd
 !       read-in file
 
-        if (.not. popdon) then
-            prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !From Kloster et al. (2010)
-        end if
+        prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !From Kloster et al. (2010)
 
         lterm(i)=max(0.0, min(1.0, temp+(1.0-temp)*prbfrhuc(i) ))
 
@@ -480,18 +531,26 @@ real :: soilterm, duffterm              ! temporary variables
 !     fire.
 
       do 420 i = il1, il2
-
         probfire(i)=bterm(i)*mterm(i)*lterm(i)
-
         if (probfire(i) .gt. zero) fire(i)=.true.
-
 420   continue
+
+!     calculate fire probability for each PFT. Recall that lightning term is still grid
+!     averaged, Vivek, loops 421 and 422
+
+      do 421 j = 1, icc
+        do 422 i = il1, il2
+           probfire_veg(i,j)=bterm_veg(i,j)*mterm_veg(i,j)*lterm(i)
+           if (probfire_veg(i,j) .gt. zero) fire_veg(i,j)=.true.
+422     continue
+421   continue
+
 
 !     If fire is to be started then estimate burn area and litter generated
 !     by the fire, else do nothing.
 
       do 430 i = il1, il2
-        if (fire(i)) then
+        if(fire(i))then
 
 !         Find spread rate as a function of wind speed and soil moisture in the
 !         root zone (as found above) which we use as a surrogate for moisture
@@ -555,13 +614,10 @@ real :: soilterm, duffterm              ! temporary variables
 
 !         Original way from Arora & Boer 2005
 !          extnprob(i)=0.5 !ORIG
-
 !         Kloster et al. 2010 way:
-          if (.not. popdon) then
-            extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
-            extnprob(i)=0.5+extnprob(i)/2.0
-          end if
-          
+          extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
+          extnprob(i)=0.5+extnprob(i)/2.0
+
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
 
 !         area burned, km^2
@@ -621,10 +677,87 @@ real :: soilterm, duffterm              ! temporary variables
 
 490   continue
 
-      ! Reset cumulative_burnedf if needed. Not used. JM Jun 2014
-      ! do i = il1, il2
-      !   if (meandry(i) .lt. 1e-3) cumulative_burnedf(i) = 0.
-      ! end do
+
+!     calculate area burned for each PFT, make sure it's not greater than the
+!     area available, then find area and fraction burned for the whole gridcell
+!     Vivek, loops 500 and 501
+
+
+      do 500 j = 1, icc
+        do 501 i = il1, il2
+          if (fire_veg(i,j) ) then
+
+!         soil moisture dependence on fire spread rate
+          betmsprd_veg = (1 - min(1, (drgtstrs(i,j)/extnmois_veg) ))**2
+          betmsprd_duff = (1 - min(1, (betadrgt(i,1)/extnmois_duff) ))**2
+          smfunc_veg(i,j)= betmsprd_veg*(1-duff_frac_veg(i,j)) + betmsprd_duff*duff_frac_veg(i,j)
+
+!         wind speed, which is gridcell specific
+          wind(i)=sqrt(uwind(i)**2.0 + vwind(i)**2.0)
+          wind(i)=wind(i)*3.60     ! change m/s to km/hr
+
+!         Length to breadth ratio from Li et al. (2012)
+          lbratio(i)=1.0+10.0*(1.0-exp(-0.06*wind(i)))
+
+!         head to back ratio from Li et al. (2012). 
+          hb_interm = (lbratio(i)**2 - 1.0)**0.5
+          hbratio(i) = (lbratio(i) + hb_interm)/(lbratio(i) - hb_interm)
+
+!         dependence of spread rate on wind
+          wndfunc(i)= (2.0 * lbratio(i)) / (1.0 + 1.0 / hbratio(i)) * f0 
+
+!         fire spread rate per PFT
+          n = sort(j)  
+          sprdrate_veg(i)= maxsprd(n) * smfunc_veg(i,j) * wndfunc(i) 
+
+!         area burned in 1 day for that PFT
+          arbn1day_veg(i)=(pi*24.0*24.0*sprdrate_veg(i,j)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
+
+!         fire extinguishing probability as a function of grid-cell averaged population density
+          extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   
+          extnprob(i)=0.5+extnprob(i)/2.0
+
+!         area multipler to calculate area burned over the duration of the fire
+          areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
+
+!         per PFT area burned, km^2
+          burnarea_veg(i,j)=arbn1day_veg(i,j)*areamult(i)*(grclarea(i)*fcancmx(i,j)*probfire_veg(i,j))/reparea
+          
+!         if area burned greater than area of PFT, set it tp area of PFT
+
+          if ( burnarea_veg(i,j) .gt. grclarea(i)*fcancmx(i,j) ) then
+             burnarea_veg(i,j)=grclarea(i)*fcancmx(i,j)
+          endif
+
+         endif
+501     continue
+500   continue
+
+! !     calculate gridcell area burned and fraction, Vivek
+! 
+! !     following 2 lines of initialization won't be needed once the code is cleaned
+! !     and older stuff removed since these two quantities are initialized anyway in
+! !     loop 180
+!       burnarea(:)=0.0 
+!       burnfrac(:)=0.0 
+! 
+! !     Vivek did loops 510, 511 and 512
+!       do 510 j = 1, icc
+!         do 511 i = il1, il2
+!           burnarea(i)=burnarea(i)+burnarea_veg(i,j)
+! 511     continue       
+! 510   continue
+! 
+!       do 512 i = il1, il2
+!         burnfrac(i)=burnarea(i)/grclarea(i)
+! 512   continue       
+! 
+! !     overwrite burnveg (based on older grid-averaged and inconsistent calculations) with 
+! !     burnarea_veg (based  on newer per PFT calculations) but the following can be removed
+! !     when the code is cleaned up to retain only the per PFT calculations, Vivek.
+! 
+!       burnveg(:,:)=burnarea_veg(:,:)
+
 
 !     Finally estimate amount of litter generated from each pft, and
 !     each vegetation component (leaves, stem, and root) based on their

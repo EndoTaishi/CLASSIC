@@ -6,7 +6,7 @@ module ctem_params
 ! which has the information passed in via arguments. This is a legacy thing.
 
 ! Remember that changes to this module will usually only take effect
-! after you have done a make clean then a make.
+! after you have done a 'make clean' then a 'make' (because it is a module).
 
 ! This module is structured with general parameters first then the PFT specific
 ! parameters later.
@@ -16,6 +16,7 @@ module ctem_params
 
 ! Change History:
 
+! Jun 11 2015 - JM - Add in new disturb params (extnmois_duff and extnmois_veg) replacing duff_dry and extnmois.
 ! Mar 12 2014 - JM - Allow for two sets of paramters (competition and prescribed PFT fractions).
 !                    all ctem subroutines except PHTSYN3 keep their parameters here.   
 !
@@ -180,8 +181,10 @@ real :: repro_fraction                  ! Fraction of NPP that is used to create
 ! disturb.f90 parameters: -------------
 
 real, dimension(2) :: bmasthrs_fire     ! min. and max. vegetation biomass thresholds to initiate fire, kg c/m^2
-real :: extnmois                        ! extinction moisture content for estimating fire likeliness due to soil moisture
-real :: duff_dry                        ! extinction moisture content for estimating fire likeliness due to moisture in the duff layer
+real :: extnmois                        ! extinction moisture content for estimating fire likeliness due to soil moisture !OLD!
+real :: duff_dry                        ! extinction moisture content for estimating fire likeliness due to moisture in the duff layer !OLD!
+real :: extnmois_veg                    ! extinction moisture content for estimating vegetation fire likeliness due to soil moisture 
+real :: extnmois_duff                   ! extinction moisture content for estimating duff layer fire likeliness due to soil moisture 
 real :: lwrlthrs                        ! lower cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
 real :: hgrlthrs                        ! higher cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
 real :: parmlght                        ! parameter m (mean) and b of logistic distribution used for 
@@ -445,13 +448,17 @@ f0 = 0.05  ! NOT used in CTEM v.2.
 
 bmasthrs_fire = [ 0.2, 1.0 ] 
 
-extnmois = 0.35 !0.3 Sept 22 2014. JM. 
+extnmois = 0.35 !0.3 Sept 22 2014. JM. !OLD!
+
+duff_dry = 0.25 !OLD!
+
+extnmois_veg = 0.3
+
+extnmois_duff = 0.5   
 
 lwrlthrs = 0.25
 
 hgrlthrs = 10.0 
-
-duff_dry = 0.25
 
 !     **Parmlght was increased to 0.8 to make it so areas with higher amounts of
 !     lightning have higher lterm. The saturation is still the same, but the 
