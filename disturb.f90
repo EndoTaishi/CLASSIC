@@ -364,17 +364,17 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 210     continue
 200   continue
 
-      do 250 i = il1, il2
-
-        if(fcsum(i) .gt. zero)then
-          avgbmass(i)=avgbmass(i)/fcsum(i)
-        else
-          avgbmass(i)=0.0
-        endif
-
-        bterm(i)=min(1.0,max(0.0,(avgbmass(i)-bmasthrs_fire(1))/(bmasthrs_fire(2)-bmasthrs_fire(1))))     
-
-250   continue 
+!       do 250 i = il1, il2
+! 
+!         if(fcsum(i) .gt. zero)then
+!           avgbmass(i)=avgbmass(i)/fcsum(i)
+!         else
+!           avgbmass(i)=0.0
+!         endif
+! 
+!         bterm(i)=min(1.0,max(0.0,(avgbmass(i)-bmasthrs_fire(1))/(bmasthrs_fire(2)-bmasthrs_fire(1))))     
+! 
+! 250   continue 
 
 !     calculate bterm for individual PFTs as well, Vivek did loops 251, 252
 
@@ -420,20 +420,20 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
           drgtstrs(i,j) = min(1.0,max(0.0,drgtstrs(i,j)/(rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))))
 
-!         Next find this dryness factor averaged over the vegetated fraction
-          avgdryns(i) = avgdryns(i) + drgtstrs(i,j)*fcancmx(i,j)
-
+! !         Next find this dryness factor averaged over the vegetated fraction
+!           avgdryns(i) = avgdryns(i) + drgtstrs(i,j)*fcancmx(i,j)
+! 
           ! The litter and brown leaves are not affected by the soil water potential
           ! therefore they will react only to the moisture conditions (our proxy here
           ! is the upper soil moisture). If it is dry they increase the probability of 
           ! fire corresponding to the proportion of total C they contribute. Only allow
           ! if there is no snow. 
-          if (biomass(i,j) .gt. 0. .and. fsnow(i) .eq. 0.) then
-            ! The surface duff calculation ignores the litter on the bare fraction.
-            surface_duff_f(i) = surface_duff_f(i) + (bleafmas(i,j)+litrmass(i,j)) &
-                                                     /biomass(i,j) * fcancmx(i,j)
-
-          end if
+!           if (biomass(i,j) .gt. 0. .and. fsnow(i) .eq. 0.) then
+!             ! The surface duff calculation ignores the litter on the bare fraction.
+!             surface_duff_f(i) = surface_duff_f(i) + (bleafmas(i,j)+litrmass(i,j)) &
+!                                                      /biomass(i,j) * fcancmx(i,j)
+! 
+!           end if
 
          endif
 
@@ -443,39 +443,39 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !     Use average root zone vegetation dryness to find likelihood of
 !     fire due to moisture. 
 
-      do 380 i = il1, il2
-        if(fcsum(i) .gt. zero)then
-       
-          avgdryns(i)=avgdryns(i)/fcsum(i)
-
-          soilterm = 1.0-tanh((1.75*avgdryns(i)/extnmois)**2)
-
-!         We incorporate a new term here to account for the dryness of the duff layer. JM Jun 2014.
-          duffterm = 1.0-tanh(20.*(thliq(i,1)/duff_dry)**4)  
-
-          mterm(i) = soilterm * (1.0-surface_duff_f(i)) + duffterm * surface_duff_f(i)
-
-        else
-          mterm(i)=0.0   !no fire likelihood due to moisture if no vegetation
-          avgdryns(i)=0.0
-        endif
-
-        mterm(i)=max(0.0, min(mterm(i),1.0))
-
-        ! Save the soil moisture term to help determine when the lightning
-        ! previously burned area reduction of efficiency (ief) can be reset. 
-        ! Not used. JM Jun 2014
-        ! dryspell(i,:) = eoshift(dryspell(i,:),1,soilterm)
-        ! meandry(i) = sum(dryspell(i,:))/10.0
-
-380   continue
+!       do 380 i = il1, il2
+!         if(fcsum(i) .gt. zero)then
+!        
+!           avgdryns(i)=avgdryns(i)/fcsum(i)
+! 
+!           soilterm = 1.0-tanh((1.75*avgdryns(i)/extnmois)**2)
+! 
+! !         We incorporate a new term here to account for the dryness of the duff layer. JM Jun 2014.
+!           duffterm = 1.0-tanh(20.*(thliq(i,1)/duff_dry)**4)  
+! 
+!           mterm(i) = soilterm * (1.0-surface_duff_f(i)) + duffterm * surface_duff_f(i)
+! 
+!         else
+!           mterm(i)=0.0   !no fire likelihood due to moisture if no vegetation
+!           avgdryns(i)=0.0
+!         endif
+! 
+!         mterm(i)=max(0.0, min(mterm(i),1.0))
+! 
+!         ! Save the soil moisture term to help determine when the lightning
+!         ! previously burned area reduction of efficiency (ief) can be reset. 
+!         ! Not used. JM Jun 2014
+!         ! dryspell(i,:) = eoshift(dryspell(i,:),1,soilterm)
+!         ! meandry(i) = sum(dryspell(i,:))/10.0
+! 
+! 380   continue
 
 !       calculate mterm for each PFT, Vivek, loops 381 and 382 (replaces loop 320,330, 380 -JM)
 
       do 381 j = 1, icc
         do 382 i = il1, il2
            ! duff fraction for each PFT, Vivek
-            if (biomass(i,j) .gt. 0.) then
+            if (biomass(i,j) .gt. 0. .and. fsnow(i) .eq. 0.) then
                duff_frac_veg(i,j) = (bleafmas(i,j)+litrmass(i,j)) / biomass(i,j)
             end if
 
@@ -534,13 +534,13 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 400   continue
 
-!     Multiply the bterm, mterm, and the lterm to find probability of
-!     fire.
-
-      do 420 i = il1, il2
-        probfire(i)=bterm(i)*mterm(i)*lterm(i)
-        if (probfire(i) .gt. zero) fire(i)=.true.
-420   continue
+! !     Multiply the bterm, mterm, and the lterm to find probability of
+! !     fire.
+! 
+!       do 420 i = il1, il2
+!         probfire(i)=bterm(i)*mterm(i)*lterm(i)
+!         if (probfire(i) .gt. zero) fire(i)=.true.
+! 420   continue
 
 !     calculate fire probability for each PFT. Recall that lightning term is still grid
 !     averaged, Vivek, loops 421 and 422
@@ -553,138 +553,138 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 421   continue
 
 
-!     If fire is to be started then estimate burn area and litter generated
-!     by the fire, else do nothing.
-
-      do 430 i = il1, il2
-        if(fire(i))then
-
-!         Find spread rate as a function of wind speed and soil moisture in the
-!         root zone (as found above) which we use as a surrogate for moisture
-!         content of vegetation.
-
-!         Original way from Arora & Boer 2005
-!           betmsprd(i)= max(0.0,min(1.0,avgdryns(i)/extnmois)) 
-!         New way that includes contribution of duff layer. JM Jun 2014
-          betmsprd(i)= max(0.0,min(1.0, avgdryns(i)/extnmois * (1.0-surface_duff_f(i)) &
-                                       + (thliq(i,1)/duff_dry) * surface_duff_f(i)))
-
-          smfunc(i)=(1.0-betmsprd(i))**2.0
-          wind(i)=sqrt(uwind(i)**2.0 + vwind(i)**2.0)
-          wind(i)=wind(i)*3.60     ! change m/s to km/hr
-
-!         length to breadth ratio of fire
-!         Original way from Arora & Boer 2005
-!         lbratio(i)=1.0+10.0*(1.0-exp(-0.017*wind(i))) 
-!         New way from Li et al. (2012), it is now a derived quantity:
-          lbratio(i)=1.0+10.0*(1.0-exp(-0.06*wind(i)))
-
-!         New way from Li et al. (2012). Calculate the head to back ratio of the fire
-          hb_interm = (lbratio(i)**2 - 1.0)**0.5
-          hbratio(i) = (lbratio(i) + hb_interm)/(lbratio(i) - hb_interm)
-
-!         Following Li et al. 2012 this function has been derived
-!         from the fire rate spread perpendicular to the wind 
-!         direction, in the downwind direction, the head to back
-!         ratio and the length to breadth ratio. f0 is also now
-!         a derived quantity (0.05)
-
-!         Original way from Arora & Boer 2005
-!          wndfunc(i)=1.0 - ( (1.0-f0)*exp(-1.0*alpha*wind(i)**2) ) 
-!         New way from Li et al. (2012)
-          wndfunc(i)= (2.0 * lbratio(i)) / (1.0 + 1.0 / hbratio(i)) * f0 
-
-!         New, now find the per PFT spread rate rather than the same one per
-!         the whole gridcell.
-      do 435 j = 1, icc
-          n = sort(j)  
-          sprdrate(i)=sprdrate(i) + maxsprd(n)*fcancmx(i,j) * smfunc(i) * wndfunc(i) 
-435     continue
-
-!         Area burned in 1 day, km^2
-
-!         The assumed ratio of the head to back ratio was 5.0 in 
-!         Arora and Boer 2005 JGR, this value can be calculated
-!         as was pointed out in Li et al. 2012 Biogeosci. We 
-!         adopt the calculated version below
-
-!         Original way from Arora & Boer 2005
-!          arbn1day(i)=(pi*0.36*24*24*sprdrate(i)**2)/lbratio(i)
-!         New way from Li et al. (2012)
-          arbn1day(i)=(pi*24.0*24.0*sprdrate(i)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
-
-!         Based on fire extinguishing probability we estimate the number 
-!         which needs to be multiplied with arbn1day to estimate average 
-!         area burned
-
-!         Fire extinction is now based upon population density
-
-!         Original way from Arora & Boer 2005
-!          extnprob(i)=0.5 !ORIG
-!         Kloster et al. 2010 way:
-          if (.not. popdon) then
-            extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
-            extnprob(i)=0.5+extnprob(i)/2.0
-          end if
-
-          areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
-
-!         area burned, km^2
-          burnarea(i)=arbn1day(i)*areamult(i)*(grclarea(i)/reparea)*probfire(i)
-          burnfrac(i)=100.*burnarea(i)/grclarea(i)
-
-        endif
-430   continue
-
-!     Make sure area burned is not greater than the vegetated area. 
-!     distribute burned area equally amongst pfts present in the grid cell.
- 
-      do 460 i = il1, il2
-        do j = 1,icc
-         if (.not. crop(j)) then
-          vegarea(i)= vegarea(i) + pftareab(i,j)  !in km^2
-         end if
-        end do  
- 
-        if(burnarea(i) .gt. vegarea(i)) then
-          burnarea(i)=vegarea(i)
-          burnfrac(i)=100.*burnarea(i)/grclarea(i)
-        endif
-460   continue
-
-      k1=0
-      do 470 j = 1, ican
-       if(j.eq.1) then
-         k1 = k1 + 1
-       else
-         k1 = k1 + nol2pfts(j-1)
-       endif
-       k2 = k1 + nol2pfts(j) - 1
-       do 475 m = k1, k2
-        do 480 i = il1, il2
-          if(vegarea(i) .gt. zero)then
-            burnveg(i,m)= burnarea(i) * pftareab(i,m)/vegarea(i) !in km^2
-            if(j .eq. 3)then  !crops not allowed to burn
-              burnveg(i,m)= 0.0
-            endif
-          else
-            burnveg(i,m)= 0.0
-          endif
-480     continue
-475    continue 
-470   continue 
-
-      ! Readjust the burn area
-      do 490 i = il1, il2
-       burnarea(i) = 0.0
-       do j = 1,icc
-         burnarea(i)= burnarea(i) + burnveg(i,j)
-       end do
-       burnfrac(i)=100.*burnarea(i)/grclarea(i)
-
-!       cumulative_burnedf(i) = cumulative_burnedf(i) + burnarea(i)/grclarea(i) 
-
-490   continue
+! !     If fire is to be started then estimate burn area and litter generated
+! !     by the fire, else do nothing.
+! 
+!       do 430 i = il1, il2
+!         if(fire(i))then
+! 
+! !         Find spread rate as a function of wind speed and soil moisture in the
+! !         root zone (as found above) which we use as a surrogate for moisture
+! !         content of vegetation.
+! 
+! !         Original way from Arora & Boer 2005
+! !           betmsprd(i)= max(0.0,min(1.0,avgdryns(i)/extnmois)) 
+! !         New way that includes contribution of duff layer. JM Jun 2014
+!           betmsprd(i)= max(0.0,min(1.0, avgdryns(i)/extnmois * (1.0-surface_duff_f(i)) &
+!                                        + (thliq(i,1)/duff_dry) * surface_duff_f(i)))
+! 
+!           smfunc(i)=(1.0-betmsprd(i))**2.0
+!           wind(i)=sqrt(uwind(i)**2.0 + vwind(i)**2.0)
+!           wind(i)=wind(i)*3.60     ! change m/s to km/hr
+! 
+! !         length to breadth ratio of fire
+! !         Original way from Arora & Boer 2005
+! !         lbratio(i)=1.0+10.0*(1.0-exp(-0.017*wind(i))) 
+! !         New way from Li et al. (2012), it is now a derived quantity:
+!           lbratio(i)=1.0+10.0*(1.0-exp(-0.06*wind(i)))
+! 
+! !         New way from Li et al. (2012). Calculate the head to back ratio of the fire
+!           hb_interm = (lbratio(i)**2 - 1.0)**0.5
+!           hbratio(i) = (lbratio(i) + hb_interm)/(lbratio(i) - hb_interm)
+! 
+! !         Following Li et al. 2012 this function has been derived
+! !         from the fire rate spread perpendicular to the wind 
+! !         direction, in the downwind direction, the head to back
+! !         ratio and the length to breadth ratio. f0 is also now
+! !         a derived quantity (0.05)
+! 
+! !         Original way from Arora & Boer 2005
+! !          wndfunc(i)=1.0 - ( (1.0-f0)*exp(-1.0*alpha*wind(i)**2) ) 
+! !         New way from Li et al. (2012)
+!           wndfunc(i)= (2.0 * lbratio(i)) / (1.0 + 1.0 / hbratio(i)) * f0 
+! 
+! !         New, now find the per PFT spread rate rather than the same one per
+! !         the whole gridcell.
+!       do 435 j = 1, icc
+!           n = sort(j)  
+!           sprdrate(i)=sprdrate(i) + maxsprd(n)*fcancmx(i,j) * smfunc(i) * wndfunc(i) 
+! 435     continue
+! 
+! !         Area burned in 1 day, km^2
+! 
+! !         The assumed ratio of the head to back ratio was 5.0 in 
+! !         Arora and Boer 2005 JGR, this value can be calculated
+! !         as was pointed out in Li et al. 2012 Biogeosci. We 
+! !         adopt the calculated version below
+! 
+! !         Original way from Arora & Boer 2005
+! !          arbn1day(i)=(pi*0.36*24*24*sprdrate(i)**2)/lbratio(i)
+! !         New way from Li et al. (2012)
+!           arbn1day(i)=(pi*24.0*24.0*sprdrate(i)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
+! 
+! !         Based on fire extinguishing probability we estimate the number 
+! !         which needs to be multiplied with arbn1day to estimate average 
+! !         area burned
+! 
+! !         Fire extinction is now based upon population density
+! 
+! !         Original way from Arora & Boer 2005
+! !          extnprob(i)=0.5 !ORIG
+! !         Kloster et al. 2010 way:
+!           if (.not. popdon) then
+!             extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
+!             extnprob(i)=0.5+extnprob(i)/2.0
+!           end if
+! 
+!           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
+! 
+! !         area burned, km^2
+!           burnarea(i)=arbn1day(i)*areamult(i)*(grclarea(i)/reparea)*probfire(i)
+!           burnfrac(i)=100.*burnarea(i)/grclarea(i)
+! 
+!         endif
+! 430   continue
+! 
+! !     Make sure area burned is not greater than the vegetated area. 
+! !     distribute burned area equally amongst pfts present in the grid cell.
+!  
+!       do 460 i = il1, il2
+!         do j = 1,icc
+!          if (.not. crop(j)) then
+!           vegarea(i)= vegarea(i) + pftareab(i,j)  !in km^2
+!          end if
+!         end do  
+!  
+!         if(burnarea(i) .gt. vegarea(i)) then
+!           burnarea(i)=vegarea(i)
+!           burnfrac(i)=100.*burnarea(i)/grclarea(i)
+!         endif
+! 460   continue
+! 
+!       k1=0
+!       do 470 j = 1, ican
+!        if(j.eq.1) then
+!          k1 = k1 + 1
+!        else
+!          k1 = k1 + nol2pfts(j-1)
+!        endif
+!        k2 = k1 + nol2pfts(j) - 1
+!        do 475 m = k1, k2
+!         do 480 i = il1, il2
+!           if(vegarea(i) .gt. zero)then
+!             burnveg(i,m)= burnarea(i) * pftareab(i,m)/vegarea(i) !in km^2
+!             if(j .eq. 3)then  !crops not allowed to burn
+!               burnveg(i,m)= 0.0
+!             endif
+!           else
+!             burnveg(i,m)= 0.0
+!           endif
+! 480     continue
+! 475    continue 
+! 470   continue 
+! 
+!       ! Readjust the burn area
+!       do 490 i = il1, il2
+!        burnarea(i) = 0.0
+!        do j = 1,icc
+!          burnarea(i)= burnarea(i) + burnveg(i,j)
+!        end do
+!        burnfrac(i)=100.*burnarea(i)/grclarea(i)
+! 
+! !       cumulative_burnedf(i) = cumulative_burnedf(i) + burnarea(i)/grclarea(i) 
+! 
+! 490   continue
 
 !     calculate area burned for each PFT, make sure it's not greater than the
 !     area available, then find area and fraction burned for the whole gridcell
@@ -741,30 +741,30 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 501     continue
 500   continue
 
-! !     calculate gridcell area burned and fraction, Vivek
-! 
-! !     following 2 lines of initialization won't be needed once the code is cleaned
-! !     and older stuff removed since these two quantities are initialized anyway in
-! !     loop 180
-!       burnarea(:)=0.0 
-!       burnfrac(:)=0.0 
-! 
-! !     Vivek did loops 510, 511 and 512
-!       do 510 j = 1, icc
-!         do 511 i = il1, il2
-!           burnarea(i)=burnarea(i)+burnarea_veg(i,j)
-! 511     continue       
-! 510   continue
-! 
-!       do 512 i = il1, il2
-!         burnfrac(i)=burnarea(i)/grclarea(i)
-! 512   continue       
-! 
-! !     overwrite burnveg (based on older grid-averaged and inconsistent calculations) with 
-! !     burnarea_veg (based  on newer per PFT calculations) but the following can be removed
-! !     when the code is cleaned up to retain only the per PFT calculations, Vivek.
-! 
-!       burnveg(:,:)=burnarea_veg(:,:)
+!     calculate gridcell area burned and fraction, Vivek
+
+!     following 2 lines of initialization won't be needed once the code is cleaned
+!     and older stuff removed since these two quantities are initialized anyway in
+!     loop 180
+      burnarea(:)=0.0 
+      burnfrac(:)=0.0 
+
+!     Vivek did loops 510, 511 and 512
+      do 510 j = 1, icc
+        do 511 i = il1, il2
+          burnarea(i)=burnarea(i)+burnarea_veg(i,j)
+511     continue       
+510   continue
+
+      do 512 i = il1, il2
+        burnfrac(i)=burnarea(i)/grclarea(i)
+512   continue       
+
+!     overwrite burnveg (based on older grid-averaged and inconsistent calculations) with 
+!     burnarea_veg (based  on newer per PFT calculations) but the following can be removed
+!     when the code is cleaned up to retain only the per PFT calculations, Vivek.
+
+      burnveg(:,:)=burnarea_veg(:,:)
 
 
 !     Finally estimate amount of litter generated from each pft, and
