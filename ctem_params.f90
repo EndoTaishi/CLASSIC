@@ -349,6 +349,13 @@ kn= [ 0.50, 0.50, 0.00, &
       0.50, 0.50, 0.50, &
       0.40, 0.48, 0.00, &
       0.46, 0.44, 0.00 ]
+      
+!lfespany  =   [ 5.00, 1.00, 0.00, &
+!                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+lfespany  =   [ 5.00, 0.40, 0.00, &
+                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
+                1.75, 1.75, 0.00, &
+                1.00, 1.00, 0.00 ]      
 
 ! allocate.f parameters: --------------
 
@@ -765,7 +772,19 @@ thrprcnt = [ 40.0, 40.0,  0.0, &
              40.0, 50.0, 50.0, &
              50.0, 50.0,  0.0, &
              40.0, 40.0,  0.0 ]  
+             
+lwrthrsh = [ -50.0, -5.0, 0.0, & 
+               5.0,  8.0, 5.0, &  
+               5.0,  5.0, 0.0, &
+               0.1,  5.0, 0.0 ]             
 
+! these parameters  are from competition runs. FLAG.
+! testing for work with Ray and Bakr! Mar 2015.          
+cdlsrtmx = [ 0.10, 0.30, 0.00, &  
+             0.30, 0.40, 0.15, &
+             0.15, 0.15, 0.00, &
+             0.15, 0.15, 0.00 ]
+             
 ! turnover.f parameters: --------------
 
 stmhrspn = 17.0
@@ -823,14 +842,7 @@ if (compete) then
 ! prescribed PFT fractional cover, then the parameters after this section
 ! are used. Parameters that are the same in both are above this if loop.
 
-! Parameters used in more than one subroutine:
-
-!lfespany  =   [ 5.00, 1.00, 0.00, &
-!                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
-lfespany  =   [ 5.00, 0.40, 0.00, &
-                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
-                1.75, 1.75, 0.00, &
-                1.00, 1.00, 0.00 ]
+              
 
 ! allocate.f parameters: --------------
 
@@ -943,35 +955,12 @@ mxmortge = [ 0.005, 0.005, 0.00, &
 
 ! phenology.f parameters: ---------
 
-cdlsrtmx = [ 0.10, 0.30, 0.00, &  
-             0.30, 0.40, 0.15, &
-             0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
-
 drlsrtmx = [ 0.006 , 0.005, 0.000, &
              0.010 , 0.025, 0.030, & 
              0.005 , 0.005, 0.000, &
              0.020 , 0.020, 0.000 ] 
 
-
-lwrthrsh = [ -50.0, -5.0, 0.0, & 
-               5.0,  8.0, 5.0, &  
-               5.0,  5.0, 0.0, &
-               0.1,  5.0, 0.0 ]
-
 roothrsh = 8.0
-
-! turnover.f parameters: --------------
-! NOW USING SAME VALUES FOR COMP/PRESC.
-!stemlife = [ 86.3, 86.3, 0.00, &  
-!             80.5, 80.5, 75.8, &  
-!             20.0, 20.0, 0.00, &
-!              0.00, 0.00, 0.00 ]
-
-!rootlife = [ 13.8,13.2, 0.0, &
-!             12.7,10.9, 9.8, &    
-!              3.0, 3.0, 0.0, &
-!              3.0, 3.0, 0.0 ]
 
 !   ********************************************************************************************
 !   =============                                                     ==========================
@@ -983,15 +972,6 @@ else ! Prescribed PFT fractional cover
 
 ! These parameters are used when the PFT fractional cover is read in from the 
 ! CTM and INI files, or when LUC is on, the LUC file.
-
-! Parameters used in more than one subroutine:
-
-!lfespany  =   [ 5.00, 1.00, 0.00, &
-!                1.75, 1.00, 1.00, &  
-lfespany  =   [ 5.00, 0.40, 0.00, &
-                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015.
-                1.75, 1.75, 0.00, &
-                1.00, 1.00, 0.00 ]
 
 ! allocate.f parameters: --------------
 
@@ -1030,7 +1010,7 @@ bsrtroot = [ 0.5000, 0.2850, 0.0000, &
 
 ! mortality.f parameters: ---------
 
-maxage = [ 250.0, 400.0,   0.0, &    !same as comp
+maxage = [ 250.0, 400.0,   0.0, &    
            600.0, 250.0, 500.0, &  
              0.0,   0.0,   0.0, &
              0.0,   0.0,   0.0 ]
@@ -1043,48 +1023,13 @@ mxmortge = [ 0.005, 0.005, 0.00, &   ! Same as competition except for grasses.
 
 ! phenology.f parameters: ---------
 
-!cdlsrtmx = [ 0.15, 0.30, 0.00, &
-!             0.30, 0.15, 0.15, &
-!             0.15, 0.15, 0.00, &
-!             0.15, 0.15, 0.00 ]
-! these parameters  are from competition runs. FLAG.
-! testing for work with Ray and Bakr! Mar 2015.          
-cdlsrtmx = [ 0.10, 0.30, 0.00, &  
-             0.30, 0.40, 0.15, &
-             0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
-
 drlsrtmx = [ 0.0025, 0.005, 0.000, &
              0.005, 0.005, 0.025, &
              0.005, 0.005, 0.000, &
              0.050, 0.050, 0.000 ]    
 
-!lwrthrsh = [ -45.0, -5.0, 0.0, &
-!               5.0,  5.0, 5.0, &
-!               5.0,  5.0, 0.0, &
-!               0.1,  5.0, 0.0 ] 
-! these parameters  are from competition runs. FLAG.
-! testing for work with Ray and Bakr! Mar 2015.          
-lwrthrsh = [ -50.0, -5.0, 0.0, & 
-               5.0,  8.0, 5.0, &  
-               5.0,  5.0, 0.0, &
-               0.1,  5.0, 0.0 ]
-
-
 roothrsh = 15.0
 
-! turnover.f parameters: --------------
-! NOW USING SAME VALUES FOR COMP/PRESC.
-
-!stemlife = [ 65.0, 75.0, 0.00, &
-!             45.0, 40.0, 45.0, &
-!             20.0, 20.0, 0.00, &
-!              0.00, 0.00, 0.00 ]
-
-!rootlife = [ 10.0,11.5, 0.0, &
-!              5.5, 5.5, 5.5, &
-!              3.0, 3.0, 0.0, &
-!              2.5, 2.5, 0.0 ]
 
 end if
 
