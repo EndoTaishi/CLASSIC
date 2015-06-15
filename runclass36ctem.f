@@ -3535,6 +3535,7 @@ C====================== CTEM =========================================== \
 C
 c     read from ctem initialization file (.CTM)
 
+      if (ctem_on) then
       call read_from_ctm(nltest,nmtest,FCANROT,FAREROT,
      1                   RSMNROT,QA50ROT,VPDAROT,VPDBROT,PSGAROT,
      2                   PSGBROT,DRNROT,SDEPROT, XSLPROT,GRKFROT,
@@ -3542,6 +3543,7 @@ c     read from ctem initialization file (.CTM)
      4                   ORGMROT,TBARROT,THLQROT,THICROT,TCANROT,
      5                   TSNOROT,TPNDROT,ZPNDROT,RCANROT,SCANROT,
      6                   SNOROT, ALBSROT,RHOSROT,GROROT,argbuff)
+      end if
 c
 !       if (ctem_on) then
 !       do 71 i=1,nltest
