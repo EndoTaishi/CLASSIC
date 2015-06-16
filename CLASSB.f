@@ -119,7 +119,7 @@ C
       DO 100 J=1,IG
       DO 100 M=1,IM
       DO 100 I=IL1,IL2
-          ISAND (I,M,J)=NINT(SAND(I,M,J))                                               
+          ISAND (I,M,J)=NINT(SAND(I,M,J))  
           IF(ISAND(I,M,J).GT.-3) IGDR(I,M)=J
 100   CONTINUE
 C

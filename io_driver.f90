@@ -79,7 +79,6 @@ real, dimension(nlat,nmos), intent(inout) :: GROROT
 ! pointers:
 logical, pointer :: mosaic
 logical, pointer :: dofire
-logical, pointer :: ctem_on
 logical, pointer :: compete
 logical, pointer :: inibioclim
 logical, pointer :: dowetlands
@@ -126,7 +125,6 @@ real, dimension(ilg,2) :: crop_temp_frac
 ! point pointers:
 mosaic            => c_switch%mosaic
 dofire            => c_switch%dofire
-ctem_on           => c_switch%ctem_on
 compete           => c_switch%compete
 inibioclim        => c_switch%inibioclim
 dowetlands        => c_switch%dowetlands

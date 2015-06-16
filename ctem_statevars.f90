@@ -1154,14 +1154,12 @@ end subroutine resetclassmon
 !==================================================
 
 subroutine resetclassyr(nltest)
-
-use ctem_params, only : ignd
      
 implicit none
 
 integer, intent(in) :: nltest
 
-integer :: i,j
+integer :: i
     
 do i=1,nltest
           class_out%ALVSACC_YR(I)=0.
@@ -1500,7 +1498,9 @@ integer, intent(in) :: nltest
 
 integer :: i,j
 
-        ctem_grd%fsstar_g    =0.0
+        do i = 1, nltest
+
+        ctem_grd%fsstar_g    =0.0 !flag should some of these be per i?  they seem to be purely diagnostic so probably not important. JM Jun 2015.
         ctem_grd%flstar_g    =0.0
         ctem_grd%qh_g        =0.0
         ctem_grd%qe_g        =0.0
@@ -1571,7 +1571,9 @@ integer :: i,j
             ctem_grd%anvegrow_g(i,j)=0.0
             ctem_grd%rmlvegrow_g(i,j)=0.0
           end do
-       end if   
+       end if  
+       
+       end do
 
 end subroutine resetgridavg
 

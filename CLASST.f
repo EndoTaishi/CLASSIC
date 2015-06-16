@@ -356,7 +356,7 @@ C
 C
 C     * CHECK LIQUID AND FROZEN SOIL MOISTURE CONTENTS FOR SMALL
 C     * ABERRATIONS CAUSED BY PACKING/UNPACKING.
-C
+C       
       DO 60 J=1,IG
       DO 60 I=IL1,IL2
           IF(ISAND(I,1).GT.-4)                                   THEN

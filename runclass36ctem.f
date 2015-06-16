@@ -2517,7 +2517,7 @@ c     all model switches are read in from a namelist file
      6             itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,
      7             igralb,jhhstd,jhhendd,jdstd,jdendd,jhhsty,jhhendy,
      8             jdsty,jdendy)
-
+      
 c     Initialize the CTEM parameters
       call initpftpars(compete)
 c
@@ -3497,7 +3497,7 @@ C     GGEOROW(1)=-0.035
      1                  WFCIROT(I,M),MIDROT(I,M)
           READ(10,5080) (SANDROT(I,M,J),J=1,3)
           READ(10,5080) (CLAYROT(I,M,J),J=1,3)
-          READ(10,5080) (ORGMROT(I,M,J),J=1,3)
+          READ(10,5080) (ORGMROT(I,M,J),J=1,3)          
           READ(10,5050) (TBARROT(I,M,J),J=1,3),TCANROT(I,M),
      1                  TSNOROT(I,M),TPNDROT(I,M)
           READ(10,5060) (THLQROT(I,M,J),J=1,3),(THICROT(I,M,J),
@@ -3508,7 +3508,7 @@ C     GGEOROW(1)=-0.035
 50    CONTINUE
 C
       DO 25 J=1,IGND                     
-          READ(10,5002) DELZ(J),ZBOT(J)  
+          READ(10,*) DELZ(J),ZBOT(J) !was format 5002 but was causing problems so let be free-format. JM Jun 2015           
  25   CONTINUE                            
  5002 FORMAT(2X,2F8.2)                   
 C
@@ -4921,6 +4921,7 @@ C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.
 C
+
           CALL CLASSW  (THLQGAT,THICGAT,TBARGAT,TCANGAT,RCANGAT,SCANGAT,
      1                  ROFGAT, TROFGAT,SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,
      2                  WSNOGAT,ZPNDGAT,TPNDGAT,GROGAT, TBASGAT,GFLXGAT,
@@ -6594,7 +6595,7 @@ c
 c     calculate daily outputs from ctem
 c
        if (ctem_on) then
-       if(ncount.eq.nday) then
+        if(ncount.eq.nday) then
          call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
      1                      iyear,iyd,jdst,jdend,grclarea)
 ! c
@@ -7121,7 +7122,7 @@ c     First initialize some output variables
 c     initialization is done just before use.
 
       if (ctem_on) then
-      if(ncount.eq.nday) then
+       if(ncount.eq.nday) then
 c
         !do 861 i=1,nltest
 
