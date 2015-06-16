@@ -5586,7 +5586,8 @@ C===================== CTEM =====================================/
 C
        DO 425 M=1,NMTEST
           IF(FSSROW(I).GT.0.0) THEN
-              ALTOT=(ALVSROT(I,M)+ALIRROT(I,M))/2.0
+C              ALTOT=(ALVSROT(I,M)+ALIRROT(I,M))/2.0
+              ALTOT=(FSSROW(I)-FSGGGAT(I))/FSSROW(I)
           ELSE
               ALTOT=0.0
           ENDIF
@@ -5594,8 +5595,9 @@ C
           FLSTAR=FDLROW(I)-SBC*GTROT(I,M)**4
           QH=HFSROT(I,M)
           QE=QEVPROT(I,M)
-          BEG=FSSTAR+FLSTAR-QH-QE
-C         BEG=GFLXGAT(1,1)
+C          BEG=FSSTAR+FLSTAR-QH-QE !(commented out in runclass.fieldsite)
+          BEG=GFLXGAT(1,1)  !FLAG! 
+C          USTARBS=UVROW(1)*SQRT(CDMROT(I,M)) !FLAG (commented out in runclass.fieldsite)
           SNOMLT=HMFNROT(I,M)
           IF(RHOSROT(I,M).GT.0.0) THEN
               ZSN=SNOROT(I,M)/RHOSROT(I,M)
