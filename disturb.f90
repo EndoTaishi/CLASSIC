@@ -504,8 +504,9 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
         !c2glgtng(i)=0.25*lightng(i)   !Original from Arora and Boer 2005
         !c2glgtng(i)=(1./(4.16+2.16*cos(currlat(i)*pi/180)))*lightng(i) !Relation From Prentice and Mackerras
 
-!       New approximation of Price and Rind equation. It was developed from a more complete dataset than Prentice and Mackerras.          
-        c2glgtng(i)=0.219913*exp(0.0058899*abs(currlat(i)))*lightng(i)  
+!       New approximation of Price and Rind equation. It was developed from a more complete dataset than Prentice and Mackerras. 
+!       Lightning comes in in units of flashes/km2/yr so divide by 12 to make per month.
+        c2glgtng(i)=0.219913*exp(0.0058899*abs(currlat(i)))*(lightng(i)/12.)  
 
         betalght(i)=min(1.0,max(0.0,(c2glgtng(i)-lwrlthrs)/(hgrlthrs-lwrlthrs)))
         y(i)=1.0/( 1.0+exp((parmlght-betalght(i))/parblght) )

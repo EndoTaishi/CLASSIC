@@ -447,7 +447,7 @@ repro_fraction = 0.10
 
 ! disturbance parameters: ------------
 
-reparea = 1000.0
+reparea = 500.0 !1000.0  !FLAG testing JM Jun 17 2015.
 
 popdthrshld = 300.
 
