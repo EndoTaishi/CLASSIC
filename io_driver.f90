@@ -30,15 +30,16 @@ subroutine read_from_ctm(nltest,nmtest,FCANROT,FAREROT,RSMNROT,QA50ROT, &
                          TSNOROT,TPNDROT,ZPNDROT,RCANROT,SCANROT,SNOROT, &
                          ALBSROT,RHOSROT,GROROT,argbuff)
 
+!   This subroutine reads in the restart/starting conditions from
+!   the .CTM file. The input values are checked and possibly adjusted
+!   if the run is intended to be with competition on and if the start_bare
+!   flag is true. 
+
 use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1
 use ctem_statevars,     only : c_switch,vrot,vgat
 
 implicit none
 
-!   This subroutine reads in the restart/starting conditions from
-!   the .CTM file. The input values are check and possibly adjusted
-!   if the run is intended to be with competition on and if the start_bare
-!   flag is true. 
 
 ! arguments:
 character(80), intent(in) :: argbuff
@@ -489,14 +490,14 @@ end subroutine read_from_ctm
 
 subroutine write_ctm_rs(nltest,nmtest,FCANROT,argbuff)
 
+!   After a set period is complete the restart file for CTEM (.CTM_RS) is written
+!   this restart file contains all of the CTEM level information needed to 
+!   to restart the model to the same state.
+
 use ctem_params,        only : ican,l2max,modelpft,icc,nmos,nlat,icp1,iccp1
 use ctem_statevars,     only : c_switch,vrot,vgat
 
 implicit none
-
-!   After a year is complete the restart file for CTEM (.CTM_RS) is written
-!   this restart file contains all of the CTEM level information needed to 
-!   to restart the model to the same state.
 
 ! arguments:
 character(80), intent(in) :: argbuff
@@ -707,6 +708,8 @@ end subroutine write_ctm_rs
 subroutine create_outfiles(argbuff,title1, title2, title3, title4, title5, title6, name1, name2, name3, &
                            name4, name5, name6, place1 ,place2, place3, place4, place5, place6)
                            
+!   All output files are initialized in this subroutine
+
 use ctem_statevars,     only : c_switch,vrot,vgat
 
 implicit none
