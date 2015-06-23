@@ -144,6 +144,7 @@ C
           IF(SAND(I,M,1).GE.0.0) THEN
               ALGWET(I,M)=0.08+0.0022*SAND(I,M,1)
               ALGDRY(I,M)=MIN(0.14+0.0046*SAND(I,M,1),0.45)
+              soci(i,m)=10.0 !FLAG!!!!!! JM JUN22 2015. Just put in random value so compiles!!
               ALGWV(I,M)=ALWV(NINT(SOCI(I,M)))                          
               ALGWN(I,M)=ALWN(NINT(SOCI(I,M)))                          
               ALGDV(I,M)=ALDV(NINT(SOCI(I,M)))                          

@@ -449,9 +449,9 @@ bmasthrs_fire = [ 0.2, 1.0 ]
 
 extnmois = 0.35 !0.3 Sept 22 2014. JM. 
 
-lwrlthrs = 0.25
+lwrlthrs = 0.05 !0.25 FLAG test. JM Jun 22 15
 
-hgrlthrs = 10.0 
+hgrlthrs = 2.0 !10.0 FLAG test. JM Jun 22 15
 
 duff_dry = 0.25
 

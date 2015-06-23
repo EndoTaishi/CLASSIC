@@ -350,7 +350,7 @@ C
           IF(IPAI.EQ.0) THEN
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
-              IF (ICTEMMOD .EQ. 1) THEN
+              IF (ICTEMMOD .EQ. 1) THEN               
                 PAI(I,1)=PAIC(I,1)
                 PAI(I,2)=PAIC(I,2)
                 PAI(I,3)=PAIC(I,3)
@@ -359,7 +359,7 @@ C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
                 PAI(I,1)=PAIMIN(I,1)+GROWN(I)*(PAIMAX(I,1)-PAIMIN(I,1))                 
                 PAI(I,2)=PAIMIN(I,2)+GROWB(I)*(PAIMAX(I,2)-PAIMIN(I,2))                 
                 PAI(I,3)=PAIMIN(I,3)+GROWA(I)*(PAIMAX(I,3)-PAIMIN(I,3))                 
-                PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4))                 
+                PAI(I,4)=PAIMIN(I,4)+GROWG   *(PAIMAX(I,4)-PAIMIN(I,4)) 
               ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
@@ -934,7 +934,7 @@ C
      2                (1.0-EXP(-0.75*SQRT(PAI(I,J))))+
      3                FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
-     5                (FC(I)+FCS(I))                                          
+     5                (FC(I)+FCS(I))    
         ENDIF               
   450 CONTINUE                                                                    
 C                                                                                 

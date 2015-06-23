@@ -3002,6 +3002,7 @@ wetfdyn_yr_m          =>ctem_tile_yr%wetfdyn_yr_m
 ch4dyn1_yr_m          =>ctem_tile_yr%ch4dyn1_yr_m
 ch4dyn2_yr_m          =>ctem_tile_yr%ch4dyn2_yr_m
 
+pftexistrow       => vrot%pftexist
 gppvegrow         => vrot%gppveg
 nepvegrow         => vrot%nepveg
 nbpvegrow         => vrot%nbpveg
@@ -3277,6 +3278,7 @@ ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
                  litres_yr_g(i),soilcres_yr_g(i),' GRDAV'
 
            if (dofire .or. lnduseon) then
+
 !            Write to file .CT06Y_M/.CT06Y_G
             do m=1,nmtest
              do j=1,icc
@@ -3311,6 +3313,7 @@ ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
 !           write fraction of each pft and bare 
 
              if (compete .or. lnduseon) then
+
                  sumfare=0.0
                if (mosaic) then
                  do m=1,nmos
@@ -3323,7 +3326,8 @@ ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
                  do j=1,icc  
                     sumfare=sumfare+fcancmxrow(i,m,j)
                  enddo
-                write(89,8107)iyear,(fcancmxrow(i,m,j)*100., &
+
+                 write(89,8107)iyear,(fcancmxrow(i,m,j)*100., &
                             j=1,icc),(1.0-sumfare)*100.,sumfare, &
                            (pftexistrow(i,m,j),j=1,icc)
 
@@ -3331,12 +3335,11 @@ ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
              endif !compete/lnduseon
             
               if (dowetlands .or. obswetf) then 
+
                 write(92,8115)iyear,ch4wet1_yr_g(i), &
                           ch4wet2_yr_g(i),wetfdyn_yr_g(i), &
                           ch4dyn1_yr_g(i),ch4dyn2_yr_g(i)
               endif 
-
-
 
 !             initialize yearly accumulated arrays
 !             for the next round
