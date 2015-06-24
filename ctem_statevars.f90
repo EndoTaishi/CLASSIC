@@ -53,11 +53,11 @@ type ctem_switches
     logical :: dowetlands
     logical :: obswetf
     logical :: transient_run
-    
+
     character(80) :: titlec1
     character(80) :: titlec2
     character(80) :: titlec3
-    
+
 end type ctem_switches
 
 type (ctem_switches), save, target :: c_switch
@@ -77,11 +77,11 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: stemmass        !
     real, dimension(nlat,nmos,icc) :: rootmass        !
     real, dimension(nlat,nmos,icc) :: pstemmass       !
-    real, dimension(nlat,nmos,icc) :: pgleafmass      !     
+    real, dimension(nlat,nmos,icc) :: pgleafmass      !
     real, dimension(nlat,nmos,icc) :: fcancmx
 
     real, dimension(nlat,nmos) :: gavglai
-    
+
     real, dimension(nlat,nmos,ican) :: zolnc
     real, dimension(nlat,nmos,ican) :: ailc
 
@@ -103,7 +103,7 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: slai
     real, dimension(nlat,nmos,icc) :: ailcb
     real, dimension(nlat,nmos) :: canres
-    real, dimension(nlat,nmos,icc) :: flhrloss      
+    real, dimension(nlat,nmos,icc) :: flhrloss
 
     real, dimension(nlat,nmos,icc) :: grwtheff
     real, dimension(nlat,nmos,icc) :: lystmmas
@@ -118,7 +118,7 @@ type veg_rot
     real, dimension(nlat,nmos,iccp1) :: litrmass
     real, dimension(nlat,nmos,iccp1) :: soilcmas
     real, dimension(nlat,nmos,icc) :: vgbiomas_veg
-    
+
     ! c     Fire-related variables
 
     real, dimension(nlat,nmos,icc) :: emit_co2
@@ -138,12 +138,12 @@ type veg_rot
     real, dimension(nlat,nmos) :: probfire
     real, dimension(nlat,nmos) :: bterm
     real, dimension(nlat,nmos) :: lterm
-    real, dimension(nlat,nmos) :: mterm 
+    real, dimension(nlat,nmos) :: mterm
 
     real, dimension(nlat) :: extnprob
     real, dimension(nlat) :: prbfrhuc
-    real, dimension(nlat,12) :: mlightng    
-    
+    real, dimension(nlat,12) :: mlightng
+
     real, dimension(nlat,nmos,icc) :: bmasveg
     real, dimension(nlat,nmos,ican) :: cmasvegc
     real, dimension(nlat,nmos,icc) :: veghght
@@ -161,7 +161,7 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: wtstatus
     real, dimension(nlat,nmos,icc) :: ltstatus
     real, dimension(nlat,nmos) :: rmr
-        
+
     real, dimension(nlat) :: wetfrac
     real, dimension(nlat,nmos) :: ch4wet1
     real, dimension(nlat,nmos) :: ch4wet2
@@ -169,11 +169,11 @@ type veg_rot
     real, dimension(nlat,nmos) :: ch4dyn1
     real, dimension(nlat,nmos) :: ch4dyn2
     real, dimension(nlat,12) :: wetfrac_mon
-    
+
     real, dimension(nlat,nmos) :: lucemcom
     real, dimension(nlat,nmos) :: lucltrin
     real, dimension(nlat,nmos) :: lucsocin
-    
+
     real, dimension(nlat,nmos) :: npp
     real, dimension(nlat,nmos) :: nep
     real, dimension(nlat,nmos) :: nbp
@@ -188,7 +188,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: dstcemls
     real, dimension(nlat,nmos) :: litrfall
     real, dimension(nlat,nmos) :: humiftrs
-   
+
     real, dimension(nlat,nmos,icc) :: gppveg
     real, dimension(nlat,nmos,iccp1) :: nepveg
     real, dimension(nlat,nmos,iccp1) :: nbpveg
@@ -201,7 +201,7 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: rmsveg
     real, dimension(nlat,nmos,icc) :: rmrveg
     real, dimension(nlat,nmos,icc) :: rgveg
-    
+
     real, dimension(nlat,nmos,icc) :: rothrlos
     real, dimension(nlat,nmos,icc) :: pfcancmx
     real, dimension(nlat,nmos,icc) :: nfcancmx
@@ -221,7 +221,7 @@ type veg_rot
     integer, dimension(nlat,nmos,icc) :: lfstatus
     integer, dimension(nlat,nmos,icc) :: pandays
     integer, dimension(nlat) :: stdaln
-    
+
     real, dimension(nlat,nmos) :: PREACC_M
     real, dimension(nlat,nmos) :: GTACC_M
     real, dimension(nlat,nmos) :: QEVPACC_M
@@ -252,7 +252,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: QAACC_M
     real, dimension(nlat,nmos) :: EVAPACC_M
     real, dimension(nlat,nmos) :: FLUTACC_M
-    
+
     real, dimension(nlat,nmos) :: tcanrs
     real, dimension(nlat,nmos) :: tsnors
     real, dimension(nlat,nmos) :: tpndrs
@@ -261,11 +261,11 @@ type veg_rot
     real, dimension(nlat,nmos) :: tcanoaccrow_m
     real, dimension(nlat,nmos) :: uvaccrow_m
     real, dimension(nlat,nmos) :: vvaccrow_m
-    
-    real, dimension(nlat,nmos) :: tcanoaccrow_out  
+
+    real, dimension(nlat,nmos) :: tcanoaccrow_out
     real, dimension(nlat,nmos) :: qevpacc_m_save
 
-        
+
 end type veg_rot
 
 type (veg_rot), save, target :: vrot
@@ -288,7 +288,7 @@ type veg_gat
     real, dimension(ilg,icc) :: fcancmx
 
     real, dimension(ilg) :: gavglai
-    
+
     real, dimension(ilg) :: lightng
     real, dimension(ilg) :: tcanoaccgat_out
 
@@ -305,15 +305,15 @@ type veg_gat
     real, dimension(ilg,icc) :: co2i1cg
     real, dimension(ilg,icc) :: co2i1cs
     real, dimension(ilg,icc) :: co2i2cg
-    real, dimension(ilg,icc) :: co2i2cs     
+    real, dimension(ilg,icc) :: co2i2cs
     real, dimension(ilg,icc) :: ancsveg
-    real, dimension(ilg,icc) :: ancgveg 
+    real, dimension(ilg,icc) :: ancgveg
     real, dimension(ilg,icc) :: rmlcsveg
     real, dimension(ilg,icc) :: rmlcgveg
     real, dimension(ilg,icc) :: slai
     real, dimension(ilg,icc) :: ailcb
     real, dimension(ilg) :: canres
-    real, dimension(ilg,icc) :: flhrloss    
+    real, dimension(ilg,icc) :: flhrloss
 
     real, dimension(ilg,icc) :: grwtheff
     real, dimension(ilg,icc) :: lystmmas
@@ -327,7 +327,7 @@ type veg_gat
     real, dimension(ilg,icc,ignd) :: rmatctem
     real, dimension(ilg,iccp1) :: litrmass
     real, dimension(ilg,iccp1) :: soilcmas
-    real, dimension(ilg,icc) :: vgbiomas_veg    
+    real, dimension(ilg,icc) :: vgbiomas_veg
 
     real, dimension(ilg,icc) :: emit_co2
     real, dimension(ilg,icc) :: emit_co
@@ -349,8 +349,8 @@ type veg_gat
     real, dimension(ilg) :: mterm
 
     real, dimension(ilg) :: extnprob
-    real, dimension(ilg) :: prbfrhuc    
-    real, dimension(ilg,12) :: mlightng 
+    real, dimension(ilg) :: prbfrhuc
+    real, dimension(ilg,12) :: mlightng
 
     real, dimension(ilg,icc) :: bmasveg
     real, dimension(ilg,ican) :: cmasvegc
@@ -369,18 +369,18 @@ type veg_gat
     real, dimension(ilg,icc) :: wtstatus
     real, dimension(ilg,icc) :: ltstatus
     real, dimension(ilg) :: rmr
- 
+
     real, dimension(ilg,8) :: wetfrac_s
     real, dimension(ilg) :: ch4wet1
     real, dimension(ilg) :: ch4wet2
     real, dimension(ilg) :: wetfdyn
     real, dimension(ilg) :: ch4dyn1
     real, dimension(ilg) :: ch4dyn2
-    
+
     real, dimension(ilg) :: lucemcom
     real, dimension(ilg) :: lucltrin
     real, dimension(ilg) :: lucsocin
-    
+
     real, dimension(ilg) :: npp
     real, dimension(ilg) :: nep
     real, dimension(ilg) :: nbp
@@ -395,7 +395,7 @@ type veg_gat
     real, dimension(ilg) :: dstcemls
     real, dimension(ilg) :: litrfall
     real, dimension(ilg) :: humiftrs
-    
+
     real, dimension(ilg,icc) :: gppveg
     real, dimension(ilg,iccp1) :: nepveg
     real, dimension(ilg,iccp1) :: nbpveg
@@ -408,7 +408,7 @@ type veg_gat
     real, dimension(ilg,icc) :: rmsveg
     real, dimension(ilg,icc) :: rmrveg
     real, dimension(ilg,icc) :: rgveg
-    
+
     real, dimension(ilg,icc) :: rothrlos
     real, dimension(ilg,icc) :: pfcancmx
     real, dimension(ilg,icc) :: nfcancmx
@@ -421,14 +421,14 @@ type veg_gat
     real, dimension(ilg) :: dstcemls3
     real, dimension(ilg,icc) :: anveg
     real, dimension(ilg,icc) :: rmlveg
-    
+
     real, dimension(ilg) :: twarmm              ! temperature of the warmest month (c)
     real, dimension(ilg) :: tcoldm              ! temperature of the coldest month (c)
     real, dimension(ilg) :: gdd5                ! growing degree days above 5 c
     real, dimension(ilg) :: aridity             ! aridity index, ratio of potential evaporation to precipitation
     real, dimension(ilg) :: srplsmon            ! number of months in a year with surplus water i.e. precipitation more than potential evaporation
     real, dimension(ilg) :: defctmon            ! number of months in a year with water deficit i.e. precipitation less than potential evaporation
-    real, dimension(ilg) :: anndefct            ! annual water deficit (mm) 
+    real, dimension(ilg) :: anndefct            ! annual water deficit (mm)
     real, dimension(ilg) :: annsrpls            ! annual water surplus (mm)
     real, dimension(ilg) :: annpcp              ! annual precipitation (mm)
     real, dimension(ilg) :: dry_season_length   ! length of dry season (months)
@@ -439,7 +439,7 @@ type veg_gat
     integer, dimension(ilg,icc) :: lfstatus
     integer, dimension(ilg,icc) :: pandays
     integer, dimension(ilg) :: stdaln
-         
+
 end type veg_gat
 
 type (veg_gat), save, target :: vgat
@@ -462,12 +462,12 @@ type class_moyr_output
     real, dimension(nlat) :: PREACC_MO
     real, dimension(nlat) :: EVAPACC_MO
     real, dimension(nlat) :: TAACC_MO
-    
+
     real :: FSSTAR_MO
     real :: FLSTAR_MO
     real :: QH_MO
     real :: QE_MO
-    
+
     real, dimension(nlat,ignd) :: TBARACC_MO
     real, dimension(nlat,ignd) :: THLQACC_MO
     real, dimension(nlat,ignd) :: THICACC_MO
@@ -513,7 +513,7 @@ type ctem_gridavg
       real, dimension(nlat) :: TROOROT_g
       real, dimension(nlat) :: TROBROT_g
       real, dimension(nlat) :: ROFOROT_g
-      real, dimension(nlat) :: ROFBROT_g      
+      real, dimension(nlat) :: ROFBROT_g
       real, dimension(nlat) :: TROSROT_g
       real, dimension(nlat) :: FSGVROT_g
       real, dimension(nlat) :: FSGSROT_g
@@ -529,15 +529,19 @@ type ctem_gridavg
       real, dimension(nlat) :: HTCCROT_g
       real, dimension(nlat) :: FSGGROT_g
       real, dimension(nlat) :: FLGGROT_g
-      real, dimension(nlat) :: HFSGROT_g      
+      real, dimension(nlat) :: HFSGROT_g
       real, dimension(nlat) :: HEVGROT_g
+      real, dimension(nlat) :: CDHROT_g
+      real, dimension(nlat) :: CDMROT_g
+      real, dimension(nlat) :: SFCUROT_g
+      real, dimension(nlat) :: SFCVROT_g
       real, dimension(nlat) :: fc_g
       real, dimension(nlat) :: fg_g
       real, dimension(nlat) :: fcs_g
       real, dimension(nlat) :: fgs_g
       real, dimension(nlat) :: PCFCROT_g
       real, dimension(nlat) :: PCLCROT_g
-      real, dimension(nlat) :: PCPGROT_g      
+      real, dimension(nlat) :: PCPGROT_g
       real, dimension(nlat) :: QFCFROT_g
       real, dimension(nlat) :: QFGROT_g
       real, dimension(nlat,ignd) :: QFCROT_g
@@ -547,7 +551,7 @@ type ctem_gridavg
       real, dimension(nlat) :: WTRGROT_g
       real, dimension(nlat) :: PCPNROT_g
       real, dimension(nlat) :: QFCLROT_g
-      real, dimension(nlat) :: QFNROT_g      
+      real, dimension(nlat) :: QFNROT_g
       real, dimension(nlat) :: WTRCROT_g
       real, dimension(nlat) :: gpp_g
       real, dimension(nlat) :: npp_g
@@ -558,7 +562,7 @@ type ctem_gridavg
       real, dimension(nlat) :: dstcemls3_g
       real, dimension(nlat) :: litrfall_g
       real, dimension(nlat) :: rml_g
-      real, dimension(nlat) :: rms_g      
+      real, dimension(nlat) :: rms_g
       real, dimension(nlat) :: rg_g
       real, dimension(nlat) :: leaflitr_g
       real, dimension(nlat) :: tltrstem_g
@@ -570,7 +574,7 @@ type ctem_gridavg
       real, dimension(nlat) :: rmr_g
       real, dimension(nlat) :: tltrleaf_g
       real, dimension(nlat) :: gavgltms_g
-      
+
       real, dimension(nlat) :: vgbiomas_g
       real, dimension(nlat) :: gavglai_g
       real, dimension(nlat) :: gavgscms_g
@@ -614,7 +618,7 @@ type ctem_gridavg
       real, dimension(nlat) :: ch4dyn1_g
       real, dimension(nlat) :: ch4dyn2_g
       real, dimension(nlat,icc) :: afrleaf_g
-      real, dimension(nlat,icc) :: afrstem_g     
+      real, dimension(nlat,icc) :: afrstem_g
       real, dimension(nlat,icc) :: afrroot_g
       real, dimension(nlat,icc) :: lfstatus_g
       real, dimension(nlat,icc) :: rmlvegrow_g
@@ -626,7 +630,7 @@ type ctem_gridavg
       real, dimension(nlat,ignd) :: THLQROT_g
       real, dimension(nlat,ignd) :: THICROT_g
       real, dimension(nlat,ignd) :: GFLXROT_g
-      
+
       real :: fsstar_g
       real :: flstar_g
       real :: qh_g
@@ -639,7 +643,7 @@ type ctem_gridavg
       real :: tcn_g
       real :: tsn_g
       real :: zsn_g
-                  
+
 end type ctem_gridavg
 
 type (ctem_gridavg), save, target :: ctem_grd
@@ -648,7 +652,7 @@ type (ctem_gridavg), save, target :: ctem_grd
 
 type ctem_mosaic_level
 
-!   Mosaic-level variables (denoted by an ending of "_m")  
+!   Mosaic-level variables (denoted by an ending of "_m")
 
       real, dimension(nlat,nmos) :: leaflitr_m
       real, dimension(nlat,nmos) :: tltrleaf_m
@@ -660,7 +664,7 @@ type ctem_mosaic_level
       real, dimension(nlat,nmos) :: veghght_m
       real, dimension(nlat,nmos) :: rootdpth_m
       real, dimension(nlat,nmos) :: roottemp_m
-      real, dimension(nlat,nmos) :: slai_m      
+      real, dimension(nlat,nmos) :: slai_m
       real, dimension(nlat,nmos) :: afrroot_m
       real, dimension(nlat,nmos) :: afrleaf_m
       real, dimension(nlat,nmos) :: afrstem_m
@@ -671,7 +675,7 @@ type ctem_mosaic_level
       real, dimension(nlat,nmos) :: gleafmas_m
       real, dimension(nlat,nmos) :: bleafmas_m
       real, dimension(nlat,nmos) :: soilcmas_m
-      
+
       real, dimension(ilg) :: fsnowacc_m
       real, dimension(ilg) :: tcansacc_m
       real, dimension(ilg) :: tcanoaccgat_m
@@ -691,7 +695,7 @@ type ctem_mosaic_level
       real, dimension(ilg,icc) :: rmlcsvga_m
       real, dimension(ilg,icc) :: rmlcgvga_m
       integer, dimension(nlat,nmos) :: ifcancmx_m
-    
+
 end type ctem_mosaic_level
 
 type (ctem_mosaic_level), save, target :: ctem_tile
@@ -713,7 +717,7 @@ type ctem_gridavg_monthly
     real, dimension(nlat) :: nbp_mo_g
     real, dimension(nlat) :: hetrores_mo_g
     real, dimension(nlat) :: autores_mo_g
-    real, dimension(nlat) :: litres_mo_g 
+    real, dimension(nlat) :: litres_mo_g
     real, dimension(nlat) :: soilcres_mo_g
     real, dimension(nlat) :: vgbiomas_mo_g
     real, dimension(nlat) :: totcmass_mo_g
@@ -742,7 +746,7 @@ type ctem_gridavg_monthly
     real, dimension(nlat) :: wetfdyn_mo_g
     real, dimension(nlat) :: ch4dyn1_mo_g
     real, dimension(nlat) :: ch4dyn2_mo_g
-    
+
 end type ctem_gridavg_monthly
 
 type (ctem_gridavg_monthly), save, target :: ctem_grd_mo
@@ -777,7 +781,7 @@ type ctem_mosaic_monthly
       real, dimension(nlat,nmos,icc) :: emit_n2o_mo_m
       real, dimension(nlat,nmos,icc) :: emit_pm25_mo_m
       real, dimension(nlat,nmos,icc) :: emit_tpm_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_tc_mo_m      
+      real, dimension(nlat,nmos,icc) :: emit_tc_mo_m
       real, dimension(nlat,nmos,icc) :: emit_oc_mo_m
       real, dimension(nlat,nmos,icc) :: emit_bc_mo_m
       real, dimension(nlat,nmos,icc) :: burnfrac_mo_m
@@ -793,7 +797,7 @@ type ctem_mosaic_monthly
       real, dimension(nlat,nmos) :: wetfdyn_mo_m
       real, dimension(nlat,nmos) :: ch4dyn1_mo_m
       real, dimension(nlat,nmos) :: ch4dyn2_mo_m
-     
+
 end type ctem_mosaic_monthly
 
 type (ctem_mosaic_monthly), save, target :: ctem_tile_mo
@@ -825,7 +829,7 @@ type ctem_gridavg_annual
     real, dimension(nlat) :: emit_co_yr_g
     real, dimension(nlat) :: emit_ch4_yr_g
     real, dimension(nlat) :: emit_nmhc_yr_g
-    real, dimension(nlat) :: emit_h2_yr_g    
+    real, dimension(nlat) :: emit_h2_yr_g
     real, dimension(nlat) :: emit_nox_yr_g
     real, dimension(nlat) :: emit_n2o_yr_g
     real, dimension(nlat) :: emit_pm25_yr_g
@@ -835,7 +839,7 @@ type ctem_gridavg_annual
     real, dimension(nlat) :: emit_bc_yr_g
     real, dimension(nlat) :: probfire_yr_g
     real, dimension(nlat) :: luc_emc_yr_g
-    real, dimension(nlat) :: lucltrin_yr_g    
+    real, dimension(nlat) :: lucltrin_yr_g
     real, dimension(nlat) :: lucsocin_yr_g
     real, dimension(nlat) :: burnfrac_yr_g
     real, dimension(nlat) :: bterm_yr_g
@@ -846,7 +850,7 @@ type ctem_gridavg_annual
     real, dimension(nlat) :: wetfdyn_yr_g
     real, dimension(nlat) :: ch4dyn1_yr_g
     real, dimension(nlat) :: ch4dyn2_yr_g
-    
+
 end type ctem_gridavg_annual
 
 type (ctem_gridavg_annual), save, target :: ctem_grd_yr
@@ -857,7 +861,7 @@ type ctem_mosaic_annual
 
 ! c      Annual output for CTEM mosaic variables:
 ! c      (denoted by name ending in "_yr_m")
-! 
+!
       real, dimension(nlat,nmos,icc) :: laimaxg_yr_m
       real, dimension(nlat,nmos,icc) :: stemmass_yr_m
       real, dimension(nlat,nmos,icc) :: rootmass_yr_m
@@ -882,7 +886,7 @@ type ctem_mosaic_annual
       real, dimension(nlat,nmos,icc) :: emit_n2o_yr_m
       real, dimension(nlat,nmos,icc) :: emit_pm25_yr_m
       real, dimension(nlat,nmos,icc) :: emit_tpm_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_tc_yr_m      
+      real, dimension(nlat,nmos,icc) :: emit_tc_yr_m
       real, dimension(nlat,nmos,icc) :: emit_oc_yr_m
       real, dimension(nlat,nmos,icc) :: emit_bc_yr_m
       real, dimension(nlat,nmos,icc) :: burnfrac_yr_m
@@ -911,23 +915,23 @@ contains
 subroutine initrowvars()
 
 use ctem_params, only : nlat, nmos, ican, ignd ,icc, iccp1
-     
+
 implicit none
 
 integer :: j,k,l,m
-   
+
  do j = 1,nlat
- 
+
    vrot%prbfrhuc(j)         = 0.0
    vrot%extnprob(j)         = 0.0
    !vrot%barf(j)                = 1.0
-  
-   do k =1,12  
+
+   do k =1,12
      vrot%mlightng(j,k) = 0.0
    end do
 
    do k = 1,nmos
-        
+
 !         vrot%PREACC_M(j,k) = 0.
 !         vrot%GTACC_M(j,k) = 0.
 !         vrot%QEVPACC_M(j,k) = 0.
@@ -937,7 +941,7 @@ integer :: j,k,l,m
 !         vrot%SNOACC_M(j,k) = 0.
 !         vrot%OVRACC_M(j,k) = 0.
 !         vrot%WTBLACC_M(j,k) = 0.
-! 
+!
 !         vrot%ALVSACC_M(j,k) = 0.
 !         vrot%ALIRACC_M(j,k) = 0.
 !         vrot%RHOSACC_M(j,k) = 0.
@@ -955,9 +959,9 @@ integer :: j,k,l,m
 !         vrot%QAACC_M(j,k) = 0.
 !         vrot%EVAPACC_M(j,k) = 0.
 !         vrot%FLUTACC_M(j,k) = 0.
-        
+
         vrot%icount(j,k)           = 0
-        vrot%co2conc(j,k)          = 0.0 
+        vrot%co2conc(j,k)          = 0.0
         vrot%npp(j,k)              = 0.0
         vrot%nep(j,k)              = 0.0
         vrot%hetrores(j,k)         = 0.0
@@ -976,7 +980,7 @@ integer :: j,k,l,m
         vrot%canres(j,k)           = 0.0
         vrot%rml(j,k)              = 0.0
         vrot%rms(j,k)              = 0.0
-        vrot%rmr(j,k)              = 0.0  
+        vrot%rmr(j,k)              = 0.0
         vrot%lucemcom(j,k)         = 0.0
         vrot%lucltrin(j,k)         = 0.0
         vrot%lucsocin(j,k)         = 0.0
@@ -986,7 +990,7 @@ integer :: j,k,l,m
         vrot%lterm(j,k)            = 0.0
         vrot%mterm(j,k)            = 0.0
         vrot%cfluxcg(j,k)          = 0.0
-        vrot%cfluxcs(j,k)          = 0.0         
+        vrot%cfluxcs(j,k)          = 0.0
         !vrot%TCANOACC_M(j,k)       = 0.0
         !vrot%UVACC_M(j,k)          = 0.0
         !vrot%VVACC_M(j,k)          = 0.0
@@ -997,7 +1001,7 @@ integer :: j,k,l,m
         vrot%ch4dyn1(j,k)          = 0.0
         vrot%ch4dyn2(j,k)          = 0.0
 
-        
+
         do l=1,ignd
             vrot%tbaraccrow_m(j,k,l)  = 0.0
 !             vrot%TBARACC_M(j,k,l) = 0.
@@ -1005,7 +1009,7 @@ integer :: j,k,l,m
 !             vrot%THICACC_M(j,k,l) = 0.
 !             vrot%THALACC_M(j,k,l) = 0.
         end do
-        
+
         do l=1,ican
             vrot%ZOLNC(j,k,l)        = 0.0
             vrot%AILC(j,k,l)         = 0.0
@@ -1015,15 +1019,15 @@ integer :: j,k,l,m
             vrot%CSUM(j,k,l)            = 0.0
             vrot%PAIC(j,k,l)         = 0.0
             vrot%SLAIC(j,k,l)        = 0.0
-            
+
             do m = 1, 3
                 vrot%RMATC(j,k,l,m)    = 0.0
             end do
-        
+
         end do
-        
+
         do l = 1,icc
- 
+
             vrot%ailcmin(j,k,l) = 0.
             vrot%ailcmax(j,k,l) = 0.
             vrot%dvdfcan(j,k,l) = 0.
@@ -1032,22 +1036,22 @@ integer :: j,k,l,m
             vrot%stemmass(j,k,l) = 0.
             vrot%rootmass(j,k,l) = 0.
             vrot%pstemmass(j,k,l) = 0.
-            vrot%pgleafmass(j,k,l) = 0.                        
+            vrot%pgleafmass(j,k,l) = 0.
             vrot%ailcg(j,k,l)        = 0.0
-            vrot%ailcgs(j,k,l)       = 0.0   
-            vrot%fcancs(j,k,l)       = 0.0 
+            vrot%ailcgs(j,k,l)       = 0.0
+            vrot%fcancs(j,k,l)       = 0.0
             vrot%fcanc(j,k,l)        = 0.0
             vrot%fcancmx(j,k,l)      = 0.0
-            vrot%co2i1cg(j,k,l)      = 0.0  
+            vrot%co2i1cg(j,k,l)      = 0.0
             vrot%co2i1cs(j,k,l)      = 0.0
             vrot%co2i2cg(j,k,l)      = 0.0
             vrot%co2i2cs(j,k,l)      = 0.0
             vrot%ancsveg(j,k,l)      = 0.0
-            vrot%ancgveg(j,k,l)      = 0.0 
+            vrot%ancgveg(j,k,l)      = 0.0
             vrot%rmlcsveg(j,k,l)     = 0.0
             vrot%rmlcgveg(j,k,l)     = 0.0
             vrot%stemmass(j,k,l)     = 0.0
-            vrot%rootmass(j,k,l)     = 0.0  
+            vrot%rootmass(j,k,l)     = 0.0
             vrot%ailcb(j,k,l)        = 0.0
             vrot%grwtheff(j,k,l)     = 0.0
             vrot%dvdfcan(j,k,l)      = 0.0
@@ -1078,7 +1082,7 @@ integer :: j,k,l,m
             vrot%rmrveg(j,k,l)       = 0.0
             vrot%rgveg(j,k,l)        = 0.0
             vrot%vgbiomas_veg(j,k,l) = 0.0
-            vrot%gppveg(j,k,l) = 0.0 
+            vrot%gppveg(j,k,l) = 0.0
             vrot%autoresveg(j,k,l) = 0.0
             vrot%emit_co2(j,k,l)         =0.0
             vrot%emit_co(j,k,l)          =0.0
@@ -1095,21 +1099,21 @@ integer :: j,k,l,m
             vrot%burnvegf(j,k,l)         =0.0
 
                 do m = 1, ignd
-                    vrot%rmatctem(j,k,l,m) = 0.0     
+                    vrot%rmatctem(j,k,l,m) = 0.0
                 end do
-                
+
             end do !icc
-            !      
-            do l = 1, iccp1 
+            !
+            do l = 1, iccp1
                 vrot%litrmass(j,k,l)    = 0.0
                 vrot%soilcmas(j,k,l)    = 0.0
                 vrot%hetroresveg(j,k,l) = 0.0
                 vrot%litresveg(j,k,l) = 0.0
                 vrot%soilcresveg(j,k,l) = 0.0
-                vrot%nepveg(j,k,l) = 0.0 
-                vrot%nbpveg(j,k,l) = 0.0                        
+                vrot%nepveg(j,k,l) = 0.0
+                vrot%nbpveg(j,k,l) = 0.0
             end do !iccp1
-            
+
    end do !nmos
  end do !nlat
 
@@ -1120,16 +1124,16 @@ end subroutine initrowvars
 subroutine resetclassmon(nltest)
 
 use ctem_params, only : ignd
-     
+
 implicit none
 
 integer, intent(in) :: nltest
 
 integer :: i,j
-    
+
 do i=1,nltest
     class_out%ALVSACC_MO(I)=0.
-    class_out%ALIRACC_MO(I)=0. 
+    class_out%ALIRACC_MO(I)=0.
     class_out%FLUTACC_MO(I)=0.
     class_out%FSINACC_MO(I)=0.
     class_out%FLINACC_MO(I)=0.
@@ -1146,24 +1150,24 @@ do i=1,nltest
         class_out%TBARACC_MO(I,J)=0.
         class_out%THLQACC_MO(I,J)=0.
         class_out%THICACC_MO(I,J)=0.
-    end do    
+    end do
 end do
 
-end subroutine resetclassmon 
+end subroutine resetclassmon
 
 !==================================================
 
 subroutine resetclassyr(nltest)
-     
+
 implicit none
 
 integer, intent(in) :: nltest
 
 integer :: i
-    
+
 do i=1,nltest
           class_out%ALVSACC_YR(I)=0.
-          class_out%ALIRACC_YR(I)=0. 
+          class_out%ALIRACC_YR(I)=0.
           class_out%FLUTACC_YR(I)=0.
           class_out%FSINACC_YR(I)=0.
           class_out%FLINACC_YR(I)=0.
@@ -1175,12 +1179,12 @@ do i=1,nltest
           class_out%TAACC_YR(I)=0.
 end do
 
-end subroutine resetclassyr 
+end subroutine resetclassyr
 
 !==================================================
 
 subroutine resetmidmonth(nltest)
-     
+
 implicit none
 
 integer, intent(in) :: nltest
@@ -1194,14 +1198,14 @@ do i=1,nltest
     ctem_grd_mo%soilcmas_mo_g(i)=0.0
     ctem_grd_mo%vgbiomas_mo_g(i)=0.0
     ctem_grd_mo%totcmass_mo_g(i)=0.0
-end do  
- 
-end subroutine resetmidmonth    
+end do
+
+end subroutine resetmidmonth
 
 !==================================================
 
 subroutine resetmonthend_g(nltest)
-     
+
 implicit none
 
 integer, intent(in) :: nltest
@@ -1243,7 +1247,7 @@ do i=1,nltest
     ctem_grd_mo%wetfdyn_mo_g(i)  =0.0
     ctem_grd_mo%ch4dyn1_mo_g(i)  =0.0
     ctem_grd_mo%ch4dyn2_mo_g(i)  =0.0
-end do    
+end do
 
 end subroutine resetmonthend_g
 
@@ -1252,7 +1256,7 @@ end subroutine resetmonthend_g
 subroutine resetmonthend_m(nltest,nmtest)
 
 use ctem_params, only : iccp1,icc
-     
+
 implicit none
 
 integer, intent(in) :: nltest
@@ -1262,12 +1266,12 @@ integer :: i,m,j
 
 do i=1,nltest
  do m = 1,nmtest
-   do j=1,icc 
+   do j=1,icc
     ctem_tile_mo%npp_mo_m(i,m,j)=0.0
     ctem_tile_mo%gpp_mo_m(i,m,j)=0.0
     ctem_tile_mo%nep_mo_m(i,m,j)=0.0
     ctem_tile_mo%nbp_mo_m(i,m,j)=0.0
-    ctem_tile_mo%laimaxg_mo_m(i,m,j)=0.0 
+    ctem_tile_mo%laimaxg_mo_m(i,m,j)=0.0
     ctem_tile_mo%emit_co2_mo_m(i,m,j)=0.0
     ctem_tile_mo%emit_co_mo_m(i,m,j) =0.0
     ctem_tile_mo%emit_ch4_mo_m(i,m,j) =0.0
@@ -1302,14 +1306,14 @@ do i=1,nltest
     ctem_tile_mo%ch4dyn2_mo_m(i,m)  =0.0
 
   end do !nmtest
-end do ! nltest   
+end do ! nltest
 
 end subroutine resetmonthend_m
 
 !==================================================
 
 subroutine resetyearend_g(nltest)
-     
+
 implicit none
 
 integer, intent(in) :: nltest
@@ -1322,12 +1326,12 @@ do i=1,nltest
     ctem_grd_yr%stemmass_yr_g(i)=0.0
     ctem_grd_yr%rootmass_yr_g(i)=0.0
     ctem_grd_yr%litrmass_yr_g(i)=0.0
-    ctem_grd_yr%soilcmas_yr_g(i)=0.0 
-    ctem_grd_yr%vgbiomas_yr_g(i)=0.0 
-    ctem_grd_yr%totcmass_yr_g(i)=0.0 
+    ctem_grd_yr%soilcmas_yr_g(i)=0.0
+    ctem_grd_yr%vgbiomas_yr_g(i)=0.0
+    ctem_grd_yr%totcmass_yr_g(i)=0.0
     ctem_grd_yr%npp_yr_g(i)=0.0
     ctem_grd_yr%gpp_yr_g(i)=0.0
-    ctem_grd_yr%nep_yr_g(i)=0.0 
+    ctem_grd_yr%nep_yr_g(i)=0.0
     ctem_grd_yr%nbp_yr_g(i)=0.0
     ctem_grd_yr%hetrores_yr_g(i)=0.0
     ctem_grd_yr%autores_yr_g(i)=0.0
@@ -1350,7 +1354,7 @@ do i=1,nltest
     ctem_grd_yr%lucsocin_yr_g(i)=0.0
     ctem_grd_yr%lucltrin_yr_g(i)=0.0
     ctem_grd_yr%burnfrac_yr_g(i)=0.0
-    ctem_grd_yr%bterm_yr_g(i)=0.0 
+    ctem_grd_yr%bterm_yr_g(i)=0.0
     ctem_grd_yr%lterm_yr_g(i)=0.0
     ctem_grd_yr%mterm_yr_g(i)=0.0
     ctem_grd_yr%ch4wet1_yr_g(i)  =0.0
@@ -1358,17 +1362,17 @@ do i=1,nltest
     ctem_grd_yr%wetfdyn_yr_g(i)  =0.0
     ctem_grd_yr%ch4dyn1_yr_g(i)  =0.0
     ctem_grd_yr%ch4dyn2_yr_g(i)  =0.0
-    
-end do    
+
+end do
 
 end subroutine resetyearend_g
 
 !==================================================
 
 subroutine resetyearend_m(nltest,nmtest)
-     
+
 use ctem_params, only : iccp1,icc
-     
+
 implicit none
 
 integer, intent(in) :: nltest
@@ -1378,9 +1382,9 @@ integer :: i,m,j
 
 do i=1,nltest
  do m = 1,nmtest
-   do j=1,icc 
- 
-    ctem_tile_yr%laimaxg_yr_m(i,m,j)=0.0    
+   do j=1,icc
+
+    ctem_tile_yr%laimaxg_yr_m(i,m,j)=0.0
     ctem_tile_yr%npp_yr_m(i,m,j)=0.0
     ctem_tile_yr%gpp_yr_m(i,m,j)=0.0
     ctem_tile_yr%nep_yr_m(i,m,j)=0.0
@@ -1416,19 +1420,19 @@ do i=1,nltest
     ctem_tile_yr%luc_emc_yr_m(i,m)=0.0
     ctem_tile_yr%lucsocin_yr_m(i,m)=0.0
     ctem_tile_yr%lucltrin_yr_m(i,m)=0.0
-    ctem_tile_yr%bterm_yr_m(i,m)=0.0 
+    ctem_tile_yr%bterm_yr_m(i,m)=0.0
     ctem_tile_yr%lterm_yr_m(i,m)=0.0
     ctem_tile_yr%mterm_yr_m(i,m)=0.0
 
     ctem_tile_yr%ch4wet1_yr_m(i,m)  =0.0
     ctem_tile_yr%ch4wet2_yr_m(i,m)  =0.0
     ctem_tile_yr%wetfdyn_yr_m(i,m)  =0.0
-    ctem_tile_yr%ch4dyn1_yr_m(i,m)  =0.0 
-    ctem_tile_yr%ch4dyn2_yr_m(i,m)  =0.0     
+    ctem_tile_yr%ch4dyn1_yr_m(i,m)  =0.0
+    ctem_tile_yr%ch4dyn2_yr_m(i,m)  =0.0
 
   end do !nmtest
-end do ! nltest   
-   
+end do ! nltest
+
 end subroutine resetyearend_m
 
 !==================================================
@@ -1479,9 +1483,9 @@ DO I=1,NLTEST
         vrot%THLQACC_M(I,M,J)=0.
         vrot%THICACC_M(I,M,J)=0.
         vrot%THALACC_M(I,M,J)=0.
-    end do   
+    end do
   end do
-end do  
+end do
 
 end subroutine resetclassaccum
 
@@ -1521,7 +1525,7 @@ integer :: i,j
          ctem_grd%THICROT_g(i,j)=0.0
          ctem_grd%GFLXROT_g(i,j)=0.0
          ctem_grd%HMFGROT_g(i,j)=0.0
-         ctem_grd%HTCROT_g(i,j)=0.0  
+         ctem_grd%HTCROT_g(i,j)=0.0
          ctem_grd%QFCROT_g(i,j)=0.0
         end do
 
@@ -1549,7 +1553,7 @@ integer :: i,j
         ctem_grd%HEVSROT_g(i)=0.0
         ctem_grd%HEVGROT_g(i)=0.0
         ctem_grd%HMFCROT_g(i)=0.0
-        ctem_grd%HMFNROT_g(i)=0.0               
+        ctem_grd%HMFNROT_g(i)=0.0
         ctem_grd%HTCCROT_g(i)=0.0
         ctem_grd%HTCSROT_g(i)=0.0
         ctem_grd%PCFCROT_g(i)=0.0
@@ -1559,20 +1563,24 @@ integer :: i,j
         ctem_grd%QFCFROT_g(i)=0.0
         ctem_grd%QFCLROT_g(i)=0.0
         ctem_grd%QFNROT_g(i)=0.0
-        ctem_grd%QFGROT_g(i)=0.0      
+        ctem_grd%QFGROT_g(i)=0.0
         ctem_grd%ROFCROT_g(i)=0.0
         ctem_grd%ROFNROT_g(i)=0.0
         ctem_grd%WTRCROT_g(i)=0.0
         ctem_grd%WTRSROT_g(i)=0.0
         ctem_grd%WTRGROT_g(i)=0.0
+        ctem_grd%CDHROT_g(i)=0.0
+        ctem_grd%CDMROT_g(i)=0.0
+        ctem_grd%SFCUROT_g(i)=0.0
+        ctem_grd%SFCVROT_g(i)=0.0
 
        if (c_switch%ctem_on) then
           do j=1,icc
             ctem_grd%anvegrow_g(i,j)=0.0
             ctem_grd%rmlvegrow_g(i,j)=0.0
           end do
-       end if  
-       
+       end if
+
        end do
 
 end subroutine resetgridavg
@@ -1620,20 +1628,20 @@ do i=1,nltest
     ctem_grd%lucsocin_g(i) =0.0
     ctem_grd%emit_co2_g(i) =0.0
     ctem_grd%emit_co_g(i)  =0.0
-    ctem_grd%emit_ch4_g(i) =0.0  
+    ctem_grd%emit_ch4_g(i) =0.0
     ctem_grd%emit_nmhc_g(i) =0.0
     ctem_grd%emit_h2_g(i) =0.0
     ctem_grd%emit_nox_g(i) =0.0
-    ctem_grd%emit_n2o_g(i) =0.0 
+    ctem_grd%emit_n2o_g(i) =0.0
     ctem_grd%emit_pm25_g(i) =0.0
-    ctem_grd%emit_tpm_g(i) =0.0 
+    ctem_grd%emit_tpm_g(i) =0.0
     ctem_grd%emit_tc_g(i) =0.0
-    ctem_grd%emit_oc_g(i) =0.0  
+    ctem_grd%emit_oc_g(i) =0.0
     ctem_grd%emit_bc_g(i) =0.0
     ctem_grd%bterm_g(i)   =0.0
     ctem_grd%lterm_g(i)   =0.0
     ctem_grd%mterm_g(i)   =0.0
-    ctem_grd%leaflitr_g(i)=0.0  
+    ctem_grd%leaflitr_g(i)=0.0
     ctem_grd%tltrleaf_g(i)=0.0
     ctem_grd%tltrstem_g(i)=0.0
     ctem_grd%tltrroot_g(i)=0.0
@@ -1658,12 +1666,12 @@ do i=1,nltest
       ctem_grd%rmatctem_g(i,k)=0.0
     enddo
 
-    do j=1,icc        
+    do j=1,icc
       ctem_grd%afrleaf_g(i,j)=0.0
       ctem_grd%afrstem_g(i,j)=0.0
       ctem_grd%afrroot_g(i,j)=0.0
     enddo
-end do    
+end do
 
 end subroutine resetctem_g
 
@@ -1671,7 +1679,7 @@ end subroutine resetctem_g
 
 
 ! separate one:
-! 
+!
 ! c     reset mosaic accumulator arrays.
 ! c
 !       do 655 i=1,nml
@@ -1683,10 +1691,10 @@ end subroutine resetctem_g
 ! c
 ! c         competitition related variables added by y. peng \\
 !           fsinacc_gat(i)=0.
-!           flinacc_gat(i)=0.     
-!           flutacc_gat(i)=0.   
+!           flinacc_gat(i)=0.
+!           flutacc_gat(i)=0.
 !           alswacc_gat(i)=0.
-!           allwacc_gat(i)=0. 
+!           allwacc_gat(i)=0.
 !           pregacc_gat(i)=0.
 ! c         competitition related variables added by y. peng //
 ! c
@@ -1699,7 +1707,7 @@ end subroutine resetctem_g
 !           vvaccgat_m(i)=0.0
 ! c
 !           do 715 j=1,ignd
-!              tbaraccgat_m(i,j)=0.0    
+!              tbaraccgat_m(i,j)=0.0
 !              tbarcacc_m(i,j)=0.0
 !              tbarcsacc_m(i,j)=0.0
 !              tbargacc_m(i,j)=0.0
