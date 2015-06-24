@@ -361,16 +361,16 @@ C
       J=1
       DO 150 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN               
-C              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))   
-              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  !JM EDIT
-              TRCLRV=EXP(TMP)    
+              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))   
+!              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  !JM EDIT
+!              TRCLRV=EXP(TMP)    
                                  
               TRCLDV=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*               
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)   
 
-C              TRCLRT=EXP(-0.3*PAI(I,J)/COSZS(I))   
-              TMP=MAX(-50.0,(-0.3*PAI(I,J)/COSZS(I)))    !JM EDIT
-              TRCLRT = EXP(TMP)
+              TRCLRT=EXP(-0.3*PAI(I,J)/COSZS(I))   
+!              TMP=MAX(-50.0,(-0.3*PAI(I,J)/COSZS(I)))    !JM EDIT
+!              TRCLRT = EXP(TMP)
                                  
               TRCLDT=0.30*EXP(-0.3*PAI(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.3*PAI(I,J)/0.2588)   
@@ -456,16 +456,17 @@ C
       DO 350 J=3,IC
       DO 350 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN
-C             TRCLRV=EXP(-0.5*PAI(I,J)/COSZS(I))   
-              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  !JM EDIT
-              TRCLRV=EXP(TMP)    
+             TRCLRV=EXP(-0.5*PAI(I,J)/COSZS(I))   
+!              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  !JM EDIT
+!              TRCLRV=EXP(TMP)    
 
               TRCLDV=0.30*EXP(-0.5*PAI(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.5*PAI(I,J)/0.2588)
 
-C              TRCLRT=EXP(-0.4*PAI(I,J)/COSZS(I))  
-              TMP=MAX(-50.0,(-0.4*PAI(I,J)/COSZS(I)))    !JM EDIT
-              TRCLRT = EXP(TMP)
+              TRCLRT=EXP(-0.4*PAI(I,J)/COSZS(I))  
+!              TMP=MAX(-50.0,(-0.4*PAI(I,J)/COSZS(I)))    !JM EDIT
+!              TRCLRT = EXP(TMP)
+
                                
               TRCLDT=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)                
@@ -549,16 +550,16 @@ C
       J=1
       DO 500 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-C              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I)) 
-              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
-              TRCLRV=EXP(TMP)    
+              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I)) 
+!              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
+!              TRCLRV=EXP(TMP) 
                                    
               TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)   
 
-C              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))                       
-              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    !JM EDIT
-              TRCLRT = EXP(TMP)
+              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))                       
+!              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    !JM EDIT
+!              TRCLRT = EXP(TMP)
              
               TRCLDT=0.30*EXP(-0.3*PAIS(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.3*PAIS(I,J)/0.2588)   
@@ -630,16 +631,16 @@ C
       DO 700 J=3,IC
       DO 700 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-C              TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I)) 
-              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  !JM EDIT
-              TRCLRV=EXP(TMP)    
+              TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I)) 
+!              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  !JM EDIT
+!              TRCLRV=EXP(TMP)    
                                    
               TRCLDV=0.30*EXP(-0.5*PAIS(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.5*PAIS(I,J)/0.2588)
 
-C              TRCLRT=EXP(-0.4*PAIS(I,J)/COSZS(I))
-              TMP=MAX(-50.0,(-0.4*PAIS(I,J)/COSZS(I)))    !JM EDIT
-              TRCLRT = EXP(TMP)
+              TRCLRT=EXP(-0.4*PAIS(I,J)/COSZS(I))
+!              TMP=MAX(-50.0,(-0.4*PAIS(I,J)/COSZS(I)))    !JM EDIT
+!              TRCLRT = EXP(TMP)
                                     
               TRCLDT=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)                
