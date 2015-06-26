@@ -527,7 +527,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !       Determine the probability of fire due to human causes
 !       this is based upon the population density from the .popd
 !       read-in file
-        if (.not. popdon) then
+        if (popdon) then
             prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !From Kloster et al. (2010)
         end if
 
