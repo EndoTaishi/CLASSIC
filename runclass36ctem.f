@@ -424,7 +424,8 @@ c
      6           ncyear, co2yr, popyr, nummetcylyrs,
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
      8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2),
-     9           obswetyr, cywetldyr, trans_startyr, jmosty   
+     9           obswetyr, cywetldyr, trans_startyr, jmosty,
+     +           obslghtyr
 c
        real      fsstar_g,
      1           flstar_g,  qh_g,    qe_g,        snomlt_g,
@@ -879,6 +880,8 @@ c      (denoted by name ending in "_yr_m")
      &      wetfdyn_yr_m(nlat,nmos),   ch4dyn1_yr_m(nlat,nmos),
      &      ch4dyn2_yr_m(nlat,nmos)
   
+      logical, parameter :: obslght = .true.  ! if true the observed lightning will be used. False means you will use the
+                                              ! lightning climatology from the CTM file.
 c
 c============= CTEM array declaration done =============================/
 C
@@ -931,6 +934,8 @@ c     all model switches are read in from a namelist file
 
 c     Initialize the CTEM parameters
       call initpftpars(compete)
+
+
 c
 c     set ictemmod, which is the class switch for coupling to ctem
 c     either to 1 (ctem is coupled to class) or 0 (class runs alone)
@@ -1183,8 +1188,8 @@ c
         cylucyr = metcylyrst
 !        cywetldyr = metcylyrst
       else  ! give dummy value
-        cypopyr = -9999
-        cylucyr = -9999
+        cypopyr = popcycleyr !-9999
+        cylucyr = popcycleyr !-9999
 !        cywetldyr = -9999
       end if
 
@@ -1236,6 +1241,12 @@ c
         open(unit=16,file=argbuff(1:strlen(argbuff))//'.WET',
      &         status='old')
       endif 
+
+      if (obslght) then ! this was brought in for FireMIP
+        open(unit=17,file=argbuff(1:strlen(argbuff))//'.LGHT',
+     &         status='old')
+      endif
+
 c
 c     * output files
 c
@@ -2515,7 +2526,8 @@ c     ----------
 c     preparation with the input datasets prior to launching run:
 
       iyear=-99999  ! initialization, forces entry to loop below
-      obswetyr=-99999 
+      obswetyr=-99999
+      obslghtyr=-99999
 
 c     find the first year of met data
 
@@ -2548,6 +2560,14 @@ c  /--------------Rudra-------------/
          
        end if 
 
+       if(obslght) then
+        do while (obslghtyr .lt. metcylyrst)
+            do i=1,nltest
+              read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
+            end do
+         end do
+         backspace(17)
+       end if
 
 c    \---------------Rudra----------\
 
@@ -2814,11 +2834,11 @@ c     start up the main model loop
       
       do while (run_model)
 
-
 c     if the met file has been rewound (due to cycling over the met data)
 c     then we need to find the proper year in the file before we continue
 c     on with the run
       if (met_rewound) then
+
         do while (iyear .lt. metcylyrst) 
          do i=1,nltest
 c         this reads in one 30 min slice of met data, when it reaches 
@@ -2850,6 +2870,15 @@ c  /------------------Rudra----------------/
              enddo
            enddo
         endif !obswetf
+       if(obslght) then
+        do while (obslghtyr .lt. metcylyrst)
+            do i=1,nltest
+              read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
+            end do
+         end do
+         if (metcylyrst .ne. -9999) backspace(17)
+       end if
+
        endif ! ctem_on 
 
 
@@ -2885,6 +2914,10 @@ c         /---------------Rudra-----------------/
                      wetfrac_mon(i,j) = 0.0
                    enddo
               endif !obswetf
+              if(obslght) then
+                read(17,*,end=212) obslghtyr,(mlightnggrd(i,j),j=1,12)
+212       continue !if end of file, just keep using the last year of lighting data.
+              end if
             endif ! ctem_on 
  
           endif 
@@ -2911,7 +2944,7 @@ c
           endif   ! lopcount .gt. 1
           
 c
-!         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
+c         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 c
 C===================== CTEM ============================================ /
           FSVHGRD(I)=0.5*FSDOWN
@@ -2951,7 +2984,7 @@ c      read in from the .ctm file. Set
 c      cypopyr = -9999 when we don't want to cycle over the popd data
 c      so this allows us to grab a new value each year.
 
-       if(popdon .and. cypopyr .eq. -9999) then
+       if(popdon .and. transient_run) then
          do while (popyr .lt. iyear) 
           do i=1,nltest
            read(13,5301,end=999) popyr,popdin
@@ -6616,12 +6649,16 @@ c      check if the model is done running.
              if(lopcount.le.ctemloop .and. .not. transient_run)then
 
               rewind(12)   ! rewind met file
-c /---------------------Rudra----------------/
+
                if(obswetf) then
                 rewind(16) !rewind obswetf file
                 read(16,*) ! read in the header
                endif
-c\----------------------Rudra---------------\
+              if (obslght) then ! FLAG
+                 obslghtyr=-9999
+                 rewind(17)
+              endif
+
               met_rewound = .true.
               iyear=-9999
               obswetyr=-9999     !Rudra
@@ -6640,12 +6677,33 @@ c\----------------------Rudra---------------\
              ! rewind only the MET file (since we are looping over the MET  while
              ! the other inputs continue on.
                rewind(12)   ! rewind met file
-               
+
+               if (obslght) then ! FLAG
+                 obslghtyr=-999
+                 rewind(17)
+                 do while (obslghtyr .lt. metcylyrst)
+                   do i=1,nltest
+                    read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
+                   end do
+                 end do
+                 backspace(17)
+               endif
+
              else
              
               if (transient_run .and. cyclemet) then
               ! Now switch from cycling over the MET to running through the file
               rewind(12)   ! rewind met file
+              if (obslght) then !FLAG
+                 obslghtyr=-999
+                 rewind(17)
+                 do while (obslghtyr .lt. metcylyrst)
+                   do i=1,nltest
+                    read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
+                   end do
+                 end do
+               backspace(17)
+              endif
               cyclemet = .false.
               lopcount = 1   
               endyr = iyear + ncyear  !set the new end year
@@ -6778,7 +6836,10 @@ c     close the input files too
       close(14)
       if (obswetf) then
         close(16)  !*.WET
-      end if     
+      end if
+      if (obslght) then
+         close(17)
+      end if
       call exit
 C
 c         the 999 label below is hit when an input file reaches its end.       
@@ -6808,7 +6869,10 @@ c \------------Rudra---------------\
                if(co2on) then
                  rewind(14) !rewind co2 file
                endif
-                               
+              if (obslght) then
+                 rewind(17)
+              endif
+
              else
 
               run_model = .false.

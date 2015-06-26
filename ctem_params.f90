@@ -350,10 +350,10 @@ kn= [ 0.50, 0.50, 0.00, &
       0.40, 0.48, 0.00, &
       0.46, 0.44, 0.00 ]
       
-!lfespany  =   [ 5.00, 1.00, 0.00, &
-!                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
-lfespany  =   [ 5.00, 0.40, 0.00, &
-                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
+lfespany  =   [ 5.00, 1.00, 0.00, &
+                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+!lfespany  =   [ 5.00, 0.40, 0.00, & !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
+!               1.50, 0.40, 1.00, &
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]      
 
@@ -459,13 +459,13 @@ extnmois = 0.35 !0.3 Sept 22 2014. JM. !OLD!
 
 duff_dry = 0.25 !OLD!
 
-extnmois_veg = 0.3
+extnmois_veg = 0.37 !flag test was 0.3
 
-extnmois_duff = 0.5   
+extnmois_duff = 0.55 !flat test was 0.5  
 
-lwrlthrs = 0.25
+lwrlthrs = 0.025 !0.25 FLAG test. JM Jun 22 15
 
-hgrlthrs = 10.0 
+hgrlthrs = 1.0 !10.0 FLAG test. JM Jun 22 15
 
 !     **Parmlght was increased to 0.8 to make it so areas with higher amounts of
 !     lightning have higher lterm. The saturation is still the same, but the 
@@ -687,7 +687,8 @@ bsratesc = [ 0.0208, 0.0208, 0.0000, &
              0.0280, 0.0280, 0.0000, &
              0.0100, 0.0100, 0.0000 ]              
 
-tanhq10  = [ 1.2, 0.2, 0.075, 46.0 ] ! was 1.44/0.56/0.075/46 TEST FLAG mar 3 JM 2015
+tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ] 
+!tanhq10  = [ 1.2, 0.2, 0.075, 46.0 ] ! was 1.44/0.56/0.075/46 TEST FLAG mar 3 JM 2015
            !   a     b      c     d
            ! q10 = a + b * tanh[ c (d-temperature) ]
            ! when a = 2, b = 0, we get the constant q10 of 2. if b is non

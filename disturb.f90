@@ -506,7 +506,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !       New approximation of Price and Rind equation. It was developed from a more complete dataset than Prentice and Mackerras. 
 !       Lightning comes in in units of flashes/km2/yr so divide by 12 to make per month.
-        c2glgtng(i)=0.219913*exp(0.0058899*abs(currlat(i)))*(lightng(i)/12.)  
+        c2glgtng(i)=lightng(i) !FLAG FireMIP lightning is already C2G!! !0.219913*exp(0.0058899*abs(currlat(i)))*lightng(i)
 
         betalght(i)=min(1.0,max(0.0,(c2glgtng(i)-lwrlthrs)/(hgrlthrs-lwrlthrs)))
         y(i)=1.0/( 1.0+exp((parmlght-betalght(i))/parblght) )
@@ -723,7 +723,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
           arbn1day_veg(i,j)=(pi*24.0*24.0*sprdrate_veg(i,j)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
 
 !         fire extinguishing probability as a function of grid-cell averaged population density
-          extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   
+          extnprob(i)=max(0.0,0.9-exp(-0.025*popdin))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
           extnprob(i)=0.5+extnprob(i)/2.0
 
 !         area multipler to calculate area burned over the duration of the fire

@@ -23,7 +23,7 @@ export PGIMACH=linux86-64
 # Debugging of model ----------------
 
 # PGI
-#FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds 
+#FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds
 
 #export PGIMACH=linux86-64
 
