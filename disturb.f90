@@ -623,7 +623,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 ! !         Original way from Arora & Boer 2005
 ! !          extnprob(i)=0.5 !ORIG
 ! !         Kloster et al. 2010 way:
-!           if (.not. popdon) then
+!           if (popdon) then
 !             extnprob(i)=max(0.0,0.9-exp(-0.015*popdin))   !FLAG test  was -0.025, but that makes a very large drop in fire over historical. JM Sept 2014
 !             extnprob(i)=0.5+extnprob(i)/2.0
 !           end if
@@ -723,8 +723,10 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
           arbn1day_veg(i,j)=(pi*24.0*24.0*sprdrate_veg(i,j)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
 
 !         fire extinguishing probability as a function of grid-cell averaged population density
-          extnprob(i)=max(0.0,0.9-exp(-0.025*popdin))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
-          extnprob(i)=0.5+extnprob(i)/2.0
+          if (popdon) then
+            extnprob(i)=max(0.0,0.9-exp(-0.025*popdin))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
+            extnprob(i)=0.5+extnprob(i)/2.0
+          end if
 
 !         area multipler to calculate area burned over the duration of the fire
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
