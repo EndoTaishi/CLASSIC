@@ -1212,7 +1212,7 @@ c
      2                      il2,   tbarcs,   thliqc,     sand,
      3                     clay, rttempcs,    zbotw,     sort,
      4                     isand,
-     5                 ltrsvgcs, scrsvgcs) 
+     5                 ltrsvgcs, scrsvgcs, thicec) !YW FLAG
 c
 c     find heterotrophic respiration rates for canopy over ground 
 c     subarea
@@ -1222,7 +1222,7 @@ c
      2                      il2,    tbarc,   thliqc,     sand,
      3                     clay, rttempcg,    zbotw,     sort,
      4                     isand,
-     5                 ltrsvgcg, scrsvgcg) 
+     5                 ltrsvgcg, scrsvgcg, thicec) ! YW FLAG
 
 c
 c     find heterotrophic respiration rates from bare ground subarea
