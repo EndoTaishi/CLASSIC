@@ -240,6 +240,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: RHOSACC_M
     real, dimension(nlat,nmos) :: TSNOACC_M
     real, dimension(nlat,nmos) :: WSNOACC_M
+    real, dimension(nlat,nmos) :: SNOARE_M
     real, dimension(nlat,nmos) :: TCANACC_M
     real, dimension(nlat,nmos) :: RCANACC_M
     real, dimension(nlat,nmos) :: SCANACC_M
@@ -1465,6 +1466,7 @@ DO I=1,NLTEST
         vrot%RHOSACC_M(i,m) = 0.
         vrot%TSNOACC_M(i,m) = 0.
         vrot%WSNOACC_M(i,m) = 0.
+        vrot%SNOARE_M(i,m) = 0.
         vrot%TCANACC_M(i,m) = 0.
         vrot%RCANACC_M(i,m) = 0.
         vrot%SCANACC_M(i,m) = 0.
@@ -1536,6 +1538,7 @@ integer :: i,j
         ctem_grd%zsn_g=0.0
         ctem_grd%TROFROT_g(i)=0.0
         ctem_grd%TROOROT_g(i)=0.0
+        ctem_grd%TROBROT_g(i)=0.0
         ctem_grd%TROSROT_g(i)=0.0
         ctem_grd%ROFOROT_g(i)=0.0
         ctem_grd%ROFSROT_g(i)=0.0

@@ -7,6 +7,11 @@ C     * ECOSYSTEM MODEL).
 C
 C     REVISION HISTORY:
 C
+C     * JUL 2 2015
+C     * JOE MELTON : Took many calculations out of this driver and into subroutines. Introduced
+C                    modular structure and made CTEM vars into pointers. Harmonized CLASS v. 3.6.1
+C                    code with CTEM code and into this driver.
+C
 C     * JAN 14 2014
 C     * JOE MELTON : Harmonized the field capacity and wilting point calculations between CLASS and CTEM.
 C                    took the code out of runclassctem and it is now fully done within CLASSB. Harmonized names too.
@@ -85,11 +90,11 @@ c     through use statements for modules:
      7                               ctem_tile_yr,resetgridavg,
      8                               resetmonthend_m,resetyearend_g,
      9                               resetyearend_m
+
       use io_driver,          only : read_from_ctm, create_outfiles,
      1                               write_ctm_rs, class_monthly_aw,
      2                               ctem_monthly_aw,ctem_annual_aw,
      3                               close_outfiles,ctem_daily_aw
-
 
 c
       implicit none
@@ -431,7 +436,7 @@ C
       REAL DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,
      1     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,
      2     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,
-     3     ALTOT_YR,TSURF,ALAVG,ALMAX,ACTLYR,FTAVG,FTMAX,FTABLE !,ALTOT_MO
+     3     ALTOT_YR,TSURF,ALAVG,ALMAX,ACTLYR,FTAVG,FTMAX,FTABLE
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -442,12 +447,11 @@ C
      4     HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,
      5     CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,ALVSI,ALIRI,ALVSO,ALIRO,
      6     ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,
-     7     ANGMAX,A,B !,EPS1,EPS2,T1S,T2S,AI,BI,AW,BW,SLP,RW1,RW2,RW3, !FLAG not in new CLASS
-!     8     RI1,RI2,RI3
+     7     ANGMAX,A,B
 C
 c================= CTEM array declaration ===============================\
 c
-c     local variables for coupling CLASS and CTEM
+c     Local variables for coupling CLASS and CTEM
 c
       integer ictemmod
 
@@ -1115,6 +1119,7 @@ c
       real, pointer, dimension(:,:) :: RHOSACC_M
       real, pointer, dimension(:,:) :: TSNOACC_M
       real, pointer, dimension(:,:) :: WSNOACC_M
+      real, pointer, dimension(:,:) :: SNOARE_M
       real, pointer, dimension(:,:) :: TCANACC_M
       real, pointer, dimension(:,:) :: RCANACC_M
       real, pointer, dimension(:,:) :: SCANACC_M
@@ -2147,6 +2152,7 @@ C===================== CTEM ==============================================\
       RHOSACC_M         => vrot%RHOSACC_M
       TSNOACC_M         => vrot%TSNOACC_M
       WSNOACC_M         => vrot%WSNOACC_M
+      SNOARE_M          => vrot%SNOARE_M
       TCANACC_M         => vrot%TCANACC_M
       RCANACC_M         => vrot%RCANACC_M
       SCANACC_M         => vrot%SCANACC_M
@@ -2848,20 +2854,22 @@ c
 c     * CLASS output files
 c
       if (.not. parallelrun) then ! stand alone mode, includes half-hourly and daily output
-       OPEN(UNIT=61,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1_G')  ! DAILY OUTPUT FROM CLASS
+       OPEN(UNIT=61,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1_G')  ! GRID-LEVEL DAILY OUTPUT FROM CLASS
        OPEN(UNIT=62,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF2_G')
        OPEN(UNIT=63,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF3_G')
-       OPEN(UNIT=611,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1_M') ! DAILY OUTPUT FROM CLASS
+
+       OPEN(UNIT=611,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1_M') ! MOSAIC DAILY OUTPUT FROM CLASS
        OPEN(UNIT=621,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF2_M')
        OPEN(UNIT=631,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF3_M')
 
-       OPEN(UNIT=64,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF4_M')  ! HALF-HOURLY OUTPUT FROM CLASS
+       OPEN(UNIT=64,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF4_M')  ! MOSAIC HALF-HOURLY OUTPUT FROM CLASS
        OPEN(UNIT=65,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF5_M')
        OPEN(UNIT=66,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF6_M')
        OPEN(UNIT=67,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF7_M')
        OPEN(UNIT=68,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF8_M')
        OPEN(UNIT=69,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF9_M')
-       OPEN(UNIT=641,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF4_G') ! HALF-HOURLY OUTPUT FROM CLASS
+
+       OPEN(UNIT=641,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF4_G') ! GRID-LEVEL HALF-HOURLY OUTPUT FROM CLASS
        OPEN(UNIT=651,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF5_G')
        OPEN(UNIT=661,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF6_G')
        OPEN(UNIT=671,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF7_G')
@@ -5744,7 +5752,7 @@ C===================== CTEM =====================================\
               write(65,6500) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
      1                   tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,3),
      2                  tcn,RCANROT(i,m),SCANROT(i,m),tsn,zsn,
-     3                   TCN_G-(TAROW(I)-TFREZ),TCANO(I)-TFREZ,
+     3                   TCN-(TAROW(I)-TFREZ),TCANO(I)-TFREZ,
      4                   TACGAT(I)-TFREZ,ACTLYR,FTABLE,' TILE ',m
               write(66,6601) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
      1                   tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=4,10),
@@ -5754,7 +5762,7 @@ C===================== CTEM =====================================\
               write(65,6500) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
      1                   tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,3),
      2                  tcn,RCANROT(i,m),SCANROT(i,m),tsn,zsn,
-     3                   TCN_G-(TAROW(I)-TFREZ),TCANO(I)-TFREZ,
+     3                   TCN-(TAROW(I)-TFREZ),TCANO(I)-TFREZ,
      4                   TACGAT(I)-TFREZ,ACTLYR,FTABLE,' TILE ',m
 
 C===================== CTEM =====================================/
@@ -6320,6 +6328,7 @@ C
               RHOSACC_M(I,M)=RHOSACC_M(I,M)+RHOSROT(I,M)
               TSNOACC_M(I,M)=TSNOACC_M(I,M)+TSNOROT(I,M)
               WSNOACC_M(I,M)=WSNOACC_M(I,M)+WSNOROT(I,M)
+              SNOARE_M(I,M) = SNOARE_M(I,M) + 1.0 !FLAG test.
           ENDIF
           IF(TCANROT(I,M).GT.0.5) THEN
               TCANACC_M(I,M)=TCANACC_M(I,M)+TCANROT(I,M)
@@ -6369,11 +6378,13 @@ C
             ALIRACC_M(I,M)=0.0
           ENDIF
 C
-          RHOSACC_M(I,M)=RHOSACC_M(I,M)/REAL(NDAY)
-          TSNOACC_M(I,M)=TSNOACC_M(I,M)/REAL(NDAY)
-          WSNOACC_M(I,M)=WSNOACC_M(I,M)/REAL(NDAY)
-          TCANACC_M(I,M)=TCANACC_M(I,M)/REAL(NDAY)
           SNOACC_M(I,M)=SNOACC_M(I,M)/REAL(NDAY)
+          if (SNOARE_M(I,M) .GT. 0.) THEN
+             RHOSACC_M(I,M)=RHOSACC_M(I,M)/SNOARE_M(I,M)
+             TSNOACC_M(I,M)=TSNOACC_M(I,M)/SNOARE_M(I,M)
+             WSNOACC_M(I,M)=WSNOACC_M(I,M)/SNOARE_M(I,M)
+          END IF
+          TCANACC_M(I,M)=TCANACC_M(I,M)/REAL(NDAY)
           RCANACC_M(I,M)=RCANACC_M(I,M)/REAL(NDAY)
           SCANACC_M(I,M)=SCANACC_M(I,M)/REAL(NDAY)
           GROACC_M(I,M)=GROACC_M(I,M)/REAL(NDAY)
