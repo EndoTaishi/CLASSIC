@@ -103,10 +103,14 @@ C
      1        IMONTH,NDMONTH,NT,
      2        IHOUR,IMIN,IDAY,IYEAR,NML,NMW,NWAT,NICE,JLAT,
      3        NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,I,J,K,L,M,
-     4        NTLD,NAL,NFT
+     4        NTLD
 C
-      INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11
-C
+      INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11,ITA,ITCAN,ITD,
+     1        ITAC,ITS,ITSCR,ITD2,ITD3,ITD4,ISTEPS,NFS,NDRY,NAL,NFT
+      REAL TAHIST(200), TCHIST(200), TACHIST(200), TDHIST(200),
+     1     TSHIST(200),TSCRHIST(200),TD2HIST(200),TD3HIST(200),
+     2     TD4HIST(200),PAICAN(ILG)
+
       INTEGER*4 TODAY(3), NOW(3)
 C
 C     * LAND SURFACE PROGNOSTIC VARIABLES.
@@ -120,7 +124,7 @@ C
      3        SNOROT ,   TCANROT,   RCANROT,
      4        SCANROT,   GROROT ,   CMAIROT,
      5        TACROT ,   QACROT ,   WSNOROT,
-     7        REFROT,    BCSNROT
+     6        REFROT,    BCSNROT
 C
       REAL    TSFSROT(NLAT,NMOS,4)
 C
@@ -133,7 +137,7 @@ C
      3        SNOGAT ,   TCANGAT,   RCANGAT,
      4        SCANGAT,   GROGAT ,   CMAIGAT,
      5        TACGAT ,   QACGAT ,   WSNOGAT,
-     7        REFGAT,    BCSNGAT
+     6        REFGAT,    BCSNGAT
 
 C
       REAL    TSFSGAT(ILG,4)
@@ -245,8 +249,8 @@ C
      6      RPCPROW,   TRPCROW,   SPCPROW,   TSPCROW,
      7      RHSIROW,   FCLOROW,   DLONROW,   UVROW  ,
      8      XDIFFUS,   GCROW  ,   Z0ORROW,   GGEOROW,
-     9      RPREROW,   SPREROW,   DLATROW,   FSSROW,
-     A      PRENROW,   CLDTROW,   VMODROW,   FSGROL,
+     9      RPREROW,   SPREROW,   VMODROW,   DLATROW,
+     A      FSSROW,    PRENROW,   CLDTROW,   FSGROL,
      B      FLGROL,    GUSTROL,   DEPBROW
 C
       REAL,DIMENSION(ILG) ::
@@ -424,10 +428,10 @@ C
 C
 C     * CONSTANTS AND TEMPORARY VARIABLES.
 C
-      REAL DEGLON,DAY,DECL,HOUR,COSZ,
+      REAL DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,
      1     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,
-     2     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,
-     3     ALTOT_YR,CUMSNO,ALAVG,ALMAX,ACTLYR,FTAVG,FTMAX,FTABLE !,ALTOT_MO
+     2     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,
+     3     ALTOT_YR,TSURF,ALAVG,ALMAX,ACTLYR,FTAVG,FTMAX,FTABLE !,ALTOT_MO
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -3009,92 +3013,105 @@ C
        WRITE(61,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(61,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
        WRITE(61,6011)
+6011  FORMAT(2X,'DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
+     1          'TR  SWE  DS  WS  AL  ROF  CUMS')
+
        WRITE(62,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(62,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-C
+
        IF(IGND.GT.3) THEN
           WRITE(62,6012)
+6012      FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
+     1              'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',
+     2              'THI5')
+
        ELSE
           WRITE(62,6212)
+6212      FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
+     1              'TG3  THL3  THI3  TCN  RCAN  SCAN  TSN  ZSN')
+
        ENDIF
-C
+
        WRITE(63,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(63,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-C
+
        IF(IGND.GT.3) THEN
           WRITE(63,6013)
+6013      FORMAT(2X,'DAY  YEAR  TG6  THL6  THI6  TG7  THL7  THI7  ',
+     1              'TG8  THL8  THI8  TG9  THL9  THI9  TG10'  ,
+     2              'THL10  THI10')
+
        ELSE
           WRITE(63,6313)
+6313      FORMAT(2X,'DAY YEAR KIN LIN TA UV PRES QA PCP EVAP')
+
        ENDIF
 C
        WRITE(64,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(64,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
        WRITE(64,6014)
-       WRITE(65,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
-       WRITE(65,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-C
-       IF(IGND.GT.3) THEN
-          WRITE(65,6015)
-       ELSE
-          WRITE(65,6515)
-       ENDIF
-C
-       WRITE(66,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
-       WRITE(66,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-C
-       IF(IGND.GT.3) THEN
-          WRITE(66,6016)
-       ELSE
-          WRITE(66,6616)
-          WRITE(66,6615)
-       ENDIF
-C
-       WRITE(67,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
-       WRITE(67,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-       WRITE(67,6017)
-       WRITE(68,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
-       WRITE(68,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-       WRITE(68,6018)
-       WRITE(69,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
-       WRITE(69,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-       WRITE(69,6019)
-C
-6011  FORMAT(2X,'DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
-     1          'TR  SWE  DS  WS  AL  ROF  CUMS')
-6012  FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
-     1              'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',
-     2              'THI5')
-6212  FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
-     1              'TG3  THL3  THI3  TCN  RCAN  SCAN  TSN  ZSN')
-6013  FORMAT(2X,'DAY  YEAR  TG6  THL6  THI6  TG7  THL7  THI7  ',
-     1              'TG8  THL8  THI8  TG9  THL9  THI9  TG10'  ,
-     2              'THL10  THI10')
-6313  FORMAT(2X,'DAY YEAR KIN LIN TA UV PRES QA PCP EVAP')
 6014  FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
      1          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',
      2          'SFCU  SFCV  UV')
-6015  FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',
-     1          'THL2  THI2  TG3  THL3  THI3')
-6515  FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',
+
+       WRITE(65,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+       WRITE(65,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+
+       IF(IGND.GT.3) THEN
+          WRITE(65,6015)
+6015      FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',
+     1          'THL2  THI2  TG3  THL3  THI3  TG4  THL4  THI4  ',
+     2          'TG5  THL5  THI5')
+
+       ELSE
+          WRITE(65,6515)
+6515      FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',
      1           'THL2  THI2  TG3  THL3  THI3  TCN  RCAN  SCAN  ',
      2           'TSN  ZSN  TCN-TA  TCANO  TAC  ACTLYR  FTABLE')
-6016  FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG4  THL4  THI4  TG5  ',
-     1          'THL5  THI5  TG6  THL6  THI6  TG7  ',
-     2          'THL7  THI7  TG8  THL8  THI8  TG9  THL9  THI9  ',
-     3          'TG10  THL10  THI10  G0  G1  G2  G3  G4  G5  G6  ',
-     4          'G7  G8  G9')
+
+       ENDIF
+
+       WRITE(66,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+       WRITE(66,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+
+       IF(IGND.GT.3) THEN
+          WRITE(66,6016)
+6016      FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG6  THL6  THI6  TG7  ',
+     1          'THL7  THI7  TG8  THL8  THI8  TG9  THL9  THI9  ',
+     2          'TG10  THL10  THI10  G0  G1  G2  G3  G4  G5  G6  ',
+     3          'G7  G8  G9')
+
+       ELSE
+          WRITE(66,6616)
+          WRITE(66,6615)
 6616  FORMAT(2X,'HOUR  MIN  DAY  SWIN  LWIN  PCP  TA  VA  PA  QA')
 6615  FORMAT(2X,'IF IGND <= 3, THIS FILE IS EMPTY')
+       ENDIF
+
+       WRITE(67,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+       WRITE(67,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+       WRITE(67,6017)
+!     6017  FORMAT(2X,'WCAN SCAN CWLCAP CWFCAP FC FG FCS FGS CDH ', !runclass formatted.
+!     1          'TCANO TCANS ALBS')
 6017  FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',
      1  'TROF     TROO     TROS     TROB      ROF     ROFO   ',
      2  '  ROFS        ROFB         FCS        FGS        FC       FG')
+
+       WRITE(68,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+       WRITE(68,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+       WRITE(68,6018)
 6018  FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',
-     1   'FSGV FSGS FSGG FLGV FLGS FLGG HFSC HFSS HFSG ',
+     1          'FSGV FSGS FSGG FLGV FLGS FLGG HFSC HFSS HFSG ',
      2          'HEVC HEVS HEVG HMFC HMFS HMFG1 HMFG2 HMFG3 ',
      3          'HTCC HTCS HTC1 HTC2 HTC3')
+
+       WRITE(69,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+       WRITE(69,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+       WRITE(69,6019)
 6019  FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',
      1   'PCFC PCLC PCPN PCPG QFCF QFCL QFN QFG QFC1 ',
      2          'QFC2 QFC3 ROFC ROFN ROFO ROF WTRC WTRS WTRG')
+!       runclass also has: EVDF ','CTV CTS CT1 CT2 CT3')
 C
        WRITE(611,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(611,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
@@ -3884,11 +3901,12 @@ C         THIS WILL CAUSE THE MODEL TO FAIL RIGHT AWAY. TO PREVENT THIS CHECK
 C         IF THE CANOPY TEMP IS WITHIN 5 DEGREES OF THE SNOW TEMP (IF THERE IS
 C         SNOW), AND IF SO THEN OVERWRITE THE TCAN WITH 1 DEGREE COLDER THAN THE SNOW TEMP.
 C         JM FEB 5 2013
-          IF (SNOROT(I,M) .GT. 0.0) then
-           IF ( ABS(TCANROT(I,M)-TSNOROT(I,M)) .GT. 5. ) THEN
-              TCANROT(I,M)=TSNOROT(I,M) - 0.5
-           ENDIF
-          ENDIF
+!          FLAG commented out for 3.6.2 JM Jun 2015.
+!          IF (SNOROT(I,M) .GT. 0.0) then
+!           IF ( ABS(TCANROT(I,M)-TSNOROT(I,M)) .GT. 5. ) THEN
+!              TCANROT(I,M)=TSNOROT(I,M) - 0.5
+!           ENDIF
+!          ENDIF
 
           TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
           TBASROT(I,M)=TBARROT(I,M,3)
@@ -3899,13 +3917,14 @@ C         JM FEB 5 2013
 C         THIS FIX BELOW IS TO CORRECT A BUG THAT CAUSES A CRASH DUE
 C         TO UNREASONABLE CANOPY TEMPERATURES IN THE FIRST YEAR OF A RESTART
 C         WITH SNOW ON THE GROUND. NOTE: RUNCLASS.f HAS THIS SAME PROBLEM. JM JAN 2013
-          IF (SNOROT(I,M) .GT. 0.) THEN !THERE IS SNOW ON THE GROUND
-           TSFSROT(I,M,1)=TBARROT(I,M,1)
-           TSFSROT(I,M,2)=TBARROT(I,M,1)
-          ELSE ! NO SNOW SO JUST SET THESE TO FREEZING POINT
+!          FLAG commented out for 3.6.2 JM Jun 2015.
+!          IF (SNOROT(I,M) .GT. 0.) THEN !THERE IS SNOW ON THE GROUND
+!           TSFSROT(I,M,1)=TBARROT(I,M,1)
+!           TSFSROT(I,M,2)=TBARROT(I,M,1)
+!          ELSE ! NO SNOW SO JUST SET THESE TO FREEZING POINT
            TSFSROT(I,M,1)=TFREZ
            TSFSROT(I,M,2)=TFREZ
-          ENDIF
+!          ENDIF
 
           TSFSROT(I,M,3)=TBARROT(I,M,1)
           TSFSROT(I,M,4)=TBARROT(I,M,1)
@@ -4019,6 +4038,17 @@ C
 ! 151   CONTINUE
 C===================== CTEM =============================================== /
 
+      DO 175 I=1,200
+          TAHIST(I)=0.0
+          TCHIST(I)=0.0
+          TACHIST(I)=0.0
+          TDHIST(I)=0.0
+          TD2HIST(I)=0.0
+          TD3HIST(I)=0.0
+          TD4HIST(I)=0.0
+          TSHIST(I)=0.0
+          TSCRHIST(I)=0.0
+175   CONTINUE
       ALAVG=0.0
       ALMAX=0.0
       ACTLYR=0.0
@@ -4483,12 +4513,13 @@ c       but only if it was read in during the loop above.
 
 C===================== CTEM ============================================ /
 C
+C========================================================================
 C     * READ IN METEOROLOGICAL FORCING DATA FOR CURRENT TIME STEP;
 C     * CALCULATE SOLAR ZENITH ANGLE AND COMPONENTS OF INCOMING SHORT-
 C     * WAVE RADIATION FLUX; ESTIMATE FLUX PARTITIONS IF NECESSARY.
 C
       N=N+1
-C
+
       DO 250 I=1,NLTEST
 C         THIS READS IN ONE 30 MIN SLICE OF MET DATA, WHEN IT REACHES
 C         THE END OF FILE IT WILL GO TO 999. !formatting was 5300
@@ -4630,6 +4661,7 @@ C
      2            PREROW,RPREROW,SPREROW,PRESROW,
      3            IPCP,NLAT,1,NLTEST)
 
+C
       CUMSNO=CUMSNO+SPCPROW(1)*RHSIROW(1)*DELT
 C
       CALL GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,
@@ -4648,8 +4680,8 @@ C
      9             THFCGAT,THLWGAT,PSIWGAT,DLZWGAT,ZBTWGAT,
      A             VMODGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,TACGAT,
      B             QACGAT,DRNGAT, XSLPGAT,GRKFGAT,WFSFGAT,
-     +             WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT,ALGDNGAT,
-     C             ALGWGAT,ALGDGAT,ASVDGAT,ASIDGAT,AGVDGAT,
+     C             WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT,ALGDNGAT,
+     +             ALGWGAT,ALGDGAT,ASVDGAT,ASIDGAT,AGVDGAT,
      D             AGIDGAT,ISNDGAT,RADJGAT,ZBLDGAT,Z0ORGAT,
      E             ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT, FSVHGAT,
      F             FSIHGAT,FSDBGAT,FSFBGAT,FSSBGAT,CSZGAT,
@@ -4672,8 +4704,8 @@ C
      V             THFCROT,THLWROT,PSIWROT,DLZWROT,ZBTWROT,
      W             VMODROW,ZSNLROT,ZPLGROT,ZPLSROT,TACROT,
      X             QACROT,DRNROT, XSLPROT,GRKFROT,WFSFROT,
-     +             WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,
-     Y             ALGWROT,ALGDROT,ASVDROT,ASIDROT,AGVDROT,
+     Y             WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,
+     +             ALGWROT,ALGDROT,ASVDROT,ASIDROT,AGVDROT,
      Z             AGIDROT,ISNDROT,RADJROW,ZBLDROW,Z0ORROW,
      +             ZRFMROW,ZRFHROW,ZDMROW, ZDHROW, FSVHROW,
      +             FSIHROW,FSDBROL,FSFBROL,FSSBROL,CSZROW,
@@ -4779,6 +4811,7 @@ C
      A             DELZ,   FCS,    FGS,    FC,     FG,
      B             1,      NML,    ILG,    IGND,   N    )
 C
+C========================================================================
 C
 C===================== CTEM ============================================ \
 C
@@ -4972,8 +5005,9 @@ C
      Q                  IWF,    ILG,    1,      NML,    N,
      R                  JLAT,   ICAN,   IGND,   IGND+1, IGND+2,
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
+C
 
-C-----------------------------------------------------------------------
+C========================================================================
 C
       CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP,
      1             WTVSTP, WTSSTP, WTGSTP,
@@ -4988,31 +5022,7 @@ C
      A             DELZ,   FCS,    FGS,    FC,     FG,
      B             1,      NML,    ILG,    IGND,   N    )
 C
-C-----------------------------------------------------------------------
-C
-C===================== CTEM ============================================ \
-C
-c     use net photosynthetic rates from canopy over snow and canopy over
-c     ground sub-areas to find average net photosynthetic rate for each
-c     pft. and similarly for leaf respiration.
-c
-      if (ctem_on) then
-        do 605 j = 1, icc
-          do 610 i = 1, nml
-            if ( (fcancgat(i,j)+fcancsgat(i,j)).gt.abszero) then
-              anveggat(i,j)=(fcancgat(i,j)*ancgveggat(i,j) +
-     &                   fcancsgat(i,j)*ancsveggat(i,j)) /
-     &                   (fcancgat(i,j)+fcancsgat(i,j))
-              rmlveggat(i,j)=(fcancgat(i,j)*rmlcgveggat(i,j) +
-     &                    fcancsgat(i,j)*rmlcsveggat(i,j)) /
-     &                    (fcancgat(i,j)+fcancsgat(i,j))
-            else
-              anveggat(i,j)=0.0
-              rmlveggat(i,j)=0.0
-            endif
-610       continue
-605     continue
-      endif
+C=======================================================================
 
 c     * accumulate output data for running ctem.
 c
@@ -5646,7 +5656,7 @@ C
        DO 425 M=1,NMTEST
           IF(FSSROW(I).GT.0.0) THEN
 C              ALTOT=(ALVSROT(I,M)+ALIRROT(I,M))/2.0
-              ALTOT=(FSSROW(I)-FSGGGAT(I))/FSSROW(I)
+              ALTOT=(FSSROW(I)-FSGGGAT(1))/FSSROW(I)  !FLAG I adopt the runclass approach of using 1 for index here. JM Jul 2015.
           ELSE
               ALTOT=0.0
           ENDIF
@@ -5668,6 +5678,41 @@ C          USTARBS=UVROW(1)*SQRT(CDMROT(I,M)) !FLAG (commented out in runclass.f
           ELSE
               TCN=0.0
           ENDIF
+          TSURF=FCS(I)*TSFSGAT(I,1)+FGS(I)*TSFSGAT(I,2)+
+     1           FC(I)*TSFSGAT(I,3)+FG(I)*TSFSGAT(I,4)
+C          IF(FSSROW(I).GT.0.0 .AND. (FCS(I)+FC(I)).GT.0.0) THEN
+C          IF(FSSROW(I).GT.0.0) THEN
+              NFS=NFS+1
+              ITA=NINT(TAROW(I)-TFREZ)
+              ITCAN=NINT(TCN)
+              ITAC=NINT(TACGAT(I)-TFREZ)
+              ITSCR=NINT(SFCTGAT(I)-TFREZ)
+              ITS=NINT(TSURF-TFREZ)
+C              ITD=ITS-ITA
+              ITD=ITCAN-ITA
+              ITD2=ITCAN-ITSCR
+              ITD3=ITCAN-ITAC
+              ITD4=ITAC-ITA
+C              IF(ITA.GT.0.0) THEN
+                  TAHIST(ITA+100)=TAHIST(ITA+100)+1.0
+                  TCHIST(ITCAN+100)=TCHIST(ITCAN+100)+1.0
+                  TSHIST(ITS+100)=TSHIST(ITS+100)+1.0
+                  TACHIST(ITAC+100)=TACHIST(ITAC+100)+1.0
+                  TDHIST(ITD+100)=TDHIST(ITD+100)+1.0
+                  TD2HIST(ITD2+100)=TD2HIST(ITD2+100)+1.0
+                  TD3HIST(ITD3+100)=TD3HIST(ITD3+100)+1.0
+                  TD4HIST(ITD4+100)=TD4HIST(ITD4+100)+1.0
+                  TSCRHIST(ITSCR+100)=TSCRHIST(ITSCR+100)+1.0
+C              ENDIF
+C          ENDIF     
+          IF(FC(I).GT.0.1 .AND. RC(I).GT.1.0E5) NDRY=NDRY+1
+          IF((ITCAN-ITA).GE.10) THEN
+              WRITE(6,6070) IHOUR,IMIN,IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,
+     1                      BEG,TAROW(I)-TFREZ,TCN,TCN-(TAROW(I)-TFREZ),
+     2                      PAICAN(I),FSVF(I),UVROW(I),RC(I)
+6070          FORMAT(2X,2I2,I4,I5,9F6.1,F6.3,F6.1,F8.1)
+          ENDIF
+C
           IF(TSNOROT(I,M).GT.0.01) THEN
               TSN=TSNOROT(I,M)-TFREZ
           ELSE
@@ -5679,6 +5724,8 @@ C          USTARBS=UVROW(1)*SQRT(CDMROT(I,M)) !FLAG (commented out in runclass.f
               TPN=0.0
           ENDIF
           GTOUT=GTROT(I,M)-TFREZ
+          EVAPSUM=QFCFROT(I,M)+QFCLROT(I,M)+QFNROT(I,M)+QFGROT(I,M)+
+     1                   QFCROT(I,M,1)+QFCROT(I,M,2)+QFCROT(I,M,3)
 C
 C===================== CTEM =====================================\
 c         start writing output
