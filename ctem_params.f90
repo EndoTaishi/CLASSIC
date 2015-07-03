@@ -675,6 +675,7 @@ bsratesc = [ 0.0208, 0.0208, 0.0000, &
              0.0280, 0.0280, 0.0000, &
              0.0100, 0.0100, 0.0000 ]              
 
+tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ]
 tanhq10  = [ 1.2, 0.2, 0.075, 46.0 ] ! was 1.44/0.56/0.075/46 TEST FLAG mar 3 JM 2015
            !   a     b      c     d
            ! q10 = a + b * tanh[ c (d-temperature) ]
@@ -820,10 +821,10 @@ if (compete) then
 
 ! Parameters used in more than one subroutine:
 
-!lfespany  =   [ 5.00, 1.00, 0.00, &
-!                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
-lfespany  =   [ 5.00, 0.40, 0.00, &
-                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
+lfespany  =   [ 5.00, 1.00, 0.00, &
+                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+! lfespany  =   [ 5.00, 0.40, 0.00, &
+!                 1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]
 
@@ -981,10 +982,10 @@ else ! Prescribed PFT fractional cover
 
 ! Parameters used in more than one subroutine:
 
-!lfespany  =   [ 5.00, 1.00, 0.00, &
-!                1.75, 1.00, 1.00, &  
-lfespany  =   [ 5.00, 0.40, 0.00, &
-                1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015.
+lfespany  =   [ 5.00, 1.00, 0.00, &
+                1.75, 1.00, 1.00, &
+! lfespany  =   [ 5.00, 0.40, 0.00, &
+!                 1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015.
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]
 

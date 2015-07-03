@@ -636,28 +636,28 @@ c
 c
 !
 !       FLAG test done to see impact of no alloc to leaves after 20 days past solstice! JM Dec 5 2014.
-      do i = il1, il2
-         j = 2 !needle dcd
-           if (ailcg(i,j).gt.0.0) then 
-             if (iday > 192 .and. radl(i) > 0. .and. lfstatus(i,j).ne.
-     &             4) then ! north hemi past summer solstice
-                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
-             else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.  !172 is solstice / 355 is austral summer 
-     &               .and. lfstatus(i,j).ne. 4)then  ! southern hemi after austral summer solstice but before austral winter solstice
-                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
-             end if
-           endif
-         j = 4  ! broad dcd
-           if (ailcg(i,j).gt.0.0) then 
-              if (iday > 192  .and.  radl(i) >0. .and. lfstatus(i,j).ne.
-     &             4) then ! north hemi past summer solstice
-                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
-              else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.
-     &               .and. lfstatus(i,j).ne. 4) then  ! southern hemi after austral summer solstice but before austral winter solstice
-                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
-              end if
-           endif
-      end do
+!       do i = il1, il2
+!          j = 2 !needle dcd
+!            if (ailcg(i,j).gt.0.0) then
+!              if (iday > 192 .and. radl(i) > 0. .and. lfstatus(i,j).ne.
+!      &             4) then ! north hemi past summer solstice
+!                  lfstatus(i,j) = 3 ! no allocation to leaves permitted
+!              else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.  !172 is solstice / 355 is austral summer
+!      &               .and. lfstatus(i,j).ne. 4)then  ! southern hemi after austral summer solstice but before austral winter solstice
+!                  lfstatus(i,j) = 3 ! no allocation to leaves permitted
+!              end if
+!            endif
+!          j = 4  ! broad dcd
+!            if (ailcg(i,j).gt.0.0) then
+!               if (iday > 192  .and.  radl(i) >0. .and. lfstatus(i,j).ne.
+!      &             4) then ! north hemi past summer solstice
+!                  lfstatus(i,j) = 3 ! no allocation to leaves permitted
+!               else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.
+!      &               .and. lfstatus(i,j).ne. 4) then  ! southern hemi after austral summer solstice but before austral winter solstice
+!                  lfstatus(i,j) = 3 ! no allocation to leaves permitted
+!               end if
+!            endif
+!       end do
 
 
 c     check that leaf status of all vegetation types in all grid cells has
@@ -692,21 +692,21 @@ c
         n = sort(j)
         do 430 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
-!         nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(365.0*lfespany(n)))) 
-         ! FLAG! TEST Dec 10 2014 JM. Testing the influence of only allowing
-         ! leaf aging turnover when the lfstatus is >1 (so normal alloc or 
-         ! no alloc to leaves). When lfstatus is 1, it is not applied. 
-           if (j == 2 .or. j == 4) then !only deciduous PFTs
-                if (lfstatus(i,j) .ne. 1) then
-                    nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
-     &                          (365.0*lfespany(n))))
-                else
-                    nrmlloss(i,j)=0. ! no loss during leaf out.
-                end if
-            else ! pfts other than deciduous
-                nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
-     &                (365.0*lfespany(n))))
-            end if  !decid/non
+         nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(365.0*lfespany(n))))
+!          ! FLAG! TEST Dec 10 2014 JM. Testing the influence of only allowing
+!          ! leaf aging turnover when the lfstatus is >1 (so normal alloc or
+!          ! no alloc to leaves). When lfstatus is 1, it is not applied.
+!            if (j == 2 .or. j == 4) then !only deciduous PFTs
+!                 if (lfstatus(i,j) .ne. 1) then
+!                     nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
+!      &                          (365.0*lfespany(n))))
+!                 else
+!                     nrmlloss(i,j)=0. ! no loss during leaf out.
+!                 end if
+!             else ! pfts other than deciduous
+!                 nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
+!      &                (365.0*lfespany(n))))
+!             end if  !decid/non
          endif   !fcancmx 
     
 430     continue
