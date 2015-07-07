@@ -93,7 +93,7 @@ c     through use statements for modules:
 
       use io_driver,          only : read_from_ctm, create_outfiles,
      1                               write_ctm_rs, class_monthly_aw,
-     2                               ctem_monthly_aw,ctem_annual_aw,
+     2                               ctem_annual_aw,ctem_monthly_aw,
      3                               close_outfiles,ctem_daily_aw
 
 c
