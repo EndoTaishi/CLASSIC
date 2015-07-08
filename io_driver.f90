@@ -808,7 +808,7 @@ OPEN(UNIT=82,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF2M_G')
 ! CLASS YEARLY OUTPUT FILES
 OPEN(UNIT=83,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1Y_G')
 
-if (ctem_on .and. parallelrun) then
+if (ctem_on) then
 
     if (mosaic) then
 
@@ -854,7 +854,7 @@ if (ctem_on .and. parallelrun) then
         open(unit=92,file=argbuff(1:strlen(argbuff))//'.CT08Y_G')  !Methane(wetland) YEARLY
     endif !dowetlands
     
-end if !ctem_on & parallelrun
+end if !ctem_on
 
 !===========================
 !
@@ -1006,7 +1006,7 @@ WRITE(83,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
 WRITE(83,6023)
 WRITE(83,6123)
 
-if (ctem_on .and. parallelrun) then 
+if (ctem_on) then
 
     write(84,6001) title1,title2,title3,title4,title5,title6
     write(84,6002) name1,name2,name3,name4,name5,name6

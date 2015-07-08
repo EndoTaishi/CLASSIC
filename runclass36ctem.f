@@ -5714,12 +5714,12 @@ C              IF(ITA.GT.0.0) THEN
 C              ENDIF
 C          ENDIF     
           IF(FC(I).GT.0.1 .AND. RC(I).GT.1.0E5) NDRY=NDRY+1
-          IF((ITCAN-ITA).GE.10) THEN
-              WRITE(6,6070) IHOUR,IMIN,IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,
-     1                      BEG,TAROW(I)-TFREZ,TCN,TCN-(TAROW(I)-TFREZ),
-     2                      PAICAN(I),FSVF(I),UVROW(I),RC(I)
-6070          FORMAT(2X,2I2,I4,I5,9F6.1,F6.3,F6.1,F8.1)
-          ENDIF
+!           IF((ITCAN-ITA).GE.10) THEN
+!               WRITE(6,6070) IHOUR,IMIN,IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,
+!      1                      BEG,TAROW(I)-TFREZ,TCN,TCN-(TAROW(I)-TFREZ),
+!      2                      PAICAN(I),FSVF(I),UVROW(I),RC(I)
+! 6070          FORMAT(2X,2I2,I4,I5,9F6.1,F6.3,F6.1,F8.1)
+!           ENDIF
 C
           IF(TSNOROT(I,M).GT.0.01) THEN
               TSN=TSNOROT(I,M)-TFREZ
