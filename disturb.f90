@@ -180,7 +180,7 @@ real :: stemmass(ilg,icc), rootmass(ilg,icc), gleafmas(ilg,icc),      &
              fieldsm(ilg,ignd),        uwind(ilg),        vwind(ilg),    &
             fcancmx(ilg,icc),      lightng(ilg),litrmass(ilg,icc+1),     &
                prbfrhuc(ilg),     extnprob(ilg), &
-        rmatctem(ilg,icc,ignd),     thice(ilg,ignd),            popdin,  &
+        rmatctem(ilg,icc,ignd),     thice(ilg,ignd),    popdin(ilg),  &
                lucemcom(ilg),    tmpprob(ilg),  currlat(ilg), fsnow(ilg) 
 
 real ::  stemltdt(ilg,icc), rootltdt(ilg,icc), glfltrdt(ilg,icc), &
@@ -528,7 +528,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !       this is based upon the population density from the .popd
 !       read-in file
         if (popdon) then
-            prbfrhuc(i)=min(1.0,(popdin/popdthrshld)**0.43) !From Kloster et al. (2010)
+            prbfrhuc(i)=min(1.0,(popdin(i)/popdthrshld)**0.43) !From Kloster et al. (2010)
         end if
 
         lterm(i)=max(0.0, min(1.0, temp+(1.0-temp)*prbfrhuc(i) ))
@@ -724,7 +724,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !         fire extinguishing probability as a function of grid-cell averaged population density
           if (popdon) then
-            extnprob(i)=max(0.0,0.9-exp(-0.025*popdin))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
+            extnprob(i)=max(0.0,0.9-exp(-0.025*popdin(i)))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
             extnprob(i)=0.5+extnprob(i)/2.0
           end if
 

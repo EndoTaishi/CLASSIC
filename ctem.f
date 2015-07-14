@@ -484,7 +484,7 @@ c
      4            bterm(ilg),          lterm(ilg),          mterm(ilg)
 c
       real tltrleaf(ilg,icc),   tltrstem(ilg,icc),   tltrroot(ilg,icc),
-     1                popdin
+     1                popdin(ilg)
 c
       real  faregat(ilg), paicgat(ilg,ican),slaicgat(ilg,ican)  
 c

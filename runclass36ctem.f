@@ -432,7 +432,7 @@ c
      2           beg_g,     gtout_g, tpn_g,       altot_g,
      3           tcn_g,     tsn_g,   zsn_g       
 
-       real      co2concin,  popdin,    setco2conc, sumfare,
+       real      co2concin,  popdin(nlat),    setco2conc, sumfare,
      1           temp_var, barefrac,  todfrac(ilg,icc), barf(nlat)
 
       real grclarea(ilg), crop_temp_frac(ilg,2)
@@ -2581,7 +2581,7 @@ c      find the popd data to cycle over, popd is only cycled over when the met i
        if (cyclemet .and. popdon) then
         do while (popyr .lt. cypopyr) 
          do i = 1, nltest
-          read(13,5301) popyr,popdin
+          read(13,5301) popyr,popdin(i)
          enddo
         enddo 
        endif
@@ -2987,7 +2987,7 @@ c      so this allows us to grab a new value each year.
        if(popdon .and. transient_run) then
          do while (popyr .lt. iyear) 
           do i=1,nltest
-           read(13,5301,end=999) popyr,popdin
+           read(13,5301,end=999) popyr,popdin(i)
           enddo
          enddo 
        endif
