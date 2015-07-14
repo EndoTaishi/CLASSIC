@@ -203,6 +203,8 @@ real ::  biomass(ilg,icc),        bterm(ilg), drgtstrs(ilg,icc), &
             burnveg(ilg,icc),      vegarea(ilg),     grclarea(ilg),    &
                      tot_emit,      tot_emit_dom,     burnvegf(ilg,icc)   
 
+real :: natural_ignitions(ilg),  anthro_ignitions(ilg), fire_supp(ilg), &
+         num_ignitions(ilg, icc), num_fires(ilg, icc)
 
 real :: hb_interm, hbratio(ilg)
 !real, save, dimension(ilg) :: cumulative_burnedf  ! Not used. JM Jun 2014
@@ -533,6 +535,26 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
         lterm(i)=max(0.0, min(1.0, temp+(1.0-temp)*prbfrhuc(i) ))
 
+!       ----------------------- Number of fire calculations ----------------------\\
+
+!       calculate natural and anthorpogenic ignitions/km2.day
+!       the constant 0.25 assumes not all c2g lightning hits causes ignitions, only 0.25 of them do
+!       the constant (1/30.4) converts c2g lightning from flashes/km2.month to flashes/km2.day
+!       MAKE SURE LIGHTNING IS IN UNITS OF FLASHES/KM2.MONTH
+
+!       Eqs. (4) and (5) of Li et al. 2012 doi:10.5194/bg-9-2761-2012 + also see corrigendum
+        natural_ignitions(i)=c2glgtng(i) * 0.25 * (1/30.4)
+        anthro_ignitions(i)=9.72E-4 * (1/30.4) * popdin(i) * (6.8 * (popdin(i)**(-0.6)) )
+
+!       calculate fire suppression also as a function of population density.
+!       Li et al. (2012) formulation is quite similar to what we already use based
+!       on Kloster et al. (2010, I think) but we use Kloster's formulation together
+!       with our fire extingishing probability. Here, the fire suppression formulation
+!       is just by itself
+
+        fire_supp(i)=0.99 - ( 0.98*exp(-0.025*popdin(i)*(i)) )
+
+!       ----------------------- Number of fire calculations ----------------------//
 400   continue
 
 ! !     Multiply the bterm, mterm, and the lterm to find probability of
@@ -550,6 +572,20 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
         do 422 i = il1, il2
            probfire_veg(i,j)=bterm_veg(i,j)*mterm_veg(i,j)*lterm(i)
            if (probfire_veg(i,j) .gt. zero) fire_veg(i,j)=.true.
+!          ----------------------- Number of fire calculations ----------------------\\
+!
+!          calculate total number of ignitions based natural and anthorpogenic ignitions
+!          for the whole grid cell
+    
+           num_ignitions(i,j) = ( natural_ignitions(i) + anthro_ignitions(i) ) * fcancmx(i,j)*grclarea(i)
+
+!          finally calculate number of fire, noting that not all ignitions turn into fire
+!          because moisture and biomass may now allow that to happen, and some of those
+!          will be suppressed due to fire fighting efforts
+
+           num_fires(i,j) = num_ignitions(i,j)*(1-fire_supp(i))*bterm_veg(i,j)*mterm_veg(i,j)
+!
+!          ----------------------- Number of fire calculations ----------------------//
 422     continue
 421   continue
 
@@ -734,7 +770,18 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !         per PFT area burned, km^2
           burnarea_veg(i,j)=arbn1day_veg(i,j)*areamult(i)*(grclarea(i)*fcancmx(i,j)*probfire_veg(i,j))/reparea
           
-!         if area burned greater than area of PFT, set it tp area of PFT
+!          ------- Area burned based on number of fire calculations ----------------------\\
+!         the constant 4 is suppose to address the fact that Li et al. (2012) suggested to
+!         double the fire spread rates. However, if we do that than our usual calculations
+!         based on CTEM's original parameterization will be affected. Rather than do that
+!         we just use a multiplier of 4, since doubling fire spread rates means 4 times the
+!         area burned
+!
+          burnarea_veg(i,j)=arbn1day_veg(i,j)*num_fires(i,j)*4.0
+!
+!          ------- Area burned based on number of fire calculations ----------------------//
+
+!         if area burned greater than area of PFT, set it to area of PFT
 
           if ( burnarea_veg(i,j) .gt. grclarea(i)*fcancmx(i,j) ) then
              burnarea_veg(i,j)=grclarea(i)*fcancmx(i,j)
