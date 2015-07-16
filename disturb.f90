@@ -777,8 +777,8 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !         we just use a multiplier of 4, since doubling fire spread rates means 4 times the
 !         area burned
 !
-          burnarea_veg(i,j)=arbn1day_veg(i,j)*num_fires(i,j)*4.0
-!
+!          burnarea_veg(i,j)=arbn1day_veg(i,j)*num_fires(i,j)*2.0  !flag test was 4!
+ !
 !          ------- Area burned based on number of fire calculations ----------------------//
 
 !         if area burned greater than area of PFT, set it to area of PFT
