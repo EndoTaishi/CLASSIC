@@ -655,7 +655,7 @@ c
        real tcanoaccrow_out(nlat,nmos),tcanoaccgat_out(ilg),
      1     qevpacc_m_save(nlat,nmos)
 c
-       integer ifcancmx_g(nlat,icc), z ! flag z is temp.
+       integer ifcancmx_g(nlat,icc)
 
 !     -----------------------
 !      Mosaic-level variables (denoted by an ending of "_m")  
@@ -2567,7 +2567,6 @@ c  /--------------Rudra-------------/
             end do
          end do
          backspace(17)
-         write(*,*)'backspaced at 2570'
        end if
 
 c    \---------------Rudra----------\
@@ -2874,13 +2873,10 @@ c  /------------------Rudra----------------/
        if(obslght) then
         do while (obslghtyr .lt. metcylyrst)
             do i=1,nltest
-              write(*,*)obslghtyr,metcylyrst
               read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
             end do
          end do
-         write(*,*)'at 2881',metcylyrst
          if (metcylyrst .ne. -9999) backspace(17)
-
        end if
 
        endif ! ctem_on 
@@ -2919,21 +2915,7 @@ c         /---------------Rudra-----------------/
                    enddo
               endif !obswetf
               if(obslght) then
-              !>>>
-                if (obslghtyr .eq. 1920) then
-                write(*,*)'rewinding!'
-                       obslghtyr=-999
-                 rewind(17)
-                 do while (obslghtyr .lt. metcylyrst)
-                   do z=1,nltest
-                    read(17,*) obslghtyr,(mlightnggrd(z,j),j=1,12)
-                   end do
-                 end do
-                 backspace(17)
-               endif
-              !<<<
                 read(17,*,end=212) obslghtyr,(mlightnggrd(i,j),j=1,12)
-                write(*,*)'line 2919',obslghtyr
 212       continue !if end of file, just keep using the last year of lighting data.
               end if
             endif ! ctem_on 
@@ -6704,7 +6686,6 @@ c      check if the model is done running.
                     read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
                    end do
                  end do
-                 write(*,*)'backspaced at 6705'
                  backspace(17)
                endif
 
@@ -6721,7 +6702,6 @@ c      check if the model is done running.
                     read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
                    end do
                  end do
-                 write(*,*)'backspaced at 6722'
                backspace(17)
               endif
               cyclemet = .false.
