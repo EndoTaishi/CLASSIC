@@ -69,7 +69,7 @@ c
      1         tbar(ilg,ignd),soilcmas(ilg,icc+1),      thliq(ilg,ignd),  
      2         sand(ilg,ignd),       clay(ilg,ignd),  roottemp(ilg,icc),  
      3        zbotw(ilg,ignd),  ltresveg(ilg,icc),    scresveg(ilg,icc),
-     4        thice(ilg,ignd)
+     4        thicec(ilg,ignd)
 
       
       real           litrq10,           soilcq10,       

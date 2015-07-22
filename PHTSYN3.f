@@ -12,6 +12,7 @@ C                       PHOTOSYNTHESIS SUBROUTINE
 
 C     HISTORY:
 C
+C     * JUL 22/15 - J. Melton      SM_FUNC2 was not correctly set up for soil layers > 3 (Noted by Yuanqiao Wu). Now fixed.
 C     * FEB 27/15 - J. Melton      Increase REQUITR to 10, it was not converging correctly at 4. Also rename
 C                                  WILTSM and FIELDSM to THLW and THFC, respectively, for consistency with CLASS.
 C     * SEP 15/14 - J. Melton      Since SN is converted to INT, I made the assignment explicitly INT, rather
@@ -148,7 +149,7 @@ C
      1     KC, KO, IPAR, GB, RH, VPD, O2_CONC, CO2A, USEBB
 
       REAL, DIMENSION(:,:), ALLOCATABLE     :: USEAILCG, SM_FUNC,
-     1     AVE_SM_FUNC, VMAXC, JE3,SM_FUNC2,
+     1     AVE_SM_FUNC, VMAXC, JE3,SM_FUNC2,TOT_RMAT,
      2     VMUNS1, VMUNS2, VMUNS3, VMUNS, VM, CO2I, PREV_CO2I, 
      3     FPAR, JC,  JC1, JC2, JC3, JE, JE1, JE2, JS, A_VEG,
      4     RC_VEG, GCTU, GCMIN, GCMAX, VPD_TERM, CO2LS, GC
@@ -404,6 +405,7 @@ C
       ALLOCATE(SM_FUNC(ILG,IG))
       ALLOCATE(SM_FUNC2(ILG,IG))
       ALLOCATE(AVE_SM_FUNC(ILG,ICC))
+      ALLOCATE(TOT_RMAT(ILG,ICC))
 
       ALLOCATE(VMAXC(ILG,ICC))
       ALLOCATE(JE3(ILG,ICC))
@@ -488,6 +490,7 @@ C
             VMUNS3(I,J) = 0.0
             VMUNS(I,J) = 0.0
             AVE_SM_FUNC(I,J) = 0.0
+            TOT_RMAT(I,J) = 0.0
             VM(I,J) = 0.0
             JC1(I,J) = 0.0
             JC2(I,J) = 0.0
@@ -541,6 +544,7 @@ C
             VMUNS_SUN(I,J) = 0.0
             VMUNS_SHA(I,J) = 0.0
             AVE_SM_FUNC(I,J) = 0.0
+            TOT_RMAT(I,J) = 0.0
             VM_SUN(I,J) = 0.0
             VM_SHA(I,J) = 0.0
             JC1_SUN(I,J) = 0.0
@@ -886,45 +890,61 @@ C
        K2 = K1 + NOL2PFTS(J) - 1
        DO 525 M = K1, K2
         DO 530 I = IL1, IL2
-C
-         SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**SN(SORT(M)) )
-         SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**SN(SORT(M)) )
-         SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**SN(SORT(M)) )
-
-         SM_FUNC2(I,1)=SM_FUNC2(I,1)+(1.0-SM_FUNC2(I,1))
+         DO 535 N = 1, IG ! FLAG new code til end of 530 loop JM Jul 22
+          IF(ISAND(I,N) .NE. -3)THEN ! ONLY FOR NON-BEDROCK LAYERS
+           SM_FUNC2(I,N)=(1.0 - (1.0-SM_FUNC(I,N))**SN(SORT(M)))
+           SM_FUNC2(I,N)=SM_FUNC2(I,N)+(1.0-SM_FUNC2(I,N))
      &                 *SMSCALE(SORT(M))
-         SM_FUNC2(I,2)=SM_FUNC2(I,2)+(1.0-SM_FUNC2(I,2))
-     &                 *SMSCALE(SORT(M))
-         SM_FUNC2(I,3)=SM_FUNC2(I,3)+(1.0-SM_FUNC2(I,3))
-     &                 *SMSCALE(SORT(M))
+           AVE_SM_FUNC(I,M)=AVE_SM_FUNC(I,M)+SM_FUNC2(I,N)*RMAT(I,M,N)
+           TOT_RMAT(I,M) = TOT_RMAT(I,M) + RMAT(I,M,N)
+          ENDIF
+535      CONTINUE
+         AVE_SM_FUNC(I,M) = AVE_SM_FUNC(I,M) / TOT_RMAT(I,M)
 
-         AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)*RMAT(I,M,1) +
-     &                    SM_FUNC2(I,2)*RMAT(I,M,2) +
-     &                    SM_FUNC2(I,3)*RMAT(I,M,3)
-
-         AVE_SM_FUNC(I,M)= AVE_SM_FUNC(I,M) /
-     &    (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
-C
-C        MAKE SURE THAT I DO NOT USE SM_FUNC FROM 2nd AND 3rd LAYERS
-C        IF THEY ARE BED ROCK
-C
-         IF(ISAND(I,3) .EQ. -3)THEN ! THIRD LAYER BED ROCK
-           AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)*RMAT(I,M,1) +
-     &                      SM_FUNC2(I,2)*RMAT(I,M,2)
-C
-           AVE_SM_FUNC(I,M)= AVE_SM_FUNC(I,M) /
-     &      (RMAT(I,M,1)+RMAT(I,M,2))
-         ENDIF
-C
-         IF(ISAND(I,2) .EQ. -3)THEN ! SECOND LAYER BED ROCK
-           AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)
-         ENDIF
-C
-         IF( (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3)).LT.0.9) THEN
+         IF(TOT_RMAT(I,M) .LT. 0.9) THEN
            WRITE(6,*)'PFT = ',M,' I =',I
-           WRITE(6,*)'RMAT ADD =',(RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
+           WRITE(6,*)'RMAT ADD =',TOT_RMAT(I,M)
            CALL XIT('PHTSYN', -99)
          ENDIF
+
+!          SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**SN(SORT(M)) )
+!          SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**SN(SORT(M)) )
+!          SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**SN(SORT(M)) )
+
+!          SM_FUNC2(I,1)=SM_FUNC2(I,1)+(1.0-SM_FUNC2(I,1))
+!      &                 *SMSCALE(SORT(M))
+!          SM_FUNC2(I,2)=SM_FUNC2(I,2)+(1.0-SM_FUNC2(I,2))
+!      &                 *SMSCALE(SORT(M))
+!          SM_FUNC2(I,3)=SM_FUNC2(I,3)+(1.0-SM_FUNC2(I,3))
+!      &                 *SMSCALE(SORT(M))
+
+!          AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)*RMAT(I,M,1) +
+!      &                    SM_FUNC2(I,2)*RMAT(I,M,2) +
+!      &                    SM_FUNC2(I,3)*RMAT(I,M,3)
+
+!          AVE_SM_FUNC(I,M)= AVE_SM_FUNC(I,M) /
+!      &    (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
+! C
+! C        MAKE SURE THAT I DO NOT USE SM_FUNC FROM 2nd AND 3rd LAYERS
+! C        IF THEY ARE BED ROCK
+! C
+!          IF(ISAND(I,3) .EQ. -3)THEN ! THIRD LAYER BED ROCK
+!            AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)*RMAT(I,M,1) +
+!      &                      SM_FUNC2(I,2)*RMAT(I,M,2)
+! C
+!            AVE_SM_FUNC(I,M)= AVE_SM_FUNC(I,M) /
+!      &      (RMAT(I,M,1)+RMAT(I,M,2))
+!          ENDIF
+! C
+!          IF(ISAND(I,2) .EQ. -3)THEN ! SECOND LAYER BED ROCK
+!            AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)
+!          ENDIF
+C
+!          IF( (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3)).LT.0.9) THEN
+!            WRITE(6,*)'PFT = ',M,' I =',I
+!            WRITE(6,*)'RMAT ADD =',(RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
+!            CALL XIT('PHTSYN', -99)
+!          ENDIF
 C
 530     CONTINUE
 525    CONTINUE
@@ -1528,6 +1548,7 @@ C     PUT TCAN BACK TO ITS ORIGINAL VALUE FROM THE TEMP VAR
       DEALLOCATE(SM_FUNC)
       DEALLOCATE(SM_FUNC2)
       DEALLOCATE(AVE_SM_FUNC)
+      DEALLOCATE(TOT_RMAT)
 
       DEALLOCATE(VMAXC)
       DEALLOCATE(JE3)
