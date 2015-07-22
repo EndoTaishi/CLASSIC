@@ -16,6 +16,8 @@ c                     subroutine.
 
 c     change history:
 
+!     J. Melton 22  Jul 2015 - Loops 180 and 190 were not set up for > 3 soil layers. Fixed.
+!
 c     J. Melton 17  Jan 2014 - Moved parameters to global file (ctem_params.f90)
 c
 c     J. Melton 22  Jul 2013 - Add in module for parameters
@@ -37,7 +39,7 @@ c                 be used at some later stage
 c     stemmass  - stem biomass for the 9 pfts in kg c/m2
 c     rootmass  - root biomass for the 9 pfts in kg c/m2
 c     icc       - no. of ctem pfts (currently 9)
-c     ignd        - no. of soil layers (currently 3)
+c     ignd      - no. of soil layers
 c     ilg       - no. of grid cells in latitude circle
 c     il1,il2   - il1=1, il2=ilg
 c     tcan      - canopy temperature, k
@@ -61,7 +63,7 @@ c
 
       implicit none
 c
-      integer il1, il2, i, j, k, sort(icc), 
+      integer il1, il2, i, j, k, sort(icc), n,
      1        nol2pfts(ican),   k1,   k2,  m,  isand(ilg,ignd)
 c
       real  fcan(ilg,icc),         fct(ilg),      stemmass(ilg,icc), 
@@ -69,7 +71,8 @@ c
      2    rmsveg(ilg,icc),  rmrveg(ilg,icc),   rmatctem(ilg,icc,ignd)   
 c
       real tempq10r(ilg,icc), tempq10s(ilg), roottemp(ilg,icc),  q10, 
-     1     q10func, livstmfr(ilg,icc), livrotfr(ilg,icc)
+     1     q10func, livstmfr(ilg,icc), livrotfr(ilg,icc),
+     2     rmat_tot(ilg,icc)
 c
       logical consq10
 c
@@ -91,6 +94,7 @@ c
       do 100 j = 1, icc
         do 110 i = il1, il2
           roottemp(i,j) = 0.0        ! root temperature
+          rmat_tot(i,j) = 0.0
           rmsveg(i,j) = 0.0          ! stem maintenance respiration
           rmrveg(i,j) = 0.0          ! root maintenance respiration
           livstmfr(i,j)= 0.0         ! live stem fraction
@@ -134,25 +138,33 @@ c
       do 180 j = 1, icc
         do 190 i = il1, il2
          if (fcan(i,j) .gt. 0.) then
-          roottemp(i,j)=tbar(i,1)*rmatctem(i,j,1) + 
-     &       tbar(i,2)*rmatctem(i,j,2) +  
-     &       tbar(i,3)*rmatctem(i,j,3)
-          roottemp(i,j)=roottemp(i,j) /
-     &       (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
+          do 195 n = 1, ignd
+           if (isand(i,n) .ne. -3) then !Only for non-bedrock
+            roottemp(i,j)= roottemp(i,j)+ tbar(i,n)*rmatctem(i,j,n)
+            rmat_tot(i,j)=rmat_tot(i,j) + rmatctem(i,j,n)
+           end if
+195       continue
+          roottemp(i,j)=roottemp(i,j) / rmat_tot(i,j)
 
+!           roottemp(i,j)=tbar(i,1)*rmatctem(i,j,1) +
+!      &       tbar(i,2)*rmatctem(i,j,2) +
+!      &       tbar(i,3)*rmatctem(i,j,3)
+!           roottemp(i,j)=roottemp(i,j) /
+!      &       (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
 c
 c        make sure that i do not use temperatures from 2nd and 3rd layers
 c        if they are bed rock
 c
-          if(isand(i,3).eq.-3)then ! third layer bed rock
-            roottemp(i,j)=tbar(i,1)*rmatctem(i,j,1) + 
-     &        tbar(i,2)*rmatctem(i,j,2)   
-            roottemp(i,j)=roottemp(i,j) /
-     &        (rmatctem(i,j,1)+rmatctem(i,j,2))
-          endif         
-          if(isand(i,2).eq.-3)then ! second layer bed rock
-            roottemp(i,j)=tbar(i,1)
-          endif    
+!           if(isand(i,3).eq.-3)then ! third layer bed rock
+!             roottemp(i,j)=tbar(i,1)*rmatctem(i,j,1) +
+!      &        tbar(i,2)*rmatctem(i,j,2)
+!             roottemp(i,j)=roottemp(i,j) /
+!      &        (rmatctem(i,j,1)+rmatctem(i,j,2))
+!           endif
+!           if(isand(i,2).eq.-3)then ! second layer bed rock
+!             roottemp(i,j)=tbar(i,1)
+!           endif
+
          endif !fcan check.     
 190     continue 
 180   continue 
