@@ -1,7 +1,7 @@
       subroutine allocate(lfstatus,    thliq,    ailcg,     ailcb, 
      1                         il1,     il2,     sand,     clay,  
      2                    rmatctem, gleafmas, stemmass, rootmass,
-     4                        sort, nol2pfts, fcancmx,
+     4                        sort, nol2pfts, fcancmx, isand,
 c    5 ------------------ inputs above this line ----------------------   
      6                     afrleaf,  afrstem,  afrroot,  wiltsm,
      7                     fieldsm, wtstatus, ltstatus)
@@ -10,6 +10,10 @@ c
 C               Canadian Terrestrial Ecosystem Model (CTEM)
 C                            Allocation Subroutine
 C
+C     22  Jul 2015  - The code with rmatctem was not set up for >3 soil layers.
+C     J. Melton       Fixed that and also brought in isand so that the layers of
+C                     bedrock won't have their rmat used.
+c
 c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 c     J. Melton
 c   
@@ -73,7 +77,7 @@ c
       integer il1, il2, i, j, k,  lfstatus(ilg,icc), 
      1         n, k1,  k2,   m
 c
-      integer       sort(icc),      nol2pfts(ican)
+      integer       sort(icc),      nol2pfts(ican),   isand(ilg,ignd)
 c
       real     ailcg(ilg,icc),    ailcb(ilg,icc),       thliq(ilg,ignd), 
      1         wiltsm(ilg,ignd),   fieldsm(ilg,ignd), rootmass(ilg,icc),
@@ -88,7 +92,8 @@ c
      1      wtstatus(ilg,icc),  ltstatus(ilg,icc),    nstatus(ilg,icc),
      2      wnstatus(ilg,icc),              denom,   mnstrtms(ilg,icc),
      3                   diff,              term1,               term2,
-     4         aleaf(ilg,icc),     astem(ilg,icc),      aroot(ilg,icc)
+     4         aleaf(ilg,icc),     astem(ilg,icc),      aroot(ilg,icc),
+     5      tot_rmat_ctem(ilg,icc)
 c
 c
 c     ------------------------------------------------------------------
@@ -111,6 +116,7 @@ c                                 !averaged over the root zone
           avwiltsm(i,j)=0.0   !wilting point soil moisture
           afieldsm(i,j)=0.0   !field capacity soil moisture
            avthliq(i,j)=0.0   !liquid soil moisture content
+          tot_rmat_ctem(i,j)= 0.0 !temp var.
 c
           wtstatus(i,j)=0.0   !water status
           ltstatus(i,j)=0.0   !light status
@@ -160,24 +166,36 @@ c
       do 200 j = 1, icc
         do 210 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
-         avwiltsm(i,j) =  wiltsm(i,1)*rmatctem(i,j,1) +
-     &                    wiltsm(i,2)*rmatctem(i,j,2) +
-     &                    wiltsm(i,3)*rmatctem(i,j,3)
-         avwiltsm(i,j) = avwiltsm(i,j) /
-     &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
+          do 215 n = 1, ignd
+           if (isand(i,n) .ne. -3) then !Only for non-bedrock
+            avwiltsm(i,j) = avwiltsm(i,j) + wiltsm(i,n)*rmatctem(i,j,n)
+            afieldsm(i,j) = afieldsm(i,j) + fieldsm(i,n)*rmatctem(i,j,n)
+            avthliq(i,j)  = avthliq(i,j) + thliq(i,n)*rmatctem(i,j,n)
+            tot_rmat_ctem(i,j) = tot_rmat_ctem(i,j) + rmatctem(i,j,n)
+           end if
+215       continue
+          avwiltsm(i,j) = avwiltsm(i,j) / tot_rmat_ctem(i,j)
+          afieldsm(i,j) = afieldsm(i,j) / tot_rmat_ctem(i,j)
+          avthliq(i,j)  = avthliq(i,j) / tot_rmat_ctem(i,j)
+
+!          avwiltsm(i,j) =  wiltsm(i,1)*rmatctem(i,j,1) +
+!      &                    wiltsm(i,2)*rmatctem(i,j,2) +
+!      &                    wiltsm(i,3)*rmatctem(i,j,3)
+!          avwiltsm(i,j) = avwiltsm(i,j) /
+!      &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
 c
-         afieldsm(i,j) =  fieldsm(i,1)*rmatctem(i,j,1) +
-     &                    fieldsm(i,2)*rmatctem(i,j,2) +
-     &                    fieldsm(i,3)*rmatctem(i,j,3)
-         afieldsm(i,j) = afieldsm(i,j) /
-     &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
+!          afieldsm(i,j) =  fieldsm(i,1)*rmatctem(i,j,1) +
+!      &                    fieldsm(i,2)*rmatctem(i,j,2) +
+!      &                    fieldsm(i,3)*rmatctem(i,j,3)
+!          afieldsm(i,j) = afieldsm(i,j) /
+!      &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
 c
-         avthliq(i,j)  =  thliq(i,1)*rmatctem(i,j,1) +
-     &                    thliq(i,2)*rmatctem(i,j,2) +
-     &                    thliq(i,3)*rmatctem(i,j,3)
-         avthliq(i,j)  = avthliq(i,j) /
-     &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
-         endif
+!          avthliq(i,j)  =  thliq(i,1)*rmatctem(i,j,1) +
+!      &                    thliq(i,2)*rmatctem(i,j,2) +
+!      &                    thliq(i,3)*rmatctem(i,j,3)
+!          avthliq(i,j)  = avthliq(i,j) /
+!      &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
+         end if
 210     continue
 200   continue
 c

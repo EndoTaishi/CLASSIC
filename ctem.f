@@ -1385,7 +1385,7 @@ c
            call allocate (lfstatus,   thliqc,    ailcg,     ailcb,
      1                     il1, il2,     sand,     clay,  
      3                    rmatctem,   gleafmas, stemmass, rootmass,      
-     4                       sort,    nol2pfts,  fcancmx,
+     4                       sort,    nol2pfts,  fcancmx, isand,
      5                     afrleaf,  afrstem,  afrroot,    wiltsm,
      6                     fieldsm, wtstatus, ltstatus)
      
