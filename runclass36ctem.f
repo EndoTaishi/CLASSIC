@@ -3173,7 +3173,6 @@ C
        WRITE(691,6019)
 C
 6008  FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
-<<<<<<< HEAD
      1          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',
      2          'SFCU  SFCV  UV')
 
@@ -6737,7 +6736,7 @@ c
        if (ctem_on) then
         if(ncount.eq.nday) then
          call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
-     1                      iyear,iyd,jdst,jdend,grclarea)
+     1                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea)
 ! c
 !         do i=1,nltest
 !            do j=1,icc
@@ -8483,7 +8482,6 @@ C       FIRST ANY CLASS OUTPUT FILES
         end if ! moved this up from below so it calls the close subroutine. JRM.
 
 c       then ctem ones
-<<<<<<< HEAD
 
         call close_outfiles()
 

@@ -1321,7 +1321,7 @@ end subroutine class_monthly_aw
 
 !==============================================================================================================
 
-subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,iyd,jdst,jdend,grclarea)
+subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea)
                            
 use ctem_statevars,     only : ctem_tile, vrot, c_switch, &
                                resetctem_g, ctem_grd
@@ -1335,9 +1335,10 @@ integer, intent(in) :: nmtest
 integer, intent(in) :: iday
 real, intent(in), dimension(:,:) :: FAREROT
 integer, intent(in) :: iyear
-integer, intent(in) :: iyd
-integer, intent(in) :: jdst
-integer, intent(in) :: jdend
+integer, intent(in) :: jdstd
+integer, intent(in) :: jdsty
+integer, intent(in) :: jdendd
+integer, intent(in) :: jdendy
 real, intent(in), dimension(:) :: grclarea
 
 ! pointers
@@ -1836,8 +1837,8 @@ do 851 i=1,nltest
     CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
 
 !          write daily ctem results
-
-    if ((iyd.ge.jdst).and.(iyd.le.jdend)) then   
+    if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
+     if ((iday .ge. jdstd).and.(iday .le.jdendd))then
 
 !             write grid-averaged fluxes of basic quantities to 
 !             file *.CT01D_M
@@ -1962,7 +1963,8 @@ do 851 i=1,nltest
         end if !if (ifcancmx_m(i,m) .gt.0.0) then
         endif !mosaic
 !
-    endif ! if ((iyd.ge.jdst).and.(iyd.le.jdend))
+    end if
+    endif ! if write daily
 
 8200       format(1x,i4,i5,11f10.5,2(a6,i2))
 8201       format(1x,i4,i5,3f10.5,80x,2(a6,i2))
@@ -2061,7 +2063,9 @@ do 851 i=1,nltest
 
 852       continue
 
-    if ((iyd.ge.jdst).and.(iyd.le.jdend)) then   
+    if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
+     if ((iday .ge. jdstd).and.(iday .le.jdendd))then
+
 !           write to file .CT01D_G               
     write(721,8200)iday,iyear,gpp_g(i),npp_g(i), &
                 nep_g(i),nbp_g(i),autores_g(i), &
@@ -2123,7 +2127,8 @@ do 851 i=1,nltest
         endif !mosaic/composite
     endif !compete/lnduseon
 
-    endif !if ((iyd.ge.jdst).and.(iyd.le.jdend)) then  
+    end if
+    endif !if write daily
 
 851     continue
 
