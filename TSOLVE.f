@@ -2,12 +2,12 @@
      1                  QSWNET,QLWOUT,QTRANS,QSENS,QEVAP,EVAP,
      2                  TZERO,QZERO,GZERO,QMELT,CDH,CDM,RIB,CFLUX,
      3                  FTEMP,FVAP,ILMO,UE,H,
-     4                  QSWINV,QSWINI,QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,
+     4                  QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,                 
      5                  ALVISG,ALNIRG,CRIB,CPHCH,CEVAP,TVIRTA,
      6                  ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
-     7                  GCONST,GCOEFF,TSTART,TRSNOW,PCPR,
+     7                  GCONST,GCOEFF,TSTART,PCPR,TRSNOWG,FSSB,ALSNO,   
      8                  IWATER,IEVAP,ITERCT,ISAND,
-     9                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,
+     9                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,        
      A                  TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
      C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF)
@@ -15,6 +15,17 @@ C
 C     Purpose: Solution of surface energy balance for non-vegetated 
 C     subareas.
 C
+C     * JAN 09/15 - D.VERSEGHY. FIX TO SUPPRESS EVAPORATION FROM ROCK.
+C     * JUN 27/14 - D.VERSEGHY. CHANGE ITERATION LIMIT BACK TO 50 FOR
+C     *                         BISECTION SCHEME.
+C     * NOV 16/13 - J.COLE/     FINAL VERSION FOR GCM17:                
+C     *             M.LAZARE.   - FIX COMPUTATION OF QSWNI OVER SNOW FREE 
+C     *                           BARE SOIL for ISNOW=0 and ISNOALB=1 (NEED 
+C     *                           TO SUM OVER THE 3 NEAR-IR BANDS).     
+C     * JUN 22/13 - J.COLE/     - ADD "ISNOALB" OPTION (4-BAND SOLAR).  
+C     *             M.LAZARE.   - MODIFY ABORT CONDITION FOR TOO COLD   
+C     *                           TEMPS FROM 173 TO 123, SO WON'T       
+C     *                           BLOW UP OVER ANTARCTICA.     
 C     * OCT 14/11 - D.VERSEGHY. FOR POST-ITERATION CLEANUP WITH N-R SCHEME,
 C     *                         REMOVE CONDITION INVOLVING LAST ITERATION
 C     *                         TEMPERATURE.
@@ -93,7 +104,7 @@ C
 C     * INTEGER CONSTANTS.
 C
       INTEGER ISNOW !Flag indicating presence or absence of snow
-      INTEGER ISLFD,ITG,ILG,IG,IL1,IL2,JL,I
+      INTEGER ISLFD,ITG,ILG,IG,IL1,IL2,JL,I,IB,NBS,ISNOALB
 C
       INTEGER NUMIT,NIT,IBAD,ITERMX
 C
@@ -129,10 +140,6 @@ C     * INPUT ARRAYS.
 C
       REAL FI    (ILG)  !Fractional coverage of subarea in question on 
                         !modelled area [ ]
-      REAL QSWINV(ILG)  !Visible radiation incident on horizontal 
-                        !surface [W m-2]
-      REAL QSWINI(ILG)  !Near-infrared radiation incident on horizontal 
-                        !surface [W m -2]
       REAL QLWIN (ILG)  !Downwelling longwave radiation at bottom of 
                         !atmosphere [W m-2]
       REAL TPOTA (ILG)  !Potential temperature of air at reference 
@@ -168,7 +175,6 @@ C
                         !heat flux to surface temperature [W m-2 K-1]
       REAL TSTART(ILG)  !Starting point for surface temperature 
                         !iteration [K]  
-      REAL TRSNOW(ILG)  !Short-wave transmissivity of snow pack [ ]  
       REAL FCOR  (ILG)  !Coriolis parameter [s-1]  
       REAL PCPR  (ILG)  !Surface precipitation rate [kg m-2 s-1]
 
@@ -183,10 +189,15 @@ C
                                         !balance for four subareas
       INTEGER          ISAND(ILG,IG)    !Sand content flag
 C
+C     * BAND-DEPENDANT ARRAYS.                                          
+C                                                                       
+      REAL TRSNOWG(ILG,NBS), ALSNO(ILG,NBS), FSSB(ILG,NBS),             
+     1     TRTOP  (ILG,NBS)    
+C                                                                       
 C     * INTERNAL WORK ARRAYS.
 C
       REAL TSTEP (ILG),    TVIRTS(ILG),    EVBETA(ILG),    Q0SAT (ILG),
-     1     RESID (ILG),    DCFLXM(ILG),    CFLUXM(ILG),    TRTOP (ILG),    
+     1     RESID (ILG),    DCFLXM(ILG),    CFLUXM(ILG),                 
      2     A     (ILG),    B     (ILG),
      3     LZZ0  (ILG),    LZZ0T (ILG),    FM    (ILG),    FH    (ILG),
      4     WZERO (ILG)
@@ -260,7 +271,7 @@ C-----------------------------------------------------------------------
 C     * INITIALIZATION AND PRE-ITERATION SEQUENCE.
 C
       IF(ITG.LT.2) THEN
-          ITERMX=12
+          ITERMX=50                                                     
       ELSE
           ITERMX=5
       ENDIF
@@ -272,8 +283,15 @@ C          EZERO=2.0
 C      ENDIF
        EZERO=0.0
 C
-      !
-      !In the 50 loop, some preliminary calculations are done. The 
+
+      DO I=IL1,IL2                                                      
+         QSWNET(I)=0.0                                                  
+         QTRANS(I)=0.0                                                  
+      END DO                                                            
+C 
+      ! FLAG: this comment below likely needs updating!
+
+      !In the beginning loop, some preliminary calculations are done. The 
       !shortwave transmissivity at the surface, TRTOP, is set to zero in 
       !the absence of a snow pack, and to the transmissivity of snow 
       !TRSNOW otherwise. The net shortwave radiation at the surface, 
@@ -289,19 +307,62 @@ C
       !that its surface temperature has not yet been found. The 
       !iteration counter NITER is initialized to 1 for each element. 
       !Initial values are assigned to several other variables.
-      !
-      DO 50 I=IL1,IL2
+      !                                                                      
+      IF(ISNOW. EQ. 0)    THEN ! Use usual snow-free bare soil formulation
+         DO I=IL1,IL2                                                   
           IF(FI(I).GT.0.)                                          THEN
-              IF(ISNOW.EQ.0)                      THEN
-                  TRTOP(I)=0.
-              ELSE
-                  TRTOP(I)=TRSNOW(I)
-              ENDIF
-              QSWNV=QSWINV(I)*(1.0-ALVISG(I))   
-              QSWNI=QSWINI(I)*(1.0-ALNIRG(I))  
+               TRTOP(I,1)=0.                                            
+               QSWNV=FSSB(I,1)*(1.0-ALVISG(I))                          
+               IF (ISNOALB .EQ. 0) THEN                                 
+                  QSWNI=FSSB(I,2)*(1.0-ALNIRG(I))                       
+               ELSE IF (ISNOALB .EQ. 1) THEN                            
+                  QSWNI=0.0                                             
+                  DO IB = 2, NBS                                        
+                     QSWNI=QSWNI+FSSB(I,IB)*(1.0-ALNIRG(I))             
+                  END DO ! IB                                           
+              ENDIF 
               QSWNET(I)=QSWNV+QSWNI           
-              QTRANS(I)=QSWNET(I)*TRTOP(I)   
+               QTRANS(I)=QSWNET(I)*TRTOP(I,1)                           
               QSWNET(I)=QSWNET(I)-QTRANS(I) 
+            END IF                                                      
+         END DO ! I                                                     
+      ELSE                                                              
+         IF (ISNOALB .EQ. 0) THEN ! Use the existing snow albedo and transmission 
+            DO I=IL1,IL2                                                
+               IF(FI(I).GT.0.) THEN                                     
+                  TRTOP(I,1)=TRSNOWG(I,1)                               
+                  QSWNV=FSSB(I,1)*(1.0-ALSNO(I,1))                      
+                  QSWNI=FSSB(I,2)*(1.0-ALSNO(I,2))                      
+                  QSWNET(I)=QSWNV+QSWNI                                 
+                  QTRANS(I)=QSWNET(I)*TRTOP(I,1)                        
+                  QSWNET(I)=QSWNET(I)-QTRANS(I)                         
+               END IF                                                   
+            END DO ! I                                                  
+         ELSE IF(ISNOALB .EQ. 1) THEN ! Use the band-by-band snow albedo and transmission
+            DO I=IL1,IL2                                                
+               QTRANS(I) = 0.0                                          
+               QSWNET(I) = 0.0                                          
+            END DO ! I                                                  
+            DO IB = 1, NBS                                              
+               DO I=IL1,IL2                                             
+                  IF(FI(I).GT.0.) THEN                                  
+                     TRTOP(I,IB)=TRSNOWG(I,IB)                          
+                     QSWNV=FSSB(I,IB)*(1.0-ALSNO(I,IB))                 
+                     QSWNET(I)=QSWNET(I)+FSSB(I,IB)*(1.0-ALSNO(I,IB))   
+                     QTRANS(I)=QTRANS(I)+QSWNV*TRTOP(I,IB)              
+                  END IF                                                
+               END DO ! I                                               
+            END DO ! IB                                                 
+            DO I=IL1,IL2                                                
+               IF(FI(I).GT.0.) THEN                                     
+                  QSWNET(I)=QSWNET(I)-QTRANS(I)                         
+               END IF                                                   
+            END DO ! I                                                  
+         END IF ! ISNOALB                                               
+      END IF ! ISNOW                                                    
+C                                                                       
+      DO 50 I=IL1,IL2                                                   
+          IF(FI(I).GT.0.)                                          THEN 
               TZERO(I)=TSTART(I)            
               TSTEP(I)=1.0
               ITER(I)=1
@@ -656,6 +717,7 @@ C
                   ELSE
                       QEVAP(I)=RESID(I)*0.5
                   ENDIF
+                  IF(IEVAP(I).EQ.0) QEVAP(I)=0.0
                   QSENS(I)=RESID(I)-QEVAP(I)
                   RESID(I)=0.
                   EVAP(I)=QEVAP(I)/CPHCH(I)
@@ -690,7 +752,7 @@ C     * CHECK FOR BAD ITERATION TEMPERATURES.
 C
       IBAD=0
       DO 200 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. (TZERO(I).LT.173.16 .OR. 
+          IF(FI(I).GT.0. .AND. (TZERO(I).LT.123.16 .OR.                 
      1                           TZERO(I).GT.373.16))               THEN 
               IBAD=I
           ENDIF  

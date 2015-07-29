@@ -10,6 +10,12 @@ C
 C     Purpose: Calculate vegetation albedos, transmissivities and 
 C     stomatal resistances.
 C
+C     * SEP 05/14 - P.BARTLETT. INCREASED ALBEDO VALUES FOR SNOW-
+C     *                         COVERED CANOPY.
+C     * JUN 27/13 - D.VERSEGHY/ USE LOWER BOUND OF 0.01 INSTEAD OF     
+C     *             M.LAZARE.   0. IN LOOP 900 TO AVOID CRASH          
+C     *                         IN EXTREME CASE OF LOW VISIBLE         
+C     *                         INCIDENT SUN. 
 C     * AUG 17/12 - J.MELTON    ADD CONSTRAINT TO TRCLRV AT LOW COSZS
 C                               OTHERWISE IT HAS NUMERICAL PROBLEMS
 C                               WHEN MODEL IS COMPILED WITH GFORTRAN.
@@ -173,8 +179,8 @@ C
       COMMON /CLASS1/ DELT,TFREZ                                                  
       COMMON /CLASS7/ CANEXT,XLEAF
  
-      DATA ALVSWC,CXTLRG
-     1    /  0.17,1.0E20  /
+      DATA ALVSWC,ALIRWC,CXTLRG
+     1    /  0.27,0.38,1.0E20  /
 C----------------------------------------------------------------------
       !
       !The transmissivity τc of a vegetation canopy to shortwave 
@@ -355,16 +361,16 @@ C
       J=1
       DO 150 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN               
-C              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))   
-              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  !JM EDIT
-              TRCLRV=EXP(TMP)    
+              TRCLRV=EXP(-0.4*PAI(I,J)/COSZS(I))   
+!              TMP=MAX(-50.0, -0.4*PAI(I,J)/COSZS(I))  !JM EDIT
+!              TRCLRV=EXP(TMP)    
                                  
               TRCLDV=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*               
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)   
 
-C              TRCLRT=EXP(-0.3*PAI(I,J)/COSZS(I))   
-              TMP=MAX(-50.0,(-0.3*PAI(I,J)/COSZS(I)))    !JM EDIT
-              TRCLRT = EXP(TMP)
+              TRCLRT=EXP(-0.3*PAI(I,J)/COSZS(I))   
+!              TMP=MAX(-50.0,(-0.3*PAI(I,J)/COSZS(I)))    !JM EDIT
+!              TRCLRT = EXP(TMP)
                                  
               TRCLDT=0.30*EXP(-0.3*PAI(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.3*PAI(I,J)/0.2588)   
@@ -384,7 +390,6 @@ C
       DO 200 I=IL1,IL2                                               
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
               SVF=EXP(CANEXT(J)*PAI(I,J))
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ALIRC(I,J)
@@ -430,7 +435,6 @@ C
       DO 300 I=IL1,IL2                                               
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
               SVF=EXP(CANEXT(J)*PAI(I,J))
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ALIRC(I,J)
@@ -452,16 +456,17 @@ C
       DO 350 J=3,IC
       DO 350 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)                  THEN
-C             TRCLRV=EXP(-0.5*PAI(I,J)/COSZS(I))   
-              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  !JM EDIT
-              TRCLRV=EXP(TMP)    
+             TRCLRV=EXP(-0.5*PAI(I,J)/COSZS(I))   
+!              TMP=MAX(-50.0, -0.5*PAI(I,J)/COSZS(I))  !JM EDIT
+!              TRCLRV=EXP(TMP)    
 
               TRCLDV=0.30*EXP(-0.5*PAI(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.5*PAI(I,J)/0.2588)
 
-C              TRCLRT=EXP(-0.4*PAI(I,J)/COSZS(I))  
-              TMP=MAX(-50.0,(-0.4*PAI(I,J)/COSZS(I)))    !JM EDIT
-              TRCLRT = EXP(TMP)
+              TRCLRT=EXP(-0.4*PAI(I,J)/COSZS(I))  
+!              TMP=MAX(-50.0,(-0.4*PAI(I,J)/COSZS(I)))    !JM EDIT
+!              TRCLRT = EXP(TMP)
+
                                
               TRCLDT=0.30*EXP(-0.4*PAI(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAI(I,J)/0.7071)+0.20*EXP(-0.4*PAI(I,J)/0.2588)                
@@ -483,7 +488,6 @@ C
       DO 400 I=IL1,IL2                                                     
           IF(COSZS(I).GT.0. .AND. FCAN(I,J).GT.0.)               THEN
               SVF=EXP(CANEXT(J)*PAI(I,J))
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOWC(I)*ALVSWC+(1.0-FSNOWC(I))*ALVSC(I,J)
                   ALIRCX=FSNOWC(I)*ALIRWC+(1.0-FSNOWC(I))*ALIRC(I,J)
@@ -496,7 +500,7 @@ C
                   ALIRN=(1.0-SVF)*ALIRCX+SVF*ACIDAT(I,J)
               ENDIF
               ALVSCN(I)=ALVSCN(I)+FCAN(I,J)*ALVSN
-              ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN
+              ALIRCN(I)=ALIRCN(I)+FCAN(I,J)*ALIRN              
           ENDIF   
   400 CONTINUE
 C
@@ -506,7 +510,7 @@ C
       DO 450 I=IL1,IL2
           IF(FC(I).GT.0. .AND. COSZS(I).GT.0.)                      THEN
               ALVSCN(I)=ALVSCN(I)/FC(I)                                                        
-               ALIRCN(I)=ALIRCN(I)/FC(I)
+              ALIRCN(I)=ALIRCN(I)/FC(I)               
           ENDIF
           IF(ALVSCN(I).GT.1. .OR. ALVSCN(I).LT.0.) IPTBAD=I
           IF(ALIRCN(I).GT.1. .OR. ALIRCN(I).LT.0.) IPTBAD=I
@@ -546,16 +550,16 @@ C
       J=1
       DO 500 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-C              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I)) 
-              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
-              TRCLRV=EXP(TMP)    
+              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I)) 
+!              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
+!              TRCLRV=EXP(TMP) 
                                    
               TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)   
 
-C              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))                       
-              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    !JM EDIT
-              TRCLRT = EXP(TMP)
+              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))                       
+!              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    !JM EDIT
+!              TRCLRT = EXP(TMP)
              
               TRCLDT=0.30*EXP(-0.3*PAIS(I,J)/0.9659)+0.50*EXP(-0.3*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.3*PAIS(I,J)/0.2588)   
@@ -569,7 +573,6 @@ C              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))
 C
       DO 550 I=IL1,IL2                                               
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -608,7 +611,6 @@ C
 C
       DO 650 I=IL1,IL2                                               
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -629,16 +631,16 @@ C
       DO 700 J=3,IC
       DO 700 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-C              TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I)) 
-              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  !JM EDIT
-              TRCLRV=EXP(TMP)    
+              TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I)) 
+!              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  !JM EDIT
+!              TRCLRV=EXP(TMP)    
                                    
               TRCLDV=0.30*EXP(-0.5*PAIS(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.5*PAIS(I,J)/0.2588)
 
-C              TRCLRT=EXP(-0.4*PAIS(I,J)/COSZS(I))
-              TMP=MAX(-50.0,(-0.4*PAIS(I,J)/COSZS(I)))    !JM EDIT
-              TRCLRT = EXP(TMP)
+              TRCLRT=EXP(-0.4*PAIS(I,J)/COSZS(I))
+!              TMP=MAX(-50.0,(-0.4*PAIS(I,J)/COSZS(I)))    !JM EDIT
+!              TRCLRT = EXP(TMP)
                                     
               TRCLDT=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*              
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)                
@@ -653,7 +655,6 @@ C
       DO 750 J=3,IC
       DO 750 I=IL1,IL2                                                     
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)             THEN
-              ALIRWC=ALIRC(I,J)+0.04
               IF(IALC.EQ.0) THEN
                   ALVSCX=FSNOCS(I)*ALVSWC+(1.0-FSNOCS(I))*ALVSC(I,J)
                   ALIRCX=FSNOCS(I)*ALIRWC+(1.0-FSNOCS(I))*ALIRC(I,J)
@@ -843,7 +844,7 @@ C
               ELSE
                   RCG(I,J)=1.0
               ENDIF
-              IF(QSWINV(I).GT.0. .AND. COSZS(I).GT.0. .AND.
+              IF(QSWINV(I).GT.0.01 .AND. COSZS(I).GT.0. .AND.           
      1            CXTEFF(I,J).GT.1.0E-5 .AND. RCG(I,J).LT.1.0E5)  THEN
                 RCACC(I,J)=MIN(CXTEFF(I,J)*RSMIN(I,J)/LOG((QSWINV(I)+
      1            QA50(I,J)/CXTEFF(I,J))/(QSWINV(I)*EXP(-CXTEFF(I,J)*

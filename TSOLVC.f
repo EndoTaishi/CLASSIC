@@ -10,7 +10,7 @@
      8                 RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,
      A                 FCOR,GCONST,GCOEFF,TGND,TRSNOW,FSNOWC,FRAINC,
      B                 CHCAP,CMASS,PCPR,IWATER,IEVAP,ITERCT,
-     C                 ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N,  
+     C                 ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N,
      D                 TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT,
      E                 RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,
      F                 TPOTG,RESID,
@@ -24,13 +24,16 @@
      N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS)
 C
 C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
+C     * JUN 27/14 - D.VERSEGHY. CHANGE ITERATION LIMIT BACK TO 50 FOR
+C     *                         BISECTION SCHEME; BUGFIX IN CALCULATION
+C     *                         OF EVPWET.
 C     * OCT 30/12 - V. ARORA  - CFLUXV WAS BEING INITIALIZED TO ZERO INAPPROPRIATELY
-C     *                         FOR MOSAIC RUNS. NOT A PROBLEM WITH COMPOSITE 
+C     *                         FOR MOSAIC RUNS. NOT A PROBLEM WITH COMPOSITE
 C     *                         RUNS. CREATED A TEMPORARY STORAGE VAR TO ALLOW
 C     *                         AN APPROPRIATE VALUE FOR THE INITIALIZATION
 C     * SEP 05/12 - J.MELTON. - MADE AN IMPLICIT INT TO REAL CONVERSION
 C     *                         EXPLICIT. ALSO PROBLEM WITH TAC, SEE NOTE
-C     *                         IN THE CODE BEFORE CALL TO PHTSYN.           
+C     *                         IN THE CODE BEFORE CALL TO PHTSYN.
 C     * NOV 11/11 - M.LAZARE. - INCORPORATES CTEM. THIS INVOLVES
 C     *                         SEVERAL CHANGES AND NEW OUTPUT ROUTINES.
 C     *                         QSWNVC IS PROMOTED TO A WORK ARRAY
@@ -47,7 +50,7 @@ C     *                         FOR CTEM.
 C     * OCT 14/11 - D.VERSEGHY. FOR POST-ITERATION CLEANUP WITH N-R SCHEME,
 C     *                         REMOVE CONDITION INVOLVING LAST ITERATION
 C     *                         TEMPERATURE.
-C     * DEC 07/09 - D.VERSEGHY. RESTORE EVAPOTRANSPIRATION WHEN 
+C     * DEC 07/09 - D.VERSEGHY. RESTORE EVAPOTRANSPIRATION WHEN
 C     *                         PRECIPITATION IS OCCURRING; ADD EVAPC
 C     *                         TO EVAP WHEN DEPOSITION OF WATER ON
 C     *                         CANOPY IS OCCURRING.
@@ -59,7 +62,7 @@ C     *                         N-R ITERATION SCHEME.
 C     * FEB 26/08 - D.VERSEGHY. STREAMLINE SOME CALCULATIONS; REMOVE
 C     *                         "ILW" SWITCH; SUPPRESS WATER VAPOUR FLUX
 C     *                         IF PRECIPITATION IS OCCURRING.
-C     * FEB 19/07 - D.VERSEGHY. UPDATE CANOPY WATER STORES IN THIS 
+C     * FEB 19/07 - D.VERSEGHY. UPDATE CANOPY WATER STORES IN THIS
 C     *                         ROUTINE INSTEAD OF CANADD FOR CASES
 C     *                         OF WATER DEPOSITION.
 C     * MAY 17/06 - D.VERSEGHY. ADD IL1 AND IL2 TO CALL TO FLXSURFZ;
@@ -73,7 +76,7 @@ C     *                         BISECTION ITERATION SCHEME WITH CANOPY
 C     *                         AIR PARAMETRIZATION, OR THE NEWTON-
 C     *                         RAPHSON ITERATION SCHEME WITH MODIFIED
 C     *                         ZOH.
-C     * JAN 31/05 - Y.DELAGE.   USE THE CANOPY AIR RESISTANCE TO CALCULATE A 
+C     * JAN 31/05 - Y.DELAGE.   USE THE CANOPY AIR RESISTANCE TO CALCULATE A
 C     *                         ROUGHNESS LENGTH FOR TEMPERATURE AND HUMIDITY.
 C     *                         REPLACE SECANT METHOD BY NEWTON-RAPHSON SCHEME
 C     *                         FOR BOTH ITERATION LOOPS.
@@ -93,28 +96,28 @@ C     *                         AND RB.
 C     * JUL 26/02 - D.VERSEGHY. SHORTENED CLASS4 COMMON BLOCK.
 C     * MAR 28/02 - D.VERSEGHY. STREAMLINED SUBROUTINE CALL.
 C     * MAR 10/02 - M.LAZARE.   VECTORIZE LOOP 650 BY SPLITTING INTO TWO.
-C     * JAN 18/02 - P.BARTLETT/D.VERSEGHY. NEW "BETA" FORMULATION FOR 
+C     * JAN 18/02 - P.BARTLETT/D.VERSEGHY. NEW "BETA" FORMULATION FOR
 C     *                         BARE SOIL EVAPORATION BASED ON LEE AND
 C     *                         PIELKE.
 C     * APR 11/01 - M.LAZARE.   SHORTENED "CLASS2" COMMON BLOCK.
 C     * OCT 06/00 - D.VERSEGHY. CONDITIONAL "IF" IN ITERATION SEQUENCE
 C     *                         TO AVOID DIVIDE BY ZERO.
-C     * DEC 16/99 - A.WU/D.VERSEGHY. REVISED CANOPY TURBULENT FLUX 
+C     * DEC 16/99 - A.WU/D.VERSEGHY. REVISED CANOPY TURBULENT FLUX
 C     *                              FORMULATION: ADD PARAMETRIZATION
 C     *                              OF CANOPY AIR TEMPERATURE.
 C     * DEC 07/99 - A.WU/D.VERSEGHY. NEW SOIL EVAPORATION FORMULATION.
 C     * JUL 24/97 - D.VERSEGHY. CLASS - VERSION 2.7.
-C     *                         REPLACE BISECTION METHOD IN SURFACE 
-C     *                         TEMPERATURE ITERATION SCHEME WITH 
+C     *                         REPLACE BISECTION METHOD IN SURFACE
+C     *                         TEMPERATURE ITERATION SCHEME WITH
 C     *                         SECANT METHOD FOR FIRST TEN ITERATIONS.
 C     *                         PASS QZERO,QA,ZOMS,ZOHS TO REVISED
 C     *                         DRCOEF (ZOMS AND ZOHS ALSO NEW WORK ARRAYS
 C     *                         PASSED TO THIS ROUTINE).
 C     * JUN 20/97 - D.VERSEGHY. PASS IN NEW "CLASS4" COMMON BLOCK.
 C     * JAN 02/96 - D.VERSEGHY. CLASS - VERSION 2.5.
-C     *                         COMPLETION OF ENERGY BALANCE 
+C     *                         COMPLETION OF ENERGY BALANCE
 C     *                         DIAGNOSTICS.  ALSO, PASS SWITCH "ILW"
-C     *                         THROUGH SUBROUTINE CALL, SPECIFYING 
+C     *                         THROUGH SUBROUTINE CALL, SPECIFYING
 C     *                         WHETHER QLWIN REPRESENTS INCOMING
 C     *                         (ILW=1) OR NET (ILW=2) LONGWAVE
 C     *                         RADIATION ABOVE THE GROUND.
@@ -124,14 +127,14 @@ C     *                         NOW DETERMINED IN ROUTINE "DRCOEF".
 C     * OCT 04/94 - D.VERSEGHY. CHANGE "CALL ABORT" TO "CALL XIT" TO
 C     *                         ENABLE RUNNING ON PCS.
 C     * JAN 24/94 - M.LAZARE.   UNFORMATTED I/O COMMENTED OUT IN LOOPS
-C     *                         200 AND 600. 
+C     *                         200 AND 600.
 C     * JUL 29/93 - D.VERSEGHY. CLASS - VERSION 2.2.
 C     *                         ADD TRANSMISSION THROUGH SNOWPACK TO
-C     *                         "QSWNET" FOR DIAGNOSTIC PURPOSES. 
+C     *                         "QSWNET" FOR DIAGNOSTIC PURPOSES.
 C     * OCT 15/92 - D.VERSEGHY/M.LAZARE. CLASS - VERSION 2.1.
 C     *                                  REVISED AND VECTORIZED CODE
 C     *                                  FOR MODEL VERSION GCM7.
-C     * AUG 12/91 - D.VERSEGHY. ITERATIVE TEMPERATURE CALCULATIONS 
+C     * AUG 12/91 - D.VERSEGHY. ITERATIVE TEMPERATURE CALCULATIONS
 C     *                         FOR VEGETATION CANOPY AND UNDERLYING
 C     *                         SURFACE.
 C
@@ -145,32 +148,32 @@ C
 C
 C     * OUTPUT ARRAYS.
 C
-      REAL QSWNET(ILG),    QSWNC (ILG),    QSWNG (ILG),    QLWOUT(ILG),   
-     1     QLWOC (ILG),    QLWOG (ILG),    QTRANS(ILG),    QSENS (ILG),    
-     2     QSENSC(ILG),    QSENSG(ILG),    QEVAP (ILG),    QEVAPC(ILG),    
-     3     QEVAPG(ILG),    EVAPC (ILG),    EVAPG (ILG),    TCAN  (ILG),   
-     4     QCAN  (ILG),    TZERO (ILG),    QZERO (ILG),    GZERO (ILG),    
-     5     QMELTC(ILG),    QMELTG(ILG),    RAICAN(ILG),    SNOCAN(ILG),    
-     6     CDH   (ILG),    CDM   (ILG),    RIB   (ILG),    TAC   (ILG),    
-     7     QAC   (ILG),    CFLUX (ILG),    FTEMP (ILG),    FVAP  (ILG),    
+      REAL QSWNET(ILG),    QSWNC (ILG),    QSWNG (ILG),    QLWOUT(ILG),
+     1     QLWOC (ILG),    QLWOG (ILG),    QTRANS(ILG),    QSENS (ILG),
+     2     QSENSC(ILG),    QSENSG(ILG),    QEVAP (ILG),    QEVAPC(ILG),
+     3     QEVAPG(ILG),    EVAPC (ILG),    EVAPG (ILG),    TCAN  (ILG),
+     4     QCAN  (ILG),    TZERO (ILG),    QZERO (ILG),    GZERO (ILG),
+     5     QMELTC(ILG),    QMELTG(ILG),    RAICAN(ILG),    SNOCAN(ILG),
+     6     CDH   (ILG),    CDM   (ILG),    RIB   (ILG),    TAC   (ILG),
+     7     QAC   (ILG),    CFLUX (ILG),    FTEMP (ILG),    FVAP  (ILG),
      8     ILMO  (ILG),    UE    (ILG),    H     (ILG),
      9     QFCF  (ILG),    QFCL  (ILG),    HTCC  (ILG),    EVAP  (ILG)
 C
 C     * INPUT ARRAYS.
 C
-      REAL FI    (ILG),    QSWINV(ILG),    QSWINI(ILG),    QLWIN (ILG),    
-     1     TPOTA (ILG),    TA    (ILG),    QA    (ILG),    VA    (ILG), 
-     2     VAC   (ILG),    PADRY (ILG),    RHOAIR(ILG),    ALVISC(ILG), 
+      REAL FI    (ILG),    QSWINV(ILG),    QSWINI(ILG),    QLWIN (ILG),
+     1     TPOTA (ILG),    TA    (ILG),    QA    (ILG),    VA    (ILG),
+     2     VAC   (ILG),    PADRY (ILG),    RHOAIR(ILG),    ALVISC(ILG),
      3     ALNIRC(ILG),    ALVISG(ILG),    ALNIRG(ILG),    TRVISC(ILG),
-     4     TRNIRC(ILG),    FSVF  (ILG),    CRIB  (ILG),    CPHCHC(ILG), 
+     4     TRNIRC(ILG),    FSVF  (ILG),    CRIB  (ILG),    CPHCHC(ILG),
      5     CPHCHG(ILG),    CEVAP (ILG),    TADP  (ILG),    TVIRTA(ILG),
      6     RC    (ILG),    RBCOEF(ILG),    ZOSCLH(ILG),    ZOSCLM(ILG),
      7     ZRSLFH(ILG),    ZRSLFM(ILG),    ZOH   (ILG),    ZOM   (ILG),
-     8     FCOR  (ILG),    GCONST(ILG),    GCOEFF(ILG),    TGND  (ILG),    
-     9     TRSNOW(ILG),    FSNOWC(ILG),    FRAINC(ILG),    
+     8     FCOR  (ILG),    GCONST(ILG),    GCOEFF(ILG),    TGND  (ILG),
+     9     TRSNOW(ILG),    FSNOWC(ILG),    FRAINC(ILG),
      A     CHCAP (ILG),    CMASS (ILG),    PCPR  (ILG)
 C
-      INTEGER              IWATER(ILG),    IEVAP (ILG),    
+      INTEGER              IWATER(ILG),    IEVAP (ILG),
      1                     ITERCT(ILG,6,50)
 C
 C     * ARRAYS FOR CTEM.
@@ -203,30 +206,30 @@ C
      5     ANVEG(ILG,ICTEM),    RMLVEG(ILG,ICTEM),       THLIQ(ILG,IG),
      6         THFC(ILG,IG),       THLW(ILG,IG),      CFLUXV(ILG),
      7       CFLUXV_IN(ILG)
- 
+
       INTEGER ISAND(ILG,IG),    LFSTATUS(ILG,ICTEM)
 C
       INTEGER ICTEM, ICTEMMOD, L2MAX, NOL2PFTS(IC), IC, IG
 C
 C     * LOCAL WORK ARRAYS FOR CTEM.
 C
-      REAL RCPHTSYN(ILG), QSWNVC(ILG)  
+      REAL RCPHTSYN(ILG), QSWNVC(ILG)
 C
 C     * GENERAL INTERNAL WORK ARRAYS.
 C
       REAL TSTEP (ILG),    TVIRTC(ILG),    TVIRTG(ILG),
      1     EVBETA(ILG),    XEVAP (ILG),    EVPWET(ILG),    Q0SAT (ILG),
-     2     RA    (ILG),    RB    (ILG),    RAGINV(ILG),    RBINV (ILG),    
-     3     RBTINV(ILG),    RBCINV(ILG),    TVRTAC(ILG),    
-     4     TPOTG (ILG),    RESID (ILG),    TCANO (ILG),    
-     5     TRTOP (ILG),    QSTOR (ILG),    A     (ILG),    B     (ILG),    
-     6     LZZ0  (ILG),    LZZ0T (ILG),    
-     7     FM    (ILG),    FH    (ILG),    WZERO (ILG),    XEVAPM(ILG),    
+     2     RA    (ILG),    RB    (ILG),    RAGINV(ILG),    RBINV (ILG),
+     3     RBTINV(ILG),    RBCINV(ILG),    TVRTAC(ILG),
+     4     TPOTG (ILG),    RESID (ILG),    TCANO (ILG),
+     5     TRTOP (ILG),    QSTOR (ILG),    A     (ILG),    B     (ILG),
+     6     LZZ0  (ILG),    LZZ0T (ILG),
+     7     FM    (ILG),    FH    (ILG),    WZERO (ILG),    XEVAPM(ILG),
      8     DCFLXM(ILG),    WC    (ILG),    DRAGIN(ILG),    CFLUXM(ILG),
      9     CFSENS(ILG),    CFEVAP(ILG),    QSGADD(ILG),    CFLX  (ILG)
 C
       INTEGER              ITER  (ILG),    NITER (ILG),    IEVAPC(ILG),
-     1                     KF1   (ILG),    KF2   (ILG)    
+     1                     KF1   (ILG),    KF2   (ILG)
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -242,7 +245,7 @@ C
      2     RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP,DELTA,CGRAV,CKARM,CPD,
      3     AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
 C
-      COMMON /CLASS1/ DELT,TFREZ                                                  
+      COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
@@ -255,13 +258,14 @@ C
 C-----------------------------------------------------------------------
 C     * INITIALIZATION AND PRE-ITERATION SEQUENCE.
 C===================== CTEM =====================================\
+C
       DO I = 1,ILG
         QSWNVC(I)=0.0
       ENDDO
 C===================== CTEM =====================================/
 C
       IF(ITCG.LT.2) THEN
-          ITERMX=12
+          ITERMX=50
       ELSE
           ITERMX=5
       ENDIF
@@ -280,48 +284,51 @@ C
               ELSE
                   TRTOP(I)=TRSNOW(I)
               ENDIF
-              QSWNVG=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I)) 
+              QSWNVG=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I))
               QSWNIG=QSWINI(I)*TRNIRC(I)*(1.0-ALNIRG(I))
-              QSWNG(I)=QSWNVG+QSWNIG                    
-              QTRANS(I)=QSWNG(I)*TRTOP(I)   
-              QSWNG(I)=QSWNG(I)-QTRANS(I)  
+              QSWNG(I)=QSWNVG+QSWNIG
+              QTRANS(I)=QSWNG(I)*TRTOP(I)
+              QSWNG(I)=QSWNG(I)-QTRANS(I)
               QSWNVC(I)=QSWINV(I)*(1.0-ALVISC(I))-QSWNVG
-              QSWNIC=QSWINI(I)*(1.0-ALNIRC(I))-QSWNIG    
+              QSWNIC=QSWINI(I)*(1.0-ALNIRC(I))-QSWNIG
               QSWNC(I)=QSWNVC(I)+QSWNIC
               IF(ABS(TCAN(I)).LT.1.0E-3)        TCAN(I)=TPOTA(I)
               QLWOC(I)=SBC*TCAN(I)*TCAN(I)*TCAN(I)*TCAN(I)
-C      
+C
               IF(TCAN(I).GE.TFREZ)                         THEN
-                  A(I)=17.269      
-                  B(I)=35.86      
+                  A(I)=17.269
+                  B(I)=35.86
               ELSE
-                  A(I)=21.874   
-                  B(I)=7.66    
-              ENDIF           
+                  A(I)=21.874
+                  B(I)=7.66
+              ENDIF
               WCAN=0.622*611.0*EXP(A(I)*(TCAN(I)-TFREZ)/
-     1             (TCAN(I)-B(I)))/PADRY(I)           
-              QCAN(I)=WCAN/(1.0+WCAN)   
+     1             (TCAN(I)-B(I)))/PADRY(I)
+              QCAN(I)=WCAN/(1.0+WCAN)
               TVIRTC(I)=TCAN(I)*(1.0+0.61*QCAN(I))
               IF(ITC.EQ.2) THEN
                   TAC(I)=TCAN(I)
                   QAC(I)=QA(I)
               ENDIF
-              TVRTAC(I)=TAC(I)*(1.0+0.61*QAC(I))  
-C                         
+              TVRTAC(I)=TAC(I)*(1.0+0.61*QAC(I))
+C
               IF(SNOCAN(I).GT.0.)             THEN
                   CPHCHC(I)=CLHVAP+CLHMLT
-              ELSE                                                                        
-                  CPHCHC(I)=CLHVAP                                                           
-              ENDIF                    
+              ELSE
+                  CPHCHC(I)=CLHVAP
+              ENDIF
               RBINV(I)=RBCOEF(I)*SQRT(VAC(I))
+              IF (RBINV(I) .LT. 0.) CALL XIT('TSOLVC',0)
+              ! If RBINV is < 0, it is possible your INI file is missing
+              ! the PAIMIN and PAIMAX values.
               RB(I)=1.0/RBINV(I)
               TZERO(I)=TGND(I)
               TCANO(I)=TCAN(I)
               TSTEP(I)=1.0
               ITER(I)=1
               NITER(I)=1
-              QMELTC(I)=0.0    
-              QMELTG(I)=0.0   
+              QMELTC(I)=0.0
+              QMELTG(I)=0.0
               IF(ISNOW.EQ.1)                               THEN
                   KF1(I)=1
                   KF2(I)=2
@@ -337,15 +344,14 @@ C     * RC BASED ON PHOTOSYNTHESIS.
 C
       IF(ICTEMMOD.EQ.1) THEN
 
+C
 C       STORE CFLUXV NUMBERS IN A TEMPORARY ARRAY
         DO I = IL1, IL2
           CFLUXV_IN(I)=CFLUXV(I)
-        ENDDO 
+        ENDDO
 C
-C       NOTE: WE DO NOT USE TAC HERE. TAC IS INTENDED FOR USE WHEN ITC=2
-C             HOWEVER, AS SET UP TAC CAN BE USED UNSET IN THE CALCULATION
-C             OF QSENSG EVEN IF ITC/=2. TO ENSURE THE PHTSYN WORKS, WE THEN
-C             USE TA (THE SUB OCCURS IN PHTSYN). JM 11/09/12
+C       NOTE: FOR NOW, CTEM IS USING TA INSTEAD OF TCAN (THE SUB OCCURS
+C             IN PHTSYN). JM 11/09/12. (THIS IS CURRENTLY UNDER REVIEW.)
 
         CALL PHTSYN3(  AILCG, FCANC,     TCAN, CO2CONC,  PRESSG,    FI,
      1                CFLUXV,    QA,   QSWNVC,      IC,   THLIQ, ISAND,
@@ -358,52 +364,52 @@ C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
-        DO 70 I =IL1,IL2
+C        DO 70 I =IL1,IL2
 C          IF(RC(I).LE.10000.) THEN !FLAG, TURNING ON CAUSES A MAJOR PROBLEM
 C                                    WHEN THERE IS VEG WITH NO ROOTS. VA & JM OCT2012
-            RC(I)=MIN(RCPHTSYN(I),4999.999)
+C            RC(I)=MIN(RCPHTSYN(I),4999.999)
 C          ENDIF
-   70   CONTINUE
+C   70   CONTINUE
 
       ENDIF
 C
 C     * ITERATION FOR SURFACE TEMPERATURE OF GROUND UNDER CANOPY.
 C     * LOOP IS REPEATED UNTIL SOLUTIONS HAVE BEEN FOUND FOR ALL POINTS
 C     * ON THE CURRENT LATITUDE CIRCLE(S).
-C  
+C
   100 CONTINUE
 C
       NUMIT=0
       DO 125 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN    
+          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN
               IF(TZERO(I).GE.TFREZ)                           THEN
-                  A(I)=17.269     
-                  B(I)=35.86     
-              ELSE              
-                  A(I)=21.874  
-                  B(I)=7.66   
-              ENDIF  
+                  A(I)=17.269
+                  B(I)=35.86
+              ELSE
+                  A(I)=21.874
+                  B(I)=7.66
+              ENDIF
               WZERO(I)=0.622*611.0*EXP(A(I)*(TZERO(I)-TFREZ)/
-     1              (TZERO(I)-B(I)))/PADRY(I)           
-              Q0SAT(I)=WZERO(I)/(1.0+WZERO(I))    
+     1              (TZERO(I)-B(I)))/PADRY(I)
+              Q0SAT(I)=WZERO(I)/(1.0+WZERO(I))
               IF(IWATER(I).GT.0)                              THEN
-                  EVBETA(I)=1.0        
+                  EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
-              ELSE                            
+              ELSE
                   EVBETA(I)=CEVAP(I)
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QAC(I)
-                  IF(QZERO(I).GT.QAC(I) .AND. IEVAP(I).EQ.0) THEN                   
+                  IF(QZERO(I).GT.QAC(I) .AND. IEVAP(I).EQ.0) THEN
                       EVBETA(I)=0.0
                       QZERO(I)=QAC(I)
                   ENDIF
               ENDIF
 C
               TPOTG(I)=TZERO(I)-8.0*ZOM(I)*GRAV/CPD
-              TVIRTG(I)=TPOTG(I)*(1.0+0.61*QZERO(I))   
+              TVIRTG(I)=TPOTG(I)*(1.0+0.61*QZERO(I))
               IF(TVIRTG(I).GT.TVRTAC(I)+1.)                   THEN
                   RAGINV(I)=RAGCO*(TVIRTG(I)-TVRTAC(I))**0.333333
                   DRAGIN(I)=0.333*RAGCO*(TVIRTG(I)-TVRTAC(I))**(-.667)
-              ELSEIF(TVIRTG(I).GT.(TVRTAC(I)+0.001))          THEN 
+              ELSEIF(TVIRTG(I).GT.(TVRTAC(I)+0.001))          THEN
                   RAGINV(I)=RAGCO*(TVIRTG(I)-TVRTAC(I))
                   DRAGIN(I)=RAGCO
               ELSE
@@ -415,7 +421,7 @@ C
               QSENSG(I)=RHOAIR(I)*SPHAIR*RAGINV(I)*
      1            (TPOTG(I)-TAC(I))
               EVAPG (I)=RHOAIR(I)*(QZERO(I)-QAC(I))*RAGINV(I)
-              QEVAPG(I)=CPHCHG(I)*EVAPG(I)    
+              QEVAPG(I)=CPHCHG(I)*EVAPG(I)
               GZERO(I)=GCOEFF(I)*TZERO(I)+GCONST(I)
               RESID(I)=QSWNG(I)+FSVF(I)*QLWIN(I)+(1.0-FSVF(I))*
      1            QLWOC(I)-QLWOG(I)-QSENSG(I)-QEVAPG(I)-GZERO(I)
@@ -430,7 +436,7 @@ C
 C     * OPTION #1: BISECTION ITERATION METHOD.
 C
       DO 150 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN    
+          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN
               IF(NITER(I).EQ.1) THEN
                   IF(RESID(I).GT.0.0) THEN
                       TZERO(I)=TZERO(I)+TSTEP(I)
@@ -439,8 +445,8 @@ C
                   ENDIF
               ELSE
                   IF((RESID(I).GT.0. .AND. TSTEP(I).LT.0.) .OR.
-     1                (RESID(I).LT.0. .AND. TSTEP(I).GT.0.))   THEN 
-                      TSTEP(I)=-TSTEP(I)/2.0   
+     1                (RESID(I).LT.0. .AND. TSTEP(I).GT.0.))   THEN
+                      TSTEP(I)=-TSTEP(I)/2.0
                   ENDIF
                   TZERO(I)=TZERO(I)+TSTEP(I)
               ENDIF
@@ -454,7 +460,7 @@ C
 C     * OPTION #2: NEWTON-RAPHSON ITERATION METHOD.
 C
       DO 175 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN    
+          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN
               DQ0DT=-WZERO(I)*A(I)*(B(I)-TFREZ)/((TZERO(I)-B(I))*
      1               (1.0+WZERO(I)))**2*EVBETA(I)
               DRDT0=-4.0*SBC*TZERO(I)**3
@@ -474,8 +480,8 @@ C
 C
       IF(NUMIT.GT.0)                                    GO TO 100
 C
-C     * IF CONVERGENCE HAS NOT BEEN REACHED FOR ITERATION METHOD #2, 
-C     * CALCULATE TEMPERATURE AND FLUXES ASSUMING NEUTRAL STABILITY 
+C     * IF CONVERGENCE HAS NOT BEEN REACHED FOR ITERATION METHOD #2,
+C     * CALCULATE TEMPERATURE AND FLUXES ASSUMING NEUTRAL STABILITY
 C     * AND USING BOWEN RATIO APPROACH.
 C
       IF(ITCG.EQ.2)                                                 THEN
@@ -516,10 +522,10 @@ C
       IBAD=0
 C
       DO 225 I=IL1,IL2
-C          IF(FI(I).GT.0. .AND. ITER(I).EQ.-1)                     THEN 
+C          IF(FI(I).GT.0. .AND. ITER(I).EQ.-1)                     THEN
 C              WRITE(6,6250) I,JL,NITER(I),RESID(I),TZERO(I),RIB(I)
 C6250          FORMAT('0SUBCAN ITERATION LIMIT',3X,3I3,3(F8.2,E12.4))
-C          ENDIF                                            
+C          ENDIF
           IF(FI(I).GT.0.)                                           THEN
               IF(TZERO(I).LT.173.16 .OR. TZERO(I).GT.373.16)    THEN
                   IBAD=I
@@ -540,31 +546,31 @@ C     * POST-ITERATION CLEAN-UP.
 C
       DO 250 I=IL1,IL2
           IF(FI(I).GT.0.)                                        THEN
-              IF((IWATER(I).EQ.1 .AND. TZERO(I).LT.TFREZ) .OR. 
+              IF((IWATER(I).EQ.1 .AND. TZERO(I).LT.TFREZ) .OR.
      1              (IWATER(I).EQ.2 .AND. TZERO(I).GT.TFREZ))  THEN
-                  TZERO(I)=TFREZ      
+                  TZERO(I)=TFREZ
                   WZERO(I)=0.622*611.0/PADRY(I)
                   QZERO(I)=WZERO(I)/(1.0+WZERO(I))
                   TPOTG(I)=TZERO(I)-8.0*ZOM(I)*GRAV/CPD
-                  TVIRTG(I)=TPOTG(I)*(1.0+0.61*QZERO(I))   
+                  TVIRTG(I)=TPOTG(I)*(1.0+0.61*QZERO(I))
 C
                   QLWOG(I)=SBC*TZERO(I)*TZERO(I)*TZERO(I)*TZERO(I)
                   GZERO(I)=GCOEFF(I)*TZERO(I)+GCONST(I)
-                  IF(TVIRTG(I).GT.(TVRTAC(I)+0.001))         THEN 
+                  IF(TVIRTG(I).GT.(TVRTAC(I)+0.001))         THEN
                       RAGINV(I)=RAGCO*(TVIRTG(I)-TVRTAC(I))**0.333333
                       QSENSG(I)=RHOAIR(I)*SPHAIR*RAGINV(I)*
      1                          (TPOTG(I)-TAC(I))
                       EVAPG (I)=RHOAIR(I)*(QZERO(I)-QAC(I))*RAGINV(I)
-                  ELSE                  
+                  ELSE
                       RAGINV(I)=0.0
-                      QSENSG(I)=0.0    
-                      EVAPG (I)=0.0   
-                  ENDIF              
-                  QEVAPG(I)=CPHCHG(I)*EVAPG(I)   
+                      QSENSG(I)=0.0
+                      EVAPG (I)=0.0
+                  ENDIF
+                  QEVAPG(I)=CPHCHG(I)*EVAPG(I)
                   QMELTG(I)=QSWNG(I)+FSVF(I)*QLWIN(I)+(1.0-FSVF(I))*
      1                 QLWOC(I)-QLWOG(I)-QSENSG(I)-QEVAPG(I)-GZERO(I)
                   RESID(I)=0.0
-              ENDIF                                                                   
+              ENDIF
 C
               IF(ABS(EVAPG(I)).LT.1.0E-8) THEN
                   RESID(I)=RESID(I)+QEVAPG(I)
@@ -578,7 +584,7 @@ C
                   QSENSG(I)=QSENSG(I)+RESID(I)
               ENDIF
               ITERCT(I,KF2(I),NITER(I))=ITERCT(I,KF2(I),NITER(I))+1
-          ENDIF                                                                   
+          ENDIF
   250 CONTINUE
 C
 C     * PRE-ITERATION SEQUENCE FOR VEGETATION CANOPY.
@@ -593,7 +599,7 @@ C
                   TVRTAC(I)=TVIRTC(I)
               ENDIF
               ITER(I)=1
-              NITER(I)=1      
+              NITER(I)=1
               TSTEP(I)=1.0
               CFLUXM(I)=0.0
               DCFLXM(I)=0.0
@@ -601,7 +607,7 @@ C
   300 CONTINUE
 C
       IF(ITC.LT.2) THEN
-          ITERMX=12
+          ITERMX=50
       ELSE
           ITERMX=5
       ENDIF
@@ -609,34 +615,34 @@ C
 C     * ITERATION FOR CANOPY TEMPERATURE.
 C     * LOOP IS REPEATED UNTIL SOLUTIONS HAVE BEEN FOUND FOR ALL POINTS
 C     * ON THE CURRENT LATITUDE CIRCLE(S).
-C  
+C
   400 CONTINUE
 C
       NUMIT=0
       NIT=0
       DO 450 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                     THEN    
+          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                     THEN
               NIT=NIT+1
               IF(ITC.EQ.1) THEN
                   IF(TCAN(I).GE.TFREZ)                       THEN
-                      A(I)=17.269      
-                      B(I)=35.86      
+                      A(I)=17.269
+                      B(I)=35.86
                   ELSE
-                      A(I)=21.874   
-                      B(I)=7.66    
-                  ENDIF           
+                      A(I)=21.874
+                      B(I)=7.66
+                  ENDIF
                   WCAN=0.622*611.0*EXP(A(I)*(TCAN(I)-TFREZ)/
-     1                 (TCAN(I)-B(I)))/PADRY(I)           
-                  QCAN(I)=WCAN/(1.0+WCAN)   
+     1                 (TCAN(I)-B(I)))/PADRY(I)
+                  QCAN(I)=WCAN/(1.0+WCAN)
                   TVIRTC(I)=TCAN(I)*(1.0+0.61*QCAN(I))
               ENDIF
           ENDIF
-  450 CONTINUE      
+  450 CONTINUE
 C
-      IF(NIT.GT.0)                                                  THEN 
+      IF(NIT.GT.0)                                                  THEN
 C
 C     * CALCULATE SURFACE DRAG COEFFICIENTS (STABILITY-DEPENDENT)
-C     * AND OTHER RELATED QUANTITIES BETWEEN CANOPY AIR SPACE AND 
+C     * AND OTHER RELATED QUANTITIES BETWEEN CANOPY AIR SPACE AND
 C     * ATMOSPHERE.
 C
         IF(ISLFD.LT.2) THEN
@@ -650,27 +656,27 @@ C
      3                    LZZ0,LZZ0T,FM,FH,ILG,IL1,IL2,FI,ITER,JL )
         ENDIF
 C
-C     * CALCULATE CANOPY AIR TEMPERATURE AND SPECIFIC HUMIDITY OF 
-C     * CANOPY AIR (FIRST WITHOUT RC TO CHECK FOR CONDENSATION; 
+C     * CALCULATE CANOPY AIR TEMPERATURE AND SPECIFIC HUMIDITY OF
+C     * CANOPY AIR (FIRST WITHOUT RC TO CHECK FOR CONDENSATION;
 C     * IF NO CONDENSATION EXISTS, RECALCULATE).
 C
         IF(ITC.EQ.1) THEN
 C
         DO 475 I=IL1,IL2
-            IF (FI(I).GT.0. .AND. ITER(I).EQ.1)                THEN    
+            IF (FI(I).GT.0. .AND. ITER(I).EQ.1)                THEN
                 XEVAP(I)=RBINV(I)
                 QAC(I)=(QCAN(I)*XEVAP(I)+QZERO(I)*RAGINV(I)+
      1              QA(I)*CFLUX(I))/(XEVAP(I)+RAGINV(I)+CFLUX(I))
                 IF(QAC(I).LT.QCAN(I))                     THEN
-                   IF(FSNOWC(I).GT.0.0)               THEN 
+                   IF(FSNOWC(I).GT.0.0)               THEN
                        XEVAP(I)=(FRAINC(I)+FSNOWC(I))/RB(I)
-                   ELSE   
+                   ELSE
                        XEVAP(I)=FRAINC(I)/RB(I)+(1.0-FRAINC(I))/
-     1                          (RB(I)+RC(I))                            
+     1                          (RB(I)+RC(I))
                        QAC(I)=(QCAN(I)*XEVAP(I)+QZERO(I)*RAGINV(I)+
      1                     QA(I)*CFLUX(I))/(XEVAP(I)+RAGINV(I)+
      2                     CFLUX(I))
-                   ENDIF 
+                   ENDIF
                 ELSE
                     IF(FSNOWC(I).GT.1.0E-5) THEN
                         XEVAP(I)=FSNOWC(I)/RB(I)
@@ -680,7 +686,7 @@ C
                 ENDIF
                 TAC(I)=(TCAN(I)*RBINV(I)+TPOTG(I)*RAGINV(I)+
      1              TPOTA(I)*CFLUX(I))/(RBINV(I)+RAGINV(I)+CFLUX(I))
-                TVRTAC(I)=TAC(I)*(1.0+0.61*QAC(I))  
+                TVRTAC(I)=TAC(I)*(1.0+0.61*QAC(I))
                 CFSENS(I)=RBINV(I)
                 CFEVAP(I)=XEVAP(I)
             ENDIF
@@ -689,18 +695,18 @@ C
         ELSE
 C
         DO 500 I=IL1,IL2
-            IF (FI(I).GT.0. .AND. ITER(I).EQ.1)                THEN    
+            IF (FI(I).GT.0. .AND. ITER(I).EQ.1)                THEN
                 CFLX(I)=RBINV(I)*CFLUX(I)/(RBINV(I)+CFLUX(I))
                 CFLX(I)=CFLUX(I)+(CFLX(I)-CFLUX(I))*
      1              MIN(1.0,QSWINV(I)*0.04)
                 RA(I)=1.0/CFLX(I)
                 IF(QA(I).LT.QCAN(I))                     THEN
-                   IF(FSNOWC(I).GT.0.0)               THEN 
+                   IF(FSNOWC(I).GT.0.0)               THEN
                        XEVAP(I)=(FRAINC(I)+FSNOWC(I))/RA(I)
-                   ELSE   
+                   ELSE
                        XEVAP(I)=FRAINC(I)/RA(I)+(1.0-FRAINC(I))/
-     1                          (RA(I)+RC(I))                            
-                   ENDIF 
+     1                          (RA(I)+RC(I))
+                   ENDIF
                 ELSE
                     IF(FSNOWC(I).GT.1.0E-5) THEN
                         XEVAP(I)=FSNOWC(I)/RA(I)
@@ -709,16 +715,16 @@ C
                     ENDIF
                 ENDIF
                 IF(TCAN(I).GE.TFREZ)                         THEN
-                    A(I)=17.269      
-                    B(I)=35.86      
+                    A(I)=17.269
+                    B(I)=35.86
                 ELSE
-                    A(I)=21.874   
-                    B(I)=7.66    
-                ENDIF           
+                    A(I)=21.874
+                    B(I)=7.66
+                ENDIF
                 WCAN=0.622*611.0*EXP(A(I)*(TCAN(I)-TFREZ)/
-     1               (TCAN(I)-B(I)))/PADRY(I)           
+     1               (TCAN(I)-B(I)))/PADRY(I)
                 WC(I)=WCAN
-                QCAN(I)=WCAN/(1.0+WCAN)   
+                QCAN(I)=WCAN/(1.0+WCAN)
                 QCAN(I)=RA(I)*XEVAP(I)*QCAN(I)+(1.0-RA(I)*XEVAP(I))*
      1              QA(I)
                 TVIRTC(I)=TCAN(I)*(1.0+0.61*QCAN(I))
@@ -734,30 +740,30 @@ C
 C     * CALCULATE THE TERMS IN THE ENERGY BALANCE AND SOLVE.
 C
         DO 525 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN    
+          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN
               QLWOC(I)=SBC*TCAN(I)*TCAN(I)*TCAN(I)*TCAN(I)
               QSENSC(I)=RHOAIR(I)*SPHAIR*CFSENS(I)*(TCAN(I)-TAC(I))
-              IF(FRAINC(I).GT.0. .OR. FSNOWC(I).GT.0. .OR. 
-     1           RC(I).LE.5000. .OR. QAC(I).GT.QCAN(I))       THEN 
+              IF(FRAINC(I).GT.0. .OR. FSNOWC(I).GT.0. .OR.
+     1           RC(I).LE.5000. .OR. QAC(I).GT.QCAN(I))       THEN
                   EVAPC(I)=RHOAIR(I)*CFEVAP(I)*(QCAN(I)-QAC(I))
                   IEVAPC(I)=1
-              ELSE     
-                  EVAPC(I)=0.0   
+              ELSE
+                  EVAPC(I)=0.0
                   IEVAPC(I)=0
                   QCAN(I)=QA(I)
-              ENDIF             
+              ENDIF
               IF(EVAPC(I).LT.0. .AND. TCAN(I).GT.TADP(I)) EVAPC(I)=0.0
               IF(SNOCAN(I).GT.0.)                            THEN
-                  EVPWET(I)=(CLHVAP+CLHMLT)*SNOCAN(I)/DELT
+                  EVPWET(I)=SNOCAN(I)/DELT
               ELSE
-                  EVPWET(I)=CLHVAP*RAICAN(I)/DELT
+                  EVPWET(I)=RAICAN(I)/DELT
               ENDIF
-              IF((FRAINC(I)+FSNOWC(I)).GT.0.50 .AND. 
+              IF((FRAINC(I)+FSNOWC(I)).GT.0.50 .AND.
      1                        EVAPC(I).GT.EVPWET(I))         THEN
                   EVAPC(I)=EVPWET(I)
                   IEVAPC(I)=0
               ENDIF
-              QEVAPC(I)=CPHCHC(I)*EVAPC(I)  
+              QEVAPC(I)=CPHCHC(I)*EVAPC(I)
               QSTOR (I)=CHCAP(I)*(TCAN(I)-TCANO(I))/DELT
               RESID(I)=QSWNC(I)+(QLWIN(I)+QLWOG(I)-2.0*QLWOC(I))*
      1             (1.0-FSVF(I))+QSGADD(I)-QSENSC(I)-QEVAPC(I)-
@@ -766,14 +772,14 @@ C
               IF(ABS(TSTEP(I)).LT. 1.0E-2)                   ITER(I)=0
               IF(NITER(I).EQ.ITERMX .AND. ITER(I).EQ.1)      ITER(I)=-1
           ENDIF
-  525   CONTINUE     
+  525   CONTINUE
 C
       IF(ITC.LT.2) THEN
 C
 C     * OPTION #1: SECANT/BISECTION ITERATION METHOD.
 C
         DO 550 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN    
+          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN
               IF(NITER(I).EQ.1) THEN
                   IF(RESID(I).GT.0.0) THEN
                       TCAN(I)=TCAN(I)+TSTEP(I)
@@ -782,8 +788,8 @@ C
                   ENDIF
               ELSE
                   IF((RESID(I).GT.0. .AND. TSTEP(I).LT.0.) .OR.
-     1                (RESID(I).LT.0. .AND. TSTEP(I).GT.0.))    THEN 
-                      TSTEP(I)=-TSTEP(I)/2.0   
+     1                (RESID(I).LT.0. .AND. TSTEP(I).GT.0.))    THEN
+                      TSTEP(I)=-TSTEP(I)/2.0
                   ENDIF
                   TCAN(I)=TCAN(I)+TSTEP(I)
               ENDIF
@@ -836,14 +842,14 @@ C
       ENDIF
       IF(NUMIT.GT.0)                                    GO TO 400
 C
-C     * IF CONVERGENCE HAS NOT BEEN REACHED FOR ITERATION METHOD #2, 
-C     * CALCULATE TEMPERATURE AND FLUXES ASSUMING NEUTRAL STABILITY. 
+C     * IF CONVERGENCE HAS NOT BEEN REACHED FOR ITERATION METHOD #2,
+C     * CALCULATE TEMPERATURE AND FLUXES ASSUMING NEUTRAL STABILITY.
 C
       IF(ITC.EQ.2) THEN
 C
         NUMIT=0
         DO 600 I=IL1,IL2
-          if (tvirta(i) .gt. 100.) then !flag! TEMP FIX! JM July 8 2013.
+!          if (tvirta(i) .gt. 100.) then !flag! TEMP FIX! JM July 8 2013.
           IEVAPC(I)=0
           IF(ITER(I).EQ.-1)                   THEN
             TCANT=TVIRTA(I)/(1.0+0.61*QCAN(I))
@@ -882,7 +888,7 @@ C
                IEVAPC(I)=1
             ENDIF
           ENDIF
-         end if
+!         end if
   600   CONTINUE
 c
       IF(NUMIT.GT.0) THEN
@@ -900,17 +906,19 @@ c
 C
       ENDIF
 C
+      IBAD=0
+C
       DO 625 I=IL1,IL2
-C         IF(FI(I).GT.0. .AND. ITER(I).EQ.-1)                      THEN 
+C         IF(FI(I).GT.0. .AND. ITER(I).EQ.-1)                      THEN
 C             WRITE(6,6350) I,JL,NITER(I),RESID(I),TCAN(I),RIB(I)
-C6350         FORMAT('0CANOPY ITERATION LIMIT',3X,3I3,3(F8.2,E12.4))            
-C         ENDIF                                            
+C6350         FORMAT('0CANOPY ITERATION LIMIT',3X,3I3,3(F8.2,E12.4))
+C         ENDIF
           IF(FI(I).GT.0. .AND. (TCAN(I).LT.173.16 .OR.
      1                           TCAN(I).GT.373.16))                THEN
               IBAD=I
-          ENDIF  
+          ENDIF
   625 CONTINUE
-C  
+C
       IF(IBAD.NE.0)                                                 THEN
           WRITE(6,6375) IBAD,JL,TCAN(IBAD),NITER(IBAD),ISNOW
  6375     FORMAT('0BAD CANOPY ITERATION TEMPERATURE',3X,2I3,F16.2,2I4)
@@ -927,52 +935,52 @@ C
       NIT=0
       DO 650 I=IL1,IL2
           IF(FI(I).GT.0.) THEN
-              IF(RAICAN(I).GT.0. .AND. TCAN(I).LT.TFREZ)      THEN 
+              IF(RAICAN(I).GT.0. .AND. TCAN(I).LT.TFREZ)      THEN
                   QSTOR(I)=-CHCAP(I)*TCANO(I)/DELT
                   ITER(I)=1
                   NIT=NIT+1
-                  HFREZ=CHCAP(I)*(TFREZ-TCAN(I))   
-                  HCONV=RAICAN(I)*CLHMLT          
-                  IF(HFREZ.LE.HCONV)                       THEN 
-                     RCONV=HFREZ/CLHMLT          
+                  HFREZ=CHCAP(I)*(TFREZ-TCAN(I))
+                  HCONV=RAICAN(I)*CLHMLT
+                  IF(HFREZ.LE.HCONV)                       THEN
+                     RCONV=HFREZ/CLHMLT
                      FSNOWC(I)=FSNOWC(I)+FRAINC(I)*RCONV/RAICAN(I)
                      FRAINC(I)=FRAINC(I)-FRAINC(I)*RCONV/RAICAN(I)
-                     SNOCAN(I)=SNOCAN(I)+RCONV  
-                     RAICAN(I)=RAICAN(I)-RCONV 
-                     TCAN  (I)=TFREZ          
+                     SNOCAN(I)=SNOCAN(I)+RCONV
+                     RAICAN(I)=RAICAN(I)-RCONV
+                     TCAN  (I)=TFREZ
                      QMELTC(I)=-CLHMLT*RCONV/DELT
-                     WCAN=0.622*611.0/PADRY(I)  
-                     QCAN(I)=WCAN/(1.0+WCAN)                                                 
+                     WCAN=0.622*611.0/PADRY(I)
+                     QCAN(I)=WCAN/(1.0+WCAN)
                      TVIRTC(I)=TCAN(I)*(1.0+0.61*QCAN(I))
-                  ELSE                    
-                     HCOOL=HFREZ-HCONV   
-                     SNOCAN(I)=SNOCAN(I)+RAICAN(I)  
+                  ELSE
+                     HCOOL=HFREZ-HCONV
+                     SNOCAN(I)=SNOCAN(I)+RAICAN(I)
                      FSNOWC(I)=FSNOWC(I)+FRAINC(I)
                      FRAINC(I)=0.0
                      TCAN  (I)=-HCOOL/(SPHVEG*CMASS(I)+SPHICE*
-     1                         SNOCAN(I))+TFREZ  
+     1                         SNOCAN(I))+TFREZ
                      QMELTC(I)=-CLHMLT*RAICAN(I)/DELT
-                     RAICAN(I)=0.0                 
-                     A(I)=21.874                  
-                     B(I)=7.66                   
+                     RAICAN(I)=0.0
+                     A(I)=21.874
+                     B(I)=7.66
                      WCAN=0.622*611.0*EXP(A(I)*(TCAN(I)-TFREZ)/
-     1                    (TCAN(I)-B(I)))/PADRY(I)           
-                     QCAN(I)=WCAN/(1.0+WCAN)    
+     1                    (TCAN(I)-B(I)))/PADRY(I)
+                     QCAN(I)=WCAN/(1.0+WCAN)
                      TVIRTC(I)=TCAN(I)*(1.0+0.61*QCAN(I))
-                  ENDIF    
+                  ENDIF
                   CHCAP(I)=SPHVEG*CMASS(I)+SPHICE*SNOCAN(I)+
      1                     SPHW*RAICAN(I)
                   QSTOR(I)=QSTOR(I)+CHCAP(I)*TCAN(I)/DELT
               ELSE
                   ITER(I)=0
-              ENDIF                       
+              ENDIF
               IF(ITC.EQ.2) THEN
                   TAC(I)=TCAN(I)
                   QAC(I)=QCAN(I)
                   TVRTAC(I)=TVIRTC(I)
               ENDIF
           ENDIF
-  650 CONTINUE      
+  650 CONTINUE
 C
       DO 675 I=IL1,IL2
           IF(FI(I).GT.0.) THEN
@@ -980,51 +988,51 @@ C
                   QSTOR(I)=-CHCAP(I)*TCANO(I)/DELT
                   ITER(I)=1
                   NIT=NIT+1
-                  HMELT=CHCAP(I)*(TCAN(I)-TFREZ)    
-                  HCONV=SNOCAN(I)*CLHMLT           
-                  IF(HMELT.LE.HCONV)                       THEN 
-                     SCONV=HMELT/CLHMLT           
+                  HMELT=CHCAP(I)*(TCAN(I)-TFREZ)
+                  HCONV=SNOCAN(I)*CLHMLT
+                  IF(HMELT.LE.HCONV)                       THEN
+                     SCONV=HMELT/CLHMLT
                      FRAINC(I)=FRAINC(I)+FSNOWC(I)*SCONV/SNOCAN(I)
                      FSNOWC(I)=FSNOWC(I)-FSNOWC(I)*SCONV/SNOCAN(I)
-                     SNOCAN(I)=SNOCAN(I)-SCONV   
-                     RAICAN(I)=RAICAN(I)+SCONV  
-                     TCAN  (I)=TFREZ           
+                     SNOCAN(I)=SNOCAN(I)-SCONV
+                     RAICAN(I)=RAICAN(I)+SCONV
+                     TCAN  (I)=TFREZ
                      QMELTC(I)=CLHMLT*SCONV/DELT
-                     WCAN=0.622*611.0/PADRY(I)  
-                     QCAN(I)=WCAN/(1.0+WCAN)  
+                     WCAN=0.622*611.0/PADRY(I)
+                     QCAN(I)=WCAN/(1.0+WCAN)
                      TVIRTC(I)=TCAN(I)*(1.0+0.61*QCAN(I))
-                  ELSE                       
-                     HWARM=HMELT-HCONV      
-                     RAICAN(I)=RAICAN(I)+SNOCAN(I)    
+                  ELSE
+                     HWARM=HMELT-HCONV
+                     RAICAN(I)=RAICAN(I)+SNOCAN(I)
                      FRAINC(I)=FRAINC(I)+FSNOWC(I)
                      FSNOWC(I)=0.0
                      TCAN  (I)=HWARM/(SPHVEG*CMASS(I)+SPHW*
-     1                         RAICAN(I))+TFREZ                         
+     1                         RAICAN(I))+TFREZ
                      QMELTC(I)=CLHMLT*SNOCAN(I)/DELT
-                     SNOCAN(I)=0.0                   
-                     A(I)=17.269      
-                     B(I)=35.86      
+                     SNOCAN(I)=0.0
+                     A(I)=17.269
+                     B(I)=35.86
                      WCAN=0.622*611.0*EXP(A(I)*(TCAN(I)-TFREZ)/
-     1                    (TCAN(I)-B(I)))/PADRY(I)           
-                     QCAN(I)=WCAN/(1.0+WCAN)   
+     1                    (TCAN(I)-B(I)))/PADRY(I)
+                     QCAN(I)=WCAN/(1.0+WCAN)
                      TVIRTC(I)=TCAN(I)*(1.0+0.61*QCAN(I))
-                  ENDIF                       
+                  ENDIF
                   CHCAP(I)=SPHVEG*CMASS(I)+SPHW*RAICAN(I)+
      1                     SPHICE*SNOCAN(I)
                   QSTOR(I)=QSTOR(I)+CHCAP(I)*TCAN(I)/DELT
-              ENDIF                       
+              ENDIF
               IF(ITC.EQ.2) THEN
                   TAC(I)=TCAN(I)
                   QAC(I)=QCAN(I)
                   TVRTAC(I)=TVIRTC(I)
               ENDIF
           ENDIF
-  675 CONTINUE      
+  675 CONTINUE
 C
-      IF(NIT.GT.0)                                         THEN 
+      IF(NIT.GT.0)                                         THEN
 C
 C     * CALCULATE SURFACE DRAG COEFFICIENTS (STABILITY-DEPENDENT)
-C     * AND OTHER RELATED QUANTITIES BETWEEN CANOPY AIR SPACE AND 
+C     * AND OTHER RELATED QUANTITIES BETWEEN CANOPY AIR SPACE AND
 C     * ATMOSPHERE.
 C
         IF(ISLFD.LT.2) THEN
@@ -1044,20 +1052,20 @@ C
       IF(ITC.EQ.1) THEN
 C
       DO 700 I=IL1,IL2
-          IF (FI(I).GT.0. .AND. ITER(I).EQ.1)                THEN    
+          IF (FI(I).GT.0. .AND. ITER(I).EQ.1)                THEN
               XEVAP(I)=RBINV(I)
               QAC(I)=(QCAN(I)*XEVAP(I)+QZERO(I)*RAGINV(I)+
      1            QA(I)*CFLUX(I))/(XEVAP(I)+RAGINV(I)+CFLUX(I))
               IF(QAC(I).LT.QCAN(I))                     THEN
-                 IF(FSNOWC(I).GT.0.0)               THEN 
+                 IF(FSNOWC(I).GT.0.0)               THEN
                      XEVAP(I)=(FRAINC(I)+FSNOWC(I))/RB(I)
-                 ELSE   
+                 ELSE
                      XEVAP(I)=FRAINC(I)/RB(I)+(1.0-FRAINC(I))/
-     1                        (RB(I)+RC(I))                            
+     1                        (RB(I)+RC(I))
                      QAC(I)=(QCAN(I)*XEVAP(I)+QZERO(I)*RAGINV(I)+
      1                   QA(I)*CFLUX(I))/(XEVAP(I)+RAGINV(I)+
      2                   CFLUX(I))
-                 ENDIF 
+                 ENDIF
               ELSE
                   IF(FSNOWC(I).GT.1.0E-5) THEN
                       XEVAP(I)=FSNOWC(I)/RB(I)
@@ -1067,7 +1075,7 @@ C
               ENDIF
               TAC(I)=(TCAN(I)*RBINV(I)+TPOTG(I)*RAGINV(I)+
      1            TPOTA(I)*CFLUX(I))/(RBINV(I)+RAGINV(I)+CFLUX(I))
-              TVRTAC(I)=TAC(I)*(1.0+0.61*QAC(I))  
+              TVRTAC(I)=TAC(I)*(1.0+0.61*QAC(I))
               CFSENS(I)=RBINV(I)
               CFEVAP(I)=XEVAP(I)
           ENDIF
@@ -1076,18 +1084,18 @@ C
       ELSE
 C
       DO 750 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN    
+          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN
               CFLX(I)=RBINV(I)*CFLUX(I)/(RBINV(I)+CFLUX(I))
               CFLX(I)=CFLUX(I)+(CFLX(I)-CFLUX(I))*
      1            MIN(1.0,QSWINV(I)*0.04)
               RA(I)=1.0/CFLX(I)
               IF(QA(I).LT.QCAN(I))                     THEN
-                 IF(FSNOWC(I).GT.0.0)               THEN 
+                 IF(FSNOWC(I).GT.0.0)               THEN
                      XEVAP(I)=(FRAINC(I)+FSNOWC(I))/RA(I)
-                 ELSE   
+                 ELSE
                      XEVAP(I)=FRAINC(I)/RA(I)+(1.0-FRAINC(I))/
-     1                        (RA(I)+RC(I))                            
-                 ENDIF 
+     1                        (RA(I)+RC(I))
+                 ENDIF
               ELSE
                   IF(FSNOWC(I).GT.1.0E-5) THEN
                       XEVAP(I)=FSNOWC(I)/RA(I)
@@ -1107,29 +1115,29 @@ C
       ENDIF
 C
       DO 800 I=IL1,IL2
-          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN    
+          IF(FI(I).GT.0. .AND. ITER(I).EQ.1)                       THEN
               IF(SNOCAN(I).GT.0.)             THEN
                   CPHCHC(I)=CLHVAP+CLHMLT
-              ELSE                                                                        
-                  CPHCHC(I)=CLHVAP                                                           
-              ENDIF                                                                       
+              ELSE
+                  CPHCHC(I)=CLHVAP
+              ENDIF
               QLWOC(I)=SBC*TCAN(I)*TCAN(I)*TCAN(I)*TCAN(I)
               QSENSC(I)=RHOAIR(I)*SPHAIR*CFSENS(I)*(TCAN(I)-TAC(I))
-              IF(FRAINC(I).GT.0. .OR. FSNOWC(I).GT.0. .OR. 
-     1           RC(I).LE.5000. .OR. QAC(I).GT.QCAN(I))       THEN 
+              IF(FRAINC(I).GT.0. .OR. FSNOWC(I).GT.0. .OR.
+     1           RC(I).LE.5000. .OR. QAC(I).GT.QCAN(I))       THEN
                   EVAPC(I)=RHOAIR(I)*CFEVAP(I)*(QCAN(I)-QAC(I))
-              ELSE                 
-                  EVAPC(I)=0.0        
-              ENDIF                    
+              ELSE
+                  EVAPC(I)=0.0
+              ENDIF
               IF(EVAPC(I).LT.0. .AND. TCAN(I).GE.TADP(I)) EVAPC(I)=0.0
               IF(SNOCAN(I).GT.0.)                            THEN
-                  EVPWET(I)=(CLHVAP+CLHMLT)*SNOCAN(I)/DELT
+                  EVPWET(I)=SNOCAN(I)/DELT
               ELSE
-                  EVPWET(I)=CLHVAP*RAICAN(I)/DELT
+                  EVPWET(I)=RAICAN(I)/DELT
               ENDIF
-              IF((FRAINC(I)+FSNOWC(I)).GT.0.50 .AND. 
+              IF((FRAINC(I)+FSNOWC(I)).GT.0.50 .AND.
      1            EVAPC(I).GT.EVPWET(I)) EVAPC(I)=EVPWET(I)
-              QEVAPC(I)=CPHCHC(I)*EVAPC(I)    
+              QEVAPC(I)=CPHCHC(I)*EVAPC(I)
               RESID(I)=QSWNC(I)+(QLWIN(I)+QLWOG(I)-2.0*QLWOC(I))*
      1             (1.0-FSVF(I))+QSGADD(I)-QSENSC(I)-QEVAPC(I)-
      2             QSTOR(I)-QMELTC(I)
@@ -1137,7 +1145,7 @@ C
   800 CONTINUE
 C
       DO 850 I=IL1,IL2
-          IF(FI(I).GT.0.)                                          THEN 
+          IF(FI(I).GT.0.)                                          THEN
               IF(ABS(EVAPC(I)).LT.1.0E-8) THEN
                   RESID(I)=RESID(I)+QEVAPC(I)
                   EVAPC(I)=0.0
@@ -1169,8 +1177,8 @@ C
               QSWNET(I)=QSWNG(I)+QSWNC(I)+QTRANS(I)
               QLWOUT(I)=FSVF(I)*QLWOG(I)+(1.0-FSVF(I))*QLWOC(I)
               QSENS(I)=QSENSC(I)+QSENSG(I)-QSGADD(I)
-              QEVAP(I)=QEVAPC(I)+QEVAPG(I)    
-              EVAPC(I)=EVAPC(I)/RHOW         
+              QEVAP(I)=QEVAPC(I)+QEVAPG(I)
+              EVAPC(I)=EVAPC(I)/RHOW
               EVAPG(I)=EVAPG(I)/RHOW
               ITERCT(I,KF1(I),NITER(I))=ITERCT(I,KF1(I),NITER(I))+1
           ENDIF
@@ -1183,13 +1191,14 @@ C       * OVERWRITE OLDER NUMBERS ONLY WHEN FRACTION OF CANOPY
 C       * OR FRACTION OF CANOPY OVER SNOW (AKA FI) IS > 0.
 C
         DO 900 I = IL1, IL2
-          IF(FI(I).GT.0.)                                          THEN 
+          IF(FI(I).GT.0.)                                          THEN
             CFLUXV(I) = CFLUX(I)
           ELSE
             CFLUXV(I) = CFLUXV_IN(I)
           ENDIF
   900   CONTINUE
       ENDIF
-C                                                                                  
-      RETURN                                                                      
+C
+C
+      RETURN
       END

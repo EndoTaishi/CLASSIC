@@ -156,12 +156,16 @@ pftarrays=0.
               nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
              end if
              barf(i) = barf(i) - nfcancmxrow(i,m,j)
-             ! Keep track of the non-crop nfcancmx for use in loop below.              
-             pftarrays(i,n,k) = nfcancmxrow(i,m,j)   !FLAG test
-             indexposj(i,n,k) = j  !FLAG test
-             indexposm(i,n,k) = m  !FLAG test
-             n = n+1  !FLAG test
-             k = k+1  !FLAG test
+             ! Keep track of the non-crop nfcancmx for use in loop below.
+             ! pftarrays keeps track of the nfcancmxrow for all non-crops
+             ! indexposj and indexposm store the index values of the non-crops
+             ! in a continuous array for use later. n and k are then the indexs used by
+             ! these arrays.
+             pftarrays(i,n,k) = nfcancmxrow(i,m,j)   
+             indexposj(i,n,k) = j  
+             indexposm(i,n,k) = m  
+             n = n+1  
+             k = k+1  
             end if
            end do
           end do
@@ -172,19 +176,17 @@ pftarrays=0.
 !      more than 1.0.
        do i=1,nltest
         if (barf(i) .lt. 0.) then
-
-!         bigpftc=maxloc(nfcancmxrow(i,:,:))  !FLAG test
+         ! Find out which of the non-crop PFTs covers the largest area.
          bigpftc=maxloc(pftarrays(i,:,:))
 
-         j = indexposj(i,bigpftc(1),bigpftc(2))  !FLAG test
-         m = indexposj(i,bigpftc(1),bigpftc(2))  !FLAG test
-         ! Reduce the most dominant PFT by barf and 1.0e-5. The extra 
+         ! j is then the nmos index and m is the icc index of the PFT with the largest area
+         j = indexposj(i,bigpftc(1),bigpftc(2))  
+         m = indexposj(i,bigpftc(1),bigpftc(2))  
+         
+         ! Reduce the most dominant PFT by barf and minbare. The extra 
          ! amount is to ensure we don't have trouble later with an extremely
-         ! small bare fraction.
-!         nfcancmxrow(i,bigpftc(1),bigpftc(2))=nfcancmxrow &
-!                     (i,bigpftc(1),bigpftc(2))+barf(i) - 1.0e-5
-         nfcancmxrow(i,m,j)=nfcancmxrow &
-                     (i,m,j)+barf(i) - minbare   !FLAG test
+         ! small bare fraction. barf is a negative value.
+         nfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)+barf(i) - minbare
 
         end if
        end do 
@@ -222,7 +224,7 @@ pftarrays=0.
 !       (re)find the bare fraction for farerow(i,iccp1)
          if (mosaic) then
           do i = 1, nltest
-          temp = 0.
+           temp = 0.
            do m = 1, nmtest-1
             temp = temp + farerow(i,m)
            enddo
@@ -239,7 +241,9 @@ pftarrays=0.
           do i = 1, nltest
            temp = 0.0
            if (mosaic) then
-            if (farerow(i,nmtest) < seed) then  !FLAG should this include a compete switch that compares to see if true and 0 otherwise? JM Feb 17 2015
+            ! competition requires a 'seed' fraction so make sure the bare ground is also that big.
+            ! for prescribed runs you just need it to be possible (>0).
+            if ((compete .and. farerow(i,nmtest) < seed) .or. (.not. compete .and. farerow(i,nmtest) < 0.)) then  
 
              call adjust_luc_fracs(i,mosaic,nfcancmxrow,farerow(i,nmtest),compete)
 
@@ -263,14 +267,22 @@ pftarrays=0.
              fcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
              pfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
             else !mosaic
-!            ensure that the fraction is >= seed
-             pfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))!FLAG should this include a compete switch? Can't a mosaic tile be 0 if not in compete mode? JM Feb 17 2015
+             ! I think this check below is not needed (JM Mar 2015)
+             if (compete) then
+!              ensure that the fraction is >= seed
+               pfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))
+             else !prescribed run
+               pfcancmxrow(i,m,j)=max(0.,nfcancmxrow(i,m,j))
+             end if
             endif
            enddo
           enddo
         enddo
 
 !       back up one year in the luc file 
+!       this is because we were setting things up here, 
+!       we will later call readin_luc so want the file to be 
+!       rewound prior to that to the proper start year.
 
         do i = 1, nltest
            backspace(15)  
@@ -341,7 +353,11 @@ real, dimension(nltest) :: bare_ground_frac
               read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
               do m = 1, nmtest-1    !nmtest-1 same as icc
                j = m
-               nfcancmxrow(i,m,j) = max(seed,temparray(m)) !FLAG Can it actually be 0 if compete not on? JM Feb 17 2015
+               if (compete) then
+                  nfcancmxrow(i,m,j) = max(seed,temparray(m)) 
+               else !prescribed run
+                  nfcancmxrow(i,m,j) = max(0.,temparray(m)) 
+               end if   
               enddo !m loop
             endif
            enddo !nltest
@@ -383,14 +399,10 @@ real, dimension(nltest) :: bare_ground_frac
           enddo
           
           do i = 1, nltest
-           if (compete .and. bare_ground_frac(i) < seed) then
+           if ((compete .and. bare_ground_frac(i) < seed) .or. (.not. compete .and. bare_ground_frac(i) < 0.)) then
 
              call adjust_luc_fracs(i,mosaic,nfcancmxrow,bare_ground_frac(i),compete)           
 
-           else if (.not. compete .and. bare_ground_frac(i) < 0.) then
-           
-             call adjust_luc_fracs(i,mosaic,nfcancmxrow,bare_ground_frac(i),compete)
-           
            endif 
           enddo !nltest
 
@@ -1234,7 +1246,7 @@ subroutine adjust_luc_fracs(i,mosaic,nfcancmxrow, &
 ! this subroutine adjusts the amount of each pft to ensure that the fraction
 ! of gridcell bare ground is >0.
 
-! j. melton, jan 11 2013
+! J. Melton, Jan 11 2013
 
 use ctem_params,        only : nlat,nmos,icc,seed
 

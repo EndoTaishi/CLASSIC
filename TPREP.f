@@ -5,13 +5,13 @@
      4                 TCANS,  CEVAP,  IEVAP,  TBAR1P, WTABLE, ZERO,
      5                 EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS,            
      6                 GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS,
-     7                 QMELTC, QMELTG, EVAP,
+     7                 QMELTC, QMELTG, EVAP,   GSNOW,                   
      8                 TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, 
      9                 QEVAPC, QEVAPG, TACCO,  QACCO,  TACCS,  QACCS,  
      A                 ILMOX,  UEX,    HBLX,
      B                 ILMO,   UE,     HBL,    
-     C                 ST,     SU,     SV,     SQ,     CDH,    CDM,              
-     D                 QSENS,  QEVAP,  QLWAVG, 
+     C                 ST,     SU,     SV,     SQ,     SRH,             
+     D                 CDH,    CDM,    QSENS,  QEVAP,  QLWAVG,          
      E                 FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG,   
      F                 HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG,   
      G                 HMFC,   HMFN,   QFCF,   QFCL,   EVPPOT, ACOND,  
@@ -26,6 +26,7 @@ C
 C     Purpose: Initialize subarea variables and calculate various 
 C     parameters for surface energy budget calculations.
 C
+C     * JUN 21/13 - M.LAZARE.   PASS IN AND INITIALIZE TO ZERO "GSNOW". 
 C     * NOV 24/11 - R.HARVEY.   NEW SNOW THERMAL CONDUCTIVITY FROM
 C     *                         STURM ET AL. (1997).
 C     * OCT 12/11 - M.LAZARE.   REMOVED TSURF.     
@@ -235,6 +236,7 @@ C
                         !space over snow [K]
       REAL QACCS (ILG)  !Specific humidity of air within vegetation 
                         !canopy space over snow [kg kg-1]
+      REAL GSNOW (ILG)  !
  
 C
 C     * DIAGNOSTIC ARRAYS.
@@ -245,6 +247,7 @@ C
                         ![m s-1] 
       REAL SQ    (ILG)  !Diagnosed screen-level specific humidity 
                         ![kg kg-1]
+      REAL SRH   (ILG)  !
       REAL CDH   (ILG)  !Surface drag coefficient for heat [ ] 
       REAL CDM   (ILG)  !Surface drag coefficient for momentum [ ]
       REAL QSENS (ILG)  !Diagnosed total surface sensible heat flux over 
@@ -298,7 +301,8 @@ C
       REAL HBLX  (ILG)  !Height of the atmospheric boundary layer over 
                         !each subarea [m]   
 
-      REAL QFCF  (ILG),   QFCL  (ILG)
+      REAL QFCF  (ILG)
+      REAL QFCL  (ILG)
       REAL FTEMP (ILG),   FTEMPX(ILG),   FVAP  (ILG),
      1     FVAPX (ILG),   RIB   (ILG),   RIBX  (ILG)
 
@@ -483,6 +487,7 @@ C
           SU    (I)=0.
           SV    (I)=0.
           SQ    (I)=0.
+          SRH   (I)=0.                                                  
           CDH   (I)=0.
           CDM   (I)=0.
           QSENS (I)=0.
@@ -518,6 +523,7 @@ C
           FTEMP (I)=0.
           FVAP  (I)=0.
           RIB   (I)=0.
+          GSNOW (I)=0.                                                  
           FTEMPX(I)=0.
           FVAPX (I)=0.
           RIBX  (I)=0.
@@ -787,7 +793,7 @@ C
                       TCTOPC(I,J)=TCSAND
                       TCTOPG(I,J)=TCSAND
                   ENDIF
-                  IF(DELZW(I,J).LT.DELZ(J)) THEN
+               IF(DELZW(I,J).LT.(DELZ(J)-0.01)) THEN                    
                       TCBOTC(I,J)=TCSAND
                       TCBOTG(I,J)=TCSAND
                   ELSE
@@ -819,7 +825,7 @@ C
                       TCTOPC(I,J)=TCSAND
                       TCTOPG(I,J)=TCSAND
                   ENDIF
-                  IF(DELZW(I,J).LT.DELZ(J)) THEN
+               IF(DELZW(I,J).LT.(DELZ(J)-0.01)) THEN                    
                       TCBOTC(I,J)=TCSAND
                       TCBOTG(I,J)=TCSAND
                   ELSE
@@ -857,7 +863,7 @@ C                  IF(J.EQ.1) TCTOPC(I,J)=TCTOPC(I,J)*0.1
                   TCTOPC(I,J)=TCSAND
                   TCTOPG(I,J)=TCSAND
               ENDIF
-              IF(DELZW(I,J).LT.DELZ(J)) THEN
+               IF(DELZW(I,J).LT.(DELZ(J)-0.01)) THEN                    
                   TCBOTC(I,J)=TCSAND
                   TCBOTG(I,J)=TCSAND
               ELSE

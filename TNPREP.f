@@ -2,12 +2,11 @@
      1                  GCONST,CPHCHG,IWATER, 
      2                  TBAR,TCTOP,TCBOT,
      3                  FI,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     4                  ISAND,ILG,IL1,IL2,IG                     )
+     4                  ISAND,ILG,IL1,IL2,JL,IG                     )
 C
 C     Purpose: Calculate coefficients for solution of heat conduction 
 C     into soil.
 C
-C     * SEP 05/12 - J.MELTON.   REMOVED UNUSED VARS, JL AND J
 C     * MAR 03/08 - D.VERSEGHY. ASSIGN TCTOP3 AND TCBOT3 ON THE BASIS
 C     *                         OF SUBAREA VALUES FROM TPREP; REPLACE
 C     *                         THREE-LEVEL TEMPERATURE AND THERMAL
@@ -56,7 +55,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ILG,IL1,IL2,IG,I
+      INTEGER ILG,IL1,IL2,JL,IG,I,J
 C
 C     * OUTPUT ARRAYS.
 C
@@ -96,7 +95,7 @@ C
       REAL TCSNOW(ILG)  !Thermal conductivity of snow [W m-1 K-1]  
       REAL ZSNOW (ILG)  !Depth of snow pack [m]
 C
-      INTEGER              ISAND (ILG,IG)   !Sand content flag
+      INTEGER   ISAND (ILG,IG)   !Sand content flag
 C
       REAL DELZ  (IG)   !Overall thickness of soil layer [m] (delta_z)
 C

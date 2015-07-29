@@ -797,11 +797,11 @@ C
 !          if (lfstatus(i,m).eq.1 .and. (m .eq. 2 .or. m .eq. 4)) then
 !            use_vmax = vmax(sort(m)) * 2.0
 !          else if ((lfstatus(i,m).eq.3).and.(m.eq. 2 .or. m .eq. 4))then  !leaf fall
-!            use_vmax = vmax(sort(m)) * 0.5            
+!            use_vmax = vmax(sort(m)) * 0.5
 !          else
 !            use_vmax = vmax(sort(m)) !normal growth
 !          end if
-!          vmaxc(i,m)=use_vmax * fpar(i,m)    
+!          vmaxc(i,m)=use_vmax * fpar(i,m)
           VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
           IF(LEAFOPT.EQ.2)THEN
              VMAXC_SUN(I,M) = VMAX(SORT(M)) * FPAR_SUN(I,M)

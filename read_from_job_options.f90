@@ -2,7 +2,7 @@ subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctem
                   ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
                   setco2conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
                   compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
-                  islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,jhhstd,& 
+                  islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,& 
                   jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
 !#ifdef nagf95
@@ -11,6 +11,8 @@ subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctem
 
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    Joboptions Read-In Subroutine 
+!
+!     20  Mar. 2015 - Add in new CLASS flags for snow albedos -igralb & isnoalb
 !
 !     4   Sep. 2014 - Add in the transient_run flag.
 !     J. Melton
@@ -203,6 +205,16 @@ integer, intent(out) :: jhhendy   ! simulation year (iyear) to stop writing the 
 integer, intent(out) :: jdsty     ! simulation year (iyear) to start writing the daily output
 integer, intent(out) :: jdendy    ! simulation year (iyear) to stop writing the daily output
 
+! if isnoalb is set to 0, the original two-band snow albedo algorithms are used.  if it is set to 1, the new four-band
+! routines are used.
+
+integer, intent(out) :: isnoalb 
+
+! if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of soil texture.  if it is set to 1,
+! they are assigned values based on the ncar clm soil "colour"  dataset.
+
+integer, intent(out) :: igralb
+
 ! -------------
 
 namelist /joboptions/ &
@@ -244,6 +256,8 @@ namelist /joboptions/ &
   IALC,               &
   IALS,               &
   IALG,               &
+  isnoalb,            &
+  igralb,             & 
   jhhstd,             &
   jhhendd,            &
   jdstd,              &

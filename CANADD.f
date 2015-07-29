@@ -1,13 +1,12 @@
       SUBROUTINE CANADD(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP,
      1                  HTCC,ROFC,ROVG,PCPN,PCPG,FI,FSVF,
      2                  CWLCAP,CWFCAP,CMASS,RHOSNI,TSURX,RDRIP,SDRIP,
-     3                  ILG,IL1,IL2)
+     3                  ILG,IL1,IL2, JL)
 C
 C     Purpose: Calculate canopy interception of rainfall and snowfall, 
 C     and determine rainfall/snowfall rates at ground surface as a 
 C     result of throughfall and unloading.
-C
-C     * SEP 05/12 - J.MELTON.   REMOVED UNUSED PASSED IN VAR, JL       
+C     
 C     * NOV 22/06 - E.CHAN/D.VERSEGHY. UNCONDITIONALLY SET TR AND TS.
 C     * JAN 05/05 - P.BARTLETT. CORRECT/REFINE SNOW INTERCEPTION
 C     *                         CALCULATIONS.
@@ -35,7 +34,7 @@ C
 C                                                                
 C     * INTEGER CONSTANTS.
 C
-      INTEGER IWATER,ILG,IL1,IL2,I
+      INTEGER IWATER,ILG,IL1,IL2,JL,I
 C 
 C     * INPUT/OUTPUT ARRAYS.
 C

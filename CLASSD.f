@@ -66,6 +66,8 @@ C
       COMMON /PARAM3/ X12,   X13,   X14,   X15,   SIGMA,  X16
       COMMON  /TIMES/ DELTIM,K1,    K2,    K3,    K4,     K5,
      1                K6,    K7,    K8,    K9,    K10,    K11
+      COMMON /EPS/    A,B,EPS1,EPS2
+      COMMON /HTCP/   T1S,T2S,AI,BI,AW,BW,SLP
 
 C     * ADDITIONAL COMMON BLOCKS ARE DEFINED SPECIFICALLY FOR USE 
 C     * IN CLASS.
@@ -85,6 +87,7 @@ C     * IN CLASS.
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+      COMMON /ESTWI/  RW1,RW2,RW3,RI1,RI2,RI3
 C
 C==================================================================
 C     * RE-DEFINE CONSTANTS FOR STORAGE IN CLASS COMMON BLOCKS.
@@ -100,6 +103,11 @@ C
       SPHAIR=CPRES
       CPD=CPRES
       PI=CPI
+      AI=2.88053E+6/1004.5
+      BI=0.167E+3/1004.5
+      AW=3.15213E+6/1004.5
+      BW=2.38E+3/1004.5
+      SLP=1.0/(T1S-T2S)
 C==================================================================
       RETURN
       END

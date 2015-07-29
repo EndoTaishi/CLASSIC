@@ -5,9 +5,10 @@
      4   EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, TCANO,  TCANS,  
      5   RAICAN, SNOCAN, RAICNS, SNOCNS, CHCAP,  CHCAPS, TPONDC, TPONDG,  
      6   TPNDCS, TPNDGS, TSNOCS, TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS,
-     7   ITERCT, CDH,    CDM,    QSENS,  TFLUX,  QEVAP,  EVAP,   QFLUX,  
+     7   ITERCT, CDH,    CDM,    QSENS,  TFLUX,  QEVAP,  EVAP,          
      8   EVPPOT, ACOND,  EVAPB,  GT,     QG, 
      9   ST,     SU,     SV,     SQ,     SRH,
+     +   GTBS, SFCUBS, SFCVBS, USTARBS,                                 
      A   FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG,   
      B   HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG,   HMFC,   HMFN, 
      C   HTCC,   HTCS,   HTC,    QFCF,   QFCL,   DRAG,   WTABLE, ILMO,    
@@ -20,7 +21,8 @@
      J   FRAINC, FSNOWC, FRAICS, FSNOCS, CMASSC, CMASCS, DISP,   DISPS,  
      K   ZOMLNC, ZOELNC, ZOMLNG, ZOELNG, ZOMLCS, ZOELCS, ZOMLNS, ZOELNS, 
      L   TBAR,   THLIQ,  THICE,  TPOND,  ZPOND,  TBASE,  TCAN,   TSNOW,  
-     M   ZSNOW,  TRSNOW, RHOSNO, WSNOW,  THPOR,  THLRET, THLMIN, THFC,   
+     M   ZSNOW,  RHOSNO, WSNOW,  THPOR,  THLRET, THLMIN, THFC,   THLW,
+     +   TRSNOWC, TRSNOWG, ALSNO, FSSB,                                 
      N   RADJ,   PCPR,   HCPS,   TCS,    TSFSAV, DELZ,   DELZW,  ZBOTW,  
      O   FTEMP,  FVAP,   RIB,   
      P   ISAND,
@@ -30,12 +32,19 @@
      T   ICTEM,          ICTEMMOD,       RMATCTEM,       FCANCMX,
      U   L2MAX,          NOL2PFTS,       CFLUXCG,        CFLUXCS,
      V   ANCSVEG,        ANCGVEG,        RMLCSVEG,       RMLCGVEG,
-     W   THLW,
+     +   TCSNOW, GSNOW,                                                 
      X   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
      Y   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     Z   LFSTATUS) 
+     Z   NBS, ISNOALB,LFSTATUS)                                                  
 C
-C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
+C     * SEP 09/14 - D.VERSEGHY/M.LAZARE. CORRECTIONS TO SCREEN LEVEL
+C     *                         DIAGNOSTIC CALCULATIONS.
+C     * AUG 19/13 - M.LAZARE.   REMOVE CALCULATION AND REFERENCES TO    
+C     *                         "QFLUX" (NOW DONE IN CLASSW).           
+C     * JUN 21/13 - M.LAZARE.   REVISED CALL TO TPREP TO SUPPORT ADDING 
+C     *                         INITIALIZATION OF "GSNOW".              
+C     * JUN 10/13 - M.LAZARE/   ADD SUPPORT FOR "ISNOALB" FORMULATION.  
+C     *             M.NAMAZI.                                           
 C     * NOV 11/11 - M.LAZARE.   IMPLEMENT CTEM (INITIALIZATION OF FIELDS
 C     *                         NEAR BEGINNING AND TWO REVISED CALLS TO 
 C     *                         TSOLVC).                 
@@ -154,7 +163,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,ISNOW,N 
+      INTEGER NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,ISNOW,N,NBS,ISNOALB  
 C
       INTEGER ITC,ITCG,ITG,ILG,IL1,IL2,JL,IC,IG,IZREF,ISLFD,I,J
 C
@@ -177,11 +186,12 @@ C
      9     WSNOCS(ILG),   WSNOGS(ILG),   RHOSCS(ILG),   RHOSGS(ILG)   
 C
       REAL CDH   (ILG),   CDM   (ILG),   QSENS (ILG),   TFLUX (ILG),   
-     1     QEVAP (ILG),   EVAP  (ILG),   QFLUX (ILG),   
+     1     QEVAP (ILG),   EVAP  (ILG),                                  
      2     EVPPOT(ILG),   ACOND (ILG),   EVAPB (ILG),   WTRG  (ILG),
      3     QLWAVG(ILG),   GT    (ILG),   QG    (ILG), 
      4     WTABLE(ILG),   ST    (ILG),   SU    (ILG),   SV    (ILG),  
      5     SQ    (ILG),   SRH   (ILG),
+     5     GTBS  (ILG),   SFCUBS(ILG),   SFCVBS(ILG),  USTARBS(ILG),    
      6     FSGV  (ILG),   FSGS  (ILG),   FSGG  (ILG),   FLGV  (ILG),
      7     FLGS  (ILG),   FLGG  (ILG),   HFSC  (ILG),   HFSS  (ILG),
      8     HFSG  (ILG),   HEVC  (ILG),   HEVS  (ILG),   HEVG  (ILG),  
@@ -210,15 +220,17 @@ C
      D     ZOMLNC(ILG),   ZOELNC(ILG),   ZOMLNG(ILG),   ZOELNG(ILG),   
      E     ZOMLCS(ILG),   ZOELCS(ILG),   ZOMLNS(ILG),   ZOELNS(ILG),   
      F     TPOND (ILG),   ZPOND (ILG),   TBASE (ILG),   TCAN  (ILG),   
-     G     TSNOW (ILG),   ZSNOW (ILG),   TRSNOW(ILG),   RHOSNO(ILG),
+     G     TSNOW (ILG),   ZSNOW (ILG),   TRSNOWC(ILG),  RHOSNO(ILG),    
      H     WSNOW (ILG),   RADJ  (ILG),   PCPR  (ILG)   
+C                                                                       
+      REAL TRSNOWG(ILG,NBS), ALSNO(ILG,NBS), FSSB(ILG,NBS)              
 C     
       REAL TBAR  (ILG,IG),THLIQ (ILG,IG),THICE (ILG,IG)
 C
 C     * SOIL PROPERTY ARRAYS.
 C
       REAL THPOR (ILG,IG),THLRET(ILG,IG),THLMIN(ILG,IG),
-     1     THFC  (ILG,IG),HCPS  (ILG,IG),TCS   (ILG,IG),
+     1     THFC  (ILG,IG),THLW  (ILG,IG),HCPS  (ILG,IG),TCS   (ILG,IG),
      1     DELZ  (IG),    DELZW (ILG,IG),ZBOTW (ILG,IG)
 C
       INTEGER  ISAND (ILG,IG)
@@ -226,52 +238,32 @@ C
 C     * CTEM-RELATED I/O FIELDS.
 C
 
-C    AILCG    - GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR
-C               CANOPY OVER GROUND SUBAREA
-C    AILCGS   - GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR
-C               CANOPY OVER SNOW SUBAREA
-C    FCANC    - FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
-C    FCANCS   - FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
-C    CO2CONC  - ATMOS. CO2 CONC. IN PPM
-C    CO2I1CG  - INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND
-C               SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-C    CO2I2CG  - SAME AS ABOVE BUT FOR SHADED LEAF
-C    CO2I1CS  - INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOW
-C               SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-C    CO2I2CS  - SAME AS ABOVE BUT FOR SHADED LEAF
-C    COSZS    - COSINE OF SUN'S ZENITH ANGLE
-C    XDIFFUS  - FRACTION OF DIFFUSED RADIATION
-C    SLAI     - STORAGE LAI. SEE PHTSYN SUBROUTINE FOR MORE DETAILS.
-C    ICC      - 8 (CTEM's PLANT FUNCTIONAL TYPES)
-C    ICTEMMOD - 1 FOR COUPLING TO CTEM
-C    RMATCTEM - FRACTION OF ROOTS IN EACH SOIL LAYER FOR EACH OF CTEM's
-C               8 PFTs
-C    FCANCMX  - MAX. FRACTIONAL COVERAGE OF CTEM PFTs
-C    ANCSVEG  - NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY
-C               OVER SNOW SUBAREA
-C    ANCGVEG  - NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY
-C               OVER GROUND SUBAREA
-C    RMLCSVEG - LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY
-C               OVER SNOW SUBAREA
-C    RMLCGVEG - LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY
-C               OVER GROUND SUBAREA
-C    CANRES   - WEIGHTED AVERAGE OF CANOPY RESISTANCE FOR CANOPY OVER
-C               SNOW (RCS) AND CANOPY OVER GROUND (RC) SUBAREAS. THIS
-C               IS TO BE USED AS A DIAGNOSTIC FOR COMPARING CANOPY
-C               RESISTANCE FROM CLASS AND CTEM's PHTSYN SUBROUTINE.
-C    THLW     - WILTING POINT SOIL MOISTURE CONTENT
+      REAL AILCG(ILG,ICTEM)   ! GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER GROUND SUBAREA
+      REAL AILCGS(ILG,ICTEM)  ! GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER SNOW SUBAREA
+      REAL FCANC(ILG,ICTEM)   ! FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
+      REAL FCANCS(ILG,ICTEM)  ! FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
+      REAL CO2CONC(ILG)       ! ATMOS. CO2 CONC. IN PPM
+      REAL CO2I1CG(ILG,ICTEM) ! INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+      REAL CO2I1CS(ILG,ICTEM) ! SAME AS ABOVE BUT FOR SHADED LEAF
+      REAL CO2I2CG(ILG,ICTEM) ! INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+      REAL CO2I2CS(ILG,ICTEM) ! SAME AS ABOVE BUT FOR SHADED LEAF
+      REAL COSZS(ILG)         ! COSINE OF SUN'S ZENITH ANGLE
+      REAL XDIFFUS(ILG)       ! FRACTION OF DIFFUSED RADIATION
+      REAL SLAI(ILG,ICTEM)    ! STORAGE LAI. SEE PHTSYN SUBROUTINE FOR MORE DETAILS.
+      REAL RMATCTEM(ILG,ICTEM,IG) ! FRACTION OF ROOTS IN EACH SOIL LAYER FOR EACH OF CTEM's 8 PFTs
+      REAL FCANCMX(ILG,ICTEM) ! MAX. FRACTIONAL COVERAGE OF CTEM PFTs
+      REAL ANCSVEG(ILG,ICTEM) ! NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
+      REAL ANCGVEG(ILG,ICTEM) ! NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
+      REAL RMLCSVEG(ILG,ICTEM)! LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
+      REAL RMLCGVEG(ILG,ICTEM)! LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
 
-      REAL AILCG(ILG,ICTEM),    AILCGS(ILG,ICTEM),    FCANC(ILG,ICTEM),
-     1    FCANCS(ILG,ICTEM),         CO2CONC(ILG),  CO2I1CG(ILG,ICTEM),
-     2   CO2I1CS(ILG,ICTEM),   CO2I2CG(ILG,ICTEM),  CO2I2CS(ILG,ICTEM),
-     3           COSZS(ILG),         XDIFFUS(ILG),     SLAI(ILG,ICTEM),
-     4                     RMATCTEM(ILG,ICTEM,IG),  FCANCMX(ILG,ICTEM),
-     5   ANCSVEG(ILG,ICTEM),   ANCGVEG(ILG,ICTEM), RMLCSVEG(ILG,ICTEM),
-     6  RMLCGVEG(ILG,ICTEM),         CFLUXCG(ILG),        CFLUXCS(ILG)
+      REAL CFLUXCG(ILG)
+      REAL CFLUXCS(ILG)
 C
-      REAL THLW(ILG,IG)
-C
-      INTEGER ICTEM, ICTEMMOD, L2MAX, NOL2PFTS(IC), LFSTATUS(ILG,ICTEM)
+      INTEGER ICTEM           ! 8 (CTEM's PLANT FUNCTIONAL TYPES)
+      INTEGER ICTEMMOD        ! 1 FOR COUPLING TO CTEM
+      INTEGER LFSTATUS(ILG,ICTEM) ! LEAF PHENOLOGICAL STATUS (SEE PHENOLOGY)
+      INTEGER L2MAX, NOL2PFTS(IC)
 C
 C     * INTERNAL WORK ARRAYS FOR THIS ROUTINE.
 C
@@ -279,7 +271,7 @@ C
      1     ZRSLFH(ILG),   ZDSLM (ILG),   ZDSLH (ILG),   TPOTA (ILG),   
      2     TVIRTA(ILG),   CRIB  (ILG),   CPHCHC(ILG),   CPHCHG(ILG),   
      3     HCPSCS(ILG),   HCPSGS(ILG),   TCSNOW(ILG),   CEVAP (ILG),   
-     4     TBAR1P(ILG),   GSNOWC(ILG),   GSNOWG(ILG),   
+     4     TBAR1P(ILG),   GSNOWC(ILG),   GSNOWG(ILG),   GSNOW(ILG) ,    
      5     GDENOM(ILG),   GCOEFF(ILG),   GCONST(ILG),   
      6     TSNBOT(ILG),   GCOEFFS(ILG),  GCONSTS(ILG),
      7     A1    (ILG),   A2    (ILG),   B1    (ILG),   B2    (ILG),   
@@ -293,7 +285,8 @@ C
      F     TSURX (ILG),   QSURX (ILG),                  
      G     TACCS (ILG),   QACCS (ILG),   TACCO (ILG),   QACCO (ILG),
      H     ILMOX (ILG),   UEX   (ILG),   HBLX  (ILG),   ZERO  (ILG),
-     I     STT   (ILG),   SQT   (ILG),   SHT   (ILG)
+     I     STT   (ILG),   SQT   (ILG),   SUT   (ILG),   SVT   (ILG),    
+     J     SHT   (ILG)                                                  
 C
       INTEGER             IEVAP (ILG),   IWATER(ILG)
 C
@@ -308,7 +301,7 @@ C
      2     RA    (ILG),    RB    (ILG),    RAGINV(ILG),    RBINV (ILG),    
      3     RBTINV(ILG),    RBCINV(ILG),    
      4     TVRTAC(ILG),    TPOTG (ILG),    RESID (ILG),    
-     5     TCANP (ILG),    TRTOP (ILG),    QSTOR (ILG),    
+     5     TCANP (ILG),    TRTOP (ILG),   TRTOPG(ILG,NBS), QSTOR (ILG), 
      6     AC    (ILG),    BC    (ILG), 
      7     LZZ0  (ILG),    LZZ0T (ILG),    FM    (ILG),    FH    (ILG),
      8     DCFLXM(ILG),    CFLUXM(ILG),    WZERO (ILG),    XEVAPM(ILG),
@@ -322,8 +315,7 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL THTOT,ZRUF,ZSCRN,ZANNOM,RATFC,RATFC1,RATFCA,RATFCA1,RATIO,
-     1     CA,CB,WACSAT,QACSAT
+      REAL THTOT,CA,CB,WACSAT,QACSAT,RATIOM,RATIOH,FACTM,FACTH          
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -331,7 +323,8 @@ C
      1     TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,
      2     HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      3     TCGLAC,CLHMLT,CLHVAP,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,
-     4     BETA,FACTN,HMIN,ANGMAX
+     4     BETA,FACTN,HMIN,ANGMAX,A,B,EPS1,EPS2,T1S,T2S,AI,BI,AW,BW,SLP,
+     5     RW1,RW2,RW3,RI1,RI2,RI3
 C
       COMMON /CLASS1/ DELT,TFREZ                                       
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
@@ -342,6 +335,9 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+      COMMON /EPS/    A,B,EPS1,EPS2
+      COMMON /HTCP/   T1S,T2S,AI,BI,AW,BW,SLP
+      COMMON /ESTWI/  RW1,RW2,RW3,RI1,RI2,RI3
 C
 C----------------------------------------------------------------------
 C
@@ -360,7 +356,7 @@ C
 C
 C     * CHECK LIQUID AND FROZEN SOIL MOISTURE CONTENTS FOR SMALL
 C     * ABERRATIONS CAUSED BY PACKING/UNPACKING.
-C
+C       
       DO 60 J=1,IG
       DO 60 I=IL1,IL2
           IF(ISAND(I,1).GT.-4)                                   THEN
@@ -409,13 +405,13 @@ C
      4                 TCANS,  CEVAP,  IEVAP,  TBAR1P, WTABLE, ZERO,
      5                 EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS,
      6                 GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS,
-     7                 QMELTC, QMELTG, EVAP,
+     7                 QMELTC, QMELTG, EVAP,   GSNOW,                   
      8                 TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, 
      9                 QEVAPC, QEVAPG, TACCO,  QACCO,  TACCS,  QACCS,  
      A                 ILMOX,  UEX,    HBLX,
      B                 ILMO,   UE,     HBL,   
-     C                 ST,     SU,     SV,     SQ,     CDH,    CDM,
-     D                 QSENS,  QEVAP,  QLWAVG, 
+     C                 ST,     SU,     SV,     SQ,     SRH,             
+     D                 CDH,    CDM,    QSENS,  QEVAP,  QLWAVG,          
      E                 FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG,   
      F                 HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG,   
      G                 HMFC,   HMFN,   QFCF,   QFCL,   EVPPOT, ACOND,  
@@ -490,7 +486,7 @@ C
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPC,TCBOTC,
      +                FCS,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     3                ISAND,ILG,IL1,IL2,IG                      )
+     3                ISAND,ILG,IL1,IL2,JL,IG                      )    
           CALL TSPREP(GCOEFFS,GCONSTS,CPHCHG,IWATER,
      1                FCS,ZSNOW,TSNOW,TCSNOW,
      2                ILG,IL1,IL2,JL      )
@@ -505,7 +501,7 @@ C
      7                RHOAIR,ALVSCS,ALIRCS,ALVSSC,ALIRSC,TRVSCS,TRIRCS,
      8                FSVFS,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RCS,
      9                RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,
-     A                FCOR,GCONSTS,GCOEFFS,TSFSAV(1,1),TRSNOW,FSNOCS,
+     A                FCOR,GCONSTS,GCOEFFS,TSFSAV(1,1),TRSNOWC,FSNOCS,  
      B                FRAICS,CHCAPS,CMASCS,PCPR,IWATER,IEVAP,ITERCT,
      C                ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N,  
      D                TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT,
@@ -535,40 +531,52 @@ C
           IF(ISLFD.EQ.0)                                         THEN
             DO 150 I=IL1,IL2
               IF(FCS(I).GT.0.)                THEN
-                  ZRUF=ZOH(I)
-                  ZSCRN=MAX(ZRUF,2.0)                         
-                  ZANNOM=MAX(ZRUF,10.0)                         
-                  RATFC=LOG(ZSCRN/ZRUF)/VKC                              
-                  RATFC1=RATFC*SQRT(CDMX(I))                          
-                  RATFC1=MIN(RATFC1,1.)
-                  RATFCA=LOG(ZANNOM/ZRUF)/VKC                              
-                  RATFCA1=RATFCA*SQRT(CDMX(I))                          
-                  RATFCA1=MIN(RATFCA1,1.)
-                  IF(RIBX(I).GE.0.)  THEN                               
-                      RATIO=RATFC1                                             
-                  ELSE                                                    
-                      RATIO=RATFC1*CDHX(I)/CDMX(I)                   
-                      RATIO=MIN(RATIO,(ZSCRN/ZRSLDM(I))**(1./3.))             
+                FACTM=ZDSLM(I)+ZOM(I)                                   
+                FACTH=ZDSLH(I)+ZOM(I)                                   
+                RATIOM=SQRT(CDMX(I))*LOG(FACTM/ZOM(I))/VKC              
+                RATIOM=MIN(RATIOM,1.)                                   
+                RATIOH=SQRT(CDMX(I))*LOG(FACTH/ZOH(I))/VKC              
+                RATIOH=MIN(RATIOH,1.)                                   
+                IF(RIBX(I).LT.0.)  THEN                                 
+                  RATIOH=RATIOH*CDHX(I)/CDMX(I)                         
+                  RATIOH=MIN(RATIOH,(FACTH/ZRSLDH(I))**(1./3.))         
                   ENDIF                                                    
-                  STT(I)=TCANS(I)-(MIN(RATIO,1.))*(TCANS(I)-TA(I))       
-                  ST(I)=ST(I)+FCS(I)*STT(I)
-                  SU(I)=SU(I)+FCS(I)*RATFCA1*UWIND(I)                                     
-                  SV(I)=SV(I)+FCS(I)*RATFCA1*VWIND(I)                                     
-                  SQT(I)=QA(I)+(QCANX(I)-QA(I))*MIN(RATIO,1.)      
-                  SQ(I)=SQ(I)+FCS(I)*SQT(I)
+                STT(I)=TACCS(I)-(MIN(RATIOH,1.))*(TACCS(I)-TA(I))       
+                SQT(I)=QACCS(I)-(MIN(RATIOH,1.))*(QACCS(I)-QA(I))       
+                SUT(I)=RATIOM*UWIND(I)                                  
+                SVT(I)=RATIOM*VWIND(I)                                  
               ENDIF
   150     CONTINUE
 C
-            SHT=0.
             CALL SCREENRH(SHT,STT,SQT,PRESSG,FCS,ILG,IL1,IL2)
-            DO 160 I=IL1,IL2
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FCS(I).GT.0.)                THEN                      
+                ST (I)=ST (I)+FCS(I)*STT(I)                             
+                SQ (I)=SQ (I)+FCS(I)*SQT(I)                             
+                SU (I)=SU (I)+FCS(I)*SUT(I)                             
+                SV (I)=SV (I)+FCS(I)*SVT(I)                             
                 SRH(I)=SRH(I)+FCS(I)*SHT(I)
-  160       CONTINUE    
+              ENDIF                                                     
+            ENDDO                                                       
+C                                                                       
           ELSEIF(ISLFD.EQ.1)                                        THEN
-              CALL SLDIAG(SU,SV,ST,SQ,
+            CALL SLDIAG(SUT,SVT,STT,SQT,                                
      1                    CDMX,CDHX,UWIND,VWIND,TPOTA,QA,
      2                    TACCS,QACCS,ZOM,ZOH,FCS,ZRSLDM,
      3                    ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+C                                                                       
+            CALL SCREENRH(SHT,STT,SQT,PRESSG,FCS,ILG,IL1,IL2)           
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FCS(I).GT.0.)                THEN                      
+                ST (I)=ST (I)+FCS(I)*STT(I)                             
+                SQ (I)=SQ (I)+FCS(I)*SQT(I)                             
+                SU (I)=SU (I)+FCS(I)*SUT(I)                             
+                SV (I)=SV (I)+FCS(I)*SVT(I)                             
+                SRH(I)=SRH(I)+FCS(I)*SHT(I)                             
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.2)                                        THEN
               CALL DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TACCS,QACCS,
      1                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX,
@@ -625,6 +633,7 @@ C
                   FTEMP(I)= FTEMP(I) + FCS(I) * FTEMPX(I)
                   FVAP (I)= FVAP (I) + FCS(I) * FVAPX (I)
                   RIB  (I)= RIB  (I) + FCS(I) * RIBX  (I)
+                  GSNOW(I) =GSNOW(I)+FCS(I)/(FCS(I)+FGS(I))*GSNOWC(I)   
               ENDIF
   175     CONTINUE
       ENDIF                                                               
@@ -666,7 +675,7 @@ C
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPG,TCBOTG,
      +                FGS,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     3                ISAND,ILG,IL1,IL2,IG                  )
+     3                ISAND,ILG,IL1,IL2,JL,IG                  )        
           CALL TSPREP(GCOEFFS,GCONSTS,CPHCHG,IWATER,
      1                FGS,ZSNOW,TSNOW,TCSNOW,
      2                ILG,IL1,IL2,JL      )
@@ -675,14 +684,15 @@ C
      1                QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPGS,
      2                TSURX,QSURX,GSNOWG,QMELTG,CDHX,CDMX,RIBX,CFLUX,
      3                FTEMPX,FVAPX,ILMOX,UEX,HBLX, 
-     4                QSWINV,QSWINI,QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,
+     4                QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,                   
      5                ALVSSN,ALIRSN,CRIB,CPHCHG,CEVAP,TVIRTA,
      6                ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
-     7                GCONSTS,GCOEFFS,TSFSAV(1,2),TRSNOW,PCPR,
+     7                GCONSTS,GCOEFFS,TSFSAV(1,2),PCPR,                 
+     +                TRSNOWG,FSSB,ALSNO,                               
      8                IWATER,IEVAP,ITERCT,ISAND,
-     9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,  
+     9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,          
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
-     B                DCFLXM,CFLUXM,WZERO,TRTOP,AC,BC,
+     B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  )
           CALL TSPOST(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG,
      1                GZROGS,TSNBOT,HTCS,HMFN,
@@ -699,40 +709,52 @@ C
           IF(ISLFD.EQ.0)                                         THEN
             DO 250 I=IL1,IL2
               IF(FGS(I).GT.0.)                THEN
-                  ZRUF=ZOH(I)
-                  ZSCRN=MAX(ZRUF,2.0)                         
-                  ZANNOM=MAX(ZRUF,10.0)                         
-                  RATFC=LOG(ZSCRN/ZRUF)/VKC                              
-                  RATFC1=RATFC*SQRT(CDMX(I))                                
-                  RATFC1=MIN(RATFC1,1.)
-                  RATFCA=LOG(ZANNOM/ZRUF)/VKC                              
-                  RATFCA1=RATFCA*SQRT(CDMX(I))                           
-                  RATFCA1=MIN(RATFCA1,1.)
-                  IF(RIBX(I).GE.0.)  THEN                              
-                      RATIO=RATFC1                                             
-                  ELSE                                                    
-                      RATIO=RATFC1*CDHX(I)/CDMX(I)                       
-                      RATIO=MIN(RATIO,(ZSCRN/ZRSLDM(I))**(1./3.))          
+                FACTM=ZDSLM(I)+ZOM(I)                                   
+                FACTH=ZDSLH(I)+ZOM(I)                                   
+                RATIOM=SQRT(CDMX(I))*LOG(FACTM/ZOM(I))/VKC              
+                RATIOM=MIN(RATIOM,1.)                                   
+                RATIOH=SQRT(CDMX(I))*LOG(FACTH/ZOH(I))/VKC              
+                RATIOH=MIN(RATIOH,1.)                                   
+                IF(RIBX(I).LT.0.)  THEN                                 
+                  RATIOH=RATIOH*CDHX(I)/CDMX(I)                         
+                  RATIOH=MIN(RATIOH,(FACTH/ZRSLDH(I))**(1./3.))         
                   ENDIF                                                      
-                  STT(I)=TSURX(I)-(MIN(RATIO,1.))*(TSURX(I)-TA(I))     
-                  ST(I)=ST(I)+FGS(I)*STT(I)
-                  SU(I)=SU(I)+FGS(I)*RATFCA1*UWIND(I)                                     
-                  SV(I)=SV(I)+FGS(I)*RATFCA1*VWIND(I)                                     
-                  SQT(I)=QA(I)+(QSURX(I)-QA(I))*MIN(RATIO,1.)      
-                  SQ(I)=SQ(I)+FGS(I)*SQT(I)
+                STT(I)=TSURX(I)-(MIN(RATIOH,1.))*(TSURX(I)-TA(I))       
+                SQT(I)=QSURX(I)-(MIN(RATIOH,1.))*(QSURX(I)-QA(I))       
+                SUT(I)=RATIOM*UWIND(I)                                  
+                SVT(I)=RATIOM*VWIND(I)                                  
               ENDIF
   250     CONTINUE
 C
-            SHT=0.
             CALL SCREENRH(SHT,STT,SQT,PRESSG,FGS,ILG,IL1,IL2)
-            DO 260 I=IL1,IL2
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FGS(I).GT.0.)                THEN                      
+                ST (I)=ST (I)+FGS(I)*STT(I)                             
+                SQ (I)=SQ (I)+FGS(I)*SQT(I)                             
+                SU (I)=SU (I)+FGS(I)*SUT(I)                             
+                SV (I)=SV (I)+FGS(I)*SVT(I)                             
                 SRH(I)=SRH(I)+FGS(I)*SHT(I)
-  260       CONTINUE    
+              ENDIF                                                     
+            ENDDO                                                       
+C                                                                       
           ELSEIF(ISLFD.EQ.1)                                        THEN
-              CALL SLDIAG(SU,SV,ST,SQ,
+            CALL SLDIAG(SUT,SVT,STT,SQT,                                
      1                    CDMX,CDHX,UWIND,VWIND,TPOTA,QA,
      2                    TSURX,QSURX,ZOM,ZOH,FGS,ZRSLDM,
      3                    ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+C                                                                       
+            CALL SCREENRH(SHT,STT,SQT,PRESSG,FGS,ILG,IL1,IL2)           
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FGS(I).GT.0.)                THEN                      
+                ST (I)=ST (I)+FGS(I)*STT(I)                             
+                SQ (I)=SQ (I)+FGS(I)*SQT(I)                             
+                SU (I)=SU (I)+FGS(I)*SUT(I)                             
+                SV (I)=SV (I)+FGS(I)*SVT(I)                             
+                SRH(I)=SRH(I)+FGS(I)*SHT(I)                             
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.2)                                        THEN  
               CALL DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TSURX,QSURX,
      1                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX,
@@ -768,6 +790,7 @@ C
                   FTEMP(I)= FTEMP(I) + FGS(I) * FTEMPX(I)
                   FVAP (I)= FVAP (I) + FGS(I) * FVAPX (I)
                   RIB  (I)= RIB  (I) + FGS(I) * RIBX  (I)
+                  GSNOW(I) =GSNOW(I)+FGS(I)/(FCS(I)+FGS(I))*GSNOWG(I)   
               ENDIF
   275     CONTINUE
       ENDIF                                                               
@@ -815,7 +838,7 @@ C
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPC,TCBOTC,
      +                FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     3                ISAND,ILG,IL1,IL2,IG                      )
+     3                ISAND,ILG,IL1,IL2,JL,IG                      )    
           ISNOW=0
           CALL TSOLVC(ISNOW,FC,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
@@ -827,7 +850,7 @@ C
      7                RHOAIR,ALVSCN,ALIRCN,ALVSGC,ALIRGC,TRVSCN,TRIRCN,
      8                FSVF,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RC,
      9                RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,
-     A                FCOR,GCONST,GCOEFF,TSFSAV(1,3),TRSNOW,FSNOWC,
+     A                FCOR,GCONST,GCOEFF,TSFSAV(1,3),TRSNOWC,FSNOWC,    
      B                FRAINC,CHCAP,CMASSC,PCPR,IWATER,IEVAP,ITERCT,
      C                ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N,  
      D                TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT,
@@ -851,40 +874,51 @@ C
           IF(ISLFD.EQ.0)                                         THEN
             DO 350 I=IL1,IL2
               IF(FC(I).GT.0.)                 THEN
-                  ZRUF=ZOH(I)
-                  ZSCRN=MAX(ZRUF,2.0)                         
-                  ZANNOM=MAX(ZRUF,10.0)                         
-                  RATFC=LOG(ZSCRN/ZRUF)/VKC                              
-                  RATFC1=RATFC*SQRT(CDMX(I))                               
-                  RATFC1=MIN(RATFC1,1.)
-                  RATFCA=LOG(ZANNOM/ZRUF)/VKC                              
-                  RATFCA1=RATFCA*SQRT(CDMX(I))                           
-                  RATFCA1=MIN(RATFCA1,1.)
-                  IF(RIBX(I).GE.0.)  THEN                             
-                      RATIO=RATFC1                                             
-                  ELSE                                                     
-                      RATIO=RATFC1*CDHX(I)/CDMX(I)                       
-                      RATIO=MIN(RATIO,(ZSCRN/ZRSLDM(I))**(1./3.))           
+                FACTM=ZDSLM(I)+ZOM(I)                                   
+                FACTH=ZDSLH(I)+ZOM(I)                                   
+                RATIOM=SQRT(CDMX(I))*LOG(FACTM/ZOM(I))/VKC              
+                RATIOM=MIN(RATIOM,1.)                                   
+                RATIOH=SQRT(CDMX(I))*LOG(FACTH/ZOH(I))/VKC              
+                RATIOH=MIN(RATIOH,1.)                                   
+                IF(RIBX(I).LT.0.)  THEN                                 
+                  RATIOH=RATIOH*CDHX(I)/CDMX(I)                         
+                  RATIOH=MIN(RATIOH,(FACTH/ZRSLDH(I))**(1./3.))         
                   ENDIF                                                     
-                  STT(I)=TCANO(I)-(MIN(RATIO,1.))*(TCANO(I)-TA(I))        
-                  ST(I)=ST(I)+FC(I)*STT(I)
-                  SU(I)=SU(I)+FC(I)*RATFCA1*UWIND(I)                                     
-                  SV(I)=SV(I)+FC(I)*RATFCA1*VWIND(I)                                     
-                  SQT(I)=QA(I)+(QCANX(I)-QA(I))*MIN(RATIO,1.)      
-                  SQ(I)=SQ(I)+FC(I)*SQT(I)
+                STT(I)=TACCO(I)-(MIN(RATIOH,1.))*(TACCO(I)-TA(I))       
+                SQT(I)=QACCO(I)-(MIN(RATIOH,1.))*(QACCO(I)-QA(I))       
+                SUT(I)=RATIOM*UWIND(I)                                  
+                SVT(I)=RATIOM*VWIND(I)                                  
               ENDIF
   350     CONTINUE
 C
-            SHT=0.
             CALL SCREENRH(SHT,STT,SQT,PRESSG,FC,ILG,IL1,IL2)
-            DO 360 I=IL1,IL2
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FC(I).GT.0.)                 THEN                      
+                ST (I)=ST (I)+FC(I)*STT(I)                              
+                SQ (I)=SQ (I)+FC(I)*SQT(I)                              
+                SU (I)=SU (I)+FC(I)*SUT(I)                              
+                SV (I)=SV (I)+FC(I)*SVT(I)                              
                 SRH(I)=SRH(I)+FC(I)*SHT(I)
-  360       CONTINUE    
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.1)                                        THEN
-              CALL SLDIAG(SU,SV,ST,SQ,
+            CALL SLDIAG(SUT,SVT,STT,SQT,                                
      1                    CDMX,CDHX,UWIND,VWIND,TPOTA,QA,
      2                    TACCO,QACCO,ZOM,ZOH,FC,ZRSLDM,
      3                    ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+C                                                                       
+            CALL SCREENRH(SHT,STT,SQT,PRESSG,FC,ILG,IL1,IL2)            
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FC(I).GT.0.)                 THEN                      
+                ST (I)=ST (I)+FC(I)*STT(I)                              
+                SQ (I)=SQ (I)+FC(I)*SQT(I)                              
+                SU (I)=SU (I)+FC(I)*SUT(I)                              
+                SV (I)=SV (I)+FC(I)*SVT(I)                              
+                SRH(I)=SRH(I)+FC(I)*SHT(I)                              
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.2)                                        THEN    
               CALL DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TACCO,QACCO,
      1                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX,
@@ -978,20 +1012,21 @@ C
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPG,TCBOTG,
      +                FG,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     3                ISAND,ILG,IL1,IL2,IG                      )
+     3                ISAND,ILG,IL1,IL2,JL,IG                      )    
           ISNOW=0
           CALL TSOLVE(ISNOW,FG,
      1                QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPG,
      2                TSURX,QSURX,GZEROG,QFREZG,CDHX,CDMX,RIBX,CFLUX,
      3                FTEMPX,FVAPX,ILMOX,UEX,HBLX, 
-     4                QSWINV,QSWINI,QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,
+     4                QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,                   
      5                ALVSG,ALIRG,CRIB,CPHCHG,CEVAP,TVIRTA,
      6                ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
-     7                GCONST,GCOEFF,TSFSAV(1,4),TRSNOW,PCPR,
+     7                GCONST,GCOEFF,TSFSAV(1,4),PCPR,                   
+     +                TRSNOWG,FSSB,ALSNO,                               
      8                IWATER,IEVAP,ITERCT,ISAND,
-     9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,  
+     9                ISLFD,ITG,ILG,IG,IL1,IL2,JL, NBS,ISNOALB,         
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
-     B                DCFLXM,CFLUXM,WZERO,TRTOP,AC,BC,
+     B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF )
           CALL TNPOST(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST,
      1                GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSURX,
@@ -1003,40 +1038,59 @@ C
           IF(ISLFD.EQ.0)                                         THEN
             DO 450 I=IL1,IL2
               IF(FG(I).GT.0.)                 THEN
-                  ZRUF=ZOH(I)
-                  ZSCRN=MAX(ZRUF,2.0)                         
-                  ZANNOM=MAX(ZRUF,10.0)                         
-                  RATFC=LOG(ZSCRN/ZRUF)/VKC                              
-                  RATFC1=RATFC*SQRT(CDMX(I))                              
-                  RATFC1=MIN(RATFC1,1.)
-                  RATFCA=LOG(ZANNOM/ZRUF)/VKC                              
-                  RATFCA1=RATFCA*SQRT(CDMX(I))                               
-                  RATFCA1=MIN(RATFCA1,1.)
-                  IF(RIBX(I).GE.0.)  THEN                                
-                      RATIO=RATFC1                                             
-                  ELSE                                                    
-                      RATIO=RATFC1*CDHX(I)/CDMX(I)                       
-                      RATIO=MIN(RATIO,(ZSCRN/ZRSLDM(I))**(1./3.))             
+                FACTM=ZDSLM(I)+ZOM(I)                                   
+                FACTH=ZDSLH(I)+ZOM(I)                                   
+                RATIOM=SQRT(CDMX(I))*LOG(FACTM/ZOM(I))/VKC              
+                RATIOM=MIN(RATIOM,1.)                                   
+                RATIOH=SQRT(CDMX(I))*LOG(FACTH/ZOH(I))/VKC              
+                RATIOH=MIN(RATIOH,1.)                                   
+                IF(RIBX(I).LT.0.)  THEN                                 
+                  RATIOH=RATIOH*CDHX(I)/CDMX(I)                         
+                  RATIOH=MIN(RATIOH,(FACTH/ZRSLDH(I))**(1./3.))         
                   ENDIF                                                        
-                  STT(I)=TSURX(I)-(MIN(RATIO,1.))*(TSURX(I)-TA(I))    
-                  ST(I)=ST(I)+FG(I)*STT(I)
-                  SU(I)=SU(I)+FG(I)*RATFCA1*UWIND(I)                                     
-                  SV(I)=SV(I)+FG(I)*RATFCA1*VWIND(I)                                     
-                  SQT(I)=QA(I)+(QSURX(I)-QA(I))*MIN(RATIO,1.)      
-                  SQ(I)=SQ(I)+FG(I)*SQT(I)
+                STT(I)=TSURX(I)-(MIN(RATIOH,1.))*(TSURX(I)-TA(I))       
+                SQT(I)=QSURX(I)-(MIN(RATIOH,1.))*(QSURX(I)-QA(I))       
+                SUT(I)=RATIOM*UWIND(I)                                  
+                SVT(I)=RATIOM*VWIND(I)                                  
               ENDIF
   450       CONTINUE
 C
-            SHT=0.
             CALL SCREENRH(SHT,STT,SQT,PRESSG,FG,ILG,IL1,IL2)
-            DO 460 I=IL1,IL2
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FG(I).GT.0.)                THEN                       
+                ST (I)=ST (I)+FG(I)*STT(I)                              
+                SQ (I)=SQ (I)+FG(I)*SQT(I)                              
+                SU (I)=SU (I)+FG(I)*SUT(I)                              
+                SV (I)=SV (I)+FG(I)*SVT(I)                              
                 SRH(I)=SRH(I)+FG(I)*SHT(I)
-  460       CONTINUE    
+                GTBS   (I)=TSURX(I)
+                SFCUBS (I)=SUT(I)                                       
+                SFCVBS (I)=SVT(I)                                       
+                USTARBS(I)=VA(I)*SQRT(CDMX(I))                          
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.1)                                        THEN
-              CALL SLDIAG(SU,SV,ST,SQ,
+            CALL SLDIAG(SUT,SVT,STT,SQT,                                
      1                    CDMX,CDHX,UWIND,VWIND,TPOTA,QA,
      2                    TSURX,QSURX,ZOM,ZOH,FG,ZRSLDM,
      3                    ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+C                                                                       
+            CALL SCREENRH(SHT,STT,SQT,PRESSG,FG,ILG,IL1,IL2)            
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FG(I).GT.0.)                THEN                       
+                ST (I)=ST (I)+FG(I)*STT(I)                              
+                SQ (I)=SQ (I)+FG(I)*SQT(I)                              
+                SU (I)=SU (I)+FG(I)*SUT(I)                              
+                SV (I)=SV (I)+FG(I)*SVT(I)                              
+                SRH(I)=SRH(I)+FG(I)*SHT(I)                              
+                GTBS   (I)=TSURX(I)
+                SFCUBS (I)=SUT(I)                                       
+                SFCVBS (I)=SVT(I)                                       
+                USTARBS(I)=VA(I)*SQRT(CDMX(I))                          
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.2)                                        THEN      
               CALL DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TSURX,QSURX,
      1                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX,
@@ -1079,8 +1133,7 @@ C
           TFLUX(I)=-QSENS(I)/(RHOAIR(I)*SPHAIR)                                  
           EVAP(I)=EVAP(I)+RHOW*
      1           (FCS(I)*(EVAPCS(I)+EVPCSG(I)) + FGS(I)*EVAPGS(I) +              
-     2            FC (I)*(EVAPC (I)+EVAPCG(I)) + FG (I)*EVAPG(I))
-          QFLUX(I)=-EVAP(I)/RHOAIR(I)                                            
+     2            FC (I)*(EVAPC (I)+EVAPCG(I)) + FG (I)*EVAPG(I))                                          
           IF(EVPPOT(I).NE.0.0) THEN
               EVAPB(I)=EVAP(I)/EVPPOT(I)
           ELSE
@@ -1094,21 +1147,7 @@ C
               QAC(I)=QA(I)
           ENDIF
   500 CONTINUE
-C
-C==FLAG OLD=================== CTEM =====================================\
-C     FLAG- LEAVE THIS OUT, DOES NOT APPEAR TO BE USED ANYWHERE. JM 11/09/12
-C     CALCULATE WEIGHTED AVERAGE OF CANOPY RESISTANCE FOR CANOPY OVER SNOW
-C     (RCS) AND CANOPY OVER GROUND (RC) SUBAREAS.
-C
-C      DO 550 I = IL1, IL2
-C        IF( (FC(I)+FCS(I)).GT. 1.0E-12) THEN
-C          CANRES(I)=( (FC(I)*RC(I)) + (FCS(I)*RCS(I)) )/ (FC(I)+FCS(I))
-C        ELSE
-C          CANRES(I)=5000.0
-C        ENDIF
-C550   CONTINUE
-C
-C===================== CTEM =====================================/
+
 C                                                         
       RETURN                                                                      
       END        
