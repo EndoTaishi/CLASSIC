@@ -4,7 +4,7 @@
      3                     clay, roottemp,    zbotw,     sort,
      4                     isand,
 c    -------------- inputs above this line, outputs below -------------
-     5                 ltresveg, scresveg)  
+     5                 ltresveg, scresveg,thicec)  !YW FLAG
 c
 C               Canadian Terrestrial Ecosystem Model (CTEM) 
 C           Heterotrophic Respiration Subtoutine For Vegetated Fraction
@@ -41,6 +41,8 @@ c     ilg       - no. of grid cells in latitude circle
 c     il1,il2   - il1=1, il2=ilg
 c     tbar      - soil temperature, k
 c     thliq     - liquid soil moisture content in 3 soil layers
+c     thicec     - liquid soil moisture content in 3 soil layers in canopy  
+c                 covered subarea  
 c     sand      - percentage sand
 c     clay      - percentage clay
 c     roottemp  - root temperature as estimated in mainres subroutine
@@ -66,7 +68,8 @@ c
       real    fcan(ilg,icc),           fct(ilg),  litrmass(ilg,icc+1), 
      1         tbar(ilg,ignd),soilcmas(ilg,icc+1),      thliq(ilg,ignd),  
      2         sand(ilg,ignd),       clay(ilg,ignd),  roottemp(ilg,icc),  
-     3        zbotw(ilg,ignd),  ltresveg(ilg,icc),    scresveg(ilg,icc)
+     3        zbotw(ilg,ignd),  ltresveg(ilg,icc),    scresveg(ilg,icc),
+     4        thicec(ilg,ignd)
 
       
       real           litrq10,           soilcq10,       
@@ -211,7 +214,8 @@ c                               ! ltrmoscl becomes 0.2
             psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
             b(i,j)     = 0.159*clay(i,j)+2.91
             thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
-            psi(i,j)   = psisat(i,j)*(thliq(i,j)/thpor(i,j))**(-b(i,j)) 
+            psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005
+     1                   -thicec(i,j)))**(-b(i,j)) 
 c   
             if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2
