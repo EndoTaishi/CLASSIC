@@ -418,8 +418,8 @@ c
        integer   lopcount,  isumc,   nol2pfts(4),  
      1           k1c,       k2c,     iyd,         jhhstd,
      2           jhhendd,   jdstd,   jdendd,      jhhsty,
-     3           jhhendy,   jdsty,   jdendy,      jhhst, 
-     4           jhhend,    jdst,    jdend,       ctemloop,  
+     3           jhhendy,   jdsty,   jdendy,
+     4           ctemloop,
      5           spinfast,  month1,  month2,      xday, 
      6           ncyear, co2yr, popyr, nummetcylyrs,
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
@@ -1274,7 +1274,7 @@ c       ctem half hourly output files
         open(unit=71, file=argbuff(1:strlen(argbuff))//'.CT01H_M')  
         open(unit=711,file=argbuff(1:strlen(argbuff))//'.CT01H_G')
 
-        if (mosaic) then
+        !if (mosaic) then !FLAG jm. jul 2015
 c        ctem daily output files (mosaic)
          open(unit=72,file=argbuff(1:strlen(argbuff))//'.CT01D_M')  
          open(unit=73,file=argbuff(1:strlen(argbuff))//'.CT02D_M')
@@ -1286,7 +1286,7 @@ c        ctem daily output files (mosaic)
           open(unit=78,file=argbuff(1:strlen(argbuff))//'.CT06D_M') ! disturbance vars
          endif
 
-        end if ! mosaic
+!        end if ! mosaic
 
 c        ctem daily output files (grid-average)
          open(unit=721,file=argbuff(1:strlen(argbuff))//'.CT01D_G') 
@@ -1539,7 +1539,7 @@ C
         WRITE(71,7020)
         WRITE(71,7030)
 C
-       IF (MOSAIC) THEN
+!       IF (MOSAIC) THEN
         WRITE(72,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
         WRITE(72,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
         WRITE(72,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
@@ -1578,7 +1578,7 @@ C
         WRITE(78,7110)
         WRITE(78,7111)
        ENDIF
-      END IF !mosaic
+!      END IF !mosaic FLAG jm jul 2015
 C
 7010  FORMAT(A80)
 7020  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) DAILY RESULTS'
@@ -1912,10 +1912,10 @@ c     -9999 thus triggering the read in of the .ini file values below
       end if
 C======================= CTEM ========================================== /
 
-      JHHST=JHHSTY*1000+JHHSTD
-      JHHEND=JHHENDY*1000+JHHENDD
-      JDST=JDSTY*1000+JDSTD
-      JDEND=JDENDY*1000+JDENDD
+      !JHHST=JHHSTY*1000+JHHSTD
+      !JHHEND=JHHENDY*1000+JHHENDD
+      !JDST=JDSTY*1000+JDSTD
+      !JDEND=JDENDY*1000+JDENDD
 
       CLOSE(10)
 C
@@ -4012,8 +4012,9 @@ C
 C===================== CTEM =====================================\
 c         start writing output
 c
-          iyd=iyear*1000+iday                         
-          if ((iyd.ge.jhhst).and.(iyd.le.jhhend)) then 
+          if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
+           if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
+
 C===================== CTEM =====================================/
           WRITE(64,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,
      1                   SNOMLT,BEG,GTOUT,SNOROW(I,M),RHOSROW(I,M),
@@ -4059,7 +4060,8 @@ C
      6                   WTRGROW(I,M),' TILE ',M
 C===================== CTEM =====================================\
 C
-          endif ! if ((iyd.ge.jhhst).and.(iyd.le.jhhend))
+         endif
+        endif ! half hourly output loop.
 c
 c         Write half-hourly CTEM results to file *.CT01H
 c
@@ -4082,11 +4084,13 @@ c
               endif
 760         continue
 c
-              iyd=iyear*1000+iday                  
-              if ((iyd.ge.jhhst).and.(iyd.le.jhhend)) then 
+          if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
+           if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
+
               write(71,7200)ihour,imin,iday,(anvegrow(i,m,j),j=1,icc),
      1                    (rmlvegrow(i,m,j),j=1,icc),' TILE ',m
-              endif
+            endif
+           end if
           endif  ! if(ctem_on) 
 c
 7200      format(1x,i2,1x,i2,i5,9f11.3,9f11.3,2(a6,i2))
@@ -4172,14 +4176,14 @@ C======================== CTEM =====================================/
 C===================== CTEM =====================================\
 C      WRITE CTEM OUTPUT FILES
 C
+      if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
+       if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
+
        IF (CTEM_ON) THEN
-           IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND)) THEN  
            WRITE(711,7200)IHOUR,IMIN,IDAY,(ANVEGROW_G(I,J),J=1,ICC),
      1                 (RMLVEGROW_G(I,J),J=1,ICC)
-           ENDIF  
        ENDIF !CTEM_ON
 
-       IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND)) THEN 
          WRITE(641,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR_G,FLSTAR_G,QH_G,
      1      QE_G,SNOMLT_G,BEG_G,GTOUT_G,SNOROW_G(I),RHOSROW_G(I),
      2                   WSNOROW_G(I),ALTOT_G,ROFROW_G(I),
@@ -4219,7 +4223,8 @@ C
      4                   ROFROW_G(I),WTRCROW_G(I),WTRSROW_G(I),
      5                   WTRGROW_G(I)
 C
-       ENDIF ! IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND))
+        endif
+       ENDIF ! if write half-hourly
 C===================== CTEM =====================================/
 450   CONTINUE
 C
@@ -4500,8 +4505,9 @@ C
               ENDIF
               GTOUT=GTACC(I)-TFREZ
 C
-             IYD=IYEAR*1000+IDAY                         
-             IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND)) THEN  
+             if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+              if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
+
               WRITE(61,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,
      1                       BEG,GTOUT,SNOACC(I),RHOSACC(I),
      2                       WSNOACC(I),ALTOT,ROFACC(I)
@@ -4518,7 +4524,8 @@ C
      1                       TAACC(I)-TFREZ,UVACC(I),PRESACC(I),
      2                       QAACC(I),PREACC(I),EVAPACC(I)
               ENDIF
-             ENDIF
+             endif
+            ENDIF
 C
 C     * RESET ACCUMULATOR ARRAYS.
 C
@@ -4681,8 +4688,8 @@ C
 C
           GTOUT=GTACC_M(I,M)-TFREZ
 C 
-          IYD=IYEAR*1000+IDAY                        
-          IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND)) THEN
+          if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+           if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
 C
 C         WRITE TO OUTPUT FILES
 C
@@ -4707,7 +4714,8 @@ C
      3                  ' TILE ',M 
             ENDIF
 C
-           ENDIF ! IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND))
+           endif
+          ENDIF ! IF write daily
 C
 C          INITIALIZTION FOR MOSAIC TILE AND GRID VARIABLES
 C
@@ -5166,18 +5174,19 @@ c
 c
 c          write daily ctem results
 c
-           if ((iyd.ge.jdst).and.(iyd.le.jdend)) then   
+          if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+           if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
 c
 c             write grid-averaged fluxes of basic quantities to 
 c             file *.CT01D_M
 c
-             if (mosaic) then
+!             if (mosaic) then !FLAG jm jul 2015
               write(72,8200)iday,iyear,gpprow(i,m),npprow(i,m),
      1                neprow(i,m),nbprow(i,m),autoresrow(i,m),
      2                hetroresrow(i,m),litresrow(i,m),socresrow(i,m),
      3                (dstcemlsrow(i,m)+dstcemls3row(i,m)),
      4               litrfallrow(i,m),humiftrsrow(i,m),' TILE ',m,'AVGE'
-             end if
+!             end if
 
 c             write breakdown of some of basic fluxes to file *.CT3 
 c             and selected litter fluxes for selected pft
@@ -5203,7 +5212,7 @@ c
 
  
 c                write to file .CT01D_M 
-                 if (mosaic) then
+                 !if (mosaic) then
                   write(72,8201)iday,iyear,gppvegrow(i,m,j),
      1            nppvegrow(i,m,j),nepvegrow(i,m,j),
      2            ' TILE ',m,'PFT',j
@@ -5255,7 +5264,7 @@ c
      8         ' TILE ',m,'PFT',j
                endif
 
-              end if !mosaic
+              !end if !mosaic
 
               endif  !if (fcancmxrow(i,m,j) .gt.0.0) then
 c
@@ -5293,7 +5302,8 @@ c               write to file .CT05D_M
                end if !if (ifcancmx_m(i,m) .gt.0.0) then
               endif !mosaic
 c
-           endif ! if ((iyd.ge.jdst).and.(iyd.le.jdend))
+           endif
+           endif ! if write daily
 c
 8200       format(1x,i4,i5,11f10.5,2(a6,i2))
 8201       format(1x,i4,i5,3f10.5,80x,2(a6,i2))
@@ -5413,7 +5423,9 @@ c                                                   !Rudra added CH4 related var
 c
 852       continue
 c
-          if ((iyd.ge.jdst).and.(iyd.le.jdend)) then   
+          if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+           if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
+
 c           write to file .CT01D_G               
             write(721,8200)iday,iyear,gpp_g(i),npp_g(i),
      1                nep_g(i),nbp_g(i),autores_g(i),
@@ -5479,8 +5491,9 @@ c
               endif !mosaic/composite
             endif !compete/lnduseon
 c
-          endif !if ((iyd.ge.jdst).and.(iyd.le.jdend)) then  
-c
+          endif !if write daily
+         endif
+
 851     continue
 c
       endif ! if(ncount.eq.nday) 
@@ -6727,7 +6740,7 @@ c       then ctem ones
         close(741)
         close(751)
 
-        if (mosaic) then
+        !if (mosaic) then !flag jm jul 2015
          close(72)
          close(73)
          close(74)
@@ -6736,7 +6749,7 @@ c       then ctem ones
          if (dofire .or. lnduseon) then
           close(78)
          end if
-        end if
+        !end if
 c
         if (compete .or. lnduseon) then
           close(761)
