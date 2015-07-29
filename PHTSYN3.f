@@ -792,6 +792,15 @@ C
 C         FIND Vmax,canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE
 C         LEAF MODEL
 C
+!         ------------- Changing Vcmax seasonally -----------------------\\\
+!         Based on Wilson, Baldocchi, and Hanson, Plant, Cell and Environment 2001, 24, 571-583.
+!         there is good evidence for the Vcmax varying throughout the season for deciduous tree
+!         species. We are adopting a parameterization based upon their paper with some differences.
+!         First, we cannot use an initial Vcmax of 0 at the start of leaf out. This is because we
+!         need the leaves to gain the carbon they need for growth and we have no non-structural
+!         carbohydrates to push the leaves out. So we thus start with high Vcmax. We otherwise
+!         generally follow their model of spring Vcmax maximums, summer declines, then rapid
+!         declines once senescence is initiated.
 
           ! FLAG: test only done for one-leaf model!! JM Dec 4 2014./ Jan 21 2015.
 !          if (lfstatus(i,m).eq.1 .and. (m .eq. 2 .or. m .eq. 4)) then
@@ -808,6 +817,9 @@ C
              VMAXC_SHA(I,M) = VMAX(SORT(M)) * FPAR_SHA(I,M)
           ENDIF
 C
+!         ------------- Changing Vcmax seasonally -----------------------///
+
+
 C         FIND Vm,unstressed (DUE TO WATER) BUT STRESSED DUE TO TEMPERATURE
 C
           Q10 = 2.00

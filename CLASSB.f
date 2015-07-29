@@ -244,7 +244,6 @@ C
      1                (PSISAT(I,M,J)*BI(I,M,J)/SDEPTH(I,M))**
      2                (1.0/BI(I,M,J))
               ENDIF
-
               PSIWLT(I,M,J)=150.0
               THLW(I,M,J)=THPOR(I,M,J)*(PSIWLT(I,M,J)/PSISAT(I,M,J))**
      1                    (-1.0/BI(I,M,J))

@@ -469,10 +469,10 @@ c
 !      6    transient_run
 c
        integer   lopcount,  isumc,
-     1           k1c,       k2c,     iyd,         jhhstd,
+     1           k1c,       k2c,     jhhstd,
      2           jhhendd,   jdstd,   jdendd,      jhhsty,
-     3           jhhendy,   jdsty,   jdendy,      jhhst,
-     4           jhhend,    jdst,    jdend,      month1,
+     3           jhhendy,   jdsty,   jdendy,
+     4           month1,
      5           month2,      xday,  ctemloop,nummetcylyrs,
      6           ncyear,  co2yr,
      5           spinfast,   nol2pfts(4),
@@ -2888,7 +2888,6 @@ c      mosaic modes.
 c
        ! Set up the CTEM half-hourly, daily, monthly and yearly files (if all needed), also
        ! setup the CLASS monthly and annual output files:
-
 ! !       JRM: comment below:
 !        if (ctem_on) then
 ! c       ctem half hourly output files
@@ -3174,6 +3173,7 @@ C
        WRITE(691,6019)
 C
 6008  FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
+<<<<<<< HEAD
      1          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',
      2          'SFCU  SFCV  UV')
 
@@ -3496,6 +3496,7 @@ C
 !      & gCH4/M2.YR ')
 !
 ! C           JRM: To here!
+
 C     CTEM FILE TITLES DONE
 C======================= CTEM ========================================== /
 C
@@ -3561,10 +3562,10 @@ c     -9999 thus triggering the read in of the .ini file values below
       end if
 C======================= CTEM ========================================== /
 
-      JHHST=JHHSTY*1000+JHHSTD
-      JHHEND=JHHENDY*1000+JHHENDD
-      JDST=JDSTY*1000+JDSTD
-      JDEND=JDENDY*1000+JDENDD
+      !JHHST=JHHSTY*1000+JHHSTD
+      !JHHEND=JHHENDY*1000+JHHENDD
+      !JDST=JDSTY*1000+JDSTD
+      !JDEND=JDENDY*1000+JDENDD
 
       CLOSE(10)
 C
@@ -5738,8 +5739,8 @@ C
 C===================== CTEM =====================================\
 c         start writing output
 c
-          iyd=iyear*1000+iday
-          if ((iyd.ge.jhhst).and.(iyd.le.jhhend)) then
+          if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
+           if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
 C===================== CTEM =====================================/
           WRITE(64,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,
      1                   SNOMLT,BEG,GTOUT,SNOROT(I,M),RHOSROT(I,M),
@@ -5791,7 +5792,8 @@ C
      6                   WTRGROT(I,M),' TILE ',M
 C===================== CTEM =====================================\
 C
-          endif ! if ((iyd.ge.jhhst).and.(iyd.le.jhhend))
+         endif
+        endif ! half hourly output loop.
 c
 c         Write half-hourly CTEM results to file *.CT01H
 c
@@ -5814,12 +5816,14 @@ c
               endif
 760         continue
 c
-              iyd=iyear*1000+iday
-              if ((iyd.ge.jhhst).and.(iyd.le.jhhend)) then
+          if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
+           if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
+
               write(71,7200)ihour,imin,iday,(anvegrow(i,m,j),j=1,icc),
      1                    (rmlvegrow(i,m,j),j=1,icc),' TILE ',m
-              endif
-          endif  ! if(ctem_on)
+            endif
+           end if
+          endif  ! if(ctem_on) 
 c
 7200      format(1x,i2,1x,i2,i5,9f11.3,9f11.3,2(a6,i2))
 c
@@ -5908,15 +5912,15 @@ C======================== CTEM =====================================/
 C===================== CTEM =====================================\
 C      WRITE CTEM OUTPUT FILES
 C
+      if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
+       if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
+
        IF (CTEM_ON) THEN
-           IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND)) THEN
            WRITE(711,7200)IHOUR,IMIN,IDAY,(ANVEGROW_G(I,J),J=1,ICC),
      1                 (RMLVEGROW_G(I,J),J=1,ICC)
-           ENDIF
        ENDIF !CTEM_ON
 
-       IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND)) THEN
-         WRITE(641,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR_G,FLSTAR_G,QH_G,
+       WRITE(641,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR_G,FLSTAR_G,QH_G,
      1      QE_G,SNOMLT_G,BEG_G,GTOUT_G,SNOROT_G(I),RHOSROT_G(I),
      2                   WSNOROT_G(I),ALTOT_G,ROFROT_G(I),
      3                   TPN_G,ZPNDROT_G(I),CDHROT_G(I),CDMROT_G(I),
@@ -5958,7 +5962,8 @@ C
      4                   ROFROT_G(I),WTRCROT_G(I),WTRSROT_G(I),
      5                   WTRGROT_G(I)
 C
-       ENDIF ! IF ((IYD.GE.JHHST).AND.(IYD.LE.JHHEND))
+        endif
+       ENDIF ! if write half-hourly
 C===================== CTEM =====================================/
 450   CONTINUE
 C
@@ -6239,8 +6244,9 @@ C
               ENDIF
               GTOUT=GTACC(I)-TFREZ
 C
-             IYD=IYEAR*1000+IDAY
-             IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND)) THEN
+             if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+              if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
+
               WRITE(61,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,
      1                       BEG,GTOUT,SNOACC(I),RHOSACC(I),
      2                       WSNOACC(I),ALTOT,ROFACC(I),CUMSNO
@@ -6257,7 +6263,8 @@ C
      1                       TAACC(I)-TFREZ,UVACC(I),PRESACC(I),
      2                       QAACC(I),PREACC(I),EVAPACC(I)
               ENDIF
-             ENDIF
+             endif
+            ENDIF
 C
 C     * RESET ACCUMULATOR ARRAYS.
 C
@@ -6423,9 +6430,9 @@ C
           ENDIF
 C
           GTOUT=GTACC_M(I,M)-TFREZ
-C
-          IYD=IYEAR*1000+IDAY
-          IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND)) THEN
+C 
+          if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+           if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
 C
 C         WRITE TO OUTPUT FILES
 C
@@ -6451,8 +6458,8 @@ C
      3                  ' TILE ',M
             ENDIF
 C
-!               end JM FLAG!
-           ENDIF ! IF ((IYD.GE.JDST).AND.(IYD.LE.JDEND))
+           endif
+          ENDIF ! IF write daily
 C
 C          INITIALIZTION FOR MOSAIC TILE AND GRID VARIABLES
 C
@@ -8476,6 +8483,7 @@ C       FIRST ANY CLASS OUTPUT FILES
         end if ! moved this up from below so it calls the close subroutine. JRM.
 
 c       then ctem ones
+<<<<<<< HEAD
 
         call close_outfiles()
 
