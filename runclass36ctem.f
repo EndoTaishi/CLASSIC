@@ -5805,6 +5805,7 @@ c         are not passed to ctem. rather ancsveg, ancgveg, rmlcsveg, and
 c         rmlcgveg are passed.
 c
           if (ctem_on) then
+
             do 760 j = 1,icc
              if(ailcgrow(i,m,j).le.0.0) then
                 anvegrow(i,m,j)=0.0
@@ -5818,22 +5819,21 @@ c
           if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
            if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
 
-              write(71,7200)ihour,imin,iday,(anvegrow(i,m,j),j=1,icc),
+              write(71,7200)ihour,imin,iday,iyear,(anvegrow(i,m,j),j=1,icc),
      1                    (rmlvegrow(i,m,j),j=1,icc),' TILE ',m
             endif
            end if
-          endif  ! if(ctem_on) 
-c
-7200      format(1x,i2,1x,i2,i5,9f11.3,9f11.3,2(a6,i2))
-c
-          if (ctem_on) then
-            do j = 1,icc
+
+           do j = 1,icc
               anvegrow_g(i,j)=anvegrow_g(i,j)+anvegrow(i,m,j)
      1                                        *FAREROT(i,m)
               rmlvegrow_g(i,j)=rmlvegrow_g(i,j)+rmlvegrow(i,m,j)
      1                                         *FAREROT(i,m)
             enddo
+
           endif   ! ctem_on
+
+7200      format(1x,i2,1x,i2,i5,i5,9f11.3,9f11.3,2(a6,i2))
 c
           fsstar_g    =fsstar_g + fsstar*FAREROT(i,m)
           flstar_g    =flstar_g + flstar*FAREROT(i,m)
@@ -5915,7 +5915,7 @@ C
        if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
 
        IF (CTEM_ON) THEN
-           WRITE(711,7200)IHOUR,IMIN,IDAY,(ANVEGROW_G(I,J),J=1,ICC),
+           WRITE(711,7200)IHOUR,IMIN,IDAY,IYEAR,(ANVEGROW_G(I,J),J=1,ICC),
      1                 (RMLVEGROW_G(I,J),J=1,ICC)
        ENDIF !CTEM_ON
 
