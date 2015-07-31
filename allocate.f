@@ -115,7 +115,7 @@ c
 c                                 !averaged over the root zone
           avwiltsm(i,j)=0.0   !wilting point soil moisture
           afieldsm(i,j)=0.0   !field capacity soil moisture
-           avthliq(i,j)=0.0   !liquid soil moisture content
+          avthliq(i,j)=0.0    !liquid soil moisture content
           tot_rmat_ctem(i,j)= 0.0 !temp var.
 c
           wtstatus(i,j)=0.0   !water status
@@ -177,24 +177,6 @@ c
           avwiltsm(i,j) = avwiltsm(i,j) / tot_rmat_ctem(i,j)
           afieldsm(i,j) = afieldsm(i,j) / tot_rmat_ctem(i,j)
           avthliq(i,j)  = avthliq(i,j) / tot_rmat_ctem(i,j)
-
-!          avwiltsm(i,j) =  wiltsm(i,1)*rmatctem(i,j,1) +
-!      &                    wiltsm(i,2)*rmatctem(i,j,2) +
-!      &                    wiltsm(i,3)*rmatctem(i,j,3)
-!          avwiltsm(i,j) = avwiltsm(i,j) /
-!      &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
-c
-!          afieldsm(i,j) =  fieldsm(i,1)*rmatctem(i,j,1) +
-!      &                    fieldsm(i,2)*rmatctem(i,j,2) +
-!      &                    fieldsm(i,3)*rmatctem(i,j,3)
-!          afieldsm(i,j) = afieldsm(i,j) /
-!      &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
-c
-!          avthliq(i,j)  =  thliq(i,1)*rmatctem(i,j,1) +
-!      &                    thliq(i,2)*rmatctem(i,j,2) +
-!      &                    thliq(i,3)*rmatctem(i,j,3)
-!          avthliq(i,j)  = avthliq(i,j) /
-!      &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
          end if
 210     continue
 200   continue

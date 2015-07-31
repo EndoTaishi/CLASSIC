@@ -2723,6 +2723,7 @@ ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
 !              initialize monthly accumulated arrays
 !              for the next round
 
+probfire_mo_m(i,:) = 0.0
              do m=1,nmtest
 
                probfire_mo_m(i,m) =0.0

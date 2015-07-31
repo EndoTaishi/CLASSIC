@@ -113,14 +113,8 @@
       use competition_scheme, only : bioclim, existence, competition
       use disturbance_scheme, only : disturb
 
-!
-!     inputs
-!
-!     fcancmx  - max. fractional coverage of ctem's 9 pfts, but this can be
-!                modified by land-use change, and competition between pfts
-!     fsnow    - fraction of snow simulated by class
-!     sand     - percentage sand
-!     clay     - percentage clay
+implicit none
+
 !     icc      - no of pfts for use by ctem, currently 9
 !     ican       - no of pfts for use by class, currently 4
 !     ig       - no. of soil layers, 3
@@ -128,34 +122,37 @@
 !     il1,il2  - il1=1, il2=ilg
 !     iday     - day of year
 !     mosaic   - true if the simulation is a mosaic, otherwise it is composite
-!     radj     - latitude in radians
-!     tcano    - canopy temperature for canopy over ground subarea, k
-!     tcans    - canopy temperature for canopy over snow subarea
-!     tbarc    - soil temperature for canopy over ground subarea, k
-!     tbarcs   - soil temperature for canopy over snow subarea
-!     tbarg    - soil temperature for ground subarea
-!     tbargs   - soil temperature for snow over ground subarea
-!     ta       - air temperatuure, k
-!     ancsveg  - net photosynthetic rate for ctems 9 pfts for
-!                canopy over snow subarea
-!     ancgveg  - net photosynthetic rate for ctems 9 pfts for
-!                canopy over ground subarea
-!     rmlcsveg - leaf respiration rate for ctems 9 pfts for
-!                canopy over snow subarea
-!     rmlcgveg - leaf respiration rate for ctems 9 pfts for
-!                canopy over ground subarea
-!     delzw    - thicknesses of the 3 soil layers
-!     zbotw    - bottom of soil layers
-!     thliqc   - liquid mois. content of 3 soil layers, for canopy
-!                over snow and canopy over ground subareas
-!     thliqg   - liquid mois. content of 3 soil layers, for ground
-!                and snow over ground subareas
-!     deltat   - ctem time step in days
-!     uwind    - u wind speed, m/s
-!     vwind    - v wind speed, m/s
-!     lightng  - total lightning frequency, flashes/km2.year
-!     prbfrhuc - probability of fire due to human causes
-!     extnprob - fire extingusinging probability
+
+!
+!     inputs
+!
+real, dimension(ilg,icc), intent(in) :: fcancmx ! max. fractional coverage of ctem's 9 pfts, but this can be
+                                                ! modified by land-use change, and competition between pfts
+real, dimension(ilg), intent(in) :: fsnow       ! fraction of snow simulated by class
+real, dimension(ilg,ignd), intent(in) :: sand   ! percentage sand
+real, dimension(ilg,ignd), intent(in) :: clay   ! percentage clay
+real, dimension(ilg), intent(in) :: radj        ! latitude in radians
+real, dimension(ilg), intent(in) :: tcano       ! canopy temperature for canopy over ground subarea, K
+real, dimension(ilg), intent(in) :: tcans       ! canopy temperature for canopy over snow subarea, K
+real, dimension(ilg,ignd), intent(in) :: tbarc  ! soil temperature for canopy over ground subarea, K
+real, dimension(ilg,ignd), intent(in) :: tbarcs ! soil temperature for canopy over snow subarea
+real, dimension(ilg,ignd), intent(in) :: tbarg  ! soil temperature for ground subarea
+real, dimension(ilg,ignd), intent(in) :: tbargs ! soil temperature for snow over ground subarea
+real, dimension(ilg), intent(in) :: ta          ! air temp, K
+real, dimension(ilg,ignd), intent(in) :: delzw  ! thicknesses of the 3 soil layers
+real, dimension(ilg,ignd), intent(in) :: zbotw  ! bottom of soil layers
+real, dimension(ilg,ignd), intent(in) :: thliqc ! liquid mois. content of 3 soil layers, for canopy
+                                                !over snow and canopy over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thliqg ! liquid mois. content of 3 soil layers, for ground
+                                                !and snow over ground subareas
+real, intent(in) :: deltat                      ! CTEM timestep in days
+real, dimension(ilg), intent(in) :: uwind       ! u wind speed, m/s
+real, dimension(ilg), intent(in) :: vwind       ! v wind speed, m/s
+real, dimension(ilg), intent(in) :: lightng     ! total lightning frequency, flashes/km2.year
+real, dimension(ilg), intent(in) :: prbfrhuc    ! probability of fire due to human causes
+real, dimension(ilg), intent(in) :: extnprob    ! fire extingusinging probability
+
+
 !     stdaln   - an integer telling if ctem is operated within gcm (=0)
 !                or in stand alone mode (=1). this is used for fire
 !                purposes. see comments just above where disturb 
@@ -185,6 +182,11 @@
 !
 !     updates
 !
+real, dimension(ilg,icc), intent(inout) :: ancsveg ! net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
+real, dimension(ilg,icc), intent(inout) :: ancgveg !net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
+real, dimension(ilg,icc), intent(inout) :: rmlcsveg ! leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
+real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
+
 !     stemmass - stem mass for each of the 9 ctem pfts, kg c/m2
 !     rootmass - root mass for each of the 9 ctem pfts, kg c/m2
 !     gleafmas - green leaf mass for each of the 9 ctem pfts, kg c/m2
@@ -350,8 +352,6 @@
 !     annpcp    - annual precipitation (mm)
 !     burnvegf- fractiona areas burned for 9 ctem pfts
 !
-      implicit none
-!
       logical   lnduseon,  dofire, do_mortality, mosaic,&
      &          dowetlands, obswetf 
 
@@ -364,11 +364,8 @@
       integer       pandays(ilg,icc), curlatno(ilg),    colddays(ilg,2),&
      &             lfstatus(ilg,icc), isand(ilg,ignd)                 
 !
-      real fsnow(ilg),  sand(ilg,ignd), clay(ilg,ignd),thliqc(ilg,ignd),&
-     &     tcano(ilg), tcans(ilg),tbarc(ilg,ignd),rmatc(ilg,ican,ignd),&
-     &  zbotw(ilg,ignd),      rml(ilg),   gpp(ilg),   fcancmx(ilg,icc),&
-     & tbarcs(ilg,ignd),tbarg(ilg,ignd),tbargs(ilg,ignd),&
-     &   radj(ilg),   ta(ilg), deltat, delzw(ilg,ignd),thliqg(ilg,ignd),&
+      real rmatc(ilg,ican,ignd),&
+     &  rml(ilg),   gpp(ilg),   &
      &   tbar(ilg,ignd),thicec(ilg,ignd), soildpth(ilg),todfrac(ilg,icc)
 
 !
@@ -407,8 +404,7 @@
 !
       real  stemmass(ilg,icc),   rootmass(ilg,icc), litrmass(ilg,iccp1),&
      &      gleafmas(ilg,icc),   bleafmas(ilg,icc), soilcmas(ilg,iccp1),&
-     &       ancsveg(ilg,icc),    ancgveg(ilg,icc),   rmlcsveg(ilg,icc),&
-     &      rmlcgveg(ilg,icc),      ailcg(ilg,icc),     ailc(ilg,ican),&
+     &          ailcg(ilg,icc),     ailc(ilg,ican),&
      &   rmatctem(ilg,icc,ignd),       zolnc(ilg,ican),  ailcb(ilg,icc),&
      &          vgbiomas(ilg),       gavgltms(ilg),       gavgscms(ilg),&
      &          slai(ilg,icc),    bmasveg(ilg,icc),  cmasvegc(ilg,ican),&
@@ -469,9 +465,7 @@
      &             radl(lat),          wossl(lat),             sl(lat),&
      &               cl(lat),             ml(ilg),       grclarea(ilg)
 !
-      real        uwind(ilg),          vwind(ilg),        lightng(ilg),&
-     &         prbfrhuc(ilg),       extnprob(ilg),&
-     &     stemltdt(ilg,icc),   rootltdt(ilg,icc),   glfltrdt(ilg,icc),&
+      real    stemltdt(ilg,icc),   rootltdt(ilg,icc),   glfltrdt(ilg,icc),&
      &     blfltrdt(ilg,icc),   glcaemls(ilg,icc),   blcaemls(ilg,icc),&
      &     rtcaemls(ilg,icc),   stcaemls(ilg,icc),   ltrcemls(ilg,icc),&
      &         burnfrac(ilg),   dscemlv1(ilg,icc),&
@@ -1206,7 +1200,7 @@
      &                      il2,   tbarcs,   thliqc,     sand,&
      &                     clay, rttempcs,    zbotw,     sort,&
      &                     isand,&
-     &                 ltrsvgcs, scrsvgcs, thicec) !YW FLAG 
+     &                 ltrsvgcs, scrsvgcs, thicec)
 !
 !     find heterotrophic respiration rates for canopy over ground 
 !     subarea
@@ -1216,7 +1210,7 @@
      &                      il2,    tbarc,   thliqc,     sand,&
      &                     clay, rttempcg,    zbotw,     sort,&
      &                     isand,&
-     &                 ltrsvgcg, scrsvgcg, thicec) !YW FLAG 
+     &                 ltrsvgcg, scrsvgcg, thicec)
 
 !
 !     find heterotrophic respiration rates from bare ground subarea

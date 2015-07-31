@@ -4,7 +4,7 @@
      3                     clay, roottemp,    zbotw,     sort,
      4                     isand,
 c    -------------- inputs above this line, outputs below -------------
-     5                 ltresveg, scresveg,thicec)  !YW FLAG
+     5                 ltresveg, scresveg,thicec)
 c
 C               Canadian Terrestrial Ecosystem Model (CTEM) 
 C           Heterotrophic Respiration Subtoutine For Vegetated Fraction
@@ -15,6 +15,9 @@ c                     pools.
 c
 c     change history:
 c
+C     30  Jul 2015  - Based on work by Yuanqiao Wu, respiration was found to
+c                     behave incorrectly if the soil froze as it thought the water
+c                     was leaving the soil. This is now fixed.
 c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 c     J. Melton
 c
@@ -110,7 +113,6 @@ c
           thpor(i,j) = 0.0        ! porosity
           b(i,j) = 0.0            ! parameter b of clapp and hornberger
           scmotrm(i,j)=0.0        ! soil carbon moisture term
-c         isand(i,j)=nint(sand(i,j)) !now passed in. jm. aug 23 2012
 130     continue
 120   continue
 
@@ -214,7 +216,7 @@ c                               ! ltrmoscl becomes 0.2
             psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
             b(i,j)     = 0.159*clay(i,j)+2.91
             thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
-            psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005
+            psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 !the 0.005 prevents a divide by 0 situation.
      1                   -thicec(i,j)))**(-b(i,j)) 
 c   
             if(psi(i,j).ge.10000.0) then

@@ -5819,8 +5819,9 @@ c
           if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
            if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
 
-              write(71,7200)ihour,imin,iday,iyear,(anvegrow(i,m,j),j=1,icc),
-     1                    (rmlvegrow(i,m,j),j=1,icc),' TILE ',m
+              write(71,7200)ihour,imin,iday,iyear,(anvegrow(i,m,j),
+     1                    j=1,icc),(rmlvegrow(i,m,j),j=1,icc),
+     2                    ' TILE ',m
             endif
            end if
 
@@ -5915,8 +5916,8 @@ C
        if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
 
        IF (CTEM_ON) THEN
-           WRITE(711,7200)IHOUR,IMIN,IDAY,IYEAR,(ANVEGROW_G(I,J),J=1,ICC),
-     1                 (RMLVEGROW_G(I,J),J=1,ICC)
+           WRITE(711,7200)IHOUR,IMIN,IDAY,IYEAR,(ANVEGROW_G(I,J),
+     1                 J=1,ICC),(RMLVEGROW_G(I,J),J=1,ICC)
        ENDIF !CTEM_ON
 
        WRITE(641,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR_G,FLSTAR_G,QH_G,

@@ -317,7 +317,7 @@ C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 C     VALUES ARE MAINLY DERIVED FROM KATTGE ET AL. 2009 WHICH 
 C     DOESN'T INCLUDE C4
       DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, 
-     &          35.0E-06, 57.0E-06, 40.0E-06, !FLAG test Fri Feb27th JM, was 48 for PFT3
+     &          35.0E-06, 57.0E-06, 40.0E-06, !Fri Feb27th JM, new value. was 48 for PFT3
      &          55.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
 
@@ -367,8 +367,7 @@ C     LEAF ANGLE DISTRIBUTION
 C
 C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
-C      DATA GAMMA_W/0.45/  
-      DATA GAMMA_W/0.17/  ! Tests occurring in Sept 2014. JM.  
+      DATA GAMMA_W/0.17/  ! New value from Sept 2014, old was 0.45. JM.
 C
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT MODEL ACTUALLY GIVES
 C     WITHOUT ANY PHOTOSYNTHESIS DOWN-REGULATION
@@ -902,7 +901,7 @@ C
        K2 = K1 + NOL2PFTS(J) - 1
        DO 525 M = K1, K2
         DO 530 I = IL1, IL2
-         DO 535 N = 1, IG ! FLAG new code til end of 530 loop JM Jul 22
+         DO 535 N = 1, IG
           IF(ISAND(I,N) .NE. -3)THEN ! ONLY FOR NON-BEDROCK LAYERS
            SM_FUNC2(I,N)=(1.0 - (1.0-SM_FUNC(I,N))**SN(SORT(M)))
            SM_FUNC2(I,N)=SM_FUNC2(I,N)+(1.0-SM_FUNC2(I,N))
@@ -919,45 +918,6 @@ C
            CALL XIT('PHTSYN', -99)
          ENDIF
 
-!          SM_FUNC2(I,1)=( 1.0 - (1.0-SM_FUNC(I,1))**SN(SORT(M)) )
-!          SM_FUNC2(I,2)=( 1.0 - (1.0-SM_FUNC(I,2))**SN(SORT(M)) )
-!          SM_FUNC2(I,3)=( 1.0 - (1.0-SM_FUNC(I,3))**SN(SORT(M)) )
-
-!          SM_FUNC2(I,1)=SM_FUNC2(I,1)+(1.0-SM_FUNC2(I,1))
-!      &                 *SMSCALE(SORT(M))
-!          SM_FUNC2(I,2)=SM_FUNC2(I,2)+(1.0-SM_FUNC2(I,2))
-!      &                 *SMSCALE(SORT(M))
-!          SM_FUNC2(I,3)=SM_FUNC2(I,3)+(1.0-SM_FUNC2(I,3))
-!      &                 *SMSCALE(SORT(M))
-
-!          AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)*RMAT(I,M,1) +
-!      &                    SM_FUNC2(I,2)*RMAT(I,M,2) +
-!      &                    SM_FUNC2(I,3)*RMAT(I,M,3)
-
-!          AVE_SM_FUNC(I,M)= AVE_SM_FUNC(I,M) /
-!      &    (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
-! C
-! C        MAKE SURE THAT I DO NOT USE SM_FUNC FROM 2nd AND 3rd LAYERS
-! C        IF THEY ARE BED ROCK
-! C
-!          IF(ISAND(I,3) .EQ. -3)THEN ! THIRD LAYER BED ROCK
-!            AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)*RMAT(I,M,1) +
-!      &                      SM_FUNC2(I,2)*RMAT(I,M,2)
-! C
-!            AVE_SM_FUNC(I,M)= AVE_SM_FUNC(I,M) /
-!      &      (RMAT(I,M,1)+RMAT(I,M,2))
-!          ENDIF
-! C
-!          IF(ISAND(I,2) .EQ. -3)THEN ! SECOND LAYER BED ROCK
-!            AVE_SM_FUNC(I,M)=SM_FUNC2(I,1)
-!          ENDIF
-C
-!          IF( (RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3)).LT.0.9) THEN
-!            WRITE(6,*)'PFT = ',M,' I =',I
-!            WRITE(6,*)'RMAT ADD =',(RMAT(I,M,1)+RMAT(I,M,2)+RMAT(I,M,3))
-!            CALL XIT('PHTSYN', -99)
-!          ENDIF
-C
 530     CONTINUE
 525    CONTINUE
 520   CONTINUE
