@@ -6,7 +6,8 @@
      5                    nol2pfts,  fcancmx,
 c    6 ------------------ inputs above this line ----------------------   
      7                    flhrloss, leaflitr, lfstatus,  pandays,
-     8                    colddays)  
+     8                    colddays
+     9                    ,thice)  
 c    9 --- variables which are updated and outputs above this line ----
 c
 c               Canadian Terrestrial Ecosystem Model (CTEM)
@@ -101,6 +102,7 @@ c
      2           clay(ilg,ignd),    anveg(ilg,icc),   leaflitr(ilg,icc),
      3      roottemp(ilg,icc),                   rmatctem(ilg,icc,ignd),
      4      stemmass(ilg,icc), rootmass(ilg,icc),     fcancmx(ilg,icc)
+     5     ,thice(ilg,ignd)    !YW May 04, 2015 
 c
       integer pandays(ilg,icc),     lfstatus(ilg,icc),   
      1    chkmode(ilg,icc),     colddays(ilg,2) 
@@ -121,7 +123,7 @@ c     Constants and parameters are located in ctem_params.f90
 c
 c     ---------------------------------------------------------------
 c
-      if(icc.ne.11)                            call xit('phenolgy',-1)     !YW April 14, 2015 
+      if(icc.ne.12)                            call xit('phenolgy',-1)     !YW April 14, 2015 
 c
 c     initialize required arrays to zero
 c
@@ -555,7 +557,8 @@ c     if lai doesn't reach this threshold (say due to a bad year)
 c     we harvest anyway if it starts getting cold, otherwise we
 c     don't harvest.
 c
-c    add branch for icc =11, j6, 7 are shrubs YW April 15, 2015 --------\
+c    add a branch for icc =12, j6, 7 = shrubs,j 8,9 = crops, j10,11,12
+c    = grasses, YW April 15, 2015 -----------------------------------\
 c
       if (icc==9)                           then       
       do 340 j = 6,7
@@ -608,8 +611,8 @@ c
 380     continue
 370   continue 
 c
-      else          !icc != 9 here icc == 11, 6,7 =shrubs, 8,9 = crops, 
-                    ! 10, 11 = grass 
+      else          !icc != 9 here icc == 12, 6,7 =shrubs, 8,9 = crops, 
+                    ! 10, 11,12 = grass 
 c    EVG-SHRUB      treated the same as needel leaf EVG                    
       do 385 i = il1, il2
        if (fcancmx(i,6).gt.0.0) then 
@@ -680,7 +683,7 @@ c     DCD-SHRUB     treated the same as needle leaf dcd
 c
 c     "normal growth" to "max. growth" transition for grasses 
 c
-      do 395 j = 10,11
+      do 395 j = 10,12
         do 396 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
           if(chkmode(i,j).eq.0.and.lfstatus(i,j).eq.2)then
@@ -720,7 +723,7 @@ c     mode
 c
 
       do 400 j = 1, icc
-c        if(j.eq.2.or.j.eq.4.or.j.eq.5.or.j.eq.6.or.j.eq.7) !YW for icc=11
+c        if(j.eq.2.or.j.eq.4.or.j.eq.5.or.j.eq.6.or.j.eq.7) !YW for icc=12
         if(j.eq.2.or.j.eq.4.or.j.eq.5.or.j.eq.7.or.j.eq.8.or. j.eq.9)
      1                                  then  !only dcd trees and crops
           do 410 i = il1, il2
@@ -780,30 +783,31 @@ c
         endif
 400   continue
 c
-!
+!         YW July 13, 2015  comment out the testing to reverse to 2.0.4
 !       FLAG test done to see impact of no alloc to leaves after 20 days past solstice! JM Dec 5 2014.
-      do i = il1, il2
-         j = 2 !needle dcd
-           if (ailcg(i,j).gt.0.0) then 
-             if (iday > 192 .and. radl(i) > 0. .and. lfstatus(i,j).ne.
-     &             4) then ! north hemi past summer solstice
-                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
-             else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.  !172 is solstice / 355 is austral summer 
-     &               .and. lfstatus(i,j).ne. 4)then  ! southern hemi after austral summer solstice but before austral winter solstice
-                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
-             end if
-           endif
-         j = 4  ! broad dcd
-           if (ailcg(i,j).gt.0.0) then 
-              if (iday > 192  .and.  radl(i) >0. .and. lfstatus(i,j).ne.
-     &             4) then ! north hemi past summer solstice
-                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
-              else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.
-     &               .and. lfstatus(i,j).ne. 4) then  ! southern hemi after austral summer solstice but before austral winter solstice
-                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
-              end if
-           endif
-      end do
+!      do i = il1, il2
+!         j = 2 !needle dcd
+!           if (ailcg(i,j).gt.0.0) then 
+!             if (iday > 192 .and. radl(i) > 0. .and. lfstatus(i,j).ne.
+!     &             4) then ! north hemi past summer solstice
+!                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
+!             else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.  !172 is solstice / 355 is austral summer 
+!     &               .and. lfstatus(i,j).ne. 4)then  ! southern hemi after austral summer solstice but before austral winter solstice
+!                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
+!             end if
+!           endif
+!         j = 4  ! broad dcd
+!           if (ailcg(i,j).gt.0.0) then 
+!              if (iday > 192  .and.  radl(i) >0. .and. lfstatus(i,j).ne.
+!     &             4) then ! north hemi past summer solstice
+!                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
+!              else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.
+!     &               .and. lfstatus(i,j).ne. 4) then  ! southern hemi after austral summer solstice but before austral winter solstice
+!                 lfstatus(i,j) = 3 ! no allocation to leaves permitted
+!              end if
+!               endif
+!      end do
+!
 
 c          write(90,6990) '789', real(lfstatus)
 6990      format(A5,20F6.2)
@@ -840,21 +844,21 @@ c
         n = sort(j)
         do 430 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
-!         nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(365.0*lfespany(n)))) 
-         ! FLAG! TEST Dec 10 2014 JM. Testing the influence of only allowing
-         ! leaf aging turnover when the lfstatus is >1 (so normal alloc or 
-         ! no alloc to leaves). When lfstatus is 1, it is not applied. 
-           if (j == 2 .or. j == 4) then !only deciduous PFTs
-                if (lfstatus(i,j) .ne. 1) then
-                    nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
-     &                          (365.0*lfespany(n))))
-                else
-                    nrmlloss(i,j)=0. ! no loss during leaf out.
-                end if
-            else ! pfts other than deciduous
-                nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
-     &                (365.0*lfespany(n))))
-            end if  !decid/non
+         nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(365.0*lfespany(n))))   !YW comment theVmax changes out to reverse to 2.0.4
+!         ! FLAG! TEST Dec 10 2014 JM. Testing the influence of only allowing
+!         ! leaf aging turnover when the lfstatus is >1 (so normal alloc or 
+!         ! no alloc to leaves). When lfstatus is 1, it is not applied. 
+!           if (j == 2 .or. j == 4) then !only deciduous PFTs
+!                if (lfstatus(i,j) .ne. 1) then
+!                    nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
+!     &                          (365.0*lfespany(n))))
+!                else
+!                    nrmlloss(i,j)=0. ! no loss during leaf out.
+!                end if
+!            else ! pfts other than deciduous
+!                nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
+!     &                (365.0*lfespany(n))))
+!            end if  !decid/non
          endif   !fcancmx 
     
 430     continue
@@ -872,12 +876,13 @@ c
 c
 c         estimate (1-drought stress) 
 c
-          if(thliq(i,j).le.wiltsm(i,j)) then
+          if(thliq(i,j).le.(wiltsm(i,j)-thice(i,j))) then
             betadrgt(i,j)=0.0
-          else if(thliq(i,j).gt.wiltsm(i,j).and.
-     &      thliq(i,j).lt.fieldsm(i,j))then
-            betadrgt(i,j)=(thliq(i,j)-wiltsm(i,j))
-            betadrgt(i,j)=betadrgt(i,j)/(fieldsm(i,j)-wiltsm(i,j))
+          else if (thliq(i,j).gt.(wiltsm(i,j)-thice(i,j)) .and.
+     &      (thliq(i,j).lt.(fieldsm(i,j)-thice(i,j)))) then
+            betadrgt(i,j)=(thliq(i,j)-(wiltsm(i,j)-thice(i,j)))
+            betadrgt(i,j)=betadrgt(i,j)/(fieldsm(i,j)-thice(i,j)
+     1                   -wiltsm(i,j))
           else 
             betadrgt(i,j)=1.0
           endif          
@@ -891,15 +896,26 @@ c     for each pft
 c
       do 480 j = 1, icc
         n = sort(j)
+
         do 490 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
+           if (ignd==3)          then           !YW May 04, 2015  
           drgtstrs(i,j) =  (1.0-betadrgt(i,1))*rmatctem(i,j,1) +  
      &                     (1.0-betadrgt(i,2))*rmatctem(i,j,2) +  
      &                     (1.0-betadrgt(i,3))*rmatctem(i,j,3)   
           drgtstrs(i,j) = drgtstrs(i,j) /
      &     (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))  
-          drgtstrs(i,j)=max(0.0, min(1.0,drgtstrs(i,j)))
 c
+c     for ignd != 3 ---------------------------------------------------\      
+           else                              !If ignd != 3    
+             do  k= 1, ignd                 
+                drgtstrs(i,j)=drgtstrs(i,j)+(1.0-betadrgt(i,k))*
+     1                         rmatctem(i,j,k)
+             enddo
+           endif 
+c    ---------YW May 04, 2015 ---------------------------------------/
+          drgtstrs(i,j)=max(0.0, min(1.0,drgtstrs(i,j)))
+       
 c         using this drought stress term and our two vegetation-dependent
 c         parameters we find leaf loss rate associated with drought
 c
@@ -942,6 +958,9 @@ c     for grasses and use those to turn live green grass into dead
 c     brown grass. we then find the leaf litter from the brown grass
 c     which will then go into the litter pool.
 c
+
+c     YW May 11, 2015 add ICC = 12  
+      if (icc==9) then 
       do 620 j = 8,9
         n = sort(j)
         do 630 i = il1, il2
@@ -966,6 +985,34 @@ c         but this is an adjustable parameter.
          endif      
 630     continue
 620   continue 
+
+      else          !if icc==12
+      do 640 j = 10,12
+        n = sort(j)
+        do 645 i = il1, il2
+         if (fcancmx(i,j).gt.0.0) then 
+          gleafmas(i,j)   = gleafmas(i,j)-nrmlloss(i,j)-drgtloss(i,j)-  
+     &                      coldloss(i,j)
+          if( gleafmas(i,j).lt.0.0) then
+            bleafmas(i,j) = bleafmas(i,j)+nrmlloss(i,j)+drgtloss(i,j)+  
+     &                      coldloss(i,j)+gleafmas(i,j)
+            gleafmas(i,j)=0.0
+          else
+            bleafmas(i,j) = bleafmas(i,j)+nrmlloss(i,j)+drgtloss(i,j)+  
+     &                      coldloss(i,j)
+          endif
+          nrmlloss(i,j) = 0.0
+          drgtloss(i,j) = 0.0
+          coldloss(i,j) = 0.0
+c         we assume life span of brown grass is 10% that of green grass
+c         but this is an adjustable parameter.
+          nrmlloss(i,j) = bleafmas(i,j)*
+     &      (1.0-exp(-1.0/(0.10*365.0*lfespany(n)))) 
+         endif      
+645     continue
+640   continue 
+ 
+      endif         ! icc ==9
 c
 c     combine nrmlloss, drgtloss, and coldloss together to get total
 c     leaf litter generated, which is what we use to update gleafmass,
@@ -980,6 +1027,10 @@ c
 660     continue
 650   continue
 c
+c      write(90,6991)  iday, nrmlloss(1,1),drgtloss(1,1),
+c     1    coldloss(1,1),flhrloss(1,1),drgtstrs(1,1),betadrgt(1,1),
+c     2    thliq(1,1),thice(1,1),wiltsm(1,1),fieldsm(1,1)
+c6991      format(I5, 12E10.3)
       return
       end
 

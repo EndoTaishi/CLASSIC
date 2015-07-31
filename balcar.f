@@ -159,7 +159,7 @@ c	------peatland variables ----------------------------------------\
 	4		socrestep(ilg), 	hutrstep(ilg,icc+1)
 c     ------YW March 27, 2015 -----------------------------------------/  
 c
-      if(icc.ne.11)                            call xit('balcar',-1)  !YW for peatland
+      if(icc.ne.12)                            call xit('balcar',-1)  !YW for peatland
 c
 c     to check c budget we go through each pool for each vegetation
 c     type.
@@ -237,6 +237,7 @@ c
 c     litter over the bare fraction
 c
         do 280 i = il1, il2
+           if (ipeatland(i)==0)         then      !YW May 11, 2015 
           diff1=litrmass(i,icc+1) - plitmass(i,icc+1)
           diff2=( -ltresveg(i,icc+1)-humtrsvg(i,icc+1))*
      &          ( deltat/963.62 )  
@@ -244,6 +245,7 @@ c
             write(6,2003)i,icc+1,abs(diff1-diff2),tolrance
             call xit('balcar',-6)
           endif
+           endif
 280     continue
 c
 c
@@ -251,14 +253,20 @@ c     soil carbon over the bare fraction
 c
       do 300 j = 1, icc+1
         do 310 i = il1, il2
+         if (ipeatland(i)==0)          then
           diff1=soilcmas(i,j) - psocmass(i,j)
           diff2=( humtrsvg(i,j)-scresveg(i,j) )*(deltat/963.62)  
           if((abs(diff1-diff2)).gt.tolrance)then
+            write(6,3001)'soilCmas(',i,')=',soilcmas(i,j)
+            write(6,3001)'psocmass(',i,')=',psocmass(i,j)
+            write(6,3001)'humtr(',i,')=',humtrsvg(i,j)*(deltat/963.62)
+      	  write(6,3001)'scres(',i,')=',scresveg(i,j)*(deltat/963.62)
             write(6,2004)i,j,abs(diff1-diff2),tolrance
 2004        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
      & than our tolerance of ',f12.6,' for soil c')
             call xit('balcar',-7)
           endif
+         endif
 310     continue
 300   continue   
 c
@@ -306,7 +314,7 @@ c
         diff1=vgbiomas(i)-pvgbioms(i)
         diff2=(gpp(i)-autores(i)-litrfall(i)-
      &   dstcemls(i)-repro_cost_g(i))*(deltat/963.62)
-        if((abs(diff1-diff2)).gt.tolrance)then
+        if((abs(diff1-diff2)).gt.tolrance)   then
           write(6,3001)'vgbiomas(',i,')=',vgbiomas(i)
           write(6,3001)'pvgbioms(',i,')=',pvgbioms(i)
           write(6,3001)'     gpp(',i,')=',gpp(i)
@@ -318,6 +326,7 @@ c
           write(6,2005)i,abs(diff1-diff2),tolrance
 2005      format('at (i)= (',i3,'),',f12.6,' is greater
      & than our tolerance of ',f12.6,' for vegetation biomass')
+          write(90,*)    abs(diff1-diff2),tolrance
           call xit('balcar',-8)
         endif
 350   continue

@@ -25,7 +25,7 @@
 c    pass  variables to the moss subroutines YW March 19, 2015------------\   
 	1		,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss
 c	------input above, output below-----------------------------------	
-	2		,anmoss,rmlmoss,iyear, iday, ihour,imin)
+	2	,anmoss,rmlmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 c    Y.Wu ------------------------------------------------------------/
 C
 C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
@@ -245,7 +245,8 @@ C	 --------define peatland variables--------------------------------\
  	 integer  ipeatland(ilg),ievapms(ilg),iday,ihour,iyear,imin
 	 real	tbar(ilg,ig),	thmin(ilg,ig), thpor(ilg,ig),	
 	1		bi(ig),		zsnow(ilg),	delzw(ilg,ig),
-	2		Cmossmas(ilg), dmoss(ilg)
+	2		Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
+	3         pdd(ilg),      cdd(ilg)
 c	------input above output below------------------------------------
 	 real	anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
 C	---------YW March 26, 2015 ---------------------------------------/
@@ -378,6 +379,7 @@ C             HOWEVER, AS SET UP TAC CAN BE USED UNSET IN THE CALCULATION
 C             OF QSENSG EVEN IF ITC/=2. TO ENSURE THE PHTSYN WORKS, WE THEN
 C             USE TA (THE SUB OCCURS IN PHTSYN). JM 11/09/12
 
+
         CALL PHTSYN3(  AILCG, FCANC,     TCAN, CO2CONC,  PRESSG,    FI,
      1                CFLUXV,    QA,   QSWNVC,      IC,   THLIQ, ISAND,
      2                    TA,        RMATCTEM,   COSZS, XDIFFUS,   ILG,
@@ -403,7 +405,7 @@ c    -------moss photosynthesis----------------------------------------
 c	---------------input above output below-------------------
 	2		anmoss,rmlmoss,cevapms,ievapms,ipeatland
 c    -----------for testing------------------------------------
-	3		,iyear, ihour,imin) 
+	3		,iyear, ihour,imin,daylength,pdd,cdd) 
 c    -------YW March 20, 2015 -----------------------------------------
 
       ENDIF

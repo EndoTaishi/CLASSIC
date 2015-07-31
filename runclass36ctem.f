@@ -892,7 +892,9 @@ c   ----CLASS moss variables------- ----------------------------------
 	2      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg),
      3      thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
      3      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
-     4      hpdrow(nlat,nmos), hpdgat(ilg)
+     4      hpdrow(nlat,nmos), hpdgat(ilg),
+     5      HourAngle(ilg),   daylength(ilg), CosHourAngel  
+     6      ,pdd(ilg), cdd(ilg)
 c	----CTEM moss variables--------------------------------------------
       real  anmosrow(nlat,nmos)  ,      anmosgat(ilg),
      1      rmlmosrow(nlat,nmos) ,      rmlmosgat(ilg),  
@@ -1872,42 +1874,43 @@ c    --------write peatland output-------------------------------------\
           write(98,6908)
           write(99,6909)
           
-6903  format (2X,'iday iyear nppmoss  armoss   gppmoss   ',
-     1    'gppveg1  gppveg2  gppveg3  gppveg4  gppveg5  ',
-     2    'gppveg6  gppveg7  gppveg8  gppveg9  gppveg10  gppveg11  ',
-     3    'nppveg1  nppveg2  nppveg3  nppveg4  nppveg5  ',
-     4    'nppveg6  nppveg7  nppveg8  nppveg9  nppveg10  nppveg11  ',
-     5    'autoresp1   autoresp2   autoresp3   autoresp4   ',   
-     6    'autoresp5   autoresp6   autoresp7   autoresp8   ',
-     7    'autoresp9   autoresp10  autoresp11  heteresp1   ',
-     8    'heteresp2   heteresp3   heteresp4   heteresp5   ',
-     9    'heteresp6   heteresp7   heteresp8   heteresp9   ',
-     1    'heteresp10  heteresp11   fcancmx1    fcancmx2   ',   
-     2    'fcancmx3   fcancmx4   fcancmx5   fcancmx6   fcancmx7   ',
-     3    'fcancmx8   fcancmx9   fcancmx10  fcancmx11')
+6903  format (2X,'iday iyear nppmoss   armoss   gppmoss   ',
+     1    'gppveg1  gppveg2  gppveg3  gppveg4   gppveg5   gppveg6  ',
+     2    'gppveg7  gppveg8  gppveg9  gppveg10  gppveg11  gppveg12',
+     3    'nppveg1  nppveg2  nppveg3  nppveg4   nppveg5   nppveg6  ',
+     4    'nppveg7  nppveg8  nppveg9  nppveg10  nppveg11  nppveg12',
+     5    'autoresp1   autoresp2   autoresp3   autoresp4  autoresp5  ',   
+     6    'autoresp6   autoresp7   autoresp8   autoresp9  autoresp10 ',
+     7    'autoresp11  autoresp12  heteresp1   heteresp2  heteresp3  ',
+     8    'heteresp4   heteresp5   heteresp6   heteresp7  heteresp8  ',
+     9    'heteresp9   heteresp10  heteresp11  heteresp12   ',
+     1    'fcancmx1  fcancmx2  fcancmx3  fcancmx4  fcancmx5  fcancmx6 ',   
+     2    'fcancmx7  fcancmx8  fcancmx9  fcancmx10 fcancmx11 fcancmx12')
 6904  format (2X,'iday   iyear   veghght1   veghght2   veghght3   ',   
      1    'veghght4   veghght5   veghght6   veghght7   veghght8   ',
-     2    'veghght9   veghght10  veghght11  rootdpt1   rootdpt2   ',
-     3    'rootdpt3   rootdpt4   rootdpt5   rootdpt6   rootdpt7   ',
-     4    'rootdpt8   rootdpt9   rootdpt10  rootdpt11   ailcg1   ',
-     5    'ailcg2   ailcg3   ailcg4   ailcg5   ailcg6   ailcg7   ',
-     4    'ailcg8   ailcg9   ailcg10  ailcg11  stemmas1  stemmas2   ',
-     5    'stemmas3   stemmas4   stemmas5    stemmas6    stemmas7   ',
-     6    'stemmas8   stemmas9   stemmas10   stemmas11   rootmas1   ',
-     7    'rootmas2   rootmas3   rootmas4   rootmas5    rootmas6    ',
-     8    'rootmas7   rootmas8   rootmas9   rootmas10   rootmas11   ',
-     9    'litrmas1   litrmas2   litrmas3   litrmas4    litrmas5   ',
-     1    'litrmas6   litrmas7   litrmas8   litrmas9   litrmas10   ',
-     2    'litrmas11  gleafmas1  gleafmas2  gleafmas3  gleafmas4   ',
-     3    'gleafmas5  gleafmas6  gleafmas7  gleafmas8  gleafmas9   ',
-     4    'gleafmas10 gleafmas11 bleafmas1  bleafmas2  bleafmas3   ',
-     5    'bleafmas4  bleafmas5  bleafmas6  bleafmas7  bleafmas8   ',
-     6    'bleafmas9  bleafmas10 bleafmas11')
+     2    'veghght9   veghght10  veghght11  veghght12  rootdpt1   ',
+     3    'rootdpt2   rootdpt3   rootdpt4   rootdpt5   rootdpt6   ',
+     4    'rootdpt7   rootdpt8   rootdpt9   rootdpt10  rootdpt11  ',
+     5    'rootdpt12  ailcg1   ailcg2   ailcg3   ailcg4   ailcg5  ',
+     4    'ailcg6  ailcg7   ailcg8   ailcg9    ailcg10   ailcg11   ',
+     5    'ailcg12     stemmas1    stemmas2   stemmas3   stemmas4   ',
+     6    'stemmas5    stemmas6    stemmas7   stemmas8   stemmas9   ',
+     7    'stemmas10   stemmas11   stemmas12  rootmas1   rootmas2   ',
+     8    'rootmas3   rootmas4   rootmas5   rootmas6    rootmas7    ',
+     9    'rootmas8   rootmas9   rootmas10   rootmas11  rootmas12   ',
+     1    'litrmas1   litrmas2   litrmas3   litrmas4    litrmas5    ',
+     2    'litrmas6   litrmas7   litrmas8   litrmas9    litrmas10   ',
+     3    'litrmas11  litrmas12  gleafmas1  gleafmas2   gleafmas3   ',
+     4    'gleafmas4  gleafmas5  gleafmas6  gleafmas7   gleafmas8   ',
+     5    'gleafmas9  gleafmas10 gleafmas11 gleafmas12  bleafmas1   ',
+     6    'bleafmas2  bleafmas3   bleafmas4  bleafmas5  bleafmas6   ',
+     7    'bleafmas7  bleafmas8   bleafmas9  bleafmas10  bleafmas11 ', 
+     8    'bleafmas12')
 6905  format (2X, 'litrmass6  tlreleaf6  tltrstem6  tltrroot6  ',
      1    'ltresveg6  humtrsvg6  litrmass7  tltrleaf7  tltrstem7  ',
      2    'tltrroot7  ltresveg7  humtrsvg7  plitrmassms  litrmassms  ',
      3    'litrfallms  ltrestepms  humicmstep  nppmosstep  nppmoss  ',
-     4    'anmoss  rgmoss  rmlmoss  gppmoss  Cmossmas  ')
+     4    'anmoss  rgmoss  rmlmoss  gppmoss  Cmossmas  pCmossmas ')
 6906  format (2X, 'hpd  gavgscms  hutrstep_g  socrestep  resoxic  ',
      1    'resanoxic  socresp(umol/m2/s)  resoxic(umol/m2/s)  ',  
      2    'resanoxic(umol/m2/s)')  
@@ -2066,6 +2069,7 @@ c    -----------------read peatland input------------------------------\
       write(6,*) 'nlat=', nlat
       write(6,*) 'nmos=' ,nmos
       write(6,*) 'ignd=', ignd
+      write(6,*) 'ican=', ican
       write(6,*) 'icc=', icc
       write(6,*) 'ipeatland=',ipeatlandrow
       write(6,6990) 'Cmossmas=',Cmossmasrow
@@ -3137,11 +3141,38 @@ C===================== CTEM ============================================ /
 250   CONTINUE
 
 C
+c    ---------Calculate day length for seasonailtiy-------------------
+C      day=real(iday)+(real(ihour)+(real(imin)-real(ihour)*100)/60.)/24.
+C      decl=sin(2.*pi*(284.+day)/365.)*23.45*pi/180.
+C      hour=(real(ihour)+(real(imin)-real(ihour)*100)/60.)*pi/12.-pi                                         
+
       DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
       DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
-      HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
+      HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI     
       COSZ=SIN(RADJGRD(1))*SIN(DECL)+COS(RADJGRD(1))*COS(DECL)*COS(HOUR)
 
+      do i = 1, nltest
+          CosHourAngel=(sin(-0.83*pi/180)-sin(decl)*sin(radjgrd(1))) /
+     1                        cos(decl)/cos(radjgrd(1))
+          if (CosHourAngel > 1.)        then
+               daylength(i) = 0.
+          elseif  (CosHourAngel < -1.)        then
+               daylength(i) = 24.
+          else 
+               HourAngle(i)=acos(CosHourAngel)
+               daylength(i)=24.0*HourAngle(i)/pi          
+          endif
+
+c     -------initiallize pdd and cdd at the beginning of the year---
+          if (iday ==1)     then 
+           pdd(i) = 0.
+           cdd(i) = 0.
+          endif
+      enddo
+
+c    --------------   YW May 06, 2015 ---------------------------------   
+
+     
       DO 300 I=1,NLTEST
           CSZGRD(I)=SIGN(MAX(ABS(COSZ),1.0E-3),COSZ)
           IF(PREGRD(I).GT.0.) THEN
@@ -3374,6 +3405,7 @@ C
 C
 C===================== CTEM ============================================ \
 C
+
       call ctemg2(fcancmxgat,rmatcgat,zolncgat,paicgat,
      1      ailcgat,     ailcggat,    cmasvegcgat,  slaicgat,
      2      ailcgsgat,   fcancsgat,   fcancgat,     rmatctemgat,
@@ -3461,7 +3493,6 @@ c
 	5    ,thlqaccrow_m, thlqaccgat_m,thicaccrow_m, thicaccgat_m
 	6    ,ipeatlandgat)
 c    ----gathering of peatland variables YW March 19, 2015 ------------/
-
 C===================== CTEM ============================================ /
 C
 C-----------------------------------------------------------------------
@@ -3507,6 +3538,10 @@ C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
 C          * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM
 C          
+c        write(90,6991)    ailcggat(1,6),ailcggat(1,7),ailcggat(1,12),
+c     1    ailcgsgat(1,6), ailcgsgat(1,7), ailcgsgat(1,12)                   
+c6991      format(6f10.5)
+
       CALL CLASST     (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1  THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG, 
      2  GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS,  
@@ -3542,7 +3577,8 @@ c    ---peatland variabels in mosspht.f called in TSOLVC, TSOLVE----- -\
 	1	,ipeatlandgat, bigat,
 	2	ancsmosgat,	angsmosgat, 	ancmosgat,	angmosgat,
 	3	rmlcsmosgat,	rmlgsmosgat,	rmlcmosgat,	rmlgmosgat,
-	4	Cmossmasgat,   dmossgat,  iyear,  iday,  ihour,   imin)
+	4	Cmossmasgat,   dmossgat,  iyear, iday, ihour, imin,
+	5    daylength, pdd, cdd)
 c    --------------------YW March 19, 2015 ----------------------------/
 C
 C-----------------------------------------------------------------------
@@ -3824,6 +3860,7 @@ c    the ratio between stem and capitulum = 7.5 and 7.7
 			gppmosac_g(i) = gppmosac_g(i)/real(nday)
 	  	endif	
 833		continue
+
 c
 c    ----------------YW March 26, 2015 ---------------------------------/
 c 
@@ -3893,6 +3930,21 @@ c
 	4    psisgat,grksgat,thfcgat, thlwgat, 
 	5    thlqaccgat_m, thicaccgat_m,tfrez,nppmosgat, armosgat,hpdgat)	
 c    ---------------- YW March 26, 2015  -------------------------------/
+c          
+c    ----------calculate degree days for mosspht Vmax seasonality------
+       do   i = 1, nml
+          if (iday == 2)    then
+               pdd(i) = 0.               
+          elseif (taaccgat_m(i)>tfrez)           then
+               pdd(i)=pdd(i)+taaccgat_m(i)-tfrez     
+          endif
+          if (iday ==180)     then 
+               cdd(i) = 0.
+          elseif (taaccgat_m(i)<tfrez)            then 
+               cdd(i)=cdd(i)+taaccgat_m(i)-tfrez
+          endif
+      enddo 
+c---------------YW May 27, 2015 ---------------------------------------
 c
       endif  !if(ctem_on)
 c
@@ -4141,24 +4193,15 @@ C     * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
 6200  FORMAT(1X,I4,I5,3(F8.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,2(A6,I2))
 6201  FORMAT(1X,I4,I5,5(F7.2,2F6.3),2(A6,I2))
 6300  FORMAT(1X,I4,I5,3F9.2,F8.2,F10.2,E12.3,2F12.3,A6,I2)   
-C6400  FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,F9.2,2(A6,I2))
-C6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,
-C     &    2(A6,I2))
-C6600  FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
-C6501  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-C6601  FORMAT(1X,I2,I3,I5,I6,7(F7.2,2F6.3),10F9.4,2(A6,I2))  
-C6700  FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))       
-C6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))   
-C6900  FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))   
-6400  FORMAT(1X,I2,I5,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,F9.2,2(A6,I2))
-6500  FORMAT(1X,I2,I5,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,
+6400  FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,F9.2,2(A6,I2))
+6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,
      &    2(A6,I2))
-6600  FORMAT(1X,I2,I5,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
-6501  FORMAT(1X,I2,I5,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-6601  FORMAT(1X,I2,I5,I5,I6,7(F7.2,2F6.3),10F9.4,2(A6,I2))  
-6700  FORMAT(1X,I2,I5,I5,I6,2X,12E11.4,2(A6,I2))       
-6800  FORMAT(1X,I2,I5,I5,I6,2X,22(F10.4,2X),2(A6,I2))   
-6900  FORMAT(1X,I2,I5,I5,I6,2X,18(E12.4,2X),2(A6,I2))   
+6600  FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
+6501  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
+6601  FORMAT(1X,I2,I3,I5,I6,7(F7.2,2F6.3),10F9.4,2(A6,I2))  
+6700  FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))       
+6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))   
+6900  FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))   
 C
 C===================== CTEM ============================================ \
 c
@@ -4386,7 +4429,7 @@ c
           endif  ! if(ctem_on) 
 c
 c7200      format(1x,i2,1x,i2,i5,9f11.3,9f11.3,2(a6,i2))
-7200      format(1x,i2,1x,i2,i5,11f11.3,11f11.3,2(a6,i2))
+7200      format(1x,i2,1x,i2,i5,12f11.3,12f11.3,2(a6,i2))
 c
           if (ctem_on) then
             do j = 1,icc
@@ -6949,9 +6992,9 @@ c
 c7011  format(9f8.2)
 c7012  format(9i8)
 c7013  format(10f8.2)
-7011  format(11f8.2)     !YW April 14, 2015 
-7012  format(11i8)        
-7013  format(12f8.2)
+7011  format(12f8.2)     !YW April 14, 2015 
+7012  format(12i8)        
+7013  format(13f8.2)
 c
 c
 c      check if the model is done running.

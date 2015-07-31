@@ -1180,6 +1180,8 @@ c
      4              rmscgveg, rmrcgveg,     rttempcg)
 c
 c
+          
+          
 c     If ailcg/gleafmas is zero, i.e. real leaves are not on, then
 c     make maintenance respiration and gpp from storage/imaginary lai 
 c     equal to zero so that we don't use these numbers in carbon budget.
@@ -1214,6 +1216,7 @@ c     find vegetation averaged leaf, stem, and root respiration, and
 c     gpp using values from canopy over ground and canopy over snow
 c     subareas
 c
+
       do 270 j = 1, icc
         do 280 i = il1, il2
           if( (fcanc(i,j)+fcancs(i,j)).gt.zero) then
@@ -1325,7 +1328,6 @@ c
      5                 ltrsvgcg, scrsvgcg
      6               ,ipeatland, iday, psisat, thpor, bi,thicec)    !YW
 
-
 c
 c     find heterotrophic respiration rates from bare ground subarea
 c
@@ -1365,8 +1367,7 @@ c
      &        fcancs(i,j)*ltrsvgcs(i,j)) / ( fcanc(i,j) + fcancs(i,j))     
             scresveg(i,j)= (fcanc(i,j)*scrsvgcg(i,j) + 
      &        fcancs(i,j)*scrsvgcs(i,j)) / ( fcanc(i,j) + fcancs(i,j))
-            hetrsveg(i,j) =  ltresveg(i,j) + scresveg(i,j)
-
+            hetrsveg(i,j) =  ltresveg(i,j) + scresveg(i,j)          
           else
             ltresveg(i,j)= 0.0
             scresveg(i,j)= 0.0
@@ -1375,6 +1376,7 @@ c
           nepveg(i,j)=nppveg(i,j)-hetrsveg(i,j)
 350     continue 
 340   continue 
+
 c
 c     find litter and soil c respiration rates averaged over the bare 
 c     fraction of the grid cell using values from ground and snow over
@@ -1543,6 +1545,8 @@ c     Estimate fraction of npp that is to be used for horizontal
 c     expansion (lambda) during the next day (i.e. this will be determining
 c     the colonization rate in competition).
 
+
+
       if (compete) then
        do 500 j = 1, icc
         if(.not. crop(j)) then   ! not for crops
@@ -1653,7 +1657,6 @@ c
           stemmass(i,j)=stemmass(i,j)+ntchsveg(i,j)
           rootmass(i,j)=rootmass(i,j)+ntchrveg(i,j)
 c
-c
           if(gleafmas(i,j).lt.0.0)then
             write(6,1900)'gleafmas lt zero at i=',i,' for pft=',j,''   
             write(6,1901)'gleafmas = ',gleafmas(i,j)
@@ -1706,6 +1709,8 @@ c
 c  
 c     calculate grid averaged value of C related to spatial expansion
 c
+
+
       do 620 j = 1,icc
         do 621 i = il1, il2
          if (compete .or. lnduseon) then  
@@ -1769,7 +1774,7 @@ c
      4                    rmatctem, stemmass, rootmass,     sort,
      5                    nol2pfts,  fcancmx,
      6                    flhrloss, leaflitr, lfstatus,  pandays,
-     7                    colddays)
+     7                    colddays,thicec)
 c
 c    -------------------------------------------------------------------
 c
@@ -1783,6 +1788,7 @@ c
      3                     stmhrlos, rothrlos,
      4                     stemlitr, rootlitr)
 c
+
 c    -------------------------------------------------------------------
 c
 c     update green leaf biomass for trees and crops and brown leaf biomass 
@@ -1834,6 +1840,8 @@ c
           endif
 790     continue
 780   continue
+
+c
 c
 c     update litter pool with leaf litter calculated in the phenology 
 c     subroutine and stem and root litter calculated in the turnover
@@ -1846,6 +1854,7 @@ c
      &                       *deltat
 810     continue
 800   continue
+
 c
 c
 c    ------------------------------------------------------------------
@@ -1872,6 +1881,7 @@ c
      4                     grwtheff, stemltrm,     rootltrm, glealtrm,
      5                     geremort, intrmort)
 c
+
 c    ------------------------------------------------------------------
 c
 c     Update leaf, stem, and root biomass pools to take into loss
@@ -2042,14 +2052,13 @@ c    add peatland branch for grid aggregations-------------------------\
 c    NOTE peatlands soil C is not agregated from plants but updated  
 c    by humification and respiration from the previous stored value
 c
-c         testing floating point 
       do 1020 i = il1, il2
           if (ipeatland(i)==0)                              then
              gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
              gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
           else                      
              litrmassms(i)= litrmassms(i)+litrfallms(i)-
-	1			        ltrestepms(i)-humicmstep(i)
+	1			        ltrestepms(i)-humicmstep(i)     !kg/m2
 		   Cmossmas(i)= Cmossmas(i)+nppmosstep(i)-litrfallms(i)
 		   vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
 		   litrfall(i) = litrfall(i) + litrfallms(i)*(963.62/deltat)!umolCO2/m2/s
@@ -2060,22 +2069,6 @@ c         testing floating point
 
           endif          
 1020  continue
-
-c      do 1021 j = 1, icc
-c        WRITE(90,6992) j,vgbiomas_veg(1,j),gppveg(1,j),autoresveg(1,j),
-c     1  tltrleaf(1,j)+tltrstem(1,j)+tltrroot(1,j)
-c6992      format(I5,10F8.4)
-c         gleafmas(1,j), stemmass(1,j), 
-c     1         rootmass(1,j) , bleafmas(1,j), fcancmx(1,j)
-c     1         gppveg(1,j), rmveg(1,j),rgveg(1,j), 
-c     2    tltrleaf(1,j),tltrstem(1,j), tltrroot(1,j)
-c1021      continue      
-c          write(90,6991) gpp, gppmoss, autores, armoss, litrfall,rg,rm, 
-c     1     litrfallms*(963.62/deltat)
-c     1 Cmossmas, vgbiomas
-          
-          
-          
 c    ----------------YW March 26, 2015 ---------------------------------/
 c
 c     At this stage we have all required fluxes in u-mol co2/m2.sec and
@@ -2137,7 +2130,7 @@ c    CT13D_G
 	3	tltrstem(1,7),  tltrroot(1,7), ltresveg(1,7), humtrsvg(1,7),
 	5	plitrmassms, litrmassms, litrfallms, ltrestepms, humicmstep,
 	6	nppmosstep,nppmoss,anmoss,rgmoss,rmlmoss,gppmoss,Cmossmas,
-	7    rmlveg(1,1),rmsveg(1,1),rmrveg(1,1)
+	7    rmlveg(1,1),rmsveg(1,1), rmrveg(1,1)
 c    CT14D_G
 	 write(96,6991) hpd, gavgscms,  hutrstep_g, socrestep,
 	1	resoxic*(1.0/963.62)*deltat, resanoxic*(1.0/963.62)*deltat, !kgC/m2/timestep

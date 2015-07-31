@@ -199,7 +199,7 @@ c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
       real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp1),
-     1      nbpvegrow(nlat,nmos,icc),hetroresvegrow(nlat,nmos,iccp1),
+     1      nbpvegrow(nlat,nmos,iccp1),hetroresvegrow(nlat,nmos,iccp1),
      2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp1),
      3      soilcresvegrow(nlat,nmos,iccp1)
 c
@@ -289,7 +289,7 @@ c
       real vgbiomas_veggat(ilg,icc)
 c
       real gppveggat(ilg,icc),        nepveggat(ilg,iccp1),
-     1     nbpveggat(ilg,icc), hetroresveggat(ilg,iccp1),
+     1     nbpveggat(ilg,iccp1), hetroresveggat(ilg,iccp1),
      2      autoresveggat(ilg,icc),litresveggat(ilg,iccp1),
      3      soilcresveggat(ilg,iccp1)
 
@@ -390,6 +390,7 @@ c
           pstemmassrow(ilmos(k),jlmos(k),l)  = pstemmassgat(k,l)
           pgleafmassrow(ilmos(k),jlmos(k),l)  = pgleafmassgat(k,l)
           gleafmasrow(ilmos(k),jlmos(k),l)  = gleafmasgat(k,l)
+          pgleafmassrow(ilmos(k),jlmos(k),l)  = pgleafmassgat(k,l)
           bleafmasrow(ilmos(k),jlmos(k),l)  = bleafmasgat(k,l)
           ailcbrow(ilmos(k),jlmos(k),l)     = ailcbgat(k,l)   
           flhrlossrow(ilmos(k),jlmos(k),l)  = flhrlossgat(k,l)
@@ -521,6 +522,6 @@ c    scatter peatland variables----------------------------------------\
 		dmossrow(ilmos(k),jlmos(k)) = dmossgat(k)
 		ipeatlandrow(ilmos(k),jlmos(k)) = ipeatlandgat(k)
 400	 continue
-c    -----------YW March 23, 2015 -------------------------------------/
+
       return
       end

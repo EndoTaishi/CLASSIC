@@ -1,9 +1,9 @@
 	 subroutine mosspht(ilg,ignd,isand,iday,qswnv,thliq,tbar,thpor,
-	1		co2conc,tsurfk,zsnow,delzw,pres,qg,coszs,Cmossmas,dmoss,
+	1    co2conc,tsurfk,zsnow,delzw,pres,qg,coszs,Cmossmas,dmoss,
 c		output below
 	2		anmoss,rmlmoss,cevapms,ievapms,ipeatland	
 c	testing
-	3		,iyear, ihour,imin ) 
+	3		,iyear, ihour,imin,daylength,pdd,cdd) 
 C	
 c	-----------definitions---------------------------------------------
 	 implicit none
@@ -40,7 +40,7 @@ c	---------------output above this line, parameters below------------
 						!to convert for value in solution to that 
 						!based in air. The old value was 2321.1.
 						!New value (2904.12) Quercus robor (Balaguer
-						! et al., 1996) !Similar number from Dreyer 
+						! et al., 1996). Similar number from Dreyer 
 						!et al. 2001, Tree Physiol, tau= 2710 
 						!2600 from Brooks and Farquhar (1985) used 
 						!AS A CONSTANT; 2321 Harley et al. (1992) 
@@ -142,6 +142,9 @@ c	--------------internal variables above this line------------------
 	 real:: mI(ilg), mII(ilg)!coefficients of the solutions for net psn
 	 real:: beta1, beta2
 	 real:: temp_b, temp_c, temp_r, temp_q1, temp_q2, temp_jp
+
+c    -----------testing------------YW May 06, 2015 --------------------
+      real::  dr2, SWin_ex, pdd(ilg), cdd(ilg), ta(ilg),daylength(ilg)
 c	 -----------temporal terms above this line------------------------
 
 	 real     DELT,TFREZ, HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,
@@ -273,14 +276,30 @@ c
 		bc(i)  = kc(i) * (1.0 + (o2(i)/ ko(i)))	
 c		
 c    seasonal change of Vcmax, sphagnum (fig. 6, Williams and Flanagan, 1998)
+c    from May 1st to september 1st Vmax is maximum  
+C		if(iday .lt. 121)        then
+C			vcmax25(i) = 6.0
+C		else if(iday .gt. 245)   then
+C			vcmax25(i) = 7.0
+C		else 
+C			vcmax25(i) = 13.5 
+C		endif	
+
+c     use a function that is also valid for the southern hemisphere
+c      dr2= 1.0+0.033*cos(2.0*pi*day/365.0)    ! dr inverse of solar sun distance 
+c      swin_ex=1367.0*dr2*coszs
+          if (daylength(i)>14.0 .and. pdd(i)>200. .and. pdd(i)<2000. )    
+     1                                                           then
+               vcmax25(i) = 14.0
+          else 
+               vcmax25(i) = 6.5
+          endif
 c
-		if(iday .lt. 121)        then
-			vcmax25(i) = 6.0
-		else if(iday .gt. 245)   then
-			vcmax25(i) = 7.0
-		else 
-			vcmax25(i) = 13.5 
-		endif	
+c      IF (IYEAR ==2008)          THEN
+c      write(90,6991) iday,imin,ihour,pdd,cdd,daylength,vcmax25,tmoss
+c6991  format(3I5,5f9.3)
+c      ENDIF
+
 		vcmax(i) = vcmax25(i)*exp((tmossk(i)-tref)*evc/
 	1			(tref*gasc*tmossk(i)))
 c
@@ -290,6 +309,7 @@ c
           if (coszs(i).gt.0.0)	THEN
 			ws(i) = 0.5*vcmax(i)
 		endif
+
 c
 c	calculate the maximum electorn transport rate Jmax (umol/m2/s)
 c    1.67 = vcmax25m/jmax25m ratio

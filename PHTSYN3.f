@@ -233,10 +233,10 @@ C      DATA   KN/0.50, 0.50, 0.00,
 C     &          0.50, 0.50, 0.50,
 C     &          0.40, 0.48, 0.00,
 C     &          0.46, 0.44, 0.00/
-      DATA KN/ 0.50, 0.50, 0.00, 0.00, 0.00, !YW April 13, 2015 add 2 colums for all val matrix  
+      DATA KN/ 0.50, 0.50, 0.00, 0.00, 0.00, !YW April 13, 2015 add 2 colums   
      &         0.50, 0.50, 0.50, 0.50, 0.50,    
      &         0.40, 0.48, 0.00, 0.00, 0.00,
-     &         0.46, 0.44, 0.00, 0.00, 0.00/         
+     &         0.46, 0.44, 0.46, 0.00, 0.00/         
 C
 C     LOWER AND UPPER TEMPERATURE LIMITS FOR PHOTOSYNTHESIS, KELVIN
 C     LOWER LIMIT IN CELCIUS /-5, -5, --,
@@ -244,9 +244,9 @@ C                              0,  0,  0,
 C                             -3,  5, --,
 C                             -1, 10, --/
       DATA TLOW/268.1, 268.1, 0.000, 0.000, 0.000, 
-     &          273.1, 273.1, 273.1, 273.1, 273.1,     !(Tanja et al. 2003) 5 days average air T above 4.3   
+     &          273.1, 273.1, 273.1, 271.1, 271.1,     !(Tanja et al. 2003) 5 days average air T above 4.3   
      &          270.1, 278.1, 0.000, 0.000, 0.000,     !as the threshold of spring PSN for boreal forests.
-     &          272.1, 283.1, 0.000, 0.000, 0.000/     !YW April 22, 2015  
+     &          272.1, 283.1, 272.1, 0.000, 0.000/     !YW April 22, 2015  
 C
 C     UPPER LIMIT IN CELCIUS /34, 34, --,
 C                             45, 37, 37,
@@ -257,7 +257,7 @@ C    ITO AND OIKAWA 2000.
       DATA  TUP/307.1, 307.1, 0.000, 0.000, 0.000, 
      &          318.1, 310.1, 310.1, 307.1, 307.1, 
      &          315.1, 315.1, 0.000, 0.000, 0.000, 
-     &          313.1, 323.1, 0.000, 0.000, 0.000/
+     &          313.1, 323.1, 313.1, 0.000, 0.000/
 C
 C     ARRAY TELLING WHICH VEGETATION TYPE IS C4
       DATA  ISC4/0, 0, 0, 0, 0,
@@ -270,36 +270,36 @@ C     C4 PLANTS, RESPECTIVELY
       DATA  ALPHA/0.08, 0.08, 0.00, 0.00, 0.00, 
      &            0.08, 0.08, 0.08, 0.08, 0.08, 
      &            0.08, 0.04, 0.00, 0.00, 0.00, 
-     &            0.08, 0.04, 0.00, 0.00, 0.00/
+     &            0.08, 0.04, 0.08, 0.00, 0.00/
 C
 C     LEAF SCATTERING COEFFICIENTS, VALUES OF 0.15 & 0.17 ARE USED
 C     FOR C3 AND C4 PLANTS, RESPECTIVELY
       DATA  OMEGA/0.15, 0.15, 0.00, 0.00, 0.00, 
      &            0.15, 0.15, 0.15, 0.15, 0.15, 
      &            0.15, 0.17, 0.00, 0.00, 0.00, 
-     &            0.15, 0.17, 0.00, 0.00, 0.00/
+     &            0.15, 0.17, 0.15, 0.00, 0.00/
 C
 C     PARAMETER M USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
 C     COUPLING. 
 C
       DATA  MM/9.0, 9.0, 0.0, 0.0, 0.0, 
-     &        12.0,12.0,12.0, 9.0, 9.0, 
+     &        12.0,12.0,12.0, 12.0, 12.0,         !YW May 05, 2015  PFT6&7 were 9.0 
      &        12.0, 6.0, 0.0, 0.0, 0.0, 
-     &        12.0, 6.0, 0.0, 0.0, 0.0/
+     &        12.0, 6.0, 12.0, 0.0, 0.0/
 C
 C     PARAMETER B USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
 C     COUPLING.
       DATA  BB/0.01, 0.01, 0.00, 0.00, 0.00, 
      &         0.01, 0.01, 0.01, 0.01, 0.01, 
      &         0.01, 0.04, 0.00, 0.00, 0.00, 
-     &         0.01, 0.04, 0.00, 0.00, 0.00/
+     &         0.01, 0.04, 0.01, 0.00, 0.00/
 C
 C     PARAMETER VPD0 USED IN LEUNING TYPE PHOTOSYNTHESIS - STOMATAL
 C     CONDUCTANCE COUPLING, IN PASCALS
       DATA VPD0/2000., 2000., 0.000,  0.000, 0.000, 
      &          2000., 2000., 2000.,  2000., 2000.,
      &          1500., 1500., 0.000,  0.000, 0.000, 
-     &          1500., 1500., 0.000,  0.000, 0.000/
+     &          1500., 1500., 1500.,  0.000, 0.000/
 C
 C     EXPONENT FOR SOIL MOISTURE STRESS. FOR SN EQUAL TO 1, PHOTOSYNTHESIS
 C     DECREASES LINEARLY WITH SOIL MOISTURE, AND OF COURSE NON-LINEARLY
@@ -312,7 +312,7 @@ c    new values in 2.0.5
       DATA SN/2, 2, 0, 0, 0, 
      &        4, 2, 2, 2, 2, 
      &        2, 2, 0, 0, 0, 
-     &        2, 2, 0, 0, 0/
+     &        2, 2, 2, 0, 0/      !sedge may take up a higher value as it adapts to wet condition well YW May 13, 2015 
 
 c    ---in 1.6 PEATLAND version less moisture limit ,in original ctem 1.6
 c    version sn = 20.0 for all pfts 
@@ -337,7 +337,7 @@ C     DOESN'T INCLUDE C4
       DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
      &          35.0E-06, 57.0E-06, 40.0E-06, 60.0E-06, 50.0E-06,     !YW April 17, 2015 
      &          55.0E-06, 40.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
-     &          75.0E-06, 15.0E-06, 0.00E-06, 0.00E-06, 0.00E-06/     
+     &          75.0E-06, 15.0E-06, 40.0E-06, 0.00E-06, 0.00E-06/     !YW May 06, 2015 sedge=PFT12      
 
 C     NEEDLE LEAF |  EVG       DCD       ---
 C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
@@ -359,13 +359,13 @@ C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
       DATA  INICO2I/0.65, 0.65, 0.00, 0.00, 0.00, 
      &              0.65, 0.65, 0.65, 0.65, 0.65, 
      &              0.65, 0.37, 0.00, 0.00, 0.00, 
-     &              0.65, 0.37, 0.00, 0.00, 0.00/
+     &              0.65, 0.37, 0.65, 0.00, 0.00/
 C
 C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS  
       DATA  RMLCOEFF/0.015, 0.021, 0.000, 0.000, 0.000, 
-     &               0.025, 0.015, 0.015, 0.015, 0.021,   
+     &               0.025, 0.015, 0.015, 0.025, 0.020,     !pft7 WAS 0.021 YW May 05, 2015    
      &               0.015, 0.025, 0.000, 0.000, 0.000, 
-     &               0.013, 0.025, 0.000, 0.000, 0.000/
+     &               0.013, 0.025, 0.015, 0.000, 0.000/
      
 c    In 1.6 version use the following -------------------------------\
 c	data rmlcoeff	 /0.020, 	0.020,	0.000,
@@ -386,9 +386,9 @@ C
 C     ADDITIONAL PARAMETERS FOR TWO-LEAF MODEL
 C     LEAF ANGLE DISTRIBUTION
       DATA  CHI/0.01,  0.01, 0.00, 0.00, 0.00, 
-     &          0.17,  0.17, 0.17, 0.01, 0.01, 
+     &          0.17,  0.17, 0.17, 0.17, 0.17,    !YW May 4th 
      &         -0.30, -0.30, 0.00, 0.00, 0.00, 
-     &         -0.30, -0.30, 0.00, 0.00, 0.00/
+     &         -0.30, -0.30,-0.30, 0.00, 0.00/
 C
 C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
@@ -659,6 +659,7 @@ C
           ENDIF
 350     CONTINUE
 340   CONTINUE
+
 C
 C     SET MIN. AND MAX. VALUES FOR STOMATAL CONDUCTANCE. WE MAKE SURE
 C     THAT MAX. STOMATAL RESISTANCE IS AROUND 5000 S/M AND MIN. STOMATAL
@@ -801,6 +802,7 @@ C         FROM THE TWO LEAVES TO GET THE TOTAL.
 C
           FPAR(I,M)=(1.0/KN(SORT(M)))*(1.0-EXP(-KN(SORT(M))
      &               *USEAILCG(I,M)))
+      
           IF(LEAFOPT.EQ.2)THEN
             FPAR_SUN(I,M) = ( 1.0/(KN(SORT(M))+KB(I,M)) )*
      &        ( 1.0-EXP( -1.*(KN(SORT(M))+KB(I,M))*USEAILCG(I,M) ) )
@@ -821,15 +823,15 @@ C         LEAF MODEL
 C
 
           ! FLAG: test only done for one-leaf model!! JM Dec 4 2014./ Jan 21 2015.
-          if (lfstatus(i,m).eq.1 .and. (m .eq. 2 .or. m .eq. 4)) then
-            use_vmax = vmax(sort(m)) * 2.0
-          else if ((lfstatus(i,m).eq.3).and.(m.eq. 2 .or. m .eq. 4))then  !leaf fall
-            use_vmax = vmax(sort(m)) * 0.5            
-          else
-            use_vmax = vmax(sort(m)) !normal growth
-          end if
-          vmaxc(i,m)=use_vmax * fpar(i,m)    
-!          VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
+!          if (lfstatus(i,m).eq.1 .and. (m .eq. 2 .or. m .eq. 4)) then
+!            use_vmax = vmax(sort(m)) * 2.0
+!          else if ((lfstatus(i,m).eq.3).and.(m.eq. 2 .or. m .eq. 4))then  !leaf fall
+!            use_vmax = vmax(sort(m)) * 0.5            
+!          else
+!            use_vmax = vmax(sort(m)) !normal growth
+!          end if
+!          vmaxc(i,m)=use_vmax * fpar(i,m)    
+          VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
           IF(LEAFOPT.EQ.2)THEN
              VMAXC_SUN(I,M) = VMAX(SORT(M)) * FPAR_SUN(I,M)
              VMAXC_SHA(I,M) = VMAX(SORT(M)) * FPAR_SHA(I,M)
@@ -1291,18 +1293,23 @@ C
 C
 c    ---------------testing--------------------------------------------\
 
-c      if  (iyear == 2004 .and. ihour == 12 .and. imin == 1200) then
-c        write(90,6991)        iyear, iday, ihour, imin,    
-c     1    COSZS(1), FCANC(1,3), JE(1,3), JC(1,3), JS(1,3), 
-c     1    A_VEG(1,3),FCANC(1,4), JE(1,4), JC(1,4), JS(1,4), A_VEG(1,4) 
-C     1    VMUNS(1,3), AVE_SM_FUNC(1,3), vmaxc(1,3), fpar(1,3),
-C     2    vmuns(1,4), ave_sm_func(1,4), vmaxc(1,4), fpar(1,4),
+c      if  (iyear == 2008 .and. ihour==12. .and. imin==30.) then
+c        write(90,6991)    
+C     1    COSZS(1), FCANC(1,3), JE(1,3), JC(1,3), JS(1,3), 
+C     1    A_VEG(1,3),FCANC(1,4), JE(1,4), JC(1,4), JS(1,4), A_VEG(1,4) 
+C     1    vm(1,1),VMUNS(1,1), AVE_SM_FUNC(1,1), vmaxc(1,1), fpar(1,1),
+C     2    vm(1,2),vmuns(1,2), ave_sm_func(1,2), vmaxc(1,2), fpar(1,2),
+c     3    vm(1,6),VMUNS(1,6), AVE_SM_FUNC(1,6), vmaxc(1,6), fpar(1,6),
+c     4    vm(1,7),vmuns(1,7), ave_sm_func(1,7), vmaxc(1,7), fpar(1,7),
+c     4    vm(1,10),vmuns(1,10),ave_sm_func(1,10),vmaxc(1,10),fpar(1,10),
+c     4    vm(1,12),vmuns(1,12),ave_sm_func(1,12),vmaxc(1,12),fpar(1,12)
 C     1    SM_FUNC2(I,1),SM_FUNC2(I,2),SM_FUNC2(1,3),
 C     2    RMAT(1,3,1),RMAT(1,3,2),RMAT(1,3,3),
 C     3    RMAT(1,4,1),RMAT(1,4,2),RMAT(1,3,3),
 C     4    RMAT(1,8,1),RMAT(1,8,2),RMAT(1,8,3)
-6991   format(4i5, 20f8.2)
-C      endif
+c     5         ,COSZS(1)
+6991   format(50e10.2)
+c      endif
 c    ---------------testing--------------------------------------------/
 
 C

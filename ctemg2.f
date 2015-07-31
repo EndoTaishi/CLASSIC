@@ -194,7 +194,7 @@ c
       real vgbiomas_veggat(ilg,icc)
 c
       real gppveggat(ilg,icc),        nepveggat(ilg,iccp1),
-     1     nbpveggat(ilg,icc),    hetroresveggat(ilg,iccp1),
+     1     nbpveggat(ilg,iccp1),    hetroresveggat(ilg,iccp1),
      2      autoresveggat(ilg,icc),litresveggat(ilg,iccp1),
      3      soilcresveggat(ilg,iccp1) 
 c
@@ -286,7 +286,7 @@ c
       real vgbiomas_vegrow(nlat,nmos,icc)
 c
       real gppvegrow(nlat,nmos,icc),    nepvegrow(nlat,nmos,iccp1),
-     1     nbpvegrow(nlat,nmos,icc), hetroresvegrow(nlat,nmos,iccp1),
+     1     nbpvegrow(nlat,nmos,iccp1), hetroresvegrow(nlat,nmos,iccp1),
      2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp1),
      3      soilcresvegrow(nlat,nmos,iccp1) 
 

@@ -803,7 +803,6 @@ C     -----------roughness of the surface is z0 moss for peatlands------\
 			       ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
      1              *zolnms+FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)          
 			   endif
-c    -------------YW March 19, 2015------------------------------------/
               ELSE                                                                
                   ZOMLNG(I)=ZOLNI                                                 
               ENDIF                                                               
@@ -927,9 +926,15 @@ C
       DO 450 J=1,IC                                                               
       DO 450 I=IL1,IL2                                                            
         IF (ICTEMMOD.EQ.1) THEN
+          if (ig==3)                then        !YW May 13, 2015 
           RMAT(I,J,1)=RMATC(I,J,1)
           RMAT(I,J,2)=RMATC(I,J,2)
           RMAT(I,J,3)=RMATC(I,J,3)
+          else           
+            do k = 1, ig
+                rmat(i,j,k)=rmatc(i,j,k)         
+            enddo
+          endif
         ELSE
           ZROOT=ZRTMAX(I,J)
           IF(J.EQ.3) ZROOT=ZRTMAX(I,J)*GROWA(I)                                   

@@ -15,7 +15,7 @@ c    ------------pass variables in moss subroutine---------------------\
 	1	,ipeatland, thliq, tbar, thpor, co2conc,
 	2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
 c	3-----input above, output below-----------------------------------	
-	4	 ,anmoss,rmlmoss,iyear, iday, ihour,imin)
+	4	 ,anmoss,rmlmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 C    ------------------YW March 26, 2015 ------------------------------/ 
 C
 C     Purpose: Solution of surface energy balance for non-vegetated 
@@ -210,7 +210,8 @@ c    ---------------Peatland variables YW March 19, 2015 --------------\
 	 real	thliq(ilg,ig), tbar(ilg,ig), 	thpor(ilg,ig),	
 	1		bi(ig),		zsnow(ilg),	delzw(ilg,ig),
 	2		co2conc(ilg),	pressg(ilg) ,	coszs(ilg),
-	3		Cmossmas(ilg), dmoss(ilg)
+	3		Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
+	4         pdd(ilg),      cdd(ilg)
 c	------input above output below-----------------------------
 	 real	anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
 c    -------------------YW March 26, 2015 -----------------------------/
@@ -353,7 +354,7 @@ c	--moss subroutine find ground evaporation rate and photosynthesis--\
 c	--------------input above output below-------------------
 	2		anmoss,rmlmoss,cevapms,ievapms, ipeatland
 c    --------------for testing--------------------------------
-	3		,iyear, ihour,imin) 
+	3		,iyear, ihour,imin,daylength,pdd,cdd) 
 c    ------------------YW March 19, 2015 ------------------------------/	 	 
       !
       !The 100 continuation line marks the beginning of the surface 

@@ -38,7 +38,7 @@ c    peatland variabels in mosspht.f called in TSOLVC and TSOLVE-------\
 	1	,ipeatland, bi,
 	2	ancsmoss,	angsmoss, ancmoss,	angmoss,
 	3	rmlcsmoss,rmlgsmoss,rmlcmoss,	rmlgmoss,
-	4	Cmossmas, dmoss,iyear, iday, ihour,imin)
+	4	Cmossmas, dmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 c    YW March 19, 2015 ------------------------------------------------/
 
 C
@@ -330,7 +330,8 @@ C
 c    ------------------peatland variables -----------------------------\
 
 	 integer 	ipeatland(ilg),iyear, iday, imin, ihour
-	 real	bi(ig), Cmossmas(ilg), dmoss(ilg)
+	 real	bi(ig), Cmossmas(ilg), dmoss(ilg),daylength(ilg),
+	1         pdd(ilg), cdd(ilg)
 c	------input above output below this line---------------------------
 	 real	ancsmoss(ilg),		angsmoss(ilg), 
 	1		ancmoss(ilg), 		angmoss(ilg),
@@ -433,6 +434,7 @@ C
 		endif
 66	   continue		
 c
+C
 C    initialize moss fluxes done---------------------------------------/
 C
 C     * PREPARATION.
@@ -557,7 +559,8 @@ C
 c    pass  variables to moss subroutines YW March 19, 2015------------\   
 	1		   ,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss,
 c	------input above, output below-----------------------------------	
-	2		     ancsmoss,rmlcsmoss,iyear, iday, ihour,imin)
+	2		     ancsmoss,rmlcsmoss,iyear,iday,ihour,imin,daylength
+	3              ,pdd,cdd)
 c    Y.Wu ------------------------------------------------------------/
 
           CALL TSPOST(GSNOWC,TSNOCS,WSNOCS,RHOSCS,QMELTC,
@@ -728,7 +731,7 @@ c    ----------pass variables in mosspht.f-----------------------------\
 	1	,ipeatland, thliqg, tbar, thpor, co2conc,
 	2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
 c	------input above, output below-----------------------------------	
-	3	 ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin)
+	3   ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 C    ---------------YW March 26, 2015 ---------------------------------/      
 c     
           CALL TSPOST(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG,
@@ -864,6 +867,7 @@ C
      +                FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
      3                ISAND,ILG,IL1,IL2,IG                      )
           ISNOW=0
+
           CALL TSOLVC(ISNOW,FC,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPC,
@@ -891,7 +895,8 @@ C
 c    pass  variables to moss subroutines YW March 19, 2015------------\   
 	1		   ,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss,
 c	------input above, output below-----------------------------------	
-	2		     ancmoss,rmlcmoss,iyear, iday, ihour,imin)
+	2		     ancmoss,rmlcmoss,iyear, iday, ihour,imin,daylength
+	3              ,pdd,cdd)
 c    Y.Wu ------------------------------------------------------------/
 
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
@@ -1050,7 +1055,7 @@ c    ----------pass variables in mosspht.f-----------------------------\
 	1	,ipeatland, thliqg, tbar, thpor, co2conc,
 	2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
 c	------input above, output below-----------------------------------	
-	3	 ,angmoss,rmlgmoss,iyear, iday, ihour,imin)
+	3	 ,angmoss,rmlgmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 C    ---------------YW March 26, 2015 ---------------------------------/ 
 C
           CALL TNPOST(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST,
