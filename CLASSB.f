@@ -214,7 +214,7 @@ C
               THLW(I,M,J)=THLMIN(I,M,J)
               PSIWLT(I,M,J)=PSISAT(I,M,J)*(THLMIN(I,M,J)/
      1            THPOR(I,M,J))**(-BI(I,M,J))
-          ELSEIF(SAND(I,M,J).GT.0.) THEN
+          ELSEIF(SAND(I,M,J).GE.0.) THEN
               THPOR (I,M,J)=(-0.126*SAND(I,M,J)+48.9)/100.0
               THLRET(I,M,J)=0.04
               THLMIN(I,M,J)=0.04
