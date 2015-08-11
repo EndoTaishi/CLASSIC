@@ -401,6 +401,11 @@ c
           ailcmaxrow(ilmos(k),jlmos(k),l)=ailcmaxgat(k,l)
           pftexistrow(ilmos(k),jlmos(k),l)=pftexistgat(k,l)
 
+          ancsvegrow(ilmos(k),jlmos(k),l)=ancsveggat(k,l)
+          ancgvegrow(ilmos(k),jlmos(k),l)=ancgveggat(k,l)
+          rmlcsvegrow(ilmos(k),jlmos(k),l)=rmlcsveggat(k,l)
+          rmlcgvegrow(ilmos(k),jlmos(k),l)=rmlcgveggat(k,l)
+
 c         fire variables
           emit_co2row(ilmos(k),jlmos(k),l)    = emit_co2gat(k,l)
           emit_corow(ilmos(k),jlmos(k),l)     = emit_cogat(k,l) 

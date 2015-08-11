@@ -5811,8 +5811,10 @@ c
                 anvegrow(i,m,j)=0.0
                 rmlvegrow(i,m,j)=0.0
               else
-                anvegrow(i,m,j)=anvegrow(i,m,j)
-                rmlvegrow(i,m,j)=rmlvegrow(i,m,j)
+                anvegrow(i,m,j)=ancsvegrow(i,m,j)*FSNOROT(i,m) +
+     &                          ancgvegrow(i,m,j)*(1. - FSNOROT(i,m))
+                rmlvegrow(i,m,j)=rmlcsvegrow(i,m,j)*FSNOROT(i,m) +
+     &                         rmlcgvegrow(i,m,j)*(1. - FSNOROT(i,m))
               endif
 760         continue
 c
