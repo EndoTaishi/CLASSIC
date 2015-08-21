@@ -126,7 +126,7 @@ implicit none
 !
 !     inputs
 !
-real, dimension(ilg,icc), intent(in) :: fcancmx ! max. fractional coverage of ctem's 9 pfts, but this can be
+real, dimension(ilg,icc), intent(inout) :: fcancmx ! max. fractional coverage of ctem's 9 pfts, but this can be
                                                 ! modified by land-use change, and competition between pfts
 real, dimension(ilg), intent(in) :: fsnow       ! fraction of snow simulated by class
 real, dimension(ilg,ignd), intent(in) :: sand   ! percentage sand
