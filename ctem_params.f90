@@ -6,7 +6,7 @@ module ctem_params
 ! which has the information passed in via arguments. This is a legacy thing.
 
 ! Remember that changes to this module will usually only take effect
-! after you have done a make clean then a make.
+! after you have done a 'make clean' then a 'make' (because it is a module).
 
 ! This module is structured with general parameters first then the PFT specific
 ! parameters later.
@@ -16,6 +16,7 @@ module ctem_params
 
 ! Change History:
 
+! Jun 11 2015 - JM - Add in new disturb params (extnmois_duff and extnmois_veg) replacing duff_dry and extnmois.
 ! Mar 12 2014 - JM - Allow for two sets of paramters (competition and prescribed PFT fractions).
 !                    all ctem subroutines except PHTSYN3 keep their parameters here.   
 !
@@ -39,19 +40,20 @@ integer, parameter, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31
 integer, parameter, dimension(13) :: monthend = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] ! calender day at end of each month
 integer, parameter, dimension(12) :: mmday= [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !mid-month day
 
-integer, parameter :: lon = 96  ! specify gcm resolution for longitude
-integer, parameter :: lat = 48  ! specify gcm resolution for latitude
+integer, parameter :: lon = 128 ! specify gcm resolution for longitude
+integer, parameter :: lat = 64  ! specify gcm resolution for latitude
 
-! latitudes of the edges of the gcm grid cells for 96x48 resolution
-real, parameter, dimension(lat+1) :: edgelat = [ -90.0000, -85.3190, -81.6280, -77.9236, -74.2159,  &
-                                        -70.5068, -66.7970, -63.0868, -59.3763, -55.6657, -51.9549, &
-                                        -48.2441, -44.5331, -40.8221, -37.1111, -33.4001, -29.6890, &
-                                        -25.9779, -22.2668, -18.5557, -14.8446, -11.1335,  -7.4223, &
-                                         -3.7112,   0.0000,   3.7112,   7.4223,  11.1335,  14.8446, &
-                                         18.5557,  22.2668,  25.9779,  29.6890,  33.4001,  37.1111, &
-                                         40.8221,  44.5331,  48.2441,  51.9549,  55.6657,  59.3763, &
-                                         63.0868,  66.7970,  70.5068,  74.2159,  77.9236,  81.6280, &
-                                         85.3190,  90.0000 ]
+! latitudes of the edges of the gcm grid cells for 128/x64 resolution
+real, parameter, dimension(lat+1) :: edgelat = &
+                                    [ -90.0,-86.4802,-83.7047,-80.9193,-78.1313,-75.3422,-72.5527, &
+                                    -69.7628,-66.9727,-64.1825,-61.3922,-58.6018,-55.8114,-53.021, &
+                                    -50.2305,-47.44,-44.6495,-41.8589,-39.0684,-36.2778,-33.4872, &
+                                    -30.6967,-27.9061,-25.1155,-22.3249,-19.5343,-16.7437,-13.9531, &
+                                    -11.1625,-8.3718,-5.5812,-2.7906,0.0,2.7906,5.5812,8.3718,11.16245, &
+                                    13.9531,16.7437,19.5343,22.3249,25.1155,27.9061,30.69665,33.4872, &
+                                    36.2778,39.06835,41.8589,44.64945,47.43995,50.23045,53.02095, &
+                                    55.8114,58.6018,61.3922,64.1825,66.9727,69.7628,72.55265,75.3422, &
+                                    78.13125,80.91925,83.7047,86.48015,90.0 ]
 
 ! ----
 ! Model state
@@ -182,8 +184,10 @@ real :: repro_fraction                  ! Fraction of NPP that is used to create
 ! disturb.f90 parameters: -------------
 
 real, dimension(2) :: bmasthrs_fire     ! min. and max. vegetation biomass thresholds to initiate fire, kg c/m^2
-real :: extnmois                        ! extinction moisture content for estimating fire likeliness due to soil moisture
-real :: duff_dry                        ! extinction moisture content for estimating fire likeliness due to moisture in the duff layer
+real :: extnmois                        ! extinction moisture content for estimating fire likeliness due to soil moisture !OLD!
+real :: duff_dry                        ! extinction moisture content for estimating fire likeliness due to moisture in the duff layer !OLD!
+real :: extnmois_veg                    ! extinction moisture content for estimating vegetation fire likeliness due to soil moisture 
+real :: extnmois_duff                   ! extinction moisture content for estimating duff layer fire likeliness due to soil moisture 
 real :: lwrlthrs                        ! lower cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
 real :: hgrlthrs                        ! higher cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
 real :: parmlght                        ! parameter m (mean) and b of logistic distribution used for 
@@ -348,6 +352,13 @@ kn= [ 0.50, 0.50, 0.00, &
       0.50, 0.50, 0.50, &
       0.40, 0.48, 0.00, &
       0.46, 0.44, 0.00 ]
+      
+lfespany  =   [ 5.00, 1.00, 0.00, &
+                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+!lfespany  =   [ 5.00, 0.40, 0.00, & !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
+!               1.50, 0.40, 1.00, &
+                1.75, 1.75, 0.00, &
+                1.00, 1.00, 0.00 ]      
 
 ! allocate.f parameters: --------------
 
@@ -439,7 +450,7 @@ repro_fraction = 0.10
 
 ! disturbance parameters: ------------
 
-reparea = 1000.0
+reparea = 300.0 !1000.0  !FLAG testing JM Jun 17 2015.
 
 popdthrshld = 300.
 
@@ -447,13 +458,17 @@ f0 = 0.05  ! NOT used in CTEM v.2.
 
 bmasthrs_fire = [ 0.2, 1.0 ] 
 
-extnmois = 0.35 !0.3 Sept 22 2014. JM. 
+extnmois = 0.35 !0.3 Sept 22 2014. JM. !OLD!
 
-lwrlthrs = 0.05 !0.25 FLAG test. JM Jun 22 15
+duff_dry = 0.25 !OLD!
 
-hgrlthrs = 2.0 !10.0 FLAG test. JM Jun 22 15
+extnmois_veg = 0.37 !flag test was 0.3
 
-duff_dry = 0.25
+extnmois_duff = 0.55 !flag test was 0.5
+
+lwrlthrs = 0.025 !0.25 FLAG test. JM Jun 22 15
+
+hgrlthrs = 1.0 !10.0 FLAG test. JM Jun 22 15
 
 !     **Parmlght was increased to 0.8 to make it so areas with higher amounts of
 !     lightning have higher lterm. The saturation is still the same, but the 
@@ -465,7 +480,7 @@ parblght = 0.1
 maxsprd = [  0.54, 0.54, 0.00, &
              0.40, 0.40, 0.40, &
              0.00, 0.00, 0.00, &
-             2.00, 2.00, 0.00 ]
+             0.72, 0.72, 0.00 ]  !FLAG testing Li value, old was 2.0
 
 frco2glf = [ 0.21, 0.21, 0.00, & 
              0.21, 0.21, 0.21, & 
@@ -675,8 +690,8 @@ bsratesc = [ 0.0208, 0.0208, 0.0000, &
              0.0280, 0.0280, 0.0000, &
              0.0100, 0.0100, 0.0000 ]              
 
-tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ]
-tanhq10  = [ 1.2, 0.2, 0.075, 46.0 ] ! was 1.44/0.56/0.075/46 TEST FLAG mar 3 JM 2015
+tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ] 
+!tanhq10  = [ 1.2, 0.2, 0.075, 46.0 ] ! was 1.44/0.56/0.075/46 TEST FLAG mar 3 JM 2015
            !   a     b      c     d
            ! q10 = a + b * tanh[ c (d-temperature) ]
            ! when a = 2, b = 0, we get the constant q10 of 2. if b is non
@@ -761,7 +776,19 @@ thrprcnt = [ 40.0, 40.0,  0.0, &
              40.0, 50.0, 50.0, &
              50.0, 50.0,  0.0, &
              40.0, 40.0,  0.0 ]  
+             
+lwrthrsh = [ -50.0, -5.0, 0.0, & 
+               5.0,  8.0, 5.0, &  
+               5.0,  5.0, 0.0, &
+               0.1,  5.0, 0.0 ]             
 
+! these parameters  are from competition runs. FLAG.
+! testing for work with Ray and Bakr! Mar 2015.          
+cdlsrtmx = [ 0.10, 0.30, 0.00, &  
+             0.30, 0.40, 0.15, &
+             0.15, 0.15, 0.00, &
+             0.15, 0.15, 0.00 ]
+             
 ! turnover.f parameters: --------------
 
 stmhrspn = 17.0
@@ -818,15 +845,6 @@ if (compete) then
 ! These parameters are used when competition is on. If you are using
 ! prescribed PFT fractional cover, then the parameters after this section
 ! are used. Parameters that are the same in both are above this if loop.
-
-! Parameters used in more than one subroutine:
-
-lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
-! lfespany  =   [ 5.00, 0.40, 0.00, &
-!                 1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
-                1.75, 1.75, 0.00, &
-                1.00, 1.00, 0.00 ]
 
 ! allocate.f parameters: --------------
 
@@ -939,35 +957,12 @@ mxmortge = [ 0.005, 0.005, 0.00, &
 
 ! phenology.f parameters: ---------
 
-cdlsrtmx = [ 0.10, 0.30, 0.00, &  
-             0.30, 0.40, 0.15, &
-             0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
-
 drlsrtmx = [ 0.006 , 0.005, 0.000, &
              0.010 , 0.025, 0.030, & 
              0.005 , 0.005, 0.000, &
              0.020 , 0.020, 0.000 ] 
 
-
-lwrthrsh = [ -50.0, -5.0, 0.0, & 
-               5.0,  8.0, 5.0, &  
-               5.0,  5.0, 0.0, &
-               0.1,  5.0, 0.0 ]
-
 roothrsh = 8.0
-
-! turnover.f parameters: --------------
-! NOW USING SAME VALUES FOR COMP/PRESC.
-!stemlife = [ 86.3, 86.3, 0.00, &  
-!             80.5, 80.5, 75.8, &  
-!             20.0, 20.0, 0.00, &
-!              0.00, 0.00, 0.00 ]
-
-!rootlife = [ 13.8,13.2, 0.0, &
-!             12.7,10.9, 9.8, &    
-!              3.0, 3.0, 0.0, &
-!              3.0, 3.0, 0.0 ]
 
 !   ********************************************************************************************
 !   =============                                                     ==========================
@@ -979,15 +974,6 @@ else ! Prescribed PFT fractional cover
 
 ! These parameters are used when the PFT fractional cover is read in from the 
 ! CTM and INI files, or when LUC is on, the LUC file.
-
-! Parameters used in more than one subroutine:
-
-lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.75, 1.00, 1.00, &
-! lfespany  =   [ 5.00, 0.40, 0.00, &
-!                 1.50, 0.40, 1.00, &  !These values are for the tests with Ray and Bakr. JM Mar 2015.
-                1.75, 1.75, 0.00, &
-                1.00, 1.00, 0.00 ]
 
 ! allocate.f parameters: --------------
 
@@ -1026,7 +1012,7 @@ bsrtroot = [ 0.5000, 0.2850, 0.0000, &
 
 ! mortality.f parameters: ---------
 
-maxage = [ 250.0, 400.0,   0.0, &    !same as comp
+maxage = [ 250.0, 400.0,   0.0, &    
            600.0, 250.0, 500.0, &  
              0.0,   0.0,   0.0, &
              0.0,   0.0,   0.0 ]
@@ -1039,48 +1025,13 @@ mxmortge = [ 0.005, 0.005, 0.00, &   ! Same as competition except for grasses.
 
 ! phenology.f parameters: ---------
 
-!cdlsrtmx = [ 0.15, 0.30, 0.00, &
-!             0.30, 0.15, 0.15, &
-!             0.15, 0.15, 0.00, &
-!             0.15, 0.15, 0.00 ]
-! these parameters  are from competition runs. FLAG.
-! testing for work with Ray and Bakr! Mar 2015.          
-cdlsrtmx = [ 0.10, 0.30, 0.00, &  
-             0.30, 0.40, 0.15, &
-             0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
-
 drlsrtmx = [ 0.0025, 0.005, 0.000, &
              0.005, 0.005, 0.025, &
              0.005, 0.005, 0.000, &
              0.050, 0.050, 0.000 ]    
 
-!lwrthrsh = [ -45.0, -5.0, 0.0, &
-!               5.0,  5.0, 5.0, &
-!               5.0,  5.0, 0.0, &
-!               0.1,  5.0, 0.0 ] 
-! these parameters  are from competition runs. FLAG.
-! testing for work with Ray and Bakr! Mar 2015.          
-lwrthrsh = [ -50.0, -5.0, 0.0, & 
-               5.0,  8.0, 5.0, &  
-               5.0,  5.0, 0.0, &
-               0.1,  5.0, 0.0 ]
-
-
 roothrsh = 15.0
 
-! turnover.f parameters: --------------
-! NOW USING SAME VALUES FOR COMP/PRESC.
-
-!stemlife = [ 65.0, 75.0, 0.00, &
-!             45.0, 40.0, 45.0, &
-!             20.0, 20.0, 0.00, &
-!              0.00, 0.00, 0.00 ]
-
-!rootlife = [ 10.0,11.5, 0.0, &
-!              5.5, 5.5, 5.5, &
-!              3.0, 3.0, 0.0, &
-!              2.5, 2.5, 0.0 ]
 
 end if
 

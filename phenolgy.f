@@ -707,7 +707,7 @@ c
 !                 nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
 !      &                (365.0*lfespany(n))))
 !             end if  !decid/non
-         endif   !fcancmx 
+         endif   !fcancmx
     
 430     continue
 420   continue
