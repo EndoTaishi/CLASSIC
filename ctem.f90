@@ -478,7 +478,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &            bterm(ilg),          lterm(ilg),          mterm(ilg)
 !
       real tltrleaf(ilg,icc),   tltrstem(ilg,icc),   tltrroot(ilg,icc),&
-     &                popdin
+     &           popdin(ilg)
 !
       real  faregat(ilg), paicgat(ilg,ican),slaicgat(ilg,ican)  
 !
