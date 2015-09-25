@@ -12,18 +12,18 @@
      B                  FC,     FG,     FCS,    FGS,    TPONDC, TPONDG,
      C                  TPNDCS, TPNDGS, EVAPC,  EVAPCG, EVAPG,  EVAPCS,
      D                  EVPCSG, EVAPGS, QFREZC, QFREZG, QMELTC, QMELTG,
-     E                  RAICAN, SNOCAN, RAICNS, SNOCNS, FROOT,  FSVF,   
-     F                  FSVFS,  CWLCAP, CWFCAP, CWLCPS, CWFCPS, TCANO,  
+     E                  RAICAN, SNOCAN, RAICNS, SNOCNS, FSVF,   FSVFS,  
+     F                  CWLCAP, CWFCAP, CWLCPS, CWFCPS, TCANO,  
      G                  TCANS,  CHCAP,  CHCAPS, CMASSC, CMASCS, ZSNOW,  
      H                  GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,
      I                  G12CS,  G12GS,  G23C,   G23G,   G23CS,  G23GS,
      J                  TSNOCS, TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS,
      K                  ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, TSFSAV,
-     L                  TCTOPC, TCBOTC, TCTOPG, TCBOTG, 
+     L                  TCTOPC, TCBOTC, TCTOPG, TCBOTG, FROOT,  FROOTS,
      M                  THPOR,  THLRET, THLMIN, BI,     PSISAT, GRKSAT,
      N                  THLRAT, THFC,   XDRAIN, HCPS, DELZ,
      O                  DELZW,  ZBOTW,  XSLOPE, GRKFAC, WFSURF, WFCINT,
-     P                  ISAND,  IGDR,
+     P                  WLOSTC, WLOSTG, WLSTCS, WLSTGS, ISAND,  IGDR,
      Q                  IWF,    ILG,    IL1,    IL2,    N,
      R                  JL,     IC,     IG,     IGP1,   IGP2,
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
@@ -31,6 +31,8 @@ C
 C     Purpose: Call subroutines to perform surface water budget 
 C     calculations,
 C
+C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
+C     *                         AREAS WITH AND WITHOUT SNOW.
 C     * OCT 03/14 - D.VERSEGHY. CHANGE LIMITING VALUE OF SNOW PACK
 C     *                         FROM 100 KG/M2 TO 10 M.
 C     * AUG 19/13 - M.LAZARE.   ADD CALCULATION OF "QFLUX" (NOW PASSED  
@@ -259,6 +261,9 @@ C
                             !layer (bare ground) [W m-1 K-1]
       REAL FROOT (ILG,IG)   !Fraction of total transpiration contributed 
                             !by soil layer [ ]
+      REAL FROOTS (ILG,IG)  !Fraction of total transpiration contributed 
+                            !by snow-covered soil layer [ ]
+
       REAL TSFSAV(ILG,4)    !Ground surface temperature over subarea [K]
 C
       REAL FC    (ILG),   FG    (ILG),   FCS   (ILG),   FGS   (ILG)
@@ -605,7 +610,7 @@ C
           CALL CANVAP(EVAPCS,SUBLCS,RAICNS,SNOCNS,TCANS,THLQCS,
      1                TBARCS,ZSNOCS,WLSTCS,CHCAPS,QFCF,QFCL,QFN,QFC,
      2                HTCC,HTCS,HTC,FCS,CMASCS,TSNOCS,HCPSCS,RHOSCS,
-     3                FROOT,THPOR,THLMIN,DELZW,EVLOST,RLOST,IROOT,
+     3                FROOTS,THPOR,THLMIN,DELZW,EVLOST,RLOST,IROOT, 
      4                IG,ILG,IL1,IL2,JL,N  )
           CALL CANADD(2,RPCCS,TRPCCS,SPCCS,TSPCCS,RAICNS,SNOCNS,
      1                TCANS,CHCAPS,HTCC,ROFC,ROVG,PCPN,PCPG,

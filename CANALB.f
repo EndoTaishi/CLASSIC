@@ -2,7 +2,7 @@
      1                  TRVSCS,TRIRCS,RC,RCS,
      2                  ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB,
      3                  FC,FCS,FSNOW,FSNOWC,FSNOCS,FCAN,FCANS,PAI,PAIS,
-     4                  AIL,PSIGND,FROOT,FCLOUD,COSZS,QSWINV,VPD,TA,
+     4                  AIL,PSIGND,FCLOUD,COSZS,QSWINV,VPD,TA,   
      5                  ACVDAT,ACIDAT,ALVSGC,ALIRGC,ALVSSC,ALIRSC,
      6                  ILG,IL1,IL2,JL,IC,ICP1,IG,IALC,
      7                  CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC) 
@@ -10,6 +10,8 @@ C
 C     Purpose: Calculate vegetation albedos, transmissivities and 
 C     stomatal resistances.
 C
+C     * AUG 04/15 - D.VERSEGHY/M.LAZARE. REMOVE FLAG VALUE OF RC FOR 
+C     *                         VERY DRY SOILS.
 C     * SEP 05/14 - P.BARTLETT. INCREASED ALBEDO VALUES FOR SNOW-
 C     *                         COVERED CANOPY.
 C     * JUN 27/13 - D.VERSEGHY/ USE LOWER BOUND OF 0.01 INSTEAD OF     
@@ -168,7 +170,7 @@ C
 C     * TEMPORARY VARIABLES.
 C
       REAL SVF,ALVSCX,ALIRCX,ALVSN,ALIRN,ALVSS,ALIRS,
-     1     TRTOT,FRMAX,EXPMAX1,EXPMAX2,EXPMAX3,TMP
+     1     TRTOT,EXPMAX1,EXPMAX2,EXPMAX3,TMP
 C
 C     * COMMON BLOCK AND OTHER PARAMETERS.
 C
@@ -860,14 +862,7 @@ C
 C
       DO 950 I=IL1,IL2   
           IF((FCS(I)+FC(I)).GT.0.)                                THEN
-              FRMAX=0.0
-              DO 925 J=1,IG
-                  FRMAX=MAX(FRMAX,FROOT(I,J))
-925           CONTINUE
-              IF(FRMAX .LT. 1.0E-6)                           THEN
-                  RCS(I)=1.0E+20
-                  RC(I) =1.0E+20
-              ELSEIF(QSWINV(I).LT.2.0)                        THEN
+              IF(QSWINV(I).LT.2.0)                        THEN      
                   RCS(I)=5000.0
                   RC(I)=5000.0  
               ELSE                                                                

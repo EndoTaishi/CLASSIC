@@ -22,7 +22,7 @@
      K   ZOMLNC, ZOELNC, ZOMLNG, ZOELNG, ZOMLCS, ZOELCS, ZOMLNS, ZOELNS, 
      L   TBAR,   THLIQ,  THICE,  TPOND,  ZPOND,  TBASE,  TCAN,   TSNOW,  
      M   ZSNOW,  RHOSNO, WSNOW,  THPOR,  THLRET, THLMIN, THFC,   THLW,
-     +   TRSNOWC, TRSNOWG, ALSNO, FSSB,                                 
+     +   TRSNOWC, TRSNOWG, ALSNO, FSSB,  FROOT,  FROOTS,
      N   RADJ,   PCPR,   HCPS,   TCS,    TSFSAV, DELZ,   DELZW,  ZBOTW,  
      O   FTEMP,  FVAP,   RIB,   
      P   ISAND,
@@ -37,6 +37,16 @@
      Y   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
      Z   NBS, ISNOALB,LFSTATUS)                                                  
 C
+C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
+C     *                         AREAS WITH AND WITHOUT SNOW.
+C     * JUL 22/15 - D.VERSEGHY. CHANGES TO TSOLVC AND TSOLVE CALLS.
+C     * FEB 09/15 - D.VERSEGHY. New version for gcm18 and class 3.6:
+C     *                         - Revised calls to revised TPREP for
+C     *                           initialization of SRH and SLDIAG.
+C     *                         - Input {THFC,THLW} (from CLASSB) replace
+C     *                           work arrays {FIELDSM,WILTSM}.
+C     *                         - Calculation of new bare-soil fields
+C     *                           {GTBS,SFCUBS,SFCVBS,USTARBS}.
 C     * SEP 09/14 - D.VERSEGHY/M.LAZARE. CORRECTIONS TO SCREEN LEVEL
 C     *                         DIAGNOSTIC CALCULATIONS.
 C     * AUG 19/13 - M.LAZARE.   REMOVE CALCULATION AND REFERENCES TO    
@@ -231,7 +241,8 @@ C     * SOIL PROPERTY ARRAYS.
 C
       REAL THPOR (ILG,IG),THLRET(ILG,IG),THLMIN(ILG,IG),
      1     THFC  (ILG,IG),THLW  (ILG,IG),HCPS  (ILG,IG),TCS   (ILG,IG),
-     1     DELZ  (IG),    DELZW (ILG,IG),ZBOTW (ILG,IG)
+     2     DELZ  (IG),    DELZW (ILG,IG),ZBOTW (ILG,IG),
+     3     FROOT (ILG,IG),FROOTS(ILG,IG)
 C
       INTEGER  ISAND (ILG,IG)
 C
@@ -323,8 +334,7 @@ C
      1     TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,
      2     HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      3     TCGLAC,CLHMLT,CLHVAP,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,
-     4     BETA,FACTN,HMIN,ANGMAX,A,B,EPS1,EPS2,T1S,T2S,AI,BI,AW,BW,SLP,
-     5     RW1,RW2,RW3,RI1,RI2,RI3
+     4     BETA,FACTN,HMIN,ANGMAX
 C
       COMMON /CLASS1/ DELT,TFREZ                                       
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
@@ -335,9 +345,6 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-      COMMON /EPS/    A,B,EPS1,EPS2
-      COMMON /HTCP/   T1S,T2S,AI,BI,AW,BW,SLP
-      COMMON /ESTWI/  RW1,RW2,RW3,RI1,RI2,RI3
 C
 C----------------------------------------------------------------------
 C
@@ -502,7 +509,8 @@ C
      8                FSVFS,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RCS,
      9                RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,
      A                FCOR,GCONSTS,GCOEFFS,TSFSAV(1,1),TRSNOWC,FSNOCS,  
-     B                FRAICS,CHCAPS,CMASCS,PCPR,IWATER,IEVAP,ITERCT,
+     B                FRAICS,CHCAPS,CMASCS,PCPR,FROOTS,THLMIN,DELZW,
+     +                RHOSCS,ZSNOW,IWATER,IEVAP,ITERCT,    
      C                ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N,  
      D                TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT,
      E                RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,TPOTG,
@@ -689,6 +697,7 @@ C
      6                ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
      7                GCONSTS,GCOEFFS,TSFSAV(1,2),PCPR,                 
      +                TRSNOWG,FSSB,ALSNO,                               
+     +                THLIQG,THLMIN,DELZW,RHOSGS,ZSNOW,
      8                IWATER,IEVAP,ITERCT,ISAND,
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,          
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
@@ -851,7 +860,8 @@ C
      8                FSVF,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RC,
      9                RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,
      A                FCOR,GCONST,GCOEFF,TSFSAV(1,3),TRSNOWC,FSNOWC,    
-     B                FRAINC,CHCAP,CMASSC,PCPR,IWATER,IEVAP,ITERCT,
+     B                FRAINC,CHCAP,CMASSC,PCPR,FROOT,THLMIN,DELZW,
+     +                ZERO,ZERO,IWATER,IEVAP,ITERCT,     
      C                ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N,  
      D                TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT,
      E                RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,TPOTG,
@@ -1023,6 +1033,7 @@ C
      6                ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
      7                GCONST,GCOEFF,TSFSAV(1,4),PCPR,                   
      +                TRSNOWG,FSSB,ALSNO,                               
+     +                THLIQG,THLMIN,DELZW,ZERO,ZERO,
      8                IWATER,IEVAP,ITERCT,ISAND,
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL, NBS,ISNOALB,         
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
@@ -1064,7 +1075,6 @@ C
                 SU (I)=SU (I)+FG(I)*SUT(I)                              
                 SV (I)=SV (I)+FG(I)*SVT(I)                              
                 SRH(I)=SRH(I)+FG(I)*SHT(I)
-                GTBS   (I)=TSURX(I)
                 SFCUBS (I)=SUT(I)                                       
                 SFCVBS (I)=SVT(I)                                       
                 USTARBS(I)=VA(I)*SQRT(CDMX(I))                          
@@ -1085,7 +1095,6 @@ C
                 SU (I)=SU (I)+FG(I)*SUT(I)                              
                 SV (I)=SV (I)+FG(I)*SVT(I)                              
                 SRH(I)=SRH(I)+FG(I)*SHT(I)                              
-                GTBS   (I)=TSURX(I)
                 SFCUBS (I)=SUT(I)                                       
                 SFCVBS (I)=SVT(I)                                       
                 USTARBS(I)=VA(I)*SQRT(CDMX(I))                          
@@ -1108,6 +1117,7 @@ C
                   CDH (I) =CDH(I)+FG(I)*CDHX(I)
                   CDM (I) =CDM(I)+FG(I)*CDMX(I)
                   TSFSAV(I,4)=TSURX(I)
+                  GTBS(I)=TSURX(I)
                   QG(I)=QG(I)+FG(I)*QSURX(I)
                   QSENS(I)=QSENS(I)+FG(I)*QSENSX(I)
                   QEVAP(I)=QEVAP(I)+FG(I)*QEVAPX(I)

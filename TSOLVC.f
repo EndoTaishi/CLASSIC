@@ -9,7 +9,8 @@
      7                 FSVF,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RC,
      8                 RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,
      A                 FCOR,GCONST,GCOEFF,TGND,TRSNOW,FSNOWC,FRAINC,
-     B                 CHCAP,CMASS,PCPR,IWATER,IEVAP,ITERCT,
+     B                 CHCAP,CMASS,PCPR,FROOT,THLMIN,DELZW,RHOSNO,ZSNOW,
+     +                 IWATER,IEVAP,ITERCT,  
      C                 ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N,
      D                 TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT,
      E                 RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,
@@ -23,6 +24,8 @@
      M                 ICTEMMOD,SLAI,FCANCMX,L2MAX,
      N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS)
 C
+C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATES
+C     *                         ACCORDING TO WATER AVAILABILITY.
 C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
 C     * JUN 27/14 - D.VERSEGHY. CHANGE ITERATION LIMIT BACK TO 50 FOR
 C     *                         BISECTION SCHEME; BUGFIX IN CALCULATION
@@ -142,7 +145,7 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ISNOW,ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,I,N,KK
+      INTEGER ISNOW,ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,I,J,N,KK    
 C
       INTEGER NUMIT,IBAD,NIT,ITERMX
 C
@@ -170,8 +173,10 @@ C
      6     RC    (ILG),    RBCOEF(ILG),    ZOSCLH(ILG),    ZOSCLM(ILG),
      7     ZRSLFH(ILG),    ZRSLFM(ILG),    ZOH   (ILG),    ZOM   (ILG),
      8     FCOR  (ILG),    GCONST(ILG),    GCOEFF(ILG),    TGND  (ILG),
-     9     TRSNOW(ILG),    FSNOWC(ILG),    FRAINC(ILG),
-     A     CHCAP (ILG),    CMASS (ILG),    PCPR  (ILG)
+     9     TRSNOW(ILG),    FSNOWC(ILG),    FRAINC(ILG),    CHCAP (ILG),
+     A     CMASS (ILG),    PCPR  (ILG),    RHOSNO(ILG),    ZSNOW (ILG)
+C
+      REAL FROOT (ILG,IG), THLMIN(ILG,IG), DELZW(ILG,IG)
 C
       INTEGER              IWATER(ILG),    IEVAP (ILG),
      1                     ITERCT(ILG,6,50)
@@ -226,7 +231,10 @@ C
      6     LZZ0  (ILG),    LZZ0T (ILG),
      7     FM    (ILG),    FH    (ILG),    WZERO (ILG),    XEVAPM(ILG),
      8     DCFLXM(ILG),    WC    (ILG),    DRAGIN(ILG),    CFLUXM(ILG),
-     9     CFSENS(ILG),    CFEVAP(ILG),    QSGADD(ILG),    CFLX  (ILG)
+     9     CFSENS(ILG),    CFEVAP(ILG),    QSGADD(ILG),    CFLX  (ILG),
+     A     EVPMAX(ILG),    WTRTOT(ILG)
+C                                                                       
+      REAL WAVAIL(ILG,IG), WROOT (ILG,IG)
 C
       INTEGER              ITER  (ILG),    NITER (ILG),    IEVAPC(ILG),
      1                     KF1   (ILG),    KF2   (ILG)
@@ -236,7 +244,7 @@ C
       REAL QSWNVG,QSWNIG,QSWNIC,HFREZ,HCONV,
      1     RCONV,HCOOL,HMELT,SCONV,HWARM,WCAN,DQ0DT,
      2     DRDT0,QEVAPT,BOWEN,DCFLUX,DXEVAP,TCANT,QEVAPCT,
-     3     TZEROT,YEVAP,RAGCO,EZERO
+     3     TZEROT,YEVAP,RAGCO,EZERO,WTRANSP,WTEST
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -332,9 +340,13 @@ C
               IF(ISNOW.EQ.1)                               THEN
                   KF1(I)=1
                   KF2(I)=2
+                  EVPMAX(I)=RHOSNO(I)*ZSNOW(I)/DELT 
               ELSE
                   KF1(I)=4
                   KF2(I)=5
+                  EVPMAX(I)=RHOW*(THLIQ(I,1)-THLMIN(I,1))*DELZW(I,1)/
+     1                      DELT
+                  EVPMAX(I)=MAX(EVPMAX(I),0.)
               ENDIF
           ENDIF
    50 CONTINUE
@@ -364,12 +376,12 @@ C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
-C        DO 70 I =IL1,IL2
+        DO 70 I =IL1,IL2                                                
 C          IF(RC(I).LE.10000.) THEN !FLAG, TURNING ON CAUSES A MAJOR PROBLEM
 C                                    WHEN THERE IS VEG WITH NO ROOTS. VA & JM OCT2012
-C            RC(I)=MIN(RCPHTSYN(I),4999.999)
+            RC(I)=MIN(RCPHTSYN(I),4999.999)                             
 C          ENDIF
-C   70   CONTINUE
+   70   CONTINUE                                                        
 
       ENDIF
 C
@@ -421,6 +433,7 @@ C
               QSENSG(I)=RHOAIR(I)*SPHAIR*RAGINV(I)*
      1            (TPOTG(I)-TAC(I))
               EVAPG (I)=RHOAIR(I)*(QZERO(I)-QAC(I))*RAGINV(I)
+              IF(EVAPG(I).GT.EVPMAX(I)) EVAPG(I)=EVPMAX(I)
               QEVAPG(I)=CPHCHG(I)*EVAPG(I)
               GZERO(I)=GCOEFF(I)*TZERO(I)+GCONST(I)
               RESID(I)=QSWNG(I)+FSVF(I)*QLWIN(I)+(1.0-FSVF(I))*
@@ -566,6 +579,7 @@ C
                       QSENSG(I)=0.0
                       EVAPG (I)=0.0
                   ENDIF
+                  IF(EVAPG(I).GT.EVPMAX(I)) EVAPG(I)=EVPMAX(I)
                   QEVAPG(I)=CPHCHG(I)*EVAPG(I)
                   QMELTG(I)=QSWNG(I)+FSVF(I)*QLWIN(I)+(1.0-FSVF(I))*
      1                 QLWOC(I)-QLWOG(I)-QSENSG(I)-QEVAPG(I)-GZERO(I)
@@ -577,12 +591,12 @@ C
                   EVAPG(I)=0.0
                   QEVAPG(I)=0.0
               ENDIF
-              IF(RESID(I).GT.15. .AND. QEVAPG(I).GT.10. .AND. PCPR(I)
-     1                   .LT.1.0E-8)                 THEN
-                  QEVAPG(I)=QEVAPG(I)+RESID(I)
-              ELSE
+C              IF(RESID(I).GT.15. .AND. QEVAPG(I).GT.10. .AND. PCPR(I)   
+C     1                   .LT.1.0E-8)                 THEN               
+C                  QEVAPG(I)=QEVAPG(I)+RESID(I)                          
+C              ELSE                                                      
                   QSENSG(I)=QSENSG(I)+RESID(I)
-              ENDIF
+C              ENDIF                                                     
               ITERCT(I,KF2(I),NITER(I))=ITERCT(I,KF2(I),NITER(I))+1
           ENDIF
   250 CONTINUE
@@ -603,8 +617,20 @@ C
               TSTEP(I)=1.0
               CFLUXM(I)=0.0
               DCFLXM(I)=0.0
+              WTRTOT(I)=0.0
           ENDIF
   300 CONTINUE
+C
+      DO 350 J=1,IG
+      DO 350 I=IL1,IL2
+          IF(FI(I).GT.0.)                                          THEN 
+              WAVAIL(I,J)=RHOW*(THLIQ(I,J)-THLMIN(I,J))*DELZW(I,J)
+              IF(J.EQ.1 .AND. EVAPG(I).GT.0.0) 
+     1            WAVAIL(I,J)=WAVAIL(I,J)-EVAPG(I)*DELT
+              WAVAIL(I,J)=MAX(WAVAIL(I,J),0.)
+              WROOT(I,J)=0.0
+          ENDIF
+  350 CONTINUE
 C
       IF(ITC.LT.2) THEN
           ITERMX=50
@@ -755,13 +781,21 @@ C
               IF(EVAPC(I).LT.0. .AND. TCAN(I).GT.TADP(I)) EVAPC(I)=0.0
               IF(SNOCAN(I).GT.0.)                            THEN
                   EVPWET(I)=SNOCAN(I)/DELT
+                  IF(EVAPC(I).GT.EVPWET(I)) EVAPC(I)=EVPWET(I)
               ELSE
                   EVPWET(I)=RAICAN(I)/DELT
-              ENDIF
-              IF((FRAINC(I)+FSNOWC(I)).GT.0.50 .AND.
-     1                        EVAPC(I).GT.EVPWET(I))         THEN
-                  EVAPC(I)=EVPWET(I)
-                  IEVAPC(I)=0
+                  IF(EVAPC(I).GT.EVPWET(I)) THEN  
+                      WTRANSP=(EVAPC(I)-EVPWET(I))*DELT
+                      EVPMAX(I)=EVPWET(I)
+                      WTRTOT(I)=0.0
+                      DO J=1,IG
+                          WTEST=WTRANSP*FROOT(I,J)
+                          WROOT(I,J)=MIN(WTEST,WAVAIL(I,J))
+                          WTRTOT(I)=WTRTOT(I)+WROOT(I,J)
+                          EVPMAX(I)=EVPMAX(I)+WROOT(I,J)/DELT
+                      ENDDO
+                      IF(EVAPC(I).GT.EVPMAX(I)) EVAPC(I)=EVPMAX(I)
+                  ENDIF
               ENDIF
               QEVAPC(I)=CPHCHC(I)*EVAPC(I)
               QSTOR (I)=CHCAP(I)*(TCAN(I)-TCANO(I))/DELT
@@ -1132,11 +1166,22 @@ C
               IF(EVAPC(I).LT.0. .AND. TCAN(I).GE.TADP(I)) EVAPC(I)=0.0
               IF(SNOCAN(I).GT.0.)                            THEN
                   EVPWET(I)=SNOCAN(I)/DELT
+                  IF(EVAPC(I).GT.EVPWET(I)) EVAPC(I)=EVPWET(I)
               ELSE
                   EVPWET(I)=RAICAN(I)/DELT
+                  IF(EVAPC(I).GT.EVPWET(I)) THEN  
+                      WTRANSP=(EVAPC(I)-EVPWET(I))*DELT
+                      EVPMAX(I)=EVPWET(I)
+                      WTRTOT(I)=0.0
+                      DO J=1,IG
+                          WTEST=WTRANSP*FROOT(I,J)
+                          WROOT(I,J)=MIN(WTEST,WAVAIL(I,J))
+                          WTRTOT(I)=WTRTOT(I)+WROOT(I,J)
+                          EVPMAX(I)=EVPMAX(I)+WROOT(I,J)/DELT
+                      ENDDO
+                      IF(EVAPC(I).GT.EVPMAX(I)) EVAPC(I)=EVPMAX(I)
               ENDIF
-              IF((FRAINC(I)+FSNOWC(I)).GT.0.50 .AND.
-     1            EVAPC(I).GT.EVPWET(I)) EVAPC(I)=EVPWET(I)
+              ENDIF                                                     
               QEVAPC(I)=CPHCHC(I)*EVAPC(I)
               RESID(I)=QSWNC(I)+(QLWIN(I)+QLWOG(I)-2.0*QLWOC(I))*
      1             (1.0-FSVF(I))+QSGADD(I)-QSENSC(I)-QEVAPC(I)-
@@ -1199,6 +1244,12 @@ C
   900   CONTINUE
       ENDIF
 C
+      DO 950 J=1,IG
+      DO 950 I=IL1,IL2
+          IF(FI(I).GT.0.)                                          THEN 
+              IF(WTRTOT(I).GT.0.0) FROOT(I,J)=WROOT(I,J)/WTRTOT(I)
+          ENDIF                                                         
+  950 CONTINUE
 C
       RETURN
       END

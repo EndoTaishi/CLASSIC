@@ -2,9 +2,10 @@
      1            FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN,
      2            SNOCNS,DISP,DISPS,ZOMLNC,ZOMLCS,ZOELNC,ZOELCS,
      3            ZOMLNG,ZOMLNS,ZOELNG,ZOELNS,CHCAP,CHCAPS,CMASSC,
-     4            CMASCS,CWLCAP,CWFCAP,CWLCPS,CWFCPS,RBCOEF,FROOT,
-     5            ZPLIMC,ZPLIMG,ZPLMCS,ZPLMGS,HTCC,HTCS,HTC,WTRC,
-     6            WTRS,WTRG,CMAI,PAI,PAIS,AIL,FCAN,FCANS,PSIGND,
+     4            CMASCS,CWLCAP,CWFCAP,CWLCPS,CWFCPS,RBCOEF,
+     5            ZPLIMC,ZPLIMG,ZPLMCS,ZPLMGS,HTCC,HTCS,HTC,
+     +            FROOT,FROOTS,
+     6            WTRC,WTRS,WTRG,CMAI,PAI,PAIS,AIL,FCAN,FCANS,PSIGND,
      7            FCANMX,ZOLN,PAIMAX,PAIMIN,CWGTMX,ZRTMAX,
      8            PAIDAT,HGTDAT,THLIQ,THICE,TBAR,RCAN,SNCAN,
      9            TCAN,GROWTH,ZSNOW,TSNOW,FSNOW,RHOSNO,SNO,Z0ORO,
@@ -13,13 +14,16 @@
      C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,
      D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
      E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,
-     F            RRESID,SRESID,FRTOT,
+     F            RRESID,SRESID,FRTOT,FRTOTS,
      G            FCANCMX,ICTEM,ICTEMMOD,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC )
 
-C     * SEP 05/12 - J.MELTON.   CHANGED IDAY CONVERSION FROM FLOAT TO REAL, 
-C                               REINTEGRATED CTEM 
+C     * AUG 04/15 - D.VERSEGHY. SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
+C     *                         AREAS WITH AND WITHOUT SNOW.
+C     * SEP 05/12 - J.MELTON.   CHANGED IDAY
+C                               CONVERSION FROM FLOAT TO REAL, REINTEGRATED
+C                               CTEM 
 C     * NOV 15/11 - M.LAZARE.   CTEM ADDED. CALCULATIONS ARE DIFFERENT
 C     *                         IN SEVERAL AREAS, UNDER CONTROL OF
 C     *                         "ICTEMMOD" SWITCH (ICTEMMOD=0 REVERTS
@@ -146,7 +150,7 @@ C
      A     ZPLMCS(ILG),   ZPLMGS(ILG),   HTCC  (ILG),   HTCS  (ILG),   
      B     WTRC  (ILG),   WTRS  (ILG),   WTRG  (ILG),   CMAI  (ILG)  
 C                                                                                 
-      REAL FROOT (ILG,IG),  HTC   (ILG,IG)
+      REAL FROOT (ILG,IG),  FROOTS(ILG,IG),  HTC   (ILG,IG)
 C                                                                                 
 C     * OUTPUT ARRAYS ONLY USED ELSEWHERE IN CLASSA.                              
 C                                                                                 
@@ -185,12 +189,12 @@ C
       REAL RMAT (ILG,IC,IG),H     (ILG,IC),  HS    (ILG,IC),                      
      1     CWCPAV(ILG),     GROWA (ILG),     GROWN (ILG),     
      2     GROWB (ILG),     RRESID(ILG),     SRESID(ILG),
-     3     FRTOT (ILG) 
+     3     FRTOT (ILG),     FRTOTS(ILG)
 C
 C     * TEMPORARY VARIABLES.
 C
       REAL DAY,GROWG,FSUM,SNOI,ZSNADD,THSUM,THICEI,THLIQI,ZROOT,
-     1     ZROOTG,FCOEFF,PSII,LZ0ORO,THR_LAI
+     1     ZROOTG,FCOEFF,PSII,LZ0ORO,THR_LAI,PSIRAT
 C
 C     * CTEM-RELATED FIELDS.
 C
@@ -244,6 +248,7 @@ C
           WTRS(I) =0.0
           WTRG(I) =0.0
           FRTOT(I)=0.0
+          FRTOTS(I)=0.0
           DISP  (I)=0.                                                            
           ZOMLNC(I)=0.                                                            
           ZOELNC(I)=1.                                                            
@@ -940,14 +945,21 @@ C
 C                                                                                 
       DO 500 J=1,IG                                                               
       DO 500 I=IL1,IL2                                                            
-          IF((FC(I)+FCS(I)).GT.0.)                               THEN             
-              FROOT(I,J)=((FCAN(I,1)+FCANS(I,1))*RMAT(I,1,J) +                    
-     1                    (FCAN(I,2)+FCANS(I,2))*RMAT(I,2,J) +                    
-     2                    (FCAN(I,3)+FCANS(I,3))*RMAT(I,3,J) +                    
-     3                    (FCAN(I,4)+FCANS(I,4))*RMAT(I,4,J))/                    
-     4                    (FC(I)+FCS(I))                                          
+          IF(FC(I).GT.0.)                               THEN             
+              FROOT(I,J)=(FCAN(I,1)*RMAT(I,1,J) +                    
+     1                    FCAN(I,2)*RMAT(I,2,J) +                    
+     2                    FCAN(I,3)*RMAT(I,3,J) +                    
+     3                    FCAN(I,4)*RMAT(I,4,J))/FC(I)                    
           ELSE                                                                    
               FROOT(I,J)=0.0                                                      
+          ENDIF                                                                   
+          IF(FCS(I).GT.0.)                              THEN             
+              FROOTS(I,J)=(FCANS(I,1)*RMAT(I,1,J) +                    
+     1                     FCANS(I,2)*RMAT(I,2,J) +                    
+     2                     FCANS(I,3)*RMAT(I,3,J) +                    
+     3                     FCANS(I,4)*RMAT(I,4,J))/FCS(I)    
+          ELSE                                                                    
+              FROOTS(I,J)=0.0                                                      
           ENDIF                                                                   
   500 CONTINUE                                                                    
 C                                                                                 
@@ -979,16 +991,18 @@ C
       DO 650 J=1,IG                                                               
       DO 650 I=IL1,IL2                                                            
           IF(FCS(I).GT.0.0 .OR. FC(I).GT.0.0)                      THEN          
-              IF(THLIQ(I,J).GT.(THLMIN(I,J)+0.01) .AND. 
-     1                           FROOT(I,J).GT.0.)             THEN               
+              IF(THLIQ(I,J).GT.(THLMIN(I,J)+0.01))          THEN
                   PSII=PSISAT(I,J)*(THLIQ(I,J)/THPOR(I,J))**(-BI(I,J))
                   PSII=MIN(PSII,PSIWLT(I,J))
                   PSIGND(I)=MIN(PSIGND(I),PSII)                                 
-                  FROOT(I,J)=FROOT(I,J)*(PSIWLT(I,J)-PSII)/
-     1                       (PSIWLT(I,J)-PSISAT(I,J))          
+                  PSIRAT=(PSIWLT(I,J)-PSII)/(PSIWLT(I,J)-PSISAT(I,J))          
+                  FROOT(I,J)=FROOT(I,J)*PSIRAT
+                  FROOTS(I,J)=FROOTS(I,J)*PSIRAT
                   FRTOT(I)=FRTOT(I)+FROOT(I,J)                                    
+                  FRTOTS(I)=FRTOTS(I)+FROOTS(I,J)                                    
               ELSE
                   FROOT(I,J)=0.0
+                  FROOTS(I,J)=0.0
               ENDIF                                                               
           ENDIF                                                                   
   650 CONTINUE                                                                    
@@ -997,6 +1011,9 @@ C
       DO 700 I=IL1,IL2                                                            
           IF(FRTOT(I).GT.0.)                                       THEN           
               FROOT(I,J)=FROOT(I,J)/FRTOT(I)                                      
+          ENDIF                                                                   
+          IF(FRTOTS(I).GT.0.)                                      THEN           
+              FROOTS(I,J)=FROOTS(I,J)/FRTOTS(I)                                      
           ENDIF                                                                   
   700 CONTINUE                                                                    
 C 

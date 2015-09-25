@@ -7,7 +7,7 @@
      6                  ZOELNC, ZOELCS, ZOMLNG, ZOMLNS, ZOELNG, ZOELNS, 
      7                  CHCAP,  CHCAPS, CMASSC, CMASCS, CWLCAP, CWFCAP,
      8                  CWLCPS, CWFCPS, RC,     RCS,    RBCOEF, FROOT,  
-     9                  ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, ZSNOW,          
+     9                  FROOTS, ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, ZSNOW, 
      A                  WSNOW,  ALVS,   ALIR,   HTCC,   HTCS,   HTC,    
      B                  ALTG,   ALSNO,  TRSNOWC,TRSNOWG,
      C                  WTRC,   WTRS,   WTRG,   CMAI,   FSNOW,
@@ -36,7 +36,8 @@ C
 C     Purpose: Organize calculation of radiation-related and other 
 C     surface parameters.
 C
-C
+C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
+C     *                         AREAS WITH AND WITHOUT SNOW.
 C     * AUG 25/14 - M.LAZARE.   PASS IN NEW WET AND DRY SOIL BRIGHTNESS
 C     *                         FIELDS FROM CLM.
 C     * NOV 16/13 - J.COLE.     FINAL VERSION FOR GCM17:                
@@ -243,7 +244,9 @@ C
       REAL FSNOW (ILG)  !Diagnosed fractional snow coverage [ ]
 C
       REAL FROOT (ILG,IG)   !Fraction of total transpiration contributed 
-                            !by soil layer [ ]  
+                            !by soil layer [ ] 
+      REAL FROOTS(ILG,IG)   !Fraction of total transpiration contributed 
+                            !by snow-covered soil layer [ ] 
       REAL HTC   (ILG,IG)   !Diagnosed internal energy change of soil 
                             !layer due to conduction and/or change in 
                             !mass [W m-2]
@@ -411,7 +414,7 @@ C
      2     FCANS (ILG,IC),  CXTEFF(ILG,IC),  AIL   (ILG,IC),
      3     RCACC (ILG,IC),  RCG   (ILG,IC),  RCV   (ILG,IC)
 C
-      REAL PSIGND(ILG),     CWCPAV(ILG),                                
+      REAL PSIGND(ILG),     CWCPAV(ILG),     FRTOTS(ILG),                           
      1     GROWA (ILG),     GROWN (ILG),     GROWB (ILG),     
      2     RRESID(ILG),     SRESID(ILG),     FRTOT (ILG),
      3     TRVS  (ILG),     TRIR  (ILG),     RCT   (ILG),     
@@ -578,9 +581,10 @@ C
      1            FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN,
      2            SNOCNS,DISP,DISPS,ZOMLNC,ZOMLCS,ZOELNC,ZOELCS,
      3            ZOMLNG,ZOMLNS, ZOELNG,ZOELNS,CHCAP,CHCAPS,CMASSC,
-     4            CMASCS,CWLCAP,CWFCAP,CWLCPS,CWFCPS,RBCOEF,FROOT,
-     5            ZPLIMC,ZPLIMG,ZPLMCS,ZPLMGS,HTCC,HTCS,HTC,WTRC,
-     6            WTRS,WTRG,CMAI,PAI,PAIS,AIL,FCAN,FCANS,PSIGND,
+     4            CMASCS,CWLCAP,CWFCAP,CWLCPS,CWFCPS,RBCOEF,
+     5            ZPLIMC,ZPLIMG,ZPLMCS,ZPLMGS,HTCC,HTCS,HTC,
+     +            FROOT,FROOTS,
+     6            WTRC,WTRS,WTRG,CMAI,PAI,PAIS,AIL,FCAN,FCANS,PSIGND, 
      7            FCANMX,ZOLN,PAIMAX,PAIMIN,CWGTMX,ZRTMAX,
      8            PAIDAT,HGTDAT,THLIQ,THICE,TBAR,RCAN,SNCAN,
      9            TCAN,GROWTH,ZSNOW,TSNOW,FSNOW,RHOSNO,SNO,Z0ORO,
@@ -589,7 +593,7 @@ C
      C            THPOR,THLMIN,PSISAT,BI,PSIWLT,HCPS,ISAND,
      D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
      E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,         
-     F            RRESID,SRESID,FRTOT,
+     F            RRESID,SRESID,FRTOT,FRTOTS, 
      G            FCANCMX,ICTEM,ICTEMMOD,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC)

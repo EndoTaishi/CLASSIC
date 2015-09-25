@@ -6,7 +6,8 @@
      5                  ALVISG,ALNIRG,CRIB,CPHCH,CEVAP,TVIRTA,
      6                  ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
      7                  GCONST,GCOEFF,TSTART,PCPR,TRSNOWG,FSSB,ALSNO,   
-     8                  IWATER,IEVAP,ITERCT,ISAND,
+     8                  THLIQ,THLMIN,DELZW,RHOSNO,ZSNOW,
+     +                  IWATER,IEVAP,ITERCT,ISAND, 
      9                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,        
      A                  TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
@@ -15,6 +16,8 @@ C
 C     Purpose: Solution of surface energy balance for non-vegetated 
 C     subareas.
 C
+C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATE
+C     *                         ACCORDING TO WATER AVAILABILITY.
 C     * JAN 09/15 - D.VERSEGHY. FIX TO SUPPRESS EVAPORATION FROM ROCK.
 C     * JUN 27/14 - D.VERSEGHY. CHANGE ITERATION LIMIT BACK TO 50 FOR
 C     *                         BISECTION SCHEME.
@@ -177,7 +180,12 @@ C
                         !iteration [K]  
       REAL FCOR  (ILG)  !Coriolis parameter [s-1]  
       REAL PCPR  (ILG)  !Surface precipitation rate [kg m-2 s-1]
+      REAL RHOSNO(ILG)
+      REAL ZSNOW(ILG)
 
+      REAL THLIQ(ILG,IG)
+      REAL THLMIN(ILG,IG)
+      REAL DELZW(ILG,IG)
 C
       INTEGER          IWATER(ILG)  !Flag indicating condition of 
                                     !surface (dry, water-covered or 
@@ -200,7 +208,7 @@ C
      1     RESID (ILG),    DCFLXM(ILG),    CFLUXM(ILG),                 
      2     A     (ILG),    B     (ILG),
      3     LZZ0  (ILG),    LZZ0T (ILG),    FM    (ILG),    FH    (ILG),
-     4     WZERO (ILG)
+     4     WZERO (ILG),    EVPMAX(ILG)
 C
       INTEGER              ITER  (ILG),    NITER (ILG),    JEVAP (ILG),
      1                     KF    (ILG)
@@ -374,8 +382,11 @@ C
               CFLUX(I)=0.0
               IF(ISNOW.EQ.1)                      THEN
                   KF(I)=3
+                  EVPMAX(I)=RHOSNO(I)*ZSNOW(I)/DELT
               ELSE
                   KF(I)=6
+                  EVPMAX(I)=RHOW*(THLIQ(I,1)-THLMIN(I,1))*DELZW(I,1)/
+     1                      DELT
               ENDIF
           ENDIF
    50 CONTINUE
@@ -553,6 +564,7 @@ C
      1                TPOTA(I))
               ENDIF
               EVAP(I)=RHOAIR(I)*CFLUX(I)*(QZERO(I)-QA(I)) 
+              IF(EVAP(I).GT.EVPMAX(I)) EVAP(I)=EVPMAX(I)
               QEVAP(I)=CPHCH(I)*EVAP(I)      
               GZERO(I)=GCOEFF(I)*TZERO(I)+GCONST(I)
               RESID(I)=QSWNET(I)+QLWIN(I)-QLWOUT(I)-QSENS(I)-QEVAP(I)-
@@ -845,6 +857,7 @@ C
      1                TPOTA(I))
               ENDIF
               EVAP(I)=RHOAIR(I)*CFLUX(I)*(QZERO(I)-QA(I)) 
+              IF(EVAP(I).GT.EVPMAX(I)) EVAP(I)=EVPMAX(I)
               QEVAP(I)=CPHCH(I)*EVAP(I)       
               GZERO(I)=GCOEFF(I)*TZERO(I)+GCONST(I)
               QMELT(I)=QSWNET(I)+QLWIN(I)-QLWOUT(I)-QSENS(I)-QEVAP(I)-
