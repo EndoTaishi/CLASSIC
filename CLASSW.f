@@ -23,7 +23,7 @@
      M                  THPOR,  THLRET, THLMIN, BI,     PSISAT, GRKSAT,
      N                  THLRAT, THFC,   XDRAIN, HCPS, DELZ,
      O                  DELZW,  ZBOTW,  XSLOPE, GRKFAC, WFSURF, WFCINT,
-     P                  WLOSTC, WLOSTG, WLSTCS, WLSTGS, ISAND,  IGDR,
+     P                  ISAND,  IGDR,
      Q                  IWF,    ILG,    IL1,    IL2,    N,
      R                  JL,     IC,     IG,     IGP1,   IGP2,
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )

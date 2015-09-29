@@ -994,7 +994,7 @@ C
               IF(THLIQ(I,J).GT.(THLMIN(I,J)+0.01))          THEN
                   PSII=PSISAT(I,J)*(THLIQ(I,J)/THPOR(I,J))**(-BI(I,J))
                   PSII=MIN(PSII,PSIWLT(I,J))
-                  PSIGND(I)=MIN(PSIGND(I),PSII)                                 
+                  IF(FROOT(I,J).GT.0.0) PSIGND(I)=MIN(PSIGND(I),PSII)
                   PSIRAT=(PSIWLT(I,J)-PSII)/(PSIWLT(I,J)-PSISAT(I,J))          
                   FROOT(I,J)=FROOT(I,J)*PSIRAT
                   FROOTS(I,J)=FROOTS(I,J)*PSIRAT
