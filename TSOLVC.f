@@ -326,8 +326,8 @@ C
                   CPHCHC(I)=CLHVAP
               ENDIF
               RBINV(I)=RBCOEF(I)*SQRT(VAC(I))
-              IF (RBINV(I) .LT. 0.) CALL XIT('TSOLVC',0)
-              ! If RBINV is < 0, it is possible your INI file is missing
+              IF (RBINV(I) .LE. 0.) CALL XIT('TSOLVC',0)
+              ! If RBINV is <= 0, it is possible your INI file is missing
               ! the PAIMIN and PAIMAX values.
               RB(I)=1.0/RBINV(I)
               TZERO(I)=TGND(I)
