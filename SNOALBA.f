@@ -183,13 +183,13 @@ C
          CALL XIT('SNOALBA',-1)
       ENDIF
 C
-      IF (ISNOALB .EQ. 0) THEN                                          
+      IF (ISNOALB .EQ. 0) THEN
          DO I = IL1, IL2                                                
             ALSNO(I,1) = ALVSSN(I)                                      
             ALSNO(I,2) = ALIRSN(I)                                      
             ALSNO(I,3) = ALIRSN(I)                                      
-            ALSNO(I,4) = ALIRSN(I)                                      
-                                                                        
+            ALSNO(I,4) = ALIRSN(I)
+
             TRSNOWG(I,1:NBS) = TRSNOWC(I)                               
          END DO ! I                                                     
       ELSE IF (ISNOALB .EQ. 1) THEN                                     
