@@ -1280,7 +1280,7 @@ c      (denoted by name ending in "_yr_g")
       real, pointer, dimension(:,:) :: ch4dyn1_yr_m
       real, pointer, dimension(:,:) :: ch4dyn2_yr_m
 
-      logical, parameter :: obslght = .true.  ! if true the observed lightning will be used. False means you will use the
+      logical, parameter :: obslght = .false.  ! if true the observed lightning will be used. False means you will use the
                                               ! lightning climatology from the CTM file.
 c
 c============= CTEM array declaration done =============================/
@@ -2795,7 +2795,7 @@ c     find the first year of met data
        do while (iyear .lt. metcylyrst)
 c
         do i=1,nltest  ! formatting was 5300
-          read(12,*) ihour,imin,iday,iyear,FSSROW(I),FDLROW(i),
+          read(12,5300) ihour,imin,iday,iyear,FSSROW(I),FDLROW(i),
      1         PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
         enddo
        enddo
@@ -2991,8 +2991,8 @@ c     on with the run
          do i=1,nltest
 c         this reads in one 30 min slice of met data, when it reaches
 c         the end of file it will go to label 999.  !formatting was 5300
-          read(12,*,end=999) ihour,imin,iday,iyear,FSSROW(I),FDLROW(i),
-     1         PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
+          read(12,5300,end=999) ihour,imin,iday,iyear,FSSROW(I),
+     1         FDLROW(i),PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
          enddo
         enddo
 
@@ -3043,8 +3043,8 @@ C
       DO 250 I=1,NLTEST
 C         THIS READS IN ONE 30 MIN SLICE OF MET DATA, WHEN IT REACHES
 C         THE END OF FILE IT WILL GO TO 999. !formatting was 5300
-          READ(12,*,END=999) IHOUR,IMIN,IDAY,IYEAR,FSSROW(I),FDLROW(I),
-     1         PREROW(I),TAROW(I),QAROW(I),UVROW(I),PRESROW(I)
+          READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSSROW(I),
+     1        FDLROW(I),PREROW(I),TAROW(I),QAROW(I),UVROW(I),PRESROW(I)
 
 C===================== CTEM ============================================ \
           if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
