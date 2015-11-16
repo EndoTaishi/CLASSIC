@@ -2504,7 +2504,6 @@ C     GGEOROW(1)=-0.035
           READ(10,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),
      1                  ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
 
-          CMASROT(I,M,J)=CMASROT(I,M,J)*10.0
 50    CONTINUE
 
 C     ! In CLASS 3.6.2, we not include this soil info in the INI file.
