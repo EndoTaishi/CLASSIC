@@ -1506,7 +1506,7 @@ integer :: i,j
 
         do i = 1, nltest
 
-        ctem_grd%fsstar_g    =0.0 !flag should some of these be per i?  they seem to be purely diagnostic so probably not important. JM Jun 2015.
+        ctem_grd%fsstar_g    =0.0 !flag should some of these be per i that are presently not?   JM Jun 2015.
         ctem_grd%flstar_g    =0.0
         ctem_grd%qh_g        =0.0
         ctem_grd%qe_g        =0.0

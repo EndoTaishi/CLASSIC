@@ -172,27 +172,25 @@ read (11,7010) titlec3
 
 7010  FORMAT(A80)
 
-!  read from ctem initialization file (.CTM)
+!  Read from CTEM initialization file (.CTM)
 
   do 71 i=1,nltest
     do 72 m=1,nmtest
 
-!       The following three variables are needed to run ctem. 
-!       min & max leaf area index are needed to break
+!       The following three variables are needed to run CTEM.
+!       1) min & 2) max leaf area index are needed to break
 !       class lai into dcd and evg for trees (for crops and grasses it
-!       doesn't matter much).
-
-!       dvdfcanrow is needed to divide needle & broad leaf into dcd and evg,
+!       doesn't matter much). 3) dvdfcanrow is needed to divide needle & broad leaf into dcd and evg,
 !       and crops & grasses into c3 and c4 fractions.
 
         read(11,*) (ailcminrow(i,m,j),j=1,icc)
         read(11,*) (ailcmaxrow(i,m,j),j=1,icc)
         read(11,*) (dvdfcanrow(i,m,j),j=1,icc)
 
-!       rest of the initialization variables are needed to run ctem.
+!       Rest of the initialization variables are needed to run CTEM but
 !       if starting from bare ground initialize all live and dead c pools from zero. suitable values
 !       of extnprobgrd and prbfrhucgrd would still be required. set stdalngrd to
-!       1 for operation in non-gcm stand alone mode, in the ctem
+!       1 for operation in non-gcm stand alone mode, in the CTEM
 !       initialization file.
 
         read(11,*) (gleafmasrow(i,m,j),j=1,icc)
@@ -238,7 +236,7 @@ read (11,7010) titlec3
         dry_season_length(i) = 0.0
         endif
 
-        if (dowetlands) then      ! Rudra !if true then read wetland fractions
+        if (dowetlands) then !if true then read wetland fractions
             read(11,*) (wetfrac_sgrd(i,j),j=1,8)
         endif   
 71    continue
@@ -246,7 +244,7 @@ read (11,7010) titlec3
 close(11)
     
 
-!     check that a competition or luc run has the correct number of mosaics
+!     Check that a competition or luc run has the correct number of mosaics.
 !     if it is not a start_bare run, then nmtest should equal nmos
       if (mosaic .and. (compete .or. lnduseon) .and. .not. start_bare) then
         if (nmtest .ne. nmos) then
@@ -629,7 +627,7 @@ if (lnduseon .or. compete ) then
   do i=1,nltest
    do m=1,nmtest 
     do j = 1, icc
-!            lastly check if the different pfts accidently add up > 1.0
+!            Lastly check if the different pfts accidently add up > 1.0
 !            after rounding to the number of sig figs used in the output
 !            this rounds to 3 decimal places. if you are found to be over
 !            or under, arbitrarily reduce one of the pfts. the amount of
@@ -1115,8 +1113,6 @@ end if !ctem_on & parallelrun
  
 end subroutine create_outfiles
 
-!==============================================================================================================
-
 
 !==============================================================================================================
 
@@ -1322,7 +1318,8 @@ end subroutine class_monthly_aw
 !==============================================================================================================
 
 subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea)
-                           
+
+
 use ctem_statevars,     only : ctem_tile, vrot, c_switch, &
                                resetctem_g, ctem_grd
 use ctem_params, only : icc,ignd,nmos,iccp1
@@ -2479,7 +2476,6 @@ ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
            luc_emc_mo_m(i,m) =luc_emc_mo_m(i,m)+lucemcomrow(i,m)
            lucsocin_mo_m(i,m) =lucsocin_mo_m(i,m)+lucsocinrow(i,m)
            lucltrin_mo_m(i,m) =lucltrin_mo_m(i,m)+lucltrinrow(i,m)
-                         !CH4 related variables !Rudra
            ch4wet1_mo_m(i,m) = ch4wet1_mo_m(i,m) + CH4WET1ROW(i,m)
            ch4wet2_mo_m(i,m) = ch4wet2_mo_m(i,m) + CH4WET2ROW(i,m)
            wetfdyn_mo_m(i,m) = wetfdyn_mo_m(i,m) + WETFDYNROW(i,m)

@@ -1,7 +1,7 @@
       PROGRAM RUNCLASS36CTEM
 C
 C     * SHELL PROGRAM TO RUN "CLASS" ("CANADIAN LAND SURFACE SCHEME")
-C     * VERSION 3.6 IN STAND-ALONE MODE USING SPECIFIED BOUNDARY
+C     * IN STAND-ALONE MODE USING SPECIFIED BOUNDARY
 C     * CONDITIONS AND ATMOSPHERIC FORCING, COUPLED TO CTEM (CANADIAN TERRESTRIAL
 C     * ECOSYSTEM MODEL).
 C
@@ -10,7 +10,7 @@ C
 C     * JUL 2 2015
 C     * JOE MELTON : Took many calculations out of this driver and into subroutines. Introduced
 C                    modular structure and made CTEM vars into pointers. Harmonized CLASS v. 3.6.1
-C                    code with CTEM code and into this driver.
+C                    code with CTEM code and into this driver to produce CLASS v. 3.6.2.
 C
 C     * JAN 14 2014
 C     * JOE MELTON : Harmonized the field capacity and wilting point calculations between CLASS and CTEM.
@@ -70,8 +70,11 @@ C     * DIMENSION ELEMENT IN THE "GAT" VARIABLES IS GIVEN BY
 C     * THE PRODUCT OF THE FIRST TWO DIMENSION ELEMENTS IN THE
 C     * "ROT" VARIABLES.
 
-C     The majority of CTEM parameters are stored in ctem_params.f90. We access them
+C     The majority of CTEM parameters are stored in ctem_params.f90.
+c     Also the CTEM variables are stored in modules that we point to
+c     in this driver. We access the variables and parameters
 c     through use statements for modules:
+
       use ctem_params,        only : initpftpars,nlat,nmos,ilg,nmon,
      1                               ican, ignd,icp1, icc, iccp1,
      2                               monthend, mmday,modelpft, l2max,
@@ -487,9 +490,7 @@ c
 !       These go into CTEM but that is about it...
        real lyglfmasgat(ilg,icc),   geremortgat(ilg,icc),
      1      intrmortgat(ilg,icc),     lambdagat(ilg,icc),
-         !2            rnded_pft(icc),
-     3            ccgat(ilg,icc),         mmgat(ilg,icc) !,
-!     4            temparray(icc),                  temp
+     3            ccgat(ilg,icc),         mmgat(ilg,icc)
 
       real  xdiffusgat(ilg) ! the corresponding ROW is CLASS's XDIFFUS
 
@@ -870,18 +871,16 @@ c
       real, pointer, dimension(:,:) :: anveggat
       real, pointer, dimension(:,:) :: rmlveggat
 
-      real, pointer, dimension(:) :: twarmm    ! temperature of the warmest month (c)
-      real, pointer, dimension(:) :: tcoldm    ! temperature of the coldest month (c)
-      real, pointer, dimension(:) :: gdd5      ! growing degree days above 5 c
-      real, pointer, dimension(:) :: aridity   ! aridity index, ratio of potential evaporation to precipitation
-      real, pointer, dimension(:) :: srplsmon  ! number of months in a year with surplus water i.e.
-                                                  !  precipitation more than potential evaporation
-      real, pointer, dimension(:) :: defctmon  ! number of months in a year with water deficit i.e.
-                                                  ! precipitation less than potential evaporation
-      real, pointer, dimension(:) :: anndefct  ! annual water deficit (mm)
-      real, pointer, dimension(:) :: annsrpls  ! annual water surplus (mm)
-      real, pointer, dimension(:) :: annpcp    ! annual precipitation (mm)
-      real, pointer, dimension(:) :: dry_season_length  ! length of dry season (months)
+      real, pointer, dimension(:) :: twarmm
+      real, pointer, dimension(:) :: tcoldm
+      real, pointer, dimension(:) :: gdd5
+      real, pointer, dimension(:) :: aridity
+      real, pointer, dimension(:) :: srplsmon
+      real, pointer, dimension(:) :: defctmon
+      real, pointer, dimension(:) :: anndefct
+      real, pointer, dimension(:) :: annsrpls
+      real, pointer, dimension(:) :: annpcp
+      real, pointer, dimension(:) :: dry_season_length
 
       ! Mosaic level:
 
@@ -1281,7 +1280,7 @@ c      (denoted by name ending in "_yr_g")
       real, pointer, dimension(:,:) :: ch4dyn2_yr_m
 
       logical, parameter :: obslght = .false.  ! if true the observed lightning will be used. False means you will use the
-                                              ! lightning climatology from the CTM file.
+                                               ! lightning climatology from the CTM file. This was brought in for FireMIP runs.
 c
 c============= CTEM array declaration done =============================/
 C
@@ -1313,13 +1312,6 @@ C
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-C
-      CALL CLASSD
-C
-      ZDMROW(1)=10.0
-      ZDHROW(1)=2.0
-      NTLD=NMOS
-      CUMSNO = 0.0
 C
 C===================== CTEM ==============================================\
 
@@ -2096,6 +2088,17 @@ C===================== CTEM ==============================================\
       ch4dyn1_yr_m          =>ctem_tile_yr%ch4dyn1_yr_m
       ch4dyn2_yr_m          =>ctem_tile_yr%ch4dyn2_yr_m
 
+!    =================================================================================
+!    =================================================================================
+
+!    Declarations are complete, run preparations begin
+
+      CALL CLASSD
+C
+      ZDMROW(1)=10.0
+      ZDHROW(1)=2.0
+      NTLD=NMOS
+      CUMSNO = 0.0
 
 c     all model switches are read in from a namelist file
       call read_from_job_options(argbuff,mosaic,transient_run,
@@ -2506,12 +2509,12 @@ C     GGEOROW(1)=-0.035
 
 50    CONTINUE
 
-C     ! In CLASS 3.6.2, we not include this soil info in the INI file.
+C     ! In CLASS 3.6.2, we include this soil info in the INI file.
       DO 25 J=1,IGND
           READ(10,*) DELZ(J),ZBOT(J) 
  25   CONTINUE
 C
-c     the output year ranges can be read in from the job options file or not.
+c     the output year ranges can be read in from the job options file, or not.
 c     if the values should be read in from the .ini file, and not
 c     from the job options file, the job options file values are set to
 c     -9999 thus triggering the read in of the .ini file values below
@@ -2519,6 +2522,7 @@ c     -9999 thus triggering the read in of the .ini file values below
         read(10,5200) jhhstd,jhhendd,jdstd,jdendd
        read(10,5200) jhhsty,jhhendy,jdsty,jdendy
       end if
+
 C======================= CTEM ========================================== /
 
       CLOSE(10)
@@ -2989,7 +2993,7 @@ c     on with the run
         do while (iyear .lt. metcylyrst)
          do i=1,nltest
 c         this reads in one 30 min slice of met data, when it reaches
-c         the end of file it will go to label 999.  !formatting was 5300
+c         the end of file it will go to label 999.
           read(12,5300,end=999) ihour,imin,iday,iyear,FSSROW(I),
      1         FDLROW(i),PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
          enddo
@@ -2999,6 +3003,8 @@ c       back up one space in the met file so it is ready for the next readin
 c       but only if it was read in during the loop above.
         if (metcylyrst .ne. -9999) backspace(12)
 
+      ! Find the correct years of the accessory input files (wetlands, lightining...)
+      ! if needed
       if (ctem_on) then
         if (obswetf) then
           do while (obswetyr .lt. metcylyrst)
@@ -3041,30 +3047,12 @@ C
 
       DO 250 I=1,NLTEST
 C         THIS READS IN ONE 30 MIN SLICE OF MET DATA, WHEN IT REACHES
-C         THE END OF FILE IT WILL GO TO 999. !formatting was 5300
+C         THE END OF FILE IT WILL GO TO 999.
           READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSSROW(I),
      1        FDLROW(I),PREROW(I),TAROW(I),QAROW(I),UVROW(I),PRESROW(I)
 
 C===================== CTEM ============================================ \
-          if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
-            if (ctem_on) then
-              if (obswetf) then
-                  read(16,*,end=1001) obswetyr,(wetfrac_mon(i,j),j=1,12)
-              else
-                   do j = 1,12
-                     wetfrac_mon(i,j) = 0.0
-                   enddo
-              endif !obswetf
-
-              if(obslght) then
-                read(17,*,end=212) obslghtyr,(mlightnggrd(i,j),j=1,12)
-212       continue !if end of file, just keep using the last year of lighting data.
-              end if
-            endif ! ctem_on 
- 
-          endif 
-
-c         assign the met climate year to climiyear
+c         Assign the met climate year to climiyear
           climiyear = iyear
 
 !         If in a transient_run that has to cycle over MET then change
@@ -3081,9 +3069,7 @@ c
             end if
           endif   ! lopcount .gt. 1
 
-c
 c         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
-c
 C===================== CTEM ============================================ /
 
           FSVHROW(I)=0.5*FSSROW(I)
@@ -3112,70 +3098,79 @@ C
 C
 C===================== CTEM ============================================ \
 C
+      ! If needed, read in the accessory input files (popd, wetlands, lightining...)
       if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
-c
-c      if popdon=true
-c      calculate fire extinguishing probability and
-c      probability of fire due to human causes
-c      from population density input data. In disturb.f90 this will
-c      overwrite extnprobgrd(i) and prbfrhucgrd(i) that are
-c      read in from the .ctm file. Set
-c      cypopyr = -9999 when we don't want to cycle over the popd data
-c      so this allows us to grab a new value each year.
 
-       if(popdon .and. transient_run) then
-         do while (popyr .lt. iyear) 
-          do i=1,nltest
-           read(13,5301,end=999) popyr,popdin(i)
-          enddo
-         enddo
-       endif
-c
-c      if co2on is true
-c      read co2concin from input datafile and
-c      overwrite co2concrow, otherwise set to constant value
-c
-       if(co2on) then
+            if (ctem_on) then
+              if (obswetf) then
+                  read(16,*,end=1001) obswetyr,(wetfrac_mon(i,j),j=1,12)
+              else
+                   do j = 1,12
+                     wetfrac_mon(i,j) = 0.0
+                   enddo
+              endif !obswetf
 
-        do while (co2yr .lt. iyear)
-          do i=1,nltest
-           read(14,*,end=999) co2yr,co2concin
-           do m=1,nmtest
-            co2concrow(i,m)=co2concin
-           enddo !nmtest
-          enddo !nltest
-        enddo !co2yr < iyear
+              if(obslght) then
+                read(17,*,end=312) obslghtyr,(mlightnggrd(i,j),j=1,12)
+312             continue !if end of file, just keep using the last year of lighting data.
+              end if !obslight
 
-       else !constant co2
+            endif ! ctem_on
 
-         do i=1,nltest
-          do m=1,nmtest
-           co2concrow(i,m)=setco2conc
-          enddo
-         enddo
+c         If popdon=true, calculate fire extinguishing probability and
+c         probability of fire due to human causes from population density
+c         input data. In disturb.f90 this will overwrite extnprobgrd(i)
+c         and prbfrhucgrd(i) that are read in from the .ctm file. Set
+c         cypopyr = -9999 when we don't want to cycle over the popd data
+c         so this allows us to grab a new value each year.
 
-       endif !co2on
+          if(popdon .and. transient_run) then
+            do while (popyr .lt. iyear)
+             do i=1,nltest
+              read(13,5301,end=999) popyr,popdin(i)
+             enddo
+            enddo
+          endif
 
-c      if lnduseon is true, read in the luc data now
+c         If co2on is true, read co2concin from input datafile and
+c         overwrite co2concrow, otherwise set to constant value
 
-       if (ctem_on .and. lnduseon .and. transient_run) then
+          if(co2on) then
+           do while (co2yr .lt. iyear)
+             do i=1,nltest
+              read(14,*,end=999) co2yr,co2concin
+              do m=1,nmtest
+               co2concrow(i,m)=co2concin
+              enddo
+             enddo
+           enddo !co2yr < iyear
+          else !constant co2
+            do i=1,nltest
+             do m=1,nmtest
+              co2concrow(i,m)=setco2conc
+             enddo
+            enddo
+          endif !co2on
 
-         call readin_luc(iyear,nmtest,nltest,mosaic,lucyr,
+c         If lnduseon is true, read in the luc data now
+
+          if (ctem_on .and. lnduseon .and. transient_run) then
+
+            call readin_luc(iyear,nmtest,nltest,mosaic,lucyr,
      &                   nfcancmxrow,pfcancmxrow,reach_eof,compete)
-         if (reach_eof) goto 999
+            if (reach_eof) goto 999
 
-       else ! lnduseon = false or met is cycling in a spin up run
+          else ! lnduseon = false or met is cycling in a spin up run
 
-c          land use is not on or the met data is being cycled, so the
-c          pfcancmx value is also the nfcancmx value.
-c
+c         Land use is not on or the met data is being cycled, so the
+c         pfcancmx value is also the nfcancmx value.
+
            nfcancmxrow=pfcancmxrow
 
-       endif ! lnduseon/cyclemet
-c
+          endif ! lnduseon/cyclemet
+
       endif   ! at the first day of each year i.e.
 c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
-c
 
 C===================== CTEM ============================================ /
 C
@@ -3420,7 +3415,8 @@ C
 C-----------------------------------------------------------------------
 C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS; GENERAL VEGETATION
 C     * CHARACTERISTICS.
-C     * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM by including zolnc,
+
+C     * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM by including: zolnc,
 !     * cmasvegc, alvsctm, alirctm in the arguments.
 C
       CALL CLASSA    (FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN,
@@ -3459,8 +3455,9 @@ C
 C
 C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
+
 C          * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM
-!          * by including in the arguments lfstatus
+!          * by including in the arguments: lfstatus
 C
       CALL CLASST     (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1  THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG,
@@ -3530,7 +3527,6 @@ C
      Q                  IWF,    ILG,    1,      NML,    N,
      R                  JLAT,   ICAN,   IGND,   IGND+1, IGND+2,
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
-C
 
 C========================================================================
 C
@@ -3719,9 +3715,9 @@ c
 c
 855   continue
 c
-c     call canadian terrestrial ecosystem model which operates at a
+c     call Canadian Terrestrial Ecosystem Model which operates at a
 c     daily time step, and uses daily accumulated values of variables
-c     simulated by class.
+c     simulated by CLASS.
 c
       if (ctem_on) then
 c
@@ -3789,14 +3785,12 @@ c
       if (ctem_on) then
         do 705 i = 1, nml
 c
-c         competitition related variables added by y. peng \\
           fsinacc_gat(i)=0.
           flinacc_gat(i)=0.
           flutacc_gat(i)=0.
           alswacc_gat(i)=0.
           allwacc_gat(i)=0.
           pregacc_gat(i)=0.
-c         competitition related variables added by y. peng //
 c
           fsnowacc_m(i)=0.0
           tcanoaccgat_out(i)=tcanoaccgat_m(i)
@@ -4088,7 +4082,7 @@ C
       ENDIF
 
       if (.not. parallelrun) then ! stand alone mode, include half-hourly
-c                                 ! output for class & ctem
+c                                 ! output for CLASS & CTEM
 C
       DO 450 I=1,NLTEST
 
@@ -4843,7 +4837,7 @@ C
           FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
           QH=HFSACC_M(I,M)
           QE=QEVPACC_M(I,M)
-          QEVPACC_M_SAVE(I,M)=QEVPACC_M(I,M)   !FLAG!! What is the point of this? JM Apr 1 2015
+          QEVPACC_M_SAVE(I,M)=QEVPACC_M(I,M)   !FLAG! What is the point of this? JM Apr 1 2015
           BEG=FSSTAR+FLSTAR-QH-QE
           SNOMLT=HMFNACC_M(I,M)
 C
@@ -5171,14 +5165,14 @@ c      check if the model is done running.
                 rewind(16) !rewind obswetf file
                 read(16,*) ! read in the header
                endif
-              if (obslght) then ! FLAG
+              if (obslght) then
                  obslghtyr=-9999
                  rewind(17)
               endif
 
               met_rewound = .true.
               iyear=-9999
-              obswetyr=-9999     !Rudra
+              obswetyr=-9999
 
                if(popdon) then
                  rewind(13) !rewind popd file
@@ -5303,12 +5297,12 @@ c         the 999 label below is hit when an input file reaches its end.
              if(lopcount.le.ctemloop)then
 
               rewind(12)   ! rewind met file
-c /-----------Rudra-----------------/
+
                 if(obswetf) then
                   rewind(16) !rewind obswetf file
                   read(16,*) ! read in the header
                 endif
-c \------------Rudra---------------\
+
               met_rewound = .true.
               iyear=-9999
               obswetyr=-9999   !Rudra
@@ -5339,8 +5333,9 @@ c     return to the time stepping loop
 
 c     close the output files
 C
+c     FIRST ANY CLASS OUTPUT FILES
       IF (.NOT. PARALLELRUN) THEN
-C       FIRST ANY CLASS OUTPUT FILES
+
         CLOSE(61)
         CLOSE(62)
         CLOSE(63)
@@ -5359,10 +5354,11 @@ C       FIRST ANY CLASS OUTPUT FILES
         CLOSE(671)
         CLOSE(681)
         CLOSE(691)
-        end if ! moved this up from below so it calls the close subroutine. JRM.
-c       then ctem ones
-        call close_outfiles()
-C
+      end if
+
+c     Then the CTEM ones
+      call close_outfiles()
+
 C     CLOSE THE INPUT FILES TOO
       CLOSE(12)
       CLOSE(13)
