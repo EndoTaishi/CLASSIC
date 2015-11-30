@@ -3078,6 +3078,12 @@ C===================== CTEM ============================================ /
           ULROW(I)=UVROW(I)
           VLROW(I)=0.0
           VMODROW(I)=UVROW(I)
+
+          !In the new four-band albedo calculation for snow, the incoming
+          ! radiation for snow or bare soil is now passed into TSOLVE via this new array:
+          FSSBROL(I,1)=FSVHROW(I)
+          FSSBROL(I,2)=FSIHROW(I)
+
 250   CONTINUE
 
 C
