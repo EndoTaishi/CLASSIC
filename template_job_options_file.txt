@@ -28,7 +28,7 @@
 
  IDISP = 0 ,
  IZREF = 2 ,
- ISLFD = 1 ,
+ ISLFD = 0 ,
  IPCP = 1 ,
  ITC = 1 ,
  ITCG = 1 ,
