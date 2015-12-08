@@ -1443,11 +1443,11 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 
 !         Remove the cost of making reproductive tissues. This cost can only
 !         be removed when NPP is positive.
-          if (compete) then   !FLAG - set up now so only compete on has a reproductive cost. JM
+          !if (compete) then   !FLAG - set up now so only compete on has a reproductive cost. JM
             reprocost(i,j) =max(0.,nppveg(i,j)*repro_fraction)
-          else
-            reprocost(i,j) = 0.
-          end if   
+          !else
+          !  reprocost(i,j) = 0.
+          !end if
 
 !         Not in use. We now use a constant reproductive cost as the prior formulation
 !         produces perturbations that do not allow closing of the C balance. JM Jun 2014.

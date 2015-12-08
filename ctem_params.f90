@@ -118,12 +118,6 @@ real, dimension(kk) :: kn               ! Canopy light/nitrogen extinction coeff
 
 ! allocate.f parameters: ---------------------------------
 
-! Parameterization values based on comparison mostly with LUYSSAERT, S.et al. CO2 balance
-! of boreal, temperate, and tropical forests derived from a global database,
-! Glob. Chang. Biol., 13(12), 2509–2537, 2007. and informed by LITTON, et al. Carbon
-! allocation in forest ecosystems, Glob. Chang. Biol., 13(10), 2089–2109, 2007. Further
-! tuning was performed on these basic values. JM Dec 20 2013.
-
 real, dimension(kk) :: omega            ! omega, parameter used in allocation formulae
 real, dimension(kk) :: epsilonl         ! Epsilon leaf, parameter used in allocation formulae
 real, dimension(kk) :: epsilons         ! Epsilon stem, parameter used in allocation formulae
@@ -184,8 +178,6 @@ real :: repro_fraction                  ! Fraction of NPP that is used to create
 ! disturb.f90 parameters: -------------
 
 real, dimension(2) :: bmasthrs_fire     ! min. and max. vegetation biomass thresholds to initiate fire, kg c/m^2
-real :: extnmois                        ! extinction moisture content for estimating fire likeliness due to soil moisture !OLD!
-real :: duff_dry                        ! extinction moisture content for estimating fire likeliness due to moisture in the duff layer !OLD!
 real :: extnmois_veg                    ! extinction moisture content for estimating vegetation fire likeliness due to soil moisture 
 real :: extnmois_duff                   ! extinction moisture content for estimating duff layer fire likeliness due to soil moisture 
 real :: lwrlthrs                        ! lower cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
@@ -356,7 +348,7 @@ kn= [ 0.50, 0.50, 0.00, &
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
 !lfespany  =   [ 5.00, 0.40, 0.00, & !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
-!               1.50, 0.40, 1.00, &
+!               1.50, 1.00, 1.00, &
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]      
 
@@ -435,8 +427,7 @@ albnir = [ 19.0, 19.0, 0.00, &
 
 humicfac = [ 0.42, 0.42, 0.00, &
              0.53, 0.48, 0.48, &
-!             0.42, 0.42, 0.00, &
-             0.10, 0.10, 0.00, &  !FLAG: Test Dec 22 2014 JM. Based on Vivek's test with the couple model these were too high (were 0.42)
+             0.10, 0.10, 0.00, &
              0.42, 0.42, 0.00 ]
 
 grescoef = [ 0.15, 0.15, 0.00, &
@@ -450,25 +441,21 @@ repro_fraction = 0.10
 
 ! disturbance parameters: ------------
 
-reparea = 300.0 !1000.0  !FLAG testing JM Jun 17 2015.
+reparea = 500.0  ! FireMIP value: 300.0
 
 popdthrshld = 300.
 
-f0 = 0.05  ! NOT used in CTEM v.2.
+f0 = 0.05
 
 bmasthrs_fire = [ 0.2, 1.0 ] 
 
-extnmois = 0.35 !0.3 Sept 22 2014. JM. !OLD!
+extnmois_veg = 0.3 !0.37 !flag test was 0.3
 
-duff_dry = 0.25 !OLD!
+extnmois_duff = 0.5 !0.55 !flag test was 0.5
 
-extnmois_veg = 0.37 !flag test was 0.3
+lwrlthrs = 0.25 ! FireMIP value: 0.025
 
-extnmois_duff = 0.55 !flag test was 0.5
-
-lwrlthrs = 0.025 !0.25 FLAG test. JM Jun 22 15
-
-hgrlthrs = 1.0 !10.0 FLAG test. JM Jun 22 15
+hgrlthrs = 10.0 ! FireMIP value: 1.0
 
 !     **Parmlght was increased to 0.8 to make it so areas with higher amounts of
 !     lightning have higher lterm. The saturation is still the same, but the 
@@ -480,7 +467,7 @@ parblght = 0.1
 maxsprd = [  0.54, 0.54, 0.00, &
              0.40, 0.40, 0.40, &
              0.00, 0.00, 0.00, &
-             0.72, 0.72, 0.00 ]  !FLAG testing Li value, old was 2.0
+             0.72, 0.72, 0.00 ]
 
 frco2glf = [ 0.21, 0.21, 0.00, & 
              0.21, 0.21, 0.21, & 
@@ -767,7 +754,7 @@ harvthrs = [ 0.0, 0.0, 0.0, &
              4.5, 3.5, 0.0, &
              0.0, 0.0, 0.0 ]
 
-specsla =[  0.0, 0.0, 0.0, &  ! Not used.
+specsla =[  0.0, 0.0, 0.0, &  ! Not used in general. Only will take effect if these are non-zero.
             0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0 ]
@@ -788,12 +775,13 @@ cdlsrtmx = [ 0.10, 0.30, 0.00, &
              0.30, 0.40, 0.15, &
              0.15, 0.15, 0.00, &
              0.15, 0.15, 0.00 ]
+
+roothrsh = 8.0
              
 ! turnover.f parameters: --------------
 
 stmhrspn = 17.0
 
-! these are from competition ones.
 stemlife = [ 86.3, 86.3, 0.00, &  
              80.5, 80.5, 75.8, &  
              20.0, 20.0, 0.00, &
@@ -812,27 +800,24 @@ rootlife = [ 13.8,13.2, 0.0, &
 !	temperature, but it is difficult to know the function, so leave
 !	constant for now ratio is mol ch4 to mol co2
 
-!	ratioch4/0.16/
-ratioch4 = 0.16 ! 0.07 !0.21 ! test jm july 24 2014
+ratioch4 = 0.16
 
 !	Use the heterotrophic respiration outputs for soil and litter 
 !	as the ecosystem basis.  These were summed as "hetrores".
 !	This respiration is for upland soils; we multiply by 
 !	wtdryres as the ratio of wetland to upland respiration 
 !	based on literature measurements: Dalva et al. 1997 found 0.5 factor; 
-!	Segers 1998 found a 0.4 factor. use 0.5 here (unitless)
+!	Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
 
-wtdryres = 0.45  !0.5
+wtdryres = 0.45
 
-factor2 = 0.015 ! 0.02 test. jm july 22 2014
+factor2 = 0.015
 
-lat_thrshld1 = 40.0 !25.0 !50.0   ! degrees North
-lat_thrshld2 = -20.0 !-10.0  ! degrees North
-soilw_thrshN = 0.55 !0.60   ! Soil wetness threshold in the North zone
+lat_thrshld1 = 40.0 ! degrees North
+lat_thrshld2 = -20.0 ! degrees North
+soilw_thrshN = 0.55   ! Soil wetness threshold in the North zone
 soilw_thrshE = 0.80   ! Soil wetness threshold in the Equatorial zone
 soilw_thrshS = 0.70   ! Soil wetness threshold in the South zone
-
-
 
 !   ********************************************************************************************
 !   =============                                                     ==========================
@@ -848,22 +833,28 @@ if (compete) then
 
 ! allocate.f parameters: --------------
 
-omega = [ 0.80, 0.50, 0.00, & 
+! Parameterization values based on comparison mostly with LUYSSAERT, S.et al. CO2 balance
+! of boreal, temperate, and tropical forests derived from a global database,
+! Glob. Chang. Biol., 13(12), 2509–2537, 2007. and informed by LITTON, et al. Carbon
+! allocation in forest ecosystems, Glob. Chang. Biol., 13(10), 2089–2109, 2007. Further
+! tuning was performed on these basic values. JM Dec 20 2013.
+
+omega = [ 0.80, 0.50, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
           0.80, 0.45, 0.80, &  
           0.05, 0.05, 0.00, &
           1.00, 1.00, 0.00 ]
 
-epsilonl = [ 0.19, 0.45, 0.00, &  
+epsilonl = [ 0.19, 0.45, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
              0.39, 0.50, 0.30, &  
              0.80, 0.80, 0.00, &
              0.10, 0.10, 0.00 ]
 
-epsilons = [ 0.40, 0.34, 0.00, &
+epsilons = [ 0.40, 0.34, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
              0.21, 0.35, 0.10, & 
              0.15, 0.15, 0.00, &
              0.00, 0.00, 0.00 ]
 
-epsilonr = [ 0.41, 0.21, 0.00, &  
+epsilonr = [ 0.41, 0.21, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
              0.40, 0.15, 0.60, &  
              0.05, 0.05, 0.00, &
              0.90, 0.90, 0.00 ]
@@ -897,7 +888,7 @@ aridlmt = [ 9.9,  9.9,  0.0, &
             9.9,  9.9,  0.0, &
             9.9,  9.9,  0.0 ]
 
-dryseasonlmt=[  9.0,  99.9,    0.0, & !FLAG: PFT 1 doesn't use it. can be set to 99.9 JM May 14 2015.
+dryseasonlmt=[ 99.0,  99.9,    0.0, &
                99.9,  99.9,    5.5, & 
                99.9,  99.9,    0.0, &
                99.9,  99.9,    0.0 ]
@@ -933,12 +924,12 @@ standreplace = [ 0.20, 0.20, 0.00, &
 
 ! mainres.f parameters: ---------
 
-bsrtstem = [ 0.0700, 0.0550, 0.0000, &
+bsrtstem = [ 0.0700, 0.0550, 0.0000, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
              0.0500, 0.0335, 0.0350, &  
              0.0365, 0.0365, 0.0000, & 
              0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
 
-bsrtroot = [ 0.5000, 0.2850, 0.0000, &
+bsrtroot = [ 0.5000, 0.2850, 0.0000, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
              0.4000, 0.2250, 0.1500, & 
              0.1600, 0.1600, 0.0000, & 
              0.1000, 0.1000, 0.0000 ]
@@ -950,19 +941,19 @@ maxage = [ 800.0, 500.0,   0.0, &
              0.0,   0.0,   0.0, &
              0.0,   0.0,   0.0 ]
 
-mxmortge = [ 0.005, 0.005, 0.00, & 
+mxmortge = [ 0.005, 0.005, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
              0.005, 0.005, 0.005, & 
              0.00, 0.00, 0.00, & 
              0.05, 0.10, 0.00 ] 
 
 ! phenology.f parameters: ---------
 
-drlsrtmx = [ 0.006 , 0.005, 0.000, &
+drlsrtmx = [ 0.006 , 0.005, 0.000, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
              0.010 , 0.025, 0.030, & 
              0.005 , 0.005, 0.000, &
              0.020 , 0.020, 0.000 ] 
 
-roothrsh = 8.0
+!roothrsh = 8.0 ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
 
 !   ********************************************************************************************
 !   =============                                                     ==========================
@@ -1030,7 +1021,7 @@ drlsrtmx = [ 0.0025, 0.005, 0.000, &
              0.005, 0.005, 0.000, &
              0.050, 0.050, 0.000 ]    
 
-roothrsh = 15.0
+!roothrsh = 15.0
 
 
 end if
