@@ -1551,11 +1551,11 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !
       do 620 j = 1,icc
         do 621 i = il1, il2
-         if (compete .or. lnduseon) then  
+         !if (compete .or. lnduseon) then
 !           Not in use. We now use the constant reproductive cost below. JM Jun 2014
 !           expnbaln(i)=expnbaln(i)+fcancmx(i,j)*expbalvg(i,j)
             repro_cost_g(i)=repro_cost_g(i)+fcancmx(i,j)*reprocost(i,j) 
-         endif
+         !endif
 621     continue
 620   continue
 !

@@ -455,26 +455,26 @@ C
           IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
           IF(FCAN(I,2).LT.1.0E-5) FCAN(I,2)=0.0
           ! FLAG test JM Dec 8 2015
-          do j = 1,4
-            IF(PAI(I,j).LT.THR_LAI) THEN
-              FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))*PAI(I,j)
-              PAI (I,j)=THR_LAI
-            ELSE
-              FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))
-            ENDIF
-          !IF(PAI(I,3).LT.THR_LAI) THEN
-          !    FCAN(I,3)=FCANMX(I,3)*(1.0-FSNOW(I))*PAI(I,3)
-          !    PAI (I,3)=THR_LAI
-          !ELSE
-          !    FCAN(I,3)=FCANMX(I,3)*(1.0-FSNOW(I))
-          !ENDIF
-          !IF(PAI(I,4).LT.THR_LAI) THEN
-          !    FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))*PAI(I,4)
-          !    PAI (I,4)=THR_LAI
-          !ELSE
-          !    FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))
-          !ENDIF
-          end do
+          !do j = 1,4
+          !  IF(PAI(I,j).LT.THR_LAI) THEN
+          !    FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))*PAI(I,j)
+          !    PAI (I,j)=THR_LAI
+          !  ELSE
+          !    FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))
+          !  ENDIF
+          IF(PAI(I,3).LT.THR_LAI) THEN
+             FCAN(I,3)=FCANMX(I,3)*(1.0-FSNOW(I))*PAI(I,3)
+             PAI (I,3)=THR_LAI
+          ELSE
+             FCAN(I,3)=FCANMX(I,3)*(1.0-FSNOW(I))
+          ENDIF
+          IF(PAI(I,4).LT.THR_LAI) THEN
+             FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))*PAI(I,4)
+             PAI (I,4)=THR_LAI
+          ELSE
+             FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))
+          ENDIF
+          !end do
           ! FLAG end test
           IF(FCAN(I,3).LT.1.0E-5) FCAN(I,3)=0.0
           IF(FCAN(I,4).LT.1.0E-5) FCAN(I,4)=0.0
@@ -484,26 +484,26 @@ C
           IF(FCANS(I,1).LT.1.0E-5) FCANS(I,1)=0.0
           IF(FCANS(I,2).LT.1.0E-5) FCANS(I,2)=0.0
           ! FLAG test JM Dec 8 2015
-          do j = 1,4
-            IF(PAIS(I,j).LT.THR_LAI) THEN
-              FCANS(I,j)=FCANMX(I,j)*FSNOW(I)*PAIS(I,j)
-              PAIS (I,j)=THR_LAI
-            ELSE
-              FCANS(I,j)=FCANMX(I,j)*FSNOW(I)
-            ENDIF
-          !IF(PAIS(I,3).LT.THR_LAI) THEN
-          !    FCANS(I,3)=FCANMX(I,3)*FSNOW(I)*PAIS(I,3)
-          !    PAIS (I,3)=THR_LAI
-          !ELSE
-          !    FCANS(I,3)=FCANMX(I,3)*FSNOW(I)
-          !ENDIF
-          !IF(PAIS(I,4).LT.THR_LAI) THEN
-          !    FCANS(I,4)=FCANMX(I,4)*FSNOW(I)*PAIS(I,4)
-          !    PAIS (I,4)=THR_LAI
-          !ELSE
-          !    FCANS(I,4)=FCANMX(I,4)*FSNOW(I)
-          !ENDIF
-          end do
+!           do j = 1,4
+!             IF(PAIS(I,j).LT.THR_LAI) THEN
+!               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)*PAIS(I,j)
+!               PAIS (I,j)=THR_LAI
+!             ELSE
+!               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)
+!             ENDIF
+          IF(PAIS(I,3).LT.THR_LAI) THEN
+             FCANS(I,3)=FCANMX(I,3)*FSNOW(I)*PAIS(I,3)
+             PAIS (I,3)=THR_LAI
+          ELSE
+             FCANS(I,3)=FCANMX(I,3)*FSNOW(I)
+          ENDIF
+          IF(PAIS(I,4).LT.THR_LAI) THEN
+             FCANS(I,4)=FCANMX(I,4)*FSNOW(I)*PAIS(I,4)
+             PAIS (I,4)=THR_LAI
+          ELSE
+             FCANS(I,4)=FCANMX(I,4)*FSNOW(I)
+          ENDIF
+          !end do
           ! FLAG end test
           IF(FCANS(I,3).LT.1.0E-5) FCANS(I,3)=0.0
           IF(FCANS(I,4).LT.1.0E-5) FCANS(I,4)=0.0
