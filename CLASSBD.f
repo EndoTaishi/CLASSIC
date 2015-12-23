@@ -272,7 +272,7 @@ C    --------------------peatland common block data--------------------\
 						!Whittington 2010 value for feather moss
 						!is lower than sphagnmum (20 kg/m3 in
 						!O'Donnell et al. 2009)
-	 data slams	/20/		!specific leaf area of moss, 20 m2/kg S
+	 data slams	/20/	!specific leaf area of moss, 20 m2/kg S
 						!vensson 1995 sphangum value ranges from 
 						!13.5~47.3 m2/kg (Lamberty et al. 2007)
 c    ------------------------YW March 23, 2015 -------------------------/

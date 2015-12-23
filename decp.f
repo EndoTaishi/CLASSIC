@@ -1,6 +1,6 @@
 	  subroutine  decp(il1,il2,iyear,iday,ihour,imin,ipeatland,isand,
 	1	litrmassms,hpd, wtable,tbar, thliq, thice,thpor,bi,zbotw,
-	2    delzw,psisat,tfrez,  
+	2    delzw,psisat,tfrez, jdst,jdend,iyd,
 c    -------------- inputs above this line, outputs below -------------
      3    litresms, socresp, resoxic, resanoxic)  
 
@@ -12,6 +12,7 @@ c                        YW March 20, 2015
 	 implicit none
 c	 inputs-----------------------------------------------------------
  	 integer  iyear, iday, ihour, imin ,i,j, il1, il2, isand(ilg,ignd)
+ 	 integer  jdst, jdend, iyd
 	 integer	ipeatland(ilg)	!0 = not peatland, 1 = bog, 2 = fen  
       integer:: lewtable(ilg) !layer index of the water table layer 
 	 real     hpd(ilg) , wtable(ilg), tbar(ilg,ignd),	!(K) 		 
@@ -245,20 +246,24 @@ c	find the temperature factor for moss litter respiration
 		q10funcms(i)= litrq10ms(i)**(0.1*(litrtempms(i)-15.0))
 
 c	calculate the litter respiration rate in mosses and converts it 
-c    from kg c/kg c.year to u-mol co2/kg c.s using 2.64
+c     from kg c/kg c.year to u-mol co2/kg c.s using 2.64
        	litresms(i)=ltrmosclms(i)*litrmassms(i)*bsrateltms*
 	1			2.64*q10funcms(i)
 70		continue
 c
-c    write peat soil respiration details .CT15D_G
-	 write(97, 6997) litresms, litpsims(1), psisat(1,1),ltrmosclms, 
-	1	     litrmassms, tbar(1,1), q10funcms ,litrtempms,	
-	2		ratescpo, ratescpa, Cso,Csa, fto,fta,
-	3		resoxic, resanoxic, frac, 
-	4		tsoila-tfrez, tsoilo-tfrez,ewtable,real(lewtable),
-	5         tbar(1,1)-tfrez, tbar(1,2)-tfrez, tbar(1,3)-tfrez	,
-	6         thliq(1,1) 
-6997	      format(50f10.3) 
+c     write peat soil respiration details .CT15D_G
+      
+      if ((iyd.ge.jdst).and.(iyd.le.jdend)) then   
+
+      write(97, 6997) litresms, litpsims(1), psisat(1,1),ltrmosclms, 
+     1     litrmassms, tbar(1,1), q10funcms ,litrtempms,
+     2     ratescpo, ratescpa, Cso,Csa, fto,fta,
+     3     resoxic, resanoxic, frac, 
+     4     tsoila-tfrez, tsoilo-tfrez,ewtable,real(lewtable),
+     5     tbar(1,1)-tfrez, tbar(1,2)-tfrez, tbar(1,3)-tfrez,
+     6     thliq(1,1) 
+6997  format(50f10.3) 
+      endif
 c
  	 return
 	 end 

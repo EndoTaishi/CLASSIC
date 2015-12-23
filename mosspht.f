@@ -1,9 +1,9 @@
 	 subroutine mosspht(ilg,ignd,isand,iday,qswnv,thliq,tbar,thpor,
 	1    co2conc,tsurfk,zsnow,delzw,pres,qg,coszs,Cmossmas,dmoss,
 c		output below
-	2		anmoss,rmlmoss,cevapms,ievapms,ipeatland	
+	2	anmoss,rmlmoss,cevapms,ievapms,ipeatland	
 c	testing
-	3		,iyear, ihour,imin,daylength,pdd,cdd) 
+	3	,iyear, ihour,imin,daylength,pdd,cdd) 
 C	
 c	-----------definitions---------------------------------------------
 	 implicit none
@@ -100,7 +100,7 @@ c
 	 real:: tsurfk(Ilg) 	!grid average ground surface temprature in K
 	 real:: wmoss(ilg) 		!water content extraporated from the surface
 						!humidity qg and thliq of the first soil layer
-						!unit g water/ g dw 
+						!unit kg water/ kg dw 
 	 real:: wmosmin(ilg)	!residual water content kg water /kg moss 
 	 real:: wmosmax(ilg)	!maximum water content kg water /kg moss 
 	 real:: fwmoss(ilg)		!relative water content of mosses in g fw /g dw
@@ -262,7 +262,7 @@ c
 c	** moss dark respiration
 c     observed range of rmlmoss 0.60 to 1.60 umol/m2/s (e.g. Adkinson 2006)
 	 do 350 i = 1, ilg
-	     q10rmlmos(i)=(3.22-(0.046*tmoss(i)))**((tmoss(i)-25.0)/10.0)
+	    q10rmlmos(i)=(3.22-(0.046*tmoss(i)))**((tmoss(i)-25.0)/10.0)
 		rmlmoss(i) = rmlmoss25*mwce(i)*q10rmlmos(i)
 
 c	** moss photosynthesis

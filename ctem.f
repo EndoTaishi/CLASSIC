@@ -56,7 +56,7 @@ c
      8                 wetfdyn, ch4dyn1, ch4dyn2
 c    -------------- moss C in peatlands -------------------------------\
 c
-	1		,ipeatland,iyear,ihour,imin,
+	1		,ipeatland,iyear,ihour,imin,jdst,jdend,iyd,
 	2		anmoss,rmlmoss,gppmoss, Cmossmas, litrmassms,
 	3         wtable,thpor,bi, psisat,grksat,
 	4         thfc,thlw,thliq,thice,tfrez,
@@ -530,7 +530,7 @@ C
        real lambdaalt 
 c
 c	------------define peatland related variables--------------------\ 
-	 integer  ipeatland (ilg), iyear,ihour,imin
+	 integer  ipeatland (ilg), iyear,ihour,imin,jdst,jdend,iyd
 	 
 	 real     wtable(ilg),thpor(ilg,ignd),bi(ilg,ignd),
 	1         grksat(ilg,ignd),thfc(ilg,ignd),thlw(ilg,ignd),  
@@ -1352,7 +1352,7 @@ c    ------------peat heterotrophic respiration------------------------\
 c
 	  call  decp(il1,il2,iyear,iday,ihour,imin,ipeatland,isand,
 	1	litrmassms,hpd, wtable,tbar, thliq,thice, thpor,bi,zbotw,
-	2    delzw,psisat,tfrez,  
+	2    delzw,psisat,tfrez,jdst,jdend,iyd,  
 c    -------------- inputs above this line, outputs below -------------
      3    litresms, socresp, resoxic, resanoxic)  
 c    ------------YW March 26, 2015 ------------------------------------/
@@ -2123,19 +2123,22 @@ c
       enddo
 c
 c    =============write peatland output files==========================\
-c    CT13D_G
-	 write(95,6991)          
-	1	litrmass(1,6),  tltrleaf(1,6), tltrstem(1,6), tltrroot(1,6), 
-	2	ltresveg(1,6),	 humtrsvg(1,6), litrmass(1,7), tltrleaf(1,7),
-	3	tltrstem(1,7),  tltrroot(1,7), ltresveg(1,7), humtrsvg(1,7),
-	5	plitrmassms, litrmassms, litrfallms, ltrestepms, humicmstep,
-	6	nppmosstep,nppmoss,anmoss,rgmoss,rmlmoss,gppmoss,Cmossmas,
-	7    rmlveg(1,1),rmsveg(1,1), rmrveg(1,1)
-c    CT14D_G
-	 write(96,6991) hpd, gavgscms,  hutrstep_g, socrestep,
-	1	resoxic*(1.0/963.62)*deltat, resanoxic*(1.0/963.62)*deltat, !kgC/m2/timestep
-     2    socresp,resoxic, resanoxic    !umol/m2/s
-6991		format(30F12.6)
+
+         if ((iyd.ge.jdst).and.(iyd.le.jdend)) then   
+!     CT13D_G
+         write(95,6991)          
+     1  litrmass(1,6),  tltrleaf(1,6), tltrstem(1,6), tltrroot(1,6), 
+     2  ltresveg(1,6),	 humtrsvg(1,6), litrmass(1,7), tltrleaf(1,7),
+     3  tltrstem(1,7),  tltrroot(1,7), ltresveg(1,7), humtrsvg(1,7),
+     4  plitrmassms, litrmassms, litrfallms, ltrestepms, humicmstep,
+     5  nppmosstep,nppmoss,anmoss,rgmoss,rmlmoss,gppmoss,Cmossmas,
+     6   rmlveg(1,1),rmsveg(1,1), rmrveg(1,1)
+!     CT14D_G
+       write(96,6991) hpd, gavgscms,  hutrstep_g, socrestep,
+     1  resoxic*(1.0/963.62)*deltat, resanoxic*(1.0/963.62)*deltat, !kgC/m2/timestep
+     2   socresp,resoxic, resanoxic    !umol/m2/s
+6991   format(30F12.6)
+      endif
 c    ==========write file done YW=======================================/
 c
       return

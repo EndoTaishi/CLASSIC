@@ -908,7 +908,8 @@ c	----CTEM moss variables--------------------------------------------
      7      ancmosgat(ilg) ,            angmosgat(ilg),
      8      rmlcsmosgat(ilg),           rmlgsmosgat(ilg),
      9      rmlcmosgat(ilg),            rmlgmosgat(ilg),
-     1      anmosac_g(ilg), rmlmosac_g(ilg), gppmosac_g(ilg)
+     1      anmosac_g(ilg), rmlmosac_g(ilg), gppmosac_g(ilg),
+     2      hpd_yr_g(nlat), hpd_yr_m(nlat,nmos)
 c	----common block parametes----------------------- -----------------
       real  zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
      1         sphms,rhoms,slams
@@ -1247,7 +1248,7 @@ c       find the final year of the cycling met
 c       metcylyrst is defined in the joboptions file
         metcycendyr = metcylyrst + nummetcylyrs - 1
       endif
-
+      
 c     if cycling met (and not doing a transient run), find the popd and luc year to cycle with.
 c     it is assumed that you always want to cycle the popd and luc
 c     on the same year to be consistent. so if you are cycling the 
@@ -1461,7 +1462,8 @@ C    peatland output----------------------------------------------\
       open(unit=97,file=argbuff(1:strlen(argbuff))//'.CT15D_G') !peatland decompositon components (in decp.f)     
       open(unit=98,file=argbuff(1:strlen(argbuff))//'.CT16D_G') !peatland moss photosynthesis midday sub-areas(mosspht.f)
       open(unit=99,file=argbuff(1:strlen(argbuff))//'.CT17D_G') !peatland water balance
-      open(unit=90,file='testing')
+      open(unit=90,file=argbuff(1:strlen(argbuff))//'.CT18Y_G') !peatland depth information 
+      
 C    YW March 25, 2015 ----------------------------------------------/
 
       end if !ctem_on
@@ -1603,7 +1605,7 @@ C
        WRITE(651,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(651,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 C
-       IF(IGND.GT.3) THEN
+       IF(IGND.LE.3) THEN
           WRITE(651,6015) 
        ELSE
           WRITE(651,6515)
@@ -2009,7 +2011,7 @@ C     CTEM FILE TITLES DONE
 C======================= CTEM ========================================== /
 C
 C=======================================================================
-
+c
 C     BEGIN READ IN OF THE .INI FILE
       
       READ(10,5020) DEGLAT,DEGLON,ZRFMGRD(1),ZRFHGRD(1),ZBLDGRD(1),
@@ -2022,6 +2024,24 @@ C     BEGIN READ IN OF THE .INI FILE
       GGEOGRD(1)=0.0
 C     GGEOGRD(1)=-0.035
 
+c    -----------------read peatland input------------------------------\      
+       do  40 i = 1, nltest
+          do 40 m = 1, nmtest
+             read(17,*) ipeatlandrow(i,m),Cmossmasrow(i,m),
+     1                   litrmassmsrow(i,m),dmossrow(i,m)
+40    continue
+      write(6,*) 'NLTEST=',NLTEST
+      write(6,*) 'NMTEST=',NMTEST
+      write(6,*) 'nlat=', nlat
+      write(6,*) 'nmos=' ,nmos
+      write(6,*) 'ignd=', ignd
+      write(6,*) 'ican=', ican
+      write(6,*) 'icc=', icc
+      write(6,*) 'ipeatland=',ipeatlandrow
+      write(6,6990) 'Cmossmas=',Cmossmasrow
+      write(6,6990) 'litrmassms=',litrmassmsrow
+      write(6,6990) 'dmoss=',dmossrow 
+c    -----------------YW March 23, 2015 -------------------------------/
       DO 50 I=1,NLTEST
       DO 50 M=1,NMTEST
           READ(10,5040) (FCANROW(I,M,J),J=1,ICAN+1),(PAMXROW(I,M,J),
@@ -2048,6 +2068,15 @@ C     GGEOGRD(1)=-0.035
      1                  TSNOROW(I,M),TPNDROW(I,M)
           READ(10,5060) (THLQROW(I,M,J),J=1,3),(THICROW(I,M,J),
      1                  J=1,3),ZPNDROW(I,M)
+c     -------read in layer 4 to 10 for peatlands----------------------\
+c
+      if (ipeatlandrow(i,m) >0)    then 
+          READ(10,5060) (TBARROW(I,M,J),J=4,10)
+          READ(10,5060) (THLQROW(I,M,J),J=4,10)
+          READ(10,5060) (THICROW(I,M,J),J=4,10)
+      endif
+c     ---------------YW September 01, 2015 ----------------------------/
+C   
           READ(10,5070) RCANROW(I,M),SCANROW(I,M),SNOROW(I,M),
      1                  ALBSROW(I,M),RHOSROW(I,M),GROROW(I,M)
 
@@ -2058,24 +2087,8 @@ C
  25   CONTINUE                            
  5002 FORMAT(2X,2F8.2)                   
 C      
-c    -----------------read peatland input------------------------------\      
-       do  40 i = 1, nltest
-          do 40 m = 1, nmtest
-             read(17,*) ipeatlandrow(i,m),Cmossmasrow(i,m),
-     1                   litrmassmsrow(i,m),dmossrow(i,m)
-40    continue
-      write(6,*) 'NLTEST=',NLTEST
-      write(6,*) 'NMTEST=',NMTEST
-      write(6,*) 'nlat=', nlat
-      write(6,*) 'nmos=' ,nmos
-      write(6,*) 'ignd=', ignd
-      write(6,*) 'ican=', ican
-      write(6,*) 'icc=', icc
-      write(6,*) 'ipeatland=',ipeatlandrow
-      write(6,6990) 'Cmossmas=',Cmossmasrow
-      write(6,6990) 'litrmassms=',litrmassmsrow
-      write(6,6990) 'dmoss=',dmossrow 
-c    -----------------YW March 23, 2015 -------------------------------/
+c       
+
 C
 C======================= CTEM ========================================== \
 
@@ -2415,9 +2428,17 @@ C
       DO 100 I=1,NLTEST
       DO 100 M=1,NMTEST
 
+c       ------------------add TFREZ for all layers---------------------
+        if (ipeatlandrow(i,m)==0) then
           TBARROW(I,M,1)=TBARROW(I,M,1)+TFREZ
           TBARROW(I,M,2)=TBARROW(I,M,2)+TFREZ
           TBARROW(I,M,3)=TBARROW(I,M,3)+TFREZ
+        else 
+            do J = 1, ignd
+            tbarrow(i,m,j) = tbarrow(i,m, j) + tfrez
+            enddo
+        endif
+c       --------YW September 02, 2015 ----------------------------------                
           TSNOROW(I,M)=TSNOROW(I,M)+TFREZ
           TCANROW(I,M)=TCANROW(I,M)+TFREZ
 
@@ -2457,20 +2478,30 @@ C         WITH SNOW ON THE GROUND. NOTE: RUNCLASS.f HAS THIS SAME PROBLEM. JM JA
 
           IF(IGND.GT.3)                                 THEN
               DO 65 J=4,IGND
+                if (ipeatlandrow(i,m) == 0) then  !YW September 02, 2015 
                   TBARROW(I,M,J)=TBARROW(I,M,3)
+                endif
                   IF(SDEPROW(I,M).LT.(ZBOT(J-1)+0.001) .AND.
      1                  SANDROW(I,M,3).GT.-2.5)     THEN
                       SANDROW(I,M,J)=-3.0
                       CLAYROW(I,M,J)=-3.0
                       ORGMROW(I,M,J)=-3.0
+c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
+                    if (ipeatlandrow(i,m) == 0) then
                       THLQROW(I,M,J)=0.0
                       THICROW(I,M,J)=0.0
+                    endif
+c      --------------YW September 01, 2015------------------------------ 
                   ELSE
                       SANDROW(I,M,J)=SANDROW(I,M,3)
                       CLAYROW(I,M,J)=CLAYROW(I,M,3)
                       ORGMROW(I,M,J)=ORGMROW(I,M,3)
+c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
+                    if (ipeatlandrow(i,m) == 0) then
                       THLQROW(I,M,J)=THLQROW(I,M,3)
                       THICROW(I,M,J)=THICROW(I,M,3)
+                    endif
+c      --------------YW September 01, 2015------------------------------ 
                   ENDIF
 65            CONTINUE
           ENDIF
@@ -2959,7 +2990,8 @@ c	 peatland PFT bio2str YW March 19, 2015---------------------------/
 c
        write(6,6990)  'veghght =',veghghtgat   !YW
        write(6,6990)  'rootdpth=',rootdpthgat   !YW
-6990   format(A15,12f6.2)                         
+6990   format(A15,12f6.2)
+
 c           
 c    find the wilting point and field capacity for classt
 c    (it would be preferable to have this in a subroutine 
@@ -3252,6 +3284,7 @@ c
 
 C===================== CTEM ============================================ /
 C
+
       CALL CLASSI(VPDGRD,TADPGRD,PADRGRD,RHOAGRD,RHSIGRD,
      1            RPCPGRD,TRPCGRD,SPCPGRD,TSPCGRD,TAGRD,QAGRD,
      2            PREGRD,RPREGRD,SPREGRD,PRESGRD,
@@ -3538,10 +3571,6 @@ C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
 C          * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM
 C          
-c        write(90,6991)    ailcggat(1,6),ailcggat(1,7),ailcggat(1,12),
-c     1    ailcgsgat(1,6), ailcgsgat(1,7), ailcgsgat(1,12)                   
-c6991      format(6f10.5)
-
       CALL CLASST     (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1  THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG, 
      2  GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS,  
@@ -3924,13 +3953,13 @@ c    -------------- inputs updated by ctem are above this line ------
 c    ---------------- outputs are listed above this line ------------
 c    -------------- moss C in peatlands -------------------------------\
 c
-	1	,ipeatlandgat,iyear,ihour,imin,
+	1	,ipeatlandgat,iyear,ihour,imin,jdst,jdend,iyd,
 	2	anmosac_g,rmlmosac_g,gppmosac_g,Cmossmasgat,
 	3	litrmassmsgat,wtabgat,thpgat, bigat, 
 	4    psisgat,grksgat,thfcgat, thlwgat, 
 	5    thlqaccgat_m, thicaccgat_m,tfrez,nppmosgat, armosgat,hpdgat)	
-c    ---------------- YW March 26, 2015  -------------------------------/
-c          
+c
+c    ---------------- YW March 26, 2015  -------------------------------/          
 c    ----------calculate degree days for mosspht Vmax seasonality------
        do   i = 1, nml
           if (iday == 2)    then
@@ -3943,8 +3972,21 @@ c    ----------calculate degree days for mosspht Vmax seasonality------
           elseif (taaccgat_m(i)<tfrez)            then 
                cdd(i)=cdd(i)+taaccgat_m(i)-tfrez
           endif
+c----------------update peatland bottom layer depth--------------------       
+          if (ipeatlandgat(i) > 0)         then
+              dlzwgat(i,ignd)= hpdgat(i)-0.90
+              sdepgat(i) = hpdgat(i)
+          endif
+c================YW August 26, 2015 =======================/ 
       enddo 
-c---------------YW May 27, 2015 ---------------------------------------
+
+        if (iday == 1) then
+        write(90,6991)   iyear, iday,DLZWGAT(1,10), hpdgat
+c        , sdepgat
+c      1     ailcggat(1,6),ailcggat(1,7),ailcggat(1,12),
+c     1    ailcgsgat(1,6), ailcgsgat(1,7), ailcgsgat(1,12)                   
+6991      format(2I7,6f12.5)
+        endif
 c
       endif  !if(ctem_on)
 c
@@ -4198,9 +4240,11 @@ C     * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
      &    2(A6,I2))
 6600  FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
 6501  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-6601  FORMAT(1X,I2,I3,I5,I6,7(F7.2,2F6.3),10F9.4,2(A6,I2))  
+c6601  FORMAT(1X,I2,I3,I5,I6,7(F7.2,2F6.3),10F9.4,2(A6,I2))  YW September 02, 2015 
+6601  FORMAT(1X,I2,I3,I5,I6,7(F8.2,2F7.3),10F10.4,2(A7,I3))  
 6700  FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))       
-6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))   
+C6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))   
+6800  FORMAT(1X,I2,I3,I5,I6,3X,22(F12.4,3X),2(A7,2I2))   
 6900  FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))   
 C
 C===================== CTEM ============================================ \
@@ -4320,7 +4364,7 @@ C
               ALTOT=0.0
           ENDIF
           FSSTAR=FSDOWN*(1.0-ALTOT)
-          FLSTAR=FDLGRD(I)-SBC*GTROW(I,M)**4
+          FLSTAR=FDLGRD(I)-SBC*GTROW(I,M)**4          
           QH=HFSROW(I,M)
           QE=QEVPROW(I,M)
           BEG=FSSTAR+FLSTAR-QH-QE
@@ -4870,7 +4914,7 @@ C
 c    ----peatland output-----------------------------------------------\
 
 	  write(99,6999)  WTBLACC, ZSN,PREACC,EVAPACC,ROFACC,g12acc,g23acc
-6999	  format(10f10.3)
+6999	  format(10f12.3)
 c    ----YW March 23, 2015 --------------------------------------------/
 C
 C     * RESET ACCUMULATOR ARRAYS.
@@ -5518,6 +5562,7 @@ c
            CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
 c
 c     ------convert peatland C fluxes to gC/m2/day for output-----------\
+
           if (ipeatlandrow(i,m) >0 )         then
             nppmosrow(i,m)=nppmosrow(i,m)*1.0377 ! convert to gc/m2.day
             armosrow(i,m)=armosrow(i,m)*1.0377 ! convert to gc/m2.day
@@ -5983,8 +6028,7 @@ c          CH4(wetland) related variables !Rudra 04/12/2013
            wetfdyn_yr_g(i)  =0.0
            ch4dyn1_yr_g(i)  =0.0
            ch4dyn2_yr_g(i)  =0.0
-
-
+           hpd_yr_g(i) = 0.0 
           endif
 
 861     continue
@@ -6474,7 +6518,7 @@ c             CH4(wetland) variables !Rudra
      &                           +ch4dyn1row(i,m)
                ch4dyn2_yr_m(i,m) = ch4dyn2_yr_m(i,m)
      &                           +ch4dyn2row(i,m)
-
+               hpd_yr_m(i,m)=hpdrow(i,m)      !YW September 04, 2015 
 
             if (iday.eq.365) then
 
@@ -6492,7 +6536,6 @@ c             CH4(wetland) variables !Rudra
 
                 litrmass_yr_m(i,m,iccp1)=litrmassrow(i,m,iccp1)
                 soilcmas_yr_m(i,m,iccp1)=soilcmasrow(i,m,iccp1)
-
                 barefrac=1.0
 
               do j=1,icc
@@ -6510,6 +6553,7 @@ c             CH4(wetland) variables !Rudra
      &                          *farerow(i,m)*fcancmxrow(i,m,j) 
                 totcmass_yr_g(i)=totcmass_yr_g(i)+totcmass_yr_m(i,m,j)
      &                          *farerow(i,m)*fcancmxrow(i,m,j) 
+
                 npp_yr_g(i)=npp_yr_g(i)+npp_yr_m(i,m,j)
      &                          *farerow(i,m)*fcancmxrow(i,m,j)
                 gpp_yr_g(i)=gpp_yr_g(i)+gpp_yr_m(i,m,j)    
@@ -6597,6 +6641,8 @@ c    CH4(wetland) variables !Rudra
      &                           +ch4dyn1_yr_m(i,m)*farerow(i,m)
                ch4dyn2_yr_g(i) = ch4dyn2_yr_g(i)
      &                           +ch4dyn2_yr_m(i,m)*farerow(i,m)
+
+            hpd_yr_g(i)=hpd_yr_g(i)+hpd_yr_m(i,m)*farerow(i,m)    !YW September 04, 2015 
   
 c
             endif ! iday 365
@@ -6606,7 +6652,6 @@ c
           if (iday.eq.365) then
 
               barefrac=1.0
-
 c            Write to file .CT01Y_M/.CT01Y_G
 
            do m=1,nmtest
@@ -6643,15 +6688,15 @@ c            Write to file .CT01Y_M/.CT01Y_G
      7            ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
              end if
             end if
-
            end do !m
-
+           
              write(86,8105)iyear,laimaxg_yr_g(i),vgbiomas_yr_g(i),
      1            stemmass_yr_g(i),rootmass_yr_g(i),litrmass_yr_g(i),
      2            soilcmas_yr_g(i),totcmass_yr_g(i),npp_yr_g(i),
      3            gpp_yr_g(i),nep_yr_g(i),
      4            nbp_yr_g(i),hetrores_yr_g(i),autores_yr_g(i),
      5            litres_yr_g(i),soilcres_yr_g(i),' GRDAV'
+     
 
            if (dofire .or. lnduseon) then
 c            Write to file .CT06Y_M/.CT06Y_G
@@ -6713,7 +6758,7 @@ C
      2                     ch4dyn1_yr_g(i),ch4dyn2_yr_g(i)
               endif 
 
-
+c           write(90,*) iyear, hpd_yr_g(i)
 
 c             initialize yearly accumulated arrays
 c             for the next round
@@ -6732,7 +6777,7 @@ C       !Rudra
                wetfdyn_yr_m(i,m)  =0.0
                ch4dyn1_yr_m(i,m)  =0.0
                ch4dyn2_yr_m(i,m)  =0.0
-
+               hpd_yr_m(i,m)      =0.0      !YW September 04, 2015 
 
                do j = 1, icc 
                 laimaxg_yr_m(i,m,j)=0.0
@@ -7005,6 +7050,7 @@ c      check if the model is done running.
             lopcount = lopcount+1           
 
              if(lopcount.le.ctemloop .and. .not. transient_run)then
+        
 
               rewind(12)   ! rewind met file
 c /---------------------Rudra----------------/
