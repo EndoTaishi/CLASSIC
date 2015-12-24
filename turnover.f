@@ -100,12 +100,13 @@ c
         if(stemlife(n).gt.zero)then
          nrmlsmlr(i,j)=stemmass(i,j)*(1.0-exp(-1.0/(365.0*stemlife(n))))  
         endif
-        if(rootlife(n).gt.zero)then
+        if( rootlife(n).gt.zero)then
          nrmlrtlr(i,j)=rootmass(i,j)*(1.0-exp(-1.0/(365.0*rootlife(n))))  
         endif
        endif
 210    continue
 200   continue
+
 c
 c     if crops are in harvest mode then we start harvesting stem as well.
 c     if stem has already been harvested then we set the stem harvest

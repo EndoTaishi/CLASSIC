@@ -58,7 +58,7 @@ real, parameter, dimension(lat+1) :: edgelat = &
 ! ----
 ! Model state
 integer, parameter :: nlat=1            !
-integer, parameter :: nmos=10           ! Number of mosaic tiles
+integer, parameter :: nmos=1            ! Number of mosaic tiles
 integer, parameter :: ilg = nlat*nmos   !
 integer, parameter :: nmon=12           ! Number of months in a year
 
@@ -66,28 +66,46 @@ integer, parameter :: nmon=12           ! Number of months in a year
 ! Plant-related
 
 integer, parameter :: ican=4            ! Number of CLASS pfts
-integer, parameter :: ignd=3            ! Number of soil layers
+integer, parameter :: ignd=10           ! Number of soil layers
 integer, parameter :: icp1 = ican + 1   !
-integer,parameter  :: icc=9             ! Number of CTEM pfts
+!integer,parameter  :: icc=9            ! Number of CTEM pfts    
+integer,parameter  :: icc=12            ! YW + EVG shrub,DCD shrubs, sedge              
 integer,parameter  :: iccp1 = icc + 1   !
-integer, parameter :: l2max = 3         !
-integer, parameter :: kk = 12           ! product of class pfts and l2max
+!integer, parameter :: l2max = 3        !
+!integer, parameter :: kk = 12          ! product of class pfts and l2max
 integer, parameter :: numcrops = 2      ! number of crop pfts
 integer, parameter :: numtreepfts = 5   ! number of tree pfts
-integer, parameter :: numgrass = 2      ! number of grass pfts
+!integer, parameter :: numgrass = 2      ! number of grass pfts
+integer, parameter :: numgrass = 3      ! YW May 11, 2015 
+integer, parameter :: numshrubs = 2     ! number of shrubs pfts
+! Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
+!integer, parameter, dimension(kk) :: modelpft= [ 1,     1,     0,  &  ! CLASS PFT 1 NDL
+!                             !                  EVG    DCD
+!                                                 1,     1,     1,  &  ! CLASS PFT 2 BDL
+!                             !                  EVG  DCD-CLD DCD-DRY  ! NOTE 2 TYPES OF BDL DCD - COLD & DRY
+!                                                 1,     1,     0,  &  ! CLASS PFT 3 CROP
+!                             !                  C3      C4
+!                                                 1,     1,     0 ]   ! CLASS PFT 4 GRASS
+!                             !                  C3      C4
+
+
+!    add peatland pfts------------------------------------------------\
 
 integer, parameter :: nbs = 4           !
+integer, parameter :: l2max = 5          
+integer, parameter :: kk = 20            
 
 ! Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
-integer, parameter, dimension(kk) :: modelpft= [ 1,     1,     0,  &  ! CLASS PFT 1 NDL
-                             !                  EVG    DCD
-                                                 1,     1,     1,  &  ! CLASS PFT 2 BDL
-                             !                  EVG  DCD-CLD DCD-DRY  ! NOTE 2 TYPES OF BDL DCD - COLD & DRY
-                                                 1,     1,     0,  &  ! CLASS PFT 3 CROP
-                             !                  C3      C4
-                                                 1,     1,     0 ]   ! CLASS PFT 4 GRASS
-                             !                  C3      C4
+integer, parameter, dimension(kk) :: modelpft= [ 1,     1,     0,     0,        0, &  ! CLASS PFT 1 NDL
+                             !                  EVG    DCD   
+                                                 1,     1,     1,     1,        1, &  ! CLASS PFT 2 BDL
+                             !                  EVG  DCD-CLD DCD-DRY EVG-shrubs DCD-shrubs
+                                                 1,     1,     0,     0,        0,&  ! CLASS PFT 3 CROP
+                             !                  C3      C4  
+                                                 1,     1,     1,     0,        0 ]   ! CLASS PFT 4 GRASS
+                             !                  C3      C4     sedge 
 
+!    YW MAy 12, 2015 ------------------------------------------------/
 
 real, parameter :: seed = 0.001 ! seed pft fraction, same as in competition
                                 ! in mosaic mode, all tiles are given this
@@ -98,15 +116,30 @@ real, parameter :: minbare = 1.0e-5 ! minimum bare fraction when running competi
 ! conversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
 
+! YW add pft indexes for all pfts and use it in phenology April 15, 2015 
+
 ! simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
-logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false. ]   
+!logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false. ]   
+logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false.,.false. ]      !YW
 
 ! simple grass matric, define the number and position of grass 
-logical, parameter, dimension(icc) :: grass = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true. ] 
+!logical, parameter, dimension(icc) :: grass = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true. ] 
+logical, parameter, dimension(icc) :: grass = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true. ,.true.]     !YW
 
-integer, parameter, dimension(numgrass) :: grass_ind = [ 8, 9 ] ! index of the grass pfts (only 2 grass pfts at present)        
+!integer, parameter, dimension(numgrass) :: grass_ind = [ 8, 9 ] ! index of the grass pfts (only 2 grass pfts at present)        
+integer, parameter, dimension(numgrass) :: grass_ind = [ 10, 11,12 ]  !YW May 11, 2015             
+integer, parameter, dimension(numshrubs) :: shrub_ind = [ 6, 7 ]  !not used for now    
+integer, parameter, dimension(numtreepfts) :: tree_ind = [ 1, 2,3,4,5 ]       
+integer, parameter, dimension(numcrops) :: crop_ind = [ 8,9 ]                 
+!
+!    the new pft index table  YW April 15, 2015 
+!                  EVG    DCD       /         /         /
+!                  EVG  DCD-CLD DCD-DRY EVG-shrubs DCD-shrubs
+!                  C3      C4       /         /         /
+!                  C3      C4   sedge         /         /
 
-! ==========================================================================================================================
+
+!==========================================================================================================================
 
 ! PFT specific parameters:
 
@@ -320,6 +353,11 @@ subroutine initpftpars(compete)
 !     crops       |   c3        c4       ---
 !     grasses     |   c3        c4       ---
 
+! for peatland pfts                YW April 13, 2015 
+!     needle leaf |  evg       dcd       ---
+!     broad leaf  |  evg   dcd-cld   dcd-dry   evg-shrubs   dcd-shrubs
+!     crops       |   c3        c4       ---
+!     grasses     |   c3        c4       ---
 
 implicit none
 
@@ -337,103 +375,98 @@ logical, intent(in) :: compete   !true if the competition scheme is on.
 
 ! Parameters used in more than one subroutine:
 
-tolrance = 0.0001d0 
+tolrance = 0.0001d0           !was 0.0001d0 YW May 12, 2015 in peatland the C balance gap reaches 0.00016. 
+
+!    YW peatland add 2 columns for all pft parameters(kk) ------------\
 
 ! (kn -> CAREFUL: Separate set defined in PHTSYN3.f!!)
-kn= [ 0.50, 0.50, 0.00, &
-      0.50, 0.50, 0.50, &
-      0.40, 0.48, 0.00, &
-      0.46, 0.44, 0.00 ]
-      
-lfespany  =   [ 5.00, 1.00, 0.00, &
-                1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
-!lfespany  =   [ 5.00, 0.40, 0.00, & !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
-!               1.50, 1.00, 1.00, &
-                1.75, 1.75, 0.00, &
-                1.00, 1.00, 0.00 ]      
+kn= [ 0.50, 0.50, 0.00, 0.00, 0.00, &         
+      0.50, 0.50, 0.50, 0.50, 0.50, &    
+      0.40, 0.48, 0.00, 0.00, 0.00, &
+      0.46, 0.44, 0.46, 0.00, 0.00 ]         
 
 ! allocate.f parameters: --------------
 
 consallo = .false.
 
-rtsrmin  = [ 0.16, 0.16, 0.00, &
-             0.16, 0.16, 0.32, &
-             0.16, 0.16, 0.00, & 
-             0.50, 0.50, 0.00 ]
+rtsrmin  = [ 0.16, 0.16, 0.00, 0.00, 0.00, &
+             0.16, 0.16, 0.32, 0.16, 0.16, &
+             0.16, 0.16, 0.00, 0.00, 0.00, & 
+             0.50, 0.50, 0.30, 0.00, 0.00 ]       !YW sedge has less roots fraction than the real grass 
 
-aldrlfon = [ 1.00, 1.00, 0.00, &
-             1.00, 1.00, 1.00, &
-             1.00, 1.00, 0.00, &
-             1.00, 1.00, 0.00 ]
+aldrlfon = [ 1.00, 1.00, 0.00, 0.00, 0.00, &
+             1.00, 1.00, 1.00, 1.00, 1.00, &
+             1.00, 1.00, 0.00, 0.00, 0.00, &
+             1.00, 1.00, 1.00, 0.00, 0.00 ]
 
-caleaf = [ 0.275, 0.300, 0.000, &
-           0.200, 0.250, 0.250, &
-           0.400, 0.400, 0.000, &
-           0.450, 0.450, 0.000 ]
+caleaf = [ 0.275, 0.300, 0.000, 0.000, 0.000, &
+           0.200, 0.250, 0.250, 0.275, 0.300, &
+           0.400, 0.400, 0.000, 0.000, 0.000, &
+           0.450, 0.450, 0.450, 0.000, 0.000]
 
-castem = [ 0.475, 0.450, 0.000, &
-           0.370, 0.400, 0.400, &
-           0.150, 0.150, 0.000, &
-           0.000, 0.000, 0.000 ]
+castem = [ 0.475, 0.450, 0.000, 0.000, 0.000, &
+           0.370, 0.400, 0.400, 0.475, 0.450, &
+           0.150, 0.150, 0.000, 0.000, 0.000, &
+           0.000, 0.000, 0.000, 0.000, 0.000 ]
 
-caroot =  [ 0.250, 0.250, 0.000, &
-            0.430, 0.350, 0.350, &
-            0.450, 0.450, 0.000, & 
-            0.550, 0.550, 0.000 ]
+caroot =  [ 0.250, 0.250, 0.000, 0.000, 0.000, &
+            0.430, 0.350, 0.350, 0.250, 0.250, &
+            0.450, 0.450, 0.000, 0.000, 0.000, & 
+            0.550, 0.550, 0.550, 0.000, 0.000 ]
 
 ! bio2str.f parameters: --------
 
-abar    = [ 4.70, 5.86, 0.00, &
-            3.87, 3.46, 3.97, &
-            3.97, 3.97, 0.00, &
-            5.86, 4.92, 0.00 ]
+abar    = [ 4.70, 5.86, 0.00, 0.00, 0.00, &
+            3.87, 3.46, 3.97, 8.50, 9.50, &  !shrubs in should have large abar because of Water restrictions
+            3.97, 3.97, 0.00, 0.00, 0.00, &  !so that rootdepth is shallower
+            5.86, 4.92, 9.50, 0.00, 0.00 ]   
 
-avertmas = [ 1.85, 1.45, 0.00, &
-             2.45, 2.10, 2.10, &
-             0.10, 0.10, 0.00, &
-             0.70, 0.70, 0.00 ]
+avertmas = [ 1.85, 1.45, 0.00, 0.00, 0.00, &
+             2.45, 2.10, 2.10, 1.50, 1.20, & !shrubs root biomass lower than trees YW 
+             0.10, 0.10, 0.00, 0.00, 0.00, &
+             0.70, 0.70, 0.20, 0.00, 0.00 ]       !Herbaceous above/below biomass ratio is 2.91 vs graminoids 0.63 
+                                                  !in Tundra (Koerner & Renhardt 1987)
+alpha   = [ 0.80, 0.80, 0.00, 0.00, 0.00, &
+            0.80, 0.80, 0.80, 0.80, 0.80, &
+            0.80, 0.80, 0.00, 0.00, 0.00, &
+            0.80, 0.80, 0.80, 0.00, 0.00 ]
 
-alpha   = [ 0.80, 0.80, 0.00, &
-            0.80, 0.80, 0.80, &
-            0.80, 0.80, 0.00, &
-            0.80, 0.80, 0.00 ]
+prcnslai = [ 7.5, 7.5, 0.0, 0.0, 0.0, &
+             7.5, 7.5, 7.5, 7.5, 7.5, &
+             7.5, 7.5, 0.0, 0.0, 0.0 ,&
+             2.5, 2.5, 2.5, 0.0, 0.0 ]
 
-prcnslai = [ 7.5, 7.5, 0.0, &
-             7.5, 7.5, 7.5, &
-             7.5, 7.5, 0.0, &
-             2.5, 2.5, 0.0 ]
+minslai = [ 0.3, 0.3, 0.0, 0.0, 0.0, &
+            0.3, 0.3, 0.3, 0.3, 0.3, &
+            0.2, 0.2, 0.0, 0.0, 0.0, &
+            0.2, 0.2, 0.2, 0.0, 0.0  ]
 
-minslai = [ 0.3, 0.3, 0.0, &
-            0.3, 0.3, 0.3, &
-            0.2, 0.2, 0.0, &
-            0.2, 0.2, 0.0 ]
+mxrtdpth = [ 3.00, 3.00, 0.00, 0.00, 0.00, &
+             5.00, 5.00, 3.00, 1.00, 1.00, & !YW peatland shrubs lower values April 22, 2015 
+             2.00, 2.00, 0.00, 0.00, 0.00, &
+             1.00, 1.00, 1.00, 0.00, 0.00 ] 
 
-mxrtdpth = [ 3.00, 3.00, 0.00, &
-             5.00, 5.00, 3.00, &
-             2.00, 2.00, 0.00, &
-             1.00, 1.00, 0.00 ] 
+albvis = [ 3.00, 3.00, 0.00, 0.00, 0.00, &
+           3.00, 5.00, 5.00, 3.00, 3.00, &
+           5.50, 5.50, 0.00, 0.00, 0.00, &
+           5.00, 6.00, 5.00, 0.00, 0.00 ]
 
-albvis = [ 3.00, 3.00, 0.00, &
-           3.00, 5.00, 5.00, &
-           5.50, 5.50, 0.00, &
-           5.00, 6.00, 0.00 ]
-
-albnir = [ 19.0, 19.0, 0.00, &
-           23.0, 29.0, 29.0, &
-           34.0, 34.0, 0.00, &
-           30.0, 34.0, 0.00 ] 
+albnir = [ 19.0, 19.0, 0.00, 0.00, 0.00, &
+           23.0, 29.0, 29.0, 19.0, 19.0, &
+           34.0, 34.0, 0.00, 0.00, 0.00, &
+           30.0, 34.0, 30.0, 0.00, 0.00 ] 
 
 ! ctem.f parameters: ----------
 
-humicfac = [ 0.42, 0.42, 0.00, &
-             0.53, 0.48, 0.48, &
-             0.10, 0.10, 0.00, &
-             0.42, 0.42, 0.00 ]
+humicfac = [ 0.42, 0.42, 0.00, 0.00, 0.00, &
+             0.53, 0.48, 0.48, 0.42, 0.42, &
+             0.10, 0.10, 0.00, 0.00, 0.00, &  
+             0.42, 0.42, 0.42, 0.00, 0.00 ]
 
-grescoef = [ 0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.15, &
-             0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
+grescoef = [ 0.15, 0.15, 0.00, 0.00, 0.00, &
+             0.15, 0.15, 0.15, 0.15, 0.15, &
+             0.15, 0.15, 0.00, 0.00, 0.00, &
+             0.15, 0.15, 0.15, 0.00, 0.00 ]
 
 lambdamax = 0.10 
 
@@ -464,55 +497,57 @@ parmlght = 0.8
 parblght = 0.1
 
 ! Li et al vals (except grass)
-maxsprd = [  0.54, 0.54, 0.00, &
-             0.40, 0.40, 0.40, &
-             0.00, 0.00, 0.00, &
-             0.72, 0.72, 0.00 ]
 
-frco2glf = [ 0.21, 0.21, 0.00, & 
-             0.21, 0.21, 0.21, & 
-             0.00, 0.00, 0.00, &
-             0.24, 0.24, 0.00 ]   
+maxsprd = [  0.54, 0.54, 0.00, 0.00, 0.00, &
+             0.40, 0.40, 0.40, 0.54, 0.54, &
+             0.00, 0.00, 0.00, 0.00, 0.00, &
+             2.00, 2.00, 2.00, 0.00, 0.00 ]     ! is 0.72 for PFT 16 &17 in Joe's 3.6.2 develop version
 
-frco2blf = [ 0.00, 0.00, 0.00, & 
-             0.00, 0.00, 0.00, & 
-             0.00, 0.00, 0.00, &
-             0.27, 0.27, 0.00 ]
+frco2glf = [ 0.21, 0.21, 0.00, 0.00, 0.00, & 
+             0.21, 0.21, 0.21, 0.21, 0.21, & 
+             0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.24, 0.24, 0.24, 0.00, 0.00 ]   
 
-frltrglf = [ 0.06, 0.06, 0.00, &
-             0.06, 0.06, 0.06, & 
-             0.00, 0.00, 0.00, &
-             0.03, 0.03, 0.00 ]  
+frco2blf = [ 0.00, 0.00, 0.00, 0.00, 0.00, & 
+             0.00, 0.00, 0.00, 0.00, 0.00, & 
+             0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.27, 0.27, 0.27, 0.00, 0.00 ]
 
-frltrblf = [ 0.00, 0.00, 0.00, &
-             0.00, 0.00, 0.00, & 
-             0.00, 0.00, 0.00, &
-             0.02, 0.02, 0.00 ]
+frltrglf = [ 0.06, 0.06, 0.00, 0.00, 0.00, &
+             0.06, 0.06, 0.06, 0.06, 0.06, & 
+             0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.03, 0.03, 0.03, 0.00, 0.00 ]  
 
-frco2stm = [ 0.06, 0.06, 0.00, &
-             0.06, 0.03, 0.03, &  
-             0.00, 0.00, 0.00, &
-             0.00, 0.00, 0.00 ]
+frltrblf = [ 0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00, 0.00, 0.00, & 
+             0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.02, 0.02, 0.02, 0.00, 0.00 ]
 
-frltrstm = [ 0.15, 0.15, 0.00, &
-             0.15, 0.09, 0.09, & 
-             0.00, 0.00, 0.00, &
-             0.00, 0.00, 0.00 ]
+frco2stm = [ 0.06, 0.06, 0.00, 0.00, 0.00, &
+             0.06, 0.03, 0.03, 0.06, 0.06, &  
+             0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00, 0.00, 0.00 ]
 
-frco2rt = [ 0.0, 0.0, 0.0, &
-            0.0, 0.0, 0.0, &
-            0.0, 0.0, 0.0, &
-            0.0, 0.0, 0.0 ]
+frltrstm = [ 0.15, 0.15, 0.00, 0.00, 0.00, &
+             0.15, 0.09, 0.09, 0.15, 0.15, & 
+             0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00, 0.00, 0.00  ]
 
-frltrrt = [ 0.03, 0.03, 0.00, &
-            0.03, 0.03, 0.03, &
-            0.00, 0.00, 0.00, &
-            0.08, 0.08, 0.00 ]
+frco2rt = [ 0.0, 0.0, 0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0, 0.0, 0.0  ]
 
-frltrbrn = [ 0.15, 0.15, 0.00, &
-             0.18, 0.18, 0.18, &
-             0.00, 0.00, 0.00, &
-             0.21, 0.21, 0.00 ]
+frltrrt = [ 0.03, 0.03, 0.00, 0.00, 0.00, &
+            0.03, 0.03, 0.03, 0.03, 0.03, &
+            0.00, 0.00, 0.00, 0.00, 0.00, &
+            0.08, 0.08, 0.08, 0.00, 0.00 ]
+
+frltrbrn = [ 0.15, 0.15, 0.00, 0.00, 0.00, &
+             0.18, 0.18, 0.18, 0.15, 0.15, &
+             0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.21, 0.21, 0.21, 0.00, 0.00 ]
+
 
 !     emissions factors by chemical species
 !     
@@ -520,10 +555,10 @@ frltrbrn = [ 0.15, 0.15, 0.00, &
 !     Biogeosci. Units: g species / (kg DOM)
  
 !     Andreae 2011 as described in Li et al. 2012
-emif_co2 = [ 1576.0, 1576.0,   0.00, &
-             1604.0, 1576.0, 1654.0, &
-             1576.0, 1654.0,   0.00, &
-             1576.0, 1654.0,   0.00 ]
+emif_co2 = [ 1576.0, 1576.0,   0.00,   0.00,   0.00, &
+             1604.0, 1576.0, 1654.0, 1576.0, 1576.0, &
+             1576.0, 1654.0,   0.00,   0.00,   0.00, &
+             1576.0, 1654.0, 1576.00,   0.00,   0.00 ]
 
 !    values from Wiedinmyer et al. 2011
 !emif_co2 = [ 1514.0, 1514.0,   0.00, &
@@ -532,10 +567,10 @@ emif_co2 = [ 1576.0, 1576.0,   0.00, &
 !             1692.0, 1692.0,   0.00 ]
  
 !     Andreae 2011 as described in Li et al. 2012
-emif_co = [ 106.0, 106.0, 0.00, &
-            103.0, 106.0, 64.0, &
-            106.0,  64.0, 0.00, &
-            106.0,  64.0, 0.00 ]
+emif_co = [ 106.0, 106.0, 0.00,  0.00,  0.00, &
+            103.0, 106.0, 64.0, 106.0, 106.0, &
+            106.0,  64.0, 0.00,  0.00,  0.00, &
+            106.0,  64.0, 106.00,  0.00,  0.00 ]
 
 !    values from Wiedinmyer et al. 2011
 !emif_co = [ 118.0, 118.0, 0.00, &
@@ -544,10 +579,10 @@ emif_co = [ 106.0, 106.0, 0.00, &
 !             59.0,  59.0, 0.00 ]
 
 !     Andreae 2011 as described in Li et al. 2012
-emif_ch4 = [ 4.8, 4.8, 0.0, &
-             5.8, 4.8, 2.4, &
-             4.8, 2.4, 0.0, &
-             4.8, 2.4, 0.0 ]
+emif_ch4 = [ 4.8, 4.8, 0.0, 0.0, 0.0, &
+             5.8, 4.8, 2.4, 4.8, 4.8, &
+             4.8, 2.4, 0.0, 0.0, 0.0, &
+             4.8, 2.4, 4.8, 0.0, 0.0 ]
 
 !    values from Wiedinmyer et al. 2011
 !emif_ch4 = [ 6.0, 6.0, 0.0, &
@@ -556,10 +591,10 @@ emif_ch4 = [ 4.8, 4.8, 0.0, &
 !             1.5, 1.5, 0.0 ]
 
 !     Andreae 2011 as described in Li et al. 2012
-emif_nmhc = [ 5.7, 5.7, 0.0, &
-              6.4, 5.7, 3.7, &
-              5.7, 3.7, 0.0, &
-              5.7, 3.7, 0.0 ] 
+emif_nmhc = [ 5.7, 5.7, 0.0, 0.0, 0.0, &
+              6.4, 5.7, 3.7, 5.7, 5.7, &
+              5.7, 3.7, 0.0, 0.0, 0.0, &
+              5.7, 3.7, 5.7, 0.0, 0.0 ] 
 
 !    values from Wiedinmyer et al. 2011
 !emif_nmhc = [ 5.7, 5.7, 0.0, &
@@ -568,10 +603,10 @@ emif_nmhc = [ 5.7, 5.7, 0.0, &
 !              3.4, 3.4, 0.0 ]
 
 !     Andreae 2011 as described in Li et al. 2012
-emif_h2 = [ 1.80, 1.80, 0.00, &
-            2.54, 1.80, 0.98, &
-            1.80, 0.98, 0.00, &
-            1.80, 0.98, 0.00 ]
+emif_h2 = [ 1.80, 1.80, 0.00, 0.00, 0.00, &
+            2.54, 1.80, 0.98, 1.80, 1.80, &
+            1.80, 0.98, 0.00, 0.00, 0.00, &
+            1.80, 0.98, 1.80, 0.00, 0.00 ]
 
 !    values from Wiedinmyer et al. 2011
 !emif_h2 = [ 2.30, 2.30, 0.00, &
@@ -580,10 +615,10 @@ emif_h2 = [ 1.80, 1.80, 0.00, &
 !            0.97, 0.97, 0.00 ]
 
 !     Andreae 2011 as described in Li et al. 2012
-emif_nox = [ 3.24, 3.24, 0.00, &
-             2.90, 3.24, 2.49, &
-             3.24, 2.49, 0.00, &
-             3.24, 2.49, 0.00 ]
+emif_nox = [ 3.24, 3.24, 0.00, 0.00, 0.00, &
+             2.90, 3.24, 2.49, 3.24, 3.24, &
+             3.24, 2.49, 0.00, 0.00, 0.00, &
+             3.24, 2.49, 3.24, 0.00, 0.00 ]
 
 !    values from Wiedinmyer et al. 2011 (species: "NOx (as NO)" from Table 1)
 !emif_nox = [ 1.80, 2.30, 0.00, &
@@ -592,18 +627,18 @@ emif_nox = [ 3.24, 3.24, 0.00, &
 !             2.80, 2.80, 0.00 ]
 
 !     Andreae 2011 as described in Li et al. 2012 
-emif_n2o = [ 0.26, 0.26, 0.00, &
-             0.23, 0.26, 0.20, &
-             0.26, 0.20, 0.00, &
-             0.26, 0.20, 0.00 ]
+emif_n2o = [ 0.26, 0.26, 0.00, 0.00, 0.00, &
+             0.23, 0.26, 0.20, 0.26, 0.26, &
+             0.26, 0.20, 0.00, 0.00, 0.00, &
+             0.26, 0.20, 0.26, 0.00, 0.00 ]
 
 !     emission factors for aerosols
 
 !     Andreae 2011 as described in Li et al. 2012
-emif_pm25 = [ 12.7, 12.7, 0.0, &
-              10.5, 12.7, 5.2, &
-              12.7,  5.2, 0.0, &
-              12.7,  5.2, 0.0 ]
+emif_pm25 = [ 12.7, 12.7,  0.0,  0.0,  0.0, &
+              10.5, 12.7,  5.2, 12.7, 12.7, &
+              12.7,  5.2,  0.0,  0.0,  0.0, &
+              12.7,  5.2, 12.7,  0.0,  0.0 ]
 
 !    values from Wiedinmyer et al. 2011
 !emif_pm25 = [ 13.0, 13.0, 0.0, &
@@ -612,10 +647,10 @@ emif_pm25 = [ 12.7, 12.7, 0.0, &
 !               5.4,  5.4, 0.0 ] 
 
 !     Andreae 2011 as described in Li et al. 2012
-emif_tpm = [ 17.6, 17.6, 0.0, &
-             14.7, 17.6, 8.5, &
-             17.6,  8.5, 0.0, &
-             17.6,  8.5, 0.0 ]
+emif_tpm = [ 17.6, 17.6,  0.0,  0.0,  0.0, &
+             14.7, 17.6,  8.5, 17.6, 17.6, &
+             17.6,  8.5,  0.0, 0.0,   0.0, &
+             17.6,  8.5, 17.6, 0.0,   0.0 ]
 
 !    values from Wiedinmyer et al. 2011
 !emif_tpm = [ 18.0, 18.0, 0.0, &
@@ -624,10 +659,10 @@ emif_tpm = [ 17.6, 17.6, 0.0, &
 !              8.3,  8.3, 0.0 ]
 
 !     Andreae 2011 as described in Li et al. 2012
-emif_tc = [ 8.3, 8.3, 0.0, &
-            7.2, 8.3, 3.4, &
-            8.3, 3.4, 0.0, &
-            8.3, 3.4, 0.0 ]
+emif_tc = [ 8.3, 8.3, 0.0, 0.0, 0.0, &
+            7.2, 8.3, 3.4, 8.3, 8.3, &
+            8.3, 3.4, 0.0, 0.0, 0.0, &
+            8.3, 3.4, 8.3, 0.0, 0.0 ]
 
 !    values from Wiedinmyer et al. 2011 (TPC in Table 1)
 !emif_tc = [ 8.3, 8.3, 0.0, &
@@ -636,10 +671,10 @@ emif_tc = [ 8.3, 8.3, 0.0, &
 !            3.0, 3.0, 0.0 ]
 
 !     Andreae 2011 as described in Li et al. 2012
-emif_oc = [ 9.1, 9.1, 0.0, &
-            6.7, 9.1, 3.2, & 
-            9.1, 3.2, 0.0, &
-            9.1, 3.2, 0.0 ] 
+emif_oc = [ 9.1, 9.1, 0.0, 0.0, 0.0, &
+            6.7, 9.1, 3.2, 9.1, 9.1, & 
+            9.1, 3.2, 0.0, 0.0, 0.0, &
+            9.1, 3.2, 9.1, 0.0, 0.0 ] 
 
 !    values from Wiedinmyer et al. 2011 
 !emif_oc = [ 7.8, 7.8, 0.0, &
@@ -648,10 +683,10 @@ emif_oc = [ 9.1, 9.1, 0.0, &
 !            2.6, 2.6, 0.0 ]
 
 !     Andreae 2011 as described in Li et al. 2012
-emif_bc = [ 0.56, 0.56, 0.00, &
-            0.56, 0.56, 0.47, &
-            0.56, 0.47, 0.00, &
-            0.56, 0.47, 0.00 ]
+emif_bc = [ 0.56, 0.56, 0.00, 0.00, 0.00, &
+            0.56, 0.56, 0.47, 0.56, 0.56, &
+            0.56, 0.47, 0.00, 0.00, 0.00, &
+            0.56, 0.47, 0.56, 0.00, 0.00 ]
 
 !    values from Wiedinmyer et al. 2011
 !emif_bc = [ 0.20, 0.20, 0.00, &
@@ -662,20 +697,20 @@ emif_bc = [ 0.56, 0.56, 0.00, &
 ! hetres parameters: ----------
 
 
-bsratelt = [ 0.4453, 0.5986, 0.0000, &
-             0.6339, 0.7576, 0.6957, &
-             0.6000, 0.6000, 0.0000, &
-             0.5260, 0.5260, 0.0000 ] 
+bsratelt = [ 0.4453, 0.5986, 0.0000, 0.0000, 0.0000, &
+             0.6339, 0.7576, 0.6957, 0.4453, 0.5986, &
+             0.6000, 0.6000, 0.0000, 0.0000, 0.0000, &
+             0.5260, 0.5260, 0.5260, 0.0000, 0.0000 ] 
 
 !bsratesc = [ 0.0260, 0.0260, 0.0000, &
 !             0.0208, 0.0208, 0.0208, &
 !             0.0350, 0.0350, 0.0000, &
 !             0.0125, 0.0125, 0.0000 ]  
 ! FLAG test new vals, JM Dec 29 2014.
-bsratesc = [ 0.0208, 0.0208, 0.0000, &
-             0.0166, 0.0166, 0.0166, &
-             0.0280, 0.0280, 0.0000, &
-             0.0100, 0.0100, 0.0000 ]              
+bsratesc = [ 0.0208, 0.0208, 0.0000, 0.0000, 0.0000, &
+             0.0166, 0.0166, 0.0166, 0.0208, 0.0208, &
+             0.0280, 0.0280, 0.0000, 0.0000, 0.0000, &
+             0.0100, 0.0100, 0.0100, 0.0000, 0.0000  ]              
 
 tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ] 
 !tanhq10  = [ 1.2, 0.2, 0.075, 46.0 ] ! was 1.44/0.56/0.075/46 TEST FLAG mar 3 JM 2015
@@ -716,58 +751,53 @@ kmort1 = 0.3
 
 ! phenology.f parameters: ---------
 
-colda = [ 3.0, 3.0, 0.0, &
-          3.0, 3.0, 3.0, &
-          3.0, 3.0, 0.0, &
-          3.0, 3.0, 0.0 ]
+colda = [ 3.0, 3.0, 0.0, 0.0, 0.0, &
+          3.0, 3.0, 3.0, 3.0, 3.0, &
+          3.0, 3.0, 0.0, 0.0, 0.0, &
+          3.0, 3.0, 3.0, 0.0, 0.0 ]
 
 coldlmt = [ 7 , 5 ]   ! days
 
 coldthrs = [ -5.0 , 8.0 ]
 
-dayschk = [ 7, 7, 0, &
-            7, 7, 7, &
-            7, 7, 0, &
-            7, 7, 0 ]
+dayschk = [ 7, 7, 0, 0, 0, &
+            7, 7, 7, 7, 7, &
+            7, 7, 0, 0, 0, &
+            7, 7, 7, 0, 0 ]
 
-drgta = [ 3.0, 3.0, 0.0, &
-          3.0, 3.0, 3.0, &
-          3.0, 3.0, 0.0, &
-          3.0, 3.0, 0.0 ] 
+drgta = [ 3.0, 3.0, 0.0, 0.0, 0.0, &
+          3.0, 3.0, 3.0, 0.0, 0.0, &
+          3.0, 3.0, 0.0, 3.0, 3.0, &
+          3.0, 3.0, 3.0, 0.0, 0.0 ] 
 
-eta = [ 10.0, 30.8, 0.00, &
-        31.0, 50.0, 30.0, &
-        7.0,  7.0, 0.00,  &
-        3.0,  3.0, 0.00 ]
+eta = [ 10.0, 30.8, 0.00, 0.00, 0.00, &
+        31.0, 50.0, 30.0, 10.0, 30.8, &
+        7.0,  7.0,   0.0,  0.0, 0.00, &
+        3.0,  3.0,   3.0,  0.0, 0.00 ]
 
-kappa =[ 1.6, 1.6, 0.0, &
-         1.6, 1.6, 1.6, &
-         1.6, 1.6, 0.0, &
-         1.2, 1.2, 0.0 ]
+kappa =[ 1.6, 1.6, 0.0, 0.0, 0.0, &
+         1.6, 1.6, 1.6, 1.6, 1.6, &
+         1.6, 1.6, 0.0, 0.0, 0.0, &
+         1.2, 1.2, 1.2, 0.0, 0.0 ]
   
 flhrspan = [ 17.0, 45.0 ]
 
 fracbofg = 0.55
 
-harvthrs = [ 0.0, 0.0, 0.0, &
-             0.0, 0.0, 0.0, &
-             4.5, 3.5, 0.0, &
-             0.0, 0.0, 0.0 ]
-
-specsla =[  0.0, 0.0, 0.0, &  ! Not used in general. Only will take effect if these are non-zero.
-            0.0, 0.0, 0.0, &
-            0.0, 0.0, 0.0, &
-            0.0, 0.0, 0.0 ]
-
-thrprcnt = [ 40.0, 40.0,  0.0, &
-             40.0, 50.0, 50.0, &
-             50.0, 50.0,  0.0, &
-             40.0, 40.0,  0.0 ]  
+harvthrs = [ 0.0, 0.0, 0.0, 0.0, 0.0, &
+             0.0, 0.0, 0.0, 0.0, 0.0, &
+             4.5, 3.5, 0.0, 0.0, 0.0, &
+             0.0, 0.0, 0.0, 0.0, 0.0 ]
              
-lwrthrsh = [ -50.0, -5.0, 0.0, & 
-               5.0,  8.0, 5.0, &  
-               5.0,  5.0, 0.0, &
-               0.1,  5.0, 0.0 ]             
+specsla =[  0.0, 0.0, 0.0, 0.0, 0.0, &  ! Not used.
+            0.0, 0.0, 0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0, 0.0, 0.0, &
+            0.0, 0.0, 0.0, 0.0, 0.0 ]
+
+thrprcnt = [ 40.0, 40.0,  0.0,  0.0,  0.0, &
+             40.0, 50.0, 50.0, 40.0, 40.0, &
+             50.0, 50.0,  0.0,  0.0,  0.0, &
+             40.0, 40.0, 40.0,  0.0,  0.0 ]  
 
 ! these parameters  are from competition runs. FLAG.
 ! testing for work with Ray and Bakr! Mar 2015.          
@@ -782,15 +812,17 @@ roothrsh = 8.0
 
 stmhrspn = 17.0
 
-stemlife = [ 86.3, 86.3, 0.00, &  
-             80.5, 80.5, 75.8, &  
-             20.0, 20.0, 0.00, &
-              0.00, 0.00, 0.00 ]
+! these are from competition ones.
+stemlife = [ 65.0, 75.0, 0.00, 0.00, 0.00, &      !values in 2.0. in 3.6.2 develop version pft1&2 are 86.0 YW
+             80.5, 80.5, 75.8, 65.0, 75.0, &      !shrub values < trees in ctem2.0 was 45 for pft4 and 5 was used in v6.   
+             20.0, 20.0, 0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00, 0.00, 0.00 ]
 
-rootlife = [ 13.8,13.2, 0.0, &
-             12.7,10.9, 9.8, &    
-              3.0, 3.0, 0.0, &
-              3.0, 3.0, 0.0 ]
+rootlife = [ 13.8,13.2, 0.0,  0.0,  0.0, &
+             12.7,10.9, 9.8, 11.5, 12.0, &    !shrubs values<trees, in ctem 2.0 was 5.5 for pft 4 and 5 and was used and shrubs in v6.
+              3.0, 3.0, 0.0,  0.0,  0.0, &
+              2.0, 2.0, 2.0,  0.0,  0.0  ]   !grass was 3.5 in this version
+                                             ! 2.5 in v2.0.and before, and 3.0 in 3.6.2 develop version
 
 ! wetland_methane.f90 parameters: -------
 
@@ -830,130 +862,168 @@ if (compete) then
 ! These parameters are used when competition is on. If you are using
 ! prescribed PFT fractional cover, then the parameters after this section
 ! are used. Parameters that are the same in both are above this if loop.
-
-! allocate.f parameters: --------------
-
+!
 ! Parameterization values based on comparison mostly with LUYSSAERT, S.et al. CO2 balance
 ! of boreal, temperate, and tropical forests derived from a global database,
 ! Glob. Chang. Biol., 13(12), 2509–2537, 2007. and informed by LITTON, et al. Carbon
 ! allocation in forest ecosystems, Glob. Chang. Biol., 13(10), 2089–2109, 2007. Further
 ! tuning was performed on these basic values. JM Dec 20 2013.
 
-omega = [ 0.80, 0.50, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-          0.80, 0.45, 0.80, &  
-          0.05, 0.05, 0.00, &
-          1.00, 1.00, 0.00 ]
 
-epsilonl = [ 0.19, 0.45, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.39, 0.50, 0.30, &  
-             0.80, 0.80, 0.00, &
-             0.10, 0.10, 0.00 ]
+! Parameters used in more than one subroutine:
 
-epsilons = [ 0.40, 0.34, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.21, 0.35, 0.10, & 
-             0.15, 0.15, 0.00, &
-             0.00, 0.00, 0.00 ]
+lfespany  =   [ 5.00, 1.00, 0.00, 0.00, 0.00, &          !YW July 13, 2015  add 4 PFT slots and 2 with values for shrubs
+                1.50, 1.00, 1.00, 5.00, 0.40, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+!lfespany  =   [ 5.00, 0.40, 0.00, 0.00 , 0.00, &
+!                1.50, 0.40, 1.00, 5.00 , 0.40 , &  !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
+                1.75, 1.75, 0.00, 0.00, 0.00, &
+                1.00, 1.00, 1.00, 0.00, 0.00 ]
 
-epsilonr = [ 0.41, 0.21, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.40, 0.15, 0.60, &  
-             0.05, 0.05, 0.00, &
-             0.90, 0.90, 0.00 ]
+! allocate.f parameters: --------------
+
+omega = [ 0.80, 0.50, 0.00, 0.00, 0.00, & 
+          0.80, 0.45, 0.80, 0.80, 0.50, &  
+          0.05, 0.05, 0.00, 0.00, 0.00, &
+          1.00, 1.00, 1.00, 0.00, 0.00 ]
+
+epsilonl = [ 0.19, 0.45, 0.00, 0.00, 0.00, &  
+             0.39, 0.50, 0.30, 0.19, 0.45, &  
+             0.80, 0.80, 0.00, 0.00, 0.00, &
+             0.10, 0.10, 0.60, 0.00, 0.00]        !Sedge YW less allocation to root than real grass
+
+
+epsilons = [ 0.40, 0.34, 0.00, 0.00, 0.00, &
+             0.21, 0.35, 0.10, 0.40, 0.34, & 
+             0.15, 0.15, 0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00, 0.00, 0.00 ]
+
+epsilonr = [ 0.41, 0.21, 0.00, 0.00, 0.00, &  
+             0.40, 0.15, 0.60, 0.41, 0.21, &  
+             0.05, 0.05, 0.00, 0.00, 0.00, &
+             0.90, 0.90, 0.40, 0.00, 0.00 ]       !Sedge YW less allocation to root than real grass
+
 
 ! competition_mod.f90 parameters
 
   ! existence subroutine:
 
-tcoldmin = [-999.9, -999.9,   0.0, & 
-               2.5,  -35.0,   4.0, & 
-            -999.9, -999.9,   0.0, &
-            -999.9, -999.9,   0.0 ]  
+tcoldmin = [-999.9, -999.9,   0.0,    0.0,    0.0, & 
+               2.5,  -35.0,   4.0, -999.0, -999.0, & 
+            -999.9, -999.9,   0.0,    0.0,    0.0, &
+            -999.9, -999.9,-999.9,    0.0,    0.0 ]  
 
-tcoldmax = [ 18.0,  -28.0,   0.0, & 
-            999.9,   16.0, 900.0, &       
-            999.9,  999.9,   0.0, &
-            999.9,  999.9,   0.0 ]  
+tcoldmax = [ 18.0,  -28.0,   0.0,    0.0,    0.0, & 
+            999.9,   16.0, 900.0,   18.0,  -28.0, &       
+            999.9,  999.9,   0.0,    0.0,    0.0, &
+            999.9,  999.9, 999.9,    0.0,    0.0  ]  
 
-twarmmax = [ 99.9,  25.0,  0.0, & 
-             99.9,  99.9, 99.9, &       
-             99.9,  99.9,  0.0, &
-             99.9,  99.9,  0.0 ]
+twarmmax = [ 99.9,  25.0,  0.0,   0.0,   0.0,   & 
+             99.9,  99.9, 99.9,  99.9,  25.0,   &       
+             99.9,  99.9,  0.0,   0.0,   0.0,   &
+             99.9,  99.9, 99.9,   0.0,   0.0 ]
 
-gdd5lmt = [ 375.0,  600.0,  0.0, &  
-           1200.0,  300.0,  9.9, & 
-              9.9,    9.9,  0.0, &
-              9.9,    9.9,  0.0 ]
+gdd5lmt = [ 375.0,  600.0,  0.0,   0.0,   0.0, &  
+           1200.0,  300.0,  9.9, 375.0, 600.0, & 
+              9.9,    9.9,  0.0,   0.0,   0.0, &
+              9.9,    9.9,  9.9,   0.0,   0.0 ]
 
-aridlmt = [ 9.9,  9.9,  0.0, &
-            9.9,  9.9,  0.9, & 
-            9.9,  9.9,  0.0, &
-            9.9,  9.9,  0.0 ]
+aridlmt = [ 9.9,  9.9,  0.0,  0.0,  0.0, &
+            9.9,  9.9,  0.9,  9.9,  9.9, & 
+            9.9,  9.9,  0.0,  0.0,  0.0, &
+            9.9,  9.9,  9.9,  0.0,  0.0 ]
 
-dryseasonlmt=[ 99.0,  99.9,    0.0, &
-               99.9,  99.9,    5.5, & 
-               99.9,  99.9,    0.0, &
-               99.9,  99.9,    0.0 ]
+dryseasonlmt=[  9.0,  99.9,    0.0,   0.0,  0.0, &
+               99.9,  99.9,    5.5,   9.0, 99.9, & 
+               99.9,  99.9,    0.0,   0.0,  0.0, &
+               99.9,  99.9,   99.9,   0.0,  0.0 ]
  
   ! competition subroutine
 
   ! smaller numbers give faster colonization rates.
-bio2sap = [ 0.32, 0.20, 0.00, & 
-            0.08, 0.14, 0.13, & 
-            0.00, 0.00, 0.00, &
-            0.20, 0.20, 0.00 ] 
+bio2sap = [ 0.32, 0.20, 0.00, 0.00, 0.00, & 
+            0.08, 0.14, 0.13, 0.32, 0.20, & 
+            0.00, 0.00, 0.00, 0.00, 0.00, &
+            0.20, 0.20, 0.20, 0.00, 0.00 ] 
 
 bioclimrt = 0.25                
                      
 ! ctem.f parameters: ----------
 
-laimin = [ 1.0, 1.0, 0.0, &
-           1.5, 1.0, 1.0, &  
-           1.0, 1.0, 0.0, &
-           0.01, 0.01, 0.0 ] 
+laimin = [ 1.0,   1.0,  0.0, 0.0, 0.0, &
+           1.5,   1.0,  1.0, 1.0, 1.0, &  
+           1.0,   1.0,  0.0, 0.0, 0.0, &
+           0.01, 0.01, 0.01, 0.0, 0.0 ] 
 
-laimax = [ 4.0, 3.0, 0.0, & 
-           6.0, 5.0, 5.0, & 
-           8.0, 8.0, 0.0, &
-           4.0, 4.0, 0.0 ] 
+laimax = [ 4.0, 3.0, 0.0, 0.0, 0.0, & 
+           6.0, 5.0, 5.0, 4.0, 3.0, & 
+           8.0, 8.0, 0.0, 0.0, 0.0, &
+           4.0, 4.0, 4.0, 0.0, 0.0 ] 
 
 ! disturbance parameters: ------------
 
-standreplace = [ 0.20, 0.20, 0.00, &
-                 0.50, 0.20, 0.15, &  
-                 0.00, 0.00, 0.00, &
-                 0.25, 0.25, 0.00 ] 
+standreplace = [ 0.20, 0.20, 0.00, 0.00, 0.00, &
+                 0.50, 0.20, 0.15, 0.20, 0.20, &  
+                 0.00, 0.00, 0.00, 0.00, 0.00, &
+                 0.25, 0.25, 0.25, 0.00, 0.00 ] 
 
 ! mainres.f parameters: ---------
 
-bsrtstem = [ 0.0700, 0.0550, 0.0000, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.0500, 0.0335, 0.0350, &  
-             0.0365, 0.0365, 0.0000, & 
-             0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
+bsrtstem = [ 0.0700, 0.0550, 0.0000, 0.0000, 0.0000, &
+             0.0500, 0.0335, 0.0350, 0.0700, 0.0335, &  
+             0.0365, 0.0365, 0.0000, 0.0000, 0.0000, & 
+             0.0000, 0.0000, 0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
 
-bsrtroot = [ 0.5000, 0.2850, 0.0000, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.4000, 0.2250, 0.1500, & 
-             0.1600, 0.1600, 0.0000, & 
-             0.1000, 0.1000, 0.0000 ]
+bsrtroot = [ 0.5000, 0.2850, 0.0000, 0.0000, 0.0000, &
+             0.4000, 0.2250, 0.1500, 0.5000, 0.2850, & 
+             0.1600, 0.1600, 0.0000, 0.0000, 0.0000, & 
+             0.1000, 0.1000, 0.1000, 0.0000, 0.0000 ]
 
 ! mortality.f parameters: ---------
 
-maxage = [ 800.0, 500.0,   0.0, &  
-           700.0, 450.0, 500.0, &  
-             0.0,   0.0,   0.0, &
-             0.0,   0.0,   0.0 ]
+maxage = [ 800.0, 500.0,    0.0,   0.0,  0.0, &  
+           700.0, 450.0, 500.0,  800.0, 500.0, &  
+             0.0,   0.0,   0.0,    0.0, 0.0, &
+             0.0,   0.0,   0.0,    0.0, 0.0 ]
 
-mxmortge = [ 0.005, 0.005, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.005, 0.005, 0.005, & 
-             0.00, 0.00, 0.00, & 
-             0.05, 0.10, 0.00 ] 
+
+
+mxmortge = [ 0.005, 0.005, 0.000, 0.000, 0.000, & 
+             0.005, 0.005, 0.005, 0.005, 0.005, & 
+             0.000, 0.000, 0.000, 0.000, 0.000, & 
+             0.050, 0.100, 0.050, 0.000, 0.000 ] 
 
 ! phenology.f parameters: ---------
 
-drlsrtmx = [ 0.006 , 0.005, 0.000, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.010 , 0.025, 0.030, & 
-             0.005 , 0.005, 0.000, &
-             0.020 , 0.020, 0.000 ] 
+cdlsrtmx = [ 0.10, 0.30, 0.00, 0.00, 0.00, &  
+             0.30, 0.40, 0.15, 0.10, 0.30, &
+             0.15, 0.15, 0.00, 0.00, 0.00, &
+             0.15, 0.15, 0.15, 0.00, 0.00 ]
+
+drlsrtmx = [ 0.006 , 0.005, 0.000, 0.000, 0.000, &
+             0.010 , 0.025, 0.030, 0.006, 0.005, & 
+             0.005 , 0.005, 0.000, 0.000, 0.000, &
+             0.020 , 0.020, 0.020, 0.000, 0.000 ] 
+
+
+lwrthrsh = [ -50.0, -5.0, 0.0,   0.0,  0.0, & 
+               5.0,  8.0, 5.0, -50.0, -5.0, &  
+               5.0,  5.0, 0.0,   0.0,  0.0, &
+               0.1,  5.0, 0.1,   0.0,  0.0 ]
 
 !roothrsh = 8.0 ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+=======
+
+! turnover.f parameters: --------------
+! NOW USING SAME VALUES FOR COMP/PRESC.
+!stemlife = [ 86.3, 86.3, 0.00, &  
+!             80.5, 80.5, 75.8, &  
+!             20.0, 20.0, 0.00, &
+!              0.00, 0.00, 0.00 ]
+
+!rootlife = [ 13.8,13.2, 0.0, &
+!             12.7,10.9, 9.8, &    
+!              3.0, 3.0, 0.0, &
+!              3.0, 3.0, 0.0 ]
 
 !   ********************************************************************************************
 !   =============                                                     ==========================
@@ -966,62 +1036,96 @@ else ! Prescribed PFT fractional cover
 ! These parameters are used when the PFT fractional cover is read in from the 
 ! CTM and INI files, or when LUC is on, the LUC file.
 
+! Parameters used in more than one subroutine:
+
+lfespany  =   [ 5.00, 1.00, 0.00, 0.00, 0.00, &                    !Added 4 slots of PFT and 2 values for shrubs 
+                1.75, 1.00, 1.00, 5.00, 1.00, &  
+                1.75, 1.75, 0.00, 0.00, 0.00, &   !YW DCD SHR based on literature (lamberty et al. 2007)  
+                1.00, 1.00, 1.00, 0.00, 0.00 ]
+
 ! allocate.f parameters: --------------
 
-omega = [ 0.80, 0.50, 0.00, & 
-          0.80, 0.80, 0.80, &
-          0.05, 0.05, 0.00, &
-          1.00, 1.00, 0.00 ]
+omega = [ 0.80, 0.50, 0.00, 0.00, 0.00, & 
+          0.80, 0.80, 0.80, 0.80, 0.50, &
+          0.05, 0.05, 0.00, 0.00, 0.00, &
+          1.00, 1.00, 1.00, 0.00, 0.00 ]
 
-epsilonl = [ 0.20, 0.06, 0.00, &  
-             0.35, 0.35, 0.25, &  
-             0.80, 0.80, 0.00, &
-             0.01, 0.01, 0.00 ]
+epsilonl = [ 0.20, 0.06, 0.00, 0.00, 0.00, &  
+             0.35, 0.35, 0.25, 0.20, 0.06, &  
+             0.80, 0.80, 0.00, 0.80, 0.80, &
+             0.01, 0.01, 0.01, 0.00, 0.00 ]
 
-epsilons = [ 0.15, 0.05, 0.00, &
-             0.05, 0.10, 0.10, & 
-             0.15, 0.15, 0.00, &
-             0.00, 0.00, 0.00 ]
+epsilons = [ 0.15, 0.05, 0.00, 0.00, 0.00, &
+             0.05, 0.10, 0.10, 0.15, 0.05, & 
+             0.15, 0.15, 0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00, 0.00, 0.00 ]
 
-epsilonr = [ 0.65, 0.89, 0.00, &  
-             0.60, 0.55, 0.65, &  
-             0.05, 0.05, 0.00, &
-             0.99, 0.99, 0.00 ]
+epsilonr = [ 0.65, 0.89, 0.00, 0.00, 0.00, &  
+             0.60, 0.55, 0.65, 0.65, 0.89, &  
+             0.05, 0.05, 0.00, 0.00, 0.00, &
+             0.99, 0.99, 0.99, 0.00, 0.00 ]
 
 ! mainres.f parameters: ---------
 
-bsrtstem = [ 0.0900, 0.0550, 0.0000, &
-             0.0600, 0.0335, 0.0300, &
-             0.0365, 0.0365, 0.0000, &
-             0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
+bsrtstem = [ 0.0900, 0.0550, 0.0000, 0.0000, 0.0000, &
+             0.0600, 0.0335, 0.0300, 0.0900, 0.0550, &
+             0.0365, 0.0365, 0.0000, 0.0000, 0.0000, &
+             0.0000, 0.0000, 0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
 
-bsrtroot = [ 0.5000, 0.2850, 0.0000, &
-             0.6500, 0.2250, 0.0550, &
-             0.1600, 0.1600, 0.0000, &
-             0.1000, 0.1000, 0.0000 ]
+bsrtroot = [ 0.5000, 0.2850, 0.0000, 0.0000, 0.0000, &
+             0.6500, 0.2250, 0.0550, 0.5000, 0.2850, &
+             0.1600, 0.1600, 0.0000, 0.0000, 0.0000, &
+             0.1000, 0.1000, 0.1000, 0.0000, 0.0000 ]
 
 
 ! mortality.f parameters: ---------
 
-maxage = [ 250.0, 400.0,   0.0, &    
-           600.0, 250.0, 500.0, &  
-             0.0,   0.0,   0.0, &
-             0.0,   0.0,   0.0 ]
+maxage = [ 250.0, 400.0,   0.0,   0.0,   0.0,  &    !same as comp
+           600.0, 250.0, 500.0, 250.0, 400.0,  &  
+             0.0,   0.0,   0.0,   0.0,   0.0,  &
+             0.0,   0.0,   0.0,   0.0,   0.0 ]
 
-mxmortge = [ 0.005, 0.005, 0.00, &   ! Same as competition except for grasses.
-             0.005, 0.005, 0.005, & 
-             0.00, 0.00, 0.00, & 
-             0.00, 0.00, 0.00 ] 
+mxmortge = [ 0.005, 0.005,  0.00,  0.00,  0.00, &   ! Same as competition except for grasses.
+             0.005, 0.005, 0.005, 0.005, 0.005, & 
+              0.00,  0.00,  0.00,  0.00,  0.00, & 
+              0.00,  0.00,  0.00,  0.00,  0.00 ] 
 
 
 ! phenology.f parameters: ---------
 
-drlsrtmx = [ 0.0025, 0.005, 0.000, &
-             0.005, 0.005, 0.025, &
-             0.005, 0.005, 0.000, &
-             0.050, 0.050, 0.000 ]    
+!cdlsrtmx = [ 0.15, 0.30, 0.00, &
+!             0.30, 0.15, 0.15, &
+!             0.15, 0.15, 0.00, &
+!             0.15, 0.15, 0.00 ]
+! these parameters  are from competition runs. FLAG.
+! testing for work with Ray and Bakr! Mar 2015.          
+cdlsrtmx = [ 0.10, 0.30, 0.00, 0.00, 0.00, &  
+             0.30, 0.40, 0.15, 0.10, 0.30, &
+             0.15, 0.15, 0.00, 0.00, 0.00, &
+             0.15, 0.15, 0.15, 0.00, 0.00 ]
 
-!roothrsh = 15.0
+drlsrtmx = [ 0.0025, 0.005, 0.000, 0.000, 0.000, &
+             0.005, 0.005, 0.025, 0.0025, 0.005, &
+             0.005, 0.005, 0.000,  0.000, 0.000, &
+             0.050, 0.050, 0.050,  0.000, 0.000 ]    
+
+!lwrthrsh = [ -45.0, -5.0, 0.0, &
+!               5.0,  5.0, 5.0, &
+!               5.0,  5.0, 0.0, &
+!               0.1,  5.0, 0.0 ] 
+! these parameters  are from competition runs. FLAG.
+! testing for work with Ray and Bakr! Mar 2015.          
+lwrthrsh = [ -50.0, -5.0, 0.0,   0.0,  0.0, & 
+               5.0,  8.0, 5.0, -50.0, -5.0, &  
+               5.0,  5.0, 0.0,   0.0,  0.0, &
+               0.1,  5.0, 0.1,   0.0,  0.0 ]
+
+
+!roothrsh = 15.0        !YW commend out in 3.6.2 develop, run with it in peatland version
+
+! turnover.f parameters: --------------
+! NOW USING SAME VALUES FOR COMP/PRESC.
+
 
 
 end if

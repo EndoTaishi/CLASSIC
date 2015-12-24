@@ -74,7 +74,17 @@ c
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow,pgleafmassrow,
      &      CH4WET1ROW, CH4WET2ROW, WETFDYNROW, CH4DYN1ROW, 
-     &      CH4DYN2ROW)
+     &      CH4DYN2ROW
+c    ----gathering of peatland variables YW March 19, 2015 ------------\
+c
+     1    ,anmosrow,rmlmosrow,gppmosrow,armosrow,nppmosrow
+     2    ,anmosgat,rmlmosgat,gppmosgat,armosgat,nppmosgat
+	3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
+	4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
+     5    ,thlqaccrow_m, thlqaccgat_m,thicaccrow_m,thicaccgat_m
+     6    ,ipeatland)
+c    ----gathering of peatland variables YW March 19, 2015 ------------/
+
 c
 c              Canadian Terrestrial Ecosystem Model (CTEM)
 c
@@ -289,6 +299,20 @@ c   Methane(Wetland) related variables
      5       CH4DYN1ROW(nlat,nmos),         CH4DYN1GAT(ILG),
      6       CH4DYN2ROW(nlat,nmos),         CH4DYN2GAT(ILG)
 
+c	--peatland variables YW March 19, 2015 ---------------------------
+	 real	anmosrow(nlat,nmos), 	anmosgat(ilg),
+	1		rmlmosrow(nlat,nmos),	rmlmosgat(ilg),
+	2		gppmosrow(nlat,nmos),	gppmosgat(ilg),
+	3         armosrow(nlat,nmos), 	armosgat(ilg),
+	4		nppmosrow(nlat,nmos),	nppmosgat(ilg),
+	5		hpdrow(nlat,nmos),		hpdgat(ilg),
+	6		litrmassmsrow(nlat,nmos),litrmassmsgat(ilg),
+	7		Cmossmasrow(nlat,nmos),	Cmossmasgat(ilg),
+	8         dmossrow(nlat,nmos),dmossgat(ilg),  
+     9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
+     1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd)
+	 integer	ipeatland(ilg) 
+
 
 c----------------------------------------------------------------------
       do 100 k=1,nml
@@ -463,6 +487,8 @@ c
           claygat(k,l) = clayrow(ilmos(k),jlmos(k),l)
           orgmgat(k,l) = orgmrow(ilmos(k),jlmos(k),l)
           tbaraccgat_m(k,l) = tbaraccrow_m(ilmos(k),jlmos(k),l)
+          thlqaccgat_m(k,l) = thlqaccrow_m(ilmos(k),jlmos(k),l)  !YW
+          thicaccgat_m(k,l) = thicaccrow_m(ilmos(k),jlmos(k),l)  !YW
 250   continue
 c
       do 280 l=1,icc
@@ -477,6 +503,22 @@ c
           rmatcgat(k,l,m) = rmatcrow(ilmos(k),jlmos(k),l,m)
 290   continue
 c
+c	gather peatland related variables  YW March 19, 2015--------------\
+
+	 do 300 k=1,nml 
+	   if (ipeatland(k)>0)                  then
+		anmosgat(k) = 	anmosrow(ilmos(k),jlmos(k))	
+		rmlmosgat(k) = rmlmosrow(ilmos(k),jlmos(k))	
+		gppmosgat(k) = gppmosrow(ilmos(k),jlmos(k))	
+		armosgat(k) = 	armosrow(ilmos(k),jlmos(k))	
+		nppmosgat(k) = nppmosrow(ilmos(k),jlmos(k))	
+		hpdgat(k)	   =	   hpdrow(ilmos(k),jlmos(k))
+		litrmassmsgat(k) = 	litrmassmsrow(ilmos(k),jlmos(k))
+		Cmossmasgat(k) = Cmossmasrow(ilmos(k),jlmos(k)) 
+		dmossgat(k) = dmossrow(ilmos(k),jlmos(k)) 
+        endif
+300	 continue
+c	gather peatland related variables  YW March 19, 2015-------------/
 
       return
       end

@@ -11,7 +11,14 @@
      9                          npp,  autores, hetrores,      gpp,
      a                          nep,   litres,   socres, dstcemls,
      b                          nbp, litrfall, humiftrs,
-     c                          il1,      il2)    
+     c                          il1,      il2
+c    --------------moss variables--------------------------------------\
+C
+	1 			,ipeatland, Cmossmas, pCmossmas
+	2			,nppmosstep, litrfallms, litrmassms,plitrmassms,
+	3			ltrestepms,humicmstep,socrestep,hutrstep)    
+c    -----------YW March 20, 2015 -------------------------------------/	
+
 c     -----------------------------------------------------------------      
 c
 c               Canadian Terrestrial Ecosystem Model (CTEM)
@@ -143,10 +150,16 @@ c
 c
       real             diff1,               diff2
 c
+c	------peatland variables ----------------------------------------\
+	 integer	ipeatland (ilg)
+	 real	cmossmas(ilg), 	pcmossmas(ilg),
+	1		nppmosstep(ilg), 	litrfallms(ilg), 	
+	2		litrmassms(ilg),	plitrmassms(ilg),
+	3		ltrestepms(ilg),	humicmstep(ilg),
+	4		socrestep(ilg), 	hutrstep(ilg,icc+1)
+c     ------YW March 27, 2015 -----------------------------------------/  
 c
-c     -----------------------------------------------------------------  
-c
-      if(icc.ne.9)                            call xit('balcar',-1)
+      if(icc.ne.12)                            call xit('balcar',-1)  !YW for peatland
 c
 c     to check c budget we go through each pool for each vegetation
 c     type.
@@ -224,6 +237,7 @@ c
 c     litter over the bare fraction
 c
         do 280 i = il1, il2
+           if (ipeatland(i)==0)         then      !YW May 11, 2015 
           diff1=litrmass(i,icc+1) - plitmass(i,icc+1)
           diff2=( -ltresveg(i,icc+1)-humtrsvg(i,icc+1))*
      &          ( deltat/963.62 )  
@@ -231,6 +245,7 @@ c
             write(6,2003)i,icc+1,abs(diff1-diff2),tolrance
             call xit('balcar',-6)
           endif
+           endif
 280     continue
 c
 c
@@ -238,18 +253,58 @@ c     soil carbon over the bare fraction
 c
       do 300 j = 1, icc+1
         do 310 i = il1, il2
+         if (ipeatland(i)==0)          then
           diff1=soilcmas(i,j) - psocmass(i,j)
           diff2=( humtrsvg(i,j)-scresveg(i,j) )*(deltat/963.62)  
           if((abs(diff1-diff2)).gt.tolrance)then
+            write(6,3001)'soilCmas(',i,')=',soilcmas(i,j)
+            write(6,3001)'psocmass(',i,')=',psocmass(i,j)
+            write(6,3001)'humtr(',i,')=',humtrsvg(i,j)*(deltat/963.62)
+      	  write(6,3001)'scres(',i,')=',scresveg(i,j)*(deltat/963.62)
             write(6,2004)i,j,abs(diff1-diff2),tolrance
 2004        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
      & than our tolerance of ',f12.6,' for soil c')
             call xit('balcar',-7)
           endif
+         endif
 310     continue
 300   continue   
 c
-c     -----------------------------------------------------------------
+c    --------------------add moss C balance----------------------------\
+
+	  do 400 i = il1, il2
+		 if (ipeatland(i).gt. 0) 	then
+			diff1 = Cmossmas(i)- pCmossmas(i)
+			diff2 = nppmosstep(i) - litrfallms(i)
+          	if((abs(diff1-diff2)).gt.tolrance)then
+       		    write(6,3001)'Cmossmas(',i,')=',Cmossmas(i)
+       		    write(6,3001)'pCmossmas(',i,')=',pCmossmas(i)
+        		    write(6,3001)'nppmosstep(',i,')=',nppmosstep(i)
+      	  	    write(6,3001)' litrfallms(',i,')=',litrfallms(i)
+      		    write(6,2008)i,abs(diff1-diff2),tolrance
+2008		     format('at (i)= (',i3,'),',f12.6,' is greater'
+     1 		'than our tolerance of ',f12.6,' for moss carbon')
+          	     call xit('balcar',-11)
+               endif
+               
+c    -------------------add moss litter pool C balance-----------------
+               
+               diff1 = litrmassms(i)- plitrmassms(i)
+			diff2 = litrfallms(i)-ltrestepms(i)-humicmstep(i)
+             	if((abs(diff1-diff2)).gt.tolrance)then
+            	    write(6,3001)'litrmassms(',i,')=',litrmassms(i)
+            	    write(6,3001)'plitrmassms(',i,')=',plitrmassms(i)
+             	    write(6,3001)'litrfallms(',i,')=',litrfallms(i)
+           	    write(6,3001)' ltrestepms(',i,')=',ltrestepms(i)
+           	    write(6,3001)' humicmstep(',i,')=',humicmstep(i)
+           	    write(6,2009)i,abs(diff1-diff2),tolrance
+2009		         format('at (i)= (',i3,'),',f12.6,' is greater
+     1 		    than our tolerance of ',f12.6,' for moss litter')
+          	    call xit('balcar',-12)
+        	     endif
+          endif
+400	   continue
+c	-------------------YW March 27, 2015------------------------------/
 c
 c     grid averaged fluxes must also balance
 c
@@ -259,7 +314,7 @@ c
         diff1=vgbiomas(i)-pvgbioms(i)
         diff2=(gpp(i)-autores(i)-litrfall(i)-
      &   dstcemls(i)-repro_cost_g(i))*(deltat/963.62)
-        if((abs(diff1-diff2)).gt.tolrance)then
+        if((abs(diff1-diff2)).gt.tolrance)   then
           write(6,3001)'vgbiomas(',i,')=',vgbiomas(i)
           write(6,3001)'pvgbioms(',i,')=',pvgbioms(i)
           write(6,3001)'     gpp(',i,')=',gpp(i)
@@ -271,6 +326,7 @@ c
           write(6,2005)i,abs(diff1-diff2),tolrance
 2005      format('at (i)= (',i3,'),',f12.6,' is greater
      & than our tolerance of ',f12.6,' for vegetation biomass')
+          write(90,*)    abs(diff1-diff2),tolrance
           call xit('balcar',-8)
         endif
 350   continue

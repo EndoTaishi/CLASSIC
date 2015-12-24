@@ -1,7 +1,7 @@
       subroutine hetresg (litrmass, soilcmas,         
      1                         il1,      il2,     tbar,    
      2                       thliq,     sand,      clay,   zbotw,   
-     3                        frac,    isnow,      isand,
+     3                        frac,    isnow,      isand,   
 c    -------------- inputs above this line, outputs below -------------
      4                      litres,   socres)  
 c
@@ -242,20 +242,21 @@ c     as a surrogate for litter moisture content. so we use only
 c     psi(i,1) calculated in loops 260 and 270 above.
 c
       do 300 i = il1, il2
-        if(psi(i,1).gt.10000.0) then
-          ltrmoscl(i)=0.2
-        else if( psi(i,1).le.10000.0 .and.  psi(i,1).gt.6.0 ) then
-          ltrmoscl(i)=1.0 - 0.8*
+          if(psi(i,1) .gt. 10000.0) then
+            ltrmoscl(i)=0.2
+          else if( psi(i,1).le.10000.0 .and.  psi(i,1).gt.6.0 ) then
+            ltrmoscl(i)=1.0 - 0.8*
      &    ( (log10(psi(i,1)) - log10(6.0))/(log10(10000.0)-log10(6.0)) )
-        else if( psi(i,1).le.6.0 ) then
-          ltrmoscl(i)=1.0 
-        endif
-        ltrmoscl(i)=max(0.2,min(ltrmoscl(i),1.0))
+          else if( psi(i,1).le.6.0 ) then
+            ltrmoscl(i)=1.0 
+          endif
+          ltrmoscl(i)=max(0.2,min(ltrmoscl(i),1.0))          
 300   continue
 c
 c     use temperature of the litter and soil c pools, and their soil
 c     moisture scalars to find respiration rates from these pools
 c
+
       do 330 i = il1, il2
       if(frac(i).gt.zero)then
 c

@@ -2,9 +2,11 @@
      1                      il1,
      2                      il2,     tbar,    thliq,     sand,     
      3                     clay, roottemp,    zbotw,     sort,
-     4                     isand,
+     4                     isand, 
 c    -------------- inputs above this line, outputs below -------------
-     5                 ltresveg, scresveg,thicec)
+     5                 ltresveg, scresveg, 
+     6              ipeatland, iday, psisatpt, thporpt, bipt,thicec)    !YW
+
 c
 C               Canadian Terrestrial Ecosystem Model (CTEM) 
 C           Heterotrophic Respiration Subtoutine For Vegetated Fraction
@@ -68,6 +70,14 @@ c
 
       integer  il1, il2, i, j, k, sort(icc), isand(ilg,ignd) 
 c
+c    --------------peatland variables---------------------------------\
+
+      integer  ipeatland(ilg), iday     
+c
+      real     psisatpt(ilg,ignd), thporpt(ilg,ignd), bipt(ilg,ignd),
+     1         thice(ilg,ignd)       
+c    ----------- YW April 08, 2015-----------------------------------/
+c 
       real    fcan(ilg,icc),           fct(ilg),  litrmass(ilg,icc+1), 
      1         tbar(ilg,ignd),soilcmas(ilg,icc+1),      thliq(ilg,ignd),  
      2         sand(ilg,ignd),       clay(ilg,ignd),  roottemp(ilg,icc),  
@@ -219,6 +229,23 @@ c                               ! ltrmoscl becomes 0.2
             psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 !the 0.005 prevents a divide by 0 situation.
      1                   -thicec(i,j)))**(-b(i,j)) 
 c   
+c         peatland psi calculated seperately YW April 08, 2015 
+            if (ipeatland(i) >0)          then
+                psisat(i,j) =psisatpt(i,j)
+                b(i,j)= bipt(i,j)
+                thpor(i,j) = thporpt(i,j)
+                if (thliq(i,j)+ thice(i,j)+0.01 < thporpt(i,j)
+     1              .and.  tbar(i,j) <273.16)                   then
+                  psi(i,j) = 0.001
+                elseif (thice(i,j) > thporpt(i,j))    then
+                  psi(i,j) = 0.001   !set to saturation 
+                else 
+                  psi(i,j) = psisatpt(i,j)*(thliq(i,j)/(thporpt(i,j)-
+     1                    thice(i,j)))**(-bipt(i,j))
+                endif
+            endif
+
+
             if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2
             else if( psi(i,j).lt.10000.0 .and.  psi(i,j).gt.6.0 ) then
@@ -275,15 +302,47 @@ c     as a surrogate for litter moisture content. so we use only
 c     psi(i,1) calculated in loops 260 and 270 above.
 c
       do 300 i = il1, il2
-        if(psi(i,1).gt.10000.0) then
-          ltrmoscl(i)=0.2
-        else if( psi(i,1).le.10000.0 .and. psi(i,1).gt.6.0 ) then
-          ltrmoscl(i)=1.0 -  0.8*
+c     peatland branch where litter respiration can be limtied by water\
+
+        if (ipeatland(i) == 0)        then           
+          if(psi(i,1).gt.10000.0) then
+            ltrmoscl(i)=0.2
+          else if( psi(i,1).le.10000.0 .and.  psi(i,1).gt.6.0 ) then
+            ltrmoscl(i)=1.0 - 0.8*
      &    ( (log10(psi(i,1)) - log10(6.0))/(log10(10000.0)-log10(6.0)) )
-        else if( psi(i,1).le.6.0 ) then
-          ltrmoscl(i)=1.0 
-        endif
-        ltrmoscl(i)=max(0.2,min(1.0,ltrmoscl(i)))
+          else if( psi(i,1).le.6.0 ) then
+            ltrmoscl(i)=1.0 
+          endif
+          ltrmoscl(i)=max(0.2,min(ltrmoscl(i),1.0))
+c
+        else                       !is peatland  
+c
+c    test psi optimal at psisat    YW April 10, 2015 
+c    peatland microbals performs better towards wet environment, 
+c    for b = 2.3, thpor = 0.98 as soil layer 1, 
+c    thliq = 0.01  0.1   0.2    0.3    0.4    0.5   0.6   0.7    0.8     0.9         
+c    psi   =  391  1.0   0.38  0.15   0.08   0.05   0.03  0.022  0.016  0.012  
+c
+c    set the upper boundary at 500, optimal psi between 0.05 and 0.03
+c    (Mayono et al. 2013)
+c
+c    limit of ltrmoscalms at saturation YW April 10, 2015 
+          if (psi(i,1).ge. 10000.0) then          
+	    		ltrmoscl(i) = 0.2
+        	elseif (psi(i,1).le. 10000.0 .and.psi(i,1).gt. 6.0) then
+	          ltrmoscl(i)=1.0 - 0.8*((log10(psi(i,1))-log10(6.0))
+	1				/(log10(10000.0)-log10(6.0)))**1.
+         	elseif (psi(i,1).le. 6.0 .and. psi(i,1) .gt. 4.0) then
+              	ltrmoscl(i)=1.0
+         	elseif (psi(i,1).le. 4.0 .and. psi(i,1).gt.psisat(i,1))  then 
+              	ltrmoscl(i)=1.0-0.99*((log10(4.0)-log10(psi(i,1)))/   
+     1         		(log10(4.0)-log10(psisat(i,1))))
+         	elseif (psi(i,1) .le. psisat(i,1)) 				then
+             	ltrmoscl(i)=0.01
+        	endif
+         	ltrmoscl(i)=max(0.0,min(ltrmoscl(i),1.0))
+        endif  !peatland  
+c    -------------------YW March 30, 2015 -----------------------------/          
 300   continue
 c
 c     use temperature of the litter and soil c pools, and their soil
@@ -303,6 +362,7 @@ c
           q10func = litrq10**(0.1*(litrtemp(i,j)-273.16-15.0))
           ltresveg(i,j)= ltrmoscl(i) * litrmass(i,j)*
      &      bsratelt(sort(j))*2.64*q10func ! 2.64 converts bsratelt from kg c/kg c.year
+          
 c                                          ! to u-mol co2/kg c.s
 c         respiration from soil c pool
 c

@@ -14,7 +14,7 @@
      D   HTCC,   HTCS,   HTC,    QFCF,   QFCL,   DRAG,   WTABLE, ILMO,    
      E   UE,     HBL,    TAC,    QAC,    ZREFM,  ZREFH,  ZDIAGM, ZDIAGH, 
      F   VPD,    TADP,   RHOAIR, QSWINV, QSWINI, QLWIN,  UWIND,  VWIND,   
-     G   TA,     QA,     PADRY,  FC,     FG,     FCS,    FGS,    RBCOEF,
+     G   TA,     QA,     PADRY,  FC,     FG,     FCS,    FGS,    RBCOEF,     
      H   FSVF,   FSVFS,  PRESSG, VMOD,   ALVSCN, ALIRCN, ALVSG,  ALIRG,  
      I   ALVSCS, ALIRCS, ALVSSN, ALIRSN, ALVSGC, ALIRGC, ALVSSC, ALIRSC,
      J   TRVSCN, TRIRCN, TRVSCS, TRIRCS, RC,     RCS,    WTRG,   QLWAVG,
@@ -32,14 +32,22 @@
      V   ICTEM,          ICTEMMOD,       RMATCTEM,       FCANCMX,
      W   L2MAX,          NOL2PFTS,       CFLUXCG,        CFLUXCS,
      X   ANCSVEG,        ANCGVEG,        RMLCSVEG,       RMLCGVEG,
+
      Y   TCSNOW, GSNOW,                                                 
      Z   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
      +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
      +   NBS, ISNOALB,LFSTATUS)                                                  
+c    peatland variabels in mosspht.f called in TSOLVC and TSOLVE-------\  
+	 1	 ,ipeatland, bi,
+	 2	 ancsmoss,	angsmoss, ancmoss,	angmoss,
+	 3	 rmlcsmoss,rmlgsmoss,rmlcmoss,	rmlgmoss,
+	 4 	 Cmossmas, dmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+c    YW March 19, 2015 ------------------------------------------------/
 C
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
 C     * JUL 22/15 - D.VERSEGHY. CHANGES TO TSOLVC AND TSOLVE CALLS.
+C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
 C     * FEB 09/15 - D.VERSEGHY. New version for gcm18 and class 3.6:
 C     *                         - Revised calls to revised TPREP for
 C     *                           initialization of SRH and SLDIAG.
@@ -55,6 +63,7 @@ C     * JUN 21/13 - M.LAZARE.   REVISED CALL TO TPREP TO SUPPORT ADDING
 C     *                         INITIALIZATION OF "GSNOW".              
 C     * JUN 10/13 - M.LAZARE/   ADD SUPPORT FOR "ISNOALB" FORMULATION.  
 C     *             M.NAMAZI.                                           
+C
 C     * NOV 11/11 - M.LAZARE.   IMPLEMENT CTEM (INITIALIZATION OF FIELDS
 C     *                         NEAR BEGINNING AND TWO REVISED CALLS TO 
 C     *                         TSOLVC).                 
@@ -324,6 +333,18 @@ C
      1                     KF    (ILG),    KF1   (ILG),    KF2   (ILG),
      2                     IEVAPC(ILG)
 C
+c    ------------------peatland variables -----------------------------\
+
+	 integer 	ipeatland(ilg),iyear, iday, imin, ihour
+	 real	bi(ig), Cmossmas(ilg), dmoss(ilg),daylength(ilg),
+	1         pdd(ilg), cdd(ilg)
+c	------input above output below this line---------------------------
+	 real	ancsmoss(ilg),		angsmoss(ilg), 
+	1		ancmoss(ilg), 		angmoss(ilg),
+	2		rmlcsmoss(ilg),	rmlgsmoss(ilg),	
+	3		rmlcmoss(ilg),		rmlgmoss(ilg)
+c    -------------------YW March 19, 2015------------------------------/ 
+c
 C     * TEMPORARY VARIABLES.
 C
       REAL THTOT,CA,CB,WACSAT,QACSAT,RATIOM,RATIOH,FACTM,FACTH          
@@ -402,6 +423,24 @@ C
           RMLCGVEG(I,J)=0.0
    65   CONTINUE
       ENDIF
+C
+c    initialize moss C fluxes YW March 19, 2015 -----------------------\
+C
+	   do 66 i = il1, il2
+		if (ipeatland(i) > 0)	          then		
+			ancsmoss(i) = 0.0
+			angsmoss(i) = 0.0
+			ancmoss(i)  = 0.0
+			angmoss(i)  = 0.0	
+			rmlcsmoss(i) = 0.0
+			rmlgsmoss(i) = 0.0
+			rmlcmoss(i)  = 0.0
+			rmlgmoss(i)  = 0.0
+		endif
+66	   continue		
+c
+C
+C    initialize moss fluxes done---------------------------------------/
 C
 C     * PREPARATION.
 C
@@ -522,7 +561,13 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS,
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS)
+     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS
+c    pass  variables to moss subroutines YW March 19, 2015------------\   
+	1		   ,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss,
+c	------input above, output below-----------------------------------	
+	2		     ancsmoss,rmlcsmoss,iyear,iday,ihour,imin,daylength
+	3              ,pdd,cdd)
+c    Y.Wu ------------------------------------------------------------/
 
           CALL TSPOST(GSNOWC,TSNOCS,WSNOCS,RHOSCS,QMELTC,
      1                GZROCS,TSNBOT,HTCS,HMFN,
@@ -702,7 +747,14 @@ C
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,          
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
-     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  )
+     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  
+c    ----------pass variables in mosspht.f-----------------------------\  
+	 1	,ipeatland, thliqg, tbar, thpor, co2conc,
+	 2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
+c	------input above, output below-----------------------------------	
+	 3   ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+C    ---------------YW March 26, 2015 ---------------------------------/      
+c     
           CALL TSPOST(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG,
      1                GZROGS,TSNBOT,HTCS,HMFN,
      2                GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR,
@@ -849,6 +901,7 @@ C
      +                FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
      3                ISAND,ILG,IL1,IL2,JL,IG                      )    
           ISNOW=0
+
           CALL TSOLVC(ISNOW,FC,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPC,
@@ -873,7 +926,14 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG,
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS)
+     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS
+c    pass  variables to moss subroutines YW March 19, 2015------------\   
+	1		   ,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss,
+c	------input above, output below-----------------------------------	
+	2		     ancmoss,rmlcmoss,iyear, iday, ihour,imin,daylength
+	3              ,pdd,cdd)
+c    Y.Wu ------------------------------------------------------------/
+
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
      1                GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSURX,
      2                TBASE,TBAR1P,A1,A2,B1,B2,C2,FC,IWATER,
@@ -1038,7 +1098,14 @@ C
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL, NBS,ISNOALB,         
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
-     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF )
+     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
+c    ----------pass variables in mosspht.f-----------------------------\  
+	1	,ipeatland, thliqg, tbar, thpor, co2conc,
+	2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
+c	------input above, output below-----------------------------------	
+	3	 ,angmoss,rmlgmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+C    ---------------YW March 26, 2015 ---------------------------------/ 
+C
           CALL TNPOST(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST,
      1                GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSURX,
      2                TBASE,TBAR1P,A1,A2,B1,B2,C2,FG,IWATER,
@@ -1159,5 +1226,22 @@ C
   500 CONTINUE
 
 C                                                         
+C
+C==FLAG OLD=================== CTEM =====================================\
+C     FLAG- LEAVE THIS OUT, DOES NOT APPEAR TO BE USED ANYWHERE. JM 11/09/12
+C     CALCULATE WEIGHTED AVERAGE OF CANOPY RESISTANCE FOR CANOPY OVER SNOW
+C     (RCS) AND CANOPY OVER GROUND (RC) SUBAREAS.
+C
+C      DO 550 I = IL1, IL2
+C        IF( (FC(I)+FCS(I)).GT. 1.0E-12) THEN
+C          CANRES(I)=( (FC(I)*RC(I)) + (FCS(I)*RCS(I)) )/ (FC(I)+FCS(I))
+C        ELSE
+C          CANRES(I)=5000.0
+C        ENDIF
+C550   CONTINUE
+C
+C===================== CTEM =====================================/
+C                
+
       RETURN                                                                      
       END        

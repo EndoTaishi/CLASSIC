@@ -11,7 +11,13 @@
      9                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,        
      A                  TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
-     C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF)
+     C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
+c    ------------pass variables in moss subroutine---------------------\  
+     1	,ipeatland, thliq, tbar, thpor, co2conc,
+	 2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
+c    3-----input above, output below-----------------------------------	
+     4	 ,anmoss,rmlmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+C    ------------------YW March 26, 2015 ------------------------------/ 
 C
 C     Purpose: Solution of surface energy balance for non-vegetated 
 C     subareas.
@@ -215,7 +221,19 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL QSWNV,QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO
+C      REAL QSWNV,QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO   !YW
+      REAL QSWNV(ilg),QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO
+c    ---------------Peatland variables YW March 19, 2015 --------------\
+
+ 	 integer  ipeatland(ilg),iday, ihour, iyear,imin, ievapms(ilg)
+	 real	thliq(ilg,ig), tbar(ilg,ig), 	thpor(ilg,ig),	
+	1		bi(ig),		zsnow(ilg),	delzw(ilg,ig),
+	2		co2conc(ilg),	pressg(ilg) ,	coszs(ilg),
+	3		Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
+	4         pdd(ilg),      cdd(ilg)
+c	------input above output below-----------------------------
+	 real	anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
+c    -------------------YW March 26, 2015 -----------------------------/
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -263,6 +281,12 @@ C
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
 C-----------------------------------------------------------------------
+      do i = 1,ilg
+      	if (ipeatland(i) > 0)		          then 
+     	   	qswnv(i)=0.0
+          endif
+	 enddo
+c	------------YW March 20, 2015 ------------------------------------/  
       !
       !For the surface temperature iteration, two alternative schemes 
       !are offered: the bisection method (selected if the flag ITG = 1) 
@@ -281,7 +305,7 @@ C
       IF(ITG.LT.2) THEN
           ITERMX=50                                                     
       ELSE
-          ITERMX=5
+          ITERMX=12      !wwas 5 YW March 27, 2015 
       ENDIF
 C
 C      IF(ISNOW.EQ.0) THEN
@@ -320,7 +344,7 @@ C
          DO I=IL1,IL2                                                   
           IF(FI(I).GT.0.)                                          THEN
                TRTOP(I,1)=0.                                            
-               QSWNV=FSSB(I,1)*(1.0-ALVISG(I))                          
+               QSWNV(i)=FSSB(I,1)*(1.0-ALVISG(I)) !YW QSWNV to QSWNV(i)                          
                IF (ISNOALB .EQ. 0) THEN                                 
                   QSWNI=FSSB(I,2)*(1.0-ALNIRG(I))                       
                ELSE IF (ISNOALB .EQ. 1) THEN                            
@@ -329,19 +353,21 @@ C
                      QSWNI=QSWNI+FSSB(I,IB)*(1.0-ALNIRG(I))             
                   END DO ! IB                                           
               ENDIF 
-              QSWNET(I)=QSWNV+QSWNI           
-               QTRANS(I)=QSWNET(I)*TRTOP(I,1)                           
+              QSWNET(I)=QSWNV(i)+QSWNI           
+              QTRANS(I)=QSWNET(I)*TRTOP(I,1)                           
               QSWNET(I)=QSWNET(I)-QTRANS(I) 
             END IF                                                      
          END DO ! I                                                     
+ 
       ELSE                                                              
+ 
          IF (ISNOALB .EQ. 0) THEN ! Use the existing snow albedo and transmission 
             DO I=IL1,IL2                                                
                IF(FI(I).GT.0.) THEN                                     
                   TRTOP(I,1)=TRSNOWG(I,1)                               
-                  QSWNV=FSSB(I,1)*(1.0-ALSNO(I,1))                      
+                  QSWNV((i)=FSSB(I,1)*(1.0-ALSNO(I,1))  !YW QSWNV to QSWNV(i)     
                   QSWNI=FSSB(I,2)*(1.0-ALSNO(I,2))                      
-                  QSWNET(I)=QSWNV+QSWNI                                 
+                  QSWNET(I)=QSWNV(i)+QSWNI                                 
                   QTRANS(I)=QSWNET(I)*TRTOP(I,1)                        
                   QSWNET(I)=QSWNET(I)-QTRANS(I)                         
                END IF                                                   
@@ -355,9 +381,9 @@ C
                DO I=IL1,IL2                                             
                   IF(FI(I).GT.0.) THEN                                  
                      TRTOP(I,IB)=TRSNOWG(I,IB)                          
-                     QSWNV=FSSB(I,IB)*(1.0-ALSNO(I,IB))                 
+                     QSWNV(i)=FSSB(I,IB)*(1.0-ALSNO(I,IB))                 
                      QSWNET(I)=QSWNET(I)+FSSB(I,IB)*(1.0-ALSNO(I,IB))   
-                     QTRANS(I)=QTRANS(I)+QSWNV*TRTOP(I,IB)              
+                     QTRANS(I)=QTRANS(I)+QSWNV(i)*TRTOP(I,IB)              
                   END IF                                                
                END DO ! I                                               
             END DO ! IB                                                 
@@ -390,6 +416,15 @@ C
               ENDIF
           ENDIF
    50 CONTINUE
+
+c	--moss subroutine find ground evaporation rate and photosynthesis--\ 
+	 call  mosspht(ilg,ig, isand,iday,qswnv,thliq,tbar,thpor,
+	1	co2conc,tstart,zsnow,delzw,pressg,qa,coszs,Cmossmas,dmoss,
+c	--------------input above output below-------------------
+	2		anmoss,rmlmoss,cevapms,ievapms, ipeatland
+c    --------------for testing--------------------------------
+	3		,iyear, ihour,imin,daylength,pdd,cdd) 
+c    ------------------YW March 19, 2015 ------------------------------/	 	 
       !
       !The 100 continuation line marks the beginning of the surface 
       !temperature iteration sequence. First the flags NIT (indicating 
@@ -468,7 +503,14 @@ C
                   EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
               ELSE
-                  EVBETA(I)=CEVAP(I)
+c	evaporation coefficient evbeta is controled by moss in peatland --\				
+		        if (ipeatland(i) == 0)                   then 
+                       EVBETA(I)=CEVAP(I)
+                  else
+				   evbeta(i) = cevapms(i)
+			        ievap(i) = ievapms(i)
+			   endif
+c    ---------------YW March 19, 2015----------------------------------/
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QA(I)
                   IF(QZERO(I).GT.QA(I) .AND. IEVAP(I).EQ.0) THEN
                       EVBETA(I)=0.0

@@ -30,8 +30,10 @@
      S                  IDAY,   ILG,    IL1,    IL2, NBS,   
      T                  JL,N,   IC,     ICP1,   IG,     IDISP,  IZREF,
      U                  IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     V                  ISNOALB,IGRALB,ALVSCTM, ALIRCTM )
-
+     V                  ISNOALB,IGRALB,ALVSCTM, ALIRCTM 
+c     peatland input YW March 19, 2015---------------------------------\ 
+     &                ,ipeatland)
+c     peatland---------------------------------------------------------/
 C
 C     Purpose: Organize calculation of radiation-related and other 
 C     surface parameters.
@@ -480,6 +482,12 @@ C
       REAL ALIRO    !Near-infrared albedo of organic matter (0.30)
       REAL ALBRCK   !Albedo of rock 
 
+c	 ---------------peatland variable --------------------------------\ 	
+	 integer 	ipeatland(ilg)
+	 real 	zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
+	1		sphms,rhoms,slams
+c	 ------------------YW March 19, 2015 -----------------------------/ 	
+
       COMMON /CLASS1/ DELT,TFREZ                                               
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
       COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
@@ -490,6 +498,9 @@ C
       COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG                   
       COMMON /CLASS7/ CANEXT,XLEAF
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
+      common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
+     1				hcpms, sphms,rhoms,slams      !YW
+
                                                                                   
 C------------------------------------------------------------------
       !
@@ -596,7 +607,14 @@ C
      F            RRESID,SRESID,FRTOT,FRTOTS, 
      G            FCANCMX,ICTEM,ICTEMMOD,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
-     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC)
+     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC
+     j              ,ipeatland)!YW March 26, 2015 
+
+C     * SNOW ALBEDOS AND TRANSMISSIVITY.
+C 
+      CALL SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,TRSNOW,
+     1             ZSNOW,FSNOW,ASVDAT,ASIDAT,
+     2             ILG,IG,IL1,IL2,JL,IALS)
 C
 C     * BARE SOIL ALBEDOS.
 C

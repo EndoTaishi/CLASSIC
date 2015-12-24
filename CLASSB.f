@@ -3,7 +3,8 @@
      2                  DELZW,ZBOTW,ALGWET,ALGDRY,
      +                  ALGWV,ALGWN,ALGDV,ALGDN,
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,IGRALB)
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,IGRALB
+     5                  ,ipeatland)
 C
 C     * JUN 24/15 - J. MELTON.  PASS IN IGRALB SO THAT WE CAN SKIP
 C                               USING SOCI IF IGRALB IS 0.
@@ -15,6 +16,9 @@ C     *                         BRIGHTNESS FIELDS FROM CLM.
 C     * NOV 16/13 - M.LAZARE.   FINAL VERSION FOR GCM17:
 C     *                         - REVERT BACK TO CLASS2.7
 C     *                           SPECIFICATION FOR "ALGWET".
+C
+C     * FEB 26/15 - J.MELTON.   - MAKE WILTING POINT THE SAME AS CTEM 
+C                                 WITH A VALUE OF 150 M.
 C     * NOV 11/11 - M.LAZARE.   - IMPLEMENT CTEM CHOICE OF
 C     *                           ALGDRY DETERMINED BY ADDED
 C     *                           PASSED SWITCH "ICTEMMOD".
@@ -94,6 +98,12 @@ C
 C
       REAL VSAND,VORG,VFINE,VTOT,AEXP,ABC,THSAND,THFINE,THORG
 C
+c	--------peatland variables---------------------------------------\ 	
+c
+	 integer ipeatland(nl,nm)
+	 real 	zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
+	1		sphms,rhoms,slams
+c    -----------YW March 23, 2015 -------------------------------------/
 C     * COMMON BLOCK PARAMETERS.
 C
       REAL TCW,TCICE,TCSAND,TCFINE,TCOM,TCDRYS,RHOSOL,RHOOM,
@@ -115,6 +125,12 @@ C
      1           0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
       DATA ALDN /0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,0.37,
      1           0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16/
+c
+c    moss common block parametes YW March 19, 2015 ---------------------\
+
+      common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
+	1				    hcpms, sphms,rhoms,slams
+c    moss common block parametes YW March 19, 2015 ---------------------/
 C---------------------------------------------------------------------
 C
       DO 50 M=1,IM
@@ -210,6 +226,40 @@ C
               THLRAT(I,M,J)=0.5**(1.0/(2.0*BI(I,M,J)+3.0))
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
+             if (ipeatland(i,m) > 0 )                      then  !YW
+                  if (j .eq. 1)    	                        then
+                      thpor(i,m,j)  = thpms
+                      thlret(i,m,j) = thrms
+                      thlmin(i,m,j) = thmms
+                      bi(i,m,j)     = bms
+                      psisat(i,m,j) = psisms
+                      grksat(i,m,j) = grksms
+                      hcps(i,m,j) = hcpms
+                      tcs(i,m,j) = tcom	
+                  elseif (j .eq. 2    )                     then
+                      thpor(i,m,j)  = thporg(1)
+                      thlret(i,m,j) = throrg(1) 
+                      thlmin(i,m,j) = thmorg(1)
+                      bi(i,m,j)     = borg(1)
+                      psisat(i,m,j) = psisorg(1)
+                      grksat(i,m,j) = grksorg(1)
+                  elseif (j .ge. 3 .and. j .le. 5 )         then
+                      thpor(i,m,j)  = thporg(2)
+                      thlret(i,m,j) = throrg(2) 
+                      thlmin(i,m,j) = thmorg(2)
+                      bi(i,m,j)     = borg(2)
+                      psisat(i,m,j) = psisorg(2)
+                      grksat(i,m,j) = grksorg(2)
+                  else 
+                      thpor(i,m,j)  = thporg(3)
+                      thlret(i,m,j) = throrg(3) 
+                      thlmin(i,m,j) = thmorg(3)
+                      bi(i,m,j)     = borg(3)
+                      psisat(i,m,j) = psisorg(3)
+                      grksat(i,m,j) = grksorg(3)
+                  endif                                      
+                  thlrat(i,m,j) = 0.5**(1.0/(2.0*bi(i,m,j)+3.0))	
+              endif
               THFC(I,M,J)=THLRET(I,M,J)
               THLW(I,M,J)=THLMIN(I,M,J)
               PSIWLT(I,M,J)=PSISAT(I,M,J)*(THLMIN(I,M,J)/
@@ -251,5 +301,17 @@ C
           ENDIF
 300   CONTINUE
 C
+
+C    ------------right to screen for monitoring-----------------------\
+
+      DO 400 J=1,IG
+      DO 400 M=1,IM
+      DO 400 I=IL1,IL2
+       write(6,6990) i,m, j,  thpor(i,m,j), thlret(i,m,j),thlmin(i,m,j),
+     1         bi(i,m,j), zbotw(i,m,j), thfc(i,m,j), GRKSAT(i,m,j)
+400   continue
+6990  format(3I4,6F7.2, E10.3)
+C    ------------right to screen for monitoring-----------------------/
+
       RETURN
       END

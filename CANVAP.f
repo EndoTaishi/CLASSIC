@@ -283,6 +283,7 @@ C
               ENDIF
           ENDIF
   300 CONTINUE
+  
       !
       !The next loop is performed if IROOT=1, i.e. if transpiration is 
       !possible. For each soil layer, the volumetric water content that 
@@ -306,7 +307,7 @@ C
                   THTRAN=RLOST(I)*FROOT(I,J)/(RHOW*DELZW(I,J))                      
               ELSE
                   THTRAN=0.0
-              ENDIF
+              ENDIF     
               IF(THPOR(I,J).LT.THLMIN(I,J))           THEN
                   THLLIM=THPOR(I,J)
               ELSE
@@ -323,7 +324,8 @@ C
                   THLIQ(I,J)=THLLIM
               ENDIF                                                       
           ENDIF
-  400 CONTINUE                                                        
+  400 CONTINUE    
+  
       !
       !In the final cleanup, the canopy heat capacity is recalculated, 
       !the contents of EVLOST are added to WLOST, and the remaining 

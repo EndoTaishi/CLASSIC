@@ -132,69 +132,19 @@ C
       INTEGER ILG,IL1,IL2,JL,IG,I,J  
 C                                                                                 
 C     * OUTPUT ARRAYS.                                                            
-C
-C     (Suffix CS = vegetation over snow cover; GS = bare snow cover; C 
-C     or CO = vegetation over ground; G or GO = bare ground.)
-C
-      REAL TBARC (ILG,IG)   !Subarea temperatures of soil layers [C]
-      REAL TBARG (ILG,IG)   !Subarea temperatures of soil layers [C]
-      REAL TBARCS(ILG,IG)   !Subarea temperatures of soil layers [C]
-      REAL TBARGS(ILG,IG)   !Subarea temperatures of soil layers [C]
-      REAL THLIQC(ILG,IG)   !Liquid water content of soil layers under 
-                            !vegetation [m3 m-3]
-      REAL THLIQG(ILG,IG)   !Liquid water content of soil layers in bare 
-                            !areas [m3 m-3]
-      REAL THICEC(ILG,IG)   !Frozen water content of soil layers under 
-                            !vegetation [m3 m-3]
-      REAL THICEG(ILG,IG)   !Frozen water content of soil layers in bare 
-                            !areas [m3 m-3]
-      REAL HCPC  (ILG,IG)   !Heat capacity of soil layers under 
-                            !vegetation [J m-3 K-1] (Cg)
-      REAL HCPG  (ILG,IG)   !Heat capacity of soil layers in bare areas 
-                            ![J m-3 K1] (Cg)
-      REAL TCTOPC(ILG,IG)   !Thermal conductivity of soil at top of 
-                            !layer in canopy-covered subareas 
-                            ![W m-1 K-1] (lambda)
-      REAL TCBOTC(ILG,IG)   !Thermal conductivity of soil at bottom of 
-                            !layer in canopy-covered subareas
-                            ![W m-1 K-1] (lambda)
-      REAL TCTOPG(ILG,IG)   !Thermal conductivity of soil at top of 
-                            !layer in bare ground subareas [W m-1 K-1] 
-                            !(lambda)
-      REAL TCBOTG(ILG,IG)   !Thermal conductivity of soil at bottom of 
-                            !layer in bare ground subareas [W m-1 K-1] 
-                            !(lambda)
 C                                                                                 
-      REAL HCPSCS(ILG)  !Heat capacity of snow pack under vegetation 
-                        !canopy [J m -3 K1] (Cs)
-      REAL HCPSGS(ILG)  !Heat capacity of snow pack in bare areas 
-                        ![J m-3 K1] (Cs)
-      REAL TCSNOW(ILG)  !Thermal conductivity of snow [W m-1 K-1] 
-      REAL TSNOGS(ILG)  !Temperature of snow pack in bare areas [K] 
-      REAL TSNOCS(ILG)  !Temperature of snow pack under vegetation 
-                        !canopy [K]
-      REAL WSNOCS(ILG)  !Liquid water content of snow pack under 
-                        !vegetation [kg m-2]
-      REAL WSNOGS(ILG)  !Liquid water content of snow pack in bare areas 
-                        ![kg m-2]
-      REAL RHOSCS(ILG)  !Density of snow pack under vegetation canopy 
-                        ![kg m-3]
-      REAL RHOSGS(ILG)  !Density of snow pack in bare areas [kg m-3] 
-      REAL TCANO (ILG)  !Temperature of canopy over ground [K] 
-      REAL TCANS (ILG)  !Temperature of canopy over snow [K] 
-      REAL CEVAP (ILG)  !Soil evaporation efficiency coefficient [ ] 
-                        !(beta)
-      REAL TBAR1P(ILG)  !Lumped temperature of ponded water and first 
-                        !soil layer [K]
-      REAL WTABLE(ILG)  !Depth of water table in soil [m] (zwt)
-      REAL ZERO  (ILG)  !Dummy vector containing all zeros
-      REAL TPONDC(ILG)  !Subarea temperature of surface ponded water [C] 
-      REAL TPONDG(ILG)  !Subarea temperature of surface ponded water [C] 
-      REAL TPNDCS(ILG)  !Subarea temperature of surface ponded water [C]
-      REAL TPNDGS(ILG)  !Subarea temperature of surface ponded water [C]
+      REAL TBARC (ILG,IG),TBARG (ILG,IG),TBARCS(ILG,IG),TBARGS(ILG,IG),
+     1     THLIQC(ILG,IG),THLIQG(ILG,IG),THICEC(ILG,IG),THICEG(ILG,IG),           
+     2     HCPC  (ILG,IG),HCPG  (ILG,IG),TCTOPC(ILG,IG),TCBOTC(ILG,IG),
+     3     TCTOPG(ILG,IG),TCBOTG(ILG,IG)
+C                                                                                 
+      REAL HCPSCS(ILG),   HCPSGS(ILG),   TCSNOW(ILG),   TSNOGS(ILG),   
+     1     TSNOCS(ILG),   WSNOCS(ILG),   WSNOGS(ILG),   RHOSCS(ILG),   
+     2     RHOSGS(ILG),   TCANO (ILG),   TCANS (ILG),   CEVAP (ILG),   
+     3     TBAR1P(ILG),   WTABLE(ILG),   ZERO  (ILG), 
+     4     TPONDC(ILG),   TPONDG(ILG),   TPNDCS(ILG),   TPNDGS(ILG)
 C
-      INTEGER             IEVAP (ILG)   !Flag indicating whether soil 
-                                        !evaporation is occurring or not
+      INTEGER             IEVAP (ILG)
 C                                                                                 
 C     * OUTPUT ARRAYS WHICH ARE INTERNAL WORK ARRAYS FOR CLASST                   
 C     * AND ARE INITIALIZED TO ZERO HERE.                                               
@@ -309,50 +259,26 @@ C
 C
 C     * INPUT ARRAYS.                                                             
 C                                                                                 
-      REAL THLIQ (ILG,IG)   !Volumetric liquid water content of soil 
-                            !layers [m3 m-3] (theta_l)
-      REAL THICE (ILG,IG)   !Volumetric frozen water content of soil 
-                            !layers [m3 m-3] (theta_i)
-      REAL TBAR  (ILG,IG)   !Temperature of soil layers [K]
-      REAL ZPOND (ILG)      !Depth of ponded water on surface [m]
-      REAL TPOND (ILG)      !Temperature of ponded water [K]
+      REAL THLIQ (ILG,IG),THICE (ILG,IG),TBAR  (ILG,IG),
+     1     ZPOND (ILG),   TPOND (ILG)
 C                                                                                 
-      REAL TA    (ILG)  !Air temperature at reference height [K]   
-      REAL RHOSNO(ILG)  !Density of snow [kg m-3] (rho_s) 
-      REAL TSNOW (ILG)  !Snowpack temperature [K] 
-      REAL ZSNOW (ILG)  !Depth of snow pack [m] (zs) 
-      REAL WSNOW (ILG)  !Liquid water content of snow pack [kg m-2] (ws) 
-      REAL TCAN  (ILG)  !Vegetation canopy temperature [K] 
-      REAL FC    (ILG)  !Fractional coverage of canopy over bare ground 
-                        !for modelled area [ ]
-      REAL FCS   (ILG)  !Fractional coverage of canopy over snow for 
-                        !modelled area [ ]
+      REAL TA    (ILG),   RHOSNO(ILG),   TSNOW (ILG),   ZSNOW (ILG),   
+     1     WSNOW (ILG),   TCAN  (ILG),   FC    (ILG),   FCS   (ILG) 
 C
 C     * SOIL PROPERTY ARRAYS.                                     
 C                                                                                 
-      REAL THPOR(ILG,IG)    !Pore volume in soil layer [m3 m-3] 
-                            !(theta_p)
-      REAL THLMIN(ILG,IG)   !Residual soil liquid water content 
-                            !remaining after freezing or evaporation 
-                            ![m3 m-3]
-      REAL THLRET(ILG,IG)   !Liquid water retention capacity for organic 
-                            !soil [m3 m-3 ] (theta_ret)
-      REAL THFC  (ILG,IG)   !Field capacity [m3 m-3] (theta_fc)
-      REAL HCPS  (ILG,IG)   !Heat capacity of soil material [J m-3 K-1] 
-                            !(Cm)
-      REAL TCS   (ILG,IG)   !Thermal conductivity of soil particles 
-                            ![W m-1 K-1] (theta_s)
-      REAL DELZW(ILG,IG)    !Permeable thickness of soil layer [m] 
-                            !(delta_zw) 
-      REAL ZBOTW(ILG,IG)    !Depth to permeable bottom of soil layer [m] 
-                            !(zb,w)
-      REAL DELZ(IG)         !Overall thickness of soil layer [m]
+      REAL THPOR(ILG,IG), THLMIN(ILG,IG),THLRET(ILG,IG),
+     1     THFC  (ILG,IG),HCPS  (ILG,IG),TCS   (ILG,IG)
+
+      REAL DELZW(ILG,IG), ZBOTW(ILG,IG), DELZ(IG)
 C                                                                                 
-      INTEGER       ISAND (ILG,IG)  !Sand content flag
+      INTEGER       ISAND (ILG,IG)
 C                                                                                 
 C     * INTERNAL WORK FIELDS FOR THIS ROUTINE.                                    
 C                                                                                 
       REAL FVEG  (ILG),   TCSATU(ILG),   TCSATF(ILG)
+C
+      INTEGER IWTABL(ILG)
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -361,52 +287,10 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
-      REAL RGAS     !Gas Constant [J kg-1 K-1]
-      REAL RGASV    !Gas constant for water vapour [J kg-1 K-1]
-      REAL GRAV     !Acceleration due to gravity [m s-1]
-      REAL SBC      !Stefan-Boltzmann constant [W m-2 K-4]
-      REAL VKC      !Von Karman constant (0.40)
-      REAL CT       !Drag coefficient for water (1.15*10^-3)
-      REAL VMIN     !Minimum wind speed (0.1) [m s-1]
-      REAL TCW      !Thermal conductivity of water (0.57) [W m-1 K-1]
-      REAL TCICE    !Thermal conductivity of ice (2.24) [W m-1 K-1]
-      REAL TCSAND   !Thermal conductivity of sand particles (2.5) 
-                    ![W m-1 K-1]
-      REAL TCCLAY   !Thermal conductivity of fine mineral particles 
-                    !(2.5) [W m-1 K-1]
-      REAL TCOM     !Thermal conductivity of organic matter (0.25) 
-                    ![W m-1 K-1]
-      REAL TCDRYS   !Thermal conductivity of dry mineral soil (0.275) 
-                    ![W m-1 K-1]
-      REAL RHOSOL   !Density of soil mineral matter (2.65*10^3) [kg m-3]
-      REAL RHOOM    !Density of soil organic matter (1.30*10^3) [kg m-3]
-      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
-                    !(2.25*10^6) [J m-3 K-1]
-      REAL HCPOM    !Volumetric heat capacity of organic matter 
-                    !(2.50*10^6) [J m-3 K-1]
-      REAL HCPSND   !Volumetric heat capacity of sand particles 
-                    !(2.13*10^6) [J m-3 K-1]
-      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
-                    !(2.38*10^6) [J m-3 K-1]
-      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
-      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
-      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
-                    ![J kg-1 K-1]
-      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
-      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
-      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
-      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
-                    ![W m-1 K-1]
-      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
-                    ![J kg-1]
-      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
-                    ![J kg-1]
+      REAL DELT,TFREZ,RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,
+     1     TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,
+     2     HCPOM,HCPSND,HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
+     3     TCGLAC,CLHMLT,CLHVAP
 C                                                                                 
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
@@ -416,18 +300,7 @@ C
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C                                                                                 
-C----------------------------------------------------------------------        
-C
-      !
-      !In the first two loops, various subarea arrays and internal 
-      !CLASST variables are initialized. The initial temperatures of the 
-      !vegetation canopy above snow and above bare ground (TCANS and 
-      !TCANO) are set to the temperature of the vegetation over the 
-      !whole modelled area (TCAN) if TCAN is not effectively 0 K (the 
-      !value it is assigned if vegetation is not present). Otherwise, 
-      !the canopy temperatures are initialized to the air temperature 
-      !TA.
-      !
+C----------------------------------------------------------------------           
 C     * INITIALIZE 2-D AND 3-D ARRAYS.                                                    
 C                                                                                 
       DO 50 J=1,IG                                                                
@@ -449,7 +322,7 @@ C
 C     * INITIALIZE 1-D INTERNAL WORK FIELDS AND DIAGNOSTIC ARRAYS.
 C                                                                                 
       DO 100 I=IL1,IL2                                                            
-          FVEG  (I)=FC(I)+FCS(I)                                                
+          FVEG  (I)=FC(I)+FCS(I)                                                  
           IF(TCAN(I).GT.5.0) THEN
               TCANS (I)=TCAN(I)  
               TCANO (I)=TCAN(I) 
@@ -528,27 +401,12 @@ C
           FVAPX (I)=0.
           RIBX  (I)=0.
           WTABLE(I)=9999.
+          IWTABL(I)=0
   100 CONTINUE                                                                    
 C                                                                                 
 C     * SURFACE EVAPORATION EFFICIENCY FOR BARE SOIL ENERGY BALANCE
 C     * CALCULATIONS.                                 
 C
-      !
-      !In loop 200 the soil surface evaporation flag IEVAP and the 
-      !evaporation efficiency coefficient CEVAP are assigned. If the 
-      !liquid water content of the first soil layer is effectively equal 
-      !to the minimum water content THLMIN, IEVAP and CEVAP are set to 
-      !zero. If the liquid water content of the first soil layer is 
-      !greater than the field capacity THFC, IEVAP and CEVAP are set to 
-      !unity. Otherwise, IEVAP is set to 1 and CEVAP (or beta as it is 
-      !typically symbolized in the literature) is calculated using a 
-      !relation presented by Lee and Pielke (1992):
-      !
-      !CEVAP = 0.25*[1 – cos(THLIQ*pi/THFC)]^2
-      !
-      !where THLIQ is the liquid water content of the first soil layer 
-      !and THFC is its field capacity.
-      !
       DO 200 I=IL1,IL2    
           IF(THLIQG(I,1).LT.(THLMIN(I,1)+0.001)) THEN    
               IEVAP(I)=0  
@@ -563,18 +421,7 @@ C
   200 CONTINUE  
 C                                                                                 
 C     * VOLUMETRIC HEAT CAPACITIES OF SOIL LAYERS.
-C                   
-      !
-      !In loop 300 the volumetric heat capacities Cg of the soil layers 
-      !under a bare surface (HCPG) and under vegetation (HCPC) are 
-      !calculated, from their respective liquid and frozen water 
-      !contents THLIQ and THICE:
-      !
-      !Cg = HCPW*THLIQ + HCPICE*THICE + HCPS(1 - THPOR)
-      !
-      !where HCPS is the heat capacity of the soil matter and THPOR is 
-      !the pore volume. (The heat capacity of air is neglected.)
-      !                                                              
+C                                                                                 
       DO 300 J=1,IG                                                               
       DO 300 I=IL1,IL2                                                            
           IF(ISAND(I,1).GT.-4)                                     THEN          
@@ -589,27 +436,7 @@ C
   300 CONTINUE                                                                    
 C                                                                                 
 C     * THERMAL PROPERTIES OF SNOW.
-C                            
-      !
-      !In loop 400, the thermal properties of the snow pack under the 
-      !vegetation canopy and over bare soil are assigned on the basis of 
-      !the properties of the snow pack over the whole modelled area. The 
-      !heat capacity of the snow pack Cs is calculated from the volume 
-      !fractions of snow particles and liquid water in the pack. The 
-      !former is obtained from the ratio of the densities of the snow 
-      !pack and ice, and the latter from the ratio of the liquid water 
-      !content, normalized by the snow depth, and the density of water:
-      !
-      !Cs = HCPICE*[RHOSNO/RHOICE] + HCPW*WSNOW/[RHOW*ZSNOW]
-      !
-      !The thermal conductivity of snow TCSNOW is obtained from the 
-      !snow density using an empirical relationship derived by Sturm et 
-      !al. (1997):
-      !
-      !TCSNOW = (3.233*10^-6)*RHOSNO^2 – (1.01*10^-3)*RHOSNO + 0.138 
-      !RHOSNO >= 156.0
-      !TCSNOW = (0.234*10-3)*RHOSNO + 0.023      RHOSNO < 156.0
-      !                                                     
+C                                                                                 
       DO 400 I=IL1,IL2                                                            
           IF(ZSNOW(I).GT.0.)                                        THEN          
               HCPSCS(I)=HCPICE*RHOSNO(I)/RHOICE+HCPW*WSNOW(I)/
@@ -650,112 +477,10 @@ C             TCSNOW(I)=2.576E-6*RHOSNO(I)*RHOSNO(I)+0.074
               TCSNOW(I)=0.0
           ENDIF                                                                   
   400 CONTINUE                                                                    
-C                
+C                                                                                 
 C     * THERMAL CONDUCTIVITIES OF SOIL LAYERS AND DEPTH OF WATER
 C     * TABLE IN ORGANIC SOILS.                                         
-C        
-      !In loop 500, the thermal conductivities of the soil layers are 
-      !assigned. If the ISAND flag for the first soil layer is -4 
-      !(indicating glacier or ice sheet), or if the ISAND flag is -3 
-      !(indicating rock), then literature values for glacier ice or sand 
-      !particles respectively are assigned. If the ISAND flag is equal 
-      !to -2, indicating organic soil, the depth of the water table 
-      !WTABLE is first calculated. This is taken to lie within the first 
-      !layer, counting from the bottom of the soil profile, in which the 
-      !soil water content is larger than the retention capacity THLRET. 
-      !The water table depth is deduced by assuming that the soil is 
-      !saturated below the water table, and that the water content is at 
-      !the retention capacity above it. Thus, if THLIQ + THICE = THPOR 
-      !for the soil layer, the water table is located at the top of the 
-      !soil layer; if THLIQ + THICE = THLRET, it is located at the 
-      !permeable bottom of the soil layer; and if THLIQ + THICE is 
-      !between these two values, its location is given by:
-      !
-      !WTABLE = ZBOTW - DELZW*[(THLIQ + THICE - THLRET)/(THPOR-THLRET)]
-      !
-      !where DELZW is the permeable thickness of the soil layer.
-      !
-      !The thermal conductivities of organic and mineral soils are 
-      !calculated following the analysis of Côté and Konrad (2005). 
-      !They model the soil thermal conductivity using the concept of a 
-      !relative thermal conductivity lambda_r which has a value of 0 for 
-      !dry soils and 1 at saturation:
-      !
-      !lambda = [ lambda_sat – lambda_dry ]*lambda_r + lambda_dry
-      !
-      !The relative thermal conductivity is obtained from the degree of 
-      !saturation (the water content divided by the pore volume) Sr, 
-      !using the following generalized relationship:
-      !
-      !lambda_r = kappa*Sr/[1 + (kappa-1)*Sr ]
-      !
-      !The empirical coefficient kappa takes the following values:
-      !
-      !Unfrozen coarse mineral soils:   kappa = 4.0
-      !Frozen coarse mineral soils:     kappa = 1.2
-      !Unfrozen fine mineral soils:     kappa = 1.9
-      !Frozen fine mineral soils:       kappa = 0.85
-      !Unfrozen organic soils:          kappa = 0.6
-      !Frozen organic soils:            kappa = 0.25
-      !
-      !The dry thermal conductivity lambda_dry is calculated using an 
-      !empirical relationship based on the pore volume THPOR, with 
-      !different coefficients for mineral and organic soils:
-      !
-      !lambda_dry = 0.75*exp(-2.76*THPOR)   (mineral)
-      !lambda_dry = 0.30*exp(-2.0*THPOR)    (organic)
-      !
-      !The saturated thermal conductivity lambda_sat is calculated by 
-      !Cote and Konrad as a geometric mean of the conductivities of the 
-      !soil components. However, other researchers (e.g. Zhang et al., 
-      !2008) have found the linear averaging used by de Vries (1963) to 
-      !be more generally accurate:
-      !
-      !lambda_sat = lambda_w*THPOR + lambda_s*(1 - THPOR)   (unfrozen)
-      !lambda_sat = lambda_i*THPOR + lambda_s*(1 - THPOR)   (frozen)
-      !
-      !where lambda_w is the thermal conductivity of water, lambda_i is 
-      !that of ice and lambda_s is that of the soil particles.
-      !
-      !In the 500 loop, thermal conductivities are calculated for the 
-      !top and bottom of each soil layer. The degree of saturation 
-      !SATRAT is calculated as the sum of liquid and frozen water 
-      !contents, theta_w and THICE, divided by the pore volume. In 
-      !organic soils, if the liquid water content of the soil layer is 
-      !above the retention capacity THLRET, theta_w at the top of the 
-      !soil layer is assumed to be equal to theta_re and Sr at the 
-      !bottom of the layer is assumed to be 1. The relative liquid and 
-      !frozen water contents, THLSAT and THISAT, are calculated from 
-      !theta_w and THICE normalized by theta_w + THICE. The dry thermal 
-      !conductivity, and the saturated thermal conductivity for unfrozen 
-      !and frozen conditions, are evaluated using the equations above. 
-      !The unfrozen and frozen relative thermal conductivity, TCRATU and 
-      !TCRATF, are obtained from SATRAT and the appropriate values of 
-      !the empirical coefficient kappa. For mineral soils, kappa is 
-      !obtained as a weighted average over the percent sand content 
-      !(ISAND converted to a real value) and the percentage of fine 
-      !material (assumed to be 100-ISAND). The unfrozen and frozen soil 
-      !thermal conductivities, TCSOLU and TCSOLF, are then calculated 
-      !from TCRATU, TCRATF, and the dry and saturated thermal 
-      !conductivities; and the actual thermal conductivity of the soil, 
-      !TCSOIL, is determined as the average of TCSOLU and TCSOLF, 
-      !weighted according to the relative liquid and frozen water 
-      !contents THLSAT and THISAT. If the permeable thickness of the 
-      !layer, DELZW, is greater than zero, the thermal conductivity at 
-      !the top of the layer is set to TCSOIL; otherwise it is set to the 
-      !rock value, TCSAND. If DELZW is less than the thermal thickness 
-      !of the layer DELZ, the thermal conductivity at the bottom of the 
-      !layer is set to TCSAND; otherwise it is set to TCSOIL. (In the 
-      !case of organic soils in the latter branch, if theta_w was 
-      !greater than THLRET, the thermal conductivity at the bottom of 
-      !the layer is set to the average of the saturated unfrozen and 
-      !frozen values, weighted by THLSAT and THISAT.) Finally, if there 
-      !is ponded water present on the soil surface, the thermal 
-      !conductivity at the top of the first soil layer is treated as
-      ! varying linearly from the calculated soil thermal conductivity 
-      !if the pond depth ZPOND is zero, to the thermal conductivity of 
-      !water if ZPOND >= 10-2 m.
-      !                                                                        
+C                                                                                 
       DO 500 J=IG,1,-1
       DO 500 I=IL1,IL2                                                            
           IF    (ISAND(I,1).EQ.-4)                              THEN          
@@ -767,13 +492,20 @@ C
               TCBOTC(I,J)=TCSAND
               TCBOTG(I,J)=TCSAND
           ELSEIF(ISAND(I,J).EQ.-2)                          THEN 
-              IF ((THLIQG(I,J)+THICEG(I,J)).GT.(THLRET(I,J)+0.0001)) 
-     1                                                 THEN
-                  WTABLE(I)=ZBOTW(I,J)-DELZW(I,J)*MIN(1.0,
-     1                      (THLIQG(I,J)+THICEG(I,J)-THLRET(I,J))/
-     2                      (THPOR(I,J)-THLRET(I,J)))
-              ENDIF
-              IF (THLIQG(I,J).GT.(THLRET(I,J)+0.0001)) THEN
+              IF(J.EQ.IG .AND. (THLIQG(I,J)+THICEG(I,J)).LT.
+     1            (THPOR(I,J)-0.01)) IWTABL(I)=1
+              IF(IWTABL(I).EQ.0)                               THEN
+                  IF ((THLIQG(I,J)+THICEG(I,J)).GT.(THPOR(I,J)-0.01))
+     1                                                 THEN 
+                      WTABLE(I)=ZBOTW(I,J)-DELZW(I,J)
+                  ELSEIF (WTABLE(I).LT.9000.0)             THEN
+                      WTABLE(I)=ZBOTW(I,J)-DELZW(I,J)*MIN(1.0,
+     1                          (THLIQG(I,J)+THICEG(I,J)-THLRET(I,J))/
+     2                          (THPOR(I,J)-THLRET(I,J)))
+                      IWTABL(I)=1
+                  ENDIF          
+              ENDIF    
+             IF (THLIQG(I,J).GT.(THLRET(I,J)+0.0001)) THEN
                   SATRAT=MIN((THLRET(I,J)+THICEG(I,J))/
      1                   THPOR(I,J), 1.0)              
                   THLSAT=THLIQG(I,J)/(THLIQG(I,J)+THICEG(I,J))          
@@ -881,14 +613,6 @@ C
 C     * ADD PONDED WATER TEMPERATURE TO FIRST SOIL LAYER FOR USE
 C     * IN GROUND HEAT FLUX CALCULATIONS.
 C
-      !
-      !Finally, in loop 600, a variable TBAR1P is evaluated, 
-      !representing the weighted average value of the first layer soil 
-      !temperature and the ponded water, if any. (The heat capacity of 
-      !the soil is determined as the weighted average of HCPG over the 
-      !permeable thickness DELZW, and the heat capacity of rock, HCPSND, 
-      !over the impermeable thickness, DELZ-DELZW.)
-      !
       DO 600 I=IL1,IL2
           IF(ZPOND(I).GT.0.)                          THEN 
               TBAR1P(I)=(TPOND(I)*HCPW*ZPOND(I) + 
@@ -900,6 +624,7 @@ C
               TBAR1P(I)=TBAR(I,1)
           ENDIF
   600 CONTINUE
-C
+C         
+6990           format(I3, F6.2)
       RETURN                                                                      
       END 
