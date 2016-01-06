@@ -3742,7 +3742,7 @@ c
      b            thicecacc_m,     sdepgat,    spinfast,   todfrac,
      &                compete,  netrad_gat,  preacc_gat,
      &                 popdin,  dofire, dowetlands,obswetf, isndgat,
-     &                faregat,      mosaic, WETFRACGRD, wetfrac_sgrd,
+     &                faregat,      mosaic, wetfracgrd, wetfrac_sgrd,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
@@ -3787,7 +3787,8 @@ c
 
       ! Calculate the methane that is oxidized by the soil sink
       call soil_ch4uptake(TBARGAT,THPGAT,BIGAT,THLQGAT,THICGAT,
-     &                     PSISGAT,GRAV,FCANGAT)
+     &                     PSISGAT,GRAV,FCANGAT,obswetf,wetfdyn,
+     &                     wetfracgrd)
 
 c
 c     reset mosaic accumulator arrays.

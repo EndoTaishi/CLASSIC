@@ -39,13 +39,13 @@ real :: THP_air                                     ! Air-filled porosity ($cm^3
 real :: k_oxidr                                     ! First-order oxidation rate constant ($s^-1$)
 real :: r_T                                         ! Temperature factor used in determination of rate constant (-)
 real :: r_SM                                        ! Soil moisture factor used in determination of rate constant (-)
-integer :: i,j                                      ! counters
+integer :: i,j,layer                                      ! counters
 
 ! Local parameters:
 real, parameter :: D_air = 0.196   ! Diffusion coefficient in air (cm^2 s^-1) @ STP
 real, parameter :: g_0 = 586.7     ! Scaling factor takes atm_CH4 from ppmv to mg CH4 m^-2 d^-1 (mg $CH_4 ppmv^{-1} s d^{-1} m^2$)  !FLAG!! DO I WANT IN PER DAY??!
 real, parameter :: betaCH4 = 0.8   ! Constant derived in Curry (2007) from comparison against measurements (-)
-real, parameter :: k_o = 5.E-5     ! Base oxidation rate derived in Curry (2007) from comparison against measurements ($s^{-1}$)
+real, parameter :: k_o = 5.03E-5     ! Base oxidation rate derived in Curry (2007) from comparison against measurements ($s^{-1}$)
 
 ! ---------------------------------------------------------------------
 ! Begin
@@ -61,24 +61,26 @@ else ! use the dynamically determined wetland area
     r_W = 1.0 - wetfdyn
 end if
 
+! The soil oxidation methane sink is assumed to only operate in the first model
+! soil layer, thus we only consider that layer here.
+layer = 1
+
 do 10 i = il1, il2
 
     ! Find the diffusion coefficient in soil (D_soil)
 
-    ! The soil oxidation methane sink is assumed to only operate in the first model
-    ! soil layer, thus we only consider that layer here.
 
     ! First the temperature factor, G_T:
-    G_T = 1.0 + 0.0055 * Tsoil(i,1)
+    G_T = 1.0 + 0.0055 * Tsoil(i,layer)
 
     ! Find the air filled porosity, THP_air:
-    THP_air = THP(i,1) - (THLQ(i,1) + THIC(i,1)) ! Check if already calc'd in CLASS.
+    THP_air = THP(i,layer) - (THLQ(i,layer) + THIC(i,layer)) ! Check if already calc'd in CLASS.
 
     ! The BI  (Clapp and Hornberger b-term) is already calculated by CLASS as:
     !BI = 15.9 * f_clay + 2.91, thus we use that value.
 
     ! G_soil is the influence of the soil texture, moisture, and porosity:
-    G_soil = THP(i,1)**(4/3) * (THP_air / THP(i,1))**(1.5 + 3 / BI(i,1))
+    G_soil = THP(i,layer)**(4/3) * (THP_air / THP(i,layer))**(1.5 + 3 / BI(i,layer))
 
     ! The diffusion coefficient in soil is then:
     D_soil(i,j) = D_air * G_T * G_soil
@@ -87,10 +89,10 @@ do 10 i = il1, il2
 
     ! First find the temperature term, r_T:
 
-    if (Tsoil(i,1) < 0.0 .and. Tsoil(i,1) >= -10.0) then
-        r_T = (0.1 * Tsoil(i,1) + 1.0)**2
-    else if (Tsoil(i,1) >= 0.0 .and. Tsoil(i,1) < 43.3) then
-        r_T = exp(0.0693 * Tsoil(i,1) - 8.56E-7 * Tsoil(i,1)**4)
+    if (Tsoil(i,layer) < 0.0 .and. Tsoil(i,layer) >= -10.0) then
+        r_T = (0.1 * Tsoil(i,layer) + 1.0)**2
+    else if (Tsoil(i,layer) >= 0.0 .and. Tsoil(i,layer) < 43.3) then
+        r_T = exp(0.0693 * Tsoil(i,layer) - 8.56E-7 * Tsoil(i,layer)**4)
     else !all other temps (<-10 and >=43.3)
         r_T = 0.
     end if
@@ -99,7 +101,7 @@ do 10 i = il1, il2
 
     ! Find the soil water potential for the uppermost layer
     ! need the absolute value.
-    psi = abs(PSIS(i,1) * (THLQ(i,1)/THP(i,1))**-BI(i,1))
+    psi = abs(PSIS(i,layer) * (THLQ(i,layer)/THP(i,layer))**-BI(i,layer))
 
     ! Convert units from m to kPa !FLAG convert to MPa!!
     psi = psi * GRAV
