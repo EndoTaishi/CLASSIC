@@ -12,6 +12,8 @@ C                       PHOTOSYNTHESIS SUBROUTINE
 
 C     HISTORY:
 C
+C     * JAN 5/15  - J. Melton      Use TCAN again. We instituted a PAI minimum for trees (grass and crops already had it) of
+C                                  of 1. This removed the wild TCAN values that could occur.
 C     * JUL 22/15 - J. Melton      SM_FUNC2 was not correctly set up for soil layers > 3 (Noted by Yuanqiao Wu). Now fixed.
 C     * FEB 27/15 - J. Melton      Increase REQUITR to 10, it was not converging correctly at 4. Also rename
 C                                  WILTSM and FIELDSM to THLW and THFC, respectively, for consistency with CLASS.
@@ -611,12 +613,6 @@ C
 C     INITIALIZATION ENDS
 C
 C     -------------------------------------------------------------------
-C
-C     SINCE WE DON'T YET USE TCAN, STORE THE TCAN VALUE IN A TEMP VAR AND
-C     SET TCAN TO TA 
-C
-      T_TEMP = TCAN
-      TCAN   = TA
 C
 C     IF LAI IS LESS THAN SLAI THAN WE USE STORAGE LAI TO PHOTOSYNTHESIZE.
 C     HOWEVER, WE DO NOT USE THE STOMATAL RESISTANCE ESTIMATED IN THIS CASE,
@@ -1507,9 +1503,6 @@ C
 880     CONTINUE
 870   CONTINUE
 C
-C     PUT TCAN BACK TO ITS ORIGINAL VALUE FROM THE TEMP VAR 
-      TCAN = T_TEMP
-
 
       DEALLOCATE(USESLAI)
       DEALLOCATE(SORT)

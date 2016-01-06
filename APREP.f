@@ -19,6 +19,9 @@
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC )
 
+C     * JAN 05/15 - J.MELTON.   TREE PFTS NOW HAVE A MINIMUM PAI OF 1 (LIKE
+C     *                         CROPS AND GRASSES) TO PREVENT WILD CANOPY TEMPERATURE
+C     *                         VALUES WHEN THE CANOPY IS SMALL.
 C     * AUG 04/15 - D.VERSEGHY. SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
 C     * SEP 05/12 - J.MELTON.   CHANGED IDAY
@@ -454,28 +457,18 @@ C
           FCAN(I,2)=FCANMX(I,2)*(1.0-FSNOW(I))                                    
           IF(FCAN(I,1).LT.1.0E-5) FCAN(I,1)=0.0
           IF(FCAN(I,2).LT.1.0E-5) FCAN(I,2)=0.0
-          ! FLAG test JM Dec 8 2015
-          !do j = 1,4
-          !  IF(PAI(I,j).LT.THR_LAI) THEN
-          !    FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))*PAI(I,j)
-          !    PAI (I,j)=THR_LAI
-          !  ELSE
-          !    FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))
-          !  ENDIF
-          IF(PAI(I,3).LT.THR_LAI) THEN
-             FCAN(I,3)=FCANMX(I,3)*(1.0-FSNOW(I))*PAI(I,3)
-             PAI (I,3)=THR_LAI
-          ELSE
-             FCAN(I,3)=FCANMX(I,3)*(1.0-FSNOW(I))
-          ENDIF
-          IF(PAI(I,4).LT.THR_LAI) THEN
-             FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))*PAI(I,4)
-             PAI (I,4)=THR_LAI
-          ELSE
-             FCAN(I,4)=FCANMX(I,4)*(1.0-FSNOW(I))
-          ENDIF
-          !end do
-          ! FLAG end test
+
+          ! PAI has a minimum value of 1.0 for all PFTs. This is to prevent
+          ! wild canopy temperature values that could occur when the canopy
+          ! size is small.
+          do j = 1,4
+           IF(PAI(I,j).LT.THR_LAI) THEN
+             FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))*PAI(I,j)
+             PAI (I,j)=THR_LAI
+           ELSE
+             FCAN(I,j)=FCANMX(I,j)*(1.0-FSNOW(I))
+           ENDIF
+          end do
           IF(FCAN(I,3).LT.1.0E-5) FCAN(I,3)=0.0
           IF(FCAN(I,4).LT.1.0E-5) FCAN(I,4)=0.0
 C                                                                                 
@@ -483,28 +476,14 @@ C
           FCANS(I,2)=FCANMX(I,2)*FSNOW(I)                                         
           IF(FCANS(I,1).LT.1.0E-5) FCANS(I,1)=0.0
           IF(FCANS(I,2).LT.1.0E-5) FCANS(I,2)=0.0
-          ! FLAG test JM Dec 8 2015
-!           do j = 1,4
-!             IF(PAIS(I,j).LT.THR_LAI) THEN
-!               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)*PAIS(I,j)
-!               PAIS (I,j)=THR_LAI
-!             ELSE
-!               FCANS(I,j)=FCANMX(I,j)*FSNOW(I)
-!             ENDIF
-          IF(PAIS(I,3).LT.THR_LAI) THEN
-             FCANS(I,3)=FCANMX(I,3)*FSNOW(I)*PAIS(I,3)
-             PAIS (I,3)=THR_LAI
-          ELSE
-             FCANS(I,3)=FCANMX(I,3)*FSNOW(I)
-          ENDIF
-          IF(PAIS(I,4).LT.THR_LAI) THEN
-             FCANS(I,4)=FCANMX(I,4)*FSNOW(I)*PAIS(I,4)
-             PAIS (I,4)=THR_LAI
-          ELSE
-             FCANS(I,4)=FCANMX(I,4)*FSNOW(I)
-          ENDIF
-          !end do
-          ! FLAG end test
+          do j = 1,4
+            IF(PAIS(I,j).LT.THR_LAI) THEN
+              FCANS(I,j)=FCANMX(I,j)*FSNOW(I)*PAIS(I,j)
+              PAIS (I,j)=THR_LAI
+            ELSE
+              FCANS(I,j)=FCANMX(I,j)*FSNOW(I)
+            ENDIF
+          end do
           IF(FCANS(I,3).LT.1.0E-5) FCANS(I,3)=0.0
           IF(FCANS(I,4).LT.1.0E-5) FCANS(I,4)=0.0
 C                                                                                 
