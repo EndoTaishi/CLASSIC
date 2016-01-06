@@ -1,11 +1,14 @@
       PROGRAM RUNCLASS36CTEM
 C
-C     * SHELL PROGRAM TO RUN "CLASS" ("CANADIAN LAND SURFACE SCHEME")
+C     * DRIVER PROGRAM TO RUN "CLASS" ("CANADIAN LAND SURFACE SCHEME")
 C     * IN STAND-ALONE MODE USING SPECIFIED BOUNDARY
 C     * CONDITIONS AND ATMOSPHERIC FORCING, COUPLED TO CTEM (CANADIAN TERRESTRIAL
 C     * ECOSYSTEM MODEL).
 C
 C     REVISION HISTORY:
+C
+C     * JAN 6 2015
+C     * Joe Melton : Added the soil methane sink subroutine
 C
 C     * JUL 2 2015
 C     * JOE MELTON : Took many calculations out of this driver and into subroutines. Introduced
@@ -3781,6 +3784,11 @@ c    -------------- inputs updated by ctem are above this line ------
 c    ---------------- outputs are listed above this line ------------
 c
       endif  !if(ctem_on)
+
+      ! Calculate the methane that is oxidized by the soil sink
+      call soil_ch4uptake(TBARGAT,THPGAT,BIGAT,THLQGAT,THICGAT,
+     &                     PSISGAT,GRAV,FCANGAT)
+
 c
 c     reset mosaic accumulator arrays.
 c
