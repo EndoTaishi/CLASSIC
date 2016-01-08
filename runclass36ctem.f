@@ -677,6 +677,7 @@ c
       real, pointer, dimension(:,:) :: ch4dyn1row
       real, pointer, dimension(:,:) :: ch4dyn2row
       real, pointer, dimension(:,:) :: wetfrac_mon
+      real, pointer, dimension(:,:) :: ch4soillsrow
 
       real, pointer, dimension(:,:) :: lucemcomrow
       real, pointer, dimension(:,:) :: lucltrinrow
@@ -828,6 +829,7 @@ c
       real, pointer, dimension(:) :: wetfdyngat
       real, pointer, dimension(:) :: ch4dyn1gat
       real, pointer, dimension(:) :: ch4dyn2gat
+      real, pointer, dimension(:) :: ch4soillsgat
 
       real, pointer, dimension(:) :: lucemcomgat
       real, pointer, dimension(:) :: lucltringat
@@ -1091,6 +1093,7 @@ c
       real, pointer, dimension(:) :: wetfdyn_g
       real, pointer, dimension(:) :: ch4dyn1_g
       real, pointer, dimension(:) :: ch4dyn2_g
+      real, pointer, dimension(:) :: ch4soills_g
       real, pointer, dimension(:,:) :: afrleaf_g
       real, pointer, dimension(:,:) :: afrstem_g
       real, pointer, dimension(:,:) :: afrroot_g
@@ -1148,6 +1151,7 @@ c
         real, pointer, dimension(:) :: wetfdyn_mo_g
         real, pointer, dimension(:) :: ch4dyn1_mo_g
         real, pointer, dimension(:) :: ch4dyn2_mo_g
+        real, pointer, dimension(:) :: ch4soills_mo_g
 
 !      Mosaic monthly variables (denoted by name ending in "_mo_m")
 c
@@ -1191,6 +1195,7 @@ c
       real, pointer, dimension(:,:) :: wetfdyn_mo_m
       real, pointer, dimension(:,:) :: ch4dyn1_mo_m
       real, pointer, dimension(:,:) :: ch4dyn2_mo_m
+      real, pointer, dimension(:,:) :: ch4soills_mo_m
 
 !     -----------------------
 c      Annual output for CTEM grid-averaged variables:
@@ -1236,6 +1241,7 @@ c      (denoted by name ending in "_yr_g")
       real, pointer, dimension(:) :: wetfdyn_yr_g
       real, pointer, dimension(:) :: ch4dyn1_yr_g
       real, pointer, dimension(:) :: ch4dyn2_yr_g
+      real, pointer, dimension(:) :: ch4soills_yr_g
 
 
 ! c      Annual output for CTEM mosaic variables:
@@ -1281,6 +1287,7 @@ c      (denoted by name ending in "_yr_g")
       real, pointer, dimension(:,:) :: wetfdyn_yr_m
       real, pointer, dimension(:,:) :: ch4dyn1_yr_m
       real, pointer, dimension(:,:) :: ch4dyn2_yr_m
+      real, pointer, dimension(:,:) :: ch4soills_yr_m
 
       logical, parameter :: obslght = .false.  ! if true the observed lightning will be used. False means you will use the
                                                ! lightning climatology from the CTM file. This was brought in for FireMIP runs.
@@ -1482,6 +1489,7 @@ C===================== CTEM ==============================================\
       ch4dyn1row        => vrot%ch4dyn1
       ch4dyn2row        => vrot%ch4dyn2
       wetfrac_mon       => vrot%wetfrac_mon
+      ch4soillsrow      => vrot%ch4_soills
 
       lucemcomrow       => vrot%lucemcom
       lucltrinrow       => vrot%lucltrin
@@ -1634,6 +1642,7 @@ C===================== CTEM ==============================================\
       wetfdyngat        => vgat%wetfdyn
       ch4dyn1gat        => vgat%ch4dyn1
       ch4dyn2gat        => vgat%ch4dyn2
+      ch4soillsgat      => vgat%ch4_soills
 
       lucemcomgat       => vgat%lucemcom
       lucltringat       => vgat%lucltrin
@@ -1849,6 +1858,7 @@ C===================== CTEM ==============================================\
       wetfdyn_g         => ctem_grd%wetfdyn_g
       ch4dyn1_g         => ctem_grd%ch4dyn1_g
       ch4dyn2_g         => ctem_grd%ch4dyn2_g
+      ch4soills_g       => ctem_grd%ch4soills_g
       afrleaf_g         => ctem_grd%afrleaf_g
       afrstem_g         => ctem_grd%afrstem_g
       afrroot_g         => ctem_grd%afrroot_g
@@ -1962,6 +1972,7 @@ C===================== CTEM ==============================================\
         wetfdyn_mo_g        =>ctem_grd_mo%wetfdyn_mo_g
         ch4dyn1_mo_g        =>ctem_grd_mo%ch4dyn1_mo_g
         ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
+        ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
 
       ! mosaic monthly outputs
 
@@ -2005,6 +2016,7 @@ C===================== CTEM ==============================================\
       wetfdyn_mo_m          =>ctem_tile_mo%wetfdyn_mo_m
       ch4dyn1_mo_m          =>ctem_tile_mo%ch4dyn1_mo_m
       ch4dyn2_mo_m          =>ctem_tile_mo%ch4dyn2_mo_m
+      ch4soills_mo_m        =>ctem_tile_mo%ch4soills_mo_m
 
       ! grid level annual outputs
       laimaxg_yr_g          =>ctem_grd_yr%laimaxg_yr_g
@@ -2047,6 +2059,7 @@ C===================== CTEM ==============================================\
       wetfdyn_yr_g          =>ctem_grd_yr%wetfdyn_yr_g
       ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
       ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
+      ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
 
       ! mosaic annual outputs
 
@@ -2090,6 +2103,7 @@ C===================== CTEM ==============================================\
       wetfdyn_yr_m          =>ctem_tile_yr%wetfdyn_yr_m
       ch4dyn1_yr_m          =>ctem_tile_yr%ch4dyn1_yr_m
       ch4dyn2_yr_m          =>ctem_tile_yr%ch4dyn2_yr_m
+      ch4soills_yr_m          =>ctem_tile_yr%ch4soills_yr_m
 
 !    =================================================================================
 !    =================================================================================
@@ -3377,8 +3391,8 @@ C
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
-     &      CH4WET1GAT, CH4WET2GAT,
-     &      WETFDYNGAT, CH4DYN1GAT,  CH4DYN2GAT,
+     &      ch4wet1gat, ch4wet2gat,
+     &      wetfdyngat, ch4dyn1gat,  ch4dyn2gat, ch4soillsgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,      fcancmxrow,  rmatcrow,    zolncrow,  paicrow,
@@ -3416,8 +3430,8 @@ c
      &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
-     &      CH4WET1ROW, CH4WET2ROW,
-     &      WETFDYNROW, CH4DYN1ROW, CH4DYN2ROW)
+     &      ch4wet1row, ch4wet2row,
+     &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow)
 c
 C===================== CTEM ============================================ /
 C
@@ -3779,16 +3793,16 @@ c    -------------- inputs updated by ctem are above this line ------
      &          rmlvegaccgat,    rmsveggat,  rmrveggat,  rgveggat,
      &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,
      &        hetroresveggat, autoresveggat, litresveggat,
-     &           soilcresveggat, nml, ilmos, jlmos, CH4WET1GAT,
-     &          CH4WET2GAT, WETFDYNGAT, CH4DYN1GAT, CH4DYN2GAT)
+     &           soilcresveggat, nml, ilmos, jlmos, ch4wet1gat,
+     &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat)
 c    ---------------- outputs are listed above this line ------------
 c
       endif  !if(ctem_on)
 
       ! Calculate the methane that is oxidized by the soil sink
-      call soil_ch4uptake(TBARGAT,THPGAT,BIGAT,THLQGAT,THICGAT,
+      call soil_ch4uptake(1,nml,TBARGAT,THPGAT,BIGAT,THLQGAT,THICGAT,
      &                     PSISGAT,GRAV,FCANGAT,obswetf,wetfdyn,
-     &                     wetfracgrd)
+     &                     wetfracgrd,sandgat,RHOW,RHOICE,ch4soillsgat)
 
 c
 c     reset mosaic accumulator arrays.
@@ -3975,8 +3989,8 @@ C
      &      btermrow,     ltermrow,   mtermrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
-     &      CH4WET1ROW, CH4WET2ROW,
-     &      WETFDYNROW, CH4DYN1ROW, CH4DYN2ROW,
+     &      ch4wet1row, ch4wet2row,
+     &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,
 c    ----
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -4015,8 +4029,8 @@ c    ----
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
-     &      CH4WET1GAT, CH4WET2GAT,
-     &      WETFDYNGAT, CH4DYN1GAT, CH4DYN2GAT)
+     &      ch4wet1gat, ch4wet2gat,
+     &      wetfdyngat, ch4dyn1gat, ch4dyn2gat,ch4soillsgat)
 c
 C===================== CTEM ============================================ /
 C

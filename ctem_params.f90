@@ -98,6 +98,8 @@ real, parameter :: minbare = 1.0e-5 ! minimum bare fraction when running competi
 ! conversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
 
+real, parameter :: wtCH4 = 16.044        ! Molar mass of CH4 ($g mol^{-1}$)
+
 ! simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
 logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false. ]   
 

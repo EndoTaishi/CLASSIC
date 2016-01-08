@@ -34,8 +34,8 @@
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat,burnvegfgat, pstemmassgat, pgleafmassgat,
-     &      CH4WET1GAT, CH4WET2GAT, WETFDYNGAT, CH4DYN1GAT, 
-     &      CH4DYN2GAT,
+     &      ch4wet1gat, ch4wet2gat, wetfdyngat, ch4dyn1gat,
+     &      ch4dyn2gat, ch4soillsgat
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -73,8 +73,8 @@ c
      &      btermrow,     ltermrow,   mtermrow, 
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow,pgleafmassrow,
-     &      CH4WET1ROW, CH4WET2ROW, WETFDYNROW, CH4DYN1ROW, 
-     &      CH4DYN2ROW)
+     &      ch4wet1row, ch4wet2row, wetfdynrow, ch4dyn1row,
+     &      ch4dyn2row, ch4soillsrow)
 c
 c              Canadian Terrestrial Ecosystem Model (CTEM)
 c
@@ -280,14 +280,15 @@ c
      2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp1),
      3      soilcresvegrow(nlat,nmos,iccp1) 
 
-c   Methane(Wetland) related variables 
-        real                                                         !      WETFRACROW(nlat),             WETFRACGAT(ILG),
-                                                                     !  1       WETFRAC_SROW(nlat),            WETFRAC_SGAT(ILG),
-     2       CH4WET1ROW(nlat,nmos),         CH4WET1GAT(ILG),
-     3       CH4WET2ROW(nlat,nmos),         CH4WET2GAT(ILG),
-     4       WETFDYNROW(nlat,nmos),         WETFDYNGAT(ILG),
-     5       CH4DYN1ROW(nlat,nmos),         CH4DYN1GAT(ILG),
-     6       CH4DYN2ROW(nlat,nmos),         CH4DYN2GAT(ILG)
+c   Methane related variables
+        real                                                         !      wetfracrow(nlat),             wetfracgat(ilg),
+                                                                     !  1       wetfrac_srow(nlat),            wetfrac_sgat(ilg),
+     2       ch4wet1row(nlat,nmos),         ch4wet1gat(ilg),
+     3       ch4wet2row(nlat,nmos),         ch4wet2gat(ilg),
+     4       wetfdynrow(nlat,nmos),         wetfdyngat(ilg),
+     5       ch4dyn1row(nlat,nmos),         ch4dyn1gat(ilg),
+     6       ch4dyn2row(nlat,nmos),         ch4dyn2gat(ilg),
+     7       ch4soillsrow(nlat,nmos),      ch4soillsgat(ilg)
 
 
 c----------------------------------------------------------------------
@@ -335,13 +336,14 @@ c----------------------------------------------------------------------
           dstcemls3gat(k) = dstcemls3row(ilmos(k),jlmos(k))
           faregat(k)      = farerow(ilmos(k),jlmos(k))
           gavgscmsgat(k)  = gavgscmsrow(ilmos(k),jlmos(k)) 
-!          WETFRACGAT(k)   = WETFRACROW(ilmos(k))
-!          WETFRAC_SGAT(k) = WETFRAC_SROW(ilmos(k))
-          CH4WET1GAT(k)   = CH4WET1ROW(ilmos(k),jlmos(k))
-          CH4WET2GAT(k)   = CH4WET2ROW(ilmos(k),jlmos(k))
-          WETFDYNGAT(k)   = WETFDYNROW(ilmos(k),jlmos(k))
-          CH4DYN1GAT(k)   = CH4DYN1ROW(ilmos(k),jlmos(k))
-          CH4DYN2GAT(k)   = CH4DYN2ROW(ilmos(k),jlmos(k))        
+!          wetfracgat(k)   = wetfracrow(ilmos(k))
+!          wetfrac_sgat(k) = wetfrac_srow(ilmos(k))
+          ch4wet1gat(k)   = ch4wet1row(ilmos(k),jlmos(k))
+          ch4wet2gat(k)   = ch4wet2row(ilmos(k),jlmos(k))
+          wetfdyngat(k)   = wetfdynrow(ilmos(k),jlmos(k))
+          ch4dyn1gat(k)   = ch4dyn1row(ilmos(k),jlmos(k))
+          ch4dyn2gat(k)   = ch4dyn2row(ilmos(k),jlmos(k))
+          ch4soillsgat(k) = ch4soillsrow(ilmos(k),jlmos(k))
 c  
 100   continue
 c

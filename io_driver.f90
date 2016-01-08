@@ -924,8 +924,8 @@ if (ctem_on .and. .not. parallelrun) then
             '   LUCSOCIN   GRCLAREA   BTERM   LTERM   MTERM')
 7111  FORMAT('               g/m2.D     g/m2.d','     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d',&
             '     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d   ','       %  avgprob/d uMOL-CO2/M2.S KgC/M2.D','   KgC/M2.D      KM^2    prob/d       prob/d       prob/d')
-7112  FORMAT(' DAY  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2 ')
-7113  FORMAT('          umolCH4/M2.S    umolCH4/M2.S          umolCH4/M2.S  umolCH4/M2.S')
+7112  FORMAT(' DAY  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2  SOILUP ')
+7113  FORMAT('          umolCH4/M2.S    umolCH4/M2.S          umolCH4/M2.S  umolCH4/M2.S  umolCH4/M2.S')
 
     write(711,6001) title1,title2,title3,title4,title5,title6
     write(711,6002) name1,name2,name3,name4,name5,name6
@@ -1106,10 +1106,10 @@ end if !ctem_on & parallelrun
             'SUMCHECK, PFT existence for each of the 9 pfts')
 6229  FORMAT('         %         %         %         %         ','%         %         %         %         %         %          ','     ')
      
-6230  FORMAT('MONTH  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2 ')
-6231  FORMAT('       gCH4/M2.MON     gCH4/M2.MON        gCH4/M2.MON  gCH4/M2.MON')
-6232  FORMAT('  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2 ')
-6233  FORMAT('      gCH4/M2.YR      gCH4/M2.YR         gCH4/M2.YR   gCH4/M2.YR ')
+6230  FORMAT('MONTH  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2  SOILUPTAKE ')
+6231  FORMAT('       gCH4/M2.MON     gCH4/M2.MON        gCH4/M2.MON  gCH4/M2.MON  gCH4/M2.MON')
+6232  FORMAT('  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2   SOILUPTAKE ')
+6233  FORMAT('      gCH4/M2.YR      gCH4/M2.YR         gCH4/M2.YR   gCH4/M2.YR   gCH4/M2.YR ')
  
 end subroutine create_outfiles
 
@@ -1322,7 +1322,7 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
 
 use ctem_statevars,     only : ctem_tile, vrot, c_switch, &
                                resetctem_g, ctem_grd
-use ctem_params, only : icc,ignd,nmos,iccp1
+use ctem_params, only : icc,ignd,nmos,iccp1,wtCH4
 
 implicit none
 
@@ -1386,6 +1386,7 @@ real, pointer, dimension(:,:) :: ch4wet2row
 real, pointer, dimension(:,:) :: wetfdynrow
 real, pointer, dimension(:,:) :: ch4dyn1row
 real, pointer, dimension(:,:) :: ch4dyn2row
+real, pointer, dimension(:,:) :: ch4soillsrow
 real, pointer, dimension(:,:,:) :: litrmassrow
 real, pointer, dimension(:,:,:) :: soilcmasrow
 real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
@@ -1501,6 +1502,7 @@ real, pointer, dimension(:) :: ch4wet2_g
 real, pointer, dimension(:) :: wetfdyn_g
 real, pointer, dimension(:) :: ch4dyn1_g
 real, pointer, dimension(:) :: ch4dyn2_g
+real, pointer, dimension(:) :: ch4soills_g
 real, pointer, dimension(:,:) :: afrleaf_g
 real, pointer, dimension(:,:) :: afrstem_g     
 real, pointer, dimension(:,:) :: afrroot_g
@@ -1585,6 +1587,7 @@ ch4wet2row        => vrot%ch4wet2
 wetfdynrow        => vrot%wetfdyn
 ch4dyn1row        => vrot%ch4dyn1
 ch4dyn2row        => vrot%ch4dyn2
+ch4soillsrow      => vrot%ch4_soills
 litrmassrow       => vrot%litrmass
 soilcmasrow       => vrot%soilcmas
 vgbiomas_vegrow   => vrot%vgbiomas_veg
@@ -1696,6 +1699,7 @@ ch4wet2_g         => ctem_grd%ch4wet2_g
 wetfdyn_g         => ctem_grd%wetfdyn_g
 ch4dyn1_g         => ctem_grd%ch4dyn1_g
 ch4dyn2_g         => ctem_grd%ch4dyn2_g
+ch4soills_g       => ctem_grd%ch4_soills_g
 afrleaf_g         => ctem_grd%afrleaf_g
 afrstem_g         => ctem_grd%afrstem_g   
 afrroot_g         => ctem_grd%afrroot_g
@@ -1828,10 +1832,11 @@ do 851 i=1,nltest
     litresrow(i,m)  =litresrow(i,m)*1.0377   ! convert to gc/m2.day
     socresrow(i,m)  =socresrow(i,m)*1.0377   ! convert to gc/m2.day
 
-    CH4WET1ROW(i,m) = CH4WET1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
-    CH4WET2ROW(i,m) = CH4WET2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
-    CH4DYN1ROW(i,m) = CH4DYN1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
-    CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
+    ch4wet1row(i,m) = ch4wet1row(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
+    ch4wet2row(i,m) = ch4wet2row(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
+    ch4dyn1row(i,m) = ch4dyn1row(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
+    ch4dyn2row(i,m) = ch4dyn2row(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
+    ch4soillsrow(i,m) = ch4soillsrow(i,m)*1.0377 * wtCH4 / 12. ! convert from umolch4/m2/s to gch4/m2.day
 
 !          write daily ctem results
     if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
@@ -1975,7 +1980,7 @@ do 851 i=1,nltest
 8600       format(1x,i4,i5,4f10.5,i8,2(a6,i2))
 8601       format(1x,i4,i5,4f10.5,8x,2(a6,i2))   
 8800       format(1x,i4,i5,20f11.4,2x,f9.2,2(a6,i2))
-8810       format(1x,i4,i5,5f11.4,2(a6,i2))
+8810       format(1x,i4,i5,6f11.4,2(a6,i2))
 
 !          Calculation of grid averaged variables
 
@@ -2023,11 +2028,12 @@ do 851 i=1,nltest
     lterm_g(i)    =lterm_g(i)   +ltermrow(i,m)*FAREROT(i,m) 
     mterm_g(i)    =mterm_g(i)   +mtermrow(i,m)*FAREROT(i,m)
 
-    CH4WET1_G(i) = CH4WET1_G(i) + CH4WET1ROW(i,m)*FAREROT(i,m)
-    CH4WET2_G(i) = CH4WET2_G(i) + CH4WET2ROW(i,m)*FAREROT(i,m)
-    WETFDYN_G(i) = WETFDYN_G(i) + WETFDYNROW(i,m)*FAREROT(i,m)
-    CH4DYN1_G(i) = CH4DYN1_G(i) + CH4DYN1ROW(i,m)*FAREROT(i,m)
-    CH4DYN2_G(i) = CH4DYN2_G(i) + CH4DYN2ROW(i,m)*FAREROT(i,m)
+    ch4wet1_g(i) = ch4wet1_g(i) + ch4wet1row(i,m)*farerot(i,m)
+    ch4wet2_g(i) = ch4wet2_g(i) + ch4wet2row(i,m)*farerot(i,m)
+    wetfdyn_g(i) = wetfdyn_g(i) + wetfdynrow(i,m)*farerot(i,m)
+    ch4dyn1_g(i) = ch4dyn1_g(i) + ch4dyn1row(i,m)*farerot(i,m)
+    ch4dyn2_g(i) = ch4dyn2_g(i) + ch4dyn2row(i,m)*farerot(i,m)
+    ch4soills_g(i) = ch4soills_g(i) + ch4soillsrow(i,m)*farerot(i,m)
 
     do j=1,icc  
 
@@ -2106,7 +2112,8 @@ do 851 i=1,nltest
     if (dowetlands .or. obswetf) then
     write(762,8810)iday,iyear, ch4wet1_g(i),  &
                  ch4wet2_g(i), wetfdyn_g(i),  &
-                 ch4dyn1_g(i), ch4dyn2_g(i)
+                 ch4dyn1_g(i), ch4dyn2_g(i),  &
+                 ch4soills_g(i)
     endif  
 
     if (compete .or. lnduseon) then 
@@ -2197,6 +2204,7 @@ real, pointer, dimension(:,:) :: ch4wet2_mo_m
 real, pointer, dimension(:,:) :: wetfdyn_mo_m
 real, pointer, dimension(:,:) :: ch4dyn1_mo_m
 real, pointer, dimension(:,:) :: ch4dyn2_mo_m
+real, pointer, dimension(:,:) :: ch4soills_mo_m
 logical, pointer, dimension(:,:,:) :: pftexistrow
 real, pointer, dimension(:,:,:) :: gppvegrow
 real, pointer, dimension(:,:,:) :: nepvegrow
@@ -2237,6 +2245,7 @@ real, pointer, dimension(:,:) :: ch4wet2row
 real, pointer, dimension(:,:) :: wetfdynrow
 real, pointer, dimension(:,:) :: ch4dyn1row
 real, pointer, dimension(:,:) :: ch4dyn2row
+real, pointer, dimension(:,:) :: ch4soillsrow
 real, pointer, dimension(:,:,:) :: litrmassrow
 real, pointer, dimension(:,:,:) :: soilcmasrow
 real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
@@ -2283,6 +2292,7 @@ real, pointer, dimension(:) :: ch4wet2_mo_g
 real, pointer, dimension(:) :: wetfdyn_mo_g
 real, pointer, dimension(:) :: ch4dyn1_mo_g
 real, pointer, dimension(:) :: ch4dyn2_mo_g
+real, pointer, dimension(:) :: ch4soills_mo_g
 
 ! local
 integer :: i,m,j,nt
@@ -2341,6 +2351,7 @@ ch4wet2_mo_m          =>ctem_tile_mo%ch4wet2_mo_m
 wetfdyn_mo_m          =>ctem_tile_mo%wetfdyn_mo_m
 ch4dyn1_mo_m          =>ctem_tile_mo%ch4dyn1_mo_m
 ch4dyn2_mo_m          =>ctem_tile_mo%ch4dyn2_mo_m
+ch4soills_mo_m        =>ctem_tile_mo%ch4soills_mo_m
 
 gppvegrow         => vrot%gppveg
 nepvegrow         => vrot%nepveg
@@ -2381,6 +2392,7 @@ ch4wet2row        => vrot%ch4wet2
 wetfdynrow        => vrot%wetfdyn
 ch4dyn1row        => vrot%ch4dyn1
 ch4dyn2row        => vrot%ch4dyn2
+ch4soillsrow      => vrot%ch4_soills
 litrmassrow       => vrot%litrmass
 soilcmasrow       => vrot%soilcmas
 vgbiomas_vegrow   => vrot%vgbiomas_veg
@@ -2427,7 +2439,7 @@ ch4wet2_mo_g        =>ctem_grd_mo%ch4wet2_mo_g
 wetfdyn_mo_g        =>ctem_grd_mo%wetfdyn_mo_g
 ch4dyn1_mo_g        =>ctem_grd_mo%ch4dyn1_mo_g
 ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
-
+ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
 
 ! ------------
 
@@ -2476,11 +2488,12 @@ ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
            luc_emc_mo_m(i,m) =luc_emc_mo_m(i,m)+lucemcomrow(i,m)
            lucsocin_mo_m(i,m) =lucsocin_mo_m(i,m)+lucsocinrow(i,m)
            lucltrin_mo_m(i,m) =lucltrin_mo_m(i,m)+lucltrinrow(i,m)
-           ch4wet1_mo_m(i,m) = ch4wet1_mo_m(i,m) + CH4WET1ROW(i,m)
-           ch4wet2_mo_m(i,m) = ch4wet2_mo_m(i,m) + CH4WET2ROW(i,m)
-           wetfdyn_mo_m(i,m) = wetfdyn_mo_m(i,m) + WETFDYNROW(i,m)
-           ch4dyn1_mo_m(i,m) = ch4dyn1_mo_m(i,m) + CH4DYN1ROW(i,m)
-           ch4dyn2_mo_m(i,m) = ch4dyn2_mo_m(i,m) + CH4DYN2ROW(i,m)
+           ch4wet1_mo_m(i,m) = ch4wet1_mo_m(i,m) + ch4wet1row(i,m)
+           ch4wet2_mo_m(i,m) = ch4wet2_mo_m(i,m) + ch4wet2row(i,m)
+           wetfdyn_mo_m(i,m) = wetfdyn_mo_m(i,m) + wetfdynrow(i,m)
+           ch4dyn1_mo_m(i,m) = ch4dyn1_mo_m(i,m) + ch4dyn1row(i,m)
+           ch4dyn2_mo_m(i,m) = ch4dyn2_mo_m(i,m) + ch4dyn2row(i,m)
+           ch4soills_mo_m(i,m) = ch4soills_mo_m(i,m) + ch4soillsrow(i,m)
 
 !          Sum the probfire now, later we will make it a per day value.
            probfire_mo_m(i,m) =probfire_mo_m(i,m) + probfirerow(i,m)
@@ -2589,6 +2602,7 @@ ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
                wetfdyn_mo_g(i) = wetfdyn_mo_g(i)+wetfdyn_mo_m(i,m)*FAREROT(i,m)
                ch4dyn1_mo_g(i) = ch4dyn1_mo_g(i)+ch4dyn1_mo_m(i,m)*FAREROT(i,m)
                ch4dyn2_mo_g(i) = ch4dyn2_mo_g(i)+ch4dyn2_mo_m(i,m)*FAREROT(i,m)
+               ch4soills_mo_g(i) = ch4soills_mo_g(i)+ch4soills_mo_m(i,m)*FAREROT(i,m)
 
 !              Make the probability of fire a per day value
                probfire_mo_m(i,m)=probfire_mo_m(i,m)*(1./real(monthdays(nt)))
@@ -2712,7 +2726,8 @@ ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
              if (dowetlands .or. obswetf) then
              write(91,8111)imonth,iyear,ch4wet1_mo_g(i), &
                           ch4wet2_mo_g(i),wetfdyn_mo_g(i), &
-                          ch4dyn1_mo_g(i),ch4dyn2_mo_g(i)
+                          ch4dyn1_mo_g(i),ch4dyn2_mo_g(i), &
+                          ch4soills_mo_g(i)
              endif
 
 
@@ -2735,7 +2750,7 @@ probfire_mo_m(i,:) = 0.0
                wetfdyn_mo_m(i,m)  =0.0
                ch4dyn1_mo_m(i,m)  =0.0
                ch4dyn2_mo_m(i,m)  =0.0
-
+               ch4soills_mo_m(i,m)  =0.0
 
              do j=1,icc
 
@@ -2784,7 +2799,7 @@ probfire_mo_m(i,:) = 0.0
 8107  FORMAT(1X,I5,11(F10.5,1X),9L5,2(A6,I2))
 8108  FORMAT(1X,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
 8109  FORMAT(1X,I4,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
-8111  FORMAT(1X,I4,I5,5(F10.3,1X),2(A6,I2))
+8111  FORMAT(1X,I4,I5,6(F10.3,1X),2(A6,I2))
 8115  FORMAT(1X,I5,5(F10.3,1X),2(A6,I2))
 
 
@@ -2855,6 +2870,7 @@ real, pointer, dimension(:,:) :: ch4wet2_yr_m
 real, pointer, dimension(:,:) :: wetfdyn_yr_m
 real, pointer, dimension(:,:) :: ch4dyn1_yr_m
 real, pointer, dimension(:,:) :: ch4dyn2_yr_m
+real, pointer, dimension(:,:) :: ch4soills_yr_m
 
 logical, pointer, dimension(:,:,:) :: pftexistrow
 real, pointer, dimension(:,:,:) :: gppvegrow
@@ -2896,6 +2912,7 @@ real, pointer, dimension(:,:) :: ch4wet2row
 real, pointer, dimension(:,:) :: wetfdynrow
 real, pointer, dimension(:,:) :: ch4dyn1row
 real, pointer, dimension(:,:) :: ch4dyn2row
+real, pointer, dimension(:,:) :: ch4soillsrow
 real, pointer, dimension(:,:,:) :: litrmassrow
 real, pointer, dimension(:,:,:) :: soilcmasrow
 real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
@@ -2943,6 +2960,7 @@ real, pointer, dimension(:) :: ch4wet2_yr_g
 real, pointer, dimension(:) :: wetfdyn_yr_g
 real, pointer, dimension(:) :: ch4dyn1_yr_g
 real, pointer, dimension(:) :: ch4dyn2_yr_g
+real, pointer, dimension(:) :: ch4soills_yr_g
 
 ! local
 integer :: i,m,j,nt
@@ -3000,6 +3018,7 @@ ch4wet2_yr_m          =>ctem_tile_yr%ch4wet2_yr_m
 wetfdyn_yr_m          =>ctem_tile_yr%wetfdyn_yr_m
 ch4dyn1_yr_m          =>ctem_tile_yr%ch4dyn1_yr_m
 ch4dyn2_yr_m          =>ctem_tile_yr%ch4dyn2_yr_m
+ch4soills_yr_m        =>ctem_tile_yr%ch4soills_yr_m
 
 pftexistrow       => vrot%pftexist
 gppvegrow         => vrot%gppveg
@@ -3041,6 +3060,7 @@ ch4wet2row        => vrot%ch4wet2
 wetfdynrow        => vrot%wetfdyn
 ch4dyn1row        => vrot%ch4dyn1
 ch4dyn2row        => vrot%ch4dyn2
+ch4soillsrow      => vrot%ch4_soills
 litrmassrow       => vrot%litrmass
 soilcmasrow       => vrot%soilcmas
 vgbiomas_vegrow   => vrot%vgbiomas_veg
@@ -3088,7 +3108,7 @@ ch4wet2_yr_g          =>ctem_grd_yr%ch4wet2_yr_g
 wetfdyn_yr_g          =>ctem_grd_yr%wetfdyn_yr_g
 ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
 ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
-
+ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
 !------------
 
 !       accumulate yearly outputs
@@ -3146,7 +3166,7 @@ do 882 i=1,nltest
         wetfdyn_yr_m(i,m) = wetfdyn_yr_m(i,m)+(wetfdynrow(i,m)*(1./365.))
         ch4dyn1_yr_m(i,m) = ch4dyn1_yr_m(i,m)+ch4dyn1row(i,m)
         ch4dyn2_yr_m(i,m) = ch4dyn2_yr_m(i,m)+ch4dyn2row(i,m)
-
+        ch4soillls_yr_m(i,m) = ch4soills_yr_m(i,m)+ch4soillsrow(i,m)
 
         if (iday.eq.365) then
 
@@ -3221,6 +3241,7 @@ do 882 i=1,nltest
             wetfdyn_yr_g(i) = wetfdyn_yr_g(i)+wetfdyn_yr_m(i,m)*FAREROT(i,m)
             ch4dyn1_yr_g(i) = ch4dyn1_yr_g(i)+ch4dyn1_yr_m(i,m)*FAREROT(i,m)
             ch4dyn2_yr_g(i) = ch4dyn2_yr_g(i)+ch4dyn2_yr_m(i,m)*FAREROT(i,m)
+            ch4soills_yr_g(i) = ch4soills_yr_g(i)+ch4soills_yr_m(i,m)*FAREROT(i,m)
 
     endif ! iday 365
 
@@ -3339,7 +3360,8 @@ do 882 i=1,nltest
 
         write(92,8115)iyear,ch4wet1_yr_g(i), &
                     ch4wet2_yr_g(i),wetfdyn_yr_g(i), &
-                    ch4dyn1_yr_g(i),ch4dyn2_yr_g(i)
+                    ch4dyn1_yr_g(i),ch4dyn2_yr_g(i),
+                    ch4soills_yr_g(i)
         endif
 
 !       initialize yearly accumulated arrays
@@ -3359,6 +3381,7 @@ do 882 i=1,nltest
             wetfdyn_yr_m(i,m)  =0.0
             ch4dyn1_yr_m(i,m)  =0.0
             ch4dyn2_yr_m(i,m)  =0.0
+            ch4soills_yr_m(i,m)  =0.0
 
             do j = 1, icc
                 laimaxg_yr_m(i,m,j)=0.0
@@ -3402,8 +3425,8 @@ do 882 i=1,nltest
 8107  FORMAT(1X,I5,11(F10.5,1X),9L5,2(A6,I2))
 8108  FORMAT(1X,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
 8109  FORMAT(1X,I4,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
-8111  FORMAT(1X,I4,I5,5(F10.3,1X),2(A6,I2))
-8115  FORMAT(1X,I5,5(F10.3,1X),2(A6,I2))
+8111  FORMAT(1X,I4,I5,6(F10.3,1X),2(A6,I2))
+8115  FORMAT(1X,I5,6(F10.3,1X),2(A6,I2))
 
 end subroutine ctem_annual_aw
 
