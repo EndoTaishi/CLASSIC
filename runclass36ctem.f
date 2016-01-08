@@ -2565,6 +2565,7 @@ C
           TACROT (I,M)=TCANROT(I,M)
           QACROT (I,M)=0.5E-2
 
+          ! FLAG!!! THIS NEEDS TO CHANGE FOR PERMAFROST WORK!! These values will be provided and written out!! JM Jan 8 2016.
           IF(IGND.GT.3)                                 THEN
               DO 65 J=4,IGND
                   TBARROT(I,M,J)=TBARROT(I,M,3)
