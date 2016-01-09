@@ -35,7 +35,7 @@
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat,burnvegfgat, pstemmassgat, pgleafmassgat,
      &      ch4wet1gat, ch4wet2gat, wetfdyngat, ch4dyn1gat,
-     &      ch4dyn2gat, ch4soillsgat
+     &      ch4dyn2gat, ch4soillsgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,

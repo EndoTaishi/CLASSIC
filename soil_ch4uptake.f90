@@ -1,6 +1,7 @@
 subroutine soil_ch4uptake(IL1,IL2,TBAR,THP,BI,THLQ,THIC, &
      &                     PSIS,GRAV,FCAN,obswetf,wetfdyn, &
-     &                     wetfracgrd,SAND,RHOW,RHOICE,CH4_soills)
+     &                     wetfracgrd,SAND,RHOW,RHOICE,atm_CH4, &
+     &                     CH4_soills)
 !           Canadian Terrestrial Ecosystem Model (CTEM)
 !               Soil Methane Oxidation Subroutine
 !
@@ -25,11 +26,13 @@ real, dimension(ilg,ignd), intent(in) :: SAND       ! Sand content (%)
 real, dimension(ilg,icp1), intent(in) :: FCAN       ! Fractional coverage of vegetation (-)
 real, dimension(nlat), intent(in) :: wetfracgrd     ! Prescribed fraction of wetlands in a grid cell
 real, dimension(ilg), intent(in) :: wetfdyn         ! Dynamic gridcell wetland fraction determined using slope and soil moisture
-real, dimension(ilg), intent(in) :: atm_CH4         ! CH4 concentration at the soil surface ($cm^-3$) ? likely ppm CHECK!
+real, dimension(ilg), intent(in) :: atm_CH4         ! Atmospheric CH4 concentration at the soil surface (ppmv)
 real, intent(in) :: GRAV                            ! Acceleration due to gravity ($m s^{-1}$)
 logical, intent(in) :: obswetf                      ! Switch, if true then use the prescribed wetland cover
 real, intent(in) :: RHOW                            ! Density of water ($kg m^{-3}$)
 real, intent(in) :: RHOICE                          ! Density of ice ($kg m^{-3}$)
+integer, intent(in) :: IL1
+integer, intent(in) :: IL2
 
 real, dimension(ilg), intent(out) :: CH4_soills          ! Methane uptake into the soil column ($mg CH_4 m^{-2} s^{-1}$)
 
@@ -44,6 +47,9 @@ real :: r_T                                         ! Temperature factor used in
 real :: r_SM                                        ! Soil moisture factor used in determination of rate constant (-)
 integer :: i,j,layer                                ! Counters
 integer :: isand                                    ! Check if bedrock (value of -3)
+real :: psi                                         ! Soil moisture suction / matric potential (m)
+real :: r_C                                         ! Factor to account for croplands
+real :: r_W                                         ! Factor to account for wetlands
 
 ! Local parameters:
 real, parameter :: D_air = 0.196        ! Diffusivity of CH4 in air (cm^2 s^-1) @ STP
@@ -54,19 +60,11 @@ real, parameter :: k_o = 5.03E-5        ! Base oxidation rate derived in Curry (
 ! ---------------------------------------------------------------------
 ! Begin
 
-! Find the flux correction due to wetlands
-
-if (obswetf) then  ! Use the prescribed wetland fractions
-    r_W = 1.0 - wetfracgrd
-else ! use the dynamically determined wetland area
-    r_W = 1.0 - wetfdyn
-end if
-
 ! The soil oxidation methane sink is assumed to only operate in the first model
 ! soil layer, thus we only consider that layer here.
 layer = 1
 
-do 10 i = il1, il2
+do 10 i = IL1, IL2
 
     isand = nint(SAND(i,layer))
 
@@ -121,8 +119,8 @@ do 10 i = il1, il2
 
     if ( psi < 200.) then !0.2 MPa in paper (NOTE: In Charles's code this is <=, but is < in paper)
         r_SM = 1.0
-    else if (psi >= 200. .and. psi <= 100000.) then !0.2 and 100 Mpa in paper
-        r_SM = (1. - (log10(psi) - log10(0.2)) / (log10(100) - log10(0.2)))**betaCH4
+    else if (psi >= 200. .and. psi <= 1.E5) then !0.2 and 100 Mpa in paper
+        r_SM = (1. - (log10(psi) - log10(200.)) / (log10(1.E5) - log10(200.)))**betaCH4
     else ! psi > 100 MPa.
         r_SM = 0.
     end if
@@ -133,9 +131,17 @@ do 10 i = il1, il2
 
     r_C = 1.0 - (0.75 * FCAN(i, 3))
 
+    ! Find the flux correction due to wetlands
+
+    if (obswetf) then  ! Use the prescribed wetland fractions
+        r_W = 1.0 - wetfracgrd(i)
+    else ! use the dynamically determined wetland area
+        r_W = 1.0 - wetfdyn(i)
+    end if
+
     ! Find the surface flux (CH4_soills) for each tile, then for each gridcell
 
-    CH4_soills(i) =  atm_CH4 * r_C * r_W * g_0 * sqrt(D_soil * k_oxidr)
+    CH4_soills(i) =  atm_CH4(i) * r_C * r_W * g_0 * sqrt(D_soil * k_oxidr)
 
     ! Convert from mg CH4 m^-2 s^-1 to umol CH4 m^-2 s^-1
 

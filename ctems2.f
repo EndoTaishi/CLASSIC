@@ -288,7 +288,7 @@ c   Methane related variables
      3       ch4wet2row(nlat,nmos),         ch4wet2gat(ilg),
      4       wetfdynrow(nlat,nmos),         wetfdyngat(ilg),
      5       ch4dyn1row(nlat,nmos),         ch4dyn1gat(ilg),
-     6       ch4dyn2row(nlat,nmos),         ch4dyn2gat(ilg)
+     6       ch4dyn2row(nlat,nmos),         ch4dyn2gat(ilg),
      7       ch4soillsrow(nlat,nmos),      ch4soillsgat(ilg)
 
 c----------------------------------------------------------------------

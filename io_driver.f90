@@ -3166,7 +3166,7 @@ do 882 i=1,nltest
         wetfdyn_yr_m(i,m) = wetfdyn_yr_m(i,m)+(wetfdynrow(i,m)*(1./365.))
         ch4dyn1_yr_m(i,m) = ch4dyn1_yr_m(i,m)+ch4dyn1row(i,m)
         ch4dyn2_yr_m(i,m) = ch4dyn2_yr_m(i,m)+ch4dyn2row(i,m)
-        ch4soillls_yr_m(i,m) = ch4soills_yr_m(i,m)+ch4soillsrow(i,m)
+        ch4soills_yr_m(i,m) = ch4soills_yr_m(i,m)+ch4soillsrow(i,m)
 
         if (iday.eq.365) then
 
@@ -3360,7 +3360,7 @@ do 882 i=1,nltest
 
         write(92,8115)iyear,ch4wet1_yr_g(i), &
                     ch4wet2_yr_g(i),wetfdyn_yr_g(i), &
-                    ch4dyn1_yr_g(i),ch4dyn2_yr_g(i),
+                    ch4dyn1_yr_g(i),ch4dyn2_yr_g(i), &
                     ch4soills_yr_g(i)
         endif
 

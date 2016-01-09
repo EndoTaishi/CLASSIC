@@ -1858,7 +1858,7 @@ C===================== CTEM ==============================================\
       wetfdyn_g         => ctem_grd%wetfdyn_g
       ch4dyn1_g         => ctem_grd%ch4dyn1_g
       ch4dyn2_g         => ctem_grd%ch4dyn2_g
-      ch4soills_g       => ctem_grd%ch4soills_g
+      ch4soills_g       => ctem_grd%ch4_soills_g
       afrleaf_g         => ctem_grd%afrleaf_g
       afrstem_g         => ctem_grd%afrstem_g
       afrroot_g         => ctem_grd%afrroot_g
@@ -3161,7 +3161,7 @@ c         overwrite co2concrow, otherwise set to constant value
           if(co2on) then
            do while (co2yr .lt. iyear)
              do i=1,nltest
-              read(14,*,end=999) co2yr,co2concin
+              read(14,*,end=999) co2yr,co2concin !,ch4concin
               do m=1,nmtest
                co2concrow(i,m)=co2concin
               enddo
@@ -3801,8 +3801,9 @@ c
 
       ! Calculate the methane that is oxidized by the soil sink
       call soil_ch4uptake(1,nml,TBARGAT,THPGAT,BIGAT,THLQGAT,THICGAT,
-     &                     PSISGAT,GRAV,FCANGAT,obswetf,wetfdyn,
-     &                     wetfracgrd,sandgat,RHOW,RHOICE,ch4soillsgat)
+     &                     PSISGAT,GRAV,FCANGAT,obswetf,wetfdyngat,
+     &                     wetfracgrd,sandgat,RHOW,RHOICE,ch4concgat
+     &                     ch4soillsgat)
 
 c
 c     reset mosaic accumulator arrays.
