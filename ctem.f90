@@ -352,7 +352,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !     annpcp    - annual precipitation (mm)
 !     burnvegf- fractiona areas burned for 9 ctem pfts
 !
-      logical   lnduseon,  dofire, do_mortality, mosaic,&
+      logical   lnduseon,  dofire, mosaic,&
      &          dowetlands, obswetf 
 
       integer      il1,       il2,     &
@@ -1697,19 +1697,13 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !     disturbances and the subsequent litter that is generated is 
 !     calculated in the disturb subroutine.
 !    
-!     set do_mortality=.false. to switch off mortality due to age and 
+!     set maxage >0 in ctem_params.f90 to switch on mortality due to age and
 !     reduced growth. Mortality is linked to the competition parameterization
 !     and generates bare fraction.
 !
-      if (compete) then
-        do_mortality=.true. 
-      else
-        do_mortality=.false.
-      end if  
-!
       call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
      &                     bleafmas,      il1, &
-     &                          il2,     iday, do_mortality,     sort,&
+     &                          il2,     iday,     sort,&
      &                      fcancmx, lystmmas,     lyrotmas, tymaxlai,&
      &                     grwtheff, stemltrm,     rootltrm, glealtrm,&
      &                     geremort, intrmort)
