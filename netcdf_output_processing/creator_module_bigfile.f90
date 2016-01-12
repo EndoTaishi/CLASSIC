@@ -334,28 +334,30 @@ character(100), parameter, dimension(nctemcompvars_a) :: CTEM_Y_C_NAME=[ 'Annual
 
 character(100), parameter, dimension(nctemcompvars_a) :: CTEM_Y_C_UNIT=['percent              ','percent','boolean' ]
 
-!====== DOWETLANDS ================== Declare arryas for annual CTEM COMPOSITE /Rudra
+!====== DOWETLANDS ================== Declare arryas for annual CTEM COMPOSITE
 
-integer, parameter :: nctemwetvars_a = 5  !number of annual CTEM dowetlands vars to write
+integer, parameter :: nctemwetvars_a = 6  !number of annual CTEM dowetlands vars to write
 !.CT08Y
 
-character(100), parameter, dimension(nctemwetvars_a) :: CTEM_Y_W_VAR=['CH4WET1_A                 ','CH4WET2_A','WETFDYN_A', 'CH4DYN1_A','CH4DYN2_A' ]
+character(100), parameter, dimension(nctemwetvars_a) :: CTEM_Y_W_VAR=['CH4WET1_A                 ','CH4WET2_A','WETFDYN_A', 'CH4DYN1_A','CH4DYN2_A','SOILCH4UP_A' ]
 
 
 character(100), parameter, dimension(nctemwetvars_a) :: CTEM_Y_W_NAME=['Annual Methane flux from obswetf using Hetres                          ','Annual Methane flux from obswetf using NPP',&
-                                                                             'Dynamic Wetland Fraction','Annual Methane Flux using Hetres', 'Annual Methane Flux using NPP' ]
+                                                                             'Dynamic Wetland Fraction','Annual Methane Flux using Hetres', 'Annual Methane Flux using NPP', &
+                                                                             'Annual Soil uptake of Methane']
 
-character(100), parameter, dimension(nctemwetvars_a) :: CTEM_Y_W_UNIT=['CH4/m2.yr                ','CH4/m2.yr','Fraction','CH4/m2.yr','CH4/m2.yr' ]
+character(100), parameter, dimension(nctemwetvars_a) :: CTEM_Y_W_UNIT=['CH4/m2.yr                ','CH4/m2.yr','Fraction','CH4/m2.yr','CH4/m2.yr','CH4/m2.yr' ]
 
 !===========Dowetlands===========Declare arrays for monthly CTEM composite 
 
-integer, parameter :: nctemwetvars_m = 5  !number of annual CTEM dowetlands vars to write
+integer, parameter :: nctemwetvars_m = 6  !number of annual CTEM dowetlands vars to write
 
-character(100), parameter, dimension(nctemwetvars_m) :: CTEM_M_W_VAR=['CH4WET1_M                    ','CH4WET2_M','WETFDYN_M', 'CH4DYN1_M','CH4DYN2_M' ]
+character(100), parameter, dimension(nctemwetvars_m) :: CTEM_M_W_VAR=['CH4WET1_M                    ','CH4WET2_M','WETFDYN_M', 'CH4DYN1_M','CH4DYN2_M','SOILCH4UP_M' ]
 
 character(100), parameter, dimension(nctemwetvars_m) :: CTEM_M_W_NAME=['Monthly Methane flux from obswetf using Hetres                          ','Monthly Methane flux from obswetf using NPP',&
-                                                                             'Dynamic Wetland Fraction','Monthly Methane Flux using Hetres', 'Monthly Methane Flux using NPP' ]
+                                                                             'Dynamic Wetland Fraction','Monthly Methane Flux using Hetres', 'Monthly Methane Flux using NPP', &
+                                                                             'Monthly Soil uptake of Methane']
 
-character(100), parameter, dimension(nctemwetvars_m) :: CTEM_M_W_UNIT=['CH4/m2.mo                ','CH4/m2.mo','Fraction','CH4/m2.mo','CH4/m2.mo' ]
+character(100), parameter, dimension(nctemwetvars_m) :: CTEM_M_W_UNIT=['CH4/m2.mo                ','CH4/m2.mo','Fraction','CH4/m2.mo','CH4/m2.mo','CH4/m2.mo' ]
 
 end module creator_module_bf
