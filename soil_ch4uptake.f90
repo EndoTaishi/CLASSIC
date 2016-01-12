@@ -1,7 +1,8 @@
-subroutine soil_ch4uptake(IL1,IL2,TBAR,THP,BI,THLQ,THIC, &
-     &                     PSIS,GRAV,FCAN,obswetf,wetfdyn, &
-     &                     wetfracgrd,SAND,RHOW,RHOICE,atm_CH4, &
-     &                     CH4_soills)
+subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &
+     &                     THIC,PSIS,GRAV,FCAN,obswetf, &
+     &                     wetfdyn,wetfracgrd,SAND,RHOW,RHOICE, &
+     &                     atm_CH4,CH4_soills)
+
 !           Canadian Terrestrial Ecosystem Model (CTEM)
 !               Soil Methane Oxidation Subroutine
 !
@@ -16,11 +17,11 @@ use ctem_params,  only : ilg,ignd,icp1,nlat,wtCH4
 implicit none
 
 ! Arguments:
-real, dimension(ilg,ignd), intent(in) :: TBAR       ! Temperature of soil layers (K)
-real, dimension(ilg,ignd), intent(in) :: THP        ! Total porosity ($cm^3 cm^{-3}$)
+real, dimension(ilg,ignd), intent(in) :: tbar       ! Temperature of soil layers (K) - daily average
+real, dimension(ilg,ignd), intent(in) :: THP        ! Total porosity ($cm^3 cm^{-3}$) - daily average
 real, dimension(ilg,ignd), intent(in) :: BI         ! Clapp and Hornberger b-term (-)
-real, dimension(ilg,ignd), intent(in) :: THLQ       ! Fractional water content (-)
-real, dimension(ilg,ignd), intent(in) :: THIC       ! Fractional ice content (-)
+real, dimension(ilg,ignd), intent(in) :: THLQ       ! Fractional water content (-) - daily average
+real, dimension(ilg,ignd), intent(in) :: THIC       ! Fractional ice content (-) - daily average
 real, dimension(ilg,ignd), intent(in) :: PSIS       ! Soil moisture suction at saturation (m)
 real, dimension(ilg,ignd), intent(in) :: SAND       ! Sand content (%)
 real, dimension(ilg,icp1), intent(in) :: FCAN       ! Fractional coverage of vegetation (-)
@@ -35,6 +36,11 @@ integer, intent(in) :: IL1
 integer, intent(in) :: IL2
 
 real, dimension(ilg), intent(out) :: CH4_soills          ! Methane uptake into the soil column ($mg CH_4 m^{-2} s^{-1}$)
+
+! GRAV, RHOW, and RHOICE are the same as in the commonblocks:
+! CLASS2 : GRAV and CLASS4 : RHOW, RHOICE. I am passing as arguments
+! to avoid the common block format.
+
 
 ! Local variables:
 real :: Tsoil                                       ! Temperature of soil layers ($/circ$C)
@@ -70,8 +76,8 @@ do 10 i = IL1, IL2
 
     if (isand <= -1) goto 10 ! not soil so move on.
 
-    ! Convert TBAR to Tsoil (from K to deg C)
-    Tsoil = TBAR(i,layer) - 273.16
+    ! Convert tbar to Tsoil (from K to deg C)
+    Tsoil = tbar(i,layer) - 273.16
 
     ! Find the diffusion coefficient in soil (D_soil)
 

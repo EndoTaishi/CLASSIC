@@ -12,7 +12,7 @@ BDIR = ../bin
 FC=pgf90
 
 # GNU Fortran
-FC=gfortran
+#FC=gfortran
 
 # General running of model (PGI)
 
@@ -28,7 +28,7 @@ export PGIMACH=linux86-64
 #export PGIMACH=linux86-64
 
 #GNU
-FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
+#FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
 
 #-----------------------
 

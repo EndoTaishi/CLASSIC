@@ -4,7 +4,7 @@
      3      co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,
      4      co2i2csrow,  xdiffus,     slairow,      cfluxcgrow,
      5      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,
-     6      rmlcgvegrow, canresrow,   sdeprow,
+     6      rmlcgvegrow, canresrow,   sdeprow,      ch4concrow,
      7      sandrow,     clayrow,     orgmrow,
      8      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
      9      uvaccrow_m,  vvaccrow_m,  mlightnggrd,  prbfrhucgrd,
@@ -44,7 +44,7 @@ c --
      x      co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat, 
      y      co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat, 
      z      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
-     1      rmlcgveggat, canresgat,   sdepgat,
+     1      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      2      sandgat,     claygat,     orgmgat,
      3      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
      4      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
@@ -114,7 +114,8 @@ c
      a      cfluxcsrow(nlat,nmos),      ancsvegrow(nlat,nmos,icc),
      b      ancgvegrow(nlat,nmos,icc),  rmlcsvegrow(nlat,nmos,icc),
      c      rmlcgvegrow(nlat,nmos,icc), canresrow(nlat,nmos),
-     d      sdeprow(nlat,nmos),         fcanrow(nlat,nmos,icp1)  
+     d      sdeprow(nlat,nmos),         fcanrow(nlat,nmos,icp1),
+     e      ch4concrow(nlat,nmos)
 c
       real    sandrow(nlat,nmos,ignd),  clayrow(nlat,nmos,ignd), 
      1        orgmrow(nlat,nmos,ignd)
@@ -206,7 +207,8 @@ c
      a      cfluxcsgat(ilg),            ancsveggat(ilg,icc),
      b      ancgveggat(ilg,icc),        rmlcsveggat(ilg,icc),
      c      rmlcgveggat(ilg,icc),       canresgat(ilg),
-     d      sdepgat(ilg),               fcangat(ilg,icp1)
+     d      sdepgat(ilg),               fcangat(ilg,icp1),
+     e      ch4concgat(ilg)
 c
       real    sandgat(ilg,ignd),        claygat(ilg,ignd), 
      1        orgmgat(ilg,ignd)
@@ -295,6 +297,7 @@ c----------------------------------------------------------------------
       do 100 k=1,nml
           sdeprow(ilmos(k),jlmos(k))        = sdepgat(k)
           co2concrow(ilmos(k),jlmos(k))     = co2concgat(k)
+          ch4concrow(ilmos(k),jlmos(k))     = ch4concgat(k)
           cfluxcgrow(ilmos(k),jlmos(k))     = cfluxcggat(k)
           cfluxcsrow(ilmos(k),jlmos(k))     = cfluxcsgat(k)
           canresrow(ilmos(k),jlmos(k))      = canresgat(k)

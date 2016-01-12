@@ -5,7 +5,7 @@
      3      co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat, 
      4      co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat, 
      5      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
-     6      rmlcgveggat, canresgat,   sdepgat,
+     6      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      7      sandgat,     claygat,     orgmgat,
      8      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
      9      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
@@ -44,7 +44,7 @@ c
      x      co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,
      y      co2i2csrow,  xdiffus,     slairow,      cfluxcgrow,
      z      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,
-     1      rmlcgvegrow, canresrow,   sdeprow,
+     1      rmlcgvegrow, canresrow,   sdeprow,      ch4concrow,
      2      sandrow,     clayrow,     orgmrow,
      3      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
      4      uvaccrow_m,  vvaccrow_m,  mlightnggrd,  prbfrhucgrd,
@@ -111,7 +111,7 @@ c
      a      cfluxcsgat(ilg),          ancsveggat(ilg,icc),
      b      ancgveggat(ilg,icc),      rmlcsveggat(ilg,icc),
      c      rmlcgveggat(ilg,icc),     canresgat(ilg),
-     d      sdepgat(ilg)
+     d      sdepgat(ilg),             ch4concgat(ilg)
 c
       real    sandgat(ilg,ignd),      claygat(ilg,ignd), 
      1        orgmgat(ilg,ignd)
@@ -201,7 +201,7 @@ c
      a      cfluxcsrow(nlat,nmos),       ancsvegrow(nlat,nmos,icc),
      b      ancgvegrow(nlat,nmos,icc),   rmlcsvegrow(nlat,nmos,icc),
      c      rmlcgvegrow(nlat,nmos,icc),  canresrow(nlat,nmos),
-     d      sdeprow(nlat,nmos)
+     d      sdeprow(nlat,nmos),          ch4concrow(nlat,nmos)
 c
       real    sandrow(nlat,nmos,ignd),   clayrow(nlat,nmos,ignd), 
      1        orgmrow(nlat,nmos,ignd)
@@ -295,6 +295,7 @@ c----------------------------------------------------------------------
       do 100 k=1,nml
           sdepgat(k)      = sdeprow(ilmos(k),jlmos(k))
           co2concgat(k)   = co2concrow(ilmos(k),jlmos(k))
+          ch4concgat(k)   = ch4concrow(ilmos(k),jlmos(k))
           cfluxcggat(k)   = cfluxcgrow(ilmos(k),jlmos(k))
           cfluxcsgat(k)   = cfluxcsrow(ilmos(k),jlmos(k))
           canresgat(k)    = canresrow(ilmos(k),jlmos(k))

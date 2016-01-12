@@ -472,7 +472,8 @@ c
       real, pointer ::  zsn_g
 
        real      co2concin,  popdin(nlat),    setco2conc, sumfare,
-     1           temp_var, barefrac,  todfrac(ilg,icc), barf(nlat)
+     1           temp_var, barefrac,  todfrac(ilg,icc), barf(nlat),
+     2           ch4concin, setch4conc
 
       real grclarea(ilg), crop_temp_frac(ilg,2)
 c
@@ -559,6 +560,7 @@ c
       logical, pointer :: rsfile
       logical, pointer :: lnduseon
       logical, pointer :: co2on
+      logical, pointer :: ch4on
       logical, pointer :: popdon
       logical, pointer :: inibioclim
       logical, pointer :: start_from_rs
@@ -602,6 +604,7 @@ c
       real, pointer, dimension(:,:,:) :: fcancsrow
       real, pointer, dimension(:,:,:) :: fcancrow
       real, pointer, dimension(:,:) :: co2concrow
+      real, pointer, dimension(:,:) :: ch4concrow
       real, pointer, dimension(:,:,:) :: co2i1cgrow
       real, pointer, dimension(:,:,:) :: co2i1csrow
       real, pointer, dimension(:,:,:) :: co2i2cgrow
@@ -755,6 +758,7 @@ c
       real, pointer, dimension(:,:) :: fcancsgat
       real, pointer, dimension(:,:) :: fcancgat
       real, pointer, dimension(:) :: co2concgat
+      real, pointer, dimension(:) :: ch4concgat
       real, pointer, dimension(:,:) :: co2i1cggat
       real, pointer, dimension(:,:) :: co2i1csgat
       real, pointer, dimension(:,:) :: co2i2cggat
@@ -967,6 +971,7 @@ c
       real, pointer, dimension(:,:) :: tbargsacc_m
       real, pointer, dimension(:,:) :: thliqcacc_m
       real, pointer, dimension(:,:) :: thliqgacc_m
+      real, pointer, dimension(:,:) :: thliqacc_m
       real, pointer, dimension(:,:) :: thicecacc_m
       real, pointer, dimension(:,:) :: ancsvgac_m
       real, pointer, dimension(:,:) :: ancgvgac_m
@@ -1376,6 +1381,7 @@ C===================== CTEM ==============================================\
       rsfile            => c_switch%rsfile
       lnduseon          => c_switch%lnduseon
       co2on             => c_switch%co2on
+      ch4on             => c_switch%ch4on
       popdon            => c_switch%popdon
       inibioclim        => c_switch%inibioclim
       start_from_rs     => c_switch%start_from_rs
@@ -1411,6 +1417,7 @@ C===================== CTEM ==============================================\
       fcancsrow         => vrot%fcancs
       fcancrow          => vrot%fcanc
       co2concrow        => vrot%co2conc
+      ch4concrow        => vrot%ch4conc
       co2i1cgrow        => vrot%co2i1cg
       co2i1csrow        => vrot%co2i1cs
       co2i2cgrow        => vrot%co2i2cg
@@ -1568,6 +1575,7 @@ C===================== CTEM ==============================================\
       fcancsgat         => vgat%fcancs
       fcancgat          => vgat%fcanc
       co2concgat        => vgat%co2conc
+      ch4concgat        => vgat%ch4conc
       co2i1cggat        => vgat%co2i1cg
       co2i1csgat        => vgat%co2i1cs
       co2i2cggat        => vgat%co2i2cg
@@ -1922,6 +1930,7 @@ C===================== CTEM ==============================================\
       tbargsacc_m       => ctem_tile%tbargsacc_m
       thliqcacc_m       => ctem_tile%thliqcacc_m
       thliqgacc_m       => ctem_tile%thliqgacc_m
+      thliqacc_m        => ctem_tile%thliqacc_m
       thicecacc_m       => ctem_tile%thicecacc_m
       ancsvgac_m        => ctem_tile%ancsvgac_m
       ancgvgac_m        => ctem_tile%ancgvgac_m
@@ -2121,7 +2130,8 @@ c     all model switches are read in from a namelist file
       call read_from_job_options(argbuff,mosaic,transient_run,
      1             trans_startyr,ctemloop,ctem_on,ncyear,lnduseon,
      2             spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on,
-     3             setco2conc,popdon,popcycleyr,parallelrun,dofire,
+     3             setco2conc,ch4on,setch4conc,popdon,popcycleyr,
+     4             parallelrun,dofire,
      4             dowetlands,obswetf,compete,inibioclim,start_bare,
      5             rsfile,start_from_rs,jmosty,idisp,izref,islfd,ipcp,
      6             itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,
@@ -2240,7 +2250,7 @@ c     luc file is opened in initialize_luc subroutine
         read(13,*)
         read(13,*)
       endif
-      if (co2on) then
+      if (co2on .or. ch4on) then
         open(unit=14,file=argbuff(1:strlen(argbuff))//'.CO2',
      &         status='old')
       endif
@@ -2746,6 +2756,7 @@ c
             tbargsacc_m(i,j)=0.0
             thliqcacc_m(i,j)=0.0
             thliqgacc_m(i,j)=0.0
+            thliqacc_m(i,j)=0.0
             thicecacc_m(i,j)=0.0
 112      continue
 123    continue
@@ -3156,24 +3167,28 @@ c         so this allows us to grab a new value each year.
           endif
 
 c         If co2on is true, read co2concin from input datafile and
-c         overwrite co2concrow, otherwise set to constant value
+c         overwrite co2concrow, otherwise set to constant value.
+!         Same applies to CH4.
 
-          if(co2on) then
+          if(co2on .or. ch4on) then
            do while (co2yr .lt. iyear)
              do i=1,nltest
-              read(14,*,end=999) co2yr,co2concin !,ch4concin
+              read(14,*,end=999) co2yr,co2concin,ch4concin
               do m=1,nmtest
-               co2concrow(i,m)=co2concin
+                if (co2on) co2concrow(i,m)=co2concin
+                if (ch4on) ch4concrow(i,m)=ch4concin
               enddo
              enddo
            enddo !co2yr < iyear
-          else !constant co2
+          end if
+          if (.not. co2on .or. .not. ch4on) then !constant co2 or ch4
             do i=1,nltest
              do m=1,nmtest
-              co2concrow(i,m)=setco2conc
+              if (.not. co2on) co2concrow(i,m)=setco2conc
+              if (.not. co2on) ch4concrow(i,m)=setch4conc
              enddo
             enddo
-          endif !co2on
+          endif
 
 c         If lnduseon is true, read in the luc data now
 
@@ -3362,7 +3377,7 @@ C
      3      co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat,
      4      co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat,
      5      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
-     6      rmlcgveggat, canresgat,   sdepgat,
+     6      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      7      sandgat,     claygat,     orgmgat,
      8      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
      9      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
@@ -3401,7 +3416,7 @@ c
      x      co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,
      y      co2i2csrow,  xdiffus,     slairow,      cfluxcgrow,
      z      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,
-     1      rmlcgvegrow, canresrow,   SDEPROT,
+     1      rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,
      2      SANDROT,     CLAYROT,     ORGMROT,
      3      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
      4      uvaccrow_m,  vvaccrow_m,  mlightnggrd,  prbfrhucgrd,
@@ -3602,6 +3617,7 @@ c
              tbargsacc_m(i,j)=tbargsacc_m(i,j)+tbargs(i,j)
              thliqcacc_m(i,j)=thliqcacc_m(i,j)+thliqc(i,j)
              thliqgacc_m(i,j)=thliqgacc_m(i,j)+thliqg(i,j)
+             thliqacc_m(i,j) = thliqacc_m(i,j) + THLQGAT(i,j)
              thicecacc_m(i,j)=thicecacc_m(i,j)+thicec(i,j)
 710       continue
 c
@@ -3659,6 +3675,7 @@ c
 c
               thliqcacc_m(i,j)=thliqcacc_m(i,j)/real(nday)
               thliqgacc_m(i,j)=thliqgacc_m(i,j)/real(nday)
+              thliqacc_m(i,j)=thliqacc_m(i,j)/real(nday)
               thicecacc_m(i,j)=thicecacc_m(i,j)/real(nday)
 831         continue
 c
@@ -3800,10 +3817,11 @@ c
       endif  !if(ctem_on)
 
       ! Calculate the methane that is oxidized by the soil sink
-      call soil_ch4uptake(1,nml,TBARGAT,THPGAT,BIGAT,THLQGAT,THICGAT,
-     &                     PSISGAT,GRAV,FCANGAT,obswetf,wetfdyngat,
-     &                     wetfracgrd,sandgat,RHOW,RHOICE,ch4concgat
-     &                     ch4soillsgat)
+      ! this operates on a daily timestep.
+      call soil_ch4uptake(1,nml,tbaraccgat_m,THPGAT,BIGAT,thliqacc_m,
+     &                     thicecacc_m,PSISGAT,GRAV,FCANGAT,obswetf,
+     &                     wetfdyngat,wetfracgrd,sandgat,RHOW,RHOICE,
+     &                     ch4concgat,ch4soillsgat)
 
 c
 c     reset mosaic accumulator arrays.
@@ -3838,6 +3856,7 @@ c
              tbargsacc_m(i,j)=0.0
              thliqcacc_m(i,j)=0.0
              thliqgacc_m(i,j)=0.0
+             thliqacc_m(i,j)=0.0
              thicecacc_m(i,j)=0.0
 715       continue
 c
@@ -3960,7 +3979,7 @@ C
      3      co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,
      4      co2i2csrow,  xdiffus,     slairow,      cfluxcgrow,
      5      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,
-     6      rmlcgvegrow, canresrow,   SDEPROT,
+     6      rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,
      7      SANDROT,     CLAYROT,     ORGMROT,
      8      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
      9      uvaccrow_m,  vvaccrow_m,  mlightnggrd,  prbfrhucgrd,
@@ -4000,7 +4019,7 @@ c    ----
      x      co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat,
      y      co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat,
      z      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
-     1      rmlcgveggat, canresgat,   sdepgat,
+     1      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      2      sandgat,     claygat,     orgmgat,
      3      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
      4      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
@@ -5210,7 +5229,7 @@ c      check if the model is done running.
                  read(13,*) ! skip header (3 lines)
                  read(13,*) ! skip header (3 lines)
                endif
-               if(co2on) then
+               if(co2on .or. ch4on) then
                  rewind(14) !rewind co2 file
                endif
 
@@ -5343,7 +5362,7 @@ c         the 999 label below is hit when an input file reaches its end.
                  read(13,*) ! skip header
                  read(13,*) ! skip header
                endif
-               if(co2on) then
+               if(co2on .or. ch4on) then
                  rewind(14) !rewind co2 file
                endif
               if (obslght) then

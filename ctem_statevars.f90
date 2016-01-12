@@ -47,6 +47,7 @@ type ctem_switches
     logical :: rsfile
     logical :: lnduseon
     logical :: co2on
+    logical :: ch4on
     logical :: popdon
     logical :: inibioclim
     logical :: start_from_rs
@@ -91,6 +92,7 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: fcanc
 
     real, dimension(nlat,nmos) :: co2conc
+    real, dimension(nlat,nmos) :: ch4conc
 
     real, dimension(nlat,nmos,icc) :: co2i1cg
     real, dimension(nlat,nmos,icc) :: co2i1cs
@@ -303,6 +305,7 @@ type veg_gat
     real, dimension(ilg,icc) :: fcanc
 
     real, dimension(ilg) :: co2conc
+    real, dimension(ilg) :: ch4conc
 
     real, dimension(ilg,icc) :: co2i1cg
     real, dimension(ilg,icc) :: co2i1cs
@@ -693,6 +696,7 @@ type ctem_mosaic_level
       real, dimension(ilg,ignd) :: tbargsacc_m
       real, dimension(ilg,ignd) :: thliqcacc_m
       real, dimension(ilg,ignd) :: thliqgacc_m
+      real, dimension(ilg,ignd) :: thliqacc_m
       real, dimension(ilg,ignd) :: thicecacc_m
       real, dimension(ilg,icc) :: ancsvgac_m
       real, dimension(ilg,icc) :: ancgvgac_m
