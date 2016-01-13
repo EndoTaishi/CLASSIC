@@ -971,46 +971,46 @@ else ! Prescribed PFT fractional cover
 ! allocate.f parameters: --------------
 
 ! ORIGINAL PRESCRIBED VALUES: FLAG JM Jan 11 2016.
-! omega = [ 0.80, 0.50, 0.00, &
-!           0.80, 0.80, 0.80, &
-!           0.05, 0.05, 0.00, &
-!           1.00, 1.00, 0.00 ]
-!
-! epsilonl = [ 0.20, 0.06, 0.00, &
-!              0.35, 0.35, 0.25, &
-!              0.80, 0.80, 0.00, &
-!              0.01, 0.01, 0.00 ]
-!
-! epsilons = [ 0.15, 0.05, 0.00, &
-!              0.05, 0.10, 0.10, &
-!              0.15, 0.15, 0.00, &
-!              0.00, 0.00, 0.00 ]
-!
-! epsilonr = [ 0.65, 0.89, 0.00, &
-!              0.60, 0.55, 0.65, &
-!              0.05, 0.05, 0.00, &
-!              0.99, 0.99, 0.00 ]
-
-! TESTING using the compete versions:
-omega = [ 0.80, 0.50, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-          0.80, 0.45, 0.80, &
+omega = [ 0.80, 0.50, 0.00, &
+          0.80, 0.80, 0.80, &
           0.05, 0.05, 0.00, &
           1.00, 1.00, 0.00 ]
 
-epsilonl = [ 0.19, 0.45, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.39, 0.50, 0.30, &
+epsilonl = [ 0.20, 0.06, 0.00, &
+             0.35, 0.35, 0.25, &
              0.80, 0.80, 0.00, &
-             0.10, 0.10, 0.00 ]
+             0.01, 0.01, 0.00 ]
 
-epsilons = [ 0.40, 0.34, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.21, 0.35, 0.10, &
+epsilons = [ 0.15, 0.05, 0.00, &
+             0.05, 0.10, 0.10, &
              0.15, 0.15, 0.00, &
              0.00, 0.00, 0.00 ]
 
-epsilonr = [ 0.41, 0.21, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.40, 0.15, 0.60, &
+epsilonr = [ 0.65, 0.89, 0.00, &
+             0.60, 0.55, 0.65, &
              0.05, 0.05, 0.00, &
-             0.90, 0.90, 0.00 ]
+             0.99, 0.99, 0.00 ]
+
+! TESTING using the compete versions:
+! omega = [ 0.80, 0.50, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!           0.80, 0.45, 0.80, &
+!           0.05, 0.05, 0.00, &
+!           1.00, 1.00, 0.00 ]
+!
+! epsilonl = [ 0.19, 0.45, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!              0.39, 0.50, 0.30, &
+!              0.80, 0.80, 0.00, &
+!              0.10, 0.10, 0.00 ]
+!
+! epsilons = [ 0.40, 0.34, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!              0.21, 0.35, 0.10, &
+!              0.15, 0.15, 0.00, &
+!              0.00, 0.00, 0.00 ]
+!
+! epsilonr = [ 0.41, 0.21, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!              0.40, 0.15, 0.60, &
+!              0.05, 0.05, 0.00, &
+!              0.90, 0.90, 0.00 ]
 
 ! --- to here.
 
