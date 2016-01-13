@@ -1355,7 +1355,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !     ------------------------------------------------------------------
 !
 
-!     ch4 wetland emissions !rudra added on 02/12/2013                  
+!     Find CH4 wetland area (if not prescribed) and emissions:
 !
       if (dowetlands .or. obswetf) then
       call  wetland_methane (hetrores, il1, il2, ilg, ta, wetfrac,&

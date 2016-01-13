@@ -1,6 +1,6 @@
 subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctemloop,ctem_on, &
                   ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
-                  setco2conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
+                  setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
                   compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
                   islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,& 
                   jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
@@ -85,7 +85,13 @@ integer, intent(out) :: metcylyrst   ! climate year to start the spin up on
 
 logical, intent(out) :: co2on    ! use co2 time series, set to false if cyclemet is true
 
-real, intent(out) :: setco2conc  ! set the value of atmospheric co2 if co2on is false.
+real, intent(out) :: setco2conc  ! set the value of atmospheric co2 if co2on is false. (ppmv)
+
+logical, intent(out) :: ch4on    ! use CH4 time series, set to false if cyclemet is true
+                                 ! the CO2 timeseries is in the same input file as the CO2 one.
+
+real, intent(out) :: setch4conc  ! set the value of atmospheric CH4 if ch4on is false. (ppmv)
+
 
 logical, intent(out) :: popdon   ! if set true use population density data to calculate fire extinguishing 
                  				 ! probability and probability of fire due to human causes, 
@@ -231,6 +237,8 @@ namelist /joboptions/ &
   metcylyrst,         &
   co2on,              &
   setco2conc,         &
+  ch4on,              &
+  setch4conc,         &
   popdon,             &
   popcycleyr,         &
   parallelrun,        &
@@ -327,6 +335,8 @@ call getarg(2,argbuff)
 ! POPDON = .TRUE. ,
 ! OBSWETF = .false. ,
 
+! If you are doing methane then this would be true like the CO2 switches
+
 ! +++++++++++++++++++++++++++++++
 
 ! To set up a spinup run:
@@ -347,6 +357,8 @@ call getarg(2,argbuff)
 ! POPDON = .TRUE. , <-- note keep this on uses the POPD file, setting false uses the INI file value
 ! POPCYCLEYR = 1850 ,
 ! OBSWETF = .false. ,
+
+! If doing methane then the CH4 switches should be the same as the CO2 ones.
 
 
 end subroutine read_from_job_options

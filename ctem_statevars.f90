@@ -47,6 +47,7 @@ type ctem_switches
     logical :: rsfile
     logical :: lnduseon
     logical :: co2on
+    logical :: ch4on
     logical :: popdon
     logical :: inibioclim
     logical :: start_from_rs
@@ -91,6 +92,7 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: fcanc
 
     real, dimension(nlat,nmos) :: co2conc
+    real, dimension(nlat,nmos) :: ch4conc
 
     real, dimension(nlat,nmos,icc) :: co2i1cg
     real, dimension(nlat,nmos,icc) :: co2i1cs
@@ -169,6 +171,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: ch4dyn1
     real, dimension(nlat,nmos) :: ch4dyn2
     real, dimension(nlat,12) :: wetfrac_mon
+    real, dimension(nlat,nmos) :: ch4_soills
 
     real, dimension(nlat,nmos) :: lucemcom
     real, dimension(nlat,nmos) :: lucltrin
@@ -302,6 +305,7 @@ type veg_gat
     real, dimension(ilg,icc) :: fcanc
 
     real, dimension(ilg) :: co2conc
+    real, dimension(ilg) :: ch4conc
 
     real, dimension(ilg,icc) :: co2i1cg
     real, dimension(ilg,icc) :: co2i1cs
@@ -377,6 +381,7 @@ type veg_gat
     real, dimension(ilg) :: wetfdyn
     real, dimension(ilg) :: ch4dyn1
     real, dimension(ilg) :: ch4dyn2
+    real, dimension(ilg) :: ch4_soills
 
     real, dimension(ilg) :: lucemcom
     real, dimension(ilg) :: lucltrin
@@ -618,6 +623,7 @@ type ctem_gridavg
       real, dimension(nlat) :: wetfdyn_g
       real, dimension(nlat) :: ch4dyn1_g
       real, dimension(nlat) :: ch4dyn2_g
+      real, dimension(nlat) :: ch4_soills_g
       real, dimension(nlat,icc) :: afrleaf_g
       real, dimension(nlat,icc) :: afrstem_g
       real, dimension(nlat,icc) :: afrroot_g
@@ -690,6 +696,7 @@ type ctem_mosaic_level
       real, dimension(ilg,ignd) :: tbargsacc_m
       real, dimension(ilg,ignd) :: thliqcacc_m
       real, dimension(ilg,ignd) :: thliqgacc_m
+      real, dimension(ilg,ignd) :: thliqacc_m
       real, dimension(ilg,ignd) :: thicecacc_m
       real, dimension(ilg,icc) :: ancsvgac_m
       real, dimension(ilg,icc) :: ancgvgac_m
@@ -747,6 +754,7 @@ type ctem_gridavg_monthly
     real, dimension(nlat) :: wetfdyn_mo_g
     real, dimension(nlat) :: ch4dyn1_mo_g
     real, dimension(nlat) :: ch4dyn2_mo_g
+    real, dimension(nlat) :: ch4soills_mo_g
 
 end type ctem_gridavg_monthly
 
@@ -798,6 +806,7 @@ type ctem_mosaic_monthly
       real, dimension(nlat,nmos) :: wetfdyn_mo_m
       real, dimension(nlat,nmos) :: ch4dyn1_mo_m
       real, dimension(nlat,nmos) :: ch4dyn2_mo_m
+      real, dimension(nlat,nmos) :: ch4soills_mo_m
 
 end type ctem_mosaic_monthly
 
@@ -851,6 +860,7 @@ type ctem_gridavg_annual
     real, dimension(nlat) :: wetfdyn_yr_g
     real, dimension(nlat) :: ch4dyn1_yr_g
     real, dimension(nlat) :: ch4dyn2_yr_g
+    real, dimension(nlat) :: ch4soills_yr_g
 
 end type ctem_gridavg_annual
 
@@ -903,6 +913,7 @@ type ctem_mosaic_annual
       real, dimension(nlat,nmos) :: wetfdyn_yr_m
       real, dimension(nlat,nmos) :: ch4dyn1_yr_m
       real, dimension(nlat,nmos) :: ch4dyn2_yr_m
+      real, dimension(nlat,nmos) :: ch4soills_yr_m
 
 end type ctem_mosaic_annual
 
@@ -1001,6 +1012,7 @@ integer :: j,k,l,m
         vrot%wetfdyn(j,k)          = 0.0
         vrot%ch4dyn1(j,k)          = 0.0
         vrot%ch4dyn2(j,k)          = 0.0
+        vrot%ch4_soills(j,k)       = 0.0
 
 
         do l=1,ignd
@@ -1248,6 +1260,7 @@ do i=1,nltest
     ctem_grd_mo%wetfdyn_mo_g(i)  =0.0
     ctem_grd_mo%ch4dyn1_mo_g(i)  =0.0
     ctem_grd_mo%ch4dyn2_mo_g(i)  =0.0
+    ctem_grd_mo%ch4soills_mo_g(i)  =0.0
 end do
 
 end subroutine resetmonthend_g
@@ -1305,6 +1318,7 @@ do i=1,nltest
     ctem_tile_mo%wetfdyn_mo_m(i,m)  =0.0
     ctem_tile_mo%ch4dyn1_mo_m(i,m)  =0.0
     ctem_tile_mo%ch4dyn2_mo_m(i,m)  =0.0
+    ctem_tile_mo%ch4soills_mo_m(i,m)  =0.0
 
   end do !nmtest
 end do ! nltest
@@ -1363,6 +1377,7 @@ do i=1,nltest
     ctem_grd_yr%wetfdyn_yr_g(i)  =0.0
     ctem_grd_yr%ch4dyn1_yr_g(i)  =0.0
     ctem_grd_yr%ch4dyn2_yr_g(i)  =0.0
+    ctem_grd_yr%ch4soills_yr_g(i)  =0.0
 
 end do
 
@@ -1430,6 +1445,7 @@ do i=1,nltest
     ctem_tile_yr%wetfdyn_yr_m(i,m)  =0.0
     ctem_tile_yr%ch4dyn1_yr_m(i,m)  =0.0
     ctem_tile_yr%ch4dyn2_yr_m(i,m)  =0.0
+    ctem_tile_yr%ch4soills_yr_m(i,m)  =0.0
 
   end do !nmtest
 end do ! nltest
@@ -1664,6 +1680,7 @@ do i=1,nltest
     ctem_grd%WETFDYN_G(i) = 0.0
     ctem_grd%CH4DYN1_G(i) = 0.0
     ctem_grd%CH4DYN2_G(i) = 0.0
+    ctem_grd%ch4_soills_g(i) = 0.0
 
     do k=1,ignd
       ctem_grd%rmatctem_g(i,k)=0.0
