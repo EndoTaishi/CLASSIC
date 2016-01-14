@@ -363,6 +363,8 @@ c     ---------------peatland vegetation-------------------------------\
             endif
 290       continue
 280     continue
+        write(6,*) '366',ipeatland
+
 c    --------------------YW March 26, 2015 ----------------------------/
 c
 250   continue

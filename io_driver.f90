@@ -186,7 +186,7 @@ read (11,7010) titlec3
         read(11,*) (ailcminrow(i,m,j),j=1,icc)
         read(11,*) (ailcmaxrow(i,m,j),j=1,icc)
         read(11,*) (dvdfcanrow(i,m,j),j=1,icc)
-
+        
 !       Rest of the initialization variables are needed to run CTEM but
 !       if starting from bare ground initialize all live and dead c pools from zero. suitable values
 !       of extnprobgrd and prbfrhucgrd would still be required. set stdalngrd to

@@ -3082,51 +3082,6 @@ C     BEGIN READ IN OF THE .INI FILE
       GGEOGRD(1)=0.0
 C     GGEOGRD(1)=-0.035
 C
-      DO 50 I=1,NLTEST
-      DO 50 M=1,NMTEST
-          READ(10,5040) (FCANROW(I,M,J),J=1,ICAN+1),(PAMXROW(I,M,J),
-     1                  J=1,ICAN)
-          READ(10,5040) (LNZ0ROW(I,M,J),J=1,ICAN+1),(PAMNROW(I,M,J),
-     1                  J=1,ICAN)
-          READ(10,5040) (ALVCROW(I,M,J),J=1,ICAN+1),(CMASROW(I,M,J),
-     1                  J=1,ICAN)
-          READ(10,5040) (ALICROW(I,M,J),J=1,ICAN+1),(ROOTROW(I,M,J),
-     1                  J=1,ICAN)
-          READ(10,5030) (RSMNROW(I,M,J),J=1,ICAN),
-     1                  (QA50ROW(I,M,J),J=1,ICAN)
-          READ(10,5030) (VPDAROW(I,M,J),J=1,ICAN),
-     1                  (VPDBROW(I,M,J),J=1,ICAN)
-          READ(10,5030) (PSGAROW(I,M,J),J=1,ICAN),
-     1                  (PSGBROW(I,M,J),J=1,ICAN)
-          READ(10,5040) DRNROW(I,M),SDEPROW(I,M),FAREROW(I,M)
-          READ(10,*)    XSLPROW(I,M),GRKFROW(I,M),WFSFROW(I,M),
-     1                  WFCIROW(I,M),MIDROW(I,M)
-          READ(10,5080) (SANDROW(I,M,J),J=1,3)
-          READ(10,5080) (CLAYROW(I,M,J),J=1,3)
-          READ(10,5080) (ORGMROW(I,M,J),J=1,3)
-          READ(10,5050) (TBARROW(I,M,J),J=1,3),TCANROW(I,M),
-     1                  TSNOROW(I,M),TPNDROW(I,M)
-          READ(10,5060) (THLQROW(I,M,J),J=1,3),(THICROW(I,M,J),
-     1                  J=1,3),ZPNDROW(I,M)
-c     -------read in layer 4 to 10 for peatlands----------------------\
-c
-      if (ipeatlandrow(i,m) >0)    then 
-          READ(10,5060) (TBARROW(I,M,J),J=4,10)
-          READ(10,5060) (THLQROW(I,M,J),J=4,10)
-          READ(10,5060) (THICROW(I,M,J),J=4,10)
-      endif
-c     ---------------YW September 01, 2015 ----------------------------/
-C   
-          READ(10,5070) RCANROW(I,M),SCANROW(I,M),SNOROW(I,M),
-     1                  ALBSROW(I,M),RHOSROW(I,M),GROROW(I,M)
-
-50    CONTINUE
-C
-      DO 25 J=1,IGND                     
-          READ(10,5002) DELZ(J),ZBOT(J)  
- 25   CONTINUE                            
- 5002 FORMAT(2X,2F8.2)                   
-
 c    -----------------read peatland input------------------------------\      
        do  40 i = 1, nltest
           do 40 m = 1, nmtest
@@ -3146,6 +3101,52 @@ c    -----------------read peatland input------------------------------\
       write(6,6990) 'dmoss=',dmossrow 
 c    -----------------YW March 23, 2015 -------------------------------/
 
+      DO 50 I=1,NLTEST
+      DO 50 M=1,NMTEST
+          READ(10,5040) (FCANROT(I,M,J),J=1,ICAN+1),(PAMXROT(I,M,J),
+     1                  J=1,ICAN)
+          READ(10,5040) (LNZ0ROT(I,M,J),J=1,ICAN+1),(PAMNROT(I,M,J),
+     1                  J=1,ICAN)
+          READ(10,5040) (ALVCROT(I,M,J),J=1,ICAN+1),(CMASROT(I,M,J),
+     1                  J=1,ICAN)
+          READ(10,5040) (ALICROT(I,M,J),J=1,ICAN+1),(ROOTROT(I,M,J),
+     1                  J=1,ICAN)
+          READ(10,5030) (RSMNROT(I,M,J),J=1,ICAN),
+     1                  (QA50ROT(I,M,J),J=1,ICAN)
+          READ(10,5030) (VPDAROT(I,M,J),J=1,ICAN),
+     1                  (VPDBROT(I,M,J),J=1,ICAN)
+          READ(10,5030) (PSGAROT(I,M,J),J=1,ICAN),
+     1                  (PSGBROT(I,M,J),J=1,ICAN)
+          READ(10,5040) DRNROT(I,M),SDEPROT(I,M),FAREROT(I,M)
+          READ(10,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
+     1                  WFCIROT(I,M),MIDROT(I,M)
+          READ(10,5080) (SANDROT(I,M,J),J=1,3)
+          READ(10,5080) (CLAYROT(I,M,J),J=1,3)
+          READ(10,5080) (ORGMROT(I,M,J),J=1,3)
+          READ(10,5050) (TBARROT(I,M,J),J=1,3),TCANROT(I,M),
+     1                  TSNOROT(I,M),TPNDROT(I,M)
+          READ(10,5060) (THLQROT(I,M,J),J=1,3),(THICROT(I,M,J),
+     1                  J=1,3),ZPNDROT(I,M)
+          READ(10,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),
+     1                  ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
+c     -------read in layer 4 to 10 for peatlands----------------------\
+c
+
+      if (ipeatlandrow(i,m) >0)    then 
+          READ(10,5060) (TBARROT(I,M,J),J=4,10)
+          READ(10,5060) (THLQROT(I,M,J),J=4,10)
+          READ(10,5060) (THICROT(I,M,J),J=4,10)
+      endif
+      
+c     ---------------YW September 01, 2015 ----------------------------/
+C   
+
+50    CONTINUE
+C
+      DO 25 J=1,IGND                     
+          READ(10,5002) DELZ(J),ZBOT(J)  
+ 25   CONTINUE                            
+ 5002 FORMAT(2X,2F8.2)                       
 C
 c     the output year ranges can be read in from the job options file, or not.
 c     if the values should be read in from the .ini file, and not
@@ -3162,6 +3163,7 @@ C======================= CTEM ========================================== /
 C
 C====================== CTEM =========================================== \
 C
+c   --------------change to an old style of reading .CTM as read_from_ctm was missing---YW January 14, 2016 
 c     read from ctem initialization file (.CTM)
 
       if (ctem_on) then
@@ -3173,200 +3175,19 @@ c     read from ctem initialization file (.CTM)
      5                   TSNOROT,TPNDROT,ZPNDROT,RCANROT,SCANROT,
      6                   SNOROT, ALBSROT,RHOSROT,GROROT,argbuff)
       end if
-c       
-      if ((compete .or. lnduseon) .and. start_bare) then
-      if (mosaic) then          !merge fix YW January 12, 2016 
-c       
-c       check the number of mosaics that came from the .ini file
-        if (nmtest .ne. nmos) then      !merge fix YW January 12, 2016 
-
-        do i=1,nltest
-         do m=1,nmtest
-           tcanrow(i,m)=tcanrow(i,1)
-           tsnorow(i,m)=tsnorow(i,1)
-           tpndrow(i,m)=tpndrow(i,1)
-           zpndrow(i,m)=zpndrow(i,1)
-           rcanrow(i,m)=rcanrow(i,1)
-           scanrow(i,m)=scanrow(i,1)
-           snorow(i,m)=snorow(i,1)
-           albsrow(i,m)=albsrow(i,1)
-           rhosrow(i,m)=rhosrow(i,1)
-           grorow(i,m)=grorow(i,1)
-           do j=1,icc
-             lfstatusrow(i,m,j) = 4
-           enddo !j
-          enddo !m
-         enddo !i
-
-c       set the number of mosaics to icc+1        
-        nmtest=nmos
-
-        endif  !if (nmtest .ne. nmos)
 c
-c       set the initial conditions for the pfts
-c       (bah, this is such an inelegant way to do this, but oh well...)
-c
-c       initalize to zero
-        fcanrow=0.0
-        dvdfcanrow=0.0
-        farerow=0.0
-
-        do i=1,nltest
-         do m=1,nmtest
-c
-c         set the seed amount for each pft in its mosaic
-          if (compete .or. lnduseon) then
-            if (m .lt. icc+1) then
-             farerow(i,m)=seed
-            else
-             farerow(i,m)=1.0 - (real(icc) * seed)
-            endif
-          endif
-
-          do j = 1,icc
-            ailcminrow(i,m,j)=0.0
-            ailcmaxrow(i,m,j)=0.0
-            gleafmasrow(i,m,j)=0.0
-            bleafmasrow(i,m,j)=0.0
-            stemmassrow(i,m,j)=0.0
-            rootmassrow(i,m,j)=0.0
-            lfstatusrow(i,m,j)=4
-            pandaysrow(i,m,j)=0
-          enddo
-          
-          lfstatusrow(i,m,1)=2
-
-          do j = 1,iccp1
-            litrmassrow(i,m,j)=0. 
-            soilcmasrow(i,m,j)=0. 
-          enddo
-
-c         initial conditions always required
-          dvdfcanrow(i,m,1)=1.0  !ndl
-          dvdfcanrow(i,m,3)=1.0  !bdl
-          dvdfcanrow(i,m,6)=1.0  !crop
-          dvdfcanrow(i,m,8)=1.0  !grasses
-
-c         then adjusted below for the actual mosaic makeup
-          if (m .le. 2) then                     !ndl
-           fcanrow(i,m,1)=1.0
-           if (m .eq. 2) then
-             dvdfcanrow(i,m,1)=0.0
-             dvdfcanrow(i,m,2)=1.0        
-           endif
-          elseif (m .ge. 3 .and. m .le. 5) then  !bdl
-           fcanrow(i,m,2)=1.0
-           if (m .eq. 4) then
-             dvdfcanrow(i,m,3)=0.0
-             dvdfcanrow(i,m,4)=1.0        
-           endif
-           if (m .eq. 5) then
-             dvdfcanrow(i,m,3)=0.0
-             dvdfcanrow(i,m,5)=1.0        
-           endif
-          elseif (m .eq. 6 .or. m .eq. 7) then  !crop
-           fcanrow(i,m,3)=1.0
-           if (m .eq. 7) then
-             dvdfcanrow(i,m,6)=0.0
-             dvdfcanrow(i,m,7)=1.0        
-           endif
-          elseif (m .eq. 8 .or. m .eq. 9) then  !grasses
-           fcanrow(i,m,4)=1.0
-           if (m .eq. 9) then
-             dvdfcanrow(i,m,8)=0.0
-             dvdfcanrow(i,m,9)=1.0        
-           endif
-          else                                  !bare/urban? 
-           fcanrow(i,m,5)=1.0
-           endif !mosaic adjustments
-         enddo  !m
-        enddo  !i
-
-
-         do i=1,nltest
-          farerow(i,6)=crop_temp_frac(i,1)
-          farerow(i,7)=crop_temp_frac(i,2)
-         end do
-
-      else if (.not. mosaic) then  !set up for composite runs when start_bare is on and compete or landuseon
-
-c       store the read-in crop fractions as we keep them even when we start bare. 
-c       FLAG: this is setup assuming that crops are in pft number 6 and 7. JM Apr 9 2014.
-         do i=1,nltest
-          crop_temp_frac(i,1)=fcanrow(i,1,3)*dvdfcanrow(i,1,6)
-          crop_temp_frac(i,2)=fcanrow(i,1,3)*dvdfcanrow(i,1,7)
-         end do
-
-c      initalize to zero, these will be filled in by the luc or 
-c      competition subroutines.
-       fcanrow=0.0
-       dvdfcanrow=0.0
-
-       ! Added this as start_bare runs were not properly assigning 
-       ! a TCAN on the very first day since the fcanrow was 0. JM Jan 14 2014. 
-       do i=1,nltest
-        do j=1,iccp1       
-           if (j .lt. icc+1) then
-            fcanrow(i,1,j)=seed
-           else
-            fcanrow(i,1,j)=1.0 - (real(icc) * seed)
-           endif
-        end do
-       end do
-
-       do i=1,nltest
-
-c      initial conditions always required
-         dvdfcanrow(i,1,1)=1.0  !ndl
-         dvdfcanrow(i,1,3)=1.0  !bdl
-         dvdfcanrow(i,1,6)=1.0  !crop
-         dvdfcanrow(i,1,8)=1.0  !grasses
-
-         do j = 1,icc
-           ailcminrow(i,1,j)=0.0
-           ailcmaxrow(i,1,j)=0.0
-           gleafmasrow(i,1,j)=0.0
-           bleafmasrow(i,1,j)=0.0
-           stemmassrow(i,1,j)=0.0
-           rootmassrow(i,1,j)=0.0
-           lfstatusrow(i,1,j)=4
-           pandaysrow(i,1,j)=0
-         enddo
-         
-         lfstatusrow(i,1,1)=2
-
-         do j = 1,iccp1
-           litrmassrow(i,1,j)=0.0 
-           soilcmasrow(i,1,j)=0.0 
-         enddo
-       enddo !nltest
-
-         do i=1,nltest
-          fcanrow(i,1,3) = crop_temp_frac(i,1) + crop_temp_frac(i,2)
-          if (fcanrow(i,1,3) .gt. abszero) then
-           dvdfcanrow(i,1,6) = crop_temp_frac(i,1) / fcanrow(i,1,3)
-           dvdfcanrow(i,1,7) = crop_temp_frac(i,2) / fcanrow(i,1,3)
-          else
-           dvdfcanrow(i,1,6) = 1.0
-           dvdfcanrow(i,1,7) = 0.0
-          end if
-         end do
-
-      end if ! mosaic / composite
-      end if !if (compete/landuseon .and. start_bare) 
-
 C===================== CTEM =============================================== /
 C
       DO 100 I=1,NLTEST
       DO 100 M=1,NMTEST
 
         if (ipeatlandrow(i,m)==0) then
-          TBARROW(I,M,1)=TBARROW(I,M,1)+TFREZ
-          TBARROW(I,M,2)=TBARROW(I,M,2)+TFREZ
-          TBARROW(I,M,3)=TBARROW(I,M,3)+TFREZ
+          TBARROT(I,M,1)=TBARROT(I,M,1)+TFREZ
+          TBARROT(I,M,2)=TBARROT(I,M,2)+TFREZ
+          TBARROT(I,M,3)=TBARROT(I,M,3)+TFREZ
         else 
             do J = 1, ignd
-            tbarrow(i,m,j) = tbarrow(i,m, j) + tfrez
+            tbarrot(i,m,j) = tbarrot(i,m, j) + tfrez
             enddo
         endif       !YW 
 
@@ -3387,37 +3208,36 @@ C
           QACROT (I,M)=0.5E-2
 
 
-
           IF(IGND.GT.3)                                 THEN
               DO 65 J=4,IGND
                 if (ipeatlandrow(i,m) == 0) then  !YW September 02, 2015 
-                  TBARROW(I,M,J)=TBARROW(I,M,3)
-                endif
-                  IF(SDEPROW(I,M).LT.(ZBOT(J-1)+0.001) .AND.
-     1                  SANDROW(I,M,3).GT.-2.5)     THEN
-                      SANDROW(I,M,J)=-3.0
-                      CLAYROW(I,M,J)=-3.0
-                      ORGMROW(I,M,J)=-3.0
+                  TBARROT(I,M,J)=TBARROT(I,M,3)
+                endif                
+                  IF(SDEPROT(I,M).LT.(ZBOT(J-1)+0.001) .AND.
+     1                  SANDROT(I,M,3).GT.-2.5)     THEN
+                      SANDROT(I,M,J)=-3.0
+                      CLAYROT(I,M,J)=-3.0
+                      ORGMROT(I,M,J)=-3.0
 c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
                     if (ipeatlandrow(i,m) == 0) then
-                      THLQROW(I,M,J)=0.0
-                      THICROW(I,M,J)=0.0
+                      THLQROT(I,M,J)=0.0
+                      THICROT(I,M,J)=0.0
                     endif
 c      --------------YW September 01, 2015------------------------------ 
                   ELSE
-                      SANDROW(I,M,J)=SANDROW(I,M,3)
-                      CLAYROW(I,M,J)=CLAYROW(I,M,3)
-                      ORGMROW(I,M,J)=ORGMROW(I,M,3)
+                      SANDROT(I,M,J)=SANDROT(I,M,3)
+                      CLAYROT(I,M,J)=CLAYROT(I,M,3)
+                      ORGMROT(I,M,J)=ORGMROT(I,M,3)
 c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
                     if (ipeatlandrow(i,m) == 0) then
-                      THLQROW(I,M,J)=THLQROW(I,M,3)
-                      THICROW(I,M,J)=THICROW(I,M,3)
+                      THLQROT(I,M,J)=THLQROT(I,M,3)
+                      THICROT(I,M,J)=THICROT(I,M,3)
                     endif
 c      --------------YW September 01, 2015------------------------------ 
                   ENDIF
 65            CONTINUE
           ENDIF
-
+        
           DO 75 K=1,6
           DO 75 L=1,50
               ITCTROT(I,M,K,L)=0
@@ -3716,7 +3536,7 @@ c
           do 116 j = 1, icc
             vgbiomasrow(i,m)=vgbiomasrow(i,m)+fcancmxrow(i,m,j)*
      &        (gleafmasrow(i,m,j)+stemmassrow(i,m,j)+
-     &         rootmassrow(i,m,j)+bleafmasrow(i,m,j))
+     &         rootmassrow(i,m,j)+bleafmasrow(i,m,j))     
             gavgltmsrow(i,m)=gavgltmsrow(i,m)+fcancmxrow(i,m,j)*
      &                       litrmassrow(i,m,j)
             gavgscmsrow(i,m)=gavgscmsrow(i,m)+fcancmxrow(i,m,j)*
@@ -3746,16 +3566,33 @@ c     initlaized the litter and soil C pool for peatland and non-peatland
 c     differently. In peatland moss litter and soil C pool willl substitute
 c     bare ground (icc+1). --------------------------------------------\
 c
+c     initlaized the litter and soil C pool for peatland and non-peatland 
+c     differently. In peatland moss litter and soil C pool willl substitute
+c     bare ground (icc+1). --------------------------------------------\
+c
       do 117 i = 1,nltest
         do 117 m = 1,nmtest
-         gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-FCANROT(i,m,1)-
-     &       FCANROT(i,m,2)-
-     &    FCANROT(i,m,3)-FCANROT(i,m,4))*litrmassrow(i,m,icc+1)
-         gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-FCANROT(i,m,1)-
-     &   FCANROT(i,m,2)-
-     &    FCANROT(i,m,3)-FCANROT(i,m,4))*soilcmasrow(i,m,icc+1)
-c
+            if (ipeatlandrow(i,m)==0)           then
+                gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-fcanrot(i,m,1)-
+     &                        fcanrot(i,m,2)-fcanrot(i,m,3)-
+     &                        fcanrot(i,m,4))*litrmassrow(i,m,icc+1)
+                gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrot(i,m,1)-
+     &                        fcanrot(i,m,2)-fcanrot(i,m,3)-
+     &                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
+            else                       !is peatland tile
+                gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmassmsrow(i,m)
+ 		      hpdrow(i,m) = sdeprot(i,m)
+		      gavgscmsrow(i,m) = 0.487*(4056.6*hpdrow(i,m)**2+
+     &                              72067.0*hpdrow(i,m))/1000               
+                vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
+c    also initialize the accumulators for moss daily C fluxes 
+	           anmosac_g(i)  = 0.0
+			 rmlmosac_g(i) = 0.0
+			 gppmosac_g(i) = 0.0
+            endif
+c              
 117   continue
+          write(6,6990)     'hpdrow=', hpdrow 
           write(6,6990)     'gavgscms=', gavgscmsrow
           write(6,6990)     'vgbiomas=', vgbiomasrow
 c    ----------------------------YW March 25, 2015 --------------------/
@@ -3783,6 +3620,7 @@ c	gather peatland variable YW March 19, 2015---------------------- /
 	1      ,ipeatlandrow,   ipeatlandgat)
 c
 c
+        write (6,*) '3623', ipeatlandrow, ipeatlandgat
       call bio2str( gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,
      1                           1,      nml,    fcancmxgat, zbtwgat,
      2                        dlzwgat, nol2pfts,   sdepgat,
