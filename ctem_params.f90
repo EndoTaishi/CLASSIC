@@ -66,7 +66,7 @@ integer, parameter :: nmon=12           ! Number of months in a year
 ! Plant-related
 
 integer, parameter :: ican=4            ! Number of CLASS pfts
-integer, parameter :: ignd=3            ! Number of soil layers
+integer, parameter :: ignd=26            ! Number of soil layers
 integer, parameter :: icp1 = ican + 1   !
 integer,parameter  :: icc=9             ! Number of CTEM pfts
 integer,parameter  :: iccp1 = icc + 1   !
@@ -97,6 +97,8 @@ real, parameter :: minbare = 1.0e-5 ! minimum bare fraction when running competi
 
 ! conversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: c2dom = 450.0 ! gc / kg dry organic matter
+
+real, parameter :: wtCH4 = 16.044        ! Molar mass of CH4 ($g mol^{-1}$)
 
 ! simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
 logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false. ]   
@@ -667,15 +669,15 @@ bsratelt = [ 0.4453, 0.5986, 0.0000, &
              0.6000, 0.6000, 0.0000, &
              0.5260, 0.5260, 0.0000 ] 
 
-!bsratesc = [ 0.0260, 0.0260, 0.0000, &
-!             0.0208, 0.0208, 0.0208, &
-!             0.0350, 0.0350, 0.0000, &
-!             0.0125, 0.0125, 0.0000 ]  
+bsratesc = [ 0.0260, 0.0260, 0.0000, &
+             0.0208, 0.0208, 0.0208, &
+             0.0350, 0.0350, 0.0000, &
+             0.0125, 0.0125, 0.0000 ]
 ! FLAG test new vals, JM Dec 29 2014.
-bsratesc = [ 0.0208, 0.0208, 0.0000, &
-             0.0166, 0.0166, 0.0166, &
-             0.0280, 0.0280, 0.0000, &
-             0.0100, 0.0100, 0.0000 ]              
+!bsratesc = [ 0.0208, 0.0208, 0.0000, &
+!             0.0166, 0.0166, 0.0166, &
+!             0.0280, 0.0280, 0.0000, &
+!             0.0100, 0.0100, 0.0000 ]
 
 tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ] 
 !tanhq10  = [ 1.2, 0.2, 0.075, 46.0 ] ! was 1.44/0.56/0.075/46 TEST FLAG mar 3 JM 2015
@@ -688,9 +690,9 @@ alpha_hetres = 0.7
 
 bsratelt_g = 0.5605
 
-!bsratesc_g = 0.02258
+bsratesc_g = 0.02258
 ! FLAG test new vals, JM Dec 29 2014.
-bsratesc_g = 0.01806
+!bsratesc_g = 0.01806
 
 
 a = 4.0
@@ -936,7 +938,7 @@ bsrtroot = [ 0.5000, 0.2850, 0.0000, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VER
 
 ! mortality.f parameters: ---------
 
-maxage = [ 800.0, 500.0,   0.0, &  
+maxage = [ 800.0, 500.0,   0.0, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
            700.0, 450.0, 500.0, &  
              0.0,   0.0,   0.0, &
              0.0,   0.0,   0.0 ]
@@ -968,25 +970,49 @@ else ! Prescribed PFT fractional cover
 
 ! allocate.f parameters: --------------
 
-omega = [ 0.80, 0.50, 0.00, & 
+! ORIGINAL PRESCRIBED VALUES: FLAG JM Jan 11 2016.
+omega = [ 0.80, 0.50, 0.00, &
           0.80, 0.80, 0.80, &
           0.05, 0.05, 0.00, &
           1.00, 1.00, 0.00 ]
 
-epsilonl = [ 0.20, 0.06, 0.00, &  
-             0.35, 0.35, 0.25, &  
+epsilonl = [ 0.20, 0.06, 0.00, &
+             0.35, 0.35, 0.25, &
              0.80, 0.80, 0.00, &
              0.01, 0.01, 0.00 ]
 
 epsilons = [ 0.15, 0.05, 0.00, &
-             0.05, 0.10, 0.10, & 
+             0.05, 0.10, 0.10, &
              0.15, 0.15, 0.00, &
              0.00, 0.00, 0.00 ]
 
-epsilonr = [ 0.65, 0.89, 0.00, &  
-             0.60, 0.55, 0.65, &  
+epsilonr = [ 0.65, 0.89, 0.00, &
+             0.60, 0.55, 0.65, &
              0.05, 0.05, 0.00, &
              0.99, 0.99, 0.00 ]
+
+! TESTING using the compete versions:
+! omega = [ 0.80, 0.50, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!           0.80, 0.45, 0.80, &
+!           0.05, 0.05, 0.00, &
+!           1.00, 1.00, 0.00 ]
+!
+! epsilonl = [ 0.19, 0.45, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!              0.39, 0.50, 0.30, &
+!              0.80, 0.80, 0.00, &
+!              0.10, 0.10, 0.00 ]
+!
+! epsilons = [ 0.40, 0.34, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!              0.21, 0.35, 0.10, &
+!              0.15, 0.15, 0.00, &
+!              0.00, 0.00, 0.00 ]
+!
+! epsilonr = [ 0.41, 0.21, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!              0.40, 0.15, 0.60, &
+!              0.05, 0.05, 0.00, &
+!              0.90, 0.90, 0.00 ]
+
+! --- to here.
 
 ! mainres.f parameters: ---------
 

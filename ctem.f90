@@ -1772,6 +1772,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                         il1,      il2,     sort, nol2pfts,&
      &                    grclarea,   thicec,   popdin, lucemcom,&
      &                      dofire,  currlat,     iday, fsnow,&
+     &                       isand,  &
 !    in above, out below 
      &                    stemltdt, rootltdt, glfltrdt, blfltrdt,&
      &                    glcaemls, rtcaemls, stcaemls,&
