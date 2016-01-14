@@ -763,42 +763,6 @@ c
       real, pointer, dimension(:,:,:) :: anvegrow
       real, pointer, dimension(:,:,:) :: rmlvegrow
 
-c     missing declarions after merge YW January 12, 2016 
-      real, pointer, dimension(:,:,:) :: PAMXROW
-      real, pointer, dimension(:,:,:) :: PAMNROW
-      real, pointer, dimension(:,:,:) :: CMASROW
-      real, pointer, dimension(:,:,:) :: ROOTROW            
-      real, pointer, dimension(:,:,:) :: RSMNROW
-      real, pointer, dimension(:,:,:) :: QA50ROW
-      real, pointer, dimension(:,:,:) :: VPDAROW
-      real, pointer, dimension(:,:,:) :: VPDBROW
-      real, pointer, dimension(:,:,:) :: PSGAROW
-      real, pointer, dimension(:,:,:) :: PSGBROW
-      real, pointer, dimension(:,:) ::  DRNROW  
-      real, pointer, dimension(:,:) ::  SDEPROW 
-      real, pointer, dimension(:,:) ::  FAREROW
-      real, pointer, dimension(:,:) ::  XSLPROW 
-      real, pointer, dimension(:,:) ::  GRKFROW 
-      real, pointer, dimension(:,:) ::  WFSFROW   
-      real, pointer, dimension(:,:) ::  WFCIROW   
-      real, pointer, dimension(:,:) ::  MIDROW   
-      real, pointer, dimension(:,:,:) :: SANDROW 
-      real, pointer, dimension(:,:,:) :: CLAYROW
-      real, pointer, dimension(:,:,:) :: ORGMROW 
-      real, pointer, dimension(:,:,:) :: TBARROW 
-      real, pointer, dimension(:,:,:) :: THLQROW 
-      real, pointer, dimension(:,:,:) :: THICROW  
-      real, pointer, dimension(:,:) ::  TCANROW
-      real, pointer, dimension(:,:) ::  TSNOROW   
-      real, pointer, dimension(:,:) ::  TPNDROW   
-      real, pointer, dimension(:,:) ::  ZPNDROW   
-      real, pointer, dimension(:,:) ::  RCANROW     
-      real, pointer, dimension(:,:) ::  SCANROW     
-      real, pointer, dimension(:,:) ::  SNOROW     
-      real, pointer, dimension(:,:) ::  ALBSROW     
-      real, pointer, dimension(:,:) ::  RHOSROW     
-      real, pointer, dimension(:,:) ::  GROROW       
-
 
 
 
@@ -997,6 +961,38 @@ c     missing declarions after merge YW January 12, 2016
       real, pointer, dimension(:,:) :: QAACC_M
       real, pointer, dimension(:,:) :: EVAPACC_M
       real, pointer, dimension(:,:) :: FLUTACC_M
+
+c     missing declarions after merge YW January 12, 2016 
+      REAL,DIMENSION(NLAT,NMOS,ICAN) ::
+     1              PAMXROW,  PAMNROW,
+     2              CMASROW,  ROOTROW,
+     3              RSMNROW,  QA50ROW,
+     4              VPDAROW,  VPDBROW,
+     5              PSGAROW,  PSGBROW
+      
+      REAL,DIMENSION(NLAT,NMOS) ::
+     1        DRNROW ,   XSLPROW,   GRKFROW,
+     2        WFSFROW,   WFCIROW,   ALGWROW,   
+     3        ALGDROW,   ASVDROW,   ASIDROW,   
+     4        AGVDROW,   AGIDROW,   ZSNLROW,
+     5        ZPLGROW,   ZPLSROW
+
+      REAL    SANDROW(NLAT,NMOS,IGND), CLAYROW(NLAT,NMOS,IGND), 
+     1        ORGMROW(NLAT,NMOS,IGND),
+     2        SDEPROW(NLAT,NMOS),      FAREROW(NLAT,NMOS),
+     3        MIDROW (NLAT,NMOS)              
+      
+      REAL,DIMENSION(NLAT,NMOS,IGND) ::
+     1        TBARROW,   THLQROW,   THICROW
+  
+       
+      REAL,DIMENSION(NLAT,NMOS) ::
+     1        TPNDROW,   ZPNDROW,   TBASROW,   
+     2        ALBSROW,   TSNOROW,   RHOSROW,   
+     3        SNOROW ,   TCANROW,   RCANROW,   
+     4        SCANROW,   GROROW ,   CMAIROW
+C     5        TACROW ,   QACROW ,   WSNOROW
+
 
 !      Outputs
 
@@ -3103,7 +3099,7 @@ C
           READ(10,5030) (PSGAROW(I,M,J),J=1,ICAN),
      1                  (PSGBROW(I,M,J),J=1,ICAN)
           READ(10,5040) DRNROW(I,M),SDEPROW(I,M),FAREROW(I,M)
-          READ(10,5090) XSLPROW(I,M),GRKFROW(I,M),WFSFROW(I,M),
+          READ(10,*)    XSLPROW(I,M),GRKFROW(I,M),WFSFROW(I,M),
      1                  WFCIROW(I,M),MIDROW(I,M)
           READ(10,5080) (SANDROW(I,M,J),J=1,3)
           READ(10,5080) (CLAYROW(I,M,J),J=1,3)
