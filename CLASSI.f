@@ -169,6 +169,7 @@ C
           RHOAIR(I)=PADRY(I)/(RGAS*TA(I))+EA/(RGASV*TA(I))                          
           CONST=LOG(EA/611.0)                                          
           TADP(I)=(CB*CONST-CA*TFREZ)/(CONST-CA)
+
 C
 C     * DENSITY OF FRESH SNOW.
 C
@@ -188,6 +189,7 @@ C
           ELSE
               RHOSNI(I)=MIN((119.17+20.0*(TA(I)-TFREZ)),200.0)
           ENDIF
+
 C
 C     * PRECIPITATION PARTITIONING BETWEEN RAIN AND SNOW.
 C

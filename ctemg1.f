@@ -76,7 +76,7 @@ c----------------------------------------------------------------------
           sdepgat(k)=sdeprow(ilmos(k),jlmos(k))
           ipeatlandgat(k)=ipeatlandrow(ilmos(k),jlmos(k))     !YW
 100   continue
-          write(6,*) 'ctemg1',ipeatlandgat, ipeatlandrow
+          
 c
       do 101 l=1,icc
        do 101 k=1,nml

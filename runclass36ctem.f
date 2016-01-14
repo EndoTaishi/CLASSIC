@@ -3072,8 +3072,8 @@ C
 C=======================================================================
 c
 C     BEGIN READ IN OF THE .INI FILE
-      READ(10,5020) DEGLAT,DEGLON,ZRFMGRD(1),ZRFHGRD(1),ZBLDGRD(1),
-     1              GCGRD(1),NLTEST,NMTEST
+      READ(10,5020) DLATROW(1),DEGLON,ZRFMROW(1),ZRFHROW(1),ZBLDROW(1),
+     1              GCROW(1),NLTEST,NMTEST
 
       JLAT=NINT(DEGLAT)
       RADJGRD(1)=DEGLAT*PI/180.
@@ -3620,7 +3620,6 @@ c	gather peatland variable YW March 19, 2015---------------------- /
 	1      ,ipeatlandrow,   ipeatlandgat)
 c
 c
-        write (6,*) '3623', ipeatlandrow, ipeatlandgat
       call bio2str( gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,
      1                           1,      nml,    fcancmxgat, zbtwgat,
      2                        dlzwgat, nol2pfts,   sdepgat,
@@ -3755,7 +3754,6 @@ C    CO2conc is 0. to fix the floating point problem
           enddo
          enddo
 c	----YW March 19, 2015---------------------------------------------/
-
 
 C===================== CTEM ============================================ /
 C
@@ -3929,18 +3927,19 @@ c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
 C===================== CTEM ============================================ /
 C
 
-      CALL CLASSI(VPDGRD,TADPGRD,PADRGRD,RHOAGRD,RHSIGRD,
-     1            RPCPGRD,TRPCGRD,SPCPGRD,TSPCGRD,TAGRD,QAGRD,
-     2            PREGRD,RPREGRD,SPREGRD,PRESGRD,
+      CALL CLASSI(VPDROW,TADPROW,PADRROW,RHOAROW,RHSIROW,
+     1            RPCPROW,TRPCROW,SPCPROW,TSPCROW,TAROW,QAROW,
+     2            PREROW,RPREROW,SPREROW,PRESROW,
      3            IPCP,NLAT,1,NLTEST)
 
-C
+
       CUMSNO=CUMSNO+SPCPROW(1)*RHSIROW(1)*DELT
 C
       CALL GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,
      1             NML,NMW,GCROW,FAREROT,MIDROT,
      2             NLAT,NMOS,ILG,1,NLTEST,NMTEST)
 C
+
       CALL CLASSG (TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT,
      1             TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT,
      2             TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT,
