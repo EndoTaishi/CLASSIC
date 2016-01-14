@@ -36,13 +36,12 @@
      Y   TCSNOW, GSNOW,                                                 
      Z   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
      +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     +   NBS, ISNOALB,LFSTATUS)                                                  
-c    peatland variabels in mosspht.f called in TSOLVC and TSOLVE-------\  
-	 1	 ,ipeatland, bi,
-	 2	 ancsmoss,	angsmoss, ancmoss,	angmoss,
-	 3	 rmlcsmoss,rmlgsmoss,rmlcmoss,	rmlgmoss,
-	 4 	 Cmossmas, dmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
-c    YW March 19, 2015 ------------------------------------------------/
+     +   NBS, ISNOALB,LFSTATUS,                                                  
+c    peatland variabels in mosspht.f called in TSOLVC and TSOLVE------
+     1	 ipeatland, bi, ancsmoss,angsmoss, ancmoss,	angmoss,
+     2	 rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,Cmossmas, dmoss,
+     3 	 iyear, iday, ihour,imin,daylength,pdd,cdd)
+!    YW March 19, 2015 ------------------------------------------------
 C
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
@@ -563,7 +562,7 @@ C
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
      N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS
 c    pass  variables to moss subroutines YW March 19, 2015------------\   
-	1		   ,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss,
+	1		   ,ipeatland, tbar, thpor, Cmossmas,dmoss,
 c	------input above, output below-----------------------------------	
 	2		     ancsmoss,rmlcsmoss,iyear,iday,ihour,imin,daylength
 	3              ,pdd,cdd)
@@ -749,10 +748,9 @@ C
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  
 c    ----------pass variables in mosspht.f-----------------------------\  
-	 1	,ipeatland, thliqg, tbar, thpor, co2conc,
-	 2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
+     1	,ipeatland, tbar,thpor,co2conc,pressg, coszs, Cmossmas,dmoss
 c	------input above, output below-----------------------------------	
-	 3   ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+     2   ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 C    ---------------YW March 26, 2015 ---------------------------------/      
 c     
           CALL TSPOST(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG,
@@ -928,7 +926,7 @@ C
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
      N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS
 c    pass  variables to moss subroutines YW March 19, 2015------------\   
-	1		   ,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss,
+	1		   ,ipeatland, tbar, thpor, Cmossmas,dmoss,
 c	------input above, output below-----------------------------------	
 	2		     ancmoss,rmlcmoss,iyear, iday, ihour,imin,daylength
 	3              ,pdd,cdd)
@@ -1100,8 +1098,8 @@ C
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
 c    ----------pass variables in mosspht.f-----------------------------\  
-	1	,ipeatland, thliqg, tbar, thpor, co2conc,
-	2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
+	1	,ipeatland, tbar, thpor, co2conc,
+	2	 pressg, coszs, Cmossmas,dmoss
 c	------input above, output below-----------------------------------	
 	3	 ,angmoss,rmlgmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 C    ---------------YW March 26, 2015 ---------------------------------/ 

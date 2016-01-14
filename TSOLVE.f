@@ -7,16 +7,15 @@
      6                  ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
      7                  GCONST,GCOEFF,TSTART,PCPR,TRSNOWG,FSSB,ALSNO,   
      8                  THLIQ,THLMIN,DELZW,RHOSNO,ZSNOW,
-     +                  IWATER,IEVAP,ITERCT,ISAND, 
-     9                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,        
-     A                  TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
-     B                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
-     C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
-c    ------------pass variables in moss subroutine---------------------\  
-     1	,ipeatland, thliq, tbar, thpor, co2conc,
-	 2	zsnow, delzw, pressg, coszs, Cmossmas,dmoss
-c    3-----input above, output below-----------------------------------	
-     4	 ,anmoss,rmlmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+     9                  IWATER,IEVAP,ITERCT,ISAND, 
+     1                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,        
+     2                  TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
+     3                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
+     4                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
+!    ------------pass variables in moss subroutine---------------------\  
+     5	,ipeatland,tbar,thpor,co2conc,pressg,coszs,Cmossmas,dmoss,
+!    -----input above, output below-----------------------------------	
+     7	   anmoss,rmlmoss,iyear,iday,ihour,imin,daylength,pdd,cdd )
 C    ------------------YW March 26, 2015 ------------------------------/ 
 C
 C     Purpose: Solution of surface energy balance for non-vegetated 
@@ -226,8 +225,7 @@ C      REAL QSWNV,QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO   !YW
 c    ---------------Peatland variables YW March 19, 2015 --------------\
 
  	 integer  ipeatland(ilg),iday, ihour, iyear,imin, ievapms(ilg)
-	 real	thliq(ilg,ig), tbar(ilg,ig), 	thpor(ilg,ig),	
-	1		bi(ig),		zsnow(ilg),	delzw(ilg,ig),
+	 real	tbar(ilg,ig), 	thpor(ilg,ig),	 bi(ig),	
 	2		co2conc(ilg),	pressg(ilg) ,	coszs(ilg),
 	3		Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
 	4         pdd(ilg),      cdd(ilg)
@@ -365,7 +363,7 @@ C
             DO I=IL1,IL2                                                
                IF(FI(I).GT.0.) THEN                                     
                   TRTOP(I,1)=TRSNOWG(I,1)                               
-                  QSWNV((i)=FSSB(I,1)*(1.0-ALSNO(I,1))  !YW QSWNV to QSWNV(i)     
+                  QSWNV(i)=FSSB(I,1)*(1.0-ALSNO(I,1))  !YW QSWNV to QSWNV(i)     
                   QSWNI=FSSB(I,2)*(1.0-ALSNO(I,2))                      
                   QSWNET(I)=QSWNV(i)+QSWNI                                 
                   QTRANS(I)=QSWNET(I)*TRTOP(I,1)                        

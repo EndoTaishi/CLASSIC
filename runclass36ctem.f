@@ -164,6 +164,14 @@ C
      1              FCANROT,  LNZ0ROT,
      2              ALVCROT,  ALICROT
 C
+c   -----------------merge fix----------------------------------------
+c     declaration missing after the merge YW January 12, 2016  
+      REAL,DIMENSION(NLAT,NMOS,ICP1) ::
+     1              FCANROW,  LNZ0ROW,
+     2              ALVCROW,  ALICROW
+     
+c   ---------------------merge fix--------------------------------------
+
       REAL,DIMENSION(NLAT,NMOS,ICAN) ::
      1              PAMXROT,  PAMNROT,
      2              CMASROT,  ROOTROT,
@@ -250,6 +258,17 @@ C
 C     * ATMOSPHERIC AND GRID-CONSTANT INPUT VARIABLES.
 C
       REAL,DIMENSION(NLAT) ::
+     1      ZRFMGRD,   ZRFHGRD,   ZDMGRD ,   ZDHGRD ,  
+     2      ZBLDGRD,   FSVHGRD,   FSIHGRD,   RADJGRD,
+     3      CSZGRD ,   FDLGRD ,   ULGRD  ,   VLGRD  ,   
+     4      TAGRD  ,   QAGRD  ,   PRESGRD,   PREGRD ,  
+     5      PADRGRD,   VPDGRD ,   TADPGRD,   RHOAGRD,  
+     6      RPCPGRD,   TRPCGRD,   SPCPGRD,   TSPCGRD,  
+     7      RHSIGRD,   FCLOGRD,   DLONGRD,   UVGRD  ,   
+     8      XDIFFUS,   GCGRD  ,   Z0ORGRD,   GGEOGRD,
+     9      RPREGRD,   SPREGRD,   VMODGRD
+
+      REAL,DIMENSION(NLAT) ::
      1      ZRFMROW,   ZRFHROW,   ZDMROW ,   ZDHROW ,
      2      ZBLDROW,   FSVHROW,   FSIHROW,   RADJROW,
      3      CSZROW ,   FDLROW ,   ULROW  ,   VLROW  ,
@@ -257,7 +276,7 @@ C
      5      PADRROW,   VPDROW ,   TADPROW,   RHOAROW,
      6      RPCPROW,   TRPCROW,   SPCPROW,   TSPCROW,
      7      RHSIROW,   FCLOROW,   DLONROW,   UVROW  ,
-     8      XDIFFUS,   GCROW  ,   Z0ORROW,   GGEOROW,
+     8      GCROW  ,   Z0ORROW,   GGEOROW,
      9      RPREROW,   SPREROW,   VMODROW,   DLATROW,
      A      FSSROW,    PRENROW,   CLDTROW,   FSGROL,
      B      FLGROL,    GUSTROL,   DEPBROW
@@ -314,23 +333,43 @@ C
      G      ILMOGAT,   UEGAT  ,   HBLGAT ,   QLWOGAT,
      H      FTEMP  ,   FVAP   ,   RIB
 C
-      REAL,DIMENSION(NLAT) ::
-     1      CDHROW ,   CDMROW ,   HFSROW ,   TFXROW ,
-     2      QEVPROW,   QFSROW ,   QFXROW ,   PETROW ,
-     3      GAROW  ,   EFROW  ,   GTROW  ,   QGROW  ,
-     4      ALVSROW,   ALIRROW,   FSNOROW,   SFRHROW,
-     5      SFCTROW,   SFCUROW,   SFCVROW,   SFCQROW,
-     6      FSGVROW,   FSGSROW,   FSGGROW,   FLGVROW,
-     7      FLGSROW,   FLGGROW,   HFSCROW,   HFSSROW,
-     8      HFSGROW,   HEVCROW,   HEVSROW,   HEVGROW,
-     9      HMFCROW,   HMFNROW,   HTCCROW,   HTCSROW,
-     A      PCFCROW,   PCLCROW,   PCPNROW,   PCPGROW,
-     B      QFGROW ,   QFNROW ,   QFCLROW,   QFCFROW,
-     C      ROFROW ,   ROFOROW,   ROFSROW,   ROFBROW,
-     D      ROFCROW,   ROFNROW,   ROVGROW,   WTRCROW,
-     E      WTRSROW,   WTRGROW,   DRROW  ,   WTABROW,
-     F      ILMOROW,   UEROW  ,   HBLROW
+      REAL,DIMENSION(NLAT,NMOS) ::
+     1      CDHROW ,   CDMROW ,   HFSROW ,   TFXROW ,  
+     2      QEVPROW,   QFSROW ,   QFXROW ,   PETROW ,  
+     3      GAROW  ,   EFROW  ,   GTROW  ,   QGROW  ,   
+     4      TSFROW ,   ALVSROW,   ALIRROW,   FSNOROW,  
+     5      SFCTROW,   SFCUROW,   SFCVROW,   SFCQROW,   
+     6      FSGVROW,   FSGSROW,   FSGGROW,   FLGVROW,   
+     7      FLGSROW,   FLGGROW,   HFSCROW,   HFSSROW,  
+     8      HFSGROW,   HEVCROW,   HEVSROW,   HEVGROW,   
+     9      HMFCROW,   HMFNROW,   HTCCROW,   HTCSROW,   
+     A      PCFCROW,   PCLCROW,   PCPNROW,   PCPGROW,   
+     B      QFGROW ,   QFNROW ,   QFCLROW,   QFCFROW,   
+     C      ROFROW ,   ROFOROW,   ROFSROW,   ROFBROW,  
+     D      TROFROW,   TROOROW,   TROSROW,   TROBROW,  
+     E      ROFCROW,   ROFNROW,   ROVGROW,   WTRCROW,   
+     F      WTRSROW,   WTRGROW,   DRROW  ,   WTABROW,  
+     G      ILMOROW,   UEROW  ,   HBLROW 
 C
+c   --------------lost after merge YW January 12, 2016 ----------------- 
+      REAL,DIMENSION(NLAT) ::
+     1      CDHGRD ,   CDMGRD ,   HFSGRD ,   TFXGRD ,  
+     2      QEVPGRD,   QFSGRD ,   QFXGRD ,   PETGRD ,  
+     3      GAGRD  ,   EFGRD  ,   GTGRD  ,   QGGRD  ,   
+     4      TSFGRD ,   ALVSGRD,   ALIRGRD,   FSNOGRD,  
+     5      SFCTGRD,   SFCUGRD,   SFCVGRD,   SFCQGRD,   
+     6      FSGVGRD,   FSGSGRD,   FSGGGRD,   FLGVGRD,   
+     7      FLGSGRD,   FLGGGRD,   HFSCGRD,   HFSSGRD,  
+     8      HFSGGRD,   HEVCGRD,   HEVSGRD,   HEVGGRD,   
+     9      HMFCGRD,   HMFNGRD,   HTCCGRD,   HTCSGRD,   
+     A      PCFCGRD,   PCLCGRD,   PCPNGRD,   PCPGGRD,   
+     B      QFGGRD ,   QFNGRD ,   QFCLGRD,   QFCFGRD,   
+     C      ROFGRD ,   ROFOGRD,   ROFSGRD,   ROFBGRD,  
+     D      ROFCGRD,   ROFNGRD,   ROVGGRD,   WTRCGRD,   
+     E      WTRSGRD,   WTRGGRD,   DRGRD  ,   WTABGRD,  
+     F      ILMOGRD,   UEGRD  ,   HBLGRD
+c   --------------lost after merge YW January 12, 2016 ----------------- 
+
       REAL    HMFGROT(NLAT,NMOS,IGND),   HTCROT (NLAT,NMOS,IGND),
      1        QFCROT (NLAT,NMOS,IGND),   GFLXROT(NLAT,NMOS,IGND),
      2        HMFGGAT(ILG,IGND),         HTCGAT (ILG,IGND),
@@ -415,10 +454,11 @@ C
 C
 C     * CONSTANTS AND TEMPORARY VARIABLES.
 C
-      REAL DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,
+      REAL DEGLAT,DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,
      1     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,
      2     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,
      3     ALTOT_YR,TSURF,ALAVG,ALMAX,ACTLYR,FTAVG,FTMAX,FTABLE
+     4     ,FSDOWN !lost after merge January 12, 2016 YW
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -454,7 +494,9 @@ c
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
      8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2),
      9           obswetyr, cywetldyr, trans_startyr, jmosty,
-     +           obslghtyr
+     +           obslghtyr,
+     +           jdst, jdend,jyd, jhhst, jhhend,iyd! lost after merge YW January 12, 2016 
+
 c
       real, pointer ::  fsstar_g
       real, pointer ::  flstar_g
@@ -721,6 +763,45 @@ c
       real, pointer, dimension(:,:,:) :: anvegrow
       real, pointer, dimension(:,:,:) :: rmlvegrow
 
+c     missing declarions after merge YW January 12, 2016 
+      real, pointer, dimension(:,:,:) :: PAMXROW
+      real, pointer, dimension(:,:,:) :: PAMNROW
+      real, pointer, dimension(:,:,:) :: CMASROW
+      real, pointer, dimension(:,:,:) :: ROOTROW            
+      real, pointer, dimension(:,:,:) :: RSMNROW
+      real, pointer, dimension(:,:,:) :: QA50ROW
+      real, pointer, dimension(:,:,:) :: VPDAROW
+      real, pointer, dimension(:,:,:) :: VPDBROW
+      real, pointer, dimension(:,:,:) :: PSGAROW
+      real, pointer, dimension(:,:,:) :: PSGBROW
+      real, pointer, dimension(:,:) ::  DRNROW  
+      real, pointer, dimension(:,:) ::  SDEPROW 
+      real, pointer, dimension(:,:) ::  FAREROW
+      real, pointer, dimension(:,:) ::  XSLPROW 
+      real, pointer, dimension(:,:) ::  GRKFROW 
+      real, pointer, dimension(:,:) ::  WFSFROW   
+      real, pointer, dimension(:,:) ::  WFCIROW   
+      real, pointer, dimension(:,:) ::  MIDROW   
+      real, pointer, dimension(:,:,:) :: SANDROW 
+      real, pointer, dimension(:,:,:) :: CLAYROW
+      real, pointer, dimension(:,:,:) :: ORGMROW 
+      real, pointer, dimension(:,:,:) :: TBARROW 
+      real, pointer, dimension(:,:,:) :: THLQROW 
+      real, pointer, dimension(:,:,:) :: THICROW  
+      real, pointer, dimension(:,:) ::  TCANROW
+      real, pointer, dimension(:,:) ::  TSNOROW   
+      real, pointer, dimension(:,:) ::  TPNDROW   
+      real, pointer, dimension(:,:) ::  ZPNDROW   
+      real, pointer, dimension(:,:) ::  RCANROW     
+      real, pointer, dimension(:,:) ::  SCANROW     
+      real, pointer, dimension(:,:) ::  SNOROW     
+      real, pointer, dimension(:,:) ::  ALBSROW     
+      real, pointer, dimension(:,:) ::  RHOSROW     
+      real, pointer, dimension(:,:) ::  GROROW       
+
+
+
+
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
       ! GAT version:
 
@@ -918,6 +999,8 @@ c
       real, pointer, dimension(:,:) :: FLUTACC_M
 
 !      Outputs
+
+       integer ifcancmx_g(nlat,icc)     ! lost after merge YW January 12, 2016 
 
        real, pointer, dimension(:,:) :: tcanoaccrow_out
        real, pointer, dimension(:) :: tcanoaccgat_out
@@ -1286,27 +1369,28 @@ c      (denoted by name ending in "_yr_g")
 c      Annual output for CTEM mosaic variables:
 c      (denoted by name ending in "_yr_m")
 
-       real laimaxg_yr_m(nlat,nmos,icc), stemmass_yr_m(nlat,nmos,icc),
-     1      rootmass_yr_m(nlat,nmos,icc),litrmass_yr_m(nlat,nmos,iccp1),
-     2      soilcmas_yr_m(nlat,nmos,iccp1),npp_yr_m(nlat,nmos,icc),
-     3      gpp_yr_m(nlat,nmos,icc),       nep_yr_m(nlat,nmos,iccp1),
-     4      nbp_yr_m(nlat,nmos,iccp1),     vgbiomas_yr_m(nlat,nmos,icc),
-     a      hetrores_yr_m(nlat,nmos,iccp1),autores_yr_m(nlat,nmos,icc),
-     b      litres_yr_m(nlat,nmos,iccp1),soilcres_yr_m(nlat,nmos,iccp1),  
-     5      emit_co2_yr_m(nlat,nmos,icc), emit_co_yr_m(nlat,nmos,icc),
-     6      emit_ch4_yr_m(nlat,nmos,icc), emit_nmhc_yr_m(nlat,nmos,icc),
-     7      emit_h2_yr_m(nlat,nmos,icc), emit_nox_yr_m(nlat,nmos,icc),
-     8      emit_n2o_yr_m(nlat,nmos,icc),emit_pm25_yr_m(nlat,nmos,icc),
-     9      emit_tpm_yr_m(nlat,nmos,icc),emit_tc_yr_m(nlat,nmos,icc),
-     a      emit_oc_yr_m(nlat,nmos,icc), emit_bc_yr_m(nlat,nmos,icc),
-     b      probfire_yr_m(nlat,nmos),    bterm_yr_m(nlat,nmos),
-     c      luc_emc_yr_m(nlat,nmos),     totcmass_yr_m(nlat,nmos,icc),
-     d      lucsocin_yr_m(nlat,nmos),    lterm_yr_m(nlat,nmos),   
-     e      lucltrin_yr_m(nlat,nmos),    mterm_yr_m(nlat,nmos),
-     f      burnfrac_yr_m(nlat,nmos,icc),
-     &      ch4wet1_yr_m(nlat,nmos),   ch4wet2_yr_m(nlat,nmos),
-     &      wetfdyn_yr_m(nlat,nmos),   ch4dyn1_yr_m(nlat,nmos),
-     &      ch4dyn2_yr_m(nlat,nmos)  
+c   YW January 12, 2016  seems to be redudant after the merge
+c       real laimaxg_yr_m(nlat,nmos,icc), stemmass_yr_m(nlat,nmos,icc),
+c     1      rootmass_yr_m(nlat,nmos,icc),litrmass_yr_m(nlat,nmos,iccp1),
+c     2      soilcmas_yr_m(nlat,nmos,iccp1),npp_yr_m(nlat,nmos,icc),
+c     3      gpp_yr_m(nlat,nmos,icc),       nep_yr_m(nlat,nmos,iccp1),
+c     4      nbp_yr_m(nlat,nmos,iccp1),     vgbiomas_yr_m(nlat,nmos,icc),
+c     a      hetrores_yr_m(nlat,nmos,iccp1),autores_yr_m(nlat,nmos,icc),
+c     b      litres_yr_m(nlat,nmos,iccp1),soilcres_yr_m(nlat,nmos,iccp1),  
+c     5      emit_co2_yr_m(nlat,nmos,icc), emit_co_yr_m(nlat,nmos,icc),
+c     6      emit_ch4_yr_m(nlat,nmos,icc), emit_nmhc_yr_m(nlat,nmos,icc),
+c     7      emit_h2_yr_m(nlat,nmos,icc), emit_nox_yr_m(nlat,nmos,icc),
+c     8      emit_n2o_yr_m(nlat,nmos,icc),emit_pm25_yr_m(nlat,nmos,icc),
+c     9      emit_tpm_yr_m(nlat,nmos,icc),emit_tc_yr_m(nlat,nmos,icc),
+c     a      emit_oc_yr_m(nlat,nmos,icc), emit_bc_yr_m(nlat,nmos,icc),
+c     b      probfire_yr_m(nlat,nmos),    bterm_yr_m(nlat,nmos),
+c     c      luc_emc_yr_m(nlat,nmos),     totcmass_yr_m(nlat,nmos,icc),
+c     d      lucsocin_yr_m(nlat,nmos),    lterm_yr_m(nlat,nmos),   
+c     e      lucltrin_yr_m(nlat,nmos),    mterm_yr_m(nlat,nmos),
+c     f      burnfrac_yr_m(nlat,nmos,icc),
+c     &      ch4wet1_yr_m(nlat,nmos),   ch4wet2_yr_m(nlat,nmos),
+c     &      wetfdyn_yr_m(nlat,nmos),   ch4dyn1_yr_m(nlat,nmos),
+c     &      ch4dyn2_yr_m(nlat,nmos)  
 c
 c============= CTEM array declaration done =============================/
 C
@@ -1316,13 +1400,13 @@ c=====peatland related parameter declaration March 18, 2015 YW=========\
 
 c   ----CLASS moss variables------- ----------------------------------
       real  wiltsmrow(nlat,nmos,ignd),  wiltsmgat(ilg,ignd), 	      
-     1	  fieldsmrow(nlat,nmos,ignd), fieldsmgat(ilg,ignd),		 	
-	 2      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg),
+     1	  fieldsmrow(nlat,nmos,ignd), fieldsmgat(ilg,ignd),
+     2      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg),
      3      thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
-     3      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
-     4      hpdrow(nlat,nmos), hpdgat(ilg),
-     5      HourAngle(ilg),   daylength(ilg), CosHourAngel  
-     6      ,pdd(ilg), cdd(ilg)
+     4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
+     5      hpdrow(nlat,nmos), hpdgat(ilg),
+     6      HourAngle(ilg),   daylength(ilg), CosHourAngel  
+     7      ,pdd(ilg), cdd(ilg)
 c	----CTEM moss variables--------------------------------------------
       real  anmosrow(nlat,nmos)  ,      anmosgat(ilg),
      1      rmlmosrow(nlat,nmos) ,      rmlmosgat(ilg),  
@@ -1419,6 +1503,11 @@ C
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+c     ------peatland common block March 19, 2015 YW--------------------\
+
+      common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
+     1              hcpms, sphms,rhoms,slams
+c     ------peatland common block March 19, 2015 YW--------------------/
 C
 C===================== CTEM ==============================================\
 
@@ -2200,11 +2289,6 @@ C===================== CTEM ==============================================\
 
 !    Declarations are complete, run preparations begin
 
-c     ------peatland common block March 19, 2015 YW--------------------\
-
-      common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
-	1				    hcpms, sphms,rhoms,slams
-c     ------peatland common block March 19, 2015 YW--------------------/
 c
       CALL CLASSD
 C
@@ -2382,7 +2466,8 @@ c
        OPEN(UNIT=681,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF8_G')
        OPEN(UNIT=691,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF9_G')
        end if
-
+       
+        if (compete .or. lnduseon) then     !YW the sequence of opening is messed up with the merge
          open(unit=89,file=argbuff(1:strlen(argbuff))//'.CT07Y_GM')! ctem pft fractions YEARLY
         endif
 c
@@ -2404,7 +2489,7 @@ C    peatland output----------------------------------------------\
       
 C    YW March 25, 2015 ----------------------------------------------/
 
-      end if !ctem_on
+c      end if !ctem_on  YW January 12, 2016 redudant after merge 
 c
 C=======================================================================
 C
@@ -2532,31 +2617,8 @@ C
        WRITE(69,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
        WRITE(69,6019) 
 C
-6011  FORMAT(2X,'DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
-     1          'TR  SWE  DS  WS  AL  ROF')
-6012  FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
-     1              'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',
-     2              'THI5')
-6212  FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
-     1              'TG3  THL3  THI3  TCN  RCAN  SCAN  TSN  ZSN')
-6013  FORMAT(2X,'DAY  YEAR  TG6  THL6  THI6  TG7  THL7  THI7  ',
-     1              'TG8  THL8  THI8  TG9  THL9  THI9  TG10   '  ,
-     2              'THL10  THI10')
-6313  FORMAT(2X,'DAY YEAR KIN LIN TA UV PRES QA PCP EVAP')
-6014  FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
-     1          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN CANRES')
-6015  FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',
-     1          'THL2  THI2  TG3  THL3  THI3')
-6515  FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',
-     1           'THL2  THI2  TG3  THL3  THI3  TCN  RCAN  SCAN  ',
-     2           'TSN  ZSN')
-6016  FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG4  THL4  THI4  TG5  ',
-     1          'THL5  THI5  TG6  THL6  THI6  TG7  ',
-     2          'THL7  THI7  TG8  THL8  THI8  TG9  THL9  THI9  ',
-     3          'TG10  THL10  THI10  G0  G1  G2  G3  G4  G5  G6  ',
-     4          'G7  G8  G9')
-6616  FORMAT(2X,'HOUR  MIN  DAY  SWIN  LWIN  PCP  TA  VA  PA  QA')
-6615  FORMAT(2X,'IF IGND <= 3, THIS FILE IS EMPTY')
+
+
 6017  FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',
      1  'TROF     TROO     TROS     TROB      ROF     ROFO   ',
      2  '  ROFS        ROFB         FCS        FGS        FC       FG')
@@ -3006,7 +3068,7 @@ C
      & gCH4/M2.YR ')
  
 C
-       ENDIF !IF NOT PARALLELRUN
+c       ENDIF !IF NOT PARALLELRUN
 
 C     CTEM FILE TITLES DONE
 C======================= CTEM ========================================== /
@@ -3014,44 +3076,25 @@ C
 C=======================================================================
 c
 C     BEGIN READ IN OF THE .INI FILE
+      READ(10,5020) DEGLAT,DEGLON,ZRFMGRD(1),ZRFHGRD(1),ZBLDGRD(1),
+     1              GCGRD(1),NLTEST,NMTEST
 
-      READ(10,5020) DLATROW(1),DEGLON,ZRFMROW(1),ZRFHROW(1),ZBLDROW(1),
-     1              GCROW(1),NLTEST,NMTEST
-
-      JLAT=NINT(DLATROW(1))
-      RADJROW(1)=DLATROW(1)*PI/180.
-      DLONROW(1)=DEGLON
-      Z0ORROW(1)=0.0
-      GGEOROW(1)=0.0
-C     GGEOROW(1)=-0.035
-
-c    -----------------read peatland input------------------------------\      
-       do  40 i = 1, nltest
-          do 40 m = 1, nmtest
-             read(17,*) ipeatlandrow(i,m),Cmossmasrow(i,m),
-     1                   litrmassmsrow(i,m),dmossrow(i,m)
-40    continue
-      write(6,*) 'NLTEST=',NLTEST
-      write(6,*) 'NMTEST=',NMTEST
-      write(6,*) 'nlat=', nlat
-      write(6,*) 'nmos=' ,nmos
-      write(6,*) 'ignd=', ignd
-      write(6,*) 'ican=', ican
-      write(6,*) 'icc=', icc
-      write(6,*) 'ipeatland=',ipeatlandrow
-      write(6,6990) 'Cmossmas=',Cmossmasrow
-      write(6,6990) 'litrmassms=',litrmassmsrow
-      write(6,6990) 'dmoss=',dmossrow 
-c    -----------------YW March 23, 2015 -------------------------------/
+      JLAT=NINT(DEGLAT)
+      RADJGRD(1)=DEGLAT*PI/180.
+      DLONGRD(1)=DEGLON
+      Z0ORGRD(1)=0.0
+      GGEOGRD(1)=0.0
+C     GGEOGRD(1)=-0.035
+C
       DO 50 I=1,NLTEST
       DO 50 M=1,NMTEST
-          READ(10,5040) (FCANROT(I,M,J),J=1,ICAN+1),(PAMXROT(I,M,J),
+          READ(10,5040) (FCANROW(I,M,J),J=1,ICAN+1),(PAMXROW(I,M,J),
      1                  J=1,ICAN)
-          READ(10,5040) (LNZ0ROT(I,M,J),J=1,ICAN+1),(PAMNROT(I,M,J),
+          READ(10,5040) (LNZ0ROW(I,M,J),J=1,ICAN+1),(PAMNROW(I,M,J),
      1                  J=1,ICAN)
-          READ(10,5040) (ALVCROT(I,M,J),J=1,ICAN+1),(CMASROT(I,M,J),
+          READ(10,5040) (ALVCROW(I,M,J),J=1,ICAN+1),(CMASROW(I,M,J),
      1                  J=1,ICAN)
-          READ(10,5040) (ALICROT(I,M,J),J=1,ICAN+1),(ROOTROT(I,M,J),
+          READ(10,5040) (ALICROW(I,M,J),J=1,ICAN+1),(ROOTROW(I,M,J),
      1                  J=1,ICAN)
           READ(10,5030) (RSMNROW(I,M,J),J=1,ICAN),
      1                  (QA50ROW(I,M,J),J=1,ICAN)
@@ -3087,16 +3130,26 @@ C
           READ(10,5002) DELZ(J),ZBOT(J)  
  25   CONTINUE                            
  5002 FORMAT(2X,2F8.2)                   
-C      
-c       
 
-C
-C======================= CTEM ========================================== \
+c    -----------------read peatland input------------------------------\      
+       do  40 i = 1, nltest
+          do 40 m = 1, nmtest
+             read(17,*) ipeatlandrow(i,m),Cmossmasrow(i,m),
+     1                   litrmassmsrow(i,m),dmossrow(i,m)
+40    continue
+      write(6,*) 'NLTEST=',NLTEST
+      write(6,*) 'NMTEST=',NMTEST
+      write(6,*) 'nlat=', nlat
+      write(6,*) 'nmos=' ,nmos
+      write(6,*) 'ignd=', ignd
+      write(6,*) 'ican=', ican
+      write(6,*) 'icc=', icc
+      write(6,*) 'ipeatland=',ipeatlandrow
+      write(6,6990) 'Cmossmas=',Cmossmasrow
+      write(6,6990) 'litrmassms=',litrmassmsrow
+      write(6,6990) 'dmoss=',dmossrow 
+c    -----------------YW March 23, 2015 -------------------------------/
 
-C     ! In CLASS 3.6.2, we include this soil info in the INI file.
-      DO 25 J=1,IGND
-          READ(10,*) DELZ(J),ZBOT(J) 
- 25   CONTINUE
 C
 c     the output year ranges can be read in from the job options file, or not.
 c     if the values should be read in from the .ini file, and not
@@ -3124,7 +3177,15 @@ c     read from ctem initialization file (.CTM)
      5                   TSNOROT,TPNDROT,ZPNDROT,RCANROT,SCANROT,
      6                   SNOROT, ALBSROT,RHOSROT,GROROT,argbuff)
       end if
-c
+c       
+      if ((compete .or. lnduseon) .and. start_bare) then
+      if (mosaic) then          !merge fix YW January 12, 2016 
+c       
+c       check the number of mosaics that came from the .ini file
+        if (nmtest .ne. nmos) then      !merge fix YW January 12, 2016 
+
+        do i=1,nltest
+         do m=1,nmtest
            tcanrow(i,m)=tcanrow(i,1)
            tsnorow(i,m)=tsnorow(i,1)
            tpndrow(i,m)=tpndrow(i,1)
@@ -3138,7 +3199,6 @@ c
            do j=1,icc
              lfstatusrow(i,m,j) = 4
            enddo !j
-c
           enddo !m
          enddo !i
 
@@ -3764,7 +3824,6 @@ c
 
 !119    continue
 c
->>>>>>> yw2.0.4
       call ctems1(gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,
      1      fcancmxrow,ZBTWROT,DLZWROT,SDEPROT,ailcgrow,ailcbrow,
      2      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
@@ -4277,10 +4336,10 @@ c    ----gathering of peatland variables YW March 19, 2015 ------------\
 c
      1    ,anmosrow,rmlmosrow,gppmosrow,armosrow,nppmosrow
      2    ,anmosgat,rmlmosgat,gppmosgat,armosgat,nppmosgat
-	 3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
-	 4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
-	 5    ,thlqaccrow_m, thlqaccgat_m,thicaccrow_m, thicaccgat_m
-	 6    ,ipeatlandgat)
+     3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
+     4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
+     5    ,thlqaccrow_m, thlqaccgat_m,thicaccrow_m, thicaccgat_m
+     6    ,ipeatlandgat)
 c    ----gathering of peatland variables YW March 19, 2015 ------------/
 C===================== CTEM ============================================ /
 C
@@ -4370,11 +4429,11 @@ C
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
      U  NBS,    ISNOALB,lfstatusgat
 c    ---peatland variabels in mosspht.f called in TSOLVC, TSOLVE----- -\  
- 	 1	,ipeatlandgat, bigat,
-	 2	ancsmosgat,	angsmosgat, 	ancmosgat,	angmosgat,
-	 3	rmlcsmosgat,	rmlgsmosgat,	rmlcmosgat,	rmlgmosgat,
-	 4	Cmossmasgat,   dmossgat,  iyear, iday, ihour, imin,
-	 5    daylength, pdd, cdd)
+     1	,ipeatlandgat, bigat,
+     2	ancsmosgat,	angsmosgat, 	ancmosgat,	angmosgat,
+     3	rmlcsmosgat,	rmlgsmosgat,	rmlcmosgat,	rmlgmosgat,
+     4	Cmossmasgat,   dmossgat,  iyear, iday, ihour, imin,
+     5    daylength, pdd, cdd)
 c    --------------------YW March 19, 2015 ----------------------------/
 C
 C-----------------------------------------------------------------------
@@ -5262,7 +5321,6 @@ c
 
           endif   ! ctem_on
 
-7200      format(1x,i2,1x,i2,i5,i5,9f11.3,9f11.3,2(a6,i2))
 c
           fsstar_g    =fsstar_g + fsstar*FAREROT(i,m)
           flstar_g    =flstar_g + flstar*FAREROT(i,m)
@@ -7036,6 +7094,12 @@ c
       endif ! if(ncount.eq.nday)
       endif ! if(ctem_on)
 C
+
+8105  FORMAT(1X,I5,15(F10.3,1X),2(A6,I2),A6,F8.2)
+8107  FORMAT(1X,I5,11(F10.5,1X),9L5,2(A6,I2))
+8108  FORMAT(1X,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
+8115  FORMAT(1X,I5,5(F10.3,1X),2(A6,I2))
+
 C     OPEN AND WRITE TO THE RESTART FILES
 C
       IF (RSFILE) THEN
@@ -7108,7 +7172,6 @@ C
         DO J=1,IGND
           WRITE(100,5002) DELZ(J),ZBOT(J)
         ENDDO
-5002  FORMAT(2F8.3)
 C
         WRITE(100,5200) JHHSTD,JHHENDD,JDSTD,JDENDD
         WRITE(100,5200) JHHSTY,JHHENDY,JDSTY,JDENDY

@@ -24,7 +24,7 @@
      M                 ICTEMMOD,SLAI,FCANCMX,L2MAX,
      N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS
 c    pass  variables to the moss subroutines YW March 19, 2015------------\   
-	1		,ipeatland, tbar, thpor,zsnow, delzw, Cmossmas,dmoss
+	1		,ipeatland, tbar, thpor, Cmossmas,dmoss
 c	------input above, output below-----------------------------------	
 	2	,anmoss,rmlmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 c    Y.Wu ------------------------------------------------------------/
@@ -255,8 +255,7 @@ C
 C	 --------define peatland variables--------------------------------\ 
  	 integer  ipeatland(ilg),ievapms(ilg),iday,ihour,iyear,imin
 	 real	tbar(ilg,ig),	thmin(ilg,ig), thpor(ilg,ig),	
-	1		bi(ig),		zsnow(ilg),	delzw(ilg,ig),
-	2		Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
+	1		bi(ig),	Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
 	3         pdd(ilg),      cdd(ilg)
 c	------input above output below------------------------------------
 	 real	anmoss(ilg),rmlmoss(ilg),cevapms(ilg)

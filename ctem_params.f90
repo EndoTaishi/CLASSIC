@@ -801,10 +801,10 @@ thrprcnt = [ 40.0, 40.0,  0.0,  0.0,  0.0, &
 
 ! these parameters  are from competition runs. FLAG.
 ! testing for work with Ray and Bakr! Mar 2015.          
-cdlsrtmx = [ 0.10, 0.30, 0.00, &  
-             0.30, 0.40, 0.15, &
-             0.15, 0.15, 0.00, &
-             0.15, 0.15, 0.00 ]
+!cdlsrtmx = [ 0.10, 0.30, 0.00, &  
+!             0.30, 0.40, 0.15, &
+!             0.15, 0.15, 0.00, &
+!             0.15, 0.15, 0.00 ]
 
 roothrsh = 8.0
              
@@ -1011,7 +1011,6 @@ lwrthrsh = [ -50.0, -5.0, 0.0,   0.0,  0.0, &
                0.1,  5.0, 0.1,   0.0,  0.0 ]
 
 !roothrsh = 8.0 ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-=======
 
 ! turnover.f parameters: --------------
 ! NOW USING SAME VALUES FOR COMP/PRESC.
