@@ -691,6 +691,7 @@ type ctem_mosaic_level
       real, dimension(ilg,ignd) :: thliqcacc_m
       real, dimension(ilg,ignd) :: thliqgacc_m
       real, dimension(ilg,ignd) :: thicecacc_m
+      real, dimension(ilg,ignd) :: thicegacc_m
       real, dimension(ilg,icc) :: ancsvgac_m
       real, dimension(ilg,icc) :: ancgvgac_m
       real, dimension(ilg,icc) :: rmlcsvga_m

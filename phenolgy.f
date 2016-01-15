@@ -3,7 +3,7 @@
      2                       thliq,   wiltsm,  fieldsm,       ta,  
      3                       anveg,     iday,     radl, roottemp,
      4                    rmatctem, stemmass, rootmass,     sort,
-     5                    nol2pfts,  fcancmx,
+     5                    nol2pfts,  fcancmx, isand,
 c    6 ------------------ inputs above this line ----------------------   
      7                    flhrloss, leaflitr, lfstatus,  pandays,
      8                    colddays)  
@@ -99,7 +99,7 @@ c
       integer        sort(icc),     nol2pfts(ican)
 c
       real  gleafmas(ilg,icc), bleafmas(ilg,icc),              ta(ilg),
-     1           tbar(ilg,ignd),     thliq(ilg,ignd),    sand(ilg,ignd), 
+     1           tbar(ilg,ignd),     thliq(ilg,ignd),
      2           clay(ilg,ignd),    anveg(ilg,icc),   leaflitr(ilg,icc),
      3      roottemp(ilg,icc),                   rmatctem(ilg,icc,ignd),
      4      stemmass(ilg,icc), rootmass(ilg,icc),     fcancmx(ilg,icc)
@@ -157,12 +157,6 @@ c
 c     initialization ends    
 c
 c     ------------------------------------------------------------------
-
-!     Find isand for each layer
-      do 160 j = 1, ignd
-       do 160 i = il1, il2
-         isand(i,j) = nint(sand(i,j))
-160   continue
 c
 c     convert green leaf mass into leaf area index using specific leaf
 c     area (sla, m2/kg c) estimated using leaf life span. see bio2str

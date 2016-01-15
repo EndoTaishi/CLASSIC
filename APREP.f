@@ -19,6 +19,8 @@
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC )
 
+C     * JAN 14/16 - J.MELTON    IN LOOP 450, MODIFIED SO IT COULD HANDLE >3 SOIL LAYERS
+!                               ALSO REMOVED SOME HARDCODED CTEM CODE FOR MORE FLEXIBLE FORMS
 C     * AUG 04/15 - D.VERSEGHY. SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
 C     * SEP 05/12 - J.MELTON.   CHANGED IDAY
@@ -329,10 +331,9 @@ C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C    IF USING CTEM's STRUCTURAL ATTRIBUTES OVERWRITE ZOLN
 
           IF (ICTEMMOD.EQ.1) THEN
-            ZOLN(I,1)=ZOLNC(I,1)
-            ZOLN(I,2)=ZOLNC(I,2)
-            ZOLN(I,3)=ZOLNC(I,3)
-            ZOLN(I,4)=ZOLNC(I,4)
+           DO J = 1,IC
+            ZOLN(I,J)=ZOLNC(I,J)
+           END DO
           ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
@@ -355,11 +356,10 @@ C
           IF(IPAI.EQ.0) THEN
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
-              IF (ICTEMMOD .EQ. 1) THEN               
-                PAI(I,1)=PAIC(I,1)
-                PAI(I,2)=PAIC(I,2)
-                PAI(I,3)=PAIC(I,3)
-                PAI(I,4)=PAIC(I,4)
+              IF (ICTEMMOD .EQ. 1) THEN
+               DO J = 1, IC
+                PAI(I,J)=PAIC(I,J)
+               END DO
               ELSE
                 PAI(I,1)=PAIMIN(I,1)+GROWN(I)*(PAIMAX(I,1)-PAIMIN(I,1))                 
                 PAI(I,2)=PAIMIN(I,2)+GROWB(I)*(PAIMAX(I,2)-PAIMIN(I,2))                 
@@ -369,10 +369,9 @@ C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
           ELSE
-              PAI(I,1)=PAIDAT(I,1)
-              PAI(I,2)=PAIDAT(I,2)
-              PAI(I,3)=PAIDAT(I,3)
-              PAI(I,4)=PAIDAT(I,4)
+            DO J = 1,IC
+              PAI(I,J)=PAIDAT(I,J)
+            END DO
           ENDIF
           PAIS(I,1)=PAI(I,1)                                                      
           PAIS(I,2)=PAI(I,2)                                                      
@@ -390,10 +389,9 @@ C
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C
           IF (ICTEMMOD .EQ. 1) THEN
-             AIL(I,1)=MAX(AILC(I,1), SLAIC(I,1))
-             AIL(I,2)=MAX(AILC(I,2), SLAIC(I,2))
-             AIL(I,3)=MAX(AILC(I,3), SLAIC(I,3))
-             AIL(I,4)=MAX(AILC(I,4), SLAIC(I,4))
+           DO J = 1,IC
+             AIL(I,J)=MAX(AILC(I,J), SLAIC(I,J))
+           END DO
           ELSE
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
@@ -409,11 +407,12 @@ C         ESTIMATE GREEN LAI FOR CANOPY OVER SNOW FRACTION FOR CTEM's
 C         9 PFTs, JUST LIKE CLASS DOES.
 C
           IF (ICTEMMOD.EQ.1) THEN
-            AILCGS(I,1)=AILCG(I,1)    !NDL EVG
-            AILCGS(I,2)=AILCG(I,2)    !NDL DCD
-            AILCGS(I,3)=AILCG(I,3)    !BDL EVG
-            AILCGS(I,4)=AILCG(I,4)    !BDL DCD CLD
-            AILCGS(I,5)=AILCG(I,5)    !BDL DCD DRY
+           DO J = 1,ICTEM
+            AILCGS(I,J)=AILCG(I,J)
+           END DO
+
+           ! Some adjustments for crops and grasses:
+
             IF(H(I,3).GT.0.0) THEN
               AILCGS(I,6)=AILCG(I,6)*HS(I,3)/H(I,3)  !C3 CROP
               AILCGS(I,7)=AILCG(I,7)*HS(I,3)/H(I,3)  !C4 CROP
@@ -929,9 +928,9 @@ C
       DO 450 J=1,IC                                                               
       DO 450 I=IL1,IL2                                                            
         IF (ICTEMMOD.EQ.1) THEN
-          RMAT(I,J,1)=RMATC(I,J,1)
-          RMAT(I,J,2)=RMATC(I,J,2)
-          RMAT(I,J,3)=RMATC(I,J,3)
+         DO K = 1,IG
+          RMAT(I,J,K)=RMATC(I,J,K)
+         ENDDO
         ELSE
           ZROOT=ZRTMAX(I,J)
           IF(J.EQ.3) ZROOT=ZRTMAX(I,J)*GROWA(I)                                   

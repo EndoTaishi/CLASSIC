@@ -14,9 +14,9 @@ contains
 
 ! ------------------------------------------------------------------
 
-subroutine hetresg (litrmass, soilcmas, &
-                    il1,      il2,     tbar, &
-                    thliq,     sand,      clay,   zbotw, &
+subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
+                    il1,      il2,     tbar,  psisat, b, &
+                    thliq,    zbotw,   thiceg, &
                         frac,    isnow,      isand, &
 !    -------------- inputs above this line, outputs below -------------
                       litres,   socres)
@@ -32,6 +32,10 @@ subroutine hetresg (litrmass, soilcmas, &
 !
 !     14  Jan 2016  - Converted to F90 and made it so it can handle > 3 soil layers
 !     J. Melton
+!
+!     30  Jul 2015  - Based on work by Yuanqiao Wu, respiration was found to
+!     J. Melton       behave incorrectly if the soil froze as it thought the water
+!                     was leaving the soil. This is now fixed.
 !
 !     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 !     J. Melton
@@ -57,10 +61,11 @@ subroutine hetresg (litrmass, soilcmas, &
 !     tbar      - soil temperature, k
 !     thliq     - liquid soil moisture content in 3 soil layers
 !     sand      - percentage sand
-!     clay      - percentage clay
 !     zbotw     - bottom of soil layers
 !     frac      - fraction of ground (fg) or snow over ground (fgs)
 !     isnow     - integer telling if bare fraction is fg (0) or fgs (1)
+!     delzw     - permeable thickness of the layer (m)
+!     thiceg    - frozen soil moisture content over bare ground fraction
 
 !     outputs
 
@@ -77,18 +82,19 @@ implicit none
 integer il1,il2,i,j,k,isnow,isand(ilg,ignd)
 
 real                  litrmass(ilg,icc+1),  soilcmas(ilg,icc+1),&
-           tbar(ilg,ignd),    thliq(ilg,ignd),    sand(ilg,ignd), &
+           tbar(ilg,ignd),    thliq(ilg,ignd),   psisat(ilg,ignd),  &
            zbotw(ilg,ignd),      litres(ilg),          socres(ilg), &
-           clay(ilg,ignd),        frac(ilg)
+           frac(ilg),       delzw(ilg,ignd), thpor(ilg,ignd),  b(ilg,ignd), &
+           thiceg(ilg,ignd)
 
 real              litrq10,           soilcq10, &
         litrtemp(ilg),      solctemp(ilg),             q10func, &
-       psisat(ilg,ignd),     grksat(ilg,ignd),        b(ilg,ignd),&
-        thpor(ilg,ignd),               beta, &
+           grksat(ilg,ignd),       &
+              beta, &
       fracarb(ilg,ignd),         zcarbon, &
         tempq10l(ilg),      socmoscl(ilg),     scmotrm(ilg,ignd), &
         ltrmoscl(ilg),        psi(ilg,ignd),       tempq10s(ilg), &
-               fcoeff
+               fcoeff,          zcarb_g
 
 !     ------------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
@@ -112,66 +118,76 @@ real              litrq10,           soilcq10, &
         tempq10s(i)=0.0
 110   continue
 
-      do 120 j = 1, ignd
-        do 130 i = il1, il2
-          psisat(i,j) = 0.0       ! saturation matric potential
-          grksat(i,j) = 0.0       ! saturation hyd. conductivity
-          thpor(i,j) = 0.0        ! porosity
-          b(i,j) = 0.0            ! parameter b of clapp and hornberger
-130     continue
-120   continue
-
 !     initialization ends
 
 !     ------------------------------------------------------------------
 
-!     estimate temperature of the litter and soil carbon pools.
+!     Estimate temperature of the litter and soil carbon pools.
 
-!     over the bare fraction there is no live root. so we make the
+!     Over the bare fraction there is no live root. So we make the
 !     simplest assumption that litter temperature is same as temperature of the top soil layer.
 
       do 210 i = il1, il2
         litrtemp(i)=tbar(i,1)
 210   continue
 
-!     we estimate the temperature of the soil c pool assuming that soil
-!     carbon over the bare fraction is distributed exponentially. note
-!     that bare fraction may contain dead roots from different pfts all of
-!     which may be distributed differently. for simplicity we do not
-!     track each pft's dead root biomass and assume that distribution of
-!     soil carbon over the bare fraction can be described by a single
+!     We estimate the temperature of the soil c pool assuming that soil carbon over the bare fraction is distributed exponentially. note
+!     that bare fraction may contain dead roots from different pfts all of which may be distributed differently. For simplicity we do not
+!     track each pft's dead root biomass and assume that distribution of soil carbon over the bare fraction can be described by a single
 !     parameter.
 
       do 240 i = il1, il2
 
-        zcarbon=3.0/a                 ! 95% depth
-        if(zcarbon.le.zbotw(i,1)) then
-            fracarb(i,1)=1.0             ! fraction of carbon in soil layers
-        else
-            fcoeff=exp(-a*zcarbon)
-            fracarb(i,1)=1.0-(exp(-a*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
-            if(zcarbon.le.zbotw(i,2)) then
-                fracarb(i,2)=1.0-fracarb(i,1)
-                fracarb(i,3)=0.0
-            else
-                fracarb(i,3)=(exp(-a*zbotw(i,2))-fcoeff)/(1.0-fcoeff)
-                fracarb(i,2)=1.0-fracarb(i,1)-fracarb(i,3)
-            endif
-        endif
+!         zcarbon=3.0/a                 ! 95% depth
+!
+!         if(zcarbon.le.zbotw(i,1)) then
+!             fracarb(i,1)=1.0             ! fraction of carbon in soil layers
+!         else
+!             fcoeff=exp(-a*zcarbon)
+!             fracarb(i,1)=1.0-(exp(-a*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
+!             if(zcarbon.le.zbotw(i,2)) then
+!                 fracarb(i,2)=1.0-fracarb(i,1)
+!                 fracarb(i,3)=0.0
+!             else
+!                 fracarb(i,3)=(exp(-a*zbotw(i,2))-fcoeff)/(1.0-fcoeff)
+!                 fracarb(i,2)=1.0-fracarb(i,1)-fracarb(i,3)
+!             endif
+!         endif
+! New, allows for many soil layers:
+        zcarbon = 3.0 / a
+        zcarb_g = 0.0
+        do j=1,ignd
+          zcarb_g = zcarb_g + delzw(i,j)
+        end do
+        zcarbon = min(zcarbon,zcarb_g)
+        fcoeff=exp(-a*zcarbon)
+        fracarb(i,1)=1.0-(exp(-a*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
+        do 245 j = 2,ignd
+          if (zcarbon <= zbotw(i,j) - delzw(i,j)+0.0001) then
+             fracarb(i,j) = 0.0
+          elseif (zcarbon <= zbotw(i,j)) then
+             fracarb(i,j) = (exp(-a * zbotw(i,j)-delzw(i,j))-exp(-a*zcarbon))/(1. - exp(-a*zcarbon))
+          else
+             fracarb(i,j) = (exp(-a * zbotw(i,j)-delzw(i,j))-exp(-a*zbotw(i,j)))/(1. - exp(-a*zcarbon))
+          end if
+245       continue
 
-        solctemp(i)=tbar(i,1)*fracarb(i,1) +tbar(i,2)*fracarb(i,2) +tbar(i,3)*fracarb(i,3)
-        solctemp(i)=solctemp(i) /(fracarb(i,1)+fracarb(i,2)+fracarb(i,3))
+        ! -------------
+        !solctemp(i)=tbar(i,1)*fracarb(i,1) +tbar(i,2)*fracarb(i,2) +tbar(i,3)*fracarb(i,3)
+        !solctemp(i)=solctemp(i) /(fracarb(i,1)+fracarb(i,2)+fracarb(i,3))
+        solctemp(i) = sum(tbar(i,:)*fracarb(i,:))/ sum(fracarb(i,:))
+
 
 !       make sure we don't use temperatures of 2nd and 3rd soil layers
 !       if they are specified bedrock via sand -3 flag
-
-        if(isand(i,3).eq.-3)then ! third layer bed rock
-          solctemp(i)=tbar(i,1)*fracarb(i,1) +tbar(i,2)*fracarb(i,2)
-          solctemp(i)=solctemp(i) /(fracarb(i,1)+fracarb(i,2))
-        endif
-        if(isand(i,2).eq.-3)then ! second layer bed rock
-          solctemp(i)=tbar(i,1)
-        endif
+!        JM NOTE: This is not needed. zbotw already accounts for bedrock.
+!         if(isand(i,3).eq.-3)then ! third layer bed rock
+!           solctemp(i)=tbar(i,1)*fracarb(i,1) +tbar(i,2)*fracarb(i,2)
+!           solctemp(i)=solctemp(i) /(fracarb(i,1)+fracarb(i,2))
+!         endif
+!         if(isand(i,2).eq.-3)then ! second layer bed rock
+!           solctemp(i)=tbar(i,1)
+!         endif
 
 240   continue
 
@@ -189,10 +205,13 @@ real              litrq10,           soilcq10, &
             psi (i,j) = 10000.0 ! set to large number so that
                                ! ltrmoscl becomes 0.2
           else ! i.e., sand.ne.-3 or -4
-            psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
-            b(i,j)     = 0.159*clay(i,j)+2.91
-            thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
-            psi(i,j)   = psisat(i,j)*(thliq(i,j)/thpor(i,j))**(-b(i,j))
+
+!            psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
+!            b(i,j)     = 0.159*clay(i,j)+2.91
+!            thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
+!            psi(i,j)   = psisat(i,j)*(thliq(i,j)/thpor(i,j))**(-b(i,j))
+
+            psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thiceg(i,j)))**(-b(i,j))
 
             if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2
@@ -212,21 +231,24 @@ real              litrq10,           soilcq10, &
 260   continue
 
       do 290 i = il1, il2
-        socmoscl(i) = scmotrm(i,1)*fracarb(i,1) +scmotrm(i,2)*fracarb(i,2) +scmotrm(i,3)*fracarb(i,3)
-        socmoscl(i) = socmoscl(i) /(fracarb(i,1)+fracarb(i,2)+fracarb(i,3))
+
+        socmoscl(i) = sum(scmotrm(i,:)*fracarb(i,:)) / sum(fracarb(i,:))
+!         socmoscl(i) = scmotrm(i,1)*fracarb(i,1) +scmotrm(i,2)*fracarb(i,2) +scmotrm(i,3)*fracarb(i,3)
+!         socmoscl(i) = socmoscl(i) /(fracarb(i,1)+fracarb(i,2)+fracarb(i,3))
 
 !       make sure we don't use scmotrm of 2nd and 3rd soil layers
 !       if they are specified bedrock via sand -3 flag
 
-        if(isand(i,3).eq.-3)then ! third layer bed rock
-          socmoscl(i) = scmotrm(i,1)*fracarb(i,1) +scmotrm(i,2)*fracarb(i,2)
-          socmoscl(i) = socmoscl(i) /(fracarb(i,1)+fracarb(i,2))
-        endif
-        if(isand(i,2).eq.-3)then ! second layer bed rock
-          socmoscl(i) = scmotrm(i,1)
-        endif
+!         if(isand(i,3).eq.-3)then ! third layer bed rock
+!           socmoscl(i) = scmotrm(i,1)*fracarb(i,1) +scmotrm(i,2)*fracarb(i,2)
+!           socmoscl(i) = socmoscl(i) /(fracarb(i,1)+fracarb(i,2))
+!         endif
+!         if(isand(i,2).eq.-3)then ! second layer bed rock
+!           socmoscl(i) = scmotrm(i,1)
+!         endif
 
         socmoscl(i)=max(0.2,min(socmoscl(i),1.0))
+
 290   continue
 
 !     find moisture scalar for litter decomposition
@@ -283,12 +305,12 @@ end subroutine hetresg
 ! ------------------------------------------------------------------------------------
 
 subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
-                      il1, &
-                      il2,     tbar,    thliq,     sand, &
-                     clay, roottemp,    zbotw,     sort, &
-                     isand, &
+                      delzw,  thpor, il1, &
+                      il2,     tbar,   psisat, b, thliq,  &
+                     roottemp,    zbotw,     sort, &
+                     isand, thicec, &
 !    -------------- inputs above this line, outputs below -------------
-                    ltresveg, scresveg,thicec)
+                    ltresveg, scresveg)
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !           Heterotrophic Respiration Subtoutine For Vegetated Fraction
@@ -328,7 +350,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 !     il1,il2   - il1=1, il2=ilg
 !     tbar      - soil temperature, k
 !     thliq     - liquid soil moisture content in 3 soil layers
-!     thicec     - liquid soil moisture content in 3 soil layers in canopy
+!     thicec    - frozen soil moisture content in 3 soil layers in canopy
 !                 covered subarea
 !     sand      - percentage sand
 !     clay      - percentage clay
@@ -336,6 +358,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 !     zbotw     - bottom of soil layers
 !     sort      - index for correspondence between 9 pfts and 12 values
 !                 in the parameters vectors
+!     delzw     - permeable thickness of the layer (m)
 
 !     outputs
 
@@ -354,19 +377,18 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 
       real    fcan(ilg,icc),           fct(ilg),  litrmass(ilg,icc+1),&
          tbar(ilg,ignd),soilcmas(ilg,icc+1),      thliq(ilg,ignd),&
-         sand(ilg,ignd),       clay(ilg,ignd),  roottemp(ilg,icc),&
+        roottemp(ilg,icc), psisat(ilg,ignd),  b(ilg,ignd), &
         zbotw(ilg,ignd),  ltresveg(ilg,icc),    scresveg(ilg,icc),&
-        thicec(ilg,ignd)
+        thicec(ilg,ignd),  delzw(ilg,ignd),  thpor(ilg,ignd)
 
 
       real           litrq10,           soilcq10,&
         litrtemp(ilg,icc),  solctemp(ilg,icc),             q10func,&
-       psisat(ilg,ignd),     grksat(ilg,ignd),        b(ilg,ignd),&
-        thpor(ilg,ignd),&
+       grksat(ilg,ignd),       &
        fracarb(ilg,icc,ignd),                       zcarbon,&
          tempq10l(ilg,icc),  socmoscl(ilg,icc),     scmotrm(ilg,ignd),&
              ltrmoscl(ilg),        psi(ilg,ignd),   tempq10s(ilg,icc),&
-                    fcoeff
+                    fcoeff, zcarb_g
 
 !     ------------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
@@ -383,28 +405,16 @@ do 100 j = 1, icc
           socmoscl(i,j)=0.0       ! soil moisture scalar for soil carbon decomposition
           ltresveg(i,j)=0.0       ! litter resp. rate for each pft
           scresveg(i,j)=0.0       ! soil c resp. rate for each pft
+          do 120 k = 1, ignd
+            scmotrm(i,k)=0.0        ! soil carbon moisture term
+            fracarb(i,j,k)=0.0    ! fraction of carbon in each soil layer for each vegetation
+          120   continue
 110     continue
 100   continue
 
-do 120 j = 1, ignd
-  do 130 i = il1, il2
-          psisat(i,j) = 0.0       ! saturation matric potential
-          grksat(i,j) = 0.0       ! saturation hyd. conductivity
-          thpor(i,j) = 0.0        ! porosity
-          b(i,j) = 0.0            ! parameter b of clapp and hornberger
-          scmotrm(i,j)=0.0        ! soil carbon moisture term
-130     continue
-120   continue
-
-do 140 i = il1, il2
-        ltrmoscl(i)=0.0           ! soil moisture scalar for litter decomposition
-140   continue
-
-do 150 k = 1, ignd
-   do 150 j = 1, icc
-      do 150 i = il1, il2
-            fracarb(i,j,k)=0.0    ! fraction of carbon in each soil layer for each vegetation
-150   continue
+do 130 i = il1, il2
+    ltrmoscl(i)=0.0           ! soil moisture scalar for litter decomposition
+130   continue
 
 !     initialization ends
 
@@ -436,36 +446,57 @@ do 150 k = 1, ignd
         do 240 i = il1, il2
          if (fcan(i,j) .gt. 0.) then
 
-          zcarbon=3.0/abar(sort(j))                ! 95% depth
-          if(zcarbon.le.zbotw(i,1)) then
-              fracarb(i,j,1)=1.0             ! fraction of carbon in
-              fracarb(i,j,2)=0.0             ! soil layers
-              fracarb(i,j,3)=0.0
+!           zcarbon=3.0/abar(sort(j))                ! 95% depth
+!           if(zcarbon.le.zbotw(i,1)) then
+!               fracarb(i,j,1)=1.0             ! fraction of carbon in
+!               fracarb(i,j,2)=0.0             ! soil layers
+!               fracarb(i,j,3)=0.0
+!           else
+!               fcoeff=exp(-abar(sort(j))*zcarbon)
+!               fracarb(i,j,1)=1.0-(exp(-abar(sort(j))*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
+!               if(zcarbon.le.zbotw(i,2)) then
+!                   fracarb(i,j,2)=1.0-fracarb(i,j,1)
+!                   fracarb(i,j,3)=0.0
+!               else
+!                   fracarb(i,j,3)=(exp(-abar(sort(j))*zbotw(i,2))-fcoeff)/(1.0-fcoeff)
+!                   fracarb(i,j,2)=1.0-fracarb(i,j,1)-fracarb(i,j,3)
+!               endif
+!           endif
+        ! New, allows for many soil layers:
+        zcarbon = 3.0 / abar(sort(j))
+        zcarb_g = 0.0
+        do k=1,ignd
+          zcarb_g = zcarb_g + delzw(i,k)
+        end do
+        zcarbon = min(zcarbon,zcarb_g)
+        fcoeff=exp(-abar(sort(j))*zcarbon)
+        fracarb(i,j,1)=1.0-(exp(-abar(sort(j))*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
+        do 245 k = 2,ignd
+          if (zcarbon <= zbotw(i,k) - delzw(i,k)+0.0001) then
+             fracarb(i,j,k) = 0.0
+          elseif (zcarbon <= zbotw(i,k)) then
+             fracarb(i,j,k) = (exp(-abar(sort(j)) * zbotw(i,k)-delzw(i,k))- &
+                               exp(-abar(sort(j))*zcarbon))/(1. - exp(-abar(sort(j))*zcarbon))
           else
-              fcoeff=exp(-abar(sort(j))*zcarbon)
-              fracarb(i,j,1)=1.0-(exp(-abar(sort(j))*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
-              if(zcarbon.le.zbotw(i,2)) then
-                  fracarb(i,j,2)=1.0-fracarb(i,j,1)
-                  fracarb(i,j,3)=0.0
-              else
-                  fracarb(i,j,3)=(exp(-abar(sort(j))*zbotw(i,2))-fcoeff)/(1.0-fcoeff)
-                  fracarb(i,j,2)=1.0-fracarb(i,j,1)-fracarb(i,j,3)
-              endif
-          endif
+             fracarb(i,j,k) = (exp(-abar(sort(j)) * zbotw(i,k)-delzw(i,k))- &
+                               exp(-abar(sort(j))*zbotw(i,k)))/(1. - exp(-abar(sort(j))*zcarbon))
+          end if
+245       continue
 
-          solctemp(i,j)=tbar(i,1)*fracarb(i,j,1) +tbar(i,2)*fracarb(i,j,2) +tbar(i,3)*fracarb(i,j,3)
-          solctemp(i,j)=solctemp(i,j) /(fracarb(i,j,1)+fracarb(i,j,2)+fracarb(i,j,3))
+!           solctemp(i,j)=tbar(i,1)*fracarb(i,j,1) +tbar(i,2)*fracarb(i,j,2) +tbar(i,3)*fracarb(i,j,3)
+!           solctemp(i,j)=solctemp(i,j) /(fracarb(i,j,1)+fracarb(i,j,2)+fracarb(i,j,3))
+          solctemp(i,j) = sum(tbar(i,:)*fracarb(i,j,:))/ sum(fracarb(i,j,:))
 
 !         make sure we don't use temperatures of 2nd and 3rd soil layers
 !         if they are specified bedrock via sand -3 flag
 
-          if(isand(i,3).eq.-3)then ! third layer bed rock
-            solctemp(i,j)=tbar(i,1)*fracarb(i,j,1) +tbar(i,2)*fracarb(i,j,2)
-            solctemp(i,j)=solctemp(i,j) /(fracarb(i,j,1)+fracarb(i,j,2))
-          endif
-          if(isand(i,2).eq.-3)then ! second layer bed rock
-            solctemp(i,j)=tbar(i,1)
-          endif
+!           if(isand(i,3).eq.-3)then ! third layer bed rock
+!             solctemp(i,j)=tbar(i,1)*fracarb(i,j,1) +tbar(i,2)*fracarb(i,j,2)
+!             solctemp(i,j)=solctemp(i,j) /(fracarb(i,j,1)+fracarb(i,j,2))
+!           endif
+!           if(isand(i,2).eq.-3)then ! second layer bed rock
+!             solctemp(i,j)=tbar(i,1)
+!           endif
         endif
 240     continue
 230   continue
@@ -485,9 +516,11 @@ do 150 k = 1, ignd
             psi (i,j) = 10000.0 ! set to large number so that
                                ! ltrmoscl becomes 0.2
           else ! i.e., sand.ne.-3 or -4
-            psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
-            b(i,j)     = 0.159*clay(i,j)+2.91
-            thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
+
+!             psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
+!             b(i,j)     = 0.159*clay(i,j)+2.91
+!             thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
+
             !the 0.005 below prevents a divide by 0 situation.
             psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thicec(i,j)))**(-b(i,j))
 
@@ -511,20 +544,24 @@ do 150 k = 1, ignd
       do 280 j = 1, icc
         do 290 i = il1, il2
          if (fcan(i,j) .gt. 0.) then
-          socmoscl(i,j) = scmotrm(i,1)*fracarb(i,j,1) +scmotrm(i,2)*fracarb(i,j,2) +scmotrm(i,3)*fracarb(i,j,3)
-          socmoscl(i,j) = socmoscl(i,j) /(fracarb(i,j,1)+fracarb(i,j,2)+fracarb(i,j,3))
+
+          socmoscl(i,j) = sum(scmotrm(i,:)*fracarb(i,j,:)) / sum(fracarb(i,j,:))
+!           socmoscl(i,j) = scmotrm(i,1)*fracarb(i,j,1) +scmotrm(i,2)*fracarb(i,j,2) +scmotrm(i,3)*fracarb(i,j,3)
+!           socmoscl(i,j) = socmoscl(i,j) /(fracarb(i,j,1)+fracarb(i,j,2)+fracarb(i,j,3))
 
 !         make sure we don't use scmotrm of 2nd and 3rd soil layers
 !         if they are specified bedrock via sand -3 flag
 
-          if(isand(i,3).eq.-3)then ! third layer bed rock
-            socmoscl(i,j) = scmotrm(i,1)*fracarb(i,j,1) +scmotrm(i,2)*fracarb(i,j,2)
-            socmoscl(i,j) = socmoscl(i,j) /(fracarb(i,j,1)+fracarb(i,j,2))
-          endif
-          if(isand(i,2).eq.-3)then ! second layer bed rock
-            socmoscl(i,j) = scmotrm(i,1)
-          endif
+!           if(isand(i,3).eq.-3)then ! third layer bed rock
+!             socmoscl(i,j) = scmotrm(i,1)*fracarb(i,j,1) +scmotrm(i,2)*fracarb(i,j,2)
+!             socmoscl(i,j) = socmoscl(i,j) /(fracarb(i,j,1)+fracarb(i,j,2))
+!           endif
+!           if(isand(i,2).eq.-3)then ! second layer bed rock
+!             socmoscl(i,j) = scmotrm(i,1)
+!           endif
+
           socmoscl(i,j)=max(0.2,min(1.0,socmoscl(i,j)))
+
          endif
 290     continue
 280   continue

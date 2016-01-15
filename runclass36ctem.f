@@ -3725,9 +3725,10 @@ c
      9            extnprobgat,   stdalngat,tbaraccgat_m,  popdon,
      a               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,
      b            thicecacc_m,     sdepgat,    spinfast,   todfrac,
-     &                compete,  netrad_gat,  preacc_gat,
+     &                compete,  netrad_gat,  preacc_gat,  PSISGAT,
      &                 popdin,  dofire, dowetlands,obswetf, isndgat,
      &                faregat,      mosaic, WETFRACGRD, wetfrac_sgrd,
+     &                  BIGAT,    THPGAT,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
