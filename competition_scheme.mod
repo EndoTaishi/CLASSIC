@@ -1,6 +1,6 @@
 V26 competition_scheme
 19 competition_mod.f90 S582 0
-01/13/2016  09:40:06
+01/15/2016  13:46:24
 enduse
 D 56 21 9 1 3 13 0 0 1 0 0
  0 12 3 3 13 13

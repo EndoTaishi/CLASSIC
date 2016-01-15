@@ -1,6 +1,6 @@
 	  subroutine  decp(il1,il2,iyear,iday,ihour,imin,ipeatland,isand,
 	1	litrmassms,hpd, wtable,tbar, thliq, thice,thpor,bi,zbotw,
-	2    delzw,psisat,tfrez, jdst,jdend,iyd,
+	2    delzw,psisat,tfrez, jdsty,jdstd,jdendy,jdendd,
 c    -------------- inputs above this line, outputs below -------------
      3    litresms, socresp, resoxic, resanoxic)  
 
@@ -12,7 +12,7 @@ c                        YW March 20, 2015
 	 implicit none
 c	 inputs-----------------------------------------------------------
  	 integer  iyear, iday, ihour, imin ,i,j, il1, il2, isand(ilg,ignd)
- 	 integer  jdst, jdend, iyd
+ 	 integer  jdsty,jdstd,jdendy,jdendd
 	 integer	ipeatland(ilg)	!0 = not peatland, 1 = bog, 2 = fen  
       integer:: lewtable(ilg) !layer index of the water table layer 
 	 real     hpd(ilg) , wtable(ilg), tbar(ilg,ignd),	!(K) 		 
@@ -253,7 +253,8 @@ c     from kg c/kg c.year to u-mol co2/kg c.s using 2.64
 c
 c     write peat soil respiration details .CT15D_G
       
-      if ((iyd.ge.jdst).and.(iyd.le.jdend)) then   
+       if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+           if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
 
       write(97, 6997) litresms, litpsims(1), psisat(1,1),ltrmosclms, 
      1     litrmassms, tbar(1,1), q10funcms ,litrtempms,
@@ -263,6 +264,7 @@ c     write peat soil respiration details .CT15D_G
      5     tbar(1,1)-tfrez, tbar(1,2)-tfrez, tbar(1,3)-tfrez,
      6     thliq(1,1) 
 6997  format(50f10.3) 
+        endif
       endif
 c
  	 return

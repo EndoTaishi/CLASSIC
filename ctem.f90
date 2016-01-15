@@ -53,10 +53,15 @@
      &                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,&
      &                  hetrsveg,autoresveg, ltresveg, scresveg,&
      &                 nml,    ilmos, jlmos,  ch4wet1,  ch4wet2,  &
-     &                 wetfdyn, ch4dyn1, ch4dyn2)
-!
+     &                 wetfdyn, ch4dyn1, ch4dyn2, &
 !    ---------------- outputs are listed above this line ------------ 
-!
+	 &		ipeatland,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd, &
+	 &		anmoss,rmlmoss,gppmoss, Cmossmas, litrmassms, &
+	 &         wtable,thpor,bi, psisat,grksat, &
+	 &         thfc,thlw,thliq,thice,tfrez, &
+!    -------------input above, output and updated variables below------
+     &         nppmoss,armoss,hpd)
+
 !
 !             Canadian Terrestrial Ecosystem Model (CTEM) 
 !             Main Ctem Subroutine Compatible With CLASS 
@@ -513,6 +518,60 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 
        real lambdaalt 
 !
+!	------------define peatland related variables--------------------\ 
+	  integer  ipeatland(ilg),iyear,ihour,imin,&
+	 &         jdsty,jdstd,jdendy,jdendd
+	 
+	  real     wtable(ilg),thpor(ilg,ignd),bi(ilg,ignd),&
+	 &         grksat(ilg,ignd),thfc(ilg,ignd),thlw(ilg,ignd),&  
+	 &         psisat(ilg,ignd),thliq(ilg,ignd),thice(ilg,ignd),tfrez
+	
+      real     gppmoss(ilg),rmlmoss(ilg),anmoss(ilg),armoss(ilg), &
+     &         nppmoss(ilg), rgmoss(ilg), litresms(ilg), socresp(ilg),&
+     &         resoxic(ilg), resanoxic(ilg), litrfallms(ilg),&
+     &         Cmossmas(ilg), ltrestepms(ilg), humicmstep(ilg),&
+     &         pcmossmas(ilg), plitrmassms(ilg), nppmosstep(ilg),&     
+     &         litrmassms(ilg), socrestep(ilg), hutrstep_g(ilg),&
+     &         hpd(ilg)
+
+      real::   grescoefms = 0.15
+      real::   rmortms = 0.7
+      real::   humicfacms=2.0   
+
+!    hpd - peat depth(m)
+!    -----daily averaged C fluxes rates (umol/m2/s) below-----
+!    gppmoss - moss GPP 
+!    rmlmoss -	moss maintainance respiration moss 
+!	anmoss  - moss net photoysnthesis  
+!	nppmoss -	moss net primary production 
+!    rgmoss  - moss growth respiration 
+!    armoss  - moss autotrophic respiration (rmlmoss+rgmoss) 
+!    litresms-	moss litter respiration  
+!    socresp - heterotrphic repsiration from peat soil  
+!    resoxic -	oxic respiration from peat soil 
+!    resanoxic - anoxic respiration from peat soil
+!    ------accumulated C fluxes (kgC/m2/timestep) below---------
+!    litrfallms - moss litter fall 	
+!    ltrestepms - litter respiration from moss    
+!    humicmstep - moss humification 
+!    nppmosstep - moss npp
+!    socrestep  - hetretrophic respiration from soil 
+!    hutrstep_g - grid sum of humification from vascualr litter 
+!    ------C pool (kgC/m2) below--------------------------------
+!    Cmossmas - moss biomass C 
+!    litrmassms - moss litter C
+!    pcmossmas - moss biomass C at the previous time step
+!	plitrmassms - moss litter C at the previous time step
+!    ------parametes below, may be moved to ctem_params---------
+!	grescoefms - growth respiration coefficient
+!	rmortms - moss mortality rate constant (year-1),assumed based on  
+!              lterature (eg. 54g litter/75g biomass in Moore et al,2002)
+!    humicfacms - humification ratio of moss litter, higher in mosses than
+!              vascular pfts because the decomposibility of moss litter is 
+!              lower.It's calibrated over the training sites.
+!
+!    ------------peatland variables done YW March 20, 2015-------------/  
+
 !     ---------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
 !     -----------------------------------------------------------------
@@ -1035,6 +1094,26 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !
         plitmass(i,iccp1)=litrmass(i,iccp1)  !litter mass over bare fraction
         psocmass(i,iccp1)=soilcmas(i,iccp1)  !soil c mass over bare fraction
+
+!    ---------initialize peatland variables YW---------------------------\
+
+	   if  (ipeatland(i) >  0)                   then
+ 		  pCmossmas(i)  = Cmossmas(i)            
+		  plitrmassms(i)= litrmassms(i)
+		  litrfallms(i) = 0.0
+		  litresms(i)   = 0.0 		
+		  socresp(i)    = 0.0
+	 	  resoxic(i)    = 0.0
+		  resanoxic(i)  = 0.0
+		  ltrestepms(i) = 0.0
+		  humicmstep(i) = 0.0
+		  nppmosstep(i) = 0.0
+		  rgmoss(i)     = 0.0	 
+		  hutrstep_g(i) = 0.0
+		  nppmoss(i)    = 0.0
+		  armoss(i)     = 0.0	
+	   endif
+!    ---------YW March 20, 2015----------------------------------------/
 145   continue
 !
 !     initialization ends
@@ -1185,6 +1264,21 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 330     continue
 320   continue
 !
+!	--------add moss GPP and rml to the grid avarage C fluxes---------\  
+      do 335 i = il1, il2
+	     if (ipeatland(i) > 0)	               then		
+		  	rgmoss(i) = anmoss(i)*grescoefms
+	 		rml(i)= rml(i) + rmlmoss(i)
+			rm(i) = rm(i)  + rmlmoss(i)
+			rg(i) = rg(i)  + rgmoss (i)
+			armoss(i) = rmlmoss(i) + rgmoss(i) 
+	        nppmoss(i) = anmoss(i) - rgmoss(i)
+			npp(i)= npp(i) + nppmoss (i)
+		    gpp(i)= gpp(i) + gppmoss(i)			
+			autores(i) = autores(i) + armoss(i) 
+		endif
+335   continue       
+!    -----------YW March 20, 2015 -------------------------------------/
 !
 !     autotrophic respiration part ends
 !
@@ -1200,7 +1294,9 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                      il2,   tbarcs,   thliqc,     sand,&
      &                     clay, rttempcs,    zbotw,     sort,&
      &                     isand,&
-     &                 ltrsvgcs, scrsvgcs, thicec)
+     &                 ltrsvgcs, scrsvgcs,&
+     &               ipeatland, iday, psisat, thpor, bi, thicec)    !YW
+
 !
 !     find heterotrophic respiration rates for canopy over ground 
 !     subarea
@@ -1210,7 +1306,9 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                      il2,    tbarc,   thliqc,     sand,&
      &                     clay, rttempcg,    zbotw,     sort,&
      &                     isand,&
-     &                 ltrsvgcg, scrsvgcg, thicec)
+     &                 ltrsvgcg, scrsvgcg, &
+     &               ipeatland, iday, psisat, thpor, bi,thicec)    !YW
+
 
 !
 !     find heterotrophic respiration rates from bare ground subarea
@@ -1232,7 +1330,15 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                     isand,&
      &                   ltrsbrgs, scrsbrgs)
 !
+!    ------------peat heterotrophic respiration------------------------\
 !
+	   call  decp(il1,il2,iyear,iday,ihour,imin,ipeatland,isand,  &
+	 &	litrmassms,hpd, wtable,tbar, thliq,thice, thpor,bi,zbotw, &
+	 &    delzw,psisat,tfrez,jdsty,jdstd,jdendy,jdendd,  &
+!    -------------- inputs above this line, outputs below -------------
+     &    litresms, socresp, resoxic, resanoxic)  
+!    ------------YW March 26, 2015 ------------------------------------/
+
 !     find vegetation averaged litter and soil c respiration rates
 !     using values from canopy over ground and canopy over snow subareas
 !
@@ -1282,13 +1388,23 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 370     continue
 360   continue
 !
-      do 380 i = il1, il2
-        litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,iccp1))
-        socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,iccp1))
-        hetrores(i)= litres(i)+socres(i)
-        nep(i)=npp(i)-hetrores(i)
-380   continue
+!    -------------add moss and peat soil respiration to the grid--------\     
+!    above have aggregated icc litres and socres, below add iccp1 for 
+!    bareground to the grid sum if it's not peatland. Add litresms to
+!    the grid sum and NOT adding iccp1 if it's peatland.    
 !
+      do 380 i = il1, il2
+          if (ipeatland(i) ==0)         then 
+              litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,iccp1))
+              socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,iccp1))
+          else                     !it is peatlands
+	  	    litres(i) = litres(i)+ litresms(i)
+		    socres(i) = socresp(i)
+	     endif
+              hetrores(i)= litres(i)+socres(i)
+              nep(i)=npp(i)-hetrores(i)
+380   continue
+!    ----------------------------YW March 26, 2015 ---------------------/  
 !     ---------------------------------------------------------------
 !
 !     update the litter and soil c pools based on litter and soil c
@@ -1308,8 +1424,12 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                   (1.0+humicfac(sort(j))))
            hutrstep(i,j)=(humicfac(sort(j))* ltrestep(i,j))
           else
-           litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*(1.0+0.45))
-           hutrstep(i,j)=(0.45 * ltrestep(i,j))
+!         only add bareground to total for non-peatlands because for   
+!         peatlands litrmass of bareground is part of the moss litter
+             if (ipeatland(i) == 0)          then    !YW March 20, 2015
+                 litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*(1.0+0.45))
+                 hutrstep(i,j)=(0.45 * ltrestep(i,j))
+             endif
           endif
 !
           humtrsvg(i,j)=hutrstep(i,j)*(963.62/deltat) ! u-mol co2/m2.sec
@@ -1342,13 +1462,36 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
         do 480 i = il1, il2
           soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)
           humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j)
+		  hutrstep_g(i) = hutrstep_g(i)+fcancmx(i,j)*hutrstep(i,j)!YW 
 480     continue
 470   continue
 !
+!    add a peatland branch for soilresp and humiftrs-------------------\  
+!    after aggregation of icc for non-peatlands add iccp1 to the grid  
+!    for peatlands add ms to the grid. Note in loop 430 iccp1 is passed
+!    for peatlands
+!
       do 490 i = il1, il2
-        soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
-        humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
+          if (ipeatland(i) ==0 )                  then
+            soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
+            humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
+          else                          !is peatland  
+            soilresp(i) = litres(i)+socres(i)+rmr(i) 
+!	calculate moss time step C fluxes, '/365*deltat' convert year-1
+!    to time step-1, 'deltat/963.62' convert umol/m2/s to kgC/m2/deltat. 
+!    note that hutrstep_g aggregation for icc was done in loop 480
+! 
+		    litrfallms(i)= Cmossmas(i)*rmortms/365*deltat !kgC/m2/day(dt)
+     	    ltrestepms(i)= litresms(i)*(1.0/963.62)*deltat   !kgC/m2/dt	
+		    nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
+		    socrestep(i) = socres(i)*(1.0/963.62)*deltat     !kgC/m2/dt
+		    soilresp(i)  = soilresp(i)*(1.0/963.62)*deltat   !kgC/m2/dt
+      	    humicmstep(i)= humicfacms * ltrestepms(i)        !kgC/m2/dt
+		    hutrstep_g(i)= hutrstep_g(i) + humicmstep(i)	   !kgC/m2/dt
+		    humiftrs(i)  = humiftrs(i)+humicmstep(i)*(963.62/deltat)!umol/m2/s
+          endif
 490   continue
+!    ---------------YW March 20, 2015 ---------------------------------/
 !
 !     heterotrophic respiration part ends
 !
@@ -1370,12 +1513,14 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 
 !     estimate allocation fractions for leaf, stem, and root components.
 !
-           call allocate (lfstatus,   thliqc,    ailcg,     ailcb,&
+       call allocate (lfstatus,   thliqc,    ailcg,     ailcb,&
      &                     il1, il2,     sand,     clay,  &
      &                    rmatctem,   gleafmas, stemmass, rootmass,     &
      &                       sort,    nol2pfts,  fcancmx, isand, &
      &                     afrleaf,  afrstem,  afrroot,    wiltsm,&
-     &                     fieldsm, wtstatus, ltstatus)
+     &                     fieldsm, wtstatus, ltstatus, &
+!    add peatland parameters YW April 13, 2015 ------------------------ 
+     &                   ipeatland, thpor,bi, psisat,grksat,thfc, thlw)      
      
 !     Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the 
 !     CLASS part of the model. They are recalculated here in CTEM to avoid passing them through the
@@ -1496,7 +1641,6 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
           stemmass(i,j)=stemmass(i,j)+ntchsveg(i,j)
           rootmass(i,j)=rootmass(i,j)+ntchrveg(i,j)
 !
-!
           if(gleafmas(i,j).lt.0.0)then
             write(6,1900)'gleafmas lt zero at i=',i,' for pft=',j,''   
             write(6,1901)'gleafmas = ',gleafmas(i,j)
@@ -1611,7 +1755,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                    rmatctem, stemmass, rootmass,     sort,&
      &                    nol2pfts,  fcancmx,&
      &                    flhrloss, leaflitr, lfstatus,  pandays,&
-     &                    colddays)
+     &                    colddays,thicec)
 !
 !    -------------------------------------------------------------------
 !
@@ -1872,16 +2016,34 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
           litrfall(i)=litrfall(i)+fcancmx(i,j)*(tltrleaf(i,j)+&
      &     tltrstem(i,j)+tltrroot(i,j))
           gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
-          gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
+          if (ipeatland(i)==0)          then       !YW March 20, 2015 
+               gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
+          endif    !soil C is calculated from hpd in peatland 
           vgbiomas_veg(i,j)=gleafmas(i,j)+&
      &     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j) !vegetation biomass for each pft
 1110    continue
 1100  continue
 !
+!    add peatland branch for grid aggregations-------------------------\
+!    NOTE peatlands soil C is not agregated from plants but updated  
+!    by humification and respiration from the previous stored value
+!
       do 1020 i = il1, il2
-        gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
-        gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
+          if (ipeatland(i)==0)                              then
+             gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
+             gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
+          else                      
+             litrmassms(i)= litrmassms(i)+litrfallms(i)-&
+	 &			        ltrestepms(i)-humicmstep(i)     !kg/m2
+		   Cmossmas(i)= Cmossmas(i)+nppmosstep(i)-litrfallms(i)
+		   vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
+		   litrfall(i) = litrfall(i) + litrfallms(i)*(963.62/deltat)!umolCO2/m2/s
+	        gavgltms(i) = gavgltms(i) + litrmassms(i)
+		   gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i)		   
+             hpd(i)=(-72067.0+sqrt((72067.0**2.0)-(4.0*4056.6*&
+     &              (-gavgscms(i)*1000/0.487))))/(2*4056.6)
 
+          endif          
 1020  continue
 !
 !     -----------------------------------------------------------------
@@ -1905,7 +2067,13 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                         npp,  autores, hetrores,       gpp,&
      &                         nep,   litres,   socres, dstcemls1,&
      &                         nbp, litrfall, humiftrs,&
-     &                         il1,       il2)
+     &                         il1,       il2, &
+!	----------------balance of the moss C pool YW------------------------\
+!
+	 & 			ipeatland, Cmossmas, pCmossmas, &
+	 &			nppmosstep, litrfallms, litrmassms,plitrmassms, &
+	 &			ltrestepms,humicmstep,socrestep, hutrstep)    
+
       endif
 !
 !     -----------------------------------------------------------------
@@ -1919,7 +2087,9 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                          ailcg,    ailcb,     ailc,    zolnc,&
      &                          rmatc, rmatctem,     slai,  bmasveg,&
      &                       cmasvegc,  veghght, rootdpth,   alvisc,&
-     &                         alnirc,  paicgat,  slaicgat  )
+     &                         alnirc,  paicgat,  slaicgat,&
+     &                         ipeatland )         !YW March 26, 2015 
+
 
 !
 !    calculation of gavglai is moved from loop 1100 to here 
@@ -1932,6 +2102,27 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
       enddo
 !
 !
+!    =============write peatland output files==========================\
+
+             if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+              if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
+!     CT13D_G
+         write(95,6991) &          
+     &  litrmass(1,6),  tltrleaf(1,6), tltrstem(1,6), tltrroot(1,6), &
+     &  ltresveg(1,6),	 humtrsvg(1,6), litrmass(1,7), tltrleaf(1,7),&
+     &  tltrstem(1,7),  tltrroot(1,7), ltresveg(1,7), humtrsvg(1,7),&
+     &  plitrmassms, litrmassms, litrfallms, ltrestepms, humicmstep,&
+     &  nppmosstep,nppmoss,anmoss,rgmoss,rmlmoss,gppmoss,Cmossmas,&
+     &   rmlveg(1,1),rmsveg(1,1), rmrveg(1,1)
+!     CT14D_G
+       write(96,6991) hpd, gavgscms,  hutrstep_g, socrestep,&
+     &  resoxic*(1.0/963.62)*deltat, resanoxic*(1.0/963.62)*deltat,& !kgC/m2/timestep
+     &   socresp,resoxic, resanoxic    !umol/m2/s
+6991   format(30F12.6)
+            endif
+         endif
+!    ==========write file done YW=======================================/
+
 !     -----------------------------------------------------------------
 !
       return
