@@ -3127,19 +3127,18 @@ c    -----------------YW March 23, 2015 -------------------------------/
      1                  TSNOROT(I,M),TPNDROT(I,M)
           READ(10,5060) (THLQROT(I,M,J),J=1,3),(THICROT(I,M,J),
      1                  J=1,3),ZPNDROT(I,M)
-          READ(10,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),
-     1                  ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
 c     -------read in layer 4 to 10 for peatlands----------------------\
-c
 
       if (ipeatlandrow(i,m) >0)    then 
           READ(10,5060) (TBARROT(I,M,J),J=4,10)
           READ(10,5060) (THLQROT(I,M,J),J=4,10)
           READ(10,5060) (THICROT(I,M,J),J=4,10)
       endif
-      
 c     ---------------YW September 01, 2015 ----------------------------/
 C   
+          READ(10,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),
+     1                  ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
+
 
 50    CONTINUE
 C
@@ -3411,8 +3410,8 @@ c
      &         dvdfcanrow(i,m,icountrow(i,m)))
                barf(i) = barf(i) - fcancmxrow(i,m,icountrow(i,m))
               else
-               fcancmxrow(i,m,icountrow(i,m))=fcanrow(i,m,j)*
-     &         dvdfcanrow(i,m,icountrow(i,m))               
+               fcancmxrow(i,m,icountrow(i,m))=FCANROT(i,m,j)*
+     &         dvdfcanrow(i,m,icountrow(i,m))
               end if
             endif
           enddo
@@ -5142,7 +5141,7 @@ c
           endif  ! if(ctem_on) 
 c
 c7200      format(1x,i2,1x,i2,i5,9f11.3,9f11.3,2(a6,i2))
-7200      format(1x,i2,1x,i2,i5,12f11.3,12f11.3,2(a6,i2))
+7200      format(1x,i2,i3,i4,i5,12f11.3,12f11.3,2(a6,i2))
 c
           if (ctem_on) then
             do j = 1,icc
@@ -5597,6 +5596,7 @@ c    ----peatland output-----------------------------------------------\
 	  write(99,6999)  WTBLACC, ZSN,PREACC,EVAPACC,ROFACC,g12acc,g23acc
 6999	  format(10f12.3)
 c    ----YW March 23, 2015 --------------------------------------------/
+        
 C
 C     * RESET ACCUMULATOR ARRAYS.
 C
@@ -5912,17 +5912,20 @@ C     1                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea)
 C         endif ! if(ncount.eq.nday)
 C       endif ! if(ctem_on)
 c
-C       endif ! if(not.parallelrun)
+c       endif ! if(not.parallelrun)
 c
 c   Note it's either the following chunk or the above commentted out part    
+        write (6,*)'l5919',ctem_on, ncount, nday
+
       if (ctem_on) then
-      if(ncount.eq.nday) then
+      if(ncount.eq.nday) then        
 c
         do i=1,nltest
            do j=1,icc
              ifcancmx_g(i,j)=0   
            enddo
         enddo
+
 c
         do i=1,nltest
            do m=1,nmtest
@@ -6462,6 +6465,7 @@ c
 851     continue
 c
       endif ! if(ncount.eq.nday) 
+
       endif ! if(ctem_on)
 c
       endif ! if(not.parallelrun)

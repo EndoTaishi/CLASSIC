@@ -963,7 +963,8 @@ C
      3                FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
      5                (FC(I)+FCS(I))    
-        ENDIF               
+        ENDIF
+                       
   450 CONTINUE                                                                    
 C                                                                                 
       DO 500 J=1,IG                                                               

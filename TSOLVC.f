@@ -349,7 +349,7 @@ C
                   CPHCHC(I)=CLHVAP+CLHMLT
               ELSE
                   CPHCHC(I)=CLHVAP
-              ENDIF
+              ENDIF              
               RBINV(I)=RBCOEF(I)*SQRT(VAC(I))
               IF (RBINV(I) .LE. 0.) CALL XIT('TSOLVC',0)
               ! If RBINV is <= 0, it is possible your INI file is missing
