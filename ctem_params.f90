@@ -443,7 +443,7 @@ repro_fraction = 0.10
 
 ! disturbance parameters: ------------
 
-reparea = 500.0  ! FireMIP value: 300.0
+reparea = 300.0  !500.0 ;  FireMIP value: 300.0
 
 popdthrshld = 300.
 
@@ -771,8 +771,6 @@ lwrthrsh = [ -50.0, -5.0, 0.0, &
                5.0,  5.0, 0.0, &
                0.1,  5.0, 0.0 ]             
 
-! these parameters  are from competition runs. FLAG.
-! testing for work with Ray and Bakr! Mar 2015.          
 cdlsrtmx = [ 0.10, 0.30, 0.00, &  
              0.30, 0.40, 0.15, &
              0.15, 0.15, 0.00, &
@@ -955,8 +953,6 @@ drlsrtmx = [ 0.006 , 0.005, 0.000, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSI
              0.005 , 0.005, 0.000, &
              0.020 , 0.020, 0.000 ] 
 
-!roothrsh = 8.0 ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-
 !   ********************************************************************************************
 !   =============                                                     ==========================
 !   ============================== PRESCRIBED COVER PARAMETERS =================================
@@ -991,29 +987,6 @@ epsilonr = [ 0.65, 0.89, 0.00, &
              0.05, 0.05, 0.00, &
              0.99, 0.99, 0.00 ]
 
-! TESTING using the compete versions:
-! omega = [ 0.80, 0.50, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-!           0.80, 0.45, 0.80, &
-!           0.05, 0.05, 0.00, &
-!           1.00, 1.00, 0.00 ]
-!
-! epsilonl = [ 0.19, 0.45, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-!              0.39, 0.50, 0.30, &
-!              0.80, 0.80, 0.00, &
-!              0.10, 0.10, 0.00 ]
-!
-! epsilons = [ 0.40, 0.34, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-!              0.21, 0.35, 0.10, &
-!              0.15, 0.15, 0.00, &
-!              0.00, 0.00, 0.00 ]
-!
-! epsilonr = [ 0.41, 0.21, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-!              0.40, 0.15, 0.60, &
-!              0.05, 0.05, 0.00, &
-!              0.90, 0.90, 0.00 ]
-
-! --- to here.
-
 ! mainres.f parameters: ---------
 
 bsrtstem = [ 0.0900, 0.0550, 0.0000, &
@@ -1046,9 +1019,6 @@ drlsrtmx = [ 0.0025, 0.005, 0.000, &
              0.005, 0.005, 0.025, &
              0.005, 0.005, 0.000, &
              0.050, 0.050, 0.000 ]    
-
-!roothrsh = 15.0
-
 
 end if
 
