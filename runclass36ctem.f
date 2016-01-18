@@ -963,6 +963,7 @@ c
       real, pointer, dimension(:,:) :: thliqcacc_m
       real, pointer, dimension(:,:) :: thliqgacc_m
       real, pointer, dimension(:,:) :: thicecacc_m
+      real, pointer, dimension(:,:) :: thicegacc_m
       real, pointer, dimension(:,:) :: ancsvgac_m
       real, pointer, dimension(:,:) :: ancgvgac_m
       real, pointer, dimension(:,:) :: rmlcsvga_m
@@ -1910,6 +1911,7 @@ C===================== CTEM ==============================================\
       thliqcacc_m       => ctem_tile%thliqcacc_m
       thliqgacc_m       => ctem_tile%thliqgacc_m
       thicecacc_m       => ctem_tile%thicecacc_m
+      thicegacc_m       => ctem_tile%thicegacc_m
       ancsvgac_m        => ctem_tile%ancsvgac_m
       ancgvgac_m        => ctem_tile%ancgvgac_m
       rmlcsvga_m        => ctem_tile%rmlcsvga_m
@@ -2718,6 +2720,7 @@ c
             thliqcacc_m(i,j)=0.0
             thliqgacc_m(i,j)=0.0
             thicecacc_m(i,j)=0.0
+            thicegacc_m(i,j)=0.0
 112      continue
 123    continue
 c
@@ -3728,7 +3731,7 @@ c
      &                compete,  netrad_gat,  preacc_gat,  PSISGAT,
      &                 popdin,  dofire, dowetlands,obswetf, isndgat,
      &                faregat,      mosaic, WETFRACGRD, wetfrac_sgrd,
-     &                  BIGAT,    THPGAT,
+     &                  BIGAT,    THPGAT, thicegacc_m,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
@@ -3804,6 +3807,7 @@ c
              thliqcacc_m(i,j)=0.0
              thliqgacc_m(i,j)=0.0
              thicecacc_m(i,j)=0.0
+             thicegacc_m(i,j)=0.0
 715       continue
 c
           do 716 j = 1, icc
