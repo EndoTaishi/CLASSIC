@@ -21,6 +21,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
                               il1,      il2,     sort, nol2pfts, &
                          grclarea,    thice,   popdin, lucemcom, &
                            dofire,   currlat,   iday,  fsnow,    &
+                            isand,                               &
 !     ------------------ inputs above this line ----------------------          
                          stemltdt, rootltdt, glfltrdt, blfltrdt, &
                          glcaemls, rtcaemls, stcaemls, & 
@@ -34,6 +35,9 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !                           Disturbance Subroutine
+!
+!     12  Jan 2016  - Change to allow more than 3 soil layers
+!     J. Melton
 !
 !     11  Jun 2015  - Clean up to make all calculations PFT dependent and add in a
 !     V. Arora        capability to do a fire count method for comparison with
@@ -94,6 +98,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !                 u-mol co2/m2.sec 
 !     dofire    - boolean, if true allow fire, if false no fire.
 !     fsnow    - fraction of snow simulated by class
+!     isand     - bedrock/other non-soils flag (negative values)
 
 !     Outputs
 
@@ -170,6 +175,8 @@ logical, intent(in) :: popdon   ! if set true use population density data to cal
                                             ! probability and probability of fire due to human causes, 
                                             ! or if false, read directly from .ctm file
 
+integer, dimension(ilg,ignd), intent(in) :: isand
+
 integer :: il1,il2,i,j,k,m,k1,k2,n
 
 integer :: sort(icc), nol2pfts(ican), iday
@@ -230,9 +237,8 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !     Constants and parameters are located in ctem_params.f90
 !     -----------------------------------------------------------------
 
-!     * if icc /= 9 or ignd /= 3 this subroutine will need changes.
+!     * if icc /= 9 this subroutine will need changes.
       IF(ICC.NE.9)      CALL XIT('DISTURB',-1)
-      IF(IGND.NE.3)     CALL XIT('DISTURB',-2)
 
 !     initialize required arrays to zero, or assign value
 
@@ -313,7 +319,6 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !     if not simulating fire, leave the subroutine now.
       if (.not. dofire) goto 600
 
-
       do 190 i = il1, il2
         if(extnprob(i).le.zero) then
           write(6,*)'fire extinguishing prob. (',i,'= ',extnprob(i)
@@ -389,7 +394,11 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
       do i = il1, il2
         if (fsnow(i) .eq. 0.) then
           do j = 1, ignd
-           betadrgt(i,j)=min(1.0,max(0.0,(thliq(i,j)+thice(i,j)-wiltsm(i,j))/(fieldsm(i,j)-wiltsm(i,j))))   
+           if (isand(i,j) .gt. -2) then
+            betadrgt(i,j)=min(1.0,max(0.0,(thliq(i,j)+thice(i,j)-wiltsm(i,j))/(fieldsm(i,j)-wiltsm(i,j))))
+           else
+            betadrgt(i,j)=0.
+           end if
           end do        
         end if
       end do
@@ -401,10 +410,9 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
         do 330 i = il1, il2
          if (.not. crop(j)) then
      
-          drgtstrs(i,j) =  (betadrgt(i,1))*rmatctem(i,j,1) + (betadrgt(i,2))*rmatctem(i,j,2) + &
-                         (betadrgt(i,3))*rmatctem(i,j,3)
+          drgtstrs(i,j) =  sum((betadrgt(i,:))*rmatctem(i,j,:))
 
-          drgtstrs(i,j) = min(1.0,max(0.0,drgtstrs(i,j)/(rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))))
+          drgtstrs(i,j) = min(1.0,max(0.0,drgtstrs(i,j)/sum(rmatctem(i,j,:))))
 
 ! !         Next find this dryness factor averaged over the vegetated fraction
 !           avgdryns(i) = avgdryns(i) + drgtstrs(i,j)*fcancmx(i,j)

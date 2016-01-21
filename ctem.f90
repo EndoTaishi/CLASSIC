@@ -8,9 +8,10 @@
      &                    extnprob,   stdaln,     tbar,    popdon, &
      &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
      &                      thicec, soildpth, spinfast,   todfrac,&
-     &                     compete,   netrad,   precip,   &
+     &                     compete,   netrad,   precip,   psisat, &
      &                    popdin, dofire,  dowetlands,obswetf,isand,  &
-     &                       faregat,  mosaic, wetfrac, wetfrac_s,&
+     &                       faregat,  mosaic, wetfrac, wetfrac_s, &
+     &                       bi,     thpor,    thiceg, &
 !
 !    -------------- inputs used by ctem are above this line ---------
 !
@@ -112,6 +113,7 @@
       use landuse_change,     only : luc
       use competition_scheme, only : bioclim, existence, competition
       use disturbance_scheme, only : disturb
+      use heterotrophic_respiration, only : hetresg, hetresv
 
 implicit none
 
@@ -138,6 +140,9 @@ real, dimension(ilg,ignd), intent(in) :: tbarc  ! soil temperature for canopy ov
 real, dimension(ilg,ignd), intent(in) :: tbarcs ! soil temperature for canopy over snow subarea
 real, dimension(ilg,ignd), intent(in) :: tbarg  ! soil temperature for ground subarea
 real, dimension(ilg,ignd), intent(in) :: tbargs ! soil temperature for snow over ground subarea
+real, dimension(ilg,ignd), intent(in) :: psisat ! saturated soil matric potential (m)
+real, dimension(ilg,ignd), intent(in) :: bi     ! Brooks and Corey b term
+real, dimension(ilg,ignd), intent(in) :: thpor  ! Soil porosity
 real, dimension(ilg), intent(in) :: ta          ! air temp, K
 real, dimension(ilg,ignd), intent(in) :: delzw  ! thicknesses of the 3 soil layers
 real, dimension(ilg,ignd), intent(in) :: zbotw  ! bottom of soil layers
@@ -145,6 +150,10 @@ real, dimension(ilg,ignd), intent(in) :: thliqc ! liquid mois. content of 3 soil
                                                 !over snow and canopy over ground subareas
 real, dimension(ilg,ignd), intent(in) :: thliqg ! liquid mois. content of 3 soil layers, for ground
                                                 !and snow over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thicec ! Frozen soil moisture content for canopy
+                                                !over snow and canopy over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thiceg ! Frozen soil moisture content for ground
+                                                ! and snow over ground subareas
 real, intent(in) :: deltat                      ! CTEM timestep in days
 real, dimension(ilg), intent(in) :: uwind       ! u wind speed, m/s
 real, dimension(ilg), intent(in) :: vwind       ! v wind speed, m/s
@@ -366,7 +375,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !
       real rmatc(ilg,ican,ignd),&
      &  rml(ilg),   gpp(ilg),   &
-     &   tbar(ilg,ignd),thicec(ilg,ignd), soildpth(ilg),todfrac(ilg,icc)
+     &   tbar(ilg,ignd), soildpth(ilg),todfrac(ilg,icc)
 
 !
       real fare_cmp(nlat,icc), nppveg_cmp(nlat,icc),&
@@ -1196,28 +1205,28 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !     over snow subarea
 !
        call    hetresv ( fcancs,      fcs, litrmass, soilcmas,&
-     &                      il1,&
-     &                      il2,   tbarcs,   thliqc,     sand,&
-     &                     clay, rttempcs,    zbotw,     sort,&
-     &                     isand,&
-     &                 ltrsvgcs, scrsvgcs, thicec)
+     &                      delzw, thpor, il1,&
+     &                      il2,   tbarcs, psisat, bi,  thliqc,&
+     &                     rttempcs,    zbotw,     sort,&
+     &                     isand, thicec, &
+     &                 ltrsvgcs, scrsvgcs)
 !
 !     find heterotrophic respiration rates for canopy over ground 
 !     subarea
 !
-       call    hetresv (  fcanc,       fc, litrmass, soilcmas,&
-     &                      il1,&
-     &                      il2,    tbarc,   thliqc,     sand,&
-     &                     clay, rttempcg,    zbotw,     sort,&
-     &                     isand,&
-     &                 ltrsvgcg, scrsvgcg, thicec)
+       call    hetresv ( fcanc,      fc, litrmass, soilcmas,&
+     &                      delzw, thpor, il1,&
+     &                      il2,   tbarc, psisat, bi,  thliqc,&
+     &                     rttempcg,    zbotw,     sort,&
+     &                     isand, thicec, &
+     &                 ltrsvgcg, scrsvgcg)
 
 !
 !     find heterotrophic respiration rates from bare ground subarea
 !
-       call  hetresg  (litrmass, soilcmas,            &
-     &                      il1,      il2,     tbarg,   &
-     &                   thliqg,     sand,      clay,   zbotw,   &
+       call  hetresg  (litrmass, soilcmas,   delzw,  thpor, &
+     &                      il1,  il2, tbarg, psisat, bi,&
+     &                   thliqg,      zbotw, thiceg,   &
      &                       fg,        0,&
      &                     isand,&
      &                   ltrsbrg,  scrsbrg)
@@ -1225,9 +1234,9 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !     find heterotrophic respiration rates from snow over ground 
 !     subarea
 !
-       call  hetresg  (litrmass, soilcmas,            &
-     &                      il1,      il2,    tbargs,   &
-     &                   thliqg,     sand,      clay,   zbotw,   &
+       call  hetresg  (litrmass, soilcmas,    delzw, thpor, &
+     &                      il1, il2,  tbargs, psisat, bi,  &
+     &                   thliqg,      zbotw,  thiceg, &
      &                      fgs,        1,&
      &                     isand,&
      &                   ltrsbrgs, scrsbrgs)
@@ -1609,7 +1618,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                      thliqc,   wiltsm,  fieldsm,       ta,&
      &                    pheanveg,     iday,     radj, roottemp,&
      &                    rmatctem, stemmass, rootmass,     sort,&
-     &                    nol2pfts,  fcancmx,&
+     &                    nol2pfts,  fcancmx,  isand, &
      &                    flhrloss, leaflitr, lfstatus,  pandays,&
      &                    colddays)
 !
@@ -1627,8 +1636,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !
 !    -------------------------------------------------------------------
 !
-!     update green leaf biomass for trees and crops and brown leaf biomass
-!     for grasses
+!     update green leaf biomass for trees and crops and brown leaf biomass !     for grasses
 !
       k1=0
       do 700 j = 1, ican 
@@ -1766,6 +1774,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &                         il1,      il2,     sort, nol2pfts,&
      &                    grclarea,   thicec,   popdin, lucemcom,&
      &                      dofire,  currlat,     iday, fsnow,&
+     &                       isand,  &
 !    in above, out below 
      &                    stemltdt, rootltdt, glfltrdt, blfltrdt,&
      &                    glcaemls, rtcaemls, stcaemls,&

@@ -973,6 +973,7 @@ c
       real, pointer, dimension(:,:) :: thliqgacc_m
       real, pointer, dimension(:,:) :: thliqacc_m
       real, pointer, dimension(:,:) :: thicecacc_m
+      real, pointer, dimension(:,:) :: thicegacc_m
       real, pointer, dimension(:,:) :: ancsvgac_m
       real, pointer, dimension(:,:) :: ancgvgac_m
       real, pointer, dimension(:,:) :: rmlcsvga_m
@@ -1932,6 +1933,7 @@ C===================== CTEM ==============================================\
       thliqgacc_m       => ctem_tile%thliqgacc_m
       thliqacc_m        => ctem_tile%thliqacc_m
       thicecacc_m       => ctem_tile%thicecacc_m
+      thicegacc_m       => ctem_tile%thicegacc_m
       ancsvgac_m        => ctem_tile%ancsvgac_m
       ancgvgac_m        => ctem_tile%ancgvgac_m
       rmlcsvga_m        => ctem_tile%rmlcsvga_m
@@ -2373,19 +2375,10 @@ C
        WRITE(65,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(65,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 
-       IF(IGND.GT.3) THEN
-          WRITE(65,6015)
-6015      FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',
-     1          'THL2  THI2  TG3  THL3  THI3  TG4  THL4  THI4  ',
-     2          'TG5  THL5  THI5')
-
-       ELSE
           WRITE(65,6515)
 6515      FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',
      1           'THL2  THI2  TG3  THL3  THI3  TCN  RCAN  SCAN  ',
      2           'TSN  ZSN  TCN-TA  TCANO  TAC  ACTLYR  FTABLE')
-
-       ENDIF
 
        WRITE(66,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(66,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
@@ -2394,8 +2387,15 @@ C
           WRITE(66,6016)
 6016      FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG6  THL6  THI6  TG7  ',
      1          'THL7  THI7  TG8  THL8  THI8  TG9  THL9  THI9  ',
-     2          'TG10  THL10  THI10  G0  G1  G2  G3  G4  G5  G6  ',
-     3          'G7  G8  G9')
+     2          'TG10  THL10  THI10  TG11  THL11  THI11  TG12  ',
+     3          'THL12  THI12  TG13  THL13  THI13  TG14  THL14  ',
+     4          'THI14  TG15  THL15  THI15  TG16  THL16  THI16  ',
+     5          'TG17  THL17  THI17  TG18  THL18  THI18  TG19  '
+     6          'THL19  THI19  TG20  THL20  THI20  TG21  THL21  ',
+     7          'THI21  TG22  THL22 THI22  TG23  THL23  THI23  ',
+     8          'TG24  THL24  THI24  TG25  THL25  THI25  TG26  ',
+     9          'THL26  THI26  G0  G1  G2  G3  G4  G5  G6  ',
+     A          'G7  G8  G9')
 
        ELSE
           WRITE(66,6616)
@@ -2453,14 +2453,10 @@ C
        WRITE(641,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(641,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
        WRITE(641,6008)
+
        WRITE(651,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(651,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-C
-       IF(IGND.GT.3) THEN
-          WRITE(651,6015)
-       ELSE
-          WRITE(651,6515)
-       ENDIF
+       WRITE(651,6515)
 C
        WRITE(661,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(661,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
@@ -2524,22 +2520,16 @@ C     GGEOROW(1)=-0.035
           READ(10,5040) DRNROT(I,M),SDEPROT(I,M),FAREROT(I,M)
           READ(10,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
      1                  WFCIROT(I,M),MIDROT(I,M)
-          READ(10,5080) (SANDROT(I,M,J),J=1,3)
-          READ(10,5080) (CLAYROT(I,M,J),J=1,3)
-          READ(10,5080) (ORGMROT(I,M,J),J=1,3)
-          READ(10,5050) (TBARROT(I,M,J),J=1,3),TCANROT(I,M),
-     1                  TSNOROT(I,M),TPNDROT(I,M)
-          READ(10,5060) (THLQROT(I,M,J),J=1,3),(THICROT(I,M,J),
-     1                  J=1,3),ZPNDROT(I,M)
+          DO 25 J=1,IGND
+             READ(10,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),
+     1        CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J),
+     2        THLQROT(I,M,J),THICROT(I,M,J)
+25        CONTINUE
+          READ(10,5050)TCANROT(I,M),TSNOROT(I,M),TPNDROT(I,M),
+     1        ZPNDROT(I,M)
           READ(10,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),
      1                  ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
-
 50    CONTINUE
-
-C     ! In CLASS 3.6.2, we include this soil info in the INI file.
-      DO 25 J=1,IGND
-          READ(10,*) DELZ(J),ZBOT(J) 
- 25   CONTINUE
 C
 c     the output year ranges can be read in from the job options file, or not.
 c     if the values should be read in from the .ini file, and not
@@ -2573,14 +2563,14 @@ C
       DO 100 I=1,NLTEST
       DO 100 M=1,NMTEST
 
-          TBARROT(I,M,1)=TBARROT(I,M,1)+TFREZ
-          TBARROT(I,M,2)=TBARROT(I,M,2)+TFREZ
-          TBARROT(I,M,3)=TBARROT(I,M,3)+TFREZ
+        DO J=1,IGND
+          TBARROT(I,M,J)=TBARROT(I,M,J)+TFREZ
+        ENDDO
           TSNOROT(I,M)=TSNOROT(I,M)+TFREZ
           TCANROT(I,M)=TCANROT(I,M)+TFREZ
 
           TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
-          TBASROT(I,M)=TBARROT(I,M,3)
+          TBASROT(I,M)=TBARROT(I,M,IGND)
           CMAIROT(I,M)=0.
           WSNOROT(I,M)=0.
           ZSNLROT(I,M)=0.10
@@ -2592,25 +2582,26 @@ C
           TACROT (I,M)=TCANROT(I,M)
           QACROT (I,M)=0.5E-2
 
-          IF(IGND.GT.3)                                 THEN
-              DO 65 J=4,IGND
-                  TBARROT(I,M,J)=TBARROT(I,M,3)
-                  IF(SDEPROT(I,M).LT.(ZBOT(J-1)+0.001) .AND.
-     1                  SANDROT(I,M,3).GT.-2.5)     THEN
-                      SANDROT(I,M,J)=-3.0
-                      CLAYROT(I,M,J)=-3.0
-                      ORGMROT(I,M,J)=-3.0
-                      THLQROT(I,M,J)=0.0
-                      THICROT(I,M,J)=0.0
-                  ELSE
-                      SANDROT(I,M,J)=SANDROT(I,M,3)
-                      CLAYROT(I,M,J)=CLAYROT(I,M,3)
-                      ORGMROT(I,M,J)=ORGMROT(I,M,3)
-                      THLQROT(I,M,J)=THLQROT(I,M,3)
-                      THICROT(I,M,J)=THICROT(I,M,3)
-                  ENDIF
-65            CONTINUE
-          ENDIF
+          ! FLAG!!! THIS NEEDS TO CHANGE FOR PERMAFROST WORK!! These values will be provided and written out!! JM Jan 8 2016.
+!           IF(IGND.GT.3)                                 THEN
+!               DO 65 J=4,IGND
+!                   TBARROT(I,M,J)=TBARROT(I,M,3)
+!                   IF(SDEPROT(I,M).LT.(ZBOT(J-1)+0.001) .AND.
+!      1                  SANDROT(I,M,3).GT.-2.5)     THEN
+!                       SANDROT(I,M,J)=-3.0
+!                       CLAYROT(I,M,J)=-3.0
+!                       ORGMROT(I,M,J)=-3.0
+!                       THLQROT(I,M,J)=0.0
+!                       THICROT(I,M,J)=0.0
+!                   ELSE
+!                       SANDROT(I,M,J)=SANDROT(I,M,3)
+!                       CLAYROT(I,M,J)=CLAYROT(I,M,3)
+!                       ORGMROT(I,M,J)=ORGMROT(I,M,3)
+!                       THLQROT(I,M,J)=THLQROT(I,M,3)
+!                       THICROT(I,M,J)=THICROT(I,M,3)
+!                   ENDIF
+! 65            CONTINUE
+!           ENDIF
 
           DO 75 K=1,6
           DO 75 L=1,50
@@ -2694,16 +2685,15 @@ C===================== CTEM =============================================== /
 5020  FORMAT(5F10.2,F7.1,3I5)
 5030  FORMAT(4F8.3,8X,4F8.3)
 5040  FORMAT(9F8.3)
-5050  FORMAT(6F10.2)
-5060  FORMAT(7F10.3)
+5050  FORMAT(4F10.2)
 5070  FORMAT(2F10.4,F10.2,F10.3,F10.4,F10.3)
-5080  FORMAT(3F10.1)
+5080  FORMAT(2F8.2,3F10.1,3F10.3)
 5090  FORMAT(4E8.1,I8)
 5200  FORMAT(4I10)
 5300  FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,
      1       F9.4)
 5301  FORMAT(I5,F10.4)
-6001  FORMAT('CLASS TEST RUN:     ',6A4)
+6001  FORMAT('CLASS-CTEM RUN:     ',6A4)
 6002  FORMAT('RESEARCHER:         ',6A4)
 6003  FORMAT('INSTITUTION:        ',6A4)
 C
@@ -2758,6 +2748,7 @@ c
             thliqgacc_m(i,j)=0.0
             thliqacc_m(i,j)=0.0
             thicecacc_m(i,j)=0.0
+            thicegacc_m(i,j)=0.0
 112      continue
 123    continue
 c
@@ -3771,9 +3762,10 @@ c
      9            extnprobgat,   stdalngat,tbaraccgat_m,  popdon,
      a               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,
      b            thicecacc_m,     sdepgat,    spinfast,   todfrac,
-     &                compete,  netrad_gat,  preacc_gat,
+     &                compete,  netrad_gat,  preacc_gat,  PSISGAT,
      &                 popdin,  dofire, dowetlands,obswetf, isndgat,
-     &                faregat,      mosaic, wetfracgrd, wetfrac_sgrd,
+     &                faregat,      mosaic, WETFRACGRD, wetfrac_sgrd,
+     &                  BIGAT,    THPGAT, thicegacc_m,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
@@ -3858,6 +3850,7 @@ c
              thliqgacc_m(i,j)=0.0
              thliqacc_m(i,j)=0.0
              thicecacc_m(i,j)=0.0
+             thicegacc_m(i,j)=0.0
 715       continue
 c
           do 716 j = 1, icc
@@ -4066,7 +4059,7 @@ C     * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
      &       2F7.3,2(A6,I2))
 6600  FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
 6501  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-6601  FORMAT(1X,I2,I3,I5,I6,7(F7.2,2F6.3),10F9.4,2(A6,I2))
+6601  FORMAT(1X,I2,I3,I5,I6,26(F7.2,2F6.3),26F9.4,2(A6,I2))
 6700  FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))
 6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))
 6900  FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))
@@ -4225,17 +4218,12 @@ C===================== CTEM =====================================/
      4                   SFCUROT(I,M),SFCVROT(I,M),UVROW(I),' TILE ',m
           IF(IGND.GT.3) THEN
 C===================== CTEM =====================================\
-
-              write(65,6500) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
-     1                   tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,3),
-     2                  tcn,RCANROT(i,m),SCANROT(i,m),tsn,zsn,
-     3                   TCN-(TAROW(I)-TFREZ),TCANO(I)-TFREZ,
-     4                   TACGAT(I)-TFREZ,ACTLYR,FTABLE,' TILE ',m
               write(66,6601) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
-     1                   tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=4,10),
-     2                   (GFLXROT(i,m,j),j=1,10),
-     3                   ' TILE ',m
-          else
+     1                 tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,IGND),
+     2                 (GFLXROT(i,m,j),j=1,IGND),
+     3                 ' TILE ',m
+          end if
+
               write(65,6500) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
      1                   tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,3),
      2                  tcn,RCANROT(i,m),SCANROT(i,m),tsn,zsn,
@@ -4243,7 +4231,7 @@ C===================== CTEM =====================================\
      4                   TACGAT(I)-TFREZ,ACTLYR,FTABLE,' TILE ',m
 
 C===================== CTEM =====================================/
-          ENDIF
+
 C
           WRITE(67,6700) IHOUR,IMIN,IDAY,IYEAR,
      1                   TROFROT(I,M),TROOROT(I,M),TROSROT(I,M),
@@ -4412,8 +4400,8 @@ C
 C
          IF(IGND.GT.3) THEN
           WRITE(661,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
-     1                   TFREZ,THLQROT_G(I,J),THICROT_G(I,J),J=4,10),
-     2                   (GFLXROT_G(I,J),J=1,10)
+     1                   TFREZ,THLQROT_G(I,J),THICROT_G(I,J),J=1,IGND),
+     2                   (GFLXROT_G(I,J),J=1,IGND)
          ELSE
           WRITE(661,6600) IHOUR,IMIN,IDAY,FSSROW(I),FDLROW(I),PREROW(I),
      1                   TAROW(I)-TFREZ,UVROW(I),PRESROW(I),QAROW(I)
@@ -5163,29 +5151,21 @@ C         THE FCANROT FOR THE RS FILE.
             WRITE(100,5040) DRNROT(I,M),SDEPROT(I,M),FAREROT(I,M)
             WRITE(100,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
      1                      WFCIROT(I,M),MIDROT(I,M)
-            WRITE(100,5080) (SANDROT(I,M,J),J=1,3)
-            WRITE(100,5080) (CLAYROT(I,M,J),J=1,3)
-            WRITE(100,5080) (ORGMROT(I,M,J),J=1,3)
+            DO J=1,IGND
+             WRITE(100,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),
+     1         CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J),
+     2         THLQROT(I,M,J),THICROT(I,M,J)
+            END DO
 C           Temperatures are in degree C
             IF (TCANROT(I,M).NE.0.0) TCANRS(I,M)=TCANROT(I,M)-273.16
             IF (TSNOROT(I,M).NE.0.0) TSNORS(I,M)=TSNOROT(I,M)-273.16
             IF (TPNDROT(I,M).NE.0.0) TPNDRS(I,M)=TPNDROT(I,M)-273.16
-            WRITE(100,5050) (TBARROT(I,M,J)-273.16,J=1,3),TCANRS(I,M),
-     2                      TSNORS(I,M),TPNDRS(I,M)
-            WRITE(100,5060) (THLQROT(I,M,J),J=1,3),(THICROT(I,M,J),
-     1                      J=1,3),ZPNDROT(I,M)
-C
+            WRITE(100,5050)TCANRS(I,M),TSNORS(I,M),TPNDRS(I,M),
+     1         ZPNDROT(I,M)
             WRITE(100,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),
      1                      ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
-C           WRITE(100,5070) 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
           ENDDO
         ENDDO
-C
-        DO J=1,IGND
-          WRITE(100,5002) DELZ(J),ZBOT(J)
-        ENDDO
-5002  FORMAT(2F8.3)
-C
         WRITE(100,5200) JHHSTD,JHHENDD,JDSTD,JDENDD
         WRITE(100,5200) JHHSTY,JHHENDY,JDSTY,JDENDY
         CLOSE(100)

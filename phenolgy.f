@@ -3,7 +3,7 @@
      2                       thliq,   wiltsm,  fieldsm,       ta,  
      3                       anveg,     iday,     radl, roottemp,
      4                    rmatctem, stemmass, rootmass,     sort,
-     5                    nol2pfts,  fcancmx,
+     5                    nol2pfts,  fcancmx, isand,
 c    6 ------------------ inputs above this line ----------------------   
      7                    flhrloss, leaflitr, lfstatus,  pandays,
      8                    colddays)  
@@ -12,6 +12,8 @@ c
 c               Canadian Terrestrial Ecosystem Model (CTEM)
 C               Phenology, Leaf Turnover & Mortality Subroutine
 c
+C     14  Jan 2016  - There was a bit of hardwired code for 3 soil layers, that has been
+!                     fixed to allow >3.
 c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 c     J. Melton
 c
@@ -97,12 +99,12 @@ c
       integer        sort(icc),     nol2pfts(ican)
 c
       real  gleafmas(ilg,icc), bleafmas(ilg,icc),              ta(ilg),
-     1           tbar(ilg,ignd),     thliq(ilg,ignd),    sand(ilg,ignd), 
+     1           tbar(ilg,ignd),     thliq(ilg,ignd),
      2           clay(ilg,ignd),    anveg(ilg,icc),   leaflitr(ilg,icc),
      3      roottemp(ilg,icc),                   rmatctem(ilg,icc,ignd),
      4      stemmass(ilg,icc), rootmass(ilg,icc),     fcancmx(ilg,icc)
 c
-      integer pandays(ilg,icc),     lfstatus(ilg,icc),   
+      integer pandays(ilg,icc),     lfstatus(ilg,icc),  isand(ilg,ignd),
      1    chkmode(ilg,icc),     colddays(ilg,2) 
 c
       real        sla(icc),      ailcg(ilg,icc),        ailcb(ilg,icc)
@@ -169,8 +171,10 @@ c
 
         do 180 i = il1,il2
          if (fcancmx(i,j).gt.0.0) then 
+
           ailcg(i,j)=sla(j)*gleafmas(i,j)
           ailcb(i,j)=sla(j)*bleafmas(i,j)*fracbofg
+
 c         also find threshold lai as a function of stem+root biomass
 c         which is used to determine leaf status
           lfthrs(i,j)=((stemmass(i,j)+rootmass(i,j))/eta(n))
@@ -719,7 +723,7 @@ c
 c
       do 450 j = 1, ignd
         do 460 i = il1, il2
-c
+         if (isand(i,j) .ne. -3) then !for non-bedrock (bedrock keeps the initialization value of 0)
 c         estimate (1-drought stress) 
 c
           if(thliq(i,j).le.wiltsm(i,j)) then
@@ -732,7 +736,7 @@ c
             betadrgt(i,j)=1.0
           endif          
           betadrgt(i,j)=max(0.0, min(1.0,betadrgt(i,j)))
-c
+          end if
 460     continue
 450   continue
 c
@@ -743,19 +747,15 @@ c
         n = sort(j)
         do 490 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
-          drgtstrs(i,j) =  (1.0-betadrgt(i,1))*rmatctem(i,j,1) +  
-     &                     (1.0-betadrgt(i,2))*rmatctem(i,j,2) +  
-     &                     (1.0-betadrgt(i,3))*rmatctem(i,j,3)   
-          drgtstrs(i,j) = drgtstrs(i,j) /
-     &     (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))  
-          drgtstrs(i,j)=max(0.0, min(1.0,drgtstrs(i,j)))
-c
+          drgtstrs(i,j) =  sum((1.0-betadrgt(i,:))*rmatctem(i,j,:))
+          drgtstrs(i,j) = drgtstrs(i,j) / sum(rmatctem(i,j,:))
+
 c         using this drought stress term and our two vegetation-dependent
 c         parameters we find leaf loss rate associated with drought
-c
+
 c         drought related leaf loss rate
           drgtlsrt(i,j)=drlsrtmx(n)*(drgtstrs(i,j)**drgta(n))
-c
+
 c         estimate leaf loss in kg c/m2 due to drought stress
           drgtloss(i,j)=gleafmas(i,j)*( 1.0-exp(-drgtlsrt(i,j)) )
 

@@ -66,7 +66,7 @@ integer, parameter :: nmon=12           ! Number of months in a year
 ! Plant-related
 
 integer, parameter :: ican=4            ! Number of CLASS pfts
-integer, parameter :: ignd=3            ! Number of soil layers
+integer, parameter :: ignd=26            ! Number of soil layers
 integer, parameter :: icp1 = ican + 1   !
 integer,parameter  :: icc=9             ! Number of CTEM pfts
 integer,parameter  :: iccp1 = icc + 1   !
@@ -986,6 +986,29 @@ epsilonr = [ 0.65, 0.89, 0.00, &
              0.60, 0.55, 0.65, &
              0.05, 0.05, 0.00, &
              0.99, 0.99, 0.00 ]
+
+! TESTING using the compete versions:
+! omega = [ 0.80, 0.50, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!           0.80, 0.45, 0.80, &
+!           0.05, 0.05, 0.00, &
+!           1.00, 1.00, 0.00 ]
+!
+! epsilonl = [ 0.19, 0.45, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!              0.39, 0.50, 0.30, &
+!              0.80, 0.80, 0.00, &
+!              0.10, 0.10, 0.00 ]
+!
+! epsilons = [ 0.40, 0.34, 0.00, & ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!              0.21, 0.35, 0.10, &
+!              0.15, 0.15, 0.00, &
+!              0.00, 0.00, 0.00 ]
+!
+! epsilonr = [ 0.41, 0.21, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
+!              0.40, 0.15, 0.60, &
+!              0.05, 0.05, 0.00, &
+!              0.90, 0.90, 0.00 ]
+
+! --- to here.
 
 ! mainres.f parameters: ---------
 
