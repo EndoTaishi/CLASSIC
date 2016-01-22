@@ -66,7 +66,7 @@ integer, parameter :: nmon=12           ! Number of months in a year
 ! Plant-related
 
 integer, parameter :: ican=4            ! Number of CLASS pfts
-integer, parameter :: ignd=26            ! Number of soil layers
+integer, parameter :: ignd=20            ! Number of soil layers
 integer, parameter :: icp1 = ican + 1   !
 integer,parameter  :: icc=9             ! Number of CTEM pfts
 integer,parameter  :: iccp1 = icc + 1   !

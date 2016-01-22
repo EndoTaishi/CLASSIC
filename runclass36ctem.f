@@ -2390,7 +2390,7 @@ C
      2          'TG10  THL10  THI10  TG11  THL11  THI11  TG12  ',
      3          'THL12  THI12  TG13  THL13  THI13  TG14  THL14  ',
      4          'THI14  TG15  THL15  THI15  TG16  THL16  THI16  ',
-     5          'TG17  THL17  THI17  TG18  THL18  THI18  TG19  '
+     5          'TG17  THL17  THI17  TG18  THL18  THI18  TG19  ' ,
      6          'THL19  THI19  TG20  THL20  THI20  TG21  THL21  ',
      7          'THI21  TG22  THL22 THI22  TG23  THL23  THI23  ',
      8          'TG24  THL24  THI24  TG25  THL25  THI25  TG26  ',
@@ -3812,7 +3812,7 @@ c
       ! this operates on a daily timestep.
       call soil_ch4uptake(1,nml,tbaraccgat_m,THPGAT,BIGAT,thliqacc_m,
      &                     thicecacc_m,PSISGAT,GRAV,FCANGAT,obswetf,
-     &                     wetfdyngat,wetfracgrd,sandgat,RHOW,RHOICE,
+     &                     wetfdyngat,wetfracgrd,isndgat,RHOW,RHOICE,
      &                     ch4concgat,ch4soillsgat)
 
 c
@@ -5153,7 +5153,7 @@ C         THE FCANROT FOR THE RS FILE.
      1                      WFCIROT(I,M),MIDROT(I,M)
             DO J=1,IGND
              WRITE(100,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),
-     1         CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J),
+     1         CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J)-273.16,
      2         THLQROT(I,M,J),THICROT(I,M,J)
             END DO
 C           Temperatures are in degree C
