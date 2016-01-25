@@ -367,9 +367,6 @@ C       STORE CFLUXV NUMBERS IN A TEMPORARY ARRAY
           CFLUXV_IN(I)=CFLUXV(I)
         ENDDO
 C
-C       NOTE: FOR NOW, CTEM IS USING TA INSTEAD OF TCAN (THE SUB OCCURS
-C             IN PHTSYN). JM 11/09/12. (THIS IS CURRENTLY UNDER REVIEW.)
-
         CALL PHTSYN3(  AILCG, FCANC,     TCAN, CO2CONC,  PRESSG,    FI,
      1                CFLUXV,    QA,   QSWNVC,      IC,   THLIQ, ISAND,
      2                    TA,        RMATCTEM,   COSZS, XDIFFUS,   ILG,
@@ -382,10 +379,7 @@ C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
         DO 70 I =IL1,IL2                                                
-C          IF(RC(I).LE.10000.) THEN !FLAG, TURNING ON CAUSES A MAJOR PROBLEM
-C                                    WHEN THERE IS VEG WITH NO ROOTS. VA & JM OCT2012
-            RC(I)=MIN(RCPHTSYN(I),4999.999)                             
-C          ENDIF
+            RC(I)=MIN(RCPHTSYN(I),4999.999)
    70   CONTINUE                                                        
 
       ENDIF

@@ -3225,6 +3225,16 @@ c         pfcancmx value is also the nfcancmx value.
       endif   ! at the first day of each year i.e.
 c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
 
+      !       ! FLAG test JM Dec 18 2015
+      if (ihour.eq.0.and.imin.eq.0) then ! first time step of the day
+      ! Find the daylength of this day
+        do i = 1, nltest
+          call finddaylength(real(iday), radjrow(1), dayl(i)) !following rest of code, radjrow is always given index of 1 offline.
+        end do
+      end if
+      ! end FLAG test JM Dec 18 2015
+
+
 C===================== CTEM ============================================ /
 C
       CALL CLASSI(VPDROW,TADPROW,PADRROW,RHOAROW,RHSIROW,
