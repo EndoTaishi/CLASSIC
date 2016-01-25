@@ -30,6 +30,7 @@ public :: resetyearend_m
 public :: resetclassaccum
 public :: resetgridavg
 public :: resetctem_g
+public :: finddaylength
 
 !=================================================================================
 type ctem_switches
@@ -650,6 +651,10 @@ type ctem_gridavg
       real :: tcn_g
       real :: tsn_g
       real :: zsn_g
+
+      ! Variables that are the same for the entire gridcell
+      real, dimension(nlat) :: dayl_max ! maximum daylength for that location (hours)
+      real, dimension(nlat) :: dayl     ! daylength for that location (hours)
 
 end type ctem_gridavg
 
@@ -1694,6 +1699,33 @@ do i=1,nltest
 end do
 
 end subroutine resetctem_g
+
+!==================================================
+
+subroutine finddaylength(solday,radl,daylength)
+
+! Calculate the daylength based on the latitude and day of year
+
+! Joe Melton Dec 18 2015 (taken from phenlogy.f)
+
+use ctem_params, only : pi
+
+implicit none
+
+real, intent(in) :: solday  !day of year
+real, intent(in) :: radl    ! latitude
+real, intent(out) :: daylength  ! calculated daylength
+real :: theta               ! temp var
+real :: decli               ! temp var
+real :: term                ! temp var
+
+    theta=0.2163108 + 2.0*atan(0.9671396*tan(0.0086*(solday-186.0)))
+    decli=asin(0.39795*cos(theta))    !declination !note I see that CLASS does this also but with different formula...
+    term=(sin(radl)*sin(decli))/(cos(radl)*cos(decli))
+    term=max(-1.0,min(term,1.0))
+    daylength=24.0-(24.0/pi)*acos(term)
+
+end subroutine finddaylength
 
 !==================================================
 

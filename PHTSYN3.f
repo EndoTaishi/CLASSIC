@@ -5,7 +5,7 @@
      4                       THFC, THLW, FCANCMX,  L2MAX, NOL2PFTS,
 C    ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
      5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG,
-     6                        LFSTATUS)
+     6                        LFSTATUS,DAYL,DAYL_MAX)
 C     
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) 
 C                       PHOTOSYNTHESIS SUBROUTINE
@@ -135,6 +135,8 @@ C     CO2I2     - INTERCELLULAR CO2 CONCENTRATION FOR THE SHADED PART OF
 C                 THE TWO LEAF MODEL FROM THE PREVIOUS TIME STEP
 C     AN_VEG    - NET PHOTOSYNTHESIS RATE, u MOL CO2/M2.S FOR EACH PFT
 C     RML_VEG   - LEAF RESPIRATION RATE, u MOL CO2/M2.S FOR EACH PFT
+C     DAYL_MAX(ILG)      ! MAXIMUM DAYLENGTH FOR THAT LOCATION
+C     DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
 C
 C     ------------------------------------------------------------------
 C
@@ -202,6 +204,9 @@ C
      2            TEMP_AN
 C    
       INTEGER  ISAND(ILG,IG),  SN(KK), LFSTATUS(ILG,ICC) !FLAG test LFSTATUS DEC 4 2014. JM.
+      REAL DAYL_MAX(ILG)      ! MAXIMUM DAYLENGTH FOR THAT LOCATION
+      REAL DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
+
 
       REAL use_vmax !FLAG test LFSTATUS DEC 4 2014. JM.
 C
@@ -801,16 +806,21 @@ C
 !         generally follow their model of spring Vcmax maximums, summer declines, then rapid
 !         declines once senescence is initiated.
 
-          ! FLAG: test only done for one-leaf model!! JM Dec 4 2014./ Jan 21 2015.
-!          if (lfstatus(i,m).eq.1 .and. (m .eq. 2 .or. m .eq. 4)) then
-!            use_vmax = vmax(sort(m)) * 2.0
-!          else if ((lfstatus(i,m).eq.3).and.(m.eq. 2 .or. m .eq. 4))then  !leaf fall
-!            use_vmax = vmax(sort(m)) * 0.5
-!          else
-!            use_vmax = vmax(sort(m)) !normal growth
-!          end if
-!          vmaxc(i,m)=use_vmax * fpar(i,m)
-          VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
+          ! FLAG: test only done for one-leaf model!! JM Dec 18 2015
+          if ((m .eq. 2 .or. m .eq. 4)) then
+           !if (lfstatus(i,m).eq.1) then
+           !  use_vmax = vmax(sort(m)) * 2.0
+          !else if ((lfstatus(i,m).eq.3).and.(m.eq. 2 .or. m .eq. 4))then  !leaf fall
+          !  use_vmax = vmax(sort(m)) * 0.5
+           !else
+             use_vmax = vmax(sort(m)) * (dayl(i)/dayl_max(i))**2
+           !end if
+          else ! other PFT
+           use_vmax = vmax(sort(m))
+          end if
+!          write(*,*)m,lfstatus(i,m),use_vmax*1E5
+          vmaxc(i,m)=use_vmax * fpar(i,m)
+!          VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
           IF(LEAFOPT.EQ.2)THEN
              VMAXC_SUN(I,M) = VMAX(SORT(M)) * FPAR_SUN(I,M)
              VMAXC_SHA(I,M) = VMAX(SORT(M)) * FPAR_SHA(I,M)
