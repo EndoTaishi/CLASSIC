@@ -807,17 +807,12 @@ C
 !         declines once senescence is initiated.
 
           ! FLAG: test only done for one-leaf model!! JM Dec 18 2015
-          if ((m .eq. 2 .or. m .eq. 4)) then
-           !if (lfstatus(i,m).eq.1) then
-           !  use_vmax = vmax(sort(m)) * 2.0
-          !else if ((lfstatus(i,m).eq.3).and.(m.eq. 2 .or. m .eq. 4))then  !leaf fall
-          !  use_vmax = vmax(sort(m)) * 0.5
-           !else
+!          if ((m .eq. 2 .or. m .eq. 4)) then
              use_vmax = vmax(sort(m)) * (dayl(i)/dayl_max(i))**2
            !end if
-          else ! other PFT
-           use_vmax = vmax(sort(m))
-          end if
+!          else ! other PFT
+!           use_vmax = vmax(sort(m))
+!          end if
 !          write(*,*)m,lfstatus(i,m),use_vmax*1E5
           vmaxc(i,m)=use_vmax * fpar(i,m)
 !          VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
