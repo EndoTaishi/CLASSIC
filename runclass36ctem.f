@@ -3004,12 +3004,10 @@ c
 !       ! FLAG test JM Dec 18 2015
 !     Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
       do i = 1, nltest
-       write(*,*)radjrow(1)
        if (radjrow(1) > 0.) then
         call finddaylength(172.0, radjrow(1),dayl_max(i)) !following rest of code, radjrow is always given index of 1 offline.
        else ! S. Hemi so do N.Hemi winter solstice Dec 21
         call finddaylength(355.0, radjrow(1),dayl_max(i)) !following rest of code, radjrow is always given index of 1 offline.
-        write(*,*) dayl_max(i)
        end if
       end do
       ! end FLAG test JM Dec 18 2015
