@@ -3849,7 +3849,7 @@ c
       ! this operates on a daily timestep.
       call soil_ch4uptake(1,nml,tbaraccgat_m,THPGAT,BIGAT,thliqacc_m,
      &                     thicecacc_m,PSISGAT,GRAV,FCANGAT,obswetf,
-     &                     wetfdyngat,wetfracgrd,sandgat,RHOW,RHOICE,
+     &                     wetfdyngat,wetfracgrd,isndgat,RHOW,RHOICE,
      &                     ch4concgat,ch4soillsgat)
 
 c

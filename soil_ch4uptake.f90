@@ -1,6 +1,6 @@
 subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &
      &                     THIC,PSIS,GRAV,FCAN,obswetf, &
-     &                     wetfdyn,wetfracgrd,SAND,RHOW,RHOICE, &
+     &                     wetfdyn,wetfracgrd,isand,RHOW,RHOICE, &
      &                     atm_CH4,CH4_soills)
 
 !           Canadian Terrestrial Ecosystem Model (CTEM)
@@ -23,7 +23,6 @@ real, dimension(ilg,ignd), intent(in) :: BI         ! Clapp and Hornberger b-ter
 real, dimension(ilg,ignd), intent(in) :: THLQ       ! Fractional water content (-) - daily average
 real, dimension(ilg,ignd), intent(in) :: THIC       ! Fractional ice content (-) - daily average
 real, dimension(ilg,ignd), intent(in) :: PSIS       ! Soil moisture suction at saturation (m)
-real, dimension(ilg,ignd), intent(in) :: SAND       ! Sand content (%)
 real, dimension(ilg,icp1), intent(in) :: FCAN       ! Fractional coverage of vegetation (-)
 real, dimension(nlat), intent(in) :: wetfracgrd     ! Prescribed fraction of wetlands in a grid cell
 real, dimension(ilg), intent(in) :: wetfdyn         ! Dynamic gridcell wetland fraction determined using slope and soil moisture
@@ -32,6 +31,7 @@ real, intent(in) :: GRAV                            ! Acceleration due to gravit
 logical, intent(in) :: obswetf                      ! Switch, if true then use the prescribed wetland cover
 real, intent(in) :: RHOW                            ! Density of water ($kg m^{-3}$)
 real, intent(in) :: RHOICE                          ! Density of ice ($kg m^{-3}$)
+integer, dimension(ilg,ignd), intent(in) :: isand   ! flag for soil/bedrock/ice/glacier
 integer, intent(in) :: IL1
 integer, intent(in) :: IL2
 
@@ -52,10 +52,10 @@ real :: k_oxidr                                     ! First-order oxidation rate
 real :: r_T                                         ! Temperature factor used in determination of rate constant (-)
 real :: r_SM                                        ! Soil moisture factor used in determination of rate constant (-)
 integer :: i,j,layer                                ! Counters
-integer :: isand                                    ! Check if bedrock (value of -3)
 real :: psi                                         ! Soil moisture suction / matric potential (m)
 real :: r_C                                         ! Factor to account for croplands
 real :: r_W                                         ! Factor to account for wetlands
+real :: THP_tot                                     ! temp variable for total porosity ($cm^3 cm^{-3}$)
 
 ! Local parameters:
 real, parameter :: D_air = 0.196        ! Diffusivity of CH4 in air (cm^2 s^-1) @ STP
@@ -72,9 +72,7 @@ layer = 1
 
 do 10 i = IL1, IL2
 
-    isand = nint(SAND(i,layer))
-
-    if (isand <= -1) goto 10 ! not soil so move on.
+    if (isand(i,layer) <= -1) goto 10 ! not soil so move on.
 
     ! Convert tbar to Tsoil (from K to deg C)
     Tsoil = tbar(i,layer) - 273.16
@@ -86,18 +84,19 @@ do 10 i = IL1, IL2
 
     ! Find the air filled porosity, THP_air:
     THP_air = THP(i,layer) - (THLQ(i,layer) + THIC(i,layer)*RHOICE/RHOW)
+    THP_tot = THP(i,layer)
+
     ! Note: THP_air can fall to < 0 after snow melt
     if (THP_air  < 0.) then
-        write(*,*)'In soil_ch4uptake THP_air became negative!'
-        call exit()
-        !THP_air = max(0.,THP_air)
+        THP_air = 0.0
+        THP_tot = (THLQ(i,layer) + THIC(i,layer)*RHOICE/RHOW)
     end if
 
     ! The BI  (Clapp and Hornberger b-term) is already calculated by CLASS as:
     !BI = 15.9 * f_clay + 2.91, thus we use that value.
 
     ! G_soil is the influence of the soil texture, moisture, and porosity:
-    G_soil = THP(i,layer)**(4./3.) * (THP_air / THP(i,layer))**(1.5 + 3. / BI(i,layer))
+    G_soil = THP_tot**(4./3.) * (THP_air / THP_tot)**(1.5 + 3. / BI(i,layer))
 
     ! The diffusion coefficient of CH4 in soil is then:
     D_soil = D_air * G_T * G_soil
@@ -118,7 +117,7 @@ do 10 i = IL1, IL2
 
     ! Find the soil water potential for the uppermost layer
     ! need the absolute value.
-    psi = abs(PSIS(i,layer) * (THLQ(i,layer)/THP(i,layer))**(-BI(i,layer)))
+    psi = abs(PSIS(i,layer) * (THLQ(i,layer)/THP_tot)**(-BI(i,layer)))
 
     ! Convert units from m to kPa
     psi = psi * GRAV
