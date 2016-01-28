@@ -95,7 +95,7 @@ c     through use statements for modules:
      6                               ctem_tile, ctem_tile_mo,
      7                               ctem_tile_yr,resetgridavg,
      8                               resetmonthend_m,resetyearend_g,
-     9                               resetyearend_m
+     9                               resetyearend_m,finddaylength
 
       use io_driver,          only : read_from_ctm, create_outfiles,
      1                               write_ctm_rs, class_monthly_aw,
@@ -1100,7 +1100,7 @@ c
       real, pointer, dimension(:) :: ch4dyn1_g
       real, pointer, dimension(:) :: ch4dyn2_g
       real, pointer, dimension(:) :: ch4soills_g
-      real, pointer, dimension(:,:) :: afrleaf_g
+       real, pointer, dimension(:,:) :: afrleaf_g
       real, pointer, dimension(:,:) :: afrstem_g
       real, pointer, dimension(:,:) :: afrroot_g
       real, pointer, dimension(:,:) :: lfstatus_g
@@ -1113,6 +1113,10 @@ c
       real, pointer, dimension(:,:) :: THLQROT_g
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
+
+      ! Variables that are the same for the entire gridcell
+      real, pointer, dimension(:) :: dayl_max
+      real, pointer, dimension(:) :: dayl
 
 !     -----------------------
 !      Grid averaged monthly variables (denoted by name ending in "_mo_g")
@@ -1881,6 +1885,10 @@ C===================== CTEM ==============================================\
       THLQROT_g         => ctem_grd%THLQROT_g
       THICROT_g         => ctem_grd%THICROT_g
       GFLXROT_g         => ctem_grd%GFLXROT_g
+
+       ! Variables that are the same for the entire gridcell
+       dayl_max         => ctem_grd%dayl_max
+       dayl             => ctem_grd%dayl
 
        fsstar_g         => ctem_grd%fsstar_g
        flstar_g         => ctem_grd%flstar_g
@@ -2984,6 +2992,17 @@ c
 c
       endif   ! if (ctem_on)
 c
+!       ! FLAG test JM Dec 18 2015
+!     Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
+      do i = 1, nltest
+       if (radjrow(1) > 0.) then
+        call finddaylength(172.0, radjrow(1),dayl_max(i)) !following rest of code, radjrow is always given index of 1 offline.
+       else ! S. Hemi so do N.Hemi winter solstice Dec 21
+        call finddaylength(355.0, radjrow(1),dayl_max(i)) !following rest of code, radjrow is always given index of 1 offline.
+       end if
+      end do
+      ! end FLAG test JM Dec 18 2015
+
 c     ctem initial preparation done
 
 C===================== CTEM ============================================ /
@@ -3200,6 +3219,16 @@ c         pfcancmx value is also the nfcancmx value.
 
       endif   ! at the first day of each year i.e.
 c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
+
+      !       ! FLAG test JM Dec 18 2015
+      if (ihour.eq.0.and.imin.eq.0) then ! first time step of the day
+      ! Find the daylength of this day
+        do i = 1, nltest
+          call finddaylength(real(iday), radjrow(1), dayl(i)) !following rest of code, radjrow is always given index of 1 offline.
+        end do
+      end if
+      ! end FLAG test JM Dec 18 2015
+
 
 C===================== CTEM ============================================ /
 C
@@ -3521,7 +3550,7 @@ C
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
      S  TCSNOW,GSNOW,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     U  NBS,    ISNOALB,lfstatusgat)
+     U  NBS,    ISNOALB,lfstatusgat,dayl, dayl_max)
 C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.

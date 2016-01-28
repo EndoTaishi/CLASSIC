@@ -22,7 +22,8 @@
      K                 THLIQ,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                 XDIFFUS,ICTEM,IC,CO2I1,CO2I2,
      M                 ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS)
+     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS,
+     O                 DAYL,DAYL_MAX)
 C
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATES
 C     *                         ACCORDING TO WATER AVAILABILITY.
@@ -212,6 +213,10 @@ C
      6         THFC(ILG,IG),       THLW(ILG,IG),      CFLUXV(ILG),
      7       CFLUXV_IN(ILG)
 
+      REAL DAYL_MAX(ILG)      ! MAXIMUM DAYLENGTH FOR THAT LOCATION
+      REAL DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
+
+
       INTEGER ISAND(ILG,IG),    LFSTATUS(ILG,ICTEM)
 C
       INTEGER ICTEM, ICTEMMOD, L2MAX, NOL2PFTS(IC), IC, IG
@@ -362,25 +367,19 @@ C       STORE CFLUXV NUMBERS IN A TEMPORARY ARRAY
           CFLUXV_IN(I)=CFLUXV(I)
         ENDDO
 C
-C       NOTE: FOR NOW, CTEM IS USING TA INSTEAD OF TCAN (THE SUB OCCURS
-C             IN PHTSYN). JM 11/09/12. (THIS IS CURRENTLY UNDER REVIEW.)
-
         CALL PHTSYN3(  AILCG, FCANC,     TCAN, CO2CONC,  PRESSG,    FI,
      1                CFLUXV,    QA,   QSWNVC,      IC,   THLIQ, ISAND,
      2                    TA,        RMATCTEM,   COSZS, XDIFFUS,   ILG,
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
      4               THFC,  THLW,  FCANCMX,   L2MAX,NOL2PFTS,
      5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG,
-     6              LFSTATUS)  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
+     6              LFSTATUS,DAYL, DAYL_MAX)  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
 C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
         DO 70 I =IL1,IL2                                                
-C          IF(RC(I).LE.10000.) THEN !FLAG, TURNING ON CAUSES A MAJOR PROBLEM
-C                                    WHEN THERE IS VEG WITH NO ROOTS. VA & JM OCT2012
-            RC(I)=MIN(RCPHTSYN(I),4999.999)                             
-C          ENDIF
+            RC(I)=MIN(RCPHTSYN(I),4999.999)
    70   CONTINUE                                                        
 
       ENDIF
