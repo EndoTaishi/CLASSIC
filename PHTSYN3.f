@@ -797,26 +797,31 @@ C         FIND Vmax,canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE
 C         LEAF MODEL
 C
 !         ------------- Changing Vcmax seasonally -----------------------\\\
-!         Based on Wilson, Baldocchi, and Hanson, Plant, Cell and Environment 2001, 24, 571-583.
+!         Based on Bauerle, W. L., Oren, R., Way, D. A., Qian, S. S., Stoy, P. C., Thornton,
+!         P. E., Bowden, J. D., Hoffman, F. M. and Reynolds, R. F.: Photoperiodic regulation
+!         of the seasonal pattern of photosynthetic capacity and the implications for carbon
+!         cycling, Proc. Natl. Acad. Sci. U. S. A., 109(22), 8612–8617, 2012,
 !         there is good evidence for the Vcmax varying throughout the season for deciduous tree
 !         species. We are adopting a parameterization based upon their paper with some differences.
-!         First, we cannot use an initial Vcmax of 0 at the start of leaf out. This is because we
-!         need the leaves to gain the carbon they need for growth and we have no non-structural
-!         carbohydrates to push the leaves out. So we thus start with high Vcmax. We otherwise
-!         generally follow their model of spring Vcmax maximums, summer declines, then rapid
-!         declines once senescence is initiated.
+!         We don't apply it to evergreens like they suggest. Their paper had only one evergreen species
+!         and other papers (Miyazawa, Y. and Kikuzawa, K.: Physiological basis of seasonal trend in
+!         leaf photosynthesis of five evergreen broad-leaved species in a temperate deciduous forest,
+!         Tree Physiol., 26(2), 249–256, 2006.) don't seem to back that up. Grasses and crops are also
+!         not affected by the dayl.
 
-          ! FLAG: test only done for one-leaf model!! JM Dec 18 2015
-          if ((m .eq. 2 .or. m.eq. 3 .or. m .eq. 4)) then
+          if ((m .eq. 2 .or. m .eq. 4)) then
              use_vmax = vmax(sort(m)) * (dayl(i)/dayl_max(i))**2
           else ! evergreens, crops, and grasses
            use_vmax = vmax(sort(m))
           end if
+
           vmaxc(i,m)=use_vmax * fpar(i,m)
 
           IF(LEAFOPT.EQ.2)THEN
-             VMAXC_SUN(I,M) = VMAX(SORT(M)) * FPAR_SUN(I,M)
-             VMAXC_SHA(I,M) = VMAX(SORT(M)) * FPAR_SHA(I,M)
+             ! The two leaf is assumed to be affect by the insolation seasonal cycle the
+             ! same for each sun/shade leaf
+             VMAXC_SUN(I,M) = use_vmax * FPAR_SUN(I,M)
+             VMAXC_SHA(I,M) = use_vmax * FPAR_SHA(I,M)
           ENDIF
 C
 !         ------------- Changing Vcmax seasonally -----------------------///
