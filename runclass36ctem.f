@@ -3146,6 +3146,7 @@ C
       if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
 
             if (ctem_on) then
+             do i=1,nltest
               if (obswetf) then
                   read(16,*,end=1001) obswetyr,(wetfrac_mon(i,j),j=1,12)
               else
@@ -3158,7 +3159,7 @@ C
                 read(17,*,end=312) obslghtyr,(mlightnggrd(i,j),j=1,12)
 312             continue !if end of file, just keep using the last year of lighting data.
               end if !obslight
-
+             enddo
             endif ! ctem_on
 
 c         If popdon=true, calculate fire extinguishing probability and
