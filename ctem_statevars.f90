@@ -37,7 +37,6 @@ type ctem_switches
 
     logical :: ctem_on
     logical :: parallelrun
-    logical :: mosaic
     logical :: cyclemet
     logical :: dofire
     logical :: run_model

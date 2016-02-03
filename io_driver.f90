@@ -25,7 +25,7 @@ subroutine read_from_ctm(nltest,nmtest,FCANROT,FAREROT,RSMNROT,QA50ROT, &
                          XSLPROT,GRKFROT,WFSFROT,WFCIROT,MIDROT,SANDROT, &
                          CLAYROT,ORGMROT,TBARROT,THLQROT,THICROT,TCANROT, &
                          TSNOROT,TPNDROT,ZPNDROT,RCANROT,SCANROT,SNOROT, &
-                         ALBSROT,RHOSROT,GROROT,argbuff)
+                         ALBSROT,RHOSROT,GROROT,argbuff,onetile_perPFT)
 
 !   This subroutine reads in the restart/starting conditions from
 !   the .CTM file. The input values are checked and possibly adjusted
@@ -73,9 +73,9 @@ real, dimension(nlat,nmos), intent(inout) :: SNOROT
 real, dimension(nlat,nmos), intent(inout) :: ALBSROT
 real, dimension(nlat,nmos), intent(inout) :: RHOSROT
 real, dimension(nlat,nmos), intent(inout) :: GROROT
+logical, intent(in) :: onetile_perPFT
 
 ! pointers:
-logical, pointer :: mosaic
 logical, pointer :: dofire
 logical, pointer :: compete
 logical, pointer :: inibioclim
@@ -121,7 +121,6 @@ integer :: i,m,j,strlen
 real, dimension(ilg,2) :: crop_temp_frac
 
 ! point pointers:
-mosaic            => c_switch%mosaic
 dofire            => c_switch%dofire
 compete           => c_switch%compete
 inibioclim        => c_switch%inibioclim
@@ -246,7 +245,7 @@ close(11)
 
 !     Check that a competition or luc run has the correct number of mosaics.
 !     if it is not a start_bare run, then nmtest should equal nmos
-      if (mosaic .and. (compete .or. lnduseon) .and. .not. start_bare) then
+      if (onetile_perPFT .and. (compete .or. lnduseon) .and. .not. start_bare) then
         if (nmtest .ne. nmos) then
            write(6,*)'compete or luc runs that do not start from bare'
            write(6,*)'ground need the number of mosaics to equal icc+1'
@@ -261,7 +260,7 @@ close(11)
 !     for composite runs (the composite set up is after this one for mosaics)
       if ((compete .or. lnduseon) .and. start_bare) then
 
-       if (mosaic) then 
+       if (onetile_perPFT) then
 
 !       store the read-in crop fractions as we keep them even when we start bare. 
 !       FLAG: this is setup assuming that crops are in mosaics 6 and 7. JM Apr 9 2014.
@@ -412,7 +411,7 @@ close(11)
           FAREROT(i,7)=crop_temp_frac(i,2)
          end do
 
-      else if (.not. mosaic) then  !set up for composite runs when start_bare is on and compete or landuseon
+      else if (.not. onetile_perPFT) then  !set up for composite runs when start_bare is on and compete or landuseon
 
 !       store the read-in crop fractions as we keep them even when we start bare. 
 !       FLAG: this is setup assuming that crops are in pft number 6 and 7. JM Apr 9 2014.
@@ -717,7 +716,6 @@ character(4), intent(in) :: title1, title2, title3, title4, &
                             place3, place4, place5, place6
 
 ! pointers:
-logical, pointer :: mosaic
 logical, pointer :: dofire
 logical, pointer :: ctem_on
 logical, pointer :: compete
@@ -731,7 +729,6 @@ integer :: strlen
 character(80) :: titlec1, titlec2, titlec3
 
 ! point pointers:
-mosaic            => c_switch%mosaic
 dofire            => c_switch%dofire
 ctem_on           => c_switch%ctem_on
 compete           => c_switch%compete
@@ -762,20 +759,16 @@ if (.not. parallelrun .and. ctem_on) then ! stand alone mode, includes half-hour
     open(unit=71, file=argbuff(1:strlen(argbuff))//'.CT01H_M')  
     open(unit=711,file=argbuff(1:strlen(argbuff))//'.CT01H_G')
 
-    if (mosaic) then
-    
     !   ctem daily output files (mosaic)
-        open(unit=72,file=argbuff(1:strlen(argbuff))//'.CT01D_M')  
-        open(unit=73,file=argbuff(1:strlen(argbuff))//'.CT02D_M')
-        open(unit=74,file=argbuff(1:strlen(argbuff))//'.CT03D_M')
-        open(unit=75,file=argbuff(1:strlen(argbuff))//'.CT04D_M')
-        open(unit=76,file=argbuff(1:strlen(argbuff))//'.CT05D_M')
-        
-        if (dofire .or. lnduseon) then
-        open(unit=78,file=argbuff(1:strlen(argbuff))//'.CT06D_M') ! disturbance vars
-        endif
+    open(unit=72,file=argbuff(1:strlen(argbuff))//'.CT01D_M')
+    open(unit=73,file=argbuff(1:strlen(argbuff))//'.CT02D_M')
+    open(unit=74,file=argbuff(1:strlen(argbuff))//'.CT03D_M')
+    open(unit=75,file=argbuff(1:strlen(argbuff))//'.CT04D_M')
+    open(unit=76,file=argbuff(1:strlen(argbuff))//'.CT05D_M')
 
-    end if ! mosaic
+    if (dofire .or. lnduseon) then
+    open(unit=78,file=argbuff(1:strlen(argbuff))//'.CT06D_M') ! disturbance vars
+    endif
 
     ! ctem daily output files (grid-average)
     open(unit=721,file=argbuff(1:strlen(argbuff))//'.CT01D_G') 
@@ -808,38 +801,32 @@ OPEN(UNIT=83,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1Y_G')
 
 if (ctem_on) then
 
-    if (mosaic) then
+    ! Mosaic file names:
 
-        ! Mosaic file names:
+    ! CTEM monthly output files
+    open(unit=84,file=argbuff(1:strlen(argbuff))//'.CT01M_M')
 
-        ! CTEM monthly output files
-        open(unit=84,file=argbuff(1:strlen(argbuff))//'.CT01M_M')
+    ! CTEM yearly output files
+    open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y_M')
 
-        ! CTEM yearly output files
-        open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y_M')
+    if (dofire .or. lnduseon) then
+        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M_M') ! Monthly disturbance
+        open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y_M') ! Annual disturbance
+    endif
 
-        if (dofire .or. lnduseon) then
-            open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M_M') ! Monthly disturbance
-            open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y_M') ! Annual disturbance
-        endif 
+    ! Composite file names:
 
-    else
+    ! CTEM monthly output files
+    open(unit=84,file=argbuff(1:strlen(argbuff))//'.CT01M_G')
 
-        ! Composite file names:
+    ! CTEM yearly output files
+    open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y_G')
 
-        ! CTEM monthly output files
-        open(unit=84,file=argbuff(1:strlen(argbuff))//'.CT01M_G')
+    if (dofire .or. lnduseon) then
+        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M_G') ! Monthly disturbance
+        open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y_G') ! Annual disturbance
+    endif
 
-        ! CTEM yearly output files
-        open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y_G')
-
-        if (dofire .or. lnduseon) then
-            open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M_G') ! Monthly disturbance
-            open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y_G') ! Annual disturbance
-        endif 
-
-    end if !mosiac/composite 
-    
     if (compete .or. lnduseon) then
         open(unit=88,file=argbuff(1:strlen(argbuff))//'.CT07M_GM')! ctem pft fractions MONTHLY
 
@@ -865,47 +852,44 @@ if (ctem_on .and. .not. parallelrun) then
     write(71,7020)
     write(71,7030)
     
-    if (mosaic) then
-        write(72,6001) title1,title2,title3,title4,title5,title6
-        write(72,6002) name1,name2,name3,name4,name5,name6
-        write(72,6003) place1,place2,place3,place4,place5,place6
-        write(72,7020)
-        write(72,7040)
-        
-        write(73,6001) title1,title2,title3,title4,title5,title6
-        write(73,6002) name1,name2,name3,name4,name5,name6
-        write(73,6003) place1,place2,place3,place4,place5,place6
-        write(73,7020)
-        write(73,7050)
-        
-        write(74,6001) title1,title2,title3,title4,title5,title6
-        write(74,6002) name1,name2,name3,name4,name5,name6
-        write(74,6003) place1,place2,place3,place4,place5,place6
-        write(74,7020)
-        write(74,7061)
-        
-        write(75,6001) title1,title2,title3,title4,title5,title6
-        write(75,6002) name1,name2,name3,name4,name5,name6
-        write(75,6003) place1,place2,place3,place4,place5,place6
-        write(75,7020)
-        write(75,7070)
-        
-        write(76,6001) title1,title2,title3,title4,title5,title6
-        write(76,6002) name1,name2,name3,name4,name5,name6
-        write(76,6003) place1,place2,place3,place4,place5,place6
-        write(76,7020)
-        write(76,7080)
-    
-        if (dofire .or. lnduseon) then
-            write(78,6001) title1,title2,title3,title4,title5,title6
-            write(78,6002) name1,name2,name3,name4,name5,name6
-            write(78,6003) place1,place2,place3,place4,place5,place6
-            write(78,7021)
-            write(78,7110)
-            write(78,7111)
-        end if
-        
-    end if !mosaic
+    write(72,6001) title1,title2,title3,title4,title5,title6
+    write(72,6002) name1,name2,name3,name4,name5,name6
+    write(72,6003) place1,place2,place3,place4,place5,place6
+    write(72,7020)
+    write(72,7040)
+
+    write(73,6001) title1,title2,title3,title4,title5,title6
+    write(73,6002) name1,name2,name3,name4,name5,name6
+    write(73,6003) place1,place2,place3,place4,place5,place6
+    write(73,7020)
+    write(73,7050)
+
+    write(74,6001) title1,title2,title3,title4,title5,title6
+    write(74,6002) name1,name2,name3,name4,name5,name6
+    write(74,6003) place1,place2,place3,place4,place5,place6
+    write(74,7020)
+    write(74,7061)
+
+    write(75,6001) title1,title2,title3,title4,title5,title6
+    write(75,6002) name1,name2,name3,name4,name5,name6
+    write(75,6003) place1,place2,place3,place4,place5,place6
+    write(75,7020)
+    write(75,7070)
+
+    write(76,6001) title1,title2,title3,title4,title5,title6
+    write(76,6002) name1,name2,name3,name4,name5,name6
+    write(76,6003) place1,place2,place3,place4,place5,place6
+    write(76,7020)
+    write(76,7080)
+
+    if (dofire .or. lnduseon) then
+        write(78,6001) title1,title2,title3,title4,title5,title6
+        write(78,6002) name1,name2,name3,name4,name5,name6
+        write(78,6003) place1,place2,place3,place4,place5,place6
+        write(78,7021)
+        write(78,7110)
+        write(78,7111)
+    end if
 
 7010  FORMAT(A80)
 7020  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) DAILY RESULTS')
@@ -1317,7 +1301,7 @@ end subroutine class_monthly_aw
 
 !==============================================================================================================
 
-subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea)
+subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT)
 
 
 use ctem_statevars,     only : ctem_tile, vrot, c_switch, &
@@ -1337,6 +1321,7 @@ integer, intent(in) :: jdsty
 integer, intent(in) :: jdendd
 integer, intent(in) :: jdendy
 real, intent(in), dimension(:) :: grclarea
+logical, intent(in) :: onetile_perPFT
 
 ! pointers
 
@@ -1345,7 +1330,6 @@ logical, pointer :: lnduseon
 logical, pointer :: compete
 logical, pointer :: dowetlands
 logical, pointer :: obswetf
-logical, pointer :: mosaic
 real, pointer, dimension(:,:,:) :: fcancmxrow
 real, pointer, dimension(:,:,:) :: gppvegrow
 real, pointer, dimension(:,:,:) :: nepvegrow
@@ -1546,7 +1530,6 @@ lnduseon              => c_switch%lnduseon
 compete               => c_switch%compete
 dowetlands            => c_switch%dowetlands
 obswetf               => c_switch%obswetf
-mosaic                => c_switch%mosaic
 fcancmxrow            => vrot%fcancmx
 gppvegrow         => vrot%gppveg
 nepvegrow         => vrot%nepveg
@@ -1842,19 +1825,15 @@ do 851 i=1,nltest
     if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
      if ((iday .ge. jdstd).and.(iday .le.jdendd))then
 
-!             write grid-averaged fluxes of basic quantities to 
-!             file *.CT01D_M
+!      write grid-averaged fluxes of basic quantities to file *.CT01D_M
 
-        if (mosaic) then
         write(72,8200)iday,iyear,gpprow(i,m),npprow(i,m), &
                 neprow(i,m),nbprow(i,m),autoresrow(i,m), &
                 hetroresrow(i,m),litresrow(i,m),socresrow(i,m), &
                 (dstcemlsrow(i,m)+dstcemls3row(i,m)), &
                litrfallrow(i,m),humiftrsrow(i,m),' TILE ',m,'AVGE'
-        end if
 
-!             write breakdown of some of basic fluxes to file *.CT3 
-!             and selected litter fluxes for selected pft
+!       Write breakdown of some of basic fluxes to file *.CT3  and selected litter fluxes for selected pft
 
 !       First for the bare fraction of the grid cell.
         hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*1.0377 ! convert to gc/m2.day
@@ -1874,19 +1853,17 @@ do 851 i=1,nltest
             litresvegrow(i,m,j)=litresvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
             soilcresvegrow(i,m,j)=soilcresvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
 
-!                write to file .CT01D_M 
-            if (mosaic) then
+!           Write to file .CT01D_M
+
             write(72,8201)iday,iyear,gppvegrow(i,m,j), &
             nppvegrow(i,m,j),nepvegrow(i,m,j), &
             ' TILE ',m,'PFT',j
-            
 
 !                write to file .CT02D_M 
             write(73,8300)iday,iyear,rmlvegaccrow(i,m,j), & 
            rmsvegrow(i,m,j),rmrvegrow(i,m,j),rgvegrow(i,m,j), &
            leaflitrrow(i,m,j),tltrleafrow(i,m,j), &
           tltrstemrow(i,m,j),tltrrootrow(i,m,j),' TILE ',m,'PFT',j
-
 
 !                write grid-averaged pool sizes and component sizes for
 !                seleced ctem pft to file *.CT03D_M
@@ -1927,15 +1904,11 @@ do 851 i=1,nltest
          ' TILE ',m,'PFT',j
         endif
 
-        end if !mosaic
-
         endif  !if (fcancmxrow(i,m,j) .gt.0.0) then
 
 853           continue
 
-        if (mosaic) then
         if (ifcancmx_m(i,m) .gt. 0) then
-
 
 !               write to file .CT02D_M 
         write(73,8300)iday,iyear,rmlrow(i,m),rmsrow(i,m), &
@@ -1963,7 +1936,6 @@ do 851 i=1,nltest
                 ' TILE ',m,'AVGE'
 
         end if !if (ifcancmx_m(i,m) .gt.0.0) then
-        endif !mosaic
 !
     end if
     endif ! if write daily
@@ -2117,17 +2089,21 @@ do 851 i=1,nltest
     endif  
 
     if (compete .or. lnduseon) then 
+
         sumfare=0.0
-        if (mosaic) then
+        if (onetile_perPFT) then
         do m=1,nmos
             sumfare=sumfare+FAREROT(i,m)
         enddo
         write(761,8200)iday,iyear,(FAREROT(i,m)*100.,m=1,nmos),sumfare
         else !composite
-        do j=1,icc  !m = 1
-            sumfare=sumfare+fcancmxrow(i,1,j)
-        enddo
-        write(761,8200)iday,iyear,(fcancmxrow(i,1,j)*100.,j=1,icc),(1.0-sumfare)*100.,sumfare
+        do m=1,nmos
+         sumfare=0.0
+         do j=1,icc  !m = 1
+            sumfare=sumfare+fcancmxrow(i,m,j)
+         enddo
+         write(761,8200)iday,iyear,(fcancmxrow(i,m,j)*100.,j=1,icc),(1.0-sumfare)*100.,sumfare,' TILE ',m
+        end do
         endif !mosaic/composite
     endif !compete/lnduseon
 
@@ -2140,7 +2116,7 @@ end subroutine ctem_daily_aw
 
 !==============================================================================================================
 
-subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday)
+subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,onetile_perPFT)
 
 use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch
 use ctem_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed,nmos
@@ -2154,6 +2130,7 @@ integer, intent(in) :: iday
 real, intent(in), dimension(:,:) :: FAREROT
 integer, intent(in) :: iyear
 integer, intent(in) :: nday
+logical, intent(in) :: onetile_perPFT
 
 ! pointers
 
@@ -2162,7 +2139,6 @@ logical, pointer :: lnduseon
 logical, pointer :: compete
 logical, pointer :: dowetlands
 logical, pointer :: obswetf
-logical, pointer :: mosaic
 real, pointer, dimension(:,:,:) :: fcancmxrow
 real, pointer, dimension(:,:,:) :: laimaxg_mo_m
 real, pointer, dimension(:,:,:) :: stemmass_mo_m
@@ -2308,7 +2284,6 @@ lnduseon              => c_switch%lnduseon
 compete               => c_switch%compete
 dowetlands            => c_switch%dowetlands
 obswetf               => c_switch%obswetf
-mosaic                => c_switch%mosaic
 pftexistrow           => vrot%pftexist
 fcancmxrow            => vrot%fcancmx
 laimaxg_mo_m          =>ctem_tile_mo%laimaxg_mo_m
@@ -2706,21 +2681,23 @@ ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
 
             if (compete .or. lnduseon) then
               sumfare=0.0
-              if (mosaic) then
+              if (onetile_perPFT) then
                do m=1,nmos
                  sumfare=sumfare+FAREROT(i,m)
                enddo
                write(88,8106)imonth,iyear,(FAREROT(i,m)*100.,m=1,nmos) &
                            ,sumfare,(pftexistrow(i,j,j),j=1,icc)
-              else !composite
-               m=1
-               do j=1,icc
+              else !composite/mosaic
+               do m=1,nmtest
+                sumfare = 0.0
+                do j=1,icc
                  sumfare=sumfare+fcancmxrow(i,m,j)
-               enddo
-               write(88,8106)imonth,iyear,(fcancmxrow(i,m,j)*100., &
+                enddo
+                write(88,8106)imonth,iyear,(fcancmxrow(i,m,j)*100., &
                            j=1,icc),(1.0-sumfare)*100.,sumfare, &
-                             (pftexistrow(i,m,j),j=1,icc)
-              endif !mosaic/composite
+                             (pftexistrow(i,m,j),j=1,icc),' TILE ',m
+                end do
+              endif !onetile_perPFT/composite
             endif !compete/lnduseon
 
              if (dowetlands .or. obswetf) then
@@ -2807,7 +2784,7 @@ end subroutine ctem_monthly_aw
 
 !==============================================================================================================
 
-subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear)
+subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT)
 
 use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch
 use ctem_params, only : icc,iccp1,seed,nmos
@@ -2820,6 +2797,7 @@ integer, intent(in) :: nmtest
 integer, intent(in) :: iday
 real, intent(in), dimension(:,:) :: FAREROT
 integer, intent(in) :: iyear
+logical, intent(in) :: onetile_perPFT
 
 ! pointers
 
@@ -2828,7 +2806,6 @@ logical, pointer :: lnduseon
 logical, pointer :: compete
 logical, pointer :: dowetlands
 logical, pointer :: obswetf
-logical, pointer :: mosaic
 
 real, pointer, dimension(:,:,:) :: laimaxg_yr_m
 real, pointer, dimension(:,:,:) :: stemmass_yr_m
@@ -2976,7 +2953,6 @@ lnduseon              => c_switch%lnduseon
 compete               => c_switch%compete
 dowetlands            => c_switch%dowetlands
 obswetf               => c_switch%obswetf
-mosaic                => c_switch%mosaic
 
 laimaxg_yr_m          =>ctem_tile_yr%laimaxg_yr_m
 stemmass_yr_m         =>ctem_tile_yr%stemmass_yr_m
@@ -3337,22 +3313,23 @@ do 882 i=1,nltest
         if (compete .or. lnduseon) then
 
             sumfare=0.0
-            if (mosaic) then
+            if (onetile_perPFT) then
                 do m=1,nmos
                     sumfare=sumfare+FAREROT(i,m)
                 enddo
                 write(89,8107)iyear,(FAREROT(i,m)*100.,m=1,nmos), &
                             sumfare,(pftexistrow(i,j,j),j=1,icc)
             else  !composite
-                m=1
-                do j=1,icc
+                do m=1,nmtest
+                 sumfare=0.0
+                 do j=1,icc
                     sumfare=sumfare+fcancmxrow(i,m,j)
-                enddo
+                 enddo
 
-                write(89,8107)iyear,(fcancmxrow(i,m,j)*100., &
+                 write(89,8107)iyear,(fcancmxrow(i,m,j)*100., &
                         j=1,icc),(1.0-sumfare)*100.,sumfare, &
-                        (pftexistrow(i,m,j),j=1,icc)
-
+                        (pftexistrow(i,m,j),j=1,icc),' TILE ',m
+                end do
             endif
         endif !compete/lnduseon
 
@@ -3445,7 +3422,6 @@ logical, pointer :: lnduseon
 logical, pointer :: compete
 logical, pointer :: dowetlands
 logical, pointer :: obswetf
-logical, pointer :: mosaic
 logical, pointer :: parallelrun
 
 ! point pointers
@@ -3455,7 +3431,6 @@ lnduseon              => c_switch%lnduseon
 compete               => c_switch%compete
 dowetlands            => c_switch%dowetlands
 obswetf               => c_switch%obswetf
-mosaic                => c_switch%mosaic
 parallelrun           => c_switch%parallelrun
 
 ! -----------------------
@@ -3467,8 +3442,6 @@ parallelrun           => c_switch%parallelrun
         close(731)
         close(741)
         close(751)
-
-        if (mosaic) then
          close(72)
          close(73)
          close(74)
@@ -3477,7 +3450,6 @@ parallelrun           => c_switch%parallelrun
          if (dofire .or. lnduseon) then
           close(78)
          end if
-        end if
 
         if (compete .or. lnduseon) then
           close(761)

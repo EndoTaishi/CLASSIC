@@ -10,7 +10,7 @@
      &                      thicec, soildpth, spinfast,   todfrac,&
      &                     compete,   netrad,   precip,   &
      &                    popdin, dofire,  dowetlands,obswetf,isand,  &
-     &                       faregat,  mosaic, wetfrac, wetfrac_s,&
+     &                   faregat, onetile_perPFT, wetfrac, wetfrac_s,&
 !
 !    -------------- inputs used by ctem are above this line ---------
 !
@@ -56,7 +56,6 @@
      &                 wetfdyn, ch4dyn1, ch4dyn2)
 !
 !    ---------------- outputs are listed above this line ------------ 
-!
 !
 !             Canadian Terrestrial Ecosystem Model (CTEM) 
 !             Main Ctem Subroutine Compatible With CLASS 
@@ -125,7 +124,6 @@ implicit none
 !     ilg      - no. of grid cells in latitude circle
 !     il1,il2  - il1=1, il2=ilg
 !     iday     - day of year
-!     mosaic   - true if the simulation is a mosaic, otherwise it is composite
 
 !
 !     inputs
@@ -356,7 +354,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !     annpcp    - annual precipitation (mm)
 !     burnvegf- fractiona areas burned for 9 ctem pfts
 !
-      logical   lnduseon,  dofire, mosaic,&
+      logical   lnduseon,  dofire,&
      &          dowetlands, obswetf 
 
      logical :: onetile_perPFT      ! if you are running with one tile per PFT in mosaic mode, set to true. Changes

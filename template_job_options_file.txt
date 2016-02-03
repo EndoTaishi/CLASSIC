@@ -1,6 +1,5 @@
 &joboptions
 
- MOSAIC = .TRUE.,
  TRANSIENT_RUN = .TRUE.
  TRANS_STARTYR = 1850
  CTEMLOOP = 7 ,
@@ -26,7 +25,6 @@
  START_BARE=.FALSE.,
  RSFILE=.TRUE. ,
  START_FROM_RS=.FALSE.,
- JMOSTY = 2110 ,
 
  IDISP = 0 ,
  IZREF = 2 ,
@@ -52,6 +50,7 @@
  JHHENDY = 2010 ,
  JDSTY = 1901 ,
  JDENDY = 2999 ,
+ JMOSTY = 2110 ,
  
 /
 

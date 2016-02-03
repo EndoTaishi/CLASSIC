@@ -18,14 +18,17 @@ contains
 
 !-------------------------------------------------------------------------------------------------------------
 subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
-                          mosaic,nol2pfts,cyclemet,   &
+                          nol2pfts,cyclemet,   &
                           cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,  &
                           pfcancmxrow,fcancmxrow,reach_eof,start_bare,&
-                          compete)
+                          compete,onetile_perPFT)
 
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    LUC Initial Read-In Subroutine 
 !
+!     3  Feb  2016  - Remove mosaic flag and replace it with the onetile_perPFT one.
+!     J. Melton
+
 !     9  Jan. 2013  - this subroutine takes in luc information from
 !     J. Melton       a luc file and adapts them for runclassctem
 !                     it is run once to set up the luc info before the 
@@ -47,7 +50,6 @@ implicit none
 ! inputs
 integer, intent(in) :: iyear
 character(80), intent(in) :: lucdat
-logical, intent(in) :: mosaic
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
 integer, dimension(ican), intent(in) :: nol2pfts
@@ -55,6 +57,11 @@ logical, intent(in) :: cyclemet
 integer, intent(in) :: cylucyr 
 logical, intent(in) :: start_bare
 logical, intent(in) :: compete
+
+logical, intent(in) :: onetile_perPFT      ! if you are running with one tile per PFT in mosaic mode, set to true. Changes
+                                ! how competition is run. Specifically it allows competition between tiles. This
+                                ! is not recommended for any case where you don't have one PFT in each tile as it
+                                ! has not been tested for that.
 
 ! updates
 real, dimension(nlat,nmos,icp1), intent(inout) :: fcanrow
@@ -84,7 +91,7 @@ barf=1.0
 pftarrays=0.
 
 !       reset the composite fcanrow as it is appended on later in a loop
-        if (.not. mosaic) fcanrow = 0.0
+        if (.not. onetile_perPFT) fcanrow = 0.0
 
 ! it is the first year, so prepare the luc data:
 
@@ -103,9 +110,9 @@ pftarrays=0.
 !       year
 
         do i = 1, nltest
-         if (.not. mosaic) then  !composite
+         if (.not. onetile_perPFT) then  !composite
            read (15,*) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-         else                    !mosaic
+         else                    !onetile_perPFT
            read (15,*) lucyr,(temparray(j),j=1,icc)
            do m = 1, nmtest-1 !as nmtest-1 = icc
              j = m
@@ -128,9 +135,9 @@ pftarrays=0.
           lucyr .lt. iyear))
 !           get the luc data
             do i = 1, nltest
-             if (.not. mosaic) then  !composite
+             if (.not. onetile_perPFT) then  !composite
                read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-             else                    !mosaic
+             else                    !onetile_perPFT
                read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
                do m = 1, nmtest-1 !nmtest-1 same as icc
                 j = m
@@ -203,11 +210,11 @@ pftarrays=0.
           do 998 n = k1, k2
             do i = 1, nltest
              do m = 1, nmtest
-              if (.not. mosaic) then !composite
+              if (.not. onetile_perPFT) then !composite
 
                fcanrow(i,m,j)=fcanrow(i,m,j)+nfcancmxrow(i,m,n) 
 
-              else if (mosaic .and. nfcancmxrow(i,m,n) .gt. seed) then
+              else if (onetile_perPFT .and. nfcancmxrow(i,m,n) .gt. seed) then
 !              this tile has some plants so overwrite the seed fraction with
 !              an actual fraction
 
@@ -222,7 +229,7 @@ pftarrays=0.
 997     continue
 
 !       (re)find the bare fraction for farerow(i,iccp1)
-         if (mosaic) then
+         if (onetile_perPFT) then
           do i = 1, nltest
            temp = 0.
            do m = 1, nmtest-1
@@ -240,12 +247,12 @@ pftarrays=0.
 
           do i = 1, nltest
            temp = 0.0
-           if (mosaic) then
+           if (onetile_perPFT) then
             ! competition requires a 'seed' fraction so make sure the bare ground is also that big.
             ! for prescribed runs you just need it to be possible (>0).
             if ((compete .and. farerow(i,nmtest) < seed) .or. (.not. compete .and. farerow(i,nmtest) < 0.)) then  
 
-             call adjust_luc_fracs(i,mosaic,nfcancmxrow,farerow(i,nmtest),compete)
+             call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,farerow(i,nmtest),compete)
 
              do m = 1, nmtest
                 n = m
@@ -256,17 +263,17 @@ pftarrays=0.
              farerow(i,nmtest) = 1.0 - temp
 
             endif !farerow<seed
-           endif !mosaic
+           endif !onetile_perPFT
           enddo !nltest
 
 !       assign the present pft fractions from those just read in
         do j = 1, icc
           do i = 1, nltest
            do m = 1, nmtest
-            if (.not. mosaic) then  !composite 
+            if (.not. onetile_perPFT) then  !composite
              fcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
              pfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
-            else !mosaic
+            else !onetile_perPFT
              ! I think this check below is not needed (JM Mar 2015)
              if (compete) then
 !              ensure that the fraction is >= seed
@@ -300,12 +307,16 @@ end subroutine initialize_luc
 
 !=======================================================================
 
-subroutine readin_luc(iyear,nmtest,nltest,mosaic,lucyr, &
-                      nfcancmxrow,pfcancmxrow,reach_eof,compete)
+subroutine readin_luc(iyear,nmtest,nltest,lucyr, &
+                      nfcancmxrow,pfcancmxrow,reach_eof,compete,&
+                      onetile_perPFT)
 
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    LUC Annual Read-In Subroutine 
 !
+!     3  Feb  2016  - Remove mosaic flag, replace with onetile_perPFT flag.
+!     J. Melton
+
 !     9  Jan. 2013  - this subroutine takes in luc information from
 !     J. Melton       a luc file annually and adapts them for runclassctem
 !	
@@ -320,11 +331,13 @@ implicit none
 
 ! inputs
 integer, intent(in) :: iyear
-logical, intent(in) :: mosaic
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
 logical, intent(in) :: compete
-
+logical, intent(in) :: onetile_perPFT      ! if you are running with one tile per PFT in mosaic mode, set to true. Changes
+                                ! how competition is run. Specifically it allows competition between tiles. This
+                                ! is not recommended for any case where you don't have one PFT in each tile as it
+                                ! has not been tested for that.
 
 ! updates
 integer, intent(inout) :: lucyr
@@ -347,9 +360,9 @@ real, dimension(nltest) :: bare_ground_frac
 
          do while (lucyr < iyear) 
            do i = 1, nltest
-            if (.not. mosaic) then  !composite
+            if (.not. onetile_perPFT) then  !composite
               read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-            else                    !mosaic
+            else                    !onetile_perPFT
               read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
               do m = 1, nmtest-1    !nmtest-1 same as icc
                j = m
@@ -369,9 +382,9 @@ real, dimension(nltest) :: bare_ground_frac
          do j = 1, icc
           if (.not. crop(j)) then
            do i = 1, nltest
-            if (.not. mosaic) then  !composite
+            if (.not. onetile_perPFT) then  !composite
                 m = 1
-            else !mosaic
+            else !onetile_perPFT
                 m = j
             end if
                 nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)           
@@ -386,7 +399,7 @@ real, dimension(nltest) :: bare_ground_frac
           do i = 1, nltest
           temp = 0.0
            do j = 1, icc
-            if (mosaic) then !flag
+            if (onetile_perPFT) then !flag
               m = j
             else !composite
               m = 1
@@ -401,7 +414,7 @@ real, dimension(nltest) :: bare_ground_frac
           do i = 1, nltest
            if ((compete .and. bare_ground_frac(i) < seed) .or. (.not. compete .and. bare_ground_frac(i) < 0.)) then
 
-             call adjust_luc_fracs(i,mosaic,nfcancmxrow,bare_ground_frac(i),compete)           
+             call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,bare_ground_frac(i),compete)
 
            endif 
           enddo !nltest
@@ -1240,7 +1253,7 @@ end subroutine luc
 
 !=======================================================================
 
-subroutine adjust_luc_fracs(i,mosaic,nfcancmxrow, &
+subroutine adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow, &
                           bare_ground_frac, compete)
 
 ! this subroutine adjusts the amount of each pft to ensure that the fraction
@@ -1256,7 +1269,7 @@ implicit none
 integer, intent(in) :: i
 real, dimension(nlat,nmos,icc), intent(inout) :: nfcancmxrow
 real, intent(in) :: bare_ground_frac
-logical, intent(in) :: mosaic
+logical, intent(in) :: onetile_perPFT
 logical, intent(in) :: compete
 
 real, dimension(nlat,nmos,icc) :: outnfcrow
@@ -1282,7 +1295,7 @@ needed_bare=(-bare_ground_frac) + min_val
 
 ! get the proportionate amounts of each pft above the min_val lower limit
 do j = 1,icc
-  if (mosaic) then
+  if (onetile_perPFT) then
     m = j
   else
     m = 1
@@ -1300,7 +1313,7 @@ enddo
 ! the bare ground fraction be the min_val amount and no other pft be less than
 ! min_val
 do j = 1,icc
-  if (mosaic) then
+  if (onetile_perPFT) then
     m = j
   else
     m = 1

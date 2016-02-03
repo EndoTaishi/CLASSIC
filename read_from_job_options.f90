@@ -1,4 +1,4 @@
-subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctemloop,ctem_on, &
+subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ctem_on, &
                   ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
                   setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
                   compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
@@ -12,8 +12,12 @@ subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctem
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    Joboptions Read-In Subroutine 
 !
+!     3   Feb  2016 - Remove mosaic flag. It is no longer required.
+!     J. Melton
+
 !     20  Mar. 2015 - Add in new CLASS flags for snow albedos -igralb & isnoalb
-!
+!     J. Melton
+
 !     4   Sep. 2014 - Add in the transient_run flag.
 !     J. Melton
 !
@@ -28,7 +32,6 @@ subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctem
 !
 !     25  Apr. 2012 - This subroutine takes in model switches from
 !     J. Melton       a job file and pushes them to RUNCLASSCTEM
-!		      
 
 implicit none
 
@@ -37,9 +40,6 @@ implicit none
 
 character(80), intent(out) :: argbuff !prefix of file names
 
-logical, intent(out) :: mosaic   ! true if the run is in mosaic mode, otherwise it
-                                 ! is a composite run
-                                 
 logical, intent(out) :: transient_run ! true if the run is a transient run. With this flag set
                                  ! set to .true., you can cycle over nummetcyclyrs of climate a
                                  ! ctemloop number of times then continue on through the climate
@@ -224,7 +224,6 @@ integer, intent(out) :: igralb
 ! -------------
 
 namelist /joboptions/ &
-  mosaic,             &
   transient_run,      &
   trans_startyr,      &
   ctemloop,           &
