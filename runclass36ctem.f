@@ -549,7 +549,6 @@ c
 
       logical, pointer :: ctem_on
       logical, pointer :: parallelrun
-      logical, pointer :: mosaic
       logical, pointer :: cyclemet
       logical, pointer :: dofire
       logical, pointer :: run_model
@@ -654,6 +653,9 @@ c
       real, pointer, dimension(:) :: extnprobgrd
       real, pointer, dimension(:) :: prbfrhucgrd
       real, pointer, dimension(:,:) :: mlightnggrd
+      real, pointer, dimension(:) :: dayl_maxrow
+      real, pointer, dimension(:) :: daylrow
+
 
       real, pointer, dimension(:,:,:) :: bmasvegrow
       real, pointer, dimension(:,:,:) :: cmasvegcrow
@@ -808,6 +810,8 @@ c
       real, pointer, dimension(:) :: extnprobgat
       real, pointer, dimension(:) :: prbfrhucgat
       real, pointer, dimension(:,:) :: mlightnggat
+      real, pointer, dimension(:) :: dayl_maxgat
+      real, pointer, dimension(:) :: daylgat
 
       real, pointer, dimension(:,:) :: bmasveggat
       real, pointer, dimension(:,:) :: cmasvegcgat
@@ -1114,10 +1118,6 @@ c
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
 
-      ! Variables that are the same for the entire gridcell
-      real, pointer, dimension(:) :: dayl_max
-      real, pointer, dimension(:) :: dayl
-
 !     -----------------------
 !      Grid averaged monthly variables (denoted by name ending in "_mo_g")
 
@@ -1299,8 +1299,15 @@ c      (denoted by name ending in "_yr_g")
       real, pointer, dimension(:,:) :: ch4dyn2_yr_m
       real, pointer, dimension(:,:) :: ch4soills_yr_m
 
+! Model Switches (rarely changed ones only! The rest are in joboptions file):
+
       logical, parameter :: obslght = .false.  ! if true the observed lightning will be used. False means you will use the
-                                               ! lightning climatology from the CTM file. This was brought in for FireMIP runs.
+                                             ! lightning climatology from the CTM file. This was brought in for FireMIP runs.
+
+   ! If you intend to have LUC BETWEEN tiles then set this to true:
+      logical, parameter ::  onetile_perPFT = .False. ! NOTE: This is usually not the behaviour desired unless you are
+                                                   ! running with one PFT on each tile and want them to compete for space
+                                                   ! across tiles. In general keep this as False. JM Feb 2016.
 c
 c============= CTEM array declaration done =============================/
 C
@@ -1375,7 +1382,6 @@ C===================== CTEM ==============================================\
 
       ctem_on           => c_switch%ctem_on
       parallelrun       => c_switch%parallelrun
-      mosaic            => c_switch%mosaic
       cyclemet          => c_switch%cyclemet
       dofire            => c_switch%dofire
       run_model         => c_switch%run_model
@@ -1475,6 +1481,8 @@ C===================== CTEM ==============================================\
       extnprobgrd       => vrot%extnprob
       prbfrhucgrd       => vrot%prbfrhuc
       mlightnggrd       => vrot%mlightng
+      daylrow           => vrot%dayl
+      dayl_maxrow       => vrot%dayl_max
 
       bmasvegrow        => vrot%bmasveg
       cmasvegcrow       => vrot%cmasvegc
@@ -1630,6 +1638,8 @@ C===================== CTEM ==============================================\
       extnprobgat       => vgat%extnprob
       prbfrhucgat       => vgat%prbfrhuc
       mlightnggat       => vgat%mlightng
+      daylgat           => vgat%dayl
+      dayl_maxgat       => vgat%dayl_max
 
       bmasveggat        => vgat%bmasveg
       cmasvegcgat       => vgat%cmasvegc
@@ -1886,10 +1896,6 @@ C===================== CTEM ==============================================\
       THICROT_g         => ctem_grd%THICROT_g
       GFLXROT_g         => ctem_grd%GFLXROT_g
 
-       ! Variables that are the same for the entire gridcell
-       dayl_max         => ctem_grd%dayl_max
-       dayl             => ctem_grd%dayl
-
        fsstar_g         => ctem_grd%fsstar_g
        flstar_g         => ctem_grd%flstar_g
        qh_g             => ctem_grd%qh_g
@@ -2137,7 +2143,7 @@ C
       CUMSNO = 0.0
 
 c     all model switches are read in from a namelist file
-      call read_from_job_options(argbuff,mosaic,transient_run,
+      call read_from_job_options(argbuff,transient_run,
      1             trans_startyr,ctemloop,ctem_on,ncyear,lnduseon,
      2             spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on,
      3             setco2conc,ch4on,setch4conc,popdon,popcycleyr,
@@ -2563,7 +2569,8 @@ c     read from ctem initialization file (.CTM)
      3                   WFSFROT,WFCIROT,MIDROT,SANDROT, CLAYROT,
      4                   ORGMROT,TBARROT,THLQROT,THICROT,TCANROT,
      5                   TSNOROT,TPNDROT,ZPNDROT,RCANROT,SCANROT,
-     6                   SNOROT, ALBSROT,RHOSROT,GROROT,argbuff)
+     6                   SNOROT, ALBSROT,RHOSROT,GROROT,argbuff,
+     7                   onetile_perPFT)
       end if
 c
 C===================== CTEM =============================================== /
@@ -2779,7 +2786,7 @@ c
 
 !              Added in seed here to prevent competition from getting
 !              pfts with no seed fraction.  JM Feb 20 2014.
-              if (compete .and. .not. mosaic) then
+              if (compete .and. .not. onetile_perPFT) then
                fcancmxrow(i,m,icountrow(i,m))=max(seed,FCANROT(i,m,j)*
      &         dvdfcanrow(i,m,icountrow(i,m)))
                barf(i) = barf(i) - fcancmxrow(i,m,icountrow(i,m))
@@ -2881,10 +2888,10 @@ c
          reach_eof=.false.  !flag for when read to end of luc input file
 
          call initialize_luc(iyear,argbuff,nmtest,nltest,
-     1                     mosaic,nol2pfts,cyclemet,
+     1                     nol2pfts,cyclemet,
      2                     cylucyr,lucyr,FCANROT,FAREROT,nfcancmxrow,
      3                     pfcancmxrow,fcancmxrow,reach_eof,start_bare,
-     4                     compete)
+     4                     compete,onetile_perPFT)
 
          if (reach_eof) goto 999
 
@@ -2996,9 +3003,9 @@ c
 !     Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
       do i = 1, nltest
        if (radjrow(1) > 0.) then
-        call finddaylength(172.0, radjrow(1),dayl_max(i)) !following rest of code, radjrow is always given index of 1 offline.
+        call finddaylength(172.0, radjrow(1),dayl_maxrow(i)) !following rest of code, radjrow is always given index of 1 offline.
        else ! S. Hemi so do N.Hemi winter solstice Dec 21
-        call finddaylength(355.0, radjrow(1),dayl_max(i)) !following rest of code, radjrow is always given index of 1 offline.
+        call finddaylength(355.0, radjrow(1),dayl_maxrow(i)) !following rest of code, radjrow is always given index of 1 offline.
        end if
       end do
       ! end FLAG test JM Dec 18 2015
@@ -3159,7 +3166,7 @@ C
                 read(17,*,end=312) obslghtyr,(mlightnggrd(i,j),j=1,12)
 312             continue !if end of file, just keep using the last year of lighting data.
               end if !obslight
-             enddo
+             end do
             endif ! ctem_on
 
 c         If popdon=true, calculate fire extinguishing probability and
@@ -3205,8 +3212,9 @@ c         If lnduseon is true, read in the luc data now
 
           if (ctem_on .and. lnduseon .and. transient_run) then
 
-            call readin_luc(iyear,nmtest,nltest,mosaic,lucyr,
-     &                   nfcancmxrow,pfcancmxrow,reach_eof,compete)
+            call readin_luc(iyear,nmtest,nltest,lucyr,
+     &                   nfcancmxrow,pfcancmxrow,reach_eof,compete,
+     &                   onetile_perPFT)
             if (reach_eof) goto 999
 
           else ! lnduseon = false or met is cycling in a spin up run
@@ -3225,7 +3233,7 @@ c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
       if (ihour.eq.0.and.imin.eq.0) then ! first time step of the day
       ! Find the daylength of this day
         do i = 1, nltest
-          call finddaylength(real(iday), radjrow(1), dayl(i)) !following rest of code, radjrow is always given index of 1 offline.
+          call finddaylength(real(iday), radjrow(1), daylrow(i)) !following rest of code, radjrow is always given index of 1 offline.
         end do
       end if
       ! end FLAG test JM Dec 18 2015
@@ -3424,7 +3432,7 @@ C
      &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
-     &      btermgat,     ltermgat,   mtermgat,
+     &      btermgat,     ltermgat,   mtermgat, daylgat,dayl_maxgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
      &      ch4wet1gat, ch4wet2gat,
@@ -3463,7 +3471,7 @@ c
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
-     &      btermrow,     ltermrow,   mtermrow,
+     &      btermrow,     ltermrow,   mtermrow, daylrow, dayl_maxrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
      &      ch4wet1row, ch4wet2row,
@@ -3551,7 +3559,7 @@ C
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
      S  TCSNOW,GSNOW,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     U  NBS,    ISNOALB,lfstatusgat,dayl, dayl_max)
+     U  NBS,    ISNOALB,lfstatusgat,daylgat, dayl_maxgat)
 C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.
@@ -3619,7 +3627,9 @@ c
 c
           alswacc_gat(i)=alswacc_gat(i)+alvsgat(i)*fsvhgat(i)
           allwacc_gat(i)=allwacc_gat(i)+alirgat(i)*fsihgat(i)
-          fsinacc_gat(i)=fsinacc_gat(i)+FSSROW(I)
+          fsinacc_gat(i)=fsinacc_gat(i)+FSSROW(1) ! FLAG! Do this offline only (since all tiles
+                                                  ! are the same in a gridcell and we run
+                                                  ! only one gridcell at a time. JM Feb 4 2016.
           flinacc_gat(i)=flinacc_gat(i)+fdlgat(i)
           flutacc_gat(i)=flutacc_gat(i)+sbc*gtgat(i)**4
           pregacc_gat(i)=pregacc_gat(i)+pregat(i)*delt
@@ -3794,7 +3804,7 @@ c
      b            thicecacc_m,     sdepgat,    spinfast,   todfrac,
      &                compete,  netrad_gat,  preacc_gat,  PSISGAT,
      &                 popdin,  dofire, dowetlands,obswetf, isndgat,
-     &                faregat,      mosaic, WETFRACGRD, wetfrac_sgrd,
+     &               faregat,onetile_perPFT, WETFRACGRD,wetfrac_sgrd,
      &                  BIGAT,    THPGAT, thicegacc_m,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
@@ -5072,7 +5082,8 @@ c
        if (ctem_on) then
          if(ncount.eq.nday) then
           call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
-     1                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea)
+     1                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea,
+     2                      onetile_perPFT)
          endif ! if(ncount.eq.nday)
        endif ! if(ctem_on)
 ! c
@@ -5120,12 +5131,14 @@ c
       if (iyear .ge. jmosty) then
 !       CTEM--------------/
 
-        call ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday)
+        call ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,
+     1                        onetile_perPFT)
 
         end if !to write out the monthly outputs or not
 c
 c       accumulate yearly outputs
-            call ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear)
+            call ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,
+     1                           onetile_perPFT)
 c
       endif ! if(ncount.eq.nday)
       endif ! if(ctem_on)
@@ -5150,7 +5163,7 @@ C
 
 C         IF START_BARE (SO EITHER COMPETE OR LNDUSEON), THEN WE NEED TO CREATE
 C         THE FCANROT FOR THE RS FILE.
-          IF (START_BARE .AND. MOSAIC) THEN
+          IF (START_BARE .AND. onetile_perPFT) THEN
            IF (M .LE. 2) THEN                     !NDL
             FCANROT(I,M,1)=1.0
            ELSEIF (M .GE. 3 .AND. M .LE. 5) THEN  !BDL
@@ -5162,7 +5175,7 @@ C         THE FCANROT FOR THE RS FILE.
            ELSE                                  !BARE
             FCANROT(I,M,5)=1.0
            ENDIF
-          ENDIF !START_BARE/MOSAIC
+          ENDIF !START_BARE/onetile_perPFT
 
             WRITE(100,5040) (FCANROT(I,M,J),J=1,ICAN+1),(PAMXROT(I,M,J),
      1                      J=1,ICAN)

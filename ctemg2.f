@@ -31,7 +31,7 @@
      t      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      u      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      v      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
-     &      btermgat,     ltermgat,   mtermgat,
+     &      btermgat,     ltermgat,   mtermgat,daylgat,dayl_maxgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat,burnvegfgat, pstemmassgat, pgleafmassgat,
      &      ch4wet1gat, ch4wet2gat, wetfdyngat, ch4dyn1gat,
@@ -70,7 +70,7 @@ c
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
-     &      btermrow,     ltermrow,   mtermrow, 
+     &      btermrow,     ltermrow,   mtermrow, daylrow,dayl_maxrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow,pgleafmassrow,
      &      ch4wet1row, ch4wet2row, wetfdynrow, ch4dyn1row,
@@ -124,6 +124,7 @@ c
       real   mlightnggat(ilg,12)  !12month
 c
       real  prbfrhucgat(ilg),         extnprobgat(ilg),
+     +      daylgat(ilg),             dayl_maxgat(ilg),
      1      tbaraccgat_m(ilg,ignd),
      2      pfcancmxgat(ilg,icc),     nfcancmxgat(ilg,icc),
      3      stemmassgat(ilg,icc),     rootmassgat(ilg,icc),
@@ -213,7 +214,8 @@ c
 c
       real  mlightnggrd(nlat,12)  !12month
 c
-      real  prbfrhucgrd(nlat),            extnprobgrd(nlat),
+      real  prbfrhucgrd(nlat),       extnprobgrd(nlat),
+     +      daylrow(nlat),           dayl_maxrow(nlat),
      1      tbaraccrow_m(nlat,nmos,ignd),
      2      pfcancmxrow(nlat,nmos,icc),   nfcancmxrow(nlat,nmos,icc),
      3      stemmassrow(nlat,nmos,icc),   rootmassrow(nlat,nmos,icc),
@@ -302,6 +304,8 @@ c----------------------------------------------------------------------
           xdiffusgat(k)   = xdiffus(ilmos(k))
           prbfrhucgat(k)  = prbfrhucgrd(ilmos(k))
           extnprobgat(k)  = extnprobgrd(ilmos(k))
+          daylgat(k)      = daylrow(ilmos(k))
+          dayl_maxgat(k)  = dayl_maxrow(ilmos(k))
           stdalngat(k)    = stdalngrd(ilmos(k))
           tcanoaccgat_m(k)= tcanoaccrow_m(ilmos(k),jlmos(k))
           uvaccgat_m(k)   = uvaccrow_m(ilmos(k),jlmos(k))

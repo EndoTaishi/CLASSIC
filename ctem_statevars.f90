@@ -37,7 +37,6 @@ type ctem_switches
 
     logical :: ctem_on
     logical :: parallelrun
-    logical :: mosaic
     logical :: cyclemet
     logical :: dofire
     logical :: run_model
@@ -146,6 +145,9 @@ type veg_rot
     real, dimension(nlat) :: extnprob
     real, dimension(nlat) :: prbfrhuc
     real, dimension(nlat,12) :: mlightng
+    real, dimension(nlat) :: dayl_max ! maximum daylength for that location (hours)
+    real, dimension(nlat) :: dayl     ! daylength for that location (hours)
+
 
     real, dimension(nlat,nmos,icc) :: bmasveg
     real, dimension(nlat,nmos,ican) :: cmasvegc
@@ -357,6 +359,9 @@ type veg_gat
     real, dimension(ilg) :: extnprob
     real, dimension(ilg) :: prbfrhuc
     real, dimension(ilg,12) :: mlightng
+    real, dimension(ilg) :: dayl_max ! maximum daylength for that location (hours)
+    real, dimension(ilg) :: dayl     ! daylength for that location (hours)
+
 
     real, dimension(ilg,icc) :: bmasveg
     real, dimension(ilg,ican) :: cmasvegc
@@ -652,10 +657,6 @@ type ctem_gridavg
       real :: tsn_g
       real :: zsn_g
 
-      ! Variables that are the same for the entire gridcell
-      real, dimension(nlat) :: dayl_max ! maximum daylength for that location (hours)
-      real, dimension(nlat) :: dayl     ! daylength for that location (hours)
-
 end type ctem_gridavg
 
 type (ctem_gridavg), save, target :: ctem_grd
@@ -940,8 +941,8 @@ integer :: j,k,l,m
 
  do j = 1,nlat
 
-   vrot%prbfrhuc(j)         = 0.0
-   vrot%extnprob(j)         = 0.0
+        vrot%prbfrhuc(j)         = 0.0
+        vrot%extnprob(j)         = 0.0
    !vrot%barf(j)                = 1.0
 
    do k =1,12
@@ -977,7 +978,6 @@ integer :: j,k,l,m
 !         vrot%QAACC_M(j,k) = 0.
 !         vrot%EVAPACC_M(j,k) = 0.
 !         vrot%FLUTACC_M(j,k) = 0.
-
         vrot%icount(j,k)           = 0
         vrot%co2conc(j,k)          = 0.0
         vrot%npp(j,k)              = 0.0

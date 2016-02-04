@@ -19,7 +19,7 @@
      G                  TAGAT,  QAGAT,  PRESGAT,PREGAT, PADRGAT,
      H                  VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,
      I                  SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,
-     J                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,       
+     J                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,
      K                   ILMOS,JLMOS,
      L                   NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS,               
      M                  TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,
