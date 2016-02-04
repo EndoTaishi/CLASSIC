@@ -249,7 +249,6 @@ namelist /joboptions/ &
   start_bare,         &
   rsfile,             &
   start_from_rs,      &
-  jmosty,             &
   IDISP,              &
   IZREF,              &
   ISLFD,              &
@@ -272,7 +271,8 @@ namelist /joboptions/ &
   jhhsty,             &
   jhhendy,            &
   jdsty,              &
-  jdendy
+  jdendy,             &
+  jmosty
 
 character(140) :: jobfile
 integer :: argcount, iargc 
