@@ -127,7 +127,7 @@ c
 c
       real  mlightnggrd(nlat,12)  !12month
 c
-      real  prbfrhucgrd(nlat),          extnprobgrd(nlat),
+      real  prbfrhucgrd(nlat),       extnprobgrd(nlat),
      1      tbaraccrow_m(nlat,nmos,ignd),
      2      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc),
      3      stemmassrow(nlat,nmos,icc), rootmassrow(nlat,nmos,icc),
@@ -302,8 +302,8 @@ c----------------------------------------------------------------------
           cfluxcsrow(ilmos(k),jlmos(k))     = cfluxcsgat(k)
           canresrow(ilmos(k),jlmos(k))      = canresgat(k)
           xdiffus(ilmos(k))                 = xdiffusgat(k) 
-          prbfrhucgrd(ilmos(k))             = prbfrhucgat(k) 
-          extnprobgrd(ilmos(k))             = extnprobgat(k) 
+          prbfrhucgrd(ilmos(k))             = prbfrhucgat(k)
+          extnprobgrd(ilmos(k))             = extnprobgat(k)
           stdalngrd(ilmos(k))               = stdalngat(k) 
           tcanoaccrow_m(ilmos(k),jlmos(k))  = tcanoaccgat_m(k) 
           uvaccrow_m(ilmos(k),jlmos(k))     = uvaccgat_m(k) 

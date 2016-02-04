@@ -653,6 +653,9 @@ c
       real, pointer, dimension(:) :: extnprobgrd
       real, pointer, dimension(:) :: prbfrhucgrd
       real, pointer, dimension(:,:) :: mlightnggrd
+      real, pointer, dimension(:) :: dayl_maxrow
+      real, pointer, dimension(:) :: daylrow
+
 
       real, pointer, dimension(:,:,:) :: bmasvegrow
       real, pointer, dimension(:,:,:) :: cmasvegcrow
@@ -807,6 +810,8 @@ c
       real, pointer, dimension(:) :: extnprobgat
       real, pointer, dimension(:) :: prbfrhucgat
       real, pointer, dimension(:,:) :: mlightnggat
+      real, pointer, dimension(:) :: dayl_maxgat
+      real, pointer, dimension(:) :: daylgat
 
       real, pointer, dimension(:,:) :: bmasveggat
       real, pointer, dimension(:,:) :: cmasvegcgat
@@ -1111,10 +1116,6 @@ c
       real, pointer, dimension(:,:) :: THLQROT_g
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
-
-      ! Variables that are the same for the entire gridcell
-      real, pointer, dimension(:) :: dayl_max
-      real, pointer, dimension(:) :: dayl
 
 !     -----------------------
 !      Grid averaged monthly variables (denoted by name ending in "_mo_g")
@@ -1479,6 +1480,8 @@ C===================== CTEM ==============================================\
       extnprobgrd       => vrot%extnprob
       prbfrhucgrd       => vrot%prbfrhuc
       mlightnggrd       => vrot%mlightng
+      daylrow           => vrot%dayl
+      dayl_maxrow       => vrot%dayl_max
 
       bmasvegrow        => vrot%bmasveg
       cmasvegcrow       => vrot%cmasvegc
@@ -1634,6 +1637,8 @@ C===================== CTEM ==============================================\
       extnprobgat       => vgat%extnprob
       prbfrhucgat       => vgat%prbfrhuc
       mlightnggat       => vgat%mlightng
+      daylgat           => vgat%dayl
+      dayl_maxgat       => vgat%dayl_max
 
       bmasveggat        => vgat%bmasveg
       cmasvegcgat       => vgat%cmasvegc
@@ -1889,10 +1894,6 @@ C===================== CTEM ==============================================\
       THLQROT_g         => ctem_grd%THLQROT_g
       THICROT_g         => ctem_grd%THICROT_g
       GFLXROT_g         => ctem_grd%GFLXROT_g
-
-       ! Variables that are the same for the entire gridcell
-       dayl_max         => ctem_grd%dayl_max
-       dayl             => ctem_grd%dayl
 
        fsstar_g         => ctem_grd%fsstar_g
        flstar_g         => ctem_grd%flstar_g
@@ -3011,9 +3012,9 @@ c
 !     Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
       do i = 1, nltest
        if (radjrow(1) > 0.) then
-        call finddaylength(172.0, radjrow(1),dayl_max(i)) !following rest of code, radjrow is always given index of 1 offline.
+        call finddaylength(172.0, radjrow(1),dayl_maxrow(i)) !following rest of code, radjrow is always given index of 1 offline.
        else ! S. Hemi so do N.Hemi winter solstice Dec 21
-        call finddaylength(355.0, radjrow(1),dayl_max(i)) !following rest of code, radjrow is always given index of 1 offline.
+        call finddaylength(355.0, radjrow(1),dayl_maxrow(i)) !following rest of code, radjrow is always given index of 1 offline.
        end if
       end do
       ! end FLAG test JM Dec 18 2015
@@ -3161,6 +3162,7 @@ C
       if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
 
             if (ctem_on) then
+             do i=1,nltest
               if (obswetf) then
                   read(16,*,end=1001) obswetyr,(wetfrac_mon(i,j),j=1,12)
               else
@@ -3173,7 +3175,7 @@ C
                 read(17,*,end=312) obslghtyr,(mlightnggrd(i,j),j=1,12)
 312             continue !if end of file, just keep using the last year of lighting data.
               end if !obslight
-
+             end do
             endif ! ctem_on
 
 c         If popdon=true, calculate fire extinguishing probability and
@@ -3240,7 +3242,7 @@ c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
       if (ihour.eq.0.and.imin.eq.0) then ! first time step of the day
       ! Find the daylength of this day
         do i = 1, nltest
-          call finddaylength(real(iday), radjrow(1), dayl(i)) !following rest of code, radjrow is always given index of 1 offline.
+          call finddaylength(real(iday), radjrow(1), daylrow(i)) !following rest of code, radjrow is always given index of 1 offline.
         end do
       end if
       ! end FLAG test JM Dec 18 2015
@@ -3439,7 +3441,7 @@ C
      &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
-     &      btermgat,     ltermgat,   mtermgat,
+     &      btermgat,     ltermgat,   mtermgat, daylgat,dayl_maxgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
      &      ch4wet1gat, ch4wet2gat,
@@ -3478,7 +3480,7 @@ c
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
-     &      btermrow,     ltermrow,   mtermrow,
+     &      btermrow,     ltermrow,   mtermrow, daylrow, dayl_maxrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
      &      ch4wet1row, ch4wet2row,
@@ -3566,7 +3568,7 @@ C
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
      S  TCSNOW,GSNOW,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     U  NBS,    ISNOALB,lfstatusgat,dayl, dayl_max)
+     U  NBS,    ISNOALB,lfstatusgat,daylgat, dayl_maxgat)
 C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.
@@ -3634,7 +3636,9 @@ c
 c
           alswacc_gat(i)=alswacc_gat(i)+alvsgat(i)*fsvhgat(i)
           allwacc_gat(i)=allwacc_gat(i)+alirgat(i)*fsihgat(i)
-          fsinacc_gat(i)=fsinacc_gat(i)+FSSROW(I)
+          fsinacc_gat(i)=fsinacc_gat(i)+FSSROW(1) ! FLAG! Do this offline only (since all tiles
+                                                  ! are the same in a gridcell and we run
+                                                  ! only one gridcell at a time. JM Feb 4 2016.
           flinacc_gat(i)=flinacc_gat(i)+fdlgat(i)
           flutacc_gat(i)=flutacc_gat(i)+sbc*gtgat(i)**4
           pregacc_gat(i)=pregacc_gat(i)+pregat(i)*delt
