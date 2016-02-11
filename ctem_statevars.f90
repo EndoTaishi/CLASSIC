@@ -6,11 +6,13 @@ module ctem_statevars
 ! 3) vgat - CTEM's 'gat' vars
 ! 4) class_out - CLASS's monthly outputs
 ! 5) ctem_grd - CTEM's grid average variables
-! 6) ctem_tile - CTEM's variables per tile (mosaic)
-! 7) ctem_grd_mo - CTEM's grid average monthly values
-! 8) ctem_tile_mo - CTEM's variables per tile (mosaic) monthly values
-! 9) ctem_grd_yr - CTEM's grid average annual values
-! 10) ctem_tile_yr - CTEM's variables per tile (mosaic) annual values
+! 6) ctem_tile - CTEM's variables per tile
+! 7) ctem_mo - CTEM's variables monthly averaged (per pft)
+! 8) ctem_grd_mo - CTEM's grid average monthly values
+! 9) ctem_tile_mo - CTEM's variables per tile monthly values
+! 10) ctem_yr - CTEM's average annual values (per PFT)
+! 11) ctem_grd_yr - CTEM's grid average annual values
+! 12) ctem_tile_yr - CTEM's variables per tile annual values
 
 ! J. Melton Apr 2015
 
@@ -23,10 +25,9 @@ public :: initrowvars
 public :: resetclassmon
 public :: resetclassyr
 public :: resetmidmonth
-public :: resetmonthend_g
-public :: resetmonthend_m
+public :: resetmonthend
 public :: resetyearend_g
-public :: resetyearend_m
+public :: resetyearend_t
 public :: resetclassaccum
 public :: resetgridavg
 public :: resetctem_g
@@ -715,6 +716,44 @@ end type ctem_tile_level
 type (ctem_tile_level), save, target :: ctem_tile
 
 !=================================================================================
+type ctem_monthly
+
+!     Tile-level monthly variables (denoted by name ending in "_mo_t")
+
+      real, dimension(nlat,nmos,icc) :: laimaxg_mo
+      real, dimension(nlat,nmos,icc) :: stemmass_mo
+      real, dimension(nlat,nmos,icc) :: rootmass_mo
+      real, dimension(nlat,nmos,icc) :: npp_mo
+      real, dimension(nlat,nmos,icc) :: gpp_mo
+      real, dimension(nlat,nmos,icc) :: vgbiomas_mo
+      real, dimension(nlat,nmos,icc) :: autores_mo
+      real, dimension(nlat,nmos,icc) :: totcmass_mo
+      real, dimension(nlat,nmos,iccp1) :: litrmass_mo
+      real, dimension(nlat,nmos,iccp1) :: soilcmas_mo
+      real, dimension(nlat,nmos,iccp1) :: nep_mo
+      real, dimension(nlat,nmos,iccp1) :: litres_mo
+      real, dimension(nlat,nmos,iccp1) :: soilcres_mo
+      real, dimension(nlat,nmos,iccp1) :: hetrores_mo
+      real, dimension(nlat,nmos,iccp1) :: nbp_mo
+      real, dimension(nlat,nmos,icc) :: emit_co2_mo
+      real, dimension(nlat,nmos,icc) :: emit_co_mo
+      real, dimension(nlat,nmos,icc) :: emit_ch4_mo
+      real, dimension(nlat,nmos,icc) :: emit_nmhc_mo
+      real, dimension(nlat,nmos,icc) :: emit_h2_mo
+      real, dimension(nlat,nmos,icc) :: emit_nox_mo
+      real, dimension(nlat,nmos,icc) :: emit_n2o_mo
+      real, dimension(nlat,nmos,icc) :: emit_pm25_mo
+      real, dimension(nlat,nmos,icc) :: emit_tpm_mo
+      real, dimension(nlat,nmos,icc) :: emit_tc_mo
+      real, dimension(nlat,nmos,icc) :: emit_oc_mo
+      real, dimension(nlat,nmos,icc) :: emit_bc_mo
+      real, dimension(nlat,nmos,icc) :: burnfrac_mo
+
+end type ctem_monthly
+
+type (ctem_monthly), save, target :: ctem_mo
+
+!=================================================================================
 
 type ctem_gridavg_monthly
 
@@ -767,39 +806,38 @@ end type ctem_gridavg_monthly
 type (ctem_gridavg_monthly), save, target :: ctem_grd_mo
 
 !=================================================================================
-
 type ctem_tileavg_monthly
 
 !     Tile-level monthly variables (denoted by name ending in "_mo_t")
 
-      real, dimension(nlat,nmos,icc) :: laimaxg_mo_t
-      real, dimension(nlat,nmos,icc) :: stemmass_mo_t
-      real, dimension(nlat,nmos,icc) :: rootmass_mo_t
-      real, dimension(nlat,nmos,icc) :: npp_mo_t
-      real, dimension(nlat,nmos,icc) :: gpp_mo_t
-      real, dimension(nlat,nmos,icc) :: vgbiomas_mo_t
-      real, dimension(nlat,nmos,icc) :: autores_mo_t
-      real, dimension(nlat,nmos,icc) :: totcmass_mo_t
-      real, dimension(nlat,nmos,iccp1) :: litrmass_mo_t
-      real, dimension(nlat,nmos,iccp1) :: soilcmas_mo_t
-      real, dimension(nlat,nmos,iccp1) :: nep_mo_t
-      real, dimension(nlat,nmos,iccp1) :: litres_mo_t
-      real, dimension(nlat,nmos,iccp1) :: soilcres_mo_t
-      real, dimension(nlat,nmos,iccp1) :: hetrores_mo_t
-      real, dimension(nlat,nmos,iccp1) :: nbp_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_co2_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_co_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_ch4_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_nmhc_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_h2_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_nox_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_n2o_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_pm25_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_tpm_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_tc_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_oc_mo_t
-      real, dimension(nlat,nmos,icc) :: emit_bc_mo_t
-      real, dimension(nlat,nmos,icc) :: burnfrac_mo_t
+      real, dimension(nlat,nmos) :: laimaxg_mo_t
+      real, dimension(nlat,nmos) :: stemmass_mo_t
+      real, dimension(nlat,nmos) :: rootmass_mo_t
+      real, dimension(nlat,nmos) :: npp_mo_t
+      real, dimension(nlat,nmos) :: gpp_mo_t
+      real, dimension(nlat,nmos) :: vgbiomas_mo_t
+      real, dimension(nlat,nmos) :: autores_mo_t
+      real, dimension(nlat,nmos) :: totcmass_mo_t
+      real, dimension(nlat,nmos) :: litrmass_mo_t
+      real, dimension(nlat,nmos) :: soilcmas_mo_t
+      real, dimension(nlat,nmos) :: nep_mo_t
+      real, dimension(nlat,nmos) :: litres_mo_t
+      real, dimension(nlat,nmos) :: soilcres_mo_t
+      real, dimension(nlat,nmos) :: hetrores_mo_t
+      real, dimension(nlat,nmos) :: nbp_mo_t
+      real, dimension(nlat,nmos) :: emit_co2_mo_t
+      real, dimension(nlat,nmos) :: emit_co_mo_t
+      real, dimension(nlat,nmos) :: emit_ch4_mo_t
+      real, dimension(nlat,nmos) :: emit_nmhc_mo_t
+      real, dimension(nlat,nmos) :: emit_h2_mo_t
+      real, dimension(nlat,nmos) :: emit_nox_mo_t
+      real, dimension(nlat,nmos) :: emit_n2o_mo_t
+      real, dimension(nlat,nmos) :: emit_pm25_mo_t
+      real, dimension(nlat,nmos) :: emit_tpm_mo_t
+      real, dimension(nlat,nmos) :: emit_tc_mo_t
+      real, dimension(nlat,nmos) :: emit_oc_mo_t
+      real, dimension(nlat,nmos) :: emit_bc_mo_t
+      real, dimension(nlat,nmos) :: burnfrac_mo_t
       real, dimension(nlat,nmos) :: probfire_mo_t
       real, dimension(nlat,nmos) :: bterm_mo_t
       real, dimension(nlat,nmos) :: luc_emc_mo_t
@@ -879,47 +917,47 @@ type ctem_tileavg_annual
 ! c      Annual output for CTEM mosaic variables:
 ! c      (denoted by name ending in "_yr_m")
 !
-      real, dimension(nlat,nmos,icc) :: laimaxg_yr_m
-      real, dimension(nlat,nmos,icc) :: stemmass_yr_m
-      real, dimension(nlat,nmos,icc) :: rootmass_yr_m
-      real, dimension(nlat,nmos,icc) :: npp_yr_m
-      real, dimension(nlat,nmos,icc) :: gpp_yr_m
-      real, dimension(nlat,nmos,icc) :: vgbiomas_yr_m
-      real, dimension(nlat,nmos,icc) :: autores_yr_m
-      real, dimension(nlat,nmos,icc) :: totcmass_yr_m
-      real, dimension(nlat,nmos,iccp1) :: litrmass_yr_m
-      real, dimension(nlat,nmos,iccp1) :: soilcmas_yr_m
-      real, dimension(nlat,nmos,iccp1) :: nep_yr_m
-      real, dimension(nlat,nmos,iccp1) :: litres_yr_m
-      real, dimension(nlat,nmos,iccp1) :: soilcres_yr_m
-      real, dimension(nlat,nmos,iccp1) :: hetrores_yr_m
-      real, dimension(nlat,nmos,iccp1) :: nbp_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_co2_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_co_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_ch4_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_nmhc_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_h2_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_nox_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_n2o_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_pm25_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_tpm_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_tc_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_oc_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_bc_yr_m
-      real, dimension(nlat,nmos,icc) :: burnfrac_yr_m
-      real, dimension(nlat,nmos) :: probfire_yr_m
-      real, dimension(nlat,nmos) :: bterm_yr_m
-      real, dimension(nlat,nmos) :: luc_emc_yr_m
-      real, dimension(nlat,nmos) :: lterm_yr_m
-      real, dimension(nlat,nmos) :: lucsocin_yr_m
-      real, dimension(nlat,nmos) :: mterm_yr_m
-      real, dimension(nlat,nmos) :: lucltrin_yr_m
-      real, dimension(nlat,nmos) :: ch4wet1_yr_m
-      real, dimension(nlat,nmos) :: ch4wet2_yr_m
-      real, dimension(nlat,nmos) :: wetfdyn_yr_m
-      real, dimension(nlat,nmos) :: ch4dyn1_yr_m
-      real, dimension(nlat,nmos) :: ch4dyn2_yr_m
-      real, dimension(nlat,nmos) :: ch4soills_yr_m
+      real, dimension(nlat,nmos,icc) :: laimaxg_yr_t
+      real, dimension(nlat,nmos,icc) :: stemmass_yr_t
+      real, dimension(nlat,nmos,icc) :: rootmass_yr_t
+      real, dimension(nlat,nmos,icc) :: npp_yr_t
+      real, dimension(nlat,nmos,icc) :: gpp_yr_t
+      real, dimension(nlat,nmos,icc) :: vgbiomas_yr_t
+      real, dimension(nlat,nmos,icc) :: autores_yr_t
+      real, dimension(nlat,nmos,icc) :: totcmass_yr_t
+      real, dimension(nlat,nmos,iccp1) :: litrmass_yr_t
+      real, dimension(nlat,nmos,iccp1) :: soilcmas_yr_t
+      real, dimension(nlat,nmos,iccp1) :: nep_yr_t
+      real, dimension(nlat,nmos,iccp1) :: litres_yr_t
+      real, dimension(nlat,nmos,iccp1) :: soilcres_yr_t
+      real, dimension(nlat,nmos,iccp1) :: hetrores_yr_t
+      real, dimension(nlat,nmos,iccp1) :: nbp_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_co2_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_co_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_ch4_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_nmhc_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_h2_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_nox_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_n2o_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_pm25_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_tpm_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_tc_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_oc_yr_t
+      real, dimension(nlat,nmos,icc) :: emit_bc_yr_t
+      real, dimension(nlat,nmos,icc) :: burnfrac_yr_t
+      real, dimension(nlat,nmos) :: probfire_yr_t
+      real, dimension(nlat,nmos) :: bterm_yr_t
+      real, dimension(nlat,nmos) :: luc_emc_yr_t
+      real, dimension(nlat,nmos) :: lterm_yr_t
+      real, dimension(nlat,nmos) :: lucsocin_yr_t
+      real, dimension(nlat,nmos) :: mterm_yr_t
+      real, dimension(nlat,nmos) :: lucltrin_yr_t
+      real, dimension(nlat,nmos) :: ch4wet1_yr_t
+      real, dimension(nlat,nmos) :: ch4wet2_yr_t
+      real, dimension(nlat,nmos) :: wetfdyn_yr_t
+      real, dimension(nlat,nmos) :: ch4dyn1_yr_t
+      real, dimension(nlat,nmos) :: ch4dyn2_yr_t
+      real, dimension(nlat,nmos) :: ch4soills_yr_t
 
 end type ctem_tileavg_annual
 
@@ -1201,13 +1239,18 @@ end subroutine resetclassyr
 
 !==================================================
 
-subroutine resetmidmonth(nltest)
+subroutine resetmidmonth(nltest,nmtest)
+
+! Reset all monthly vars that are set mid-month.
+
+use ctem_params, only : icc,iccp1
 
 implicit none
 
 integer, intent(in) :: nltest
+integer, intent(in) :: nmtest
 
-integer :: i
+integer :: i,m,j
 
 do i=1,nltest
     ctem_grd_mo%stemmass_mo_g(i)=0.0
@@ -1216,21 +1259,43 @@ do i=1,nltest
     ctem_grd_mo%soilcmas_mo_g(i)=0.0
     ctem_grd_mo%vgbiomas_mo_g(i)=0.0
     ctem_grd_mo%totcmass_mo_g(i)=0.0
+  do m = 1, nmtest
+        ctem_tile_mo%stemmass_mo_t(i,m)=0.0
+        ctem_tile_mo%rootmass_mo_t(i,m)=0.0
+        ctem_tile_mo%litrmass_mo_t(i,m)=0.0
+        ctem_tile_mo%soilcmas_mo_t(i,m)=0.0
+        ctem_tile_mo%vgbiomas_mo_t(i,m)=0.0
+        ctem_tile_mo%totcmass_mo_t(i,m)=0.0
+        do j = 1,icc
+            ctem_mo%stemmass_mo(i,m,j)=0.0
+            ctem_mo%rootmass_mo(i,m,j)=0.0
+            ctem_mo%litrmass_mo(i,m,j)=0.0
+            ctem_mo%soilcmas_mo(i,m,j)=0.0
+            ctem_mo%vgbiomas_mo(i,m,j)=0.0
+            ctem_mo%totcmass_mo(i,m,j)=0.0
+        end do
+            ctem_mo%litrmass_mo(i,m,iccp1)=0.0
+            ctem_mo%soilcmas_mo(i,m,iccp1)=0.0
+  end do
 end do
 
 end subroutine resetmidmonth
 
 !==================================================
 
-subroutine resetmonthend_g(nltest)
+subroutine resetmonthend(nltest,nmtest)
+
+use ctem_params, only : iccp1,icc
 
 implicit none
 
 integer, intent(in) :: nltest
+integer, intent(in) :: nmtest
 
-integer :: i
+integer :: i,m,j
 
 do i=1,nltest
+    ! Grid avg
     ctem_grd_mo%laimaxg_mo_g(i)=0.0
     ctem_grd_mo%npp_mo_g(i)=0.0
     ctem_grd_mo%gpp_mo_g(i)=0.0
@@ -1266,69 +1331,81 @@ do i=1,nltest
     ctem_grd_mo%ch4dyn1_mo_g(i)  =0.0
     ctem_grd_mo%ch4dyn2_mo_g(i)  =0.0
     ctem_grd_mo%ch4soills_mo_g(i)  =0.0
-end do
 
-end subroutine resetmonthend_g
+    do m = 1,nmtest
+        ! Tile avg
+        ctem_tile_mo%laimaxg_mo_t(i,m)=0.0
+        ctem_tile_mo%npp_mo_t(i,m)=0.0
+        ctem_tile_mo%gpp_mo_t(i,m)=0.0
+        ctem_tile_mo%nep_mo_t(i,m)=0.0
+        ctem_tile_mo%nbp_mo_t(i,m)=0.0
+        ctem_tile_mo%hetrores_mo_t(i,m)=0.0
+        ctem_tile_mo%autores_mo_t(i,m)=0.0
+        ctem_tile_mo%litres_mo_t(i,m)=0.0
+        ctem_tile_mo%soilcres_mo_t(i,m)=0.0
+        ctem_tile_mo%emit_co2_mo_t(i,m)=0.0
+        ctem_tile_mo%emit_co_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_ch4_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_nmhc_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_h2_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_nox_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_n2o_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_pm25_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_tpm_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_tc_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_oc_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_bc_mo_t(i,m) =0.0
+        ctem_tile_mo%probfire_mo_t(i,m) =0.0
+        ctem_tile_mo%luc_emc_mo_t(i,m) =0.0
+        ctem_tile_mo%lucsocin_mo_t(i,m) =0.0
+        ctem_tile_mo%lucltrin_mo_t(i,m) =0.0
+        ctem_tile_mo%burnfrac_mo_t(i,m) =0.0
+        ctem_tile_mo%bterm_mo_t(i,m)    =0.0
+        ctem_tile_mo%lterm_mo_t(i,m)    =0.0
+        ctem_tile_mo%mterm_mo_t(i,m)    =0.0
+        ctem_tile_mo%ch4wet1_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4wet2_mo_t(i,m)  =0.0
+        ctem_tile_mo%wetfdyn_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4dyn1_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4dyn2_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4soills_mo_t(i,m)  =0.0
 
-!==================================================
+        do j=1,icc
+            ! per pft
+            ctem_mo%laimaxg_mo(i,m,j)=0.0
+            ctem_mo%npp_mo(i,m,j)=0.0
+            ctem_mo%gpp_mo(i,m,j)=0.0
+            ctem_mo%nep_mo(i,m,j)=0.0
+            ctem_mo%nbp_mo(i,m,j)=0.0
+            ctem_mo%hetrores_mo(i,m,j)=0.0
+            ctem_mo%autores_mo(i,m,j)=0.0
+            ctem_mo%litres_mo(i,m,j)=0.0
+            ctem_mo%soilcres_mo(i,m,j)=0.0
+            ctem_mo%emit_co2_mo(i,m,j)=0.0
+            ctem_mo%emit_co_mo(i,m,j) =0.0
+            ctem_mo%emit_ch4_mo(i,m,j) =0.0
+            ctem_mo%emit_nmhc_mo(i,m,j) =0.0
+            ctem_mo%emit_h2_mo(i,m,j) =0.0
+            ctem_mo%emit_nox_mo(i,m,j) =0.0
+            ctem_mo%emit_n2o_mo(i,m,j) =0.0
+            ctem_mo%emit_pm25_mo(i,m,j) =0.0
+            ctem_mo%emit_tpm_mo(i,m,j) =0.0
+            ctem_mo%emit_tc_mo(i,m,j) =0.0
+            ctem_mo%emit_oc_mo(i,m,j) =0.0
+            ctem_mo%emit_bc_mo(i,m,j) =0.0
+            ctem_mo%burnfrac_mo(i,m,j) =0.0
+        end do
 
-subroutine resetmonthend_m(nltest,nmtest)
+        ctem_mo%nep_mo(i,m,iccp1)=0.0
+        ctem_mo%nbp_mo(i,m,iccp1)=0.0
+        ctem_mo%hetrores_mo(i,m,iccp1)=0.0
+        ctem_mo%litres_mo(i,m,iccp1)=0.0
+        ctem_mo%soilcres_mo(i,m,iccp1)=0.0
 
-use ctem_params, only : iccp1,icc
-
-implicit none
-
-integer, intent(in) :: nltest
-integer, intent(in) :: nmtest
-
-integer :: i,m,j
-
-do i=1,nltest
- do m = 1,nmtest
-   do j=1,icc
-    ctem_tile_mo%npp_mo_t(i,m,j)=0.0
-    ctem_tile_mo%gpp_mo_t(i,m,j)=0.0
-    ctem_tile_mo%nep_mo_t(i,m,j)=0.0
-    ctem_tile_mo%nbp_mo_t(i,m,j)=0.0
-    ctem_tile_mo%laimaxg_mo_t(i,m,j)=0.0
-    ctem_tile_mo%emit_co2_mo_t(i,m,j)=0.0
-    ctem_tile_mo%emit_co_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_ch4_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_nmhc_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_h2_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_nox_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_n2o_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_pm25_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_tpm_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_tc_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_oc_mo_t(i,m,j) =0.0
-    ctem_tile_mo%emit_bc_mo_t(i,m,j) =0.0
-    ctem_tile_mo%burnfrac_mo_t(i,m,j) =0.0
-
-   end do
-
-    ctem_tile_mo%nep_mo_t(i,m,iccp1)=0.0
-    ctem_tile_mo%nbp_mo_t(i,m,iccp1)=0.0
-
-    ctem_tile_mo%probfire_mo_t(i,m) =0.0
-    ctem_tile_mo%luc_emc_mo_t(i,m) =0.0
-    ctem_tile_mo%lucsocin_mo_t(i,m) =0.0
-    ctem_tile_mo%lucltrin_mo_t(i,m) =0.0
-    ctem_tile_mo%bterm_mo_t(i,m)=0.0
-    ctem_tile_mo%lterm_mo_t(i,m)=0.0
-    ctem_tile_mo%mterm_mo_t(i,m)=0.0
-
-    ctem_tile_mo%ch4wet1_mo_t(i,m)  =0.0
-    ctem_tile_mo%ch4wet2_mo_t(i,m)  =0.0
-    ctem_tile_mo%wetfdyn_mo_t(i,m)  =0.0
-    ctem_tile_mo%ch4dyn1_mo_t(i,m)  =0.0
-    ctem_tile_mo%ch4dyn2_mo_t(i,m)  =0.0
-    ctem_tile_mo%ch4soills_mo_t(i,m)  =0.0
-
-  end do !nmtest
+    end do !nmtest
 end do ! nltest
 
-end subroutine resetmonthend_m
+end subroutine resetmonthend
 
 !==================================================
 
@@ -1390,7 +1467,7 @@ end subroutine resetyearend_g
 
 !==================================================
 
-subroutine resetyearend_m(nltest,nmtest)
+subroutine resetyearend_t(nltest,nmtest)
 
 use ctem_params, only : iccp1,icc
 
@@ -1405,57 +1482,57 @@ do i=1,nltest
  do m = 1,nmtest
    do j=1,icc
 
-    ctem_tile_yr%laimaxg_yr_m(i,m,j)=0.0
-    ctem_tile_yr%npp_yr_m(i,m,j)=0.0
-    ctem_tile_yr%gpp_yr_m(i,m,j)=0.0
-    ctem_tile_yr%nep_yr_m(i,m,j)=0.0
-    ctem_tile_yr%nbp_yr_m(i,m,j)=0.0
-    ctem_tile_yr%hetrores_yr_m(i,m,j)=0.0
-    ctem_tile_yr%autores_yr_m(i,m,j)=0.0
-    ctem_tile_yr%litres_yr_m(i,m,j)=0.0
-    ctem_tile_yr%soilcres_yr_m(i,m,j)=0.0
+    ctem_tile_yr%laimaxg_yr_t(i,m,j)=0.0
+    ctem_tile_yr%npp_yr_t(i,m,j)=0.0
+    ctem_tile_yr%gpp_yr_t(i,m,j)=0.0
+    ctem_tile_yr%nep_yr_t(i,m,j)=0.0
+    ctem_tile_yr%nbp_yr_t(i,m,j)=0.0
+    ctem_tile_yr%hetrores_yr_t(i,m,j)=0.0
+    ctem_tile_yr%autores_yr_t(i,m,j)=0.0
+    ctem_tile_yr%litres_yr_t(i,m,j)=0.0
+    ctem_tile_yr%soilcres_yr_t(i,m,j)=0.0
 
-    ctem_tile_yr%emit_co2_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_co_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_ch4_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_nmhc_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_h2_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_nox_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_n2o_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_pm25_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_tpm_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_tc_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_oc_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_bc_yr_m(i,m,j)=0.0
-    ctem_tile_yr%burnfrac_yr_m(i,m,j)=0.0
+    ctem_tile_yr%emit_co2_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_co_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_ch4_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_nmhc_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_h2_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_nox_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_n2o_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_pm25_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_tpm_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_tc_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_oc_yr_t(i,m,j)=0.0
+    ctem_tile_yr%emit_bc_yr_t(i,m,j)=0.0
+    ctem_tile_yr%burnfrac_yr_t(i,m,j)=0.0
 
    end do
 
-    ctem_tile_yr%hetrores_yr_m(i,m,iccp1)=0.0
-    ctem_tile_yr%litres_yr_m(i,m,iccp1)=0.0
-    ctem_tile_yr%soilcres_yr_m(i,m,iccp1)=0.0
-    ctem_tile_yr%nep_yr_m(i,m,iccp1)=0.0
-    ctem_tile_yr%nbp_yr_m(i,m,iccp1)=0.0
+    ctem_tile_yr%hetrores_yr_t(i,m,iccp1)=0.0
+    ctem_tile_yr%litres_yr_t(i,m,iccp1)=0.0
+    ctem_tile_yr%soilcres_yr_t(i,m,iccp1)=0.0
+    ctem_tile_yr%nep_yr_t(i,m,iccp1)=0.0
+    ctem_tile_yr%nbp_yr_t(i,m,iccp1)=0.0
 
-    ctem_tile_yr%probfire_yr_m(i,m)=0.0
-    ctem_tile_yr%luc_emc_yr_m(i,m)=0.0
-    ctem_tile_yr%lucsocin_yr_m(i,m)=0.0
-    ctem_tile_yr%lucltrin_yr_m(i,m)=0.0
-    ctem_tile_yr%bterm_yr_m(i,m)=0.0
-    ctem_tile_yr%lterm_yr_m(i,m)=0.0
-    ctem_tile_yr%mterm_yr_m(i,m)=0.0
+    ctem_tile_yr%probfire_yr_t(i,m)=0.0
+    ctem_tile_yr%luc_emc_yr_t(i,m)=0.0
+    ctem_tile_yr%lucsocin_yr_t(i,m)=0.0
+    ctem_tile_yr%lucltrin_yr_t(i,m)=0.0
+    ctem_tile_yr%bterm_yr_t(i,m)=0.0
+    ctem_tile_yr%lterm_yr_t(i,m)=0.0
+    ctem_tile_yr%mterm_yr_t(i,m)=0.0
 
-    ctem_tile_yr%ch4wet1_yr_m(i,m)  =0.0
-    ctem_tile_yr%ch4wet2_yr_m(i,m)  =0.0
-    ctem_tile_yr%wetfdyn_yr_m(i,m)  =0.0
-    ctem_tile_yr%ch4dyn1_yr_m(i,m)  =0.0
-    ctem_tile_yr%ch4dyn2_yr_m(i,m)  =0.0
-    ctem_tile_yr%ch4soills_yr_m(i,m)  =0.0
+    ctem_tile_yr%ch4wet1_yr_t(i,m)  =0.0
+    ctem_tile_yr%ch4wet2_yr_t(i,m)  =0.0
+    ctem_tile_yr%wetfdyn_yr_t(i,m)  =0.0
+    ctem_tile_yr%ch4dyn1_yr_t(i,m)  =0.0
+    ctem_tile_yr%ch4dyn2_yr_t(i,m)  =0.0
+    ctem_tile_yr%ch4soills_yr_t(i,m)  =0.0
 
   end do !nmtest
 end do ! nltest
 
-end subroutine resetyearend_m
+end subroutine resetyearend_t
 
 !==================================================
 subroutine resetclassaccum(nltest,nmtest)

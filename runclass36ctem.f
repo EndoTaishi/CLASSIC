@@ -92,11 +92,11 @@ c     through use statements for modules:
       use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,
      1                               class_out,resetclassmon,
      2                               resetclassyr,resetmidmonth,
-     3                               resetmonthend_g,resetyearend_g,
+     3                               resetmonthend,resetyearend_g,
      4                               resetclassaccum,ctem_grd,
      5                               ctem_tile,resetgridavg,
-     6                               resetmonthend_m,resetyearend_g,
-     7                               resetyearend_m,finddaylength
+     6                               resetyearend_g,
+     7                               resetyearend_t,finddaylength
 
       use io_driver,          only : read_from_ctm, create_outfiles,
      1                               write_ctm_rs, class_monthly_aw,
@@ -2404,9 +2404,9 @@ c                                      !first year
 c
 c *     initialize accumulated array for monthly and yearly output for ctem
 c
-
-         call resetmonthend_m(nltest,nmtest)
-         call resetyearend_m(nltest,nmtest)
+         call resetmidmonth(nltest,nmtest)
+         call resetmonthend(nltest,nmtest)
+         call resetyearend_t(nltest,nmtest)
 c
 115   continue
 c
@@ -4573,20 +4573,20 @@ c
         !do 861 i=1,nltest
 
 c
-          do nt=1,nmon
-           if (iday.eq.mmday(nt)) then
-
-            call resetmidmonth(nltest)
-
-           endif
-          enddo
+!           do nt=1,nmon  !FLAG now done in ctem_monthly_aw
+!            if (iday.eq.mmday(nt)) then
+!
+!             call resetmidmonth(nltest,nmtest)
+!
+!            endif
+!           enddo
 c
 
-          if(iday.eq.monthend(imonth+1))then
-
-            call resetmonthend_g(nltest)
-
-          endif
+!           if(iday.eq.monthend(imonth+1))then
+!
+!             call resetmonthend(nltest)
+!
+!           endif
 c
           if (iday .eq. 365) then
 
@@ -4594,7 +4594,7 @@ c
 
           endif
 
-861     continue
+!861     continue
 c
 
 !       CTEM--------------\
