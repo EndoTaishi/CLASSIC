@@ -7,6 +7,9 @@ C     * ECOSYSTEM MODEL).
 C
 C     REVISION HISTORY:
 C
+C     * Feb 10 2016 : Trimmed CTEM secondary vars from driver. They are not used, so can find in io_driver
+C     * Joe Melton
+C
 C     * JAN 6 2015
 C     * Joe Melton : Added the soil methane sink subroutine
 C
@@ -89,13 +92,11 @@ c     through use statements for modules:
       use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,
      1                               class_out,resetclassmon,
      2                               resetclassyr,resetmidmonth,
-     3                               resetmonthend_g,ctem_grd_mo,
-     4                               resetyearend_g,ctem_grd_yr,
-     5                               resetclassaccum,ctem_grd,
-     6                               ctem_tile, ctem_tile_mo,
-     7                               ctem_tile_yr,resetgridavg,
-     8                               resetmonthend_m,resetyearend_g,
-     9                               resetyearend_m,finddaylength
+     3                               resetmonthend_g,resetyearend_g,
+     4                               resetclassaccum,ctem_grd,
+     5                               ctem_tile,resetgridavg,
+     6                               resetmonthend_m,resetyearend_g,
+     7                               resetyearend_m,finddaylength
 
       use io_driver,          only : read_from_ctm, create_outfiles,
      1                               write_ctm_rs, class_monthly_aw,
@@ -939,49 +940,25 @@ c
 !      Mosaic-level variables (denoted by an ending of "_m")
 
       real faregat(ilg)
-c
-      real, pointer, dimension(:,:) :: leaflitr_m
-      real, pointer, dimension(:,:) :: tltrleaf_m
-      real, pointer, dimension(:,:) :: tltrstem_m
-      real, pointer, dimension(:,:) :: tltrroot_m
-      real, pointer, dimension(:,:) :: ailcg_m
-      real, pointer, dimension(:,:) :: ailcb_m
-      real, pointer, dimension(:,:,:) :: rmatctem_m
-      real, pointer, dimension(:,:) :: veghght_m
-      real, pointer, dimension(:,:) :: rootdpth_m
-      real, pointer, dimension(:,:) :: roottemp_m
-      real, pointer, dimension(:,:) :: slai_m
-      real, pointer, dimension(:,:) :: afrroot_m
-      real, pointer, dimension(:,:) :: afrleaf_m
-      real, pointer, dimension(:,:) :: afrstem_m
-      real, pointer, dimension(:,:) :: laimaxg_m
-      real, pointer, dimension(:,:) :: stemmass_m
-      real, pointer, dimension(:,:) :: rootmass_m
-      real, pointer, dimension(:,:) :: litrmass_m
-      real, pointer, dimension(:,:) :: gleafmas_m
-      real, pointer, dimension(:,:) :: bleafmas_m
-      real, pointer, dimension(:,:) :: soilcmas_m
-
-      real, pointer, dimension(:) :: fsnowacc_m
-      real, pointer, dimension(:) :: tcansacc_m
-      real, pointer, dimension(:) :: tcanoaccgat_m
-      real, pointer, dimension(:) :: taaccgat_m
-      real, pointer, dimension(:) :: uvaccgat_m
-      real, pointer, dimension(:) :: vvaccgat_m
-      real, pointer, dimension(:,:) :: tbaraccgat_m
-      real, pointer, dimension(:,:) :: tbarcacc_m
-      real, pointer, dimension(:,:) :: tbarcsacc_m
-      real, pointer, dimension(:,:) :: tbargacc_m
-      real, pointer, dimension(:,:) :: tbargsacc_m
-      real, pointer, dimension(:,:) :: thliqcacc_m
-      real, pointer, dimension(:,:) :: thliqgacc_m
-      real, pointer, dimension(:,:) :: thliqacc_m
-      real, pointer, dimension(:,:) :: thicecacc_m
-      real, pointer, dimension(:,:) :: ancsvgac_m
-      real, pointer, dimension(:,:) :: ancgvgac_m
-      real, pointer, dimension(:,:) :: rmlcsvga_m
-      real, pointer, dimension(:,:) :: rmlcgvga_m
-      integer, pointer, dimension(:,:) :: ifcancmx_m
+      real, pointer, dimension(:) :: fsnowacc_t
+      real, pointer, dimension(:) :: tcansacc_t
+      real, pointer, dimension(:) :: tcanoaccgat_t
+      real, pointer, dimension(:) :: taaccgat_t
+      real, pointer, dimension(:) :: uvaccgat_t
+      real, pointer, dimension(:) :: vvaccgat_t
+      real, pointer, dimension(:,:) :: tbaraccgat_t
+      real, pointer, dimension(:,:) :: tbarcacc_t
+      real, pointer, dimension(:,:) :: tbarcsacc_t
+      real, pointer, dimension(:,:) :: tbargacc_t
+      real, pointer, dimension(:,:) :: tbargsacc_t
+      real, pointer, dimension(:,:) :: thliqcacc_t
+      real, pointer, dimension(:,:) :: thliqgacc_t
+      real, pointer, dimension(:,:) :: thliqacc_t
+      real, pointer, dimension(:,:) :: thicecacc_t
+      real, pointer, dimension(:,:) :: ancsvgac_t
+      real, pointer, dimension(:,:) :: ancgvgac_t
+      real, pointer, dimension(:,:) :: rmlcsvga_t
+      real, pointer, dimension(:,:) :: rmlcgvga_t
 
 !     -----------------------
 !     Grid-averaged variables (denoted with an ending of "_g")
@@ -1038,265 +1015,14 @@ c
       real, pointer, dimension(:) :: QFCLROT_g
       real, pointer, dimension(:) :: QFNROT_g
       real, pointer, dimension(:) :: WTRCROT_g
-      real, pointer, dimension(:) :: gpp_g
-      real, pointer, dimension(:) :: npp_g
-      real, pointer, dimension(:) :: nbp_g
-      real, pointer, dimension(:) :: autores_g
-      real, pointer, dimension(:) :: socres_g
-      real, pointer, dimension(:) :: litres_g
-      real, pointer, dimension(:) :: dstcemls3_g
-      real, pointer, dimension(:) :: litrfall_g
-      real, pointer, dimension(:) :: rml_g
-      real, pointer, dimension(:) :: rms_g
-      real, pointer, dimension(:) :: rg_g
-      real, pointer, dimension(:) :: leaflitr_g
-      real, pointer, dimension(:) :: tltrstem_g
-      real, pointer, dimension(:) :: tltrroot_g
-      real, pointer, dimension(:) :: nep_g
-      real, pointer, dimension(:) :: hetrores_g
-      real, pointer, dimension(:) :: dstcemls_g
-      real, pointer, dimension(:) :: humiftrs_g
-      real, pointer, dimension(:) :: rmr_g
-      real, pointer, dimension(:) :: tltrleaf_g
-      real, pointer, dimension(:) :: gavgltms_g
-
-      real, pointer, dimension(:) :: vgbiomas_g
-      real, pointer, dimension(:) :: gavglai_g
-      real, pointer, dimension(:) :: gavgscms_g
-      real, pointer, dimension(:) :: gleafmas_g
-      real, pointer, dimension(:) :: bleafmas_g
-      real, pointer, dimension(:) :: stemmass_g
-      real, pointer, dimension(:) :: rootmass_g
-      real, pointer, dimension(:) :: litrmass_g
-      real, pointer, dimension(:) :: soilcmas_g
-      real, pointer, dimension(:) :: slai_g
-      real, pointer, dimension(:) :: ailcg_g
-      real, pointer, dimension(:) :: ailcb_g
-      real, pointer, dimension(:) :: veghght_g
-      real, pointer, dimension(:) :: rootdpth_g
-      real, pointer, dimension(:) :: roottemp_g
-      real, pointer, dimension(:) :: totcmass_g
-      real, pointer, dimension(:) :: tcanoacc_out_g
-      real, pointer, dimension(:) :: burnfrac_g
-      real, pointer, dimension(:) :: probfire_g
-      real, pointer, dimension(:) :: lucemcom_g
-      real, pointer, dimension(:) :: lucltrin_g
-      real, pointer, dimension(:) :: lucsocin_g
-      real, pointer, dimension(:) :: emit_co2_g
-      real, pointer, dimension(:) :: emit_co_g
-      real, pointer, dimension(:) :: emit_ch4_g
-      real, pointer, dimension(:) :: emit_nmhc_g
-      real, pointer, dimension(:) :: emit_h2_g
-      real, pointer, dimension(:) :: emit_nox_g
-      real, pointer, dimension(:) :: emit_n2o_g
-      real, pointer, dimension(:) :: emit_pm25_g
-      real, pointer, dimension(:) :: emit_tpm_g
-      real, pointer, dimension(:) :: emit_tc_g
-      real, pointer, dimension(:) :: emit_oc_g
-      real, pointer, dimension(:) :: emit_bc_g
-      real, pointer, dimension(:) :: bterm_g
-      real, pointer, dimension(:) :: lterm_g
-      real, pointer, dimension(:) :: mterm_g
-      real, pointer, dimension(:) :: ch4wet1_g
-      real, pointer, dimension(:) :: ch4wet2_g
-      real, pointer, dimension(:) :: wetfdyn_g
-      real, pointer, dimension(:) :: ch4dyn1_g
-      real, pointer, dimension(:) :: ch4dyn2_g
-      real, pointer, dimension(:) :: ch4soills_g
-       real, pointer, dimension(:,:) :: afrleaf_g
-      real, pointer, dimension(:,:) :: afrstem_g
-      real, pointer, dimension(:,:) :: afrroot_g
-      real, pointer, dimension(:,:) :: lfstatus_g
       real, pointer, dimension(:,:) :: rmlvegrow_g
       real, pointer, dimension(:,:) :: anvegrow_g
-      real, pointer, dimension(:,:) :: rmatctem_g
       real, pointer, dimension(:,:) :: HMFGROT_g
       real, pointer, dimension(:,:) :: HTCROT_g
       real, pointer, dimension(:,:) :: TBARROT_g
       real, pointer, dimension(:,:) :: THLQROT_g
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
-
-!     -----------------------
-!      Grid averaged monthly variables (denoted by name ending in "_mo_g")
-
-        real, pointer, dimension(:) :: laimaxg_mo_g
-        real, pointer, dimension(:) :: stemmass_mo_g
-        real, pointer, dimension(:) :: rootmass_mo_g
-        real, pointer, dimension(:) :: litrmass_mo_g
-        real, pointer, dimension(:) :: soilcmas_mo_g
-        real, pointer, dimension(:) :: npp_mo_g
-        real, pointer, dimension(:) :: gpp_mo_g
-        real, pointer, dimension(:) :: nep_mo_g
-        real, pointer, dimension(:) :: nbp_mo_g
-        real, pointer, dimension(:) :: hetrores_mo_g
-        real, pointer, dimension(:) :: autores_mo_g
-        real, pointer, dimension(:) :: litres_mo_g
-        real, pointer, dimension(:) :: soilcres_mo_g
-        real, pointer, dimension(:) :: vgbiomas_mo_g
-        real, pointer, dimension(:) :: totcmass_mo_g
-        real, pointer, dimension(:) :: emit_co2_mo_g
-        real, pointer, dimension(:) :: emit_co_mo_g
-        real, pointer, dimension(:) :: emit_ch4_mo_g
-        real, pointer, dimension(:) :: emit_nmhc_mo_g
-        real, pointer, dimension(:) :: emit_h2_mo_g
-        real, pointer, dimension(:) :: emit_nox_mo_g
-        real, pointer, dimension(:) :: emit_n2o_mo_g
-        real, pointer, dimension(:) :: emit_pm25_mo_g
-        real, pointer, dimension(:) :: emit_tpm_mo_g
-        real, pointer, dimension(:) :: emit_tc_mo_g
-        real, pointer, dimension(:) :: emit_oc_mo_g
-        real, pointer, dimension(:) :: emit_bc_mo_g
-        real, pointer, dimension(:) :: probfire_mo_g
-        real, pointer, dimension(:) :: luc_emc_mo_g
-        real, pointer, dimension(:) :: lucltrin_mo_g
-        real, pointer, dimension(:) :: lucsocin_mo_g
-        real, pointer, dimension(:) :: burnfrac_mo_g
-        real, pointer, dimension(:) :: bterm_mo_g
-        real, pointer, dimension(:) :: lterm_mo_g
-        real, pointer, dimension(:) :: mterm_mo_g
-        real, pointer, dimension(:) :: ch4wet1_mo_g
-        real, pointer, dimension(:) :: ch4wet2_mo_g
-        real, pointer, dimension(:) :: wetfdyn_mo_g
-        real, pointer, dimension(:) :: ch4dyn1_mo_g
-        real, pointer, dimension(:) :: ch4dyn2_mo_g
-        real, pointer, dimension(:) :: ch4soills_mo_g
-
-!      Mosaic monthly variables (denoted by name ending in "_mo_m")
-c
-      real, pointer, dimension(:,:,:) :: laimaxg_mo_m
-      real, pointer, dimension(:,:,:) :: stemmass_mo_m
-      real, pointer, dimension(:,:,:) :: rootmass_mo_m
-      real, pointer, dimension(:,:,:) :: npp_mo_m
-      real, pointer, dimension(:,:,:) :: gpp_mo_m
-      real, pointer, dimension(:,:,:) :: vgbiomas_mo_m
-      real, pointer, dimension(:,:,:) :: autores_mo_m
-      real, pointer, dimension(:,:,:) :: totcmass_mo_m
-      real, pointer, dimension(:,:,:) :: litrmass_mo_m
-      real, pointer, dimension(:,:,:) :: soilcmas_mo_m
-      real, pointer, dimension(:,:,:) :: nep_mo_m
-      real, pointer, dimension(:,:,:) :: litres_mo_m
-      real, pointer, dimension(:,:,:) :: soilcres_mo_m
-      real, pointer, dimension(:,:,:) :: hetrores_mo_m
-      real, pointer, dimension(:,:,:) :: nbp_mo_m
-      real, pointer, dimension(:,:,:) :: emit_co2_mo_m
-      real, pointer, dimension(:,:,:) :: emit_co_mo_m
-      real, pointer, dimension(:,:,:) :: emit_ch4_mo_m
-      real, pointer, dimension(:,:,:) :: emit_nmhc_mo_m
-      real, pointer, dimension(:,:,:) :: emit_h2_mo_m
-      real, pointer, dimension(:,:,:) :: emit_nox_mo_m
-      real, pointer, dimension(:,:,:) :: emit_n2o_mo_m
-      real, pointer, dimension(:,:,:) :: emit_pm25_mo_m
-      real, pointer, dimension(:,:,:) :: emit_tpm_mo_m
-      real, pointer, dimension(:,:,:) :: emit_tc_mo_m
-      real, pointer, dimension(:,:,:) :: emit_oc_mo_m
-      real, pointer, dimension(:,:,:) :: emit_bc_mo_m
-      real, pointer, dimension(:,:,:) :: burnfrac_mo_m
-      real, pointer, dimension(:,:) :: probfire_mo_m
-      real, pointer, dimension(:,:) :: bterm_mo_m
-      real, pointer, dimension(:,:) :: luc_emc_mo_m
-      real, pointer, dimension(:,:) :: lterm_mo_m
-      real, pointer, dimension(:,:) :: lucsocin_mo_m
-      real, pointer, dimension(:,:) :: mterm_mo_m
-      real, pointer, dimension(:,:) :: lucltrin_mo_m
-      real, pointer, dimension(:,:) :: ch4wet1_mo_m
-      real, pointer, dimension(:,:) :: ch4wet2_mo_m
-      real, pointer, dimension(:,:) :: wetfdyn_mo_m
-      real, pointer, dimension(:,:) :: ch4dyn1_mo_m
-      real, pointer, dimension(:,:) :: ch4dyn2_mo_m
-      real, pointer, dimension(:,:) :: ch4soills_mo_m
-
-!     -----------------------
-c      Annual output for CTEM grid-averaged variables:
-c      (denoted by name ending in "_yr_g")
-
-      real, pointer, dimension(:) :: laimaxg_yr_g
-      real, pointer, dimension(:) :: stemmass_yr_g
-      real, pointer, dimension(:) :: rootmass_yr_g
-      real, pointer, dimension(:) :: litrmass_yr_g
-      real, pointer, dimension(:) :: soilcmas_yr_g
-      real, pointer, dimension(:) :: npp_yr_g
-      real, pointer, dimension(:) :: gpp_yr_g
-      real, pointer, dimension(:) :: nep_yr_g
-      real, pointer, dimension(:) :: nbp_yr_g
-      real, pointer, dimension(:) :: hetrores_yr_g
-      real, pointer, dimension(:) :: autores_yr_g
-      real, pointer, dimension(:) :: litres_yr_g
-      real, pointer, dimension(:) :: soilcres_yr_g
-      real, pointer, dimension(:) :: vgbiomas_yr_g
-      real, pointer, dimension(:) :: totcmass_yr_g
-      real, pointer, dimension(:) :: emit_co2_yr_g
-      real, pointer, dimension(:) :: emit_co_yr_g
-      real, pointer, dimension(:) :: emit_ch4_yr_g
-      real, pointer, dimension(:) :: emit_nmhc_yr_g
-      real, pointer, dimension(:) :: emit_h2_yr_g
-      real, pointer, dimension(:) :: emit_nox_yr_g
-      real, pointer, dimension(:) :: emit_n2o_yr_g
-      real, pointer, dimension(:) :: emit_pm25_yr_g
-      real, pointer, dimension(:) :: emit_tpm_yr_g
-      real, pointer, dimension(:) :: emit_tc_yr_g
-      real, pointer, dimension(:) :: emit_oc_yr_g
-      real, pointer, dimension(:) :: emit_bc_yr_g
-      real, pointer, dimension(:) :: probfire_yr_g
-      real, pointer, dimension(:) :: luc_emc_yr_g
-      real, pointer, dimension(:) :: lucltrin_yr_g
-      real, pointer, dimension(:) :: lucsocin_yr_g
-      real, pointer, dimension(:) :: burnfrac_yr_g
-      real, pointer, dimension(:) :: bterm_yr_g
-      real, pointer, dimension(:) :: lterm_yr_g
-      real, pointer, dimension(:) :: mterm_yr_g
-      real, pointer, dimension(:) :: ch4wet1_yr_g
-      real, pointer, dimension(:) :: ch4wet2_yr_g
-      real, pointer, dimension(:) :: wetfdyn_yr_g
-      real, pointer, dimension(:) :: ch4dyn1_yr_g
-      real, pointer, dimension(:) :: ch4dyn2_yr_g
-      real, pointer, dimension(:) :: ch4soills_yr_g
-
-
-! c      Annual output for CTEM mosaic variables:
-! c      (denoted by name ending in "_yr_m")
-!
-      real, pointer, dimension(:,:,:) :: laimaxg_yr_m
-      real, pointer, dimension(:,:,:) :: stemmass_yr_m
-      real, pointer, dimension(:,:,:) :: rootmass_yr_m
-      real, pointer, dimension(:,:,:) :: npp_yr_m
-      real, pointer, dimension(:,:,:) :: gpp_yr_m
-      real, pointer, dimension(:,:,:) :: vgbiomas_yr_m
-      real, pointer, dimension(:,:,:) :: autores_yr_m
-      real, pointer, dimension(:,:,:) :: totcmass_yr_m
-      real, pointer, dimension(:,:,:) :: litrmass_yr_m
-      real, pointer, dimension(:,:,:) :: soilcmas_yr_m
-      real, pointer, dimension(:,:,:) :: nep_yr_m
-      real, pointer, dimension(:,:,:) :: litres_yr_m
-      real, pointer, dimension(:,:,:) :: soilcres_yr_m
-      real, pointer, dimension(:,:,:) :: hetrores_yr_m
-      real, pointer, dimension(:,:,:) :: nbp_yr_m
-      real, pointer, dimension(:,:,:) :: emit_co2_yr_m
-      real, pointer, dimension(:,:,:) :: emit_co_yr_m
-      real, pointer, dimension(:,:,:) :: emit_ch4_yr_m
-      real, pointer, dimension(:,:,:) :: emit_nmhc_yr_m
-      real, pointer, dimension(:,:,:) :: emit_h2_yr_m
-      real, pointer, dimension(:,:,:) :: emit_nox_yr_m
-      real, pointer, dimension(:,:,:) :: emit_n2o_yr_m
-      real, pointer, dimension(:,:,:) :: emit_pm25_yr_m
-      real, pointer, dimension(:,:,:) :: emit_tpm_yr_m
-      real, pointer, dimension(:,:,:) :: emit_tc_yr_m
-      real, pointer, dimension(:,:,:) :: emit_oc_yr_m
-      real, pointer, dimension(:,:,:) :: emit_bc_yr_m
-      real, pointer, dimension(:,:,:) :: burnfrac_yr_m
-      real, pointer, dimension(:,:) :: probfire_yr_m
-      real, pointer, dimension(:,:) :: bterm_yr_m
-      real, pointer, dimension(:,:) :: luc_emc_yr_m
-      real, pointer, dimension(:,:) :: lterm_yr_m
-      real, pointer, dimension(:,:) :: lucsocin_yr_m
-      real, pointer, dimension(:,:) :: mterm_yr_m
-      real, pointer, dimension(:,:) :: lucltrin_yr_m
-      real, pointer, dimension(:,:) :: ch4wet1_yr_m
-      real, pointer, dimension(:,:) :: ch4wet2_yr_m
-      real, pointer, dimension(:,:) :: wetfdyn_yr_m
-      real, pointer, dimension(:,:) :: ch4dyn1_yr_m
-      real, pointer, dimension(:,:) :: ch4dyn2_yr_m
-      real, pointer, dimension(:,:) :: ch4soills_yr_m
 
 ! Model Switches (rarely changed ones only! The rest are in joboptions file):
 
@@ -1729,7 +1455,7 @@ C===================== CTEM ==============================================\
       pandaysgat        => vgat%pandays
       stdalngat         => vgat%stdaln
 
-      ! Mosaic-level:
+      ! Mosaic-level (CLASS vars):
 
       PREACC_M          => vrot%PREACC_M
       GTACC_M           => vrot%GTACC_M
@@ -1763,7 +1489,7 @@ C===================== CTEM ==============================================\
       EVAPACC_M         => vrot%EVAPACC_M
       FLUTACC_M         => vrot%FLUTACC_M
 
-      ! grid-averaged
+      ! grid-averaged (CLASS vars)
 
       WSNOROT_g         => ctem_grd%WSNOROT_g
       ROFSROT_g         => ctem_grd%ROFSROT_g
@@ -1817,77 +1543,8 @@ C===================== CTEM ==============================================\
       QFCLROT_g         => ctem_grd%QFCLROT_g
       QFNROT_g          => ctem_grd%QFNROT_g
       WTRCROT_g         => ctem_grd%WTRCROT_g
-      gpp_g             => ctem_grd%gpp_g
-      npp_g             => ctem_grd%npp_g
-      nbp_g             => ctem_grd%nbp_g
-      autores_g         => ctem_grd%autores_g
-      socres_g          => ctem_grd%socres_g
-      litres_g          => ctem_grd%litres_g
-      dstcemls3_g       => ctem_grd%dstcemls3_g
-      litrfall_g        => ctem_grd%litrfall_g
-      rml_g             => ctem_grd%rml_g
-      rms_g             => ctem_grd%rms_g
-      rg_g              => ctem_grd%rg_g
-      leaflitr_g        => ctem_grd%leaflitr_g
-      tltrstem_g        => ctem_grd%tltrstem_g
-      tltrroot_g        => ctem_grd%tltrroot_g
-      nep_g             => ctem_grd%nep_g
-      hetrores_g        => ctem_grd%hetrores_g
-      dstcemls_g        => ctem_grd%dstcemls_g
-      humiftrs_g        => ctem_grd%humiftrs_g
-      rmr_g             => ctem_grd%rmr_g
-      tltrleaf_g        => ctem_grd%tltrleaf_g
-      gavgltms_g        => ctem_grd%gavgltms_g
-      vgbiomas_g        => ctem_grd%vgbiomas_g
-      gavglai_g         => ctem_grd%gavglai_g
-      gavgscms_g        => ctem_grd%gavgscms_g
-      gleafmas_g        => ctem_grd%gleafmas_g
-      bleafmas_g        => ctem_grd%bleafmas_g
-      stemmass_g        => ctem_grd%stemmass_g
-      rootmass_g        => ctem_grd%rootmass_g
-      litrmass_g        => ctem_grd%litrmass_g
-      soilcmas_g        => ctem_grd%soilcmas_g
-      slai_g            => ctem_grd%slai_g
-      ailcg_g           => ctem_grd%ailcg_g
-      ailcb_g           => ctem_grd%ailcb_g
-      veghght_g         => ctem_grd%veghght_g
-      rootdpth_g        => ctem_grd%rootdpth_g
-      roottemp_g        => ctem_grd%roottemp_g
-      totcmass_g        => ctem_grd%totcmass_g
-      tcanoacc_out_g    => ctem_grd%tcanoacc_out_g
-      burnfrac_g        => ctem_grd%burnfrac_g
-      probfire_g        => ctem_grd%probfire_g
-      lucemcom_g        => ctem_grd%lucemcom_g
-      lucltrin_g        => ctem_grd%lucltrin_g
-      lucsocin_g        => ctem_grd%lucsocin_g
-      emit_co2_g        => ctem_grd%emit_co2_g
-      emit_co_g         => ctem_grd%emit_co_g
-      emit_ch4_g        => ctem_grd%emit_ch4_g
-      emit_nmhc_g       => ctem_grd%emit_nmhc_g
-      emit_h2_g         => ctem_grd%emit_h2_g
-      emit_nox_g        => ctem_grd%emit_nox_g
-      emit_n2o_g        => ctem_grd%emit_n2o_g
-      emit_pm25_g       => ctem_grd%emit_pm25_g
-      emit_tpm_g        => ctem_grd%emit_tpm_g
-      emit_tc_g         => ctem_grd%emit_tc_g
-      emit_oc_g         => ctem_grd%emit_oc_g
-      emit_bc_g         => ctem_grd%emit_bc_g
-      bterm_g           => ctem_grd%bterm_g
-      lterm_g           => ctem_grd%lterm_g
-      mterm_g           => ctem_grd%mterm_g
-      ch4wet1_g         => ctem_grd%ch4wet1_g
-      ch4wet2_g         => ctem_grd%ch4wet2_g
-      wetfdyn_g         => ctem_grd%wetfdyn_g
-      ch4dyn1_g         => ctem_grd%ch4dyn1_g
-      ch4dyn2_g         => ctem_grd%ch4dyn2_g
-      ch4soills_g       => ctem_grd%ch4_soills_g
-      afrleaf_g         => ctem_grd%afrleaf_g
-      afrstem_g         => ctem_grd%afrstem_g
-      afrroot_g         => ctem_grd%afrroot_g
-      lfstatus_g        => ctem_grd%lfstatus_g
       rmlvegrow_g       => ctem_grd%rmlvegrow_g
       anvegrow_g        => ctem_grd%anvegrow_g
-      rmatctem_g        => ctem_grd%rmatctem_g
       HMFGROT_g         => ctem_grd%HMFGROT_g
       HTCROT_g          => ctem_grd%HTCROT_g
       TBARROT_g         => ctem_grd%TBARROT_g
@@ -1908,225 +1565,27 @@ C===================== CTEM ==============================================\
        tsn_g            => ctem_grd%tsn_g
        zsn_g            => ctem_grd%zsn_g
 
-      ! mosaic level variables:
+      ! mosaic level variables (CLASS):
 
-      leaflitr_m        => ctem_tile%leaflitr_m
-      tltrleaf_m        => ctem_tile%tltrleaf_m
-      tltrstem_m        => ctem_tile%tltrstem_m
-      tltrroot_m        => ctem_tile%tltrroot_m
-      ailcg_m           => ctem_tile%ailcg_m
-      ailcb_m           => ctem_tile%ailcb_m
-      rmatctem_m        => ctem_tile%rmatctem_m
-      veghght_m         => ctem_tile%veghght_m
-      rootdpth_m        => ctem_tile%rootdpth_m
-      roottemp_m        => ctem_tile%roottemp_m
-      slai_m            => ctem_tile%slai_m
-      afrroot_m         => ctem_tile%afrroot_m
-      afrleaf_m         => ctem_tile%afrleaf_m
-      afrstem_m         => ctem_tile%afrstem_m
-      laimaxg_m         => ctem_tile%laimaxg_m
-      stemmass_m        => ctem_tile%stemmass_m
-      rootmass_m        => ctem_tile%rootmass_m
-      litrmass_m        => ctem_tile%litrmass_m
-      gleafmas_m        => ctem_tile%gleafmas_m
-      bleafmas_m        => ctem_tile%bleafmas_m
-      soilcmas_m        => ctem_tile%soilcmas_m
-      fsnowacc_m        => ctem_tile%fsnowacc_m
-      tcansacc_m        => ctem_tile%tcansacc_m
-      tcanoaccgat_m     => ctem_tile%tcanoaccgat_m
-      taaccgat_m        => ctem_tile%taaccgat_m
-      uvaccgat_m        => ctem_tile%uvaccgat_m
-      vvaccgat_m        => ctem_tile%vvaccgat_m
-      tbaraccgat_m      => ctem_tile%tbaraccgat_m
-      tbarcacc_m        => ctem_tile%tbarcacc_m
-      tbarcsacc_m       => ctem_tile%tbarcsacc_m
-      tbargacc_m        => ctem_tile%tbargacc_m
-      tbargsacc_m       => ctem_tile%tbargsacc_m
-      thliqcacc_m       => ctem_tile%thliqcacc_m
-      thliqgacc_m       => ctem_tile%thliqgacc_m
-      thliqacc_m        => ctem_tile%thliqacc_m
-      thicecacc_m       => ctem_tile%thicecacc_m
-      ancsvgac_m        => ctem_tile%ancsvgac_m
-      ancgvgac_m        => ctem_tile%ancgvgac_m
-      rmlcsvga_m        => ctem_tile%rmlcsvga_m
-      rmlcgvga_m        => ctem_tile%rmlcgvga_m
-      ifcancmx_m        => ctem_tile%ifcancmx_m
-
-
-      ! grid level monthly outputs
-
-        laimaxg_mo_g        =>ctem_grd_mo%laimaxg_mo_g
-        stemmass_mo_g       =>ctem_grd_mo%stemmass_mo_g
-        rootmass_mo_g       =>ctem_grd_mo%rootmass_mo_g
-        litrmass_mo_g       =>ctem_grd_mo%litrmass_mo_g
-        soilcmas_mo_g       =>ctem_grd_mo%soilcmas_mo_g
-        npp_mo_g            =>ctem_grd_mo%npp_mo_g
-        gpp_mo_g            =>ctem_grd_mo%gpp_mo_g
-        nep_mo_g            =>ctem_grd_mo%nep_mo_g
-        nbp_mo_g            =>ctem_grd_mo%nbp_mo_g
-        hetrores_mo_g       =>ctem_grd_mo%hetrores_mo_g
-        autores_mo_g        =>ctem_grd_mo%autores_mo_g
-        litres_mo_g         =>ctem_grd_mo%litres_mo_g
-        soilcres_mo_g       =>ctem_grd_mo%soilcres_mo_g
-        vgbiomas_mo_g       =>ctem_grd_mo%vgbiomas_mo_g
-        totcmass_mo_g       =>ctem_grd_mo%totcmass_mo_g
-        emit_co2_mo_g       =>ctem_grd_mo%emit_co2_mo_g
-        emit_co_mo_g        =>ctem_grd_mo%emit_co_mo_g
-        emit_ch4_mo_g       =>ctem_grd_mo%emit_ch4_mo_g
-        emit_nmhc_mo_g      =>ctem_grd_mo%emit_nmhc_mo_g
-        emit_h2_mo_g        =>ctem_grd_mo%emit_h2_mo_g
-        emit_nox_mo_g       =>ctem_grd_mo%emit_nox_mo_g
-        emit_n2o_mo_g       =>ctem_grd_mo%emit_n2o_mo_g
-        emit_pm25_mo_g      =>ctem_grd_mo%emit_pm25_mo_g
-        emit_tpm_mo_g       =>ctem_grd_mo%emit_tpm_mo_g
-        emit_tc_mo_g        =>ctem_grd_mo%emit_tc_mo_g
-        emit_oc_mo_g        =>ctem_grd_mo%emit_oc_mo_g
-        emit_bc_mo_g        =>ctem_grd_mo%emit_bc_mo_g
-        probfire_mo_g       =>ctem_grd_mo%probfire_mo_g
-        luc_emc_mo_g        =>ctem_grd_mo%luc_emc_mo_g
-        lucltrin_mo_g       =>ctem_grd_mo%lucltrin_mo_g
-        lucsocin_mo_g       =>ctem_grd_mo%lucsocin_mo_g
-        burnfrac_mo_g       =>ctem_grd_mo%burnfrac_mo_g
-        bterm_mo_g          =>ctem_grd_mo%bterm_mo_g
-        lterm_mo_g          =>ctem_grd_mo%lterm_mo_g
-        mterm_mo_g          =>ctem_grd_mo%mterm_mo_g
-        ch4wet1_mo_g        =>ctem_grd_mo%ch4wet1_mo_g
-        ch4wet2_mo_g        =>ctem_grd_mo%ch4wet2_mo_g
-        wetfdyn_mo_g        =>ctem_grd_mo%wetfdyn_mo_g
-        ch4dyn1_mo_g        =>ctem_grd_mo%ch4dyn1_mo_g
-        ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
-        ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
-
-      ! mosaic monthly outputs
-
-      laimaxg_mo_m          =>ctem_tile_mo%laimaxg_mo_m
-      stemmass_mo_m         =>ctem_tile_mo%stemmass_mo_m
-      rootmass_mo_m         =>ctem_tile_mo%rootmass_mo_m
-      npp_mo_m              =>ctem_tile_mo%npp_mo_m
-      gpp_mo_m              =>ctem_tile_mo%gpp_mo_m
-      vgbiomas_mo_m         =>ctem_tile_mo%vgbiomas_mo_m
-      autores_mo_m          =>ctem_tile_mo%autores_mo_m
-      totcmass_mo_m         =>ctem_tile_mo%totcmass_mo_m
-      litrmass_mo_m         =>ctem_tile_mo%litrmass_mo_m
-      soilcmas_mo_m         =>ctem_tile_mo%soilcmas_mo_m
-      nep_mo_m              =>ctem_tile_mo%nep_mo_m
-      litres_mo_m           =>ctem_tile_mo%litres_mo_m
-      soilcres_mo_m         =>ctem_tile_mo%soilcres_mo_m
-      hetrores_mo_m         =>ctem_tile_mo%hetrores_mo_m
-      nbp_mo_m              =>ctem_tile_mo%nbp_mo_m
-      emit_co2_mo_m         =>ctem_tile_mo%emit_co2_mo_m
-      emit_co_mo_m          =>ctem_tile_mo%emit_co_mo_m
-      emit_ch4_mo_m         =>ctem_tile_mo%emit_ch4_mo_m
-      emit_nmhc_mo_m        =>ctem_tile_mo%emit_nmhc_mo_m
-      emit_h2_mo_m          =>ctem_tile_mo%emit_h2_mo_m
-      emit_nox_mo_m         =>ctem_tile_mo%emit_nox_mo_m
-      emit_n2o_mo_m         =>ctem_tile_mo%emit_n2o_mo_m
-      emit_pm25_mo_m        =>ctem_tile_mo%emit_pm25_mo_m
-      emit_tpm_mo_m         =>ctem_tile_mo%emit_tpm_mo_m
-      emit_tc_mo_m          =>ctem_tile_mo%emit_tc_mo_m
-      emit_oc_mo_m          =>ctem_tile_mo%emit_oc_mo_m
-      emit_bc_mo_m          =>ctem_tile_mo%emit_bc_mo_m
-      burnfrac_mo_m         =>ctem_tile_mo%burnfrac_mo_m
-      probfire_mo_m         =>ctem_tile_mo%probfire_mo_m
-      bterm_mo_m            =>ctem_tile_mo%bterm_mo_m
-      luc_emc_mo_m          =>ctem_tile_mo%luc_emc_mo_m
-      lterm_mo_m            =>ctem_tile_mo%lterm_mo_m
-      lucsocin_mo_m         =>ctem_tile_mo%lucsocin_mo_m
-      mterm_mo_m            =>ctem_tile_mo%mterm_mo_m
-      lucltrin_mo_m         =>ctem_tile_mo%lucltrin_mo_m
-      ch4wet1_mo_m          =>ctem_tile_mo%ch4wet1_mo_m
-      ch4wet2_mo_m          =>ctem_tile_mo%ch4wet2_mo_m
-      wetfdyn_mo_m          =>ctem_tile_mo%wetfdyn_mo_m
-      ch4dyn1_mo_m          =>ctem_tile_mo%ch4dyn1_mo_m
-      ch4dyn2_mo_m          =>ctem_tile_mo%ch4dyn2_mo_m
-      ch4soills_mo_m        =>ctem_tile_mo%ch4soills_mo_m
-
-      ! grid level annual outputs
-      laimaxg_yr_g          =>ctem_grd_yr%laimaxg_yr_g
-      stemmass_yr_g         =>ctem_grd_yr%stemmass_yr_g
-      rootmass_yr_g         =>ctem_grd_yr%rootmass_yr_g
-      litrmass_yr_g         =>ctem_grd_yr%litrmass_yr_g
-      soilcmas_yr_g         =>ctem_grd_yr%soilcmas_yr_g
-      npp_yr_g              =>ctem_grd_yr%npp_yr_g
-      gpp_yr_g              =>ctem_grd_yr%gpp_yr_g
-      nep_yr_g              =>ctem_grd_yr%nep_yr_g
-      nbp_yr_g              =>ctem_grd_yr%nbp_yr_g
-      hetrores_yr_g         =>ctem_grd_yr%hetrores_yr_g
-      autores_yr_g          =>ctem_grd_yr%autores_yr_g
-      litres_yr_g           =>ctem_grd_yr%litres_yr_g
-      soilcres_yr_g         =>ctem_grd_yr%soilcres_yr_g
-      vgbiomas_yr_g         =>ctem_grd_yr%vgbiomas_yr_g
-      totcmass_yr_g         =>ctem_grd_yr%totcmass_yr_g
-      emit_co2_yr_g         =>ctem_grd_yr%emit_co2_yr_g
-      emit_co_yr_g          =>ctem_grd_yr%emit_co_yr_g
-      emit_ch4_yr_g         =>ctem_grd_yr%emit_ch4_yr_g
-      emit_nmhc_yr_g        =>ctem_grd_yr%emit_nmhc_yr_g
-      emit_h2_yr_g          =>ctem_grd_yr%emit_h2_yr_g
-      emit_nox_yr_g         =>ctem_grd_yr%emit_nox_yr_g
-      emit_n2o_yr_g         =>ctem_grd_yr%emit_n2o_yr_g
-      emit_pm25_yr_g        =>ctem_grd_yr%emit_pm25_yr_g
-      emit_tpm_yr_g         =>ctem_grd_yr%emit_tpm_yr_g
-      emit_tc_yr_g          =>ctem_grd_yr%emit_tc_yr_g
-      emit_oc_yr_g          =>ctem_grd_yr%emit_oc_yr_g
-      emit_bc_yr_g          =>ctem_grd_yr%emit_bc_yr_g
-      probfire_yr_g         =>ctem_grd_yr%probfire_yr_g
-      luc_emc_yr_g          =>ctem_grd_yr%luc_emc_yr_g
-      lucltrin_yr_g         =>ctem_grd_yr%lucltrin_yr_g
-      lucsocin_yr_g         =>ctem_grd_yr%lucsocin_yr_g
-      burnfrac_yr_g         =>ctem_grd_yr%burnfrac_yr_g
-      bterm_yr_g            =>ctem_grd_yr%bterm_yr_g
-      lterm_yr_g            =>ctem_grd_yr%lterm_yr_g
-      mterm_yr_g            =>ctem_grd_yr%mterm_yr_g
-      ch4wet1_yr_g          =>ctem_grd_yr%ch4wet1_yr_g
-      ch4wet2_yr_g          =>ctem_grd_yr%ch4wet2_yr_g
-      wetfdyn_yr_g          =>ctem_grd_yr%wetfdyn_yr_g
-      ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
-      ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
-      ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
-
-      ! mosaic annual outputs
-
-      laimaxg_yr_m          =>ctem_tile_yr%laimaxg_yr_m
-      stemmass_yr_m         =>ctem_tile_yr%stemmass_yr_m
-      rootmass_yr_m         =>ctem_tile_yr%rootmass_yr_m
-      npp_yr_m              =>ctem_tile_yr%npp_yr_m
-      gpp_yr_m              =>ctem_tile_yr%gpp_yr_m
-      vgbiomas_yr_m         =>ctem_tile_yr%vgbiomas_yr_m
-      autores_yr_m          =>ctem_tile_yr%autores_yr_m
-      totcmass_yr_m         =>ctem_tile_yr%totcmass_yr_m
-      litrmass_yr_m         =>ctem_tile_yr%litrmass_yr_m
-      soilcmas_yr_m         =>ctem_tile_yr%soilcmas_yr_m
-      nep_yr_m              =>ctem_tile_yr%nep_yr_m
-      litres_yr_m           =>ctem_tile_yr%litres_yr_m
-      soilcres_yr_m         =>ctem_tile_yr%soilcres_yr_m
-      hetrores_yr_m         =>ctem_tile_yr%hetrores_yr_m
-      nbp_yr_m              =>ctem_tile_yr%nbp_yr_m
-      emit_co2_yr_m         =>ctem_tile_yr%emit_co2_yr_m
-      emit_co_yr_m          =>ctem_tile_yr%emit_co_yr_m
-      emit_ch4_yr_m         =>ctem_tile_yr%emit_ch4_yr_m
-      emit_nmhc_yr_m        =>ctem_tile_yr%emit_nmhc_yr_m
-      emit_h2_yr_m          =>ctem_tile_yr%emit_h2_yr_m
-      emit_nox_yr_m         =>ctem_tile_yr%emit_nox_yr_m
-      emit_n2o_yr_m         =>ctem_tile_yr%emit_n2o_yr_m
-      emit_pm25_yr_m        =>ctem_tile_yr%emit_pm25_yr_m
-      emit_tpm_yr_m         =>ctem_tile_yr%emit_tpm_yr_m
-      emit_tc_yr_m          =>ctem_tile_yr%emit_tc_yr_m
-      emit_oc_yr_m          =>ctem_tile_yr%emit_oc_yr_m
-      emit_bc_yr_m          =>ctem_tile_yr%emit_bc_yr_m
-      burnfrac_yr_m         =>ctem_tile_yr%burnfrac_yr_m
-      probfire_yr_m         =>ctem_tile_yr%probfire_yr_m
-      bterm_yr_m            =>ctem_tile_yr%bterm_yr_m
-      luc_emc_yr_m          =>ctem_tile_yr%luc_emc_yr_m
-      lterm_yr_m            =>ctem_tile_yr%lterm_yr_m
-      lucsocin_yr_m         =>ctem_tile_yr%lucsocin_yr_m
-      mterm_yr_m            =>ctem_tile_yr%mterm_yr_m
-      lucltrin_yr_m         =>ctem_tile_yr%lucltrin_yr_m
-      ch4wet1_yr_m          =>ctem_tile_yr%ch4wet1_yr_m
-      ch4wet2_yr_m          =>ctem_tile_yr%ch4wet2_yr_m
-      wetfdyn_yr_m          =>ctem_tile_yr%wetfdyn_yr_m
-      ch4dyn1_yr_m          =>ctem_tile_yr%ch4dyn1_yr_m
-      ch4dyn2_yr_m          =>ctem_tile_yr%ch4dyn2_yr_m
-      ch4soills_yr_m          =>ctem_tile_yr%ch4soills_yr_m
+      fsnowacc_t        => ctem_tile%fsnowacc_t
+      tcansacc_t        => ctem_tile%tcansacc_t
+      tcanoaccgat_t     => ctem_tile%tcanoaccgat_t
+      taaccgat_t        => ctem_tile%taaccgat_t
+      uvaccgat_t        => ctem_tile%uvaccgat_t
+      vvaccgat_t        => ctem_tile%vvaccgat_t
+      tbaraccgat_t      => ctem_tile%tbaraccgat_t
+      tbarcacc_t        => ctem_tile%tbarcacc_t
+      tbarcsacc_t       => ctem_tile%tbarcsacc_t
+      tbargacc_t        => ctem_tile%tbargacc_t
+      tbargsacc_t       => ctem_tile%tbargsacc_t
+      thliqcacc_t       => ctem_tile%thliqcacc_t
+      thliqgacc_t       => ctem_tile%thliqgacc_t
+      thliqacc_t        => ctem_tile%thliqacc_t
+      thicecacc_t       => ctem_tile%thicecacc_t
+      ancsvgac_t        => ctem_tile%ancsvgac_t
+      ancgvgac_t        => ctem_tile%ancgvgac_t
+      rmlcsvga_t        => ctem_tile%rmlcsvga_t
+      rmlcgvga_t        => ctem_tile%rmlcgvga_t
 
 !    =================================================================================
 !    =================================================================================
@@ -2752,27 +2211,27 @@ c
 110   continue
 c
       do 123 i =1, ilg
-         fsnowacc_m(i)=0.0         !daily accu. fraction of snow
-         tcansacc_m(i)=0.0         !daily accu. canopy temp. over snow
-         taaccgat_m(i)=0.0
+         fsnowacc_t(i)=0.0         !daily accu. fraction of snow
+         tcansacc_t(i)=0.0         !daily accu. canopy temp. over snow
+         taaccgat_t(i)=0.0
 c
          do 128 j = 1, icc
-           ancsvgac_m(i,j)=0.0    !daily accu. net photosyn. for canopy over snow subarea
-           ancgvgac_m(i,j)=0.0    !daily accu. net photosyn. for canopy over ground subarea
-           rmlcsvga_m(i,j)=0.0    !daily accu. leaf respiration for canopy over snow subarea
-           rmlcgvga_m(i,j)=0.0    !daily accu. leaf respiration for canopy over ground subarea
+           ancsvgac_t(i,j)=0.0    !daily accu. net photosyn. for canopy over snow subarea
+           ancgvgac_t(i,j)=0.0    !daily accu. net photosyn. for canopy over ground subarea
+           rmlcsvga_t(i,j)=0.0    !daily accu. leaf respiration for canopy over snow subarea
+           rmlcgvga_t(i,j)=0.0    !daily accu. leaf respiration for canopy over ground subarea
            todfrac(i,j)=0.0
 128      continue
 c
          do 112 j = 1,ignd       !soil temperature and moisture over different subareas
-            tbarcacc_m (i,j)=0.0
-            tbarcsacc_m(i,j)=0.0
-            tbargacc_m (i,j)=0.0
-            tbargsacc_m(i,j)=0.0
-            thliqcacc_m(i,j)=0.0
-            thliqgacc_m(i,j)=0.0
-            thliqacc_m(i,j)=0.0
-            thicecacc_m(i,j)=0.0
+            tbarcacc_t (i,j)=0.0
+            tbarcsacc_t(i,j)=0.0
+            tbargacc_t (i,j)=0.0
+            tbargsacc_t(i,j)=0.0
+            thliqcacc_t(i,j)=0.0
+            thliqgacc_t(i,j)=0.0
+            thliqacc_t(i,j)=0.0
+            thicecacc_t(i,j)=0.0
 112      continue
 123    continue
 c
@@ -3417,8 +2876,8 @@ C
      5      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
      6      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      7      sandgat,     claygat,     orgmgat,
-     8      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
-     9      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
+     8      anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,
+     9      uvaccgat_t,  vvaccgat_t,  mlightnggat,  prbfrhucgat,
      a      extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,
      b      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,
      c      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,
@@ -3625,7 +3084,7 @@ C===================== CTEM ============================================ \
 c     * accumulate output data for running ctem.
 c
       do 660 i=1,nml
-         uvaccgat_m(i)=uvaccgat_m(i)+ulgat(i)
+         uvaccgat_t(i)=uvaccgat_t(i)+ulgat(i)
 660   continue
 c
 c     accumulate variables not already accumulated but which are required by
@@ -3643,29 +3102,29 @@ c
           flutacc_gat(i)=flutacc_gat(i)+sbc*gtgat(i)**4
           pregacc_gat(i)=pregacc_gat(i)+pregat(i)*delt
 c
-          fsnowacc_m(i)=fsnowacc_m(i)+fsnogat(i)
-          tcanoaccgat_m(i)=tcanoaccgat_m(i)+tcano(i)
-          tcansacc_m(i)=tcansacc_m(i)+tcans(i)
-          taaccgat_m(i)=taaccgat_m(i)+tagat(i)
-          vvaccgat_m(i)=vvaccgat_m(i)+ vlgat(i)
+          fsnowacc_t(i)=fsnowacc_t(i)+fsnogat(i)
+          tcanoaccgat_t(i)=tcanoaccgat_t(i)+tcano(i)
+          tcansacc_t(i)=tcansacc_t(i)+tcans(i)
+          taaccgat_t(i)=taaccgat_t(i)+tagat(i)
+          vvaccgat_t(i)=vvaccgat_t(i)+ vlgat(i)
 c
           do 710 j=1,ignd
-             tbaraccgat_m(i,j)=tbaraccgat_m(i,j)+tbargat(i,j)
-             tbarcacc_m(i,j)=tbarcacc_m(i,j)+tbarc(i,j)
-             tbarcsacc_m(i,j)=tbarcsacc_m(i,j)+tbarcs(i,j)
-             tbargacc_m(i,j)=tbargacc_m(i,j)+tbarg(i,j)
-             tbargsacc_m(i,j)=tbargsacc_m(i,j)+tbargs(i,j)
-             thliqcacc_m(i,j)=thliqcacc_m(i,j)+thliqc(i,j)
-             thliqgacc_m(i,j)=thliqgacc_m(i,j)+thliqg(i,j)
-             thliqacc_m(i,j) = thliqacc_m(i,j) + THLQGAT(i,j)
-             thicecacc_m(i,j)=thicecacc_m(i,j)+thicec(i,j)
+             tbaraccgat_t(i,j)=tbaraccgat_t(i,j)+tbargat(i,j)
+             tbarcacc_t(i,j)=tbarcacc_t(i,j)+tbarc(i,j)
+             tbarcsacc_t(i,j)=tbarcsacc_t(i,j)+tbarcs(i,j)
+             tbargacc_t(i,j)=tbargacc_t(i,j)+tbarg(i,j)
+             tbargsacc_t(i,j)=tbargsacc_t(i,j)+tbargs(i,j)
+             thliqcacc_t(i,j)=thliqcacc_t(i,j)+thliqc(i,j)
+             thliqgacc_t(i,j)=thliqgacc_t(i,j)+thliqg(i,j)
+             thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j)
+             thicecacc_t(i,j)=thicecacc_t(i,j)+thicec(i,j)
 710       continue
 c
           do 713 j = 1, icc
-            ancsvgac_m(i,j)=ancsvgac_m(i,j)+ancsveggat(i,j)
-            ancgvgac_m(i,j)=ancgvgac_m(i,j)+ancgveggat(i,j)
-            rmlcsvga_m(i,j)=rmlcsvga_m(i,j)+rmlcsveggat(i,j)
-            rmlcgvga_m(i,j)=rmlcgvga_m(i,j)+rmlcgveggat(i,j)
+            ancsvgac_t(i,j)=ancsvgac_t(i,j)+ancsveggat(i,j)
+            ancgvgac_t(i,j)=ancgvgac_t(i,j)+ancgveggat(i,j)
+            rmlcsvga_t(i,j)=rmlcsvga_t(i,j)+rmlcsveggat(i,j)
+            rmlcgvga_t(i,j)=rmlcgvga_t(i,j)+rmlcgveggat(i,j)
 713       continue
 c
 700     continue
@@ -3674,8 +3133,8 @@ c
       if(ncount.eq.nday) then
 c
       do 855 i=1,nml
-          uvaccgat_m(i)=uvaccgat_m(i)/real(nday)
-          vvaccgat_m(i)=vvaccgat_m(i)/real(nday)
+          uvaccgat_t(i)=uvaccgat_t(i)/real(nday)
+          vvaccgat_t(i)=vvaccgat_t(i)/real(nday)
 c
 c         daily averages of accumulated variables for ctem
 c
@@ -3701,29 +3160,29 @@ c
             netrad_gat(i)=fsstar_gat+flstar_gat
             preacc_gat(i)=pregacc_gat(i)
 c
-            fsnowacc_m(i)=fsnowacc_m(i)/real(nday)
-            tcanoaccgat_m(i)=tcanoaccgat_m(i)/real(nday)
-            tcansacc_m(i)=tcansacc_m(i)/real(nday)
-            taaccgat_m(i)=taaccgat_m(i)/real(nday)
+            fsnowacc_t(i)=fsnowacc_t(i)/real(nday)
+            tcanoaccgat_t(i)=tcanoaccgat_t(i)/real(nday)
+            tcansacc_t(i)=tcansacc_t(i)/real(nday)
+            taaccgat_t(i)=taaccgat_t(i)/real(nday)
 c
             do 831 j=1,ignd
-              tbaraccgat_m(i,j)=tbaraccgat_m(i,j)/real(nday)
-              tbarcacc_m(i,j) = tbaraccgat_m(i,j)
-              tbarcsacc_m(i,j) = tbaraccgat_m(i,j)
-              tbargacc_m(i,j) = tbaraccgat_m(i,j)
-              tbargsacc_m(i,j) = tbaraccgat_m(i,j)
+              tbaraccgat_t(i,j)=tbaraccgat_t(i,j)/real(nday)
+              tbarcacc_t(i,j) = tbaraccgat_t(i,j)
+              tbarcsacc_t(i,j) = tbaraccgat_t(i,j)
+              tbargacc_t(i,j) = tbaraccgat_t(i,j)
+              tbargsacc_t(i,j) = tbaraccgat_t(i,j)
 c
-              thliqcacc_m(i,j)=thliqcacc_m(i,j)/real(nday)
-              thliqgacc_m(i,j)=thliqgacc_m(i,j)/real(nday)
-              thliqacc_m(i,j)=thliqacc_m(i,j)/real(nday)
-              thicecacc_m(i,j)=thicecacc_m(i,j)/real(nday)
+              thliqcacc_t(i,j)=thliqcacc_t(i,j)/real(nday)
+              thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
+              thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday)
+              thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
 831         continue
 c
             do 832 j = 1, icc
-              ancsvgac_m(i,j)=ancsvgac_m(i,j)/real(nday)
-              ancgvgac_m(i,j)=ancgvgac_m(i,j)/real(nday)
-              rmlcsvga_m(i,j)=rmlcsvga_m(i,j)/real(nday)
-              rmlcgvga_m(i,j)=rmlcgvga_m(i,j)/real(nday)
+              ancsvgac_t(i,j)=ancsvgac_t(i,j)/real(nday)
+              ancgvgac_t(i,j)=ancgvgac_t(i,j)/real(nday)
+              rmlcsvga_t(i,j)=rmlcsvga_t(i,j)/real(nday)
+              rmlcgvga_t(i,j)=rmlcgvga_t(i,j)/real(nday)
 832         continue
 c
 c           pass on mean monthly lightning for the current month to ctem
@@ -3801,16 +3260,16 @@ c     simulated by CLASS.
 c
       if (ctem_on) then
 c
-        call ctem ( fcancmxgat, fsnowacc_m,    sandgat,    claygat,
+        call ctem ( fcancmxgat, fsnowacc_t,    sandgat,    claygat,
      2                      1,        nml,        iday,    radjgat,
-     4          tcanoaccgat_m,  tcansacc_m, tbarcacc_m,tbarcsacc_m,
-     5             tbargacc_m, tbargsacc_m, taaccgat_m,    dlzwgat,
-     6             ancsvgac_m,  ancgvgac_m, rmlcsvga_m, rmlcgvga_m,
-     7                zbtwgat, thliqcacc_m,thliqgacc_m,     deltat,
-     8             uvaccgat_m,  vvaccgat_m,    lightng,prbfrhucgat,
-     9            extnprobgat,   stdalngat,tbaraccgat_m,  popdon,
+     4          tcanoaccgat_t,  tcansacc_t, tbarcacc_t,tbarcsacc_t,
+     5             tbargacc_t, tbargsacc_t, taaccgat_t,    dlzwgat,
+     6             ancsvgac_t,  ancgvgac_t, rmlcsvga_t, rmlcgvga_t,
+     7                zbtwgat, thliqcacc_t,thliqgacc_t,     deltat,
+     8             uvaccgat_t,  vvaccgat_t,    lightng,prbfrhucgat,
+     9            extnprobgat,   stdalngat,tbaraccgat_t,  popdon,
      a               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,
-     b            thicecacc_m,     sdepgat,    spinfast,   todfrac,
+     b            thicecacc_t,     sdepgat,    spinfast,   todfrac,
      &                compete,  netrad_gat,  preacc_gat,
      &                 popdin,  dofire, dowetlands,obswetf, isndgat,
      &              faregat,onetile_perPFT,wetfracgrd, wetfrac_sgrd,
@@ -3858,8 +3317,8 @@ c
 
       ! Calculate the methane that is oxidized by the soil sink
       ! this operates on a daily timestep.
-      call soil_ch4uptake(1,nml,tbaraccgat_m,THPGAT,BIGAT,thliqacc_m,
-     &                     thicecacc_m,PSISGAT,GRAV,FCANGAT,obswetf,
+      call soil_ch4uptake(1,nml,tbaraccgat_t,THPGAT,BIGAT,thliqacc_t,
+     &                     thicecacc_t,PSISGAT,GRAV,FCANGAT,obswetf,
      &                     wetfdyngat,wetfracgrd,isndgat,RHOW,RHOICE,
      &                     ch4concgat,ch4soillsgat)
 
@@ -3867,7 +3326,7 @@ c
 c     reset mosaic accumulator arrays.
 c
       do 655 i=1,nml
-         uvaccgat_m(i)=0.0
+         uvaccgat_t(i)=0.0
 655   continue
 c
       if (ctem_on) then
@@ -3880,31 +3339,31 @@ c
           allwacc_gat(i)=0.
           pregacc_gat(i)=0.
 c
-          fsnowacc_m(i)=0.0
-          tcanoaccgat_out(i)=tcanoaccgat_m(i)
-          tcanoaccgat_m(i)=0.0
+          fsnowacc_t(i)=0.0
+          tcanoaccgat_out(i)=tcanoaccgat_t(i)
+          tcanoaccgat_t(i)=0.0
 c
-          tcansacc_m(i)=0.0
-          taaccgat_m(i)=0.0
-          vvaccgat_m(i)=0.0
+          tcansacc_t(i)=0.0
+          taaccgat_t(i)=0.0
+          vvaccgat_t(i)=0.0
 c
           do 715 j=1,ignd
-             tbaraccgat_m(i,j)=0.0
-             tbarcacc_m(i,j)=0.0
-             tbarcsacc_m(i,j)=0.0
-             tbargacc_m(i,j)=0.0
-             tbargsacc_m(i,j)=0.0
-             thliqcacc_m(i,j)=0.0
-             thliqgacc_m(i,j)=0.0
-             thliqacc_m(i,j)=0.0
-             thicecacc_m(i,j)=0.0
+             tbaraccgat_t(i,j)=0.0
+             tbarcacc_t(i,j)=0.0
+             tbarcsacc_t(i,j)=0.0
+             tbargacc_t(i,j)=0.0
+             tbargsacc_t(i,j)=0.0
+             thliqcacc_t(i,j)=0.0
+             thliqgacc_t(i,j)=0.0
+             thliqacc_t(i,j)=0.0
+             thicecacc_t(i,j)=0.0
 715       continue
 c
           do 716 j = 1, icc
-            ancsvgac_m(i,j)=0.0
-            ancgvgac_m(i,j)=0.0
-            rmlcsvga_m(i,j)=0.0
-            rmlcgvga_m(i,j)=0.0
+            ancsvgac_t(i,j)=0.0
+            ancgvgac_t(i,j)=0.0
+            rmlcsvga_t(i,j)=0.0
+            rmlcgvga_t(i,j)=0.0
 716       continue
 c
 705     continue
@@ -4061,8 +3520,8 @@ c    ----
      z      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
      1      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      2      sandgat,     claygat,     orgmgat,
-     3      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
-     4      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
+     3      anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,
+     4      uvaccgat_t,  vvaccgat_t,  mlightnggat,  prbfrhucgat,
      5      extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,
      6      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,
      7      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,
