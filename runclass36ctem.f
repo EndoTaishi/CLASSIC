@@ -92,11 +92,10 @@ c     through use statements for modules:
       use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,
      1                               class_out,resetclassmon,
      2                               resetclassyr,resetmidmonth,
-     3                               resetmonthend,resetyearend_g,
+     3                               resetmonthend,resetyearend,
      4                               resetclassaccum,ctem_grd,
      5                               ctem_tile,resetgridavg,
-     6                               resetyearend_g,
-     7                               resetyearend_t,finddaylength
+     6                               finddaylength
 
       use io_driver,          only : read_from_ctm, create_outfiles,
      1                               write_ctm_rs, class_monthly_aw,
@@ -2406,7 +2405,7 @@ c *     initialize accumulated array for monthly and yearly output for ctem
 c
          call resetmidmonth(nltest,nmtest)
          call resetmonthend(nltest,nmtest)
-         call resetyearend_t(nltest,nmtest)
+         call resetyearend(nltest,nmtest)
 c
 115   continue
 c
@@ -4588,11 +4587,11 @@ c
 !
 !           endif
 c
-          if (iday .eq. 365) then
-
-            call resetyearend_g(nltest)
-
-          endif
+!           if (iday .eq. 365) then
+!
+!             call resetyearend_g(nltest)
+!
+!           endif
 
 !861     continue
 c

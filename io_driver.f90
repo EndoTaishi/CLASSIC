@@ -810,7 +810,7 @@ if (ctem_on) then
     open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y_M')
 
     if (dofire .or. lnduseon) then
-        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M_M') ! Monthly disturbance
+        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M') ! Monthly disturbance
         open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y_M') ! Annual disturbance
     endif
 
@@ -820,7 +820,6 @@ if (ctem_on) then
     open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y_G')
 
     if (dofire .or. lnduseon) then
-        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M_G') ! Monthly disturbance
         open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y_G') ! Annual disturbance
     endif
 
@@ -2480,11 +2479,26 @@ ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
 
 ! ------------
 
-!       accumulate monthly outputs
+! Accumulate monthly outputs
 !
+! First prepare the monthly vars:
+do nt=1,nmon
+    if(iday.eq.mmday(nt))then
+
+        ! First reset all mid-monthly variables in preparation:
+        call resetmonthend(nltest,nmtest)
+
+    elseif(iday.eq.monthend(nt+1))then
+
+        ! Reset all end of month accumulated arrays
+        call resetmidmonth(nltest,nmtest)
+
+    endif ! if(iday.eq.monthend(nt+1))
+enddo ! nt=1,nmon
+
 do 862 i=1,nltest
 
-
+    do 863 m = 1,nmtest
 
           do j=1,icc
 
@@ -2515,7 +2529,7 @@ do 862 i=1,nltest
            emit_bc_mo(i,m,j) =emit_bc_mo(i,m,j)+emit_bcrow(i,m,j)
            burnfrac_mo(i,m,j) =burnfrac_mo(i,m,j)+burnvegfrow(i,m,j)
 
-          end do
+          end do !j
 
           ! Also do the bare ground
            nep_mo(i,m,iccp1)=nep_mo(i,m,iccp1)+nepvegrow(i,m,iccp1)
@@ -2524,7 +2538,7 @@ do 862 i=1,nltest
            litres_mo(i,m,iccp1)  =litres_mo(i,m,iccp1)+litresvegrow(i,m,iccp1)
            soilcres_mo(i,m,iccp1) =soilcres_mo(i,m,iccp1) +soilcresvegrow(i,m,iccp1)
 
-           ! Accumulate monthly outputs at the per PFT level.
+           ! Accumulate monthly outputs at the per tile level.
            luc_emc_mo_t(i,m) =luc_emc_mo_t(i,m)+lucemcomrow(i,m)
            lucsocin_mo_t(i,m) =lucsocin_mo_t(i,m)+lucsocinrow(i,m)
            lucltrin_mo_t(i,m) =lucltrin_mo_t(i,m)+lucltrinrow(i,m)
@@ -2539,18 +2553,15 @@ do 862 i=1,nltest
            lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m)
            mterm_mo_t(i,m) = mterm_mo_t(i,m) + mtermrow(i,m)
 
-863      continue ! m
+863 continue ! m
 
-           do 865 nt=1,nmon
+    do 865 nt=1,nmon
 
-            if(iday.eq.mmday(nt))then
+        if(iday.eq.mmday(nt))then
 
-              ! Do the mid-month variables
+        ! Do the mid-month variables
 
-              ! First reset all monthly variables in preparation:
-              call resetmonthend(nltest,nmtest)
-
-              do 866 m=1,nmtest
+             do 866 m=1,nmtest
 
                 do 867 j=1,icc
 
@@ -2592,26 +2603,25 @@ do 862 i=1,nltest
                 rootmass_mo_g(i)=rootmass_mo_g(i)+rootmass_mo_t(i,m)*FAREROT(i,m)
                 totcmass_mo_g(i)=totcmass_mo_g(i)+totcmass_mo_t(i,m)*FAREROT(i,m)
 
-866          continue  !nmtest loop.
+866         continue  !nmtest loop.
 
-            endif ! mmday (mid-month instantaneous value)
+        endif ! mmday (mid-month instantaneous value)
 
-             if(iday.eq.monthend(nt+1))then
+        if(iday.eq.monthend(nt+1))then
 
-               ! Do the end of month variables
+            ! Do the end of month variables
+            ndmonth=(monthend(nt+1)-monthend(nt))*nday
 
-               ndmonth=(monthend(nt+1)-monthend(nt))*nday
+            ! Convert some quantities into per day values
+            wetfdyn_mo_t(i,m)=wetfdyn_mo_t(i,m)*(1./real(monthdays(nt)))
+            probfire_mo_t(i,m)=probfire_mo_t(i,m)*(1./real(monthdays(nt)))
+            bterm_mo_t(i,m)=bterm_mo_t(i,m)*(1./real(monthdays(nt)))
+            lterm_mo_t(i,m)=lterm_mo_t(i,m)*(1./real(monthdays(nt)))
+            mterm_mo_t(i,m)=mterm_mo_t(i,m)*(1./real(monthdays(nt)))
 
-               ! Convert some quantities into per day values
-               wetfdyn_mo_t(i,m)=wetfdyn_mo_t(i,m)*(1./real(monthdays(nt)))
-               probfire_mo_t(i,m)=probfire_mo_t(i,m)*(1./real(monthdays(nt)))
-               bterm_mo_t(i,m)=bterm_mo_t(i,m)*(1./real(monthdays(nt)))
-               lterm_mo_t(i,m)=lterm_mo_t(i,m)*(1./real(monthdays(nt)))
-               mterm_mo_t(i,m)=mterm_mo_t(i,m)*(1./real(monthdays(nt)))
+            barefrac=1.0
 
-               barefrac=1.0
-
-               do j=1,icc
+            do j=1,icc
 
                 ! Find the monthly outputs at the per tile level from the outputs at the per PFT level
                 npp_mo_t(i,m)=npp_mo_t(i,m)+npp_mo(i,m,j)*fcancmxrow(i,m,j)
@@ -2637,128 +2647,119 @@ do 862 i=1,nltest
                 burnfrac_mo_t(i,m) =burnfrac_mo_t(i,m)+burnfrac_mo(i,m,j)*fcancmxrow(i,m,j)
                 barefrac=barefrac-fcancmxrow(i,m,j)
 
-               end do !j
+            end do !j
 
-                nep_mo_t(i,m)=nep_mo_t(i,m)+nep_mo(i,m,iccp1)*barefrac
-                nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,iccp1)*barefrac
-                hetrores_mo_t(i,m)=hetrores_mo_t(i,m)+hetrores_mo(i,m,iccp1)*barefrac
-                litres_mo_t(i,m)  =litres_mo_t(i,m) +litres_mo(i,m,iccp1)*barefrac
-                soilcres_mo_t(i,m)=soilcres_mo_t(i,m)+soilcres_mo(i,m,iccp1)*barefrac
+            nep_mo_t(i,m)=nep_mo_t(i,m)+nep_mo(i,m,iccp1)*barefrac
+            nbp_mo_t(i,m)=nbp_mo_t(i,m)+nbp_mo(i,m,iccp1)*barefrac
+            hetrores_mo_t(i,m)=hetrores_mo_t(i,m)+hetrores_mo(i,m,iccp1)*barefrac
+            litres_mo_t(i,m)  =litres_mo_t(i,m) +litres_mo(i,m,iccp1)*barefrac
+            soilcres_mo_t(i,m)=soilcres_mo_t(i,m)+soilcres_mo(i,m,iccp1)*barefrac
 
-                ! Find the monthly outputs at the per grid cell level from the outputs at the per tile level
-                npp_mo_g(i)=npp_mo_g(i)+npp_mo_t(i,m)*FAREROT(i,m)
-                gpp_mo_g(i)=gpp_mo_g(i)+gpp_mo_t(i,m)*FAREROT(i,m)
-                nep_mo_g(i)=nep_mo_g(i)+nep_mo_t(i,m)*FAREROT(i,m)
-                nbp_mo_g(i)=nbp_mo_g(i)+nbp_mo_t(i,m)*FAREROT(i,m)
-                hetrores_mo_g(i)=hetrores_mo_g(i)+hetrores_mo_t(i,m)*FAREROT(i,m)
-                autores_mo_g(i) =autores_mo_g(i) +autores_mo_t(i,m)*FAREROT(i,m)
-                litres_mo_g(i)  =litres_mo_g(i) +litres_mo_t(i,m)*FAREROT(i,m)
-                soilcres_mo_g(i) =soilcres_mo_g(i)+ soilcres_mo_t(i,m)*FAREROT(i,m)
-                laimaxg_mo_g(i)=laimaxg_mo_g(i)+laimaxg_mo_t(i,m)*FAREROT(i,m)
-                emit_co2_mo_g(i)=emit_co2_mo_g(i)+emit_co2_mo_t(i,m)*FAREROT(i,m)
-                emit_co_mo_g(i) =emit_co_mo_g(i)+emit_co_mo_t(i,m)*FAREROT(i,m)
-                emit_ch4_mo_g(i) =emit_ch4_mo_g(i)+emit_ch4_mo_t(i,m)*FAREROT(i,m)
-                emit_nmhc_mo_g(i)=emit_nmhc_mo_g(i)+emit_nmhc_mo_t(i,m)*FAREROT(i,m)
-                emit_h2_mo_g(i) =emit_h2_mo_g(i)+emit_h2_mo_t(i,m)*FAREROT(i,m)
-                emit_nox_mo_g(i) =emit_nox_mo_g(i)+emit_nox_mo_t(i,m)*FAREROT(i,m)
-                emit_n2o_mo_g(i) =emit_n2o_mo_g(i)+emit_n2o_mo_t(i,m)*FAREROT(i,m)
-                emit_pm25_mo_g(i) =emit_pm25_mo_g(i)+emit_pm25_mo_t(i,m)*FAREROT(i,m)
-                emit_tpm_mo_g(i) =emit_tpm_mo_g(i)+emit_tpm_mo_t(i,m)*FAREROT(i,m)
-                emit_tc_mo_g(i) =emit_tc_mo_g(i)+emit_tc_mo_t(i,m)*FAREROT(i,m)
-                emit_oc_mo_g(i) =emit_oc_mo_g(i)+emit_oc_mo_t(i,m)*FAREROT(i,m)
-                emit_bc_mo_g(i) =emit_bc_mo_g(i)+emit_bc_mo_t(i,m)*FAREROT(i,m)
-                burnfrac_mo_g(i)=burnfrac_mo_g(i)+burnfrac_mo_t(i,m)*FAREROT(i,m)
-                luc_emc_mo_g(i) =luc_emc_mo_g(i)+luc_emc_mo_t(i,m)*FAREROT(i,m)
-                lucsocin_mo_g(i) =lucsocin_mo_g(i)+lucsocin_mo_t(i,m)*FAREROT(i,m)
-                lucltrin_mo_g(i) =lucltrin_mo_g(i)+lucltrin_mo_t(i,m)*FAREROT(i,m)
-                ch4wet1_mo_g(i) = ch4wet1_mo_g(i) +ch4wet1_mo_t(i,m)*FAREROT(i,m)
-                ch4wet2_mo_g(i) = ch4wet2_mo_g(i)+ch4wet2_mo_t(i,m)*FAREROT(i,m)
-                wetfdyn_mo_g(i) = wetfdyn_mo_g(i)+wetfdyn_mo_t(i,m)*FAREROT(i,m)
-                ch4dyn1_mo_g(i) = ch4dyn1_mo_g(i)+ch4dyn1_mo_t(i,m)*FAREROT(i,m)
-                ch4dyn2_mo_g(i) = ch4dyn2_mo_g(i)+ch4dyn2_mo_t(i,m)*FAREROT(i,m)
-                ch4soills_mo_g(i) = ch4soills_mo_g(i)+ch4soills_mo_t(i,m)*FAREROT(i,m)
-                probfire_mo_g(i)=probfire_mo_g(i)+probfire_mo_t(i,m)*FAREROT(i,m)
-                bterm_mo_g(i) =bterm_mo_g(i)+bterm_mo_t(i,m)*FAREROT(i,m)
-                lterm_mo_g(i) =lterm_mo_g(i)+lterm_mo_t(i,m)*FAREROT(i,m)
-                mterm_mo_g(i) =mterm_mo_g(i)+mterm_mo_t(i,m)*FAREROT(i,m)
+            ! Find the monthly outputs at the per grid cell level from the outputs at the per tile level
+            npp_mo_g(i)=npp_mo_g(i)+npp_mo_t(i,m)*FAREROT(i,m)
+            gpp_mo_g(i)=gpp_mo_g(i)+gpp_mo_t(i,m)*FAREROT(i,m)
+            nep_mo_g(i)=nep_mo_g(i)+nep_mo_t(i,m)*FAREROT(i,m)
+            nbp_mo_g(i)=nbp_mo_g(i)+nbp_mo_t(i,m)*FAREROT(i,m)
+            hetrores_mo_g(i)=hetrores_mo_g(i)+hetrores_mo_t(i,m)*FAREROT(i,m)
+            autores_mo_g(i) =autores_mo_g(i) +autores_mo_t(i,m)*FAREROT(i,m)
+            litres_mo_g(i)  =litres_mo_g(i) +litres_mo_t(i,m)*FAREROT(i,m)
+            soilcres_mo_g(i) =soilcres_mo_g(i)+ soilcres_mo_t(i,m)*FAREROT(i,m)
+            laimaxg_mo_g(i)=laimaxg_mo_g(i)+laimaxg_mo_t(i,m)*FAREROT(i,m)
+            emit_co2_mo_g(i)=emit_co2_mo_g(i)+emit_co2_mo_t(i,m)*FAREROT(i,m)
+            emit_co_mo_g(i) =emit_co_mo_g(i)+emit_co_mo_t(i,m)*FAREROT(i,m)
+            emit_ch4_mo_g(i) =emit_ch4_mo_g(i)+emit_ch4_mo_t(i,m)*FAREROT(i,m)
+            emit_nmhc_mo_g(i)=emit_nmhc_mo_g(i)+emit_nmhc_mo_t(i,m)*FAREROT(i,m)
+            emit_h2_mo_g(i) =emit_h2_mo_g(i)+emit_h2_mo_t(i,m)*FAREROT(i,m)
+            emit_nox_mo_g(i) =emit_nox_mo_g(i)+emit_nox_mo_t(i,m)*FAREROT(i,m)
+            emit_n2o_mo_g(i) =emit_n2o_mo_g(i)+emit_n2o_mo_t(i,m)*FAREROT(i,m)
+            emit_pm25_mo_g(i) =emit_pm25_mo_g(i)+emit_pm25_mo_t(i,m)*FAREROT(i,m)
+            emit_tpm_mo_g(i) =emit_tpm_mo_g(i)+emit_tpm_mo_t(i,m)*FAREROT(i,m)
+            emit_tc_mo_g(i) =emit_tc_mo_g(i)+emit_tc_mo_t(i,m)*FAREROT(i,m)
+            emit_oc_mo_g(i) =emit_oc_mo_g(i)+emit_oc_mo_t(i,m)*FAREROT(i,m)
+            emit_bc_mo_g(i) =emit_bc_mo_g(i)+emit_bc_mo_t(i,m)*FAREROT(i,m)
+            burnfrac_mo_g(i)=burnfrac_mo_g(i)+burnfrac_mo_t(i,m)*FAREROT(i,m)
+            luc_emc_mo_g(i) =luc_emc_mo_g(i)+luc_emc_mo_t(i,m)*FAREROT(i,m)
+            lucsocin_mo_g(i) =lucsocin_mo_g(i)+lucsocin_mo_t(i,m)*FAREROT(i,m)
+            lucltrin_mo_g(i) =lucltrin_mo_g(i)+lucltrin_mo_t(i,m)*FAREROT(i,m)
+            ch4wet1_mo_g(i) = ch4wet1_mo_g(i) +ch4wet1_mo_t(i,m)*FAREROT(i,m)
+            ch4wet2_mo_g(i) = ch4wet2_mo_g(i)+ch4wet2_mo_t(i,m)*FAREROT(i,m)
+            wetfdyn_mo_g(i) = wetfdyn_mo_g(i)+wetfdyn_mo_t(i,m)*FAREROT(i,m)
+            ch4dyn1_mo_g(i) = ch4dyn1_mo_g(i)+ch4dyn1_mo_t(i,m)*FAREROT(i,m)
+            ch4dyn2_mo_g(i) = ch4dyn2_mo_g(i)+ch4dyn2_mo_t(i,m)*FAREROT(i,m)
+            ch4soills_mo_g(i) = ch4soills_mo_g(i)+ch4soills_mo_t(i,m)*FAREROT(i,m)
+            probfire_mo_g(i)=probfire_mo_g(i)+probfire_mo_t(i,m)*FAREROT(i,m)
+            bterm_mo_g(i) =bterm_mo_g(i)+bterm_mo_t(i,m)*FAREROT(i,m)
+            lterm_mo_g(i) =lterm_mo_g(i)+lterm_mo_t(i,m)*FAREROT(i,m)
+            mterm_mo_g(i) =mterm_mo_g(i)+mterm_mo_t(i,m)*FAREROT(i,m)
 
-             endif ! monthend (max lai and accumulated npp/gpp/nep over the whole month)
-                   ! if(iday.eq.monthend(nt+1))
+            imonth=nt
+            barefrac=1.0
 
-865        continue ! nmon
+            ! Write to file .CT01M
 
-         do nt=1,nmon
-           if(iday.eq.monthend(nt+1))then
+            do m=1,nmtest
 
-              imonth=nt
-              barefrac=1.0
+                ! First the per PFT values:
+                do j=1,icc
 
-                ! Write to file .CT01M
+                    barefrac=barefrac-fcancmxrow(i,m,j)*FAREROT(i,m)
 
-                do m=1,nmtest
-
-                    ! First the per PFT values:
-                    do j=1,icc
-
-                        barefrac=barefrac-fcancmxrow(i,m,j)*FAREROT(i,m)
-
-                    if (FAREROT(i,m)*fcancmxrow(i,m,j) .gt. seed) then
+                    if (fcancmxrow(i,m,j) .gt. seed) then
                         write(84,8104)imonth,iyear,laimaxg_mo(i,m,j),&
-                            vgbiomas_mo(i,m,j),litrmass_mo(i,m,j),&
-                            soilcmas_mo(i,m,j),npp_mo(i,m,j),&
-                            gpp_mo(i,m,j),nep_mo(i,m,j),&
-                            nbp_mo(i,m,j),hetrores_mo(i,m,j),&
-                            autores_mo(i,m,j),litres_mo(i,m,j),&
-                            soilcres_mo(i,m,j),&
-                            ' TILE ',m,' PFT ',j,' FRAC ',FAREROT(i,m)* &
-                            fcancmxrow(i,m,j)
+                        vgbiomas_mo(i,m,j),litrmass_mo(i,m,j),&
+                        soilcmas_mo(i,m,j),npp_mo(i,m,j),&
+                        gpp_mo(i,m,j),nep_mo(i,m,j),&
+                        nbp_mo(i,m,j),hetrores_mo(i,m,j),&
+                        autores_mo(i,m,j),litres_mo(i,m,j),&
+                        soilcres_mo(i,m,j),&
+                        ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
                     end if
 
-                    end do !icc
+                end do !icc
 
-                    ! Now write out the bare fraction values:
-                    if (barefrac .gt. seed) then  !FLAG if totcmass gets the iccp1 added, also do so here.
-                        write(84,8104)imonth,iyear,0.0,  &
-                            0.0,litrmass_mo(i,m,iccp1), &
-                            soilcmas_mo(i,m,iccp1),0.0, &
-                            0.0,0.0, &
-                            0.0,hetrores_mo(i,m,iccp1), &
-                            0.0,litres_mo(i,m,iccp1), &
-                            soilcres_mo(i,m,iccp1), &
-                            ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
-                    end if
+                ! Now write out the bare fraction values:
+                if (barefrac .gt. seed) then  !FLAG if totcmass gets the iccp1 added, also do so here.
+                    write(84,8104)imonth,iyear,0.0,  &
+                        0.0,litrmass_mo(i,m,iccp1), &
+                        soilcmas_mo(i,m,iccp1),0.0, &
+                        0.0,0.0, &
+                        0.0,hetrores_mo(i,m,iccp1), &
+                        0.0,litres_mo(i,m,iccp1), &
+                        soilcres_mo(i,m,iccp1), &
+                        ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
+                end if
 
-                    ! Now write out the tile average values for each tile if the tile number
-                    ! is greater than 1 (nmtest > 1).
-                    if (nmtest > 1) then
-                        write(84,8104)imonth,iyear,laimaxg_mo_t(i,m),&
-                            vgbiomas_mo_t(i,m),litrmass_mo_t(i,m),&
-                            soilcmas_mo_t(i,m),npp_mo_t(i,m),&
-                            gpp_mo_t(i,m),nep_mo_t(i,m),&
-                            nbp_mo_t(i,m),hetrores_mo_t(i,m),&
-                            autores_mo_t(i,m),litres_mo_t(i,m),&
-                            soilcres_mo_t(i,m),&
-                            ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
-                    end if
+                ! Now write out the tile average values for each tile if the tile number
+                ! is greater than 1 (nmtest > 1).
+                if (nmtest > 1) then
+                    write(84,8104)imonth,iyear,laimaxg_mo_t(i,m),&
+                        vgbiomas_mo_t(i,m),litrmass_mo_t(i,m),&
+                        soilcmas_mo_t(i,m),npp_mo_t(i,m),&
+                        gpp_mo_t(i,m),nep_mo_t(i,m),&
+                        nbp_mo_t(i,m),hetrores_mo_t(i,m),&
+                        autores_mo_t(i,m),litres_mo_t(i,m),&
+                        soilcres_mo_t(i,m),&
+                        ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+                end if
 
-                end do !m
+            end do !m
 
-                write(84,8104)imonth,iyear,laimaxg_mo_g(i), &
-                        vgbiomas_mo_g(i),litrmass_mo_g(i), &
-                        soilcmas_mo_g(i),npp_mo_g(i), &
-                        gpp_mo_g(i),nep_mo_g(i), &
-                        nbp_mo_g(i),hetrores_mo_g(i),autores_mo_g(i), &
-                        litres_mo_g(i),soilcres_mo_g(i),' GRDAV'
+            write(84,8104)imonth,iyear,laimaxg_mo_g(i), &
+                    vgbiomas_mo_g(i),litrmass_mo_g(i), &
+                    soilcmas_mo_g(i),npp_mo_g(i), &
+                    gpp_mo_g(i),nep_mo_g(i), &
+                    nbp_mo_g(i),hetrores_mo_g(i),autores_mo_g(i), &
+                    litres_mo_g(i),soilcres_mo_g(i),' GRDAV'
 
             if (dofire .or. lnduseon) then
 
-!               Write to file .CT06M_M/.CT06M_G
+!           Write to file .CT06M
 
                 do m=1,nmtest
                     ! First the per PFT values:
                     do j=1,icc
-                        if (FAREROT(i,m)*fcancmxrow(i,m,j) .gt. seed) then
-                        write(85,8109)imonth,iyear,emit_co2_mo(i,m,j), &
+                        if (fcancmxrow(i,m,j) .gt. seed) then
+                            write(85,8109)imonth,iyear,emit_co2_mo(i,m,j), &
                             emit_co_mo(i,m,j),emit_ch4_mo(i,m,j), &
                             emit_nmhc_mo(i,m,j),emit_h2_mo(i,m,j), &
                             emit_nox_mo(i,m,j),emit_n2o_mo(i,m,j), &
@@ -2768,8 +2769,7 @@ do 862 i=1,nltest
                             luc_emc_mo_t(i,m),lucltrin_mo_t(i,m), &
                             lucsocin_mo_t(i,m),burnfrac_mo(i,m,j)*100., &
                             bterm_mo_t(i,m),lterm_mo_t(i,m),mterm_mo_t(i,m), &
-                            ' TILE ',m,' PFT ',j,' FRAC ',FAREROT(i,m)* &
-                            fcancmxrow(i,m,j)
+                            ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
                         end if
                     end do !j
 
@@ -2777,79 +2777,73 @@ do 862 i=1,nltest
                     ! is greater than 1 (nmtest > 1).
                     if (nmtest > 1) then
                         write(85,8109)imonth,iyear,emit_co2_mo_t(i,m), &
-                            emit_co_mo_t(i,m),emit_ch4_mo_t(i,m), &
-                            emit_nmhc_mo_t(i,m),emit_h2_mo_t(i,m), &
-                            emit_nox_mo_t(i,m),emit_n2o_mo_t(i,m), &
-                            emit_pm25_mo_t(i,m),emit_tpm_mo_t(i,m), &
-                            emit_tc_mo_t(i,m),emit_oc_mo_t(i,m), &
-                            emit_bc_mo_t(i,m),probfire_mo_t(i,m), &
-                            luc_emc_mo_t(i,m),lucltrin_mo_t(i,m), &
-                            lucsocin_mo_t(i,m),burnfrac_mo_t(i,m)*100., &
-                            bterm_mo_t(i,m),lterm_mo_t(i,m),mterm_mo_t(i,m), &
-                            ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+                        emit_co_mo_t(i,m),emit_ch4_mo_t(i,m), &
+                        emit_nmhc_mo_t(i,m),emit_h2_mo_t(i,m), &
+                        emit_nox_mo_t(i,m),emit_n2o_mo_t(i,m), &
+                        emit_pm25_mo_t(i,m),emit_tpm_mo_t(i,m), &
+                        emit_tc_mo_t(i,m),emit_oc_mo_t(i,m), &
+                        emit_bc_mo_t(i,m),probfire_mo_t(i,m), &
+                        luc_emc_mo_t(i,m),lucltrin_mo_t(i,m), &
+                        lucsocin_mo_t(i,m),burnfrac_mo_t(i,m)*100., &
+                        bterm_mo_t(i,m),lterm_mo_t(i,m),mterm_mo_t(i,m), &
+                        ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
                     end if
                 end do !m
 
                 write(85,8109)imonth,iyear,emit_co2_mo_g(i), &
-                        emit_co_mo_g(i),emit_ch4_mo_g(i),emit_nmhc_mo_g(i), &
-                        emit_h2_mo_g(i),emit_nox_mo_g(i),emit_n2o_mo_g(i), &
-                        emit_pm25_mo_g(i),emit_tpm_mo_g(i),emit_tc_mo_g(i), &
-                        emit_oc_mo_g(i),emit_bc_mo_g(i), &
-                        probfire_mo_g(i),luc_emc_mo_g(i), &
-                        lucltrin_mo_g(i),lucsocin_mo_g(i), &
-                        burnfrac_mo_g(i)*100.,bterm_mo_g(i),lterm_mo_g(i), &
-                        mterm_mo_g(i),' GRDAV '
+                    emit_co_mo_g(i),emit_ch4_mo_g(i),emit_nmhc_mo_g(i), &
+                    emit_h2_mo_g(i),emit_nox_mo_g(i),emit_n2o_mo_g(i), &
+                    emit_pm25_mo_g(i),emit_tpm_mo_g(i),emit_tc_mo_g(i), &
+                    emit_oc_mo_g(i),emit_bc_mo_g(i), &
+                    probfire_mo_g(i),luc_emc_mo_g(i), &
+                    lucltrin_mo_g(i),lucsocin_mo_g(i), &
+                    burnfrac_mo_g(i)*100.,bterm_mo_g(i),lterm_mo_g(i), &
+                    mterm_mo_g(i),' GRDAV '
 
             endif  !dofire/lnduseon
 
 !           Add fraction of each pft and bare \\
 
             if (compete .or. lnduseon) then
-
-              sumfare=0.0
-              if (onetile_perPFT) then
-               do m=1,nmos
-                 sumfare=sumfare+FAREROT(i,m)
-               enddo
-               write(88,8106)imonth,iyear,(FAREROT(i,m)*100.,m=1,nmos) &
-                           ,sumfare,(pftexistrow(i,j,j),j=1,icc)
-
-              else !composite or mosaic mode.
-
-               do m=1,nmtest
-                sumfare = 0.0
-                do j=1,icc
-                 sumfare=sumfare+fcancmxrow(i,m,j)
-                end do !j
-                write(88,8106)imonth,iyear,(fcancmxrow(i,m,j)*100., &
-                           j=1,icc),(1.0-sumfare)*100.,sumfare, &
-                             (pftexistrow(i,m,j),j=1,icc),' TILE ',m
-                end do !m
-              endif !onetile_perPFT/composite
-
+                sumfare=0.0
+                if (onetile_perPFT) then
+                    do m=1,nmos
+                        sumfare=sumfare+FAREROT(i,m)
+                    enddo
+                    write(88,8106)imonth,iyear,(FAREROT(i,m)*100.,m=1,nmos) &
+                            ,sumfare,(pftexistrow(i,j,j),j=1,icc)
+                else !composite or mosaic mode.
+                    do m=1,nmtest
+                        sumfare = 0.0
+                        do j=1,icc
+                            sumfare=sumfare+fcancmxrow(i,m,j)
+                        end do !j
+                        write(88,8106)imonth,iyear,(fcancmxrow(i,m,j)*100., &
+                                j=1,icc),(1.0-sumfare)*100.,sumfare, &
+                                    (pftexistrow(i,m,j),j=1,icc),' TILE ',m
+                    end do !m
+                endif !onetile_perPFT/composite
             endif !compete/lnduseon
 
-             if (dowetlands .or. obswetf) then
-             do m=1,nmtest
-             write(91,8111)imonth,iyear,ch4wet1_mo_t(i,m), &
-                          ch4wet2_mo_t(i,m),wetfdyn_mo_t(i,m), &
-                          ch4dyn1_mo_t(i,m),ch4dyn2_mo_t(i,m), &
-                          ch4soills_mo_t(i,m),' TILE ',m
-             end do
-             write(91,8111)imonth,iyear,ch4wet1_mo_g(i), &
-                          ch4wet2_mo_g(i),wetfdyn_mo_g(i), &
-                          ch4dyn1_mo_g(i),ch4dyn2_mo_g(i), &
-                          ch4soills_mo_g(i),' GRDAV '
-             endif
+            if (dowetlands .or. obswetf) then
+                if (nmtest > 1) then
+                    do m=1,nmtest
+                        write(91,8111)imonth,iyear,ch4wet1_mo_t(i,m), &
+                                ch4wet2_mo_t(i,m),wetfdyn_mo_t(i,m), &
+                                ch4dyn1_mo_t(i,m),ch4dyn2_mo_t(i,m), &
+                                ch4soills_mo_t(i,m),' TILE ',m
+                    end do
+                end if
+                    write(91,8111)imonth,iyear,ch4wet1_mo_g(i), &
+                                ch4wet2_mo_g(i),wetfdyn_mo_g(i), &
+                                ch4dyn1_mo_g(i),ch4dyn2_mo_g(i), &
+                                ch4soills_mo_g(i),' GRDAV '
+            endif
 
-!           Initialize monthly accumulated arrays
-!           for the next round
-            call resetmidmonth(nltest,nmtest)
+    end if ! end of month
 
-           endif ! if(iday.eq.monthend(nt+1))
-         enddo ! nt=1,nmon
-
- 862     continue ! i
+865   continue ! nmon
+862  continue ! i
 
 8104  FORMAT(1X,I4,I5,12(F10.3,1X),2(A8,I2),A8,F8.2)
 8105  FORMAT(1X,I5,15(F10.3,1X),2(A6,I2),A6,F8.2)
@@ -2866,7 +2860,8 @@ end subroutine ctem_monthly_aw
 
 subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT)
 
-use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch
+use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
+                                resetyearend
 use ctem_params, only : icc,iccp1,seed,nmos
 
 implicit none
@@ -2887,34 +2882,63 @@ logical, pointer :: compete
 logical, pointer :: dowetlands
 logical, pointer :: obswetf
 
-real, pointer, dimension(:,:,:) :: laimaxg_yr_t
-real, pointer, dimension(:,:,:) :: stemmass_yr_t
-real, pointer, dimension(:,:,:) :: rootmass_yr_t
-real, pointer, dimension(:,:,:) :: npp_yr_t
-real, pointer, dimension(:,:,:) :: gpp_yr_t
-real, pointer, dimension(:,:,:) :: vgbiomas_yr_t
-real, pointer, dimension(:,:,:) :: autores_yr_t
-real, pointer, dimension(:,:,:) :: totcmass_yr_t
-real, pointer, dimension(:,:,:) :: litrmass_yr_t
-real, pointer, dimension(:,:,:) :: soilcmas_yr_t
-real, pointer, dimension(:,:,:) :: nep_yr_t
-real, pointer, dimension(:,:,:) :: litres_yr_t
-real, pointer, dimension(:,:,:) :: soilcres_yr_t
-real, pointer, dimension(:,:,:) :: hetrores_yr_t
-real, pointer, dimension(:,:,:) :: nbp_yr_t
-real, pointer, dimension(:,:,:) :: emit_co2_yr_t
-real, pointer, dimension(:,:,:) :: emit_co_yr_t
-real, pointer, dimension(:,:,:) :: emit_ch4_yr_t
-real, pointer, dimension(:,:,:) :: emit_nmhc_yr_t
-real, pointer, dimension(:,:,:) :: emit_h2_yr_t
-real, pointer, dimension(:,:,:) :: emit_nox_yr_t
-real, pointer, dimension(:,:,:) :: emit_n2o_yr_t
-real, pointer, dimension(:,:,:) :: emit_pm25_yr_t
-real, pointer, dimension(:,:,:) :: emit_tpm_yr_t
-real, pointer, dimension(:,:,:) :: emit_tc_yr_t
-real, pointer, dimension(:,:,:) :: emit_oc_yr_t
-real, pointer, dimension(:,:,:) :: emit_bc_yr_t
-real, pointer, dimension(:,:,:) :: burnfrac_yr_t
+real, pointer, dimension(:,:,:) :: laimaxg_yr
+real, pointer, dimension(:,:,:) :: stemmass_yr
+real, pointer, dimension(:,:,:) :: rootmass_yr
+real, pointer, dimension(:,:,:) :: npp_yr
+real, pointer, dimension(:,:,:) :: gpp_yr
+real, pointer, dimension(:,:,:) :: vgbiomas_yr
+real, pointer, dimension(:,:,:) :: autores_yr
+real, pointer, dimension(:,:,:) :: totcmass_yr
+real, pointer, dimension(:,:,:) :: litrmass_yr
+real, pointer, dimension(:,:,:) :: soilcmas_yr
+real, pointer, dimension(:,:,:) :: nep_yr
+real, pointer, dimension(:,:,:) :: litres_yr
+real, pointer, dimension(:,:,:) :: soilcres_yr
+real, pointer, dimension(:,:,:) :: hetrores_yr
+real, pointer, dimension(:,:,:) :: nbp_yr
+real, pointer, dimension(:,:,:) :: emit_co2_yr
+real, pointer, dimension(:,:,:) :: emit_co_yr
+real, pointer, dimension(:,:,:) :: emit_ch4_yr
+real, pointer, dimension(:,:,:) :: emit_nmhc_yr
+real, pointer, dimension(:,:,:) :: emit_h2_yr
+real, pointer, dimension(:,:,:) :: emit_nox_yr
+real, pointer, dimension(:,:,:) :: emit_n2o_yr
+real, pointer, dimension(:,:,:) :: emit_pm25_yr
+real, pointer, dimension(:,:,:) :: emit_tpm_yr
+real, pointer, dimension(:,:,:) :: emit_tc_yr
+real, pointer, dimension(:,:,:) :: emit_oc_yr
+real, pointer, dimension(:,:,:) :: emit_bc_yr
+real, pointer, dimension(:,:,:) :: burnfrac_yr
+
+real, pointer, dimension(:,:) :: laimaxg_yr_t
+real, pointer, dimension(:,:) :: stemmass_yr_t
+real, pointer, dimension(:,:) :: rootmass_yr_t
+real, pointer, dimension(:,:) :: npp_yr_t
+real, pointer, dimension(:,:) :: gpp_yr_t
+real, pointer, dimension(:,:) :: vgbiomas_yr_t
+real, pointer, dimension(:,:) :: autores_yr_t
+real, pointer, dimension(:,:) :: totcmass_yr_t
+real, pointer, dimension(:,:) :: litrmass_yr_t
+real, pointer, dimension(:,:) :: soilcmas_yr_t
+real, pointer, dimension(:,:) :: nep_yr_t
+real, pointer, dimension(:,:) :: litres_yr_t
+real, pointer, dimension(:,:) :: soilcres_yr_t
+real, pointer, dimension(:,:) :: hetrores_yr_t
+real, pointer, dimension(:,:) :: nbp_yr_t
+real, pointer, dimension(:,:) :: emit_co2_yr_t
+real, pointer, dimension(:,:) :: emit_co_yr_t
+real, pointer, dimension(:,:) :: emit_ch4_yr_t
+real, pointer, dimension(:,:) :: emit_nmhc_yr_t
+real, pointer, dimension(:,:) :: emit_h2_yr_t
+real, pointer, dimension(:,:) :: emit_nox_yr_t
+real, pointer, dimension(:,:) :: emit_n2o_yr_t
+real, pointer, dimension(:,:) :: emit_pm25_yr_t
+real, pointer, dimension(:,:) :: emit_tpm_yr_t
+real, pointer, dimension(:,:) :: emit_tc_yr_t
+real, pointer, dimension(:,:) :: emit_oc_yr_t
+real, pointer, dimension(:,:) :: emit_bc_yr_t
+real, pointer, dimension(:,:) :: burnfrac_yr_t
 real, pointer, dimension(:,:) :: probfire_yr_t
 real, pointer, dimension(:,:) :: bterm_yr_t
 real, pointer, dimension(:,:) :: luc_emc_yr_t
@@ -3021,7 +3045,7 @@ real, pointer, dimension(:) :: ch4soills_yr_g
 
 ! local
 integer :: i,m,j,nt
-real :: barefrac
+real :: barefrac, totbare
 real :: sumfare
 integer :: NDMONTH
 integer :: IMONTH
@@ -3033,6 +3057,35 @@ lnduseon              => c_switch%lnduseon
 compete               => c_switch%compete
 dowetlands            => c_switch%dowetlands
 obswetf               => c_switch%obswetf
+
+laimaxg_yr          =>ctem_yr%laimaxg_yr
+stemmass_yr         =>ctem_yr%stemmass_yr
+rootmass_yr         =>ctem_yr%rootmass_yr
+npp_yr              =>ctem_yr%npp_yr
+gpp_yr              =>ctem_yr%gpp_yr
+vgbiomas_yr         =>ctem_yr%vgbiomas_yr
+autores_yr          =>ctem_yr%autores_yr
+totcmass_yr         =>ctem_yr%totcmass_yr
+litrmass_yr         =>ctem_yr%litrmass_yr
+soilcmas_yr         =>ctem_yr%soilcmas_yr
+nep_yr              =>ctem_yr%nep_yr
+litres_yr           =>ctem_yr%litres_yr
+soilcres_yr         =>ctem_yr%soilcres_yr
+hetrores_yr         =>ctem_yr%hetrores_yr
+nbp_yr              =>ctem_yr%nbp_yr
+emit_co2_yr         =>ctem_yr%emit_co2_yr
+emit_co_yr          =>ctem_yr%emit_co_yr
+emit_ch4_yr         =>ctem_yr%emit_ch4_yr
+emit_nmhc_yr        =>ctem_yr%emit_nmhc_yr
+emit_h2_yr          =>ctem_yr%emit_h2_yr
+emit_nox_yr         =>ctem_yr%emit_nox_yr
+emit_n2o_yr         =>ctem_yr%emit_n2o_yr
+emit_pm25_yr        =>ctem_yr%emit_pm25_yr
+emit_tpm_yr         =>ctem_yr%emit_tpm_yr
+emit_tc_yr          =>ctem_yr%emit_tc_yr
+emit_oc_yr          =>ctem_yr%emit_oc_yr
+emit_bc_yr          =>ctem_yr%emit_bc_yr
+burnfrac_yr         =>ctem_yr%burnfrac_yr
 
 laimaxg_yr_t          =>ctem_tile_yr%laimaxg_yr_t
 stemmass_yr_t         =>ctem_tile_yr%stemmass_yr_t
@@ -3167,123 +3220,169 @@ ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
 ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
 !------------
 
-!       accumulate yearly outputs
+! Accumulate yearly outputs
+
+if (iday.eq.365) then
+
+! Reset all annual vars in preparation:
+    call resetyearend(nltest,nmtest)
+
+end if
+
 
 do 882 i=1,nltest
     do 883 m=1,nmtest
         do 884 j=1,icc
 
-            if (ailcgrow(i,m,j).gt.laimaxg_yr_t(i,m,j)) then
-            laimaxg_yr_t(i,m,j)=ailcgrow(i,m,j)
+            ! Accumulate the variables at the per PFT level
+
+            if (ailcgrow(i,m,j).gt.laimaxg_yr(i,m,j)) then
+            laimaxg_yr(i,m,j)=ailcgrow(i,m,j)
             end if
 
-            npp_yr_t(i,m,j)=npp_yr_t(i,m,j)+nppvegrow(i,m,j)
-            gpp_yr_t(i,m,j)=gpp_yr_t(i,m,j)+gppvegrow(i,m,j)
-            nep_yr_t(i,m,j)=nep_yr_t(i,m,j)+nepvegrow(i,m,j)
-            nbp_yr_t(i,m,j)=nbp_yr_t(i,m,j)+nbpvegrow(i,m,j)
-            emit_co2_yr_t(i,m,j)=emit_co2_yr_t(i,m,j)+emit_co2row(i,m,j)
-            emit_co_yr_t(i,m,j)=emit_co_yr_t(i,m,j)+emit_corow(i,m,j)
-            emit_ch4_yr_t(i,m,j)=emit_ch4_yr_t(i,m,j)+emit_ch4row(i,m,j)
-            emit_nmhc_yr_t(i,m,j)=emit_nmhc_yr_t(i,m,j)+emit_nmhcrow(i,m,j)
-            emit_h2_yr_t(i,m,j)=emit_h2_yr_t(i,m,j)+emit_h2row(i,m,j)
-            emit_nox_yr_t(i,m,j)=emit_nox_yr_t(i,m,j)+emit_noxrow(i,m,j)
-            emit_n2o_yr_t(i,m,j)=emit_n2o_yr_t(i,m,j)+emit_n2orow(i,m,j)
-            emit_pm25_yr_t(i,m,j)=emit_pm25_yr_t(i,m,j)+emit_pm25row(i,m,j)
-            emit_tpm_yr_t(i,m,j)=emit_tpm_yr_t(i,m,j)+emit_tpmrow(i,m,j)
-            emit_tc_yr_t(i,m,j)=emit_tc_yr_t(i,m,j)+emit_tcrow(i,m,j)
-            emit_oc_yr_t(i,m,j)=emit_oc_yr_t(i,m,j)+emit_ocrow(i,m,j)
-            emit_bc_yr_t(i,m,j)=emit_bc_yr_t(i,m,j)+emit_bcrow(i,m,j)
-
-            hetrores_yr_t(i,m,j)=hetrores_yr_t(i,m,j)+hetroresvegrow(i,m,j)
-            autores_yr_t(i,m,j)=autores_yr_t(i,m,j)+autoresvegrow(i,m,j)
-            litres_yr_t(i,m,j)=litres_yr_t(i,m,j)+litresvegrow(i,m,j)
-            soilcres_yr_t(i,m,j)=soilcres_yr_t(i,m,j)+soilcresvegrow(i,m,j)
-            burnfrac_yr_t(i,m,j)=burnfrac_yr_t(i,m,j)+burnvegfrow(i,m,j)
+            npp_yr(i,m,j)=npp_yr(i,m,j)+nppvegrow(i,m,j)
+            gpp_yr(i,m,j)=gpp_yr(i,m,j)+gppvegrow(i,m,j)
+            nep_yr(i,m,j)=nep_yr(i,m,j)+nepvegrow(i,m,j)
+            nbp_yr(i,m,j)=nbp_yr(i,m,j)+nbpvegrow(i,m,j)
+            emit_co2_yr(i,m,j)=emit_co2_yr(i,m,j)+emit_co2row(i,m,j)
+            emit_co_yr(i,m,j)=emit_co_yr(i,m,j)+emit_corow(i,m,j)
+            emit_ch4_yr(i,m,j)=emit_ch4_yr(i,m,j)+emit_ch4row(i,m,j)
+            emit_nmhc_yr(i,m,j)=emit_nmhc_yr(i,m,j)+emit_nmhcrow(i,m,j)
+            emit_h2_yr(i,m,j)=emit_h2_yr(i,m,j)+emit_h2row(i,m,j)
+            emit_nox_yr(i,m,j)=emit_nox_yr(i,m,j)+emit_noxrow(i,m,j)
+            emit_n2o_yr(i,m,j)=emit_n2o_yr(i,m,j)+emit_n2orow(i,m,j)
+            emit_pm25_yr(i,m,j)=emit_pm25_yr(i,m,j)+emit_pm25row(i,m,j)
+            emit_tpm_yr(i,m,j)=emit_tpm_yr(i,m,j)+emit_tpmrow(i,m,j)
+            emit_tc_yr(i,m,j)=emit_tc_yr(i,m,j)+emit_tcrow(i,m,j)
+            emit_oc_yr(i,m,j)=emit_oc_yr(i,m,j)+emit_ocrow(i,m,j)
+            emit_bc_yr(i,m,j)=emit_bc_yr(i,m,j)+emit_bcrow(i,m,j)
+            hetrores_yr(i,m,j)=hetrores_yr(i,m,j)+hetroresvegrow(i,m,j)
+            autores_yr(i,m,j)=autores_yr(i,m,j)+autoresvegrow(i,m,j)
+            litres_yr(i,m,j)=litres_yr(i,m,j)+litresvegrow(i,m,j)
+            soilcres_yr(i,m,j)=soilcres_yr(i,m,j)+soilcresvegrow(i,m,j)
+            burnfrac_yr(i,m,j)=burnfrac_yr(i,m,j)+burnvegfrow(i,m,j)
 
 884         continue
 
     !   Also do the bare fraction amounts
-        hetrores_yr_t(i,m,iccp1)=hetrores_yr_t(i,m,iccp1)+hetroresvegrow(i,m,iccp1)
-        litres_yr_t(i,m,iccp1)=litres_yr_t(i,m,iccp1)+litresvegrow(i,m,iccp1)
-        soilcres_yr_t(i,m,iccp1)=soilcres_yr_t(i,m,iccp1)+soilcresvegrow(i,m,iccp1)
-        nep_yr_t(i,m,iccp1)=nep_yr_t(i,m,iccp1)+nepvegrow(i,m,iccp1)
-        nbp_yr_t(i,m,iccp1)=nbp_yr_t(i,m,iccp1)+nbpvegrow(i,m,iccp1)
+        hetrores_yr(i,m,iccp1)=hetrores_yr(i,m,iccp1)+hetroresvegrow(i,m,iccp1)
+        litres_yr(i,m,iccp1)=litres_yr(i,m,iccp1)+litresvegrow(i,m,iccp1)
+        soilcres_yr(i,m,iccp1)=soilcres_yr(i,m,iccp1)+soilcresvegrow(i,m,iccp1)
+        nep_yr(i,m,iccp1)=nep_yr(i,m,iccp1)+nepvegrow(i,m,iccp1)
+        nbp_yr(i,m,iccp1)=nbp_yr(i,m,iccp1)+nbpvegrow(i,m,iccp1)
 
+        ! Accumulate the variables at the per tile level
         probfire_yr_t(i,m)=probfire_yr_t(i,m)+(probfirerow(i,m) * (1./365.))
         bterm_yr_t(i,m)=bterm_yr_t(i,m)+(btermrow(i,m)*(1./365.))
         lterm_yr_t(i,m)=lterm_yr_t(i,m)+(ltermrow(i,m)*(1./365.))
         mterm_yr_t(i,m)=mterm_yr_t(i,m)+(mtermrow(i,m)*(1./365.))
+        wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./365.))
         luc_emc_yr_t(i,m)=luc_emc_yr_t(i,m)+lucemcomrow(i,m)
         lucsocin_yr_t(i,m)=lucsocin_yr_t(i,m)+lucsocinrow(i,m)
         lucltrin_yr_t(i,m)=lucltrin_yr_t(i,m)+lucltrinrow(i,m)
-
         ch4wet1_yr_t(i,m) = ch4wet1_yr_t(i,m)+ch4wet1row(i,m)
         ch4wet2_yr_t(i,m) = ch4wet2_yr_t(i,m)+ch4wet2row(i,m)
-        wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./365.))
         ch4dyn1_yr_t(i,m) = ch4dyn1_yr_t(i,m)+ch4dyn1row(i,m)
         ch4dyn2_yr_t(i,m) = ch4dyn2_yr_t(i,m)+ch4dyn2row(i,m)
         ch4soills_yr_t(i,m) = ch4soills_yr_t(i,m)+ch4soillsrow(i,m)
 
-        if (iday.eq.365) then
+883       continue ! m
 
-            do 885 j=1,icc
-                stemmass_yr_t(i,m,j)=stemmassrow(i,m,j)
-                rootmass_yr_t(i,m,j)=rootmassrow(i,m,j)
-                litrmass_yr_t(i,m,j)=litrmassrow(i,m,j)
-                soilcmas_yr_t(i,m,j)=soilcmasrow(i,m,j)
-                vgbiomas_yr_t(i,m,j)=vgbiomas_vegrow(i,m,j)
-                totcmass_yr_t(i,m,j)=vgbiomas_yr_t(i,m,j)+litrmass_yr_t(i,m,j)+soilcmas_yr_t(i,m,j)
+    if (iday.eq.365) then
 
-885           continue
+        do 900 m = 1, nmtest
 
-            litrmass_yr_t(i,m,iccp1)=litrmassrow(i,m,iccp1)
-            soilcmas_yr_t(i,m,iccp1)=soilcmasrow(i,m,iccp1)
+            do 925 j=1,icc
+
+                ! The pools are looked at just at the end of the year.
+                stemmass_yr(i,m,j)=stemmassrow(i,m,j)
+                rootmass_yr(i,m,j)=rootmassrow(i,m,j)
+                litrmass_yr(i,m,j)=litrmassrow(i,m,j)
+                soilcmas_yr(i,m,j)=soilcmasrow(i,m,j)
+                vgbiomas_yr(i,m,j)=vgbiomas_vegrow(i,m,j)
+                totcmass_yr(i,m,j)=vgbiomas_yr(i,m,j)+litrmass_yr(i,m,j)+soilcmas_yr(i,m,j) !FLAG totc should include iccp1!
+
+925         continue
+
+            litrmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1)
+            soilcmas_yr(i,m,iccp1)=soilcmasrow(i,m,iccp1)
 
             barefrac=1.0
 
+            ! Add values to the per tile vars
             do j=1,icc
-                laimaxg_yr_g(i)=laimaxg_yr_g(i)+ laimaxg_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                stemmass_yr_g(i)=stemmass_yr_g(i)+stemmass_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                rootmass_yr_g(i)=rootmass_yr_g(i)+rootmass_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                litrmass_yr_g(i)=litrmass_yr_g(i)+litrmass_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                soilcmas_yr_g(i)=soilcmas_yr_g(i)+soilcmas_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                vgbiomas_yr_g(i)=vgbiomas_yr_g(i)+vgbiomas_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                totcmass_yr_g(i)=totcmass_yr_g(i)+totcmass_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                npp_yr_g(i)=npp_yr_g(i)+npp_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                gpp_yr_g(i)=gpp_yr_g(i)+gpp_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                nep_yr_g(i)=nep_yr_g(i)+nep_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                nbp_yr_g(i)=nbp_yr_g(i)+nbp_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_co2_yr_g(i)=emit_co2_yr_g(i)+emit_co2_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_co_yr_g(i)=emit_co_yr_g(i)+emit_co_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_ch4_yr_g(i)=emit_ch4_yr_g(i)+emit_ch4_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_nmhc_yr_g(i)=emit_nmhc_yr_g(i)+emit_nmhc_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_h2_yr_g(i)=emit_h2_yr_g(i)+emit_h2_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_nox_yr_g(i)=emit_nox_yr_g(i)+emit_nox_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_n2o_yr_g(i)=emit_n2o_yr_g(i)+emit_n2o_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_pm25_yr_g(i)=emit_pm25_yr_g(i)+emit_pm25_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_tpm_yr_g(i)=emit_tpm_yr_g(i)+emit_tpm_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_tc_yr_g(i)=emit_tc_yr_g(i)+emit_tc_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_oc_yr_g(i)=emit_oc_yr_g(i)+emit_oc_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                emit_bc_yr_g(i)=emit_bc_yr_g(i)+emit_bc_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
 
-                hetrores_yr_g(i)=hetrores_yr_g(i)+hetrores_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                autores_yr_g(i) =autores_yr_g(i) +autores_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                litres_yr_g(i)  =litres_yr_g(i)  +litres_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                soilcres_yr_g(i) =soilcres_yr_g(i) +soilcres_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
-                burnfrac_yr_g(i)=burnfrac_yr_g(i)+burnfrac_yr_t(i,m,j)*FAREROT(i,m)*fcancmxrow(i,m,j)
+                laimaxg_yr_t(i,m)=laimaxg_yr_t(i,m)+ laimaxg_yr(i,m,j)*fcancmxrow(i,m,j)
+                stemmass_yr_t(i,m)=stemmass_yr_t(i,m)+stemmass_yr(i,m,j)*fcancmxrow(i,m,j)
+                rootmass_yr_t(i,m)=rootmass_yr_t(i,m)+rootmass_yr(i,m,j)*fcancmxrow(i,m,j)
+                litrmass_yr_t(i,m)=litrmass_yr_t(i,m)+litrmass_yr(i,m,j)*fcancmxrow(i,m,j)
+                soilcmas_yr_t(i,m)=soilcmas_yr_t(i,m)+soilcmas_yr(i,m,j)*fcancmxrow(i,m,j)
+                vgbiomas_yr_t(i,m)=vgbiomas_yr_t(i,m)+vgbiomas_yr(i,m,j)*fcancmxrow(i,m,j)
+                totcmass_yr_t(i,m)=totcmass_yr_t(i,m)+totcmass_yr(i,m,j)*fcancmxrow(i,m,j)
+                npp_yr_t(i,m)=npp_yr_t(i,m)+npp_yr(i,m,j)*fcancmxrow(i,m,j)
+                gpp_yr_t(i,m)=gpp_yr_t(i,m)+gpp_yr(i,m,j)*fcancmxrow(i,m,j)
+                nep_yr_t(i,m)=nep_yr_t(i,m)+nep_yr(i,m,j)*fcancmxrow(i,m,j)
+                nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_co2_yr_t(i,m)=emit_co2_yr_t(i,m)+emit_co2_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_co_yr_t(i,m)=emit_co_yr_t(i,m)+emit_co_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_ch4_yr_t(i,m)=emit_ch4_yr_t(i,m)+emit_ch4_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_nmhc_yr_t(i,m)=emit_nmhc_yr_t(i,m)+emit_nmhc_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_h2_yr_t(i,m)=emit_h2_yr_t(i,m)+emit_h2_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_nox_yr_t(i,m)=emit_nox_yr_t(i,m)+emit_nox_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_n2o_yr_t(i,m)=emit_n2o_yr_t(i,m)+emit_n2o_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_pm25_yr_t(i,m)=emit_pm25_yr_t(i,m)+emit_pm25_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_tpm_yr_t(i,m)=emit_tpm_yr_t(i,m)+emit_tpm_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_tc_yr_t(i,m)=emit_tc_yr_t(i,m)+emit_tc_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_oc_yr_t(i,m)=emit_oc_yr_t(i,m)+emit_oc_yr(i,m,j)*fcancmxrow(i,m,j)
+                emit_bc_yr_t(i,m)=emit_bc_yr_t(i,m)+emit_bc_yr(i,m,j)*fcancmxrow(i,m,j)
 
-                barefrac=barefrac-FAREROT(i,m)*fcancmxrow(i,m,j)
+                hetrores_yr_t(i,m)=hetrores_yr_t(i,m)+hetrores_yr(i,m,j)*fcancmxrow(i,m,j)
+                autores_yr_t(i,m) =autores_yr_t(i,m) +autores_yr(i,m,j)*fcancmxrow(i,m,j)
+                litres_yr_t(i,m)  =litres_yr_t(i,m)  +litres_yr(i,m,j)*fcancmxrow(i,m,j)
+                soilcres_yr_t(i,m) =soilcres_yr_t(i,m) +soilcres_yr(i,m,j)*fcancmxrow(i,m,j)
+                burnfrac_yr_t(i,m)=burnfrac_yr_t(i,m)+burnfrac_yr(i,m,j)*fcancmxrow(i,m,j)
+
+                barefrac=barefrac-fcancmxrow(i,m,j)
 
             end do !j
 
-            litrmass_yr_g(i)=litrmass_yr_g(i)+litrmass_yr_t(i,m,iccp1)*barefrac
-            soilcmas_yr_g(i)=soilcmas_yr_g(i)+soilcmas_yr_t(i,m,iccp1)*barefrac
-            hetrores_yr_g(i)=hetrores_yr_g(i)+hetrores_yr_t(i,m,iccp1)*barefrac
-            litres_yr_g(i)  =litres_yr_g(i)  +litres_yr_t(i,m,iccp1)*barefrac
-            soilcres_yr_g(i)=soilcres_yr_g(i)+soilcres_yr_t(i,m,iccp1)*barefrac
-            nep_yr_g(i)=nep_yr_g(i)+nep_yr_t(i,m,j)*barefrac
-            nbp_yr_g(i)=nbp_yr_g(i)+nbp_yr_t(i,m,j)*barefrac
+            litrmass_yr_t(i,m)=litrmass_yr_t(i,m)+litrmass_yr(i,m,iccp1)*barefrac
+            soilcmas_yr_t(i,m)=soilcmas_yr_t(i,m)+soilcmas_yr(i,m,iccp1)*barefrac
+            hetrores_yr_t(i,m)=hetrores_yr_t(i,m)+hetrores_yr(i,m,iccp1)*barefrac
+            litres_yr_t(i,m)  =litres_yr_t(i,m)  +litres_yr(i,m,iccp1)*barefrac
+            soilcres_yr_t(i,m)=soilcres_yr_t(i,m)+soilcres_yr(i,m,iccp1)*barefrac
+            nep_yr_t(i,m)=nep_yr_t(i,m)+nep_yr(i,m,j)*barefrac
+            nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,j)*barefrac
 
+            ! Add values to the per gridcell vars
+            laimaxg_yr_g(i)=laimaxg_yr_g(i)+ laimaxg_yr_t(i,m)*FAREROT(i,m)
+            stemmass_yr_g(i)=stemmass_yr_g(i)+stemmass_yr_t(i,m)*FAREROT(i,m)
+            rootmass_yr_g(i)=rootmass_yr_g(i)+rootmass_yr_t(i,m)*FAREROT(i,m)
+            litrmass_yr_g(i)=litrmass_yr_g(i)+litrmass_yr_t(i,m)*FAREROT(i,m)
+            soilcmas_yr_g(i)=soilcmas_yr_g(i)+soilcmas_yr_t(i,m)*FAREROT(i,m)
+            vgbiomas_yr_g(i)=vgbiomas_yr_g(i)+vgbiomas_yr_t(i,m)*FAREROT(i,m)
+            totcmass_yr_g(i)=totcmass_yr_g(i)+totcmass_yr_t(i,m)*FAREROT(i,m)
+            npp_yr_g(i)=npp_yr_g(i)+npp_yr_t(i,m)*FAREROT(i,m)
+            gpp_yr_g(i)=gpp_yr_g(i)+gpp_yr_t(i,m)*FAREROT(i,m)
+            nep_yr_g(i)=nep_yr_g(i)+nep_yr_t(i,m)*FAREROT(i,m)
+            nbp_yr_g(i)=nbp_yr_g(i)+nbp_yr_t(i,m)*FAREROT(i,m)
+            emit_co2_yr_g(i)=emit_co2_yr_g(i)+emit_co2_yr_t(i,m)*FAREROT(i,m)
+            emit_co_yr_g(i)=emit_co_yr_g(i)+emit_co_yr_t(i,m)*FAREROT(i,m)
+            emit_ch4_yr_g(i)=emit_ch4_yr_g(i)+emit_ch4_yr_t(i,m)*FAREROT(i,m)
+            emit_nmhc_yr_g(i)=emit_nmhc_yr_g(i)+emit_nmhc_yr_t(i,m)*FAREROT(i,m)
+            emit_h2_yr_g(i)=emit_h2_yr_g(i)+emit_h2_yr_t(i,m)*FAREROT(i,m)
+            emit_nox_yr_g(i)=emit_nox_yr_g(i)+emit_nox_yr_t(i,m)*FAREROT(i,m)
+            emit_n2o_yr_g(i)=emit_n2o_yr_g(i)+emit_n2o_yr_t(i,m)*FAREROT(i,m)
+            emit_pm25_yr_g(i)=emit_pm25_yr_g(i)+emit_pm25_yr_t(i,m)*FAREROT(i,m)
+            emit_tpm_yr_g(i)=emit_tpm_yr_g(i)+emit_tpm_yr_t(i,m)*FAREROT(i,m)
+            emit_tc_yr_g(i)=emit_tc_yr_g(i)+emit_tc_yr_t(i,m)*FAREROT(i,m)
+            emit_oc_yr_g(i)=emit_oc_yr_g(i)+emit_oc_yr_t(i,m)*FAREROT(i,m)
+            emit_bc_yr_g(i)=emit_bc_yr_g(i)+emit_bc_yr_t(i,m)*FAREROT(i,m)
+            hetrores_yr_g(i)=hetrores_yr_g(i)+hetrores_yr_t(i,m)*FAREROT(i,m)
+            autores_yr_g(i) =autores_yr_g(i) +autores_yr_t(i,m)*FAREROT(i,m)
+            litres_yr_g(i)  =litres_yr_g(i)  +litres_yr_t(i,m)*FAREROT(i,m)
+            soilcres_yr_g(i) =soilcres_yr_g(i) +soilcres_yr_t(i,m)*FAREROT(i,m)
+            burnfrac_yr_g(i)=burnfrac_yr_g(i)+burnfrac_yr_t(i,m)*FAREROT(i,m)
             probfire_yr_g(i)=probfire_yr_g(i)+probfire_yr_t(i,m)*FAREROT(i,m)
             bterm_yr_g(i)=bterm_yr_g(i)+bterm_yr_t(i,m)*FAREROT(i,m)
             lterm_yr_g(i)=lterm_yr_g(i)+lterm_yr_t(i,m)*FAREROT(i,m)
@@ -3291,7 +3390,6 @@ do 882 i=1,nltest
             luc_emc_yr_g(i)=luc_emc_yr_g(i)+luc_emc_yr_t(i,m)*FAREROT(i,m)
             lucsocin_yr_g(i)=lucsocin_yr_g(i)+lucsocin_yr_t(i,m)*FAREROT(i,m)
             lucltrin_yr_g(i)=lucltrin_yr_g(i)+lucltrin_yr_t(i,m)*FAREROT(i,m)
-
             ch4wet1_yr_g(i) = ch4wet1_yr_g(i)+ch4wet1_yr_t(i,m)*FAREROT(i,m)
             ch4wet2_yr_g(i) = ch4wet2_yr_g(i)+ch4wet2_yr_t(i,m)*FAREROT(i,m)
             wetfdyn_yr_g(i) = wetfdyn_yr_g(i)+wetfdyn_yr_t(i,m)*FAREROT(i,m)
@@ -3299,56 +3397,71 @@ do 882 i=1,nltest
             ch4dyn2_yr_g(i) = ch4dyn2_yr_g(i)+ch4dyn2_yr_t(i,m)*FAREROT(i,m)
             ch4soills_yr_g(i) = ch4soills_yr_g(i)+ch4soills_yr_t(i,m)*FAREROT(i,m)
 
-    endif ! iday 365
+900     continue
 
-883       continue ! m
+!   Write to annual output files:
 
+!   File .CT01Y
 
-    if (iday.eq.365) then
-
-        barefrac=1.0
-
-!   Write to file .CT01Y_M/.CT01Y_G
+    totbare=1.0
 
     do m=1,nmtest
-    do j=1,icc
+      barefrac=1.0
+      do j=1,icc
 
-        barefrac=barefrac-fcancmxrow(i,m,j)*FAREROT(i,m)
+        barefrac=barefrac-fcancmxrow(i,m,j)
 
-        if (FAREROT(i,m)*fcancmxrow(i,m,j) .gt. seed) then
-        write(86,8105)iyear,laimaxg_yr_t(i,m,j), &
-            vgbiomas_yr_t(i,m,j),stemmass_yr_t(i,m,j), &
-            rootmass_yr_t(i,m,j),litrmass_yr_t(i,m,j), &
-            soilcmas_yr_t(i,m,j),totcmass_yr_t(i,m,j), &
-            npp_yr_t(i,m,j),gpp_yr_t(i,m,j),nep_yr_t(i,m,j), &
-            nbp_yr_t(i,m,j),hetrores_yr_t(i,m,j), &
-            autores_yr_t(i,m,j),litres_yr_t(i,m,j), &
-            soilcres_yr_t(i,m,j),' TILE ',m,' PFT ',j,' FRAC ' &
-            ,FAREROT(i,m)*fcancmxrow(i,m,j)
+        if (fcancmxrow(i,m,j) .gt. seed) then
+        write(86,8105)iyear,laimaxg_yr(i,m,j), &
+            vgbiomas_yr(i,m,j),stemmass_yr(i,m,j), &
+            rootmass_yr(i,m,j),litrmass_yr(i,m,j), &
+            soilcmas_yr(i,m,j),totcmass_yr(i,m,j), &
+            npp_yr(i,m,j),gpp_yr(i,m,j),nep_yr(i,m,j), &
+            nbp_yr(i,m,j),hetrores_yr(i,m,j), &
+            autores_yr(i,m,j),litres_yr(i,m,j), &
+            soilcres_yr(i,m,j),' TILE ',m,' PFT ',j,' FRAC ' &
+            ,fcancmxrow(i,m,j)
         end if
-     end do !j
+      end do !j
 
-!   Now do the bare fraction of the grid cell. Only soil c, hetres
-!   and litter are relevant so the rest are set to 0.
+!       Now do the bare fraction of the grid cell. Only soil c, hetres
+!       and litter are relevant so the rest are set to 0.
 
-    if (m .eq. nmtest) then
-        if (barefrac .gt. seed) then
+      if (barefrac .gt. seed) then
         write(86,8105)iyear,0.,  &
             0.,  &
             0.,0., &
-            litrmassrow(i,m,iccp1),soilcmasrow(i,m,iccp1), &
-            0.+soilcmasrow(i,m,iccp1)+ &
-            litrmassrow(i,m,iccp1),0., &
+            litrmass_yr(i,m,iccp1),soilcmas_yr(i,m,iccp1), &
+            0.+soilcmas_yr(i,m,iccp1)+ &
+            litrmass_yr(i,m,iccp1),0., &
             0.,0., &
-            0.,hetrores_yr_t(i,m,iccp1), &
-            0.,litres_yr_t(i,m,iccp1),soilcres_yr_t(i,m,iccp1), &
+            0.,hetrores_yr(i,m,iccp1), &
+            0.,litres_yr(i,m,iccp1),soilcres_yr(i,m,iccp1), &
             ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
-        end if
-    end if
+      end if
+
+      if (nmtest > 1) then
+
+        ! Write out the per tile values
+        totbare=totbare-FAREROT(i,m)
+
+        write(86,8105)iyear,laimaxg_yr_t(i,m), &
+            vgbiomas_yr_t(i,m),stemmass_yr_t(i,m), &
+            rootmass_yr_t(i,m),litrmass_yr_t(i,m), &
+            soilcmas_yr_t(i,m),totcmass_yr_t(i,m), &
+            npp_yr_t(i,m),gpp_yr_t(i,m),nep_yr_t(i,m), &
+            nbp_yr_t(i,m),hetrores_yr_t(i,m), &
+            autores_yr_t(i,m),litres_yr_t(i,m), &
+            soilcres_yr_t(i,m),' TILE ',m,' OF ' &
+            ,nmtest,' TFRAC ',FAREROT(i,m)
+
+      end if
+
 
     end do !m
 
-        write(86,8105)iyear,laimaxg_yr_g(i),vgbiomas_yr_g(i), &
+    ! Finally write out the per gridcell values
+    write(86,8105)iyear,laimaxg_yr_g(i),vgbiomas_yr_g(i), &
             stemmass_yr_g(i),rootmass_yr_g(i),litrmass_yr_g(i), &
             soilcmas_yr_g(i),totcmass_yr_g(i),npp_yr_g(i), &
             gpp_yr_g(i),nep_yr_g(i), &
@@ -3357,26 +3470,43 @@ do 882 i=1,nltest
 
     if (dofire .or. lnduseon) then
 
-!   Write to file .CT06Y_M/.CT06Y_G
-    do m=1,nmtest
-       do j=1,icc
-        if (FAREROT(i,m)*fcancmxrow(i,m,j) .gt. seed) then
-        write(87,8108)iyear,emit_co2_yr_t(i,m,j), &
-            emit_co_yr_t(i,m,j),emit_ch4_yr_t(i,m,j), &
-            emit_nmhc_yr_t(i,m,j),emit_h2_yr_t(i,m,j), &
-            emit_nox_yr_t(i,m,j),emit_n2o_yr_t(i,m,j), &
-            emit_pm25_yr_t(i,m,j),emit_tpm_yr_t(i,m,j), &
-            emit_tc_yr_t(i,m,j),emit_oc_yr_t(i,m,j), &
-            emit_bc_yr_t(i,m,j),probfire_yr_t(i,m), &
-            luc_emc_yr_t(i,m),lucltrin_yr_t(i,m), &
-            lucsocin_yr_t(i,m),burnfrac_yr_t(i,m,j)*100., &
-            bterm_yr_t(i,m),lterm_yr_t(i,m),mterm_yr_t(i,m), &
-            ' TILE ',m,' PFT ',j,' FRAC ' &
-            ,FAREROT(i,m)*fcancmxrow(i,m,j)
-        end if
-       end do
-    end do
+        ! Write to file .CT06Y
+        do m=1,nmtest
+            do j=1,icc
+                if (fcancmxrow(i,m,j) .gt. seed) then
+                write(87,8108)iyear,emit_co2_yr(i,m,j), &
+                    emit_co_yr(i,m,j),emit_ch4_yr(i,m,j), &
+                    emit_nmhc_yr(i,m,j),emit_h2_yr(i,m,j), &
+                    emit_nox_yr(i,m,j),emit_n2o_yr(i,m,j), &
+                    emit_pm25_yr(i,m,j),emit_tpm_yr(i,m,j), &
+                    emit_tc_yr(i,m,j),emit_oc_yr(i,m,j), &
+                    emit_bc_yr(i,m,j),probfire_yr_t(i,m), &
+                    luc_emc_yr_t(i,m),lucltrin_yr_t(i,m), &
+                    lucsocin_yr_t(i,m),burnfrac_yr(i,m,j)*100., &
+                    bterm_yr_t(i,m),lterm_yr_t(i,m),mterm_yr_t(i,m), &
+                    ' TILE ',m,' PFT ',j,' FRAC ' &
+                    ,fcancmxrow(i,m,j)
+                end if
+            end do !j
 
+            if (nmtest > 1) then
+                ! Write out the per tile values
+                write(87,8108)iyear,emit_co2_yr_t(i,m), &
+                    emit_co_yr_t(i,m),emit_ch4_yr_t(i,m), &
+                    emit_nmhc_yr_t(i,m),emit_h2_yr_t(i,m), &
+                    emit_nox_yr_t(i,m),emit_n2o_yr_t(i,m), &
+                    emit_pm25_yr_t(i,m),emit_tpm_yr_t(i,m), &
+                    emit_tc_yr_t(i,m),emit_oc_yr_t(i,m), &
+                    emit_bc_yr_t(i,m),probfire_yr_t(i,m), &
+                    luc_emc_yr_t(i,m),lucltrin_yr_t(i,m), &
+                    lucsocin_yr_t(i,m),burnfrac_yr_t(i,m)*100., &
+                    bterm_yr_t(i,m),lterm_yr_t(i,m),mterm_yr_t(i,m), &
+                    ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+            end if
+
+        end do !m
+
+        ! Finally write out the per gridcell values
         write(87,8108)iyear,emit_co2_yr_g(i), &
             emit_co_yr_g(i),emit_ch4_yr_g(i),emit_nmhc_yr_g(i), &
             emit_h2_yr_g(i),emit_nox_yr_g(i),emit_n2o_yr_g(i), &
@@ -3388,89 +3518,48 @@ do 882 i=1,nltest
 
     endif !dofire,lnduseon
 
-!       write fraction of each pft and bare
+    ! Write fraction of each pft and bare
 
-        if (compete .or. lnduseon) then
+    if (compete .or. lnduseon) then
 
-            sumfare=0.0
-            if (onetile_perPFT) then
-                do m=1,nmos
-                    sumfare=sumfare+FAREROT(i,m)
-                enddo
-                write(89,8107)iyear,(FAREROT(i,m)*100.,m=1,nmos), &
-                            sumfare,(pftexistrow(i,j,j),j=1,icc)
-            else  !composite
-                do m=1,nmtest
-                 sumfare=0.0
-                 do j=1,icc
-                    sumfare=sumfare+fcancmxrow(i,m,j)
-                 enddo
-
-                 write(89,8107)iyear,(fcancmxrow(i,m,j)*100., &
-                        j=1,icc),(1.0-sumfare)*100.,sumfare, &
-                        (pftexistrow(i,m,j),j=1,icc),' TILE ',m
-                end do
-            endif
-        endif !compete/lnduseon
-
-        if (dowetlands .or. obswetf) then
-
-        write(92,8115)iyear,ch4wet1_yr_g(i), &
-                    ch4wet2_yr_g(i),wetfdyn_yr_g(i), &
-                    ch4dyn1_yr_g(i),ch4dyn2_yr_g(i), &
-                    ch4soills_yr_g(i)
-        endif
-
-!       initialize yearly accumulated arrays
-!       for the next round
-
-        do m=1,nmtest
-            probfire_yr_t(i,m)=0.0
-            luc_emc_yr_t(i,m)=0.0
-            lucsocin_yr_t(i,m)=0.0
-            lucltrin_yr_t(i,m)=0.0
-            bterm_yr_t(i,m)=0.0
-            lterm_yr_t(i,m)=0.0
-            mterm_yr_t(i,m)=0.0
-
-            ch4wet1_yr_t(i,m)  =0.0
-            ch4wet2_yr_t(i,m)  =0.0
-            wetfdyn_yr_t(i,m)  =0.0
-            ch4dyn1_yr_t(i,m)  =0.0
-            ch4dyn2_yr_t(i,m)  =0.0
-            ch4soills_yr_t(i,m)  =0.0
-
-            do j = 1, icc
-                laimaxg_yr_t(i,m,j)=0.0
-                npp_yr_t(i,m,j)=0.0
-                gpp_yr_t(i,m,j)=0.0
-                nep_yr_t(i,m,j)=0.0
-                nbp_yr_t(i,m,j)=0.0
-                emit_co2_yr_t(i,m,j)=0.0
-                emit_co_yr_t(i,m,j)=0.0
-                emit_ch4_yr_t(i,m,j)=0.0
-                emit_nmhc_yr_t(i,m,j)=0.0
-                emit_h2_yr_t(i,m,j)=0.0
-                emit_nox_yr_t(i,m,j)=0.0
-                emit_n2o_yr_t(i,m,j)=0.0
-                emit_pm25_yr_t(i,m,j)=0.0
-                emit_tpm_yr_t(i,m,j)=0.0
-                emit_tc_yr_t(i,m,j)=0.0
-                emit_oc_yr_t(i,m,j)=0.0
-                emit_bc_yr_t(i,m,j)=0.0
-                hetrores_yr_t(i,m,j)=0.0
-                autores_yr_t(i,m,j)=0.0
-                litres_yr_t(i,m,j)=0.0
-                soilcres_yr_t(i,m,j)=0.0
-                burnfrac_yr_t(i,m,j)=0.0
+        sumfare=0.0
+        if (onetile_perPFT) then
+            do m=1,nmos
+                sumfare=sumfare+FAREROT(i,m)
             enddo
+            write(89,8107)iyear,(FAREROT(i,m)*100.,m=1,nmos), &
+                        sumfare,(pftexistrow(i,j,j),j=1,icc)
+        else  !composite/mosaic (normal) runs
+            do m=1,nmtest
+                sumfare=0.0
+                do j=1,icc
+                sumfare=sumfare+fcancmxrow(i,m,j)
+                enddo
 
-            hetrores_yr_t(i,m,iccp1)=0.0
-            litres_yr_t(i,m,iccp1)=0.0
-            soilcres_yr_t(i,m,iccp1)=0.0
-            nep_yr_t(i,m,iccp1)=0.0
-            nbp_yr_t(i,m,iccp1)=0.0
-        enddo
+                write(89,8107)iyear,(fcancmxrow(i,m,j)*100., &
+                    j=1,icc),(1.0-sumfare)*100.,sumfare, &
+                    (pftexistrow(i,m,j),j=1,icc),' TILE ',m
+            end do
+        endif
+    endif !compete/lnduseon
+
+    if (dowetlands .or. obswetf) then
+
+        ! Write out the per tile values
+        if (nmtest > 1) then
+            do m = 1,nmtest
+                write(92,8115)iyear,ch4wet1_yr_t(i,m), &
+                    ch4wet2_yr_t(i,m),wetfdyn_yr_t(i,m), &
+                    ch4dyn1_yr_t(i,m),ch4dyn2_yr_t(i,m), &
+                    ch4soills_yr_t(i,m),' TILE ',m
+            end do
+        end if
+
+    write(92,8115)iyear,ch4wet1_yr_g(i), &
+                ch4wet2_yr_g(i),wetfdyn_yr_g(i), &
+                ch4dyn1_yr_g(i),ch4dyn2_yr_g(i), &
+                ch4soills_yr_g(i),' GRDAV '
+    endif
 
     endif ! if iday=365
 
