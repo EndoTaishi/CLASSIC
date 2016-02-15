@@ -1684,7 +1684,7 @@ c     initializations primarily affect how the model does a spinup or transient
 c     simulation and which years of the input data are being read.
 
       if (.not. cyclemet .and. transient_run) then !transient simulation, set to dummy values
-        metcylyrst=-9999
+        metcylyrst=trans_startyr ! this will make it skip to the trans_startyr
         metcycendyr=9999
       else
 c       find the final year of the cycling met
@@ -2649,6 +2649,9 @@ C
             if (ctem_on) then
              do i=1,nltest
               if (obswetf) then
+              ! FLAG note that this will be read in, regardless of the iyear, if the
+              ! obswetf flag is true. This means you have to be restarting from a run
+              ! that ends the year prior to the first year in this file.
                  read(16,*,end=1001) obswetyr,
      1                               (wetfrac_monrow(i,j),j=1,12)
               else
@@ -2658,6 +2661,9 @@ C
               endif !obswetf
 
               if(obslght) then
+              ! FLAG note that this will be read in, regardless of the iyear, if the
+              ! obswetf flag is true. This means you have to be restarting from a run
+              ! that ends the year prior to the first year in this file.
                 read(17,*,end=312) obslghtyr,(mlightnggrd(i,j),j=1,12)
 312             continue !if end of file, just keep using the last year of lighting data.
               end if !obslight
