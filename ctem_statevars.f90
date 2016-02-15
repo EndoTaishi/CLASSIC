@@ -24,7 +24,6 @@ implicit none
 public :: initrowvars
 public :: resetclassmon
 public :: resetclassyr
-public :: resetmidmonth
 public :: resetmonthend
 public :: resetyearend
 public :: resetclassaccum
@@ -167,7 +166,8 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: ltstatus
     real, dimension(nlat,nmos) :: rmr
 
-    real, dimension(nlat) :: wetfrac
+    real, dimension(nlat) :: wetfrac_pres
+    real, dimension(nlat,8) :: slopefrac
     real, dimension(nlat,nmos) :: ch4wet1
     real, dimension(nlat,nmos) :: ch4wet2
     real, dimension(nlat,nmos) :: wetfdyn
@@ -272,6 +272,16 @@ type veg_rot
     real, dimension(nlat,nmos) :: tcanoaccrow_out
     real, dimension(nlat,nmos) :: qevpacc_m_save
 
+    real, dimension(nlat) :: twarmm              ! temperature of the warmest month (c)
+    real, dimension(nlat) :: tcoldm              ! temperature of the coldest month (c)
+    real, dimension(nlat) :: gdd5                ! growing degree days above 5 c
+    real, dimension(nlat) :: aridity             ! aridity index, ratio of potential evaporation to precipitation
+    real, dimension(nlat) :: srplsmon            ! number of months in a year with surplus water i.e. precipitation more than potential evaporation
+    real, dimension(nlat) :: defctmon            ! number of months in a year with water deficit i.e. precipitation less than potential evaporation
+    real, dimension(nlat) :: anndefct            ! annual water deficit (mm)
+    real, dimension(nlat) :: annsrpls            ! annual water surplus (mm)
+    real, dimension(nlat) :: annpcp              ! annual precipitation (mm)
+    real, dimension(nlat) :: dry_season_length   ! length of dry season (months)
 
 end type veg_rot
 
@@ -381,7 +391,9 @@ type veg_gat
     real, dimension(ilg,icc) :: ltstatus
     real, dimension(ilg) :: rmr
 
-    real, dimension(ilg,8) :: wetfrac_s
+    real, dimension(ilg,8) :: slopefrac
+    real, dimension(ilg) :: wetfrac_pres
+    real, dimension(ilg,12) :: wetfrac_mon
     real, dimension(ilg) :: ch4wet1
     real, dimension(ilg) :: ch4wet2
     real, dimension(ilg) :: wetfdyn
@@ -1278,11 +1290,9 @@ end subroutine resetclassyr
 
 !==================================================
 
-subroutine resetmidmonth(nltest,nmtest)
+subroutine resetmonthend(nltest,nmtest)
 
-! Reset all monthly vars that are set mid-month.
-
-use ctem_params, only : icc,iccp1
+use ctem_params, only : iccp1,icc
 
 implicit none
 
@@ -1291,6 +1301,8 @@ integer, intent(in) :: nmtest
 
 integer :: i,m,j
 
+! These are assigned to mid-month, but are not accumulated so can be
+! zeroed out at the same time as the other month-end vars.
 do i=1,nltest
     ctem_grd_mo%stemmass_mo_g(i)=0.0
     ctem_grd_mo%rootmass_mo_g(i)=0.0
@@ -1318,21 +1330,7 @@ do i=1,nltest
   end do
 end do
 
-end subroutine resetmidmonth
-
-!==================================================
-
-subroutine resetmonthend(nltest,nmtest)
-
-use ctem_params, only : iccp1,icc
-
-implicit none
-
-integer, intent(in) :: nltest
-integer, intent(in) :: nmtest
-
-integer :: i,m,j
-
+! Now zero out the month end vars.
 do i=1,nltest
     ! Grid avg
     ctem_grd_mo%laimaxg_mo_g(i)=0.0

@@ -341,7 +341,7 @@ c----------------------------------------------------------------------
           gavgscmsrow(ilmos(k),jlmos(k))    = gavgscmsgat(k)
           tcanoaccrow_out(ilmos(k),jlmos(k))= tcanoaccgat_out(k)
 !          wetfracrow(ilmos(k))              = wetfracgat(k)
-!          wetfrac_srow(ilmos(k))            = wetfrac_sgat(k)
+!          slopefrac_row(ilmos(k))            = slopefrac_gat(k)
           ch4wet1row(ilmos(k),jlmos(k))     = ch4wet1gat(k)
           ch4wet2row(ilmos(k),jlmos(k))     = ch4wet2gat(k)
           wetfdynrow(ilmos(k),jlmos(k))     = wetfdyngat(k)

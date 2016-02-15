@@ -91,7 +91,7 @@ c     through use statements for modules:
 
       use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,
      1                               class_out,resetclassmon,
-     2                               resetclassyr,resetmidmonth,
+     2                               resetclassyr,
      3                               resetmonthend,resetyearend,
      4                               resetclassaccum,ctem_grd,
      5                               ctem_tile,resetgridavg,
@@ -675,13 +675,14 @@ c
       real, pointer, dimension(:,:,:) :: ltstatusrow
       real, pointer, dimension(:,:) :: rmrrow
 
-      real, pointer, dimension(:) :: wetfracgrd
+      real, pointer, dimension(:,:) :: slopefracrow
+      real, pointer, dimension(:) :: wetfrac_presrow
       real, pointer, dimension(:,:) :: ch4wet1row
       real, pointer, dimension(:,:) :: ch4wet2row
       real, pointer, dimension(:,:) :: wetfdynrow
       real, pointer, dimension(:,:) :: ch4dyn1row
       real, pointer, dimension(:,:) :: ch4dyn2row
-      real, pointer, dimension(:,:) :: wetfrac_mon
+      real, pointer, dimension(:,:) :: wetfrac_monrow
       real, pointer, dimension(:,:) :: ch4soillsrow
 
       real, pointer, dimension(:,:) :: lucemcomrow
@@ -728,6 +729,18 @@ c
       real, pointer, dimension(:,:) :: dstcemls3row
       real, pointer, dimension(:,:,:) :: anvegrow
       real, pointer, dimension(:,:,:) :: rmlvegrow
+
+      real, pointer, dimension(:) :: twarmmrow
+      real, pointer, dimension(:) :: tcoldmrow
+      real, pointer, dimension(:) :: gdd5row
+      real, pointer, dimension(:) :: aridityrow
+      real, pointer, dimension(:) :: srplsmonrow
+      real, pointer, dimension(:) :: defctmonrow
+      real, pointer, dimension(:) :: anndefctrow
+      real, pointer, dimension(:) :: annsrplsrow
+      real, pointer, dimension(:) :: annpcprow
+      real, pointer, dimension(:) :: dry_season_lengthrow
+
 
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
       ! GAT version:
@@ -831,7 +844,9 @@ c
       real, pointer, dimension(:,:) :: ltstatusgat
       real, pointer, dimension(:) :: rmrgat
 
-      real, pointer, dimension(:,:) :: wetfrac_sgrd
+      real, pointer, dimension(:,:) :: slopefracgat
+      real, pointer, dimension(:) :: wetfrac_presgat
+      real, pointer, dimension(:,:) :: wetfrac_mongat
       real, pointer, dimension(:) :: ch4wet1gat
       real, pointer, dimension(:) :: ch4wet2gat
       real, pointer, dimension(:) :: wetfdyngat
@@ -884,16 +899,16 @@ c
       real, pointer, dimension(:,:) :: anveggat
       real, pointer, dimension(:,:) :: rmlveggat
 
-      real, pointer, dimension(:) :: twarmm
-      real, pointer, dimension(:) :: tcoldm
-      real, pointer, dimension(:) :: gdd5
-      real, pointer, dimension(:) :: aridity
-      real, pointer, dimension(:) :: srplsmon
-      real, pointer, dimension(:) :: defctmon
-      real, pointer, dimension(:) :: anndefct
-      real, pointer, dimension(:) :: annsrpls
-      real, pointer, dimension(:) :: annpcp
-      real, pointer, dimension(:) :: dry_season_length
+      real, pointer, dimension(:) :: twarmmgat
+      real, pointer, dimension(:) :: tcoldmgat
+      real, pointer, dimension(:) :: gdd5gat
+      real, pointer, dimension(:) :: ariditygat
+      real, pointer, dimension(:) :: srplsmongat
+      real, pointer, dimension(:) :: defctmongat
+      real, pointer, dimension(:) :: anndefctgat
+      real, pointer, dimension(:) :: annsrplsgat
+      real, pointer, dimension(:) :: annpcpgat
+      real, pointer, dimension(:) :: dry_season_lengthgat
 
       ! Mosaic level:
 
@@ -936,7 +951,7 @@ c
        real, pointer, dimension(:,:) :: qevpacc_m_save
 
 !     -----------------------
-!      Mosaic-level variables (denoted by an ending of "_m")
+!      Tile-level variables (denoted by an ending of "_t")
 
       real faregat(ilg)
       real, pointer, dimension(:) :: fsnowacc_t
@@ -1226,13 +1241,14 @@ C===================== CTEM ==============================================\
       ltstatusrow       => vrot%ltstatus
       rmrrow            => vrot%rmr
 
-      wetfracgrd        => vrot%wetfrac
+      slopefracrow      => vrot%slopefrac
+      wetfrac_presrow   => vrot%wetfrac_pres
       ch4wet1row        => vrot%ch4wet1
       ch4wet2row        => vrot%ch4wet2
       wetfdynrow        => vrot%wetfdyn
       ch4dyn1row        => vrot%ch4dyn1
       ch4dyn2row        => vrot%ch4dyn2
-      wetfrac_mon       => vrot%wetfrac_mon
+      wetfrac_monrow    => vrot%wetfrac_mon
       ch4soillsrow      => vrot%ch4_soills
 
       lucemcomrow       => vrot%lucemcom
@@ -1287,6 +1303,16 @@ C===================== CTEM ==============================================\
       pandaysrow        => vrot%pandays
       stdalngrd         => vrot%stdaln
 
+      twarmmrow            => vrot%twarmm
+      tcoldmrow            => vrot%tcoldm
+      gdd5row              => vrot%gdd5
+      aridityrow           => vrot%aridity
+      srplsmonrow          => vrot%srplsmon
+      defctmonrow          => vrot%defctmon
+      anndefctrow          => vrot%anndefct
+      annsrplsrow          => vrot%annsrpls
+      annpcprow            => vrot%annpcp
+      dry_season_lengthrow => vrot%dry_season_length
 
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>
       ! GAT:
@@ -1383,7 +1409,9 @@ C===================== CTEM ==============================================\
       ltstatusgat       => vgat%ltstatus
       rmrgat            => vgat%rmr
 
-      wetfrac_sgrd      => vgat%wetfrac_s
+      slopefracgat      => vgat%slopefrac
+      wetfrac_presgat   => vgat%wetfrac_pres
+      wetfrac_mongat    => vgat%wetfrac_mon
       ch4wet1gat        => vgat%ch4wet1
       ch4wet2gat        => vgat%ch4wet2
       wetfdyngat        => vgat%wetfdyn
@@ -1436,16 +1464,16 @@ C===================== CTEM ==============================================\
       anveggat          => vgat%anveg
       rmlveggat         => vgat%rmlveg
 
-      twarmm            => vgat%twarmm
-      tcoldm            => vgat%tcoldm
-      gdd5              => vgat%gdd5
-      aridity           => vgat%aridity
-      srplsmon          => vgat%srplsmon
-      defctmon          => vgat%defctmon
-      anndefct          => vgat%anndefct
-      annsrpls          => vgat%annsrpls
-      annpcp            => vgat%annpcp
-      dry_season_length => vgat%dry_season_length
+      twarmmgat            => vgat%twarmm
+      tcoldmgat            => vgat%tcoldm
+      gdd5gat              => vgat%gdd5
+      ariditygat           => vgat%aridity
+      srplsmongat          => vgat%srplsmon
+      defctmongat          => vgat%defctmon
+      anndefctgat          => vgat%anndefct
+      annsrplsgat          => vgat%annsrpls
+      annpcpgat            => vgat%annpcp
+      dry_season_lengthgat => vgat%dry_season_length
 
       pftexistgat       => vgat%pftexist
       colddaysgat       => vgat%colddays
@@ -2264,11 +2292,11 @@ c
             endif
           enddo
 c
-          if( abs(csum(i,m,j)-1.0).gt.abszero ) then
-           write(6,1130)i,m,j
-1130       format('dvdfcans for (',i1,',',i1,',',i1,') must add to 1.0')
-            call xit('runclass36ctem', -3)
-          endif
+!           if( abs(csum(i,m,j)-1.0).gt.abszero ) then
+!            write(6,1130)i,m,j
+! 1130       format('dvdfcans for (',i1,',',i1,',',i1,') must add to 1.0')
+!             call xit('runclass36ctem', -3)
+!           endif
 c
 114     continue
 113   continue
@@ -2310,14 +2338,14 @@ c      back up one space in the met file so it is ready for the next readin
        if(obswetf) then
          do while (obswetyr .lt. metcylyrst)
             do i=1,nltest
-              read(16,*) obswetyr,(wetfrac_mon(i,j),j=1,12)
+              read(16,*) obswetyr,(wetfrac_monrow(i,j),j=1,12)
             end do
          end do
          backspace(16)
        else
            do i=1,nltest
              do j = 1,12
-               wetfrac_mon(i,j) = 0.0
+               wetfrac_monrow(i,j) = 0.0
              enddo
            enddo
 
@@ -2403,7 +2431,6 @@ c                                      !first year
 c
 c *     initialize accumulated array for monthly and yearly output for ctem
 c
-         call resetmidmonth(nltest,nmtest)
          call resetmonthend(nltest,nmtest)
          call resetyearend(nltest,nmtest)
 c
@@ -2521,14 +2548,14 @@ c       but only if it was read in during the loop above.
         if (obswetf) then
           do while (obswetyr .lt. metcylyrst)
               do i = 1,nltest
-                read(16,*) obswetyr,(wetfrac_mon(i,j),j=1,12)
+                read(16,*) obswetyr,(wetfrac_monrow(i,j),j=1,12)
               enddo
           enddo
          if (metcylyrst .ne. -9999) backspace(16)
         else
            do i=1,nltest
              do j = 1,12
-               wetfrac_mon(i,j) = 0.0
+               wetfrac_monrow(i,j) = 0.0
              enddo
            enddo
         endif !obswetf
@@ -2622,10 +2649,11 @@ C
             if (ctem_on) then
              do i=1,nltest
               if (obswetf) then
-                  read(16,*,end=1001) obswetyr,(wetfrac_mon(i,j),j=1,12)
+                 read(16,*,end=1001) obswetyr,
+     1                               (wetfrac_monrow(i,j),j=1,12)
               else
                    do j = 1,12
-                     wetfrac_mon(i,j) = 0.0
+                     wetfrac_monrow(i,j) = 0.0
                    enddo
               endif !obswetf
 
@@ -2902,8 +2930,11 @@ C
      &      btermgat,     ltermgat,   mtermgat, daylgat,dayl_maxgat,
      &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
-     &      ch4wet1gat, ch4wet2gat,
+     &      ch4wet1gat, ch4wet2gat,  slopefracgat, wetfrac_mongat,
      &      wetfdyngat, ch4dyn1gat,  ch4dyn2gat, ch4soillsgat,
+     &      twarmmgat,    tcoldmgat,     gdd5gat,
+     1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
+     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,      fcancmxrow,  rmatcrow,    zolncrow,  paicrow,
@@ -2941,8 +2972,11 @@ c
      &      btermrow,     ltermrow,   mtermrow, daylrow, dayl_maxrow,
      &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
-     &      ch4wet1row, ch4wet2row,
-     &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow)
+     &      ch4wet1row, ch4wet2row,  slopefracrow, wetfrac_monrow,
+     &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,
+     &      twarmmrow,    tcoldmrow,     gdd5row,
+     1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
+     2      annsrplsrow,   annpcprow,  dry_season_lengthrow)
 c
 C===================== CTEM ============================================ /
 C
@@ -3245,8 +3279,10 @@ c
      &                 (mlightnggat(i,month2)-mlightnggat(i,month1))
 c
             if (obswetf) then
-              wetfracgrd(i)=wetfrac_mon(i,month1)+(real(xday)/30.0)*
-     &                 (wetfrac_mon(i,month2)-wetfrac_mon(i,month1))
+                wetfrac_presgat(i)=wetfrac_mongat(i,month1)+
+     &                 (real(xday)/30.0)*
+     &                 (wetfrac_mongat(i,month2)-
+     &                  wetfrac_mongat(i,month1))
             endif !obswetf
 
           endif ! if(ctem_on)
@@ -3271,7 +3307,7 @@ c
      b            thicecacc_t,     sdepgat,    spinfast,   todfrac,
      &                compete,  netrad_gat,  preacc_gat,
      &                 popdin,  dofire, dowetlands,obswetf, isndgat,
-     &              faregat,onetile_perPFT,wetfracgrd, wetfrac_sgrd,
+     &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
@@ -3285,9 +3321,9 @@ c    -------------- inputs used by ctem are above this line ---------
      &                 tmonth,    anpcpcur,      anpecur,     gdd5cur,
      &               surmncur,    defmncur,     srplscur,    defctcur,
      &            geremortgat, intrmortgat,    lambdagat, lyglfmasgat,
-     &            pftexistgat,      twarmm,       tcoldm,        gdd5,
-     1                aridity,    srplsmon,     defctmon,    anndefct,
-     2               annsrpls,      annpcp,  dry_season_length,
+     &            pftexistgat,   twarmmgat,    tcoldmgat,     gdd5gat,
+     1             ariditygat, srplsmongat,  defctmongat, anndefctgat,
+     2            annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      &              burnvegfgat, pstemmassgat, pgleafmassgat,
 c    -------------- inputs updated by ctem are above this line ------
      k                 nppgat,      nepgat, hetroresgat, autoresgat,
@@ -3318,8 +3354,8 @@ c
       ! this operates on a daily timestep.
       call soil_ch4uptake(1,nml,tbaraccgat_t,THPGAT,BIGAT,thliqacc_t,
      &                     thicecacc_t,PSISGAT,GRAV,FCANGAT,obswetf,
-     &                     wetfdyngat,wetfracgrd,isndgat,RHOW,RHOICE,
-     &                     ch4concgat,ch4soillsgat)
+     &                     wetfdyngat,wetfrac_presgat,isndgat,RHOW,
+     &                     RHOICE,ch4concgat,ch4soillsgat)
 
 c
 c     reset mosaic accumulator arrays.
