@@ -4,10 +4,6 @@ program netcdf_create_bf
 ! into (using netcdf_writer). The creator_module.f90 contains a module 
 ! where any parameters must be defined. A simple joboptions file is also required.
 
-! If MOSAIC=.true., you will write both the composite and mosaic variables to the 
-! netcdf, in this case MAKEMONTHLY=.false. is likely a good idea to avoid a massive
-! file size.
-
 ! If the run has many years, also MAKEMONTHLY=.false. could be a good idea
 
 ! DOFIRE=.true. turns on the disturbance vars, while COMPETE_LNDUSE=.true. will
@@ -32,6 +28,11 @@ program netcdf_create_bf
 !
 ! Joe Melton - Jul 28 2014
 !       Split creation into an annual and a monthly file
+!
+! Joe Melton - Feb 15 2016
+!       Adapt so it can deal with tiling (different form than before) and push the
+!       month into the years so I can reduce the dimension of the monthly files.
+!       Also made it so the number of soil layers comes in from the job options
 
 !----------------
 
@@ -44,6 +45,7 @@ integer :: totyrs
 integer :: monyrs
 integer :: yrst
 integer :: realyrst
+integer :: nl ! number of soil layers
 integer :: i
 integer :: adjustyr
 character(120) :: file_to_write
@@ -53,8 +55,8 @@ character(120) :: jobfile
 logical :: CTEM
 logical :: MAKEMONTHLY
 logical :: DOFIRE
-logical :: DOWETLANDS   !Rudra
-logical :: MOSAIC
+logical :: TILED
+logical :: DOWETLANDS
 logical :: COMPETE_LNDUSE
 logical :: PARALLELRUN
 
@@ -64,9 +66,10 @@ namelist /joboptions/ &
   CTEM, 	      &
   MAKEMONTHLY,        &
   DOFIRE,             &
-  DOWETLANDS,         &    !Rudra
-  MOSAIC,             &
+  TILED,              &
+  DOWETLANDS,         &
   COMPETE_LNDUSE,     &
+  nl,                 &
   totyrs,             &
   monyrs,             &
   yrst,               &
@@ -136,7 +139,7 @@ yrange(2) = maxval(latvect)
 
 ! First create the annual file
 file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_A.nc'
-call create_netcdf(totyrs,yrst,realyrst,file_to_write_extended,CTEM,MOSAIC,.FALSE.,DOFIRE,DOWETLANDS,COMPETE_LNDUSE)
+call create_netcdf(totyrs,yrst,realyrst,file_to_write_extended,CTEM,.FALSE.,DOFIRE,DOWETLANDS,COMPETE_LNDUSE)
 
 write(*,*)'Done annual file'
 
@@ -144,7 +147,7 @@ if (MAKEMONTHLY) then
   ! Then create the monthly file if you are making one:
   file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_M.nc'
   adjustyr=realyrst+(totyrs - monyrs - 1) 
-  call create_netcdf(monyrs,yrst,adjustyr,file_to_write_extended,CTEM,MOSAIC,.TRUE.,DOFIRE,DOWETLANDS,COMPETE_LNDUSE)
+  call create_netcdf(monyrs,yrst,adjustyr,file_to_write_extended,CTEM,.TRUE.,DOFIRE,DOWETLANDS,COMPETE_LNDUSE)
 end if
 
 deallocate(lonvect)
@@ -160,24 +163,24 @@ end program netcdf_create_bf
 
 !=======================================================================
 
-subroutine create_netcdf(totyrs,yrst,realyrst,file_to_write,CTEM,MOSAIC,MAKEMONTHLY,DOFIRE,DOWETLANDS,COMPETE_LNDUSE)
+subroutine create_netcdf(totyrs,yrst,realyrst,file_to_write,CTEM,MAKEMONTHLY,DOFIRE,DOWETLANDS,COMPETE_LNDUSE,nl)
 
 use creator_module_bf
 use netcdf
 
 implicit none
 
-integer :: i
+integer :: i,j
 integer,intent(in) :: totyrs
 integer,intent(in) :: yrst
 integer,intent(in) :: realyrst
 character(120),intent(in) :: file_to_write
 logical,intent(in) :: CTEM
-logical,intent(in) :: MOSAIC
 logical,intent(in) :: MAKEMONTHLY
 logical,intent(in) :: DOFIRE
-logical,intent(in)  :: DOWETLANDS   !Rudra
+logical,intent(in)  :: DOWETLANDS
 logical,intent(in) :: COMPETE_LNDUSE
+integer, intent(in) :: nl
 
 integer :: grpid_ann_ctem
 integer :: grpid_ann_class
@@ -185,8 +188,8 @@ integer :: grpid_mon_ctem
 integer :: grpid_mon_class
 integer :: grpid_mon_dist
 integer :: grpid_ann_dist
-integer :: grpid_ann_wet   !Rudra
-integer :: grpid_mon_wet   !Rudra
+integer :: grpid_ann_wet
+integer :: grpid_mon_wet
 
 integer :: grpid_ann_ctem_t
 integer :: grpid_mon_ctem_t
@@ -227,14 +230,6 @@ if (status/=nf90_noerr) call handle_err(status)
 
 status = nf90_put_att(ncid,nf90_global,'Conventions','COARDS')
 if (status/=nf90_noerr) call handle_err(status)
-
-if (MOSAIC) then 
-  status = nf90_put_att(ncid,nf90_global,'history','This was a Mosaic run')
-  if (status/=nf90_noerr) call handle_err(status)
-else
-  status = nf90_put_att(ncid,nf90_global,'history','This was a Composite run')
-  if (status/=nf90_noerr) call handle_err(status)
-end if
 
 status = nf90_put_att(ncid,nf90_global,'node_offset',1)
 if (status/=nf90_noerr) call handle_err(status)
@@ -303,7 +298,7 @@ if (status/=nf90_noerr) call handle_err(status)
 status = nf90_def_var(ncid,'tile',nf90_short,tile,varid)
 if (status/=nf90_noerr) call handle_err(status)
 
-status = nf90_put_att(ncid,varid,'long_name','mosaic tile')
+status = nf90_put_att(ncid,varid,'long_name','tile')
 if (status/=nf90_noerr) call handle_err(status)
 
 status = nf90_put_att(ncid,varid,'units','tile number')
@@ -354,25 +349,25 @@ status = nf90_put_att(ncid,varid,'_Endianness',"little")
 if (status/=nf90_noerr) call handle_err(status)
 
 !----6
-if (MAKEMONTHLY) then
- status = nf90_def_dim(ncid,'month',12,month)
- if (status/=nf90_noerr) call handle_err(status)
-
- status = nf90_def_var(ncid,'month',nf90_short,month,varid)
- if (status/=nf90_noerr) call handle_err(status)
-
- status = nf90_put_att(ncid,varid,'long_name','month')
- if (status/=nf90_noerr) call handle_err(status)
-
- status = nf90_put_att(ncid,varid,'units','month')
- if (status/=nf90_noerr) call handle_err(status)
-
- status = nf90_put_att(ncid,varid,'_Storage',"contiguous")
- if (status/=nf90_noerr) call handle_err(status)
-
- status = nf90_put_att(ncid,varid,'_Endianness',"little")
- if (status/=nf90_noerr) call handle_err(status)
-end if
+! if (MAKEMONTHLY) then
+!  status = nf90_def_dim(ncid,'month',12,month)
+!  if (status/=nf90_noerr) call handle_err(status)
+!
+!  status = nf90_def_var(ncid,'month',nf90_short,month,varid)
+!  if (status/=nf90_noerr) call handle_err(status)
+!
+!  status = nf90_put_att(ncid,varid,'long_name','month')
+!  if (status/=nf90_noerr) call handle_err(status)
+!
+!  status = nf90_put_att(ncid,varid,'units','month')
+!  if (status/=nf90_noerr) call handle_err(status)
+!
+!  status = nf90_put_att(ncid,varid,'_Storage',"contiguous")
+!  if (status/=nf90_noerr) call handle_err(status)
+!
+!  status = nf90_put_att(ncid,varid,'_Endianness',"little")
+!  if (status/=nf90_noerr) call handle_err(status)
+! end if
 
 !----7
 z=realyrst-1
@@ -536,8 +531,17 @@ status = nf90_put_var(ncid,layer,layersnum)
 if (status/=nf90_noerr) call handle_err(status)
 
 if (MAKEMONTHLY) then
-status = nf90_put_var(ncid,month,[1,2,3,4,5,6,7,8,9,10,11,12]) !months
-if (status/=nf90_noerr) call handle_err(status)
+!status = nf90_put_var(ncid,month,[1,2,3,4,5,6,7,8,9,10,11,12]) !months
+!if (status/=nf90_noerr) call handle_err(status)
+    do i=yrst,totyrs
+      do j=1,12
+!
+        timenum(i) = i * 365 + mmday(j)
+      enddo
+    enddo
+
+    status = nf90_put_var(ncid,time,timenum)
+    if (status/=nf90_noerr) call handle_err(status)
 end if
 
 status = nf90_put_var(ncid,time,timenum)    
@@ -595,7 +599,7 @@ if (CTEM) then
    status = nf90_redef(grpid_mon_ctem_t) 
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_def_var(grpid_mon_ctem_t,trim(CTEM_M_VAR(i)),nf90_float,[lon,lat,tile,month,time],varid)
+   status = nf90_def_var(grpid_mon_ctem_t,trim(CTEM_M_VAR(i)),nf90_float,[lon,lat,tile,time],varid)
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_enddef(grpid_mon_ctem_t)
@@ -633,8 +637,7 @@ if (CTEM) then
 
   end do
  
- ! MONTHLY MOSAIC DISTURBANCE VARIABLES
- !if (MOSAIC) then  
+ ! MONTHLY DISTURBANCE VARIABLES
   if (DOFIRE) then
 
     do i=lbound(CTEM_M_D_VAR,1), ubound(CTEM_M_D_VAR,1)
@@ -642,7 +645,7 @@ if (CTEM) then
      status = nf90_redef(grpid_mon_dist_t) 
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_def_var(grpid_mon_dist_t,trim(CTEM_M_D_VAR(i)),nf90_float,[lon,lat,tile,month,time],varid)
+     status = nf90_def_var(grpid_mon_dist_t,trim(CTEM_M_D_VAR(i)),nf90_float,[lon,lat,tile,time],varid)
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_enddef(grpid_mon_dist_t)
@@ -682,7 +685,6 @@ if (CTEM) then
 
   end if !dofire
   end if !makemonthly
-!  end if ! mosaic
 
 !Annual CTEM per PFT/tile====================================
   if (.not. MAKEMONTHLY) then
@@ -732,7 +734,7 @@ if (CTEM) then
 
   enddo
 
- ! Annual DISTURBANCE MOSAIC VARIABLES
+ ! Annual DISTURBANCE VARIABLES
     if (DOFIRE) then
 
      do i=lbound(CTEM_Y_D_VAR,1), ubound(CTEM_Y_D_VAR,1)
@@ -801,7 +803,7 @@ if (CTEM) then
    status = nf90_redef(grpid_mon_ctem) 
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_VAR_GA(i)),nf90_float,[lon,lat,month,time],varid)
+   status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_VAR_GA(i)),nf90_float,[lon,lat,time],varid)
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_enddef(grpid_mon_ctem)
@@ -847,7 +849,7 @@ if (CTEM) then
       status = nf90_redef(grpid_mon_dist) 
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_def_var(grpid_mon_dist,trim(CTEM_M_D_VAR_GA(i)),nf90_float,[lon,lat,month,time],varid)
+      status = nf90_def_var(grpid_mon_dist,trim(CTEM_M_D_VAR_GA(i)),nf90_float,[lon,lat,time],varid)
       if (status/=nf90_noerr) call handle_err(status)
 
       status = nf90_enddef(grpid_mon_dist)
@@ -893,7 +895,7 @@ if (CTEM) then
       status = nf90_redef(grpid_mon_wet)
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_def_var(grpid_mon_wet,trim(CTEM_M_W_VAR(i)),nf90_float,[lon,lat,month,time],varid)
+      status = nf90_def_var(grpid_mon_wet,trim(CTEM_M_W_VAR(i)),nf90_float,[lon,lat,time],varid)
       if (status/=nf90_noerr) call handle_err(status)
 
       status = nf90_enddef(grpid_mon_wet)
@@ -1100,7 +1102,7 @@ if (COMPETE_LNDUSE) then
      status = nf90_redef(grpid_mon_ctem) 
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_C_VAR(i)),nf90_float,[lon,lat,pft,month,time],varid)
+     status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_C_VAR(i)),nf90_float,[lon,lat,pft,time],varid)
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_enddef(grpid_mon_ctem)
@@ -1143,7 +1145,7 @@ if (COMPETE_LNDUSE) then
      status = nf90_redef(grpid_mon_ctem) 
      if (status/=nf90_noerr) call handle_err(status)
  
-     status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_C_VAR(1)),nf90_float,[lon,lat,month,time],varid)
+     status = nf90_def_var(grpid_mon_ctem,trim(CTEM_M_C_VAR(1)),nf90_float,[lon,lat,time],varid)
      if (status/=nf90_noerr) call handle_err(status)
 
      status = nf90_enddef(grpid_mon_ctem)
@@ -1284,7 +1286,7 @@ end if ! land cover
 
 end if !CTEMboolean
 
-!============Monthly CLASS MOSAIC====================
+!============Monthly CLASS====================
 
 ! In the future we might want to output the mosaic output of CLASS, right
 ! now we do not so this can be commented out.
@@ -1292,7 +1294,7 @@ end if !CTEMboolean
 !if (MOSAIC) then
 
 ! do i=lbound(CLASS_M_VAR,1), ubound(CLASS_M_VAR,1)
-!  status = nf90_def_var(grpid_mon_class,trim(CLASS_M_VAR(i)),nf90_float,[lon,lat,tile,month,time],varid)
+!  status = nf90_def_var(grpid_mon_class,trim(CLASS_M_VAR(i)),nf90_float,[lon,lat,tile,time],varid)
 !  if (status/=nf90_noerr) call handle_err(status)
 
 !  status = nf90_put_att(grpid_mon_class,varid,'long_name',trim(CLASS_M_NAME(i)))
@@ -1335,7 +1337,7 @@ end if !CTEMboolean
    status = nf90_redef(grpid_mon_class) 
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_def_var(grpid_mon_class,trim(CLASS_M_VAR(i)),nf90_float,[lon,lat,month,time],varid)
+   status = nf90_def_var(grpid_mon_class,trim(CLASS_M_VAR(i)),nf90_float,[lon,lat,time],varid)
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_enddef(grpid_mon_class)
@@ -1379,7 +1381,7 @@ end if !CTEMboolean
   status = nf90_redef(grpid_mon_class) 
   if (status/=nf90_noerr) call handle_err(status)
 
-  status = nf90_def_var(grpid_mon_class,trim(CLASS_M_S_VAR(i)),nf90_float,[lon,lat,layer,month,time],varid)
+  status = nf90_def_var(grpid_mon_class,trim(CLASS_M_S_VAR(i)),nf90_float,[lon,lat,layer,time],varid)
   if (status/=nf90_noerr) call handle_err(status)
 
   status = nf90_enddef(grpid_mon_class)
@@ -1513,7 +1515,6 @@ end if !CTEMboolean
 
  end if ! monthly
 
-!endif !mosaic/composite
 
 !close the netcdf
 status = nf90_close(ncid)
