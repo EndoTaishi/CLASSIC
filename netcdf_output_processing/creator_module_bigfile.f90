@@ -11,7 +11,7 @@ implicit none
 ! June 19, 2013
 
 ! Parameters
-integer, parameter :: ntile = 10  	! maximum number of mosiac tiles 
+integer, parameter :: ntile = 10  	! maximum number of mosiac tiles
 integer, parameter :: ctemnpft = 10      ! number of CTEM pfts  ! this includes the bare!
 integer, parameter :: classnpft = 4     ! number of CLASS pfts
 !integer, parameter :: cntx = 96		! number of longitudes T47
@@ -82,7 +82,7 @@ real, parameter, dimension(cntx) :: valslons= &
     326.25, 329.0625, 331.875, 334.6875, 337.5, 340.3125, 343.125, 345.9375, &
     348.75, 351.5625, 354.375, 357.1875 ]
 
-integer, parameter, dimension(12) :: mmday= [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !mid-month day
+integer, parameter, dimension(13) :: monthend = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] ! calender day at end of each month
 
 ! ---------------- VARIABLES ---------------- 
 

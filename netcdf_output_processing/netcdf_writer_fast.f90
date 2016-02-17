@@ -83,6 +83,7 @@ logical :: MAKEMONTHLY
 logical :: DOFIRE
 logical :: DOWETLANDS
 logical :: TILED
+logical :: DOPFTS
 logical :: PARALLELRUN
 logical :: COMPETE_LNDUSE
 integer :: nl ! number of soil layers
@@ -108,7 +109,8 @@ namelist /joboptions/ &
   MAKEMONTHLY,        &
   DOFIRE,             &
   DOWETLANDS,         &   
-  TILED,             &
+  TILED,              &
+  DOPFTS,             &
   COMPETE_LNDUSE,     &
   nl,                 &
   totyrs,             &

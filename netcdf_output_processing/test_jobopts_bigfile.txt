@@ -6,6 +6,7 @@
  DOFIRE = .true. ,
  DOWETLANDS = .true. ,
  TILED = .TRUE. ,
+ DOPFTS = .FALSE. ,
  COMPETE_LNDUSE= .FALSE. ,
  nl = 3 ,
  totyrs = 7 ,
