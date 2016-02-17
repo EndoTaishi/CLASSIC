@@ -1317,8 +1317,10 @@ end subroutine class_monthly_aw
 
 !==============================================================================================================
 
-subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea)
+subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,ipeatlandrow)
+!subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea)
 
+! Modified to include YW's peatland changes, originally in the driver. EC - Feb 16, 2016.
 
 use ctem_statevars,     only : ctem_tile, vrot, c_switch, &
                                resetctem_g, ctem_grd
@@ -1337,6 +1339,8 @@ integer, intent(in) :: jdsty
 integer, intent(in) :: jdendd
 integer, intent(in) :: jdendy
 real, intent(in), dimension(:) :: grclarea
+
+integer, intent(in), dimension(:,:) :: ipeatlandrow
 
 ! pointers
 
@@ -1438,6 +1442,9 @@ real, pointer, dimension(:,:) :: rgrow
 real, pointer, dimension(:,:) :: litresrow
 real, pointer, dimension(:,:) :: socresrow
 
+real, pointer, dimension(:,:) :: nppmosrow
+real, pointer, dimension(:,:) :: armosrow
+
 real, pointer, dimension(:) :: gpp_g
 real, pointer, dimension(:) :: npp_g
 real, pointer, dimension(:) :: nbp_g
@@ -1508,6 +1515,8 @@ real, pointer, dimension(:,:) :: lfstatus_g
 real, pointer, dimension(:,:) :: rmlvegrow_g
 real, pointer, dimension(:,:) :: anvegrow_g
 real, pointer, dimension(:,:) :: rmatctem_g
+
+real, pointer, dimension(:) :: gppmosac_g
 
 real, pointer, dimension(:,:,:) :: bmasvegrow
 real, pointer, dimension(:,:,:) :: cmasvegcrow
@@ -1616,6 +1625,8 @@ gleafmas_m        => ctem_tile%gleafmas_m
 bleafmas_m        => ctem_tile%bleafmas_m
 soilcmas_m        => ctem_tile%soilcmas_m      
 ifcancmx_m        => ctem_tile%ifcancmx_m
+
+gppmosac_g        => ctem_tile%gppmosac_g
  
 tcanoaccrow_out   => vrot%tcanoaccrow_out
 
@@ -1632,6 +1643,9 @@ socresrow         => vrot%socres
 vgbiomasrow       => vrot%vgbiomas
 gavgltmsrow       => vrot%gavgltms
 gavgscmsrow       => vrot%gavgscms
+
+nppmosrow         => vrot%nppmos
+armosrow          => vrot%armos
       
 gpp_g             => ctem_grd%gpp_g
 npp_g             => ctem_grd%npp_g
@@ -1703,6 +1717,7 @@ lfstatus_g        => ctem_grd%lfstatus_g
 rmlvegrow_g       => ctem_grd%rmlvegrow_g
 anvegrow_g        => ctem_grd%anvegrow_g
 rmatctem_g        => ctem_grd%rmatctem_g    
+
 
 bmasvegrow        => vrot%bmasveg
 cmasvegcrow       => vrot%cmasvegc
@@ -1832,6 +1847,14 @@ do 851 i=1,nltest
     CH4WET2ROW(i,m) = CH4WET2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
     CH4DYN1ROW(i,m) = CH4DYN1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
     CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
+
+!   ------convert peatland C fluxes to gC/m2/day for output-----------\
+    if (ipeatlandrow(i,m) > 0) then
+      nppmosrow(i,m)=nppmosrow(i,m)*1.0377 ! convert to gc/m2.day
+      armosrow(i,m)=armosrow(i,m)*1.0377 ! convert to gc/m2.day
+    endif
+!   ------------YW March 27, 2015 -------------------------------------/
+
 
 !          write daily ctem results
     if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
@@ -2108,6 +2131,40 @@ do 851 i=1,nltest
                  ch4wet2_g(i), wetfdyn_g(i),  &
                  ch4dyn1_g(i), ch4dyn2_g(i)
     endif  
+
+!   ---------------peatland outputs-----------------------------------\
+!   - Note that YW's original code used a mixture of gat/row variables.
+!     The gat variables are replaced with row versions except for
+!     gppmosac_g which has no row version equivalent. Needs to be scattered out? 
+!   - Also note that in YW's original code the arrays were hard-coded 
+!     for just the 1st tile of the 1st grid point.
+!   - Leave gppmosac_g hard-coded to 1 for now, but should be changed!
+!   EC - Feb 2106.
+
+    do m=1,nmtest
+
+!   CT11D_G   convert moss gpp from umol/m2/s to g/m2/day  
+    write (93,6993) iday,iyear, &
+          nppmosrow(i,m),armosrow(i,m),gppmosac_g(1)*1.0377, &
+          (fcancmxrow(i,m,j)*gppvegrow(i,m,j),j=1,icc),      &
+          (fcancmxrow(i,m,j)*nppvegrow(i,m,j),j=1,icc),      &
+          (fcancmxrow(i,m,j)*autoresvegrow(i,m,j),j=1,icc),  &
+          (fcancmxrow(i,m,j)*hetroresvegrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j),j=1,icc)
+!   CT12D_G
+    write (94,6993) iday,iyear,(veghghtrow(i,m,j),j=1,icc), &
+          (rootdpthrow(i,m,j),j=1,icc),(ailcgrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*stemmassrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*rootmassrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*litrmassrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*gleafmasrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*bleafmasrow(i,m,j),j=1,icc)
+
+    enddo
+
+6993 format(2i5,100f12.6)
+
+!   ----------------YW March 27, 2015 -------------------------------/
 
     if (compete .or. lnduseon) then 
         sumfare=0.0
@@ -2794,6 +2851,10 @@ end subroutine ctem_monthly_aw
 
 subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear)
 
+! Moved YW's peatland changes from driver for "hpd". EC - Feb 16, 2016.
+! However, they don't affect output, so not sure why these changes were done. 
+! Perhaps the modifications are not complete?
+
 use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch
 use ctem_params, only : icc,iccp1,seed,nmos
 
@@ -2855,6 +2916,7 @@ real, pointer, dimension(:,:) :: ch4wet2_yr_m
 real, pointer, dimension(:,:) :: wetfdyn_yr_m
 real, pointer, dimension(:,:) :: ch4dyn1_yr_m
 real, pointer, dimension(:,:) :: ch4dyn2_yr_m
+real, pointer, dimension(:,:) :: hpd_yr_m
 
 logical, pointer, dimension(:,:,:) :: pftexistrow
 real, pointer, dimension(:,:,:) :: gppvegrow
@@ -2903,6 +2965,8 @@ real, pointer, dimension(:,:,:) :: stemmassrow
 real, pointer, dimension(:,:,:) :: rootmassrow
 real, pointer, dimension(:,:,:) :: fcancmxrow
 
+real, pointer, dimension(:,:) :: hpdrow
+
 real, pointer, dimension(:) :: laimaxg_yr_g
 real, pointer, dimension(:) :: stemmass_yr_g
 real, pointer, dimension(:) :: rootmass_yr_g
@@ -2943,6 +3007,7 @@ real, pointer, dimension(:) :: ch4wet2_yr_g
 real, pointer, dimension(:) :: wetfdyn_yr_g
 real, pointer, dimension(:) :: ch4dyn1_yr_g
 real, pointer, dimension(:) :: ch4dyn2_yr_g
+real, pointer, dimension(:) :: hpd_yr_g
 
 ! local
 integer :: i,m,j,nt
@@ -3000,6 +3065,7 @@ ch4wet2_yr_m          =>ctem_tile_yr%ch4wet2_yr_m
 wetfdyn_yr_m          =>ctem_tile_yr%wetfdyn_yr_m
 ch4dyn1_yr_m          =>ctem_tile_yr%ch4dyn1_yr_m
 ch4dyn2_yr_m          =>ctem_tile_yr%ch4dyn2_yr_m
+hpd_yr_m              =>ctem_tile_yr%hpd_yr_m
 
 pftexistrow       => vrot%pftexist
 gppvegrow         => vrot%gppveg
@@ -3048,6 +3114,8 @@ stemmassrow       => vrot%stemmass
 rootmassrow       => vrot%rootmass
 fcancmxrow        => vrot%fcancmx
 
+hpdrow            => vrot%hpd
+
 laimaxg_yr_g          =>ctem_grd_yr%laimaxg_yr_g
 stemmass_yr_g         =>ctem_grd_yr%stemmass_yr_g
 rootmass_yr_g         =>ctem_grd_yr%rootmass_yr_g
@@ -3088,6 +3156,7 @@ ch4wet2_yr_g          =>ctem_grd_yr%ch4wet2_yr_g
 wetfdyn_yr_g          =>ctem_grd_yr%wetfdyn_yr_g
 ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
 ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
+hpd_yr_g              =>ctem_grd_yr%hpd_yr_g
 
 !------------
 
@@ -3147,6 +3216,7 @@ do 882 i=1,nltest
         ch4dyn1_yr_m(i,m) = ch4dyn1_yr_m(i,m)+ch4dyn1row(i,m)
         ch4dyn2_yr_m(i,m) = ch4dyn2_yr_m(i,m)+ch4dyn2row(i,m)
 
+        hpd_yr_m(i,m)=hpdrow(i,m)      !YW September 04, 2015
 
         if (iday.eq.365) then
 
@@ -3221,6 +3291,8 @@ do 882 i=1,nltest
             wetfdyn_yr_g(i) = wetfdyn_yr_g(i)+wetfdyn_yr_m(i,m)*FAREROT(i,m)
             ch4dyn1_yr_g(i) = ch4dyn1_yr_g(i)+ch4dyn1_yr_m(i,m)*FAREROT(i,m)
             ch4dyn2_yr_g(i) = ch4dyn2_yr_g(i)+ch4dyn2_yr_m(i,m)*FAREROT(i,m)
+
+            hpd_yr_g(i)=hpd_yr_g(i)+hpd_yr_m(i,m)*farerot(i,m)    !YW September 04, 2015
 
     endif ! iday 365
 
@@ -3359,6 +3431,8 @@ do 882 i=1,nltest
             wetfdyn_yr_m(i,m)  =0.0
             ch4dyn1_yr_m(i,m)  =0.0
             ch4dyn2_yr_m(i,m)  =0.0
+
+            hpd_yr_m(i,m)      =0.0      !YW September 04, 2015
 
             do j = 1, icc
                 laimaxg_yr_m(i,m,j)=0.0

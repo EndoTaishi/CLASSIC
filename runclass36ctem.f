@@ -164,14 +164,6 @@ C
      1              FCANROT,  LNZ0ROT,
      2              ALVCROT,  ALICROT
 C
-c   -----------------merge fix----------------------------------------
-c     declaration missing after the merge YW January 12, 2016  
-      REAL,DIMENSION(NLAT,NMOS,ICP1) ::
-     1              FCANROW,  LNZ0ROW,
-     2              ALVCROW,  ALICROW
-     
-c   ---------------------merge fix--------------------------------------
-
       REAL,DIMENSION(NLAT,NMOS,ICAN) ::
      1              PAMXROT,  PAMNROT,
      2              CMASROT,  ROOTROT,
@@ -350,25 +342,6 @@ C
      E      WTRSROW,   WTRGROW,   DRROW  ,   WTABROW,
      F      ILMOROW,   UEROW  ,   HBLROW
 C
-c   --------------lost after merge YW January 12, 2016 ----------------- 
-      REAL,DIMENSION(NLAT) ::
-     1      CDHGRD ,   CDMGRD ,   HFSGRD ,   TFXGRD ,  
-     2      QEVPGRD,   QFSGRD ,   QFXGRD ,   PETGRD ,  
-     3      GAGRD  ,   EFGRD  ,   GTGRD  ,   QGGRD  ,   
-     4      TSFGRD ,   ALVSGRD,   ALIRGRD,   FSNOGRD,  
-     5      SFCTGRD,   SFCUGRD,   SFCVGRD,   SFCQGRD,   
-     6      FSGVGRD,   FSGSGRD,   FSGGGRD,   FLGVGRD,   
-     7      FLGSGRD,   FLGGGRD,   HFSCGRD,   HFSSGRD,  
-     8      HFSGGRD,   HEVCGRD,   HEVSGRD,   HEVGGRD,   
-     9      HMFCGRD,   HMFNGRD,   HTCCGRD,   HTCSGRD,   
-     A      PCFCGRD,   PCLCGRD,   PCPNGRD,   PCPGGRD,   
-     B      QFGGRD ,   QFNGRD ,   QFCLGRD,   QFCFGRD,   
-     C      ROFGRD ,   ROFOGRD,   ROFSGRD,   ROFBGRD,  
-     D      ROFCGRD,   ROFNGRD,   ROVGGRD,   WTRCGRD,   
-     E      WTRSGRD,   WTRGGRD,   DRGRD  ,   WTABGRD,  
-     F      ILMOGRD,   UEGRD  ,   HBLGRD
-c   --------------lost after merge YW January 12, 2016 ----------------- 
-
       REAL    HMFGROT(NLAT,NMOS,IGND),   HTCROT (NLAT,NMOS,IGND),
      1        QFCROT (NLAT,NMOS,IGND),   GFLXROT(NLAT,NMOS,IGND),
      2        HMFGGAT(ILG,IGND),         HTCGAT (ILG,IGND),
@@ -457,7 +430,6 @@ C
      1     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,
      2     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,
      3     ALTOT_YR,TSURF,ALAVG,ALMAX,ACTLYR,FTAVG,FTMAX,FTABLE
-     4     ,FSDOWN !lost after merge January 12, 2016 YW
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -717,6 +689,12 @@ c
       real, pointer, dimension(:,:) :: ch4dyn2row
       real, pointer, dimension(:,:) :: wetfrac_mon
 
+c     For some reason, using vrot%hpd instead of a locally defined
+c     variable results in a difference to the output in a number of files, 
+c     which shouldn't happen?! Note that a similar change for hpdgat works.
+c     Needs further investigation. EC - Feb 16, 2016.
+c     real, pointer, dimension(:,:) :: hpdrow 
+
       real, pointer, dimension(:,:) :: lucemcomrow
       real, pointer, dimension(:,:) :: lucltrinrow
       real, pointer, dimension(:,:) :: lucsocinrow
@@ -735,6 +713,9 @@ c
       real, pointer, dimension(:,:) :: dstcemlsrow
       real, pointer, dimension(:,:) :: litrfallrow
       real, pointer, dimension(:,:) :: humiftrsrow
+
+      real, pointer, dimension(:,:) :: nppmosrow
+      real, pointer, dimension(:,:) :: armosrow
 
       real, pointer, dimension(:,:,:) :: gppvegrow
       real, pointer, dimension(:,:,:) :: nepvegrow
@@ -961,14 +942,6 @@ c
       real, pointer, dimension(:,:) :: EVAPACC_M
       real, pointer, dimension(:,:) :: FLUTACC_M
 
-c     missing declarions after merge YW January 12, 2016 
-      REAL,DIMENSION(NLAT,NMOS,ICAN) ::
-     1              PAMXROW,  PAMNROW,
-     2              CMASROW,  ROOTROW,
-     3              RSMNROW,  QA50ROW,
-     4              VPDAROW,  VPDBROW,
-     5              PSGAROW,  PSGBROW
-      
       REAL,DIMENSION(NLAT,NMOS) ::
      1        DRNROW ,   XSLPROW,   GRKFROW,
      2        WFSFROW,   WFCIROW,   ALGWROW,   
@@ -995,8 +968,6 @@ C     5        TACROW ,   QACROW ,   WSNOROW
 
 !      Outputs
 
-       integer ifcancmx_g(nlat,icc)     ! lost after merge YW January 12, 2016 
-
        real, pointer, dimension(:,:) :: tcanoaccrow_out
        real, pointer, dimension(:) :: tcanoaccgat_out
        real, pointer, dimension(:,:) :: qevpacc_m_save
@@ -1006,28 +977,6 @@ C     5        TACROW ,   QACROW ,   WSNOROW
 
       real faregat(ilg)
 c
-      real, pointer, dimension(:,:) :: leaflitr_m
-      real, pointer, dimension(:,:) :: tltrleaf_m
-      real, pointer, dimension(:,:) :: tltrstem_m
-      real, pointer, dimension(:,:) :: tltrroot_m
-      real, pointer, dimension(:,:) :: ailcg_m
-      real, pointer, dimension(:,:) :: ailcb_m
-      real, pointer, dimension(:,:,:) :: rmatctem_m
-      real, pointer, dimension(:,:) :: veghght_m
-      real, pointer, dimension(:,:) :: rootdpth_m
-      real, pointer, dimension(:,:) :: roottemp_m
-      real, pointer, dimension(:,:) :: slai_m
-      real, pointer, dimension(:,:) :: afrroot_m
-      real, pointer, dimension(:,:) :: afrleaf_m
-      real, pointer, dimension(:,:) :: afrstem_m
-      real, pointer, dimension(:,:) :: laimaxg_m
-      real, pointer, dimension(:,:) :: stemmass_m
-      real, pointer, dimension(:,:) :: rootmass_m
-      real, pointer, dimension(:,:) :: litrmass_m
-      real, pointer, dimension(:,:) :: gleafmas_m
-      real, pointer, dimension(:,:) :: bleafmas_m
-      real, pointer, dimension(:,:) :: soilcmas_m
-
       real, pointer, dimension(:) :: fsnowacc_m
       real, pointer, dimension(:) :: tcansacc_m
       real, pointer, dimension(:) :: tcanoaccgat_m
@@ -1046,7 +995,6 @@ c
       real, pointer, dimension(:,:) :: ancgvgac_m
       real, pointer, dimension(:,:) :: rmlcsvga_m
       real, pointer, dimension(:,:) :: rmlcgvga_m
-      integer, pointer, dimension(:,:) :: ifcancmx_m
 
 !     -----------------------
 !     Grid-averaged variables (denoted with an ending of "_g")
@@ -1103,77 +1051,8 @@ c
       real, pointer, dimension(:) :: QFCLROT_g
       real, pointer, dimension(:) :: QFNROT_g
       real, pointer, dimension(:) :: WTRCROT_g
-      real, pointer, dimension(:) :: gpp_g
-      real, pointer, dimension(:) :: npp_g
-      real, pointer, dimension(:) :: nbp_g
-      real, pointer, dimension(:) :: autores_g
-      real, pointer, dimension(:) :: socres_g
-      real, pointer, dimension(:) :: litres_g
-      real, pointer, dimension(:) :: dstcemls3_g
-      real, pointer, dimension(:) :: litrfall_g
-      real, pointer, dimension(:) :: rml_g
-      real, pointer, dimension(:) :: rms_g
-      real, pointer, dimension(:) :: rg_g
-      real, pointer, dimension(:) :: leaflitr_g
-      real, pointer, dimension(:) :: tltrstem_g
-      real, pointer, dimension(:) :: tltrroot_g
-      real, pointer, dimension(:) :: nep_g
-      real, pointer, dimension(:) :: hetrores_g
-      real, pointer, dimension(:) :: dstcemls_g
-      real, pointer, dimension(:) :: humiftrs_g
-      real, pointer, dimension(:) :: rmr_g
-      real, pointer, dimension(:) :: tltrleaf_g
-      real, pointer, dimension(:) :: gavgltms_g
-
-      real, pointer, dimension(:) :: vgbiomas_g
-      real, pointer, dimension(:) :: gavglai_g
-      real, pointer, dimension(:) :: gavgscms_g
-      real, pointer, dimension(:) :: gleafmas_g
-      real, pointer, dimension(:) :: bleafmas_g
-      real, pointer, dimension(:) :: stemmass_g
-      real, pointer, dimension(:) :: rootmass_g
-      real, pointer, dimension(:) :: litrmass_g
-      real, pointer, dimension(:) :: soilcmas_g
-      real, pointer, dimension(:) :: slai_g
-      real, pointer, dimension(:) :: ailcg_g
-      real, pointer, dimension(:) :: ailcb_g
-      real, pointer, dimension(:) :: veghght_g
-      real, pointer, dimension(:) :: rootdpth_g
-      real, pointer, dimension(:) :: roottemp_g
-      real, pointer, dimension(:) :: totcmass_g
-      real, pointer, dimension(:) :: tcanoacc_out_g
-      real, pointer, dimension(:) :: burnfrac_g
-      real, pointer, dimension(:) :: probfire_g
-      real, pointer, dimension(:) :: lucemcom_g
-      real, pointer, dimension(:) :: lucltrin_g
-      real, pointer, dimension(:) :: lucsocin_g
-      real, pointer, dimension(:) :: emit_co2_g
-      real, pointer, dimension(:) :: emit_co_g
-      real, pointer, dimension(:) :: emit_ch4_g
-      real, pointer, dimension(:) :: emit_nmhc_g
-      real, pointer, dimension(:) :: emit_h2_g
-      real, pointer, dimension(:) :: emit_nox_g
-      real, pointer, dimension(:) :: emit_n2o_g
-      real, pointer, dimension(:) :: emit_pm25_g
-      real, pointer, dimension(:) :: emit_tpm_g
-      real, pointer, dimension(:) :: emit_tc_g
-      real, pointer, dimension(:) :: emit_oc_g
-      real, pointer, dimension(:) :: emit_bc_g
-      real, pointer, dimension(:) :: bterm_g
-      real, pointer, dimension(:) :: lterm_g
-      real, pointer, dimension(:) :: mterm_g
-      real, pointer, dimension(:) :: ch4wet1_g
-      real, pointer, dimension(:) :: ch4wet2_g
-      real, pointer, dimension(:) :: wetfdyn_g
-      real, pointer, dimension(:) :: ch4dyn1_g
-      real, pointer, dimension(:) :: ch4dyn2_g
-      real, pointer, dimension(:,:) :: afrleaf_g
-      real, pointer, dimension(:,:) :: afrstem_g
-      real, pointer, dimension(:,:) :: afrroot_g
-      real, pointer, dimension(:,:) :: lfstatus_g
       real, pointer, dimension(:,:) :: rmlvegrow_g
       real, pointer, dimension(:,:) :: anvegrow_g
-      real, pointer, dimension(:,:) :: rmatctem_g
       real, pointer, dimension(:,:) :: HMFGROT_g
       real, pointer, dimension(:,:) :: HTCROT_g
       real, pointer, dimension(:,:) :: TBARROT_g
@@ -1181,212 +1060,13 @@ c
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
 
-!     -----------------------
-!      Grid averaged monthly variables (denoted by name ending in "_mo_g")
-
-        real, pointer, dimension(:) :: laimaxg_mo_g
-        real, pointer, dimension(:) :: stemmass_mo_g
-        real, pointer, dimension(:) :: rootmass_mo_g
-        real, pointer, dimension(:) :: litrmass_mo_g
-        real, pointer, dimension(:) :: soilcmas_mo_g
-        real, pointer, dimension(:) :: npp_mo_g
-        real, pointer, dimension(:) :: gpp_mo_g
-        real, pointer, dimension(:) :: nep_mo_g
-        real, pointer, dimension(:) :: nbp_mo_g
-        real, pointer, dimension(:) :: hetrores_mo_g
-        real, pointer, dimension(:) :: autores_mo_g
-        real, pointer, dimension(:) :: litres_mo_g
-        real, pointer, dimension(:) :: soilcres_mo_g
-        real, pointer, dimension(:) :: vgbiomas_mo_g
-        real, pointer, dimension(:) :: totcmass_mo_g
-        real, pointer, dimension(:) :: emit_co2_mo_g
-        real, pointer, dimension(:) :: emit_co_mo_g
-        real, pointer, dimension(:) :: emit_ch4_mo_g
-        real, pointer, dimension(:) :: emit_nmhc_mo_g
-        real, pointer, dimension(:) :: emit_h2_mo_g
-        real, pointer, dimension(:) :: emit_nox_mo_g
-        real, pointer, dimension(:) :: emit_n2o_mo_g
-        real, pointer, dimension(:) :: emit_pm25_mo_g
-        real, pointer, dimension(:) :: emit_tpm_mo_g
-        real, pointer, dimension(:) :: emit_tc_mo_g
-        real, pointer, dimension(:) :: emit_oc_mo_g
-        real, pointer, dimension(:) :: emit_bc_mo_g
-        real, pointer, dimension(:) :: probfire_mo_g
-        real, pointer, dimension(:) :: luc_emc_mo_g
-        real, pointer, dimension(:) :: lucltrin_mo_g
-        real, pointer, dimension(:) :: lucsocin_mo_g
-        real, pointer, dimension(:) :: burnfrac_mo_g
-        real, pointer, dimension(:) :: bterm_mo_g
-        real, pointer, dimension(:) :: lterm_mo_g
-        real, pointer, dimension(:) :: mterm_mo_g
-        real, pointer, dimension(:) :: ch4wet1_mo_g
-        real, pointer, dimension(:) :: ch4wet2_mo_g
-        real, pointer, dimension(:) :: wetfdyn_mo_g
-        real, pointer, dimension(:) :: ch4dyn1_mo_g
-        real, pointer, dimension(:) :: ch4dyn2_mo_g
-
-!      Mosaic monthly variables (denoted by name ending in "_mo_m")
-c
-      real, pointer, dimension(:,:,:) :: laimaxg_mo_m
-      real, pointer, dimension(:,:,:) :: stemmass_mo_m
-      real, pointer, dimension(:,:,:) :: rootmass_mo_m
-      real, pointer, dimension(:,:,:) :: npp_mo_m
-      real, pointer, dimension(:,:,:) :: gpp_mo_m
-      real, pointer, dimension(:,:,:) :: vgbiomas_mo_m
-      real, pointer, dimension(:,:,:) :: autores_mo_m
-      real, pointer, dimension(:,:,:) :: totcmass_mo_m
-      real, pointer, dimension(:,:,:) :: litrmass_mo_m
-      real, pointer, dimension(:,:,:) :: soilcmas_mo_m
-      real, pointer, dimension(:,:,:) :: nep_mo_m
-      real, pointer, dimension(:,:,:) :: litres_mo_m
-      real, pointer, dimension(:,:,:) :: soilcres_mo_m
-      real, pointer, dimension(:,:,:) :: hetrores_mo_m
-      real, pointer, dimension(:,:,:) :: nbp_mo_m
-      real, pointer, dimension(:,:,:) :: emit_co2_mo_m
-      real, pointer, dimension(:,:,:) :: emit_co_mo_m
-      real, pointer, dimension(:,:,:) :: emit_ch4_mo_m
-      real, pointer, dimension(:,:,:) :: emit_nmhc_mo_m
-      real, pointer, dimension(:,:,:) :: emit_h2_mo_m
-      real, pointer, dimension(:,:,:) :: emit_nox_mo_m
-      real, pointer, dimension(:,:,:) :: emit_n2o_mo_m
-      real, pointer, dimension(:,:,:) :: emit_pm25_mo_m
-      real, pointer, dimension(:,:,:) :: emit_tpm_mo_m
-      real, pointer, dimension(:,:,:) :: emit_tc_mo_m
-      real, pointer, dimension(:,:,:) :: emit_oc_mo_m
-      real, pointer, dimension(:,:,:) :: emit_bc_mo_m
-      real, pointer, dimension(:,:,:) :: burnfrac_mo_m
-      real, pointer, dimension(:,:) :: probfire_mo_m
-      real, pointer, dimension(:,:) :: bterm_mo_m
-      real, pointer, dimension(:,:) :: luc_emc_mo_m
-      real, pointer, dimension(:,:) :: lterm_mo_m
-      real, pointer, dimension(:,:) :: lucsocin_mo_m
-      real, pointer, dimension(:,:) :: mterm_mo_m
-      real, pointer, dimension(:,:) :: lucltrin_mo_m
-      real, pointer, dimension(:,:) :: ch4wet1_mo_m
-      real, pointer, dimension(:,:) :: ch4wet2_mo_m
-      real, pointer, dimension(:,:) :: wetfdyn_mo_m
-      real, pointer, dimension(:,:) :: ch4dyn1_mo_m
-      real, pointer, dimension(:,:) :: ch4dyn2_mo_m
+      real, pointer, dimension(:) :: gppmosac_g
 
 !     -----------------------
-c      Annual output for CTEM grid-averaged variables:
-c      (denoted by name ending in "_yr_g")
-
-      real, pointer, dimension(:) :: laimaxg_yr_g
-      real, pointer, dimension(:) :: stemmass_yr_g
-      real, pointer, dimension(:) :: rootmass_yr_g
-      real, pointer, dimension(:) :: litrmass_yr_g
-      real, pointer, dimension(:) :: soilcmas_yr_g
-      real, pointer, dimension(:) :: npp_yr_g
-      real, pointer, dimension(:) :: gpp_yr_g
-      real, pointer, dimension(:) :: nep_yr_g
-      real, pointer, dimension(:) :: nbp_yr_g
-      real, pointer, dimension(:) :: hetrores_yr_g
-      real, pointer, dimension(:) :: autores_yr_g
-      real, pointer, dimension(:) :: litres_yr_g
-      real, pointer, dimension(:) :: soilcres_yr_g
-      real, pointer, dimension(:) :: vgbiomas_yr_g
-      real, pointer, dimension(:) :: totcmass_yr_g
-      real, pointer, dimension(:) :: emit_co2_yr_g
-      real, pointer, dimension(:) :: emit_co_yr_g
-      real, pointer, dimension(:) :: emit_ch4_yr_g
-      real, pointer, dimension(:) :: emit_nmhc_yr_g
-      real, pointer, dimension(:) :: emit_h2_yr_g
-      real, pointer, dimension(:) :: emit_nox_yr_g
-      real, pointer, dimension(:) :: emit_n2o_yr_g
-      real, pointer, dimension(:) :: emit_pm25_yr_g
-      real, pointer, dimension(:) :: emit_tpm_yr_g
-      real, pointer, dimension(:) :: emit_tc_yr_g
-      real, pointer, dimension(:) :: emit_oc_yr_g
-      real, pointer, dimension(:) :: emit_bc_yr_g
-      real, pointer, dimension(:) :: probfire_yr_g
-      real, pointer, dimension(:) :: luc_emc_yr_g
-      real, pointer, dimension(:) :: lucltrin_yr_g
-      real, pointer, dimension(:) :: lucsocin_yr_g
-      real, pointer, dimension(:) :: burnfrac_yr_g
-      real, pointer, dimension(:) :: bterm_yr_g
-      real, pointer, dimension(:) :: lterm_yr_g
-      real, pointer, dimension(:) :: mterm_yr_g
-      real, pointer, dimension(:) :: ch4wet1_yr_g
-      real, pointer, dimension(:) :: ch4wet2_yr_g
-      real, pointer, dimension(:) :: wetfdyn_yr_g
-      real, pointer, dimension(:) :: ch4dyn1_yr_g
-      real, pointer, dimension(:) :: ch4dyn2_yr_g
-
-
-! c      Annual output for CTEM mosaic variables:
-! c      (denoted by name ending in "_yr_m")
-!
-      real, pointer, dimension(:,:,:) :: laimaxg_yr_m
-      real, pointer, dimension(:,:,:) :: stemmass_yr_m
-      real, pointer, dimension(:,:,:) :: rootmass_yr_m
-      real, pointer, dimension(:,:,:) :: npp_yr_m
-      real, pointer, dimension(:,:,:) :: gpp_yr_m
-      real, pointer, dimension(:,:,:) :: vgbiomas_yr_m
-      real, pointer, dimension(:,:,:) :: autores_yr_m
-      real, pointer, dimension(:,:,:) :: totcmass_yr_m
-      real, pointer, dimension(:,:,:) :: litrmass_yr_m
-      real, pointer, dimension(:,:,:) :: soilcmas_yr_m
-      real, pointer, dimension(:,:,:) :: nep_yr_m
-      real, pointer, dimension(:,:,:) :: litres_yr_m
-      real, pointer, dimension(:,:,:) :: soilcres_yr_m
-      real, pointer, dimension(:,:,:) :: hetrores_yr_m
-      real, pointer, dimension(:,:,:) :: nbp_yr_m
-      real, pointer, dimension(:,:,:) :: emit_co2_yr_m
-      real, pointer, dimension(:,:,:) :: emit_co_yr_m
-      real, pointer, dimension(:,:,:) :: emit_ch4_yr_m
-      real, pointer, dimension(:,:,:) :: emit_nmhc_yr_m
-      real, pointer, dimension(:,:,:) :: emit_h2_yr_m
-      real, pointer, dimension(:,:,:) :: emit_nox_yr_m
-      real, pointer, dimension(:,:,:) :: emit_n2o_yr_m
-      real, pointer, dimension(:,:,:) :: emit_pm25_yr_m
-      real, pointer, dimension(:,:,:) :: emit_tpm_yr_m
-      real, pointer, dimension(:,:,:) :: emit_tc_yr_m
-      real, pointer, dimension(:,:,:) :: emit_oc_yr_m
-      real, pointer, dimension(:,:,:) :: emit_bc_yr_m
-      real, pointer, dimension(:,:,:) :: burnfrac_yr_m
-      real, pointer, dimension(:,:) :: probfire_yr_m
-      real, pointer, dimension(:,:) :: bterm_yr_m
-      real, pointer, dimension(:,:) :: luc_emc_yr_m
-      real, pointer, dimension(:,:) :: lterm_yr_m
-      real, pointer, dimension(:,:) :: lucsocin_yr_m
-      real, pointer, dimension(:,:) :: mterm_yr_m
-      real, pointer, dimension(:,:) :: lucltrin_yr_m
-      real, pointer, dimension(:,:) :: ch4wet1_yr_m
-      real, pointer, dimension(:,:) :: ch4wet2_yr_m
-      real, pointer, dimension(:,:) :: wetfdyn_yr_m
-      real, pointer, dimension(:,:) :: ch4dyn1_yr_m
-      real, pointer, dimension(:,:) :: ch4dyn2_yr_m
 
       logical, parameter :: obslght = .false.  ! if true the observed lightning will be used. False means you will use the
                                                ! lightning climatology from the CTM file. This was brought in for FireMIP runs.
 
-c      Annual output for CTEM mosaic variables:
-c      (denoted by name ending in "_yr_m")
-
-c   YW January 12, 2016  seems to be redudant after the merge
-c       real laimaxg_yr_m(nlat,nmos,icc), stemmass_yr_m(nlat,nmos,icc),
-c     1      rootmass_yr_m(nlat,nmos,icc),litrmass_yr_m(nlat,nmos,iccp1),
-c     2      soilcmas_yr_m(nlat,nmos,iccp1),npp_yr_m(nlat,nmos,icc),
-c     3      gpp_yr_m(nlat,nmos,icc),       nep_yr_m(nlat,nmos,iccp1),
-c     4      nbp_yr_m(nlat,nmos,iccp1),     vgbiomas_yr_m(nlat,nmos,icc),
-c     a      hetrores_yr_m(nlat,nmos,iccp1),autores_yr_m(nlat,nmos,icc),
-c     b      litres_yr_m(nlat,nmos,iccp1),soilcres_yr_m(nlat,nmos,iccp1),  
-c     5      emit_co2_yr_m(nlat,nmos,icc), emit_co_yr_m(nlat,nmos,icc),
-c     6      emit_ch4_yr_m(nlat,nmos,icc), emit_nmhc_yr_m(nlat,nmos,icc),
-c     7      emit_h2_yr_m(nlat,nmos,icc), emit_nox_yr_m(nlat,nmos,icc),
-c     8      emit_n2o_yr_m(nlat,nmos,icc),emit_pm25_yr_m(nlat,nmos,icc),
-c     9      emit_tpm_yr_m(nlat,nmos,icc),emit_tc_yr_m(nlat,nmos,icc),
-c     a      emit_oc_yr_m(nlat,nmos,icc), emit_bc_yr_m(nlat,nmos,icc),
-c     b      probfire_yr_m(nlat,nmos),    bterm_yr_m(nlat,nmos),
-c     c      luc_emc_yr_m(nlat,nmos),     totcmass_yr_m(nlat,nmos,icc),
-c     d      lucsocin_yr_m(nlat,nmos),    lterm_yr_m(nlat,nmos),   
-c     e      lucltrin_yr_m(nlat,nmos),    mterm_yr_m(nlat,nmos),
-c     f      burnfrac_yr_m(nlat,nmos,icc),
-c     &      ch4wet1_yr_m(nlat,nmos),   ch4wet2_yr_m(nlat,nmos),
-c     &      wetfdyn_yr_m(nlat,nmos),   ch4dyn1_yr_m(nlat,nmos),
-c     &      ch4dyn2_yr_m(nlat,nmos)  
-c
 c============= CTEM array declaration done =============================/
 C
 c=====peatland related parameter declaration March 18, 2015 YW=========\
@@ -1394,20 +1074,21 @@ c=====peatland related parameter declaration March 18, 2015 YW=========\
       integer:: ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
 
 c   ----CLASS moss variables------- ----------------------------------
-      real  wiltsmrow(nlat,nmos,ignd),  wiltsmgat(ilg,ignd), 	      
-     1	  fieldsmrow(nlat,nmos,ignd), fieldsmgat(ilg,ignd),
+      real  wiltsmrow(nlat,nmos,ignd),  wiltsmgat(ilg,ignd),
+     1      fieldsmrow(nlat,nmos,ignd), fieldsmgat(ilg,ignd),
      2      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg),
      3      thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
      4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
      5      hpdrow(nlat,nmos), hpdgat(ilg),
      6      HourAngle(ilg),   daylength(ilg), CosHourAngel  
      7      ,pdd(ilg), cdd(ilg)
-c	----CTEM moss variables--------------------------------------------
+c    5      hpdgat(ilg),
+c   ----CTEM moss variables--------------------------------------------
       real  anmosrow(nlat,nmos)  ,      anmosgat(ilg),
      1      rmlmosrow(nlat,nmos) ,      rmlmosgat(ilg),  
      2      gppmosrow(nlat,nmos) ,      gppmosgat(ilg),
-     1      armosrow(nlat,nmos) ,       armosgat(ilg),  
-     2      nppmosrow(nlat,nmos) ,      nppmosgat(ilg),
+     1      armosgat(ilg),  
+     2      nppmosgat(ilg),
      3      litrmassmsrow(nlat,nmos),   litrmassmsgat(ilg),
      4      Cmossmasrow(nlat,nmos),     Cmossmasgat(ilg),
      5      dmossrow(nlat,nmos),        dmossgat(ilg),
@@ -1415,9 +1096,11 @@ c	----CTEM moss variables--------------------------------------------
      7      ancmosgat(ilg) ,            angmosgat(ilg),
      8      rmlcsmosgat(ilg),           rmlgsmosgat(ilg),
      9      rmlcmosgat(ilg),            rmlgmosgat(ilg),
-     1      anmosac_g(ilg), rmlmosac_g(ilg), gppmosac_g(ilg),
-     2      hpd_yr_g(nlat), hpd_yr_m(nlat,nmos)
-c	----common block parametes----------------------- -----------------
+     1      anmosac_g(ilg), rmlmosac_g(ilg)
+c    1      anmosac_g(ilg), rmlmosac_g(ilg), gppmosac_g(ilg) 
+c    1      armosrow(nlat,nmos) ,       armosgat(ilg),  
+c    2      nppmosrow(nlat,nmos) ,      nppmosgat(ilg),
+c   ----common block parametes----------------------- -----------------
       real  zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
      1         sphms,rhoms,slams
 
@@ -1425,14 +1108,14 @@ c   definitions of new variables---------------------------------------
 c   -grd = grid average, -acc = daily avarage , 
 c   -gat = after gathering, - row = after scattering
 
-c	ipeatland - peatland flag 0 = no peatland, 1= bog, 2 = fen
+c   ipeatland - peatland flag 0 = no peatland, 1= bog, 2 = fen
 c   g12 - energy flux between soil layer 1 and 2 (W/m2)  
 c   g23 - energy flux between soil layer 2 and 3 (W/m2)  
 c   wiltsm - wilting point for peat soil layers  (m3/m3)
 c   fieldsm - field capacity for peat soil layers (m3/m3)
 C   thliqc - liquid water content of canopy+snow subarea (m3/m3)
 c   thliqg - liquid water content of snow ground subarea (m3/m3) 
-c   hpd - peat depth (m)	
+c   hpd - peat depth (m)
 c   litrmassms - C in moss ltter (kg m-2)
 c   Cmossmas -   C in moss biomass (kg m-2)
 c   dmoss -   depth of living moss (m) 
@@ -1454,18 +1137,18 @@ c   anmosac_g - daily averaged moss net photosynthesis accumulated
 c   rmlmosac_g- daily averaged moss maintainence respiration 
 c   gppmosac_g- daily averaged gross primary production 
 c   ----common block parameters for the moss layer below----------------
-c   zolnms	- natual logarithm of roughness length of moss surface
-c   thpms	- pore volume of moss (m3/m3)
-c   thrms	- liquid water retention capacity of moss (m3/m3)
-c   thmms	- residual liquid water content after freezing or 
-c             evaporation of moss (m3/m3) 
+c   zolnms  - natual logarithm of roughness length of moss surface
+c   thpms   - pore volume of moss (m3/m3)
+c   thrms   - liquid water retention capacity of moss (m3/m3)
+c   thmms   - residual liquid water content after freezing or 
+c              evaporation of moss (m3/m3) 
 c   bms	    - Clapp and Hornberger empirical "b" parameter of moss
 c   psisms  - soil moisure suction at saturation of moss (m)
-c   grksms	- saturated hydrualic conductivity of moss (m)
-c   hcpms	- heat capacity of moss (m)
-c   sphms	- specific heat of moss layer (J/kg/K)
-c   rhoms	- density of dry moss (kg/m3)
-c   slams	- specific leaf area (m2/kg)
+c   grksms  - saturated hydrualic conductivity of moss (m)
+c   hcpms   - heat capacity of moss (m)
+c   sphms   - specific heat of moss layer (J/kg/K)
+c   rhoms   - density of dry moss (kg/m3)
+c   slams   - specific leaf area (m2/kg)
 c=====peatland parameter declaration done March 19, 2015 YW===========/
 c
 c============= CTEM array declaration done =============================/
@@ -1671,6 +1354,8 @@ C===================== CTEM ==============================================\
       ch4dyn2row        => vrot%ch4dyn2
       wetfrac_mon       => vrot%wetfrac_mon
 
+c     hpdrow            => vrot%hpd
+
       lucemcomrow       => vrot%lucemcom
       lucltrinrow       => vrot%lucltrin
       lucsocinrow       => vrot%lucsocin
@@ -1689,6 +1374,9 @@ C===================== CTEM ==============================================\
       dstcemlsrow       => vrot%dstcemls
       litrfallrow       => vrot%litrfall
       humiftrsrow       => vrot%humiftrs
+
+      nppmosrow         => vrot%nppmos
+      armosrow          => vrot%armos
 
       gppvegrow         => vrot%gppveg
       nepvegrow         => vrot%nepveg
@@ -1974,76 +1662,8 @@ C===================== CTEM ==============================================\
       QFCLROT_g         => ctem_grd%QFCLROT_g
       QFNROT_g          => ctem_grd%QFNROT_g
       WTRCROT_g         => ctem_grd%WTRCROT_g
-      gpp_g             => ctem_grd%gpp_g
-      npp_g             => ctem_grd%npp_g
-      nbp_g             => ctem_grd%nbp_g
-      autores_g         => ctem_grd%autores_g
-      socres_g          => ctem_grd%socres_g
-      litres_g          => ctem_grd%litres_g
-      dstcemls3_g       => ctem_grd%dstcemls3_g
-      litrfall_g        => ctem_grd%litrfall_g
-      rml_g             => ctem_grd%rml_g
-      rms_g             => ctem_grd%rms_g
-      rg_g              => ctem_grd%rg_g
-      leaflitr_g        => ctem_grd%leaflitr_g
-      tltrstem_g        => ctem_grd%tltrstem_g
-      tltrroot_g        => ctem_grd%tltrroot_g
-      nep_g             => ctem_grd%nep_g
-      hetrores_g        => ctem_grd%hetrores_g
-      dstcemls_g        => ctem_grd%dstcemls_g
-      humiftrs_g        => ctem_grd%humiftrs_g
-      rmr_g             => ctem_grd%rmr_g
-      tltrleaf_g        => ctem_grd%tltrleaf_g
-      gavgltms_g        => ctem_grd%gavgltms_g
-      vgbiomas_g        => ctem_grd%vgbiomas_g
-      gavglai_g         => ctem_grd%gavglai_g
-      gavgscms_g        => ctem_grd%gavgscms_g
-      gleafmas_g        => ctem_grd%gleafmas_g
-      bleafmas_g        => ctem_grd%bleafmas_g
-      stemmass_g        => ctem_grd%stemmass_g
-      rootmass_g        => ctem_grd%rootmass_g
-      litrmass_g        => ctem_grd%litrmass_g
-      soilcmas_g        => ctem_grd%soilcmas_g
-      slai_g            => ctem_grd%slai_g
-      ailcg_g           => ctem_grd%ailcg_g
-      ailcb_g           => ctem_grd%ailcb_g
-      veghght_g         => ctem_grd%veghght_g
-      rootdpth_g        => ctem_grd%rootdpth_g
-      roottemp_g        => ctem_grd%roottemp_g
-      totcmass_g        => ctem_grd%totcmass_g
-      tcanoacc_out_g    => ctem_grd%tcanoacc_out_g
-      burnfrac_g        => ctem_grd%burnfrac_g
-      probfire_g        => ctem_grd%probfire_g
-      lucemcom_g        => ctem_grd%lucemcom_g
-      lucltrin_g        => ctem_grd%lucltrin_g
-      lucsocin_g        => ctem_grd%lucsocin_g
-      emit_co2_g        => ctem_grd%emit_co2_g
-      emit_co_g         => ctem_grd%emit_co_g
-      emit_ch4_g        => ctem_grd%emit_ch4_g
-      emit_nmhc_g       => ctem_grd%emit_nmhc_g
-      emit_h2_g         => ctem_grd%emit_h2_g
-      emit_nox_g        => ctem_grd%emit_nox_g
-      emit_n2o_g        => ctem_grd%emit_n2o_g
-      emit_pm25_g       => ctem_grd%emit_pm25_g
-      emit_tpm_g        => ctem_grd%emit_tpm_g
-      emit_tc_g         => ctem_grd%emit_tc_g
-      emit_oc_g         => ctem_grd%emit_oc_g
-      emit_bc_g         => ctem_grd%emit_bc_g
-      bterm_g           => ctem_grd%bterm_g
-      lterm_g           => ctem_grd%lterm_g
-      mterm_g           => ctem_grd%mterm_g
-      ch4wet1_g         => ctem_grd%ch4wet1_g
-      ch4wet2_g         => ctem_grd%ch4wet2_g
-      wetfdyn_g         => ctem_grd%wetfdyn_g
-      ch4dyn1_g         => ctem_grd%ch4dyn1_g
-      ch4dyn2_g         => ctem_grd%ch4dyn2_g
-      afrleaf_g         => ctem_grd%afrleaf_g
-      afrstem_g         => ctem_grd%afrstem_g
-      afrroot_g         => ctem_grd%afrroot_g
-      lfstatus_g        => ctem_grd%lfstatus_g
       rmlvegrow_g       => ctem_grd%rmlvegrow_g
       anvegrow_g        => ctem_grd%anvegrow_g
-      rmatctem_g        => ctem_grd%rmatctem_g
       HMFGROT_g         => ctem_grd%HMFGROT_g
       HTCROT_g          => ctem_grd%HTCROT_g
       TBARROT_g         => ctem_grd%TBARROT_g
@@ -2066,27 +1686,6 @@ C===================== CTEM ==============================================\
 
       ! mosaic level variables:
 
-      leaflitr_m        => ctem_tile%leaflitr_m
-      tltrleaf_m        => ctem_tile%tltrleaf_m
-      tltrstem_m        => ctem_tile%tltrstem_m
-      tltrroot_m        => ctem_tile%tltrroot_m
-      ailcg_m           => ctem_tile%ailcg_m
-      ailcb_m           => ctem_tile%ailcb_m
-      rmatctem_m        => ctem_tile%rmatctem_m
-      veghght_m         => ctem_tile%veghght_m
-      rootdpth_m        => ctem_tile%rootdpth_m
-      roottemp_m        => ctem_tile%roottemp_m
-      slai_m            => ctem_tile%slai_m
-      afrroot_m         => ctem_tile%afrroot_m
-      afrleaf_m         => ctem_tile%afrleaf_m
-      afrstem_m         => ctem_tile%afrstem_m
-      laimaxg_m         => ctem_tile%laimaxg_m
-      stemmass_m        => ctem_tile%stemmass_m
-      rootmass_m        => ctem_tile%rootmass_m
-      litrmass_m        => ctem_tile%litrmass_m
-      gleafmas_m        => ctem_tile%gleafmas_m
-      bleafmas_m        => ctem_tile%bleafmas_m
-      soilcmas_m        => ctem_tile%soilcmas_m
       fsnowacc_m        => ctem_tile%fsnowacc_m
       tcansacc_m        => ctem_tile%tcansacc_m
       tcanoaccgat_m     => ctem_tile%tcanoaccgat_m
@@ -2105,179 +1704,8 @@ C===================== CTEM ==============================================\
       ancgvgac_m        => ctem_tile%ancgvgac_m
       rmlcsvga_m        => ctem_tile%rmlcsvga_m
       rmlcgvga_m        => ctem_tile%rmlcgvga_m
-      ifcancmx_m        => ctem_tile%ifcancmx_m
 
-
-      ! grid level monthly outputs
-
-        laimaxg_mo_g        =>ctem_grd_mo%laimaxg_mo_g
-        stemmass_mo_g       =>ctem_grd_mo%stemmass_mo_g
-        rootmass_mo_g       =>ctem_grd_mo%rootmass_mo_g
-        litrmass_mo_g       =>ctem_grd_mo%litrmass_mo_g
-        soilcmas_mo_g       =>ctem_grd_mo%soilcmas_mo_g
-        npp_mo_g            =>ctem_grd_mo%npp_mo_g
-        gpp_mo_g            =>ctem_grd_mo%gpp_mo_g
-        nep_mo_g            =>ctem_grd_mo%nep_mo_g
-        nbp_mo_g            =>ctem_grd_mo%nbp_mo_g
-        hetrores_mo_g       =>ctem_grd_mo%hetrores_mo_g
-        autores_mo_g        =>ctem_grd_mo%autores_mo_g
-        litres_mo_g         =>ctem_grd_mo%litres_mo_g
-        soilcres_mo_g       =>ctem_grd_mo%soilcres_mo_g
-        vgbiomas_mo_g       =>ctem_grd_mo%vgbiomas_mo_g
-        totcmass_mo_g       =>ctem_grd_mo%totcmass_mo_g
-        emit_co2_mo_g       =>ctem_grd_mo%emit_co2_mo_g
-        emit_co_mo_g        =>ctem_grd_mo%emit_co_mo_g
-        emit_ch4_mo_g       =>ctem_grd_mo%emit_ch4_mo_g
-        emit_nmhc_mo_g      =>ctem_grd_mo%emit_nmhc_mo_g
-        emit_h2_mo_g        =>ctem_grd_mo%emit_h2_mo_g
-        emit_nox_mo_g       =>ctem_grd_mo%emit_nox_mo_g
-        emit_n2o_mo_g       =>ctem_grd_mo%emit_n2o_mo_g
-        emit_pm25_mo_g      =>ctem_grd_mo%emit_pm25_mo_g
-        emit_tpm_mo_g       =>ctem_grd_mo%emit_tpm_mo_g
-        emit_tc_mo_g        =>ctem_grd_mo%emit_tc_mo_g
-        emit_oc_mo_g        =>ctem_grd_mo%emit_oc_mo_g
-        emit_bc_mo_g        =>ctem_grd_mo%emit_bc_mo_g
-        probfire_mo_g       =>ctem_grd_mo%probfire_mo_g
-        luc_emc_mo_g        =>ctem_grd_mo%luc_emc_mo_g
-        lucltrin_mo_g       =>ctem_grd_mo%lucltrin_mo_g
-        lucsocin_mo_g       =>ctem_grd_mo%lucsocin_mo_g
-        burnfrac_mo_g       =>ctem_grd_mo%burnfrac_mo_g
-        bterm_mo_g          =>ctem_grd_mo%bterm_mo_g
-        lterm_mo_g          =>ctem_grd_mo%lterm_mo_g
-        mterm_mo_g          =>ctem_grd_mo%mterm_mo_g
-        ch4wet1_mo_g        =>ctem_grd_mo%ch4wet1_mo_g
-        ch4wet2_mo_g        =>ctem_grd_mo%ch4wet2_mo_g
-        wetfdyn_mo_g        =>ctem_grd_mo%wetfdyn_mo_g
-        ch4dyn1_mo_g        =>ctem_grd_mo%ch4dyn1_mo_g
-        ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
-
-      ! mosaic monthly outputs
-
-      laimaxg_mo_m          =>ctem_tile_mo%laimaxg_mo_m
-      stemmass_mo_m         =>ctem_tile_mo%stemmass_mo_m
-      rootmass_mo_m         =>ctem_tile_mo%rootmass_mo_m
-      npp_mo_m              =>ctem_tile_mo%npp_mo_m
-      gpp_mo_m              =>ctem_tile_mo%gpp_mo_m
-      vgbiomas_mo_m         =>ctem_tile_mo%vgbiomas_mo_m
-      autores_mo_m          =>ctem_tile_mo%autores_mo_m
-      totcmass_mo_m         =>ctem_tile_mo%totcmass_mo_m
-      litrmass_mo_m         =>ctem_tile_mo%litrmass_mo_m
-      soilcmas_mo_m         =>ctem_tile_mo%soilcmas_mo_m
-      nep_mo_m              =>ctem_tile_mo%nep_mo_m
-      litres_mo_m           =>ctem_tile_mo%litres_mo_m
-      soilcres_mo_m         =>ctem_tile_mo%soilcres_mo_m
-      hetrores_mo_m         =>ctem_tile_mo%hetrores_mo_m
-      nbp_mo_m              =>ctem_tile_mo%nbp_mo_m
-      emit_co2_mo_m         =>ctem_tile_mo%emit_co2_mo_m
-      emit_co_mo_m          =>ctem_tile_mo%emit_co_mo_m
-      emit_ch4_mo_m         =>ctem_tile_mo%emit_ch4_mo_m
-      emit_nmhc_mo_m        =>ctem_tile_mo%emit_nmhc_mo_m
-      emit_h2_mo_m          =>ctem_tile_mo%emit_h2_mo_m
-      emit_nox_mo_m         =>ctem_tile_mo%emit_nox_mo_m
-      emit_n2o_mo_m         =>ctem_tile_mo%emit_n2o_mo_m
-      emit_pm25_mo_m        =>ctem_tile_mo%emit_pm25_mo_m
-      emit_tpm_mo_m         =>ctem_tile_mo%emit_tpm_mo_m
-      emit_tc_mo_m          =>ctem_tile_mo%emit_tc_mo_m
-      emit_oc_mo_m          =>ctem_tile_mo%emit_oc_mo_m
-      emit_bc_mo_m          =>ctem_tile_mo%emit_bc_mo_m
-      burnfrac_mo_m         =>ctem_tile_mo%burnfrac_mo_m
-      probfire_mo_m         =>ctem_tile_mo%probfire_mo_m
-      bterm_mo_m            =>ctem_tile_mo%bterm_mo_m
-      luc_emc_mo_m          =>ctem_tile_mo%luc_emc_mo_m
-      lterm_mo_m            =>ctem_tile_mo%lterm_mo_m
-      lucsocin_mo_m         =>ctem_tile_mo%lucsocin_mo_m
-      mterm_mo_m            =>ctem_tile_mo%mterm_mo_m
-      lucltrin_mo_m         =>ctem_tile_mo%lucltrin_mo_m
-      ch4wet1_mo_m          =>ctem_tile_mo%ch4wet1_mo_m
-      ch4wet2_mo_m          =>ctem_tile_mo%ch4wet2_mo_m
-      wetfdyn_mo_m          =>ctem_tile_mo%wetfdyn_mo_m
-      ch4dyn1_mo_m          =>ctem_tile_mo%ch4dyn1_mo_m
-      ch4dyn2_mo_m          =>ctem_tile_mo%ch4dyn2_mo_m
-
-      ! grid level annual outputs
-      laimaxg_yr_g          =>ctem_grd_yr%laimaxg_yr_g
-      stemmass_yr_g         =>ctem_grd_yr%stemmass_yr_g
-      rootmass_yr_g         =>ctem_grd_yr%rootmass_yr_g
-      litrmass_yr_g         =>ctem_grd_yr%litrmass_yr_g
-      soilcmas_yr_g         =>ctem_grd_yr%soilcmas_yr_g
-      npp_yr_g              =>ctem_grd_yr%npp_yr_g
-      gpp_yr_g              =>ctem_grd_yr%gpp_yr_g
-      nep_yr_g              =>ctem_grd_yr%nep_yr_g
-      nbp_yr_g              =>ctem_grd_yr%nbp_yr_g
-      hetrores_yr_g         =>ctem_grd_yr%hetrores_yr_g
-      autores_yr_g          =>ctem_grd_yr%autores_yr_g
-      litres_yr_g           =>ctem_grd_yr%litres_yr_g
-      soilcres_yr_g         =>ctem_grd_yr%soilcres_yr_g
-      vgbiomas_yr_g         =>ctem_grd_yr%vgbiomas_yr_g
-      totcmass_yr_g         =>ctem_grd_yr%totcmass_yr_g
-      emit_co2_yr_g         =>ctem_grd_yr%emit_co2_yr_g
-      emit_co_yr_g          =>ctem_grd_yr%emit_co_yr_g
-      emit_ch4_yr_g         =>ctem_grd_yr%emit_ch4_yr_g
-      emit_nmhc_yr_g        =>ctem_grd_yr%emit_nmhc_yr_g
-      emit_h2_yr_g          =>ctem_grd_yr%emit_h2_yr_g
-      emit_nox_yr_g         =>ctem_grd_yr%emit_nox_yr_g
-      emit_n2o_yr_g         =>ctem_grd_yr%emit_n2o_yr_g
-      emit_pm25_yr_g        =>ctem_grd_yr%emit_pm25_yr_g
-      emit_tpm_yr_g         =>ctem_grd_yr%emit_tpm_yr_g
-      emit_tc_yr_g          =>ctem_grd_yr%emit_tc_yr_g
-      emit_oc_yr_g          =>ctem_grd_yr%emit_oc_yr_g
-      emit_bc_yr_g          =>ctem_grd_yr%emit_bc_yr_g
-      probfire_yr_g         =>ctem_grd_yr%probfire_yr_g
-      luc_emc_yr_g          =>ctem_grd_yr%luc_emc_yr_g
-      lucltrin_yr_g         =>ctem_grd_yr%lucltrin_yr_g
-      lucsocin_yr_g         =>ctem_grd_yr%lucsocin_yr_g
-      burnfrac_yr_g         =>ctem_grd_yr%burnfrac_yr_g
-      bterm_yr_g            =>ctem_grd_yr%bterm_yr_g
-      lterm_yr_g            =>ctem_grd_yr%lterm_yr_g
-      mterm_yr_g            =>ctem_grd_yr%mterm_yr_g
-      ch4wet1_yr_g          =>ctem_grd_yr%ch4wet1_yr_g
-      ch4wet2_yr_g          =>ctem_grd_yr%ch4wet2_yr_g
-      wetfdyn_yr_g          =>ctem_grd_yr%wetfdyn_yr_g
-      ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
-      ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
-
-      ! mosaic annual outputs
-
-      laimaxg_yr_m          =>ctem_tile_yr%laimaxg_yr_m
-      stemmass_yr_m         =>ctem_tile_yr%stemmass_yr_m
-      rootmass_yr_m         =>ctem_tile_yr%rootmass_yr_m
-      npp_yr_m              =>ctem_tile_yr%npp_yr_m
-      gpp_yr_m              =>ctem_tile_yr%gpp_yr_m
-      vgbiomas_yr_m         =>ctem_tile_yr%vgbiomas_yr_m
-      autores_yr_m          =>ctem_tile_yr%autores_yr_m
-      totcmass_yr_m         =>ctem_tile_yr%totcmass_yr_m
-      litrmass_yr_m         =>ctem_tile_yr%litrmass_yr_m
-      soilcmas_yr_m         =>ctem_tile_yr%soilcmas_yr_m
-      nep_yr_m              =>ctem_tile_yr%nep_yr_m
-      litres_yr_m           =>ctem_tile_yr%litres_yr_m
-      soilcres_yr_m         =>ctem_tile_yr%soilcres_yr_m
-      hetrores_yr_m         =>ctem_tile_yr%hetrores_yr_m
-      nbp_yr_m              =>ctem_tile_yr%nbp_yr_m
-      emit_co2_yr_m         =>ctem_tile_yr%emit_co2_yr_m
-      emit_co_yr_m          =>ctem_tile_yr%emit_co_yr_m
-      emit_ch4_yr_m         =>ctem_tile_yr%emit_ch4_yr_m
-      emit_nmhc_yr_m        =>ctem_tile_yr%emit_nmhc_yr_m
-      emit_h2_yr_m          =>ctem_tile_yr%emit_h2_yr_m
-      emit_nox_yr_m         =>ctem_tile_yr%emit_nox_yr_m
-      emit_n2o_yr_m         =>ctem_tile_yr%emit_n2o_yr_m
-      emit_pm25_yr_m        =>ctem_tile_yr%emit_pm25_yr_m
-      emit_tpm_yr_m         =>ctem_tile_yr%emit_tpm_yr_m
-      emit_tc_yr_m          =>ctem_tile_yr%emit_tc_yr_m
-      emit_oc_yr_m          =>ctem_tile_yr%emit_oc_yr_m
-      emit_bc_yr_m          =>ctem_tile_yr%emit_bc_yr_m
-      burnfrac_yr_m         =>ctem_tile_yr%burnfrac_yr_m
-      probfire_yr_m         =>ctem_tile_yr%probfire_yr_m
-      bterm_yr_m            =>ctem_tile_yr%bterm_yr_m
-      luc_emc_yr_m          =>ctem_tile_yr%luc_emc_yr_m
-      lterm_yr_m            =>ctem_tile_yr%lterm_yr_m
-      lucsocin_yr_m         =>ctem_tile_yr%lucsocin_yr_m
-      mterm_yr_m            =>ctem_tile_yr%mterm_yr_m
-      lucltrin_yr_m         =>ctem_tile_yr%lucltrin_yr_m
-      ch4wet1_yr_m          =>ctem_tile_yr%ch4wet1_yr_m
-      ch4wet2_yr_m          =>ctem_tile_yr%ch4wet2_yr_m
-      wetfdyn_yr_m          =>ctem_tile_yr%wetfdyn_yr_m
-      ch4dyn1_yr_m          =>ctem_tile_yr%ch4dyn1_yr_m
-      ch4dyn2_yr_m          =>ctem_tile_yr%ch4dyn2_yr_m
+      gppmosac_g        => ctem_tile%gppmosac_g
 
 !    =================================================================================
 !    =================================================================================
@@ -2483,8 +1911,6 @@ C    peatland output----------------------------------------------\
       open(unit=90,file=argbuff(1:strlen(argbuff))//'.CT18Y_G') !peatland depth information 
       
 C    YW March 25, 2015 ----------------------------------------------/
-
-c      end if !ctem_on  YW January 12, 2016 redudant after merge 
 c
 C=======================================================================
 C
@@ -2975,7 +2401,7 @@ c    --------write peatland output-------------------------------------\
 6907  format (2X, 'litresms  litpsims  psisat1  ltrmosclms   ',
      1    'litrmassms  tbar1  q10funcms litrtempms  ratescpo  ', 
      2    'ratescpa  Cso  Csa  fto  fta  resoxic  resanoxic   ',
-     3    'frac  tsoila  toilo  ewtable  lewtable  tbar1  tbar2  tbar3')	
+     3    'frac  tsoila  toilo  ewtable  lewtable  tbar1  tbar2  tbar3')
 6908  format(2X, 'iday  tmoss  cevapms  fwmoss  thliq1  dsmoss  ', 
      1    'g_moss  wmoss  rmlmoss  mwce  q10rmlmos  wmosmax  wmosmin')
 6909  format(2X,'WTBLACC ZSN PREACC EVAPACC ROFACC g12acc g23acc')     
@@ -3161,7 +2587,6 @@ C======================= CTEM ========================================== /
 C
 C====================== CTEM =========================================== \
 C
-c   --------------change to an old style of reading .CTM as read_from_ctm was missing---YW January 14, 2016 
 c     read from ctem initialization file (.CTM)
 
       if (ctem_on) then
@@ -3579,20 +3004,28 @@ c
      &                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
             else                       !is peatland tile
                 gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmassmsrow(i,m)
- 		      hpdrow(i,m) = sdeprot(i,m)
-		      gavgscmsrow(i,m) = 0.487*(4056.6*hpdrow(i,m)**2+
-     &                              72067.0*hpdrow(i,m))/1000               
+                hpdrow(i,m) = sdeprot(i,m)
+                gavgscmsrow(i,m) = 0.487*(4056.6*hpdrow(i,m)**2+
+     &                              72067.0*hpdrow(i,m))/1000       
                 vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
-c    also initialize the accumulators for moss daily C fluxes 
-	           anmosac_g(i)  = 0.0
-			 rmlmosac_g(i) = 0.0
-			 gppmosac_g(i) = 0.0
             endif
 c              
 117   continue
-          write(6,6990)     'hpdrow=', hpdrow 
-          write(6,6990)     'gavgscms=', gavgscmsrow
-          write(6,6990)     'vgbiomas=', vgbiomasrow
+
+c    Also initialize the accumulators for moss daily C fluxes.
+c
+c    Moved out of 117 loop and ipeatlandrow > 0 block where only 1 to nltest 
+c    elements were actually initialized since the loop is really for row 
+c    variables. Initialization is now done on all elements, which shouldn't be
+c    a problem. EC - Feb 16, 2016.
+
+      anmosac_g  = 0.0
+      rmlmosac_g = 0.0
+      gppmosac_g = 0.0
+
+      write(6,6990) 'hpdrow=', hpdrow 
+      write(6,6990) 'gavgscms=', gavgscmsrow
+      write(6,6990) 'vgbiomas=', vgbiomasrow
 c    ----------------------------YW March 25, 2015 --------------------/
 c
 
@@ -3615,7 +3048,7 @@ c
      c      rootdpthrow,alvsctmrow,alirctmrow,
      d      paicrow,    slaicrow
 c	gather peatland variable YW March 19, 2015---------------------- /
-	1      ,ipeatlandrow,   ipeatlandgat)
+     1      ,ipeatlandrow,   ipeatlandgat)
 c
 c
       call bio2str( gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,
@@ -3626,7 +3059,7 @@ c
      6                 cmasvegcgat,veghghtgat, rootdpthgat,alvsctmgat,
      7                     alirctmgat, paicgat,  slaicgat 
 c	 peatland PFT bio2str YW March 19, 2015---------------------------/ 
-     8				,ipeatlandgat)     
+     8              ,ipeatlandgat)     
 c
        write(6,6990)  'veghght =',veghghtgat   !YW
        write(6,6990)  'rootdpth=',rootdpthgat   !YW
@@ -4260,11 +3693,11 @@ C
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
      U  NBS,    ISNOALB,lfstatusgat
 c    ---peatland variabels in mosspht.f called in TSOLVC, TSOLVE----- -\  
-     1	,ipeatlandgat, bigat,
-     2	ancsmosgat,	angsmosgat, 	ancmosgat,	angmosgat,
-     3	rmlcsmosgat,	rmlgsmosgat,	rmlcmosgat,	rmlgmosgat,
-     4	Cmossmasgat,   dmossgat,  iyear, iday, ihour, imin,
-     5    daylength, pdd, cdd)
+     1  ,ipeatlandgat, bigat,
+     2  ancsmosgat, angsmosgat, ancmosgat, angmosgat,
+     3  rmlcsmosgat,rmlgsmosgat,rmlcmosgat,rmlgmosgat,
+     4  Cmossmasgat,   dmossgat,  iyear, iday, ihour, imin,
+     5  daylength, pdd, cdd)
 c    --------------------YW March 19, 2015 ----------------------------/
 C
 C-----------------------------------------------------------------------
@@ -4342,13 +3775,13 @@ c
 
 c	--aggregate moss C fluxes of subareas to grid for ctem.f------------\ 
       do 620 i = 1, nml
-		if (ipeatlandgat(i) > 0)	                    then
-              anmosgat(i) = (fcs(i)*ancsmosgat(i)+fgs(i)*angsmosgat(i)
-	1				+fc(i)*ancmosgat(i)+fg(i)*angmosgat(i))
+         if (ipeatlandgat(i) > 0)                    then
+              anmosgat(i) = fcs(i)*ancsmosgat(i)+fgs(i)*angsmosgat(i)
+     1                       +fc(i)*ancmosgat(i)+fg(i)*angmosgat(i)
               rmlmosgat(i)= fcs(i)*rmlcsmosgat(i)+fgs(i)*rmlgsmosgat(i)
-	1				+fc(i)*rmlcmosgat(i)+fg(i)*rmlgmosgat(i)
-		    gppmosgat(i) = anmosgat(i) +rmlmosgat(i)
-		endif
+     1                      +fc(i)*rmlcmosgat(i)+fg(i)*rmlgmosgat(i)
+              gppmosgat(i) = anmosgat(i) +rmlmosgat(i)
+         endif
 620   continue
 
 c    -------------------YW March 20, 2015------------------------------/
@@ -4403,11 +3836,11 @@ c
 c
 c    ------------accumulate moss C fluxes to daily---------------------\
 c
-		if (ipeatlandgat(i) > 0)			          then	
-		    anmosac_g(i) = anmosac_g(i)   + anmosgat(i)
-		    rmlmosac_g(i)= rmlmosac_g(i)  + rmlmosgat(i)
-		    gppmosac_g(i)= gppmosac_g(i)  + gppmosgat(i)
-		endif
+          if (ipeatlandgat(i) > 0) then
+            anmosac_g(i) = anmosac_g(i)   + anmosgat(i)
+            rmlmosac_g(i)= rmlmosac_g(i)  + rmlmosgat(i)
+            gppmosac_g(i)= gppmosac_g(i)  + gppmosgat(i)
+          endif
 c    -------------------YW March 20, 2015 -----------------------------/
 c
 700     continue
@@ -4540,18 +3973,17 @@ c
 c
 c     call Canadian Terrestrial Ecosystem Model which operates at a
 c
-c 	---------daily average moss C fluxes for ctem.f-------------------\  
-c    Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
-c    stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.2004)
-c    the ratio between stem and capitulum = 7.5 and 7.7 
-		do 833 i = 1, nml
-		 if (ipeatlandgat(i) > 0)			then	
-			anmosac_g(i) = anmosac_g(i)/real(nday)
-			rmlmosac_g(i)= rmlmosac_g(i)/real(nday)
-			gppmosac_g(i) = gppmosac_g(i)/real(nday)
-	  	endif	
-833		continue
-
+c     ---------daily average moss C fluxes for ctem.f-------------------\  
+c     Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
+c     stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.2004)
+c     the ratio between stem and capitulum = 7.5 and 7.7 
+      do 833 i = 1, nml
+        if (ipeatlandgat(i) > 0) then
+          anmosac_g(i) = anmosac_g(i)/real(nday)
+          rmlmosac_g(i)= rmlmosac_g(i)/real(nday)
+          gppmosac_g(i) = gppmosac_g(i)/real(nday)
+        endif
+833   continue
 c
 c    ----------------YW March 26, 2015 ---------------------------------/
 c 
@@ -4617,11 +4049,11 @@ c    -------------- inputs updated by ctem are above this line ------
 c    ---------------- outputs are listed above this line ------------
 c    -------------- moss C in peatlands -------------------------------\
 c
-     1	  ipeatlandgat,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd,
-     2	  anmosac_g,rmlmosac_g,gppmosac_g,Cmossmasgat,litrmassmsgat,
+     1    ipeatlandgat,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd,
+     2    anmosac_g,rmlmosac_g,gppmosac_g,Cmossmasgat,litrmassmsgat,
      3    wtabgat,thpgat, bigat, psisgat,grksgat,
      4    thfcgat, thlwgat, thlqaccgat_m, thicaccgat_m,tfrez,
-     5    nppmosgat, armosgat,hpdgat)	
+     5    nppmosgat, armosgat,hpdgat)
 c
 c    ---------------- YW March 26, 2015  -------------------------------/          
 c    ----------calculate degree days for mosspht Vmax seasonality------
@@ -4882,12 +4314,12 @@ c    ----
      &      WETFDYNGAT, CH4DYN1GAT, CH4DYN2GAT,
 C    --------------------scatter peatland variables-------------------\
 c
-     1	anmosrow, rmlmosrow, gppmosrow, armosrow, nppmosrow, 
-	2	anmosgat, rmlmosgat, gppmosgat, armosgat, nppmosgat,
-	3	hpdrow,   hpdgat,    litrmassmsrow,   litrmassmsgat,
-	4	Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat,
-	5    thlqaccrow_m , thlqaccgat_m, thicaccrow_m, thicaccgat_m,    
-	6    ipeatlandrow, 	ipeatlandgat)
+     1      anmosrow, rmlmosrow, gppmosrow, armosrow, nppmosrow, 
+     2      anmosgat, rmlmosgat, gppmosgat, armosgat, nppmosgat,
+     3      hpdrow,   hpdgat,    litrmassmsrow,   litrmassmsgat,
+     4      Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat,
+     5      thlqaccrow_m, thlqaccgat_m, thicaccrow_m, thicaccgat_m,    
+     6      ipeatlandrow, ipeatlandgat)
 c    ---------------YW March 23, 2015 ---------------------------------/
 c
 C===================== CTEM ============================================ /
@@ -5302,67 +4734,67 @@ c                               ! diagnostic fields
 C===================== CTEM =====================================/
 C
       DO 525 I=1,NLTEST
-          CDHGRD(I)=0.
-          CDMGRD(I)=0.
-          HFSGRD(I)=0.
-          TFXGRD(I)=0.
-          QEVPGRD(I)=0.
-          QFSGRD(I)=0.
-          QFXGRD(I)=0.
-          PETGRD(I)=0.
-          GAGRD(I)=0.
-          EFGRD(I)=0.
-          GTGRD(I)=0.
-          QGGRD(I)=0.
-          TSFGRD(I)=0.
-          ALVSGRD(I)=0.
-          ALIRGRD(I)=0.
-          SFCTGRD(I)=0.
-          SFCUGRD(I)=0.
-          SFCVGRD(I)=0.
-          SFCQGRD(I)=0.
-          FSNOGRD(I)=0.
-          FSGVGRD(I)=0.
-          FSGSGRD(I)=0.
-          FSGGGRD(I)=0.
-          FLGVGRD(I)=0.
-          FLGSGRD(I)=0.
-          FLGGGRD(I)=0.
-          HFSCGRD(I)=0.
-          HFSSGRD(I)=0.
-          HFSGGRD(I)=0.
-          HEVCGRD(I)=0.
-          HEVSGRD(I)=0.
-          HEVGGRD(I)=0.
-          HMFCGRD(I)=0.
-          HMFNGRD(I)=0.
-          HTCCGRD(I)=0.
-          HTCSGRD(I)=0.
-          PCFCGRD(I)=0.
-          PCLCGRD(I)=0.
-          PCPNGRD(I)=0.
-          PCPGGRD(I)=0.
-          QFGGRD(I)=0.
-          QFNGRD(I)=0.
-          QFCLGRD(I)=0.
-          QFCFGRD(I)=0.
-          ROFGRD(I)=0.
-          ROFOGRD(I)=0.
-          ROFSGRD(I)=0.
-          ROFBGRD(I)=0.
-          ROFCGRD(I)=0.
-          ROFNGRD(I)=0.
-          ROVGGRD(I)=0.
-          WTRCGRD(I)=0.
-          WTRSGRD(I)=0.
-          WTRGGRD(I)=0.
-          DRGRD(I)=0.
-          WTABGRD(I)=0.
-          ILMOGRD(I)=0.
-          UEGRD(I)=0.
-          HBLGRD(I)=0.
+          CDHROW(I)=0.
+          CDMROW(I)=0.
+          HFSROW(I)=0.
+          TFXROW(I)=0.
+          QEVPROW(I)=0.
+          QFSROW(I)=0.
+          QFXROW(I)=0.
+          PETROW(I)=0.
+          GAROW(I)=0.
+          EFROW(I)=0.
+          GTROW(I)=0.
+          QGROW(I)=0.
+c         TSFROW(I)=0.
+          ALVSROW(I)=0.
+          ALIRROW(I)=0.
+          SFCTROW(I)=0.
+          SFCUROW(I)=0.
+          SFCVROW(I)=0.
+          SFCQROW(I)=0.
+          FSNOROW(I)=0.
+          FSGVROW(I)=0.
+          FSGSROW(I)=0.
+          FSGGROW(I)=0.
+          FLGVROW(I)=0.
+          FLGSROW(I)=0.
+          FLGGROW(I)=0.
+          HFSCROW(I)=0.
+          HFSSROW(I)=0.
+          HFSGROW(I)=0.
+          HEVCROW(I)=0.
+          HEVSROW(I)=0.
+          HEVGROW(I)=0.
+          HMFCROW(I)=0.
+          HMFNROW(I)=0.
+          HTCCROW(I)=0.
+          HTCSROW(I)=0.
+          PCFCROW(I)=0.
+          PCLCROW(I)=0.
+          PCPNROW(I)=0.
+          PCPGROW(I)=0.
+          QFGROW(I)=0.
+          QFNROW(I)=0.
+          QFCLROW(I)=0.
+          QFCFROW(I)=0.
+          ROFROW(I)=0.
+          ROFOROW(I)=0.
+          ROFSROW(I)=0.
+          ROFBROW(I)=0.
+          ROFCROW(I)=0.
+          ROFNROW(I)=0.
+          ROVGROW(I)=0.
+          WTRCROW(I)=0.
+          WTRSROW(I)=0.
+          WTRGROW(I)=0.
+          DRROW(I)=0.
+          WTABROW(I)=0.
+          ILMOROW(I)=0.
+          UEROW(I)=0.
+          HBLROW(I)=0.
           G12GRD(I)= 0.       !YW March 27, 2015  
-		  G23GRD(I)= 0.       !YW March 27, 2015 
+          G23GRD(I)= 0.       !YW March 27, 2015 
           DO 500 J=1,IGND
               HMFGROW(I,J)=0.
               HTCROW(I,J)=0.
@@ -5432,10 +4864,10 @@ C
           ILMOROW(I)=ILMOROW(I)+ILMOROT(I,M)*FAREROT(I,M)
           UEROW(I)=UEROW(I)+UEROT(I,M)*FAREROT(I,M)
           HBLROW(I)=HBLROW(I)+HBLROT(I,M)*FAREROT(I,M)
-	     G12GRD(I)=G12C(I)*FC(I)+G12G(I)*FG(I)+G12CS(I)*FCS(I)+
-     1		     G12GS(I)*FGS(I)     !YW March 27, 2015 
-	     G23GRD(I)=G23C(I)*FC(I)+G23G(I)*FG(I)+G23CS(I)*FCS(I)+
-     1		     G23GS(I)*FGS(I)     !YW March 27, 2015 
+          G12GRD(I)=G12C(I)*FC(I)+G12G(I)*FG(I)+G12CS(I)*FCS(I)+
+     1    G12GS(I)*FGS(I)     !YW March 27, 2015 
+          G23GRD(I)=G23C(I)*FC(I)+G23G(I)*FG(I)+G23CS(I)*FCS(I)+
+     1    G23GS(I)*FGS(I)     !YW March 27, 2015 
           DO 550 J=1,IGND
               HMFGROW(I,J)=HMFGROW(I,J)+HMFGROT(I,M,J)*FAREROT(I,M)
               HTCROW(I,J)=HTCROW(I,J)+HTCROT(I,M,J)*FAREROT(I,M)
@@ -5496,8 +4928,8 @@ C
           UVACC(I)=UVACC(I)+UVROW(I)*FAREROT(I,M)
           PRESACC(I)=PRESACC(I)+PRESROW(I)*FAREROT(I,M)
           QAACC(I)=QAACC(I)+QAROW(I)*FAREROT(I,M)
-	      G12ACC(I)=G12ACC(I)+G12GRD(I)*FAREROT(I,M)  !YW March 23, 2015 
-	      G23ACC(I)=G23ACC(I)+G23GRD(I)*FAREROT(I,M)  !YW March 23, 2015
+          G12ACC(I)=G12ACC(I)+G12GRD(I)*FAREROT(I,M)  !YW March 23, 2015 
+          G23ACC(I)=G23ACC(I)+G23GRD(I)*FAREROT(I,M)  !YW March 23, 2015
 650   CONTINUE
 675   CONTINUE
 C
@@ -5595,8 +5027,8 @@ C
             ENDIF
 c    ----peatland output-----------------------------------------------\
 
-	  write(99,6999)  WTBLACC, ZSN,PREACC,EVAPACC,ROFACC,g12acc,g23acc
-6999	  format(10f12.3)
+        write(99,6999)  WTBLACC, ZSN,PREACC,EVAPACC,ROFACC,g12acc,g23acc
+6999    format(10f12.3)
 c    ----YW March 23, 2015 --------------------------------------------/
         
 C
@@ -5904,1044 +5336,69 @@ c     CTEM output and write out
 c
       if(.not.parallelrun) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
 c
-c     calculate daily outputs from ctem
-c
-c   write the daily outputs in a new subroutine, comment out for now as no ctem_daily_aw was found 
-c       if (ctem_on) then
-C         if(ncount.eq.nday) then
-C          call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
-C     1                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea)
-C         endif ! if(ncount.eq.nday)
-C       endif ! if(ctem_on)
-c
-c       endif ! if(not.parallelrun)
-c
-c   Note it's either the following chunk or the above commentted out part    
+c       Calculate daily outputs from ctem.
+c       Re-enabled. YW modifications moved to io_driver.f90. EC - Feb 16 2016.
 
-      if (ctem_on) then
-      if(ncount.eq.nday) then        
-c
-        do i=1,nltest
-           do j=1,icc
-             ifcancmx_g(i,j)=0   
-           enddo
-        enddo
+        if (ctem_on) then
+          if(ncount.eq.nday) then
 
-c
-        do i=1,nltest
-           do m=1,nmtest
-              ifcancmx_m(i,m)=0   !0=bare soil tile; 1=tile with vegetation
-              leaflitr_m(i,m)=0.0
-              tltrleaf_m(i,m)=0.0
-              tltrstem_m(i,m)=0.0
-              tltrroot_m(i,m)=0.0
-              ailcg_m(i,m)=0.0
-              ailcb_m(i,m)=0.0
-              afrleaf_m(i,m)=0.0
-              afrstem_m(i,m)=0.0
-              afrroot_m(i,m)=0.0
-              veghght_m(i,m)=0.0
-              rootdpth_m(i,m)=0.0
-              roottemp_m(i,m)=0.0
-              slai_m(i,m)=0.0
-              gleafmas_m(i,m) = 0.0
-              bleafmas_m(i,m) = 0.0
-              stemmass_m(i,m) = 0.0
-              rootmass_m(i,m) = 0.0
-              litrmass_m(i,m) = 0.0
-              soilcmas_m(i,m) = 0.0
+             call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
+     1                         iyear,jdstd,jdsty,jdendd,jdendy,grclarea,
+     2                         ipeatlandrow)
 
-c
-              do j=1,icc
-                if (fcancmxrow(i,m,j) .gt.0.0) then
-                ifcancmx_g(i,j)=1
-                ifcancmx_m(i,m)=1
-                endif 
-              enddo
-c
-              do k=1,ignd
-                rmatctem_m(i,m,k)=0.0
-              enddo
-c
-           enddo ! m
-        enddo  ! i
-c
-c       ---------------------------------------------------------
-c
-        do 851 i=1,nltest
-          gpp_g(i) =0.0
-          npp_g(i) =0.0
-          nep_g(i) =0.0
-          nbp_g(i) =0.0
-          autores_g(i) =0.0
-          hetrores_g(i)=0.0
-          litres_g(i) =0.0
-          socres_g(i) =0.0
-          dstcemls_g(i)=0.0
-          dstcemls3_g(i)=0.0
-          litrfall_g(i)=0.0
-          humiftrs_g(i)=0.0
-          rml_g(i) =0.0
-          rms_g(i) =0.0
-          rmr_g(i) =0.0
-          rg_g(i) =0.0
-          vgbiomas_g(i) =0.0
-          totcmass_g(i) =0.0
-          gavglai_g(i) =0.0
-          gavgltms_g(i) =0.0
-          gavgscms_g(i) =0.0
-          ailcg_g(i)=0.0
-          ailcb_g(i)=0.0
-          tcanoacc_out_g(i) =0.0
-          burnfrac_g(i) =0.0
-          probfire_g(i) =0.0
-          lucemcom_g(i) =0.0
-          lucltrin_g(i) =0.0
-          lucsocin_g(i) =0.0
-          emit_co2_g(i) =0.0
-          emit_co_g(i)  =0.0
-          emit_ch4_g(i) =0.0  
-          emit_nmhc_g(i) =0.0
-          emit_h2_g(i) =0.0
-          emit_nox_g(i) =0.0
-          emit_n2o_g(i) =0.0 
-          emit_pm25_g(i) =0.0
-          emit_tpm_g(i) =0.0 
-          emit_tc_g(i) =0.0
-          emit_oc_g(i) =0.0  
-          emit_bc_g(i) =0.0
-          bterm_g(i)   =0.0
-          lterm_g(i)   =0.0
-          mterm_g(i)   =0.0
-          leaflitr_g(i)=0.0  
-          tltrleaf_g(i)=0.0
-          tltrstem_g(i)=0.0
-          tltrroot_g(i)=0.0
-          gleafmas_g(i)=0.0
-          bleafmas_g(i)=0.0
-          stemmass_g(i)=0.0
-          rootmass_g(i)=0.0
-          litrmass_g(i)=0.0
-          soilcmas_g(i)=0.0
-          veghght_g(i)=0.0
-          rootdpth_g(i)=0.0
-          roottemp_g(i)=0.0
-          slai_g(i)=0.0
-c                         !Rudra added CH4 realted variables on 03/12/2013
-          CH4WET1_G(i) = 0.0
-          CH4WET2_G(i) = 0.0
-          WETFDYN_G(i) = 0.0
-          CH4DYN1_G(i) = 0.0
-          CH4DYN2_G(i) = 0.0
+c            --------reset peatland accumulators-------------------------------
+c            Originally done only for peatland points, but simpler to just 
+c            reset the entire arrays. EC - Feb 16 2016.
+             anmosac_g  = 0.0
+             rmlmosac_g = 0.0
+             gppmosac_g = 0.0
+             G12ACC     = 0.
+             G23ACC     = 0.
+c            ----------------YW March 27, 2015 -------------------------------/
 
-          do k=1,ignd
-           rmatctem_g(i,k)=0.0
-          enddo
-c
-          do j=1,icc        
-            afrleaf_g(i,j)=0.0
-            afrstem_g(i,j)=0.0
-            afrroot_g(i,j)=0.0
-          enddo
-c
-          do 852 m=1,nmtest
-c
-           do j=1,icc
-             leaflitr_m(i,m)=leaflitr_m(i,m)+
-     &                       leaflitrrow(i,m,j)*fcancmxrow(i,m,j)
-             tltrleaf_m(i,m)=tltrleaf_m(i,m)+
-     &                       tltrleafrow(i,m,j)*fcancmxrow(i,m,j)
-             tltrstem_m(i,m)=tltrstem_m(i,m)+
-     &                       tltrstemrow(i,m,j)*fcancmxrow(i,m,j)
-             tltrroot_m(i,m)=tltrroot_m(i,m)+
-     &                       tltrrootrow(i,m,j)*fcancmxrow(i,m,j)
-             veghght_m(i,m)=veghght_m(i,m)+
-     &                            veghghtrow(i,m,j)*fcancmxrow(i,m,j)
-             rootdpth_m(i,m)=rootdpth_m(i,m)+
-     &                            rootdpthrow(i,m,j)*fcancmxrow(i,m,j)
-             roottemp_m(i,m)=roottemp_m(i,m)+
-     &                            roottemprow(i,m,j)*fcancmxrow(i,m,j)
-             slai_m(i,m)=slai_m(i,m)+slairow(i,m,j)*fcancmxrow(i,m,j)
-c
-             afrleaf_m(i,m)=afrleaf_m(i,m)+
-     &                              afrleafrow(i,m,j)*fcancmxrow(i,m,j)
-             afrstem_m(i,m)=afrstem_m(i,m)+
-     &                              afrstemrow(i,m,j)*fcancmxrow(i,m,j)
-             afrroot_m(i,m)=afrroot_m(i,m)+
-     &                              afrrootrow(i,m,j)*fcancmxrow(i,m,j)
-c
-             ailcg_m(i,m)=ailcg_m(i,m)+ailcgrow(i,m,j)*fcancmxrow(i,m,j)
-             ailcb_m(i,m)=ailcb_m(i,m)+ailcbrow(i,m,j)*fcancmxrow(i,m,j)
+          endif ! if(ncount.eq.nday) 
+        endif ! if(ctem_on)
 
-             gleafmas_m(i,m) = gleafmas_m(i,m) + gleafmasrow(i,m,j)
-     &                                          *fcancmxrow(i,m,j)
-             bleafmas_m(i,m) = bleafmas_m(i,m) + bleafmasrow(i,m,j)
-     &                                          *fcancmxrow(i,m,j)
-             stemmass_m(i,m) = stemmass_m(i,m) + stemmassrow(i,m,j)
-     &                                          *fcancmxrow(i,m,j)
-             rootmass_m(i,m) = rootmass_m(i,m) + rootmassrow(i,m,j)
-     &                                          *fcancmxrow(i,m,j)
-             litrmass_m(i,m) = litrmass_m(i,m) + litrmassrow(i,m,j)
-     &                                          *fcancmxrow(i,m,j)
-             soilcmas_m(i,m) = soilcmas_m(i,m) + soilcmasrow(i,m,j)
-     &                                          *fcancmxrow(i,m,j)
-
-c
-             do k=1,ignd
-                rmatctem_m(i,m,k)=rmatctem_m(i,m,k)+
-     &                            rmatctemrow(i,m,j,k)*fcancmxrow(i,m,j)
-             enddo
-           enddo
-c
-           npprow(i,m)     =npprow(i,m)*1.0377 ! convert to gc/m2.day
-           gpprow(i,m)     =gpprow(i,m)*1.0377 ! convert to gc/m2.day
-           neprow(i,m)     =neprow(i,m)*1.0377 ! convert to gc/m2.day
-           nbprow(i,m)     =nbprow(i,m)*1.0377 ! convert to gc/m2.day
-           lucemcomrow(i,m)=lucemcomrow(i,m)*1.0377 ! convert to gc/m2.day
-           lucltrinrow(i,m)=lucltrinrow(i,m)*1.0377 ! convert to gc/m2.day
-           lucsocinrow(i,m)=lucsocinrow(i,m)*1.0377 ! convert to gc/m2.day
-c
-           hetroresrow(i,m)=hetroresrow(i,m)*1.0377 ! convert to gc/m2.day
-           autoresrow(i,m) =autoresrow(i,m)*1.0377  ! convert to gc/m2.day
-           litresrow(i,m)  =litresrow(i,m)*1.0377   ! convert to gc/m2.day
-           socresrow(i,m)  =socresrow(i,m)*1.0377   ! convert to gc/m2.day
-c
-           CH4WET1ROW(i,m) = CH4WET1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
-           CH4WET2ROW(i,m) = CH4WET2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
-           CH4DYN1ROW(i,m) = CH4DYN1ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day
-           CH4DYN2ROW(i,m) = CH4DYN2ROW(i,m)*1.0377 * 16.044 / 12. ! convert from umolCH4/m2/s to gCH4/m2.day 
-c
-c     ------convert peatland C fluxes to gC/m2/day for output-----------\
-
-          if (ipeatlandrow(i,m) >0 )         then
-            nppmosrow(i,m)=nppmosrow(i,m)*1.0377 ! convert to gc/m2.day
-            armosrow(i,m)=armosrow(i,m)*1.0377 ! convert to gc/m2.day
-          endif          
-c    ------------YW March 27, 2015 -------------------------------------/
-
-c          write daily ctem results
-c
-       if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
-         if ((iday .ge. jdstd).and.(iday .le.jdendd))then
-c
-c             write grid-averaged fluxes of basic quantities to 
-c             file *.CT01D_M
-c
-             if (mosaic) then
-              write(72,8200)iday,iyear,gpprow(i,m),npprow(i,m),
-     1                neprow(i,m),nbprow(i,m),autoresrow(i,m),
-     2                hetroresrow(i,m),litresrow(i,m),socresrow(i,m),
-     3                (dstcemlsrow(i,m)+dstcemls3row(i,m)),
-     4               litrfallrow(i,m),humiftrsrow(i,m),' TILE ',m,'AVGE'
-             end if
-
-c             write breakdown of some of basic fluxes to file *.CT3 
-c             and selected litter fluxes for selected pft
-
-!              First for the bare fraction of the grid cell.
-             hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*1.0377 ! convert to gc/m2.day
-             litresvegrow(i,m,iccp1)=litresvegrow(i,m,iccp1)*1.0377 ! convert to gc/m2.day
-             soilcresvegrow(i,m,iccp1)=soilcresvegrow(i,m,iccp1)*1.0377 ! convert to gc/m2.day
-
-c
-              do 853 j=1,icc
-c
-                if (fcancmxrow(i,m,j) .gt.0.0) then
-c
-                 gppvegrow(i,m,j)=gppvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
-                 nppvegrow(i,m,j)=nppvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
-                 nepvegrow(i,m,j)=nepvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
-                 nbpvegrow(i,m,j)=nbpvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
-                 hetroresvegrow(i,m,j)=hetroresvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
-                 autoresvegrow(i,m,j)=autoresvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
-                 litresvegrow(i,m,j)=litresvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
-                 soilcresvegrow(i,m,j)=soilcresvegrow(i,m,j)*1.0377 ! convert to gc/m2.day
- 
-c                write to file .CT01D_M 
-                 if (mosaic) then
-                  write(72,8201)iday,iyear,gppvegrow(i,m,j),
-     1            nppvegrow(i,m,j),nepvegrow(i,m,j),
-     2            ' TILE ',m,'PFT',j
-                 
-
-c                write to file .CT02D_M 
-                 write(73,8300)iday,iyear,rmlvegaccrow(i,m,j), 
-     1           rmsvegrow(i,m,j),rmrvegrow(i,m,j),rgvegrow(i,m,j),
-     2           leaflitrrow(i,m,j),tltrleafrow(i,m,j),
-     3          tltrstemrow(i,m,j),tltrrootrow(i,m,j),' TILE ',m,'PFT',j
-c
-c
-c                write grid-averaged pool sizes and component sizes for
-c                seleced ctem pft to file *.CT03D_M
-c
-                 write(74,8401)iday,iyear,vgbiomas_vegrow(i,m,j),
-     1               ailcgrow(i,m,j),gleafmasrow(i,m,j),
-     3               bleafmasrow(i,m,j), stemmassrow(i,m,j),
-     4               rootmassrow(i,m,j), litrmassrow(i,m,j), 
-     5               soilcmasrow(i,m,j),' TILE ',m,'PFT',j
-c
-c                write lai, rmatctem, & structural attributes for selected 
-c                pft to file *.CT04D_M
-c
-                 write(75,8500)iday,iyear, ailcgrow(i,m,j), 
-     1                ailcbrow(i,m,j),(rmatctemrow(i,m,j,k),k=1,3),
-     2                veghghtrow(i,m,j),rootdpthrow(i,m,j),
-     3              roottemprow(i,m,j),slairow(i,m,j),' TILE ',m,'PFT',j
-c
-c                write allocation fractions for selected pft to 
-c                file *.CT05D_M
-c
-                 write(76,8600)iday,iyear, afrleafrow(i,m,j), 
-     1                afrstemrow(i,m,j),afrrootrow(i,m,j), 
-     2                tcanoaccrow_out(i,m), lfstatusrow(i,m,j),
-     3                ' TILE ',m,'PFT',j
-
-c             write fire and luc results to file *.CT06D_M
-c
-              if (dofire .or. lnduseon) then   !FLAG FIX THIS
-               write(78,8800)iday,iyear,
-     1         emit_co2row(i,m,j),emit_corow(i,m,j),emit_ch4row(i,m,j),
-     2         emit_nmhcrow(i,m,j),emit_h2row(i,m,j),emit_noxrow(i,m,j),
-     3         emit_n2orow(i,m,j),emit_pm25row(i,m,j),
-     4         emit_tpmrow(i,m,j),emit_tcrow(i,m,j),emit_ocrow(i,m,j),
-     5         emit_bcrow(i,m,j),burnvegfrow(i,m,j),probfirerow(i,m), 
-     6         lucemcomrow(i,m),lucltrinrow(i,m), lucsocinrow(i,m),
-     7         grclarea(i),btermrow(i,m),ltermrow(i,m),mtermrow(i,m),
-     8         ' TILE ',m,'PFT',j
-               endif
-
-              end if !mosaic
-
-              endif  !if (fcancmxrow(i,m,j) .gt.0.0) then
-c
-853           continue
-c
-              if (mosaic) then
-               if (ifcancmx_m(i,m) .gt. 0) then
-
-
-c               write to file .CT02D_M 
-                write(73,8300)iday,iyear,rmlrow(i,m),rmsrow(i,m),
-     1          rmrrow(i,m),rgrow(i,m),leaflitr_m(i,m),tltrleaf_m(i,m),
-     2          tltrstem_m(i,m),tltrroot_m(i,m),' TILE ',m,'AVGE'
-c
-c               write to file .CT03D_M 
-                write(74,8402)iday,iyear,vgbiomasrow(i,m),
-     1               gavglairow(i,m),gavgltmsrow(i,m),
-     2               gavgscmsrow(i,m),gleafmasrow(i,m,j),
-     3               bleafmasrow(i,m,j), stemmassrow(i,m,j),
-     4               rootmassrow(i,m,j), litrmassrow(i,m,j), 
-     5               soilcmasrow(i,m,j),' TILE ',m, 'AVGE'
-c
-c               write to file .CT04D_M
-                write(75,8500)iday,iyear,ailcg_m(i,m),
-     1                ailcb_m(i,m),(rmatctem_m(i,m,k),k=1,3),
-     2                veghght_m(i,m),rootdpth_m(i,m),
-     3                roottemp_m(i,m),slai_m(i,m),' TILE ',m, 'AVGE'
-c
-c               write to file .CT05D_M
-                write(76,8601)iday,iyear, afrleaf_m(i,m), 
-     1                afrstem_m(i,m),afrroot_m(i,m), 
-     2                tcanoaccrow_out(i,m), 
-     3                ' TILE ',m,'AVGE'
-
-               end if !if (ifcancmx_m(i,m) .gt.0.0) then
-              endif !mosaic
-c
-           endif ! if ((iday .ge. jdstd).and.(iday .le.jdendd))
-           endif  !if ((iyear .ge. jdsty).and.(iyear.le.jdendy)
-
-c
-8200       format(1x,i4,i5,11f10.5,2(a6,i2))
-8201       format(1x,i4,i5,3f10.5,80x,2(a6,i2))
-8300       format(1x,i4,i5,8f10.5,2(a6,i2))
-8301       format(1x,i4,i5,4f10.5,40x,2(a6,i2)) 
-8400       format(1x,i4,i5,11f10.5,2(a6,i2))
-8401       format(1x,i4,i5,2f10.5,6f10.5,2(a6,i2))
-8402       format(1x,i4,i5,10f10.5,2(a6,i2))
-!                   8402       format(1x,i4,i5,2f10.5,40x,2f10.5,2(a6,i2))
-8500       format(1x,i4,i5,9f10.5,2(a6,i2))
-8600       format(1x,i4,i5,4f10.5,i8,2(a6,i2))
-8601       format(1x,i4,i5,4f10.5,8x,2(a6,i2))   
-8800       format(1x,i4,i5,20f11.4,2x,f9.2,2(a6,i2))
-8810       format(1x,i4,i5,5f11.4,2(a6,i2))
-c
-c          Calculation of grid averaged variables
-c
-                        
-        gpp_g(i) =gpp_g(i) + gpprow(i,m)*FAREROT(i,m)
-        npp_g(i) =npp_g(i) + npprow(i,m)*FAREROT(i,m)
-        nep_g(i) =nep_g(i) + neprow(i,m)*FAREROT(i,m)
-        nbp_g(i) =nbp_g(i) + nbprow(i,m)*FAREROT(i,m)
-        autores_g(i) =autores_g(i) +autoresrow(i,m)*FAREROT(i,m)
-        hetrores_g(i)=hetrores_g(i)+hetroresrow(i,m)*FAREROT(i,m)
-        litres_g(i) =litres_g(i) + litresrow(i,m)*FAREROT(i,m)
-        socres_g(i) =socres_g(i) + socresrow(i,m)*FAREROT(i,m)
-        dstcemls_g(i)=dstcemls_g(i)+dstcemlsrow(i,m)*FAREROT(i,m)
-        dstcemls3_g(i)=dstcemls3_g(i)+dstcemls3row(i,m)*FAREROT(i,m)
-
-        litrfall_g(i)=litrfall_g(i)+litrfallrow(i,m)*FAREROT(i,m)
-        humiftrs_g(i)=humiftrs_g(i)+humiftrsrow(i,m)*FAREROT(i,m)
-        rml_g(i) =rml_g(i) + rmlrow(i,m)*FAREROT(i,m)
-        rms_g(i) =rms_g(i) + rmsrow(i,m)*FAREROT(i,m)
-        rmr_g(i) =rmr_g(i) + rmrrow(i,m)*FAREROT(i,m)
-        rg_g(i) =rg_g(i) + rgrow(i,m)*FAREROT(i,m)
-        leaflitr_g(i) = leaflitr_g(i) + leaflitr_m(i,m)*FAREROT(i,m)
-        tltrleaf_g(i) = tltrleaf_g(i) + tltrleaf_m(i,m)*FAREROT(i,m)
-        tltrstem_g(i) = tltrstem_g(i) + tltrstem_m(i,m)*FAREROT(i,m)
-        tltrroot_g(i) = tltrroot_g(i) + tltrroot_m(i,m)*FAREROT(i,m)
-        vgbiomas_g(i) =vgbiomas_g(i) + vgbiomasrow(i,m)*FAREROT(i,m)
-        gavglai_g(i) =gavglai_g(i) + gavglairow(i,m)*FAREROT(i,m)
-        gavgltms_g(i) =gavgltms_g(i) + gavgltmsrow(i,m)*FAREROT(i,m)
-        gavgscms_g(i) =gavgscms_g(i) + gavgscmsrow(i,m)*FAREROT(i,m)
-        tcanoacc_out_g(i) =tcanoacc_out_g(i)+tcanoaccrow_out(i,m)
-     1                 *FAREROT(i,m)
-        totcmass_g(i) =vgbiomas_g(i) + gavgltms_g(i) + gavgscms_g(i)
-        gleafmas_g(i) = gleafmas_g(i) + gleafmas_m(i,m)*FAREROT(i,m)
-        bleafmas_g(i) = bleafmas_g(i) + bleafmas_m(i,m)*FAREROT(i,m)
-        stemmass_g(i) = stemmass_g(i) + stemmass_m(i,m)*FAREROT(i,m)
-        rootmass_g(i) = rootmass_g(i) + rootmass_m(i,m)*FAREROT(i,m)
-        litrmass_g(i) = litrmass_g(i) + litrmass_m(i,m)*FAREROT(i,m)
-        soilcmas_g(i) = soilcmas_g(i) + soilcmas_m(i,m)*FAREROT(i,m)
-
-        burnfrac_g(i) =burnfrac_g(i)+ burnfracrow(i,m)*FAREROT(i,m) 
-
-        probfire_g(i) =probfire_g(i)+probfirerow(i,m)*FAREROT(i,m)
-        lucemcom_g(i) =lucemcom_g(i)+lucemcomrow(i,m)*FAREROT(i,m)
-        lucltrin_g(i) =lucltrin_g(i)+lucltrinrow(i,m)*FAREROT(i,m)
-        lucsocin_g(i) =lucsocin_g(i)+lucsocinrow(i,m)*FAREROT(i,m) 
-        bterm_g(i)    =bterm_g(i)   +btermrow(i,m)*FAREROT(i,m) 
-        lterm_g(i)    =lterm_g(i)   +ltermrow(i,m)*FAREROT(i,m) 
-        mterm_g(i)    =mterm_g(i)   +mtermrow(i,m)*FAREROT(i,m)
-
-        CH4WET1_G(i) = CH4WET1_G(i) + CH4WET1ROW(i,m)*FAREROT(i,m)
-        CH4WET2_G(i) = CH4WET2_G(i) + CH4WET2ROW(i,m)*FAREROT(i,m)
-        WETFDYN_G(i) = WETFDYN_G(i) + WETFDYNROW(i,m)*FAREROT(i,m)
-        CH4DYN1_G(i) = CH4DYN1_G(i) + CH4DYN1ROW(i,m)*FAREROT(i,m)
-        CH4DYN2_G(i) = CH4DYN2_G(i) + CH4DYN2ROW(i,m)*FAREROT(i,m)
-
-           do j=1,icc  
-
-            do k=1,ignd
-             rmatctem_g(i,k)=rmatctem_g(i,k)+rmatctemrow(i,m,j,k)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-            end do
-
-           veghght_g(i) = veghght_g(i) + veghghtrow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           rootdpth_g(i) = rootdpth_g(i) + rootdpthrow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           roottemp_g(i) = roottemp_g(i) + roottemprow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           slai_g(i) = slai_g(i) + slairow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-
-           emit_co2_g(i) =emit_co2_g(i)+ emit_co2row(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_co_g(i)  =emit_co_g(i) + emit_corow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_ch4_g(i) =emit_ch4_g(i)+ emit_ch4row(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_nmhc_g(i)=emit_nmhc_g(i)+emit_nmhcrow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_h2_g(i)  =emit_h2_g(i) + emit_h2row(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_nox_g(i) =emit_nox_g(i)+ emit_noxrow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_n2o_g(i) =emit_n2o_g(i)+ emit_n2orow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_pm25_g(i)=emit_pm25_g(i)+emit_pm25row(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_tpm_g(i) =emit_tpm_g(i)+ emit_tpmrow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_tc_g(i)  =emit_tc_g(i) + emit_tcrow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_oc_g(i)  =emit_oc_g(i) + emit_ocrow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-           emit_bc_g(i)  =emit_bc_g(i) + emit_bcrow(i,m,j)
-     1                            *farerot(i,m)*fcancmxrow(i,m,j)
-
-             ailcg_g(i)=ailcg_g(i)+ailcgrow(i,m,j)*fcancmxrow(i,m,j)
-     &                   *farerot(i,m)
-             ailcb_g(i)=ailcb_g(i)+ailcbrow(i,m,j)*fcancmxrow(i,m,j)
-     &                   *farerot(i,m)
-
-           enddo 
-c
-852       continue
-c
-      if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
-        if ((iday .ge. jdstd).and.(iday .le.jdendd))then
-c           write to file .CT01D_G               
-            write(721,8200)iday,iyear,gpp_g(i),npp_g(i),
-     1                nep_g(i),nbp_g(i),autores_g(i),
-     2                hetrores_g(i),litres_g(i),socres_g(i),
-     3                (dstcemls_g(i)+dstcemls3_g(i)),
-     4                litrfall_g(i),humiftrs_g(i)
-
-c           write breakdown of some of basic fluxes to file  
-c           *.CT02D_G and selected litter fluxes for selected pft
-            write(731,8300)iday,iyear,rml_g(i),rms_g(i),
-     1          rmr_g(i),rg_g(i),leaflitr_g(i),tltrleaf_g(i),
-     2          tltrstem_g(i),tltrroot_g(i)
-c
-c           write to file .CT03D_G
-            write(741,8400)iday,iyear,vgbiomas_g(i),
-     1               gavglai_g(i),gavgltms_g(i),
-     2               gavgscms_g(i), totcmass_g(i),
-     3               gleafmas_g(i), bleafmas_g(i), stemmass_g(i),
-     4               rootmass_g(i), litrmass_g(i), soilcmas_g(i)
-c
-c           write to file .CT04D_G
-            write(751,8500)iday,iyear, ailcg_g(i), 
-     1                ailcb_g(i),(rmatctem_g(i,k),k=1,3),
-     2                veghght_g(i),rootdpth_g(i),roottemp_g(i),slai_g(i)
-c
-c           write fire and luc results to file *.CT06D_G
-c
-           if (dofire .or. lnduseon) then
-            write(781,8800)iday,iyear, 
-     1          emit_co2_g(i), emit_co_g(i), emit_ch4_g(i),
-     2          emit_nmhc_g(i), emit_h2_g(i), emit_nox_g(i),
-     3          emit_n2o_g(i), emit_pm25_g(i), emit_tpm_g(i),
-     4          emit_tc_g(i), emit_oc_g(i), emit_bc_g(i),
-     5          burnfrac_g(i)*100., probfire_g(i),lucemcom_g(i), 
-     6          lucltrin_g(i), lucsocin_g(i),
-     7          grclarea(i), bterm_g(i), lterm_g(i), mterm_g(i)
-           endif
-c      
-c      write CH4 variables to file *.CT08D_G
-c
-           if (dowetlands .or. obswetf) then
-            write(762,8810)iday,iyear, ch4wet1_g(i), 
-     1                 ch4wet2_g(i), wetfdyn_g(i), 
-     2                 ch4dyn1_g(i), ch4dyn2_g(i)
-           endif  
-    
-c	---------------peatland outputs-----------------------------------\
-c    CT11D_G   convert moss gpp from umol/m2/s to g/m2/day  
-          write (93,6993) iday,iyear, 
-     1    nppmosrow(1,1),armosrow(1,1), gppmosac_g(1)*1.0377,
-	2    (fcancmxrow(1,1,j)*gppvegrow(1,1,j), j = 1,icc),
-	3    (fcancmxrow(1,1,j)*nppvegrow(1,1,j), j = 1,icc),
-	4	(fcancmxrow(1,1,j)*autoresvegrow(1,1,j),j=1,icc),
-     5    (fcancmxrow(1,1,j)*hetroresvegrow(1,1,j),j=1,icc),
-     6    fcancmxrow
-c    CT12D_G
-	     write (94,6993) iday,iyear,(veghghtgat(1,j),   j = 1, icc),	
-	1    (rootdpthgat(1,j), j = 1,icc), (ailcggat(1,j), j = 1, icc),
-     2    (fcancmxrow(1,1,j)*stemmassrow(1,1,j), j = 1, icc), 	
-     3    (fcancmxrow(1,1,j)*rootmassrow(1,1,j), j = 1, icc), 	
-     4    (fcancmxrow(1,1,j)*litrmassrow(1,1,j), j = 1, icc), 	
-     5    (fcancmxrow(1,1,j)*gleafmasrow(1,1,j),j = 1, icc), 	
-     6    (fcancmxrow(1,1,j)*bleafmasrow(1,1,j),j = 1, icc)     
-6993	 format(2i5,100f12.6)
-c    --------reset peatland accumulators--------- ---------------------
-
-       if (ipeatlandgat(i) > 0)              		then
-		 anmosac_g(i) = 0.0
-		 rmlmosac_g(i)= 0.0
-		 gppmosac_g(i)= 0.0
-	      G12ACC (I) = 0.
-	      G23ACC (I) = 0.
-	  endif
-c    ----------------YW March 27, 2015 -------------------------------/
-
-
-            if (compete .or. lnduseon) then 
-              sumfare=0.0
-              if (mosaic) then
-               do m=1,nmos
-                 sumfare=sumfare+farerot(i,m)
-               enddo
-               write(761,8200)iday,iyear,(farerot(i,m)*100.,m=1,nmos),
-     1                      sumfare
-              else !composite
-               do j=1,icc  !m = 1
-                 sumfare=sumfare+fcancmxrow(i,1,j)
-               enddo
-               write(761,8200)iday,iyear,(fcancmxrow(i,1,j)*100.,
-     1                      j=1,icc),(1.0-sumfare)*100.,sumfare
-              endif !mosaic/composite
-            endif !compete/lnduseon
-c
-          endif !    if ((iday .ge. jdstd).and.(iday .le.jdendd))  
-          endif !    if ((iyear .ge. jdsty).and.(iyear.le.jdendy))
-c
-851     continue
-c
-      endif ! if(ncount.eq.nday) 
-
-      endif ! if(ctem_on)
-c
       endif ! if(not.parallelrun)
 c
 c=======================================================================
 c     Calculate monthly & yearly output for ctem
 c
-
-c     First initialize some output variables
-c     initialization is done just before use.
-
       if (ctem_on) then
-       if(ncount.eq.nday) then
-c
-        !do 861 i=1,nltest
-
+        if(ncount.eq.nday) then
 c
           do nt=1,nmon
-           if (iday.eq.mmday(nt)) then
-
-            call resetmidmonth(nltest)
-
-           endif
+            if (iday.eq.mmday(nt)) then
+              call resetmidmonth(nltest)
+            endif
           enddo
 c
-
           if(iday.eq.monthend(imonth+1))then
-
             call resetmonthend_g(nltest)
-
           endif
 c
           if (iday .eq. 365) then
-
-c           No resetyearend_g in the merged branch, so leave it for now 
-c            call resetyearend_g(nltest)
-
-           laimaxg_yr_g(i)=0.0
-           stemmass_yr_g(i)=0.0
-           rootmass_yr_g(i)=0.0
-           litrmass_yr_g(i)=0.0
-           soilcmas_yr_g(i)=0.0 
-           vgbiomas_yr_g(i)=0.0 
-           totcmass_yr_g(i)=0.0 
-           npp_yr_g(i)=0.0
-           gpp_yr_g(i)=0.0
-           nep_yr_g(i)=0.0 
-           nbp_yr_g(i)=0.0
-           hetrores_yr_g(i)=0.0
-           autores_yr_g(i)=0.0
-           litres_yr_g(i)=0.0
-           soilcres_yr_g(i)=0.0
-           emit_co2_yr_g(i)=0.0
-           emit_co_yr_g(i)=0.0
-           emit_ch4_yr_g(i)=0.0
-           emit_nmhc_yr_g(i)=0.0
-           emit_h2_yr_g(i)=0.0
-           emit_nox_yr_g(i)=0.0
-           emit_n2o_yr_g(i)=0.0
-           emit_pm25_yr_g(i)=0.0
-           emit_tpm_yr_g(i)=0.0
-           emit_tc_yr_g(i)=0.0
-           emit_oc_yr_g(i)=0.0
-           emit_bc_yr_g(i)=0.0
-           probfire_yr_g(i)=0.0
-           luc_emc_yr_g(i)=0.0
-           lucsocin_yr_g(i)=0.0
-           lucltrin_yr_g(i)=0.0
-           burnfrac_yr_g(i)=0.0
-           bterm_yr_g(i)=0.0 
-           lterm_yr_g(i)=0.0
-           mterm_yr_g(i)=0.0
-c          CH4(wetland) related variables !Rudra 04/12/2013
-           ch4wet1_yr_g(i)  =0.0
-           ch4wet2_yr_g(i)  =0.0
-           wetfdyn_yr_g(i)  =0.0
-           ch4dyn1_yr_g(i)  =0.0
-           ch4dyn2_yr_g(i)  =0.0
-           hpd_yr_g(i) = 0.0 
+c           Re-enabled, replacing loop 861 and fixes a bug with laimaxg_yr_g which wasn't
+c           getting properly reset to 0. EC - Feb 16, 2016.
+            call resetyearend_g(nltest)
           endif
 
-861     continue
+!         CTEM--------------\
+!         Only bother with monthly calculations if we desire those outputs to be written out.
+          if (iyear .ge. jmosty) then
+!         CTEM--------------/
+
+            call ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday)
+
+          end if !to write out the monthly outputs or not
 c
+c         Accumulate yearly outputs.
+c         Re-enabled. YW modifications moved to io_driver.f90. EC - Feb 16 2016.
 
-!       CTEM--------------\
-!     Only bother with monthly calculations if we desire those outputs to be written out.
-      if (iyear .ge. jmosty) then
-!       CTEM--------------/
+          call ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear)
 
-        call ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday)
-
-        end if !to write out the monthly outputs or not
-c
-c       accumulate yearly outputs
-c       same here , haven't found ctem_annual_aw, so leave it for now
-c            call ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear)
-c
-        do 882 i=1,nltest
-          do 883 m=1,nmtest
-            do 884 j=1,icc          
-
-             if (ailcgrow(i,m,j).gt.laimaxg_yr_m(i,m,j)) then
-               laimaxg_yr_m(i,m,j)=ailcgrow(i,m,j)
-             end if
-
-            npp_yr_m(i,m,j)=npp_yr_m(i,m,j)+nppvegrow(i,m,j)
-            gpp_yr_m(i,m,j)=gpp_yr_m(i,m,j)+gppvegrow(i,m,j) 
-            nep_yr_m(i,m,j)=nep_yr_m(i,m,j)+nepvegrow(i,m,j) 
-            nbp_yr_m(i,m,j)=nbp_yr_m(i,m,j)+nbpvegrow(i,m,j) 
-            emit_co2_yr_m(i,m,j)=emit_co2_yr_m(i,m,j)+emit_co2row(i,m,j)
-            emit_co_yr_m(i,m,j)=emit_co_yr_m(i,m,j)+emit_corow(i,m,j)
-            emit_ch4_yr_m(i,m,j)=emit_ch4_yr_m(i,m,j)+emit_ch4row(i,m,j)
-            emit_nmhc_yr_m(i,m,j)=emit_nmhc_yr_m(i,m,j)+
-     1                            emit_nmhcrow(i,m,j)
-            emit_h2_yr_m(i,m,j)=emit_h2_yr_m(i,m,j)+emit_h2row(i,m,j)
-            emit_nox_yr_m(i,m,j)=emit_nox_yr_m(i,m,j)+emit_noxrow(i,m,j)
-            emit_n2o_yr_m(i,m,j)=emit_n2o_yr_m(i,m,j)+emit_n2orow(i,m,j)
-            emit_pm25_yr_m(i,m,j)=emit_pm25_yr_m(i,m,j)+
-     1                            emit_pm25row(i,m,j)
-            emit_tpm_yr_m(i,m,j)=emit_tpm_yr_m(i,m,j)+emit_tpmrow(i,m,j)
-            emit_tc_yr_m(i,m,j)=emit_tc_yr_m(i,m,j)+emit_tcrow(i,m,j)
-            emit_oc_yr_m(i,m,j)=emit_oc_yr_m(i,m,j)+emit_ocrow(i,m,j)
-            emit_bc_yr_m(i,m,j)=emit_bc_yr_m(i,m,j)+emit_bcrow(i,m,j)
-
-            hetrores_yr_m(i,m,j)=hetrores_yr_m(i,m,j)
-     &                                +hetroresvegrow(i,m,j) 
-            autores_yr_m(i,m,j)=autores_yr_m(i,m,j)
-     &                                +autoresvegrow(i,m,j) 
-            litres_yr_m(i,m,j)=litres_yr_m(i,m,j)+litresvegrow(i,m,j) 
-            soilcres_yr_m(i,m,j)=soilcres_yr_m(i,m,j)
-     &                                +soilcresvegrow(i,m,j) 
-            burnfrac_yr_m(i,m,j)=burnfrac_yr_m(i,m,j)+burnvegfrow(i,m,j)
-
-884         continue
-
-!           Also do the bare fraction amounts
-            hetrores_yr_m(i,m,iccp1)=hetrores_yr_m(i,m,iccp1)+
-     &                                  hetroresvegrow(i,m,iccp1) 
-            litres_yr_m(i,m,iccp1)=litres_yr_m(i,m,iccp1)+
-     &                                  litresvegrow(i,m,iccp1) 
-            soilcres_yr_m(i,m,iccp1)=soilcres_yr_m(i,m,iccp1)+
-     &                                  soilcresvegrow(i,m,iccp1) 
-            nep_yr_m(i,m,iccp1)=nep_yr_m(i,m,iccp1)+nepvegrow(i,m,iccp1) 
-            nbp_yr_m(i,m,iccp1)=nbp_yr_m(i,m,iccp1)+nbpvegrow(i,m,iccp1) 
-
-            probfire_yr_m(i,m)=probfire_yr_m(i,m)
-     &                         +(probfirerow(i,m) * (1./365.))
-            bterm_yr_m(i,m)=bterm_yr_m(i,m)+(btermrow(i,m)*(1./365.))  
-            lterm_yr_m(i,m)=lterm_yr_m(i,m)+(ltermrow(i,m)*(1./365.))
-            mterm_yr_m(i,m)=mterm_yr_m(i,m)+(mtermrow(i,m)*(1./365.))
-            luc_emc_yr_m(i,m)=luc_emc_yr_m(i,m)+lucemcomrow(i,m)
-            lucsocin_yr_m(i,m)=lucsocin_yr_m(i,m)+lucsocinrow(i,m)
-            lucltrin_yr_m(i,m)=lucltrin_yr_m(i,m)+lucltrinrow(i,m)
-c             CH4(wetland) variables !Rudra 
-
-               ch4wet1_yr_m(i,m) = ch4wet1_yr_m(i,m)
-     &                           +ch4wet1row(i,m)
-               ch4wet2_yr_m(i,m) = ch4wet2_yr_m(i,m)
-     &                           +ch4wet2row(i,m)
-               wetfdyn_yr_m(i,m) = wetfdyn_yr_m(i,m)
-     &                           +(wetfdynrow(i,m)*(1./365.))
-               ch4dyn1_yr_m(i,m) = ch4dyn1_yr_m(i,m)
-     &                           +ch4dyn1row(i,m)
-               ch4dyn2_yr_m(i,m) = ch4dyn2_yr_m(i,m)
-     &                           +ch4dyn2row(i,m)
-               hpd_yr_m(i,m)=hpdrow(i,m)      !YW September 04, 2015 
-
-            if (iday.eq.365) then
-
-              do 885 j=1,icc
-                stemmass_yr_m(i,m,j)=stemmassrow(i,m,j)
-                rootmass_yr_m(i,m,j)=rootmassrow(i,m,j)
-                litrmass_yr_m(i,m,j)=litrmassrow(i,m,j)
-                soilcmas_yr_m(i,m,j)=soilcmasrow(i,m,j)
-                vgbiomas_yr_m(i,m,j)=vgbiomas_vegrow(i,m,j)
-                totcmass_yr_m(i,m,j)=vgbiomas_yr_m(i,m,j)+
-     &                               litrmass_yr_m(i,m,j)+
-     &                               soilcmas_yr_m(i,m,j)
-
-885           continue
-
-                litrmass_yr_m(i,m,iccp1)=litrmassrow(i,m,iccp1)
-                soilcmas_yr_m(i,m,iccp1)=soilcmasrow(i,m,iccp1)
-                barefrac=1.0
-
-              do j=1,icc
-                laimaxg_yr_g(i)=laimaxg_yr_g(i)+ laimaxg_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j) 
-                stemmass_yr_g(i)=stemmass_yr_g(i)+stemmass_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j) 
-                rootmass_yr_g(i)=rootmass_yr_g(i)+rootmass_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j) 
-                litrmass_yr_g(i)=litrmass_yr_g(i)+litrmass_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j) 
-                soilcmas_yr_g(i)=soilcmas_yr_g(i)+soilcmas_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)   
-                vgbiomas_yr_g(i)=vgbiomas_yr_g(i)+vgbiomas_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j) 
-                totcmass_yr_g(i)=totcmass_yr_g(i)+totcmass_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j) 
-
-                npp_yr_g(i)=npp_yr_g(i)+npp_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                gpp_yr_g(i)=gpp_yr_g(i)+gpp_yr_m(i,m,j)    
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                nep_yr_g(i)=nep_yr_g(i)+nep_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                nbp_yr_g(i)=nbp_yr_g(i)+nbp_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_co2_yr_g(i)=emit_co2_yr_g(i)+emit_co2_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_co_yr_g(i)=emit_co_yr_g(i)+emit_co_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_ch4_yr_g(i)=emit_ch4_yr_g(i)+emit_ch4_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-               emit_nmhc_yr_g(i)=emit_nmhc_yr_g(i)+emit_nmhc_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_h2_yr_g(i)=emit_h2_yr_g(i)+emit_h2_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_nox_yr_g(i)=emit_nox_yr_g(i)+emit_nox_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_n2o_yr_g(i)=emit_n2o_yr_g(i)+emit_n2o_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-               emit_pm25_yr_g(i)=emit_pm25_yr_g(i)+emit_pm25_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_tpm_yr_g(i)=emit_tpm_yr_g(i)+emit_tpm_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_tc_yr_g(i)=emit_tc_yr_g(i)+emit_tc_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_oc_yr_g(i)=emit_oc_yr_g(i)+emit_oc_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                emit_bc_yr_g(i)=emit_bc_yr_g(i)+emit_bc_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-
-                hetrores_yr_g(i)=hetrores_yr_g(i)+hetrores_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                autores_yr_g(i) =autores_yr_g(i) +autores_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                litres_yr_g(i)  =litres_yr_g(i)  +litres_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                soilcres_yr_g(i) =soilcres_yr_g(i) +soilcres_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-                burnfrac_yr_g(i)=burnfrac_yr_g(i)+burnfrac_yr_m(i,m,j)
-     &                          *farerot(i,m)*fcancmxrow(i,m,j)
-
-                barefrac=barefrac-farerot(i,m)*fcancmxrow(i,m,j) 
-
-              end do !j
-
-              litrmass_yr_g(i)=litrmass_yr_g(i)+litrmass_yr_m(i,m,iccp1)
-     &                          *barefrac
-              soilcmas_yr_g(i)=soilcmas_yr_g(i)+soilcmas_yr_m(i,m,iccp1)
-     &                          *barefrac
-              hetrores_yr_g(i)=hetrores_yr_g(i)+hetrores_yr_m(i,m,iccp1)
-     &                          *barefrac
-              litres_yr_g(i)  =litres_yr_g(i)  +litres_yr_m(i,m,iccp1)
-     &                          *barefrac
-              soilcres_yr_g(i)=soilcres_yr_g(i)+soilcres_yr_m(i,m,iccp1)
-     &                          *barefrac
-                nep_yr_g(i)=nep_yr_g(i)+nep_yr_m(i,m,j)
-     &                          *barefrac
-                nbp_yr_g(i)=nbp_yr_g(i)+nbp_yr_m(i,m,j)
-     &                          *barefrac
-   
-
-              probfire_yr_g(i)=probfire_yr_g(i)
-     &                         +probfire_yr_m(i,m)*farerot(i,m)   
-              bterm_yr_g(i)=bterm_yr_g(i)+bterm_yr_m(i,m)*farerot(i,m)   
-              lterm_yr_g(i)=lterm_yr_g(i)+lterm_yr_m(i,m)*farerot(i,m)   
-              mterm_yr_g(i)=mterm_yr_g(i)+mterm_yr_m(i,m)*farerot(i,m)   
-              luc_emc_yr_g(i)=luc_emc_yr_g(i)
-     &                         +luc_emc_yr_m(i,m)*farerot(i,m)   
-              lucsocin_yr_g(i)=lucsocin_yr_g(i)
-     &                         +lucsocin_yr_m(i,m)*farerot(i,m)   
-              lucltrin_yr_g(i)=lucltrin_yr_g(i)
-     &                         +lucltrin_yr_m(i,m)*farerot(i,m) 
-c    CH4(wetland) variables !Rudra 
-
-               ch4wet1_yr_g(i) = ch4wet1_yr_g(i)
-     &                           +ch4wet1_yr_m(i,m)*farerot(i,m)
-               ch4wet2_yr_g(i) = ch4wet2_yr_g(i)
-     &                           +ch4wet2_yr_m(i,m)*farerot(i,m)
-               wetfdyn_yr_g(i) = wetfdyn_yr_g(i)
-     &                           +wetfdyn_yr_m(i,m)*farerot(i,m)
-               ch4dyn1_yr_g(i) = ch4dyn1_yr_g(i)
-     &                           +ch4dyn1_yr_m(i,m)*farerot(i,m)
-               ch4dyn2_yr_g(i) = ch4dyn2_yr_g(i)
-     &                           +ch4dyn2_yr_m(i,m)*farerot(i,m)
-
-            hpd_yr_g(i)=hpd_yr_g(i)+hpd_yr_m(i,m)*farerot(i,m)    !YW September 04, 2015 
-  
-c
-            endif ! iday 365
-c
-883       continue ! m
-c
-          if (iday.eq.365) then
-
-              barefrac=1.0
-c            Write to file .CT01Y_M/.CT01Y_G
-
-           do m=1,nmtest
-            do j=1,icc
-
-                barefrac=barefrac-fcancmxrow(i,m,j)*farerot(i,m)
-
-             if (farerot(i,m)*fcancmxrow(i,m,j) .gt. seed) then
-              write(86,8105)iyear,laimaxg_yr_m(i,m,j),
-     1            vgbiomas_yr_m(i,m,j),stemmass_yr_m(i,m,j),
-     2            rootmass_yr_m(i,m,j),litrmass_yr_m(i,m,j),
-     3            soilcmas_yr_m(i,m,j),totcmass_yr_m(i,m,j),
-     4            npp_yr_m(i,m,j),gpp_yr_m(i,m,j),nep_yr_m(i,m,j),
-     5            nbp_yr_m(i,m,j),hetrores_yr_m(i,m,j),
-     6            autores_yr_m(i,m,j),litres_yr_m(i,m,j),
-     9            soilcres_yr_m(i,m,j),' TILE ',m,' PFT ',j,' FRAC '
-     a            ,farerot(i,m)*fcancmxrow(i,m,j)
-             end if
-            end do !j
-
-!           Now do the bare fraction of the grid cell. Only soil c, hetres
-!           and litter are relevant so the rest are set to 0. 
-            if (m .eq. nmtest) then
-             if (barefrac .gt. seed) then
-              write(86,8105)iyear,0.,
-     1            0., 
-     1            0.,0.,
-     2            litrmassrow(i,m,iccp1),soilcmasrow(i,m,iccp1),
-     3            0.+soilcmasrow(i,m,iccp1)+
-     2            litrmassrow(i,m,iccp1),0.,
-     4            0.,0.,
-     5            0.,hetrores_yr_m(i,m,iccp1),
-     6            0.,litres_yr_m(i,m,iccp1),soilcres_yr_m(i,m,iccp1),
-     7            ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
-             end if
-            end if
-           end do !m
-           
-             write(86,8105)iyear,laimaxg_yr_g(i),vgbiomas_yr_g(i),
-     1            stemmass_yr_g(i),rootmass_yr_g(i),litrmass_yr_g(i),
-     2            soilcmas_yr_g(i),totcmass_yr_g(i),npp_yr_g(i),
-     3            gpp_yr_g(i),nep_yr_g(i),
-     4            nbp_yr_g(i),hetrores_yr_g(i),autores_yr_g(i),
-     5            litres_yr_g(i),soilcres_yr_g(i),' GRDAV'
-     
-
-           if (dofire .or. lnduseon) then
-c            Write to file .CT06Y_M/.CT06Y_G
-            do m=1,nmtest
-             do j=1,icc
-              if (farerot(i,m)*fcancmxrow(i,m,j) .gt. seed) then
-               write(87,8108)iyear,emit_co2_yr_m(i,m,j),
-     1            emit_co_yr_m(i,m,j),emit_ch4_yr_m(i,m,j),
-     2            emit_nmhc_yr_m(i,m,j),emit_h2_yr_m(i,m,j),
-     3            emit_nox_yr_m(i,m,j),emit_n2o_yr_m(i,m,j),
-     4            emit_pm25_yr_m(i,m,j),emit_tpm_yr_m(i,m,j),
-     5            emit_tc_yr_m(i,m,j),emit_oc_yr_m(i,m,j),
-     6            emit_bc_yr_m(i,m,j),probfire_yr_m(i,m),
-     7            luc_emc_yr_m(i,m),lucltrin_yr_m(i,m),
-     8            lucsocin_yr_m(i,m),burnfrac_yr_m(i,m,j)*100.,
-     9            bterm_yr_m(i,m),lterm_yr_m(i,m),mterm_yr_m(i,m),
-     9            ' TILE ',m,' PFT ',j,' FRAC '
-     a            ,farerot(i,m)*fcancmxrow(i,m,j)
-             end if
-            end do
-           end do
-
-             write(87,8108)iyear,emit_co2_yr_g(i),
-     4            emit_co_yr_g(i),emit_ch4_yr_g(i),emit_nmhc_yr_g(i),
-     5            emit_h2_yr_g(i),emit_nox_yr_g(i),emit_n2o_yr_g(i),
-     6            emit_pm25_yr_g(i),emit_tpm_yr_g(i),emit_tc_yr_g(i),
-     7            emit_oc_yr_g(i),emit_bc_yr_g(i),probfire_yr_g(i),
-     8            luc_emc_yr_g(i),lucltrin_yr_g(i),
-     9            lucsocin_yr_g(i),burnfrac_yr_g(i)*100.,bterm_yr_g(i),
-     a            lterm_yr_g(i),mterm_yr_g(i), ' GRDAV'
-
-           endif !dofire,lnduseon
-
-c           write fraction of each pft and bare 
-c
-             if (compete .or. lnduseon) then
-                 sumfare=0.0
-               if (mosaic) then
-                 do m=1,nmos
-                    sumfare=sumfare+farerot(i,m)
-                 enddo
-                 write(89,8107)iyear,(farerot(i,m)*100.,m=1,nmos),
-     &                         sumfare,(pftexistrow(i,j,j),j=1,icc)
-               else  !composite
-                 m=1 
-                 do j=1,icc  
-                    sumfare=sumfare+fcancmxrow(i,m,j)
-                 enddo
-                write(89,8107)iyear,(fcancmxrow(i,m,j)*100.,
-     1                       j=1,icc),(1.0-sumfare)*100.,sumfare,
-     2                      (pftexistrow(i,m,j),j=1,icc)
-
-               endif
-             endif !compete/lnduseon
-C            
-              if (dowetlands .or. obswetf) then 
-                write(92,8115)iyear,ch4wet1_yr_g(i),
-     1                     ch4wet2_yr_g(i),wetfdyn_yr_g(i),
-     2                     ch4dyn1_yr_g(i),ch4dyn2_yr_g(i)
-              endif 
-
-c           write(90,*) iyear, hpd_yr_g(i)
-
-c             initialize yearly accumulated arrays
-c             for the next round
-
-             do m=1,nmtest
-              probfire_yr_m(i,m)=0.0
-              luc_emc_yr_m(i,m)=0.0
-              lucsocin_yr_m(i,m)=0.0
-              lucltrin_yr_m(i,m)=0.0
-              bterm_yr_m(i,m)=0.0
-              lterm_yr_m(i,m)=0.0
-              mterm_yr_m(i,m)=0.0
-C       !Rudra
-               ch4wet1_yr_m(i,m)  =0.0
-               ch4wet2_yr_m(i,m)  =0.0
-               wetfdyn_yr_m(i,m)  =0.0
-               ch4dyn1_yr_m(i,m)  =0.0
-               ch4dyn2_yr_m(i,m)  =0.0
-               hpd_yr_m(i,m)      =0.0      !YW September 04, 2015 
-
-               do j = 1, icc 
-                laimaxg_yr_m(i,m,j)=0.0
-                npp_yr_m(i,m,j)=0.0
-                gpp_yr_m(i,m,j)=0.0
-                nep_yr_m(i,m,j)=0.0 
-                nbp_yr_m(i,m,j)=0.0 
-                emit_co2_yr_m(i,m,j)=0.0
-                emit_co_yr_m(i,m,j)=0.0
-                emit_ch4_yr_m(i,m,j)=0.0
-                emit_nmhc_yr_m(i,m,j)=0.0
-                emit_h2_yr_m(i,m,j)=0.0
-                emit_nox_yr_m(i,m,j)=0.0
-                emit_n2o_yr_m(i,m,j)=0.0
-                emit_pm25_yr_m(i,m,j)=0.0
-                emit_tpm_yr_m(i,m,j)=0.0
-                emit_tc_yr_m(i,m,j)=0.0
-                emit_oc_yr_m(i,m,j)=0.0
-                emit_bc_yr_m(i,m,j)=0.0
-                hetrores_yr_m(i,m,j)=0.0 
-                autores_yr_m(i,m,j)=0.0 
-                litres_yr_m(i,m,j)=0.0 
-                soilcres_yr_m(i,m,j)=0.0 
-                burnfrac_yr_m(i,m,j)=0.0
-              
-               enddo
-                hetrores_yr_m(i,m,iccp1)=0.0  
-                litres_yr_m(i,m,iccp1)=0.0 
-                soilcres_yr_m(i,m,iccp1)=0.0 
-                nep_yr_m(i,m,iccp1)=0.0 
-                nbp_yr_m(i,m,iccp1)=0.0 
-             enddo
-
-            endif ! if iday=365
-c
-882     continue ! i
-c
-      endif ! if(ncount.eq.nday)
+        endif ! if(ncount.eq.nday)
       endif ! if(ctem_on)
-C
-
-8105  FORMAT(1X,I5,15(F10.3,1X),2(A6,I2),A6,F8.2)
-8107  FORMAT(1X,I5,11(F10.5,1X),9L5,2(A6,I2))
-8108  FORMAT(1X,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
-8115  FORMAT(1X,I5,5(F10.3,1X),2(A6,I2))
 
 C     OPEN AND WRITE TO THE RESTART FILES
 C

@@ -6,7 +6,7 @@ OBJ = ctem_params.o ctem_statevars.o APREP.o CLASSBD.o GRALB.o mvidx.o SNOW_ALBV
 
 # Binary dir
 #
-BDIR = ../bin
+BDIR = ..
 
 # PGI
 FC=pgf90
@@ -44,6 +44,8 @@ export PGIMACH=linux86-64
 
 CLASS36CTEM: $(OBJ)
 	 $(FC) $(FFLAGS) -o $(BDIR)/CLASS36CTEM $(OBJ)
+
+io_driver.o: ctem_statevars.o
 
 .PHONY: clean
 

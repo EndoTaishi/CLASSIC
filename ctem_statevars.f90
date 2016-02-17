@@ -170,6 +170,8 @@ type veg_rot
     real, dimension(nlat,nmos) :: ch4dyn2
     real, dimension(nlat,12) :: wetfrac_mon
 
+    real, dimension(nlat,nmos) :: hpd  !  EC: Should this go here or elsewhere?
+
     real, dimension(nlat,nmos) :: lucemcom
     real, dimension(nlat,nmos) :: lucltrin
     real, dimension(nlat,nmos) :: lucsocin
@@ -188,6 +190,9 @@ type veg_rot
     real, dimension(nlat,nmos) :: dstcemls
     real, dimension(nlat,nmos) :: litrfall
     real, dimension(nlat,nmos) :: humiftrs
+
+    real, dimension(nlat,nmos) :: nppmos
+    real, dimension(nlat,nmos) :: armos
 
     real, dimension(nlat,nmos,icc) :: gppveg
     real, dimension(nlat,nmos,iccp1) :: nepveg
@@ -697,6 +702,8 @@ type ctem_mosaic_level
       real, dimension(ilg,icc) :: rmlcgvga_m
       integer, dimension(nlat,nmos) :: ifcancmx_m
 
+      real, dimension(ilg) :: gppmosac_g ! Unconventional name, should review. EC - Feb, 2016.
+
 end type ctem_mosaic_level
 
 type (ctem_mosaic_level), save, target :: ctem_tile
@@ -851,6 +858,7 @@ type ctem_gridavg_annual
     real, dimension(nlat) :: wetfdyn_yr_g
     real, dimension(nlat) :: ch4dyn1_yr_g
     real, dimension(nlat) :: ch4dyn2_yr_g
+    real, dimension(nlat) :: hpd_yr_g
 
 end type ctem_gridavg_annual
 
@@ -903,6 +911,7 @@ type ctem_mosaic_annual
       real, dimension(nlat,nmos) :: wetfdyn_yr_m
       real, dimension(nlat,nmos) :: ch4dyn1_yr_m
       real, dimension(nlat,nmos) :: ch4dyn2_yr_m
+      real, dimension(nlat,nmos) :: hpd_yr_m
 
 end type ctem_mosaic_annual
 
@@ -1002,6 +1011,9 @@ integer :: j,k,l,m
         vrot%ch4dyn1(j,k)          = 0.0
         vrot%ch4dyn2(j,k)          = 0.0
 
+        vrot%nppmos(j,k)           = 0.0
+        vrot%armos(j,k)            = 0.0
+        vrot%hpd(j,k)              = 0.0
 
         do l=1,ignd
             vrot%tbaraccrow_m(j,k,l)  = 0.0
@@ -1363,6 +1375,8 @@ do i=1,nltest
     ctem_grd_yr%wetfdyn_yr_g(i)  =0.0
     ctem_grd_yr%ch4dyn1_yr_g(i)  =0.0
     ctem_grd_yr%ch4dyn2_yr_g(i)  =0.0
+
+    ctem_grd_yr%hpd_yr_g(i)  =0.0
 
 end do
 
