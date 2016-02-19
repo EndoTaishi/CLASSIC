@@ -689,11 +689,7 @@ c
       real, pointer, dimension(:,:) :: ch4dyn2row
       real, pointer, dimension(:,:) :: wetfrac_mon
 
-c     For some reason, using vrot%hpd instead of a locally defined
-c     variable results in a difference to the output in a number of files, 
-c     which shouldn't happen?! Note that a similar change for hpdgat works.
-c     Needs further investigation. EC - Feb 16, 2016.
-c     real, pointer, dimension(:,:) :: hpdrow 
+      real, pointer, dimension(:,:) :: hpdrow 
 
       real, pointer, dimension(:,:) :: lucemcomrow
       real, pointer, dimension(:,:) :: lucltrinrow
@@ -1079,10 +1075,9 @@ c   ----CLASS moss variables------- ----------------------------------
      2      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg),
      3      thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
      4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
-     5      hpdrow(nlat,nmos), hpdgat(ilg),
+     5      hpdgat(ilg),
      6      HourAngle(ilg),   daylength(ilg), CosHourAngel  
      7      ,pdd(ilg), cdd(ilg)
-c    5      hpdgat(ilg),
 c   ----CTEM moss variables--------------------------------------------
       real  anmosrow(nlat,nmos)  ,      anmosgat(ilg),
      1      rmlmosrow(nlat,nmos) ,      rmlmosgat(ilg),  
@@ -1354,7 +1349,7 @@ C===================== CTEM ==============================================\
       ch4dyn2row        => vrot%ch4dyn2
       wetfrac_mon       => vrot%wetfrac_mon
 
-c     hpdrow            => vrot%hpd
+      hpdrow            => vrot%hpd
 
       lucemcomrow       => vrot%lucemcom
       lucltrinrow       => vrot%lucltrin
@@ -3286,15 +3281,21 @@ C
 
             if (ctem_on) then
               if (obswetf) then
+                do i=1,nltest    ! do loop missing - fixed, EC Feb 18, 2016
                   read(16,*,end=1001) obswetyr,(wetfrac_mon(i,j),j=1,12)
+                enddo
               else
+                 do i=1,nltest   ! do loop missing - fixed, EC Feb 18, 2016
                    do j = 1,12
                      wetfrac_mon(i,j) = 0.0
                    enddo
+                 enddo
               endif !obswetf
 
               if(obslght) then
+               do i=1,nltest     ! do loop missing - fixed, EC Feb 18, 2016
                 read(17,*,end=312) obslghtyr,(mlightnggrd(i,j),j=1,12)
+               enddo
 312             continue !if end of file, just keep using the last year of lighting data.
               end if !obslight
 
