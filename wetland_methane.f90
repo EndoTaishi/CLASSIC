@@ -1,6 +1,6 @@
-subroutine wetland_methane (hetrores, il1, il2, ilg, ta, wetfrac, &
-                       ignd, npp, tbar, thliqg, currlat, &
-                        sand,  wetfrac_s, &! obswetf, &
+subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &
+                       npp, tbar, thliqg, currlat, &
+                        sand,  slopefrac, &! obswetf, &
 !
 !    -------------- inputs above this line, outputs below -------------
                        ch4wet1,    ch4wet2,    wetfdyn,  &
@@ -17,21 +17,19 @@ subroutine wetland_methane (hetrores, il1, il2, ilg, ta, wetfrac, &
 
 use ctem_params,        only : wtdryres, ratioch4, factor2,lat_thrshld1, &
                                lat_thrshld2, soilw_thrshN, soilw_thrshE, &
-                               soilw_thrshS 
+                               soilw_thrshS, ilg, ignd
 
 implicit none
 
 !logical, intent(in) :: obswetf                  ! if true the observed wetland fraction will be used.
-integer, intent(in) :: ilg                      ! no. of grid cells in latitude circle
 integer, intent(in) :: il1                      ! il1=1
 integer, intent(in) :: il2                      ! il2=ilg
-integer, intent(in) :: ignd                     ! no. of soil layers 
 real, dimension(ilg), intent(in) :: hetrores    ! heterotrophic respiration from main ctem program calculated as sum of litres + socres
 real, dimension(ilg), intent(in) :: ta          ! air temperature, k
 real, dimension(ilg), intent(in) :: wetfrac     ! prescribed fraction of wetlands in a grid cell
 real, dimension(ilg), intent(in) :: npp         ! grid-averaged npp from ctem (u-mol co2/m2.s)
 real, dimension(ilg), intent(in) :: currlat     ! centre latitude of grid cells in degrees
-real, dimension(ilg,8), intent(in) :: wetfrac_s ! prescribed fraction of wetlands based on slope only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
+real, dimension(ilg,8), intent(in) :: slopefrac ! prescribed fraction of wetlands based on slope only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
 real, dimension(ilg,ignd), intent(in) :: tbar   ! temperature of soil layers
 real, dimension(ilg,ignd), intent(in) :: thliqg ! liquid soil moisture content (fraction)
 real, dimension(ilg,ignd), intent(in) :: sand   ! percentage sand in soil layers
@@ -101,15 +99,15 @@ do 110 i = il1, il2
 ! Original way:
 !     if (currlat(i).ge.lat_thrshld1) then ! all area north of 35 n
 !        if(soil_wetness.gt.soilw_thrshN)then ! ckw 3041-3050
-!           wetfdyn(i)=wetfrac_s(i)
+!           wetfdyn(i)=slopefrac_(i)
 !        endif
 !     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! between 10 s and 35 n
 !        if(soil_wetness.gt.soilw_thrshE)then   ! ckw 3041-3050
-!            wetfdyn(i)=wetfrac_s(i)
+!            wetfdyn(i)=slopefrac_(i)
 !        endif
 !     else ! everything else below 10 s
 !        if(soil_wetness.gt.soilw_thrshS)then ! ckw 3041-3050
-!            wetfdyn(i)=wetfrac_s(i)
+!            wetfdyn(i)=slopefrac_(i)
 !        endif
 !     endif    
 
@@ -130,11 +128,11 @@ do 110 i = il1, il2
       end if
 
         if(soil_wetness .gt. low_mois_lim .and. soil_wetness .le. mid_mois_lim) then 
-           wetfdyn(i)=wetfrac_s(i,1)  !<0.025% slope class
+           wetfdyn(i)=slopefrac(i,1)  !<0.025% slope class
         elseif (soil_wetness .gt. mid_mois_lim .and. soil_wetness .le. upp_mois_lim) then
-            wetfdyn(i)=wetfrac_s(i,3) !<0.1 % slope class
+            wetfdyn(i)=slopefrac(i,3) !<0.1 % slope class
         elseif (soil_wetness .gt. upp_mois_lim) then 
-            wetfdyn(i)=wetfrac_s(i,5) ! <0.2% slope class
+            wetfdyn(i)=slopefrac(i,5) ! <0.2% slope class
         endif
      
 
@@ -155,8 +153,3 @@ do 110 i = il1, il2
 
 return
 end
- 
-
-
-
-

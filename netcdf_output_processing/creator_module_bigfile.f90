@@ -11,10 +11,9 @@ implicit none
 ! June 19, 2013
 
 ! Parameters
-integer, parameter :: ntile = 10  	! maximum number of mosiac tiles (9 PFTs + 1 bare)
-integer, parameter :: ctemnpft = 9      ! number of CTEM pfts 
+integer, parameter :: ntile = 10  	! maximum number of mosiac tiles
+integer, parameter :: ctemnpft = 10      ! number of CTEM pfts  ! this includes the bare!
 integer, parameter :: classnpft = 4     ! number of CLASS pfts
-integer, parameter :: nl = 3		! number of soil layers
 !integer, parameter :: cntx = 96		! number of longitudes T47
 !integer, parameter :: cnty = 48		! number of latitudes T47
 integer, parameter :: cntx = 128		! number of longitudes T47
@@ -82,6 +81,9 @@ real, parameter, dimension(cntx) :: valslons= &
     303.75, 306.5625, 309.375, 312.1875, 315.0, 317.8125, 320.625, 323.4375, &
     326.25, 329.0625, 331.875, 334.6875, 337.5, 340.3125, 343.125, 345.9375, &
     348.75, 351.5625, 354.375, 357.1875 ]
+
+integer, parameter, dimension(13) :: monthend = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] ! calender day at end of each month
+
 ! ---------------- VARIABLES ---------------- 
 
 integer :: lon,lat,tile,pft,month,time,layer,lat_bnds,lon_bnds,bnds
@@ -102,7 +104,7 @@ real, allocatable, dimension(:,:) :: latbound
 real, allocatable, dimension(:,:) :: lonbound
 
 ! When the arrays are declared below, they share commonalities between the
-! composite and mosaic formats. The distinctions between the two occur in the 
+! composite and tiled formats. The distinctions between the two occur in the
 ! netcdf_creator and writer subroutines. We do distinguish between disturbance
 ! and competition here.
 
@@ -162,7 +164,7 @@ character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_NAME=['Shortwave 
 character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_UNIT=['W/$m^2$          ','W/$m^2$','W/$m^2$','W/$m^2$',&
                                                                      'mm/year','mm/year','mm/year']
 
-!====================== Declare arrays for monthly CTEM COMPOSITE AND MOSAIC=============
+!====================== Declare arrays for monthly CTEM COMPOSITE AND tiled=============
 
 ! NOTE: These do not include disturbance or competition variables. 
 
@@ -179,6 +181,10 @@ character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR=['LAIMAXG     
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR_GA=['LAIMAXG_GA          ','VGBIOMAS_GA','LITTER_GA','SOIL_C_GA','NPP_GA','GPP_GA','NEP_GA',   &
                                                                    'NBP_GA','HETRESP_GA','AUTORESP_GA','LITRESP_GA','SOILCRESP_GA' ]
 
+! We respecify them here for the Grid-Averaged values
+character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR_TA=['LAIMAXG_TA          ','VGBIOMAS_TA','LITTER_TA','SOIL_C_TA','NPP_TA','GPP_TA','NEP_TA',   &
+                                                                   'NBP_TA','HETRESP_TA','AUTORESP_TA','LITRESP_TA','SOILCRESP_TA' ]
+
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_NAME=['Maximum LAI from month                  ','Grid averaged vegetation biomass','Litter mass',                              &
                                                                     'Soil C mass','Grid averaged monthly net primary productivity',                                         &
                                                                     'Monthly gross primary productivity','Monthly net ecosystem productivity',                              &
@@ -188,7 +194,7 @@ character(100), parameter, dimension(numctemvars_m) :: CTEM_M_NAME=['Maximum LAI
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_UNIT=['$m^2$/$m^2$               ','kg C/$m^2$','kg C/$m^2$','kg C/$m^2$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$', &
                                                                     'gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$' ]
 
-!====DISTURBANCE================== Declare arrays for monthly CTEM COMPOSITE AND MOSAIC =============
+!====DISTURBANCE================== Declare arrays for monthly CTEM COMPOSITE AND tiled =============
 
 integer, parameter :: nctemdistvars_m = 20  !number of annual CTEM disturbance vars to write
 
@@ -203,6 +209,10 @@ character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR=['CO2     
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR_GA=['CO2_GA                  ','CO_GA','CH4_GA','NMHC_GA','H2_GA','NOX_GA',                         &
                                                                    'N2O_GA','PM25_GA','TPM_GA','TC_GA','OC_GA','BC_GA','PROBFIRE_GA','LUC_CO2_GA',&
                                                                    'LUC_LITR_GA','LUC_SOC_GA','BURNFRAC_GA','BTERM_GA','LTERM_GA','MTERM_GA' ]
+
+character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR_TA=['CO2_TA                  ','CO_TA','CH4_TA','NMHC_TA','H2_TA','NOX_TA',                         &
+                                                                   'N2O_TA','PM25_TA','TPM_TA','TC_TA','OC_TA','BC_TA','PROBFIRE_TA','LUC_CO2_TA',&
+                                                                   'LUC_LITR_TA','LUC_SOC_TA','BURNFRAC_TA','BTERM_TA','LTERM_TA','MTERM_TA' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_NAME=['Monthly disturbance CO2 emissions                   ','Monthly disturbance CO emissions',                                 &
                                                                     'Monthly disturbance CH4 emissions','Monthly disturbance non-CH4 hydrocarbons emissions',               &
@@ -222,7 +232,7 @@ character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_UNIT=['g CO$_2
                                                                     'g BC $m^{-2}$ month$^{-1}$',                                 &
                                                                     'kg $CO_2$/m$^2$','% ','kg C $m^{-2}$ month$^{-1}$','kg C $m^{-2}$ month$^{-1}$','fraction   ','% ','% ','% ' ]
 
-!====COMPETITION/LUC================== Declare arrays for monthly CTEM COMPOSITE AND MOSAIC =============
+!====COMPETITION/LUC================== Declare arrays for monthly CTEM COMPOSITE AND tiled =============
 
 integer, parameter :: nctemcompvars_m = 3  !number of annual CTEM COMPETITION/LUC vars to write
 
@@ -236,7 +246,7 @@ character(100), parameter, dimension(nctemcompvars_m) :: CTEM_M_C_NAME=[ 'Monthl
 
 character(100), parameter, dimension(nctemcompvars_m) :: CTEM_M_C_UNIT=['Percent                 ','Percent','Boolean' ]
 
-!======================== Declare arrays for annual CTEM COMPOSITE AND MOSAIC=============
+!======================== Declare arrays for annual CTEM COMPOSITE AND tiled=============
 
 ! NOTE: These do not include disturbance or competition variables. 
 
@@ -256,7 +266,12 @@ character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_VAR_GA=['LAIMAXG_A
                                                                    'LITRMASS_A_GA','SOILCMAS_A_GA','TOTCMASS_GA','ANNUALNPP_GA',                &
                                                                    'ANNUALGPP_GA','ANNUALNEP_GA','ANNUALNBP_GA','ANNUALHETRESP_GA',         &
                                                                    'ANNUALAUTORESP_GA','ANNUALLITRESP_GA','ANNUALSOILCRESP_GA' ]
- 
+
+character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_VAR_TA=['LAIMAXG_A_TA                  ','VGBIOMAS_A_TA','STEMMASS_A_TA','ROOTMASS_A_TA',   &
+                                                                   'LITRMASS_A_TA','SOILCMAS_A_TA','TOTCMASS_TA','ANNUALNPP_TA',                &
+                                                                   'ANNUALGPP_TA','ANNUALNEP_TA','ANNUALNBP_TA','ANNUALHETRESP_TA',         &
+                                                                   'ANNUALAUTORESP_TA','ANNUALLITRESP_TA','ANNUALSOILCRESP_TA' ]
+
 character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_NAME=['Maximum LAI from month               ','Grid averaged vegetation biomass',        &
                                                                     'Grid averaged stem biomass', 'Grid averaged root biomass',         &
                                                                     'Litter mass','Soil C mass','Total C mass',               &
@@ -274,7 +289,7 @@ character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_UNIT = ['m$^2$/m$^
                                                                       'g C m$^{-2}$ year$^{-1}$',          &
                                                                       'g C m$^{-2}$ year$^{-1}$' ] 
 
-!====DISTURBANCE==================== Declare arrays for annual CTEM COMPOSITE AND MOSAIC=============
+!====DISTURBANCE==================== Declare arrays for annual CTEM COMPOSITE AND tiled=============
 
 integer, parameter :: nctemdistvars_a = 20  !number of annual CTEM vars to write
 
@@ -295,6 +310,13 @@ character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_VAR_GA=['ANNUA
                                                                    'ANNUAL_OC_GA','ANNUAL_BC_GA','ANNUAL_PROBFIRE_GA','ANNUAL_LUC_CO2_GA',  &
                                                                    'ANNUAL_LUC_LITTER_GA','ANNUAL_LUC_SOILC_GA','ANNUAL_BURNFRAC_GA',       &
                                                                    'ANNUAL_BTERM_GA','ANNUAL_LTERM_GA','ANNUAL_MTERM_GA'  ]
+
+character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_VAR_TA=['ANNUALCO2_TA             ','ANNUALCO_TA',                                      &
+                                                                   'ANNUALCH4_TA','ANN_NMHC_TA','ANNUAL_H2_TA','ANNUALNOX_TA',              &
+                                                                   'ANNUALN2O_TA','ANN_PM25_TA','ANNUALTPM_TA','ANNUAL_TC_TA',              &
+                                                                   'ANNUAL_OC_TA','ANNUAL_BC_TA','ANNUAL_PROBFIRE_TA','ANNUAL_LUC_CO2_TA',  &
+                                                                   'ANNUAL_LUC_LITTER_TA','ANNUAL_LUC_SOILC_TA','ANNUAL_BURNFRAC_TA',       &
+                                                                   'ANNUAL_BTERM_TA','ANNUAL_LTERM_TA','ANNUAL_MTERM_TA'  ]
 
  
 character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_NAME=['Annual disturbance CO2 emissions                  ',                                 &
@@ -320,7 +342,7 @@ character(100), parameter, dimension(nctemdistvars_a) :: CTEM_Y_D_UNIT = ['g/m2.
                                                                       'g/m2.yr','g/m2.yr','Kg CO2/m2.yr','%.yr','Kg C/m2.yr','Kg C/m2.yr',' ',&
                                                                       '%.yr','%.yr','%.yr' ] 
 
-!====COMPETITION================== Declare arrays for annual CTEM COMPOSITE AND MOSAIC =============
+!====COMPETITION================== Declare arrays for annual CTEM COMPOSITE AND tiled =============
 
 integer, parameter :: nctemcompvars_a = 3  !number of annual CTEM disturbance vars to write
 
@@ -341,6 +363,8 @@ integer, parameter :: nctemwetvars_a = 6  !number of annual CTEM dowetlands vars
 
 character(100), parameter, dimension(nctemwetvars_a) :: CTEM_Y_W_VAR=['CH4WET1_A                 ','CH4WET2_A','WETFDYN_A', 'CH4DYN1_A','CH4DYN2_A','SOILCH4UP_A' ]
 
+! per tile
+character(100), parameter, dimension(nctemwetvars_a) :: CTEM_Y_W_T_VAR=['CH4WET1_A_T                 ','CH4WET2_A_T','WETFDYN_A_T', 'CH4DYN1_A_T','CH4DYN2_A_T','SOILCH4UP_A_T' ]
 
 character(100), parameter, dimension(nctemwetvars_a) :: CTEM_Y_W_NAME=['Annual Methane flux from obswetf using Hetres                          ','Annual Methane flux from obswetf using NPP',&
                                                                              'Dynamic Wetland Fraction','Annual Methane Flux using Hetres', 'Annual Methane Flux using NPP', &
@@ -353,6 +377,9 @@ character(100), parameter, dimension(nctemwetvars_a) :: CTEM_Y_W_UNIT=['CH4/m2.y
 integer, parameter :: nctemwetvars_m = 6  !number of annual CTEM dowetlands vars to write
 
 character(100), parameter, dimension(nctemwetvars_m) :: CTEM_M_W_VAR=['CH4WET1_M                    ','CH4WET2_M','WETFDYN_M', 'CH4DYN1_M','CH4DYN2_M','SOILCH4UP_M' ]
+
+!per tile
+character(100), parameter, dimension(nctemwetvars_m) :: CTEM_M_W_T_VAR=['CH4WET1_M_T                    ','CH4WET2_M_T','WETFDYN_M_T', 'CH4DYN1_M_T','CH4DYN2_M_T','SOILCH4UP_M_T' ]
 
 character(100), parameter, dimension(nctemwetvars_m) :: CTEM_M_W_NAME=['Monthly Methane flux from obswetf using Hetres                          ','Monthly Methane flux from obswetf using NPP',&
                                                                              'Dynamic Wetland Fraction','Monthly Methane Flux using Hetres', 'Monthly Methane Flux using NPP', &

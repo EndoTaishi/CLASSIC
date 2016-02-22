@@ -6,11 +6,13 @@ module ctem_statevars
 ! 3) vgat - CTEM's 'gat' vars
 ! 4) class_out - CLASS's monthly outputs
 ! 5) ctem_grd - CTEM's grid average variables
-! 6) ctem_tile - CTEM's variables per tile (mosaic)
-! 7) ctem_grd_mo - CTEM's grid average monthly values
-! 8) ctem_tile_mo - CTEM's variables per tile (mosaic) monthly values
-! 9) ctem_grd_yr - CTEM's grid average annual values
-! 10) ctem_tile_yr - CTEM's variables per tile (mosaic) annual values
+! 6) ctem_tile - CTEM's variables per tile
+! 7) ctem_mo - CTEM's variables monthly averaged (per pft)
+! 8) ctem_grd_mo - CTEM's grid average monthly values
+! 9) ctem_tile_mo - CTEM's variables per tile monthly values
+! 10) ctem_yr - CTEM's average annual values (per PFT)
+! 11) ctem_grd_yr - CTEM's grid average annual values
+! 12) ctem_tile_yr - CTEM's variables per tile annual values
 
 ! J. Melton Apr 2015
 
@@ -22,11 +24,8 @@ implicit none
 public :: initrowvars
 public :: resetclassmon
 public :: resetclassyr
-public :: resetmidmonth
-public :: resetmonthend_g
-public :: resetmonthend_m
-public :: resetyearend_g
-public :: resetyearend_m
+public :: resetmonthend
+public :: resetyearend
 public :: resetclassaccum
 public :: resetgridavg
 public :: resetctem_g
@@ -167,7 +166,8 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: ltstatus
     real, dimension(nlat,nmos) :: rmr
 
-    real, dimension(nlat) :: wetfrac
+    real, dimension(nlat) :: wetfrac_pres
+    real, dimension(nlat,8) :: slopefrac
     real, dimension(nlat,nmos) :: ch4wet1
     real, dimension(nlat,nmos) :: ch4wet2
     real, dimension(nlat,nmos) :: wetfdyn
@@ -272,6 +272,16 @@ type veg_rot
     real, dimension(nlat,nmos) :: tcanoaccrow_out
     real, dimension(nlat,nmos) :: qevpacc_m_save
 
+    real, dimension(nlat) :: twarmm              ! temperature of the warmest month (c)
+    real, dimension(nlat) :: tcoldm              ! temperature of the coldest month (c)
+    real, dimension(nlat) :: gdd5                ! growing degree days above 5 c
+    real, dimension(nlat) :: aridity             ! aridity index, ratio of potential evaporation to precipitation
+    real, dimension(nlat) :: srplsmon            ! number of months in a year with surplus water i.e. precipitation more than potential evaporation
+    real, dimension(nlat) :: defctmon            ! number of months in a year with water deficit i.e. precipitation less than potential evaporation
+    real, dimension(nlat) :: anndefct            ! annual water deficit (mm)
+    real, dimension(nlat) :: annsrpls            ! annual water surplus (mm)
+    real, dimension(nlat) :: annpcp              ! annual precipitation (mm)
+    real, dimension(nlat) :: dry_season_length   ! length of dry season (months)
 
 end type veg_rot
 
@@ -381,7 +391,9 @@ type veg_gat
     real, dimension(ilg,icc) :: ltstatus
     real, dimension(ilg) :: rmr
 
-    real, dimension(ilg,8) :: wetfrac_s
+    real, dimension(ilg,8) :: slopefrac
+    real, dimension(ilg) :: wetfrac_pres
+    real, dimension(ilg,12) :: wetfrac_mon
     real, dimension(ilg) :: ch4wet1
     real, dimension(ilg) :: ch4wet2
     real, dimension(ilg) :: wetfdyn
@@ -663,57 +675,95 @@ type (ctem_gridavg), save, target :: ctem_grd
 
 !=================================================================================
 
-type ctem_mosaic_level
+type ctem_tile_level
 
-!   Mosaic-level variables (denoted by an ending of "_m")
+!   Tile-level variables (denoted by an ending of "_t")
 
-      real, dimension(nlat,nmos) :: leaflitr_m
-      real, dimension(nlat,nmos) :: tltrleaf_m
-      real, dimension(nlat,nmos) :: tltrstem_m
-      real, dimension(nlat,nmos) :: tltrroot_m
-      real, dimension(nlat,nmos) :: ailcg_m
-      real, dimension(nlat,nmos) :: ailcb_m
-      real, dimension(nlat,nmos,ignd) :: rmatctem_m
-      real, dimension(nlat,nmos) :: veghght_m
-      real, dimension(nlat,nmos) :: rootdpth_m
-      real, dimension(nlat,nmos) :: roottemp_m
-      real, dimension(nlat,nmos) :: slai_m
-      real, dimension(nlat,nmos) :: afrroot_m
-      real, dimension(nlat,nmos) :: afrleaf_m
-      real, dimension(nlat,nmos) :: afrstem_m
-      real, dimension(nlat,nmos) :: laimaxg_m
-      real, dimension(nlat,nmos) :: stemmass_m
-      real, dimension(nlat,nmos) :: rootmass_m
-      real, dimension(nlat,nmos) :: litrmass_m
-      real, dimension(nlat,nmos) :: gleafmas_m
-      real, dimension(nlat,nmos) :: bleafmas_m
-      real, dimension(nlat,nmos) :: soilcmas_m
+      real, dimension(nlat,nmos) :: leaflitr_t
+      real, dimension(nlat,nmos) :: tltrleaf_t
+      real, dimension(nlat,nmos) :: tltrstem_t
+      real, dimension(nlat,nmos) :: tltrroot_t
+      real, dimension(nlat,nmos) :: ailcg_t
+      real, dimension(nlat,nmos) :: ailcb_t
+      real, dimension(nlat,nmos,ignd) :: rmatctem_t
+      real, dimension(nlat,nmos) :: veghght_t
+      real, dimension(nlat,nmos) :: rootdpth_t
+      real, dimension(nlat,nmos) :: roottemp_t
+      real, dimension(nlat,nmos) :: slai_t
+      real, dimension(nlat,nmos) :: afrroot_t
+      real, dimension(nlat,nmos) :: afrleaf_t
+      real, dimension(nlat,nmos) :: afrstem_t
+      real, dimension(nlat,nmos) :: laimaxg_t
+      real, dimension(nlat,nmos) :: stemmass_t
+      real, dimension(nlat,nmos) :: rootmass_t
+      real, dimension(nlat,nmos) :: litrmass_t
+      real, dimension(nlat,nmos) :: gleafmas_t
+      real, dimension(nlat,nmos) :: bleafmas_t
+      real, dimension(nlat,nmos) :: soilcmas_t
 
-      real, dimension(ilg) :: fsnowacc_m
-      real, dimension(ilg) :: tcansacc_m
-      real, dimension(ilg) :: tcanoaccgat_m
-      real, dimension(ilg) :: taaccgat_m
-      real, dimension(ilg) :: uvaccgat_m
-      real, dimension(ilg) :: vvaccgat_m
-      real, dimension(ilg,ignd) :: tbaraccgat_m
-      real, dimension(ilg,ignd) :: tbarcacc_m
-      real, dimension(ilg,ignd) :: tbarcsacc_m
-      real, dimension(ilg,ignd) :: tbargacc_m
-      real, dimension(ilg,ignd) :: tbargsacc_m
-      real, dimension(ilg,ignd) :: thliqcacc_m
-      real, dimension(ilg,ignd) :: thliqgacc_m
-      real, dimension(ilg,ignd) :: thliqacc_m
-      real, dimension(ilg,ignd) :: thicecacc_m
-      real, dimension(ilg,ignd) :: thicegacc_m
-      real, dimension(ilg,icc) :: ancsvgac_m
-      real, dimension(ilg,icc) :: ancgvgac_m
-      real, dimension(ilg,icc) :: rmlcsvga_m
-      real, dimension(ilg,icc) :: rmlcgvga_m
-      integer, dimension(nlat,nmos) :: ifcancmx_m
+      real, dimension(ilg) :: fsnowacc_t
+      real, dimension(ilg) :: tcansacc_t
+      real, dimension(ilg) :: tcanoaccgat_t
+      real, dimension(ilg) :: taaccgat_t
+      real, dimension(ilg) :: uvaccgat_t
+      real, dimension(ilg) :: vvaccgat_t
+      real, dimension(ilg,ignd) :: tbaraccgat_t
+      real, dimension(ilg,ignd) :: tbarcacc_t
+      real, dimension(ilg,ignd) :: tbarcsacc_t
+      real, dimension(ilg,ignd) :: tbargacc_t
+      real, dimension(ilg,ignd) :: tbargsacc_t
+      real, dimension(ilg,ignd) :: thliqcacc_t
+      real, dimension(ilg,ignd) :: thliqgacc_t
+      real, dimension(ilg,ignd) :: thliqacc_t
+      real, dimension(ilg,ignd) :: thicecacc_t
+      real, dimension(ilg,ignd) :: thicegacc_t
+      real, dimension(ilg,icc) :: ancsvgac_t
+      real, dimension(ilg,icc) :: ancgvgac_t
+      real, dimension(ilg,icc) :: rmlcsvga_t
+      real, dimension(ilg,icc) :: rmlcgvga_t
+      integer, dimension(nlat,nmos) :: ifcancmx_t
 
-end type ctem_mosaic_level
+end type ctem_tile_level
 
-type (ctem_mosaic_level), save, target :: ctem_tile
+type (ctem_tile_level), save, target :: ctem_tile
+
+!=================================================================================
+type ctem_monthly
+
+!     Tile-level monthly variables (denoted by name ending in "_mo_t")
+
+      real, dimension(nlat,nmos,icc) :: laimaxg_mo
+      real, dimension(nlat,nmos,icc) :: stemmass_mo
+      real, dimension(nlat,nmos,icc) :: rootmass_mo
+      real, dimension(nlat,nmos,icc) :: npp_mo
+      real, dimension(nlat,nmos,icc) :: gpp_mo
+      real, dimension(nlat,nmos,icc) :: vgbiomas_mo
+      real, dimension(nlat,nmos,icc) :: autores_mo
+      real, dimension(nlat,nmos,icc) :: totcmass_mo
+      real, dimension(nlat,nmos,iccp1) :: litrmass_mo
+      real, dimension(nlat,nmos,iccp1) :: soilcmas_mo
+      real, dimension(nlat,nmos,iccp1) :: nep_mo
+      real, dimension(nlat,nmos,iccp1) :: litres_mo
+      real, dimension(nlat,nmos,iccp1) :: soilcres_mo
+      real, dimension(nlat,nmos,iccp1) :: hetrores_mo
+      real, dimension(nlat,nmos,iccp1) :: nbp_mo
+      real, dimension(nlat,nmos,icc) :: emit_co2_mo
+      real, dimension(nlat,nmos,icc) :: emit_co_mo
+      real, dimension(nlat,nmos,icc) :: emit_ch4_mo
+      real, dimension(nlat,nmos,icc) :: emit_nmhc_mo
+      real, dimension(nlat,nmos,icc) :: emit_h2_mo
+      real, dimension(nlat,nmos,icc) :: emit_nox_mo
+      real, dimension(nlat,nmos,icc) :: emit_n2o_mo
+      real, dimension(nlat,nmos,icc) :: emit_pm25_mo
+      real, dimension(nlat,nmos,icc) :: emit_tpm_mo
+      real, dimension(nlat,nmos,icc) :: emit_tc_mo
+      real, dimension(nlat,nmos,icc) :: emit_oc_mo
+      real, dimension(nlat,nmos,icc) :: emit_bc_mo
+      real, dimension(nlat,nmos,icc) :: burnfrac_mo
+
+end type ctem_monthly
+
+type (ctem_monthly), save, target :: ctem_mo
 
 !=================================================================================
 
@@ -768,57 +818,96 @@ end type ctem_gridavg_monthly
 type (ctem_gridavg_monthly), save, target :: ctem_grd_mo
 
 !=================================================================================
+type ctem_tileavg_monthly
 
-type ctem_mosaic_monthly
+!     Tile-level monthly variables (denoted by name ending in "_mo_t")
 
-!     Mosaic monthly variables (denoted by name ending in "_mo_m")
+      real, dimension(nlat,nmos) :: laimaxg_mo_t
+      real, dimension(nlat,nmos) :: stemmass_mo_t
+      real, dimension(nlat,nmos) :: rootmass_mo_t
+      real, dimension(nlat,nmos) :: npp_mo_t
+      real, dimension(nlat,nmos) :: gpp_mo_t
+      real, dimension(nlat,nmos) :: vgbiomas_mo_t
+      real, dimension(nlat,nmos) :: autores_mo_t
+      real, dimension(nlat,nmos) :: totcmass_mo_t
+      real, dimension(nlat,nmos) :: litrmass_mo_t
+      real, dimension(nlat,nmos) :: soilcmas_mo_t
+      real, dimension(nlat,nmos) :: nep_mo_t
+      real, dimension(nlat,nmos) :: litres_mo_t
+      real, dimension(nlat,nmos) :: soilcres_mo_t
+      real, dimension(nlat,nmos) :: hetrores_mo_t
+      real, dimension(nlat,nmos) :: nbp_mo_t
+      real, dimension(nlat,nmos) :: emit_co2_mo_t
+      real, dimension(nlat,nmos) :: emit_co_mo_t
+      real, dimension(nlat,nmos) :: emit_ch4_mo_t
+      real, dimension(nlat,nmos) :: emit_nmhc_mo_t
+      real, dimension(nlat,nmos) :: emit_h2_mo_t
+      real, dimension(nlat,nmos) :: emit_nox_mo_t
+      real, dimension(nlat,nmos) :: emit_n2o_mo_t
+      real, dimension(nlat,nmos) :: emit_pm25_mo_t
+      real, dimension(nlat,nmos) :: emit_tpm_mo_t
+      real, dimension(nlat,nmos) :: emit_tc_mo_t
+      real, dimension(nlat,nmos) :: emit_oc_mo_t
+      real, dimension(nlat,nmos) :: emit_bc_mo_t
+      real, dimension(nlat,nmos) :: burnfrac_mo_t
+      real, dimension(nlat,nmos) :: probfire_mo_t
+      real, dimension(nlat,nmos) :: bterm_mo_t
+      real, dimension(nlat,nmos) :: luc_emc_mo_t
+      real, dimension(nlat,nmos) :: lterm_mo_t
+      real, dimension(nlat,nmos) :: lucsocin_mo_t
+      real, dimension(nlat,nmos) :: mterm_mo_t
+      real, dimension(nlat,nmos) :: lucltrin_mo_t
+      real, dimension(nlat,nmos) :: ch4wet1_mo_t
+      real, dimension(nlat,nmos) :: ch4wet2_mo_t
+      real, dimension(nlat,nmos) :: wetfdyn_mo_t
+      real, dimension(nlat,nmos) :: ch4dyn1_mo_t
+      real, dimension(nlat,nmos) :: ch4dyn2_mo_t
+      real, dimension(nlat,nmos) :: ch4soills_mo_t
 
-      real, dimension(nlat,nmos,icc) :: laimaxg_mo_m
-      real, dimension(nlat,nmos,icc) :: stemmass_mo_m
-      real, dimension(nlat,nmos,icc) :: rootmass_mo_m
-      real, dimension(nlat,nmos,icc) :: npp_mo_m
-      real, dimension(nlat,nmos,icc) :: gpp_mo_m
-      real, dimension(nlat,nmos,icc) :: vgbiomas_mo_m
-      real, dimension(nlat,nmos,icc) :: autores_mo_m
-      real, dimension(nlat,nmos,icc) :: totcmass_mo_m
-      real, dimension(nlat,nmos,iccp1) :: litrmass_mo_m
-      real, dimension(nlat,nmos,iccp1) :: soilcmas_mo_m
-      real, dimension(nlat,nmos,iccp1) :: nep_mo_m
-      real, dimension(nlat,nmos,iccp1) :: litres_mo_m
-      real, dimension(nlat,nmos,iccp1) :: soilcres_mo_m
-      real, dimension(nlat,nmos,iccp1) :: hetrores_mo_m
-      real, dimension(nlat,nmos,iccp1) :: nbp_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_co2_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_co_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_ch4_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_nmhc_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_h2_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_nox_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_n2o_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_pm25_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_tpm_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_tc_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_oc_mo_m
-      real, dimension(nlat,nmos,icc) :: emit_bc_mo_m
-      real, dimension(nlat,nmos,icc) :: burnfrac_mo_m
-      real, dimension(nlat,nmos) :: probfire_mo_m
-      real, dimension(nlat,nmos) :: bterm_mo_m
-      real, dimension(nlat,nmos) :: luc_emc_mo_m
-      real, dimension(nlat,nmos) :: lterm_mo_m
-      real, dimension(nlat,nmos) :: lucsocin_mo_m
-      real, dimension(nlat,nmos) :: mterm_mo_m
-      real, dimension(nlat,nmos) :: lucltrin_mo_m
-      real, dimension(nlat,nmos) :: ch4wet1_mo_m
-      real, dimension(nlat,nmos) :: ch4wet2_mo_m
-      real, dimension(nlat,nmos) :: wetfdyn_mo_m
-      real, dimension(nlat,nmos) :: ch4dyn1_mo_m
-      real, dimension(nlat,nmos) :: ch4dyn2_mo_m
-      real, dimension(nlat,nmos) :: ch4soills_mo_m
+end type ctem_tileavg_monthly
 
-end type ctem_mosaic_monthly
+type (ctem_tileavg_monthly), save, target :: ctem_tile_mo
 
-type (ctem_mosaic_monthly), save, target :: ctem_tile_mo
 
+!=================================================================================
+
+type ctem_annual
+
+! c      Annual output for CTEM mosaic variables:
+! c      (denoted by name ending in "_yr_m")
+!
+      real, dimension(nlat,nmos,icc) :: laimaxg_yr
+      real, dimension(nlat,nmos,icc) :: stemmass_yr
+      real, dimension(nlat,nmos,icc) :: rootmass_yr
+      real, dimension(nlat,nmos,icc) :: npp_yr
+      real, dimension(nlat,nmos,icc) :: gpp_yr
+      real, dimension(nlat,nmos,icc) :: vgbiomas_yr
+      real, dimension(nlat,nmos,icc) :: autores_yr
+      real, dimension(nlat,nmos,icc) :: totcmass_yr
+      real, dimension(nlat,nmos,iccp1) :: litrmass_yr
+      real, dimension(nlat,nmos,iccp1) :: soilcmas_yr
+      real, dimension(nlat,nmos,iccp1) :: nep_yr
+      real, dimension(nlat,nmos,iccp1) :: litres_yr
+      real, dimension(nlat,nmos,iccp1) :: soilcres_yr
+      real, dimension(nlat,nmos,iccp1) :: hetrores_yr
+      real, dimension(nlat,nmos,iccp1) :: nbp_yr
+      real, dimension(nlat,nmos,icc) :: emit_co2_yr
+      real, dimension(nlat,nmos,icc) :: emit_co_yr
+      real, dimension(nlat,nmos,icc) :: emit_ch4_yr
+      real, dimension(nlat,nmos,icc) :: emit_nmhc_yr
+      real, dimension(nlat,nmos,icc) :: emit_h2_yr
+      real, dimension(nlat,nmos,icc) :: emit_nox_yr
+      real, dimension(nlat,nmos,icc) :: emit_n2o_yr
+      real, dimension(nlat,nmos,icc) :: emit_pm25_yr
+      real, dimension(nlat,nmos,icc) :: emit_tpm_yr
+      real, dimension(nlat,nmos,icc) :: emit_tc_yr
+      real, dimension(nlat,nmos,icc) :: emit_oc_yr
+      real, dimension(nlat,nmos,icc) :: emit_bc_yr
+      real, dimension(nlat,nmos,icc) :: burnfrac_yr
+
+end type ctem_annual
+
+type (ctem_annual), save, target :: ctem_yr
 
 !=================================================================================
 
@@ -875,56 +964,56 @@ type (ctem_gridavg_annual), save, target :: ctem_grd_yr
 
 !=================================================================================
 
-type ctem_mosaic_annual
+type ctem_tileavg_annual
 
 ! c      Annual output for CTEM mosaic variables:
 ! c      (denoted by name ending in "_yr_m")
 !
-      real, dimension(nlat,nmos,icc) :: laimaxg_yr_m
-      real, dimension(nlat,nmos,icc) :: stemmass_yr_m
-      real, dimension(nlat,nmos,icc) :: rootmass_yr_m
-      real, dimension(nlat,nmos,icc) :: npp_yr_m
-      real, dimension(nlat,nmos,icc) :: gpp_yr_m
-      real, dimension(nlat,nmos,icc) :: vgbiomas_yr_m
-      real, dimension(nlat,nmos,icc) :: autores_yr_m
-      real, dimension(nlat,nmos,icc) :: totcmass_yr_m
-      real, dimension(nlat,nmos,iccp1) :: litrmass_yr_m
-      real, dimension(nlat,nmos,iccp1) :: soilcmas_yr_m
-      real, dimension(nlat,nmos,iccp1) :: nep_yr_m
-      real, dimension(nlat,nmos,iccp1) :: litres_yr_m
-      real, dimension(nlat,nmos,iccp1) :: soilcres_yr_m
-      real, dimension(nlat,nmos,iccp1) :: hetrores_yr_m
-      real, dimension(nlat,nmos,iccp1) :: nbp_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_co2_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_co_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_ch4_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_nmhc_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_h2_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_nox_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_n2o_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_pm25_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_tpm_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_tc_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_oc_yr_m
-      real, dimension(nlat,nmos,icc) :: emit_bc_yr_m
-      real, dimension(nlat,nmos,icc) :: burnfrac_yr_m
-      real, dimension(nlat,nmos) :: probfire_yr_m
-      real, dimension(nlat,nmos) :: bterm_yr_m
-      real, dimension(nlat,nmos) :: luc_emc_yr_m
-      real, dimension(nlat,nmos) :: lterm_yr_m
-      real, dimension(nlat,nmos) :: lucsocin_yr_m
-      real, dimension(nlat,nmos) :: mterm_yr_m
-      real, dimension(nlat,nmos) :: lucltrin_yr_m
-      real, dimension(nlat,nmos) :: ch4wet1_yr_m
-      real, dimension(nlat,nmos) :: ch4wet2_yr_m
-      real, dimension(nlat,nmos) :: wetfdyn_yr_m
-      real, dimension(nlat,nmos) :: ch4dyn1_yr_m
-      real, dimension(nlat,nmos) :: ch4dyn2_yr_m
-      real, dimension(nlat,nmos) :: ch4soills_yr_m
+      real, dimension(nlat,nmos) :: laimaxg_yr_t
+      real, dimension(nlat,nmos) :: stemmass_yr_t
+      real, dimension(nlat,nmos) :: rootmass_yr_t
+      real, dimension(nlat,nmos) :: npp_yr_t
+      real, dimension(nlat,nmos) :: gpp_yr_t
+      real, dimension(nlat,nmos) :: vgbiomas_yr_t
+      real, dimension(nlat,nmos) :: autores_yr_t
+      real, dimension(nlat,nmos) :: totcmass_yr_t
+      real, dimension(nlat,nmos) :: litrmass_yr_t
+      real, dimension(nlat,nmos) :: soilcmas_yr_t
+      real, dimension(nlat,nmos) :: nep_yr_t
+      real, dimension(nlat,nmos) :: litres_yr_t
+      real, dimension(nlat,nmos) :: soilcres_yr_t
+      real, dimension(nlat,nmos) :: hetrores_yr_t
+      real, dimension(nlat,nmos) :: nbp_yr_t
+      real, dimension(nlat,nmos) :: emit_co2_yr_t
+      real, dimension(nlat,nmos) :: emit_co_yr_t
+      real, dimension(nlat,nmos) :: emit_ch4_yr_t
+      real, dimension(nlat,nmos) :: emit_nmhc_yr_t
+      real, dimension(nlat,nmos) :: emit_h2_yr_t
+      real, dimension(nlat,nmos) :: emit_nox_yr_t
+      real, dimension(nlat,nmos) :: emit_n2o_yr_t
+      real, dimension(nlat,nmos) :: emit_pm25_yr_t
+      real, dimension(nlat,nmos) :: emit_tpm_yr_t
+      real, dimension(nlat,nmos) :: emit_tc_yr_t
+      real, dimension(nlat,nmos) :: emit_oc_yr_t
+      real, dimension(nlat,nmos) :: emit_bc_yr_t
+      real, dimension(nlat,nmos) :: burnfrac_yr_t
+      real, dimension(nlat,nmos) :: probfire_yr_t
+      real, dimension(nlat,nmos) :: bterm_yr_t
+      real, dimension(nlat,nmos) :: luc_emc_yr_t
+      real, dimension(nlat,nmos) :: lterm_yr_t
+      real, dimension(nlat,nmos) :: lucsocin_yr_t
+      real, dimension(nlat,nmos) :: mterm_yr_t
+      real, dimension(nlat,nmos) :: lucltrin_yr_t
+      real, dimension(nlat,nmos) :: ch4wet1_yr_t
+      real, dimension(nlat,nmos) :: ch4wet2_yr_t
+      real, dimension(nlat,nmos) :: wetfdyn_yr_t
+      real, dimension(nlat,nmos) :: ch4dyn1_yr_t
+      real, dimension(nlat,nmos) :: ch4dyn2_yr_t
+      real, dimension(nlat,nmos) :: ch4soills_yr_t
 
-end type ctem_mosaic_annual
+end type ctem_tileavg_annual
 
-type (ctem_mosaic_annual), save, target :: ctem_tile_yr
+type (ctem_tileavg_annual), save, target :: ctem_tile_yr
 
 
 contains
@@ -1202,14 +1291,19 @@ end subroutine resetclassyr
 
 !==================================================
 
-subroutine resetmidmonth(nltest)
+subroutine resetmonthend(nltest,nmtest)
+
+use ctem_params, only : iccp1,icc
 
 implicit none
 
 integer, intent(in) :: nltest
+integer, intent(in) :: nmtest
 
-integer :: i
+integer :: i,m,j
 
+! These are assigned to mid-month, but are not accumulated so can be
+! zeroed out at the same time as the other month-end vars.
 do i=1,nltest
     ctem_grd_mo%stemmass_mo_g(i)=0.0
     ctem_grd_mo%rootmass_mo_g(i)=0.0
@@ -1217,21 +1311,29 @@ do i=1,nltest
     ctem_grd_mo%soilcmas_mo_g(i)=0.0
     ctem_grd_mo%vgbiomas_mo_g(i)=0.0
     ctem_grd_mo%totcmass_mo_g(i)=0.0
+  do m = 1, nmtest
+        ctem_tile_mo%stemmass_mo_t(i,m)=0.0
+        ctem_tile_mo%rootmass_mo_t(i,m)=0.0
+        ctem_tile_mo%litrmass_mo_t(i,m)=0.0
+        ctem_tile_mo%soilcmas_mo_t(i,m)=0.0
+        ctem_tile_mo%vgbiomas_mo_t(i,m)=0.0
+        ctem_tile_mo%totcmass_mo_t(i,m)=0.0
+        do j = 1,icc
+            ctem_mo%stemmass_mo(i,m,j)=0.0
+            ctem_mo%rootmass_mo(i,m,j)=0.0
+            ctem_mo%litrmass_mo(i,m,j)=0.0
+            ctem_mo%soilcmas_mo(i,m,j)=0.0
+            ctem_mo%vgbiomas_mo(i,m,j)=0.0
+            ctem_mo%totcmass_mo(i,m,j)=0.0
+        end do
+            ctem_mo%litrmass_mo(i,m,iccp1)=0.0
+            ctem_mo%soilcmas_mo(i,m,iccp1)=0.0
+  end do
 end do
 
-end subroutine resetmidmonth
-
-!==================================================
-
-subroutine resetmonthend_g(nltest)
-
-implicit none
-
-integer, intent(in) :: nltest
-
-integer :: i
-
+! Now zero out the month end vars.
 do i=1,nltest
+    ! Grid avg
     ctem_grd_mo%laimaxg_mo_g(i)=0.0
     ctem_grd_mo%npp_mo_g(i)=0.0
     ctem_grd_mo%gpp_mo_g(i)=0.0
@@ -1267,13 +1369,85 @@ do i=1,nltest
     ctem_grd_mo%ch4dyn1_mo_g(i)  =0.0
     ctem_grd_mo%ch4dyn2_mo_g(i)  =0.0
     ctem_grd_mo%ch4soills_mo_g(i)  =0.0
-end do
 
-end subroutine resetmonthend_g
+    do m = 1,nmtest
+        ! Tile avg
+        ctem_tile_mo%laimaxg_mo_t(i,m)=0.0
+        ctem_tile_mo%npp_mo_t(i,m)=0.0
+        ctem_tile_mo%gpp_mo_t(i,m)=0.0
+        ctem_tile_mo%nep_mo_t(i,m)=0.0
+        ctem_tile_mo%nbp_mo_t(i,m)=0.0
+        ctem_tile_mo%hetrores_mo_t(i,m)=0.0
+        ctem_tile_mo%autores_mo_t(i,m)=0.0
+        ctem_tile_mo%litres_mo_t(i,m)=0.0
+        ctem_tile_mo%soilcres_mo_t(i,m)=0.0
+        ctem_tile_mo%emit_co2_mo_t(i,m)=0.0
+        ctem_tile_mo%emit_co_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_ch4_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_nmhc_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_h2_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_nox_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_n2o_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_pm25_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_tpm_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_tc_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_oc_mo_t(i,m) =0.0
+        ctem_tile_mo%emit_bc_mo_t(i,m) =0.0
+        ctem_tile_mo%probfire_mo_t(i,m) =0.0
+        ctem_tile_mo%luc_emc_mo_t(i,m) =0.0
+        ctem_tile_mo%lucsocin_mo_t(i,m) =0.0
+        ctem_tile_mo%lucltrin_mo_t(i,m) =0.0
+        ctem_tile_mo%burnfrac_mo_t(i,m) =0.0
+        ctem_tile_mo%bterm_mo_t(i,m)    =0.0
+        ctem_tile_mo%lterm_mo_t(i,m)    =0.0
+        ctem_tile_mo%mterm_mo_t(i,m)    =0.0
+        ctem_tile_mo%ch4wet1_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4wet2_mo_t(i,m)  =0.0
+        ctem_tile_mo%wetfdyn_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4dyn1_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4dyn2_mo_t(i,m)  =0.0
+        ctem_tile_mo%ch4soills_mo_t(i,m)  =0.0
+
+        do j=1,icc
+            ! per pft
+            ctem_mo%laimaxg_mo(i,m,j)=0.0
+            ctem_mo%npp_mo(i,m,j)=0.0
+            ctem_mo%gpp_mo(i,m,j)=0.0
+            ctem_mo%nep_mo(i,m,j)=0.0
+            ctem_mo%nbp_mo(i,m,j)=0.0
+            ctem_mo%hetrores_mo(i,m,j)=0.0
+            ctem_mo%autores_mo(i,m,j)=0.0
+            ctem_mo%litres_mo(i,m,j)=0.0
+            ctem_mo%soilcres_mo(i,m,j)=0.0
+            ctem_mo%emit_co2_mo(i,m,j)=0.0
+            ctem_mo%emit_co_mo(i,m,j) =0.0
+            ctem_mo%emit_ch4_mo(i,m,j) =0.0
+            ctem_mo%emit_nmhc_mo(i,m,j) =0.0
+            ctem_mo%emit_h2_mo(i,m,j) =0.0
+            ctem_mo%emit_nox_mo(i,m,j) =0.0
+            ctem_mo%emit_n2o_mo(i,m,j) =0.0
+            ctem_mo%emit_pm25_mo(i,m,j) =0.0
+            ctem_mo%emit_tpm_mo(i,m,j) =0.0
+            ctem_mo%emit_tc_mo(i,m,j) =0.0
+            ctem_mo%emit_oc_mo(i,m,j) =0.0
+            ctem_mo%emit_bc_mo(i,m,j) =0.0
+            ctem_mo%burnfrac_mo(i,m,j) =0.0
+        end do
+
+        ctem_mo%nep_mo(i,m,iccp1)=0.0
+        ctem_mo%nbp_mo(i,m,iccp1)=0.0
+        ctem_mo%hetrores_mo(i,m,iccp1)=0.0
+        ctem_mo%litres_mo(i,m,iccp1)=0.0
+        ctem_mo%soilcres_mo(i,m,iccp1)=0.0
+
+    end do !nmtest
+end do ! nltest
+
+end subroutine resetmonthend
 
 !==================================================
 
-subroutine resetmonthend_m(nltest,nmtest)
+subroutine resetyearend(nltest,nmtest)
 
 use ctem_params, only : iccp1,icc
 
@@ -1285,64 +1459,7 @@ integer, intent(in) :: nmtest
 integer :: i,m,j
 
 do i=1,nltest
- do m = 1,nmtest
-   do j=1,icc
-    ctem_tile_mo%npp_mo_m(i,m,j)=0.0
-    ctem_tile_mo%gpp_mo_m(i,m,j)=0.0
-    ctem_tile_mo%nep_mo_m(i,m,j)=0.0
-    ctem_tile_mo%nbp_mo_m(i,m,j)=0.0
-    ctem_tile_mo%laimaxg_mo_m(i,m,j)=0.0
-    ctem_tile_mo%emit_co2_mo_m(i,m,j)=0.0
-    ctem_tile_mo%emit_co_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_ch4_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_nmhc_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_h2_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_nox_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_n2o_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_pm25_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_tpm_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_tc_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_oc_mo_m(i,m,j) =0.0
-    ctem_tile_mo%emit_bc_mo_m(i,m,j) =0.0
-    ctem_tile_mo%burnfrac_mo_m(i,m,j) =0.0
-
-   end do
-
-    ctem_tile_mo%nep_mo_m(i,m,iccp1)=0.0
-    ctem_tile_mo%nbp_mo_m(i,m,iccp1)=0.0
-
-    ctem_tile_mo%probfire_mo_m(i,m) =0.0
-    ctem_tile_mo%luc_emc_mo_m(i,m) =0.0
-    ctem_tile_mo%lucsocin_mo_m(i,m) =0.0
-    ctem_tile_mo%lucltrin_mo_m(i,m) =0.0
-    ctem_tile_mo%bterm_mo_m(i,m)=0.0
-    ctem_tile_mo%lterm_mo_m(i,m)=0.0
-    ctem_tile_mo%mterm_mo_m(i,m)=0.0
-
-    ctem_tile_mo%ch4wet1_mo_m(i,m)  =0.0
-    ctem_tile_mo%ch4wet2_mo_m(i,m)  =0.0
-    ctem_tile_mo%wetfdyn_mo_m(i,m)  =0.0
-    ctem_tile_mo%ch4dyn1_mo_m(i,m)  =0.0
-    ctem_tile_mo%ch4dyn2_mo_m(i,m)  =0.0
-    ctem_tile_mo%ch4soills_mo_m(i,m)  =0.0
-
-  end do !nmtest
-end do ! nltest
-
-end subroutine resetmonthend_m
-
-!==================================================
-
-subroutine resetyearend_g(nltest)
-
-implicit none
-
-integer, intent(in) :: nltest
-
-integer :: i
-
-do i=1,nltest
-
+    ! Grid avg
     ctem_grd_yr%laimaxg_yr_g(i)=0.0
     ctem_grd_yr%stemmass_yr_g(i)=0.0
     ctem_grd_yr%rootmass_yr_g(i)=0.0
@@ -1385,78 +1502,94 @@ do i=1,nltest
     ctem_grd_yr%ch4dyn2_yr_g(i)  =0.0
     ctem_grd_yr%ch4soills_yr_g(i)  =0.0
 
-end do
+    do m = 1,nmtest
+        ! Tile avg
+        ctem_tile_yr%laimaxg_yr_t(i,m)=0.0
+        ctem_tile_yr%stemmass_yr_t(i,m)=0.0
+        ctem_tile_yr%rootmass_yr_t(i,m)=0.0
+        ctem_tile_yr%litrmass_yr_t(i,m)=0.0
+        ctem_tile_yr%soilcmas_yr_t(i,m)=0.0
+        ctem_tile_yr%vgbiomas_yr_t(i,m)=0.0
+        ctem_tile_yr%totcmass_yr_t(i,m)=0.0
+        ctem_tile_yr%npp_yr_t(i,m)=0.0
+        ctem_tile_yr%gpp_yr_t(i,m)=0.0
+        ctem_tile_yr%nep_yr_t(i,m)=0.0
+        ctem_tile_yr%nbp_yr_t(i,m)=0.0
+        ctem_tile_yr%hetrores_yr_t(i,m)=0.0
+        ctem_tile_yr%autores_yr_t(i,m)=0.0
+        ctem_tile_yr%litres_yr_t(i,m)=0.0
+        ctem_tile_yr%soilcres_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_co2_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_co_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_ch4_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_nmhc_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_h2_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_nox_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_n2o_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_pm25_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_tpm_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_tc_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_oc_yr_t(i,m)=0.0
+        ctem_tile_yr%emit_bc_yr_t(i,m)=0.0
+        ctem_tile_yr%probfire_yr_t(i,m)=0.0
+        ctem_tile_yr%luc_emc_yr_t(i,m)=0.0
+        ctem_tile_yr%lucsocin_yr_t(i,m)=0.0
+        ctem_tile_yr%lucltrin_yr_t(i,m)=0.0
+        ctem_tile_yr%burnfrac_yr_t(i,m)=0.0
+        ctem_tile_yr%bterm_yr_t(i,m)=0.0
+        ctem_tile_yr%lterm_yr_t(i,m)=0.0
+        ctem_tile_yr%mterm_yr_t(i,m)=0.0
+        ctem_tile_yr%ch4wet1_yr_t(i,m)  =0.0
+        ctem_tile_yr%ch4wet2_yr_t(i,m)  =0.0
+        ctem_tile_yr%wetfdyn_yr_t(i,m)  =0.0
+        ctem_tile_yr%ch4dyn1_yr_t(i,m)  =0.0
+        ctem_tile_yr%ch4dyn2_yr_t(i,m)  =0.0
+        ctem_tile_yr%ch4soills_yr_t(i,m)  =0.0
 
-end subroutine resetyearend_g
+        do j=1,icc
+            ! per pft
+            ctem_yr%laimaxg_yr(i,m,j)=0.0
+            ctem_yr%stemmass_yr(i,m,j)=0.0
+            ctem_yr%rootmass_yr(i,m,j)=0.0
+            ctem_yr%litrmass_yr(i,m,j)=0.0
+            ctem_yr%soilcmas_yr(i,m,j)=0.0
+            ctem_yr%vgbiomas_yr(i,m,j)=0.0
+            ctem_yr%totcmass_yr(i,m,j)=0.0
+            ctem_yr%npp_yr(i,m,j)=0.0
+            ctem_yr%gpp_yr(i,m,j)=0.0
+            ctem_yr%nep_yr(i,m,j)=0.0
+            ctem_yr%nbp_yr(i,m,j)=0.0
+            ctem_yr%hetrores_yr(i,m,j)=0.0
+            ctem_yr%autores_yr(i,m,j)=0.0
+            ctem_yr%litres_yr(i,m,j)=0.0
+            ctem_yr%soilcres_yr(i,m,j)=0.0
+            ctem_yr%emit_co2_yr(i,m,j)=0.0
+            ctem_yr%emit_co_yr(i,m,j)=0.0
+            ctem_yr%emit_ch4_yr(i,m,j)=0.0
+            ctem_yr%emit_nmhc_yr(i,m,j)=0.0
+            ctem_yr%emit_h2_yr(i,m,j)=0.0
+            ctem_yr%emit_nox_yr(i,m,j)=0.0
+            ctem_yr%emit_n2o_yr(i,m,j)=0.0
+            ctem_yr%emit_pm25_yr(i,m,j)=0.0
+            ctem_yr%emit_tpm_yr(i,m,j)=0.0
+            ctem_yr%emit_tc_yr(i,m,j)=0.0
+            ctem_yr%emit_oc_yr(i,m,j)=0.0
+            ctem_yr%emit_bc_yr(i,m,j)=0.0
+            ctem_yr%burnfrac_yr(i,m,j)=0.0
+        end do
 
-!==================================================
+        ctem_yr%hetrores_yr(i,m,iccp1)=0.0
+        ctem_yr%litres_yr(i,m,iccp1)=0.0
+        ctem_yr%soilcres_yr(i,m,iccp1)=0.0
+        ctem_yr%nep_yr(i,m,iccp1)=0.0
+        ctem_yr%nbp_yr(i,m,iccp1)=0.0
+        ctem_yr%litrmass_yr(i,m,iccp1)=0.0
+        ctem_yr%soilcmas_yr(i,m,iccp1)=0.0
 
-subroutine resetyearend_m(nltest,nmtest)
-
-use ctem_params, only : iccp1,icc
-
-implicit none
-
-integer, intent(in) :: nltest
-integer, intent(in) :: nmtest
-
-integer :: i,m,j
-
-do i=1,nltest
- do m = 1,nmtest
-   do j=1,icc
-
-    ctem_tile_yr%laimaxg_yr_m(i,m,j)=0.0
-    ctem_tile_yr%npp_yr_m(i,m,j)=0.0
-    ctem_tile_yr%gpp_yr_m(i,m,j)=0.0
-    ctem_tile_yr%nep_yr_m(i,m,j)=0.0
-    ctem_tile_yr%nbp_yr_m(i,m,j)=0.0
-    ctem_tile_yr%hetrores_yr_m(i,m,j)=0.0
-    ctem_tile_yr%autores_yr_m(i,m,j)=0.0
-    ctem_tile_yr%litres_yr_m(i,m,j)=0.0
-    ctem_tile_yr%soilcres_yr_m(i,m,j)=0.0
-
-    ctem_tile_yr%emit_co2_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_co_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_ch4_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_nmhc_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_h2_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_nox_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_n2o_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_pm25_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_tpm_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_tc_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_oc_yr_m(i,m,j)=0.0
-    ctem_tile_yr%emit_bc_yr_m(i,m,j)=0.0
-    ctem_tile_yr%burnfrac_yr_m(i,m,j)=0.0
-
-   end do
-
-    ctem_tile_yr%hetrores_yr_m(i,m,iccp1)=0.0
-    ctem_tile_yr%litres_yr_m(i,m,iccp1)=0.0
-    ctem_tile_yr%soilcres_yr_m(i,m,iccp1)=0.0
-    ctem_tile_yr%nep_yr_m(i,m,iccp1)=0.0
-    ctem_tile_yr%nbp_yr_m(i,m,iccp1)=0.0
-
-    ctem_tile_yr%probfire_yr_m(i,m)=0.0
-    ctem_tile_yr%luc_emc_yr_m(i,m)=0.0
-    ctem_tile_yr%lucsocin_yr_m(i,m)=0.0
-    ctem_tile_yr%lucltrin_yr_m(i,m)=0.0
-    ctem_tile_yr%bterm_yr_m(i,m)=0.0
-    ctem_tile_yr%lterm_yr_m(i,m)=0.0
-    ctem_tile_yr%mterm_yr_m(i,m)=0.0
-
-    ctem_tile_yr%ch4wet1_yr_m(i,m)  =0.0
-    ctem_tile_yr%ch4wet2_yr_m(i,m)  =0.0
-    ctem_tile_yr%wetfdyn_yr_m(i,m)  =0.0
-    ctem_tile_yr%ch4dyn1_yr_m(i,m)  =0.0
-    ctem_tile_yr%ch4dyn2_yr_m(i,m)  =0.0
-    ctem_tile_yr%ch4soills_yr_m(i,m)  =0.0
-
-  end do !nmtest
+    end do !nmtest
 end do ! nltest
 
-end subroutine resetyearend_m
+end subroutine resetyearend
 
 !==================================================
 subroutine resetclassaccum(nltest,nmtest)
@@ -1736,7 +1869,7 @@ end subroutine finddaylength
 ! c     reset mosaic accumulator arrays.
 ! c
 !       do 655 i=1,nml
-!          uvaccgat_m(i)=0.0
+!          uvaccgat_t(i)=0.0
 ! 655   continue
 ! c
 !       if (ctem_on) then
@@ -1751,30 +1884,30 @@ end subroutine finddaylength
 !           pregacc_gat(i)=0.
 ! c         competitition related variables added by y. peng //
 ! c
-!           fsnowacc_m(i)=0.0
-!           tcanoaccgat_out(i)=tcanoaccgat_m(i)
-!           tcanoaccgat_m(i)=0.0
+!           fsnowacc_t(i)=0.0
+!           tcanoaccgat_out(i)=tcanoaccgat_t(i)
+!           tcanoaccgat_t(i)=0.0
 ! c
-!           tcansacc_m(i)=0.0
-!           taaccgat_m(i)=0.0
-!           vvaccgat_m(i)=0.0
+!           tcansacc_t(i)=0.0
+!           taaccgat_t(i)=0.0
+!           vvaccgat_t(i)=0.0
 ! c
 !           do 715 j=1,ignd
-!              tbaraccgat_m(i,j)=0.0
-!              tbarcacc_m(i,j)=0.0
-!              tbarcsacc_m(i,j)=0.0
-!              tbargacc_m(i,j)=0.0
-!              tbargsacc_m(i,j)=0.0
-!              thliqcacc_m(i,j)=0.0
-!              thliqgacc_m(i,j)=0.0
-!              thicecacc_m(i,j)=0.0
+!              tbaraccgat_t(i,j)=0.0
+!              tbarcacc_t(i,j)=0.0
+!              tbarcsacc_t(i,j)=0.0
+!              tbargacc_t(i,j)=0.0
+!              tbargsacc_t(i,j)=0.0
+!              thliqcacc_t(i,j)=0.0
+!              thliqgacc_t(i,j)=0.0
+!              thicecacc_t(i,j)=0.0
 ! 715       continue
 ! c
 !           do 716 j = 1, icc
-!             ancsvgac_m(i,j)=0.0
-!             ancgvgac_m(i,j)=0.0
-!             rmlcsvga_m(i,j)=0.0
-!             rmlcgvga_m(i,j)=0.0
+!             ancsvgac_t(i,j)=0.0
+!             ancgvgac_t(i,j)=0.0
+!             rmlcsvga_t(i,j)=0.0
+!             rmlcgvga_t(i,j)=0.0
 ! 716       continue
 ! c
 ! 705     continue

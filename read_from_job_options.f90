@@ -311,7 +311,7 @@ call getarg(2,argbuff)
 ! ************************************
 ! EXAMPLES:
 
-! To set up a transient run:
+! To set up a transient run that does a cycling of the climate at the start:
 
 ! In the example below the model will run from 1851 - 2012 using a climate dataset that
 ! spans 1901 - 2012. The LUC, POPD, CO2 files all span 1850 - 2012. The climate dataset will
@@ -335,6 +335,14 @@ call getarg(2,argbuff)
 ! OBSWETF = .false. ,
 
 ! If you are doing methane then this would be true like the CO2 switches
+
+! +++++++++++++++++++++++++++++++
+
+! If you want a transient run that does not spin over climate at the start, you need to change from above the following:
+
+! (only the relevant switches are shown below)
+! trans_startyr = 2000, <-- whatever year you want to start at
+! CYCLEMET = .FALSE. ,  <-- note this is set to FALSE.
 
 ! +++++++++++++++++++++++++++++++
 

@@ -10,7 +10,7 @@
      &                      thicec, soildpth, spinfast,   todfrac,&
      &                     compete,   netrad,   precip,   psisat, &
      &                    popdin, dofire,  dowetlands,obswetf,isand,  &
-     &                  faregat,onetile_perPFT, wetfrac, wetfrac_s, &
+     &                   faregat, onetile_perPFT, wetfrac, slopefrac,&
      &                       bi,     thpor,    thiceg, &
 !
 !    -------------- inputs used by ctem are above this line ---------
@@ -524,7 +524,7 @@ logical, intent(inout) :: popdon   ! if set true use population density data to 
                                     ! or if false, read directly from .ctm file
 ! 
 real      wetfrac(ilg),        ch4wet1(ilg),        ch4wet2(ilg)
-real    wetfrac_s(ilg,8),        wetfdyn(ilg)
+real    slopefrac(ilg,8),        wetfdyn(ilg)
 real      ch4dyn1(ilg),        ch4dyn2(ilg)
 
 real lambdaalt
@@ -1329,9 +1329,9 @@ do 490 i = il1, il2
 !     Find CH4 wetland area (if not prescribed) and emissions:
 
 if (dowetlands .or. obswetf) then
-    call  wetland_methane (hetrores, il1, il2, ilg, ta, wetfrac,&
-     &                        ignd, npp, tbar, thliqg, currlat,&
-     &                     sand,  wetfrac_s, & !obswetf,&
+    call  wetland_methane (hetrores, il1, il2, ta, wetfrac,&
+     &                        npp, tbar, thliqg, currlat,&
+     &                     sand,  slopefrac, & !obswetf,&
      &                  ch4wet1,    ch4wet2,    wetfdyn,&
      &                  ch4dyn1,    ch4dyn2)
 endif
