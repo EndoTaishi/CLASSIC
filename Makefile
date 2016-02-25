@@ -45,6 +45,8 @@ export PGIMACH=linux86-64
 CLASS36CTEM: $(OBJ)
 	 $(FC) $(FFLAGS) -o $(BDIR)/CLASS36CTEM $(OBJ)
 
+io_driver.o: ctem_statevars.o
+
 .PHONY: clean
 
 clean:

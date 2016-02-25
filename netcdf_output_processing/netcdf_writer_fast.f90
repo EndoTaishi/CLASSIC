@@ -95,7 +95,7 @@ character(len=10) :: x1
 integer :: io_set
 logical :: lexist
 
-integer, allocatable, dimension(:) :: pfts_to_write
+logical, allocatable, dimension(:,:) :: pfts_to_write
 
 real, allocatable, dimension(:) :: tmp
 real, allocatable, dimension(:) :: tmpd
@@ -105,7 +105,7 @@ real, allocatable, dimension(:,:) :: tmpm
 
 namelist /joboptions/ &
   PARALLELRUN,        &
-  CTEM, 	      &
+  CTEM,               &
   MAKEMONTHLY,        &
   DOFIRE,             &
   DOWETLANDS,         &   
@@ -123,7 +123,7 @@ namelist /joboptions/ &
 
 tic=char(39)
 
-allocate(pfts_to_write(ctemnpft))
+allocate(pfts_to_write(ntile,ctemnpft))
 
 ! Open the grid cells file
  call getarg(1,cellsfile)
@@ -137,6 +137,9 @@ allocate(pfts_to_write(ctemnpft))
  close(10)
 
 !********************************************************************
+
+totmons = monyrs * 12
+
 ! First do all of the annual writes:
 
 ! open the list of coordinates
@@ -153,10 +156,12 @@ if (status /= nf90_noerr) call handle_major_err(status)
 
 do cell = 1,num_land_cells
 
-    write(*,*)'annual:writing ',cell,' of ',num_land_cells
+
     read(11,*)lon_in,lat_in
 
     ARGBUFF = trim(lon_in)//'_'//trim(lat_in)
+
+    write(*,*)'annual:writing ',cell,' of ',num_land_cells,'   cell: ',ARGBUFF
 
     call parsecoords(ARGBUFF,bounds)
 
@@ -166,14 +171,12 @@ do cell = 1,num_land_cells
     xlon=bounds(1)
     ylat=bounds(3)
 
-    pfts_to_write = -1 ! initialize to -1 now.
+    pfts_to_write = .False. ! initialize to -1 now.
     numtiles = 0
-
-    totmons = monyrs * 12
 
 !==CLASS ANNUAL =====================================================
 
-! OF1Y_G 
+! OF1Y
 
 if (.NOT. net4) then
    grpid=ncid
@@ -370,20 +373,25 @@ if (lexist) then
 
 !now per Tile MODE  for CTEM Annual ====================================================
 
+  if (TILED) then
 ! Read in from the ascii file
 
 ! Allocate the size of the arrays for the output data
   allocate(ctem_a_mos(numctemvars_a,ntile,totyrs))
+  allocate(tmp(numctemvars_a))
 
    ! Make a file of the TILE AVG info
    command='sed -n '//tic//'/TFRAC/p'//tic//' '//trim(infile)//' > tmp_a_t.dat'  !this removes any header!
    call system(command)
+
+   ! Check if there was only one tile and if so then use the grid avg value and sub in the format of the tile avg so it works well
+   command='[ -s tmp_a_t.dat ] || sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_t.dat ; sed -i '//tic//'s/GRDAV/TILE  1   OF  1 TFRAC/g'//tic//' tmp_a_t.dat'
+   call system(command)
+
    OPEN(750,FILE='tmp_a_t.dat',status='old',form='formatted') ! YEARLY OUTPUT FOR CTEM
 
    read(750,*,iostat=io_set,end=9000) yrin,tmp(1:numctemvars_a),dummy,tilnum,dummy,dummynum
    backspace(750)
-
-  allocate(tmp(numctemvars_a))
 
 ! We have to keep track of the year that is read in as it is the only way we know that we are done the tiles for a gridcell.
     yrin=realyrst
@@ -446,7 +454,13 @@ end if
 ! deallocate arrays
 deallocate(ctem_a_mos)
 
+  end if !TILED
+
 !now per PFT MODE for CTEM Annual ====================================================
+
+  if (DOPFTS) then
+
+  numtiles = 0 ! in case you didn't run with TILED, we can redetermine this here.
 
 ! Read in from the ascii file
 
@@ -480,8 +494,9 @@ deallocate(ctem_a_mos)
 
           if (yrin == realyrst) then
 
-             pfts_to_write = cshift(pfts_to_write,1)
-             pfts_to_write(1) = pftnum
+             pfts_to_write(tilnum,pftnum) = .True.
+             numtiles=max(tilnum,numtiles)
+
 
           end if
 
@@ -507,17 +522,19 @@ if (net4) then
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
- do l=1,ntile
+ do l=1,numtiles
   do p = 1, ctemnpft
+   if (pfts_to_write(l,p)) then
    do v = 1,numctemvars_a ! begin vars loop
 
      status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id) !pft level vars
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_var(grpid,var_id,ctem_a_pft(v,pfts_to_write(p),l,:),start=[xlon,ylat,pfts_to_write(p),l,yrst],count=[1,1,1,1,totyrs])
+     status = nf90_put_var(grpid,var_id,ctem_a_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totyrs])
      if (status/=nf90_noerr) call handle_err(status)
 
    end do ! vars loop
+   end if
   end do ! pft loop
  end do !tiles loop
 
@@ -528,10 +545,12 @@ deallocate(ctem_a_pft)
 
 end if !lexist
 
+end if ! DOPFTS
+
 !=====Fire Annual Grid Average=============================================
 
 if (DOFIRE) then
-  
+
      infile=trim(folder)//trim(ARGBUFF)//'.CT06Y'
 
     inquire(file=infile,exist=lexist)
@@ -573,14 +592,21 @@ if (DOFIRE) then
 
  deallocate(ctem_d_a)
 
+ if (TILED) then
+
 ! Per TILE AVG CTEM Annual Fire ==========================================
 
      allocate(ctem_d_a_mos(nctemdistvars_a,ntile,totyrs))
      allocate(tmpd(nctemdistvars_a))
 
      ! Grab only the tile avg values
-     command='sed '//tic//'/TFRAC/p'//tic//' '//trim(infile)//' > tmp_a_d_t.dat'
+     command='sed -n '//tic//'/TFRAC/p'//tic//' '//trim(infile)//' > tmp_a_d_t.dat'
      call system(command)
+
+     ! Check if there was only one tile and if so then use the grid avg value and sub in the format of the tile avg so it works well
+     command='[ -s tmp_a_d_t.dat ] || sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_d_t.dat ; sed -i '//tic//'s/GRDAV/TILE  1   OF  1 TFRAC/g'//tic//' tmp_a_d_t.dat'
+     call system(command)
+
      OPEN(851,FILE='tmp_a_d_t.dat',status='old',form='formatted')
      ! test the file
      read(851,*,iostat=io_set,end=9150) yrin,tmpd(1:nctemdistvars_a),dummy,tilnum,dummy,dummynum
@@ -592,8 +618,9 @@ if (DOFIRE) then
      do while (yrin == yr_now)
 
        read(851,*,iostat=io_set,end=915) yrin,tmpd(1:nctemdistvars_a),dummy,tilnum,dummy,dummynum
+
        if (io_set .ne. 0 .and. y < totyrs) then
-          write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT06Y tiled'
+          write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT06Y tiled',y,totyrs
           close(851)
           deallocate(ctem_d_a_mos)
           deallocate(tmpd)
@@ -634,6 +661,10 @@ if (DOFIRE) then
 9150 continue ! This was a composite run so just move on.
 
   deallocate(ctem_d_a_mos)
+
+  end if !TILED
+
+  if (DOPFTS) then
 
 ! Per PFT CTEM Annual Fire ==========================================
 
@@ -680,17 +711,18 @@ if (DOFIRE) then
 
  do l=1,numtiles
   do p = 1, ctemnpft
-   do v = 1,nctemdistvars_a  ! begin vars loop
-    if (pfts_to_write(p) .ne. -1) then !don't have to check pfts since always appear (unlike tiles).
+    if (pfts_to_write(l,p)) then ! these were determined by the CTO1Y file.
+     do v = 1,nctemdistvars_a  ! begin vars loop
+
 
      status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id) !pft level vars
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_var(grpid,var_id,ctem_d_a_pft(v,pfts_to_write(p),l,:),start=[xlon,ylat,pfts_to_write(p),l,yrst],count=[1,1,1,1,totyrs])
+     status = nf90_put_var(grpid,var_id,ctem_d_a_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totyrs])
      if (status/=nf90_noerr) call handle_err(status)
 
+     end do ! vars loop
     end if
-   end do ! vars loop
   end do ! pft loop
  end do !tiles loop
 
@@ -699,6 +731,8 @@ if (DOFIRE) then
 215 continue !error thrown by file
 
  end if !lexist
+
+ end if !DOPFTS
  
 endif ! if fire.
 
@@ -746,14 +780,19 @@ if (DOWETLANDS) then
 
   deallocate(ctem_w_a)
 
+  if (TILED) then
 ! =====Annual Wetlands==Tile avg=====================================================================
 
     allocate(ctem_w_a_mos(nctemwetvars_a,ntile,totyrs))
     allocate(tmpd(nctemdistvars_a))
 
      ! Grab only the tile avg values and remove the header
-     command='sed '//tic//'/TILE/p'//tic//' '//trim(infile)//' > tmp_a_w_t.dat'
+     command='sed -n '//tic//'/TILE/p'//tic//' '//trim(infile)//' > tmp_a_w_t.dat'
      call system(command)
+     ! Check if there was only one tile and if so then use the grid avg value and sub in the format of the tile avg so it works well
+     command='[ -s tmp_a_w_t.dat ] || sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_w_t.dat ; sed -i '//tic//'s/GRDAV/TILE  1/g'//tic//' tmp_a_w_t.dat'
+     call system(command)
+
      OPEN(901,FILE='tmp_a_w_t.dat',status='old',form='formatted')
      ! test the file
      read(901,*,iostat=io_set,end=10150) yrin,tmpd(1:nctemwetvars_a),dummy,tilnum
@@ -811,10 +850,17 @@ if (DOWETLANDS) then
 315 continue !error thrown by file
   
   end if !lexist for wetland file
+
+  end if !TILED
   
 end if  !if wetlands. 
 
 end if !if CTEM.
+
+! remove the tmp files
+command='rm tmp*.dat'
+call system(command)
+
 
 end do !loop over the gridcells
 
@@ -828,7 +874,6 @@ if (status/=nf90_noerr) call handle_err(status)
 ! *******************************************************************
 !=====================CLASS_MONTHLY files============================
 ! *******************************************************************
-
 
 if (MAKEMONTHLY) then
 
@@ -847,9 +892,12 @@ if (status /= nf90_noerr) call handle_major_err(status)
 
 do cell = 1,num_land_cells
 
-    write(*,*)'monthly: starting',cell,' of ',num_land_cells
+
     read(12,*)lon_in,lat_in
     ARGBUFF = trim(lon_in)//'_'//trim(lat_in)
+
+    write(*,*)'monthly:writing ',cell,' of ',num_land_cells,'   cell: ',ARGBUFF
+
     call parsecoords(ARGBUFF,bounds)
     folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
 
@@ -857,7 +905,7 @@ do cell = 1,num_land_cells
     xlon=bounds(1)
     ylat=bounds(3)
 
-    pfts_to_write = -1  !initialize to -1 now.
+    pfts_to_write = .False.  !initialize to False now.
     numtiles=0
 
 
@@ -1094,6 +1142,7 @@ if (net4) then
 end if
 
  do v = 1,numctemvars_m ! begin vars loop
+
    status = nf90_inq_varid(grpid,trim(CTEM_M_VAR_GA(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
@@ -1102,21 +1151,27 @@ end if
 
  end do ! vars loop
 
+ if (TILED) then
 ! =================CTEM Monthly Tile Avg Values ===============
 
 ! Get only the tile avg values.
- command='sed '//tic//'/TFRAC/p'//tic//' '//trim(infile)//' > tmp_m_t.dat'
+ command='sed -n '//tic//'/TFRAC/p'//tic//' '//trim(infile)//' > tmp_m_t.dat'
 call system(command)
+
+! Check if there was only one tile and if so then use the grid avg value and sub in the format of the tile avg so it works well
+command='[ -s tmp_m_t.dat ] || sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m_t.dat ; sed -i '//tic//'s/GRDAV/TILE  1   OF  1 TFRAC/g'//tic//' tmp_m_t.dat'
+call system(command)
+
+
+!Allocate Arrays
+allocate(ctem_m_mos(numctemvars_m,ntile,totmons))
+allocate(tmp(numctemvars_m))
 
 ! Open the newly trimmed file
 OPEN(741,FILE='tmp_m_t.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR CTEM
 ! Test this
 read(741,*,iostat=io_set,END=1123) mo,yrin,tmp(1:numctemvars_m),dummy,tilnum,dummy,pftnum
 backspace(741)
-
-!Allocate Arrays
-allocate(ctem_m_mos(numctemvars_m,ntile,totmons))
-allocate(tmp(numctemvars_m))
 
 ! We have to keep track of the month that is read in as it is the only way we know that we are done the tiles for a gridcell.
 
@@ -1128,6 +1183,7 @@ allocate(tmp(numctemvars_m))
       do while (mo == m)
 
           read(741,*,iostat=io_set,END=11) mo,yrin,tmp(1:numctemvars_m),dummy,tilnum,dummy,pftnum
+
           if (io_set .ne. 0 .and. y < monyrs .and. m < 12) then
             write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT01M'
             close(741)
@@ -1139,6 +1195,7 @@ allocate(tmp(numctemvars_m))
           ! Figure out what tiles to write
           if (y == 1 .and. mo == 1) then
              numtiles = max(tilnum, numtiles)
+
           end if
 
         if (mo == m) then
@@ -1154,11 +1211,10 @@ allocate(tmp(numctemvars_m))
      end do !mo=m loop
     end do !months
    end do ! years
-
 11 continue
 
  close(741)
- deallocate(tmp)
+
 
 !----
 ! MONTHLY
@@ -1181,7 +1237,14 @@ end if
 
 1123 continue
 
+deallocate(tmp)
 deallocate(ctem_m_mos)
+
+end if ! TILED
+
+if (DOPFTS) then
+
+numtiles=0
 
 ! ======= CTEM Monthly per PFT value ==================
 
@@ -1217,8 +1280,8 @@ allocate(tmp(numctemvars_m))
           ! Figure out what pfts to write
           if (y == 1 .and. mo == 1) then
 
-             pfts_to_write = cshift(pfts_to_write,1)
-             pfts_to_write(1) = tilnum
+             pfts_to_write(tilnum,pftnum) = .True.
+             numtiles = max(tilnum, numtiles)
 
           end if
 
@@ -1248,19 +1311,18 @@ if (net4) then
   if (status /= nf90_noerr) call handle_err(status)
 end if
 
- do v = 1,numctemvars_m ! begin vars loop
   do p = 1,ctemnpft
    do l = 1,numtiles ! begin tile loop
-
-    if (pfts_to_write(p) .ne. -1) then
+    if (pfts_to_write(l,p)) then
+     do v = 1,numctemvars_m ! begin vars loop
       status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_put_var(grpid,var_id,ctem_m_pft(v,pfts_to_write(p),l,:),start=[xlon,ylat,pfts_to_write(p),l,yrst],count=[1,1,1,1,totmons])
+      status = nf90_put_var(grpid,var_id,ctem_m_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totmons])
       if (status/=nf90_noerr) call handle_err(status)
-    end if
 
-   end do
+    end do
+   end if
   end do
  end do
 
@@ -1269,6 +1331,8 @@ deallocate(ctem_m_pft)
 1210 continue !error thrown by file
 
 end if  !lexist
+
+end if !DOPFTS
 
 ! Fire Monthly Grid Avg ============================================================
 
@@ -1317,8 +1381,16 @@ if (lexist) then
 
  ! Fire Monthly Tile Avg ============================================================
 
+if (TILED) then
+
   command='sed -n '//tic//'/TFRAC/p'//tic//' '//trim(infile)//' > tmp_m_t_d.dat'
   call system(command)
+
+  ! Check if there was only one tile and if so then use the grid avg value and sub in the format of the tile avg so it works well
+  command='[ -s tmp_m_t_d.dat ] || sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m_t_d.dat ; sed -i '//tic//'s/GRDAV/TILE  1   OF  1 TFRAC/g'//tic//' tmp_m_t_d.dat'
+  call system(command)
+
+
   OPEN(841,FILE='tmp_m_t_d.dat',status='old',form='formatted')
 
   allocate(ctem_d_m_mos(nctemdistvars_m,ntile,totmons))
@@ -1371,6 +1443,10 @@ if (lexist) then
 
  deallocate(ctem_d_m_mos)
 
+ end if !TILED
+
+ if (DOPFTS) then
+
  ! Fire Monthly Per PFT ============================================================
 
   command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' | sed '//tic//'/TFRAC/d'//tic//' | sed '//tic//'1,6d'//tic//' > tmp_m_p_d.dat'
@@ -1412,20 +1488,19 @@ if (lexist) then
     if (status /= nf90_noerr) call handle_err(status)
   end if
 
- do v = 1,nctemdistvars_m ! begin vars loop
   do p = 1,ctemnpft
    do l = 1,numtiles ! begin tile loop
-
-    if (pfts_to_write(p) .ne. -1) then
+    if (pfts_to_write(l,p)) then
+     do v = 1,nctemdistvars_m ! begin vars loop
 
       status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_put_var(grpid,var_id,ctem_d_m_pft(v,pfts_to_write(p),l,:),start=[xlon,ylat,pfts_to_write(p),l,yrst],count=[1,1,1,1,totmons])
+      status = nf90_put_var(grpid,var_id,ctem_d_m_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totmons])
       if (status/=nf90_noerr) call handle_err(status)
-     end if
 
-   end do
+    end do
+   end if
   end do
  end do
 
@@ -1434,6 +1509,8 @@ if (lexist) then
 1220 continue !error thrown by file
 
  end if !lexist 
+
+ end if ! DOPFTS
  
 end if !if fire.
 
@@ -1481,10 +1558,16 @@ if (DOWETLANDS) then
 
 deallocate(ctem_w_m)
 
+if (TILED) then
 !===================per Tile===CTEM Monthly wetlands==========================
 
  command='sed -n '//tic//'/TILE/p'//tic//' '//trim(infile)//' > tmp_m_t_w.dat'
   call system(command)
+
+  ! Check if there was only one tile and if so then use the grid avg value and sub in the format of the tile avg so it works well
+  command='[ -s tmp_m_t_w.dat ] || sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_m_t_w.dat ; sed -i '//tic//'s/GRDAV/TILE  1/g'//tic//' tmp_m_t_w.dat'
+  call system(command)
+
   OPEN(911,FILE='tmp_m_t_w.dat',status='old',form='formatted')
 
   allocate(ctem_w_m_mos(nctemwetvars_m,ntile,totmons))
@@ -1539,6 +1622,8 @@ deallocate(ctem_w_m)
 123 continue !error thrown by monthly wetland file
 
  end if !lexist
+
+ end if !TILED
    
 end if !if wetlands
 
