@@ -68,9 +68,9 @@ namelist /joboptions/ &
   CTEM,               &
   MAKEMONTHLY,        &
   DOFIRE,             &
+  DOWETLANDS,         &
   TILED,              &
   DOPFTS,             &
-  DOWETLANDS,         &
   COMPETE_LNDUSE,     &
   nl,                 &
   totyrs,             &
@@ -146,13 +146,15 @@ write(*,*)'Starting annual file'
 file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_A.nc'
 call create_netcdf(totyrs,yrst,realyrst,file_to_write_extended,CTEM,.FALSE.,DOFIRE,DOWETLANDS,COMPETE_LNDUSE,nl,TILED,DOPFTS)
 
-write(*,*)'Done annual file, starting monthly (if needed)'
+write(*,*)'Done annual file'
 
 if (MAKEMONTHLY) then
+  write(*,*)'Starting monthly file'
   ! Then create the monthly file if you are making one:
   file_to_write_extended = trim(file_to_write)//'_CLASSCTEM_M.nc'
   adjustyr=realyrst+(totyrs - monyrs - 1) 
   call create_netcdf(monyrs,yrst,adjustyr,file_to_write_extended,CTEM,.TRUE.,DOFIRE,DOWETLANDS,COMPETE_LNDUSE,nl,TILED,DOPFTS)
+  write(*,*)'Done monthly file'
 end if
 
 deallocate(lonvect)
