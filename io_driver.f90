@@ -2545,10 +2545,10 @@ do 862 i=1,nltest
 
 867             continue
 
-                ! Do the bare fraction too  !FLAG should  Ido the totcmass for bare as well? I think so - JM Feb 2016.
+                ! Do the bare fraction too
                 litrmass_mo(i,m,iccp1)=litrmassrow(i,m,iccp1)
                 soilcmas_mo(i,m,iccp1)=soilcmasrow(i,m,iccp1)
-
+                totcmass_mo(i,m,iccp1)=soilcmasrow(i,m,iccp1) + litrmassrow(i,m,iccp1)
                 barefrac=1.0
 
                ! Now find the per tile values:
@@ -2565,6 +2565,7 @@ do 862 i=1,nltest
 !               Also add in the bare fraction contributions.
                 litrmass_mo_t(i,m)=litrmass_mo_t(i,m)+litrmass_mo(i,m,iccp1)*barefrac
                 soilcmas_mo_t(i,m)=soilcmas_mo_t(i,m)+soilcmas_mo(i,m,iccp1)*barefrac
+                totcmas_mo_t(i,m)=totcmas_mo_t(i,m)+(litrmass_mo(i,m,iccp1)+soilcmas_mo(i,m,iccp1))*barefrac
 
                 ! Now find the gridcell level values:
                 vgbiomas_mo_g(i)=vgbiomas_mo_g(i)+vgbiomas_mo_t(i,m)*FAREROT(i,m)
@@ -2696,12 +2697,12 @@ do 862 i=1,nltest
                 end do !icc
 
                 ! Now write out the bare fraction values:
-                if (barefrac .gt. seed) then  !FLAG if totcmass gets the iccp1 added, also do so here.
+                if (barefrac .gt. seed) then
                     write(84,8104)imonth,iyear,0.0,  &
                         0.0,litrmass_mo(i,m,iccp1), &
                         soilcmas_mo(i,m,iccp1),0.0, &
-                        0.0,0.0, &
-                        0.0,hetrores_mo(i,m,iccp1), &
+                        0.0,nep_mo(i,m,iccp1), &
+                        nbp_mo(i,m,iccp1),hetrores_mo(i,m,iccp1), &
                         0.0,litres_mo(i,m,iccp1), &
                         soilcres_mo(i,m,iccp1), &
                         ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
@@ -3281,13 +3282,13 @@ do 882 i=1,nltest
                 litrmass_yr(i,m,j)=litrmassrow(i,m,j)
                 soilcmas_yr(i,m,j)=soilcmasrow(i,m,j)
                 vgbiomas_yr(i,m,j)=vgbiomas_vegrow(i,m,j)
-                totcmass_yr(i,m,j)=vgbiomas_yr(i,m,j)+litrmass_yr(i,m,j)+soilcmas_yr(i,m,j) !FLAG totc should include iccp1!
+                totcmass_yr(i,m,j)=vgbiomas_yr(i,m,j)+litrmass_yr(i,m,j)+soilcmas_yr(i,m,j)
 
 925         continue
 
             litrmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1)
             soilcmas_yr(i,m,iccp1)=soilcmasrow(i,m,iccp1)
-
+            totcmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1) + soilcmasrow(i,m,iccp1)
             barefrac=1.0
 
             ! Add values to the per tile vars
@@ -3331,8 +3332,9 @@ do 882 i=1,nltest
             hetrores_yr_t(i,m)=hetrores_yr_t(i,m)+hetrores_yr(i,m,iccp1)*barefrac
             litres_yr_t(i,m)  =litres_yr_t(i,m)  +litres_yr(i,m,iccp1)*barefrac
             soilcres_yr_t(i,m)=soilcres_yr_t(i,m)+soilcres_yr(i,m,iccp1)*barefrac
-            nep_yr_t(i,m)=nep_yr_t(i,m)+nep_yr(i,m,j)*barefrac
-            nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,j)*barefrac
+            nep_yr_t(i,m)=nep_yr_t(i,m)+nep_yr(i,m,iccp1)*barefrac
+            nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,iccp1)*barefrac
+            totcmass_yr_t(i,m) = totcmass_yr_t(i,m)+(litrmass_yr(i,m,iccp1) + soilcmas_yr(i,m,iccp1))*barefrac
 
             ! Add values to the per gridcell vars
             laimaxg_yr_g(i)=laimaxg_yr_g(i)+ laimaxg_yr_t(i,m)*FAREROT(i,m)
@@ -3409,10 +3411,9 @@ do 882 i=1,nltest
                     0.,  &
                     0.,0., &
                     litrmass_yr(i,m,iccp1),soilcmas_yr(i,m,iccp1), &
-                    0.+soilcmas_yr(i,m,iccp1)+ &
-                    litrmass_yr(i,m,iccp1),0., &
-                    0.,0., &
-                    0.,hetrores_yr(i,m,iccp1), &
+                    totcmass_yr(i,m,iccp1),0., &
+                    0.,nep_yr(i,m,iccp1), &
+                    nbp_yr(i,m,iccp1),hetrores_yr(i,m,iccp1), &
                     0.,litres_yr(i,m,iccp1),soilcres_yr(i,m,iccp1), &
                     ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
             end if

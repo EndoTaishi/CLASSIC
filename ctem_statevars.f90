@@ -738,7 +738,7 @@ type ctem_monthly
       real, dimension(nlat,nmos,icc) :: gpp_mo
       real, dimension(nlat,nmos,icc) :: vgbiomas_mo
       real, dimension(nlat,nmos,icc) :: autores_mo
-      real, dimension(nlat,nmos,icc) :: totcmass_mo
+      real, dimension(nlat,nmos,iccp1) :: totcmass_mo
       real, dimension(nlat,nmos,iccp1) :: litrmass_mo
       real, dimension(nlat,nmos,iccp1) :: soilcmas_mo
       real, dimension(nlat,nmos,iccp1) :: nep_mo
@@ -882,7 +882,7 @@ type ctem_annual
       real, dimension(nlat,nmos,icc) :: gpp_yr
       real, dimension(nlat,nmos,icc) :: vgbiomas_yr
       real, dimension(nlat,nmos,icc) :: autores_yr
-      real, dimension(nlat,nmos,icc) :: totcmass_yr
+      real, dimension(nlat,nmos,iccp1) :: totcmass_yr
       real, dimension(nlat,nmos,iccp1) :: litrmass_yr
       real, dimension(nlat,nmos,iccp1) :: soilcmas_yr
       real, dimension(nlat,nmos,iccp1) :: nep_yr
@@ -1327,6 +1327,7 @@ do i=1,nltest
         end do
             ctem_mo%litrmass_mo(i,m,iccp1)=0.0
             ctem_mo%soilcmas_mo(i,m,iccp1)=0.0
+            ctem_mo%totcmass_mo(i,m,iccp1)=0.0
   end do
 end do
 
@@ -1584,6 +1585,7 @@ do i=1,nltest
         ctem_yr%nbp_yr(i,m,iccp1)=0.0
         ctem_yr%litrmass_yr(i,m,iccp1)=0.0
         ctem_yr%soilcmas_yr(i,m,iccp1)=0.0
+        ctem_yr%totcmass_yr(i,m,iccp1)=0.0
 
     end do !nmtest
 end do ! nltest
