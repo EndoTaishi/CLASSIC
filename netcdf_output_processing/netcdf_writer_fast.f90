@@ -76,7 +76,7 @@ character(120) :: jobfile
 character(512) :: command
 character(160) :: infile
 character(160) :: cellsfile
-character(4) :: dummy
+character(4) :: dummy,dummy2
 character(6) :: lon_in, lat_in
 logical :: CTEM
 logical :: MAKEMONTHLY
@@ -161,7 +161,7 @@ do cell = 1,num_land_cells
 
     ARGBUFF = trim(lon_in)//'_'//trim(lat_in)
 
-    write(*,*)'annual:writing ',cell,' of ',num_land_cells,'   cell: ',ARGBUFF
+    write(*,'(a9,i5,a5,i5,a8,a10)')'annual: ',cell,' of ',num_land_cells,' cell: ',ARGBUFF
 
     call parsecoords(ARGBUFF,bounds)
 
@@ -483,7 +483,8 @@ deallocate(ctem_a_mos)
 
       do while (yrin == yr_now)
 
-          read(751,*,iostat=io_set,end=95) yrin,tmp(1:numctemvars_a),dummy,tilnum,dummy,pftnum
+          read(751,*,iostat=io_set,end=95) yrin,tmp(1:numctemvars_a),dummy,tilnum,dummy2,pftnum
+
           if (io_set .ne. 0 .and. y < totyrs) then
             write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.CT01Y pftlevel'
             close(751)
@@ -501,6 +502,7 @@ deallocate(ctem_a_mos)
           end if
 
         if (yrin == yr_now) then
+
           ! Assign that just read in to its vars
           do v = 1,numctemvars_a ! begin vars loop
             ctem_a_pft(v,pftnum,tilnum,y)=tmp(v)
@@ -526,13 +528,23 @@ end if
   do p = 1, ctemnpft
    if (pfts_to_write(l,p)) then
    do v = 1,numctemvars_a ! begin vars loop
+     if (TILED .and. DOPFTS) then
 
-     status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id) !pft level vars
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id) !pft level vars
+      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_var(grpid,var_id,ctem_a_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totyrs])
-     if (status/=nf90_noerr) call handle_err(status)
+      status = nf90_put_var(grpid,var_id,ctem_a_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totyrs])
+      if (status/=nf90_noerr) call handle_err(status)
 
+    else if (DOPFTS .and. .not. TILED) then
+
+      status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id) !pft level vars
+      if (status/=nf90_noerr) call handle_err(status)
+
+      status = nf90_put_var(grpid,var_id,ctem_a_pft(v,p,1,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totyrs])
+      if (status/=nf90_noerr) call handle_err(status)
+
+    end if
    end do ! vars loop
    end if
   end do ! pft loop
@@ -713,13 +725,23 @@ if (DOFIRE) then
   do p = 1, ctemnpft
     if (pfts_to_write(l,p)) then ! these were determined by the CTO1Y file.
      do v = 1,nctemdistvars_a  ! begin vars loop
+      if (TILED .and. DOPFTS) then
 
+        status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id) !pft level vars
+        if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id) !pft level vars
-     if (status/=nf90_noerr) call handle_err(status)
+        status = nf90_put_var(grpid,var_id,ctem_d_a_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totyrs])
+        if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_var(grpid,var_id,ctem_d_a_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totyrs])
-     if (status/=nf90_noerr) call handle_err(status)
+      else if (DOPFTS .and. .not. TILED) then
+
+        status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id) !pft level vars
+        if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_put_var(grpid,var_id,ctem_d_a_pft(v,p,1,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totyrs])
+        if (status/=nf90_noerr) call handle_err(status)
+
+      end if
 
      end do ! vars loop
     end if
@@ -896,7 +918,7 @@ do cell = 1,num_land_cells
     read(12,*)lon_in,lat_in
     ARGBUFF = trim(lon_in)//'_'//trim(lat_in)
 
-    write(*,*)'monthly:writing ',cell,' of ',num_land_cells,'   cell: ',ARGBUFF
+    write(*,'(a9,i5,a5,i5,a8,a10)')'monthly:',cell,' of ',num_land_cells,'   cell: ',ARGBUFF
 
     call parsecoords(ARGBUFF,bounds)
     folder=trim(long_path)//'/'//trim(ARGBUFF)//'/'
@@ -1315,11 +1337,24 @@ end if
    do l = 1,numtiles ! begin tile loop
     if (pfts_to_write(l,p)) then
      do v = 1,numctemvars_m ! begin vars loop
-      status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
-      if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_put_var(grpid,var_id,ctem_m_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totmons])
-      if (status/=nf90_noerr) call handle_err(status)
+      if (TILED .and. DOPFTS) then
+
+        status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
+        if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_put_var(grpid,var_id,ctem_m_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totmons])
+        if (status/=nf90_noerr) call handle_err(status)
+
+      else if (DOPFTS .and. .not. TILED) then
+
+        status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
+        if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_put_var(grpid,var_id,ctem_m_pft(v,p,1,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totmons])
+        if (status/=nf90_noerr) call handle_err(status)
+
+      end if
 
     end do
    end if
@@ -1493,11 +1528,23 @@ if (TILED) then
     if (pfts_to_write(l,p)) then
      do v = 1,nctemdistvars_m ! begin vars loop
 
-      status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
-      if (status/=nf90_noerr) call handle_err(status)
+      if (TILED .and. DOPFTS) then
 
-      status = nf90_put_var(grpid,var_id,ctem_d_m_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totmons])
-      if (status/=nf90_noerr) call handle_err(status)
+        status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
+        if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_put_var(grpid,var_id,ctem_d_m_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totmons])
+        if (status/=nf90_noerr) call handle_err(status)
+
+      else if (DOPFTS .and. .not. TILED) then
+
+        status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
+        if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_put_var(grpid,var_id,ctem_d_m_pft(v,p,1,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totmons])
+        if (status/=nf90_noerr) call handle_err(status)
+
+      end if
 
     end do
    end if

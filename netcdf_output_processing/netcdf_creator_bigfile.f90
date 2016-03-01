@@ -358,9 +358,9 @@ if (status/=nf90_noerr) call handle_err(status)
 
 !----7
 
-z=realyrst-1
+z=realyrst-2
 write (zchar, '(I4)') z
-daysince='days since '//zchar//'-01-01'
+daysince='days since '//zchar//'-12-31'
 
 tottime = totyrs * 12
 
@@ -583,26 +583,35 @@ deallocate(timenum)
  if (CTEM) then
 
     if (MONTHFILE) then
-        ! Annual GRID average:
+        ! Monthly GRID average:
             call dothevars(3,tottime,grpid_mon_ctem,CTEM_M_VAR_GA,CTEM_M_NAME,CTEM_M_UNIT,numctemvars_m,0,nl)
         ! Fire
-            call dothevars(3,tottime,grpid_mon_dist,CTEM_M_D_VAR_GA,CTEM_M_D_NAME,CTEM_M_D_UNIT,nctemdistvars_m,0,nl)
+            if (DOFIRE) call dothevars(3,tottime,grpid_mon_dist,CTEM_M_D_VAR_GA,CTEM_M_D_NAME,CTEM_M_D_UNIT,nctemdistvars_m,0,nl)
         ! Wetlands
-            call dothevars(3,tottime,grpid_mon_wet,CTEM_M_W_VAR,CTEM_M_W_NAME,CTEM_M_W_UNIT,nctemwetvars_m,0,nl)
+            if (DOWETLANDS) call dothevars(3,tottime,grpid_mon_wet,CTEM_M_W_VAR,CTEM_M_W_NAME,CTEM_M_W_UNIT,nctemwetvars_m,0,nl)
+
         if (tiled) then
-            ! Annual TILE average:
+            ! Monthly TILE average:
                 call dothevars(4,tottime,grpid_mon_ctem,CTEM_M_VAR_TA,CTEM_M_NAME,CTEM_M_UNIT,numctemvars_m,0,nl)
             ! Fire
-                call dothevars(4,tottime,grpid_mon_dist,CTEM_M_D_VAR_TA,CTEM_M_D_NAME,CTEM_M_D_UNIT,nctemdistvars_m,0,nl)
+                if (DOFIRE) call dothevars(4,tottime,grpid_mon_dist,CTEM_M_D_VAR_TA,CTEM_M_D_NAME,CTEM_M_D_UNIT,nctemdistvars_m,0,nl)
             ! Wetlands
-                call dothevars(4,tottime,grpid_mon_wet,CTEM_M_W_T_VAR,CTEM_M_W_NAME,CTEM_M_W_UNIT,nctemwetvars_m,0,nl)
+                if (DOWETLANDS) call dothevars(4,tottime,grpid_mon_wet,CTEM_M_W_T_VAR,CTEM_M_W_NAME,CTEM_M_W_UNIT,nctemwetvars_m,0,nl)
         end if
-        if (DOPFTS) then
-        ! Annual Per PFT values:
+
+        if (DOPFTS .and. TILED) then
+        ! Monthly Per PFT values:
             call dothevars(5,tottime,grpid_mon_ctem,CTEM_M_VAR,CTEM_M_NAME,CTEM_M_UNIT,numctemvars_m,0,nl)
         ! Fire
-            call dothevars(5,tottime,grpid_mon_dist,CTEM_M_D_VAR,CTEM_M_D_NAME,CTEM_M_D_UNIT,nctemdistvars_m,0,nl)
+            if (DOFIRE) call dothevars(5,tottime,grpid_mon_dist,CTEM_M_D_VAR,CTEM_M_D_NAME,CTEM_M_D_UNIT,nctemdistvars_m,0,nl)
+
+        else if (DOPFTS .and. .not. TILED) then
+        ! Monthly Per PFT values:
+            call dothevars(4,tottime,grpid_mon_ctem,CTEM_M_VAR,CTEM_M_NAME,CTEM_M_UNIT,numctemvars_m,1,nl) !specialdim = 1 means it has ctemnpft not ntile.
+        ! Fire
+            if (DOFIRE) call dothevars(4,tottime,grpid_mon_dist,CTEM_M_D_VAR,CTEM_M_D_NAME,CTEM_M_D_UNIT,nctemdistvars_m,1,nl)
         end if
+
         if (COMPETE_LNDUSE) then
             call dothevars(3,tottime,grpid_mon_ctem,CTEM_M_C_VAR(1),CTEM_M_C_NAME(1),CTEM_M_C_UNIT(1),1,0,nl)
             call dothevars(4,tottime,grpid_mon_ctem,CTEM_M_C_VAR(2:nctemcompvars_m),CTEM_M_C_NAME(2:nctemcompvars_m),CTEM_M_C_UNIT(2:nctemcompvars_m),nctemcompvars_m-1,1,nl)! specialdim = 1 for COMPETE_LNDUSE
@@ -611,22 +620,35 @@ deallocate(timenum)
         ! Annual GRID average:
             call dothevars(3,totyrs,grpid_ann_ctem,CTEM_Y_VAR_GA,CTEM_Y_NAME,CTEM_Y_UNIT,numctemvars_a,0,nl)
         ! Fire
-            call dothevars(3,totyrs,grpid_ann_dist,CTEM_Y_D_VAR_GA,CTEM_Y_D_NAME,CTEM_Y_D_UNIT,nctemdistvars_a,0,nl)
+        if (DOFIRE) call dothevars(3,totyrs,grpid_ann_dist,CTEM_Y_D_VAR_GA,CTEM_Y_D_NAME,CTEM_Y_D_UNIT,nctemdistvars_a,0,nl)
         ! Wetlands
-            call dothevars(3,totyrs,grpid_ann_wet,CTEM_Y_W_VAR,CTEM_Y_W_NAME,CTEM_Y_W_UNIT,nctemwetvars_a,0,nl)
+        if (DOWETLANDS) call dothevars(3,totyrs,grpid_ann_wet,CTEM_Y_W_VAR,CTEM_Y_W_NAME,CTEM_Y_W_UNIT,nctemwetvars_a,0,nl)
+
         if (tiled) then
+
             ! Annual TILE average:
                 call dothevars(4,totyrs,grpid_ann_ctem,CTEM_Y_VAR_TA,CTEM_Y_NAME,CTEM_Y_UNIT,numctemvars_a,0,nl)
             ! Fire
-                call dothevars(4,totyrs,grpid_ann_dist,CTEM_Y_D_VAR_TA,CTEM_Y_D_NAME,CTEM_Y_D_UNIT,nctemdistvars_a,0,nl)
+                if (DOFIRE) call dothevars(4,totyrs,grpid_ann_dist,CTEM_Y_D_VAR_TA,CTEM_Y_D_NAME,CTEM_Y_D_UNIT,nctemdistvars_a,0,nl)
             ! Wetlands
-                call dothevars(4,totyrs,grpid_ann_wet,CTEM_Y_W_T_VAR,CTEM_Y_W_NAME,CTEM_Y_W_UNIT,nctemwetvars_a,0,nl)
+                if (DOWETLANDS) call dothevars(4,totyrs,grpid_ann_wet,CTEM_Y_W_T_VAR,CTEM_Y_W_NAME,CTEM_Y_W_UNIT,nctemwetvars_a,0,nl)
         end if
-        if (DOPFTS) then
+
+        if (DOPFTS .and. TILED) then
+
         ! Annual Per PFT values:
             call dothevars(5,totyrs,grpid_ann_ctem,CTEM_Y_VAR,CTEM_Y_NAME,CTEM_Y_UNIT,numctemvars_a,0,nl)
+
         ! Fire
-            call dothevars(5,totyrs,grpid_ann_dist,CTEM_Y_D_VAR,CTEM_Y_D_NAME,CTEM_Y_D_UNIT,nctemdistvars_a,0,nl)
+            if (DOFIRE) call dothevars(5,totyrs,grpid_ann_dist,CTEM_Y_D_VAR,CTEM_Y_D_NAME,CTEM_Y_D_UNIT,nctemdistvars_a,0,nl)
+
+        else if (DOPFTS .and. .not. TILED) then
+
+        ! Annual Per PFT values:
+            call dothevars(4,totyrs,grpid_ann_ctem,CTEM_Y_VAR,CTEM_Y_NAME,CTEM_Y_UNIT,numctemvars_a,1,nl) !specialdim = 1 means it has ctemnpft not ntile.
+
+        ! Fire
+            if (DOFIRE) call dothevars(4,totyrs,grpid_ann_dist,CTEM_Y_D_VAR,CTEM_Y_D_NAME,CTEM_Y_D_UNIT,nctemdistvars_a,1,nl)
         end if
 
         if (COMPETE_LNDUSE) then
