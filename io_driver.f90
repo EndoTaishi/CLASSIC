@@ -1263,7 +1263,6 @@ integer, intent(in) :: nltest
 integer, intent(in) :: nmtest
 real, intent(in) :: SBC
 real, intent(in) :: DELT
-real, intent(in) :: TFREZ
 real, dimension(nlat), intent(in) :: FSSROW
 real, dimension(nlat), intent(in) :: FDLROW
 real, dimension(nlat), intent(in) :: FSVHROW
@@ -1300,6 +1299,7 @@ real, pointer :: QE_YR
 
 !local
 integer :: i,m,j
+real :: ALTOT_YR
 
 !point pointers
 ALVSACC_YR        => class_out%ALVSACC_YR
@@ -1374,10 +1374,10 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
             QH_YR=HFSACC_YR(I)
             QE_YR=QEVPACC_YR(I)
 
-            WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,
-        1                  QE_YR,ROFACC_YR(I),PREACC_YR(I),
-        2                  EVAPACC_YR(I),TRANSPACC_YR(I),
-        3                  TRANSPACC_YR(I)/EVAPACC_YR(I)
+            WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,&
+                          QE_YR,ROFACC_YR(I),PREACC_YR(I),&
+                          EVAPACC_YR(I),TRANSPACC_YR(I),&
+                          TRANSPACC_YR(I)/EVAPACC_YR(I)
 
         ! ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
 

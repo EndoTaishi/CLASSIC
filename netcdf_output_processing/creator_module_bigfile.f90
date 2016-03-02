@@ -120,17 +120,17 @@ real, allocatable, dimension(:,:) :: lonbound
 ! MONTH YEAR  SW     LW      QH      QE    SNOACC    WSNOACC    ROFACC      PCP      EVAP      TAir
 !             W/m2    W/m2    W/m2    W/m2    kg/m2   kg/m2      mm.mon    mm.mon    mm.mon    degC
 
-integer, parameter :: numclasvars_m = 10   !number of monthly CLASS vars to write
+integer, parameter :: numclasvars_m = 12   !number of monthly CLASS vars to write
 
 character(100), parameter, dimension(numclasvars_m) :: CLASS_M_VAR=['SW           ','LW','QH','QE','SNOACC','WSNOACC',                 &
-                                                                    'ROFACC','PCP','EVAP','TA']
+                                                                    'ROFACC','PCP','EVAP','TA','TRANSP','T/E']
 
 character(100), parameter, dimension(numclasvars_m) :: CLASS_M_NAME=['Shortwave radiation                      ','Longwave radiation','Sensible heat flux','Latent heat flux',                     &
                                                                      'Mass of snow pack','Liquid water content of snow pack','Total runoff from soil',                       &
-                                                                     'Precipitation','Evaporation','Air temperature']
+                                                                     'Precipitation','Evaporation','Air temperature','Transpiration','Transpiration / Evaporation']
 
 character(100), parameter, dimension(numclasvars_m) :: CLASS_M_UNIT=['W/$m^2$        ','W/$m^2$','W/$m^2$','W/$m^2$','kg/$m^2$','kg/$m^2$','mm/month',              &
-                                                                     'mm/month','mm/month','$\circ$C']
+                                                                     'mm/month','mm/month','$\circ$C','mm/month','ratio']
 
 ! CLASS Soil vars are stored in a separate file.
 
@@ -149,20 +149,20 @@ character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_UNIT=['$\circ
 
 !======================== Declare arrays for annual CLASS =============
 
-integer, parameter :: numclasvars_a = 7  !number of annual CLASS vars to write
+integer, parameter :: numclasvars_a = 9  !number of annual CLASS vars to write
 
 ! .OF1Y_G
 ! YEAR   SW     LW      QH      QE     ROFACC    PCP     EVAP  
 !        W/m2   W/m2    W/m2    W/m2    mm.yr    mm.yr    mm.yr
 
-character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_VAR=['ANN_SW        ','ANN_LW','ANN_QH','ANN_QE','ANN_ROFACC','ANN_PCP','ANN_EVAP']
+character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_VAR=['ANN_SW        ','ANN_LW','ANN_QH','ANN_QE','ANN_ROFACC','ANN_PCP','ANN_EVAP','ANN_TRANSP','T/E']
 
 character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_NAME=['Shortwave radiation          ','Longwave radiation','Sensible heat flux',     &
                                                                      'Latent heat flux','Total runoff from soil','Precipitation',         &
-                                                                     'Evaporation']
+                                                                     'Evaporation','Transpiration', 'Transpiration / Evaporation']
 
 character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_UNIT=['W/$m^2$          ','W/$m^2$','W/$m^2$','W/$m^2$',&
-                                                                     'mm/year','mm/year','mm/year']
+                                                                     'mm/year','mm/year','mm/year','mm/year','ratio']
 
 !====================== Declare arrays for monthly CTEM COMPOSITE AND tiled=============
 
