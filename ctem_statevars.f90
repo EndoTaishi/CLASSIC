@@ -485,6 +485,7 @@ type class_moyr_output
     real, dimension(nlat) :: ROFACC_MO
     real, dimension(nlat) :: PREACC_MO
     real, dimension(nlat) :: EVAPACC_MO
+    real, dimension(nlat) :: TRANSPACC_MO
     real, dimension(nlat) :: TAACC_MO
 
     real :: FSSTAR_MO
@@ -508,6 +509,7 @@ type class_moyr_output
     real, dimension(nlat) :: ROFACC_YR
     real, dimension(nlat) :: PREACC_YR
     real, dimension(nlat) :: EVAPACC_YR
+    real, dimension(nlat) :: TRANSPACC_YR
     real, dimension(nlat) :: TAACC_YR
 
     real :: FSSTAR_YR
@@ -728,6 +730,7 @@ type ctem_tile_level
       real, dimension(ilg,ignd) :: thliqgacc_t
       real, dimension(ilg,ignd) :: thliqacc_t
       real, dimension(ilg,ignd) :: thicecacc_t
+      real, dimension(ilg,ignd) :: thicegacc_t
       real, dimension(ilg,icc) :: ancsvgac_t
       real, dimension(ilg,icc) :: ancgvgac_t
       real, dimension(ilg,icc) :: rmlcsvga_t
@@ -1257,6 +1260,7 @@ do i=1,nltest
     class_out%FLINACC_MO(I)=0.
     class_out%HFSACC_MO(I) =0.
     class_out%QEVPACC_MO(I)=0.
+    class_out%TRANSPACC_MO(I)=0.
     class_out%SNOACC_MO(I) =0.
     class_out%WSNOACC_MO(I)=0.
     class_out%ROFACC_MO(I) =0.
@@ -1294,6 +1298,7 @@ do i=1,nltest
           class_out%ROFACC_YR(I) =0.
           class_out%PREACC_YR(I) =0.
           class_out%EVAPACC_YR(I)=0.
+          class_out%TRANSPACC_YR(I)=0.
           class_out%TAACC_YR(I)=0.
 end do
 
