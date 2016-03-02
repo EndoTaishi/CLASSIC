@@ -24,11 +24,11 @@ implicit none
 public :: initrowvars
 public :: resetclassmon
 public :: resetclassyr
+public :: resetdaily
 public :: resetmonthend
 public :: resetyearend
 public :: resetclassaccum
 public :: resetgridavg
-public :: resetctem_g
 public :: finddaylength
 
 !=================================================================================
@@ -700,6 +700,18 @@ type ctem_tile_level
       real, dimension(nlat,nmos) :: gleafmas_t
       real, dimension(nlat,nmos) :: bleafmas_t
       real, dimension(nlat,nmos) :: soilcmas_t
+      real, dimension(nlat,nmos) :: emit_co2_t
+      real, dimension(nlat,nmos) :: emit_co_t
+      real, dimension(nlat,nmos) :: emit_ch4_t
+      real, dimension(nlat,nmos) :: emit_nmhc_t
+      real, dimension(nlat,nmos) :: emit_h2_t
+      real, dimension(nlat,nmos) :: emit_nox_t
+      real, dimension(nlat,nmos) :: emit_n2o_t
+      real, dimension(nlat,nmos) :: emit_pm25_t
+      real, dimension(nlat,nmos) :: emit_tpm_t
+      real, dimension(nlat,nmos) :: emit_tc_t
+      real, dimension(nlat,nmos) :: emit_oc_t
+      real, dimension(nlat,nmos) :: emit_bc_t
 
       real, dimension(ilg) :: fsnowacc_t
       real, dimension(ilg) :: tcansacc_t
@@ -721,7 +733,6 @@ type ctem_tile_level
       real, dimension(ilg,icc) :: ancgvgac_t
       real, dimension(ilg,icc) :: rmlcsvga_t
       real, dimension(ilg,icc) :: rmlcgvga_t
-      integer, dimension(nlat,nmos) :: ifcancmx_t
 
 end type ctem_tile_level
 
@@ -1291,6 +1302,138 @@ end subroutine resetclassyr
 
 !==================================================
 
+subroutine resetdaily(nltest,nmtest)
+
+use ctem_params, only : ignd,icc
+
+implicit none
+
+integer, intent(in) :: nltest
+integer, intent(in) :: nmtest
+
+integer :: i,j,k,m
+
+! First reset the grid average
+do i=1,nltest
+    ctem_grd%gpp_g(i) =0.0
+    ctem_grd%npp_g(i) =0.0
+    ctem_grd%nep_g(i) =0.0
+    ctem_grd%nbp_g(i) =0.0
+    ctem_grd%autores_g(i) =0.0
+    ctem_grd%hetrores_g(i)=0.0
+    ctem_grd%litres_g(i) =0.0
+    ctem_grd%socres_g(i) =0.0
+    ctem_grd%dstcemls_g(i)=0.0
+    ctem_grd%dstcemls3_g(i)=0.0
+    ctem_grd%litrfall_g(i)=0.0
+    ctem_grd%humiftrs_g(i)=0.0
+    ctem_grd%rml_g(i) =0.0
+    ctem_grd%rms_g(i) =0.0
+    ctem_grd%rmr_g(i) =0.0
+    ctem_grd%rg_g(i) =0.0
+    ctem_grd%vgbiomas_g(i) =0.0
+    ctem_grd%totcmass_g(i) =0.0
+    ctem_grd%gavglai_g(i) =0.0
+    ctem_grd%gavgltms_g(i) =0.0
+    ctem_grd%gavgscms_g(i) =0.0
+    ctem_grd%ailcg_g(i)=0.0
+    ctem_grd%ailcb_g(i)=0.0
+    ctem_grd%tcanoacc_out_g(i) =0.0
+    ctem_grd%burnfrac_g(i) =0.0
+    ctem_grd%probfire_g(i) =0.0
+    ctem_grd%lucemcom_g(i) =0.0
+    ctem_grd%lucltrin_g(i) =0.0
+    ctem_grd%lucsocin_g(i) =0.0
+    ctem_grd%emit_co2_g(i) =0.0
+    ctem_grd%emit_co_g(i)  =0.0
+    ctem_grd%emit_ch4_g(i) =0.0
+    ctem_grd%emit_nmhc_g(i) =0.0
+    ctem_grd%emit_h2_g(i) =0.0
+    ctem_grd%emit_nox_g(i) =0.0
+    ctem_grd%emit_n2o_g(i) =0.0
+    ctem_grd%emit_pm25_g(i) =0.0
+    ctem_grd%emit_tpm_g(i) =0.0
+    ctem_grd%emit_tc_g(i) =0.0
+    ctem_grd%emit_oc_g(i) =0.0
+    ctem_grd%emit_bc_g(i) =0.0
+    ctem_grd%bterm_g(i)   =0.0
+    ctem_grd%lterm_g(i)   =0.0
+    ctem_grd%mterm_g(i)   =0.0
+    ctem_grd%leaflitr_g(i)=0.0
+    ctem_grd%tltrleaf_g(i)=0.0
+    ctem_grd%tltrstem_g(i)=0.0
+    ctem_grd%tltrroot_g(i)=0.0
+    ctem_grd%gleafmas_g(i)=0.0
+    ctem_grd%bleafmas_g(i)=0.0
+    ctem_grd%stemmass_g(i)=0.0
+    ctem_grd%rootmass_g(i)=0.0
+    ctem_grd%litrmass_g(i)=0.0
+    ctem_grd%soilcmas_g(i)=0.0
+    ctem_grd%veghght_g(i)=0.0
+    ctem_grd%rootdpth_g(i)=0.0
+    ctem_grd%roottemp_g(i)=0.0
+    ctem_grd%slai_g(i)=0.0
+    ctem_grd%CH4WET1_G(i) = 0.0
+    ctem_grd%CH4WET2_G(i) = 0.0
+    ctem_grd%WETFDYN_G(i) = 0.0
+    ctem_grd%CH4DYN1_G(i) = 0.0
+    ctem_grd%CH4DYN2_G(i) = 0.0
+    ctem_grd%ch4_soills_g(i) = 0.0
+
+    do k=1,ignd
+      ctem_grd%rmatctem_g(i,k)=0.0
+    enddo
+
+    do j=1,icc
+      ctem_grd%afrleaf_g(i,j)=0.0
+      ctem_grd%afrstem_g(i,j)=0.0
+      ctem_grd%afrroot_g(i,j)=0.0
+    enddo
+
+    do m = 1, nmtest
+
+        ctem_tile%leaflitr_t(i,m)=0.0
+        ctem_tile%tltrleaf_t(i,m)=0.0
+        ctem_tile%tltrstem_t(i,m)=0.0
+        ctem_tile%tltrroot_t(i,m)=0.0
+        ctem_tile%ailcg_t(i,m)=0.0
+        ctem_tile%ailcb_t(i,m)=0.0
+        ctem_tile%afrleaf_t(i,m)=0.0
+        ctem_tile%afrstem_t(i,m)=0.0
+        ctem_tile%afrroot_t(i,m)=0.0
+        ctem_tile%veghght_t(i,m)=0.0
+        ctem_tile%rootdpth_t(i,m)=0.0
+        ctem_tile%roottemp_t(i,m)=0.0
+        ctem_tile%slai_t(i,m)=0.0
+        ctem_tile%gleafmas_t(i,m) = 0.0
+        ctem_tile%bleafmas_t(i,m) = 0.0
+        ctem_tile%stemmass_t(i,m) = 0.0
+        ctem_tile%rootmass_t(i,m) = 0.0
+        ctem_tile%litrmass_t(i,m) = 0.0
+        ctem_tile%soilcmas_t(i,m) = 0.0
+        ctem_tile%emit_co2_t(i,m) = 0.0
+        ctem_tile%emit_co_t(i,m) = 0.0
+        ctem_tile%emit_ch4_t(i,m) = 0.0
+        ctem_tile%emit_nmhc_t(i,m) = 0.0
+        ctem_tile%emit_h2_t(i,m) = 0.0
+        ctem_tile%emit_nox_t(i,m) = 0.0
+        ctem_tile%emit_n2o_t(i,m) = 0.0
+        ctem_tile%emit_pm25_t(i,m) = 0.0
+        ctem_tile%emit_tpm_t(i,m) = 0.0
+        ctem_tile%emit_tc_t(i,m) = 0.0
+        ctem_tile%emit_oc_t(i,m) = 0.0
+        ctem_tile%emit_bc_t(i,m) = 0.0
+
+        do k=1,ignd
+            ctem_tile%rmatctem_t(i,m,k)=0.0
+        enddo
+
+    end do !nmtest
+end do !nltest
+
+end subroutine resetdaily
+
+!==================================================
 subroutine resetmonthend(nltest,nmtest)
 
 use ctem_params, only : iccp1,icc
@@ -1745,96 +1888,7 @@ integer :: i,j
 
 end subroutine resetgridavg
 
-!==================================================
-subroutine resetctem_g(nltest)
 
-use ctem_params, only : ignd,icc
-
-implicit none
-
-integer, intent(in) :: nltest
-
-integer :: i,j,k
-
-do i=1,nltest
-    ctem_grd%gpp_g(i) =0.0
-    ctem_grd%npp_g(i) =0.0
-    ctem_grd%nep_g(i) =0.0
-    ctem_grd%nbp_g(i) =0.0
-    ctem_grd%autores_g(i) =0.0
-    ctem_grd%hetrores_g(i)=0.0
-    ctem_grd%litres_g(i) =0.0
-    ctem_grd%socres_g(i) =0.0
-    ctem_grd%dstcemls_g(i)=0.0
-    ctem_grd%dstcemls3_g(i)=0.0
-    ctem_grd%litrfall_g(i)=0.0
-    ctem_grd%humiftrs_g(i)=0.0
-    ctem_grd%rml_g(i) =0.0
-    ctem_grd%rms_g(i) =0.0
-    ctem_grd%rmr_g(i) =0.0
-    ctem_grd%rg_g(i) =0.0
-    ctem_grd%vgbiomas_g(i) =0.0
-    ctem_grd%totcmass_g(i) =0.0
-    ctem_grd%gavglai_g(i) =0.0
-    ctem_grd%gavgltms_g(i) =0.0
-    ctem_grd%gavgscms_g(i) =0.0
-    ctem_grd%ailcg_g(i)=0.0
-    ctem_grd%ailcb_g(i)=0.0
-    ctem_grd%tcanoacc_out_g(i) =0.0
-    ctem_grd%burnfrac_g(i) =0.0
-    ctem_grd%probfire_g(i) =0.0
-    ctem_grd%lucemcom_g(i) =0.0
-    ctem_grd%lucltrin_g(i) =0.0
-    ctem_grd%lucsocin_g(i) =0.0
-    ctem_grd%emit_co2_g(i) =0.0
-    ctem_grd%emit_co_g(i)  =0.0
-    ctem_grd%emit_ch4_g(i) =0.0
-    ctem_grd%emit_nmhc_g(i) =0.0
-    ctem_grd%emit_h2_g(i) =0.0
-    ctem_grd%emit_nox_g(i) =0.0
-    ctem_grd%emit_n2o_g(i) =0.0
-    ctem_grd%emit_pm25_g(i) =0.0
-    ctem_grd%emit_tpm_g(i) =0.0
-    ctem_grd%emit_tc_g(i) =0.0
-    ctem_grd%emit_oc_g(i) =0.0
-    ctem_grd%emit_bc_g(i) =0.0
-    ctem_grd%bterm_g(i)   =0.0
-    ctem_grd%lterm_g(i)   =0.0
-    ctem_grd%mterm_g(i)   =0.0
-    ctem_grd%leaflitr_g(i)=0.0
-    ctem_grd%tltrleaf_g(i)=0.0
-    ctem_grd%tltrstem_g(i)=0.0
-    ctem_grd%tltrroot_g(i)=0.0
-    ctem_grd%gleafmas_g(i)=0.0
-    ctem_grd%bleafmas_g(i)=0.0
-    ctem_grd%stemmass_g(i)=0.0
-    ctem_grd%rootmass_g(i)=0.0
-    ctem_grd%litrmass_g(i)=0.0
-    ctem_grd%soilcmas_g(i)=0.0
-    ctem_grd%veghght_g(i)=0.0
-    ctem_grd%rootdpth_g(i)=0.0
-    ctem_grd%roottemp_g(i)=0.0
-    ctem_grd%slai_g(i)=0.0
-
-    ctem_grd%CH4WET1_G(i) = 0.0
-    ctem_grd%CH4WET2_G(i) = 0.0
-    ctem_grd%WETFDYN_G(i) = 0.0
-    ctem_grd%CH4DYN1_G(i) = 0.0
-    ctem_grd%CH4DYN2_G(i) = 0.0
-    ctem_grd%ch4_soills_g(i) = 0.0
-
-    do k=1,ignd
-      ctem_grd%rmatctem_g(i,k)=0.0
-    enddo
-
-    do j=1,icc
-      ctem_grd%afrleaf_g(i,j)=0.0
-      ctem_grd%afrstem_g(i,j)=0.0
-      ctem_grd%afrroot_g(i,j)=0.0
-    enddo
-end do
-
-end subroutine resetctem_g
 
 !==================================================
 
