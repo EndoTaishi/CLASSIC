@@ -680,8 +680,8 @@ do i=1,nltest
     write(101,"(i4)") stdalngrd(i)
 
     if (compete) then
-        write(101,"(5f8.2)")twarmm(i),tcoldm(i),gdd5(i),aridity(i),srplsmon(i)
-        write(101,"(5f8.2)")defctmon(i),anndefct(i),annsrpls(i), annpcp(i),dry_season_length(i)
+        write(101,7014)twarmm(i),tcoldm(i),gdd5(i),aridity(i),srplsmon(i)
+        write(101,7014)defctmon(i),anndefct(i),annsrpls(i), annpcp(i),dry_season_length(i)
     end if
 
     if (dowetlands) then     
@@ -692,9 +692,10 @@ end do !nltest
 
 close(101)
 
-7011  format(9f8.2)
+7011  format(9ES12.5)
 7012  format(9i8)
-7013  format(10f8.2)
+7013  format(10ES12.5)
+7014  format(5ES10.4)
 
 end subroutine write_ctm_rs        
 
