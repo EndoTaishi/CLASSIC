@@ -100,7 +100,8 @@ c     through use statements for modules:
       use io_driver,          only : read_from_ctm, create_outfiles,
      1                               write_ctm_rs, class_monthly_aw,
      2                               ctem_annual_aw,ctem_monthly_aw,
-     3                               close_outfiles,ctem_daily_aw
+     3                               close_outfiles,ctem_daily_aw,
+     4                               class_annual_aw
 
 c
       implicit none
@@ -420,7 +421,7 @@ C
       REAL DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,
      1     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,
      2     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,
-     3     ALTOT_YR,TSURF,ALAVG,ALMAX,ACTLYR,FTAVG,FTMAX,FTABLE
+     3     TSURF,ALAVG,ALMAX,ACTLYR,FTAVG,FTMAX,FTABLE
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -503,49 +504,6 @@ c
       real  sdepgat(ilg),       orgmgat(ilg,ignd),
      1      sandgat(ilg,ignd),  claygat(ilg,ignd)
 
-      ! CLASS Monthly Outputs:
-
-      real, pointer, dimension(:) :: ALVSACC_MO
-      real, pointer, dimension(:) :: ALIRACC_MO
-      real, pointer, dimension(:) :: FLUTACC_MO
-      real, pointer, dimension(:) :: FSINACC_MO
-      real, pointer, dimension(:) :: FLINACC_MO
-      real, pointer, dimension(:) :: HFSACC_MO
-      real, pointer, dimension(:) :: QEVPACC_MO
-      real, pointer, dimension(:) :: SNOACC_MO
-      real, pointer, dimension(:) :: WSNOACC_MO
-      real, pointer, dimension(:) :: ROFACC_MO
-      real, pointer, dimension(:) :: PREACC_MO
-      real, pointer, dimension(:) :: EVAPACC_MO
-      real, pointer, dimension(:) :: TAACC_MO
-
-      real, pointer :: FSSTAR_MO
-      real, pointer :: FLSTAR_MO
-      real, pointer :: QH_MO
-      real, pointer :: QE_MO
-
-      real, pointer, dimension(:,:) :: TBARACC_MO
-      real, pointer, dimension(:,:) :: THLQACC_MO
-      real, pointer, dimension(:,:) :: THICACC_MO
-
-    ! CLASS yearly output for class grid-mean
-
-      real, pointer, dimension(:) :: ALVSACC_YR
-      real, pointer, dimension(:) :: ALIRACC_YR
-      real, pointer, dimension(:) :: FLUTACC_YR
-      real, pointer, dimension(:) :: FSINACC_YR
-      real, pointer, dimension(:) :: FLINACC_YR
-      real, pointer, dimension(:) :: HFSACC_YR
-      real, pointer, dimension(:) :: QEVPACC_YR
-      real, pointer, dimension(:) :: ROFACC_YR
-      real, pointer, dimension(:) :: PREACC_YR
-      real, pointer, dimension(:) :: EVAPACC_YR
-      real, pointer, dimension(:) :: TAACC_YR
-
-      real, pointer :: FSSTAR_YR
-      real, pointer :: FLSTAR_YR
-      real, pointer :: QH_YR
-      real, pointer :: QE_YR
 
       logical, pointer :: ctem_on
       logical, pointer :: parallelrun
@@ -1084,42 +1042,6 @@ C
 C===================== CTEM ==============================================\
 
     ! Point pointers
-
-      ALVSACC_MO        => class_out%ALVSACC_MO
-      ALIRACC_MO        => class_out%ALIRACC_MO
-      FLUTACC_MO        => class_out%FLUTACC_MO
-      FSINACC_MO        => class_out%FSINACC_MO
-      FLINACC_MO        => class_out%FLINACC_MO
-      HFSACC_MO         => class_out%HFSACC_MO
-      QEVPACC_MO        => class_out%QEVPACC_MO
-      SNOACC_MO         => class_out%SNOACC_MO
-      WSNOACC_MO        => class_out%WSNOACC_MO
-      ROFACC_MO         => class_out%ROFACC_MO
-      PREACC_MO         => class_out%PREACC_MO
-      EVAPACC_MO        => class_out%EVAPACC_MO
-      TAACC_MO          => class_out%TAACC_MO
-      FSSTAR_MO         => class_out%FSSTAR_MO
-      FLSTAR_MO         => class_out%FLSTAR_MO
-      QH_MO             => class_out%QH_MO
-      QE_MO             => class_out%QE_MO
-      TBARACC_MO        => class_out%TBARACC_MO
-      THLQACC_MO        => class_out%THLQACC_MO
-      THICACC_MO        => class_out%THICACC_MO
-      ALVSACC_YR        => class_out%ALVSACC_YR
-      ALIRACC_YR        => class_out%ALIRACC_YR
-      FLUTACC_YR        => class_out%FLUTACC_YR
-      FSINACC_YR        => class_out%FSINACC_YR
-      FLINACC_YR        => class_out%FLINACC_YR
-      HFSACC_YR         => class_out%HFSACC_YR
-      QEVPACC_YR        => class_out%QEVPACC_YR
-      ROFACC_YR         => class_out%ROFACC_YR
-      PREACC_YR         => class_out%PREACC_YR
-      EVAPACC_YR        => class_out%EVAPACC_YR
-      TAACC_YR          => class_out%TAACC_YR
-      FSSTAR_YR         => class_out%FSSTAR_YR
-      FLSTAR_YR         => class_out%FLSTAR_YR
-      QH_YR             => class_out%QH_YR
-      QE_YR             => class_out%QE_YR
 
       ctem_on           => c_switch%ctem_on
       parallelrun       => c_switch%parallelrun
@@ -4329,6 +4251,7 @@ C
           ROFACC_M(I,M)=ROFACC_M(I,M)+ROFROT(I,M)*DELT
           OVRACC_M(I,M)=OVRACC_M(I,M)+ROFOROT(I,M)*DELT
           WTBLACC_M(I,M)=WTBLACC_M(I,M)+WTABROT(I,M)
+
           DO 626 J=1,IGND
               TBARACC_M(I,M,J)=TBARACC_M(I,M,J)+TBARROT(I,M,J)
               THLQACC_M(I,M,J)=THLQACC_M(I,M,J)+THLQROT(I,M,J)
@@ -4336,6 +4259,7 @@ C
               THALACC_M(I,M,J)=THALACC_M(I,M,J)+(THLQROT(I,M,J)+
      1           THICROT(I,M,J))
 626       CONTINUE
+
           ALVSACC_M(I,M)=ALVSACC_M(I,M)+ALVSROT(I,M)*FSVHROW(I)
           ALIRACC_M(I,M)=ALIRACC_M(I,M)+ALIRROT(I,M)*FSIHROW(I)
           IF(SNOROT(I,M).GT.0.0) THEN
@@ -4468,7 +4392,7 @@ C
            endif
           ENDIF ! IF write daily
 C
-C          INITIALIZTION FOR MOSAIC TILE AND GRID VARIABLES
+C          INITIALIZATION FOR MOSAIC TILE AND GRID VARIABLES
 C
             call resetclassaccum(nltest,nmtest)
 C
@@ -4478,10 +4402,9 @@ C
       ENDIF ! IF(NCOUNT.EQ.NDAY)
 C
       ENDIF !  IF(.NOT.PARALLELRUN)
-C
+
 C=======================================================================
-C
-!       CTEM--------------\
+
 !     Only bother with monthly calculations if we desire those outputs to be written out.
       if (iyear .ge. jmosty) then
 
@@ -4490,95 +4413,28 @@ C
      2                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
      4                       SNOROT,TAROW,WSNOROT,TBARROT,THLQROT,
-     5                       THICROT,TFREZ)
-!       CTEM--------------/
+     5                       THICROT,TFREZ,QFCROT)
 
        DO NT=1,NMON
         IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
          IMONTH=NT
-        ENDIF ! IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)
-       ENDDO ! NMON
-
-!       CTEM--------------\
+        ENDIF
+       ENDDO
 
       end if !skip the monthly calculations/writing unless iyear>=jmosty
-!       CTEM--------------/
-C
-C     ACCUMULATE OUTPUT DATA FOR YEARLY AVERAGED FIELDS FOR CLASS GRID-MEAN.
-C     FOR BOTH PARALLEL MODE AND STAND ALONE MODE
-C
-      FSSTAR_YR   =0.0
-      FLSTAR_YR   =0.0
-      QH_YR       =0.0
-      QE_YR       =0.0
-      ALTOT_YR    =0.0
-C
-      DO 827 I=1,NLTEST
-       DO 828 M=1,NMTEST
-          ALVSACC_YR(I)=ALVSACC_YR(I)+ALVSROT(I,M)*FAREROT(I,M)
-     1                  *FSVHROW(I)
-          ALIRACC_YR(I)=ALIRACC_YR(I)+ALIRROT(I,M)*FAREROT(I,M)
-     1                  *FSIHROW(I)
-          FLUTACC_YR(I)=FLUTACC_YR(I)+SBC*GTROT(I,M)**4*FAREROT(I,M)
-          FSINACC_YR(I)=FSINACC_YR(I)+FSSROW(I)*FAREROT(I,M)
-          FLINACC_YR(I)=FLINACC_YR(I)+FDLROW(I)*FAREROT(I,M)
-          HFSACC_YR(I) =HFSACC_YR(I)+HFSROT(I,M)*FAREROT(I,M)
-          QEVPACC_YR(I)=QEVPACC_YR(I)+QEVPROT(I,M)*FAREROT(I,M)
-          TAACC_YR(I)=TAACC_YR(I)+TAROW(I)*FAREROT(I,M)
-          ROFACC_YR(I) =ROFACC_YR(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
-          PREACC_YR(I) =PREACC_YR(I)+PREROW(I)*FAREROT(I,M)*DELT
-          EVAPACC_YR(I)=EVAPACC_YR(I)+QFSROT(I,M)*FAREROT(I,M)*DELT
-828    CONTINUE
-827   CONTINUE
-C
-      IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
-C
-       DO 829 I=1,NLTEST
-         IF(FSINACC_YR(I).GT.0.0) THEN
-          ALVSACC_YR(I)=ALVSACC_YR(I)/(FSINACC_YR(I)*0.5)
-          ALIRACC_YR(I)=ALIRACC_YR(I)/(FSINACC_YR(I)*0.5)
-         ELSE
-          ALVSACC_YR(I)=0.0
-          ALIRACC_YR(I)=0.0
-         ENDIF
-         FLUTACC_YR(I)=FLUTACC_YR(I)/(REAL(NDAY)*365.)
-         FSINACC_YR(I)=FSINACC_YR(I)/(REAL(NDAY)*365.)
-         FLINACC_YR(I)=FLINACC_YR(I)/(REAL(NDAY)*365.)
-         HFSACC_YR(I) =HFSACC_YR(I)/(REAL(NDAY)*365.)
-         QEVPACC_YR(I)=QEVPACC_YR(I)/(REAL(NDAY)*365.)
-         ROFACC_YR(I) =ROFACC_YR(I)
-         PREACC_YR(I) =PREACC_YR(I)
-         EVAPACC_YR(I)=EVAPACC_YR(I)
-         TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*365.)
-C
-         ALTOT_YR=(ALVSACC_YR(I)+ALIRACC_YR(I))/2.0
-         FSSTAR_YR=FSINACC_YR(I)*(1.-ALTOT_YR)
-         FLSTAR_YR=FLINACC_YR(I)-FLUTACC_YR(I)
-         QH_YR=HFSACC_YR(I)
-         QE_YR=QEVPACC_YR(I)
-C
-         WRITE(*,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
 
-         WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,
-     1                  QE_YR,ROFACC_YR(I),PREACC_YR(I),
-     2                  EVAPACC_YR(I)
-C
-C ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
-C
-      call resetclassyr(nltest)
-C
-829    CONTINUE ! I
-C
-      ENDIF ! IDAY.EQ.365 .AND. NDAY
-C
-8103  FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,2(F12.3,1X),2(A5,I1))
-C
+      call class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,
+     1                       nltest,nmtest,ALVSROT,FAREROT,FSVHROW,
+     2                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,
+     3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
+     4                       TAROW,QFCROT)
+
 c     CTEM output and write out
-c
+
       if(.not.parallelrun) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
-c
+
 c     calculate daily outputs from ctem
-c
+
        if (ctem_on) then
          if(ncount.eq.nday) then
           call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
@@ -4586,76 +4442,49 @@ c
      2                      onetile_perPFT)
          endif ! if(ncount.eq.nday)
        endif ! if(ctem_on)
-! c
+
        endif ! if(not.parallelrun)
-c
+
 c=======================================================================
 c     Calculate monthly & yearly output for ctem
-c
+
 
 c     First initialize some output variables
 c     initialization is done just before use.
 
       if (ctem_on) then
        if(ncount.eq.nday) then
-c
-        !do 861 i=1,nltest
 
-c
-!           do nt=1,nmon  !FLAG now done in ctem_monthly_aw
-!            if (iday.eq.mmday(nt)) then
-!
-!             call resetmidmonth(nltest,nmtest)
-!
-!            endif
-!           enddo
-c
-
-!           if(iday.eq.monthend(imonth+1))then
-!
-!             call resetmonthend(nltest)
-!
-!           endif
-c
-!           if (iday .eq. 365) then
-!
-!             call resetyearend_g(nltest)
-!
-!           endif
-
-!861     continue
-c
-
-!       CTEM--------------\
 !     Only bother with monthly calculations if we desire those outputs to be written out.
       if (iyear .ge. jmosty) then
-!       CTEM--------------/
 
         call ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,
      1                        onetile_perPFT)
 
         end if !to write out the monthly outputs or not
-c
-c       accumulate yearly outputs
+
+c       Accumulate and possibly write out yearly outputs
             call ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,
      1                           onetile_perPFT)
-c
+
       endif ! if(ncount.eq.nday)
       endif ! if(ctem_on)
-C
+
 C     OPEN AND WRITE TO THE RESTART FILES
-C
-      IF (RSFILE) THEN
+
+
        IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
-C
+
+        WRITE(*,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
+
+        IF (RSFILE) THEN
 C       WRITE .INI_RS FOR CLASS RESTART DATA
-C
+
         OPEN(UNIT=100,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.INI_RS')
-C
+
         WRITE(100,5010) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
         WRITE(100,5010) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
         WRITE(100,5010) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
-C
         WRITE(100,5020)DLATROW(1),DEGLON,ZRFMROW(1),ZRFHROW(1),
      1                 ZBLDROW(1),GCROW(1),NLTEST,NMTEST
         DO I=1,NLTEST
@@ -4709,6 +4538,7 @@ C           Temperatures are in degree C
      1                      ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
           ENDDO
         ENDDO
+
         WRITE(100,5200) JHHSTD,JHHENDD,JDSTD,JDENDD
         WRITE(100,5200) JHHSTY,JHHENDY,JDSTY,JDENDY
         CLOSE(100)

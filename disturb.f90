@@ -163,7 +163,7 @@ use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
                         frltrglf, frltrblf, frco2stm, frltrstm, frco2rt, frltrrt, &
                         frltrbrn, emif_co2, emif_co, emif_ch4, emif_nmhc, emif_h2, &
                         emif_nox, emif_n2o, emif_pm25, emif_tpm, emif_tc, emif_oc, emif_bc, &
-                        grass, extnmois_veg, extnmois_duff
+                        grass, extnmois_veg, extnmois_duff, iccp1
 
 implicit none
 
@@ -186,7 +186,7 @@ logical :: dofire, fire(ilg)
 real :: stemmass(ilg,icc), rootmass(ilg,icc), gleafmas(ilg,icc),      &
            bleafmas(ilg,icc),     thliq(ilg,ignd),    wiltsm(ilg,ignd),  &
              fieldsm(ilg,ignd),        uwind(ilg),        vwind(ilg),    &
-            fcancmx(ilg,icc),      lightng(ilg),litrmass(ilg,icc+1),     &
+            fcancmx(ilg,icc),      lightng(ilg),litrmass(ilg,iccp1),     &
                prbfrhuc(ilg),     extnprob(ilg), &
         rmatctem(ilg,icc,ignd),     thice(ilg,ignd),    popdin(ilg),  &
                lucemcom(ilg),    tmpprob(ilg),  currlat(ilg), fsnow(ilg) 

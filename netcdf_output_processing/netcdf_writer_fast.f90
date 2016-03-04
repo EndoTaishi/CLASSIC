@@ -954,7 +954,7 @@ end if
    do h = 1,5
 	read(81,*,iostat=io_set)
 	if (io_set .ne. 0) then
-      write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'OF1M'
+      write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.OF1M'
       close(81)
       deallocate(class_m)
       goto 118
@@ -964,7 +964,7 @@ end if
    do y = 1,totmons
      read(81,*,iostat=io_set)dummy_month,dummy_year,class_m(1:numclasvars_m,y)
      if (io_set .ne. 0 .and. y < totmons) then
-         write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'OF1M'
+         write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'.OF1M'
          close(81)
          deallocate(class_m)
          goto 118
@@ -1466,7 +1466,7 @@ if (TILED) then
  do v = 1,nctemdistvars_m ! begin vars loop
    do l = 1,numtiles ! begin tile loop
 
-      status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
+      status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR_TA(v)), var_id)
       if (status/=nf90_noerr) call handle_err(status)
 
       status = nf90_put_var(grpid,var_id,ctem_d_m_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totmons])
