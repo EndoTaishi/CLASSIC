@@ -123,7 +123,7 @@ real, allocatable, dimension(:,:) :: lonbound
 integer, parameter :: numclasvars_m = 12   !number of monthly CLASS vars to write
 
 character(100), parameter, dimension(numclasvars_m) :: CLASS_M_VAR=['SW           ','LW','QH','QE','SNOACC','WSNOACC',                 &
-                                                                    'ROFACC','PCP','EVAP','TA','TRANSP','T/E']
+                                                                    'ROFACC','PCP','EVAP','TA','TRANSP','TE']
 
 character(100), parameter, dimension(numclasvars_m) :: CLASS_M_NAME=['Shortwave radiation                      ','Longwave radiation','Sensible heat flux','Latent heat flux',                     &
                                                                      'Mass of snow pack','Liquid water content of snow pack','Total runoff from soil',                       &
@@ -155,7 +155,7 @@ integer, parameter :: numclasvars_a = 9  !number of annual CLASS vars to write
 ! YEAR   SW     LW      QH      QE     ROFACC    PCP     EVAP  
 !        W/m2   W/m2    W/m2    W/m2    mm.yr    mm.yr    mm.yr
 
-character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_VAR=['ANN_SW        ','ANN_LW','ANN_QH','ANN_QE','ANN_ROFACC','ANN_PCP','ANN_EVAP','ANN_TRANSP','T/E']
+character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_VAR=['ANN_SW        ','ANN_LW','ANN_QH','ANN_QE','ANN_ROFACC','ANN_PCP','ANN_EVAP','ANN_TRANSP','ANN_TE']
 
 character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_NAME=['Shortwave radiation          ','Longwave radiation','Sensible heat flux',     &
                                                                      'Latent heat flux','Total runoff from soil','Precipitation',         &

@@ -1106,6 +1106,7 @@ integer :: NT
 integer :: NDMONTH
 integer :: i,m,j
 integer :: IMONTH
+real :: tovere
 
 ! point pointers
 ALVSACC_MO        => class_out%ALVSACC_MO  
@@ -1210,11 +1211,17 @@ DO NT=1,NMON
             QH_MO=HFSACC_MO(I)
             QE_MO=QEVPACC_MO(I)
 
+            if (EVAPACC_MO(I) > 0.) then
+                tovere = TRANSPACC_MO(I)/EVAPACC_MO(I)
+            else
+                tovere = 0.
+            end if
+
             WRITE(81,8100)IMONTH,IYEAR,FSSTAR_MO,FLSTAR_MO,QH_MO, &
                          QE_MO,SNOACC_MO(I),WSNOACC_MO(I), &
                          ROFACC_MO(I),PREACC_MO(I),EVAPACC_MO(I), &
                          TAACC_MO(I)-TFREZ,TRANSPACC_MO(I),&
-                         TRANSPACC_MO(I)/EVAPACC_MO(I)
+                         tovere
             IF (IGND.GT.3) THEN
             WRITE(82,8101)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
                           THLQACC_MO(I,J),THICACC_MO(I,J),J=1,5)
@@ -1300,6 +1307,7 @@ real, pointer :: QE_YR
 !local
 integer :: i,m,j
 real :: ALTOT_YR
+real :: tovere
 
 !point pointers
 ALVSACC_YR        => class_out%ALVSACC_YR
@@ -1373,6 +1381,12 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
             FLSTAR_YR=FLINACC_YR(I)-FLUTACC_YR(I)
             QH_YR=HFSACC_YR(I)
             QE_YR=QEVPACC_YR(I)
+
+            if (EVAPACC_YR(I) > 0.) then
+                tovere = TRANSPACC_YR(I)/EVAPACC_YR(I)
+            else
+                tovere = 0.
+            end if
 
             WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,&
                           QE_YR,ROFACC_YR(I),PREACC_YR(I),&
@@ -2651,7 +2665,6 @@ do 862 i=1,nltest
            emit_oc_mo(i,m,j) =emit_oc_mo(i,m,j)+emit_ocrow(i,m,j)
            emit_bc_mo(i,m,j) =emit_bc_mo(i,m,j)+emit_bcrow(i,m,j)
            burnfrac_mo(i,m,j) =burnfrac_mo(i,m,j)+burnvegfrow(i,m,j)
-
            barefrac=barefrac-fcancmxrow(i,m,j)
 
         end do !j
@@ -2774,7 +2787,6 @@ do 862 i=1,nltest
                     emit_bc_mo_t(i,m) =emit_bc_mo_t(i,m)+emit_bc_mo(i,m,j)*fcancmxrow(i,m,j)
                     burnfrac_mo_t(i,m) =burnfrac_mo_t(i,m)+burnfrac_mo(i,m,j)*fcancmxrow(i,m,j)
                     laimaxg_mo_t(i,m)=laimaxg_mo_t(i,m)+laimaxg_mo(i,m,j)*fcancmxrow(i,m,j)
-
                     barefrac=barefrac-fcancmxrow(i,m,j)
 
                 end do !j
@@ -2989,14 +3001,10 @@ do nt=1,nmon
 enddo ! nt=1,nmon
 
 
-8104  FORMAT(1X,I4,I5,12(F10.3,1X),2(A8,I2),A8,F8.2)
-8105  FORMAT(1X,I5,15(F10.3,1X),2(A6,I2),A6,F8.2)
-8106  FORMAT(1X,I4,I5,11(F10.5,1X),9L5,2(A6,I2))
-8107  FORMAT(1X,I5,11(F10.5,1X),9L5,2(A6,I2))
-8108  FORMAT(1X,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
-8109  FORMAT(1X,I4,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
-8111  FORMAT(1X,I4,I5,6(F10.3,1X),2(A6,I2))
-8115  FORMAT(1X,I5,5(F10.3,1X),2(A6,I2))
+8104  FORMAT(1X,I4,I5,12(ES12.5,1X),2(A8,I2),A8,F8.2)
+8106  FORMAT(1X,I4,I5,11(ES12.7,1X),9L5,2(A6,I2))
+8109  FORMAT(1X,I4,I5,20(ES12.5,1X),2(A6,I2),A6,F8.2)
+8111  FORMAT(1X,I4,I5,6(ES12.5,1X),2(A6,I2))
 
 end subroutine ctem_monthly_aw
 
@@ -3694,14 +3702,10 @@ if (iday.eq.365) then
 end if
 
 
-8104  FORMAT(1X,I4,I5,12(F10.3,1X),2(A6,I2),A6,F8.2)
-8105  FORMAT(1X,I5,15(F10.3,1X),2(A6,I2),A6,F8.2)
-8106  FORMAT(1X,I4,I5,11(F10.5,1X),9L5,2(A6,I2))
-8107  FORMAT(1X,I5,11(F10.5,1X),9L5,2(A6,I2))
-8108  FORMAT(1X,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
-8109  FORMAT(1X,I4,I5,20(F10.3,1X),2(A6,I2),A6,F8.2)
-8111  FORMAT(1X,I4,I5,6(F10.3,1X),2(A6,I2))
-8115  FORMAT(1X,I5,6(F10.3,1X),2(A6,I2))
+8105  FORMAT(1X,I5,15(ES12.5,1X),2(A6,I2),A6,F8.2)
+8107  FORMAT(1X,I5,11(ES12.7,1X),9L5,2(A6,I2))
+8108  FORMAT(1X,I5,20(ES12.5,1X),2(A6,I2),A6,F8.2)
+8115  FORMAT(1X,I5,6(ES12.5,1X),2(A6,I2))
 
 end subroutine ctem_annual_aw
 

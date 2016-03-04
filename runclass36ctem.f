@@ -504,25 +504,6 @@ c
       real  sdepgat(ilg),       orgmgat(ilg,ignd),
      1      sandgat(ilg,ignd),  claygat(ilg,ignd)
 
-    ! CLASS yearly output for class grid-mean
-
-!       real, pointer, dimension(:) :: ALVSACC_YR
-!       real, pointer, dimension(:) :: ALIRACC_YR
-!       real, pointer, dimension(:) :: FLUTACC_YR
-!       real, pointer, dimension(:) :: FSINACC_YR
-!       real, pointer, dimension(:) :: FLINACC_YR
-!       real, pointer, dimension(:) :: HFSACC_YR
-!       real, pointer, dimension(:) :: QEVPACC_YR
-!       real, pointer, dimension(:) :: ROFACC_YR
-!       real, pointer, dimension(:) :: PREACC_YR
-!       real, pointer, dimension(:) :: EVAPACC_YR
-!       real, pointer, dimension(:) :: TRANSPACC_YR
-!       real, pointer, dimension(:) :: TAACC_YR
-!
-!       real, pointer :: FSSTAR_YR
-!       real, pointer :: FLSTAR_YR
-!       real, pointer :: QH_YR
-!       real, pointer :: QE_YR
 
       logical, pointer :: ctem_on
       logical, pointer :: parallelrun
@@ -1059,23 +1040,6 @@ C
 C===================== CTEM ==============================================\
 
     ! Point pointers
-
-!       ALVSACC_YR        => class_out%ALVSACC_YR
-!       ALIRACC_YR        => class_out%ALIRACC_YR
-!       FLUTACC_YR        => class_out%FLUTACC_YR
-!       FSINACC_YR        => class_out%FSINACC_YR
-!       FLINACC_YR        => class_out%FLINACC_YR
-!       HFSACC_YR         => class_out%HFSACC_YR
-!       QEVPACC_YR        => class_out%QEVPACC_YR
-!       ROFACC_YR         => class_out%ROFACC_YR
-!       PREACC_YR         => class_out%PREACC_YR
-!       EVAPACC_YR        => class_out%EVAPACC_YR
-!       TRANSPACC_YR      => class_out%TRANSPACC_YR
-!       TAACC_YR          => class_out%TAACC_YR
-!       FSSTAR_YR         => class_out%FSSTAR_YR
-!       FLSTAR_YR         => class_out%FLSTAR_YR
-!       QH_YR             => class_out%QH_YR
-!       QE_YR             => class_out%QE_YR
 
       ctem_on           => c_switch%ctem_on
       parallelrun       => c_switch%parallelrun
@@ -4450,9 +4414,9 @@ C
       ENDIF ! IF(NCOUNT.EQ.NDAY)
 C
       ENDIF !  IF(.NOT.PARALLELRUN)
-C
+
 C=======================================================================
-C
+
 !     Only bother with monthly calculations if we desire those outputs to be written out.
       if (iyear .ge. jmosty) then
 
@@ -4476,85 +4440,13 @@ C
      2                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
      4                       TAROW,QFCROT)
-C
-! C     ACCUMULATE OUTPUT DATA FOR YEARLY AVERAGED FIELDS FOR CLASS GRID-MEAN.
-! C     FOR BOTH PARALLEL MODE AND STAND ALONE MODE
-! C
-!       FSSTAR_YR   =0.0
-!       FLSTAR_YR   =0.0
-!       QH_YR       =0.0
-!       QE_YR       =0.0
-!       ALTOT_YR    =0.0
-! C
-!       DO 827 I=1,NLTEST
-!        DO 828 M=1,NMTEST
-!           ALVSACC_YR(I)=ALVSACC_YR(I)+ALVSROT(I,M)*FAREROT(I,M)
-!      1                  *FSVHROW(I)
-!           ALIRACC_YR(I)=ALIRACC_YR(I)+ALIRROT(I,M)*FAREROT(I,M)
-!      1                  *FSIHROW(I)
-!           FLUTACC_YR(I)=FLUTACC_YR(I)+SBC*GTROT(I,M)**4*FAREROT(I,M)
-!           FSINACC_YR(I)=FSINACC_YR(I)+FSSROW(I)*FAREROT(I,M)
-!           FLINACC_YR(I)=FLINACC_YR(I)+FDLROW(I)*FAREROT(I,M)
-!           HFSACC_YR(I) =HFSACC_YR(I)+HFSROT(I,M)*FAREROT(I,M)
-!           QEVPACC_YR(I)=QEVPACC_YR(I)+QEVPROT(I,M)*FAREROT(I,M)
-!           TAACC_YR(I)=TAACC_YR(I)+TAROW(I)*FAREROT(I,M)
-!           ROFACC_YR(I) =ROFACC_YR(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
-!           PREACC_YR(I) =PREACC_YR(I)+PREROW(I)*FAREROT(I,M)*DELT
-!           EVAPACC_YR(I)=EVAPACC_YR(I)+QFSROT(I,M)*FAREROT(I,M)*DELT
-!           TRANSPACC_YR(I)=TRANSPACC_YR(I)+QFCROT(I,M)*FAREROT(I,M)*DELT
-! 828    CONTINUE
-! 827   CONTINUE
-! C
-!       IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
-! C
-!        DO 829 I=1,NLTEST
-!          IF(FSINACC_YR(I).GT.0.0) THEN
-!           ALVSACC_YR(I)=ALVSACC_YR(I)/(FSINACC_YR(I)*0.5)
-!           ALIRACC_YR(I)=ALIRACC_YR(I)/(FSINACC_YR(I)*0.5)
-!          ELSE
-!           ALVSACC_YR(I)=0.0
-!           ALIRACC_YR(I)=0.0
-!          ENDIF
-!          FLUTACC_YR(I)=FLUTACC_YR(I)/(REAL(NDAY)*365.)
-!          FSINACC_YR(I)=FSINACC_YR(I)/(REAL(NDAY)*365.)
-!          FLINACC_YR(I)=FLINACC_YR(I)/(REAL(NDAY)*365.)
-!          HFSACC_YR(I) =HFSACC_YR(I)/(REAL(NDAY)*365.)
-!          QEVPACC_YR(I)=QEVPACC_YR(I)/(REAL(NDAY)*365.)
-!          ROFACC_YR(I) =ROFACC_YR(I)
-!          PREACC_YR(I) =PREACC_YR(I)
-!          EVAPACC_YR(I)=EVAPACC_YR(I)
-!          TRANSPACC_YR(I)=TRANSPACC_YR(I)
-!          TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*365.)
-! C
-!          ALTOT_YR=(ALVSACC_YR(I)+ALIRACC_YR(I))/2.0
-!          FSSTAR_YR=FSINACC_YR(I)*(1.-ALTOT_YR)
-!          FLSTAR_YR=FLINACC_YR(I)-FLUTACC_YR(I)
-!          QH_YR=HFSACC_YR(I)
-!          QE_YR=QEVPACC_YR(I)
-! C
-!          WRITE(*,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
-!
-!          WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,
-!      1                  QE_YR,ROFACC_YR(I),PREACC_YR(I),
-!      2                  EVAPACC_YR(I),TRANSPACC_YR(I),
-!      3                  TRANSPACC_YR(I)/EVAPACC_YR(I)
-! C
-! C ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
-! C
-!       call resetclassyr(nltest)
-! C
-! 829    CONTINUE ! I
-! C
-!       ENDIF ! IDAY.EQ.365 .AND. NDAY
-! C
-! 8103  FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,4(F12.3,1X),2(A5,I1))
-! C
+
 c     CTEM output and write out
-c
+
       if(.not.parallelrun) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
-c
+
 c     calculate daily outputs from ctem
-c
+
        if (ctem_on) then
          if(ncount.eq.nday) then
           call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
