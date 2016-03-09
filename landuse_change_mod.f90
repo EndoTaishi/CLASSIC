@@ -166,7 +166,7 @@ pftarrays=0.
              ! Keep track of the non-crop nfcancmx for use in loop below.
              ! pftarrays keeps track of the nfcancmxrow for all non-crops
              ! indexposj and indexposm store the index values of the non-crops
-             ! in a continuous array for use later. n and k are then the indexs used by
+             ! in a continuous array for use later. n and k are then the indexes used by
              ! these arrays.
              pftarrays(i,n,k) = nfcancmxrow(i,m,j)   
              indexposj(i,n,k) = j  

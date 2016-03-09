@@ -415,7 +415,9 @@ close(11)
       else if (.not. onetile_perPFT) then  !set up for composite runs when start_bare is on and compete or landuseon
 
 !       store the read-in crop fractions as we keep them even when we start bare. 
-!       FLAG: this is setup assuming that crops are in pft number 6 and 7. JM Apr 9 2014.
+!       FLAG: this is setup assuming that crops are in pft number 6 and 7.
+!       and the first tile contains the information for the grid cell (assumes we have crops in
+!       every tile too! JM Apr 9 2014.
          do i=1,nltest
           crop_temp_frac(i,1)=FCANROT(i,1,3)*dvdfcanrow(i,1,6)
           crop_temp_frac(i,2)=FCANROT(i,1,3)*dvdfcanrow(i,1,7)
@@ -428,53 +430,59 @@ close(11)
 
        ! Added this as start_bare runs were not properly assigning 
        ! a TCAN on the very first day since the FCANROT was 0. JM Jan 14 2014. 
-       do i=1,nltest
-        do j=1,iccp1       
-           if (j .lt. icc+1) then
-            FCANROT(i,1,j)=seed
-           else
-            FCANROT(i,1,j)=1.0 - (real(icc) * seed)
-           endif
-        end do
-       end do
+!        do i=1,nltest
+!         do m = 1,nmtest
+!          do j=1,icp1
+!            if (j .lt. icp1) then
+!             FCANROT(i,m,j)=seed
+!            else
+!             FCANROT(i,m,j)=1.0 - (real(ican) * seed)
+!            endif
+!          end do
+!         end do
+!        end do
 
        do i=1,nltest
+         do m = 1,nmtest
 
-!      initial conditions always required
-         dvdfcanrow(i,1,1)=1.0  !ndl
-         dvdfcanrow(i,1,3)=1.0  !bdl
-         dvdfcanrow(i,1,6)=1.0  !crop
-         dvdfcanrow(i,1,8)=1.0  !grasses
+    !      initial conditions always required
+            dvdfcanrow(i,m,1)=1.0  !ndl
+            dvdfcanrow(i,m,3)=1.0  !bdl
+            dvdfcanrow(i,m,6)=1.0  !crop
+            dvdfcanrow(i,m,8)=1.0  !grasses
 
-         do j = 1,icc
-           ailcminrow(i,1,j)=0.0
-           ailcmaxrow(i,1,j)=0.0
-           gleafmasrow(i,1,j)=0.0
-           bleafmasrow(i,1,j)=0.0
-           stemmassrow(i,1,j)=0.0
-           rootmassrow(i,1,j)=0.0
-           lfstatusrow(i,1,j)=4
-           pandaysrow(i,1,j)=0
-         enddo
+            do j = 1,icc
+            ailcminrow(i,m,j)=0.0
+            ailcmaxrow(i,m,j)=0.0
+            gleafmasrow(i,m,j)=0.0
+            bleafmasrow(i,m,j)=0.0
+            stemmassrow(i,m,j)=0.0
+            rootmassrow(i,m,j)=0.0
+            lfstatusrow(i,m,j)=4
+            pandaysrow(i,m,j)=0
+            enddo
 
-         lfstatusrow(i,1,1)=2
+            lfstatusrow(i,m,1)=2
 
-         do j = 1,iccp1
-           litrmassrow(i,1,j)=0.0 
-           soilcmasrow(i,1,j)=0.0 
-         enddo
+            do j = 1,iccp1
+            litrmassrow(i,m,j)=0.0
+            soilcmasrow(i,m,j)=0.0
+            enddo
+         end do ! nmtest
        enddo !nltest
 
          do i=1,nltest
-          FCANROT(i,1,3) = crop_temp_frac(i,1) + crop_temp_frac(i,2)
-          if (FCANROT(i,1,3) .gt. abszero) then
-           dvdfcanrow(i,1,6) = crop_temp_frac(i,1) / FCANROT(i,1,3)
-           dvdfcanrow(i,1,7) = crop_temp_frac(i,2) / FCANROT(i,1,3)
-          else
-           dvdfcanrow(i,1,6) = 1.0
-           dvdfcanrow(i,1,7) = 0.0
-          end if
-         end do
+            do m = 1,nmtest
+                FCANROT(i,m,3) = crop_temp_frac(i,1) + crop_temp_frac(i,2)
+                if (FCANROT(i,m,3) .gt. abszero) then
+                dvdfcanrow(i,m,6) = crop_temp_frac(i,1) / FCANROT(i,m,3)
+                dvdfcanrow(i,m,7) = crop_temp_frac(i,2) / FCANROT(i,m,3)
+                else
+                dvdfcanrow(i,m,6) = 1.0
+                dvdfcanrow(i,m,7) = 0.0
+                end if
+            end do !nmtest
+         end do !nltest
 
       end if ! mosaic / composite
       end if !if (compete/landuseon .and. start_bare) 
@@ -695,7 +703,7 @@ close(101)
 7011  format(9ES12.5)
 7012  format(9i8)
 7013  format(10ES12.5)
-7014  format(5ES10.4)
+7014  format(5ES12.4)
 
 end subroutine write_ctm_rs        
 
@@ -3704,7 +3712,7 @@ end if
 
 
 8105  FORMAT(1X,I5,15(ES12.5,1X),2(A6,I2),A6,F8.2)
-8107  FORMAT(1X,I5,11(ES12.7,1X),9L5,2(A6,I2))
+8107  FORMAT(1X,I5,11(F12.7,1X),9L5,2(A6,I2))
 8108  FORMAT(1X,I5,20(ES12.5,1X),2(A6,I2),A6,F8.2)
 8115  FORMAT(1X,I5,6(ES12.5,1X),2(A6,I2))
 
