@@ -26,6 +26,9 @@ subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    LUC Initial Read-In Subroutine 
 !
+!     9  Mar  2016  - Adapt for tiling where we compete for space within a tile
+!     J. Melton
+!
 !     3  Feb  2016  - Remove mosaic flag and replace it with the onetile_perPFT one.
 !     J. Melton
 
@@ -33,7 +36,7 @@ subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
 !     J. Melton       a luc file and adapts them for runclassctem
 !                     it is run once to set up the luc info before the 
 !                     model timestepping begins.
-!		      
+!
 !     7  Feb. 2014  - Adapt it to work with competition and start_bare
 !     J. Melton 
 !
@@ -112,6 +115,11 @@ pftarrays=0.
         do i = 1, nltest
          if (.not. onetile_perPFT) then  !composite
            read (15,*) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
+           if (nmtest > 1) then
+             do m = 2, nmtest
+               nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
+             end do
+           end if
          else                    !onetile_perPFT
            read (15,*) lucyr,(temparray(j),j=1,icc)
            do m = 1, nmtest-1 !as nmtest-1 = icc
@@ -137,6 +145,11 @@ pftarrays=0.
             do i = 1, nltest
              if (.not. onetile_perPFT) then  !composite
                read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
+                if (nmtest > 1) then
+                    do m = 2, nmtest
+                    nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
+                    end do
+                end if
              else                    !onetile_perPFT
                read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
                do m = 1, nmtest-1 !nmtest-1 same as icc
@@ -166,7 +179,7 @@ pftarrays=0.
              ! Keep track of the non-crop nfcancmx for use in loop below.
              ! pftarrays keeps track of the nfcancmxrow for all non-crops
              ! indexposj and indexposm store the index values of the non-crops
-             ! in a continuous array for use later. n and k are then the indexs used by
+             ! in a continuous array for use later. n and k are then the indexes used by
              ! these arrays.
              pftarrays(i,n,k) = nfcancmxrow(i,m,j)   
              indexposj(i,n,k) = j  
@@ -314,6 +327,9 @@ subroutine readin_luc(iyear,nmtest,nltest,lucyr, &
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    LUC Annual Read-In Subroutine 
 !
+!     9  Mar  2016  - Adapt for tiling where we compete for space within a tile
+!     J. Melton
+!
 !     3  Feb  2016  - Remove mosaic flag, replace with onetile_perPFT flag.
 !     J. Melton
 
@@ -362,6 +378,11 @@ real, dimension(nltest) :: bare_ground_frac
            do i = 1, nltest
             if (.not. onetile_perPFT) then  !composite
               read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
+              if (nmtest > 1) then
+                do m = 2, nmtest
+                    nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
+                end do
+              end if
             else                    !onetile_perPFT
               read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
               do m = 1, nmtest-1    !nmtest-1 same as icc
@@ -382,12 +403,9 @@ real, dimension(nltest) :: bare_ground_frac
          do j = 1, icc
           if (.not. crop(j)) then
            do i = 1, nltest
-            if (.not. onetile_perPFT) then  !composite
-                m = 1
-            else !onetile_perPFT
-                m = j
-            end if
-                nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)           
+             do m = 1,nmtest
+                nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)
+             end do
            end do
           end if
          end do

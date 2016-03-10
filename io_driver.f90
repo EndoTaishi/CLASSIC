@@ -96,25 +96,25 @@ real, pointer, dimension(:,:,:) :: stemmassrow          !
 real, pointer, dimension(:,:,:) :: rootmassrow          !
 real, pointer, dimension(:,:,:) :: pstemmassrow         !
 real, pointer, dimension(:,:,:) :: pgleafmassrow        !     
-real, pointer, dimension(:) :: twarmm                   ! temperature of the warmest month (c)
-real, pointer, dimension(:) :: tcoldm                   ! temperature of the coldest month (c)
-real, pointer, dimension(:) :: gdd5                     ! growing degree days above 5 c
-real, pointer, dimension(:) :: aridity                  ! aridity index, ratio of potential evaporation to precipitation
-real, pointer, dimension(:) :: srplsmon                 ! number of months in a year with surplus water i.e.precipitation more than potential evaporation
-real, pointer, dimension(:) :: defctmon                 ! number of months in a year with water deficit i.e.precipitation less than potential evaporation
-real, pointer, dimension(:) :: anndefct                 ! annual water deficit (mm) 
-real, pointer, dimension(:) :: annsrpls                 ! annual water surplus (mm)
-real, pointer, dimension(:) :: annpcp                   ! annual precipitation (mm)
-real, pointer, dimension(:) :: dry_season_length        ! length of dry season (months)
+real, pointer, dimension(:,:) :: twarmm                   ! temperature of the warmest month (c)
+real, pointer, dimension(:,:) :: tcoldm                   ! temperature of the coldest month (c)
+real, pointer, dimension(:,:) :: gdd5                     ! growing degree days above 5 c
+real, pointer, dimension(:,:) :: aridity                  ! aridity index, ratio of potential evaporation to precipitation
+real, pointer, dimension(:,:) :: srplsmon                 ! number of months in a year with surplus water i.e.precipitation more than potential evaporation
+real, pointer, dimension(:,:) :: defctmon                 ! number of months in a year with water deficit i.e.precipitation less than potential evaporation
+real, pointer, dimension(:,:) :: anndefct                 ! annual water deficit (mm)
+real, pointer, dimension(:,:) :: annsrpls                 ! annual water surplus (mm)
+real, pointer, dimension(:,:) :: annpcp                   ! annual precipitation (mm)
+real, pointer, dimension(:,:) :: dry_season_length        ! length of dry season (months)
 real, pointer, dimension(:,:,:) :: litrmassrow
 real, pointer, dimension(:,:,:) :: soilcmasrow
-real, pointer, dimension(:) :: extnprobgrd
-real, pointer, dimension(:) :: prbfrhucgrd
-real, pointer, dimension(:,:) :: mlightnggrd  
+real, pointer, dimension(:,:) :: extnprob
+real, pointer, dimension(:,:) :: prbfrhuc
+real, pointer, dimension(:,:,:) :: mlightng
 integer, pointer, dimension(:,:,:) :: lfstatusrow
 integer, pointer, dimension(:,:,:) :: pandaysrow
-integer, pointer, dimension(:) :: stdalngrd
-real, pointer, dimension(:,:) :: slopefracgrd
+integer, pointer, dimension(:,:) :: stdaln
+real, pointer, dimension(:,:,:) :: slopefrac
 
 ! local variables
 
@@ -153,11 +153,11 @@ annpcp            => vrot%annpcp
 dry_season_length => vrot%dry_season_length
 litrmassrow       => vrot%litrmass
 soilcmasrow       => vrot%soilcmas
-extnprobgrd       => vrot%extnprob
-prbfrhucgrd       => vrot%prbfrhuc
-mlightnggrd       => vrot%mlightng 
-slopefracgrd      => vrot%slopefrac
-stdalngrd         => vrot%stdaln
+extnprob          => vrot%extnprob
+prbfrhuc          => vrot%prbfrhuc
+mlightng          => vrot%mlightng
+slopefrac         => vrot%slopefrac
+stdaln            => vrot%stdaln
 lfstatusrow       => vrot%lfstatus
 pandaysrow        => vrot%pandays
       
@@ -189,7 +189,7 @@ read (11,7010) titlec3
 
 !       Rest of the initialization variables are needed to run CTEM but
 !       if starting from bare ground initialize all live and dead c pools from zero. suitable values
-!       of extnprobgrd and prbfrhucgrd would still be required. set stdalngrd to
+!       of extnprobgrd and prbfrhucgrd would still be required. set stdaln to
 !       1 for operation in non-gcm stand alone mode, in the CTEM
 !       initialization file.
 
@@ -214,31 +214,57 @@ read (11,7010) titlec3
 
 72      continue
 
-        read(11,*) (mlightnggrd(i,j),j=1,6)  !mean monthly lightning frequency
-        read(11,*) (mlightnggrd(i,j),j=7,12) !flashes/km2.year
-        read(11,*) extnprobgrd(i)
-        read(11,*) prbfrhucgrd(i)
-        read(11,*) stdalngrd(i)
+        read(11,*) (mlightng(i,1,j),j=1,6)  !mean monthly lightning frequency
+        read(11,*) (mlightng(i,1,j),j=7,12) !flashes/km2.year, this is spread over other tiles below
+        read(11,*) extnprob(i,1)
+        read(11,*) prbfrhuc(i,1)
+        read(11,*) stdaln(i,1)
 
         if (compete .and. inibioclim) then  !read in the bioclimatic parameters
-        read(11,*) twarmm(i), tcoldm(i), gdd5(i), aridity(i),srplsmon(i)
-        read(11,*) defctmon(i), anndefct(i), annsrpls(i), annpcp(i), dry_season_length(i)
+        ! read them into the first tile of each grid cell.
+        read(11,*) twarmm(i,1), tcoldm(i,1), gdd5(i,1), aridity(i,1),srplsmon(i,1)
+        read(11,*) defctmon(i,1), anndefct(i,1), annsrpls(i,1), annpcp(i,1), dry_season_length(i,1)
+
         else if (compete .and. .not. inibioclim) then ! set them to zero
-        twarmm(i)=0.0
-        tcoldm(i)=0.0
-        gdd5(i)=0.0
-        aridity(i)=0.0
-        srplsmon(i)=0.0
-        defctmon(i)=0.0
-        anndefct(i)=0.0
-        annsrpls(i)=0.0
-        annpcp(i)=0.0
-        dry_season_length(i) = 0.0
+            twarmm(i,1)=0.0
+            tcoldm(i,1)=0.0
+            gdd5(i,1)=0.0
+            aridity(i,1)=0.0
+            srplsmon(i,1)=0.0
+            defctmon(i,1)=0.0
+            anndefct(i,1)=0.0
+            annsrpls(i,1)=0.0
+            annpcp(i,1)=0.0
+            dry_season_length(i,1) = 0.0
         endif
 
-        if (dowetlands) then !if true then read wetland fractions
-            read(11,*) (slopefracgrd(i,j),j=1,8)
-        endif   
+! Take the first tile value now and put it over the other tiles
+        if (nmtest > 1) then
+            do m = 2,nmtest
+                twarmm(i,m)=twarmm(i,1)
+                tcoldm(i,m)=tcoldm(i,1)
+                gdd5(i,m)=gdd5(i,1)
+                aridity(i,m)=aridity(i,1)
+                srplsmon(i,m)=srplsmon(i,1)
+                defctmon(i,m)=defctmon(i,1)
+                anndefct(i,m)=anndefct(i,1)
+                annsrpls(i,m)=annsrpls(i,1)
+                annpcp(i,m)=annpcp(i,1)
+                dry_season_length(i,m) =dry_season_length(i,1)
+                mlightng(i,m,:) = mlightng(i,1,:)
+                extnprob(i,m) = extnprob(i,1)
+                prbfrhuc(i,m) = prbfrhuc(i,1)
+                stdaln(i,m) = stdaln(i,1)
+            end do
+        end if
+        if (dowetlands) then !if true then read wetland fractions into the first tile position
+          read(11,*) (slopefrac(i,1,j),j=1,8)
+          if (nmtest > 1) then ! if more tiles then just put the first tile across the rest
+            do m = 2,nmtest
+              slopefrac(i,m,:) = slopefrac(i,1,:)
+            end do
+          end if
+        endif
 71    continue
 
 close(11)
@@ -415,7 +441,9 @@ close(11)
       else if (.not. onetile_perPFT) then  !set up for composite runs when start_bare is on and compete or landuseon
 
 !       store the read-in crop fractions as we keep them even when we start bare. 
-!       FLAG: this is setup assuming that crops are in pft number 6 and 7. JM Apr 9 2014.
+!       FLAG: this is setup assuming that crops are in pft number 6 and 7.
+!       and the first tile contains the information for the grid cell (assumes we have crops in
+!       every tile too! JM Apr 9 2014.
          do i=1,nltest
           crop_temp_frac(i,1)=FCANROT(i,1,3)*dvdfcanrow(i,1,6)
           crop_temp_frac(i,2)=FCANROT(i,1,3)*dvdfcanrow(i,1,7)
@@ -428,53 +456,59 @@ close(11)
 
        ! Added this as start_bare runs were not properly assigning 
        ! a TCAN on the very first day since the FCANROT was 0. JM Jan 14 2014. 
-       do i=1,nltest
-        do j=1,iccp1       
-           if (j .lt. icc+1) then
-            FCANROT(i,1,j)=seed
-           else
-            FCANROT(i,1,j)=1.0 - (real(icc) * seed)
-           endif
-        end do
-       end do
+!        do i=1,nltest
+!         do m = 1,nmtest
+!          do j=1,icp1
+!            if (j .lt. icp1) then
+!             FCANROT(i,m,j)=seed
+!            else
+!             FCANROT(i,m,j)=1.0 - (real(ican) * seed)
+!            endif
+!          end do
+!         end do
+!        end do
 
        do i=1,nltest
+         do m = 1,nmtest
 
-!      initial conditions always required
-         dvdfcanrow(i,1,1)=1.0  !ndl
-         dvdfcanrow(i,1,3)=1.0  !bdl
-         dvdfcanrow(i,1,6)=1.0  !crop
-         dvdfcanrow(i,1,8)=1.0  !grasses
+    !      initial conditions always required
+            dvdfcanrow(i,m,1)=1.0  !ndl
+            dvdfcanrow(i,m,3)=1.0  !bdl
+            dvdfcanrow(i,m,6)=1.0  !crop
+            dvdfcanrow(i,m,8)=1.0  !grasses
 
-         do j = 1,icc
-           ailcminrow(i,1,j)=0.0
-           ailcmaxrow(i,1,j)=0.0
-           gleafmasrow(i,1,j)=0.0
-           bleafmasrow(i,1,j)=0.0
-           stemmassrow(i,1,j)=0.0
-           rootmassrow(i,1,j)=0.0
-           lfstatusrow(i,1,j)=4
-           pandaysrow(i,1,j)=0
-         enddo
+            do j = 1,icc
+            ailcminrow(i,m,j)=0.0
+            ailcmaxrow(i,m,j)=0.0
+            gleafmasrow(i,m,j)=0.0
+            bleafmasrow(i,m,j)=0.0
+            stemmassrow(i,m,j)=0.0
+            rootmassrow(i,m,j)=0.0
+            lfstatusrow(i,m,j)=4
+            pandaysrow(i,m,j)=0
+            enddo
 
-         lfstatusrow(i,1,1)=2
+            lfstatusrow(i,m,1)=2
 
-         do j = 1,iccp1
-           litrmassrow(i,1,j)=0.0 
-           soilcmasrow(i,1,j)=0.0 
-         enddo
+            do j = 1,iccp1
+            litrmassrow(i,m,j)=0.0
+            soilcmasrow(i,m,j)=0.0
+            enddo
+         end do ! nmtest
        enddo !nltest
 
          do i=1,nltest
-          FCANROT(i,1,3) = crop_temp_frac(i,1) + crop_temp_frac(i,2)
-          if (FCANROT(i,1,3) .gt. abszero) then
-           dvdfcanrow(i,1,6) = crop_temp_frac(i,1) / FCANROT(i,1,3)
-           dvdfcanrow(i,1,7) = crop_temp_frac(i,2) / FCANROT(i,1,3)
-          else
-           dvdfcanrow(i,1,6) = 1.0
-           dvdfcanrow(i,1,7) = 0.0
-          end if
-         end do
+            do m = 1,nmtest
+                FCANROT(i,m,3) = crop_temp_frac(i,1) + crop_temp_frac(i,2)
+                if (FCANROT(i,m,3) .gt. abszero) then
+                dvdfcanrow(i,m,6) = crop_temp_frac(i,1) / FCANROT(i,m,3)
+                dvdfcanrow(i,m,7) = crop_temp_frac(i,2) / FCANROT(i,m,3)
+                else
+                dvdfcanrow(i,m,6) = 1.0
+                dvdfcanrow(i,m,7) = 0.0
+                end if
+            end do !nmtest
+         end do !nltest
 
       end if ! mosaic / composite
       end if !if (compete/landuseon .and. start_bare) 
@@ -520,21 +554,21 @@ real, pointer, dimension(:,:,:) :: litrmassrow
 real, pointer, dimension(:,:,:) :: soilcmasrow
 integer, pointer, dimension(:,:,:) :: lfstatusrow
 integer, pointer, dimension(:,:,:) :: pandaysrow
-real, pointer, dimension(:) :: extnprobgrd
-real, pointer, dimension(:) :: prbfrhucgrd
-real, pointer, dimension(:,:) :: mlightnggrd  
-integer, pointer, dimension(:) :: stdalngrd
-real, pointer, dimension(:) :: twarmm                   ! temperature of the warmest month (c)
-real, pointer, dimension(:) :: tcoldm                   ! temperature of the coldest month (c)
-real, pointer, dimension(:) :: gdd5                     ! growing degree days above 5 c
-real, pointer, dimension(:) :: aridity                  ! aridity index, ratio of potential evaporation to precipitation
-real, pointer, dimension(:) :: srplsmon                 ! number of months in a year with surplus water i.e.precipitation more than potential evaporation
-real, pointer, dimension(:) :: defctmon                 ! number of months in a year with water deficit i.e.precipitation less than potential evaporation
-real, pointer, dimension(:) :: anndefct                 ! annual water deficit (mm) 
-real, pointer, dimension(:) :: annsrpls                 ! annual water surplus (mm)
-real, pointer, dimension(:) :: annpcp                   ! annual precipitation (mm)
-real, pointer, dimension(:) :: dry_season_length        ! length of dry season (months)
-real, pointer, dimension(:,:) :: slopefracgrd           ! Gridcell fraction flatter than the slope threshold
+real, pointer, dimension(:,:) :: extnprob
+real, pointer, dimension(:,:) :: prbfrhuc
+real, pointer, dimension(:,:,:) :: mlightng
+integer, pointer, dimension(:,:) :: stdaln
+real, pointer, dimension(:,:) :: twarmm                   ! temperature of the warmest month (c)
+real, pointer, dimension(:,:) :: tcoldm                   ! temperature of the coldest month (c)
+real, pointer, dimension(:,:) :: gdd5                     ! growing degree days above 5 c
+real, pointer, dimension(:,:) :: aridity                  ! aridity index, ratio of potential evaporation to precipitation
+real, pointer, dimension(:,:) :: srplsmon                 ! number of months in a year with surplus water i.e.precipitation more than potential evaporation
+real, pointer, dimension(:,:) :: defctmon                 ! number of months in a year with water deficit i.e.precipitation less than potential evaporation
+real, pointer, dimension(:,:) :: anndefct                 ! annual water deficit (mm)
+real, pointer, dimension(:,:) :: annsrpls                 ! annual water surplus (mm)
+real, pointer, dimension(:,:) :: annpcp                   ! annual precipitation (mm)
+real, pointer, dimension(:,:) :: dry_season_length        ! length of dry season (months)
+real, pointer, dimension(:,:,:) :: slopefrac                ! Fraction flatter than the slope threshold
 
 ! local variables
 
@@ -562,10 +596,10 @@ litrmassrow       => vrot%litrmass
 soilcmasrow       => vrot%soilcmas
 lfstatusrow       => vrot%lfstatus
 pandaysrow        => vrot%pandays
-extnprobgrd       => vrot%extnprob
-prbfrhucgrd       => vrot%prbfrhuc
-mlightnggrd       => vrot%mlightng 
-stdalngrd         => vrot%stdaln
+extnprob          => vrot%extnprob
+prbfrhuc          => vrot%prbfrhuc
+mlightng          => vrot%mlightng
+stdaln            => vrot%stdaln
 twarmm            => vrot%twarmm
 tcoldm            => vrot%tcoldm
 gdd5              => vrot%gdd5
@@ -576,7 +610,7 @@ anndefct          => vrot%anndefct
 annsrpls          => vrot%annsrpls
 annpcp            => vrot%annpcp
 dry_season_length => vrot%dry_season_length
-slopefracgrd      => vrot%slopefrac
+slopefrac         => vrot%slopefrac
       
 ! -----------------      
 ! Begin
@@ -673,19 +707,21 @@ do i=1,nltest
         write(101,7012) (pandaysrow(i,m,j),j=1,icc)
     end do !nmtest
 
-    write(101,"(6f8.3)") (mlightnggrd(i,j),j=1,6)  !mean monthly lightning frequency
-    write(101,"(6f8.3)") (mlightnggrd(i,j),j=7,12) !flashes/km2.year
-    write(101,"(f8.2)") extnprobgrd(i)
-    write(101,"(f8.2)") prbfrhucgrd(i)
-    write(101,"(i4)") stdalngrd(i)
+    write(101,"(6f8.3)") (mlightng(i,1,j),j=1,6)  !mean monthly lightning frequency
+    write(101,"(6f8.3)") (mlightng(i,1,j),j=7,12) !flashes/km2.year, use the first tile since all the same.
+    write(101,"(f8.2)") extnprob(i,1)
+    write(101,"(f8.2)") prbfrhuc(i,1)
+    write(101,"(i4)") stdaln(i,1)
 
     if (compete) then
-        write(101,7014)twarmm(i),tcoldm(i),gdd5(i),aridity(i),srplsmon(i)
-        write(101,7014)defctmon(i),anndefct(i),annsrpls(i), annpcp(i),dry_season_length(i)
+    !   We can write out the first tile value since these are the same across an entire gridcell.
+        write(101,7014)twarmm(i,1),tcoldm(i,1),gdd5(i,1),aridity(i,1),srplsmon(i,1)
+        write(101,7014)defctmon(i,1),anndefct(i,1),annsrpls(i,1), annpcp(i,1),dry_season_length(i,1)
     end if
 
     if (dowetlands) then     
-        write(101,"(8f9.5)")(slopefracgrd(i,j),j=1,8)
+        ! Just write in the first tiles value since all tiles in a gridcell are the same.
+        write(101,"(8f9.5)")(slopefrac(i,1,j),j=1,8)
     end if   
 
 end do !nltest
@@ -695,7 +731,7 @@ close(101)
 7011  format(9ES12.5)
 7012  format(9i8)
 7013  format(10ES12.5)
-7014  format(5ES10.4)
+7014  format(5ES12.4)
 
 end subroutine write_ctm_rs        
 
@@ -3704,7 +3740,7 @@ end if
 
 
 8105  FORMAT(1X,I5,15(ES12.5,1X),2(A6,I2),A6,F8.2)
-8107  FORMAT(1X,I5,11(ES12.7,1X),9L5,2(A6,I2))
+8107  FORMAT(1X,I5,11(F12.7,1X),9L5,2(A6,I2))
 8108  FORMAT(1X,I5,20(ES12.5,1X),2(A6,I2),A6,F8.2)
 8115  FORMAT(1X,I5,6(ES12.5,1X),2(A6,I2))
 

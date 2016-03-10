@@ -7,6 +7,10 @@ C     * ECOSYSTEM MODEL).
 C
 C     REVISION HISTORY:
 C
+C     * Mar 9  2016 : For consistency I have changed all inputs (except MET) to be adopted into the row/gat
+C     * Joe Melton    framework. This means that a per gridcell value is then also assigned per tile. This
+C                     just makes it easier to deal with in the model code since it fits into the loops like the vars.
+C
 C     * Feb 10 2016 : Trimmed CTEM secondary vars from driver. They are not used, so can find in io_driver
 C     * Joe Melton
 C
@@ -455,7 +459,7 @@ c
      5           spinfast,   nol2pfts(4),
      6           popyr,
      7           metcylyrst, metcycendyr, climiyear, popcycleyr,
-     8           cypopyr, lucyr, cylucyr, endyr,bigpftc(2),
+     8           cypopyr, lucyr, cylucyr, endyr,bigpftc(1),
      9           obswetyr, cywetldyr, trans_startyr, jmosty,
      +           obslghtyr
 c
@@ -472,8 +476,8 @@ c
       real, pointer ::  tsn_g
       real, pointer ::  zsn_g
 
-       real      co2concin,  popdin(nlat),    setco2conc, sumfare,
-     1           temp_var, barefrac,  todfrac(ilg,icc), barf(nlat),
+      real      co2concin,    setco2conc, sumfare,
+     1           temp_var, barefrac,  todfrac(ilg,icc), barf(nlat,nmos),
      2           ch4concin, setch4conc
 
       real grclarea(ilg), crop_temp_frac(ilg,2)
@@ -531,9 +535,7 @@ c
       integer, pointer, dimension(:,:) :: icountrow
       integer, pointer, dimension(:,:,:) :: lfstatusrow
       integer, pointer, dimension(:,:,:) :: pandaysrow
-
-      integer, pointer, dimension(:) :: stdalngrd
-
+      integer, pointer, dimension(:,:) :: stdalnrow
       real, pointer, dimension(:,:) :: tcanrs
       real, pointer, dimension(:,:) :: tsnors
       real, pointer, dimension(:,:) :: tpndrs
@@ -604,13 +606,14 @@ c
       real, pointer, dimension(:,:) :: burnfracrow
       real, pointer, dimension(:,:,:) :: burnvegfrow
       real, pointer, dimension(:,:) :: probfirerow
+      real, pointer, dimension(:,:) :: popdinrow
       real, pointer, dimension(:,:) :: btermrow
       real, pointer, dimension(:,:) :: ltermrow
       real, pointer, dimension(:,:) :: mtermrow
 
-      real, pointer, dimension(:) :: extnprobgrd
-      real, pointer, dimension(:) :: prbfrhucgrd
-      real, pointer, dimension(:,:) :: mlightnggrd
+      real, pointer, dimension(:,:) :: extnprobrow
+      real, pointer, dimension(:,:) :: prbfrhucrow
+      real, pointer, dimension(:,:,:) :: mlightngrow
       real, pointer, dimension(:) :: dayl_maxrow
       real, pointer, dimension(:) :: daylrow
 
@@ -633,14 +636,13 @@ c
       real, pointer, dimension(:,:,:) :: ltstatusrow
       real, pointer, dimension(:,:) :: rmrrow
 
-      real, pointer, dimension(:,:) :: slopefracrow
-      real, pointer, dimension(:) :: wetfrac_presrow
+      real, pointer, dimension(:,:,:) :: slopefracrow
       real, pointer, dimension(:,:) :: ch4wet1row
       real, pointer, dimension(:,:) :: ch4wet2row
       real, pointer, dimension(:,:) :: wetfdynrow
       real, pointer, dimension(:,:) :: ch4dyn1row
       real, pointer, dimension(:,:) :: ch4dyn2row
-      real, pointer, dimension(:,:) :: wetfrac_monrow
+      real, pointer, dimension(:,:,:) :: wetfrac_monrow
       real, pointer, dimension(:,:) :: ch4soillsrow
 
       real, pointer, dimension(:,:) :: lucemcomrow
@@ -688,16 +690,16 @@ c
       real, pointer, dimension(:,:,:) :: anvegrow
       real, pointer, dimension(:,:,:) :: rmlvegrow
 
-      real, pointer, dimension(:) :: twarmmrow
-      real, pointer, dimension(:) :: tcoldmrow
-      real, pointer, dimension(:) :: gdd5row
-      real, pointer, dimension(:) :: aridityrow
-      real, pointer, dimension(:) :: srplsmonrow
-      real, pointer, dimension(:) :: defctmonrow
-      real, pointer, dimension(:) :: anndefctrow
-      real, pointer, dimension(:) :: annsrplsrow
-      real, pointer, dimension(:) :: annpcprow
-      real, pointer, dimension(:) :: dry_season_lengthrow
+      real, pointer, dimension(:,:) :: twarmmrow
+      real, pointer, dimension(:,:) :: tcoldmrow
+      real, pointer, dimension(:,:) :: gdd5row
+      real, pointer, dimension(:,:) :: aridityrow
+      real, pointer, dimension(:,:) :: srplsmonrow
+      real, pointer, dimension(:,:) :: defctmonrow
+      real, pointer, dimension(:,:) :: anndefctrow
+      real, pointer, dimension(:,:) :: annsrplsrow
+      real, pointer, dimension(:,:) :: annpcprow
+      real, pointer, dimension(:,:) :: dry_season_lengthrow
 
 
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
@@ -708,9 +710,7 @@ c
       integer, pointer, dimension(:) :: icountgat
       integer, pointer, dimension(:,:) :: lfstatusgat
       integer, pointer, dimension(:,:) :: pandaysgat
-
       integer, pointer, dimension(:) :: stdalngat
-
       real, pointer, dimension(:) :: lightng
 
       real, pointer, dimension(:,:) :: ailcmingat         !
@@ -774,6 +774,7 @@ c
       real, pointer, dimension(:) :: burnfracgat
       real, pointer, dimension(:,:) :: burnvegfgat
       real, pointer, dimension(:) :: probfiregat
+      real, pointer, dimension(:) :: popdingat
       real, pointer, dimension(:) :: btermgat
       real, pointer, dimension(:) :: ltermgat
       real, pointer, dimension(:) :: mtermgat
@@ -1137,13 +1138,14 @@ C===================== CTEM ==============================================\
       burnfracrow       => vrot%burnfrac
       burnvegfrow       => vrot%burnvegf
       probfirerow       => vrot%probfire
+      popdinrow         => vrot%popdin
       btermrow          => vrot%bterm
       ltermrow          => vrot%lterm
       mtermrow          => vrot%mterm
 
-      extnprobgrd       => vrot%extnprob
-      prbfrhucgrd       => vrot%prbfrhuc
-      mlightnggrd       => vrot%mlightng
+      extnprobrow       => vrot%extnprob
+      prbfrhucrow       => vrot%prbfrhuc
+      mlightngrow       => vrot%mlightng
       daylrow           => vrot%dayl
       dayl_maxrow       => vrot%dayl_max
 
@@ -1166,7 +1168,6 @@ C===================== CTEM ==============================================\
       rmrrow            => vrot%rmr
 
       slopefracrow      => vrot%slopefrac
-      wetfrac_presrow   => vrot%wetfrac_pres
       ch4wet1row        => vrot%ch4wet1
       ch4wet2row        => vrot%ch4wet2
       wetfdynrow        => vrot%wetfdyn
@@ -1225,7 +1226,7 @@ C===================== CTEM ==============================================\
       icountrow         => vrot%icount
       lfstatusrow       => vrot%lfstatus
       pandaysrow        => vrot%pandays
-      stdalngrd         => vrot%stdaln
+      stdalnrow         => vrot%stdaln
 
       twarmmrow            => vrot%twarmm
       tcoldmrow            => vrot%tcoldm
@@ -1304,6 +1305,7 @@ C===================== CTEM ==============================================\
       emit_bcgat        => vgat%emit_bc
       burnfracgat       => vgat%burnfrac
       burnvegfgat       => vgat%burnvegf
+      popdingat         => vgat%popdin
       probfiregat       => vgat%probfire
       btermgat          => vgat%bterm
       ltermgat          => vgat%lterm
@@ -1594,8 +1596,8 @@ C
        IMONTH = 0
 
        do 11 i=1,nlat
-        barf(i)                = 1.0
         do 11 m=1,nmos
+         barf(i,m)                = 1.0
          TCANOACCROW_M(I,M)       = 0.0
          UVACCROW_M(I,M)          = 0.0
          VVACCROW_M(I,M)          = 0.0
@@ -1924,7 +1926,7 @@ C     BEGIN READ IN OF THE .INI FILE
       GGEOROW(1)=0.0
 C     GGEOROW(1)=-0.035
 
-      DO 50 I=1,NLTEST
+      DO 50 I=1,NLTEST !I think this should go above the read(10 . JM.
       DO 50 M=1,NMTEST
           READ(10,5040) (FCANROT(I,M,J),J=1,ICAN+1),(PAMXROT(I,M,J),
      1                  J=1,ICAN)
@@ -2197,7 +2199,7 @@ c
               if (compete .and. .not. onetile_perPFT) then
                fcancmxrow(i,m,icountrow(i,m))=max(seed,FCANROT(i,m,j)*
      &         dvdfcanrow(i,m,icountrow(i,m)))
-               barf(i) = barf(i) - fcancmxrow(i,m,icountrow(i,m))
+               barf(i,m) = barf(i,m) - fcancmxrow(i,m,icountrow(i,m))
               else
                fcancmxrow(i,m,icountrow(i,m))=FCANROT(i,m,j)*
      &         dvdfcanrow(i,m,icountrow(i,m))
@@ -2214,17 +2216,20 @@ c
 114     continue
 113   continue
 
-!     Now make sure that you aren´t over 1.0 for a grid cell (i.e. with a negative
-!     bare ground fraction due to the seed fractions being added in.) JM Mar 27 2014
+!     Now make sure that you aren´t over 1.0 for a tile (i.e. with a negative
+!     bare ground fraction due to the seed fractions being added in.) JM Mar 9 2016
       do i=1,nltest
-       if (barf(i) .lt. 0.) then
-        bigpftc=maxloc(fcancmxrow(i,:,:))
-        ! reduce the most predominant PFT by barf and 1.0e-5,
-        ! which ensures that our barefraction is non-zero to avoid
-        ! problems later.
-        fcancmxrow(i,bigpftc(1),bigpftc(2))=fcancmxrow
-     &                (i,bigpftc(1),bigpftc(2))+barf(i) - 1.0e-5
-       end if
+       do m = 1,nmtest
+        if (barf(i,m) .lt. 0.) then
+         bigpftc=maxloc(fcancmxrow(i,m,:))
+         ! reduce the most predominant PFT by barf and 1.0e-5,
+         ! which ensures that our barefraction is non-zero to avoid
+         ! problems later.
+         fcancmxrow(i,m,bigpftc(1))=fcancmxrow
+     &                (i,m,bigpftc(1))+barf(i,m) - 1.0e-5
+      write(*,*)bigpftc,barf(i,m)
+        end if
+       end do
       end do
 c
 c     ----------
@@ -2251,23 +2256,29 @@ c      back up one space in the met file so it is ready for the next readin
        if(obswetf) then
          do while (obswetyr .lt. metcylyrst)
             do i=1,nltest
-              read(16,*) obswetyr,(wetfrac_monrow(i,j),j=1,12)
+              ! Read the values into the first tile
+              read(16,*) obswetyr,(wetfrac_monrow(i,1,j),j=1,12)
+              if (nmtest > 1) then
+                do m = 2,nmtest !spread grid values over all tiles for easier use in model
+                  wetfrac_monrow(i,m,:) = wetfrac_monrow(i,1,:)
+                end do
+              end if
             end do
          end do
          backspace(16)
-       else
-           do i=1,nltest
-             do j = 1,12
-               wetfrac_monrow(i,j) = 0.0
-             enddo
-           enddo
-
+       else !not needed, just set to 0 and move on.
+         wetfrac_monrow(:,:,:) = 0.0
        end if
 
        if(obslght) then
         do while (obslghtyr .lt. metcylyrst)
             do i=1,nltest
-              read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
+              read(17,*) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
+              if (nmtest > 1) then
+                do m = 2,nmtest !spread grid values over all tiles for easier use in model
+                  mlightngrow(i,m,:) = mlightngrow(i,1,:)
+                end do
+              end if
             end do
          end do
          backspace(17)
@@ -2283,7 +2294,12 @@ c      find the popd data to cycle over, popd is only cycled over when the met i
        if (cyclemet .and. popdon) then
         do while (popyr .lt. cypopyr)
          do i = 1, nltest
-          read(13,5301) popyr,popdin(i)
+          read(13,5301) popyr,popdinrow(i,1) !place it in the first tile
+          if (nmtest > 1) then
+            do m = 2, nmtest
+              popdinrow(i,m) = popdinrow(i,1) !spread this value over all tiles
+            end do
+          end if
          enddo
         enddo
        endif
@@ -2455,28 +2471,34 @@ c       back up one space in the met file so it is ready for the next readin
 c       but only if it was read in during the loop above.
         if (metcylyrst .ne. -9999) backspace(12)
 
-      ! Find the correct years of the accessory input files (wetlands, lightining...)
+      ! Find the correct years of the accessory input files (wetlands, lightning...)
       ! if needed
       if (ctem_on) then
         if (obswetf) then
           do while (obswetyr .lt. metcylyrst)
-              do i = 1,nltest
-                read(16,*) obswetyr,(wetfrac_monrow(i,j),j=1,12)
+              do i = 1,nltest ! Read into the first tile position
+                read(16,*) obswetyr,(wetfrac_monrow(i,1,j),j=1,12)
+                if (nmtest > 1) then
+                 do m = 1,nmtest !spread grid values over all tiles for easier use in model
+                  wetfrac_monrow(i,m,:) = wetfrac_monrow(i,1,:)
+                 end do
+                end if
               enddo
           enddo
          if (metcylyrst .ne. -9999) backspace(16)
         else
-           do i=1,nltest
-             do j = 1,12
-               wetfrac_monrow(i,j) = 0.0
-             enddo
-           enddo
+            wetfrac_monrow(:,:,:) = 0.0
         endif !obswetf
 
        if(obslght) then
         do while (obslghtyr .lt. metcylyrst)
             do i=1,nltest
-              read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
+              read(17,*) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
+              if (nmtest > 1) then
+                do m = 2,nmtest !spread grid values over all tiles for easier use in model
+                  mlightngrow(i,m,:) = mlightngrow(i,1,:)
+                end do
+              end if
             end do
          end do
          if (metcylyrst .ne. -9999) backspace(17)
@@ -2565,19 +2587,28 @@ C
               ! FLAG note that this will be read in, regardless of the iyear, if the
               ! obswetf flag is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
+              ! Read into the first tile position
                  read(16,*,end=1001) obswetyr,
-     1                               (wetfrac_monrow(i,j),j=1,12)
+     1                               (wetfrac_monrow(i,1,j),j=1,12)
+                if (nmtest > 1) then
+                  do m = 2,nmtest !spread grid values over all tiles for easier use in model
+                    wetfrac_monrow(i,m,:) = wetfrac_monrow(i,1,:)
+                  end do
+                end if
               else
-                   do j = 1,12
-                     wetfrac_monrow(i,j) = 0.0
-                   enddo
+                wetfrac_monrow(:,:,:) = 0.0
               endif !obswetf
 
               if(obslght) then
               ! FLAG note that this will be read in, regardless of the iyear, if the
               ! obswetf flag is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
-                read(17,*,end=312) obslghtyr,(mlightnggrd(i,j),j=1,12)
+                read(17,*,end=312) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
+                if (nmtest > 1) then
+                  do m = 2,nmtest !spread grid values over all tiles for easier use in model
+                    mlightngrow(i,m,:) = mlightngrow(i,1,:)
+                  end do
+                end if
 312             continue !if end of file, just keep using the last year of lighting data.
               end if !obslight
              end do
@@ -2585,15 +2616,20 @@ C
 
 c         If popdon=true, calculate fire extinguishing probability and
 c         probability of fire due to human causes from population density
-c         input data. In disturb.f90 this will overwrite extnprobgrd(i)
-c         and prbfrhucgrd(i) that are read in from the .ctm file. Set
+c         input data. In disturb.f90 this will overwrite extnprobrow
+c         and prbfrhucgrd that are read in from the .ctm file. Set
 c         cypopyr = -9999 when we don't want to cycle over the popd data
 c         so this allows us to grab a new value each year.
 
           if(popdon .and. transient_run) then
             do while (popyr .lt. iyear)
              do i=1,nltest
-              read(13,5301,end=999) popyr,popdin(i)
+              read(13,5301,end=999) popyr,popdinrow(i,1) !place it in the first tile
+              if (nmtest > 1) then
+                do m = 2, nmtest
+                  popdinrow(i,m) = popdinrow(i,1) !spread this value over all tiles
+                end do
+              end if
              enddo
             enddo
           endif
@@ -2839,7 +2875,7 @@ C
      m      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,
      n      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,
      o      burnfracgat, probfiregat, lucemcomgat,  lucltringat,
-     p      lucsocingat, nppveggat,   dstcemls3gat,
+     p      lucsocingat, nppveggat,   dstcemls3gat, popdingat,
      q      faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,
      &      rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,
      &      gppveggat,   nepveggat,   ailcmingat,   ailcmaxgat,
@@ -2865,8 +2901,8 @@ c
      1      rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,
      2      SANDROT,     CLAYROT,     ORGMROT,
      3      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
-     4      uvaccrow_m,  vvaccrow_m,  mlightnggrd,  prbfrhucgrd,
-     5      extnprobgrd, stdalngrd,   pfcancmxrow,  nfcancmxrow,
+     4      uvaccrow_m,  vvaccrow_m,  mlightngrow,  prbfrhucrow,
+     5      extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,
      6      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,
      7      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,
      8      pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,
@@ -2881,7 +2917,7 @@ c
      h      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,
      i      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,
      j      burnfracrow, probfirerow, lucemcomrow,  lucltrinrow,
-     k      lucsocinrow, nppvegrow,   dstcemls3row,
+     k      lucsocinrow, nppvegrow,   dstcemls3row, popdinrow,
      l      FAREROT,     gavgscmsrow, rmlvegaccrow, pftexistrow,
      &      rmsvegrow,   rmrvegrow,   rgvegrow,    vgbiomas_vegrow,
      &      gppvegrow,   nepvegrow,   ailcminrow,   ailcmaxrow,
@@ -3225,7 +3261,7 @@ c
      a               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,
      b            thicecacc_t,     sdepgat,    spinfast,   todfrac,
      &                compete,  netrad_gat,  preacc_gat,PSISGAT,
-     &                 popdin,  dofire, dowetlands,obswetf, isndgat,
+     &              popdingat,  dofire, dowetlands,obswetf, isndgat,
      &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,
      &                  BIGAT,    THPGAT, thicegacc_t,
 c    -------------- inputs used by ctem are above this line ---------
@@ -3437,8 +3473,8 @@ C
      6      rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,
      7      SANDROT,     CLAYROT,     ORGMROT,
      8      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
-     9      uvaccrow_m,  vvaccrow_m,  mlightnggrd,  prbfrhucgrd,
-     a      extnprobgrd, stdalngrd,   pfcancmxrow,  nfcancmxrow,
+     9      uvaccrow_m,  vvaccrow_m,  prbfrhucrow,
+     a      extnprobrow, pfcancmxrow,  nfcancmxrow,
      b      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,
      c      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,
      d      pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,
@@ -3466,6 +3502,9 @@ C
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
      &      ch4wet1row, ch4wet2row,
      &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,
+     &      twarmmrow,    tcoldmrow,     gdd5row,
+     1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
+     2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
 c    ----
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -3477,8 +3516,8 @@ c    ----
      1      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      2      sandgat,     claygat,     orgmgat,
      3      anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,
-     4      uvaccgat_t,  vvaccgat_t,  mlightnggat,  prbfrhucgat,
-     5      extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,
+     4      uvaccgat_t,  vvaccgat_t,  prbfrhucgat,
+     5      extnprobgat, pfcancmxgat,  nfcancmxgat,
      6      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,
      7      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,
      8      pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,
@@ -3505,7 +3544,10 @@ c    ----
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
      &      ch4wet1gat, ch4wet2gat,
-     &      wetfdyngat, ch4dyn1gat, ch4dyn2gat,ch4soillsgat)
+     &      wetfdyngat, ch4dyn1gat, ch4dyn2gat,ch4soillsgat,
+     &      twarmmgat,    tcoldmgat,     gdd5gat,
+     1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
+     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat)
 c
 C===================== CTEM ============================================ /
 C
@@ -4596,7 +4638,12 @@ c      check if the model is done running.
                  rewind(17)
                  do while (obslghtyr .lt. metcylyrst)
                    do i=1,nltest
-                    read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
+                    read(17,*) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
+                    if (nmtest > 1) then
+                      do m = 2,nmtest !spread grid values over all tiles for easier use in model
+                        mlightngrow(i,m,:) = mlightngrow(i,1,:)
+                      end do
+                    end if
                    end do
                  end do
                  backspace(17)
@@ -4611,7 +4658,12 @@ c      check if the model is done running.
                  rewind(17)
                  do while (obslghtyr .lt. metcylyrst)
                    do i=1,nltest
-                    read(17,*) obslghtyr,(mlightnggrd(i,j),j=1,12)
+                    read(17,*) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
+                    if (nmtest > 1) then
+                      do m = 2,nmtest !spread grid values over all tiles for easier use in model
+                        mlightngrow(i,m,:) = mlightngrow(i,1,:)
+                      end do
+                    end if
                    end do
                  end do
                backspace(17)

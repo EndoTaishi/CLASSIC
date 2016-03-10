@@ -7,8 +7,8 @@
      6      rmlcgvegrow, canresrow,   sdeprow,      ch4concrow,
      7      sandrow,     clayrow,     orgmrow,
      8      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
-     9      uvaccrow_m,  vvaccrow_m,  mlightnggrd,  prbfrhucgrd,
-     a      extnprobgrd, stdalngrd,   pfcancmxrow,  nfcancmxrow,
+     9      uvaccrow_m,  vvaccrow_m,  prbfrhucgrd,
+     a      extnprobgrd, pfcancmxrow,  nfcancmxrow,
      b      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,
      c      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,
      d      pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,
@@ -36,6 +36,9 @@
      &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,
      &      ch4wet1row, ch4wet2row, wetfdynrow, ch4dyn1row,
      &      ch4dyn2row,ch4soillsrow,
+     &      twarmmrow,    tcoldmrow,     gdd5row,
+     1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
+     2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
 c --
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,   fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -47,8 +50,8 @@ c --
      1      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      2      sandgat,     claygat,     orgmgat,
      3      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
-     4      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
-     5      extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,
+     4      uvaccgat_m,  vvaccgat_m,  prbfrhucgat,
+     5      extnprobgat, pfcancmxgat,  nfcancmxgat,
      6      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,
      7      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,
      8      pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,
@@ -75,7 +78,10 @@ c --
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
      &      ch4wet1gat, ch4wet2gat, wetfdyngat, ch4dyn1gat,
-     &      ch4dyn2gat, ch4soillsgat)
+     &      ch4dyn2gat, ch4soillsgat,
+     &      twarmmgat,    tcoldmgat,     gdd5gat,
+     1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
+     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat)
 c
 c
 C              Canadian Terrestrial Ecosystem Model (CTEM)
@@ -125,8 +131,6 @@ c
       real  tcanoaccrow_m(nlat,nmos),
      1      uvaccrow_m(nlat,nmos),      vvaccrow_m(nlat,nmos)
 c
-      real  mlightnggrd(nlat,12)  !12month
-c
       real  prbfrhucgrd(nlat),       extnprobgrd(nlat),
      1      tbaraccrow_m(nlat,nmos,ignd),
      2      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc),
@@ -137,7 +141,7 @@ c
      6      ailcbrow(nlat,nmos,icc),    flhrlossrow(nlat,nmos,icc)
 c
       integer  pandaysrow(nlat,nmos,icc), lfstatusrow(nlat,nmos,icc),
-     1      stdalngrd(nlat),              colddaysrow(nlat,nmos,2)
+     1         colddaysrow(nlat,nmos,2)
 
       logical pftexistrow(nlat,nmos,icc)
 c
@@ -218,8 +222,6 @@ c
       real  tcanoaccgat_m(ilg),         uvaccgat_m(ilg),
      1      vvaccgat_m(ilg)
 c
-      real  mlightnggat(ilg,12)  !12month
-c
       real  prbfrhucgat(ilg),           extnprobgat(ilg),
      1      tbaraccgat_m(ilg,ignd),
      2      pfcancmxgat(ilg,icc),       nfcancmxgat(ilg,icc),
@@ -230,7 +232,7 @@ c
      6      ailcbgat(ilg,icc),          flhrlossgat(ilg,icc)
 c
       integer pandaysgat(ilg,icc),      lfstatusgat(ilg,icc),
-     1        stdalngat(ilg),           colddaysgat(ilg,2)
+     1        colddaysgat(ilg,2)
 
       logical pftexistgat(ilg,icc)
 c
@@ -293,6 +295,19 @@ c   Methane related variables
      6       ch4dyn2row(nlat,nmos),         ch4dyn2gat(ilg),
      7       ch4soillsrow(nlat,nmos),      ch4soillsgat(ilg)
 
+       real twarmmrow(nlat,nmos),             twarmmgat(ilg),
+     1       tcoldmrow(nlat,nmos),            tcoldmgat(ilg),
+     2       gdd5row(nlat,nmos),              gdd5gat(ilg),
+     3       aridityrow(nlat,nmos),           ariditygat(ilg),
+     4       srplsmonrow(nlat,nmos),          srplsmongat(ilg),
+     5       defctmonrow(nlat,nmos),          defctmongat(ilg),
+     6       anndefctrow(nlat,nmos),          anndefctgat(ilg),
+     7       annsrplsrow(nlat,nmos),          annsrplsgat(ilg),
+     8       annpcprow(nlat,nmos),            annpcpgat(ilg),
+     9       dry_season_lengthrow(nlat,nmos),
+     +       dry_season_lengthgat(ilg)
+
+
 c----------------------------------------------------------------------
       do 100 k=1,nml
           sdeprow(ilmos(k),jlmos(k))        = sdepgat(k)
@@ -304,7 +319,6 @@ c----------------------------------------------------------------------
           xdiffus(ilmos(k))                 = xdiffusgat(k) 
           prbfrhucgrd(ilmos(k))             = prbfrhucgat(k)
           extnprobgrd(ilmos(k))             = extnprobgat(k)
-          stdalngrd(ilmos(k))               = stdalngat(k) 
           tcanoaccrow_m(ilmos(k),jlmos(k))  = tcanoaccgat_m(k) 
           uvaccrow_m(ilmos(k),jlmos(k))     = uvaccgat_m(k) 
           vvaccrow_m(ilmos(k),jlmos(k))     = vvaccgat_m(k) 
@@ -348,6 +362,19 @@ c----------------------------------------------------------------------
           ch4dyn1row(ilmos(k),jlmos(k))     = ch4dyn1gat(k)
           ch4dyn2row(ilmos(k),jlmos(k))     = ch4dyn2gat(k)
           ch4soillsrow(ilmos(k),jlmos(k))   = ch4soillsgat(k)
+
+          twarmmrow(ilmos(k),jlmos(k)) = twarmmgat(k)
+          tcoldmrow(ilmos(k),jlmos(k)) = tcoldmgat(k)
+          gdd5row(ilmos(k),jlmos(k)) = gdd5gat(k)
+          aridityrow(ilmos(k),jlmos(k)) = ariditygat(k)
+          srplsmonrow(ilmos(k),jlmos(k)) = srplsmongat(k)
+          defctmonrow(ilmos(k),jlmos(k)) = defctmongat(k)
+          anndefctrow(ilmos(k),jlmos(k)) = anndefctgat(k)
+          annsrplsrow(ilmos(k),jlmos(k)) = annsrplsgat(k)
+          annpcprow(ilmos(k),jlmos(k)) = annpcpgat(k)
+          dry_season_lengthrow(ilmos(k),jlmos(k)) =
+     1                           dry_season_lengthgat(k)
+
 c
 100   continue
 c
@@ -440,11 +467,6 @@ c
           nbpvegrow(ilmos(k),jlmos(k),l)    = nbpveggat(k,l)
 
 102   continue
-c
-      do 105 l=1,12     !12 months
-       do 105 k=1,nml
-          mlightnggrd(ilmos(k),l) = mlightnggat(k,l)
-105   continue
 c
       do 106 l=1,2     !2 pfts (ndl dcd & crops)
        do 106 k=1,nml

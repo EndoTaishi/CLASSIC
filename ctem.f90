@@ -163,11 +163,12 @@ real, dimension(ilg), intent(in) :: lightng     ! total lightning frequency, fla
 real, dimension(ilg), intent(in) :: prbfrhuc    ! probability of fire due to human causes
 real, dimension(ilg), intent(in) :: extnprob    ! fire extingusinging probability
 
+integer, dimension(ilg), intent(in) :: stdaln   ! an integer telling if ctem is operated within gcm (=0)
+                                 !                or in stand alone mode (=1). this is used for fire
+                                 !                purposes. see comments just above where disturb
+                                 !                subroutine is called.
 
-!     stdaln   - an integer telling if ctem is operated within gcm (=0)
-!                or in stand alone mode (=1). this is used for fire
-!                purposes. see comments just above where disturb 
-!                subroutine is called.
+
 !     tbar     - soil temperature, k
 !     l2max    - max. number of level 2 ctem pfts
 !     nol2pfts - number of level 2 ctem pfts
@@ -366,13 +367,13 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
       logical   lnduseon,  dofire,&
      &          dowetlands, obswetf 
 
-     logical :: onetile_perPFT      ! if you are running with one tile per PFT in mosaic mode, set to true. Changes
-                                    ! how competition is run. Specifically it allows competition between tiles. This
-                                    ! is not recommended for any case where you don't have one PFT in each tile as it
-                                    ! has not been tested for that.
+     logical, intent(in) :: onetile_perPFT      ! if you are running with one tile per PFT in mosaic mode, set to true. Changes
+                                                ! how competition is run. Specifically it allows competition between tiles. This
+                                                ! is not recommended for any case where you don't have one PFT in each tile as it
+                                                ! has not been tested for that.
 
       integer      il1,       il2,     &
-     &           iday,        i,        j,        k,    stdaln,    lath,&
+     &           iday,        i,        j,        k,    lath,&
      &         icount,        n,        m,  sort(icc),&
      &   nol2pfts(ican),       k1,       k2,            spinfast,&
      &           nml,    ilmos(ilg), jlmos(ilg)
@@ -400,7 +401,8 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &     pfcancmx_cmp(nlat,icc),  nfcancmx_cmp(nlat,icc),&
      &     pstemmass_cmp(nlat,icc), pgleafmass_cmp(nlat,icc)
 !
-      integer surmncur_cmp(nlat), defmncur_cmp(nlat)
+      real surmncur_cmp(nlat), defmncur_cmp(nlat)
+      real surmncur(ilg),       defmncur(ilg)
 
       logical pftexist_cmp(nlat,icc)
 !
@@ -516,8 +518,6 @@ real  vgbiomas_veg(ilg,icc)
      &          cc(ilg,icc),         mm(ilg,icc),    barefrac_tmp(ilg),&
      &     reprocost(ilg,icc),  repro_cost_g(ilg)
 !
-integer   surmncur(ilg),       defmncur(ilg)
-!
 logical compete, inibioclim, pftexist(ilg,icc)
 logical, intent(inout) :: popdon   ! if set true use population density data to calculate fire extinguishing
                                     ! probability and probability of fire due to human causes,
@@ -556,55 +556,54 @@ do 60 k = 1, lat
 61 continue
 60 continue
 
-do 70 i = il1, il2
-    if(curlatno(i).eq.0)then
-      write(6,2000)i
+do 70 j = il1, il2
+    if(curlatno(j).eq.0)then
+      write(6,2000)j
 2000        format('cannot find current latitude no. for i = ',i3)  
       call xit ('ctem',-5)
     endif
-70 continue
 
-stdaln=1 ! for off-line mode
+    if(stdaln(j).eq.0)then         ! i.e. when operated in a GCM mode
 
-if(stdaln.eq.0)then         ! i.e. when operated in a GCM mode
-
-    lath = lat/2
-    call gaussg(lath,sl,wl,cl,radl,wossl)
-    call trigl(lath,sl,wl,cl,radl,wossl)
-
-!   wl contains zonal weights, lets find meridional weights
-
-    do 80 i = il1,il2
-        ml(i) = 1.0/real(lon)
-80  continue
-
-    do 81 i = il1, il2
-        grclarea(i) = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)&
-     &                   *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
-                                          ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
-81  continue
-
-else if(stdaln.eq.1)then    ! i.e. when operated at point scale
-
-    do i = il1,il2
-        lath = curlatno(i)/2
+        lath = lat/2
         call gaussg(lath,sl,wl,cl,radl,wossl)
         call trigl(lath,sl,wl,cl,radl,wossl)
-    enddo
 
-!       wl contains zonal weights, lets find meridional weights
+    !   wl contains zonal weights, lets find meridional weights
 
-    do i = il1,il2
-        ml(i) = 1.0/real(lon)
-    end do
+        do 74 i = il1,il2
+            ml(i) = 1.0/real(lon)
+    74  continue
 
-    do i = il1, il2
-        grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)&
-    &                   *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
-                                        ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
-    end do
+        do 75 i = il1, il2
+            grclarea(i) = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)&
+        &                   *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
+                                            ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
+    75  continue
 
-endif
+    else if(stdaln(j).eq.1)then    ! i.e. when operated at point scale
+
+        do i = il1,il2
+            lath = curlatno(i)/2
+            call gaussg(lath,sl,wl,cl,radl,wossl)
+            call trigl(lath,sl,wl,cl,radl,wossl)
+        enddo
+
+    !       wl contains zonal weights, lets find meridional weights
+
+        do i = il1,il2
+            ml(i) = 1.0/real(lon)
+        end do
+
+        do i = il1, il2
+            grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)&
+        &                   *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
+                                            ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
+        end do
+
+    endif
+
+70 continue
 
 ! Generate the sort index for correspondence between 9 pfts and the
 ! 12 values in the parameter vectors
@@ -622,10 +621,10 @@ do 95 j = 1, ican
 
 if(compete .or. lnduseon)then
 
-! If you intend to have competition and LUC between tiles then set this to true:
-    onetile_perPFT = .False. ! NOTE: This is usually not the behaviour desired unless you are
-                             ! running with one PFT on each tile and want them to compete for space
-                             ! across tiles. So in general keep this as False. JM Jan 2016.
+! If you intend to have competition and LUC between tiles then set onetile_perPFT to true.
+! NOTE: Turning onetile_perPFT to true is usually not the behaviour desired unless you are
+! running with one PFT on each tile and want them to compete for space
+! across tiles. So in general keep this as False. JM Jan 2016.
 
   if (.not. onetile_perPFT) then ! this is composite/mosaic mode (in mosaic competition only occurs WITHIN a tile)
 
