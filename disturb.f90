@@ -574,7 +574,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
             extnprob(i)=max(0.0,0.9-exp(-0.025*popdin(i)))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
             extnprob(i)=0.5+extnprob(i)/2.0
           end if
-
+          
 !         area multipler to calculate area burned over the duration of the fire
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
 

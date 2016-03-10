@@ -126,7 +126,7 @@ do 110 i = il1, il2
         mid_mois_lim=0.75
         upp_mois_lim=0.95
       end if
-
+        
         if(soil_wetness .gt. low_mois_lim .and. soil_wetness .le. mid_mois_lim) then 
            wetfdyn(i)=slopefrac(i,1)  !<0.025% slope class
         elseif (soil_wetness .gt. mid_mois_lim .and. soil_wetness .le. upp_mois_lim) then
@@ -134,7 +134,6 @@ do 110 i = il1, il2
         elseif (soil_wetness .gt. upp_mois_lim) then 
             wetfdyn(i)=slopefrac(i,5) ! <0.2% slope class
         endif
-     
 
 ! new dynamic calculation
 ! same as ch4wet1 & 2, but wetfrac replaced by wetfdyn

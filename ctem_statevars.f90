@@ -137,13 +137,14 @@ type veg_rot
     real, dimension(nlat,nmos) :: burnfrac
     real, dimension(nlat,nmos,icc) :: burnvegf
     real, dimension(nlat,nmos) :: probfire
+    real, dimension(nlat,nmos) :: popdin
     real, dimension(nlat,nmos) :: bterm
     real, dimension(nlat,nmos) :: lterm
     real, dimension(nlat,nmos) :: mterm
 
-    real, dimension(nlat) :: extnprob
-    real, dimension(nlat) :: prbfrhuc
-    real, dimension(nlat,12) :: mlightng
+    real, dimension(nlat,nmos) :: extnprob
+    real, dimension(nlat,nmos) :: prbfrhuc
+    real, dimension(nlat,nmos,12) :: mlightng
     real, dimension(nlat) :: dayl_max ! maximum daylength for that location (hours)
     real, dimension(nlat) :: dayl     ! daylength for that location (hours)
 
@@ -166,14 +167,13 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: ltstatus
     real, dimension(nlat,nmos) :: rmr
 
-    real, dimension(nlat) :: wetfrac_pres
-    real, dimension(nlat,8) :: slopefrac
+    real, dimension(nlat,nmos,8) :: slopefrac
     real, dimension(nlat,nmos) :: ch4wet1
     real, dimension(nlat,nmos) :: ch4wet2
     real, dimension(nlat,nmos) :: wetfdyn
     real, dimension(nlat,nmos) :: ch4dyn1
     real, dimension(nlat,nmos) :: ch4dyn2
-    real, dimension(nlat,12) :: wetfrac_mon
+    real, dimension(nlat,nmos,12) :: wetfrac_mon
     real, dimension(nlat,nmos) :: ch4_soills
 
     real, dimension(nlat,nmos) :: lucemcom
@@ -226,7 +226,7 @@ type veg_rot
     integer, dimension(nlat,nmos) :: icount
     integer, dimension(nlat,nmos,icc) :: lfstatus
     integer, dimension(nlat,nmos,icc) :: pandays
-    integer, dimension(nlat) :: stdaln
+    integer, dimension(nlat,nmos) :: stdaln
 
     real, dimension(nlat,nmos) :: PREACC_M
     real, dimension(nlat,nmos) :: GTACC_M
@@ -272,16 +272,16 @@ type veg_rot
     real, dimension(nlat,nmos) :: tcanoaccrow_out
     real, dimension(nlat,nmos) :: qevpacc_m_save
 
-    real, dimension(nlat) :: twarmm              ! temperature of the warmest month (c)
-    real, dimension(nlat) :: tcoldm              ! temperature of the coldest month (c)
-    real, dimension(nlat) :: gdd5                ! growing degree days above 5 c
-    real, dimension(nlat) :: aridity             ! aridity index, ratio of potential evaporation to precipitation
-    real, dimension(nlat) :: srplsmon            ! number of months in a year with surplus water i.e. precipitation more than potential evaporation
-    real, dimension(nlat) :: defctmon            ! number of months in a year with water deficit i.e. precipitation less than potential evaporation
-    real, dimension(nlat) :: anndefct            ! annual water deficit (mm)
-    real, dimension(nlat) :: annsrpls            ! annual water surplus (mm)
-    real, dimension(nlat) :: annpcp              ! annual precipitation (mm)
-    real, dimension(nlat) :: dry_season_length   ! length of dry season (months)
+    real, dimension(nlat,nmos) :: twarmm              ! temperature of the warmest month (c)
+    real, dimension(nlat,nmos) :: tcoldm              ! temperature of the coldest month (c)
+    real, dimension(nlat,nmos) :: gdd5                ! growing degree days above 5 c
+    real, dimension(nlat,nmos) :: aridity             ! aridity index, ratio of potential evaporation to precipitation
+    real, dimension(nlat,nmos) :: srplsmon            ! number of months in a year with surplus water i.e. precipitation more than potential evaporation
+    real, dimension(nlat,nmos) :: defctmon            ! number of months in a year with water deficit i.e. precipitation less than potential evaporation
+    real, dimension(nlat,nmos) :: anndefct            ! annual water deficit (mm)
+    real, dimension(nlat,nmos) :: annsrpls            ! annual water surplus (mm)
+    real, dimension(nlat,nmos) :: annpcp              ! annual precipitation (mm)
+    real, dimension(nlat,nmos) :: dry_season_length   ! length of dry season (months)
 
 end type veg_rot
 
@@ -362,6 +362,7 @@ type veg_gat
     real, dimension(ilg) :: burnfrac
     real, dimension(ilg,icc) :: burnvegf
     real, dimension(ilg) :: probfire
+    real, dimension(ilg) :: popdin
     real, dimension(ilg) :: bterm
     real, dimension(ilg) :: lterm
     real, dimension(ilg) :: mterm
@@ -1042,14 +1043,6 @@ implicit none
 integer :: j,k,l,m
 
  do j = 1,nlat
-
-        vrot%prbfrhuc(j)         = 0.0
-        vrot%extnprob(j)         = 0.0
-   !vrot%barf(j)                = 1.0
-
-   do k =1,12
-     vrot%mlightng(j,k) = 0.0
-   end do
 
    do k = 1,nmos
 
