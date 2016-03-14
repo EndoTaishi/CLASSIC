@@ -458,6 +458,25 @@ type veg_gat
     real, dimension(ilg) :: annpcp              ! annual precipitation (mm)
     real, dimension(ilg) :: dry_season_length   ! length of dry season (months)
 
+    ! These go into CTEM and are used to keep track of the bioclim limits.
+    real, dimension(ilg) :: tcurm
+    real, dimension(ilg) :: srpcuryr
+    real, dimension(ilg) :: dftcuryr
+    real, dimension(12,ilg) :: tmonth
+    real, dimension(ilg) :: anpcpcur
+    real, dimension(ilg) :: anpecur
+    real, dimension(ilg) :: gdd5cur
+    real, dimension(ilg) :: surmncur
+    real, dimension(ilg) :: defmncur
+    real, dimension(ilg) :: srplscur
+    real, dimension(ilg) :: defctcur
+
+    real, dimension(ilg,icc) :: geremort
+    real, dimension(ilg,icc) :: intrmort
+    real, dimension(ilg,icc) :: lambda
+    real, dimension(ilg,icc) :: cc
+    real, dimension(ilg,icc) :: mm
+
     logical, dimension(ilg,icc) :: pftexist
     integer, dimension(ilg,2) :: colddays
     integer, dimension(ilg) :: icount

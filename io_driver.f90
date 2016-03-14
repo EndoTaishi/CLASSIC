@@ -7,15 +7,16 @@ module io_driver
 implicit none
 
 ! subroutines contained in this module:
-public  :: read_from_ctm
-public  :: write_ctm_rs
-public  :: create_outfiles
-public  :: class_monthly_aw
-public  :: class_annual_aw
-public  :: ctem_daily_aw
-public  :: ctem_monthly_aw
-public  :: ctem_annual_aw
-public  :: close_outfiles
+public  :: read_from_ctm        ! Reads the input CTM file
+public  :: write_ctm_rs         ! Writes the CTM restart file
+public  :: create_outfiles      ! Creates and sets up the output files
+public  :: class_monthly_aw     ! Accumulates and writes the CLASS monthly file
+public  :: class_annual_aw      ! Accumulates and writes the CLASS annual file
+!public  :: ctem_hh_aw           ! Accumulates and writes the CTEM half hourly file
+public  :: ctem_daily_aw        ! Accumulates and writes the CTEM daily file
+public  :: ctem_monthly_aw      ! Accumulates and writes the CTEM monthly file
+public  :: ctem_annual_aw       ! Accumulates and writes the CTEM annual file
+public  :: close_outfiles       ! Closes the model output files
 
 contains
 
@@ -1441,6 +1442,11 @@ ENDIF ! IDAY.EQ.365 .AND. NDAY
 8103  FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,4(F12.3,1X),2(A5,I1))
 
 end subroutine class_annual_aw
+
+!==============================================================================================================
+!subroutine ctem_hh_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT)
+
+!subroutine ctem_hh_aw
 
 !==============================================================================================================
 

@@ -89,7 +89,8 @@ c     through use statements for modules:
      1                               ican, ignd,icp1, icc, iccp1,
      2                               monthend, mmday,modelpft, l2max,
      3                                deltat, abszero, monthdays,seed,
-     4                                crop, NBS
+     4                                crop, NBS, lat, edgelat,earthrad,
+     5                                lon
 
       use landuse_change,     only : initialize_luc, readin_luc
 
@@ -107,7 +108,7 @@ c     through use statements for modules:
      3                               close_outfiles,ctem_daily_aw,
      4                               class_annual_aw
 
-c
+
       implicit none
 C
 C     * INTEGER CONSTANTS.
@@ -443,72 +444,45 @@ c
 c     Local variables for coupling CLASS and CTEM
 c
       integer ictemmod
-
-      integer strlen !strlen can go in arg reader subroutine.
-      character*80   titlec1 !, titlec2, titlec3
+      integer strlen
+      character*80   titlec1
       character*80   argbuff
       character*160  command
-c
-       integer   lopcount,  isumc,
-     1           k1c,       k2c,     jhhstd,
-     2           jhhendd,   jdstd,   jdendd,      jhhsty,
-     3           jhhendy,   jdsty,   jdendy,
-     4           month1,
-     5           month2,      xday,  ctemloop,nummetcylyrs,
-     6           ncyear,  co2yr,
-     5           spinfast,   nol2pfts(4),
-     6           popyr,
-     7           metcylyrst, metcycendyr, climiyear, popcycleyr,
-     8           cypopyr, lucyr, cylucyr, endyr,bigpftc(1),
-     9           obswetyr, cywetldyr, trans_startyr, jmosty,
-     +           obslghtyr
-c
-      real, pointer ::  fsstar_g
-      real, pointer ::  flstar_g
-      real, pointer ::  qh_g
-      real, pointer ::  qe_g
-      real, pointer ::  snomlt_g
-      real, pointer ::  beg_g
-      real, pointer ::  gtout_g
-      real, pointer ::  tpn_g
-      real, pointer ::  altot_g
-      real, pointer ::  tcn_g
-      real, pointer ::  tsn_g
-      real, pointer ::  zsn_g
+
+       integer   lopcount,  isumc,     k1c,       k2c,
+     2           jhhstd,    jhhendd,   jdstd,   jdendd,
+     3           jhhsty,     jhhendy,   jdsty,   jdendy,
+     4           month1,     month2,      xday,  ctemloop,
+     5           nummetcylyrs, ncyear,  co2yr,   spinfast,
+     6           nol2pfts(4),  popyr, metcylyrst, metcycendyr,
+     7           climiyear,   popcycleyr,    cypopyr, lucyr,
+     8           cylucyr, endyr,bigpftc(1), obswetyr,
+     9           cywetldyr, trans_startyr, jmosty, obslghtyr,
+     +          curlatno(ilg), lath
 
       real      co2concin,    setco2conc, sumfare,
-     1           temp_var, barefrac,  todfrac(ilg,icc), barf(nlat,nmos),
-     2           ch4concin, setch4conc
+     1           temp_var, barefrac,  todfrac(ilg,icc),
+     2           ch4concin, setch4conc,barf(nlat,nmos)
 
-      real grclarea(ilg), crop_temp_frac(ilg,2)
-c
-c     Competition related variables
+      real      currlat(ilg),            wl(lat),    grclarea(ilg),
+     1             radl(lat),          wossl(lat),        sl(lat),
+     2               cl(lat),             ml(ilg)
 
        real fsinacc_gat(ilg), flutacc_gat(ilg), flinacc_gat(ilg),
      1      alswacc_gat(ilg), allwacc_gat(ilg), pregacc_gat(ilg),
      2      altot_gat,        fsstar_gat,       flstar_gat,
      3      netrad_gat(ilg),  preacc_gat(ilg)
-c
-!       These go into CTEM but that is about it...
-       real tcurm(ilg),       srpcuryr   (ilg), dftcuryr(ilg),
-     1      tmonth(12,ilg),      anpcpcur(ilg),  anpecur(ilg),
-     2      gdd5cur(ilg),        surmncur(ilg), defmncur(ilg),
-     3      srplscur(ilg),       defctcur(ilg)
 
-c
-!       These go into CTEM but that is about it...
-       real lyglfmasgat(ilg,icc),   geremortgat(ilg,icc),
-     1      intrmortgat(ilg,icc),     lambdagat(ilg,icc),
-     3            ccgat(ilg,icc),         mmgat(ilg,icc)
 
-      real  xdiffusgat(ilg) ! the corresponding ROW is CLASS's XDIFFUS
 
 !     For these below, the corresponding ROWs are defined by CLASS
 
       real  sdepgat(ilg),       orgmgat(ilg,ignd),
-     1      sandgat(ilg,ignd),  claygat(ilg,ignd)
+     1      sandgat(ilg,ignd),  claygat(ilg,ignd),
+     2      xdiffusgat(ilg), ! the corresponding ROW is CLASS's XDIFFUS
+     3      faregat(ilg) ! the ROT is FAREROT
 
-
+      ! Model switches:
       logical, pointer :: ctem_on
       logical, pointer :: parallelrun
       logical, pointer :: cyclemet
@@ -869,6 +843,24 @@ c
       real, pointer, dimension(:) :: annpcpgat
       real, pointer, dimension(:) :: dry_season_lengthgat
 
+      real, pointer, dimension(:) :: tcurm
+      real, pointer, dimension(:) :: srpcuryr
+      real, pointer, dimension(:) :: dftcuryr
+      real, pointer, dimension(:,:) :: tmonth
+      real, pointer, dimension(:) :: anpcpcur
+      real, pointer, dimension(:) :: anpecur
+      real, pointer, dimension(:) :: gdd5cur
+      real, pointer, dimension(:) :: surmncur
+      real, pointer, dimension(:) :: defmncur
+      real, pointer, dimension(:) :: srplscur
+      real, pointer, dimension(:) :: defctcur
+
+      real, pointer, dimension(:,:) :: geremortgat
+      real, pointer, dimension(:,:) :: intrmortgat
+      real, pointer, dimension(:,:) :: lambdagat
+      real, pointer, dimension(:,:) :: ccgat
+      real, pointer, dimension(:,:) :: mmgat
+
       ! Mosaic level:
 
       real, pointer, dimension(:,:) :: PREACC_M
@@ -912,8 +904,6 @@ c
 !     -----------------------
 !      Tile-level variables (denoted by an ending of "_t")
 
-      real faregat(ilg)
-
       real, pointer, dimension(:) :: fsnowacc_t
       real, pointer, dimension(:) :: tcansacc_t
       real, pointer, dimension(:) :: tcanoaccgat_t
@@ -937,6 +927,19 @@ c
 
 !     -----------------------
 !     Grid-averaged variables (denoted with an ending of "_g")
+
+      real, pointer ::  fsstar_g
+      real, pointer ::  flstar_g
+      real, pointer ::  qh_g
+      real, pointer ::  qe_g
+      real, pointer ::  snomlt_g
+      real, pointer ::  beg_g
+      real, pointer ::  gtout_g
+      real, pointer ::  tpn_g
+      real, pointer ::  altot_g
+      real, pointer ::  tcn_g
+      real, pointer ::  tsn_g
+      real, pointer ::  zsn_g
 
       real, pointer, dimension(:) :: WSNOROT_g
       real, pointer, dimension(:) :: ROFSROT_g
@@ -1401,6 +1404,24 @@ C===================== CTEM ==============================================\
       annpcpgat            => vgat%annpcp
       dry_season_lengthgat => vgat%dry_season_length
 
+      tcurm             => vgat%tcurm
+      srpcuryr          => vgat%srpcuryr
+      dftcuryr          => vgat%dftcuryr
+      tmonth            => vgat%tmonth
+      anpcpcur          => vgat%anpcpcur
+      anpecur           => vgat%anpecur
+      gdd5cur           => vgat%gdd5cur
+      surmncur          => vgat%surmncur
+      defmncur          => vgat%defmncur
+      srplscur          => vgat%srplscur
+      defctcur          => vgat%defctcur
+
+      geremortgat       => vgat%geremort
+      intrmortgat       => vgat%intrmort
+      lambdagat         => vgat%lambda
+      ccgat             => vgat%cc
+      mmgat             => vgat%mm
+
       pftexistgat       => vgat%pftexist
       colddaysgat       => vgat%colddays
       icountgat         => vgat%icount
@@ -1547,7 +1568,7 @@ C===================== CTEM ==============================================\
 !    Declarations are complete, run preparations begin
 
       CALL CLASSD
-C
+
       ZDMROW(1)=10.0
       ZDHROW(1)=2.0
       NTLD=NMOS
@@ -1603,8 +1624,6 @@ C
          VVACCROW_M(I,M)          = 0.0
          TCANOACCROW_OUT(I,M)     = 0.0
 11     continue
-c
-!     ==================================================================================================
 
 c     do some initializations for the reading in of data from files. these
 c     initializations primarily affect how the model does a spinup or transient
@@ -1642,10 +1661,9 @@ c
         cylucyr = popcycleyr !-9999
       end if
 
-c     ctem initialization done
+c     CTEM initialization done
 c
-c     open files for reading and writing.
-c     these are for coupled model (class_ctem)
+c     open files for reading and writing. these are for coupled model (class_ctem)
 c     we added both grid and mosaic output files
 c
 c     * input files
@@ -1693,7 +1711,7 @@ c
      &         status='old')
       endif
 c
-c     * CLASS output files
+c     * CLASS daily and half-hourly output files (monthly and annual are done in io_driver)
 c
       if (.not. parallelrun) then ! stand alone mode, includes half-hourly and daily output
        OPEN(UNIT=61,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1_G')  ! GRID-LEVEL DAILY OUTPUT FROM CLASS
@@ -1727,16 +1745,11 @@ C     * FIRST, MODEL RUN SPECIFICATIONS.
       READ (10,5010) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
 !
 !      the ctem output file suffix naming convention is as follows:
-!                       ".CT##{time}_{mosaic/grid}"
+!                       ".CT##{time}"
 !      where the ## is a numerical identifier, {time} is any of H, D, M,
 !      or Y for half hourly, daily, monthly, or yearly, respectively.
-!      after the underscore M or G is used to denote mosaic or grid
-!      -averaged values, respectively. also possible is GM for competition
-!      outputs since they are the same format in either composite or
-!      mosaic modes.
 !
-
-       ! Set up the CTEM half-hourly, daily, monthly and yearly files (if all needed), also
+       ! Set up the CTEM half-hourly, daily, monthly and yearly files (if any needed), also
        ! setup the CLASS monthly and annual output files:
 
        call create_outfiles(argbuff,title1, title2, title3, title4,
@@ -1911,8 +1924,6 @@ C
 
 C     CTEM FILE TITLES DONE
 C======================= CTEM ========================================== /
-C
-C=======================================================================
 
 C     BEGIN READ IN OF THE .INI FILE
 
@@ -1926,7 +1937,7 @@ C     BEGIN READ IN OF THE .INI FILE
       GGEOROW(1)=0.0
 C     GGEOROW(1)=-0.035
 
-      DO 50 I=1,NLTEST !I think this should go above the read(10 . JM.
+      DO 50 I=1,NLTEST !This should go above the first read(10 but offline nltest is always 1.
       DO 50 M=1,NMTEST
           READ(10,5040) (FCANROT(I,M,J),J=1,ICAN+1),(PAMXROT(I,M,J),
      1                  J=1,ICAN)
@@ -1965,8 +1976,6 @@ c     -9999 thus triggering the read in of the .ini file values below
        read(10,5200) jhhsty,jhhendy,jdsty,jdendy
       end if
 
-C======================= CTEM ========================================== /
-
       CLOSE(10)
 C
 C====================== CTEM =========================================== \
@@ -1985,7 +1994,9 @@ c     read from ctem initialization file (.CTM)
       end if
 c
 C===================== CTEM =============================================== /
-C
+
+!     Complete some initial set up work:
+
       DO 100 I=1,NLTEST
       DO 100 M=1,NMTEST
 
@@ -2071,15 +2082,11 @@ C
               THALACC(I,J)=0.
 125       CONTINUE
 150   CONTINUE
-C
-C===================== CTEM =============================================== \
-c
+
 c     initialize accumulated array for monthly & yearly output for class
-c
+
       call resetclassmon(nltest)
       call resetclassyr(nltest)
-
-C===================== CTEM =============================================== /
 
       DO 175 I=1,200
           TAHIST(I)=0.0
@@ -2227,7 +2234,6 @@ c
          ! problems later.
          fcancmxrow(i,m,bigpftc(1))=fcancmxrow
      &                (i,m,bigpftc(1))+barf(i,m) - 1.0e-5
-      write(*,*)bigpftc,barf(i,m)
         end if
        end do
       end do
@@ -2244,7 +2250,7 @@ c     find the first year of met data
 
        do while (iyear .lt. metcylyrst)
 c
-        do i=1,nltest  ! formatting was 5300
+        do i=1,nltest
           read(12,5300) ihour,imin,iday,iyear,FSSROW(I),FDLROW(i),
      1         PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
         enddo
@@ -2380,13 +2386,13 @@ c
       CALL GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,
      1             NML,NMW,GCROW,FAREROT,MIDROT,
      2             NLAT,NMOS,ILG,1,NLTEST,NMTEST)
-c
+
       call ctemg1(gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,
      1      fcancmxgat,zbtwgat,dlzwgat,sdepgat,ailcggat,ailcbgat,
      2      ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,
      3      bmasveggat,cmasvegcgat,veghghtgat,
      4      rootdpthgat,alvsctmgat,alirctmgat,
-     5      paicgat,    slaicgat,
+     5      paicgat,    slaicgat, faregat,
      6      ilmos,jlmos,iwmos,jwmos,
      7      nml,
      8      gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,
@@ -2394,9 +2400,8 @@ c
      a      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
      b      bmasvegrow,cmasvegcrow,veghghtrow,
      c      rootdpthrow,alvsctmrow,alirctmrow,
-     d      paicrow,    slaicrow)
-c
-c
+     d      paicrow,    slaicrow, FAREROT)
+
       call bio2str( gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,
      1                           1,      nml,    fcancmxgat, zbtwgat,
      2                        dlzwgat, nol2pfts,   sdepgat,
@@ -2404,7 +2409,7 @@ c
      5                       rmatcgat, rmatctemgat,slaigat,bmasveggat,
      6                 cmasvegcgat,veghghtgat, rootdpthgat,alvsctmgat,
      7                     alirctmgat, paicgat,  slaicgat )
-c
+
       call ctems1(gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,
      1      fcancmxrow,ZBTWROT,DLZWROT,SDEPROT,ailcgrow,ailcbrow,
      2      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
@@ -2419,7 +2424,46 @@ c
      b      bmasveggat,cmasvegcgat,veghghtgat,
      c      rootdpthgat,alvsctmgat,alirctmgat,
      d      paicgat,    slaicgat)
-c
+
+      ! LUC and disturbance need to know the area of the gridcell. Find it here and pass into CTEM
+
+      do i = 1, nml
+        currlat(i)=radjrow(1)*180.0/pi !following rest of code, radjrow is always given index of 1 offline.
+        curlatno(i)=0
+      end do
+
+      ! Find current latitude number
+      do k = 1, lat
+        do i = 1, nml
+          if(currlat(i).ge.edgelat(k).and.
+     1      currlat(i).lt.edgelat(k+1))then
+            curlatno(i)=k
+          endif
+        end do
+      end do
+
+      do 190 j = 1, nml
+        if(curlatno(j).eq.0)then
+            write(6,2000)j
+2000        format('cannot find current latitude no. for i = ',i3)
+            call xit ('driver',-5)
+        endif
+
+        do i = 1,nml
+            lath = curlatno(i)/2
+            call gaussg(lath,sl,wl,cl,radl,wossl)
+            call trigl(lath,sl,wl,cl,radl,wossl)
+        enddo
+
+
+        do i = 1, nml
+            ml(i) = 1.0/real(lon) ! wl contains zonal weights, lets find meridional weights
+            grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)
+     1                     *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
+                                            ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
+        end do
+190    continue
+
       endif   ! if (ctem_on)
 c
 !       ! FLAG test JM Dec 18 2015
@@ -2436,7 +2480,7 @@ c
 c     ctem initial preparation done
 
 C===================== CTEM ============================================ /
-C
+
 C     **** LAUNCH RUN. ****
 
       N=0
@@ -2512,7 +2556,6 @@ c       but only if it was read in during the loop above.
 
 C===================== CTEM ============================================ /
 C
-C========================================================================
 C     * READ IN METEOROLOGICAL FORCING DATA FOR CURRENT TIME STEP;
 C     * CALCULATE SOLAR ZENITH ANGLE AND COMPONENTS OF INCOMING SHORT-
 C     * WAVE RADIATION FLUX; ESTIMATE FLUX PARTITIONS IF NECESSARY.
@@ -3244,7 +3287,7 @@ c
 c
 855   continue
 c
-c     call Canadian Terrestrial Ecosystem Model which operates at a
+c     Call Canadian Terrestrial Ecosystem Model which operates at a
 c     daily time step, and uses daily accumulated values of variables
 c     simulated by CLASS.
 c
@@ -3260,10 +3303,10 @@ c
      9            extnprobgat,   stdalngat,tbaraccgat_t,  popdon,
      a               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,
      b            thicecacc_t,     sdepgat,    spinfast,   todfrac,
-     &                compete,  netrad_gat,  preacc_gat,PSISGAT,
+     &          compete,  netrad_gat,  preacc_gat,PSISGAT,grclarea,
      &              popdingat,  dofire, dowetlands,obswetf, isndgat,
      &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,
-     &                  BIGAT,    THPGAT, thicegacc_t,
+     &                  BIGAT,    THPGAT, thicegacc_t,currlat,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
@@ -3276,7 +3319,7 @@ c    -------------- inputs used by ctem are above this line ---------
      &                  tcurm,    srpcuryr,     dftcuryr,  inibioclim,
      &                 tmonth,    anpcpcur,      anpecur,     gdd5cur,
      &               surmncur,    defmncur,     srplscur,    defctcur,
-     &            geremortgat, intrmortgat,    lambdagat, lyglfmasgat,
+     &            geremortgat, intrmortgat,    lambdagat,
      &            pftexistgat,   twarmmgat,    tcoldmgat,     gdd5gat,
      1             ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2            annsrplsgat,   annpcpgat,  dry_season_lengthgat,
@@ -3290,7 +3333,7 @@ c    -------------- inputs updated by ctem are above this line ------
      p            tltrstemgat, tltrrootgat, leaflitrgat, roottempgat,
      q             afrleafgat,  afrstemgat,  afrrootgat, wtstatusgat,
      r            ltstatusgat, burnfracgat, probfiregat, lucemcomgat,
-     s            lucltringat, lucsocingat,   nppveggat, grclarea,
+     s            lucltringat, lucsocingat,   nppveggat,
      t            dstcemls3gat,    paicgat,    slaicgat,
      u            emit_co2gat,  emit_cogat,  emit_ch4gat, emit_nmhcgat,
      v             emit_h2gat, emit_noxgat,  emit_n2ogat, emit_pm25gat,

@@ -187,24 +187,24 @@ if (lexist) then
 
     OPEN(83,FILE=trim(folder)//trim(ARGBUFF)//'.OF1Y',status='old',form='formatted') ! YEARLY OUTPUT FOR CLASS
 
+    !Allocate arrays
+    allocate(class_a(numclasvars_a,totyrs))
+
     !  first throw out header
        do h = 1,5
     	read(83,*,iostat=io_set)
     	if (io_set .ne. 0) then
-    	    write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.OF1Y'
+    	    write(*,*)'Missing file',trim(ARGBUFF)//'.OF1Y'
     	    close(83)
     	    goto 111
     	end if     
        end do
-
-    !Allocate arrays
-    allocate(class_a(numclasvars_a,totyrs))
     
        do y = 1,totyrs
     
          read(83,*,iostat=io_set)dummy_year,class_a(1:numclasvars_a,y)
          if (io_set .ne. 0 .and. y < totyrs) then
-    	    write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.OF1Y'
+    	    write(*,*)'Truncated file',trim(ARGBUFF)//'.OF1Y'
             close(83)
             goto 111
          end if   
@@ -257,7 +257,7 @@ if (lexist) then
    do h = 1,6
 	read(92,*,iostat=io_set)
 	if (io_set .ne. 0) then
-      write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.CT07Y'
+      write(*,*)'Missing file',trim(ARGBUFF)//'.CT07Y'
       close(92)
       goto 112
     end if     
@@ -267,7 +267,7 @@ if (lexist) then
 
     read(92,*,iostat=io_set)dummy_year,pftf(1:ctemnpft,y),pft_tot(y),dummy_var,pftexist(1:ctemnpft,y)
     if (io_set .ne. 0 .and. y < totyrs) then
-       write(*,*)'Missing/truncated file',trim(ARGBUFF)//'.CT07Y'
+       write(*,*)'Ttruncated file',trim(ARGBUFF)//'.CT07Y'
        close(92)
        goto 112
     end if   
