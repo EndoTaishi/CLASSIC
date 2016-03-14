@@ -4,7 +4,7 @@
      c           ailcbgat,    ailcgat,     zolncgat,     rmatcgat,
      d        rmatctemgat,    slaigat,   bmasveggat,  cmasvegcgat,
      e         veghghtgat,rootdpthgat,   alvsctmgat,   alirctmgat,
-     f            paicgat,   slaicgat,
+     f            paicgat,   slaicgat,   faregat,
      g              ilmos,      jlmos,       iwmos,         jwmos,
      h         nml, 
      i        gleafmasrow,bleafmasrow, stemmassrow,   rootmassrow,
@@ -12,7 +12,7 @@
      k           ailcgrow,   ailcbrow,     ailcrow,      zolncrow,
      l           rmatcrow,rmatctemrow,     slairow,    bmasvegrow,
      m        cmasvegcrow, veghghtrow, rootdpthrow,    alvsctmrow,
-     n         alirctmrow,    paicrow,    slaicrow )
+     n         alirctmrow,    paicrow,    slaicrow,    FAREROT )
 c
 C              Canadian Terrestrial Ecosystem Model (CTEM) 
 c
@@ -44,7 +44,7 @@ c
      3         dlzwgat(ilg,ignd),          sdepgat(ilg),      
      4         ailcggat(ilg,icc),     ailcbgat(ilg,icc),
      5         ailcgat(ilg,ican),     zolncgat(ilg,ican),
-     6   rmatcgat(ilg,ican,ignd),
+     6   rmatcgat(ilg,ican,ignd),     faregat(ilg),
      7 rmatctemgat(ilg,icc,ignd),
      8          slaigat(ilg,icc),    bmasveggat(ilg,icc),
      9     cmasvegcgat(ilg,ican),    veghghtgat(ilg,icc),
@@ -58,7 +58,7 @@ c
      3         dlzwrow(nlat,nmos,ignd),             sdeprow(nlat,nmos),
      4         ailcgrow(nlat,nmos,icc),        ailcbrow(nlat,nmos,icc),
      5         ailcrow(nlat,nmos,ican),       zolncrow(nlat,nmos,ican),
-     6   rmatcrow(nlat,nmos,ican,ignd),
+     6   rmatcrow(nlat,nmos,ican,ignd),       FAREROT(nlat, nmos),
      7 rmatctemrow(nlat,nmos,icc,ignd),
      8          slairow(nlat,nmos,icc),      bmasvegrow(nlat,nmos,icc),
      9     cmasvegcrow(nlat,nmos,ican),      veghghtrow(nlat,nmos,icc),
@@ -69,6 +69,7 @@ c
 c----------------------------------------------------------------------
       do 100 k=1,nml
           sdepgat(k)=sdeprow(ilmos(k),jlmos(k))
+          faregat(k) = FAREROT(ilmos(k), jlmos(k))
 100   continue
 c
       do 101 l=1,icc

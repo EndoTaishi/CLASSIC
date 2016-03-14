@@ -8,9 +8,10 @@
      &                    extnprob,   stdaln,     tbar,    popdon, &
      &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
      &                      thicec, soildpth, spinfast,   todfrac,&
-     &                     compete,   netrad,   precip,   &
+     &                     compete,   netrad,   precip,  grclarea, &
      &                    popdin, dofire,  dowetlands,obswetf,isand,  &
      &                   faregat, onetile_perPFT, wetfrac, slopefrac,&
+     &                   currlat, &
 !
 !    -------------- inputs used by ctem are above this line ---------
 !
@@ -26,7 +27,7 @@
      &                       tcurm, srpcuryr, dftcuryr,inibioclim,&
      &                      tmonth, anpcpcur,  anpecur,   gdd5cur,&
      &                    surmncur, defmncur, srplscur,  defctcur,&
-     &                    geremort, intrmort,   lambda,  lyglfmas,&
+     &                    geremort, intrmort,   lambda,  &
      &                    pftexist, twarmm,    tcoldm,       gdd5,&
      &                     aridity, srplsmon, defctmon,  anndefct,&
      &                    annsrpls,  annpcp,dry_season_length,&
@@ -42,7 +43,7 @@
      &                   tltrstem,  tltrroot, leaflitr,  roottemp,&
      &                    afrleaf,   afrstem,  afrroot,  wtstatus,&
      &                   ltstatus,  burnfrac, probfire,  lucemcom,&
-     &                   lucltrin,  lucsocin,   nppveg,  grclarea,&
+     &                   lucltrin,  lucsocin,   nppveg,  &
      &                   dstcemls3, paicgat,  slaicgat,    &
      &                    emit_co2, emit_co,  emit_ch4, emit_nmhc,&
      &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
@@ -60,6 +61,9 @@
 !             Canadian Terrestrial Ecosystem Model (CTEM) 
 !             Main Ctem Subroutine Compatible With CLASS 
 
+!     14  Mar 2016  - Remove grid cell area calculation to the driver. This will
+!     J. Melton       harmonize this subroutine with the coupled code.
+!
 !     3   Feb 2016  - Bring in onetile_perPFT switch so now in mosaic mode the
 !     J. Melton       tiles in a grid cell are treated independently by competition
 !                     and LUC.
@@ -107,14 +111,15 @@
 !                     fractions. 
 !    -----------------------------------------------------------------
 
-      use ctem_params,        only : kk, lon, lat, pi, earthrad, zero,&
-     &                               edgelat, kn,iccp1, ican, ilg, nlat,&
-     &                               ignd, icc, nmos, l2max, grescoef,&
-     &                               humicfac,laimin,laimax,lambdamax,&
-     &                               crop,repro_fraction
-      use landuse_change,     only : luc
-      use competition_scheme, only : bioclim, existence, competition
-      use disturbance_scheme, only : disturb
+use ctem_params,        only : kk, pi, zero,&
+     &                         kn,iccp1, ican, ilg, nlat,&
+     &                         ignd, icc, nmos, l2max, grescoef,&
+     &                         humicfac,laimin,laimax,lambdamax,&
+     &                         crop,repro_fraction
+
+use landuse_change,     only : luc
+use competition_scheme, only : bioclim, existence, competition
+use disturbance_scheme, only : disturb
 
 implicit none
 
@@ -185,10 +190,12 @@ integer, dimension(ilg), intent(in) :: stdaln   ! an integer telling if ctem is 
 !
 !     updates
 !
-real, dimension(ilg,icc), intent(inout) :: ancsveg ! net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
-real, dimension(ilg,icc), intent(inout) :: ancgveg !net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
+real, dimension(ilg,icc), intent(inout) :: ancsveg  ! net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
+real, dimension(ilg,icc), intent(inout) :: ancgveg  !net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
 real, dimension(ilg,icc), intent(inout) :: rmlcsveg ! leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
 real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
+real, dimension(ilg), intent(in) ::  grclarea       ! area of the grid cell, km^2
+real, dimension(ilg), intent(in) ::  currlat        ! centre latitude of grid cells in degrees
 
 !     stemmass - stem mass for each of the 9 ctem pfts, kg c/m2
 !     rootmass - root mass for each of the 9 ctem pfts, kg c/m2
@@ -207,7 +214,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !     ailcb    - brown lai for ctem's 9 pfts. for now we assume only
 !                grasses can have brown lai
 !     flhrloss - fall or harvest loss for deciduous trees and crops,
-!                respectively, kg c/m2
+!                respectively, kg c/m2il1
 !     pandays  - days with positive net photosynthesis (an) for use in
 !                the phenology subroutine
 !     lfstatus - leaf phenology status
@@ -279,7 +286,7 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
 !     lucltrin - luc related inputs to litter pool, u-mol co2/m2.sec
 !     lucsocin - luc related inputs to soil c pool, u-mol co2/m2.sec
 !     nppveg   - npp for individual pfts,  u-mol co2/m2.sec
-!     grclarea - area of the grid cell, km^2
+
 !     dstcemls3- carbon emission losses due to disturbance (fire at present)
 !                from litter pool
 !     pstemmass - stem mass from previous timestep, is value before fire. used by burntobare subroutine
@@ -364,12 +371,12 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
                                                 ! has not been tested for that.
 
       integer      il1,       il2,     &
-     &           iday,        i,        j,        k,    lath,&
+     &           iday,        i,        j,        k,  &
      &         icount,        n,        m,  sort(icc),&
      &   nol2pfts(ican),       k1,       k2,            spinfast,&
      &           nml,    ilmos(ilg), jlmos(ilg)
 !
-      integer       pandays(ilg,icc), curlatno(ilg),    colddays(ilg,2),&
+      integer       pandays(ilg,icc), colddays(ilg,2),&
      &             lfstatus(ilg,icc), isand(ilg,ignd)                 
 !
       real rmatc(ilg,ican,ignd),&
@@ -470,10 +477,6 @@ real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for 
      &     tymaxlai(ilg,icc),   stemltrm(ilg,icc),   rootltrm(ilg,icc), &
      &     glealtrm(ilg,icc),   geremort(ilg,icc),   intrmort(ilg,icc)
 !
-      real      currlat(ilg),            wl(lat),&
-     &             radl(lat),          wossl(lat),             sl(lat),&
-     &               cl(lat),             ml(ilg),       grclarea(ilg)
-!
       real    stemltdt(ilg,icc),   rootltdt(ilg,icc),   glfltrdt(ilg,icc),&
      &     blfltrdt(ilg,icc),   glcaemls(ilg,icc),   blcaemls(ilg,icc),&
      &     rtcaemls(ilg,icc),   stcaemls(ilg,icc),   ltrcemls(ilg,icc),&
@@ -504,7 +507,7 @@ real  vgbiomas_veg(ilg,icc)
      &         anndefct(ilg),       annsrpls(ilg)
 !     
       real     barefrac(ilg),       pbarefrc(ilg),           tolrance,&
-     &       lambda(ilg,icc),   add2allo(ilg,icc),  lyglfmas(ilg,icc),&
+     &       lambda(ilg,icc),   add2allo(ilg,icc), &
      &   ltrflcom(ilg,iccp1),&
      &          cc(ilg,icc),         mm(ilg,icc),    barefrac_tmp(ilg),&
      &     reprocost(ilg,icc),  repro_cost_g(ilg)
@@ -524,77 +527,9 @@ real lambdaalt
 !     Constants and parameters are located in ctem_params.f90
 !     -----------------------------------------------------------------
 
-!  ------------------------------------------------------------------------------------------
 !  ==========================================================================================
 
 ! Begin calculations
-
-! Find area of the gcm grid cells. this is needed for land use change
-! and disturbance subroutines
-
-do 50 i = il1, il2
-    currlat(i)=radj(i)*180.0/pi
-    curlatno(i)=0
-50     continue
-
-! Find current latitude number
-do 60 k = 1, lat
-  do 61 i = il1, il2
-    if(currlat(i).ge.edgelat(k).and.&
-&      currlat(i).lt.edgelat(k+1))then
-        curlatno(i)=k
-    endif
-61 continue
-60 continue
-
-do 70 j = il1, il2
-    if(curlatno(j).eq.0)then
-      write(6,2000)j
-2000        format('cannot find current latitude no. for i = ',i3)  
-      call xit ('ctem',-5)
-    endif
-
-    if(stdaln(j).eq.0)then         ! i.e. when operated in a GCM mode
-
-        lath = lat/2
-        call gaussg(lath,sl,wl,cl,radl,wossl)
-        call trigl(lath,sl,wl,cl,radl,wossl)
-
-    !   wl contains zonal weights, lets find meridional weights
-
-        do 74 i = il1,il2
-            ml(i) = 1.0/real(lon)
-    74  continue
-
-        do 75 i = il1, il2
-            grclarea(i) = 4.0*pi*(earthrad**2)*wl(curlatno(i))*ml(i)&
-        &                   *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
-                                            ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
-    75  continue
-
-    else if(stdaln(j).eq.1)then    ! i.e. when operated at point scale
-
-        do i = il1,il2
-            lath = curlatno(i)/2
-            call gaussg(lath,sl,wl,cl,radl,wossl)
-            call trigl(lath,sl,wl,cl,radl,wossl)
-        enddo
-
-    !       wl contains zonal weights, lets find meridional weights
-
-        do i = il1,il2
-            ml(i) = 1.0/real(lon)
-        end do
-
-        do i = il1, il2
-            grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)&
-        &                   *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
-                                            ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
-        end do
-
-    endif
-
-70 continue
 
 ! Generate the sort index for correspondence between 9 pfts and the
 ! 12 values in the parameter vectors
