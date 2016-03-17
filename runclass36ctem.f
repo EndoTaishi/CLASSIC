@@ -1958,6 +1958,11 @@ C     GGEOROW(1)=-0.035
           READ(10,5030) (PSGAROT(I,M,J),J=1,ICAN),
      1                  (PSGBROT(I,M,J),J=1,ICAN)
           READ(10,5040) DRNROT(I,M),SDEPROT(I,M),FAREROT(I,M)
+          ! Error check:
+          if (FAREROT(I,M) .gt. 1.0) then
+           write(*,*)'FAREROT > 1',FAREROT(I,M)
+           call XIT('runclass36ctem', -2)
+          end if
           READ(10,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
      1                  WFCIROT(I,M),MIDROT(I,M)
           READ(10,5080) (SANDROT(I,M,J),J=1,3)
