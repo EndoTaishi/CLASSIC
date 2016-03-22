@@ -360,7 +360,7 @@ real, dimension(ilg), intent(in) ::  currlat        ! centre latitude of grid ce
 !     anndefct  - annual water deficit (mm)
 !     annsrpls  - annual water surplus (mm)
 !     annpcp    - annual precipitation (mm)
-!     burnvegf- fractiona areas burned for 9 ctem pfts
+!     burnvegf  - per PFT fraction burned of that PFT's area
 !
       logical   lnduseon,  dofire,&
      &          dowetlands, obswetf 
