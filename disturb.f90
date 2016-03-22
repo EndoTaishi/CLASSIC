@@ -154,7 +154,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 
 !     hb_interm - interm calculation
 !     hbratio   - head to back ratio of ellipse
-!     burnvegf - total per PFT areal fraction burned
+!     burnvegf - per PFT fraction burned of that PFTs area
 
 use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
                         iccp1, standreplace, tolrance, bmasthrs_fire, &
@@ -656,8 +656,11 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
             rootmass(i,j)=rootmass(i,j) - rootltdt(i,j) - rtcaemls(i,j)
             litrmass(i,j)=litrmass(i,j) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) + rootltdt(i,j) - ltrcemls(i,j)
 
-!           Output the burned area per PFT
-            burnvegf(i,j)=burnarea_veg(i,j)/grclarea(i)
+!           Output the burned area per PFT (the units here are burned fraction of each PFTs area. So
+!           if a PFT has 50% gridcell cover and 50% of that burns it will have a burnvegf of 0.5 (which
+!           then translates into a gridcell fraction of 0.25). This units is for consistency outside of
+!           this subroutine.
+            burnvegf(i,j)=burnarea_veg(i,j) /  pftareab(i,j)
 
           endif
 530     continue
@@ -745,7 +748,7 @@ real, dimension(nilg), intent(in) :: pvgbioms           ! initial veg biomass
 real, dimension(nilg), intent(in) :: pgavltms           ! initial litter mass
 real, dimension(nilg), intent(in) :: pgavscms           ! initial soil c mass
 real, dimension(nilg,icc), intent(inout) :: fcancmx     ! initial fractions of the ctem pfts
-real, dimension(nilg,icc), intent(in) :: burnvegf       ! total per PFT areal fraction burned
+real, dimension(nilg,icc), intent(in) :: burnvegf       ! per PFT fraction burned of that PFTs area
 real, dimension(nilg,icc), intent(inout) :: gleafmas    ! green leaf carbon mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: bleafmas    ! brown leaf carbon mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: stemmass    ! stem carbon mass for each of the 9 ctem pfts, kg c/m2
@@ -799,9 +802,9 @@ do 10 i = il1, il2
               pftfracb(i,j)=fcancmx(i,j)
 
               pftfraca(i,j) = max(seed,fcancmx(i,j) - burnvegf(i,j) * standreplace(n))
-        
+
               fcancmx(i,j) = pftfraca(i,j)
-   
+
               barefrac(i)=barefrac(i)-fcancmx(i,j)
 
             else  !crops
