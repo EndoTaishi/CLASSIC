@@ -136,11 +136,11 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: emit_bc
     real, dimension(nlat,nmos) :: burnfrac
     real, dimension(nlat,nmos,icc) :: burnvegf
-    real, dimension(nlat,nmos) :: probfire
+    real, dimension(nlat,nmos,icc) :: smfuncveg
     real, dimension(nlat,nmos) :: popdin
-    real, dimension(nlat,nmos) :: bterm
+    real, dimension(nlat,nmos,icc) :: bterm
     real, dimension(nlat,nmos) :: lterm
-    real, dimension(nlat,nmos) :: mterm
+    real, dimension(nlat,nmos,icc) :: mterm
 
     real, dimension(nlat,nmos) :: extnprob
     real, dimension(nlat,nmos) :: prbfrhuc
@@ -361,11 +361,11 @@ type veg_gat
     real, dimension(ilg,icc) :: emit_bc
     real, dimension(ilg) :: burnfrac
     real, dimension(ilg,icc) :: burnvegf
-    real, dimension(ilg) :: probfire
+    real, dimension(ilg,icc) :: smfuncveg
     real, dimension(ilg) :: popdin
-    real, dimension(ilg) :: bterm
+    real, dimension(ilg,icc) :: bterm
     real, dimension(ilg) :: lterm
-    real, dimension(ilg) :: mterm
+    real, dimension(ilg,icc) :: mterm
 
     real, dimension(ilg) :: extnprob
     real, dimension(ilg) :: prbfrhuc
@@ -639,7 +639,7 @@ type ctem_gridavg
       real, dimension(nlat) :: totcmass_g
       real, dimension(nlat) :: tcanoacc_out_g
       real, dimension(nlat) :: burnfrac_g
-      real, dimension(nlat) :: probfire_g
+      real, dimension(nlat) :: smfuncveg_g
       real, dimension(nlat) :: lucemcom_g
       real, dimension(nlat) :: lucltrin_g
       real, dimension(nlat) :: lucsocin_g
@@ -734,6 +734,9 @@ type ctem_tile_level
       real, dimension(nlat,nmos) :: emit_tc_t
       real, dimension(nlat,nmos) :: emit_oc_t
       real, dimension(nlat,nmos) :: emit_bc_t
+      real, dimension(nlat,nmos) :: bterm_t
+      real, dimension(nlat,nmos) :: mterm_t
+      real, dimension(nlat,nmos) :: smfuncveg_t
 
       real, dimension(ilg) :: fsnowacc_t
       real, dimension(ilg) :: tcansacc_t
@@ -793,6 +796,9 @@ type ctem_monthly
       real, dimension(nlat,nmos,icc) :: emit_oc_mo
       real, dimension(nlat,nmos,icc) :: emit_bc_mo
       real, dimension(nlat,nmos,icc) :: burnfrac_mo
+      real, dimension(nlat,nmos,icc) :: bterm_mo
+      real, dimension(nlat,nmos,icc) :: mterm_mo
+      real, dimension(nlat,nmos,icc) :: smfuncveg_mo
 
 end type ctem_monthly
 
@@ -831,7 +837,7 @@ type ctem_gridavg_monthly
     real, dimension(nlat) :: emit_tc_mo_g
     real, dimension(nlat) :: emit_oc_mo_g
     real, dimension(nlat) :: emit_bc_mo_g
-    real, dimension(nlat) :: probfire_mo_g
+    real, dimension(nlat) :: smfuncveg_mo_g
     real, dimension(nlat) :: luc_emc_mo_g
     real, dimension(nlat) :: lucltrin_mo_g
     real, dimension(nlat) :: lucsocin_mo_g
@@ -883,7 +889,7 @@ type ctem_tileavg_monthly
       real, dimension(nlat,nmos) :: emit_oc_mo_t
       real, dimension(nlat,nmos) :: emit_bc_mo_t
       real, dimension(nlat,nmos) :: burnfrac_mo_t
-      real, dimension(nlat,nmos) :: probfire_mo_t
+      real, dimension(nlat,nmos) :: smfuncveg_mo_t
       real, dimension(nlat,nmos) :: bterm_mo_t
       real, dimension(nlat,nmos) :: luc_emc_mo_t
       real, dimension(nlat,nmos) :: lterm_mo_t
@@ -896,6 +902,7 @@ type ctem_tileavg_monthly
       real, dimension(nlat,nmos) :: ch4dyn1_mo_t
       real, dimension(nlat,nmos) :: ch4dyn2_mo_t
       real, dimension(nlat,nmos) :: ch4soills_mo_t
+      real, dimension(nlat,nmos) :: wind_mo_t
 
 end type ctem_tileavg_monthly
 
@@ -936,7 +943,10 @@ type ctem_annual
       real, dimension(nlat,nmos,icc) :: emit_tc_yr
       real, dimension(nlat,nmos,icc) :: emit_oc_yr
       real, dimension(nlat,nmos,icc) :: emit_bc_yr
+      real, dimension(nlat,nmos,icc) :: bterm_yr
+      real, dimension(nlat,nmos,icc) :: mterm_yr
       real, dimension(nlat,nmos,icc) :: burnfrac_yr
+      real, dimension(nlat,nmos,icc) :: smfuncveg_yr
 
 end type ctem_annual
 
@@ -976,7 +986,7 @@ type ctem_gridavg_annual
     real, dimension(nlat) :: emit_tc_yr_g
     real, dimension(nlat) :: emit_oc_yr_g
     real, dimension(nlat) :: emit_bc_yr_g
-    real, dimension(nlat) :: probfire_yr_g
+    real, dimension(nlat) :: smfuncveg_yr_g
     real, dimension(nlat) :: luc_emc_yr_g
     real, dimension(nlat) :: lucltrin_yr_g
     real, dimension(nlat) :: lucsocin_yr_g
@@ -1030,7 +1040,7 @@ type ctem_tileavg_annual
       real, dimension(nlat,nmos) :: emit_oc_yr_t
       real, dimension(nlat,nmos) :: emit_bc_yr_t
       real, dimension(nlat,nmos) :: burnfrac_yr_t
-      real, dimension(nlat,nmos) :: probfire_yr_t
+      real, dimension(nlat,nmos) :: smfuncveg_yr_t
       real, dimension(nlat,nmos) :: bterm_yr_t
       real, dimension(nlat,nmos) :: luc_emc_yr_t
       real, dimension(nlat,nmos) :: lterm_yr_t
@@ -1117,10 +1127,7 @@ integer :: j,k,l,m
         vrot%lucltrin(j,k)         = 0.0
         vrot%lucsocin(j,k)         = 0.0
         vrot%burnfrac(j,k)         = 0.0
-        vrot%probfire(j,k)         = 0.0
-        vrot%bterm(j,k)            = 0.0
         vrot%lterm(j,k)            = 0.0
-        vrot%mterm(j,k)            = 0.0
         vrot%cfluxcg(j,k)          = 0.0
         vrot%cfluxcs(j,k)          = 0.0
         !vrot%TCANOACC_M(j,k)       = 0.0
@@ -1161,6 +1168,7 @@ integer :: j,k,l,m
 
         do l = 1,icc
 
+            vrot%smfuncveg(j,k,l)         = 0.0
             vrot%ailcmin(j,k,l) = 0.
             vrot%ailcmax(j,k,l) = 0.
             vrot%dvdfcan(j,k,l) = 0.
@@ -1170,6 +1178,8 @@ integer :: j,k,l,m
             vrot%rootmass(j,k,l) = 0.
             vrot%pstemmass(j,k,l) = 0.
             vrot%pgleafmass(j,k,l) = 0.
+            vrot%bterm(j,k,l)        = 0.0
+            vrot%mterm(j,k,l)        = 0.0
             vrot%ailcg(j,k,l)        = 0.0
             vrot%ailcgs(j,k,l)       = 0.0
             vrot%fcancs(j,k,l)       = 0.0
@@ -1356,7 +1366,7 @@ do i=1,nltest
     ctem_grd%ailcb_g(i)=0.0
     ctem_grd%tcanoacc_out_g(i) =0.0
     ctem_grd%burnfrac_g(i) =0.0
-    ctem_grd%probfire_g(i) =0.0
+    ctem_grd%smfuncveg_g(i) =0.0
     ctem_grd%lucemcom_g(i) =0.0
     ctem_grd%lucltrin_g(i) =0.0
     ctem_grd%lucsocin_g(i) =0.0
@@ -1515,7 +1525,7 @@ do i=1,nltest
     ctem_grd_mo%emit_tc_mo_g(i) =0.0
     ctem_grd_mo%emit_oc_mo_g(i) =0.0
     ctem_grd_mo%emit_bc_mo_g(i) =0.0
-    ctem_grd_mo%probfire_mo_g(i) =0.0
+    ctem_grd_mo%smfuncveg_mo_g(i) =0.0
     ctem_grd_mo%luc_emc_mo_g(i) =0.0
     ctem_grd_mo%lucsocin_mo_g(i) =0.0
     ctem_grd_mo%lucltrin_mo_g(i) =0.0
@@ -1553,7 +1563,7 @@ do i=1,nltest
         ctem_tile_mo%emit_tc_mo_t(i,m) =0.0
         ctem_tile_mo%emit_oc_mo_t(i,m) =0.0
         ctem_tile_mo%emit_bc_mo_t(i,m) =0.0
-        ctem_tile_mo%probfire_mo_t(i,m) =0.0
+        ctem_tile_mo%smfuncveg_mo_t(i,m) =0.0
         ctem_tile_mo%luc_emc_mo_t(i,m) =0.0
         ctem_tile_mo%lucsocin_mo_t(i,m) =0.0
         ctem_tile_mo%lucltrin_mo_t(i,m) =0.0
@@ -1567,6 +1577,7 @@ do i=1,nltest
         ctem_tile_mo%ch4dyn1_mo_t(i,m)  =0.0
         ctem_tile_mo%ch4dyn2_mo_t(i,m)  =0.0
         ctem_tile_mo%ch4soills_mo_t(i,m)  =0.0
+        ctem_tile_mo%wind_mo_t(i,m) = 0.0
 
         do j=1,icc
             ! per pft
@@ -1592,6 +1603,9 @@ do i=1,nltest
             ctem_mo%emit_oc_mo(i,m,j) =0.0
             ctem_mo%emit_bc_mo(i,m,j) =0.0
             ctem_mo%burnfrac_mo(i,m,j) =0.0
+            ctem_mo%bterm_mo(i,m,j) =0.0
+            ctem_mo%mterm_mo(i,m,j) =0.0
+            ctem_mo%smfuncveg_mo(i,m,j) =0.0
         end do
 
         ctem_mo%nep_mo(i,m,iccp1)=0.0
@@ -1647,7 +1661,7 @@ do i=1,nltest
     ctem_grd_yr%emit_tc_yr_g(i)=0.0
     ctem_grd_yr%emit_oc_yr_g(i)=0.0
     ctem_grd_yr%emit_bc_yr_g(i)=0.0
-    ctem_grd_yr%probfire_yr_g(i)=0.0
+    ctem_grd_yr%smfuncveg_yr_g(i)=0.0
     ctem_grd_yr%luc_emc_yr_g(i)=0.0
     ctem_grd_yr%lucsocin_yr_g(i)=0.0
     ctem_grd_yr%lucltrin_yr_g(i)=0.0
@@ -1691,7 +1705,7 @@ do i=1,nltest
         ctem_tile_yr%emit_tc_yr_t(i,m)=0.0
         ctem_tile_yr%emit_oc_yr_t(i,m)=0.0
         ctem_tile_yr%emit_bc_yr_t(i,m)=0.0
-        ctem_tile_yr%probfire_yr_t(i,m)=0.0
+        ctem_tile_yr%smfuncveg_yr_t(i,m)=0.0
         ctem_tile_yr%luc_emc_yr_t(i,m)=0.0
         ctem_tile_yr%lucsocin_yr_t(i,m)=0.0
         ctem_tile_yr%lucltrin_yr_t(i,m)=0.0
@@ -1735,7 +1749,10 @@ do i=1,nltest
             ctem_yr%emit_tc_yr(i,m,j)=0.0
             ctem_yr%emit_oc_yr(i,m,j)=0.0
             ctem_yr%emit_bc_yr(i,m,j)=0.0
+            ctem_yr%bterm_yr(i,m,j)=0.0
+            ctem_yr%mterm_yr(i,m,j)=0.0
             ctem_yr%burnfrac_yr(i,m,j)=0.0
+            ctem_yr%smfuncveg_yr(i,m,j)=0.0
         end do
 
         ctem_yr%hetrores_yr(i,m,iccp1)=0.0

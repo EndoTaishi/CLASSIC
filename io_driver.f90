@@ -934,7 +934,7 @@ if (ctem_on .and. .not. parallelrun) then
 7075  FORMAT('  DAY YEAR   FRAC #1   FRAC #2   FRAC #3   FRAC #4   ','FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9  ','FRAC #10[%] SUMCHECK')
 7080  FORMAT('  DAY YEAR   AFRLEAF   AFRSTEM   AFRROOT  TCANOACC','  LFSTATUS')
 7110  FORMAT('  DAY YEAR   EMIT_CO2','    EMIT_CO   EMIT_CH4  EMIT_NMHC    EMIT_H2   EMIT_NOX', &
-            '   EMIT_N2O  EMIT_PM25   EMIT_TPM    EMIT_TC    EMIT_OC','    EMIT_BC   BURNFRAC   PROBFIRE   LUCEMCOM   LUCLTRIN',&
+            '   EMIT_N2O  EMIT_PM25   EMIT_TPM    EMIT_TC    EMIT_OC','    EMIT_BC   BURNFRAC   SMFUNCVEG   LUCEMCOM   LUCLTRIN',&
             '   LUCSOCIN   GRCLAREA   BTERM   LTERM   MTERM')
 7111  FORMAT('               g/m2.D     g/m2.d','     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d',&
             '     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d   ','       %  avgprob/d uMOL-CO2/M2.S KgC/M2.D','   KgC/M2.D      KM^2    prob/d       prob/d       prob/d')
@@ -1042,16 +1042,16 @@ end if !ctem_on & parallelrun
             'gC/m2.mon  gC/m2.mon  gC/m2.mon')   
 6025  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS FOR DISTURBANCES')
 6125  FORMAT('  MONTH  YEAR  CO2','        CO        CH4      NMHC       H2       NOX       N2O       PM25       TPM        TC        OC        BC  ',&
-            ' PROBFIRE  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC    BTERM',' LTERM   MTERM')
+            ' SMFUNCVEG  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC    BTERM',' LTERM   MTERM   WIND')
 6225  FORMAT('            g/m2.mon  g/m2.mon','  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon', &
-            '  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon','  prob/mon    g C/m2    g C/m2    g C/m2         %  prob/mon','  prob/mon  prob/mon')  
+            '  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon','  prob/mon    g C/m2    g C/m2    g C/m2         %  prob/mon','  prob/mon  prob/mon  km/h')
 6026  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS')
 6126  FORMAT('  YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS', '  SOILCMAS  TOTCMASS  ANNUALNPP ANNUALGPP ANNUALNEP ANNUALNBP',&
      ' ANNHETRSP ANAUTORSP ANNLITRES ANSOILCRES')
 6226  FORMAT('          m2/m2   Kg C/m2   Kg C/m2   Kg C/m2    Kg C/m2','  Kg C/m2   Kg C/m2   gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',&
      '  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr')
 6027  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS FOR DISTURBANCES')
-6127  FORMAT('  YEAR   ANNUALCO2','  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O','  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC APROBFIRE',&
+6127  FORMAT('  YEAR   ANNUALCO2','  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O','  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC ASMFUNCVEG',&
      ' ANNLUCCO2  ANNLUCLTR ANNLUCSOC ABURNFRAC ANNBTERM ANNLTERM',' ANNMTERM')
 6227  FORMAT('         g/m2.yr','  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr','  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  prob/yr ',&
             '  g/m2.yr  g/m2.yr  g/m2.yr    %     prob/yr  prob/yr','  prob/yr')
@@ -1261,13 +1261,13 @@ DO NT=1,NMON
                          TAACC_MO(I)-TFREZ,TRANSPACC_MO(I),&
                          tovere
             IF (IGND.GT.3) THEN
-            WRITE(82,8101)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
-                          THLQACC_MO(I,J),THICACC_MO(I,J),J=1,5)
-            WRITE(82,8101)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
-                          THLQACC_MO(I,J),THICACC_MO(I,J),J=6,10)
+            WRITE(82,8103)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
+                          THLQACC_MO(I,J),THICACC_MO(I,J),J=1,20) !, &
+                        !,' TILE ',m
             ELSE
             WRITE(82,8102)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
-                          THLQACC_MO(I,J),THICACC_MO(I,J),J=1,3)
+                          THLQACC_MO(I,J),THICACC_MO(I,J),J=1,3)! , &
+                         ! ,' TILE ',m
             ENDIF   
 
           call resetclassmon(nltest)
@@ -1281,6 +1281,7 @@ DO NT=1,NMON
 
 8100  FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,5(E12.3,1X),2(A6,I2))
 8101  FORMAT(1X,I4,I5,5(F7.2,1X,2F6.3,1X),2(A6,I2))
+8103  FORMAT(1X,I4,I5,20(F7.2,1X,2F6.3,1X),2(A6,I2))
 8102  FORMAT(1X,I4,I5,3(F8.2,1X,2F6.3,1X),2(A6,I2))
 
 
@@ -1510,10 +1511,10 @@ real, pointer, dimension(:,:,:) :: emit_ocrow
 real, pointer, dimension(:,:,:) :: emit_bcrow
 real, pointer, dimension(:,:) :: burnfracrow
 real, pointer, dimension(:,:,:) :: burnvegfrow
-real, pointer, dimension(:,:) :: probfirerow
-real, pointer, dimension(:,:) :: btermrow
+real, pointer, dimension(:,:,:) :: smfuncvegrow
+real, pointer, dimension(:,:,:) :: btermrow
 real, pointer, dimension(:,:) :: ltermrow
-real, pointer, dimension(:,:) :: mtermrow
+real, pointer, dimension(:,:,:) :: mtermrow
 real, pointer, dimension(:,:) :: lucemcomrow
 real, pointer, dimension(:,:) :: lucltrinrow
 real, pointer, dimension(:,:) :: lucsocinrow
@@ -1573,6 +1574,9 @@ real, pointer, dimension(:,:) :: emit_tpm_t
 real, pointer, dimension(:,:) :: emit_tc_t
 real, pointer, dimension(:,:) :: emit_oc_t
 real, pointer, dimension(:,:) :: emit_bc_t
+real, pointer, dimension(:,:) :: bterm_t
+real, pointer, dimension(:,:) :: mterm_t
+real, pointer, dimension(:,:) :: smfuncveg_t
 real, pointer, dimension(:,:) :: tcanoaccrow_out
 
 real, pointer, dimension(:,:) :: npprow
@@ -1625,7 +1629,7 @@ real, pointer, dimension(:) :: roottemp_g
 real, pointer, dimension(:) :: totcmass_g
 real, pointer, dimension(:) :: tcanoacc_out_g
 real, pointer, dimension(:) :: burnfrac_g
-real, pointer, dimension(:) :: probfire_g
+real, pointer, dimension(:) :: smfuncveg_g
 real, pointer, dimension(:) :: lucemcom_g
 real, pointer, dimension(:) :: lucltrin_g
 real, pointer, dimension(:) :: lucsocin_g
@@ -1722,7 +1726,7 @@ emit_ocrow        => vrot%emit_oc
 emit_bcrow        => vrot%emit_bc
 burnfracrow       => vrot%burnfrac
 burnvegfrow       => vrot%burnvegf
-probfirerow       => vrot%probfire
+smfuncvegrow      => vrot%smfuncveg
 btermrow          => vrot%bterm
 ltermrow          => vrot%lterm
 mtermrow          => vrot%mterm
@@ -1818,6 +1822,9 @@ emit_tpm_t        => ctem_tile%emit_tpm_t
 emit_tc_t         => ctem_tile%emit_tc_t
 emit_oc_t         => ctem_tile%emit_oc_t
 emit_bc_t         => ctem_tile%emit_bc_t
+bterm_t           => ctem_tile%bterm_t
+mterm_t           => ctem_tile%mterm_t
+smfuncveg_t       => ctem_tile%smfuncveg_t
 
 gpp_g             => ctem_grd%gpp_g
 npp_g             => ctem_grd%npp_g
@@ -1858,7 +1865,7 @@ roottemp_g        => ctem_grd%roottemp_g
 totcmass_g        => ctem_grd%totcmass_g
 tcanoacc_out_g    => ctem_grd%tcanoacc_out_g
 burnfrac_g        => ctem_grd%burnfrac_g
-probfire_g        => ctem_grd%probfire_g
+smfuncveg_g       => ctem_grd%smfuncveg_g
 lucemcom_g        => ctem_grd%lucemcom_g
 lucltrin_g        => ctem_grd%lucltrin_g
 lucsocin_g        => ctem_grd%lucsocin_g
@@ -1984,6 +1991,9 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
             emit_tc_t(i,m)  =emit_tc_t(i,m) + emit_tcrow(i,m,j)*fcancmxrow(i,m,j)
             emit_oc_t(i,m)  =emit_oc_t(i,m) + emit_ocrow(i,m,j)*fcancmxrow(i,m,j)
             emit_bc_t(i,m)  =emit_bc_t(i,m) + emit_bcrow(i,m,j)*fcancmxrow(i,m,j)
+            bterm_t(i,m)  =bterm_t(i,m) + btermrow(i,m,j)*fcancmxrow(i,m,j)
+            mterm_t(i,m)  =mterm_t(i,m) + mtermrow(i,m,j)*fcancmxrow(i,m,j)
+            smfuncveg_t(i,m) = smfuncveg_t(i,m) + smfuncvegrow(i,m,j)*fcancmxrow(i,m,j)
 
             do k=1,ignd
             rmatctem_t(i,m,k)=rmatctem_t(i,m,k)+rmatctemrow(i,m,j,k)*fcancmxrow(i,m,j)
@@ -2035,13 +2045,13 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
         litrmass_g(i) = litrmass_g(i) + litrmass_t(i,m)*FAREROT(i,m)
         soilcmas_g(i) = soilcmas_g(i) + soilcmas_t(i,m)*FAREROT(i,m)
         burnfrac_g(i) =burnfrac_g(i)+ burnfracrow(i,m)*FAREROT(i,m)
-        probfire_g(i) =probfire_g(i)+probfirerow(i,m)*FAREROT(i,m)
+        smfuncveg_g(i) =smfuncveg_g(i)+smfuncveg_t(i,m)*FAREROT(i,m)
         lucemcom_g(i) =lucemcom_g(i)+lucemcomrow(i,m)*FAREROT(i,m)
         lucltrin_g(i) =lucltrin_g(i)+lucltrinrow(i,m)*FAREROT(i,m)
         lucsocin_g(i) =lucsocin_g(i)+lucsocinrow(i,m)*FAREROT(i,m)
-        bterm_g(i)    =bterm_g(i)   +btermrow(i,m)*FAREROT(i,m)
+        bterm_g(i)    =bterm_g(i)   +bterm_t(i,m)*FAREROT(i,m)
         lterm_g(i)    =lterm_g(i)   +ltermrow(i,m)*FAREROT(i,m)
-        mterm_g(i)    =mterm_g(i)   +mtermrow(i,m)*FAREROT(i,m)
+        mterm_g(i)    =mterm_g(i)   +mterm_t(i,m)*FAREROT(i,m)
         ch4wet1_g(i) = ch4wet1_g(i) + ch4wet1row(i,m)*farerot(i,m)
         ch4wet2_g(i) = ch4wet2_g(i) + ch4wet2row(i,m)*farerot(i,m)
         wetfdyn_g(i) = wetfdyn_g(i) + wetfdynrow(i,m)*farerot(i,m)
@@ -2126,9 +2136,9 @@ do 80 i=1,nltest
                     emit_n2orow(i,m,j),emit_pm25row(i,m,j), &
                     emit_tpmrow(i,m,j),emit_tcrow(i,m,j),emit_ocrow(i,m,j), &
                     emit_bcrow(i,m,j),burnvegfrow(i,m,j)*100., &
-                    probfire_g(i),lucemcom_g(i), &  !FLAG only per grid values for these last ones.
+                    smfuncvegrow(i,m,j),lucemcom_g(i), &  !FLAG only per grid values for these last ones.
                     lucltrin_g(i), lucsocin_g(i), &
-                    grclarea(i), bterm_g(i), lterm_g(i), mterm_g(i), &
+                    grclarea(i), btermrow(i,m,j), lterm_g(i), mtermrow(i,m,j), &
                     ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
                 endif
 
@@ -2203,9 +2213,9 @@ do 80 i=1,nltest
                     emit_nmhc_t(i,m), emit_h2_t(i,m), emit_nox_t(i,m), &
                     emit_n2o_t(i,m), emit_pm25_t(i,m), emit_tpm_t(i,m), &
                     emit_tc_t(i,m), emit_oc_t(i,m), emit_bc_t(i,m), &
-                    burnfrac_g(i)*100., probfire_g(i),lucemcom_g(i), & !FLAG only per grid values for these last ones.
+                    burnfrac_g(i)*100., smfuncveg_t(i,m),lucemcom_g(i), & !FLAG only per grid values for these last ones.
                     lucltrin_g(i), lucsocin_g(i), &
-                    grclarea(i), bterm_g(i), lterm_g(i), mterm_g(i), &
+                    grclarea(i), bterm_t(i,m), lterm_g(i), mterm_t(i,m), &
                     ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
             endif
 
@@ -2252,7 +2262,7 @@ do 80 i=1,nltest
             emit_nmhc_g(i), emit_h2_g(i), emit_nox_g(i), &
             emit_n2o_g(i), emit_pm25_g(i), emit_tpm_g(i), &
             emit_tc_g(i), emit_oc_g(i), emit_bc_g(i), &
-            burnfrac_g(i)*100., probfire_g(i),lucemcom_g(i), &
+            burnfrac_g(i)*100., smfuncveg_g(i),lucemcom_g(i), &
             lucltrin_g(i), lucsocin_g(i), &
             grclarea(i), bterm_g(i), lterm_g(i), mterm_g(i),' GRDAV'
     endif
@@ -2364,7 +2374,10 @@ real, pointer, dimension(:,:,:) :: emit_tpm_mo
 real, pointer, dimension(:,:,:) :: emit_tc_mo
 real, pointer, dimension(:,:,:) :: emit_oc_mo
 real, pointer, dimension(:,:,:) :: emit_bc_mo
+real, pointer, dimension(:,:,:) :: bterm_mo
+real, pointer, dimension(:,:,:) :: mterm_mo
 real, pointer, dimension(:,:,:) :: burnfrac_mo
+real, pointer, dimension(:,:,:) :: smfuncveg_mo
 
 real, pointer, dimension(:,:) :: laimaxg_mo_t
 real, pointer, dimension(:,:) :: stemmass_mo_t
@@ -2394,7 +2407,7 @@ real, pointer, dimension(:,:) :: emit_tc_mo_t
 real, pointer, dimension(:,:) :: emit_oc_mo_t
 real, pointer, dimension(:,:) :: emit_bc_mo_t
 real, pointer, dimension(:,:) :: burnfrac_mo_t
-real, pointer, dimension(:,:) :: probfire_mo_t
+real, pointer, dimension(:,:) :: smfuncveg_mo_t
 real, pointer, dimension(:,:) :: bterm_mo_t
 real, pointer, dimension(:,:) :: luc_emc_mo_t
 real, pointer, dimension(:,:) :: lterm_mo_t
@@ -2407,6 +2420,7 @@ real, pointer, dimension(:,:) :: wetfdyn_mo_t
 real, pointer, dimension(:,:) :: ch4dyn1_mo_t
 real, pointer, dimension(:,:) :: ch4dyn2_mo_t
 real, pointer, dimension(:,:) :: ch4soills_mo_t
+real, pointer, dimension(:,:) :: wind_mo_t
 
 logical, pointer, dimension(:,:,:) :: pftexistrow
 real, pointer, dimension(:,:,:) :: gppvegrow
@@ -2436,10 +2450,10 @@ real, pointer, dimension(:,:,:) :: emit_ocrow
 real, pointer, dimension(:,:,:) :: emit_bcrow
 real, pointer, dimension(:,:) :: burnfracrow
 real, pointer, dimension(:,:,:) :: burnvegfrow
-real, pointer, dimension(:,:) :: probfirerow
-real, pointer, dimension(:,:) :: btermrow
+real, pointer, dimension(:,:,:) :: smfuncvegrow
+real, pointer, dimension(:,:,:) :: btermrow
 real, pointer, dimension(:,:) :: ltermrow
-real, pointer, dimension(:,:) :: mtermrow
+real, pointer, dimension(:,:,:) :: mtermrow
 real, pointer, dimension(:,:) :: lucemcomrow
 real, pointer, dimension(:,:) :: lucltrinrow
 real, pointer, dimension(:,:) :: lucsocinrow
@@ -2454,6 +2468,8 @@ real, pointer, dimension(:,:,:) :: soilcmasrow
 real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
 real, pointer, dimension(:,:,:) :: stemmassrow
 real, pointer, dimension(:,:,:) :: rootmassrow
+real, pointer, dimension(:,:) ::uvaccrow_m
+real, pointer, dimension(:,:) ::vvaccrow_m
 
 real, pointer, dimension(:) :: laimaxg_mo_g
 real, pointer, dimension(:) :: stemmass_mo_g
@@ -2482,7 +2498,7 @@ real, pointer, dimension(:) :: emit_tpm_mo_g
 real, pointer, dimension(:) :: emit_tc_mo_g
 real, pointer, dimension(:) :: emit_oc_mo_g
 real, pointer, dimension(:) :: emit_bc_mo_g
-real, pointer, dimension(:) :: probfire_mo_g
+real, pointer, dimension(:) :: smfuncveg_mo_g
 real, pointer, dimension(:) :: luc_emc_mo_g
 real, pointer, dimension(:) :: lucltrin_mo_g
 real, pointer, dimension(:) :: lucsocin_mo_g
@@ -2540,7 +2556,11 @@ emit_tpm_mo           =>ctem_mo%emit_tpm_mo
 emit_tc_mo            =>ctem_mo%emit_tc_mo
 emit_oc_mo            =>ctem_mo%emit_oc_mo
 emit_bc_mo            =>ctem_mo%emit_bc_mo
+bterm_mo              =>ctem_mo%bterm_mo
+mterm_mo              =>ctem_mo%mterm_mo
 burnfrac_mo           =>ctem_mo%burnfrac_mo
+smfuncveg_mo          =>ctem_mo%smfuncveg_mo
+
 laimaxg_mo_t          =>ctem_tile_mo%laimaxg_mo_t
 stemmass_mo_t         =>ctem_tile_mo%stemmass_mo_t
 rootmass_mo_t         =>ctem_tile_mo%rootmass_mo_t
@@ -2569,7 +2589,7 @@ emit_tc_mo_t          =>ctem_tile_mo%emit_tc_mo_t
 emit_oc_mo_t          =>ctem_tile_mo%emit_oc_mo_t
 emit_bc_mo_t          =>ctem_tile_mo%emit_bc_mo_t
 burnfrac_mo_t         =>ctem_tile_mo%burnfrac_mo_t
-probfire_mo_t         =>ctem_tile_mo%probfire_mo_t
+smfuncveg_mo_t        =>ctem_tile_mo%smfuncveg_mo_t
 bterm_mo_t            =>ctem_tile_mo%bterm_mo_t
 luc_emc_mo_t          =>ctem_tile_mo%luc_emc_mo_t
 lterm_mo_t            =>ctem_tile_mo%lterm_mo_t
@@ -2582,6 +2602,7 @@ wetfdyn_mo_t          =>ctem_tile_mo%wetfdyn_mo_t
 ch4dyn1_mo_t          =>ctem_tile_mo%ch4dyn1_mo_t
 ch4dyn2_mo_t          =>ctem_tile_mo%ch4dyn2_mo_t
 ch4soills_mo_t        =>ctem_tile_mo%ch4soills_mo_t
+wind_mo_t             =>ctem_tile_mo%wind_mo_t
 
 gppvegrow         => vrot%gppveg
 nepvegrow         => vrot%nepveg
@@ -2610,7 +2631,7 @@ emit_ocrow        => vrot%emit_oc
 emit_bcrow        => vrot%emit_bc
 burnfracrow       => vrot%burnfrac
 burnvegfrow       => vrot%burnvegf
-probfirerow       => vrot%probfire
+smfuncvegrow      => vrot%smfuncveg
 btermrow          => vrot%bterm
 ltermrow          => vrot%lterm
 mtermrow          => vrot%mterm
@@ -2628,6 +2649,8 @@ soilcmasrow       => vrot%soilcmas
 vgbiomas_vegrow   => vrot%vgbiomas_veg
 stemmassrow       => vrot%stemmass
 rootmassrow       => vrot%rootmass
+uvaccrow_m        => vrot%uvaccrow_m
+vvaccrow_m        => vrot%vvaccrow_m
 
 laimaxg_mo_g        =>ctem_grd_mo%laimaxg_mo_g
 stemmass_mo_g       =>ctem_grd_mo%stemmass_mo_g
@@ -2656,7 +2679,7 @@ emit_tpm_mo_g       =>ctem_grd_mo%emit_tpm_mo_g
 emit_tc_mo_g        =>ctem_grd_mo%emit_tc_mo_g
 emit_oc_mo_g        =>ctem_grd_mo%emit_oc_mo_g
 emit_bc_mo_g        =>ctem_grd_mo%emit_bc_mo_g
-probfire_mo_g       =>ctem_grd_mo%probfire_mo_g
+smfuncveg_mo_g      =>ctem_grd_mo%smfuncveg_mo_g
 luc_emc_mo_g        =>ctem_grd_mo%luc_emc_mo_g
 lucltrin_mo_g       =>ctem_grd_mo%lucltrin_mo_g
 lucsocin_mo_g       =>ctem_grd_mo%lucsocin_mo_g
@@ -2707,7 +2730,10 @@ do 862 i=1,nltest
            emit_tc_mo(i,m,j) =emit_tc_mo(i,m,j)+emit_tcrow(i,m,j)
            emit_oc_mo(i,m,j) =emit_oc_mo(i,m,j)+emit_ocrow(i,m,j)
            emit_bc_mo(i,m,j) =emit_bc_mo(i,m,j)+emit_bcrow(i,m,j)
+           bterm_mo(i,m,j) = bterm_mo(i,m,j) + btermrow(i,m,j)
+           mterm_mo(i,m,j) = mterm_mo(i,m,j) + mtermrow(i,m,j)
            burnfrac_mo(i,m,j) =burnfrac_mo(i,m,j)+burnvegfrow(i,m,j)
+           smfuncveg_mo(i,m,j) =smfuncveg_mo(i,m,j) + smfuncvegrow(i,m,j)
            barefrac=barefrac-fcancmxrow(i,m,j)
 
         end do !j
@@ -2729,10 +2755,8 @@ do 862 i=1,nltest
         ch4dyn1_mo_t(i,m) = ch4dyn1_mo_t(i,m) + ch4dyn1row(i,m)
         ch4dyn2_mo_t(i,m) = ch4dyn2_mo_t(i,m) + ch4dyn2row(i,m)
         ch4soills_mo_t(i,m) = ch4soills_mo_t(i,m) + ch4soillsrow(i,m)
-        probfire_mo_t(i,m) =probfire_mo_t(i,m) + probfirerow(i,m) !  Sum the probfire now, later we will make it a per day value.
-        bterm_mo_t(i,m) = bterm_mo_t(i,m) + btermrow(i,m)
         lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m)
-        mterm_mo_t(i,m) = mterm_mo_t(i,m) + mtermrow(i,m)
+        wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !take mean wind speed and convert to km/h
 
 863 continue ! m
 
@@ -2796,12 +2820,16 @@ do 862 i=1,nltest
 
             do 900 m = 1,nmtest
 
+
                 ! Convert some quantities into per day values
                 wetfdyn_mo_t(i,m)=wetfdyn_mo_t(i,m)*(1./real(monthdays(nt)))
-                probfire_mo_t(i,m)=probfire_mo_t(i,m)*(1./real(monthdays(nt)))
-                bterm_mo_t(i,m)=bterm_mo_t(i,m)*(1./real(monthdays(nt)))
                 lterm_mo_t(i,m)=lterm_mo_t(i,m)*(1./real(monthdays(nt)))
-                mterm_mo_t(i,m)=mterm_mo_t(i,m)*(1./real(monthdays(nt)))
+                wind_mo_t(i,m) = wind_mo_t(i,m)*(1./real(monthdays(nt)))
+                do j = 1, icc
+                    bterm_mo(i,m,j)=bterm_mo(i,m,j)*(1./real(monthdays(nt)))
+                    mterm_mo(i,m,j)=mterm_mo(i,m,j)*(1./real(monthdays(nt)))
+                    smfuncveg_mo(i,m,j) =smfuncveg_mo(i,m,j) *(1./real(monthdays(nt)))
+                end do
 
                 barefrac=1.0
 
@@ -2828,6 +2856,9 @@ do 862 i=1,nltest
                     emit_tc_mo_t(i,m) =emit_tc_mo_t(i,m)+emit_tc_mo(i,m,j)*fcancmxrow(i,m,j)
                     emit_oc_mo_t(i,m) =emit_oc_mo_t(i,m)+emit_oc_mo(i,m,j)*fcancmxrow(i,m,j)
                     emit_bc_mo_t(i,m) =emit_bc_mo_t(i,m)+emit_bc_mo(i,m,j)*fcancmxrow(i,m,j)
+                    bterm_mo_t(i,m) =bterm_mo_t(i,m)+bterm_mo(i,m,j)*fcancmxrow(i,m,j)
+                    mterm_mo_t(i,m) =mterm_mo_t(i,m)+mterm_mo(i,m,j)*fcancmxrow(i,m,j)
+                    smfuncveg_mo_t(i,m) =smfuncveg_mo_t(i,m)+smfuncveg_mo(i,m,j)*fcancmxrow(i,m,j)
                     burnfrac_mo_t(i,m) =burnfrac_mo_t(i,m)+burnfrac_mo(i,m,j)*fcancmxrow(i,m,j)
                     laimaxg_mo_t(i,m)=laimaxg_mo_t(i,m)+laimaxg_mo(i,m,j)*fcancmxrow(i,m,j)
                     barefrac=barefrac-fcancmxrow(i,m,j)
@@ -2872,7 +2903,7 @@ do 862 i=1,nltest
                 ch4dyn1_mo_g(i) = ch4dyn1_mo_g(i)+ch4dyn1_mo_t(i,m)*FAREROT(i,m)
                 ch4dyn2_mo_g(i) = ch4dyn2_mo_g(i)+ch4dyn2_mo_t(i,m)*FAREROT(i,m)
                 ch4soills_mo_g(i) = ch4soills_mo_g(i)+ch4soills_mo_t(i,m)*FAREROT(i,m)
-                probfire_mo_g(i)=probfire_mo_g(i)+probfire_mo_t(i,m)*FAREROT(i,m)
+                smfuncveg_mo_g(i)=smfuncveg_mo_g(i)+smfuncveg_mo_t(i,m)*FAREROT(i,m)
                 bterm_mo_g(i) =bterm_mo_g(i)+bterm_mo_t(i,m)*FAREROT(i,m)
                 lterm_mo_g(i) =lterm_mo_g(i)+lterm_mo_t(i,m)*FAREROT(i,m)
                 mterm_mo_g(i) =mterm_mo_g(i)+mterm_mo_t(i,m)*FAREROT(i,m)
@@ -2953,11 +2984,11 @@ do 862 i=1,nltest
                             emit_nox_mo(i,m,j),emit_n2o_mo(i,m,j), &
                             emit_pm25_mo(i,m,j),emit_tpm_mo(i,m,j), &
                             emit_tc_mo(i,m,j),emit_oc_mo(i,m,j), &
-                            emit_bc_mo(i,m,j),probfire_mo_t(i,m), &
+                            emit_bc_mo(i,m,j),smfuncveg_mo(i,m,j), &
                             luc_emc_mo_t(i,m),lucltrin_mo_t(i,m), &
                             lucsocin_mo_t(i,m),burnfrac_mo(i,m,j)*100., &
-                            bterm_mo_t(i,m),lterm_mo_t(i,m),mterm_mo_t(i,m), &
-                            ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
+                            bterm_mo(i,m,j),lterm_mo_t(i,m),mterm_mo(i,m,j), &
+                            wind_mo_t(i,m),' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
                         end if
                     end do !j
 
@@ -2970,11 +3001,11 @@ do 862 i=1,nltest
                         emit_nox_mo_t(i,m),emit_n2o_mo_t(i,m), &
                         emit_pm25_mo_t(i,m),emit_tpm_mo_t(i,m), &
                         emit_tc_mo_t(i,m),emit_oc_mo_t(i,m), &
-                        emit_bc_mo_t(i,m),probfire_mo_t(i,m), &
+                        emit_bc_mo_t(i,m),smfuncveg_mo_t(i,m), &
                         luc_emc_mo_t(i,m),lucltrin_mo_t(i,m), &
                         lucsocin_mo_t(i,m),burnfrac_mo_t(i,m)*100., &
                         bterm_mo_t(i,m),lterm_mo_t(i,m),mterm_mo_t(i,m), &
-                        ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+                        wind_mo_t(i,m),' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
                     end if
                 end do !m
 
@@ -2983,10 +3014,10 @@ do 862 i=1,nltest
                     emit_h2_mo_g(i),emit_nox_mo_g(i),emit_n2o_mo_g(i), &
                     emit_pm25_mo_g(i),emit_tpm_mo_g(i),emit_tc_mo_g(i), &
                     emit_oc_mo_g(i),emit_bc_mo_g(i), &
-                    probfire_mo_g(i),luc_emc_mo_g(i), &
+                    smfuncveg_mo_g(i),luc_emc_mo_g(i), &
                     lucltrin_mo_g(i),lucsocin_mo_g(i), &
                     burnfrac_mo_g(i)*100.,bterm_mo_g(i),lterm_mo_g(i), &
-                    mterm_mo_g(i),' GRDAV '
+                    mterm_mo_g(i),wind_mo_t(i,m),' GRDAV '
 
             endif  !dofire/lnduseon
 
@@ -3046,7 +3077,7 @@ enddo ! nt=1,nmon
 
 8104  FORMAT(1X,I4,I5,12(ES12.5,1X),2(A8,I2),A8,F8.2)
 8106  FORMAT(1X,I4,I5,11(ES12.7,1X),9L5,2(A6,I2))
-8109  FORMAT(1X,I4,I5,20(ES12.5,1X),2(A6,I2),A6,F8.2)
+8109  FORMAT(1X,I4,I5,21(ES12.5,1X),2(A6,I2),A6,F8.2)
 8111  FORMAT(1X,I4,I5,6(ES12.5,1X),2(A6,I2))
 
 end subroutine ctem_monthly_aw
@@ -3104,6 +3135,9 @@ real, pointer, dimension(:,:,:) :: emit_tpm_yr
 real, pointer, dimension(:,:,:) :: emit_tc_yr
 real, pointer, dimension(:,:,:) :: emit_oc_yr
 real, pointer, dimension(:,:,:) :: emit_bc_yr
+real, pointer, dimension(:,:,:) :: bterm_yr
+real, pointer, dimension(:,:,:) :: mterm_yr
+real, pointer, dimension(:,:,:) :: smfuncveg_yr
 real, pointer, dimension(:,:,:) :: burnfrac_yr
 
 real, pointer, dimension(:,:) :: laimaxg_yr_t
@@ -3134,7 +3168,7 @@ real, pointer, dimension(:,:) :: emit_tc_yr_t
 real, pointer, dimension(:,:) :: emit_oc_yr_t
 real, pointer, dimension(:,:) :: emit_bc_yr_t
 real, pointer, dimension(:,:) :: burnfrac_yr_t
-real, pointer, dimension(:,:) :: probfire_yr_t
+real, pointer, dimension(:,:) :: smfuncveg_yr_t
 real, pointer, dimension(:,:) :: bterm_yr_t
 real, pointer, dimension(:,:) :: luc_emc_yr_t
 real, pointer, dimension(:,:) :: lterm_yr_t
@@ -3176,10 +3210,10 @@ real, pointer, dimension(:,:,:) :: emit_ocrow
 real, pointer, dimension(:,:,:) :: emit_bcrow
 real, pointer, dimension(:,:) :: burnfracrow
 real, pointer, dimension(:,:,:) :: burnvegfrow
-real, pointer, dimension(:,:) :: probfirerow
-real, pointer, dimension(:,:) :: btermrow
+real, pointer, dimension(:,:,:) :: smfuncvegrow
+real, pointer, dimension(:,:,:) :: btermrow
 real, pointer, dimension(:,:) :: ltermrow
-real, pointer, dimension(:,:) :: mtermrow
+real, pointer, dimension(:,:,:) :: mtermrow
 real, pointer, dimension(:,:) :: lucemcomrow
 real, pointer, dimension(:,:) :: lucltrinrow
 real, pointer, dimension(:,:) :: lucsocinrow
@@ -3223,7 +3257,7 @@ real, pointer, dimension(:) :: emit_tpm_yr_g
 real, pointer, dimension(:) :: emit_tc_yr_g
 real, pointer, dimension(:) :: emit_oc_yr_g
 real, pointer, dimension(:) :: emit_bc_yr_g
-real, pointer, dimension(:) :: probfire_yr_g
+real, pointer, dimension(:) :: smfuncveg_yr_g
 real, pointer, dimension(:) :: luc_emc_yr_g
 real, pointer, dimension(:) :: lucltrin_yr_g
 real, pointer, dimension(:) :: lucsocin_yr_g
@@ -3280,7 +3314,10 @@ emit_tpm_yr         =>ctem_yr%emit_tpm_yr
 emit_tc_yr          =>ctem_yr%emit_tc_yr
 emit_oc_yr          =>ctem_yr%emit_oc_yr
 emit_bc_yr          =>ctem_yr%emit_bc_yr
+bterm_yr            =>ctem_yr%bterm_yr
+mterm_yr            =>ctem_yr%mterm_yr
 burnfrac_yr         =>ctem_yr%burnfrac_yr
+smfuncveg_yr        =>ctem_yr%smfuncveg_yr
 
 laimaxg_yr_t          =>ctem_tile_yr%laimaxg_yr_t
 stemmass_yr_t         =>ctem_tile_yr%stemmass_yr_t
@@ -3310,7 +3347,7 @@ emit_tc_yr_t          =>ctem_tile_yr%emit_tc_yr_t
 emit_oc_yr_t          =>ctem_tile_yr%emit_oc_yr_t
 emit_bc_yr_t          =>ctem_tile_yr%emit_bc_yr_t
 burnfrac_yr_t         =>ctem_tile_yr%burnfrac_yr_t
-probfire_yr_t         =>ctem_tile_yr%probfire_yr_t
+smfuncveg_yr_t        =>ctem_tile_yr%smfuncveg_yr_t
 bterm_yr_t            =>ctem_tile_yr%bterm_yr_t
 luc_emc_yr_t          =>ctem_tile_yr%luc_emc_yr_t
 lterm_yr_t            =>ctem_tile_yr%lterm_yr_t
@@ -3352,7 +3389,7 @@ emit_ocrow        => vrot%emit_oc
 emit_bcrow        => vrot%emit_bc
 burnfracrow       => vrot%burnfrac
 burnvegfrow       => vrot%burnvegf
-probfirerow       => vrot%probfire
+smfuncvegrow      => vrot%smfuncveg
 btermrow          => vrot%bterm
 ltermrow          => vrot%lterm
 mtermrow          => vrot%mterm
@@ -3399,7 +3436,7 @@ emit_tpm_yr_g         =>ctem_grd_yr%emit_tpm_yr_g
 emit_tc_yr_g          =>ctem_grd_yr%emit_tc_yr_g
 emit_oc_yr_g          =>ctem_grd_yr%emit_oc_yr_g
 emit_bc_yr_g          =>ctem_grd_yr%emit_bc_yr_g
-probfire_yr_g         =>ctem_grd_yr%probfire_yr_g
+smfuncveg_yr_g        =>ctem_grd_yr%smfuncveg_yr_g
 luc_emc_yr_g          =>ctem_grd_yr%luc_emc_yr_g
 lucltrin_yr_g         =>ctem_grd_yr%lucltrin_yr_g
 lucsocin_yr_g         =>ctem_grd_yr%lucsocin_yr_g
@@ -3443,6 +3480,9 @@ do 882 i=1,nltest
             emit_tc_yr(i,m,j)=emit_tc_yr(i,m,j)+emit_tcrow(i,m,j)
             emit_oc_yr(i,m,j)=emit_oc_yr(i,m,j)+emit_ocrow(i,m,j)
             emit_bc_yr(i,m,j)=emit_bc_yr(i,m,j)+emit_bcrow(i,m,j)
+            bterm_yr(i,m,j)=bterm_yr(i,m,j)+(btermrow(i,m,j)*(1./365.))
+            mterm_yr(i,m,j)=mterm_yr(i,m,j)+(mtermrow(i,m,j)*(1./365.))
+            smfuncveg_yr(i,m,j)=smfuncveg_yr(i,m,j)+(smfuncvegrow(i,m,j) * (1./365.))
             hetrores_yr(i,m,j)=hetrores_yr(i,m,j)+hetroresvegrow(i,m,j)
             autores_yr(i,m,j)=autores_yr(i,m,j)+autoresvegrow(i,m,j)
             litres_yr(i,m,j)=litres_yr(i,m,j)+litresvegrow(i,m,j)
@@ -3459,10 +3499,7 @@ do 882 i=1,nltest
         nbp_yr(i,m,iccp1)=nbp_yr(i,m,iccp1)+nbpvegrow(i,m,iccp1)
 
         ! Accumulate the variables at the per tile level
-        probfire_yr_t(i,m)=probfire_yr_t(i,m)+(probfirerow(i,m) * (1./365.))
-        bterm_yr_t(i,m)=bterm_yr_t(i,m)+(btermrow(i,m)*(1./365.))
         lterm_yr_t(i,m)=lterm_yr_t(i,m)+(ltermrow(i,m)*(1./365.))
-        mterm_yr_t(i,m)=mterm_yr_t(i,m)+(mtermrow(i,m)*(1./365.))
         wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./365.))
         luc_emc_yr_t(i,m)=luc_emc_yr_t(i,m)+lucemcomrow(i,m)
         lucsocin_yr_t(i,m)=lucsocin_yr_t(i,m)+lucsocinrow(i,m)
@@ -3522,6 +3559,9 @@ do 882 i=1,nltest
                 emit_tc_yr_t(i,m)=emit_tc_yr_t(i,m)+emit_tc_yr(i,m,j)*fcancmxrow(i,m,j)
                 emit_oc_yr_t(i,m)=emit_oc_yr_t(i,m)+emit_oc_yr(i,m,j)*fcancmxrow(i,m,j)
                 emit_bc_yr_t(i,m)=emit_bc_yr_t(i,m)+emit_bc_yr(i,m,j)*fcancmxrow(i,m,j)
+                bterm_yr_t(i,m)=bterm_yr_t(i,m)+bterm_yr(i,m,j)*fcancmxrow(i,m,j)
+                mterm_yr_t(i,m)=mterm_yr_t(i,m)+mterm_yr(i,m,j)*fcancmxrow(i,m,j)
+                smfuncveg_yr_t(i,m)=smfuncveg_yr_t(i,m)+smfuncveg_yr(i,m,j)*fcancmxrow(i,m,j)
                 hetrores_yr_t(i,m)=hetrores_yr_t(i,m)+hetrores_yr(i,m,j)*fcancmxrow(i,m,j)
                 autores_yr_t(i,m) =autores_yr_t(i,m) +autores_yr(i,m,j)*fcancmxrow(i,m,j)
                 litres_yr_t(i,m)  =litres_yr_t(i,m)  +litres_yr(i,m,j)*fcancmxrow(i,m,j)
@@ -3570,7 +3610,7 @@ do 882 i=1,nltest
             litres_yr_g(i)  =litres_yr_g(i)  +litres_yr_t(i,m)*FAREROT(i,m)
             soilcres_yr_g(i) =soilcres_yr_g(i) +soilcres_yr_t(i,m)*FAREROT(i,m)
             burnfrac_yr_g(i)=burnfrac_yr_g(i)+burnfrac_yr_t(i,m)*FAREROT(i,m)
-            probfire_yr_g(i)=probfire_yr_g(i)+probfire_yr_t(i,m)*FAREROT(i,m)
+            smfuncveg_yr_g(i)=smfuncveg_yr_g(i)+smfuncveg_yr_t(i,m)*FAREROT(i,m)
             bterm_yr_g(i)=bterm_yr_g(i)+bterm_yr_t(i,m)*FAREROT(i,m)
             lterm_yr_g(i)=lterm_yr_g(i)+lterm_yr_t(i,m)*FAREROT(i,m)
             mterm_yr_g(i)=mterm_yr_g(i)+mterm_yr_t(i,m)*FAREROT(i,m)
@@ -3658,10 +3698,10 @@ do 882 i=1,nltest
                         emit_nox_yr(i,m,j),emit_n2o_yr(i,m,j), &
                         emit_pm25_yr(i,m,j),emit_tpm_yr(i,m,j), &
                         emit_tc_yr(i,m,j),emit_oc_yr(i,m,j), &
-                        emit_bc_yr(i,m,j),probfire_yr_t(i,m), &
+                        emit_bc_yr(i,m,j),smfuncveg_yr(i,m,j), &
                         luc_emc_yr_t(i,m),lucltrin_yr_t(i,m), &
                         lucsocin_yr_t(i,m),burnfrac_yr(i,m,j)*100., &
-                        bterm_yr_t(i,m),lterm_yr_t(i,m),mterm_yr_t(i,m), &
+                        bterm_yr(i,m,j),lterm_yr_t(i,m),mterm_yr(i,m,j), &
                         ' TILE ',m,' PFT ',j,' FRAC ' &
                         ,fcancmxrow(i,m,j)
                     end if
@@ -3675,7 +3715,7 @@ do 882 i=1,nltest
                         emit_nox_yr_t(i,m),emit_n2o_yr_t(i,m), &
                         emit_pm25_yr_t(i,m),emit_tpm_yr_t(i,m), &
                         emit_tc_yr_t(i,m),emit_oc_yr_t(i,m), &
-                        emit_bc_yr_t(i,m),probfire_yr_t(i,m), &
+                        emit_bc_yr_t(i,m),smfuncveg_yr_t(i,m), &
                         luc_emc_yr_t(i,m),lucltrin_yr_t(i,m), &
                         lucsocin_yr_t(i,m),burnfrac_yr_t(i,m)*100., &
                         bterm_yr_t(i,m),lterm_yr_t(i,m),mterm_yr_t(i,m), &
@@ -3688,7 +3728,7 @@ do 882 i=1,nltest
                 emit_co_yr_g(i),emit_ch4_yr_g(i),emit_nmhc_yr_g(i), &
                 emit_h2_yr_g(i),emit_nox_yr_g(i),emit_n2o_yr_g(i), &
                 emit_pm25_yr_g(i),emit_tpm_yr_g(i),emit_tc_yr_g(i), &
-                emit_oc_yr_g(i),emit_bc_yr_g(i),probfire_yr_g(i), &
+                emit_oc_yr_g(i),emit_bc_yr_g(i),smfuncveg_yr_g(i), &
                 luc_emc_yr_g(i),lucltrin_yr_g(i), &
                 lucsocin_yr_g(i),burnfrac_yr_g(i)*100.,bterm_yr_g(i), &
                 lterm_yr_g(i),mterm_yr_g(i), ' GRDAV'

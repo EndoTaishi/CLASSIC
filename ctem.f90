@@ -42,13 +42,13 @@
      &                        rml,       rms,      rmr,  tltrleaf,&
      &                   tltrstem,  tltrroot, leaflitr,  roottemp,&
      &                    afrleaf,   afrstem,  afrroot,  wtstatus,&
-     &                   ltstatus,  burnfrac, probfire,  lucemcom,&
+     &                   ltstatus,  burnfrac, smfunc_veg, lucemcom,&
      &                   lucltrin,  lucsocin,   nppveg,  &
      &                   dstcemls3, paicgat,  slaicgat,    &
      &                    emit_co2, emit_co,  emit_ch4, emit_nmhc,&
      &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
      &                    emit_tpm, emit_tc,  emit_oc,    emit_bc,&
-     &                      bterm,    lterm,    mterm,&
+     &                  bterm_veg,    lterm, mterm_veg,        &
      &                         cc,       mm,&
      &                      rmlveg,  rmsveg,   rmrveg,    rgveg,&
      &                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,&
@@ -167,7 +167,7 @@ real, dimension(ilg), intent(in) :: uwind       ! u wind speed, m/s
 real, dimension(ilg), intent(in) :: vwind       ! v wind speed, m/s
 real, dimension(ilg), intent(in) :: lightng     ! total lightning frequency, flashes/km2.year
 real, dimension(ilg), intent(in) :: prbfrhuc    ! probability of fire due to human causes
-real, dimension(ilg), intent(in) :: extnprob    ! fire extingusinging probability
+real, dimension(ilg), intent(inout) :: extnprob    ! fire extingusinging probability
 
 integer, dimension(ilg), intent(in) :: stdaln   ! an integer telling if ctem is operated within gcm (=0)
                                  !                or in stand alone mode (=1). this is used for fire
@@ -333,7 +333,7 @@ real, dimension(ilg), intent(in) ::  currlat        ! centre latitude of grid ce
 !     wtstatus - soil water status used for calculating allocation fractions
 !     ltstatus - light status used for calculating allocation fractions
 !     burnfrac - areal fraction burned due to fire for every grid cell (%)
-!     probfire - probability of fire for every grid cell
+!     smfunc_veg - soil moisture dependence on fire spread rate
 !
 !     emitted compounds from biomass burning in g of compound
 !
@@ -491,13 +491,13 @@ real, dimension(ilg), intent(in) ::  currlat        ! centre latitude of grid ce
      &     blfltrdt(ilg,icc),   glcaemls(ilg,icc),   blcaemls(ilg,icc),&
      &     rtcaemls(ilg,icc),   stcaemls(ilg,icc),   ltrcemls(ilg,icc),&
      &         burnfrac(ilg),   dscemlv1(ilg,icc),&
-     &     dscemlv2(ilg,icc),       probfire(ilg), burnvegf(ilg,icc)
+     &     dscemlv2(ilg,icc),    smfunc_veg(ilg,icc), burnvegf(ilg,icc)
 !
       real emit_co2(ilg,icc),    emit_co(ilg,icc),    emit_ch4(ilg,icc),&
      &    emit_nmhc(ilg,icc),    emit_h2(ilg,icc),    emit_nox(ilg,icc),&
      &     emit_n2o(ilg,icc),  emit_pm25(ilg,icc),    emit_tpm(ilg,icc),&
      &      emit_tc(ilg,icc),    emit_oc(ilg,icc),     emit_bc(ilg,icc),&
-     &            bterm(ilg),          lterm(ilg),          mterm(ilg)
+     &    bterm_veg(ilg,icc),          lterm(ilg),   mterm_veg(ilg,icc)
 !
       real tltrleaf(ilg,icc),   tltrstem(ilg,icc),   tltrroot(ilg,icc),&
      &           popdin(ilg)
@@ -1667,11 +1667,11 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 !    in above, out below 
      &                    stemltdt, rootltdt, glfltrdt, blfltrdt,&
      &                    glcaemls, rtcaemls, stcaemls,&
-     &                    blcaemls, ltrcemls, burnfrac, probfire,&
+     &                    blcaemls, ltrcemls, burnfrac,smfunc_veg,&
      &                    emit_co2, emit_co,  emit_ch4, emit_nmhc,&
      &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
      &                    emit_tpm, emit_tc,  emit_oc,  emit_bc,&
-     &                    burnvegf, bterm,    mterm,    lterm,&
+     &                    burnvegf, bterm_veg,mterm_veg,  lterm,&
      &                    pstemmass, pgleafmass )  
 
 !    ------------------------------------------------------------------
