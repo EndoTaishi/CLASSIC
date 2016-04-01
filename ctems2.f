@@ -22,7 +22,7 @@
      l      rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,
      m      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,
      n      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,
-     o      burnfracrow, probfirerow, lucemcomrow,  lucltrinrow,
+     o      burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,
      p      lucsocinrow, nppvegrow,   dstcemls3row,
      q      farerow,     gavgscmsrow, tcanoaccrow_out,
      &      rmlvegaccrow, rmsvegrow,  rmrvegrow,    rgvegrow,
@@ -65,7 +65,7 @@ c --
      g      rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,
      h      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,
      i      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,
-     j      burnfracgat, probfiregat, lucemcomgat,  lucltringat,
+     j      burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,
      k      lucsocingat, nppveggat,   dstcemls3gat,
      l      faregat,     gavgscmsgat, tcanoaccgat_out,
      &      rmlvegaccgat, rmsveggat,  rmrveggat,    rgveggat,
@@ -167,7 +167,7 @@ c
      b      roottemprow(nlat,nmos,icc),   afrleafrow(nlat,nmos,icc),
      c      afrstemrow(nlat,nmos,icc),    afrrootrow(nlat,nmos,icc),
      d      wtstatusrow(nlat,nmos,icc),   ltstatusrow(nlat,nmos,icc),
-     e      burnfracrow(nlat,nmos),       probfirerow(nlat,nmos),
+     e      burnfracrow(nlat,nmos),      smfuncvegrow(nlat,nmos,icc),
      f      lucemcomrow(nlat,nmos),       lucltrinrow(nlat,nmos),
      g      lucsocinrow(nlat,nmos),       nppvegrow(nlat,nmos,icc),
      h      dstcemls3row(nlat,nmos)
@@ -180,8 +180,8 @@ c
      3     emit_n2orow(nlat,nmos,icc),    emit_pm25row(nlat,nmos,icc),
      4     emit_tpmrow(nlat,nmos,icc),    emit_tcrow(nlat,nmos,icc),
      5     emit_ocrow(nlat,nmos,icc),     emit_bcrow(nlat,nmos,icc),
-     6     burnvegfrow(nlat,nmos,icc),    btermrow(nlat,nmos),
-     7     ltermrow(nlat,nmos),           mtermrow(nlat,nmos)
+     6     burnvegfrow(nlat,nmos,icc),    btermrow(nlat,nmos,icc),
+     7     ltermrow(nlat,nmos),           mtermrow(nlat,nmos,icc)
 
       real  farerow(nlat,nmos)
       real  gavgscmsrow(nlat,nmos)
@@ -257,7 +257,7 @@ c
      b      roottempgat(ilg,icc),      afrleafgat(ilg,icc),
      c      afrstemgat(ilg,icc),       afrrootgat(ilg,icc),
      d      wtstatusgat(ilg,icc),      ltstatusgat(ilg,icc),
-     e      burnfracgat(ilg),          probfiregat(ilg),
+     e      burnfracgat(ilg),          smfuncveggat(ilg,icc),
      f      lucemcomgat(ilg),          lucltringat(ilg),
      g      lucsocingat(ilg),          nppveggat(ilg,icc),
      h      dstcemls3gat(ilg)
@@ -269,8 +269,9 @@ c      fire variables
      3      emit_n2ogat(ilg,icc),      emit_pm25gat(ilg,icc),
      4      emit_tpmgat(ilg,icc),      emit_tcgat(ilg,icc),
      5      emit_ocgat(ilg,icc),       emit_bcgat(ilg,icc),
-     6      burnvegfgat(ilg,icc),      btermgat(ilg),
-     7      ltermgat(ilg),             mtermgat(ilg)
+     6      burnvegfgat(ilg,icc),      btermgat(ilg,icc),
+     7      ltermgat(ilg),             mtermgat(ilg,icc)
+
 c
       real  faregat(ilg) 
       real  gavgscmsgat(ilg)  
@@ -343,10 +344,7 @@ c----------------------------------------------------------------------
           rmsrow(ilmos(k),jlmos(k))         = rmsgat(k)
           rmrrow(ilmos(k),jlmos(k))         = rmrgat(k)
           burnfracrow(ilmos(k),jlmos(k))    = burnfracgat(k)
-          probfirerow(ilmos(k),jlmos(k))    = probfiregat(k)
-          btermrow(ilmos(k),jlmos(k))       = btermgat(k)
           ltermrow(ilmos(k),jlmos(k))       = ltermgat(k)
-          mtermrow(ilmos(k),jlmos(k))       = mtermgat(k)
           lucemcomrow(ilmos(k),jlmos(k))    = lucemcomgat(k)
           lucltrinrow(ilmos(k),jlmos(k))    = lucltringat(k)
           lucsocinrow(ilmos(k),jlmos(k))    = lucsocingat(k)
@@ -380,6 +378,9 @@ c
 c
       do 101 l=1,icc
        do 101 k=1,nml
+          smfuncvegrow(ilmos(k),jlmos(k),l) = smfuncveggat(k,l)
+          mtermrow(ilmos(k),jlmos(k),l)     = mtermgat(k,l)
+          btermrow(ilmos(k),jlmos(k),l)     = btermgat(k,l)
           ailcgrow(ilmos(k),jlmos(k),l)     = ailcggat(k,l)   
           ailcgsrow(ilmos(k),jlmos(k),l)    = ailcgsgat(k,l)
           co2i1cgrow(ilmos(k),jlmos(k),l)   = co2i1cggat(k,l) 

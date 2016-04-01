@@ -443,7 +443,7 @@ repro_fraction = 0.10
 
 ! disturbance parameters: ------------
 
-reparea = 300.0  !500.0 ;  FireMIP value: 300.0
+reparea = 1000.0  ! 500 ;  FireMIP value: 300.0
 
 popdthrshld = 300.
 
@@ -451,9 +451,9 @@ f0 = 0.05
 
 bmasthrs_fire = [ 0.2, 1.0 ] 
 
-extnmois_veg = 0.3 !0.37 !flag test was 0.3
+extnmois_veg = 0.3
 
-extnmois_duff = 0.5 !0.55 !flag test was 0.5
+extnmois_duff = 0.5
 
 lwrlthrs = 0.25 ! FireMIP value: 0.025
 
@@ -465,7 +465,7 @@ hgrlthrs = 10.0 ! FireMIP value: 1.0
 parmlght = 0.8  
 parblght = 0.1
 
-! Li et al vals (except grass)
+! Li et al (2012) Biogeosciences vals converted to km/h
 maxsprd = [  0.54, 0.54, 0.00, &
              0.40, 0.40, 0.40, &
              0.00, 0.00, 0.00, &

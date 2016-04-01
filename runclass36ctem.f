@@ -579,11 +579,11 @@ c
       real, pointer, dimension(:,:,:) :: emit_bcrow
       real, pointer, dimension(:,:) :: burnfracrow
       real, pointer, dimension(:,:,:) :: burnvegfrow
-      real, pointer, dimension(:,:) :: probfirerow
+      real, pointer, dimension(:,:,:) :: smfuncvegrow
       real, pointer, dimension(:,:) :: popdinrow
-      real, pointer, dimension(:,:) :: btermrow
+      real, pointer, dimension(:,:,:) :: btermrow
       real, pointer, dimension(:,:) :: ltermrow
-      real, pointer, dimension(:,:) :: mtermrow
+      real, pointer, dimension(:,:,:) :: mtermrow
 
       real, pointer, dimension(:,:) :: extnprobrow
       real, pointer, dimension(:,:) :: prbfrhucrow
@@ -747,11 +747,11 @@ c
       real, pointer, dimension(:,:) :: emit_bcgat
       real, pointer, dimension(:) :: burnfracgat
       real, pointer, dimension(:,:) :: burnvegfgat
-      real, pointer, dimension(:) :: probfiregat
+      real, pointer, dimension(:,:) :: smfuncveggat
       real, pointer, dimension(:) :: popdingat
-      real, pointer, dimension(:) :: btermgat
+      real, pointer, dimension(:,:) :: btermgat
       real, pointer, dimension(:) :: ltermgat
-      real, pointer, dimension(:) :: mtermgat
+      real, pointer, dimension(:,:) :: mtermgat
 
       real, pointer, dimension(:) :: extnprobgat
       real, pointer, dimension(:) :: prbfrhucgat
@@ -1139,7 +1139,7 @@ C===================== CTEM ==============================================\
       emit_bcrow        => vrot%emit_bc
       burnfracrow       => vrot%burnfrac
       burnvegfrow       => vrot%burnvegf
-      probfirerow       => vrot%probfire
+      smfuncvegrow      => vrot%smfuncveg
       popdinrow         => vrot%popdin
       btermrow          => vrot%bterm
       ltermrow          => vrot%lterm
@@ -1308,7 +1308,7 @@ C===================== CTEM ==============================================\
       burnfracgat       => vgat%burnfrac
       burnvegfgat       => vgat%burnvegf
       popdingat         => vgat%popdin
-      probfiregat       => vgat%probfire
+      smfuncveggat      => vgat%smfuncveg
       btermgat          => vgat%bterm
       ltermgat          => vgat%lterm
       mtermgat          => vgat%mterm
@@ -2932,7 +2932,7 @@ C
      l      rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,
      m      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,
      n      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,
-     o      burnfracgat, probfiregat, lucemcomgat,  lucltringat,
+     o      burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,
      p      lucsocingat, nppveggat,   dstcemls3gat, popdingat,
      q      faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,
      &      rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,
@@ -2974,7 +2974,7 @@ c
      g      rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,
      h      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,
      i      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,
-     j      burnfracrow, probfirerow, lucemcomrow,  lucltrinrow,
+     j      burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,
      k      lucsocinrow, nppvegrow,   dstcemls3row, popdinrow,
      l      FAREROT,     gavgscmsrow, rmlvegaccrow, pftexistrow,
      &      rmsvegrow,   rmrvegrow,   rgvegrow,    vgbiomas_vegrow,
@@ -3347,7 +3347,7 @@ c    -------------- inputs updated by ctem are above this line ------
      o                 rmlgat,      rmsgat,     rmrgat,  tltrleafgat,
      p            tltrstemgat, tltrrootgat, leaflitrgat, roottempgat,
      q             afrleafgat,  afrstemgat,  afrrootgat, wtstatusgat,
-     r            ltstatusgat, burnfracgat, probfiregat, lucemcomgat,
+     r            ltstatusgat, burnfracgat, smfuncveggat, lucemcomgat,
      s            lucltringat, lucsocingat,   nppveggat,
      t            dstcemls3gat,    paicgat,    slaicgat,
      u            emit_co2gat,  emit_cogat,  emit_ch4gat, emit_nmhcgat,
@@ -3371,52 +3371,51 @@ c
      &                     wetfdyngat,wetfrac_presgat,isndgat,RHOW,
      &                     RHOICE,ch4concgat,ch4soillsgat)
 
-c
-c     reset mosaic accumulator arrays.
-c
-      do 655 i=1,nml
-         uvaccgat_t(i)=0.0
-655   continue
-c
-      if (ctem_on) then
-        do 705 i = 1, nml
-c
-          fsinacc_gat(i)=0.
-          flinacc_gat(i)=0.
-          flutacc_gat(i)=0.
-          alswacc_gat(i)=0.
-          allwacc_gat(i)=0.
-          pregacc_gat(i)=0.
-c
-          fsnowacc_t(i)=0.0
-          tcanoaccgat_out(i)=tcanoaccgat_t(i)
-          tcanoaccgat_t(i)=0.0
-c
-          tcansacc_t(i)=0.0
-          taaccgat_t(i)=0.0
-          vvaccgat_t(i)=0.0
-c
-          do 715 j=1,ignd
-             tbaraccgat_t(i,j)=0.0
-             tbarcacc_t(i,j)=0.0
-             tbarcsacc_t(i,j)=0.0
-             tbargacc_t(i,j)=0.0
-             tbargsacc_t(i,j)=0.0
-             thliqcacc_t(i,j)=0.0
-             thliqgacc_t(i,j)=0.0
-             thliqacc_t(i,j)=0.0
-             thicecacc_t(i,j)=0.0
-715       continue
-c
-          do 716 j = 1, icc
-            ancsvgac_t(i,j)=0.0
-            ancgvgac_t(i,j)=0.0
-            rmlcsvga_t(i,j)=0.0
-            rmlcgvga_t(i,j)=0.0
-716       continue
-c
-705     continue
-      endif  ! if(ctem_on)
+! c
+! c     reset mosaic accumulator arrays.
+! c
+! c
+!       if (ctem_on) then
+!         do 705 i = 1, nml
+! c
+!           fsinacc_gat(i)=0.
+!           flinacc_gat(i)=0.
+!           flutacc_gat(i)=0.
+!           alswacc_gat(i)=0.
+!           allwacc_gat(i)=0.
+!           pregacc_gat(i)=0.
+! c
+!           fsnowacc_t(i)=0.0
+!           tcanoaccgat_out(i)=tcanoaccgat_t(i)  !
+!           tcanoaccgat_t(i)=0.0  !
+! c
+!           tcansacc_t(i)=0.0
+!           taaccgat_t(i)=0.0
+!           vvaccgat_t(i)=0.0  !
+!           uvaccgat_t(i)=0.0  !
+! c
+!           do 715 j=1,ignd
+!              tbaraccgat_t(i,j)=0.0 !
+!              tbarcacc_t(i,j)=0.0
+!              tbarcsacc_t(i,j)=0.0
+!              tbargacc_t(i,j)=0.0
+!              tbargsacc_t(i,j)=0.0
+!              thliqcacc_t(i,j)=0.0
+!              thliqgacc_t(i,j)=0.0
+!              thliqacc_t(i,j)=0.0
+!              thicecacc_t(i,j)=0.0
+!              thicegacc_t(i,j)=0.0
+! 715       continue
+! c
+!           do 716 j = 1, icc
+!             ancsvgac_t(i,j)=0.0
+!             ancgvgac_t(i,j)=0.0
+!             rmlcsvga_t(i,j)=0.0
+!             rmlcgvga_t(i,j)=0.0
+! 716       continue
+! c
+! 705     continue
+!       endif  ! if(ctem_on)
       endif  ! if(ncount.eq.nday)
 C===================== CTEM ============================================ /
 C
@@ -3545,7 +3544,7 @@ C
      l      rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,
      m      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,
      n      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,
-     o      burnfracrow, probfirerow, lucemcomrow,  lucltrinrow,
+     o      burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,
      p      lucsocinrow, nppvegrow,   dstcemls3row,
      q      FAREROT,     gavgscmsrow, tcanoaccrow_out,
      &      rmlvegaccrow, rmsvegrow,  rmrvegrow,    rgvegrow,
@@ -3588,7 +3587,7 @@ c    ----
      g      rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,
      h      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,
      i      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,
-     j      burnfracgat, probfiregat, lucemcomgat,  lucltringat,
+     j      burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,
      k      lucsocingat, nppveggat,   dstcemls3gat,
      l      faregat,     gavgscmsgat, tcanoaccgat_out,
      &      rmlvegaccgat, rmsveggat,  rmrveggat,    rgveggat,
@@ -3606,6 +3605,54 @@ c    ----
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat)
 c
+      if(ncount.eq.nday) then
+c
+c     reset mosaic accumulator arrays.
+c
+c
+      if (ctem_on) then
+        do 705 i = 1, nml
+c
+          fsinacc_gat(i)=0.
+          flinacc_gat(i)=0.
+          flutacc_gat(i)=0.
+          alswacc_gat(i)=0.
+          allwacc_gat(i)=0.
+          pregacc_gat(i)=0.
+c
+          fsnowacc_t(i)=0.0
+          tcanoaccgat_out(i)=tcanoaccgat_t(i)  !
+          tcanoaccgat_t(i)=0.0  !
+c
+          tcansacc_t(i)=0.0
+          taaccgat_t(i)=0.0
+          vvaccgat_t(i)=0.0  !
+          uvaccgat_t(i)=0.0  !
+c
+          do 715 j=1,ignd
+             tbaraccgat_t(i,j)=0.0 !
+             tbarcacc_t(i,j)=0.0
+             tbarcsacc_t(i,j)=0.0
+             tbargacc_t(i,j)=0.0
+             tbargsacc_t(i,j)=0.0
+             thliqcacc_t(i,j)=0.0
+             thliqgacc_t(i,j)=0.0
+             thliqacc_t(i,j)=0.0
+             thicecacc_t(i,j)=0.0
+             thicegacc_t(i,j)=0.0
+715       continue
+c
+          do 716 j = 1, icc
+            ancsvgac_t(i,j)=0.0
+            ancgvgac_t(i,j)=0.0
+            rmlcsvga_t(i,j)=0.0
+            rmlcgvga_t(i,j)=0.0
+716       continue
+c
+705     continue
+      endif  ! if(ctem_on)
+      end if
+
 C===================== CTEM ============================================ /
 C
 C=======================================================================

@@ -24,11 +24,11 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !     ------------------ inputs above this line ----------------------          
                          stemltdt, rootltdt, glfltrdt, blfltrdt, &
                          glcaemls, rtcaemls, stcaemls, & 
-                         blcaemls, ltrcemls, burnfrac, probfire, &
+                         blcaemls, ltrcemls, burnfrac, smfunc_veg, &
                          emit_co2, emit_co,  emit_ch4, emit_nmhc, &
                          emit_h2,  emit_nox, emit_n2o, emit_pm25, &
                          emit_tpm, emit_tc,  emit_oc,  emit_bc, &
-                         burnvegf, bterm,    mterm,    lterm, &
+                         burnvegf, bterm_veg, mterm_veg,    lterm, &
                          pstemmass, pgleafmass )  
 !     ------------------outputs above this line ----------------------
 !
@@ -103,7 +103,6 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !     blfltrdt  - brown leaf litter generated due to disturbance (kg c/m2)
 !     burnarea  - total area burned, km^2
 !     burnfrac  - total areal fraction burned, (%)
-!     probfire  - probability of fire
 
 !     note the following c burned will be converted to a trace gas 
 !     emission or aerosol on the basis of emission factors.
@@ -193,12 +192,11 @@ real ::  stemltdt(ilg,icc), rootltdt(ilg,icc), glfltrdt(ilg,icc), &
           emit_n2o(ilg,icc), emit_pm25(ilg,icc), emit_tpm(ilg,icc),    &
            emit_tc(ilg,icc),   emit_oc(ilg,icc),  emit_bc(ilg,icc)    
 
-real ::  biomass(ilg,icc),        bterm(ilg), drgtstrs(ilg,icc), &
+real ::  biomass(ilg,icc),        drgtstrs(ilg,icc), &
             betadrgt(ilg,ignd),     avgdryns(ilg),        fcsum(ilg),  &
-               avgbmass(ilg),        mterm(ilg),     c2glgtng(ilg),    &
+               avgbmass(ilg),     c2glgtng(ilg),    &
                betalght(ilg),            y(ilg),        lterm(ilg),    &
-               probfire(ilg),             ctime,            random,    &
-                        temp,     betmsprd(ilg),       smfunc(ilg),    &
+                    temp(ilg),     betmsprd(ilg),       smfunc(ilg),    &
                    wind(ilg),      wndfunc(ilg),     sprdrate(ilg),    &
                 lbratio(ilg),     arbn1day(ilg),     areamult(ilg),    &
                  vegarea(ilg),     grclarea(ilg),    &
@@ -213,7 +211,7 @@ real, dimension(ilg,icc) :: pftareab    ! pft area before fire (km2)
 
 real :: ymin, ymax, slope
 real :: soilterm, duffterm              ! temporary variables
-
+real :: extn_par1                       ! parameter used in calculation of fire extinguishing probability
 
 real, dimension(ilg,icc) :: bterm_veg     
 real, dimension(ilg,icc) :: duff_frac_veg
@@ -287,13 +285,10 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
         avgbmass(i)=0.0         !avg. veg. biomass over the veg. fraction of grid cell
         avgdryns(i)=0.0         !avg. dryness over the vegetated fraction
         fcsum(i)=0.0            !total vegetated fraction
-        bterm(i)=0.0            !biomass fire probability term
-        mterm(i)=0.0            !moisture fire probability term
         c2glgtng(i)=0.0         !cloud-to-ground lightning
         betalght(i)=0.0         !0-1 lightning term
         y(i)=0.0                !logistic dist. for fire prob. due to lightning
         lterm(i)=0.0            !lightning fire probability term
-        probfire(i)=0.0         !probability of fire
         fire(i)=.false.         !fire occuring 
         burnarea(i)=0.0         !total area burned due to fire
         burnfrac(i)=0.0         !total areal fraction burned due to fire
@@ -473,7 +468,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
         ymax=1.0/( 1.0+exp((parmlght-1.0)/parblght) )
         slope=abs(0.0-ymin)+abs(1.0-ymax)
 
-        temp=y(i)+(0.0-ymin)+betalght(i)*slope
+        temp(i)=y(i)+(0.0-ymin)+betalght(i)*slope
 
 !       Determine the probability of fire due to human causes
 !       this is based upon the population density from the .popd read-in file
@@ -481,7 +476,15 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
             prbfrhuc(i)=min(1.0,(popdin(i)/popdthrshld)**0.43) !From Kloster et al. (2010)
         end if
 
-        lterm(i)=max(0.0, min(1.0, temp+(1.0-temp)*prbfrhuc(i) ))
+        ! account for cultural ignitions in Savanna regions, see below for
+        ! reduction in suppression too
+!        if ( currlat(i).ge.-25.0.and.currlat(i).le.25.0 ) then
+        ! i.e. between 25S and 25N, prbfrhuc is always a minimum
+        ! of 0.7
+!           prbfrhuc(i)=max(0.7, prbfrhuc(i))
+!        endif
+
+        lterm(i)=max(0.0, min(1.0, temp(i)+(1.0-temp(i))*prbfrhuc(i) ))
 
 !       ----------------------- Number of fire calculations ----------------------\\
 
@@ -571,7 +574,21 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !         fire extinguishing probability as a function of grid-cell averaged population density
           if (popdon) then
-            extnprob(i)=max(0.0,0.9-exp(-0.025*popdin(i)))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
+
+            ! account for low suppression in Savanna regions, see above for
+            ! increase in ignition due to cultural practices
+            !if ( currlat(i).ge.-25.0.and.currlat(i).le.25.0 ) then
+               ! i.e. between 25S and 25N, change extnprob
+               ! note 0.025 is changed to 0.005
+            !   extn_par1=-0.005
+            !else
+               extn_par1=-0.025 ! default value
+            !endif
+
+            !extnprob(i)=max(0.0,0.9-exp(-0.025*popdin(i)))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
+            ! change 0.9 to 1.0 in eqn. A78 of Melton and Arora, 2016, GMD competition paper
+            extnprob(i)=max(0.0,1.0-exp(extn_par1*popdin(i)))
+
             extnprob(i)=0.5+extnprob(i)/2.0
           end if
           
@@ -707,6 +724,11 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 630     continue
 620   continue
+
+!FLAG for the optimization of popd effect on fire I am taking the lterm out as the 'temp' var. So I have made tmp be dimension
+! ilg and I overwrite the lterm (which is written to an output file) here in its place.
+
+lterm = temp
 
 end subroutine disturb
 
