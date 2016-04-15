@@ -919,6 +919,7 @@ c
       real, pointer, dimension(:,:) :: thliqgacc_t
       real, pointer, dimension(:,:) :: thliqacc_t
       real, pointer, dimension(:,:) :: thicecacc_t
+      real, pointer, dimension(:,:) :: thicegacc_t
       real, pointer, dimension(:,:) :: ancsvgac_t
       real, pointer, dimension(:,:) :: ancgvgac_t
       real, pointer, dimension(:,:) :: rmlcsvga_t
@@ -1555,6 +1556,7 @@ C===================== CTEM ==============================================\
       thliqgacc_t       => ctem_tile%thliqgacc_t
       thliqacc_t        => ctem_tile%thliqacc_t
       thicecacc_t       => ctem_tile%thicecacc_t
+      thicegacc_t       => ctem_tile%thicegacc_t
       ancsvgac_t        => ctem_tile%ancsvgac_t
       ancgvgac_t        => ctem_tile%ancgvgac_t
       rmlcsvga_t        => ctem_tile%rmlcsvga_t
