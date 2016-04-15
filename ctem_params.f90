@@ -349,8 +349,6 @@ kn= [ 0.50, 0.50, 0.00, &
       
 lfespany  =   [ 5.00, 1.00, 0.00, &
                 1.50, 1.00, 1.00, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
-!lfespany  =   [ 5.00, 0.40, 0.00, & !These values are for the tests with Ray and Bakr. JM Mar 2015. HAVE NOT TESTED WITH COMPETITION!!!!
-!               1.50, 1.00, 1.00, &
                 1.75, 1.75, 0.00, &
                 1.00, 1.00, 0.00 ]      
 
@@ -443,7 +441,7 @@ repro_fraction = 0.10
 
 ! disturbance parameters: ------------
 
-reparea = 1000.0  ! 500 ;  FireMIP value: 300.0
+reparea = 1000.0  ! FireMIP value: 300.0
 
 popdthrshld = 300.
 
@@ -462,7 +460,7 @@ hgrlthrs = 10.0 ! FireMIP value: 1.0
 !     **Parmlght was increased to 0.8 to make it so areas with higher amounts of
 !     lightning have higher lterm. The saturation is still the same, but the 
 !     increase is more gradual at low lightning density. JM
-parmlght = 0.8  
+parmlght = 0.8
 parblght = 0.1
 
 ! Li et al (2012) Biogeosciences vals converted to km/h
@@ -471,33 +469,33 @@ maxsprd = [  0.54, 0.54, 0.00, &
              0.00, 0.00, 0.00, &
              0.72, 0.72, 0.00 ]
 
-frco2glf = [ 0.21, 0.21, 0.00, & 
-             0.21, 0.21, 0.21, & 
+frco2glf = [ 0.70, 0.70, 0.00, &
+             0.70, 0.70, 0.70, &
              0.00, 0.00, 0.00, &
-             0.24, 0.24, 0.00 ]   
+             0.80, 0.80, 0.00 ]
 
-frco2blf = [ 0.00, 0.00, 0.00, & 
-             0.00, 0.00, 0.00, & 
+frco2blf = [ 0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00, &
-             0.27, 0.27, 0.00 ]
+             0.00, 0.00, 0.00, &
+             0.90, 0.90, 0.00 ]
 
-frltrglf = [ 0.06, 0.06, 0.00, &
-             0.06, 0.06, 0.06, & 
+frltrglf = [ 0.20, 0.20, 0.00, &
+             0.20, 0.20, 0.20, &
              0.00, 0.00, 0.00, &
-             0.03, 0.03, 0.00 ]  
+             0.10, 0.10, 0.00 ]
 
 frltrblf = [ 0.00, 0.00, 0.00, &
-             0.00, 0.00, 0.00, & 
              0.00, 0.00, 0.00, &
-             0.02, 0.02, 0.00 ]
+             0.00, 0.00, 0.00, &
+             0.06, 0.06, 0.00 ]
 
-frco2stm = [ 0.06, 0.06, 0.00, &
-             0.06, 0.03, 0.03, &  
+frco2stm = [ 0.20, 0.20, 0.00, &
+             0.20, 0.10, 0.10, &
              0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00 ]
 
-frltrstm = [ 0.15, 0.15, 0.00, &
-             0.15, 0.09, 0.09, & 
+frltrstm = [ 0.60, 0.60, 0.00, &
+             0.60, 0.40, 0.40, &
              0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00 ]
 
@@ -506,15 +504,15 @@ frco2rt = [ 0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0, &
             0.0, 0.0, 0.0 ]
 
-frltrrt = [ 0.03, 0.03, 0.00, &
-            0.03, 0.03, 0.03, &
+frltrrt = [ 0.10, 0.10, 0.00, &
+            0.10, 0.10, 0.10, &
             0.00, 0.00, 0.00, &
-            0.08, 0.08, 0.00 ]
+            0.25, 0.25, 0.00 ]
 
-frltrbrn = [ 0.15, 0.15, 0.00, &
-             0.18, 0.18, 0.18, &
+frltrbrn = [ 0.50, 0.50, 0.00, &
+             0.60, 0.60, 0.60, &
              0.00, 0.00, 0.00, &
-             0.21, 0.21, 0.00 ]
+             0.70, 0.70, 0.00 ]
 
 !     emissions factors by chemical species
 !     
@@ -673,14 +671,8 @@ bsratesc = [ 0.0260, 0.0260, 0.0000, &
              0.0208, 0.0208, 0.0208, &
              0.0350, 0.0350, 0.0000, &
              0.0125, 0.0125, 0.0000 ]
-! FLAG test new vals, JM Dec 29 2014.
-!bsratesc = [ 0.0208, 0.0208, 0.0000, &
-!             0.0166, 0.0166, 0.0166, &
-!             0.0280, 0.0280, 0.0000, &
-!             0.0100, 0.0100, 0.0000 ]
 
 tanhq10  = [ 1.44, 0.56, 0.075, 46.0 ] 
-!tanhq10  = [ 1.2, 0.2, 0.075, 46.0 ] ! was 1.44/0.56/0.075/46 TEST FLAG mar 3 JM 2015
            !   a     b      c     d
            ! q10 = a + b * tanh[ c (d-temperature) ]
            ! when a = 2, b = 0, we get the constant q10 of 2. if b is non
@@ -691,9 +683,6 @@ alpha_hetres = 0.7
 bsratelt_g = 0.5605
 
 bsratesc_g = 0.02258
-! FLAG test new vals, JM Dec 29 2014.
-!bsratesc_g = 0.01806
-
 
 a = 4.0
 
