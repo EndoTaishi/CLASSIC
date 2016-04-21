@@ -441,7 +441,7 @@ repro_fraction = 0.10
 
 ! disturbance parameters: ------------
 
-reparea = 1000.0  ! FireMIP value: 300.0
+reparea = 500.0 !1000  ! FireMIP value: 300.0
 
 popdthrshld = 300.
 
