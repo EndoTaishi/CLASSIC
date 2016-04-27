@@ -1077,7 +1077,8 @@ end subroutine create_outfiles
 subroutine class_monthly_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,&
                                   ALVSROT,FAREROT,FSVHROW,ALIRROT,FSIHROW,GTROT,FSSROW, &
                                   FDLROW,HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,SNOROT, &
-                                  TAROW,WSNOROT,TBARROT,THLQROT,THICROT,TFREZ,QFCROT)
+                                  TAROW,WSNOROT,TBARROT,THLQROT,THICROT,TFREZ,QFCROT,&
+                                  ACTLYR,FTABLE)
                            
 use ctem_statevars,     only : class_out,resetclassmon
 use ctem_params, only : nmon, monthend, nlat, nmos, ignd
@@ -1114,6 +1115,8 @@ real, dimension(nlat,nmos,ignd), intent(in) :: TBARROT
 real, dimension(nlat,nmos,ignd), intent(in) :: THLQROT
 real, dimension(nlat,nmos,ignd), intent(in) :: THICROT
 real, dimension(nlat,nmos,ignd), intent(in) :: QFCROT
+real, dimension(nlat,nmos), intent(in) :: ACTLYR          ! Active layer depth (m)
+real, dimension(nlat,nmos), intent(in) :: FTABLE          ! Depth to frozen water table (m)
 
 ! pointers
 real, pointer, dimension(:) :: ALVSACC_MO
@@ -1130,6 +1133,13 @@ real, pointer, dimension(:) :: PREACC_MO
 real, pointer, dimension(:) :: EVAPACC_MO
 real, pointer, dimension(:) :: TRANSPACC_MO
 real, pointer, dimension(:) :: TAACC_MO
+real, pointer, dimension(:) :: ACTLYR_MO
+real, pointer, dimension(:) :: FTABLE_MO
+real, pointer, dimension(:) :: ACTLYR_MIN_MO
+real, pointer, dimension(:) :: FTABLE_MIN_MO
+real, pointer, dimension(:) :: ACTLYR_MAX_MO
+real, pointer, dimension(:) :: FTABLE_MAX_MO
+
 real, pointer :: FSSTAR_MO
 real, pointer :: FLSTAR_MO
 real, pointer :: QH_MO
@@ -1145,6 +1155,8 @@ integer :: NDMONTH
 integer :: i,m,j
 integer :: IMONTH
 real :: tovere
+real, dimension(nlat) :: ACTLYR_tmp
+real, dimension(nlat) :: FTABLE_tmp
 
 ! point pointers
 ALVSACC_MO        => class_out%ALVSACC_MO  
@@ -1168,6 +1180,12 @@ QE_MO             => class_out%QE_MO
 TBARACC_MO        => class_out%TBARACC_MO
 THLQACC_MO        => class_out%THLQACC_MO    
 THICACC_MO        => class_out%THICACC_MO
+ACTLYR_MO         => class_out%ACTLYR_MO
+FTABLE_MO         => class_out%FTABLE_MO
+ACTLYR_MIN_MO     => class_out%ACTLYR_MIN_MO
+FTABLE_MIN_MO     => class_out%FTABLE_MIN_MO
+ACTLYR_MAX_MO     => class_out%ACTLYR_MAX_MO
+FTABLE_MAX_MO     => class_out%FTABLE_MAX_MO
 
 ! ------------
 
@@ -1179,6 +1197,8 @@ FLSTAR_MO   =0.0
 QH_MO       =0.0
 QE_MO       =0.0
 ALTOT_MO    =0.0
+ACTLYR_tmp  =0.0
+FTABLE_tmp  =0.0
 
 DO 820 I=1,NLTEST
 DO 821 M=1,NMTEST
@@ -1191,6 +1211,10 @@ DO 821 M=1,NMTEST
     QEVPACC_MO(I)=QEVPACC_MO(I)+QEVPROT(I,M)*FAREROT(I,M)
     SNOACC_MO(I) =SNOACC_MO(I)+SNOROT(I,M)*FAREROT(I,M)
     TAACC_MO(I)=TAACC_MO(I)+TAROW(I)*FAREROT(I,M)
+    ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
+    FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
+    ACTLYR_tmp(I) = ACTLYR_tmp(I) + ACTLYR(I,M) * FAREROT(I,M)
+    FTABLE_tmp(I) = FTABLE_tmp(I) + FTABLE(I,M) * FAREROT(I,M)
 
     IF(SNOROT(I,M).GT.0.0) THEN
         WSNOACC_MO(I)=WSNOACC_MO(I)+WSNOROT(I,M)*FAREROT(I,M)
@@ -1208,7 +1232,15 @@ DO 821 M=1,NMTEST
 823 CONTINUE
 
 821    CONTINUE
+
+  ! Check if the active layer has become more shallow or deepended.
+  ACTLYR_MAX_MO(I) = max(ACTLYR_MAX_MO(I), ACTLYR_tmp(I))
+  ACTLYR_MIN_MO(I) = min(ACTLYR_MIN_MO(I), ACTLYR_tmp(I))
+  FTABLE_MAX_MO(I) = max(FTABLE_MAX_MO(I), FTABLE_tmp(I))
+  FTABLE_MIN_MO(I) = min(FTABLE_MIN_MO(I), FTABLE_tmp(I))
+
 820   CONTINUE 
+
 
 DO NT=1,NMON
     IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
@@ -1237,6 +1269,9 @@ DO NT=1,NMON
             EVAPACC_MO(I)=EVAPACC_MO(I)
             TRANSPACC_MO(I) =TRANSPACC_MO(I)
             TAACC_MO(I)=TAACC_MO(I)/REAL(NDMONTH)
+            ACTLYR_MO(I) = ACTLYR_MO(I)/REAL(NDMONTH)
+            FTABLE_MO(I) = FTABLE_MO(I)/REAL(NDMONTH)
+
             DO J=1,IGND
                 TBARACC_MO(I,J)=TBARACC_MO(I,J)/REAL(NDMONTH)
                 THLQACC_MO(I,J)=THLQACC_MO(I,J)/REAL(NDMONTH)
@@ -1262,11 +1297,15 @@ DO NT=1,NMON
                          tovere
             IF (IGND.GT.3) THEN
             WRITE(82,8103)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
-                          THLQACC_MO(I,J),THICACC_MO(I,J),J=1,20) !, &
+                          THLQACC_MO(I,J),THICACC_MO(I,J),J=1,20), &
+                          ACTLYR_MO(I),ACTLYR_MAX_MO(I),ACTLYR_MIN_MO(I),&
+                          FTABLE_MO(I),FTABLE_MAX_MO(I),FTABLE_MIN_MO(I)
                         !,' TILE ',m
             ELSE
             WRITE(82,8102)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
-                          THLQACC_MO(I,J),THICACC_MO(I,J),J=1,3)! , &
+                          THLQACC_MO(I,J),THICACC_MO(I,J),J=1,3), &
+                          ACTLYR_MO(I),ACTLYR_MAX_MO(I),ACTLYR_MIN_MO(I),&
+                          FTABLE_MO(I),FTABLE_MAX_MO(I),FTABLE_MIN_MO(I)
                          ! ,' TILE ',m
             ENDIF   
 
@@ -1281,8 +1320,8 @@ DO NT=1,NMON
 
 8100  FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,5(E12.3,1X),2(A6,I2))
 8101  FORMAT(1X,I4,I5,5(F7.2,1X,2F6.3,1X),2(A6,I2))
-8103  FORMAT(1X,I4,I5,20(F7.2,1X,2F6.3,1X),2(A6,I2))
-8102  FORMAT(1X,I4,I5,3(F8.2,1X,2F6.3,1X),2(A6,I2))
+8103  FORMAT(1X,I4,I5,20(F7.2,1X,2F6.3,1X),6(F6.3,1X),2(A6,I2))
+8102  FORMAT(1X,I4,I5,3(F8.2,1X,2F6.3,1X),6(F6.3,1X),2(A6,I2))
 
 
 end subroutine class_monthly_aw
@@ -1293,7 +1332,7 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
                             nltest,nmtest,ALVSROT,FAREROT,FSVHROW, &
                             ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW, &
                             HFSROT,ROFROT,PREROW,QFSROT,QEVPROT, &
-                            TAROW,QFCROT)
+                            TAROW,QFCROT,ACTLYR,FTABLE)
 
 use ctem_statevars,     only : class_out,resetclassyr
 use ctem_params, only : nmon, monthend, nlat, nmos, ignd
@@ -1324,6 +1363,8 @@ real, dimension(nlat,nmos), intent(in) :: QEVPROT
 real, dimension(nlat,nmos), intent(in) :: ROFROT
 real, dimension(nlat,nmos), intent(in) :: QFSROT
 real, dimension(nlat,nmos,ignd), intent(in) :: QFCROT
+real, dimension(nlat,nmos), intent(in) :: ACTLYR          ! Active layer depth (m)
+real, dimension(nlat,nmos), intent(in) :: FTABLE          ! Depth to frozen water table (m)
 
 ! pointers
 real, pointer, dimension(:) :: ALVSACC_YR
@@ -1338,6 +1379,8 @@ real, pointer, dimension(:) :: PREACC_YR
 real, pointer, dimension(:) :: EVAPACC_YR
 real, pointer, dimension(:) :: TRANSPACC_YR
 real, pointer, dimension(:) :: TAACC_YR
+real, pointer, dimension(:) :: ACTLYR_YR
+real, pointer, dimension(:) :: FTABLE_YR
 real, pointer :: FSSTAR_YR
 real, pointer :: FLSTAR_YR
 real, pointer :: QH_YR
@@ -1365,6 +1408,8 @@ FSSTAR_YR         => class_out%FSSTAR_YR
 FLSTAR_YR         => class_out%FLSTAR_YR
 QH_YR             => class_out%QH_YR
 QE_YR             => class_out%QE_YR
+ACTLYR_YR         => class_out%ACTLYR_YR
+FTABLE_YR         => class_out%FTABLE_YR
 
 
 ! Accumulate output data for yearly averaged fields for class grid-mean.
@@ -1391,6 +1436,10 @@ DO 827 I=1,NLTEST
         DO J = 1,IGND
             TRANSPACC_YR(I)=TRANSPACC_YR(I)+QFCROT(I,M,J)*FAREROT(I,M)*DELT
         END DO
+
+        !ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
+        !FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
+
 828    CONTINUE
 827   CONTINUE
 

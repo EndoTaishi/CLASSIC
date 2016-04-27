@@ -426,7 +426,7 @@ C
       REAL DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,
      1     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,
      2     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,
-     3     TSURF,ALAVG,ALMAX,ACTLYR,FTAVG,FTMAX,FTABLE
+     3     TSURF,ACTLYR(NLAT,NMOS),FTABLE(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -975,6 +975,8 @@ c
       real, pointer, dimension(:) :: CDMROT_g
       real, pointer, dimension(:) :: SFCUROT_g
       real, pointer, dimension(:) :: SFCVROT_g
+      real, pointer, dimension(:) :: ACTLYR_g
+      real, pointer, dimension(:) :: FTABLE_g
       real, pointer, dimension(:) :: fc_g
       real, pointer, dimension(:) :: fg_g
       real, pointer, dimension(:) :: fcs_g
@@ -1002,12 +1004,12 @@ c
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
 
-! Model Switches (rarely changed ones only! The rest are in joboptions file):
+    ! Model Switches (rarely changed ones only! The rest are in joboptions file):
 
       logical, parameter :: obslght = .false.  ! if true the observed lightning will be used. False means you will use the
                                              ! lightning climatology from the CTM file. This was brought in for FireMIP runs.
 
-   ! If you intend to have LUC BETWEEN tiles then set this to true:
+    ! If you intend to have LUC BETWEEN tiles then set this to true:
       logical, parameter ::  onetile_perPFT = .False. ! NOTE: This is usually not the behaviour desired unless you are
                                                    ! running with one PFT on each tile and want them to compete for space
                                                    ! across tiles. In general keep this as False. JM Feb 2016.
@@ -1499,6 +1501,8 @@ C===================== CTEM ==============================================\
       CDMROT_g          => ctem_grd%CDMROT_g
       SFCUROT_g         => ctem_grd%SFCUROT_g
       SFCVROT_g         => ctem_grd%SFCVROT_g
+      ACTLYR_g          => ctem_grd%ACTLYR_g
+      FTABLE_g          => ctem_grd%FTABLE_g
       fc_g              => ctem_grd%fc_g
       fg_g              => ctem_grd%fg_g
       fcs_g             => ctem_grd%fcs_g
@@ -1778,30 +1782,26 @@ C
        IF(IGND.GT.3) THEN
           WRITE(62,6012)
 6012      FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
-     1              'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',
-     2              'THI5')
+     1    'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',
+     2    'THI5 TG6  THL6  THI6 TG7  THL7  THI7',
+     3    'TG8  THL8  THI8 TG9  THL9  THI9 TG10  THL10  THI10',
+     4    'TG11  THL11  THI11 TG12  THL12  THI12 TG13  THL13  THI13',
+     5    'TG14  THL14  THI14 TG15  THL15  THI15 TG16  THL16  THI16',
+     6    'TG17  THL17  THI17 TG18  THL18  THI18 TG19  THL19  THI19',
+     7    'TG20  THL20  THI20 ACTLYR FTABLE')
 
        ELSE
           WRITE(62,6212)
 6212      FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
-     1              'TG3  THL3  THI3  TCN  RCAN  SCAN  TSN  ZSN')
+     1              'TG3  THL3  THI3  TCN  RCAN  SCAN  TSN  ZSN',
+     2              'ACTLYR FTABLE')
 
        ENDIF
 
        WRITE(63,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(63,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-
-       IF(IGND.GT.3) THEN
-          WRITE(63,6013)
-6013      FORMAT(2X,'DAY  YEAR  TG6  THL6  THI6  TG7  THL7  THI7  ',
-     1              'TG8  THL8  THI8  TG9  THL9  THI9  TG10'  ,
-     2              'THL10  THI10')
-
-       ELSE
-          WRITE(63,6313)
+       WRITE(63,6313)
 6313      FORMAT(2X,'DAY YEAR KIN LIN TA UV PRES QA PCP EVAP')
-
-       ENDIF
 C
        WRITE(64,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(64,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
@@ -1881,12 +1881,7 @@ C
 C
        WRITE(631,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(631,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-C
-       IF(IGND.GT.3) THEN
-          WRITE(631,6013)
-       ELSE
-          WRITE(631,6313)
-       ENDIF
+       WRITE(631,6313)
 C
        WRITE(641,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
        WRITE(641,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
@@ -2104,12 +2099,12 @@ c     initialize accumulated array for monthly & yearly output for class
           TSHIST(I)=0.0
           TSCRHIST(I)=0.0
 175   CONTINUE
-      ALAVG=0.0
-      ALMAX=0.0
-      ACTLYR=0.0
-      FTAVG=0.0
-      FTMAX=0.0
-      FTABLE=0.0
+      !ALAVG=0.0
+      !ALMAX=0.0
+      !ACTLYR=0.0
+      !FTAVG=0.0
+      !FTMAX=0.0
+      !FTABLE=0.0
 
       CALL CLASSB(THPROT,THRROT,THMROT,BIROT,PSISROT,GRKSROT,
      1            THRAROT,HCPSROT,TCSROT,THFCROT,THLWROT,PSIWROT,
@@ -3650,7 +3645,7 @@ C     * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
 
 6100  FORMAT(1X,I4,I5,9F8.2,2F8.3,F12.4,F8.2,2(A6,I2))
 6200  FORMAT(1X,I4,I5,3(F8.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,2(A6,I2))
-6201  FORMAT(1X,I4,I5,5(F7.2,2F6.3),2(A6,I2))
+6201  FORMAT(1X,I4,I5,20(F7.2,2F6.3),2F8.3,2(A6,I2))
 6300  FORMAT(1X,I4,I5,3F9.2,F8.2,F10.2,E12.3,2F12.3,A6,I2)
 6400  FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,5F9.5,2(A6,I2))
 6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,4F8.3,
@@ -3684,42 +3679,48 @@ c
 C===================== CTEM =====================================/
 C
 
+      ! Find the active layer depth and depth to the frozen water table.
       ACTLYR=0.0
       FTABLE=0.0
       DO 440 J=1,IGND
-          IF(ABS(TBARGAT(1,J)-TFREZ).LT.0.0001) THEN
-              IF(ISNDGAT(1,J).GT.-3) THEN
-                  ACTLYR=ACTLYR+(THLQGAT(1,J)/(THLQGAT(1,J)+
-     1                THICGAT(1,J)))*DLZWGAT(1,J)
-              ELSEIF(ISNDGAT(1,J).EQ.-3) THEN
-                  ACTLYR=ACTLYR+DELZ(J)
-              ENDIF
-          ELSEIF(TBARGAT(1,J).GT.TFREZ) THEN
-              ACTLYR=ACTLYR+DELZ(J)
+       DO I = 1, NLTEST
+        DO M = 1,NMTEST
+          IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
+            IF(ISNDROT(I,M,J).GT.-3) THEN
+               ACTLYR(I,M)=ACTLYR(I,M)+(THLQROT(I,M,J)/(THLQROT(I,M,J)+
+     1               THICROT(I,M,J)))*DLZWROT(I,M,J)
+              !ELSEIF(ISNDGAT(1,J).EQ.-3) THEN
+              !    ACTLYR=ACTLYR+DELZ(J)
+            ENDIF
+          ELSEIF(TBARROT(I,M,J).GT.TFREZ) THEN
+              ACTLYR(I,M)=ACTLYR(I,M)+DELZ(J)
           ENDIF
-          IF(ABS(TBARGAT(1,J)-TFREZ).LT.0.0001) THEN
-              IF(ISNDGAT(1,J).GT.-3) THEN
-                  FTABLE=FTABLE+(THICGAT(1,J)/(THLQGAT(1,J)+
-     1                THICGAT(1,J)-THMGAT(1,J)))*DLZWGAT(1,J)
-              ELSE
-                  FTABLE=FTABLE+DELZ(J)
-              ENDIF
-          ELSEIF(TBARGAT(1,J).LT.TFREZ) THEN
-              FTABLE=FTABLE+DELZ(J)
+          IF(ABS(TBARROT(I,M,J)-TFREZ).LT.0.0001) THEN
+            IF(ISNDROT(I,M,J).GT.-3) THEN
+               FTABLE(I,M)=FTABLE(I,M)+(THICROT(I,M,J)/(THLQROT(I,M,J)+
+     1              THICROT(I,M,J)-THMROT(I,M,J)))*DLZWROT(I,M,J)
+              !ELSE
+              !    FTABLE=FTABLE+DELZ(J)
+            ENDIF
+          ELSEIF(TBARROT(I,M,J).LT.TFREZ) THEN
+              FTABLE(I,M)=FTABLE(I,M)+DELZ(J)
           ENDIF
+         END DO
+        END DO
 440   CONTINUE
+
 C
-      IF(IDAY.GE.182 .AND. IDAY.LE.243)  THEN
-          ALAVG=ALAVG+ACTLYR
-          NAL=NAL+1
-          IF(ACTLYR.GT.ALMAX) ALMAX=ACTLYR
-      ENDIF
+!      IF(IDAY.GE.182 .AND. IDAY.LE.243)  THEN ! July 1st and Aug 31
+!          ALAVG=ALAVG+ACTLYR
+!          NAL=NAL+1
+!          IF(ACTLYR.GT.ALMAX) ALMAX=ACTLYR
+!      ENDIF
 C
-      IF(IDAY.GE.1 .AND. IDAY.LE.59)   THEN
-          FTAVG=FTAVG+FTABLE
-          NFT=NFT+1
-          IF(FTABLE.GT.FTMAX) FTMAX=FTABLE
-      ENDIF
+!      IF(IDAY.GE.1 .AND. IDAY.LE.59)   THEN  ! Jan 1st and Feb 28th
+!          FTAVG=FTAVG+FTABLE
+!          NFT=NFT+1
+!          IF(FTABLE.GT.FTMAX) FTMAX=FTABLE
+!      ENDIF
 
       if (.not. parallelrun) then ! stand alone mode, include half-hourly
 c                                 ! output for CLASS & CTEM
@@ -3818,15 +3819,14 @@ C===================== CTEM =====================================/
 C===================== CTEM =====================================\
               write(66,6601) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
      1                 tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,IGND),
-     2                 (GFLXROT(i,m,j),j=1,IGND),
-     3                 ' TILE ',m
+     2                 (GFLXROT(i,m,j),j=1,IGND),' TILE ',m
           end if
 
               write(65,6500) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
      1                   tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,3),
      2                  tcn,RCANROT(i,m),SCANROT(i,m),tsn,zsn,
      3                   TCN-(TAROW(I)-TFREZ),TCANO(I)-TFREZ,
-     4                   TACGAT(I)-TFREZ,ACTLYR,FTABLE,' TILE ',m
+     4                   TACGAT(I)-TFREZ,' TILE ',m
 
 C===================== CTEM =====================================/
 
@@ -3971,6 +3971,8 @@ c
           CDMROT_g(i) =CDMROT_g(i) + CDMROT(i,m)*FAREROT(i,m)
           SFCUROT_g(i) =SFCUROT_g(i) + SFCUROT(i,m)*FAREROT(i,m)
           SFCVROT_g(i) =SFCVROT_g(i) + SFCVROT(i,m)*FAREROT(i,m)
+          ACTLYR_g(i) = ACTLYR_g(i) + ACTLYR(i,m) * FAREROT(i,m)
+          FTABLE_g(i) = FTABLE_g(i) + FTABLE(i,m) * FAREROT(i,m)
 C
 C======================== CTEM =====================================/
 425    CONTINUE
@@ -3994,7 +3996,7 @@ C
      1                   TFREZ,THLQROT_G(I,J),THICROT_G(I,J),J=1,3),
      2                   TCN_G,RCANROT_G(I),SCANROT_G(I),TSN_G,ZSN_G,
      3                   TCN_G-(TAROW(I)-TFREZ),TCANO(I)-TFREZ,
-     4                   TACGAT(I)-TFREZ,ACTLYR,FTABLE
+     4                   TACGAT(I)-TFREZ
 C
          IF(IGND.GT.3) THEN
           WRITE(661,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
@@ -4317,17 +4319,18 @@ C
      2                       WSNOACC(I),ALTOT,ROFACC(I),CUMSNO
               IF(IGND.GT.3) THEN
                   WRITE(62,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
-     1                       THLQACC(I,J),THICACC(I,J),J=1,5)
-                  WRITE(63,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
-     1                       THLQACC(I,J),THICACC(I,J),J=6,10)
+     1                       THLQACC(I,J),THICACC(I,J),J=1,IGND),
+     2                       ACTLYR_G(I),FTABLE_g(I)
               ELSE
                   WRITE(62,6200) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
      1                       THLQACC(I,J),THICACC(I,J),J=1,3),
-     2                       TCN,RCANACC(I),SCANACC(I),TSN,ZSN
-                  WRITE(63,6300) IDAY,IYEAR,FSINACC(I),FLINACC(I),
+     2                       TCN,RCANACC(I),SCANACC(I),TSN,ZSN,
+     3                       ACTLYR_G(I),FTABLE_g(I)
+              ENDIF
+              WRITE(63,6300) IDAY,IYEAR,FSINACC(I),FLINACC(I),
      1                       TAACC(I)-TFREZ,UVACC(I),PRESACC(I),
      2                       QAACC(I),PREACC(I),EVAPACC(I)
-              ENDIF
+
              endif
             ENDIF
 C
@@ -4509,21 +4512,18 @@ C
      3                    CUMSNO,' TILE ',M
             IF(IGND.GT.3) THEN
                WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
-     1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,5),
-     2                  ' TILE ',M
-               WRITE(631,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
-     1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=6,10),
-     2                  ' TILE ',M
+     1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,IGND)
+     2                  ,ACTLYR(I,M), FTABLE(I,M),' TILE ',M
             ELSE
                WRITE(621,6200) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
      1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,3),
      2                  TCN,RCANACC_M(I,M),SCANACC_M(I,M),TSN,ZSN,
      3                  ' TILE ',M
-               WRITE(631,6300) IDAY,IYEAR,FSINACC_M(I,M),FLINACC_M(I,M),
+            ENDIF
+            WRITE(631,6300) IDAY,IYEAR,FSINACC_M(I,M),FLINACC_M(I,M),
      1                  TAACC_M(I,M)-TFREZ,UVACC_M(I,M),PRESACC_M(I,M),
      2                  QAACC_M(I,M),PREACC_M(I,M),EVAPACC_M(I,M),
      3                  ' TILE ',M
-            ENDIF
 C
            endif
           ENDIF ! IF write daily
@@ -4549,7 +4549,7 @@ C=======================================================================
      2                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
      4                       SNOROT,TAROW,WSNOROT,TBARROT,THLQROT,
-     5                       THICROT,TFREZ,QFCROT)
+     5                       THICROT,TFREZ,QFCROT,ACTLYR,FTABLE)
 
        DO NT=1,NMON
         IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
@@ -4563,7 +4563,7 @@ C=======================================================================
      1                       nltest,nmtest,ALVSROT,FAREROT,FSVHROW,
      2                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
-     4                       TAROW,QFCROT)
+     4                       TAROW,QFCROT,ACTLYR,FTABLE)
 
 c     CTEM output and write out
 

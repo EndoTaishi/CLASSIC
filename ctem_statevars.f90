@@ -507,6 +507,12 @@ type class_moyr_output
     real, dimension(nlat) :: EVAPACC_MO
     real, dimension(nlat) :: TRANSPACC_MO
     real, dimension(nlat) :: TAACC_MO
+    real, dimension(nlat) :: ACTLYR_MO
+    real, dimension(nlat) :: FTABLE_MO
+    real, dimension(nlat) :: ACTLYR_MIN_MO
+    real, dimension(nlat) :: ACTLYR_MAX_MO
+    real, dimension(nlat) :: FTABLE_MIN_MO
+    real, dimension(nlat) :: FTABLE_MAX_MO
 
     real :: FSSTAR_MO
     real :: FLSTAR_MO
@@ -531,6 +537,12 @@ type class_moyr_output
     real, dimension(nlat) :: EVAPACC_YR
     real, dimension(nlat) :: TRANSPACC_YR
     real, dimension(nlat) :: TAACC_YR
+    real, dimension(nlat) :: ACTLYR_YR
+    real, dimension(nlat) :: ACTLYR_MIN_YR
+    real, dimension(nlat) :: ACTLYR_MAX_YR
+    real, dimension(nlat) :: FTABLE_YR
+    real, dimension(nlat) :: FTABLE_MIN_YR
+    real, dimension(nlat) :: FTABLE_MAX_YR
 
     real :: FSSTAR_YR
     real :: FLSTAR_YR
@@ -581,6 +593,8 @@ type ctem_gridavg
       real, dimension(nlat) :: CDMROT_g
       real, dimension(nlat) :: SFCUROT_g
       real, dimension(nlat) :: SFCVROT_g
+      real, dimension(nlat) :: ACTLYR_g
+      real, dimension(nlat) :: FTABLE_g
       real, dimension(nlat) :: fc_g
       real, dimension(nlat) :: fg_g
       real, dimension(nlat) :: fcs_g
@@ -1289,6 +1303,12 @@ do i=1,nltest
     class_out%PREACC_MO(I) =0.
     class_out%EVAPACC_MO(I)=0.
     class_out%TAACC_MO(I)=0.
+    class_out%ACTLYR_MO(I)=0.
+    class_out%FTABLE_MO(I)=0.
+    class_out%ACTLYR_MIN_MO(I)=100000.
+    class_out%FTABLE_MIN_MO(I)=100000.
+    class_out%ACTLYR_MAX_MO(I)=0.
+    class_out%FTABLE_MAX_MO(I)=0.
 
     DO J=1,IGND
         class_out%TBARACC_MO(I,J)=0.
@@ -1909,6 +1929,8 @@ integer :: i,j
         ctem_grd%CDMROT_g(i)=0.0
         ctem_grd%SFCUROT_g(i)=0.0
         ctem_grd%SFCVROT_g(i)=0.0
+        ctem_grd%ACTLYR_g(i)=0.0
+        ctem_grd%FTABLE_g(i)=0.0
 
        if (c_switch%ctem_on) then
           do j=1,icc
