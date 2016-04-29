@@ -663,7 +663,7 @@ deallocate(timenum)
  if (MONTHFILE) then
     call dothevars(3,tottime,grpid_ann_class,CLASS_M_VAR,CLASS_M_NAME,CLASS_M_UNIT,numclasvars_m,0,nl)
     ! Now the soil layer vars
-    call dothevars(3,tottime,grpid_ann_class,CLASS_M_S_VAR,CLASS_M_S_NAME,CLASS_M_S_UNIT,nclassoilvars_m,2,nl) ! specialdim = 2 for the CLASS soil layers
+    call dothevars(4,tottime,grpid_ann_class,CLASS_M_S_VAR,CLASS_M_S_NAME,CLASS_M_S_UNIT,nclassoilvars_m,2,nl) ! specialdim = 2 for the CLASS soil layers
  else ! Annual file
     call dothevars(3,totyrs,grpid_mon_class,CLASS_Y_VAR,CLASS_Y_NAME,CLASS_Y_UNIT,numclasvars_a,0,nl)
  end if

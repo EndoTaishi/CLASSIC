@@ -2126,9 +2126,9 @@ c     initialize accumulated array for monthly & yearly output for class
 5300  FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,
      1       F9.4)
 5301  FORMAT(I5,F10.4)
-6001  FORMAT('CLASS-CTEM RUN:     ',6A4)
-6002  FORMAT('RESEARCHER:         ',6A4)
-6003  FORMAT('INSTITUTION:        ',6A4)
+6001  FORMAT('#CLASS TEST RUN:     ',6A4)
+6002  FORMAT('#RESEARCHER:         ',6A4)
+6003  FORMAT('#INSTITUTION:        ',6A4)
 C
 C===================== CTEM =============================================== \
 C
@@ -3347,8 +3347,6 @@ c    -------------- inputs updated by ctem are above this line ------
      &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat)
 c    ---------------- outputs are listed above this line ------------
 c
-      endif  !if(ctem_on)
-
       ! Calculate the methane that is oxidized by the soil sink
       ! this operates on a daily timestep.
       call soil_ch4uptake(1,nml,tbaraccgat_t,THPGAT,BIGAT,thliqacc_t,
@@ -3356,52 +3354,21 @@ c
      &                     wetfdyngat,wetfrac_presgat,isndgat,RHOW,
      &                     RHOICE,ch4concgat,ch4soillsgat)
 
-! c
-! c     reset mosaic accumulator arrays.
-! c
-! c
-!       if (ctem_on) then
-!         do 705 i = 1, nml
-! c
-!           fsinacc_gat(i)=0.
-!           flinacc_gat(i)=0.
-!           flutacc_gat(i)=0.
-!           alswacc_gat(i)=0.
-!           allwacc_gat(i)=0.
-!           pregacc_gat(i)=0.
-! c
-!           fsnowacc_t(i)=0.0
-!           tcanoaccgat_out(i)=tcanoaccgat_t(i)  !
-!           tcanoaccgat_t(i)=0.0  !
-! c
-!           tcansacc_t(i)=0.0
-!           taaccgat_t(i)=0.0
-!           vvaccgat_t(i)=0.0  !
-!           uvaccgat_t(i)=0.0  !
-! c
-!           do 715 j=1,ignd
-!              tbaraccgat_t(i,j)=0.0 !
-!              tbarcacc_t(i,j)=0.0
-!              tbarcsacc_t(i,j)=0.0
-!              tbargacc_t(i,j)=0.0
-!              tbargsacc_t(i,j)=0.0
-!              thliqcacc_t(i,j)=0.0
-!              thliqgacc_t(i,j)=0.0
-!              thliqacc_t(i,j)=0.0
-!              thicecacc_t(i,j)=0.0
-!              thicegacc_t(i,j)=0.0
-! 715       continue
-! c
-!           do 716 j = 1, icc
-!             ancsvgac_t(i,j)=0.0
-!             ancgvgac_t(i,j)=0.0
-!             rmlcsvga_t(i,j)=0.0
-!             rmlcgvga_t(i,j)=0.0
-! 716       continue
-! c
-! 705     continue
-!       endif  ! if(ctem_on)
+
+!     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
+!     to reset here, prior to ctems2.
+        do i = 1, nml
+          vvaccgat_t(i)=0.0  !
+          uvaccgat_t(i)=0.0  !
+          do j=1,ignd
+             tbaraccgat_t(i,j)=0.0 !
+          end do
+        end do
+
+       endif  ! if(ctem_on)
+
       endif  ! if(ncount.eq.nday)
+
 C===================== CTEM ============================================ /
 C
       CALL CLASSS (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT,
@@ -3589,33 +3556,27 @@ c    ----
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat)
-c
+
       if(ncount.eq.nday) then
-c
+
 c     reset mosaic accumulator arrays.
-c
-c
+
       if (ctem_on) then
         do 705 i = 1, nml
-c
+
           fsinacc_gat(i)=0.
           flinacc_gat(i)=0.
           flutacc_gat(i)=0.
           alswacc_gat(i)=0.
           allwacc_gat(i)=0.
           pregacc_gat(i)=0.
-c
           fsnowacc_t(i)=0.0
-          tcanoaccgat_out(i)=tcanoaccgat_t(i)  !
-          tcanoaccgat_t(i)=0.0  !
-c
+          tcanoaccgat_out(i)=tcanoaccgat_t(i)
+          tcanoaccgat_t(i)=0.0
           tcansacc_t(i)=0.0
           taaccgat_t(i)=0.0
-          vvaccgat_t(i)=0.0  !
-          uvaccgat_t(i)=0.0  !
-c
+
           do 715 j=1,ignd
-             tbaraccgat_t(i,j)=0.0 !
              tbarcacc_t(i,j)=0.0
              tbarcsacc_t(i,j)=0.0
              tbargacc_t(i,j)=0.0
@@ -3626,14 +3587,14 @@ c
              thicecacc_t(i,j)=0.0
              thicegacc_t(i,j)=0.0
 715       continue
-c
+
           do 716 j = 1, icc
             ancsvgac_t(i,j)=0.0
             ancgvgac_t(i,j)=0.0
             rmlcsvga_t(i,j)=0.0
             rmlcgvga_t(i,j)=0.0
 716       continue
-c
+
 705     continue
       endif  ! if(ctem_on)
       end if

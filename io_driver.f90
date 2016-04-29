@@ -785,9 +785,9 @@ parallelrun       => c_switch%parallelrun
 !      or Y for half hourly, daily, monthly, or yearly, respectively. 
 
      
-6001  FORMAT('CLASS-CTEM TEST RUN:     ',6A4)
-6002  FORMAT('RESEARCHER:         ',6A4)
-6003  FORMAT('INSTITUTION:        ',6A4)
+6001  FORMAT('#CLASS-CTEM TEST RUN:     ',6A4)
+6002  FORMAT('#RESEARCHER:         ',6A4)
+6003  FORMAT('#INSTITUTION:        ',6A4)
 
 if (.not. parallelrun .and. ctem_on) then ! stand alone mode, includes half-hourly and daily output
 
@@ -922,8 +922,8 @@ if (ctem_on .and. .not. parallelrun) then
     end if
 
 7010  FORMAT(A80)
-7020  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) DAILY RESULTS')
-7021  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) DAILY ',' DISTURBANCE RESULTS')
+7020  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) DAILY RESULTS')
+7021  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) DAILY ',' DISTURBANCE RESULTS')
 7030  FORMAT('HOUR MIN  DAY YEAR, An FOR 9 PFTs, RmL FOR 9 PFTs')
 7040  FORMAT('  DAY YEAR       GPP       NPP       NEP       NBP', '   AUTORES  HETRORES    LITRES    SOCRES  DSTCEMLS  LITRFALL', &
      '  HUMIFTRS')
@@ -936,10 +936,10 @@ if (ctem_on .and. .not. parallelrun) then
 7110  FORMAT('  DAY YEAR   EMIT_CO2','    EMIT_CO   EMIT_CH4  EMIT_NMHC    EMIT_H2   EMIT_NOX', &
             '   EMIT_N2O  EMIT_PM25   EMIT_TPM    EMIT_TC    EMIT_OC','    EMIT_BC   BURNFRAC   SMFUNCVEG   LUCEMCOM   LUCLTRIN',&
             '   LUCSOCIN   GRCLAREA   BTERM   LTERM   MTERM')
-7111  FORMAT('               g/m2.D     g/m2.d','     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d',&
-            '     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d   ','       %  avgprob/d uMOL-CO2/M2.S KgC/M2.D','   KgC/M2.D      KM^2    prob/d       prob/d       prob/d')
+7111  FORMAT('#               g/m2.D     g/m2.d','     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d',&
+            '#     g/m2.d     g/m2.d     g/m2.d     g/m2.d     g/m2.d   ','       %  avgprob/d uMOL-CO2/M2.S KgC/M2.D','   KgC/M2.D      KM^2    prob/d       prob/d       prob/d')
 7112  FORMAT(' DAY  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2  SOILUP ')
-7113  FORMAT('          umolCH4/M2.S    umolCH4/M2.S          umolCH4/M2.S  umolCH4/M2.S  umolCH4/M2.S')
+7113  FORMAT('#          umolCH4/M2.S    umolCH4/M2.S          umolCH4/M2.S  umolCH4/M2.S  umolCH4/M2.S')
 
 end if !ctem_on & not parallelrun
  
@@ -1031,43 +1031,43 @@ if (ctem_on) then
 end if !ctem_on & parallelrun
 
 6021  FORMAT(2X,'MONTH YEAR  SW     LW      QH      QE    SNOACC    ','WSNOACC    ROFACC      PCP      EVAP       TAIR     TRANSP     T/E')
-6121  FORMAT(2X,'           W/m2    W/m2    W/m2    W/m2    kg/m2   ','kg/m2      mm.mon    mm.mon    mm.mon      degC      mm.mon    ratio')
+6121  FORMAT('#           W/m2    W/m2    W/m2    W/m2    kg/m2   ','kg/m2      mm.mon    mm.mon    mm.mon      degC      mm.mon    ratio')
 6022  FORMAT(2X,'MONTH  YEAR  TG1  THL1  THI1     TG2  THL2  THI2','     TG3  THL3  THI3')
-6122  FORMAT(2X,'             deg  m3/m3  m3/m3   deg  m3/m3  ','m3/m3   deg  m3/m3  m3/m3')
+6122  FORMAT('#             deg  m3/m3  m3/m3   deg  m3/m3  ','m3/m3   deg  m3/m3  m3/m3')
 6023  FORMAT(2X,'YEAR   SW     LW      QH      QE     ROFACC   ',' PCP     EVAP     TRANSP     T/E  ')
-6123  FORMAT(2X,'      W/m2   W/m2    W/m2    W/m2    mm.yr    ','mm.yr    mm.yr     mm.yr     ratio')
-6024  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS')
+6123  FORMAT('#      W/m2   W/m2    W/m2    W/m2    mm.yr    ','mm.yr    mm.yr     mm.yr     ratio')
+6024  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS')
 6124  FORMAT('  MONTH  YEAR  LAIMAXG  VGBIOMAS  LITTER    SOIL_C  ', '  NPP       GPP        NEP       NBP    HETRES','   AUTORES    LITRES   SOILCRES')
-6224  FORMAT('                 m2/m2  Kg C/m2  Kg C/m2   Kg C/m2  ','gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon ',&
+6224  FORMAT('#                 m2/m2  Kg C/m2  Kg C/m2   Kg C/m2  ','gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon ',&
             'gC/m2.mon  gC/m2.mon  gC/m2.mon')   
-6025  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS FOR DISTURBANCES')
+6025  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS FOR DISTURBANCES')
 6125  FORMAT('  MONTH  YEAR  CO2','        CO        CH4      NMHC       H2       NOX       N2O       PM25       TPM        TC        OC        BC  ',&
-            ' SMFUNCVEG  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC    BTERM',' LTERM   MTERM   WIND')
-6225  FORMAT('            g/m2.mon  g/m2.mon','  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon', &
+            '# SMFUNCVEG  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC    BTERM',' LTERM   MTERM   WIND')
+6225  FORMAT('#            g/m2.mon  g/m2.mon','  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon', &
             '  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon','  prob/mon    g C/m2    g C/m2    g C/m2         %  prob/mon','  prob/mon  prob/mon  km/h')
-6026  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS')
+6026  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS')
 6126  FORMAT('  YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS', '  SOILCMAS  TOTCMASS  ANNUALNPP ANNUALGPP ANNUALNEP ANNUALNBP',&
      ' ANNHETRSP ANAUTORSP ANNLITRES ANSOILCRES')
-6226  FORMAT('          m2/m2   Kg C/m2   Kg C/m2   Kg C/m2    Kg C/m2','  Kg C/m2   Kg C/m2   gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',&
+6226  FORMAT('#          m2/m2   Kg C/m2   Kg C/m2   Kg C/m2    Kg C/m2','  Kg C/m2   Kg C/m2   gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',&
      '  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr')
-6027  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS FOR DISTURBANCES')
+6027  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS FOR DISTURBANCES')
 6127  FORMAT('  YEAR   ANNUALCO2','  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O','  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC ASMFUNCVEG',&
      ' ANNLUCCO2  ANNLUCLTR ANNLUCSOC ABURNFRAC ANNBTERM ANNLTERM',' ANNMTERM')
-6227  FORMAT('         g/m2.yr','  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr','  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  prob/yr ',&
+6227  FORMAT('#         g/m2.yr','  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr','  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  prob/yr ',&
             '  g/m2.yr  g/m2.yr  g/m2.yr    %     prob/yr  prob/yr','  prob/yr')
-6028  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS')
+6028  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS')
 6128  FORMAT(' MONTH YEAR  FRAC #1   FRAC #2   FRAC #3   FRAC #4   ','FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9   FRAC #10   ',&
             'SUMCHECK, PFT existence for each of the 9 pfts') 
-6228  FORMAT('             %         %         %         %         ','%         %         %         %         %         %          ','     ')   
-6029  FORMAT('CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS')
+6228  FORMAT('#             %         %         %         %         ','%         %         %         %         %         %          ','     ')
+6029  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS')
 6129  FORMAT('  YEAR   FRAC #1   FRAC #2   FRAC #3   FRAC #4   ','FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9   FRAC #10   ',&
             'SUMCHECK, PFT existence for each of the 9 pfts')
-6229  FORMAT('         %         %         %         %         ','%         %         %         %         %         %          ','     ')
+6229  FORMAT('#         %         %         %         %         ','%         %         %         %         %         %          ','     ')
      
 6230  FORMAT('MONTH  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2  SOILUPTAKE ')
-6231  FORMAT('       gCH4/M2.MON     gCH4/M2.MON        gCH4/M2.MON  gCH4/M2.MON  gCH4/M2.MON')
+6231  FORMAT('#       gCH4/M2.MON     gCH4/M2.MON        gCH4/M2.MON  gCH4/M2.MON  gCH4/M2.MON')
 6232  FORMAT('  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2   SOILUPTAKE ')
-6233  FORMAT('      gCH4/M2.YR      gCH4/M2.YR         gCH4/M2.YR   gCH4/M2.YR   gCH4/M2.YR ')
+6233  FORMAT('#      gCH4/M2.YR      gCH4/M2.YR         gCH4/M2.YR   gCH4/M2.YR   gCH4/M2.YR ')
  
 end subroutine create_outfiles
 
