@@ -2143,9 +2143,9 @@ c     initialize accumulated array for monthly & yearly output for class
 5300  FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,
      1       F9.4)
 5301  FORMAT(I5,F10.4)
-6001  FORMAT('CLASS TEST RUN:     ',6A4)
-6002  FORMAT('RESEARCHER:         ',6A4)
-6003  FORMAT('INSTITUTION:        ',6A4)
+6001  FORMAT('#CLASS TEST RUN:     ',6A4)
+6002  FORMAT('#RESEARCHER:         ',6A4)
+6003  FORMAT('#INSTITUTION:        ',6A4)
 C
 C===================== CTEM =============================================== \
 C
