@@ -141,17 +141,19 @@ character(100), parameter, dimension(numclasvars_m) :: CLASS_M_UNIT=['W/$m^2$   
 ! CLASS Soil vars are stored in a separate file.
 
 ! .OF2M_G **************************
-!  MONTH  YEAR  TG1  THL1  THI1     TG2  THL2  THI2     TG3  THL3  THI3
-!              deg  m3/m3  m3/m3   deg  m3/m3  m3/m3   deg  m3/m3  m3/m3
+!  MONTH  YEAR  TG1  THL1  THI1     TG2  THL2  THI2     TG3  THL3  THI3  ACTLYR_MO ACTLYR_MAX_MO ACTLYR_MIN_MO FTABLE_MO FTABLE_MAX_MO FTABLE_MIN_MO
+!              deg  m3/m3  m3/m3   deg  m3/m3  m3/m3   deg  m3/m3  m3/m3 m m m m m m
 
-integer, parameter :: nclassoilvars_m = 3   !number of monthly CLASS vars to write
+integer, parameter :: nclassoilvars_m = 9   !number of monthly CLASS vars to write
 
-character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_VAR=['TG       ','THL','THI']
+character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_VAR=['TG       ','THL','THI','ACTLYR_mean','ACTLYR_max','ACTLYR_min','FTABLE_mean','FTABLE_max','FTABLE_min']
 
-character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_NAME=['Ground temperature in celsius of soil layer                    ',                                                        &
-                                                                     'Volumetric liquid water content of soil layer','Volumetric frozen water content of soil layer']
+character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_NAME=['Ground temperature in celsius of soil layer                    ', &
+                                                                     'Volumetric liquid water content of soil layer','Volumetric frozen water content of soil layer', &
+                                                                     'Mean active layer depth','Maximum active layer depth','Minimum active layer depth', &
+                                                                     'Mean depth to frozen water table','Maximum depth to frozen water table','Minimum depth to frozen water table']
 
-character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_UNIT=['$\circ$C           ','$m^3$/$m^3$','$m^3$/$m^3$']
+character(100), parameter, dimension(nclassoilvars_m) :: CLASS_M_S_UNIT=['$\circ$C           ','$m^3$/$m^3$','$m^3$/$m^3$','m','m','m','m','m','m']
 
 !======================== Declare arrays for annual CLASS =============
 

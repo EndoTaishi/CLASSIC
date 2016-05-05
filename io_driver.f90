@@ -1479,7 +1479,7 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
             WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,&
                           QE_YR,ROFACC_YR(I),PREACC_YR(I),&
                           EVAPACC_YR(I),TRANSPACC_YR(I),&
-                          TRANSPACC_YR(I)/EVAPACC_YR(I)
+                          tovere
 
         ! ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
 

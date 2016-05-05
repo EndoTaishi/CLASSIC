@@ -701,8 +701,13 @@ subroutine dothevars(numdims,tottime,grpid,inarray,namearray,unitarray,sizear,sp
         allocate(threevar(cntx,cnty,tottime))
         threevar=fill_value  !comes in via the module
    else if (numdims == 4) then
-        allocate(fourvar(cntx,cnty,ntile,tottime))
-        fourvar=fill_value
+        if (specialdim == 1) then
+            allocate(fourvar(cntx,cnty,ntile,tottime))
+            fourvar=fill_value
+        else
+            allocate(fourvar(cntx,cnty,nl,tottime))
+            fourvar=fill_value
+        end if
    else if (numdims == 5) then
         allocate(fivevar(cntx,cnty,ctemnpft,ntile,tottime))
         fivevar=fill_value
@@ -723,8 +728,13 @@ subroutine dothevars(numdims,tottime,grpid,inarray,namearray,unitarray,sizear,sp
             status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,pft,time],varid)
             if (status/=nf90_noerr) call handle_err(status)
         else if (specialdim == 2) then ! CLASS SOIL
+           if (i <= 3) then  !FLAG!!! First three are per layer
             status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,layer,time],varid)
             if (status/=nf90_noerr) call handle_err(status)
+           else ! the rest are not!
+            status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,time],varid)
+            if (status/=nf90_noerr) call handle_err(status)
+           end if
         else
             status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,tile,time],varid)
             if (status/=nf90_noerr) call handle_err(status)
@@ -763,8 +773,13 @@ subroutine dothevars(numdims,tottime,grpid,inarray,namearray,unitarray,sizear,sp
             status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,ctemnpft,1])
             if (status/=nf90_noerr) call handle_err(status)
         else if (specialdim == 2) then ! CLASS SOIL
+          if (i <= 3) then  !FLAG!!! First three are per layer
             status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,nl,1])
             if (status/=nf90_noerr) call handle_err(status)
+          else ! the rest are not!
+            status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,1])
+            if (status/=nf90_noerr) call handle_err(status)
+          end if
         else
             status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,ntile,1])
             if (status/=nf90_noerr) call handle_err(status)
@@ -788,8 +803,16 @@ subroutine dothevars(numdims,tottime,grpid,inarray,namearray,unitarray,sizear,sp
             status = nf90_put_var(grpid,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,ctemnpft,tottime])
             if (status/=nf90_noerr) call handle_err(status)
         else if (specialdim == 2) then ! CLASS SOIL
+          if (i <= 3) then  !FLAG!!! First three are per layer
             status = nf90_put_var(grpid,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,nl,tottime])
             if (status/=nf90_noerr) call handle_err(status)
+          else ! the rest are not!
+            allocate(threevar(cntx,cnty,tottime))
+            threevar=fill_value  !comes in via the module
+            status = nf90_put_var(grpid,varid,threevar,start=[1,1,1],count=[cntx,cnty,tottime])
+            if (status/=nf90_noerr) call handle_err(status)
+            deallocate(threevar)
+          end if
         else
             status = nf90_put_var(grpid,varid,fourvar,start=[1,1,1,1],count=[cntx,cnty,ntile,tottime])
             if (status/=nf90_noerr) call handle_err(status)

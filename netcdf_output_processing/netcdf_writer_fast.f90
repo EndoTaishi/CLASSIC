@@ -48,6 +48,7 @@ real, allocatable, dimension(:) :: mpft_tot
 ! Monthly variables for CLASS
 real, allocatable, dimension(:,:) :: class_m
 real, allocatable, dimension(:,:,:) :: class_s_m
+real, allocatable, dimension(:,:) :: class_s_mother
 
 ! Annual variables for CLASS
 real, allocatable, dimension(:,:) :: class_a
@@ -55,7 +56,7 @@ real, allocatable, dimension(:,:) :: class_a
 integer :: y,dummy_year,dummy_month
 real :: dummy_var
 integer, dimension(1) :: lyear
-integer :: i,m,xlon,ylat,yrst,h,l,cell
+integer :: i,m,xlon,ylat,yrst,h,l,cell,j
 integer :: totyrs
 integer :: monyrs
 integer :: totmons
@@ -997,7 +998,8 @@ end if !lexist
    OPEN(82,FILE=trim(folder)//trim(ARGBUFF)//'.OF2M',status='old',form='formatted')
 
    !Allocate Arrays
-   allocate(class_s_m(nclassoilvars_m,nl,totmons))
+   allocate(class_s_m(3,nl,totmons))  ! This one is for the THL, THI, and soil temp
+   allocate(class_s_mother(nclassoilvars_m-3,totmons)) ! This is for the other vars that are not per soil layer
 
    !  first throw out header (5 lines)
    do h = 1,5
@@ -1011,11 +1013,12 @@ end if !lexist
    end do
         
    do y = 1,totmons
-     read(82,*,iostat=io_set)dummy_month,dummy_year,class_s_m(1,1,y),class_s_m(2,1,y),class_s_m(3,1,y),class_s_m(1,2,y),class_s_m(2,2,y),class_s_m(3,2,y),class_s_m(1,3,y),class_s_m(2,3,y),class_s_m(3,3,y)
+     read(82,*,iostat=io_set)dummy_month,dummy_year,(class_s_m(1,j,y),class_s_m(2,j,y),class_s_m(3,j,y),j=1,nl),class_s_mother(1:nclassoilvars_m-3,y)
      if (io_set .ne. 0 .and. y < totmons) then
          write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'OF2M'
          close(82)
          deallocate(class_s_m)
+         deallocate(class_s_mother)
          goto 119
      end if   
    end do
@@ -1025,7 +1028,7 @@ end if !lexist
 !----
 ! Write to netcdf file
  do l=1,nl   ! begin soil layer loop
-  do v = 1,nclassoilvars_m ! begin vars loop
+  do v = 1,3 ! begin vars loop of the three soil vars that are per layer
 
    status = nf90_inq_varid(grpid,trim(CLASS_M_S_VAR(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
@@ -1036,8 +1039,19 @@ end if !lexist
   end do ! vars loop
  end do ! soil layer loop
 
+ do v = 4,nclassoilvars_m ! begin vars loop of the remainder
+
+   status = nf90_inq_varid(grpid,trim(CLASS_M_S_VAR(v)), var_id)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_put_var(grpid,var_id,class_s_mother(v-3,:),start=[xlon,ylat,yrst],count=[1,1,totmons])
+   if (status/=nf90_noerr) call handle_err(status)
+
+ end do ! vars loop
+
 ! deallocate arrays
 deallocate(class_s_m)
+deallocate(class_s_mother)
 
 119 continue !error thrown by file
 
