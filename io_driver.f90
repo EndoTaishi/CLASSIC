@@ -1041,7 +1041,7 @@ end if !ctem_on & parallelrun
             'gC/m2.mon  gC/m2.mon  gC/m2.mon')   
 6025  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS FOR DISTURBANCES')
 6125  FORMAT('  MONTH  YEAR  CO2','        CO        CH4      NMHC       H2       NOX       N2O       PM25       TPM        TC        OC        BC  ',&
-            '# SMFUNCVEG  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC    BTERM',' LTERM   MTERM   WIND')
+            ' SMFUNCVEG  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC    BTERM',' LTERM   MTERM   WIND')
 6225  FORMAT('#            g/m2.mon  g/m2.mon','  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon', &
             '  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon','  prob/mon    g C/m2    g C/m2    g C/m2         %  prob/mon','  prob/mon  prob/mon  km/h')
 6026  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS')
