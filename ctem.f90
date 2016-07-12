@@ -622,7 +622,6 @@ if(compete .or. lnduseon)then
      &                  litrmass, soilcmas, vgbiomas, gavgltms,&
      &                  gavgscms,  fcancmx,   fcanmx,&
      &                  lucemcom, lucltrin, lucsocin)
-
         endif !lnduseon
 
   else ! onetile_perPFT is True
