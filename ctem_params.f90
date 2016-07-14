@@ -463,17 +463,10 @@ hgrlthrs = 10.0 ! FireMIP value: 1.0
 parmlght = 0.8
 parblght = 0.1
 
-! Li et al (2012) Biogeosciences vals converted to km/h
-! maxsprd = [  0.54, 0.54, 0.00, &
-!              0.40, 0.40, 0.40, &
-!              0.00, 0.00, 0.00, &
-!              0.72, 0.72, 0.00 ]
-
-! Flag test values Apr 21 2016 JM.
 maxsprd = [  0.38, 0.38, 0.00, &
              0.28, 0.28, 0.28, &
              0.00, 0.00, 0.00, &
-             0.51, 0.51, 0.00 ]
+             0.51, 0.75, 0.00 ]  ! new C4 value based on Vivek's literature searches (Jul 14 2016), old =0.51
 
 frco2glf = [ 0.70, 0.70, 0.00, &
              0.70, 0.70, 0.70, &
