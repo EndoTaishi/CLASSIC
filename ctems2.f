@@ -19,6 +19,7 @@
      i      rmrow,       rgrow,       nbprow,       litresrow,
      j      socresrow,   gpprow,      dstcemlsrow,  litrfallrow,
      k      humiftrsrow, veghghtrow,  rootdpthrow,  rmlrow,
+     1      litrfallvegrow, humiftrsvegrow,
      l      rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,
      m      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,
      n      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,
@@ -62,6 +63,7 @@ c --
      d      rmgat,       rggat,       nbpgat,       litresgat,
      e      socresgat,   gppgat,      dstcemlsgat,  litrfallgat,
      f      humiftrsgat, veghghtgat,  rootdpthgat,  rmlgat,
+     1      litrfallveggat, humiftrsveggat,
      g      rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,
      h      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,
      i      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,
@@ -160,6 +162,8 @@ c
      4      socresrow(nlat,nmos),         gpprow(nlat,nmos),
      5      dstcemlsrow(nlat,nmos),       litrfallrow(nlat,nmos),
      6      humiftrsrow(nlat,nmos),       veghghtrow(nlat,nmos,icc),
+     7      litrfallvegrow(nlat,nmos,icc),
+     &      humiftrsvegrow(nlat,nmos,iccp1),
      7      rootdpthrow(nlat,nmos,icc),   rmlrow(nlat,nmos),
      8      rmsrow(nlat,nmos),            rmrrow(nlat,nmos),
      9      tltrleafrow(nlat,nmos,icc),   tltrstemrow(nlat,nmos,icc),
@@ -250,6 +254,7 @@ c
      4      socresgat(ilg),            gppgat(ilg),
      5      dstcemlsgat(ilg),          litrfallgat(ilg),
      6      humiftrsgat(ilg),          veghghtgat(ilg,icc),
+     &      litrfallveggat(ilg,icc), humiftrsveggat(ilg,iccp1),
      7      rootdpthgat(ilg,icc),      rmlgat(ilg),
      8      rmsgat(ilg),               rmrgat(ilg),
      9      tltrleafgat(ilg,icc),      tltrstemgat(ilg,icc),
@@ -438,6 +443,7 @@ c
           ancgvegrow(ilmos(k),jlmos(k),l)=ancgveggat(k,l)
           rmlcsvegrow(ilmos(k),jlmos(k),l)=rmlcsveggat(k,l)
           rmlcgvegrow(ilmos(k),jlmos(k),l)=rmlcgveggat(k,l)
+          litrfallvegrow(ilmos(k),jlmos(k),l) = litrfallveggat(k,l)
 
 c         fire variables
           emit_co2row(ilmos(k),jlmos(k),l)    = emit_co2gat(k,l)
@@ -453,7 +459,6 @@ c         fire variables
           emit_ocrow(ilmos(k),jlmos(k),l)     = emit_ocgat(k,l)
           emit_bcrow(ilmos(k),jlmos(k),l)     = emit_bcgat(k,l)
           burnvegfrow(ilmos(k),jlmos(k),l)    = burnvegfgat(k,l)
-
 c
 101   continue
 c
@@ -466,6 +471,7 @@ c
           soilcresvegrow(ilmos(k),jlmos(k),l) = soilcresveggat(k,l)
           nepvegrow(ilmos(k),jlmos(k),l)    = nepveggat(k,l)
           nbpvegrow(ilmos(k),jlmos(k),l)    = nbpveggat(k,l)
+          humiftrsvegrow(ilmos(k),jlmos(k),l) = humiftrsveggat(k,l)
 
 102   continue
 c

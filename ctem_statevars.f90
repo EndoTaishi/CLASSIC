@@ -207,6 +207,8 @@ type veg_rot
     real, dimension(nlat,nmos,icc) :: rmsveg
     real, dimension(nlat,nmos,icc) :: rmrveg
     real, dimension(nlat,nmos,icc) :: rgveg
+    real, dimension(nlat,nmos,icc) :: litrfallveg
+    real, dimension(nlat,nmos,iccp1) :: humiftrsveg
 
     real, dimension(nlat,nmos,icc) :: rothrlos
     real, dimension(nlat,nmos,icc) :: pfcancmx
@@ -433,6 +435,8 @@ type veg_gat
     real, dimension(ilg,icc) :: rmsveg
     real, dimension(ilg,icc) :: rmrveg
     real, dimension(ilg,icc) :: rgveg
+    real, dimension(ilg,icc) :: litrfallveg
+    real, dimension(ilg,iccp1) :: humiftrsveg
 
     real, dimension(ilg,icc) :: rothrlos
     real, dimension(ilg,icc) :: pfcancmx
@@ -507,6 +511,8 @@ type class_moyr_output
     real, dimension(nlat) :: EVAPACC_MO
     real, dimension(nlat) :: TRANSPACC_MO
     real, dimension(nlat) :: TAACC_MO
+    real, dimension(nlat) :: GROUNDEVAP     ! evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
+    real, dimension(nlat) :: CANOPYEVAP     ! evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
 
     real :: FSSTAR_MO
     real :: FLSTAR_MO
@@ -771,6 +777,8 @@ type ctem_monthly
       real, dimension(nlat,nmos,icc) :: laimaxg_mo
       real, dimension(nlat,nmos,icc) :: stemmass_mo
       real, dimension(nlat,nmos,icc) :: rootmass_mo
+      real, dimension(nlat,nmos,icc) :: litrfallveg_mo
+      real, dimension(nlat,nmos,iccp1) :: humiftrsveg_mo
       real, dimension(nlat,nmos,icc) :: npp_mo
       real, dimension(nlat,nmos,icc) :: gpp_mo
       real, dimension(nlat,nmos,icc) :: vgbiomas_mo
@@ -815,6 +823,8 @@ type ctem_gridavg_monthly
     real, dimension(nlat) :: rootmass_mo_g
     real, dimension(nlat) :: litrmass_mo_g
     real, dimension(nlat) :: soilcmas_mo_g
+    real, dimension(nlat) :: litrfall_mo_g
+    real, dimension(nlat) :: humiftrs_mo_g
     real, dimension(nlat) :: npp_mo_g
     real, dimension(nlat) :: gpp_mo_g
     real, dimension(nlat) :: nep_mo_g
@@ -864,6 +874,8 @@ type ctem_tileavg_monthly
       real, dimension(nlat,nmos) :: laimaxg_mo_t
       real, dimension(nlat,nmos) :: stemmass_mo_t
       real, dimension(nlat,nmos) :: rootmass_mo_t
+      real, dimension(nlat,nmos) :: litrfall_mo_t
+      real, dimension(nlat,nmos) :: humiftrs_mo_t
       real, dimension(nlat,nmos) :: npp_mo_t
       real, dimension(nlat,nmos) :: gpp_mo_t
       real, dimension(nlat,nmos) :: vgbiomas_mo_t
@@ -947,6 +959,7 @@ type ctem_annual
       real, dimension(nlat,nmos,icc) :: mterm_yr
       real, dimension(nlat,nmos,icc) :: burnfrac_yr
       real, dimension(nlat,nmos,icc) :: smfuncveg_yr
+      real, dimension(nlat,nmos,icc) :: veghght_yr
 
 end type ctem_annual
 
@@ -1000,6 +1013,7 @@ type ctem_gridavg_annual
     real, dimension(nlat) :: ch4dyn1_yr_g
     real, dimension(nlat) :: ch4dyn2_yr_g
     real, dimension(nlat) :: ch4soills_yr_g
+    real, dimension(nlat) :: veghght_yr_g
 
 end type ctem_gridavg_annual
 
@@ -1053,6 +1067,7 @@ type ctem_tileavg_annual
       real, dimension(nlat,nmos) :: ch4dyn1_yr_t
       real, dimension(nlat,nmos) :: ch4dyn2_yr_t
       real, dimension(nlat,nmos) :: ch4soills_yr_t
+      real, dimension(nlat,nmos) :: veghght_yr_t
 
 end type ctem_tileavg_annual
 
@@ -1178,6 +1193,7 @@ integer :: j,k,l,m
             vrot%rootmass(j,k,l) = 0.
             vrot%pstemmass(j,k,l) = 0.
             vrot%pgleafmass(j,k,l) = 0.
+            vrot%litrfallveg(j,k,l)=0.
             vrot%bterm(j,k,l)        = 0.0
             vrot%mterm(j,k,l)        = 0.0
             vrot%ailcg(j,k,l)        = 0.0
@@ -1255,6 +1271,7 @@ integer :: j,k,l,m
                 vrot%soilcresveg(j,k,l) = 0.0
                 vrot%nepveg(j,k,l) = 0.0
                 vrot%nbpveg(j,k,l) = 0.0
+                vrot%humiftrsveg(j,k,l)=0.
             end do !iccp1
 
    end do !nmos
@@ -1289,6 +1306,8 @@ do i=1,nltest
     class_out%PREACC_MO(I) =0.
     class_out%EVAPACC_MO(I)=0.
     class_out%TAACC_MO(I)=0.
+    class_out%CANOPYEVAP(I)=0.
+    class_out%GROUNDEVAP(I)=0.
 
     DO J=1,IGND
         class_out%TBARACC_MO(I,J)=0.
@@ -1513,6 +1532,8 @@ do i=1,nltest
     ctem_grd_mo%autores_mo_g(i)=0.0
     ctem_grd_mo%litres_mo_g(i)=0.0
     ctem_grd_mo%soilcres_mo_g(i)=0.0
+    ctem_grd_mo%litrfall_mo_g(i)=0.0
+    ctem_grd_mo%humiftrs_mo_g(i)=0.0
     ctem_grd_mo%emit_co2_mo_g(i)=0.0
     ctem_grd_mo%emit_co_mo_g(i) =0.0
     ctem_grd_mo%emit_ch4_mo_g(i) =0.0
@@ -1551,6 +1572,8 @@ do i=1,nltest
         ctem_tile_mo%autores_mo_t(i,m)=0.0
         ctem_tile_mo%litres_mo_t(i,m)=0.0
         ctem_tile_mo%soilcres_mo_t(i,m)=0.0
+        ctem_tile_mo%litrfall_mo_t(i,m)=0.0
+        ctem_tile_mo%humiftrs_mo_t(i,m)=0.0
         ctem_tile_mo%emit_co2_mo_t(i,m)=0.0
         ctem_tile_mo%emit_co_mo_t(i,m) =0.0
         ctem_tile_mo%emit_ch4_mo_t(i,m) =0.0
@@ -1590,6 +1613,8 @@ do i=1,nltest
             ctem_mo%autores_mo(i,m,j)=0.0
             ctem_mo%litres_mo(i,m,j)=0.0
             ctem_mo%soilcres_mo(i,m,j)=0.0
+            ctem_mo%litrfallveg_mo(i,m,j)=0.0
+            ctem_mo%humiftrsveg_mo(i,m,j)=0.0
             ctem_mo%emit_co2_mo(i,m,j)=0.0
             ctem_mo%emit_co_mo(i,m,j) =0.0
             ctem_mo%emit_ch4_mo(i,m,j) =0.0
@@ -1613,6 +1638,7 @@ do i=1,nltest
         ctem_mo%hetrores_mo(i,m,iccp1)=0.0
         ctem_mo%litres_mo(i,m,iccp1)=0.0
         ctem_mo%soilcres_mo(i,m,iccp1)=0.0
+        ctem_mo%humiftrsveg_mo(i,m,iccp1)=0.0
 
     end do !nmtest
 end do ! nltest
@@ -1641,6 +1667,7 @@ do i=1,nltest
     ctem_grd_yr%soilcmas_yr_g(i)=0.0
     ctem_grd_yr%vgbiomas_yr_g(i)=0.0
     ctem_grd_yr%totcmass_yr_g(i)=0.0
+    ctem_grd_yr%veghght_yr_g(i)=0.0
     ctem_grd_yr%npp_yr_g(i)=0.0
     ctem_grd_yr%gpp_yr_g(i)=0.0
     ctem_grd_yr%nep_yr_g(i)=0.0
@@ -1685,6 +1712,7 @@ do i=1,nltest
         ctem_tile_yr%soilcmas_yr_t(i,m)=0.0
         ctem_tile_yr%vgbiomas_yr_t(i,m)=0.0
         ctem_tile_yr%totcmass_yr_t(i,m)=0.0
+        ctem_tile_yr%veghght_yr_t(i,m)=0.0
         ctem_tile_yr%npp_yr_t(i,m)=0.0
         ctem_tile_yr%gpp_yr_t(i,m)=0.0
         ctem_tile_yr%nep_yr_t(i,m)=0.0
@@ -1729,6 +1757,7 @@ do i=1,nltest
             ctem_yr%soilcmas_yr(i,m,j)=0.0
             ctem_yr%vgbiomas_yr(i,m,j)=0.0
             ctem_yr%totcmass_yr(i,m,j)=0.0
+            ctem_yr%veghght_yr(i,m,j)=0.0
             ctem_yr%npp_yr(i,m,j)=0.0
             ctem_yr%gpp_yr(i,m,j)=0.0
             ctem_yr%nep_yr(i,m,j)=0.0

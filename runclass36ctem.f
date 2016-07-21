@@ -650,6 +650,8 @@ c
       real, pointer, dimension(:,:,:) :: rmsvegrow
       real, pointer, dimension(:,:,:) :: rmrvegrow
       real, pointer, dimension(:,:,:) :: rgvegrow
+      real, pointer, dimension(:,:,:) :: litrfallvegrow
+      real, pointer, dimension(:,:,:) :: humiftrsvegrow
 
       real, pointer, dimension(:,:,:) :: rothrlosrow
       real, pointer, dimension(:,:,:) :: pfcancmxrow
@@ -818,6 +820,8 @@ c
       real, pointer, dimension(:,:) :: rmsveggat
       real, pointer, dimension(:,:) :: rmrveggat
       real, pointer, dimension(:,:) :: rgveggat
+      real, pointer, dimension(:,:) :: litrfallveggat
+      real, pointer, dimension(:,:) :: humiftrsveggat
 
       real, pointer, dimension(:,:) :: rothrlosgat
       real, pointer, dimension(:,:) :: pfcancmxgat
@@ -1210,6 +1214,8 @@ C===================== CTEM ==============================================\
       rmsvegrow         => vrot%rmsveg
       rmrvegrow         => vrot%rmrveg
       rgvegrow          => vrot%rgveg
+      litrfallvegrow    => vrot%litrfallveg
+      humiftrsvegrow    => vrot%humiftrsveg
 
       rothrlosrow       => vrot%rothrlos
       pfcancmxrow       => vrot%pfcancmx
@@ -1293,6 +1299,8 @@ C===================== CTEM ==============================================\
       litrmassgat       => vgat%litrmass
       soilcmasgat       => vgat%soilcmas
       vgbiomas_veggat   => vgat%vgbiomas_veg
+      litrfallveggat    => vgat%litrfallveg
+      humiftrsveggat    => vgat%humiftrsveg
 
       emit_co2gat       => vgat%emit_co2
       emit_cogat        => vgat%emit_co
@@ -3346,6 +3354,7 @@ c    -------------- inputs updated by ctem are above this line ------
      l            soilcrespgat,       rmgat,       rggat,      nbpgat,
      m              litresgat,    socresgat,     gppgat, dstcemlsgat,
      n            litrfallgat,  humiftrsgat, veghghtgat, rootdpthgat,
+     1            litrfallveggat,  humiftrsveggat,
      o                 rmlgat,      rmsgat,     rmrgat,  tltrleafgat,
      p            tltrstemgat, tltrrootgat, leaflitrgat, roottempgat,
      q             afrleafgat,  afrstemgat,  afrrootgat, wtstatusgat,
@@ -3510,6 +3519,7 @@ C
      i      rmrow,       rgrow,       nbprow,       litresrow,
      j      socresrow,   gpprow,      dstcemlsrow,  litrfallrow,
      k      humiftrsrow, veghghtrow,  rootdpthrow,  rmlrow,
+     1      litresvegrow, humiftrsvegrow,
      l      rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,
      m      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,
      n      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,
@@ -3553,6 +3563,7 @@ c    ----
      d      rmgat,       rggat,       nbpgat,       litresgat,
      e      socresgat,   gppgat,      dstcemlsgat,  litrfallgat,
      f      humiftrsgat, veghghtgat,  rootdpthgat,  rmlgat,
+     1      litresveggat, humiftrsveggat,
      g      rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,
      h      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,
      i      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,
@@ -4527,7 +4538,8 @@ C=======================================================================
      2                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
      4                       SNOROT,TAROW,WSNOROT,TBARROT,THLQROT,
-     5                       THICROT,TFREZ,QFCROT)
+     5                       THICROT,TFREZ,QFCROT,QFGROT,QFNROT,
+     6                       QFCLROT,QFCFROT)
 
        DO NT=1,NMON
         IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN

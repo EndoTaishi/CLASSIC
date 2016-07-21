@@ -39,6 +39,7 @@
      &                   soilresp,        rm,       rg,       nbp,&
      &                     litres,    socres,      gpp, dstcemls1,&
      &                   litrfall,  humiftrs,  veghght,  rootdpth,&
+     &                   litrfallveg,  humtrsvg, &
      &                        rml,       rms,      rmr,  tltrleaf,&
      &                   tltrstem,  tltrroot, leaflitr,  roottemp,&
      &                    afrleaf,   afrstem,  afrroot,  wtstatus,&
@@ -132,7 +133,6 @@ implicit none
 
 !
 !     inputs
-!
 real, dimension(ilg,icc), intent(inout) :: fcancmx ! max. fractional coverage of ctem's 9 pfts, but this can be
                                                 ! modified by land-use change, and competition between pfts
 real, dimension(ilg), intent(in) :: fsnow       ! fraction of snow simulated by class
@@ -456,7 +456,7 @@ real, dimension(ilg), intent(in) ::  currlat        ! centre latitude of grid ce
      &     scrsvgcg(ilg,icc), ltresveg(ilg,iccp1), scresveg(ilg,iccp1),&
      &          ltrsbrg(ilg),        scrsbrg(ilg),       ltrsbrgs(ilg),&
      &         scrsbrgs(ilg), hetrsveg(ilg,iccp1), humtrsvg(ilg,iccp1),&
-     &   soilrsvg(ilg,iccp1), autoresveg(ilg,icc)             
+     &   soilrsvg(ilg,iccp1), autoresveg(ilg,icc), litrfallveg(ilg,icc)
 !
       real ltrestep(ilg,iccp1),screstep(ilg,iccp1), hutrstep(ilg,iccp1) 
 !
@@ -890,6 +890,7 @@ do 110 j = 1,icc
         hetrsveg(i,j)=0.0  !heterotrophic resp. rate for each pft
         soilrsvg(i,j)=0.0  !soil respiration rate for each pft
         humtrsvg(i,j)=0.0  !humification rate for each pft
+        litrfallveg(i,j)=0.0 !litter fall in kg C/m2 for each pft
         screstep(i,j)=0.0  !soil c respiration in kg c/m2 over the tim
         ltrestep(i,j)=0.0  !litter c respiration in kg c/m2 over the t
         hutrstep(i,j)=0.0  !humification rate in kg c/m2 over the time
@@ -1750,6 +1751,8 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
           litrfall(i)=litrfall(i)+fcancmx(i,j)*(tltrleaf(i,j)+&
      &     tltrstem(i,j)+tltrroot(i,j))
+          ! store the per PFT litterfall for outputting.
+          litrfallveg(i,j)=(tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j))
           gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
           gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
           vgbiomas_veg(i,j)=gleafmas(i,j)+&
