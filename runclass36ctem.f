@@ -458,7 +458,7 @@ c
      7           climiyear,   popcycleyr,    cypopyr, lucyr,
      8           cylucyr, endyr,bigpftc(1), obswetyr,
      9           cywetldyr, trans_startyr, jmosty, obslghtyr,
-     +          curlatno(ilg), lath
+     +          curlatno(ilg), lath, testyr
 
       real      co2concin,    setco2conc, sumfare,
      1           temp_var, barefrac,  todfrac(ilg,icc),
@@ -2707,7 +2707,9 @@ c         overwrite co2concrow, otherwise set to constant value.
 !         Same applies to CH4.
 
           if(co2on .or. ch4on) then
-           do while (co2yr .lt. iyear)
+           if (transient_run) then
+                testyr = iyear
+            do while (co2yr .lt. testyr)
              do i=1,nltest
               read(14,*,end=999) co2yr,co2concin,ch4concin
               do m=1,nmtest
@@ -2715,8 +2717,33 @@ c         overwrite co2concrow, otherwise set to constant value.
                 if (ch4on) ch4concrow(i,m)=ch4concin
               enddo
              enddo
-           enddo !co2yr < iyear
-          end if
+            enddo !co2yr < testyr
+           else ! still spinning but you apparently want the CO2 to move forward with time
+                ! we assume the year you want to start from here is trans_startyr
+                testyr = trans_startyr
+                ! Now make sure we end up starting from the testyr
+                if (co2yr .lt. testyr) then
+                 do while (co2yr .lt. testyr)
+                  do i=1,nltest
+                    read(14,*,end=999) co2yr,co2concin,ch4concin
+                   do m=1,nmtest
+                    if (co2on) co2concrow(i,m)=co2concin
+                    if (ch4on) ch4concrow(i,m)=ch4concin
+                   enddo
+                  enddo
+                 enddo !co2yr < testyr
+                else ! years beyond the first, just go up in years without paying attention to iyear (since it is cycling)
+                   do i=1,nltest
+                    read(14,*,end=999) co2yr,co2concin,ch4concin
+                   do m=1,nmtest
+                    if (co2on) co2concrow(i,m)=co2concin
+                    if (ch4on) ch4concrow(i,m)=ch4concin
+                   enddo
+                  enddo
+                end if
+           end if !transient_run or not
+          end if !co2 or ch4on
+
           if (.not. co2on .or. .not. ch4on) then !constant co2 or ch4
             do i=1,nltest
              do m=1,nmtest
@@ -4601,7 +4628,9 @@ C     OPEN AND WRITE TO THE RESTART FILES
 
        IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
 
-        WRITE(*,*) 'IYEAR=',IYEAR,' CLIMATE YEAR=',CLIMIYEAR
+        WRITE(*,*) !'(6A,5I,13A,5I,9A,5I,6A,5I)')
+     1     'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR,
+     2     'CO2YEAR =',co2yr,'LUCYR=',lucyr
 
         IF (RSFILE) THEN
 C       WRITE .INI_RS FOR CLASS RESTART DATA
@@ -4714,7 +4743,7 @@ c      check if the model is done running.
                  read(13,*) ! skip header (3 lines)
                  read(13,*) ! skip header (3 lines)
                endif
-               if(co2on .or. ch4on) then
+               if((co2on .or. ch4on) .and. trans_startyr < 0) then
                  rewind(14) !rewind co2 file
                endif
 
@@ -4857,7 +4886,7 @@ c         the 999 label below is hit when an input file reaches its end.
                  read(13,*) ! skip header
                  read(13,*) ! skip header
                endif
-               if(co2on .or. ch4on) then
+               if((co2on .or. ch4on) .and. trans_startyr < 0) then
                  rewind(14) !rewind co2 file
                endif
               if (obslght) then
