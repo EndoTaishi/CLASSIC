@@ -590,7 +590,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !         per PFT area burned, km^2
           burnarea_veg(i,j)=arbn1day_veg(i,j)*areamult(i)*(grclarea(i)*fcancmx(i,j)*probfire_veg(i,j))/reparea
-          
+
 !          ------- Area burned based on number of fire calculations ----------------------\\
 
 !       This is not used in CTEM in general but we keep the code here for testing purposes

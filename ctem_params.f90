@@ -339,7 +339,7 @@ logical, intent(in) :: compete   !true if the competition scheme is on.
 
 ! Parameters used in more than one subroutine:
 
-tolrance = 0.0001d0 
+tolrance = 0.0001d0
 
 ! (kn -> CAREFUL: Separate set defined in PHTSYN3.f!!)
 kn= [ 0.50, 0.50, 0.00, &
