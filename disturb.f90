@@ -585,15 +585,8 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
             ! account for low suppression in Savanna regions, see above for
             ! increase in ignition due to cultural practices
-            !if ( currlat(i).ge.-25.0.and.currlat(i).le.25.0 ) then
-               ! i.e. between 25S and 25N, change extnprob
-               ! note 0.025 is changed to 0.005
-            !   extn_par1=-0.005
-            !else
-               extn_par1=-0.025 ! default value
-            !endif
+               extn_par1=-0.015 ! Value based on Vivek's testing. Jul 14 2016. old = -0.025
 
-            !extnprob(i)=max(0.0,0.9-exp(-0.025*popdin(i)))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
             ! change 0.9 to 1.0 in eqn. A78 of Melton and Arora, 2016, GMD competition paper
             extnprob(i)=max(0.0,1.0-exp(extn_par1*popdin(i)))
 
@@ -605,7 +598,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !         per PFT area burned, km^2
           burnarea_veg(i,j)=arbn1day_veg(i,j)*areamult(i)*(grclarea(i)*fcancmx(i,j)*probfire_veg(i,j))/reparea
-          
+
 !          ------- Area burned based on number of fire calculations ----------------------\\
 
 !       This is not used in CTEM in general but we keep the code here for testing purposes

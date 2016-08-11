@@ -637,6 +637,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 
     if (dofire) then
 
+
         call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
                       rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
                       nppveg)
@@ -1057,6 +1058,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !           reduce biomass density by spreading over larger fraction
 
             term = (pfcancmx(i,j)/fcancmx(i,j))
+
             gleafmas(i,j) = gleafmas(i,j)*term
             bleafmas(i,j) = bleafmas(i,j)*term
             stemmass(i,j) = stemmass(i,j)*term

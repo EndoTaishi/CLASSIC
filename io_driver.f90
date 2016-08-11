@@ -816,36 +816,6 @@ if (.not. parallelrun .and. ctem_on) then ! stand alone mode, includes half-hour
 
 endif ! parallelrun & ctem_on
 
-! monthly & yearly output for both parallel mode and stand alone mode
-
-! CLASS MONTHLY OUTPUT FILES 
-OPEN(UNIT=81,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1M')
-OPEN(UNIT=82,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF2M')
-
-! CLASS YEARLY OUTPUT FILES
-OPEN(UNIT=83,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1Y')
-
-if (ctem_on) then
-
-    open(unit=84,file=argbuff(1:strlen(argbuff))//'.CT01M') ! CTEM monthly output files
-    open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y') ! CTEM yearly output files
-
-    if (dofire .or. lnduseon) then
-        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M') ! Monthly disturbance
-        open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y') ! Annual disturbance
-    endif
-
-    if (compete .or. lnduseon) then
-        open(unit=88,file=argbuff(1:strlen(argbuff))//'.CT07M')! ctem pft fractions MONTHLY
-        open(unit=89,file=argbuff(1:strlen(argbuff))//'.CT07Y')! ctem pft fractions YEARLY
-    endif
-    
-    if (dowetlands .or. obswetf) then
-        open(unit=91,file=argbuff(1:strlen(argbuff))//'.CT08M')  !Methane(wetland) MONTHLY
-        open(unit=92,file=argbuff(1:strlen(argbuff))//'.CT08Y')  !Methane(wetland) YEARLY
-    endif !dowetlands
-    
-end if !ctem_on
 
 !===========================
 !
@@ -942,143 +912,149 @@ if (ctem_on .and. .not. parallelrun) then
 7113  FORMAT('#          umolCH4/M2.S    umolCH4/M2.S          umolCH4/M2.S  umolCH4/M2.S  umolCH4/M2.S')
 
 end if !ctem_on & not parallelrun
- 
-!     CLASS MONTHLY & YEARLY OUTPUT FOR BOTH PARALLEL MODE AND STAND ALONE MODE
+
+! CLASS MONTHLY FOR BOTH PARALLEL MODE AND STAND ALONE MODE
+
+OPEN(UNIT=81,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1M')
 WRITE(81,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
 WRITE(81,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 WRITE(81,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
-WRITE(81,6021) 
-WRITE(81,6121)
+WRITE(81,6021)'MONTH','YEAR','SW','LW','QH','QE','SNOACC','WSNOACC','ROFACC','PCP',&
+              'EVAP','TAIR','TRANSP','T/E','GROUNDEVAP','CANOPYEVAP'
+WRITE(81,6021)'#','','W/m2','W/m2','W/m2','W/m2','kg/m2','kg/m2','mm.mon','mm.mon',&
+              'mm.mon','degC','mm.mon','ratio','kg/m2/mon','kg/m2/mon'
 
+OPEN(UNIT=82,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF2M')
 WRITE(82,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
 WRITE(82,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 WRITE(82,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
-WRITE(82,6022)
-WRITE(82,6122)
+WRITE(82,6022)'MONTH','YEAR','TG1','THL1','THI1','TG2','THL2','THI2','TG3','THL3','THI3'
+WRITE(82,6022)'#','','deg','m3/m3','m3/m3','deg','m3/m3','m3/m3','deg','m3/m3','m3/m3'
 
+! CLASS YEARLY OUTPUT FILES
+
+OPEN(UNIT=83,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1Y')
 WRITE(83,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
 WRITE(83,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 WRITE(83,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
-WRITE(83,6023)
-WRITE(83,6123)
+WRITE(83,6023)'YEAR','SW','LW','QH','QE','ROFACC','PCP','EVAP','TRANSP','T/E'
+WRITE(83,6023)'#','W/m2','W/m2','W/m2','W/m2','mm.yr','mm.yr','mm.yr','mm.yr','ratio'
 
 if (ctem_on) then
 
+    open(unit=84,file=argbuff(1:strlen(argbuff))//'.CT01M') ! CTEM monthly output files
     write(84,6001) title1,title2,title3,title4,title5,title6
     write(84,6002) name1,name2,name3,name4,name5,name6
     write(84,6003) place1,place2,place3,place4,place5,place6
-    write(84,6024)
-    write(84,6124)
-    write(84,6224)
+    write(84,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY RESULTS'
+    write(84,6124)'MONTH','YEAR','LAIMAXG','VGBIOMAS','LITTER','SOIL_C','NPP','GPP','NEP','NBP','HETRES',&
+             'AUTORES','LITRES','SOILCRES','LITRFALL','HUMIFTRS'
+    write(84,6124)'#','','m2/m2','Kg C/m2','Kg C/m2','Kg C/m2','gC/m2.mon','gC/m2.mon','gC/m2.mon',&
+             'g/m2.mon','g/m2.mon','gC/m2.mon','gC/m2.mon','gC/m2.mon','gC/m2.mon','gC/m2.mon'
     
     if (dofire .or. lnduseon) then
+        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M') ! Monthly disturbance
         write(85,6001) title1,title2,title3,title4,title5,title6
         write(85,6002) name1,name2,name3,name4,name5,name6
         write(85,6003) place1,place2,place3,place4,place5,place6
-        write(85,6025)
-        write(85,6125)
-        write(85,6225)
+        write(85,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY RESULTS FOR DISTURBANCES'
+        write(85,6125)'MONTH','YEAR','CO2','CO','CH4','NMHC','H2','NOX','N2O','PM25','TPM','TC','OC','BC',&
+            'SMFUNCVEG','LUC_CO2_E','LUC_LTRIN','LUC_SOCIN','BURNFRAC','BTERM','LTERM','MTERM','WIND'
+        write(85,6125)'#','','g/m2.mon','g/m2.mon','g/m2.mon','g/m2.mon','g/m2.mon','g/m2.mon','g/m2.mon', &
+            'g/m2.mon','g/m2.mon','g/m2.mon','g/m2.mon','g/m2.mon','prob/mon','g C/m2','g C/m2','g C/m2', &
+            '%','prob/mon','prob/mon','prob/mon','km/h'
     end if
 
+    open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y') ! CTEM yearly output files
     write(86,6001) title1,title2,title3,title4,title5,title6
     write(86,6002) name1,name2,name3,name4,name5,name6
     write(86,6003) place1,place2,place3,place4,place5,place6
-    write(86,6026)
-    write(86,6126)
-    write(86,6226)
+    write(86,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS'
+    write(86,6126)'YEAR','LAIMAXG','VGBIOMAS','STEMMASS','ROOTMASS','LITRMASS','SOILCMAS','TOTCMASS', &
+                  'ANNUALNPP','ANNUALGPP','ANNUALNEP','ANNUALNBP','ANNHETRSP','ANAUTORSP','ANNLITRES', &
+                  'ANSOILCRES','VEGHGHT'
+    write(86,6126)'#','m2/m2','Kg C/m2','Kg C/m2','Kg C/m2','Kg C/m2','Kg C/m2','Kg C/m2','gC/m2.yr',&
+                  'gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','m'
 
-    if (dofire .or. lnduseon) then        
+    if (dofire .or. lnduseon) then
+        open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y') ! Annual disturbance
         write(87,6001) title1,title2,title3,title4,title5,title6
         write(87,6002) name1,name2,name3,name4,name5,name6
         write(87,6003) place1,place2,place3,place4,place5,place6
-        write(87,6027)
-        write(87,6127)
-        write(87,6227)
+        write(87,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS FOR DISTURBANCES'
+        write(87,6127)'YEAR','ANNUALCO2','ANNUALCO','ANNUALCH4','ANN_NMHC','ANNUAL_H2','ANNUALNOX','ANNUALN2O',&
+                      'ANN_PM25','ANNUALTPM','ANNUAL_TC','ANNUAL_OC','ANNUAL_BC','ASMFUNCVEG',&
+                      'ANNLUCCO2','ANNLUCLTR','ANNLUCSOC','ABURNFRAC','ANNBTERM','ANNLTERM','ANNMTERM'
+        write(87,6127)'#','g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr',&
+                      'g/m2.yr','g/m2.yr','g/m2.yr','g/m2.yr','prob/yr ','  g/m2.yr','g/m2.yr','g/m2.yr',&
+                      '%','prob/yr','prob/yr','prob/yr'
     end if
 
     if (compete .or. lnduseon) then
+
+        open(unit=88,file=argbuff(1:strlen(argbuff))//'.CT07M')! ctem pft fractions MONTHLY
         write(88,6001) title1,title2,title3,title4,title5,title6
         write(88,6002) name1,name2,name3,name4,name5,name6
         write(88,6003) place1,place2,place3,place4,place5,place6
-        write(88,6028)
-        write(88,6128)
-        write(88,6228)
+        write(88,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY RESULTS'
+        write(88,6128)'MONTH','YEAR','FRAC#1','FRAC#2','FRAC#3','FRAC#4','FRAC#5','FRAC#6','FRAC#7',&
+                      'FRAC#8','FRAC#9','FRAC#10','SUMCHECK','PFT existence for each of the 9 pfts'
+        write(88,6128)'#','','%','%','%','%','%','%','%','%','%','%','%'
 
+        open(unit=89,file=argbuff(1:strlen(argbuff))//'.CT07Y')! ctem pft fractions YEARLY
         write(89,6001) title1,title2,title3,title4,title5,title6
         write(89,6002) name1,name2,name3,name4,name5,name6
         write(89,6003) place1,place2,place3,place4,place5,place6
-        write(89,6029)
-        write(89,6129)
-        write(89,6229)
+        write(89,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS'
+        write(89,6129)'YEAR','FRAC#1','FRAC#2','FRAC#3','FRAC#4','FRAC#5','FRAC#6','FRAC#7',&
+                      'FRAC#8','FRAC#9','FRAC#10','SUMCHECK','PFT existence for each of the 9 pfts'
+        write(89,6129)'#','','%','%','%','%','%','%','%','%','%','%','%'
+
     end if !compete
 
     if (dowetlands .or. obswetf) then
+
+        open(unit=91,file=argbuff(1:strlen(argbuff))//'.CT08M')  !Methane(wetland) MONTHLY
         write(91,6001) title1,title2,title3,title4,title5,title6
         write(91,6002) name1,name2,name3,name4,name5,name6
         write(91,6003) place1,place2,place3,place4,place5,place6
-        write(91,6028)
-        write(91,6230)
-        write(91,6231)
+        write(91,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY RESULTS'
+        write(91,6230)'MONTH','YEAR','CH4WET1','CH4WET2','WETFDYN','CH4DYN1','CH4DYN2','SOILUPTAKE'
+        write(91,6230)'#','','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON'
 
+        open(unit=92,file=argbuff(1:strlen(argbuff))//'.CT08Y')  !Methane(wetland) YEARLY
         write(92,6001) title1,title2,title3,title4,title5,title6
         write(92,6002) name1,name2,name3,name4,name5,name6
         write(92,6003) place1,place2,place3,place4,place5,place6
-        write(92,6028)
-        write(92,6232)
-        write(92,6233)
+        write(92,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS'
+        write(92,6232)'YEAR','CH4WET1','CH4WET2','WETFDYN','CH4DYN1','CH4DYN2','SOILUPTAKE'
+        write(92,6232)'#','gCH4/M2.YR','gCH4/M2.YR','gCH4/M2.YR','gCH4/M2.YR','gCH4/M2.YR'
+
     end if 
     
 end if !ctem_on & parallelrun
 
-6021  FORMAT(2X,'MONTH YEAR  SW     LW      QH      QE    SNOACC    ','WSNOACC    ROFACC      PCP      EVAP       TAIR     TRANSP     T/E')
-6121  FORMAT('#           W/m2    W/m2    W/m2    W/m2    kg/m2   ','kg/m2      mm.mon    mm.mon    mm.mon      degC      mm.mon    ratio')
-6022  FORMAT(2X,'MONTH  YEAR  TG1  THL1  THI1     TG2  THL2  THI2','     TG3  THL3  THI3')
-6122  FORMAT('#             deg  m3/m3  m3/m3   deg  m3/m3  ','m3/m3   deg  m3/m3  m3/m3')
-6023  FORMAT(2X,'YEAR   SW     LW      QH      QE     ROFACC   ',' PCP     EVAP     TRANSP     T/E  ')
-6123  FORMAT('#      W/m2   W/m2    W/m2    W/m2    mm.yr    ','mm.yr    mm.yr     mm.yr     ratio')
-6024  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS')
-6124  FORMAT('  MONTH  YEAR  LAIMAXG  VGBIOMAS  LITTER    SOIL_C  ', '  NPP       GPP        NEP       NBP    HETRES','   AUTORES    LITRES   SOILCRES')
-6224  FORMAT('#                 m2/m2  Kg C/m2  Kg C/m2   Kg C/m2  ','gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon ',&
-            'gC/m2.mon  gC/m2.mon  gC/m2.mon')   
-6025  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS FOR DISTURBANCES')
-6125  FORMAT('  MONTH  YEAR  CO2','        CO        CH4      NMHC       H2       NOX       N2O       PM25       TPM        TC        OC        BC  ',&
-            '# SMFUNCVEG  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC    BTERM',' LTERM   MTERM   WIND')
-6225  FORMAT('#            g/m2.mon  g/m2.mon','  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon', &
-            '  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon  g/m2.mon','  prob/mon    g C/m2    g C/m2    g C/m2         %  prob/mon','  prob/mon  prob/mon  km/h')
-6026  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS')
-6126  FORMAT('  YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS', '  SOILCMAS  TOTCMASS  ANNUALNPP ANNUALGPP ANNUALNEP ANNUALNBP',&
-     ' ANNHETRSP ANAUTORSP ANNLITRES ANSOILCRES')
-6226  FORMAT('#          m2/m2   Kg C/m2   Kg C/m2   Kg C/m2    Kg C/m2','  Kg C/m2   Kg C/m2   gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr',&
-     '  gC/m2.yr  gC/m2.yr  gC/m2.yr  gC/m2.yr')
-6027  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS FOR DISTURBANCES')
-6127  FORMAT('  YEAR   ANNUALCO2','  ANNUALCO  ANNUALCH4  ANN_NMHC ANNUAL_H2 ANNUALNOX ANNUALN2O','  ANN_PM25  ANNUALTPM ANNUAL_TC ANNUAL_OC ANNUAL_BC ASMFUNCVEG',&
-     ' ANNLUCCO2  ANNLUCLTR ANNLUCSOC ABURNFRAC ANNBTERM ANNLTERM',' ANNMTERM')
-6227  FORMAT('#         g/m2.yr','  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr','  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  g/m2.yr  prob/yr ',&
-            '  g/m2.yr  g/m2.yr  g/m2.yr    %     prob/yr  prob/yr','  prob/yr')
-6028  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY ','RESULTS')
-6128  FORMAT(' MONTH YEAR  FRAC #1   FRAC #2   FRAC #3   FRAC #4   ','FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9   FRAC #10   ',&
-            'SUMCHECK, PFT existence for each of the 9 pfts') 
-6228  FORMAT('#             %         %         %         %         ','%         %         %         %         %         %          ','     ')
-6029  FORMAT('#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY ','RESULTS')
-6129  FORMAT('  YEAR   FRAC #1   FRAC #2   FRAC #3   FRAC #4   ','FRAC #5   FRAC #6   FRAC #7   FRAC #8   FRAC #9   FRAC #10   ',&
-            'SUMCHECK, PFT existence for each of the 9 pfts')
-6229  FORMAT('#         %         %         %         %         ','%         %         %         %         %         %          ','     ')
-     
-6230  FORMAT('MONTH  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2  SOILUPTAKE ')
-6231  FORMAT('#       gCH4/M2.MON     gCH4/M2.MON        gCH4/M2.MON  gCH4/M2.MON  gCH4/M2.MON')
-6232  FORMAT('  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2   SOILUPTAKE ')
-6233  FORMAT('#      gCH4/M2.YR      gCH4/M2.YR         gCH4/M2.YR   gCH4/M2.YR   gCH4/M2.YR ')
+6021  FORMAT(A5,A5,5(A8,1X),A8,A12,7(A12,1X))
+6022  FORMAT(A5,A5,3(A8,1X,2A6,1X))
+6023  FORMAT(A5,4(A8,1X),A12,1X,4(A12,1X))
+6124  FORMAT(A5,A5,14(A12,1X))
+6125  FORMAT(A5,A5,21(A12,1X))
+6126  FORMAT(1X,A5,16(A12,1X))
+6127  FORMAT(1X,A5,20(A12,1X))
+6128  FORMAT(A5,A5,11(A12,1X),45A)
+6129  FORMAT(A5,11(A12,1X),45A)
+6230  FORMAT(A5,I5,6(A12,1X))
+6232  FORMAT(1X,A5,6(A12,1X))
  
 end subroutine create_outfiles
-
 
 !==============================================================================================================
 
 subroutine class_monthly_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,&
                                   ALVSROT,FAREROT,FSVHROW,ALIRROT,FSIHROW,GTROT,FSSROW, &
                                   FDLROW,HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,SNOROT, &
-                                  TAROW,WSNOROT,TBARROT,THLQROT,THICROT,TFREZ,QFCROT,&
-                                  ACTLYR,FTABLE)
+                                  TAROW,WSNOROT,TBARROT,THLQROT,THICROT,TFREZ,QFCROT, &
+                                  QFGROT,QFNROT,QFCLROT,QFCFROT,ACTLYR,FTABLE))
                            
 use ctem_statevars,     only : class_out,resetclassmon
 use ctem_params, only : nmon, monthend, nlat, nmos, ignd
@@ -1117,6 +1093,10 @@ real, dimension(nlat,nmos,ignd), intent(in) :: THICROT
 real, dimension(nlat,nmos,ignd), intent(in) :: QFCROT
 real, dimension(nlat,nmos), intent(in) :: ACTLYR          ! Active layer depth (m)
 real, dimension(nlat,nmos), intent(in) :: FTABLE          ! Depth to frozen water table (m)
+real, dimension(nlat,nmos), intent(in) :: QFGROT
+real, dimension(nlat,nmos), intent(in) :: QFNROT
+real, dimension(nlat,nmos), intent(in) :: QFCLROT
+real, dimension(nlat,nmos), intent(in) :: QFCFROT
 
 ! pointers
 real, pointer, dimension(:) :: ALVSACC_MO
@@ -1139,7 +1119,8 @@ real, pointer, dimension(:) :: ACTLYR_MIN_MO
 real, pointer, dimension(:) :: FTABLE_MIN_MO
 real, pointer, dimension(:) :: ACTLYR_MAX_MO
 real, pointer, dimension(:) :: FTABLE_MAX_MO
-
+real, pointer, dimension(:) :: GROUNDEVAP
+real, pointer, dimension(:) :: CANOPYEVAP
 real, pointer :: FSSTAR_MO
 real, pointer :: FLSTAR_MO
 real, pointer :: QH_MO
@@ -1186,6 +1167,8 @@ ACTLYR_MIN_MO     => class_out%ACTLYR_MIN_MO
 FTABLE_MIN_MO     => class_out%FTABLE_MIN_MO
 ACTLYR_MAX_MO     => class_out%ACTLYR_MAX_MO
 FTABLE_MAX_MO     => class_out%FTABLE_MAX_MO
+GROUNDEVAP        => class_out%GROUNDEVAP
+CANOPYEVAP        => class_out%CANOPYEVAP
 
 ! ------------
 
@@ -1215,6 +1198,8 @@ DO 821 M=1,NMTEST
     FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
     ACTLYR_tmp(I) = ACTLYR_tmp(I) + ACTLYR(I,M) * FAREROT(I,M)
     FTABLE_tmp(I) = FTABLE_tmp(I) + FTABLE(I,M) * FAREROT(I,M)
+    GROUNDEVAP(I)=GROUNDEVAP(I)+(QFGROT(I,M)+QFNROT(I,M))*FAREROT(I,M) !ground evap includes both evap and sublimation from snow
+    CANOPYEVAP(I)=CANOPYEVAP(I)+(QFCLROT(I,M)+QFCFROT(I,M))*FAREROT(I,M) !canopy evap includes both evap and sublimation
 
     IF(SNOROT(I,M).GT.0.0) THEN
         WSNOACC_MO(I)=WSNOACC_MO(I)+WSNOROT(I,M)*FAREROT(I,M)
@@ -1264,14 +1249,12 @@ DO NT=1,NMON
             QEVPACC_MO(I)=QEVPACC_MO(I)/REAL(NDMONTH)
             SNOACC_MO(I) =SNOACC_MO(I)/REAL(NDMONTH)
             WSNOACC_MO(I)=WSNOACC_MO(I)/REAL(NDMONTH)
-            ROFACC_MO(I) =ROFACC_MO(I)
-            PREACC_MO(I) =PREACC_MO(I)
-            EVAPACC_MO(I)=EVAPACC_MO(I)
-            TRANSPACC_MO(I) =TRANSPACC_MO(I)
             TAACC_MO(I)=TAACC_MO(I)/REAL(NDMONTH)
+
             ACTLYR_MO(I) = ACTLYR_MO(I)/REAL(NDMONTH)
             FTABLE_MO(I) = FTABLE_MO(I)/REAL(NDMONTH)
-
+            ! The accumulated quantities don't change.
+            !ROFACC_MO,PREACC_MO(I),EVAPACC_MO(I),TRANSPACC_MO(I),GROUNDEVAP,CANOPYEVAP
             DO J=1,IGND
                 TBARACC_MO(I,J)=TBARACC_MO(I,J)/REAL(NDMONTH)
                 THLQACC_MO(I,J)=THLQACC_MO(I,J)/REAL(NDMONTH)
@@ -1294,7 +1277,7 @@ DO NT=1,NMON
                          QE_MO,SNOACC_MO(I),WSNOACC_MO(I), &
                          ROFACC_MO(I),PREACC_MO(I),EVAPACC_MO(I), &
                          TAACC_MO(I)-TFREZ,TRANSPACC_MO(I),&
-                         tovere
+                         tovere,GROUNDEVAP(I),CANOPYEVAP(I)
             IF (IGND.GT.3) THEN
             WRITE(82,8103)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
                           THLQACC_MO(I,J),THICACC_MO(I,J),J=1,20), &
@@ -1318,7 +1301,7 @@ DO NT=1,NMON
        END IF ! IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)
       END DO ! NMON
 
-8100  FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,5(E12.3,1X),2(A6,I2))
+8100  FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,7(E12.3,1X),2(A6,I2))
 8101  FORMAT(1X,I4,I5,5(F7.2,1X,2F6.3,1X),2(A6,I2))
 8103  FORMAT(1X,I4,I5,20(F7.2,1X,2F6.3,1X),6(F6.3,1X),2(A6,I2))
 8102  FORMAT(1X,I4,I5,3(F8.2,1X,2F6.3,1X),6(F6.3,1X),2(A6,I2))
@@ -2399,6 +2382,8 @@ real, pointer, dimension(:,:,:) :: fcancmxrow
 real, pointer, dimension(:,:,:) :: laimaxg_mo
 real, pointer, dimension(:,:,:) :: stemmass_mo
 real, pointer, dimension(:,:,:) :: rootmass_mo
+real, pointer, dimension(:,:,:) :: litrfallveg_mo
+real, pointer, dimension(:,:,:) :: humiftrsveg_mo
 real, pointer, dimension(:,:,:) :: npp_mo
 real, pointer, dimension(:,:,:) :: gpp_mo
 real, pointer, dimension(:,:,:) :: vgbiomas_mo
@@ -2431,6 +2416,8 @@ real, pointer, dimension(:,:,:) :: smfuncveg_mo
 real, pointer, dimension(:,:) :: laimaxg_mo_t
 real, pointer, dimension(:,:) :: stemmass_mo_t
 real, pointer, dimension(:,:) :: rootmass_mo_t
+real, pointer, dimension(:,:) :: litrfall_mo_t
+real, pointer, dimension(:,:) :: humiftrs_mo_t
 real, pointer, dimension(:,:) :: npp_mo_t
 real, pointer, dimension(:,:) :: gpp_mo_t
 real, pointer, dimension(:,:) :: vgbiomas_mo_t
@@ -2517,6 +2504,8 @@ real, pointer, dimension(:,:,:) :: soilcmasrow
 real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
 real, pointer, dimension(:,:,:) :: stemmassrow
 real, pointer, dimension(:,:,:) :: rootmassrow
+real, pointer, dimension(:,:,:) :: litrfallvegrow
+real, pointer, dimension(:,:,:) :: humiftrsvegrow
 real, pointer, dimension(:,:) ::uvaccrow_m
 real, pointer, dimension(:,:) ::vvaccrow_m
 
@@ -2525,6 +2514,8 @@ real, pointer, dimension(:) :: stemmass_mo_g
 real, pointer, dimension(:) :: rootmass_mo_g
 real, pointer, dimension(:) :: litrmass_mo_g
 real, pointer, dimension(:) :: soilcmas_mo_g
+real, pointer, dimension(:) :: litrfall_mo_g
+real, pointer, dimension(:) :: humiftrs_mo_g
 real, pointer, dimension(:) :: npp_mo_g
 real, pointer, dimension(:) :: gpp_mo_g
 real, pointer, dimension(:) :: nep_mo_g
@@ -2581,6 +2572,8 @@ fcancmxrow            => vrot%fcancmx
 laimaxg_mo            =>ctem_mo%laimaxg_mo
 stemmass_mo           =>ctem_mo%stemmass_mo
 rootmass_mo           =>ctem_mo%rootmass_mo
+litrfallveg_mo           =>ctem_mo%litrfallveg_mo
+humiftrsveg_mo           =>ctem_mo%humiftrsveg_mo
 npp_mo                =>ctem_mo%npp_mo
 gpp_mo                =>ctem_mo%gpp_mo
 vgbiomas_mo           =>ctem_mo%vgbiomas_mo
@@ -2613,6 +2606,8 @@ smfuncveg_mo          =>ctem_mo%smfuncveg_mo
 laimaxg_mo_t          =>ctem_tile_mo%laimaxg_mo_t
 stemmass_mo_t         =>ctem_tile_mo%stemmass_mo_t
 rootmass_mo_t         =>ctem_tile_mo%rootmass_mo_t
+litrfall_mo_t         =>ctem_tile_mo%litrfall_mo_t
+humiftrs_mo_t         =>ctem_tile_mo%humiftrs_mo_t
 npp_mo_t              =>ctem_tile_mo%npp_mo_t
 gpp_mo_t              =>ctem_tile_mo%gpp_mo_t
 vgbiomas_mo_t         =>ctem_tile_mo%vgbiomas_mo_t
@@ -2700,12 +2695,16 @@ stemmassrow       => vrot%stemmass
 rootmassrow       => vrot%rootmass
 uvaccrow_m        => vrot%uvaccrow_m
 vvaccrow_m        => vrot%vvaccrow_m
+litrfallvegrow    => vrot%litrfallveg
+humiftrsvegrow    => vrot%humiftrsveg
 
 laimaxg_mo_g        =>ctem_grd_mo%laimaxg_mo_g
 stemmass_mo_g       =>ctem_grd_mo%stemmass_mo_g
 rootmass_mo_g       =>ctem_grd_mo%rootmass_mo_g
 litrmass_mo_g       =>ctem_grd_mo%litrmass_mo_g
 soilcmas_mo_g       =>ctem_grd_mo%soilcmas_mo_g
+litrfall_mo_g       =>ctem_grd_mo%litrfall_mo_g
+humiftrs_mo_g       =>ctem_grd_mo%humiftrs_mo_g
 npp_mo_g            =>ctem_grd_mo%npp_mo_g
 gpp_mo_g            =>ctem_grd_mo%gpp_mo_g
 nep_mo_g            =>ctem_grd_mo%nep_mo_g
@@ -2750,8 +2749,6 @@ ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
 do 862 i=1,nltest
 
     do 863 m = 1,nmtest
-
-        barefrac=1.0
         do j=1,icc
 
            ! Accumulate monthly outputs at the per PFT level.
@@ -2783,16 +2780,17 @@ do 862 i=1,nltest
            mterm_mo(i,m,j) = mterm_mo(i,m,j) + mtermrow(i,m,j)
            burnfrac_mo(i,m,j) =burnfrac_mo(i,m,j)+burnvegfrow(i,m,j)
            smfuncveg_mo(i,m,j) =smfuncveg_mo(i,m,j) + smfuncvegrow(i,m,j)
-           barefrac=barefrac-fcancmxrow(i,m,j)
+           litrfallveg_mo(i,m,j) = litrfallveg_mo(i,m,j) + litrfallvegrow(i,m,j)
+           humiftrsveg_mo(i,m,j) = humiftrsveg_mo(i,m,j) + humiftrsvegrow(i,m,j)
 
         end do !j
 
         ! Also do the bare ground
-        nep_mo(i,m,iccp1)=nep_mo(i,m,iccp1)+nepvegrow(i,m,iccp1)*barefrac
-        nbp_mo(i,m,iccp1)=nbp_mo(i,m,iccp1)+nbpvegrow(i,m,iccp1)*barefrac
-        hetrores_mo(i,m,iccp1)=hetrores_mo(i,m,iccp1)+hetroresvegrow(i,m,iccp1)*barefrac
-        litres_mo(i,m,iccp1)  =litres_mo(i,m,iccp1)+litresvegrow(i,m,iccp1)*barefrac
-        soilcres_mo(i,m,iccp1) =soilcres_mo(i,m,iccp1) +soilcresvegrow(i,m,iccp1)*barefrac
+        nep_mo(i,m,iccp1)=nep_mo(i,m,iccp1)+nepvegrow(i,m,iccp1)
+        nbp_mo(i,m,iccp1)=nbp_mo(i,m,iccp1)+nbpvegrow(i,m,iccp1)
+        hetrores_mo(i,m,iccp1)=hetrores_mo(i,m,iccp1)+hetroresvegrow(i,m,iccp1)
+        litres_mo(i,m,iccp1)  =litres_mo(i,m,iccp1)+litresvegrow(i,m,iccp1)
+        soilcres_mo(i,m,iccp1) =soilcres_mo(i,m,iccp1) +soilcresvegrow(i,m,iccp1)
 
         ! Accumulate monthly outputs at the per tile level.
         luc_emc_mo_t(i,m) =luc_emc_mo_t(i,m)+lucemcomrow(i,m)
@@ -2832,6 +2830,7 @@ do 862 i=1,nltest
                 litrmass_mo(i,m,iccp1)=litrmassrow(i,m,iccp1)
                 soilcmas_mo(i,m,iccp1)=soilcmasrow(i,m,iccp1)
                 totcmass_mo(i,m,iccp1)=soilcmasrow(i,m,iccp1) + litrmassrow(i,m,iccp1)
+
                 barefrac=1.0
 
                ! Now find the per tile values:
@@ -2910,6 +2909,8 @@ do 862 i=1,nltest
                     smfuncveg_mo_t(i,m) =smfuncveg_mo_t(i,m)+smfuncveg_mo(i,m,j)*fcancmxrow(i,m,j)
                     burnfrac_mo_t(i,m) =burnfrac_mo_t(i,m)+burnfrac_mo(i,m,j)*fcancmxrow(i,m,j)
                     laimaxg_mo_t(i,m)=laimaxg_mo_t(i,m)+laimaxg_mo(i,m,j)*fcancmxrow(i,m,j)
+                    litrfall_mo_t(i,m)=litrfall_mo_t(i,m)+litrfallveg_mo(i,m,j)*fcancmxrow(i,m,j)
+                    humiftrs_mo_t(i,m)=humiftrs_mo_t(i,m)+humiftrsveg_mo(i,m,j)*fcancmxrow(i,m,j)
                     barefrac=barefrac-fcancmxrow(i,m,j)
 
                 end do !j
@@ -2919,6 +2920,7 @@ do 862 i=1,nltest
                 hetrores_mo_t(i,m)=hetrores_mo_t(i,m)+hetrores_mo(i,m,iccp1)*barefrac
                 litres_mo_t(i,m)  =litres_mo_t(i,m) +litres_mo(i,m,iccp1)*barefrac
                 soilcres_mo_t(i,m)=soilcres_mo_t(i,m)+soilcres_mo(i,m,iccp1)*barefrac
+                humiftrs_mo_t(i,m)=humiftrs_mo_t(i,m)+humiftrsveg_mo(i,m,iccp1)*barefrac
 
                 ! Find the monthly outputs at the per grid cell level from the outputs at the per tile level
                 npp_mo_g(i)=npp_mo_g(i)+npp_mo_t(i,m)*FAREROT(i,m)
@@ -2956,6 +2958,8 @@ do 862 i=1,nltest
                 bterm_mo_g(i) =bterm_mo_g(i)+bterm_mo_t(i,m)*FAREROT(i,m)
                 lterm_mo_g(i) =lterm_mo_g(i)+lterm_mo_t(i,m)*FAREROT(i,m)
                 mterm_mo_g(i) =mterm_mo_g(i)+mterm_mo_t(i,m)*FAREROT(i,m)
+                litrfall_mo_g(i)=litrfall_mo_g(i)+litrfall_mo_t(i,m)*FAREROT(i,m)
+                humiftrs_mo_g(i)=humiftrs_mo_g(i)+humiftrs_mo_t(i,m)*FAREROT(i,m)
 
 900         continue
 
@@ -2979,7 +2983,7 @@ do 862 i=1,nltest
                         gpp_mo(i,m,j),nep_mo(i,m,j),&
                         nbp_mo(i,m,j),hetrores_mo(i,m,j),&
                         autores_mo(i,m,j),litres_mo(i,m,j),&
-                        soilcres_mo(i,m,j),&
+                        soilcres_mo(i,m,j),litrfallveg_mo(i,m,j),humiftrsveg_mo(i,m,j),&
                         ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
                     end if
 
@@ -2994,6 +2998,7 @@ do 862 i=1,nltest
                         nbp_mo(i,m,iccp1),hetrores_mo(i,m,iccp1), &
                         0.0,litres_mo(i,m,iccp1), &
                         soilcres_mo(i,m,iccp1), &
+                        0.0,humiftrsveg_mo(i,m,iccp1), &
                         ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
                 end if
 
@@ -3006,7 +3011,7 @@ do 862 i=1,nltest
                         gpp_mo_t(i,m),nep_mo_t(i,m),&
                         nbp_mo_t(i,m),hetrores_mo_t(i,m),&
                         autores_mo_t(i,m),litres_mo_t(i,m),&
-                        soilcres_mo_t(i,m),&
+                        soilcres_mo_t(i,m),litrfall_mo_t(i,m),humiftrs_mo_t(i,m),&
                         ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
                 end if
 
@@ -3017,7 +3022,8 @@ do 862 i=1,nltest
                     soilcmas_mo_g(i),npp_mo_g(i), &
                     gpp_mo_g(i),nep_mo_g(i), &
                     nbp_mo_g(i),hetrores_mo_g(i),autores_mo_g(i), &
-                    litres_mo_g(i),soilcres_mo_g(i),' GRDAV'
+                    litres_mo_g(i),soilcres_mo_g(i),&
+                    litrfall_mo_g(i),humiftrs_mo_g(i),' GRDAV'
 
             if (dofire .or. lnduseon) then
 
@@ -3124,7 +3130,7 @@ do nt=1,nmon
 enddo ! nt=1,nmon
 
 
-8104  FORMAT(1X,I4,I5,12(ES12.5,1X),2(A8,I2),A8,F8.2)
+8104  FORMAT(1X,I4,I5,14(ES12.5,1X),2(A8,I2),A8,F8.2)
 8106  FORMAT(1X,I4,I5,11(ES12.7,1X),9L5,2(A6,I2))
 8109  FORMAT(1X,I4,I5,21(ES12.5,1X),2(A6,I2),A6,F8.2)
 8111  FORMAT(1X,I4,I5,6(ES12.5,1X),2(A6,I2))
@@ -3188,6 +3194,7 @@ real, pointer, dimension(:,:,:) :: bterm_yr
 real, pointer, dimension(:,:,:) :: mterm_yr
 real, pointer, dimension(:,:,:) :: smfuncveg_yr
 real, pointer, dimension(:,:,:) :: burnfrac_yr
+real, pointer, dimension(:,:,:) :: veghght_yr
 
 real, pointer, dimension(:,:) :: laimaxg_yr_t
 real, pointer, dimension(:,:) :: stemmass_yr_t
@@ -3230,6 +3237,7 @@ real, pointer, dimension(:,:) :: wetfdyn_yr_t
 real, pointer, dimension(:,:) :: ch4dyn1_yr_t
 real, pointer, dimension(:,:) :: ch4dyn2_yr_t
 real, pointer, dimension(:,:) :: ch4soills_yr_t
+real, pointer, dimension(:,:) :: veghght_yr_t
 
 logical, pointer, dimension(:,:,:) :: pftexistrow
 real, pointer, dimension(:,:,:) :: gppvegrow
@@ -3278,6 +3286,7 @@ real, pointer, dimension(:,:,:) :: vgbiomas_vegrow
 real, pointer, dimension(:,:,:) :: stemmassrow
 real, pointer, dimension(:,:,:) :: rootmassrow
 real, pointer, dimension(:,:,:) :: fcancmxrow
+real, pointer, dimension(:,:,:) :: veghghtrow
 
 real, pointer, dimension(:) :: laimaxg_yr_g
 real, pointer, dimension(:) :: stemmass_yr_g
@@ -3320,6 +3329,7 @@ real, pointer, dimension(:) :: wetfdyn_yr_g
 real, pointer, dimension(:) :: ch4dyn1_yr_g
 real, pointer, dimension(:) :: ch4dyn2_yr_g
 real, pointer, dimension(:) :: ch4soills_yr_g
+real, pointer, dimension(:) :: veghght_yr_g
 
 ! local
 integer :: i,m,j,nt
@@ -3367,6 +3377,7 @@ bterm_yr            =>ctem_yr%bterm_yr
 mterm_yr            =>ctem_yr%mterm_yr
 burnfrac_yr         =>ctem_yr%burnfrac_yr
 smfuncveg_yr        =>ctem_yr%smfuncveg_yr
+veghght_yr          =>ctem_yr%veghght_yr
 
 laimaxg_yr_t          =>ctem_tile_yr%laimaxg_yr_t
 stemmass_yr_t         =>ctem_tile_yr%stemmass_yr_t
@@ -3409,6 +3420,7 @@ wetfdyn_yr_t          =>ctem_tile_yr%wetfdyn_yr_t
 ch4dyn1_yr_t          =>ctem_tile_yr%ch4dyn1_yr_t
 ch4dyn2_yr_t          =>ctem_tile_yr%ch4dyn2_yr_t
 ch4soills_yr_t        =>ctem_tile_yr%ch4soills_yr_t
+veghght_yr_t          =>ctem_tile_yr%veghght_yr_t
 
 pftexistrow       => vrot%pftexist
 gppvegrow         => vrot%gppveg
@@ -3457,6 +3469,7 @@ vgbiomas_vegrow   => vrot%vgbiomas_veg
 stemmassrow       => vrot%stemmass
 rootmassrow       => vrot%rootmass
 fcancmxrow        => vrot%fcancmx
+veghghtrow        => vrot%veghght
 
 laimaxg_yr_g          =>ctem_grd_yr%laimaxg_yr_g
 stemmass_yr_g         =>ctem_grd_yr%stemmass_yr_g
@@ -3499,6 +3512,7 @@ wetfdyn_yr_g          =>ctem_grd_yr%wetfdyn_yr_g
 ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
 ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
 ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
+veghght_yr_g          =>ctem_grd_yr%veghght_yr_g
 !------------
 
 ! Accumulate yearly outputs
@@ -3574,12 +3588,14 @@ do 882 i=1,nltest
                 soilcmas_yr(i,m,j)=soilcmasrow(i,m,j)
                 vgbiomas_yr(i,m,j)=vgbiomas_vegrow(i,m,j)
                 totcmass_yr(i,m,j)=vgbiomas_yr(i,m,j)+litrmass_yr(i,m,j)+soilcmas_yr(i,m,j)
+                veghght_yr(i,m,j)=veghghtrow(i,m,j)
 
 925         continue
 
             litrmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1)
             soilcmas_yr(i,m,iccp1)=soilcmasrow(i,m,iccp1)
             totcmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1) + soilcmasrow(i,m,iccp1)
+
             barefrac=1.0
 
             ! Add values to the per tile vars
@@ -3616,6 +3632,7 @@ do 882 i=1,nltest
                 litres_yr_t(i,m)  =litres_yr_t(i,m)  +litres_yr(i,m,j)*fcancmxrow(i,m,j)
                 soilcres_yr_t(i,m) =soilcres_yr_t(i,m) +soilcres_yr(i,m,j)*fcancmxrow(i,m,j)
                 burnfrac_yr_t(i,m)=burnfrac_yr_t(i,m)+burnfrac_yr(i,m,j)*fcancmxrow(i,m,j)
+                veghght_yr_t(i,m) = veghght_yr_t(i,m)+veghght_yr(i,m,j)*fcancmxrow(i,m,j)
 
                 barefrac=barefrac-fcancmxrow(i,m,j)
 
@@ -3672,6 +3689,7 @@ do 882 i=1,nltest
             ch4dyn1_yr_g(i) = ch4dyn1_yr_g(i)+ch4dyn1_yr_t(i,m)*FAREROT(i,m)
             ch4dyn2_yr_g(i) = ch4dyn2_yr_g(i)+ch4dyn2_yr_t(i,m)*FAREROT(i,m)
             ch4soills_yr_g(i) = ch4soills_yr_g(i)+ch4soills_yr_t(i,m)*FAREROT(i,m)
+            veghght_yr_g(i) = veghght_yr_g(i) + veghght_yr_t(i,m)*FAREROT(i,m)
 
 900      continue !m
 
@@ -3692,7 +3710,7 @@ do 882 i=1,nltest
                     npp_yr(i,m,j),gpp_yr(i,m,j),nep_yr(i,m,j), &
                     nbp_yr(i,m,j),hetrores_yr(i,m,j), &
                     autores_yr(i,m,j),litres_yr(i,m,j), &
-                    soilcres_yr(i,m,j),' TILE ',m,' PFT ',j,' FRAC ' &
+                    soilcres_yr(i,m,j),veghght_yr(i,m,j),' TILE ',m,' PFT ',j,' FRAC ' &
                     ,fcancmxrow(i,m,j)
                 end if
             end do !j
@@ -3708,7 +3726,7 @@ do 882 i=1,nltest
                     totcmass_yr(i,m,iccp1),0., &
                     0.,nep_yr(i,m,iccp1), &
                     nbp_yr(i,m,iccp1),hetrores_yr(i,m,iccp1), &
-                    0.,litres_yr(i,m,iccp1),soilcres_yr(i,m,iccp1), &
+                    0.,litres_yr(i,m,iccp1),soilcres_yr(i,m,iccp1),0.0, &
                     ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
             end if
 
@@ -3722,7 +3740,7 @@ do 882 i=1,nltest
                     npp_yr_t(i,m),gpp_yr_t(i,m),nep_yr_t(i,m), &
                     nbp_yr_t(i,m),hetrores_yr_t(i,m), &
                     autores_yr_t(i,m),litres_yr_t(i,m), &
-                    soilcres_yr_t(i,m),' TILE ',m,' OF ' &
+                    soilcres_yr_t(i,m),veghght_yr_t(i,m),' TILE ',m,' OF ' &
                     ,nmtest,' TFRAC ',FAREROT(i,m)
             end if
         end do !m
@@ -3733,7 +3751,7 @@ do 882 i=1,nltest
                 soilcmas_yr_g(i),totcmass_yr_g(i),npp_yr_g(i), &
                 gpp_yr_g(i),nep_yr_g(i), &
                 nbp_yr_g(i),hetrores_yr_g(i),autores_yr_g(i), &
-                litres_yr_g(i),soilcres_yr_g(i),' GRDAV'
+                litres_yr_g(i),soilcres_yr_g(i),veghght_yr_g(i),' GRDAV'
 
         if (dofire .or. lnduseon) then
 
@@ -3834,7 +3852,7 @@ if (iday.eq.365) then
 end if
 
 
-8105  FORMAT(1X,I5,15(ES12.5,1X),2(A6,I2),A6,F8.2)
+8105  FORMAT(1X,I5,16(ES12.5,1X),2(A6,I2),A6,F8.2)
 8107  FORMAT(1X,I5,11(F12.7,1X),9L5,2(A6,I2))
 8108  FORMAT(1X,I5,20(ES12.5,1X),2(A6,I2),A6,F8.2)
 8115  FORMAT(1X,I5,6(ES12.5,1X),2(A6,I2))
