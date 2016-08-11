@@ -5,7 +5,7 @@
      4                       THFC, THLW, FCANCMX,  L2MAX, NOL2PFTS,
 C    ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
      5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG,
-     6                        LFSTATUS
+     6                        LFSTATUS,DAYL,DAYL_MAX
      7                        ,iyear, iday, ihour, imin)! YW for testing
 C     
 C               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) 
@@ -13,6 +13,8 @@ C                       PHOTOSYNTHESIS SUBROUTINE
 
 C     HISTORY:
 C
+C     * JAN 5/15  - J. Melton      Use TCAN again. We instituted a PAI minimum for trees (grass and crops already had it) of
+C                                  of 1. This removed the wild TCAN values that could occur.
 C     * JUL 22/15 - J. Melton      SM_FUNC2 was not correctly set up for soil layers > 3 (Noted by Yuanqiao Wu). Now fixed.
 C     * FEB 27/15 - J. Melton      Increase REQUITR to 10, it was not converging correctly at 4. Also rename
 C                                  WILTSM and FIELDSM to THLW and THFC, respectively, for consistency with CLASS.
@@ -134,6 +136,8 @@ C     CO2I2     - INTERCELLULAR CO2 CONCENTRATION FOR THE SHADED PART OF
 C                 THE TWO LEAF MODEL FROM THE PREVIOUS TIME STEP
 C     AN_VEG    - NET PHOTOSYNTHESIS RATE, u MOL CO2/M2.S FOR EACH PFT
 C     RML_VEG   - LEAF RESPIRATION RATE, u MOL CO2/M2.S FOR EACH PFT
+C     DAYL_MAX(ILG)      ! MAXIMUM DAYLENGTH FOR THAT LOCATION
+C     DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
 C
 C     ------------------------------------------------------------------
 C
@@ -202,10 +206,11 @@ C
      2            TEMP_AN
 C    
       INTEGER  ISAND(ILG,IG),  SN(KK), LFSTATUS(ILG,ICC) !FLAG test LFSTATUS DEC 4 2014. JM.
-c
       integer  iyear, iday, ihour, imin, l      !YW for testing only
       real     rmatsum(ilg,icc)    !accumulated root fraction in sm_func calculations
-c      
+      REAL DAYL_MAX(ILG)      ! MAXIMUM DAYLENGTH FOR THAT LOCATION
+      REAL DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
+
       REAL use_vmax !FLAG test LFSTATUS DEC 4 2014. JM.
 C
 C     FOR LIMITING CO2 UPTAKE
@@ -308,8 +313,6 @@ C     FOR VALUES HIGHER THAN 1. WHEN SN IS ABOUT 10, PHOTOSYNTHESIS DOES
 C     NOT START DECREASING UNTIL SOIL MOISTURE IS ABOUT HALF WAY BETWEEN
 C     WILTING POINT AND FIELD CAPACITY.
 C
-
-c    new values in 2.0.5
       DATA SN/2, 2, 0, 0, 0, 
      &        4, 2, 2, 2, 2, 
      &        2, 2, 0, 0, 0, 
@@ -394,7 +397,6 @@ C     LEAF ANGLE DISTRIBUTION
 C
 C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
-C
       DATA GAMMA_W/0.17/  ! New value from Sept 2014, old was 0.45. JM.
 C
 C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT MODEL ACTUALLY GIVES
@@ -641,12 +643,6 @@ C     INITIALIZATION ENDS
 C
 C     -------------------------------------------------------------------
 C
-C     SINCE WE DON'T YET USE TCAN, STORE THE TCAN VALUE IN A TEMP VAR AND
-C     SET TCAN TO TA 
-C
-!      T_TEMP = TCAN
-!      TCAN   = TA
-C
 C     IF LAI IS LESS THAN SLAI THAN WE USE STORAGE LAI TO PHOTOSYNTHESIZE.
 C     HOWEVER, WE DO NOT USE THE STOMATAL RESISTANCE ESTIMATED IN THIS CASE,
 C     BECAUSE STORAGE LAI IS AN IMAGINARY LAI, AND WE SET STOMATAL RESISTANCE
@@ -827,29 +823,31 @@ C         FIND Vmax,canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE
 C         LEAF MODEL
 C
 !         ------------- Changing Vcmax seasonally -----------------------\\\
-!         Based on Wilson, Baldocchi, and Hanson, Plant, Cell and Environment 2001, 24, 571-583.
+!         Based on Bauerle, W. L., Oren, R., Way, D. A., Qian, S. S., Stoy, P. C., Thornton,
+!         P. E., Bowden, J. D., Hoffman, F. M. and Reynolds, R. F.: Photoperiodic regulation
+!         of the seasonal pattern of photosynthetic capacity and the implications for carbon
+!         cycling, Proc. Natl. Acad. Sci. U. S. A., 109(22), 8612–8617, 2012,
 !         there is good evidence for the Vcmax varying throughout the season for deciduous tree
 !         species. We are adopting a parameterization based upon their paper with some differences.
-!         First, we cannot use an initial Vcmax of 0 at the start of leaf out. This is because we
-!         need the leaves to gain the carbon they need for growth and we have no non-structural
-!         carbohydrates to push the leaves out. So we thus start with high Vcmax. We otherwise
-!         generally follow their model of spring Vcmax maximums, summer declines, then rapid
-!         declines once senescence is initiated.
+!         We don't apply it to evergreens like they suggest. Their paper had only one evergreen species
+!         and other papers (Miyazawa, Y. and Kikuzawa, K.: Physiological basis of seasonal trend in
+!         leaf photosynthesis of five evergreen broad-leaved species in a temperate deciduous forest,
+!         Tree Physiol., 26(2), 249–256, 2006.) don't seem to back that up. Grasses and crops are also
+!         not affected by the dayl.
 
-          ! FLAG: test only done for one-leaf model!! JM Dec 4 2014./ Jan 21 2015.
-!          if (lfstatus(i,m).eq.1 .and. (m .eq. 2 .or. m .eq. 4)) then
-!            use_vmax = vmax(sort(m)) * 2.0
-!          else if ((lfstatus(i,m).eq.3).and.(m.eq. 2 .or. m .eq. 4))then  !leaf fall
-!            use_vmax = vmax(sort(m)) * 0.5
-!          else
-!            use_vmax = vmax(sort(m)) !normal growth
-!          end if
-!          vmaxc(i,m)=use_vmax * fpar(i,m)
-C
-          VMAXC(I,M)=VMAX(SORT(M)) * FPAR(I,M)
+          if ((m .eq. 2 .or. m .eq. 4)) then
+             use_vmax = vmax(sort(m)) * (dayl(i)/dayl_max(i))**2
+          else ! evergreens, crops, and grasses
+           use_vmax = vmax(sort(m))
+          end if
+
+          vmaxc(i,m)=use_vmax * fpar(i,m)
+
           IF(LEAFOPT.EQ.2)THEN
-             VMAXC_SUN(I,M) = VMAX(SORT(M)) * FPAR_SUN(I,M)
-             VMAXC_SHA(I,M) = VMAX(SORT(M)) * FPAR_SHA(I,M)
+             ! The two leaf is assumed to be affect by the insolation seasonal cycle the
+             ! same for each sun/shade leaf
+             VMAXC_SUN(I,M) = use_vmax * FPAR_SUN(I,M)
+             VMAXC_SHA(I,M) = use_vmax * FPAR_SHA(I,M)
           ENDIF
 C
 !         ------------- Changing Vcmax seasonally -----------------------///
@@ -1561,9 +1559,6 @@ C
 880     CONTINUE
 870   CONTINUE
 C
-C     PUT TCAN BACK TO ITS ORIGINAL VALUE FROM THE TEMP VAR 
-!      TCAN = T_TEMP
-
 
       DEALLOCATE(USESLAI)
       DEALLOCATE(SORT)

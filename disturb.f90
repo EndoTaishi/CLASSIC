@@ -24,11 +24,11 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !     ------------------ inputs above this line ----------------------          
                          stemltdt, rootltdt, glfltrdt, blfltrdt, &
                          glcaemls, rtcaemls, stcaemls, & 
-                         blcaemls, ltrcemls, burnfrac, probfire, &
+                         blcaemls, ltrcemls, burnfrac, smfunc_veg, &
                          emit_co2, emit_co,  emit_ch4, emit_nmhc, &
                          emit_h2,  emit_nox, emit_n2o, emit_pm25, &
                          emit_tpm, emit_tc,  emit_oc,  emit_bc, &
-                         burnvegf, bterm,    mterm,    lterm, &
+                         burnvegf, bterm_veg, mterm_veg,    lterm, &
                          pstemmass, pgleafmass )  
 !     ------------------outputs above this line ----------------------
 !
@@ -103,7 +103,6 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 !     blfltrdt  - brown leaf litter generated due to disturbance (kg c/m2)
 !     burnarea  - total area burned, km^2
 !     burnfrac  - total areal fraction burned, (%)
-!     probfire  - probability of fire
 
 !     note the following c burned will be converted to a trace gas 
 !     emission or aerosol on the basis of emission factors.
@@ -149,7 +148,7 @@ subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
 
 !     hb_interm - interm calculation
 !     hbratio   - head to back ratio of ellipse
-!     burnvegf - total per PFT areal fraction burned
+!     burnvegf - per PFT fraction burned of that PFTs area
 
 use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
                         iccp1, standreplace, tolrance, bmasthrs_fire, &
@@ -158,7 +157,7 @@ use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
                         frltrglf, frltrblf, frco2stm, frltrstm, frco2rt, frltrrt, &
                         frltrbrn, emif_co2, emif_co, emif_ch4, emif_nmhc, emif_h2, &
                         emif_nox, emif_n2o, emif_pm25, emif_tpm, emif_tc, emif_oc, emif_bc, &
-                        grass, extnmois_veg, extnmois_duff
+                        grass, extnmois_veg, extnmois_duff, iccp1
 
 implicit none
 
@@ -179,7 +178,7 @@ logical :: dofire, fire(ilg)
 real :: stemmass(ilg,icc), rootmass(ilg,icc), gleafmas(ilg,icc),      &
            bleafmas(ilg,icc),     thliq(ilg,ignd),    wiltsm(ilg,ignd),  &
              fieldsm(ilg,ignd),        uwind(ilg),        vwind(ilg),    &
-            fcancmx(ilg,icc),      lightng(ilg),litrmass(ilg,icc+1),     &
+            fcancmx(ilg,icc),      lightng(ilg),litrmass(ilg,iccp1),     &
                prbfrhuc(ilg),     extnprob(ilg), &
         rmatctem(ilg,icc,ignd),     thice(ilg,ignd),    popdin(ilg),  &
                lucemcom(ilg),    tmpprob(ilg),  currlat(ilg), fsnow(ilg) 
@@ -193,12 +192,11 @@ real ::  stemltdt(ilg,icc), rootltdt(ilg,icc), glfltrdt(ilg,icc), &
           emit_n2o(ilg,icc), emit_pm25(ilg,icc), emit_tpm(ilg,icc),    &
            emit_tc(ilg,icc),   emit_oc(ilg,icc),  emit_bc(ilg,icc)    
 
-real ::  biomass(ilg,icc),        bterm(ilg), drgtstrs(ilg,icc), &
+real ::  biomass(ilg,icc),        drgtstrs(ilg,icc), &
             betadrgt(ilg,ignd),     avgdryns(ilg),        fcsum(ilg),  &
-               avgbmass(ilg),        mterm(ilg),     c2glgtng(ilg),    &
+               avgbmass(ilg),     c2glgtng(ilg),    &
                betalght(ilg),            y(ilg),        lterm(ilg),    &
-               probfire(ilg),             ctime,            random,    &
-                        temp,     betmsprd(ilg),       smfunc(ilg),    &
+                    temp(ilg),     betmsprd(ilg),       smfunc(ilg),    &
                    wind(ilg),      wndfunc(ilg),     sprdrate(ilg),    &
                 lbratio(ilg),     arbn1day(ilg),     areamult(ilg),    &
                  vegarea(ilg),     grclarea(ilg),    &
@@ -213,7 +211,7 @@ real, dimension(ilg,icc) :: pftareab    ! pft area before fire (km2)
 
 real :: ymin, ymax, slope
 real :: soilterm, duffterm              ! temporary variables
-
+real :: extn_par1                       ! parameter used in calculation of fire extinguishing probability
 
 real, dimension(ilg,icc) :: bterm_veg     
 real, dimension(ilg,icc) :: duff_frac_veg
@@ -287,13 +285,10 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
         avgbmass(i)=0.0         !avg. veg. biomass over the veg. fraction of grid cell
         avgdryns(i)=0.0         !avg. dryness over the vegetated fraction
         fcsum(i)=0.0            !total vegetated fraction
-        bterm(i)=0.0            !biomass fire probability term
-        mterm(i)=0.0            !moisture fire probability term
         c2glgtng(i)=0.0         !cloud-to-ground lightning
         betalght(i)=0.0         !0-1 lightning term
         y(i)=0.0                !logistic dist. for fire prob. due to lightning
         lterm(i)=0.0            !lightning fire probability term
-        probfire(i)=0.0         !probability of fire
         fire(i)=.false.         !fire occuring 
         burnarea(i)=0.0         !total area burned due to fire
         burnfrac(i)=0.0         !total areal fraction burned due to fire
@@ -475,7 +470,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
         ymax=1.0/( 1.0+exp((parmlght-1.0)/parblght) )
         slope=abs(0.0-ymin)+abs(1.0-ymax)
 
-        temp=y(i)+(0.0-ymin)+betalght(i)*slope
+        temp(i)=y(i)+(0.0-ymin)+betalght(i)*slope
 
 !       Determine the probability of fire due to human causes
 !       this is based upon the population density from the .popd read-in file
@@ -483,7 +478,15 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
             prbfrhuc(i)=min(1.0,(popdin(i)/popdthrshld)**0.43) !From Kloster et al. (2010)
         end if
 
-        lterm(i)=max(0.0, min(1.0, temp+(1.0-temp)*prbfrhuc(i) ))
+        ! account for cultural ignitions in Savanna regions, see below for
+        ! reduction in suppression too
+!        if ( currlat(i).ge.-25.0.and.currlat(i).le.25.0 ) then
+        ! i.e. between 25S and 25N, prbfrhuc is always a minimum
+        ! of 0.7
+!           prbfrhuc(i)=max(0.7, prbfrhuc(i))
+!        endif
+
+        lterm(i)=max(0.0, min(1.0, temp(i)+(1.0-temp(i))*prbfrhuc(i) ))
 
 !       ----------------------- Number of fire calculations ----------------------\\
 
@@ -573,16 +576,23 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !         fire extinguishing probability as a function of grid-cell averaged population density
           if (popdon) then
-            extnprob(i)=max(0.0,0.9-exp(-0.025*popdin(i)))  !FLAG changed from -0.015 to keep in line with Kloster. JM Jun 24 2015
+
+            ! account for low suppression in Savanna regions, see above for
+            ! increase in ignition due to cultural practices
+               extn_par1=-0.015 ! Value based on Vivek's testing. Jul 14 2016. old = -0.025
+
+            ! change 0.9 to 1.0 in eqn. A78 of Melton and Arora, 2016, GMD competition paper
+            extnprob(i)=max(0.0,1.0-exp(extn_par1*popdin(i)))
+
             extnprob(i)=0.5+extnprob(i)/2.0
           end if
-
+          
 !         area multipler to calculate area burned over the duration of the fire
           areamult(i)=((1.0-extnprob(i))*(2.0-extnprob(i)))/ extnprob(i)**2                              
 
 !         per PFT area burned, km^2
           burnarea_veg(i,j)=arbn1day_veg(i,j)*areamult(i)*(grclarea(i)*fcancmx(i,j)*probfire_veg(i,j))/reparea
-          
+
 !          ------- Area burned based on number of fire calculations ----------------------\\
 
 !       This is not used in CTEM in general but we keep the code here for testing purposes
@@ -650,8 +660,11 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
             rootmass(i,j)=rootmass(i,j) - rootltdt(i,j) - rtcaemls(i,j)
             litrmass(i,j)=litrmass(i,j) + glfltrdt(i,j) + blfltrdt(i,j) + stemltdt(i,j) + rootltdt(i,j) - ltrcemls(i,j)
 
-!           Output the burned area per PFT
-            burnvegf(i,j)=burnarea_veg(i,j)/grclarea(i)
+!           Output the burned area per PFT (the units here are burned fraction of each PFTs area. So
+!           if a PFT has 50% gridcell cover and 50% of that burns it will have a burnvegf of 0.5 (which
+!           then translates into a gridcell fraction of 0.25). This units is for consistency outside of
+!           this subroutine.
+            burnvegf(i,j)=burnarea_veg(i,j) /  pftareab(i,j)
 
           endif
 530     continue
@@ -707,6 +720,11 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 630     continue
 620   continue
 
+!FLAG for the optimization of popd effect on fire I am taking the lterm out as the 'temp' var. So I have made tmp be dimension
+! ilg and I overwrite the lterm (which is written to an output file) here in its place.
+
+lterm = temp
+
 end subroutine disturb
 
 ! ------------------------------------------------------------------------------------
@@ -739,7 +757,7 @@ real, dimension(nilg), intent(in) :: pvgbioms           ! initial veg biomass
 real, dimension(nilg), intent(in) :: pgavltms           ! initial litter mass
 real, dimension(nilg), intent(in) :: pgavscms           ! initial soil c mass
 real, dimension(nilg,icc), intent(inout) :: fcancmx     ! initial fractions of the ctem pfts
-real, dimension(nilg,icc), intent(in) :: burnvegf       ! total per PFT areal fraction burned
+real, dimension(nilg,icc), intent(in) :: burnvegf       ! per PFT fraction burned of that PFTs area
 real, dimension(nilg,icc), intent(inout) :: gleafmas    ! green leaf carbon mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: bleafmas    ! brown leaf carbon mass for each of the 9 ctem pfts, kg c/m2
 real, dimension(nilg,icc), intent(inout) :: stemmass    ! stem carbon mass for each of the 9 ctem pfts, kg c/m2
@@ -793,9 +811,9 @@ do 10 i = il1, il2
               pftfracb(i,j)=fcancmx(i,j)
 
               pftfraca(i,j) = max(seed,fcancmx(i,j) - burnvegf(i,j) * standreplace(n))
-        
+
               fcancmx(i,j) = pftfraca(i,j)
-   
+
               barefrac(i)=barefrac(i)-fcancmx(i,j)
 
             else  !crops

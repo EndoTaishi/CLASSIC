@@ -1,6 +1,6 @@
       subroutine mortalty (stemmass, rootmass,    ailcg, gleafmas,
      1                     bleafmas,     il1, 
-     2                          il2,     iday,   do_age_mort, sort,
+     2                          il2,     iday, sort,
      3                      fcancmx,
 c    + ------------------ inputs above this line ----------------------   
      4                     lystmmas, lyrotmas, tymaxlai, grwtheff,
@@ -19,10 +19,10 @@ c     22  Jul 2013  - Add in module for parameters
 C     J. Melton
 c
 c     24  sep 2012  - add in checks to prevent calculation of non-present
-c     j. melton       pfts
+c     J. Melton       pfts
 c
 c     07  may 2003  - this subroutine calculates the litter generated
-c     v. arora        from leaves, stem, and root components after
+c     V. Arora        from leaves, stem, and root components after
 c                     vegetation dies due to reduced growth efficiency
 c                     or due to aging (the intrinsic mortality)  
 
@@ -42,7 +42,6 @@ c     icc       - no. of ctem plant function types, currently 8
 c     ilg       - no. of grid cells in latitude circle
 c     il1,il2   - il1=1, il2=ilg
 c     iday      - day of the year
-c     do_age_mort - switch to control calc of age mortality (false=not done)
 c     sort      - index for correspondence between ctem 9 pfts and size
 c                 12 of parameters vectors
 c
@@ -62,8 +61,6 @@ c
       integer il1, il2, i, j, k, iday, n
 c
       integer       sort(icc)
-c
-      logical      do_age_mort
 c
       real  stemmass(ilg,icc), rootmass(ilg,icc), gleafmas(ilg,icc),
      1         ailcg(ilg,icc), grwtheff(ilg,icc), lystmmas(ilg,icc),

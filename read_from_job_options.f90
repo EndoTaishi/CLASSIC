@@ -1,6 +1,6 @@
-subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctemloop,ctem_on, &
+subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ctem_on, &
                   ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
-                  setco2conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
+                  setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
                   compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
                   islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,& 
                   jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
@@ -12,8 +12,16 @@ subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctem
 !           Canadian Terrestrial Ecosystem Model (CTEM) 
 !                    Joboptions Read-In Subroutine 
 !
-!     20  Mar. 2015 - Add in new CLASS flags for snow albedos -igralb & isnoalb
+!     28  Jul  2016  - Add ability to have changing CO2 but cycling climate
+!     J. Melton        this was for the TRENDY project but generally useful so
+!                      keep in.
 !
+!     3   Feb  2016 - Remove mosaic flag. It is no longer required.
+!     J. Melton
+
+!     20  Mar. 2015 - Add in new CLASS flags for snow albedos -igralb & isnoalb
+!     J. Melton
+
 !     4   Sep. 2014 - Add in the transient_run flag.
 !     J. Melton
 !
@@ -28,7 +36,6 @@ subroutine read_from_job_options(argbuff,mosaic,transient_run,trans_startyr,ctem
 !
 !     25  Apr. 2012 - This subroutine takes in model switches from
 !     J. Melton       a job file and pushes them to RUNCLASSCTEM
-!		      
 
 implicit none
 
@@ -37,9 +44,6 @@ implicit none
 
 character(80), intent(out) :: argbuff !prefix of file names
 
-logical, intent(out) :: mosaic   ! true if the run is in mosaic mode, otherwise it
-                                 ! is a composite run
-                                 
 logical, intent(out) :: transient_run ! true if the run is a transient run. With this flag set
                                  ! set to .true., you can cycle over nummetcyclyrs of climate a
                                  ! ctemloop number of times then continue on through the climate
@@ -48,7 +52,8 @@ logical, intent(out) :: transient_run ! true if the run is a transient run. With
                                  ! from 1850. See the bottom of this subroutine for an example of how to 
                                  ! set this correctly.  
                                  
-integer, intent(out) :: trans_startyr ! the year you want the transient run to start (e.g. 1850)                                                                
+integer, intent(out) :: trans_startyr ! the year you want the transient run to start (e.g. 1850). If you
+                                      ! are not doing a transient run, set to a negative value (like -9999)
 
 integer, intent(out) :: ctemloop ! no. of times the .met file is to be read. this
                     	         ! option is useful to see how ctem's c pools
@@ -85,7 +90,13 @@ integer, intent(out) :: metcylyrst   ! climate year to start the spin up on
 
 logical, intent(out) :: co2on    ! use co2 time series, set to false if cyclemet is true
 
-real, intent(out) :: setco2conc  ! set the value of atmospheric co2 if co2on is false.
+real, intent(out) :: setco2conc  ! set the value of atmospheric co2 if co2on is false. (ppmv)
+
+logical, intent(out) :: ch4on    ! use CH4 time series, set to false if cyclemet is true
+                                 ! the CO2 timeseries is in the same input file as the CO2 one.
+
+real, intent(out) :: setch4conc  ! set the value of atmospheric CH4 if ch4on is false. (ppmv)
+
 
 logical, intent(out) :: popdon   ! if set true use population density data to calculate fire extinguishing 
                  				 ! probability and probability of fire due to human causes, 
@@ -218,7 +229,6 @@ integer, intent(out) :: igralb
 ! -------------
 
 namelist /joboptions/ &
-  mosaic,             &
   transient_run,      &
   trans_startyr,      &
   ctemloop,           &
@@ -231,6 +241,8 @@ namelist /joboptions/ &
   metcylyrst,         &
   co2on,              &
   setco2conc,         &
+  ch4on,              &
+  setch4conc,         &
   popdon,             &
   popcycleyr,         &
   parallelrun,        &
@@ -242,7 +254,6 @@ namelist /joboptions/ &
   start_bare,         &
   rsfile,             &
   start_from_rs,      &
-  jmosty,             &
   IDISP,              &
   IZREF,              &
   ISLFD,              &
@@ -265,7 +276,8 @@ namelist /joboptions/ &
   jhhsty,             &
   jhhendy,            &
   jdsty,              &
-  jdendy
+  jdendy,             &
+  jmosty
 
 character(140) :: jobfile
 integer :: argcount, iargc 
@@ -304,7 +316,7 @@ call getarg(2,argbuff)
 ! ************************************
 ! EXAMPLES:
 
-! To set up a transient run:
+! To set up a transient run that does a cycling of the climate at the start:
 
 ! In the example below the model will run from 1851 - 2012 using a climate dataset that
 ! spans 1901 - 2012. The LUC, POPD, CO2 files all span 1850 - 2012. The climate dataset will
@@ -327,6 +339,16 @@ call getarg(2,argbuff)
 ! POPDON = .TRUE. ,
 ! OBSWETF = .false. ,
 
+! If you are doing methane then this would be true like the CO2 switches
+
+! +++++++++++++++++++++++++++++++
+
+! If you want a transient run that does not spin over climate at the start, you need to change from above the following:
+
+! (only the relevant switches are shown below)
+! trans_startyr = 2000, <-- whatever year you want to start at
+! CYCLEMET = .FALSE. ,  <-- note this is set to FALSE.
+
 ! +++++++++++++++++++++++++++++++
 
 ! To set up a spinup run:
@@ -348,6 +370,16 @@ call getarg(2,argbuff)
 ! POPCYCLEYR = 1850 ,
 ! OBSWETF = .false. ,
 
+! If doing methane then the CH4 switches should be the same as the CO2 ones.
+
+! +++++++++++++++++++++++++++++++
+
+! If you want a transient CO2 run that DOES spin over climate, you need to change from above the following:
+
+! (only the relevant switches are shown below)
+! trans_startyr = 2000, <-- whatever year you want the CO2 to start at (note: the run will end at the end of the CO2 file)
+! CO2ON = .TRUE.
+! SETCO2CONC = 285.00 , <-- Now ignored.
 
 end subroutine read_from_job_options
 

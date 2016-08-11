@@ -78,8 +78,8 @@ real, dimension(12,nilg), intent(inout) :: tmonth    ! monthly temperatures
 real, dimension(nilg), intent(inout) :: anpcpcur  ! annual precipitation for current year (mm)
 real, dimension(nilg), intent(inout) :: anpecur   ! annual potential evaporation for current year (mm)
 real, dimension(nilg), intent(inout) :: gdd5cur   ! growing degree days above 5 c for current year
-integer, dimension(nilg), intent(inout) :: surmncur  ! number of months with surplus water for current year
-integer, dimension(nilg), intent(inout) :: defmncur  ! number of months with water deficit for current year
+real, dimension(nilg), intent(inout) :: surmncur  ! number of months with surplus water for current year
+real, dimension(nilg), intent(inout) :: defmncur  ! number of months with water deficit for current year
 real, dimension(nilg), intent(inout) :: srplscur  ! water surplus for the current month
 real, dimension(nilg), intent(inout) :: defctcur  ! water deficit for the current month
 
@@ -128,8 +128,8 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
           anpcpcur(i)=0.0   ! annual precip. for the current year
           anpecur(i)=0.0    ! annual potential evap for the current year
           aridcur(i)=100.0  ! aridity index for the current year
-          surmncur(i)=0     ! months with surplus water for current year
-          defmncur(i)=0     ! months with water deficit for current year
+          surmncur(i)=0.     ! months with surplus water for current year
+          defmncur(i)=0.     ! months with water deficit for current year
           srpcuryr(i)=0.0   ! current year's water surplus
           dftcuryr(i)=0.0   ! current year's water deficit
           tcurm(i)=0.0      ! temperature of current month
@@ -188,10 +188,10 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
         if(atmonthend.eq.1)then
           tmonth(curmonth,i)=tcurm(i)
           if( srplscur(i).ge.defctcur(i) )then
-            surmncur(i) = surmncur(i) + 1
+            surmncur(i) = surmncur(i) + 1.
             wet_dry_mon_index(i,curmonth) = 1   
           else if(srplscur(i).lt.defctcur(i) )then
-            defmncur(i) = defmncur(i) + 1
+            defmncur(i) = defmncur(i) + 1.
             wet_dry_mon_index(i,curmonth) = -1  
           endif
           srpcuryr(i)=srpcuryr(i)+srplscur(i)
@@ -248,32 +248,34 @@ real, parameter :: factor=exp(-1.0/eftime) !faster to calculate this only at com
 
 !       Update long term moving average of bioclimatic parameters in an 
 !       e-folding sense
-        do 280 i = il1, il2          
           if(.not. inibioclim)then
-            twarmm(i)=twcuryr(i)
-            tcoldm(i)=tccuryr(i)
-            gdd5(i)=gdd5cur(i)
-            aridity(i)=aridcur(i)
-            srplsmon(i)=real(surmncur(i))
-            defctmon(i)=real(defmncur(i))
-            annsrpls(i)=srpcuryr(i)
-            anndefct(i)=dftcuryr(i)
-            annpcp(i)=anpcpcur(i)
-            dry_season_length(i)=dry_season_length_curyr(i)    
+            do i = il1, il2
+                twarmm(i)=twcuryr(i)
+                tcoldm(i)=tccuryr(i)
+                gdd5(i)=gdd5cur(i)
+                aridity(i)=aridcur(i)
+                srplsmon(i)=surmncur(i)
+                defctmon(i)=defmncur(i)
+                annsrpls(i)=srpcuryr(i)
+                anndefct(i)=dftcuryr(i)
+                annpcp(i)=anpcpcur(i)
+                dry_season_length(i)=dry_season_length_curyr(i)
+            end do
             inibioclim=.true.
           else
-            twarmm(i)=twarmm(i)*factor + twcuryr(i)*(1.0-factor)
-            tcoldm(i)=tcoldm(i)*factor + tccuryr(i)*(1.0-factor)
-            gdd5(i)  =gdd5(i)*factor + gdd5cur(i)*(1.0-factor)
-            aridity(i)=aridity(i)*factor + aridcur(i)*(1.0-factor)
-            srplsmon(i)=srplsmon(i)*factor + real(surmncur(i))*(1.0-factor)
-            defctmon(i)=defctmon(i)*factor + real(defmncur(i))*(1.0-factor)
-            annsrpls(i)=annsrpls(i)*factor + srpcuryr(i)*(1.0-factor)
-            anndefct(i)=anndefct(i)*factor + dftcuryr(i)*(1.0-factor)
-            annpcp(i)=annpcp(i)*factor + anpcpcur(i)*(1.0-factor)
-            dry_season_length(i)=dry_season_length(i)*factor + dry_season_length_curyr(i)*(1.0-factor)   
+            do 280 i = il1, il2
+                twarmm(i)=twarmm(i)*factor + twcuryr(i)*(1.0-factor)
+                tcoldm(i)=tcoldm(i)*factor + tccuryr(i)*(1.0-factor)
+                gdd5(i)  =gdd5(i)*factor + gdd5cur(i)*(1.0-factor)
+                aridity(i)=aridity(i)*factor + aridcur(i)*(1.0-factor)
+                srplsmon(i)=srplsmon(i)*factor + surmncur(i)*(1.0-factor)
+                defctmon(i)=defctmon(i)*factor + defmncur(i)*(1.0-factor)
+                annsrpls(i)=annsrpls(i)*factor + srpcuryr(i)*(1.0-factor)
+                anndefct(i)=anndefct(i)*factor + dftcuryr(i)*(1.0-factor)
+                annpcp(i)=annpcp(i)*factor + anpcpcur(i)*(1.0-factor)
+                dry_season_length(i)=dry_season_length(i)*factor + dry_season_length_curyr(i)*(1.0-factor)
+280         continue
           endif
-280     continue
 
          ! Deallocate the arrays for dry season length
           deallocate(wet_dry_mon_index)
@@ -634,6 +636,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !   First, let's adjust the fractions if fire is turned on.
 
     if (dofire) then
+
 
         call burntobare(il1, il2, nilg, sort, vgbiomas, gavgltms, gavgscms,fcancmx, burnvegf, stemmass, &
                       rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, &
@@ -1055,6 +1058,7 @@ logical, parameter :: boer  =.false. ! modified form of lv eqns with f missing a
 !           reduce biomass density by spreading over larger fraction
 
             term = (pfcancmx(i,j)/fcancmx(i,j))
+
             gleafmas(i,j) = gleafmas(i,j)*term
             bleafmas(i,j) = bleafmas(i,j)*term
             stemmass(i,j) = stemmass(i,j)*term

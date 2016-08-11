@@ -5,7 +5,7 @@
      3      co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat, 
      4      co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat, 
      5      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,
-     6      rmlcgveggat, canresgat,   sdepgat,
+     6      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,
      7      sandgat,     claygat,     orgmgat,
      8      anveggat,    rmlveggat,   tcanoaccgat_m,tbaraccgat_m,
      9      uvaccgat_m,  vvaccgat_m,  mlightnggat,  prbfrhucgat,
@@ -23,19 +23,23 @@
      l      rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,
      m      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,
      n      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,
-     o      burnfracgat, probfiregat, lucemcomgat,  lucltringat,
-     p      lucsocingat, nppveggat,   dstcemls3gat,
+     o      burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,
+     p      lucsocingat, nppveggat,   dstcemls3gat, popdingat,
      q      faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,
      r      rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,
      s      gppveggat,   nepveggat,   ailcmingat,   ailcmaxgat,
      t      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,
      u      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,
      v      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,
-     &      btermgat,     ltermgat,   mtermgat,
+     &      btermgat,     ltermgat,   mtermgat,daylgat,dayl_maxgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat,burnvegfgat, pstemmassgat, pgleafmassgat,
-     &      CH4WET1GAT, CH4WET2GAT, WETFDYNGAT, CH4DYN1GAT, 
-     &      CH4DYN2GAT,
+     &      ch4wet1gat, ch4wet2gat, slopefracgat, wetfrac_mongat,
+     &       wetfdyngat, ch4dyn1gat, ch4dyn2gat, ch4soillsgat,
+     &      twarmmgat,    tcoldmgat,     gdd5gat,
+     1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
+     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
+
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -44,11 +48,11 @@ c
      x      co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,
      y      co2i2csrow,  xdiffus,     slairow,      cfluxcgrow,
      z      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,
-     1      rmlcgvegrow, canresrow,   sdeprow,
+     1      rmlcgvegrow, canresrow,   sdeprow,      ch4concrow,
      2      sandrow,     clayrow,     orgmrow,
      3      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,
-     4      uvaccrow_m,  vvaccrow_m,  mlightnggrd,  prbfrhucgrd,
-     5      extnprobgrd, stdalngrd,   pfcancmxrow,  nfcancmxrow,
+     4      uvaccrow_m,  vvaccrow_m,  mlightngrow,  prbfrhucrow,
+     5      extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,
      6      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,
      7      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,
      8      pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,
@@ -62,28 +66,30 @@ c
      g      rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,
      h      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,
      i      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,
-     j      burnfracrow, probfirerow, lucemcomrow,  lucltrinrow,
-     k      lucsocinrow, nppvegrow,   dstcemls3row,
+     j      burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,
+     k      lucsocinrow, nppvegrow,   dstcemls3row, popdinrow,
      l      farerow,     gavgscmsrow, rmlvegaccrow, pftexistrow,
      &      rmsvegrow,   rmrvegrow,   rgvegrow,   vgbiomas_vegrow,
      &      gppvegrow,   nepvegrow,  ailcminrow,   ailcmaxrow,
      &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,
      &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,
      &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,
-     &      btermrow,     ltermrow,   mtermrow, 
+     &      btermrow,     ltermrow,   mtermrow, daylrow,dayl_maxrow,
      &      nbpvegrow,   hetroresvegrow, autoresvegrow,litresvegrow,
      &      soilcresvegrow, burnvegfrow, pstemmassrow,pgleafmassrow,
-     &      CH4WET1ROW, CH4WET2ROW, WETFDYNROW, CH4DYN1ROW, 
-     &      CH4DYN2ROW
+     &      ch4wet1row, ch4wet2row, slopefracrow, wetfrac_monrow,
+     &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,
+     &      twarmmrow,    tcoldmrow,     gdd5row,
+     1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
+     2      annsrplsrow,   annpcprow,  dry_season_lengthrow
 c    ----gathering of peatland variables YW March 19, 2015 ------------\
-c
      1    ,anmosrow,rmlmosrow,gppmosrow,armosrow,nppmosrow
      2    ,anmosgat,rmlmosgat,gppmosgat,armosgat,nppmosgat
-	3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
-	4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
+	 3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
+	 4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
      5    ,thlqaccrow_m, thlqaccgat_m,thicaccrow_m,thicaccgat_m
      6    ,ipeatland)
-c    ----gathering of peatland variables YW March 19, 2015 ------------/
+c    ----gathering of peatland variables YW March 19,
 
 c
 c              Canadian Terrestrial Ecosystem Model (CTEM)
@@ -101,7 +107,7 @@ c
 c
 c     * integer constants.
 c
-      integer  nml, k, l, m
+      integer  nml, k, l, m, n, j
 c
 c     * gather-scatter index arrays.
 c
@@ -121,7 +127,7 @@ c
      a      cfluxcsgat(ilg),          ancsveggat(ilg,icc),
      b      ancgveggat(ilg,icc),      rmlcsveggat(ilg,icc),
      c      rmlcgveggat(ilg,icc),     canresgat(ilg),
-     d      sdepgat(ilg)
+     d      sdepgat(ilg),             ch4concgat(ilg)
 c
       real    sandgat(ilg,ignd),      claygat(ilg,ignd), 
      1        orgmgat(ilg,ignd)
@@ -134,6 +140,7 @@ c
       real   mlightnggat(ilg,12)  !12month
 c
       real  prbfrhucgat(ilg),         extnprobgat(ilg),
+     +      daylgat(ilg),             dayl_maxgat(ilg),
      1      tbaraccgat_m(ilg,ignd),
      2      pfcancmxgat(ilg,icc),     nfcancmxgat(ilg,icc),
      3      stemmassgat(ilg,icc),     rootmassgat(ilg,icc),
@@ -169,7 +176,7 @@ c
      b      roottempgat(ilg,icc),   afrleafgat(ilg,icc),
      c      afrstemgat(ilg,icc),    afrrootgat(ilg,icc),
      d      wtstatusgat(ilg,icc),   ltstatusgat(ilg,icc),
-     e      burnfracgat(ilg),       probfiregat(ilg),
+     e      burnfracgat(ilg),       smfuncveggat(ilg,icc),
      f      lucemcomgat(ilg),       lucltringat(ilg),
      g      lucsocingat(ilg),       nppveggat(ilg,icc),
      h      dstcemls3gat(ilg)
@@ -181,8 +188,9 @@ c      fire emission variables
      3      emit_n2ogat(ilg,icc),  emit_pm25gat(ilg,icc),
      4      emit_tpmgat(ilg,icc),  emit_tcgat(ilg,icc),
      5      emit_ocgat(ilg,icc),   emit_bcgat(ilg,icc),
-     6      burnvegfgat(ilg,icc),  btermgat(ilg),
-     7      ltermgat(ilg),         mtermgat(ilg)
+     6      burnvegfgat(ilg,icc),  btermgat(ilg,icc),
+     7      ltermgat(ilg),         mtermgat(ilg,icc),
+     8      popdingat(ilg)
 c
       real  faregat(ilg)
       real  gavgscmsgat(ilg)
@@ -211,7 +219,7 @@ c
      a      cfluxcsrow(nlat,nmos),       ancsvegrow(nlat,nmos,icc),
      b      ancgvegrow(nlat,nmos,icc),   rmlcsvegrow(nlat,nmos,icc),
      c      rmlcgvegrow(nlat,nmos,icc),  canresrow(nlat,nmos),
-     d      sdeprow(nlat,nmos)
+     d      sdeprow(nlat,nmos),          ch4concrow(nlat,nmos)
 c
       real    sandrow(nlat,nmos,ignd),   clayrow(nlat,nmos,ignd), 
      1        orgmrow(nlat,nmos,ignd)
@@ -221,9 +229,10 @@ c
       real  tcanoaccrow_m(nlat,nmos),
      1      uvaccrow_m(nlat,nmos),       vvaccrow_m(nlat,nmos)
 c
-      real  mlightnggrd(nlat,12)  !12month
+      real  mlightngrow(nlat,nmos,12)  !12month
 c
-      real  prbfrhucgrd(nlat),            extnprobgrd(nlat),
+      real  prbfrhucrow(nlat,nmos),       extnprobrow(nlat,nmos),
+     +      daylrow(nlat),           dayl_maxrow(nlat),
      1      tbaraccrow_m(nlat,nmos,ignd),
      2      pfcancmxrow(nlat,nmos,icc),   nfcancmxrow(nlat,nmos,icc),
      3      stemmassrow(nlat,nmos,icc),   rootmassrow(nlat,nmos,icc),
@@ -233,7 +242,7 @@ c
      6      ailcbrow(nlat,nmos,icc),      flhrlossrow(nlat,nmos,icc)
 c
       integer pandaysrow(nlat,nmos,icc),  lfstatusrow(nlat,nmos,icc),
-     1      stdalngrd(nlat),               colddaysrow(nlat,nmos,2)
+     1      stdalnrow(nlat,nmos),           colddaysrow(nlat,nmos,2)
 
       logical pftexistrow(nlat,nmos,icc)
 c
@@ -260,7 +269,7 @@ c
      b      roottemprow(nlat,nmos,icc),    afrleafrow(nlat,nmos,icc),
      c      afrstemrow(nlat,nmos,icc),     afrrootrow(nlat,nmos,icc),
      d      wtstatusrow(nlat,nmos,icc),    ltstatusrow(nlat,nmos,icc),
-     e      burnfracrow(nlat,nmos),        probfirerow(nlat,nmos),
+     e      burnfracrow(nlat,nmos),       smfuncvegrow(nlat,nmos,icc),
      f      lucemcomrow(nlat,nmos),        lucltrinrow(nlat,nmos),
      g      lucsocinrow(nlat,nmos),        nppvegrow(nlat,nmos,icc),
      h      dstcemls3row(nlat,nmos)
@@ -272,8 +281,9 @@ c     fire variables
      3     emit_n2orow(nlat,nmos,icc),  emit_pm25row(nlat,nmos,icc),
      4     emit_tpmrow(nlat,nmos,icc),  emit_tcrow(nlat,nmos,icc),
      5     emit_ocrow(nlat,nmos,icc),   emit_bcrow(nlat,nmos,icc),
-     6     burnvegfrow(nlat,nmos,icc),  btermrow(nlat,nmos),
-     7     ltermrow(nlat,nmos),         mtermrow(nlat,nmos)
+     6     burnvegfrow(nlat,nmos,icc),  btermrow(nlat,nmos,icc),
+     7     ltermrow(nlat,nmos),         mtermrow(nlat,nmos,icc),
+     8     popdinrow(nlat,nmos)
 c
       real  farerow(nlat,nmos)
 c
@@ -290,14 +300,28 @@ c
      2      autoresvegrow(nlat,nmos,icc),litresvegrow(nlat,nmos,iccp1),
      3      soilcresvegrow(nlat,nmos,iccp1) 
 
-c   Methane(Wetland) related variables 
-        real                                                         !      WETFRACROW(nlat),             WETFRACGAT(ILG),
-                                                                     !  1       WETFRAC_SROW(nlat),            WETFRAC_SGAT(ILG),
-     2       CH4WET1ROW(nlat,nmos),         CH4WET1GAT(ILG),
-     3       CH4WET2ROW(nlat,nmos),         CH4WET2GAT(ILG),
-     4       WETFDYNROW(nlat,nmos),         WETFDYNGAT(ILG),
-     5       CH4DYN1ROW(nlat,nmos),         CH4DYN1GAT(ILG),
-     6       CH4DYN2ROW(nlat,nmos),         CH4DYN2GAT(ILG)
+c   Methane related variables
+        real wetfrac_monrow(nlat,nmos,12),wetfrac_mongat(ilg,12),
+     1       slopefracrow(nlat,nmos,8),      slopefracgat(ilg,8),
+     2       ch4wet1row(nlat,nmos),         ch4wet1gat(ilg),
+     3       ch4wet2row(nlat,nmos),         ch4wet2gat(ilg),
+     4       wetfdynrow(nlat,nmos),         wetfdyngat(ilg),
+     5       ch4dyn1row(nlat,nmos),         ch4dyn1gat(ilg),
+     6       ch4dyn2row(nlat,nmos),         ch4dyn2gat(ilg),
+     7       ch4soillsrow(nlat,nmos),      ch4soillsgat(ilg)
+
+
+       real twarmmrow(nlat,nmos),           twarmmgat(ilg),
+     1       tcoldmrow(nlat,nmos),          tcoldmgat(ilg),
+     2       gdd5row(nlat,nmos),            gdd5gat(ilg),
+     3       aridityrow(nlat,nmos),         ariditygat(ilg),
+     4       srplsmonrow(nlat,nmos),        srplsmongat(ilg),
+     5       defctmonrow(nlat,nmos),        defctmongat(ilg),
+     6       anndefctrow(nlat,nmos),        anndefctgat(ilg),
+     7       annsrplsrow(nlat,nmos),        annsrplsgat(ilg),
+     8       annpcprow(nlat,nmos),          annpcpgat(ilg),
+     9       dry_season_lengthrow(nlat,nmos),
+     +       dry_season_lengthgat(ilg)
 
 c	--peatland variables YW March 19, 2015 ---------------------------
 	 real	anmosrow(nlat,nmos), 	anmosgat(ilg),
@@ -318,13 +342,16 @@ c----------------------------------------------------------------------
       do 100 k=1,nml
           sdepgat(k)      = sdeprow(ilmos(k),jlmos(k))
           co2concgat(k)   = co2concrow(ilmos(k),jlmos(k))
+          ch4concgat(k)   = ch4concrow(ilmos(k),jlmos(k))
           cfluxcggat(k)   = cfluxcgrow(ilmos(k),jlmos(k))
           cfluxcsgat(k)   = cfluxcsrow(ilmos(k),jlmos(k))
           canresgat(k)    = canresrow(ilmos(k),jlmos(k))
           xdiffusgat(k)   = xdiffus(ilmos(k))
-          prbfrhucgat(k)  = prbfrhucgrd(ilmos(k))
-          extnprobgat(k)  = extnprobgrd(ilmos(k))
-          stdalngat(k)    = stdalngrd(ilmos(k))
+          prbfrhucgat(k)  = prbfrhucrow(ilmos(k),jlmos(k))
+          extnprobgat(k)  = extnprobrow(ilmos(k),jlmos(k))
+          daylgat(k)      = daylrow(ilmos(k))
+          dayl_maxgat(k)  = dayl_maxrow(ilmos(k))
+          stdalngat(k)    = stdalnrow(ilmos(k),jlmos(k))
           tcanoaccgat_m(k)= tcanoaccrow_m(ilmos(k),jlmos(k))
           uvaccgat_m(k)   = uvaccrow_m(ilmos(k),jlmos(k))
           vvaccgat_m(k)   = vvaccrow_m(ilmos(k),jlmos(k))
@@ -349,28 +376,49 @@ c----------------------------------------------------------------------
           rmsgat(k)       = rmsrow(ilmos(k),jlmos(k))
           rmrgat(k)       = rmrrow(ilmos(k),jlmos(k))
           burnfracgat(k)  = burnfracrow(ilmos(k),jlmos(k))
-          probfiregat(k)  = probfirerow(ilmos(k),jlmos(k))
           lucemcomgat(k)  = lucemcomrow(ilmos(k),jlmos(k))
           lucltringat(k)  = lucltrinrow(ilmos(k),jlmos(k))
           lucsocingat(k)  = lucsocinrow(ilmos(k),jlmos(k))
-          btermgat(k)     = btermrow(ilmos(k),jlmos(k))
-          ltermgat(k)     = ltermrow(ilmos(k),jlmos(k))
-          mtermgat(k)     = mtermrow(ilmos(k),jlmos(k))
           dstcemls3gat(k) = dstcemls3row(ilmos(k),jlmos(k))
           faregat(k)      = farerow(ilmos(k),jlmos(k))
-          gavgscmsgat(k)  = gavgscmsrow(ilmos(k),jlmos(k)) 
-!          WETFRACGAT(k)   = WETFRACROW(ilmos(k))
-!          WETFRAC_SGAT(k) = WETFRAC_SROW(ilmos(k))
-          CH4WET1GAT(k)   = CH4WET1ROW(ilmos(k),jlmos(k))
-          CH4WET2GAT(k)   = CH4WET2ROW(ilmos(k),jlmos(k))
-          WETFDYNGAT(k)   = WETFDYNROW(ilmos(k),jlmos(k))
-          CH4DYN1GAT(k)   = CH4DYN1ROW(ilmos(k),jlmos(k))
-          CH4DYN2GAT(k)   = CH4DYN2ROW(ilmos(k),jlmos(k))        
+          gavgscmsgat(k)  = gavgscmsrow(ilmos(k),jlmos(k))
+          do n = 1,8
+            slopefracgat(k,n) = slopefracrow(ilmos(k),jlmos(k),n)
+          end do
+          ch4wet1gat(k)   = ch4wet1row(ilmos(k),jlmos(k))
+          ch4wet2gat(k)   = ch4wet2row(ilmos(k),jlmos(k))
+          wetfdyngat(k)   = wetfdynrow(ilmos(k),jlmos(k))
+          ch4dyn1gat(k)   = ch4dyn1row(ilmos(k),jlmos(k))
+          ch4dyn2gat(k)   = ch4dyn2row(ilmos(k),jlmos(k))
+          ch4soillsgat(k) = ch4soillsrow(ilmos(k),jlmos(k))
+
+          twarmmgat(k)    = twarmmrow(ilmos(k),jlmos(k))
+          tcoldmgat(k)    = tcoldmrow(ilmos(k),jlmos(k))
+          gdd5gat(k)      = gdd5row(ilmos(k),jlmos(k))
+          ariditygat(k)   = aridityrow(ilmos(k),jlmos(k))
+          srplsmongat(k)  = srplsmonrow(ilmos(k),jlmos(k))
+          defctmongat(k)  = defctmonrow(ilmos(k),jlmos(k))
+          anndefctgat(k)  = anndefctrow(ilmos(k),jlmos(k))
+          annsrplsgat(k)  = annsrplsrow(ilmos(k),jlmos(k))
+          annpcpgat(k)    = annpcprow(ilmos(k),jlmos(k))
+          popdingat(k)    = popdinrow(ilmos(k),jlmos(k))
+          dry_season_lengthgat(k) =
+     1            dry_season_lengthrow(ilmos(k),jlmos(k))
+
+      do 90 j=1,12     !12 months
+          wetfrac_mongat(k,j)= wetfrac_monrow(ilmos(k),jlmos(k),j)
+          mlightnggat(k,j)=mlightngrow(ilmos(k),jlmos(k),j)
+90    continue
+
 c  
 100   continue
 c
       do 101 l=1,icc
        do 101 k=1,nml
+          btermgat(k,l)    = btermrow(ilmos(k),jlmos(k),l)
+          ltermgat(k)      = ltermrow(ilmos(k),jlmos(k))  !not per pft but keeping in with the other term vars.
+          mtermgat(k,l)    = mtermrow(ilmos(k),jlmos(k),l)
+          smfuncveggat(k,l)= smfuncvegrow(ilmos(k),jlmos(k),l)
           fcancmxgat(k,l)  = fcancmxrow(ilmos(k),jlmos(k),l)
           ailcggat(k,l)    = ailcgrow(ilmos(k),jlmos(k),l)
           ailcgsgat(k,l)   = ailcgsrow(ilmos(k),jlmos(k),l)
@@ -459,11 +507,6 @@ c
 
 102   continue
 c
-      do 105 l=1,12     !12 months
-       do 105 k=1,nml
-          mlightnggat(k,l)=mlightnggrd(ilmos(k),l)
-105   continue
-c
       do 106 l=1,2     !2 pfts (ndl dcd & crops)
        do 106 k=1,nml
           colddaysgat(k,l)=colddaysrow(ilmos(k),jlmos(k),l)
@@ -504,7 +547,7 @@ c
 290   continue
 c
 c	gather peatland related variables  YW March 19, 2015--------------\
-
+!        FLAG JM check on this.
 	 do 300 k=1,nml 
 	   if (ipeatland(k)>0)                  then
 		anmosgat(k) = 	anmosrow(ilmos(k),jlmos(k))	

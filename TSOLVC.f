@@ -22,12 +22,14 @@
      K                 THLIQ,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                 XDIFFUS,ICTEM,IC,CO2I1,CO2I2,
      M                 ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS
+     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS,
+     O                 DAYL,DAYL_MAX
 c    pass  variables to the moss subroutines YW March 19, 2015------------\   
 	1		,ipeatland, tbar, thpor, Cmossmas,dmoss
 c	------input above, output below-----------------------------------	
 	2	,anmoss,rmlmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 c    Y.Wu ------------------------------------------------------------/
+
 C
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATES
 C     *                         ACCORDING TO WATER AVAILABILITY.
@@ -217,6 +219,10 @@ C
      6         THFC(ILG,IG),       THLW(ILG,IG),      CFLUXV(ILG),
      7       CFLUXV_IN(ILG)
 
+      REAL DAYL_MAX(ILG)      ! MAXIMUM DAYLENGTH FOR THAT LOCATION
+      REAL DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
+
+
       INTEGER ISAND(ILG,IG),    LFSTATUS(ILG,ICTEM)
 C
       INTEGER ICTEM, ICTEMMOD, L2MAX, NOL2PFTS(IC), IC, IG
@@ -314,7 +320,7 @@ C
                   TRTOP(I)=TRSNOW(I)
               ENDIF
 
-c    calcualte visible short wave radiation QSWNVG on the ground for moss
+c    calculate visible short wave radiation QSWNVG on the ground for moss
 c    photosynthesis ---------------------------------------------------\
               qswnvg(i)=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I)) 
               QSWNIG=QSWINI(I)*TRNIRC(I)*(1.0-ALNIRG(I))
@@ -387,27 +393,20 @@ C       STORE CFLUXV NUMBERS IN A TEMPORARY ARRAY
           CFLUXV_IN(I)=CFLUXV(I)
         ENDDO
 C
-C       NOTE: FOR NOW, CTEM IS USING TA INSTEAD OF TCAN (THE SUB OCCURS
-C             IN PHTSYN). JM 11/09/12. (THIS IS CURRENTLY UNDER REVIEW.)
-
-
         CALL PHTSYN3(  AILCG, FCANC,     TCAN, CO2CONC,  PRESSG,    FI,
      1                CFLUXV,    QA,   QSWNVC,      IC,   THLIQ, ISAND,
      2                    TA,        RMATCTEM,   COSZS, XDIFFUS,   ILG,
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
      4               THFC,  THLW,  FCANCMX,   L2MAX,NOL2PFTS,
      5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG,
-     6              LFSTATUS  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
+     6              LFSTATUS,DAYL, DAYL_MAX  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
      7              ,iyear,iday,ihour,imin)        !YW for testing
 C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
         DO 70 I =IL1,IL2                                                
-C          IF(RC(I).LE.10000.) THEN !FLAG, TURNING ON CAUSES A MAJOR PROBLEM
-C                                    WHEN THERE IS VEG WITH NO ROOTS. VA & JM OCT2012
-            RC(I)=MIN(RCPHTSYN(I),4999.999)                             
-C          ENDIF
+            RC(I)=MIN(RCPHTSYN(I),4999.999)
    70   CONTINUE                                                        
 
 c    -------moss photosynthesis----------------------------------------
@@ -451,7 +450,7 @@ c	evaporation coefficient is moss-controlled for peatland-----------\
 				  ievap(i) = ievapms(i)
 				  evbeta(i) = cevapms(i)
 			   endif
-c    YW March 20, 2015 ------------------------------------------------/
+c    YW March 20, 2015 -------JM FLAG-----------------------------------------/
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QAC(I)
                   IF(QZERO(I).GT.QAC(I) .AND. IEVAP(I).EQ.0) THEN
                       EVBETA(I)=0.0

@@ -36,12 +36,12 @@
      Y   TCSNOW, GSNOW,                                                 
      Z   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
      +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     +   NBS, ISNOALB,LFSTATUS,                                                  
+     +   NBS, ISNOALB,LFSTATUS,DAYL, DAYL_MAX,                                                 
 c    peatland variabels in mosspht.f called in TSOLVC and TSOLVE------
      1	 ipeatland, bi, ancsmoss,angsmoss, ancmoss,	angmoss,
      2	 rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,Cmossmas, dmoss,
      3 	 iyear, iday, ihour,imin,daylength,pdd,cdd)
-!    YW March 19, 2015 ------------------------------------------------
+
 C
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
@@ -282,6 +282,9 @@ C
       INTEGER ICTEM           ! 8 (CTEM's PLANT FUNCTIONAL TYPES)
       INTEGER ICTEMMOD        ! 1 FOR COUPLING TO CTEM
       INTEGER LFSTATUS(ILG,ICTEM) ! LEAF PHENOLOGICAL STATUS (SEE PHENOLOGY)
+      REAL DAYL_MAX(ILG)      ! MAXIMUM DAYLENGTH FOR THAT LOCATION
+      REAL DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
+
       INTEGER L2MAX, NOL2PFTS(IC)
 C
 C     * INTERNAL WORK ARRAYS FOR THIS ROUTINE.
@@ -560,13 +563,15 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS,
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS
+     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS,
+                      DAYL, DAYL_MAX,  
 c    pass  variables to moss subroutines YW March 19, 2015------------\   
-	1		   ,ipeatland, tbar, thpor, Cmossmas,dmoss,
+	1		          ipeatland, tbar, thpor, Cmossmas,dmoss,
 c	------input above, output below-----------------------------------	
-	2		     ancsmoss,rmlcsmoss,iyear,iday,ihour,imin,daylength
-	3              ,pdd,cdd)
+	2		          ancsmoss,rmlcsmoss,iyear,iday,ihour,imin,
+	3                 daylength,pdd,cdd)
 c    Y.Wu ------------------------------------------------------------/
+
 
           CALL TSPOST(GSNOWC,TSNOCS,WSNOCS,RHOSCS,QMELTC,
      1                GZROCS,TSNBOT,HTCS,HMFN,
@@ -924,7 +929,8 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG,
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS
+     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS,
+     O                DAYL, DAYL_MAX
 c    pass  variables to moss subroutines YW March 19, 2015------------\   
 	1		   ,ipeatland, tbar, thpor, Cmossmas,dmoss,
 c	------input above, output below-----------------------------------	
@@ -1224,22 +1230,6 @@ C
   500 CONTINUE
 
 C                                                         
-C
-C==FLAG OLD=================== CTEM =====================================\
-C     FLAG- LEAVE THIS OUT, DOES NOT APPEAR TO BE USED ANYWHERE. JM 11/09/12
-C     CALCULATE WEIGHTED AVERAGE OF CANOPY RESISTANCE FOR CANOPY OVER SNOW
-C     (RCS) AND CANOPY OVER GROUND (RC) SUBAREAS.
-C
-C      DO 550 I = IL1, IL2
-C        IF( (FC(I)+FCS(I)).GT. 1.0E-12) THEN
-C          CANRES(I)=( (FC(I)*RC(I)) + (FCS(I)*RCS(I)) )/ (FC(I)+FCS(I))
-C        ELSE
-C          CANRES(I)=5000.0
-C        ENDIF
-C550   CONTINUE
-C
-C===================== CTEM =====================================/
-C                
 
       RETURN                                                                      
       END        
