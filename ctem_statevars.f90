@@ -1804,7 +1804,6 @@ do i=1,nltest
         ctem_yr%litrmass_yr(i,m,iccp1)=0.0
         ctem_yr%soilcmas_yr(i,m,iccp1)=0.0
         ctem_yr%totcmass_yr(i,m,iccp1)=0.0
->>>>>>> release_dev
 
     end do !nmtest
 end do ! nltest

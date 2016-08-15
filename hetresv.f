@@ -328,19 +328,19 @@ c    (Mayono et al. 2013)
 c
 c    limit of ltrmoscalms at saturation YW April 10, 2015 
           if (psi(i,1).ge. 10000.0) then          
-	    		ltrmoscl(i) = 0.2
-        	elseif (psi(i,1).le. 10000.0 .and.psi(i,1).gt. 6.0) then
-	          ltrmoscl(i)=1.0 - 0.8*((log10(psi(i,1))-log10(6.0))
-	1				/(log10(10000.0)-log10(6.0)))**1.
-         	elseif (psi(i,1).le. 6.0 .and. psi(i,1) .gt. 4.0) then
-              	ltrmoscl(i)=1.0
-         	elseif (psi(i,1).le. 4.0 .and. psi(i,1).gt.psisat(i,1))  then 
-              	ltrmoscl(i)=1.0-0.99*((log10(4.0)-log10(psi(i,1)))/   
-     1         		(log10(4.0)-log10(psisat(i,1))))
-         	elseif (psi(i,1) .le. psisat(i,1)) 				then
-             	ltrmoscl(i)=0.01
-        	endif
-         	ltrmoscl(i)=max(0.0,min(ltrmoscl(i),1.0))
+               ltrmoscl(i) = 0.2
+          elseif (psi(i,1).le. 10000.0 .and.psi(i,1).gt. 6.0) then
+               ltrmoscl(i)=1.0 - 0.8*((log10(psi(i,1))-log10(6.0))
+     1                   /(log10(10000.0)-log10(6.0)))**1.
+          elseif (psi(i,1).le. 6.0 .and. psi(i,1) .gt. 4.0) then
+               ltrmoscl(i)=1.0
+          elseif (psi(i,1).le. 4.0 .and. psi(i,1).gt.psisat(i,1))  then 
+               ltrmoscl(i)=1.0-0.99*((log10(4.0)-log10(psi(i,1)))/   
+     1                   (log10(4.0)-log10(psisat(i,1))))
+          elseif (psi(i,1) .le. psisat(i,1))                     then
+               ltrmoscl(i)=0.01
+          endif
+          ltrmoscl(i)=max(0.0,min(ltrmoscl(i),1.0))
         endif  !peatland  
 c    -------------------YW March 30, 2015 -----------------------------/          
 300   continue

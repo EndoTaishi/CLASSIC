@@ -14,10 +14,10 @@
      c                          il1,      il2
 c    --------------moss variables--------------------------------------\
 C
-	1 			,ipeatland, Cmossmas, pCmossmas
-	2			,nppmosstep, litrfallms, litrmassms,plitrmassms,
-	3			ltrestepms,humicmstep,socrestep,hutrstep)    
-c    -----------YW March 20, 2015 -------------------------------------/	
+     1              ,ipeatland, Cmossmas, pCmossmas
+     2              ,nppmosstep, litrfallms, litrmassms,plitrmassms,
+     3              ltrestepms,humicmstep,socrestep,hutrstep)    
+c    -----------YW March 20, 2015 -------------------------------------/   
 
 c     -----------------------------------------------------------------      
 c
@@ -150,13 +150,13 @@ c
 c
       real             diff1,               diff2
 c
-c	------peatland variables ----------------------------------------\
-	 integer	ipeatland (ilg)
-	 real	cmossmas(ilg), 	pcmossmas(ilg),
-	1		nppmosstep(ilg), 	litrfallms(ilg), 	
-	2		litrmassms(ilg),	plitrmassms(ilg),
-	3		ltrestepms(ilg),	humicmstep(ilg),
-	4		socrestep(ilg), 	hutrstep(ilg,icc+1)
+c    ------peatland variables ----------------------------------------\
+      integer  ipeatland (ilg)
+      real     cmossmas(ilg),      pcmossmas(ilg),
+     1         nppmosstep(ilg),    litrfallms(ilg),    
+     2         litrmassms(ilg),    plitrmassms(ilg),
+     3         ltrestepms(ilg),    humicmstep(ilg),
+     4         socrestep(ilg),     hutrstep(ilg,icc+1)
 c     ------YW March 27, 2015 -----------------------------------------/  
 c
       if(icc.ne.12)                            call xit('balcar',-1)  !YW for peatland
@@ -260,7 +260,7 @@ c
             write(6,3001)'soilCmas(',i,')=',soilcmas(i,j)
             write(6,3001)'psocmass(',i,')=',psocmass(i,j)
             write(6,3001)'humtr(',i,')=',humtrsvg(i,j)*(deltat/963.62)
-      	  write(6,3001)'scres(',i,')=',scresveg(i,j)*(deltat/963.62)
+            write(6,3001)'scres(',i,')=',scresveg(i,j)*(deltat/963.62)
             write(6,2004)i,j,abs(diff1-diff2),tolrance
 2004        format('at (i)= (',i3,'), pft=',i2,', ',f12.6,' is greater
      & than our tolerance of ',f12.6,' for soil c')
@@ -272,39 +272,39 @@ c
 c
 c    --------------------add moss C balance----------------------------\
 
-	  do 400 i = il1, il2
-		 if (ipeatland(i).gt. 0) 	then
-			diff1 = Cmossmas(i)- pCmossmas(i)
-			diff2 = nppmosstep(i) - litrfallms(i)
-          	if((abs(diff1-diff2)).gt.tolrance)then
-       		    write(6,3001)'Cmossmas(',i,')=',Cmossmas(i)
-       		    write(6,3001)'pCmossmas(',i,')=',pCmossmas(i)
-        		    write(6,3001)'nppmosstep(',i,')=',nppmosstep(i)
-      	  	    write(6,3001)' litrfallms(',i,')=',litrfallms(i)
-      		    write(6,2008)i,abs(diff1-diff2),tolrance
-2008		     format('at (i)= (',i3,'),',f12.6,' is greater'
-     1 		'than our tolerance of ',f12.6,' for moss carbon')
-          	     call xit('balcar',-11)
+       do 400 i = il1, il2
+           if (ipeatland(i).gt. 0)      then
+               diff1 = Cmossmas(i)- pCmossmas(i)
+               diff2 = nppmosstep(i) - litrfallms(i)
+               if((abs(diff1-diff2)).gt.tolrance)then
+                   write(6,3001)'Cmossmas(',i,')=',Cmossmas(i)
+                   write(6,3001)'pCmossmas(',i,')=',pCmossmas(i)
+                   write(6,3001)'nppmosstep(',i,')=',nppmosstep(i)
+                   write(6,3001)' litrfallms(',i,')=',litrfallms(i)
+                   write(6,2008)i,abs(diff1-diff2),tolrance
+2008           format('at (i)= (',i3,'),',f12.6,' is greater'
+     1         'than our tolerance of ',f12.6,' for moss carbon')
+                    call xit('balcar',-11)
                endif
                
 c    -------------------add moss litter pool C balance-----------------
                
                diff1 = litrmassms(i)- plitrmassms(i)
-			diff2 = litrfallms(i)-ltrestepms(i)-humicmstep(i)
-             	if((abs(diff1-diff2)).gt.tolrance)then
-            	    write(6,3001)'litrmassms(',i,')=',litrmassms(i)
-            	    write(6,3001)'plitrmassms(',i,')=',plitrmassms(i)
-             	    write(6,3001)'litrfallms(',i,')=',litrfallms(i)
-           	    write(6,3001)' ltrestepms(',i,')=',ltrestepms(i)
-           	    write(6,3001)' humicmstep(',i,')=',humicmstep(i)
-           	    write(6,2009)i,abs(diff1-diff2),tolrance
-2009		         format('at (i)= (',i3,'),',f12.6,' is greater
-     1 		    than our tolerance of ',f12.6,' for moss litter')
-          	    call xit('balcar',-12)
-        	     endif
+               diff2 = litrfallms(i)-ltrestepms(i)-humicmstep(i)
+               if((abs(diff1-diff2)).gt.tolrance)then
+                   write(6,3001)'litrmassms(',i,')=',litrmassms(i)
+                   write(6,3001)'plitrmassms(',i,')=',plitrmassms(i)
+                   write(6,3001)'litrfallms(',i,')=',litrfallms(i)
+                   write(6,3001)' ltrestepms(',i,')=',ltrestepms(i)
+                   write(6,3001)' humicmstep(',i,')=',humicmstep(i)
+                   write(6,2009)i,abs(diff1-diff2),tolrance
+2009               format('at (i)= (',i3,'),',f12.6,' is greater
+     1             than our tolerance of ',f12.6,' for moss litter')
+                   call xit('balcar',-12)
+               endif
           endif
-400	   continue
-c	-------------------YW March 27, 2015------------------------------/
+400     continue
+c    -------------------YW March 27, 2015------------------------------/
 c
 c     grid averaged fluxes must also balance
 c

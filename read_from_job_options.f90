@@ -56,37 +56,37 @@ integer, intent(out) :: trans_startyr ! the year you want the transient run to s
                                       ! are not doing a transient run, set to a negative value (like -9999)
 
 integer, intent(out) :: ctemloop ! no. of times the .met file is to be read. this
-                    	         ! option is useful to see how ctem's c pools
-                    	         ! equilibrate when driven with same climate data
-                    	         ! over and over again.
+                                  ! option is useful to see how ctem's c pools
+                                  ! equilibrate when driven with same climate data
+                                  ! over and over again.
 
 logical, intent(out) :: ctem_on  ! set this to true for using ctem simulated dynamic
- 				                 ! lai and canopy mass, else class simulated specified
-                 				 ! lai and canopy mass are used. with this switch on,
-                 				 ! all ctem subroutines are run.
+                                     ! lai and canopy mass, else class simulated specified
+                                    ! lai and canopy mass are used. with this switch on,
+                                    ! all ctem subroutines are run.
 
 integer, intent(out) :: ncyear   ! no. of years in the .met file. 
 
 logical, intent(out) :: lnduseon ! set this to 1 if land use change is to be
-                 				 ! implimented by reading in the fractions of 9 ctem
-                				 ! pfts from a file. keep in mind that once on, luc read-in is
+                                    ! implimented by reading in the fractions of 9 ctem
+                                    ! pfts from a file. keep in mind that once on, luc read-in is
                                  ! also influenced by the cyclemet and popcycleyr
                                  ! switches
 
 integer, intent(out) :: spinfast ! set this to a higher number up to 10 to spin up
-                 				 ! soil carbon pool faster
+                                    ! soil carbon pool faster
 
 logical, intent(out) :: cyclemet ! to cycle over only a fixed number of years 
-                 				 ! (nummetcylyrs) starting at a certain year (metcylyrst)
-                 				 ! if cyclemet, then put co2on = false and set an appopriate setco2conc, also
-                 				 ! if popdon is true, it will choose the popn and luc data for year
-                 				 ! metcylyrst and cycle on that.
+                                    ! (nummetcylyrs) starting at a certain year (metcylyrst)
+                                    ! if cyclemet, then put co2on = false and set an appopriate setco2conc, also
+                                    ! if popdon is true, it will choose the popn and luc data for year
+                                    ! metcylyrst and cycle on that.
 
 integer, intent(out) :: nummetcylyrs ! years of the climate file to spin up on repeatedly
-                 				 ! ignored if cyclemet is false
+                                    ! ignored if cyclemet is false
 
 integer, intent(out) :: metcylyrst   ! climate year to start the spin up on
-                 				 ! ignored if cyclemet is false
+                                    ! ignored if cyclemet is false
 
 logical, intent(out) :: co2on    ! use co2 time series, set to false if cyclemet is true
 
@@ -99,18 +99,18 @@ real, intent(out) :: setch4conc  ! set the value of atmospheric CH4 if ch4on is 
 
 
 logical, intent(out) :: popdon   ! if set true use population density data to calculate fire extinguishing 
-                 				 ! probability and probability of fire due to human causes, 
-                 				 ! or if false, read directly from .ctm file
+                                    ! probability and probability of fire due to human causes, 
+                                    ! or if false, read directly from .ctm file
 
 integer, intent(out) :: popcycleyr ! popd and luc year to cycle on when cyclemet is true, set to -9999
-                				 ! to cycle on metcylyrst for both popd and luc. if cyclemet is false
+                                    ! to cycle on metcylyrst for both popd and luc. if cyclemet is false
                                  ! this defaults to -9999, which will then cause the model to cycle on
                                  ! whatever is the first year in the popd and luc datasets
 
 logical, intent(out) :: parallelrun ! set this to be true if model is run in parallel mode for 
-                            		! multiple grid cells, output is limited to monthly & yearly 
-                    				! grid-mean only. else the run is in stand alone mode, in which 
-                     				! output includes half-hourly and daily and mosaic-mean as well.
+                                   ! multiple grid cells, output is limited to monthly & yearly 
+                                        ! grid-mean only. else the run is in stand alone mode, in which 
+                                        ! output includes half-hourly and daily and mosaic-mean as well.
 
 logical, intent(out) :: dofire   ! if true the fire/disturbance subroutine will be used.
 
@@ -119,10 +119,10 @@ logical, intent(out) :: dowetlands   ! if true the ch4wetland subroutine will be
 logical, intent(out) :: obswetf   ! if true the observed wetland fraction will be used.
 
 logical, intent(out) :: compete  ! set this to true if competition between pfts is
-                 				 ! to be implimented
+                                    ! to be implimented
 
 logical, intent(out) :: inibioclim  ! set this to true if competition between pfts is
-                 				    ! to be implimented and you have the mean climate values
+                                       ! to be implimented and you have the mean climate values
                                     ! in the ctm files.
 
 logical, intent(out) :: start_bare !set this to true if competition is true, and if you wish
@@ -132,11 +132,11 @@ logical, intent(out) :: start_bare !set this to true if competition is true, and
                                  ! zero)
 
 logical, intent(out) :: rsfile   ! set this to true if restart files (.ini_rs and .ctm_rs)   
-                 				 ! are written at the end of each year. these files are  
-                 				 ! necessary for checking whether the model reaches 
-                 				 ! equilibrium after running for a certain years. 
-                 				 ! set this to false if restart files are not needed 
-                 				 ! (known how many years the model will run)
+                                    ! are written at the end of each year. these files are  
+                                    ! necessary for checking whether the model reaches 
+                                    ! equilibrium after running for a certain years. 
+                                    ! set this to false if restart files are not needed 
+                                    ! (known how many years the model will run)
 logical, intent(out) :: start_from_rs ! if true, this option copies the _RS INI and CTM files
                                  ! to be the .INI and .CTM files and then starts the run as per normal.
                                  ! it is handy when spinning up so you don't have to do a complicated copying of the
@@ -151,34 +151,34 @@ integer, intent(out) :: jmosty    ! Year to start writing out the monthly output
 ! class model switches
 
 integer, intent(out) :: idisp    ! if idisp=0, vegetation displacement heights are ignored,
-				 ! because the atmospheric model considers these to be part
-				 ! of the "terrain".
-				 ! if idisp=1, vegetation displacement heights are calculated.
+                     ! because the atmospheric model considers these to be part
+                     ! of the "terrain".
+                     ! if idisp=1, vegetation displacement heights are calculated.
 
 integer, intent(out) :: izref    ! if izref=1, the bottom of the atmospheric model is taken
-				 ! to lie at the ground surface.
-				 ! if izref=2, the bottom of the atmospheric model is taken
-				 ! to lie at the local roughness height.
+                     ! to lie at the ground surface.
+                     ! if izref=2, the bottom of the atmospheric model is taken
+                     ! to lie at the local roughness height.
 
 integer, intent(out) :: islfd    ! if islfd=0, drcoef is called for surface stability corrections
-				 ! and the original gcm set of screen-level diagnostic calculations 
-				 ! is done.
-				 ! if islfd=1, drcoef is called for surface stability corrections
-				 ! and sldiag is called for screen-level diagnostic calculations. 
-				 ! if islfd=2, flxsurfz is called for surface stability corrections
-				 ! and diasurf is called for screen-level diagnostic calculations. 
+                     ! and the original gcm set of screen-level diagnostic calculations 
+                     ! is done.
+                     ! if islfd=1, drcoef is called for surface stability corrections
+                     ! and sldiag is called for screen-level diagnostic calculations. 
+                     ! if islfd=2, flxsurfz is called for surface stability corrections
+                     ! and diasurf is called for screen-level diagnostic calculations. 
 
 integer, intent(out) :: ipcp     ! if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
-				 ! if ipcp=2, a linear partitioning of precipitation betweeen 
-				 ! rainfall and snowfall is done between 0 c and 2 c.
-				 ! if ipcp=3, rainfall and snowfall are partitioned according to
-				 ! a polynomial curve between 0 c and 6 c.
+                     ! if ipcp=2, a linear partitioning of precipitation betweeen 
+                     ! rainfall and snowfall is done between 0 c and 2 c.
+                     ! if ipcp=3, rainfall and snowfall are partitioned according to
+                     ! a polynomial curve between 0 c and 6 c.
 
 integer, intent(out) :: iwf     ! if iwf=0, only overland flow and baseflow are modelled, and
-				! the ground surface slope is not modelled.
-				! if iwf=n (0<n<4), the watflood calculations of overland flow 
-				! and interflow are performed; interflow is drawn from the top 
-				! n soil layers.
+                    ! the ground surface slope is not modelled.
+                    ! if iwf=n (0<n<4), the watflood calculations of overland flow 
+                    ! and interflow are performed; interflow is drawn from the top 
+                    ! n soil layers.
 
 ! itc, itcg and itg are switches to choose the iteration scheme to
 ! be used in calculating the canopy or ground surface temperature

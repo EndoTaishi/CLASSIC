@@ -38,9 +38,9 @@
      +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
      +   NBS, ISNOALB,LFSTATUS,DAYL, DAYL_MAX,                                                 
 c    peatland variabels in mosspht.f called in TSOLVC and TSOLVE------
-     1	 ipeatland, bi, ancsmoss,angsmoss, ancmoss,	angmoss,
-     2	 rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,Cmossmas, dmoss,
-     3 	 iyear, iday, ihour,imin,daylength,pdd,cdd)
+     1   ipeatland, bi, ancsmoss,angsmoss, ancmoss, angmoss,
+     2   rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,Cmossmas, dmoss,
+     3   iyear, iday, ihour,imin,daylength,pdd,cdd)
 
 C
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
@@ -337,14 +337,14 @@ C
 C
 c    ------------------peatland variables -----------------------------\
 
-	 integer 	ipeatland(ilg),iyear, iday, imin, ihour
-	 real	bi(ig), Cmossmas(ilg), dmoss(ilg),daylength(ilg),
-	1         pdd(ilg), cdd(ilg)
-c	------input above output below this line---------------------------
-	 real	ancsmoss(ilg),		angsmoss(ilg), 
-	1		ancmoss(ilg), 		angmoss(ilg),
-	2		rmlcsmoss(ilg),	rmlgsmoss(ilg),	
-	3		rmlcmoss(ilg),		rmlgmoss(ilg)
+      integer      ipeatland(ilg),iyear, iday, imin, ihour
+      real     bi(ig), Cmossmas(ilg), dmoss(ilg),daylength(ilg),
+     1         pdd(ilg), cdd(ilg)
+c     ------input above output below this line---------------------------
+      real     ancsmoss(ilg),          angsmoss(ilg), 
+     1          ancmoss(ilg),           angmoss(ilg),
+     2          rmlcsmoss(ilg),     rmlgsmoss(ilg),     
+     3          rmlcmoss(ilg),          rmlgmoss(ilg)
 c    -------------------YW March 19, 2015------------------------------/ 
 c
 C     * TEMPORARY VARIABLES.
@@ -428,18 +428,18 @@ C
 C
 c    initialize moss C fluxes YW March 19, 2015 -----------------------\
 C
-	   do 66 i = il1, il2
-		if (ipeatland(i) > 0)	          then		
-			ancsmoss(i) = 0.0
-			angsmoss(i) = 0.0
-			ancmoss(i)  = 0.0
-			angmoss(i)  = 0.0	
-			rmlcsmoss(i) = 0.0
-			rmlgsmoss(i) = 0.0
-			rmlcmoss(i)  = 0.0
-			rmlgmoss(i)  = 0.0
-		endif
-66	   continue		
+        do 66 i = il1, il2
+          if (ipeatland(i) > 0)               then          
+               ancsmoss(i) = 0.0
+               angsmoss(i) = 0.0
+               ancmoss(i)  = 0.0
+               angmoss(i)  = 0.0     
+               rmlcsmoss(i) = 0.0
+               rmlgsmoss(i) = 0.0
+               rmlcmoss(i)  = 0.0
+               rmlgmoss(i)  = 0.0
+          endif
+66        continue          
 c
 C
 C    initialize moss fluxes done---------------------------------------/
@@ -564,12 +564,12 @@ C
      L                XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS,
      M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
      N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS,
-                      DAYL, DAYL_MAX,  
+     O                DAYL, DAYL_MAX,
 c    pass  variables to moss subroutines YW March 19, 2015------------\   
-	1		          ipeatland, tbar, thpor, Cmossmas,dmoss,
-c	------input above, output below-----------------------------------	
-	2		          ancsmoss,rmlcsmoss,iyear,iday,ihour,imin,
-	3                 daylength,pdd,cdd)
+     1                ipeatland, tbar, thpor, Cmossmas,dmoss,
+c------input above, output below-----------------------------------
+     2                 ancsmoss,rmlcsmoss,iyear,iday,ihour,imin,
+     3                 daylength,pdd,cdd)
 c    Y.Wu ------------------------------------------------------------/
 
 
@@ -753,8 +753,8 @@ C
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  
 c    ----------pass variables in mosspht.f-----------------------------\  
-     1	,ipeatland, tbar,thpor,co2conc,pressg, coszs, Cmossmas,dmoss
-c	------input above, output below-----------------------------------	
+     1     ,ipeatland, tbar,thpor,co2conc,pressg, coszs, Cmossmas,dmoss
+c     ------input above, output below-----------------------------------     
      2   ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 C    ---------------YW March 26, 2015 ---------------------------------/      
 c     
@@ -932,10 +932,10 @@ C
      N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS,
      O                DAYL, DAYL_MAX
 c    pass  variables to moss subroutines YW March 19, 2015------------\   
-	1		   ,ipeatland, tbar, thpor, Cmossmas,dmoss,
-c	------input above, output below-----------------------------------	
-	2		     ancmoss,rmlcmoss,iyear, iday, ihour,imin,daylength
-	3              ,pdd,cdd)
+     1             ,ipeatland, tbar, thpor, Cmossmas,dmoss,
+c     ------input above, output below-----------------------------------     
+     2               ancmoss,rmlcmoss,iyear, iday, ihour,imin,daylength
+     3              ,pdd,cdd)
 c    Y.Wu ------------------------------------------------------------/
 
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
@@ -1104,10 +1104,10 @@ C
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
 c    ----------pass variables in mosspht.f-----------------------------\  
-	1	,ipeatland, tbar, thpor, co2conc,
-	2	 pressg, coszs, Cmossmas,dmoss
-c	------input above, output below-----------------------------------	
-	3	 ,angmoss,rmlgmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+     1     ,ipeatland, tbar, thpor, co2conc,
+     2      pressg, coszs, Cmossmas,dmoss
+c     ------input above, output below-----------------------------------     
+     3      ,angmoss,rmlgmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 C    ---------------YW March 26, 2015 ---------------------------------/ 
 C
           CALL TNPOST(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST,

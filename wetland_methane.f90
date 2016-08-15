@@ -7,7 +7,7 @@ subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &
                       ch4dyn1,    ch4dyn2)
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
-!           	Wetland and wetland methane subroutine 
+!              Wetland and wetland methane subroutine 
 
 !      4  July  2014 - Convert to f90 and bring in ctem_params
 !     J. Melton
@@ -64,12 +64,12 @@ do 110 i = il1, il2
 110   continue
 
 !     initialization ends  
-!	--------------------------------------------------
+!    --------------------------------------------------
 !
-!	Estimate the methane flux from wetlands for each grid cell
-!	scaling by the wetland fraction in a grid cell
-! 	and set the methane flux to zero when screen temperature (ta) is below or at freezing
-!	this is consistent with recent flux measurements by the university of manitoba at churchill, manitoba
+!    Estimate the methane flux from wetlands for each grid cell
+!    scaling by the wetland fraction in a grid cell
+!    and set the methane flux to zero when screen temperature (ta) is below or at freezing
+!    this is consistent with recent flux measurements by the university of manitoba at churchill, manitoba
 !
 !if (obswetf) then  ! Use the read-in wetland locations as the CH4 producing area
 

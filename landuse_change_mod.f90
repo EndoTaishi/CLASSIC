@@ -365,10 +365,10 @@ subroutine readin_luc(iyear,nmtest,nltest,lucyr, &
 
 !     9  Jan. 2013  - this subroutine takes in luc information from
 !     J. Melton       a luc file annually and adapts them for runclassctem
-!	
+!    
 !     7  Feb. 2014  - Adapt it to work with competition
 !     J. Melton 
-	      
+           
 use ctem_params,        only : nmos,nlat,icc,seed,crop
 
 implicit none

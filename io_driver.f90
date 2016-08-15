@@ -1648,7 +1648,7 @@ real, pointer, dimension(:,:) :: rmlvegrow_g
 real, pointer, dimension(:,:) :: anvegrow_g
 real, pointer, dimension(:,:) :: rmatctem_g
 
-real, pointer, dimension(:) :: gppmosac_g
+!real, pointer, dimension(:) :: gppmosac_g
 
 real, pointer, dimension(:,:,:) :: bmasvegrow
 real, pointer, dimension(:,:,:) :: cmasvegcrow
@@ -1736,8 +1736,8 @@ flhrlossrow       => vrot%flhrloss
 dstcemls3row      => vrot%dstcemls3
 lfstatusrow       => vrot%lfstatus
 
-gppmosac_g        => ctem_tile%gppmosac_g
- 
+!gppmosac_g        => ctem_tile%gppmosac_g
+
 tcanoaccrow_out   => vrot%tcanoaccrow_out
 npprow            => vrot%npp
 neprow            => vrot%nep
@@ -2296,7 +2296,7 @@ do 80 i=1,nltest
 
 !   CT11D_G   convert moss gpp from umol/m2/s to g/m2/day  
     write (93,6993) iday,iyear, &
-          nppmosrow(i,m),armosrow(i,m),gppmosac_g(1)*1.0377, &
+          nppmosrow(i,m),armosrow(i,m), &!,gppmosac_g(1)*1.0377, &
           (fcancmxrow(i,m,j)*gppvegrow(i,m,j),j=1,icc),      &
           (fcancmxrow(i,m,j)*nppvegrow(i,m,j),j=1,icc),      &
           (fcancmxrow(i,m,j)*autoresvegrow(i,m,j),j=1,icc),  &

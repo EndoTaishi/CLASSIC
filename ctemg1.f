@@ -13,8 +13,8 @@
      l           rmatcrow,rmatctemrow,     slairow,    bmasvegrow,
      m        cmasvegcrow, veghghtrow, rootdpthrow,    alvsctmrow,
      n         alirctmrow,    paicrow,    slaicrow 
-c	  gather peatland variable YW March 19, 2015----------------------/
-     1		,ipeatlandrow, 	ipeatlandgat)
+c      gather peatland variable YW March 19, 2015----------------------/
+     1         ,ipeatlandrow,      ipeatlandgat)
 
 c
 C              Canadian Terrestrial Ecosystem Model (CTEM) 
@@ -70,7 +70,7 @@ c
      c         paicrow(nlat,nmos,ican),       slaicrow(nlat,nmos,ican)
 c    
 c    gather ipeatland here for bio2str  YW March 19, 2015  
-	 integer	ipeatlandgat(ilg), ipeatlandrow(nlat,nmos)
+      integer  ipeatlandgat(ilg), ipeatlandrow(nlat,nmos)
 c
 c----------------------------------------------------------------------
       do 100 k=1,nml

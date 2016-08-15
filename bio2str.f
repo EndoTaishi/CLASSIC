@@ -6,8 +6,8 @@ c    4--------------- inputs above this line, outputs below --------
      6                          rmatc, rmatctem,     slai,  bmasveg,
      7                       cmasvegc,  veghght, rootdpth,   alvisc,
      8                         alnirc,     paic,    slaic 
-c	 -----------------peatland PFT bio2str YW March 19, 2015--------/ 
-     9				,ipeatland)
+c     -----------------peatland PFT bio2str YW March 19, 2015--------/ 
+     9                   ,ipeatland)
 c
 c     ----------------------------------------------------------------
 c
@@ -129,7 +129,7 @@ c     ----------------------------------------------------------------
      4          useb(ilg,icc),              zroot,      soildpth(ilg),
      8       etmp(ilg,icc,ignd),    totala(ilg,icc),       rmat_sum
 c
-	 integer		ipeatland(ilg)      !YW March 19, 2015
+      integer       ipeatland(ilg)      !YW March 19, 2015
 c     ---------------------------------------------------------------
 c     Constants and parameters are located in ctem_params.f90
 c
@@ -355,11 +355,11 @@ c     ---------------peatland vegetation-------------------------------\
             if (ipeatland(i) > 0)                           then 
                if (j == 1)                             then
                  veghght(i,m)=min(3.0*stemmass(i,m)**0.385,10.0)                 
-               elseif (j == 2 .and. m >= (k2c-1))  	     then      
+               elseif (j == 2 .and. m >= (k2c-1))           then      
                  veghght(i,m)=min(1.0, 0.25*(stemmass(i,m)**0.2))  !last 2 pft in ican2 are shrubs 
                elseif (j == 4 )              then
-			  veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
-	1                               *bleafmas(i,m))**0.3)              
+                 veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
+     1                               *bleafmas(i,m))**0.3)              
                endif
             endif
 290       continue

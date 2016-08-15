@@ -25,9 +25,9 @@
      N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS,
      O                 DAYL,DAYL_MAX
 c    pass  variables to the moss subroutines YW March 19, 2015------------\   
-	1		,ipeatland, tbar, thpor, Cmossmas,dmoss
-c	------input above, output below-----------------------------------	
-	2	,anmoss,rmlmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+     1         ,ipeatland, tbar, thpor, Cmossmas,dmoss
+c    ------input above, output below-----------------------------------    
+     2    ,anmoss,rmlmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
 c    Y.Wu ------------------------------------------------------------/
 
 C
@@ -258,14 +258,14 @@ C
      2     DRDT0,QEVAPT,BOWEN,DCFLUX,DXEVAP,TCANT,QEVAPCT,
      3     TZEROT,YEVAP,RAGCO,EZERO,WTRANSP,WTEST
 C
-C	 --------define peatland variables--------------------------------\ 
- 	 integer  ipeatland(ilg),ievapms(ilg),iday,ihour,iyear,imin
-	 real	tbar(ilg,ig),	thmin(ilg,ig), thpor(ilg,ig),	
-	1		bi(ig),	Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
-	3         pdd(ilg),      cdd(ilg)
-c	------input above output below------------------------------------
-	 real	anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
-C	---------YW March 26, 2015 ---------------------------------------/
+C     --------define peatland variables--------------------------------\ 
+      integer  ipeatland(ilg),ievapms(ilg),iday,ihour,iyear,imin
+      real     tbar(ilg,ig),  thmin(ilg,ig), thpor(ilg,ig), 
+     1         bi(ig),   Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
+     3         pdd(ilg),      cdd(ilg)
+c    ------input above output below------------------------------------
+      real     anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
+C    ---------YW March 26, 2015 ---------------------------------------/
 
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -292,9 +292,9 @@ C
         QSWNVC(I)=0.0
 C    initiate QSWNVG to be used in mosspht.f --------------------------\  
             if (ipeatland(i) >0)       then
-	          qswnvg(i) = 0.0 
-	       endif
-C	YW March 20, 2015 ------------------------------------------------/  
+               qswnvg(i) = 0.0 
+            endif
+C    YW March 20, 2015 ------------------------------------------------/  
       ENDDO
 
 C===================== CTEM =====================================/
@@ -410,12 +410,12 @@ C
    70   CONTINUE                                                        
 
 c    -------moss photosynthesis----------------------------------------
-	   call  mosspht(ilg,ig,isand,iday,qswnvg,thliq,tbar,thpor,
-	1		co2conc,tgnd,zsnow,delzw,pressg,qac,coszs,Cmossmas,dmoss,
-c	---------------input above output below-------------------
-	2		anmoss,rmlmoss,cevapms,ievapms,ipeatland
+        call  mosspht(ilg,ig,isand,iday,qswnvg,thliq,tbar,thpor,
+     1         co2conc,tgnd,zsnow,delzw,pressg,qac,coszs,Cmossmas,dmoss,
+c    ---------------input above output below-------------------
+     2         anmoss,rmlmoss,cevapms,ievapms,ipeatland
 c    -----------for testing------------------------------------
-	3		,iyear, ihour,imin,daylength,pdd,cdd) 
+     3         ,iyear, ihour,imin,daylength,pdd,cdd) 
 c    -------YW March 20, 2015 -----------------------------------------
 
       ENDIF
@@ -443,13 +443,13 @@ C
                   EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
               ELSE                            
-c	evaporation coefficient is moss-controlled for peatland-----------\  
+c    evaporation coefficient is moss-controlled for peatland-----------\  
                   if (ipeatland(i)==0)               then
                       EVBETA(I)=CEVAP(I)
-			   else        		           
-				  ievap(i) = ievapms(i)
-				  evbeta(i) = cevapms(i)
-			   endif
+                  else                             
+                      ievap(i) = ievapms(i)
+                      evbeta(i) = cevapms(i)
+                  endif
 c    YW March 20, 2015 -------JM FLAG-----------------------------------------/
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QAC(I)
                   IF(QZERO(I).GT.QAC(I) .AND. IEVAP(I).EQ.0) THEN

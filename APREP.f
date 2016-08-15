@@ -219,8 +219,8 @@ C     * SEE BIO2STR SUBROUTINE FOR EXPLANATION OF OTHER CTEM VARIABLES
 C    ---------------peatland variable  --------------------------------\
 C
       integer ipeatland (ilg)      
-	 real 	zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
-	1		sphms,rhoms,slams
+      real     zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
+     1         sphms,rhoms,slams
 C    ------------------YW March 19, 2015  -----------------------------/
 
 C     * INTERNAL WORK FIELD.
@@ -245,7 +245,7 @@ C
       COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG     
       COMMON /CLASS7/ CANEXT,XLEAF
       common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
-	1				hcpms, sphms,rhoms,slams      !YW 
+     1                   hcpms, sphms,rhoms,slams      !YW 
 
 C-----------------------------------------------------------------------          
       IF(IC.NE.4)                               CALL XIT('APREP',-2)
@@ -802,10 +802,10 @@ C
      1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)           
 C     -----------roughness of the surface is z0 moss for peatlands------\
 
-			   if (ipeatland(i) > 0)      then
-			       ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
+                  if (ipeatland(i) > 0)      then
+                      ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
      1              *zolnms+FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)          
-			   endif
+                  endif
               ELSE                                                                
                   ZOMLNG(I)=ZOLNI                                                 
               ENDIF                                                               

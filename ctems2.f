@@ -87,12 +87,12 @@ c --
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat
 C    --------------------scatter peatland variables-------------------\
 c
-     1	,anmosrow, rmlmosrow, gppmosrow,armosrow,nppmosrow
-	2	,anmosgat, rmlmosgat, gppmosgat,armosgat,nppmosgat
-	3	,hpdrow,	hpdgat,	litrmassmsrow,	litrmassmsgat
-	4	,Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat
-	5	,thlqaccrow_m , thlqaccgat_m ,thicaccrow_m,thicaccgat_m 
-	6    ,ipeatlandrow, 	ipeatlandgat)
+     1    ,anmosrow, rmlmosrow, gppmosrow,armosrow,nppmosrow
+     2    ,anmosgat, rmlmosgat, gppmosgat,armosgat,nppmosgat
+     3    ,hpdrow,  hpdgat,   litrmassmsrow, litrmassmsgat
+     4    ,Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat
+     5    ,thlqaccrow_m , thlqaccgat_m ,thicaccrow_m,thicaccgat_m 
+     6    ,ipeatlandrow,      ipeatlandgat)
 c    ---------------YW March 23, 2015 --------------------
 c
 c
@@ -325,19 +325,19 @@ c   Methane related variables
 
 
 c   Peatland variables   YW March 27, 2015 
-	  real	anmosrow(nlat,nmos), 	anmosgat(ilg),
-	3		rmlmosrow(nlat,nmos),	rmlmosgat(ilg),
-	4		gppmosrow(nlat,nmos),	gppmosgat(ilg),
-	3		armosrow(nlat,nmos),	armosgat(ilg),
-	4		nppmosrow(nlat,nmos),	nppmosgat(ilg),
-	5		hpdrow(nlat,nmos),		hpdgat(ilg),
-	6		litrmassmsrow(nlat,nmos),litrmassmsgat(ilg),
-	7		Cmossmasrow(nlat,nmos),	Cmossmasgat(ilg),
-	8         dmossrow(nlat,nmos) ,dmossgat(ilg),
-	9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
-	1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd)
-	
-	 integer	ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
+       real    anmosrow(nlat,nmos),     anmosgat(ilg),
+     3         rmlmosrow(nlat,nmos),    rmlmosgat(ilg),
+     4         gppmosrow(nlat,nmos),    gppmosgat(ilg),
+     3         armosrow(nlat,nmos),     armosgat(ilg),
+     4         nppmosrow(nlat,nmos),    nppmosgat(ilg),
+     5         hpdrow(nlat,nmos),       hpdgat(ilg),
+     6         litrmassmsrow(nlat,nmos),litrmassmsgat(ilg),
+     7         Cmossmasrow(nlat,nmos),  Cmossmasgat(ilg),
+     8         dmossrow(nlat,nmos) ,dmossgat(ilg),
+     9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
+     1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd)
+     
+      integer  ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
 
 c----------------------------------------------------------------------
       do 100 k=1,nml
@@ -549,18 +549,18 @@ c     not in ctemg2. jm jan 8 2013.
 
 c    scatter peatland variables----------------------------------------\
 !               FLAG JM check on this.
-	 do 400 k=1,nml 
-		anmosrow(ilmos(k),jlmos(k)) = anmosgat(k)
-		rmlmosrow(ilmos(k),jlmos(k))= rmlmosgat(k)	
-		gppmosrow(ilmos(k),jlmos(k))= gppmosgat(k) 	
-		armosrow(ilmos(k),jlmos(k))= armosgat(k)	
-		nppmosrow(ilmos(k),jlmos(k))= nppmosgat(k) 	
-		hpdrow (ilmos(k),jlmos(k))  = hpdgat(k)
-		litrmassmsrow(ilmos(k),jlmos(k)) = litrmassmsgat(k) 
-		Cmossmasrow(ilmos(k),jlmos(k)) = Cmossmasgat(k)
-		dmossrow(ilmos(k),jlmos(k)) = dmossgat(k)
-		ipeatlandrow(ilmos(k),jlmos(k)) = ipeatlandgat(k)
-400	 continue
+      do 400 k=1,nml 
+          anmosrow(ilmos(k),jlmos(k)) = anmosgat(k)
+          rmlmosrow(ilmos(k),jlmos(k))= rmlmosgat(k)   
+          gppmosrow(ilmos(k),jlmos(k))= gppmosgat(k)   
+          armosrow(ilmos(k),jlmos(k))= armosgat(k)     
+          nppmosrow(ilmos(k),jlmos(k))= nppmosgat(k)   
+          hpdrow (ilmos(k),jlmos(k))  = hpdgat(k)
+          litrmassmsrow(ilmos(k),jlmos(k)) = litrmassmsgat(k) 
+          Cmossmasrow(ilmos(k),jlmos(k)) = Cmossmasgat(k)
+          dmossrow(ilmos(k),jlmos(k)) = dmossgat(k)
+          ipeatlandrow(ilmos(k),jlmos(k)) = ipeatlandgat(k)
+400   continue
 
       return
       end

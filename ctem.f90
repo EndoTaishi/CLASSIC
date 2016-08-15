@@ -57,16 +57,13 @@
      &                 nml,    ilmos, jlmos,  ch4wet1,  ch4wet2,  &
      &                 wetfdyn, ch4dyn1, ch4dyn2, &
 !    ---------------- outputs are listed above this line ------------ 
-<<<<<<< HEAD
-	 &		ipeatland,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd, &
-	 &		anmoss,rmlmoss,gppmoss, Cmossmas, litrmassms, &
-	 &         wtable,thpor,bi, psisat,grksat, &
-	 &         thfc,thlw,thliq,thice,tfrez, &
+     &        ipeatland,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd, &
+     &                anmoss,rmlmoss,gppmoss, Cmossmas, litrmassms, &
+     &                    wtable,thpor,bi, psisat,grksat, &
+     &                    thfc,thlw,thliq,thice,tfrez, &
 !    -------------input above, output and updated variables below------
-     &         nppmoss,armoss,hpd)
+     &                nppmoss,armoss,hpd)
 
-=======
->>>>>>> release_dev
 !
 !             Canadian Terrestrial Ecosystem Model (CTEM) 
 !             Main Ctem Subroutine Compatible With CLASS 
@@ -532,14 +529,14 @@ real      ch4dyn1(ilg),        ch4dyn2(ilg)
 
 real lambdaalt
 !
-!	------------define peatland related variables--------------------\ 
-	  integer  ipeatland(ilg),iyear,ihour,imin,&
-	 &         jdsty,jdstd,jdendy,jdendd
-	 
-	  real     wtable(ilg),thpor(ilg,ignd),bi(ilg,ignd),&
-	 &         grksat(ilg,ignd),thfc(ilg,ignd),thlw(ilg,ignd),&  
-	 &         psisat(ilg,ignd),thliq(ilg,ignd),thice(ilg,ignd),tfrez
-	
+!    ------------define peatland related variables--------------------\ 
+       integer  ipeatland(ilg),iyear,ihour,imin,&
+      &         jdsty,jdstd,jdendy,jdendd
+      
+       real     wtable(ilg),thpor(ilg,ignd),bi(ilg,ignd),&
+      &         grksat(ilg,ignd),thfc(ilg,ignd),thlw(ilg,ignd),&  
+      &         psisat(ilg,ignd),thliq(ilg,ignd),thice(ilg,ignd),tfrez
+     
       real     gppmoss(ilg),rmlmoss(ilg),anmoss(ilg),armoss(ilg), &
      &         nppmoss(ilg), rgmoss(ilg), litresms(ilg), socresp(ilg),&
      &         resoxic(ilg), resanoxic(ilg), litrfallms(ilg),&
@@ -555,17 +552,17 @@ real lambdaalt
 !    hpd - peat depth(m)
 !    -----daily averaged C fluxes rates (umol/m2/s) below-----
 !    gppmoss - moss GPP 
-!    rmlmoss -	moss maintainance respiration moss 
-!	anmoss  - moss net photoysnthesis  
-!	nppmoss -	moss net primary production 
+!    rmlmoss - moss maintainance respiration moss 
+!    anmoss  - moss net photoysnthesis  
+!    nppmoss - moss net primary production 
 !    rgmoss  - moss growth respiration 
 !    armoss  - moss autotrophic respiration (rmlmoss+rgmoss) 
-!    litresms-	moss litter respiration  
+!    litresms- moss litter respiration  
 !    socresp - heterotrphic repsiration from peat soil  
-!    resoxic -	oxic respiration from peat soil 
+!    resoxic - oxic respiration from peat soil 
 !    resanoxic - anoxic respiration from peat soil
 !    ------accumulated C fluxes (kgC/m2/timestep) below---------
-!    litrfallms - moss litter fall 	
+!    litrfallms - moss litter fall      
 !    ltrestepms - litter respiration from moss    
 !    humicmstep - moss humification 
 !    nppmosstep - moss npp
@@ -575,10 +572,10 @@ real lambdaalt
 !    Cmossmas - moss biomass C 
 !    litrmassms - moss litter C
 !    pcmossmas - moss biomass C at the previous time step
-!	plitrmassms - moss litter C at the previous time step
+!    plitrmassms - moss litter C at the previous time step
 !    ------parametes below, may be moved to ctem_params---------
-!	grescoefms - growth respiration coefficient
-!	rmortms - moss mortality rate constant (year-1),assumed based on  
+!    grescoefms - growth respiration coefficient
+!    rmortms - moss mortality rate constant (year-1),assumed based on  
 !              lterature (eg. 54g litter/75g biomass in Moore et al,2002)
 !    humicfacms - humification ratio of moss litter, higher in mosses than
 !              vascular pfts because the decomposibility of moss litter is 
@@ -1008,22 +1005,22 @@ do 130 j = 1, icc
 
 !    ---------initialize peatland variables YW---------------------------\
 
-	   if  (ipeatland(i) >  0)                   then
- 		  pCmossmas(i)  = Cmossmas(i)            
-		  plitrmassms(i)= litrmassms(i)
-		  litrfallms(i) = 0.0
-		  litresms(i)   = 0.0 		
-		  socresp(i)    = 0.0
-	 	  resoxic(i)    = 0.0
-		  resanoxic(i)  = 0.0
-		  ltrestepms(i) = 0.0
-		  humicmstep(i) = 0.0
-		  nppmosstep(i) = 0.0
-		  rgmoss(i)     = 0.0	 
-		  hutrstep_g(i) = 0.0
-		  nppmoss(i)    = 0.0
-		  armoss(i)     = 0.0	
-	   endif
+        if  (ipeatland(i) >  0)                   then
+            pCmossmas(i)  = Cmossmas(i)            
+            plitrmassms(i)= litrmassms(i)
+            litrfallms(i) = 0.0
+            litresms(i)   = 0.0         
+            socresp(i)    = 0.0
+            resoxic(i)    = 0.0
+            resanoxic(i)  = 0.0
+            ltrestepms(i) = 0.0
+            humicmstep(i) = 0.0
+            nppmosstep(i) = 0.0
+            rgmoss(i)     = 0.0     
+            hutrstep_g(i) = 0.0
+            nppmoss(i)    = 0.0
+            armoss(i)     = 0.0    
+        endif
 !    ---------YW March 20, 2015----------------------------------------/
 
 145   continue
@@ -1176,19 +1173,19 @@ do 320 j = 1,icc
 330     continue
 320   continue
 !
-!	--------add moss GPP and rml to the grid avarage C fluxes---------\  
+!    --------add moss GPP and rml to the grid avarage C fluxes---------\  
       do 335 i = il1, il2
-	     if (ipeatland(i) > 0)	               then		
-		  	rgmoss(i) = anmoss(i)*grescoefms
-	 		rml(i)= rml(i) + rmlmoss(i)
-			rm(i) = rm(i)  + rmlmoss(i)
-			rg(i) = rg(i)  + rgmoss (i)
-			armoss(i) = rmlmoss(i) + rgmoss(i) 
-	        nppmoss(i) = anmoss(i) - rgmoss(i)
-			npp(i)= npp(i) + nppmoss (i)
-		    gpp(i)= gpp(i) + gppmoss(i)			
-			autores(i) = autores(i) + armoss(i) 
-		endif
+          if (ipeatland(i) > 0)                   then      
+               rgmoss(i) = anmoss(i)*grescoefms
+               rml(i)= rml(i) + rmlmoss(i)
+               rm(i) = rm(i)  + rmlmoss(i)
+               rg(i) = rg(i)  + rgmoss (i)
+               armoss(i) = rmlmoss(i) + rgmoss(i) 
+             nppmoss(i) = anmoss(i) - rgmoss(i)
+               npp(i)= npp(i) + nppmoss (i)
+              gpp(i)= gpp(i) + gppmoss(i)              
+               autores(i) = autores(i) + armoss(i) 
+          endif
 335   continue       
 !    -----------YW March 20, 2015 -------------------------------------/
 !
@@ -1242,9 +1239,9 @@ call  hetresg  (litrmass, soilcmas,            &
 !
 !    ------------peat heterotrophic respiration------------------------\
 !
-	   call  decp(il1,il2,iyear,iday,ihour,imin,ipeatland,isand,  &
-	 &	litrmassms,hpd, wtable,tbar, thliq,thice, thpor,bi,zbotw, &
-	 &    delzw,psisat,tfrez,jdsty,jdstd,jdendy,jdendd,  &
+        call  decp(il1,il2,iyear,iday,ihour,imin,ipeatland,isand,  &
+      &   litrmassms,hpd, wtable,tbar, thliq,thice, thpor,bi,zbotw, &
+      &    delzw,psisat,tfrez,jdsty,jdstd,jdendy,jdendd,  &
 !    -------------- inputs above this line, outputs below -------------
      &    litresms, socresp, resoxic, resanoxic)  
 !    ------------YW March 26, 2015 ------------------------------------/
@@ -1309,9 +1306,9 @@ do 360 j = 1,icc
               litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,iccp1))
               socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,iccp1))
           else                     !it is peatlands
-	  	    litres(i) = litres(i)+ litresms(i)
-		    socres(i) = socresp(i)
-	     endif
+              litres(i) = litres(i)+ litresms(i)
+              socres(i) = socresp(i)
+          endif
               hetrores(i)= litres(i)+socres(i)
               nep(i)=npp(i)-hetrores(i)
 380   continue
@@ -1372,7 +1369,7 @@ do 460 i = il1, il2
         do 480 i = il1, il2
           soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)
           humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j)
-		  hutrstep_g(i) = hutrstep_g(i)+fcancmx(i,j)*hutrstep(i,j)!YW 
+            hutrstep_g(i) = hutrstep_g(i)+fcancmx(i,j)*hutrstep(i,j)!YW 
 480     continue
 470   continue
 !
@@ -1387,18 +1384,18 @@ do 460 i = il1, il2
             humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
           else                          !is peatland  
             soilresp(i) = litres(i)+socres(i)+rmr(i) 
-!	calculate moss time step C fluxes, '/365*deltat' convert year-1
+!    calculate moss time step C fluxes, '/365*deltat' convert year-1
 !    to time step-1, 'deltat/963.62' convert umol/m2/s to kgC/m2/deltat. 
 !    note that hutrstep_g aggregation for icc was done in loop 480
 ! 
-		    litrfallms(i)= Cmossmas(i)*rmortms/365*deltat !kgC/m2/day(dt)
-     	    ltrestepms(i)= litresms(i)*(1.0/963.62)*deltat   !kgC/m2/dt	
-		    nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
-		    socrestep(i) = socres(i)*(1.0/963.62)*deltat     !kgC/m2/dt
-		    soilresp(i)  = soilresp(i)*(1.0/963.62)*deltat   !kgC/m2/dt
-      	    humicmstep(i)= humicfacms * ltrestepms(i)        !kgC/m2/dt
-		    hutrstep_g(i)= hutrstep_g(i) + humicmstep(i)	   !kgC/m2/dt
-		    humiftrs(i)  = humiftrs(i)+humicmstep(i)*(963.62/deltat)!umol/m2/s
+              litrfallms(i)= Cmossmas(i)*rmortms/365*deltat !kgC/m2/day(dt)
+              ltrestepms(i)= litresms(i)*(1.0/963.62)*deltat   !kgC/m2/dt  
+              nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
+              socrestep(i) = socres(i)*(1.0/963.62)*deltat     !kgC/m2/dt
+              soilresp(i)  = soilresp(i)*(1.0/963.62)*deltat   !kgC/m2/dt
+              humicmstep(i)= humicfacms * ltrestepms(i)        !kgC/m2/dt
+              hutrstep_g(i)= hutrstep_g(i) + humicmstep(i)     !kgC/m2/dt
+              humiftrs(i)  = humiftrs(i)+humicmstep(i)*(963.62/deltat)!umol/m2/s
           endif
 490   continue
 !    ---------------YW March 20, 2015 ---------------------------------/
@@ -1816,7 +1813,7 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                    emit_co2, emit_co,  emit_ch4, emit_nmhc,&
      &                    emit_h2,  emit_nox, emit_n2o, emit_pm25,&
      &                    emit_tpm, emit_tc,  emit_oc,  emit_bc,&
-     &thice                    burnvegf, bterm_veg,mterm_veg,  lterm,&
+     &                    burnvegf, bterm_veg,mterm_veg,  lterm,&
      &                    pstemmass, pgleafmass )  
 
 !    ------------------------------------------------------------------
@@ -1927,12 +1924,12 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
              gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
           else                      
              litrmassms(i)= litrmassms(i)+litrfallms(i)-&
-	 &			        ltrestepms(i)-humicmstep(i)     !kg/m2
-		   Cmossmas(i)= Cmossmas(i)+nppmosstep(i)-litrfallms(i)
-		   vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
-		   litrfall(i) = litrfall(i) + litrfallms(i)*(963.62/deltat)!umolCO2/m2/s
-	        gavgltms(i) = gavgltms(i) + litrmassms(i)
-		   gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i)		   
+      &                     ltrestepms(i)-humicmstep(i)     !kg/m2
+             Cmossmas(i)= Cmossmas(i)+nppmosstep(i)-litrfallms(i)
+             vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
+             litrfall(i) = litrfall(i) + litrfallms(i)*(963.62/deltat)!umolCO2/m2/s
+             gavgltms(i) = gavgltms(i) + litrmassms(i)
+             gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i)          
              hpd(i)=(-72067.0+sqrt((72067.0**2.0)-(4.0*4056.6*&
      &              (-gavgscms(i)*1000/0.487))))/(2*4056.6)
 
@@ -1961,11 +1958,11 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                         nep,   litres,   socres, dstcemls1,&
      &                         nbp, litrfall, humiftrs,&
      &                         il1,       il2, &
-!	----------------balance of the moss C pool YW------------------------\
+!    ----------------balance of the moss C pool YW------------------------\
 !
-	 & 			ipeatland, Cmossmas, pCmossmas, &
-	 &			nppmosstep, litrfallms, litrmassms,plitrmassms, &
-	 &			ltrestepms,humicmstep,socrestep, hutrstep)    
+      &             ipeatland, Cmossmas, pCmossmas, &
+      &             nppmosstep, litrfallms, litrmassms,plitrmassms, &
+      &             ltrestepms,humicmstep,socrestep, hutrstep)    
 
       endif
 !
@@ -2001,7 +1998,7 @@ call bio2str( gleafmas, bleafmas, stemmass, rootmass,&
 !     CT13D_G
          write(95,6991) &          
      &  litrmass(1,6),  tltrleaf(1,6), tltrstem(1,6), tltrroot(1,6), &
-     &  ltresveg(1,6),	 humtrsvg(1,6), litrmass(1,7), tltrleaf(1,7),&
+     &  ltresveg(1,6),    humtrsvg(1,6), litrmass(1,7), tltrleaf(1,7),&
      &  tltrstem(1,7),  tltrroot(1,7), ltresveg(1,7), humtrsvg(1,7),&
      &  plitrmassms, litrmassms, litrfallms, ltrestepms, humicmstep,&
      &  nppmosstep,nppmoss,anmoss,rgmoss,rmlmoss,gppmoss,Cmossmas,&

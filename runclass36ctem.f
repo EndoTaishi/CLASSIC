@@ -1027,7 +1027,7 @@ c
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
 
-      real, pointer, dimension(:) :: gppmosac_g
+      !real, pointer, dimension(:) :: gppmosac_g
 
 ! Model Switches (rarely changed ones only! The rest are in joboptions file):
 
@@ -1067,7 +1067,8 @@ c   ----CTEM moss variables--------------------------------------------
      8      rmlcsmosgat(ilg),           rmlgsmosgat(ilg),
      9      rmlcmosgat(ilg),            rmlgmosgat(ilg),
      1      anmosac_g(ilg), rmlmosac_g(ilg)
-c    1      anmosac_g(ilg), rmlmosac_g(ilg), gppmosac_g(ilg) 
+c    1      anmosac_g(ilg), rmlmosac_g(ilg),
+     1       ,gppmosac_g(ilg)
 c    1      armosrow(nlat,nmos) ,       armosgat(ilg),  
 c    2      nppmosrow(nlat,nmos) ,      nppmosgat(ilg),
 c   ----common block parametes----------------------- -----------------
@@ -1112,7 +1113,7 @@ c   thpms   - pore volume of moss (m3/m3)
 c   thrms   - liquid water retention capacity of moss (m3/m3)
 c   thmms   - residual liquid water content after freezing or 
 c              evaporation of moss (m3/m3) 
-c   bms	    - Clapp and Hornberger empirical "b" parameter of moss
+c   bms       - Clapp and Hornberger empirical "b" parameter of moss
 c   psisms  - soil moisure suction at saturation of moss (m)
 c   grksms  - saturated hydrualic conductivity of moss (m)
 c   hcpms   - heat capacity of moss (m)
@@ -1683,7 +1684,7 @@ C===================== CTEM ==============================================\
       rmlcsvga_t        => ctem_tile%rmlcsvga_t
       rmlcgvga_t        => ctem_tile%rmlcgvga_t
 
-      gppmosac_g        => ctem_tile%gppmosac_g
+!      gppmosac_g        => ctem_tile%gppmosac_g
 
 
 !    =================================================================================
@@ -2073,7 +2074,7 @@ C
        WRITE(691,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
        WRITE(691,6019)
 C
-6008  FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
+! FLAG!!!! 6008  FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',
 
 C
       ENDIF !IF NOT PARALLELRUN
@@ -2648,8 +2649,8 @@ c
      a      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
      b      bmasvegrow,cmasvegcrow,veghghtrow,
      c      rootdpthrow,alvsctmrow,alirctmrow,
-     d      paicrow,    slaicrow, FAREROT,
-c	gather peatland variable YW March 19, 2015---------------------- /
+     d      paicrow,    slaicrow, FAREROT
+c    gather peatland variable YW March 19, 2015---------------------- /
      1      ,ipeatlandrow,   ipeatlandgat)
 
       call bio2str( gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,
@@ -2659,7 +2660,7 @@ c	gather peatland variable YW March 19, 2015---------------------- /
      5                       rmatcgat, rmatctemgat,slaigat,bmasveggat,
      6                 cmasvegcgat,veghghtgat, rootdpthgat,alvsctmgat,
      7                     alirctmgat, paicgat,  slaicgat 
-c	 peatland PFT bio2str YW March 19, 2015---------------------------/ 
+c     peatland PFT bio2str YW March 19, 2015---------------------------/ 
      8              ,ipeatlandgat)     
 c
        write(6,6990)  'veghght =',veghghtgat   !YW
@@ -2810,8 +2811,8 @@ c       but only if it was read in during the loop above.
       met_rewound = .false.
 
       endif
-c	----assign the initial CO2 concentration YW March 19, 2015--------\
-C	add initialization of CO2 concentration at the first time step when 
+c    ----assign the initial CO2 concentration YW March 19, 2015--------\
+C    add initialization of CO2 concentration at the first time step when 
 C    CO2conc is 0. to fix the floating point problem  
 !           FLAG - wha?
          do i=1,nltest
@@ -2819,7 +2820,7 @@ C    CO2conc is 0. to fix the floating point problem
            co2concrow(i,m)=setco2conc
           enddo
          enddo
-c	----YW March 19, 2015---------------------------------------------/
+c    ----YW March 19, 2015---------------------------------------------/
 
 C===================== CTEM ============================================ /
 C
@@ -3456,7 +3457,7 @@ C
 C
 
 !     FLAG!
-c	--aggregate moss C fluxes of subareas to grid for ctem.f------------\ 
+c    --aggregate moss C fluxes of subareas to grid for ctem.f------------\ 
       do 620 i = 1, nml
          if (ipeatlandgat(i) > 0)                    then
               anmosgat(i) = fcs(i)*ancsmosgat(i)+fgs(i)*angsmosgat(i)

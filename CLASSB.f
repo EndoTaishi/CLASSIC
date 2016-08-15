@@ -98,11 +98,11 @@ C
 C
       REAL VSAND,VORG,VFINE,VTOT,AEXP,ABC,THSAND,THFINE,THORG
 C
-c	--------peatland variables---------------------------------------\ 	
+c    --------peatland variables---------------------------------------\    
 c
-	 integer ipeatland(nl,nm)
-	 real 	zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
-	1		sphms,rhoms,slams
+      integer ipeatland(nl,nm)
+      real     zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
+     1         sphms,rhoms,slams
 c    -----------YW March 23, 2015 -------------------------------------/
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -129,7 +129,7 @@ c
 c    moss common block parametes YW March 19, 2015 ---------------------\
 
       common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
-	1				    hcpms, sphms,rhoms,slams
+     1                       hcpms, sphms,rhoms,slams
 c    moss common block parametes YW March 19, 2015 ---------------------/
 C---------------------------------------------------------------------
 C
@@ -227,7 +227,7 @@ C
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
              if (ipeatland(i,m) > 0 )                      then  !YW
-                  if (j .eq. 1)    	                        then
+                  if (j .eq. 1)                                 then
                       thpor(i,m,j)  = thpms
                       thlret(i,m,j) = thrms
                       thlmin(i,m,j) = thmms
@@ -235,7 +235,7 @@ C
                       psisat(i,m,j) = psisms
                       grksat(i,m,j) = grksms
                       hcps(i,m,j) = hcpms
-                      tcs(i,m,j) = tcom	
+                      tcs(i,m,j) = tcom 
                   elseif (j .eq. 2    )                     then
                       thpor(i,m,j)  = thporg(1)
                       thlret(i,m,j) = throrg(1) 
@@ -258,7 +258,7 @@ C
                       psisat(i,m,j) = psisorg(3)
                       grksat(i,m,j) = grksorg(3)
                   endif                                      
-                  thlrat(i,m,j) = 0.5**(1.0/(2.0*bi(i,m,j)+3.0))	
+                  thlrat(i,m,j) = 0.5**(1.0/(2.0*bi(i,m,j)+3.0)) 
               endif
               THFC(I,M,J)=THLRET(I,M,J)
               THLW(I,M,J)=THLMIN(I,M,J)

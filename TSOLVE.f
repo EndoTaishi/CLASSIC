@@ -13,9 +13,9 @@
      3                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
      4                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
 !    ------------pass variables in moss subroutine---------------------\  
-     5	,ipeatland,tbar,thpor,co2conc,pressg,coszs,Cmossmas,dmoss,
-!    -----input above, output below-----------------------------------	
-     7	   anmoss,rmlmoss,iyear,iday,ihour,imin,daylength,pdd,cdd )
+     5    ,ipeatland,tbar,thpor,co2conc,pressg,coszs,Cmossmas,dmoss,
+!    -----input above, output below-----------------------------------     
+     7       anmoss,rmlmoss,iyear,iday,ihour,imin,daylength,pdd,cdd )
 C    ------------------YW March 26, 2015 ------------------------------/ 
 C
 C     Purpose: Solution of surface energy balance for non-vegetated 
@@ -224,13 +224,13 @@ C      REAL QSWNV,QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO   !YW
       REAL QSWNV(ilg),QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO
 c    ---------------Peatland variables YW March 19, 2015 --------------\
 
- 	 integer  ipeatland(ilg),iday, ihour, iyear,imin, ievapms(ilg)
-	 real	tbar(ilg,ig), 	thpor(ilg,ig),	 bi(ig),	
-	2		co2conc(ilg),	pressg(ilg) ,	coszs(ilg),
-	3		Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
-	4         pdd(ilg),      cdd(ilg)
-c	------input above output below-----------------------------
-	 real	anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
+      integer  ipeatland(ilg),iday, ihour, iyear,imin, ievapms(ilg)
+      real     tbar(ilg,ig),  thpor(ilg,ig),  bi(ig),  
+     2         co2conc(ilg),  pressg(ilg) ,  coszs(ilg),
+     3         Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
+     4         pdd(ilg),      cdd(ilg)
+c    ------input above output below-----------------------------
+      real     anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
 c    -------------------YW March 26, 2015 -----------------------------/
 C
 C     * COMMON BLOCK PARAMETERS.
@@ -280,11 +280,11 @@ C
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
 C-----------------------------------------------------------------------
       do i = 1,ilg
-      	if (ipeatland(i) > 0)		          then 
-     	   	qswnv(i)=0.0
+          if (ipeatland(i) > 0)                   then 
+               qswnv(i)=0.0
           endif
-	 enddo
-c	------------YW March 20, 2015 ------------------------------------/  
+      enddo
+c    ------------YW March 20, 2015 ------------------------------------/  
       !
       !For the surface temperature iteration, two alternative schemes 
       !are offered: the bisection method (selected if the flag ITG = 1) 
@@ -415,14 +415,14 @@ C
           ENDIF
    50 CONTINUE
 
-c	--moss subroutine find ground evaporation rate and photosynthesis--\ 
-	 call  mosspht(ilg,ig, isand,iday,qswnv,thliq,tbar,thpor,
-	1	co2conc,tstart,zsnow,delzw,pressg,qa,coszs,Cmossmas,dmoss,
-c	--------------input above output below-------------------
-	2		anmoss,rmlmoss,cevapms,ievapms, ipeatland
+c    --moss subroutine find ground evaporation rate and photosynthesis--\ 
+      call  mosspht(ilg,ig, isand,iday,qswnv,thliq,tbar,thpor,
+     1    co2conc,tstart,zsnow,delzw,pressg,qa,coszs,Cmossmas,dmoss,
+c    --------------input above output below-------------------
+     2         anmoss,rmlmoss,cevapms,ievapms, ipeatland
 c    --------------for testing--------------------------------
-	3		,iyear, ihour,imin,daylength,pdd,cdd) 
-c    ------------------YW March 19, 2015 ------------------------------/	 	 
+     3         ,iyear, ihour,imin,daylength,pdd,cdd) 
+c    ------------------YW March 19, 2015 ------------------------------/         
       !
       !The 100 continuation line marks the beginning of the surface 
       !temperature iteration sequence. First the flags NIT (indicating 
@@ -501,13 +501,13 @@ C
                   EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
               ELSE
-c	evaporation coefficient evbeta is controled by moss in peatland --\				
-		        if (ipeatland(i) == 0)                   then 
+c    evaporation coefficient evbeta is controled by moss in peatland --\                  
+                  if (ipeatland(i) == 0)                   then 
                        EVBETA(I)=CEVAP(I)
                   else
-				   evbeta(i) = cevapms(i)
-			        ievap(i) = ievapms(i)
-			   endif
+                       evbeta(i) = cevapms(i)
+                       ievap(i) = ievapms(i)
+                  endif
 c    ---------------YW March 19, 2015----------------------------------/
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QA(I)
                   IF(QZERO(I).GT.QA(I) .AND. IEVAP(I).EQ.0) THEN

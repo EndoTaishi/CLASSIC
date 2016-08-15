@@ -516,9 +516,9 @@ frco2glf = [ 0.70, 0.70, 0.00, 0.00, 0.00,&
              0.00, 0.00, 0.00, 0.00, 0.00, &
              0.80, 0.80, 0.80, 0.00, 0.00 ]
 
-frco2blf = [ 0.00, 0.00, 0.00, 0.00, 0.00, &&
-             0.00, 0.00, 0.00, 0.00, 0.00, &&
-             0.00, 0.00, 0.00, 0.00, 0.00, &&
+frco2blf = [ 0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00, 0.00, 0.00, &
+             0.00, 0.00, 0.00, 0.00, 0.00, &
              0.90, 0.90, 0.90, 0.00, 0.00 ] !FLAG JM- can sedge get brown leaves in YW scheme?
 
 frltrglf = [ 0.20, 0.20, 0.00, 0.00, 0.00, &
@@ -835,20 +835,20 @@ rootlife = [ 13.8,13.2, 0.0,  0.0,  0.0, &
 
 ! wetland_methane.f90 parameters: -------
 
-!	Rita Wania's thesis suggests about 0.25, but we get a better agreement 
-!	to outputs from the Walter's model if we use 0.16.  Note that this
-!	scaling factor likely is temperature dependent, and increases with
-!	temperature, but it is difficult to know the function, so leave
-!	constant for now ratio is mol ch4 to mol co2
+!    Rita Wania's thesis suggests about 0.25, but we get a better agreement 
+!    to outputs from the Walter's model if we use 0.16.  Note that this
+!    scaling factor likely is temperature dependent, and increases with
+!    temperature, but it is difficult to know the function, so leave
+!    constant for now ratio is mol ch4 to mol co2
 
 ratioch4 = 0.16
 
-!	Use the heterotrophic respiration outputs for soil and litter 
-!	as the ecosystem basis.  These were summed as "hetrores".
-!	This respiration is for upland soils; we multiply by 
-!	wtdryres as the ratio of wetland to upland respiration 
-!	based on literature measurements: Dalva et al. 1997 found 0.5 factor; 
-!	Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
+!    Use the heterotrophic respiration outputs for soil and litter 
+!    as the ecosystem basis.  These were summed as "hetrores".
+!    This respiration is for upland soils; we multiply by 
+!    wtdryres as the ratio of wetland to upland respiration 
+!    based on literature measurements: Dalva et al. 1997 found 0.5 factor; 
+!    Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
 
 wtdryres = 0.45
 
@@ -979,11 +979,10 @@ bsrtroot = [ 0.5000, 0.2850, 0.0000, 0.0000, 0.0000, &
 
 ! mortality.f parameters: ---------
 
-maxage = [ 800.0, 500.0,   0.0,  0.0, 0.0,  &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-           700.0, 450.0, 500.0,  800.0, 500.0, &  
-             0.0,   0.0,   0.0,  0.0, 0.0, &
-             0.0,   0.0,   0.0  0.0, 0.0, ]
-
+maxage = [ 800., 500.,   0.,   0.,   0., &
+           700., 450., 500., 800., 500., &
+             0.,   0.,   0.,   0.,   0., &
+             0.,   0.,   0.,   0.,   0. ]
 
 
 mxmortge = [ 0.005, 0.005, 0.000, 0.000, 0.000, & 
@@ -1014,7 +1013,6 @@ else ! Prescribed PFT fractional cover
 
 ! allocate.f parameters: --------------
 
-<<<<<<< HEAD
 omega = [ 0.80, 0.50, 0.00, 0.00, 0.00, & 
           0.80, 0.80, 0.80, 0.80, 0.50, &
           0.05, 0.05, 0.00, 0.00, 0.00, &

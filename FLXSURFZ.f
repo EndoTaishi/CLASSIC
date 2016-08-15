@@ -168,7 +168,7 @@ c - - - - - - - - -  BEGINNING OF ITERATION LOOP - - - - - - - - - - -
         IF(RIB(J).GT.0.)  THEN
 c----------------------------------------------------------------------
 c  STABLE CASE
-       	ILMO(J)=max(EPSLN,ILMO(J))
+          ILMO(J)=max(EPSLN,ILMO(J))
         hl=(ZU(J)+10.0*Z0(J))*FACTN
         F=MAX(ABS(FCOR(J)),CORMIN)
         hs=BS*sqrt(KARMAN*u/(ILMO(J)*F*fm(j)))

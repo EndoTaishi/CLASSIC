@@ -482,11 +482,11 @@ C
       REAL ALIRO    !Near-infrared albedo of organic matter (0.30)
       REAL ALBRCK   !Albedo of rock 
 
-c	 ---------------peatland variable --------------------------------\ 	
-	 integer 	ipeatland(ilg)
-	 real 	zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
-	1		sphms,rhoms,slams
-c	 ------------------YW March 19, 2015 -----------------------------/ 	
+c     ---------------peatland variable --------------------------------\   
+      integer  ipeatland(ilg)
+      real     zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
+     1         sphms,rhoms,slams
+c     ------------------YW March 19, 2015 -----------------------------/   
 
       COMMON /CLASS1/ DELT,TFREZ                                               
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
@@ -499,7 +499,7 @@ c	 ------------------YW March 19, 2015 -----------------------------/
       COMMON /CLASS7/ CANEXT,XLEAF
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
       common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
-     1				hcpms, sphms,rhoms,slams      !YW
+     1                   hcpms, sphms,rhoms,slams      !YW
 
                                                                                   
 C------------------------------------------------------------------
