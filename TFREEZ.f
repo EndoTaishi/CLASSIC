@@ -1,8 +1,9 @@
+!>\file
+C!Purpose: Address freezing of water ponded on ground surface.
+C!
       SUBROUTINE TFREEZ(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO,
      1                  GZERO,HMFG,HTCS,HTC,WTRS,WTRG,FI,QFREZ,
      2                  WSNOW,TA,TBAR,ISAND,IG,ILG,IL1,IL2,JL)
-C
-C     Purpose: Address freezing of water ponded on ground surface.
 C
 C     * JAN 06/09 - D.VERSEGHY. SET QFREZ TO ZERO AFTER CALCULATION
 C     *                         OF HADD.
@@ -42,30 +43,30 @@ C
 C
 C     * INPUT/OUTPUT ARRAYS.
 C
-      REAL ZPOND (ILG)  !Depth of ponded water [m] (zp)  
-      REAL TPOND (ILG)  !Temperature of ponded water [C] (Tp) 
-      REAL ZSNOW (ILG)  !Depth of snow pack [m] (zg) 
-      REAL TSNOW (ILG)  !Temperature of the snow pack [C] (Ts)
-      REAL ALBSNO(ILG)  !Albedo of snow [ ]    
-      REAL RHOSNO(ILG)  !Density of snow pack [kg m-3] (rho_s )  
-      REAL HCPSNO(ILG)  !Heat capacity of snow pack [J m-3 K-1] (Cs)  
-      REAL GZERO (ILG)  !Heat flow into soil surface [W m-2]
-      REAL HTCS  (ILG)  !Internal energy change of snow pack due to conduction and/or change in mass [W m-2] (Is)
-      REAL WTRS  (ILG)  !Water transferred into or out of the snow pack [kg m-2 s-1] 
-      REAL WTRG  (ILG)  !Water transferred into or out of the soil [kg m-2 s-1]
+      REAL ZPOND (ILG)  !<Depth of ponded water \f$[m] (z_p)\f$  
+      REAL TPOND (ILG)  !<Temperature of ponded water \f$[C] (T_p)\f$ 
+      REAL ZSNOW (ILG)  !<Depth of snow pack \f$[m] (z_g)\f$
+      REAL TSNOW (ILG)  !<Temperature of the snow pack \f$[C] (T_s)\f$
+      REAL ALBSNO(ILG)  !<Albedo of snow [ ]
+      REAL RHOSNO(ILG)  !<Density of snow pack \f$[kg m^{-3}] (\rho_s)\f$  
+      REAL HCPSNO(ILG)  !<Heat capacity of snow pack \f$[J m^{-3} K^{-1}] (C_s)\f$
+      REAL GZERO (ILG)  !<Heat flow into soil surface \f$[W m^{-2}]\f$
+      REAL HTCS  (ILG)  !<Internal energy change of snow pack due to conduction and/or change in mass \f$[W m^{-2}]\f$ (Is)
+      REAL WTRS  (ILG)  !<Water transferred into or out of the snow pack \f$[kg m^{-2} s^{-1}]\f$ 
+      REAL WTRG  (ILG)  !<Water transferred into or out of the soil \f$[kg m^{-2} s^{-1}]\f$
 C
-      REAL HMFG  (ILG,IG)   !Energy associated with phase change of water in soil layers [W m-2]
-      REAL HTC   (ILG,IG)   !Internal energy change of soil layer due to conduction and/or change in mass [W m-2] (Ig)
+      REAL HMFG  (ILG,IG) !<Energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
+      REAL HTC   (ILG,IG) !<Internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2}]\f$ (Ig)
 C
 C     * INPUT ARRAYS.
 C
-      REAL FI    (ILG)  !Fractional coverage of subarea in question on modelled area [ ] (Xi)    
-      REAL QFREZ (ILG)  !Energy sink for freezing of water at the ground surface [W m -2] 
-      REAL WSNOW (ILG)  !Liquid water content of snow pack [kg m-2] (ws) 
-      REAL TA    (ILG)  !Air temperature [K]  
-      REAL TBAR  (ILG,IG)   !Temperature of soil layer [C] (Tg)
+      REAL FI    (ILG)    !<Fractional coverage of subarea in question on modelled area \f$[ ] (X_i)\f$    
+      REAL QFREZ (ILG)    !<Energy sink for freezing of water at the ground surface \f$[W m^{-2}]\f$ 
+      REAL WSNOW (ILG)    !<Liquid water content of snow pack \f$[kg m^{-2}] (w_s)\f$
+      REAL TA    (ILG)    !<Air temperature [K]  
+      REAL TBAR  (ILG,IG) !<Temperature of soil layer \f$[C] (T_g)\f$
 C
-      INTEGER              ISAND (ILG,IG)   !Sand content flag
+      INTEGER ISAND (ILG,IG) !<Sand content flag
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -73,51 +74,51 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
-      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) [J m-3 K-1]
-      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) [J m-3 K-1]
-      REAL HCPSOL   !Volumetric heat capacity of mineral matter (2.25*10^6) [J m-3 K-1]
-      REAL HCPOM    !Volumetric heat capacity of organic matter (2.50*10^6) [J m-3 K-1]
-      REAL HCPSND   !Volumetric heat capacity of sand particles (2.13*10^6) [J m-3 K-1]
-      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles (2.38*10^6) [J m-3 K-1]
-      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
-      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
-      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) [J kg-1 K-1]
-      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
-      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
-      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
-      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) [W m-1 K-1]
-      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) [J kg-1]
-      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) [J kg-1]
+      REAL DELT     !<Time step [s]
+      REAL TFREZ    !<Freezing point of water [K]
+      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSOL   !<Volumetric heat capacity of mineral matter \f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPOM    !<Volumetric heat capacity of organic matter \f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSND   !<Volumetric heat capacity of sand particles \f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles \f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg m^{-1} K^{-1}]\f$
+      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg m^{-1} K^{-1}]\f$
+      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg m^{-1} K^{-1}]\f$
+      REAL SPHAIR   !<Specific heat of air \f$[J kg m^{-1} K^{-1}]\f$
+      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
+      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
+      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
+      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
+      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
 C                                                                                   
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
-      !
-      !Freezing of water ponded on the ground surface occurs if an 
-      !energy sink QFREZ is produced as a result
-      !of the solution of the surface energy balance, or if the pond 
-      !temperature at the beginning of the
-      !subroutine has been projected to be below 0 C. The change of 
-      !internal energy I in the snow and first soil
-      !layer (which for the purposes of diagnostic calculations includes 
-      !the ponded water) as a result of these
-      !processes is calculated as the difference in I between the 
-      !beginning and end of the subroutine:
-      !
-      !delta_Is = Xi*delta(Cs*Ts*zs)/DELT
-      !delta_Ig = Xi*delta(Cw*Tp*zp)/DELT
-      !
-      !where the C terms represent volumetric heat capacities, the T 
-      !terms temperatures, and the z terms depths
-      !of the snow pack and the ponded water respectively, DELT is the 
-      !length of the time step, and Xi the
-      !fractional coverage of the subarea under consideration relative 
-      !to the modelled area.
-      !
+      !>
+      !!Freezing of water ponded on the ground surface occurs if an 
+      !!energy sink QFREZ is produced as a result
+      !!of the solution of the surface energy balance, or if the pond 
+      !!temperature at the beginning of the
+      !!subroutine has been projected to be below 0 C. The change of 
+      !!internal energy I in the snow and first soil
+      !!layer (which for the purposes of diagnostic calculations includes 
+      !!the ponded water) as a result of these
+      !!processes is calculated as the difference in I between the 
+      !!beginning and end of the subroutine:
+      !!
+      !!\f$\Delta I_s = X_i \Delta(C_s T_s z_s) / \Delta t\f$
+      !!\f$\Delta I_g = X_i \Delta(C_w T_p z_p)/\Delta t\f$
+      !!
+      !!where the C terms represent volumetric heat capacities, the T 
+      !!terms temperatures, and the z terms depths
+      !!of the snow pack and the ponded water respectively, \f$\Delta t\f$ is the 
+      !!length of the time step, and \f$X_i\f$ the
+      !!fractional coverage of the subarea under consideration relative 
+      !!to the modelled area.
+      !!
       DO 100 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ZPOND(I).GT.0. .AND. (TPOND(I).LT.0. 
      1                     .OR. QFREZ(I).LT.0.))           THEN
@@ -130,19 +131,19 @@ C-----------------------------------------------------------------------
                  HADD=HADD-TPOND(I)*HCPW*ZPOND(I)
                  TPOND(I)=0.0              
              ENDIF        
-             !
-             !The energy sink HADD to be applied to the ponded water is 
-             !calculated from QFREZ and the pond
-             !temperature TPOND (if it is below 0 C). Two diagnostic 
-             !variables, HCOOL and HCONV, are calculated as the energy 
-             !sink required to cool the ponded water to 0 C, and that 
-             !required both to cool and to freeze
-             !the ponded water, respectively. If HADD <= HCOOL, the 
-             !available energy sink is only sufficient to
-             !decrease the temperature of the ponded water. This 
-             !decrease is applied, and the energy used is added to
-             !the internal energy HTC of the first soil layer.
-             !                                                               
+             !>
+             !!The energy sink HADD to be applied to the ponded water is 
+             !!calculated from QFREZ and the pond
+             !!temperature TPOND (if it is below 0 C). Two diagnostic 
+             !!variables, HCOOL and HCONV, are calculated as the energy 
+             !!sink required to cool the ponded water to 0 C, and that 
+             !!required both to cool and to freeze
+             !!the ponded water, respectively. If HADD \f$\leq\f$ HCOOL, the 
+             !!available energy sink is only sufficient to
+             !!decrease the temperature of the ponded water. This 
+             !!decrease is applied, and the energy used is added to
+             !!the internal energy HTC of the first soil layer.
+             !!                                                               
              HCOOL=TPOND(I)*HCPW*ZPOND(I)                                                      
              HCONV=HCOOL+CLHMLT*RHOW*ZPOND(I)                                               
              HTC (I,1)=HTC (I,1)-FI(I)*HCPW*(TPOND(I)+TFREZ)*
@@ -150,21 +151,21 @@ C-----------------------------------------------------------------------
              IF(HADD.LE.HCOOL)             THEN                                                      
                 TPOND(I)=TPOND(I)-HADD/(HCPW*ZPOND(I))                                           
                 HTC(I,1)=HTC(I,1)+FI(I)*HADD/DELT
-             !
-             !If HADD > HCOOL but HADD <= HCONV, the available energy 
-             !sink is sufficient to decrease the
-             !ponded water temperature to 0 C and to freeze part of it. 
-             !The energy used in freezing is calculated as
-             !HADD – HCOOL, and is used to calculate the depth of frozen 
-             !water ZFREZ, which is then subtracted
-             !from the ponded water depth ZPOND. HCOOL is added to HTC, 
-             !and ZFREZ is converted from a
-             !depth of water to a depth of ice and added to the snow 
-             !pack. If there is not a pre-existing snow pack, the
-             !snow albedo is set to the background value for old snow, 
-             !0.50. The temperature, density and heat
-             !capacity of the snow pack are recalculated.
-             !
+             !>
+             !!If HADD > HCOOL but HADD \f$\leq\f$ HCONV, the available energy 
+             !!sink is sufficient to decrease the
+             !!ponded water temperature to 0 C and to freeze part of it. 
+             !!The energy used in freezing is calculated as
+             !!HADD – HCOOL, and is used to calculate the depth of frozen 
+             !!water ZFREZ, which is then subtracted
+             !!from the ponded water depth ZPOND. HCOOL is added to HTC, 
+             !!and ZFREZ is converted from a
+             !!depth of water to a depth of ice and added to the snow 
+             !!pack. If there is not a pre-existing snow pack, the
+             !!snow albedo is set to the background value for old snow, 
+             !!0.50. The temperature, density and heat
+             !!capacity of the snow pack are recalculated.
+             !!
              ELSE IF(HADD.LE.HCONV)        THEN                                                  
                 HADD=HADD-HCOOL                                                         
                 ZFREZ=HADD/(CLHMLT*RHOW)                                                
@@ -180,36 +181,36 @@ C-----------------------------------------------------------------------
                 HCPSNO(I)=HCPICE*RHOSNO(I)/RHOICE+HCPW*WSNOW(I)/
      1                   (RHOW*ZSNOW(I))
                 TPOND(I)=0.0   
-             !
-             !If HADD > HCONV, the available energy sink is sufficient 
-             !to cool and freeze the whole depth of
-             !ponded water, and also to decrease the temperature of the 
-             !ice thus formed. The ponded water depth is
-             !converted to a depth of ice ZFREZ, and HCOOL is added to 
-             !HTC. In order to avoid unphysical
-             !temperature decreases caused by the length of the time 
-             !step and the small ponding depth, a limit is set on
-             !the allowable decrease. The theoretical temperature of 
-             !the newly formed ice, TTEST, is calculated from
-             !HADD – HCONV. If there is a pre-existing snow pack, the 
-             !limiting temperature TLIM is set to the
-             !minimum of the snow pack temperature TSNOW, the first soil 
-             !layer temperature, and 0 C; otherwise it is
-             !set to the minimum of the air temperature, the first soil 
-             !layer temperature and 0 C. If TTEST < TLIM,
-             !the new ice is assigned TLIM as its temperature in the 
-             !recalculation of TSNOW, the excess heat sink
-             !HEXCES is calculated from HADD and TLIM and assigned to 
-             !the ground heat flux GZERO, and
-             !HADD – HEXCES is used to update HTC. Otherwise the new ice 
-             !is assigned TTEST as its temperature
-             !in the recalculation of TSNOW, and HADD is used to update 
-             !HTC. If there is not a pre-existing snow
-             !pack, the snow albedo is set to the background value. The 
-             !density, depth and heat capacity of the snow
-             !pack are recalculated, and the pond depth and temperature 
-             !are set to zero.
-             !                                                            
+             !>
+             !!If HADD > HCONV, the available energy sink is sufficient 
+             !!to cool and freeze the whole depth of
+             !!ponded water, and also to decrease the temperature of the 
+             !!ice thus formed. The ponded water depth is
+             !!converted to a depth of ice ZFREZ, and HCOOL is added to 
+             !!HTC. In order to avoid unphysical
+             !!temperature decreases caused by the length of the time 
+             !!step and the small ponding depth, a limit is set on
+             !!the allowable decrease. The theoretical temperature of 
+             !!the newly formed ice, TTEST, is calculated from
+             !!HADD – HCONV. If there is a pre-existing snow pack, the 
+             !!limiting temperature TLIM is set to the
+             !!minimum of the snow pack temperature TSNOW, the first soil 
+             !!layer temperature, and 0 C; otherwise it is
+             !!set to the minimum of the air temperature, the first soil 
+             !!layer temperature and 0 C. If TTEST < TLIM,
+             !!the new ice is assigned TLIM as its temperature in the 
+             !!recalculation of TSNOW, the excess heat sink
+             !!HEXCES is calculated from HADD and TLIM and assigned to 
+             !!the ground heat flux GZERO, and
+             !!HADD – HEXCES is used to update HTC. Otherwise the new ice 
+             !!is assigned TTEST as its temperature
+             !!in the recalculation of TSNOW, and HADD is used to update 
+             !!HTC. If there is not a pre-existing snow
+             !!pack, the snow albedo is set to the background value. The 
+             !!density, depth and heat capacity of the snow
+             !!pack are recalculated, and the pond depth and temperature 
+             !!are set to zero.
+             !!                                                            
              ELSE                                                                        
                 HADD=HADD-HCONV                                                         
                 ZFREZ=ZPOND(I)*RHOW/RHOICE                                                 
@@ -242,19 +243,19 @@ C-----------------------------------------------------------------------
                 ZPOND(I)=0.0                                                               
                 TPOND(I)=0.0                                                               
              ENDIF    
-             !
-             !At the end of the subroutine, the internal energy 
-             !calculations are completed, and ZFREZ is used to
-             !update the diagnostic variable HMFG describing the energy 
-             !associated with phase changes of water in soil
-             !layers, and also the diagnostic variables WTRS and WTRG 
-             !describing transfers of water into or out of the
-             !snow and soil respectively. Finally, the initial step in 
-             !the calculation of the internal energy change for the
-             !ponded water over the following subroutines GRINFL and 
-             !GRDRAN is performed (the calculation is
-             !completed in subroutine TMCALC).
-             !                                                                   
+             !>
+             !!At the end of the subroutine, the internal energy 
+             !!calculations are completed, and ZFREZ is used to
+             !!update the diagnostic variable HMFG describing the energy 
+             !!associated with phase changes of water in soil
+             !!layers, and also the diagnostic variables WTRS and WTRG 
+             !!describing transfers of water into or out of the
+             !!snow and soil respectively. Finally, the initial step in 
+             !!the calculation of the internal energy change for the
+             !!ponded water over the following subroutines GRINFL and 
+             !!GRDRAN is performed (the calculation is
+             !!completed in subroutine TMCALC).
+             !!                                                                   
              HTC (I,1)=HTC (I,1)+FI(I)*HCPW*(TPOND(I)+TFREZ)*
      1                 ZPOND(I)/DELT
              HMFG(I,1)=HMFG(I,1)-FI(I)*CLHMLT*RHOICE*ZFREZ/DELT

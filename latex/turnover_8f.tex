@@ -1,0 +1,73 @@
+\hypertarget{turnover_8f}{}\section{turnover.\+f File Reference}
+\label{turnover_8f}\index{turnover.\+f@{turnover.\+f}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Stem And Root Turnover Subroutine.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{turnover_8f_a3cab47e670d977409bfe234418add754}{turnover} (stemmass, rootmass,lfstatus,ailcg,il1,il2,sort, nol2pfts,fcancmx,
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Stem And Root Turnover Subroutine. 
+
+The turnover of stem and root components is modelled via their P\+F\+T-\/dependent specified lifetimes. The litter generation ( $kg\,C\,m^{-2}$ $day^{-1}$) associated with turnover of stem ( $D_\mathrm{S}$) and root ( $D_\mathrm{R}$) components is calculated based on the amount of biomass in the respective components ( $C_\mathrm{S}, C_\mathrm{R}$; $kg\,C\,m^{-2}$) and their respective turnover timescales ( $\tau_\mathrm{S}$ and $\tau_\mathrm{R}$; $yr$; see Table$\sim$tab\+:phen\+\_\+turnover\+\_\+par\}) as \[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\] 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{turnover_8f_a3cab47e670d977409bfe234418add754}{}\index{turnover.\+f@{turnover.\+f}!turnover@{turnover}}
+\index{turnover@{turnover}!turnover.\+f@{turnover.\+f}}
+\subsubsection[{turnover}]{\setlength{\rightskip}{0pt plus 5cm}subroutine turnover (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg,icc)}]{stemmass, }
+\item[{real, dimension(ilg,icc)}]{rootmass, }
+\item[{integer, dimension(ilg,icc)}]{lfstatus, }
+\item[{real, dimension(ilg,icc)}]{ailcg, }
+\item[{integer}]{il1, }
+\item[{integer}]{il2, }
+\item[{integer, dimension(icc)}]{sort, }
+\item[{integer, dimension(ican)}]{nol2pfts, }
+\item[{real, dimension(ilg,icc)}]{fcancmx}
+\end{DoxyParamCaption}
+)}\label{turnover_8f_a3cab47e670d977409bfe234418add754}
+
+\begin{DoxyParams}{Parameters}
+{\em il1} & il1=1\\
+\hline
+{\em il2} & il2=ilg\\
+\hline
+{\em lfstatus} & leaf status. an integer indicating if leaves are in \char`\"{}max. growth\char`\"{}, \char`\"{}normal growth\char`\"{}, \char`\"{}fall/harvest\char`\"{}, or \char`\"{}no leaves\char`\"{} mode. see phenolgy subroutine for more details.\\
+\hline
+{\em sort} & index for correspondence between 9 ctem pfts and size 12 of parameter vectors\\
+\hline
+{\em nol2pfts} & number of level 2 ctem pfts\\
+\hline
+{\em stemmass} & stem mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+{\em rootmass} & root mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+{\em ailcg} & green or live lai\\
+\hline
+{\em fcancmx} & max. fractional coverage of ctem\textquotesingle{}s 9 pfts, but this can be modified by land-\/use change, and competition between pfts \\
+\hline
+\end{DoxyParams}
+
+
+ \subsubsection*{Constants and parameters are located in \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90} }
+
+initialize required arrays to zero
+
+initialization ends 
+
+
+
+calculate normal stem and root litter using the amount of stem and root biomass and their turnover time scales.
+
+if crops are in harvest mode then we start harvesting stem as well. if stem has already been harvested then we set the stem harvest loss equal to zero. the roots of the crop die in a similar way.
+
+stem/root harvest/death for crops
+
+add stem and root litter from all sources

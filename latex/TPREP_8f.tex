@@ -1,0 +1,441 @@
+\hypertarget{TPREP_8f}{}\section{T\+P\+R\+E\+P.\+f File Reference}
+\label{TPREP_8f}\index{T\+P\+R\+E\+P.\+f@{T\+P\+R\+E\+P.\+f}}
+
+
+Purpose\+: Initialize subarea variables and calculate various parameters for surface energy budget calculations.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{TPREP_8f_a7e4916d23e9c1a0300f168e58bbf7ae4}{tprep} (T\+H\+L\+I\+Q\+C, T\+H\+L\+I\+Q\+G, T\+H\+I\+C\+E\+C, T\+H\+I\+C\+E\+G, T\+B\+A\+R\+C, T\+B\+A\+R\+G, T\+B\+A\+R\+C\+S, T\+B\+A\+R\+G\+S, H\+C\+P\+C, H\+C\+P\+G, T\+C\+T\+O\+P\+C, T\+C\+B\+O\+T\+C, T\+C\+T\+O\+P\+G, T\+C\+B\+O\+T\+G, H\+C\+P\+S\+C\+S, H\+C\+P\+S\+G\+S, T\+C\+S\+N\+O\+W, T\+S\+N\+O\+C\+S, T\+S\+N\+O\+G\+S, W\+S\+N\+O\+C\+S, W\+S\+N\+O\+G\+S, R\+H\+O\+S\+C\+S, R\+H\+O\+S\+G\+S, T\+C\+A\+N\+O, T\+C\+A\+N\+S, C\+E\+V\+A\+P, I\+E\+V\+A\+P, T\+B\+A\+R1\+P, W\+T\+A\+B\+L\+E, Z\+E\+R\+O, E\+V\+A\+P\+C, E\+V\+A\+P\+C\+G, E\+V\+A\+P\+G, E\+V\+A\+P\+C\+S, E\+V\+P\+C\+S\+G, E\+V\+A\+P\+G\+S, G\+S\+N\+O\+W\+C, G\+S\+N\+O\+W\+G, G\+Z\+E\+R\+O\+C, G\+Z\+E\+R\+O\+G, G\+Z\+R\+O\+C\+S, G\+Z\+R\+O\+G\+S, Q\+M\+E\+L\+T\+C, Q\+M\+E\+L\+T\+G, E\+V\+A\+P, G\+S\+N\+O\+W, T\+P\+O\+N\+D\+C, T\+P\+O\+N\+D\+G, T\+P\+N\+D\+C\+S, T\+P\+N\+D\+G\+S, Q\+S\+E\+N\+S\+C, Q\+S\+E\+N\+S\+G, Q\+E\+V\+A\+P\+C, Q\+E\+V\+A\+P\+G, T\+A\+C\+C\+O, Q\+A\+C\+C\+O, T\+A\+C\+C\+S, Q\+A\+C\+C\+S, I\+L\+M\+O\+X, U\+E\+X, H\+B\+L\+X, I\+L\+M\+O, U\+E, H\+B\+L, S\+T, S\+U, S\+V, S\+Q, S\+R\+H, C\+D\+H, C\+D\+M, Q\+S\+E\+N\+S, Q\+E\+V\+A\+P, Q\+L\+W\+A\+V\+G, F\+S\+G\+V, F\+S\+G\+S, F\+S\+G\+G, F\+L\+G\+V, F\+L\+G\+S, F\+L\+G\+G, H\+F\+S\+C, H\+F\+S\+S, H\+F\+S\+G, H\+E\+V\+C, H\+E\+V\+S, H\+E\+V\+G, H\+M\+F\+C, H\+M\+F\+N, Q\+F\+C\+F, Q\+F\+C\+L, E\+V\+P\+P\+O\+T, A\+C\+O\+N\+D, D\+R\+A\+G, T\+H\+L\+I\+Q, T\+H\+I\+C\+E, T\+B\+A\+R, Z\+P\+O\+N\+D, T\+P\+O\+N\+D, T\+H\+P\+O\+R, T\+H\+L\+M\+I\+N, T\+H\+L\+R\+E\+T, T\+H\+F\+C, H\+C\+P\+S, T\+C\+S, T\+A, R\+H\+O\+S\+N\+O, T\+S\+N\+O\+W, Z\+S\+N\+O\+W, W\+S\+N\+O\+W, T\+C\+A\+N, F\+C, F\+C\+S, D\+E\+L\+Z, D\+E\+L\+Z\+W, Z\+B\+O\+T\+W, I\+S\+A\+N\+D, I\+L\+G, I\+L1, I\+L2, J\+L, I\+G, F\+V\+E\+G, T\+C\+S\+A\+T\+U, T\+C\+S\+A\+T\+F, F\+T\+E\+M\+P, F\+T\+E\+M\+P\+X, F\+V\+A\+P, F\+V\+A\+P\+X, R\+I\+B, R\+I\+B\+X)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Initialize subarea variables and calculate various parameters for surface energy budget calculations. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{TPREP_8f_a7e4916d23e9c1a0300f168e58bbf7ae4}{}\index{T\+P\+R\+E\+P.\+f@{T\+P\+R\+E\+P.\+f}!tprep@{tprep}}
+\index{tprep@{tprep}!T\+P\+R\+E\+P.\+f@{T\+P\+R\+E\+P.\+f}}
+\subsubsection[{tprep}]{\setlength{\rightskip}{0pt plus 5cm}subroutine tprep (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+I\+Q\+C, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+I\+Q\+G, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+C\+E\+C, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+C\+E\+G, }
+\item[{real, dimension (ilg,ig)}]{T\+B\+A\+R\+C, }
+\item[{real, dimension (ilg,ig)}]{T\+B\+A\+R\+G, }
+\item[{real, dimension(ilg,ig)}]{T\+B\+A\+R\+C\+S, }
+\item[{real, dimension(ilg,ig)}]{T\+B\+A\+R\+G\+S, }
+\item[{real, dimension  (ilg,ig)}]{H\+C\+P\+C, }
+\item[{real, dimension  (ilg,ig)}]{H\+C\+P\+G, }
+\item[{real, dimension(ilg,ig)}]{T\+C\+T\+O\+P\+C, }
+\item[{real, dimension(ilg,ig)}]{T\+C\+B\+O\+T\+C, }
+\item[{real, dimension(ilg,ig)}]{T\+C\+T\+O\+P\+G, }
+\item[{real, dimension(ilg,ig)}]{T\+C\+B\+O\+T\+G, }
+\item[{real, dimension(ilg)}]{H\+C\+P\+S\+C\+S, }
+\item[{real, dimension(ilg)}]{H\+C\+P\+S\+G\+S, }
+\item[{real, dimension(ilg)}]{T\+C\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{T\+S\+N\+O\+C\+S, }
+\item[{real, dimension(ilg)}]{T\+S\+N\+O\+G\+S, }
+\item[{real, dimension(ilg)}]{W\+S\+N\+O\+C\+S, }
+\item[{real, dimension(ilg)}]{W\+S\+N\+O\+G\+S, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+C\+S, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+G\+S, }
+\item[{real, dimension (ilg)}]{T\+C\+A\+N\+O, }
+\item[{real, dimension (ilg)}]{T\+C\+A\+N\+S, }
+\item[{real, dimension (ilg)}]{C\+E\+V\+A\+P, }
+\item[{integer, dimension (ilg)}]{I\+E\+V\+A\+P, }
+\item[{real, dimension(ilg)}]{T\+B\+A\+R1\+P, }
+\item[{real, dimension(ilg)}]{W\+T\+A\+B\+L\+E, }
+\item[{real, dimension  (ilg)}]{Z\+E\+R\+O, }
+\item[{real, dimension (ilg)}]{E\+V\+A\+P\+C, }
+\item[{real, dimension(ilg)}]{E\+V\+A\+P\+C\+G, }
+\item[{real, dimension (ilg)}]{E\+V\+A\+P\+G, }
+\item[{real, dimension(ilg)}]{E\+V\+A\+P\+C\+S, }
+\item[{real, dimension(ilg)}]{E\+V\+P\+C\+S\+G, }
+\item[{real, dimension(ilg)}]{E\+V\+A\+P\+G\+S, }
+\item[{real, dimension(ilg)}]{G\+S\+N\+O\+W\+C, }
+\item[{real, dimension(ilg)}]{G\+S\+N\+O\+W\+G, }
+\item[{real, dimension(ilg)}]{G\+Z\+E\+R\+O\+C, }
+\item[{real, dimension(ilg)}]{G\+Z\+E\+R\+O\+G, }
+\item[{real, dimension(ilg)}]{G\+Z\+R\+O\+C\+S, }
+\item[{real, dimension(ilg)}]{G\+Z\+R\+O\+G\+S, }
+\item[{real, dimension(ilg)}]{Q\+M\+E\+L\+T\+C, }
+\item[{real, dimension(ilg)}]{Q\+M\+E\+L\+T\+G, }
+\item[{real, dimension  (ilg)}]{E\+V\+A\+P, }
+\item[{real, dimension (ilg)}]{G\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{T\+P\+O\+N\+D\+C, }
+\item[{real, dimension(ilg)}]{T\+P\+O\+N\+D\+G, }
+\item[{real, dimension(ilg)}]{T\+P\+N\+D\+C\+S, }
+\item[{real, dimension(ilg)}]{T\+P\+N\+D\+G\+S, }
+\item[{real, dimension(ilg)}]{Q\+S\+E\+N\+S\+C, }
+\item[{real, dimension(ilg)}]{Q\+S\+E\+N\+S\+G, }
+\item[{real, dimension(ilg)}]{Q\+E\+V\+A\+P\+C, }
+\item[{real, dimension(ilg)}]{Q\+E\+V\+A\+P\+G, }
+\item[{real, dimension (ilg)}]{T\+A\+C\+C\+O, }
+\item[{real, dimension (ilg)}]{Q\+A\+C\+C\+O, }
+\item[{real, dimension (ilg)}]{T\+A\+C\+C\+S, }
+\item[{real, dimension (ilg)}]{Q\+A\+C\+C\+S, }
+\item[{real, dimension (ilg)}]{I\+L\+M\+O\+X, }
+\item[{real, dimension   (ilg)}]{U\+E\+X, }
+\item[{real, dimension  (ilg)}]{H\+B\+L\+X, }
+\item[{real, dimension  (ilg)}]{I\+L\+M\+O, }
+\item[{real, dimension    (ilg)}]{U\+E, }
+\item[{real, dimension   (ilg)}]{H\+B\+L, }
+\item[{real, dimension    (ilg)}]{S\+T, }
+\item[{real, dimension    (ilg)}]{S\+U, }
+\item[{real, dimension    (ilg)}]{S\+V, }
+\item[{real, dimension    (ilg)}]{S\+Q, }
+\item[{real, dimension   (ilg)}]{S\+R\+H, }
+\item[{real, dimension   (ilg)}]{C\+D\+H, }
+\item[{real, dimension   (ilg)}]{C\+D\+M, }
+\item[{real, dimension (ilg)}]{Q\+S\+E\+N\+S, }
+\item[{real, dimension (ilg)}]{Q\+E\+V\+A\+P, }
+\item[{real, dimension(ilg)}]{Q\+L\+W\+A\+V\+G, }
+\item[{real, dimension  (ilg)}]{F\+S\+G\+V, }
+\item[{real, dimension  (ilg)}]{F\+S\+G\+S, }
+\item[{real, dimension  (ilg)}]{F\+S\+G\+G, }
+\item[{real, dimension  (ilg)}]{F\+L\+G\+V, }
+\item[{real, dimension  (ilg)}]{F\+L\+G\+S, }
+\item[{real, dimension  (ilg)}]{F\+L\+G\+G, }
+\item[{real, dimension  (ilg)}]{H\+F\+S\+C, }
+\item[{real, dimension  (ilg)}]{H\+F\+S\+S, }
+\item[{real, dimension  (ilg)}]{H\+F\+S\+G, }
+\item[{real, dimension  (ilg)}]{H\+E\+V\+C, }
+\item[{real, dimension  (ilg)}]{H\+E\+V\+S, }
+\item[{real, dimension  (ilg)}]{H\+E\+V\+G, }
+\item[{real, dimension  (ilg)}]{H\+M\+F\+C, }
+\item[{real, dimension  (ilg)}]{H\+M\+F\+N, }
+\item[{real, dimension  (ilg)}]{Q\+F\+C\+F, }
+\item[{real, dimension  (ilg)}]{Q\+F\+C\+L, }
+\item[{real, dimension(ilg)}]{E\+V\+P\+P\+O\+T, }
+\item[{real, dimension (ilg)}]{A\+C\+O\+N\+D, }
+\item[{real, dimension  (ilg)}]{D\+R\+A\+G, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+L\+I\+Q, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+I\+C\+E, }
+\item[{real, dimension  (ilg,ig)}]{T\+B\+A\+R, }
+\item[{real, dimension (ilg)}]{Z\+P\+O\+N\+D, }
+\item[{real, dimension (ilg)}]{T\+P\+O\+N\+D, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+P\+O\+R, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+M\+I\+N, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+R\+E\+T, }
+\item[{real, dimension  (ilg,ig)}]{T\+H\+F\+C, }
+\item[{real, dimension  (ilg,ig)}]{H\+C\+P\+S, }
+\item[{real, dimension   (ilg,ig)}]{T\+C\+S, }
+\item[{real, dimension    (ilg)}]{T\+A, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+O, }
+\item[{real, dimension (ilg)}]{T\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{W\+S\+N\+O\+W, }
+\item[{real, dimension  (ilg)}]{T\+C\+A\+N, }
+\item[{real, dimension    (ilg)}]{F\+C, }
+\item[{real, dimension   (ilg)}]{F\+C\+S, }
+\item[{real, dimension(ig)}]{D\+E\+L\+Z, }
+\item[{real, dimension(ilg,ig)}]{D\+E\+L\+Z\+W, }
+\item[{real, dimension(ilg,ig)}]{Z\+B\+O\+T\+W, }
+\item[{integer, dimension (ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{I\+G, }
+\item[{real, dimension  (ilg)}]{F\+V\+E\+G, }
+\item[{real, dimension(ilg)}]{T\+C\+S\+A\+T\+U, }
+\item[{real, dimension(ilg)}]{T\+C\+S\+A\+T\+F, }
+\item[{real, dimension (ilg)}]{F\+T\+E\+M\+P, }
+\item[{real, dimension(ilg)}]{F\+T\+E\+M\+P\+X, }
+\item[{real, dimension  (ilg)}]{F\+V\+A\+P, }
+\item[{real, dimension (ilg)}]{F\+V\+A\+P\+X, }
+\item[{real, dimension   (ilg)}]{R\+I\+B, }
+\item[{real, dimension  (ilg)}]{R\+I\+B\+X}
+\end{DoxyParamCaption}
+)}\label{TPREP_8f_a7e4916d23e9c1a0300f168e58bbf7ae4}
+
+\begin{DoxyParams}{Parameters}
+{\em tbarc} & Subarea temperatures of soil layers \mbox{[}C\mbox{]}\\
+\hline
+{\em tbarg} & Subarea temperatures of soil layers \mbox{[}C\mbox{]}\\
+\hline
+{\em tbarcs} & Subarea temperatures of soil layers \mbox{[}C\mbox{]}\\
+\hline
+{\em tbargs} & Subarea temperatures of soil layers \mbox{[}C\mbox{]}\\
+\hline
+{\em thliqc} & Liquid water content of soil layers under vegetation $[m^3 m^{-3}]$\\
+\hline
+{\em thliqg} & Liquid water content of soil layers in bare areas $[m^3 m^{-3}]$\\
+\hline
+{\em thicec} & Frozen water content of soil layers under vegetation $[m^3 m^{-3}]$\\
+\hline
+{\em thiceg} & Frozen water content of soil layers in bare areas $[m^3 m^{-3}]$\\
+\hline
+{\em hcpc} & Heat capacity of soil layers under vegetation $[J m^{-3} K^{-1}] (C_g)$\\
+\hline
+{\em hcpg} & Heat capacity of soil layers in bare areas $[J m^{-3} K^{1}] (Cg)$\\
+\hline
+{\em tctopc} & Thermal conductivity of soil at top of layer in canopy-\/covered subareas $[W m^{-1} K^{-1}] (\lambda)$\\
+\hline
+{\em tcbotc} & Thermal conductivity of soil at bottom of layer in canopy-\/covered subareas $[W m^{-1} K^{-1}] (\lambda)$\\
+\hline
+{\em tctopg} & Thermal conductivity of soil at top of layer in bare ground subareas $[W m^{-1} K^{-1}] (\lambda)$\\
+\hline
+{\em tcbotg} & Thermal conductivity of soil at bottom of layer in bare ground subareas $[W m^{-1} K^{-1}] (\lambda)$\\
+\hline
+{\em hcpscs} & Heat capacity of snow pack under vegetation canopy $[J m^{-3} K^1] (C_s)$\\
+\hline
+{\em hcpsgs} & Heat capacity of snow pack in bare areas $[J m^{-3} K^{1}] (C_s)$\\
+\hline
+{\em tcsnow} & Thermal conductivity of snow $[W m^{-1} K^{-1}]$\\
+\hline
+{\em tsnogs} & Temperature of snow pack in bare areas \mbox{[}K\mbox{]}\\
+\hline
+{\em tsnocs} & Temperature of snow pack under vegetation canopy \mbox{[}K\mbox{]}\\
+\hline
+{\em wsnocs} & Liquid water content of snow pack under vegetation $[kg m^{-2}]$\\
+\hline
+{\em wsnogs} & Liquid water content of snow pack in bare areas $[kg m^{-2}]$\\
+\hline
+{\em rhoscs} & Density of snow pack under vegetation canopy $[kg m^{-3}]$\\
+\hline
+{\em rhosgs} & Density of snow pack in bare areas $[kg m^{-3}]$\\
+\hline
+{\em tcano} & Temperature of canopy over ground \mbox{[}K\mbox{]}\\
+\hline
+{\em tcans} & Temperature of canopy over snow \mbox{[}K\mbox{]}\\
+\hline
+{\em cevap} & Soil evaporation efficiency coefficient $[ ] (\beta)$\\
+\hline
+{\em tbar1p} & Lumped temperature of ponded water and first soil layer \mbox{[}K\mbox{]}\\
+\hline
+{\em wtable} & Depth of water table in soil $[m] (z_{wt})$\\
+\hline
+{\em zero} & Dummy vector containing all zeros\\
+\hline
+{\em tpondc} & Subarea temperature of surface ponded water \mbox{[}C\mbox{]}\\
+\hline
+{\em tpondg} & Subarea temperature of surface ponded water \mbox{[}C\mbox{]}\\
+\hline
+{\em tpndcs} & Subarea temperature of surface ponded water \mbox{[}C\mbox{]}\\
+\hline
+{\em tpndgs} & Subarea temperature of surface ponded water \mbox{[}C\mbox{]}\\
+\hline
+{\em ievap} & Flag indicating whether soil evaporation is occurring or not\\
+\hline
+{\em evapc} & Evaporation from vegetation over ground $[m s^{-1}]$\\
+\hline
+{\em evapcg} & Evaporation from ground under vegetation $[m s^{-1}]$\\
+\hline
+{\em evapg} & Evaporation from bare ground $[m s^{-1}]$\\
+\hline
+{\em evapcs} & Evaporation from vegetation over snow $[m s^{-1}]$\\
+\hline
+{\em evpcsg} & Evaporation from snow under vegetation $[m s^{-1}]$\\
+\hline
+{\em evapgs} & Evaporation from snow on bare ground $[m s^{-1}]$\\
+\hline
+{\em gsnowc} & Heat flux at top of snow pack under canopy $[W m^{-2}]$\\
+\hline
+{\em gsnowg} & Heat flux at top of snow pack over bare ground $[W m^{-2}]$\\
+\hline
+{\em gzeroc} & Subarea heat flux at soil surface $[W m^{-2}]$\\
+\hline
+{\em gzerog} & Subarea heat flux at soil surface $[W m^{-2}]$\\
+\hline
+{\em gzrocs} & Subarea heat flux at soil surface $[W m^{-2}]$\\
+\hline
+{\em gzrogs} & Subarea heat flux at soil surface $[W m^{-2}]$\\
+\hline
+{\em qmeltc} & Heat to be used for melting snow under canopy $[W m^{-2}]$\\
+\hline
+{\em qmeltg} & Heat to be used for melting snow on bare ground $[W m^{-2}]$\\
+\hline
+{\em evap} & Diagnosed total surface water vapour flux over modelled area $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em qsensc} & Sensible heat flux from vegetation canopy over subarea $[W m^{-2}]$\\
+\hline
+{\em qsensg} & Sensible heat flux from ground over subarea $[W m^{-2}]$\\
+\hline
+{\em qevapc} & Latent heat flux from vegetation canopy over subarea $[W m^{-2}]$\\
+\hline
+{\em qevapg} & Latent heat flux from ground over subarea $[W m^{-2}]$\\
+\hline
+{\em tacco} & Temperature of air within vegetation canopy space over bare ground \mbox{[}K\mbox{]}\\
+\hline
+{\em qacco} & Specific humidity of air within vegetation canopy space over bare ground $[kg kg^{-1}]$\\
+\hline
+{\em taccs} & Temperature of air within vegetation canopy space over snow \mbox{[}K\mbox{]}\\
+\hline
+{\em qaccs} & Specific humidity of air within vegetation canopy space over snow $[kg kg^{-1}]$\\
+\hline
+{\em st} & Diagnosed screen-\/level air temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em su} & Diagnosed anemometer-\/level zonal wind $[m s^{-1}]$\\
+\hline
+{\em sv} & Diagnosed anemometer-\/level meridional wind $[m s^{-1}]$\\
+\hline
+{\em sq} & Diagnosed screen-\/level specific humidity $[kg kg^{-1}]$\\
+\hline
+{\em cdh} & Surface drag coefficient for heat \mbox{[} \mbox{]}\\
+\hline
+{\em cdm} & Surface drag coefficient for momentum \mbox{[} \mbox{]}\\
+\hline
+{\em qsens} & Diagnosed total surface sensible heat flux over modelled area $[W m^{-2}]$\\
+\hline
+{\em qevap} & Diagnosed total surface latent heat flux over modelled area $[W m^{-2}]$\\
+\hline
+{\em qlwavg} & Upwelling longwave radiation over modelled area $[W m^{-2}]$\\
+\hline
+{\em fsgv} & Diagnosed net shortwave radiation on vegetation canopy $[W m^{-2}]$\\
+\hline
+{\em fsgs} & Diagnosed net shortwave radiation at snow surface $[W m^{-2}]$\\
+\hline
+{\em fsgg} & Diagnosed net shortwave radiation at soil surface $[W m^{-2}]$\\
+\hline
+{\em flgv} & Diagnosed net longwave radiation on vegetation canopy $[W m^{-2}]$\\
+\hline
+{\em flgs} & Diagnosed net longwave radiation at snow surface $[W m^{-2}]$\\
+\hline
+{\em flgg} & Diagnosed net longwave radiation at soil surface $[W m^{-2}]$\\
+\hline
+{\em hfsc} & Diagnosed sensible heat flux on vegetation canopy $[W m^{-2}]$\\
+\hline
+{\em hfss} & Diagnosed sensible heat flux at snow surface $[W m^{-2}]$\\
+\hline
+{\em hfsg} & Diagnosed sensible heat flux at soil surface $[W m^{-2}]$\\
+\hline
+{\em hevc} & Diagnosed latent heat flux on vegetation canopy $[W m^{-2}]$\\
+\hline
+{\em hevs} & Diagnosed latent heat flux at snow surface $[W m^{-2}]$\\
+\hline
+{\em hevg} & Diagnosed latent heat flux at soil surface $[W m^{-2}]$\\
+\hline
+{\em hmfc} & Diagnosed energy associated with phase change of water on vegetation $[W m^{-2}]$\\
+\hline
+{\em hmfn} & Diagnosed energy associated with phase change of water in snow pack $[W m^{-2}]$\\
+\hline
+{\em evppot} & Diagnosed potential evapotranspiration $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em acond} & Diagnosed product of drag coefficient and wind speed over modelled area $[m s^{-1}]$\\
+\hline
+{\em drag} & Surface drag coefficient under neutral stability \mbox{[} \mbox{]}\\
+\hline
+{\em ilmo} & Surface drag coefficient under neutral stability \mbox{[} \mbox{]}\\
+\hline
+{\em ue} & Friction velocity of air $[m s^{-1}]$\\
+\hline
+{\em hbl} & Height of the atmospheric boundary layer \mbox{[}m\mbox{]}\\
+\hline
+{\em ilmox} & Inverse of Monin-\/\+Obukhov roughness length over each subarea $[m^{-1}]$\\
+\hline
+{\em uex} & Friction velocity of air over each subarea $[m s^{-1}]$\\
+\hline
+{\em hblx} & Height of the atmospheric boundary layer over each subarea \mbox{[}m\mbox{]}\\
+\hline
+{\em thliq} & Volumetric liquid water content of soil layers $[m^3 m^{-3}] (\theta_l)$\\
+\hline
+{\em thice} & Volumetric frozen water content of soil layers $[m^3 m^{-3}] (\theta_i)$\\
+\hline
+{\em tbar} & Temperature of soil layers \mbox{[}K\mbox{]}\\
+\hline
+{\em zpond} & Depth of ponded water on surface \mbox{[}m\mbox{]}\\
+\hline
+{\em tpond} & Temperature of ponded water \mbox{[}K\mbox{]}\\
+\hline
+{\em ta} & Air temperature at reference height \mbox{[}K\mbox{]}\\
+\hline
+{\em rhosno} & Density of snow $[kg m^{-3}] (\rho_s)$\\
+\hline
+{\em tsnow} & Snowpack temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em zsnow} & Depth of snow pack $[m] (z_s)$\\
+\hline
+{\em wsnow} & Liquid water content of snow pack $[kg m^{-2}] (w_s)$\\
+\hline
+{\em tcan} & Vegetation canopy temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em fc} & Fractional coverage of canopy over bare ground for modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fcs} & Fractional coverage of canopy over snow for modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em thpor} & Pore volume in soil layer $[m^3 m^{-3}] (\theta_p)$\\
+\hline
+{\em thlmin} & Residual soil liquid water content remaining after freezing or evaporation $[m^3 m^{-3}]$\\
+\hline
+{\em thlret} & Liquid water retention capacity for organic soil $[m^3 m^{-3}] (\theta_{ret})$\\
+\hline
+{\em thfc} & Field capacity $[m^3 m^{-3}] (theta_{fc})$\\
+\hline
+{\em hcps} & Heat capacity of soil material $[J m^{-3} K^{-1}] (C_m)$\\
+\hline
+{\em tcs} & Thermal conductivity of soil particles $[W m^{-1} K^{-1}] (\theta_s)$\\
+\hline
+{\em delzw} & Permeable thickness of soil layer $[m] (\Delta z_w)$\\
+\hline
+{\em zbotw} & Depth to permeable bottom of soil layer $[m] (z_{b,w})$\\
+\hline
+{\em delz} & Overall thickness of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em isand} & Sand content flag \\
+\hline
+\end{DoxyParams}
+In the first two loops, various subarea arrays and internal C\+L\+A\+S\+S\+T variables are initialized. The initial temperatures of the vegetation canopy above snow and above bare ground (T\+C\+A\+N\+S and T\+C\+A\+N\+O) are set to the temperature of the vegetation over the whole modelled area (T\+C\+A\+N) if T\+C\+A\+N is not effectively 0 K (the value it is assigned if vegetation is not present). Otherwise, the canopy temperatures are initialized to the air temperature T\+A.
+
+In loop 200 the soil surface evaporation flag I\+E\+V\+A\+P and the evaporation efficiency coefficient C\+E\+V\+A\+P are assigned. If the liquid water content of the first soil layer is effectively equal to the minimum water content T\+H\+L\+M\+I\+N, I\+E\+V\+A\+P and C\+E\+V\+A\+P are set to zero. If the liquid water content of the first soil layer is greater than the field capacity T\+H\+F\+C, I\+E\+V\+A\+P and C\+E\+V\+A\+P are set to unity. Otherwise, I\+E\+V\+A\+P is set to 1 and C\+E\+V\+A\+P (or $\beta$ as it is typically symbolized in the literature) is calculated using a relation presented by Lee and Pielke (1992)\+:
+
+$\beta = 0.25 [1 – cos(\theta_l \pi / \theta_{fc})]^2$
+
+where $\theta_l$ is the liquid water content of the first soil layer and $\theta_{fc}$ is its field capacity.
+
+In loop 300 the volumetric heat capacities Cg of the soil layers under a bare surface (H\+C\+P\+G) and under vegetation (H\+C\+P\+C) are calculated, from their respective liquid and frozen water contents $\theta_l$ and $\theta_i$\+:
+
+$C_g = C_w \theta_l + C_i \theta_i + C_m(1 - \theta_p)$
+
+where $C_m$ is the heat capacity of the soil matter and $\theta_p$ is the pore volume. (The heat capacity of air is neglected.)
+
+In loop 400, the thermal properties of the snow pack under the vegetation canopy and over bare soil are assigned on the basis of the properties of the snow pack over the whole modelled area. The heat capacity of the snow pack Cs is calculated from the volume fractions of snow particles and liquid water in the pack. The former is obtained from the ratio of the densities of the snow pack and ice, and the latter from the ratio of the liquid water content, normalized by the snow depth, and the density of water\+:
+
+$C_s = C_i [\rho_s /\rho_i ] + C_w w_s /[\rho_w z_s]$
+
+The thermal conductivity of snow $\lambda_s$ is obtained from the snow density using an empirical relationship derived by Sturm et al. (1997)\+:
+
+$\lambda_s = 3.233 x 10^{-6} \rho_s^2 – 1.01 x 10^{-3} \rho_s + 0.138 \rho_s \geq 156.0 $ = 0.\+234 x 10$^\wedge$\{-\/3\}  + 0.\+023  $<$ 156.\+0
+
+In loop 500, the thermal conductivities of the soil layers are assigned. If the I\+S\+A\+N\+D flag for the first soil layer is -\/4 (indicating glacier or ice sheet), or if the I\+S\+A\+N\+D flag is -\/3 (indicating rock), then literature values for glacier ice or sand particles respectively are assigned. If the I\+S\+A\+N\+D flag is equal to -\/2, indicating organic soil, the depth of the water table $z_{wt}$ is first calculated. This is taken to lie within the first layer, counting from the bottom of the soil profile, in which the soil water content is larger than the retention capacity $\theta_{ret}$. The water table depth is deduced by assuming that the soil is saturated below the water table, and that the water content is at the retention capacity above it. Thus, if $\theta_l + \theta_i = \theta_p$ for the soil layer, the water table is located at the top of the soil layer; if $\theta_l + \theta_i = \theta_{ret}$, it is located at the permeable bottom of the soil layer; and if $\theta_l + \theta_i$ is between these two values, its location is given by\+:
+
+$z_{wt} = z_{b,w} - \Delta z_w [(\theta_l + \theta_i - \theta_{ret})/(\theta_p - \theta_{ret})]$
+
+where $\Delta z_w$ is the permeable thickness of the soil layer.
+
+The thermal conductivities of organic and mineral soils are calculated following the analysis of Côté and Konrad (2005). They model the soil thermal conductivity $\lambda$ using the concept of a relative thermal conductivity $\lambda_r$ which has a value of 0 for dry soils and 1 at saturation\+:
+
+$\lambda = [ \lambda_{sat} – \lambda_{dry} ] \lambda_r + \lambda_{dry}$
+
+The relative thermal conductivity is obtained from the degree of saturation (the water content divided by the pore volume) $S_r$, using the following generalized relationship\+:
+
+$\lambda_r = \kappa S_r/[1 + (\kappa-1) S_r ]$
+
+The empirical coefficient kappa takes the following values\+:
+
+Unfrozen coarse mineral soils\+: $\kappa = 4.0$ ~\newline
+Frozen coarse mineral soils\+: $\kappa = 1.2$ ~\newline
+Unfrozen fine mineral soils\+: $\kappa = 1.9$ ~\newline
+Frozen fine mineral soils\+: $\kappa = 0.85$ ~\newline
+Unfrozen organic soils\+: $\kappa = 0.6$ ~\newline
+Frozen organic soils\+: $\kappa = 0.25$
+
+The dry thermal conductivity $lambda_{dry}$ is calculated using an empirical relationship based on the pore volume $\theta_p$, with different coefficients for mineral and organic soils\+:
+
+$\lambda_{dry} = 0.75 exp(-2.76 \theta_p) (mineral)$ $\lambda_{dry} = 0.30 exp(-2.0 \theta_p) (organic)$
+
+The saturated thermal conductivity $\lambda_{sat}$ is calculated by Cote and Konrad as a geometric mean of the conductivities of the soil components. However, other researchers (e.\+g. Zhang et al., 2008) have found the linear averaging used by de Vries (1963) to be more generally accurate\+:
+
+$lambda_{sat} = lambda_w \theta_p + \lambda_s (1 - \theta_p) (unfrozen)$ $lambda_{sat} = lambda_i \theta_p + \lambda_s (1 - \theta_p) (frozen)$
+
+where $\lambda_w$ is the thermal conductivity of water, $\lambda_i$ is that of ice and $\lambda_s$ is that of the soil particles.
+
+In the 500 loop, thermal conductivities are calculated for the top and bottom of each soil layer. The degree of saturation S\+A\+T\+R\+A\+T is calculated as the sum of liquid and frozen water contents, $\theta_w$ and $\theta_i$, divided by the pore volume. In organic soils, if the liquid water content of the soil layer is above the retention capacity $\theta_{ret}$, $\theta_w$ at the top of the soil layer is assumed to be equal to $\theta_{re}$ and $S_r$ at the bottom of the layer is assumed to be 1. The relative liquid and frozen water contents, T\+H\+L\+S\+A\+T and T\+H\+I\+S\+A\+T, are calculated from $\theta_w$ and $\theta_i$ normalized by $\theta_w + \theta_i$. The dry thermal conductivity, and the saturated thermal conductivity for unfrozen and frozen conditions, are evaluated using the equations above. The unfrozen and frozen relative thermal conductivity, T\+C\+R\+A\+T\+U and T\+C\+R\+A\+T\+F, are obtained from S\+A\+T\+R\+A\+T and the appropriate values of the empirical coefficient $\kappa$. For mineral soils, $\kappa$ is obtained as a weighted average over the percent sand content (I\+S\+A\+N\+D converted to a real value) and the percentage of fine material (assumed to be 100-\/\+I\+S\+A\+N\+D). The unfrozen and frozen soil thermal conductivities, T\+C\+S\+O\+L\+U and T\+C\+S\+O\+L\+F, are then calculated from T\+C\+R\+A\+T\+U, T\+C\+R\+A\+T\+F, and the dry and saturated thermal conductivities; and the actual thermal conductivity of the soil, T\+C\+S\+O\+I\+L, is determined as the average of T\+C\+S\+O\+L\+U and T\+C\+S\+O\+L\+F, weighted according to the relative liquid and frozen water contents T\+H\+L\+S\+A\+T and T\+H\+I\+S\+A\+T. If the permeable thickness of the layer, D\+E\+L\+Z\+W, is greater than zero, the thermal conductivity at the top of the layer is set to T\+C\+S\+O\+I\+L; otherwise it is set to the rock value, T\+C\+S\+A\+N\+D. If D\+E\+L\+Z\+W is less than the thermal thickness of the layer D\+E\+L\+Z, the thermal conductivity at the bottom of the layer is set to T\+C\+S\+A\+N\+D; otherwise it is set to T\+C\+S\+O\+I\+L. (In the case of organic soils in the latter branch, if $\theta_w$ was greater than $\theta_{ret}$, the thermal conductivity at the bottom of the layer is set to the average of the saturated unfrozen and frozen values, weighted by T\+H\+L\+S\+A\+T and T\+H\+I\+S\+A\+T.) Finally, if there is ponded water present on the soil surface, the thermal conductivity at the top of the first soil layer is treated as varying linearly from the calculated soil thermal conductivity if the pond depth Z\+P\+O\+N\+D is zero, to the thermal conductivity of water if Z\+P\+O\+N\+D $\geq 10^{-2} m$.
+
+Finally, in loop 600, a variable T\+B\+A\+R1\+P is evaluated, representing the weighted average value of the first layer soil temperature and the ponded water, if any. (The heat capacity of the soil is determined as the weighted average of H\+C\+P\+G over the permeable thickness D\+E\+L\+Z\+W, and the heat capacity of rock, H\+C\+P\+S\+N\+D, over the impermeable thickness, D\+E\+L\+Z-\/\+D\+E\+L\+Z\+W.)

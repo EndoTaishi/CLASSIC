@@ -1,4 +1,10 @@
-
+!>\file
+!!               Canadian Terrestrial Ecosystem Model (CTEM)
+!!                          Carbon Balance Subroutine
+!!
+!!unless mentioned all pools are in kg c/m2
+!!unless mentioned all fluxes are in units of u-mol co2/m2.sec
+!!
        subroutine  balcar (gleafmas, stemmass, rootmass, bleafmas,      
      1                     litrmass, soilcmas, ntchlveg, ntchsveg,
      2                     ntchrveg, tltrleaf, tltrstem, tltrroot,
@@ -14,9 +20,6 @@
      c                          il1,      il2)    
 c     -----------------------------------------------------------------      
 c
-c               Canadian Terrestrial Ecosystem Model (CTEM)
-C                          Carbon Balance Subroutine
-c
 c     22  Nov 2012  - calling this version 1.1 since a fair bit of ctem
 c     V. Arora        subroutines were changed for compatibility with class
 c                     version 3.6 including the capability to run ctem in
@@ -29,91 +32,17 @@ c     27  May 2003  - this subroutine checks if the various c fluxes
 c     V. Arora        between the different pools balance properly to
 c                     make sure that conservation of mass is achieved 
 c                     with in a specified tolerance.
+c
 c     inputs 
-c
-c                 unless mentioned all pools are in kg c/m2
-c
-c                 pools (after being updated)
-c
-c     stemmass  - stem mass for each of the 9 ctem pfts
-c     rootmass  - root mass for each of the 9 ctem pfts
-c     gleafmas  - green leaf mass for each of the 9 ctem pfts
-c     bleafmas  - brown leaf mass for each of the 9 ctem pfts
-c     litrmass  - litter mass over the 9 pfts and the bare fraction
-c                 of the grid cell
-c     soilcmas  - soil carbon mass over the 9 pfts and the bare fraction
-c                 of the grid cell
-c     repro_cost - amount of C transferred to litter due to reproductive tissues
-c
-c                 grid averaged pools
-c     vgbiomas  - vegetation biomass
-c     gavgltms  - litter mass
-c     gavgscms  - soil carbon mass
-c
-c                 pools (before being updated)
-
-c                 variable explanation same as above.
-c     pglfmass  - previous green leaf mass
-c     pblfmass  - previous brown leaf mass
-c     pstemass  - previous stem mass
-c     protmass  - previous root mass
-c     plitmass  - previous litter mass
-c     psocmass  - previous soil c mass
-c       
-c                 grid average pools
-c     pvgbioms  - previous vegetation biomass
-c     pgavltms  - previous litter mass
-c     pgavscms  - previous soil c mass
-c                 
-c                 unless mentioned all fluxes are in units of 
-c                 u-mol co2/m2.sec
-c
-c                 fluxes for each pft
-c
-c     ntchlveg  - net change in leaf biomass
-c     ntchsveg  - net change in stem biomass
-c     ntchrveg  - net change in root biomass
-c                 the net change is the difference between allocation
-c                 and autotrophic respiratory fluxes 
-c
-c     tltrleaf  - total leaf litter falling rate
-c     tltrstem  - total stem litter falling rate
-c     tltrroot  - total root litter falling rate
-c 
-c                 carbon emission losses mainly due to fire 
-c     glcaemls  - green leaf carbon emission losses 
-c     blcaemls  - brown leaf carbon emission losses 
-c     stcaemls  - stem carbon emission losses 
-c     rtcaemls  - root carbon emission losses 
-c     ltrcemls  - litter carbon emission losses
-c
-c     ltresveg  - litter respiration for each pft + bare fraction 
-c     scresveg  - soil c respiration for each pft + bare fraction
-c     humtrsvg  - humification for each pft + bare fraction
-c
 c                 grid averaged fluxes
 c
-c     npp       - net primary productivity 
-c     autores   - autotrophic respiration
-c     hetrores  - heterotrophic respiration
-c     gpp       - gross primary productivity
-c     nep       - net primary productivity     
-c     litres    - litter respiration
-c     socres    - soil carbon respiration
-c     dstcemls  - carbon emission losses due to disturbance, mainly fire
-c     galtcels  - carbon emission losses from litter
 c     expnbaln  - amount of c related to spatial expansion
-c     repro_cost_g - amount of C used to generate reproductive tissues
-c     nbp       - net biome productivity
-c     litrfall  - combined (leaves, stem, and root) total litter fall rate   
-c     humiftrs  - humification
 c
 c                 other variables
-c 
+c
 c     deltat    - ctem's time step
 c     icc       - no. of ctem plant function types, currently 8
 c     ilg       - no. of grid cells in latitude circle
-c     il1,il2   - il1=1, il2=ilg
 c     fcancmx   - max. fractional coverage of ctem's 9 pfts, but this can be
 c                modified by land-use change, and competition between pfts
 
@@ -121,38 +50,73 @@ c                modified by land-use change, and competition between pfts
 c
       implicit none
 c
-      integer il1, il2, i, j, k
+      integer il1 !<other variables: il1=1
+      integer il2 !<other variables: il2=ilg
+      integer i, j, k
 c
-      real stemmass(ilg,icc),   rootmass(ilg,icc),   gleafmas(ilg,icc),    
-     1     bleafmas(ilg,icc), litrmass(ilg,icc+1), soilcmas(ilg,icc+1), 
-     2     ntchlveg(ilg,icc),   ntchsveg(ilg,icc),   ntchrveg(ilg,icc),
-     3     tltrleaf(ilg,icc),   tltrstem(ilg,icc),   tltrroot(ilg,icc),
-     4     glcaemls(ilg,icc),   blcaemls(ilg,icc),   stcaemls(ilg,icc),
-     5     rtcaemls(ilg,icc),   ltrcemls(ilg,icc), ltresveg(ilg,icc+1),
-     6   scresveg(ilg,icc+1), humtrsvg(ilg,icc+1),   pglfmass(ilg,icc),
-     7     pblfmass(ilg,icc),   pstemass(ilg,icc),   protmass(ilg,icc),
-     8   plitmass(ilg,icc+1), psocmass(ilg,icc+1),            npp(ilg),
-     9         vgbiomas(ilg),       pvgbioms(ilg),       gavgltms(ilg),
-     a         pgavltms(ilg),       gavgscms(ilg),       pgavscms(ilg),
-     9          autores(ilg),       hetrores(ilg),            gpp(ilg),
-     a              nep(ilg),         litres(ilg),         socres(ilg),
-     b         dstcemls(ilg),            nbp(ilg),       litrfall(ilg),
-     c         humiftrs(ilg),       repro_cost(ilg,icc),          
+      real stemmass(ilg,icc)  !<pools (after being updated): stem mass for each of the 9 ctem pfts
+      real rootmass(ilg,icc)  !<pools (after being updated): root mass for each of the 9 ctem pfts
+      real gleafmas(ilg,icc)  !<pools (after being updated): green leaf mass for each of the 9 ctem pfts
+      real bleafmas(ilg,icc)  !<pools (after being updated): brown leaf mass for each of the 9 ctem pfts
+      real litrmass(ilg,icc+1)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell
+      real soilcmas(ilg,icc+1)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell
+      real ntchlveg(ilg,icc)  !<fluxes for each pft: net change in leaf biomass
+      real ntchsveg(ilg,icc)  !<fluxes for each pft: net change in stem biomass
+      real ntchrveg(ilg,icc)  !<fluxes for each pft: net change in root biomass the net change is the difference
+                              !<between allocation and autotrophic respiratory fluxes 
+      real tltrleaf(ilg,icc)  !<fluxes for each pft: total leaf litter falling rate
+      real tltrstem(ilg,icc)  !<fluxes for each pft: total stem litter falling rate
+      real tltrroot(ilg,icc)  !<fluxes for each pft: total root litter falling rate
+      real glcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: green leaf carbon emission losses 
+      real blcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: brown leaf carbon emission losses 
+      real stcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: stem carbon emission losses 
+      real rtcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: root carbon emission losses 
+      real ltrcemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: litter carbon emission losses
+      real ltresveg(ilg,icc+1)!<fluxes for each pft: litter respiration for each pft + bare fraction 
+      real scresveg(ilg,icc+1)!<fluxes for each pft: soil c respiration for each pft + bare fraction
+      real humtrsvg(ilg,icc+1)!<fluxes for each pft: humification for each pft + bare fraction
+      real pglfmass(ilg,icc)  !<pools (before being updated): previous green leaf mass
+      real pblfmass(ilg,icc)  !<pools (before being updated): previous brown leaf mass
+      real pstemass(ilg,icc)  !<pools (before being updated): previous stem mass
+      real protmass(ilg,icc)  !<pools (before being updated): previous root mass
+      real plitmass(ilg,icc+1)!<pools (before being updated): previous litter mass
+      real psocmass(ilg,icc+1)!<pools (before being updated): previous soil c mass
+      real npp(ilg)           !<grid averaged flux: net primary productivity 
+      real vgbiomas(ilg)      !<pools (after being updated): grid averaged pools: vegetation biomass
+      real pvgbioms(ilg)      !<pools (before being updated): grid average pools: previous vegetation biomass
+      real gavgltms(ilg)      !<pools (after being updated): grid averaged pools: litter mass
+      real pgavltms(ilg)      !<pools (before being updated): grid average pools: previous litter mass
+      real gavgscms(ilg)      !<pools (after being updated): grid averaged pools: soil carbon mass
+      real pgavscms(ilg)      !<pools (before being updated): grid average pools: previous soil c mass
+      real autores(ilg)       !<grid averaged flux: autotrophic respiration
+      real hetrores(ilg)      !<grid averaged flux: heterotrophic respiration
+      real gpp(ilg)           !<grid averaged flux: gross primary productivity
+      real nep(ilg)           !<grid averaged flux: net primary productivity 
+      real litres(ilg)        !<grid averaged flux: litter respiration
+      real socres(ilg)        !<grid averaged flux: soil carbon respiration
+      real dstcemls(ilg)      !<grid averaged flux: carbon emission losses due to disturbance, mainly fire
+      real nbp(ilg)           !<grid averaged flux: net biome productivity
+      real litrfall(ilg)      !<grid averaged flux: combined (leaves, stem, and root) total litter fall rate
+      real humiftrs(ilg)      !<grid averaged flux: humification
+      real repro_cost(ilg,icc)!<pools (after being updated): amount of C transferred to litter due to reproductive tissues
+          
 !     d         galtcels(ilg),       expnbaln(ilg),   
-     d         galtcels(ilg),    repro_cost_g(ilg)
+
+      real galtcels(ilg)      !<grid averaged flux: carbon emission losses from litter
+      real repro_cost_g(ilg)  !<grid averaged flux: amount of C used to generate reproductive tissues
 c
-      real             diff1,               diff2
+      real diff1  !<
+      real diff2  !<
 c
 c
 c     -----------------------------------------------------------------  
 c
       if(icc.ne.9)                            call xit('balcar',-1)
-c
-c     to check c budget we go through each pool for each vegetation
-c     type.
-c
-c     green and brown leaves
-c
+!>
+!!to check c budget we go through each pool for each vegetation type.
+!!
+!!green and brown leaves
+!!
       do 100 j = 1, icc
         do 110 i = il1, il2
           diff1=(gleafmas(i,j)+bleafmas(i,j)- pglfmass(i,j)-
@@ -168,9 +132,9 @@ c
 c         endif
 110     continue
 100   continue     
-c
-c     stem
-c
+!>
+!!stem
+!!
       do 150 j = 1, icc
         do 160 i = il1, il2
           diff1=stemmass(i,j) - pstemass(i,j)
@@ -185,9 +149,9 @@ c
 c         endif
 160     continue
 150   continue    
-c
-c     root
-c
+!>
+!!root
+!!
       do 200 j = 1, icc
         do 210 i = il1, il2
           diff1=rootmass(i,j) - protmass(i,j)
@@ -202,9 +166,9 @@ c
 c         endif
 210     continue
 200   continue    
-c
-c     litter over all pfts
-c
+!>
+!!litter over all pfts
+!!
       do 250 j = 1, icc
         do 260 i = il1, il2
           diff1=litrmass(i,j) - plitmass(i,j)
@@ -220,9 +184,9 @@ c
 c         endif
 260     continue
 250   continue    
-c
-c     litter over the bare fraction
-c
+!>
+!!litter over the bare fraction
+!!
         do 280 i = il1, il2
           diff1=litrmass(i,icc+1) - plitmass(i,icc+1)
           diff2=( -ltresveg(i,icc+1)-humtrsvg(i,icc+1))*
@@ -232,10 +196,9 @@ c
             call xit('balcar',-6)
           endif
 280     continue
-c
-c
-c     soil carbon over the bare fraction
-c
+!>
+!!soil carbon over the bare fraction
+!!
       do 300 j = 1, icc+1
         do 310 i = il1, il2
           diff1=soilcmas(i,j) - psocmass(i,j)
@@ -250,11 +213,11 @@ c
 300   continue   
 c
 c     -----------------------------------------------------------------
-c
-c     grid averaged fluxes must also balance
-c
-c     vegetation biomass
-c
+!>
+!!grid averaged fluxes must also balance
+!!
+!!vegetation biomass
+!!
       do 350 i = il1, il2
         diff1=vgbiomas(i)-pvgbioms(i)
         diff2=(gpp(i)-autores(i)-litrfall(i)-
@@ -274,9 +237,9 @@ c
           call xit('balcar',-8)
         endif
 350   continue
-c
-c     litter
-c
+!>
+!!litter
+!!
       do 380 i = il1, il2
         diff1=gavgltms(i)-pgavltms(i)
         diff2=(litrfall(i)-litres(i)-humiftrs(i)-galtcels(i)
@@ -296,9 +259,9 @@ c
           call xit('balcar',-9)
         endif
 380   continue
-c
-c     soil carbon
-c
+!>
+!!soil carbon
+!!
       do 390 i = il1, il2
         diff1=gavgscms(i)-pgavscms(i)
         diff2=(humiftrs(i)-socres(i))*(deltat/963.62)

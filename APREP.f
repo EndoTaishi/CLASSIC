@@ -1,13 +1,12 @@
-C>\file
-!>
+!>\file
 !!Purpose: Calculate various land surface parameters.
 !!
 
 !>
 !!This subroutine is hard-coded to handle the standard four vegetation categories recognized by CLASS
 !!(needleleaf trees, broadleaf trees, crops and grass), so a call to abort is performed if the number of
-!!vegetation classes, IC, is not equal to 4. A set of diagnostic and accumulator arrays is then initialized to
-!!zero, and the liquid water suction in the soil is set to an arbitrarily high value.
+!!vegetation classes, IC, is not equal to 4. A set of diagnostic and accumulator arrays is then initialized 
+!!to zero, and the liquid water suction in the soil is set to an arbitrarily high value.
 !!
       SUBROUTINE APREP(FC,FG,FCS,FGS,PAICAN,PAICNS,FSVF,FSVFS, 
      1            FRAINC,FSNOWC,FRAICS,FSNOCS,RAICAN,RAICNS,SNOCAN,
@@ -151,28 +150,28 @@ C
 C                                                                                 
 C     * OUTPUT ARRAYS USED ELSEWHERE IN CLASS.                                    
 C                                                                                 
-      REAL FC    (ILG) !<Subarea fractional coverage of modelled area [ ] (X)   
-      REAL FG    (ILG) !<Subarea fractional coverage of modelled area [ ] (X)
-      REAL FCS   (ILG) !<Subarea fractional coverage of modelled area [ ] (X)
-      REAL FGS   (ILG) !<Subarea fractional coverage of modelled area [ ] (X)  
+      REAL FC    (ILG) !<Subarea fractional coverage of modelled area (X) [ ]
+      REAL FG    (ILG) !<Subarea fractional coverage of modelled area (X) [ ]
+      REAL FCS   (ILG) !<Subarea fractional coverage of modelled area (X) [ ]
+      REAL FGS   (ILG) !<Subarea fractional coverage of modelled area (X) [ ]
     
-      REAL PAICAN(ILG) !<Plant area index of canopy over bare ground [ ] (Λ p )
-      REAL PAICNS(ILG) !<Plant area index of canopy over snow [ ] (Λ p )
+      REAL PAICAN(ILG) !<Plant area index of canopy over bare ground (\f$\Lambda_p\f$) [ ]
+      REAL PAICNS(ILG) !<Plant area index of canopy over snow (\f$\Lambda_p\f$) [ ]
 
-      REAL FSVF  (ILG) !<Sky view factor for bare ground under canopy [ ] (χ)
-      REAL FSVFS (ILG) !<Sky view factor for snow under canopy [ ] (χ)
+      REAL FSVF  (ILG) !<Sky view factor for bare ground under canopy (\f$\chi\f$) [ ]
+      REAL FSVFS (ILG) !<Sky view factor for snow under canopy (\f$\chi\f$) [ ]
       REAL FRAINC(ILG) !<Fractional coverage of canopy by liquid water over snow-free subarea [ ]
       REAL FSNOWC(ILG) !<Fractional coverage of canopy by frozen water over snow-free subarea [ ]
       REAL FRAICS(ILG) !<Fractional coverage of canopy by liquid water over snow-covered subarea [ ]
       REAL FSNOCS(ILG) !<Fractional coverage of canopy by frozen water over snow-covered subarea [ ]
 
-      REAL RAICAN(ILG) !<Intercepted liquid water stored on canopy over bare ground [kg m -2 ] (W l )
-      REAL RAICNS(ILG) !<Intercepted liquid water stored on canopy over snow [kg m -2 ] (W l )
-      REAL SNOCAN(ILG) !<Intercepted frozen water stored on canopy over bare soil [kg m -2 ] (W f )
-      REAL SNOCNS(ILG) !<Intercepted frozen water stored on canopy over snow [kg m -2 ] (W f )
+      REAL RAICAN(ILG) !<Intercepted liquid water stored on canopy over bare ground (\f$W_l\f$) [\f$kg m^{-2}\f$] 
+      REAL RAICNS(ILG) !<Intercepted liquid water stored on canopy over snow (\f$W_l\f$) [\f$kg m^{-2}\f$]
+      REAL SNOCAN(ILG) !<Intercepted frozen water stored on canopy over bare soil (\f$W_f\f$) [\f$kg m^{-2}\f$]
+      REAL SNOCNS(ILG) !<Intercepted frozen water stored on canopy over snow (\f$W_f\f$) [\f$kg m^{-2}\f$]
 
-      REAL DISP  (ILG) !<Displacement height of vegetation over bare ground [m] (d)
-      REAL DISPS (ILG) !<Displacement height of vegetation over snow [m] (d)
+      REAL DISP  (ILG) !<Displacement height of vegetation over bare ground (d) [m]
+      REAL DISPS (ILG) !<Displacement height of vegetation over snow (d) [m]
 
       REAL ZOMLNC(ILG) !<Logarithm of roughness length for momentum of vegetation over bare ground [ ]
       REAL ZOMLCS(ILG) !<Logarithm of roughness length for momentum of vegetation over snow [ ]
@@ -182,15 +181,15 @@ C
       REAL ZOMLNS(ILG) !<Logarithm of roughness length for momentum of snow [ ]
       REAL ZOELNG(ILG) !<Logarithm of roughness length for heat of bare ground [ ]
       REAL ZOELNS(ILG) !<Logarithm of roughness length for heat of snow [ ]
-      REAL RBCOEF(ILG) !<Parameter for calculation of leaf boundary resistance (C rb )
-      REAL CHCAP (ILG) !<Heat capacity of canopy over bare ground [J m -2 K -1 ]
-      REAL CHCAPS(ILG) !<Heat capacity of canopy over snow [J m -2 K -1 ]
-      REAL CMASSC(ILG) !<Mass of canopy over bare ground [kg m -2 ]
-      REAL CMASCS(ILG) !<Mass of canopy over snow [kg m -2 ]
-      REAL CWLCAP(ILG) !<Storage capacity of canopy over bare ground for liquid water [kg m -2 ] (W l,max )
-      REAL CWFCAP(ILG) !<Storage capacity of canopy over bare ground for frozen water [kg m -2 ] (W f,max )
-      REAL CWLCPS(ILG) !<Storage capacity of canopy over snow for liquid water [kg m -2 ] (W l,max )
-      REAL CWFCPS(ILG) !<Storage capacity of canopy over snow for frozen water [kg m -2 ] (W f,max )
+      REAL RBCOEF(ILG) !<Parameter for calculation of leaf boundary resistance (\f$C_{rb}\f$)
+      REAL CHCAP (ILG) !<Heat capacity of canopy over bare ground [\f$J m^{-2} K^{-1}\f$]
+      REAL CHCAPS(ILG) !<Heat capacity of canopy over snow [\f$J m^{-2} K^{-1}\f$]
+      REAL CMASSC(ILG) !<Mass of canopy over bare ground [\f$kg m^{-2}\f$]
+      REAL CMASCS(ILG) !<Mass of canopy over snow [\f$kg m^{-2}\f$]
+      REAL CWLCAP(ILG) !<Storage capacity of canopy over bare ground for liquid water (\f$W_{l,max}\f$) [\f$kg m^{-2}\f$]
+      REAL CWFCAP(ILG) !<Storage capacity of canopy over bare ground for frozen water (\f$W_{f,max}\f$) [\f$kg m^{-2}\f$]
+      REAL CWLCPS(ILG) !<Storage capacity of canopy over snow for liquid water (\f$W_{l,max}\f$) [\f$kg m^{-2}\f$]
+      REAL CWFCPS(ILG) !<Storage capacity of canopy over snow for frozen water (\f$W_{f,max}\f$) [\f$kg m^{-2}\f$]
 
       REAL ZPLIMC(ILG) !<Maximum water ponding depth for ground under canopy [m]
       REAL ZPLIMG(ILG) !<Maximum water ponding depth for bare ground [m]
@@ -198,19 +197,18 @@ C
       REAL ZPLMGS(ILG) !<Maximum water ponding depth for ground under snow [m]
 
       REAL HTCC  (ILG) !<Diagnosed internal energy change of vegetation canopy
-                       !! due to conduction and/or change in mass [W m -2 ]
+                       !!due to conduction and/or change in mass [\f$W m^{-2}\f$]
       REAL HTCS  (ILG) !<Diagnosed internal energy change of snow pack
-                       !! due to conduction and/or change in mass [W m -2 ]
-      REAL WTRC  (ILG) !<Diagnosed residual water transferred off the vegetation canopy [kg m -2 s -1 ]
-      REAL WTRS  (ILG) !<Diagnosed residual water transferred into or out of the snow pack [kg m -2 s -1 ]
-      REAL WTRG  (ILG) !<Diagnosed residual water transferred into or out of the soil [kg m -2 s -1 ]
-      REAL CMAI  (ILG) !<Aggregated mass of vegetation canopy [kg m -2 ]
+                       !!due to conduction and/or change in mass [\f$W m^{-2}\f$]
+      REAL WTRC  (ILG) !<Diagnosed residual water transferred off the vegetation canopy [\f$kg m^{-2} s^{-1}\f$]
+      REAL WTRS  (ILG) !<Diagnosed residual water transferred into or out of the snow pack [\f$kg m^{-2} s^{-1}\f$]
+      REAL WTRG  (ILG) !<Diagnosed residual water transferred into or out of the soil [\f$kg m^{-2} s^{-1}\f$]
+      REAL CMAI  (ILG) !<Aggregated mass of vegetation canopy [\f$kg m^{-2}\f$]
 
-C                                                                                 
       REAL FROOT (ILG,IG) !<Fraction of total transpiration contributed by soil layer [ ]
       REAL FROOTS(ILG,IG) !<
       REAL HTC   (ILG,IG) !<Diagnosed internal energy change of soil layer
-                          !! due to conduction and/or change in mass [W m -2 ]
+                          !!due to conduction and/or change in mass [\f$W m^{-2}\f$]
 
 C                                                                                 
 C     * OUTPUT ARRAYS ONLY USED ELSEWHERE IN CLASSA.                              
@@ -218,48 +216,46 @@ C
       REAL PAI   (ILG,IC) !<Plant area index of vegetation category over bare ground [ ]
       REAL PAIS  (ILG,IC) !<Plant area index of vegetation category over snow [ ]
       REAL AIL   (ILG,IC) !<Leaf area index of vegetation category over bare ground [ ]
-      REAL FCAN  (ILG,IC) !<Fractional coverage of vegetation category over bare ground[ ] (X i )
-      REAL FCANS (ILG,IC) !<Fractional coverage of vegetation category over snow [ ] (X i )
-      REAL PSIGND(ILG) !<Minimum liquid moisture suction in soil layers [m]
+      REAL FCAN  (ILG,IC) !<Fractional coverage of vegetation category over bare ground (\f$X_i\f$) [ ]
+      REAL FCANS (ILG,IC) !<Fractional coverage of vegetation category over snow (\f$X_i\f$) [ ]
+      REAL PSIGND(ILG)    !<Minimum liquid moisture suction in soil layers [m]
 
 C                                                                                 
 C     * INPUT ARRAYS.                                      
 C                                                                                 
       REAL FCANMX(ILG,ICP1) !<Maximum fractional coverage of modelled area by vegetation category [ ]
       REAL ZOLN  (ILG,ICP1) !<Natural logarithm of maximum roughness length of vegetation category [ ]
-      REAL PAIMAX(ILG,IC) !<Maximum plant area index of vegetation category [ ]
-      REAL PAIMIN(ILG,IC) !<Minimum plant area index of vegetation category [ ]
-      REAL CWGTMX(ILG,IC) !<Maximum canopy mass for vegetation category [kg m -2 ]
-      REAL ZRTMAX(ILG,IC) !<Maximum rooting depth of vegetation category [m]
-      REAL PAIDAT(ILG,IC) !<Optional user-specified value of plant area indices of
-                          !! vegetation categories to override CLASS-calculated values [ ]
-      REAL HGTDAT(ILG,IC) !<Optional user-specified values of height of
-                          !! vegetation categories to override CLASS-calculated values [m]
-      REAL THLIQ (ILG,IG) !<Volumetric liquid water content of soil layers [m 3 m -3 ] (θ l )
-      REAL THICE (ILG,IG) !<Frozen water content of soil layers under vegetation [m 3 m -3 ] 
-      REAL TBAR  (ILG,IG) !<Temperature of soil layers [K]
+      REAL PAIMAX(ILG,IC)   !<Maximum plant area index of vegetation category [ ]
+      REAL PAIMIN(ILG,IC)   !<Minimum plant area index of vegetation category [ ]
+      REAL CWGTMX(ILG,IC)   !<Maximum canopy mass for vegetation category [\f$kg m^{-2}\f$]
+      REAL ZRTMAX(ILG,IC)   !<Maximum rooting depth of vegetation category [m]
+      REAL PAIDAT(ILG,IC)   !<Optional user-specified value of plant area indices of
+                            !!vegetation categories to override CLASS-calculated values [ ]
+      REAL HGTDAT(ILG,IC)   !<Optional user-specified values of height of
+                            !!vegetation categories to override CLASS-calculated values [m]
+      REAL THLIQ (ILG,IG)   !<Volumetric liquid water content of soil layers (\f$\theta\f$ l) [\f$m^3 m^{-3}\f$]
+      REAL THICE (ILG,IG)   !<Frozen water content of soil layers under vegetation [\f$m^3 m^{-3}\f$]
+      REAL TBAR  (ILG,IG)   !<Temperature of soil layers [K]
 
-C                                                                                 
-
-      REAL RCAN  (ILG) !<Intercepted liquid water stored on canopy [kg m -2 ] (W l )
-      REAL SNCAN (ILG) !<Intercepted frozen water stored on canopy [kg m -2 ] (W f )
+      REAL RCAN  (ILG) !<Intercepted liquid water stored on canopy (\f$W_l\f$) [\f$kg m^{-2}\f$]
+      REAL SNCAN (ILG) !<Intercepted frozen water stored on canopy (\f$W_f\f$) [\f$kg m^{-2}\f$]
       REAL TCAN  (ILG) !<Vegetation canopy temperature [K]
       REAL GROWTH(ILG) !<Vegetation growth index [ ]
-      REAL ZSNOW (ILG) !<Depth of snow pack [m] (z s )
+      REAL ZSNOW (ILG) !<Depth of snow pack (\f$z_s\f$) [m]
       REAL TSNOW (ILG) !<Snowpack temperature [K]
       REAL FSNOW (ILG) !<Diagnosed fractional snow coverage [ ]
-      REAL RHOSNO(ILG) !<Density of snow [kg m -3 ] (ρ s )
-      REAL SNO   (ILG) !<Mass of snow pack [kg m -2 ] (W s )
+      REAL RHOSNO(ILG) !<Density of snow (\f$ s\f$) [\f$kg m^{-3}\f$]
+      REAL SNO   (ILG) !<Mass of snow pack (\f$W_s\f$) [\f$kg m^{-2}\f$]
       REAL TA    (ILG) !<Air temperature at reference height [K]
-      REAL RHOAIR(ILG) !<Density of air [kg m -3 ]
+      REAL RHOAIR(ILG) !<Density of air [\f$kg m^{-3}\f$]
       REAL DLON  (ILG) !<Longitude of grid cell (east of Greenwich) [degrees]
       REAL Z0ORO (ILG) !<Orographic roughness length [m]
-      REAL ZBLEND(ILG) !<Atmospheric blending height for surface roughness length averaging [m] (z b )
-      REAL RHOSNI(ILG) !<Density of fresh snow [kg m -3 ] (ρ s,f )
+      REAL ZBLEND(ILG) !<Atmospheric blending height for surface roughness length averaging (\f$z_b\f$) [m]
+      REAL RHOSNI(ILG) !<Density of fresh snow (\f$\rho\f$ s,f) [\f$kg m^{-3}\f$]
       REAL ZPLMG0(ILG) !<Maximum water ponding depth for snow-free subareas
-                       !! (user-specified when running MESH code) [m]
+                       !!(user-specified when running MESH code) [m]
       REAL ZPLMS0(ILG) !<Maximum water ponding depth for snow-covered subareas
-                       !! (user-specified when running MESH code) [m]
+                       !!(user-specified when running MESH code) [m]
       REAL RADJ  (ILG) !<Latitude of grid cell (positive north of equator) [rad]
 
 C
@@ -267,12 +263,12 @@ C     * SOIL PROPERTY ARRAYS.
 C                                                                                 
       REAL DELZW (ILG,IG) !<Permeable thickness of soil layer [m]
       REAL ZBOTW (ILG,IG) !<Depth to permeable bottom of soil layer [m]
-      REAL THPOR (ILG,IG) !<Pore volume in soil layer [m 3 m -3 ] (θ p )
-      REAL THLMIN(ILG,IG) !<Residual soil liquid water content remaining after freezing or evaporation [m 3 m -3 ]
-      REAL PSISAT(ILG,IG) !<Soil moisture suction at saturation [m] (ψ sat )
-      REAL BI    (ILG,IG) !<Clapp and Hornberger empirical “b” parameter [ ]
-      REAL PSIWLT(ILG,IG) !<Soil moisture suction at wilting point [m] (ψ w )
-      REAL HCPS  (ILG,IG) !<Volumetric heat capacity of soil particles [J m -3 ]
+      REAL THPOR (ILG,IG) !<Pore volume in soil layer (\f$\theta\f$ p) [\f$m^3 m^{-3}\f$]
+      REAL THLMIN(ILG,IG) !<Residual soil liquid water content remaining after freezing or evaporation [\f$m^3 m^{-3}\f$]
+      REAL PSISAT(ILG,IG) !<Soil moisture suction at saturation (\f$\Psi\f$ sat) [m]
+      REAL BI    (ILG,IG) !<Clapp and Hornberger empirical "b" parameter [ ]
+      REAL PSIWLT(ILG,IG) !<Soil moisture suction at wilting point (\f$\Psi\f$ w) [m]
+      REAL HCPS  (ILG,IG) !<Volumetric heat capacity of soil particles [\f$J m^{-3}\f$]
 
 C                                                                                 
       INTEGER ISAND (ILG,IG) !<Sand content flag
@@ -282,10 +278,10 @@ C     * OTHER DATA ARRAYS WITH NON-VARYING VALUES.
 C                                                                                 
 
       REAL GROWYR(18,4,2) !<
-      REAL DELZ  (IG) !<Soil layer thickness [m]
-      REAL ZORAT (4) !<
-      REAL CANEXT(4) !<
-      REAL XLEAF (4) !<
+      REAL DELZ  (IG)     !<Soil layer thickness [m]
+      REAL ZORAT (4)      !<
+      REAL CANEXT(4)      !<
+      REAL XLEAF (4)      !<
 C                                                                                 
 C     * WORK ARRAYS NOT USED ELSEWHERE IN CLASSA.                          
 C                                                                                 
@@ -303,11 +299,11 @@ C     * CTEM-RELATED FIELDS.
 C
       REAL  AILC (ILG,IC)
       REAL  PAIC   (ILG,IC)
-      REAL  AILCG(ILG,ICTEM) !<GREEN LAI FOR USE WITH PHTSYN SUBROUTINE
+      REAL  AILCG(ILG,ICTEM)   !<GREEN LAI FOR USE WITH PHTSYN SUBROUTINE
       REAL  AILCGS (ILG,ICTEM) !<GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
       REAL  RMATC(ILG,IC,IG)
       REAL  FCANCMX(ILG,ICTEM)  
-      REAL  FCANC(ILG,ICTEM) !<FRACTION OF CANOPY OVER GROUND FOR CTEM's 9 PFTs
+      REAL  FCANC(ILG,ICTEM)   !<FRACTION OF CANOPY OVER GROUND FOR CTEM's 9 PFTs
       REAL  FCANCS (ILG,ICTEM) !<FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
       REAL  ZOLNC(ILG,IC)
       REAL  CMASVEGC(ILG,IC)
@@ -387,7 +383,7 @@ C
         !!areas classified as agricultural are constantly under cultivation, so all four values are set to zero.)
         !!
         !!First, the latitude of the modelled area is converted from a value in radians to a value from 1 to 18, IN,
-        !!corresponding to the index of the latitude circle (1 for latitudes 80-90 o S, 18 for latitudes 80-90 o N). Then
+        !!corresponding to the index of the latitude circle (1 for latitudes \f$80-90^o S\f$, 18 for latitudes \f$80-90^o N\f$). Then
         !!the hemisphere index, NL, is set to 1 for the Eastern Hemisphere, and 2 for the Western Hemisphere. If
         !!the planting date for the modelled area is zero (indicating a location in the tropics), GROWA is set to 1.
         !!Otherwise, GROWA is set to 1 if the day of the year lies between the maturity date and the start of the
@@ -454,29 +450,7 @@ C
       !!grasses is set to 1 all year round.
       !!
       DO 150 I=IL1,IL2    
-      !>
-      !!A branch in the code occurs next, depending on the value of the flag IHGT. If IHGT=0, the values of
-      !!vegetation height calculated by CLASS are to be used. For trees and grass, the vegetation height under
-      !!snow-free conditions is assumed to be constant year-round, and is calculated as 10 times the exponential
-      !!of ZOLN, the logarithm of the maximum vegetation roughness length. For crops, this maximum height
-      !!is multiplied by GROWA. If IHGT=1, vegetation heights specified by the user are utilized instead. This
-      !!height H for each of the four vegetation categories is used to calculate the height HS over snow-covered
-      !!areas. For needleleaf and broadleaf trees, HS is set to H. For crops and grass, HS is calculated by
-      !!subtracting the snow depth ZSNOW from H, to account for the burying of short vegetation by snow.
-      !!
-      !!If CLASS is being run uncoupled to CTEM, a second branch now occurs, depending on the value of the
-      !!flag IPAI. If IPAI=0, the values of plant area index calculated by CLASS are to be used. For all four
-      !!vegetation categories, the plant area index over snow-free ground, PAI, is determined by interpolating
-      !!between the annual maximum and minimum plant area indices using the growth index. If IPAI=1, plant
-      !!area index values specified by the user are utilized instead. For trees, the plant area index over snow-
-      !!covered ground, PAIS, is set to PAI. For crops and grass, if H>0, PAIS is set to PAI scaled by the ratio
-      !!of HS/H; otherwise, it is set to zero. Lastly, the leaf area indices for the four vegetation categories over
-      !!snow-free ground, AIL, are determined from the PAI values. For needleleaf trees, AIL is estimated as
-      !!0.90 PAI; for broadleaf trees it is estimated as the excess PAI over the annual minimum value. For crops
-      !!and grass AIL is assumed to be equal to PAI. (If CLASS is being run coupled to CTEM, the CTEM-
-      !!generated values of PAI and AIL are used instead.)
-      !!        
-                                                
+                                                    
           GROWN(I)=ABS(GROWTH(I))                                                 
           IF(GROWTH(I).GT.0.0)                      THEN                          
               GROWB(I)=MIN(1.0,GROWTH(I)*2.0)                                   
@@ -496,6 +470,17 @@ C    IF USING CTEM's STRUCTURAL ATTRIBUTES OVERWRITE ZOLN
           ENDIF
 C    ----------------- CTEM MODIFICATIONS -----------------------------/
 C
+      !>
+      !!A branch in the code occurs next, depending on the value of the flag IHGT. If IHGT=0, the values of
+      !!vegetation height calculated by CLASS are to be used. For trees and grass, the vegetation height under
+      !!snow-free conditions is assumed to be constant year-round, and is calculated as 10 times the exponential
+      !!of ZOLN, the logarithm of the maximum vegetation roughness length. For crops, this maximum height
+      !!is multiplied by GROWA. If IHGT=1, vegetation heights specified by the user are utilized instead. This
+      !!height H for each of the four vegetation categories is used to calculate the height HS over snow-covered
+      !!areas. For needleleaf and broadleaf trees, HS is set to H. For crops and grass, HS is calculated by
+      !!subtracting the snow depth ZSNOW from H, to account for the burying of short vegetation by snow.
+      !!
+
           IF(IHGT.EQ.0) THEN
               H(I,1)=10.0*EXP(ZOLN(I,1))                                              
               H(I,2)=10.0*EXP(ZOLN(I,2))                                              
@@ -512,6 +497,19 @@ C
           HS(I,3)=MAX(H(I,3)-ZSNOW(I),1.0E-3)                                       
           HS(I,4)=MAX(H(I,4)-ZSNOW(I),1.0E-3)                                       
 
+      !>
+      !!If CLASS is being run uncoupled to CTEM, a second branch now occurs, depending on the value of the
+      !!flag IPAI. If IPAI=0, the values of plant area index calculated by CLASS are to be used. For all four
+      !!vegetation categories, the plant area index over snow-free ground, PAI, is determined by interpolating
+      !!between the annual maximum and minimum plant area indices using the growth index. If IPAI=1, plant
+      !!area index values specified by the user are utilized instead. For trees, the plant area index over snow-
+      !!covered ground, PAIS, is set to PAI. For crops and grass, if H>0, PAIS is set to PAI scaled by the ratio
+      !!of HS/H; otherwise, it is set to zero. Lastly, the leaf area indices for the four vegetation categories over
+      !!snow-free ground, AIL, are determined from the PAI values. For needleleaf trees, AIL is estimated as
+      !!0.90 PAI; for broadleaf trees it is estimated as the excess PAI over the annual minimum value. For crops
+      !!and grass AIL is assumed to be equal to PAI. (If CLASS is being run coupled to CTEM, the CTEM-
+      !!generated values of PAI and AIL are used instead.)
+      !!    
           IF(IPAI.EQ.0) THEN
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
@@ -608,7 +606,6 @@ C     *        LOW VEGETATION:       0.003 M.
 C     *        FOREST:               0.01  M.
 C                                                                                 
       THR_LAI=1.0
-C
       !>
       !!In the 175 loop, the fractional coverage of the modelled area by each of the four vegetation categories is
       !!calculated, for snow-free (FCAN) and snow-covered ground (FCANS). For needleleaf and broadleaf
@@ -765,9 +762,9 @@ C
       !!In loop 200, calculations are done related to the interception of water on vegetation. First, the plant area
       !!indices of the composite vegetation canopy over the snow-free and snow-covered subareas are calculated
       !!as weighted averages of the plant area indices of the four vegetation categories over each subarea. The
-      !!liquid water interception capacity W l,max on each of the two subareas is calculated as
-      !!W l,max = 0.20Λ p
-      !!where Λ p is the plant area index of the composite canopy. This simple relation has been found to work
+      !!liquid water interception capacity \f$W_{l,max}\f$ on each of the two subareas is calculated as
+      !!\f$W_{l,max} = 0.20 \Lambda_p\f$
+      !!where \f$\Lambda_p\f$ is the plant area index of the composite canopy. This simple relation has been found to work
       !!well for a wide range of canopy types and precipitation events (see Verseghy et al, 1993). If either the
       !!average amount of liquid water on the canopy, RCAN, or the total cancpy coverage, FC+FCS, is less than
       !!a small threshold value, the value of RCAN is stored in a residual water array RRESID, and RCAN is set
@@ -775,28 +772,31 @@ C
       !!evaluated as an average value over the canopy-covered area only, rather than over the whole modelled
       !!area. Then the intercepted liquid water amounts on vegetation over snow-free (RAICAN) and snow-
       !!covered areas (RAICNS) are calculated by making use of the relations
-      !!W L,0 /Λ p,0 = W L,s /Λ p,s and
-      !!W l (X 0 +X s ) = W l,0 X 0 + W l,s X s
-      !!where W l is the liquid water on the canopy, X is the fractional area, and the subscripts 0 and s refer to
+      !!\f$W_{L,0} / \Lambda_{p,0} = W_{L,s} / \Lambda_{p,s}\f$ and
+      !!\f$W_l (X_0 + X_s) = W_{l,0} X_0 + W_{l,s} X_s\f$
+      !!where \f$W_l\f$ is the liquid water on the canopy, \f$X\f$ is the fractional area, and the subscripts \f$0\f$ and \f$s\f$ refer to
       !!snow-free and snow-covered areas respectively.
-      !!For snow interception on the canopy, a modified calculation of the plant area indices Λ p,0 and Λ p,s is
+      !!
+      !!For snow interception on the canopy, a modified calculation of the plant area indices \f$\Lambda_{p,0}\f$ and \f$\Lambda_{p,s}\f$ is
       !!performed, assigning a weight of 0.7 to the plant area index of needleleaf trees, to account for the effect
-      !!56of needle clumping. The interception capacity for snow, W f,max , is calculated following Bartlett et al.
+      !!of needle clumping. The interception capacity for snow, \f$W_{f,max}\f$, is calculated following Bartlett et al.
       !!(2006), using a relation developed by Schmidt and Gluns (1991):
-      !!W f,max = 6.0 Λ p [0.27 + 46.0 ρ s,f ]
-      !!where ρ s,f is the density of fresh snow. As was done for the intercepted liquid water, if either the average
+      !!\f$W_{f,max} = 6.0 \Lambda_p [0.27 + 46.0 \rho_{s,f} ]\f$
+      !!where \f$\rho_{s,f} is the density of fresh snow. As was done for the intercepted liquid water, if either the average
       !!amount of snow on the canopy, SNCAN, or the total cancpy coverage is less than a small threshold value,
       !!the value of SNCAN is stored in a residual water array SRESID, and SNCAN is set to zero. Next the
       !!intercepted snow is partitioned between FC and FCS. First SNCAN is recalculated as an average over the
       !!canopy-covered area only, rather than over the whole modelled area. Then the intercepted snow amounts
       !!on vegetation over snow-free (SNOCAN) and snow-covered areas (SNOCNS) are calculated in the same
       !!way as for RAICAN and RAICNS.
+      !!
       !!The fractional canopy coverages of snow and liquid water are calculated as the ratio of the intercepted
       !!snow or liquid water to their respective interception capacities. Separate values are determined for the
       !!snow-covered (FSNOCS, FRAICS) and snow-free (FSNOWC, FRAINC) subareas. If intercepted snow
       !!and liquid water are both present on the canopy, part of the liquid water cover is assumed to underlie the
       !!snow cover, so the fractional liquid water coverage is decreased by the fractional snow coverage, to yield
       !!the fractional coverage of liquid water that is exposed to the air.
+      !!
       !!Next, tests are performed to ascertain whether the liquid water and snow on the canopy exceed their
       !!respective interception capacities. If so, the excess is assigned to RRESID for liquid water and SRESID
       !!for snow, and the intercepted liquid water or snow is reset to the respective interception capacity. The
@@ -812,10 +812,7 @@ C
       !!recalculated, the diagnosed change in internal energy HTC is updated, and RRESID and SRESID are
       !!added to WTRG, the diagnosed residual water transferred into or out of the soil, and are then set to zero.
       !!
-      !!
-      !!
 
-                                                             
       DO 200 I=IL1,IL2                                                            
           IF(FC(I).GT.0.)                                     THEN                
               PAICAN(I)=(FCAN(I,1)*PAI(I,1)+FCAN(I,2)*PAI(I,2)+                   
@@ -994,25 +991,26 @@ C     * CANOPY OVERLYING SNOW.
 C  
 
 !>
-!!
 !!In loops 250 and 275, calculations of the displacement height and the logarithms of the roughness lengths
-!!for heat and momentum are performed for the vegetated subareas. The displacement height d i and the
-!!roughness length z 0,i for the separate vegetation categories are obtained as simple ratios of the canopy
+!!for heat and momentum are performed for the vegetated subareas. The displacement height \f$d_i\f$ and the
+!!roughness length \f$z_{0,i}\f$ for the separate vegetation categories are obtained as simple ratios of the canopy
 !!height H:
-!!d i = 0.70 H
-!!z 0,i = 0.10 H
+!!\f$d_i = 0.70 H\f$
+!!\f$z_{0,i} = 0.10 H\f$
+!!
 !!The averaged displacement height d over the vegetated subareas is only calculated if the flag IDISP has
 !!been set to 1. If IDISP = 0, this indicates that the atmospheric model is using a terrain-following
-!!coordinate system, and thus the displacement height is treated as part of the “terrain”. If DISP = 1, d is
+!!coordinate system, and thus the displacement height is treated as part of the "terrain". If DISP = 1, d is
 !!calculated as a logarithmic average over the vegetation categories:
-!!57X ln(d) = Σ [X i ln(d i )]
-!!where X is the fractional coverage of the subarea. The averaged roughness length for momentum z 0m
+!!\f$X ln(d) = \Sigma [X_i ln(d_i)]\f$
+!!where X is the fractional coverage of the subarea. The averaged roughness length for momentum \f$z_{0m}\f$
 !!over the subarea is determined based on the assumption that averaging should be performed on the basis
 !!of the drag coefficient formulation. Thus, following Delage et al. (1999), and after Mason (1988):
-!!X/ln 2 (z b /z 0m ) = Σ [X i /ln 2 (z b /z 0i )]
-!!The averaged roughness length for heat z 0e over the subarea is calculated as a geometric mean over the
+!!\f$X/ln^2 (z_b /z_{0m}) = \Sigma [X_i /ln^2 (z_b /z_{0i})]\f$
+!!
+!!The averaged roughness length for heat \f$z_{0e}\f$ over the subarea is calculated as a geometric mean over the
 !!vegetation categories:
-!!z 0e z 0mX = Π ( z 0i 2Xi )
+!!\f$z_{0e} z_{0mX} = \Pi ( z_{0i}^{2Xi} )\f$
 !!
                                                                                
       DO 250 J=1,IC                                                               
@@ -1055,12 +1053,12 @@ C     * SOIL FOR URBAN ROUGHNESS IF PRESENT.
 C        
 !>
 !!In loop 300, calculations of the logarithms of the roughness lengths for heat and momentum are
-!!performed for the bare ground and snow-covered subareas. Background values of ln(z om ) for soil, snow
+!!performed for the bare ground and snow-covered subareas. Background values of \f$ln(z_{om})\f$ for soil, snow
 !!cover, ice sheets and urban areas are passed into the subroutine through common blocks. In CLASS,
 !!urban areas are treated very simply, as areas of bare soil with a high roughness length. The subarea values
-!!of ln(z om ) for bare soil and snow are therefore adjusted for the fractional coverage of urban area. Values
+!!of \f$ln(z_{om})\f$ for bare soil and snow are therefore adjusted for the fractional coverage of urban area. Values
 !!for the ratio between the roughness lengths for momentum and heat for bare soil and snow are also
-!!passed in via common blocks. These are used to derive subarea values of ln(z oe ) from ln(z om ).
+!!passed in via common blocks. These are used to derive subarea values of \f$ln(z_{oe})\f$ from \f$ln(z_{om})\f$.
 !!
                                                                          
       DO 300 I=IL1,IL2                                                            
@@ -1084,7 +1082,7 @@ C     * ADD CONTRIBUTION OF OROGRAPHY TO MOMENTUM ROUGHNESS LENGTH
 C
 
 !>
-!!In loop 325, an adjustment is applied to ln(z om ) if the effect of terrain roughness needs to be taken into
+!!In loop 325, an adjustment is applied to \f$ln(z_{om})\f$ if the effect of terrain roughness needs to be taken into
 !!account. If the surface orographic roughness length is not vanishingly small, its logarithm, LZ0ORO, is
 !!calculated. If it is greater than the calculated logarithm of the roughness length for momentum of any of
 !!the subareas, these are reset to LZ0ORO.
@@ -1112,7 +1110,7 @@ C
 !!canopy over bare soil (CMASSC) and over snow (CMASCS). (For crops over bare soil, the mass is
 !!adjusted according to the growth index; for crops and grass over snow, the mass is additionally adjusted
 !!to take into account burying by snow.) If IDISP = 0, indicating that the vegetation displacement height is
-!!part of the “terrain”, the mass of air within the displacement height is normalized by the vegetation heat
+!!part of the "terrain", the mass of air within the displacement height is normalized by the vegetation heat
 !!capacity and added to the canopy mass. If IZREF = 2, indicating that the bottom of the atmosphere is
 !!taken to lie at the local roughness length rather than at the ground surface, the mass of air within the
 !!roughness length is likewise normalized by the vegetation heat capacity and added to the canopy mass.
@@ -1218,17 +1216,20 @@ C
 !!in each vegetation category for each soil layer. According to Feddes et al. (1974), the fractional root
 !!volume R(z) below a depth z is well represented for many varieties of plants by the following exponential
 !!function:
-!!R(z) = a 1 exp(-3.0z) + a 2 .
-!!Making use of the boundary conditions R(0) = 1 and R(z r ) = 0, where z r is the rooting depth ZROOT, it
-!!can be seen that the fraction of roots within a soil depth interval Δz can be obtained as the difference
-!!between R(z) evaluated at the top (z T ) and bottom (z B ) of the interval:
-!!R(Δz) = [exp(-3.0z T ) – exp(-3.0z B )]/ [1 – exp(-3.0z r )]
+!!\f$R(z) = a_1 exp(-3.0z) + a_2.\f$
+!!
+!!Making use of the boundary conditions \f$R(0) = 1\f$ and \f$R(z_r ) = 0\f$, where \f$z_r\f$ is the rooting depth ZROOT, it
+!!can be seen that the fraction of roots within a soil depth interval \f$\Delta z\f$ can be obtained as the difference
+!!between R(z) evaluated at the top \f$(z_T)\f$ and bottom \f$(z_B)\f$ of the interval:
+!!\f$R(\Delta z) = [exp(-3.0z_T) - exp(-3.0z_B)]/ [1 - exp(-3.0z_r)]\f$
+!!
 !!The total fraction of roots in each soil layer, FROOT, can then be determined as a weighted average over
 !!the four vegetation categories.
-!!In loop 450, a leaf boundary resistance parameter C rb , incorporating the plant area indices of the four
+!!
+!!In loop 450, a leaf boundary resistance parameter \f$C_{rb}\f$ , incorporating the plant area indices of the four
 !!vegetation subareas, is also calculated for later use in subroutine TSOLVC:
-!!C rb = C l Λ p,i0.5 /0.75 · [1 – exp(-0.75Λ p,i0.5 )]
-!!where C l is a parameter that varies with the vegetation category. The aggregated value of C rb is obtained
+!!\f$C_{rb} = C_l \Lambda_{p,i}^{0.5} /0.75 \bullet [1 - exp(-0.75 \Lambda_{p,i}^{0.5} )]\f$
+!!where \f$C_l\f$ is a parameter that varies with the vegetation category. The aggregated value of \f$C_{rb}\f$ is obtained
 !!as a weighted average over the four vegetation categories over bare ground and snow cover.
 !!                                                                 
       DO 450 J=1,IC                                                               
@@ -1293,10 +1294,10 @@ C     * UNDERLYING CANOPY.
 C            
 
 !>
-!!In loop 600, the sky view factor χ of the ground underlying the canopy is calculated for the vegetated
-!!subareas. The standard approach is to determine χ as an exponential function of the plant area index Λ p :
-!!χ = exp[-cΛ p ]
-!!where c is a constant depending on the vegetation category. The subarea values of χ are obtained as
+!!In loop 600, the sky view factor \f$\chi\f$ of the ground underlying the canopy is calculated for the vegetated
+!!subareas. The standard approach is to determine \f$\chi\f$ as an exponential function of the plant area index \f$\Lambda_p\f$ :
+!!\f$\chi = exp[-c \Lambda_p ]\f$
+!!where c is a constant depending on the vegetation category. The subarea values of \f$\chi\f$ are obtained as
 !!weighted averages over the four vegetation categories.
 !!
                                                                      
@@ -1326,16 +1327,15 @@ C
 !>
 !!In the 650 loop, the fraction of the total transpiration of water by plants that is extracted from each soil
 !!layer is determined. This is done by weighting the values of FROOT calculated above by the relative soil
-!!moisture suction in each layer:
-!!( ψ w – ψ i )/( ψ w – ψ sat )
-!!where ψ i , the soil moisture suction in the layer, is obtained as
-!!ψ i = ψ sat (θ l,i /θ p ) -b
-!!In these equations ψ w is the soil moisture suction at the wilting point, ψ sat is the suction at saturation, θ l,i is
-!!the volumetric liquid water content of the soil layer, θ p is the pore volume, and b is an empirical parameter
-!!developed by Clapp and Hornberger (1978). The layer values of FROOT are then re-normalized so that
-!!their sum adds up to unity. In this loop, the representative soil moisture suction PSIGND is also
-!!calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of ψ i and
-!!ψ w over all the soil layers.
+!!moisture suction in each layer: \f$( \Psi_w - \Psi_i )/( \Psi_w - \Psi_{sat} )\f$
+!!where \f$\Psi_i\f$ , the soil moisture suction in the layer, is obtained as
+!!\f$\Psi_i = \Psi_{sat} ( \theta_{l,i} / \theta_p )^{-b}\f$
+!!In these equations \f$\Psi_w\f$ is the soil moisture suction at the wilting point, \f$\Psi_{sat}\f$ is the suction at 
+!!saturation, \f$\theta_{l,i}\f$ is the volumetric liquid water content of the soil layer, \f$\theta_p\f$ is the pore 
+!!volume, and b is an empirical parameter developed by Clapp and Hornberger (1978). The layer values of FROOT are then 
+!!re-normalized so that their sum adds up to unity. In this loop, the representative soil moisture suction PSIGND is also
+!!calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of \f$\Psi_i\f$ and
+!!\f$\Psi_w\f$ over all the soil layers.
 !!
 
       DO 650 J=1,IG                                                               
@@ -1437,5 +1437,5 @@ C
   860   CONTINUE
       ENDIF
 C                                                                                 
-      RETURN                                                                      
-      END 
+      RETURN
+      END

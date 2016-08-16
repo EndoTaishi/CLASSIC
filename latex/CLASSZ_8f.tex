@@ -1,0 +1,251 @@
+\hypertarget{CLASSZ_8f}{}\section{C\+L\+A\+S\+S\+Z.\+f File Reference}
+\label{CLASSZ_8f}\index{C\+L\+A\+S\+S\+Z.\+f@{C\+L\+A\+S\+S\+Z.\+f}}
+
+
+Purpose\+: Check for energy and water balance closure over modelled area.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{CLASSZ_8f_a3011accdb26e214045175dff31aead39}{classz} (I\+S\+T\+E\+P, C\+T\+V\+S\+T\+P, C\+T\+S\+S\+T\+P, C\+T1\+S\+T\+P, C\+T2\+S\+T\+P, C\+T3\+S\+T\+P, W\+T\+V\+S\+T\+P, W\+T\+S\+S\+T\+P, W\+T\+G\+S\+T\+P, F\+S\+G\+V, F\+L\+G\+V, H\+F\+S\+C, H\+E\+V\+C, H\+M\+F\+C, H\+T\+C\+C, F\+S\+G\+S, F\+L\+G\+S, H\+F\+S\+S, H\+E\+V\+S, H\+M\+F\+N, H\+T\+C\+S, F\+S\+G\+G, F\+L\+G\+G, H\+F\+S\+G, H\+E\+V\+G, H\+M\+F\+G, H\+T\+C, P\+C\+F\+C, P\+C\+L\+C, Q\+F\+C\+F, Q\+F\+C\+L, R\+O\+F\+C, W\+T\+R\+C, P\+C\+P\+N, Q\+F\+N, R\+O\+F\+N, W\+T\+R\+S, P\+C\+P\+G, Q\+F\+G, Q\+F\+C, R\+O\+F, W\+T\+R\+G, C\+M\+A\+I, R\+C\+A\+N, S\+C\+A\+N, T\+C\+A\+N, S\+N\+O, W\+S\+N\+O\+W, T\+S\+N\+O\+W, T\+H\+L\+I\+Q, T\+H\+I\+C\+E, H\+C\+P\+S, T\+H\+P\+O\+R, D\+E\+L\+Z\+W, T\+B\+A\+R, Z\+P\+O\+N\+D, T\+P\+O\+N\+D, D\+E\+L\+Z, F\+C\+S, F\+G\+S, F\+C, F\+G, I\+L1, I\+L2, I\+L\+G, I\+G, N)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Check for energy and water balance closure over modelled area. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{CLASSZ_8f_a3011accdb26e214045175dff31aead39}{}\index{C\+L\+A\+S\+S\+Z.\+f@{C\+L\+A\+S\+S\+Z.\+f}!classz@{classz}}
+\index{classz@{classz}!C\+L\+A\+S\+S\+Z.\+f@{C\+L\+A\+S\+S\+Z.\+f}}
+\subsubsection[{classz}]{\setlength{\rightskip}{0pt plus 5cm}subroutine classz (
+\begin{DoxyParamCaption}
+\item[{integer}]{I\+S\+T\+E\+P, }
+\item[{real, dimension(ilg)}]{C\+T\+V\+S\+T\+P, }
+\item[{real, dimension(ilg)}]{C\+T\+S\+S\+T\+P, }
+\item[{real, dimension(ilg)}]{C\+T1\+S\+T\+P, }
+\item[{real, dimension(ilg)}]{C\+T2\+S\+T\+P, }
+\item[{real, dimension(ilg)}]{C\+T3\+S\+T\+P, }
+\item[{real, dimension(ilg)}]{W\+T\+V\+S\+T\+P, }
+\item[{real, dimension(ilg)}]{W\+T\+S\+S\+T\+P, }
+\item[{real, dimension(ilg)}]{W\+T\+G\+S\+T\+P, }
+\item[{real, dimension  (ilg)}]{F\+S\+G\+V, }
+\item[{real, dimension  (ilg)}]{F\+L\+G\+V, }
+\item[{real, dimension  (ilg)}]{H\+F\+S\+C, }
+\item[{real, dimension  (ilg)}]{H\+E\+V\+C, }
+\item[{real, dimension  (ilg)}]{H\+M\+F\+C, }
+\item[{real, dimension  (ilg)}]{H\+T\+C\+C, }
+\item[{real, dimension  (ilg)}]{F\+S\+G\+S, }
+\item[{real, dimension  (ilg)}]{F\+L\+G\+S, }
+\item[{real, dimension  (ilg)}]{H\+F\+S\+S, }
+\item[{real, dimension  (ilg)}]{H\+E\+V\+S, }
+\item[{real, dimension  (ilg)}]{H\+M\+F\+N, }
+\item[{real, dimension  (ilg)}]{H\+T\+C\+S, }
+\item[{real, dimension  (ilg)}]{F\+S\+G\+G, }
+\item[{real, dimension  (ilg)}]{F\+L\+G\+G, }
+\item[{real, dimension  (ilg)}]{H\+F\+S\+G, }
+\item[{real, dimension  (ilg)}]{H\+E\+V\+G, }
+\item[{real, dimension  (ilg,ig)}]{H\+M\+F\+G, }
+\item[{real, dimension   (ilg,ig)}]{H\+T\+C, }
+\item[{real, dimension  (ilg)}]{P\+C\+F\+C, }
+\item[{real, dimension  (ilg)}]{P\+C\+L\+C, }
+\item[{real, dimension  (ilg)}]{Q\+F\+C\+F, }
+\item[{real, dimension  (ilg)}]{Q\+F\+C\+L, }
+\item[{real, dimension  (ilg)}]{R\+O\+F\+C, }
+\item[{real, dimension  (ilg)}]{W\+T\+R\+C, }
+\item[{real, dimension  (ilg)}]{P\+C\+P\+N, }
+\item[{real, dimension   (ilg)}]{Q\+F\+N, }
+\item[{real, dimension  (ilg)}]{R\+O\+F\+N, }
+\item[{real, dimension  (ilg)}]{W\+T\+R\+S, }
+\item[{real, dimension  (ilg)}]{P\+C\+P\+G, }
+\item[{real, dimension   (ilg)}]{Q\+F\+G, }
+\item[{real, dimension   (ilg,ig)}]{Q\+F\+C, }
+\item[{real, dimension   (ilg)}]{R\+O\+F, }
+\item[{real, dimension  (ilg)}]{W\+T\+R\+G, }
+\item[{real, dimension  (ilg)}]{C\+M\+A\+I, }
+\item[{real, dimension  (ilg)}]{R\+C\+A\+N, }
+\item[{real, dimension  (ilg)}]{S\+C\+A\+N, }
+\item[{real, dimension  (ilg)}]{T\+C\+A\+N, }
+\item[{real, dimension   (ilg)}]{S\+N\+O, }
+\item[{real, dimension (ilg)}]{W\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{T\+S\+N\+O\+W, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+L\+I\+Q, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+I\+C\+E, }
+\item[{real, dimension  (ilg,ig)}]{H\+C\+P\+S, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+P\+O\+R, }
+\item[{real, dimension (ilg,ig)}]{D\+E\+L\+Z\+W, }
+\item[{real, dimension  (ilg,ig)}]{T\+B\+A\+R, }
+\item[{real, dimension (ilg)}]{Z\+P\+O\+N\+D, }
+\item[{real, dimension (ilg)}]{T\+P\+O\+N\+D, }
+\item[{}]{D\+E\+L\+Z, }
+\item[{real, dimension   (ilg)}]{F\+C\+S, }
+\item[{real, dimension   (ilg)}]{F\+G\+S, }
+\item[{real, dimension    (ilg)}]{F\+C, }
+\item[{real, dimension    (ilg)}]{F\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{N}
+\end{DoxyParamCaption}
+)}\label{CLASSZ_8f_a3011accdb26e214045175dff31aead39}
+
+\begin{DoxyParams}{Parameters}
+{\em istep} & Flag indicating position at beginning or end of time step\\
+\hline
+{\em ctvstp} & Change in internal energy of vegetation over current time step $[W m^{-2}] $\\
+\hline
+{\em ctsstp} & Change in internal energy of snow pack over current time step $[W m^{-2}] $\\
+\hline
+{\em ct1stp} & Change in internal energy of first soil layer over current time step $[W m^{-2}] $\\
+\hline
+{\em ct2stp} & Change in internal energy of second soil layer over current time step $[W m^{-2}] $\\
+\hline
+{\em ct3stp} & Change in internal energy of third soil layer over current time step $[W m^{-2}] $\\
+\hline
+{\em wtvstp} & Change in vegetation mass over current time step $[kg m^{-2}]$\\
+\hline
+{\em wtsstp} & Change in snow mass over current time step $[kg m^{-2}]$\\
+\hline
+{\em wtgstp} & Change in soil water storage over current time step $[kg m^{-2}]$\\
+\hline
+{\em fsgv} & Diagnosed net shortwave radiation on vegetation canopy $[W m^{-2}] (K_{*,c})$\\
+\hline
+{\em flgv} & Diagnosed net longwave radiation on vegetation canopy $[W m^{-2}] (L_{*,c})$\\
+\hline
+{\em hfsc} & Diagnosed sensible heat flux on vegetation canopy $[W m^{-2}] (Q_{H,c})$\\
+\hline
+{\em hevc} & Diagnosed latent heat flux on vegetation canopy $[W m^{-2}] (Q_{E,c})$\\
+\hline
+{\em hmfc} & Diagnosed energy associated with phase change of water on vegetation $[W m^{-2}] (Q_{M,c})$\\
+\hline
+{\em htcc} & Diagnosed internal energy change of vegetation canopy due to conduction and/or change in mass $[W m^{-2}] (Q_{I,c})$\\
+\hline
+{\em fsgs} & Diagnosed net shortwave radiation at snow surface $[W m^{-2}] (K_{*,s})$\\
+\hline
+{\em flgs} & Diagnosed net longwave radiation at snow surface $[W m^{-2}] (L_{*,s})$\\
+\hline
+{\em hfss} & Diagnosed sensible heat flux at snow surface $[W m^{-2}] (Q_{H,s})$\\
+\hline
+{\em hevs} & Diagnosed latent heat flux at snow surface $[W m^{-2}] (Q_{E,s})$\\
+\hline
+{\em hmfn} & Diagnosed energy associated with phase change of water in snow pack $[W m^{-2}] (Q_{M,s})$\\
+\hline
+{\em htcs} & Diagnosed internal energy change of snow pack due to conduction and/or change in mass $[W m^{-2}] (Q_{I,s})$\\
+\hline
+{\em fsgg} & Diagnosed net shortwave radiation at soil surface $[W m^{-2}] (K_{*,g})$\\
+\hline
+{\em flgg} & Diagnosed net longwave radiation at soil surface $[W m^{-2}] (L_{*,g})$\\
+\hline
+{\em hfsg} & Diagnosed sensible heat flux at soil surface $[W m^{-2}] (Q_{H,g})$\\
+\hline
+{\em hevg} & Diagnosed latent heat flux at soil surface $[W m^{-2}] (Q_{E,g})$\\
+\hline
+{\em hmfg} & Diagnosed energy associated with phase change of water in soil layers $[W m^{-2}] (Q_{M,g})$\\
+\hline
+{\em htc} & Diagnosed internal energy change of soil layer due to conduction and/or change in mass $[W m^{-2}] (Q_{I,g})$\\
+\hline
+{\em pcfc} & Diagnosed frozen precipitation intercepted by vegetation $[kg m^{-2} s^{-1}] (P_{f,c})$\\
+\hline
+{\em pclc} & Diagnosed liquid precipitation intercepted by vegetation $[kg m^{-2} s^{-1}] (P_{l,c})$\\
+\hline
+{\em qfcf} & Diagnosed vapour flux from frozen water on vegetation $[kg m^{-2} s^{-1}] (E_{f,c})$\\
+\hline
+{\em qfcl} & Diagnosed vapour flux from liquid water on vegetation $[kg m^{-2} s^{-1}] (E_{l,c})$\\
+\hline
+{\em rofc} & Liquid/frozen water runoff from vegetation $[kg m^{-2} s^{-1}] (R_c)$\\
+\hline
+{\em wtrc} & Diagnosed water transferred off the vegetation canopy $[kg m^{-2} s^{-1}] (A_c)$\\
+\hline
+{\em pcpn} & Diagnosed precipitation incident on snow pack $[kg m^{-2} s^{-1}] (P_s)$\\
+\hline
+{\em qfn} & Diagnosed water vapour flux from snow pack $[kg m^{-2} s^{-1}] (E_s)$\\
+\hline
+{\em rofn} & Liquid water runoff from snow pack $[kg m^{-2} s^{-1}] (R_s)$\\
+\hline
+{\em wtrs} & Diagnosed water transferred into or out of the snow pack $[kg m^{-2} s^{-1}] (A_s)$\\
+\hline
+{\em pcpg} & Diagnosed precipitation incident on ground $[kg m^{-2} s^{-1}] (P_g)$\\
+\hline
+{\em qfg} & Diagnosed water vapour flux from ground surface $[kg m^{-2} s^{-1}] (E_g)$\\
+\hline
+{\em qfc} & Diagnosed vapour flux from transpiration over modelled area $[W m^{-2}] (E_c)$\\
+\hline
+{\em rof} & Total runoff from soil $[kg m^{-2} s^{-1}] (R_g)$\\
+\hline
+{\em wtrg} & Diagnosed water transferred into or out of the soil $[kg m^{-2} s^{-1}] (A_g)$\\
+\hline
+{\em cmai} & Current mass of vegetation canopy $[kg m^{-2}] (W_c)$\\
+\hline
+{\em rcan} & Intercepted liquid water stored on canopy $[kg m^{-2}] (W_{l,c})$\\
+\hline
+{\em scan} & Intercepted frozen water stored on canopy $[kg m^{-2}] (W_{f,c})$\\
+\hline
+{\em tcan} & Vegetation canopy temperature $[K] (T_c)$\\
+\hline
+{\em sno} & Mass of snow pack $[kg m^{-2}] (W_s)$\\
+\hline
+{\em wsnow} & Liquid water content of snow pack $[kg m^{-2}] (W_{l,s})$\\
+\hline
+{\em tsnow} & Snowpack temperature $[K] (T_s)$\\
+\hline
+{\em thliq} & Volumetric liquid water content of soil layers $[m^3 m^{-3}] (\theta_l)$\\
+\hline
+{\em thice} & Volumetric frozen water content of soil layers $[m^3 m^{-3}] (\theta_f)$\\
+\hline
+{\em hcps} & Volumetric heat capacity of soil particles $[J m^{-3}] (C_g)$\\
+\hline
+{\em thpor} & Pore volume in soil layer $[m^3 m^{-3}]$\\
+\hline
+{\em delzw} & Permeable thickness of soil layer $[m] (\Delta_zw)$\\
+\hline
+{\em tbar} & Temperature of soil layers $[K] (T_g)$\\
+\hline
+{\em zpond} & Depth of ponded water on surface $[m] (z_p)$\\
+\hline
+{\em tpond} & Total thickness of soil layer $[m] (\Delta_z)$\\
+\hline
+{\em fcs} & Fractional coverage of vegetation over snow on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fgs} & Fractional coverage of snow over bare ground on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fc} & Fractional coverage of vegetation over bare ground on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fg} & Fractional coverage of bare ground on modelled area \mbox{[} \mbox{]} \\
+\hline
+\end{DoxyParams}
+In this subroutine, checks are carried out to ensure that the change in energy storage in each of the components of the modelled area (canopy, snow and soil) is equal to the sum of the energy fluxes into and out of them; and that the change in moisture storage in each of the components is equal to the sum of the water fluxes into and out of them. The subroutine is called twice, once at the beginning (I\+S\+T\+E\+P=0) and once at the end (I\+S\+T\+E\+P=1) of each time step. At the beginning, the instantaneous energy and moisture storage terms are evaluated, and at the end the differences over the time step are calculated\+:
+
+Change in canopy energy storage = $\Delta [(c_c W_c + c_w W_{l,c} + c_i W_{f,c} )T_c ] / \Delta t$
+
+Change in snow energy storage = $\Delta [(C_i W_s /\rho_i + C_w W_{l,s} / \rho_w )T_s ]/ \Delta t $
+
+Change in soil layer energy storage = $\Delta {[(C_w \theta_l + C_i \theta_f + C_g \theta_g ) \Delta z_w + C_b (\Delta z – \Delta z_w )]T_j }/ \Delta t$ (For the first soil layer, the numerator contains the additional term $C_w z_p T_p$.)
+
+Change in canopy moisture storage = $\Delta[W_{l,c} + W_{f,c}]$
+
+Change in snow moisture storage = $\Delta[W_s + W_{l,s}]$
+
+Change in soil moisture storage = $\Delta [(\theta_l \rho_w + \theta_f \rho_i ) \Delta z_w + z_p \rho_w ]$
+
+The net energy and moisture fluxes are also evaluated at the end of the time step\+:
+
+Net energy flux for canopy = $K_{*,c} + L_{*,c} – Q_{H,c} – Q_{E,c} – Q_{M,c} + Q_{I,c}$
+
+Net energy flux for snow = $K_{*,s} + L_{*,s} – Q_{H,s} – Q_{E,s} – Q_{M,s} + Q_{I,s}$
+
+Net energy flux for first soil layer = $K_{*,g} + L_{*,g} – Q_{H,g} – Q_{E,g} – Q_{M,1} + Q_{I,1}$
+
+Net energy flux for other soil layers = $- Q_{M,j} + Q_{I,j}$
+
+Net moisture flux for canopy = $P_{l,c} + P_{f,c} – E_{l,c} – E_{f,c} – R_c + A_c$
+
+Net moisture flux for snow = $P_s – E_s – R_s + A_s$
+
+Net moisture flux for soil = $P_g – E_g – R_g + A_g - E_c$
+
+In these equations the $K_*$ terms refer to net shortwave radiation, the $L_*$ terms to net longwave radiation, the $Q_H$ terms to sensible heat flux, the $Q_E$ terms to latent heat flux, the $Q_M$ terms to heat associated with melting or freezing of water, and the $Q_I$ terms to changes in heat storage caused by conduction or redistribution of water. The P terms refer to precipitation, the E terms to evaporation, the R terms to runoff and the A terms to water transferred between different components of the landscape. The subscript 1 refers to the first soil layer, and j to a generalized other layer.
+
+Finally, each change in energy or moisture storage is compared in turn with the corresponding net flux of energy or moisture, and if the difference is greater than a selected threshold value, an error message is printed out and the run is stopped.

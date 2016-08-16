@@ -1,9 +1,14 @@
+C>\file
+!!Purpose: Assign thermal and hydraulic properties to soil layers based on sand/clay content, or soil type.
+!!Also calculate permeable thickness of soil layers, and wet and dry surface albedo for mineral soils.
+!!
       SUBROUTINE CLASSB(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
      1                  THLRAT,HCPS,TCS,THFC,THLW,PSIWLT,
      2                  DELZW,ZBOTW,ALGWET,ALGDRY,
      +                  ALGWV,ALGWN,ALGDV,ALGDN,
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
      4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,IGRALB)
+
 C
 C     * JUN 24/15 - J. MELTON.  PASS IN IGRALB SO THAT WE CAN SKIP
 C                               USING SOCI IF IGRALB IS 0.
@@ -63,27 +68,43 @@ C
 C
 C     * OUTPUT ARRAYS.
 C
-      REAL THPOR (NL,NM,IG),  THLRET(NL,NM,IG),  THLMIN(NL,NM,IG),
-     1     BI    (NL,NM,IG),  PSISAT(NL,NM,IG),  GRKSAT(NL,NM,IG),
-     2     THLRAT(NL,NM,IG),  HCPS  (NL,NM,IG),
-     3     TCS   (NL,NM,IG),  THFC  (NL,NM,IG),  THLW  (NL,NM,IG),
-     4     PSIWLT(NL,NM,IG),  DELZW (NL,NM,IG),  ZBOTW (NL,NM,IG),
-     +     ALGWET(NL,NM),     ALGDRY(NL,NM),
-     +     ALGWV (NL,NM),     ALGWN (NL,NM),
-     5     ALGDV (NL,NM),     ALGDN (NL,NM)
+      REAL THPOR (NL,NM,IG) !<Pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
+      REAL THLRET(NL,NM,IG) !<Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
+      REAL THLMIN(NL,NM,IG) !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
+      REAL BI    (NL,NM,IG) !<Clapp and Hornberger empirical parameter [ ] (b)
+      REAL PSISAT(NL,NM,IG) !<Soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
+      REAL GRKSAT(NL,NM,IG) !<Hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
+      REAL THLRAT(NL,NM,IG) !<Fractional saturation of soil at half the saturated hydraulic conductivity [ ] \f$(f_{inf} )\f$
+      REAL HCPS  (NL,NM,IG) !<Volumetric heat capacity of soil matter \f$[J m^{-3} K^{-1} ] (C_g )\f$
+      REAL TCS   (NL,NM,IG) !<Thermal conductivity of soil \f$[W m^{-1} K^{-1} ] (\tau_g )\f$
+      REAL THFC  (NL,NM,IG) !<Field capacity \f$[m^3 m^{-3} ] (\theta_{fc} )\f$
+      REAL THLW  (NL,NM,IG) !<
+      REAL PSIWLT(NL,NM,IG) !<Soil moisture suction at wilting point [m] \f$(\Psi_{wilt} )\f$
+      REAL DELZW (NL,NM,IG) !<Thickness of permeable part of soil layer [m]
+      REAL ZBOTW (NL,NM,IG) !<Depth of bottom of permeable part of soil layer [m]
+      REAL ALGWET(NL,NM)    !<All-wave albedo of wet soil for modelled area [ ]
+      REAL ALGDRY(NL,NM)    !<All-wave albedo of dry soil for modelled area [ ]
+      REAL ALGWV (NL,NM)    !<
+      REAL ALGWN (NL,NM)    !<
+      REAL ALGDV (NL,NM)    !<
+      REAL ALGDN (NL,NM)    !<
 C
-      INTEGER                 ISAND (NL,NM,IG),  IGDR  (NL,NM)
+      INTEGER ISAND (NL,NM,IG) !<Sand content flag
+      INTEGER IGDR  (NL,NM) !<Index of soil layer in which bedrock is encountered
 C
 C     * INPUT ARRAYS.
 C
-      REAL SAND  (NL,NM,IG),  CLAY  (NL,NM,IG),  ORGM  (NL,NM,IG),
-     1     DELZ  (IG),        ZBOT  (IG),        SDEPTH(NL,NM)
+      REAL SAND  (NL,NM,IG) !<Percent sand content of soil layer [percent] \f$(X_{sand} )\f$
+      REAL CLAY  (NL,NM,IG) !<Percent clay content of soil layer [percent] \f$(X_{clay} )\f$
+      REAL ORGM  (NL,NM,IG) !<Percent organic matter content of soil layer [percent]
+      REAL DELZ  (IG)       !<Thickness of soil layer [m]
+      REAL ZBOT  (IG)       !<Depth of bottom of soil layer [m]
+      REAL SDEPTH(NL,NM)    !<Permeable depth of soil column (depth to bedrock) [m] \f$(z_b )\f$
+      REAL SOCI  (NL,NM)   !<
 C
-      REAL SOCI  (NL,NM)
-C
-      INTEGER IGRALB ! IF IGRALB IS SET TO 0, THE WET AND DRY SOIL ALBEDOS ARE
-                     ! CALCULATED ON THE BASIS OF SOIL TEXTURE.  IF IT IS SET TO 1,
-                     ! THEY ARE ASSIGNED VALUES BASED ON THE NCAR CLM SOIL "COLOUR"  DATASET.
+      INTEGER IGRALB !< IF IGRALB IS SET TO 0, THE WET AND DRY SOIL ALBEDOS ARE
+                     !! CALCULATED ON THE BASIS OF SOIL TEXTURE.  IF IT IS SET TO 1,
+                     !! THEY ARE ASSIGNED VALUES BASED ON THE NCAR CLM SOIL "COLOUR"  DATASET.
 C
       REAL THPORG (3),      THRORG (3),      THMORG (3),
      1     BORG   (3),      PSISORG(3),      GRKSORG(3)
@@ -117,6 +138,14 @@ C
      1           0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16/
 C---------------------------------------------------------------------
 C
+
+!>
+!!In the first section of code, two integer flags are evaluated: IGDR, the index of the soil layer in which the
+!!bottom of the soil permeable depth, \f$z_b\f$ , occurs; and ISAND, the value of the SAND variable for each soil
+!!layer converted to an integer. ISAND is used throughout the CLASS code as a flag to determine which
+!!branches of code to execute.
+!!
+
       DO 50 M=1,IM
       DO 50 I=IL1,IL2
           IGDR(I,M)=1
@@ -129,6 +158,21 @@ C
           IF(ISAND(I,M,J).GT.-3) IGDR(I,M)=J
 100   CONTINUE
 C
+!>
+!!In loop 200, calculations are done to determine the permeable thickness DELZW of each soil layer. If
+!!the land cover is an ice sheet (indicated by an ISAND value of -4 in the top layer), the value of DELZW
+!!in each layer is set to DELZ, the standard thickness of the corresponding thermal layer, and the soil flag is
+!!set to -4. If the layer consists of rock, indicated by an ISAND value of -3, DELZW is set to 0. For soil
+!!layers where \f$z_b\f$ occurs below the bottom of the layer, DELZW is set to DELZ; for layers where \f$z_b\f$ occurs
+!!near the top of the layer, DELZW is set to 0 and ISAND is set to -3. For the soil layer containing \f$z_b\f$ ,
+!!DELZW is set to the distance from the top of the layer to \f$z_b\f$ , and is further constrained to be \f$\geq\f$ 5 cm, to
+!!avoid overshoots in the water movement calculations. For all layers, the distance to the bottom of its
+!!respective permeable depth, ZBOTW, is set to the depth of the top of the layer plus DELZW. At the
+!!end of the loop, if the soil is a mineral one, the wet and dry albedo values are calculated using simple
+!!empirical functions derived from values given in Wilson and Henderson-Sellers (1985). (The dry albedo
+!!calculation varies slightly depending on whether or not CTEM is being run.)
+!!
+
       DO 200 M=1,IM
       DO 200 I=IL1,IL2
           DO 150 J=1,IG
@@ -171,6 +215,63 @@ C
           ENDIF
 200   CONTINUE
 C
+!>
+!!In loop 300, various thermal and hydraulic soil properties are assigned to each of the soil layers,
+!!depending on soil type. Values of ISAND greater than zero indicate mineral soil. The pore volume \f$\theta_p\f$ ,
+!!the saturated hydraulic conductivity \f$K_{sat}\f$ , and the soil moisture suction at saturation \f$\Psi\f$ sat are calculated from
+!!the percentage sand content \f$X_{sand}\f$ , and the hydraulic parameter b is calculated from the percentage clay
+!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984):
+!!\f$\theta_p = (-0.126 X_{sand} +48.9)/100.0\f$
+!!\f$b = 0.159 X_{clay} + 2.91\f$
+!!\f$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)\f$
+!!\f$K_{sat} = 7.0556 x 10 -6 exp(0.0352 X_{sand} - 2.035)\f$
+!!
+!!The fractional saturation of the soil at half the saturated hydraulic conductivity, \f$f_{inf}\f$ , is calculated by
+!!inverting the Clapp and Hornberger (1978) expression relating hydraulic conductivity \f$K\f$ to liquid water
+!!content of the soil \f$\theta_l\f$ :
+!!\f$K = K_{sat} (\theta_l / \theta_p ) (2b + 3)\f$
+!!
+!!Thus,
+!!\f$f_{inf} = 0.5 1/(2b+3)\f$
+!!
+!!The residual soil liquid water content remaining after evaporation or freezing, \f$\theta_{min}\f$ , and the liquid water
+!!retention capacity, \f$\theta_{ret}\f$ , are both set for mineral soils to a textbook value of 0.04.
+!!The volumetric sand, silt + clay and organic matter components of the soil matrix are derived by
+!!converting the percent values to volume fractions. The overall volumetric heat capacity of the soil
+!!material, \f$C_g\f$ , is then calculated as a weighted average:
+!!\f$C_g = \Sigma (C_{sand} \theta_{sand} + C_{fine} \theta_{fine} + C_{org} \theta_{org} )/(1 - \theta_p )\f$
+!!where the subscript "fine" refers to the silt and clay particles taken together. The thermal conductivity of
+!!the soil material, \f$\tau_g\f$ , is likewise calculated as a weighted average over the thermal conductivities of the
+!!components:
+!!\f$\tau_g = \Sigma (\tau_{sand} \theta_{sand} + \tau_{fine} \theta_{fine} + \tau_{org} \theta_{org} )/(1 - \theta_p )\f$
+!!
+!!The field capacity \f$\theta_{fc}\f$ , that is, the liquid water content of the soil at which gravitational drainage effectively
+!!ceases, is calculated by setting the expression for K above to a value of 0.1 mm \f$d^{-1}\f$ , and solving for the
+!!liquid water content:
+!!\f$\theta_{fc} = \theta_p (1.157 x 10^{-9} /K_{sat} )^{1/(2b + 3)}\f$
+!!
+!!The only exception is the field capacity of the lowest permeable layer in mineral soils (layer IGDR), which
+!!is determined using an expression developed by Soulis et al. (2010), which takes into account the
+!!permeable depth of the whole overlying soil:
+!!\f$\theta_{fc} = \theta_p /(b-1) \bullet (\Psi_{sat} b/ z_b )^{1/b} \bullet [(3b+2)^{(b-1)/b} - (2b+2)^{(b-1)/b} ]\f$
+!!
+!!The soil moisture suction \f$\Psi_{wilt}\f$ at the wilting point (the liquid water content at which plant roots can no
+!!longer draw water from the soil) is calculated from the saturated soil moisture suction using the Clapp and
+!!Hornberger (1978) expression, with the liquid water content approximated as 0.5 \f$\theta_{fc}\f$ :
+!!\f$\Psi_{wilt} = \Psi_{sat} (0.5 \theta_{fc} / \theta_p )^{-b}\f$
+!!Organic soils are flagged with an ISAND value of -2. For these soils, the variables \f$\theta_p\f$ , b, \f$K_{sat}\f$ , \f$\Psi_{sat}\f$ , \f$\theta_{min}\f$ , and
+!!\f$\theta_{ret}\f$ are assigned values based on the peat texture (fibric, hemic or sapric). These values are obtained from
+!!the arrays in common block CLASS5 (see the CLASSBD documentation above). The current default is
+!!to assume the first soil layer as fibric, the second as hemic, and any lower layers as sapric. The volumetric
+!!heat capacity and thermal conductivity are set to textbook values for organic matter; the field capacity is
+!!set equal to the retention capacity; \f$f_{inf}\f$ is obtained as above; and \f$\Psi_{wilt}\f$ is assume to apply at a liquid water
+!!content of \f$\theta_{min}\f$ .
+!!
+!!In the cases of rock soils and ice sheets (respectively flagged with ISAND values of -3 and -4), all of the
+!!above variables are set to zero except for the volumetric heat capacity and the thermal conductivity, which
+!!are assigned values representative of rock or ice.
+!!
+
       DO 300 J=1,IG
       DO 300 M=1,IM
       DO 300 I=IL1,IL2
