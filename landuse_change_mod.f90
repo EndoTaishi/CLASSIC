@@ -555,7 +555,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       integer il1               !<il1=1
       integer il2               !<il2=nilg
       integer nilg              !<no. of grid cells in latitude circle(this is passed in as either ilg or nlat depending on comp/mos)
-      integer i, j, k, m, n, k1, k2, q 
+      integer i, j, k, m, n, k1, k2, q !FLAG q needed? JM
       integer iday              !<day of year
       integer nol2pfts(ican)    !<number of level 2 pfts
       integer fraciord(nilg,icc)!<fractional coverage increase or decrease increase +1, decrease -1
@@ -633,6 +633,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !>---------------------------------------------------------------
 !>Constants and parameters are located in ctem_params.f90
 !>---------------------------------------------------------------
+
 
       if(icc.ne.9)                               call xit('luc',-1)  
       if(ican.ne.4)                              call xit('luc',-2)  
@@ -731,31 +732,29 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
           endif
 250     continue
 200   continue
-!>
-!!only perform the rest of the subroutine if any luc is actually taking place, otherwise exit.
-      do 255 q = il1, il2
-        if (luctkplc(q)) then
-!>-------------------------------------------------------------------
-!>initialization
-!>
+
+
+!     only perform the rest of the subroutine if any luc is actually taking 
+!     place, otherwise exit.
+      do 255 i = il1, il2
+        if (luctkplc(i)) then
+!     -------------------------------------------------------------------
+!     initialization
+
       do 260 j = 1, ican
-        do 261 i = il1, il2
             fcanmx(i,j)=0.0 ! fractional coverage of class' pfts
-261     continue      
-260   continue      
+260   continue
 
       do 270 j = 1, icc
-        do 271 i = il1, il2
-          fraciord(i,j)=0   
-          abvgmass(i,j)=0.0 
-          treatind(i,j)=0   
-          combustc(i,j)=0.0 
-          paperc(i,j)=0.0   
-          furnturc(i,j)=0.0 
-271     continue  
-270   continue      
+          fraciord(i,j)=0   !fractional coverage increase or decrease
+!                           !increase +1, decrease -1
+          abvgmass(i,j)=0.0 !above-ground biomass
+          treatind(i,j)=0   !treatment index for combust, paper, & furniture
+          combustc(i,j)=0.0 !total carbon from deforestation- combustion
+          paperc(i,j)=0.0   !total carbon from deforestation- paper
+          furnturc(i,j)=0.0 !total carbon from deforestation- furniture
+270   continue
 
-      do 280 i = il1, il2
         pvgbioms(i)=vgbiomas(i)  ! store grid average quantities in
         pgavltms(i)=gavgltms(i)  ! temporary arrays
         pgavscms(i)=gavgscms(i)
@@ -763,6 +762,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         vgbiomas(i)=0.0
         gavgltms(i)=0.0
         gavgscms(i)=0.0
+
 
         barefrac(i)=1.0          
         pbarefra(i)=1.0           
@@ -795,8 +795,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
         bareiord(i)=0             
         chopedbm(i)=0.0           
-/
-280   continue
+
+
 
 !>initialization ends
 
@@ -813,10 +813,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         endif
         k2 = k1 + nol2pfts(j) - 1
         do 301 m = k1, k2
-          do 302 i = il1, il2
             fcanmx(i,j)=fcanmx(i,j)+fcancmx(i,m)
             barefrac(i)=barefrac(i)-fcancmx(i,m)
-302       continue
 301     continue
 300   continue
 !>
@@ -824,8 +822,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !!extra amount from the pft with the largest area. jm apr 24 2013.
 !!but you can't take it from crops!
       pftarrays=0.
-      do 304 i = il1, il2
-         if (barefrac(i).lt.0.0) then !> compete only needs minbare but it checks later.
+
+         if (barefrac(i).lt.0.0) then ! compete only needs minbare but it checks later.
+
            k=1
            do j = 1,icc
             if (.not. crop(j)) then
@@ -846,56 +845,48 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                barefrac(i) = 0.0
             end if
          endif
-304   continue
 
 !>find previous day's bare fraction using previous day's fcancmxs
       do 310 j = 1, icc
-        do 311 i = il1, il2
           pbarefra(i)=pbarefra(i)-fcancmy(i,j)
-311     continue
 310   continue
 !>
 !>check if the interpol didn't mess up the pbarefra. if so, take the
 !!extra amount from the pft with the largest area. jm apr 24 2013.
 !!but you can't take it from crops!
-      do 314 i = il1, il2
          if (pbarefra(i).lt.0.0) then 
            k=1
            do j = 1,icc
             if (.not. crop(j)) then
              indexpos(i,k) = j
              pftarrays(i,k)=fcancmy(i,j)
-             k=k+1 
-            end if          
-           end do   
+             k=k+1
+            end if
+           end do
 
             lrgstpft = maxloc(pftarrays(i,:))
-            j = indexpos(i,lrgstpft(1))  
-             
+            j = indexpos(i,lrgstpft(1))
+
            if (compete) then
-                fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare 
-                pbarefra(i) = minbare 
+                fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare
+                pbarefra(i) = minbare
             else
                 fcancmy(i,j) = fcancmy(i,j) + pbarefra(i)
                 pbarefra(i) = 0.0
             end if
 
          endif
-314   continue
 !>
 !>based on sizes of 3 live pools and 2 dead pools we estimate the total amount of c in each grid cell.
 !>
       do 320 j = 1, icc
-        do 321 i = il1, il2
           totlmass(i)=totlmass(i)+ &
                      (fcancmy(i,j)*(gleafmas(i,j)+bleafmas(i,j)+ &
                       stemmass(i,j)+rootmass(i,j))*grclarea(i) &
                       *km2tom2)
-321     continue
 320   continue
 
       do 340 j = 1, iccp1
-        do 341 i = il1, il2
           if(j.lt.iccp1) then
             term = fcancmy(i,j)
           else if(j.eq.iccp1) then
@@ -905,17 +896,10 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                      (term*litrmass(i,j)*grclarea(i)*km2tom2)
           totdmas2(i)=totdmas2(i)+ & 
                      (term*soilcmas(i,j)*grclarea(i)*km2tom2)
-
-341     continue
 340   continue
 
-      do 350 i = il1, il2
         totcmass(i)=totlmass(i)+totdmas1(i)+totdmas2(i)
-350   continue
-!>
-!>bare fractions cannot be negative
-!>
-      do 440 i = il1, il2
+!     bare fractions cannot be negative
         if( pbarefra(i).lt.0.0.and.abs(pbarefra(i)).lt.1.0e-05 )then
           pbarefra(i)=0.0
         else if(pbarefra(i).lt.0.0.and.abs(pbarefra(i)).ge.1.0e-05 )then
@@ -932,10 +916,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
           write(6,*)'bare fraction(',i,')  =',barefrac(i)
           call xit('luc',-8)
         endif
-440   continue
-!>
-!>find above ground biomass and treatment index for combust, paper, and furniture
-!>
+!>     find above ground biomass and treatment index for combust, paper,
+!>     and furniture
       k1=0
       do 500 j = 1, ican
         if(j.eq.1) then
@@ -945,7 +927,6 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         endif
         k2 = k1 + nol2pfts(j) - 1
         do 510 m = k1, k2
-          do 520 i = il1, il2
             abvgmass(i,m)=gleafmas(i,m)+bleafmas(i,m)+stemmass(i,m)
             if(j.eq.1.or.j.eq.2) then  ! trees
               if(abvgmass(i,m).ge.bmasthrs(1)) then !forest
@@ -958,14 +939,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             else                       !crops and grasses
               treatind(i,m)=3
             endif
-520       continue
 510     continue
 500   continue
 
 !>check if a pft's fractional cover is increasing or decreasing
 
       do 550 j = 1, icc 
-        do 551 i = il1, il2
           if( ( fcancmx(i,j).gt.fcancmy(i,j)) .and. &
              (abs(fcancmy(i,j)-fcancmx(i,j)).gt.zero) ) then
               fraciord(i,j)=1  ! increasing
@@ -973,13 +952,10 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                   (abs(fcancmy(i,j)-fcancmx(i,j)).gt.zero) ) then
               fraciord(i,j)=-1 ! decreasing
           endif
-
-551     continue
 550   continue
 
 !>check if bare fraction increases of decreases
 
-      do 560 i = il1, il2
         if( ( barefrac(i).gt.pbarefra(i)) .and. &
            (abs(pbarefra(i)-barefrac(i)).gt.zero) ) then
               bareiord(i)=1  !increasing
@@ -987,14 +963,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                  (abs(pbarefra(i)-barefrac(i)).gt.zero) ) then
               bareiord(i)=-1 !decreasing
         endif
-560   continue
 
 !>        
 !>if the fractional coverage of pfts increases then spread their live & dead biomass uniformly 
 !!over the new fraction. this effectively reduces their per m2 c density. 
 !!
       do 570 j = 1, icc
-        do 571 i = il1, il2
           if(fraciord(i,j).eq.1)then
             term = fcancmy(i,j)/fcancmx(i,j)
             gleafmas(i,j)=gleafmas(i,j)*term
@@ -1004,18 +978,15 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             litrmass(i,j)=litrmass(i,j)*term
             soilcmas(i,j)=soilcmas(i,j)*term
           endif 
-571     continue
 570   continue
 !>
 !>if bare fraction increases then spread its litter and soil c uniformly over the increased fraction
 !>
-      do 580 i = il1, il2
         if(bareiord(i).eq.1)then
           term = pbarefra(i)/barefrac(i)
           litrmass(i,iccp1)=litrmass(i,iccp1)*term
           soilcmas(i,iccp1)=soilcmas(i,iccp1)*term
         endif
-580   continue
 !>
 !>if any of the pfts fractional coverage decreases, then we chop the
 !!aboveground biomass and treat it according to our rules (burn it,
@@ -1034,8 +1005,6 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         endif
         k2 = k1 + nol2pfts(j) - 1
         do 610 m = k1, k2
-          do 620 i = il1, il2
-
             if(fraciord(i,m).eq.-1)then
 
 !>chop off above ground biomass 
@@ -1085,14 +1054,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
               grsumsoc(i)=grsumsoc(i)+incrsolc(i,m)
             endif
 
-620       continue
 610     continue
 600   continue
 
 !>if bare fraction decreases then chop off the litter and soil c
 !!from the decreased fraction and add it to grsumlit & grsumsoc for spreading over the whole grid cell
 !!
-      do 630 i = il1, il2
         if(bareiord(i).eq.-1)then
 
           redubmas1=(pbarefra(i)-barefrac(i))*grclarea(i) &
@@ -1104,11 +1071,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
           grsumlit(i)=grsumlit(i)+redubmas1
           grsumsoc(i)=grsumsoc(i)+redubmas2
         endif
-630   continue
 
 !>calculate if the chopped off biomass equals the sum of grsumcom(i), grsumpap(i) & grsumfur(i)
 
-      do 632 i = il1, il2
        if( abs(chopedbm(i)-grsumcom(i)-grsumpap(i)-grsumfur(i)).gt. &
           tolrnce1 ) then
            write(6,*)'at grid cell = ',i
@@ -1122,23 +1087,19 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             grsumcom(i)+grsumpap(i)+grsumfur(i) 
            call xit('luc',-11)
        endif
-632   continue     
 !>
 !!spread chopped off stuff uniformly over the litter and soil c pools of all existing pfts, including the bare fraction.
 !!
 !!convert the available c into density 
 !!
-      do 640 i = il1, il2
         grdencom(i)=grsumcom(i)/(grclarea(i)*km2tom2)
         grdenpap(i)=grsumpap(i)/(grclarea(i)*km2tom2)
         grdenfur(i)=grsumfur(i)/(grclarea(i)*km2tom2)
         grdenlit(i)=grsumlit(i)/(grclarea(i)*km2tom2)
         grdensoc(i)=grsumsoc(i)/(grclarea(i)*km2tom2)
 
-640   continue
 
       do 650 j = 1, icc
-        do 651 i = il1, il2
           if(fcancmx(i,j).gt.zero)then
             litrmass(i,j)=litrmass(i,j)+grdenpap(i)+grdenlit(i)
             soilcmas(i,j)=soilcmas(i,j)+grdenfur(i)+grdensoc(i)
@@ -1150,10 +1111,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             litrmass(i,j)=0.0
             soilcmas(i,j)=0.0
           endif
-651     continue 
 650   continue
  
-      do 660 i = il1, il2
         if(barefrac(i).gt.zero)then
           litrmass(i,iccp1)=litrmass(i,iccp1)+grdenpap(i)+grdenlit(i)
           soilcmas(i,iccp1)=soilcmas(i,iccp1)+grdenfur(i)+grdensoc(i)
@@ -1161,16 +1120,11 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
           litrmass(i,iccp1)=0.0
           soilcmas(i,iccp1)=0.0
         endif
-660   continue
 
 !>the combusted c is used to find the c flux that we can release into the atmosphere.
 
-      do 670 i = il1, il2
         lucemcom(i)=grdencom(i)     
 !>this is flux in kg c/m2.day that will be emitted 
-!       lucltrin(i)=grdenpap(i)+grdenlit(i) ! flux in kg c/m2.day
-!       lucsocin(i)=grdenfur(i)+grdensoc(i) ! flux in kg c/m2.day
-
         lucltrin(i)=grdenpap(i) ! flux in kg c/m2.day
         lucsocin(i)=grdenfur(i) ! flux in kg c/m2.day
 
@@ -1179,21 +1133,16 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         lucltrin(i)=lucltrin(i)*963.62
         lucsocin(i)=lucsocin(i)*963.62
 
-670   continue
-
 !>and finally we see if the total amount of carbon is conserved
 
       do 700 j = 1, icc
-        do 701 i = il1, il2
           ntotlmas(i)=ntotlmas(i)+ &
                      (fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j)+&
                      stemmass(i,j)+rootmass(i,j))*grclarea(i) &
                      *km2tom2)
-701     continue
 700   continue
 
       do 710 j = 1, iccp1
-        do 711 i = il1, il2
           if(j.lt.iccp1) then
             term = fcancmx(i,j)
           else if(j.eq.iccp1) then
@@ -1203,16 +1152,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                      (term*litrmass(i,j)*grclarea(i)*km2tom2) 
           ntotdms2(i)=ntotdms2(i)+ & 
                      (term*soilcmas(i,j)*grclarea(i)*km2tom2)
-711     continue
 710   continue
 
-      do 720 i = il1, il2
         ntotcmas(i)=ntotlmas(i)+ntotdms1(i)+ntotdms2(i)
-720   continue
 !>
 !>total litter mass (before + input from chopped off biomass) and after must be same
 !>
-      do 722 i = il1, il2
         if( abs(totdmas1(i)+grsumpap(i)-ntotdms1(i)).gt.tolrnce1 )then   
            write(6,*)'at grid cell = ',i
            write(6,*)'total litter carbon does not balance after luc'
@@ -1223,11 +1168,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'ntotdms1(i) = ',ntotdms1(i)
            call xit('luc',-12)
         endif
-722   continue
 !>
 !>for conservation totcmass(i) must be equal to ntotcmas(i) plus combustion carbon losses
 !>
-      do 730 i = il1, il2
         if( abs(totcmass(i)-ntotcmas(i)-grsumcom(i)).gt.tolrnce1)then
            write(6,*)'at grid cell = ',i
            write(6,*)'total carbon does not balance after luc'
@@ -1236,27 +1179,21 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'grsumcom(i) = ',grsumcom(i)
            call xit('luc',-13)
         endif
-730   continue
 !>
 !>update grid averaged vegetation biomass, and litter and soil c densities
 !>
       do 750 j = 1, icc
-        do 751 i = il1, il2
           vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+ &
                      bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
           gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
           gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
-751     continue
 750   continue
 
-      do 760 i = il1, il2
         gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
         gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
-760   continue
 !>
 !>just like total amount of carbon must balance, the grid averagred densities must also balance
 !>
-      do 780 i = il1, il2
        if( abs(pvgbioms(i)+pgavltms(i)+pgavscms(i)- &
               vgbiomas(i)-gavgltms(i)-gavgscms(i)- &
               grdencom(i)).gt.tolrance ) then
@@ -1283,14 +1220,11 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'tolrance = ',tolrance
            call xit('luc',-14)
        endif
-780   continue
 
       do 800 j = 1, icc
-        do 810 i = il1, il2
           if(iday.eq.365)then
             pfcancmx(i,j)=nfcancmx(i,j)
           endif
-810     continue
 800   continue
 
        endif  ! loop to check if any luc took place. 

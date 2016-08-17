@@ -720,22 +720,23 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !>per PFT area burned, \f$km^2\f$
           burnarea_veg(i,j)=arbn1day_veg(i,j)*areamult(i)*(grclarea(i)*fcancmx(i,j)*probfire_veg(i,j))/reparea
-          
-!>------- Area burned based on number of fire calculations ----------------------\\
-!!
-!!This is not used in CTEM in general but we keep the code here for testing purposes
-!!
-!!the constant 4 is suppose to address the fact that Li et al. (2012) suggested to
-!!double the fire spread rates. However, if we do that than our usual calculations
-!!based on CTEM's original parameterization will be affected. Rather than do that
-!!we just use a multiplier of 4, since doubling fire spread rates means 4 times the
-!!area burned
-!!
-!!burnarea_veg(i,j)=arbn1day_veg(i,j)*num_fires(i,j)*2.0  !flag test was 4!
-!!
-!!------- Area burned based on number of fire calculations ----------------------//
-!!
-!!if area burned greater than area of PFT, set it to area of PFT
+
+
+!          ------- Area burned based on number of fire calculations ----------------------\\
+
+!       This is not used in CTEM in general but we keep the code here for testing purposes
+
+!         the constant 4 is suppose to address the fact that Li et al. (2012) suggested to
+!         double the fire spread rates. However, if we do that than our usual calculations
+!         based on CTEM's original parameterization will be affected. Rather than do that
+!         we just use a multiplier of 4, since doubling fire spread rates means 4 times the
+!         area burned
+!
+!          burnarea_veg(i,j)=arbn1day_veg(i,j)*num_fires(i,j)*2.0  !flag test was 4!
+ !
+!          ------- Area burned based on number of fire calculations ----------------------//
+
+!         if area burned greater than area of PFT, set it to area of PFT
 
           if ( burnarea_veg(i,j) .gt. grclarea(i)*fcancmx(i,j) ) then
              burnarea_veg(i,j)=grclarea(i)*fcancmx(i,j)

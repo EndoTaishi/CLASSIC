@@ -120,17 +120,18 @@ real, allocatable, dimension(:,:) :: lonbound
 ! MONTH YEAR  SW     LW      QH      QE    SNOACC    WSNOACC    ROFACC      PCP      EVAP      TAir
 !             W/m2    W/m2    W/m2    W/m2    kg/m2   kg/m2      mm.mon    mm.mon    mm.mon    degC
 
-integer, parameter :: numclasvars_m = 12   !number of monthly CLASS vars to write
+integer, parameter :: numclasvars_m = 14   !number of monthly CLASS vars to write
 
 character(100), parameter, dimension(numclasvars_m) :: CLASS_M_VAR=['SW           ','LW','QH','QE','SNOACC','WSNOACC',                 &
-                                                                    'ROFACC','PCP','EVAP','TA','TRANSP','TE']
+                                                                    'ROFACC','PCP','EVAP','TA','TRANSP','TE','GROUNDEVAP','CANOPYEVAP']
 
 character(100), parameter, dimension(numclasvars_m) :: CLASS_M_NAME=['Shortwave radiation                      ','Longwave radiation','Sensible heat flux','Latent heat flux',                     &
                                                                      'Mass of snow pack','Liquid water content of snow pack','Total runoff from soil',                       &
-                                                                     'Precipitation','Evaporation','Air temperature','Transpiration','Transpiration / Evaporation']
+                                                                     'Precipitation','Evaporation','Air temperature','Transpiration','Transpiration / Evaporation',&
+                                                                     'Ground evaporation+sublimation','Canopy evaporation+sublimation']
 
 character(100), parameter, dimension(numclasvars_m) :: CLASS_M_UNIT=['W/$m^2$        ','W/$m^2$','W/$m^2$','W/$m^2$','kg/$m^2$','kg/$m^2$','mm/month',              &
-                                                                     'mm/month','mm/month','$\circ$C','mm/month','ratio']
+                                                                     'mm/month','mm/month','$\circ$C','mm/month','ratio','kg/$m^2$','kg/$m^2$']
 
 ! CLASS Soil vars are stored in a separate file.
 
@@ -168,35 +169,36 @@ character(100), parameter, dimension(numclasvars_a) :: CLASS_Y_UNIT=['W/$m^2$   
 
 ! NOTE: These do not include disturbance or competition variables. 
 
-integer, parameter :: numctemvars_m = 12  !number of annual CTEM vars to write
+integer, parameter :: numctemvars_m = 14  !number of annual CTEM vars to write
 
 ! .CT01M_G
 !  MONTH  YEAR  LAIMAXG  VGBIOMAS  LITTER    SOIL C    NPP       GPP        NEP       NBP    HETRES   AUTORES    LITRES   SOILRES
 !                 m2/m2  Kg C/m2  Kg C/m2   Kg C/m2  gC/m2.mon  gC/m2.mon  gC/m2.mon  g/m2.mon   g/m2.mon gC/m2.mon  gC/m2.mon  gC/m2.mon
 
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR=['LAIMAXG           ','VGBIOMAS','LITTER','SOIL_C','NPP','GPP','NEP',   &
-                                                                   'NBP','HETRESP','AUTORESP','LITRESP','SOILCRESP' ]
+                                                                   'NBP','HETRESP','AUTORESP','LITRESP','SOILCRESP','LITRFALL','HUMIFTRS' ]
 
 ! We respecify them here for the Grid-Averaged values
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR_GA=['LAIMAXG_GA          ','VGBIOMAS_GA','LITTER_GA','SOIL_C_GA','NPP_GA','GPP_GA','NEP_GA',   &
-                                                                   'NBP_GA','HETRESP_GA','AUTORESP_GA','LITRESP_GA','SOILCRESP_GA' ]
+                                                                   'NBP_GA','HETRESP_GA','AUTORESP_GA','LITRESP_GA','SOILCRESP_GA','LITRFALL_GA','HUMIFTRS_GA' ]
 
 ! We respecify them here for the Grid-Averaged values
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_VAR_TA=['LAIMAXG_TA          ','VGBIOMAS_TA','LITTER_TA','SOIL_C_TA','NPP_TA','GPP_TA','NEP_TA',   &
-                                                                   'NBP_TA','HETRESP_TA','AUTORESP_TA','LITRESP_TA','SOILCRESP_TA' ]
+                                                                   'NBP_TA','HETRESP_TA','AUTORESP_TA','LITRESP_TA','SOILCRESP_TA','LITRFALL_TA','HUMIFTRS_TA' ]
 
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_NAME=['Maximum LAI from month                  ','Grid averaged vegetation biomass','Litter mass',                              &
                                                                     'Soil C mass','Grid averaged monthly net primary productivity',                                         &
                                                                     'Monthly gross primary productivity','Monthly net ecosystem productivity',                              &
                                                                     'Monthly net biome productivity','Monthly heterotrophic respiration',                                   &
-                                                                    'Monthly autotrophic respiration','Monthly litter respiration','Monthly soil carbon respiration' ]
+                                                                    'Monthly autotrophic respiration','Monthly litter respiration','Monthly soil carbon respiration',&
+                                                                    'Monthly transfers from veg to litter','Monthly transfers from litter to soil C' ]
 
 character(100), parameter, dimension(numctemvars_m) :: CTEM_M_UNIT=['$m^2$/$m^2$               ','kg C/$m^2$','kg C/$m^2$','kg C/$m^2$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$', &
-                                                                    'gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$' ]
+                                                                    'gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$','gC $m^{-2}$ month$^{-1}$' ]
 
 !====DISTURBANCE================== Declare arrays for monthly CTEM COMPOSITE AND tiled =============
 
-integer, parameter :: nctemdistvars_m = 20  !number of annual CTEM disturbance vars to write
+integer, parameter :: nctemdistvars_m = 21  !number of annual CTEM disturbance vars to write
 
 ! .CT06M_G
 !  MONTH  YEAR  CO2        CO        CH4      NMHC       H2       NOX       N2O       PM25       TPM        TC        OC        BC   PROBFIRE  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC
@@ -204,15 +206,15 @@ integer, parameter :: nctemdistvars_m = 20  !number of annual CTEM disturbance v
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR=['CO2                 ','CO','CH4','NMHC','H2','NOX',                         &
                                                                    'N2O','PM25','TPM','TC','OC','BC','PROBFIRE','LUC_CO2',&
-                                                                   'LUC_LITR','LUC_SOC','BURNFRAC','BTERM','LTERM','MTERM' ]
+                                                                   'LUC_LITR','LUC_SOC','BURNFRAC','BTERM','LTERM','MTERM','WIND' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR_GA=['CO2_GA                  ','CO_GA','CH4_GA','NMHC_GA','H2_GA','NOX_GA',                         &
                                                                    'N2O_GA','PM25_GA','TPM_GA','TC_GA','OC_GA','BC_GA','PROBFIRE_GA','LUC_CO2_GA',&
-                                                                   'LUC_LITR_GA','LUC_SOC_GA','BURNFRAC_GA','BTERM_GA','LTERM_GA','MTERM_GA' ]
+                                                                   'LUC_LITR_GA','LUC_SOC_GA','BURNFRAC_GA','BTERM_GA','LTERM_GA','MTERM_GA','WIND_GA' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR_TA=['CO2_TA                  ','CO_TA','CH4_TA','NMHC_TA','H2_TA','NOX_TA',                         &
                                                                    'N2O_TA','PM25_TA','TPM_TA','TC_TA','OC_TA','BC_TA','PROBFIRE_TA','LUC_CO2_TA',&
-                                                                   'LUC_LITR_TA','LUC_SOC_TA','BURNFRAC_TA','BTERM_TA','LTERM_TA','MTERM_TA' ]
+                                                                   'LUC_LITR_TA','LUC_SOC_TA','BURNFRAC_TA','BTERM_TA','LTERM_TA','MTERM_TA','WIND_TA' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_NAME=['Monthly disturbance CO2 emissions                   ','Monthly disturbance CO emissions',                                 &
                                                                     'Monthly disturbance CH4 emissions','Monthly disturbance non-CH4 hydrocarbons emissions',               &
@@ -222,7 +224,7 @@ character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_NAME=['Monthly
                                                                     'Monthly disturbance organic C emissions','Monthly disturbance black C emissions',                      &
                                                                     'Monthly fire probability','Monthly land use CO2 emissions','Monthly land use litter additions',        &
                                                                     'Monthly land use soil C additions','Monthly burned fraction','Monthly fire probability-Biomass',       &
-                                                                    'Monthly fire probability-Lightning','Monthly fire probability-Moisture' ]
+                                                                    'Monthly fire probability-Lightning','Monthly fire probability-Moisture','Monthly wind' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_UNIT=['g CO$_2$ $m^{-2}$ month$^{-1}$                     ','g CO $m^{-2}$ month$^{-1}$','g $CH_4$ $m^{-2}$ month$^{-1}$',&
                                                                     'g NMHC $m^{-2}$ month$^{-1}$',                   &
@@ -230,7 +232,7 @@ character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_UNIT=['g CO$_2
                                                                     'g PM2.5 $m^{-2}$ month$^{-1}$',                                 &
                                                                     'g TPM $m^{-2}$ month$^{-1}$','g total C $m^{-2}$ month$^{-1}$','g OC $m^{-2}$ month$^{-1}$',&
                                                                     'g BC $m^{-2}$ month$^{-1}$',                                 &
-                                                                    'kg $CO_2$/m$^2$','% ','kg C $m^{-2}$ month$^{-1}$','kg C $m^{-2}$ month$^{-1}$','fraction   ','% ','% ','% ' ]
+                                                                    'kg $CO_2$/m$^2$','% ','kg C $m^{-2}$ month$^{-1}$','kg C $m^{-2}$ month$^{-1}$','fraction   ','% ','% ','% ','m/s' ]
 
 !====COMPETITION/LUC================== Declare arrays for monthly CTEM COMPOSITE AND tiled =============
 
@@ -250,7 +252,7 @@ character(100), parameter, dimension(nctemcompvars_m) :: CTEM_M_C_UNIT=['Percent
 
 ! NOTE: These do not include disturbance or competition variables. 
 
-integer, parameter :: numctemvars_a = 15  !number of annual CTEM vars to write
+integer, parameter :: numctemvars_a = 16  !number of annual CTEM vars to write
 
 ! .CT01Y_G
 ! YEAR   LAIMAXG  VGBIOMAS  STEMMASS  ROOTMASS  LITRMASS  SOILCMAS  TOTCMASS  ANNUALNPP ANNUALGPP ANNUALNEP ANNUALNBP ANNHETRSP ANAUTORSP ANNLITRES ANSOILRES
@@ -259,18 +261,18 @@ integer, parameter :: numctemvars_a = 15  !number of annual CTEM vars to write
 character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_VAR=['LAIMAXG_A               ','VGBIOMAS_A','STEMMASS_A','ROOTMASS_A',   &
                                                                    'LITRMASS_A','SOILCMAS_A','TOTCMASS','ANNUALNPP',                &
                                                                    'ANNUALGPP','ANNUALNEP','ANNUALNBP','ANNUALHETRESP',         &
-                                                                   'ANNUALAUTORESP','ANNUALLITRESP','ANNUALSOILCRESP' ]
+                                                                   'ANNUALAUTORESP','ANNUALLITRESP','ANNUALSOILCRESP','VEGHGHT' ]
 
 ! We respecify them here for the Grid-Averaged values
 character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_VAR_GA=['LAIMAXG_A_GA                  ','VGBIOMAS_A_GA','STEMMASS_A_GA','ROOTMASS_A_GA',   &
                                                                    'LITRMASS_A_GA','SOILCMAS_A_GA','TOTCMASS_GA','ANNUALNPP_GA',                &
                                                                    'ANNUALGPP_GA','ANNUALNEP_GA','ANNUALNBP_GA','ANNUALHETRESP_GA',         &
-                                                                   'ANNUALAUTORESP_GA','ANNUALLITRESP_GA','ANNUALSOILCRESP_GA' ]
+                                                                   'ANNUALAUTORESP_GA','ANNUALLITRESP_GA','ANNUALSOILCRESP_GA','VEGHGHT_GA' ]
 
 character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_VAR_TA=['LAIMAXG_A_TA                  ','VGBIOMAS_A_TA','STEMMASS_A_TA','ROOTMASS_A_TA',   &
                                                                    'LITRMASS_A_TA','SOILCMAS_A_TA','TOTCMASS_TA','ANNUALNPP_TA',                &
                                                                    'ANNUALGPP_TA','ANNUALNEP_TA','ANNUALNBP_TA','ANNUALHETRESP_TA',         &
-                                                                   'ANNUALAUTORESP_TA','ANNUALLITRESP_TA','ANNUALSOILCRESP_TA' ]
+                                                                   'ANNUALAUTORESP_TA','ANNUALLITRESP_TA','ANNUALSOILCRESP_TA','VEGHGHT_TA' ]
 
 character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_NAME=['Maximum LAI from month               ','Grid averaged vegetation biomass',        &
                                                                     'Grid averaged stem biomass', 'Grid averaged root biomass',         &
@@ -280,14 +282,14 @@ character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_NAME=['Maximum LAI
                                                                     'Annual net ecosystem productivity',                                &
                                                                     'Annual net biome productivity','Annual heterotrophic respiration', &
                                                                     'Annual autotrophic respiration','Annual litter respiration',       &
-                                                                    'Annual soil carbon respiration' ]
+                                                                    'Annual soil carbon respiration','Vegetation height' ]
 
 character(100), parameter, dimension(numctemvars_a) :: CTEM_Y_UNIT = ['m$^2$/m$^2$           ','kg C/m$^2$','kg C/m$^2$','kg C/m$^2$','kg C/m$^2$',            &
                                                                       'kg C/m$^2$','kg C/m$^2$','g C m$^{-2}$ year$^{-1}$','g C m$^{-2}$ year$^{-1}$',&
                                                                       'g C m$^{-2}$ year$^{-1}$',  &
                                                                       'g C m$^{-2}$ year$^{-1}$','g C m$^{-2}$ year$^{-1}$','g C m$^{-2}$ year$^{-1}$',&
                                                                       'g C m$^{-2}$ year$^{-1}$',          &
-                                                                      'g C m$^{-2}$ year$^{-1}$' ] 
+                                                                      'g C m$^{-2}$ year$^{-1}$','m' ]
 
 !====DISTURBANCE==================== Declare arrays for annual CTEM COMPOSITE AND tiled=============
 

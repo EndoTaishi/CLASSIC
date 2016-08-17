@@ -37,6 +37,15 @@
 !! trans_startyr = 2000, <-- whatever year you want to start at \n
 !! CYCLEMET = .FALSE. ,  <-- note this is set to FALSE.
 !!
+! +++++++++++++++++++++++++++++++
+!!
+!! If you want a transient CO2 run that DOES spin over climate, you need to change from above the following:
+
+!! (only the relevant switches are shown below) \n
+!! trans_startyr = 2000, <-- whatever year you want the CO2 to start at (note: the run will end at the end of the CO2 file)\n
+!! CO2ON = .TRUE.\n
+!! SETCO2CONC = 285.00 , <-- Now ignored.\n
+!!
 !! ------------------------------
 !!
 !! To set up a spinup run:
@@ -71,7 +80,11 @@ subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ct
 !use f90_unix
 !#endif
 
-!           
+!       History:
+!
+!     28  Jul  2016  - Add ability to have changing CO2 but cycling climate
+!     J. Melton        this was for the TRENDY project but generally useful so
+!                      keep in.
 !     3   Feb  2016 - Remove mosaic flag. It is no longer required.
 !     J. Melton
 
@@ -108,7 +121,8 @@ logical, intent(out) :: transient_run !< true if the run is a transient run. Wit
                                  !< from 1850. See the bottom of this subroutine for an example of how to 
                                  !< set this correctly.  
                                  
-integer, intent(out) :: trans_startyr !< the year you want the transient run to start (e.g. 1850)                                                                
+integer, intent(out) :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
+                                      !! are not doing a transient run, set to a negative value (like -9999)
 
 integer, intent(out) :: ctemloop !< no. of times the .met file is to be read. this
                     	         !< option is useful to see how ctem's c pools
@@ -386,8 +400,6 @@ read(10,nml = joboptions)
 close(10)
 
 call getarg(2,argbuff)
-
-
 
 end subroutine read_from_job_options
 
