@@ -1,3 +1,6 @@
+!>\file
+!!              Canadian Terrestrial Ecosystem Model (CTEM)
+!!
       subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,
      1      ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,
      2      ailcgsrow,   fcancsrow,   fcancrow,     rmatctemrow,
@@ -84,9 +87,6 @@ c --
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat)
-c
-c
-C              Canadian Terrestrial Ecosystem Model (CTEM)
 c
 C     July 12 2013    Bring in the ctem params use statement
 c     J. Melton

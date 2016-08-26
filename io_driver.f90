@@ -1,6 +1,36 @@
-module io_driver
+!>\defgroup io_driver_read_from_ctm
+!>
+!>This subroutine reads in the restart/starting conditions from
+!!the .CTM file. The input values are checked and possibly adjusted
+!!if the run is intended to be with competition on and if the start_bare flag is true. 
+!------------------------------------------------------------------------------------
+!>\defgroup io_driver_write_ctm_rs
+!>
+!>After a set period is complete the restart file for CTEM (.CTM_RS) is written
+!!this restart file contains all of the CTEM level information needed to 
+!!to restart the model to the same state.
+!------------------------------------------------------------------------------------
+!>\defgroup io_driver_create_outfiles
+!>All output files are initialized in this subroutine
+!------------------------------------------------------------------------------------
+!>\defgroup io_driver_class_monthly_aw
+!>Accumulate and write out the monthly CTEM outputs
+!------------------------------------------------------------------------------------
+!>\defgroup io_driver_class_annual_aw
+!------------------------------------------------------------------------------------
+!>\defgroup io_driver_ctem_daily_aw
+!>Accumulate and write out the daily CTEM outputs
+!------------------------------------------------------------------------------------
+!>\defgroup io_driver_ctem_monthly_aw
+!------------------------------------------------------------------------------------
+!>\defgroup io_driver_ctem_annual_aw
+!------------------------------------------------------------------------------------
+!>\defgroup io_driver_close_outfiles
+!------------------------------------------------------------------------------------
 
-! Central module that handles all CTEM reading and writing of external files
+!>\file
+!!Central module that handles all CTEM reading and writing of external files
+module io_driver
 
 ! J. Melton Mar 30 2015
 
@@ -22,17 +52,15 @@ contains
 
 !-------------------------------------------------------------------------------------------------------------
 
+!>\ingroup io_driver_read_from_ctm
+!!@{
+
 subroutine read_from_ctm(nltest,nmtest,FCANROT,FAREROT,RSMNROT,QA50ROT, &
                          VPDAROT,VPDBROT,PSGAROT,PSGBROT,DRNROT,SDEPROT, &
                          XSLPROT,GRKFROT,WFSFROT,WFCIROT,MIDROT,SANDROT, &
                          CLAYROT,ORGMROT,TBARROT,THLQROT,THICROT,TCANROT, &
                          TSNOROT,TPNDROT,ZPNDROT,RCANROT,SCANROT,SNOROT, &
                          ALBSROT,RHOSROT,GROROT,argbuff,onetile_perPFT)
-
-!   This subroutine reads in the restart/starting conditions from
-!   the .CTM file. The input values are checked and possibly adjusted
-!   if the run is intended to be with competition on and if the start_bare
-!   flag is true. 
 
 use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero
 use ctem_statevars,     only : c_switch,vrot,vgat
@@ -97,16 +125,16 @@ real, pointer, dimension(:,:,:) :: stemmassrow          !
 real, pointer, dimension(:,:,:) :: rootmassrow          !
 real, pointer, dimension(:,:,:) :: pstemmassrow         !
 real, pointer, dimension(:,:,:) :: pgleafmassrow        !     
-real, pointer, dimension(:,:) :: twarmm                   ! temperature of the warmest month (c)
-real, pointer, dimension(:,:) :: tcoldm                   ! temperature of the coldest month (c)
-real, pointer, dimension(:,:) :: gdd5                     ! growing degree days above 5 c
-real, pointer, dimension(:,:) :: aridity                  ! aridity index, ratio of potential evaporation to precipitation
-real, pointer, dimension(:,:) :: srplsmon                 ! number of months in a year with surplus water i.e.precipitation more than potential evaporation
-real, pointer, dimension(:,:) :: defctmon                 ! number of months in a year with water deficit i.e.precipitation less than potential evaporation
-real, pointer, dimension(:,:) :: anndefct                 ! annual water deficit (mm)
-real, pointer, dimension(:,:) :: annsrpls                 ! annual water surplus (mm)
-real, pointer, dimension(:,:) :: annpcp                   ! annual precipitation (mm)
-real, pointer, dimension(:,:) :: dry_season_length        ! length of dry season (months)
+real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
+real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
+real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
+real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
+real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
+real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
+real, pointer, dimension(:,:) :: anndefct          !< annual water deficit (mm)
+real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
+real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
+real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
 real, pointer, dimension(:,:,:) :: litrmassrow
 real, pointer, dimension(:,:,:) :: soilcmasrow
 real, pointer, dimension(:,:) :: extnprob
@@ -173,34 +201,28 @@ read (11,7010) titlec3
 
 7010  FORMAT(A80)
 
-!  Read from CTEM initialization file (.CTM)
+!>Read from CTEM initialization file (.CTM)
 
   do 71 i=1,nltest
     do 72 m=1,nmtest
-
-!       The following three variables are needed to run CTEM.
-!       1) min & 2) max leaf area index are needed to break
-!       class lai into dcd and evg for trees (for crops and grasses it
-!       doesn't matter much). 3) dvdfcanrow is needed to divide needle & broad leaf into dcd and evg,
-!       and crops & grasses into c3 and c4 fractions.
-
+!>
+!>The following three variables are needed to run CTEM. 1) min & 2) max leaf area index are needed to break
+!>class lai into dcd and evg for trees (for crops and grasses it doesn't matter much). 3) dvdfcanrow is 
+!>needed to divide needle & broad leaf into dcd and evg, and crops & grasses into c3 and c4 fractions.
         read(11,*) (ailcminrow(i,m,j),j=1,icc)
         read(11,*) (ailcmaxrow(i,m,j),j=1,icc)
         read(11,*) (dvdfcanrow(i,m,j),j=1,icc)
-
-!       Rest of the initialization variables are needed to run CTEM but
-!       if starting from bare ground initialize all live and dead c pools from zero. suitable values
-!       of extnprobgrd and prbfrhucgrd would still be required. set stdaln to
-!       1 for operation in non-gcm stand alone mode, in the CTEM
-!       initialization file.
-
+!>
+!>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all 
+!>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set 
+!>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
+!>
         read(11,*) (gleafmasrow(i,m,j),j=1,icc)
         read(11,*) (bleafmasrow(i,m,j),j=1,icc)
         read(11,*) (stemmassrow(i,m,j),j=1,icc)
         read(11,*) (rootmassrow(i,m,j),j=1,icc)
-
-!       If fire and competition are on, save the stemmass and rootmass for
-!       use in burntobare subroutine on the first timestep.
+!>
+!>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
         if (dofire .and. compete) then
             do j =1,icc
             pstemmassrow(i,m,j)=stemmassrow(i,m,j)
@@ -239,7 +261,7 @@ read (11,7010) titlec3
             dry_season_length(i,1) = 0.0
         endif
 
-! Take the first tile value now and put it over the other tiles
+!>Take the first tile value now and put it over the other tiles
         if (nmtest > 1) then
             do m = 2,nmtest
                 twarmm(i,m)=twarmm(i,1)
@@ -271,8 +293,7 @@ read (11,7010) titlec3
 close(11)
     
 
-!     Check that a competition or luc run has the correct number of mosaics.
-!     if it is not a start_bare run, then nmtest should equal nmos
+!>Check that a competition or luc run has the correct number of mosaics. if it is not a start_bare run, then nmtest should equal nmos
       if (onetile_perPFT .and. (compete .or. lnduseon) .and. .not. start_bare) then
         if (nmtest .ne. nmos) then
            write(6,*)'compete or luc runs that do not start from bare'
@@ -281,27 +302,24 @@ close(11)
             call xit('runclass36ctem', -2)
         endif
       endif
-
-!     if this run uses the competition or lnduseon parameterization and
-!     starts from bare ground, set up the model state here. this 
-!     overwrites what was read in from the .ini and .ctm files. 
-!     for composite runs (the composite set up is after this one for mosaics)
+!>
+!>if this run uses the competition or lnduseon parameterization and starts from bare ground, set up the model state here. this 
+!>overwrites what was read in from the .ini and .ctm files. for composite runs (the composite set up is after this one for mosaics)
       if ((compete .or. lnduseon) .and. start_bare) then
 
        if (onetile_perPFT) then
-
-!       store the read-in crop fractions as we keep them even when we start bare. 
-!       FLAG: this is setup assuming that crops are in mosaics 6 and 7. JM Apr 9 2014.
+!>
+!!store the read-in crop fractions as we keep them even when we start bare. 
+!!FLAG: this is setup assuming that crops are in mosaics 6 and 7. JM Apr 9 2014.
          do i=1,nltest
           crop_temp_frac(i,1)=FAREROT(i,6)
           crop_temp_frac(i,2)=FAREROT(i,7)
          end do
 
-!       check the number of mosaics that came from the .ini file
+!>check the number of mosaics that came from the .ini file
         if (nmtest .ne. nmos) then
 
-!        we need to transfer some initial parameterization info to all
-!        mosaics, so set all values to that of the first mosaic.
+!>we need to transfer some initial parameterization info to all mosaics, so set all values to that of the first mosaic.
          do i=1,nltest
           do m=nmtest+1,nmos
 
@@ -349,15 +367,15 @@ close(11)
           enddo !m
          enddo !i
 
-!       set the number of mosaics to icc+1        
+!>set the number of mosaics to icc+1        
         nmtest=nmos
 
-        endif  !if (nmtest .ne. nmos)
+        endif  !>if (nmtest .ne. nmos)
 
-!       set the initial conditions for the pfts
-!       (bah, this is such an inelegant way to do this, but oh well...)
+!>set the initial conditions for the pfts
+! (bah, this is such an inelegant way to do this, but oh well...)
 
-!       initalize to zero
+!>initalize to zero
         FCANROT=0.0
         dvdfcanrow=0.0
         FAREROT=0.0
@@ -365,7 +383,7 @@ close(11)
         do i=1,nltest
          do m=1,nmtest
 
-!         set the seed amount for each pft in its mosaic
+!>set the seed amount for each pft in its mosaic
           if (compete .or. lnduseon) then
             if (m .lt. icc+1) then
              FAREROT(i,m)=seed
@@ -392,13 +410,13 @@ close(11)
             soilcmasrow(i,m,j)=0. 
           enddo
 
-!         initial conditions always required
+!>initial conditions always required
           dvdfcanrow(i,m,1)=1.0  !ndl
           dvdfcanrow(i,m,3)=1.0  !bdl
           dvdfcanrow(i,m,6)=1.0  !crop
           dvdfcanrow(i,m,8)=1.0  !grasses
 
-!         then adjusted below for the actual mosaic makeup
+!>then adjusted below for the actual mosaic makeup
           if (m .le. 2) then                     !ndl
            FCANROT(i,m,1)=1.0
            if (m .eq. 2) then
@@ -439,19 +457,19 @@ close(11)
           FAREROT(i,7)=crop_temp_frac(i,2)
          end do
 
-      else if (.not. onetile_perPFT) then  !set up for composite runs when start_bare is on and compete or landuseon
+      else if (.not. onetile_perPFT) then  
+!>set up for composite runs when start_bare is on and compete or landuseon
 
-!       store the read-in crop fractions as we keep them even when we start bare. 
-!       FLAG: this is setup assuming that crops are in pft number 6 and 7.
-!       and the first tile contains the information for the grid cell (assumes we have crops in
-!       every tile too! JM Apr 9 2014.
+!>store the read-in crop fractions as we keep them even when we start bare. 
+!!FLAG: this is setup assuming that crops are in pft number 6 and 7.
+!!and the first tile contains the information for the grid cell (assumes we have crops in
+!!every tile too! JM Apr 9 2014.
          do i=1,nltest
           crop_temp_frac(i,1)=FCANROT(i,1,3)*dvdfcanrow(i,1,6)
           crop_temp_frac(i,2)=FCANROT(i,1,3)*dvdfcanrow(i,1,7)
          end do
-
-!      initalize to zero, these will be filled in by the luc or 
-!      competition subroutines.
+!>
+!>initalize to zero, these will be filled in by the luc or competition subroutines.
        FCANROT=0.0
        dvdfcanrow=0.0
 
@@ -472,7 +490,7 @@ close(11)
        do i=1,nltest
          do m = 1,nmtest
 
-    !      initial conditions always required
+    !>initial conditions always required
             dvdfcanrow(i,m,1)=1.0  !ndl
             dvdfcanrow(i,m,3)=1.0  !bdl
             dvdfcanrow(i,m,6)=1.0  !crop
@@ -515,8 +533,11 @@ close(11)
       end if !if (compete/landuseon .and. start_bare) 
 
 end subroutine read_from_ctm
-
+!>@}
 !==============================================================================================================
+
+!>\ingroup io_driver_write_ctm_rs
+!>@{
 
 subroutine write_ctm_rs(nltest,nmtest,FCANROT,argbuff)
 
@@ -559,17 +580,17 @@ real, pointer, dimension(:,:) :: extnprob
 real, pointer, dimension(:,:) :: prbfrhuc
 real, pointer, dimension(:,:,:) :: mlightng
 integer, pointer, dimension(:,:) :: stdaln
-real, pointer, dimension(:,:) :: twarmm                   ! temperature of the warmest month (c)
-real, pointer, dimension(:,:) :: tcoldm                   ! temperature of the coldest month (c)
-real, pointer, dimension(:,:) :: gdd5                     ! growing degree days above 5 c
-real, pointer, dimension(:,:) :: aridity                  ! aridity index, ratio of potential evaporation to precipitation
-real, pointer, dimension(:,:) :: srplsmon                 ! number of months in a year with surplus water i.e.precipitation more than potential evaporation
-real, pointer, dimension(:,:) :: defctmon                 ! number of months in a year with water deficit i.e.precipitation less than potential evaporation
-real, pointer, dimension(:,:) :: anndefct                 ! annual water deficit (mm)
-real, pointer, dimension(:,:) :: annsrpls                 ! annual water surplus (mm)
-real, pointer, dimension(:,:) :: annpcp                   ! annual precipitation (mm)
-real, pointer, dimension(:,:) :: dry_season_length        ! length of dry season (months)
-real, pointer, dimension(:,:,:) :: slopefrac                ! Fraction flatter than the slope threshold
+real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
+real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
+real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
+real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
+real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
+real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
+real, pointer, dimension(:,:) :: anndefct          !< annual water deficit (mm)
+real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
+real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
+real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
+real, pointer, dimension(:,:,:) :: slopefrac       !< Fraction flatter than the slope threshold
 
 ! local variables
 
@@ -624,7 +645,7 @@ write(101,7010) titlec3
 
 7010  FORMAT(A80)
 
-! if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
+!> if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
 if (lnduseon .or. compete ) then
   icountrow=0
   do j = 1, ican
@@ -644,7 +665,7 @@ if (lnduseon .or. compete ) then
           end if !modelpft
         end do !n
     
-        ! check to ensure that the dvdfcanrow's add up to 1 across a class-level pft
+        !> check to ensure that the dvdfcanrow's add up to 1 across a class-level pft
         if (dvdfcanrow(i,m,1) .eq. 0. .and. dvdfcanrow(i,m,2) .eq. 0.) then
             dvdfcanrow(i,m,1)=1.0
         else if (dvdfcanrow(i,m,3) .eq. 0. .and. dvdfcanrow(i,m,4) .eq. 0. .and. dvdfcanrow(i,m,5) .eq. 0.) then
@@ -662,11 +683,9 @@ if (lnduseon .or. compete ) then
   do i=1,nltest
    do m=1,nmtest 
     do j = 1, icc
-!            Lastly check if the different pfts accidently add up > 1.0
-!            after rounding to the number of sig figs used in the output
-!            this rounds to 3 decimal places. if you are found to be over
-!            or under, arbitrarily reduce one of the pfts. the amount of
-!            the change will be inconsequential. 
+!>Lastly check if the different pfts accidently add up > 1.0 after rounding to the number of sig figs used in the output
+!>this rounds to 3 decimal places. if you are found to be over or under, arbitrarily reduce one of the pfts. the amount of
+!>the change will be inconsequential. 
        rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 1000.0))/ 1000.0
        dvdfcanrow(i,m,j) = rnded_pft(j)
     end do
@@ -715,13 +734,13 @@ do i=1,nltest
     write(101,"(i4)") stdaln(i,1)
 
     if (compete) then
-    !   We can write out the first tile value since these are the same across an entire gridcell.
+    !>We can write out the first tile value since these are the same across an entire gridcell.
         write(101,7014)twarmm(i,1),tcoldm(i,1),gdd5(i,1),aridity(i,1),srplsmon(i,1)
         write(101,7014)defctmon(i,1),anndefct(i,1),annsrpls(i,1), annpcp(i,1),dry_season_length(i,1)
     end if
 
     if (dowetlands) then     
-        ! Just write in the first tiles value since all tiles in a gridcell are the same.
+        !>Just write in the first tiles value since all tiles in a gridcell are the same.
         write(101,"(8f9.5)")(slopefrac(i,1,j),j=1,8)
     end if   
 
@@ -735,14 +754,16 @@ close(101)
 7014  format(5ES12.4)
 
 end subroutine write_ctm_rs        
-
+!>@}
 !==============================================================================================================
+
+!>\ingroup io_driver_create_outfiles
+!>@{
 
 subroutine create_outfiles(argbuff,title1, title2, title3, title4, title5, title6, name1, name2, name3, &
                            name4, name5, name6, place1 ,place2, place3, place4, place5, place6)
-                           
-!   All output files are initialized in this subroutine
 
+!   All output files are initialized in this subroutine
 use ctem_statevars,     only : c_switch,vrot,vgat
 
 implicit none
@@ -777,25 +798,24 @@ obswetf           => c_switch%obswetf
 parallelrun       => c_switch%parallelrun
 
 !-----     
-! begin:
-
-!      the ctem output file suffix naming convention is as follows:
-!                       ".CT##{time}"
-!      where the ## is a numerical identifier, {time} is any of H, D, M,
-!      or Y for half hourly, daily, monthly, or yearly, respectively. 
-
+!>begin:
+!!
+!!the ctem output file suffix naming convention is as follows: ".CT##{time}"
+!!where the ## is a numerical identifier, {time} is any of H, D, M,
+!!or Y for half hourly, daily, monthly, or yearly, respectively. 
+!!
      
 6001  FORMAT('#CLASS-CTEM TEST RUN:     ',6A4)
 6002  FORMAT('#RESEARCHER:         ',6A4)
 6003  FORMAT('#INSTITUTION:        ',6A4)
 
-if (.not. parallelrun .and. ctem_on) then ! stand alone mode, includes half-hourly and daily output
+if (.not. parallelrun .and. ctem_on) then !>stand alone mode, includes half-hourly and daily output
 
-    ! ctem half hourly output files
+    !>ctem half hourly output files
     open(unit=71, file=argbuff(1:strlen(argbuff))//'.CT01H_M')  
     open(unit=711,file=argbuff(1:strlen(argbuff))//'.CT01H_G')
 
-    !   ctem daily output files
+    !>ctem daily output files
     open(unit=72,file=argbuff(1:strlen(argbuff))//'.CT01D')
     open(unit=73,file=argbuff(1:strlen(argbuff))//'.CT02D')
     open(unit=74,file=argbuff(1:strlen(argbuff))//'.CT03D')
@@ -911,9 +931,9 @@ if (ctem_on .and. .not. parallelrun) then
 7112  FORMAT(' DAY  YEAR   CH4WET1    CH4WET2    WETFDYN   CH4DYN1  CH4DYN2  SOILUP ')
 7113  FORMAT('#          umolCH4/M2.S    umolCH4/M2.S          umolCH4/M2.S  umolCH4/M2.S  umolCH4/M2.S')
 
-end if !ctem_on & not parallelrun
+end if !>ctem_on & not parallelrun
 
-! CLASS MONTHLY FOR BOTH PARALLEL MODE AND STAND ALONE MODE
+!> CLASS MONTHLY FOR BOTH PARALLEL MODE AND STAND ALONE MODE
 
 OPEN(UNIT=81,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1M')
 WRITE(81,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
@@ -931,7 +951,7 @@ WRITE(82,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
 WRITE(82,6022)'MONTH','YEAR','TG1','THL1','THI1','TG2','THL2','THI2','TG3','THL3','THI3'
 WRITE(82,6022)'#','','deg','m3/m3','m3/m3','deg','m3/m3','m3/m3','deg','m3/m3','m3/m3'
 
-! CLASS YEARLY OUTPUT FILES
+!> CLASS YEARLY OUTPUT FILES
 
 OPEN(UNIT=83,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1Y')
 WRITE(83,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
@@ -942,7 +962,7 @@ WRITE(83,6023)'#','W/m2','W/m2','W/m2','W/m2','mm.yr','mm.yr','mm.yr','mm.yr','r
 
 if (ctem_on) then
 
-    open(unit=84,file=argbuff(1:strlen(argbuff))//'.CT01M') ! CTEM monthly output files
+    open(unit=84,file=argbuff(1:strlen(argbuff))//'.CT01M') !> CTEM monthly output files
     write(84,6001) title1,title2,title3,title4,title5,title6
     write(84,6002) name1,name2,name3,name4,name5,name6
     write(84,6003) place1,place2,place3,place4,place5,place6
@@ -953,7 +973,7 @@ if (ctem_on) then
              'g/m2.mon','g/m2.mon','gC/m2.mon','gC/m2.mon','gC/m2.mon','gC/m2.mon','gC/m2.mon'
     
     if (dofire .or. lnduseon) then
-        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M') ! Monthly disturbance
+        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M') !> Monthly disturbance
         write(85,6001) title1,title2,title3,title4,title5,title6
         write(85,6002) name1,name2,name3,name4,name5,name6
         write(85,6003) place1,place2,place3,place4,place5,place6
@@ -965,7 +985,7 @@ if (ctem_on) then
             '%','prob/mon','prob/mon','prob/mon','km/h'
     end if
 
-    open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y') ! CTEM yearly output files
+    open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y') !> CTEM yearly output files
     write(86,6001) title1,title2,title3,title4,title5,title6
     write(86,6002) name1,name2,name3,name4,name5,name6
     write(86,6003) place1,place2,place3,place4,place5,place6
@@ -977,7 +997,7 @@ if (ctem_on) then
                   'gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','m'
 
     if (dofire .or. lnduseon) then
-        open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y') ! Annual disturbance
+        open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y') !> Annual disturbance
         write(87,6001) title1,title2,title3,title4,title5,title6
         write(87,6002) name1,name2,name3,name4,name5,name6
         write(87,6003) place1,place2,place3,place4,place5,place6
@@ -992,7 +1012,7 @@ if (ctem_on) then
 
     if (compete .or. lnduseon) then
 
-        open(unit=88,file=argbuff(1:strlen(argbuff))//'.CT07M')! ctem pft fractions MONTHLY
+        open(unit=88,file=argbuff(1:strlen(argbuff))//'.CT07M')!> ctem pft fractions MONTHLY
         write(88,6001) title1,title2,title3,title4,title5,title6
         write(88,6002) name1,name2,name3,name4,name5,name6
         write(88,6003) place1,place2,place3,place4,place5,place6
@@ -1001,7 +1021,7 @@ if (ctem_on) then
                       'FRAC#8','FRAC#9','FRAC#10','SUMCHECK','PFT existence for each of the 9 pfts'
         write(88,6128)'#','','%','%','%','%','%','%','%','%','%','%','%'
 
-        open(unit=89,file=argbuff(1:strlen(argbuff))//'.CT07Y')! ctem pft fractions YEARLY
+        open(unit=89,file=argbuff(1:strlen(argbuff))//'.CT07Y')!> ctem pft fractions YEARLY
         write(89,6001) title1,title2,title3,title4,title5,title6
         write(89,6002) name1,name2,name3,name4,name5,name6
         write(89,6003) place1,place2,place3,place4,place5,place6
@@ -1014,7 +1034,7 @@ if (ctem_on) then
 
     if (dowetlands .or. obswetf) then
 
-        open(unit=91,file=argbuff(1:strlen(argbuff))//'.CT08M')  !Methane(wetland) MONTHLY
+        open(unit=91,file=argbuff(1:strlen(argbuff))//'.CT08M') !>Methane(wetland) MONTHLY
         write(91,6001) title1,title2,title3,title4,title5,title6
         write(91,6002) name1,name2,name3,name4,name5,name6
         write(91,6003) place1,place2,place3,place4,place5,place6
@@ -1022,7 +1042,7 @@ if (ctem_on) then
         write(91,6230)'MONTH','YEAR','CH4WET1','CH4WET2','WETFDYN','CH4DYN1','CH4DYN2','SOILUPTAKE'
         write(91,6230)'#','','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON'
 
-        open(unit=92,file=argbuff(1:strlen(argbuff))//'.CT08Y')  !Methane(wetland) YEARLY
+        open(unit=92,file=argbuff(1:strlen(argbuff))//'.CT08Y')  !>Methane(wetland) YEARLY
         write(92,6001) title1,title2,title3,title4,title5,title6
         write(92,6002) name1,name2,name3,name4,name5,name6
         write(92,6003) place1,place2,place3,place4,place5,place6
@@ -1032,7 +1052,7 @@ if (ctem_on) then
 
     end if 
     
-end if !ctem_on & parallelrun
+end if !>ctem_on & parallelrun
 
 6021  FORMAT(A5,A5,5(A8,1X),A8,A12,7(A12,1X))
 6022  FORMAT(A5,A5,3(A8,1X,2A6,1X))
@@ -1047,9 +1067,10 @@ end if !ctem_on & parallelrun
 6232  FORMAT(1X,A5,6(A12,1X))
  
 end subroutine create_outfiles
-
+!>@}
 !==============================================================================================================
-
+!>\ingroup io_driver_class_monthly_aw
+!>@{
 subroutine class_monthly_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,&
                                   ALVSROT,FAREROT,FSVHROW,ALIRROT,FSIHROW,GTROT,FSSROW, &
                                   FDLROW,HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,SNOROT, &
@@ -1172,8 +1193,8 @@ CANOPYEVAP        => class_out%CANOPYEVAP
 
 ! ------------
 
-! Accumulate output data for monthly averaged fields for class grid-mean.
-! for both parallel mode and stand alone mode
+!> Accumulate output data for monthly averaged fields for class grid-mean.
+!> for both parallel mode and stand alone mode
 
 FSSTAR_MO   =0.0
 FLSTAR_MO   =0.0
@@ -1308,9 +1329,10 @@ DO NT=1,NMON
 
 
 end subroutine class_monthly_aw
-
+!>@}
 !==============================================================================================================
-
+!>\ingroup io_driver_class_annual_aw
+!>@{
 subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
                             nltest,nmtest,ALVSROT,FAREROT,FSVHROW, &
                             ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW, &
@@ -1395,8 +1417,8 @@ ACTLYR_YR         => class_out%ACTLYR_YR
 FTABLE_YR         => class_out%FTABLE_YR
 
 
-! Accumulate output data for yearly averaged fields for class grid-mean.
-! for both parallel mode and stand alone mode
+!> Accumulate output data for yearly averaged fields for class grid-mean.
+!> for both parallel mode and stand alone mode
 FSSTAR_YR   =0.0
 FLSTAR_YR   =0.0
 QH_YR       =0.0
@@ -1464,24 +1486,29 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
                           EVAPACC_YR(I),TRANSPACC_YR(I),&
                           tovere
 
-        ! ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
+        !> ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
 
         call resetclassyr(nltest)
 
 829 CONTINUE ! I
 
-ENDIF ! IDAY.EQ.365 .AND. NDAY
+ENDIF !> IDAY.EQ.365 .AND. NDAY
 
 8103  FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,4(F12.3,1X),2(A5,I1))
 
 end subroutine class_annual_aw
-
+!>@}
 !==============================================================================================================
+
 !subroutine ctem_hh_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT)
 
 !subroutine ctem_hh_aw
 
 !==============================================================================================================
+
+!>\ingroup io_driver_ctem_daily_aw
+!>@{
+
 
 subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT)
 
@@ -1932,14 +1959,14 @@ rmatctem_g        => ctem_grd%rmatctem_g
 
 !       ---------------------------------------------------------
 
-!          write daily ctem results
+!>write daily ctem results
 if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
   if ((iday .ge. jdstd).and.(iday .le.jdendd))then
 
-    ! Reset the grid and tile average variables.
+    !>Reset the grid and tile average variables.
     call resetdaily(nltest,nmtest)
 
-    ! First some unit conversions:
+    !>First some unit conversions:
 
     do 10 i = 1,nltest
       do 20 m = 1 , nmtest
@@ -1959,7 +1986,7 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
 
 30      continue ! icc
 
-        ! Now for the bare fraction of the grid cell.
+        !>Now for the bare fraction of the grid cell.
         hetroresvegrow(i,m,iccp1)=hetroresvegrow(i,m,iccp1)*1.0377 ! convert to gc/m2.day
         litresvegrow(i,m,iccp1)=litresvegrow(i,m,iccp1)*1.0377 ! convert to gc/m2.day
         soilcresvegrow(i,m,iccp1)=soilcresvegrow(i,m,iccp1)*1.0377 ! convert to gc/m2.day
@@ -1987,7 +2014,7 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
 10 continue
 
 
-    ! Aggregate to the tile avg vars:
+    !>Aggregate to the tile avg vars:
     do 60 i=1,nltest
       do 70 m=1,nmtest
         do j=1,icc
@@ -2032,11 +2059,11 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
             enddo
         enddo !icc
 
-        ! Do the bare ground also:
+        !>Do the bare ground also:
         litrmass_t(i,m) = litrmass_t(i,m) + litrmassrow(i,m,iccp1)*fcancmxrow(i,m,iccp1)
         soilcmas_t(i,m) = soilcmas_t(i,m) + soilcmasrow(i,m,iccp1)*fcancmxrow(i,m,iccp1)
 
-    !   Calculation of grid averaged variables
+    !>Calculation of grid averaged variables
 
         gpp_g(i) =gpp_g(i) + gpprow(i,m)*FAREROT(i,m)
         npp_g(i) =npp_g(i) + npprow(i,m)*FAREROT(i,m)
@@ -2110,21 +2137,21 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
 70 continue !nmtest
 60 continue !nltest
 
-! Write daily ctem results
+!>Write daily ctem results
 
 do 80 i=1,nltest
    do 90 m=1,nmtest
 
         barefrac = 1.0
 
-  ! First the per PFT values to file .CT01D
+  !>First the per PFT values to file .CT01D
         do j=1,icc
 
             if (fcancmxrow(i,m,j) .gt. seed) then
 
                 barefrac = barefrac - fcancmxrow(i,m,j)
 
-                ! File: .CT01D
+                !>File: .CT01D
                 write(72,8200)iday,iyear,gppvegrow(i,m,j),nppvegrow(i,m,j), &
                 nepvegrow(i,m,j),nbpvegrow(i,m,j),autoresvegrow(i,m,j), &
                 hetroresvegrow(i,m,j),litresvegrow(i,m,j),soilcresvegrow(i,m,j), &
@@ -2132,14 +2159,14 @@ do 80 i=1,nltest
                 litrfallrow(i,m),humiftrsrow(i,m), & ! same with litrfall and humiftrs.
                 ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
 
-                ! File .CT02D
+                !>File .CT02D
                 write(73,8300)iday,iyear,rmlvegaccrow(i,m,j), &
                 rmsvegrow(i,m,j),rmrvegrow(i,m,j),rgvegrow(i,m,j), &
                 leaflitrrow(i,m,j),tltrleafrow(i,m,j), &
                 tltrstemrow(i,m,j),tltrrootrow(i,m,j), &
                 ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
 
-               ! File *.CT03D
+                !>File *.CT03D
                 write(74,8401)iday,iyear,vgbiomas_vegrow(i,m,j), &
                 ailcgrow(i,m,j),gleafmasrow(i,m,j), &
                 bleafmasrow(i,m,j), stemmassrow(i,m,j), &
@@ -2147,7 +2174,7 @@ do 80 i=1,nltest
                 soilcmasrow(i,m,j), &
                 ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
 
-                ! File .CT04D
+                !>File .CT04D
                 write(75,8500)iday,iyear, ailcgrow(i,m,j),  &
                 ailcbrow(i,m,j),(rmatctemrow(i,m,j,k),k=1,3), &
                 veghghtrow(i,m,j),rootdpthrow(i,m,j), &
@@ -2160,7 +2187,7 @@ do 80 i=1,nltest
                 !tcanoaccrow_out(i,m), lfstatusrow(i,m,j), &
                 !' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
 
-                ! File *.CT06D
+                !>File *.CT06D
                 if (dofire .or. lnduseon) then
                     write(77,8800)iday,iyear, &
                     emit_co2row(i,m,j),emit_corow(i,m,j),emit_ch4row(i,m,j), &
@@ -2178,10 +2205,10 @@ do 80 i=1,nltest
 
         end do !icc
 
-        ! Now write out the bare fraction values ( only needed if you have vars that are affected by barefrac values)
+        !>Now write out the bare fraction values ( only needed if you have vars that are affected by barefrac values)
         if (barefrac .gt. seed) then
 
-            ! File: .CT01D
+            !>File: .CT01D
             write(72,8200)iday,iyear,0.0,0.0, &
             nepvegrow(i,m,iccp1),nbpvegrow(i,m,iccp1),0.0, &
             hetroresvegrow(i,m,iccp1),litresvegrow(i,m,iccp1),soilcresvegrow(i,m,iccp1), &
@@ -2189,7 +2216,7 @@ do 80 i=1,nltest
             litrfallrow(i,m),humiftrsrow(i,m), & ! same with litrfall and humiftrs.
             ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
 
-            ! File *.CT03D
+            !>File *.CT03D
             write(74,8401)iday,iyear,0.0, &
             0.0,0.0, &
             0.0, 0.0, &
@@ -2197,14 +2224,13 @@ do 80 i=1,nltest
             soilcmasrow(i,m,iccp1), &
             ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
 
-
         end if
 
-        ! Now write out the tile average values for each tile if the tile number
-        ! is greater than 1 (nmtest > 1).
+        !>Now write out the tile average values for each tile if the tile number
+        !>is greater than 1 (nmtest > 1).
         if (nmtest > 1) then
 
-            ! File: .CT01D
+            !>File: .CT01D
             write(72,8200)iday,iyear,gpprow(i,m),npprow(i,m), &
                 neprow(i,m),nbprow(i,m),autoresrow(i,m), &
                 hetroresrow(i,m),litresrow(i,m),socresrow(i,m), &
@@ -2212,13 +2238,13 @@ do 80 i=1,nltest
                 litrfallrow(i,m),humiftrsrow(i,m), &
                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
 
-            ! File .CT02D
+            !>File .CT02D
             write(73,8300)iday,iyear,rmlrow(i,m),rmsrow(i,m), &
                 rmrrow(i,m),rgrow(i,m),leaflitr_t(i,m),tltrleaf_t(i,m), &
                 tltrstem_t(i,m),tltrroot_t(i,m), &
                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
 
-            ! File .CT03D
+            !>File .CT03D
             write(74,8401)iday,iyear,vgbiomasrow(i,m), &
                 ailcg_t(i,m), gleafmas_t(i,m), &
                 bleafmas_t(i,m), stemmass_t(i,m), &
@@ -2226,7 +2252,7 @@ do 80 i=1,nltest
                 soilcmas_t(i,m),&
                 ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
 
-            ! File .CT04D
+            !>File .CT04D
             write(75,8500)iday,iyear,ailcg_t(i,m), &
                 ailcb_t(i,m),(rmatctem_t(i,m,k),k=1,3), &
                 veghght_t(i,m),rootdpth_t(i,m), &
@@ -2255,27 +2281,27 @@ do 80 i=1,nltest
 
 90  continue !nmtest
 
-    ! Finally do the grid avg values:
+    !>Finally do the grid avg values:
 
-    ! File: .CT01D
+    !>File: .CT01D
     write(72,8200)iday,iyear,gpp_g(i),npp_g(i), &
             nep_g(i),nbp_g(i),autores_g(i), &
             hetrores_g(i),litres_g(i),socres_g(i), &
             (dstcemls_g(i)+dstcemls3_g(i)), &
             litrfall_g(i),humiftrs_g(i),' GRDAV'
 
-    ! File .CT02D
+    !>File .CT02D
     write(73,8300)iday,iyear,rml_g(i),rms_g(i), &
             rmr_g(i),rg_g(i),leaflitr_g(i),tltrleaf_g(i), &
             tltrstem_g(i),tltrroot_g(i),' GRDAV'
 
-    ! File .CT03D
+    !>File .CT03D
     write(74,8401)iday,iyear,vgbiomas_g(i), &
             gavglai_g(i), &
             gleafmas_g(i), bleafmas_g(i), stemmass_g(i), &
             rootmass_g(i), litrmass_g(i), soilcmas_g(i),' GRDAV'
 
-    ! File .CT04D
+    !>File .CT04D
     write(75,8500)iday,iyear, ailcg_g(i),  &
             ailcb_g(i),(rmatctem_g(i,k),k=1,3), &
             veghght_g(i),rootdpth_g(i),roottemp_g(i),&
@@ -2287,7 +2313,7 @@ do 80 i=1,nltest
     !    tcanoaccrow_out(i,m), -999,   & ! lfstatus is kinda meaningless grid avg so set to -999
     !    ' GRDAV'
 
-    ! File *.CT06D
+    !>File *.CT06D
     if (dofire .or. lnduseon) then
         write(77,8800)iday,iyear,  &
             emit_co2_g(i), emit_co_g(i), emit_ch4_g(i), &
@@ -2300,7 +2326,7 @@ do 80 i=1,nltest
     endif
 
 
-    ! File .CT08D
+    !>File .CT08D
     if (dowetlands .or. obswetf) then
     write(79,8810)iday,iyear, ch4wet1_g(i),  &
                  ch4wet2_g(i), wetfdyn_g(i),  &
@@ -2346,8 +2372,10 @@ endif !if write daily
 8810       format(1x,i4,i5,6f11.4,2(a6,i2),a8,f5.3)
 
 end subroutine ctem_daily_aw
-
+!>@}
 !==============================================================================================================
+!>\ingroup io_driver_ctem_monthly_aw
+!>@{
 
 subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,onetile_perPFT)
 
@@ -2742,16 +2770,16 @@ ch4dyn1_mo_g        =>ctem_grd_mo%ch4dyn1_mo_g
 ch4dyn2_mo_g        =>ctem_grd_mo%ch4dyn2_mo_g
 ch4soills_mo_g      =>ctem_grd_mo%ch4soills_mo_g
 
-! ------------
+!> ------------
 
-! Accumulate monthly outputs
+!> Accumulate monthly outputs
 
 do 862 i=1,nltest
 
     do 863 m = 1,nmtest
         do j=1,icc
 
-           ! Accumulate monthly outputs at the per PFT level.
+           !> Accumulate monthly outputs at the per PFT level.
            if (ailcgrow(i,m,j) .gt. laimaxg_mo(i,m,j)) then
             laimaxg_mo(i,m,j)=ailcgrow(i,m,j)
            end if
@@ -2785,14 +2813,14 @@ do 862 i=1,nltest
 
         end do !j
 
-        ! Also do the bare ground
+        !> Also do the bare ground
         nep_mo(i,m,iccp1)=nep_mo(i,m,iccp1)+nepvegrow(i,m,iccp1)
         nbp_mo(i,m,iccp1)=nbp_mo(i,m,iccp1)+nbpvegrow(i,m,iccp1)
         hetrores_mo(i,m,iccp1)=hetrores_mo(i,m,iccp1)+hetroresvegrow(i,m,iccp1)
         litres_mo(i,m,iccp1)  =litres_mo(i,m,iccp1)+litresvegrow(i,m,iccp1)
         soilcres_mo(i,m,iccp1) =soilcres_mo(i,m,iccp1) +soilcresvegrow(i,m,iccp1)
 
-        ! Accumulate monthly outputs at the per tile level.
+        !> Accumulate monthly outputs at the per tile level.
         luc_emc_mo_t(i,m) =luc_emc_mo_t(i,m)+lucemcomrow(i,m)
         lucsocin_mo_t(i,m) =lucsocin_mo_t(i,m)+lucsocinrow(i,m)
         lucltrin_mo_t(i,m) =lucltrin_mo_t(i,m)+lucltrinrow(i,m)
@@ -2803,7 +2831,7 @@ do 862 i=1,nltest
         ch4dyn2_mo_t(i,m) = ch4dyn2_mo_t(i,m) + ch4dyn2row(i,m)
         ch4soills_mo_t(i,m) = ch4soills_mo_t(i,m) + ch4soillsrow(i,m)
         lterm_mo_t(i,m) = lterm_mo_t(i,m) + ltermrow(i,m)
-        wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !take mean wind speed and convert to km/h
+        wind_mo_t(i,m) = wind_mo_t(i,m) + (sqrt(uvaccrow_m(i,m)**2.0 + vvaccrow_m(i,m)**2.0))*3.6 !>take mean wind speed and convert to km/h
 
 863 continue ! m
 
@@ -2811,7 +2839,7 @@ do 862 i=1,nltest
 
         if(iday.eq.mmday(nt))then
 
-        ! Do the mid-month variables (these are not accumulated, we just keep the mid month value for printing in the monthly file)
+        !> Do the mid-month variables (these are not accumulated, we just keep the mid month value for printing in the monthly file)
 
              do 866 m=1,nmtest
 
@@ -2826,14 +2854,14 @@ do 862 i=1,nltest
 
 867             continue
 
-                ! Do the bare fraction too
+                !> Do the bare fraction too
                 litrmass_mo(i,m,iccp1)=litrmassrow(i,m,iccp1)
                 soilcmas_mo(i,m,iccp1)=soilcmasrow(i,m,iccp1)
                 totcmass_mo(i,m,iccp1)=soilcmasrow(i,m,iccp1) + litrmassrow(i,m,iccp1)
 
                 barefrac=1.0
 
-               ! Now find the per tile values:
+               !> Now find the per tile values:
                do j=1,icc
                 vgbiomas_mo_t(i,m)=vgbiomas_mo_t(i,m)+vgbiomas_mo(i,m,j)*fcancmxrow(i,m,j)
                 litrmass_mo_t(i,m)=litrmass_mo_t(i,m)+litrmass_mo(i,m,j)*fcancmxrow(i,m,j)
@@ -2844,12 +2872,12 @@ do 862 i=1,nltest
                 barefrac=barefrac-fcancmxrow(i,m,j)
                end do
 
-!               Also add in the bare fraction contributions.
+!>Also add in the bare fraction contributions.
                 litrmass_mo_t(i,m)=litrmass_mo_t(i,m)+litrmass_mo(i,m,iccp1)*barefrac
                 soilcmas_mo_t(i,m)=soilcmas_mo_t(i,m)+soilcmas_mo(i,m,iccp1)*barefrac
                 totcmass_mo_t(i,m)=totcmass_mo_t(i,m)+(litrmass_mo(i,m,iccp1)+soilcmas_mo(i,m,iccp1))*barefrac
 
-                ! Now find the gridcell level values:
+                !> Now find the gridcell level values:
                 vgbiomas_mo_g(i)=vgbiomas_mo_g(i)+vgbiomas_mo_t(i,m)*FAREROT(i,m)
                 litrmass_mo_g(i)=litrmass_mo_g(i)+litrmass_mo_t(i,m)*FAREROT(i,m)
                 soilcmas_mo_g(i)=soilcmas_mo_g(i)+soilcmas_mo_t(i,m)*FAREROT(i,m)
@@ -2863,13 +2891,13 @@ do 862 i=1,nltest
 
         if(iday.eq.monthend(nt+1))then
 
-            ! Do the end of month variables
+            !> Do the end of month variables
             ndmonth=(monthend(nt+1)-monthend(nt))*nday
 
             do 900 m = 1,nmtest
 
 
-                ! Convert some quantities into per day values
+                !> Convert some quantities into per day values
                 wetfdyn_mo_t(i,m)=wetfdyn_mo_t(i,m)*(1./real(monthdays(nt)))
                 lterm_mo_t(i,m)=lterm_mo_t(i,m)*(1./real(monthdays(nt)))
                 wind_mo_t(i,m) = wind_mo_t(i,m)*(1./real(monthdays(nt)))
@@ -2883,7 +2911,7 @@ do 862 i=1,nltest
 
                 do j=1,icc
 
-                    ! Find the monthly outputs at the per tile level from the outputs at the per PFT level
+                    !> Find the monthly outputs at the per tile level from the outputs at the per PFT level
                     npp_mo_t(i,m)=npp_mo_t(i,m)+npp_mo(i,m,j)*fcancmxrow(i,m,j)
                     gpp_mo_t(i,m)=gpp_mo_t(i,m)+gpp_mo(i,m,j)*fcancmxrow(i,m,j)
                     nep_mo_t(i,m)=nep_mo_t(i,m)+nep_mo(i,m,j)*fcancmxrow(i,m,j)
@@ -2922,7 +2950,7 @@ do 862 i=1,nltest
                 soilcres_mo_t(i,m)=soilcres_mo_t(i,m)+soilcres_mo(i,m,iccp1)*barefrac
                 humiftrs_mo_t(i,m)=humiftrs_mo_t(i,m)+humiftrsveg_mo(i,m,iccp1)*barefrac
 
-                ! Find the monthly outputs at the per grid cell level from the outputs at the per tile level
+                !> Find the monthly outputs at the per grid cell level from the outputs at the per tile level
                 npp_mo_g(i)=npp_mo_g(i)+npp_mo_t(i,m)*FAREROT(i,m)
                 gpp_mo_g(i)=gpp_mo_g(i)+gpp_mo_t(i,m)*FAREROT(i,m)
                 nep_mo_g(i)=nep_mo_g(i)+nep_mo_t(i,m)*FAREROT(i,m)
@@ -2965,13 +2993,13 @@ do 862 i=1,nltest
 
             imonth=nt
 
-            ! Write to file .CT01M
+            !> Write to file .CT01M
 
             do m=1,nmtest
 
                 barefrac=1.0
 
-                ! First the per PFT values:
+                !> First the per PFT values:
                 do j=1,icc
 
                     barefrac=barefrac-fcancmxrow(i,m,j)
@@ -2989,7 +3017,7 @@ do 862 i=1,nltest
 
                 end do !icc
 
-                ! Now write out the bare fraction values:
+                !> Now write out the bare fraction values:
                 if (barefrac .gt. seed) then
                     write(84,8104)imonth,iyear,0.0,  &
                         0.0,litrmass_mo(i,m,iccp1), &
@@ -3002,8 +3030,8 @@ do 862 i=1,nltest
                         ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
                 end if
 
-                ! Now write out the tile average values for each tile if the tile number
-                ! is greater than 1 (nmtest > 1).
+                !> Now write out the tile average values for each tile if the tile number
+                !> is greater than 1 (nmtest > 1).
                 if (nmtest > 1) then
                     write(84,8104)imonth,iyear,laimaxg_mo_t(i,m),&
                         vgbiomas_mo_t(i,m),litrmass_mo_t(i,m),&
@@ -3027,10 +3055,10 @@ do 862 i=1,nltest
 
             if (dofire .or. lnduseon) then
 
-!           Write to file .CT06M
+!>Write to file .CT06M
 
                 do m=1,nmtest
-                    ! First the per PFT values:
+                    !> First the per PFT values:
                     do j=1,icc
                         if (fcancmxrow(i,m,j) .gt. seed) then
                             write(85,8109)imonth,iyear,emit_co2_mo(i,m,j), &
@@ -3047,8 +3075,8 @@ do 862 i=1,nltest
                         end if
                     end do !j
 
-                    ! Now write out the tile average values for each tile if the tile number
-                    ! is greater than 1 (nmtest > 1).
+                    !> Now write out the tile average values for each tile if the tile number
+                    !> is greater than 1 (nmtest > 1).
                     if (nmtest > 1) then
                         write(85,8109)imonth,iyear,emit_co2_mo_t(i,m), &
                         emit_co_mo_t(i,m),emit_ch4_mo_t(i,m), &
@@ -3076,7 +3104,7 @@ do 862 i=1,nltest
 
             endif  !dofire/lnduseon
 
-!           Add fraction of each pft and bare \\
+!>Add fraction of each pft and bare
 
             if (compete .or. lnduseon) then
                 sumfare=0.0
@@ -3119,15 +3147,15 @@ do 862 i=1,nltest
 865   continue ! nmon
 862  continue ! i
 
-! Prepare the monthly vars for the next month:
+!> Prepare the monthly vars for the next month:
 do nt=1,nmon
     if(iday.eq.monthend(nt+1))then
 
-        ! Reset all end of month accumulated arrays
+        !> Reset all end of month accumulated arrays
         call resetmonthend(nltest,nmtest)
 
-    endif ! if(iday.eq.monthend(nt+1))
-enddo ! nt=1,nmon
+    endif !> if(iday.eq.monthend(nt+1))
+enddo !> nt=1,nmon
 
 
 8104  FORMAT(1X,I4,I5,14(ES12.5,1X),2(A8,I2),A8,F8.2)
@@ -3136,9 +3164,10 @@ enddo ! nt=1,nmon
 8111  FORMAT(1X,I4,I5,6(ES12.5,1X),2(A6,I2))
 
 end subroutine ctem_monthly_aw
-
+!>@}
 !==============================================================================================================
-
+!>\ingroup io_driver_ctem_annual_aw
+!>@{
 subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT)
 
 use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
@@ -3513,15 +3542,15 @@ ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
 ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
 ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
 veghght_yr_g          =>ctem_grd_yr%veghght_yr_g
-!------------
+!>------------
 
-! Accumulate yearly outputs
+!> Accumulate yearly outputs
 
 do 882 i=1,nltest
     do 883 m=1,nmtest
         do 884 j=1,icc
 
-            ! Accumulate the variables at the per PFT level
+            !> Accumulate the variables at the per PFT level
 
             if (ailcgrow(i,m,j).gt.laimaxg_yr(i,m,j)) then
             laimaxg_yr(i,m,j)=ailcgrow(i,m,j)
@@ -3554,14 +3583,14 @@ do 882 i=1,nltest
 
 884     continue
 
-    !   Also do the bare fraction amounts
+    !>   Also do the bare fraction amounts
         hetrores_yr(i,m,iccp1)=hetrores_yr(i,m,iccp1)+hetroresvegrow(i,m,iccp1)
         litres_yr(i,m,iccp1)=litres_yr(i,m,iccp1)+litresvegrow(i,m,iccp1)
         soilcres_yr(i,m,iccp1)=soilcres_yr(i,m,iccp1)+soilcresvegrow(i,m,iccp1)
         nep_yr(i,m,iccp1)=nep_yr(i,m,iccp1)+nepvegrow(i,m,iccp1)
         nbp_yr(i,m,iccp1)=nbp_yr(i,m,iccp1)+nbpvegrow(i,m,iccp1)
 
-        ! Accumulate the variables at the per tile level
+        !> Accumulate the variables at the per tile level
         lterm_yr_t(i,m)=lterm_yr_t(i,m)+(ltermrow(i,m)*(1./365.))
         wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./365.))
         luc_emc_yr_t(i,m)=luc_emc_yr_t(i,m)+lucemcomrow(i,m)
@@ -3581,7 +3610,7 @@ do 882 i=1,nltest
 
             do 925 j=1,icc
 
-                ! The pools are looked at just at the end of the year.
+                !> The pools are looked at just at the end of the year.
                 stemmass_yr(i,m,j)=stemmassrow(i,m,j)
                 rootmass_yr(i,m,j)=rootmassrow(i,m,j)
                 litrmass_yr(i,m,j)=litrmassrow(i,m,j)
@@ -3598,7 +3627,7 @@ do 882 i=1,nltest
 
             barefrac=1.0
 
-            ! Add values to the per tile vars
+            !> Add values to the per tile vars
             do j=1,icc
 
                 laimaxg_yr_t(i,m)=laimaxg_yr_t(i,m)+ laimaxg_yr(i,m,j)*fcancmxrow(i,m,j)
@@ -3647,7 +3676,7 @@ do 882 i=1,nltest
             nbp_yr_t(i,m)=nbp_yr_t(i,m)+nbp_yr(i,m,iccp1)*barefrac
             totcmass_yr_t(i,m) = totcmass_yr_t(i,m)+(litrmass_yr(i,m,iccp1) + soilcmas_yr(i,m,iccp1))*barefrac
 
-            ! Add values to the per gridcell vars
+            !> Add values to the per gridcell vars
             laimaxg_yr_g(i)=laimaxg_yr_g(i)+ laimaxg_yr_t(i,m)*FAREROT(i,m)
             stemmass_yr_g(i)=stemmass_yr_g(i)+stemmass_yr_t(i,m)*FAREROT(i,m)
             rootmass_yr_g(i)=rootmass_yr_g(i)+rootmass_yr_t(i,m)*FAREROT(i,m)
@@ -3693,9 +3722,9 @@ do 882 i=1,nltest
 
 900      continue !m
 
-!        Write to annual output files:
-
-!        File .CT01Y
+!>Write to annual output files:
+!>
+!>File .CT01Y
 
         do m=1,nmtest
 
@@ -3715,8 +3744,8 @@ do 882 i=1,nltest
                 end if
             end do !j
 
-    !       Now do the bare fraction of the grid cell. Only soil c, hetres
-    !       and litter are relevant so the rest are set to 0.
+    !>Now do the bare fraction of the grid cell. Only soil c, hetres
+    !>and litter are relevant so the rest are set to 0.
 
             if (barefrac .gt. seed) then
                 write(86,8105)iyear,0.,  &
@@ -3732,7 +3761,7 @@ do 882 i=1,nltest
 
             if (nmtest > 1) then
 
-                ! Write out the per tile values
+                !> Write out the per tile values
                 write(86,8105)iyear,laimaxg_yr_t(i,m), &
                     vgbiomas_yr_t(i,m),stemmass_yr_t(i,m), &
                     rootmass_yr_t(i,m),litrmass_yr_t(i,m), &
@@ -3745,7 +3774,7 @@ do 882 i=1,nltest
             end if
         end do !m
 
-        ! Finally write out the per gridcell values
+        !> Finally write out the per gridcell values
         write(86,8105)iyear,laimaxg_yr_g(i),vgbiomas_yr_g(i), &
                 stemmass_yr_g(i),rootmass_yr_g(i),litrmass_yr_g(i), &
                 soilcmas_yr_g(i),totcmass_yr_g(i),npp_yr_g(i), &
@@ -3755,7 +3784,7 @@ do 882 i=1,nltest
 
         if (dofire .or. lnduseon) then
 
-            ! Write to file .CT06Y
+            !> Write to file .CT06Y
             do m=1,nmtest
                 do j=1,icc
                     if (fcancmxrow(i,m,j) .gt. seed) then
@@ -3775,7 +3804,7 @@ do 882 i=1,nltest
                 end do !j
 
                 if (nmtest > 1) then
-                    ! Write out the per tile values
+                    !> Write out the per tile values
                     write(87,8108)iyear,emit_co2_yr_t(i,m), &
                         emit_co_yr_t(i,m),emit_ch4_yr_t(i,m), &
                         emit_nmhc_yr_t(i,m),emit_h2_yr_t(i,m), &
@@ -3790,7 +3819,7 @@ do 882 i=1,nltest
                 end if
             end do !m
 
-            ! Finally write out the per gridcell values
+            !> Finally write out the per gridcell values
             write(87,8108)iyear,emit_co2_yr_g(i), &
                 emit_co_yr_g(i),emit_ch4_yr_g(i),emit_nmhc_yr_g(i), &
                 emit_h2_yr_g(i),emit_nox_yr_g(i),emit_n2o_yr_g(i), &
@@ -3802,7 +3831,7 @@ do 882 i=1,nltest
 
         endif !dofire,lnduseon
 
-        ! Write fraction of each pft and bare
+        !> Write fraction of each pft and bare
 
         if (compete .or. lnduseon) then
             sumfare=0.0
@@ -3826,7 +3855,7 @@ do 882 i=1,nltest
         endif !compete/lnduseon
 
         if (dowetlands .or. obswetf) then
-            ! Write out the per tile values
+            !> Write out the per tile values
             if (nmtest > 1) then
                 do m = 1,nmtest
                     write(92,8115)iyear,ch4wet1_yr_t(i,m), &
@@ -3846,7 +3875,7 @@ do 882 i=1,nltest
 
 if (iday.eq.365) then
 
-! Reset all annual vars in preparation:
+!> Reset all annual vars in preparation:
     call resetyearend(nltest,nmtest)
 
 end if
@@ -3858,9 +3887,10 @@ end if
 8115  FORMAT(1X,I5,6(ES12.5,1X),2(A6,I2))
 
 end subroutine ctem_annual_aw
-
+!>@}
 !==============================================================================================================
-
+!>\ingroup io_driver_close_outfiles
+!>@{
 subroutine close_outfiles()
                      
 use ctem_statevars, only : c_switch
@@ -3909,11 +3939,11 @@ parallelrun           => c_switch%parallelrun
 
       endif ! if (.not. parallelrun) 
 
-!     CLOSE CLASS OUTPUT FILES      
+!>CLOSE CLASS OUTPUT FILES      
       CLOSE(81)
       CLOSE(82)
       CLOSE(83)
-!     then the CTEM ones
+!>then the CTEM ones
       close(84)
       close(86)
       if (dofire .or. lnduseon) then
@@ -3932,6 +3962,6 @@ parallelrun           => c_switch%parallelrun
 
 
 end subroutine close_outfiles
-
+!@}
 
 end module io_driver      

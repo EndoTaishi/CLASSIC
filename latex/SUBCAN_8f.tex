@@ -1,0 +1,74 @@
+\hypertarget{SUBCAN_8f}{}\section{S\+U\+B\+C\+A\+N.\+f File Reference}
+\label{SUBCAN_8f}\index{S\+U\+B\+C\+A\+N.\+f@{S\+U\+B\+C\+A\+N.\+f}}
+
+
+Purpose\+: Assess water flux elements at the ground surface under the vegetation canopy.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{SUBCAN_8f_a7821b148b27a4db899e0cdf8ece2379a}{subcan} (I\+W\+A\+T\+E\+R, R, T\+R, S, T\+S, R\+H\+O\+S\+N\+I, E\+V\+A\+P\+G, Q\+F\+N, Q\+F\+G, P\+C\+P\+N, P\+C\+P\+G, F\+I, I\+L\+G, I\+L1, I\+L2, J\+L)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Assess water flux elements at the ground surface under the vegetation canopy. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{SUBCAN_8f_a7821b148b27a4db899e0cdf8ece2379a}{}\index{S\+U\+B\+C\+A\+N.\+f@{S\+U\+B\+C\+A\+N.\+f}!subcan@{subcan}}
+\index{subcan@{subcan}!S\+U\+B\+C\+A\+N.\+f@{S\+U\+B\+C\+A\+N.\+f}}
+\subsubsection[{subcan}]{\setlength{\rightskip}{0pt plus 5cm}subroutine subcan (
+\begin{DoxyParamCaption}
+\item[{integer}]{I\+W\+A\+T\+E\+R, }
+\item[{real, dimension     (ilg)}]{R, }
+\item[{real, dimension    (ilg)}]{T\+R, }
+\item[{real, dimension     (ilg)}]{S, }
+\item[{real, dimension    (ilg)}]{T\+S, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+I, }
+\item[{real, dimension (ilg)}]{E\+V\+A\+P\+G, }
+\item[{real, dimension   (ilg)}]{Q\+F\+N, }
+\item[{real, dimension   (ilg)}]{Q\+F\+G, }
+\item[{real, dimension  (ilg)}]{P\+C\+P\+N, }
+\item[{real, dimension  (ilg)}]{P\+C\+P\+G, }
+\item[{real, dimension    (ilg)}]{F\+I, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L}
+\end{DoxyParamCaption}
+)}\label{SUBCAN_8f_a7821b148b27a4db899e0cdf8ece2379a}
+
+\begin{DoxyParams}{Parameters}
+{\em r} & Rainfall rate incident on ground $[m s^{-1}]$\\
+\hline
+{\em tr} & Temperature of rainfall \mbox{[}C\mbox{]}\\
+\hline
+{\em s} & Snowfall rate incident on ground $[m s^{-1}]$\\
+\hline
+{\em ts} & Temperature of snowfall \mbox{[}C\mbox{]}\\
+\hline
+{\em rhosni} & Density of fresh snow $[kg m^{-3}]$\\
+\hline
+{\em evapg} & Evaporation rate from surface $[m s^{-1}]$\\
+\hline
+{\em qfn} & Sublimation from snow pack $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em qfg} & Evaporation from ground $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em pcpn} & Precipitation incident on ground $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em pcpg} & Precipitation incident on ground $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em fi} & Fractional coverage of subarea in question on modelled area \mbox{[} \mbox{]} \\
+\hline
+\end{DoxyParams}
+This subroutine starts with the precipitation rate under the canopy (a result of throughfall and unloading) and calculates the resulting overall evaporation or deposition rates.
+
+For I\+W\+A\+T\+E\+R = 2 (snow on the ground under the canopy), the water vapour flux E\+V\+A\+P\+G at the ground surface is in the first instance assumed to be sublimation. Thus the first step is to compare it to the snowfall rate. The sum of the snowfall rate and the evaporation rate, S\+A\+D\+D, is calculated as S – E\+V\+A\+P\+G, with E\+V\+A\+P\+G converted from a liquid water flux (the standard output from T\+S\+O\+L\+V\+C) to a snow flux. If S\+A\+D\+D is greater than zero (indicating a downward flux) the snowfall rate is set to S\+A\+D\+D and E\+V\+A\+P\+G is set to zero. Otherwise E\+V\+A\+P\+G is set to -\/\+S\+A\+D\+D (converted back to a liquid water flux), and S and T\+S are set to zero.
+
+After this section, any remaining evaporative flux is compared to the rainfall rate. The sum R\+A\+D\+D is calculated as R – E\+V\+A\+P\+G. If R\+A\+D\+D is greater than zero, the rainfall rate is set to R\+A\+D\+D and E\+V\+A\+P\+G is set to zero. Otherwise E\+V\+A\+P\+G is set to –\+R\+A\+D\+D, and R and T\+R are set to zero.
+
+Analogous calculations are done for I\+W\+A\+T\+E\+R = 1 (bare ground under the canopy). In this case E\+V\+A\+P\+G is assumed in the first instance to be evaporation or condensation. Thus the first step is to compare it to the rainfall rate, and the same steps are followed as in the paragraph above. Afterwards, any remaining vapour flux is compared to the snowfall rate. If S\+A\+D\+D is positive (downward), E\+V\+A\+P\+G, which is now considered to be absorbed into the snowfall rate, is subtracted from the ground vapour flux Q\+F\+G and added to the snow vapour flux Q\+F\+N. If S\+A\+D\+D is negative (upward), S, which has now been absorbed into the evaporative flux, is subtracted from the snow precipitation flux P\+C\+P\+N and added to the ground precipitation flux P\+C\+P\+G.

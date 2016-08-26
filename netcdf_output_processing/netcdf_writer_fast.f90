@@ -467,6 +467,7 @@ deallocate(ctem_a_mos)
 
 ! Allocate the size of the arrays for the output data
   allocate(ctem_a_pft(numctemvars_a,ctemnpft,ntile,totyrs))
+  ctem_a_pft = fill_value
 
    ! Make a file of the PFT info, removing the grdav and TFRAC and the header (first 6 lines)
    command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' | sed '//tic//'/TFRAC/d'//tic//' | sed '//tic//'1,6d'//tic//' > tmp_a_p.dat'
@@ -682,6 +683,7 @@ if (DOFIRE) then
 ! Per PFT CTEM Annual Fire ==========================================
 
      allocate(ctem_d_a_pft(nctemdistvars_a,ctemnpft,ntile,totyrs))
+     ctem_d_a_pft = fill_value
      allocate(tmpd(nctemdistvars_a))
 
      ! Remove the header, grdavg and tfrac values
@@ -1293,6 +1295,7 @@ OPEN(740,FILE='tmp_m_p.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR 
 
 !Allocate Arrays
 allocate(ctem_m_pft(numctemvars_m,ctemnpft,ntile,totmons))
+ ctem_m_pft = fill_value
 allocate(tmp(numctemvars_m))
 
 ! We have to keep track of the month that is read in as it is the only way we know that we are done the tiles for a gridcell.
@@ -1503,6 +1506,7 @@ if (TILED) then
   OPEN(840,FILE='tmp_m_p_d.dat',status='old',form='formatted')
 
   allocate(ctem_d_m_pft(nctemdistvars_m,ctemnpft,ntile,totmons))
+  ctem_d_m_pft = fill_value
   allocate(tmpd(nctemdistvars_m))
 
   do y = 1,monyrs

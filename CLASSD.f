@@ -1,10 +1,40 @@
+C>\file
+C>
+C!Purpose: Assign values to parameters in CLASS common blocks. CLASS 
+C!incorporates several kinds of parameters in its common blocks. 
+C!Some are defined specifically for use in the CLASS code; some are 
+C!also shared with the atmospheric model (if running in coupled 
+C!mode).
+C!
+      !!
+      !!In subroutine CLASSD, for consistency throughout the code, some 
+      !!parameters in the CLASS common blocks are set equal to their 
+      !!corresponding values in the common blocks PARAMS, PARAM1, PARAM3 
+      !!and TIMES from the CGCM. Also, some parameters in the common 
+      !!block PHYCON which is used in the RPN subroutines DIASURFZ and 
+      !!FLXSURFZ are set equal to their values defined in the CGCM or in 
+      !!the block data routine CLASSBD. The parameters in question are as 
+      !!follows:
+      !!
+      !!\f[
+      !!\begin{tabular} { | l | l | l | c | }
+      !!\hline
+      !! CLASS/RPN name & GCM name & Definition                    & Units              \\ \hline
+      !! DELT           & DELTIM   & Time step                     & s                  \\ \hline
+      !! TFREZ          & CELZRO   & Freezing point of water       & K                  \\ \hline
+      !! RGAS           & GAS      & Gas constant                  & $J kg^{-1} K^{-1}$ \\ \hline
+      !! RGASV          & GASV     & Gas constant for water vapour & $J kg^{-1} K^{-1}$ \\ \hline
+      !! GRAV           & G        & Acceleration due to gravity   & $m s^{-1}        $ \\ \hline
+      !! CGRAV          & G        & Acceleration due to gravity   & $m s^{-1}        $ \\ \hline
+      !! SBC            & SIGMA    & Stefan-Boltzmann constant     & $W m^{-2} K^{-4} $ \\ \hline
+      !! CKARM          & VKC      & Von Karman constant           & -                  \\ \hline
+      !! SPHAIR         & CPRES    & Specific heat of air          & $J kg^{-1} K^{-1}$ \\ \hline
+      !! CPD            & CPRES    & Specific heat of air          & $J kg^{-1} K^{-1}$ \\ \hline
+      !! PI             & CPI      & Pi                            & -                  \\ \hline
+      !!\end{tabular}
+      !!\f]
       SUBROUTINE CLASSD
-C
-C     Purpose: Assign values to parameters in CLASS common blocks. CLASS 
-C     incorporates several kinds of parameters in its common blocks. 
-C     Some are defined specifically for use in the CLASS code; some are 
-C     also shared with the atmospheric model (if running in coupled 
-C     mode).
+
 C
 C     * MAR 13/09 - D.VERSEGHY. REPLACE SURFCON COMMON BLOCK WITH
 C     *                         CLASSD2.
@@ -17,46 +47,6 @@ C     * AUG 06/02 - D.VERSEGHY. DEFINE PHYSICAL CONSTANTS PASSED
 C     *                         THROUGH CLASS COMMON BLOCKS.  
 C     *                         (BASED ON ROUTINE "HYDCON".)
 C
-      !
-      !In subroutine CLASSD, for consistency throughout the code, some 
-      !parameters in the CLASS common blocks are set equal to their 
-      !corresponding values in the common blocks PARAMS, PARAM1, PARAM3 
-      !and TIMES from the CGCM. Also, some parameters in the common 
-      !block PHYCON which is used in the RPN subroutines DIASURFZ and 
-      !FLXSURFZ are set equal to their values defined in the CGCM or in 
-      !the block data routine CLASSBD. The parameters in question are as 
-      !follows:
-      !
-      !----------------------------------------------------------------|
-      ! CLASS/RPN name | GCM name | Definition             | Units     |
-      !----------------------------------------------------------------|
-      ! DELT           | DELTIM   | Time step              | s         |
-      !----------------------------------------------------------------|
-      ! TFREZ          | CELZRO   | Freezing point of water| K         |
-      !----------------------------------------------------------------|
-      ! RGAS           | GAS      | Gas constant           | J kg-1 K-1|
-      !----------------------------------------------------------------|
-      ! RGASV          | GASV     | Gas constant for water | J kg-1 K-1|
-      !                |          | vapour                 |           |
-      !----------------------------------------------------------------|
-      ! GRAV           | G        | Acceleration due to    | m s-1     |
-      !                |          | gravity                |           |
-      !----------------------------------------------------------------|
-      ! CGRAV          | G        | Acceleration due to    | m s-1     |
-      !                |          | gravity                |           |
-      !----------------------------------------------------------------|
-      ! SBC            | SIGMA    | Stefan-Boltzmann       | W m-2 K-4 |
-      !                |          | constant               |           |
-      !----------------------------------------------------------------|
-      ! CKARM          | VKC      | Von Karman constant    | -         |
-      !----------------------------------------------------------------|
-      ! SPHAIR         | CPRES    | Specific heat of air   | J kg-1 K-1|
-      !----------------------------------------------------------------|
-      ! CPD            | CPRES    | Specific heat of air   | J kg-1 K-1|
-      !----------------------------------------------------------------|
-      ! PI             | CPI      | Pi                     | -         |
-      !----------------------------------------------------------------|
-      !
 C     * THE FOLLOWING COMMON BLOCK PARAMETERS ARE DEFINED WITHIN
 C     * THE ATMOSPHERIC MODEL.
 C

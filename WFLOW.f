@@ -1,12 +1,13 @@
+!>\file
+!!Evaluates infiltration of water into soil under saturated 
+!!conditions.
+!!
       SUBROUTINE WFLOW(WMOVE,TMOVE,LZF,NINF,TRMDR,TPOND,ZPOND,
      1                 R,TR,EVAP,PSIF,GRKINF,THLINF,THLIQX,TBARWX,
      2                 DELZX,ZBOTX,FMAX,ZF,DZF,DTFLOW,THLNLZ,
      3                 THLQLZ,DZDISP,WDISP,WABS,ITER,NEND,ISIMP,
      4                 IGRN,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N )
-     
-C     * Evaluates infiltration of water into soil under saturated 
-C     * conditions.
-                                                                         
+                                                                       
 C     * FEB 09/09 - J.P.BLANCHETTE. INCREASE LIMITING VALUE OF NEND.
 C     * JAN 06/09 - D.VERSEGHY. CHECKS ON WETTING FRONT LOCATION
 C     *                         IN 500 LOOP.
@@ -38,32 +39,29 @@ C
 C
 C     * INPUT/OUTPUT FIELDS.
 C                      
-      REAL WMOVE (ILG,IGP2)  !Water movement matrix [m3 m-2]
-      REAL TMOVE (ILG,IGP2)  !Temperature matrix associated with ground water movement [C]
-C
-      INTEGER  LZF   (ILG)  !Index of soil layer in which wetting front is located
-      INTEGER  NINF  (ILG)  !Number of levels involved in water movement
-C
-      REAL TRMDR (ILG)  !Time remaining in current time step [s]
-      REAL TPOND (ILG)  !Temperature of ponded water [C]
-      REAL ZPOND (ILG)  !Depth of ponded water [m] (zp)
+      REAL    WMOVE (ILG,IGP2) !<Water movement matrix \f$[m^3 m^{-2}]\f$
+      REAL    TMOVE (ILG,IGP2) !<Temperature matrix associated with ground water movement [C]
+      INTEGER LZF   (ILG)      !<Index of soil layer in which wetting front is located
+      INTEGER NINF  (ILG)      !<Number of levels involved in water movement
+      REAL    TRMDR (ILG)      !<Time remaining in current time step [s]
+      REAL    TPOND (ILG)      !<Temperature of ponded water [C]
+      REAL    ZPOND (ILG)      !<Depth of ponded water \f$[m] (z_p)\f$
 C
 C     * INPUT FIELDS.
 C
-      REAL R     (ILG)       !Rainfall rate at ground surface [m s-1]
-      REAL TR    (ILG)       !Temperature of rainfall [C]
-      REAL EVAP  (ILG)       !Surface evaporation rate [m s-1]
-      REAL PSIF  (ILG,IGP1)  !Soil water suction across the wetting front [m] (psi_f)
-      REAL GRKINF(ILG,IGP1)  !Hydraulic conductivity of soil behind the wetting front [m s-1] (K)
-      REAL THLINF(ILG,IGP1)  !Volumetric liquid water content behind the wetting front [m3 m-3]
-      REAL THLIQX(ILG,IGP1)  !Volumetric liquid water content of soil layer [m3 m-3]
-      REAL TBARWX(ILG,IGP1)  !Temperature of water in soil layer [C]
-      REAL DELZX (ILG,IGP1)  !Permeable depth of soil layer [m] (delta_z)
-      REAL ZBOTX (ILG,IGP1)  !Depth of bottom of soil layer [m]
-      REAL FMAX  (ILG)       !Maximum infiltration rate, defined as minimum value of GRKINF
-      REAL ZF    (ILG)       !Depth of the wetting front [m] (zf)
-C
-      INTEGER   IGRN  (ILG)  !Flag to indicate whether infiltration is occurring
+      REAL R        (ILG)      !<Rainfall rate at ground surface \f$[m s^{-1}]\f$
+      REAL TR       (ILG)      !<Temperature of rainfall [C]
+      REAL EVAP     (ILG)      !<Surface evaporation rate \f$[m s^{-1}]\f$
+      REAL PSIF     (ILG,IGP1) !<Soil water suction across the wetting front \f$[m] (\Psi_f)\f$
+      REAL GRKINF   (ILG,IGP1) !<Hydraulic conductivity of soil behind the wetting front \f$[m s^{-1}] (K)\f$
+      REAL THLINF   (ILG,IGP1) !<Volumetric liquid water content behind the wetting front \f$[m^3 m^{-3}]\f$
+      REAL THLIQX   (ILG,IGP1) !<Volumetric liquid water content of soil layer \f$[m^3 m^{-3}]\f$
+      REAL TBARWX   (ILG,IGP1) !<Temperature of water in soil layer [C]
+      REAL DELZX    (ILG,IGP1) !<Permeable depth of soil layer \f$[m] (\Delta z_{z,w})\f$
+      REAL ZBOTX    (ILG,IGP1) !<Depth of bottom of soil layer [m]
+      REAL FMAX     (ILG)      !<Maximum infiltration rate, defined as minimum value of GRKINF
+      REAL ZF       (ILG)      !<Depth of the wetting front \f$[m] (z_f)\f$
+      INTEGER IGRN  (ILG)      !<Flag to indicate whether infiltration is occurring
 C
 C     * INTERNAL WORK FIELDS.
 C
@@ -80,31 +78,25 @@ C
 C 
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
+      REAL DELT  !<Time step [s]
+      REAL TFREZ !<Freezing point of water [K]
 C
       COMMON /CLASS1/ DELT,TFREZ
 C-----------------------------------------------------------------------
-C
-C     General calculations performed:
-C     *The infiltration rate Finf under saturated conditions is 
-C     *calculated as
-C     *
-C     *Finf = GRKINF [(PSIF + ZF + ZPOND)/ZF ]
-C     *
-C     *where GRKINF is the hydraulic conductivity of the soil behind the
-C     *wetting front, PSIF is the soil C*moisture suction across the 
-C     *wetting front, ZF is the depth of the wetting front, and ZP is 
-C     *the depth of water ponded on the surface. Since PSIF will vary 
-C     *by soil layer, and zf and zp will vary with time, the period of 
-C     *infiltration is divided into two-minute segments. A maximum
-C     *iteration flag NEND is defined as the number of iteration 
-C     *segments plus 100, as a safeguard against runaway iterations.
-C     *Since the surface infiltration rate will be limited by the
-C     *lowest infiltration rate encountered, a maximum infiltration rate
-C     *FMAX is defined as the minimum value of GRKINF, the hydraulic
-C     *conductivity behind the wetting front, in all of the soil layers
-C     *above and including that containing the wetting front.
+!>
+!!General calculations performed: The infiltration rate \f$F_{inf}\f$ under saturated conditions is calculated as
+!!
+!!\f$F_{inf} = K_{inf} [(\Psi_f + z_f + z_p)/z_f ]\f$
+!!
+!!where \f$K_{inf}\f$ is the hydraulic conductivity of the soil behind the wetting front, \f$\Psi_f\f$ is the soil moisture 
+!!suction across the wetting front, \f$z_f\f$ is the depth of the wetting front, and \f$z_p\f$ is the depth of water ponded 
+!!on the surface. Since \f$\Psi_f\f$ will vary by soil layer, and \f$z_f\f$ and \f$z_p\f$ will vary with time, the period of 
+!!infiltration is divided into two-minute segments. A maximum iteration flag NEND is defined as the number of 
+!!iteration segments plus 100, as a safeguard against runaway iterations. Since the surface infiltration rate 
+!!will be limited by the lowest infiltration rate encountered, a maximum infiltration rate FMAX is defined as 
+!!the minimum value of GRKINF, the hydraulic conductivity behind the wetting front, in all of the soil layers 
+!!above and including that containing the wetting front.
+!!
 C
 C     * CALCULATE ITERATION ENDPOINT "NEND", AND SET SWITCH "ITER" TO 1
 C     * FOR POINTS OVER WHICH THIS SUBROUTINE IS TO BE PERFORMED.
@@ -140,39 +132,40 @@ C     * SET OR RESET NUMBER OF POINTS TO BE PROCESSED ON THE CURRENT
 C     * LATITUDE CIRCLE(S).
 C
       NPNTS=0   
-C      
-C     * In loop 200, a check is performed to determine whether the 
-C     * liquid water content of the current soil layer, THLIQX, equals 
-C     * or exceeds that behind the wetting front, THLINF. If so, the 
-C     * depth of the wetting front is reset to the depth of the soil 
-C     * layer. The water content of the soil layer is assigned to the
-C     * level of the water movement matrix WMOVE corresponding to the 
-C     * soil layer index plus 1, and the temperature of the water in the
-C     * layer is assigned to the same level of the matrix TMOVE. FMAX is
-C     * recalculated, and the flags LZF and NINF are each incremented
-C     * by 1. The flag ISIMP is set to 1, indicating that the following
-C     * calculations are to be bypassed for this iteration.
-C
-C     * If ISIMP is not 1, the time period DTFLOW applying to the
-C     * current iteration loop is set to two minutes or to the
-C     * remainder of the time step, whichever is less. If GRKINF for
-C     * the current soil layer is not vanishingly small, the flag ISIMP
-C     * is set to -2. Otherwise, it is deemed that infiltration is
-C     * suppressed, and the temperature and depth of water ponded on
-C     * the surface are simply updated. The temperature of the ponded
-C     * water is calculated as the weighted average of the current pond
-C     * temperature and the rainfall added to it. The ponded water
-C     * remaining after rainfall and evaporation have taken place is
-C     * calculated as ZPTEST. If ZPTEST is less than zero, it is
-C     * deduced that evaporation must have removed the ponded water
-C     * before the end of the current iteration loop. If this is the
-C     * case, the time period of the current iteration loop is
-C     * recalculated as the amount of time required for the difference
-C     * between the evaporation
-C     * and the rainfall rates to consume the ponded water, and the
-C     * pond depth ZPOND is set to zero. Otherwise, ZPOND is set to
-C     * ZPTEST. Finally, ISIMP is set to -1.
-                               
+C>      
+C!In loop 200, a check is performed to determine whether the 
+C!liquid water content of the current soil layer, THLIQX, equals 
+C!or exceeds that behind the wetting front, THLINF. If so, the 
+C!depth of the wetting front is reset to the depth of the soil 
+C!layer. The water content of the soil layer is assigned to the
+C!level of the water movement matrix WMOVE corresponding to the 
+C!soil layer index plus 1, and the temperature of the water in the
+C!layer is assigned to the same level of the matrix TMOVE. FMAX is
+C!recalculated, and the flags LZF and NINF are each incremented
+C!by 1. The flag ISIMP is set to 1, indicating that the following
+C!calculations are to be bypassed for this iteration.
+C!
+C!If ISIMP is not 1, the time period DTFLOW applying to the
+C!current iteration loop is set to two minutes or to the
+C!remainder of the time step, whichever is less. If GRKINF for
+C!the current soil layer is not vanishingly small, the flag ISIMP
+C!is set to -2. Otherwise, it is deemed that infiltration is
+C!suppressed, and the temperature and depth of water ponded on
+C!the surface are simply updated. The temperature of the ponded
+C!water is calculated as the weighted average of the current pond
+C!temperature and the rainfall added to it. The ponded water
+C!remaining after rainfall and evaporation have taken place is
+C!calculated as ZPTEST. If ZPTEST is less than zero, it is
+C!deduced that evaporation must have removed the ponded water
+C!before the end of the current iteration loop. If this is the
+C!case, the time period of the current iteration loop is
+C!recalculated as the amount of time required for the difference
+C!between the evaporation
+C!and the rainfall rates to consume the ponded water, and the
+C!pond depth ZPOND is set to zero. Otherwise, ZPOND is set to
+C!ZPTEST. Finally, ISIMP is set to -1.
+C!  
+                             
 C
 C     * IF THE WATER CONTENT OF THE CURRENT SOIL LAYER EQUALS OR EXCEEDS
 C     * THE WATER CONTENT BEHIND THE WETTING FRONT, INSTANTANEOUSLY 
@@ -234,52 +227,33 @@ C
               ENDIF
           ENDIF
   300 CONTINUE
-C 
-C     The 400 loop addresses the infiltration process under saturated 
-C     conditions. Such infiltration is modelled as “piston flow”. First 
-C     the current infiltration rate FINF is calculated using the 
-C     equation given above. If the wetting front has passed the bottom 
-C     of the lowest soil layer, PSIF Cis neglected. If FINF is greater 
-C     than the rainfall rate R, FINF is set equal to R; if FINF is 
-C     greater than CFMAX, FINF is set equal to FMAX. If the wetting 
-C     front has not passed the bottom of the lowest soil layer, the 
-C     change in depth of the wetting front DZF over the current time 
-C     interval is calculated from the amount of infiltrating water WINF 
-C     and the volumetric water content behind the wetting front, THLINF. 
-C     The amount of soil water WDISP displaced by this movement of the 
-C     wetting front is calculated from DZF and THLIQX, and the depth to 
-C     which this water penetrates, DZDISP, is calculated as 
-C     WDISP/(THLINF – THLIQX). The amount of soil water WABS entrained 
-C     by the movement of WDISP itself is calculated as the product of 
-C     DZDISP and THLIQX. The change in depth of the wetting front, 
-C     behind which the liquid water content of the   soil layer is 
-C     THLINF, is now the sum of the depth represented by infiltration of 
-C     water at the surface, DZF, and the depth represented by 
-C     displacement of the pre-existing soil water, DZDISP. If this 
-C     change in depth causes the wetting front to move beyond the bottom 
-C     of the current soil layer, DTFLOW is recalculated as the amount of 
-C     time required for the composite wetting front to reach the bottom 
-C     of the soil layer, and DZF, WDISP, DZDISP and WABS are likewise 
-C     recalculated. As in the case for ISIMP = -1, the temperature of 
-C     the ponded water on the surface is calculated as the weighted 
-C     average of the current pond temperature and the rainfall added to 
-C     it. The ponded water remaining after rainfall, infiltration and 
-C     evaporation have taken place is calculated as ZPTEST. If ZPTEST is 
-C     less than zero, it is deduced that infiltration and evaporation 
-C     must have removed the ponded water before the end of the current 
-C     iteration loop. If this is the case, the time period of the 
-C     current iteration loop is recalculated as the amount of time 
-C     required for the infiltration and evaporation minus the rainfall 
-C     to consume the ponded water. The pond depth ZPOND is set to zero; 
-C     if the wetting front has not passed the bottom of the lowest soil 
-C     layer, DZF, WDISP, DZDISP and WABS are recalculated. Otherwise, 
-C     ZPOND is set to ZPTEST. Finally, the first layer of the water 
-C     movement matrix WMOVE is incremented with the amount of the 
-C     infiltrated water, and the first layer of the matrix TMOVE with 
-C     the temperature of the infiltrated water. The last layer of WMOVE 
-C     is incremented by WDISP+WABS, and the depth of the wetting front 
-C     by DZF+DZDISP.
-C
+!> 
+!!The 400 loop addresses the infiltration process under saturated conditions. Such infiltration is modelled 
+!!as “piston flow”. First the current infiltration rate FINF is calculated using the equation given above. 
+!!If the wetting front has passed the bottom of the lowest soil layer, PSIF Cis neglected. If FINF is greater 
+!!than the rainfall rate R, FINF is set equal to R; if FINF is greater than CFMAX, FINF is set equal to FMAX. 
+!!If the wetting front has not passed the bottom of the lowest soil layer, the change in depth of the wetting 
+!!front DZF over the current time interval is calculated from the amount of infiltrating water WINF and the 
+!!volumetric water content behind the wetting front, THLINF. The amount of soil water WDISP displaced by this 
+!!movement of the wetting front is calculated from DZF and THLIQX, and the depth to which this water penetrates, 
+!!DZDISP, is calculated as WDISP/(THLINF – THLIQX). The amount of soil water WABS entrained by the movement of 
+!!WDISP itself is calculated as the product of DZDISP and THLIQX. The change in depth of the wetting front, 
+!!behind which the liquid water content of the   soil layer is THLINF, is now the sum of the depth represented 
+!!by infiltration of water at the surface, DZF, and the depth represented by displacement of the pre-existing 
+!!soil water, DZDISP. If this change in depth causes the wetting front to move beyond the bottom of the current 
+!!soil layer, DTFLOW is recalculated as the amount of time required for the composite wetting front to reach the 
+!!bottom of the soil layer, and DZF, WDISP, DZDISP and WABS are likewise recalculated. As in the case for ISIMP = -1, 
+!!the temperature of the ponded water on the surface is calculated as the weighted average of the current pond temperature 
+!!and the rainfall added to it. The ponded water remaining after rainfall, infiltration and evaporation have taken place 
+!!is calculated as ZPTEST. If ZPTEST is less than zero, it is deduced that infiltration and evaporation must have removed 
+!!the ponded water before the end of the current iteration loop. If this is the case, the time period of the current iteration 
+!!loop is recalculated as the amount of time required for the infiltration and evaporation minus the rainfall to 
+!!consume the ponded water. The pond depth ZPOND is set to zero; if the wetting front has not passed the bottom of the 
+!!lowest soil layer, DZF, WDISP, DZDISP and WABS are recalculated. Otherwise, ZPOND is set to ZPTEST. Finally, the first 
+!!layer of the water movement matrix WMOVE is incremented with the amount of the infiltrated water, and the first layer 
+!!of the matrix TMOVE with the temperature of the infiltrated water. The last layer of WMOVE is incremented by WDISP+WABS, 
+!!and the depth of the wetting front by DZF+DZDISP.
+!!
 C     * "ISIMP"=-2: NORMAL SATURATED INFILTRATION UNDER PISTON-FLOW
 C     * CONDITIONS. CALCULATE CURRENT INFILTRATION RATE (FINF); WATER
 C     * INFILTRATING DURING CURRENT ITERATION PASS (WINF); SOIL WATER
@@ -363,16 +337,14 @@ C
               ZF(I)=ZF(I)+DZF(I)+DZDISP(I)
           ENDIF
   450 CONTINUE  
-C
-C     In the 500 loop, if ISIMP < 0 (i.e. water movement has occurred), 
-C     the time remaining in the current time step is recalculated. If 
-C     the wetting front is at a soil layer boundary, if the time 
-C     remaining is non-zero, if the wetting front is still within the 
-C     modelled soil column, and if the calculated water content behind 
-C     the wetting front is greater than zero, FMAX is updated, and LZF 
-C     and NINF are incremented by 1. The NINF level of the TMOVE matrix 
-C     is set to the water temperature of the new soil layer.
-C
+!>
+!!In the 500 loop, if ISIMP < 0 (i.e. water movement has occurred), the time remaining in the 
+!!current time step is recalculated. If the wetting front is at a soil layer boundary, if the 
+!!time remaining is non-zero, if the wetting front is still within the modelled soil column, and 
+!!if the calculated water content behind the wetting front is greater than zero, FMAX is updated, 
+!!and LZF and NINF are incremented by 1. The NINF level of the TMOVE matrix is set to the water 
+!!temperature of the new soil layer.
+!!
 C     * CALCULATE REMAINING ITERATION TIME; RE-EVALUATE INFILTRATION
 C     * PARAMETERS.
 C
@@ -397,18 +369,15 @@ C     * REMAIN TO BE DONE (USING "NPNTS"). IF SO, RETURN TO BEGINNING
 C     * TO COMPLETE THESE REMAINING POINTS.
 C
       NIT=NIT+1
-C
-C   At the end of the iteration pass, checks are done in the 600 loop to 
-C   ascertain whether the number of iteration passes is still less than 
-C   NEND, whether either ponded water still exists or rain is still 
-C   falling, and whether there is still time remaining in the current 
-C   time step. If these conditions are all fulfilled, the counter NPNTS 
-C   representing the number of points in the current vector of mosaic 
-C   tiles for which infiltration is still occurring is incremented by 1. 
-C   Otherwise, the iteration flag for the current tile is changed from 1 
-C   to 0, signaling the end of the saturated infiltration calculations 
-C   for that tile.
-C
+!>
+!!At the end of the iteration pass, checks are done in the 600 loop to ascertain whether the number 
+!!of iteration passes is still less than NEND, whether either ponded water still exists or rain is 
+!!still falling, and whether there is still time remaining in the current time step. If these conditions 
+!!are all fulfilled, the counter NPNTS representing the number of points in the current vector of mosaic 
+!!tiles for which infiltration is still occurring is incremented by 1. Otherwise, the iteration flag for 
+!!the current tile is changed from 1 to 0, signaling the end of the saturated infiltration calculations 
+!!for that tile.
+!!
       DO 600 I=IL1,IL2
           IF(IGRN(I).GT.0)                                          THEN 
               IF(NIT.LE.NEND(I) .AND. ITER(I).EQ.1 .AND.

@@ -1,3 +1,8 @@
+!>\file
+!>
+!!Purpose: Scatter variables from long, gathered vectors back onto original two-dimensional arrays (latitude
+!!circle x mosaic tiles).
+!!
       SUBROUTINE CLASSS (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT,       
      1                   ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT,       
      2                   SNOROT, GTROT,  TCANROT,RCANROT,SCANROT,       
@@ -55,29 +60,110 @@ C
 C
 C     * LAND SURFACE PROGNOSTIC VARIABLES.
 C
-      REAL    SALBROT(NL,NM,NBS),CSALROT(NL,NM,NBS)                     
-      REAL    TBARROT(NL,NT,IG), THLQROT(NL,NT,IG), THICROT(NL,NT,IG)   
-      REAL    TSFSROT(NL,NT,4)                                          
-      REAL    TPNDROT(NL,NT),    ZPNDROT(NL,NT),    TBASROT(NL,NT),     
-     1        ALBSROT(NL,NM),    TSNOROT(NL,NM),    RHOSROT(NL,NM),   
-     2        SNOROT (NL,NM),    GTROT  (NL,NM),    TCANROT(NL,NT),     
-     3        RCANROT(NL,NT),    SCANROT(NL,NT),    GROROT (NL,NT),     
-     4        TACROT (NL,NT),    QACROT (NL,NT),    WSNOROT(NL,NT),     
-     5        CMAIROT(NL,NT),    REFROT (NL,NM),    BCSNROT(NL,NM),     
-     6        EMISROT(NL,NM)                                            
+
+
+      REAL    SALBROT(NL,NM,NBS) !<
+                                 !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    CSALROT(NL,NM,NBS) !<                  
+                                 !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    TBARROT(NL,NT,IG) !<Temperature of soil layers [K]
+                                !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    THLQROT(NL,NT,IG) !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+                                !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    THICROT(NL,NT,IG) !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+                                !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    TSFSROT(NL,NT,4) !<Ground surface temperature over subarea [K]                            
+                               !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    TPNDROT(NL,NT) !<Temperature of ponded water [K]
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    ZPNDROT(NL,NT) !<Depth of ponded water on surface [m]
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    TBASROT(NL,NT) !<Temperature of bedrock in third soil layer [K]
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    ALBSROT(NL,NM) !<Snow albedo [ ]
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    TSNOROT(NL,NM) !<Snowpack temperature [K]
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    RHOSROT(NL,NM) !<Density of snow \f$[kg m^{-3} ]\f$
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    SNOROT (NL,NM) !<Mass of snow pack \f$[kg m^{-2} ]\f$
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    GTROT  (NL,NM) !<
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    TCANROT(NL,NT) !<Vegetation canopy temperature [K]
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    RCANROT(NL,NT) !<Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    SCANROT(NL,NT) !<Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    GROROT (NL,NT) !<Vegetation growth index [ ]   
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    TACROT (NL,NT) !<Temperature of air within vegetation canopy [K]
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    QACROT (NL,NT) !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ]\f$
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    WSNOROT(NL,NT) !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    CMAIROT(NL,NT) !<Aggregated mass of vegetation canopy \f$[kg m^{-2} ]\f$
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    REFROT (NL,NM) !<
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    BCSNROT(NL,NM) !<    
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
+      REAL    EMISROT(NL,NM) !<                                            
+                             !!Suffix ROT refers to variables on original two-dimensional arrays.
 C
-      REAL    SALBGAT(ILG,NBS),  CSALGAT(ILG,NBS)                       
-      REAL    TBARGAT(ILG,IG),   THLQGAT(ILG,IG),   THICGAT(ILG,IG)     
-
-      REAL    TSFSGAT(ILG,4)
-
-      REAL    TPNDGAT(ILG),      ZPNDGAT(ILG),      TBASGAT(ILG),   
-     1        ALBSGAT(ILG),      TSNOGAT(ILG),      RHOSGAT(ILG),   
-     2        SNOGAT (ILG),      GTGAT  (ILG),      TCANGAT(ILG),       
-     3        RCANGAT(ILG),      SCANGAT(ILG),      GROGAT (ILG),       
-     4        TACGAT (ILG),      QACGAT (ILG),      WSNOGAT(ILG),       
-     5        CMAIGAT(ILG),      REFGAT (ILG),      BCSNGAT(ILG),       
-     6        EMISGAT(ILG)                                              
+      REAL    SALBGAT(ILG,NBS) !<
+                               !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    CSALGAT(ILG,NBS) !<                       
+                               !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    TBARGAT(ILG,IG) !<Temperature of soil layers [K]
+                              !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    THLQGAT(ILG,IG) !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+                              !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    THICGAT(ILG,IG) !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+                              !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    TSFSGAT(ILG,4) !<Ground surface temperature over subarea [K]
+                             !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    TPNDGAT(ILG) !<Temperature of ponded water [K]
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    ZPNDGAT(ILG) !<Depth of ponded water on surface [m]
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    TBASGAT(ILG) !<Temperature of bedrock in third soil layer [K]
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    ALBSGAT(ILG) !<Snow albedo [ ]
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    TSNOGAT(ILG) !<Snowpack temperature [K]
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    RHOSGAT(ILG) !<Density of snow \f$[kg m^{-3} ]\f$
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    SNOGAT (ILG) !<Mass of snow pack \f$[kg m^{-2} ]\f$
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    GTGAT  (ILG) !<
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    TCANGAT(ILG) !<Vegetation canopy temperature [K]
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    RCANGAT(ILG) !<Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    SCANGAT(ILG) !<Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    GROGAT (ILG) !<Vegetation growth index [ ]
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    TACGAT (ILG) !<Temperature of air within vegetation canopy [K]
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    QACGAT (ILG) !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ]\f$
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    WSNOGAT(ILG) !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    CMAIGAT(ILG) !<Aggregated mass of vegetation canopy \f$[kg m^{-2} ]\f$
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    REFGAT (ILG) !<
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    BCSNGAT(ILG) !<
+                           !!Suffix GAT refers to variables on gathered long vectors.
+      REAL    EMISGAT(ILG) !<
+                           !!Suffix GAT refers to variables on gathered long vectors.
+                                              
 C
 C     * GATHER-SCATTER INDEX ARRAYS.
 C
@@ -102,7 +188,13 @@ C----------------------------------------------------------------------
           CMAIROT(ILMOS(K),JLMOS(K))=CMAIGAT(K)  
           REFROT (ILMOS(K),JLMOS(K))=REFGAT (K)                         
           BCSNROT(ILMOS(K),JLMOS(K))=BCSNGAT(K)                         
-          EMISROT(ILMOS(K),JLMOS(K))=EMISGAT(K)                         
+          EMISROT(ILMOS(K),JLMOS(K))=EMISGAT(K)      
+
+!>
+!!The prognostic variables are scattered from the long, gathered arrays (collapsing the latitude and mosaic
+!!dimensions into one) back onto the original arrays using the pointer vectors generated in GATPREP.
+!!
+
   100 CONTINUE
 C
       DO 200 L=1,NBS                                                    

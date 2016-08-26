@@ -1,6 +1,54 @@
-module heterotrophic_respiration
+!>\defgroup hetresg
+!!
+!!Canadian Terrestrial Ecosystem Model (CTEM)
+!!Heterotrophic respiration Subroutine
+!!
+!!Heterotrophic Respiration Subroutine For Bare Fraction
+!!
+!!
+!!Heterotrophic respiration, \f$R_\mathrm{h}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), in CTEM is based on respiration from the litter (which includes contributions from the stem, leaf and root components), \f$R_{h,D}\f$, and soil carbon, \f$R_{h,H}\f$, pools,
+!!\f[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \f]
+!!
+!!Heterotrophic respiration is regulated by soil temperature and moisture and is calculated on a daily time step. The original heterotrophic respiration scheme is described in \cite Arora2003-3b7 while the modified parametrization used in CTEM v. 2.0 is detailed in \cite Melton2014-xy and is briefly described here. Respiration from the litter and soil carbon pools takes the following basic form
+!!\f[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i,\nonumber \\ i = \mathrm{D}, \mathrm{H}.\label{lithet} \f]
+!!
+!!The soil carbon and litter respiration depends on the amount of carbon in these components (\f$C_\mathrm{H}\f$ and \f$C_\mathrm{D}\f$; \f$kg\,C\,m^{-2}\f$) and on a PFT-dependent respiration rate specified at \f$15\,{C}\f$ (\f$\varsigma_\mathrm{H}\f$ and \f$\varsigma_\mathrm{D}\f$; \f$kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$; see also ctem_params.f90). The constant \f$2.64 \times 10^{-6}\f$ converts units from \f$kg\,C\,m^{-2}\,yr^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$.
+!!
+!!The effect of soil moisture is accounted for via dependence on soil matric potential (\f$f(\Psi)\f$), described later. The temperature dependency of microbial soil respiration rates has been estimated by several different formulations, ranging from simple \f$Q_{10}\f$ (exponential) to Arrhenius-type formulations (see review by \cite Lloyd1994-ct). In CTEM, soil temperature influences heterotrophic respiration through a temperature-dependent \f$Q_{10}\f$ function (\f$f_{15}(Q_{10})\f$). The value of \f$Q_{10}\f$ itself is assumed to be a function of temperature following a hyperbolic tan function:
+!!\f[ Q_{10} = 1.44 + 0.56\,\tanh[0.075 (46.0 - T_i)], \nonumber\\ i = \mathrm{D}, \mathrm{H}\label{hyper}, \f]
+!!where \f$T_{\{D,H\}}\f$ is the temperature of either the litter or soil carbon pool (\f$C\f$), respectively. The parametrization is a compromise between the temperature-independent \f$Q_{10}\f$ commonly found in many terrestrial ecosystem models \cite Cox2001-am and the temperature-dependent \f$Q_{10}\f$ of \cite Kirschbaum1995-db. While a constant \f$Q_{10}\f$ yields an indefinitely increasing respiration rate with increasing temperature, the formulation of \cite Kirschbaum1995-db gives a continuously increasing \f$Q_{10}\f$ under decreasing temperature, which leads to unreasonably high soil and litter carbon pools at high latitudes in CTEM. The CTEM parametrization avoids these issues with a $Q_{10}$ value of about 2.0 for temperatures less than \f$20\,C\f$, while a decreasing value of \f$Q_{10}\f$ at temperatures above \f$20\,C\f$ ensures that the respiration rate does not increase indefinitely.
+!!
+!!The temperature of the litter pool is a weighted average of the temperature of the top soil layer (\f$T_1\f$) and the root temperature (\f$T_\mathrm{R}\f$) as litter consists of leaf, stem, and root litter (\f$T_\mathrm{D} = 0.7 T_1 + 0.3T_\mathrm{R}\f$). The temperature of the soil carbon pool is calculated as the mean soil temperature in the rooting zone based upon the fraction of roots in each soil layer and their temperature. The carbon in each soil layer is not explicitly tracked but assumed to adopt an exponential distribution \cite Jobbagy2000-pa.
+!!
+!!The response of heterotrophic respiration to soil moisture is formulated through soil matric potential (\f$\Psi\f$; \f$MPa\f$). While soil matric potential values are usually negative, the formulation uses absolute values to allow its logarithm to be taken. Absolute values of soil matric potential are high when soil is dry and low when it is wet. The primary premise of soil moisture control on heterotrophic respiration is that heterotrophic respiration is constrained both when the soils are dry (due to reduced microbial activity) and when they are wet (due to impeded oxygen supply to microbes) with optimum conditions in-between. The exception is the respiration from the litter component, which is assumed to be continually exposed to air, and thus never oxygen deprived, even when soil moisture content is high (\f$0.04 > \vert \Psi \vert \geq \vert \Psi_{sat} \vert\f$, where \f$\Psi_{sat}\f$ is the soil matric potential at saturation). The soil moisture dependence thus varies between 0 and 1 with matric potential as follows:
+!!
+!!for \f$0.04 > \vert\Psi\vert \geq \vert\Psi_{sat}\vert\f$
+!!\f[ f(\Psi)_\mathrm{H} = 1 - 0.5  \frac{\log(0.04)-\log\vert\Psi\vert}{\log(0.04)-\log\vert\Psi_{sat}\vert}\\ f(\Psi)_D = 1\nonumber; \f]
+!!for \f$0.06 \geq \vert\Psi\vert \geq 0.04\f$
+!!\f[ f(\Psi)_\{D,H\} = 1; \f]
+!!for \f$100.0 \geq \vert\Psi\vert > 0.06\f$
+!!\f[ f(\Psi)_\{D,H\} = 1 - 0.8\frac{\log\vert\Psi\vert-\log(0.06)}{\log(100)-\log(0.06)}; \f]
+!!for \f$\vert\Psi\vert > 100.0\f$
+!!\f[ \label{lastpsi} f(\Psi)_\{D,H\}=0.2. \f]
+!!
+!!Heterotrophic respiration for bare ground is treated separately in CTEM. The carbon contributions to the bare ground litter and soil carbon pools come via processes such as creation of bare ground due to fire, competition between PFTs and land use change. The heterotrophic respiration is sensitive to temperature and moisture in the same manner as vegetated areas using Eqs. (\ref{lithet})--(\ref{lastpsi}). The base respiration rates of \f$\varsigma_{D,bare}\f$ and \f$\varsigma_{H,bare}\f$ are set to \f$0.5605\f$ and \f$0.02258\,kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$, respectively.
+!!
+!!The amount of humidified litter, which is transferred from the litter to the soil carbon pool (\f$C_{\mathrm{D} \rightarrow \mathrm{H}}\f$) is modelled as a fraction of litter respiration (\f$R_{h,D}\f$) as
+!!\f[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \f]
+!!where \f$\chi\f$ (see also ctem_params.f90) is the PFT-dependent humification factor and varies between 0.4 and 0.5. For crops, \f$\chi\f$ is set to 0.1 to account for reduced transfer of humidified litter to the soil carbon pool which leads to loss in soil carbon when natural vegetation is converted to croplands. Over the bare ground fraction \f$\chi\f$ is set to 0.45.
+!!
+!!With heterotrophic respiration known, net ecosystem productivity (\f$NEP\f$) is calculated as
+!!\f[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \f]
+!!
 
-! Central module for all heterotrophic respiration-related operations
+!>\defgroup hetresv
+
+!>
+!!Heterotrophic Respiration Subroutine For Vegetated Fraction
+
+!>\file
+!!Central module for all heterotrophic respiration-related operations
+module heterotrophic_respiration
 
 ! J. Melton. Jan 14 2016
 
@@ -13,6 +61,8 @@ public  :: hetresv
 contains
 
 ! ------------------------------------------------------------------
+!>\ingroup hetresg
+!!@{
 
 subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
                     il1,      il2,     tbar,  psisat, b, &
@@ -49,53 +99,50 @@ subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
 !                             int was missing some gridcells assigned
 !                             to bedrock in classb
 
-!     ------
-!     inputs
-
-!     litrmass  - litter mass for the 8 pfts + bare in kg c/m2
-!     soilcmas  - soil carbon mass for the 8 pfts + bare in kg c/m2
-!     icc       - no. of vegetation types (currently 8)
-!     ignd        - no. of soil layers (currently 3)
-!     ilg       - no. of grid cells in latitude circle
-!     il1,il2   - il1=1, il2=ilg
-!     tbar      - soil temperature, k
-!     thliq     - liquid soil moisture content in 3 soil layers
-!     sand      - percentage sand
-!     zbotw     - bottom of soil layers
-!     frac      - fraction of ground (fg) or snow over ground (fgs)
-!     isnow     - integer telling if bare fraction is fg (0) or fgs (1)
-!     delzw     - permeable thickness of the layer (m)
-!     thiceg    - frozen soil moisture content over bare ground fraction
-
-!     outputs
-
-!     litres    - litter respiration over the given unvegetated sub-area
-!                 in umol co2/m2.s
-!     socres    - soil c respiration over the given unvegetated sub-area
-!                 in umol co2/m2.s
-
 use ctem_params,        only : icc, ilg, ignd, zero, tanhq10, a, &
                                      bsratelt_g, bsratesc_g
 
 implicit none
 
-integer il1,il2,i,j,k,isnow,isand(ilg,ignd)
+      integer il1   !<il1=1
+      integer il2   !<il2=ilg
+      integer i,j,k
+      integer isnow !<integer telling if bare fraction is fg (0) or fgs (1), isnow
+                    !<is changed to isnow(ilg) in classt of class version higher than 3.4 for coupling with ctem
+      integer isand(ilg,ignd) !<
 
-real                  litrmass(ilg,icc+1),  soilcmas(ilg,icc+1),&
-           tbar(ilg,ignd),    thliq(ilg,ignd),   psisat(ilg,ignd),  &
-           zbotw(ilg,ignd),      litres(ilg),          socres(ilg), &
-           frac(ilg),       delzw(ilg,ignd), thpor(ilg,ignd),  b(ilg,ignd), &
-           thiceg(ilg,ignd)
+      real litrmass(ilg,icc+1)!<litter mass for the 8 pfts + bare in \f$kg c/m^2\f$
+      real soilcmas(ilg,icc+1)!<soil carbon mass for the 8 pfts + bare in \f$kg c/m^2\f$
+      real tbar(ilg,ignd)     !<soil temperature, k
+      real thliq(ilg,ignd)    !<liquid soil moisture content in 3 soil layers
+      real zbotw(ilg,ignd)    !<bottom of soil layers
+      real litres(ilg)        !<litter respiration over the given unvegetated sub-area in umol co2/m2.s
+      real socres(ilg)        !<soil c respiration over the given unvegetated sub-area in umol co2/m2.s
+      real frac(ilg)          !<fraction of ground (fg) or snow over ground (fgs)
 
-real              litrq10,           soilcq10, &
-        litrtemp(ilg),      solctemp(ilg),             q10func, &
-           grksat(ilg,ignd),       &
-              beta, &
-      fracarb(ilg,ignd),         zcarbon, &
-        tempq10l(ilg),      socmoscl(ilg),     scmotrm(ilg,ignd), &
-        ltrmoscl(ilg),        psi(ilg,ignd),       tempq10s(ilg), &
-               fcoeff,          zcarb_g
+      real delzw(ilg,ignd)  !<
+      real thiceg(ilg,ignd) !<
+      real zcarb_g          !<
 
+      real litrq10          !<
+      real soilcq10         !<
+      real litrtemp(ilg)    !<litter temperature
+      real solctemp(ilg)    !<soil carbon pool temperature
+      real q10func          !<
+      real psisat(ilg,ignd) !<saturation matric potential
+      real grksat(ilg,ignd) !<saturation hyd. conductivity
+      real b(ilg,ignd)      !<parameter b of clapp and hornberger
+      real thpor(ilg,ignd)  !<porosity
+      real beta             !<
+      real fracarb(ilg,ignd)!<fraction of carbon in each soil layer
+      real zcarbon          !<
+      real tempq10l(ilg)    !<
+      real socmoscl(ilg)    !<soil moisture scalar for soil carbon decomposition
+      real scmotrm(ilg,ignd)!<
+      real ltrmoscl(ilg)    !<soil moisture scalar for litter decomposition
+      real psi(ilg,ignd)    !<
+      real tempq10s(ilg)    !<
+      real fcoeff           !<
 !     ------------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
 !     ---------------------------------------------------------------
@@ -122,19 +169,19 @@ real              litrq10,           soilcq10, &
 
 !     ------------------------------------------------------------------
 
-!     Estimate temperature of the litter and soil carbon pools.
+!>     Estimate temperature of the litter and soil carbon pools.
 
-!     Over the bare fraction there is no live root. So we make the
-!     simplest assumption that litter temperature is same as temperature of the top soil layer.
+!!     Over the bare fraction there is no live root. So we make the
+!!     simplest assumption that litter temperature is same as temperature of the top soil layer.
 
       do 210 i = il1, il2
         litrtemp(i)=tbar(i,1)
 210   continue
 
-!     We estimate the temperature of the soil c pool assuming that soil carbon over the bare fraction is distributed exponentially. note
-!     that bare fraction may contain dead roots from different pfts all of which may be distributed differently. For simplicity we do not
-!     track each pft's dead root biomass and assume that distribution of soil carbon over the bare fraction can be described by a single
-!     parameter.
+!>     We estimate the temperature of the soil c pool assuming that soil carbon over the bare fraction is distributed exponentially. note
+!!     that bare fraction may contain dead roots from different pfts all of which may be distributed differently. For simplicity we do not
+!!     track each pft's dead root biomass and assume that distribution of soil carbon over the bare fraction can be described by a single
+!!     parameter.
 
       do 240 i = il1, il2
 
@@ -191,11 +238,11 @@ real              litrq10,           soilcq10, &
 
 240   continue
 
-!     find moisture scalar for soil c decomposition
+!>     find moisture scalar for soil c decomposition
 
-!     this is modelled as function of logarithm of matric potential.
-!     we find values for all soil layers, and then find an average value
-!     based on fraction of carbon present in each layer.
+!!     this is modelled as function of logarithm of matric potential.
+!!     we find values for all soil layers, and then find an average value
+!!     based on fraction of carbon present in each layer.
 
       do 260 j = 1, ignd
         do 270 i = il1, il2
@@ -251,14 +298,14 @@ real              litrq10,           soilcq10, &
 
 290   continue
 
-!     find moisture scalar for litter decomposition
+!>     find moisture scalar for litter decomposition
 
-!     the difference between moisture scalar for litter and soil c
-!     is that the litter decomposition is not constrained by high
-!     soil moisture (assuming that litter is always exposed to air).
-!     in addition, we use moisture content of the top soil layer
-!     as a surrogate for litter moisture content. so we use only
-!     psi(i,1) calculated in loops 260 and 270 above.
+!!     the difference between moisture scalar for litter and soil c
+!!     is that the litter decomposition is not constrained by high
+!!     soil moisture (assuming that litter is always exposed to air).
+!!     in addition, we use moisture content of the top soil layer
+!!     as a surrogate for litter moisture content. so we use only
+!!     psi(i,1) calculated in loops 260 and 270 above.
 
       do 300 i = il1, il2
         if(psi(i,1).gt.10000.0) then
@@ -271,8 +318,8 @@ real              litrq10,           soilcq10, &
         ltrmoscl(i)=max(0.2,min(ltrmoscl(i),1.0))
 300   continue
 
-!     use temperature of the litter and soil c pools, and their soil
-!     moisture scalars to find respiration rates from these pools
+!!     use temperature of the litter and soil c pools, and their soil
+!!     moisture scalars to find respiration rates from these pools
 
       do 330 i = il1, il2
       if(frac(i).gt.zero)then
@@ -301,9 +348,11 @@ real              litrq10,           soilcq10, &
 
       return
 end subroutine hetresg
-
+!>@}
 ! ------------------------------------------------------------------------------------
 
+!>\ingroup hetresv
+!!@{
 subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
                       delzw,  thpor, il1, &
                       il2,     tbar,   psisat, b, thliq,  &
@@ -336,36 +385,6 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 !                             int was missing some gridcells assigned
 !                             to bedrock in classb
 !     ------
-!     inputs
-
-!     fcan      - fractional coverage of ctem's 9 pfts
-!     fct       - sum of all fcan
-!                 fcan & fct are not used at this time but could
-!                 be used at some later stage
-!     litrmass  - litter mass for the 9 pfts + bare in kg c/m2
-!     soilcmas  - soil carbon mass for the 9 pfts + bare in kg c/m2
-!     icc       - no. of vegetation types (currently 9)
-!     ignd        - no. of soil layers (currently 3)
-!     ilg       - no. of grid cells in latitude circle
-!     il1,il2   - il1=1, il2=ilg
-!     tbar      - soil temperature, k
-!     thliq     - liquid soil moisture content in 3 soil layers
-!     thicec    - frozen soil moisture content in 3 soil layers in canopy
-!                 covered subarea
-!     sand      - percentage sand
-!     clay      - percentage clay
-!     roottemp  - root temperature as estimated in mainres subroutine
-!     zbotw     - bottom of soil layers
-!     sort      - index for correspondence between 9 pfts and 12 values
-!                 in the parameters vectors
-!     delzw     - permeable thickness of the layer (m)
-
-!     outputs
-
-!     ltresveg  - litter respiration for the given sub-area in
-!                 umol co2/m2.s, for ctem's 9 pfts
-!     scresveg  - soil carbon respiration for the given sub-area in
-!                 umol co2/m2.s, for ctem's 9 pfts
 
       use ctem_params,        only : icc, ilg, ignd, kk, zero, bsratelt,&
                                bsratesc, abar, tanhq10,&
@@ -373,25 +392,48 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 
       implicit none
 
-      integer  il1, il2, i, j, k, sort(icc), isand(ilg,ignd)
+      integer il1       !<il1=1
+      integer il2       !<il2=ilg
+      integer i, j, k
+      integer sort(icc) !<index for correspondence between 9 pfts and 12 values in the parameters vectors
+      integer isand(ilg,ignd) !<
+c
+      real fcan(ilg,icc)      !<fractional coverage of ctem's 9 pfts
+      real fct(ilg)           !<sum of all fcan, fcan & fct are not used at this time but could be used at some later stage
+      real litrmass(ilg,icc+1)!<litter mass for the 9 pfts + bare in \f$kg c/m^2\f$
+      real tbar(ilg,ignd)     !<soil temperature, k
+      real soilcmas(ilg,icc+1)!<soil carbon mass for the 9 pfts + bare in \f$kg c/m^2\f$
+      real thliq(ilg,ignd)    !<liquid soil moisture content in 3 soil layers
+      real roottemp(ilg,icc)  !<root temperature as estimated in mainres subroutine
+      real zbotw(ilg,ignd)    !<bottom of soil layers
+      real ltresveg(ilg,icc)  !<litter respiration for the given sub-area in umol co2/m2.s, for ctem's 9 pfts
+      real scresveg(ilg,icc)  !<soil carbon respiration for the given sub-area in umol co2/m2.s, for ctem's 9 pfts
+      real thicec(ilg,ignd)   !<liquid soil moisture content in 3 soil layers in canopy covered subarea
 
-      real    fcan(ilg,icc),           fct(ilg),  litrmass(ilg,icc+1),&
-         tbar(ilg,ignd),soilcmas(ilg,icc+1),      thliq(ilg,ignd),&
-        roottemp(ilg,icc), psisat(ilg,ignd),  b(ilg,ignd), &
-        zbotw(ilg,ignd),  ltresveg(ilg,icc),    scresveg(ilg,icc),&
-        thicec(ilg,ignd),  delzw(ilg,ignd),  thpor(ilg,ignd)
+      real delzw(ilg,ignd)    !<
+      real zcarb_g            !<
 
-
-      real           litrq10,           soilcq10,&
-        litrtemp(ilg,icc),  solctemp(ilg,icc),             q10func,&
-       grksat(ilg,ignd),       &
-       fracarb(ilg,icc,ignd),                       zcarbon,&
-         tempq10l(ilg,icc),  socmoscl(ilg,icc),     scmotrm(ilg,ignd),&
-             ltrmoscl(ilg),        psi(ilg,ignd),   tempq10s(ilg,icc),&
-                    fcoeff, zcarb_g
+      real litrq10            !<
+      real soilcq10           !<
+      real litrtemp(ilg,icc)  !<litter temperature
+      real solctemp(ilg,icc)  !<soil carbon pool temperature
+      real q10func            !<
+      real psisat(ilg,ignd)   !<saturation matric potential
+      real grksat(ilg,ignd)   !<saturation hyd. conductivity
+      real b(ilg,ignd)        !<parameter b of clapp and hornberger
+      real thpor(ilg,ignd)    !<porosity
+      real fracarb(ilg,icc,ignd) !<fraction of carbon in each soil layer for each vegetation
+      real zcarbon            !<
+      real tempq10l(ilg,icc)  !<
+      real socmoscl(ilg,icc)  !<soil moisture scalar for soil carbon decomposition
+      real scmotrm(ilg,ignd)  !<soil carbon moisture term
+      real ltrmoscl(ilg)      !<soil moisture scalar for litter decomposition
+      real psi(ilg,ignd)      !<
+      real tempq10s(ilg,icc)  !<
+      real fcoeff             !<
 
 !     ------------------------------------------------------------------
-!     Constants and parameters are located in ctem_params.f90
+!!     Constants and parameters are located in ctem_params.f90
 !     ---------------------------------------------------------------
 
 !     initialize required arrays to zero
@@ -420,10 +462,10 @@ do 130 i = il1, il2
 
 !     ------------------------------------------------------------------
 
-!     estimate temperature of the litter and soil carbon pools. litter
-!     temperature is weighted average of temperatue of top soil layer
-!     (where the stem and leaf litter sits) and root temperature, because
-!     litter pool is made of leaf, stem, and root litter.
+!<     estimate temperature of the litter and soil carbon pools. litter
+!!     temperature is weighted average of temperatue of top soil layer
+!!     (where the stem and leaf litter sits) and root temperature, because
+!!     litter pool is made of leaf, stem, and root litter.
 
       do 200 j = 1,icc
         do 210 i = il1, il2
@@ -433,14 +475,14 @@ do 130 i = il1, il2
 210     continue
 200   continue
 
-!     estimation of soil carbon pool temperature is not straight forward.
-!     ideally soil c pool temperature should be set same as root temperature,
-!     since soil c profiles are similar to root profiles. but in the event
-!     when the roots die then we may run into trouble. so we find the
-!     temperature of the soil c pool assuming that soil carbon is
-!     exponentially distributed, just like roots. but rather than using
-!     the parameter of this exponential profile from our variable root
-!     distribution we use fixed vegetation-dependent parameters.
+!<     estimation of soil carbon pool temperature is not straight forward.
+!!     ideally soil c pool temperature should be set same as root temperature,
+!!     since soil c profiles are similar to root profiles. but in the event
+!!     when the roots die then we may run into trouble. so we find the
+!!     temperature of the soil c pool assuming that soil carbon is
+!!     exponentially distributed, just like roots. but rather than using
+!!     the parameter of this exponential profile from our variable root
+!!     distribution we use fixed vegetation-dependent parameters.
 
       do 230 j = 1, icc
         do 240 i = il1, il2
@@ -487,8 +529,8 @@ do 130 i = il1, il2
 !           solctemp(i,j)=solctemp(i,j) /(fracarb(i,j,1)+fracarb(i,j,2)+fracarb(i,j,3))
           solctemp(i,j) = sum(tbar(i,:)*fracarb(i,j,:))/ sum(fracarb(i,j,:))
 
-!         make sure we don't use temperatures of 2nd and 3rd soil layers
-!         if they are specified bedrock via sand -3 flag
+!<         make sure we don't use temperatures of 2nd and 3rd soil layers
+!!         if they are specified bedrock via sand -3 flag
 
 !           if(isand(i,3).eq.-3)then ! third layer bed rock
 !             solctemp(i,j)=tbar(i,1)*fracarb(i,j,1) +tbar(i,2)*fracarb(i,j,2)
@@ -501,12 +543,12 @@ do 130 i = il1, il2
 240     continue
 230   continue
 
-!     find moisture scalar for soil c decomposition
+!!     find moisture scalar for soil c decomposition
 
-!     this is modelled as function of logarithm of matric potential.
-!     we find values for all soil layers, and then find an average value
-!     based on fraction of carbon present in each layer. this makes
-!     moisture scalar a function of vegetation type.
+!!     this is modelled as function of logarithm of matric potential.
+!!     we find values for all soil layers, and then find an average value
+!!     based on fraction of carbon present in each layer. this makes
+!!     moisture scalar a function of vegetation type.
 
       do 260 j = 1, ignd
         do 270 i = il1, il2
@@ -566,14 +608,14 @@ do 130 i = il1, il2
 290     continue
 280   continue
 
-!     find moisture scalar for litter decomposition
+!!     find moisture scalar for litter decomposition
 
-!     the difference between moisture scalar for litter and soil c
-!     is that the litter decomposition is not constrained by high
-!     soil moisture (assuming that litter is always exposed to air).
-!     in addition, we use moisture content of the top soil layer
-!     as a surrogate for litter moisture content. so we use only
-!     psi(i,1) calculated in loops 260 and 270 above.
+!!     the difference between moisture scalar for litter and soil c
+!!     is that the litter decomposition is not constrained by high
+!!     soil moisture (assuming that litter is always exposed to air).
+!!     in addition, we use moisture content of the top soil layer
+!!     as a surrogate for litter moisture content. so we use only
+!!     psi(i,1) calculated in loops 260 and 270 above.
 
       do 300 i = il1, il2
         if(psi(i,1).gt.10000.0) then
@@ -586,8 +628,8 @@ do 130 i = il1, il2
         ltrmoscl(i)=max(0.2,min(1.0,ltrmoscl(i)))
 300   continue
 
-!     use temperature of the litter and soil c pools, and their soil
-!     moisture scalars to find respiration rates from these pools
+!!    use temperature of the litter and soil c pools, and their soil
+!!     moisture scalars to find respiration rates from these pools
 
       do 320 j = 1, icc
         do 330 i = il1, il2
@@ -617,5 +659,5 @@ do 130 i = il1, il2
       return
 
 end subroutine hetresv
-
+!!@}
 end module heterotrophic_respiration

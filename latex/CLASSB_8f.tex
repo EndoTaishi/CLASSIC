@@ -1,0 +1,132 @@
+\hypertarget{CLASSB_8f}{}\section{C\+L\+A\+S\+S\+B.\+f File Reference}
+\label{CLASSB_8f}\index{C\+L\+A\+S\+S\+B.\+f@{C\+L\+A\+S\+S\+B.\+f}}
+
+
+Purpose\+: Assign thermal and hydraulic properties to soil layers based on sand/clay content, or soil type. Also calculate permeable thickness of soil layers, and wet and dry surface albedo for mineral soils.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{CLASSB_8f_ad124fb79b047c72316aea3d64d4721ee}{classb} (T\+H\+P\+O\+R, T\+H\+L\+R\+E\+T, T\+H\+L\+M\+I\+N, B\+I, P\+S\+I\+S\+A\+T, G\+R\+K\+S\+A\+T, T\+H\+L\+R\+A\+T, H\+C\+P\+S, T\+C\+S, T\+H\+F\+C, T\+H\+L\+W, P\+S\+I\+W\+L\+T, D\+E\+L\+Z\+W, Z\+B\+O\+T\+W, A\+L\+G\+W\+E\+T, A\+L\+G\+D\+R\+Y, A\+L\+G\+W\+V, A\+L\+G\+W\+N, A\+L\+G\+D\+V, A\+L\+G\+D\+N, S\+A\+N\+D, C\+L\+A\+Y, O\+R\+G\+M, S\+O\+C\+I, D\+E\+L\+Z, Z\+B\+O\+T, S\+D\+E\+P\+T\+H, I\+S\+A\+N\+D, I\+G\+D\+R, N\+L, N\+M, I\+L1, I\+L2, I\+M, I\+G, I\+G\+R\+A\+L\+B)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Assign thermal and hydraulic properties to soil layers based on sand/clay content, or soil type. Also calculate permeable thickness of soil layers, and wet and dry surface albedo for mineral soils. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{CLASSB_8f_ad124fb79b047c72316aea3d64d4721ee}{}\index{C\+L\+A\+S\+S\+B.\+f@{C\+L\+A\+S\+S\+B.\+f}!classb@{classb}}
+\index{classb@{classb}!C\+L\+A\+S\+S\+B.\+f@{C\+L\+A\+S\+S\+B.\+f}}
+\subsubsection[{classb}]{\setlength{\rightskip}{0pt plus 5cm}subroutine classb (
+\begin{DoxyParamCaption}
+\item[{real, dimension (nl,nm,ig)}]{T\+H\+P\+O\+R, }
+\item[{real, dimension(nl,nm,ig)}]{T\+H\+L\+R\+E\+T, }
+\item[{real, dimension(nl,nm,ig)}]{T\+H\+L\+M\+I\+N, }
+\item[{real, dimension    (nl,nm,ig)}]{B\+I, }
+\item[{real, dimension(nl,nm,ig)}]{P\+S\+I\+S\+A\+T, }
+\item[{real, dimension(nl,nm,ig)}]{G\+R\+K\+S\+A\+T, }
+\item[{real, dimension(nl,nm,ig)}]{T\+H\+L\+R\+A\+T, }
+\item[{real, dimension  (nl,nm,ig)}]{H\+C\+P\+S, }
+\item[{real, dimension   (nl,nm,ig)}]{T\+C\+S, }
+\item[{real, dimension  (nl,nm,ig)}]{T\+H\+F\+C, }
+\item[{real, dimension  (nl,nm,ig)}]{T\+H\+L\+W, }
+\item[{real, dimension(nl,nm,ig)}]{P\+S\+I\+W\+L\+T, }
+\item[{real, dimension (nl,nm,ig)}]{D\+E\+L\+Z\+W, }
+\item[{real, dimension (nl,nm,ig)}]{Z\+B\+O\+T\+W, }
+\item[{real, dimension(nl,nm)}]{A\+L\+G\+W\+E\+T, }
+\item[{real, dimension(nl,nm)}]{A\+L\+G\+D\+R\+Y, }
+\item[{real, dimension (nl,nm)}]{A\+L\+G\+W\+V, }
+\item[{real, dimension (nl,nm)}]{A\+L\+G\+W\+N, }
+\item[{real, dimension (nl,nm)}]{A\+L\+G\+D\+V, }
+\item[{real, dimension (nl,nm)}]{A\+L\+G\+D\+N, }
+\item[{real, dimension  (nl,nm,ig)}]{S\+A\+N\+D, }
+\item[{real, dimension  (nl,nm,ig)}]{C\+L\+A\+Y, }
+\item[{real, dimension  (nl,nm,ig)}]{O\+R\+G\+M, }
+\item[{real, dimension  (nl,nm)}]{S\+O\+C\+I, }
+\item[{real, dimension  (ig)}]{D\+E\+L\+Z, }
+\item[{real, dimension  (ig)}]{Z\+B\+O\+T, }
+\item[{real, dimension(nl,nm)}]{S\+D\+E\+P\+T\+H, }
+\item[{integer, dimension (nl,nm,ig)}]{I\+S\+A\+N\+D, }
+\item[{integer, dimension  (nl,nm)}]{I\+G\+D\+R, }
+\item[{integer}]{N\+L, }
+\item[{integer}]{N\+M, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{I\+M, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+G\+R\+A\+L\+B}
+\end{DoxyParamCaption}
+)}\label{CLASSB_8f_ad124fb79b047c72316aea3d64d4721ee}
+
+\begin{DoxyParams}{Parameters}
+{\em thpor} & Pore volume $[m^3 m^{-3} ] ( \theta_p )$\\
+\hline
+{\em thlret} & Liquid water retention capacity for organic soil $[m^3 m^{-3} ] (\theta_{ret} )$\\
+\hline
+{\em thlmin} & Residual soil liquid water content remaining after freezing or evaporation $[m^3 m^{-3} ] (\theta_{min} )$\\
+\hline
+{\em bi} & Clapp and Hornberger empirical parameter \mbox{[} \mbox{]} (b)\\
+\hline
+{\em psisat} & Soil moisture suction at saturation \mbox{[}m\mbox{]} $(\Psi_{sat} )$\\
+\hline
+{\em grksat} & Hydraulic conductivity of soil at saturation $[m s^{-1} ] (K_{sat} )$\\
+\hline
+{\em thlrat} & Fractional saturation of soil at half the saturated hydraulic conductivity \mbox{[} \mbox{]} $(f_{inf} )$\\
+\hline
+{\em hcps} & Volumetric heat capacity of soil matter $[J m^{-3} K^{-1} ] (C_g )$\\
+\hline
+{\em tcs} & Thermal conductivity of soil $[W m^{-1} K^{-1} ] (\tau_g )$\\
+\hline
+{\em thfc} & Field capacity $[m^3 m^{-3} ] (\theta_{fc} )$\\
+\hline
+{\em psiwlt} & Soil moisture suction at wilting point \mbox{[}m\mbox{]} $(\Psi_{wilt} )$\\
+\hline
+{\em delzw} & Thickness of permeable part of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em zbotw} & Depth of bottom of permeable part of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em algwet} & All-\/wave albedo of wet soil for modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em algdry} & All-\/wave albedo of dry soil for modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em isand} & Sand content flag\\
+\hline
+{\em igdr} & Index of soil layer in which bedrock is encountered\\
+\hline
+{\em sand} & Percent sand content of soil layer \mbox{[}percent\mbox{]} $(X_{sand} )$\\
+\hline
+{\em clay} & Percent clay content of soil layer \mbox{[}percent\mbox{]} $(X_{clay} )$\\
+\hline
+{\em orgm} & Percent organic matter content of soil layer \mbox{[}percent\mbox{]}\\
+\hline
+{\em delz} & Thickness of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em zbot} & Depth of bottom of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em sdepth} & Permeable depth of soil column (depth to bedrock) \mbox{[}m\mbox{]} $(z_b )$\\
+\hline
+{\em igralb} & I\+F I\+G\+R\+A\+L\+B I\+S S\+E\+T T\+O 0, T\+H\+E W\+E\+T A\+N\+D D\+R\+Y S\+O\+I\+L A\+L\+B\+E\+D\+O\+S A\+R\+E C\+A\+L\+C\+U\+L\+A\+T\+E\+D O\+N T\+H\+E B\+A\+S\+I\+S O\+F S\+O\+I\+L T\+E\+X\+T\+U\+R\+E. I\+F I\+T I\+S S\+E\+T T\+O 1, T\+H\+E\+Y A\+R\+E A\+S\+S\+I\+G\+N\+E\+D V\+A\+L\+U\+E\+S B\+A\+S\+E\+D O\+N T\+H\+E N\+C\+A\+R C\+L\+M S\+O\+I\+L \char`\"{}\+C\+O\+L\+O\+U\+R\char`\"{} D\+A\+T\+A\+S\+E\+T. \\
+\hline
+\end{DoxyParams}
+In the first section of code, two integer flags are evaluated\+: I\+G\+D\+R, the index of the soil layer in which the bottom of the soil permeable depth, $z_b$ , occurs; and I\+S\+A\+N\+D, the value of the S\+A\+N\+D variable for each soil layer converted to an integer. I\+S\+A\+N\+D is used throughout the C\+L\+A\+S\+S code as a flag to determine which branches of code to execute.
+
+In loop 200, calculations are done to determine the permeable thickness D\+E\+L\+Z\+W of each soil layer. If the land cover is an ice sheet (indicated by an I\+S\+A\+N\+D value of -\/4 in the top layer), the value of D\+E\+L\+Z\+W in each layer is set to D\+E\+L\+Z, the standard thickness of the corresponding thermal layer, and the soil flag is set to -\/4. If the layer consists of rock, indicated by an I\+S\+A\+N\+D value of -\/3, D\+E\+L\+Z\+W is set to 0. For soil layers where $z_b$ occurs below the bottom of the layer, D\+E\+L\+Z\+W is set to D\+E\+L\+Z; for layers where $z_b$ occurs near the top of the layer, D\+E\+L\+Z\+W is set to 0 and I\+S\+A\+N\+D is set to -\/3. For the soil layer containing $z_b$ , D\+E\+L\+Z\+W is set to the distance from the top of the layer to $z_b$ , and is further constrained to be $\geq$ 5 cm, to avoid overshoots in the water movement calculations. For all layers, the distance to the bottom of its respective permeable depth, Z\+B\+O\+T\+W, is set to the depth of the top of the layer plus D\+E\+L\+Z\+W. At the end of the loop, if the soil is a mineral one, the wet and dry albedo values are calculated using simple empirical functions derived from values given in Wilson and Henderson-\/\+Sellers (1985). (The dry albedo calculation varies slightly depending on whether or not C\+T\+E\+M is being run.)
+
+In loop 300, various thermal and hydraulic soil properties are assigned to each of the soil layers, depending on soil type. Values of I\+S\+A\+N\+D greater than zero indicate mineral soil. The pore volume $\theta_p$ , the saturated hydraulic conductivity $K_{sat}$ , and the soil moisture suction at saturation $\Psi$ sat are calculated from the percentage sand content $X_{sand}$ , and the hydraulic parameter b is calculated from the percentage clay content $X_{clay}$ , based on empirical relationships given in Cosby et al. (1984)\+: $\theta_p = (-0.126 X_{sand} +48.9)/100.0$ $b = 0.159 X_{clay} + 2.91$ $\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)$ $K_{sat} = 7.0556 x 10 -6 exp(0.0352 X_{sand} - 2.035)$
+
+The fractional saturation of the soil at half the saturated hydraulic conductivity, $f_{inf}$ , is calculated by inverting the Clapp and Hornberger (1978) expression relating hydraulic conductivity $K$ to liquid water content of the soil $\theta_l$ \+: $K = K_{sat} (\theta_l / \theta_p ) (2b + 3)$
+
+Thus, $f_{inf} = 0.5 1/(2b+3)$
+
+The residual soil liquid water content remaining after evaporation or freezing, $\theta_{min}$ , and the liquid water retention capacity, $\theta_{ret}$ , are both set for mineral soils to a textbook value of 0.\+04. The volumetric sand, silt + clay and organic matter components of the soil matrix are derived by converting the percent values to volume fractions. The overall volumetric heat capacity of the soil material, $C_g$ , is then calculated as a weighted average\+: $C_g = \Sigma (C_{sand} \theta_{sand} + C_{fine} \theta_{fine} + C_{org} \theta_{org} )/(1 - \theta_p )$ where the subscript \char`\"{}fine\char`\"{} refers to the silt and clay particles taken together. The thermal conductivity of the soil material, $\tau_g$ , is likewise calculated as a weighted average over the thermal conductivities of the components\+: $\tau_g = \Sigma (\tau_{sand} \theta_{sand} + \tau_{fine} \theta_{fine} + \tau_{org} \theta_{org} )/(1 - \theta_p )$
+
+The field capacity $\theta_{fc}$ , that is, the liquid water content of the soil at which gravitational drainage effectively ceases, is calculated by setting the expression for K above to a value of 0.\+1 mm $d^{-1}$ , and solving for the liquid water content\+: $\theta_{fc} = \theta_p (1.157 x 10^{-9} /K_{sat} )^{1/(2b + 3)}$
+
+The only exception is the field capacity of the lowest permeable layer in mineral soils (layer I\+G\+D\+R), which is determined using an expression developed by Soulis et al. (2010), which takes into account the permeable depth of the whole overlying soil\+: $\theta_{fc} = \theta_p /(b-1) \bullet (\Psi_{sat} b/ z_b )^{1/b} \bullet [(3b+2)^{(b-1)/b} - (2b+2)^{(b-1)/b} ]$
+
+The soil moisture suction $\Psi_{wilt}$ at the wilting point (the liquid water content at which plant roots can no longer draw water from the soil) is calculated from the saturated soil moisture suction using the Clapp and Hornberger (1978) expression, with the liquid water content approximated as 0.\+5 $\theta_{fc}$ \+: $\Psi_{wilt} = \Psi_{sat} (0.5 \theta_{fc} / \theta_p )^{-b}$ Organic soils are flagged with an I\+S\+A\+N\+D value of -\/2. For these soils, the variables $\theta_p$ , b, $K_{sat}$ , $\Psi_{sat}$ , $\theta_{min}$ , and $\theta_{ret}$ are assigned values based on the peat texture (fibric, hemic or sapric). These values are obtained from the arrays in common block C\+L\+A\+S\+S5 (see the C\+L\+A\+S\+S\+B\+D documentation above). The current default is to assume the first soil layer as fibric, the second as hemic, and any lower layers as sapric. The volumetric heat capacity and thermal conductivity are set to textbook values for organic matter; the field capacity is set equal to the retention capacity; $f_{inf}$ is obtained as above; and $\Psi_{wilt}$ is assume to apply at a liquid water content of $\theta_{min}$ .
+
+In the cases of rock soils and ice sheets (respectively flagged with I\+S\+A\+N\+D values of -\/3 and -\/4), all of the above variables are set to zero except for the volumetric heat capacity and the thermal conductivity, which are assigned values representative of rock or ice.

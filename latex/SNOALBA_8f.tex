@@ -1,0 +1,105 @@
+\hypertarget{SNOALBA_8f}{}\section{S\+N\+O\+A\+L\+B\+A.\+f File Reference}
+\label{SNOALBA_8f}\index{S\+N\+O\+A\+L\+B\+A.\+f@{S\+N\+O\+A\+L\+B\+A.\+f}}
+
+
+Purpose\+: Diagnose snowpack visible and near-\/\+I\+R albedos given the all-\/wave albedo at the current time step. Calculate snowpack transmissivity for shortwave radiation.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{SNOALBA_8f_a414a4eaf6a7d196c40633aa1c1ab2159}{snoalba} (A\+L\+V\+S\+S\+N, A\+L\+I\+R\+S\+N, A\+L\+V\+S\+S\+C, A\+L\+I\+R\+S\+C, A\+L\+B\+S\+N\+O, T\+R\+S\+N\+O\+W\+C, A\+L\+S\+N\+O, T\+R\+S\+N\+O\+W\+G, F\+S\+D\+B, F\+S\+F\+B, R\+H\+O\+S\+N\+O, R\+E\+F\+S\+N, B\+C\+S\+N, S\+N\+O, C\+S\+Z, Z\+S\+N\+O\+W, F\+S\+N\+O\+W, A\+S\+V\+D\+A\+T, A\+S\+I\+D\+A\+T, A\+L\+V\+S\+G, A\+L\+I\+R\+G, I\+L\+G, I\+G, I\+L1, I\+L2, J\+L, I\+A\+L\+S, N\+B\+S, I\+S\+N\+O\+A\+L\+B)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Diagnose snowpack visible and near-\/\+I\+R albedos given the all-\/wave albedo at the current time step. Calculate snowpack transmissivity for shortwave radiation. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{SNOALBA_8f_a414a4eaf6a7d196c40633aa1c1ab2159}{}\index{S\+N\+O\+A\+L\+B\+A.\+f@{S\+N\+O\+A\+L\+B\+A.\+f}!snoalba@{snoalba}}
+\index{snoalba@{snoalba}!S\+N\+O\+A\+L\+B\+A.\+f@{S\+N\+O\+A\+L\+B\+A.\+f}}
+\subsubsection[{snoalba}]{\setlength{\rightskip}{0pt plus 5cm}subroutine snoalba (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg)}]{A\+L\+V\+S\+S\+N, }
+\item[{real, dimension(ilg)}]{A\+L\+I\+R\+S\+N, }
+\item[{real, dimension(ilg)}]{A\+L\+V\+S\+S\+C, }
+\item[{real, dimension(ilg)}]{A\+L\+I\+R\+S\+C, }
+\item[{real, dimension(ilg)}]{A\+L\+B\+S\+N\+O, }
+\item[{real, dimension(ilg)}]{T\+R\+S\+N\+O\+W\+C, }
+\item[{real, dimension (ilg,nbs)}]{A\+L\+S\+N\+O, }
+\item[{real, dimension(ilg,nbs)}]{T\+R\+S\+N\+O\+W\+G, }
+\item[{real, dimension(ilg,nbs)}]{F\+S\+D\+B, }
+\item[{real, dimension(ilg,nbs)}]{F\+S\+F\+B, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+O, }
+\item[{real, dimension (ilg)}]{R\+E\+F\+S\+N, }
+\item[{real, dimension  (ilg)}]{B\+C\+S\+N, }
+\item[{real, dimension   (ilg)}]{S\+N\+O, }
+\item[{real, dimension   (ilg)}]{C\+S\+Z, }
+\item[{real, dimension (ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{F\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{A\+S\+V\+D\+A\+T, }
+\item[{real, dimension(ilg)}]{A\+S\+I\+D\+A\+T, }
+\item[{real, dimension  (ilg)}]{A\+L\+V\+S\+G, }
+\item[{real, dimension  (ilg)}]{A\+L\+I\+R\+G, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{I\+A\+L\+S, }
+\item[{integer}]{N\+B\+S, }
+\item[{integer}]{I\+S\+N\+O\+A\+L\+B}
+\end{DoxyParamCaption}
+)}\label{SNOALBA_8f_a414a4eaf6a7d196c40633aa1c1ab2159}
+
+\begin{DoxyParams}{Parameters}
+{\em alvssn} & Visible albedo of snow pack on bare ground $[ ] (alpha_{s,VIS})$\\
+\hline
+{\em alirsn} & Near-\/\+I\+R albedo of snow pack on bare ground $[ ] (alpha_{s,NIR})$\\
+\hline
+{\em alvssc} & Visible albedo of snow on ground under vegetation canopy \mbox{[} \mbox{]}\\
+\hline
+{\em alirsc} & Near-\/\+I\+R albedo of snow on ground under vegetation canopy \mbox{[} \mbox{]}\\
+\hline
+{\em trsnowc} & Transmissivity of snow to shortwave radiation $[ ] (\tau_s)$\\
+\hline
+{\em albsno} & All-\/wave albedo of snow pack $[ ] (\alpha_{s,T})$\\
+\hline
+{\em zsnow} & Depth of snow $[m] (z_s)$\\
+\hline
+{\em fsnow} & Fractional coverage of snow on grid cell \mbox{[} \mbox{]}\\
+\hline
+{\em asvdat} & Assigned value of visible albedo of snow pack – optional \mbox{[} \mbox{]}\\
+\hline
+{\em asidat} & Assigned value of near-\/\+I\+R albedo of snow pack – optional \mbox{[} \mbox{]} \\
+\hline
+\end{DoxyParams}
+In subroutine S\+N\+O\+A\+L\+B\+W, called at the end of C\+L\+A\+S\+S\+W, the change of total snow albedo over the current time step is calculated using an empirical exponential decay function, which has different coefficients depending on whether the snow is dry or melting. In this subroutine, the visible and near-\/\+I\+R components of the snow albedo are diagnosed from the total albedo. According to the literature (Aguado, 1985; Robinson and Kukla, 1984; Dirmhirn and Eaton, 1975), the following represent typical snow albedos for fresh snow, old dry snow and melting snow\+:
+
+\[ \begin{tabular} { | l | c | c | c | } \hline & Total albedo & Visible albedo & Near-IR albedo \\ \hline Fresh snow & 0.84 & 0.95 & 0.73 \\ \hline Old dry snow & 0.70 & 0.84 & 0.56 \\ \hline Melting snow & 0.50 & 0.62 & 0.38 \\ \hline \end{tabular} \]
+
+The same decay function is assumed to apply to all three albedo ranges, so the relative location of the visible and near-\/\+I\+R albedos, $\alpha_{s,VIS}$ and $\alpha_{s,NIR}$, on the decay curve will be analogous to that of the total albedo, $\alpha_{s,T}$. Thus, for dry snow\+:
+
+$[\alpha_{s,VIS} - 0.84]/[0.95-0.84] = [\alpha_{s,T} - 0.70]/[0.84-0.70]$ $[\alpha_{s,NIR} - 0.56]/[0.73-0.56] = [\alpha_{s,T} - 0.70]/[0.84-0.70]$
+
+or, simplifying\+:
+
+$\alpha_{s,VIS} = 0.79[\alpha_{s,T} - 0.70] + 0.84$ $\alpha_{s,NIR} = 1.21[\alpha_{s,T} - 0.70] + 0.56$
+
+For melting snow\+:
+
+\mbox{[} $\alpha_{s,VIS} - 0.62]/[0.95-0.62] = [\alpha_{s,T} - 0.50]/[0.84-0.50]$ \mbox{[} $\alpha_{s,NIR} - 0.38]/[0.73-0.38] = [\alpha_{s,T} - 0.50]/[0.84-0.50]$
+
+or, simplifying\+:
+
+$\alpha_{s,VIS} = 0.97[\alpha_{s,T} - 0.50] + 0.62$ $\alpha_{s,NIR} = 1.03[\alpha_{s,T} - 0.50] + 0.38$
+
+The above calculations are performed if the flag I\+A\+L\+S is set to zero. If I\+A\+L\+S is set to one, indicating that assigned snow albedos are to be used instead of calculated values, $\alpha_{s,VIS}$ and $\alpha_{s,NIR}$ are set to the assigned values A\+S\+V\+D\+A\+T and A\+S\+I\+D\+A\+T respectively. The sub-\/canopy values of visible and near-\/\+I\+R albedo are currently set equal to the open snowpack values (this is expected to change if a canopy litterfall parametrization is developed).
+
+The transmissivity of snow $\tau_s$ is calculated from the snow depth Z\+S\+N\+O\+W using Beer’s law, with an empirical extinction coefficient of $25.0 m^{-1}$ derived from the literature (Grenfell and Maykut, 1977; Thomas, 1963)\+:
+
+$\tau_s = exp[-25.0 z_s]$
+
+Convert the units of the snow grain size and B\+C mixing ratio Snow grain size from meters to microns and B\+C from $kg BC/m^3$ to ng B\+C/kg S\+N\+O\+W

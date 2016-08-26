@@ -1,0 +1,80 @@
+\hypertarget{group__io__driver__ctem__monthly__aw}{}\section{Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw}
+\label{group__io__driver__ctem__monthly__aw}\index{Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw}}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__ctem__monthly__aw_gaefba66acca4c5138cfa2500f7a030022}{io\+\_\+driver\+::ctem\+\_\+monthly\+\_\+aw} (nltest, nmtest, iday, F\+A\+R\+E\+R\+O\+T, iyear, nday, onetile\+\_\+per\+P\+F\+T)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__io__driver__ctem__monthly__aw_gaefba66acca4c5138cfa2500f7a030022}{}\index{Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw}!ctem\+\_\+monthly\+\_\+aw@{ctem\+\_\+monthly\+\_\+aw}}
+\index{ctem\+\_\+monthly\+\_\+aw@{ctem\+\_\+monthly\+\_\+aw}!Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw}}
+\subsubsection[{ctem\+\_\+monthly\+\_\+aw}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public io\+\_\+driver\+::ctem\+\_\+monthly\+\_\+aw (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{nltest, }
+\item[{integer, intent(in)}]{nmtest, }
+\item[{integer, intent(in)}]{iday, }
+\item[{real, dimension(\+:,\+:), intent(in)}]{F\+A\+R\+E\+R\+O\+T, }
+\item[{integer, intent(in)}]{iyear, }
+\item[{integer, intent(in)}]{nday, }
+\item[{logical, intent(in)}]{onetile\+\_\+per\+P\+F\+T}
+\end{DoxyParamCaption}
+)}\label{group__io__driver__ctem__monthly__aw_gaefba66acca4c5138cfa2500f7a030022}
+
+
+
+
+Accumulate monthly outputs
+
+Accumulate monthly outputs at the per P\+F\+T level.
+
+Also do the bare ground
+
+Accumulate monthly outputs at the per tile level.
+
+take mean wind speed and convert to km/h
+
+Do the mid-\/month variables (these are not accumulated, we just keep the mid month value for printing in the monthly file)
+
+Do the bare fraction too
+
+Now find the per tile values\+:
+
+Also add in the bare fraction contributions.
+
+Now find the gridcell level values\+:
+
+Do the end of month variables
+
+Convert some quantities into per day values
+
+Find the monthly outputs at the per tile level from the outputs at the per P\+F\+T level
+
+Find the monthly outputs at the per grid cell level from the outputs at the per tile level
+
+Write to file .C\+T01\+M
+
+First the per P\+F\+T values\+:
+
+Now write out the bare fraction values\+:
+
+Now write out the tile average values for each tile if the tile number is greater than 1 (nmtest $>$ 1).
+
+Write to file .C\+T06\+M
+
+First the per P\+F\+T values\+:
+
+Now write out the tile average values for each tile if the tile number is greater than 1 (nmtest $>$ 1).
+
+Add fraction of each pft and bare
+
+Prepare the monthly vars for the next month\+:
+
+Reset all end of month accumulated arrays
+
+if(iday.\+eq.\+monthend(nt+1))
+
+nt=1,nmon 

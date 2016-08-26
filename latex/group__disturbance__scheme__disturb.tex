@@ -1,0 +1,316 @@
+\hypertarget{group__disturbance__scheme__disturb}{}\section{Disturbance\+\_\+scheme\+\_\+disturb}
+\label{group__disturbance__scheme__disturb}\index{Disturbance\+\_\+scheme\+\_\+disturb@{Disturbance\+\_\+scheme\+\_\+disturb}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Disturbance Subroutine.  
+
+
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__disturbance__scheme__disturb_gae9a0c3412bfa04257e8b3a7475f4cd1d}{disturbance\+\_\+scheme\+::disturb} (stemmass, rootmass, gleafmas, bleafmas,thliq,wiltsm,fieldsm,uwind,vwind,lightng,fcancmx, litrmass,prbfrhuc, rmatctem, extnprob, popdon,il1,il2,sort, nol2pfts,grclarea,thice,popdin, lucemcom,dofire,currlat,iday,fsnow,
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Disturbance Subroutine. 
+
+C\+T\+E\+M v. 2.\+0 represents disturbance as both natural and human-\/influenced fires. The original fire parametrization corresponding to C\+T\+E\+M v. 1.\+0 is described in \cite{Arora20052ac}. The parametrization has since been adapted and used in several other D\+G\+V\+Ms \cite{Kloster2010-633} \cite{Kloster2012-c79} \cite{Migliavacca2013-eh} \cite{Li20121c2}. C\+T\+E\+M v. 2.\+0 incorporates changes suggested in these studies as well as several new improvements.
+
+Fire in C\+T\+E\+M is simulated using a process-\/based scheme of intermediate complexity that accounts for all elements of the fire triangle\+: fuel load, combustibility of fuel, and an ignition source. C\+T\+E\+M represents the probability of a fire occurrence ( $P_\mathrm{f}$), for a representative area of $500\,km^2$ ( $a_{rep}$), as \[ \label{fieya} P_\mathrm{f} = P_\mathrm{b}P_\mathrm{i}P_\mathrm{m},\] where the right hand side terms represent the fire probabilities that are conditioned on (i) the availability of biomass as a fuel source ( $P_\mathrm{b}$), (ii) the combustibility of the fuel based on its moisture content ( $P_\mathrm{m}$), and (iii) the presence of an ignition source ( $P_\mathrm{i}$). The probability of fire and the subsequent calculations are performed for each P\+F\+T present in a grid cell (but the P\+F\+T index $\alpha$ is omitted for clarity in Eq. fieya\}). Since the C\+T\+E\+M parametrization is based on one fire per day per representative area, the representative area has to be sufficiently small that the requirement of only one fire per day is reasonable, yet sufficiently large such that it is not possible to burn the entire representative area in 1 day. Based on M\+O\+D\+I\+S observed fire counts in Fig. 1 of \cite{Li20121c2}, $500\,km^2$ is an appropriate size to not have more than one fire per day and still be a large enough area to be assumed representative of the grid cell as a whole.
+
+The $P_\mathrm{b}$ term depends on the aboveground biomass ( $B_{ag}$) available for sustaining a fire (which includes the green and brown leaf mass, stem mass and litter mass, $B_{ag} = C_\mathrm{L} + C_\mathrm{S} + C_\mathrm{D}$). Below a lower threshold of aboveground biomass ( $B_{low}$; $0.2\, kg\,C\,m^{-2}$; similar to \cite{Moorcroft2001-co}, and \cite{Kucharik2000-xk}), fire is not sustained and thus has a probability of 0. Above a biomass of $1.0\, kg\,C\,m^{-2}$ ( $B_{high}$), $P_\mathrm{b}$ is set to 1 as the amount of fuel available is assumed sufficient for fire. $P_\mathrm{b}$ is then calculated using the aboveground biomass, $B_{ag}$ ( $kg\,C\,m^{-2}$) with a linear variation between the upper and lower thresholds as \[ \label{eqn:Pb} P_\mathrm{b}=\max\left[0, \min\left(1,\frac{B_{ag}-B_{low}}{B_{high} - B_{low}}\right)\right]. \]
+
+The linear decrease of $P_\mathrm{b}$ from $B_{high}$ to $B_{low}$ reflects the fragmentation of fuel that occurs as biomass decreases. Fuel fragmentation impacts upon area burned as it impedes the fire spread rate \cite{Guyette2002-rc}.
+
+The probability of fire based on the presence of ignition sources ( $P_\mathrm{i}$) is influenced by both natural (lightning) and anthropogenic agents (either intentional or accidental). An initial lightning scalar, $\vartheta_F$, that varies between 0 and 1 is found as \[ \vartheta_F = \max\left[0, \min \left(1,\frac{F_c2g - F_{low}}{F_{high} - F_{low}} \right)\right],\] where $F_{low}$ and $F_{high}$ represent lower and upper thresholds of cloud-\/to-\/ground lightning strikes ( $F_c2g$, $flashes\,km^{-2}\,month^{-1}$), respectively. Similar to Eq. (eqn\+:Pb\}), below the lower threshold ( $F_{low}$; $0.25\,flashes\,km^{-2}\,month^{-1}$), $\vartheta_F$ is 0 implying lightning strikes are not sufficient to cause fire ignition, above the upper threshold ( $F_{high}$; $10.0\,flashes\,km^{-2}\,month^{-1}$) $\vartheta_F$ is 1, as ignition sources now do not pose a constraint on fire. The amount of cloud-\/to-\/ground lightning, $F_c2g$, is a fraction of the total lightning based on the relationship derived by \cite{Price1993-fm} (approximation of their Eqs. 1 and 2) as \[ F_c2g = 0.22 \exp (0.0059 \times \vert {\Phi}\vert) F_{tot},\]
+
+where $\Phi$ is the grid cell latitude in degrees and $F_{tot}$ is the total number of lightning $flashes\,km^{-2}\,month^{-1}$ (both cloud-\/to-\/cloud and cloud-\/to-\/ground). The probability of fire due to natural ignition, $P_i,n$, depends on the lightning scalar, $\vartheta_F$, as \[ P_i,n = y(\vartheta_F) - y(0)(1 - \vartheta_F) + \vartheta_F[1-y(1)] \nonumber\\ y(\vartheta_F) = \frac{1}{1 + \exp\left(\frac{0.8 - \vartheta_F}{0.1}\right)}. \]
+
+Fire probability due to ignition caused by humans, $P_i,h$, is parametrized following \cite{Kloster2010-633} with a dependence on population density, $p_\mathrm{d}$ ( $number of people\,km^{-2}$) \[ \label{eqn:Ph} P_i,h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \] where $p_{thres}$ is a population threshold ( $300\,people\,km^{-2}$) above which $P_{i,h}$ is 1. The probability of fire conditioned on ignition, $P_\mathrm{i}$, is then the total contribution from both natural and human ignition sources \[ \label{eqn:Pi} P_\mathrm{i} = \max[0, \min\{1, P_{i,n} + (1 - P_{i,n})P_{i,h}\}]. \]
+
+The population data used to calculate probability of fire ignition caused by humans and anthropogenic fire suppression (discussed further down in this section) is based on the H\+Y\+D\+E 3.\+1 data set \cite{Klein_Goldewijk2010-lh}
+
+The probability of fire due to the combustibility of the fuel, $P_\mathrm{m}$, is dependent on the soil moisture in vegetation\textquotesingle{}s root zone and in the litter layer. The root-\/zone soil wetness ( $\phi_{root}$, Eq. degsoilsat\}) is used as a surrogate for the vegetation moisture content and the soil wetness of the top soil layer as a surrogate for the litter moisture content. If a grid cell is covered by snow, $P_\mathrm{m}$ is set to zero. The probability of fire conditioned on soil wetness in vegetation\textquotesingle{}s rooting zone, $P_{m,V}$, is then \[ P_{m,V} = 1-\tanh \left[\left( \frac{1.75\ \phi_{root}} {E_\mathrm{V}}\right )^2\right],\] where $E_\mathrm{V}$ is the extinction soil wetness above which $P_{f,V}$ is reduced to near zero and is set to 0.\+30.
+
+The probability of fire based on the moisture content in the $\textit{duff}$ layer, $P_{m,D}$, which includes the brown leaf mass (grasses only) and litter mass ( $B_{duff} = C_{L,b} + C_\mathrm{D}$; $kg\,C\,m^{-2}$), is calculated in a similar way but uses the soil wetness of the first soil layer, ( $\phi_1$, Eq. phitheta\}), as a surrogate for the moisture in the duff layer itself as \[ P_{m,D} = 1 -\tanh\left[\left(\frac{1.75 \phi_1}{E_{\mathrm{D}}}\right)^2\right], \] where the extinction soil wetness for the litter layer, $E_{\mathrm{D}}$, is set to 0.\+50, which yields a higher probability of fire for the litter layer than for the vegetation for the same soil wetness. $P_\mathrm{m}$ is then the weighted average of $P_{m,V}$ and $P_{m,D}$ given by \[ \label{eqn:Pf} P_\mathrm{m} = P_{m,V} (1-f_{duff}) + P_{m,D} f_{duff}\nonumber \\ f_{duff}=\frac{B_{duff}}{B_{ag}}\] where $f_{duff}$ is the duff fraction of aboveground combustible biomass.
+
+The area burned ( $a$) is assumed to be elliptical in shape for fires based upon the wind speed and properties of an ellipse \[ a(t)=\pi \frac{l}{2}\frac{w}{2}= \frac{\pi}{2} (v_\mathrm{d}+v_\mathrm{u})v_\mathrm{p}t^2,\]
+
+where $l$ ( $m$) and $w$ ( $m$) are the lengths of major and minor axes of the elliptical area burnt; $v_\mathrm{d}$ ( $km\,h^{-1}$) and $v_\mathrm{u}$ ( $km\,h^{-1}$) are the fire spread rates in the downwind and upwind directions, respectively; $v_\mathrm{p}$ ( $km\,h^{-1}$) is the fire spread rate perpendicular to the wind direction and $t$ is the time ( $h$).
+
+The fire spread rate in the downwind direction ( $v_\mathrm{d}$) is represented as \[ \label{firespreadrate} v_\mathrm{d} = v_{d,max}\,g(u)\,h(\phi_{r, d})\]
+
+where $v_{d,max}$ ( $km\,h^{-1}$) is the P\+F\+T-\/specific maximum fire spread rate from \cite{Li20121c2}, which is set to zero for crop P\+F\+Ts (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}). The functions $g(u)$ accounts for the effect of wind speed and $ h(\phi_{r, d})$ accounts for the effect of rooting zone and duff soil wetness on the fire spread rate, as discussed below.
+
+The wind speed ( $u$; $km\,h^{-1}$) is used to determine the length ( $l$) to breadth ( $w$) ratio, $L_\mathrm{b}$, of the elliptical area burned by fire \[ \label{lb} L_\mathrm{b}= \frac{l}{w} = \frac{v_\mathrm{d} + v_\mathrm{u}}{2v_\mathrm{p}} = 1 + 10 [1 -\exp(-0.06 u)] \] and its head to back ratio, $H_\mathrm{b}$, following \cite{Li20121c2}, as \[ \label{hb} H_\mathrm{b} = \frac{v_\mathrm{d}}{v_\mathrm{u}} = \frac{L_\mathrm{b} + (L_\mathrm{b}^2 - 1)^{0.5}}{L_\mathrm{b} - (L_\mathrm{b}^2 - 1)^{0.5}}, \] which help determine the fire spread rate in the direction perpendicular to the wind speed and in the downward direction. Equations (lb\}) and (hb\}) are combined to estimate the wind scalar $g(u)$ as \[ g(u)= g(0) \frac{2.0 L_\mathrm{b}}{(1 + 1/H_\mathrm{b})} \nonumber\\ \frac{g(u)}{g(0)}=\frac{v_\mathrm{d}}{v_\mathrm{p}} = \frac{2.0 L_\mathrm{b}}{(1 + 1/H_\mathrm{b})}, \]
+
+which varies between 0.\+05 and 1. The lower limit is imposed by the $g(0)$ term, which has a value of 0.\+05 and represents the fire spread rate in the absence of wind ( $u = 0$); the upper limit is assigned a maximum value of 1. The fire spread rate in the absence of wind is essentially the spread rate in the direction perpendicular to the wind speed ( $v_\mathrm{p}$). The value of the $g(0)$ term is derived by considering the case where the wind speed becomes very large. As $u$ $\rightarrow \infty$ then $L_\mathrm{b} \rightarrow 11$ and $H_\mathrm{b} \rightarrow 482$, while $g(\infty)=1$ due to its definition, which yields $g(0) = 0.0455 \approx 0.05$.
+
+The dependence of fire spread rate on the rooting zone and duff soil wetness, $h(\phi_{r, d})$ is represented as \[ h(\phi_{r, d})= h(\phi_{root})(1-f_{duff}) + h(\phi_{1})f_{duff}\nonumber \\ h(\phi_{root})= \left(1-min \left(1,\frac{\phi_{root}}{E_\mathrm{V}} \right) \right)^2\nonumber \\ h(\phi_{1})= \left(1-min \left(1,\frac{\phi_{1}}{E_\mathrm{D}} \right) \right)^2. \]
+
+Both $h(\phi_{root})$ and $h(\phi_{1})$ gradually decrease from 1 (when soil wetness is 0 and soil moisture does not constrain fire spread rate) to 0 when soil wetness exceeds the respective extinction wetness thresholds, $E_\mathrm{V}$ and $E_\mathrm{D}$.
+
+With fire spread rate determined, and the geometry of the burned area defined, the area burned in 1 day, $a_{1{\mathrm{d}}}$ ( $km^2\,day^{-1}$), following \cite{Li20121c2}, is calculated as \[ a_{1{\mathrm{d}}} = \frac{\pi v_\mathrm{d}^2 t^2}{4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2 \nonumber\\ = \frac{\pi v_\mathrm{d}^2 (24^2)}{4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2\label{aburned} \] by setting $t$ equal to $24\,h$.
+
+The fire extinguishing probability, $q$, is used to calculate the duration ( $\tau$, $days$) of the fire, which in turn is used to calculated the area burned over the duration of the fire, ${a_{\tau d}}$. $q$ is represented following \cite{Kloster2010-633} as \[ q = 0.5 + \frac{\max\left[0,0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2}, \] which yields a value of $q$ that varies from 0.\+5 to 0.\+95 as population density, $p_\mathrm{d}$ ( $number of people\,km^{-2}$), increases from zero to infinity. Higher population density thus implies a higher probability of fire being extinguished. $q$ represents the probability that a fire will be extinguished on the same day it initiated and the probability that it will continue to the next day is ( $1-q$). Assuming individual days are independent, the probability that the fire will still be burning on day $\tau$ is $(1-q)^\tau$. The probability that a fire will last exactly \$\$ days, \$\+P()\$, is the product of the probability that the fire still exists at day $\tau$ and the probability it will be extinguished on that day hence $P(\tau) = q(1-q)^\tau$. This yields an exponential distribution of fire duration whose expected value is
+
+\[ \overline{\tau} = E(\tau) = \sum_{\tau=0}^\infty\,\tau\,q(1-q)^{\tau} = \frac{1-q}{q}. \] Based on this fire duration and the area burned in 1 day (Eq. aburned\}), the area burned over the duration of the fire ( $a_{\tau \mathrm{d}}$) (but still implemented in 1 day since the model does not track individual fires over their duration, $km^2\,day^{-1}$) is calculated as \[ a_{\tau \mathrm{d}} =E(a_{1{\mathrm{d}}} \tau^2)=\sum_{\tau=0}^\infty\,a_{1{\mathrm{d}}}\,\tau^2 q(1-q)^{\tau} \\ = a_{1{\mathrm{d}}}\,\frac{(1-q) (2-q)}{q^2}.\nonumber \]
+
+Finally, and reintroducing the P\+F\+T index $\alpha$, the area burned is extrapolated for a P\+F\+T $\alpha$ ( $A_{\mathrm{b},\alpha}$, $km^2\,day^{-1}$) to the whole grid cell as \[A_{\mathrm{b},\alpha}=P_{f,\alpha}\,a_{\tau \mathrm{d},\alpha} \frac{A_\mathrm{g}f_\alpha}{a_{rep}}, \] where $A_\mathrm{g}$ is area of a grid cell ( $km^2$), $f_\alpha$ the fractional coverage of P\+F\+T $\alpha$ and $a_{rep}$ the representative area of $500\,km^2$, as mentioned earlier. Area burned over the whole grid cell ( $A_\mathrm{b}$, $km^2\,day^{-1}$) is then calculated as the sum of area burned for individual P\+F\+Ts, \[ A_\mathrm{b}=\sum_{\alpha=1}^{N}A_{\mathrm{b},\alpha}.\]
+
+Fire emits $CO_2$, other trace gases, and aerosols as biomass is burned while plant mortality and damage due to fire contribute to the litter pool. The emissions of a trace gas/aerosol species $j$ from P\+F\+T $\alpha$, $E_{\alpha,j}$ ( $g species (m^{-2} grid cell area) day^{-1}$) are obtained from a vector of carbon densities $\vec{C}_{\alpha} = (C_\mathrm{L}, C_\mathrm{S}, C_\mathrm{R}, C_\mathrm{D})_\alpha$ ( $kg\,C\,m^{-2}$) for its leaf, stem, root and litter components, multiplied by a vector of combustion factors $mho_{\alpha} = (mho_\mathrm{L}, mho_\mathrm{S}, mho_\mathrm{R}, mho_\mathrm{D})_\alpha$, which determines what fraction of leaf, stem, root and litter components gets burned, multiplied by a vector of emissions factors $\Upsilon_{j} = (\Upsilon_\mathrm{L}, \Upsilon_\mathrm{S}, \Upsilon_\mathrm{R}, \Upsilon_\mathrm{D})_j$ ( $g species (kg\,C\,dry organic matter)^{-1}$), and by the area burned $A_{\mathrm{b},\alpha}$ for that P\+F\+T.
+
+The dot product of $\vec{C}_{\alpha}$, $\Upsilon_{j}$ and $mho_{\alpha}$ thus yields emissions per unit grid cell area of species $j$ from P\+F\+T $\alpha$, \[ \label{emiss_combust_factor} {E_{\alpha,j}}= ((\vec{C}_\alpha\cdot mho_{\alpha})\cdot \Upsilon_{j}) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\frac{1000}{450}, \]
+
+where the constant 1000 converts $\vec{C}_\alpha$ from $kg\,C\,m^{-2}$ to $g\,C\,m^{-2}$ and the constant 450 ( $g\,C\,(kg dry organic matter)^{-1}$) converts biomass from carbon units to dry organic matter \cite{Li20121c2}. The corresponding loss of carbon ( $kg\,C\,m^{-2}\,day^{-1}$) from the three live vegetation components (L, S, R) and the litter pool (D) of P\+F\+T $\alpha$ is given by \[ \label{emiss_combust_loss} H_{\alpha, i}= C_{\alpha, i} mho_i\left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\right)\quad i={L, S, R, D}. \]
+
+The P\+F\+T-\/specific combustion factors for leaf ( $mho_\mathrm{L}$), stem ( $mho_{\mathrm{S}}$), root ( $mho_{\mathrm{R}}$) and litter ( $mho_{\mathrm{D}}$) components are summarized in \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}. Emission factors for all species of trace gases and aerosols ( $CO_2$, $CO$, $CH_4$, $H_2$, $NHMC$, $NO_x$, $N_2O$, total particulate matter, particulate matter less than $2.5\,\mu m$ in diameter, and black and organic carbon) are based on an updated set by \cite{Andreae2001-e04} listed in Tables 3 and 4 of \cite{Li20121c2}.
+
+Litter generated by fire is based on similar mortality factors, which reflect a P\+F\+T\textquotesingle{}s susceptibility to damage due to fire $\vec{\Theta}_{\alpha} = (\Theta_\mathrm{L}, \Theta_\mathrm{S}, \Theta_\mathrm{R})_\alpha$ (fraction). The contribution to litter pool of each P\+F\+T due to plant mortality associated with fire ( $kg\,C\,m^{-2}\,day^{-1}$) is calculated as \[ \label{eqn_using_mort_factors} {M_{\alpha}}= (\vec{C}_\alpha \cdot \Theta_{\alpha} ) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}, \] which is the sum of contribution from individual live vegetation pools \[ \label{eqn_using_mort_factors_individual} M_{\alpha, i}= C_{\alpha, i} \Theta_{\alpha, i} \left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}} \right)\quad i={L, S, R}. \]
+
+The carbon loss terms associated with combustion of vegetation components and litter ( $H_{\alpha, i}, i={L, S, R, D}$) and mortality of vegetation components ( $M_{\alpha, i}, i={L, S, R}$) due to fire are used in Eqs. (rate\+\_\+change\+\_\+eqns\+\_\+live\+\_\+pools\}) and (rate\+\_\+change\+\_\+eqns\+\_\+dead\+\_\+pools\}), which describe the rate of change of carbon in model\textquotesingle{}s five pools (however, listed there without the P\+F\+T subscript $\alpha$). The P\+F\+T-\/specific mortality factors for leaf ( $\Theta_\mathrm{L}$), stem ( $\Theta_{\mathrm{S}}$) and root ( $\Theta_\mathrm{R}$) components are listed in \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}.
+
+When C\+T\+E\+M is run with prescribed P\+F\+T fractional cover, the area of P\+F\+Ts does not change and the fire-\/related emissions of $CO_2$, other trace gases and aerosols, and generation of litter act to thin the remaining biomass. When competition between P\+F\+Ts for space is allowed, fire both thins the remaining biomass and through plant mortality creates bare ground, which is subsequently available for colonization. The creation of bare ground depends on the susceptibility of each P\+F\+T to stand replacing fire ( $\zeta_\mathrm{r}$, fraction) (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}) and the P\+F\+T area burned. The fire-\/related mortality rate, $m_{dist}$ ( $day^{-1}$), used in Eq. (mortality\}), is then \[ \label{m_dist} m_{dist,\alpha} = \zeta_{\mathrm{r},\alpha} \frac{A_{\mathrm{b},\alpha}}{f_\alpha A_\mathrm{g}}. \]
+
+After bare ground generation associated with fire, the thinned biomass is spread uniformly over the remaining fraction of a P\+F\+T. However, it is ensured that the carbon density of the remaining biomass does not increase to a value above what it was before the fire occurred. 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__disturbance__scheme__disturb_gae9a0c3412bfa04257e8b3a7475f4cd1d}{}\index{Disturbance\+\_\+scheme\+\_\+disturb@{Disturbance\+\_\+scheme\+\_\+disturb}!disturb@{disturb}}
+\index{disturb@{disturb}!Disturbance\+\_\+scheme\+\_\+disturb@{Disturbance\+\_\+scheme\+\_\+disturb}}
+\subsubsection[{disturb}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public disturbance\+\_\+scheme\+::disturb (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg,icc)}]{stemmass, }
+\item[{real, dimension(ilg,icc)}]{rootmass, }
+\item[{real, dimension(ilg,icc)}]{gleafmas, }
+\item[{real, dimension(ilg,icc)}]{bleafmas, }
+\item[{real, dimension(ilg,ignd)}]{thliq, }
+\item[{real, dimension(ilg,ignd)}]{wiltsm, }
+\item[{real, dimension(ilg,ignd)}]{fieldsm, }
+\item[{real, dimension(ilg)}]{uwind, }
+\item[{real, dimension(ilg)}]{vwind, }
+\item[{real, dimension(ilg)}]{lightng, }
+\item[{real, dimension(ilg,icc)}]{fcancmx, }
+\item[{real, dimension(ilg,iccp1)}]{litrmass, }
+\item[{real, dimension(ilg)}]{prbfrhuc, }
+\item[{real, dimension(ilg,icc,ignd)}]{rmatctem, }
+\item[{real, dimension(ilg)}]{extnprob, }
+\item[{logical, intent(in)}]{popdon, }
+\item[{integer}]{il1, }
+\item[{integer}]{il2, }
+\item[{integer, dimension(icc)}]{sort, }
+\item[{integer, dimension(ican)}]{nol2pfts, }
+\item[{real, dimension(ilg)}]{grclarea, }
+\item[{real, dimension(ilg,ignd)}]{thice, }
+\item[{real, dimension(ilg)}]{popdin, }
+\item[{real, dimension(ilg)}]{lucemcom, }
+\item[{logical}]{dofire, }
+\item[{real, dimension(ilg)}]{currlat, }
+\item[{integer}]{iday, }
+\item[{real, dimension(ilg)}]{fsnow}
+\end{DoxyParamCaption}
+)}\label{group__disturbance__scheme__disturb_gae9a0c3412bfa04257e8b3a7475f4cd1d}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em popdon} & if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes, or if false, read directly from .ctm file\\
+\hline
+ & {\em il1} & il1=1\\
+\hline
+ & {\em il2} & il2=ilg\\
+\hline
+ & {\em sort} & index for correspondence between 9 pfts and size 12 of parameters vectors\\
+\hline
+ & {\em nol2pfts} & number of level 2 ctem pfts\\
+\hline
+ & {\em dofire} & boolean, if true allow fire, if false no fire.\\
+\hline
+ & {\em stemmass} & stem mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+ & {\em rootmass} & root mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+ & {\em gleafmas} & green leaf mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+ & {\em bleafmas} & brown leaf mass\\
+\hline
+ & {\em thliq} & liquid soil moisture content\\
+\hline
+ & {\em wiltsm} & wilting point soil moisture content\\
+\hline
+ & {\em fieldsm} & field capacity soil moisture content\\
+\hline
+ & {\em uwind} & wind speed, $m/s$\\
+\hline
+ & {\em vwind} & wind speed, $m/s$\\
+\hline
+ & {\em fcancmx} & fractional coverages of ctem\textquotesingle{}s 9 pfts\\
+\hline
+ & {\em lightng} & total $lightning, flashes/(km^2 . year)$ it is assumed that cloud to ground lightning is some fixed fraction of total lightning.\\
+\hline
+ & {\em litrmass} & litter mass for each of the 9 pfts\\
+\hline
+ & {\em prbfrhuc} & probability of fire due to human causes\\
+\hline
+ & {\em extnprob} & fire extinguishing probability\\
+\hline
+ & {\em rmatctem} & fraction of roots in each soil layer for each pft\\
+\hline
+ & {\em thice} & frozen soil moisture content over canopy fraction\\
+\hline
+ & {\em popdin} & population density $(people / km^2)$\\
+\hline
+ & {\em lucemcom} & land use change (luc) related combustion emission losses, $u-mol co2/m2.sec$\\
+\hline
+ & {\em fsnow} & fraction of snow simulated by class\\
+\hline
+ & {\em grclarea} & gcm grid cell area, $km^2$ \\
+\hline
+\end{DoxyParams}
+initialize required arrays to zero, or assign value
+
+if not simulating fire, leave the subroutine now.
+
+initialization ends
+
+Find pft areas before
+
+area in $km^2$
+
+Find the probability of fire as a product of three functions with dependence on total biomass, soil moisture, and lightning
+
+
+\begin{DoxyEnumerate}
+\item Dependence on total biomass
+\end{DoxyEnumerate}
+
+don\textquotesingle{}t allow it to bring in crops since they are not allowed to burn.
+
+Root biomass is not used to initiate fire. For example if the last fire burned all grass leaves, and some of the roots were left, its unlikely these roots could catch fire.
+
+Find average biomass over the vegetated fraction
+
+Sum up the vegetated area
+
+calculate bterm for individual P\+F\+Ts as well
+
+
+\begin{DoxyEnumerate}
+\item Dependence on soil moisture
+\end{DoxyEnumerate}
+
+This is calculated in a way such that the more dry the root zone of a pft type is, and more fractional area is covered with that pft, the more likely it is that fire will get started. that is the dryness factor is weighted by fraction of roots in soil layers, as well as according to the fractional coverage of different pfts. the assumption here is that if there is less moisture in root zone, then it is more likely the vegetation will be dry and thus the likeliness of fire is more.
+
+First find the dryness factor for each soil layer.
+
+If there is snow on the ground, do not allow fire so set betadrgt to 0 for all soil layers otherwise calculate as per normal.
+
+Now find weighted value of this dryness factor averaged over the rooting depth, for each pft
+
+Next find this dryness factor averaged over the vegetated fraction $avgdryns(i) = avgdryns(i) + drgtstrs(i,j)*fcancmx(i,j)$
+
+The litter and brown leaves are not affected by the soil water potential therefore they will react only to the moisture conditions (our proxy here is the upper soil moisture). If it is dry they increase the probability of fire corresponding to the proportion of total C they contribute. Only allow if there is no snow.
+
+Use average root zone vegetation dryness to find likelihood of fire due to moisture.
+
+calculate mterm for each P\+F\+T
+
+duff fraction for each P\+F\+T, Vivek
+
+$drgtstrs(i,j)$ is $\phi_{root}$ in Melton and Arora G\+M\+D\+D (2015) paper
+
+no fire likelihood due to moisture if no vegetation
+
+
+\begin{DoxyEnumerate}
+\item dependence on lightning
+\end{DoxyEnumerate}
+
+Dependence on lightning is modelled in a simple way which implies that a large no. of lightning flashes are more likely to cause fire than few lightning flashes.
+
+New approximation of Price and Rind equation. It was developed from a more complete dataset than Prentice and Mackerras. Lightning comes in in units of $flashes/km^2/yr$ so divide by 12 to make per month.
+
+Determine the probability of fire due to human causes this is based upon the population density from the .popd read-\/in file
+
+----------------------- Number of fire calculations -\/---------------------\textbackslash{}
+
+This is not used in C\+T\+E\+M in general but we keep the code here for testing purposes
+
+calculate natural and anthorpogenic ignitions/km2.\+day the constant 0.\+25 assumes not all c2g lightning hits causes ignitions, only 0.\+25 of them do the constant (1/30.\+4) converts c2g lightning from flashes/km2.\+month to flashes/km2.\+day M\+A\+K\+E S\+U\+R\+E L\+I\+G\+H\+T\+N\+I\+N\+G I\+S I\+N U\+N\+I\+T\+S O\+F F\+L\+A\+S\+H\+E\+S/\+K\+M2.\+M\+O\+N\+T\+H
+
+Eqs. (4) and (5) of Li et al. 2012 doi\+:10.\+5194/bg-\/9-\/2761-\/2012 + also see corrigendum
+
+calculate fire suppression also as a function of population density. Li et al. (2012) formulation is quite similar to what we already use based on Kloster et al. (2010, I think) but we use Kloster\textquotesingle{}s formulation together with our fire extingishing probability. Here, the fire suppression formulation is just by itself
+
+----------------------- Number of fire calculations -\/---------------------//
+
+calculate fire probability for each P\+F\+T. Recall that lightning term is still grid averaged
+
+----------------------- Number of fire calculations -\/---------------------\textbackslash{}
+
+This is not used in C\+T\+E\+M in general but we keep the code here for testing purposes
+
+calculate total number of ignitions based natural and anthorpogenic ignitions for the whole grid cell
+
+finally calculate number of fire, noting that not all ignitions turn into fire because moisture and biomass may now allow that to happen, and some of those will be suppressed due to fire fighting efforts
+
+----------------------- Number of fire calculations -\/---------------------//
+
+Calculate area burned for each P\+F\+T, make sure it\textquotesingle{}s not greater than the area available, then find area and fraction burned for the whole gridcell
+
+soil moisture dependence on fire spread rate
+
+wind speed, which is gridcell specific
+
+Length to breadth ratio from Li et al. (2012)
+
+head to back ratio from Li et al. (2012).
+
+dependence of spread rate on wind
+
+fire spread rate per P\+F\+T
+
+area burned in 1 day for that P\+F\+T
+
+fire extinguishing probability as a function of grid-\/cell averaged population density
+
+account for low suppression in Savanna regions, see above for increase in ignition due to cultural practices
+
+area multipler to calculate area burned over the duration of the fire
+
+per P\+F\+T area burned, $km^2$
+
+-\/------ Area burned based on number of fire calculations -\/---------------------\textbackslash{}
+
+This is not used in C\+T\+E\+M in general but we keep the code here for testing purposes
+
+the constant 4 is suppose to address the fact that Li et al. (2012) suggested to double the fire spread rates. However, if we do that than our usual calculations based on C\+T\+E\+M\textquotesingle{}s original parameterization will be affected. Rather than do that we just use a multiplier of 4, since doubling fire spread rates means 4 times the area burned
+
+burnarea\+\_\+veg(i,j)=arbn1day\+\_\+veg(i,j)$\ast$num\+\_\+fires(i,j)$\ast$2.0 !flag test was 4!
+
+-\/------ Area burned based on number of fire calculations -\/---------------------//
+
+if area burned greater than area of P\+F\+T, set it to area of P\+F\+T
+
+Calculate gridcell area burned and fraction
+
+Finally estimate amount of litter generated from each pft, and each vegetation component (leaves, stem, and root) based on their resistance to combustion. Update the veg pools due to combustion.
+
+Set aside these pre-\/disturbance stem and root masses for use in burntobare subroutine.
+
+Update the pools\+:
+
+Output the burned area per P\+F\+T (the units here are burned fraction of each P\+F\+Ts area. So if a P\+F\+T has 50\% gridcell cover and 50\% of that burns it will have a burnvegf of 0.\+5 (which then translates into a gridcell fraction of 0.\+25). This units is for consistency outside of this subroutine.
+
+If .not. dofire then we enter here and perform the calculations for the emissions since we might have some from luc.
+
+We also estimate $CO_2$ emissions from each of these components. Note that the litter which is generated due to disturbance is uniformly distributed over the entire area of a given pft, and this essentially thins the vegetation biomass. If compete is not on, this does not change the vegetation fractions, if competition is on a fraction will become bare. That is handled in burntobare subroutine called from competition subroutine.
+
+Calculate the emissions of trace gases and aerosols based upon how much plant matter was burnt
+
+Sum all pools that will be converted to emissions/aerosols $(g c/m^2)$
+
+Add in the emissions due to luc fires (deforestation) the luc emissions are converted from $umol co_2 m-2 s-1 to g c m-2$ (day-\/1) before adding to tot\+\_\+emit
+
+Convert burnt plant matter from carbon to dry organic matter using a conversion factor, assume all parts of the plant has the same ratio of carbon to dry organic matter. units\+: $kg dom / m^2$
+
+Convert the dom to emissions/aerosols using emissions factors units\+: $g species / m^2$
+
+F\+L\+A\+G for the optimization of popd effect on fire I am taking the lterm out as the \textquotesingle{}temp\textquotesingle{} var. So I have made tmp be dimension ilg and I overwrite the lterm (which is written to an output file) here in its place. 

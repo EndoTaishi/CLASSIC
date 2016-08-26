@@ -1,0 +1,96 @@
+\hypertarget{mortality_8f}{}\section{mortality.\+f File Reference}
+\label{mortality_8f}\index{mortality.\+f@{mortality.\+f}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Mortality Subroutine.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{mortality_8f_a498b6ca22ad5d0ab1cd326d468801750}{mortalty} (stemmass, rootmass,ailcg, gleafmas,bleafmas,il1,il2,iday, sort,fcancmx,
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Mortality Subroutine. 
+
+Mortality
+
+The P\+F\+T-\/dependent mortality rate ( $day^{-1}$),
+
+\[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha}, \] reflects the net effect of four different processes\+: (1) intrinsic-\/ or age-\/related mortality, $m_{intr}$, (2) growth or stress-\/related mortality, $m_{ge}$, (3) mortality associated with bioclimatic criteria, $m_{bioclim}$ and (4) mortality associated with disturbances, $m_{dist}$.
+
+Intrinsic-\/ or age-\/related mortality uses a P\+F\+T-\/specific maximum age, $A_{max}$ (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}), to calculate an annual mortality rate such that only $1\,{\%}$ of tree P\+F\+Ts exceed $A_{max},\alpha$. Intrinsic mortality accounts for processes, whose effect is not explicitly captured in the model including insect damage, hail, wind throw, etc.,
+
+\[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}). \]
+
+Grasses and crops have $m_{intr} = 0$. The annual growth-\/related mortality $m_{ge}$ is calculated using growth efficiency of a P\+F\+T over the course of the previous year following \cite{Prentice1993-xn} and \cite{Sitch2003-847} as
+
+\[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \]
+
+where $m_{{ge},max}$ represents the P\+F\+T-\/specific maximum mortality rate when no growth occurs (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}). $k_{m}$ is a parameter set to $0.3\,m^{2}\,(g\,C)^{-1}$. $g_\mathrm{e}$ is the growth efficiency of the P\+F\+T ( $g\,C\,m^{-2}$) calculated based on the maximum L\+A\+I ( $L_{\alpha,max}$; $m^{2}\,m^{-2}$) and the increment in stem and root mass over the course of the previous year ( $\Delta C_\mathrm{S}$ and $\Delta C_\mathrm{R}$; $kg\,C\,m^{-2}$, respectively) \cite{Waring1983-wc} \[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \]
+
+Mortality associated with bioclimatic criteria, $m_{bioclim}$ ( $0.25\,yr^{-1}$), is applied when climatic conditions in a grid cell become unfavourable for a P\+F\+T to exist and ensures that P\+F\+Ts do not exist outside their bioclimatic envelopes, as explained in the next section.
+
+The annual mortality rates for $m_{intr}$, $m_{ge}$ and $m_{bioclim}$ are converted to daily rates and applied at the daily time step of the model, while $m_{dist}$ is calculated by the fire module of the model based on daily area burned for each P\+F\+T as summarized in Appendix fire\}. In practice, the $\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha$ term of Eq. (compact\}) is implemented right after area burnt is calculated. 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{mortality_8f_a498b6ca22ad5d0ab1cd326d468801750}{}\index{mortality.\+f@{mortality.\+f}!mortalty@{mortalty}}
+\index{mortalty@{mortalty}!mortality.\+f@{mortality.\+f}}
+\subsubsection[{mortalty}]{\setlength{\rightskip}{0pt plus 5cm}subroutine mortalty (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg,icc)}]{stemmass, }
+\item[{real, dimension(ilg,icc)}]{rootmass, }
+\item[{real, dimension(ilg,icc)}]{ailcg, }
+\item[{real, dimension(ilg,icc)}]{gleafmas, }
+\item[{real, dimension(ilg,icc)}]{bleafmas, }
+\item[{integer}]{il1, }
+\item[{integer}]{il2, }
+\item[{integer}]{iday, }
+\item[{integer, dimension(icc)}]{sort, }
+\item[{real, dimension(ilg,icc)}]{fcancmx}
+\end{DoxyParamCaption}
+)}\label{mortality_8f_a498b6ca22ad5d0ab1cd326d468801750}
+
+\begin{DoxyParams}{Parameters}
+{\em il1} & il1=1\\
+\hline
+{\em il2} & il2=ilg\\
+\hline
+{\em iday} & day of the year\\
+\hline
+{\em sort} & index for correspondence between ctem 9 pfts and size 12 of parameters vectors\\
+\hline
+{\em stemmass} & stem mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+{\em rootmass} & root mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+{\em gleafmas} & green leaf mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+{\em ailcg} & green or live lai\\
+\hline
+{\em bleafmas} & brown leaf mass for each of the 9 ctem pfts, $kg c/m^2$ \\
+\hline
+\end{DoxyParams}
+
+
+ \subsubsection*{Constants and parameters are located in \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90} }
+
+initialize required arrays to zero
+
+initialization ends 
+
+
+
+at the end of every year, i.\+e. when iday equals 365, we calculate growth related mortality. rather than using this number to kill plants at the end of every year, this mortality rate is applied gradually over the next year.
+
+calculate growth related mortality using last year\textquotesingle{}s growth efficiency or the new growth efficiency if day is 365 and growth efficiency estimate has been updated above.
+
+convert (1/year) rate into (1/day) rate
+
+calculate intrinsic mortality rate due to aging which implicity includes effects of frost, hail, wind throw etc. it is assumed that only 1\% of the plants exceed maximum age (which is a pft-\/dependent parameter). to achieve this some fraction of the plants need to be killed every year.
+
+convert (1/year) rate into (1/day) rate
+
+now that we have both growth related and intrinsic mortality rates, lets combine these rates for every pft and estimate litter generated

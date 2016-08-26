@@ -200,7 +200,7 @@ character(100), parameter, dimension(numctemvars_m) :: CTEM_M_UNIT=['$m^2$/$m^2$
 
 !====DISTURBANCE================== Declare arrays for monthly CTEM COMPOSITE AND tiled =============
 
-integer, parameter :: nctemdistvars_m = 20  !number of annual CTEM disturbance vars to write
+integer, parameter :: nctemdistvars_m = 21  !number of annual CTEM disturbance vars to write
 
 ! .CT06M_G
 !  MONTH  YEAR  CO2        CO        CH4      NMHC       H2       NOX       N2O       PM25       TPM        TC        OC        BC   PROBFIRE  LUC_CO2_E  LUC_LTRIN  LUC_SOCIN   BURNFRAC
@@ -208,15 +208,15 @@ integer, parameter :: nctemdistvars_m = 20  !number of annual CTEM disturbance v
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR=['CO2                 ','CO','CH4','NMHC','H2','NOX',                         &
                                                                    'N2O','PM25','TPM','TC','OC','BC','PROBFIRE','LUC_CO2',&
-                                                                   'LUC_LITR','LUC_SOC','BURNFRAC','BTERM','LTERM','MTERM' ]
+                                                                   'LUC_LITR','LUC_SOC','BURNFRAC','BTERM','LTERM','MTERM','WIND' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR_GA=['CO2_GA                  ','CO_GA','CH4_GA','NMHC_GA','H2_GA','NOX_GA',                         &
                                                                    'N2O_GA','PM25_GA','TPM_GA','TC_GA','OC_GA','BC_GA','PROBFIRE_GA','LUC_CO2_GA',&
-                                                                   'LUC_LITR_GA','LUC_SOC_GA','BURNFRAC_GA','BTERM_GA','LTERM_GA','MTERM_GA' ]
+                                                                   'LUC_LITR_GA','LUC_SOC_GA','BURNFRAC_GA','BTERM_GA','LTERM_GA','MTERM_GA','WIND_GA' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_VAR_TA=['CO2_TA                  ','CO_TA','CH4_TA','NMHC_TA','H2_TA','NOX_TA',                         &
                                                                    'N2O_TA','PM25_TA','TPM_TA','TC_TA','OC_TA','BC_TA','PROBFIRE_TA','LUC_CO2_TA',&
-                                                                   'LUC_LITR_TA','LUC_SOC_TA','BURNFRAC_TA','BTERM_TA','LTERM_TA','MTERM_TA' ]
+                                                                   'LUC_LITR_TA','LUC_SOC_TA','BURNFRAC_TA','BTERM_TA','LTERM_TA','MTERM_TA','WIND_TA' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_NAME=['Monthly disturbance CO2 emissions                   ','Monthly disturbance CO emissions',                                 &
                                                                     'Monthly disturbance CH4 emissions','Monthly disturbance non-CH4 hydrocarbons emissions',               &
@@ -226,7 +226,7 @@ character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_NAME=['Monthly
                                                                     'Monthly disturbance organic C emissions','Monthly disturbance black C emissions',                      &
                                                                     'Monthly fire probability','Monthly land use CO2 emissions','Monthly land use litter additions',        &
                                                                     'Monthly land use soil C additions','Monthly burned fraction','Monthly fire probability-Biomass',       &
-                                                                    'Monthly fire probability-Lightning','Monthly fire probability-Moisture' ]
+                                                                    'Monthly fire probability-Lightning','Monthly fire probability-Moisture','Monthly wind' ]
 
 character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_UNIT=['g CO$_2$ $m^{-2}$ month$^{-1}$                     ','g CO $m^{-2}$ month$^{-1}$','g $CH_4$ $m^{-2}$ month$^{-1}$',&
                                                                     'g NMHC $m^{-2}$ month$^{-1}$',                   &
@@ -234,7 +234,7 @@ character(100), parameter, dimension(nctemdistvars_m) :: CTEM_M_D_UNIT=['g CO$_2
                                                                     'g PM2.5 $m^{-2}$ month$^{-1}$',                                 &
                                                                     'g TPM $m^{-2}$ month$^{-1}$','g total C $m^{-2}$ month$^{-1}$','g OC $m^{-2}$ month$^{-1}$',&
                                                                     'g BC $m^{-2}$ month$^{-1}$',                                 &
-                                                                    'kg $CO_2$/m$^2$','% ','kg C $m^{-2}$ month$^{-1}$','kg C $m^{-2}$ month$^{-1}$','fraction   ','% ','% ','% ' ]
+                                                                    'kg $CO_2$/m$^2$','% ','kg C $m^{-2}$ month$^{-1}$','kg C $m^{-2}$ month$^{-1}$','fraction   ','% ','% ','% ','m/s' ]
 
 !====COMPETITION/LUC================== Declare arrays for monthly CTEM COMPOSITE AND tiled =============
 

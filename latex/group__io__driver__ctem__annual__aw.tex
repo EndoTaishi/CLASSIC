@@ -1,0 +1,63 @@
+\hypertarget{group__io__driver__ctem__annual__aw}{}\section{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}
+\label{group__io__driver__ctem__annual__aw}\index{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__ctem__annual__aw_gaa6ada5ef78fbb766b38f457c954348b4}{io\+\_\+driver\+::ctem\+\_\+annual\+\_\+aw} (nltest, nmtest, iday, F\+A\+R\+E\+R\+O\+T, iyear, onetile\+\_\+per\+P\+F\+T)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__io__driver__ctem__annual__aw_gaa6ada5ef78fbb766b38f457c954348b4}{}\index{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}!ctem\+\_\+annual\+\_\+aw@{ctem\+\_\+annual\+\_\+aw}}
+\index{ctem\+\_\+annual\+\_\+aw@{ctem\+\_\+annual\+\_\+aw}!Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}}
+\subsubsection[{ctem\+\_\+annual\+\_\+aw}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public io\+\_\+driver\+::ctem\+\_\+annual\+\_\+aw (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{nltest, }
+\item[{integer, intent(in)}]{nmtest, }
+\item[{integer, intent(in)}]{iday, }
+\item[{real, dimension(\+:,\+:), intent(in)}]{F\+A\+R\+E\+R\+O\+T, }
+\item[{integer, intent(in)}]{iyear, }
+\item[{logical, intent(in)}]{onetile\+\_\+per\+P\+F\+T}
+\end{DoxyParamCaption}
+)}\label{group__io__driver__ctem__annual__aw_gaa6ada5ef78fbb766b38f457c954348b4}
+
+
+
+
+Accumulate yearly outputs
+
+Accumulate the variables at the per P\+F\+T level
+
+Also do the bare fraction amounts
+
+Accumulate the variables at the per tile level
+
+The pools are looked at just at the end of the year.
+
+Add values to the per tile vars
+
+Add values to the per gridcell vars
+
+Write to annual output files\+:
+
+File .C\+T01\+Y
+
+Now do the bare fraction of the grid cell. Only soil c, hetres and litter are relevant so the rest are set to 0.
+
+Write out the per tile values
+
+Finally write out the per gridcell values
+
+Write to file .C\+T06\+Y
+
+Write out the per tile values
+
+Finally write out the per gridcell values
+
+Write fraction of each pft and bare
+
+Write out the per tile values
+
+Reset all annual vars in preparation\+: 

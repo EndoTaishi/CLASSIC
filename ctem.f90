@@ -1,3 +1,14 @@
+!>\file
+!!The basic model structure of CTEM includes three live vegetation components
+!!(leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or
+!!detritus (D) and soil carbon (H)). The amount of carbon in these pools
+!!(\f$C_\mathrm{L}\f$, \f$C_\mathrm{S}\f$, \f$C_\mathrm{R}\f$, \f$C_\mathrm{D}\f$,
+!!\f$C_\mathrm{H}\f$, \f$kgC m^{-2}\f$) is tracked prognostically through the
+!!fluxes in and out of them. The rate change equations for carbon in these
+!!pools are summarized in Sect. \ref{rate_change_eqns} after the processes
+!!leading to the calculation of fluxes in and out of these pools are introduced
+!!in the following sections.
+
       subroutine     ctem( fcancmx,    fsnow,     sand,      clay,  &
      &                      il1,       il2,      iday,      radj, &
      &                       tcano,    tcans,    tbarc,    tbarcs,    &
@@ -111,6 +122,19 @@
 !                     everything consistent with changing vegetation
 !                     fractions. 
 !    -----------------------------------------------------------------
+!
+!     l2max    - max. number of level 2 ctem pfts
+!     icc      - no of pfts for use by ctem, currently 9
+!     ican       - no of pfts for use by class, currently 4
+!     ig       - no. of soil layers, 3
+!     ilg      - no. of grid cells in latitude circle
+!
+!
+!     emitted compounds from biomass burning in g of compound
+!
+!      bterm     - biomass term for fire probabilty calc
+!      mterm     - moisture term for fire probabilty calc
+!
 
 use ctem_params,        only : kk, pi, zero,&
      &                         kn,iccp1, ican, ilg, nlat,&
@@ -127,422 +151,425 @@ use heterotrophic_respiration, only : hetresg, hetresv
 
 implicit none
 
-!     icc      - no of pfts for use by ctem, currently 9
-!     ican       - no of pfts for use by class, currently 4
-!     ig       - no. of soil layers, 3
-!     ilg      - no. of grid cells in latitude circle
-!     il1,il2  - il1=1, il2=ilg
-!     iday     - day of year
-
 !
 !     inputs
-real, dimension(ilg,icc), intent(inout) :: fcancmx ! max. fractional coverage of ctem's 9 pfts, but this can be
-                                                ! modified by land-use change, and competition between pfts
-real, dimension(ilg), intent(in) :: fsnow       ! fraction of snow simulated by class
-real, dimension(ilg,ignd), intent(in) :: sand   ! percentage sand
-real, dimension(ilg,ignd), intent(in) :: clay   ! percentage clay
-real, dimension(ilg), intent(in) :: radj        ! latitude in radians
-real, dimension(ilg), intent(in) :: tcano       ! canopy temperature for canopy over ground subarea, K
-real, dimension(ilg), intent(in) :: tcans       ! canopy temperature for canopy over snow subarea, K
-real, dimension(ilg,ignd), intent(in) :: tbarc  ! soil temperature for canopy over ground subarea, K
-real, dimension(ilg,ignd), intent(in) :: tbarcs ! soil temperature for canopy over snow subarea
-real, dimension(ilg,ignd), intent(in) :: tbarg  ! soil temperature for ground subarea
-real, dimension(ilg,ignd), intent(in) :: tbargs ! soil temperature for snow over ground subarea
-real, dimension(ilg,ignd), intent(in) :: psisat ! saturated soil matric potential (m)
-real, dimension(ilg,ignd), intent(in) :: bi     ! Brooks and Corey b term
-real, dimension(ilg,ignd), intent(in) :: thpor  ! Soil porosity
-real, dimension(ilg), intent(in) :: ta          ! air temp, K
-real, dimension(ilg,ignd), intent(in) :: delzw  ! thicknesses of the 3 soil layers
-real, dimension(ilg,ignd), intent(in) :: zbotw  ! bottom of soil layers
-real, dimension(ilg,ignd), intent(in) :: thliqc ! liquid mois. content of 3 soil layers, for canopy
-                                                !over snow and canopy over ground subareas
-real, dimension(ilg,ignd), intent(in) :: thliqg ! liquid mois. content of 3 soil layers, for ground
-                                                !and snow over ground subareas
-real, dimension(ilg,ignd), intent(in) :: thicec ! Frozen soil moisture content for canopy
-                                                !over snow and canopy over ground subareas
-real, dimension(ilg,ignd), intent(in) :: thiceg ! Frozen soil moisture content for ground
-                                                ! and snow over ground subareas
-real, intent(in) :: deltat                      ! CTEM timestep in days
-real, dimension(ilg), intent(in) :: uwind       ! u wind speed, m/s
-real, dimension(ilg), intent(in) :: vwind       ! v wind speed, m/s
-real, dimension(ilg), intent(in) :: lightng     ! total lightning frequency, flashes/km2.year
-real, dimension(ilg), intent(in) :: prbfrhuc    ! probability of fire due to human causes
-real, dimension(ilg), intent(inout) :: extnprob    ! fire extingusinging probability
+real, dimension(ilg,icc), intent(inout) :: fcancmx !< max. fractional coverage of ctem's 9 pfts, but this can be
+                                                !< modified by land-use change, and competition between pfts
+real, dimension(ilg), intent(in) :: fsnow       !< fraction of snow simulated by class
+real, dimension(ilg,ignd), intent(in) :: sand   !< percentage sand
+real, dimension(ilg,ignd), intent(in) :: clay   !< percentage clay
+real, dimension(ilg), intent(in) :: radj        !< latitude in radians
+real, dimension(ilg), intent(in) :: tcano       !< canopy temperature for canopy over ground subarea, K
+real, dimension(ilg), intent(in) :: tcans       !< canopy temperature for canopy over snow subarea, K
+real, dimension(ilg,ignd), intent(in) :: tbarc  !< soil temperature for canopy over ground subarea, K
+real, dimension(ilg,ignd), intent(in) :: tbarcs !< soil temperature for canopy over snow subarea
+real, dimension(ilg,ignd), intent(in) :: tbarg  !< soil temperature for ground subarea
+real, dimension(ilg,ignd), intent(in) :: tbargs !< soil temperature for snow over ground subarea
+real, dimension(ilg,ignd), intent(in) :: psisat !< saturated soil matric potential (m)
+real, dimension(ilg,ignd), intent(in) :: bi     !< Brooks and Corey b term
+real, dimension(ilg,ignd), intent(in) :: thpor  !< Soil porosity
+real, dimension(ilg), intent(in) :: ta          !< air temp, K
+real, dimension(ilg,ignd), intent(in) :: delzw  !< thicknesses of the 3 soil layers
+real, dimension(ilg,ignd), intent(in) :: zbotw  !< bottom of soil layers
+real, dimension(ilg,ignd), intent(in) :: thliqc !< liquid mois. content of 3 soil layers, for canopy
+                                                !<over snow and canopy over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thliqg !< liquid mois. content of 3 soil layers, for ground
+                                                !<and snow over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thicec !< Frozen soil moisture content for canopy
+                                                !<over snow and canopy over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thiceg !< Frozen soil moisture content for ground
+                                                !< and snow over ground subareas
+real, intent(in) :: deltat                      !< CTEM timestep in days
+real, dimension(ilg), intent(in) :: uwind       !< u wind speed, m/s
+real, dimension(ilg), intent(in) :: vwind       !< v wind speed, m/s
+real, dimension(ilg), intent(in) :: lightng     !< total lightning frequency, flashes/km2.year
+real, dimension(ilg), intent(in) :: prbfrhuc    !< probability of fire due to human causes
+real, dimension(ilg), intent(inout) :: extnprob !< fire extingusinging probability
 
-integer, dimension(ilg), intent(in) :: stdaln   ! an integer telling if ctem is operated within gcm (=0)
-                                 !                or in stand alone mode (=1). this is used for fire
-                                 !                purposes. see comments just above where disturb
-                                 !                subroutine is called.
-
-
-!     tbar     - soil temperature, k
-!     l2max    - max. number of level 2 ctem pfts
-!     nol2pfts - number of level 2 ctem pfts
-!     pfcancmx - previous year's fractional coverages of pfts
-!     nfcancmx - next year's fractional coverages of pfts
-!     lnduseon - logical switch to run the land use change subroutine
-!                or not. 
-!     thicec   - frozen mois. content of 3 soil layers, for canopy
-!                over snow and canopy over ground subareas
-!     soildpth - soil depth (m)
-!     spinfast - spinup factor for soil carbon whose default value is
-!                1. as this factor increases the soil c pool will come
-!                into equilibrium faster. reasonable value for spinfast
-!                is between 5 and 10. when spinfast.ne.1 then the 
-!                balcar subroutine is not run.
-!     todfrac  - max. fractional coverage of ctem's 9 pfts by the end
-!                of the day, for use by land use subroutine
-!     compete  - logical boolean telling if competition between pfts is
-!                on or not
-!     netrad   - daily net radiation (w/m2)
-!     precip   - daily precipitation (mm/day)
-!     popdin   - population density (people / km^2)
+integer, dimension(ilg), intent(in) :: stdaln   !< an integer telling if ctem is operated within gcm (=0)
+                                 !<or in stand alone mode (=1). this is used for fire
+                                 !<purposes. see comments just above where disturb subroutine is called.
 !
 !     updates
 !
-real, dimension(ilg,icc), intent(inout) :: ancsveg  ! net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
-real, dimension(ilg,icc), intent(inout) :: ancgveg  !net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
-real, dimension(ilg,icc), intent(inout) :: rmlcsveg ! leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
-real, dimension(ilg,icc), intent(inout) :: rmlcgveg ! leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
-real, dimension(ilg), intent(in) ::  grclarea       ! area of the grid cell, km^2
-real, dimension(ilg), intent(in) ::  currlat        ! centre latitude of grid cells in degrees
+real, dimension(ilg,icc), intent(inout) :: ancsveg  !< net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
+real, dimension(ilg,icc), intent(inout) :: ancgveg  !< net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
+real, dimension(ilg,icc), intent(inout) :: rmlcsveg !< leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
+real, dimension(ilg,icc), intent(inout) :: rmlcgveg !< leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
+real, dimension(ilg), intent(in) ::  grclarea       !< area of the grid cell, \f$km^2\f$
+real, dimension(ilg), intent(in) ::  currlat        !< centre latitude of grid cells in degrees
 
-!     stemmass - stem mass for each of the 9 ctem pfts, kg c/m2
-!     rootmass - root mass for each of the 9 ctem pfts, kg c/m2
-!     gleafmas - green leaf mass for each of the 9 ctem pfts, kg c/m2
-!     bleafmas - brown leaf mass for each of the 9 ctem pfts, kg c/m2
-!     litrmass - litter mass for each of the 9 ctem pfts + bare, kg c/m2
-!     soilcmas - soil carbon mass for each of the 9 ctem pfts 
-!                 + bare, kg c/m2
-!     ailcg    - green lai for ctem's 9 pfts
-!     ailc     - lumped lai for class' 4 pfts
-!     zolnc    - lumped log of roughness length for class' 4 pfts
-!     rmatctem - fraction of roots for each of ctem's 9 pfts in each
-!                soil layer
-!     rmatc    - fraction of roots for each of class' 4 pfts in each
-!                soil layer
-!     ailcb    - brown lai for ctem's 9 pfts. for now we assume only
-!                grasses can have brown lai
-!     flhrloss - fall or harvest loss for deciduous trees and crops,
-!                respectively, kg c/m2il1
-!     pandays  - days with positive net photosynthesis (an) for use in
-!                the phenology subroutine
-!     lfstatus - leaf phenology status
-!     grwtheff - growth efficiency. change in biomass per year per
-!                unit max. lai (kg c/m2)/(m2/m2), for use in mortality
-!                subroutine
-!     lystmmas - stem mass at the end of last year
-!     lyrotmas - root mass at the end of last year
-!     tymaxlai - this year's maximum lai
-!     vgbiomas - grid averaged vegetation biomass, kg c/m2
-!     gavgltms - grid averaged litter mass, kg c/m2
-!     gavgscms - grid averaged soil c mass, kg c/m2
-!     stmhrlos - stem harvest loss for crops, kg c/m2
-!     slai     - storage/imaginary lai for phenology purposes
-!     bmasveg  - total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-!     cmasvegc - total canopy mass for each of the 4 class pfts. recall that
-!                class requires canopy mass as an input, and this is now
-!                provided by ctem. kg/m2.
-!     colddays - cold days counter for tracking days below a certain
-!                temperature threshold for ndl dcd and crop pfts.
-!     rothrlos - root death as crops are harvested, kg c/m2
-!     fcanmx   - fractional coverage of class' 4 pfts
-!     alvisc   - visible albedo for class' 4 pfts
-!     alnirc   - near ir albedo for class' 4 pfts
-!     gavglai  - grid averaged green leaf area index
-!
-!     competition related variables
-!
-!     tcurm     - temperature of the current month (c)
-!     srpcuryr  - water surplus for the current year
-!     dftcuryr  - water deficit for the current year
-!     inibioclim- switch telling if bioclimatic parameters are being
-!                 initialized from scratch (false) or being initialized
-!                 from some spun up values(true).
-!     tmonth    - monthly temperatures
-!     anpcpcur  - annual precipitation for current year (mm)
-!     anpecur   - annual potential evaporation for current year (mm)
-!     gdd5cur   - growing degree days above 5 c for current year
-!     surmncur  - number of months with surplus water for current year
-!     defmncur  - number of months with water deficit for current year
-!     srplscur  - water surplus for the current month
-!     defctcur  - water deficit for the current month
-!
-!     outputs
-!                grid-averaged fluxes in u-mol co2/m2.sec
-!
-!     npp      - net primary productivity
-!     nep      - net ecosystem productivity
-!     hetrores - heterotrophic respiration
-!     autores  - autotrophic respiration
-!     soilresp - soil respiration. this includes root respiration
-!                and respiration from litter and soil carbon pools.
-!                note that soilresp is different from socres, which is
-!                respiration from the soil c pool.
-!     rm       - maintenance respiration
-!     rg       - growth respiration
-!     nbp      - net biome productivity
-!     gpp      - gross primary productivity
-!     litres   - litter respiration
-!     socres   - soil carbon respiration
-!     dstcemls1- carbon emission losses due to disturbance (fire at present)
-!                from vegetation  
-!     litrfall - total litter fall (from leaves, stem, and root) due
-!                to all causes (mortality, turnover, and disturbance)
-!     humiftrs - transfer of humidified litter from litter to soil c
-!                pool
-!     lucemcom - land use change (luc) related combustion emission losses,
-!                u-mol co2/m2.sec 
-!     lucltrin - luc related inputs to litter pool, u-mol co2/m2.sec
-!     lucsocin - luc related inputs to soil c pool, u-mol co2/m2.sec
-!     nppveg   - npp for individual pfts,  u-mol co2/m2.sec
-
-!     dstcemls3- carbon emission losses due to disturbance (fire at present)
-!                from litter pool
-!     pstemmass - stem mass from previous timestep, is value before fire. used by burntobare subroutine
-!     pgleafmass - root mass from previous timestep, is value before fire. used by burntobare subroutine
-!     twarmm    - temperature of the warmest month (c)
-!     tcoldm    - temperature of the coldest month (c)
-!     gdd5      - growing degree days above 5 c
-!     aridity   - aridity index, ratio of potential evaporation to precip
-!     srplsmon  - number of months in a year with surplus water i.e. precip more than pot. evap
-!     defctmon  - number of months in a year with water deficit i.e.precip less than pot. evap
-!     anndefct  - annual water deficit (mm) 
-!     annsrpls  - annual water surplus (mm)
-!     annpcp    - annual precipitation (mm)
-!     dry_season_length - length of the dry season (months)
-!
-!                other quantities
-!
-!     veghght  - vegetation height (meters)
-!     rootdpth - 99% soil rooting depth (meters)
-!                both veghght & rootdpth can be used as diagnostics to see
-!                how vegetation grows above and below ground, respectively
-!     rml      - leaf maintenance respiration (u-mol co2/m2.sec)
-!     rms      - stem maintenance respiration (u-mol co2/m2.sec)
-!     rmr      - root maintenance respiration (u-mol co2/m2.sec)
-!     tltrleaf - total leaf litter fall rate (u-mol co2/m2.sec)
-!     tltrstem - total stem litter fall rate (u-mol co2/m2.sec)
-!     tltrroot - total root litter fall rate (u-mol co2/m2.sec)
-!     leaflitr - leaf litter fall rate (u-mol co2/m2.sec). this leaf litter
-!                does not include litter generated due to mortality/fire
-!     roottemp - root temperature, k
-!     afrleaf  - allocation fraction for leaves
-!     afrstem  - allocation fraction for stem
-!     afrroot  - allocation fraction for root
-!     wtstatus - soil water status used for calculating allocation fractions
-!     ltstatus - light status used for calculating allocation fractions
-!     burnfrac - areal fraction burned due to fire for every grid cell (%)
-!     smfunc_veg - soil moisture dependence on fire spread rate
-!
-!     emitted compounds from biomass burning in g of compound
-!
-!      emit_co2  - carbon dioxide
-!      emit_co   - carbon monoxide
-!      emit_ch4  - methane
-!      emit_nmhc - non-methane hydrocarbons
-!      emit_h2   - hydrogen gas
-!      emit_nox  - nitrogen oxides
-!      emit_n2o  - nitrous oxide
-!      emit_pm25 - particulate matter less than 2.5 um in diameter
-!      emit_tpm  - total particulate matter
-!      emit_tc   - total carbon
-!      emit_oc   - organic carbon
-!      emit_bc   - black carbon
-!      dofire    - boolean, if true allow fire, if false no fire.
-!      dowetlands- if true allow wetland methane emission
-!      obswetf   - observed wetland fraction 
-!      bterm     - biomass term for fire probabilty calc
-!      lterm     - lightning term for fire probabilty calc
-!      mterm     - moisture term for fire probabilty calc
-!
-!     competition related variables
-!
-!     twarmm    - temperature of the warmest month (c)
-!     tcoldm    - temperature of the coldest month (c)
-!     gdd5      - growing degree days above 5 c
-!     aridity   - aridity index, ratio of potential evaporation to
-!                 precipitation
-!     srplsmon  - number of months in a year with surplus water i.e.
-!                 precipitation more than potential evaporation
-!     defctmon  - number of months in a year with water deficit i.e.
-!                 precipitation less than potential evaporation
-!     anndefct  - annual water deficit (mm)
-!     annsrpls  - annual water surplus (mm)
-!     annpcp    - annual precipitation (mm)
-!     burnvegf  - per PFT fraction burned of that PFT's area
-!
-      logical   lnduseon,  dofire,&
-     &          dowetlands, obswetf 
+      logical lnduseon   !<logical switch to run the land use change subroutine or not.
+      logical dofire     !<boolean, if true allow fire, if false no fire.
+      logical dowetlands !<if true allow wetland methane emission
+      logical obswetf    !<observed wetland fraction
 
      logical, intent(in) :: onetile_perPFT      ! if you are running with one tile per PFT in mosaic mode, set to true. Changes
                                                 ! how competition is run. Specifically it allows competition between tiles. This
                                                 ! is not recommended for any case where you don't have one PFT in each tile as it
                                                 ! has not been tested for that.
 
-      integer      il1,       il2,     &
-     &           iday,        i,        j,        k,  &
-     &         icount,        n,        m,  sort(icc),&
-     &   nol2pfts(ican),       k1,       k2,            spinfast,&
-     &           nml,    ilmos(ilg), jlmos(ilg)
+      integer il1 !<il1=1
+      integer il2 !<il2=ilg
+      integer iday !<day of year
+      integer i
+      integer j
+      integer k
+      integer icount
+      integer n
+      integer m
+      integer sort(icc)
+      integer nol2pfts(ican) !<number of level 2 ctem pfts
+      integer k1
+      integer k2
+      integer spinfast !<spinup factor for soil carbon whose default value is 1. as this factor increases the 
+                       !<soil c pool will come into equilibrium faster. reasonable value for spinfast is 
+                       !<between 5 and 10. when spinfast.ne.1 then the balcar subroutine is not run.
+      integer nml
+      integer ilmos(ilg)
+      integer jlmos(ilg)
 !
-      integer       pandays(ilg,icc), colddays(ilg,2),&
-     &             lfstatus(ilg,icc), isand(ilg,ignd)                 
+      integer pandays(ilg,icc) !<days with positive net photosynthesis (an) for use in the phenology subroutine
+      integer colddays(ilg,2)  !<cold days counter for tracking days below a certain temperature threshold for ndl dcd and crop pfts.
+      integer lfstatus(ilg,icc)!<leaf phenology status
+      integer isand(ilg,ignd)  !<             
 !
-      real rmatc(ilg,ican,ignd),&
-     &  rml(ilg),   gpp(ilg),   &
-     &   tbar(ilg,ignd), soildpth(ilg),todfrac(ilg,icc)
+      real rmatc(ilg,ican,ignd) !<fraction of roots for each of class' 4 pfts in each soil layer
+      real rml(ilg)         !<leaf maintenance respiration (u-mol co2/m2.sec)
+      real gpp(ilg)         !<gross primary productivity
+      real tbar(ilg,ignd)   !<soil temperature, k
+      real thicec(ilg,ignd) !<frozen mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas
+      real soildpth(ilg)    !<soil depth (m)
+      real todfrac(ilg,icc) !<max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
 
 !
-      real fare_cmp(nlat,icc), nppveg_cmp(nlat,icc),&
-     &     geremort_cmp(nlat,icc),intrmort_cmp(nlat,icc),&
-     &     gleafmas_cmp(nlat,icc),bleafmas_cmp(nlat,icc),&
-     &     stemmass_cmp(nlat,icc),rootmass_cmp(nlat,icc),&
-     &     litrmass_cmp(nlat,iccp1),soilcmas_cmp(nlat,iccp1),&
-     &     lambda_cmp(nlat,icc),&
-     &     bmasveg_cmp(nlat,icc),   burnvegf_cmp(nlat,icc),&
-     &     add2allo_cmp(nlat,icc),  cc_cmp(nlat,icc),mm_cmp(nlat,icc),&
-     &     fcanmx_cmp(nlat,ican),     &
-     &     vgbiomas_cmp(nlat),      grclarea_cmp(nlat),&
-     &     gavgltms_cmp(nlat),      gavgscms_cmp(nlat),&
-     &     yesfrac_mos(nlat,icc),   todfrac_cmp(nlat),&
-     &     pfcancmx_cmp(nlat,icc),  nfcancmx_cmp(nlat,icc),&
-     &     pstemmass_cmp(nlat,icc), pgleafmass_cmp(nlat,icc)
+      real fare_cmp(nlat,icc)      !<
+      real nppveg_cmp(nlat,icc)    !<
+      real geremort_cmp(nlat,icc)  !<
+      real intrmort_cmp(nlat,icc)  !<
+      real gleafmas_cmp(nlat,icc)  !<
+      real bleafmas_cmp(nlat,icc)  !<
+      real stemmass_cmp(nlat,icc)  !<
+      real rootmass_cmp(nlat,icc)  !<
+      real litrmass_cmp(nlat,iccp1)!<
+      real soilcmas_cmp(nlat,iccp1)!<
+      real lambda_cmp(nlat,icc)    !<
+      real bmasveg_cmp(nlat,icc)   !<
+      real burnvegf_cmp(nlat,icc)  !<
+      real add2allo_cmp(nlat,icc)  !<
+      real cc_cmp(nlat,icc)        !<
+      real mm_cmp(nlat,icc)        !<
+      real fcanmx_cmp(nlat,ican)   !<
+      real vgbiomas_cmp(nlat)      !<
+      real grclarea_cmp(nlat)      !<
+      real gavgltms_cmp(nlat)      !<
+      real gavgscms_cmp(nlat)      !<
+      real yesfrac_mos(nlat,icc)   !<
+      real todfrac_cmp(nlat)       !<
+      real pfcancmx_cmp(nlat,icc)  !<
+      real nfcancmx_cmp(nlat,icc)  !<
+      real pstemmass_cmp(nlat,icc) !<
+      real pgleafmass_cmp(nlat,icc)!<
 !
-      real surmncur_cmp(nlat), defmncur_cmp(nlat)
-      real surmncur(ilg),       defmncur(ilg)
+!     competition related variables
+      real surmncur_cmp(nlat) !<
+      real defmncur_cmp(nlat) !<
+      real surmncur(ilg)      !<number of months with surplus water for current year
+      real defmncur(ilg)      !<number of months with water deficit for current year
 
-      logical pftexist_cmp(nlat,icc)
+      logical pftexist_cmp(nlat,icc) !<
 !
-      real vgbiomasrow(nlat,nmos),      netradrow(nlat,nmos),&
-     &     gavgltmsrow(nlat,nmos),      gavgscmsrow(nlat,nmos)
+      real vgbiomasrow(nlat,nmos) !<
+      real netradrow(nlat,nmos)   !<
+      real gavgltmsrow(nlat,nmos) !<
+      real gavgscmsrow(nlat,nmos) !<
 !
-      real ta_cmp(nlat),       precip_cmp(nlat),  netrad_cmp(nlat), &
-     &     tcurm_cmp(nlat),    srpcuryr_cmp(nlat),dftcuryr_cmp(nlat),&
-     &     tmonth_cmp(12,nlat),anpcpcur_cmp(nlat),anpecur_cmp(nlat), &
-     &     gdd5cur_cmp(nlat),  &
-     &     srplscur_cmp(nlat), defctcur_cmp(nlat),twarmm_cmp(nlat), &
-     &     tcoldm_cmp(nlat),   gdd5_cmp(nlat),    aridity_cmp(nlat),&
-     &     srplsmon_cmp(nlat), defctmon_cmp(nlat),anndefct_cmp(nlat),&
-     &     annsrpls_cmp(nlat), annpcp_cmp(nlat),&
-     &    dry_season_length_cmp(nlat),&
-     &     lucemcom_cmp(nlat),  lucltrin_cmp(nlat), lucsocin_cmp(nlat)
+      real ta_cmp(nlat)       !<
+      real precip_cmp(nlat)   !<
+      real netrad_cmp(nlat)   !<
+      real tcurm_cmp(nlat)    !<
+      real srpcuryr_cmp(nlat) !<
+      real dftcuryr_cmp(nlat) !<
+      real tmonth_cmp(12,nlat)!<
+      real anpcpcur_cmp(nlat) !<
+      real anpecur_cmp(nlat)  !<
+      real gdd5cur_cmp(nlat)  !<
+      real srplscur_cmp(nlat) !<
+      real defctcur_cmp(nlat) !<
+      real twarmm_cmp(nlat)   !<
+      real tcoldm_cmp(nlat)   !<
+      real gdd5_cmp(nlat)     !<
+      real aridity_cmp(nlat)  !<
+      real srplsmon_cmp(nlat) !<
+      real defctmon_cmp(nlat) !<
+      real anndefct_cmp(nlat) !<
+      real annsrpls_cmp(nlat) !<
+      real annpcp_cmp(nlat)   !<
+      real dry_season_length_cmp(nlat) !<
+      real lucemcom_cmp(nlat) !<
+      real lucltrin_cmp(nlat) !<
+      real lucsocin_cmp(nlat) !<
 !
-      real  stemmass(ilg,icc),   rootmass(ilg,icc), litrmass(ilg,iccp1),&
-     &      gleafmas(ilg,icc),   bleafmas(ilg,icc), soilcmas(ilg,iccp1),&
-     &          ailcg(ilg,icc),     ailc(ilg,ican),&
-     &   rmatctem(ilg,icc,ignd),       zolnc(ilg,ican),  ailcb(ilg,icc),&
-     &          vgbiomas(ilg),       gavgltms(ilg),       gavgscms(ilg),&
-     &          slai(ilg,icc),    bmasveg(ilg,icc),  cmasvegc(ilg,ican),&
-     &       veghght(ilg,icc),   rootdpth(ilg,icc),   gppcsveg(ilg,icc),&
-     &      gppcgveg(ilg,icc),   pfcancmx(ilg,icc),    fcanmx(ilg,ican),&
-     &      nfcancmx(ilg,icc),      alvisc(ilg,ican),  alnirc(ilg,ican),&
-     &           gavglai(ilg),    yesfrac_comp(ilg,icc),&
-     &     pstemmass(ilg,icc),     pgleafmass(ilg,icc)
+      real stemmass(ilg,icc)   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+      real rootmass(ilg,icc)   !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+      real litrmass(ilg,iccp1) !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+      real gleafmas(ilg,icc)   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+      real bleafmas(ilg,icc)   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+      real soilcmas(ilg,iccp1) !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+      real ailcg(ilg,icc)      !<green lai for ctem's 9 pfts
+      real ailc(ilg,ican)      !<lumped lai for class' 4 pfts
+      real rmatctem(ilg,icc,ignd) !<fraction of roots for each of ctem's 9 pfts in each soil layer
+      real zolnc(ilg,ican)     !<lumped log of roughness length for class' 4 pfts
+      real ailcb(ilg,icc)      !<brown lai for ctem's 9 pfts. for now we assume only grasses can have brown lai
+      real vgbiomas(ilg)       !<grid averaged vegetation biomass, \f$kg c/m^2\f$
+      real gavgltms(ilg)       !<grid averaged litter mass, \f$kg c/m^2\f$
+      real gavgscms(ilg)       !<grid averaged soil c mass, \f$kg c/m^2\f$
+      real slai(ilg,icc)       !<storage/imaginary lai for phenology purposes
+      real bmasveg(ilg,icc)    !<total (gleaf + stem + root) biomass for each ctem pft, \f$kg c/m^2\f$
+      real cmasvegc(ilg,ican)  !<total canopy mass for each of the 4 class pfts. recall that class requires canopy
+                               !<mass as an input, and this is now provided by ctem. \f$kg/m^2\f$.
+      real veghght(ilg,icc)    !<vegetation height (meters)
+      real rootdpth(ilg,icc)   !<99% soil rooting depth (meters) both veghght & rootdpth can be used as diagnostics
+                               !<to see how vegetation grows above and below ground, respectively
+      real gppcsveg(ilg,icc)   !<
+      real gppcgveg(ilg,icc)   !<
+      real pfcancmx(ilg,icc)   !<previous year's fractional coverages of pfts
+      real fcanmx(ilg,ican)    !<fractional coverage of class' 4 pfts
+      real nfcancmx(ilg,icc)   !<next year's fractional coverages of pfts
+      real alvisc(ilg,ican)    !<visible albedo for class' 4 pfts
+      real alnirc(ilg,ican)    !<near ir albedo for class' 4 pfts
+      real gavglai(ilg)        !<grid averaged green leaf area index
+      real yesfrac_comp(ilg,icc) !<
+      real pstemmass(ilg,icc)  !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
+      real pgleafmass(ilg,icc) !<root mass from previous timestep, is value before fire. used by burntobare subroutine
 !
-      real   npp(ilg),      nep(ilg),  hetrores(ilg),      autores(ilg),&
-     &  soilresp(ilg),       rm(ilg),        rg(ilg),          nbp(ilg),&
-     & dstcemls1(ilg), litrfall(ilg),  humiftrs(ilg),     galtcels(ilg),&
-     & dstcemls2(ilg), lucemcom(ilg),  lucltrin(ilg),     lucsocin(ilg),&
-     & dstcemls3(ilg)
+      real npp(ilg)      !<net primary productivity
+      real nep(ilg)      !<net ecosystem productivity
+      real hetrores(ilg) !<heterotrophic respiration
+      real autores(ilg)  !<autotrophic respiration
+      real soilresp(ilg) !<soil respiration. this includes root respiration and respiration from litter and soil
+                         !<carbon pools. note that soilresp is different from socres, which is respiration from the soil c pool.
+      real rm(ilg)       !<maintenance respiration
+      real rg(ilg)       !<growth respiration
+      real nbp(ilg)      !<net biome productivity
+      real dstcemls1(ilg)!<carbon emission losses due to disturbance (fire at present) from vegetation
+      real litrfall(ilg) !<total litter fall (from leaves, stem, and root) due to all causes (mortality, turnover, and disturbance)
+      real humiftrs(ilg) !<transfer of humidified litter from litter to soil c pool
+      real galtcels(ilg) !<
+      real dstcemls2(ilg)!<
+      real lucemcom(ilg) !<land use change (luc) related combustion emission losses, u-mol co2/m2.sec
+      real lucltrin(ilg) !<luc related inputs to litter pool, u-mol co2/m2.sec
+      real lucsocin(ilg) !<luc related inputs to soil c pool, u-mol co2/m2.sec
+      real dstcemls3(ilg)!<carbon emission losses due to disturbance (fire at present) from litter pool
 !
-      real    fc(ilg),       fg(ilg),       fcs(ilg),         fgs(ilg),&
-     &  fcans(ilg,ican),  fcan(ilg,ican),         rms(ilg),&
-     &       rmr(ilg),   litres(ilg),      socres(ilg), term
+!                other quantities
+      real fc(ilg)  !<
+      real fg(ilg)  !<
+      real fcs(ilg) !<
+      real fgs(ilg) !<
+      real fcans(ilg,ican) !<
+      real fcan(ilg,ican)  !<
+      real rms(ilg)    !<stem maintenance respiration (u-mol co2/m2.sec)
+      real rmr(ilg)    !<root maintenance respiration (u-mol co2/m2.sec)
+      real litres(ilg) !<litter respiration
+      real socres(ilg) !<soil carbon respiration
+      real term        !<
 !
-      real pglfmass(ilg,icc),   pblfmass(ilg,icc),   pstemass(ilg,icc),&
-     &     protmass(ilg,icc), plitmass(ilg,iccp1), psocmass(ilg,iccp1),&
-     &         pvgbioms(ilg),       pgavltms(ilg),       pgavscms(ilg)
+      real pglfmass(ilg,icc)  !<
+      real pblfmass(ilg,icc)  !<
+      real pstemass(ilg,icc)  !<
+      real protmass(ilg,icc)  !<
+      real plitmass(ilg,iccp1)!<
+      real psocmass(ilg,iccp1)!<
+      real pvgbioms(ilg)      !<
+      real pgavltms(ilg)      !<
+      real pgavscms(ilg)      !<
 !
-      real   fcancs(ilg,icc),      fcanc(ilg,icc),   rmscgveg(ilg,icc),&
-     &     rmscsveg(ilg,icc),   rmrcgveg(ilg,icc),   rmrcsveg(ilg,icc),&
-     &       rmsveg(ilg,icc),     rmrveg(ilg,icc),      anveg(ilg,icc),&
-     &       rmlveg(ilg,icc),     gppveg(ilg,icc),     nppveg(ilg,icc),&
-     &        rgveg(ilg,icc),      rmveg(ilg,icc),    nepveg(ilg,iccp1),&
-     &     rttempcs(ilg,icc),   rttempcg(ilg,icc),    nbpveg(ilg,iccp1),&
-     &     pheanveg(ilg,icc),   pancsveg(ilg,icc),   pancgveg(ilg,icc)
+      real fcancs(ilg,icc)   !<
+      real fcanc(ilg,icc)    !<
+      real rmscgveg(ilg,icc) !<
+      real rmscsveg(ilg,icc) !<
+      real rmrcgveg(ilg,icc) !<
+      real rmrcsveg(ilg,icc) !<
+      real rmsveg(ilg,icc)   !<
+      real rmrveg(ilg,icc)   !<
+      real anveg(ilg,icc)    !<
+      real rmlveg(ilg,icc)   !<
+      real gppveg(ilg,icc)   !<
+      real nppveg(ilg,icc)   !<npp for individual pfts,  u-mol co2/m2.sec
+      real rgveg(ilg,icc)    !<
+      real rmveg(ilg,icc)    !<
+      real nepveg(ilg,iccp1) !<
+      real rttempcs(ilg,icc) !<
+      real rttempcg(ilg,icc) !<
+      real nbpveg(ilg,iccp1) !<
+      real pheanveg(ilg,icc) !<
+      real pancsveg(ilg,icc) !<
+      real pancgveg(ilg,icc) !<
 !
-      real ltrsvgcs(ilg,icc),   ltrsvgcg(ilg,icc),   scrsvgcs(ilg,icc),&
-     &     scrsvgcg(ilg,icc), ltresveg(ilg,iccp1), scresveg(ilg,iccp1),&
-     &          ltrsbrg(ilg),        scrsbrg(ilg),       ltrsbrgs(ilg),&
-     &         scrsbrgs(ilg), hetrsveg(ilg,iccp1), humtrsvg(ilg,iccp1),&
-     &   soilrsvg(ilg,iccp1), autoresveg(ilg,icc), litrfallveg(ilg,icc)
+      real ltrsvgcs(ilg,icc)   !<
+      real ltrsvgcg(ilg,icc)   !<
+      real scrsvgcs(ilg,icc)   !<
+      real scrsvgcg(ilg,icc)   !<
+      real ltresveg(ilg,iccp1) !<
+      real scresveg(ilg,iccp1) !<
+      real ltrsbrg(ilg)        !<
+      real scrsbrg(ilg)        !<
+      real ltrsbrgs(ilg)       !<
+      real scrsbrgs(ilg)       !<
+      real hetrsveg(ilg,iccp1) !<
+      real humtrsvg(ilg,iccp1) !<
+      real soilrsvg(ilg,iccp1) !<
+      real autoresveg(ilg,icc) !<
+      real litrfallveg(ilg,icc)!<
 !
-      real ltrestep(ilg,iccp1),screstep(ilg,iccp1), hutrstep(ilg,iccp1) 
+      real ltrestep(ilg,iccp1) !<
+      real screstep(ilg,iccp1) !<
+      real hutrstep(ilg,iccp1) !<
 !
-      real roottemp(ilg,icc),     tbarccs(ilg,ignd),leaflitr(ilg,icc),&
-     &       fieldsm(ilg,ignd),   flhrloss(ilg,icc),   wiltsm(ilg,ignd)
+      real roottemp(ilg,icc) !<root temperature, k
+      real tbarccs(ilg,ignd) !<
+      real leaflitr(ilg,icc) !<leaf litter fall rate (u-mol co2/m2.sec). this leaf litter does not include litter generated due to mortality/fire
+      real fieldsm(ilg,ignd) !<
+      real flhrloss(ilg,icc) !<fall or harvest loss for deciduous trees and crops, respectively, \f$kg c/m^2\f$ il1
+      real wiltsm(ilg,ignd)  !<
 !
-      real rootlitr(ilg,icc),   stemlitr(ilg,icc),   stmhrlos(ilg,icc),&
-     &     rothrlos(ilg,icc)
+      real rootlitr(ilg,icc) !<
+      real stemlitr(ilg,icc) !<
+      real stmhrlos(ilg,icc) !<stem harvest loss for crops, \f$kg c/m^2\f$
+      real rothrlos(ilg,icc) !<root death as crops are harvested, \f$kg c/m^2\f$
 !
-      real  afrleaf(ilg,icc),    afrstem(ilg,icc),    afrroot(ilg,icc),&
-     &     wtstatus(ilg,icc),   ltstatus(ilg,icc)
+      real afrleaf(ilg,icc)  !<allocation fraction for leaves
+      real afrstem(ilg,icc)  !<allocation fraction for stem
+      real afrroot(ilg,icc)  !<allocation fraction for root
+      real wtstatus(ilg,icc) !<soil water status used for calculating allocation fractions
+      real ltstatus(ilg,icc) !<light status used for calculating allocation fractions
 !
-      real nppvgstp(ilg,icc),   rmlvgstp(ilg,icc),   rmsvgstp(ilg,icc),&
-     &     rmrvgstp(ilg,icc),   gppvgstp(ilg,icc),   ntchlveg(ilg,icc),&
-     &     ntchsveg(ilg,icc),   ntchrveg(ilg,icc)
+      real nppvgstp(ilg,icc) !<
+      real rmlvgstp(ilg,icc) !<
+      real rmsvgstp(ilg,icc) !<
+      real rmrvgstp(ilg,icc) !<
+      real gppvgstp(ilg,icc) !<
+      real ntchlveg(ilg,icc) !<
+      real ntchsveg(ilg,icc) !<
+      real ntchrveg(ilg,icc) !<
 !
-      real grwtheff(ilg,icc),   lystmmas(ilg,icc),   lyrotmas(ilg,icc), &
-     &     tymaxlai(ilg,icc),   stemltrm(ilg,icc),   rootltrm(ilg,icc), &
-     &     glealtrm(ilg,icc),   geremort(ilg,icc),   intrmort(ilg,icc)
+      real grwtheff(ilg,icc) !<growth efficiency. change in biomass per year per unit max. lai (\f$kg c/m^2\f$)/(m2/m2), for use in mortality subroutine
+      real lystmmas(ilg,icc) !<stem mass at the end of last year
+      real lyrotmas(ilg,icc) !<root mass at the end of last year
+      real tymaxlai(ilg,icc) !<this year's maximum lai
+      real stemltrm(ilg,icc) !<
+      real rootltrm(ilg,icc) !<
+      real glealtrm(ilg,icc) !<
+      real geremort(ilg,icc) !<
+      real intrmort(ilg,icc) !<
 !
-      real    stemltdt(ilg,icc),   rootltdt(ilg,icc),   glfltrdt(ilg,icc),&
-     &     blfltrdt(ilg,icc),   glcaemls(ilg,icc),   blcaemls(ilg,icc),&
-     &     rtcaemls(ilg,icc),   stcaemls(ilg,icc),   ltrcemls(ilg,icc),&
-     &         burnfrac(ilg),   dscemlv1(ilg,icc),&
-     &     dscemlv2(ilg,icc),    smfunc_veg(ilg,icc), burnvegf(ilg,icc)
+      real stemltdt(ilg,icc)  !<
+      real rootltdt(ilg,icc)  !<
+      real glfltrdt(ilg,icc)  !<
+      real blfltrdt(ilg,icc)  !<
+      real glcaemls(ilg,icc)  !<
+      real blcaemls(ilg,icc)  !<
+      real rtcaemls(ilg,icc)  !<
+      real stcaemls(ilg,icc)  !<
+      real ltrcemls(ilg,icc)  !<
+      real burnfrac(ilg)      !<areal fraction burned due to fire for every grid cell (%)
+      real dscemlv1(ilg,icc)  !<
+      real dscemlv2(ilg,icc)  !<
+      real smfunc_veg(ilg,icc)!<soil moisture dependence on fire spread rate
+      real burnvegf(ilg,icc)  !<per PFT fraction burned of that PFT's area
 !
-      real emit_co2(ilg,icc),    emit_co(ilg,icc),    emit_ch4(ilg,icc),&
-     &    emit_nmhc(ilg,icc),    emit_h2(ilg,icc),    emit_nox(ilg,icc),&
-     &     emit_n2o(ilg,icc),  emit_pm25(ilg,icc),    emit_tpm(ilg,icc),&
-     &      emit_tc(ilg,icc),    emit_oc(ilg,icc),     emit_bc(ilg,icc),&
-     &    bterm_veg(ilg,icc),          lterm(ilg),   mterm_veg(ilg,icc)
+!     emitted compounds from biomass burning in g of compound
+      real emit_co2(ilg,icc) !<carbon dioxide
+      real emit_co(ilg,icc)  !<carbon monoxide
+      real emit_ch4(ilg,icc) !<methane
+      real emit_nmhc(ilg,icc)!<non-methane hydrocarbons
+      real emit_h2(ilg,icc)  !<hydrogen gas
+      real emit_nox(ilg,icc) !<nitrogen oxides
+      real emit_n2o(ilg,icc) !<nitrous oxide
+      real emit_pm25(ilg,icc)!<particulate matter less than 2.5 um in diameter
+      real emit_tpm(ilg,icc) !<total particulate matter
+      real emit_tc(ilg,icc)  !<total carbon
+      real emit_oc(ilg,icc)  !<organic carbon
+      real emit_bc(ilg,icc)  !<black carbon
+      real bterm_veg(ilg,icc)!<
+      real lterm(ilg)        !<lightning term for fire probabilty calc
+      real mterm_veg(ilg,icc)!<
 !
-      real tltrleaf(ilg,icc),   tltrstem(ilg,icc),   tltrroot(ilg,icc),&
-     &           popdin(ilg)
+      real tltrleaf(ilg,icc) !<total leaf litter fall rate (u-mol co2/m2.sec)
+      real tltrstem(ilg,icc) !<total stem litter fall rate (u-mol co2/m2.sec)
+      real tltrroot(ilg,icc) !<total root litter fall rate (u-mol co2/m2.sec)
+      real popdin(ilg)       !<population density \f$(people / km^2)\f$
 !
-real  faregat(ilg), paicgat(ilg,ican),slaicgat(ilg,ican)
+      real faregat(ilg)      !<
+      real paicgat(ilg,ican) !<
+      real slaicgat(ilg,ican)!<
 !
-real  vgbiomas_veg(ilg,icc)
+      real vgbiomas_veg(ilg,icc) !<
+>>>>>>> release_dev
 !  
-      real       precip(ilg),         netrad(ilg),         tcurm(ilg),&
-     &           annpcp(ilg),dry_season_length(ilg),&
-     &           twarmm(ilg),&
-     &           tcoldm(ilg),           gdd5(ilg),       aridity(ilg),&
-     &         srplsmon(ilg),       defctmon(ilg),     tmonth(12,ilg),&
-     &         anpcpcur(ilg),        anpecur(ilg),       gdd5cur(ilg),&
-     &         srplscur(ilg), &
-     &         defctcur(ilg),       srpcuryr(ilg),      dftcuryr(ilg),&
-     &         anndefct(ilg),       annsrpls(ilg)
+      real precip(ilg)   !<daily precipitation (mm/day)
+      real netrad(ilg)   !<daily net radiation (w/m2)
+      real tcurm(ilg)    !<temperature of the current month (c)
+      real annpcp(ilg)   !<annual precipitation (mm)
+      real dry_season_length(ilg) !<length of the dry season (months)
+      real twarmm(ilg)   !<temperature of the warmest month (c)
+      real tcoldm(ilg)   !<temperature of the coldest month (c)
+      real gdd5(ilg)     !<growing degree days above 5 c
+      real aridity(ilg)  !<aridity index, ratio of potential evaporation to precipitation
+      real srplsmon(ilg) !<number of months in a year with surplus water i.e. precipitation more than potential evaporation
+      real defctmon(ilg) !<number of months in a year with water deficit i.e. precipitation less than potential evaporation
+      real tmonth(12,ilg)!<monthly temperatures
+      real anpcpcur(ilg) !<annual precipitation for current year (mm)
+      real anpecur(ilg)  !<annual potential evaporation for current year (mm)
+      real gdd5cur(ilg)  !<growing degree days above 5 c for current year
+      real srplscur(ilg) !<water surplus for the current month
+      real defctcur(ilg) !<water deficit for the current month
+      real srpcuryr(ilg) !<water surplus for the current year
+      real dftcuryr(ilg) !<water deficit for the current year
+      real anndefct(ilg) !<annual water deficit (mm)
+      real annsrpls(ilg) !<annual water surplus (mm)
 !     
-      real     barefrac(ilg),       pbarefrc(ilg),           tolrance,&
-     &       lambda(ilg,icc),   add2allo(ilg,icc), &
-     &   ltrflcom(ilg,iccp1),&
-     &          cc(ilg,icc),         mm(ilg,icc),    barefrac_tmp(ilg),&
-     &     reprocost(ilg,icc),  repro_cost_g(ilg)
+      real barefrac(ilg)      !<
+      real pbarefrc(ilg)      !<
+      real tolrance           !<
+      real lambda(ilg,icc)    !<
+      real add2allo(ilg,icc)  !<
+      real ltrflcom(ilg,iccp1)!<
+      real cc(ilg,icc)        !<
+      real mm(ilg,icc)        !<
+      real barefrac_tmp(ilg)  !<
+      real reprocost(ilg,icc) !<
+      real repro_cost_g(ilg)  !<
 !
-logical compete, inibioclim, pftexist(ilg,icc)
-logical, intent(inout) :: popdon   ! if set true use population density data to calculate fire extinguishing
-                                    ! probability and probability of fire due to human causes,
-                                    ! or if false, read directly from .ctm file
+      logical compete    !<logical boolean telling if competition between pfts is on or not
+      logical inibioclim !<switch telling if bioclimatic parameters are being initialized from scratch (false)
+                         !<or being initialized from some spun up values(true).
+      logical pftexist(ilg,icc) !<
+      logical, intent(inout) :: popdon !< if set true use population density data to calculate fire extinguishing
+                                    !< probability and probability of fire due to human causes,
+                                    !< or if false, read directly from .ctm file
 ! 
-real      wetfrac(ilg),        ch4wet1(ilg),        ch4wet2(ilg)
-real    slopefrac(ilg,8),        wetfdyn(ilg)
-real      ch4dyn1(ilg),        ch4dyn2(ilg)
+      real wetfrac(ilg)    !<
+      real ch4wet1(ilg)    !<
+      real ch4wet2(ilg)    !<
+      real slopefrac(ilg,8)!<
+      real wetfdyn(ilg)    !<
+      real ch4dyn1(ilg)    !<
+      real ch4dyn2(ilg)    !<
 
-real lambdaalt
-!
-!     ---------------------------------------------------------------
-!     Constants and parameters are located in ctem_params.f90
-!     -----------------------------------------------------------------
+      real lambdaalt !<
+!>
+!>     ---------------------------------------------------------------
+!>     Constants and parameters are located in ctem_params.f90
+!>     -----------------------------------------------------------------
 
 !  ==========================================================================================
 
-! Begin calculations
+!> Begin calculations
 
-! Generate the sort index for correspondence between 9 pfts and the
-! 12 values in the parameter vectors
+!> Generate the sort index for correspondence between 9 pfts and the
+!> 12 values in the parameter vectors
 
 icount=0
 do 95 j = 1, ican
@@ -557,16 +584,16 @@ do 95 j = 1, ican
 
 if(compete .or. lnduseon)then
 
-! If you intend to have competition and LUC between tiles then set onetile_perPFT to true.
-! NOTE: Turning onetile_perPFT to true is usually not the behaviour desired unless you are
-! running with one PFT on each tile and want them to compete for space
-! across tiles. So in general keep this as False. JM Jan 2016.
+!> If you intend to have competition and LUC between tiles then set onetile_perPFT to true.
+!> NOTE: Turning onetile_perPFT to true is usually not the behaviour desired unless you are
+!> running with one PFT on each tile and want them to compete for space
+!> across tiles. So in general keep this as False. JM Jan 2016.
 
-  if (.not. onetile_perPFT) then ! this is composite/mosaic mode (in mosaic competition only occurs WITHIN a tile)
+  if (.not. onetile_perPFT) then !> this is composite/mosaic mode (in mosaic competition only occurs WITHIN a tile)
 
     if (compete) then
 
-!       Calculate bioclimatic parameters for estimating pfts existence
+!>Calculate bioclimatic parameters for estimating pfts existence
 
         call  bioclim (iday,       ta,    precip,  netrad,&
      &                    1,     il2,    ilg,&
@@ -578,23 +605,23 @@ if(compete .or. lnduseon)then
      &                 annpcp, dry_season_length )
 
         if (inibioclim) then
-
-!        If first day of year then based on updated bioclimatic parameters
-!        find if pfts can exist or not.
-!        If .not. inibioclim then it is the first year of a run that you do not have the
-!        climatological means already in the CTM file. After one
-!        year inibioclim is set to true and the climatological means
-!        are used from the first year.
-
+!>
+!>If first day of year then based on updated bioclimatic parameters
+!!find if pfts can exist or not.
+!!If .not. inibioclim then it is the first year of a run that you do not have the
+!!climatological means already in the CTM file. After one
+!!year inibioclim is set to true and the climatological means
+!!are used from the first year.
+!!
             call existence(iday,            1,         il2, ilg,&
      &                     sort,     nol2pfts,        &
      &                   twarmm,   tcoldm,     gdd5,  aridity,&
      &                   srplsmon, defctmon, anndefct, annsrpls,&
      &                   annpcp, pftexist, dry_season_length )
-
-!       Call competition subroutine which on the basis of previous day's
-!       npp estimates changes in fractional coverage of pfts
-!
+!>
+!!Call competition subroutine which on the basis of previous day's
+!!npp estimates changes in fractional coverage of pfts
+!!
             call competition (iday,     1,        il2,      ilg,&
      &                    nol2pfts, nppveg,   dofire,&
      &                    pftexist, geremort, intrmort,&
@@ -612,11 +639,10 @@ if(compete .or. lnduseon)then
         end if ! inibioclim
 
     endif  ! if (compete)
-
-!      If landuse is on, then implelement luc, change fractional coverages,
-!      move biomasses around, and estimate luc related combustion emission
-!      losses.
-
+!>
+!!If landuse is on, then implelement luc, change fractional coverages,
+!!move biomasses around, and estimate luc related combustion emission losses.
+!!
         if (lnduseon) then
 
          do j = 1, icc
@@ -635,13 +661,12 @@ if(compete .or. lnduseon)then
         endif !lnduseon
 
   else ! onetile_perPFT is True
-
-!      Land use change and competition for mosaics needs mapping and
-!      unmapping of the pfts. Composite does not require these extra steps.
-
-!       Check if number of mosaics is equal to the number of pfts plus one
-!       bare, e.g., nmos=iccp1
-!
+!>
+!!Land use change and competition for mosaics needs mapping and
+!!unmapping of the pfts. Composite does not require these extra steps.
+!!
+!!Check if number of mosaics is equal to the number of pfts plus one bare, e.g., nmos=iccp1
+!!
         if (nmos.ne.iccp1) then 
          write(*,2050) 'number of mosaics, nmos= ',nmos,&
      &                 ' is not equal to the number of pfts plus',&
@@ -652,10 +677,9 @@ if(compete .or. lnduseon)then
         endif 
 2050    format(a25,i2,a40,a18,i2,a1)
 2051    format(a45,a40)
-!
-!       check for fcancmx(i,j). this should be either 0 or 1 for competition
-!       to work.
-!
+!>
+!!check for fcancmx(i,j). this should be either 0 or 1 for competition to work.
+!!
         do j=1, icc
          do i=il1, il2
           if(fcancmx(i,j).ne.1.0 .and. fcancmx(i,j).ne.0.0) then
@@ -671,10 +695,9 @@ if(compete .or. lnduseon)then
         enddo
 2100    format(a7,i2,a19,a8,i2,a1,i2,a2,f8.3)
 2101    format(a40,a40)
-
-!       competition_map scatters and maps the array with indices 
-!       of (ilg,icc) to (nlat,icc) for preparation for competition
-
+!>
+!!competition_map scatters and maps the array with indices of (ilg,icc) to (nlat,icc) for preparation for competition
+!!
           call competition_map(    nml,    ilmos,   jlmos,   grclarea,&
      &                         faregat,   fcancmx,  nppveg,  geremort,&
      &                         intrmort, gleafmas, bleafmas, stemmass,&
@@ -718,7 +741,7 @@ if(compete .or. lnduseon)then
 
         if (compete) then
 
-!        Calculate bioclimatic parameters for estimating pfts existence
+!>Calculate bioclimatic parameters for estimating pfts existence
 
          call  bioclim (iday,       ta_cmp,    precip_cmp,  netrad_cmp,&
      &                    1,         nlat,          nlat,&
@@ -731,25 +754,21 @@ if(compete .or. lnduseon)then
 
 
        if (inibioclim) then
-
-!        If first day of year then based on updated bioclimatic parameters
-!        find if pfts can exist or not. 
-!        If .not. inibioclim then it is the first year of a run that you do not have the 
-!        climatological means already in the CTM file. After one
-!        year inibioclim is set to true and the climatological means
-!        are used from the first year.
-
+!>
+!!If first day of year then based on updated bioclimatic parameters find if pfts can exist
+!!or not. If .not. inibioclim then it is the first year of a run that you do not have the 
+!!climatological means already in the CTM file. After one year inibioclim is set to true and 
+!!the climatological means are used from the first year.
+!!
           call existence(iday,            1,         nlat,         nlat,&
      &                   sort,     nol2pfts,      &
      &             twarmm_cmp,   tcoldm_cmp,     gdd5_cmp,  aridity_cmp,&
      &           srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,&
      &             annpcp_cmp, pftexist_cmp,&
      &             dry_season_length_cmp)
-!     
-!
-!        call competition subroutine which on the basis of previous day's
-!        npp estimates changes in fractional coverage of pfts
-!
+!>
+!!call competition subroutine which on the basis of previous day's npp estimates changes in fractional coverage of pfts
+!!
          call competition (iday,          1,          nlat,        nlat,&
      &               nol2pfts,   nppveg_cmp, dofire, &
      &           pftexist_cmp, geremort_cmp, intrmort_cmp,&
@@ -785,10 +804,10 @@ if(compete .or. lnduseon)then
      &           lucemcom_cmp, lucltrin_cmp, lucsocin_cmp)
 
         endif !lnduseon check
-
-!       Competition_unmap unmaps and gathers the array with
-!       indices (nlat,icc) back to (ilg,icc) after competition is done 
-!
+!>
+!!Competition_unmap unmaps and gathers the array with
+!!indices (nlat,icc) back to (ilg,icc) after competition is done 
+!!
         call competition_unmap( nml,      ilmos,    jlmos,   nol2pfts,&
      &                           fare_cmp,   nppveg_cmp, geremort_cmp,&
      &                       intrmort_cmp, gleafmas_cmp, bleafmas_cmp,&
@@ -835,129 +854,129 @@ if(compete .or. lnduseon)then
 endif !compete/lnduseon
 
 !     ---------------------------------------------------------------
-!
-!     initialize required arrays to zero
-!
+!>
+!>initialize required arrays to zero
+!>
 do 100 i = il1, il2
-    rms(i) = 0.0         !grid ave. stem maintenance respiration
-    rmr(i) = 0.0         !grid ave. root maintenance respiration
-    rml(i) = 0.0         !grid ave. leaf maintenance respiration
-    rm(i) = 0.0          !grid ave. total maintenance respiration
-    rg(i) = 0.0          !grid ave. growth respiration
-    npp(i) = 0.0         !grid ave. net primary productivity
-    gpp(i) = 0.0         !grid ave. gross primary productivity
-    nep(i)=0.0           !grid ave. net ecosystem productivity
-    nbp(i)=0.0           !grid ave. net biome productivity
-    litres(i)=0.0        !grid ave. litter respiration
-    socres(i)=0.0        !grid ave. soil carbon respiration
-    hetrores(i)=0.0      !grid ave. heterotrophic respiration
-    autores(i)=0.0       !grid ave. autotrophic respiration
-    soilresp(i)=0.0      !grid ave. soil respiration
-    humiftrs(i)=0.0      !grid ave. humification rate
-    dstcemls1(i)=0.0     !grid ave. carbon emission losses due to disturbance, vegetation
-    dstcemls2(i)=0.0     !grid ave. carbon emission losses due to disturbance, total
-    dstcemls3(i)=0.0     !grid ave. carbon emission losses due to disturbance, litter
-    galtcels(i)=0.0      !grid ave. litter fire emission losses (redundant, same as dstcemls3)
-    fc(i)=0.0            !fraction of canopy over ground subarea
-    fcs(i)=0.0           !fraction of canopy over snow subarea
-    fg(i)=0.0            !fraction of bare ground subarea
-    fgs(i)=0.0           !fraction of snow over ground subarea
-    tbarccs(i,1)=0.0     !avg. soil temperature over canopy over snow
-    tbarccs(i,2)=0.0     !and canopy over ground subareas.
-    tbarccs(i,3)=0.0     !over bare fraction of the grid cell
-    screstep(i,iccp1)=0.0  !soil c respiration in kg c/m2 over the time step
-    ltrestep(i,iccp1)=0.0  !litter c respiration in kg c/m2 over the time step
-    soilrsvg(i,iccp1)=0.0  !soil respiration over the bare fraction
-    humtrsvg(i,iccp1)=0.0  !humified rate the bare fraction
-    ltresveg(i,iccp1)=0.0  !litter respiration rate over bare fraction
-    scresveg(i,iccp1)=0.0  !soil c respiration rate over bare fraction
-    hetrsveg(i,iccp1)=0.0  !heterotrophic resp. rate over bare fraction
-    nbpveg(i,iccp1) = 0.0  !net biome productity for bare fraction
-    nepveg(i,iccp1) = 0.0  !net ecosystem productity for bare fraction
+    rms(i) = 0.0         !<grid ave. stem maintenance respiration
+    rmr(i) = 0.0         !<grid ave. root maintenance respiration
+    rml(i) = 0.0         !<grid ave. leaf maintenance respiration
+    rm(i) = 0.0          !<grid ave. total maintenance respiration
+    rg(i) = 0.0          !<grid ave. growth respiration
+    npp(i) = 0.0         !<grid ave. net primary productivity
+    gpp(i) = 0.0         !<grid ave. gross primary productivity
+    nep(i)=0.0           !<grid ave. net ecosystem productivity
+    nbp(i)=0.0           !<grid ave. net biome productivity
+    litres(i)=0.0        !<grid ave. litter respiration
+    socres(i)=0.0        !<grid ave. soil carbon respiration
+    hetrores(i)=0.0      !<grid ave. heterotrophic respiration
+    autores(i)=0.0       !<grid ave. autotrophic respiration
+    soilresp(i)=0.0      !<grid ave. soil respiration
+    humiftrs(i)=0.0      !<grid ave. humification rate
+    dstcemls1(i)=0.0     !<grid ave. carbon emission losses due to disturbance, vegetation
+    dstcemls2(i)=0.0     !<grid ave. carbon emission losses due to disturbance, total
+    dstcemls3(i)=0.0     !<grid ave. carbon emission losses due to disturbance, litter
+    galtcels(i)=0.0      !<grid ave. litter fire emission losses (redundant, same as dstcemls3)
+    fc(i)=0.0            !<fraction of canopy over ground subarea
+    fcs(i)=0.0           !<fraction of canopy over snow subarea
+    fg(i)=0.0            !<fraction of bare ground subarea
+    fgs(i)=0.0           !<fraction of snow over ground subarea
+    tbarccs(i,1)=0.0     !<avg. soil temperature over canopy over snow
+    tbarccs(i,2)=0.0     !<and canopy over ground subareas.
+    tbarccs(i,3)=0.0     !<over bare fraction of the grid cell
+    screstep(i,iccp1)=0.0  !<soil c respiration in \f$kg c/m^2\f$ over the time step
+    ltrestep(i,iccp1)=0.0  !<litter c respiration in \f$kg c/m^2\f$ over the time step
+    soilrsvg(i,iccp1)=0.0  !<soil respiration over the bare fraction
+    humtrsvg(i,iccp1)=0.0  !<humified rate the bare fraction
+    ltresveg(i,iccp1)=0.0  !<litter respiration rate over bare fraction
+    scresveg(i,iccp1)=0.0  !<soil c respiration rate over bare fraction
+    hetrsveg(i,iccp1)=0.0  !<heterotrophic resp. rate over bare fraction
+    nbpveg(i,iccp1) = 0.0  !<net biome productity for bare fraction
+    nepveg(i,iccp1) = 0.0  !<net ecosystem productity for bare fraction
     !        expnbaln(i)=0.0        !amount of c related to spatial expansion !Not used JM Jun 2014
-    repro_cost_g(i)=0.0    !amount of C for production of reproductive tissues
+    repro_cost_g(i)=0.0    !<amount of C for production of reproductive tissues
 100   continue 
 !
 do 110 j = 1,icc
     do 120 i = il1, il2
         fcanc(i,j) =0.0
         fcancs(i,j)=0.0
-        rmsveg(i,j)=0.0    !stem maintenance resp. rate for each pft
-        rmrveg(i,j)=0.0    !root maintenance resp. rate for each pft
-        rmlveg(i,j)=0.0    !leaf maintenance resp. rate for each pft
-        rmveg(i,j)=0.0    !total maintenance resp. rate for each pft
-        rgveg(i,j)=0.0    !growth resp. rate for each pft
-        anveg(i,j)=0.0    !net photosynthesis rate for each pft
-        pheanveg(i,j)=0.0  !net photosynthesis rate, for phenology purposes
-        pancsveg(i,j)=0.0  !net photosynthesis rate, canopy over snow subarea, for phenology purposes
-        pancgveg(i,j)=0.0  !net photosynthesis rate, canopy over ground subarea, for phenology purposes
-        gppveg(i,j)=0.0    !gross primary productity for each pft
-        nppveg(i,j)=0.0    !net primary productity for each pft
-        nbpveg(i,j)=0.0    !net biome productity for each pft
-        nepveg(i,j)=0.0    !net ecosystem productity for each pft
-        ltresveg(i,j)=0.0  !litter respiration rate for each pft
-        scresveg(i,j)=0.0  !soil c respiration rate for each pft
-        hetrsveg(i,j)=0.0  !heterotrophic resp. rate for each pft
-        soilrsvg(i,j)=0.0  !soil respiration rate for each pft
-        humtrsvg(i,j)=0.0  !humification rate for each pft
-        litrfallveg(i,j)=0.0 !litter fall in kg C/m2 for each pft
-        screstep(i,j)=0.0  !soil c respiration in kg c/m2 over the tim
-        ltrestep(i,j)=0.0  !litter c respiration in kg c/m2 over the t
-        hutrstep(i,j)=0.0  !humification rate in kg c/m2 over the time
-        roottemp(i,j)=0.0  !root temperature
-        nppvgstp(i,j)=0.0  !npp (kg c/m2) sequestered over the model time step
-        gppvgstp(i,j)=0.0  !gpp (kg c/m2) sequestered over the model time step
-        rmlvgstp(i,j)=0.0  !leaf maintenance resp. (kg c/m2) respired over the model time step
-        rmsvgstp(i,j)=0.0  !stem maintenance resp. (kg c/m2) respired  over the model time step
-        rmrvgstp(i,j)=0.0  !root maintenance resp. (kg c/m2) respired over the model time step
-        ntchlveg(i,j)=0.0  !net change in gleaf biomass after auto. resp. & allocation
-        ntchsveg(i,j)=0.0  !net change in stem biomass after auto. resp. & allocation
-        ntchrveg(i,j)=0.0  !net change in root biomass after auto. resp. & allocation
-        dscemlv1(i,j)=0.0  !total carbon emission losses (kg c/m2), mainly due to fire
-        dscemlv2(i,j)=0.0  !total carbon emission losses (kg c/m2), mainly due to fire
-        tltrleaf(i,j)=0.0  !total leaf litter
-        tltrstem(i,j)=0.0  !total stem litter
-        tltrroot(i,j)=0.0  !total root litter
-        vgbiomas_veg(i,j)=0.0 !vegetation biomass for each pft
-        lambda(i,j)=0.0    ! Used to determine the colonization rate
-        reprocost(i,j) = 0.0 ! cost of producing reproductive tissues
+        rmsveg(i,j)=0.0    !<stem maintenance resp. rate for each pft
+        rmrveg(i,j)=0.0    !<root maintenance resp. rate for each pft
+        rmlveg(i,j)=0.0    !<leaf maintenance resp. rate for each pft
+        rmveg(i,j)=0.0    !<total maintenance resp. rate for each pft
+        rgveg(i,j)=0.0    !<growth resp. rate for each pft
+        anveg(i,j)=0.0    !<net photosynthesis rate for each pft
+        pheanveg(i,j)=0.0  !<net photosynthesis rate, for phenology purposes
+        pancsveg(i,j)=0.0  !<net photosynthesis rate, canopy over snow subarea, for phenology purposes
+        pancgveg(i,j)=0.0  !<net photosynthesis rate, canopy over ground subarea, for phenology purposes
+        gppveg(i,j)=0.0    !<gross primary productity for each pft
+        nppveg(i,j)=0.0    !<net primary productity for each pft
+        nbpveg(i,j)=0.0    !<net biome productity for each pft
+        nepveg(i,j)=0.0    !<net ecosystem productity for each pft
+        ltresveg(i,j)=0.0  !<litter respiration rate for each pft
+        scresveg(i,j)=0.0  !<soil c respiration rate for each pft
+        hetrsveg(i,j)=0.0  !<heterotrophic resp. rate for each pft
+        soilrsvg(i,j)=0.0  !<soil respiration rate for each pft
+        humtrsvg(i,j)=0.0  !<humification rate for each pft
+        litrfallveg(i,j)=0.0 !<litter fall in \f$kg c/m^2\f$ for each pft
+        screstep(i,j)=0.0  !<soil c respiration in \f$kg c/m^2\f$ over the tim
+        ltrestep(i,j)=0.0  !<litter c respiration in \f$kg c/m^2\f$ over the t
+        hutrstep(i,j)=0.0  !<humification rate in \f$kg c/m^2\f$ over the time
+        roottemp(i,j)=0.0  !<root temperature
+        nppvgstp(i,j)=0.0  !<npp (\f$kg c/m^2\f$) sequestered over the model time step
+        gppvgstp(i,j)=0.0  !<gpp (\f$kg c/m^2\f$) sequestered over the model time step
+        rmlvgstp(i,j)=0.0  !<leaf maintenance resp. (\f$kg c/m^2\f$) respired over the model time step
+        rmsvgstp(i,j)=0.0  !<stem maintenance resp. (\f$kg c/m^2\f$) respired  over the model time step
+        rmrvgstp(i,j)=0.0  !<root maintenance resp. (\f$kg c/m^2\f$) respired over the model time step
+        ntchlveg(i,j)=0.0  !<net change in gleaf biomass after auto. resp. & allocation
+        ntchsveg(i,j)=0.0  !<net change in stem biomass after auto. resp. & allocation
+        ntchrveg(i,j)=0.0  !<net change in root biomass after auto. resp. & allocation
+        dscemlv1(i,j)=0.0  !<total carbon emission losses (\f$kg c/m^2\f$), mainly due to fire
+        dscemlv2(i,j)=0.0  !<total carbon emission losses (\f$kg c/m^2\f$), mainly due to fire
+        tltrleaf(i,j)=0.0  !<total leaf litter
+        tltrstem(i,j)=0.0  !<total stem litter
+        tltrroot(i,j)=0.0  !<total root litter
+        vgbiomas_veg(i,j)=0.0 !<vegetation biomass for each pft
+        lambda(i,j)=0.0    !< Used to determine the colonization rate
+        reprocost(i,j) = 0.0 !< cost of producing reproductive tissues
     !          expbalvg(i,j)=0.0  !amount of c related to spatial expansion !Not used JM Jun 2014
 120     continue
 110   continue
-
-! Store green and brown leaf, stem, and root biomass, and litter and
-! soil c pool mass in arrays. knowing initial sizes of all pools and
-! final sizes at the end of this subroutine, we check for conservation of mass.
-
+!>
+!!Store green and brown leaf, stem, and root biomass, and litter and
+!!soil c pool mass in arrays. knowing initial sizes of all pools and
+!!final sizes at the end of this subroutine, we check for conservation of mass.
+!!
 do 130 j = 1, icc
     do 140 i = il1, il2
-        pglfmass(i,j)=gleafmas(i,j)    !green leaf mass from last time step
-        pblfmass(i,j)=bleafmas(i,j)    !brown leaf mass from last time step
-        pstemass(i,j)=stemmass(i,j)    !stem mass from last time step
-        protmass(i,j)=rootmass(i,j)    !root mass from last time step
-        plitmass(i,j)=litrmass(i,j)    !litter mass from last time step
-        psocmass(i,j)=soilcmas(i,j)    !soil c mass from last time step
+        pglfmass(i,j)=gleafmas(i,j)    !<green leaf mass from last time step
+        pblfmass(i,j)=bleafmas(i,j)    !<brown leaf mass from last time step
+        pstemass(i,j)=stemmass(i,j)    !<stem mass from last time step
+        protmass(i,j)=rootmass(i,j)    !<root mass from last time step
+        plitmass(i,j)=litrmass(i,j)    !<litter mass from last time step
+        psocmass(i,j)=soilcmas(i,j)    !<soil c mass from last time step
 140     continue
 130   continue
 !
 do 145 i = il1, il2
-    pvgbioms(i)=vgbiomas(i)          !vegetation biomass from last time step
+    pvgbioms(i)=vgbiomas(i)          !<vegetation biomass from last time step
     vgbiomas(i)= 0.0
-    pgavltms(i)=gavgltms(i)          !litter mass from last time step
+    pgavltms(i)=gavgltms(i)          !<litter mass from last time step
     gavgltms(i)=0.0
-    pgavscms(i)=gavgscms(i)          !soil c mass from last time step
+    pgavscms(i)=gavgscms(i)          !<soil c mass from last time step
     gavgscms(i)=0.0
-    litrfall(i)=0.0                  !combined total litter fall rate
-    gavglai (i)=0.0                  !grid averaged green lai
-    plitmass(i,iccp1)=litrmass(i,iccp1)  !litter mass over bare fraction
-    psocmass(i,iccp1)=soilcmas(i,iccp1)  !soil c mass over bare fraction
+    litrfall(i)=0.0                  !<combined total litter fall rate
+    gavglai (i)=0.0                  !<grid averaged green lai
+    plitmass(i,iccp1)=litrmass(i,iccp1)  !<litter mass over bare fraction
+    psocmass(i,iccp1)=soilcmas(i,iccp1)  !<soil c mass over bare fraction
 145   continue
 
 !     ------------------------------------------------------------------
 
-!     Initialization ends
+!>Initialization ends
 
-!     Find fc and fcs based on fcancmx
+!>Find fc and fcs based on fcancmx
 
 do 150 j = 1, icc
     do 160 i = il1, il2
@@ -974,27 +993,25 @@ do 170 i = il1, il2
 170   continue
 
 !     ------------------------------------------------------------------
-
-!     Autotrophic respiration
-
-! Leaf respiration is calculated in phtsyn subroutine, while stem
-! and root maintenance respiration are calculated here.
-
-! We treat canopy over ground and canopy over snow subareas
-! separately because stem temperature (for which we use canopy
-! temperature as a surrogate) can be different for these two
-! subareas.
-
-! Find maintenance respiration for canopy over snow sub-area
-! in umol co2/m2/sec
-
+!>
+!>Autotrophic respiration
+!!
+!!Leaf respiration is calculated in phtsyn subroutine, while stem
+!!and root maintenance respiration are calculated here.
+!!
+!!We treat canopy over ground and canopy over snow subareas
+!!separately because stem temperature (for which we use canopy
+!!temperature as a surrogate) can be different for these two subareas.
+!!
+!!Find maintenance respiration for canopy over snow sub-area in umol co2/m2/sec
+!!
 call   mainres (fcancs,      fcs,     stemmass,   rootmass,       &
      &                  il1,&
      &                   il2,       ta,       tbarcs,   rmatctem,&
      &                  sort, nol2pfts,        isand,&
      &              rmscsveg, rmrcsveg,     rttempcs)
 
-! Find maintenance respiration for canopy over ground sub-area
+!>Find maintenance respiration for canopy over ground sub-area
 
 call   mainres ( fcanc,       fc,     stemmass,   rootmass,       &
      &                   il1,&
@@ -1002,9 +1019,9 @@ call   mainres ( fcanc,       fc,     stemmass,   rootmass,       &
      &                  sort, nol2pfts,        isand,&
      &              rmscgveg, rmrcgveg,     rttempcg)
 
-! If ailcg/gleafmas is zero, i.e. real leaves are not on, then
-! make maintenance respiration and gpp from storage/imaginary lai
-! equal to zero so that we don't use these numbers in carbon budget.
+!>If ailcg/gleafmas is zero, i.e. real leaves are not on, then
+!>make maintenance respiration and gpp from storage/imaginary lai
+!>equal to zero so that we don't use these numbers in carbon budget.
 
 do 180 j = 1, icc
   do 190 i = il1, il2
@@ -1015,13 +1032,13 @@ do 180 j = 1, icc
     if (lfstatus(i,j).eq.4) then
         rmlcgveg(i,j)=0.0
         rmlcsveg(i,j)=0.0
-        pancsveg(i,j)=ancsveg(i,j)   ! to be used for phenology
-        pancgveg(i,j)=ancgveg(i,j)   ! purposes
+        pancsveg(i,j)=ancsveg(i,j)   !< to be used for phenology
+        pancgveg(i,j)=ancgveg(i,j)   !< purposes
         ancsveg(i,j)=0.0
         ancgveg(i,j)=0.0
     else
-        pancsveg(i,j)=ancsveg(i,j)   ! to be used for phenology
-        pancgveg(i,j)=ancgveg(i,j)   ! purposes
+        pancsveg(i,j)=ancsveg(i,j)   !< to be used for phenology
+        pancgveg(i,j)=ancgveg(i,j)   !< purposes
         if(slai(i,j).gt.ailcg(i,j))then
             term=((1.0/kn(sort(j)))*(1.0-exp(-kn(sort(j))*ailcg(i,j))) &
     &          /(1.0/kn(sort(j)))*(1.0-exp(-kn(sort(j))* slai(i,j))))
@@ -1031,11 +1048,10 @@ do 180 j = 1, icc
     endif
 190     continue
 180   continue
-
-!  Find vegetation averaged leaf, stem, and root respiration, and
-!  gpp using values from canopy over ground and canopy over snow
-!  subareas
-
+!>
+!!Find vegetation averaged leaf, stem, and root respiration, and
+!!gpp using values from canopy over ground and canopy over snow subareas
+!!
 do 270 j = 1, icc
     do 280 i = il1, il2
         if( (fcanc(i,j)+fcancs(i,j)).gt.zero) then
@@ -1069,10 +1085,10 @@ do 270 j = 1, icc
 
 280     continue 
 270   continue 
-
-! Now that we know maintenance respiration from leaf, stem, and root
-! and gpp, we can find growth respiration for each vegetation
-
+!>
+!>Now that we know maintenance respiration from leaf, stem, and root
+!>and gpp, we can find growth respiration for each vegetation
+!>
 do 300 j = 1, icc
   do 310 i = il1, il2
     if( nppveg(i,j).gt.zero ) then
@@ -1085,7 +1101,7 @@ do 300 j = 1, icc
 310     continue
 300   continue
 
-! Calculate grid-averaged rates of rm, rg, npp, and gpp
+!>Calculate grid-averaged rates of rm, rg, npp, and gpp
 
 do 320 j = 1,icc
   do 330 i = il1, il2
@@ -1102,11 +1118,11 @@ do 320 j = 1,icc
 320   continue
 
 !     ------------------------------------------------------------------
+!>
+!!     Heterotrophic respiration part starts
 
-!     Heterotrophic respiration part starts
-
-! Find heterotrophic respiration rates (umol co2/m2/sec) for canopy
-! over snow subarea
+!! Find heterotrophic respiration rates (umol co2/m2/sec) for canopy
+!! over snow subarea
 
 call    hetresv ( fcancs,      fcs, litrmass, soilcmas,&
      &                      delzw, thpor, il1,&
@@ -1115,7 +1131,8 @@ call    hetresv ( fcancs,      fcs, litrmass, soilcmas,&
      &                     isand, thicec, &
      &                 ltrsvgcs, scrsvgcs)
 
-! Find heterotrophic respiration rates for canopy over ground subarea
+!>
+!! Find heterotrophic respiration rates for canopy over ground subarea
 
 call    hetresv ( fcanc,      fc, litrmass, soilcmas,&
      &                      delzw, thpor, il1,&
@@ -1123,8 +1140,8 @@ call    hetresv ( fcanc,      fc, litrmass, soilcmas,&
      &                     rttempcg,    zbotw,     sort,&
      &                     isand, thicec, &
      &                 ltrsvgcg, scrsvgcg)
-
-! Find heterotrophic respiration rates from bare ground subarea
+!>
+!! Find heterotrophic respiration rates from bare ground subarea
 
 call  hetresg  (litrmass, soilcmas,   delzw,  thpor, &
      &                      il1,  il2, tbarg, psisat, bi,&
@@ -1132,19 +1149,20 @@ call  hetresg  (litrmass, soilcmas,   delzw,  thpor, &
      &                       fg,        0,&
      &                     isand,&
      &                   ltrsbrg,  scrsbrg)
-
-! Find heterotrophic respiration rates from snow over ground subarea
+!>
+!! Find heterotrophic respiration rates from snow over ground subarea
 
 call  hetresg  (litrmass, soilcmas,    delzw, thpor, &
      &                      il1, il2,  tbargs, psisat, bi,  &
      &                   thliqg,      zbotw,  thiceg, &
+
      &                      fgs,        1,&
      &                     isand,&
      &                   ltrsbrgs, scrsbrgs)
-
-! Find vegetation averaged litter and soil c respiration rates
-! using values from canopy over ground and canopy over snow subareas
-
+!>
+!!Find vegetation averaged litter and soil c respiration rates
+!!using values from canopy over ground and canopy over snow subareas
+!!
 do 340 j = 1, icc
   do 350 i = il1, il2
     if( (fcanc(i,j)+fcancs(i,j)).gt.zero) then
@@ -1163,11 +1181,10 @@ do 340 j = 1, icc
 
 350     continue 
 340   continue 
-
-!  Find litter and soil c respiration rates averaged over the bare
-!  fraction of the grid cell using values from ground and snow over
-!  ground sub-areas.
-
+!>
+!!Find litter and soil c respiration rates averaged over the bare
+!!fraction of the grid cell using values from ground and snow over ground sub-areas.
+!!
 do 355 i = il1, il2
     if( (fg(i)+fgs(i)).gt.zero) then
             ltresveg(i,iccp1)= (fg(i)*ltrsbrg(i) + &
@@ -1182,9 +1199,9 @@ do 355 i = il1, il2
             hetrsveg(i,iccp1)= 0.0
     endif
 355   continue
-
-! Find grid averaged litter and soil c respiration rates
-
+!>
+!!Find grid averaged litter and soil c respiration rates
+!!
 do 360 j = 1,icc
   do 370 i = il1, il2
     litres(i)=litres(i)+fcancmx(i,j)*ltresveg(i,j)
@@ -1198,20 +1215,18 @@ do 380 i = il1, il2
     hetrores(i)= litres(i)+socres(i)
     nep(i)=npp(i)-hetrores(i)
 380   continue
-
-! Update the litter and soil c pools based on litter and soil c
-! respiration rates found above. also transfer humidified litter
-! to the soil c pool.
-
+!>
+!!Update the litter and soil c pools based on litter and soil c respiration rates 
+!!found above. also transfer humidified litter to the soil c pool.
+!!
 do 420 j = 1, iccp1
   do 430 i = il1, il2
 
-!   Convert u mol co2/m2.sec -> kg c/m2 respired over the model
-!   time step
+!>Convert u mol co2/m2.sec -> \f$kg c/m^2\f$ respired over the model time step
     ltrestep(i,j)=ltresveg(i,j)*(1.0/963.62)*deltat
     screstep(i,j)=scresveg(i,j)*(1.0/963.62)*deltat
 
-!   Update litter and soil c pools
+!>Update litter and soil c pools
     if (j .ne. iccp1) then
         litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*&
     &                   (1.0+humicfac(sort(j))))
@@ -1230,8 +1245,7 @@ do 420 j = 1, iccp1
 430     continue
 420   continue
 
-! Estimate soil respiration. this is sum of heterotrophic respiratio
-! and root maintenance respiration.
+!>Estimate soil respiration. this is sum of heterotrophic respiratio and root maintenance respiration.
 
 do 440 j = 1, icc
   do 450 i = il1, il2
@@ -1239,13 +1253,13 @@ do 440 j = 1, icc
 450     continue
 440   continue
 
-! But over the bare fraction there is no live root.
+!>But over the bare fraction there is no live root.
 
 do 460 i = il1, il2
     soilrsvg(i,iccp1)=ltresveg(i,iccp1)+scresveg(i,iccp1)
 460   continue
 
-! Find grid averaged humification and soil respiration rates
+!>Find grid averaged humification and soil respiration rates
 
 do 470 j = 1,icc
   do 480 i = il1, il2
@@ -1261,7 +1275,7 @@ do 490 i = il1, il2
 
 !     ------------------------------------------------------------------
 
-!     Find CH4 wetland area (if not prescribed) and emissions:
+!>Find CH4 wetland area (if not prescribed) and emissions:
 
 if (dowetlands .or. obswetf) then
     call  wetland_methane (hetrores, il1, il2, ta, wetfrac,&
@@ -1273,7 +1287,7 @@ endif
 
 !    -------------------------------------------------------------------
 
-! Estimate allocation fractions for leaf, stem, and root components.
+!>Estimate allocation fractions for leaf, stem, and root components.
 
 call allocate (lfstatus,   thliqc,    ailcg,     ailcb,&
      &                     il1, il2,     sand,     clay,  &
@@ -1281,16 +1295,16 @@ call allocate (lfstatus,   thliqc,    ailcg,     ailcb,&
      &                       sort,    nol2pfts,  fcancmx, isand, &
      &                     afrleaf,  afrstem,  afrroot,    wiltsm,&
      &                     fieldsm, wtstatus, ltstatus)
-
-!     Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the 
-!     CLASS part of the model. They are recalculated here in CTEM to avoid passing them through the
-!     coupler in the coupled model. The CTEM calculated versions of fieldsm and wiltsm are also used
-!     in disturb and phenolgy. JM. Jan 14 2015.
-
-! Estimate fraction of npp that is to be used for horizontal
-! expansion (lambda) during the next day (i.e. this will be determining
-! the colonization rate in competition).
-
+!>
+!!Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the 
+!!CLASS part of the model. They are recalculated here in CTEM to avoid passing them through the
+!!coupler in the coupled model. The CTEM calculated versions of fieldsm and wiltsm are also used
+!!in disturb and phenolgy. JM. Jan 14 2015.
+!!
+!!Estimate fraction of npp that is to be used for horizontal
+!!expansion (lambda) during the next day (i.e. this will be determining
+!!the colonization rate in competition).
+!!
 if (compete) then
     do 500 j = 1, icc
         if(.not. crop(j)) then   ! not for crops
@@ -1306,8 +1320,8 @@ if (compete) then
         &                    (laimax(n)-laimin(n))
             endif
 
-            ! We use the following new function to smooth the transition for lambda as
-            ! an abrupt linear increase does not give good results. JM Jun 2014
+            !>We use the following new function to smooth the transition for lambda as
+            !!an abrupt linear increase does not give good results. JM Jun 2014
             if (ailcg(i,j) .gt. laimin(n)*0.25) then
                 lambdaalt = cosh((ailcg(i,j) - laimin(n)*0.25) * 0.115) - 1.
             else
@@ -1317,8 +1331,7 @@ if (compete) then
 
             lambda(i,j)=max(0.0, min(lambdamax, lambda(i,j)))
 
-            ! If tree and leaves still coming out, or if npp is negative, then
-            ! do not expand
+            !>If tree and leaves still coming out, or if npp is negative, then do not expand
             if((j.le.5.and.lfstatus(i,j).eq.1).or.nppveg(i,j).lt.0.0 &
             &.or..not.pftexist(i,j))then
                 lambda(i,j)=0.0
@@ -1330,24 +1343,22 @@ if (compete) then
 endif !compete
 
 !    ------------------------------------------------------------------
-
-! Maintenance respiration also reduces leaf, stem, and root biomass.
-! when npp for a given pft is positive then this is taken care by
-! allocating +ve npp amongst the leaves, stem, and root component.
-! when npp for a given pft is negative then maintenance respiration
-! loss is explicitly deducted from each component.
+!>
+!>Maintenance respiration also reduces leaf, stem, and root biomass.
+!!when npp for a given pft is positive then this is taken care by
+!!allocating +ve npp amongst the leaves, stem, and root component.
+!!when npp for a given pft is negative then maintenance respiration
+!!loss is explicitly deducted from each component.
 
       do 600 j = 1, icc
         do 610 i = il1, il2
-!
-!         Convert npp and maintenance respiration from different components
-!         from units of u mol co2/m2.sec -> kg c/m2 sequestered or respired
-!         over the model time step (deltat)    
+!>
+!!Convert npp and maintenance respiration from different components
+!!from units of u mol co2/m2.sec -> \f$kg c/m^2\f$ sequestered or respired over the model time step (deltat)    
       
           gppvgstp(i,j)=gppveg(i,j)*(1.0/963.62)*deltat !+ add2allo(i,j)
 
-!         Remove the cost of making reproductive tissues. This cost can only
-!         be removed when NPP is positive.
+!>Remove the cost of making reproductive tissues. This cost can only be removed when NPP is positive.
           !if (compete) then   !FLAG - set up now so only compete on has a reproductive cost. JM
             reprocost(i,j) =max(0.,nppveg(i,j)*repro_fraction)
           !else
@@ -1378,20 +1389,16 @@ endif !compete
               ntchsveg(i,j)=-rmsvgstp(i,j)+afrstem(i,j)*gppvgstp(i,j)
               ntchrveg(i,j)=-rmrvgstp(i,j)+afrroot(i,j)*gppvgstp(i,j)
             endif
-          else  ! i.e. if lfstatus.eq.4
-!           and since we do not have any real leaves on then we do not take
-!           into account co2 uptake by imaginary leaves in carbon budget.
-!           rmlvgstp(i,j) should be zero because we set maintenance
-!           respiration from storage/imaginary leaves equal to zero. 
-!           in loop 180 
-!
+          else  !>i.e. if lfstatus.eq.4
+!>and since we do not have any real leaves on then we do not take into account co2 uptake by imaginary leaves in carbon budget.
+!!rmlvgstp(i,j) should be zero because we set maintenance respiration from storage/imaginary leaves equal to zero. in loop 180 
+!!
             ntchlveg(i,j)=-rmlvgstp(i,j) 
             ntchsveg(i,j)=-rmsvgstp(i,j)
             ntchrveg(i,j)=-rmrvgstp(i,j)
-!
-!           since no real leaves are on, make allocation fractions equal to
-!           zero.
-!
+!>
+!>since no real leaves are on, make allocation fractions equal to zero.
+!>
             afrleaf(i,j)=0.0
             afrstem(i,j)=0.0
             afrroot(i,j)=0.0
@@ -1433,17 +1440,17 @@ endif !compete
             write(6,1901)'rootmass = ',rootmass(i,j)
             call xit ('ctem',-8)
           endif
-!
-!         convert net change in leaf, stem, and root biomass into 
-!         u-mol co2/m2.sec for use in balcar subroutine
-!          
+!>
+!!convert net change in leaf, stem, and root biomass into 
+!!u-mol co2/m2.sec for use in balcar subroutine
+!!         
           ntchlveg(i,j)=ntchlveg(i,j)*(963.62/deltat)         
           ntchsveg(i,j)=ntchsveg(i,j)*(963.62/deltat)         
           ntchrveg(i,j)=ntchrveg(i,j)*(963.62/deltat)         
-!
-!         to avoid over/underflow problems set gleafmas, stemmass, and
-!         rootmass to zero if they get too small
-!
+!>
+!!to avoid over/underflow problems set gleafmas, stemmass, and
+!!rootmass to zero if they get too small
+!!
           if(bleafmas(i,j).lt.zero) bleafmas(i,j)=0.0
           if(gleafmas(i,j).lt.zero) gleafmas(i,j)=0.0
           if(stemmass(i,j).lt.zero) stemmass(i,j)=0.0
@@ -1451,9 +1458,9 @@ endif !compete
 !
 610     continue
 600   continue
-!  
-!     calculate grid averaged value of C related to spatial expansion
-!
+!>  
+!>calculate grid averaged value of C related to spatial expansion
+!>
       do 620 j = 1,icc
         do 621 i = il1, il2
          !if (compete .or. lnduseon) then
@@ -1466,21 +1473,16 @@ endif !compete
 !
 !    ------------------------------------------------------------------
 
-!     Phenology part starts
-
-!     the phenology subroutine determines leaf status for each pft and 
-!     calculates leaf litter. the phenology subroutine uses soil 
-!     temperature (tbar) and root temperature. however, since ctem
-!     doesn't make the distinction between canopy over ground, and
-!     canopy over snow sub-areas for phenology purposes (for  example,
-!     leaf onset is not assumed to occur at different times over these
-!     sub-areas) we use average soil and root temperature in the phenology
-!     subroutine.
-
-!     calculate average soil temperature and root temperature using
-!     values for canopy over ground and canopy over snow sub-areas, for
-!     each vegetation type.
-!
+!>Phenology part starts
+!!
+!!the phenology subroutine determines leaf status for each pft and calculates leaf litter.
+!!the phenology subroutine uses soil temperature (tbar) and root temperature. however, 
+!!since ctem doesn't make the distinction between canopy over ground, and canopy over 
+!!snow sub-areas for phenology purposes (for  example, leaf onset is not assumed to occur 
+!!at different times over these sub-areas) we use average soil and root temperature in the phenology subroutine.
+!!
+!!calculate average soil temperature and root temperature using values for canopy over ground and canopy over snow sub-areas, for each vegetation type.
+!!
 do 650 j = 1, icc
   do 660 i = il1, il2
     if( (fcanc(i,j)+fcancs(i,j)).gt.zero) then
@@ -1502,11 +1504,10 @@ do 680 j = 1, ignd
     endif
 690     continue
 680   continue
-
-!     Call the phenology subroutine, which determines the leaf growth
-!     status, calculates leaf litter, and converts green grass into
-!     brown.
-
+!>
+!!Call the phenology subroutine, which determines the leaf growth
+!!status, calculates leaf litter, and converts green grass into brown.
+!!
 call phenolgy(gleafmas, bleafmas, &
      &                         il1,      il2,  tbarccs,&
      &                      thliqc,   wiltsm,  fieldsm,       ta,&
@@ -1518,17 +1519,17 @@ call phenolgy(gleafmas, bleafmas, &
 
 !    -------------------------------------------------------------------
 
-
-!     while leaf litter is calculated in the phenology subroutine, stem
-!     and root turnover is calculated in the turnover subroutine.
-
+!>
+!!while leaf litter is calculated in the phenology subroutine, stem
+!!and root turnover is calculated in the turnover subroutine.
+!!
 call turnover (stemmass, rootmass,  lfstatus,    ailcg,&
      &                          il1,      il2,&
      &                         sort, nol2pfts,  fcancmx,&
      &                     stmhrlos, rothrlos,&
      &                     stemlitr, rootlitr)
 
-! Update green leaf biomass for trees and crops and brown leaf biomass for grasses
+!>Update green leaf biomass for trees and crops and brown leaf biomass for grasses
 
 k1=0
 do 700 j = 1, ican
@@ -1559,7 +1560,7 @@ do 700 j = 1, ican
 705    continue
 700   continue
 
-! Update stem and root biomass for litter deductions
+!>Update stem and root biomass for litter deductions
 
 do 780 j = 1, icc
   do 790 i = il1, il2
@@ -1576,11 +1577,11 @@ do 780 j = 1, icc
     endif
 790     continue
 780   continue
-
-! Update litter pool with leaf litter calculated in the phenology
-! subroutine and stem and root litter calculated in the turnover
-! subroutine. Also add the reproduction carbon directly to the litter pool
-
+!>
+!>Update litter pool with leaf litter calculated in the phenology
+!>subroutine and stem and root litter calculated in the turnover
+!>subroutine. Also add the reproduction carbon directly to the litter pool
+!>
 do 800 j = 1, icc
   do 810 i = il1, il2
     litrmass(i,j)=litrmass(i,j) + leaflitr(i,j) + stemlitr(i,j) +&
@@ -1590,28 +1591,23 @@ do 800 j = 1, icc
 800   continue
 
 !    ------------------------------------------------------------------
-
-!     Call the mortaliy subroutine which calculates mortality due to
-!     reduced growth and aging. exogenous mortality due to fire and other
-!     disturbances and the subsequent litter that is generated is 
-!     calculated in the disturb subroutine.
-
-!     set maxage >0 in ctem_params.f90 to switch on mortality due to age and
-!     reduced growth. Mortality is linked to the competition parameterization
-!     and generates bare fraction.
-
+!>
+!>Call the mortaliy subroutine which calculates mortality due to reduced growth and aging. exogenous mortality due to fire and other
+!!disturbances and the subsequent litter that is generated is calculated in the disturb subroutine.
+!!
+!!set maxage >0 in ctem_params.f90 to switch on mortality due to age and
+!!reduced growth. Mortality is linked to the competition parameterization and generates bare fraction.
+!!
 Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
      &                     bleafmas,      il1, &
      &                          il2,     iday,     sort,&
      &                      fcancmx, lystmmas,     lyrotmas, tymaxlai,&
      &                     grwtheff, stemltrm,     rootltrm, glealtrm,&
      &                     geremort, intrmort)
-
-!     Update leaf, stem, and root biomass pools to take into loss
-!     due to mortality, and put the litter into the litter pool. the 
-!     mortality for green grasses doesn't generate litter, instead
-!     they turn brown.
-!
+!>
+!>Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the 
+!!litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.
+!!
       k1=0
       do 830 j = 1, ican 
        if(j.eq.1) then
@@ -1641,21 +1637,16 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
 830   continue 
 
 !    ------------------------------------------------------------------
-
-!     call the disturbance subroutine which calculates mortality due to 
-!     fire and other disturbances. the primary output from from 
-!     disturbance subroutine is litter generated, c emissions due to 
-!     fire and area burned, which may be used to estimate change in 
-!     fractional coverages.
-!
-!     disturbance is spatial and requires area of gcm grid cell and areas
-!     of different pfts present in a given grid cell. however, when ctem is
-!     operated at a point scale then it is assumed that the spatial scale
-!     is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped
-!     from simulating any fire by specifying fire extingushing probability
-!     equal to 1.
-!
-!
+!>
+!>call the disturbance subroutine which calculates mortality due to fire and other disturbances.
+!>the primary output from from disturbance subroutine is litter generated, c emissions due to fire
+!!and area burned, which may be used to estimate change in fractional coverages.
+!!
+!!disturbance is spatial and requires area of gcm grid cell and areas of different pfts present in 
+!!a given grid cell. however, when ctem is operated at a point scale then it is assumed that the 
+!!spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating 
+!!any fire by specifying fire extingushing probability equal to 1.
+!!
 call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                      thliqc,   wiltsm,  fieldsm,    uwind,&
      &                       vwind,  lightng,  fcancmx, litrmass,&
@@ -1675,16 +1666,15 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                    pstemmass, pgleafmass )  
 
 !    ------------------------------------------------------------------
-!
-!     Calculate nbp (net biome production) for each pft by taking into account
-!     C emission losses. The disturbance routine produces emissions due to fire
-!     and it also calculates emissions due to LUC. These LUC carbon emissions due to
-!     combustion associated with LUC are first estimated in LUC. This flux is spread out over
-!     the whole year and is therefore subtracted to get NBP of each pft
-!     as well as the grid averaged value of NBP. Also LUC related combustion flux
-!     is assumed to be spread uniformly over the grid cell and thus reduces NBP of each
-!     PFT
-!
+!>
+!>Calculate nbp (net biome production) for each pft by taking into account
+!!C emission losses. The disturbance routine produces emissions due to fire
+!!and it also calculates emissions due to LUC. These LUC carbon emissions due to
+!!combustion associated with LUC are first estimated in LUC. This flux is spread out over
+!!the whole year and is therefore subtracted to get NBP of each pft
+!!as well as the grid averaged value of NBP. Also LUC related combustion flux
+!!is assumed to be spread uniformly over the grid cell and thus reduces NBP of each PFT
+!!
       do 1000 i = il1, il2
         do 1010 j = 1, icc
           dscemlv1(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +&
@@ -1692,7 +1682,7 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
           dscemlv2(i,j)=glcaemls(i,j) + blcaemls(i,j) + stcaemls(i,j) +&
      &                  rtcaemls(i,j) + ltrcemls(i,j)
 
-!         convert kg c/m2 emitted in one day into u mol co2/m2.sec before
+!         convert \f$kg c/m^2\f$ emitted in one day into u mol co2/m2.sec before
 !         subtracting emission losses from nep. 
           nbpveg(i,j)  =nepveg(i,j)   - dscemlv2(i,j)*(963.62/deltat)
 
@@ -1703,12 +1693,10 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
           nbpveg(i,iccp1)  =nepveg(i,iccp1)   - 0. 
 
 1000  continue
-!
-!     Calculate grid. averaged rate of carbon emissions due to fire in
-!     u-mol co2/m2.sec. convert all emission losses from kg c/m2
-!     emitted in 1 day to u-mol co2/m2.sec. calculate grid averaged
-!     carbon emission losses from litter.
-!
+!>
+!!Calculate grid. averaged rate of carbon emissions due to fire in u-mol co2/m2.sec. convert all emission losses from \f$kg c/m^2\f$
+!!emitted in 1 day to u-mol co2/m2.sec. calculate grid averaged carbon emission losses from litter.
+!!
       do 1030 j = 1,icc
         do 1040 i = il1, il2
           dstcemls1(i)=dstcemls1(i) +&
@@ -1730,31 +1718,29 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
         nbp(i)=nep(i)-dstcemls2(i)
         dstcemls3(i)=dstcemls2(i)-dstcemls1(i)
 1041  continue
-!
-!     calculate total litter fall from each component (leaves, stem, and
-!     root) from all causes (normal turnover, drought and cold stress for
-!     leaves, mortality, and disturbance) for use in balcar subroutine
-!
+!>
+!!calculate total litter fall from each component (leaves, stem, and root) from all causes (normal
+!!turnover, drought and cold stress for leaves, mortality, and disturbance) for use in balcar subroutine
+!!
       do 1050 j = 1,icc
         do 1060 i = il1, il2
-!     
-!        units here are kg c/m2.day
+!>    
+!>units here are \f$kg c/m^2 .day\f$
          tltrleaf(i,j)=leaflitr(i,j)+glealtrm(i,j)+glfltrdt(i,j)+&
      &                 blfltrdt(i,j)
          tltrstem(i,j)=stemlitr(i,j)+stemltrm(i,j)+stemltdt(i,j)
          tltrroot(i,j)=rootlitr(i,j)+rootltrm(i,j)+rootltdt(i,j)
-!          
-!        convert units to u-mol co2/m2.sec
+!>       
+!>convert units to u-mol co2/m2.sec
          leaflitr(i,j)=leaflitr(i,j)*(963.62/deltat)
          tltrleaf(i,j)=tltrleaf(i,j)*(963.62/deltat)
          tltrstem(i,j)=tltrstem(i,j)*(963.62/deltat)
          tltrroot(i,j)=tltrroot(i,j)*(963.62/deltat)
 1060    continue
 1050  continue
-!
-!     calculate grid-average vegetation biomass, litter mass, and soil
-!     carbon mass, and litter fall rate
-!
+!>
+!>calculate grid-average vegetation biomass, litter mass, and soil carbon mass, and litter fall rate
+!>
       do 1100 j = 1, icc
         do 1110 i = il1, il2
           vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+&
@@ -1777,13 +1763,11 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
 1020  continue
 
 !     -----------------------------------------------------------------
-
-!     At this stage we have all required fluxes in u-mol co2/m2.sec and
-!     initial (loop 140 and 145) and updated sizes of all pools 
-!     (in kg c/m2). Now we call the balcar subroutine and make sure that
-!     C in leaves, stem, root, litter and soil C pool balances within a
-!     certain tolerance.
-
+!>
+!>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145) 
+!!and updated sizes of all pools (in \f$kg c/m^2\f$). Now we call the balcar subroutine and make sure 
+!!that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.
+!!
 if(spinfast.eq.1)then
         call  balcar(gleafmas, stemmass, rootmass,  bleafmas,&
 &                    litrmass, soilcmas, ntchlveg,  ntchsveg,&
@@ -1801,10 +1785,9 @@ if(spinfast.eq.1)then
 endif
 
 !     -----------------------------------------------------------------
-
-!     Finally find vegetation structural attributes which can be passed
-!     to the land surface scheme using leaf, stem, and root biomass. 
-!
+!>
+!>Finally find vegetation structural attributes which can be passed to the land surface scheme using leaf, stem, and root biomass. 
+!>
 call bio2str( gleafmas, bleafmas, stemmass, rootmass,&
      &                            il1,      il2, fcancmx,    zbotw,&
      &                          delzw, nol2pfts,  soildpth,&
@@ -1813,10 +1796,9 @@ call bio2str( gleafmas, bleafmas, stemmass, rootmass,&
      &                       cmasvegc,  veghght, rootdpth,   alvisc,&
      &                         alnirc,  paicgat,  slaicgat  )
 
-
-! Calculation of gavglai is moved from loop 1100 to here
-! since ailcg is updated by bio2str
-
+!>
+!>Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str
+!>
 do j = 1, icc
     do i = il1, il2
         gavglai (i)=gavglai (i)+fcancmx(i,j)*ailcg(i,j)

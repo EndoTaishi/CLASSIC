@@ -1,3 +1,10 @@
+!>\file
+C>
+C!Purpose: Gather variables from two-dimensional arrays (latitude 
+C!circle x mosaic tiles) onto long vectors for optimum processing 
+C!efficiency on vector supercomputers.
+C!
+
       SUBROUTINE CLASSG(TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT,
      1                  TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT, 
      2                  TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT,
@@ -44,11 +51,7 @@
      +                  VPDROW, TADPROW,RHOAROW,RPCPROW,TRPCROW,
      +                  SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,
      +                  GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW )
-C
-C     Purpose: Gather variables from two-dimensional arrays (latitude 
-C     circle x mosaic tiles) onto long vectors for optimum processing 
-C     efficiency on vector supercomputers.
-C
+
 C     * Dec 30, 2014 - D.Verseghy. Re-introduce ALGW,ALGD.
 C     * Aug 19, 2014 - M.Lazare. New version called by "sfcproc2":      
 C     *                          - {ALGWV,ALGWN,ALGDV,ALGDN} replace    
@@ -101,33 +104,28 @@ C
 C
 C     * LAND SURFACE PROGNOSTIC VARIABLES.
 C
-      REAL TBARROT(NL,NT,IG)    !Temperature of soil layers [K]
-      REAL THLQROT(NL,NT,IG)    !Volumetric liquid water content of soil 
-                                !layers [m3 m-3]
-      REAL THICROT(NL,NT,IG)    !Frozen water content of soil layers 
-                                !under vegetation [m3 m-3]
-      REAL TPNDROT(NL,NT)   !Temperature of ponded water [K]    
-      REAL ZPNDROT(NL,NT)   !Depth of ponded water on surface [m]
-      REAL TBASROT(NL,NT)   !Temperature of bedrock in third soil layer 
-                            ![K]
-      REAL ALBSROT(NL,NM)   !Snow albedo [ ]
-      REAL TSNOROT(NL,NM)   !Snowpack temperature [K]
-      REAL RHOSROT(NL,NM)   !Density of snow [kg m-3]
-      REAL SNOROT (NL,NM)   !Mass of snow pack [kg m-2] 
-      REAL TCANROT(NL,NT)   !Vegetation canopy temperature [K] 
-      REAL RCANROT(NL,NT)   !Intercepted liquid water stored on canopy 
-                            ![kg m-2]
-      REAL SCANROT(NL,NT)   !Intercepted frozen water stored on canopy 
-                            ![kg m-2]
-      REAL GROROT (NL,NT)   !Vegetation growth index [ ] 
-      REAL CMAIROT(NL,NT)   !Aggregated mass of vegetation canopy 
-                            ![kg m-2]
-      REAL TSFSROT(NL,NT,4) !Ground surface temperature over subarea [K] 
-      REAL TACROT (NL,NT)   !Temperature of air within vegetation canopy 
-                            ![K]
-      REAL QACROT (NL,NT)   !Specific humidity of air within vegetation 
-                            !canopy [kg kg-1]
-      REAL WSNOROT(NL,NT)   !Liquid water content of snow pack [kg m-2]
+      REAL TBARROT(NL,NT,IG)    !<Temperature of soil layers [K]
+      REAL THLQROT(NL,NT,IG)    !<Volumetric liquid water content of soil 
+                                !!layers \f$[m^3 m^{-3}]\f$
+      REAL THICROT(NL,NT,IG)    !<Frozen water content of soil layers 
+                                !!under vegetation \f$[m^3 m^{-3}]\f$
+      REAL TPNDROT(NL,NT)   !<Temperature of ponded water [K]    
+      REAL ZPNDROT(NL,NT)   !<Depth of ponded water on surface [m]
+      REAL TBASROT(NL,NT)   !<Temperature of bedrock in third soil layer [K]
+      REAL ALBSROT(NL,NM)   !<Snow albedo [ ]
+      REAL TSNOROT(NL,NM)   !<Snowpack temperature [K]
+      REAL RHOSROT(NL,NM)   !<Density of snow \f$[kg m^{-3}]\f$
+      REAL SNOROT (NL,NM)   !<Mass of snow pack \f$[kg m^{-2}]\f$
+      REAL TCANROT(NL,NT)   !<Vegetation canopy temperature [K] 
+      REAL RCANROT(NL,NT)   !<Intercepted liquid water stored on canopy \f$[kg m^{-2}]\f$
+      REAL SCANROT(NL,NT)   !<Intercepted frozen water stored on canopy \f$[kg m^{-2}]\f$
+      REAL GROROT (NL,NT)   !<Vegetation growth index [ ] 
+      REAL CMAIROT(NL,NT)   !<Aggregated mass of vegetation canopy \f$[kg m^{-2}]\f$
+      REAL TSFSROT(NL,NT,4) !<Ground surface temperature over subarea [K] 
+      REAL TACROT (NL,NT)   !<Temperature of air within vegetation canopy [K]
+      REAL QACROT (NL,NT)   !<Specific humidity of air within vegetation 
+                            !!canopy \f$[kg kg^{-1}]\f$
+      REAL WSNOROT(NL,NT)   !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
       REAL REFROT(NL,NM)    !
       REAL BCSNROT(NL,NM)   !
 C
@@ -141,12 +139,12 @@ C
 C
 C     * GATHER-SCATTER INDEX ARRAYS.
 C
-      INTEGER  ILMOS (ILG)  !Index of latitude grid cell corresponding 
-                            !to current element of gathered vector of 
-                            !land surface variables [ ]
-      INTEGER  JLMOS (ILG)  !Index of mosaic tile corresponding to 
-                            !current element of gathered vector of land 
-                            !surface variables [ ]
+      INTEGER  ILMOS (ILG)  !<Index of latitude grid cell corresponding 
+                            !!to current element of gathered vector of 
+                            !!land surface variables [ ]
+      INTEGER  JLMOS (ILG)  !<Index of mosaic tile corresponding to 
+                            !!current element of gathered vector of land 
+                            !!surface variables [ ]
 
 C
 C     * CANOPY AND SOIL INFORMATION ARRAYS.
@@ -154,52 +152,51 @@ C     * (THE LENGTH OF THESE ARRAYS IS DETERMINED BY THE NUMBER
 C     * OF SOIL LAYERS (3) AND THE NUMBER OF BROAD VEGETATION
 C     * CATEGORIES (4, OR 5 INCLUDING URBAN AREAS).)
 C
-      REAL FCANROT(NL,NT,ICP1)  !Maximum fractional coverage of modelled 
-                                !area by vegetation category [ ]
-      REAL LNZ0ROT(NL,NT,ICP1)  !Natural logarithm of maximum roughness 
-                                !length of vegetation category [ ]
-      REAL ALVCROT(NL,NT,ICP1)  !Background average visible albedo of 
-                                !vegetation category [ ]
-      REAL ALICROT(NL,NT,ICP1)  !Background average near-infrared albedo 
-                                !of vegetation category [ ]
-      REAL PAMXROT(NL,NT,IC)    !Maximum plant area index of vegetation 
-                                !category [ ]
-      REAL PAMNROT(NL,NT,IC)    !Minimum plant area index of vegetation 
-                                !category [ ]
-      REAL CMASROT(NL,NT,IC)    !Maximum canopy mass for vegetation 
-                                !category [kg m-2]
-      REAL ROOTROT(NL,NT,IC)    !Maximum rooting depth of vegetation 
-                                !category [m]
-      REAL RSMNROT(NL,NT,IC)    !Minimum stomatal resistance of 
-                                !vegetation category [s m-1]
-      REAL QA50ROT(NL,NT,IC)    !Reference value of incoming shortwave 
-                                !radiation for vegetation category (used 
-                                !in stomatal resistance calculation) 
-                                ![W m-2]
-      REAL VPDAROT(NL,NT,IC)    !Vapour pressure deficit coefficient for 
-                                !vegetation category (used in stomatal 
-                                !resistance calculation) [ ]
-      REAL VPDBROT(NL,NT,IC)    !Vapour pressure deficit coefficient for 
-                                !vegetation category (used in stomatal 
-                                !resistance calculation) [ ]
-      REAL PSGAROT(NL,NT,IC)    !Soil moisture suction coefficient for 
-                                !vegetation category (used in stomatal 
-                                !resistance calculation) [ ]
-      REAL PSGBROT(NL,NT,IC)    !Soil moisture suction coefficient for 
-                                !vegetation category (used in stomatal 
-                                !resistance calculation) [ ]
-      REAL PAIDROT(NL,NT,IC)    !Optional user-specified value of plant 
-                                !area indices of vegetation categories 
-                                !to override CLASS-calculated values [ ]
-      REAL HGTDROT(NL,NT,IC)    !Optional user-specified values of 
-                                !height of vegetation categories to 
-                                !override CLASS-calculated values [m]
-      REAL ACVDROT(NL,NT,IC)    !Optional user-specified value of canopy 
-                                !visible albedo to override CLASS-
-                                !calculated value [ ]
-      REAL ACIDROT(NL,NT,IC)    !Optional user-specified value of canopy 
-                                !near-infrared albedo to override CLASS-
-                                !calculated value [ ]
+      REAL FCANROT(NL,NT,ICP1)  !<Maximum fractional coverage of modelled 
+                                !!area by vegetation category [ ]
+      REAL LNZ0ROT(NL,NT,ICP1)  !<Natural logarithm of maximum roughness 
+                                !!length of vegetation category [ ]
+      REAL ALVCROT(NL,NT,ICP1)  !<Background average visible albedo of 
+                                !!vegetation category [ ]
+      REAL ALICROT(NL,NT,ICP1)  !<Background average near-infrared albedo 
+                                !!of vegetation category [ ]
+      REAL PAMXROT(NL,NT,IC)    !<Maximum plant area index of vegetation 
+                                !!category [ ]
+      REAL PAMNROT(NL,NT,IC)    !<Minimum plant area index of vegetation 
+                                !!category [ ]
+      REAL CMASROT(NL,NT,IC)    !<Maximum canopy mass for vegetation 
+                                !!category \f$[kg m^{-2}]\f$
+      REAL ROOTROT(NL,NT,IC)    !<Maximum rooting depth of vegetation 
+                                !!category [m]
+      REAL RSMNROT(NL,NT,IC)    !<Minimum stomatal resistance of 
+                                !!vegetation category \f$[s m^{-1}]\f$
+      REAL QA50ROT(NL,NT,IC)    !<Reference value of incoming shortwave 
+                                !!radiation for vegetation category (used 
+                                !!in stomatal resistance calculation) \f$[W m^{-2}]\f$
+      REAL VPDAROT(NL,NT,IC)    !<Vapour pressure deficit coefficient for 
+                                !!vegetation category (used in stomatal 
+                                !!resistance calculation) [ ]
+      REAL VPDBROT(NL,NT,IC)    !<Vapour pressure deficit coefficient for 
+                                !!vegetation category (used in stomatal 
+                                !!resistance calculation) [ ]
+      REAL PSGAROT(NL,NT,IC)    !<Soil moisture suction coefficient for 
+                                !!vegetation category (used in stomatal 
+                                !!resistance calculation) [ ]
+      REAL PSGBROT(NL,NT,IC)    !<Soil moisture suction coefficient for 
+                                !!vegetation category (used in stomatal 
+                                !!resistance calculation) [ ]
+      REAL PAIDROT(NL,NT,IC)    !<Optional user-specified value of plant 
+                                !!area indices of vegetation categories 
+                                !!to override CLASS-calculated values [ ]
+      REAL HGTDROT(NL,NT,IC)    !<Optional user-specified values of 
+                                !!height of vegetation categories to 
+                                !!override CLASS-calculated values [m]
+      REAL ACVDROT(NL,NT,IC)    !<Optional user-specified value of canopy 
+                                !!visible albedo to override CLASS-
+                                !!calculated value [ ]
+      REAL ACIDROT(NL,NT,IC)    !<Optional user-specified value of canopy 
+                                !!near-infrared albedo to override CLASS-
+                                !!calculated value [ ]
 C
       REAL          FCANGAT(ILG,ICP1),   LNZ0GAT(ILG,ICP1),
      1              ALVCGAT(ILG,ICP1),   ALICGAT(ILG,ICP1),
@@ -211,66 +208,59 @@ C
      7              PAIDGAT(ILG,IC),     HGTDGAT(ILG,IC),
      8              ACVDGAT(ILG,IC),     ACIDGAT(ILG,IC)
 C
-      REAL THPROT (NL,NT,IG)    !Pore volume in soil layer [m3 m-3] 
-      REAL THRROT (NL,NT,IG)    !Liquid water retention capacity for 
-                                !organic soil [m3 m-3 ]
-      REAL THMROT (NL,NT,IG)    !Residual soil liquid water content 
-                                !remaining after freezing or evaporation 
-                                ![m3 m-3]
-      REAL BIROT  (NL,NT,IG)    !Clapp and Hornberger empirical “b” 
-                                !parameter [ ]
-      REAL PSISROT(NL,NT,IG)    !Soil moisture suction at saturation [m]
-      REAL GRKSROT(NL,NT,IG)    !Saturated hydraulic conductivity of 
-                                !soil layers [m s-1]
-      REAL THRAROT(NL,NT,IG)    !Fractional saturation of soil behind 
-                                !the wetting front [ ]
-      REAL HCPSROT(NL,NT,IG)    !Volumetric heat capacity of soil 
-                                !particles [J m-3]
-      REAL TCSROT (NL,NT,IG)    !Thermal conductivity of soil particles 
-                                ![W m-1 K-1]
-      REAL THFCROT(NL,NT,IG)    !Field capacity [m3 m-3]
-      REAL THLWROT(NL,NT,IG)    !Wilting point [m3 m-3]
-      REAL PSIWROT(NL,NT,IG)    !Soil moisture suction at wilting point 
-                                ![m]
-      REAL DLZWROT(NL,NT,IG)    !Permeable thickness of soil layer [m]
-      REAL ZBTWROT(NL,NT,IG)    !Depth to permeable bottom of soil layer 
-                                ![m]
-      REAL DRNROT (NL,NT)       !Drainage index at bottom of soil 
-                                !profile [ ]
-      REAL XSLPROT(NL,NT)       !Surface slope (used when running MESH 
-                                !code) [degrees]
-      REAL GRKFROT(NL,NT)       !WATROF parameter used when running MESH 
-                                !code [ ]
-      REAL WFSFROT(NL,NT)       !WATROF parameter used when running MESH 
-                                !code [ ]
-      REAL WFCIROT(NL,NT)       !WATROF parameter used when running MESH 
-                                !code [ ]
+      REAL THPROT (NL,NT,IG)    !<Pore volume in soil layer \f$[m^3 m^{-3}]\f$
+      REAL THRROT (NL,NT,IG)    !<Liquid water retention capacity for 
+                                !!organic soil \f$[m^3 m^{-3}]\f$
+      REAL THMROT (NL,NT,IG)    !<Residual soil liquid water content 
+                                !!remaining after freezing or evaporation \f$[m^3 m^{-3}]\f$
+      REAL BIROT  (NL,NT,IG)    !<Clapp and Hornberger empirical "b"
+                                !!parameter [ ]
+      REAL PSISROT(NL,NT,IG)    !<Soil moisture suction at saturation [m]
+      REAL GRKSROT(NL,NT,IG)    !<Saturated hydraulic conductivity of 
+                                !!soil layers \f$[m s^{-1}]\f$
+      REAL THRAROT(NL,NT,IG)    !<Fractional saturation of soil behind 
+                                !!the wetting front [ ]
+      REAL HCPSROT(NL,NT,IG)    !<Volumetric heat capacity of soil 
+                                !!particles \f$[J m^{-3}]\f$
+      REAL TCSROT (NL,NT,IG)    !<Thermal conductivity of soil particles 
+                                !!\f$[W m^{-1} K^{-1}]\f$
+      REAL THFCROT(NL,NT,IG)    !<Field capacity \f$[m^3 m^{-3}]\f$
+      REAL THLWROT(NL,NT,IG)    !<Wilting point \f$[m^3 m^{-3}]\f$
+      REAL PSIWROT(NL,NT,IG)    !<Soil moisture suction at wilting point 
+                                !![m]
+      REAL DLZWROT(NL,NT,IG)    !<Permeable thickness of soil layer [m]
+      REAL ZBTWROT(NL,NT,IG)    !<Depth to permeable bottom of soil layer [m]
+      REAL DRNROT (NL,NT)       !<Drainage index at bottom of soil profile [ ]
+      REAL XSLPROT(NL,NT)       !<Surface slope (used when running MESH code) [degrees]
+      REAL GRKFROT(NL,NT)       !<WATROF parameter used when running MESH code [ ]
+      REAL WFSFROT(NL,NT)       !<WATROF parameter used when running MESH code [ ]
+      REAL WFCIROT(NL,NT)       !<WATROF parameter used when running MESH code [ ]
       REAL ALGWVROT(NL,NT)      !
       REAL ALGWNROT(NL,NT)      !
       REAL ALGDVROT(NL,NT)      !
       REAL ALGDNROT(NL,NT)      !
-      REAL ALGWROT(NL,NT)       !Reference albedo for saturated soil [ ]
-      REAL ALGDROT(NL,NT)       !Reference albedo for dry soil [ ]
-      REAL ASVDROT(NL,NT)       !Optional user-specified value of snow 
-                                !visible albedo to override CLASS-
-                                !calculated value [ ]
-      REAL ASIDROT(NL,NT)       !Optional user-specified value of snow 
-                                !near-infrared albedo to override CLASS-
-                                !calculated value [ ]
-      REAL AGVDROT(NL,NT)       !Optional user-specified value of ground 
-                                !visible albedo to override CLASS-
-                                !calculated value [ ]
-      REAL AGIDROT(NL,NT)       !Optional user-specified value of ground 
-                                !near-infrared albedo to override CLASS-
-                                !calculated value [ ]
-      REAL ZSNLROT(NL,NT)       !Limiting snow depth below which 
-                                !coverage is < 100% [m]
-      REAL ZPLGROT(NL,NT)       !Maximum water ponding depth for snow-
-                                !free subareas (user-specified when 
-                                !running MESH code) [m]
-      REAL ZPLSROT(NL,NT)       !Maximum water ponding depth for snow-
-                                !covered subareas (user-specified when 
-                                !running MESH code) [m]
+      REAL ALGWROT(NL,NT)       !<Reference albedo for saturated soil [ ]
+      REAL ALGDROT(NL,NT)       !<Reference albedo for dry soil [ ]
+      REAL ASVDROT(NL,NT)       !<Optional user-specified value of snow 
+                                !!visible albedo to override CLASS-
+                                !!calculated value [ ]
+      REAL ASIDROT(NL,NT)       !<Optional user-specified value of snow 
+                                !!near-infrared albedo to override CLASS-
+                                !!calculated value [ ]
+      REAL AGVDROT(NL,NT)       !<Optional user-specified value of ground 
+                                !!visible albedo to override CLASS-
+                                !!calculated value [ ]
+      REAL AGIDROT(NL,NT)       !<Optional user-specified value of ground 
+                                !!near-infrared albedo to override CLASS-
+                                !!calculated value [ ]
+      REAL ZSNLROT(NL,NT)       !<Limiting snow depth below which 
+                                !!coverage is < 100% [m]
+      REAL ZPLGROT(NL,NT)       !<Maximum water ponding depth for snow-
+                                !!free subareas (user-specified when 
+                                !!running MESH code) [m]
+      REAL ZPLSROT(NL,NT)       !<Maximum water ponding depth for snow-
+                                !!covered subareas (user-specified when 
+                                !!running MESH code) [m]
 C
 
       REAL    THPGAT (ILG,IG),   THRGAT (ILG,IG),   THMGAT (ILG,IG),
@@ -286,58 +276,56 @@ C
      9        AGVDGAT(ILG),      AGIDGAT(ILG),      ZSNLGAT(ILG),       
      A        ZPLGGAT(ILG),      ZPLSGAT(ILG)                           
 C
-      INTEGER ISNDROT(NL,NT,IG), ISNDGAT(ILG,IG)    !Sand content flag
-      INTEGER IGDRROT(NL,NT),    IGDRGAT(ILG)   !Index of soil layer in 
-                                                !which bedrock is 
-                                                !encountered
+      INTEGER ISNDROT(NL,NT,IG), ISNDGAT(ILG,IG)!<Sand content flag
+      INTEGER IGDRROT(NL,NT),    IGDRGAT(ILG)   !<Index of soil layer in 
+                                                !!which bedrock is 
+                                                !!encountered
 C
 C     * ATMOSPHERIC AND GRID-CONSTANT INPUT VARIABLES.
 C
-      REAL ZRFMROW( NL) !Reference height associated with forcing wind 
-                        !speed [m]
-      REAL ZRFHROW( NL) !Reference height associated with forcing air 
-                        !temperature and humidity [m]
-      REAL ZDMROW ( NL) !User-specified height associated with diagnosed 
-                        !anemometer-level wind speed [m]
-      REAL ZDHROW ( NL) !User-specified height associated with diagnosed 
-                        !screen-level variables [m]
-      REAL FSVHROW( NL) !Visible radiation incident on horizontal 
-                        !surface [W m-2]
-      REAL FSIHROW( NL) !Near-infrared radiation incident on horizontal 
-                        !surface [W m -2]
-      REAL CSZROW ( NL) !Cosine of solar zenith angle [ ]
+      REAL ZRFMROW( NL) !<Reference height associated with forcing wind 
+                        !!speed [m]
+      REAL ZRFHROW( NL) !<Reference height associated with forcing air 
+                        !!temperature and humidity [m]
+      REAL ZDMROW ( NL) !<User-specified height associated with diagnosed 
+                        !!anemometer-level wind speed [m]
+      REAL ZDHROW ( NL) !<User-specified height associated with diagnosed 
+                        !!screen-level variables [m]
+      REAL FSVHROW( NL) !<Visible radiation incident on horizontal 
+                        !!surface \f$[W m^{-2}]\f$
+      REAL FSIHROW( NL) !<Near-infrared radiation incident on horizontal 
+                        !!surface \f$[W m^{-2}]\f$
+      REAL CSZROW ( NL) !<Cosine of solar zenith angle [ ]
       REAL FSGROL ( NL) !
       REAL FLGROL ( NL) !
-      REAL FDLROL ( NL) !Downwelling longwave radiation at bottom of 
-                        !atmosphere [W m-2]
+      REAL FDLROL ( NL) !<Downwelling longwave radiation at bottom of 
+                        !!atmosphere \f$[W m^{-2}]\f$
 
-      REAL ULROW  ( NL) !Zonal component of wind speed [m s-1]
-      REAL VLROW  ( NL) !Meridional component of wind speed [m s-1]
-      REAL TAROW  ( NL) !Air temperature at reference height [K]
-      REAL QAROW  ( NL) !Specific humidity at reference height [kg kg-1]
-      REAL PRESROW( NL) !Surface air pressure [Pa]
-      REAL PREROW ( NL) !Surface precipitation rate [kg m-2 s-1]
-      REAL PADRROW( NL) !Partial pressure of dry air [Pa]
-      REAL VPDROW ( NL) !Vapour pressure deficit [mb]
-      REAL TADPROW( NL) !Dew point temperature of air [K]
-      REAL RHOAROW( NL) !Density of air [kg m-3]
-      REAL ZBLDROW( NL) !Atmospheric blending height for surface 
-                        !roughness length averaging [m]
-      REAL Z0ORROW( NL) !Orographic roughness length [m]
-      REAL RPCPROW( NL) !Rainfall rate over modelled area [m s-1]
-      REAL TRPCROW( NL) !Rainfall temperature [K]
-      REAL SPCPROW( NL) !Snowfall rate over modelled area [m s-1]
-      REAL TSPCROW( NL) !Snowfall temperature [K]
-      REAL RHSIROW( NL) !Density of fresh snow [kg m-3]
-      REAL FCLOROW( NL) !Fractional cloud cover [ ]
-      REAL DLONROW( NL) !Longitude of grid cell (east of Greenwich) 
-                        ![degrees]
-      REAL GGEOROW( NL) !Geothermal heat flux at bottom of soil profile 
-                        ![W m-2]
+      REAL ULROW  ( NL) !<Zonal component of wind speed \f$[m s^{-1}]\f$
+      REAL VLROW  ( NL) !<Meridional component of wind speed \f$[m s^{-1}]\f$
+      REAL TAROW  ( NL) !<Air temperature at reference height [K]
+      REAL QAROW  ( NL) !<Specific humidity at reference height \f$[kg kg^{-1}]\f$
+      REAL PRESROW( NL) !<Surface air pressure [Pa]
+      REAL PREROW ( NL) !<Surface precipitation rate \f$[kg m^{-2} s^{-1}]\f$
+      REAL PADRROW( NL) !<Partial pressure of dry air [Pa]
+      REAL VPDROW ( NL) !<Vapour pressure deficit [mb]
+      REAL TADPROW( NL) !<Dew point temperature of air [K]
+      REAL RHOAROW( NL) !<Density of air \f$[kg m^{-3}]\f$
+      REAL ZBLDROW( NL) !<Atmospheric blending height for surface 
+                        !!roughness length averaging [m]
+      REAL Z0ORROW( NL) !<Orographic roughness length [m]
+      REAL RPCPROW( NL) !<Rainfall rate over modelled area \f$[m s^{-1}]\f$
+      REAL TRPCROW( NL) !<Rainfall temperature [K]
+      REAL SPCPROW( NL) !<Snowfall rate over modelled area \f$[m s^{-1}]\f$
+      REAL TSPCROW( NL) !<Snowfall temperature [K]
+      REAL RHSIROW( NL) !<Density of fresh snow \f$[kg m^{-3}]\f$
+      REAL FCLOROW( NL) !<Fractional cloud cover [ ]
+      REAL DLONROW( NL) !<Longitude of grid cell (east of Greenwich) [degrees]
+      REAL GGEOROW( NL) !<Geothermal heat flux at bottom of soil profile 
+                        !!\f$[W m^{-2}]\f$
       REAL GUSTROL (NL) !
-      REAL RADJ   ( NL) !Latitude of grid cell (positive north of 
-                        !equator) [rad]
-      REAL VMODL  ( NL) !Wind speed at reference height [m s-1]
+      REAL RADJ   ( NL) !<Latitude of grid cell (positive north of equator) [rad]
+      REAL VMODL  ( NL) !<Wind speed at reference height \f$[m s^{-1}]\f$
       REAL DEPBROW (NL) !
 
       REAL, DIMENSION(NL,NBS) ::  FSDBROL

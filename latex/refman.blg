@@ -1,0 +1,65 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: refman.aux
+A level-1 auxiliary file: group__competition__scheme__existence.aux
+A level-1 auxiliary file: group__competition__scheme__competition.aux
+A level-1 auxiliary file: group__ctem__params__initpftpars.aux
+A level-1 auxiliary file: group__disturbance__scheme__disturb.aux
+A level-1 auxiliary file: group__disturbance__scheme__burntobare.aux
+A level-1 auxiliary file: group__io__driver__read__from__ctm.aux
+A level-1 auxiliary file: group__io__driver__write__ctm__rs.aux
+A level-1 auxiliary file: group__io__driver__create__outfiles.aux
+A level-1 auxiliary file: group__io__driver__class__monthly__aw.aux
+A level-1 auxiliary file: group__io__driver__class__annual__aw.aux
+A level-1 auxiliary file: group__io__driver__ctem__daily__aw.aux
+A level-1 auxiliary file: group__io__driver__ctem__monthly__aw.aux
+A level-1 auxiliary file: group__io__driver__ctem__annual__aw.aux
+A level-1 auxiliary file: group__io__driver__close__outfiles.aux
+A level-1 auxiliary file: group__landuse__change__initialize__luc.aux
+A level-1 auxiliary file: group__landuse__change__readin__luc.aux
+A level-1 auxiliary file: group__landuse__change__luc.aux
+A level-1 auxiliary file: group__landuse__change__adjust__luc__fracs.aux
+A level-1 auxiliary file: group__landuse__change__adjust__fracs__comp.aux
+The style file: plain.bst
+Database file #1: bibTmpFile_1.bib
+You've used 50 entries,
+            2118 wiz_defined-function locations,
+            874 strings with 15157 characters,
+and the built_in function-call counts, 18829 in all, are:
+= -- 1851
+> -- 1041
+< -- 3
++ -- 425
+- -- 359
+* -- 1604
+:= -- 3197
+add.period$ -- 152
+call.type$ -- 50
+change.case$ -- 328
+chr.to.int$ -- 0
+cite$ -- 50
+duplicate$ -- 567
+empty$ -- 1317
+format.name$ -- 359
+if$ -- 3736
+int.to.chr$ -- 0
+int.to.str$ -- 50
+missing$ -- 48
+newline$ -- 253
+num.names$ -- 102
+pop$ -- 249
+preamble$ -- 1
+purify$ -- 279
+quote$ -- 0
+skip$ -- 382
+stack$ -- 0
+substring$ -- 1364
+swap$ -- 67
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 200
+warning$ -- 0
+while$ -- 190
+width$ -- 52
+write$ -- 550
