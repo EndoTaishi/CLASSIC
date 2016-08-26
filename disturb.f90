@@ -411,25 +411,6 @@ use ctem_params, only : ignd, icc, ilg, ican, zero,kk, pi, c2dom, crop, &
 
 implicit none
 
-!     Outputs
-!
-!     emission factors for trace gases and aerosols. units are
-!     g of compound emitted per kg of dry organic matter.
-!     values are taken from li et al. 2012 biogeosci 
-!     emif_co2  - carbon dioxide
-!     emif_co   - carbon monoxide
-!     emif_ch4  - methane
-!     emif_nmhc - non-methane hydrocarbons
-!     emif_h2   - hydrogen gas
-!     emif_nox  - nitrogen oxides
-!     emif_n2o  - nitrous oxide
-!     emif_pm25 - particulate matter less than 2.5 um in diameter
-!     emif_tpm  - total particulate matter
-!     emif_tc   - total carbon
-!     emif_oc   - organic carbon
-!     emif_bc   - black carbon
-
-
 real, dimension(ilg,icc), intent(out) :: pstemmass 
 real, dimension(ilg,icc), intent(out) :: pgleafmass
 
@@ -441,6 +422,7 @@ integer :: il1 !<il1=1
 integer :: il2 !<il2=ilg
 integer :: i,j,k,m,k1,k2,n
 
+integer isand(ilg,ignd) !<
 integer :: sort(icc) !<index for correspondence between 9 pfts and size 12 of parameters vectors
 integer :: nol2pfts(ican) !<number of level 2 ctem pfts
 integer :: iday

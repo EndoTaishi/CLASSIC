@@ -238,7 +238,6 @@ real, dimension(ilg), intent(in) ::  currlat        !< centre latitude of grid c
       real rml(ilg)         !<leaf maintenance respiration (u-mol co2/m2.sec)
       real gpp(ilg)         !<gross primary productivity
       real tbar(ilg,ignd)   !<soil temperature, k
-      real thicec(ilg,ignd) !<frozen mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas
       real soildpth(ilg)    !<soil depth (m)
       real todfrac(ilg,icc) !<max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
 
@@ -506,7 +505,6 @@ real, dimension(ilg), intent(in) ::  currlat        !< centre latitude of grid c
       real slaicgat(ilg,ican)!<
 !
       real vgbiomas_veg(ilg,icc) !<
->>>>>>> release_dev
 !  
       real precip(ilg)   !<daily precipitation (mm/day)
       real netrad(ilg)   !<daily net radiation (w/m2)

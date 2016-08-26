@@ -91,6 +91,7 @@ c
       integer il2                 !<il2=ilg
       integer i, j, k
       integer iday                !<day of year
+      integer isand(ilg,ignd) !<
       integer n, m, k1, k2
 c
       integer sort(icc)           !<index for correspondence between 9 pfts and the 12 values in parameters vectors

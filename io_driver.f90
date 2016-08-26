@@ -1075,7 +1075,7 @@ subroutine class_monthly_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,&
                                   ALVSROT,FAREROT,FSVHROW,ALIRROT,FSIHROW,GTROT,FSSROW, &
                                   FDLROW,HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,SNOROT, &
                                   TAROW,WSNOROT,TBARROT,THLQROT,THICROT,TFREZ,QFCROT, &
-                                  QFGROT,QFNROT,QFCLROT,QFCFROT,ACTLYR,FTABLE))
+                                  QFGROT,QFNROT,QFCLROT,QFCFROT,ACTLYR,FTABLE)
                            
 use ctem_statevars,     only : class_out,resetclassmon
 use ctem_params, only : nmon, monthend, nlat, nmos, ignd

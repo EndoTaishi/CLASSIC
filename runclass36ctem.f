@@ -5010,7 +5010,7 @@ C=======================================================================
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
      4                       SNOROT,TAROW,WSNOROT,TBARROT,THLQROT,
      5                       THICROT,TFREZ,QFCROT,QFGROT,QFNROT,
-     6                       QFCLROT,QFCFROT,ACTLYR,FTABLE))
+     6                       QFCLROT,QFCFROT,ACTLYR,FTABLE)
 
        DO NT=1,NMON
         IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
