@@ -138,6 +138,7 @@ C
                             !<\f$[J m^{-3}] (C_g)\f$
       REAL THPOR (ILG,IG)   !<Pore volume in soil layer \f$[m^3 m^{-3}]\f$
       REAL DELZW (ILG,IG)   !<Permeable thickness of soil layer \f$[m] (\Delta_zw)\f$
+      REAL DELZ  (IG)       !<Total thickness of soil layer \f$[m] (\Delta_z)\f$
       REAL TBAR  (ILG,IG)   !<Temperature of soil layers \f$[K] (T_g)\f$
       REAL ZPOND (ILG)      !<Depth of ponded water on surface \f$[m] (z_p)\f$
       REAL TPOND (ILG)      !<Total thickness of soil layer \f$[m] (\Delta_z)\f$

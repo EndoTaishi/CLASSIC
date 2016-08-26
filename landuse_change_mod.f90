@@ -11,20 +11,68 @@
 !>Canadian Terrestrial Ecosystem Model (CTEM) 
 !>Land Use Change Subroutine
 !!
-!!The land use change (LUC) module of CTEM is based on \cite Arora2010-416 and briefly described here. When the area of crop PFTs changes, CTEM generates LUC emissions. In the simulation where fractional coverage of PFTs is specified, the changes in fractional coverage of crop PFTs are made consistent with changes in the fractional coverage of natural non-crop PFTs. That is, an increase or decrease in the area of crop PFTs is associated with a corresponding decrease or increase in the area of non-crop PFTs. This approach is taken by \cite Wang2006-he, which allows one to reconstruct historical land cover given a spatial data set of changes in crop area over the historical period and an estimate of potential natural land cover for the pre-industrial period (as described in Sect. \ref{methods}). When competition between PFTs for space is allowed, only the fractional coverage of crop PFTs is specified. Similar to a simulation with prescribed PFT fractions, when the area of crop PFTs increases, the fractional coverage of non-crop PFTs is decreased in proportion to their existing coverage \cite Wang2006-he. Alternatively, and in contrast to the simulation with prescribed PFT fractions, when the area of crop PFTs decreases then the generated bare fraction is available for recolonization by non-crop PFTs.
+!!The land use change (LUC) module of CTEM is based on \cite Arora2010-416 and briefly
+!! described here. When the area of crop PFTs changes, CTEM generates LUC emissions.
+!! In the simulation where fractional coverage of PFTs is specified, the changes in
+!! fractional coverage of crop PFTs are made consistent with changes in the
+!! fractional coverage of natural non-crop PFTs. That is, an increase or decrease
+!! in the area of crop PFTs is associated with a corresponding decrease or increase
+!! in the area of non-crop PFTs. This approach is taken by \cite Wang2006-he, which
+!! allows one to reconstruct historical land cover given a spatial data set of 
+!!changes in crop area over the historical period and an estimate of potential
+!! natural land cover for the pre-industrial period (as described in Sect. 
+!!\ref{methods}). When competition between PFTs for space is allowed, only the
+!! fractional coverage of crop PFTs is specified. Similar to a simulation with 
+!!prescribed PFT fractions, when the area of crop PFTs increases, the fractional
+!! coverage of non-crop PFTs is decreased in proportion to their existing coverage
+!! \cite Wang2006-he. Alternatively, and in contrast to the simulation with prescribed
+!! PFT fractions, when the area of crop PFTs decreases then the generated bare 
+!!fraction is available for recolonization by non-crop PFTs.
 !!
-!!A decrease in the area of natural non-crop PFTs, associated with an increase in area of crop PFTs, results in deforested biomass (while the term \f$\textit{deforested}\f$ implies clearing of forests, the same processes can occur in grasslands as well and is meant here to imply removal of the biomass). The deforested biomass is divided into three components: (i) the component that is combusted or used for fuel wood immediately after natural vegetated is deforested and which contributes to atmospheric \f$CO_2\f$, (ii) the component left as slash or used for pulp and paper products and (iii) the component that is used for long-lasting wood products. The fractions allocated to these three components depend on whether the PFTs are woody or herbaceous and on their aboveground vegetation biomass density (see Table 1 of \cite Arora2010-416). To account for the timescales involved, the fraction allocated to slash or pulp and paper products is transferred to the model's litter pool and the fraction allocated to long-lasting wood products is allocated to the model's soil carbon pool. Land use change associated with a decrease in the area of natural vegetation thus redistributes carbon from living vegetation to dead litter and soil carbon pools and emits \f$CO_2\f$ to the atmosphere through direct burning of the deforested biomass. The net result is positive LUC carbon emissions from land to the atmosphere.
+!!A decrease in the area of natural non-crop PFTs, associated with an increase in
+!! area of crop PFTs, results in deforested biomass (while the term 
+!!\f$\textit{deforested}\f$ implies clearing of forests, the same processes can
+!! occur in grasslands as well and is meant here to imply removal of the biomass).
+!! The deforested biomass is divided into three components: (i) the component that
+!! is combusted or used for fuel wood immediately after natural vegetated is 
+!!deforested and which contributes to atmospheric \f$CO_2\f$, (ii) the component
+!! left as slash or used for pulp and paper products and (iii) the component that 
+!!is used for long-lasting wood products. The fractions allocated to these three
+!! components depend on whether the PFTs are woody or herbaceous and on their
+!! aboveground vegetation biomass density (see Table 1 of \cite Arora2010-416). 
+!!To account for the timescales involved, the fraction allocated to slash or pulp
+!! and paper products is transferred to the model's litter pool and the fraction
+!! allocated to long-lasting wood products is allocated to the model's soil carbon
+!! pool. Land use change associated with a decrease in the area of natural
+!! vegetation thus redistributes carbon from living vegetation to dead litter
+!! and soil carbon pools and emits \f$CO_2\f$ to the atmosphere through direct
+!! burning of the deforested biomass. The net result is positive LUC carbon 
+!!emissions from land to the atmosphere.
 !!
-!!When croplands are abandoned, the area of natural PFTs increases. In simulations with prescribed fractional coverage of PFTs this results in a decreased carbon density for all model pools as the same amount of carbon is spread over a larger fraction of the grid cell. This reduced density implies that natural vegetation is able to take up carbon as it comes into equilibrium with the driving climate and atmospheric \f$CO_2\f$ concentration. This creates the carbon sink associated with abandonment of croplands as natural vegetation grows in its place. In simulations with competition between PFTs, the abandoned land is treated as bare ground, which is subsequently available for recolonization, as mentioned above. As natural vegetation expands into bare ground it takes up carbon, again creating the carbon sink associated with abandonment of croplands. The net result is negative LUC carbon emissions as carbon is taken from atmosphere to grow vegetation over the area that was previously a cropland.
+!!When croplands are abandoned, the area of natural PFTs increases. In simulations
+!! with prescribed fractional coverage of PFTs this results in a decreased carbon
+!! density for all model pools as the same amount of carbon is spread over a larger
+!! fraction of the grid cell. This reduced density implies that natural vegetation 
+!!is able to take up carbon as it comes into equilibrium with the driving climate
+!! and atmospheric \f$CO_2\f$ concentration. This creates the carbon sink associated
+!! with abandonment of croplands as natural vegetation grows in its place. In
+!! simulations with competition between PFTs, the abandoned land is treated as
+!! bare ground, which is subsequently available for recolonization, as mentioned
+!! above. As natural vegetation expands into bare ground it takes up carbon, again
+!! creating the carbon sink associated with abandonment of croplands. The net
+!! result is negative LUC carbon emissions as carbon is taken from atmosphere to
+!! grow vegetation over the area that was previously a cropland.
 !!
 !------------------------------------------------------------------------------------
 !>\defgroup landuse_change_adjust_luc_fracs
 !>
-!>this subroutine adjusts the amount of each pft to ensure that the fraction of gridcell bare ground is >0.
+!>this subroutine adjusts the amount of each pft to ensure that the fraction of
+!> gridcell bare ground is >0.
 !------------------------------------------------------------------------------------
 !>\defgroup landuse_change_adjust_fracs_comp
 !>
-!>This subroutine is used when compete = true. It adjusts the amount of each pft to allow expansion of cropland.
+!>This subroutine is used when compete = true. It adjusts the amount of each pft
+!> to allow expansion of cropland.
 !------------------------------------------------------------------------------------
 
 !>\file
