@@ -1,5 +1,7 @@
 This contribution guide is only a draft.
 
+CLASS-CTEM code uses an self-documenting tool called Doxygen. All new code should follow the doyxgen conventions and formatting.
+
 # Doxygen
 ## Overview
 Doxygen is a tool for producing documentation from commented code. For input it supports many code languages, 
@@ -7,7 +9,7 @@ including Fortran. Both fixed form code such as Fortran 77 (extension .f or .for
 (extension .f90) are recognized. There are many different supported outputs, including LaTeX and HTML.
 
 ## Quick Start (if you have made change to the code and doxygen comments)
-   1. (http://www.stack.nl/~dimitri/doxygen/download.html)[Download Doxygen] to your computer
+   1. [Download Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html) to your computer
    1. Run the command 'doxygen Doxyfile'.
    1. View the produced HTML by opening 'index.html' from within the newly created 'html' folder within your current directory.
    1. View the produced LaTeX pdf by using the created makefile:
@@ -100,20 +102,19 @@ bibtex format as in the bibliography file, biblio.bib, in the CLASS-CTEM repo.
      simply insert the spaces before the comment marker instead of after the comment marker. The first example below will generate
      a box, the second will not:
 
-
-    !>             text
-    !!             text
-    !!             text
-    !>text
-    !!text
-    !!text
+        !>             text
+        !!             text
+        !!             text
+        !>text
+        !!text
+        !!text
 
    * If a module with multiple subroutines is being documented, they can be identified by grouping them. To do this, define a group at 
      the top of the file, for example '!>\defgroup disturbance_scheme_disturb', then add to that comment block any brief or detailed 
      description text you would like for the group, and then surround the subroutine that the group is to be used for with 
 
-    !>\ingroup disturbance_scheme_disturb
-    !!@{
+        !>\ingroup disturbance_scheme_disturb
+        !!@{
 
      before the subroutine definition and '!>@}' after the 'end subroutine' code.
      
@@ -123,13 +124,13 @@ bibtex format as in the bibliography file, biblio.bib, in the CLASS-CTEM repo.
      the project and, if it exists, automatically generate a link to the documentation page for the specified file.
 
 ### Further Reading
-   * (http://www.stack.nl/~dimitri/doxygen/manual/starting.html)[Doxygen getting started guide]
-   * (https://www.stack.nl/~dimitri/doxygen/manual/formulas.html)[putting LaTeX formulas in code comments]
-   * (http://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmd_intro)[complete list of Doxygen comment commands]
-   * (http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html#fortranblocks)[fortran comment blocks documentation]
-   * (http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_extract_all)[configuration options] (pointing to 'extract all' explanation)
-   * (https://www.stack.nl/~dimitri/doxygen/manual/lists.html)[Doxygen list formatting examples]
-   * (https://www.stack.nl/~dimitri/doxygen/manual/htmlcmds.html)[Doxygen's subset of HTML that it supports] (HTML comments at the bottom of the page)
-   * (https://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmdimage)[Doxygen image command]
-   * (https://www.stack.nl/~dimitri/doxygen/manual/markdown.html#md_links)[Doxygen links within comments]
-   * (https://www.stack.nl/~dimitri/doxygen/manual/autolink.html)[Doxygen automatic link generation]
+   * [Doxygen getting started guide](http://www.stack.nl/~dimitri/doxygen/manual/starting.html)
+   * [putting LaTeX formulas in code comments](https://www.stack.nl/~dimitri/doxygen/manual/formulas.html)
+   * [complete list of Doxygen comment commands](http://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmd_intro)
+   * [fortran comment blocks documentation](http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html#fortranblocks)
+   * [configuration options](http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_extract_all) (pointing to 'extract all' explanation)
+   * [Doxygen list formatting examples](https://www.stack.nl/~dimitri/doxygen/manual/lists.html)
+   * [Doxygen's subset of HTML that it supports](https://www.stack.nl/~dimitri/doxygen/manual/htmlcmds.html) (HTML comments at the bottom of the page)
+   * [Doxygen image command](https://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmdimage)
+   * [Doxygen links within comments](https://www.stack.nl/~dimitri/doxygen/manual/markdown.html#md_links)
+   * [Doxygen automatic link generation](https://www.stack.nl/~dimitri/doxygen/manual/autolink.html)
