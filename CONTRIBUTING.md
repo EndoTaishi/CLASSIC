@@ -78,14 +78,12 @@ the comments. There are three options for escaping these symbols:
      , then optionally another space and quotes surrounding a caption for the image. An example of an image being included follows: 
 
 
-    \image html "schematicDiagramOfClass.png" "Schematic Diagram Of CLASS"
-    \image latex "schematicDiagramOfClass.png" "Schematic Diagram Of CLASS"
+        \image html "schematicDiagramOfClass.png" "Schematic Diagram Of CLASS"
+        \image latex "schematicDiagramOfClass.png" "Schematic Diagram Of CLASS"
 
 
 ### References
-To have citations within the text, first make sure the bibliography is set up.
-   * Perl and Bibtex must be installed
-To add a reference in the output text, the doxygen comment text write the doxygen command '\cite' followed by a space and a single word 
+To have citations within the text, Perl and Bibtex must be installed. To add a reference in the output text, the doxygen comment text write the doxygen command '\cite' followed by a space and a single word 
 argument of the bibliographic identifier. For example, '\cite Arora2003838'. Then add the bibliographic information in 
 bibtex format as in the bibliography file, biblio.bib, in the CLASS-CTEM repo.
 
@@ -95,7 +93,10 @@ bibtex format as in the bibliography file, biblio.bib, in the CLASS-CTEM repo.
    * Doxygen accepts HTML comment markers, so if you wish to ignore part of your comment block, you can surround the
      text with '<!-- hidden section here -->'. This can be particularly helpful if you want text in a certain place but do not want
      to break your one comment block.
-   * '[ ]' followed by '( )' will be interpreted as a link in a doxygen command. If a link is desired, follow the form '[link text description](link)'.
+   * '[ ]' followed by '( )' will be interpreted as a link in a doxygen command. If a link is desired, follow the form 
+
+            [link text description](link)
+
      If the text is simply meant to be text and not a link, the simplest way to de-link the text, simply switch the order:'(text) [text]'.
    * If a comment block contains many spaces in front of the text it will be put in its own little box in the output instead 
      of simply flowing into the rest of the text. If the text is not meant to be separated, but the comment should be indented, 
