@@ -6,12 +6,12 @@ Doxygen is a tool for producing documentation from commented code. For input it 
 including Fortran. Both fixed form code such as Fortran 77 (extension .f or .for) and free form code such as Fortran 90
 (extension .f90) are recognized. There are many different supported outputs, including LaTeX and HTML.
 
-## Quick Start
-   1. [http://www.stack.nl/~dimitri/doxygen/download.html](Download Doxygen) to your computer
-   1. Run the command 'doxygen Doxyfile' (alternately replacing 'Doxyfile' with the config file name if you specified a different name previously).
+## Quick Start (if you have made change to the code and doxygen comments)
+   1. (http://www.stack.nl/~dimitri/doxygen/download.html)[Download Doxygen] to your computer
+   1. Run the command 'doxygen Doxyfile'.
    1. View the produced HTML by opening 'index.html' from within the newly created 'html' folder within your current directory.
    1. View the produced LaTeX pdf by using the created makefile:
-      A. Run 'make' in the command line in the newly created 'latex' folder in your current project's directory.
+      A. Run 'make' on the command line in the 'latex' folder in your current project's directory.
       A. Open the new pdf 'refman.pdf'
 
 ## Documenting The Code Through Comments Doxygen Recognizes
@@ -60,6 +60,7 @@ For example:
 
 The '\file' command in the above code would tell Doxygen that the comment block is meant to be about the
 file it is contained within, not the code above or below the comment.
+
 NOTE: without a \file command comment within the document (or the file defined elsewhere), the file will not be listed. 
 
 ### LaTeX Formulas
@@ -67,14 +68,13 @@ For symbols and formulas (and LaTeX tables) to be rendered in the html and the p
 the comments. There are three options for escaping these symbols:
    1. For in-line mathematical symbols, surround the symbol with: '\f$'
    1. For unnumbered formulas on a separate line, surround the formulas with: '\f[' and '\f]'
-   1. For !LaTeX elements that are not in a math environment, surround the text with: '\f{LatexEnvironmentNameHere}' and '\f}'
-[https://www.stack.nl/~dimitri/doxygen/manual/formulas.html](Examples of commented LaTeX formulas)] (Link also in Further Reading)
+   1. For LaTeX elements that are not in a math environment, surround the text with: '\f{LatexEnvironmentNameHere}' and '\f}'(https://www.stack.nl/~dimitri/doxygen/manual/formulas.html)[Examples of commented LaTeX formulas] (Link also in Further Reading)
 
 ### Including Images
-   * Set the 'IMAGE_PATH' to the directory location that will contain the images to be included.
    * Type into a comment block the '\image' command followed by a space and an environment (each environment such as html, 
      and latex will need a new command specifying the image is for them), then another space and quotes containing the file name
      , then optionally another space and quotes surrounding a caption for the image. An example of an image being included follows: 
+
 
     \image html "schematicDiagramOfClass.png" "Schematic Diagram Of CLASS"
     \image latex "schematicDiagramOfClass.png" "Schematic Diagram Of CLASS"
@@ -83,31 +83,30 @@ the comments. There are three options for escaping these symbols:
 ### References
 To have citations within the text, first make sure the bibliography is set up.
    * Perl and Bibtex must be installed
-   * Set 'CITE_BIB_FILES' in the configuration file to the name(s) of the .bib bibliography file(s).
 To add a reference in the output text, the doxygen comment text write the doxygen command '\cite' followed by a space and a single word 
-argument of the bibliographic identifier. For example, '\cite Arora2003838'.
-For an example bibliography file see the biblio.bib in the CLASS-CTEM repo.
+argument of the bibliographic identifier. For example, '\cite Arora2003838'. Then add the bibliographic information in 
+bibtex format as in the bibliography file, biblio.bib, in the CLASS-CTEM repo.
 
 ### Formatting and Additional Tips & Tricks
    * Lists can be made in the comments by having a column aligned minus sign, plus sign, or asterisk to make a bullet point list,
      and a minus sign followed by '#' or a number followed by a dot will produce a numbered list.
    * Doxygen accepts HTML comment markers, so if you wish to ignore part of your comment block, you can surround the
-     text with '<!--' hidden section here '-->'. This can be particularly helpful if you want text in a certain place but do not want
+     text with '<!-- hidden section here -->'. This can be particularly helpful if you want text in a certain place but do not want
      to break your one comment block.
    * '[ ]' followed by '( )' will be interpreted as a link in a doxygen command. If a link is desired, follow the form '[link text description](link)'.
-     If the text is simply meant to be text and not a link, the simplest way to de-link the text, simply switch the order:'(text)' '[text]'.
+     If the text is simply meant to be text and not a link, the simplest way to de-link the text, simply switch the order:'(text) [text]'.
    * If a comment block contains many spaces in front of the text it will be put in its own little box in the output instead 
      of simply flowing into the rest of the text. If the text is not meant to be separated, but the comment should be indented, 
      simply insert the spaces before the comment marker instead of after the comment marker. The first example below will generate
      a box, the second will not:
 
+
     !>             text
     !!             text
     !!             text
-
-               !>text
-               !!text
-               !!text
+    !>text
+    !!text
+    !!text
 
    * If a module with multiple subroutines is being documented, they can be identified by grouping them. To do this, define a group at 
      the top of the file, for example '!>\defgroup disturbance_scheme_disturb', then add to that comment block any brief or detailed 
@@ -124,13 +123,13 @@ For an example bibliography file see the biblio.bib in the CLASS-CTEM repo.
      the project and, if it exists, automatically generate a link to the documentation page for the specified file.
 
 ### Further Reading
-   * [http://www.stack.nl/~dimitri/doxygen/manual/starting.html](Doxygen getting started guide)
-   * [https://www.stack.nl/~dimitri/doxygen/manual/formulas.html](putting LaTeX formulas in code comments)
-   * [http://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmd_intro](complete list of Doxygen comment commands)
-   * [http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html#fortranblocks](fortran comment blocks documentation)
-   * [http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_extract_all](configuration options) (pointing to 'extract all' explanation)
-   * [https://www.stack.nl/~dimitri/doxygen/manual/lists.html](Doxygen list formatting examples)
-   * [https://www.stack.nl/~dimitri/doxygen/manual/htmlcmds.html](Doxygen's subset of HTML that it supports) (HTML comments at the bottom of the page)
-   * [https://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmdimage](Doxygen image command)
-   * [https://www.stack.nl/~dimitri/doxygen/manual/markdown.html#md_links](Doxygen links within comments)
-   * [https://www.stack.nl/~dimitri/doxygen/manual/autolink.html](Doxygen automatic link generation)
+   * (http://www.stack.nl/~dimitri/doxygen/manual/starting.html)[Doxygen getting started guide]
+   * (https://www.stack.nl/~dimitri/doxygen/manual/formulas.html)[putting LaTeX formulas in code comments]
+   * (http://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmd_intro)[complete list of Doxygen comment commands]
+   * (http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html#fortranblocks)[fortran comment blocks documentation]
+   * (http://www.stack.nl/~dimitri/doxygen/manual/config.html#cfg_extract_all)[configuration options] (pointing to 'extract all' explanation)
+   * (https://www.stack.nl/~dimitri/doxygen/manual/lists.html)[Doxygen list formatting examples]
+   * (https://www.stack.nl/~dimitri/doxygen/manual/htmlcmds.html)[Doxygen's subset of HTML that it supports] (HTML comments at the bottom of the page)
+   * (https://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmdimage)[Doxygen image command]
+   * (https://www.stack.nl/~dimitri/doxygen/manual/markdown.html#md_links)[Doxygen links within comments]
+   * (https://www.stack.nl/~dimitri/doxygen/manual/autolink.html)[Doxygen automatic link generation]
