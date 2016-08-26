@@ -1,0 +1,38 @@
+\hypertarget{group__io__driver__write__ctm__rs}{}\section{Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs}
+\label{group__io__driver__write__ctm__rs}\index{Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs@{Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs}}
+
+
+After a set period is complete the restart file for C\+T\+E\+M (.C\+T\+M\+\_\+\+R\+S) is written this restart file contains all of the C\+T\+E\+M level information needed to to restart the model to the same state.  
+
+
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__write__ctm__rs_gab85f0131bae0d7249a9c0f0af1713289}{io\+\_\+driver\+::write\+\_\+ctm\+\_\+rs} (nltest, nmtest, F\+C\+A\+N\+R\+O\+T, argbuff)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+After a set period is complete the restart file for C\+T\+E\+M (.C\+T\+M\+\_\+\+R\+S) is written this restart file contains all of the C\+T\+E\+M level information needed to to restart the model to the same state. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__io__driver__write__ctm__rs_gab85f0131bae0d7249a9c0f0af1713289}{}\index{Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs@{Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs}!write\+\_\+ctm\+\_\+rs@{write\+\_\+ctm\+\_\+rs}}
+\index{write\+\_\+ctm\+\_\+rs@{write\+\_\+ctm\+\_\+rs}!Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs@{Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs}}
+\subsubsection[{write\+\_\+ctm\+\_\+rs}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public io\+\_\+driver\+::write\+\_\+ctm\+\_\+rs (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{nltest, }
+\item[{integer, intent(inout)}]{nmtest, }
+\item[{real, dimension(nlat,nmos,icp1), intent(inout)}]{F\+C\+A\+N\+R\+O\+T, }
+\item[{character(80), intent(in)}]{argbuff}
+\end{DoxyParamCaption}
+)}\label{group__io__driver__write__ctm__rs_gab85f0131bae0d7249a9c0f0af1713289}
+if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
+
+check to ensure that the dvdfcanrow\textquotesingle{}s add up to 1 across a class-\/level pft
+
+Lastly check if the different pfts accidently add up $>$ 1.\+0 after rounding to the number of sig figs used in the output this rounds to 3 decimal places. if you are found to be over or under, arbitrarily reduce one of the pfts. the amount of the change will be inconsequential.
+
+We can write out the first tile value since these are the same across an entire gridcell.
+
+Just write in the first tiles value since all tiles in a gridcell are the same. 

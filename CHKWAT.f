@@ -1,12 +1,13 @@
+!>\file
+C!Purpose: Check for closure of surface water budget, and for 
+C!unphysical values of certain variables.
+C!
       SUBROUTINE CHKWAT(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN,
      1                  RAICNI,SNOCNI,ZPOND,ZPONDI,THLIQ,THICE,
      2                  THLIQI,THICEI,ZSNOW,RHOSNO,XSNOW,SNOWI,
      3                  WSNOW,WSNOWI,FCS,FGS,FI,BAL,THPOR,THLMIN,
      4                  DELZW,ISAND,IG,ILG,IL1,IL2,JL,N   )
-C
-C     Purpose: Check for closure of surface water budget, and for 
-C     unphysical values of certain variables.
-C
+
 C     * APR 28/10 - B.DUGAS.    INTRODUCE SEPARATE ACCURACY LIMITS
 C     *                         FOR BAL AND FOR THE OTHER CHECKS.
 C     * JUN 06/06 - D.VERSEGHY. MODIFY CHECK ON RUNOFF.
@@ -68,50 +69,47 @@ C
 C
 C     * INPUT FIELDS.
 
-      REAL PCPR  (ILG)  !Precipitation rate over modelled subarea 
-                        ![kg m-2 s-1]    
-      REAL EVAP  (ILG)  !Evapotranspiration rate over modelled subarea 
-                        ![kg m-2 s-1]  
-      REAL RUNOFF(ILG)  !Total runoff over modelled subarea [m]  
-      REAL WLOST (ILG)  !Residual amount of water that cannot be 
-                        !supplied by surface stores [kg m-2]
-      REAL RAICAN(ILG)  !Intercepted liquid water on canopy at end of 
-                        !time step [kg m-2]
-      REAL SNOCAN(ILG)  !Intercepted frozen water on canopy at end of 
-                        !time step [kg m-2]
-      REAL RAICNI(ILG)  !Intercepted liquid water on canopy at beginning 
-                        !of time step [kg m -2]
-      REAL SNOCNI(ILG)  !Intercepted frozen water on canopy at beginning 
-                        !of time step [kg m-2]
-      REAL ZPOND (ILG)  !Depth of ponded water on ground at end of time 
-                        !step [m]
-      REAL ZPONDI(ILG)  !Depth of ponded water on ground at beginning of 
-                        !time step [m]
-      REAL ZSNOW (ILG)  !Depth of snow pack [m]  
-      REAL RHOSNO(ILG)  !Density of snow pack [kg m-3]  
-      REAL XSNOW (ILG)  !Switch to indicate presence of snow cover [ ]  
-      REAL SNOWI (ILG)  !Snow pack mass at beginning of time step 
-                        ![kg m-2] 
-      REAL WSNOW (ILG)  !Liquid water content of snow pack at end of 
-                        !time step [kg m-2]
-      REAL WSNOWI(ILG)  !Liquid water content of snow pack at beginning 
-                        !of time step [kg m-2]
-      REAL FCS   (ILG)  !Fractional coverage of canopy over snow on 
-                        !modelled area [ ]
-      REAL FGS   (ILG)  !Fractional coverage of snow over bare ground on 
-                        !modelled area [ ]
-      REAL FI    (ILG)  !Fractional coverage of subarea in question on 
-                        !modelled area [ ]
+      REAL PCPR  (ILG)  !<Precipitation rate over modelled subarea \f$[kg m^{-2} s^{-1}]\f$    
+      REAL EVAP  (ILG)  !<Evapotranspiration rate over modelled subarea \f$[kg m^{-2} s^{-1}]\f$  
+      REAL RUNOFF(ILG)  !<Total runoff over modelled subarea [m]  
+      REAL WLOST (ILG)  !<Residual amount of water that cannot be 
+                        !!supplied by surface stores \f$[kg m^{-2}]\f$
+      REAL RAICAN(ILG)  !<Intercepted liquid water on canopy at end of 
+                        !!time step \f$[kg m^{-2}]\f$
+      REAL SNOCAN(ILG)  !<Intercepted frozen water on canopy at end of 
+                        !!time step \f$[kg m^{-2}]\f$
+      REAL RAICNI(ILG)  !<Intercepted liquid water on canopy at beginning 
+                        !!of time step \f$[kg m^{-2}]\f$
+      REAL SNOCNI(ILG)  !<Intercepted frozen water on canopy at beginning 
+                        !!of time step \f$[kg m^{-2}]\f$
+      REAL ZPOND (ILG)  !<Depth of ponded water on ground at end of time 
+                        !!step [m]
+      REAL ZPONDI(ILG)  !<Depth of ponded water on ground at beginning of 
+                        !!time step [m]
+      REAL ZSNOW (ILG)  !<Depth of snow pack [m]  
+      REAL RHOSNO(ILG)  !<Density of snow pack \f$[kg m^{-3}]\f$ 
+      REAL XSNOW (ILG)  !<Switch to indicate presence of snow cover [ ]  
+      REAL SNOWI (ILG)  !<Snow pack mass at beginning of time step \f$[kg m^{-2}]\f$
+      REAL WSNOW (ILG)  !<Liquid water content of snow pack at end of 
+                        !!time step \f$[kg m^{-2}]\f$
+      REAL WSNOWI(ILG)  !<Liquid water content of snow pack at beginning 
+                        !!of time step \f$[kg m^{-2}]\f$
+      REAL FCS   (ILG)  !<Fractional coverage of canopy over snow on 
+                        !!modelled area [ ]
+      REAL FGS   (ILG)  !<Fractional coverage of snow over bare ground on 
+                        !!modelled area [ ]
+      REAL FI    (ILG)  !<Fractional coverage of subarea in question on 
+                        !!modelled area [ ]
 
 C
-      REAL THLIQ (ILG,IG)   !Volumetric liquid water content of soil 
-                            !layers at end of time step [m3 m-3]
-      REAL THICE (ILG,IG)   !Volumetric frozen water content of soil 
-                            !layers at end of time step [m3 m-3]
-      REAL THLIQI(ILG,IG)   !Volumetric frozen water content of soil 
-                            !layers at beginning of time step [m3 m-3]
-      REAL THICEI(ILG,IG)   !Volumetric frozen water content of soil 
-                            !layers at beginning of time step [m3 m-3]
+      REAL THLIQ (ILG,IG)   !<Volumetric liquid water content of soil 
+                            !!layers at end of time step \f$[m^3 m^{-3}]\f$
+      REAL THICE (ILG,IG)   !<Volumetric frozen water content of soil 
+                            !!layers at end of time step \f$[m^3 m^{-3}]\f$
+      REAL THLIQI(ILG,IG)   !<Volumetric frozen water content of soil 
+                            !!layers at beginning of time step \f$[m^3 m^{-3}]\f$
+      REAL THICEI(ILG,IG)   !<Volumetric frozen water content of soil 
+                            !!layers at beginning of time step \f$[m^3 m^{-3}]\f$
 
 C
 C     * WORK ARRAYS.
@@ -124,43 +122,36 @@ C
 C
 C     * SOIL INFORMATION ARRAYS.
 C
-      REAL THPOR (ILG,IG)   !Pore volume in soil layer [m3 m-3] 
-      REAL THLMIN(ILG,IG)   !Residual soil liquid water content 
-                            !remaining after freezing or evaporation 
-                            ![m3 m-3]
-      REAL DELZW (ILG,IG)   !Permeable depth of soil layer [m]
+      REAL THPOR (ILG,IG)   !<Pore volume in soil layer \f$[m^3 m^{-3}]\f$
+      REAL THLMIN(ILG,IG)   !<Residual soil liquid water content 
+                            !!remaining after freezing or evaporation \f$[m^3 m^{-3}]\f$
+      REAL DELZW (ILG,IG)   !<Permeable depth of soil layer [m]
 C
       INTEGER              ISAND (ILG,IG)   
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
-      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
-                    !(2.25*10^6) [J m-3 K-1]
-      REAL HCPOM    !Volumetric heat capacity of organic matter 
-                    !(2.50*10^6) [J m-3 K-1]
-      REAL HCPSND   !Volumetric heat capacity of sand particles 
-                    !(2.13*10^6) [J m-3 K-1]
-      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
-                    !(2.38*10^6) [J m-3 K-1]
-      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
-      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
-      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
-                    ![J kg-1 K-1]
-      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
-      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
-      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
-      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
-                    ![W m-1 K-1]
-      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
-                    ![J kg-1]
-      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
-                    ![J kg-1]
+      REAL DELT     !<Time step [s]
+      REAL TFREZ    !<Freezing point of water [K]
+      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSOL   !<Volumetric heat capacity of mineral matter 
+                    !!\f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPOM    !<Volumetric heat capacity of organic matter 
+                    !!\f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSND   !<Volumetric heat capacity of sand particles 
+                    !!\f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles 
+                    !!\f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
+      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
+      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
+      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
+      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
+      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
 C
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
@@ -171,32 +162,32 @@ C      ACCLMT=3.0*DELT/3.1536E7
       ACCLMT=1.0E-3
       BALLMT=1.0E-1
 C-----------------------------------------------------------------------
-      !
-      !This subroutine is called from CLASSW to perform water balance 
-      !checks for each of the four subareas. The flag ISFC indicates 
-      !which subarea is being addressed: ISFC=1 for vegetation over 
-      !snow, ISFC=2 for snow over bare ground, ISFC=3 for vegetation 
-      !over bare ground, and ISFC=4 for bare ground. If a problem is 
-      !discovered, a flag is set to the index of the modelled area, and 
-      !a call to XIT is performed with an error message. Checks for 
-      !unphysical values of certain water balance variables are 
-      !performed against an accuracy limit ACCLMT, currently set to 
-      !1x10^-3 kg m-2 or m3 m-3. The overall water balance of the 
-      !subarea is checked against an accuracy limit BALLMT, currently 
-      !set to 1x10^-1 kg m-2. (These values reflect expected roundoff 
-      !errors associated with 32-bit computation.)
-      !
+      !>
+      !!This subroutine is called from CLASSW to perform water balance 
+      !!checks for each of the four subareas. The flag ISFC indicates 
+      !!which subarea is being addressed: ISFC=1 for vegetation over 
+      !!snow, ISFC=2 for snow over bare ground, ISFC=3 for vegetation 
+      !!over bare ground, and ISFC=4 for bare ground. If a problem is 
+      !!discovered, a flag is set to the index of the modelled area, and 
+      !!a call to XIT is performed with an error message. Checks for 
+      !!unphysical values of certain water balance variables are 
+      !!performed against an accuracy limit ACCLMT, currently set to 
+      !!\f$1x10^{-3} kg m^{-2}\f$ or \f$m^3 m^{-3}\f$. The overall water balance of the 
+      !!subarea is checked against an accuracy limit BALLMT, currently 
+      !!set to \f$1x10^{-1} kg m^{-2}\f$. (These values reflect expected roundoff 
+      !!errors associated with 32-bit computation.)
+      !!
       IF(ISFC.EQ.1 .OR. ISFC.EQ.3)                                  THEN      
           IPTBAD=0
           JPTBAD=0
       ENDIF
       KPTBAD=0
-      !
-      !In loop 100, for canopy-covered subareas, the intercepted rain 
-      !RAICAN and snow SNOCAN are checked to ensure that if they are 
-      !negative, they are vanishingly small. A similar check is done for 
-      !the runoff.
-      !
+      !>
+      !!In loop 100, for canopy-covered subareas, the intercepted rain 
+      !!RAICAN and snow SNOCAN are checked to ensure that if they are 
+      !!negative, they are vanishingly small. A similar check is done for 
+      !!the runoff.
+      !!
       DO 100 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ISAND(I,1).GT.-4)                   THEN
               IF(ISFC.EQ.1 .OR. ISFC.EQ.3)                   THEN      
@@ -232,17 +223,17 @@ C
       JPTBDI=0
       KPTBDI=0
       LPTBDI=0
-      !
-      !In the 150 loop, for all areas that are not continental ice 
-      !sheets (ISAND=-4), the liquid water content in each soil layer is 
-      !checked to ensure that it is not larger than the pore volume and 
-      !that it is not smaller than the minimum liquid water content 
-      !(except for rock layers). The ice content is similarly checked to 
-      !ensure that the sum of it, converted to an equivalent liquid 
-      !water content, plus the minimum water content, is not greater 
-      !than the pore volume (except for rock layers). It is also checked 
-      !to ensure that if it is negative, it is vanishingly small. 
-      !
+      !>
+      !!In the 150 loop, for all areas that are not continental ice 
+      !!sheets (ISAND=-4), the liquid water content in each soil layer is 
+      !!checked to ensure that it is not larger than the pore volume and 
+      !!that it is not smaller than the minimum liquid water content 
+      !!(except for rock layers). The ice content is similarly checked to 
+      !!ensure that the sum of it, converted to an equivalent liquid 
+      !!water content, plus the minimum water content, is not greater 
+      !!than the pore volume (except for rock layers). It is also checked 
+      !!to ensure that if it is negative, it is vanishingly small. 
+      !!
       DO 150 J=1,IG
       DO 150 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ISAND(I,1).GT.-4)                   THEN
@@ -331,18 +322,18 @@ C
       ELSE
           CANFAC=0.0
       ENDIF
-      !
-      !Finally, in loop 300, the overall water balance BAL is calculated 
-      !and compared to BALLMT. BAL is evaluated as the residual of the 
-      !precipitation, the evaporation, the runoff, the water loss term 
-      !WLOST, the change in canopy intercepted liquid and frozen water 
-      !(for vegetation-covered areas), the change in surface ponded 
-      !water, the change in snow pack and snow liquid water content (for 
-      !snow-covered areas), and the changes in the soil layer liquid and 
-      !frozen water contents. If the absolute value of BAL is greater 
-      !than BALLMT, a flag is set, all of the terms entering BAL are 
-      !printed out, and a call to XIT is performed.
-      !
+      !>
+      !!Finally, in loop 300, the overall water balance BAL is calculated 
+      !!and compared to BALLMT. BAL is evaluated as the residual of the 
+      !!precipitation, the evaporation, the runoff, the water loss term 
+      !!WLOST, the change in canopy intercepted liquid and frozen water 
+      !!(for vegetation-covered areas), the change in surface ponded 
+      !!water, the change in snow pack and snow liquid water content (for 
+      !!snow-covered areas), and the changes in the soil layer liquid and 
+      !!frozen water contents. If the absolute value of BAL is greater 
+      !!than BALLMT, a flag is set, all of the terms entering BAL are 
+      !!printed out, and a call to XIT is performed.
+      !!
       DO 300 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ZSNOW(I).GT.0.) XSNOW(I)=1.0
           IF(FI(I).GT.0. .AND. ISAND(I,1).GT.-4)                   THEN

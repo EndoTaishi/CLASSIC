@@ -1,0 +1,223 @@
+\hypertarget{phenolgy_8f}{}\section{phenolgy.\+f File Reference}
+\label{phenolgy_8f}\index{phenolgy.\+f@{phenolgy.\+f}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Phenology, Leaf Turnover \& Mortality Subroutine.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{phenolgy_8f_ad85527ae0852027749d2e1393c2a0ec9}{phenolgy} (gleafmas, bleafmas,il1,il2,tbar,thliq,wiltsm,fieldsm,ta,anveg,iday,radl, roottemp,rmatctem, stemmass, rootmass,sort,nol2pfts,fcancmx,
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Phenology, Leaf Turnover \& Mortality Subroutine. 
+
+The leaf phenology parametrization used in C\+T\+E\+M v. 1.\+0 is described in detail by \cite{Arora2005-6b1}. Changes between version 1.\+0 and 2.\+0 are limited to parameter values and the parametrization is briefly described here. There are four different leaf phenological states in which vegetation can be at a given instant\+: (i) no leaves or dormant, (ii) maximum growth, (iii) normal growth and (iv) leaf fall or harvest. P\+F\+Ts may go through only some, or all, of these phenological states depending on their deciduousness. A broadleaf cold deciduous tree, for example, transitions through all these four states in a year. In winter, the broadleaf cold deciduous trees are in the no leaves/dormant state; favourable climatic conditions in spring trigger leaf growth and the tree enters the maximum leaf growth state when all the N\+P\+P is allocated to leaves to accelerate leaf out; when the L\+A\+I reaches a threshold (described below) the tree enters the normal leaf growth state and N\+P\+P is also allocated to stem and root components; finally the arrival of autumn triggers leaf fall and the trees go into the leaf fall mode where no carbon is allocated to leaves (but it continues for roots and stems). When all the leaves have been shed, the trees go into the no leaves or dormant state again and the cycle is repeated the next year. The evergreen tree P\+F\+Ts and the grass P\+F\+Ts do not enter the leaf fall state and maintain a leaf canopy as long as environmental conditions are favourable. Although drought and cold stress cause accelerated leaf loss compared to the normal leaf turnover from these P\+F\+Ts, they do not explicitly go into the leaf fall mode where the intent is to lose all leaves in a specified amount of time.
+
+The leaf phenological state transitions are dependent upon environmental conditions. In particular, the transition from no leaves/dormant state to the maximum growth state is based on the carbon-\/gain approach. C\+T\+E\+M uses $\textit{virtual}$ leaves to assess favourable meteorological conditions for leaf out. The virtual leaves photosynthesize and respire in a manner similar to normal leaves except the carbon gain or loss is not taken into account in vegetation\textquotesingle{}s carbon balance. A positive net leaf photosynthesis rate ( $G_{canopy,net}$, Eq. Gnet\}) for the virtual leaves over seven consecutive days indicates the arrival of favourable growth conditions and triggers leaf onset and the associated transition from the no leaves/dormant state to the maximum leaf growth state, when the entire positive N\+P\+P is allocated to leaves ( $a_{fL} = 1$, $a_{fS} = a_{fR} = 0$). When L\+A\+I reaches ${LAI}_{thrs}$ then the vegetation switches to the normal growth mode and positive N\+P\+P is allocated to all three vegetation components -- leaves, stem and roots ( $a_{fL}, a_{fS}, a_{fR} > 0$). ${LAI}_{thrs}$ is calculated as \[ \label{LAI_thrs} {LAI}_{thrs} = L_\mathrm{f} \left[ {SLA}\left(\frac{C_\mathrm{S} + C_\mathrm{R}}{\eta}\right)^{1/\kappa} \right].\]
+
+The P\+F\+T-\/specific $L_\mathrm{f}$ term (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}) calculates ${LAI}_{thrs}$ to be typically between 40 and 50\textbackslash{},\{\%\} of the maximum L\+A\+I that a given amount of stem and root biomass can support (based on the terms in the square brackets and Eq. (propwoody\}). $SLA$ is the specific leaf area (Eq. sla\}). This rule for transition from a maximum to a normal growth state is also used for evergreen tree P\+F\+Ts and grass P\+F\+Ts. Similar to ${LAI}_{thrs}$, the L\+A\+I of virtual leaves is $7.5\,{\%}$ of the maximum L\+A\+I a given amount of root and stem biomass can support for tree and crop P\+F\+Ts and $2.5\,{\%}$ for grass P\+F\+Ts. In addition, the L\+A\+I of virtual leaves is constrained to be, at least, $0.3\,m^2\,m^{-2}$ for tree P\+F\+Ts and $0.2\,m^2\,m^{-2}$ for crop and grass P\+F\+Ts.
+
+The transition from the normal growth state to the leaf fall state is triggered by unfavourable environmental conditions and shorter day length. Broadleaf deciduous trees transition to the leaf fall state when either\+: (i) day length is less than $11\,h$ and the rooting zone temperature drops below $11.15\,C$ or (ii) when the rooting zone temperature drops below $8\,C$ regardless of the day length. Needleleaf deciduous tress begin leaf fall after seven consecutive days with daily mean air temperature below $-5\,C$. Leaf fall occurs over a period of 15 days. In the leaf fall state, the vegetation continues carbon allocation to its root and stem components, but not to leaves ( $a_{fL} = 0$, $a_{fS} + a_{fR} = 1$). Evergreen trees and grasses do not enter the leaf fall state and neither do the broadleaf drought deciduous trees. The implication for the latter P\+F\+T is that if the climate changes and the dry season becomes shorter, then the trees will keep their leaves on for a longer period of time since broadleaf drought deciduous trees lose leaves due to soil moisture stress (described below).
+
+The model vegetation is able to transition between the different leaf phenological states in response to changing conditions. For example, a leaf out in spring for broadleaf cold deciduous trees can be interrupted by a cold event when the vegetation goes into a leaf fall state until the return of more favourable conditions.
+
+Leaf litter generation is caused by normal turnover of leaves ( $\Omega_\mathrm{N}$, $day^{-1}$) and also due to cold ( $\Omega_\mathrm{C}$, $day^{-1}$) and drought ( $\Omega_\mathrm{D}$, $day^{-1}$) stress, both of which contribute to seasonality of L\+A\+I. For example, the leaf loss associated with drought and reduced photosynthesis during the dry season are the principal causes of the seasonality of L\+A\+I for the broadleaf drought deciduous tree P\+F\+T.
+
+The conversion of leaf carbon to leaf litter ( $D_\mathrm{L}$, $kg\,C\,m^{-2}\,day^{-1}$) is expressed as
+
+\[ \label{cltod} D_\mathrm{L} = C_\mathrm{L}[1 - \exp(-\Omega_\mathrm{N} - \Omega_\mathrm{C} - \Omega_{\mathrm{D}})],\]
+
+where ( $\Omega_{N,C,D}$, $day^{-1}$) are the leaf loss rates associated with normal turnover of leaves and the cold and drought stress. The rate of normal turnover of leaves is governed by P\+F\+T-\/specific leaf lifespan ( $\tau_\mathrm{L}$, $yr$) as $\Omega_\mathrm{N}= 1/365 \tau_\mathrm{L}$ (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}\} for P\+F\+T specific values of $\tau_\mathrm{L}$). The leaf loss rate associated with cold stress ( $\Omega_\mathrm{C}$) is calculated as
+
+\[ \label{gamma_cold} \Omega_\mathrm{C} = \Omega_{C,max}L_{cold}^3, \]
+
+where $\Omega_{C,max}$ ( $day^{-1}$, see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}) is the maximum cold stress loss rate. $L_{cold}$ is a scalar that varies between 0 and 1 as
+
+\[ \label{cldls} L_{cold} = \begin{cases} 1, \quad T_\mathrm{a} < \left(T_{cold}^{leaf} - 5\right) \\ 1 - \frac{T_\mathrm{a} - \left(T_{cold}^{leaf} - 5\right)}{5}, \\ \quad T_{cold}^{leaf} > T_\mathrm{a} > (T_{cold}^{leaf} - 5) \\ 0, \quad T_\mathrm{a} > T_{cold}^{leaf} ,\\ \end{cases} \]
+
+where $T_{cold}^{leaf}$ is a P\+F\+T-\/specific temperature threshold below which a P\+F\+T experiences damage to its leaves promoting leaf loss (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}) and $T_\mathrm{a}$ is the daily mean air temperature ( $C$). The leaf loss rate due to drought stress is calculated in a similar manner
+
+\[ \label{gamma_dry} \Omega_{\mathrm{D}} = \Omega_{\mathrm{D},max}\,(1-\phi_{root})^3, \]
+
+where $\Omega_{\mathrm{D},max}$ ( $day^{-1}$, see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}) is the maximum drought stress loss rate and $\phi_{root}$ (Eq. degsoilsat\}) is the degree of soil saturation in the rooting zone. 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{phenolgy_8f_ad85527ae0852027749d2e1393c2a0ec9}{}\index{phenolgy.\+f@{phenolgy.\+f}!phenolgy@{phenolgy}}
+\index{phenolgy@{phenolgy}!phenolgy.\+f@{phenolgy.\+f}}
+\subsubsection[{phenolgy}]{\setlength{\rightskip}{0pt plus 5cm}subroutine phenolgy (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg,icc)}]{gleafmas, }
+\item[{real, dimension(ilg,icc)}]{bleafmas, }
+\item[{integer}]{il1, }
+\item[{integer}]{il2, }
+\item[{real, dimension(ilg,ignd)}]{tbar, }
+\item[{real, dimension(ilg,ignd)}]{thliq, }
+\item[{real, dimension(ilg,ignd)}]{wiltsm, }
+\item[{real, dimension(ilg,ignd)}]{fieldsm, }
+\item[{real, dimension(ilg)}]{ta, }
+\item[{real, dimension(ilg,icc)}]{anveg, }
+\item[{integer}]{iday, }
+\item[{real, dimension(ilg)}]{radl, }
+\item[{real, dimension(ilg,icc)}]{roottemp, }
+\item[{real, dimension(ilg,icc,ignd)}]{rmatctem, }
+\item[{real, dimension(ilg,icc)}]{stemmass, }
+\item[{real, dimension(ilg,icc)}]{rootmass, }
+\item[{integer, dimension(icc)}]{sort, }
+\item[{integer, dimension(ican)}]{nol2pfts, }
+\item[{real, dimension(ilg,icc)}]{fcancmx}
+\end{DoxyParamCaption}
+)}\label{phenolgy_8f_ad85527ae0852027749d2e1393c2a0ec9}
+
+\begin{DoxyParams}{Parameters}
+{\em il1} & il1=1\\
+\hline
+{\em il2} & il2=ilg\\
+\hline
+{\em iday} & day of year\\
+\hline
+{\em sort} & index for correspondence between 9 pfts and the 12 values in parameters vectors\\
+\hline
+{\em nol2pfts} & number of level 2 ctem pfts\\
+\hline
+{\em gleafmas} & green or live leaf mass in $kg c/m^2$, for the 9 pfts\\
+\hline
+{\em bleafmas} & brown or dead leaf mass in $kg c/m^2$, for the 9 pfts\\
+\hline
+{\em ta} & air temperature, k\\
+\hline
+{\em tbar} & soil temperature, k\\
+\hline
+{\em thliq} & liquid soil moisture content in 3 soil layers\\
+\hline
+{\em anveg} & net photosynthesis rate of ctem\textquotesingle{}s pfts, umol co2/m2.\+s\\
+\hline
+{\em roottemp} & root temperature, which is a function of soil temperature of course, k.\\
+\hline
+{\em rmatctem} & fraction of roots in each soil layer for each pft\\
+\hline
+{\em stemmass} & stem mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+{\em rootmass} & root mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+{\em fcancmx} & max. fractional coverage of ctem\textquotesingle{}s 9 pfts, but this can be modified by land-\/use change, and competition between pfts\\
+\hline
+{\em fieldsm} & field capacity soil moisture content both calculated in allocate subroutine\\
+\hline
+{\em wiltsm} & wilting point soil moisture content\\
+\hline
+{\em radl} & latitude in radians \\
+\hline
+\end{DoxyParams}
+
+
+ Constants and parameters are located in \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90} 
+
+
+
+initialize required arrays to zero
+
+initialization ends 
+
+
+
+convert green leaf mass into leaf area index using specific leaf area $(sla, m^2 /kg c)$ estimated using leaf life span. see bio2str subroutine for more details.
+
+also find threshold lai as a function of stem+root biomass which is used to determine leaf status
+
+using green leaf area index (ailcg) determine the leaf status for each pft. loops 190 and 200 thus initialize lfstatus, if this this information is not passed specifically as an initialization quantity.
+
+knowing lfstatus (after initialization above or using value from from previous time step) we decide if we stay in a given leaf mode or we move to some other mode.
+
+\subsubsection*{we start with the \char`\"{}no leaves\char`\"{} mode }
+
+add one to pandays(i,j) if daily an is positive, otherwise set it to zero.
+
+if in \char`\"{}no leaves\char`\"{} mode check if an has been positive over last dayschk(j) days to move into \char`\"{}max. growth\char`\"{} mode. if not we stay in \char`\"{}no leaves\char`\"{} mode. also set the chkmode(i,j) switch to 1.
+
+find day length using day of year and latitude. this is to be used for initiating leaf offset for broad leaf dcd trees.
+
+even if pandays criteria has been satisfied do not go into max. growth mode if environmental conditions are such that they will force leaf fall or harvest mode.
+
+needle leaf dcd
+
+broad leaf dcd cld \& dry
+
+crops
+
+similar to the way we count no. of days when an is positive, we find no. of days when temperature is below -\/5 c. we need this to determine if we go into \char`\"{}leaf fall\char`\"{} mode for needle leaf dcd trees.
+
+also estimate no. of days below 8 c. we use these days to decide if its cold enough to harvest crops.
+
+\subsubsection*{if in \char`\"{}max growth\char`\"{} mode }
+
+if mode hasn\textquotesingle{}t been checked and we are in \char`\"{}max. growth\char`\"{} mode, then check if we are above pft-\/dependent lai threshold. if lai is more then this threshold we move into \char`\"{}normal growth\char`\"{} mode, otherwise we stay in \char`\"{}max growth\char`\"{} mode so that leaves can grow at their max. climate-\/dependent rate
+
+for dcd trees we also need to go into \char`\"{}leaf fall\char`\"{} mode directly from \char`\"{}max. growth\char`\"{} mode.
+
+ndl dcd
+
+bdl dcd cold
+
+bdl dcd dry
+
+\subsubsection*{if in \char`\"{}normal growth\char`\"{} mode }
+
+if in \char`\"{}normal growth\char`\"{} mode then go through every pft individually and follow set of rules to determine if we go into \char`\"{}fall/harvest\char`\"{} mode
+
+needle leaf evg
+
+needle leaf dcd
+
+broad leaf evg
+
+broad leaf dcd cold we use daylength and roottemp to initiate leaf offset
+
+broad leaf dcd dry we still use daylength and roottemp to initiate leaf offset, for the pathological cases of dry dcd trees being further away from the equator then we can imagine. other wise leaf loss will occur due to drought anyway.
+
+\char`\"{}normal growth\char`\"{} to \char`\"{}fall/harvest\char`\"{} transition for crops is based on specified lai. we harvest if lai of crops reaches a threshold. if lai doesn\textquotesingle{}t reach this threshold (say due to a bad year) we harvest anyway if it starts getting cold, otherwise we don\textquotesingle{}t harvest.
+
+\char`\"{}normal growth\char`\"{} to \char`\"{}max. growth\char`\"{} transition for grasses
+
+\subsubsection*{if in \char`\"{}fall/harvest\char`\"{} mode }
+
+grasses and evg trees do not come into this mode, because they want to stay green if possible. this mode is activated for dcd plants and crops. once in this mode dcd trees loose their leaves and crops are harvested. ndl dcd trees keep loosing their leaves at rate determined by cold stress, bdl dcd trees loose their leaves at a specified rate, and crops are harvested over a period of 15 days. dcd trees and crops stay in \char`\"{}leaf fall/harvest\char`\"{} model until all green leaves are gone at which time they switch into \char`\"{}no leaves\char`\"{} mode, and then wait for the climate to become favourable to go into \char`\"{}max. growth\char`\"{} mode
+
+check that leaf status of all vegetation types in all grid cells has been updated
+
+
+
+
+
+having decided leaf status for every pft, we now calculate normal leaf turnover, cold and drought stress mortality, and for bdl dcd plants we also calculate specified loss rate if they are in \char`\"{}leaf fall\char`\"{} mode, and for crops we calculate harvest loss, if they are in \char`\"{}harvest\char`\"{} mode.
+
+all these loss calculations will yield leaf litter in $kg c/m^2$ for the given day for all pfts
+
+normal leaf turn over
+
+for drought stress related mortality we need field capacity and wilting point soil moisture contents, which we calculated in allocate subroutine
+
+estimate (1-\/drought stress)
+
+estimate drought stress term averaged over the rooting depth for each pft
+
+using this drought stress term and our two vegetation-\/dependent parameters we find leaf loss rate associated with drought
+
+drought related leaf loss rate
+
+estimate leaf loss in $kg c/m^2$ due to drought stress
+
+similar to drgtstrs we find coldstrs for each pft. we assume that max. cold stress related leaf loss occurs when temperature is 5 c or more below pft\textquotesingle{}s threshold
+
+using this cold stress term and our two vegetation-\/dependent parameters we find leaf loss rate associated with cold cold related leaf loss rate
+
+estimate leaf loss in $kg c/m^2$ due to cold stress
+
+now that we have all types of leaf losses (due to normal turnover, cold and drought stress, and fall/harvest) we take the losses for grasses and use those to turn live green grass into dead brown grass. we then find the leaf litter from the brown grass which will then go into the litter pool.
+
+we assume life span of brown grass is 10\% that of green grass but this is an adjustable parameter.
+
+combine nrmlloss, drgtloss, and coldloss together to get total leaf litter generated, which is what we use to update gleafmass, except for grasses, for which we have alerady updated gleafmass.

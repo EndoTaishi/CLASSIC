@@ -1,3 +1,9 @@
+!>\file
+C!Purpose: Initialize subarea variables for surface water budget 
+C!calculations, and perform preliminary calculations for diagnostic 
+C!variables.
+C!
+
       SUBROUTINE WPREP(THLQCO, THLQGO, THLQCS, THLQGS, THICCO, THICGO,
      1                 THICCS, THICGS, HCPCO,  HCPGO,  HCPCS,  HCPGS,
      2                 GRKSC,  GRKSG,  GRKSCS, GRKSGS,
@@ -29,10 +35,6 @@
      R                 THPOR,  HCPS,   GRKSAT, ISAND,  DELZW,  DELZ,
      S                 ILG,    IL1,    IL2,    JL,     IG,     IGP1,
      T                 NLANDCS,NLANDGS,NLANDC, NLANDG, RADD,   SADD )
-C
-C     Purpose: Initialize subarea variables for surface water budget 
-C     calculations, and perform preliminary calculations for diagnostic 
-C     variables.
 C
 C     * AUG 25/11 - D.VERSEGHY. REFINE CALCULATION OF TEMPERATURE OF
 C     *                         LUMPED PRECIPITATION.
@@ -110,206 +112,209 @@ C
       !(Suffix CS = vegetation over snow cover; GS = bare snow cover; C
       !or CO = vegetation over ground; G or GO = bare ground.)
       !
-      REAL THLQCO(ILG,IG),THLQGO(ILG,IG),THLQCS(ILG,IG),THLQGS(ILG,IG)
-           ! Subarea volumetric liquid water content of soil layers 
-           ![m3 m-3]
+      REAL THLQCO(ILG,IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
+      REAL THLQGO(ILG,IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
+      REAL THLQCS(ILG,IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
+      REAL THLQGS(ILG,IG) !< Subarea volumetric liquid water content of soil layers \f$[m^3 m^{-3}]\f$
 C               
-      REAL THICCO(ILG,IG),THICGO(ILG,IG),THICCS(ILG,IG),THICGS(ILG,IG)
-           !Subarea volumetric frozen water content of soil layers 
-           ![m3 m-3] (theta_i)
+      REAL THICCO(ILG,IG) !<Subarea volumetric frozen water content of soil layers 
+                          !<\f$[m^3 m^{-3}] (\theta_i)\f$
+      REAL THICGO(ILG,IG) !<Subarea volumetric frozen water content of soil layers 
+                          !<\f$[m^3 m^{-3}] (\theta_i)\f$
+      REAL THICCS(ILG,IG) !<Subarea volumetric frozen water content of soil layers 
+                          !<\f$[m^3 m^{-3}] (\theta_i)\f$
+      REAL THICGS(ILG,IG) !<Subarea volumetric frozen water content of soil layers 
+                          !<\f$[m^3 m^{-3}] (\theta_i)\f$
 C              
-      REAL HCPCO (ILG,IG),HCPGO (ILG,IG),HCPCS (ILG,IG),HCPGS (ILG,IG)
-           !Subarea heat capacity of soil layers [J m-3 K-1]
+      REAL HCPCO (ILG,IG) !<Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
+      REAL HCPGO (ILG,IG) !<Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
+      REAL HCPCS (ILG,IG) !<Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
+      REAL HCPGS (ILG,IG) !<Subarea heat capacity of soil layers \f$[J m^{-3} K^{-1}]\f$
 C 
-      REAL GRKSC (ILG,IG),GRKSG (ILG,IG),GRKSCS(ILG,IG),GRKSGS(ILG,IG)
-           !Subarea saturated hydraulic conductivity [m s-1] (Ksat)
+      REAL GRKSC (ILG,IG) !<Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
+      REAL GRKSG (ILG,IG) !<Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
+      REAL GRKSCS(ILG,IG) !<Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
+      REAL GRKSGS(ILG,IG) !<Subarea saturated hydraulic conductivity \f$[m s^{-1}] (K_{sat})\f$
 C
-      REAL GFLXC (ILG,IG),GFLXG (ILG,IG),GFLXCS(ILG,IG),GFLXGS(ILG,IG)
-           !Subarea heat flux between soil layers [W m-2]
+      REAL GFLXC (ILG,IG) !<Subarea heat flux between soil layers \f$[W m^{-2}]\f$
+      REAL GFLXG (ILG,IG) !<Subarea heat flux between soil layers \f$[W m^{-2}]\f$
+      REAL GFLXCS(ILG,IG) !<Subarea heat flux between soil layers \f$[W m^{-2}]\f$
+      REAL GFLXGS(ILG,IG) !<Subarea heat flux between soil layers \f$[W m^{-2}]\f$
 C
-      REAL THLDUM(ILG,IG)   !Internal CLASSW dummy variable for soil 
-                            !frozen water [m3 m-3]
-      REAL THIDUM(ILG,IG)   !Internal CLASSW dummy variable for soil 
-                            !frozen water [m3 m-3]
-      REAL QFC   (ILG,IG)   !Water removed from soil layers by 
-                            !transpiration [kg m-2 s-1]
-      REAL HMFG  (ILG,IG)   !Energy associated with phase change of 
-                            !water in soil layers [W m-2]
+      REAL THLDUM(ILG,IG) !<Internal CLASSW dummy variable for soil frozen water \f$[m^3 m^{-3}]\f$
+      REAL THIDUM(ILG,IG) !<Internal CLASSW dummy variable for soil frozen water \f$[m^3 m^{-3}]\f$
+      REAL QFC   (ILG,IG) !<Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
+      REAL HMFG  (ILG,IG) !<Energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
 C
-      REAL THLIQX(ILG,IGP1) !Internal CLASSW work array for soil frozen 
-                            !water [m3 m-3]
-      REAL THICEX(ILG,IGP1) !Internal CLASSW work array for soil frozen 
-                            !water [m3 m-3]
+      REAL THLIQX(ILG,IGP1) !<Internal CLASSW work array for soil frozen water \f$[m^3 m^{-3}]\f$
+      REAL THICEX(ILG,IGP1) !<Internal CLASSW work array for soil frozen water \f$[m^3 m^{-3}]\f$
 C
-      REAL SPCC  (ILG),   SPCG  (ILG),   SPCCS (ILG),   SPCGS (ILG)
-           !Subarea snowfall rate [m s-1]
+      REAL SPCC  (ILG) !<Subarea snowfall rate \f$[m s^{-1}]\f$
+      REAL SPCG  (ILG) !<Subarea snowfall rate \f$[m s^{-1}]\f$
+      REAL SPCCS (ILG) !<Subarea snowfall rate \f$[m s^{-1}]\f$
+      REAL SPCGS (ILG) !<Subarea snowfall rate \f$[m s^{-1}]\f$
 C
-      REAL TSPCC (ILG),   TSPCG (ILG),   TSPCCS(ILG),   TSPCGS(ILG)
-           !Subarea snowfall temperature [K/C]
+      REAL TSPCC (ILG) !<Subarea snowfall temperature [K/C]
+      REAL TSPCG (ILG) !<Subarea snowfall temperature [K/C]
+      REAL TSPCCS(ILG) !<Subarea snowfall temperature [K/C]
+      REAL TSPCGS(ILG) !<Subarea snowfall temperature [K/C]
 C
-      REAL RPCC  (ILG),   RPCG  (ILG),   RPCCS (ILG),   RPCGS (ILG)
-           !Subarea rainfall rate [m s-1]
+      REAL RPCC  (ILG) !<Subarea rainfall rate \f$[m s^{-1}]\f$
+      REAL RPCG  (ILG) !<Subarea rainfall rate \f$[m s^{-1}]\f$
+      REAL RPCCS (ILG) !<Subarea rainfall rate \f$[m s^{-1}]\f$
+      REAL RPCGS (ILG) !<Subarea rainfall rate \f$[m s^{-1}]\f$
 C
-      REAL TRPCC (ILG),   TRPCG (ILG),   TRPCCS(ILG),   TRPCGS(ILG)
-           !Subarea rainfall temperature [K/C]
+      REAL TRPCC (ILG) !<Subarea rainfall temperature [K/C]
+      REAL TRPCG (ILG) !<Subarea rainfall temperature [K/C]
+      REAL TRPCCS(ILG) !<Subarea rainfall temperature [K/C]
+      REAL TRPCGS(ILG) !<Subarea rainfall temperature [K/C]
 C
-      REAL EVPIC (ILG),   EVPIG (ILG),   EVPICS(ILG),   EVPIGS(ILG)
-           !Subarea evapotranspiration rate going into CLASSW [m -1s ]
+      REAL EVPIC (ILG) !<Subarea evapotranspiration rate going into CLASSW \f$[m s^{-1}]\f$
+      REAL EVPIG (ILG) !<Subarea evapotranspiration rate going into CLASSW \f$[m s^{-1}]\f$
+      REAL EVPICS(ILG) !<Subarea evapotranspiration rate going into CLASSW \f$[m s^{-1}]\f$
+      REAL EVPIGS(ILG) !<Subarea evapotranspiration rate going into CLASSW \f$[m s^{-1}]\f$
 C
-      REAL ZPONDC(ILG),   ZPONDG(ILG),   ZPNDCS(ILG),   ZPNDGS(ILG)
-           !Subarea depth of surface ponded water [m]
+      REAL ZPONDC(ILG) !<Subarea depth of surface ponded water [m]
+      REAL ZPONDG(ILG) !<Subarea depth of surface ponded water [m]
+      REAL ZPNDCS(ILG) !<Subarea depth of surface ponded water [m]
+      REAL ZPNDGS(ILG) !<Subarea depth of surface ponded water [m]
 C
-      REAL XSNOWC(ILG),   XSNOWG(ILG),   XSNOCS(ILG),   XSNOGS(ILG)
-           !Subarea fractional snow coverage [ ]
+      REAL XSNOWC(ILG) !<Subarea fractional snow coverage [ ]
+      REAL XSNOWG(ILG) !<Subarea fractional snow coverage [ ]
+      REAL XSNOCS(ILG) !<Subarea fractional snow coverage [ ]
+      REAL XSNOGS(ILG) !<Subarea fractional snow coverage [ ]
 C
-      REAL ZSNOWC(ILG),   ZSNOWG(ILG),   ZSNOCS(ILG),   ZSNOGS(ILG)
-           !Subarea depth of snow pack
+      REAL ZSNOWC(ILG) !<Subarea depth of snow pack
+      REAL ZSNOWG(ILG) !<Subarea depth of snow pack
+      REAL ZSNOCS(ILG) !<Subarea depth of snow pack
+      REAL ZSNOGS(ILG) !<Subarea depth of snow pack
 C
-      REAL ALBSC (ILG),   ALBSG (ILG),   ALBSCS(ILG),   ALBSGS(ILG)
-           !Subarea snow albedo [ ]
+      REAL ALBSC (ILG) !<Subarea snow albedo [ ]
+      REAL ALBSG (ILG) !<Subarea snow albedo [ ]
+      REAL ALBSCS(ILG) !<Subarea snow albedo [ ]
+      REAL ALBSGS(ILG) !<Subarea snow albedo [ ]
 C
-      REAL RHOSC (ILG),   RHOSG (ILG)   !Subarea snow density [kg m-3]
+      REAL RHOSC (ILG) !<Subarea snow density \f$[kg m^{-3}]\f$
+      REAL RHOSG (ILG) !<Subarea snow density \f$[kg m^{-3}]\f$
 C
-      REAL HCPSC (ILG),   HCPSG (ILG),   HCPSCS(ILG),   HCPSGS(ILG)
-           !Subarea heat capacity of snow [J m-3 K-1] (Cs)
+      REAL HCPSC (ILG) !<Subarea heat capacity of snow \f$[J m^{-3} K^{-1}] (C_s)\f$
+      REAL HCPSG (ILG) !<Subarea heat capacity of snow \f$[J m^{-3} K^{-1}] (C_s)\f$
+      REAL HCPSCS(ILG) !<Subarea heat capacity of snow \f$[J m^{-3} K^{-1}] (C_s)\f$
+      REAL HCPSGS(ILG) !<Subarea heat capacity of snow \f$[J m^{-3} K^{-1}] (C_s)\f$
 C
-      REAL RUNFC (ILG),   RUNFG (ILG),   RUNFCS(ILG),   RUNFGS(ILG)
-           !Subarea total runoff [m]
+      REAL RUNFC (ILG) !<Subarea total runoff [m]
+      REAL RUNFG (ILG) !<Subarea total runoff [m]
+      REAL RUNFCS(ILG) !<Subarea total runoff [m]
+      REAL RUNFGS(ILG) !<Subarea total runoff [m]
 C
-      REAL TRUNFC(ILG),   TRUNFG(ILG),   TRNFCS(ILG),   TRNFGS(ILG)
-           !Subarea total runoff temperature [K]
+      REAL TRUNFC(ILG) !<Subarea total runoff temperature [K]
+      REAL TRUNFG(ILG) !<Subarea total runoff temperature [K]
+      REAL TRNFCS(ILG) !<Subarea total runoff temperature [K]
+      REAL TRNFGS(ILG) !<Subarea total runoff temperature [K]
 C
-      REAL TBASC (ILG),   TBASG (ILG),   TBASCS(ILG),   TBASGS(ILG)
-           !Subarea temperature of bedrock in third soil layer [C]
+      REAL TBASC (ILG) !<Subarea temperature of bedrock in third soil layer [C]
+      REAL TBASG (ILG) !<Subarea temperature of bedrock in third soil layer [C]
+      REAL TBASCS(ILG) !<Subarea temperature of bedrock in third soil layer [C]
+      REAL TBASGS(ILG) !<Subarea temperature of bedrock in third soil layer [C]
 C
 C
-      REAL SUBLC (ILG),   SUBLCS(ILG)   !Subarea sublimation rate from 
-                                        !vegetation [m s-1]
+      REAL SUBLC (ILG) !<Subarea sublimation rate from vegetation \f$[m s^{-1}]\f$
+      REAL SUBLCS(ILG) !<Subarea sublimation rate from vegetation \f$[m s^{-1}]\f$
 
-      REAL WLOSTC(ILG),   WLOSTG(ILG),    WLSTCS(ILG),   WLSTGS(ILG)
-           !Subarea residual water not met by surface stores [kg m-2]
+      REAL WLOSTC(ILG) !<Subarea residual water not met by surface stores \f$[kg m^{-2}]\f$
+      REAL WLOSTG(ILG) !<Subarea residual water not met by surface stores \f$[kg m^{-2}]\f$
+      REAL WLSTCS(ILG) !<Subarea residual water not met by surface stores \f$[kg m^{-2}]\f$
+      REAL WLSTGS(ILG) !<Subarea residual water not met by surface stores \f$[kg m^{-2}]\f$
 C   
-      REAL RAC   (ILG),   RACS  (ILG)   !Subarea liquid water on canopy 
-                                        !going into CLASSW [kg m-2]
-      REAL SNC   (ILG),   SNCS  (ILG)   !Subarea frozen water on canopy 
-                                        !going into CLASSW [kg m-2]
-      REAL TSNOWC(ILG),   TSNOWG(ILG)   !Subarea snowpack temperature 
-                                        ![K]
-      REAL OVRFLW(ILG)  !Overland flow from top of soil column [m]   
-      REAL SUBFLW(ILG)  !Interflow from sides of soil column [m]
-      REAL BASFLW(ILG)  !Base flow from bottom of soil column [m] 
-      REAL TOVRFL(ILG)  !Temperature of overland flow from top of soil 
-                        !column [K]
-      REAL TSUBFL(ILG)  !Temperature of interflow from sides of soil 
-                        !column [K]
-      REAL TBASFL(ILG)  !Temperature of base flow from bottom of soil 
-                        !column [K]
-      REAL PCFC  (ILG)  !Frozen precipitation intercepted by vegetation 
-                        ![kg m-2 s-1]
-      REAL PCLC  (ILG)  !Liquid precipitation intercepted by vegetation 
-                        ![kg m-2 s-1]
-      REAL PCPN  (ILG)  !Precipitation incident on snow pack 
-                        ![kg m-2 s-1]
-      REAL PCPG  (ILG)  !Precipitation incident on ground [kg m-2 s-1]
-      REAL QFCF  (ILG)  !Sublimation from frozen water on vegetation 
-                        ![kg m-2 s-1]
-      REAL QFCL  (ILG)  !Evaporation from liquid water on vegetation 
-                        ![kg m-2 s-1]
-      REAL QFN   (ILG)  !Sublimation from snow pack [kg m-2 s-1] 
-      REAL QFG   (ILG)  !Evaporation from ground [kg m-2 s-1]
-      REAL ROVG  (ILG)  !Liquid/frozen water runoff from vegetation to 
-                        !ground surface [kg m-2 s-1]
-      REAL ROFC  (ILG)  !Liquid/frozen water runoff from vegetation 
-                        ![kg m-2 s-1]
-      REAL ROFN  (ILG)  !Liquid water runoff from snow pack 
-                        ![kg m-2 s-1]
-      REAL TRUNOF(ILG)  !Temperature of total runoff [K] 
-      REAL DT    (ILG)  !Time stepping variable used in GRINFL/GRDRAN 
-                        ![s]
-      REAL RDUMMY(ILG)  !Dummy variable 
-      REAL ZERO  (ILG)  !Zero vector used in several subroutines [ ]
+      REAL RAC   (ILG) !<Subarea liquid water on canopy going into CLASSW \f$[kg m^{-2}]\f$
+      REAL RACS  (ILG) !<Subarea liquid water on canopy going into CLASSW \f$[kg m^{-2}]\f$
+      REAL SNC   (ILG) !<Subarea frozen water on canopy going into CLASSW \f$[kg m^{-2}]\f$
+      REAL SNCS  (ILG) !<Subarea frozen water on canopy going into CLASSW \f$[kg m^{-2}]\f$
+      REAL TSNOWC(ILG) !<Subarea snowpack temperature [K]
+      REAL TSNOWG(ILG) !<Subarea snowpack temperature [K]
+
+      REAL OVRFLW(ILG)  !<Overland flow from top of soil column [m]   
+      REAL SUBFLW(ILG)  !<Interflow from sides of soil column [m]
+      REAL BASFLW(ILG)  !<Base flow from bottom of soil column [m] 
+      REAL TOVRFL(ILG)  !<Temperature of overland flow from top of soil column [K]
+      REAL TSUBFL(ILG)  !<Temperature of interflow from sides of soil column [K]
+      REAL TBASFL(ILG)  !<Temperature of base flow from bottom of soil column [K]
+      REAL PCFC  (ILG)  !<Frozen precipitation intercepted by vegetation \f$[kg m^{-2} s^{-1}]\f$
+      REAL PCLC  (ILG)  !<Liquid precipitation intercepted by vegetation \f$[kg m^{-2} s^{-1}]\f$
+      REAL PCPN  (ILG)  !<Precipitation incident on snow pack \f$[kg m^{-2} s^{-1}]\f$
+      REAL PCPG  (ILG)  !<Precipitation incident on ground \f$[kg m^{-2} s^{-1}]\f$
+      REAL QFCF  (ILG)  !<Sublimation from frozen water on vegetation \f$[kg m^{-2} s^{-1}]\f$
+      REAL QFCL  (ILG)  !<Evaporation from liquid water on vegetation \f$[kg m^{-2} s^{-1}]\f$
+      REAL QFN   (ILG)  !<Sublimation from snow pack \f$[kg m^{-2} s^{-1}]\f$ 
+      REAL QFG   (ILG)  !<Evaporation from ground \f$[kg m^{-2} s^{-1}]\f$
+      REAL ROVG  (ILG)  !<Liquid/frozen water runoff from vegetation to ground surface \f$[kg m^{-2} s^{-1}]\f$
+      REAL ROFC  (ILG)  !<Liquid/frozen water runoff from vegetation \f$[kg m^{-2} s^{-1}]\f$
+      REAL ROFN  (ILG)  !<Liquid water runoff from snow pack \f$[kg m^{-2} s^{-1}]\f$
+      REAL TRUNOF(ILG)  !<Temperature of total runoff [K] 
+      REAL DT    (ILG)  !<Time stepping variable used in GRINFL/GRDRAN [s]
+      REAL RDUMMY(ILG)  !<Dummy variable 
+      REAL ZERO  (ILG)  !<Zero vector used in several subroutines [ ]
 C 
-      INTEGER             IZERO (ILG)   !Zero integer flag used in 
-                                        !GRINFL
+      INTEGER IZERO (ILG) !<Zero integer flag used in GRINFL
 C
 C     * INPUT ARRAYS.
 C
       !(Suffix CS = vegetation over snow cover; GS = bare snow cover; C 
       !or CO = vegetation over ground; G or GO = bare ground.)
       !
-      REAL FC    (ILG),   FG    (ILG),   FCS   (ILG),   FGS   (ILG)
-           !Subarea fractional coverage of modelled area [ ]
+      REAL FC    (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL FG    (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL FCS   (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL FGS   (ILG) !<Subarea fractional coverage of modelled area [ ]
 C
-      REAL FSVF  (ILG)  !Sky view factor of ground under vegetation 
-                        !canopy [ ]
-      REAL FSVFS (ILG)  !Sky view factor of snow under vegetation canopy 
-                        ![ ]
-      REAL RAICAN(ILG)  !Intercepted liquid water stored on canopy over 
-                        !ground [kg m-2]
-      REAL SNOCAN(ILG)  !Intercepted frozen water stored on canopy over 
-                        !ground [kg m-2]
-      REAL RAICNS(ILG)  !Intercepted liquid water stored on canopy over 
-                        !snow [kg m-2]
-      REAL SNOCNS(ILG)  !Intercepted frozen water stored on canopy over 
-                        !snow [kg m-2]
-      REAL EVAPC (ILG)  !Evaporation from vegetation over ground [m s-1] 
-      REAL EVAPCG(ILG)  !Evaporation from ground under vegetation 
-                        ![m s-1]
-      REAL EVAPG (ILG)  !Evaporation from bare ground [m s-1] 
-      REAL EVAPCS(ILG)  !Evaporation from vegetation over snow [m s-1] 
-      REAL EVPCSG(ILG)  !Evaporation from snow under vegetation [m s-1]
-      REAL EVAPGS(ILG)  !Evaporation from snow on bare ground [m s-1]
-      REAL RPCP  (ILG)  !Rainfall rate over modelled area [m s-1]   
-      REAL TRPCP (ILG)  !Rainfall temperature over modelled area [C] 
-      REAL SPCP  (ILG)  !Snowfall rate over modelled area [m s-1] 
-      REAL TSPCP (ILG)  !Snowfall temperature over modelled area [C]
-      REAL RHOSNI(ILG)  !Density of fresh snow [kg m-3] 
-      REAL ZPOND (ILG)  !Depth of ponded water on surface [m] 
-      REAL ZSNOW (ILG)  !Depth of snow pack [m] (zs) 
-      REAL ALBSNO(ILG)  !Albedo of snow [ ]
-      REAL WSNOCS(ILG)  !Liquid water content of snow pack under 
-                        !vegetation [kg m-2] (ws) 
-      REAL WSNOGS(ILG)  !Liquid water content of snow pack in bare areas 
-                        ![kg m-2] (ws)
-      REAL RHOSCS(ILG)  !Density of snow under vegetation [kg m-3] 
-                        !(rho_s)
-      REAL RHOSGS(ILG)  !Density of snow in bare areas [kg m-3] (rho_s)
-      REAL TBASE (ILG)  !Temperature of bedrock in third soil layer [K] 
-      REAL TSURX(ILG,4) !Ground surface temperature over subarea [K]
+      REAL FSVF  (ILG)  !<Sky view factor of ground under vegetation canopy [ ]
+      REAL FSVFS (ILG)  !<Sky view factor of snow under vegetation canopy [ ]
+      REAL RAICAN(ILG)  !<Intercepted liquid water stored on canopy over ground \f$[kg m^{-2}]\f$
+      REAL SNOCAN(ILG)  !<Intercepted frozen water stored on canopy over ground \f$[kg m^{-2}]\f$
+      REAL RAICNS(ILG)  !<Intercepted liquid water stored on canopy over snow \f$[kg m^{-2}]\f$
+      REAL SNOCNS(ILG)  !<Intercepted frozen water stored on canopy over snow \f$[kg m^{-2}]\f$
+      REAL EVAPC (ILG)  !<Evaporation from vegetation over ground \f$[m s^{-1}]\f$ 
+      REAL EVAPCG(ILG)  !<Evaporation from ground under vegetation \f$[m s^{-1}]\f$
+      REAL EVAPG (ILG)  !<Evaporation from bare ground \f$[m s^{-1}]\f$ 
+      REAL EVAPCS(ILG)  !<Evaporation from vegetation over snow \f$[m s^{-1}]\f$ 
+      REAL EVPCSG(ILG)  !<Evaporation from snow under vegetation \f$[m s^{-1}]\f$
+      REAL EVAPGS(ILG)  !<Evaporation from snow on bare ground \f$[m s^{-1}]\f$
+      REAL RPCP  (ILG)  !<Rainfall rate over modelled area \f$[m s^{-1}]\f$   
+      REAL TRPCP (ILG)  !,Rainfall temperature over modelled area [C] 
+      REAL SPCP  (ILG)  !<Snowfall rate over modelled area \f$[m s^{-1}]\f$ 
+      REAL TSPCP (ILG)  !<Snowfall temperature over modelled area [C]
+      REAL RHOSNI(ILG)  !<Density of fresh snow \f$[kg m^{-3}]\f$ 
+      REAL ZPOND (ILG)  !<Depth of ponded water on surface [m] 
+      REAL ZSNOW (ILG)  !<Depth of snow pack \f$[m] (z_s)\f$ 
+      REAL ALBSNO(ILG)  !<Albedo of snow [ ]
+      REAL WSNOCS(ILG)  !<Liquid water content of snow pack under vegetation \f$[kg m^{-2}] (w_s)\f$ 
+      REAL WSNOGS(ILG)  !<Liquid water content of snow pack in bare areas \f$[kg m^{-2}] (w_s)\f$
+      REAL RHOSCS(ILG)  !<Density of snow under vegetation \f$[kg m^{-3}] (\rho_s)\f$
+      REAL RHOSGS(ILG)  !<Density of snow in bare areas \f$[kg m^{-3}] (\rho_s)\f$
+      REAL TBASE (ILG)  !<Temperature of bedrock in third soil layer [K] 
+      REAL TSURX(ILG,4) !<Ground surface temperature over subarea [K]
 C
-      REAL THLIQC(ILG,IG)   !Liquid water content of soil layers under 
-                            !vegetation [m3 m-3]
-      REAL THLIQG(ILG,IG)   !Liquid water content of soil layers in bare 
-                            !areas [m3 m-3]
-      REAL THICEC(ILG,IG)   !Frozen water content of soil layers under 
-                            !vegetation [m3 m-3]
-      REAL THICEG(ILG,IG)   !Frozen water content of soil layers in bare 
-                            !areas [m3 m-3]
-      REAL TBARC (ILG,IG)   !Subarea temperatures of soil layers [C] 
-                            !(Tg)
-      REAL TBARG (ILG,IG)   !Subarea temperatures of soil layers [C] 
-                            !(Tg)
-      REAL TBARCS(ILG,IG)   !Subarea temperatures of soil layers [C] 
-                            !(Tg)
-      REAL TBARGS(ILG,IG)   !Subarea temperatures of soil layers [C] 
-                            !(Tg)
-      REAL HCPC  (ILG,IG)   !Heat capacity of soil layers under 
-                            !vegetation [J m-3 K-1]
-      REAL HCPG  (ILG,IG)   !
+      REAL THLIQC(ILG,IG) !<Liquid water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
+      REAL THLIQG(ILG,IG) !<Liquid water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
+      REAL THICEC(ILG,IG) !<Frozen water content of soil layers under vegetation \f$[m^3 m^{-3}]\f$
+      REAL THICEG(ILG,IG) !<Frozen water content of soil layers in bare areas \f$[m^3 m^{-3}]\f$
+      REAL TBARC (ILG,IG) !<Subarea temperatures of soil layers \f$[C] (T_g)\f$
+      REAL TBARG (ILG,IG) !<Subarea temperatures of soil layers \f$[C] (T_g)\f$
+      REAL TBARCS(ILG,IG) !<Subarea temperatures of soil layers \f$[C] (T_g)\f$
+      REAL TBARGS(ILG,IG) !<Subarea temperatures of soil layers \f$[C] (T_g)\f$
+      REAL HCPC  (ILG,IG) !<Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1}]\f$
+      REAL HCPG  (ILG,IG) !<
 C
 C     * SOIL INFORMATION ARRAYS.
 C
-      REAL THPOR (ILG,IG)   !Pore volume in soil layer [m3 m-3] 
-                            !(theta_p)
-      REAL HCPS  (ILG,IG)   !Heat capacity of soil material [J m-3 K-1]
-      REAL GRKSAT(ILG,IG)   !Saturated hydraulic conductivity of soil 
-                            !layers [m s-1]
-      REAL DELZZ (ILG,IG)   !Soil layer depth variable used in 
-                            !TWCALC/TMCALC [m]
-      REAL DELZW (ILG,IG)   !Permeable thickness of soil layer [m]
-      REAL DELZ  (IG)       !Overall thickness of soil layer [m]
+      REAL THPOR (ILG,IG) !<Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$
+      REAL HCPS  (ILG,IG) !<Heat capacity of soil material \f$[J m^{-3} K^{-1}]\f$
+      REAL GRKSAT(ILG,IG) !<Saturated hydraulic conductivity of soil layers \f$[m s^{-1}]\f$
+      REAL DELZZ (ILG,IG) !<Soil layer depth variable used in TWCALC/TMCALC [m]
+      REAL DELZW (ILG,IG) !<Permeable thickness of soil layer [m]
+      REAL DELZ  (IG)     !<Overall thickness of soil layer [m]
 C
-      INTEGER             ISAND (ILG,IG)    !Sand content flag
+      INTEGER ISAND (ILG,IG) !<Sand content flag
 C
 C     * INTERNAL WORK ARRAYS.
 C
@@ -317,45 +322,39 @@ C
 C                                                                                  
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
-      REAL TCW      !Thermal conductivity of water (0.57) [W m-1 K-1]
-      REAL TCICE    !Thermal conductivity of ice (2.24) [W m-1 K-1]
-      REAL TCSAND   !Thermal conductivity of sand particles (2.5) 
-                    ![W m-1 K-1]
-      REAL TCCLAY   !Thermal conductivity of fine mineral particles 
-                    !(2.5) [W m-1 K-1]
-      REAL TCOM     !Thermal conductivity of organic matter (0.25) 
-                    ![W m-1 K-1]
-      REAL TCDRYS   !Thermal conductivity of dry mineral soil (0.275) 
-                    ![W m-1 K-1]
-      REAL RHOSOL   !Density of soil mineral matter (2.65*10^3) [kg m-3]
-      REAL RHOOM    !Density of soil organic matter (1.30*10^3) [kg m-3]
-      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
-                    !(2.25*10^6) [J m-3 K-1]
-      REAL HCPOM    !Volumetric heat capacity of organic matter 
-                    !(2.50*10^6) [J m-3 K-1]
-      REAL HCPSND   !Volumetric heat capacity of sand particles 
-                    !(2.13*10^6) [J m-3 K-1]
-      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
-                    !(2.38*10^6) [J m-3 K-1]
-      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
-      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
-      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
-                    ![J kg-1 K-1]
-      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
-      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
-      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
-      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
-                    ![W m-1 K-1]
-      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
-                    ![J kg-1]
-      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
-                    ![J kg-1]
+      REAL DELT     !<Time step [s]
+      REAL TFREZ    !<Freezing point of water [K]
+      REAL TCW      !<Thermal conductivity of water \f$(0.57) [W m^{-1} K^{-1}]\f$
+      REAL TCICE    !<Thermal conductivity of ice \f$(2.24) [W m^{-1} K^{-1}]\f$
+      REAL TCSAND   !<Thermal conductivity of sand particles \f$(2.5) [W m^{-1} K^{-1}]\f$
+      REAL TCCLAY   !<Thermal conductivity of fine mineral particles 
+                    !<\f$(2.5) [W m^{-1} K^{-1}]\f$
+      REAL TCOM     !<Thermal conductivity of organic matter \f$(0.25) [W m^{-1} K^{-1}]\f$
+      REAL TCDRYS   !<Thermal conductivity of dry mineral soil \f$(0.275) [W m^{-1} K^{-1}]\f$
+      REAL RHOSOL   !<Density of soil mineral matter \f$(2.65 * 10^3) [kg m^{-3}]\f$
+      REAL RHOOM    !<Density of soil organic matter \f$(1.30 * 10^3) [kg m^{-3}]\f$
+      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) 
+                    !< [J m^{-3} K^{-1}]\f$
+      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) 
+                    !< $[J m^{-3} K^{-1}]\f$
+      REAL HCPSOL   !<Volumetric heat capacity of mineral matter 
+                    !<\f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPOM    !<Volumetric heat capacity of organic matter 
+                    !<\f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSND   !<Volumetric heat capacity of sand particles 
+                    !<\f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles 
+                    !<\f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) 
+                    !< [J kg^{-1} K^{-1}]\f$
+      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
+      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
+      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
+      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
+      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
+      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
 C
       COMMON /CLASS1/ DELT,TFREZ                                                  
       COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
@@ -364,10 +363,10 @@ C
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
-      !
-      !In the first three loops, various subarea arrays and internal 
-      !CLASSW variables are initialized.
-      ! 
+      !>
+      !!In the first three loops, various subarea arrays and internal 
+      !!CLASSW variables are initialized.
+      !! 
 C     * INITIALIZE 2-D ARRAYS.
 C
       DO 50 J=1,IG
@@ -483,26 +482,26 @@ C
 C                                                                 
 C     * PRECIPITATION DIAGNOSTICS.
 C
-          !
-          !At the end of the 100 loop, a preliminary calculation of the 
-          !precipitation diagnostics over the four subareas is carried 
-          !out, as follows:
-          !
-          !The rainfall incident on the vegetation, PCLC, is summed over 
-          !the vegetated subareas FC and FCS, minus the fraction that 
-          !falls through the gaps in the canopy (denoted by the sky view 
-          !factors FSVF and FSVFS respectively). The rainfall incident 
-          !on the snowpack PCPN is the sum of the rainfall on the snow-
-          !covered bare area FGS, and that on the snow under the gaps in 
-          !the canopy in subarea FCS. The rainfall incident on bare 
-          !ground, PCPG, is the sum of the rainfall on the snow-free 
-          !bare area FG, and that on the ground under the gaps in the 
-          !canopy in subarea FC. The snowfall incident on the 
-          !vegetation, PCFC, as in the case of rainfall, is summed over 
-          !the vegetation subareas FC and FCS, minus the fraction that 
-          !falls through the gaps in the canopy. The remaining amount is 
-          !assigned to snowfall incident on the snow pack, PCPN.
-          !
+          !>
+          !!At the end of the 100 loop, a preliminary calculation of the 
+          !!precipitation diagnostics over the four subareas is carried 
+          !!out, as follows:
+          !!
+          !!The rainfall incident on the vegetation, PCLC, is summed over 
+          !!the vegetated subareas FC and FCS, minus the fraction that 
+          !!falls through the gaps in the canopy (denoted by the sky view 
+          !!factors FSVF and FSVFS respectively). The rainfall incident 
+          !!on the snowpack PCPN is the sum of the rainfall on the snow-
+          !!covered bare area FGS, and that on the snow under the gaps in 
+          !!the canopy in subarea FCS. The rainfall incident on bare 
+          !!ground, PCPG, is the sum of the rainfall on the snow-free 
+          !!bare area FG, and that on the ground under the gaps in the 
+          !!canopy in subarea FC. The snowfall incident on the 
+          !!vegetation, PCFC, as in the case of rainfall, is summed over 
+          !!the vegetation subareas FC and FCS, minus the fraction that 
+          !!falls through the gaps in the canopy. The remaining amount is 
+          !!assigned to snowfall incident on the snow pack, PCPN.
+          !!
           IF(RPCP(I).GT.0.)                                      THEN 
               PCLC(I)=(FCS(I)*(1.0-FSVFS(I))+FC(I)*(1.0-FSVF(I)))*
      1                RPCP(I)*RHOW
@@ -517,16 +516,15 @@ C
      1                FC(I)*FSVF(I)+FG(I))*SPCP(I)*RHOSNI(I)
           ENDIF
   100 CONTINUE
-      !
-      !In loops 200 to 550, each of the four subareas is addressed in 
-      !turn. Additional variables are initialized, and an empirical 
-      !correction is applied to the saturated hydraulic conductivity in 
-      !each of the soil layers over the subarea, to account for the 
-      !viscosity of water at the layer temperature (Dingman, 2002):
-      !
-      !Ksat' = (1.7915*10^-3)*Ksat/
-      !         [(2.0319*10^-4)+(1.5883*10^-3)*exp(-Tg 0.9/22.0)]
-      !
+      !>
+      !!In loops 200 to 550, each of the four subareas is addressed in 
+      !!turn. Additional variables are initialized, and an empirical 
+      !!correction is applied to the saturated hydraulic conductivity in 
+      !!each of the soil layers over the subarea, to account for the 
+      !!viscosity of water at the layer temperature (Dingman, 2002):
+      !!
+      !!\f$K_{sat}' = (1.7915 * 10^{-3}) K_{sat} / [(2.0319 * 10^{-4})+(1.5883 * 10^{-3}) exp(-T_g^{0.9}/22.0)]\f$
+      !!
 C
 C     * RAINFALL/SNOWFALL RATES AND OTHER INITIALIZATION PROCEDURES
 C     * OVER GRID CELL SUBAREAS. DOWNWARD WATER FLUXES ARE LUMPED
@@ -554,46 +552,47 @@ C
               ENDIF                                                  
   200     CONTINUE
 C
-          !Next, a preliminary calculation of the water vapour flux 
-          !diagnostics for each subarea is carried out. Over the 
-          !vegetated subareas, first the canopy evaporative flux is 
-          !assigned to sublimation if there is snow present on the 
-          !canopy (since it is assumed that any water present exists 
-          !within or underneath the snow). Then, if the sublimation rate 
-          !is upward, it is assigned to the diagnostic variable QFCF; if 
-          !it is downward, the portion of the flux corresponding to the 
-          !canopy-covered area is assigned to QFCF and that 
-          !corresponding to the gap area to QFN. Similarly, if the 
-          !evaporation rate is upward it is assigned to the diagnostic 
-          !variable QFCL; if it is downward, the flux corresponding to 
-          !the canopy-covered area is assigned to QFCL and that 
-          !corresponding to the gap area to QFN over subarea FCS and to 
-          !QFG over subarea FC. Over the non-vegetated subareas, the 
-          !evaporation rates are assigned to QFN for subarea GS, and to 
-          !QFG for subarea G.
-          !
-          !For the purposes of the subsequent water balance calculations 
-          !done in the other CLASSW subroutines, the subarea snowfall is 
-          !lumped together with any simultaneously occurring 
-          !sublimation, and the subarea rainfall with any simultaneously 
-          !occurring evaporation. Depending on whether the sum of the 
-          !snowfall and the sublimation, and the sum of the rainfall and 
-          !the evaporation, are positive (downward) or negative 
-          !(upward), corrections are applied to the appropriate 
-          !diagnostic variables, and the snowfall/rainfall are set to 
-          !the net flux if downward and the sublimation/evaporation are 
-          !set to the net flux if upward. The smaller of the two fluxes 
-          !in the sums are set to zero.
-          !
-          !Finally, ponded water and snow pack physical characteristics 
-          !are set, including the snow heat capacity, which is 
-          !calculated from the heat capacities of ice and water HCPICE 
-          !and HCPW, the snow, ice and water densities RHOS RHOICE, and 
-          !RHOW, and the water content and depth of the snow pack WSNOW 
-          !and ZSNOW, as follows:
-          !
-          !HCPS = HCPICE*[RHOS/RHOICE] + HCPW*WSNOW/[RHOW*ZSNOW]
-          !
+          !>
+          !!Next, a preliminary calculation of the water vapour flux 
+          !!diagnostics for each subarea is carried out. Over the 
+          !!vegetated subareas, first the canopy evaporative flux is 
+          !!assigned to sublimation if there is snow present on the 
+          !!canopy (since it is assumed that any water present exists 
+          !!within or underneath the snow). Then, if the sublimation rate 
+          !!is upward, it is assigned to the diagnostic variable QFCF; if 
+          !!it is downward, the portion of the flux corresponding to the 
+          !!canopy-covered area is assigned to QFCF and that 
+          !!corresponding to the gap area to QFN. Similarly, if the 
+          !!evaporation rate is upward it is assigned to the diagnostic 
+          !!variable QFCL; if it is downward, the flux corresponding to 
+          !!the canopy-covered area is assigned to QFCL and that 
+          !!corresponding to the gap area to QFN over subarea FCS and to 
+          !!QFG over subarea FC. Over the non-vegetated subareas, the 
+          !!evaporation rates are assigned to QFN for subarea GS, and to 
+          !!QFG for subarea G.
+          !!
+          !!For the purposes of the subsequent water balance calculations 
+          !!done in the other CLASSW subroutines, the subarea snowfall is 
+          !!lumped together with any simultaneously occurring 
+          !!sublimation, and the subarea rainfall with any simultaneously 
+          !!occurring evaporation. Depending on whether the sum of the 
+          !!snowfall and the sublimation, and the sum of the rainfall and 
+          !!the evaporation, are positive (downward) or negative 
+          !!(upward), corrections are applied to the appropriate 
+          !!diagnostic variables, and the snowfall/rainfall are set to 
+          !!the net flux if downward and the sublimation/evaporation are 
+          !!set to the net flux if upward. The smaller of the two fluxes 
+          !!in the sums are set to zero.
+          !!
+          !!Finally, ponded water and snow pack physical characteristics 
+          !!are set, including the snow heat capacity, which is 
+          !!calculated from the heat capacities of ice and water \f$C_i\f$ 
+          !!and \f$C_w\f$, the snow, ice and water densities \f$\rho_s\f$ \f$\rho_i\f$, and 
+          !!\f$\rho_w\f$, and the water content and depth of the snow pack \f$w_s\f$ 
+          !!and \f$z_s\f$, as follows:
+          !!
+          !!\f$C_s = C_i [\rho_s /\rho_i] + C_w w_s /[\rho_w z_s]\f$
+          !!
           DO 250 I=IL1,IL2
               IF(FCS(I).GT.0.)                           THEN  
                   IF(SNOCNS(I).GT.0.)      THEN                                                  

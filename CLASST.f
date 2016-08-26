@@ -1,3 +1,7 @@
+!>\file
+!>Purpose: Call subroutines to perform surface energy budget calculations.
+!>
+
       SUBROUTINE CLASST (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1   THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG,
      2   GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS,  
@@ -173,109 +177,282 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,ISNOW,N,NBS,ISNOALB  
+      INTEGER NLANDCS!<Number of modelled areas that contain subareas of canopy over 
+                     !<bare ground / bare ground / canopy over snow /snow
+      INTEGER NLANDGS!<Number of modelled areas that contain subareas of canopy over 
+                     !<bare ground / bare ground / canopy over snow /snow
+      INTEGER NLANDC !<Number of modelled areas that contain subareas of canopy over 
+                     !<bare ground / bare ground / canopy over snow /snow
+      INTEGER NLANDG !<Number of modelled areas that contain subareas of canopy over 
+                     !<bare ground / bare ground / canopy over snow /snow
+      INTEGER NLANDI !<Number of modelled areas that are ice sheets [ ]
+      INTEGER ISNOW  !<
+      INTEGER N      !<
+      INTEGER NBS    !<
+      INTEGER ISNOALB!<  
 C
-      INTEGER ITC,ITCG,ITG,ILG,IL1,IL2,JL,IC,IG,IZREF,ISLFD,I,J
+      INTEGER ITC   !<Flag to select iteration scheme for canopy temperature
+      INTEGER ITCG  !<Flag to select iteration scheme for surface under canopy
+      INTEGER ITG   !<Flag to select iteration scheme for ground or snow surface
+      INTEGER ILG   !<
+      INTEGER IL1   !<
+      INTEGER IL2   !<
+      INTEGER JL    !<
+      INTEGER IC    !<
+      INTEGER IG    !<
+      INTEGER IZREF !<Flag governing treatment of surface roughness length
+      INTEGER ISLFD !<Flag governing options for surface stability functions and diagnostic calculations
+      INTEGER I,J
 C
 C     * OUTPUT FIELDS.
-C                                                                              
-      REAL TBARC (ILG,IG),TBARG (ILG,IG),TBARCS(ILG,IG),TBARGS(ILG,IG),
-     1     THLIQC(ILG,IG),THLIQG(ILG,IG),THICEC(ILG,IG),THICEG(ILG,IG),
-     2     HCPC  (ILG,IG),HCPG  (ILG,IG),TCTOPC(ILG,IG),TCBOTC(ILG,IG),
-     3     TCTOPG(ILG,IG),TCBOTG(ILG,IG),HTC   (ILG,IG),TSFSAV(ILG,4)             
-C   
-      REAL GZEROC(ILG),   GZEROG(ILG),   GZROCS(ILG),   GZROGS(ILG),              
-     1     G12C  (ILG),   G12G  (ILG),   G12CS (ILG),   G12GS (ILG),               
-     2     G23C  (ILG),   G23G  (ILG),   G23CS (ILG),   G23GS (ILG),               
-     3     QFREZC(ILG),   QFREZG(ILG),   QMELTC(ILG),   QMELTG(ILG),              
-     4     EVAPC (ILG),   EVAPCG(ILG),   EVAPG (ILG),   EVAPCS(ILG),
-     5     EVPCSG(ILG),   EVAPGS(ILG),   TCANO (ILG),   TCANS (ILG), 
-     6     RAICAN(ILG),   SNOCAN(ILG),   RAICNS(ILG),   SNOCNS(ILG),  
-     7     CHCAP (ILG),   CHCAPS(ILG),   TPONDC(ILG),   TPONDG(ILG),   
-     8     TPNDCS(ILG),   TPNDGS(ILG),   TSNOCS(ILG),   TSNOGS(ILG),
-     9     WSNOCS(ILG),   WSNOGS(ILG),   RHOSCS(ILG),   RHOSGS(ILG)   
+C                          
+      REAL ACOND (ILG) !<Diagnosed product of drag coefficient and wind speed over modelled area \f$[m s^{-1} ]\f$
+      REAL CDH   (ILG) !<Surface drag coefficient for heat \f$[ ] (C_{DH} )\f$
+      REAL CDM   (ILG) !<Surface drag coefficient for momentum \f$[ ] (C_{DM} )\f$
+      REAL CHCAP (ILG) !<Surface drag coefficient for momentum \f$[ ] (C_{DM} )\f$
+      REAL CHCAPS(ILG) !<Heat capacity of canopy over bare ground \f$[J m^{-2} K^{-1} ]\f$
+      REAL DRAG  (ILG) !<Surface drag coefficient under neutral stability [ ]
+
+      REAL EVAP  (ILG) !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
+      REAL EVAPB (ILG) !<Evaporation efficiency at ground surface [ ]
+      REAL EVAPC (ILG) !<Evaporation from vegetation over ground \f$[m s^{-1} ]\f$
+      REAL EVAPCG(ILG) !<Evaporation from ground under vegetation \f$[m s^{-1} ]\f$
+      REAL EVAPCS(ILG) !<Evaporation from vegetation over snow \f$[m s^{-1} ]\f$
+      REAL EVAPG (ILG) !<Evaporation from bare ground \f$[m s^{-1} ]\f$
+      REAL EVAPGS(ILG) !<Evaporation from snow on bare ground \f$[m s^{-1} ]\f$
+      REAL EVPCSG(ILG) !<Evaporation from snow under vegetation \f$[m s^{-1} ]\f$
+      REAL EVPPOT(ILG) !<Diagnosed potential evapotranspiration \f$[kg m^{-2} s^{-1} ] (E_p )\f$
+      REAL FLGG  (ILG) !<Diagnosed net longwave radiation at soil surface \f$[W m^{-2} ]\f$
+      REAL FLGS  (ILG) !<Diagnosed net longwave radiation at snow surface \f$[W m^{-2} ]\f$
+      REAL FLGV  (ILG) !<Diagnosed net longwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
+      REAL FSGG  (ILG) !<Diagnosed net shortwave radiation at soil surface \f$[W m^{-2} ]\f$
+      REAL FSGS  (ILG) !<Diagnosed net shortwave radiation at snow surface \f$[W m^{-2} ]\f$
+      REAL FSGV  (ILG) !<Diagnosed net shortwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
+      REAL FTEMP (ILG) !<
+      REAL FVAP  (ILG) !<
+
+      REAL G12C  (ILG) !<Subarea heat flux between first and second soil layers \f$[W m^{-2} ]\f$
+      REAL G12CS (ILG) !<Subarea heat flux between first and second soil layers \f$[W m^{-2} ]\f$
+      REAL G12G  (ILG) !<Subarea heat flux between first and second soil layers \f$[W m^{-2} ]\f$
+      REAL G12GS (ILG) !<Subarea heat flux between first and second soil layers \f$[W m^{-2} ]\f$
+      REAL G23C  (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
+      REAL G23CS (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
+      REAL G23G  (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
+      REAL G23GS (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
+      REAL GT    (ILG) !<Diagnosed effective surface black-body temperature \f$[K] (T_{0,eff} )\f$
+      REAL GTBS  (ILG) !<
+      REAL GZEROC(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL GZEROG(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL GZROCS(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL GZROGS(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+
+      REAL HBL   (ILG)    !<Height of the atmospheric boundary layer [m]
+      REAL HCPC  (ILG,IG) !<Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1} ]\f$
+      REAL HCPG  (ILG,IG) !<Heat capacity of soil layers in bare areas \f$[J m^{-3} K^{-1} ]\f$
+      REAL HEVC  (ILG)    !<Diagnosed latent heat flux on vegetation canopy \f$[W m^{-2} ]\f$
+      REAL HEVG  (ILG)    !<Diagnosed latent heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL HEVS  (ILG)    !<Diagnosed latent heat flux at snow surface \f$[W m^{-2} ]\f$
+      REAL HFSC  (ILG)    !<Diagnosed sensible heat flux on vegetation canopy \f$[W m^{-2} ]\f$
+      REAL HFSG  (ILG)    !<Diagnosed sensible heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL HFSS  (ILG)    !<Diagnosed sensible heat flux at snow surface \f$[W m^{-2} ]\f$
+      REAL HMFC  (ILG)    !<Diagnosed energy associated with phase change of water on vegetation \f$[W m^{-2} ]\f$
+      REAL HMFN  (ILG)    !<Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
+      REAL HTC   (ILG,IG) !<Diagnosed internal energy change of soil layer due to conduction 
+                          !<and/or change in mass \f$[W m^{-2} ]\f$
+      REAL HTCC  (ILG)    !<Diagnosed internal energy change of vegetation canopy due to conduction 
+                          !<and/or change in mass \f$[W m^{-2} ]\f$
+      REAL HTCS  (ILG)    !<Diagnosed internal energy change of snow pack due to conduction 
+                          !<and/or change in mass \f$[W m^{-2} ]\f$
+
+      REAL ILMO  (ILG)         !<Inverse of Monin-Obukhov roughness length \f$(m^{-1} ]\f$
+      INTEGER ITERCT(ILG,6,50) !<Counter of number of iterations required to solve surface energy balance
+                               !<for the elements of the four subareas
+
+      REAL QAC   (ILG) !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ]\f$
+      REAL QEVAP (ILG) !<Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
+      REAL QFCF  (ILG) !<Sublimation from frozen water on vegetation \f$[kg m^{-2} s^{-1} ]\f$
+      REAL QFCL  (ILG) !<Evaporation from liquid water on vegetation \f$[kg m^{-2} s^{-1} ]\f$
+
+      REAL QFREZC(ILG) !<Heat sink to be used for freezing water on ground under canopy \f$[W m^{-2} ]\f$
+      REAL QFREZG(ILG) !<Heat sink to be used for freezing water on bare ground \f$[W m^{-2} ]\f$
+      REAL QG    (ILG) !<Diagnosed surface specific humidity \f$[kg kg^{-1} ]\f$
+      REAL QLWAVG(ILG) !<Upwelling longwave radiation from land surface \f$[W m^{-2} ]\f$
+      REAL QMELTC(ILG) !<Heat to be used for melting snow under canopy \f$[W m^{-2} ]\f$
+      REAL QMELTG(ILG) !<Heat to be used for melting snow on bare ground \f$[W m^{-2} ]\f$
+      REAL QSENS (ILG) !<Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
+      REAL RAICAN(ILG) !<Intercepted liquid water stored on canopy over ground \f$[kg m^{-2} ]\f$
+      REAL RAICNS(ILG) !<Intercepted liquid water stored on canopy over snow \f$[kg m^{-2} ]\f$
+      REAL RHOSCS(ILG) !<Density of snow under vegetation \f$[kg m^{-3} ]\f$
+      REAL RHOSGS(ILG) !<Density of snow in bare areas \f$[kg m^{-3} ]\f$
+      REAL RIB   (ILG) !<
+      REAL SFCUBS(ILG) !<
+      REAL SFCVBS(ILG) !<
+      REAL SNOCAN(ILG) !<Intercepted frozen water stored on canopy over ground \f$[kg m^{-2} ]\f$
+      REAL SNOCNS(ILG) !<Intercepted frozen water stored on canopy over snow \f$[kg m^{-2} ]\f$
+      REAL SQ    (ILG) !<Diagnosed screen-level specific humidity \f$[kg kg^{-1} ]\f$
+      REAL SRH   (ILG) !<Diagnosed screen-level relative humidity [%]
+      REAL ST    (ILG) !<Diagnosed screen-level air temperature [K]
+      REAL SU    (ILG) !<Diagnosed anemometer-level zonal wind \f$[m s^{-1} ]\f$
+      REAL SV    (ILG) !<Diagnosed anemometer-level meridional wind \f$[m s^{-1} ]\f$
+
+      REAL TAC   (ILG)    !<Temperature of air within vegetation canopy [K]
+      REAL TBARC (ILG,IG) !<Subarea temperatures of soil layers [C]
+      REAL TBARCS(ILG,IG) !<Subarea temperatures of soil layers [C]
+      REAL TBARG (ILG,IG) !<Subarea temperatures of soil layers [C]
+      REAL TBARGS(ILG,IG) !<Subarea temperatures of soil layers [C]
+      REAL TCANO (ILG)    !<Temperature of canopy over ground [K]
+      REAL TCANS (ILG)    !<Temperature of canopy over snow [K]
+      REAL TCBOTC(ILG,IG) !<Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1} ]\f$
+      REAL TCBOTG(ILG,IG) !<Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1} ]\f$
+      REAL TCTOPC(ILG,IG) !<Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
+      REAL TCTOPG(ILG,IG) !<Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
+      REAL TFLUX (ILG)    !<Product of surface drag coefficient, wind speed and surface-air 
+                          !<temperature difference \f$[K m s^{-1} ]\f$
+      REAL THICEC(ILG,IG) !<Frozen water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
+      REAL THICEG(ILG,IG) !<Frozen water content of soil layers in bare areas \f$[m^3 m^{-3} ]\f$
+      REAL THLIQC(ILG,IG) !<Liquid water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
+      REAL THLIQG(ILG,IG) !<Liquid water content of soil layers in bare areas \f$[m^3 m^{-3} ]\f$
+      REAL TPONDC(ILG)    !<Subarea temperature of surface ponded water [C]
+      REAL TPONDG(ILG)    !<Subarea temperature of surface ponded water [C]
+      REAL TPNDCS(ILG)    !<Subarea temperature of surface ponded water [C]
+      REAL TPNDGS(ILG)    !<Subarea temperature of surface ponded water [C]
+      REAL TSFSAV(ILG,4)  !<Ground surface temperature over subarea [K]
+      REAL TSNOCS(ILG)    !<Temperature of snow pack under vegetation [K]
+      REAL TSNOGS(ILG)    !<Temperature of snow pack in bare areas [K]
+
+      REAL UE    (ILG)  !<Friction velocity of air \f$[m s^{-1} ]\f$
+      REAL USTARBS(ILG) !<
+      REAL WSNOCS(ILG)  !<Liquid water content of snow pack under vegetation \f$[kg m^{-2} ]\f$
+      REAL WSNOGS(ILG)  !<Liquid water content of snow pack in bare areas \f$[kg m^{-2} ]\f$
+      REAL WTABLE(ILG)  !<Depth of water table in soil [m]
+      REAL WTRG  (ILG)  !<Diagnosed residual water transferred into or out of the soil \f$[kg m^{-2} s^{-1} ]\f$
 C
-      REAL CDH   (ILG),   CDM   (ILG),   QSENS (ILG),   TFLUX (ILG),   
-     1     QEVAP (ILG),   EVAP  (ILG),                                  
-     2     EVPPOT(ILG),   ACOND (ILG),   EVAPB (ILG),   WTRG  (ILG),
-     3     QLWAVG(ILG),   GT    (ILG),   QG    (ILG), 
-     4     WTABLE(ILG),   ST    (ILG),   SU    (ILG),   SV    (ILG),  
-     5     SQ    (ILG),   SRH   (ILG),
-     5     GTBS  (ILG),   SFCUBS(ILG),   SFCVBS(ILG),  USTARBS(ILG),    
-     6     FSGV  (ILG),   FSGS  (ILG),   FSGG  (ILG),   FLGV  (ILG),
-     7     FLGS  (ILG),   FLGG  (ILG),   HFSC  (ILG),   HFSS  (ILG),
-     8     HFSG  (ILG),   HEVC  (ILG),   HEVS  (ILG),   HEVG  (ILG),  
-     9     HMFC  (ILG),   HMFN  (ILG),   HTCC  (ILG),   HTCS  (ILG),   
-     A     DRAG  (ILG),   ILMO  (ILG),   UE    (ILG),   HBL   (ILG),   
-     B     TAC   (ILG),   QAC   (ILG),   QFCF  (ILG),   QFCL  (ILG),
-     C     FTEMP (ILG),   FVAP  (ILG),   RIB   (ILG)
-C
-      INTEGER  ITERCT(ILG,6,50)
 C
 C     * INPUT FIELDS.
 C
-      REAL ZREFM (ILG),   ZREFH (ILG),   ZDIAGM(ILG),   ZDIAGH(ILG),
-     1     VPD   (ILG),   TADP  (ILG),   RHOAIR(ILG),   QSWINV(ILG),   
-     2     QSWINI(ILG),   QLWIN (ILG),   UWIND (ILG),   VWIND (ILG),   
-     3     TA    (ILG),   QA    (ILG),   PADRY (ILG),   FC    (ILG),   
-     4     FG    (ILG),   FCS   (ILG),   FGS   (ILG),   RBCOEF(ILG), 
-     5     FSVF  (ILG),   FSVFS (ILG),   PRESSG(ILG),   VMOD  (ILG),
-     6     ALVSCN(ILG),   ALIRCN(ILG),   ALVSG (ILG),   ALIRG (ILG),              
-     7     ALVSCS(ILG),   ALIRCS(ILG),   ALVSSN(ILG),   ALIRSN(ILG),  
-     8     ALVSGC(ILG),   ALIRGC(ILG),   ALVSSC(ILG),   ALIRSC(ILG),
-     9     TRVSCN(ILG),   TRIRCN(ILG),   TRVSCS(ILG),   TRIRCS(ILG),  
-     A     RC    (ILG),   RCS   (ILG),   FRAINC(ILG),   FSNOWC(ILG),  
-     B     FRAICS(ILG),   FSNOCS(ILG),   CMASSC(ILG),   CMASCS(ILG),   
-     C     DISP  (ILG),   DISPS (ILG),   
-     D     ZOMLNC(ILG),   ZOELNC(ILG),   ZOMLNG(ILG),   ZOELNG(ILG),   
-     E     ZOMLCS(ILG),   ZOELCS(ILG),   ZOMLNS(ILG),   ZOELNS(ILG),   
-     F     TPOND (ILG),   ZPOND (ILG),   TBASE (ILG),   TCAN  (ILG),   
-     G     TSNOW (ILG),   ZSNOW (ILG),   TRSNOWC(ILG),  RHOSNO(ILG),    
-     H     WSNOW (ILG),   RADJ  (ILG),   PCPR  (ILG)   
+      REAL ZREFM (ILG) !<Reference height associated with forcing wind speed [m]
+      REAL ZREFH (ILG) !<Reference height associated with forcing air temperature and humidity [m]
+      REAL ZDIAGM(ILG) !<User-specified height associated with diagnosed anemometer-level wind speed [m]
+      REAL ZDIAGH(ILG) !<User-specified height associated with diagnosed screen-level variables [m]
+      REAL VPD   (ILG) !<Vapour pressure deficit [mb]
+      REAL TADP  (ILG) !<Dew point temperature of air [K]
+      REAL RHOAIR(ILG) !<Density of air \f$[kg m^{-3} ] (\rho_a )\f$
+      REAL QSWINV(ILG) !<Visible radiation incident on horizontal surface \f$[W m^{-2} ]\f$
+      REAL QSWINI(ILG) !<Near-infrared radiation incident on horizontal surface \f$[W m^{-2} ]\f$
+      REAL QLWIN (ILG) !<Downwelling longwave radiation at bottom of atmosphere \f$[W m^{-2} ]\f$
+      REAL UWIND (ILG) !<Zonal component of wind speed \f$[m s^{-1} ] (U_a )\f$
+      REAL VWIND (ILG) !<Meridional component of wind speed \f$[m s^{-1} ] (V_a )\f$
+      REAL TA    (ILG) !<Air temperature at reference height \f$[K] (T_a )\f$
+      REAL QA    (ILG) !<Specific humidity at reference height \f$[kg kg^{-1} ]\f$
+      REAL PADRY (ILG) !<Partial pressure of dry air \f$[Pa] (p_{dry} )\f$
+      REAL FC    (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL FG    (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL FCS   (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL FGS   (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL RBCOEF(ILG) !<Parameter for calculation of leaf boundary resistance
+      REAL FSVF  (ILG) !<Sky view factor for bare ground under canopy [ ]
+      REAL FSVFS (ILG) !<Sky view factor for snow under canopy [ ]
+      REAL PRESSG(ILG) !<Surface atmospheric pressure [Pa]
+      REAL VMOD  (ILG) !<Wind speed at reference height \f$[m s^{-1} ]\f$
+      REAL ALVSCN(ILG) !<Visible/near-IR albedo of vegetation over bare ground [ ]
+      REAL ALIRCN(ILG) !<Visible/near-IR albedo of vegetation over bare ground [ ]
+      REAL ALVSG (ILG) !<Visible/near-IR albedo of open bare ground [ ]
+      REAL ALIRG (ILG) !<Visible/near-IR albedo of open bare ground [ ]
+      REAL ALVSCS(ILG) !<Visible/near-IR albedo of vegetation over snow [ ]
+      REAL ALIRCS(ILG) !<Visible/near-IR albedo of vegetation over snow [ ]
+      REAL ALVSSN(ILG) !<Visible/near-IR albedo of open snow cover [ ]
+      REAL ALIRSN(ILG) !<Visible/near-IR albedo of open snow cover [ ]
+      REAL ALVSGC(ILG) !<Visible/near-IR albedo of bare ground under vegetation [ ]
+      REAL ALIRGC(ILG) !<Visible/near-IR albedo of bare ground under vegetation [ ]
+      REAL ALVSSC(ILG) !<Visible/near-IR albedo of snow under vegetation [ ]
+      REAL ALIRSC(ILG) !<Visible/near-IR albedo of snow under vegetation [ ]
+      REAL TRVSCN(ILG) !<Visible/near-IR transmissivity of vegetation over bare ground [ ]
+      REAL TRIRCN(ILG) !<Visible/near-IR transmissivity of vegetation over bare ground [ ]
+      REAL TRVSCS(ILG) !<Visible/near-IR transmissivity of vegetation over snow [ ]
+      REAL TRIRCS(ILG) !<Visible/near-IR transmissivity of vegetation over snow [ ]
+      REAL RC    (ILG) !<Stomatal resistance of vegetation over bare ground \f$[s m^{-1} ]\f$
+      REAL RCS   (ILG) !<Stomatal resistance of vegetation over snow \f$[s m^{-1} ]\f$
+      REAL FRAINC(ILG) !<Fractional coverage of canopy by liquid water over snow-free subarea [ ]
+      REAL FSNOWC(ILG) !<Fractional coverage of canopy by frozen water over snow-free subarea [ ]
+      REAL FRAICS(ILG) !<Fractional coverage of canopy by liquid water over snow-covered subarea [ ]
+      REAL FSNOCS(ILG) !<Fractional coverage of canopy by frozen water over snow-covered subarea [ ]
+      REAL CMASSC(ILG) !<Mass of canopy over bare ground \f$[kg m^{-2} ]\f$
+      REAL CMASCS(ILG) !<Mass of canopy over snow \f$[kg m^{-2} ]\f$
+      REAL DISP  (ILG) !<Displacement height of vegetation over bare ground [m] (d)
+      REAL DISPS (ILG) !<Displacement height of vegetation over snow [m] (d)
+      REAL ZOMLNC(ILG) !<Logarithm of roughness length for momentum of vegetation over bare ground [ ]
+      REAL ZOELNC(ILG) !<Logarithm of roughness length for heat of vegetation over bare ground [ ]
+      REAL ZOMLNG(ILG) !<Logarithm of roughness length for momentum of bare ground [ ]
+      REAL ZOELNG(ILG) !<Logarithm of roughness length for heat of bare ground [ ]
+      REAL ZOMLCS(ILG) !<Logarithm of roughness length for momentum of vegetation over snow [ ]
+      REAL ZOELCS(ILG) !<Logarithm of roughness length for heat of vegetation over snow [ ]
+      REAL ZOMLNS(ILG) !<Logarithm of roughness length for momentum of snow [ ]
+      REAL ZOELNS(ILG) !<Logarithm of roughness length for heat of snow [ ]
+      REAL TPOND (ILG) !<Temperature of ponded water [K]
+      REAL ZPOND (ILG) !<Depth of ponded water on surface [m]
+      REAL TBASE (ILG) !<Temperature of bedrock in third soil layer [K]
+      REAL TCAN  (ILG) !<Vegetation canopy temperature [K]
+      REAL TSNOW (ILG) !<Snowpack temperature [K]
+      REAL ZSNOW (ILG) !<Depth of snow pack [m]
+      REAL TRSNOWC(ILG)!<
+      REAL RHOSNO(ILG) !<Density of snow \f$[kg m^{-3} ]\f$
+      REAL WSNOW (ILG) !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+      REAL RADJ  (ILG) !<Latitude of grid cell (positive north of equator) [rad] \f$(\varphi)\f$
+      REAL PCPR  (ILG) !<Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
 C                                                                       
       REAL TRSNOWG(ILG,NBS), ALSNO(ILG,NBS), FSSB(ILG,NBS)              
 C     
-      REAL TBAR  (ILG,IG),THLIQ (ILG,IG),THICE (ILG,IG)
+      REAL TBAR  (ILG,IG) !<Temperature of soil layers [K]
+      REAL THLIQ (ILG,IG) !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+      REAL THICE (ILG,IG) !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
 C
 C     * SOIL PROPERTY ARRAYS.
 C
-      REAL THPOR (ILG,IG),THLRET(ILG,IG),THLMIN(ILG,IG),
-     1     THFC  (ILG,IG),THLW  (ILG,IG),HCPS  (ILG,IG),TCS   (ILG,IG),
-     2     DELZ  (IG),    DELZW (ILG,IG),ZBOTW (ILG,IG),
-     3     FROOT (ILG,IG),FROOTS(ILG,IG)
+      REAL THPOR (ILG,IG) !<Pore volume in soil layer \f$[m^3 m^{-3} ]\f$
+      REAL THLRET(ILG,IG) !<Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ]\f$
+      REAL THLMIN(ILG,IG) !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
+      REAL THFC  (ILG,IG) !<Field capacity \f$[m^3 m^{-3} ]\f$
+      REAL THLW  (ILG,IG)
+      REAL HCPS  (ILG,IG) !<Heat capacity of soil material \f$[J m^{-3} K^{-1} ]\f$
+      REAL TCS   (ILG,IG) !<Thermal conductivity of soil particles \f$[W m^{-1} K^{-1} ]\f$
+      REAL DELZ  (IG)     !<Overall thickness of soil layer [m]
+      REAL DELZW (ILG,IG) !<Permeable thickness of soil layer [m]
+      REAL ZBOTW (ILG,IG) !<Depth to permeable bottom of soil layer [m]
+      REAL FROOT (ILG,IG)
+      REAL FROOTS(ILG,IG)
 C
-      INTEGER  ISAND (ILG,IG)
+      INTEGER  ISAND (ILG,IG) !<Sand content flag
 C
 C     * CTEM-RELATED I/O FIELDS.
 C
 
-      REAL AILCG(ILG,ICTEM)   ! GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER GROUND SUBAREA
-      REAL AILCGS(ILG,ICTEM)  ! GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER SNOW SUBAREA
-      REAL FCANC(ILG,ICTEM)   ! FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
-      REAL FCANCS(ILG,ICTEM)  ! FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
-      REAL CO2CONC(ILG)       ! ATMOS. CO2 CONC. IN PPM
-      REAL CO2I1CG(ILG,ICTEM) ! INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-      REAL CO2I1CS(ILG,ICTEM) ! SAME AS ABOVE BUT FOR SHADED LEAF
-      REAL CO2I2CG(ILG,ICTEM) ! INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-      REAL CO2I2CS(ILG,ICTEM) ! SAME AS ABOVE BUT FOR SHADED LEAF
-      REAL COSZS(ILG)         ! COSINE OF SUN'S ZENITH ANGLE
-      REAL XDIFFUS(ILG)       ! FRACTION OF DIFFUSED RADIATION
-      REAL SLAI(ILG,ICTEM)    ! STORAGE LAI. SEE PHTSYN SUBROUTINE FOR MORE DETAILS.
-      REAL RMATCTEM(ILG,ICTEM,IG) ! FRACTION OF ROOTS IN EACH SOIL LAYER FOR EACH OF CTEM's 8 PFTs
-      REAL FCANCMX(ILG,ICTEM) ! MAX. FRACTIONAL COVERAGE OF CTEM PFTs
-      REAL ANCSVEG(ILG,ICTEM) ! NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
-      REAL ANCGVEG(ILG,ICTEM) ! NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
-      REAL RMLCSVEG(ILG,ICTEM)! LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
-      REAL RMLCGVEG(ILG,ICTEM)! LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
+      REAL AILCG(ILG,ICTEM)   !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER GROUND SUBAREA
+      REAL AILCGS(ILG,ICTEM)  !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER SNOW SUBAREA
+      REAL FCANC(ILG,ICTEM)   !< FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
+      REAL FCANCS(ILG,ICTEM)  !< FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
+      REAL CO2CONC(ILG)       !< ATMOS. CO2 CONC. IN PPM
+      REAL CO2I1CG(ILG,ICTEM) !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+      REAL CO2I1CS(ILG,ICTEM) !< SAME AS ABOVE BUT FOR SHADED LEAF
+      REAL CO2I2CG(ILG,ICTEM) !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+      REAL CO2I2CS(ILG,ICTEM) !< SAME AS ABOVE BUT FOR SHADED LEAF
+      REAL COSZS(ILG)         !< COSINE OF SUN'S ZENITH ANGLE
+      REAL XDIFFUS(ILG)       !< FRACTION OF DIFFUSED RADIATION
+      REAL SLAI(ILG,ICTEM)    !< STORAGE LAI. SEE PHTSYN SUBROUTINE FOR MORE DETAILS.
+      REAL RMATCTEM(ILG,ICTEM,IG) !< FRACTION OF ROOTS IN EACH SOIL LAYER FOR EACH OF CTEM's 8 PFTs
+      REAL FCANCMX(ILG,ICTEM) !< MAX. FRACTIONAL COVERAGE OF CTEM PFTs
+      REAL ANCSVEG(ILG,ICTEM) !< NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
+      REAL ANCGVEG(ILG,ICTEM) !< NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
+      REAL RMLCSVEG(ILG,ICTEM)!< LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
+      REAL RMLCGVEG(ILG,ICTEM)!< LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
 
       REAL CFLUXCG(ILG)
       REAL CFLUXCS(ILG)
 C
-      INTEGER ICTEM           ! 8 (CTEM's PLANT FUNCTIONAL TYPES)
-      INTEGER ICTEMMOD        ! 1 FOR COUPLING TO CTEM
-      INTEGER LFSTATUS(ILG,ICTEM) ! LEAF PHENOLOGICAL STATUS (SEE PHENOLOGY)
-      REAL DAYL_MAX(ILG)      ! MAXIMUM DAYLENGTH FOR THAT LOCATION
-      REAL DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
+      INTEGER ICTEM               !< 8 (CTEM's PLANT FUNCTIONAL TYPES)
+      INTEGER ICTEMMOD            !< 1 FOR COUPLING TO CTEM
+      INTEGER LFSTATUS(ILG,ICTEM) !< LEAF PHENOLOGICAL STATUS (SEE PHENOLOGY)
+      REAL DAYL_MAX(ILG)          !< MAXIMUM DAYLENGTH FOR THAT LOCATION
+      REAL DAYL(ILG)              !< DAYLENGTH FOR THAT LOCATION
 
       INTEGER L2MAX, NOL2PFTS(IC)
 C
@@ -354,6 +531,167 @@ C
 C     * CALCULATION OF ATMOSPHERIC INPUT FIELDS REQUIRED BY CLASS FROM 
 C     * VARIABLES SUPPLIED BY GCM.
 C
+!>First, two parameters are calculated for later use in the CLASST subroutines: the corrected wind speed \f$v_a\f$ ,
+!!and the Coriolis parameter \f$f_{cor}\f$ (describing the effect of the earth’s rotation on the movement of air
+!!according to the reference frame of the earth’s surface). The wind speed correction is applied because it
+!!is assumed that air is never completely still, so \f$v_a\f$ is specified as the maximum of VMOD and a limiting
+!!lower value of \f$0.1 m s^{-1}\f$ . The Coriolis parameter is calculated from the angular velocity \f$\Omega\f$ of the earth’s
+!!rotation (7.29 x 10 -5 radians/s), and the latitude \f$\varphi\f$:
+!!\f$f_{cor} = 2 \Omega sin \varphi\f$
+!!
+!!The packing and unpacking of binary files may cause small shifts in the values of variables at certain
+!!points in the model run, so checks are performed on the depth of ponded water and on the soil liquid and
+!!frozen moisture contents to ensure that unphysical values have not occurred. If the ponded water depth
+!!is vanishingly small or less than zero, it is set to zero. If the soil liquid water content falls below the set
+!!minimum value, it is set to the minimum value. If the soil frozen water content is less than zero, it is set
+!!back to zero. If the sum of the liquid water content and frozen water content converted to an equivalent
+!!liquid amount is greater than the pore volume, both are re-normalized by the pore volume. (This
+!!treatment of frozen water is employed in recognition of the fact that water expands upon freezing and can
+!!therefore occupy a greater volume than the nominal pore volume of the soil.) The small changes in
+!!internal energy and water content of the soil layers resulting from these operations are accounted for by
+!!updating the diagnostic variables HTC and WTRG.
+!!
+!!If CLASS is being run in coupled mode with CTEM, several CTEM variables are initialized to zero.
+!!Subroutine TPREP is then called, to carry out the initialization of a number of variables and to do
+!!preparatory calculations of various parameters associated with the energy and water budget calculations.
+!!
+!!The energy budget calculations that follow are performed over the four subareas, of canopy over snow
+!!(CS), snow over ground (GS), canopy over bare ground (C) and bare ground (G). First, a counter
+!!NLANDx is defined for each subarea, containing the number of modelled areas in which the subarea
+!!occurs. The subarea calculations are only done if the relevant counter is greater than zero. A counter
+!!NLANDI is also set to the number of modelled areas that are ice sheets (indicated by ISAND = -4).
+!!(This is used later in subroutine CLASSW to toggle the call to subroutine ICEBAL.)
+!!
+!!For each subarea, the roughness lengths for momentum and heat, ZOM and ZOH, are obtained from
+!!their logarithms, and are then used to determine various height intervals in the atmosphere for subsequent
+!!calculations. These heights are derived from the input variables ZREFM and ZREFH, the reference
+!!heights corresponding to the input values of wind speed and of air temperature and humidity respectively,
+!!and ZDIAGM and ZDIAGH, the heights at which the diagnostic values of anemometer wind speed and
+!!screen level temperature and humidity are to be determined. The form of the calculations depends on the
+!!value of the flag IZREF. If IZREF = 1, the zero plane is taken to lie at the physical ground surface (as
+!!with field measurements); if IZREF = 2, the zero plane is taken to lie at the local roughness height for
+!!momentum(as with atmospheric models). The variables ZRSLDM and ZRSLDH are the height
+!!differences used in subroutine DRCOEF to express the interval between the conceptual bottom of the
+!!atmosphere and the reference heights for wind speed and for temperature and humidity respectively; the
+!!variables ZRSLFM and ZRSLFH are the corresponding height differences used in subroutine
+!!FLXSURFZ. If IZREF = 1, ZRSLDM and ZRSLDH are set to ZREFM and ZREFH minus the
+!!displacement height DISP or DISPS, and ZRSLFM and ZRSLFH are set to ZREFM and ZREFH minus
+!!the roughness length ZOM and DISP or DISPS. If IZREF = 2, ZRSLDM and ZRSLDH are set to
+!!ZREFM and ZREFH plus the roughness height ZOM, and ZRSLFM and ZRSLFH are set to ZREFM
+!!and ZREFH minus DISP or DISPS. (In the absence of a vegetation canopy, the displacement height is
+!!zero.) The variables ZDSLM and ZDSLH are the heights above the bottom of the modelled atmosphere
+!!at which the diagnostic values are to be calculated. If IZREF = 1, they are set to ZDIAGM and
+!!ZDIAGH minus ZOM; if IZREF = 2 they are simply set to ZDIAGM and ZDIAGH. At the end of the
+!!branch in the code, the ratios ZOSCLM and ZOSCLH, which are used in subroutine DRCOEF, are
+!!calculated as ZOM/ZRSLDM and ZOH/ZRSLDH respectively.
+!!
+!!Several other local parameters are also calculated. The potential temperature is the temperature that air
+!!would have if brought adiabatically (without addition or removal of heat) to a given height. The potential
+!!temperature of the air at the reference height, \f$T_{a,pot}\f$ , is calculated relative to the height at which the
+!!horizontal wind speed goes to zero, using the dry adiabatic lapse rate, \f$dT/dz = -g/c_p\f$ , where g is the
+!!acceleration due to gravity and \f$c_p\f$ is the specific heat at constant pressure:. Thus,
+!!\f$T_{a,pot} = T_a + z_{ref,h} g/c_p\f$
+!!where \f$T_a\f$ is the temperature of the air at the reference height and \f$z_{ref,h}\f$ is the height interval, equivalent to
+!!ZRSLFH defined above. If CLASS is being run coupled to an atmospheric model, i.e. if IZREF=2, the
+!!air temperature at the reference height has already been adiabatically extrapolated before being passed to
+!!CLASS. Otherwise, the correction is performed using the above equation.
+!!
+!!The virtual potential temperature of the air at the reference height, \f$T_{a,v}\f$ , is the potential temperature
+!!adjusted for the reduction in air density due to the presence of water vapour. This is applied in order to
+!!enable the use of the equation of state for dry air. \f$T_{a,v}\f$ can be approximated as:
+!!\f$T_{a,v} = T_{a,pot} [1 + 0.61 q_a ]\f$
+!!where \f$q_a\f$ is the specific humidity of the air at the reference height.
+!!
+!!The bulk Richardson number \f$Ri_B\f$ , used in the calculations of the atmospheric stability functions in
+!!subroutine DRCOEF, is formulated as:
+!!\f$Ri_B = [T_0 – T_{a,v} ] (-g z_{ref} )/(T_{a,v} v_a^2 )\f$
+!!where \f$T_0\f$ is the surface temperature. For ease of calculation later on, the factor multiplying \f$[T_0 – T_{a,v} ]\f$ on
+!!the right-hand side of the above equation is evaluated and assigned to a coefficient CRIB, using ZRSLDM
+!!for \f$z_{ref}\f$ . The drag coefficient under neutral stability, \f$C_{DN}\f$ , is expressed using basic flux-gradient analysis as:
+!!\f$C_{DN} = k^2 /[ln(z_{ref} ) – ln(z_0 )]^2\f$
+!!where k is the von Karman constant and \f$z_0\f$ is the roughness length. ZRSLDM is used for \f$z_{ref}\f$ and the
+!!logarithm of the local roughness length for \f$ln(z_0 )\f$, and the neutral drag coefficient DRAG over the
+!!modelled area is obtained as a weighted average over the four subareas.
+!!
+!!For the two subareas with canopy cover, the wind speed of the air at the canopy top, \f$v_{a,c}\f$ , is obtained by
+!!applying the classic logarithmic wind law for the wind speed v(z) at a height z:
+!!\f$kv(z)/v_* = ln[(z – d)/z_0 ]\f$
+!!where \f$v_*\f$ is the friction velocity and d is the displacement height. Thus, \f$v_{a,c}\f$ at the canopy height H can be
+!!related to v a at the reference height \f$z_{ref}\f$ as:
+!!\f$v_{a,c} = v_a [ln(H – d) – ln(z_0 )]/[ln(z_{ref} ) – ln(z_0 )]\f$
+!!
+!!The vegetation height is calculated as \f$10z_0\f$ . Local values of the temperature of the canopy air TAC and
+!!the humidity of the canopy air QAC are assigned to variables TACCS/TACCO and QACCS/QACCO
+!!respectively.
+!!
+!!At this point calls are made to a series of subroutines addressing the calculation of the energy balance
+!!components of the subarea in question. The calls are summarized in the table below.
+!!
+!!\f[
+!!\begin{tabular} { | l | l | c | c | c | c | }
+!!\hline
+!! & & CS & GS & C & G \\
+!! \hline
+!!CWCALC & Freezing/thawing of liquid/frozen water on canopy & YES & & YES & \\ \hline
+!!TNPREP & Set coefficients for temperature calculations in soil & YES & YES & YES & YES \\ \hline
+!!TSPREP & Set coefficients for temperature calculations of snow & YES & YES & & \\ \hline
+!!TSOLVC & Calculate components of canopy energy balance & YES & & YES & \\ \hline
+!!TSOLVE & Calculate components of ground or snow energy balance & & YES & & YES \\ \hline
+!!TSPOST & Heat conduction in snow pack & YES & YES & & \\ \hline
+!!TNPOST & Heat conduction in soil & YES & YES & YES & YES \\ \hline
+!!
+!!\end{tabular}
+!!\f]
+!!
+!!After these calls, various diagnostic calculations are performed. First the screen-level temperature and
+!!humidity, and the anemometer-level zonal and meridional wind speeds, are calculated. Three options are
+!!provided for doing this, indicated by the flag ISLFD. If ISLFD = 0, the simple approach used in the
+!!Canadian GCM is selected. The ratio of the square root of the surface drag coefficient for momentum,
+!!\f$C_{DM}\f$ , to that of the neutral drag coefficient \f$C_{DN}\f$ , is calculated for the screen height \f$z_s\f$ (RATFC1) and the
+!!anemometer height (RATFCA1), to give a measure of the degree of atmospheric instability. If the bulk
+!!Richardson number RIB is positive (indicating stable conditions), RATFC1 is adopted for the screen-level
+!!calculations; if RIB is negative (indicating unstable conditions), the ratio used is the minimum of the ratio
+!!of the drag coefficient for heat \f$C_{DH}\f$ to \f$C_{DN}\f$ , and \f$(z_s / z_{ref} )^{1/3}\f$ , a measure of the depth of the convection.
+!!These ratios are applied to the calculation of the screen and anemometer level variables. If the ratios are
+!!large, indicating strong coupling with the atmosphere, the screen level variables tend to the values at the
+!!reference height; if the ratio is small, they tend to the values at the surface. At the end of the loop, the
+!!CCCma subroutine SCREENRH is called to evaluate the screen-level relative humidity.
+!!
+!!If ISLFD= 1 or 2, the more rigorous calculations in subroutines SLDIAG and DIASURFZ are followed.
+!!The calculations done in SLDIAG are consistent with the modelling approach used in subroutine
+!!DRCOEF to determine the atmospheric stability functions, so when ISLFD = 1, DRCOEF and
+!!SLDIAG are called. The calculations done in DIASURFZ are consistent with the modelling approach
+!!used in subroutine FLXSURFZ for the atmospheric stability functions, so when ISLFD = 2, FLXSURFZ
+!!and DIASURFZ are called.
+!!
+!!A number of additional diagnostic variables are calculated as weighted averages over the four subareas.
+!!For the most part, these calculations are straightforward; only the calculation of the porential
+!!evapotranspiration \f$E_p\f$ (EVPPOT) involves some complexity. \f$E_p\f$ is defined as the evapotranspiration that
+!!would occur under ambient atmospheric conditions if the soil were completely saturated and the
+!!vegetation canopy were completely water-covered, i.e. if there were no surface resistances to evaporation:
+!!\f$E_p = \rho_a C_{DH} v_a [q_{0,sat} – q_a ]\f$
+!!where \f$\rho_a\f$ is the density of air and \f$q_{0,sat}\f$ is the saturated specific humidity at the surface. For the ground or
+!!snow surface \f$q_{0,sat}\f$ was calculated in subroutine TSOLVE. For the canopy, the saturated specific humidity
+!!at the canopy air temperature, \f$q_{ac,sat}\f$ , is used. This is obtained from the mixing ratio at saturation, \f$w_{ac,sat}\f$ :
+!!\f$q_{ac,sat} = w_{ac,sat} /[1 + w_{ac,sat} ]\f$
+!!
+!!The mixing ratio is a function of the saturation vapour pressure \f$e_{ac,sat}\f$ at the canopy air temperature:
+!!\f$w_{ac,sat} = 0.622 e_{ac,sat} /(p_{dry} )\f$
+!!
+!!A standard empirical equation for the saturation vapour pressure dependence on the temperature T is
+!!used:
+!!\f[e_{sat} = 611.0 exp[17.269(T – T_f )/(T – 35.86)]      T \geq T_f \f]
+!!\f[e_{sat} = 611.0 exp[21.874(T – T_f )/(T – 7.66)]       T < T_f \f]
+!!where \f$T_f\f$ is the freezing point.
+!!
+!!At the end of the code dealing with the four subareas, several more diagnostic variables are evaluated.
+!!Again, these calculations are generally straightforward. The effective black-body surface temperature \f$T_{0,eff}\f$
+!!is obtained by inverting the Stefan-Boltzmann equation:
+!!\f$L\uparrow = \sigma T_{0,eff}^4\f$
+!!where \f$L\uparrow\f$ is the outgoing longwave radiation and \f$\sigma\f$ is the Stefan-Boltzmann constant. The evaporation
+!!efficiency parameter EVAPB is calculated as the ratio of the actual evapotranspiration to the potential
+!!evapotranspiration.
+!!
       DO 50 I=IL1,IL2                                                            
           VA(I)=MAX(VMIN,VMOD(I)) 
           FCOR(I)=2.0*7.29E-5*SIN(RADJ(I))

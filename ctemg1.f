@@ -1,3 +1,6 @@
+!>\file
+C!              Canadian Terrestrial Ecosystem Model (CTEM) 
+!!
       subroutine ctemg1(  gleafmasgat,  bleafmasgat,  stemmassgat,
      a                    rootmassgat,   fcancmxgat,      zbtwgat,
      b                        dlzwgat,      sdepgat,     ailcggat,
@@ -13,8 +16,6 @@
      l           rmatcrow,rmatctemrow,     slairow,    bmasvegrow,
      m        cmasvegcrow, veghghtrow, rootdpthrow,    alvsctmrow,
      n         alirctmrow,    paicrow,    slaicrow,    FAREROT )
-c
-C              Canadian Terrestrial Ecosystem Model (CTEM) 
 c
 c     22  Jul 2013  - Add in module for parameters
 C     J. Melton

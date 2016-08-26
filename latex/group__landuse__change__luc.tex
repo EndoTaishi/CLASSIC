@@ -1,0 +1,155 @@
+\hypertarget{group__landuse__change__luc}{}\section{Landuse\+\_\+change\+\_\+luc}
+\label{group__landuse__change__luc}\index{Landuse\+\_\+change\+\_\+luc@{Landuse\+\_\+change\+\_\+luc}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Land Use Change Subroutine.  
+
+
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__landuse__change__luc_ga2c6b3a127a7a9e0357442ba402deb31b}{landuse\+\_\+change\+::luc} (il1,il2,nilg,nol2pfts,grclarea, pfcancmx, nfcancmx,iday,todfrac,yesfrac, interpol,compete,
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Land Use Change Subroutine. 
+
+The land use change (L\+U\+C) module of C\+T\+E\+M is based on \cite{Arora2010-416} and briefly described here. When the area of crop P\+F\+Ts changes, C\+T\+E\+M generates L\+U\+C emissions. In the simulation where fractional coverage of P\+F\+Ts is specified, the changes in fractional coverage of crop P\+F\+Ts are made consistent with changes in the fractional coverage of natural non-\/crop P\+F\+Ts. That is, an increase or decrease in the area of crop P\+F\+Ts is associated with a corresponding decrease or increase in the area of non-\/crop P\+F\+Ts. This approach is taken by \cite{Wang2006-he}, which allows one to reconstruct historical land cover given a spatial data set of changes in crop area over the historical period and an estimate of potential natural land cover for the pre-\/industrial period (as described in Sect. methods\}). When competition between P\+F\+Ts for space is allowed, only the fractional coverage of crop P\+F\+Ts is specified. Similar to a simulation with prescribed P\+F\+T fractions, when the area of crop P\+F\+Ts increases, the fractional coverage of non-\/crop P\+F\+Ts is decreased in proportion to their existing coverage \cite{Wang2006-he}. Alternatively, and in contrast to the simulation with prescribed P\+F\+T fractions, when the area of crop P\+F\+Ts decreases then the generated bare fraction is available for recolonization by non-\/crop P\+F\+Ts.
+
+A decrease in the area of natural non-\/crop P\+F\+Ts, associated with an increase in area of crop P\+F\+Ts, results in deforested biomass (while the term $\textit{deforested}$ implies clearing of forests, the same processes can occur in grasslands as well and is meant here to imply removal of the biomass). The deforested biomass is divided into three components\+: (i) the component that is combusted or used for fuel wood immediately after natural vegetated is deforested and which contributes to atmospheric $CO_2$, (ii) the component left as slash or used for pulp and paper products and (iii) the component that is used for long-\/lasting wood products. The fractions allocated to these three components depend on whether the P\+F\+Ts are woody or herbaceous and on their aboveground vegetation biomass density (see Table 1 of \cite{Arora2010-416}). To account for the timescales involved, the fraction allocated to slash or pulp and paper products is transferred to the model\textquotesingle{}s litter pool and the fraction allocated to long-\/lasting wood products is allocated to the model\textquotesingle{}s soil carbon pool. Land use change associated with a decrease in the area of natural vegetation thus redistributes carbon from living vegetation to dead litter and soil carbon pools and emits $CO_2$ to the atmosphere through direct burning of the deforested biomass. The net result is positive L\+U\+C carbon emissions from land to the atmosphere.
+
+When croplands are abandoned, the area of natural P\+F\+Ts increases. In simulations with prescribed fractional coverage of P\+F\+Ts this results in a decreased carbon density for all model pools as the same amount of carbon is spread over a larger fraction of the grid cell. This reduced density implies that natural vegetation is able to take up carbon as it comes into equilibrium with the driving climate and atmospheric $CO_2$ concentration. This creates the carbon sink associated with abandonment of croplands as natural vegetation grows in its place. In simulations with competition between P\+F\+Ts, the abandoned land is treated as bare ground, which is subsequently available for recolonization, as mentioned above. As natural vegetation expands into bare ground it takes up carbon, again creating the carbon sink associated with abandonment of croplands. The net result is negative L\+U\+C carbon emissions as carbon is taken from atmosphere to grow vegetation over the area that was previously a cropland. 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__landuse__change__luc_ga2c6b3a127a7a9e0357442ba402deb31b}{}\index{Landuse\+\_\+change\+\_\+luc@{Landuse\+\_\+change\+\_\+luc}!luc@{luc}}
+\index{luc@{luc}!Landuse\+\_\+change\+\_\+luc@{Landuse\+\_\+change\+\_\+luc}}
+\subsubsection[{luc}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public landuse\+\_\+change\+::luc (
+\begin{DoxyParamCaption}
+\item[{integer}]{il1, }
+\item[{integer}]{il2, }
+\item[{integer}]{nilg, }
+\item[{integer, dimension(ican)}]{nol2pfts, }
+\item[{real, dimension(nilg)}]{grclarea, }
+\item[{real, dimension(nilg,icc)}]{pfcancmx, }
+\item[{real, dimension(nilg,icc)}]{nfcancmx, }
+\item[{integer}]{iday, }
+\item[{real, dimension(nilg,icc)}]{todfrac, }
+\item[{real, dimension(nilg,icc)}]{yesfrac, }
+\item[{logical}]{interpol, }
+\item[{logical}]{compete}
+\end{DoxyParamCaption}
+)}\label{group__landuse__change__luc_ga2c6b3a127a7a9e0357442ba402deb31b}
+
+\begin{DoxyParams}{Parameters}
+{\em il1} & il1=1\\
+\hline
+{\em il2} & il2=nilg\\
+\hline
+{\em nilg} & no. of grid cells in latitude circle(this is passed in as either ilg or nlat depending on comp/mos)\\
+\hline
+{\em iday} & day of year\\
+\hline
+{\em nol2pfts} & number of level 2 pfts\\
+\hline
+{\em interpol} & if todfrac \& yesfrac are provided then interpol must be set to false so that this subroutine doesn\textquotesingle{}t do its own interpolation using pfcancmx and nfcancmx which are year end values\\
+\hline
+{\em compete} & true if the competition subroutine is on.\\
+\hline
+{\em pfcancmx} & previous max. fractional coverages of ctem\textquotesingle{}s 9 pfts.\\
+\hline
+{\em nfcancmx} & next max. fractional coverages of ctem\textquotesingle{}s 9 pfts.\\
+\hline
+{\em todfrac} & today\textquotesingle{}s fractional coverage of all pfts\\
+\hline
+{\em yesfrac} & yesterday\textquotesingle{}s fractional coverage of all pfts\\
+\hline
+{\em grclarea} & gcm grid cell area, km2 \\
+\hline
+\end{DoxyParams}
+
+
+ \subsubsection*{Constants and parameters are located in \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90} }
+
+
+
+
+
+find/use provided current and previous day\textquotesingle{}s fractional coverage if competition is on, we will adjust these later.
+
+perform interpolation
+
+use provided values but still check they are not -\/ve
+
+If competition is on, we need to adjust the other fractions for the increase/decrease in cropland as only the crops areas is now specified.
+
+check if this year\textquotesingle{}s fractional coverages have changed or not for any pft
+
+only perform the rest of the subroutine if any luc is actually taking place, otherwise exit. 
+
+ initialization
+
+initialization ends 
+
+
+
+if land use change has taken place then get fcanmxs for use by class based on the new fcancmxs
+
+check if the interpol didn\textquotesingle{}t mess up the barefrac. if so, take the extra amount from the pft with the largest area. jm apr 24 2013. but you can\textquotesingle{}t take it from crops!
+
+compete only needs minbare but it checks later.
+
+find previous day\textquotesingle{}s bare fraction using previous day\textquotesingle{}s fcancmxs
+
+check if the interpol didn\textquotesingle{}t mess up the pbarefra. if so, take the extra amount from the pft with the largest area. jm apr 24 2013. but you can\textquotesingle{}t take it from crops!
+
+based on sizes of 3 live pools and 2 dead pools we estimate the total amount of c in each grid cell.
+
+bare fractions cannot be negative
+
+find above ground biomass and treatment index for combust, paper, and furniture
+
+check if a pft\textquotesingle{}s fractional cover is increasing or decreasing
+
+check if bare fraction increases of decreases
+
+if the fractional coverage of pfts increases then spread their live \& dead biomass uniformly over the new fraction. this effectively reduces their per m2 c density.
+
+if bare fraction increases then spread its litter and soil c uniformly over the increased fraction
+
+if any of the pfts fractional coverage decreases, then we chop the aboveground biomass and treat it according to our rules (burn it, and convert it into paper and furniture). the below ground live biomass and litter of this pfts gets assimilated into litter of all pfts (uniformly spread over the whole grid cell), and soil c from the chopped off fraction of this pft, gets assimilated into soil c of all existing pfts as well.
+
+chop off above ground biomass
+
+rootmass needs to be chopped as well and all of it goes to the litter/paper pool
+
+keep adding chopped off biomass for each pft to get the total for a grid cell for diagnostics
+
+find what\textquotesingle{}s burnt, and what\textquotesingle{}s converted to paper \& furniture
+
+keep adding all this for a given grid cell
+
+litter from the chopped off fraction of the chopped off pft needs to be assimilated, and so does soil c from the chopped off fraction of the chopped pft
+
+if bare fraction decreases then chop off the litter and soil c from the decreased fraction and add it to grsumlit \& grsumsoc for spreading over the whole grid cell
+
+calculate if the chopped off biomass equals the sum of grsumcom(i), grsumpap(i) \& grsumfur(i)
+
+spread chopped off stuff uniformly over the litter and soil c pools of all existing pfts, including the bare fraction.
+
+convert the available c into density
+
+the combusted c is used to find the c flux that we can release into the atmosphere.
+
+this is flux in kg c/m2.\+day that will be emitted
+
+convert all land use change fluxes to u-\/mol co2-\/c/m2.\+sec
+
+and finally we see if the total amount of carbon is conserved
+
+total litter mass (before + input from chopped off biomass) and after must be same
+
+for conservation totcmass(i) must be equal to ntotcmas(i) plus combustion carbon losses
+
+update grid averaged vegetation biomass, and litter and soil c densities
+
+just like total amount of carbon must balance, the grid averagred densities must also balance

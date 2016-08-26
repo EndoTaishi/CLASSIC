@@ -1,3 +1,7 @@
+!>\file
+C!               Canadian Terrestrial Ecosystem Model (CTEM)
+C!                       Unmapping For Competition 
+!!
       subroutine competition_unmap( nml, ilmos, jlmos, nol2pfts,
      2                             fare_cmp,  nppveg_cmp,geremort_cmp,
      3                         intrmort_cmp,gleafmas_cmp,bleafmas_cmp,
@@ -40,10 +44,6 @@ c    ------------------- saved for intermediate above this line ------
      o                            pgleafmass )
 c    ------------------- updates above this line ---------------------
 c
-c
-C               Canadian Terrestrial Ecosystem Model (CTEM)
-C                       Unmapping For Competition 
-c
 c     23  Jul 2013  - Add in module for parameters
 C     J. Melton
 
@@ -73,223 +73,121 @@ c               is prescribed in runclassXXctem.f
 c     nmos    - max. number of mosaic tiles in each latitudinal grid cell, 
 c               which is prescribed in runclassXXctem.f
 c     ilg     - ilg=nlat*nmos
-c     nml     - total number of mosaic tiles with pft fractions larger than 1,
-c               see gatprep.f
-c     ilmos   - indices for scattering, see gatprep.f
-c     jlmos   - indices for scattering, see gatprep.f
 c     icc     - number of pfts for use by ctem, currently 10
-c     ican      - number of pfts for use by class, currently 4
+c     ican    - number of pfts for use by class, currently 4
 c
-c    inputs
-c
-c     fare_cmp    - fractional coverage of ctem's 10 pfts in each 
-c                   latitudinal grid cell
-c     nppveg_cmp  - npp for each pft type of vegetated area in each 
-c                   latitudinal grid cell
-c     geremort_cmp- growth related mortality in each latitudinal grid cell
-c     intrmort_cmp- intrinsic (age related) mortality in each latitudinal grid cell
-c     gleafmas_cmp- green leaf mass for each of the 10 ctem pfts in each 
-c                   latitudinal grid cell
-c     bleafmas_cmp- brown leaf mass for each of the 10 ctem pfts in each 
-c                   latitudinal grid cell
-c     stemmass_cmp- stem mass for each of the 10 ctem pfts in each 
-c                   latitudinal grid cell
-c     rootmass_cmp- root mass for each of the 10 ctem pfts in each 
-c                   latitudinal grid cell
-c     litrmass_cmp- litter mass for each of the 10 ctem pfts + bare, in each 
-c                   latitudinal grid cell
-c     soilcmas_cmp- soil carbon mass for each of the 10 ctem pfts + bare, in each 
-c                   latitudinal grid cell 
-c     pftexist_cmp- logical array indicating pfts exist (t) or not (f) in each 
-c                   latitudinal grid cell 
-c     lambda_cmp  - fraction of npp that is used for horizontal expansion in each 
-c                   latitudinal grid cell 
-c     bmasveg_cmp - total (gleaf + stem + root) biomass for each ctem pft, kg c/m2 in each 
-c                   latitudinal grid cell 
-c     burnvegf_cmp - fractional areas burned, for ctem pfts in each 
-c                   latitudinal grid cell 
-c     add2allo_cmp- npp kg c/m2.day in each latitudinal grid cell that is used 
-c                   for expansion and subsequently allocated to leaves, stem,  
-c                   and root via the allocation part of the model.
-c     cc,mm_cmp   - colonization rate & mortality rate in each 
-c                   latitudinal grid cell  
-c     fcanmx_cmp  - fractional coverage of class' 4 pfts in each 
-c                   latitudinal grid cell 
-c     vgbiomas_cmp- grid averaged vegetation biomass, kg c/m2
-c     gavgltms_cmp- grid averaged litter mass, kg c/m2
-c     gavgscms_cmp- grid averaged soil c mass, kg c/m2
-c     grclarea_cmp- area of the grid cell, km^2
-c
-c     ta_cmp      - mean daily temperature (k) in each latitudinal grid cell 
-c     precip_cmp  - daily precipitation (mm/day) in each latitudinal grid cell 
-c     netrad_cmp  - daily net radiation (w/m2) in each latitudinal grid cell 
-c     tcurm_cmp   - temperature of the current month (c) in each latitudinal grid cell 
-c     srpcuryr_cmp- water surplus for the current year in each latitudinal grid cell 
-c     dftcuryr_cmp- water deficit for the current year in each latitudinal grid cell 
-c     tmonth_cmp  - monthly temperatures in each latitudinal grid cell 
-c     anpcpcur_cmp- annual precipitation for current year (mm) in each latitudinal grid cell  
-c     anpecur_cmp - annual potential evaporation for current year (mm) in each 
-c                   latitudinal grid cell 
-c     gdd5cur_cmp - growing degree days above 5 c for current year in each 
-c                   latitudinal grid cell 
-c     surmncur_cmp- number of months with surplus water for current year in each 
-c                   latitudinal grid cell 
-c     defmncur_cmp- number of months with water deficit for current year in each 
-c                   latitudinal grid cell 
-c     srplscur_cmp- water surplus for the current month in each latitudinal grid cell  
-c     defctcur_cmp- water deficit for the current month in each latitudinal grid cell 
-c     twarmm_cmp  - temperature of the warmest month (c) in each latitudinal grid cell 
-c     tcoldm_cmp  - temperature of the coldest month (c) in each latitudinal grid cell 
-c     gdd5_cmp    - growing degree days above 5 c in each latitudinal grid cell 
-c     aridity_cmp - aridity index, ratio of potential evaporation to
-c                   precipitation in each latitudinal grid cell 
-c     srplsmon_cmp- number of months in a year with surplus water i.e.
-c                   precipitation more than potential evaporation in each 
-c                   latitudinal grid cell 
-c     defctmon_cmp- number of months in a year with water deficit i.e.
-c                   precipitation less than potential evaporation in each 
-c                   latitudinal grid cell 
-c     anndefct_cmp- annual water deficit (mm) in each latitudinal grid cell   
-c     annsrpls_cmp- annual water surplus (mm) in each latitudinal grid cell 
-c     annpcp_cmp  - annual precipitation (mm) in each latitudinal grid cell 
-c     dry_season_length_cmp - length of dry season (months) in each latitudional grid cell
-c     lucemcom_cmp- land use change (luc) related combustion emission losses
-c                   in each latitudional grid cell, u-mol co2/m2.sec 
-c     lucltrin_cmp- luc related inputs to litter pool, in each latitudional 
-c                   grid cell, u-mol co2/m2.sec
-c     lucsocin_cmp- luc related inputs to soil c pool, in each latitudional 
-c                   grid cell, u-mol co2/m2.sec
-c     todfrac_cmp - max. fractional coverage of ctem's 9 pfts by the end
-c                   of the dayin each latitudinal grid cell, for use by land use subroutine
-c     pfcancmx_cmp- previous year's fractional coverages of pfts in each latitudinal grid cell
-c     nfcancmx_cmp- next year's fractional coverages of pfts in each latitudinal grid cell
-c     pstemmass_cmp - stem mass from previous timestep, is value before fire. used by burntobare subroutine
-c     pgleafmass_cmp - root mass from previous timestep, is value before fire. used by burntobare subroutine
 
-
-c
-c    updates
-c 
-c     faregat - fractional coverage of each ctem pft in each mosaic tile   
-c     fcancmx - fractional coverage of ctem's 10 pfts in each mosaic 
-c     nppveg  - npp for each pft type /m2 of vegetated area [u-mol co2-c/m2.sec]
-c     geremort- growth related mortality (1/day)
-c     intrmort- intrinsic (age related) mortality (1/day)
-c     gleafmas- green leaf mass for each of the 10 ctem pfts, kg c/m2
-c     bleafmas- brown leaf mass for each of the 10 ctem pfts, kg c/m2
-c     stemmass- stem mass for each of the 10 ctem pfts, kg c/m2
-c     rootmass- root mass for each of the 10 ctem pfts, kg c/m2
-c     litrmass- litter mass for each of the 10 ctem pfts + bare, kg c/m2
-c     soilcmas- soil carbon mass for each of the 10 ctem pfts + bare, kg c/m2
-c     pftexist- logical array indicating pfts exist (t) or not (f)
-c     lambda  - fraction of npp that is used for horizontal expansion
-c     bmasveg - total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-c     burnvegf - fractional areas burned,for ctem pfts
-c     add2allo- npp kg c/m2.day that is used for expansion and
-c               subsequently allocated to leaves, stem, and root via 
-c               the allocation part of the model.
-c     cc,mm   - colonization rate & mortality rate 
-c     fcanmx  - fractional coverage of class' 4 pfts
-c     vgbiomas- grid averaged vegetation biomass, kg c/m2
-c     gavgltms- grid averaged litter mass, kg c/m2
-c     gavgscms- grid averaged soil c mass, kg c/m2
-c     lucemcom - land use change (luc) related combustion emission losses,
-c                u-mol co2/m2.sec 
-c     lucltrin - luc related inputs to litter pool, u-mol co2/m2.sec
-c     lucsocin - luc related inputs to soil c pool, u-mol co2/m2.sec
-c     todfrac  - max. fractional coverage of ctem's 9 pfts by the end
-c                of the day, for use by land use subroutine
-c     pfcancmx - previous year's fractional coverages of pfts
-c     nfcancmx - next year's fractional coverages of pfts
-c     grclarea - area of the grid cell, km^2
-c     ta      - mean daily temperature, k
-c     precip  - daily precipitation (mm/day)
-c     netrad  - daily net radiation (w/m2)
-c     tcurm   - temperature of the current month (c)
-c     srpcuryr- water surplus for the current year
-c     dftcuryr- water deficit for the current year
-c     tmonth  - monthly temperatures
-c     anpcpcur- annual precipitation for current year (mm)
-c     anpecur - annual potential evaporation for current year (mm)
-c     gdd5cur - growing degree days above 5 c for current year
-c     surmncur- number of months with surplus water for current year
-c     defmncur- number of months with water deficit for current year
-c     srplscur- water surplus for the current month 
-c     defctcur- water deficit for the current month
-c     twarmm  - temperature of the warmest month (c)
-c     tcoldm  - temperature of the coldest month (c)
-c     gdd5    - growing degree days above 5 c
-c     aridity - aridity index, ratio of potential evaporation to
-c               precipitation
-c     srplsmon- number of months in a year with surplus water i.e.
-c               precipitation more than potential evaporation
-c     defctmon- number of months in a year with water deficit i.e.
-c               precipitation less than potential evaporation
-c     anndefct- annual water deficit (mm) 
-c     annsrpls- annual water surplus (mm)
-c     annpcp  - annual precipitation (mm)
-c     dry_season_length - length of dry season (months)
-c
       use ctem_params,        only : nlat,nmos,icc, ilg, ican,iccp1
 
       implicit none
 c
-      integer i,m,l,k,mn,
-     1        nml,ilmos(ilg),jlmos(ilg),nol2pfts(ican)
+      integer i,m,l,k,mn
+      integer nml            !<total number of mosaic tiles with pft fractions larger than 1, see gatprep.f
+      integer ilmos(ilg)     !<indices for scattering, see gatprep.f
+      integer jlmos(ilg)     !<indices for scattering, see gatprep.f
+      integer nol2pfts(ican)
 c
 c--------input arrays for unmapping------------------------------------------
 c
-      real  fare_cmp(nlat,icc), nppveg_cmp(nlat,icc),
-     1      geremort_cmp(nlat,icc),intrmort_cmp(nlat,icc),
-     2      gleafmas_cmp(nlat,icc),bleafmas_cmp(nlat,icc),
-     3      stemmass_cmp(nlat,icc),rootmass_cmp(nlat,icc),
-     4      litrmass_cmp(nlat,iccp1),soilcmas_cmp(nlat,iccp1),
-     5      lambda_cmp(nlat,icc),    todfrac_cmp(nlat,icc),
-     6      bmasveg_cmp(nlat,icc),   burnvegf_cmp(nlat,icc),
-     7      add2allo_cmp(nlat,icc),  cc_cmp(nlat,icc),mm_cmp(nlat,icc),
-     8      fcanmx_cmp(nlat,ican),   grclarea_cmp(nlat),  
-     9      vgbiomas_cmp(nlat),    
-     1      gavgltms_cmp(nlat),      gavgscms_cmp(nlat),
-     2      lucemcom_cmp(nlat),  lucltrin_cmp(nlat), lucsocin_cmp(nlat),
-     3      pfcancmx_cmp(nlat,icc), nfcancmx_cmp(nlat,icc),
-     3      pstemmass_cmp(nlat,icc), pgleafmass_cmp(nlat,icc)
+      real fare_cmp(nlat,icc)      !<fractional coverage of ctem's 10 pfts in each latitudinal grid cell
+      real nppveg_cmp(nlat,icc)    !<npp for each pft type of vegetated area in each latitudinal grid cell
+      real geremort_cmp(nlat,icc)  !<growth related mortality in each latitudinal grid cell
+      real intrmort_cmp(nlat,icc)  !<intrinsic (age related) mortality in each latitudinal grid cell
+      real gleafmas_cmp(nlat,icc)  !<green leaf mass for each of the 10 ctem pfts in each latitudinal grid cell
+      real bleafmas_cmp(nlat,icc)  !<brown leaf mass for each of the 10 ctem pfts in each latitudinal grid cell
+      real stemmass_cmp(nlat,icc)  !<stem mass for each of the 10 ctem pfts in each latitudinal grid cell
+      real rootmass_cmp(nlat,icc)  !<root mass for each of the 10 ctem pfts in each latitudinal grid cell
+      real litrmass_cmp(nlat,iccp1)!<litter mass for each of the 10 ctem pfts + bare, in each latitudinal grid cell
+      real soilcmas_cmp(nlat,iccp1)!<soil carbon mass for each of the 10 ctem pfts + bare, in each latitudinal grid cell
+      real lambda_cmp(nlat,icc)    !<fraction of npp that is used for horizontal expansion in each latitudinal grid cell
+      real todfrac_cmp(nlat,icc)   !<max. fractional coverage of ctem's 9 pfts by the end of the dayin each
+                                   !<latitudinal grid cell, for use by land use subroutine
+      real bmasveg_cmp(nlat,icc)   !<total (gleaf + stem + root) biomass for each ctem pft, \f$kg c/m^2\f$ in each latitudinal grid cell
+      real burnvegf_cmp(nlat,icc)  !<fractional areas burned, for ctem pfts in each latitudinal grid cell
+      real add2allo_cmp(nlat,icc)  !<npp \f$kg c/m^2\f$.day in each latitudinal grid cell that is used for expansion and
+                                   !<subsequently allocated to leaves, stem, and root via the allocation part of the model.
+      real cc_cmp(nlat,icc)        !<colonization rate & mortality rate in each latitudinal grid cell
+      real mm_cmp(nlat,icc)        !<colonization rate & mortality rate in each latitudinal grid cell
+      real fcanmx_cmp(nlat,ican)   !<fractional coverage of class' 4 pfts in each latitudinal grid cell
+      real grclarea_cmp(nlat)      !<area of the grid cell, \f$km^2\f$
+      real vgbiomas_cmp(nlat)      !<grid averaged vegetation biomass, \f$kg c/m^2\f$
+      real gavgltms_cmp(nlat)      !<grid averaged litter mass, \f$kg c/m^2\f$
+      real gavgscms_cmp(nlat)      !<grid averaged soil c mass, \f$kg c/m^2\f$
+      real lucemcom_cmp(nlat)      !<land use change (luc) related combustion emission losses in each latitudional grid cell, u-mol co2/m2.sec
+      real lucltrin_cmp(nlat)      !<luc related inputs to litter pool, in each latitudional grid cell, u-mol co2/m2.sec
+      real lucsocin_cmp(nlat)      !<luc related inputs to soil c pool, in each latitudional grid cell, u-mol co2/m2.sec
+      real pfcancmx_cmp(nlat,icc)  !<previous year's fractional coverages of pfts in each latitudinal grid cell
+      real nfcancmx_cmp(nlat,icc)  !<next year's fractional coverages of pfts in each latitudinal grid cell
+      real pstemmass_cmp(nlat,icc) !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
+      real pgleafmass_cmp(nlat,icc)!<root mass from previous timestep, is value before fire. used by burntobare subroutine
 c
-      logical pftexist_cmp(nlat,icc)
+      logical pftexist_cmp(nlat,icc) !<logical array indicating pfts exist (t) or not (f) in each latitudinal grid cell
 c
-      real  ta_cmp(nlat),       precip_cmp(nlat),  netrad_cmp(nlat), 
-     1      tcurm_cmp(nlat),    srpcuryr_cmp(nlat),dftcuryr_cmp(nlat),
-     2      tmonth_cmp(12,nlat),anpcpcur_cmp(nlat),anpecur_cmp(nlat), 
-     3      gdd5cur_cmp(nlat),  surmncur_cmp(nlat),defmncur_cmp(nlat),
-     4      srplscur_cmp(nlat), defctcur_cmp(nlat),twarmm_cmp(nlat), 
-     5      tcoldm_cmp(nlat),   gdd5_cmp(nlat),    aridity_cmp(nlat),
-     6      srplsmon_cmp(nlat), defctmon_cmp(nlat),anndefct_cmp(nlat),
-     7      annsrpls_cmp(nlat), annpcp_cmp(nlat),
-     8      dry_season_length_cmp(nlat)
+      real ta_cmp(nlat)       !<mean daily temperature (k) in each latitudinal grid cell
+      real precip_cmp(nlat)   !<daily precipitation (mm/day) in each latitudinal grid cell
+      real netrad_cmp(nlat)   !<daily net radiation (w/m2) in each latitudinal grid cell
+      real tcurm_cmp(nlat)    !<temperature of the current month (c) in each latitudinal grid cell
+      real srpcuryr_cmp(nlat) !<water surplus for the current year in each latitudinal grid cell
+      real dftcuryr_cmp(nlat) !<water deficit for the current year in each latitudinal grid cell
+      real tmonth_cmp(12,nlat)!<monthly temperatures in each latitudinal grid cell
+      real anpcpcur_cmp(nlat) !<annual precipitation for current year (mm) in each latitudinal grid cell
+      real anpecur_cmp(nlat)  !<annual potential evaporation for current year (mm) in each latitudinal grid cell
+      real gdd5cur_cmp(nlat)  !<growing degree days above 5 c for current year in each latitudinal grid cell
+      real surmncur_cmp(nlat) !<number of months with surplus water for current year in each latitudinal grid cell
+      real defmncur_cmp(nlat) !<number of months with water deficit for current year in each latitudinal grid cell
+      real srplscur_cmp(nlat) !<water surplus for the current month in each latitudinal grid cell
+      real defctcur_cmp(nlat) !<water deficit for the current month in each latitudinal grid cell
+      real twarmm_cmp(nlat)   !<temperature of the warmest month (c) in each latitudinal grid cell
+      real tcoldm_cmp(nlat)   !<temperature of the coldest month (c) in each latitudinal grid cell
+      real gdd5_cmp(nlat)     !<growing degree days above 5 c in each latitudinal grid cell
+      real aridity_cmp(nlat)  !<aridity index, ratio of potential evaporation to precipitation in each latitudinal grid cell
+      real srplsmon_cmp(nlat) !<number of months in a year with surplus water i.e. precipitation more than
+                              !<potential evaporation in each latitudinal grid cell
+      real defctmon_cmp(nlat) !<number of months in a year with water deficit i.e. precipitation less than
+                              !<potential evaporation in each latitudinal grid cell
+      real anndefct_cmp(nlat) !<annual water deficit (mm) in each latitudinal grid cell
+      real annsrpls_cmp(nlat) !<annual water surplus (mm) in each latitudinal grid cell
+      real annpcp_cmp(nlat)   !<annual precipitation (mm) in each latitudinal grid cell
+      real dry_season_length_cmp(nlat) !<length of dry season (months) in each latitudional grid cell
 c
 c--------intermediate arrays for unmapping-----------------------------------
 c
-      real  fcancmxrow(nlat,nmos,icc), nppvegrow(nlat,nmos,icc),
-     1      geremortrow(nlat,nmos,icc),intrmortrow(nlat,nmos,icc),
-     2      gleafmasrow(nlat,nmos,icc),bleafmasrow(nlat,nmos,icc),
-     3      stemmassrow(nlat,nmos,icc),rootmassrow(nlat,nmos,icc),
-     4      litrmassrow(nlat,nmos,iccp1),soilcmasrow(nlat,nmos,iccp1),
-     5      lambdarow(nlat,nmos,icc),    todfracrow(nlat,nmos,icc),
-     6      bmasvegrow(nlat,nmos,icc),   burnvegfrow(nlat,nmos,icc),
-     7      add2allorow(nlat,nmos,icc),  ccrow(nlat,nmos,icc),
-     8      mmrow(nlat,nmos,icc),        fcanmxrow(nlat,nmos,ican),
-     9      farerow(nlat,nmos),          grclarearow(nlat,nmos),
-     1      vgbiomasrow(nlat,nmos),    
-     2      gavgltmsrow(nlat,nmos),      gavgscmsrow(nlat,nmos),
-     3      lucemcomrow(nlat,nmos),      lucltrinrow(nlat,nmos),
-     4      lucsocinrow(nlat,nmos),
-     5      pfcancmxrow(nlat,nmos,icc), nfcancmxrow(nlat,nmos,icc),
-     5      pstemmassrow(nlat,nmos,icc), pgleafmassrow(nlat,nmos,icc)
+      real fcancmxrow(nlat,nmos,icc)
+      real nppvegrow(nlat,nmos,icc)
+      real geremortrow(nlat,nmos,icc)
+      real intrmortrow(nlat,nmos,icc)
+      real gleafmasrow(nlat,nmos,icc)
+      real bleafmasrow(nlat,nmos,icc)
+      real stemmassrow(nlat,nmos,icc)
+      real rootmassrow(nlat,nmos,icc)
+      real litrmassrow(nlat,nmos,iccp1)
+      real soilcmasrow(nlat,nmos,iccp1)
+      real lambdarow(nlat,nmos,icc)
+      real todfracrow(nlat,nmos,icc)
+      real bmasvegrow(nlat,nmos,icc)
+      real burnvegfrow(nlat,nmos,icc)
+      real add2allorow(nlat,nmos,icc)
+      real ccrow(nlat,nmos,icc)
+      real mmrow(nlat,nmos,icc)
+      real fcanmxrow(nlat,nmos,ican)
+      real farerow(nlat,nmos)
+      real grclarearow(nlat,nmos)
+      real vgbiomasrow(nlat,nmos)
+      real gavgltmsrow(nlat,nmos)
+      real gavgscmsrow(nlat,nmos)
+      real lucemcomrow(nlat,nmos)
+      real lucltrinrow(nlat,nmos)
+      real lucsocinrow(nlat,nmos)
+      real pfcancmxrow(nlat,nmos,icc)
+      real nfcancmxrow(nlat,nmos,icc)
+      real pstemmassrow(nlat,nmos,icc)
+      real pgleafmassrow(nlat,nmos,icc)
 c
       logical pftexistrow(nlat,nmos,icc)      
 c
 c--------these intermediate arrays were transferred from mapping------------\\
 c
-      real  netradrow(nlat,nmos)
+      real netradrow(nlat,nmos)
 c
 c---------------------------------------------------------------------------//
 c
@@ -309,58 +207,92 @@ c
 c
 c--------updated arrays after unmapping--------------------------------------
 c
-      real  fcancmx(ilg,icc), faregat(ilg),
-     1      nppveg(ilg,icc),  geremort(ilg,icc),  
-     2      intrmort(ilg,icc),gleafmas(ilg,icc),
-     3      bleafmas(ilg,icc),stemmass(ilg,icc),
-     4      rootmass(ilg,icc),litrmass(ilg,iccp1),
-     5      soilcmas(ilg,iccp1),
-     6      lambda(ilg,icc),  todfrac(ilg,icc),
-     7      bmasveg(ilg,icc), burnvegf(ilg,icc),
-     8      add2allo(ilg,icc),cc(ilg,icc),mm(ilg,icc),
-     9      fcanmx(ilg,ican),   
-     1      vgbiomas(ilg),    gavgltms(ilg),
-     2      gavgscms(ilg),  grclarea(ilg),
-     3      lucemcom(ilg),  lucltrin(ilg), lucsocin(ilg),
-     4      pfcancmx(ilg,icc), nfcancmx(ilg,icc),
-     4      pstemmass(ilg,icc), pgleafmass(ilg,icc)
+      real fcancmx(ilg,icc)   !<fractional coverage of ctem's 10 pfts in each mosaic
+      real faregat(ilg)       !<fractional coverage of each ctem pft in each mosaic tile
+      real nppveg(ilg,icc)    !<npp for each pft type /m2 of vegetated area [u-mol co2-c/m2.sec]
+      real geremort(ilg,icc)  !<growth related mortality (1/day)
+      real intrmort(ilg,icc)  !<intrinsic (age related) mortality (1/day)
+      real gleafmas(ilg,icc)  !<green leaf mass for each of the 10 ctem pfts, \f$kg c/m^2\f$
+      real bleafmas(ilg,icc)  !<brown leaf mass for each of the 10 ctem pfts, \f$kg c/m^2\f$
+      real stemmass(ilg,icc)  !<stem mass for each of the 10 ctem pfts, \f$kg c/m^2\f$
+      real rootmass(ilg,icc)  !<root mass for each of the 10 ctem pfts, \f$kg c/m^2\f$
+      real litrmass(ilg,iccp1)!<litter mass for each of the 10 ctem pfts + bare, \f$kg c/m^2\f$
+      real soilcmas(ilg,iccp1)!<soil carbon mass for each of the 10 ctem pfts + bare, \f$kg c/m^2\f$
+      real lambda(ilg,icc)    !<fraction of npp that is used for horizontal expansion
+      real todfrac(ilg,icc)   !<max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine
+      real bmasveg(ilg,icc)   !<total (gleaf + stem + root) biomass for each ctem pft, \f$kg c/m^2\f$
+      real burnvegf(ilg,icc)  !<fractional areas burned,for ctem pfts
+      real add2allo(ilg,icc)  !<npp \f$kg c/m^2\f$.day that is used for expansion and subsequently allocated to leaves,
+                              !<stem, and root via the allocation part of the model.
+      real cc(ilg,icc)        !<colonization rate & mortality rate
+      real mm(ilg,icc)        !<colonization rate & mortality rate
+      real fcanmx(ilg,ican)   !<fractional coverage of class' 4 pfts
+      real vgbiomas(ilg)      !<grid averaged vegetation biomass, \f$kg c/m^2\f$
+      real gavgltms(ilg)      !<grid averaged litter mass, \f$kg c/m^2\f$
+      real gavgscms(ilg)      !<grid averaged soil c mass, \f$kg c/m^2\f$
+      real grclarea(ilg)      !<area of the grid cell, \f$km^2\f$
+      real lucemcom(ilg)      !<land use change (luc) related combustion emission losses, u-mol co2/m2.sec
+      real lucltrin(ilg)      !<luc related inputs to litter pool, u-mol co2/m2.sec
+      real lucsocin(ilg)      !<luc related inputs to soil c pool, u-mol co2/m2.sec
+      real pfcancmx(ilg,icc)  !<previous year's fractional coverages of pfts
+      real nfcancmx(ilg,icc)  !<next year's fractional coverages of pfts
+      real pstemmass(ilg,icc) !<
+      real pgleafmass(ilg,icc)!<
 c
-      logical pftexist(ilg,icc)
+      logical pftexist(ilg,icc) !<logical array indicating pfts exist (t) or not (f)
 c
-      real  ta(ilg),        precip(ilg),   netrad(ilg),
-     1      tcurm(ilg),     srpcuryr(ilg), dftcuryr(ilg),
-     2      tmonth(12,ilg), anpcpcur(ilg), anpecur(ilg),
-     3      gdd5cur(ilg),   surmncur(ilg), defmncur(ilg),
-     4      srplscur(ilg),  defctcur(ilg), twarmm(ilg),
-     5      tcoldm(ilg),    gdd5(ilg),     aridity(ilg),
-     6      srplsmon(ilg),  defctmon(ilg), anndefct(ilg),
-     7      annsrpls(ilg),  annpcp(ilg),
-     8      dry_season_length(ilg) 
+      real ta(ilg)       !<mean daily temperature, k
+      real precip(ilg)   !<daily precipitation (mm/day)
+      real netrad(ilg)   !<daily net radiation (w/m2)
+      real tcurm(ilg)    !<temperature of the current month (c)
+      real srpcuryr(ilg) !<water surplus for the current year
+      real dftcuryr(ilg) !<water deficit for the current year
+      real tmonth(12,ilg)!<monthly temperatures
+      real anpcpcur(ilg) !<annual precipitation for current year (mm)
+      real anpecur(ilg)  !<annual potential evaporation for current year (mm)
+      real gdd5cur(ilg)  !<growing degree days above 5 c for current year
+      real surmncur(ilg) !<number of months with surplus water for current year
+      real defmncur(ilg) !<number of months with water deficit for current year
+      real srplscur(ilg) !<water surplus for the current month
+      real defctcur(ilg) !<water deficit for the current month
+      real twarmm(ilg)   !<temperature of the warmest month (c)
+      real tcoldm(ilg)   !<temperature of the coldest month (c)
+      real gdd5(ilg)     !<growing degree days above 5 c
+      real aridity(ilg)  !<aridity index, ratio of potential evaporation to precipitation
+      real srplsmon(ilg) !<number of months in a year with surplus water i.e. precipitation more than potential evaporation
+      real defctmon(ilg) !<number of months in a year with water deficit i.e. precipitation less than potential evaporation
+      real anndefct(ilg) !<annual water deficit (mm)
+      real annsrpls(ilg) !<annual water surplus (mm)
+      real annpcp(ilg)   !<annual precipitation (mm)
+      real dry_season_length(ilg) !<length of dry season (months)
 c
 c--------internal arrays-----------------------------------------------------
 c
       integer mcount, mcount1,mcount2
       real tpftfrac(nlat)
       logical bareexist(nlat)
-c
-c     ------------------------------------------------------------------
-c                           parameters used 
-c
-c     note the structure of parameter vectors which clearly shows the
-c     class pfts (along rows) and ctem sub-pfts (along columns)
-c
-c     needle leaf |  evg1      evg2      dcd
-c     broad leaf  |  evg   dcd-cld   dcd-dry
-c     crops       |   c3        c4       ---
-c     grasses     |   c3        c4       ---
-c
-c     ---------------------------------------------------------------
-c
+
+!>    ------------------------------------------------------------------
+!!                          parameters used 
+!!
+!!    note the structure of parameter vectors which clearly shows the
+!!    class pfts (along rows) and ctem sub-pfts (along columns)
+!!\f[
+!!\begin{tabular} { | l | c | c | c | }
+!!\hline
+!!needle leaf & evg1 &     evg2 &      dcd \\ \hline
+!!broad leaf  &  evg &  dcd-cld &  dcd-dry \\ \hline
+!!crops       &   c3 &       c4 &      --- \\ \hline
+!!grasses     &   c3 &       c4 &      --- \\ \hline
+!!\end{tabular}
+!!\f]
+!!     ---------------------------------------------------------------
+!!
       if(icc.ne.9)                     call xit('compete_map',-1)
       if(ican.ne.4)                       call xit('compete_map',-2)
-c
-c     initialization
-c
+!>
+!!initialization
+!!
       do 30 i=1,nlat
        tpftfrac(i)=0.0
        do 31 m=1,nmos
@@ -407,8 +339,7 @@ c
          lucsocinrow(i,m)  = 0.0 
          tarow(i,m)        = 0.0  
          preciprow(i,m)    = 0.0  
-c        note that netradrow is not initialized here 
-c        because it is updated
+!>note that netradrow is not initialized here because it is updated
          tcurmrow(i,m)     = 0.0  
          srpcuryrrow(i,m)  = 0.0  
          dftcuryrrow(i,m)  = 0.0  
@@ -509,13 +440,13 @@ c
        annpcp(i)    = 0.0  
        dry_season_length(i) = 0.0
 40    continue
-c
-c     unmapping the pft fraction in each grid cell (fare_cmp) 
-c     back to the pft index in each mosaic of each grid cell (fcancmxrow) 
-c     and update the pft areal fraction in each mosaic of each grid cell (farerow)
-c
-c     check if bare fraction is existed 
-c 
+!>
+!!unmapping the pft fraction in each grid cell (fare_cmp) 
+!!back to the pft index in each mosaic of each grid cell (fcancmxrow) 
+!!and update the pft areal fraction in each mosaic of each grid cell (farerow)
+!!
+!!check if bare fraction is existed 
+!! 
       do 50 i=1,nlat
 c
        do 55 l=1,icc
@@ -531,10 +462,10 @@ c
        endif
 c
 50    continue
-c
-c     unmapping back to fcancmxrow and
-c     update farerow
-c
+!>
+!!unmapping back to fcancmxrow and
+!!update farerow
+!!
       do 100 i=1,nlat
 c
          if (bareexist(i)) then 
@@ -630,11 +561,11 @@ c
          enddo
 
  100  continue
-c
-c     gathering the pft index in each mosaic of each grid cell (fcancmxrow) 
-c     to the pft index in each mosaic (fcancmx) 
-c     nml, ilmos and jlmos are referring to gatprep.f
-c           
+!>
+!>gathering the pft index in each mosaic of each grid cell (fcancmxrow) 
+!!to the pft index in each mosaic (fcancmx) 
+!!nml, ilmos and jlmos are referring to gatprep.f
+!!          
       do 200 l=1,icc
        do 200 k=1,nml
          fcancmx(k,l)  = fcancmxrow(ilmos(k),jlmos(k),l)

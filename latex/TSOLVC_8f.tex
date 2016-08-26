@@ -1,0 +1,515 @@
+\hypertarget{TSOLVC_8f}{}\section{T\+S\+O\+L\+V\+C.\+f File Reference}
+\label{TSOLVC_8f}\index{T\+S\+O\+L\+V\+C.\+f@{T\+S\+O\+L\+V\+C.\+f}}
+
+
+Purpose\+: Solution of surface energy balance for vegetated subareas.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{TSOLVC_8f_a01fda37677d459d89fc416b29cb0aff3}{tsolvc} (I\+S\+N\+O\+W, F\+I, Q\+S\+W\+N\+E\+T, Q\+S\+W\+N\+C, Q\+S\+W\+N\+G, Q\+L\+W\+O\+U\+T, Q\+L\+W\+O\+C, Q\+L\+W\+O\+G, Q\+T\+R\+A\+N\+S, Q\+S\+E\+N\+S, Q\+S\+E\+N\+S\+C, Q\+S\+E\+N\+S\+G, Q\+E\+V\+A\+P, Q\+E\+V\+A\+P\+C, Q\+E\+V\+A\+P\+G, E\+V\+A\+P\+C, E\+V\+A\+P\+G, E\+V\+A\+P, T\+C\+A\+N, Q\+C\+A\+N, T\+Z\+E\+R\+O, Q\+Z\+E\+R\+O, G\+Z\+E\+R\+O, Q\+M\+E\+L\+T\+C, Q\+M\+E\+L\+T\+G, R\+A\+I\+C\+A\+N, S\+N\+O\+C\+A\+N, C\+D\+H, C\+D\+M, R\+I\+B, T\+A\+C, Q\+A\+C, C\+F\+L\+U\+X, F\+T\+E\+M\+P, F\+V\+A\+P, I\+L\+M\+O, U\+E, H, Q\+F\+C\+F, Q\+F\+C\+L, H\+T\+C\+C, Q\+S\+W\+I\+N\+V, Q\+S\+W\+I\+N\+I, Q\+L\+W\+I\+N, T\+P\+O\+T\+A, T\+A, Q\+A, V\+A, V\+A\+C, P\+A\+D\+R\+Y, R\+H\+O\+A\+I\+R, A\+L\+V\+I\+S\+C, A\+L\+N\+I\+R\+C, A\+L\+V\+I\+S\+G, A\+L\+N\+I\+R\+G, T\+R\+V\+I\+S\+C, T\+R\+N\+I\+R\+C, F\+S\+V\+F, C\+R\+I\+B, C\+P\+H\+C\+H\+C, C\+P\+H\+C\+H\+G, C\+E\+V\+A\+P, T\+A\+D\+P, T\+V\+I\+R\+T\+A, R\+C, R\+B\+C\+O\+E\+F, Z\+O\+S\+C\+L\+H, Z\+O\+S\+C\+L\+M, Z\+R\+S\+L\+F\+H, Z\+R\+S\+L\+F\+M, Z\+O\+H, Z\+O\+M, F\+C\+O\+R, G\+C\+O\+N\+S\+T, G\+C\+O\+E\+F\+F, T\+G\+N\+D, T\+R\+S\+N\+O\+W, F\+S\+N\+O\+W\+C, F\+R\+A\+I\+N\+C, C\+H\+C\+A\+P, C\+M\+A\+S\+S, P\+C\+P\+R, F\+R\+O\+O\+T, T\+H\+L\+M\+I\+N, D\+E\+L\+Z\+W, R\+H\+O\+S\+N\+O, Z\+S\+N\+O\+W, I\+W\+A\+T\+E\+R, I\+E\+V\+A\+P, I\+T\+E\+R\+C\+T, I\+S\+L\+F\+D, I\+T\+C, I\+T\+C\+G, I\+L\+G, I\+L1, I\+L2, J\+L, N, T\+S\+T\+E\+P, T\+V\+I\+R\+T\+C, T\+V\+I\+R\+T\+G, E\+V\+B\+E\+T\+A, X\+E\+V\+A\+P, E\+V\+P\+W\+E\+T, Q0\+S\+A\+T, R\+A, R\+B, R\+A\+G\+I\+N\+V, R\+B\+I\+N\+V, R\+B\+T\+I\+N\+V, R\+B\+C\+I\+N\+V, T\+V\+R\+T\+A\+C, T\+P\+O\+T\+G, R\+E\+S\+I\+D, T\+C\+A\+N\+O, W\+Z\+E\+R\+O, X\+E\+V\+A\+P\+M, D\+C\+F\+L\+X\+M, W\+C, D\+R\+A\+G\+I\+N, C\+F\+L\+U\+X\+M, C\+F\+L\+X, I\+E\+V\+A\+P\+C, T\+R\+T\+O\+P, Q\+S\+T\+O\+R, C\+F\+S\+E\+N\+S, C\+F\+E\+V\+A\+P, Q\+S\+G\+A\+D\+D, A, B, L\+Z\+Z0, L\+Z\+Z0\+T, F\+M, F\+H, I\+T\+E\+R, N\+I\+T\+E\+R, K\+F1, K\+F2, A\+I\+L\+C\+G, F\+C\+A\+N\+C, C\+O2\+C\+O\+N\+C, R\+M\+A\+T\+C\+T\+E\+M, T\+H\+L\+I\+Q, T\+H\+F\+C, T\+H\+L\+W, I\+S\+A\+N\+D, I\+G, C\+O\+S\+Z\+S, P\+R\+E\+S\+S\+G, X\+D\+I\+F\+F\+U\+S, I\+C\+T\+E\+M, I\+C, C\+O2\+I1, C\+O2\+I2, I\+C\+T\+E\+M\+M\+O\+D, S\+L\+A\+I, F\+C\+A\+N\+C\+M\+X, L2\+M\+A\+X, N\+O\+L2\+P\+F\+T\+S, C\+F\+L\+U\+X\+V, A\+N\+V\+E\+G, R\+M\+L\+V\+E\+G, L\+F\+S\+T\+A\+T\+U\+S, D\+A\+Y\+L, D\+A\+Y\+L\+\_\+\+M\+A\+X)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Solution of surface energy balance for vegetated subareas. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{TSOLVC_8f_a01fda37677d459d89fc416b29cb0aff3}{}\index{T\+S\+O\+L\+V\+C.\+f@{T\+S\+O\+L\+V\+C.\+f}!tsolvc@{tsolvc}}
+\index{tsolvc@{tsolvc}!T\+S\+O\+L\+V\+C.\+f@{T\+S\+O\+L\+V\+C.\+f}}
+\subsubsection[{tsolvc}]{\setlength{\rightskip}{0pt plus 5cm}subroutine tsolvc (
+\begin{DoxyParamCaption}
+\item[{integer}]{I\+S\+N\+O\+W, }
+\item[{real, dimension    (ilg)}]{F\+I, }
+\item[{real, dimension(ilg)}]{Q\+S\+W\+N\+E\+T, }
+\item[{real, dimension (ilg)}]{Q\+S\+W\+N\+C, }
+\item[{real, dimension (ilg)}]{Q\+S\+W\+N\+G, }
+\item[{real, dimension(ilg)}]{Q\+L\+W\+O\+U\+T, }
+\item[{real, dimension (ilg)}]{Q\+L\+W\+O\+C, }
+\item[{real, dimension (ilg)}]{Q\+L\+W\+O\+G, }
+\item[{real, dimension(ilg)}]{Q\+T\+R\+A\+N\+S, }
+\item[{real, dimension (ilg)}]{Q\+S\+E\+N\+S, }
+\item[{real, dimension(ilg)}]{Q\+S\+E\+N\+S\+C, }
+\item[{real, dimension(ilg)}]{Q\+S\+E\+N\+S\+G, }
+\item[{real, dimension (ilg)}]{Q\+E\+V\+A\+P, }
+\item[{real, dimension(ilg)}]{Q\+E\+V\+A\+P\+C, }
+\item[{real, dimension(ilg)}]{Q\+E\+V\+A\+P\+G, }
+\item[{real, dimension (ilg)}]{E\+V\+A\+P\+C, }
+\item[{real, dimension (ilg)}]{E\+V\+A\+P\+G, }
+\item[{real, dimension  (ilg)}]{E\+V\+A\+P, }
+\item[{real, dimension  (ilg)}]{T\+C\+A\+N, }
+\item[{real, dimension  (ilg)}]{Q\+C\+A\+N, }
+\item[{real, dimension (ilg)}]{T\+Z\+E\+R\+O, }
+\item[{real, dimension (ilg)}]{Q\+Z\+E\+R\+O, }
+\item[{real, dimension (ilg)}]{G\+Z\+E\+R\+O, }
+\item[{real, dimension(ilg)}]{Q\+M\+E\+L\+T\+C, }
+\item[{real, dimension(ilg)}]{Q\+M\+E\+L\+T\+G, }
+\item[{real, dimension(ilg)}]{R\+A\+I\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{S\+N\+O\+C\+A\+N, }
+\item[{real, dimension   (ilg)}]{C\+D\+H, }
+\item[{real, dimension   (ilg)}]{C\+D\+M, }
+\item[{real, dimension   (ilg)}]{R\+I\+B, }
+\item[{real, dimension   (ilg)}]{T\+A\+C, }
+\item[{real, dimension   (ilg)}]{Q\+A\+C, }
+\item[{real, dimension (ilg)}]{C\+F\+L\+U\+X, }
+\item[{real, dimension (ilg)}]{F\+T\+E\+M\+P, }
+\item[{real, dimension  (ilg)}]{F\+V\+A\+P, }
+\item[{real, dimension  (ilg)}]{I\+L\+M\+O, }
+\item[{real, dimension    (ilg)}]{U\+E, }
+\item[{real, dimension     (ilg)}]{H, }
+\item[{real, dimension  (ilg)}]{Q\+F\+C\+F, }
+\item[{real, dimension  (ilg)}]{Q\+F\+C\+L, }
+\item[{real, dimension  (ilg)}]{H\+T\+C\+C, }
+\item[{real, dimension(ilg)}]{Q\+S\+W\+I\+N\+V, }
+\item[{real, dimension(ilg)}]{Q\+S\+W\+I\+N\+I, }
+\item[{real, dimension (ilg)}]{Q\+L\+W\+I\+N, }
+\item[{real, dimension (ilg)}]{T\+P\+O\+T\+A, }
+\item[{real, dimension    (ilg)}]{T\+A, }
+\item[{real, dimension    (ilg)}]{Q\+A, }
+\item[{real, dimension    (ilg)}]{V\+A, }
+\item[{real, dimension   (ilg)}]{V\+A\+C, }
+\item[{real, dimension (ilg)}]{P\+A\+D\+R\+Y, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+A\+I\+R, }
+\item[{real, dimension(ilg)}]{A\+L\+V\+I\+S\+C, }
+\item[{real, dimension(ilg)}]{A\+L\+N\+I\+R\+C, }
+\item[{real, dimension(ilg)}]{A\+L\+V\+I\+S\+G, }
+\item[{real, dimension(ilg)}]{A\+L\+N\+I\+R\+G, }
+\item[{real, dimension(ilg)}]{T\+R\+V\+I\+S\+C, }
+\item[{real, dimension(ilg)}]{T\+R\+N\+I\+R\+C, }
+\item[{real, dimension  (ilg)}]{F\+S\+V\+F, }
+\item[{real, dimension  (ilg)}]{C\+R\+I\+B, }
+\item[{real, dimension(ilg)}]{C\+P\+H\+C\+H\+C, }
+\item[{real, dimension(ilg)}]{C\+P\+H\+C\+H\+G, }
+\item[{real, dimension (ilg)}]{C\+E\+V\+A\+P, }
+\item[{real, dimension  (ilg)}]{T\+A\+D\+P, }
+\item[{real, dimension(ilg)}]{T\+V\+I\+R\+T\+A, }
+\item[{real, dimension    (ilg)}]{R\+C, }
+\item[{real, dimension(ilg)}]{R\+B\+C\+O\+E\+F, }
+\item[{real, dimension(ilg)}]{Z\+O\+S\+C\+L\+H, }
+\item[{real, dimension(ilg)}]{Z\+O\+S\+C\+L\+M, }
+\item[{real, dimension(ilg)}]{Z\+R\+S\+L\+F\+H, }
+\item[{real, dimension(ilg)}]{Z\+R\+S\+L\+F\+M, }
+\item[{real, dimension   (ilg)}]{Z\+O\+H, }
+\item[{real, dimension   (ilg)}]{Z\+O\+M, }
+\item[{real, dimension  (ilg)}]{F\+C\+O\+R, }
+\item[{real, dimension(ilg)}]{G\+C\+O\+N\+S\+T, }
+\item[{real, dimension(ilg)}]{G\+C\+O\+E\+F\+F, }
+\item[{real, dimension  (ilg)}]{T\+G\+N\+D, }
+\item[{real, dimension(ilg)}]{T\+R\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{F\+S\+N\+O\+W\+C, }
+\item[{real, dimension(ilg)}]{F\+R\+A\+I\+N\+C, }
+\item[{real, dimension (ilg)}]{C\+H\+C\+A\+P, }
+\item[{real, dimension (ilg)}]{C\+M\+A\+S\+S, }
+\item[{real, dimension  (ilg)}]{P\+C\+P\+R, }
+\item[{real, dimension (ilg,ig)}]{F\+R\+O\+O\+T, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+M\+I\+N, }
+\item[{real, dimension(ilg,ig)}]{D\+E\+L\+Z\+W, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+O, }
+\item[{real, dimension (ilg)}]{Z\+S\+N\+O\+W, }
+\item[{integer, dimension(ilg)}]{I\+W\+A\+T\+E\+R, }
+\item[{integer, dimension (ilg)}]{I\+E\+V\+A\+P, }
+\item[{integer, dimension(ilg,6,50)}]{I\+T\+E\+R\+C\+T, }
+\item[{integer}]{I\+S\+L\+F\+D, }
+\item[{integer}]{I\+T\+C, }
+\item[{integer}]{I\+T\+C\+G, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{N, }
+\item[{real, dimension (ilg)}]{T\+S\+T\+E\+P, }
+\item[{real, dimension(ilg)}]{T\+V\+I\+R\+T\+C, }
+\item[{real, dimension(ilg)}]{T\+V\+I\+R\+T\+G, }
+\item[{real, dimension(ilg)}]{E\+V\+B\+E\+T\+A, }
+\item[{real, dimension (ilg)}]{X\+E\+V\+A\+P, }
+\item[{real, dimension(ilg)}]{E\+V\+P\+W\+E\+T, }
+\item[{real, dimension (ilg)}]{Q0\+S\+A\+T, }
+\item[{real, dimension    (ilg)}]{R\+A, }
+\item[{real, dimension    (ilg)}]{R\+B, }
+\item[{real, dimension(ilg)}]{R\+A\+G\+I\+N\+V, }
+\item[{real, dimension (ilg)}]{R\+B\+I\+N\+V, }
+\item[{real, dimension(ilg)}]{R\+B\+T\+I\+N\+V, }
+\item[{real, dimension(ilg)}]{R\+B\+C\+I\+N\+V, }
+\item[{real, dimension(ilg)}]{T\+V\+R\+T\+A\+C, }
+\item[{real, dimension (ilg)}]{T\+P\+O\+T\+G, }
+\item[{real, dimension (ilg)}]{R\+E\+S\+I\+D, }
+\item[{real, dimension (ilg)}]{T\+C\+A\+N\+O, }
+\item[{real, dimension (ilg)}]{W\+Z\+E\+R\+O, }
+\item[{real, dimension(ilg)}]{X\+E\+V\+A\+P\+M, }
+\item[{real, dimension(ilg)}]{D\+C\+F\+L\+X\+M, }
+\item[{real, dimension    (ilg)}]{W\+C, }
+\item[{real, dimension(ilg)}]{D\+R\+A\+G\+I\+N, }
+\item[{real, dimension(ilg)}]{C\+F\+L\+U\+X\+M, }
+\item[{real, dimension  (ilg)}]{C\+F\+L\+X, }
+\item[{integer, dimension(ilg)}]{I\+E\+V\+A\+P\+C, }
+\item[{real, dimension (ilg)}]{T\+R\+T\+O\+P, }
+\item[{real, dimension (ilg)}]{Q\+S\+T\+O\+R, }
+\item[{real, dimension(ilg)}]{C\+F\+S\+E\+N\+S, }
+\item[{real, dimension(ilg)}]{C\+F\+E\+V\+A\+P, }
+\item[{real, dimension(ilg)}]{Q\+S\+G\+A\+D\+D, }
+\item[{real, dimension     (ilg)}]{A, }
+\item[{real, dimension     (ilg)}]{B, }
+\item[{real, dimension  (ilg)}]{L\+Z\+Z0, }
+\item[{real, dimension (ilg)}]{L\+Z\+Z0\+T, }
+\item[{real, dimension    (ilg)}]{F\+M, }
+\item[{real, dimension    (ilg)}]{F\+H, }
+\item[{integer, dimension  (ilg)}]{I\+T\+E\+R, }
+\item[{integer, dimension (ilg)}]{N\+I\+T\+E\+R, }
+\item[{integer, dimension   (ilg)}]{K\+F1, }
+\item[{integer, dimension   (ilg)}]{K\+F2, }
+\item[{real, dimension(ilg,ictem)}]{A\+I\+L\+C\+G, }
+\item[{real, dimension(ilg,ictem)}]{F\+C\+A\+N\+C, }
+\item[{real, dimension(ilg)}]{C\+O2\+C\+O\+N\+C, }
+\item[{real, dimension(ilg,ictem,ig)}]{R\+M\+A\+T\+C\+T\+E\+M, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+I\+Q, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+F\+C, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+W, }
+\item[{integer, dimension(ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{integer}]{I\+G, }
+\item[{real, dimension(ilg)}]{C\+O\+S\+Z\+S, }
+\item[{real, dimension(ilg)}]{P\+R\+E\+S\+S\+G, }
+\item[{real, dimension(ilg)}]{X\+D\+I\+F\+F\+U\+S, }
+\item[{integer}]{I\+C\+T\+E\+M, }
+\item[{integer}]{I\+C, }
+\item[{real, dimension(ilg,ictem)}]{C\+O2\+I1, }
+\item[{real, dimension(ilg,ictem)}]{C\+O2\+I2, }
+\item[{integer}]{I\+C\+T\+E\+M\+M\+O\+D, }
+\item[{real, dimension(ilg,ictem)}]{S\+L\+A\+I, }
+\item[{real, dimension(ilg,ictem)}]{F\+C\+A\+N\+C\+M\+X, }
+\item[{integer}]{L2\+M\+A\+X, }
+\item[{integer, dimension(ic)}]{N\+O\+L2\+P\+F\+T\+S, }
+\item[{real, dimension(ilg)}]{C\+F\+L\+U\+X\+V, }
+\item[{real, dimension(ilg,ictem)}]{A\+N\+V\+E\+G, }
+\item[{real, dimension(ilg,ictem)}]{R\+M\+L\+V\+E\+G, }
+\item[{integer, dimension(ilg,ictem)}]{L\+F\+S\+T\+A\+T\+U\+S, }
+\item[{real, dimension(ilg)}]{D\+A\+Y\+L, }
+\item[{real, dimension(ilg)}]{D\+A\+Y\+L\+\_\+\+M\+A\+X}
+\end{DoxyParamCaption}
+)}\label{TSOLVC_8f_a01fda37677d459d89fc416b29cb0aff3}
+
+\begin{DoxyParams}{Parameters}
+{\em isnow} & Flag indicating presence or absence of snow\\
+\hline
+{\em qswnet} & Total net shortwave radiation of canopy and underlying surface $[W m^{-2} ]$\\
+\hline
+{\em qswnc} & Net shortwave radiation on vegetation canopy $[W m^{-2} ] (K_{*c} )$\\
+\hline
+{\em qswng} & Net shortwave radiation at underlying surface $[W m^{-2} ] (K_{*g} )$\\
+\hline
+{\em qlwout} & Upwelling longwave radiation from canopy and underlying surface $[W m^{-2} ]$\\
+\hline
+{\em qlwoc} & Upwelling longwave radiation from vegetation canopy $[W m^{-2} ] (L \uparrow_c , L \downarrow_c )$\\
+\hline
+{\em qlwog} & Upwelling longwave radiation from underlying surface $[W m^{-2} ] (L \uparrow_g )$\\
+\hline
+{\em qtrans} & Shortwave radiation transmitted into surface $[W m^{-2} ] $\\
+\hline
+{\em qsens} & Sensible heat flux from canopy and underlying surface $[W m^{-2} ] (Q_H )$\\
+\hline
+{\em qsensc} & Sensible heat flux from vegetation canopy $[W m^{-2} ] (Q_{H,c} )$\\
+\hline
+{\em qsensg} & Sensible heat flux from underlying surface $[W m^{-2} ] (Q_{H,g} )$\\
+\hline
+{\em qevap} & Latent heat flux from canopy and underlying surface $[W m^{-2} ] (Q_E )$\\
+\hline
+{\em qevapc} & Latent heat flux from vegetation canopy $[W m^{-2} ] (Q_{E,c} )$\\
+\hline
+{\em qevapg} & Latent heat flux from underlying surface $[W m^{-2} ] (Q_{E,g} )$\\
+\hline
+{\em evapc} & Evaporation rate from vegetation $[kg m^{-2} s^{-1} ] (E_c )$\\
+\hline
+{\em evapg} & Evaporation rate from underlying surface $[kg m^{-2} s^{-1} ] (E(0))$\\
+\hline
+{\em tcan} & Vegetation canopy temperature $[K] (T_c )$\\
+\hline
+{\em qcan} & Saturated specific humidity at canopy temperature $[kg kg^{-1} ] (q_c )$\\
+\hline
+{\em tzero} & Temperature at surface $[K] (T(0))$\\
+\hline
+{\em qzero} & Specific humidity at surface $[kg kg^{-1} ] (q(0))$\\
+\hline
+{\em gzero} & Heat flux into surface $[W m^{-2} ] (G(0))$\\
+\hline
+{\em qmeltc} & Heat available for melting snow or freezing water on the vegetation $[W m^{-2} ]$\\
+\hline
+{\em qmeltg} & Heat available for melting snow or freezing water on the underlying surface $[W m^{-2} ]$\\
+\hline
+{\em raican} & Intercepted liquid water stored on vegetation canopy $[kg m^{-2} ]$\\
+\hline
+{\em snocan} & Intercepted frozen water stored on vegetation canopy $[kg m^{-2} ]$\\
+\hline
+{\em cdh} & Surface drag coefficient for heat \mbox{[} \mbox{]}\\
+\hline
+{\em cdm} & Surface drag coefficient for momentum \mbox{[} \mbox{]}\\
+\hline
+{\em rib} & Bulk Richardson number at surface \mbox{[} \mbox{]}\\
+\hline
+{\em tac} & Temperature of air within vegetation canopy $[K] (T_{ac} )$\\
+\hline
+{\em qac} & Specific humidity of air within vegetation canopy space $[kg kg^{-1} ] (q_{ac} )$\\
+\hline
+{\em cflux} & Product of surface drag coefficient and wind speed $[m s^{-1} ]$\\
+\hline
+{\em ftemp} & Product of surface-\/air temperature gradient, drag coefficient and wind speed $[K m s^{-1} ]$\\
+\hline
+{\em fvap} & Product of surface-\/air humidity gradient, drag coefficient and wind speed $[kg kg^{-1} m s^{-1} ]$\\
+\hline
+{\em ilmo} & Inverse of Monin-\/\+Obukhov roughness length $(m^{-1} ]$\\
+\hline
+{\em ue} & Friction velocity of air $[m s^{-1} ]$\\
+\hline
+{\em h} & Height of the atmospheric boundary layer \mbox{[}m\mbox{]}\\
+\hline
+{\em qfcf} & Sublimation from frozen water on vegetation $[kg m^{-2} s^{-1} ]$\\
+\hline
+{\em qfcl} & Evaporation from liquid water on vegetation $[kg m^{-2} s^{-1} ]$\\
+\hline
+{\em htcc} & Internal energy change of canopy due to changes in temperature and/or mass $[W m^{-2} ]$\\
+\hline
+{\em evap} & Diagnosed total surface water vapour flux over modelled area $[kg m^{-2} s^{-1} ]$\\
+\hline
+{\em fi} & Fractional coverage of subarea in question on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em qswinv} & Visible radiation incident on horizontal surface $[W m^{-2} ] (K \downarrow )$\\
+\hline
+{\em qswini} & Near-\/infrared radiation incident on horizontal surface $[W m^{-2} ] (K \downarrow )$\\
+\hline
+{\em qlwin} & Downwelling longwave radiation at bottom of atmosphere $[W m^{-2} ] (L \downarrow )$\\
+\hline
+{\em tpota} & Potential temperature of air at reference height $[K] (T_{a,pot} )$\\
+\hline
+{\em ta} & Air temperature at reference height \mbox{[}K\mbox{]}\\
+\hline
+{\em qa} & Specific humidity at reference height $[kg kg^{-1} ] (q_a )$\\
+\hline
+{\em va} & Wind speed at reference height $[m s^{-1} ]$\\
+\hline
+{\em vac} & Wind speed within vegetation canopy space $[m s^{-1} ] (v_{ac} )$\\
+\hline
+{\em padry} & Partial pressure of dry air $[Pa] (p_{dry} )$\\
+\hline
+{\em rhoair} & Density of air $[kg m^{-3} ] ( \rho_a )$\\
+\hline
+{\em alvisc} & Visible albedo of vegetation canopy $[ ] ( \alpha_c )$\\
+\hline
+{\em alnirc} & Near-\/\+I\+R albedo of vegetation canopy $[ ] ( \alpha_c )$\\
+\hline
+{\em alvisg} & Visible albedo of underlying surface $[ ] ( \alpha_g )$\\
+\hline
+{\em alnirg} & Near-\/\+I\+R albedo of underlying surface $[ ] ( \alpha_g )$\\
+\hline
+{\em trvisc} & Visible transmissivity of vegetation canopy $[ ] ( \tau_c )$\\
+\hline
+{\em trnirc} & Near-\/\+I\+R transmissivity of vegetation canopy $[ ] ( \tau_c )$\\
+\hline
+{\em fsvf} & Sky view factor of ground underlying canopy $[ ] ( \chi )$\\
+\hline
+{\em crib} & Richardson number coefficient $[K^{-1} ]$\\
+\hline
+{\em cphchc} & Latent heat of vaporization on vegetation canopy $[J kg^{-1} ] (L_v )$\\
+\hline
+{\em cphchg} & Latent heat of vaporization on underlying ground $[J kg^{-1} ] (L_v )$\\
+\hline
+{\em cevap} & Soil evaporation efficiency coefficient \mbox{[} \mbox{]}\\
+\hline
+{\em tadp} & Dew point of air at reference height \mbox{[}K\mbox{]}\\
+\hline
+{\em tvirta} & Virtual potential temperature of air at reference height $[K] (T_{a,v} )$\\
+\hline
+{\em rc} & Stomatal resistance of vegetation $[s m^{-1}] (r_c )$\\
+\hline
+{\em rbcoef} & Parameter for calculation of leaf boundary resistance\\
+\hline
+{\em zosclh} & Ratio of roughness length for heat to reference height for temperature and humidity \mbox{[} \mbox{]}\\
+\hline
+{\em zosclm} & Ratio of roughness length for momentum to reference height for wind speed \mbox{[} \mbox{]}\\
+\hline
+{\em zrslfh} & Difference between reference height for temperature and humidity and height at which extrapolated wind speed goes to zero \mbox{[}m\mbox{]}\\
+\hline
+{\em zrslfm} & Difference between reference height for wind speed and height at which extrapolated wind speed goes to zero \mbox{[}m\mbox{]}\\
+\hline
+{\em zoh} & Surface roughness length for heat \mbox{[}m\mbox{]}\\
+\hline
+{\em zom} & Surface roughness length for momentum $[m] (z_{0,m} )$\\
+\hline
+{\em fcor} & Coriolis parameter $[s_{-1} ]$\\
+\hline
+{\em gconst} & Intercept used in equation relating surface heat flux to surface temperature $[W m^{-2} ]$\\
+\hline
+{\em gcoeff} & Multiplier used in equation relating surface heat flux to surface temperature $[W m^{-2} K^{-1} ]$\\
+\hline
+{\em tgnd} & Starting point for surface temperature iteration \mbox{[}K\mbox{]}\\
+\hline
+{\em trsnow} & Short-\/wave transmissivity of snow pack \mbox{[} \mbox{]}\\
+\hline
+{\em fsnowc} & Fractional coverage of canopy by frozen water $[ ] (F_s )$\\
+\hline
+{\em frainc} & Fractional coverage of canopy by liquid water $[ ] (F_l )$\\
+\hline
+{\em chcap} & Heat capacity of vegetation canopy $[J m^{-2} K^{-1} ] (C_c )$\\
+\hline
+{\em cmass} & Mass of vegetation canopy $[kg m^{-2} ]$\\
+\hline
+{\em pcpr} & Surface precipitation rate $[kg m^{-2} s^{-1} ]$\\
+\hline
+{\em iwater} & Flag indicating condition of surface (dry, water-\/covered or snow-\/covered)\\
+\hline
+{\em ievap} & Flag indicating whether surface evaporation is occurring or not output variable\\
+\hline
+{\em iterct} & Counter of number of iterations required to solve energy balance for four subareas \\
+\hline
+\end{DoxyParams}
+For the subcanopy surface temperature iteration, two alternative schemes are offered\+: the bisection method (selected if the flag I\+T\+C\+G = 1) and the Newton-\/\+Raphson method (selected if I\+T\+C\+G = 2). In the first case, the maximum number of iterations I\+T\+E\+R\+M\+X is set to 12, and in the second case it is set to 5. An optional windless transfer coefficient E\+Z\+E\+R\+O is made available, which can be used, following the recommendations of Brown et al. (2006), to prevent the sensible heat flux over snow packs from becoming vanishingly small under highly stable conditions. If the snow cover flag I\+S\+N\+O\+W is zero (indicating bare ground), E\+Z\+E\+R\+O is set to zero; if I\+S\+N\+O\+W=1, E\+Z\+E\+R\+O is set to $2.0 W m^{-2} K^{-1}$ . The surface transfer coefficient under conditions of free convection, R\+A\+G\+C\+O, is set to $1.9 x 10^{-3}$ (see the calculation of R\+A\+G\+I\+N\+V below).
+
+In the 50 loop, some preliminary calculations are done. The shortwave transmissivity at the surface, T\+R\+T\+O\+P, is set to zero in the absence of a snow pack, and to the transmissivity of snow, T\+R\+S\+N\+O\+W, otherwise. The net shortwave radiation at the surface, Q\+S\+W\+N\+G, is calculated as the sum of the net visible and net near-\/infrared shortwave radiation. Each of these is obtained as\+: $K_{*g} = K \downarrow \tau_c [1 - \alpha_g ]$ where $K_{*g} is the net radiation at the surface, $K  $ is the incoming shortwave radiation above the canopy, $\$ is the canopy transmissivity and $\alpha_g$ is the surface albedo. This average value is corrected for the amount of radiation transmitted into the surface, Q\+T\+R\+A\+N\+S, obtained using T\+R\+T\+O\+P. The net shortwave radiation for the vegetation canopy, Q\+S\+W\+N\+C, is calculated as the sum of the net visible and net near-\/infrared shortwave radiation. Each of these is determined as\+: $K_{*c} = K \downarrow [1 - \alpha_c ] - K_{*g}$ where $K_{*c} is the net radiation on the canopy and $\$ is the canopy albedo. If the canopy temperature is essentially 0 K, indicating that a canopy was not present in the previous time step but has now appeared, the canopy temperature is initialized to the potential temperature of the air, T\+P\+O\+T\+A. The outgoing longwave radiation emitted upward $(L \uparrow_c )$ or downward $(L \downarrow_c )$ from the canopy is calculated using the standard Stefan-\/\+Boltzmann equation\+: $L \uparrow_c = L \downarrow_c = \sigma T_c^4$ where $\sigma$ is the Stefan-\/\+Boltzmann constant and $T_c$ is the canopy temperature.
+
+Virtual temperature is defined as temperature adjusted for the reduction in air density due to the presence of water vapour. This is applied in order to enable the use of the equation of state for dry air. The virtual temperature can be approximated by multiplying the actual temperature by a factor \mbox{[}1 + 0.\+61 q\mbox{]}, where q is the specific humidity of the air in question. Thus, the virtual temperature of air at the vegetation canopy temperature, $T_{c,v}$ , is obtained as\+: $T_{c,v} = T_c [1 + 0.61 q_c ]$ where $q_c$ is the saturated specific humidity at the canopy temperature. This is determined from the saturation mixing ratio at the canopy temperature, $w_c$ \+: $q_c = w_c /[1 + w_c ]$ The saturation mixing ratio is a function of the saturation vapour pressure $e_c$ at the canopy temperature\+: $w_c = 0.622 e_c /(p_{dry} )$ where $p_{dry}$ is the partial pressure of dry air. A standard empirical equation for the saturation vapour pressure dependence on the temperature T is used\+:
+
+$e_{sat} = 611.0 exp[17.269(T - T_f )/(T - 35.86)] T \geq T_f$ $e_{sat} = 611.0 exp[21.874(T - T_f )/(T - 7.66)] T < T_f$
+
+where $T_f$ is the freezing point. The virtual temperature of the air in the canopy space, $T_{ac,v}$ , is likewise calculated from the canopy air temperature $T_{ac}$ and the specific humidity in the canopy air space, $q_{ac}$ , as
+
+$T_{ac,v} = T_{ac} [1 + 0.61 q_{ac} ]$
+
+If the Newton-\/\+Raphson method is being used for the canopy temperature iteration (pre-\/selected by setting the flag I\+T\+C to 2), the temperature of the air in the canopy space is approximated as the canopy temperature, and the specific humidity in the canopy air space is approximated as the specific humidity of the air above the canopy.
+
+If there is intercepted snow on the vegetation, the latent heat associated with water flux from the canopy, C\+P\+H\+C\+H\+C, is set to the latent heat of sublimation (the sum of the heat of vaporization and the heat of melting). Otherwise the latent heat is set to that of vaporization alone. The leaf boundary layer resistance R\+B, and its inverse R\+B\+I\+N\+V, are calculated using the wind speed in the canopy air space, V\+A\+C, and a coefficient R\+B\+C\+O\+E\+F evaluated in subroutine A\+P\+R\+E\+P. This coefficient is formulated after Bartlett (2004), who developed an expression for the inverse of the leaf boundary resistance, $1/r_b$ , drawing on the analysis of Bonan (1996) and Mc\+Naughton and van den Hurk (1995), of the form\+:
+
+$1/r_b = v_{ac}^{1/2} \sigma f_i \gamma_i \Lambda_i^{1/2} /0.75 [1 - exp(-0.75 \Lambda_i^{1/2})]$
+
+where $v_{ac}$ is the wind speed in the canopy air space, $f_i$ is the fractional coverage of each vegetation type i over the subarea in question, $\Lambda_i$ is its leaf area index, and $\gamma_i$ is a vegetation-\/dependent parameter which incorporates the effects of leaf dimension and sheltering. The initial value of the surface temperature T\+Z\+E\+R\+O is set to T\+G\+N\+D, which contains the value of T\+Z\+E\+R\+O from the previous time step, and the initial temperature of the canopy, T\+C\+A\+N\+O, is set to the current canopy temperature. The first step in the iteration sequence, T\+S\+T\+E\+P, is set to 1.\+0 K. The flag I\+T\+E\+R is set to 1 for each element of the set of modelled areas, indicating that its surface temperature has not yet been found. The iteration counter N\+I\+T\+E\+R is initialized to 1 for each element. Initial values are assigned to other variables.
+
+(At this point in the code, if C\+L\+A\+S\+S is being run in coupled mode with C\+T\+E\+M, the C\+T\+E\+M subroutine P\+H\+T\+S\+Y\+N3 is called. These lines are commented out for uncoupled runs.)
+
+The 100 continuation line marks the beginning of the surface temperature iteration sequence. First the flag N\+U\+M\+I\+T (indicating whether there are still locations at the end of the current iteration step for which the surface temperature has not yet been found) is set to zero. Loop 125 is then performed over the vector of modelled areas. If I\+T\+E\+R=1, the saturated specific humidity at the ground surface temperature, $q(0)_{sat}$ , is calculated using the same method as that outlined above for the saturated specific humidity at the canopy temperature. If there is a snow cover or ponded water present on the surface (I\+W\+A\+T\+E\+R $>$ 0), the surface evaporation efficiency E\+V\+B\+E\+T\+A is set to 1 and the surface specific humidity q(0) is set to $q(0)_{sat}$ . Otherwise E\+V\+B\+E\+T\+A is set to C\+E\+V\+A\+P, the value obtained in subroutine T\+P\+R\+E\+P on the basis of ambient conditions, and q(0) is calculated from $q(0)_{sat}$ by making use of the definition of the surface evaporation efficiency $\beta$\+:
+
+$\beta = [q(0) - q_{ac} ]/[q(0)_{sat} - q_{ac} ]$
+
+which is inverted to obtain an expression for q(0). If $q(0) > q_{ac}$ and the evaporation flag I\+E\+V\+A\+P has been set to zero, E\+V\+B\+E\+T\+A is reset to zero and q(0) is reset to $q_{ac}$.
+
+Next, the potential temperature of air at the ground surface temperature, $T(0)_{pot}$ , is calculated relative to the sum of the displacement height d and the roughness length for momentum $z_{0,m}$ , the height at which the canopy temperature is assumed to apply. (This is also the height corresponding to the potential temperature of the air at the reference height above the canopy). $T(0)_{pot}$ is found using the dry adiabatic lapse rate, $dT/dz = -g/c_p$ , where g is the acceleration due to gravity and $c_p$ is the specific heat at constant pressure. Since the displacement height d is assumed to lie at 0.\+7 of the canopy height, and the roughness length for momentum is assumed to lie at 0.\+1 of the canopy height, their sum can be obtained as $8.0 z_{0,m}$ . Thus, $T(0)_{pot} = T(0) - 8.0 z_{0,m} g/c_p$
+
+The virtual potential temperature at the surface is obtained using the same expression as above\+: $T(0)_v = T(0)_{pot} [1 + 0.61 q(0)]$
+
+Since wind speeds under the canopy are expected to be relatively small, it is assumed that under stable or neutral conditions, turbulent fluxes are negligible. If the virtual potential temperature of the surface is more than 1 K greater than that of the canopy air, free convection conditions are assumed. Townsend\textquotesingle{}s (1964) equation for the surface-\/air transfer coefficient, or the inverse of the surface resistance $r_{a,,g}$ , is used in a form derived from the analysis of Deardorff (1972)\+: $1/r_{a,,g} = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]^{1/3}$
+
+The first derivative of the transfer coefficient with respect to the surface temperature is calculated for use with the Newton-\/\+Raphson iteration scheme\+: $d(1/r_{a,,g} )/dT = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]^{-2/3} /3$
+
+If the virtual potential temperature of the surface is between 0.\+001 and 1 K greater than that of the canopy air, a simple diffusion relation is assumed\+: $1/r_{a,,g} = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]$ Thus, $d(1/r_{a,,g} )/dT = 1.9 x 10^{-3}$
+
+The remaining terms of the surface energy balance are now evaluated. The energy balance equation is expressed as\+: $K_{*g} + L_{*g} - Q_{H,g} - Q_{E,g} - G(0) = 0$ where $K_{*g}$ is the net surface shortwave radiation, $L_{*g}$ is the net longwave radiation, $Q_{H,g}$ is the sensible heat flux, $Q_{E,g}$ is the latent heat flux, and G(0) is the conduction into the surface. $K_{*g}$ was evaluated earlier in loop 50. $L_{*g}$ is calculated as the difference between the downwelling radiation $L \downarrow_g$ at the surface and the upwelling radiation $L \uparrow_g$ . The downwelling radiation incident on the surface is determined from the downwelling sky radiation above the canopy $L \downarrow$ and the downwelling radiation from the canopy itself, $L \downarrow_c$ , weighted according to the sky view factor $\chi$\+: $L \downarrow_g = \chi L \downarrow + [1 - \chi] L \downarrow_c$ The upwelling radiation is obtained using the Stefan-\/\+Boltzmann equation\+: $L \uparrow_g = \sigma T(0)^4$
+
+The sensible heat flux is given by $Q_{H,g} = \rho_a c_p [T(0)_{pot} - T_{a,c} ]/r_{a,,g}$ where $\rho_a$ is the density of the air and $c_p$ is its specific heat. (The windless transfer coefficient defined at the beginning of the subroutine is currently not used under vegetation canopies.) The evaporation rate at the surface, E(0), is calculated as $E(0) = \rho_a [q(0) - q_{a,c} ]/r_{a,,g}$
+
+$Q_E$ is obtained by multiplying E(0) by the latent heat of vaporization at the surface. The heat flux into the surface G(0) is determined as a linear function of T(0) (see documentation for subroutines T\+N\+P\+R\+E\+P and T\+S\+P\+R\+E\+P). It can be seen that each of the terms of the surface energy balance is a function of a single unknown, T(0) or T\+Z\+E\+R\+O. The residual R\+E\+S\+I\+D of the energy balance is now evaluated on the basis of the current estimation for T\+Z\+E\+R\+O. If the absolute value of R\+E\+S\+I\+D is less than $5.0 W m^{-2}$ , or if the absolute value of the iteration step T\+S\+T\+E\+P most recently used is less than 0.\+01 K, the surface temperature is deemed to have been found and I\+T\+E\+R is set to 0. If the iteration counter N\+I\+T\+E\+R is equal to the maximum number and I\+T\+E\+R is still 1, I\+T\+E\+R is set to -\/1.
+
+In the following section, the iteration sequence is moved ahead a step. If I\+T\+C\+G = 1, the calculations for the bisection method of solution in loop 150 are performed, over each of the modelled areas for which I\+T\+E\+R = 1. If N\+I\+T\+E\+R = 1 (indicating that this is the first step in the iteration), then if R\+E\+S\+I\+D $>$ 0 (indicating that the current value for T\+Z\+E\+R\+O had undershot the correct value), T\+Z\+E\+R\+O is incremented by 1 K; otherwise it is decremented by 1 K. If this is not the first step in the iteration, then if R\+E\+S\+I\+D $>$0 and T\+S\+T\+E\+P $<$ 0 (indicating that T\+Z\+E\+R\+O has undershot the correct value and the last temperature increment had been a negative one) or if R\+E\+S\+I\+D $<$ 0 and T\+S\+T\+E\+P $>$ 0 (indicating that T\+Z\+E\+R\+O has overshot the correct value and the last temperature increment had been a positive one), T\+S\+T\+E\+P is divided in half and its sign changed. T\+S\+T\+E\+P is then added to T\+Z\+E\+R\+O. The iteration counter N\+I\+T\+E\+R and the flag N\+U\+M\+I\+T are each incremented by one. Finally, if N\+U\+M\+I\+T $>$ 0, the iteration cycle is repeated from line 100 on.
+
+If I\+T\+C\+G = 2, the calculations for the Newton-\/\+Raphson method of iteration in loop 175 are performed, over each of the modelled areas for which I\+T\+E\+R = 1. In this approach, the value $x_{n+1}$ used at each iteration step is obtained from the value $x_n$ at the previous step as follows\+: $x_{n+1} = x_n - f(x_n )/f'(x_n )$
+
+Identifying x n with T\+Z\+E\+R\+O and $f(x_n )$ with the surface energy balance equation, it can be seen that the second term on the right-\/hand side corresponds to T\+S\+T\+E\+P; the numerator is equal to R\+E\+S\+I\+D and the denominator to the first derivative of the energy balance equation evaluated at T\+Z\+E\+R\+O, which in turn is equal to the sum of the derivatives of the individual terms\+: f\mbox{[} d(L  )/d\+T = -\/4  T(0)$^\wedge$3 f\mbox{]}f\mbox{[} d(Q\+\_\+\{H,g\} )/d\+T =  c\+\_\+p \{1/r\+\_\+\{a,,g\} + \mbox{[}T(0)\+\_\+\{pot\} -\/ T\+\_\+\{ac\} \mbox{]} d(1/r\+\_\+\{a,,g\} )/d\+T\} f\mbox{]}f\mbox{[} d(Q\+\_\+\{E,g\} )/d\+T = L\+\_\+v  \{1/r\+\_\+\{a,,g\} dq(0)/d\+T+ \mbox{[}q(0) -\/ q\+\_\+\{ac\} \mbox{]} d(1/r\+\_\+\{a,,g\} )/d\+T\} f\mbox{]} and d\+G(0)/d\+T is equal to the coefficient multiplying T\+Z\+E\+R\+O in the equation for G(0). ( $L_v$ is the latent heat of vaporization at the surface.) At the end of the calculations the iteration counter N\+I\+T\+E\+R and the flag N\+U\+M\+I\+T are each incremented by one, and upon exiting the loop, if N\+U\+M\+I\+T $>$ 0, the iteration cycle is repeated from line 100 on.
+
+After the iteration has been completed, if the Newton-\/\+Raphson method has been used, a check is carried out in loop 200 to ascertain whether convergence has not been reached (i.\+e. whether I\+T\+E\+R = -\/1) for any location. In such cases it is assumed that conditions of near-\/neutral stability at the surface are the cause of the difficulty in finding a solution. A trial value of T\+Z\+E\+R\+O is calculated using the virtual potential temperature of the canopy. If the absolute value of R\+E\+S\+I\+D is $> 15 W m^{-2}$ , T\+Z\+E\+R\+O is set to this trial value. The values of q(0) and the components of the surface energy balance are recalculated as above, except that $Q_{H,g}$ and $Q_{E,g}$ are assumed as a first approximation to be zero. R\+E\+S\+I\+D is determined on this basis, and is then partitioned between $Q_{H,g}$ and $Q_{E,g}$ on the basis of the Bowen ratio B, the ratio of $Q_{H,g}$ over $Q_{E,g}$ . Setting the residual R equal to $Q_{H,g} + Q_{E,g}$ , and substituting for $Q_{H,g}$ using $B = Q_{H,g} /Q_{E,g}$ , results in\+: $Q_{E,g} = R/(1 + B)$ $Q_{H,g}$ is then obtained as $R - Q_{E,g}$ , the residual is reset to zero, and E(0) is recalculated from $Q_{E,g}$ .
+
+At this point a check is performed for unphysical values of the surface temperature, i.\+e. for values greater than 100 C or less than -\/100 C. If such values are encountered, an error message is printed and a call to abort is carried out.
+
+Finally, clean-\/up calculations are performed in loop 250. A check is carried out to ensure that T\+Z\+E\+R\+O is not less than 0 C if ponded water is present on the surface (I\+W\+A\+T\+E\+R = 1) or greater than 0 C if snow is present on the surface (I\+W\+A\+T\+E\+R = 2). If either is the case, T\+Z\+E\+R\+O is reset to the freezing point, and q(0), $T(0)_{pot}$ and $T(0)_v$ are re-\/evaluated. The components of the surface energy balance are recalculated using the above equations. The residual of the energy balance equation is assigned to the energy associated with phase change of water at the surface, Q\+M\+E\+L\+T\+G, and R\+E\+S\+I\+D is set to zero.
+
+In the last part of the loop, some final adjustments are made to a few other variables. If the evaporation flux is vanishingly small, it is added to R\+E\+S\+I\+D and reset to zero. If both R\+E\+S\+I\+D and $Q_{E,g}$ are not small, and if the precipitation rate is vanishingly small, R\+E\+S\+I\+D is added to Q E,g ; otherwise R\+E\+S\+I\+D is added to $Q_{H,g}$ . Lastly, the iteration counter I\+T\+E\+R\+C\+T is updated for the level corresponding to the subarea type and the value of N\+I\+T\+E\+R.
+
+In the 300 loop, preliminary calculations are done in preparation for the canopy temperature iteration. The sensible heat flux from the surface is treated differently if I\+T\+C = 1 (bisection method of solution) and I\+T\+C = 2 (Newton-\/\+Raphson method of solution). In the first instance the surface sensible heat flux is applied to heating the air in the canopy space; in the second, the canopy and the air space within it are treated as one aggregated mass, and the sensible heat flux from below is assumed to be added to its energy balance. Thus, if I\+T\+C = 1, the sensible heat flux that is added to the canopy, Q\+S\+G\+A\+D\+D, is set to 0. If I\+T\+C = 2, it is set to $Q_{H,g}$ ; and $T_{ac}$ is set to $T_c$ , $q_{ac}$ to $q_c$ , and $T_{ac,v}$ to $T_{c,v}$ . The flag I\+T\+E\+R is set to 1 for each element of the set of modelled areas, indicating that its surface temperature has not yet been found. The iteration counter N\+I\+T\+E\+R is initialized to 1 for each element. The first step in the iteration sequence, T\+S\+T\+E\+P, is set to 1.\+0 K. Initial values are assigned to other variables. After exiting the loop, the maximum number of iterations I\+T\+E\+R\+M\+X is set to 12 if I\+T\+C = 1, and to 5 if I\+T\+C = 2.
+
+The 400 continuation line marks the beginning of the canopy temperature iteration sequence. First the flags N\+I\+T (indicating whether there are still locations at the beginning of the current iteration step for which the surface temperature has not yet been found) and N\+U\+M\+I\+T (indicating whether there are still locations at the end of the current iteration step for which the surface temperature has not yet been found) are set to zero. Loop 450 is then performed over the set of modelled areas. If I\+T\+E\+R=1, N\+I\+T is incremented by one; if I\+T\+C = 1, the vegetation virtual temperature $T_{c,v}$ is recalculated.
+
+If N\+I\+T $>$ 0, a subroutine is called to evaluate the stability-\/corrected surface drag coefficients for heat and momentum. The subroutine selection is made on the basis of the flag I\+S\+L\+F\+D. If I\+S\+L\+F\+D=1, indicating that the calculations are to be consistent with C\+C\+Cma conventions, subroutine D\+R\+C\+O\+E\+F is called; if I\+S\+L\+F\+D=2, indicating that the calculations are to be consistent with R\+P\+N conventions, subroutine F\+L\+X\+S\+U\+R\+F\+Z is called.
+
+Next, canopy parameters and turbulent transfer coefficients are calculated prior to evaluating the terms of the surface energy balance equation. If I\+T\+C = 1, the analysis of Garratt (1992) is followed. The sensible and latent heat fluxes from the canopy air to the overlying atmosphere, $Q_H$ and $Q_E$ , are obtained as the sums of the sensible and latent heat fluxes from the canopy to the canopy air, $Q_{H,c}$ and $Q_{E,c}$ , and from the underlying surface to the canopy air, $Q_{H,g}$ and $Q_{E,g}$ \+:
+
+$Q_H = Q_{H,c} + Q_{H,g}$
+
+$Q_E = Q_{E,c} + Q_{E,g}$
+
+where
+
+$Q_H = \rho_a c_p [T_{a,c} - T_{a,pot,} ]/r_a$
+
+$Q_{H,c} = \rho_a c_p [T_c - T_{a,c,} ]/r_b$
+
+and
+
+$Q_E = L_v \rho_a [q_{a,c} - q_{a,} ]/r_a$
+
+$Q_{E,c} = L_v \rho_a [q_{,c} - q_{a,c,} ]/(r_b + r_c )$
+
+The equations for the sensible and latent heat fluxes from the surface were presented above. In these expressions, $T_{a,pot} and $q\+\_\+a $ are the potential temperature and specific humidity of the air overlying the canopy, $ $ is the aerodynamic resistance to turbulent transfer between the canopy air and the overlying air, and $ $ is the stomatal resistance to transpiration. (The term CFLUX that is generated by the subroutines DRCOEF and FLXSURFZ is equivalent to $/r\+\_\+a $ .) Thus, $T\+\_\+\{a,c\} $ and $q\+\_\+\{a,c\} $ can be evaluated as $\{a,c\} = \mbox{[}T\+\_\+\{a,pot\} /r\+\_\+a + T\+\_\+c /r\+\_\+b + T(0)\+\_\+\{pot\} /r\+\_\+\{a,,g\} \mbox{]}/\mbox{[}1/r\+\_\+a + 1/r\+\_\+b + 1/r\+\_\+\{a,,g\} \mbox{]} $ $\{a,c\} = \mbox{[}q\+\_\+a /r\+\_\+a + q\+\_\+c /(r\+\_\+b + r\+\_\+c ) + q(0)/r\+\_\+\{a,,g\} \mbox{]}/\mbox{[}1/r\+\_\+a + 1/(r\+\_\+b + r\+\_\+c ) + 1/r\+\_\+\{a,,g\} \mbox{]} $ If the water vapour flux is towards the canopy leaves, or if the canopy is snow-covered or rain-covered, $ $ is zero. If the water vapour flux is away from the canopy leaves and the fractional snow or water coverage on the canopy, $ $ or $F\+\_\+l /(r\+\_\+b + r\+\_\+c ) $ adjusted for the presence of intercepted snow or water, $ $ (XEVAP in the code) is calculated as a weighted average, as follows. If $F\+\_\+s $>$ 0 $, the canopy must be at a temperature of 0 C or less, and so it is deduced that no transpiration can be occurring. Thus, $ = (F\+\_\+s + F\+\_\+l )/r\+\_\+b $ . Otherwise, $ $ is calculated on the assumption that the resistance is equal to $r\+\_\+b $ over the water-covered area and $ + r\+\_\+c $ over the rest: $ = F\+\_\+l /r\+\_\+b + \mbox{[}1 -\/ F\+\_\+l \mbox{]}/\mbox{[}r\+\_\+b + r\+\_\+c \mbox{]}
+
+In the 450 loop, X\+E\+V\+A\+P is first set as a trial value to R\+B\+I\+N\+V (neglecting stomatal resistance), and Q\+A\+C is calculated using this value. If $q_{a,c} < q_c$ , indicating that the vapour flux is away from the canopy leaves, X\+E\+V\+A\+P is recalculated as above and Q\+A\+C is re-\/evaluated. Otherwise, if $F_s > 0$, X\+E\+V\+A\+P is scaled by $F_s$ , since it is assumed that snow on the canopy will be at a lower temperature than the canopy itself, and deposition via sublimation will occur preferentially onto it. $T_{a,c}$ and $T_{ac,v}$ are calculated as above, and the canopy-\/air turbulent transfer coefficients for sensible and latent heat flux, C\+F\+S\+E\+N\+S and C\+F\+E\+V\+A\+P, are set to R\+B\+I\+N\+V and X\+E\+V\+A\+P respectively.
+
+If I\+T\+C = 2, the canopy parameters and turbulent transfer coefficients are calculated, as noted above, on the basis of the assumption that the vegetation canopy and the air space within it can be treated as one aggregated mass, with a single representative temperature. Thus, the resistances $r_a$ and $r_b$ are considered as acting in series upon the sensible and latent heat fluxes between the canopy and the overlying air\+:
+
+$Q_{H,c} = \rho_a c_p [T_{,c} - T_{a,pot,} ]/(r_a + r_b )$
+
+$Q_{E,c} = L_v \rho_a [q_{,c} - q_{a,} ]/(r_a + r_b + r_c )$
+
+In loop 500 the term $1/(r_a + r_b )$ is calculated from the variables C\+F\+L\+U\+X (the inverse of $r_a$ ) and R\+B\+I\+N\+V (the inverse of $r_b$ ), and assigned to the temporary variable C\+F\+L\+X. If the incoming visible shortwave radiation Q\+S\+W\+I\+N\+V is greater than or equal to $25 W m^{-2}$ , the calculated value of C\+F\+L\+X is retained; if Q\+S\+W\+I\+N\+V is zero, it is reset to C\+F\+L\+U\+X; and between these two limits it varies linearly between the two.
+
+Thus the effect of the calculated leaf boundary resistance is suppressed during conditions of zero or low solar heating. (This is done to avoid unrealistically low calculated turbulent fluxes at night, which can lead to anomalously low canopy temperatures.) The overall aerodynamic resistance $r_A = r_a + r_b$ is obtained as 1/\+C\+F\+L\+X and assigned to the variable R\+A. As with I\+T\+C = 1, if $q_a < q_c$ , X\+E\+V\+A\+P is recalculated as above (except that $r_A$ is substituted for $r_b$ ). If $F_s > 0$, X\+E\+V\+A\+P is again scaled by $F_s$ .
+
+In the approach used here, the specific humidity of the aggregated canopy $q_{0,c}$ is not assumed to be equal to the saturated specific humidity at the canopy temperature, but is rather determined using $X_E$ . If the two methods of calculating $Q_{E,c}$ are assumed to be analogous\+:
+
+$Q_{E,c} = L_v \rho_a X_E [q_{,c} - q_{a,} ]$
+
+$Q_{E,c} = L_v \rho_a [q_{,0,c} - q_{a,} ]/r_A$
+
+then solving for $q_{0,c}$ leads to the expression
+
+$q_{0,c} = r_A X_E q_c + [1 - r_A X_E ]q_a$
+
+In the second part of the 500 loop the saturated specific humidity of the canopy is calculated as before and adjusted using the above equation to obtain the specific humidity of the aggregated canopy. This is then used to calculate $T_{c,v}$ . The canopy-\/air turbulent transfer coefficients for sensible and latent heat flux, C\+F\+S\+E\+N\+S and C\+F\+E\+V\+A\+P, are both set to C\+F\+L\+X, and for calculation purposes in the following loop $T_{a,c}$ is set to the potential temperature of the air above the canopy, and $q_{a,c}$ to the specific humidity of the air above the canopy.
+
+In the 525 loop, the terms of the canopy energy balance are evaluated. The energy balance is expressed as\+:
+
+$K_{*c} + L_{*c} - Q_{H,c} + Q_{H,g+} - Q_{E,c} - \Delta Q_{S,c} = 0$
+
+(The term $Q_{H,g+}$ corresponds to the variable Q\+S\+G\+A\+D\+D discussed above; the term $\Delta Q_{S,c}$ represents the change of energy storage in the canopy.) The net shortwave radiation $K_{*c}$ was evaluated earlier in the 50 loop. The net longwave radiation is obtained as\+:
+
+$L_{*c} = (1 - \chi) [L \downarrow + L \uparrow_g - 2 L \downarrow_c ]$
+
+$Q_{H,c}$ is calculated as above. If there is intercepted liquid or frozen water on the canopy, or if the vapour flux is downward, or if the stomatal resistance is less than a limiting high value of $5000 s m^{-1}$ , the canopy vapour flux $E_c$ (that is, $Q_{E,c} /L_v$ ) is calculated as above and the flag I\+E\+V\+A\+P\+C is set to 1; otherwise $E_c$ and I\+E\+V\+A\+P\+C are both set to zero and $q_c$ is set to $q_a$ . If the water vapour flux is towards the canopy and the canopy temperature is greater than the air dew point temperature, the flux is set to zero. If there is intercepted water on the canopy, a limiting evaporation flux E\+V\+P\+W\+E\+T is calculated as the rate required to sublimate all of the intercepted snow if $F_s > 0$, or all of the intercepted rain otherwise. If the canopy is more than half covered by intercepted water and the calculated canopy vapour flux is greater than E\+V\+P\+W\+E\+T, it is reset to E\+V\+P\+W\+E\+T and I\+E\+V\+A\+P\+C is set to zero. $Q_{E,c}$ is calculated from $E_c$ and $\Delta Q_{S,c}$ is obtained as
+
+$\Delta Q_{S,c} = C_c [T_c - T_{c,o} ]/ \Delta t$
+
+where $C_c$ is the canopy heat capacity, $T_{c,o}$ is the canopy temperature from the previous time step and $\Delta t$ is the length of the time step. The residual R\+E\+S\+I\+D of the energy balance is evaluated on the basis of the current estimation for the canopy temperature T\+C\+A\+N. If the absolute value of R\+E\+S\+I\+D is less than $5.0 W m^{-2}$ , or if the absolute value of the iteration step T\+S\+T\+E\+P most recently used is less than 0.\+01 K, the surface temperature is deemed to have been found and I\+T\+E\+R is set to 0. If the iteration counter N\+I\+T\+E\+R is equal to the maximum number and I\+T\+E\+R is still 1, I\+T\+E\+R is set to -\/1.
+
+In the following section, the iteration sequence is moved ahead a step. If I\+T\+C = 1, the calculations for the bisection method of solution in loop 550 are performed, over each of the modelled areas for which I\+T\+E\+R = 1. If N\+I\+T\+E\+R = 1 (indicating that this is the first step in the iteration), then if R\+E\+S\+I\+D $>$ 0 (indicating that the current value for T\+C\+A\+N had undershot the correct value), T\+C\+A\+N is incremented by 1 K; otherwise it is decremented by 1 K. If this is not the first step in the iteration, then if R\+E\+S\+I\+D $>$0 and T\+S\+T\+E\+P $<$ 0 (indicating that T\+C\+A\+N has undershot the correct value and the last temperature increment had been a negative one) or if R\+E\+S\+I\+D $<$ 0 and T\+S\+T\+E\+P $>$ 0 (indicating that T\+C\+A\+N has overshot the correct value and the last temperature increment had been a positive one), T\+S\+T\+E\+P is divided in half and its sign changed. T\+S\+T\+E\+P is then added to T\+C\+A\+N. If T\+C\+A\+N is vanishingly close to 0 C, it is reset to that value. The iteration counter N\+I\+T\+E\+R and the flag N\+U\+M\+I\+T are each incremented by one. Finally, if N\+U\+M\+I\+T $>$ 0, the iteration cycle is repeated from line 400 on.
+
+If I\+T\+C = 2, the calculations for the Newton-\/\+Raphson method of iteration in loop 575 are performed, over each of the modelled areas for which I\+T\+E\+R = 1. As outlined above, in this approach the value $x_{n+1}$ used at each iteration step is obtained from the value $x_n$ at the previous step as follows\+:
+
+$x_{n+1} = x_n - f(x_n )/f'(x_n )$
+
+Identifying $x_n$ with T\+C\+A\+N and $f(x_n )$ with the surface energy balance equation, it can be seen that the second term on the right-\/hand side corresponds to T\+S\+T\+E\+P; the numerator is equal to R\+E\+S\+I\+D and the denominator to the first derivative of the energy balance equation evaluated at T\+C\+A\+N, which in turn is equal to the sum of the derivatives of the individual terms\+:
+
+$d(L_{*c} )/dT = -8 \sigma T_c^3 (1 - \chi)$
+
+$d(Q_{H,c} )/dT = \rho_a c_p {1/r_A + [T_c - T_{a,pot} ] d(1/r_A )/dT}$
+
+$d(Q_{E,c} )/dT = L_v \rho_a {X_E dq_c /dT + [q_c - q_a ] dX_E /dT}$
+
+$d \Delta Q_{S,c} /dT = C_c / \Delta t$
+
+The term $d(1/r_A )/dT$ is represented by the variable D\+C\+F\+L\+X\+M, which is approximated as the difference between C\+F\+L\+X and its value for the previous iteration, C\+F\+L\+U\+X\+M, divided by T\+S\+T\+E\+P. The term $dX_E /dT$ is represented by the variable D\+X\+E\+V\+A\+P, which is approximated as the difference between X\+E\+V\+A\+P and its value for the previous iteration, X\+E\+V\+A\+P\+M, divided by T\+S\+T\+E\+P. The calculated value of T\+S\+T\+E\+P obtained from the above calculations is constrained to be between -\/10 and 5 K to dampen any spurious oscillations, and is then added to T\+C\+A\+N. If the resulting value of T\+C\+A\+N is vanishingly close to 0 C, it is reset to that value. At the end of the calculations the iteration counter N\+I\+T\+E\+R and the flag N\+U\+M\+I\+T are each incremented by one. The values of $T_{a,c}$ , $q_{a,c}$ and $T_{ac,v}$ are reset to $T_c$ , $q_c$ and $T_{c,v}$ respectively. Upon exiting the loop, if N\+U\+M\+I\+T $>$ 0, the iteration cycle is repeated from line 400 on.
+
+After the iteration has been completed, if the Newton-\/\+Raphson method has been used, a check is carried out in loop 600 to ascertain whether convergence has not been reached (i.\+e. whether I\+T\+E\+R = -\/1) for any location. In such cases it is assumed that conditions of near-\/neutral stability at the surface are the cause of the difficulty in finding a solution. The flags N\+U\+M\+I\+T and I\+E\+V\+A\+P\+C are set to zero, and a trial value of T\+C\+A\+N is calculated using the virtual potential temperature of the air and the canopy specific humidity. If the absolute value of R\+E\+S\+I\+D is $> 100 W m^{-2}$ , T\+C\+A\+N is set to this trial value. The values of $q_{0,c} and the components of the surface energy balance are recalculated as above, except that $\{H,c\} $ and $Q\+\_\+\{E,c\} $ are assumed as a first approximation to be zero. RESID is determined on this basis, and is then assigned to $\{H,c\} $ and $\{E,c\} $ . If RESID > 0, $Q\+\_\+\{E,c\} $ is set to this value; otherwise it is equally divided between $Q\+\_\+\{H,c\} $ and $Q\+\_\+\{E,c\} $ . The residual is then reset to zero, and E(0) and $\{v,c\}
+
+After loop 600, calls to D\+R\+C\+O\+E\+F or F\+L\+X\+S\+U\+R\+F\+Z are performed to re-\/evaluate the surface turbulent transfer coefficients for any locations for which the fluxes were modified in the previous loop, i.\+e. for any locations for which I\+E\+V\+A\+P\+C was set to 1. After this a check is performed for unphysical values of the canopy temperature, i.\+e. for values greater than 100 C or less than -\/100 C. If such values are encountered, an error message is printed and a call to abort is carried out.
+
+Next a check is carried out to determine whether freezing or melting of intercepted water has occurred over the current time step. If this is the case, adjustments are required to the canopy temperature, the intercepted liquid and frozen water amounts and fractional coverages, and to $C_c$ and $\Delta Q_{S,c}$ . In loop 650, if there is liquid water stored on the canopy and the canopy temperature is less than 0 C, the first half of the adjustment to $\Delta Q_{S,c}$ is performed, and the flags I\+T\+E\+R and N\+I\+T are set to 1. The available energy sink H\+F\+R\+E\+Z is calculated from C\+H\+C\+A\+P and the difference between T\+C\+A\+N and 0 C, and compared with H\+C\+O\+N\+V, calculated as the energy sink required to freeze all of the liquid water on the canopy. If H\+F\+R\+E\+Z $\leq$ H\+C\+O\+N\+V, the amount of water that can be frozen is calculated using the latent heat of melting. The fractional coverages of frozen and liquid water F\+S\+N\+O\+W\+C and F\+R\+A\+I\+N\+C and their masses S\+N\+O\+C\+A\+N and R\+A\+I\+C\+A\+N are adjusted accordingly, T\+C\+A\+N is set to 0 C, and the amount of energy involved is stored in the diagnostic variable Q\+M\+E\+L\+T\+C. Otherwise all of the intercepted liquid water is converted to frozen water, and the energy available for cooling the canopy is calculated as H\+C\+O\+O\+L = H\+F\+R\+E\+Z -\/ H\+C\+O\+N\+V. This available energy is applied to decreasing the temperature of the canopy, using the specific heat of the canopy elements, and the amount of energy that was involved in the phase change is stored in the diagnostic variable Q\+M\+E\+L\+T\+C. In both cases $q_c$ and $T_{c,v}$ are recalculated, and at the end of the loop $C_c$ and $\Delta Q_{S,c}$ are re-\/evaluated.
+
+In loop 675, if there is frozen water stored on the canopy and the canopy temperature is greater than 0 C, the first half of the adjustment to $\Delta Q_{S,c}$ is performed, and the flags I\+T\+E\+R and N\+I\+T are set to 1. The available energy for melting, H\+M\+E\+L\+T, is calculated from C\+H\+C\+A\+P and the difference between T\+C\+A\+N and 0 C, and compared with H\+C\+O\+N\+V, calculated as the energy required to melt all of the frozen water on the canopy. If H\+M\+E\+L\+T $\leq$ H\+C\+O\+N\+V, the amount of frozen water that can be melted is calculated using the latent heat of melting. The fractional coverages of frozen and liquid water F\+S\+N\+O\+W\+C and F\+R\+A\+I\+N\+C and their masses S\+N\+O\+C\+A\+N and R\+A\+I\+C\+A\+N are adjusted accordingly, T\+C\+A\+N is set to 0 C, and the amount of energy involved is stored in the diagnostic variable Q\+M\+E\+L\+T\+C. Otherwise, all of the intercepted frozen water is converted to liquid water, and the energy available for warming the canopy is calculated as H\+W\+A\+R\+M = H\+M\+E\+L\+T -\/ H\+C\+O\+N\+V. This available energy is applied to increasing the temperature of the canopy, using the specific heats of the canopy elements, and the amount of energy that was involved in the phase change is stored in the diagnostic variable Q\+M\+E\+L\+T\+C. In both cases $q_c$ and $T_{c,v}$ are recalculated, and at the end of the loop $C_c$ and $\Delta Q_{S,c}$ are re-\/evaluated.
+
+For the locations over which melting or freezing of water on the canopy has occurred, the surface fluxes must now be recalculated to reflect the modified canopy temperature and humidity. If N\+I\+T $>$ 0, first D\+R\+C\+O\+E\+F or F\+L\+X\+S\+U\+R\+F\+Z is called to re-\/evaluate the surface turbulent transfer coefficients over all locations where I\+T\+E\+R has been set to 1. Loops 700 and 750 repeat the calculations done in loops 475 and 500, to obtain the surface transfer coefficients. Loop 800 repeats the calculations of the surface fluxes done in loop 525.
+
+At the end of the subroutine, some final diagnostic and clean-\/up calculations are performed. If the evaporation rate from the canopy, E\+V\+A\+P\+C, is very small, it is added to the residual of the canopy energy balance equation, R\+E\+S\+I\+D, and then reset to zero. The overall residual is added to the sensible heat flux from the canopy. The energy balance of the surface underlying the canopy is then re-\/evaluated to take into account the new value of the canopy longwave radiation. If the surface temperature is close to 0 C, the residual of the equation is assigned to Q\+M\+E\+L\+T\+G, representing the energy associated with melting or freezing of water at the surface; otherwise it is assigned to the ground heat flux. If the water vapour flux is towards the canopy, the water sublimated or condensed is assigned to interception storage\+: to S\+N\+O\+C\+A\+N if S\+N\+O\+C\+A\+N $>$ 0 (for consistency with the definition of C\+P\+H\+C\+H\+C), and to R\+A\+I\+C\+A\+N otherwise. The diagnostic water vapour flux variables Q\+F\+C\+F and Q\+F\+C\+L, and the diagnostic change of canopy heat storage H\+T\+C\+C, are updated accordingly, and the canopy heat capacity C\+H\+C\+A\+P is recalculated; E\+V\+A\+P\+C is added to the diagnostic variable E\+V\+A\+P and then reset to zero. Finally, the net shortwave radiation, outgoing longwave radiation, sensible and latent heat fluxes are calculated for the whole canopy-\/ground surface ensemble; the evaporation rates are converted to $m s^{-1}$ ; and the iteration counter I\+T\+E\+R\+C\+T is updated for the level corresponding to the subarea type and the value of N\+I\+T\+E\+R.

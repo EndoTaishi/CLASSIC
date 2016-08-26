@@ -1,3 +1,34 @@
+!>\file
+C!           Canadian Terrestrial Ecosystem Model (CTEM)
+C!        Biomass To Structural Attributes Conversion Subroutine 
+!!
+!!
+!!The time-varying biomass in the leaves (\f$C_\mathrm{L}\f$), stem (\f$C_\mathrm{S}\f$) and root (\f$C_\mathrm{R}\f$) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.
+!!
+!!Leaf biomass is converted to LAI using specific leaf area (\f${SLA}\f$, \f$m^2\,(kg\,C)^{-1}\f$), which itself is assumed to be a function of leaf lifespan (\f$\tau_\mathrm{L}\f$; see also ctem_params.f90)
+!!
+!!\f[ \label{sla} SLA= \gamma_\mathrm{L}\tau_\mathrm{L}^{-0.5}\\ LAI = C_\mathrm{L}SLA\nonumber \f]
+!!
+!!where \f$\gamma_\mathrm{L}\f$ is a constant with value equal to \f$25\,m^2\,(kg\,C)^{-1}\,yr^{0.5}\f$.
+!!
+!!The vegetation height (\f$H\f$; \f$m\f$) is calculated for tree, crop and grass PFTs as
+!!\f[\label{height} H = \begin{cases} \min\left(10.0C_\mathrm{S}^{0.385},45\right) trees\\ (C_\mathrm{S} + C_\mathrm{L})^{0.385} crops\\ 3.5 (C_{L,g} + 0.55\,C_{L,b})^{0.5} grasses,\\ \end{cases} \f]
+!!where \f$C_{L,g}\f$ is the green leaf biomass and \f$C_{L,b}\f$ is the brown leaf biomass that is scaled by 0.55 to reduce its contribution to the plant height. CTEM explicitly tracks brown leaf mass for grass PFTs. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly \f$(\tau_{L,b} = 0.1\,\tau_\mathrm{L}\f$).
+!!
+!!CTEM dynamically simulates root distribution and depth in soil following \cite Arora2003838. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth \f$z\f$ is given by
+!!\f[ \label{fracroo} f_\mathrm{R}(z) = 1 - \exp(-\iota z). \f]
+!!
+!!Rooting depth (\f$d_\mathrm{R}\f$; \f$m\f$), which is defined to be the depth containing \f$99\,{\%}\f$ of the root mass, is found by setting \f$z\f$ equal to \f$d_\mathrm{R}\f$ and \f$f_\mathrm{R} = 0.99\f$, which yields
+!!\f[ \label{rootterm1} d_\mathrm{R} = \frac{-\ln(1-f_\mathrm{R})}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \f]
+!!
+!!The parameter \f$\iota\f$ that describes the exponential root distribution is calculated as
+!!\f[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_\mathrm{R}}}{C_\mathrm{R}} \right)^{0.8}, \f]
+!!
+!!where \f$\overline{\iota}\f$ represents the PFT-specific mean root distribution profile parameter and \f$\overline{C_\mathrm{R}}\f$ the average root biomass derived from \cite Jackson1996-va (see also ctem_params.f90). Equation (\ref{iota}) yields a lower (higher) value of \f$\iota\f$ than \f$\overline{\iota}\f$ when root biomass \f$C_\mathrm{R}\f$ is higher (lower) than the PFT-specific mean root biomass \f$\overline{C_\mathrm{R}}\f$, resulting in a deeper (shallower) root profile than the mean root profile.
+!!
+!!The rooting depth \f$d_\mathrm{R}\f$ is checked to ensure it does not exceed the soil depth. If so, \f$d_\mathrm{R}\f$ is set to the soil depth and \f$\iota\f$ is recalculated as \f$\iota = 4.605/d_\mathrm{R}\f$ (see Eq. \ref{rootterm1} for derivation of 4.605 term). The new value of \f$\iota\f$ is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers.
+!!
+!!
       subroutine    bio2str( gleafmas, bleafmas, stemmass, rootmass,                        
      1                            il1,      il2,  fcancmx,    zbotw,
      2                          delzw, nol2pfts,  soildpth,
@@ -9,13 +40,9 @@ c    4--------------- inputs above this line, outputs below --------
 c
 c     ----------------------------------------------------------------
 c
-C           Canadian Terrestrial Ecosystem Model (CTEM)
-C        Biomass To Structural Attributes Conversion Subroutine 
-c
-
 c     2   Jul 2013  - Integreated ctem_params module
 c     J. Melton       
-
+c
 c     22  Nov 2012  - calling this version 1.1 since a fair bit of ctem
 c     V. Arora        subroutines were changed for compatibility with class
 c                     version 3.6 including the capability to run ctem in
@@ -49,54 +76,7 @@ c                     also, this subroutine does not estimate zolnc(i,5)
 c                     the log of roughness length over the bare fraction
 c                     of the grid cell. only roughness lengths over the
 c                     vegetated fraction are updated
-c 
 c
-c     ----------------------------------------------------------------
-c     inputs
-c
-c     gleafmas  - green or live leaf mass in kg c/m2, for the 9 pfts
-c     bleafmas  - brown or dead leaf mass in kg c/m2, for the 9 pfts
-c     stemmass  - stem biomass in kg c/m2, for the 9 pfts
-c     rootmass  - root biomass in kg c/m2, for the 9 pfts
-c     fcancmx   - max. fractional coverages of ctem's 9 pfts. this is
-c                 different from fcanc and fcancs (which may vary with
-c                 snow depth). fcancmx doesn't change, unless of course
-c                 its changed by land use change or dynamic vegetation.
-c     delzw     - thicknesses of the 3 soil layers
-c     zbotw     - bottom of soil layers
-c     il1, il2  - il1=1, il2=ilg
-c     nol2pfts  - number of level 2 pfts
-c     soildpth  - soil depth (m)
-c    
-c     outputs
-c
-c     ailcg     - green lai for ctem's 9 pfts
-c     ailcb     - brown lai for ctem's 9 pfts. for now we assume only
-c                 grasses can have brown leaves.
-c     ailc      - lai to be used by class
-c     zolnc     - log of roughness length to be used by class
-c     rmatctem  - fraction of live roots in each soil layer for each of 
-c                 ctem's 9 pfts
-c     rmatc     - fraction of live roots in each soil layer for each of the
-c                 class' 4 pfts
-c     slai      - storage or imaginary lai for phenology purposes
-c     bmasveg   - total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
-c     cmasvegc  - total canopy mass for each of the 4 class pfts. recall that 
-c                 class requires canopy mass as an input, and this is now 
-c                 provided by ctem. kg/m2.
-c     veghght   - vegetation height (meters)
-c     rootdpth  - 99% soil rooting depth (meters)
-c                 both veghght & rootdpth can be used as diagnostics to see
-c                 how vegetation grows above and below ground, respectively.
-c     alvisc    - albedo for 4 class pfts simulated by ctem, visible 
-c     alnirc    - albedo for 4 class pfts simulated by ctem, near ir
-c     paic      - plant area index for class' 4 pfts. this is the sum of
-c                 leaf area index and stem area index.
-c     slaic     - storage lai. this will be used as min. lai that class
-c                 sees so that it doesn't blow up in its stomatal
-c                 conductance calculations.
-c 
-c     ---------------------------------------------------------------- 
 
       use ctem_params,        only : ignd, icc, ilg, ican, abszero,
      1                               l2max,kk, eta, kappa, kn, lfespany, 
@@ -106,39 +86,73 @@ c     ----------------------------------------------------------------
 
       implicit none
 
-      integer il1, il2, i, j, k, m, n, k1c, k2c
-      integer nol2pfts(ican), icount, sort(icc),kend
+      integer il1 !<input: il1=1
+      integer il2 !<input: il2=ilg
+      integer i, j, k, m, n, k1c, k2c
+      integer nol2pfts(ican) !<input: number of level 2 pfts
+      integer icount
+      integer sort(icc)
+      integer kend
 
       logical deeproots
         
-      real  gleafmas(ilg,icc),  bleafmas(ilg,icc),  stemmass(ilg,icc),
-     1      rootmass(ilg,icc),     ailcg(ilg,icc),     ailcb(ilg,icc),   
-     2           ailc(ilg,ican),      zolnc(ilg,ican), paic(ilg, ican),
-     3       rmatc(ilg,ican,ignd),   fcancmx(ilg,icc), delzw(ilg,ignd),
-     4          zbotw(ilg,ignd),               rmatctem(ilg,icc,ignd),
-     5          slai(ilg,icc),   bmasveg(ilg,icc),   cmasvegc(ilg,ican),
-     6           sai(ilg,icc),       saic(ilg,ican), sfcancmx(ilg,ican),
-     7         alvisc(ilg,ican),     alnirc(ilg,ican),  pai(ilg,icc),
-     8          slaic(ilg,ican)
-
-      real           sla(icc),   veghght(ilg,icc),        fcoeff, 
-     1      lnrghlth(ilg,icc),   averough(ilg,ican),      b(icc),   
-     3      rootdpth(ilg,icc),  usealpha(ilg,icc),         a(ilg,icc),
-     4          useb(ilg,icc),              zroot,      soildpth(ilg),
-     8       etmp(ilg,icc,ignd),    totala(ilg,icc),       rmat_sum
+      real gleafmas(ilg,icc)     !<input: green or live leaf mass in kg c/m2, for the 9 pfts
+      real bleafmas(ilg,icc)     !<input: brown or dead leaf mass in kg c/m2, for the 9 pfts
+      real stemmass(ilg,icc)     !<input: stem biomass in kg c/m2, for the 9 pfts
+      real rootmass(ilg,icc)     !<input: root biomass in kg c/m2, for the 9 pfts
+      real ailcg(ilg,icc)        !<output: green lai for ctem's 9 pfts
+      real ailcb(ilg,icc)        !<output: brown lai for ctem's 9 pfts. for now we assume only grasses can have brown leaves.
+      real ailc(ilg,ican)        !<output: lai to be used by class
+      real zolnc(ilg,ican)       !<output: log of roughness length to be used by class
+      real paic(ilg, ican)       !<output: plant area index for class' 4 pfts. this is the sum of leaf area index and stem area index.
+      real rmatc(ilg,ican,ignd)  !<output: fraction of live roots in each soil layer for each of the class' 4 pfts
+      real fcancmx(ilg,icc)      !<input: max. fractional coverages of ctem's 9 pfts. this is different from fcanc and fcancs
+                                 !<(which may vary with snow depth). fcancmx doesn't change, unless of course its changed by
+                                 !<land use change or dynamic vegetation.
+      real delzw(ilg,ignd)       !<input: thicknesses of the 3 soil layers
+      real zbotw(ilg,ignd)       !<input: bottom of soil layers
+      real rmatctem(ilg,icc,ignd)!<output: fraction of live roots in each soil layer for each of ctem's 9 pfts
+      real slai(ilg,icc)         !<output: storage or imaginary lai for phenology purposes
+      real bmasveg(ilg,icc)      !<output: total (gleaf + stem + root) biomass for each ctem pft, kg c/m2
+      real cmasvegc(ilg,ican)    !<output: total canopy mass for each of the 4 class pfts. recall that class requires canopy
+                                 !<mass as an input, and this is now provided by ctem. kg/m2.
+      real sai(ilg,icc)          !< 
+      real saic(ilg,ican)        !< 
+      real sfcancmx(ilg,ican)    !< 
+      real alvisc(ilg,ican)      !<output: albedo for 4 class pfts simulated by ctem, visible 
+      real alnirc(ilg,ican)      !<output: albedo for 4 class pfts simulated by ctem, near ir
+      real pai(ilg,icc)          !< 
+      real slaic(ilg,ican)       !<output: storage lai. this will be used as min. lai that class sees
+                                 !<so that it doesn't blow up in its stomatal conductance calculations.
+      real sla(icc)              !< 
+      real veghght(ilg,icc)      !<output: vegetation height (meters)
+      real fcoeff                !< 
+      real lnrghlth(ilg,icc)     !< 
+      real averough(ilg,ican)    !< 
+      real b(icc)                !< 
+      real rootdpth(ilg,icc)     !<output: 99% soil rooting depth (meters) both veghght & rootdpth can be used as diagnostics
+                                 !<to see how vegetation grows above and below ground, respectively.
+      real usealpha(ilg,icc)     !< 
+      real a(ilg,icc)            !< 
+      real useb(ilg,icc)         !< 
+      real zroot                 !< 
+      real soildpth(ilg)         !<input: soil depth (m)
+      real etmp(ilg,icc,ignd)    !<
+      real totala(ilg,icc)       !<
+      real rmat_sum              !< 
 c
 c     ---------------------------------------------------------------
-c     Constants and parameters are located in ctem_params.f90
-c
-c     class' original root parameterization has deeper roots than ctem's
-c     default values based on literature. in the coupled model this leads
-c     to lower evapotranspiration (et) values. an option is provided here to
-c     deepen roots, but this will also increase photosynthesis and vegetation
-c     biomass slightly, due to more access to soil water. so while use of
-c     deeper roots is desirable in the coupled global model, one may decide
-c     to use ctem's default parameterizarion for stand alone simulations, and
-c     set deeproots to .false. 
-c
+!>     Constants and parameters are located in ctem_params.f90
+!!
+!!    class' original root parameterization has deeper roots than ctem's
+!!    default values based on literature. in the coupled model this leads
+!!    to lower evapotranspiration (et) values. an option is provided here to
+!!    deepen roots, but this will also increase photosynthesis and vegetation
+!!    biomass slightly, due to more access to soil water. so while use of
+!!    deeper roots is desirable in the coupled global model, one may decide
+!!    to use ctem's default parameterizarion for stand alone simulations, and
+!!    set deeproots to .false. 
+!!
       data deeproots/.false./
 c     ---------------------------------------------------------------
 c
@@ -202,12 +216,11 @@ c
           pai(i,j)=0.0
 90      continue
 80    continue
-c
-c
-c     ------ 1. conversion of leaf biomass into leaf area index -------
-c
-c     find specific leaf area (sla, m2/kg) using leaf life span
-c
+!>
+!!------ 1. conversion of leaf biomass into leaf area index -------
+!!
+!!find specific leaf area (sla, m2/kg) using leaf life span
+!!
       icount=0
       do 100 j = 1, ican
         do 101 m = 1, nol2pfts(j)
@@ -217,45 +230,45 @@ c
           if(specsla(n).gt.abszero) sla(icount)=specsla(n)  
 101     continue
 100   continue
-c
-c     convert leaf biomass into lai. brown leaves could have less
-c     lai than the green leaves for the same leaf mass. for now we
-c     assume sla of brown leaves is fracbofg times that of green 
-c     leaves. 
-c
-c     also find stem area index as a function of stem biomass
-c
+!>
+!!convert leaf biomass into lai. brown leaves could have less
+!!lai than the green leaves for the same leaf mass. for now we
+!!assume sla of brown leaves is fracbofg times that of green 
+!!leaves. 
+!!
+!!also find stem area index as a function of stem biomass
+!!
       do 150 j = 1,icc
         do 160 i = il1,il2
          if (fcancmx(i,j).gt.0.0) then
           ailcg(i,j)=sla(j)*gleafmas(i,j)
           ailcb(i,j)=sla(j)*bleafmas(i,j)*fracbofg
           sai(i,j)=0.55*(1.0-exp(-0.175*stemmass(i,j))) !stem area index
-c         plant area index is sum of green and brown leaf area indices
-c         and stem area index
+!>plant area index is sum of green and brown leaf area indices
+!!and stem area index
           pai(i,j)=ailcg(i,j)+ailcb(i,j)+sai(i,j)
 
-c         make class see some minimum pai, otherwise it runs into numerical
-c         problems
+!>make class see some minimum pai, otherwise it runs into numerical
+!!problems
             pai(i,j)=max(0.3,pai(i,j))
 
          endif
 160     continue
 150   continue
-c
-c     get fcancmx weighted leaf area index for use by class
-c       needle leaf evg + dcd = total needle leaf    
-c       broad leaf evg + dcd cld + dcd dry = total broad leaf    
-c       crop c3 + c4 = total crop
-c       grass c3 + c4 = total grass
-c     also add brown lai. note that although green + brown
-c     lai is to be used by class for energy and water balance
-c     calculations, stomatal conductance estimated by the 
-c     photosynthesis subroutine is only based on green lai.
-c     that is although both green+brown leaves intercept
-c     water and light, only the green portion photosynthesizes.
-c     also lump stem and plant area indices for class' 4 pfts
-c
+!>
+!!get fcancmx weighted leaf area index for use by class
+!!needle leaf evg + dcd = total needle leaf    
+!!broad leaf evg + dcd cld + dcd dry = total broad leaf    
+!!crop c3 + c4 = total crop
+!!grass c3 + c4 = total grass
+!!also add brown lai. note that although green + brown
+!!lai is to be used by class for energy and water balance
+!!calculations, stomatal conductance estimated by the 
+!!photosynthesis subroutine is only based on green lai.
+!!that is although both green+brown leaves intercept
+!!water and light, only the green portion photosynthesizes.
+!!also lump stem and plant area indices for class' 4 pfts
+!!
       k1c=0
       do 200 j = 1, ican
         if(j.eq.1) then
@@ -289,24 +302,26 @@ c
              paic(i,j)=0.0
              slaic(i,j)=0.0
           endif
-c         for crops and grasses set the minimum lai to a small number, other
-c         wise class will never run tsolvc and thus phtsyn and ctem will not
-c         be able to grow crops or grasses.
+!>for crops and grasses set the minimum lai to a small number, other
+!!wise class will never run tsolvc and thus phtsyn and ctem will not
+!!be able to grow crops or grasses.
           if(j.eq.3.or.j.eq.4) ailc(i,j)=max(ailc(i,j),0.1)
 c
 240     continue
 230   continue
-c
-c     ------ 2. conversion of stem biomass into roughness length -------
-c 
-c     class uses log of roughness length (zoln) as an input parameter. when 
-c     vegetation grows and dies as per ctem, then zoln is provided by ctem.
-c
-c     1. convert stem biomass into vegetation height for trees and crops,
-c        and convert leaf biomass into vegetation height for grass
-c     2. convert vegetation height into roughness length & take its log
-c     3. lump this for ctem's 9 pfts into class' 4 pfts
-c
+!>
+!!------ 2. conversion of stem biomass into roughness length -------
+!!
+!!class uses log of roughness length (zoln) as an input parameter. when 
+!!vegetation grows and dies as per ctem, then zoln is provided by ctem.
+!!
+!!1. convert stem biomass into vegetation height for trees and crops,
+!!and convert leaf biomass into vegetation height for grass
+!!
+!!2. convert vegetation height into roughness length & take its log
+!!
+!!3. lump this for ctem's 9 pfts into class' 4 pfts
+!!
       k1c=0
       do 250 j = 1, ican
         if(j.eq.1) then
@@ -359,14 +374,12 @@ c
 c
 340     continue
 330   continue
-c
-c
-c     ------ 3. estimating fraction of roots in each soil layer for -----
-c     ------      ctem's each vegetation type, using root biomass   -----
-c
-c     
-c     estimate parameter b of variable root profile parameterization
-c
+!>
+!!------ 3. estimating fraction of roots in each soil layer for -----
+!!------      ctem's each vegetation type, using root biomass   -----
+!!
+!!estimate parameter b of variable root profile parameterization
+!!
       icount=0
       do 350 j = 1, ican
         do 360 m = 1, nol2pfts(j)
@@ -381,9 +394,9 @@ c         for hydraulic redistrubution
           endif
 360     continue
 350   continue
-c
-c     use b to estimate 99% rooting depth
-c
+!>
+!!use b to estimate 99% rooting depth
+!!
       k1c=0
       do 370 j = 1,ican
         if(j.eq.1) then
@@ -399,15 +412,14 @@ c
             usealpha(i,m)=alpha(sort(m))
             rootdpth(i,m) = (4.605*(rootmass(i,m)**alpha(sort(m))))/b(m)
 
-c
-c           if estimated rooting depth is greater than soil depth, or
-c           the maximum rooting depth then adjust rooting depth and
-c           parameter alpha
-c
-c           also find "a" (parameter determining root profile). this is 
-c           the "a" which depends on time varying root biomass 
-c
-c
+!>
+!!if estimated rooting depth is greater than soil depth, or
+!!the maximum rooting depth then adjust rooting depth and
+!!parameter alpha
+!!
+!!also find "a" (parameter determining root profile). this is 
+!!the "a" which depends on time varying root biomass 
+!!
             if(rootdpth(i,m).gt.min(soildpth(i),zbotw(i,ignd),
      1                                mxrtdpth(sort(m))))then
               rootdpth(i,m) = min(soildpth(i),zbotw(i,ignd),
@@ -433,16 +445,15 @@ c
         do 410 i = il1, il2
 
            kend=9999  ! initialize with a dummy value
-c
-c          using parameter "a" we can find fraction of roots in each soil layer
-c          just like class
-c
+!>
+!!using parameter "a" we can find fraction of roots in each soil layer just like class
+!!
            zroot=rootdpth(i,j)
 
            totala(i,j) = 1.0-exp(-a(i,j)*zroot)
 
            if(zroot.le.zbotw(i,1))then
-c           if rootdepth is shallower than the bottom of the first layer
+!!if rootdepth is shallower than the bottom of the first layer
             rmatctem(i,j,1)=1.0
             do 414 k=2,ignd
              rmatctem(i,j,k)=0.0
@@ -452,8 +463,8 @@ c           if rootdepth is shallower than the bottom of the first layer
 c
             do 415 k=2,ignd
              if(zroot.le.zbotw(i,k).and.zroot.gt.zbotw(i,k-1))then
-c             if rootdepth is shallower than the bottom of current layer and
-c             is deeper than bottom of the previous top layer
+!>if rootdepth is shallower than the bottom of current layer and
+!!is deeper than bottom of the previous top layer
               kend=k ! kend = soil layer number in which the roots end  
              endif
 415         continue
@@ -468,13 +479,13 @@ c
             etmp(i,j,1)=exp(-a(i,j)*zbotw(i,1))
             rmatctem(i,j,1)=(1.0-etmp(i,j,1))/totala(i,j)
             if (kend .eq. 2) then
-c             if rootdepth is shallower than the bottom of 2nd layer
+!>if rootdepth is shallower than the bottom of 2nd layer
                etmp(i,j,kend)=exp(-a(i,j)*zroot)
                rmatctem(i,j,kend)=(etmp(i,j,kend-1)-etmp(i,j,kend))
      1                          /totala(i,j)
             elseif (kend .gt. 2) then
-c             if rootdepth is shallower than the bottom of 3rd layer 
-c             or even the deeper layer (ignd>3)
+!>if rootdepth is shallower than the bottom of 3rd layer 
+!!or even the deeper layer (ignd>3)
 
               do 416 k=2,kend-1
                 etmp(i,j,k)=exp(-a(i,j)*zbotw(i,k))
@@ -489,9 +500,9 @@ c             or even the deeper layer (ignd>3)
 c
 410     continue
 400   continue
-c
-c    make sure all fractions (of roots in each layer) add to one.
-c
+!>
+!!make sure all fractions (of roots in each layer) add to one.
+!!
       do 411 j = 1, icc
         do 412 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
@@ -509,9 +520,9 @@ c
          endif
 412     continue
 411   continue
-c
-c     lump rmatctem(i,9,ignd)  into rmatc(i,4,ignd) for use by class
-c
+!>
+!!lump rmatctem(i,9,ignd)  into rmatc(i,4,ignd) for use by class
+!!
       k1c=0
       do 420 j = 1, ican
         if(j.eq.1) then
@@ -547,28 +558,25 @@ c
 c
 460     continue
 450   continue
-c
-c
-c     -------------------  4. calculate storage lai  --------------------
-c
+!>
+!>-------------------  4. calculate storage lai  --------------------
+!>
       do 500 j = 1, icc
         do 510 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
           slai(i,j)=((stemmass(i,j)+rootmass(i,j))/eta(sort(j)))
      &     **(1./kappa(sort(j)))
           slai(i,j)=(prcnslai(sort(j))/100.0)*sla(j)*slai(i,j)
-c
-c         need a minimum slai to be able to grow from scratch. consider
-c         this as model seeds.
+!>
+!>need a minimum slai to be able to grow from scratch. consider this as model seeds.
           slai(i,j)=max(slai(i,j),minslai(sort(j)))
          endif
 510     continue
 500   continue
-c
-c
-c     --- 5. calculate total vegetation biomass for each ctem pft, and --
-c     ---------------- canopy mass for each class pft ------------------
-c
+!>
+!!--- 5. calculate total vegetation biomass for each ctem pft, and --
+!!---------------- canopy mass for each class pft ------------------
+!!
       do 550 j = 1, icc
         do 560 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then
@@ -576,11 +584,11 @@ c
          endif
 560     continue
 550   continue
-c
-c     since class uses canopy mass and not total vegetation biomass as an
-c     input, we find canopy mass as a sum of stem and leaf mass, for each
-c     class pft, i.e. only above ground biomass. 
-c
+!>
+!!since class uses canopy mass and not total vegetation biomass as an
+!!input, we find canopy mass as a sum of stem and leaf mass, for each
+!!class pft, i.e. only above ground biomass. 
+!!
       k1c=0
       do 600 j = 1, ican
         if(j.eq.1) then
@@ -606,20 +614,20 @@ c
           else
             cmasvegc(i,j)=0.0
           endif
-c       
-c         if there is no vegetation canopy mass will be abszero. this should 
-c         essentially mean more bare ground, but since we are not changing
-c         fractional coverages at present, we pass a minimum canopy mass
-c         to class so that it doesn't run into numerical problems.
-c
+!>      
+!!if there is no vegetation canopy mass will be abszero. this should 
+!!essentially mean more bare ground, but since we are not changing
+!!fractional coverages at present, we pass a minimum canopy mass
+!!to class so that it doesn't run into numerical problems.
+!!
           cmasvegc(i,j)=max(cmasvegc(i,j),3.0)
 c
 640     continue
 630   continue
-c
-c     --- 6. calculate albedo for class' 4 pfts based on specified ----
-c     ------ albedos of ctem 9 pfts and their fractional coveraes -----
-c
+!>
+!!--- 6. calculate albedo for class' 4 pfts based on specified ----
+!!------ albedos of ctem 9 pfts and their fractional coveraes -----
+!!
       k1c=0
       do 700 j = 1, ican
         if(j.eq.1) then

@@ -1,3 +1,7 @@
+!>\file
+C!Purpose: Calculate vegetation albedos, transmissivities and 
+C!stomatal resistances.
+C!
       SUBROUTINE CANALB(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN,
      1                  TRVSCS,TRIRCS,RC,RCS,
      2                  ALVSC,ALIRC,RSMIN,QA50,VPDA,VPDB,PSIGA,PSIGB,
@@ -6,10 +10,7 @@
      5                  ACVDAT,ACIDAT,ALVSGC,ALIRGC,ALVSSC,ALIRSC,
      6                  ILG,IL1,IL2,JL,IC,ICP1,IG,IALC,
      7                  CXTEFF,TRVS,TRIR,RCACC,RCG,RCV,RCT,GC) 
-C
-C     Purpose: Calculate vegetation albedos, transmissivities and 
-C     stomatal resistances.
-C
+
 C     * AUG 04/15 - D.VERSEGHY/M.LAZARE. REMOVE FLAG VALUE OF RC FOR 
 C     *                         VERY DRY SOILS.
 C     * SEP 05/14 - P.BARTLETT. INCREASED ALBEDO VALUES FOR SNOW-
@@ -67,94 +68,85 @@ C
 C
 C     * OUTPUT ARRAYS.
 C
-      REAL ALVSCN(ILG)  !Visible albedo of vegetation over bare ground 
-                        ![ ]   
-      REAL ALIRCN(ILG)  !Near-IR albedo of vegetation over bare ground 
-                        ![ ]
-      REAL ALVSCS(ILG)  !Visible albedo of vegetation over snow [ ]    
-      REAL ALIRCS(ILG)  !Near-IR albedo of vegetation over snow [ ]
-      REAL TRVSCN(ILG)  !Visible transmissivity of vegetation over bare 
-                        !ground [ ] (tau_c)
-      REAL TRIRCN(ILG)  !Near-IR transmissivity of vegetation over bare 
-                        !ground [ ] (tau_c)
-      REAL TRVSCS(ILG)  !Visible transmissivity of vegetation over snow 
-                        ![ ] (tau_c)
-      REAL TRIRCS(ILG)  !Near-IR transmissivity of vegetation over snow 
-                        ![ ] (tau_c)
-      REAL RC    (ILG)  !Stomatal resistance of vegetation over bare 
-                        !ground [s m-1] (rc)
-      REAL RCS   (ILG)  !Stomatal resistance of vegetation over snow 
-                        ![s m-1]
+      REAL ALVSCN(ILG)  !<Visible albedo of vegetation over bare ground [ ]   
+      REAL ALIRCN(ILG)  !<Near-IR albedo of vegetation over bare ground [ ]
+      REAL ALVSCS(ILG)  !<Visible albedo of vegetation over snow [ ]    
+      REAL ALIRCS(ILG)  !<Near-IR albedo of vegetation over snow [ ]
+      REAL TRVSCN(ILG)  !<Visible transmissivity of vegetation over bare 
+                        !!ground \f$[ ] (\tau_c)\f$
+      REAL TRIRCN(ILG)  !<Near-IR transmissivity of vegetation over bare 
+                        !!ground \f$[ ] (\tau_c)\f$
+      REAL TRVSCS(ILG)  !<Visible transmissivity of vegetation over snow 
+                        !!\f$[ ] (\tau_c)\f$
+      REAL TRIRCS(ILG)  !<Near-IR transmissivity of vegetation over snow 
+                        !!\f$[ ] (\tau_c)\f$
+      REAL RC    (ILG)  !<Stomatal resistance of vegetation over bare 
+                        !!ground \f$[s m^{-1}] (r_c)\f$
+      REAL RCS   (ILG)  !<Stomatal resistance of vegetation over snow \f$[s m^{-1}]\f$
 C
 C     * 2-D INPUT ARRAYS.                                                   
 C                        
-      REAL ALVSC (ILG,ICP1) !Background average visible albedo of 
-                            !vegetation category [ ]
-      REAL ALIRC (ILG,ICP1) !Background average near-infrared albedo of 
-                            !vegetation category [ ]
-      REAL RSMIN (ILG,IC)   !Minimum stomatal resistance of vegetation 
-                            !category [s m-1] (rs,min)
-      REAL QA50  (ILG,IC)   !Reference value of incoming shortwave 
-                            !radiation for vegetation category (used in 
-                            !stomatal resistance calculation) [W m-2] 
-                            !(K1⁄2)
-      REAL VPDA  (ILG,IC)   !Vapour pressure deficit coefficient for 
-                            !vegetation category (used in stomatal 
-                            !resistance calculation) [ ] (cv1)        
-      REAL VPDB  (ILG,IC)   !Vapour pressure deficit coefficient for 
-                            !vegetation category (used in stomatal 
-                            !resistance calculation) [ ] (cv2)
-      REAL PSIGA (ILG,IC)   !Soil moisture suction coefficient for 
-                            !vegetation category (used in stomatal 
-                            !resistance calculation) [ ] (c_psi_1)
-      REAL PSIGB (ILG,IC)   !Soil moisture suction coefficient for 
-                            !vegetation category (used in stomatal 
-                            !resistance calculation) [ ] (c_psi_2)
-      REAL FCAN  (ILG,IC)   !Fractional coverage of vegetation category 
-                            !over bare ground [ ] (Xi)
-      REAL FCANS (ILG,IC)   !Fractional coverage of vegetation category 
-                            !over snow [ ]
-      REAL PAI   (ILG,IC)   !Plant area index of vegetation category 
-                            !over bare ground [ ] (lambda_p)
-      REAL PAIS  (ILG,IC)   !Plant area index of vegetation category 
-                            !over snow [ ] (lambda_p)    
-      REAL ACVDAT(ILG,IC)   !Optional user-specified value of canopy 
-                            !visible albedo to override CLASS-calculated 
-                            !value [ ]
-      REAL ACIDAT(ILG,IC)   !Optional user-specified value of canopy 
-                            !near-infrared albedo to override CLASS-
-                            !calculated value [ ]
-      REAL AIL   (ILG,IC)   !Leaf area index of vegetation category over 
-                            !bare ground [ ] (lambda)
-      REAL FROOT (ILG,IG)   !Fraction of water-accessing vegetation 
-                            !roots in soil layer [ ]
+      REAL ALVSC (ILG,ICP1) !<Background average visible albedo of 
+                            !!vegetation category [ ]
+      REAL ALIRC (ILG,ICP1) !<Background average near-infrared albedo of 
+                            !!vegetation category [ ]
+      REAL RSMIN (ILG,IC)   !<Minimum stomatal resistance of vegetation 
+                            !!category \f$[s m^{-1}] (r_{s,min})\f$
+      REAL QA50  (ILG,IC)   !<Reference value of incoming shortwave 
+                            !!radiation for vegetation category (used in 
+                            !!stomatal resistance calculation) \f$[W m^{-2}] (K \downarrow_{1/2})\f$
+      REAL VPDA  (ILG,IC)   !<Vapour pressure deficit coefficient for 
+                            !!vegetation category (used in stomatal 
+                            !!resistance calculation) \f$[ ] (c_{v1})\f$        
+      REAL VPDB  (ILG,IC)   !<Vapour pressure deficit coefficient for 
+                            !!vegetation category (used in stomatal 
+                            !!resistance calculation) \f$[ ] (c_{v2})\f$
+      REAL PSIGA (ILG,IC)   !<Soil moisture suction coefficient for 
+                            !!vegetation category (used in stomatal 
+                            !!resistance calculation) \f$[ ] (c_{\Psi 1})\f$
+      REAL PSIGB (ILG,IC)   !<Soil moisture suction coefficient for 
+                            !!vegetation category (used in stomatal 
+                            !!resistance calculation) \f$[ ] (c_{\Psi 2})\f$
+      REAL FCAN  (ILG,IC)   !<Fractional coverage of vegetation category 
+                            !!over bare ground \f$[ ] (X_i)\f$
+      REAL FCANS (ILG,IC)   !<Fractional coverage of vegetation category 
+                            !!over snow [ ]
+      REAL PAI   (ILG,IC)   !<Plant area index of vegetation category 
+                            !!over bare ground \f$[ ] (\Lambda_p)\f$
+      REAL PAIS  (ILG,IC)   !<Plant area index of vegetation category 
+                            !!over snow \f$[ ] (\Lambda_p)\f$
+      REAL ACVDAT(ILG,IC)   !<Optional user-specified value of canopy 
+                            !!visible albedo to override CLASS-calculated 
+                            !!value [ ]
+      REAL ACIDAT(ILG,IC)   !<Optional user-specified value of canopy 
+                            !!near-infrared albedo to override CLASS-
+                            !!calculated value [ ]
+      REAL AIL   (ILG,IC)   !<Leaf area index of vegetation category over 
+                            !!bare ground \f$[ ] (\Lambda)\f$
+      REAL FROOT (ILG,IG)   !<Fraction of water-accessing vegetation 
+                            !!roots in soil layer [ ]
 C
 C     * 1-D INPUT ARRAYS.
 C
-      REAL FC    (ILG)  !Fractional coverage of canopy over bare 
-                        !ground [ ]
-      REAL FCS   (ILG)  !Fractional coverage of canopy over snow [ ] 
-      REAL FSNOW (ILG)  !Diagnosed fractional snow coverage [ ] 
-      REAL FSNOWC(ILG)  !Fractional coverage of canopy by frozen water 
-                        !over snow-free subarea [ ]
-      REAL FSNOCS(ILG)  !Fractional coverage of canopy by frozen water 
-                        !over snow-covered subarea [ ]
-      REAL PSIGND(ILG)  !Minimum liquid moisture suction in soil layers 
-                        ![m] (psi_s)
-      REAL FCLOUD(ILG)  !Fractional cloud cover [ ] (Xi) 
-      REAL COSZS (ILG)  !Cosine of solar zenith angle [ ] 
-      REAL QSWINV(ILG)  !Visible radiation incident on horizontal 
-                        !surface [W m-2] (K)
-      REAL VPD   (ILG)  !Vapour pressure deficit of air [mb] {delta_e } 
-      REAL TA    (ILG)  !Air temperature at reference height [K] (Ta) 
-      REAL ALVSGC(ILG)  !Visible/near-IR albedo of bare ground under 
-                        !vegetation [ ]
-      REAL ALIRGC(ILG)  !Visible/near-IR albedo of bare ground under 
-                        !vegetation [ ]
-      REAL ALVSSC(ILG)  !Visible/near-IR albedo of snow under vegetation 
-                        ![ ]
-      REAL ALIRSC(ILG)  !Visible/near-IR albedo of snow under vegetation 
-                        ![ ]
+      REAL FC    (ILG)  !<Fractional coverage of canopy over bare 
+                        !!ground [ ]
+      REAL FCS   (ILG)  !<Fractional coverage of canopy over snow [ ] 
+      REAL FSNOW (ILG)  !<Diagnosed fractional snow coverage [ ] 
+      REAL FSNOWC(ILG)  !<Fractional coverage of canopy by frozen water 
+                        !!over snow-free subarea [ ]
+      REAL FSNOCS(ILG)  !<Fractional coverage of canopy by frozen water 
+                        !!over snow-covered subarea [ ]
+      REAL PSIGND(ILG)  !<Minimum liquid moisture suction in soil layers \f$[m] (\Psi_s)\f$
+      REAL FCLOUD(ILG)  !<Fractional cloud cover \f$[ ] (X_i) \f$
+      REAL COSZS (ILG)  !<Cosine of solar zenith angle [ ] 
+      REAL QSWINV(ILG)  !<Visible radiation incident on horizontal 
+                        !!surface \f$[W m^{-2}] (K)\f$
+      REAL VPD   (ILG)  !<Vapour pressure deficit of air \f$[mb] {\Delta e }\f$
+      REAL TA    (ILG)  !<Air temperature at reference height \f$[K] (T_a) \f$
+      REAL ALVSGC(ILG)  !<Visible/near-IR albedo of bare ground under vegetation [ ]
+      REAL ALIRGC(ILG)  !<Visible/near-IR albedo of bare ground under vegetation [ ]
+      REAL ALVSSC(ILG)  !<Visible/near-IR albedo of snow under vegetation [ ]
+      REAL ALIRSC(ILG)  !<Visible/near-IR albedo of snow under vegetation [ ]
 C
 C     * OTHER DATA ARRAYS.
 C
@@ -174,8 +166,8 @@ C
 C
 C     * COMMON BLOCK AND OTHER PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
+      REAL DELT     !<Time step [s]
+      REAL TFREZ    !<Freezing point of water [K]
       REAL ALVSWC,ALIRWC,TRCLRV,TRCLDV,TRCLRT,TRCLDT,CXTLRG
 C                                                                                  
       COMMON /CLASS1/ DELT,TFREZ                                                  
@@ -184,96 +176,99 @@ C
       DATA ALVSWC,ALIRWC,CXTLRG
      1    /  0.27,0.38,1.0E20  /
 C----------------------------------------------------------------------
-      !
-      !The transmissivity τc of a vegetation canopy to shortwave 
-      !radiation is obtained by applying a form of Beer’s law of 
-      !radiation transfer in non-scattering media:
-      !
-      !tau_c = exp[-kappa*PAI]
-      !
-      !where kappa is the canopy extinction coefficient and PAI is the 
-      !plant area index. The extinction coefficient is calculated after 
-      !Goudriaan (1988) as
-      !
-      !kappa = epsilon*O/cos(Z)
-      !
-      !where epsilon is a correction factor less than or equal to 1, 
-      !accounting for forward-scattering of radiation and non-random 
-      !leaf distributions (i.e. clumping), O represents the mean 
-      !projected leaf area fraction perpendicular to the incoming 
-      !radiation, and Z is the zenith angle of the incoming radiation. 
-      !For crops, grass and needleleaf trees, the distribution of leaf 
-      !angles is assumed to be spherical, and thus O = 0.5. For 
-      !broadleaf trees, the preferred leaf orientation tends to be 
-      !horizontal; thus O = cos(Z).
-      !
-      !In the clear-sky case, incoming shortwave radiation is dominated 
-      !by the direct beam; thus, the transmissivity for clear skies 
-      !tau_c,0 is evaluated by simply setting Z to Zs, the solar zenith 
-      !angle. An extensive search of the literature for values of 
-      !epsilon appropriate to the four vegetation categories yielded the 
-      !following results for the extinction coefficient:
-      !
-      !kappa = 0.3/cos(Zs)  (needleleaf trees)
-      !kappa = 0.4          (broadleaf trees, full canopy)
-      !kappa = 0.4/cos(Zs)  (broadleaf trees, leafless)
-      !kappa = 0.4/cos(Zs)  (crops and grass)
-      !
-      !In the case of overcast skies, the hemispherical distribution of 
-      !incoming shortwave radiation is modelled using the generally 
-      !accepted “standard overcast sky” distribution (e.g. Steven and 
-      !Unsworth, 1980), where the shortwave radiation D(Z) emanating 
-      !from a sky zenith angle Z is approximated as
-      !
-      !D(Z) = D(0)*[(1 + 1.23cosZ)/2.23].
-      !
-      !Integration of the cloudy-sky transmissivity tau_c,cloudy over 
-      !the sky hemisphere is performed using a simple weighting function 
-      !proposed by Goudriaan (1988):
-      !
-      !tau_c,cloudy = 0.3*tau_c(Z=15 degrees) + 0.5 τc(Z=45 degrees) 
-      !               + 0.2 tau_c(Z=75 degrees)
-      !
-      !The albedo alpha_c of a vegetation canopy is, like the 
-      !transmissivity, dependent in principle on the zenith angle Z of 
-      !the incoming radiation and the mean projected leaf area fraction 
-      !O. However, in practice the observed diurnal and seasonal 
-      !variation of vegetation albedo tends to be slight for closed 
-      !canopies or for radiation zenith angles larger than a few 
-      !degrees. Since the former is generally true in the tropics and 
-      !the latter in the extratropics, the diurnal variation of visible 
-      !and near-infrared canopy albedo is neglected in CLASS.
-      !
-      !Corrections are applied to the average albedos to account for the 
-      !effects of intercepted snow on the canopy and incomplete canopy 
-      !closure. The presence of snow on the canopy will increase the 
-      !albedo; this increase will be larger in the visible range of the 
-      !spectrum, since the visible albedo of vegetation is typically 
-      !very small. Making use of data presented by Leonard and Eschner 
-      !(1968), the visible albedo of snow-covered vegetation is set to 
-      !0.17. The near-infrared albedo, being larger in magnitude, will 
-      !be affected to a lesser degree, and is therefore set to the 
-      !background near-infrared albedo plus 0.04.
-      !
-      !If the canopy closure is incomplete, a fraction chi of the ground 
-      !or snow under the canopy will be visible through gaps in it. This 
-      !fraction is equal to the sky view factor of the underlying 
-      !surface, which is calculated using an equation analogous to that 
-      !for the canopy transmissivity, as an exponential function of the 
-      !plant area index PAI:
-      !
-      !chi = exp[-c*PAI]
-      !
-      !where c is a constant depending on the vegetation category. The 
-      !overall albedo alpha_T is calculated as a weighted average of the 
-      !canopy albedo and the underlying ground or snow albedo (the 
-      !latter weighted by the canopy transmissivity, to account for the 
-      !decreased downwelling shortwave radiation at the surface):
-      !
-      !alpha_T = (1 – chi)*alpha_c + chi*tau_c*alpha_0
-      !
-      !where alpha_0 is the albedo of the surface under the canopy.
-      !
+      !>
+      !!The transmissivity \f$\tau_c\f$ of a vegetation canopy to shortwave 
+      !!radiation is obtained by applying a form of Beer’s law of 
+      !!radiation transfer in non-scattering media:
+      !!\f$\tau_c = exp[-\kappa \Lambda_p]\f$
+      !!where \f$\kappa\f$ is the canopy extinction coefficient and \f$\Lambda_p\f$ is the 
+      !!plant area index. The extinction coefficient is calculated after 
+      !!Goudriaan (1988) as
+      !!\f$\kappa = \epsilon O/cos(Z)\f$
+      !!where epsilon is a correction factor less than or equal to 1, 
+      !!accounting for forward-scattering of radiation and non-random 
+      !!leaf distributions (i.e. clumping), O represents the mean 
+      !!projected leaf area fraction perpendicular to the incoming 
+      !!radiation, and Z is the zenith angle of the incoming radiation. 
+      !!For crops, grass and needleleaf trees, the distribution of leaf 
+      !!angles is assumed to be spherical, and thus O = 0.5. For 
+      !!broadleaf trees, the preferred leaf orientation tends to be 
+      !!horizontal; thus O = cos(Z).
+      !!
+      !!In the clear-sky case, incoming shortwave radiation is dominated 
+      !!by the direct beam; thus, the transmissivity for clear skies 
+      !!\f$\tau_{c,0}\f$ is evaluated by simply setting Z to \f$Z_s\f$, the solar zenith 
+      !!angle. An extensive search of the literature for values of 
+      !!epsilon appropriate to the four vegetation categories yielded the 
+      !!following results for the extinction coefficient:
+      !!
+      !!\f$\kappa = 0.3/cos(Z_s)  (needleleaf trees)\f$
+      !!\f$\kappa = 0.4          (broadleaf trees, full canopy)\f$
+      !!\f$\kappa = 0.4/cos(Z_s)  (broadleaf trees, leafless)\f$
+      !!\f$\kappa = 0.4/cos(Z_s)  (crops and grass)\f$
+      !!
+      !!In the visible range of the shortwave spectrum, scattering is less important because of high leaf
+      !!absorptivities. The following results were obtained for visible radiation:
+      !!
+      !!\f$\kappa = 0.4/cosZ_s     (needleleaf trees)\f$
+      !!\f$\kappa = 0.7            (broadleaf trees, full canopy)\f$
+      !!\f$\kappa = 0.4/cosZ_s     (broadleaf trees, leafless)\f$
+      !!\f$\kappa = 0.5/cosZ_s     (crops and grass)\f$
+      !!
+      !!In the case of overcast skies, the hemispherical distribution of 
+      !!incoming shortwave radiation is modelled using the generally 
+      !!accepted “standard overcast sky” distribution (e.g. Steven and 
+      !!Unsworth, 1980), where the shortwave radiation D(Z) emanating 
+      !!from a sky zenith angle Z is approximated as
+      !!
+      !!\f$D(Z) = D(0) [(1 + 1.23cosZ)/2.23].\f$
+      !!
+      !!Integration of the cloudy-sky transmissivity \f$tau_{c,cloudy}\f$ over 
+      !!the sky hemisphere is performed using a simple weighting function 
+      !!proposed by Goudriaan (1988):
+      !!
+      !!\f$\tau_{c,cloudy} = 0.3 \tau_c(Z=15^o) + 0.5 \tau_c(Z=45^o) + 0.2 \tau_c(Z=75^o)\f$
+      !!
+      !!The albedo \f$\alpha_c\f$ of a vegetation canopy is, like the 
+      !!transmissivity, dependent in principle on the zenith angle Z of 
+      !!the incoming radiation and the mean projected leaf area fraction 
+      !!O. However, in practice the observed diurnal and seasonal 
+      !!variation of vegetation albedo tends to be slight for closed 
+      !!canopies or for radiation zenith angles larger than a few 
+      !!degrees. Since the former is generally true in the tropics and 
+      !!the latter in the extratropics, the diurnal variation of visible 
+      !!and near-infrared canopy albedo is neglected in CLASS.
+      !!
+      !!Corrections are applied to the average albedos to account for the 
+      !!effects of intercepted snow on the canopy and incomplete canopy 
+      !!closure. The presence of snow on the canopy will increase the 
+      !!albedo; this increase will be larger in the visible range of the 
+      !!spectrum, since the visible albedo of vegetation is typically 
+      !!very small. Making use of data presented by Leonard and Eschner 
+      !!(1968), the visible albedo of snow-covered vegetation is set to 
+      !!0.17. The near-infrared albedo, being larger in magnitude, will 
+      !!be affected to a lesser degree, and is therefore set to the 
+      !!background near-infrared albedo plus 0.04.
+      !!
+      !!If the canopy closure is incomplete, a fraction chi of the ground 
+      !!or snow under the canopy will be visible through gaps in it. This 
+      !!fraction is equal to the sky view factor of the underlying 
+      !!surface, which is calculated using an equation analogous to that 
+      !!for the canopy transmissivity, as an exponential function of the 
+      !!plant area index \f$\Lambda_p\f$:
+      !!
+      !!\f$\chi = exp[-c\Lambda_p]\f$
+      !!
+      !!where c is a constant depending on the vegetation category. The 
+      !!overall albedo \f$\alpha_T\f$ is calculated as a weighted average of the 
+      !!canopy albedo and the underlying ground or snow albedo (the 
+      !!latter weighted by the canopy transmissivity, to account for the 
+      !!decreased downwelling shortwave radiation at the surface):
+      !!
+      !!\f$\alpha_T = (1 – \chi) \alpha_c + \chi \tau_c \alpha_0\f$
+      !!
+      !!where \f$alpha_0\f$ is the albedo of the surface under the canopy.
+      !!
 C
 C     * ASSIGN CONSTANT EXPONENTIATION TERMS: EXPMAX1=EXP(-0.4/0.9659),
 C     * EXPMAX2=EXP(-0.4/0.7071),EXPMAX3=EXP(-0.4/0.2588)
@@ -281,16 +276,16 @@ C
       EXPMAX1=0.6609
       EXPMAX2=0.5680
       EXPMAX3=0.2132
-      !
-      !At the beginning of the subroutine, a series of work arrays is 
-      !initialized to zero. Then the transmissivity and albedo of each 
-      !vegetation category are calculated in turn, first over bare soil 
-      !and then over a snow pack. After each of the latter sets of 
-      !calculations, consistency checks are carried out to ensure that 
-      !the calculated albedos and transmissivities are not less than 0 
-      !or greater than 1, and that the transmissivity is not greater 
-      !than 90% of the non-reflected radiation.
-      !
+      !!
+      !>At the beginning of the subroutine, a series of work arrays is 
+      !!initialized to zero. Then the transmissivity and albedo of each 
+      !!vegetation category are calculated in turn, first over bare soil 
+      !!and then over a snow pack. After each of the latter sets of 
+      !!calculations, consistency checks are carried out to ensure that 
+      !!the calculated albedos and transmissivities are not less than 0 
+      !!or greater than 1, and that the transmissivity is not greater 
+      !!than 90% of the non-reflected radiation.
+      !!
 C
 C     * INITIALIZE WORK ARRAYS.
 C
@@ -306,54 +301,54 @@ C
           RCG(I,J)=0.0
           RCV(I,J)=0.0
 100   CONTINUE
-      !
-      !The clear-sky and cloudy-sky transmissivities in the visible 
-      !range are calculated first, and then the clear-sky and cloudy-sky 
-      !transmissivities in the total shortwave spectrum, using the 
-      !extinction coefficient equations above. (For broadleaf trees, the 
-      !minimum of the full-canopy and leafless calculated values is 
-      !used.) The overall transmissivity in the visible range at the 
-      !current time step is obtained as an average of the clear and 
-      !cloudy-sky values, weighted according to the fractional cloud 
-      !cover. The effective overall extinction coefficient CXTEFF in the 
-      !visible range is computed for use later on in the stomatal 
-      !resistance calculation. The overall transmissivity for the entire 
-      !shortwave spectrum at the current time step is similarly obtained 
-      !as an average of the clear and cloudy-sky values, weighted 
-      !according to the fractional cloud cover. The near-infrared 
-      !transmissivity is calculated from the total and visible 
-      !transmissivities, making use of the assumption that visible and 
-      !near-infrared radiation each typically comprise 50% of the 
-      !incoming shortwave radiation. Lastly, the aggregated visible and 
-      !near-infrared transmissivities for the bulk canopy are 
-      !incremented using the current values weighted by the fractional 
-      !coverage of the vegetation category. At the end, the sum is 
-      !normalized by the total fractional vegetation coverage in the 
-      !subarea.
-      !
-      !For the albedos, first the sky view factor and the near-infrared 
-      !albedo of snow-covered vegetation are calculated. Next, a branch 
-      !directs further processing depending on the value of the flag 
-      !IALC. If IALC = 0, the CLASS-calculated visible and near-infrared 
-      !vegetation albedos are used. These albedos are corrected for the 
-      !presence of intercepted snow, using an average of the snow-
-      !covered and background snow-free albedos weighted according to 
-      !FSNOWC over snow-free, and FSNOCS over snow-covered subareas 
-      !(representing the ratio of the amount of snow present on the 
-      !canopy relative to the interception capacity). The correction for 
-      !incomplete canopy closure is applied to the resulting visible and 
-      !near- infrared albedos as described above. If IALC = 1, user-
-      !specified albedos for the vegetation canopy are used instead of 
-      !the CLASS values. These are assumed to incorporate the effects of 
-      !incomplete canopy closure, but not of the presence of snow. Thus 
-      !the CLASS values for the albedo of snow-covered vegetation and 
-      !the albedo of snow under the canopy are still used in the 
-      !averaging. Finally, the aggregated visible and near-infrared 
-      !albedos for the bulk canopy are incremented using the current 
-      !values weighted by the fractional coverage of the vegetation 
-      !category. At the end, the sum is normalized by the total 
-      !fractional vegetation coverage in the subarea.
-      !
+      !!
+      !>The clear-sky and cloudy-sky transmissivities in the visible 
+      !!range are calculated first, and then the clear-sky and cloudy-sky 
+      !!transmissivities in the total shortwave spectrum, using the 
+      !!extinction coefficient equations above. (For broadleaf trees, the 
+      !!minimum of the full-canopy and leafless calculated values is 
+      !!used.) The overall transmissivity in the visible range at the 
+      !!current time step is obtained as an average of the clear and 
+      !!cloudy-sky values, weighted according to the fractional cloud 
+      !!cover. The effective overall extinction coefficient CXTEFF in the 
+      !!visible range is computed for use later on in the stomatal 
+      !!resistance calculation. The overall transmissivity for the entire 
+      !!shortwave spectrum at the current time step is similarly obtained 
+      !!as an average of the clear and cloudy-sky values, weighted 
+      !!according to the fractional cloud cover. The near-infrared 
+      !!transmissivity is calculated from the total and visible 
+      !!transmissivities, making use of the assumption that visible and 
+      !!near-infrared radiation each typically comprise 50% of the 
+      !!incoming shortwave radiation. Lastly, the aggregated visible and 
+      !!near-infrared transmissivities for the bulk canopy are 
+      !!incremented using the current values weighted by the fractional 
+      !!coverage of the vegetation category. At the end, the sum is 
+      !!normalized by the total fractional vegetation coverage in the 
+      !!subarea.
+      !!
+      !!For the albedos, first the sky view factor and the near-infrared 
+      !!albedo of snow-covered vegetation are calculated. Next, a branch 
+      !!directs further processing depending on the value of the flag 
+      !!IALC. If IALC = 0, the CLASS-calculated visible and near-infrared 
+      !!vegetation albedos are used. These albedos are corrected for the 
+      !!presence of intercepted snow, using an average of the snow-
+      !!covered and background snow-free albedos weighted according to 
+      !!FSNOWC over snow-free, and FSNOCS over snow-covered subareas 
+      !!(representing the ratio of the amount of snow present on the 
+      !!canopy relative to the interception capacity). The correction for 
+      !!incomplete canopy closure is applied to the resulting visible and 
+      !!near- infrared albedos as described above. If IALC = 1, user-
+      !!specified albedos for the vegetation canopy are used instead of 
+      !!the CLASS values. These are assumed to incorporate the effects of 
+      !!incomplete canopy closure, but not of the presence of snow. Thus 
+      !!the CLASS values for the albedo of snow-covered vegetation and 
+      !!the albedo of snow under the canopy are still used in the 
+      !!averaging. Finally, the aggregated visible and near-infrared 
+      !!albedos for the bulk canopy are incremented using the current 
+      !!values weighted by the fractional coverage of the vegetation 
+      !!category. At the end, the sum is normalized by the total 
+      !!fractional vegetation coverage in the subarea.
+      !!
 C
 C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS FOR CANOPY OVER 
 C     * BARE SOIL.
@@ -733,79 +728,78 @@ C
           CALL XIT('CANALB',-5)    
       ENDIF                      
 C-----------------------------------------------------------------------
-      !
-      !In the final section, the stomatal resistance rc of the 
-      !vegetation canopy is determined. Based on the analysis of Schulze 
-      !et al. (1995), the unstressed stomatal resistance rc,u for a 
-      !given vegetation category can be calculated as a function of the 
-      !incoming visible shortwave radiation QSWINV:
-      !
-      !rc,u = RSMIN*kappa_e/ ln[{QSWINV + QA50/kappa_e)/
-      !         { QSWINV*exp(-kappa_e*AIL) + QA50/kappa_e)]
-      !
-      !where rs,min is the minimum stomatal resistance for the 
-      !vegetation category, kappa_e is the extinction coeffient for 
-      !visible radiation (CXTEFF above), AIL is the leaf area index, and 
-      !QA50 is the value of QSWINV at which rc,u = 2*RSMIN.
-      !
-      !Suboptimum environmental conditions for transpiration may lead to 
-      !stresses on the plant, causing the stomatal resistance to be 
-      !greater than its unstressed value. The effects of these stresses 
-      !are modelled by defining functions of the air temperature TA, the 
-      !air vapour pressure deficit VPD, and the soil moisture suction 
-      !PSIGND. These functions are used to derive rc,i of each 
-      !vegetation category on the basis of rc,u,i:
-      !
-      !rc,i = f(TA)*f(VPD) f(PSIGND) * rc,u,i
-      !
-      !The air temperature function f(TA) has a value of 1 for 
-      !temperatures between 5 degrees C and 40 degrees C, and an 
-      !arbitrary large value of 250 for temperatures less than -5 
-      !degrees C and greater than 50 degrees C. Between these points it 
-      !varies in a linear fashion. For the vapour pressure deficit 
-      !function f(VPD), two alternate forms are provided, after Oren et 
-      !al. (1999) and Wu et al. (2000) respectively:
-      !
-      !f(VPD) = [(VPD/10.0)^VPDB]/VPDA and
-      !f(VPD) = 1/[exp(-VPDA*VPD/10.0)]
-      !
-      !where VPDA and VPDB are parameters depending on the vegetation 
-      !category. If VPDB is greater than zero, the first form is used; 
-      !if not, the second form is used. The soil moisture suction 
-      !function f(PSIGND) is expressed, following Choudhury and Idso 
-      !(1985) and Fisher et al. (1981), as:
-      !
-      !f(PSIGND) = 1 + (PSIGND /PSIGA)^PSIGB
-      !
-      !where PSIGA and PSIGB are parameters depending on the vegetation 
-      !category. Finally, the aggregated stomatal resistance for the 
-      !canopy over the bare ground subarea is obtained as a weighted 
-      !average over the vegetation categories. (It is assumed that 
-      !transpiration is suppressed when snow is present under the 
-      !canopy, so rc for this subarea is set to a large number). Since, 
-      !following the electrical analogy, resistances act in parallel, 
-      !the aggregated resistance for the subarea of canopy over bare 
-      !ground is obtained as an average of inverses:
-      !
-      !X/rc = sigma(Xi/rc,i)
-      !
-      !The calculations described above pertaining to stomatal 
-      !resistances are performed in loops 850, 900 and 950. In the 850 
-      !loop, f(TA) is evaluated. In the 900 loop, for each vegetation 
-      !category in turn, f(VPD), f(PSIGND) and rc,i are determined. rc,i 
-      !is assigned upper and lower limits of 5000 and 10 s m-1 
-      !respectively, and the accumulated stomatal resistance for the 
-      !canopy is incremented by X i/rc,i. In loop 950, FRMAX, the 
-      !maximum value of FROOT, the fraction of transpiration apportioned 
-      !to each soil layer, is determined. If FRMAX is vanishingly small, 
-      !transpiration is suppressed by setting the stomatal resistances 
-      !over the vegetated subareas to a large number. If the incoming 
-      !visible radiation is small, the stomatal resistances are likewise 
-      !set to a large number. Otherwise, the stomatal resistance of 
-      !vegetation over snow is set to a large number, and the 
-      !normalized, aggregated stomatal resistance of vegetation over 
-      !soil is obtained by inverting the accumulated value.
-      !
+      !>
+      !!In the final section, the stomatal resistance \f$r_c\f$ of the 
+      !!vegetation canopy is determined. Based on the analysis of Schulze 
+      !!et al. (1995), the unstressed stomatal resistance \f$r_{c,u}\f$ for a 
+      !!given vegetation category can be calculated as a function of the 
+      !!incoming visible shortwave radiation \f$K\downarrow\f$:
+      !!
+      !!\f$r_{c,u} = r_{s,min} \kappa_e / ln[{K\downarrow + K\downarrow_{1/2} / \kappa_e} / { K\downarrow exp(-\kappa_e \Lambda ) + K\downarrow_{1/2} / \kappa_e }]\f$
+      !!
+      !!where \f$r_{s,min}\f$ is the minimum stomatal resistance for the 
+      !!vegetation category, \f$\kappa_e\f$ is the extinction coeffient for 
+      !!visible radiation (CXTEFF above), \f$\Lambda\f$ is the leaf area index, and 
+      !!\f$K\downarrow_{1/2}\f$ is the value of \f$K\downarrow\f$ at which \f$r_{c,u} = 2 r_{s,min}.\f$
+      !!
+      !!Suboptimum environmental conditions for transpiration may lead to 
+      !!stresses on the plant, causing the stomatal resistance to be 
+      !!greater than its unstressed value. The effects of these stresses 
+      !!are modelled by defining functions of the air temperature \f$T_a\f$, the 
+      !!air vapour pressure deficit \f$\Delta e\f$, and the soil moisture suction 
+      !!\f$\Psi_s\f$. These functions are used to derive \f$r_{c,i}\f$ of each 
+      !!vegetation category on the basis of \f$r_{c,u,i}\f$:
+      !!
+      !!\f$r_{c,i} = f(T_a) f( \Delta_e ) f( \Psi_s ) * r_{c,u,i}\f$
+      !!
+      !!The air temperature function \f$f(T_a)\f$ has a value of 1 for 
+      !!temperatures between \f$5^o C\f$ and \f$40^o C\f$, and an 
+      !!arbitrary large value of 250 for temperatures less than \f$-5^o C\f$ 
+      !!and greater than \f$50^o C\f$. Between these points it 
+      !!varies in a linear fashion. For the vapour pressure deficit 
+      !!function \f$f( \Delta e )\f$, two alternate forms are provided, after Oren et 
+      !!al. (1999) and Wu et al. (2000) respectively:
+      !!
+      !!\f$f( \Delta e) = [( \Delta e/10.0)^{cv2}]/c_{v1}\f$ and
+      !!\f$f(\Delta e) = 1/[exp(-c_{v1} \Delta e/10.0)]\f$
+      !!
+      !!where \f$c_{v1}\f$ and \f$c_{v2}\f$ are parameters depending on the vegetation 
+      !!category. If \f$c_{v2}\f$ is greater than zero, the first form is used; 
+      !!if not, the second form is used. The soil moisture suction 
+      !!function \f$f(\Psi_s)\f$ is expressed, following Choudhury and Idso 
+      !!(1985) and Fisher et al. (1981), as:
+      !!
+      !!\f$f(\Psi_s) = 1 + (\Psi_s / c_{\Psi 1})^{c \Psi 2}\f$
+      !!
+      !!where \f$c_{\Psi 1}\f$ and \f$c_{\Psi 2}\f$ are parameters depending on the vegetation 
+      !!category. Finally, the aggregated stomatal resistance for the 
+      !!canopy over the bare ground subarea is obtained as a weighted 
+      !!average over the vegetation categories. (It is assumed that 
+      !!transpiration is suppressed when snow is present under the 
+      !!canopy, so rc for this subarea is set to a large number). Since, 
+      !!following the electrical analogy, resistances act in parallel, 
+      !!the aggregated resistance for the subarea of canopy over bare 
+      !!ground is obtained as an average of inverses:
+      !!
+      !!\f$X/r_c = \Sigma (X_i / r_{c,i})\f$
+      !!
+      !!The calculations described above pertaining to stomatal 
+      !!resistances are performed in loops 850, 900 and 950. In the 850 
+      !!loop, \f$f(T_a)\f$ is evaluated. In the 900 loop, for each vegetation 
+      !!category in turn, \f$f(\Delta e)\f$, \f$f(\Psi_s)\f$ and \f$r_{c,i}\f$ are determined. \f$r_{c,i}\f$ 
+      !!is assigned upper and lower limits of 5000 and 10 \f$s m^{-1}\f$ 
+      !!respectively, and the accumulated stomatal resistance for the 
+      !!canopy is incremented by \f$X_i / r_{c,i}\f$. In loop 950, FRMAX, the 
+      !!maximum value of FROOT, the fraction of transpiration apportioned 
+      !!to each soil layer, is determined. If FRMAX is vanishingly small, 
+      !!transpiration is suppressed by setting the stomatal resistances 
+      !!over the vegetated subareas to a large number. If the incoming 
+      !!visible radiation is small, the stomatal resistances are likewise 
+      !!set to a large number. Otherwise, the stomatal resistance of 
+      !!vegetation over snow is set to a large number, and the 
+      !!normalized, aggregated stomatal resistance of vegetation over 
+      !!soil is obtained by inverting the accumulated value.
+      !!
 C
 C     * BULK STOMATAL RESISTANCES FOR CANOPY OVERLYING SNOW AND CANOPY
 C     * OVERLYING BARE SOIL.
