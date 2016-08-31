@@ -73,25 +73,3 @@ Estimate the methane flux from wetlands for each grid cell scaling by the wetlan
 if (obswetf) then ! Use the read-\/in wetland locations as the C\+H4 producing area
 
 else ! dynamically find the wetland locations
-
-top soil layer porosity
-
-if soil wetness meets a latitude specific threshold then the slope based wetland fraction is wet and is an actual wetland else not
-
-initialize dynamic wetland fraction to zero
-
-Testing\+:
-
-high lats all area north of 35 n
-
-tropics between 10 s and 35 n
-
-s. hemi, everything else below 10 s
-
-$<$0.\+025\% slope class
-
-$<$0.\+1 \% slope class
-
-$<$0.\+2\% slope class
-
-new dynamic calculation same as ch4wet1 \& 2, but wetfrac replaced by wetfdyn 

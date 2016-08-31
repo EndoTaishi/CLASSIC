@@ -2,9 +2,7 @@
 !!Canadian Terrestrial Ecosystem Model (CTEM)
 !!Soil Methane Oxidation Subroutine
 !!
-!! Coded up based on C. Curry (2007) Modelling the
-!! the soil consumption of atmospheric methane at the global scale. Global
-!! Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
+!! Coded up based on \cite Curry2007-du.
 
 subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &
      &                     THIC,PSIS,GRAV,FCAN,obswetf, &

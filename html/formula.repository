@@ -1860,3 +1860,19 @@
 \form#1859:\[ \begin{tabular} { | l | l | c | } \hline CANVAP & Evaporation/sublimation of water from vegetation canopy & CS,C \\ \hline CANADD & Addition of rainfall/snowfall to canopy; throughfall and drip & CS,C \\ \hline CWCALC & Freezing/thawing of liquid/frozen water on canopy & CS,C \\ \hline SUBCAN & Precipitaiton and condensation under canopy & CS,C \\ \hline TWCALC & Freezing/thawing of liquid/frozen water in soil & CS,GS,C,G \\ \hline SNOVAP & Sublimaiton from snow pack & CS,GS,C,G \\ \hline TFREEZ & Freezing of ponded water on soil & CS,GS,C,G \\ \hline TMELT & Melting of snow pack & CS,GS \\ \hline SNOADD & Accumulation of snow on ground & CS,GS,C,G \\ \hline SNINFL & Infiltration of rain into snow pack & CS,GS \\ \hline ICEBAL & Energy and water budget of ice sheets & GS,G \\ \hline GRINFL & Infiltraiton of water into soil & CS,GS,C,G \\ \hline GRDRAN & Soil water movement in response to gravity and suction forces & CS,GS,C,G \\ \hline TMCALC & Step ahead soil layer temperatures, check for freezing/thawing & CS,GS,C,G \\ \hline CHKWAT & Check subarea moisture balances for closure & CS,GS,C,G \\ \hline SNOALBW & Temporal variation of snow albedo and density & CS,GS \\ \hline \end{tabular} \]
 \form#1860:\[ \begin{tabular} { | l | c | c | c | } \hline needle leaf & evg & dcd & --- \\ \hline broad leaf & evg & dcd-cld & dcd-dry \\ \hline crops & c3 & c4 & --- \\ \hline grasses & c3 & c4 & --- \\ \hline \end{tabular} \]
 \form#1861:$m^2$
+\form#1862:$(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86) $
+\form#1863:\[ \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1} +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\ - f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1), \alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full} \]
+\form#1864:\[ \label{barecol} \frac{\mathrm{d}f_{bare}}{\mathrm{d}t} = \sum_{\beta=1}^{N} (m_\beta f_\beta - c_{\beta, {bare}}f^b_\beta f_{bare}). \]
+\form#1865:\[ \label{coloniz} c_{\alpha,\beta}f^b_\alpha f_{\beta} = c_\alpha \left(\frac{c_{\alpha,\beta}}{c_\alpha} \right)f^b_\alpha f_{\beta} = c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}. \]
+\form#1866:$\delta_{\beta,\alpha} =0$
+\form#1867:\[ \label{eqn:Pb} P_\mathrm{b}=\max\left[0, \min\left(1,\frac{B_{ag}-B_{low}} {B_{high} - B_{low}}\right)\right]. \]
+\form#1868:\[ \label{eqn:Pf} P_\mathrm{m} = P_{m,V} (1-f_{duff}) + P_{m,D} f_{duff} \nonumber \\ f_{duff}=\frac{B_{duff}}{B_{ag}}\]
+\form#1869:\[ g(u)= g(0) \frac{2.0 L_\mathrm{b}}{(1 + 1/H_\mathrm{b})} \nonumber\\ \frac{g(u)}{g(0)}=\frac{v_\mathrm{d}}{v_\mathrm{p}} = \frac{2.0 L_\mathrm{b}} {(1 + 1/H_\mathrm{b})}, \]
+\form#1870:\[ a_{1{\mathrm{d}}} = \frac{\pi v_\mathrm{d}^2 t^2}{4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2 \nonumber\\ = \frac{\pi v_\mathrm{d}^2 (24^2)} {4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2\label{aburned} \]
+\form#1871:\[ a_{\tau \mathrm{d}} =E(a_{1{\mathrm{d}}} \tau^2)=\sum_{\tau=0}^ \infty\,a_{1{\mathrm{d}}}\,\tau^2 q(1-q)^{\tau} \\ = a_{1{\mathrm{d}}}\, \frac{(1-q) (2-q)}{q^2}.\nonumber \]
+\form#1872:$km^2\, day^{-1}$
+\form#1873:$mho_{\alpha} $
+\form#1874:\[ \label{emiss_combust_factor} {E_{\alpha,j}}= ((\vec{C}_\alpha\cdot mho_{\alpha} )\cdot \Upsilon_{j}) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\frac{1000}{450}, \]
+\form#1875:$g\,C\,(kg dry organic matter)^{-1} $
+\form#1876:$2.5\, \mu m$
+\form#1877:\[ \label{eqn_using_mort_factors_individual} M_{\alpha, i}= C_{\alpha, i} \Theta_{\alpha, i} \left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}} \right) \quad i={L, S, R}. \]

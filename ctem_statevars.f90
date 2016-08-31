@@ -1,21 +1,21 @@
-!>\file
+!>\defgroup ctem_statevars
 
 !>
-!this module contains the variable type structures:
+!!this module contains the variable type structures:
+!! 1. c_switch - switches for running CTEM, read from the joboptions file
+!! 2. vrot - CTEM's 'rot' vars
+!! 3. vgat - CTEM's 'gat' vars
+!! 4. class_out - CLASS's monthly outputs
+!! 5. ctem_grd - CTEM's grid average variables
+!! 6. ctem_tile - CTEM's variables per tile
+!! 7. ctem_mo - CTEM's variables monthly averaged (per pft)
+!! 8. ctem_grd_mo - CTEM's grid average monthly values
+!! 9. ctem_tile_mo - CTEM's variables per tile monthly values
+!! 10. ctem_yr - CTEM's average annual values (per PFT)
+!! 11. ctem_grd_yr - CTEM's grid average annual values
+!! 12. ctem_tile_yr - CTEM's variables per tile annual values
 !
-! 1) c_switch - switches for running CTEM, read from the joboptions file
-! 2) vrot - CTEM's 'rot' vars
-! 3) vgat - CTEM's 'gat' vars
-! 4) class_out - CLASS's monthly outputs
-! 5) ctem_grd - CTEM's grid average variables
-! 6) ctem_tile - CTEM's variables per tile
-! 7) ctem_mo - CTEM's variables monthly averaged (per pft)
-! 8) ctem_grd_mo - CTEM's grid average monthly values
-! 9) ctem_tile_mo - CTEM's variables per tile monthly values
-! 10) ctem_yr - CTEM's average annual values (per PFT)
-! 11) ctem_grd_yr - CTEM's grid average annual values
-! 12) ctem_tile_yr - CTEM's variables per tile annual values
-!
+!>\file
 module ctem_statevars
 
 ! J. Melton Apr 2015
@@ -2093,5 +2093,5 @@ end subroutine finddaylength
 !       endif  ! if(ctem_on)
 !       endif  ! if(ncount.eq.nday)
 !=================================================================================
-
+!>@}
 end module ctem_statevars

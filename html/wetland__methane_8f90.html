@@ -194,30 +194,19 @@ Functions/Subroutines</h2></td></tr>
   </dd>
 </dl>
 <hr/>
- <h2>Constants and parameters are located in <a class="el" href="ctem__params_8f90.html">ctem_params.f90</a> </h2>
+ <h2>Constants and parameters are located in <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a> </h2>
 <p>initialize required arrays to zero</p>
 <h2>initialization ends </h2>
 <p>Estimate the methane flux from wetlands for each grid cell scaling by the wetland fraction in a grid cell and set the methane flux to zero when screen temperature (ta) is below or at freezing this is consistent with recent flux measurements by the university of manitoba at churchill, manitoba</p>
 <p>if (obswetf) then ! Use the read-in wetland locations as the CH4 producing area</p>
 <p>else ! dynamically find the wetland locations</p>
-<p>top soil layer porosity</p>
-<p>if soil wetness meets a latitude specific threshold then the slope based wetland fraction is wet and is an actual wetland else not</p>
-<p>initialize dynamic wetland fraction to zero</p>
-<p>Testing:</p>
-<p>high lats all area north of 35 n</p>
-<p>tropics between 10 s and 35 n</p>
-<p>s. hemi, everything else below 10 s</p>
-<p>&lt;0.025% slope class</p>
-<p>&lt;0.1 % slope class</p>
-<p>&lt;0.2% slope class</p>
-<p>new dynamic calculation same as ch4wet1 &amp; 2, but wetfrac replaced by wetfdyn </p>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Aug 10 2016 12:14:59 for CLASS-CTEM Documentation by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 31 2016 14:29:32 for CLASS-CTEM Documentation by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

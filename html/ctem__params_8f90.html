@@ -88,6 +88,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">ctem_params.f90 File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutines via use statements pointing to this module EXCEPT <a class="el" href="PHTSYN3_8f.html" title="CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) PHOTOSYNTHESIS SUBROUTINE. ">PHTSYN3.f</a> which has the information passed in via arguments. This is a legacy thing.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
@@ -648,7 +651,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::stmhrspn
 <tr class="memdesc:ae5c80ee006ea823900274412778709cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stem harvest span. same as crop harvest span. period in days over which crops are harvested. <br /></td></tr>
 <tr class="separator:ae5c80ee006ea823900274412778709cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34074497065d6cb2b9177c3fc400dcf3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34074497065d6cb2b9177c3fc400dcf3"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::ratioch4</b> = 0.16</td></tr>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::ratioch4</b> = 0.135</td></tr>
 <tr class="memdesc:a34074497065d6cb2b9177c3fc400dcf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">methane to carbon dioxide flux scaling factor.<br />
 Rita Wania's thesis suggests about 0.25, but we get a better agreement to outputs from the Walter's model if we use 0.16. Note that this scaling factor likely is temperature dependent, and increases with temperature, but it is difficult to know the function, so leave constant for now ratio is <img class="formulaInl" alt="$mol ch_4$" src="form_1401.png"/> to <img class="formulaInl" alt="$mol co_2$" src="form_1402.png"/> <br /></td></tr>
 <tr class="separator:a34074497065d6cb2b9177c3fc400dcf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -666,7 +669,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::lat_thrs
 <tr class="memdesc:a3a63b83e7f97702b648861ae4a586b59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Northern zone for wetland determination (degrees North) <br /></td></tr>
 <tr class="separator:a3a63b83e7f97702b648861ae4a586b59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0a149191207794d3a3867a93efc5757"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac0a149191207794d3a3867a93efc5757"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::lat_thrshld2</b> = -20.0</td></tr>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::lat_thrshld2</b> = -35.0</td></tr>
 <tr class="memdesc:ac0a149191207794d3a3867a93efc5757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boundary with southern zone for wetland determination (degrees North) <br /></td></tr>
 <tr class="separator:ac0a149191207794d3a3867a93efc5757"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4795b61fccde1fc82638b5f8b9624aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab4795b61fccde1fc82638b5f8b9624aa"></a>
@@ -682,10 +685,18 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::soilw_th
 <tr class="memdesc:ae3cc62b58531c7d353cc8baac1c1fd6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soil wetness threshold in the South zone. <br /></td></tr>
 <tr class="separator:ae3cc62b58531c7d353cc8baac1c1fd6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutines via use statements pointing to this module EXCEPT <a class="el" href="PHTSYN3_8f.html" title="CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) PHOTOSYNTHESIS SUBROUTINE. ">PHTSYN3.f</a> which has the information passed in via arguments. This is a legacy thing. </p>
+<p>The structure of this subroutine is variables that are common to competition/prescribe PFT fractions first, then the remaining variables are assigned different variables if competition is on, or not.</p>
+<p>PFT parameters</p>
+<p>Note the structure of vectors which clearly shows the CLASS PFTs (along rows) and CTEM sub-PFTs (along columns)</p>
+<p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | } \hline needle leaf &amp; evg &amp; dcd &amp; --- \\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry \\ \hline crops &amp; c3 &amp; c4 &amp; --- \\ \hline grasses &amp; c3 &amp; c4 &amp; --- \\ \hline \end{tabular} \]" src="form_1860.png"/>
+</p>
+ </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Aug 10 2016 12:14:59 for CLASS-CTEM Documentation by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 31 2016 14:29:32 for CLASS-CTEM Documentation by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

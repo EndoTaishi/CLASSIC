@@ -1,4 +1,10 @@
 !>\defgroup ctem_params_initpftpars
+
+!> This module holds CTEM globally accessible parameters
+!> These parameters are used in all CTEM subroutines
+!> via use statements pointing to this module EXCEPT PHTSYN3.f
+!> which has the information passed in via arguments. This is a legacy thing.
+
 !>The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
 !>first, then the remaining variables are assigned different variables if competition is on, or not.
 !>
@@ -22,16 +28,9 @@
 
 module ctem_params
 
-! This module holds CTEM globally accessible parameters
-! These parameters are used in all CTEM subroutines
-! via use statements pointing to this module EXCEPT PHTSYN3.f 
-! which has the information passed in via arguments. This is a legacy thing.
+!>\ingroup ctem_params_main
 
-! Remember that changes to this module will usually only take effect
-! after you have done a 'make clean' then a 'make' (because it is a module).
-
-! This module is structured with general parameters first then the PFT specific
-! parameters later.
+!!@{
 
 ! J. Melton
 ! Jun 23 2013
@@ -43,6 +42,10 @@ module ctem_params
 !                    all ctem subroutines except PHTSYN3 keep their parameters here.   
 !
 ! Jan 17 2014 - JM - Add in more parameters from ctem.f, phenology.f, and allocate.f. 
+
+! Remember that changes to this module will usually only take effect
+! after you have done a 'make clean' then a 'make' (because it is a module).
+
 
 implicit none
 

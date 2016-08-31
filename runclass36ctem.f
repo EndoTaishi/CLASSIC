@@ -1,15 +1,19 @@
 !>\file
+!! Principle driver program to run CLASS in stand-alone mode using specified boundary
+!! conditions and atmospheric forcing, coupled to CTEM.
+!!
+!! # Overview
+!!
+!! This driver program initializes the run, reads in CLASS input files, manages the run
+!! and the coupling between CLASS and CTEM, writes the CLASS sub-monthly outputs, and
+!! closes the run.
 
       PROGRAM RUNCLASS36CTEM
-
-
-C
-C     * DRIVER PROGRAM TO RUN "CLASS" ("CANADIAN LAND SURFACE SCHEME")
-C     * IN STAND-ALONE MODE USING SPECIFIED BOUNDARY
-C     * CONDITIONS AND ATMOSPHERIC FORCING, COUPLED TO CTEM (CANADIAN TERRESTRIAL
-C     * ECOSYSTEM MODEL).
 C
 C     REVISION HISTORY:
+C
+C     * Aug 31 2016 : Added proper calculation of ALTOT as provided by Diana.
+C       Joe Melton
 C
 C     * Mar 9  2016 : For consistency I have changed all inputs (except MET) to be adopted into the row/gat
 C     * Joe Melton    framework. This means that a per gridcell value is then also assigned per tile. This
@@ -58,36 +62,37 @@ C     * SEPT 8, 2009
 C     * RONG LI AND VIVEK ARORA: COUPLED CLASS3.4 AND CTEM
 C
 C=======================================================================
+!>
+!!------------------------------------------------------------------
+!! ## Dimension statements.
 
-C     * DIMENSION STATEMENTS.
-
-C     * FIRST SET OF DEFINITIONS:
-C     * BACKGROUND VARIABLES, AND PROGNOSTIC AND DIAGNOSTIC
-C     * VARIABLES NORMALLY PROVIDED BY AND/OR USED BY THE GCM.
-C     * THE SUFFIX "ROT" REFERS TO VARIABLES EXISTING ON THE
-C     * MOSAIC GRID ON THE CURRENT LATITUDE CIRCLE.  THE SUFFIX
-C     * "GAT" REFERS TO THE SAME VARIABLES AFTER THEY HAVE UNDERGONE
-C     * A "GATHER" OPERATION IN WHICH THE TWO MOSAIC DIMENSIONS
-C     * ARE COLLAPSED INTO ONE.  THE SUFFIX "ROW" REFERS BOTH TO
-C     * GRID-CONSTANT INPUT VARIABLES. AND TO GRID-AVERAGED
-C     * DIAGNOSTIC VARIABLES.
-C
-C     * THE FIRST DIMENSION ELEMENT OF THE "ROT" VARIABLES
-C     * REFERS TO THE NUMBER OF GRID CELLS ON THE CURRENT
-C     * LATITUDE CIRCLE.  IN THIS STAND-ALONE VERSION, THIS
-C     * NUMBER IS ARBITRARILY SET TO THREE, TO ALLOW UP TO THREE
-C     * SIMULTANEOUS TESTS TO BE RUN.  THE SECOND DIMENSION
-C     * ELEMENT OF THE "ROT" VARIABLES REFERS TO THE MAXIMUM
-C     * NUMBER OF TILES IN THE MOSAIC.  IN THIS STAND-ALONE
-C     * VERSION, THIS NUMBER IS SET TO EIGHT.  THE FIRST
-C     * DIMENSION ELEMENT IN THE "GAT" VARIABLES IS GIVEN BY
-C     * THE PRODUCT OF THE FIRST TWO DIMENSION ELEMENTS IN THE
-C     * "ROT" VARIABLES.
-
-C     The majority of CTEM parameters are stored in ctem_params.f90.
-c     Also the CTEM variables are stored in modules that we point to
-c     in this driver. We access the variables and parameters
-c     through use statements for modules:
+!!     ### first set of definitions:
+!!     background variables, and prognostic and diagnostic
+!!     variables normally provided by and/or used by the gcm.
+!!      the suffix "rot" refers to variables existing on the
+!!      mosaic grid on the current latitude circle.  the suffix
+!!      "gat" refers to the same variables after they have undergone
+!!      a "gather" operation in which the two mosaic dimensions
+!!      are collapsed into one.  the suffix "row" refers both to
+!!      grid-constant input variables. and to grid-averaged
+!!      diagnostic variables.
+!!
+!!      the first dimension element of the "rot" variables
+!!      refers to the number of grid cells on the current
+!!      latitude circle.  in this stand-alone version, this
+!!      number is arbitrarily set to three, to allow up to three
+!!      simultaneous tests to be run.  the second dimension
+!!      element of the "rot" variables refers to the maximum
+!!      number of tiles in the mosaic.  in this stand-alone
+!!      version, this number is set to eight.  the first
+!!      dimension element in the "gat" variables is given by
+!!      the product of the first two dimension elements in the
+!!      "rot" variables.
+!!
+!!     The majority of CTEM parameters are stored in ctem_params.f90.
+!!     Also the CTEM variables are stored in modules that we point to
+!!     in this driver. We access the variables and parameters
+!!     through use statements for modules:
 
       use ctem_params,        only : initpftpars,nlat,nmos,ilg,nmon,
      1                               ican, ignd,icp1, icc, iccp1,
@@ -686,10 +691,6 @@ C
       REAL,DIMENSION(NLAT,NMOS) :: WTRSROT !<
       REAL,DIMENSION(NLAT)      :: WTRSROW !<
 
-
-
-
-
       REAL,DIMENSION(ILG)       :: QLWOGAT !<
       REAL,DIMENSION(ILG)       :: SFRHGAT !<
       REAL,DIMENSION(NLAT,NMOS) :: SFRHROT !<
@@ -709,14 +710,6 @@ C     * CALCULATING TIME AVERAGES.)
      1              NAME4*4,      NAME5*4,      NAME6*4
       CHARACTER     PLACE1*4,     PLACE2*4,     PLACE3*4,
      1              PLACE4*4,     PLACE5*4,     PLACE6*4
-
-
-
-
-
-
-
-
 
       REAL,DIMENSION(NLAT) :: ALIRACC !<Diagnosed total near-infrared albedo of land surface [ ]
       REAL,DIMENSION(NLAT) :: ALVSACC !<Diagnosed total visible albedo of land surface [ ]
@@ -906,7 +899,6 @@ c================= CTEM array declaration ===============================\
 c
 c     Local variables for coupling CLASS and CTEM
 c
-      integer ictemmod
       integer strlen
       character*80   titlec1
       character*80   argbuff
@@ -2057,16 +2049,6 @@ c     all model switches are read in from a namelist file
 
 c     Initialize the CTEM parameters
       call initpftpars(compete)
-c
-c     set ictemmod, which is the class switch for coupling to ctem
-c     either to 1 (ctem is coupled to class) or 0 (class runs alone)
-c     this switch is set based on ctem_on that was set by read_from_job_options
-c
-      if (ctem_on) then
-        ictemmod = 1
-      else  !ctem_on is false
-        ictemmod = 0
-      end if
 c
       lopcount = 1   ! initialize loop count to 1.
 c
@@ -3524,7 +3506,7 @@ C
      K                FSVHGAT,RADJGAT,DLONGAT,RHSIGAT,DELZ,   DLZWGAT,
      L                ZBTWGAT,THPGAT, THMGAT, PSISGAT,BIGAT,  PSIWGAT,
      M                HCPSGAT,ISNDGAT,
-     P                FCANCMXGAT,ICC,ICTEMMOD,RMATCGAT,ZOLNCGAT,
+     P                FCANCMXGAT,ICC,ctem_on,RMATCGAT,ZOLNCGAT,
      Q                CMASVEGCGAT,AILCGAT,PAICGAT,L2MAX, NOL2PFTS,
      R                SLAICGAT,AILCGGAT,AILCGSGAT,FCANCGAT,FCANCSGAT,
      R                IDAY,   ILG,    1,      NML,  NBS,
@@ -3567,7 +3549,7 @@ C
      N  FTEMP,  FVAP,   RIB,    ISNDGAT,
      O  AILCGGAT,  AILCGSGAT, FCANCGAT,FCANCSGAT,CO2CONCGAT,CO2I1CGGAT,
      P  CO2I1CSGAT,CO2I2CGGAT,CO2I2CSGAT,CSZGAT,XDIFFUSGAT,SLAIGAT,ICC,
-     Q  ICTEMMOD,RMATCTEMGAT,FCANCMXGAT,L2MAX,  NOL2PFTS,CFLUXCGGAT,
+     Q  ctem_on,RMATCTEMGAT,FCANCMXGAT,L2MAX,  NOL2PFTS,CFLUXCGGAT,
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
      S  TCSNOW,GSNOW,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
@@ -4200,6 +4182,7 @@ c       initialization of various grid-averaged variables
           IF(FSSROW(I).GT.0.0) THEN
 C              ALTOT=(ALVSROT(I,M)+ALIRROT(I,M))/2.0
               ALTOT=(FSSROW(I)-FSGGGAT(1))/FSSROW(I)  !FLAG I adopt the runclass approach of using 1 for index here. JM Jul 2015.
+              ALTOT=(FSSROW(I)-(FSGVROW(I)+FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
           ELSE
               ALTOT=0.0
           ENDIF

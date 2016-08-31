@@ -33,7 +33,7 @@
      S   AILCG,          AILCGS,         FCANC,          FCANCS,
      T   CO2CONC,        CO2I1CG,        CO2I1CS,        CO2I2CG,
      U   CO2I2CS,        COSZS,          XDIFFUS,        SLAI,
-     V   ICTEM,          ICTEMMOD,       RMATCTEM,       FCANCMX,
+     V   ICTEM,          ctem_on,       RMATCTEM,       FCANCMX,
      W   L2MAX,          NOL2PFTS,       CFLUXCG,        CFLUXCS,
      X   ANCSVEG,        ANCGVEG,        RMLCSVEG,       RMLCGVEG,
      Y   TCSNOW, GSNOW,                                                 
@@ -41,6 +41,7 @@
      +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
      +   NBS, ISNOALB,LFSTATUS,DAYL, DAYL_MAX)
 C
+C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
 C     * JUL 22/15 - D.VERSEGHY. CHANGES TO TSOLVC AND TSOLVE CALLS.
@@ -449,7 +450,7 @@ C
       REAL CFLUXCS(ILG)
 C
       INTEGER ICTEM               !< 8 (CTEM's PLANT FUNCTIONAL TYPES)
-      INTEGER ICTEMMOD            !< 1 FOR COUPLING TO CTEM
+      LOGICAL ctem_on             !< TRUE GIVES COUPLING TO CTEM
       INTEGER LFSTATUS(ILG,ICTEM) !< LEAF PHENOLOGICAL STATUS (SEE PHENOLOGY)
       REAL DAYL_MAX(ILG)          !< MAXIMUM DAYLENGTH FOR THAT LOCATION
       REAL DAYL(ILG)              !< DAYLENGTH FOR THAT LOCATION
@@ -730,7 +731,7 @@ C
           ENDIF
    60 CONTINUE                                                        
 C
-      IF (ICTEMMOD.EQ.1) THEN
+      IF (ctem_on) THEN
 C
 C       * INITIALIZE VARIABLES ESTIMATED BY THE PHOTOSYNTHESIS SUBROUTINE
 C       * CALLED FROM WITHIN TSOLVC.
@@ -862,7 +863,7 @@ C
      J                AILCGS,FCANCS,CO2CONC,RMATCTEM,
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS,
-     M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
+     M                ctem_on,SLAI,FCANCMX,L2MAX,
      N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS,
      O                DAYL, DAYL_MAX)
 
@@ -1214,7 +1215,7 @@ C
      J                AILCG,FCANC,CO2CONC,RMATCTEM,
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG,
-     M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
+     M                ctem_on,SLAI,FCANCMX,L2MAX,
      N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS,
      O                DAYL, DAYL_MAX)
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
