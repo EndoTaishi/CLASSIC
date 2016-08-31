@@ -9,6 +9,10 @@ subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &
 !    -------------- inputs above this line, outputs below -------------
                        ch4wet1,    ch4wet2,    wetfdyn,  &
                       ch4dyn1,    ch4dyn2)
+
+!     31  Aug   2016 - Change how we find wetlands from discrete limits to
+!     V. Arora         smooth function
+!
 !      4  July  2014 - Convert to f90 and bring in ctem_params
 !     J. Melton
 !
@@ -48,6 +52,14 @@ integer :: i
 real :: low_mois_lim
 real :: mid_mois_lim
 real :: upp_mois_lim
+real :: alpha
+real :: x1
+real :: x2
+real :: y1
+real :: y2
+real :: slope
+real :: intercept
+
 !>
 !>---------------------------------------------------------------
 !>Constants and parameters are located in ctem_params.f90
@@ -85,66 +97,55 @@ do 110 i = il1, il2
 !>
 !>else ! dynamically find the wetland locations
 !>
-   do 310 i = il1, il2 
-     porosity=(-0.126*sand(i,1)+48.9)/100.0 !> top soil layer porosity
+   do 310 i = il1, il2
+     porosity=(-0.126*sand(i,1)+48.9)/100.0 ! top soil layer porosity
      soil_wetness=(thliqg(i,1)/porosity)
      soil_wetness=max(0.0,min(soil_wetness,1.0))
-!>
-!>if soil wetness meets a latitude specific threshold then the slope
-!>based wetland fraction is wet and is an actual wetland else not
-!>
-     wetfdyn(i)=0.0  !> initialize dynamic wetland fraction to zero
+
+!    if soil wetness meets a latitude specific threshold then the slope
+!    based wetland fraction is wet and is an actual wetland else not
+!
+     wetfdyn(i)=0.0  ! initialize dynamic wetland fraction to zero
 !
 
-! Original way:
-!     if (currlat(i).ge.lat_thrshld1) then ! all area north of 35 n
-!        if(soil_wetness.gt.soilw_thrshN)then ! ckw 3041-3050
-!           wetfdyn(i)=slopefrac_(i)
-!        endif
-!     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! between 10 s and 35 n
-!        if(soil_wetness.gt.soilw_thrshE)then   ! ckw 3041-3050
-!            wetfdyn(i)=slopefrac_(i)
-!        endif
-!     else ! everything else below 10 s
-!        if(soil_wetness.gt.soilw_thrshS)then ! ckw 3041-3050
-!            wetfdyn(i)=slopefrac_(i)
-!        endif
-!     endif    
 
-!> Testing:  
-
-     if (currlat(i).ge.lat_thrshld1) then !> high lats all area north of 35 n
-        low_mois_lim=0.40
-        mid_mois_lim=0.60
-        upp_mois_lim=0.85
-     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then !> tropics  between 10 s and 35 n
-        low_mois_lim=0.65
+     if (currlat(i).ge.lat_thrshld1) then ! high lats all area north of 40 n
+        low_mois_lim=0.45 ! Vivek
+        mid_mois_lim=0.65 ! Vivek
+        upp_mois_lim=0.90 ! Vivek
+     elseif (currlat(i).lt.lat_thrshld1.and.currlat(i).ge. lat_thrshld2) then ! tropics  between 10 s and 35 n
+        low_mois_lim=0.55 ! Vivek
         mid_mois_lim=0.85
         upp_mois_lim=0.99
-     else !> s. hemi,  everything else below 10 s
-        low_mois_lim=0.50
-        mid_mois_lim=0.75
-        upp_mois_lim=0.95
+     else ! s. hemi,  everything else below 35 s
+        low_mois_lim=0.70 ! Vivek
+        mid_mois_lim=0.85 ! Vivek
+        upp_mois_lim=0.99 ! Vivek
       end if
-        
-        if(soil_wetness .gt. low_mois_lim .and. soil_wetness .le. mid_mois_lim) then 
-           wetfdyn(i)=slopefrac(i,1)  !> <0.025% slope class
-        elseif (soil_wetness .gt. mid_mois_lim .and. soil_wetness .le. upp_mois_lim) then
-            wetfdyn(i)=slopefrac(i,3) !> <0.1 % slope class
-        elseif (soil_wetness .gt. upp_mois_lim) then 
-            wetfdyn(i)=slopefrac(i,5) !> <0.2% slope class
-        endif
 
-!> new dynamic calculation
-!> same as ch4wet1 & 2, but wetfrac replaced by wetfdyn
+!    implement Vivek's new way of modelling WETFDYN
 
-           wetresp(i)=hetrores(i)*wtdryres*wetfdyn(i)
-           ch4dyn1(i)=ratioch4*wetresp(i)
-           ch4dyn2(i)=factor2*wetfdyn(i)*max(0.0,npp(i))*(2**((tbar(i,1)-273.2)/10.0))
-           if (ta(i).lt.273.2) then
-             ch4dyn1(i)=0.0
-             ch4dyn2(i)=0.0
-           endif
+     alpha=0.45
+     x1=low_mois_lim*(1-alpha) + mid_mois_lim*alpha
+     x2=upp_mois_lim
+     y1=0
+     y2=slopefrac(i,5)
+
+     slope= (y2-y1)/(x2-x1)
+     intercept= slope*x1*(-1)
+
+     wetfdyn(i) = min(1.0, max(0.0, slope*soil_wetness + intercept))
+
+!    new dynamic calculation
+!    same as ch4wet1 & 2, but wetfrac replaced by wetfdyn
+
+     wetresp(i)=hetrores(i)*wtdryres*wetfdyn(i)
+     ch4dyn1(i)=ratioch4*wetresp(i)
+     ch4dyn2(i)=factor2*wetfdyn(i)*max(0.0,npp(i))*(2**((tbar(i,1)-273.2)/10.0))
+     if (ta(i).lt.273.2) then
+       ch4dyn1(i)=0.0
+       ch4dyn2(i)=0.0
+     endif
 
 310 continue
 
