@@ -3819,7 +3819,8 @@ c
      &                compete,  netrad_gat,  preacc_gat,  grclarea,
      &              popdingat,  dofire, dowetlands,obswetf, isndgat,
      &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,
-     &             currlat,
+     &             currlat,         THPGAT,       BIGAT,    PSISGAT,
+     &             ch4concgat,      GRAV, RHOW, RHOICE,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
@@ -3858,16 +3859,10 @@ c    -------------- inputs updated by ctem are above this line ------
      &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,
      &        hetroresveggat, autoresveggat, litresveggat,
      &           soilcresveggat, nml, ilmos, jlmos, ch4wet1gat,
-     &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat)
+     &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat,
+     &          ch4soillsgat)
 c    ---------------- outputs are listed above this line ------------
 c
-      ! Calculate the methane that is oxidized by the soil sink
-      ! this operates on a daily timestep.
-      call soil_ch4uptake(1,nml,tbaraccgat_t,THPGAT,BIGAT,thliqacc_t,
-     &                     thicecacc_t,PSISGAT,GRAV,FCANGAT,obswetf,
-     &                     wetfdyngat,wetfrac_presgat,isndgat,RHOW,
-     &                     RHOICE,ch4concgat,ch4soillsgat)
-
 
 !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
 !     to reset here, prior to ctems2.

@@ -2,6 +2,10 @@
 !!Canadian Terrestrial Ecosystem Model (CTEM)
 !!Soil Methane Oxidation Subroutine
 !!
+!! Coded up based on C. Curry (2007) Modelling the
+!! the soil consumption of atmospheric methane at the global scale. Global
+!! Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
+
 subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &
      &                     THIC,PSIS,GRAV,FCAN,obswetf, &
      &                     wetfdyn,wetfracgrd,isand,RHOW,RHOICE, &
@@ -9,11 +13,11 @@ subroutine soil_ch4uptake(IL1,IL2,tbar,THP,BI,THLQ, &
 
 !History:
 
-! >> J. Melton. Dec 22 2015 - Coded up based on C. Curry (2007) Modelling the
+! J. Melton. Dec 22 2015 - Coded up based on C. Curry (2007) Modelling the
 ! the soil consumption of atmospheric methane at the global scale. Global
 ! Biogeo. Cycl. v. 21 GB4012 doi: 10.1029/2006GB002818.
 
-use ctem_params,  only : ilg,ignd,icp1,nlat,wtCH4
+use ctem_params,  only : ilg,ignd,ican,nlat,wtCH4
 
 implicit none
 
@@ -24,7 +28,7 @@ real, dimension(ilg,ignd), intent(in) :: BI       !< Clapp and Hornberger b-term
 real, dimension(ilg,ignd), intent(in) :: THLQ     !< Fractional water content (-) - daily average
 real, dimension(ilg,ignd), intent(in) :: THIC     !< Fractional ice content (-) - daily average
 real, dimension(ilg,ignd), intent(in) :: PSIS     !< Soil moisture suction at saturation (m)
-real, dimension(ilg,icp1), intent(in) :: FCAN     !< Fractional coverage of vegetation (-)
+real, dimension(ilg,ican), intent(in) :: FCAN     !< Fractional coverage of vegetation (-)
 real, dimension(nlat), intent(in) :: wetfracgrd   !< Prescribed fraction of wetlands in a grid cell
 real, dimension(ilg), intent(in) :: wetfdyn       !< Dynamic gridcell wetland fraction determined using slope and soil moisture
 real, dimension(ilg), intent(in) :: atm_CH4       !< Atmospheric \f$CH_4\f$ concentration at the soil surface (ppmv)

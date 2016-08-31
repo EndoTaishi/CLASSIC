@@ -455,7 +455,7 @@ C
 C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
 C     VALUES ARE MAINLY DERIVED FROM KATTGE ET AL. 2009 WHICH 
 C     DOESN'T INCLUDE C4
-      DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, 
+      DATA VMAX/42.0E-06, 47.0E-06, 0.00E-06, ! Following the tests of Lina, we adopt 42 for PFT 1.
      &          35.0E-06, 57.0E-06, 40.0E-06, !Fri Feb27th JM, new value. was 48 for PFT3
      &          55.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
