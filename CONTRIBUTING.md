@@ -51,6 +51,10 @@ In general, comment blocks must be before the code (and thus use '!>' and '!!' b
 with a few exceptions such as class and namespace members.
 
 ### Beyond Standard Comment Blocks
+
+To make 'pretty' formatting, you can use [markdown](http://daringfireball.net/projects/markdown/syntax) and doyxgen will understand it (the switch for this is
+turned on in our doxyfile).
+
 Sometimes there is information that should be documented but is not necessarily related to any particular part
 of the code. In this case structural commands or other specific commands can be put directly before the comment to tell Doxygen 
 where to put the documentation. 
