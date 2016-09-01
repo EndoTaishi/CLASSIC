@@ -1,0 +1,78 @@
+\hypertarget{group__competition__scheme__existence}{}\section{Competition\+\_\+scheme\+\_\+existence}
+\label{group__competition__scheme__existence}\index{Competition\+\_\+scheme\+\_\+existence@{Competition\+\_\+scheme\+\_\+existence}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) P\+F\+T Existence Subroutine.  
+
+
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__competition__scheme__existence_ga4345a1807f52b8da4f0cdd9f0f71f91f}{competition\+\_\+scheme\+::existence} (iday, il1, il2, nilg, sort, nol2pfts, twarmm, tcoldm, gdd5, aridity, srplsmon, defctmon, anndefct, annsrpls, annpcp, pftexist, dry\+\_\+season\+\_\+length)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) P\+F\+T Existence Subroutine. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__competition__scheme__existence_ga4345a1807f52b8da4f0cdd9f0f71f91f}{}\index{Competition\+\_\+scheme\+\_\+existence@{Competition\+\_\+scheme\+\_\+existence}!existence@{existence}}
+\index{existence@{existence}!Competition\+\_\+scheme\+\_\+existence@{Competition\+\_\+scheme\+\_\+existence}}
+\subsubsection[{existence}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public competition\+\_\+scheme\+::existence (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{iday, }
+\item[{integer, intent(in)}]{il1, }
+\item[{integer, intent(in)}]{il2, }
+\item[{integer, intent(in)}]{nilg, }
+\item[{integer, dimension(icc), intent(in)}]{sort, }
+\item[{integer, dimension(ican), intent(in)}]{nol2pfts, }
+\item[{real, dimension(nilg), intent(in)}]{twarmm, }
+\item[{real, dimension(nilg), intent(in)}]{tcoldm, }
+\item[{real, dimension(nilg), intent(in)}]{gdd5, }
+\item[{real, dimension(nilg), intent(in)}]{aridity, }
+\item[{real, dimension(nilg), intent(in)}]{srplsmon, }
+\item[{real, dimension(nilg), intent(in)}]{defctmon, }
+\item[{real, dimension(nilg), intent(in)}]{anndefct, }
+\item[{real, dimension(nilg), intent(in)}]{annsrpls, }
+\item[{real, dimension(nilg), intent(in)}]{annpcp, }
+\item[{logical, dimension(nilg,icc), intent(out)}]{pftexist, }
+\item[{real, dimension(nilg), intent(in)}]{dry\+\_\+season\+\_\+length}
+\end{DoxyParamCaption}
+)}\label{group__competition__scheme__existence_ga4345a1807f52b8da4f0cdd9f0f71f91f}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em iday} & \\
+\hline
+\end{DoxyParams}
+
+
+ \subsubsection*{Constants and parameters are located in \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90} }
+
+go through all grid cells and based on bioclimatic parameters decide if a given pft should exist or not.
+
+needleleaf evergreen
+
+needleleaf deciduous
+
+broadleaf evergreen
+
+broadleaf deciduous cold (see note below pft 5 too)
+
+broadleaf deciduous dry
+
+We don\textquotesingle{}t want both broadleaf species co-\/existing so if it has P\+F\+T 5 remove P\+F\+T 4.
+
+c3 and c4 crops
+
+c3 grass
+
+if(tcoldm(i).le.\+tcoldmax(sort(j)))then
+
+else pftexist(i,j)=.false. endif
+
+c4 grass
+
+if(tcoldm(i).ge.\+tcoldmin(sort(j)))then
+
+else pftexist(i,j)=.false. endif 

@@ -1,6 +1,83 @@
-module landuse_change
+!>\defgroup landuse_change_initialize_luc
+!>Canadian Terrestrial Ecosystem Model (CTEM) 
+!>LUC Initial Read-In Subroutine 
+!------------------------------------------------------------------------------------
+!>\defgroup landuse_change_readin_luc
+!>Canadian Terrestrial Ecosystem Model (CTEM) 
+!!LUC Annual Read-In Subroutine 
+!------------------------------------------------------------------------------------
+!>\defgroup landuse_change_luc
+!>
+!>Canadian Terrestrial Ecosystem Model (CTEM) 
+!>Land Use Change Subroutine
+!!
+!!The land use change (LUC) module of CTEM is based on \cite Arora2010-416 and briefly
+!! described here. When the area of crop PFTs changes, CTEM generates LUC emissions.
+!! In the simulation where fractional coverage of PFTs is specified, the changes in
+!! fractional coverage of crop PFTs are made consistent with changes in the
+!! fractional coverage of natural non-crop PFTs. That is, an increase or decrease
+!! in the area of crop PFTs is associated with a corresponding decrease or increase
+!! in the area of non-crop PFTs. This approach is taken by \cite Wang2006-he, which
+!! allows one to reconstruct historical land cover given a spatial data set of 
+!!changes in crop area over the historical period and an estimate of potential
+!! natural land cover for the pre-industrial period (as described in Sect. 
+!!\ref{methods}). When competition between PFTs for space is allowed, only the
+!! fractional coverage of crop PFTs is specified. Similar to a simulation with 
+!!prescribed PFT fractions, when the area of crop PFTs increases, the fractional
+!! coverage of non-crop PFTs is decreased in proportion to their existing coverage
+!! \cite Wang2006-he. Alternatively, and in contrast to the simulation with prescribed
+!! PFT fractions, when the area of crop PFTs decreases then the generated bare 
+!!fraction is available for recolonization by non-crop PFTs.
+!!
+!!A decrease in the area of natural non-crop PFTs, associated with an increase in
+!! area of crop PFTs, results in deforested biomass (while the term 
+!!\f$\textit{deforested}\f$ implies clearing of forests, the same processes can
+!! occur in grasslands as well and is meant here to imply removal of the biomass).
+!! The deforested biomass is divided into three components: (i) the component that
+!! is combusted or used for fuel wood immediately after natural vegetated is 
+!!deforested and which contributes to atmospheric \f$CO_2\f$, (ii) the component
+!! left as slash or used for pulp and paper products and (iii) the component that 
+!!is used for long-lasting wood products. The fractions allocated to these three
+!! components depend on whether the PFTs are woody or herbaceous and on their
+!! aboveground vegetation biomass density (see Table 1 of \cite Arora2010-416). 
+!!To account for the timescales involved, the fraction allocated to slash or pulp
+!! and paper products is transferred to the model's litter pool and the fraction
+!! allocated to long-lasting wood products is allocated to the model's soil carbon
+!! pool. Land use change associated with a decrease in the area of natural
+!! vegetation thus redistributes carbon from living vegetation to dead litter
+!! and soil carbon pools and emits \f$CO_2\f$ to the atmosphere through direct
+!! burning of the deforested biomass. The net result is positive LUC carbon 
+!!emissions from land to the atmosphere.
+!!
+!!When croplands are abandoned, the area of natural PFTs increases. In simulations
+!! with prescribed fractional coverage of PFTs this results in a decreased carbon
+!! density for all model pools as the same amount of carbon is spread over a larger
+!! fraction of the grid cell. This reduced density implies that natural vegetation 
+!!is able to take up carbon as it comes into equilibrium with the driving climate
+!! and atmospheric \f$CO_2\f$ concentration. This creates the carbon sink associated
+!! with abandonment of croplands as natural vegetation grows in its place. In
+!! simulations with competition between PFTs, the abandoned land is treated as
+!! bare ground, which is subsequently available for recolonization, as mentioned
+!! above. As natural vegetation expands into bare ground it takes up carbon, again
+!! creating the carbon sink associated with abandonment of croplands. The net
+!! result is negative LUC carbon emissions as carbon is taken from atmosphere to
+!! grow vegetation over the area that was previously a cropland.
+!!
+!------------------------------------------------------------------------------------
+!>\defgroup landuse_change_adjust_luc_fracs
+!>
+!>this subroutine adjusts the amount of each pft to ensure that the fraction of
+!> gridcell bare ground is >0.
+!------------------------------------------------------------------------------------
+!>\defgroup landuse_change_adjust_fracs_comp
+!>
+!>This subroutine is used when compete = true. It adjusts the amount of each pft
+!> to allow expansion of cropland.
+!------------------------------------------------------------------------------------
 
-! Central module for all land use change operations
+!>\file
+!!Central module for all land use change operations
+module landuse_change
 
 ! J. Melton. Jan 11, 2013
 use ctem_params
@@ -17,20 +94,29 @@ private :: adjust_fracs_comp
 contains
 
 !-------------------------------------------------------------------------------------------------------------
+!>\ingroup landuse_change_initialize_luc
+!>@{
+
 subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
-                          mosaic,nol2pfts,cyclemet,   &
+                          nol2pfts,cyclemet,   &
                           cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,  &
                           pfcancmxrow,fcancmxrow,reach_eof,start_bare,&
-                          compete)
-
-!           Canadian Terrestrial Ecosystem Model (CTEM) 
-!                    LUC Initial Read-In Subroutine 
+                          compete,onetile_perPFT)
 !
+!    11  Jul  2016  - Further bug fixes for competing for space within a tile
+!     J. Melton
+!
+!     9  Mar  2016  - Adapt for tiling where we compete for space within a tile
+!     J. Melton
+!
+!     3  Feb  2016  - Remove mosaic flag and replace it with the onetile_perPFT one.
+!     J. Melton
+
 !     9  Jan. 2013  - this subroutine takes in luc information from
 !     J. Melton       a luc file and adapts them for runclassctem
 !                     it is run once to set up the luc info before the 
 !                     model timestepping begins.
-!		      
+!
 !     7  Feb. 2014  - Adapt it to work with competition and start_bare
 !     J. Melton 
 !
@@ -47,7 +133,6 @@ implicit none
 ! inputs
 integer, intent(in) :: iyear
 character(80), intent(in) :: lucdat
-logical, intent(in) :: mosaic
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
 integer, dimension(ican), intent(in) :: nol2pfts
@@ -55,6 +140,11 @@ logical, intent(in) :: cyclemet
 integer, intent(in) :: cylucyr 
 logical, intent(in) :: start_bare
 logical, intent(in) :: compete
+
+logical, intent(in) :: onetile_perPFT !<if you are running with one tile per PFT in mosaic mode, set to true. Changes
+                                !< how competition is run. Specifically it allows competition between tiles. This
+                                !< is not recommended for any case where you don't have one PFT in each tile as it
+                                !< has not been tested for that.
 
 ! updates
 real, dimension(nlat,nmos,icp1), intent(inout) :: fcanrow
@@ -70,7 +160,9 @@ integer, intent(out) :: lucyr
 ! local variables:
 real, dimension(icc) :: temparray
 real, dimension(nlat) :: barf
+real, dimension(nlat,nmos) :: barfm
 integer, dimension(2) :: bigpftc
+integer, dimension(1) :: bigpft
 real, dimension(nlat,nmos,icc-numcrops) :: pftarrays ! temp variable
 integer, dimension(nlat,nmos,icc-numcrops) :: indexposj ! temp var
 integer, dimension(nlat,nmos,icc-numcrops) :: indexposm ! temp var
@@ -78,222 +170,274 @@ real :: temp
 integer :: j,m,i,n,k
 integer :: k2,k1,strlen
 
-!-------------------------
-! Initialize barefraction to 1.0
+!>-------------------------
+!> Initialize barefraction to 1.0
 barf=1.0
+barfm = 1.0
 pftarrays=0.
 
-!       reset the composite fcanrow as it is appended on later in a loop
-        if (.not. mosaic) fcanrow = 0.0
+!>reset the composite fcanrow as it is appended on later in a loop
+    if (.not. onetile_perPFT) fcanrow = 0.0
 
-! it is the first year, so prepare the luc data:
+!>it is the first year, so prepare the luc data:
 
-        ! open the luc file
+!>open the luc file
 
-        open(unit=15,file=lucdat(1:strlen(lucdat))//'.LUC')
+open(unit=15,file=lucdat(1:strlen(lucdat))//'.LUC')
 
-        ! Skip first three rows:
-        read(15,*)
-        read(15,*)
-        read(15,*)
+!>Skip first three rows:
+read(15,*)
+read(15,*)
+read(15,*)
+!>
+!>get first year of luc data
+!>note we load the nfcancmx, not pfcancmx array. this is because this
+!>nfcancmx value is passed to the pfcancmx array at the start of each simulation year
+!>
+do i = 1, nltest
+    if (.not. onetile_perPFT) then  !composite
+    read (15,*) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
+    if (nmtest > 1) then
+        do m = 2, nmtest
+        nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
+        end do
+    end if
+    else                    !onetile_perPFT
+    read (15,*) lucyr,(temparray(j),j=1,icc)
+    do m = 1, nmtest-1 !as nmtest-1 = icc
+        j = m
+        nfcancmxrow(i,m,j) = temparray(m)
+    enddo !m loop
+    endif
+enddo !nltest
 
-!       get first year of luc data
-!       note we load the nfcancmx, not pfcancmx array. this is because this
-!       nfcancmx value is passed to the pfcancmx array at the start of each simulation
-!       year
-
-        do i = 1, nltest
-         if (.not. mosaic) then  !composite
-           read (15,*) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-         else                    !mosaic
-           read (15,*) lucyr,(temparray(j),j=1,icc)
-           do m = 1, nmtest-1 !as nmtest-1 = icc
-             j = m
-             nfcancmxrow(i,m,j) = temparray(m)
-           enddo !m loop
-         endif
-        enddo !nltest
-
-
-!       next update our luc data if either of the following conditions are met:
-!       1) we are cycling the met data and the luc year we just read in is less
-!       than the year we want to cycle over (assuming it is not defaulted to 
-!       -9999) or,
-!       2) we are not cycling over the met data so we just want to get the same
-!       year of luc data as the met data we read in above in preparation for our
-!       transient run.
-
-        do while ((cyclemet .and. lucyr .lt. cylucyr             &
-          .and. cylucyr .ne. -9999) .or. (.not. cyclemet .and.  &
-          lucyr .lt. iyear))
+!>
+!> next update our luc data if either of the following conditions are met:
+!!
+!! 1) we are cycling the met data and the luc year we just read in is less
+!! than the year we want to cycle over (assuming it is not defaulted to
+!! -9999) or,
+!!
+!! 2) we are not cycling over the met data so we just want to get the same
+!! year of luc data as the met data we read in above in preparation for our
+!! transient run.
+!!
+do while ((cyclemet .and. lucyr .lt. cylucyr             &
+    .and. cylucyr .ne. -9999) .or. (.not. cyclemet .and.  &
+    lucyr .lt. iyear))
 !           get the luc data
-            do i = 1, nltest
-             if (.not. mosaic) then  !composite
-               read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-             else                    !mosaic
-               read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
-               do m = 1, nmtest-1 !nmtest-1 same as icc
-                j = m
-                nfcancmxrow(i,m,j) = temparray(m) 
-               enddo !m loop
-             endif
-            enddo !nltest
-        enddo  !while loop
-
-!       If you are running with start_bare on, take in only the 
-!       crop fractions, set rest to seed. If compete, but not start bare, then
-!       just make sure you have at least seed for each pft.
-        n=1
-        k=1 
-        if (compete) then
-         do j = 1, icc
-          do i = 1, nltest
-           do m = 1, nmtest
-            if (.not. crop(j)) then
-             if (start_bare) then
-              nfcancmxrow(i,m,j)=seed              
-             else !not starting bare, but still make sure you have at least seed
-              nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
-             end if
-             barf(i) = barf(i) - nfcancmxrow(i,m,j)
-             ! Keep track of the non-crop nfcancmx for use in loop below.              
-             pftarrays(i,n,k) = nfcancmxrow(i,m,j)   !FLAG test
-             indexposj(i,n,k) = j  !FLAG test
-             indexposm(i,n,k) = m  !FLAG test
-             n = n+1  !FLAG test
-             k = k+1  !FLAG test
-            end if
-           end do
-          end do
-         end do
+    do i = 1, nltest
+        if (.not. onetile_perPFT) then  !composite
+        read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
+        if (nmtest > 1) then
+            do m = 2, nmtest
+            nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
+            end do
         end if
+        else                    !onetile_perPFT
+        read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
+        do m = 1, nmtest-1 !nmtest-1 same as icc
+        j = m
+        nfcancmxrow(i,m,j) = temparray(m)
+        enddo !m loop
+        endif
+    enddo !nltest
+enddo  !while loop
+!>
+!! If you are running with start_bare on, take in only the
+!! crop fractions, set rest to seed. If compete, but not start bare, then
+!! just make sure you have at least seed for each pft.
+!!
+n=1
+k=1
+if (compete) then
+    do i = 1, nltest
+        do m = 1, nmtest
+            do j = 1, icc
+                if (.not. crop(j)) then
+                    if (start_bare) then
+                        nfcancmxrow(i,m,j)=seed
+                    else !>not starting bare, but still make sure you have at least seed
+                        nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
+                    end if
+                    if (.not. onetile_perPFT) then
+                        barfm(i,m) = barfm(i,m) - nfcancmxrow(i,m,j)
+                    else
+                        barf(i) = barf(i) - nfcancmxrow(i,m,j)
+                    end if
+                    !> Keep track of the non-crop nfcancmx for use in loop below.
+                    !> pftarrays keeps track of the nfcancmxrow for all non-crops
+                    !> indexposj and indexposm store the index values of the non-crops
+                    !> in a continuous array for use later. n and k are then the indexes used by
+                    !> these arrays.
+                    if (.not. onetile_perPFT) n=m
+                    pftarrays(i,n,k) = nfcancmxrow(i,m,j)
+                    indexposj(i,n,k) = j
+                    indexposm(i,n,k) = m
+                    n = n+1
+                    k = k+1
+                    if (.not. onetile_perPFT .and. j == icc) k=1
+                end if !crops
+            end do !icc
+        end do !nmtest
+    end do !nltest
+end if  ! compete
 
-!      check that in making these seed fraction we haven't made our total fraction
-!      more than 1.0.
-       do i=1,nltest
+!> check that in making these seed fraction we haven't made our total fraction
+!> more than 1.0.
+do i=1,nltest
+    if (onetile_perPFT) then
         if (barf(i) .lt. 0.) then
+            !> Find out which of the non-crop PFTs covers the largest area.
+            bigpftc=maxloc(pftarrays(i,:,:))
 
-!         bigpftc=maxloc(nfcancmxrow(i,:,:))  !FLAG test
-         bigpftc=maxloc(pftarrays(i,:,:))
+            !> j is then the nmos index and m is the icc index of the PFT with the largest area
+            j = indexposj(i,bigpftc(1),bigpftc(2))
+            m = indexposj(i,bigpftc(1),bigpftc(2))
 
-         j = indexposj(i,bigpftc(1),bigpftc(2))  !FLAG test
-         m = indexposj(i,bigpftc(1),bigpftc(2))  !FLAG test
-         ! Reduce the most dominant PFT by barf and 1.0e-5. The extra 
-         ! amount is to ensure we don't have trouble later with an extremely
-         ! small bare fraction.
-!         nfcancmxrow(i,bigpftc(1),bigpftc(2))=nfcancmxrow &
-!                     (i,bigpftc(1),bigpftc(2))+barf(i) - 1.0e-5
-         nfcancmxrow(i,m,j)=nfcancmxrow &
-                     (i,m,j)+barf(i) - minbare   !FLAG test
+            !> Reduce the most dominant PFT by barf and minbare. The extra
+            !> amount is to ensure we don't have trouble later with an extremely
+            !> small bare fraction. barf is a negative value.
+            nfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)+barf(i) - minbare
 
         end if
-       end do 
+    else
+        do m = 1,nmtest
+            if (barfm(i,m) .lt. 0.) then
 
-!       get fcans for use by class using the nfcancmxs just read in
-        k1=0
-        do 997 j = 1, ican
-          if(j.eq.1) then
-            k1 = k1 + 1
-          else
-            k1 = k1 + nol2pfts(j-1)
-          endif
-          k2 = k1 + nol2pfts(j) - 1
-          do 998 n = k1, k2
-            do i = 1, nltest
-             do m = 1, nmtest
-              if (.not. mosaic) then !composite
+                !> Find out which of the non-crop PFTs covers the largest area.
+                bigpft=maxloc(pftarrays(i,m,:))
+                !> j is then the nmos index and m is the icc index of the PFT with the largest area
+                j = indexposj(i,m,bigpft(1))
+                !>
+                !> Reduce the most dominant PFT by barf and minbare. The extra
+                !! amount is to ensure we don't have trouble later with an extremely
+                !! small bare fraction. barf is a negative value.
+                !!
+                nfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)+barfm(i,j) - minbare
 
-               fcanrow(i,m,j)=fcanrow(i,m,j)+nfcancmxrow(i,m,n) 
+            end if
 
-              else if (mosaic .and. nfcancmxrow(i,m,n) .gt. seed) then
-!              this tile has some plants so overwrite the seed fraction with
-!              an actual fraction
+        end do !nmtest
+    end if !onetile_perPFT
+end do !nltest
 
-!              note: the seed fraction has already been assigned in runclassctem
-!              prior to entering this subroutine.
-               farerow(i,m)=nfcancmxrow(i,m,n)    
 
-              endif
-             enddo
-            enddo
+!> get fcans for use by class using the nfcancmxs just read in
+k1=0
+do 997 j = 1, ican
+    if(j.eq.1) then
+    k1 = k1 + 1
+    else
+    k1 = k1 + nol2pfts(j-1)
+    endif
+    k2 = k1 + nol2pfts(j) - 1
+    do 998 n = k1, k2
+    do i = 1, nltest
+        do m = 1, nmtest
+        if (.not. onetile_perPFT) then !composite
+
+        fcanrow(i,m,j)=fcanrow(i,m,j)+nfcancmxrow(i,m,n)
+
+        else if (onetile_perPFT .and. nfcancmxrow(i,m,n) .gt. seed) then
+!>this tile has some plants so overwrite the seed fraction with an actual fraction
+!!
+!!note: the seed fraction has already been assigned in runclassctem prior to entering this subroutine.
+        farerow(i,m)=nfcancmxrow(i,m,n)
+
+        endif
+        enddo
+    enddo
 998       continue
 997     continue
 
-!       (re)find the bare fraction for farerow(i,iccp1)
-         if (mosaic) then
-          do i = 1, nltest
-          temp = 0.
-           do m = 1, nmtest-1
+!> (re)find the bare fraction for farerow(i,iccp1)
+if (onetile_perPFT) then
+    do i = 1, nltest
+        temp = 0.
+        do m = 1, nmtest-1
             temp = temp + farerow(i,m)
-           enddo
+        enddo
+        farerow(i,nmtest) = 1.0 - temp
+    enddo
+endif
+!>
+!!check that the bare fraction is possible (>0) and if not then reduce the other pfts proportionally 
+!!to make a non-negative bare ground fraction.
+!!
+do i = 1, nltest
+    temp = 0.0
+    if (onetile_perPFT) then
+    !> competition requires a 'seed' fraction so make sure the bare ground is also that big.
+    !> for prescribed runs you just need it to be possible (>0).
+        if ((compete .and. farerow(i,nmtest) < seed) .or. (.not. compete .and. farerow(i,nmtest) < 0.)) then
 
-           farerow(i,nmtest) = 1.0 - temp
+            call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,farerow(i,nmtest),compete)
 
-          enddo
-         endif
+            do m = 1, nmtest
+            n = m
+            farerow(i,m)=nfcancmxrow(i,m,n)
+            temp = temp + farerow(i,m)
+            enddo
 
-          ! check that the bare fraction is possible (>0) and if not then
-          ! reduce the other pfts proportionally to make a non-negative bare
-          ! ground fraction.
+            farerow(i,nmtest) = 1.0 - temp
 
-          do i = 1, nltest
-           temp = 0.0
-           if (mosaic) then
-            if (farerow(i,nmtest) < seed) then  !FLAG should this include a compete switch that compares to see if true and 0 otherwise? JM Feb 17 2015
+        endif !farerow<seed
+    endif !onetile_perPFT
+enddo !nltest
 
-             call adjust_luc_fracs(i,mosaic,nfcancmxrow,farerow(i,nmtest),compete)
-
-             do m = 1, nmtest
-                n = m
-                farerow(i,m)=nfcancmxrow(i,m,n)  
-                temp = temp + farerow(i,m)  
-             enddo
-
-             farerow(i,nmtest) = 1.0 - temp
-
-            endif !farerow<seed
-           endif !mosaic
-          enddo !nltest
-
-!       assign the present pft fractions from those just read in
-        do j = 1, icc
-          do i = 1, nltest
-           do m = 1, nmtest
-            if (.not. mosaic) then  !composite 
-             fcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
-             pfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
-            else !mosaic
-!            ensure that the fraction is >= seed
-             pfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))!FLAG should this include a compete switch? Can't a mosaic tile be 0 if not in compete mode? JM Feb 17 2015
+!> assign the present pft fractions from those just read in
+do j = 1, icc
+    do i = 1, nltest
+        do m = 1, nmtest
+            if (.not. onetile_perPFT) then  !composite
+                fcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
+                pfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
+            else !onetile_perPFT
+                ! I think this check below is not needed (JM Mar 2015)
+                if (compete) then
+        !              ensure that the fraction is >= seed
+                    pfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))
+                else !prescribed run
+                    pfcancmxrow(i,m,j)=max(0.,nfcancmxrow(i,m,j))
+                end if
             endif
-           enddo
-          enddo
         enddo
-
-!       back up one year in the luc file 
-
-        do i = 1, nltest
-           backspace(15)  
-        enddo
+    enddo
+enddo
+!>
+!> back up one year in the luc file
+!! this is because we were setting things up here,
+!! we will later call readin_luc so want the file to be
+!! rewound prior to that to the proper start year.
+!!
+do i = 1, nltest
+    backspace(15)
+enddo
 
 return
 
 999    continue
   
-! end of the luc file is reached. close and tell main program to exit
-        close(15)
-        reach_eof = .true.
+!> end of the luc file is reached. close and tell main program to exit
+close(15)
+reach_eof = .true.
 
 end subroutine initialize_luc
-
+!>@}
 !=======================================================================
+!>\ingroup landuse_change_readin_luc
+!>@{
 
-subroutine readin_luc(iyear,nmtest,nltest,mosaic,lucyr, &
-                      nfcancmxrow,pfcancmxrow,reach_eof,compete)
-
-!           Canadian Terrestrial Ecosystem Model (CTEM) 
-!                    LUC Annual Read-In Subroutine 
+subroutine readin_luc(iyear,nmtest,nltest,lucyr, &
+                      nfcancmxrow,pfcancmxrow,reach_eof,compete,&
+                      onetile_perPFT)
+!     9  Mar  2016  - Adapt for tiling where we compete for space within a tile
+!     J. Melton
 !
+!     3  Feb  2016  - Remove mosaic flag, replace with onetile_perPFT flag.
+!     J. Melton
+
 !     9  Jan. 2013  - this subroutine takes in luc information from
 !     J. Melton       a luc file annually and adapts them for runclassctem
 !	
@@ -308,11 +452,13 @@ implicit none
 
 ! inputs
 integer, intent(in) :: iyear
-logical, intent(in) :: mosaic
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
 logical, intent(in) :: compete
-
+logical, intent(in) :: onetile_perPFT !< if you are running with one tile per PFT in mosaic mode, set to true. Changes
+                                !< how competition is run. Specifically it allows competition between tiles. This
+                                !< is not recommended for any case where you don't have one PFT in each tile as it
+                                !< has not been tested for that.
 
 ! updates
 integer, intent(inout) :: lucyr
@@ -329,48 +475,54 @@ integer :: j,m,i
 integer :: k1,k2,n
 real, dimension(nltest) :: bare_ground_frac
 
-!-------------------------
+!>-------------------------
 
-!it is subsequent years so read in and adjust the luc file info.
+!>it is subsequent years so read in and adjust the luc file info.
 
          do while (lucyr < iyear) 
            do i = 1, nltest
-            if (.not. mosaic) then  !composite
+            if (.not. onetile_perPFT) then  !composite
               read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-            else                    !mosaic
+              if (nmtest > 1) then
+                do m = 2, nmtest
+                    nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
+                end do
+              end if
+            else                    !onetile_perPFT
               read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
               do m = 1, nmtest-1    !nmtest-1 same as icc
                j = m
-               nfcancmxrow(i,m,j) = max(seed,temparray(m)) !FLAG Can it actually be 0 if compete not on? JM Feb 17 2015
+               if (compete) then
+                  nfcancmxrow(i,m,j) = max(seed,temparray(m)) 
+               else !prescribed run
+                  nfcancmxrow(i,m,j) = max(0.,temparray(m)) 
+               end if   
               enddo !m loop
             endif
            enddo !nltest
          enddo !lucyr<iyear
-  
-!     If compete is on, then only take in the crop fraction. Set the other fractions
-!     to the same as before. These will be adjusted in adjust_luc_fracs.
+!>
+!>If compete is on, then only take in the crop fraction. Set the other fractions
+!>to the same as before. These will be adjusted in adjust_luc_fracs.
         if (compete) then
          do j = 1, icc
           if (.not. crop(j)) then
            do i = 1, nltest
-            if (.not. mosaic) then  !composite
-                m = 1
-            else !mosaic
-                m = j
-            end if
-                nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)           
+             do m = 1,nmtest
+                nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)
+             end do
            end do
           end if
          end do
         end if
 
 
-!       (re)find the bare fraction for farerow(i,iccp1)
+!>(re)find the bare fraction for farerow(i,iccp1)
           bare_ground_frac=0.
           do i = 1, nltest
           temp = 0.0
            do j = 1, icc
-            if (mosaic) then !flag
+            if (onetile_perPFT) then !flag
               m = j
             else !composite
               m = 1
@@ -383,14 +535,10 @@ real, dimension(nltest) :: bare_ground_frac
           enddo
           
           do i = 1, nltest
-           if (compete .and. bare_ground_frac(i) < seed) then
+           if ((compete .and. bare_ground_frac(i) < seed) .or. (.not. compete .and. bare_ground_frac(i) < 0.)) then
 
-             call adjust_luc_fracs(i,mosaic,nfcancmxrow,bare_ground_frac(i),compete)           
+             call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,bare_ground_frac(i),compete)
 
-           else if (.not. compete .and. bare_ground_frac(i) < 0.) then
-           
-             call adjust_luc_fracs(i,mosaic,nfcancmxrow,bare_ground_frac(i),compete)
-           
            endif 
           enddo !nltest
 
@@ -398,13 +546,15 @@ return
 
 999 continue
 
-! end of the luc file is reached. close and tell main program to exit
+!>end of the luc file is reached. close and tell main program to exit
         close(15)
         reach_eof = .true.
 
 end subroutine readin_luc
-
+!>@}
 !=======================================================================
+!>\ingroup landuse_change_luc
+!>@{
 
 subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1    
                         grclarea, pfcancmx, nfcancmx,      iday,    & !2    
@@ -417,9 +567,6 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                          lucemcom, lucltrin, lucsocin)                !7  
 !
 !     ----------------------------------------------------------------
-!
-!           Canadian Terrestrial Ecosystem Model (CTEM) 
-!                       Land Use Change Subroutine 
 !
 !     31  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 !     J. Melton
@@ -445,41 +592,6 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !
 !     icc       - no of pfts for use by ctem, currently 9
 !     ican        - no of pfts for use by class, currently 4
-!     nilg      - no. of grid cells in latitude circle(this is passed in as either ilg or nlat depending on comp/mos)
-!     il1, il2  - il1=1, il2=nilg
-!     nol2pfts  - number of level 2 pfts
-!     fcancmx   - max. fractional coverages of ctem's 9 pfts. 
-!     grclarea  - gcm grid cell area, km2
-!     pfcancmx  - previous max. fractional coverages of ctem's 9 pfts. 
-!     nfcancmx  - next max. fractional coverages of ctem's 9 pfts. 
-!     iday      - day of year
-!     todfrac   - today's fractional coverage of all pfts 
-!     yesfrac   - yesterday's fractional coverage of all pfts 
-!     interpol  - if todfrac & yesfrac are provided then interpol must
-!                 be set to false so that this subroutine doesn't do its
-!                 own interpolation using pfcancmx and nfcancmx which
-!                 are year end values     
-!     updates
-
-!     gleafmas  - green or live leaf mass in kg c/m2, for the 9 pfts
-!     bleafmas  - brown or dead leaf mass in kg c/m2, for the 9 pfts
-!     stemmass  - stem biomass in kg c/m2, for the 9 pfts
-!     rootmass  - root biomass in kg c/m2, for the 9 pfts
-!     litrmass  - litter mass in kg c/m2, for the 9 pfts + bare
-!     soilcmas  - soil c mass in kg c/m2, for the 9 pfts + bare
-!     vgbiomas  - grid averaged vegetation biomass, kg c/m2
-!     gavgltms  - grid averaged litter mass, kg c/m2
-!     gavgscms  - grid averaged soil c mass, kg c/m2
-
-!     outputs
-
-!     fcanmx   - fractional coverages of class 4 pfts (these are found based 
-!                on new fcancmxs)
-!     lucemcom - luc related carbon emission losses from combustion
-!                u-mol co2/m2.sec
-!     lucltrin - luc related input to litter pool, u-mol co2/m2.sec
-!     lucsocin - luc related input to soil carbon pool, u-mol co2/m2.sec
-
 !     ----------------------------------------------------------------    
       use ctem_params,        only : icc, ican, zero, km2tom2, iccp1, &
                                      combust, paper, furniture, bmasthrs, &
@@ -488,57 +600,104 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
       implicit none
 
-      integer il1, il2, nilg, i, j, k, m, n,k1, k2, q 
-      integer    iday, nol2pfts(ican)      
-      integer fraciord(nilg,icc), treatind(nilg,icc),       bareiord(nilg)
-      integer lrgstpft(1)
+      integer il1               !<il1=1
+      integer il2               !<il2=nilg
+      integer nilg              !<no. of grid cells in latitude circle(this is passed in as either ilg or nlat depending on comp/mos)
+      integer i, j, k, m, n, k1, k2, q !FLAG q needed? JM
+      integer iday              !<day of year
+      integer nol2pfts(ican)    !<number of level 2 pfts
+      integer fraciord(nilg,icc)!<fractional coverage increase or decrease increase +1, decrease -1
+      integer treatind(nilg,icc)!<treatment index for combust, paper, & furniture
+      integer bareiord(nilg)    !<bare fraction increases or decreases
+      integer lrgstpft(1)       !<
 
-      logical  interpol         
-      logical  luctkplc(nilg)
-      logical  compete          !true if the competition subroutine is on.
-!      
-      real  gleafmas(nilg,icc), bleafmas(nilg,icc),stemmass(nilg,icc), & !1
-            rootmass(nilg,icc),  fcancmx(nilg,icc),pfcancmx(nilg,icc), & !2
-                vgbiomas(nilg),                   soilcmas(nilg,iccp1),& !3 
-          litrmass(nilg,iccp1),     gavgltms(nilg),    gavgscms(nilg), & !4
-            nfcancmx(nilg,icc),  fcancmy(nilg,icc), todfrac(nilg,icc), & !5
-             yesfrac(nilg,icc)
+      logical  interpol         !<if todfrac & yesfrac are provided then interpol must be set to false so that 
+                                !<this subroutine doesn't do its own interpolation using pfcancmx and nfcancmx 
+                                !<which are year end values
+      logical  luctkplc(nilg)   !<
+      logical  compete          !<true if the competition subroutine is on.
 
-      real    fcanmx(nilg,ican),  delfrac(nilg,icc),abvgmass(nilg,icc),& 
-                                 grclarea(nilg),   combustc(nilg,icc), & !3
-             paperc(nilg,icc), furnturc(nilg,icc),incrlitr(nilg,icc),  & !4
-           incrsolc(nilg,icc),   chopedbm(nilg)
-      real      compdelfrac(nilg,icc)  !with competition on, this is the change in pft frac per timestep   
-                          
-      real         redubmas1,              term,       barefrac(nilg), & 
-                grsumcom(nilg),     grsumpap(nilg),    grsumfur(nilg), & !1
-                grsumlit(nilg),     grsumsoc(nilg),    pbarefra(nilg), & !2
-                grdencom(nilg),     grdenpap(nilg),    grdenfur(nilg), & !3
-                grdenlit(nilg),     grdensoc(nilg),    totcmass(nilg), & !4
-                totlmass(nilg),     totdmas1(nilg),    ntotcmas(nilg), & !5
-                ntotlmas(nilg),     ntotdms1(nilg),    lucemcom(nilg), & !6
-                pvgbioms(nilg),     pgavltms(nilg),    pgavscms(nilg), & !7
-                    redubmas2,     lucltrin(nilg),     lucsocin(nilg), & !7
-                totdmas2(nilg),     ntotdms2(nilg)
-      real      pftarrays(nilg,icc-numcrops)
-      integer   indexpos(nilg,icc-numcrops) 
+      real gleafmas(nilg,icc)   !<green or live leaf mass in kg c/m2, for the 9 pfts
+      real bleafmas(nilg,icc)   !<brown or dead leaf mass in kg c/m2, for the 9 pfts
+      real stemmass(nilg,icc)   !<stem biomass in kg c/m2, for the 9 pfts
+      real rootmass(nilg,icc)   !<root biomass in kg c/m2, for the 9 pfts
+      real fcancmx(nilg,icc)    !<max. fractional coverages of ctem's 9 pfts.
+      real pfcancmx(nilg,icc)   !<previous max. fractional coverages of ctem's 9 pfts.
+      real vgbiomas(nilg)       !<grid averaged vegetation biomass, kg c/m2
+      real soilcmas(nilg,iccp1) !<soil c mass in kg c/m2, for the 9 pfts + bare
+      real litrmass(nilg,iccp1) !<litter mass in kg c/m2, for the 9 pfts + bare
+      real gavgltms(nilg)       !<grid averaged litter mass, kg c/m2
+      real gavgscms(nilg)       !<grid averaged soil c mass, kg c/m2
+      real nfcancmx(nilg,icc)   !<next max. fractional coverages of ctem's 9 pfts.
+      real fcancmy(nilg,icc)    !<
+      real todfrac(nilg,icc)    !<today's fractional coverage of all pfts
+      real yesfrac(nilg,icc)    !<yesterday's fractional coverage of all pfts
 
-!     ---------------------------------------------------------------
-!     Constants and parameters are located in ctem_params.f90
-!     -----------------------------------------------------------------
+      real fcanmx(nilg,ican)    !<fractional coverages of class 4 pfts (these are found based on new fcancmxs)
+      real delfrac(nilg,icc)    !<
+      real abvgmass(nilg,icc)   !<above-ground biomass
+      real grclarea(nilg)       !<gcm grid cell area, km2
+      real combustc(nilg,icc)   !<total carbon from deforestation- combustion
+      real paperc(nilg,icc)     !<total carbon from deforestation- paper
+      real furnturc(nilg,icc)   !<total carbon from deforestation- furniture
+      real incrlitr(nilg,icc)   !<
+      real incrsolc(nilg,icc)   !<
+      real chopedbm(nilg)       !<chopped off biomass
+      real compdelfrac(nilg,icc)!<with competition on, this is the change in pft frac per timestep   
+
+      real redubmas1      !<
+      real term           !<
+      real barefrac(nilg) !<initialize bare fraction to 1.0
+      real grsumcom(nilg) !<grid sum of combustion carbon for all pfts that are chopped
+      real grsumpap(nilg) !<grid sum of paper carbon for all pfts that are chopped
+      real grsumfur(nilg) !<grid sum of furniture carbon for all pfts that are chopped
+      real grsumlit(nilg) !<grid sum of litter carbon for all pfts that are chopped
+      real grsumsoc(nilg) !<grid sum of soil c carbon for all pfts that are chopped
+      real pbarefra(nilg) !<initialize previous years's bare fraction to 1.0
+      real grdencom(nilg) !<grid averaged densities for combustion carbon
+      real grdenpap(nilg) !<grid averaged densities for paper carbon
+      real grdenfur(nilg) !<grid averaged densities for furniture carbon
+      real grdenlit(nilg) !<grid averaged densities for litter carbon
+      real grdensoc(nilg) !<grid averaged densities for soil c carbon
+      real totcmass(nilg) !<total c mass (live+dead)
+      real totlmass(nilg) !<total c mass (live)
+      real totdmas1(nilg) !<total c mass (dead) litter
+      real ntotcmas(nilg) !<total c mass (live+dead) after luc treatment
+      real ntotlmas(nilg) !<total c mass (live) after luc treatment
+      real ntotdms1(nilg) !<total c mass (dead) litter after luc treatment
+      real lucemcom(nilg) !<luc related carbon emission losses from combustion u-mol co2/m2.sec
+      real pvgbioms(nilg) !<
+      real pgavltms(nilg) !<
+      real pgavscms(nilg) !<
+      real redubmas2      !<
+      real lucltrin(nilg) !<luc related input to litter pool, u-mol co2/m2.sec
+      real lucsocin(nilg) !<luc related input to soil carbon pool, u-mol co2/m2.sec
+      real totdmas2(nilg) !<total c mass (dead) soil c
+      real ntotdms2(nilg) !<total c mass (dead) soil c after luc treatment
+
+      real pftarrays(nilg,icc-numcrops) !<
+      integer indexpos(nilg,icc-numcrops) !<
+
+!>---------------------------------------------------------------
+!>Constants and parameters are located in ctem_params.f90
+!>---------------------------------------------------------------
+
 
       if(icc.ne.9)                               call xit('luc',-1)  
       if(ican.ne.4)                              call xit('luc',-2)  
 
-!     ------------------------------------------------------------------
+!>------------------------------------------------------------------
 
-!     find/use provided current and previous day's fractional coverage 
-!     if competition is on, we will adjust these later.
+!>find/use provided current and previous day's fractional coverage 
+!>if competition is on, we will adjust these later.
 
-      if(interpol) then ! perform interpolation 
+      if(interpol) then !> perform interpolation 
        do 110 j = 1, icc
         do 111 i = il1, il2
-
+          if (compete .and. .not. crop(j)) then !FLAG!! JM. ADDED if loop JUL 11 2016 TEST!!!
+            nfcancmx(i,j)=yesfrac(i,j)
+            pfcancmx(i,j)=yesfrac(i,j)
+          end if
           delfrac(i,j)=nfcancmx(i,j)-pfcancmx(i,j) !change in fraction
           delfrac(i,j)=delfrac(i,j)/365.0
           fcancmx(i,j)=pfcancmx(i,j)+(real(iday)*delfrac(i,j)) !  current day
@@ -564,8 +723,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
 111     continue
 110    continue
-      else ! use provided values but still check
-!            they are not -ve
+      else !> use provided values but still check
+!>they are not -ve
        do 115 j = 1, icc
         do 116 i = il1, il2
           fcancmx(i,j) = todfrac(i,j)   
@@ -592,13 +751,13 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 116     continue
 115    continue
       endif
-
-!     If competition is on, we need to adjust the other fractions for the increase/decrease
-!     in cropland as only the crops areas is now specified.
+!>
+!>If competition is on, we need to adjust the other fractions for the increase/decrease
+!>in cropland as only the crops areas is now specified.
       if (compete) then
 
          call adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,compdelfrac)
-                                        
+
          do j = 1, icc
           do i = 1, il1, il2
 
@@ -610,14 +769,10 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 
          end do
       end if
-
-!     check if this year's fractional coverages have changed or not
-!     for any pft
-
-      do 150 i = il1, il2
-        luctkplc(i)=.false.  ! did land use change take place for any pft
-150   continue         ! in this grid cell
-
+!>
+!!check if this year's fractional coverages have changed or not for any pft
+!!
+      luctkplc(:)=.false.  ! did land use change take place for any pft in this grid cell
       do 200 j = 1, icc
         do 250 i = il1, il2
           if ( (abs(fcancmx(i,j)-fcancmy(i,j))).gt.zero ) then
@@ -626,21 +781,19 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 250     continue
 200   continue
 
+
 !     only perform the rest of the subroutine if any luc is actually taking 
 !     place, otherwise exit.
-      do 255 q = il1, il2
-        if (luctkplc(q)) then
+      do 255 i = il1, il2
+        if (luctkplc(i)) then
 !     -------------------------------------------------------------------
 !     initialization
 
       do 260 j = 1, ican
-        do 261 i = il1, il2
             fcanmx(i,j)=0.0 ! fractional coverage of class' pfts
-261     continue      
-260   continue      
+260   continue
 
       do 270 j = 1, icc
-        do 271 i = il1, il2
           fraciord(i,j)=0   !fractional coverage increase or decrease
 !                           !increase +1, decrease -1
           abvgmass(i,j)=0.0 !above-ground biomass
@@ -648,11 +801,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
           combustc(i,j)=0.0 !total carbon from deforestation- combustion
           paperc(i,j)=0.0   !total carbon from deforestation- paper
           furnturc(i,j)=0.0 !total carbon from deforestation- furniture
+270   continue
 
-271     continue  
-270   continue      
-
-      do 280 i = il1, il2
         pvgbioms(i)=vgbiomas(i)  ! store grid average quantities in
         pgavltms(i)=gavgltms(i)  ! temporary arrays
         pgavscms(i)=gavgscms(i)
@@ -661,48 +811,46 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         gavgltms(i)=0.0
         gavgscms(i)=0.0
 
-        barefrac(i)=1.0          ! initialize bare fraction to 1.0
-        pbarefra(i)=1.0          ! initialize previous years's bare fraction to 1.0
 
-        grsumcom(i)=0.0          ! grid sum of combustion carbon for all
-                                 ! pfts that are chopped
-        grsumpap(i)=0.0          ! similarly for paper, 
-        grsumfur(i)=0.0          ! furniture,
-        grsumlit(i)=0.0          ! litter, and
-        grsumsoc(i)=0.0          ! soil c
+        barefrac(i)=1.0          
+        pbarefra(i)=1.0           
 
-        grdencom(i)=0.0          ! grid averaged densities for combustion carbon,
-        grdenpap(i)=0.0          ! paper,
-        grdenfur(i)=0.0          ! furniture, 
-        grdenlit(i)=0.0          ! litter, and
-        grdensoc(i)=0.0          ! soil c
+        grsumcom(i)=0.0           
+        grsumpap(i)=0.0           
+        grsumfur(i)=0.0          
+        grsumlit(i)=0.0          
+        grsumsoc(i)=0.0          
 
-        totcmass(i)=0.0          ! total c mass (live+dead)
-        totlmass(i)=0.0          ! total c mass (live)
-        totdmas1(i)=0.0          ! total c mass (dead) litter
-        totdmas2(i)=0.0          ! total c mass (dead) soil c
+        grdencom(i)=0.0          
+        grdenpap(i)=0.0          
+        grdenfur(i)=0.0           
+        grdenlit(i)=0.0          
+        grdensoc(i)=0.0          
 
-!       and the same 3 quantities as above after luc treatment
+        totcmass(i)=0.0           
+        totlmass(i)=0.0           
+        totdmas1(i)=0.0           
+        totdmas2(i)=0.0           
 
-        ntotcmas(i)=0.0          ! total c mass (live+dead)
-        ntotlmas(i)=0.0          ! total c mass (live)
-        ntotdms1(i)=0.0          ! total c mass (dead) litter
-        ntotdms2(i)=0.0          ! total c mass (dead) soil c
+        ntotcmas(i)=0.0           
+        ntotlmas(i)=0.0           
+        ntotdms1(i)=0.0           
+        ntotdms2(i)=0.0           
 
-        lucemcom(i)=0.0          ! luc related combustion emission losses
-        lucltrin(i)=0.0          ! luc related inputs to litter pool
-        lucsocin(i)=0.0          ! luc related inputs to soil c pool
+        lucemcom(i)=0.0          
+        lucltrin(i)=0.0           
+        lucsocin(i)=0.0           
 
-        bareiord(i)=0            ! bare fraction increases or decreases
-        chopedbm(i)=0.0          ! chopped off biomass
-280   continue
+        bareiord(i)=0             
+        chopedbm(i)=0.0           
 
-!     initialization ends
 
-!     -------------------------------------------------------------------
 
-!     if land use change has taken place then get fcanmxs for use by 
-!     class based on the new fcancmxs
+!>initialization ends
+
+!>-------------------------------------------------------------------
+
+!>if land use change has taken place then get fcanmxs for use by class based on the new fcancmxs
 
       k1=0
       do 300 j = 1, ican
@@ -713,19 +861,18 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         endif
         k2 = k1 + nol2pfts(j) - 1
         do 301 m = k1, k2
-          do 302 i = il1, il2
             fcanmx(i,j)=fcanmx(i,j)+fcancmx(i,m)
             barefrac(i)=barefrac(i)-fcancmx(i,m)
-302       continue
 301     continue
 300   continue
-
-!     check if the interpol didn't mess up the barefrac. if so, take the
-!     extra amount from the pft with the largest area. jm apr 24 2013.
-!     but you can't take it from crops!
+!>
+!>check if the interpol didn't mess up the barefrac. if so, take the
+!!extra amount from the pft with the largest area. jm apr 24 2013.
+!!but you can't take it from crops!
       pftarrays=0.
-      do 304 i = il1, il2
+
          if (barefrac(i).lt.0.0) then ! compete only needs minbare but it checks later.
+
            k=1
            do j = 1,icc
             if (.not. crop(j)) then
@@ -746,57 +893,48 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                barefrac(i) = 0.0
             end if
          endif
-304   continue
 
-!     find previous day's bare fraction using previous day's fcancmxs
+!>find previous day's bare fraction using previous day's fcancmxs
       do 310 j = 1, icc
-        do 311 i = il1, il2
           pbarefra(i)=pbarefra(i)-fcancmy(i,j)
-311     continue
 310   continue
-
-!     check if the interpol didn't mess up the pbarefra. if so, take the
-!     extra amount from the pft with the largest area. jm apr 24 2013.
-!     but you can't take it from crops!
-      do 314 i = il1, il2
+!>
+!>check if the interpol didn't mess up the pbarefra. if so, take the
+!!extra amount from the pft with the largest area. jm apr 24 2013.
+!!but you can't take it from crops!
          if (pbarefra(i).lt.0.0) then 
            k=1
            do j = 1,icc
             if (.not. crop(j)) then
              indexpos(i,k) = j
              pftarrays(i,k)=fcancmy(i,j)
-             k=k+1 
-            end if          
-           end do   
+             k=k+1
+            end if
+           end do
 
             lrgstpft = maxloc(pftarrays(i,:))
-            j = indexpos(i,lrgstpft(1))  
-             
+            j = indexpos(i,lrgstpft(1))
+
            if (compete) then
-                fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare 
-                pbarefra(i) = minbare 
+                fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare
+                pbarefra(i) = minbare
             else
                 fcancmy(i,j) = fcancmy(i,j) + pbarefra(i)
                 pbarefra(i) = 0.0
             end if
 
          endif
-314   continue
-
-!     based on sizes of 3 live pools and 2 dead pools we estimate the
-!     total amount of c in each grid cell.
-
+!>
+!>based on sizes of 3 live pools and 2 dead pools we estimate the total amount of c in each grid cell.
+!>
       do 320 j = 1, icc
-        do 321 i = il1, il2
           totlmass(i)=totlmass(i)+ &
                      (fcancmy(i,j)*(gleafmas(i,j)+bleafmas(i,j)+ &
                       stemmass(i,j)+rootmass(i,j))*grclarea(i) &
                       *km2tom2)
-321     continue
 320   continue
 
       do 340 j = 1, iccp1
-        do 341 i = il1, il2
           if(j.lt.iccp1) then
             term = fcancmy(i,j)
           else if(j.eq.iccp1) then
@@ -806,17 +944,10 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                      (term*litrmass(i,j)*grclarea(i)*km2tom2)
           totdmas2(i)=totdmas2(i)+ & 
                      (term*soilcmas(i,j)*grclarea(i)*km2tom2)
-
-341     continue
 340   continue
 
-      do 350 i = il1, il2
         totcmass(i)=totlmass(i)+totdmas1(i)+totdmas2(i)
-350   continue
-
 !     bare fractions cannot be negative
-
-      do 440 i = il1, il2
         if( pbarefra(i).lt.0.0.and.abs(pbarefra(i)).lt.1.0e-05 )then
           pbarefra(i)=0.0
         else if(pbarefra(i).lt.0.0.and.abs(pbarefra(i)).ge.1.0e-05 )then
@@ -833,11 +964,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
           write(6,*)'bare fraction(',i,')  =',barefrac(i)
           call xit('luc',-8)
         endif
-440   continue
-
-!     find above ground biomass and treatment index for combust, paper,
-!     and furniture
-
+!>     find above ground biomass and treatment index for combust, paper,
+!>     and furniture
       k1=0
       do 500 j = 1, ican
         if(j.eq.1) then
@@ -847,7 +975,6 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         endif
         k2 = k1 + nol2pfts(j) - 1
         do 510 m = k1, k2
-          do 520 i = il1, il2
             abvgmass(i,m)=gleafmas(i,m)+bleafmas(i,m)+stemmass(i,m)
             if(j.eq.1.or.j.eq.2) then  ! trees
               if(abvgmass(i,m).ge.bmasthrs(1)) then !forest
@@ -860,25 +987,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             else                       !crops and grasses
               treatind(i,m)=3
             endif
-520       continue
 510     continue
 500   continue
 
-!     if treatment index is zero then something is wrong - we exit
-!     jm edit -- isn't this impossible, so we don't need to check?
-      do 530 j = 1, icc
-        do 531 i = il1, il2
-          if(treatind(i,j).eq.0)then
-        write(6,*)'treatment index zero for grid cell ',i,' and pft',j
-            call xit('luc',-9)
-          endif
-531     continue
-530   continue
-
-!     check if a pft's fractional cover is increasing or decreasing
+!>check if a pft's fractional cover is increasing or decreasing
 
       do 550 j = 1, icc 
-        do 551 i = il1, il2
           if( ( fcancmx(i,j).gt.fcancmy(i,j)) .and. &
              (abs(fcancmy(i,j)-fcancmx(i,j)).gt.zero) ) then
               fraciord(i,j)=1  ! increasing
@@ -886,13 +1000,10 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                   (abs(fcancmy(i,j)-fcancmx(i,j)).gt.zero) ) then
               fraciord(i,j)=-1 ! decreasing
           endif
-
-551     continue
 550   continue
 
-!     check if bare fraction increases of decreases
+!>check if bare fraction increases of decreases
 
-      do 560 i = il1, il2
         if( ( barefrac(i).gt.pbarefra(i)) .and. &
            (abs(pbarefra(i)-barefrac(i)).gt.zero) ) then
               bareiord(i)=1  !increasing
@@ -900,15 +1011,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                  (abs(pbarefra(i)-barefrac(i)).gt.zero) ) then
               bareiord(i)=-1 !decreasing
         endif
-560   continue
 
-        
-!     if the fractional coverage of pfts increases then spread their
-!     live & dead biomass uniformly over the new fraction. this 
-!     effectively reduces their per m2 c density. 
- 
+!>        
+!>if the fractional coverage of pfts increases then spread their live & dead biomass uniformly 
+!!over the new fraction. this effectively reduces their per m2 c density. 
+!!
       do 570 j = 1, icc
-        do 571 i = il1, il2
           if(fraciord(i,j).eq.1)then
             term = fcancmy(i,j)/fcancmx(i,j)
             gleafmas(i,j)=gleafmas(i,j)*term
@@ -918,28 +1026,24 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             litrmass(i,j)=litrmass(i,j)*term
             soilcmas(i,j)=soilcmas(i,j)*term
           endif 
-571     continue
 570   continue
-
-!     if bare fraction increases then spread its litter and soil c
-!     uniformly over the increased fraction
-
-      do 580 i = il1, il2
+!>
+!>if bare fraction increases then spread its litter and soil c uniformly over the increased fraction
+!>
         if(bareiord(i).eq.1)then
           term = pbarefra(i)/barefrac(i)
           litrmass(i,iccp1)=litrmass(i,iccp1)*term
           soilcmas(i,iccp1)=soilcmas(i,iccp1)*term
         endif
-580   continue
-
-!     if any of the pfts fractional coverage decreases, then we chop the
-!     aboveground biomass and treat it according to our rules (burn it,
-!     and convert it into paper and furniture). the below ground live
-!     biomass and litter of this pfts gets assimilated into litter of
-!     all pfts (uniformly spread over the whole grid cell), and soil c
-!     from the chopped off fraction of this pft, gets assimilated into
-!     soil c of all existing pfts as well.
-
+!>
+!>if any of the pfts fractional coverage decreases, then we chop the
+!!aboveground biomass and treat it according to our rules (burn it,
+!!and convert it into paper and furniture). the below ground live
+!!biomass and litter of this pfts gets assimilated into litter of
+!!all pfts (uniformly spread over the whole grid cell), and soil c
+!!from the chopped off fraction of this pft, gets assimilated into
+!!soil c of all existing pfts as well.
+!!
       k1=0
       do 600 j = 1, ican
         if(j.eq.1) then
@@ -949,11 +1053,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
         endif
         k2 = k1 + nol2pfts(j) - 1
         do 610 m = k1, k2
-          do 620 i = il1, il2
-
             if(fraciord(i,m).eq.-1)then
 
-!             chop off above ground biomass 
+!>chop off above ground biomass 
               redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                        *abvgmass(i,m)*km2tom2
 
@@ -964,33 +1066,30 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                 write(6,*)'grid cell = ',i,' pft = ',m
                 call xit('luc',-10)
               endif
-
-!             rootmass needs to be chopped as well and all of it goes to
-!             the litter/paper pool
-
+!>
+!>rootmass needs to be chopped as well and all of it goes to the litter/paper pool
+!>
               redubmas2=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i)  &
                        *rootmass(i,m)*km2tom2
 
-!             keep adding chopped off biomass for each pft to get the total
-!             for a grid cell for diagnostics
+!>keep adding chopped off biomass for each pft to get the total for a grid cell for diagnostics
 
               chopedbm(i)=chopedbm(i) + redubmas1 + redubmas2 
 
-!             find what's burnt, and what's converted to paper &
-!             furniture
+!>find what's burnt, and what's converted to paper & furniture
               combustc(i,m)=combust(treatind(i,m))*redubmas1
               paperc(i,m)=paper(treatind(i,m))*redubmas1 + redubmas2
               furnturc(i,m)=furniture(treatind(i,m))*redubmas1
 
-!             keep adding all this for a given grid cell
+!>keep adding all this for a given grid cell
               grsumcom(i)=grsumcom(i)+combustc(i,m)
               grsumpap(i)=grsumpap(i)+paperc(i,m)
               grsumfur(i)=grsumfur(i)+furnturc(i,m)
-
-!             litter from the chopped off fraction of the chopped
-!             off pft needs to be assimilated, and so does soil c from
-!             the chopped off fraction of the chopped pft
-
+!>
+!>litter from the chopped off fraction of the chopped
+!>off pft needs to be assimilated, and so does soil c from
+!>the chopped off fraction of the chopped pft
+!>
               redubmas1=(fcancmy(i,m)-fcancmx(i,m))*grclarea(i) &
                        *litrmass(i,m)*km2tom2
               incrlitr(i,m)=redubmas1
@@ -1003,15 +1102,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
               grsumsoc(i)=grsumsoc(i)+incrsolc(i,m)
             endif
 
-620       continue
 610     continue
 600   continue
 
-!     if bare fraction decreases then chop off the litter and soil c
-!     from the decreased fraction and add it to grsumlit & grsumsoc
-!     for spreading over the whole grid cell
-
-      do 630 i = il1, il2
+!>if bare fraction decreases then chop off the litter and soil c
+!!from the decreased fraction and add it to grsumlit & grsumsoc for spreading over the whole grid cell
+!!
         if(bareiord(i).eq.-1)then
 
           redubmas1=(pbarefra(i)-barefrac(i))*grclarea(i) &
@@ -1023,12 +1119,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
           grsumlit(i)=grsumlit(i)+redubmas1
           grsumsoc(i)=grsumsoc(i)+redubmas2
         endif
-630   continue
 
-!     calculate if the chopped off biomass equals the sum of grsumcom(i),
-!     grsumpap(i) & grsumfur(i)
+!>calculate if the chopped off biomass equals the sum of grsumcom(i), grsumpap(i) & grsumfur(i)
 
-      do 632 i = il1, il2
        if( abs(chopedbm(i)-grsumcom(i)-grsumpap(i)-grsumfur(i)).gt. &
           tolrnce1 ) then
            write(6,*)'at grid cell = ',i
@@ -1042,24 +1135,19 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             grsumcom(i)+grsumpap(i)+grsumfur(i) 
            call xit('luc',-11)
        endif
-632   continue     
-
-!     spread chopped off stuff uniformly over the litter and soil c
-!     pools of all existing pfts, including the bare fraction.
-
-!     convert the available c into density 
-
-      do 640 i = il1, il2
+!>
+!!spread chopped off stuff uniformly over the litter and soil c pools of all existing pfts, including the bare fraction.
+!!
+!!convert the available c into density 
+!!
         grdencom(i)=grsumcom(i)/(grclarea(i)*km2tom2)
         grdenpap(i)=grsumpap(i)/(grclarea(i)*km2tom2)
         grdenfur(i)=grsumfur(i)/(grclarea(i)*km2tom2)
         grdenlit(i)=grsumlit(i)/(grclarea(i)*km2tom2)
         grdensoc(i)=grsumsoc(i)/(grclarea(i)*km2tom2)
 
-640   continue
 
       do 650 j = 1, icc
-        do 651 i = il1, il2
           if(fcancmx(i,j).gt.zero)then
             litrmass(i,j)=litrmass(i,j)+grdenpap(i)+grdenlit(i)
             soilcmas(i,j)=soilcmas(i,j)+grdenfur(i)+grdensoc(i)
@@ -1071,10 +1159,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             litrmass(i,j)=0.0
             soilcmas(i,j)=0.0
           endif
-651     continue 
 650   continue
  
-      do 660 i = il1, il2
         if(barefrac(i).gt.zero)then
           litrmass(i,iccp1)=litrmass(i,iccp1)+grdenpap(i)+grdenlit(i)
           soilcmas(i,iccp1)=soilcmas(i,iccp1)+grdenfur(i)+grdensoc(i)
@@ -1082,40 +1168,29 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
           litrmass(i,iccp1)=0.0
           soilcmas(i,iccp1)=0.0
         endif
-660   continue
 
-!     the combusted c is used to find the c flux that we can release
-!     into the atmosphere.
+!>the combusted c is used to find the c flux that we can release into the atmosphere.
 
-      do 670 i = il1, il2
-        lucemcom(i)=grdencom(i)     ! this is flux in kg c/m2.day that
-!                                   ! will be emitted 
-!       lucltrin(i)=grdenpap(i)+grdenlit(i) ! flux in kg c/m2.day
-!       lucsocin(i)=grdenfur(i)+grdensoc(i) ! flux in kg c/m2.day
-
+        lucemcom(i)=grdencom(i)     
+!>this is flux in kg c/m2.day that will be emitted 
         lucltrin(i)=grdenpap(i) ! flux in kg c/m2.day
         lucsocin(i)=grdenfur(i) ! flux in kg c/m2.day
 
-!       convert all land use change fluxes to u-mol co2-c/m2.sec
+!>convert all land use change fluxes to u-mol co2-c/m2.sec
         lucemcom(i)=lucemcom(i)*963.62
         lucltrin(i)=lucltrin(i)*963.62
         lucsocin(i)=lucsocin(i)*963.62
 
-670   continue
-
-!     and finally we see if the total amount of carbon is conserved
+!>and finally we see if the total amount of carbon is conserved
 
       do 700 j = 1, icc
-        do 701 i = il1, il2
           ntotlmas(i)=ntotlmas(i)+ &
                      (fcancmx(i,j)*(gleafmas(i,j)+bleafmas(i,j)+&
                      stemmass(i,j)+rootmass(i,j))*grclarea(i) &
                      *km2tom2)
-701     continue
 700   continue
 
       do 710 j = 1, iccp1
-        do 711 i = il1, il2
           if(j.lt.iccp1) then
             term = fcancmx(i,j)
           else if(j.eq.iccp1) then
@@ -1125,17 +1200,12 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                      (term*litrmass(i,j)*grclarea(i)*km2tom2) 
           ntotdms2(i)=ntotdms2(i)+ & 
                      (term*soilcmas(i,j)*grclarea(i)*km2tom2)
-711     continue
 710   continue
 
-      do 720 i = il1, il2
         ntotcmas(i)=ntotlmas(i)+ntotdms1(i)+ntotdms2(i)
-720   continue
-
-!     total litter mass (before + input from chopped off biomass)
-!     and after must be same
-
-      do 722 i = il1, il2
+!>
+!>total litter mass (before + input from chopped off biomass) and after must be same
+!>
         if( abs(totdmas1(i)+grsumpap(i)-ntotdms1(i)).gt.tolrnce1 )then   
            write(6,*)'at grid cell = ',i
            write(6,*)'total litter carbon does not balance after luc'
@@ -1146,12 +1216,9 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'ntotdms1(i) = ',ntotdms1(i)
            call xit('luc',-12)
         endif
-722   continue
-
-!     for conservation totcmass(i) must be equal to ntotcmas(i) plus
-!     combustion carbon losses
-
-      do 730 i = il1, il2
+!>
+!>for conservation totcmass(i) must be equal to ntotcmas(i) plus combustion carbon losses
+!>
         if( abs(totcmass(i)-ntotcmas(i)-grsumcom(i)).gt.tolrnce1)then
            write(6,*)'at grid cell = ',i
            write(6,*)'total carbon does not balance after luc'
@@ -1160,29 +1227,21 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'grsumcom(i) = ',grsumcom(i)
            call xit('luc',-13)
         endif
-730   continue
-
-!     update grid averaged vegetation biomass, and litter and soil c
-!     densities
-
+!>
+!>update grid averaged vegetation biomass, and litter and soil c densities
+!>
       do 750 j = 1, icc
-        do 751 i = il1, il2
           vgbiomas(i)=vgbiomas(i)+fcancmx(i,j)*(gleafmas(i,j)+ &
                      bleafmas(i,j)+stemmass(i,j)+rootmass(i,j))
           gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
           gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
-751     continue
 750   continue
 
-      do 760 i = il1, il2
         gavgltms(i)=gavgltms(i)+( barefrac(i)*litrmass(i,iccp1) )
         gavgscms(i)=gavgscms(i)+( barefrac(i)*soilcmas(i,iccp1) )
-760   continue
-
-!     just like total amount of carbon must balance, the grid averagred
-!     densities must also balance
-
-      do 780 i = il1, il2
+!>
+!>just like total amount of carbon must balance, the grid averagred densities must also balance
+!>
        if( abs(pvgbioms(i)+pgavltms(i)+pgavscms(i)- &
               vgbiomas(i)-gavgltms(i)-gavgscms(i)- &
               grdencom(i)).gt.tolrance ) then
@@ -1209,14 +1268,11 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
            write(6,*)'tolrance = ',tolrance
            call xit('luc',-14)
        endif
-780   continue
 
       do 800 j = 1, icc
-        do 810 i = il1, il2
           if(iday.eq.365)then
             pfcancmx(i,j)=nfcancmx(i,j)
           endif
-810     continue
 800   continue
 
        endif  ! loop to check if any luc took place. 
@@ -1225,16 +1281,14 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       return 
 
 end subroutine luc
-
+!>@}
 !=======================================================================
+!>\ingroup landuse_change_adjust_luc_fracs
+!>@{
 
-subroutine adjust_luc_fracs(i,mosaic,nfcancmxrow, &
+subroutine adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow, &
                           bare_ground_frac, compete)
-
-! this subroutine adjusts the amount of each pft to ensure that the fraction
-! of gridcell bare ground is >0.
-
-! j. melton, jan 11 2013
+! J. Melton, Jan 11 2013
 
 use ctem_params,        only : nlat,nmos,icc,seed
 
@@ -1244,7 +1298,7 @@ implicit none
 integer, intent(in) :: i
 real, dimension(nlat,nmos,icc), intent(inout) :: nfcancmxrow
 real, intent(in) :: bare_ground_frac
-logical, intent(in) :: mosaic
+logical, intent(in) :: onetile_perPFT
 logical, intent(in) :: compete
 
 real, dimension(nlat,nmos,icc) :: outnfcrow
@@ -1264,13 +1318,13 @@ else
     min_val = 0.
 end if        
 
-! find the amount of needed space in the other pfts
-! need a minimum bare area of min_val.
+!> find the amount of needed space in the other pfts
+!> need a minimum bare area of min_val.
 needed_bare=(-bare_ground_frac) + min_val
 
-! get the proportionate amounts of each pft above the min_val lower limit
+!> get the proportionate amounts of each pft above the min_val lower limit
 do j = 1,icc
-  if (mosaic) then
+  if (onetile_perPFT) then
     m = j
   else
     m = 1
@@ -1281,14 +1335,13 @@ do j = 1,icc
 
 enddo
 
-! add in the bare ground min fraction of min_val.
+!> add in the bare ground min fraction of min_val.
   tot = tot + min_val
 
-! now reduce the pfts proportional to their fractional area to make
-! the bare ground fraction be the min_val amount and no other pft be less than
-! min_val
+!> now reduce the pfts proportional to their fractional area to make
+!> the bare ground fraction be the min_val amount and no other pft be less than min_val
 do j = 1,icc
-  if (mosaic) then
+  if (onetile_perPFT) then
     m = j
   else
     m = 1
@@ -1299,14 +1352,12 @@ do j = 1,icc
 enddo
 
 end subroutine adjust_luc_fracs
-
+!>@}
 !=======================================================================
+!>\ingroup landuse_change_adjust_fracs_comp
+!>@{
 
 subroutine adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,outdelfrac)
-
-! This subroutine is used when compete = true. It adjusts the amount of 
-! each pft to allow expansion of cropland.
-
 ! J. Melton, Feb 13 2014
 
 use ctem_params,        only : icc,crop,zero,seed
@@ -1333,17 +1384,17 @@ real, dimension(nilg,1,icc) :: tmpfcancmx
 
 real, parameter :: smallnumber = 1.0e-12
 
-!-------------------------
+!>-------------------------
 
-! Some initializations
+!> Some initializations
 chgcrop = 0.
 cropfrac = 0.
 adjus_fracs = 0.
 outdelfrac = 0.
 barefrac=1.0
 
-! Find how much the crop area changes this timestep. We only care about the total
-! change, not the per crop PFT change.
+!> Find how much the crop area changes this timestep. We only care about the total
+!> change, not the per crop PFT change.
 do i = il1, il2
   do j = 1, icc
      if (crop(j)) then
@@ -1352,8 +1403,8 @@ do i = il1, il2
           chgcrop(i) = chgcrop(i) + (fmx(i,j) - fmy(i,j))
           cropfrac(i) = cropfrac(i) + fmx(i,j)
      else 
-        ! add the seed fracs to the cropfrac for use below since we can't take
-        ! area from a pft that only has a seed fraction.
+        !> add the seed fracs to the cropfrac for use below since we can't take
+        !> area from a pft that only has a seed fraction.
         if (yesfrac(i,j) .eq. seed) then 
           cropfrac(i) = cropfrac(i) + seed
         end if 
@@ -1361,16 +1412,16 @@ do i = il1, il2
      end if   
   end do
 end do 
-
-! If the crop area changed we have to reduce the other PFT proportional to their 
-! area (if we gained crop area). We don't presently assume anything like grasslands
-! are converted first. We assume that on the scale of our gridcells, area 
-! is simply converted proportional to the total.
+!>
+!> If the crop area changed we have to reduce the other PFT proportional to their 
+!> area (if we gained crop area). We don't presently assume anything like grasslands
+!> are converted first. We assume that on the scale of our gridcells, area 
+!> is simply converted proportional to the total.
 do i = il1, il2
 
   if (chgcrop(i) .gt. smallnumber) then
 
-    ! Adjust the non-crop PFT fractions to find their proportional fraction that does not include crops.
+    !> Adjust the non-crop PFT fractions to find their proportional fraction that does not include crops.
     do j = 1, icc
      if (.not. crop(j) .and. yesfrac(i,j) .gt. seed) then
      
@@ -1389,8 +1440,8 @@ do i = il1, il2
     end do
 
     if (barefrac(i) .lt. 0.0) then
-       ! tmpfcancmx has a nilg,1,icc dimension as adjust_luc_fracs expects
-       ! a 'row' structure of the array.
+       !> tmpfcancmx has a nilg,1,icc dimension as adjust_luc_fracs expects
+       !> a 'row' structure of the array.
        call adjust_luc_fracs(i,.false.,tmpfcancmx,barefrac(i),.true.)
        do j = 1, icc
           outdelfrac(i,j) = tmpfcancmx(i,1,j) - yesfrac(i,j)
@@ -1402,5 +1453,5 @@ do i = il1, il2
 end do
 
 end subroutine adjust_fracs_comp
-
+!>@}
 end module

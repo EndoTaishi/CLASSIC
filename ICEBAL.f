@@ -1,3 +1,8 @@
+!>\file
+!!Purpose: Perform temperature stepping and surface runoff 
+!!calculations over ice sheets.
+!!
+
       SUBROUTINE ICEBAL(TBAR,TPOND,ZPOND,TSNOW,RHOSNO,ZSNOW,HCPSNO,
      1                  ALBSNO,HMFG,HTCS,HTC,WTRS,WTRG,GFLUX,
      2                  RUNOFF,TRUNOF,OVRFLW,TOVRFL,ZPLIM,GGEO,
@@ -5,9 +10,8 @@
      4                  ZMAT,TMOVE,WMOVE,ZRMDR,TADD,ZMOVE,TBOT,DELZ,
      5                  ISAND,ICONT,IWF,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
 C
-C     Purpose: Perform temperature stepping and surface runoff 
-C     calculations over ice sheets.
-C
+C     * OCT 03/14 - D.VERSEGHY. CHANGE LIMITING VALUE OF SNOW ON ICE
+C     *                         FROM 100 KG/M2 TO 10 M.
 C     * DEC 27/07 - D.VERSEGHY. ADD GEOTHERMAL HEAT FLUX; ADD ICE MASS
 C     *                         LOSS TO RUNOFF.
 C     * NOV 01/06 - D.VERSEGHY. ALLOW PONDING OF WATER ON ICE SHEETS.
@@ -53,54 +57,58 @@ C
 C
 C     * INPUT/OUTPUT FIELDS.
 C                                                                                 
-      REAL TBAR  (ILG,IG)   !Temperature of ice layer [C] (Tav( delta_z))
-      REAL HMFG  (ILG,IG)   !Energy associated with freezing or thawing of water in ice layer [W m-2]
-      REAL HTC   (ILG,IG)   !Internal energy change of ice layer due to conduction and/or change in mass [W m -2] (Ij)
-      REAL GFLUX (ILG,IG)   !Heat flow between ice layers [W m-2] (G(delta_z))
+      REAL TBAR  (ILG,IG) !<Temperature of ice layer \f$[C] (T_{av}( \Delta z))\f$
+      REAL HMFG  (ILG,IG) !<Energy associated with freezing or thawing of water in ice layer \f$[W m^{-2}]\f$
+      REAL HTC   (ILG,IG) !<Internal energy change of ice layer due to conduction and/or change in mass \f$[W m^{-2}]\f$ (Ij)
+      REAL GFLUX (ILG,IG) !<Heat flow between ice layers \f$[W m^{-2}] (G(\Delta z))\f$
 C
-      REAL TPOND (ILG)  !Temperature of ponded water [C]
-      REAL ZPOND (ILG)  !Depth of ponded water [m]  
-      REAL TSNOW (ILG)  !Temperature of the snow pack [C]  
-      REAL RHOSNO(ILG)  !Density of snow pack [kg m-3]
-      REAL ZSNOW (ILG)  !Depth of snow pack [m]  
-      REAL HCPSNO(ILG)  !Heat capacity of snow pack [J m-3 K-1] 
-      REAL ALBSNO(ILG)  !Albedo of snow [ ]  
-      REAL HTCS  (ILG)  !Internal energy change of ice layer due to conduction and/or change in mass [W m -2] (Ij)  
-      REAL WTRS  (ILG)  !Water transferred into or out of the snow pack [kg m-2 s-1] 
-      REAL WTRG  (ILG)  !Water transferred into or out of the ice [kg m-2 s-1]  
-      REAL RUNOFF(ILG)  !Total runoff from ice column [m]  
-      REAL TRUNOF(ILG)  !Temperature of total runoff from ice column [K]
-      REAL OVRFLW(ILG)  !Overland flow from top of ice column [m]
-      REAL TOVRFL(ILG)  !Temperature of overland flow from top of ice column [K]
+      REAL TPOND (ILG)  !<Temperature of ponded water [C]
+      REAL ZPOND (ILG)  !<Depth of ponded water [m]  
+      REAL TSNOW (ILG)  !<Temperature of the snow pack [C]  
+      REAL RHOSNO(ILG)  !<Density of snow pack \f$[kg m^{-3}]\f$
+      REAL ZSNOW (ILG)  !<Depth of snow pack [m]  
+      REAL HCPSNO(ILG)  !<Heat capacity of snow pack \f$[J m^{-3} K^{-1}]\f$ 
+      REAL ALBSNO(ILG)  !<Albedo of snow [ ]  
+      REAL HTCS  (ILG)  !<Internal energy change of ice layer due to conduction and/or change in mass \f$[W m^{-2}] (I_j) \f$
+      REAL WTRS  (ILG)  !<Water transferred into or out of the snow pack \f$[kg m^{-2} s^{-1}]\f$ 
+      REAL WTRG  (ILG)  !<Water transferred into or out of the ice \f$[kg m^{-2} s^{-1}]\f$  
+      REAL RUNOFF(ILG)  !<Total runoff from ice column [m]  
+      REAL TRUNOF(ILG)  !<Temperature of total runoff from ice column [K]
+      REAL OVRFLW(ILG)  !<Overland flow from top of ice column [m]
+      REAL TOVRFL(ILG)  !<Temperature of overland flow from top of ice column [K]
 C
 C     * INPUT FIELDS.
 C
-      REAL FI    (ILG)  !Fractional coverage of subarea in question on modelled area [ ] (X)    
-      REAL EVAP  (ILG)  !Evaporation rate from ice surface [m s-1]
-      REAL R     (ILG)  !Rainfall rate at ice surface [m s-1]  
-      REAL TR    (ILG)  !Temperature of rainfall [C]
-      REAL GZERO (ILG)  !Heat flow into ice surface [W m-2] (G(0)) 
-      REAL G12   (ILG)  !Heat flow between first and second ice layers [W m-2 ] (G(delta_z1)) 
-      REAL G23   (ILG)  !Heat flow between second and third ice layers [W m-2] (G(delta_z2))
-      REAL QMELT (ILG)  !Energy available for melting of ice [W m-2]
-      REAL WSNOW (ILG)  !Liquid water content of snow pack [kg m-2] 
-      REAL ZPLIM (ILG)  !Limiting depth of ponded water [m] 
-      REAL GGEO  (ILG)  !Geothermal heat flux at bottom of modelled ice profile [W m-2]
+      REAL FI    (ILG)  !<Fractional coverage of subarea in question on modelled area \f$[ ] (X)\f$    
+      REAL EVAP  (ILG)  !<Evaporation rate from ice surface \f$[m s^{-1}]\f$
+      REAL R     (ILG)  !<Rainfall rate at ice surface \f$[m s^{-1}]\f$  
+      REAL TR    (ILG)  !<Temperature of rainfall [C]
+      REAL GZERO (ILG)  !<Heat flow into ice surface \f$[W m^{-2}] (G(0))\f$ 
+      REAL G12   (ILG)  !<Heat flow between first and second ice layers \f$[W m^{-2}] (G(\Delta z1))\f$
+      REAL G23   (ILG)  !<Heat flow between second and third ice layers \f$[W m^{-2}] (G(\Delta z2))\f$
+      REAL QMELT (ILG)  !<Energy available for melting of ice \f$[W m^{-2}]\f$
+      REAL WSNOW (ILG)  !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
+      REAL ZPLIM (ILG)  !<Limiting depth of ponded water [m] 
+      REAL GGEO  (ILG)  !<Geothermal heat flux at bottom of modelled ice profile \f$[W m^{-2}]\f$
 C
-      REAL HCP   (ILG,IG)    !Heat capacity of ice layer [J m -3 K-1]
+      REAL HCP   (ILG,IG)   !<Heat capacity of ice layer \f$[J m^{-3} K^{-1}]\f$
 C
-      INTEGER ISAND (ILG,IG) !Sand content flag
+      INTEGER ISAND (ILG,IG)!<Sand content flag
 C
-      REAL DELZ  (IG)        !Overall thickness of ice layer [m] (delta_z)
+      REAL DELZ  (IG)       !<Overall thickness of ice layer \f$[m] (\Delta z)\f$
 C
 C     * WORK FIELDS.
 C
-      REAL ZMAT  (ILG,IGP2,IGP1),          TMOVE (ILG,IGP2),
-     1     WMOVE (ILG,IGP2),               ZRMDR (ILG,IGP1)
+      REAL ZMAT  (ILG,IGP2,IGP1)
+      REAL TMOVE (ILG,IGP2)
+      REAL WMOVE (ILG,IGP2)
+      REAL ZRMDR (ILG,IGP1)
 C
-      REAL TADD  (ILG),    ZMOVE (ILG),    TBOT  (ILG) 
+      REAL TADD  (ILG)
+      REAL ZMOVE (ILG)
+      REAL TBOT  (ILG) 
 C
-      INTEGER              ICONT (ILG)
+      INTEGER ICONT (ILG)
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -108,37 +116,35 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
-      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) [J m-3 K-1]
-      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) [J m-3 K-1]
-      REAL HCPSOL   !Volumetric heat capacity of mineral matter (2.25*10^6) [J m-3 K-1]
-      REAL HCPOM    !Volumetric heat capacity of organic matter (2.50*10^6) [J m-3 K-1]
-      REAL HCPSND   !Volumetric heat capacity of sand particles (2.13*10^6) [J m-3 K-1]
-      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles (2.38*10^6) [J m-3 K-1]
-      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
-      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
-      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) [J kg-1 K-1]
-      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
-      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
-      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
-      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) [W m-1 K-1]
-      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) [J kg-1]
-      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) [J kg-1]
+      REAL DELT     !<Time step [s]
+      REAL TFREZ    !<Freezing point of water [K]
+      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSOL   !<Volumetric heat capacity of mineral matter \f$(2.25*10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPOM    !<Volumetric heat capacity of organic matter \f$(2.50*10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSND   !<Volumetric heat capacity of sand particles \f$(2.13*10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles \f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
+      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
+      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
+      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
+      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
+      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
 C                                    
       COMMON /CLASS1/ DELT,TFREZ                                               
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
-C
-C       In the 100 loop, any rainfall or snowmelt R reaching the ice 
-C       surface is added to the ponded water on the surface. The ponded 
-C       water temperature is calculated as the weighted average of the 
-C       existing pond and the rainfall or snowmelt added, and the change 
-C       in internal energy HTC of the first ice layer is updated using 
-C       the temperature of the added water.
-C
+!>
+!>In the 100 loop, any rainfall or snowmelt R reaching the ice surface is added to the ponded water on the surface. The ponded 
+!>water temperature is calculated as the weighted average of the existing pond and the rainfall or snowmelt added, and the change 
+!>in internal energy HTC of the first ice layer is updated using the temperature of the added water.
+!>
+
 C     * ADD RAINFALL OR SNOWMELT TO PONDED WATER AND ASSIGN EXCESS
 C     * TO RUNOFF.  CHECK FOR POND FREEZING.
 C
@@ -152,28 +158,18 @@ C
                  HTC (I,1)=HTC(I,1)+FI(I)*(TR(I)+TFREZ)*HCPW*
      1                     RADD/DELT
               ENDIF
-              !
-              !If a full-scale hydrological modelling application is not
-              !being run, that is, if only vertical fluxes of energy
-              !and moisture are being modelled, the flag IWF will have 
-              !been pre-set to zero. In this case, overland flow
-              !of water is treated using a simple approach: if the 
-              !ponded depth of water on the soil surface ZPOND
-              !exceeds a pre-determined limiting value ZPLIM, the excess
-              ! is assigned to overland flow. The total runoff
-              !from the ice sheet, RUNOFF, is incremented by the excess 
-              !of the ponded water, and the overland flow
-              !for the whole grid cell OVRFLW is incremented by the 
-              !product of the excess ponded water and the
-              !fractional area of the grid cell. The temperature of the 
-              !overall runoff from the modelled area TRUNOF,
-              !and the temperature of the overland flow for the grid 
-              !cell TOVRFL, are calculated as weighted averages
-              !over their previous values and the ponded water 
-              !temperature TPOND. The internal energy change HTC
-              !of the first soil layer is adjusted for the amount of 
-              !water lost, and ZPOND is set to ZPLIM.
-              !                                                                       
+!>
+!!If a full-scale hydrological modelling application is not being run, that is, if only vertical fluxes of energy
+!!and moisture are being modelled, the flag IWF will have been pre-set to zero. In this case, overland flow
+!!of water is treated using a simple approach: if the ponded depth of water on the soil surface ZPOND
+!!exceeds a pre-determined limiting value ZPLIM, the excess is assigned to overland flow. The total runoff
+!!from the ice sheet, RUNOFF, is incremented by the excess of the ponded water, and the overland flow
+!!for the whole grid cell OVRFLW is incremented by the product of the excess ponded water and the
+!!fractional area of the grid cell. The temperature of the overall runoff from the modelled area TRUNOF,
+!!and the temperature of the overland flow for the grid cell TOVRFL, are calculated as weighted averages
+!!over their previous values and the ponded water temperature TPOND. The internal energy change HTC
+!!of the first soil layer is adjusted for the amount of water lost, and ZPOND is set to ZPLIM.
+!!
               IF(IWF.EQ.0 .AND. (ZPOND(I)-ZPLIM(I)).GT.1.0E-8) THEN
                   TRUNOF(I)=(TRUNOF(I)*RUNOFF(I)+(TPOND(I)+TFREZ)*
      1                   (ZPOND(I)-ZPLIM(I)))/(RUNOFF(I)+ZPOND(I)-
@@ -187,20 +183,14 @@ C
      1                   (ZPOND(I)-ZPLIM(I))/DELT
                   ZPOND(I)=MIN(ZPOND(I),ZPLIM(I))
               ENDIF
-              !
-              !If the temperature of the remaining ponded water is 
-              !greater than 0 C, the sink of energy required to cool
-              !it to 0 C, HCOOL, is calculated and compared with the 
-              !amount of energy required to warm the first ice
-              !layer to 0 C, HWARM. If HWARM > HCOOL, the energy sink of
-              !the first layer is used to cool the
-              !ponded water to 0 C, and the layer temperature is updated
-              !accordingly. Otherwise, the ponded water
-              !temperature and the temperature of the first ice layer 
-              !are both set to 0 C, and the excess energy source
-              !given by HCOOL-HWARM is added to the heat available for 
-              !melting ice, QMELT.
-              !
+!>
+!!If the temperature of the remaining ponded water is greater than 0 C, the sink of energy required to cool
+!!it to 0 C, HCOOL, is calculated and compared with the amount of energy required to warm the first ice
+!!layer to 0 C, HWARM. If HWARM > HCOOL, the energy sink of the first layer is used to cool the
+!!ponded water to 0 C, and the layer temperature is updated accordingly. Otherwise, the ponded water
+!!temperature and the temperature of the first ice layer are both set to 0 C, and the excess energy source
+!!given by HCOOL-HWARM is added to the heat available for melting ice, QMELT.
+!!
               IF(TPOND(I).GT.0.001)                           THEN
                   HCOOL=TPOND(I)*HCPW*ZPOND(I)
                   HWARM=-TBAR(I,1)*HCPICE*DELZ(1)
@@ -215,38 +205,23 @@ C
               ENDIF
           ENDIF
   100 CONTINUE
-C
-      !
-      !In loop 125, if the temperature of the first ice layer is less 
-      !than -2 C after the above operations (i.e. if it is
-      !not very close to 0 C), and if the ponded water depth is not 
-      !vanishingly small, freezing of the ponded
-      !water can take place. The energy sink required to freeze all of 
-      !the ponded water, HFREZ, is calculated
-      !and compared with HWARM, the amount of energy required to raise 
-      !the temperature of the first ice layer
-      !to 0 C. If HWARM > HFREZ, then HFREZ is converted into an 
-      !equivalent temperature change using
-      !the heat capacity of ice, and added to the temperature of the 
-      !first ice layer. HFREZ is also used to update
-      !HMFG, the diagnosed energy used for phase changes of water in the
-      ! first ice layer. The internal energy
-      !of the first soil layer, HTC, is adjusted to account for the loss
-      ! of the ponded water, which is assumed to
-      !be added to the snow pack. The ponded water is converted into a 
-      !frozen depth ZFREZ, which is used to
-      !update the internal energy of the snow pack, HTCS. If there is 
-      !not a pre-existing snow pack, the snow
-      !albedo is set to the limiting low value of 0.50. The temperature 
-      !and density of the snow pack are
-      !recalculated as weighted averages over the original values and 
-      !the frozen amount that has been added.
-      !ZFREZ is added to the snow depth ZSNOW. The snow heat capacity is 
-      !recalculated using the new value
-      !of the snow density. Finally, the diagnostic amounts of water 
-      !transferred to the snow pack, WTRS, and
-      !from the ice, WTRG, are updated using ZFREZ.
-      !
+!>
+!!In loop 125, if the temperature of the first ice layer is less than -2 C after the above operations (i.e. if it is
+!!not very close to 0 C), and if the ponded water depth is not vanishingly small, freezing of the ponded
+!!water can take place. The energy sink required to freeze all of the ponded water, HFREZ, is calculated
+!!and compared with HWARM, the amount of energy required to raise the temperature of the first ice layer
+!!to 0 C. If HWARM > HFREZ, then HFREZ is converted into an equivalent temperature change using
+!!the heat capacity of ice, and added to the temperature of the first ice layer. HFREZ is also used to update
+!!HMFG, the diagnosed energy used for phase changes of water in the first ice layer. The internal energy
+!!of the first soil layer, HTC, is adjusted to account for the loss of the ponded water, which is assumed to
+!!be added to the snow pack. The ponded water is converted into a frozen depth ZFREZ, which is used to
+!!update the internal energy of the snow pack, HTCS. If there is not a pre-existing snow pack, the snow
+!!albedo is set to the limiting low value of 0.50. The temperature and density of the snow pack are
+!!recalculated as weighted averages over the original values and the frozen amount that has been added.
+!!ZFREZ is added to the snow depth ZSNOW. The snow heat capacity is recalculated using the new value
+!!of the snow density. Finally, the diagnostic amounts of water transferred to the snow pack, WTRS, and
+!!from the ice, WTRG, are updated using ZFREZ.
+!!
       DO 125 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ISAND(I,1).EQ.-4)                THEN
               IF(TBAR(I,1).LT.-2.0 .AND. ZPOND(I).GT.1.0E-8) THEN
@@ -278,30 +253,24 @@ C
 C
 C     * STEP AHEAD ICE LAYER TEMPERATURES.
 C
-      !In the 150 loop the heat fluxes between the ice layers are 
-      !calculated for the optional multiple-layer
-      !configuration, in which the standard third layer, normally with 
-      !a thickness of 3.75 m, can be subdivided
-      !into smaller layers and extended to a greater depth if desired. 
-      !(The heat fluxes at the ice surface, and
-      !between the first and second and the second and third layers, 
-      !were already calculated in the CLASST
-      !subroutines.) The remaining fluxes are calculated by using a 
-      !simple linearization of the soil temperature
-      !profile. The expression for the ground heat flux at a depth z, 
-      !G(z), which depends on the thermal
-      !conductivity lambda(z) and the temperature gradient, is written as:
-      !
-      !G(z) = lambda(z) dT(z)/dz
-      !
-      !The linearized form is thus:
-      !
-      !Gj = 2*lambda_i*{Tj-1 – Tj)/(DELZj-1 + DELZj)
-      !
-      !where Gj is the heat flux at the top of layer j, Tj and DELZj 
-      !refer to the temperature and thickness of the
-      !layer, and lambda_i is the thermal conductivity of ice.
-      !
+!>
+!!In the 150 loop the heat fluxes between the ice layers are calculated for the optional multiple-layer
+!!configuration, in which the standard third layer, normally with a thickness of 3.75 m, can be subdivided
+!!into smaller layers and extended to a greater depth if desired. (The heat fluxes at the ice surface, and
+!!between the first and second and the second and third layers, were already calculated in the CLASST
+!!subroutines.) The remaining fluxes are calculated by using a simple linearization of the soil temperature
+!!profile. The expression for the ground heat flux at a depth z, G(z), which depends on the thermal
+!!conductivity \f$\lambda(z)\f$ and the temperature gradient, is written as:
+!!
+!!\f$G(z) = \lambda(z) dT(z)/dz\f$
+!!
+!!The linearized form is thus:
+!!
+!!\f$G_j = 2 \lambda_i (T_{j-1} – T_j) / (\Delta z_{j-1} + \Delta z_j)\f$
+!!
+!!where \f$G_j\f$ is the heat flux at the top of layer j, \f$T_j\f$ and \f$\Delta z_j\f$ refer to the temperature and thickness 
+!!of the layer, and \f$\lambda_i\f$ is the thermal conductivity of ice.
+!!
       IF(IG.GT.3) THEN
       DO 150 J=4,IG
           DO 150 I=IL1,IL2
@@ -312,56 +281,40 @@ C
   150     CONTINUE
       ENDIF
 C     
-      !In the 200 loop a value is assigned to the temperature at the 
-      !bottom of the ice profile, TBOT, and the
-      !temperatures for the first three ice layers are stepped ahead. 
-      !If the standard three-layer configuration is
-      !being used, TBOT is obtained by making use of the assumption 
-      !(see documentation for subroutine
-      !TNPREP) that the variation of temperature T with depth z within 
-      !each soil layer can be modelled using a
-      !quadratic equation:
-      !
-      !T(z) = 1⁄2 a*z^2 + b*z +c
-      !
-      !It can be shown that the temperature at the bottom of a given 
-      !soil layer, T(DELZ), is related to the
-      !temperature at the top of the layer T(0) and the heat fluxes at 
-      !the top and bottom of the layer, G(0) and
-      !GFLUX, as follows:
-      !
-      !T(DELZ) = T(0) - (DELZ/2lambda_i)[G(0) + GFLUX]
-      !
-      !Making use of the continuity requirement that the heat flux and 
-      !temperature at the bottom of a given
-      !layer must be equal to the heat flux and temperature at the top 
-      !of the layer beneath it, an expression for
-      !the temperature at the bottom of the third ice layer can be 
-      !obtained as a function of the temperature at
-      !the surface and the fluxes between the ice layers:
-      !
-      !T(DELZ3) = T(0) – {G23*[DELZ3 + DELZ2] + 
-      !G12*[DELZ2 + DELZ1] + G(0)*DELZ21}/2lambda_i
-      !
-      !The surface temperature T(0) is obtained by integrating the 
-      !equation for T(z) to obtain an expression for
-      !the average layer temperature Tav, and then inverting this to 
-      !solve for T(0):
-      !
-      !T(0) = Tav(DELZ1) + (DELZ1/3lambda_i)*[G(0) + 1⁄2G12]
-      !
-      !The third layer temperature is then updated using the geothermal 
-      !flux GGEO. If the optional multiple-
-      !layer configuration is used, TBOT is simply set to the 
-      !temperature of the lowest layer. In either the
-      !standard or the multiple-layer case, the first three layer 
-      !temperatures are updated using the heat fluxes at
-      !the surface, between the first and second layers and between the 
-      !second and third layers, which were
-      !determined in the CLASST subroutines. Finally, the latter fluxes 
-      !are assigned to the appropriate levels in
-      !the diagnostic GFLUX vector.
-      !
+      !>
+      !!In the 200 loop a value is assigned to the temperature at the bottom of the ice profile, TBOT, and the
+      !!temperatures for the first three ice layers are stepped ahead. If the standard three-layer configuration is
+      !!being used, TBOT is obtained by making use of the assumption (see documentation for subroutine
+      !!TNPREP) that the variation of temperature T with depth z within each soil layer can be modelled using a
+      !!quadratic equation:
+      !!
+      !!\f$T(z) = 1/2 a z^2 + b z +c\f$
+      !!
+      !!It can be shown that the temperature at the bottom of a given soil layer, \f$T(\Delta z)\f$, is related to the
+      !!temperature at the top of the layer T(0) and the heat fluxes at the top and bottom of the layer, G(0) and
+      !!\f$G(\Delta z)\f$, as follows:
+      !!
+      !!\f$T(\Delta z) = T(0) - (\Delta z/ 2 \lambda_i)[G(0) + G(\Delta z)]\f$
+      !!
+      !!Making use of the continuity requirement that the heat flux and temperature at the bottom of a given
+      !!layer must be equal to the heat flux and temperature at the top of the layer beneath it, an expression for
+      !!the temperature at the bottom of the third ice layer can be obtained as a function of the temperature at
+      !!the surface and the fluxes between the ice layers:
+      !!
+      !!\f$T(\Delta z_3) = T(0) – {G(\Delta z_2) [\Delta z_3 + \Delta z_2] + G(\Delta z_1) [\Delta z_2 + \Delta z_1] + G(0) \Delta z_{21}} / 2 \lambda_i\f$
+      !!
+      !!The surface temperature T(0) is obtained by integrating the equation for T(z) to obtain an expression for
+      !!the average layer temperature \f$T_{av}(\Delta z)\f$, and then inverting this to solve for T(0):
+      !!
+      !!\f$T(0) = T_{av}(\Delta z_1) + (\Delta z_1/ 3\lambda_i) [G(0) + 1/2 G(\Delta z_1)]\f$
+      !!
+      !!The third layer temperature is then updated using the geothermal flux GGEO. If the optional multiple-
+      !!layer configuration is used, TBOT is simply set to the temperature of the lowest layer. In either the
+      !!standard or the multiple-layer case, the first three layer temperatures are updated using the heat fluxes at
+      !!the surface, between the first and second layers and between the second and third layers, which were
+      !!determined in the CLASST subroutines. Finally, the latter fluxes are assigned to the appropriate levels in
+      !!the diagnostic GFLUX vector.
+      !!
       DO 200 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ISAND(I,1).EQ.-4)                   THEN
               IF(IG.EQ.3) THEN
@@ -388,22 +341,17 @@ C
   200 CONTINUE
 C
       IF(IG.GT.3)                                                  THEN
-      !
-      !In the 250 loop, the GFLUX values determined in the 150 loop are 
-      !used to update the temperatures in
-      !the third and lower ice layers for the multiple-layer 
-      !configuration. The calculations are bracketed by a
-      !determination of the change of internal energy Ij of the ice 
-      !layers as a result of the heat fluxes, obtained as
-      !the difference in Ij between the beginning and end of the 
-      !calculations:
-      !
-      !delta_Ij = Xi*delta[Ci*DELZj*Tav(DELZj)]/Δt
-      !
-      !where Ci is the heat capacity of ice, Δt is the length of the 
-      !time step, and Xi is the fractional coverage of
-      !the subarea under consideration relative to the modelled area.
-      !
+      !>
+      !!In the 250 loop, the GFLUX values determined in the 150 loop are used to update the temperatures in
+      !!the third and lower ice layers for the multiple-layer configuration. The calculations are bracketed by a
+      !!determination of the change of internal energy \f$I_j\f$ of the ice layers as a result of the heat fluxes, obtained as
+      !!the difference in \f$I_j\f$ between the beginning and end of the calculations:
+      !!
+      !!\f$\Delta I_j = X_i \Delta[C_i \Delta z_j T_{av}(\Delta z_j)]/ \Delta t\f$
+      !!
+      !!where \f$C_i\f$ is the heat capacity of ice, \f$Delta t\f$ is the length of the time step, and \f$X_i\f$ is the 
+      !!fractional coverage of the subarea under consideration relative to the modelled area.
+      !!
       DO 250 J=3,IG                                                               
       DO 250 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ISAND(I,1).EQ.-4)                 THEN
@@ -428,20 +376,15 @@ C
 C     * IF LAYER TEMPERATURES OVERSHOOT ZERO, ADD EXCESS HEAT TO
 C     * HEAT OF MELTING.
 C
-      !In the 300 loop, checks are carried out to determine whether any 
-      !of the ice layer temperatures has
-      !overshot 0 C as a result of the calculations in the previous 
-      !loop. If so, the excess energy is assigned to a
-      !temporary variable QADD and is also added to the total heat 
-      !available for melting of the ice, QMELT.
-      !QADD is subtracted from the internal energy of the layer in 
-      !questions and is added to the internal energy
-      !of the first layer, since melting is assumed to proceed from the 
-      !top downwards. The temperature of the
-      !layer is reset to 0 C. Finally, the first half of a calculation 
-      !of the change of internal energy of each ice layer
-      !is performed, to be completed at the end of the subroutine.
-      !
+      !>
+      !!In the 300 loop, checks are carried out to determine whether any of the ice layer temperatures has
+      !!overshot 0 C as a result of the calculations in the previous loop. If so, the excess energy is assigned to a
+      !!temporary variable QADD and is also added to the total heat available for melting of the ice, QMELT.
+      !!QADD is subtracted from the internal energy of the layer in questions and is added to the internal energy
+      !!of the first layer, since melting is assumed to proceed from the top downwards. The temperature of the
+      !!layer is reset to 0 C. Finally, the first half of a calculation of the change of internal energy of each ice layer
+      !!is performed, to be completed at the end of the subroutine.
+      !!
       DO 300 J=1,IG
       DO 300 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ISAND(I,1).EQ.-4)                   THEN
@@ -456,34 +399,22 @@ C
      1                 DELZ(J)/DELT
           ENDIF
   300 CONTINUE
-      !
-      !In the next three loops, the ice layers are adjusted downward to 
-      !account for the removal of mass at the
-      !surface by melting or sublimation. First, the temperature TMOVE 
-      !of the ice into which the layer is
-      !moving is set to the temperature of the layer below it. TMOVE for 
-      !the bottom layer is set to TBOT. A
-      !depth of ice ZMELT is calculated as the amount of ice for which 
-      !QMELT is sufficient to both raise its
-      !temperature to 0 C (if necessary) and melt it. The temperature of 
-      !the overall runoff and the overland flow
-      !are updated as averages of the original temperature and the 
-      !meltwater temperature (assumed to be at the
-      !freezing point), weighted according to their respective amounts, 
-      !and the overall runoff and overland flow
-      !are incremented by ZMELT (with ZMELT converted to an equivalent 
-      !water depth). The energy used for
-      !the melting of ice is calculated from ZMELT and added to HMFG for 
-      !the first layer, and the amount of
-      !energy used to raise the layer temperature to 0 C is added to HTC 
-      !for the first layer. The total depth of
-      !downward adjustment of the ice layers, ZMOVE, is obtained as the 
-      !sum of ZMELT and the sublimation
-      !depth, calculated from EVAP. This amount is added to the 
-      !diagnostic variable WTRG. Finally, the new
-      !temperature of each ice layer is calculated over the layer 
-      !thickness DELZ as the average of the original
-      !temperature weighted by DELZ-ZMOVE and TMOVE weighted by ZMOVE.
+      !>
+      !!In the next three loops, the ice layers are adjusted downward to account for the removal of mass at the
+      !!surface by melting or sublimation. First, the temperature TMOVE of the ice into which the layer is
+      !!moving is set to the temperature of the layer below it. TMOVE for the bottom layer is set to TBOT. A
+      !!depth of ice ZMELT is calculated as the amount of ice for which QMELT is sufficient to both raise its
+      !!temperature to 0 C (if necessary) and melt it. The temperature of the overall runoff and the overland flow
+      !!are updated as averages of the original temperature and the meltwater temperature (assumed to be at the
+      !!freezing point), weighted according to their respective amounts, and the overall runoff and overland flow
+      !!are incremented by ZMELT (with ZMELT converted to an equivalent water depth). The energy used for
+      !!the melting of ice is calculated from ZMELT and added to HMFG for the first layer, and the amount of
+      !!energy used to raise the layer temperature to 0 C is added to HTC for the first layer. The total depth of
+      !!downward adjustment of the ice layers, ZMOVE, is obtained as the sum of ZMELT and the sublimation
+      !!depth, calculated from EVAP. This amount is added to the diagnostic variable WTRG. Finally, the new
+      !!temperature of each ice layer is calculated over the layer thickness DELZ as the average of the original
+      !!temperature weighted by DELZ-ZMOVE and TMOVE weighted by ZMOVE.
+      !!
 C
 C     * APPLY CALCULATED HEAT OF MELTING TO UPPER ICE LAYER; ADD MELTED
 C     * WATER TO TOTAL RUNOFF; CALCULATE DEPTH OF ICE REMOVED BY MELTING
@@ -528,34 +459,23 @@ C
      1                   ZMOVE(I))/DELZ(J)
           ENDIF                                                                       
   400 CONTINUE  
-      !
-      !In the next loops, the ice layers are adjusted upward to account 
-      !for addition of mass at the surface by
-      !conversion of snow to ice. Snow is converted to ice if the mass 
-      !of the snow pack exceeds 100 kg m-2, or
-      !if the density exceeds 900 kg m-3 (approaching that of ice). In 
-      !the first case the excess over and above 100
-      !kg m-2 is converted; in the second, the whole snow pack is 
-      !converted. These calculations   are performed
-      !in the 500 loop, bracketed by a calculation of the change in 
-      !internal energy of the snow pack, HTCS. In
-      !both cases the first level of the ice level movement matrix WMOVE 
-      !is set to the amount of snow that is
-      !converted, expressed as a depth of ice, and the first level of 
-      !the temperature matrix TMOVE is set to the
-      !snow temperature. The amount of converted snow is added to the 
-      !diagnostic variables WTRS and
-      !WTRG. The depth, density and heat capacity of the snow are 
-      !recalculated. If the entire snow pack is
-      !being converted and the water content WSNOW was non-zero, WSNOW 
-      !is subtracted from WTRS and
-      !added to WTRG, and is also added to the total runoff and the 
-      !overland flow. The runoff and overland
-      !flow temperatures are updated accordingly. The snow temperature 
-      !and water content are reset to zero.
-      !The amount of ice that is lost to the bottom of the profile is 
-      !added to the total runoff, and the runoff
-      !temperature is updated accordingly.                                        
+      !>
+      !!In the next loops, the ice layers are adjusted upward to account for addition of mass at the surface by
+      !!conversion of snow to ice. Snow is converted to ice if the mass of the snow pack exceeds \f$100 kg m^{-2}\f$, or
+      !!if the density exceeds \f$900 kg m^{-3}\f$ (approaching that of ice). In the first case the excess over
+      !!and above \f$100 kg m^{-2}\f$ is converted; in the second, the whole snow pack is converted. 
+      !!These calculations are performed
+      !!in the 500 loop, bracketed by a calculation of the change in internal energy of the snow pack, HTCS. In
+      !!both cases the first level of the ice level movement matrix WMOVE is set to the amount of snow that is
+      !!converted, expressed as a depth of ice, and the first level of the temperature matrix TMOVE is set to the
+      !!snow temperature. The amount of converted snow is added to the diagnostic variables WTRS and
+      !!WTRG. The depth, density and heat capacity of the snow are recalculated. If the entire snow pack is
+      !!being converted and the water content WSNOW was non-zero, WSNOW is subtracted from WTRS and
+      !!added to WTRG, and is also added to the total runoff and the overland flow. The runoff and overland
+      !!flow temperatures are updated accordingly. The snow temperature and water content are reset to zero.
+      !!The amount of ice that is lost to the bottom of the profile is added to the total runoff, and the runoff
+      !!temperature is updated accordingly.                                        
+      !!
 C
 C     * IF SNOW PACK EXCEEDS 100 KG M-2 OR SNOW DENSITY EXCEEDS 
 C     * 900 KG M-3, CONVERT EXCESS TO ICE AND MOVE THE LOCATIONS
@@ -567,14 +487,13 @@ C
               SNOCONV=0.
               HTCS(I)=HTCS(I)-FI(I)*(TSNOW(I)+TFREZ)*HCPSNO(I)*
      1                ZSNOW(I)/DELT
-              IF((RHOSNO(I)*ZSNOW(I)).GT.100.)                THEN                                        
-                  SNOCONV=RHOSNO(I)*ZSNOW(I)-100.
+              IF((ZSNOW(I)).GT.10.)                         THEN        
+                  SNOCONV=(ZSNOW(I)-10.0)*RHOSNO(I)                     
                   WMOVE(I,1)=SNOCONV/RHOICE                                
                   TMOVE(I,1)=TSNOW(I)                                                      
                   WTRS(I)=WTRS(I)-FI(I)*WMOVE(I,1)*RHOICE/DELT
                   WTRG(I)=WTRG(I)+FI(I)*WMOVE(I,1)*RHOICE/DELT
-                  ZSNOW(I)=ZSNOW(I)-WMOVE(I,1)                                                
-                  RHOSNO(I)=100.0/ZSNOW(I)
+                  ZSNOW(I)=10.0                                         
                   HCPSNO(I)=HCPICE*RHOSNO(I)/RHOICE+HCPW*WSNOW(I)/
      1                (RHOW*ZSNOW(I))
                   ICONT(I)=1
@@ -608,37 +527,24 @@ C
           ENDIF
   500 CONTINUE
 C        
-      !In the remaining parts of the code, the actual adjustment of ice 
-      !layer positions is performed. First the
-      !levels of the available depth matrix ZRMDR are set to the ice 
-      !layer thicknesses; the matrix ZMAT is
-      !initialized to zero; and each level J of WMOVE and TMOVE from 2 
-      !to the bottom of the ice profile is
-      !set to the value of DELZ and TBAR respectively of the J-1 ice 
-      !level. The ZMAT matrix represents the
-      !depth of each ice layer J that is occupied by ice from level K 
-      !in the layer movement matrix WMOVE after
-      !the layer adjustments are complete. In the 700 loop, starting at 
-      !the top of the ice profile, an attempt is
-      !made to assign each layer of WMOVE in turn to the K,J level of 
-      !ZMAT. If the calculated value of
-      !ZMAT is greater than the available depth ZRMDR of the layer, ZMAT 
-      !is set to ZRMDR, WMOVE is
-      !decremented by ZRMDR, and ZRMDR is set to zero. Otherwise the 
-      !calculated value of ZMAT is
-      !accepted, ZRMDR is decremented by ZMAT, and WMOVE is set to zero. 
-      !Finally, the 900 loop is
-      !performed over each ice layer J to determine the new layer 
-      !temperature. The temperature adjustment
-      !variable TADD is initialized to zero, and then incremented by the 
-      !temperature TMOVE of each level K
-      !weighted by the corresponding K,J level of ZMAT, and finally by 
-      !the original layer temperature weighted
-      !by the corresponding level of ZRMDR. The layer temperature is 
-      !reset to TADD normalized by DELZ,
-      !and the updating of HTC, begun at the end of the 300 loop, is 
-      !completed.
-      !      
+      !>
+      !!In the remaining parts of the code, the actual adjustment of ice layer positions is performed. First the
+      !!levels of the available depth matrix ZRMDR are set to the ice layer thicknesses; the matrix ZMAT is
+      !!initialized to zero; and each level J of WMOVE and TMOVE from 2 to the bottom of the ice profile is
+      !!set to the value of DELZ and TBAR respectively of the J-1 ice level. The ZMAT matrix represents the
+      !!depth of each ice layer J that is occupied by ice from level K in the layer movement matrix WMOVE after
+      !!the layer adjustments are complete. In the 700 loop, starting at the top of the ice profile, an attempt is
+      !!made to assign each layer of WMOVE in turn to the K,J level of ZMAT. If the calculated value of
+      !!ZMAT is greater than the available depth ZRMDR of the layer, ZMAT is set to ZRMDR, WMOVE is
+      !!decremented by ZRMDR, and ZRMDR is set to zero. Otherwise the calculated value of ZMAT is
+      !!accepted, ZRMDR is decremented by ZMAT, and WMOVE is set to zero. 
+      !!
+      !!Finally, the 900 loop is performed over each ice layer J to determine the new layer 
+      !!temperature. The temperature adjustment variable TADD is initialized to zero, and then incremented by the 
+      !!temperature TMOVE of each level K weighted by the corresponding K,J level of ZMAT, and finally by 
+      !!the original layer temperature weighted by the corresponding level of ZRMDR. The layer temperature is 
+      !!reset to TADD normalized by DELZ, and the updating of HTC, begun at the end of the 300 loop, is completed.
+      !!      
       DO 550 J=1,IG
       DO 550 I=IL1,IL2
           IF(FI(I).GT.0. .AND. ISAND(I,1).EQ.-4)                   THEN

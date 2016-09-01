@@ -1,3 +1,7 @@
+!>\file
+!>Purpose: Call subroutines to perform surface energy budget calculations.
+!>
+
       SUBROUTINE CLASST (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1   THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG,
      2   GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS,  
@@ -5,37 +9,57 @@
      4   EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS, TCANO,  TCANS,  
      5   RAICAN, SNOCAN, RAICNS, SNOCNS, CHCAP,  CHCAPS, TPONDC, TPONDG,  
      6   TPNDCS, TPNDGS, TSNOCS, TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS,
-     7   ITERCT, CDH,    CDM,    QSENS,  TFLUX,  QEVAP,  EVAP,   QFLUX,  
+     7   ITERCT, CDH,    CDM,    QSENS,  TFLUX,  QEVAP,  EVAP,          
      8   EVPPOT, ACOND,  EVAPB,  GT,     QG, 
      9   ST,     SU,     SV,     SQ,     SRH,
-     A   FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG,   
-     B   HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG,   HMFC,   HMFN, 
-     C   HTCC,   HTCS,   HTC,    QFCF,   QFCL,   DRAG,   WTABLE, ILMO,    
-     D   UE,     HBL,    TAC,    QAC,    ZREFM,  ZREFH,  ZDIAGM, ZDIAGH, 
-     E   VPD,    TADP,   RHOAIR, QSWINV, QSWINI, QLWIN,  UWIND,  VWIND,   
-     F   TA,     QA,     PADRY,  FC,     FG,     FCS,    FGS,    RBCOEF,
-     G   FSVF,   FSVFS,  PRESSG, VMOD,   ALVSCN, ALIRCN, ALVSG,  ALIRG,  
-     H   ALVSCS, ALIRCS, ALVSSN, ALIRSN, ALVSGC, ALIRGC, ALVSSC, ALIRSC,
-     I   TRVSCN, TRIRCN, TRVSCS, TRIRCS, RC,     RCS,    WTRG,   QLWAVG,
-     J   FRAINC, FSNOWC, FRAICS, FSNOCS, CMASSC, CMASCS, DISP,   DISPS,  
-     K   ZOMLNC, ZOELNC, ZOMLNG, ZOELNG, ZOMLCS, ZOELCS, ZOMLNS, ZOELNS, 
-     L   TBAR,   THLIQ,  THICE,  TPOND,  ZPOND,  TBASE,  TCAN,   TSNOW,  
-     M   ZSNOW,  TRSNOW, RHOSNO, WSNOW,  THPOR,  THLRET, THLMIN, THFC,   
-     N   RADJ,   PCPR,   HCPS,   TCS,    TSFSAV, DELZ,   DELZW,  ZBOTW,  
-     O   FTEMP,  FVAP,   RIB,   
-     P   ISAND,
-     Q   AILCG,          AILCGS,         FCANC,          FCANCS,
-     R   CO2CONC,        CO2I1CG,        CO2I1CS,        CO2I2CG,
-     S   CO2I2CS,        COSZS,          XDIFFUS,        SLAI,
-     T   ICTEM,          ICTEMMOD,       RMATCTEM,       FCANCMX,
-     U   L2MAX,          NOL2PFTS,       CFLUXCG,        CFLUXCS,
-     V   ANCSVEG,        ANCGVEG,        RMLCSVEG,       RMLCGVEG,
-     W   THLW,
-     X   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
-     Y   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     Z   LFSTATUS) 
+     A   GTBS, SFCUBS, SFCVBS, USTARBS,                                 
+     B   FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG,   
+     C   HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG,   HMFC,   HMFN, 
+     D   HTCC,   HTCS,   HTC,    QFCF,   QFCL,   DRAG,   WTABLE, ILMO,    
+     E   UE,     HBL,    TAC,    QAC,    ZREFM,  ZREFH,  ZDIAGM, ZDIAGH, 
+     F   VPD,    TADP,   RHOAIR, QSWINV, QSWINI, QLWIN,  UWIND,  VWIND,   
+     G   TA,     QA,     PADRY,  FC,     FG,     FCS,    FGS,    RBCOEF,
+     H   FSVF,   FSVFS,  PRESSG, VMOD,   ALVSCN, ALIRCN, ALVSG,  ALIRG,  
+     I   ALVSCS, ALIRCS, ALVSSN, ALIRSN, ALVSGC, ALIRGC, ALVSSC, ALIRSC,
+     J   TRVSCN, TRIRCN, TRVSCS, TRIRCS, RC,     RCS,    WTRG,   QLWAVG,
+     K   FRAINC, FSNOWC, FRAICS, FSNOCS, CMASSC, CMASCS, DISP,   DISPS,  
+     L   ZOMLNC, ZOELNC, ZOMLNG, ZOELNG, ZOMLCS, ZOELCS, ZOMLNS, ZOELNS, 
+     M   TBAR,   THLIQ,  THICE,  TPOND,  ZPOND,  TBASE,  TCAN,   TSNOW,  
+     N   ZSNOW,  RHOSNO, WSNOW,  THPOR,  THLRET, THLMIN, THFC,   THLW,
+     O   TRSNOWC, TRSNOWG, ALSNO, FSSB,  FROOT,  FROOTS,
+     P   RADJ,   PCPR,   HCPS,   TCS,    TSFSAV, DELZ,   DELZW,  ZBOTW,  
+     Q   FTEMP,  FVAP,   RIB,   
+     R   ISAND,
+     S   AILCG,          AILCGS,         FCANC,          FCANCS,
+     T   CO2CONC,        CO2I1CG,        CO2I1CS,        CO2I2CG,
+     U   CO2I2CS,        COSZS,          XDIFFUS,        SLAI,
+     V   ICTEM,          ctem_on,       RMATCTEM,       FCANCMX,
+     W   L2MAX,          NOL2PFTS,       CFLUXCG,        CFLUXCS,
+     X   ANCSVEG,        ANCGVEG,        RMLCSVEG,       RMLCGVEG,
+     Y   TCSNOW, GSNOW,                                                 
+     Z   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
+     +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
+     +   NBS, ISNOALB,LFSTATUS,DAYL, DAYL_MAX)
 C
-C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
+C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
+C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
+C     *                         AREAS WITH AND WITHOUT SNOW.
+C     * JUL 22/15 - D.VERSEGHY. CHANGES TO TSOLVC AND TSOLVE CALLS.
+C     * FEB 09/15 - D.VERSEGHY. New version for gcm18 and class 3.6:
+C     *                         - Revised calls to revised TPREP for
+C     *                           initialization of SRH and SLDIAG.
+C     *                         - Input {THFC,THLW} (from CLASSB) replace
+C     *                           work arrays {FIELDSM,WILTSM}.
+C     *                         - Calculation of new bare-soil fields
+C     *                           {GTBS,SFCUBS,SFCVBS,USTARBS}.
+C     * SEP 09/14 - D.VERSEGHY/M.LAZARE. CORRECTIONS TO SCREEN LEVEL
+C     *                         DIAGNOSTIC CALCULATIONS.
+C     * AUG 19/13 - M.LAZARE.   REMOVE CALCULATION AND REFERENCES TO    
+C     *                         "QFLUX" (NOW DONE IN CLASSW).           
+C     * JUN 21/13 - M.LAZARE.   REVISED CALL TO TPREP TO SUPPORT ADDING 
+C     *                         INITIALIZATION OF "GSNOW".              
+C     * JUN 10/13 - M.LAZARE/   ADD SUPPORT FOR "ISNOALB" FORMULATION.  
+C     *             M.NAMAZI.                                           
 C     * NOV 11/11 - M.LAZARE.   IMPLEMENT CTEM (INITIALIZATION OF FIELDS
 C     *                         NEAR BEGINNING AND TWO REVISED CALLS TO 
 C     *                         TSOLVC).                 
@@ -154,124 +178,284 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER NLANDCS,NLANDGS,NLANDC,NLANDG,NLANDI,ISNOW,N 
+      INTEGER NLANDCS!<Number of modelled areas that contain subareas of canopy over 
+                     !<bare ground / bare ground / canopy over snow /snow
+      INTEGER NLANDGS!<Number of modelled areas that contain subareas of canopy over 
+                     !<bare ground / bare ground / canopy over snow /snow
+      INTEGER NLANDC !<Number of modelled areas that contain subareas of canopy over 
+                     !<bare ground / bare ground / canopy over snow /snow
+      INTEGER NLANDG !<Number of modelled areas that contain subareas of canopy over 
+                     !<bare ground / bare ground / canopy over snow /snow
+      INTEGER NLANDI !<Number of modelled areas that are ice sheets [ ]
+      INTEGER ISNOW  !<
+      INTEGER N      !<
+      INTEGER NBS    !<
+      INTEGER ISNOALB!<  
 C
-      INTEGER ITC,ITCG,ITG,ILG,IL1,IL2,JL,IC,IG,IZREF,ISLFD,I,J
+      INTEGER ITC   !<Flag to select iteration scheme for canopy temperature
+      INTEGER ITCG  !<Flag to select iteration scheme for surface under canopy
+      INTEGER ITG   !<Flag to select iteration scheme for ground or snow surface
+      INTEGER ILG   !<
+      INTEGER IL1   !<
+      INTEGER IL2   !<
+      INTEGER JL    !<
+      INTEGER IC    !<
+      INTEGER IG    !<
+      INTEGER IZREF !<Flag governing treatment of surface roughness length
+      INTEGER ISLFD !<Flag governing options for surface stability functions and diagnostic calculations
+      INTEGER I,J
 C
 C     * OUTPUT FIELDS.
-C                                                                              
-      REAL TBARC (ILG,IG),TBARG (ILG,IG),TBARCS(ILG,IG),TBARGS(ILG,IG),
-     1     THLIQC(ILG,IG),THLIQG(ILG,IG),THICEC(ILG,IG),THICEG(ILG,IG),
-     2     HCPC  (ILG,IG),HCPG  (ILG,IG),TCTOPC(ILG,IG),TCBOTC(ILG,IG),
-     3     TCTOPG(ILG,IG),TCBOTG(ILG,IG),HTC   (ILG,IG),TSFSAV(ILG,4)             
-C   
-      REAL GZEROC(ILG),   GZEROG(ILG),   GZROCS(ILG),   GZROGS(ILG),              
-     1     G12C  (ILG),   G12G  (ILG),   G12CS (ILG),   G12GS (ILG),               
-     2     G23C  (ILG),   G23G  (ILG),   G23CS (ILG),   G23GS (ILG),               
-     3     QFREZC(ILG),   QFREZG(ILG),   QMELTC(ILG),   QMELTG(ILG),              
-     4     EVAPC (ILG),   EVAPCG(ILG),   EVAPG (ILG),   EVAPCS(ILG),
-     5     EVPCSG(ILG),   EVAPGS(ILG),   TCANO (ILG),   TCANS (ILG), 
-     6     RAICAN(ILG),   SNOCAN(ILG),   RAICNS(ILG),   SNOCNS(ILG),  
-     7     CHCAP (ILG),   CHCAPS(ILG),   TPONDC(ILG),   TPONDG(ILG),   
-     8     TPNDCS(ILG),   TPNDGS(ILG),   TSNOCS(ILG),   TSNOGS(ILG),
-     9     WSNOCS(ILG),   WSNOGS(ILG),   RHOSCS(ILG),   RHOSGS(ILG)   
+C                          
+      REAL ACOND (ILG) !<Diagnosed product of drag coefficient and wind speed over modelled area \f$[m s^{-1} ]\f$
+      REAL CDH   (ILG) !<Surface drag coefficient for heat \f$[ ] (C_{DH} )\f$
+      REAL CDM   (ILG) !<Surface drag coefficient for momentum \f$[ ] (C_{DM} )\f$
+      REAL CHCAP (ILG) !<Surface drag coefficient for momentum \f$[ ] (C_{DM} )\f$
+      REAL CHCAPS(ILG) !<Heat capacity of canopy over bare ground \f$[J m^{-2} K^{-1} ]\f$
+      REAL DRAG  (ILG) !<Surface drag coefficient under neutral stability [ ]
+
+      REAL EVAP  (ILG) !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
+      REAL EVAPB (ILG) !<Evaporation efficiency at ground surface [ ]
+      REAL EVAPC (ILG) !<Evaporation from vegetation over ground \f$[m s^{-1} ]\f$
+      REAL EVAPCG(ILG) !<Evaporation from ground under vegetation \f$[m s^{-1} ]\f$
+      REAL EVAPCS(ILG) !<Evaporation from vegetation over snow \f$[m s^{-1} ]\f$
+      REAL EVAPG (ILG) !<Evaporation from bare ground \f$[m s^{-1} ]\f$
+      REAL EVAPGS(ILG) !<Evaporation from snow on bare ground \f$[m s^{-1} ]\f$
+      REAL EVPCSG(ILG) !<Evaporation from snow under vegetation \f$[m s^{-1} ]\f$
+      REAL EVPPOT(ILG) !<Diagnosed potential evapotranspiration \f$[kg m^{-2} s^{-1} ] (E_p )\f$
+      REAL FLGG  (ILG) !<Diagnosed net longwave radiation at soil surface \f$[W m^{-2} ]\f$
+      REAL FLGS  (ILG) !<Diagnosed net longwave radiation at snow surface \f$[W m^{-2} ]\f$
+      REAL FLGV  (ILG) !<Diagnosed net longwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
+      REAL FSGG  (ILG) !<Diagnosed net shortwave radiation at soil surface \f$[W m^{-2} ]\f$
+      REAL FSGS  (ILG) !<Diagnosed net shortwave radiation at snow surface \f$[W m^{-2} ]\f$
+      REAL FSGV  (ILG) !<Diagnosed net shortwave radiation on vegetation canopy \f$[W m^{-2} ]\f$
+      REAL FTEMP (ILG) !<
+      REAL FVAP  (ILG) !<
+
+      REAL G12C  (ILG) !<Subarea heat flux between first and second soil layers \f$[W m^{-2} ]\f$
+      REAL G12CS (ILG) !<Subarea heat flux between first and second soil layers \f$[W m^{-2} ]\f$
+      REAL G12G  (ILG) !<Subarea heat flux between first and second soil layers \f$[W m^{-2} ]\f$
+      REAL G12GS (ILG) !<Subarea heat flux between first and second soil layers \f$[W m^{-2} ]\f$
+      REAL G23C  (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
+      REAL G23CS (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
+      REAL G23G  (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
+      REAL G23GS (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
+      REAL GT    (ILG) !<Diagnosed effective surface black-body temperature \f$[K] (T_{0,eff} )\f$
+      REAL GTBS  (ILG) !<
+      REAL GZEROC(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL GZEROG(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL GZROCS(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL GZROGS(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
+
+      REAL HBL   (ILG)    !<Height of the atmospheric boundary layer [m]
+      REAL HCPC  (ILG,IG) !<Heat capacity of soil layers under vegetation \f$[J m^{-3} K^{-1} ]\f$
+      REAL HCPG  (ILG,IG) !<Heat capacity of soil layers in bare areas \f$[J m^{-3} K^{-1} ]\f$
+      REAL HEVC  (ILG)    !<Diagnosed latent heat flux on vegetation canopy \f$[W m^{-2} ]\f$
+      REAL HEVG  (ILG)    !<Diagnosed latent heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL HEVS  (ILG)    !<Diagnosed latent heat flux at snow surface \f$[W m^{-2} ]\f$
+      REAL HFSC  (ILG)    !<Diagnosed sensible heat flux on vegetation canopy \f$[W m^{-2} ]\f$
+      REAL HFSG  (ILG)    !<Diagnosed sensible heat flux at soil surface \f$[W m^{-2} ]\f$
+      REAL HFSS  (ILG)    !<Diagnosed sensible heat flux at snow surface \f$[W m^{-2} ]\f$
+      REAL HMFC  (ILG)    !<Diagnosed energy associated with phase change of water on vegetation \f$[W m^{-2} ]\f$
+      REAL HMFN  (ILG)    !<Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
+      REAL HTC   (ILG,IG) !<Diagnosed internal energy change of soil layer due to conduction 
+                          !<and/or change in mass \f$[W m^{-2} ]\f$
+      REAL HTCC  (ILG)    !<Diagnosed internal energy change of vegetation canopy due to conduction 
+                          !<and/or change in mass \f$[W m^{-2} ]\f$
+      REAL HTCS  (ILG)    !<Diagnosed internal energy change of snow pack due to conduction 
+                          !<and/or change in mass \f$[W m^{-2} ]\f$
+
+      REAL ILMO  (ILG)         !<Inverse of Monin-Obukhov roughness length \f$(m^{-1} ]\f$
+      INTEGER ITERCT(ILG,6,50) !<Counter of number of iterations required to solve surface energy balance
+                               !<for the elements of the four subareas
+
+      REAL QAC   (ILG) !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ]\f$
+      REAL QEVAP (ILG) !<Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
+      REAL QFCF  (ILG) !<Sublimation from frozen water on vegetation \f$[kg m^{-2} s^{-1} ]\f$
+      REAL QFCL  (ILG) !<Evaporation from liquid water on vegetation \f$[kg m^{-2} s^{-1} ]\f$
+
+      REAL QFREZC(ILG) !<Heat sink to be used for freezing water on ground under canopy \f$[W m^{-2} ]\f$
+      REAL QFREZG(ILG) !<Heat sink to be used for freezing water on bare ground \f$[W m^{-2} ]\f$
+      REAL QG    (ILG) !<Diagnosed surface specific humidity \f$[kg kg^{-1} ]\f$
+      REAL QLWAVG(ILG) !<Upwelling longwave radiation from land surface \f$[W m^{-2} ]\f$
+      REAL QMELTC(ILG) !<Heat to be used for melting snow under canopy \f$[W m^{-2} ]\f$
+      REAL QMELTG(ILG) !<Heat to be used for melting snow on bare ground \f$[W m^{-2} ]\f$
+      REAL QSENS (ILG) !<Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2} ]\f$
+      REAL RAICAN(ILG) !<Intercepted liquid water stored on canopy over ground \f$[kg m^{-2} ]\f$
+      REAL RAICNS(ILG) !<Intercepted liquid water stored on canopy over snow \f$[kg m^{-2} ]\f$
+      REAL RHOSCS(ILG) !<Density of snow under vegetation \f$[kg m^{-3} ]\f$
+      REAL RHOSGS(ILG) !<Density of snow in bare areas \f$[kg m^{-3} ]\f$
+      REAL RIB   (ILG) !<
+      REAL SFCUBS(ILG) !<
+      REAL SFCVBS(ILG) !<
+      REAL SNOCAN(ILG) !<Intercepted frozen water stored on canopy over ground \f$[kg m^{-2} ]\f$
+      REAL SNOCNS(ILG) !<Intercepted frozen water stored on canopy over snow \f$[kg m^{-2} ]\f$
+      REAL SQ    (ILG) !<Diagnosed screen-level specific humidity \f$[kg kg^{-1} ]\f$
+      REAL SRH   (ILG) !<Diagnosed screen-level relative humidity [%]
+      REAL ST    (ILG) !<Diagnosed screen-level air temperature [K]
+      REAL SU    (ILG) !<Diagnosed anemometer-level zonal wind \f$[m s^{-1} ]\f$
+      REAL SV    (ILG) !<Diagnosed anemometer-level meridional wind \f$[m s^{-1} ]\f$
+
+      REAL TAC   (ILG)    !<Temperature of air within vegetation canopy [K]
+      REAL TBARC (ILG,IG) !<Subarea temperatures of soil layers [C]
+      REAL TBARCS(ILG,IG) !<Subarea temperatures of soil layers [C]
+      REAL TBARG (ILG,IG) !<Subarea temperatures of soil layers [C]
+      REAL TBARGS(ILG,IG) !<Subarea temperatures of soil layers [C]
+      REAL TCANO (ILG)    !<Temperature of canopy over ground [K]
+      REAL TCANS (ILG)    !<Temperature of canopy over snow [K]
+      REAL TCBOTC(ILG,IG) !<Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1} ]\f$
+      REAL TCBOTG(ILG,IG) !<Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1} ]\f$
+      REAL TCTOPC(ILG,IG) !<Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
+      REAL TCTOPG(ILG,IG) !<Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
+      REAL TFLUX (ILG)    !<Product of surface drag coefficient, wind speed and surface-air 
+                          !<temperature difference \f$[K m s^{-1} ]\f$
+      REAL THICEC(ILG,IG) !<Frozen water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
+      REAL THICEG(ILG,IG) !<Frozen water content of soil layers in bare areas \f$[m^3 m^{-3} ]\f$
+      REAL THLIQC(ILG,IG) !<Liquid water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
+      REAL THLIQG(ILG,IG) !<Liquid water content of soil layers in bare areas \f$[m^3 m^{-3} ]\f$
+      REAL TPONDC(ILG)    !<Subarea temperature of surface ponded water [C]
+      REAL TPONDG(ILG)    !<Subarea temperature of surface ponded water [C]
+      REAL TPNDCS(ILG)    !<Subarea temperature of surface ponded water [C]
+      REAL TPNDGS(ILG)    !<Subarea temperature of surface ponded water [C]
+      REAL TSFSAV(ILG,4)  !<Ground surface temperature over subarea [K]
+      REAL TSNOCS(ILG)    !<Temperature of snow pack under vegetation [K]
+      REAL TSNOGS(ILG)    !<Temperature of snow pack in bare areas [K]
+
+      REAL UE    (ILG)  !<Friction velocity of air \f$[m s^{-1} ]\f$
+      REAL USTARBS(ILG) !<
+      REAL WSNOCS(ILG)  !<Liquid water content of snow pack under vegetation \f$[kg m^{-2} ]\f$
+      REAL WSNOGS(ILG)  !<Liquid water content of snow pack in bare areas \f$[kg m^{-2} ]\f$
+      REAL WTABLE(ILG)  !<Depth of water table in soil [m]
+      REAL WTRG  (ILG)  !<Diagnosed residual water transferred into or out of the soil \f$[kg m^{-2} s^{-1} ]\f$
 C
-      REAL CDH   (ILG),   CDM   (ILG),   QSENS (ILG),   TFLUX (ILG),   
-     1     QEVAP (ILG),   EVAP  (ILG),   QFLUX (ILG),   
-     2     EVPPOT(ILG),   ACOND (ILG),   EVAPB (ILG),   WTRG  (ILG),
-     3     QLWAVG(ILG),   GT    (ILG),   QG    (ILG), 
-     4     WTABLE(ILG),   ST    (ILG),   SU    (ILG),   SV    (ILG),  
-     5     SQ    (ILG),   SRH   (ILG),
-     6     FSGV  (ILG),   FSGS  (ILG),   FSGG  (ILG),   FLGV  (ILG),
-     7     FLGS  (ILG),   FLGG  (ILG),   HFSC  (ILG),   HFSS  (ILG),
-     8     HFSG  (ILG),   HEVC  (ILG),   HEVS  (ILG),   HEVG  (ILG),  
-     9     HMFC  (ILG),   HMFN  (ILG),   HTCC  (ILG),   HTCS  (ILG),   
-     A     DRAG  (ILG),   ILMO  (ILG),   UE    (ILG),   HBL   (ILG),   
-     B     TAC   (ILG),   QAC   (ILG),   QFCF  (ILG),   QFCL  (ILG),
-     C     FTEMP (ILG),   FVAP  (ILG),   RIB   (ILG)
-C
-      INTEGER  ITERCT(ILG,6,50)
 C
 C     * INPUT FIELDS.
 C
-      REAL ZREFM (ILG),   ZREFH (ILG),   ZDIAGM(ILG),   ZDIAGH(ILG),
-     1     VPD   (ILG),   TADP  (ILG),   RHOAIR(ILG),   QSWINV(ILG),   
-     2     QSWINI(ILG),   QLWIN (ILG),   UWIND (ILG),   VWIND (ILG),   
-     3     TA    (ILG),   QA    (ILG),   PADRY (ILG),   FC    (ILG),   
-     4     FG    (ILG),   FCS   (ILG),   FGS   (ILG),   RBCOEF(ILG), 
-     5     FSVF  (ILG),   FSVFS (ILG),   PRESSG(ILG),   VMOD  (ILG),
-     6     ALVSCN(ILG),   ALIRCN(ILG),   ALVSG (ILG),   ALIRG (ILG),              
-     7     ALVSCS(ILG),   ALIRCS(ILG),   ALVSSN(ILG),   ALIRSN(ILG),  
-     8     ALVSGC(ILG),   ALIRGC(ILG),   ALVSSC(ILG),   ALIRSC(ILG),
-     9     TRVSCN(ILG),   TRIRCN(ILG),   TRVSCS(ILG),   TRIRCS(ILG),  
-     A     RC    (ILG),   RCS   (ILG),   FRAINC(ILG),   FSNOWC(ILG),  
-     B     FRAICS(ILG),   FSNOCS(ILG),   CMASSC(ILG),   CMASCS(ILG),   
-     C     DISP  (ILG),   DISPS (ILG),   
-     D     ZOMLNC(ILG),   ZOELNC(ILG),   ZOMLNG(ILG),   ZOELNG(ILG),   
-     E     ZOMLCS(ILG),   ZOELCS(ILG),   ZOMLNS(ILG),   ZOELNS(ILG),   
-     F     TPOND (ILG),   ZPOND (ILG),   TBASE (ILG),   TCAN  (ILG),   
-     G     TSNOW (ILG),   ZSNOW (ILG),   TRSNOW(ILG),   RHOSNO(ILG),
-     H     WSNOW (ILG),   RADJ  (ILG),   PCPR  (ILG)   
+      REAL ZREFM (ILG) !<Reference height associated with forcing wind speed [m]
+      REAL ZREFH (ILG) !<Reference height associated with forcing air temperature and humidity [m]
+      REAL ZDIAGM(ILG) !<User-specified height associated with diagnosed anemometer-level wind speed [m]
+      REAL ZDIAGH(ILG) !<User-specified height associated with diagnosed screen-level variables [m]
+      REAL VPD   (ILG) !<Vapour pressure deficit [mb]
+      REAL TADP  (ILG) !<Dew point temperature of air [K]
+      REAL RHOAIR(ILG) !<Density of air \f$[kg m^{-3} ] (\rho_a )\f$
+      REAL QSWINV(ILG) !<Visible radiation incident on horizontal surface \f$[W m^{-2} ]\f$
+      REAL QSWINI(ILG) !<Near-infrared radiation incident on horizontal surface \f$[W m^{-2} ]\f$
+      REAL QLWIN (ILG) !<Downwelling longwave radiation at bottom of atmosphere \f$[W m^{-2} ]\f$
+      REAL UWIND (ILG) !<Zonal component of wind speed \f$[m s^{-1} ] (U_a )\f$
+      REAL VWIND (ILG) !<Meridional component of wind speed \f$[m s^{-1} ] (V_a )\f$
+      REAL TA    (ILG) !<Air temperature at reference height \f$[K] (T_a )\f$
+      REAL QA    (ILG) !<Specific humidity at reference height \f$[kg kg^{-1} ]\f$
+      REAL PADRY (ILG) !<Partial pressure of dry air \f$[Pa] (p_{dry} )\f$
+      REAL FC    (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL FG    (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL FCS   (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL FGS   (ILG) !<Subarea fractional coverage of modelled area [ ]
+      REAL RBCOEF(ILG) !<Parameter for calculation of leaf boundary resistance
+      REAL FSVF  (ILG) !<Sky view factor for bare ground under canopy [ ]
+      REAL FSVFS (ILG) !<Sky view factor for snow under canopy [ ]
+      REAL PRESSG(ILG) !<Surface atmospheric pressure [Pa]
+      REAL VMOD  (ILG) !<Wind speed at reference height \f$[m s^{-1} ]\f$
+      REAL ALVSCN(ILG) !<Visible/near-IR albedo of vegetation over bare ground [ ]
+      REAL ALIRCN(ILG) !<Visible/near-IR albedo of vegetation over bare ground [ ]
+      REAL ALVSG (ILG) !<Visible/near-IR albedo of open bare ground [ ]
+      REAL ALIRG (ILG) !<Visible/near-IR albedo of open bare ground [ ]
+      REAL ALVSCS(ILG) !<Visible/near-IR albedo of vegetation over snow [ ]
+      REAL ALIRCS(ILG) !<Visible/near-IR albedo of vegetation over snow [ ]
+      REAL ALVSSN(ILG) !<Visible/near-IR albedo of open snow cover [ ]
+      REAL ALIRSN(ILG) !<Visible/near-IR albedo of open snow cover [ ]
+      REAL ALVSGC(ILG) !<Visible/near-IR albedo of bare ground under vegetation [ ]
+      REAL ALIRGC(ILG) !<Visible/near-IR albedo of bare ground under vegetation [ ]
+      REAL ALVSSC(ILG) !<Visible/near-IR albedo of snow under vegetation [ ]
+      REAL ALIRSC(ILG) !<Visible/near-IR albedo of snow under vegetation [ ]
+      REAL TRVSCN(ILG) !<Visible/near-IR transmissivity of vegetation over bare ground [ ]
+      REAL TRIRCN(ILG) !<Visible/near-IR transmissivity of vegetation over bare ground [ ]
+      REAL TRVSCS(ILG) !<Visible/near-IR transmissivity of vegetation over snow [ ]
+      REAL TRIRCS(ILG) !<Visible/near-IR transmissivity of vegetation over snow [ ]
+      REAL RC    (ILG) !<Stomatal resistance of vegetation over bare ground \f$[s m^{-1} ]\f$
+      REAL RCS   (ILG) !<Stomatal resistance of vegetation over snow \f$[s m^{-1} ]\f$
+      REAL FRAINC(ILG) !<Fractional coverage of canopy by liquid water over snow-free subarea [ ]
+      REAL FSNOWC(ILG) !<Fractional coverage of canopy by frozen water over snow-free subarea [ ]
+      REAL FRAICS(ILG) !<Fractional coverage of canopy by liquid water over snow-covered subarea [ ]
+      REAL FSNOCS(ILG) !<Fractional coverage of canopy by frozen water over snow-covered subarea [ ]
+      REAL CMASSC(ILG) !<Mass of canopy over bare ground \f$[kg m^{-2} ]\f$
+      REAL CMASCS(ILG) !<Mass of canopy over snow \f$[kg m^{-2} ]\f$
+      REAL DISP  (ILG) !<Displacement height of vegetation over bare ground [m] (d)
+      REAL DISPS (ILG) !<Displacement height of vegetation over snow [m] (d)
+      REAL ZOMLNC(ILG) !<Logarithm of roughness length for momentum of vegetation over bare ground [ ]
+      REAL ZOELNC(ILG) !<Logarithm of roughness length for heat of vegetation over bare ground [ ]
+      REAL ZOMLNG(ILG) !<Logarithm of roughness length for momentum of bare ground [ ]
+      REAL ZOELNG(ILG) !<Logarithm of roughness length for heat of bare ground [ ]
+      REAL ZOMLCS(ILG) !<Logarithm of roughness length for momentum of vegetation over snow [ ]
+      REAL ZOELCS(ILG) !<Logarithm of roughness length for heat of vegetation over snow [ ]
+      REAL ZOMLNS(ILG) !<Logarithm of roughness length for momentum of snow [ ]
+      REAL ZOELNS(ILG) !<Logarithm of roughness length for heat of snow [ ]
+      REAL TPOND (ILG) !<Temperature of ponded water [K]
+      REAL ZPOND (ILG) !<Depth of ponded water on surface [m]
+      REAL TBASE (ILG) !<Temperature of bedrock in third soil layer [K]
+      REAL TCAN  (ILG) !<Vegetation canopy temperature [K]
+      REAL TSNOW (ILG) !<Snowpack temperature [K]
+      REAL ZSNOW (ILG) !<Depth of snow pack [m]
+      REAL TRSNOWC(ILG)!<
+      REAL RHOSNO(ILG) !<Density of snow \f$[kg m^{-3} ]\f$
+      REAL WSNOW (ILG) !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+      REAL RADJ  (ILG) !<Latitude of grid cell (positive north of equator) [rad] \f$(\varphi)\f$
+      REAL PCPR  (ILG) !<Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
+C                                                                       
+      REAL TRSNOWG(ILG,NBS), ALSNO(ILG,NBS), FSSB(ILG,NBS)              
 C     
-      REAL TBAR  (ILG,IG),THLIQ (ILG,IG),THICE (ILG,IG)
+      REAL TBAR  (ILG,IG) !<Temperature of soil layers [K]
+      REAL THLIQ (ILG,IG) !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+      REAL THICE (ILG,IG) !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
 C
 C     * SOIL PROPERTY ARRAYS.
 C
-      REAL THPOR (ILG,IG),THLRET(ILG,IG),THLMIN(ILG,IG),
-     1     THFC  (ILG,IG),HCPS  (ILG,IG),TCS   (ILG,IG),
-     1     DELZ  (IG),    DELZW (ILG,IG),ZBOTW (ILG,IG)
+      REAL THPOR (ILG,IG) !<Pore volume in soil layer \f$[m^3 m^{-3} ]\f$
+      REAL THLRET(ILG,IG) !<Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ]\f$
+      REAL THLMIN(ILG,IG) !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
+      REAL THFC  (ILG,IG) !<Field capacity \f$[m^3 m^{-3} ]\f$
+      REAL THLW  (ILG,IG)
+      REAL HCPS  (ILG,IG) !<Heat capacity of soil material \f$[J m^{-3} K^{-1} ]\f$
+      REAL TCS   (ILG,IG) !<Thermal conductivity of soil particles \f$[W m^{-1} K^{-1} ]\f$
+      REAL DELZ  (IG)     !<Overall thickness of soil layer [m]
+      REAL DELZW (ILG,IG) !<Permeable thickness of soil layer [m]
+      REAL ZBOTW (ILG,IG) !<Depth to permeable bottom of soil layer [m]
+      REAL FROOT (ILG,IG)
+      REAL FROOTS(ILG,IG)
 C
-      INTEGER  ISAND (ILG,IG)
+      INTEGER  ISAND (ILG,IG) !<Sand content flag
 C
 C     * CTEM-RELATED I/O FIELDS.
 C
 
-C    AILCG    - GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR
-C               CANOPY OVER GROUND SUBAREA
-C    AILCGS   - GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR
-C               CANOPY OVER SNOW SUBAREA
-C    FCANC    - FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
-C    FCANCS   - FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
-C    CO2CONC  - ATMOS. CO2 CONC. IN PPM
-C    CO2I1CG  - INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND
-C               SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-C    CO2I2CG  - SAME AS ABOVE BUT FOR SHADED LEAF
-C    CO2I1CS  - INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOW
-C               SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-C    CO2I2CS  - SAME AS ABOVE BUT FOR SHADED LEAF
-C    COSZS    - COSINE OF SUN'S ZENITH ANGLE
-C    XDIFFUS  - FRACTION OF DIFFUSED RADIATION
-C    SLAI     - STORAGE LAI. SEE PHTSYN SUBROUTINE FOR MORE DETAILS.
-C    ICC      - 8 (CTEM's PLANT FUNCTIONAL TYPES)
-C    ICTEMMOD - 1 FOR COUPLING TO CTEM
-C    RMATCTEM - FRACTION OF ROOTS IN EACH SOIL LAYER FOR EACH OF CTEM's
-C               8 PFTs
-C    FCANCMX  - MAX. FRACTIONAL COVERAGE OF CTEM PFTs
-C    ANCSVEG  - NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY
-C               OVER SNOW SUBAREA
-C    ANCGVEG  - NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY
-C               OVER GROUND SUBAREA
-C    RMLCSVEG - LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY
-C               OVER SNOW SUBAREA
-C    RMLCGVEG - LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY
-C               OVER GROUND SUBAREA
-C    CANRES   - WEIGHTED AVERAGE OF CANOPY RESISTANCE FOR CANOPY OVER
-C               SNOW (RCS) AND CANOPY OVER GROUND (RC) SUBAREAS. THIS
-C               IS TO BE USED AS A DIAGNOSTIC FOR COMPARING CANOPY
-C               RESISTANCE FROM CLASS AND CTEM's PHTSYN SUBROUTINE.
-C    THLW     - WILTING POINT SOIL MOISTURE CONTENT
+      REAL AILCG(ILG,ICTEM)   !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER GROUND SUBAREA
+      REAL AILCGS(ILG,ICTEM)  !< GREEN LAI FOR USE WITH PHOTOSYNTHESIS SUBTROUTINE FOR CANOPY OVER SNOW SUBAREA
+      REAL FCANC(ILG,ICTEM)   !< FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
+      REAL FCANCS(ILG,ICTEM)  !< FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
+      REAL CO2CONC(ILG)       !< ATMOS. CO2 CONC. IN PPM
+      REAL CO2I1CG(ILG,ICTEM) !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+      REAL CO2I1CS(ILG,ICTEM) !< SAME AS ABOVE BUT FOR SHADED LEAF
+      REAL CO2I2CG(ILG,ICTEM) !< INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+      REAL CO2I2CS(ILG,ICTEM) !< SAME AS ABOVE BUT FOR SHADED LEAF
+      REAL COSZS(ILG)         !< COSINE OF SUN'S ZENITH ANGLE
+      REAL XDIFFUS(ILG)       !< FRACTION OF DIFFUSED RADIATION
+      REAL SLAI(ILG,ICTEM)    !< STORAGE LAI. SEE PHTSYN SUBROUTINE FOR MORE DETAILS.
+      REAL RMATCTEM(ILG,ICTEM,IG) !< FRACTION OF ROOTS IN EACH SOIL LAYER FOR EACH OF CTEM's 8 PFTs
+      REAL FCANCMX(ILG,ICTEM) !< MAX. FRACTIONAL COVERAGE OF CTEM PFTs
+      REAL ANCSVEG(ILG,ICTEM) !< NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
+      REAL ANCGVEG(ILG,ICTEM) !< NET PHOTOSYNTHETIC RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
+      REAL RMLCSVEG(ILG,ICTEM)!< LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER SNOW SUBAREA
+      REAL RMLCGVEG(ILG,ICTEM)!< LEAF RESPIRATION RATE FOR CTEM's 8 PFTs FOR CANOPY OVER GROUND SUBAREA
 
-      REAL AILCG(ILG,ICTEM),    AILCGS(ILG,ICTEM),    FCANC(ILG,ICTEM),
-     1    FCANCS(ILG,ICTEM),         CO2CONC(ILG),  CO2I1CG(ILG,ICTEM),
-     2   CO2I1CS(ILG,ICTEM),   CO2I2CG(ILG,ICTEM),  CO2I2CS(ILG,ICTEM),
-     3           COSZS(ILG),         XDIFFUS(ILG),     SLAI(ILG,ICTEM),
-     4                     RMATCTEM(ILG,ICTEM,IG),  FCANCMX(ILG,ICTEM),
-     5   ANCSVEG(ILG,ICTEM),   ANCGVEG(ILG,ICTEM), RMLCSVEG(ILG,ICTEM),
-     6  RMLCGVEG(ILG,ICTEM),         CFLUXCG(ILG),        CFLUXCS(ILG)
+      REAL CFLUXCG(ILG)
+      REAL CFLUXCS(ILG)
 C
-      REAL THLW(ILG,IG)
-C
-      INTEGER ICTEM, ICTEMMOD, L2MAX, NOL2PFTS(IC), LFSTATUS(ILG,ICTEM)
+      INTEGER ICTEM               !< 8 (CTEM's PLANT FUNCTIONAL TYPES)
+      LOGICAL ctem_on             !< TRUE GIVES COUPLING TO CTEM
+      INTEGER LFSTATUS(ILG,ICTEM) !< LEAF PHENOLOGICAL STATUS (SEE PHENOLOGY)
+      REAL DAYL_MAX(ILG)          !< MAXIMUM DAYLENGTH FOR THAT LOCATION
+      REAL DAYL(ILG)              !< DAYLENGTH FOR THAT LOCATION
+
+      INTEGER L2MAX, NOL2PFTS(IC)
 C
 C     * INTERNAL WORK ARRAYS FOR THIS ROUTINE.
 C
@@ -279,7 +463,7 @@ C
      1     ZRSLFH(ILG),   ZDSLM (ILG),   ZDSLH (ILG),   TPOTA (ILG),   
      2     TVIRTA(ILG),   CRIB  (ILG),   CPHCHC(ILG),   CPHCHG(ILG),   
      3     HCPSCS(ILG),   HCPSGS(ILG),   TCSNOW(ILG),   CEVAP (ILG),   
-     4     TBAR1P(ILG),   GSNOWC(ILG),   GSNOWG(ILG),   
+     4     TBAR1P(ILG),   GSNOWC(ILG),   GSNOWG(ILG),   GSNOW(ILG) ,    
      5     GDENOM(ILG),   GCOEFF(ILG),   GCONST(ILG),   
      6     TSNBOT(ILG),   GCOEFFS(ILG),  GCONSTS(ILG),
      7     A1    (ILG),   A2    (ILG),   B1    (ILG),   B2    (ILG),   
@@ -293,7 +477,8 @@ C
      F     TSURX (ILG),   QSURX (ILG),                  
      G     TACCS (ILG),   QACCS (ILG),   TACCO (ILG),   QACCO (ILG),
      H     ILMOX (ILG),   UEX   (ILG),   HBLX  (ILG),   ZERO  (ILG),
-     I     STT   (ILG),   SQT   (ILG),   SHT   (ILG)
+     I     STT   (ILG),   SQT   (ILG),   SUT   (ILG),   SVT   (ILG),    
+     J     SHT   (ILG)                                                  
 C
       INTEGER             IEVAP (ILG),   IWATER(ILG)
 C
@@ -308,7 +493,7 @@ C
      2     RA    (ILG),    RB    (ILG),    RAGINV(ILG),    RBINV (ILG),    
      3     RBTINV(ILG),    RBCINV(ILG),    
      4     TVRTAC(ILG),    TPOTG (ILG),    RESID (ILG),    
-     5     TCANP (ILG),    TRTOP (ILG),    QSTOR (ILG),    
+     5     TCANP (ILG),    TRTOP (ILG),   TRTOPG(ILG,NBS), QSTOR (ILG), 
      6     AC    (ILG),    BC    (ILG), 
      7     LZZ0  (ILG),    LZZ0T (ILG),    FM    (ILG),    FH    (ILG),
      8     DCFLXM(ILG),    CFLUXM(ILG),    WZERO (ILG),    XEVAPM(ILG),
@@ -322,8 +507,7 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL THTOT,ZRUF,ZSCRN,ZANNOM,RATFC,RATFC1,RATFCA,RATFCA1,RATIO,
-     1     CA,CB,WACSAT,QACSAT
+      REAL THTOT,CA,CB,WACSAT,QACSAT,RATIOM,RATIOH,FACTM,FACTH          
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -348,6 +532,167 @@ C
 C     * CALCULATION OF ATMOSPHERIC INPUT FIELDS REQUIRED BY CLASS FROM 
 C     * VARIABLES SUPPLIED BY GCM.
 C
+!>First, two parameters are calculated for later use in the CLASST subroutines: the corrected wind speed \f$v_a\f$ ,
+!!and the Coriolis parameter \f$f_{cor}\f$ (describing the effect of the earth’s rotation on the movement of air
+!!according to the reference frame of the earth’s surface). The wind speed correction is applied because it
+!!is assumed that air is never completely still, so \f$v_a\f$ is specified as the maximum of VMOD and a limiting
+!!lower value of \f$0.1 m s^{-1}\f$ . The Coriolis parameter is calculated from the angular velocity \f$\Omega\f$ of the earth’s
+!!rotation (7.29 x 10 -5 radians/s), and the latitude \f$\varphi\f$:
+!!\f$f_{cor} = 2 \Omega sin \varphi\f$
+!!
+!!The packing and unpacking of binary files may cause small shifts in the values of variables at certain
+!!points in the model run, so checks are performed on the depth of ponded water and on the soil liquid and
+!!frozen moisture contents to ensure that unphysical values have not occurred. If the ponded water depth
+!!is vanishingly small or less than zero, it is set to zero. If the soil liquid water content falls below the set
+!!minimum value, it is set to the minimum value. If the soil frozen water content is less than zero, it is set
+!!back to zero. If the sum of the liquid water content and frozen water content converted to an equivalent
+!!liquid amount is greater than the pore volume, both are re-normalized by the pore volume. (This
+!!treatment of frozen water is employed in recognition of the fact that water expands upon freezing and can
+!!therefore occupy a greater volume than the nominal pore volume of the soil.) The small changes in
+!!internal energy and water content of the soil layers resulting from these operations are accounted for by
+!!updating the diagnostic variables HTC and WTRG.
+!!
+!!If CLASS is being run in coupled mode with CTEM, several CTEM variables are initialized to zero.
+!!Subroutine TPREP is then called, to carry out the initialization of a number of variables and to do
+!!preparatory calculations of various parameters associated with the energy and water budget calculations.
+!!
+!!The energy budget calculations that follow are performed over the four subareas, of canopy over snow
+!!(CS), snow over ground (GS), canopy over bare ground (C) and bare ground (G). First, a counter
+!!NLANDx is defined for each subarea, containing the number of modelled areas in which the subarea
+!!occurs. The subarea calculations are only done if the relevant counter is greater than zero. A counter
+!!NLANDI is also set to the number of modelled areas that are ice sheets (indicated by ISAND = -4).
+!!(This is used later in subroutine CLASSW to toggle the call to subroutine ICEBAL.)
+!!
+!!For each subarea, the roughness lengths for momentum and heat, ZOM and ZOH, are obtained from
+!!their logarithms, and are then used to determine various height intervals in the atmosphere for subsequent
+!!calculations. These heights are derived from the input variables ZREFM and ZREFH, the reference
+!!heights corresponding to the input values of wind speed and of air temperature and humidity respectively,
+!!and ZDIAGM and ZDIAGH, the heights at which the diagnostic values of anemometer wind speed and
+!!screen level temperature and humidity are to be determined. The form of the calculations depends on the
+!!value of the flag IZREF. If IZREF = 1, the zero plane is taken to lie at the physical ground surface (as
+!!with field measurements); if IZREF = 2, the zero plane is taken to lie at the local roughness height for
+!!momentum(as with atmospheric models). The variables ZRSLDM and ZRSLDH are the height
+!!differences used in subroutine DRCOEF to express the interval between the conceptual bottom of the
+!!atmosphere and the reference heights for wind speed and for temperature and humidity respectively; the
+!!variables ZRSLFM and ZRSLFH are the corresponding height differences used in subroutine
+!!FLXSURFZ. If IZREF = 1, ZRSLDM and ZRSLDH are set to ZREFM and ZREFH minus the
+!!displacement height DISP or DISPS, and ZRSLFM and ZRSLFH are set to ZREFM and ZREFH minus
+!!the roughness length ZOM and DISP or DISPS. If IZREF = 2, ZRSLDM and ZRSLDH are set to
+!!ZREFM and ZREFH plus the roughness height ZOM, and ZRSLFM and ZRSLFH are set to ZREFM
+!!and ZREFH minus DISP or DISPS. (In the absence of a vegetation canopy, the displacement height is
+!!zero.) The variables ZDSLM and ZDSLH are the heights above the bottom of the modelled atmosphere
+!!at which the diagnostic values are to be calculated. If IZREF = 1, they are set to ZDIAGM and
+!!ZDIAGH minus ZOM; if IZREF = 2 they are simply set to ZDIAGM and ZDIAGH. At the end of the
+!!branch in the code, the ratios ZOSCLM and ZOSCLH, which are used in subroutine DRCOEF, are
+!!calculated as ZOM/ZRSLDM and ZOH/ZRSLDH respectively.
+!!
+!!Several other local parameters are also calculated. The potential temperature is the temperature that air
+!!would have if brought adiabatically (without addition or removal of heat) to a given height. The potential
+!!temperature of the air at the reference height, \f$T_{a,pot}\f$ , is calculated relative to the height at which the
+!!horizontal wind speed goes to zero, using the dry adiabatic lapse rate, \f$dT/dz = -g/c_p\f$ , where g is the
+!!acceleration due to gravity and \f$c_p\f$ is the specific heat at constant pressure:. Thus,
+!!\f$T_{a,pot} = T_a + z_{ref,h} g/c_p\f$
+!!where \f$T_a\f$ is the temperature of the air at the reference height and \f$z_{ref,h}\f$ is the height interval, equivalent to
+!!ZRSLFH defined above. If CLASS is being run coupled to an atmospheric model, i.e. if IZREF=2, the
+!!air temperature at the reference height has already been adiabatically extrapolated before being passed to
+!!CLASS. Otherwise, the correction is performed using the above equation.
+!!
+!!The virtual potential temperature of the air at the reference height, \f$T_{a,v}\f$ , is the potential temperature
+!!adjusted for the reduction in air density due to the presence of water vapour. This is applied in order to
+!!enable the use of the equation of state for dry air. \f$T_{a,v}\f$ can be approximated as:
+!!\f$T_{a,v} = T_{a,pot} [1 + 0.61 q_a ]\f$
+!!where \f$q_a\f$ is the specific humidity of the air at the reference height.
+!!
+!!The bulk Richardson number \f$Ri_B\f$ , used in the calculations of the atmospheric stability functions in
+!!subroutine DRCOEF, is formulated as:
+!!\f$Ri_B = [T_0 – T_{a,v} ] (-g z_{ref} )/(T_{a,v} v_a^2 )\f$
+!!where \f$T_0\f$ is the surface temperature. For ease of calculation later on, the factor multiplying \f$[T_0 – T_{a,v} ]\f$ on
+!!the right-hand side of the above equation is evaluated and assigned to a coefficient CRIB, using ZRSLDM
+!!for \f$z_{ref}\f$ . The drag coefficient under neutral stability, \f$C_{DN}\f$ , is expressed using basic flux-gradient analysis as:
+!!\f$C_{DN} = k^2 /[ln(z_{ref} ) – ln(z_0 )]^2\f$
+!!where k is the von Karman constant and \f$z_0\f$ is the roughness length. ZRSLDM is used for \f$z_{ref}\f$ and the
+!!logarithm of the local roughness length for \f$ln(z_0 )\f$, and the neutral drag coefficient DRAG over the
+!!modelled area is obtained as a weighted average over the four subareas.
+!!
+!!For the two subareas with canopy cover, the wind speed of the air at the canopy top, \f$v_{a,c}\f$ , is obtained by
+!!applying the classic logarithmic wind law for the wind speed v(z) at a height z:
+!!\f$kv(z)/v_* = ln[(z – d)/z_0 ]\f$
+!!where \f$v_*\f$ is the friction velocity and d is the displacement height. Thus, \f$v_{a,c}\f$ at the canopy height H can be
+!!related to v a at the reference height \f$z_{ref}\f$ as:
+!!\f$v_{a,c} = v_a [ln(H – d) – ln(z_0 )]/[ln(z_{ref} ) – ln(z_0 )]\f$
+!!
+!!The vegetation height is calculated as \f$10z_0\f$ . Local values of the temperature of the canopy air TAC and
+!!the humidity of the canopy air QAC are assigned to variables TACCS/TACCO and QACCS/QACCO
+!!respectively.
+!!
+!!At this point calls are made to a series of subroutines addressing the calculation of the energy balance
+!!components of the subarea in question. The calls are summarized in the table below.
+!!
+!!\f[
+!!\begin{tabular} { | l | l | c | c | c | c | }
+!!\hline
+!! & & CS & GS & C & G \\
+!! \hline
+!!CWCALC & Freezing/thawing of liquid/frozen water on canopy & YES & & YES & \\ \hline
+!!TNPREP & Set coefficients for temperature calculations in soil & YES & YES & YES & YES \\ \hline
+!!TSPREP & Set coefficients for temperature calculations of snow & YES & YES & & \\ \hline
+!!TSOLVC & Calculate components of canopy energy balance & YES & & YES & \\ \hline
+!!TSOLVE & Calculate components of ground or snow energy balance & & YES & & YES \\ \hline
+!!TSPOST & Heat conduction in snow pack & YES & YES & & \\ \hline
+!!TNPOST & Heat conduction in soil & YES & YES & YES & YES \\ \hline
+!!
+!!\end{tabular}
+!!\f]
+!!
+!!After these calls, various diagnostic calculations are performed. First the screen-level temperature and
+!!humidity, and the anemometer-level zonal and meridional wind speeds, are calculated. Three options are
+!!provided for doing this, indicated by the flag ISLFD. If ISLFD = 0, the simple approach used in the
+!!Canadian GCM is selected. The ratio of the square root of the surface drag coefficient for momentum,
+!!\f$C_{DM}\f$ , to that of the neutral drag coefficient \f$C_{DN}\f$ , is calculated for the screen height \f$z_s\f$ (RATFC1) and the
+!!anemometer height (RATFCA1), to give a measure of the degree of atmospheric instability. If the bulk
+!!Richardson number RIB is positive (indicating stable conditions), RATFC1 is adopted for the screen-level
+!!calculations; if RIB is negative (indicating unstable conditions), the ratio used is the minimum of the ratio
+!!of the drag coefficient for heat \f$C_{DH}\f$ to \f$C_{DN}\f$ , and \f$(z_s / z_{ref} )^{1/3}\f$ , a measure of the depth of the convection.
+!!These ratios are applied to the calculation of the screen and anemometer level variables. If the ratios are
+!!large, indicating strong coupling with the atmosphere, the screen level variables tend to the values at the
+!!reference height; if the ratio is small, they tend to the values at the surface. At the end of the loop, the
+!!CCCma subroutine SCREENRH is called to evaluate the screen-level relative humidity.
+!!
+!!If ISLFD= 1 or 2, the more rigorous calculations in subroutines SLDIAG and DIASURFZ are followed.
+!!The calculations done in SLDIAG are consistent with the modelling approach used in subroutine
+!!DRCOEF to determine the atmospheric stability functions, so when ISLFD = 1, DRCOEF and
+!!SLDIAG are called. The calculations done in DIASURFZ are consistent with the modelling approach
+!!used in subroutine FLXSURFZ for the atmospheric stability functions, so when ISLFD = 2, FLXSURFZ
+!!and DIASURFZ are called.
+!!
+!!A number of additional diagnostic variables are calculated as weighted averages over the four subareas.
+!!For the most part, these calculations are straightforward; only the calculation of the porential
+!!evapotranspiration \f$E_p\f$ (EVPPOT) involves some complexity. \f$E_p\f$ is defined as the evapotranspiration that
+!!would occur under ambient atmospheric conditions if the soil were completely saturated and the
+!!vegetation canopy were completely water-covered, i.e. if there were no surface resistances to evaporation:
+!!\f$E_p = \rho_a C_{DH} v_a [q_{0,sat} – q_a ]\f$
+!!where \f$\rho_a\f$ is the density of air and \f$q_{0,sat}\f$ is the saturated specific humidity at the surface. For the ground or
+!!snow surface \f$q_{0,sat}\f$ was calculated in subroutine TSOLVE. For the canopy, the saturated specific humidity
+!!at the canopy air temperature, \f$q_{ac,sat}\f$ , is used. This is obtained from the mixing ratio at saturation, \f$w_{ac,sat}\f$ :
+!!\f$q_{ac,sat} = w_{ac,sat} /[1 + w_{ac,sat} ]\f$
+!!
+!!The mixing ratio is a function of the saturation vapour pressure \f$e_{ac,sat}\f$ at the canopy air temperature:
+!!\f$w_{ac,sat} = 0.622 e_{ac,sat} /(p_{dry} )\f$
+!!
+!!A standard empirical equation for the saturation vapour pressure dependence on the temperature T is
+!!used:
+!!\f[e_{sat} = 611.0 exp[17.269(T – T_f )/(T – 35.86)]      T \geq T_f \f]
+!!\f[e_{sat} = 611.0 exp[21.874(T – T_f )/(T – 7.66)]       T < T_f \f]
+!!where \f$T_f\f$ is the freezing point.
+!!
+!!At the end of the code dealing with the four subareas, several more diagnostic variables are evaluated.
+!!Again, these calculations are generally straightforward. The effective black-body surface temperature \f$T_{0,eff}\f$
+!!is obtained by inverting the Stefan-Boltzmann equation:
+!!\f$L\uparrow = \sigma T_{0,eff}^4\f$
+!!where \f$L\uparrow\f$ is the outgoing longwave radiation and \f$\sigma\f$ is the Stefan-Boltzmann constant. The evaporation
+!!efficiency parameter EVAPB is calculated as the ratio of the actual evapotranspiration to the potential
+!!evapotranspiration.
+!!
       DO 50 I=IL1,IL2                                                            
           VA(I)=MAX(VMIN,VMOD(I)) 
           FCOR(I)=2.0*7.29E-5*SIN(RADJ(I))
@@ -360,7 +705,7 @@ C
 C
 C     * CHECK LIQUID AND FROZEN SOIL MOISTURE CONTENTS FOR SMALL
 C     * ABERRATIONS CAUSED BY PACKING/UNPACKING.
-C
+C       
       DO 60 J=1,IG
       DO 60 I=IL1,IL2
           IF(ISAND(I,1).GT.-4)                                   THEN
@@ -386,7 +731,7 @@ C
           ENDIF
    60 CONTINUE                                                        
 C
-      IF (ICTEMMOD.EQ.1) THEN
+      IF (ctem_on) THEN
 C
 C       * INITIALIZE VARIABLES ESTIMATED BY THE PHOTOSYNTHESIS SUBROUTINE
 C       * CALLED FROM WITHIN TSOLVC.
@@ -409,13 +754,13 @@ C
      4                 TCANS,  CEVAP,  IEVAP,  TBAR1P, WTABLE, ZERO,
      5                 EVAPC,  EVAPCG, EVAPG,  EVAPCS, EVPCSG, EVAPGS,
      6                 GSNOWC, GSNOWG, GZEROC, GZEROG, GZROCS, GZROGS,
-     7                 QMELTC, QMELTG, EVAP,
+     7                 QMELTC, QMELTG, EVAP,   GSNOW,                   
      8                 TPONDC, TPONDG, TPNDCS, TPNDGS, QSENSC, QSENSG, 
      9                 QEVAPC, QEVAPG, TACCO,  QACCO,  TACCS,  QACCS,  
      A                 ILMOX,  UEX,    HBLX,
      B                 ILMO,   UE,     HBL,   
-     C                 ST,     SU,     SV,     SQ,     CDH,    CDM,
-     D                 QSENS,  QEVAP,  QLWAVG, 
+     C                 ST,     SU,     SV,     SQ,     SRH,             
+     D                 CDH,    CDM,    QSENS,  QEVAP,  QLWAVG,          
      E                 FSGV,   FSGS,   FSGG,   FLGV,   FLGS,   FLGG,   
      F                 HFSC,   HFSS,   HFSG,   HEVC,   HEVS,   HEVG,   
      G                 HMFC,   HMFN,   QFCF,   QFCL,   EVPPOT, ACOND,  
@@ -490,7 +835,7 @@ C
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPC,TCBOTC,
      +                FCS,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     3                ISAND,ILG,IL1,IL2,IG                      )
+     3                ISAND,ILG,IL1,IL2,JL,IG                      )    
           CALL TSPREP(GCOEFFS,GCONSTS,CPHCHG,IWATER,
      1                FCS,ZSNOW,TSNOW,TCSNOW,
      2                ILG,IL1,IL2,JL      )
@@ -505,8 +850,9 @@ C
      7                RHOAIR,ALVSCS,ALIRCS,ALVSSC,ALIRSC,TRVSCS,TRIRCS,
      8                FSVFS,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RCS,
      9                RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,
-     A                FCOR,GCONSTS,GCOEFFS,TSFSAV(1,1),TRSNOW,FSNOCS,
-     B                FRAICS,CHCAPS,CMASCS,PCPR,IWATER,IEVAP,ITERCT,
+     A                FCOR,GCONSTS,GCOEFFS,TSFSAV(1,1),TRSNOWC,FSNOCS,  
+     B                FRAICS,CHCAPS,CMASCS,PCPR,FROOTS,THLMIN,DELZW,
+     +                RHOSCS,ZSNOW,IWATER,IEVAP,ITERCT,    
      C                ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N,  
      D                TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT,
      E                RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,TPOTG,
@@ -517,8 +863,9 @@ C
      J                AILCGS,FCANCS,CO2CONC,RMATCTEM,
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS,
-     M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS)
+     M                ctem_on,SLAI,FCANCMX,L2MAX,
+     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS,
+     O                DAYL, DAYL_MAX)
 
           CALL TSPOST(GSNOWC,TSNOCS,WSNOCS,RHOSCS,QMELTC,
      1                GZROCS,TSNBOT,HTCS,HMFN,
@@ -535,40 +882,52 @@ C
           IF(ISLFD.EQ.0)                                         THEN
             DO 150 I=IL1,IL2
               IF(FCS(I).GT.0.)                THEN
-                  ZRUF=ZOH(I)
-                  ZSCRN=MAX(ZRUF,2.0)                         
-                  ZANNOM=MAX(ZRUF,10.0)                         
-                  RATFC=LOG(ZSCRN/ZRUF)/VKC                              
-                  RATFC1=RATFC*SQRT(CDMX(I))                          
-                  RATFC1=MIN(RATFC1,1.)
-                  RATFCA=LOG(ZANNOM/ZRUF)/VKC                              
-                  RATFCA1=RATFCA*SQRT(CDMX(I))                          
-                  RATFCA1=MIN(RATFCA1,1.)
-                  IF(RIBX(I).GE.0.)  THEN                               
-                      RATIO=RATFC1                                             
-                  ELSE                                                    
-                      RATIO=RATFC1*CDHX(I)/CDMX(I)                   
-                      RATIO=MIN(RATIO,(ZSCRN/ZRSLDM(I))**(1./3.))             
+                FACTM=ZDSLM(I)+ZOM(I)                                   
+                FACTH=ZDSLH(I)+ZOM(I)                                   
+                RATIOM=SQRT(CDMX(I))*LOG(FACTM/ZOM(I))/VKC              
+                RATIOM=MIN(RATIOM,1.)                                   
+                RATIOH=SQRT(CDMX(I))*LOG(FACTH/ZOH(I))/VKC              
+                RATIOH=MIN(RATIOH,1.)                                   
+                IF(RIBX(I).LT.0.)  THEN                                 
+                  RATIOH=RATIOH*CDHX(I)/CDMX(I)                         
+                  RATIOH=MIN(RATIOH,(FACTH/ZRSLDH(I))**(1./3.))         
                   ENDIF                                                    
-                  STT(I)=TCANS(I)-(MIN(RATIO,1.))*(TCANS(I)-TA(I))       
-                  ST(I)=ST(I)+FCS(I)*STT(I)
-                  SU(I)=SU(I)+FCS(I)*RATFCA1*UWIND(I)                                     
-                  SV(I)=SV(I)+FCS(I)*RATFCA1*VWIND(I)                                     
-                  SQT(I)=QA(I)+(QCANX(I)-QA(I))*MIN(RATIO,1.)      
-                  SQ(I)=SQ(I)+FCS(I)*SQT(I)
+                STT(I)=TACCS(I)-(MIN(RATIOH,1.))*(TACCS(I)-TA(I))       
+                SQT(I)=QACCS(I)-(MIN(RATIOH,1.))*(QACCS(I)-QA(I))       
+                SUT(I)=RATIOM*UWIND(I)                                  
+                SVT(I)=RATIOM*VWIND(I)                                  
               ENDIF
   150     CONTINUE
 C
-            SHT=0.
             CALL SCREENRH(SHT,STT,SQT,PRESSG,FCS,ILG,IL1,IL2)
-            DO 160 I=IL1,IL2
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FCS(I).GT.0.)                THEN                      
+                ST (I)=ST (I)+FCS(I)*STT(I)                             
+                SQ (I)=SQ (I)+FCS(I)*SQT(I)                             
+                SU (I)=SU (I)+FCS(I)*SUT(I)                             
+                SV (I)=SV (I)+FCS(I)*SVT(I)                             
                 SRH(I)=SRH(I)+FCS(I)*SHT(I)
-  160       CONTINUE    
+              ENDIF                                                     
+            ENDDO                                                       
+C                                                                       
           ELSEIF(ISLFD.EQ.1)                                        THEN
-              CALL SLDIAG(SU,SV,ST,SQ,
+            CALL SLDIAG(SUT,SVT,STT,SQT,                                
      1                    CDMX,CDHX,UWIND,VWIND,TPOTA,QA,
      2                    TACCS,QACCS,ZOM,ZOH,FCS,ZRSLDM,
      3                    ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+C                                                                       
+            CALL SCREENRH(SHT,STT,SQT,PRESSG,FCS,ILG,IL1,IL2)           
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FCS(I).GT.0.)                THEN                      
+                ST (I)=ST (I)+FCS(I)*STT(I)                             
+                SQ (I)=SQ (I)+FCS(I)*SQT(I)                             
+                SU (I)=SU (I)+FCS(I)*SUT(I)                             
+                SV (I)=SV (I)+FCS(I)*SVT(I)                             
+                SRH(I)=SRH(I)+FCS(I)*SHT(I)                             
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.2)                                        THEN
               CALL DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TACCS,QACCS,
      1                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX,
@@ -625,6 +984,7 @@ C
                   FTEMP(I)= FTEMP(I) + FCS(I) * FTEMPX(I)
                   FVAP (I)= FVAP (I) + FCS(I) * FVAPX (I)
                   RIB  (I)= RIB  (I) + FCS(I) * RIBX  (I)
+                  GSNOW(I) =GSNOW(I)+FCS(I)/(FCS(I)+FGS(I))*GSNOWC(I)   
               ENDIF
   175     CONTINUE
       ENDIF                                                               
@@ -666,7 +1026,7 @@ C
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPG,TCBOTG,
      +                FGS,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     3                ISAND,ILG,IL1,IL2,IG                  )
+     3                ISAND,ILG,IL1,IL2,JL,IG                  )        
           CALL TSPREP(GCOEFFS,GCONSTS,CPHCHG,IWATER,
      1                FGS,ZSNOW,TSNOW,TCSNOW,
      2                ILG,IL1,IL2,JL      )
@@ -675,14 +1035,16 @@ C
      1                QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPGS,
      2                TSURX,QSURX,GSNOWG,QMELTG,CDHX,CDMX,RIBX,CFLUX,
      3                FTEMPX,FVAPX,ILMOX,UEX,HBLX, 
-     4                QSWINV,QSWINI,QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,
+     4                QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,                   
      5                ALVSSN,ALIRSN,CRIB,CPHCHG,CEVAP,TVIRTA,
      6                ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
-     7                GCONSTS,GCOEFFS,TSFSAV(1,2),TRSNOW,PCPR,
+     7                GCONSTS,GCOEFFS,TSFSAV(1,2),PCPR,                 
+     +                TRSNOWG,FSSB,ALSNO,                               
+     +                THLIQG,THLMIN,DELZW,RHOSGS,ZSNOW,
      8                IWATER,IEVAP,ITERCT,ISAND,
-     9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,  
+     9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,          
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
-     B                DCFLXM,CFLUXM,WZERO,TRTOP,AC,BC,
+     B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  )
           CALL TSPOST(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG,
      1                GZROGS,TSNBOT,HTCS,HMFN,
@@ -699,40 +1061,52 @@ C
           IF(ISLFD.EQ.0)                                         THEN
             DO 250 I=IL1,IL2
               IF(FGS(I).GT.0.)                THEN
-                  ZRUF=ZOH(I)
-                  ZSCRN=MAX(ZRUF,2.0)                         
-                  ZANNOM=MAX(ZRUF,10.0)                         
-                  RATFC=LOG(ZSCRN/ZRUF)/VKC                              
-                  RATFC1=RATFC*SQRT(CDMX(I))                                
-                  RATFC1=MIN(RATFC1,1.)
-                  RATFCA=LOG(ZANNOM/ZRUF)/VKC                              
-                  RATFCA1=RATFCA*SQRT(CDMX(I))                           
-                  RATFCA1=MIN(RATFCA1,1.)
-                  IF(RIBX(I).GE.0.)  THEN                              
-                      RATIO=RATFC1                                             
-                  ELSE                                                    
-                      RATIO=RATFC1*CDHX(I)/CDMX(I)                       
-                      RATIO=MIN(RATIO,(ZSCRN/ZRSLDM(I))**(1./3.))          
+                FACTM=ZDSLM(I)+ZOM(I)                                   
+                FACTH=ZDSLH(I)+ZOM(I)                                   
+                RATIOM=SQRT(CDMX(I))*LOG(FACTM/ZOM(I))/VKC              
+                RATIOM=MIN(RATIOM,1.)                                   
+                RATIOH=SQRT(CDMX(I))*LOG(FACTH/ZOH(I))/VKC              
+                RATIOH=MIN(RATIOH,1.)                                   
+                IF(RIBX(I).LT.0.)  THEN                                 
+                  RATIOH=RATIOH*CDHX(I)/CDMX(I)                         
+                  RATIOH=MIN(RATIOH,(FACTH/ZRSLDH(I))**(1./3.))         
                   ENDIF                                                      
-                  STT(I)=TSURX(I)-(MIN(RATIO,1.))*(TSURX(I)-TA(I))     
-                  ST(I)=ST(I)+FGS(I)*STT(I)
-                  SU(I)=SU(I)+FGS(I)*RATFCA1*UWIND(I)                                     
-                  SV(I)=SV(I)+FGS(I)*RATFCA1*VWIND(I)                                     
-                  SQT(I)=QA(I)+(QSURX(I)-QA(I))*MIN(RATIO,1.)      
-                  SQ(I)=SQ(I)+FGS(I)*SQT(I)
+                STT(I)=TSURX(I)-(MIN(RATIOH,1.))*(TSURX(I)-TA(I))       
+                SQT(I)=QSURX(I)-(MIN(RATIOH,1.))*(QSURX(I)-QA(I))       
+                SUT(I)=RATIOM*UWIND(I)                                  
+                SVT(I)=RATIOM*VWIND(I)                                  
               ENDIF
   250     CONTINUE
 C
-            SHT=0.
             CALL SCREENRH(SHT,STT,SQT,PRESSG,FGS,ILG,IL1,IL2)
-            DO 260 I=IL1,IL2
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FGS(I).GT.0.)                THEN                      
+                ST (I)=ST (I)+FGS(I)*STT(I)                             
+                SQ (I)=SQ (I)+FGS(I)*SQT(I)                             
+                SU (I)=SU (I)+FGS(I)*SUT(I)                             
+                SV (I)=SV (I)+FGS(I)*SVT(I)                             
                 SRH(I)=SRH(I)+FGS(I)*SHT(I)
-  260       CONTINUE    
+              ENDIF                                                     
+            ENDDO                                                       
+C                                                                       
           ELSEIF(ISLFD.EQ.1)                                        THEN
-              CALL SLDIAG(SU,SV,ST,SQ,
+            CALL SLDIAG(SUT,SVT,STT,SQT,                                
      1                    CDMX,CDHX,UWIND,VWIND,TPOTA,QA,
      2                    TSURX,QSURX,ZOM,ZOH,FGS,ZRSLDM,
      3                    ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+C                                                                       
+            CALL SCREENRH(SHT,STT,SQT,PRESSG,FGS,ILG,IL1,IL2)           
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FGS(I).GT.0.)                THEN                      
+                ST (I)=ST (I)+FGS(I)*STT(I)                             
+                SQ (I)=SQ (I)+FGS(I)*SQT(I)                             
+                SU (I)=SU (I)+FGS(I)*SUT(I)                             
+                SV (I)=SV (I)+FGS(I)*SVT(I)                             
+                SRH(I)=SRH(I)+FGS(I)*SHT(I)                             
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.2)                                        THEN  
               CALL DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TSURX,QSURX,
      1                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX,
@@ -768,6 +1142,7 @@ C
                   FTEMP(I)= FTEMP(I) + FGS(I) * FTEMPX(I)
                   FVAP (I)= FVAP (I) + FGS(I) * FVAPX (I)
                   RIB  (I)= RIB  (I) + FGS(I) * RIBX  (I)
+                  GSNOW(I) =GSNOW(I)+FGS(I)/(FCS(I)+FGS(I))*GSNOWG(I)   
               ENDIF
   275     CONTINUE
       ENDIF                                                               
@@ -815,7 +1190,7 @@ C
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPC,TCBOTC,
      +                FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     3                ISAND,ILG,IL1,IL2,IG                      )
+     3                ISAND,ILG,IL1,IL2,JL,IG                      )    
           ISNOW=0
           CALL TSOLVC(ISNOW,FC,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
@@ -827,8 +1202,9 @@ C
      7                RHOAIR,ALVSCN,ALIRCN,ALVSGC,ALIRGC,TRVSCN,TRIRCN,
      8                FSVF,CRIB,CPHCHC,CPHCHG,CEVAP,TADP,TVIRTA,RC,
      9                RBCOEF,ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,
-     A                FCOR,GCONST,GCOEFF,TSFSAV(1,3),TRSNOW,FSNOWC,
-     B                FRAINC,CHCAP,CMASSC,PCPR,IWATER,IEVAP,ITERCT,
+     A                FCOR,GCONST,GCOEFF,TSFSAV(1,3),TRSNOWC,FSNOWC,    
+     B                FRAINC,CHCAP,CMASSC,PCPR,FROOT,THLMIN,DELZW,
+     +                ZERO,ZERO,IWATER,IEVAP,ITERCT,     
      C                ISLFD,ITC,ITCG,ILG,IL1,IL2,JL,N,  
      D                TSTEP,TVIRTC,TVIRTG,EVBETA,XEVAP,EVPWET,Q0SAT,
      E                RA,RB,RAGINV,RBINV,RBTINV,RBCINV,TVRTAC,TPOTG,
@@ -839,8 +1215,9 @@ C
      J                AILCG,FCANC,CO2CONC,RMATCTEM,
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG,
-     M                ICTEMMOD,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS)
+     M                ctem_on,SLAI,FCANCMX,L2MAX,
+     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS,
+     O                DAYL, DAYL_MAX)
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
      1                GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSURX,
      2                TBASE,TBAR1P,A1,A2,B1,B2,C2,FC,IWATER,
@@ -851,40 +1228,51 @@ C
           IF(ISLFD.EQ.0)                                         THEN
             DO 350 I=IL1,IL2
               IF(FC(I).GT.0.)                 THEN
-                  ZRUF=ZOH(I)
-                  ZSCRN=MAX(ZRUF,2.0)                         
-                  ZANNOM=MAX(ZRUF,10.0)                         
-                  RATFC=LOG(ZSCRN/ZRUF)/VKC                              
-                  RATFC1=RATFC*SQRT(CDMX(I))                               
-                  RATFC1=MIN(RATFC1,1.)
-                  RATFCA=LOG(ZANNOM/ZRUF)/VKC                              
-                  RATFCA1=RATFCA*SQRT(CDMX(I))                           
-                  RATFCA1=MIN(RATFCA1,1.)
-                  IF(RIBX(I).GE.0.)  THEN                             
-                      RATIO=RATFC1                                             
-                  ELSE                                                     
-                      RATIO=RATFC1*CDHX(I)/CDMX(I)                       
-                      RATIO=MIN(RATIO,(ZSCRN/ZRSLDM(I))**(1./3.))           
+                FACTM=ZDSLM(I)+ZOM(I)                                   
+                FACTH=ZDSLH(I)+ZOM(I)                                   
+                RATIOM=SQRT(CDMX(I))*LOG(FACTM/ZOM(I))/VKC              
+                RATIOM=MIN(RATIOM,1.)                                   
+                RATIOH=SQRT(CDMX(I))*LOG(FACTH/ZOH(I))/VKC              
+                RATIOH=MIN(RATIOH,1.)                                   
+                IF(RIBX(I).LT.0.)  THEN                                 
+                  RATIOH=RATIOH*CDHX(I)/CDMX(I)                         
+                  RATIOH=MIN(RATIOH,(FACTH/ZRSLDH(I))**(1./3.))         
                   ENDIF                                                     
-                  STT(I)=TCANO(I)-(MIN(RATIO,1.))*(TCANO(I)-TA(I))        
-                  ST(I)=ST(I)+FC(I)*STT(I)
-                  SU(I)=SU(I)+FC(I)*RATFCA1*UWIND(I)                                     
-                  SV(I)=SV(I)+FC(I)*RATFCA1*VWIND(I)                                     
-                  SQT(I)=QA(I)+(QCANX(I)-QA(I))*MIN(RATIO,1.)      
-                  SQ(I)=SQ(I)+FC(I)*SQT(I)
+                STT(I)=TACCO(I)-(MIN(RATIOH,1.))*(TACCO(I)-TA(I))       
+                SQT(I)=QACCO(I)-(MIN(RATIOH,1.))*(QACCO(I)-QA(I))       
+                SUT(I)=RATIOM*UWIND(I)                                  
+                SVT(I)=RATIOM*VWIND(I)                                  
               ENDIF
   350     CONTINUE
 C
-            SHT=0.
             CALL SCREENRH(SHT,STT,SQT,PRESSG,FC,ILG,IL1,IL2)
-            DO 360 I=IL1,IL2
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FC(I).GT.0.)                 THEN                      
+                ST (I)=ST (I)+FC(I)*STT(I)                              
+                SQ (I)=SQ (I)+FC(I)*SQT(I)                              
+                SU (I)=SU (I)+FC(I)*SUT(I)                              
+                SV (I)=SV (I)+FC(I)*SVT(I)                              
                 SRH(I)=SRH(I)+FC(I)*SHT(I)
-  360       CONTINUE    
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.1)                                        THEN
-              CALL SLDIAG(SU,SV,ST,SQ,
+            CALL SLDIAG(SUT,SVT,STT,SQT,                                
      1                    CDMX,CDHX,UWIND,VWIND,TPOTA,QA,
      2                    TACCO,QACCO,ZOM,ZOH,FC,ZRSLDM,
      3                    ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+C                                                                       
+            CALL SCREENRH(SHT,STT,SQT,PRESSG,FC,ILG,IL1,IL2)            
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FC(I).GT.0.)                 THEN                      
+                ST (I)=ST (I)+FC(I)*STT(I)                              
+                SQ (I)=SQ (I)+FC(I)*SQT(I)                              
+                SU (I)=SU (I)+FC(I)*SUT(I)                              
+                SV (I)=SV (I)+FC(I)*SVT(I)                              
+                SRH(I)=SRH(I)+FC(I)*SHT(I)                              
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.2)                                        THEN    
               CALL DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TACCO,QACCO,
      1                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX,
@@ -978,20 +1366,22 @@ C
      1                GCONST,CPHCHG,IWATER, 
      2                TBAR,TCTOPG,TCBOTG,
      +                FG,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
-     3                ISAND,ILG,IL1,IL2,IG                      )
+     3                ISAND,ILG,IL1,IL2,JL,IG                      )    
           ISNOW=0
           CALL TSOLVE(ISNOW,FG,
      1                QSWX,QLWX,QTRANS,QSENSX,QEVAPX,EVAPG,
      2                TSURX,QSURX,GZEROG,QFREZG,CDHX,CDMX,RIBX,CFLUX,
      3                FTEMPX,FVAPX,ILMOX,UEX,HBLX, 
-     4                QSWINV,QSWINI,QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,
+     4                QLWIN,TPOTA,QA,VA,PADRY,RHOAIR,                   
      5                ALVSG,ALIRG,CRIB,CPHCHG,CEVAP,TVIRTA,
      6                ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
-     7                GCONST,GCOEFF,TSFSAV(1,4),TRSNOW,PCPR,
+     7                GCONST,GCOEFF,TSFSAV(1,4),PCPR,                   
+     +                TRSNOWG,FSSB,ALSNO,                               
+     +                THLIQG,THLMIN,DELZW,ZERO,ZERO,
      8                IWATER,IEVAP,ITERCT,ISAND,
-     9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,  
+     9                ISLFD,ITG,ILG,IG,IL1,IL2,JL, NBS,ISNOALB,         
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
-     B                DCFLXM,CFLUXM,WZERO,TRTOP,AC,BC,
+     B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF )
           CALL TNPOST(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST,
      1                GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSURX,
@@ -1003,40 +1393,57 @@ C
           IF(ISLFD.EQ.0)                                         THEN
             DO 450 I=IL1,IL2
               IF(FG(I).GT.0.)                 THEN
-                  ZRUF=ZOH(I)
-                  ZSCRN=MAX(ZRUF,2.0)                         
-                  ZANNOM=MAX(ZRUF,10.0)                         
-                  RATFC=LOG(ZSCRN/ZRUF)/VKC                              
-                  RATFC1=RATFC*SQRT(CDMX(I))                              
-                  RATFC1=MIN(RATFC1,1.)
-                  RATFCA=LOG(ZANNOM/ZRUF)/VKC                              
-                  RATFCA1=RATFCA*SQRT(CDMX(I))                               
-                  RATFCA1=MIN(RATFCA1,1.)
-                  IF(RIBX(I).GE.0.)  THEN                                
-                      RATIO=RATFC1                                             
-                  ELSE                                                    
-                      RATIO=RATFC1*CDHX(I)/CDMX(I)                       
-                      RATIO=MIN(RATIO,(ZSCRN/ZRSLDM(I))**(1./3.))             
+                FACTM=ZDSLM(I)+ZOM(I)                                   
+                FACTH=ZDSLH(I)+ZOM(I)                                   
+                RATIOM=SQRT(CDMX(I))*LOG(FACTM/ZOM(I))/VKC              
+                RATIOM=MIN(RATIOM,1.)                                   
+                RATIOH=SQRT(CDMX(I))*LOG(FACTH/ZOH(I))/VKC              
+                RATIOH=MIN(RATIOH,1.)                                   
+                IF(RIBX(I).LT.0.)  THEN                                 
+                  RATIOH=RATIOH*CDHX(I)/CDMX(I)                         
+                  RATIOH=MIN(RATIOH,(FACTH/ZRSLDH(I))**(1./3.))         
                   ENDIF                                                        
-                  STT(I)=TSURX(I)-(MIN(RATIO,1.))*(TSURX(I)-TA(I))    
-                  ST(I)=ST(I)+FG(I)*STT(I)
-                  SU(I)=SU(I)+FG(I)*RATFCA1*UWIND(I)                                     
-                  SV(I)=SV(I)+FG(I)*RATFCA1*VWIND(I)                                     
-                  SQT(I)=QA(I)+(QSURX(I)-QA(I))*MIN(RATIO,1.)      
-                  SQ(I)=SQ(I)+FG(I)*SQT(I)
+                STT(I)=TSURX(I)-(MIN(RATIOH,1.))*(TSURX(I)-TA(I))       
+                SQT(I)=QSURX(I)-(MIN(RATIOH,1.))*(QSURX(I)-QA(I))       
+                SUT(I)=RATIOM*UWIND(I)                                  
+                SVT(I)=RATIOM*VWIND(I)                                  
               ENDIF
   450       CONTINUE
 C
-            SHT=0.
             CALL SCREENRH(SHT,STT,SQT,PRESSG,FG,ILG,IL1,IL2)
-            DO 460 I=IL1,IL2
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FG(I).GT.0.)                THEN                       
+                ST (I)=ST (I)+FG(I)*STT(I)                              
+                SQ (I)=SQ (I)+FG(I)*SQT(I)                              
+                SU (I)=SU (I)+FG(I)*SUT(I)                              
+                SV (I)=SV (I)+FG(I)*SVT(I)                              
                 SRH(I)=SRH(I)+FG(I)*SHT(I)
-  460       CONTINUE    
+                SFCUBS (I)=SUT(I)                                       
+                SFCVBS (I)=SVT(I)                                       
+                USTARBS(I)=VA(I)*SQRT(CDMX(I))                          
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.1)                                        THEN
-              CALL SLDIAG(SU,SV,ST,SQ,
+            CALL SLDIAG(SUT,SVT,STT,SQT,                                
      1                    CDMX,CDHX,UWIND,VWIND,TPOTA,QA,
      2                    TSURX,QSURX,ZOM,ZOH,FG,ZRSLDM,
      3                    ZDSLM,ZDSLH,ILG,IL1,IL2,JL)
+C                                                                       
+            CALL SCREENRH(SHT,STT,SQT,PRESSG,FG,ILG,IL1,IL2)            
+C                                                                       
+            DO I=IL1,IL2                                                
+              IF(FG(I).GT.0.)                THEN                       
+                ST (I)=ST (I)+FG(I)*STT(I)                              
+                SQ (I)=SQ (I)+FG(I)*SQT(I)                              
+                SU (I)=SU (I)+FG(I)*SUT(I)                              
+                SV (I)=SV (I)+FG(I)*SVT(I)                              
+                SRH(I)=SRH(I)+FG(I)*SHT(I)                              
+                SFCUBS (I)=SUT(I)                                       
+                SFCVBS (I)=SVT(I)                                       
+                USTARBS(I)=VA(I)*SQRT(CDMX(I))                          
+              ENDIF                                                     
+            ENDDO                                                       
           ELSEIF(ISLFD.EQ.2)                                        THEN      
               CALL DIASURFZ(SU,SV,ST,SQ,ILG,UWIND,VWIND,TSURX,QSURX,
      1                    ZOM,ZOH,ILMOX,ZRSLFM,HBLX,UEX,FTEMPX,FVAPX,
@@ -1054,6 +1461,7 @@ C
                   CDH (I) =CDH(I)+FG(I)*CDHX(I)
                   CDM (I) =CDM(I)+FG(I)*CDMX(I)
                   TSFSAV(I,4)=TSURX(I)
+                  GTBS(I)=TSURX(I)
                   QG(I)=QG(I)+FG(I)*QSURX(I)
                   QSENS(I)=QSENS(I)+FG(I)*QSENSX(I)
                   QEVAP(I)=QEVAP(I)+FG(I)*QEVAPX(I)
@@ -1079,8 +1487,7 @@ C
           TFLUX(I)=-QSENS(I)/(RHOAIR(I)*SPHAIR)                                  
           EVAP(I)=EVAP(I)+RHOW*
      1           (FCS(I)*(EVAPCS(I)+EVPCSG(I)) + FGS(I)*EVAPGS(I) +              
-     2            FC (I)*(EVAPC (I)+EVAPCG(I)) + FG (I)*EVAPG(I))
-          QFLUX(I)=-EVAP(I)/RHOAIR(I)                                            
+     2            FC (I)*(EVAPC (I)+EVAPCG(I)) + FG (I)*EVAPG(I))                                          
           IF(EVPPOT(I).NE.0.0) THEN
               EVAPB(I)=EVAP(I)/EVPPOT(I)
           ELSE
@@ -1094,21 +1501,7 @@ C
               QAC(I)=QA(I)
           ENDIF
   500 CONTINUE
-C
-C==FLAG OLD=================== CTEM =====================================\
-C     FLAG- LEAVE THIS OUT, DOES NOT APPEAR TO BE USED ANYWHERE. JM 11/09/12
-C     CALCULATE WEIGHTED AVERAGE OF CANOPY RESISTANCE FOR CANOPY OVER SNOW
-C     (RCS) AND CANOPY OVER GROUND (RC) SUBAREAS.
-C
-C      DO 550 I = IL1, IL2
-C        IF( (FC(I)+FCS(I)).GT. 1.0E-12) THEN
-C          CANRES(I)=( (FC(I)*RC(I)) + (FCS(I)*RCS(I)) )/ (FC(I)+FCS(I))
-C        ELSE
-C          CANRES(I)=5000.0
-C        ENDIF
-C550   CONTINUE
-C
-C===================== CTEM =====================================/
+
 C                                                         
       RETURN                                                                      
       END        

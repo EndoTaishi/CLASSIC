@@ -1,15 +1,53 @@
+!>\file
+!!               Canadian Terrestrial Ecosystem Model (CTEM)
+!!                            Allocation Subroutine
+!!
+!!
+!!
+!!Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a component. Negative NPP generally causes net carbon loss from the components. While CTEM offers the ability to use both specified constant or dynamically calculated allocation fractions for leaves, stems and roots, in practice the dynamic allocation fractions are primarily used. The formulation used in CTEM v. 2.0 differs from that for CTEM v. 1.0 as described in \cite Arora2005-6b1 only in the parameter values.
+!!
+!!The dynamic allocation to the live plant tissues is based on the light, water and leaf phenological status of vegetation. The preferential allocation of carbon to the different tissue pools is based on three assumptions: (i) if soil moisture is limiting, carbon should be preferentially allocated to roots for greater access to water, (ii) if LAI is low, carbon should be allocated to leaves for enhanced photosynthesis and finally (iii) carbon is allocated to the stem to increase vegetation height and lateral spread of vegetation when the increase in LAI results in a decrease in light penetration.
+!!
+!!The vegetation water status, \f$W\f$, is determined as a linear scalar quantity that varies between 0 and 1 for each PFT and calculated by weighting the degree of soil saturation ($\phi_{i}(\theta_{i})$, Eq. \ref{phitheta}) with the fraction of roots in each soil layer
+!!
+!!\f[ \label{degsoilsat} W = \phi_{root} = \sum_{i=1}^g \phi_{i}(\theta_{i})  r_{i}. \f]
+!!
+!!The light status, \f$L\f$, is parametrized as a function of LAI and nitrogen extinction coefficient, \f$k_\mathrm{n}\f$ (PFT-dependent; see also ctem_params.f90), as
+!!\f[ L = \begin{cases} \exp(-k_\mathrm{n} LAI),  \quad trees and crops \\ \max\left(0,1-\frac{LAI}{4.5}\right),\quad grasses. \end{cases} \f]
+!!
+!!For PFTs with a stem component (i.e. tree and crop PFTs), the fractions of positive NPP allocated to stem (\f$a_{fS}\f$), leaf (\f$a_{fL}\f$) and root (\f$a_{fR}\f$) components are calculated as
+!!\f[ \label{As} a_{fS}=\frac{\epsilon_\mathrm{S}+\omega_\mathrm{a}(1-L)}{1+\omega_\mathrm{a}(2-L-W)} \vspace*{-4mm} \f]
+!!
+!!\f[ \label{Ar} a_{fR}=\frac{\epsilon_\mathrm{R}+ \omega_\mathrm{a}(1-W)}{1+\omega_\mathrm{a}(2-L-W)}, \vspace*{-4mm}\f]
+!!
+!!\f[ \label{Al} a_{fL}=\frac{\epsilon_\mathrm{L}}{1+\omega_\mathrm{a}(2-L-W)}= 1-a_{fS}-a_{fR}. \f]
+!!The base allocation fractions for each component (leaves -- \f$\epsilon_\mathrm{L}\f$, stem -- \f$\epsilon_\mathrm{S}\f$, and roots -- \f$\epsilon_\mathrm{R}\f$) are PFT-dependent (see also ctem_params.f90) and sum to 1, i.e. \f$\epsilon_\mathrm{L} + \epsilon_\mathrm{S} + \epsilon_\mathrm{R} = 1\f$. The parameter \f$\omega_\mathrm{a}\f$, which varies by PFT (see also ctem_params.f90), determines the sensitivity of the allocation scheme to changes in \f$W\f$ and \f$L\f$. Larger values of \f$\omega_\mathrm{a}\f$ yield higher sensitivity to changes in \f$L\f$ and \f$W\f$.
+!!
+!!Grasses do not have a stem component (i.e. \f$a_{fS}=0\f$) and the allocation fractions for leaf and root components are given by
+!!\f[ a_{fL}=\frac{\epsilon_\mathrm{L}+\omega_\mathrm{a} L}{1+\omega_\mathrm{a}(1+L-W)},\\ a_{fR}=\frac{\epsilon_\mathrm{R}+\omega_\mathrm{a}(1-W)}{1+\omega_\mathrm{a}(1+L-W)}.\f]
+!!
+!!The above equations ensure that the allocation fractions add up to one (\f$a_{fL} + a_{fR} + a_{fS} = 1\f$).
+!!
+!!The dynamic allocation fractions are superseded under three conditions. First, during the leaf onset for crops and deciduous trees, all carbon must be allocated to leaves (\f$a_{fL} = 1\f$, \f$a_{fS} = a_{fR} = 0\f$). Second, the proportion of stem plus root biomasses to leaf biomass must satisfy the relationship:
+!!\f[ \label{propwoody} C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa},\f]
+!!
+!!where \f$C_\mathrm{S}\f$, \f$C_\mathrm{R}\f$ and \f$C_\mathrm{L}\f$ are the carbon in the stem, root and leaves, respectively. The parameter \f$\eta\f$ is PFT-specific (see also ctem_params.f90) and parameter \f$\kappa\f$ has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters are based on the Frankfurt Biosphere Model (FBM) \cite Ludeke1994-px. This constraint (Eq. \ref{propwoody}) is based on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As grasses have no stem component, Eq. (\ref{propwoody}) determines their root to shoot ratio (i.e. the ratio of belowground to aboveground biomass). The final condition ensures that a minimum realistic root to shoot ratio is maintained for all PFTs (\f${lr}_{min}\f$, see also ctem_params.f90). Root mass is required for nutrient and water uptake and support for the aboveground biomass. If the minimum root to shoot ratio is not being maintained, carbon is allocated preferentially to roots.
+!!
+!!
+
       subroutine allocate(lfstatus,    thliq,    ailcg,     ailcb, 
      1                         il1,     il2,     sand,     clay,  
      2                    rmatctem, gleafmas, stemmass, rootmass,
-     4                        sort, nol2pfts, fcancmx,
+     4                        sort, nol2pfts, fcancmx, isand,
 c    5 ------------------ inputs above this line ----------------------   
      6                     afrleaf,  afrstem,  afrroot,  wiltsm,
      7                     fieldsm, wtstatus, ltstatus)
 c    8 ------------------outputs  above this line ---------------------
 c
-C               Canadian Terrestrial Ecosystem Model (CTEM)
-C                            Allocation Subroutine
-C
+C     22  Jul 2015  - The code with rmatctem was not set up for >3 soil layers.
+C     J. Melton       Fixed that and also brought in isand so that the layers of
+C                     bedrock won't have their rmat used.
+c
 c     17  Jan 2014  - Moved parameters to global file (ctem_params.f90)
 c     J. Melton
 c   
@@ -28,40 +66,11 @@ c     05  May 2003  - This subroutine calculates the allocation fractions
 c     V. Arora        for leaf, stem, and root components for ctem's pfts 
 c
 c     inputs 
-c
-c     lfstatus  - leaf status. an integer indicating if leaves are  
-c                 in "max. growth", "normal growth", "fall/harvest",
-c                 or "no leaves" mode. see phenolgy subroutine for 
-c                 more details.
-c     thliq     - liquid soil moisture content in 3 soil layers
-c     ailcg     - green or live leaf area index
-c     ailcb     - brown or dead leaf area index
 c     icc       - no. of ctem plant function types, currently 9
 c     ignd        - no. of soil layers (currently 3)
 c     ilg       - no. of grid cells in latitude circle
-c     il1,il2   - il1=1, il2=ilg
-c     sand      - percentage sand
-c     clay      - percentage clay
-c     rmatctem  - fraction of roots in each soil layer for each pft
-c     gleafmas  - green or live leaf mass in kg c/m2, for the 9 pfts
-c     stemmass  - stem mass for each of the 9 ctem pfts, kg c/m2
-c     rootmass  - root mass for each of the 9 ctem pfts, kg c/m2
-c     sort      - index for correspondence between 9 pfts and the
-c                 12 values in parameters vectors
-c     nol2pfts  - number of level 2 ctem pfts
 c     ican        - number of class pfts
-c     fcancmx   - max. fractional coverage of ctem's 9 pfts, but this can be
-c                modified by land-use change, and competition between pfts
 c
-c     outputs
-c
-c     afrleaf   - allocation fraction for leaves
-c     afrstem   - allocation fraction for stem
-c     afrroot   - allocation fraction for root
-c     wiltsm    - wilting point soil moisture content (called PSIWLT in CLASS, but calculated again here to avoid passing through coupler)
-c     fieldsm   - field capacity soil moisture content (called THFC in CLASS, but calculated again here to avoid passing through coupler)
-c     wtstatus  - soil water status (0 dry -> 1 wet)
-c     ltstatus  - light status
 
       use ctem_params,        only : eta, kappa, kn, abszero, icc, ilg,
      1                               ignd, kk, ican, omega, epsilonl,
@@ -69,26 +78,53 @@ c     ltstatus  - light status
      3                               caroot, consallo, rtsrmin, aldrlfon
 c
       implicit none
+
+      integer il1 !<input: il1=1
+      integer il2 !<input: il2=ilg
+      integer i, j, k
+      integer lfstatus(ilg,icc) !<input: leaf status. an integer indicating if leaves are  
+                                !<in "max. growth", "normal growth", "fall/harvest",
+                                !<or "no leaves" mode. see phenolgy subroutine for more details.
+      integer n, k1,  k2,   m
 c
-      integer il1, il2, i, j, k,  lfstatus(ilg,icc), 
-     1         n, k1,  k2,   m
+      integer sort(icc) !<input: index for correspondence between 9 pfts and the
+                        !<12 values in parameters vectors
+      integer nol2pfts(ican) !<input: number of level 2 ctem pfts
+      integer isand(ilg,ignd)
 c
-      integer       sort(icc),      nol2pfts(ican)
+      real   ailcg(ilg,icc) !<input: green or live leaf area index
+      real   ailcb(ilg,icc) !<input: brown or dead leaf area index
+      real   thliq(ilg,ignd) !<input: liquid soil moisture content in 3 soil layers
+      real   wiltsm(ilg,ignd) !<output: wilting point soil moisture content (called PSIWLT in CLASS, but
+                              !<calculated again here to avoid passing through coupler)
+      real   fieldsm(ilg,ignd) !<output: field capacity soil moisture content (called THFC in CLASS, but
+                               !<calculated again here to avoid passing through coupler)
+      real   rootmass(ilg,icc) !<input: root mass for each of the 9 ctem pfts, kg c/m2
+      real   rmatctem(ilg,icc,ignd) !<input: fraction of roots in each soil layer for each pft
+      real   gleafmas(ilg,icc) !<input: green or live leaf mass in kg c/m2, for the 9 pfts
+      real   stemmass(ilg,icc) !<input: stem mass for each of the 9 ctem pfts, kg c/m2
+
+      real   sand(ilg,ignd) !<input: percentage sand
+      real   clay(ilg,ignd) !<input: percentage clay
+      real   thpor(ilg,ignd)
+      real   psisat(ilg,ignd)
+      real   b(ilg,ignd)
+      real   grksat(ilg,ignd)
 c
-      real     ailcg(ilg,icc),    ailcb(ilg,icc),       thliq(ilg,ignd), 
-     1         wiltsm(ilg,ignd),   fieldsm(ilg,ignd), rootmass(ilg,icc),
-     2   rmatctem(ilg,icc,ignd), gleafmas(ilg,icc),   stemmass(ilg,icc),
-     3           sand(ilg,ignd),      clay(ilg,ignd),  thpor(ilg,ignd),
-     4         psisat(ilg,ignd),         b(ilg,ignd),  grksat(ilg,ignd)
+      real   afrleaf(ilg,icc) !<output: allocation fraction for leaves
+      real   afrstem(ilg,icc) !<output: allocation fraction for stem
+      real   afrroot(ilg,icc) !<output: allocation fraction for root
+      real   fcancmx(ilg,icc) !<input: max. fractional coverage of ctem's 9 pfts, but this can be
+                              !<modified by land-use change, and competition between pfts
 c
-      real   afrleaf(ilg,icc),  afrstem(ilg,icc),     afrroot(ilg,icc),
-     1       fcancmx(ilg,icc)
-c
-      real  avwiltsm(ilg,icc),  afieldsm(ilg,icc),    avthliq(ilg,icc),
-     1      wtstatus(ilg,icc),  ltstatus(ilg,icc),    nstatus(ilg,icc),
-     2      wnstatus(ilg,icc),              denom,   mnstrtms(ilg,icc),
-     3                   diff,              term1,               term2,
-     4         aleaf(ilg,icc),     astem(ilg,icc),      aroot(ilg,icc)
+      real  avwiltsm(ilg,icc),  afieldsm(ilg,icc),    avthliq(ilg,icc)
+      real  wtstatus(ilg,icc) !<output: soil water status (0 dry -> 1 wet)
+      real  ltstatus(ilg,icc) !<output: light status
+      real  nstatus(ilg,icc)
+      real  wnstatus(ilg,icc),              denom,   mnstrtms(ilg,icc),
+     1                   diff,              term1,               term2,
+     2         aleaf(ilg,icc),     astem(ilg,icc),      aroot(ilg,icc),
+     3      tot_rmat_ctem(ilg,icc)
 c
 c
 c     ------------------------------------------------------------------
@@ -99,39 +135,39 @@ c     initialize required arrays to 0
 c
       do 140 j = 1,icc
         do 150 i = il1, il2
-          afrleaf(i,j)=0.0    !allocation fraction for leaves
-          afrstem(i,j)=0.0    !allocation fraction for stem
-          afrroot(i,j)=0.0    !allocation fraction for root
+          afrleaf(i,j)=0.0    !<allocation fraction for leaves
+          afrstem(i,j)=0.0    !<allocation fraction for stem
+          afrroot(i,j)=0.0    !<allocation fraction for root
 c
-            aleaf(i,j)=0.0    !temporary variable
-            astem(i,j)=0.0    !temporary variable
-            aroot(i,j)=0.0    !temporary variable
+            aleaf(i,j)=0.0    !<temporary variable
+            astem(i,j)=0.0    !<temporary variable
+            aroot(i,j)=0.0    !<temporary variable
+                              !<averaged over the root zone
+          avwiltsm(i,j)=0.0   !<wilting point soil moisture
+          afieldsm(i,j)=0.0   !<field capacity soil moisture
+          avthliq(i,j)=0.0    !<liquid soil moisture content
+          tot_rmat_ctem(i,j)= 0.0 !<temp var.
 c
-c                                 !averaged over the root zone
-          avwiltsm(i,j)=0.0   !wilting point soil moisture
-          afieldsm(i,j)=0.0   !field capacity soil moisture
-           avthliq(i,j)=0.0   !liquid soil moisture content
+          wtstatus(i,j)=0.0   !<water status
+          ltstatus(i,j)=0.0   !<light status
+           nstatus(i,j)=0.0   !<nitrogen status, if and when we
+c                             !<will have n cycle in the model
+          wnstatus(i,j)=0.0   !<min. of water & n status
 c
-          wtstatus(i,j)=0.0   !water status
-          ltstatus(i,j)=0.0   !light status
-           nstatus(i,j)=0.0   !nitrogen status, if and when we
-c                                 !will have n cycle in the model
-          wnstatus(i,j)=0.0   !min. of water & n status
-c
-          mnstrtms(i,j)=0.0   !min. (stem+root) biomass needed to
-c                                 !support leaves
+          mnstrtms(i,j)=0.0   !<min. (stem+root) biomass needed to
+c                             !<support leaves
 150     continue                  
 140   continue
 c
 c     initialization ends    
 c
 c     ------------------------------------------------------------------
-c     Estimate field capacity and wilting point soil moisture contents
-c
-c     Wilting point corresponds to matric potential of 150 m
-c     field capacity corresponds to hydarulic conductivity of
-c     0.10 mm/day -> 1.157x1e-09 m/s
-c
+!>Estimate field capacity and wilting point soil moisture contents
+!!
+!!Wilting point corresponds to matric potential of 150 m
+!!field capacity corresponds to hydarulic conductivity of
+!!0.10 mm/day -> 1.157x1e-09 m/s
+!!
       do 160 j = 1, ignd
         do 170 i = il1, il2
 c
@@ -149,42 +185,36 @@ c
 c
 170     continue
 160   continue
-c
-c
-c     Calculate liquid soil moisture content, and wilting and field capacity 
-c     soil moisture contents averaged over the root zone. note that while
-c     the soil moisture content is same under the entire gcm grid cell,
-c     soil moisture averaged over the rooting depth is different for each
-c     pft because of different fraction of roots present in each soil layer.
-c
+
+!>
+!!Calculate liquid soil moisture content, and wilting and field capacity 
+!!soil moisture contents averaged over the root zone. note that while
+!!the soil moisture content is same under the entire gcm grid cell,
+!!soil moisture averaged over the rooting depth is different for each
+!!pft because of different fraction of roots present in each soil layer.
+!!
       do 200 j = 1, icc
         do 210 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
-         avwiltsm(i,j) =  wiltsm(i,1)*rmatctem(i,j,1) +
-     &                    wiltsm(i,2)*rmatctem(i,j,2) +
-     &                    wiltsm(i,3)*rmatctem(i,j,3)
-         avwiltsm(i,j) = avwiltsm(i,j) /
-     &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
-c
-         afieldsm(i,j) =  fieldsm(i,1)*rmatctem(i,j,1) +
-     &                    fieldsm(i,2)*rmatctem(i,j,2) +
-     &                    fieldsm(i,3)*rmatctem(i,j,3)
-         afieldsm(i,j) = afieldsm(i,j) /
-     &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
-c
-         avthliq(i,j)  =  thliq(i,1)*rmatctem(i,j,1) +
-     &                    thliq(i,2)*rmatctem(i,j,2) +
-     &                    thliq(i,3)*rmatctem(i,j,3)
-         avthliq(i,j)  = avthliq(i,j) /
-     &    (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
-         endif
+          do 215 n = 1, ignd
+           if (isand(i,n) .ne. -3) then !Only for non-bedrock
+            avwiltsm(i,j) = avwiltsm(i,j) + wiltsm(i,n)*rmatctem(i,j,n)
+            afieldsm(i,j) = afieldsm(i,j) + fieldsm(i,n)*rmatctem(i,j,n)
+            avthliq(i,j)  = avthliq(i,j) + thliq(i,n)*rmatctem(i,j,n)
+            tot_rmat_ctem(i,j) = tot_rmat_ctem(i,j) + rmatctem(i,j,n)
+           end if
+215       continue
+          avwiltsm(i,j) = avwiltsm(i,j) / tot_rmat_ctem(i,j)
+          afieldsm(i,j) = afieldsm(i,j) / tot_rmat_ctem(i,j)
+          avthliq(i,j)  = avthliq(i,j) / tot_rmat_ctem(i,j)
+         end if
 210     continue
 200   continue
-c
-c     Using liquid soil moisture content together with wilting and field 
-c     capacity soil moisture contents averaged over the root zone, find
-c     soil water status.
-c
+!>
+!!Using liquid soil moisture content together with wilting and field 
+!!capacity soil moisture contents averaged over the root zone, find
+!!soil water status.
+!!
       do 230 j = 1, icc
         do 240 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
@@ -200,11 +230,11 @@ c
          endif
 240     continue
 230   continue
-c
-c     Calculate light status as a function of lai and light extinction
-c     parameter. for now set nitrogen status equal to 1, which means 
-c     nitrogen is non-limiting.
-c
+!>
+!!Calculate light status as a function of lai and light extinction
+!!parameter. for now set nitrogen status equal to 1, which means 
+!!nitrogen is non-limiting.
+!!
       k1=0
       do 250 j = 1, ican
        if(j.eq.1) then
@@ -224,10 +254,10 @@ c
 260     continue 
 255    continue
 250   continue
-c
-c     allocation to roots is determined by min. of water and nitrogen
-c     status
-c
+!>
+!!allocation to roots is determined by min. of water and nitrogen
+!!status
+!!
       do 380 j = 1,icc
         do 390 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
@@ -235,12 +265,12 @@ c
          endif
 390     continue
 380   continue
-c
-c     now that we know water, light, and nitrogen status we can find
-c     allocation fractions for leaves, stem, and root components. note
-c     that allocation formulae for grasses are different from those
-c     for trees and crops, since there is no stem component in grasses. 
-c
+!>
+!!now that we know water, light, and nitrogen status we can find
+!!allocation fractions for leaves, stem, and root components. note
+!!that allocation formulae for grasses are different from those
+!!for trees and crops, since there is no stem component in grasses. 
+!!
       k1=0
       do 400 j = 1, ican
        if(j.eq.1) then
@@ -269,10 +299,10 @@ c
 410     continue
 405    continue
 400   continue
-c
-c     if using constant allocation factors then replace the dynamically
-c     calculated allocation fractions.
-c
+!>
+!!if using constant allocation factors then replace the dynamically
+!!calculated allocation fractions.
+!!
       if(consallo)then
         do 420 j = 1, icc
           do 421 i = il1, il2
@@ -284,9 +314,9 @@ c
 421       continue
 420     continue
       endif
-c
-c     make sure allocation fractions add to one
-c
+!>
+!!make sure allocation fractions add to one
+!!
       do 430 j = 1, icc
         do 440 i = il1, il2 
          if (fcancmx(i,j).gt.0.0) then 
@@ -301,15 +331,15 @@ c
          endif
 440     continue
 430   continue
-c
-c     the allocation fractions calculated above are overridden by two
-c     rules. 
-c
-c     rule 1 which states that at the time of leaf onset which corresponds 
-c     to leaf status equal to 1, more c is allocated to leaves so 
-c     that they can grow asap. in addition when leaf status is 
-c     "fall/harvest" then nothing is allocated to leaves.
-c
+!>
+!!the allocation fractions calculated above are overridden by two
+!!rules. 
+!!
+!!rule 1 which states that at the time of leaf onset which corresponds 
+!!to leaf status equal to 1, more c is allocated to leaves so 
+!!that they can grow asap. in addition when leaf status is 
+!!"fall/harvest" then nothing is allocated to leaves.
+!!
       k1=0
       do 500 j = 1, ican
        if(j.eq.1) then
@@ -323,9 +353,9 @@ c
          if (fcancmx(i,m).gt.0.0) then 
           if(lfstatus(i,m).eq.1) then
             aleaf(i,m)=aldrlfon(sort(m))
-c
-c           for grasses we use the usual allocation even at leaf onset
-c
+!>
+!!for grasses we use the usual allocation even at leaf onset
+!!
             if(j.eq.4)then
               aleaf(i,m)=afrleaf(i,m)
             endif
@@ -363,17 +393,17 @@ c
 510     continue
 505    continue
 500   continue
-c
-c
-c     rule 2 overrides rule 1 above and makes sure that we do not allow the 
-c     amount of leaves on trees and crops (i.e. pfts 1 to 7) to exceed 
-c     an amount such that the remaining woody biomass cannot support. 
-c     if this happens, allocation to leaves is reduced and most npp 
-c     is allocated to stem and roots, in a proportion based on calculated 
-c     afrstem and afrroot. for grasses this rule essentially constrains 
-c     the root:shoot ratio, meaning that the model grasses can't have 
-c     lots of leaves without having a reasonable amount of roots.
-c
+
+!>
+!!rule 2 overrides rule 1 above and makes sure that we do not allow the 
+!!amount of leaves on trees and crops (i.e. pfts 1 to 7) to exceed 
+!!an amount such that the remaining woody biomass cannot support. 
+!!if this happens, allocation to leaves is reduced and most npp 
+!!is allocated to stem and roots, in a proportion based on calculated 
+!!afrstem and afrroot. for grasses this rule essentially constrains 
+!!the root:shoot ratio, meaning that the model grasses can't have 
+!!lots of leaves without having a reasonable amount of roots.
+!!
       do 530 j = 1, icc
         n=sort(j)
         do 540 i = il1, il2
@@ -404,10 +434,10 @@ c
          endif
 540     continue
 530   continue
-c
-c     make sure that root:shoot ratio is at least equal to rtsrmin. if not
-c     allocate more to root and decrease allocation to stem.
-c
+!>
+!!make sure that root:shoot ratio is at least equal to rtsrmin. if not
+!!allocate more to root and decrease allocation to stem.
+!!
       do 541 j = 1, icc
         n=sort(j)
         do 542 i = il1, il2
@@ -424,10 +454,10 @@ c
          endif
 542     continue
 541   continue
-c
-c     finally check if all allocation fractions are positive and check
-c     again they all add to one.
-c
+!>
+!!finally check if all allocation fractions are positive and check
+!!again they all add to one.
+!!
       do 550 j = 1, icc
         do 560 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 

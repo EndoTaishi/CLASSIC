@@ -82,7 +82,7 @@
       RAC3=SQRT(3.)
 
       DO J=IL1,IL2
-      FJ_GT_0 : IF(F(J).GT.0.0)                           THEN
+      IF(F(J).GT.0.0)                           THEN
 
       LZZ0T=LOG((ZT(J)+Z0(J))/Z0T(J))
       LZZ0=LOG(ZU(J)/Z0(J)+1.0)
@@ -131,7 +131,7 @@
       UZ(J)=UZ(J)+F(J)*VITS*COS(ANG)
       VZ(J)=VZ(J)+F(J)*VITS*SIN(ANG)
 
-      ENDIF FJ_GT_0
+      ENDIF 
       ENDDO
 
       RETURN

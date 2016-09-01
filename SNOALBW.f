@@ -1,10 +1,13 @@
+!>\file
+C!Purpose: Calculate decrease in snow albedo and increase in density 
+C!due to aging.
+C!
       SUBROUTINE SNOALBW(ALBSNO,RHOSNO,ZSNOW,HCPSNO,TSNOW,
      1                   FI,S,RMELT,WSNOW,RHOMAX,ISAND,
      2                   ILG,IG,IL1,IL2,JL)       
 C
-C     Purpose: Calculate decrease in snow albedo and increase in density 
-C     due to aging.
-C
+C     * APR 17/14 - D.VERSEGHY. MAKE SNOW ALBEDO REFRESHMENT VALUE
+C     *                         CONSISTENT WITH SNOADD.
 C     * MAR 07/07 - D.VERSEGHY. STREAMLINE SOME CALCULATIONS.
 C     * MAR 24/06 - D.VERSEGHY. ALLOW FOR PRESENCE OF WATER IN SNOW.
 C     * SEP 23/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
@@ -48,24 +51,24 @@ C
 C                                                                                 
 C     * OUTPUT ARRAYS.                                                            
 C                                                                                 
-      REAL ALBSNO(ILG)  !Albedo of snow [ ] (αs)  
-      REAL RHOSNO(ILG)  !Density of snow pack [kg m-3] (ρs )
-      REAL ZSNOW (ILG)  !Depth of snow pack [m] (zs) 
-      REAL HCPSNO(ILG)  !Heat capacity of snow pack [J m-3 K-1]
+      REAL ALBSNO(ILG)  !<Albedo of snow \f$[ ] (\alpha_s)\f$  
+      REAL RHOSNO(ILG)  !<Density of snow pack \f$[kg m^{-3}] (\rho_s )\f$
+      REAL ZSNOW (ILG)  !<Depth of snow pack \f$[m] (z_s)\f$
+      REAL HCPSNO(ILG)  !<Heat capacity of snow pack \f$[J m^{-3} K^{-1}]\f$
 C                                                                                 
 C     * INPUT ARRAYS.                                                             
 C                                                                                 
-      REAL TSNOW (ILG)  !Temperature of the snow pack [C] 
-      REAL FI    (ILG)  !Fractional coverage of subarea in question on modelled area [ ]
-      REAL S     (ILG)  !Snowfall rate [m s-1] 
-      REAL RMELT (ILG)  !Melt rate at top of snow pack [m s-1]
-      REAL WSNOW (ILG)  !Liquid water content of snow pack [kg m-2]
+      REAL TSNOW (ILG)  !<Temperature of the snow pack \f$[C]\f$ 
+      REAL FI    (ILG)  !<Fractional coverage of subarea in question on modelled area [ ]
+      REAL S     (ILG)  !<Snowfall rate \f$[m s^{-1}] \f$
+      REAL RMELT (ILG)  !<Melt rate at top of snow pack \f$[m s^{-1}]\f$
+      REAL WSNOW (ILG)  !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
 C 
-      INTEGER             ISAND (ILG,IG)    !Sand content flag
+      INTEGER ISAND (ILG,IG) !<Sand content flag
 C
 C     * WORK ARRAY.                                                             
 C                                                                                 
-      REAL RHOMAX(ILG)  !Maximum density of snow pack [kg m-3] (ρs,max)
+      REAL RHOMAX(ILG)  !<Maximum density of snow pack \f$[kg m^{-3}] (\rho_{s,max})\f$
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -81,49 +84,50 @@ C
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C----------------------------------------------------------------------
-      !
-      !The albedo and density of snow are modelled using empirical 
-      !exponential decay functions. In the absence
-      !of any fresh snowfall the snow albedo αs is assumed to decrease 
-      !exponentially with time from a fresh
-      !snow value of 0.84 to a background old snow value αs,old using an 
-      !expression based on data given in
-      !Aguado (1985), Robinson and Kukla (1984) and Dirmhirn and Eaton 
-      !(1975):
-      !
-      !ALBSNO(t+1) = [ALBSNO(t) - ALBSNO,old] * exp [-0.01*Δt/3600] + ALBSNO,old
-      !
-      !where Δt is the length of the time step. If the melt rate RMELT 
-      !at the top of the snow pack is non-
-      !negligible or if the temperature of the snow is close to 0 C, 
-      !ALBSNO,old is assigned a value of 0.50; otherwise ALBSNO,old
-      !is assigned a value of 0.70.
-      !The maximum snow density RHOMAX is estimated as a function of 
-      !snow depth ZNOW, after Tabler et al. (1990):
-      !
-      !RHOMAX = As - [204.70/ZSNOW] * [1.0 – exp(-ZSNOW/0.673)]
-      !
-      !The empirical constant As is assigned a value of 450.0 for cold 
-      !snow packs, and 700.0 for snow packs near
-      !the melting point, following Brown et al. (2006).
-      !
-      !The density of snow RHOSNO increases exponentially with time from its 
-      !fresh snow value to the background old
-      !snow density calculated above, according to an expression 
-      !analogous to that for albedo, derived from the
-      !field measurements of Longley (1960) and Gold (1958):
-      !
-      !RHOSNO(t+1) = [RHOSNO(t) - RHOSNO,max] exp [-0.01Δt/3600] + RHOMAX
-      !
-      !The snow depth and heat capacity are adjusted (see notes on 
-      !subroutine SNOVAP), and a check is
-      !performed with a call to abort if for unphysical albedo values 
-      !are encountered.
-      !               
+      !>
+      !!The albedo and density of snow are modelled using empirical 
+      !!exponential decay functions. In the absence
+      !!of any fresh snowfall the snow albedo \f$\alpha_s\f$ is assumed to decrease 
+      !!exponentially with time from a fresh
+      !!snow value of 0.84 to a background old snow value \f$\alpha_{s,old}\f$ using an 
+      !!expression based on data given in
+      !!Aguado (1985), Robinson and Kukla (1984) and Dirmhirn and Eaton 
+      !!(1975):
+      !!
+      !!\f$\alpha_s (t+1) = [\alpha_s (t) - \alpha_{s,old}] exp [-0.01 \Delta t / 3600] + \alpha_{s,old}\f$
+      !!
+      !!where \f$\Delta t\f$ is the length of the time step. If the melt rate RMELT 
+      !!at the top of the snow pack is non-
+      !!negligible or if the temperature of the snow is close to 0 C, 
+      !!\f$\alpha_{s,old}\f$ is assigned a value of 0.50; otherwise \f$\alpha_{s,old}\f$
+      !!is assigned a value of 0.70.
+      !!
+      !!The maximum snow density \f$\rho_{s,max}\f$ is estimated as a function of 
+      !!snow depth \f$z_s\f$, after Tabler et al. (1990):
+      !!
+      !!\f$\rho_{s,max} = A_s - [204.70/ z_s] [1.0 - exp(-z_s /0.673)]\f$
+      !!
+      !!The empirical constant \f$A_s\f$ is assigned a value of 450.0 for cold 
+      !!snow packs, and 700.0 for snow packs near
+      !!the melting point, following Brown et al. (2006).
+      !!
+      !!The density of snow \f$\rho_s\f$ increases exponentially with time from its 
+      !!fresh snow value to the background old
+      !!snow density calculated above, according to an expression 
+      !!analogous to that for albedo, derived from the
+      !!field measurements of Longley (1960) and Gold (1958):
+      !!
+      !!\f$\rho_s (t+1) = [\rho_s (t) - \rho_{s,max} ] exp [-0.01 \Delta t/3600] + \rho{s,max}\f$
+      !!
+      !!The snow depth and heat capacity are adjusted (see notes on 
+      !!subroutine SNOVAP), and a check is
+      !!performed with a call to abort if for unphysical albedo values 
+      !!are encountered.
+      !!               
       IPTBAD=0                                                                    
       DO 100 I=IL1,IL2  
           IF(ZSNOW(I).GT.0. .AND. 
-     1            FI  (I).GT.0. .AND. S(I).LT.1.0E-6)             THEN
+     1            FI  (I).GT.0. .AND. S(I)*DELT.LT.1.0E-4)       THEN   
               IF(ALBSNO(I).GT.0.5001 .AND. (RMELT(I).GT.1.0E-7 .OR.
      1                TSNOW(I).GE.-0.01)) THEN
                   ALBSNO(I)=(ALBSNO(I)-0.50)*EXP(-0.01*DELT/3600.0)+

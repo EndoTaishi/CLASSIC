@@ -1,0 +1,112 @@
+\hypertarget{GRALB_8f}{}\section{G\+R\+A\+L\+B.\+f File Reference}
+\label{GRALB_8f}\index{G\+R\+A\+L\+B.\+f@{G\+R\+A\+L\+B.\+f}}
+
+
+Purpose\+: Calculate visible and near-\/\+I\+R ground albedos.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{GRALB_8f_af8208db48e4bd17f925ba5a654bce8bf}{gralb} (A\+L\+V\+S\+G, A\+L\+I\+R\+G, A\+L\+V\+S\+G\+C, A\+L\+I\+R\+G\+C, A\+L\+G\+W\+V, A\+L\+G\+W\+N, A\+L\+G\+D\+V, A\+L\+G\+D\+N, A\+L\+G\+W\+E\+T, A\+L\+G\+D\+R\+Y, T\+H\+L\+I\+Q, F\+S\+N\+O\+W, A\+L\+V\+S\+U, A\+L\+I\+R\+U, F\+C\+M\+X\+U, A\+G\+V\+D\+A\+T, A\+G\+I\+D\+A\+T, F\+G, I\+S\+A\+N\+D, I\+L\+G, I\+G, I\+L1, I\+L2, J\+L, I\+A\+L\+G, I\+G\+R\+A\+L\+B)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Calculate visible and near-\/\+I\+R ground albedos. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{GRALB_8f_af8208db48e4bd17f925ba5a654bce8bf}{}\index{G\+R\+A\+L\+B.\+f@{G\+R\+A\+L\+B.\+f}!gralb@{gralb}}
+\index{gralb@{gralb}!G\+R\+A\+L\+B.\+f@{G\+R\+A\+L\+B.\+f}}
+\subsubsection[{gralb}]{\setlength{\rightskip}{0pt plus 5cm}subroutine gralb (
+\begin{DoxyParamCaption}
+\item[{real, dimension (ilg)}]{A\+L\+V\+S\+G, }
+\item[{real, dimension (ilg)}]{A\+L\+I\+R\+G, }
+\item[{real, dimension (ilg)}]{A\+L\+V\+S\+G\+C, }
+\item[{real, dimension (ilg)}]{A\+L\+I\+R\+G\+C, }
+\item[{real, dimension (ilg)}]{A\+L\+G\+W\+V, }
+\item[{real, dimension (ilg)}]{A\+L\+G\+W\+N, }
+\item[{real, dimension (ilg)}]{A\+L\+G\+D\+V, }
+\item[{real, dimension (ilg)}]{A\+L\+G\+D\+N, }
+\item[{real, dimension(ilg)}]{A\+L\+G\+W\+E\+T, }
+\item[{real, dimension(ilg)}]{A\+L\+G\+D\+R\+Y, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+L\+I\+Q, }
+\item[{real, dimension (ilg)}]{F\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{A\+L\+V\+S\+U, }
+\item[{real, dimension (ilg)}]{A\+L\+I\+R\+U, }
+\item[{real, dimension (ilg)}]{F\+C\+M\+X\+U, }
+\item[{real, dimension(ilg)}]{A\+G\+V\+D\+A\+T, }
+\item[{real, dimension(ilg)}]{A\+G\+I\+D\+A\+T, }
+\item[{real, dimension    (ilg)}]{F\+G, }
+\item[{integer, dimension (ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{I\+A\+L\+G, }
+\item[{integer}]{I\+G\+R\+A\+L\+B}
+\end{DoxyParamCaption}
+)}\label{GRALB_8f_af8208db48e4bd17f925ba5a654bce8bf}
+
+\begin{DoxyParams}{Parameters}
+{\em alvsg} & Visible albedo of bare ground $[ ] (\alpha_{g,VIS})$\\
+\hline
+{\em alirg} & Near-\/\+I\+R albedo of bare ground $[ ] (\alpha_{g,NIR})$\\
+\hline
+{\em alvsgc} & Visible albedo of ground under vegetation canopy \mbox{[} \mbox{]}\\
+\hline
+{\em alirgc} & Near-\/\+I\+R albedo of ground under vegetation canopy \mbox{[} \mbox{]}\\
+\hline
+{\em algwet} & All-\/wave albedo of wet soil for modelled area $[ ] (\alpha_{g,wet})$\\
+\hline
+{\em algdry} & All-\/wave albedo of dry soil for modelled area $[ ] (\alpha_{g,dry})$\\
+\hline
+{\em thliq} & Volumetric liquid water content of soil layers $[m^3 m^{-3}]$\\
+\hline
+{\em alvsu} & Visible albedo of urban part of modelled area $[ ] (alpha_{u,VIS})$\\
+\hline
+{\em aliru} & Near-\/\+I\+R albedo of urban part of modelled area $[ ] (alpha_{u,NIR})$\\
+\hline
+{\em fcmxu} & Fractional coverage of urban part of modelled area $[ ] (X_u)$\\
+\hline
+{\em agvdat} & Assigned value of visible albedo of ground – optional \mbox{[} \mbox{]}\\
+\hline
+{\em agidat} & Assigned value of near-\/\+I\+R albedo of ground – optional \mbox{[} \mbox{]}\\
+\hline
+{\em isand} & Soil type flag based on sand content, assigned in subroutine C\+L\+A\+S\+S\+B \\
+\hline
+\end{DoxyParams}
+If the I\+S\+A\+N\+D flag for the surface soil layer is greater than zero (indicating mineral soil), the visible and near-\/\+I\+R open ground albedos, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$, are calculated on the basis of the wet and dry ground albedos $\alpha_{g,wet}$ and $\alpha_{g,dry}$ which were assigned for the modelled area in C\+L\+A\+S\+S\+B. Idso et al. (1975) found a correlation between the soil liquid moisture content in the top 10 cm of soil (represented in C\+L\+A\+S\+S by that of the first soil layer, $\theta_{1,1}$) and the total surface albedo $\alpha_{g,T}$\+: for liquid water contents less than 0.\+22 $m^3 m^{-3}$, $\alpha_{g,T}$ took on the value of $\alpha_{g,dry}$; for liquid water contents greater than 0.\+26 $m^3 m^{-3}$, $\alpha_{g,T}$ took on the value of $\alpha_{g,wet}$. For values of $\theta_{1,1}$ between these two limits, a linear relationship is assumed\+:
+
+$[\alpha_{g,T} - \alpha_{g,dry} ] / [\theta_{l,1} - 0.22] = [\alpha_{g,wet} - \alpha_{g,dry} ]/[0.26 - 0.22]$
+
+Thus, in G\+R\+A\+L\+B $\alpha_{g,T}$ is calculated as follows\+:
+
+$\alpha_{g,T} = \alpha_{g,dry}$ $\theta_{l,1} \leq 0.22 $ ~\newline
+ $\alpha_{g,T} = \theta_{l,1} [\alpha_{g,wet} - \alpha_{g,dry} ]/0.04 - 5.50 [\alpha_{g,wet} - \alpha_{g,dry} ] + \alpha_{g,dry} $ $0.22 < \theta_{l,1} < 0.26 $ ~\newline
+ $\alpha_{g,T} = \alpha{g,wet} $ $ 0.26 \leq \theta_{l,1}$
+
+The total albedo is partitioned into values for the visible and near-\/\+I\+R albedo by making use of the observation that in the case of mineral soils, the near-\/\+I\+R albedo is typically twice that of the visible albedo (e.\+g. Dickinson, 1983). Since the partitioning of incoming shortwave radiation into visible and near-\/\+I\+R can be approximated as 50\+:50 on average, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ can be calculated as
+
+$\alpha_{g,VIS} = 2.0 \alpha_{g,T} /3.0$ ~\newline
+ $\alpha_{g,NIR} = 2.0 \alpha_{g,VIS}$
+
+Finally, a correction is applied to $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ in order to account for the possible presence of urban areas over the modelled area. Visible and near-\/\+I\+R albedos are assigned for local urban areas, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$, as part of the background data (see the section on “\+Data Requirements”). A weighted average is calculated from the fractional urban area $X_u$ as\+:
+
+$\alpha_{g,VIS} = X_u \alpha_{u,VIS} + [1.0-X_u ] \alpha_{g,VIS}$~\newline
+ $\alpha_{g,NIR} = X_u \alpha_{u,NIR} + [1.0-X_u ] \alpha_{g,NIR}$
+
+If the soil on the modelled area is not mineral, i.\+e. if the I\+S\+A\+N\+D flag is less than zero, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ are determined as follows\+:
+
+If I\+S\+A\+N\+D = -\/2, indicating organic soil, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ are assigned values of 0.\+05 and 0.\+30 respectively from the lookup tables in the block data subroutine C\+L\+A\+S\+S\+B\+D, corresponding to average measured values reported in Comer et al. (2000).
+
+If I\+S\+A\+N\+D = -\/3, indicating rock at the surface, $\alpha_{g,T}$ is given a value of 0.\+27 from C\+L\+A\+S\+S\+B\+D, based on typical literature values (e.\+g. Sellers, 1974), and this is partitioned into values of $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ as above.
+
+If I\+S\+A\+N\+D = -\/4, indicating continental ice sheet or glacier, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ are assigned values of 0.\+95 and 073 from C\+L\+A\+S\+S\+B\+D, reflecting values reported for Antarctica (e.\+g. Sellers, 1974).
+
+The above calculations are all performed if the flag I\+A\+L\+G is set to zero. If I\+A\+L\+G is set to one, indicating that assigned ground albedos are to be used instead of calculated values, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ are set to the assigned values A\+G\+V\+D\+A\+T and A\+G\+I\+D\+A\+T respectively.
+
+Lastly, the ground values of visible and near-\/\+I\+R albedo under the vegetation canopy are currently set equal to the open values (this approach is currently under review).
