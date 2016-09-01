@@ -1,0 +1,11 @@
+2016-06-02  Joe Melton  joe.melton@canada.ca
+
+    * Git repo added to GitLab. Below is example changelog syntax:
+
+    * myfile.ext (myfunction): my changes made
+    additional changes
+
+    * myfile.ext (unrelated_change): my changes made
+    to myfile.ext but completely unrelated to the above
+
+    * anotherfile.ext (somefunction): more changes
