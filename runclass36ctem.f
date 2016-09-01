@@ -470,7 +470,7 @@ C
       REAL,DIMENSION(NLAT) :: Z0ORROW !<
 
       REAL,DIMENSION(NLAT) :: DLATROW !<
-      REAL,DIMENSION(NLAT) :: FSSROW  !<
+      REAL,DIMENSION(NLAT) :: FSSROW  !< Shortwave radiation \f$[W m^{-2} ]\f$
       REAL,DIMENSION(NLAT) :: PRENROW !<
       REAL,DIMENSION(NLAT) :: CLDTROW !<
       REAL,DIMENSION(NLAT) :: FSGROL  !<
@@ -741,6 +741,7 @@ C     * CALCULATING TIME AVERAGES.)
       REAL,DIMENSION(NLAT) :: UVACC   !<Wind speed \f$[m s^{-1} ]\f$
       REAL,DIMENSION(NLAT) :: WSNOACC !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
       REAL,DIMENSION(NLAT) :: WTBLACC !<Depth of water table in soil [m]
+      REAL,DIMENSION(NLAT) :: ALTOTACC!<Broadband albedo [-]
 
       REAL,DIMENSION(NLAT) :: CANARE  !<
       REAL,DIMENSION(NLAT) :: SNOARE  !<
@@ -925,7 +926,7 @@ c
 
        real fsinacc_gat(ilg), flutacc_gat(ilg), flinacc_gat(ilg),
      1      alswacc_gat(ilg), allwacc_gat(ilg), pregacc_gat(ilg),
-     2      altot_gat,        fsstar_gat,       flstar_gat,
+     2      altot_gat(ilg),        fsstar_gat,       flstar_gat,
      3      netrad_gat(ilg),  preacc_gat(ilg)
 
 !     For these below, the corresponding ROWs are defined by CLASS
@@ -1349,6 +1350,7 @@ c
       real, pointer, dimension(:,:) :: UVACC_M
       real, pointer, dimension(:,:) :: PRESACC_M
       real, pointer, dimension(:,:) :: QAACC_M
+      real, pointer, dimension(:,:) :: ALTOTACC_M
       real, pointer, dimension(:,:) :: EVAPACC_M
       real, pointer, dimension(:,:) :: FLUTACC_M
 
@@ -1921,6 +1923,7 @@ C===================== CTEM ==============================================\
       UVACC_M           => vrot%UVACC_M
       PRESACC_M         => vrot%PRESACC_M
       QAACC_M           => vrot%QAACC_M
+      ALTOTACC_M        => vrot%ALTOTACC_M
       EVAPACC_M         => vrot%EVAPACC_M
       FLUTACC_M         => vrot%FLUTACC_M
 
@@ -2521,6 +2524,7 @@ C===================== CTEM =============================================== /
           HFSACC(I)=0.
           HMFNACC(I)=0.
           ROFACC(I)=0.
+          ALTOTACC(I)=0.
           OVRACC(I)=0.
           WTBLACC(I)=0.
           ALVSACC(I)=0.
@@ -3633,6 +3637,13 @@ c
           tcansacc_t(i)=tcansacc_t(i)+tcans(i)
           taaccgat_t(i)=taaccgat_t(i)+tagat(i)
           vvaccgat_t(i)=vvaccgat_t(i)+ vlgat(i)
+          if (FSSROW(I) .gt. 0.) then
+            altot_gat(i) = altot_gat(i) + (FSSROW(I)-
+     1                (FSGVGAT(I)+FSGSGAT(I)+FSGGGAT(I)))
+     2                /FSSROW(I)
+          else
+            altot_gat(i) = altot_gat(i)
+          end if
 c
           do 710 j=1,ignd
              tbaraccgat_t(i,j)=tbaraccgat_t(i,j)+tbargat(i,j)
@@ -3680,8 +3691,8 @@ c
             flinacc_gat(i)=flinacc_gat(i)/real(nday)
             flutacc_gat(i)=flutacc_gat(i)/real(nday)
 c
-            altot_gat=(alswacc_gat(i)+allwacc_gat(i))/2.0
-            fsstar_gat=fsinacc_gat(i)*(1.-altot_gat)
+            altot_gat(i)=altot_gat(i) / real(nday)
+            fsstar_gat=fsinacc_gat(i)*(1.-altot_gat(i))
             flstar_gat=flinacc_gat(i)-flutacc_gat(i)
             netrad_gat(i)=fsstar_gat+flstar_gat
             preacc_gat(i)=pregacc_gat(i)
@@ -4068,6 +4079,7 @@ c     reset mosaic accumulator arrays.
           tcanoaccgat_t(i)=0.0
           tcansacc_t(i)=0.0
           taaccgat_t(i)=0.0
+          altot_gat(i) = 0.0
 
           do 715 j=1,ignd
              tbarcacc_t(i,j)=0.0
@@ -4180,9 +4192,8 @@ c       initialization of various grid-averaged variables
 
        DO 425 M=1,NMTEST
           IF(FSSROW(I).GT.0.0) THEN
-C              ALTOT=(ALVSROT(I,M)+ALIRROT(I,M))/2.0
-              ALTOT=(FSSROW(I)-FSGGGAT(1))/FSSROW(I)  !FLAG I adopt the runclass approach of using 1 for index here. JM Jul 2015.
-              ALTOT=(FSSROW(I)-(FSGVROW(I)+FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
+              ALTOT=(FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)
+     1              +FSGGROT(I,M)))/FSSROW(I)
           ELSE
               ALTOT=0.0
           ENDIF
@@ -4660,6 +4671,10 @@ C
           ROFACC(I)=ROFACC(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
           OVRACC(I)=OVRACC(I)+ROFOROT(I,M)*FAREROT(I,M)*DELT
           WTBLACC(I)=WTBLACC(I)+WTABROT(I,M)*FAREROT(I,M)
+          IF (FSSROW(I) .gt. 0.) then
+            ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)
+     1                   +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
+          END IF
           DO 625 J=1,IGND
               TBARACC(I,J)=TBARACC(I,J)+TBARROT(I,M,J)*FAREROT(I,M)
               THLQACC(I,J)=THLQACC(I,J)+THLQROT(I,M,J)*FAREROT(I,M)
@@ -4739,9 +4754,8 @@ C
           UVACC(I)=UVACC(I)/REAL(NDAY)
           PRESACC(I)=PRESACC(I)/REAL(NDAY)
           QAACC(I)=QAACC(I)/REAL(NDAY)
-
-              ALTOT=(ALVSACC(I)+ALIRACC(I))/2.0
-              FSSTAR=FSINACC(I)*(1.-ALTOT)
+          ALTOTACC(I)=ALTOTACC(I)/REAL(NDAY)
+              FSSTAR=FSINACC(I)*(1.-ALTOTACC(I))
               FLSTAR=FLINACC(I)-FLUTACC(I)
               QH=HFSACC(I)
               QE=QEVPACC(I)
@@ -4769,7 +4783,7 @@ C
 
               WRITE(61,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,
      1                       BEG,GTOUT,SNOACC(I),RHOSACC(I),
-     2                       WSNOACC(I),ALTOT,ROFACC(I),CUMSNO
+     2                       WSNOACC(I),ALTOTACC(I),ROFACC(I),CUMSNO
               IF(IGND.GT.3) THEN
                   WRITE(62,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
      1                       THLQACC(I,J),THICACC(I,J),J=1,5)
@@ -4820,6 +4834,7 @@ C
           UVACC(I)=0.
           PRESACC(I)=0.
           QAACC(I)=0.
+          ALTOTACC(I) = 0.
           EVAPACC(I)=0.
           FLUTACC(I)=0.
 800   CONTINUE
@@ -4867,6 +4882,11 @@ C              CANARE(I)=CANARE(I)+FAREROT(I,M)
           RCANACC_M(I,M)=RCANACC_M(I,M)+RCANROT(I,M)
           SCANACC_M(I,M)=SCANACC_M(I,M)+SCANROT(I,M)
           GROACC_M(I,M)=GROACC_M(I,M)+GROROT(I,M)
+          IF (FSSROW(I) .gt. 0.) THEN
+            ALTOTACC_M(I,M)=ALTOTACC_M(I,M) + (FSSROW(I)-
+     1                    (FSGVROT(I,M)+FSGSROT(I,M)+
+     2                     FSGGROT(I,M)))/FSSROW(I)
+          END IF
           FSINACC_M(I,M)=FSINACC_M(I,M)+FSSROW(I)
           FLINACC_M(I,M)=FLINACC_M(I,M)+FDLROW(I)
           FLUTACC_M(I,M)=FLUTACC_M(I,M)+SBC*GTROT(I,M)**4
@@ -4924,8 +4944,8 @@ C
           UVACC_M(I,M)=UVACC_M(I,M)/REAL(NDAY)
           PRESACC_M(I,M)=PRESACC_M(I,M)/REAL(NDAY)
           QAACC_M(I,M)=QAACC_M(I,M)/REAL(NDAY)
-          ALTOT=(ALVSACC_M(I,M)+ALIRACC_M(I,M))/2.0
-          FSSTAR=FSINACC_M(I,M)*(1.-ALTOT)
+          ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(NDAY)
+          FSSTAR=FSINACC_M(I,M)*(1.-ALTOTACC_M(I,M))
           FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
           QH=HFSACC_M(I,M)
           QE=QEVPACC_M(I,M)
@@ -4960,7 +4980,7 @@ C         WRITE TO OUTPUT FILES
 C
           WRITE(611,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,
      1                    BEG,GTOUT,SNOACC_M(I,M),RHOSACC_M(I,M),
-     2                    WSNOACC_M(I,M),ALTOT,ROFACC_M(I,M),
+     2                    WSNOACC_M(I,M),ALTOTACC_M(I,M),ROFACC_M(I,M),
      3                    CUMSNO,' TILE ',M
             IF(IGND.GT.3) THEN
                WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,

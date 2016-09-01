@@ -292,6 +292,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: TCANACC_M !<
     real, dimension(nlat,nmos) :: RCANACC_M !<
     real, dimension(nlat,nmos) :: SCANACC_M !<
+    real, dimension(nlat,nmos) :: ALTOTACC_M !<
     real, dimension(nlat,nmos) :: GROACC_M  !<
     real, dimension(nlat,nmos) :: FSINACC_M !<
     real, dimension(nlat,nmos) :: FLINACC_M !<
@@ -1900,6 +1901,7 @@ DO I=1,NLTEST
         vrot%UVACC_M(i,m) = 0.
         vrot%PRESACC_M(i,m) = 0.
         vrot%QAACC_M(i,m) = 0.
+        vrot%ALTOTACC_M(i,m) = 0.
         vrot%EVAPACC_M(i,m) = 0.
         vrot%FLUTACC_M(i,m) = 0.
 
