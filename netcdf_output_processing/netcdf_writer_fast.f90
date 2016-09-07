@@ -767,6 +767,7 @@ if (DOWETLANDS) then
   inquire(file=trim(folder)//trim(ARGBUFF)//'.CT08Y',exist=lexist)
   if (lexist) then
 
+     infile=trim(folder)//trim(ARGBUFF)//'.CT08Y'
      command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_w.dat'
      call system(command)
 
