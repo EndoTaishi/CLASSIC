@@ -3058,7 +3058,7 @@ c
             end if
           endif   ! lopcount .gt. 1
 
-         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
+C         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 C===================== CTEM ============================================ /
 
           FSVHROW(I)=0.5*FSSROW(I)
