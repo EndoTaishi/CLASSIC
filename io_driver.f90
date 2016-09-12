@@ -1191,8 +1191,8 @@ DO 821 M=1,NMTEST
     QEVPACC_MO(I)=QEVPACC_MO(I)+QEVPROT(I,M)*FAREROT(I,M)
     SNOACC_MO(I) =SNOACC_MO(I)+SNOROT(I,M)*FAREROT(I,M)
     TAACC_MO(I)=TAACC_MO(I)+TAROW(I)*FAREROT(I,M)
-    GROUNDEVAP(I)=GROUNDEVAP(I)+(QFGROT(I,M)+QFNROT(I,M))*FAREROT(I,M) !>ground evap includes both evap and sublimation from snow
-    CANOPYEVAP(I)=CANOPYEVAP(I)+(QFCLROT(I,M)+QFCFROT(I,M))*FAREROT(I,M) !>canopy evap includes both evap and sublimation
+    GROUNDEVAP(I)=GROUNDEVAP(I)+(QFGROT(I,M)+QFNROT(I,M))*FAREROT(I,M)*DELT !>ground evap includes both evap and sublimation from snow
+    CANOPYEVAP(I)=CANOPYEVAP(I)+(QFCLROT(I,M)+QFCFROT(I,M))*FAREROT(I,M)*DELT !>canopy evap includes both evap and sublimation
 
     IF(SNOROT(I,M).GT.0.0) THEN
         WSNOACC_MO(I)=WSNOACC_MO(I)+WSNOROT(I,M)*FAREROT(I,M)

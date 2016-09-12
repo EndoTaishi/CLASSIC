@@ -21,7 +21,7 @@ var searchData=
   ['class_5fannual_5faw',['class_annual_aw',['../group__io__driver__class__annual__aw.html#ga958601139bd592e2ac9c074c3cd41eb1',1,'io_driver']]],
   ['class_5fmonthly_5faw',['class_monthly_aw',['../group__io__driver__class__monthly__aw.html#ga5036e6789d5928d201cfc65ce1997831',1,'io_driver']]],
   ['class_5fmoyr_5foutput',['class_moyr_output',['../structctem__statevars_1_1class__moyr__output.html',1,'ctem_statevars']]],
-  ['classa',['classa',['../CLASSA_8f.html#a16fd07cb0208a389d4b379c056a917ce',1,'CLASSA.f']]],
+  ['classa',['classa',['../CLASSA_8f.html#ad4c630143a7ebd581213e2acfaf3643e',1,'CLASSA.f']]],
   ['classa_2ef',['CLASSA.f',['../CLASSA_8f.html',1,'']]],
   ['classb',['classb',['../CLASSB_8f.html#ad124fb79b047c72316aea3d64d4721ee',1,'CLASSB.f']]],
   ['classb_2ef',['CLASSB.f',['../CLASSB_8f.html',1,'']]],
@@ -33,7 +33,7 @@ var searchData=
   ['classi_2ef',['CLASSI.f',['../CLASSI_8f.html',1,'']]],
   ['classs',['classs',['../CLASSS_8f.html#a3814fc276d21467a86f856186dd5d938',1,'CLASSS.f']]],
   ['classs_2ef',['CLASSS.f',['../CLASSS_8f.html',1,'']]],
-  ['classt',['classt',['../CLASST_8f.html#ac24405b57bf032cf2758be09c8c70ab2',1,'CLASST.f']]],
+  ['classt',['classt',['../CLASST_8f.html#a676b19c50cb1465a40c967d75168a72f',1,'CLASST.f']]],
   ['classt_2ef',['CLASST.f',['../CLASST_8f.html',1,'']]],
   ['classw',['classw',['../CLASSW_8f.html#aac1827011ed2ca61bd0274e83d1f80ad',1,'CLASSW.f']]],
   ['classw_2ef',['CLASSW.f',['../CLASSW_8f.html',1,'']]],
@@ -58,6 +58,7 @@ var searchData=
   ['competition_5fscheme_5fexistence',['Competition_scheme_existence',['../group__competition__scheme__existence.html',1,'']]],
   ['competition_5funmap',['competition_unmap',['../competition__unmap_8f.html#ab970a794d878e125da563f7022d2d3a4',1,'competition_unmap.f']]],
   ['competition_5funmap_2ef',['competition_unmap.f',['../competition__unmap_8f.html',1,'']]],
+  ['contributing_2emd',['CONTRIBUTING.md',['../CONTRIBUTING_8md.html',1,'']]],
   ['create_5foutfiles',['create_outfiles',['../group__io__driver__create__outfiles.html#ga2eac450ef320091bf7724cf6b178e040',1,'io_driver']]],
   ['ctem',['ctem',['../ctem_8f90.html#ad0e785d83405070bbea8895c615e7f69',1,'ctem.f90']]],
   ['ctem_2ef90',['ctem.f90',['../ctem_8f90.html',1,'']]],
@@ -84,5 +85,6 @@ var searchData=
   ['cwcalc',['cwcalc',['../CWCALC_8f.html#a1c51886dfe7782b7a65415cc66561efb',1,'CWCALC.f']]],
   ['cwcalc_2ef',['CWCALC.f',['../CWCALC_8f.html',1,'']]],
   ['cyclemet',['cyclemet',['../structctem__statevars_1_1ctem__switches.html#a4050812675cede871eb31ce2605868e2',1,'ctem_statevars::ctem_switches']]],
-  ['class_2dctem_20documentation',['CLASS-CTEM Documentation',['../index.html',1,'']]]
+  ['class_2dctem_20documentation',['CLASS-CTEM Documentation',['../index.html',1,'']]],
+  ['contributing',['CONTRIBUTING',['../md_CONTRIBUTING.html',1,'']]]
 ];
