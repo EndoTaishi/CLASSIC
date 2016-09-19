@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['hetresg_2ef',['hetresg.f',['../hetresg_8f.html',1,'']]],
-  ['hetresv_2ef',['hetresv.f',['../hetresv_8f.html',1,'']]]
+  ['hetres_5fmod_2ef90',['hetres_mod.f90',['../hetres__mod_8f90.html',1,'']]]
 ];

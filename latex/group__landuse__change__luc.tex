@@ -84,10 +84,6 @@ If competition is on, we need to adjust the other fractions for the increase/dec
 
 check if this year\textquotesingle{}s fractional coverages have changed or not for any pft
 
-only perform the rest of the subroutine if any luc is actually taking place, otherwise exit. 
-
- initialization
-
 initialization ends 
 
 
@@ -96,17 +92,15 @@ if land use change has taken place then get fcanmxs for use by class based on th
 
 check if the interpol didn\textquotesingle{}t mess up the barefrac. if so, take the extra amount from the pft with the largest area. jm apr 24 2013. but you can\textquotesingle{}t take it from crops!
 
-compete only needs minbare but it checks later.
-
 find previous day\textquotesingle{}s bare fraction using previous day\textquotesingle{}s fcancmxs
 
 check if the interpol didn\textquotesingle{}t mess up the pbarefra. if so, take the extra amount from the pft with the largest area. jm apr 24 2013. but you can\textquotesingle{}t take it from crops!
 
 based on sizes of 3 live pools and 2 dead pools we estimate the total amount of c in each grid cell.
 
-bare fractions cannot be negative
+\begin{DoxyVerb}find above ground biomass and treatment index for combust, paper,
+and furniture \end{DoxyVerb}
 
-find above ground biomass and treatment index for combust, paper, and furniture
 
 check if a pft\textquotesingle{}s fractional cover is increasing or decreasing
 

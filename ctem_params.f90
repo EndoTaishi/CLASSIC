@@ -1,4 +1,10 @@
 !>\defgroup ctem_params_initpftpars
+
+!> This module holds CTEM globally accessible parameters
+!> These parameters are used in all CTEM subroutines
+!> via use statements pointing to this module EXCEPT PHTSYN3.f
+!> which has the information passed in via arguments. This is a legacy thing.
+
 !>The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
 !>first, then the remaining variables are assigned different variables if competition is on, or not.
 !>
@@ -22,16 +28,9 @@
 
 module ctem_params
 
-! This module holds CTEM globally accessible parameters
-! These parameters are used in all CTEM subroutines
-! via use statements pointing to this module EXCEPT PHTSYN3.f 
-! which has the information passed in via arguments. This is a legacy thing.
+!>\ingroup ctem_params_main
 
-! Remember that changes to this module will usually only take effect
-! after you have done a 'make clean' then a 'make' (because it is a module).
-
-! This module is structured with general parameters first then the PFT specific
-! parameters later.
+!!@{
 
 ! J. Melton
 ! Jun 23 2013
@@ -43,6 +42,10 @@ module ctem_params
 !                    all ctem subroutines except PHTSYN3 keep their parameters here.   
 !
 ! Jan 17 2014 - JM - Add in more parameters from ctem.f, phenology.f, and allocate.f. 
+
+! Remember that changes to this module will usually only take effect
+! after you have done a 'make clean' then a 'make' (because it is a module).
+
 
 implicit none
 
@@ -661,7 +664,9 @@ real :: stmhrspn = 17.0 !< Stem harvest span. same as crop harvest span. period 
 !>Rita Wania's thesis suggests about 0.25, but we get a better agreement to outputs from the Walter's model if we use 0.16. 
 !>Note that this scaling factor likely is temperature dependent, and increases with temperature, but it is difficult to 
 !>know the function, so leave constant for now ratio is \f$mol ch_4\f$ to \f$mol co_2\f$
-real :: ratioch4     = 0.16                       
+!real :: ratioch4     = 0.16  ! old value.
+real :: ratioch4     = 0.135 ! New value based on Vivek's work of Aug 2016.
+
 !>ratio of wetland to upland respiration\n
 !>Use the heterotrophic respiration outputs for soil and litter as the ecosystem basis.  These were summed as "hetrores".
 !>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration 
@@ -669,7 +674,7 @@ real :: ratioch4     = 0.16
 real :: wtdryres     = 0.45                       
 real :: factor2      = 0.015  !< constant value for secondary (ch4wet2) methane emissions calculation
 real :: lat_thrshld1 = 40.0   !< Northern zone for wetland determination (degrees North)
-real :: lat_thrshld2 = -20.0  !< Boundary with southern zone for wetland determination (degrees North)
+real :: lat_thrshld2 = -35.0  !< Boundary with southern zone for wetland determination (degrees North)
 real :: soilw_thrshN = 0.55   !< Soil wetness threshold in the North zone
 real :: soilw_thrshE = 0.80   !< Soil wetness threshold in the Equatorial zone
 real :: soilw_thrshS = 0.70   !< Soil wetness threshold in the South zone

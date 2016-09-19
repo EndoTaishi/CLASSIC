@@ -8,7 +8,7 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{ctem_8f90_aeac1eecbe7347b17101ecc2cf445f146}{ctem} (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar,popdon,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,compete,netrad,precip,grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile\+\_\+per\+P\+F\+T, wetfrac, slopefrac,currlat,
+subroutine \hyperlink{ctem_8f90_a2b6b15dcac84105200925dab9dfea7aa}{ctem} (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar,popdon,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,compete,netrad,precip,psisat, grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile\+\_\+per\+P\+F\+T, wetfrac, slopefrac,bi,thpor,thiceg, currlat,ch4conc,G\+R\+A\+V,R\+H\+O\+W,R\+H\+O\+I\+C\+E,
 \end{DoxyCompactItemize}
 
 
@@ -18,7 +18,7 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{ctem_8f90_aeac1eecbe7347b17101ecc2cf445f146}{}\index{ctem.\+f90@{ctem.\+f90}!ctem@{ctem}}
+\hypertarget{ctem_8f90_a2b6b15dcac84105200925dab9dfea7aa}{}\index{ctem.\+f90@{ctem.\+f90}!ctem@{ctem}}
 \index{ctem@{ctem}!ctem.\+f90@{ctem.\+f90}}
 \subsubsection[{ctem}]{\setlength{\rightskip}{0pt plus 5cm}subroutine ctem (
 \begin{DoxyParamCaption}
@@ -26,9 +26,9 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \item[{real, dimension(ilg), intent(in)}]{fsnow, }
 \item[{real, dimension(ilg,ignd), intent(in)}]{sand, }
 \item[{real, dimension(ilg,ignd), intent(in)}]{clay, }
-\item[{integer}]{il1, }
-\item[{integer}]{il2, }
-\item[{integer}]{iday, }
+\item[{integer, intent(in)}]{il1, }
+\item[{integer, intent(in)}]{il2, }
+\item[{integer, intent(in)}]{iday, }
 \item[{real, dimension(ilg), intent(in)}]{radj, }
 \item[{real, dimension(ilg), intent(in)}]{tcano, }
 \item[{real, dimension(ilg), intent(in)}]{tcans, }
@@ -52,35 +52,61 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \item[{real, dimension(ilg), intent(in)}]{prbfrhuc, }
 \item[{real, dimension(ilg), intent(inout)}]{extnprob, }
 \item[{integer, dimension(ilg), intent(in)}]{stdaln, }
-\item[{real, dimension(ilg,ignd)}]{tbar, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{tbar, }
 \item[{logical, intent(inout)}]{popdon, }
 \item[{integer, dimension(ican)}]{nol2pfts, }
-\item[{real, dimension(ilg,icc)}]{pfcancmx, }
-\item[{real, dimension(ilg,icc)}]{nfcancmx, }
-\item[{logical}]{lnduseon, }
-\item[{real, dimension(ilg,ignd)}]{thicec, }
-\item[{real, dimension(ilg)}]{soildpth, }
-\item[{integer}]{spinfast, }
-\item[{real, dimension(ilg,icc)}]{todfrac, }
-\item[{logical}]{compete, }
-\item[{real, dimension(ilg)}]{netrad, }
-\item[{real, dimension(ilg)}]{precip, }
+\item[{real, dimension(ilg,icc), intent(in)}]{pfcancmx, }
+\item[{real, dimension(ilg,icc), intent(in)}]{nfcancmx, }
+\item[{logical, intent(in)}]{lnduseon, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{thicec, }
+\item[{real, dimension(ilg), intent(in)}]{soildpth, }
+\item[{integer, intent(in)}]{spinfast, }
+\item[{real, dimension(ilg,icc), intent(in)}]{todfrac, }
+\item[{logical, intent(in)}]{compete, }
+\item[{real, dimension(ilg), intent(in)}]{netrad, }
+\item[{real, dimension(ilg), intent(in)}]{precip, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{psisat, }
 \item[{real, dimension(ilg), intent(in)}]{grclarea, }
-\item[{real, dimension(ilg)}]{popdin, }
-\item[{logical}]{dofire, }
-\item[{logical}]{dowetlands, }
-\item[{logical}]{obswetf, }
-\item[{integer, dimension(ilg,ignd)}]{isand, }
-\item[{real, dimension(ilg)}]{faregat, }
+\item[{real, dimension(ilg), intent(inout)}]{popdin, }
+\item[{logical, intent(in)}]{dofire, }
+\item[{logical, intent(in)}]{dowetlands, }
+\item[{logical, intent(in)}]{obswetf, }
+\item[{integer, dimension(ilg,ignd), intent(in)}]{isand, }
+\item[{real, dimension(ilg), intent(in)}]{faregat, }
 \item[{logical, intent(in)}]{onetile\+\_\+per\+P\+F\+T, }
-\item[{real, dimension(ilg)}]{wetfrac, }
-\item[{real, dimension(ilg,8)}]{slopefrac, }
-\item[{real, dimension(ilg), intent(in)}]{currlat}
+\item[{real, dimension(ilg), intent(in)}]{wetfrac, }
+\item[{real, dimension(ilg,8), intent(in)}]{slopefrac, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{bi, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{thpor, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{thiceg, }
+\item[{real, dimension(ilg), intent(in)}]{currlat, }
+\item[{real, dimension(ilg), intent(in)}]{ch4conc, }
+\item[{real, intent(in)}]{G\+R\+A\+V, }
+\item[{real, intent(in)}]{R\+H\+O\+W, }
+\item[{real, intent(in)}]{R\+H\+O\+I\+C\+E}
 \end{DoxyParamCaption}
-)}\label{ctem_8f90_aeac1eecbe7347b17101ecc2cf445f146}
+)}\label{ctem_8f90_a2b6b15dcac84105200925dab9dfea7aa}
 
 \begin{DoxyParams}[1]{Parameters}
-\mbox{\tt in,out}  & {\em fcancmx} & max. fractional coverage of ctem\textquotesingle{}s 9 pfts, but this can be modified by land-\/use change, and competition between pfts\\
+\mbox{\tt in}  & {\em lnduseon} & logical switch to run the land use change subroutine or not.\\
+\hline
+\mbox{\tt in}  & {\em compete} & logical boolean telling if competition between pfts is on or not\\
+\hline
+\mbox{\tt in}  & {\em dofire} & boolean, if true allow fire, if false no fire.\\
+\hline
+\mbox{\tt in}  & {\em dowetlands} & if true allow wetland methane emission\\
+\hline
+\mbox{\tt in}  & {\em obswetf} & if true, use read-\/in observed wetland fraction\\
+\hline
+\mbox{\tt in}  & {\em onetile\+\_\+perpft} & if you are running with one tile per P\+F\+T in mosaic mode, set to true. Changes how competition is run. Specifically it allows competition between tiles. This is not recommended for any case where you don\textquotesingle{}t have one P\+F\+T in each tile as it has not been tested for that.\\
+\hline
+\mbox{\tt in}  & {\em iday} & day of year\\
+\hline
+\mbox{\tt in}  & {\em spinfast} & spinup factor for soil carbon whose default value is 1. as this factor increases the soil c pool will come into equilibrium faster. reasonable value for spinfast is between 5 and 10. when spinfast.\+ne.\+1 then the balcar subroutine is not run.\\
+\hline
+\mbox{\tt in}  & {\em il1} & il1=1\\
+\hline
+\mbox{\tt in}  & {\em il2} & il2=ilg (no. of grid cells in latitude circle)\\
 \hline
 \mbox{\tt in}  & {\em fsnow} & fraction of snow simulated by class\\
 \hline
@@ -94,6 +120,8 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \hline
 \mbox{\tt in}  & {\em tcans} & canopy temperature for canopy over snow subarea, K\\
 \hline
+\mbox{\tt in}  & {\em tbar} & soil temperature, k\\
+\hline
 \mbox{\tt in}  & {\em tbarc} & soil temperature for canopy over ground subarea, K\\
 \hline
 \mbox{\tt in}  & {\em tbarcs} & soil temperature for canopy over snow subarea\\
@@ -102,29 +130,63 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \hline
 \mbox{\tt in}  & {\em tbargs} & soil temperature for snow over ground subarea\\
 \hline
+\mbox{\tt in}  & {\em psisat} & saturated soil matric potential (m)\\
+\hline
+\mbox{\tt in}  & {\em bi} & Brooks and Corey b term\\
+\hline
+\mbox{\tt in}  & {\em thpor} & Soil porosity\\
+\hline
 \mbox{\tt in}  & {\em ta} & air temp, K\\
 \hline
 \mbox{\tt in}  & {\em delzw} & thicknesses of the 3 soil layers\\
 \hline
 \mbox{\tt in}  & {\em zbotw} & bottom of soil layers\\
 \hline
+\mbox{\tt in}  & {\em soildpth} & soil depth (m)\\
+\hline
 \mbox{\tt in}  & {\em thliqc} & liquid mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas\\
 \hline
 \mbox{\tt in}  & {\em thliqg} & liquid mois. content of 3 soil layers, for ground and snow over ground subareas\\
 \hline
+\mbox{\tt in}  & {\em thicec} & Frozen soil moisture content for canopy over snow and canopy over ground subareas\\
+\hline
+\mbox{\tt in}  & {\em thiceg} & Frozen soil moisture content for ground and snow over ground subareas\\
+\hline
 \mbox{\tt in}  & {\em deltat} & C\+T\+E\+M timestep in days\\
+\hline
+\mbox{\tt in}  & {\em grclarea} & area of the grid cell, $km^2$\\
+\hline
+\mbox{\tt in}  & {\em currlat} & centre latitude of grid cells in degrees\\
 \hline
 \mbox{\tt in}  & {\em uwind} & u wind speed, m/s\\
 \hline
 \mbox{\tt in}  & {\em vwind} & v wind speed, m/s\\
 \hline
+\mbox{\tt in}  & {\em precip} & daily precipitation (mm/day)\\
+\hline
+\mbox{\tt in}  & {\em netrad} & daily net radiation (w/m2)\\
+\hline
 \mbox{\tt in}  & {\em lightng} & total lightning frequency, flashes/km2.\+year\\
 \hline
 \mbox{\tt in}  & {\em prbfrhuc} & probability of fire due to human causes\\
 \hline
-\mbox{\tt in,out}  & {\em extnprob} & fire extingusinging probability\\
+\mbox{\tt in}  & {\em pfcancmx} & previous year\textquotesingle{}s fractional coverages of pfts\\
+\hline
+\mbox{\tt in}  & {\em nfcancmx} & next year\textquotesingle{}s fractional coverages of pfts\\
+\hline
+\mbox{\tt in}  & {\em todfrac} & max. fractional coverage of ctem\textquotesingle{}s 9 pfts by the end of the day, for use by land use subroutine\\
+\hline
+\mbox{\tt in}  & {\em ch4conc} & Atmospheric $CH_4$ concentration at the soil surface (ppmv)\\
 \hline
 \mbox{\tt in}  & {\em stdaln} & an integer telling if ctem is operated within gcm (=0) or in stand alone mode (=1). this is used for fire purposes. see comments just above where disturb subroutine is called.\\
+\hline
+\mbox{\tt in}  & {\em grav} & Acceleration due to gravity (\$m s$^\wedge$\{-\/1\} ), (C\+L\+A\+S\+S param) passed in to avoid the common block structure.\\
+\hline
+\mbox{\tt in}  & {\em rhow} & Density of water (\$kg m$^\wedge$\{-\/3\}), (C\+L\+A\+S\+S param) passed in to avoid the common block structure.\\
+\hline
+\mbox{\tt in}  & {\em rhoice} & Density of ice (\$kg m$^\wedge$\{-\/3\}), (C\+L\+A\+S\+S param) passed in to avoid the common block structure.\\
+\hline
+\mbox{\tt in,out}  & {\em popdon} & if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes, or if false, read directly from .ctm file\\
 \hline
 \mbox{\tt in,out}  & {\em ancsveg} & net photosynthetic rate for ctems 9 pfts for canopy over snow subarea\\
 \hline
@@ -134,49 +196,13 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \hline
 \mbox{\tt in,out}  & {\em rmlcgveg} & leaf respiration rate for ctems 9 pfts forcanopy over ground subarea\\
 \hline
-\mbox{\tt in}  & {\em grclarea} & area of the grid cell, $km^2$\\
+\mbox{\tt in,out}  & {\em extnprob} & fire extingusinging probability\\
 \hline
-\mbox{\tt in}  & {\em currlat} & centre latitude of grid cells in degrees\\
+\mbox{\tt in,out}  & {\em fcancmx} & max. fractional coverage of ctem\textquotesingle{}s 9 pfts, but this can be modified by land-\/use change, and competition between pfts\\
 \hline
- & {\em lnduseon} & logical switch to run the land use change subroutine or not.\\
+\mbox{\tt in,out}  & {\em popdin} & population density $(people / km^2)$\\
 \hline
- & {\em dofire} & boolean, if true allow fire, if false no fire.\\
-\hline
- & {\em dowetlands} & if true allow wetland methane emission\\
-\hline
- & {\em obswetf} & observed wetland fraction\\
-\hline
- & {\em il1} & il1=1\\
-\hline
- & {\em il2} & il2=ilg\\
-\hline
- & {\em iday} & day of year\\
-\hline
- & {\em nol2pfts} & number of level 2 ctem pfts\\
-\hline
- & {\em spinfast} & spinup factor for soil carbon whose default value is 1. as this factor increases the soil c pool will come into equilibrium faster. reasonable value for spinfast is between 5 and 10. when spinfast.\+ne.\+1 then the balcar subroutine is not run.\\
-\hline
- & {\em tbar} & soil temperature, k\\
-\hline
- & {\em thicec} & frozen mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas\\
-\hline
- & {\em soildpth} & soil depth (m)\\
-\hline
- & {\em todfrac} & max. fractional coverage of ctem\textquotesingle{}s 9 pfts by the end of the day, for use by land use subroutine\\
-\hline
- & {\em pfcancmx} & previous year\textquotesingle{}s fractional coverages of pfts\\
-\hline
- & {\em nfcancmx} & next year\textquotesingle{}s fractional coverages of pfts\\
-\hline
- & {\em popdin} & population density $(people / km^2)$\\
-\hline
- & {\em precip} & daily precipitation (mm/day)\\
-\hline
- & {\em netrad} & daily net radiation (w/m2)\\
-\hline
- & {\em compete} & logical boolean telling if competition between pfts is on or not\\
-\hline
-\mbox{\tt in,out}  & {\em popdon} & if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes, or if false, read directly from .ctm file \\
+ & {\em nol2pfts} & number of level 2 ctem pfts \\
 \hline
 \end{DoxyParams}
 
@@ -241,9 +267,8 @@ Now that we know maintenance respiration from leaf, stem, and root and gpp, we c
 
 Calculate grid-\/averaged rates of rm, rg, npp, and gpp
 
-Heterotrophic respiration
+\begin{DoxyVerb} Heterotrophic respiration part starts \end{DoxyVerb}
 
-Find heterotrophic respiration rates (umol co2/m2/sec) for canopy over snow subarea
 
 Find heterotrophic respiration rates for canopy over ground subarea
 
@@ -270,6 +295,8 @@ But over the bare fraction there is no live root.
 Find grid averaged humification and soil respiration rates
 
 Find C\+H4 wetland area (if not prescribed) and emissions\+:
+
+Calculate the methane that is oxidized by the soil sink
 
 Estimate allocation fractions for leaf, stem, and root components.
 

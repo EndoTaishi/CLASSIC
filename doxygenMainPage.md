@@ -1,15 +1,7 @@
-//Doxygen main page introduction
+[TOC]
 
-/*!
-\mainpage CLASS-CTEM Documentation
-\section runStandAloneMode Running CLASS-CTEM
+# Overview of the Canadian Terrestrial Ecosystem Model (CTEM) {#overviewCTEM}
 
-[Guide to running CLASS-CTEM in a stand-alone mode](https://docs.google.com/document/d/1pzp7UfNe6aVFXe9LI9XMiGUX2pCALk4tU8MqF_UpQLg/edit?usp=sharing)
-
-
-
-
-\section overviewCTEM Overview of CTEM
 <!-- start ignore of simple table example
 \f[
 \begin{tabular} { l c r }
@@ -18,15 +10,18 @@
   7 & 8 & 9 \\
 \end{tabular}
 \f]
+
+Or can be done via the markdown syntax (http://www.stack.nl/~dimitri/doxygen/manual/markdown.html#md_toc) which is a bit easier.
+
 end ignore -->
 
-Version 1 of the CTEM is the terrestrial carbon cycle component of the second generation Canadian Earth System Model (CanESM2) \cite Arora2011-79f where it is coupled to version 2.7 of the Canadian Land Surface Scheme (CLASS). CTEM v. 2.0, used here, is currently coupled to the CLASS v. 3.6 \cite Verseghy2012-c0e. The coupled CLASS--CTEM model is capable of being run online in the CanESM model or offline, as is the case in this study, driven by observation-based meteorological forcings. CTEM models terrestrial ecosystem processes for nine PFTs, two of which are crop PFTs (see Table \ref{tab:compparams}), by tracking the flow of carbon through three living vegetation components (leaves, stem and roots) and two dead carbon pools (litter and soil). The carbon budget equations for the model's five pools are summarized in Sect. \ref{rate_change_eqns} of the Appendix. The amount of carbon in these five carbon pools is simulated prognostically. CLASS models the land surface energy and water balance and calculates liquid and frozen soil moisture, and soil temperature for three soil layers (with thicknesses 0.1, 0.25 and 3.75\,\f$m\f$). In the CLASS--CTEM framework, CLASS uses structural vegetation attributes (including LAI, vegetation height, canopy mass and rooting depth) simulated by CTEM, and CTEM uses soil moisture, soil temperature and net radiation calculated by CLASS. Combined, CLASS and CTEM simulate the atmosphere--land fluxes of energy, water and \f$CO_2\f$.
+Version 1 of the CTEM is the terrestrial carbon cycle component of the second generation Canadian Earth System Model (CanESM2) \cite Arora2011-79f where it is coupled to version 2.7 of the Canadian Land Surface Scheme (CLASS). CTEM v. 2.0 \cite Melton2016-zx is currently coupled to the CLASS v. 3.6 \cite Verseghy2012-c0e. The coupled CLASS--CTEM model is capable of being run online in the CanESM model or offline, as is the case in this study, driven by observation-based meteorological forcings. CTEM models terrestrial ecosystem processes for nine PFTs, two of which are crop PFTs (see Table \ref{tab:compparams}), by tracking the flow of carbon through three living vegetation components (leaves, stem and roots) and two dead carbon pools (litter and soil). The carbon budget equations for the model's five pools are summarized in Sect. \ref{rate_change_eqns} of the Appendix. The amount of carbon in these five carbon pools is simulated prognostically. CLASS models the land surface energy and water balance and calculates liquid and frozen soil moisture, and soil temperature for three soil layers (with thicknesses 0.1, 0.25 and 3.75\,\f$m\f$). In the CLASS--CTEM framework, CLASS uses structural vegetation attributes (including LAI, vegetation height, canopy mass and rooting depth) simulated by CTEM, and CTEM uses soil moisture, soil temperature and net radiation calculated by CLASS. Combined, CLASS and CTEM simulate the atmosphere--land fluxes of energy, water and \f$CO_2\f$.
 
 Version 1.0 of CTEM is described in a collection of papers detailing parametrization of photosynthesis, autotrophic and heterotrophic respiration \cite Arora2003-3b7; phenology, carbon allocation, biomass turnover and conversion of biomass to structural attributes \cite Arora2005-6b1; dynamic root distribution \cite Arora2003838; and disturbance (fire) \cite Arora20052ac. These processes are modelled over prescribed fractional coverage of nine PFTs \cite Wang2006-he and determine the structural vegetation dynamics including vegetation biomass, LAI, vegetation height, fraction of roots in each of the three soil layers, leaf onset and offset times and primary \f$CO_2\f$ fluxes of gross primary productivity (GPP) and NPP. A full description of CTEM and changes from v. 1.0 to v. 2.0 are included in the Appendix.
 
 A parametrization for competition between PFTs in an earlier version of CTEM is described by \cite Arora2006-pp \cite Arora2006-ax where it was evaluated at select locations. Here we present CTEM v. 2.0, which builds upon the model framework of CTEM v. 1.0 and can be run in two different modes, either (i) using specified fractional coverage of its nine PFTs, or (ii) allowing the fractional coverage of its seven non-crop PFTs to be dynamically determined based on competition between PFTs. The parametrization for simulating competition between PFTs is summarized in Sect. \ref{compmain}. The fire parametrization has also been refined in the new model version as described in Appendix \ref{fire}. The CLASS--CTEM modelling framework has the capability of representing the sub-grid scale variability of PFTs using either a composite or a mosaic configuration \cite Li2012-f7f \cite Melton2014-xk. In the composite (or single tile) configuration, the vegetation attributes for all PFTs present in a grid cell are averaged and used in energy and water balance calculations that determine the physical land surface conditions including soil moisture, soil temperature and thickness and fractional coverage of snow (if present). In the mosaic (or multi-tile) configuration each PFT is allocated its own tile for which separate energy and water balance calculations are performed. As a result, the simulated carbon balance evolves somewhat differently in the two configurations despite being driven with identical climate forcing (see \cite Melton2014-xk). The results presented in this paper are obtained using the composite configuration.
 
-\section overviewCLASS Overview of CLASS
+# Overview of the Canadian Land Surface Scheme (CLASS) {#overviewCLASS}
 
 The Canadian Land Surface Scheme, CLASS, was originally developed for use with the Canadian Global Climate Model or GCM (Verseghy, 1991; Verseghy et al., 1993). This documentation describes version 3.6 of CLASS, which was released in December of 2011. The table at the end of this overview summarizes the development of CLASS from the late 1980’s to the present.
 
@@ -47,7 +42,7 @@ The section on the CLASS offline driver, RUNCLASS, provides information on how a
 
 The two sections following the one that describes the driver provide detailed descriptions first of the common block and other preliminary routines that are called before the run is launched, and then of the pre- and post-processing routines that are called at the beginning and end of each time step. The next three sections detail the three main CLASS subroutines together with the auxiliary subroutines that they call: CLASSA, which handles the calculation of the albedos and other surface parameters; CLASST, which addresses the evaluation of the surface energy balance and related variables; and CLASSW, which performs the surface water balance calculations and the re-aggregation of the prognostic variables. The sub-section on each subroutine contains a dictionary of the variables passed into and out of it, with units. The final section provides a list of references cited.
 
-\section devHistory Developmental history of CLASS
+## Developmental history of CLASS {#devHistory}
 
 \f[
 \begin{tabular}{ | l | l || l | }
@@ -71,11 +66,11 @@ composition; modified surface temperature iteration scheme. \\
 \end{tabular}
 \f]
 
-\section dataRequirements Data Requirements
+# Data Requirements {#dataRequirements}
 
 This section describes the three types of data that are required to run CLASS: atmospheric forcing data, surface vegetation and soil data, and initial values for the prognostic variables.
 
-\subsection forcingData Forcing Data
+## Forcing Data {#forcingData}
 
 At each time step, for each grid cell or modelled area, the following atmospheric forcing data are required:
 
@@ -112,7 +107,7 @@ When assembling the forcing data, the following guidelines should be noted:
 
 8) The length of the time step should be carefully considered in assembling the forcing data. CLASS has been designed to run at a time step of 30 minutes or less, and the explicit prognostic time stepping scheme used for the soil, snow and vegetation variables is based on this assumption. Longer time steps may lead to the appearance of numerical instabilities in the modelled prognostic variables.
 
-\subsection vegetationData Vegetation Data
+## Vegetation Data {#vegetationData}
 
 For each of the four main vegetation categories (needleleaf trees, broadleaf trees, crops and grass), the following data are required for each mosaic tile over each grid cell or modelled area:
 
@@ -145,7 +140,7 @@ Grass & 100.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\
 \end{tabular}
 \f]
 
-\subsection soilData Soil Data
+## Soil Data {#soilData}
 
 The following information is required for each modelled soil layer:
 
@@ -193,7 +188,7 @@ Unless the soil depth is very large and/or the run is very long, the geothermal 
 
 Finally, four parameters are required for modelling lateral movement of soil water: GRKFROT, WFCIROT, WFSFROT and XSLPROT. However, the routines for interflow and streamflow modelling are still under development, so unless the user is involved in this development, these parameters can be set to arbitrary values, since they will not be used.
 
-\subsection initProgVar Initialization of Prognostic Variables
+## Initialization of Prognostic Variables {#initProgVar}
 
 CLASS requires initial values of the land surface prognostic variables, either from the most recent atmospheric model integration or from field measurements. These are listed below, with guidelines for specifying values for each.
 
@@ -227,8 +222,47 @@ CLASS requires initial values of the land surface prognostic variables, either f
 
 5) Surface ponded water is a small term and is ephemeral in nature, so ZPNDROT and TPNDROT can both be initialized to zero. TSFSROT is included simply to provide a first guess for the surface temperature iteration in the next time step, so it can be initialized to an arbitrary value. For the snow-covered subareas of the surface it can be set to the freezing point of water; for the snow-free subareas it can be set to the temperature of the first soil layer.
 
+# Running CLASS-CTEM {#runStandAloneMode}
 
+This guide will eventually be housed here, but until then you can also look at this: [Guide to running CLASS-CTEM in a stand-alone mode](https://docs.google.com/document/d/1pzp7UfNe6aVFXe9LI9XMiGUX2pCALk4tU8MqF_UpQLg/edit?usp=sharing)
 
+The model code is provided in this git repository. Some points:
+    1. runclass36ctem.f is the primary driver via which most input data is read (CTEM's initialization files are read in io_driver.f90) and subroutines are called.
+    2. The model initialization files include one for CLASS (SITENAME.INI) and one for CTEM (SITENAME.CTM). Examples provided in the Benchmarks folder.
+    3. The file containing meteorological data (SITENAME.MET). Also provided in the Benchmarks folder.
+    4. A Makefile is included which compiles all .f and .f90 files and generates an executable called CLASS36CTEM. The standard Makefile, currently set up for pgf90 (but can also be setup for xlf and gfortran) may not be suitable for your Unix station and might require modification. You may need your system administrator’s help to do this. Note that when the code is compiled it generates .mod files that corresponds to the Fortran modules.
 
+Other than the .INI, .CTM  and .MET files which are mandatory, some other CTEM related files are also required depending on which CTEM functionality is switched on. These required files are discussed further down in this user guide.
 
-*/
+## One thing to note about composite versus mosaic running of the model {#compvsmosaic}
+
+In the composite mode, the structural vegetation attributes (including leaf area index, vegetation height, rooting depth) of PFTs that exist in a grid cell are averaged in proportion to their fractional coverages and then used in the grid-averaged energy and water balance calculations. As a result the entire grid cell is characterized by land surface physical environment (including soil temperature, soil moisture, fractional snow cover, and net radiation) that is common to all PFTs. In contrast, in the mosaic mode a grid box is split into multiple tiles representing individual PFTs for each of which energy, water and carbon balance calculations are performed separately. The mosaic mode is, however, able to represent all forms of sub-grid scale variabilities. In principle, the mosaic mode may be used to represent tiles that are characterized by different soil types. For the purposes of coupling to CTEM, however, each tile represents each PFT.
+
+In the composite mode then there is only one tile which covers the whole grid cell and the fractional coverage of CLASS’s 4 PFTs and CTEM’s 9 PFTs are specified or dynamically modelled by CTEM. In the mosaic mode, the grid cell is divided into multiple tiles and each tile is assumed to be covered by only one PFT (for simplicity) although the entire grid cell is still assumed to be characterized by the same soil type. \cite Melton2016-zx describe the composite and mosaic approaches for the CLASS-CTEM modelling framework.
+
+Although pretty clever, running the mosaic version and interpreting the model results can be a logical nightmare, especially with competition on where the fractions of different tiles/mosaic change with time. So if you are new at this, please consider running the model in the composite mode.
+
+## The Input Files {#inputs}
+
+### The MET file (Meteorological forcings) {#MET}
+
+The .MET files contain (usually) half-hourly values of all seven variables that are needed to drive the CLASS land surface scheme. Please see the Benchmarks folder for an example .MET file.  The format of the .MET file cannot be changed since CLASS reads in these data using a fixed FORTRAN format (1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,F9.4).
+
+### The INI file (CLASS's initialization file) {#INI}
+
+The .INI file is the initialization file for CLASS, and includes initialization data for soil moisture, temperature, and other related fields. Like the .MET file, the .INI file also uses fixed FORTRAN formats to read data, so caution must be taken when changing the .INI file fields. In addition, note that when the code is run with dynamic vegetation (when CTEM is switched on) several of the vegetation- related fields specified in the .INI file are replaced by those estimated by CTEM. These fields include:
+
+   - Leaf area index (LAI)
+   - Log of roughness length
+   - Visible and near-infrared albedos
+   - Canopy mass
+   - Rooting depth
+
+In addition, CTEM calculates stomatal resistance values so parameters related to CLASS’ stomatal resistance formulation and the associated parameters in the .INI file (RSMN, QA50, VPDA, VPDB, PSGA and PSGB) do not matter.
+
+If CLASS is being run on its own, without CTEM, proper specification of vegetation related attributes and parameters is crucial.
+
+Version 2.0 of CTEM adds the capability to divide each cell into several mosaics or ‘tiles’ as mentioned above. When running for multiple tiles, Both the CLASS and CTEM calculations are performed over each tile. The prognostic variables are saved for each tile in addition to grid averaged values.
+
+A sample .INI file is found in the Benchmarks folder. Below is another example The bold text does not appear in the actual .INI file but is included here to explain the various fields.
+

@@ -44,28 +44,6 @@ If you want a transient run that does not spin over climate at the start, you ne
  trans\+\_\+startyr = 2000, $<$-- whatever year you want to start at ~\newline
  C\+Y\+C\+L\+E\+M\+E\+T = .F\+A\+L\+S\+E. , $<$-- note this is set to F\+A\+L\+S\+E. 
 
-
-
-To set up a spinup run\+:
-
-This example runs the model over 125 years. The climate cycles from 1901 -\/ 1925 five times. No L\+U\+C happens, the P\+O\+P\+D is set at the 1850 value read in from the P\+O\+P\+D file and the C\+O2 concentration is fixed at S\+E\+T\+C\+O2\+C\+O\+N\+C.
-
-(only the relevant switches are shown below) ~\newline
- transient\+\_\+run = .false. ~\newline
- C\+T\+E\+M\+L\+O\+O\+P = 5 , ~\newline
- N\+C\+Y\+E\+A\+R = 112 , $<$-- Note this should be just be the length of the climate dataset but could be less if you want. ~\newline
- L\+N\+D\+U\+S\+E\+O\+N = .false. , ~\newline
- C\+Y\+C\+L\+E\+M\+E\+T = .T\+R\+U\+E. , $<$-- note this is set to T\+R\+U\+E. ~\newline
- N\+U\+M\+M\+E\+T\+C\+Y\+L\+Y\+R\+S = 25 , $<$-- note this is however many years you want. ~\newline
- M\+E\+T\+C\+Y\+L\+Y\+R\+S\+T = 1901 , ~\newline
- C\+O2\+O\+N = .false. , ~\newline
- S\+E\+T\+C\+O2\+C\+O\+N\+C = 285.\+00 , $<$-- set to your own appropriate value. ~\newline
- P\+O\+P\+D\+O\+N = .T\+R\+U\+E. , $<$-- note keep this on uses the P\+O\+P\+D file, setting false uses the I\+N\+I file value ~\newline
- P\+O\+P\+C\+Y\+C\+L\+E\+Y\+R = 1850 , ~\newline
- O\+B\+S\+W\+E\+T\+F = .false. ,
-
-If doing methane then the C\+H4 switches should be the same as the C\+O2 ones. 
-
 \subsection{Function/\+Subroutine Documentation}
 \hypertarget{read__from__job__options_8f90_a59635532072b59aa5db6bd717cebb79b}{}\index{read\+\_\+from\+\_\+job\+\_\+options.\+f90@{read\+\_\+from\+\_\+job\+\_\+options.\+f90}!read\+\_\+from\+\_\+job\+\_\+options@{read\+\_\+from\+\_\+job\+\_\+options}}
 \index{read\+\_\+from\+\_\+job\+\_\+options@{read\+\_\+from\+\_\+job\+\_\+options}!read\+\_\+from\+\_\+job\+\_\+options.\+f90@{read\+\_\+from\+\_\+job\+\_\+options.\+f90}}
@@ -127,7 +105,7 @@ If doing methane then the C\+H4 switches should be the same as the C\+O2 ones.
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt out}  & {\em transient\+\_\+run} & true if the run is a transient run. With this flag set set to .true., you can cycle over nummetcyclyrs of climate a ctemloop number of times then continue on through the climate the reason for this is to allow a transient from 1850 on, but only having the climate from 1901 while having the other inputs from 1850. See the bottom of this subroutine for an example of how to set this correctly.\\
 \hline
-\mbox{\tt out}  & {\em trans\+\_\+startyr} & the year you want the transient run to start (e.\+g. 1850)\\
+\mbox{\tt out}  & {\em trans\+\_\+startyr} & the year you want the transient run to start (e.\+g. 1850). If you are not doing a transient run, set to a negative value (like -\/9999)\\
 \hline
 \mbox{\tt out}  & {\em ctemloop} & no. of times the .met file is to be read. this option is useful to see how ctem\textquotesingle{}s c pools equilibrate when driven with same climate data over and over again.\\
 \hline

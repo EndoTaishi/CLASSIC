@@ -28,7 +28,7 @@ C!
      M                  QSWINV, RADJ,   DLON,   RHOSNI, DELZ,   DELZW,  
      N                  ZBOTW,  THPOR,  THLMIN, PSISAT, BI,     PSIWLT, 
      O                  HCPS,   ISAND,  
-     P                  FCANCMX,ICTEM,  ICTEMMOD, RMATC, ZOLNC,CMASVEGC,
+     P                  FCANCMX,ICTEM,  ctem_on, RMATC, ZOLNC,CMASVEGC,
      Q                  AILC,   PAIC,   L2MAX,  NOL2PFTS, SLAIC,
      R                  AILCG,  AILCGS, FCANC,  FCANCS,
      S                  IDAY,   ILG,    IL1,    IL2, NBS,   
@@ -36,7 +36,7 @@ C!
      U                  IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
      V                  ISNOALB,IGRALB,ALVSCTM, ALIRCTM )
 
-
+C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
 C     * AUG 25/14 - M.LAZARE.   PASS IN NEW WET AND DRY SOIL BRIGHTNESS
@@ -365,8 +365,10 @@ C
      5      SLAIC(ILG,IC),       ALVSCTM(ILG,IC),
      6      ALIRCTM(ILG,IC)      
 
-      INTEGER ICTEM, ICTEMMOD, L2MAX, NOL2PFTS(IC)
-C                                                                                 
+      INTEGER ICTEM, L2MAX, NOL2PFTS(IC)
+
+      LOGICAL ctem_on
+C
 C     * INTERNAL WORK ARRAYS FOR THIS AND ASSOCIATED SUBROUTINES.
 C
       REAL RMAT (ILG,IC,IG),H     (ILG,IC),  HS    (ILG,IC),
@@ -515,7 +517,7 @@ C ===================== CTEM =====================================\
 C     IF USING DYNAMIC VEGETATION COMPONENT OF CTEM, REPLACE ALBEDOS
 C     THAT ARE BASED ON CTEM.
 
-      IF(ICTEMMOD.EQ.1)THEN
+      IF(ctem_on)THEN
         DO J = 1, IC
           DO I = IL1, IL2
             ALVSC(I,J)=ALVSCTM(I,J)
@@ -544,7 +546,7 @@ C
      D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
      E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,         
      F            RRESID,SRESID,FRTOT,FRTOTS, 
-     G            FCANCMX,ICTEM,ICTEMMOD,RMATC,
+     G            FCANCMX,ICTEM,ctem_on,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC)
 C

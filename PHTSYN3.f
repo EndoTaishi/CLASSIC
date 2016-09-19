@@ -453,9 +453,9 @@ C
      &             0.0, 0.0, 0.0/
 C
 C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
-C     VALUES ARE MAINLY DERIVED FROM KATTGE ET AL. 2009 WHICH 
-C     DOESN'T INCLUDE C4
-      DATA VMAX/62.0E-06, 47.0E-06, 0.00E-06, 
+C     VALUES ARE MAINLY DERIVED FROM \cite Kattge20090c0 WHICH
+C     DOESN'T INCLUDE C4. Also see \cite Alton2017-pd
+      DATA VMAX/42.0E-06, 47.0E-06, 0.00E-06, ! Following the tests of Lina, we adopt 42 for PFT 1.
      &          35.0E-06, 57.0E-06, 40.0E-06, !Fri Feb27th JM, new value. was 48 for PFT3
      &          55.0E-06, 40.0E-06, 0.00E-06,
      &          75.0E-06, 15.0E-06, 0.00E-06/
@@ -918,17 +918,13 @@ C>FIND Vmax,canopy, THAT IS Vmax SCALED BY LAI FOR THE SINGLE LEAF MODEL
 C>
 !>------------- Changing Vcmax seasonally -----------------------
 !!
-!!Based on Bauerle, W. L., Oren, R., Way, D. A., Qian, S. S., Stoy, P. C., Thornton,
-!!P. E., Bowden, J. D., Hoffman, F. M. and Reynolds, R. F.: Photoperiodic regulation
-!!of the seasonal pattern of photosynthetic capacity and the implications for carbon
-!!cycling, Proc. Natl. Acad. Sci. U. S. A., 109(22), 8612–8617, 2012,
+!!Based on \cite Bauerle2012-c29  and \cite Alton2017-pd
 !!there is good evidence for the Vcmax varying throughout the season for deciduous tree
 !!species. We are adopting a parameterization based upon their paper with some differences.
 !!We don't apply it to evergreens like they suggest. Their paper had only one evergreen species
-!!and other papers (Miyazawa, Y. and Kikuzawa, K.: Physiological basis of seasonal trend in
-!!leaf photosynthesis of five evergreen broad-leaved species in a temperate deciduous forest,
-!!Tree Physiol., 26(2), 249–256, 2006.) don't seem to back that up. Grasses and crops are also
-!!not affected by the dayl.
+!!and other papers (\cite Miyazawa2006-so) don't seem to back that up. Grasses and crops are also
+!!not affected by the dayl. \cite Alton2017-pd seems to indicate that all PFTs except
+!!BDL-EVG tropical should vary intra-annually (see their figure 8).
 !!
 
           if ((m .eq. 2 .or. m .eq. 4)) then

@@ -1,5 +1,10 @@
 \hypertarget{ctem__params_8f90}{}\section{ctem\+\_\+params.\+f90 File Reference}
 \label{ctem__params_8f90}\index{ctem\+\_\+params.\+f90@{ctem\+\_\+params.\+f90}}
+
+
+This module holds C\+T\+E\+M globally accessible parameters These parameters are used in all C\+T\+E\+M subroutines via use statements pointing to this module E\+X\+C\+E\+P\+T \hyperlink{PHTSYN3_8f}{P\+H\+T\+S\+Y\+N3.\+f} which has the information passed in via arguments. This is a legacy thing.  
+
+
 \subsection*{Functions/\+Subroutines}
 {\bf }\par
 \begin{DoxyCompactItemize}
@@ -61,7 +66,7 @@ subroutine, public \hyperlink{group__ctem__params__initpftpars_ga766b01bfb91b339
 \hypertarget{namespacectem__params_af834d482b4eec80d530f6f6afc9fc5b5}{}integer, parameter {\bfseries ctem\+\_\+params\+::ican} = 4\label{namespacectem__params_af834d482b4eec80d530f6f6afc9fc5b5}
 
 \begin{DoxyCompactList}\small\item\em Number of C\+L\+A\+S\+S pfts. \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_aa84174d70bc4dcedb2b6edeb859f1507}{}integer, parameter {\bfseries ctem\+\_\+params\+::ignd} = 3\label{namespacectem__params_aa84174d70bc4dcedb2b6edeb859f1507}
+\hypertarget{namespacectem__params_aa84174d70bc4dcedb2b6edeb859f1507}{}integer, parameter {\bfseries ctem\+\_\+params\+::ignd} = 20\label{namespacectem__params_aa84174d70bc4dcedb2b6edeb859f1507}
 
 \begin{DoxyCompactList}\small\item\em Number of soil layers. \end{DoxyCompactList}\item 
 \hypertarget{namespacectem__params_a8b61932a368c557cc3cb7edf6de23e22}{}integer, parameter {\bfseries ctem\+\_\+params\+::icp1} = ican + 1\label{namespacectem__params_a8b61932a368c557cc3cb7edf6de23e22}
@@ -433,7 +438,7 @@ real, dimension(2) {\bfseries ctem\+\_\+params\+::coldthrs} = \mbox{[} -\/5.\+0 
 \hypertarget{namespacectem__params_ae5c80ee006ea823900274412778709cf}{}real {\bfseries ctem\+\_\+params\+::stmhrspn} = 17.\+0\label{namespacectem__params_ae5c80ee006ea823900274412778709cf}
 
 \begin{DoxyCompactList}\small\item\em Stem harvest span. same as crop harvest span. period in days over which crops are harvested. \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_a34074497065d6cb2b9177c3fc400dcf3}{}real {\bfseries ctem\+\_\+params\+::ratioch4} = 0.\+16\label{namespacectem__params_a34074497065d6cb2b9177c3fc400dcf3}
+\hypertarget{namespacectem__params_a34074497065d6cb2b9177c3fc400dcf3}{}real {\bfseries ctem\+\_\+params\+::ratioch4} = 0.\+135\label{namespacectem__params_a34074497065d6cb2b9177c3fc400dcf3}
 
 \begin{DoxyCompactList}\small\item\em methane to carbon dioxide flux scaling factor.~\newline
 Rita Wania\textquotesingle{}s thesis suggests about 0.\+25, but we get a better agreement to outputs from the Walter\textquotesingle{}s model if we use 0.\+16. Note that this scaling factor likely is temperature dependent, and increases with temperature, but it is difficult to know the function, so leave constant for now ratio is $mol ch_4$ to $mol co_2$ \end{DoxyCompactList}\item 
@@ -447,7 +452,7 @@ Use the heterotrophic respiration outputs for soil and litter as the ecosystem b
 \hypertarget{namespacectem__params_a3a63b83e7f97702b648861ae4a586b59}{}real {\bfseries ctem\+\_\+params\+::lat\+\_\+thrshld1} = 40.\+0\label{namespacectem__params_a3a63b83e7f97702b648861ae4a586b59}
 
 \begin{DoxyCompactList}\small\item\em Northern zone for wetland determination (degrees North) \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_ac0a149191207794d3a3867a93efc5757}{}real {\bfseries ctem\+\_\+params\+::lat\+\_\+thrshld2} = -\/20.\+0\label{namespacectem__params_ac0a149191207794d3a3867a93efc5757}
+\hypertarget{namespacectem__params_ac0a149191207794d3a3867a93efc5757}{}real {\bfseries ctem\+\_\+params\+::lat\+\_\+thrshld2} = -\/35.\+0\label{namespacectem__params_ac0a149191207794d3a3867a93efc5757}
 
 \begin{DoxyCompactList}\small\item\em Boundary with southern zone for wetland determination (degrees North) \end{DoxyCompactList}\item 
 \hypertarget{namespacectem__params_ab4795b61fccde1fc82638b5f8b9624aa}{}real {\bfseries ctem\+\_\+params\+::soilw\+\_\+thrshn} = 0.\+55\label{namespacectem__params_ab4795b61fccde1fc82638b5f8b9624aa}
@@ -459,3 +464,15 @@ Use the heterotrophic respiration outputs for soil and litter as the ecosystem b
 \hypertarget{namespacectem__params_ae3cc62b58531c7d353cc8baac1c1fd6a}{}real {\bfseries ctem\+\_\+params\+::soilw\+\_\+thrshs} = 0.\+70\label{namespacectem__params_ae3cc62b58531c7d353cc8baac1c1fd6a}
 
 \begin{DoxyCompactList}\small\item\em Soil wetness threshold in the South zone. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This module holds C\+T\+E\+M globally accessible parameters These parameters are used in all C\+T\+E\+M subroutines via use statements pointing to this module E\+X\+C\+E\+P\+T \hyperlink{PHTSYN3_8f}{P\+H\+T\+S\+Y\+N3.\+f} which has the information passed in via arguments. This is a legacy thing. 
+
+The structure of this subroutine is variables that are common to competition/prescribe P\+F\+T fractions first, then the remaining variables are assigned different variables if competition is on, or not.
+
+P\+F\+T parameters
+
+Note the structure of vectors which clearly shows the C\+L\+A\+S\+S P\+F\+Ts (along rows) and C\+T\+E\+M sub-\/\+P\+F\+Ts (along columns)
+
+\[ \begin{tabular} { | l | c | c | c | } \hline needle leaf & evg & dcd & --- \\ \hline broad leaf & evg & dcd-cld & dcd-dry \\ \hline crops & c3 & c4 & --- \\ \hline grasses & c3 & c4 & --- \\ \hline \end{tabular} \] 

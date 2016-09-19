@@ -25,10 +25,12 @@
      D            ILG,IL1,IL2,JL,IC,ICP1,IG,IDAY,IDISP,IZREF,IWF,
      E            IPAI,IHGT,RMAT,H,HS,CWCPAV,GROWA,GROWN,GROWB,
      F            RRESID,SRESID,FRTOT,FRTOTS,
-     G            FCANCMX,ICTEM,ICTEMMOD,RMATC,
+     G            FCANCMX,ICTEM,ctem_on,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
      I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC )
 
+C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
+!
 C     * JAN 14/16 - J.MELTON    IN LOOP 450, MODIFIED SO IT COULD HANDLE >3 SOIL LAYERS
 !                               ALSO REMOVED SOME HARDCODED CTEM CODE FOR MORE FLEXIBLE FORMS
 C     * JAN 05/16 - J.MELTON.   TREE PFTS NOW HAVE A MINIMUM PAI OF 1 (LIKE
@@ -318,7 +320,9 @@ C     * INTERNAL WORK FIELD.
 C
       REAL  SFCANCMX(ILG,IC)
 C
-      INTEGER ICTEM, M, N, K1, K2, L2MAX, NOL2PFTS(IC), ICTEMMOD
+      LOGICAL ctem_on
+
+      INTEGER ICTEM, M, N, K1, K2, L2MAX, NOL2PFTS(IC)
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -374,7 +378,7 @@ C
 C
 C     * FOR CTEM, CROP GROWTH IS BUILT IN, SO GROWA=1.
 C
-      IF (ICTEMMOD.EQ.0) THEN
+      IF (.not. ctem_on) THEN
         !>
         !!In the 120 loop, the growth index for crops, GROWA, is calculated (if CLASS is not being run coupled to
         !!CTEM). This is done by referring to the three-dimensional array GROWYR, which contains values
@@ -464,7 +468,8 @@ C
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C    IF USING CTEM's STRUCTURAL ATTRIBUTES OVERWRITE ZOLN
 
-          IF (ICTEMMOD.EQ.1) THEN
+
+          IF (ctem_on) THEN
            DO J = 1,IC
             ZOLN(I,J)=ZOLNC(I,J)
            END DO
@@ -514,7 +519,8 @@ C
           IF(IPAI.EQ.0) THEN
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C             USE CTEM GENERATED PAI OR CLASS' OWN SPECIFIED PAI
-              IF (ICTEMMOD .EQ. 1) THEN
+
+              IF (ctem_on) THEN
                DO J = 1, IC
                 PAI(I,J)=PAIC(I,J)
                END DO
@@ -546,7 +552,8 @@ C
 C
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C
-          IF (ICTEMMOD .EQ. 1) THEN
+
+          IF (ctem_on) THEN
            DO J = 1,IC
              AIL(I,J)=MAX(AILC(I,J), SLAIC(I,J))
            END DO
@@ -564,7 +571,8 @@ C
 C         ESTIMATE GREEN LAI FOR CANOPY OVER SNOW FRACTION FOR CTEM's
 C         9 PFTs, JUST LIKE CLASS DOES.
 C
-          IF (ICTEMMOD.EQ.1) THEN
+
+          IF (ctem_on) THEN
            DO J = 1,ICTEM
             AILCGS(I,J)=AILCG(I,J)
            END DO
@@ -1122,7 +1130,7 @@ C
           IF(FC(I).GT.0.)                                       THEN                     
 C     ---------------- CTEM MODIFICATIONS -----------------------------\
 
-              IF (ICTEMMOD.EQ.1) THEN
+              IF (ctem_on) THEN
 
                 CMASSC(I)=(FCAN(I,1)*CMASVEGC(I,1)+
      1                     FCAN(I,2)*CMASVEGC(I,2)+
@@ -1148,7 +1156,7 @@ C
           ENDIF                                                                          
           IF(FCS(I).GT.0.)                                      THEN                     
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
-              IF (ICTEMMOD.EQ.1) THEN
+              IF (ctem_on) THEN
                 CMASCS(I)=FCANS(I,1)*CMASVEGC(I,1)+
      1                     FCANS(I,2)*CMASVEGC(I,2)+
      2                     FCANS(I,3)*CMASVEGC(I,3)
@@ -1185,7 +1193,7 @@ C     ---------------- CTEM MODIFICATIONS -----------------------------\
 
 C         THIS, BELOW, WAS MAKING IT SO THAT OUR READ-IN TCAN WAS BEING
 C         OVERWRITTEN BY TA FOR THE FIRST TIME STEP. JM JAN 2013
-          IF (ICTEMMOD.EQ.1) THEN
+          IF (ctem_on) THEN
 
             CMAI  (I)=FC(I)*CMASSC(I)+FCS(I)*CMASCS(I)
             IF(CMAI(I).LT.1.0E-5 .AND. (CMASSC(I).GT.0.0 .OR.
@@ -1232,7 +1240,8 @@ C
 !!                                                                 
       DO 450 J=1,IC                                                               
       DO 450 I=IL1,IL2                                                            
-        IF (ICTEMMOD.EQ.1) THEN
+
+        IF (ctem_on) THEN
          DO K = 1,IG
           RMAT(I,J,K)=RMATC(I,J,K)
          ENDDO
@@ -1390,7 +1399,7 @@ C
           ENDIF                                                                   
   800 CONTINUE
 C
-      IF (ICTEMMOD.EQ.1) THEN
+      IF (ctem_on) THEN
 C
 C       * ESTIMATE FCANC AND FCANCS FOR USE BY PHTSYN SUBROUTINE BASED ON
 C       * FCAN AND FCANS FOR CTEM PFTS.

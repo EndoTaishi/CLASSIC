@@ -1,15 +1,19 @@
 !>\file
+!! Principle driver program to run CLASS in stand-alone mode using specified boundary
+!! conditions and atmospheric forcing, coupled to CTEM.
+!!
+!! # Overview
+!!
+!! This driver program initializes the run, reads in CLASS input files, manages the run
+!! and the coupling between CLASS and CTEM, writes the CLASS sub-monthly outputs, and
+!! closes the run.
 
       PROGRAM RUNCLASS36CTEM
-
-
-C
-C     * DRIVER PROGRAM TO RUN "CLASS" ("CANADIAN LAND SURFACE SCHEME")
-C     * IN STAND-ALONE MODE USING SPECIFIED BOUNDARY
-C     * CONDITIONS AND ATMOSPHERIC FORCING, COUPLED TO CTEM (CANADIAN TERRESTRIAL
-C     * ECOSYSTEM MODEL).
 C
 C     REVISION HISTORY:
+C
+C     * Aug 31 2016 : Added proper calculation of ALTOT as provided by Diana.
+C       Joe Melton
 C
 C     * Mar 9  2016 : For consistency I have changed all inputs (except MET) to be adopted into the row/gat
 C     * Joe Melton    framework. This means that a per gridcell value is then also assigned per tile. This
@@ -58,36 +62,37 @@ C     * SEPT 8, 2009
 C     * RONG LI AND VIVEK ARORA: COUPLED CLASS3.4 AND CTEM
 C
 C=======================================================================
+!>
+!!------------------------------------------------------------------
+!! ## Dimension statements.
 
-C     * DIMENSION STATEMENTS.
-
-C     * FIRST SET OF DEFINITIONS:
-C     * BACKGROUND VARIABLES, AND PROGNOSTIC AND DIAGNOSTIC
-C     * VARIABLES NORMALLY PROVIDED BY AND/OR USED BY THE GCM.
-C     * THE SUFFIX "ROT" REFERS TO VARIABLES EXISTING ON THE
-C     * MOSAIC GRID ON THE CURRENT LATITUDE CIRCLE.  THE SUFFIX
-C     * "GAT" REFERS TO THE SAME VARIABLES AFTER THEY HAVE UNDERGONE
-C     * A "GATHER" OPERATION IN WHICH THE TWO MOSAIC DIMENSIONS
-C     * ARE COLLAPSED INTO ONE.  THE SUFFIX "ROW" REFERS BOTH TO
-C     * GRID-CONSTANT INPUT VARIABLES. AND TO GRID-AVERAGED
-C     * DIAGNOSTIC VARIABLES.
-C
-C     * THE FIRST DIMENSION ELEMENT OF THE "ROT" VARIABLES
-C     * REFERS TO THE NUMBER OF GRID CELLS ON THE CURRENT
-C     * LATITUDE CIRCLE.  IN THIS STAND-ALONE VERSION, THIS
-C     * NUMBER IS ARBITRARILY SET TO THREE, TO ALLOW UP TO THREE
-C     * SIMULTANEOUS TESTS TO BE RUN.  THE SECOND DIMENSION
-C     * ELEMENT OF THE "ROT" VARIABLES REFERS TO THE MAXIMUM
-C     * NUMBER OF TILES IN THE MOSAIC.  IN THIS STAND-ALONE
-C     * VERSION, THIS NUMBER IS SET TO EIGHT.  THE FIRST
-C     * DIMENSION ELEMENT IN THE "GAT" VARIABLES IS GIVEN BY
-C     * THE PRODUCT OF THE FIRST TWO DIMENSION ELEMENTS IN THE
-C     * "ROT" VARIABLES.
-
-C     The majority of CTEM parameters are stored in ctem_params.f90.
-c     Also the CTEM variables are stored in modules that we point to
-c     in this driver. We access the variables and parameters
-c     through use statements for modules:
+!!     ### first set of definitions:
+!!     background variables, and prognostic and diagnostic
+!!     variables normally provided by and/or used by the gcm.
+!!      the suffix "rot" refers to variables existing on the
+!!      mosaic grid on the current latitude circle.  the suffix
+!!      "gat" refers to the same variables after they have undergone
+!!      a "gather" operation in which the two mosaic dimensions
+!!      are collapsed into one.  the suffix "row" refers both to
+!!      grid-constant input variables. and to grid-averaged
+!!      diagnostic variables.
+!!
+!!      the first dimension element of the "rot" variables
+!!      refers to the number of grid cells on the current
+!!      latitude circle.  in this stand-alone version, this
+!!      number is arbitrarily set to three, to allow up to three
+!!      simultaneous tests to be run.  the second dimension
+!!      element of the "rot" variables refers to the maximum
+!!      number of tiles in the mosaic.  in this stand-alone
+!!      version, this number is set to eight.  the first
+!!      dimension element in the "gat" variables is given by
+!!      the product of the first two dimension elements in the
+!!      "rot" variables.
+!!
+!!     The majority of CTEM parameters are stored in ctem_params.f90.
+!!     Also the CTEM variables are stored in modules that we point to
+!!     in this driver. We access the variables and parameters
+!!     through use statements for modules:
 
       use ctem_params,        only : initpftpars,nlat,nmos,ilg,nmon,
      1                               ican, ignd,icp1, icc, iccp1,
@@ -465,7 +470,7 @@ C
       REAL,DIMENSION(NLAT) :: Z0ORROW !<
 
       REAL,DIMENSION(NLAT) :: DLATROW !<
-      REAL,DIMENSION(NLAT) :: FSSROW  !<
+      REAL,DIMENSION(NLAT) :: FSSROW  !< Shortwave radiation \f$[W m^{-2} ]\f$
       REAL,DIMENSION(NLAT) :: PRENROW !<
       REAL,DIMENSION(NLAT) :: CLDTROW !<
       REAL,DIMENSION(NLAT) :: FSGROL  !<
@@ -686,10 +691,6 @@ C
       REAL,DIMENSION(NLAT,NMOS) :: WTRSROT !<
       REAL,DIMENSION(NLAT)      :: WTRSROW !<
 
-
-
-
-
       REAL,DIMENSION(ILG)       :: QLWOGAT !<
       REAL,DIMENSION(ILG)       :: SFRHGAT !<
       REAL,DIMENSION(NLAT,NMOS) :: SFRHROT !<
@@ -709,14 +710,6 @@ C     * CALCULATING TIME AVERAGES.)
      1              NAME4*4,      NAME5*4,      NAME6*4
       CHARACTER     PLACE1*4,     PLACE2*4,     PLACE3*4,
      1              PLACE4*4,     PLACE5*4,     PLACE6*4
-
-
-
-
-
-
-
-
 
       REAL,DIMENSION(NLAT) :: ALIRACC !<Diagnosed total near-infrared albedo of land surface [ ]
       REAL,DIMENSION(NLAT) :: ALVSACC !<Diagnosed total visible albedo of land surface [ ]
@@ -748,6 +741,7 @@ C     * CALCULATING TIME AVERAGES.)
       REAL,DIMENSION(NLAT) :: UVACC   !<Wind speed \f$[m s^{-1} ]\f$
       REAL,DIMENSION(NLAT) :: WSNOACC !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
       REAL,DIMENSION(NLAT) :: WTBLACC !<Depth of water table in soil [m]
+      REAL,DIMENSION(NLAT) :: ALTOTACC!<Broadband albedo [-]
 
       REAL,DIMENSION(NLAT) :: CANARE  !<
       REAL,DIMENSION(NLAT) :: SNOARE  !<
@@ -906,7 +900,6 @@ c================= CTEM array declaration ===============================\
 c
 c     Local variables for coupling CLASS and CTEM
 c
-      integer ictemmod
       integer strlen
       character*80   titlec1
       character*80   argbuff
@@ -933,7 +926,7 @@ c
 
        real fsinacc_gat(ilg), flutacc_gat(ilg), flinacc_gat(ilg),
      1      alswacc_gat(ilg), allwacc_gat(ilg), pregacc_gat(ilg),
-     2      altot_gat,        fsstar_gat,       flstar_gat,
+     2      altot_gat(ilg),        fsstar_gat,       flstar_gat,
      3      netrad_gat(ilg),  preacc_gat(ilg)
 
 !     For these below, the corresponding ROWs are defined by CLASS
@@ -1357,6 +1350,7 @@ c
       real, pointer, dimension(:,:) :: UVACC_M
       real, pointer, dimension(:,:) :: PRESACC_M
       real, pointer, dimension(:,:) :: QAACC_M
+      real, pointer, dimension(:,:) :: ALTOTACC_M
       real, pointer, dimension(:,:) :: EVAPACC_M
       real, pointer, dimension(:,:) :: FLUTACC_M
 
@@ -1931,6 +1925,7 @@ C===================== CTEM ==============================================\
       UVACC_M           => vrot%UVACC_M
       PRESACC_M         => vrot%PRESACC_M
       QAACC_M           => vrot%QAACC_M
+      ALTOTACC_M        => vrot%ALTOTACC_M
       EVAPACC_M         => vrot%EVAPACC_M
       FLUTACC_M         => vrot%FLUTACC_M
 
@@ -2061,16 +2056,6 @@ c     all model switches are read in from a namelist file
 
 c     Initialize the CTEM parameters
       call initpftpars(compete)
-c
-c     set ictemmod, which is the class switch for coupling to ctem
-c     either to 1 (ctem is coupled to class) or 0 (class runs alone)
-c     this switch is set based on ctem_on that was set by read_from_job_options
-c
-      if (ctem_on) then
-        ictemmod = 1
-      else  !ctem_on is false
-        ictemmod = 0
-      end if
 c
       lopcount = 1   ! initialize loop count to 1.
 c
@@ -2523,6 +2508,7 @@ C===================== CTEM =============================================== /
           HFSACC(I)=0.
           HMFNACC(I)=0.
           ROFACC(I)=0.
+          ALTOTACC(I)=0.
           OVRACC(I)=0.
           WTBLACC(I)=0.
           ALVSACC(I)=0.
@@ -3055,7 +3041,7 @@ c
             end if
           endif   ! lopcount .gt. 1
 
-c         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
+C         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 C===================== CTEM ============================================ /
 
           FSVHROW(I)=0.5*FSSROW(I)
@@ -3507,7 +3493,7 @@ C
      K                FSVHGAT,RADJGAT,DLONGAT,RHSIGAT,DELZ,   DLZWGAT,
      L                ZBTWGAT,THPGAT, THMGAT, PSISGAT,BIGAT,  PSIWGAT,
      M                HCPSGAT,ISNDGAT,
-     P                FCANCMXGAT,ICC,ICTEMMOD,RMATCGAT,ZOLNCGAT,
+     P                FCANCMXGAT,ICC,ctem_on,RMATCGAT,ZOLNCGAT,
      Q                CMASVEGCGAT,AILCGAT,PAICGAT,L2MAX, NOL2PFTS,
      R                SLAICGAT,AILCGGAT,AILCGSGAT,FCANCGAT,FCANCSGAT,
      R                IDAY,   ILG,    1,      NML,  NBS,
@@ -3550,7 +3536,7 @@ C
      N  FTEMP,  FVAP,   RIB,    ISNDGAT,
      O  AILCGGAT,  AILCGSGAT, FCANCGAT,FCANCSGAT,CO2CONCGAT,CO2I1CGGAT,
      P  CO2I1CSGAT,CO2I2CGGAT,CO2I2CSGAT,CSZGAT,XDIFFUSGAT,SLAIGAT,ICC,
-     Q  ICTEMMOD,RMATCTEMGAT,FCANCMXGAT,L2MAX,  NOL2PFTS,CFLUXCGGAT,
+     Q  ctem_on,RMATCTEMGAT,FCANCMXGAT,L2MAX,  NOL2PFTS,CFLUXCGGAT,
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
      S  TCSNOW,GSNOW,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
@@ -3634,6 +3620,13 @@ c
           tcansacc_t(i)=tcansacc_t(i)+tcans(i)
           taaccgat_t(i)=taaccgat_t(i)+tagat(i)
           vvaccgat_t(i)=vvaccgat_t(i)+ vlgat(i)
+          if (FSSROW(I) .gt. 0.) then
+            altot_gat(i) = altot_gat(i) + (FSSROW(I)-
+     1                (FSGVGAT(I)+FSGSGAT(I)+FSGGGAT(I)))
+     2                /FSSROW(I)
+          else
+            altot_gat(i) = altot_gat(i)
+          end if
 c
           do 710 j=1,ignd
              tbaraccgat_t(i,j)=tbaraccgat_t(i,j)+tbargat(i,j)
@@ -3681,8 +3674,8 @@ c
             flinacc_gat(i)=flinacc_gat(i)/real(nday)
             flutacc_gat(i)=flutacc_gat(i)/real(nday)
 c
-            altot_gat=(alswacc_gat(i)+allwacc_gat(i))/2.0
-            fsstar_gat=fsinacc_gat(i)*(1.-altot_gat)
+            altot_gat(i)=altot_gat(i) / real(nday)
+            fsstar_gat=fsinacc_gat(i)*(1.-altot_gat(i))
             flstar_gat=flinacc_gat(i)-flutacc_gat(i)
             netrad_gat(i)=fsstar_gat+flstar_gat
             preacc_gat(i)=pregacc_gat(i)
@@ -3803,6 +3796,7 @@ c
      &              popdingat,  dofire, dowetlands,obswetf, isndgat,
      &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,
      &                  BIGAT,    THPGAT, thicegacc_t,currlat,
+     &             ch4concgat,      GRAV, RHOW, RHOICE,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
@@ -3841,16 +3835,10 @@ c    -------------- inputs updated by ctem are above this line ------
      &       vgbiomas_veggat, gppveggat,  nepveggat, nbpveggat,
      &        hetroresveggat, autoresveggat, litresveggat,
      &           soilcresveggat, nml, ilmos, jlmos, ch4wet1gat,
-     &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat)
+     &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat,
+     &          ch4soillsgat)
 c    ---------------- outputs are listed above this line ------------
 c
-      ! Calculate the methane that is oxidized by the soil sink
-      ! this operates on a daily timestep.
-      call soil_ch4uptake(1,nml,tbaraccgat_t,THPGAT,BIGAT,thliqacc_t,
-     &                     thicecacc_t,PSISGAT,GRAV,FCANGAT,obswetf,
-     &                     wetfdyngat,wetfrac_presgat,isndgat,RHOW,
-     &                     RHOICE,ch4concgat,ch4soillsgat)
-
 
 !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
 !     to reset here, prior to ctems2.
@@ -4074,6 +4062,7 @@ c     reset mosaic accumulator arrays.
           tcanoaccgat_t(i)=0.0
           tcansacc_t(i)=0.0
           taaccgat_t(i)=0.0
+          altot_gat(i) = 0.0
 
           do 715 j=1,ignd
              tbarcacc_t(i,j)=0.0
@@ -4192,8 +4181,8 @@ c       initialization of various grid-averaged variables
 
        DO 425 M=1,NMTEST
           IF(FSSROW(I).GT.0.0) THEN
-C              ALTOT=(ALVSROT(I,M)+ALIRROT(I,M))/2.0
-              ALTOT=(FSSROW(I)-FSGGGAT(1))/FSSROW(I)  !FLAG I adopt the runclass approach of using 1 for index here. JM Jul 2015.
+              ALTOT=(FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)
+     1              +FSGGROT(I,M)))/FSSROW(I)
           ELSE
               ALTOT=0.0
           ENDIF
@@ -4667,6 +4656,10 @@ C
           ROFACC(I)=ROFACC(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
           OVRACC(I)=OVRACC(I)+ROFOROT(I,M)*FAREROT(I,M)*DELT
           WTBLACC(I)=WTBLACC(I)+WTABROT(I,M)*FAREROT(I,M)
+          IF (FSSROW(I) .gt. 0.) then
+            ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)
+     1                   +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
+          END IF
           DO 625 J=1,IGND
               TBARACC(I,J)=TBARACC(I,J)+TBARROT(I,M,J)*FAREROT(I,M)
               THLQACC(I,J)=THLQACC(I,J)+THLQROT(I,M,J)*FAREROT(I,M)
@@ -4746,9 +4739,8 @@ C
           UVACC(I)=UVACC(I)/REAL(NDAY)
           PRESACC(I)=PRESACC(I)/REAL(NDAY)
           QAACC(I)=QAACC(I)/REAL(NDAY)
-
-              ALTOT=(ALVSACC(I)+ALIRACC(I))/2.0
-              FSSTAR=FSINACC(I)*(1.-ALTOT)
+          ALTOTACC(I)=ALTOTACC(I)/REAL(NDAY)
+              FSSTAR=FSINACC(I)*(1.-ALTOTACC(I))
               FLSTAR=FLINACC(I)-FLUTACC(I)
               QH=HFSACC(I)
               QE=QEVPACC(I)
@@ -4776,7 +4768,7 @@ C
 
               WRITE(61,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,
      1                       BEG,GTOUT,SNOACC(I),RHOSACC(I),
-     2                       WSNOACC(I),ALTOT,ROFACC(I),CUMSNO
+     2                       WSNOACC(I),ALTOTACC(I),ROFACC(I),CUMSNO
               IF(IGND.GT.3) THEN
                   WRITE(62,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
      1                       THLQACC(I,J),THICACC(I,J),J=1,IGND),
@@ -4828,6 +4820,7 @@ C
           UVACC(I)=0.
           PRESACC(I)=0.
           QAACC(I)=0.
+          ALTOTACC(I) = 0.
           EVAPACC(I)=0.
           FLUTACC(I)=0.
 800   CONTINUE
@@ -4875,6 +4868,11 @@ C              CANARE(I)=CANARE(I)+FAREROT(I,M)
           RCANACC_M(I,M)=RCANACC_M(I,M)+RCANROT(I,M)
           SCANACC_M(I,M)=SCANACC_M(I,M)+SCANROT(I,M)
           GROACC_M(I,M)=GROACC_M(I,M)+GROROT(I,M)
+          IF (FSSROW(I) .gt. 0.) THEN
+            ALTOTACC_M(I,M)=ALTOTACC_M(I,M) + (FSSROW(I)-
+     1                    (FSGVROT(I,M)+FSGSROT(I,M)+
+     2                     FSGGROT(I,M)))/FSSROW(I)
+          END IF
           FSINACC_M(I,M)=FSINACC_M(I,M)+FSSROW(I)
           FLINACC_M(I,M)=FLINACC_M(I,M)+FDLROW(I)
           FLUTACC_M(I,M)=FLUTACC_M(I,M)+SBC*GTROT(I,M)**4
@@ -4932,8 +4930,8 @@ C
           UVACC_M(I,M)=UVACC_M(I,M)/REAL(NDAY)
           PRESACC_M(I,M)=PRESACC_M(I,M)/REAL(NDAY)
           QAACC_M(I,M)=QAACC_M(I,M)/REAL(NDAY)
-          ALTOT=(ALVSACC_M(I,M)+ALIRACC_M(I,M))/2.0
-          FSSTAR=FSINACC_M(I,M)*(1.-ALTOT)
+          ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(NDAY)
+          FSSTAR=FSINACC_M(I,M)*(1.-ALTOTACC_M(I,M))
           FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
           QH=HFSACC_M(I,M)
           QE=QEVPACC_M(I,M)
@@ -4968,7 +4966,7 @@ C         WRITE TO OUTPUT FILES
 C
           WRITE(611,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,
      1                    BEG,GTOUT,SNOACC_M(I,M),RHOSACC_M(I,M),
-     2                    WSNOACC_M(I,M),ALTOT,ROFACC_M(I,M),
+     2                    WSNOACC_M(I,M),ALTOTACC_M(I,M),ROFACC_M(I,M),
      3                    CUMSNO,' TILE ',M
             IF(IGND.GT.3) THEN
                WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,

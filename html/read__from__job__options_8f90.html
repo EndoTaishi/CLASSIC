@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.9.1"/>
-<title>CLASS-CTEM Documentation: read_from_job_options.f90 File Reference</title>
+<title>CLASS-CTEM: read_from_job_options.f90 File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -23,7 +23,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">CLASS-CTEM Documentation
+   <div id="projectname">CLASS-CTEM
    </div>
   </td>
  </tr>
@@ -118,23 +118,7 @@ Functions/Subroutines</h2></td></tr>
 <p>If you want a transient run that does not spin over climate at the start, you need to change from above the following:</p>
 <p>(only the relevant switches are shown below) <br />
  trans_startyr = 2000, &lt;&ndash; whatever year you want to start at <br />
- CYCLEMET = .FALSE. , &lt;&ndash; note this is set to FALSE. </p><hr/>
-<p>To set up a spinup run:</p>
-<p>This example runs the model over 125 years. The climate cycles from 1901 - 1925 five times. No LUC happens, the POPD is set at the 1850 value read in from the POPD file and the CO2 concentration is fixed at SETCO2CONC.</p>
-<p>(only the relevant switches are shown below) <br />
- transient_run = .false. <br />
- CTEMLOOP = 5 , <br />
- NCYEAR = 112 , &lt;&ndash; Note this should be just be the length of the climate dataset but could be less if you want. <br />
- LNDUSEON = .false. , <br />
- CYCLEMET = .TRUE. , &lt;&ndash; note this is set to TRUE. <br />
- NUMMETCYLYRS = 25 , &lt;&ndash; note this is however many years you want. <br />
- METCYLYRST = 1901 , <br />
- CO2ON = .false. , <br />
- SETCO2CONC = 285.00 , &lt;&ndash; set to your own appropriate value. <br />
- POPDON = .TRUE. , &lt;&ndash; note keep this on uses the POPD file, setting false uses the INI file value <br />
- POPCYCLEYR = 1850 , <br />
- OBSWETF = .false. ,</p>
-<p>If doing methane then the CH4 switches should be the same as the CO2 ones. </p>
+ CYCLEMET = .FALSE. , &lt;&ndash; note this is set to FALSE. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="a59635532072b59aa5db6bd717cebb79b"></a>
 <div class="memitem">
@@ -450,7 +434,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">transient_run</td><td>true if the run is a transient run. With this flag set set to .true., you can cycle over nummetcyclyrs of climate a ctemloop number of times then continue on through the climate the reason for this is to allow a transient from 1850 on, but only having the climate from 1901 while having the other inputs from 1850. See the bottom of this subroutine for an example of how to set this correctly.</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">trans_startyr</td><td>the year you want the transient run to start (e.g. 1850)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">trans_startyr</td><td>the year you want the transient run to start (e.g. 1850). If you are not doing a transient run, set to a negative value (like -9999)</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ctemloop</td><td>no. of times the .met file is to be read. this option is useful to see how ctem's c pools equilibrate when driven with same climate data over and over again.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ctem_on</td><td>set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified lai and canopy mass are used. with this switch on, all ctem subroutines are run.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ncyear</td><td>no. of years in the .met file.</td></tr>
@@ -507,7 +491,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Aug 10 2016 12:14:59 for CLASS-CTEM Documentation by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Sep 19 2016 10:13:37 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

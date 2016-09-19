@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.9.1"/>
-<title>CLASS-CTEM Documentation: ctem.f90 File Reference</title>
+<title>CLASS-CTEM: ctem.f90 File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -23,7 +23,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">CLASS-CTEM Documentation
+   <div id="projectname">CLASS-CTEM
    </div>
   </td>
  </tr>
@@ -94,13 +94,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:aeac1eecbe7347b17101ecc2cf445f146"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem_8f90.html#aeac1eecbe7347b17101ecc2cf445f146">ctem</a> (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar,popdon,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,compete,netrad,precip,grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile_perPFT, wetfrac, slopefrac,currlat,</td></tr>
-<tr class="separator:aeac1eecbe7347b17101ecc2cf445f146"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b6b15dcac84105200925dab9dfea7aa"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem_8f90.html#a2b6b15dcac84105200925dab9dfea7aa">ctem</a> (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar,popdon,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,compete,netrad,precip,psisat, grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile_perPFT, wetfrac, slopefrac,bi,thpor,thiceg, currlat,ch4conc,GRAV,RHOW,RHOICE,</td></tr>
+<tr class="separator:a2b6b15dcac84105200925dab9dfea7aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The basic model structure of CTEM includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_938.png"/>, <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_939.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_940.png"/>, <img class="formulaInl" alt="$C_\mathrm{D}$" src="form_941.png"/>, <img class="formulaInl" alt="$C_\mathrm{H}$" src="form_942.png"/>, <img class="formulaInl" alt="$kgC m^{-2}$" src="form_29.png"/>) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate_change_eqns} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="aeac1eecbe7347b17101ecc2cf445f146"></a>
+<a class="anchor" id="a2b6b15dcac84105200925dab9dfea7aa"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -131,19 +131,19 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>il2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>iday</em>, </td>
         </tr>
         <tr>
@@ -287,7 +287,7 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>tbar</em>, </td>
         </tr>
         <tr>
@@ -305,62 +305,68 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>pfcancmx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>nfcancmx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical&#160;</td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>lnduseon</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>thicec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>soildpth</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer&#160;</td>
+          <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>spinfast</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,icc), intent(in)&#160;</td>
           <td class="paramname"><em>todfrac</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical&#160;</td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>compete</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>netrad</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>precip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>psisat</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -371,37 +377,37 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(inout)&#160;</td>
           <td class="paramname"><em>popdin</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical&#160;</td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>dofire</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical&#160;</td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>dowetlands</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical&#160;</td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>obswetf</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">integer, dimension(ilg,ignd)&#160;</td>
+          <td class="paramtype">integer, dimension(ilg,ignd), intent(in)&#160;</td>
           <td class="paramname"><em>isand</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>faregat</em>, </td>
         </tr>
         <tr>
@@ -413,20 +419,62 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>wetfrac</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,8)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,8), intent(in)&#160;</td>
           <td class="paramname"><em>slopefrac</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>bi</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>thpor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg,ignd), intent(in)&#160;</td>
+          <td class="paramname"><em>thiceg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
-          <td class="paramname"><em>currlat</em>&#160;</td>
+          <td class="paramname"><em>currlat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
+          <td class="paramname"><em>ch4conc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, intent(in)&#160;</td>
+          <td class="paramname"><em>GRAV</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, intent(in)&#160;</td>
+          <td class="paramname"><em>RHOW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, intent(in)&#160;</td>
+          <td class="paramname"><em>RHOICE</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -437,60 +485,69 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">fcancmx</td><td>max. fractional coverage of ctem's 9 pfts, but this can be modified by land-use change, and competition between pfts</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">lnduseon</td><td>logical switch to run the land use change subroutine or not.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">compete</td><td>logical boolean telling if competition between pfts is on or not</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dofire</td><td>boolean, if true allow fire, if false no fire.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dowetlands</td><td>if true allow wetland methane emission</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">obswetf</td><td>if true, use read-in observed wetland fraction</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">onetile_perpft</td><td>if you are running with one tile per PFT in mosaic mode, set to true. Changes how competition is run. Specifically it allows competition between tiles. This is not recommended for any case where you don't have one PFT in each tile as it has not been tested for that.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">iday</td><td>day of year</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">spinfast</td><td>spinup factor for soil carbon whose default value is 1. as this factor increases the soil c pool will come into equilibrium faster. reasonable value for spinfast is between 5 and 10. when spinfast.ne.1 then the balcar subroutine is not run.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">il2</td><td>il2=ilg (no. of grid cells in latitude circle)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fsnow</td><td>fraction of snow simulated by class</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">sand</td><td>percentage sand</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">clay</td><td>percentage clay</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">radj</td><td>latitude in radians</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tcano</td><td>canopy temperature for canopy over ground subarea, K</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tcans</td><td>canopy temperature for canopy over snow subarea, K</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tbar</td><td>soil temperature, k</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tbarc</td><td>soil temperature for canopy over ground subarea, K</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tbarcs</td><td>soil temperature for canopy over snow subarea</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tbarg</td><td>soil temperature for ground subarea</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tbargs</td><td>soil temperature for snow over ground subarea</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">psisat</td><td>saturated soil matric potential (m)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bi</td><td>Brooks and Corey b term</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thpor</td><td>Soil porosity</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ta</td><td>air temp, K</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">delzw</td><td>thicknesses of the 3 soil layers</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">zbotw</td><td>bottom of soil layers</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">soildpth</td><td>soil depth (m)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thliqc</td><td>liquid mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thliqg</td><td>liquid mois. content of 3 soil layers, for ground and snow over ground subareas</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thicec</td><td>Frozen soil moisture content for canopy over snow and canopy over ground subareas</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thiceg</td><td>Frozen soil moisture content for ground and snow over ground subareas</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">deltat</td><td>CTEM timestep in days</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">grclarea</td><td>area of the grid cell, <img class="formulaInl" alt="$km^2$" src="form_509.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">currlat</td><td>centre latitude of grid cells in degrees</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">uwind</td><td>u wind speed, m/s</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">vwind</td><td>v wind speed, m/s</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">precip</td><td>daily precipitation (mm/day)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">netrad</td><td>daily net radiation (w/m2)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">lightng</td><td>total lightning frequency, flashes/km2.year</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">prbfrhuc</td><td>probability of fire due to human causes</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">extnprob</td><td>fire extingusinging probability</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pfcancmx</td><td>previous year's fractional coverages of pfts</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nfcancmx</td><td>next year's fractional coverages of pfts</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">todfrac</td><td>max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ch4conc</td><td>Atmospheric <img class="formulaInl" alt="$CH_4$" src="form_532.png"/> concentration at the soil surface (ppmv)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">stdaln</td><td>an integer telling if ctem is operated within gcm (=0) or in stand alone mode (=1). this is used for fire purposes. see comments just above where disturb subroutine is called.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">grav</td><td>Acceleration due to gravity ($m s^{-1} ), (CLASS param) passed in to avoid the common block structure.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhow</td><td>Density of water ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhoice</td><td>Density of ice ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">popdon</td><td>if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes, or if false, read directly from .ctm file</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">ancsveg</td><td>net photosynthetic rate for ctems 9 pfts for canopy over snow subarea</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">ancgveg</td><td>net photosynthetic rate for ctems 9 pfts for canopy over ground subarea</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">rmlcsveg</td><td>leaf respiration rate for ctems 9 pfts forcanopy over snow subarea</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">rmlcgveg</td><td>leaf respiration rate for ctems 9 pfts forcanopy over ground subarea</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">grclarea</td><td>area of the grid cell, <img class="formulaInl" alt="$km^2$" src="form_509.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">currlat</td><td>centre latitude of grid cells in degrees</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">lnduseon</td><td>logical switch to run the land use change subroutine or not.</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">dofire</td><td>boolean, if true allow fire, if false no fire.</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">dowetlands</td><td>if true allow wetland methane emission</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">obswetf</td><td>observed wetland fraction</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">il1</td><td>il1=1</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">il2</td><td>il2=ilg</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">iday</td><td>day of year</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">nol2pfts</td><td>number of level 2 ctem pfts</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">spinfast</td><td>spinup factor for soil carbon whose default value is 1. as this factor increases the soil c pool will come into equilibrium faster. reasonable value for spinfast is between 5 and 10. when spinfast.ne.1 then the balcar subroutine is not run.</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">tbar</td><td>soil temperature, k</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">thicec</td><td>frozen mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">soildpth</td><td>soil depth (m)</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">todfrac</td><td>max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">pfcancmx</td><td>previous year's fractional coverages of pfts</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">nfcancmx</td><td>next year's fractional coverages of pfts</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">popdin</td><td>population density <img class="formulaInl" alt="$(people / km^2)$" src="form_617.png"/></td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">precip</td><td>daily precipitation (mm/day)</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">netrad</td><td>daily net radiation (w/m2)</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">compete</td><td>logical boolean telling if competition between pfts is on or not</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">popdon</td><td>if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes, or if false, read directly from .ctm file </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">extnprob</td><td>fire extingusinging probability</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">fcancmx</td><td>max. fractional coverage of ctem's 9 pfts, but this can be modified by land-use change, and competition between pfts</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">popdin</td><td>population density <img class="formulaInl" alt="$(people / km^2)$" src="form_617.png"/></td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">nol2pfts</td><td>number of level 2 ctem pfts </td></tr>
   </table>
   </dd>
 </dl>
 <hr/>
- <h2>Constants and parameters are located in <a class="el" href="ctem__params_8f90.html">ctem_params.f90</a> </h2>
+ <h2>Constants and parameters are located in <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a> </h2>
 <p>Begin calculations</p>
 <p>Generate the sort index for correspondence between 9 pfts and the 12 values in the parameter vectors</p>
 <p>If you intend to have competition and LUC between tiles then set onetile_perPFT to true. NOTE: Turning onetile_perPFT to true is usually not the behaviour desired unless you are running with one PFT on each tile and want them to compete for space across tiles. So in general keep this as False. JM Jan 2016.</p>
@@ -520,9 +577,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Find vegetation averaged leaf, stem, and root respiration, and gpp using values from canopy over ground and canopy over snow subareas</p>
 <p>Now that we know maintenance respiration from leaf, stem, and root and gpp, we can find growth respiration for each vegetation</p>
 <p>Calculate grid-averaged rates of rm, rg, npp, and gpp</p>
-<p>Heterotrophic respiration</p>
-<p>Find heterotrophic respiration rates (umol co2/m2/sec) for canopy over snow subarea</p>
-<p>Find heterotrophic respiration rates for canopy over ground subarea</p>
+<pre class="fragment"> Heterotrophic respiration part starts </pre><p>Find heterotrophic respiration rates for canopy over ground subarea</p>
 <p>Find heterotrophic respiration rates from bare ground subarea</p>
 <p>Find heterotrophic respiration rates from snow over ground subarea</p>
 <p>Find vegetation averaged litter and soil c respiration rates using values from canopy over ground and canopy over snow subareas</p>
@@ -535,6 +590,7 @@ Functions/Subroutines</h2></td></tr>
 <p>But over the bare fraction there is no live root.</p>
 <p>Find grid averaged humification and soil respiration rates</p>
 <p>Find CH4 wetland area (if not prescribed) and emissions:</p>
+<p>Calculate the methane that is oxidized by the soil sink</p>
 <p>Estimate allocation fractions for leaf, stem, and root components.</p>
 <p>Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the CLASS part of the model. They are recalculated here in CTEM to avoid passing them through the coupler in the coupled model. The CTEM calculated versions of fieldsm and wiltsm are also used in disturb and phenolgy. JM. Jan 14 2015.</p>
 <p>Estimate fraction of npp that is to be used for horizontal expansion (lambda) during the next day (i.e. this will be determining the colonization rate in competition).</p>
@@ -557,7 +613,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Update stem and root biomass for litter deductions</p>
 <p>Update litter pool with leaf litter calculated in the phenology subroutine and stem and root litter calculated in the turnover subroutine. Also add the reproduction carbon directly to the litter pool</p>
 <p>Call the mortaliy subroutine which calculates mortality due to reduced growth and aging. exogenous mortality due to fire and other disturbances and the subsequent litter that is generated is calculated in the disturb subroutine.</p>
-<p>set maxage &gt;0 in <a class="el" href="ctem__params_8f90.html">ctem_params.f90</a> to switch on mortality due to age and reduced growth. Mortality is linked to the competition parameterization and generates bare fraction.</p>
+<p>set maxage &gt;0 in <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a> to switch on mortality due to age and reduced growth. Mortality is linked to the competition parameterization and generates bare fraction.</p>
 <p>Update leaf, stem, and root biomass pools to take into loss due to mortality, and put the litter into the litter pool. the mortality for green grasses doesn't generate litter, instead they turn brown.</p>
 <p>call the disturbance subroutine which calculates mortality due to fire and other disturbances. the primary output from from disturbance subroutine is litter generated, c emissions due to fire and area burned, which may be used to estimate change in fractional coverages.</p>
 <p>disturbance is spatial and requires area of gcm grid cell and areas of different pfts present in a given grid cell. however, when ctem is operated at a point scale then it is assumed that the spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating any fire by specifying fire extingushing probability equal to 1.</p>
@@ -576,7 +632,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Aug 10 2016 12:14:59 for CLASS-CTEM Documentation by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Sep 19 2016 10:13:36 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

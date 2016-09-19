@@ -1040,7 +1040,7 @@ if (ctem_on) then
         write(91,6003) place1,place2,place3,place4,place5,place6
         write(91,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY RESULTS'
         write(91,6230)'MONTH','YEAR','CH4WET1','CH4WET2','WETFDYN','CH4DYN1','CH4DYN2','SOILUPTAKE'
-        write(91,6230)'#','','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON'
+        write(91,6230)'#','','gCH4/M2.MON','gCH4/M2.MON','fraction','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON'
 
         open(unit=92,file=argbuff(1:strlen(argbuff))//'.CT08Y')  !>Methane(wetland) YEARLY
         write(92,6001) title1,title2,title3,title4,title5,title6
@@ -1048,7 +1048,7 @@ if (ctem_on) then
         write(92,6003) place1,place2,place3,place4,place5,place6
         write(92,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS'
         write(92,6232)'YEAR','CH4WET1','CH4WET2','WETFDYN','CH4DYN1','CH4DYN2','SOILUPTAKE'
-        write(92,6232)'#','gCH4/M2.YR','gCH4/M2.YR','gCH4/M2.YR','gCH4/M2.YR','gCH4/M2.YR'
+        write(92,6232)'#','gCH4/M2.YR','gCH4/M2.YR','fraction','gCH4/M2.YR','gCH4/M2.YR','gCH4/M2.YR'
 
     end if 
     
@@ -1063,8 +1063,8 @@ end if !>ctem_on & parallelrun
 6127  FORMAT(1X,A5,20(A12,1X))
 6128  FORMAT(A5,A5,11(A12,1X),45A)
 6129  FORMAT(A5,11(A12,1X),45A)
-6230  FORMAT(A5,I5,6(A12,1X))
-6232  FORMAT(1X,A5,6(A12,1X))
+6230  FORMAT(A5,A5,8(A12,1X))
+6232  FORMAT(1X,A5,7(A12,1X))
  
 end subroutine create_outfiles
 !>@}
@@ -1219,8 +1219,8 @@ DO 821 M=1,NMTEST
     FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
     ACTLYR_tmp(I) = ACTLYR_tmp(I) + ACTLYR(I,M) * FAREROT(I,M)
     FTABLE_tmp(I) = FTABLE_tmp(I) + FTABLE(I,M) * FAREROT(I,M)
-    GROUNDEVAP(I)=GROUNDEVAP(I)+(QFGROT(I,M)+QFNROT(I,M))*FAREROT(I,M) !ground evap includes both evap and sublimation from snow
-    CANOPYEVAP(I)=CANOPYEVAP(I)+(QFCLROT(I,M)+QFCFROT(I,M))*FAREROT(I,M) !canopy evap includes both evap and sublimation
+    GROUNDEVAP(I)=GROUNDEVAP(I)+(QFGROT(I,M)+QFNROT(I,M))*FAREROT(I,M)*DELT !ground evap includes both evap and sublimation from snow
+    CANOPYEVAP(I)=CANOPYEVAP(I)+(QFCLROT(I,M)+QFCFROT(I,M))*FAREROT(I,M)*DELT !canopy evap includes both evap and sublimation
 
     IF(SNOROT(I,M).GT.0.0) THEN
         WSNOACC_MO(I)=WSNOACC_MO(I)+WSNOROT(I,M)*FAREROT(I,M)

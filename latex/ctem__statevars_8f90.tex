@@ -1,5 +1,10 @@
 \hypertarget{ctem__statevars_8f90}{}\section{ctem\+\_\+statevars.\+f90 File Reference}
 \label{ctem__statevars_8f90}\index{ctem\+\_\+statevars.\+f90@{ctem\+\_\+statevars.\+f90}}
+
+
+this module contains the variable type structures\+:  
+
+
 \subsection*{Data Types}
 \begin{DoxyCompactItemize}
 \item 
@@ -96,3 +101,23 @@ type \hyperlink{structctem__statevars_1_1ctem__tileavg__annual}{ctem\+\_\+statev
 \hypertarget{namespacectem__statevars_a74e5918629cea2b5e0e8cd50b271f917}{}type(ctem\+\_\+tileavg\+\_\+annual), target, save {\bfseries ctem\+\_\+statevars\+::ctem\+\_\+tile\+\_\+yr}\label{namespacectem__statevars_a74e5918629cea2b5e0e8cd50b271f917}
 
 \end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+this module contains the variable type structures\+: 
+
+
+\begin{DoxyEnumerate}
+\item c\+\_\+switch -\/ switches for running C\+T\+E\+M, read from the joboptions file
+\item vrot -\/ C\+T\+E\+M\textquotesingle{}s \textquotesingle{}rot\textquotesingle{} vars
+\item vgat -\/ C\+T\+E\+M\textquotesingle{}s \textquotesingle{}gat\textquotesingle{} vars
+\item class\+\_\+out -\/ C\+L\+A\+S\+S\textquotesingle{}s monthly outputs
+\item ctem\+\_\+grd -\/ C\+T\+E\+M\textquotesingle{}s grid average variables
+\item ctem\+\_\+tile -\/ C\+T\+E\+M\textquotesingle{}s variables per tile
+\item ctem\+\_\+mo -\/ C\+T\+E\+M\textquotesingle{}s variables monthly averaged (per pft)
+\item ctem\+\_\+grd\+\_\+mo -\/ C\+T\+E\+M\textquotesingle{}s grid average monthly values
+\item ctem\+\_\+tile\+\_\+mo -\/ C\+T\+E\+M\textquotesingle{}s variables per tile monthly values
+\item ctem\+\_\+yr -\/ C\+T\+E\+M\textquotesingle{}s average annual values (per P\+F\+T)
+\item ctem\+\_\+grd\+\_\+yr -\/ C\+T\+E\+M\textquotesingle{}s grid average annual values
+\item ctem\+\_\+tile\+\_\+yr -\/ C\+T\+E\+M\textquotesingle{}s variables per tile annual values 
+\end{DoxyEnumerate}

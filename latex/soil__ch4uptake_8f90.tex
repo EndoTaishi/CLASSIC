@@ -15,7 +15,7 @@ subroutine \hyperlink{soil__ch4uptake_8f90_a6224a4d6e29f37e3d26f6eceeee72372}{so
 \subsection{Detailed Description}
 Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Soil Methane Oxidation Subroutine. 
 
-
+Coded up based on \cite{Curry2007-du}. 
 
 \subsection{Function/\+Subroutine Documentation}
 \hypertarget{soil__ch4uptake_8f90_a6224a4d6e29f37e3d26f6eceeee72372}{}\index{soil\+\_\+ch4uptake.\+f90@{soil\+\_\+ch4uptake.\+f90}!soil\+\_\+ch4uptake@{soil\+\_\+ch4uptake}}
@@ -31,7 +31,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Soil Methane Oxidation Subrout
 \item[{real, dimension(ilg,ignd), intent(in)}]{T\+H\+I\+C, }
 \item[{real, dimension(ilg,ignd), intent(in)}]{P\+S\+I\+S, }
 \item[{real, intent(in)}]{G\+R\+A\+V, }
-\item[{real, dimension(ilg,icp1), intent(in)}]{F\+C\+A\+N, }
+\item[{real, dimension(ilg,ican), intent(in)}]{F\+C\+A\+N, }
 \item[{logical, intent(in)}]{obswetf, }
 \item[{real, dimension(ilg), intent(in)}]{wetfdyn, }
 \item[{real, dimension(nlat), intent(in)}]{wetfracgrd, }
