@@ -256,9 +256,8 @@ C
 !!\f$\theta_{fc} = \theta_p /(b-1) \bullet (\Psi_{sat} b/ z_b )^{1/b} \bullet [(3b+2)^{(b-1)/b} - (2b+2)^{(b-1)/b} ]\f$
 !!
 !!The soil moisture suction \f$\Psi_{wilt}\f$ at the wilting point (the liquid water content at which plant roots can no
-!!longer draw water from the soil) is calculated from the saturated soil moisture suction using the Clapp and
-!!Hornberger (1978) expression, with the liquid water content approximated as 0.5 \f$\theta_{fc}\f$ :
-!!\f$\Psi_{wilt} = \Psi_{sat} (0.5 \theta_{fc} / \theta_p )^{-b}\f$
+!!longer draw water from the soil) is set to 150 m.
+
 !!Organic soils are flagged with an ISAND value of -2. For these soils, the variables \f$\theta_p\f$ , b, \f$K_{sat}\f$ , \f$\Psi_{sat}\f$ , \f$\theta_{min}\f$ , and
 !!\f$\theta_{ret}\f$ are assigned values based on the peat texture (fibric, hemic or sapric). These values are obtained from
 !!the arrays in common block CLASS5 (see the CLASSBD documentation above). The current default is
