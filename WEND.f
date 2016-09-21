@@ -1,3 +1,7 @@
+!>\file
+C!Purpose: Recalculate liquid water content of soil layers after 
+C!infiltration, and evaluate baseflow.
+C!
       SUBROUTINE WEND(THLIQX,THICEX,TBARWX,ZPOND,TPOND,
      1                BASFLW,TBASFL,RUNOFF,TRUNOF,FI,
      2                WMOVE,TMOVE,LZF,NINF,TRMDR,THLINF,DELZX,
@@ -7,9 +11,6 @@
      6                THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
      7                THFC,DELZW,ISAND,IGRN,IGRD,IGDR,IZERO,
      8                IVEG,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N )
-
-C     Purpose: Recalculate liquid water content of soil layers after 
-C     infiltration, and evaluate baseflow.
 C
 C     * OCT 18/11 - M.LAZARE.   PASS IN "IGDR" AS AN INPUT FIELD 
 C     *                         (ORIGINATING IN CLASSB) RATHER
@@ -64,32 +65,27 @@ C
 C
 C     * OUTPUT FIELDS.
 C
-      REAL THLIQX(ILG,IGP1) !Volumetric liquid water content of soil 
-                            !layer [m3 m-3]
-      REAL THICEX(ILG,IGP1) !Volumetric frozen water content of soil 
-                            !layer [m3 m-3]
-      REAL TBARWX(ILG,IGP1) !Temperature of water in soil layer [C]
-      REAL ZPOND (ILG)      !Depth of ponded water [m]
-      REAL TPOND (ILG)      !Temperature of ponded water [C]
-      REAL BASFLW(ILG)      !Base flow from bottom of soil column 
-                            ![kg m-2]
-      REAL TBASFL(ILG)      !Temperature of base flow from bottom of 
-                            !soil column [K]
-      REAL RUNOFF(ILG)      !Total runoff from soil column [m]
-      REAL TRUNOF(ILG)      !Temperature of total runoff from soil 
-                            !column [K]
+      REAL THLIQX(ILG,IGP1) !<Volumetric liquid water content of soil 
+                            !<layer \f$[m^3 m^{-3}]\f$
+      REAL THICEX(ILG,IGP1) !<Volumetric frozen water content of soil 
+                            !<layer \f$[m^3 m^{-3}]\f$
+      REAL TBARWX(ILG,IGP1) !<Temperature of water in soil layer [C]
+      REAL ZPOND (ILG)      !<Depth of ponded water [m]
+      REAL TPOND (ILG)      !<Temperature of ponded water [C]
+      REAL BASFLW(ILG)      !<Base flow from bottom of soil column \f$[kg m^{-2}]\f$
+      REAL TBASFL(ILG)      !<Temperature of base flow from bottom of soil column [K]
+      REAL RUNOFF(ILG)      !<Total runoff from soil column [m]
+      REAL TRUNOF(ILG)      !<Temperature of total runoff from soil column [K]
 C
 C     * INPUT FIELDS.
 C
-      REAL WMOVE (ILG,IGP2) !Water movement matrix [m3 m-2]
-      REAL TMOVE (ILG,IGP2) !Temperature matrix associated with ground 
-                            !water movement [C]
-      REAL THLINF(ILG,IGP1) !Volumetric liquid water content behind the 
-                            !wetting front [m3 m-3]
-      REAL FI    (ILG)      !Fractional coverage of subarea in question 
-                            !on modelled area [ ]
-      REAL TRMDR (ILG)      !Time remaining in current time step [s]
-      REAL DELZX (ILG,IGP1) !Permeable depth of soil layer [m]
+      REAL WMOVE (ILG,IGP2) !<Water movement matrix \f$[m^3 m^{-2}]\f$
+      REAL TMOVE (ILG,IGP2) !<Temperature matrix associated with ground water movement [C]
+      REAL THLINF(ILG,IGP1) !<Volumetric liquid water content behind the 
+                            !<wetting front \f$[m^3 m^{-3}]\f$
+      REAL FI    (ILG)      !<Fractional coverage of subarea in question on modelled area [ ]
+      REAL TRMDR (ILG)      !<Time remaining in current time step [s]
+      REAL DELZX (ILG,IGP1) !<Permeable depth of soil layer [m]
 C
       INTEGER                LZF   (ILG),      NINF  (ILG), 
      1                       IGRN  (ILG)    
@@ -127,33 +123,31 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
-      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
-                    !(2.25*10^6) [J m-3 K-1]
-      REAL HCPOM    !Volumetric heat capacity of organic matter 
-                    !(2.50*10^6) [J m-3 K-1]
-      REAL HCPSND   !Volumetric heat capacity of sand particles 
-                    !(2.13*10^6) [J m-3 K-1]
-      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
-                    !(2.38*10^6) [J m-3 K-1]
-      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
-      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
-      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
-                    ![J kg-1 K-1]
-      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
-      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
-      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
-      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
-                    ![W m-1 K-1]
-      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
-                    ![J kg-1]
-      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
-                    ![J kg-1]
+      REAL DELT     !<Time step [s]
+      REAL TFREZ    !<Freezing point of water [K]
+      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) 
+                    !<[J m^{-3} K^{-1}]\f$
+      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) 
+                    !<[J m^{-3} K^{-1}]\f$
+      REAL HCPSOL   !<Volumetric heat capacity of mineral matter 
+                    !<\f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPOM    !<Volumetric heat capacity of organic matter 
+                    !<\f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSND   !<Volumetric heat capacity of sand particles 
+                    !<\f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles 
+                    !<\f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) 
+                    !<[J kg^{-1} K^{-1}]\f$
+      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
+      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
+      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
+      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) 
+                    !<[W m^{-1} K^{-1}]\f$
+      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
+      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
 C
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
@@ -161,19 +155,21 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
 C
-      !At levels in the soil profile lower than the bottom of the 
-      !wetting front, redistribution of soil liquid water proceeds in 
-      !response to normal gravity and suction forces. Subroutine GRDRAN 
-      !is called to calculate these redistributions. The time period 
-      !TUSED that is passed to GRDRAN is set in the 100 loop to the time 
-      !period over which infiltration was occurring during the current 
-      !time step, except if the wetting front has passed the bottom of 
-      !the lowest soil layer, in which case TUSED is set to zero (since 
-      !the flows calculated by GRDRAN are not required). GRDRAN is 
-      !called using dummy variables THLDUM, THIDUM and TDUMW, which are 
-      !set in loop 125 to the liquid water content, the frozen water 
-      !content and the water temperature of the soil layers 
-      !respectively.
+      !>
+      !!At levels in the soil profile lower than the bottom of the 
+      !!wetting front, redistribution of soil liquid water proceeds in 
+      !!response to normal gravity and suction forces. Subroutine GRDRAN 
+      !!is called to calculate these redistributions. The time period 
+      !!TUSED that is passed to GRDRAN is set in the 100 loop to the time 
+      !!period over which infiltration was occurring during the current 
+      !!time step, except if the wetting front has passed the bottom of 
+      !!the lowest soil layer, in which case TUSED is set to zero (since 
+      !!the flows calculated by GRDRAN are not required). GRDRAN is 
+      !!called using dummy variables THLDUM, THIDUM and TDUMW, which are 
+      !!set in loop 125 to the liquid water content, the frozen water 
+      !!content and the water temperature of the soil layers 
+      !!respectively.
+      !!
 C
 C     * DETERMINE AMOUNT OF TIME OUT OF CURRENT MODEL STEP DURING WHICH 
 C     * INFILTRATION WAS OCCURRING.
@@ -209,17 +205,18 @@ C
      2            TUSED,WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN,
      3            BI,PSISAT,GRKSAT,THFC,DELZW,XDRAIN,ISAND,LZF,
      4            IZERO,IGRD,IGDR,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
-      !
-      !After GRDRAN has been called, the maximum value of the water 
-      !movement index NINF is set to the number of soil layers plus 1. 
-      !The values in the matrix ZRMDR, representing for each soil layer 
-      !the depth that has not been affected by infiltration, are 
-      !initialized to the soil permeable layer thicknesses DELZX. The 
-      !water flows FDT coming out of GRDRAN are set to zero at the soil 
-      !layer interfaces above the wetting front. For the layer 
-      !containing the wetting front, if the flow at the bottom of the 
-      !layer is upward, it is set to zero (to avoid possible overflows 
-      !in liquid water content).
+      !>
+      !!After GRDRAN has been called, the maximum value of the water 
+      !!movement index NINF is set to the number of soil layers plus 1. 
+      !!The values in the matrix ZRMDR, representing for each soil layer 
+      !!the depth that has not been affected by infiltration, are 
+      !!initialized to the soil permeable layer thicknesses DELZX. The 
+      !!water flows FDT coming out of GRDRAN are set to zero at the soil 
+      !!layer interfaces above the wetting front. For the layer 
+      !!containing the wetting front, if the flow at the bottom of the 
+      !!layer is upward, it is set to zero (to avoid possible overflows 
+      !!in liquid water content).
+      !!
 C
 C     * INITIALIZATION OF ARRAYS IN PREPARATION FOR RE-ALLOCATION OF
 C     * MOISTURE STORES WITHIN SOIL LAYERS; SUPPRESS WATER FLOWS 
@@ -247,35 +244,35 @@ C
           ENDIF
   200 CONTINUE
 C
-      !
-      !The values in the three-dimensional matrix ZMAT are initialized 
-      !to zero. This matrix contains the depth of each soil layer J 
-      !(including the dummy soil layer below the lowest layer) that is 
-      !filled by water from level K in the water movement matrix WMOVE. 
-      !In WMOVE, the first level contains the amount of water that has 
-      !infiltrated at the surface during the time period in question, 
-      !and each successive level K contains the amount of water in soil 
-      !layer K-1 that has been displaced during the infiltration, down 
-      !to the soil layer containing the wetting front. Thus, the number 
-      !of levels in WMOVE that are used in the current infiltration 
-      !calculations, NINF, is equal to LZF+1, where LZF is the index of 
-      !the soil layer containing the wetting front; or to IGP1, the 
-      !number of soil layers IG plus 1, if LZF is greater than IG, i.e. 
-      !if the wetting front has penetrated below the bottom of the 
-      !lowest soil layer into the underlying dummy layer. In the 400 
-      !loop, starting at the top of the soil profile, an attempt is made 
-      !to assign each layer of WMOVE, converted into a depth by using 
-      !the volumetric water content THLINF behind the wetting front for 
-      !the soil layer, in turn to the K,J level of ZMAT. If the 
-      !calculated value of ZMAT is greater than the available depth 
-      !ZRMDR of the layer, ZMAT is set to ZRMDR, WMOVE is decremented by 
-      !ZRMDR converted back to a water amount, and ZRMDR is set to zero. 
-      !Otherwise the calculated value of ZMAT is accepted, ZRMDR is 
-      !decremented by ZMAT, and WMOVE is set to zero. At the end of 
-      !these calculations, any remaining residual amounts in the WMOVE 
-      !matrix are assigned to ponded water, and the ponded water 
-      !temperature is updated accordingly.
-      !
+      !>
+      !!The values in the three-dimensional matrix ZMAT are initialized 
+      !!to zero. This matrix contains the depth of each soil layer J 
+      !!(including the dummy soil layer below the lowest layer) that is 
+      !!filled by water from level K in the water movement matrix WMOVE. 
+      !!In WMOVE, the first level contains the amount of water that has 
+      !!infiltrated at the surface during the time period in question, 
+      !!and each successive level K contains the amount of water in soil 
+      !!layer K-1 that has been displaced during the infiltration, down 
+      !!to the soil layer containing the wetting front. Thus, the number 
+      !!of levels in WMOVE that are used in the current infiltration 
+      !!calculations, NINF, is equal to LZF+1, where LZF is the index of 
+      !!the soil layer containing the wetting front; or to IGP1, the 
+      !!number of soil layers IG plus 1, if LZF is greater than IG, i.e. 
+      !!if the wetting front has penetrated below the bottom of the 
+      !!lowest soil layer into the underlying dummy layer. In the 400 
+      !!loop, starting at the top of the soil profile, an attempt is made 
+      !!to assign each layer of WMOVE, converted into a depth by using 
+      !!the volumetric water content THLINF behind the wetting front for 
+      !!the soil layer, in turn to the K,J level of ZMAT. If the 
+      !!calculated value of ZMAT is greater than the available depth 
+      !!ZRMDR of the layer, ZMAT is set to ZRMDR, WMOVE is decremented by 
+      !!ZRMDR converted back to a water amount, and ZRMDR is set to zero. 
+      !!Otherwise the calculated value of ZMAT is accepted, ZRMDR is 
+      !!decremented by ZMAT, and WMOVE is set to zero. At the end of 
+      !!these calculations, any remaining residual amounts in the WMOVE 
+      !!matrix are assigned to ponded water, and the ponded water 
+      !!temperature is updated accordingly.
+      !!
       DO 300 J=1,IGP1                                                             
       DO 300 K=1,IGP1
       DO 300 I=IL1,IL2
@@ -315,31 +312,31 @@ C
               ZPOND(I)=ZPOND(I)+WMOVE(I,J)
           ENDIF
  450  CONTINUE
-      !
-      !As a result of the above processes, the liquid water content and 
-      !temperature of each soil layer (excluding the bottom, dummy 
-      !layer) will be a combined result of infiltration processes (WADD, 
-      !TADD), redistribution processes (WDRA, TDRA), and water in the 
-      !layer that has remained unaffected (WREM, TREM). For each layer, 
-      !WADD is calculated by summing over the respective ZMAT values 
-      !corresponding to that layer multiplied by THLINF, and TADD by 
-      !summing over the ZMAT and THLINF values multiplied by the 
-      !respective TMOVE values. WREM is obtained as the product of the 
-      !original water content THLIQX multiplied by ZRMDR, and TREM as 
-      !the product of the water temperature TBARWX, THLIQX and ZRMDR. 
-      !For the soil layer containing the wetting front, a check is 
-      !carried out to determine whether the liquid moisture content 
-      !resulting from the infiltration and drainage processes, THINFL, 
-      !is less than the residual liquid moisture content THLMIN. If so, 
-      !the flow FDT at the bottom of the layer is recalculated as the 
-      !value required to keep THLIQX at THLMIN. WDRA is obtained from 
-      !the difference between the water fluxes FDT at the top and bottom 
-      !of the layer, supplied by GRDRAN, and TDRA is obtained from the 
-      !water fluxes FDT and their corresponding temperatures TFDT. 
-      !Finally, THLIQX is calculated as the sum of WADD, WREM and WDRA 
-      !normalized by DELZX, and TBARWX as the sum of TADD, TREM and TDRA 
-      !normalized by the product of THLIQX and DELZX.
-      !
+      !>
+      !!As a result of the above processes, the liquid water content and 
+      !!temperature of each soil layer (excluding the bottom, dummy 
+      !!layer) will be a combined result of infiltration processes (WADD, 
+      !!TADD), redistribution processes (WDRA, TDRA), and water in the 
+      !!layer that has remained unaffected (WREM, TREM). For each layer, 
+      !!WADD is calculated by summing over the respective ZMAT values 
+      !!corresponding to that layer multiplied by THLINF, and TADD by 
+      !!summing over the ZMAT and THLINF values multiplied by the 
+      !!respective TMOVE values. WREM is obtained as the product of the 
+      !!original water content THLIQX multiplied by ZRMDR, and TREM as 
+      !!the product of the water temperature TBARWX, THLIQX and ZRMDR. 
+      !!For the soil layer containing the wetting front, a check is 
+      !!carried out to determine whether the liquid moisture content 
+      !!resulting from the infiltration and drainage processes, THINFL, 
+      !!is less than the residual liquid moisture content THLMIN. If so, 
+      !!the flow FDT at the bottom of the layer is recalculated as the 
+      !!value required to keep THLIQX at THLMIN. WDRA is obtained from 
+      !!the difference between the water fluxes FDT at the top and bottom 
+      !!of the layer, supplied by GRDRAN, and TDRA is obtained from the 
+      !!water fluxes FDT and their corresponding temperatures TFDT. 
+      !!Finally, THLIQX is calculated as the sum of WADD, WREM and WDRA 
+      !!normalized by DELZX, and TBARWX as the sum of TADD, TREM and TDRA 
+      !!normalized by the product of THLIQX and DELZX.
+      !!
 C
 C     * ADD WATER CONTENT AND TEMPERATURE CHANGES DUE TO INFILTRATION
 C     * (WADD, TADD) AND DRAINAGE (WDRA, TDRA) TO WATER REMAINING IN
@@ -387,20 +384,21 @@ C
   550     CONTINUE
   600 CONTINUE
 
-      !
-      !Lastly, the base flow BASFLW at the bottom of the soil profile 
-      !and its temperature TBASFL are calculated. If the wetting front 
-      !is located in the dummy soil layer below the soil profile, BASFLW 
-      !is obtained by summing over the ZMAT values for the IGP1 level, 
-      !multiplied by the dummy layer THLINF value and the fractional 
-      !coverage FI of the modelled subarea. TBASFL is similarly obtained 
-      !as the weighted average of the original TBASFL and the values of 
-      !TMOVE corresponding to the ZMAT values. The overall subarea 
-      !runoff RUNOFF and its temperature TRUNOF are calculated in the 
-      !same manner without the FI weightings. Otherwise, the baseflow 
-      !and total runoff are obtained from the value of FDT at the bottom 
-      !of the IGDR layer, and their temperatures from the values of TFDT 
-      !and FDT.
+      !>
+      !!Lastly, the base flow BASFLW at the bottom of the soil profile 
+      !!and its temperature TBASFL are calculated. If the wetting front 
+      !!is located in the dummy soil layer below the soil profile, BASFLW 
+      !!is obtained by summing over the ZMAT values for the IGP1 level, 
+      !!multiplied by the dummy layer THLINF value and the fractional 
+      !!coverage FI of the modelled subarea. TBASFL is similarly obtained 
+      !!as the weighted average of the original TBASFL and the values of 
+      !!TMOVE corresponding to the ZMAT values. The overall subarea 
+      !!runoff RUNOFF and its temperature TRUNOF are calculated in the 
+      !!same manner without the FI weightings. Otherwise, the baseflow 
+      !!and total runoff are obtained from the value of FDT at the bottom 
+      !!of the IGDR layer, and their temperatures from the values of TFDT 
+      !!and FDT.
+      !!
 C
 C     * CALCULATE FLOW OUT OF BOTTOM OF SOIL COLUMN DUE TO INFILTRATION
 C     * AND GRAVITY DRAINAGE AND ADD TO TOTAL RUNOFF AND BASEFLOW.

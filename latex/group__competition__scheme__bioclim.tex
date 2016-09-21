@@ -1,0 +1,76 @@
+\hypertarget{group__competition__scheme__bioclim}{}\section{Competition\+\_\+scheme\+\_\+bioclim}
+\label{group__competition__scheme__bioclim}\index{Competition\+\_\+scheme\+\_\+bioclim@{Competition\+\_\+scheme\+\_\+bioclim}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Bioclimatic Parameters Estimation Subroutine.  
+
+
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__competition__scheme__bioclim_ga63e17c7f18b8ab7e782acf1b3d957dd8}{competition\+\_\+scheme\+::bioclim} (iday, ta, precip, netrad, il1, il2, nilg, tcurm, srpcuryr, dftcuryr, inibioclim, tmonth, anpcpcur, anpecur, gdd5cur, surmncur, defmncur, srplscur, defctcur, twarmm, tcoldm, gdd5, aridity, srplsmon, defctmon, anndefct, annsrpls, annpcp, dry\+\_\+season\+\_\+length)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Bioclimatic Parameters Estimation Subroutine. 
+
+The mortality associated with bioclimatic criteria, $m_{bioclim}$, ensures that P\+F\+Ts do not venture outside their bioclimatic envelopes. The bioclimatic criteria that determine P\+F\+T existence are listed in Table tab\+:pftparams\} for tree P\+F\+Ts. Bioclimatic limits are not used for the $C_3$ and $C_4$ grass P\+F\+Ts. The bioclimatic limits represent physiological limits to P\+F\+T survival that are either not captured in the model or processes that are not sufficiently described by empirical observations to allow their parametrization. Some examples of the latter include a plant\textquotesingle{}s resistance to frost damage and xylem cavitation limits due to moisture stress. The bioclimatic criteria include the minimum coldest month air temperature ( $T^{cold}_{min}$), the maximum coldest month air temperature ( $T^{cold}_{max}$), the maximum warmest month air temperature ( $T^{warm}_{max}$), the minimum number of annual growing degree days above $5\,C$ ( $GDD5_{min}$), the minimum annual aridity index (ratio of potential evapotranspiration to precipitation; $arid_{min}$) and the minimum dry season length in a year ( $dryseason_{min}$), where the dry season length represents the number of consecutive months with precipitation less than potential evaporation. The bioclimatic indices are updated on a 25 year timescale ( $T=25$) such that the slowly changing value of a bioclimatic index $X(t+1)$ for time $t+1$ is updated using its previous year\textquotesingle{}s value $X(t)$ and its value $x(t)$ for the current year as
+
+\[ \label{efold} X(t+1)=X(t)e^{-1/T} + x(t) (1 - e^{-1/T}). \]
+
+Equation (efold\}) implies that $63\,{\%}$ of a sudden change in the value of a bioclimatic index $\Delta x$ is reflected in $X(t)$ in $T$ years $(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)$, while $86\,{\%}$ of the change is reflected in $2T$ years $(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86) $. 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__competition__scheme__bioclim_ga63e17c7f18b8ab7e782acf1b3d957dd8}{}\index{Competition\+\_\+scheme\+\_\+bioclim@{Competition\+\_\+scheme\+\_\+bioclim}!bioclim@{bioclim}}
+\index{bioclim@{bioclim}!Competition\+\_\+scheme\+\_\+bioclim@{Competition\+\_\+scheme\+\_\+bioclim}}
+\subsubsection[{bioclim}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public competition\+\_\+scheme\+::bioclim (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{iday, }
+\item[{real, dimension(nilg), intent(in)}]{ta, }
+\item[{real, dimension(nilg), intent(in)}]{precip, }
+\item[{real, dimension(nilg), intent(in)}]{netrad, }
+\item[{integer, intent(in)}]{il1, }
+\item[{integer, intent(in)}]{il2, }
+\item[{integer, intent(in)}]{nilg, }
+\item[{real, dimension(nilg), intent(inout)}]{tcurm, }
+\item[{real, dimension(nilg), intent(inout)}]{srpcuryr, }
+\item[{real, dimension(nilg), intent(inout)}]{dftcuryr, }
+\item[{logical, intent(inout)}]{inibioclim, }
+\item[{real, dimension(12,nilg), intent(inout)}]{tmonth, }
+\item[{real, dimension(nilg), intent(inout)}]{anpcpcur, }
+\item[{real, dimension(nilg), intent(inout)}]{anpecur, }
+\item[{real, dimension(nilg), intent(inout)}]{gdd5cur, }
+\item[{real, dimension(nilg), intent(inout)}]{surmncur, }
+\item[{real, dimension(nilg), intent(inout)}]{defmncur, }
+\item[{real, dimension(nilg), intent(inout)}]{srplscur, }
+\item[{real, dimension(nilg), intent(inout)}]{defctcur, }
+\item[{real, dimension(nilg), intent(inout)}]{twarmm, }
+\item[{real, dimension(nilg), intent(inout)}]{tcoldm, }
+\item[{real, dimension(nilg), intent(inout)}]{gdd5, }
+\item[{real, dimension(nilg), intent(inout)}]{aridity, }
+\item[{real, dimension(nilg), intent(inout)}]{srplsmon, }
+\item[{real, dimension(nilg), intent(inout)}]{defctmon, }
+\item[{real, dimension(nilg), intent(inout)}]{anndefct, }
+\item[{real, dimension(nilg), intent(inout)}]{annsrpls, }
+\item[{real, dimension(nilg), intent(inout)}]{annpcp, }
+\item[{real, dimension(nilg), intent(inout)}]{dry\+\_\+season\+\_\+length}
+\end{DoxyParamCaption}
+)}\label{group__competition__scheme__bioclim_ga63e17c7f18b8ab7e782acf1b3d957dd8}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em iday} & \\
+\hline
+\end{DoxyParams}
+Find current month
+
+Find if we are at end of month or not
+
+Update monthly temperature for the current month, and other variables. at the end of the month we will have average of all daily temperatures for the current month.
+
+If its the end of the month then store the monthly temperature and set tcurm equal to zero. also check if this month had water deficit or surplus
+
+this loop doubles up the size of the \char`\"{}wet\+\_\+dry\+\_\+mon\+\_\+index\char`\"{} matrix
+
+If its the end of year, then find the temperature of the warmest and the coldest month
+
+Update long term moving average of bioclimatic parameters in an e-\/folding sense 

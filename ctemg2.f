@@ -1,3 +1,6 @@
+!>\file
+!!Canadian Terrestrial Ecosystem Model (CTEM)
+!!
       subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,
      1      paicgat,
      1      ailcgat,     ailcggat,    cmasvegcgat,     slaicgat,
@@ -91,8 +94,6 @@ c    ----gathering of peatland variables YW March 19, 2015 ------------\
      6    ,ipeatland)
 c    ----gathering of peatland variables YW March 19,
 
-c
-c              Canadian Terrestrial Ecosystem Model (CTEM)
 c
 C     July 12 2013    Bring in the ctem params use statement
 c     J. Melton

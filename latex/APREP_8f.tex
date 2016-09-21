@@ -1,0 +1,400 @@
+\hypertarget{APREP_8f}{}\section{A\+P\+R\+E\+P.\+f File Reference}
+\label{APREP_8f}\index{A\+P\+R\+E\+P.\+f@{A\+P\+R\+E\+P.\+f}}
+
+
+Purpose\+: Calculate various land surface parameters.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{APREP_8f_a8fb2f8e6ab6c1aed96ecc05809d43ab1}{aprep} (F\+C, F\+G, F\+C\+S, F\+G\+S, P\+A\+I\+C\+A\+N, P\+A\+I\+C\+N\+S, F\+S\+V\+F, F\+S\+V\+F\+S, F\+R\+A\+I\+N\+C, F\+S\+N\+O\+W\+C, F\+R\+A\+I\+C\+S, F\+S\+N\+O\+C\+S, R\+A\+I\+C\+A\+N, R\+A\+I\+C\+N\+S, S\+N\+O\+C\+A\+N, S\+N\+O\+C\+N\+S, D\+I\+S\+P, D\+I\+S\+P\+S, Z\+O\+M\+L\+N\+C, Z\+O\+M\+L\+C\+S, Z\+O\+E\+L\+N\+C, Z\+O\+E\+L\+C\+S, Z\+O\+M\+L\+N\+G, Z\+O\+M\+L\+N\+S, Z\+O\+E\+L\+N\+G, Z\+O\+E\+L\+N\+S, C\+H\+C\+A\+P, C\+H\+C\+A\+P\+S, C\+M\+A\+S\+S\+C, C\+M\+A\+S\+C\+S, C\+W\+L\+C\+A\+P, C\+W\+F\+C\+A\+P, C\+W\+L\+C\+P\+S, C\+W\+F\+C\+P\+S, R\+B\+C\+O\+E\+F, Z\+P\+L\+I\+M\+C, Z\+P\+L\+I\+M\+G, Z\+P\+L\+M\+C\+S, Z\+P\+L\+M\+G\+S, H\+T\+C\+C, H\+T\+C\+S, H\+T\+C, F\+R\+O\+O\+T, F\+R\+O\+O\+T\+S, W\+T\+R\+C, W\+T\+R\+S, W\+T\+R\+G, C\+M\+A\+I, P\+A\+I, P\+A\+I\+S, A\+I\+L, F\+C\+A\+N, F\+C\+A\+N\+S, P\+S\+I\+G\+N\+D, F\+C\+A\+N\+M\+X, Z\+O\+L\+N, P\+A\+I\+M\+A\+X, P\+A\+I\+M\+I\+N, C\+W\+G\+T\+M\+X, Z\+R\+T\+M\+A\+X, P\+A\+I\+D\+A\+T, H\+G\+T\+D\+A\+T, T\+H\+L\+I\+Q, T\+H\+I\+C\+E, T\+B\+A\+R, R\+C\+A\+N, S\+N\+C\+A\+N, T\+C\+A\+N, G\+R\+O\+W\+T\+H, Z\+S\+N\+O\+W, T\+S\+N\+O\+W, F\+S\+N\+O\+W, R\+H\+O\+S\+N\+O, S\+N\+O, Z0\+O\+R\+O, Z\+B\+L\+E\+N\+D, Z\+P\+L\+M\+G0, Z\+P\+L\+M\+S0, T\+A, R\+H\+O\+A\+I\+R, R\+A\+D\+J, D\+L\+O\+N, R\+H\+O\+S\+N\+I, D\+E\+L\+Z, D\+E\+L\+Z\+W, Z\+B\+O\+T\+W, T\+H\+P\+O\+R, T\+H\+L\+M\+I\+N, P\+S\+I\+S\+A\+T, B\+I, P\+S\+I\+W\+L\+T, H\+C\+P\+S, I\+S\+A\+N\+D, I\+L\+G, I\+L1, I\+L2, J\+L, I\+C, I\+C\+P1, I\+G, I\+D\+A\+Y, I\+D\+I\+S\+P, I\+Z\+R\+E\+F, I\+W\+F, I\+P\+A\+I, I\+H\+G\+T, R\+M\+A\+T, H, H\+S, C\+W\+C\+P\+A\+V, G\+R\+O\+W\+A, G\+R\+O\+W\+N, G\+R\+O\+W\+B, R\+R\+E\+S\+I\+D, S\+R\+E\+S\+I\+D, F\+R\+T\+O\+T, F\+R\+T\+O\+T\+S, F\+C\+A\+N\+C\+M\+X, I\+C\+T\+E\+M, ctem\+\_\+on, R\+M\+A\+T\+C, A\+I\+L\+C, P\+A\+I\+C, A\+I\+L\+C\+G, L2\+M\+A\+X, N\+O\+L2\+P\+F\+T\+S, A\+I\+L\+C\+G\+S, F\+C\+A\+N\+C\+S, F\+C\+A\+N\+C, Z\+O\+L\+N\+C, C\+M\+A\+S\+V\+E\+G\+C, S\+L\+A\+I\+C)
+\begin{DoxyCompactList}\small\item\em This subroutine is hard-\/coded to handle the standard four vegetation categories recognized by C\+L\+A\+S\+S (needleleaf trees, broadleaf trees, crops and grass), so a call to abort is performed if the number of vegetation classes, I\+C, is not equal to 4. A set of diagnostic and accumulator arrays is then initialized to zero, and the liquid water suction in the soil is set to an arbitrarily high value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Calculate various land surface parameters. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{APREP_8f_a8fb2f8e6ab6c1aed96ecc05809d43ab1}{}\index{A\+P\+R\+E\+P.\+f@{A\+P\+R\+E\+P.\+f}!aprep@{aprep}}
+\index{aprep@{aprep}!A\+P\+R\+E\+P.\+f@{A\+P\+R\+E\+P.\+f}}
+\subsubsection[{aprep}]{\setlength{\rightskip}{0pt plus 5cm}subroutine aprep (
+\begin{DoxyParamCaption}
+\item[{real, dimension    (ilg)}]{F\+C, }
+\item[{real, dimension    (ilg)}]{F\+G, }
+\item[{real, dimension   (ilg)}]{F\+C\+S, }
+\item[{real, dimension   (ilg)}]{F\+G\+S, }
+\item[{real, dimension(ilg)}]{P\+A\+I\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{P\+A\+I\+C\+N\+S, }
+\item[{real, dimension  (ilg)}]{F\+S\+V\+F, }
+\item[{real, dimension (ilg)}]{F\+S\+V\+F\+S, }
+\item[{real, dimension(ilg)}]{F\+R\+A\+I\+N\+C, }
+\item[{real, dimension(ilg)}]{F\+S\+N\+O\+W\+C, }
+\item[{real, dimension(ilg)}]{F\+R\+A\+I\+C\+S, }
+\item[{real, dimension(ilg)}]{F\+S\+N\+O\+C\+S, }
+\item[{real, dimension(ilg)}]{R\+A\+I\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{R\+A\+I\+C\+N\+S, }
+\item[{real, dimension(ilg)}]{S\+N\+O\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{S\+N\+O\+C\+N\+S, }
+\item[{real, dimension  (ilg)}]{D\+I\+S\+P, }
+\item[{real, dimension (ilg)}]{D\+I\+S\+P\+S, }
+\item[{real, dimension(ilg)}]{Z\+O\+M\+L\+N\+C, }
+\item[{real, dimension(ilg)}]{Z\+O\+M\+L\+C\+S, }
+\item[{real, dimension(ilg)}]{Z\+O\+E\+L\+N\+C, }
+\item[{real, dimension(ilg)}]{Z\+O\+E\+L\+C\+S, }
+\item[{real, dimension(ilg)}]{Z\+O\+M\+L\+N\+G, }
+\item[{real, dimension(ilg)}]{Z\+O\+M\+L\+N\+S, }
+\item[{real, dimension(ilg)}]{Z\+O\+E\+L\+N\+G, }
+\item[{real, dimension(ilg)}]{Z\+O\+E\+L\+N\+S, }
+\item[{real, dimension (ilg)}]{C\+H\+C\+A\+P, }
+\item[{real, dimension(ilg)}]{C\+H\+C\+A\+P\+S, }
+\item[{real, dimension(ilg)}]{C\+M\+A\+S\+S\+C, }
+\item[{real, dimension(ilg)}]{C\+M\+A\+S\+C\+S, }
+\item[{real, dimension(ilg)}]{C\+W\+L\+C\+A\+P, }
+\item[{real, dimension(ilg)}]{C\+W\+F\+C\+A\+P, }
+\item[{real, dimension(ilg)}]{C\+W\+L\+C\+P\+S, }
+\item[{real, dimension(ilg)}]{C\+W\+F\+C\+P\+S, }
+\item[{real, dimension(ilg)}]{R\+B\+C\+O\+E\+F, }
+\item[{real, dimension(ilg)}]{Z\+P\+L\+I\+M\+C, }
+\item[{real, dimension(ilg)}]{Z\+P\+L\+I\+M\+G, }
+\item[{real, dimension(ilg)}]{Z\+P\+L\+M\+C\+S, }
+\item[{real, dimension(ilg)}]{Z\+P\+L\+M\+G\+S, }
+\item[{real, dimension  (ilg)}]{H\+T\+C\+C, }
+\item[{real, dimension  (ilg)}]{H\+T\+C\+S, }
+\item[{real, dimension   (ilg,ig)}]{H\+T\+C, }
+\item[{real, dimension (ilg,ig)}]{F\+R\+O\+O\+T, }
+\item[{real, dimension(ilg,ig)}]{F\+R\+O\+O\+T\+S, }
+\item[{real, dimension  (ilg)}]{W\+T\+R\+C, }
+\item[{real, dimension  (ilg)}]{W\+T\+R\+S, }
+\item[{real, dimension  (ilg)}]{W\+T\+R\+G, }
+\item[{real, dimension  (ilg)}]{C\+M\+A\+I, }
+\item[{real, dimension   (ilg,ic)}]{P\+A\+I, }
+\item[{real, dimension  (ilg,ic)}]{P\+A\+I\+S, }
+\item[{real, dimension   (ilg,ic)}]{A\+I\+L, }
+\item[{real, dimension  (ilg,ic)}]{F\+C\+A\+N, }
+\item[{real, dimension (ilg,ic)}]{F\+C\+A\+N\+S, }
+\item[{real, dimension(ilg)}]{P\+S\+I\+G\+N\+D, }
+\item[{real, dimension(ilg,icp1)}]{F\+C\+A\+N\+M\+X, }
+\item[{real, dimension  (ilg,icp1)}]{Z\+O\+L\+N, }
+\item[{real, dimension(ilg,ic)}]{P\+A\+I\+M\+A\+X, }
+\item[{real, dimension(ilg,ic)}]{P\+A\+I\+M\+I\+N, }
+\item[{real, dimension(ilg,ic)}]{C\+W\+G\+T\+M\+X, }
+\item[{real, dimension(ilg,ic)}]{Z\+R\+T\+M\+A\+X, }
+\item[{real, dimension(ilg,ic)}]{P\+A\+I\+D\+A\+T, }
+\item[{real, dimension(ilg,ic)}]{H\+G\+T\+D\+A\+T, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+L\+I\+Q, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+I\+C\+E, }
+\item[{real, dimension  (ilg,ig)}]{T\+B\+A\+R, }
+\item[{real, dimension  (ilg)}]{R\+C\+A\+N, }
+\item[{real, dimension (ilg)}]{S\+N\+C\+A\+N, }
+\item[{real, dimension  (ilg)}]{T\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{G\+R\+O\+W\+T\+H, }
+\item[{real, dimension (ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{T\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{F\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+O, }
+\item[{real, dimension   (ilg)}]{S\+N\+O, }
+\item[{real, dimension (ilg)}]{Z0\+O\+R\+O, }
+\item[{real, dimension(ilg)}]{Z\+B\+L\+E\+N\+D, }
+\item[{real, dimension(ilg)}]{Z\+P\+L\+M\+G0, }
+\item[{real, dimension(ilg)}]{Z\+P\+L\+M\+S0, }
+\item[{real, dimension    (ilg)}]{T\+A, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+A\+I\+R, }
+\item[{real, dimension  (ilg)}]{R\+A\+D\+J, }
+\item[{real, dimension  (ilg)}]{D\+L\+O\+N, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+I, }
+\item[{real, dimension  (ig)}]{D\+E\+L\+Z, }
+\item[{real, dimension (ilg,ig)}]{D\+E\+L\+Z\+W, }
+\item[{real, dimension (ilg,ig)}]{Z\+B\+O\+T\+W, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+P\+O\+R, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+M\+I\+N, }
+\item[{real, dimension(ilg,ig)}]{P\+S\+I\+S\+A\+T, }
+\item[{real, dimension    (ilg,ig)}]{B\+I, }
+\item[{real, dimension(ilg,ig)}]{P\+S\+I\+W\+L\+T, }
+\item[{real, dimension  (ilg,ig)}]{H\+C\+P\+S, }
+\item[{integer, dimension (ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{I\+C, }
+\item[{integer}]{I\+C\+P1, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+D\+A\+Y, }
+\item[{integer}]{I\+D\+I\+S\+P, }
+\item[{integer}]{I\+Z\+R\+E\+F, }
+\item[{integer}]{I\+W\+F, }
+\item[{integer}]{I\+P\+A\+I, }
+\item[{integer}]{I\+H\+G\+T, }
+\item[{real, dimension (ilg,ic,ig)}]{R\+M\+A\+T, }
+\item[{real, dimension     (ilg,ic)}]{H, }
+\item[{real, dimension    (ilg,ic)}]{H\+S, }
+\item[{real, dimension(ilg)}]{C\+W\+C\+P\+A\+V, }
+\item[{real, dimension (ilg)}]{G\+R\+O\+W\+A, }
+\item[{real, dimension (ilg)}]{G\+R\+O\+W\+N, }
+\item[{real, dimension (ilg)}]{G\+R\+O\+W\+B, }
+\item[{real, dimension(ilg)}]{R\+R\+E\+S\+I\+D, }
+\item[{real, dimension(ilg)}]{S\+R\+E\+S\+I\+D, }
+\item[{real, dimension (ilg)}]{F\+R\+T\+O\+T, }
+\item[{real, dimension(ilg)}]{F\+R\+T\+O\+T\+S, }
+\item[{real, dimension(ilg,ictem)}]{F\+C\+A\+N\+C\+M\+X, }
+\item[{integer}]{I\+C\+T\+E\+M, }
+\item[{logical}]{ctem\+\_\+on, }
+\item[{real, dimension(ilg,ic,ig)}]{R\+M\+A\+T\+C, }
+\item[{real, dimension (ilg,ic)}]{A\+I\+L\+C, }
+\item[{real, dimension   (ilg,ic)}]{P\+A\+I\+C, }
+\item[{real, dimension(ilg,ictem)}]{A\+I\+L\+C\+G, }
+\item[{integer}]{L2\+M\+A\+X, }
+\item[{integer, dimension(ic)}]{N\+O\+L2\+P\+F\+T\+S, }
+\item[{real, dimension (ilg,ictem)}]{A\+I\+L\+C\+G\+S, }
+\item[{real, dimension (ilg,ictem)}]{F\+C\+A\+N\+C\+S, }
+\item[{real, dimension(ilg,ictem)}]{F\+C\+A\+N\+C, }
+\item[{real, dimension(ilg,ic)}]{Z\+O\+L\+N\+C, }
+\item[{real, dimension(ilg,ic)}]{C\+M\+A\+S\+V\+E\+G\+C, }
+\item[{real, dimension(ilg,ic)}]{S\+L\+A\+I\+C}
+\end{DoxyParamCaption}
+)}\label{APREP_8f_a8fb2f8e6ab6c1aed96ecc05809d43ab1}
+
+
+This subroutine is hard-\/coded to handle the standard four vegetation categories recognized by C\+L\+A\+S\+S (needleleaf trees, broadleaf trees, crops and grass), so a call to abort is performed if the number of vegetation classes, I\+C, is not equal to 4. A set of diagnostic and accumulator arrays is then initialized to zero, and the liquid water suction in the soil is set to an arbitrarily high value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fc} & Subarea fractional coverage of modelled area (X) \mbox{[} \mbox{]}\\
+\hline
+{\em fg} & Subarea fractional coverage of modelled area (X) \mbox{[} \mbox{]}\\
+\hline
+{\em fcs} & Subarea fractional coverage of modelled area (X) \mbox{[} \mbox{]}\\
+\hline
+{\em fgs} & Subarea fractional coverage of modelled area (X) \mbox{[} \mbox{]}\\
+\hline
+{\em paican} & Plant area index of canopy over bare ground ( $\Lambda_p$) \mbox{[} \mbox{]}\\
+\hline
+{\em paicns} & Plant area index of canopy over snow ( $\Lambda_p$) \mbox{[} \mbox{]}\\
+\hline
+{\em fsvf} & Sky view factor for bare ground under canopy ( $\chi$) \mbox{[} \mbox{]}\\
+\hline
+{\em fsvfs} & Sky view factor for snow under canopy ( $\chi$) \mbox{[} \mbox{]}\\
+\hline
+{\em frainc} & Fractional coverage of canopy by liquid water over snow-\/free subarea \mbox{[} \mbox{]}\\
+\hline
+{\em fsnowc} & Fractional coverage of canopy by frozen water over snow-\/free subarea \mbox{[} \mbox{]}\\
+\hline
+{\em fraics} & Fractional coverage of canopy by liquid water over snow-\/covered subarea \mbox{[} \mbox{]}\\
+\hline
+{\em fsnocs} & Fractional coverage of canopy by frozen water over snow-\/covered subarea \mbox{[} \mbox{]}\\
+\hline
+{\em raican} & Intercepted liquid water stored on canopy over bare ground ( $W_l$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em raicns} & Intercepted liquid water stored on canopy over snow ( $W_l$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em snocan} & Intercepted frozen water stored on canopy over bare soil ( $W_f$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em snocns} & Intercepted frozen water stored on canopy over snow ( $W_f$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em disp} & Displacement height of vegetation over bare ground (d) \mbox{[}m\mbox{]}\\
+\hline
+{\em disps} & Displacement height of vegetation over snow (d) \mbox{[}m\mbox{]}\\
+\hline
+{\em zomlnc} & Logarithm of roughness length for momentum of vegetation over bare ground \mbox{[} \mbox{]}\\
+\hline
+{\em zomlcs} & Logarithm of roughness length for momentum of vegetation over snow \mbox{[} \mbox{]}\\
+\hline
+{\em zoelnc} & Logarithm of roughness length for heat of vegetation over bare ground \mbox{[} \mbox{]}\\
+\hline
+{\em zoelcs} & Logarithm of roughness length for heat of vegetation over snow \mbox{[} \mbox{]}\\
+\hline
+{\em zomlng} & Logarithm of roughness length for momentum of bare ground \mbox{[} \mbox{]}\\
+\hline
+{\em zomlns} & Logarithm of roughness length for momentum of snow \mbox{[} \mbox{]}\\
+\hline
+{\em zoelng} & Logarithm of roughness length for heat of bare ground \mbox{[} \mbox{]}\\
+\hline
+{\em zoelns} & Logarithm of roughness length for heat of snow \mbox{[} \mbox{]}\\
+\hline
+{\em rbcoef} & Parameter for calculation of leaf boundary resistance ( $C_{rb}$)\\
+\hline
+{\em chcap} & Heat capacity of canopy over bare ground \mbox{[} $J m^{-2} K^{-1}$\mbox{]}\\
+\hline
+{\em chcaps} & Heat capacity of canopy over snow \mbox{[} $J m^{-2} K^{-1}$\mbox{]}\\
+\hline
+{\em cmassc} & Mass of canopy over bare ground \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em cmascs} & Mass of canopy over snow \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em cwlcap} & Storage capacity of canopy over bare ground for liquid water ( $W_{l,max}$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em cwfcap} & Storage capacity of canopy over bare ground for frozen water ( $W_{f,max}$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em cwlcps} & Storage capacity of canopy over snow for liquid water ( $W_{l,max}$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em cwfcps} & Storage capacity of canopy over snow for frozen water ( $W_{f,max}$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em zplimc} & Maximum water ponding depth for ground under canopy \mbox{[}m\mbox{]}\\
+\hline
+{\em zplimg} & Maximum water ponding depth for bare ground \mbox{[}m\mbox{]}\\
+\hline
+{\em zplmcs} & Maximum water ponding depth for ground under snow under canopy \mbox{[}m\mbox{]}\\
+\hline
+{\em zplmgs} & Maximum water ponding depth for ground under snow \mbox{[}m\mbox{]}\\
+\hline
+{\em htcc} & Diagnosed internal energy change of vegetation canopy due to conduction and/or change in mass \mbox{[} $W m^{-2}$\mbox{]}\\
+\hline
+{\em htcs} & Diagnosed internal energy change of snow pack due to conduction and/or change in mass \mbox{[} $W m^{-2}$\mbox{]}\\
+\hline
+{\em wtrc} & Diagnosed residual water transferred off the vegetation canopy \mbox{[} $kg m^{-2} s^{-1}$\mbox{]}\\
+\hline
+{\em wtrs} & Diagnosed residual water transferred into or out of the snow pack \mbox{[} $kg m^{-2} s^{-1}$\mbox{]}\\
+\hline
+{\em wtrg} & Diagnosed residual water transferred into or out of the soil \mbox{[} $kg m^{-2} s^{-1}$\mbox{]}\\
+\hline
+{\em cmai} & Aggregated mass of vegetation canopy \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em froot} & Fraction of total transpiration contributed by soil layer \mbox{[} \mbox{]}\\
+\hline
+{\em htc} & Diagnosed internal energy change of soil layer due to conduction and/or change in mass \mbox{[} $W m^{-2}$\mbox{]}\\
+\hline
+{\em pai} & Plant area index of vegetation category over bare ground \mbox{[} \mbox{]}\\
+\hline
+{\em pais} & Plant area index of vegetation category over snow \mbox{[} \mbox{]}\\
+\hline
+{\em ail} & Leaf area index of vegetation category over bare ground \mbox{[} \mbox{]}\\
+\hline
+{\em fcan} & Fractional coverage of vegetation category over bare ground ( $X_i$) \mbox{[} \mbox{]}\\
+\hline
+{\em fcans} & Fractional coverage of vegetation category over snow ( $X_i$) \mbox{[} \mbox{]}\\
+\hline
+{\em psignd} & Minimum liquid moisture suction in soil layers \mbox{[}m\mbox{]}\\
+\hline
+{\em fcanmx} & Maximum fractional coverage of modelled area by vegetation category \mbox{[} \mbox{]}\\
+\hline
+{\em zoln} & Natural logarithm of maximum roughness length of vegetation category \mbox{[} \mbox{]}\\
+\hline
+{\em paimax} & Maximum plant area index of vegetation category \mbox{[} \mbox{]}\\
+\hline
+{\em paimin} & Minimum plant area index of vegetation category \mbox{[} \mbox{]}\\
+\hline
+{\em cwgtmx} & Maximum canopy mass for vegetation category \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em zrtmax} & Maximum rooting depth of vegetation category \mbox{[}m\mbox{]}\\
+\hline
+{\em paidat} & Optional user-\/specified value of plant area indices of vegetation categories to override C\+L\+A\+S\+S-\/calculated values \mbox{[} \mbox{]}\\
+\hline
+{\em hgtdat} & Optional user-\/specified values of height of vegetation categories to override C\+L\+A\+S\+S-\/calculated values \mbox{[}m\mbox{]}\\
+\hline
+{\em thliq} & Volumetric liquid water content of soil layers ( $\theta$ l) \mbox{[} $m^3 m^{-3}$\mbox{]}\\
+\hline
+{\em thice} & Frozen water content of soil layers under vegetation \mbox{[} $m^3 m^{-3}$\mbox{]}\\
+\hline
+{\em tbar} & Temperature of soil layers \mbox{[}K\mbox{]}\\
+\hline
+{\em rcan} & Intercepted liquid water stored on canopy ( $W_l$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em sncan} & Intercepted frozen water stored on canopy ( $W_f$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em tcan} & Vegetation canopy temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em growth} & Vegetation growth index \mbox{[} \mbox{]}\\
+\hline
+{\em zsnow} & Depth of snow pack ( $z_s$) \mbox{[}m\mbox{]}\\
+\hline
+{\em tsnow} & Snowpack temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em fsnow} & Diagnosed fractional snow coverage \mbox{[} \mbox{]}\\
+\hline
+{\em rhosno} & Density of snow ( $ s$) \mbox{[} $kg m^{-3}$\mbox{]}\\
+\hline
+{\em sno} & Mass of snow pack ( $W_s$) \mbox{[} $kg m^{-2}$\mbox{]}\\
+\hline
+{\em ta} & Air temperature at reference height \mbox{[}K\mbox{]}\\
+\hline
+{\em rhoair} & Density of air \mbox{[} $kg m^{-3}$\mbox{]}\\
+\hline
+{\em dlon} & Longitude of grid cell (east of Greenwich) \mbox{[}degrees\mbox{]}\\
+\hline
+{\em z0oro} & Orographic roughness length \mbox{[}m\mbox{]}\\
+\hline
+{\em zblend} & Atmospheric blending height for surface roughness length averaging ( $z_b$) \mbox{[}m\mbox{]}\\
+\hline
+{\em rhosni} & Density of fresh snow ( $\rho$ s,f) \mbox{[} $kg m^{-3}$\mbox{]}\\
+\hline
+{\em zplmg0} & Maximum water ponding depth for snow-\/free subareas (user-\/specified when running M\+E\+S\+H code) \mbox{[}m\mbox{]}\\
+\hline
+{\em zplms0} & Maximum water ponding depth for snow-\/covered subareas (user-\/specified when running M\+E\+S\+H code) \mbox{[}m\mbox{]}\\
+\hline
+{\em radj} & Latitude of grid cell (positive north of equator) \mbox{[}rad\mbox{]}\\
+\hline
+{\em delzw} & Permeable thickness of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em zbotw} & Depth to permeable bottom of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em thpor} & Pore volume in soil layer ( $\theta$ p) \mbox{[} $m^3 m^{-3}$\mbox{]}\\
+\hline
+{\em thlmin} & Residual soil liquid water content remaining after freezing or evaporation \mbox{[} $m^3 m^{-3}$\mbox{]}\\
+\hline
+{\em psisat} & Soil moisture suction at saturation ( $\Psi$ sat) \mbox{[}m\mbox{]}\\
+\hline
+{\em bi} & Clapp and Hornberger empirical \char`\"{}b\char`\"{} parameter \mbox{[} \mbox{]}\\
+\hline
+{\em psiwlt} & Soil moisture suction at wilting point ( $\Psi$ w) \mbox{[}m\mbox{]}\\
+\hline
+{\em hcps} & Volumetric heat capacity of soil particles \mbox{[} $J m^{-3}$\mbox{]}\\
+\hline
+{\em isand} & Sand content flag\\
+\hline
+{\em delz} & Soil layer thickness \mbox{[}m\mbox{]}\\
+\hline
+{\em ailcg} & G\+R\+E\+E\+N L\+A\+I F\+O\+R U\+S\+E W\+I\+T\+H P\+H\+T\+S\+Y\+N S\+U\+B\+R\+O\+U\+T\+I\+N\+E\\
+\hline
+{\em ailcgs} & G\+R\+E\+E\+N L\+A\+I F\+O\+R C\+A\+N\+O\+P\+Y O\+V\+E\+R S\+N\+O\+W S\+U\+B-\/\+A\+R\+E\+A\\
+\hline
+{\em fcanc} & F\+R\+A\+C\+T\+I\+O\+N O\+F C\+A\+N\+O\+P\+Y O\+V\+E\+R G\+R\+O\+U\+N\+D F\+O\+R C\+T\+E\+M\textquotesingle{}s 9 P\+F\+Ts\\
+\hline
+{\em fcancs} & F\+R\+A\+C\+T\+I\+O\+N O\+F C\+A\+N\+O\+P\+Y O\+V\+E\+R S\+N\+O\+W F\+O\+R C\+T\+E\+M\textquotesingle{}s 9 P\+F\+Ts \\
+\hline
+\end{DoxyParams}
+In the 120 loop, the growth index for crops, G\+R\+O\+W\+A, is calculated (if C\+L\+A\+S\+S is not being run coupled to C\+T\+E\+M). This is done by referring to the three-\/dimensional array G\+R\+O\+W\+Y\+R, which contains values corresponding to the four Julian days of the year on which crops are planted, on which they reach maturity, on which harvesting begins, and on which the harvest is complete, for each ten-\/degree latitude half-\/circle in each hemisphere. These are generic, average dates, approximated using information gleaned from annual U\+N F\+A\+O (Food and Agriculture Organization) reports. (In the tropics, it is assumed that areas classified as agricultural are constantly under cultivation, so all four values are set to zero.)
+
+First, the latitude of the modelled area is converted from a value in radians to a value from 1 to 18, I\+N, corresponding to the index of the latitude circle (1 for latitudes $80-90^o S$, 18 for latitudes $80-90^o N$). Then the hemisphere index, N\+L, is set to 1 for the Eastern Hemisphere, and 2 for the Western Hemisphere. If the planting date for the modelled area is zero (indicating a location in the tropics), G\+R\+O\+W\+A is set to 1. Otherwise, G\+R\+O\+W\+A is set to 1 if the day of the year lies between the maturity date and the start of the 54harvest, and to zero if the day of the year lies between the end of the harvest and the planting date. For dates in between, the value of G\+R\+O\+W\+A is interpolated between 0 and 1. Checks are performed at the end to ensure that G\+R\+O\+W\+A is not less than 0 or greater than 1. If the calculated value of G\+R\+O\+W\+A is vanishingly small, it is set to zero.
+
+In the 150 loop the other three growth indices are evaluated, as well as the vegetation heights and plant area indices for the four vegetation categories over snow-\/covered and snow-\/free ground. The background growth index for trees, G\+R\+O\+W\+T\+H, is evaluated separately in subroutine C\+G\+R\+O\+W. It varies from a value of 0 for dormant or leafless periods to 1 for fully-\/leafed periods, with a sixty-\/day transition between the two. When senescence begins, it is set instantaneously to -\/1 and thereafter increases over a sixty-\/day period back to 0. (The onset of spring budburst and fall senescence are triggered by near-\/zero values of the air temperature and the first soil layer temperature.) For needleleaf trees, the growth index G\+R\+O\+W\+N is simply set to the absolute value of G\+R\+O\+W\+T\+H. For broadleaf trees, the transition period is assumed to last thirty days instead of sixty, and so the growth index G\+R\+O\+W\+B is set to the absolute value of double the value of G\+R\+O\+W\+T\+H, with upper and lower limits of 1 and 0. Finally, the growth index of grasses is set to 1 all year round.
+
+A branch in the code occurs next, depending on the value of the flag I\+H\+G\+T. If I\+H\+G\+T=0, the values of vegetation height calculated by C\+L\+A\+S\+S are to be used. For trees and grass, the vegetation height under snow-\/free conditions is assumed to be constant year-\/round, and is calculated as 10 times the exponential of Z\+O\+L\+N, the logarithm of the maximum vegetation roughness length. For crops, this maximum height is multiplied by G\+R\+O\+W\+A. If I\+H\+G\+T=1, vegetation heights specified by the user are utilized instead. This height H for each of the four vegetation categories is used to calculate the height H\+S over snow-\/covered areas. For needleleaf and broadleaf trees, H\+S is set to H. For crops and grass, H\+S is calculated by subtracting the snow depth Z\+S\+N\+O\+W from H, to account for the burying of short vegetation by snow.
+
+If C\+L\+A\+S\+S is being run uncoupled to C\+T\+E\+M, a second branch now occurs, depending on the value of the flag I\+P\+A\+I. If I\+P\+A\+I=0, the values of plant area index calculated by C\+L\+A\+S\+S are to be used. For all four vegetation categories, the plant area index over snow-\/free ground, P\+A\+I, is determined by interpolating between the annual maximum and minimum plant area indices using the growth index. If I\+P\+A\+I=1, plant area index values specified by the user are utilized instead. For trees, the plant area index over snow-\/ covered ground, P\+A\+I\+S, is set to P\+A\+I. For crops and grass, if H$>$0, P\+A\+I\+S is set to P\+A\+I scaled by the ratio of H\+S/\+H; otherwise, it is set to zero. Lastly, the leaf area indices for the four vegetation categories over snow-\/free ground, A\+I\+L, are determined from the P\+A\+I values. For needleleaf trees, A\+I\+L is estimated as 0.\+90 P\+A\+I; for broadleaf trees it is estimated as the excess P\+A\+I over the annual minimum value. For crops and grass A\+I\+L is assumed to be equal to P\+A\+I. (If C\+L\+A\+S\+S is being run coupled to C\+T\+E\+M, the C\+T\+E\+M-\/ generated values of P\+A\+I and A\+I\+L are used instead.)
+
+In the 175 loop, the fractional coverage of the modelled area by each of the four vegetation categories is calculated, for snow-\/free (F\+C\+A\+N) and snow-\/covered ground (F\+C\+A\+N\+S). For needleleaf and broadleaf trees, F\+C\+A\+N is set to the maximum coverage F\+C\+A\+N\+M\+X of the vegetation category, scaled by the snow-\/ free fraction of the modelled area, 1-\/\+F\+S\+N\+O\+W. For crops and grass, this calculation is modified for cases where the plant area index has been calculated as falling below a threshold value owing to growth stage or burying by snow. (If C\+L\+A\+S\+S is being run coupled to C\+T\+E\+M, this threshold value is set to 0.\+05; otherwise it is set to 1.) In such cases the vegetation coverage is assumed to become discontinuous, and so an additional multiplication by P\+A\+I is performed to produce a reduced value of F\+C\+A\+N, and P\+A\+I is reset to the threshold value. An identical procedure is followed to determine the F\+C\+A\+N\+S values.
+
+The areal fractions of each of the four C\+L\+A\+S\+S subareas, vegetation over bare soil (F\+C), bare soil (F\+G), vegetation over snow (F\+C\+S) and snow (F\+G\+S) are then calculated, using the F\+C\+A\+N and F\+C\+A\+N\+S values and F\+S\+N\+O\+W. Checks are carried out, and adjustments performed if necessary, to ensure that none of the four subareas is vanishingly small. The values of F\+S\+N\+O\+W and of the four F\+C\+A\+Ns and F\+C\+A\+N\+Ss are recalculated accordingly. Finally, checks are carried out to ensure that each of the four subareas is greater than zero, and that their sum is unity. If this is not the case, a call to abort is performed. In the last part of the 175 loop, the limiting ponding depth for surface water is determined for each of the four subareas. If the flag I\+W\+F is zero, indicating that lateral flow of water within the soil is to be neglected, these values are assigned as follows. If the index I\+S\+A\+N\+D of the first soil layer is -\/3 or -\/4, indicating a rock surface or an ice sheet, the bare soil ponding limit, Z\+P\+L\+I\+M\+G, is set to 1 mm; otherwise Z\+P\+L\+I\+M\+G is set to 2 mm. If the fractional area of snow on bare soil is greater than zero, the subarea ponding limit Z\+P\+L\+M\+G\+S is set to the weighted average of Z\+P\+L\+I\+M\+G over the areas where snow has not buried vegetation and where it has buried crops, and to 3 mm over areas where it has buried grass; otherwise to zero. If the fractional area of canopy over bare soil is greater than zero, the subarea ponding depth Z\+P\+L\+I\+M\+C is set to the weighted average of 1 cm under trees and 3 mm under crops and grass; otherwise to zero. If the fractional area of canopy over snow is greater than zero, the subarea ponding depth Z\+P\+L\+M\+C\+S is also currently set to the weighted average of 1 cm under trees and 3 mm under crops and grass; otherwise to zero. Finally, if the flag I\+W\+F is greater than zero, indicating that lateral flow of soil water is being modelled, externally derived user-\/specified values of the ponding limit for the four subareas are assigned.
+
+In loop 200, calculations are done related to the interception of water on vegetation. First, the plant area indices of the composite vegetation canopy over the snow-\/free and snow-\/covered subareas are calculated as weighted averages of the plant area indices of the four vegetation categories over each subarea. The liquid water interception capacity $W_{l,max}$ on each of the two subareas is calculated as $W_{l,max} = 0.20 \Lambda_p$ where $\Lambda_p$ is the plant area index of the composite canopy. This simple relation has been found to work well for a wide range of canopy types and precipitation events (see Verseghy et al, 1993). If either the average amount of liquid water on the canopy, R\+C\+A\+N, or the total cancpy coverage, F\+C+\+F\+C\+S, is less than a small threshold value, the value of R\+C\+A\+N is stored in a residual water array R\+R\+E\+S\+I\+D, and R\+C\+A\+N is set to zero. Next the intercepted liquid water is partitioned between F\+C and F\+C\+S. First R\+C\+A\+N is re-\/ evaluated as an average value over the canopy-\/covered area only, rather than over the whole modelled area. Then the intercepted liquid water amounts on vegetation over snow-\/free (R\+A\+I\+C\+A\+N) and snow-\/ covered areas (R\+A\+I\+C\+N\+S) are calculated by making use of the relations $W_{L,0} / \Lambda_{p,0} = W_{L,s} / \Lambda_{p,s}$ and $W_l (X_0 + X_s) = W_{l,0} X_0 + W_{l,s} X_s$ where $W_l$ is the liquid water on the canopy, $X$ is the fractional area, and the subscripts $0$ and $s$ refer to snow-\/free and snow-\/covered areas respectively.
+
+For snow interception on the canopy, a modified calculation of the plant area indices $\Lambda_{p,0}$ and $\Lambda_{p,s}$ is performed, assigning a weight of 0.\+7 to the plant area index of needleleaf trees, to account for the effect of needle clumping. The interception capacity for snow, $W_{f,max}$, is calculated following Bartlett et al. (2006), using a relation developed by Schmidt and Gluns (1991)\+: $W_{f,max} = 6.0 \Lambda_p [0.27 + 46.0 \rho_{s,f} ]$ where
+
+In loops 250 and 275, calculations of the displacement height and the logarithms of the roughness lengths for heat and momentum are performed for the vegetated subareas. The displacement height $d_i$ and the roughness length $z_{0,i}$ for the separate vegetation categories are obtained as simple ratios of the canopy height H\+: $d_i = 0.70 H$ $z_{0,i} = 0.10 H$
+
+The averaged displacement height d over the vegetated subareas is only calculated if the flag I\+D\+I\+S\+P has been set to 1. If I\+D\+I\+S\+P = 0, this indicates that the atmospheric model is using a terrain-\/following coordinate system, and thus the displacement height is treated as part of the \char`\"{}terrain\char`\"{}. If D\+I\+S\+P = 1, d is calculated as a logarithmic average over the vegetation categories\+: $X ln(d) = \Sigma [X_i ln(d_i)]$ where X is the fractional coverage of the subarea. The averaged roughness length for momentum $z_{0m}$ over the subarea is determined based on the assumption that averaging should be performed on the basis of the drag coefficient formulation. Thus, following Delage et al. (1999), and after Mason (1988)\+: $X/ln^2 (z_b /z_{0m}) = \Sigma [X_i /ln^2 (z_b /z_{0i})]$
+
+The averaged roughness length for heat $z_{0e}$ over the subarea is calculated as a geometric mean over the vegetation categories\+: $z_{0e} z_{0mX} = \Pi ( z_{0i}^{2Xi} )$
+
+In loop 300, calculations of the logarithms of the roughness lengths for heat and momentum are performed for the bare ground and snow-\/covered subareas. Background values of $ln(z_{om})$ for soil, snow cover, ice sheets and urban areas are passed into the subroutine through common blocks. In C\+L\+A\+S\+S, urban areas are treated very simply, as areas of bare soil with a high roughness length. The subarea values of $ln(z_{om})$ for bare soil and snow are therefore adjusted for the fractional coverage of urban area. Values for the ratio between the roughness lengths for momentum and heat for bare soil and snow are also passed in via common blocks. These are used to derive subarea values of $ln(z_{oe})$ from $ln(z_{om})$.
+
+In loop 325, an adjustment is applied to $ln(z_{om})$ if the effect of terrain roughness needs to be taken into account. If the surface orographic roughness length is not vanishingly small, its logarithm, L\+Z0\+O\+R\+O, is calculated. If it is greater than the calculated logarithm of the roughness length for momentum of any of the subareas, these are reset to L\+Z0\+O\+R\+O.
+
+In loop 350, the canopy mass is calculated as a weighted average over the vegetation categories, for canopy over bare soil (C\+M\+A\+S\+S\+C) and over snow (C\+M\+A\+S\+C\+S). (For crops over bare soil, the mass is adjusted according to the growth index; for crops and grass over snow, the mass is additionally adjusted to take into account burying by snow.) If I\+D\+I\+S\+P = 0, indicating that the vegetation displacement height is part of the \char`\"{}terrain\char`\"{}, the mass of air within the displacement height is normalized by the vegetation heat capacity and added to the canopy mass. If I\+Z\+R\+E\+F = 2, indicating that the bottom of the atmosphere is taken to lie at the local roughness length rather than at the ground surface, the mass of air within the roughness length is likewise normalized by the vegetation heat capacity and added to the canopy mass. The canopy heat capacities over bare soil (C\+H\+C\+A\+P) and over snow (C\+H\+C\+A\+P\+S) are evaluated from the respective values of canopy mass and of intercepted liquid water and snow. The aggregated canopy mass C\+M\+A\+I is recalculated, and is used to determine the change in internal energy of the canopy, H\+T\+C\+C, owing to growth or disappearance of the vegetation.
+
+In the 450 and 500 loops, the fraction of plant roots in each soil layer is calculated. If C\+L\+A\+S\+S is being run coupled to C\+T\+E\+M, the C\+T\+E\+M-\/derived values are assigned. Otherwise, for each vegetation category the rooting depth Z\+R\+O\+O\+T is set to the background maximum value, except in the case of crops, for which it is set to the maximum scaled by G\+R\+O\+W\+A. If the soil permeable depth is less than Z\+R\+O\+O\+T, Z\+R\+O\+O\+T is set to this depth instead. Values are then assigned in the matrix R\+M\+A\+T, which stores the fraction of roots in each vegetation category for each soil layer. According to Feddes et al. (1974), the fractional root volume R(z) below a depth z is well represented for many varieties of plants by the following exponential function\+: $R(z) = a_1 exp(-3.0z) + a_2.$
+
+Making use of the boundary conditions $R(0) = 1$ and $R(z_r ) = 0$, where $z_r$ is the rooting depth Z\+R\+O\+O\+T, it can be seen that the fraction of roots within a soil depth interval $\Delta z$ can be obtained as the difference between R(z) evaluated at the top $(z_T)$ and bottom $(z_B)$ of the interval\+: $R(\Delta z) = [exp(-3.0z_T) - exp(-3.0z_B)]/ [1 - exp(-3.0z_r)]$
+
+The total fraction of roots in each soil layer, F\+R\+O\+O\+T, can then be determined as a weighted average over the four vegetation categories.
+
+In loop 450, a leaf boundary resistance parameter $C_{rb}$ , incorporating the plant area indices of the four vegetation subareas, is also calculated for later use in subroutine T\+S\+O\+L\+V\+C\+: $C_{rb} = C_l \Lambda_{p,i}^{0.5} /0.75 \bullet [1 - exp(-0.75 \Lambda_{p,i}^{0.5} )]$ where $C_l$ is a parameter that varies with the vegetation category. The aggregated value of $C_{rb}$ is obtained as a weighted average over the four vegetation categories over bare ground and snow cover.
+
+In loop 600, the sky view factor $\chi$ of the ground underlying the canopy is calculated for the vegetated subareas. The standard approach is to determine $\chi$ as an exponential function of the plant area index $\Lambda_p$ \+: $\chi = exp[-c \Lambda_p ]$ where c is a constant depending on the vegetation category. The subarea values of $\chi$ are obtained as weighted averages over the four vegetation categories.
+
+In the 650 loop, the fraction of the total transpiration of water by plants that is extracted from each soil layer is determined. This is done by weighting the values of F\+R\+O\+O\+T calculated above by the relative soil moisture suction in each layer\+: $( \Psi_w - \Psi_i )/( \Psi_w - \Psi_{sat} )$ where $\Psi_i$ , the soil moisture suction in the layer, is obtained as $\Psi_i = \Psi_{sat} ( \theta_{l,i} / \theta_p )^{-b}$ In these equations $\Psi_w$ is the soil moisture suction at the wilting point, $\Psi_{sat}$ is the suction at saturation, $\theta_{l,i}$ is the volumetric liquid water content of the soil layer, $\theta_p$ is the pore volume, and b is an empirical parameter developed by Clapp and Hornberger (1978). The layer values of F\+R\+O\+O\+T are then re-\/normalized so that their sum adds up to unity. In this loop, the representative soil moisture suction P\+S\+I\+G\+N\+D is also calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of $\Psi_i$ and $\Psi_w$ over all the soil layers.
+
+Finally, in loop 800 the aggregated canopy plant area indices P\+A\+I\+C\+A\+N and P\+A\+I\+C\+N\+S are set back to their original values, from the modified values used for the snow interception calculations above; and if C\+L\+A\+S\+S is being run coupled with C\+T\+E\+M, a set of C\+T\+E\+M-\/related calculations is performed.

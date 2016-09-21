@@ -1,0 +1,84 @@
+\hypertarget{SNOALBW_8f}{}\section{S\+N\+O\+A\+L\+B\+W.\+f File Reference}
+\label{SNOALBW_8f}\index{S\+N\+O\+A\+L\+B\+W.\+f@{S\+N\+O\+A\+L\+B\+W.\+f}}
+
+
+Purpose\+: Calculate decrease in snow albedo and increase in density due to aging.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{SNOALBW_8f_aa22cbc1a38c6f3907d9201392f600902}{snoalbw} (A\+L\+B\+S\+N\+O, R\+H\+O\+S\+N\+O, Z\+S\+N\+O\+W, H\+C\+P\+S\+N\+O, T\+S\+N\+O\+W, F\+I, S, R\+M\+E\+L\+T, W\+S\+N\+O\+W, R\+H\+O\+M\+A\+X, I\+S\+A\+N\+D, I\+L\+G, I\+G, I\+L1, I\+L2, J\+L)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Calculate decrease in snow albedo and increase in density due to aging. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{SNOALBW_8f_aa22cbc1a38c6f3907d9201392f600902}{}\index{S\+N\+O\+A\+L\+B\+W.\+f@{S\+N\+O\+A\+L\+B\+W.\+f}!snoalbw@{snoalbw}}
+\index{snoalbw@{snoalbw}!S\+N\+O\+A\+L\+B\+W.\+f@{S\+N\+O\+A\+L\+B\+W.\+f}}
+\subsubsection[{snoalbw}]{\setlength{\rightskip}{0pt plus 5cm}subroutine snoalbw (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg)}]{A\+L\+B\+S\+N\+O, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+O, }
+\item[{real, dimension (ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{H\+C\+P\+S\+N\+O, }
+\item[{real, dimension (ilg)}]{T\+S\+N\+O\+W, }
+\item[{real, dimension    (ilg)}]{F\+I, }
+\item[{real, dimension     (ilg)}]{S, }
+\item[{real, dimension (ilg)}]{R\+M\+E\+L\+T, }
+\item[{real, dimension (ilg)}]{W\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+M\+A\+X, }
+\item[{integer, dimension (ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L}
+\end{DoxyParamCaption}
+)}\label{SNOALBW_8f_aa22cbc1a38c6f3907d9201392f600902}
+
+\begin{DoxyParams}{Parameters}
+{\em albsno} & Albedo of snow $[ ] (\alpha_s)$\\
+\hline
+{\em rhosno} & Density of snow pack $[kg m^{-3}] (\rho_s )$\\
+\hline
+{\em zsnow} & Depth of snow pack $[m] (z_s)$\\
+\hline
+{\em hcpsno} & Heat capacity of snow pack $[J m^{-3} K^{-1}]$\\
+\hline
+{\em tsnow} & Temperature of the snow pack $[C]$\\
+\hline
+{\em fi} & Fractional coverage of subarea in question on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em s} & Snowfall rate $[m s^{-1}] $\\
+\hline
+{\em rmelt} & Melt rate at top of snow pack $[m s^{-1}]$\\
+\hline
+{\em wsnow} & Liquid water content of snow pack $[kg m^{-2}]$\\
+\hline
+{\em isand} & Sand content flag\\
+\hline
+{\em rhomax} & Maximum density of snow pack $[kg m^{-3}] (\rho_{s,max})$ \\
+\hline
+\end{DoxyParams}
+The albedo and density of snow are modelled using empirical exponential decay functions. In the absence of any fresh snowfall the snow albedo $\alpha_s$ is assumed to decrease exponentially with time from a fresh snow value of 0.\+84 to a background old snow value $\alpha_{s,old}$ using an expression based on data given in Aguado (1985), Robinson and Kukla (1984) and Dirmhirn and Eaton (1975)\+:
+
+$\alpha_s (t+1) = [\alpha_s (t) - \alpha_{s,old}] exp [-0.01 \Delta t / 3600] + \alpha_{s,old}$
+
+where $\Delta t$ is the length of the time step. If the melt rate R\+M\+E\+L\+T at the top of the snow pack is non-\/ negligible or if the temperature of the snow is close to 0 C, $\alpha_{s,old}$ is assigned a value of 0.\+50; otherwise $\alpha_{s,old}$ is assigned a value of 0.\+70.
+
+The maximum snow density $\rho_{s,max}$ is estimated as a function of snow depth $z_s$, after Tabler et al. (1990)\+:
+
+$\rho_{s,max} = A_s - [204.70/ z_s] [1.0 - exp(-z_s /0.673)]$
+
+The empirical constant $A_s$ is assigned a value of 450.\+0 for cold snow packs, and 700.\+0 for snow packs near the melting point, following Brown et al. (2006).
+
+The density of snow $\rho_s$ increases exponentially with time from its fresh snow value to the background old snow density calculated above, according to an expression analogous to that for albedo, derived from the field measurements of Longley (1960) and Gold (1958)\+:
+
+$\rho_s (t+1) = [\rho_s (t) - \rho_{s,max} ] exp [-0.01 \Delta t/3600] + \rho{s,max}$
+
+The snow depth and heat capacity are adjusted (see notes on subroutine S\+N\+O\+V\+A\+P), and a check is performed with a call to abort if for unphysical albedo values are encountered.

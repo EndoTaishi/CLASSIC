@@ -48,6 +48,7 @@ real, allocatable, dimension(:) :: mpft_tot
 ! Monthly variables for CLASS
 real, allocatable, dimension(:,:) :: class_m
 real, allocatable, dimension(:,:,:) :: class_s_m
+real, allocatable, dimension(:,:) :: class_s_mother
 
 ! Annual variables for CLASS
 real, allocatable, dimension(:,:) :: class_a
@@ -55,7 +56,7 @@ real, allocatable, dimension(:,:) :: class_a
 integer :: y,dummy_year,dummy_month
 real :: dummy_var
 integer, dimension(1) :: lyear
-integer :: i,m,xlon,ylat,yrst,h,l,cell
+integer :: i,m,xlon,ylat,yrst,h,l,cell,j
 integer :: totyrs
 integer :: monyrs
 integer :: totmons
@@ -466,6 +467,7 @@ deallocate(ctem_a_mos)
 
 ! Allocate the size of the arrays for the output data
   allocate(ctem_a_pft(numctemvars_a,ctemnpft,ntile,totyrs))
+  ctem_a_pft = fill_value
 
    ! Make a file of the PFT info, removing the grdav and TFRAC and the header (first 6 lines)
    command='sed '//tic//'/GRDAV/d'//tic//' '//trim(infile)//' | sed '//tic//'/TFRAC/d'//tic//' | sed '//tic//'1,6d'//tic//' > tmp_a_p.dat'
@@ -681,6 +683,7 @@ if (DOFIRE) then
 ! Per PFT CTEM Annual Fire ==========================================
 
      allocate(ctem_d_a_pft(nctemdistvars_a,ctemnpft,ntile,totyrs))
+     ctem_d_a_pft = fill_value
      allocate(tmpd(nctemdistvars_a))
 
      ! Remove the header, grdavg and tfrac values
@@ -765,6 +768,7 @@ if (DOWETLANDS) then
   inquire(file=trim(folder)//trim(ARGBUFF)//'.CT08Y',exist=lexist)
   if (lexist) then
 
+     infile=trim(folder)//trim(ARGBUFF)//'.CT08Y'
      command='sed -n '//tic//'/GRDAV/p'//tic//' '//trim(infile)//' > tmp_a_w.dat'
      call system(command)
 
@@ -997,7 +1001,8 @@ end if !lexist
    OPEN(82,FILE=trim(folder)//trim(ARGBUFF)//'.OF2M',status='old',form='formatted')
 
    !Allocate Arrays
-   allocate(class_s_m(nclassoilvars_m,nl,totmons))
+   allocate(class_s_m(3,nl,totmons))  ! This one is for the THL, THI, and soil temp
+   allocate(class_s_mother(nclassoilvars_m-3,totmons)) ! This is for the other vars that are not per soil layer
 
    !  first throw out header (5 lines)
    do h = 1,5
@@ -1011,11 +1016,12 @@ end if !lexist
    end do
         
    do y = 1,totmons
-     read(82,*,iostat=io_set)dummy_month,dummy_year,class_s_m(1,1,y),class_s_m(2,1,y),class_s_m(3,1,y),class_s_m(1,2,y),class_s_m(2,2,y),class_s_m(3,2,y),class_s_m(1,3,y),class_s_m(2,3,y),class_s_m(3,3,y)
+     read(82,*,iostat=io_set)dummy_month,dummy_year,(class_s_m(1,j,y),class_s_m(2,j,y),class_s_m(3,j,y),j=1,nl),class_s_mother(1:nclassoilvars_m-3,y)
      if (io_set .ne. 0 .and. y < totmons) then
          write(*,*)'Missing/truncated file ',trim(ARGBUFF)//'OF2M'
          close(82)
          deallocate(class_s_m)
+         deallocate(class_s_mother)
          goto 119
      end if   
    end do
@@ -1025,7 +1031,7 @@ end if !lexist
 !----
 ! Write to netcdf file
  do l=1,nl   ! begin soil layer loop
-  do v = 1,nclassoilvars_m ! begin vars loop
+  do v = 1,3 ! begin vars loop of the three soil vars that are per layer
 
    status = nf90_inq_varid(grpid,trim(CLASS_M_S_VAR(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
@@ -1036,8 +1042,19 @@ end if !lexist
   end do ! vars loop
  end do ! soil layer loop
 
+ do v = 4,nclassoilvars_m ! begin vars loop of the remainder
+
+   status = nf90_inq_varid(grpid,trim(CLASS_M_S_VAR(v)), var_id)
+   if (status/=nf90_noerr) call handle_err(status)
+
+   status = nf90_put_var(grpid,var_id,class_s_mother(v-3,:),start=[xlon,ylat,yrst],count=[1,1,totmons])
+   if (status/=nf90_noerr) call handle_err(status)
+
+ end do ! vars loop
+
 ! deallocate arrays
 deallocate(class_s_m)
+deallocate(class_s_mother)
 
 119 continue !error thrown by file
 
@@ -1279,6 +1296,7 @@ OPEN(740,FILE='tmp_m_p.dat',status='old',form='formatted') ! MONTHLY OUTPUT FOR 
 
 !Allocate Arrays
 allocate(ctem_m_pft(numctemvars_m,ctemnpft,ntile,totmons))
+ ctem_m_pft = fill_value
 allocate(tmp(numctemvars_m))
 
 ! We have to keep track of the month that is read in as it is the only way we know that we are done the tiles for a gridcell.
@@ -1489,6 +1507,7 @@ if (TILED) then
   OPEN(840,FILE='tmp_m_p_d.dat',status='old',form='formatted')
 
   allocate(ctem_d_m_pft(nctemdistvars_m,ctemnpft,ntile,totmons))
+  ctem_d_m_pft = fill_value
   allocate(tmpd(nctemdistvars_m))
 
   do y = 1,monyrs

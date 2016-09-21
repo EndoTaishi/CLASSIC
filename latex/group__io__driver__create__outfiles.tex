@@ -1,0 +1,77 @@
+\hypertarget{group__io__driver__create__outfiles}{}\section{Io\+\_\+driver\+\_\+create\+\_\+outfiles}
+\label{group__io__driver__create__outfiles}\index{Io\+\_\+driver\+\_\+create\+\_\+outfiles@{Io\+\_\+driver\+\_\+create\+\_\+outfiles}}
+
+
+All output files are initialized in this subroutine.  
+
+
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__create__outfiles_ga2eac450ef320091bf7724cf6b178e040}{io\+\_\+driver\+::create\+\_\+outfiles} (argbuff, title1, title2, title3, title4, title5, title6, name1, name2, name3, name4, name5, name6, place1, place2, place3, place4, place5, place6)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+All output files are initialized in this subroutine. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__io__driver__create__outfiles_ga2eac450ef320091bf7724cf6b178e040}{}\index{Io\+\_\+driver\+\_\+create\+\_\+outfiles@{Io\+\_\+driver\+\_\+create\+\_\+outfiles}!create\+\_\+outfiles@{create\+\_\+outfiles}}
+\index{create\+\_\+outfiles@{create\+\_\+outfiles}!Io\+\_\+driver\+\_\+create\+\_\+outfiles@{Io\+\_\+driver\+\_\+create\+\_\+outfiles}}
+\subsubsection[{create\+\_\+outfiles}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public io\+\_\+driver\+::create\+\_\+outfiles (
+\begin{DoxyParamCaption}
+\item[{character(80), intent(in)}]{argbuff, }
+\item[{character(4), intent(in)}]{title1, }
+\item[{character(4), intent(in)}]{title2, }
+\item[{character(4), intent(in)}]{title3, }
+\item[{character(4), intent(in)}]{title4, }
+\item[{character(4), intent(in)}]{title5, }
+\item[{character(4), intent(in)}]{title6, }
+\item[{character(4), intent(in)}]{name1, }
+\item[{character(4), intent(in)}]{name2, }
+\item[{character(4), intent(in)}]{name3, }
+\item[{character(4), intent(in)}]{name4, }
+\item[{character(4), intent(in)}]{name5, }
+\item[{character(4), intent(in)}]{name6, }
+\item[{character(4), intent(in)}]{place1, }
+\item[{character(4), intent(in)}]{place2, }
+\item[{character(4), intent(in)}]{place3, }
+\item[{character(4), intent(in)}]{place4, }
+\item[{character(4), intent(in)}]{place5, }
+\item[{character(4), intent(in)}]{place6}
+\end{DoxyParamCaption}
+)}\label{group__io__driver__create__outfiles_ga2eac450ef320091bf7724cf6b178e040}
+begin\+:
+
+the ctem output file suffix naming convention is as follows\+: \char`\"{}.\+C\+T\#\#\{time\}\char`\"{} where the \#\# is a numerical identifier, \{time\} is any of H, D, M, or Y for half hourly, daily, monthly, or yearly, respectively.
+
+stand alone mode, includes half-\/hourly and daily output
+
+ctem half hourly output files
+
+ctem daily output files
+
+ctem\+\_\+on \& not parallelrun
+
+C\+L\+A\+S\+S M\+O\+N\+T\+H\+L\+Y F\+O\+R B\+O\+T\+H P\+A\+R\+A\+L\+L\+E\+L M\+O\+D\+E A\+N\+D S\+T\+A\+N\+D A\+L\+O\+N\+E M\+O\+D\+E
+
+C\+L\+A\+S\+S Y\+E\+A\+R\+L\+Y O\+U\+T\+P\+U\+T F\+I\+L\+E\+S
+
+C\+T\+E\+M monthly output files
+
+Monthly disturbance
+
+C\+T\+E\+M yearly output files
+
+Annual disturbance
+
+ctem pft fractions M\+O\+N\+T\+H\+L\+Y
+
+ctem pft fractions Y\+E\+A\+R\+L\+Y
+
+Methane(wetland) M\+O\+N\+T\+H\+L\+Y
+
+Methane(wetland) Y\+E\+A\+R\+L\+Y
+
+ctem\+\_\+on \& parallelrun 

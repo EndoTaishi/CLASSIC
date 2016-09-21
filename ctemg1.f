@@ -1,3 +1,6 @@
+!>\file
+C!              Canadian Terrestrial Ecosystem Model (CTEM) 
+!!
       subroutine ctemg1(  gleafmasgat,  bleafmasgat,  stemmassgat,
      a                    rootmassgat,   fcancmxgat,      zbtwgat,
      b                        dlzwgat,      sdepgat,     ailcggat,
@@ -16,8 +19,6 @@
 c      gather peatland variable YW March 19, 2015----------------------/
      1         ,ipeatlandrow,      ipeatlandgat)
 
-c
-C              Canadian Terrestrial Ecosystem Model (CTEM) 
 c
 c     22  Jul 2013  - Add in module for parameters
 C     J. Melton

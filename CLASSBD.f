@@ -1,11 +1,121 @@
+C>\file
+C!     Purpose: Assign values to parameters in CLASS common blocks. CLASS 
+C!     incorporates several kinds of parameters in its common blocks. 
+C!     Some are defined specifically for use in the CLASS code; some are 
+C!     also shared with the atmospheric model (if running in coupled 
+C!     mode).
+C!
+!>\file
+      !>
+      !!In routine CLASSBD, values are primarily assigned to the 
+      !!parameters that are specific to the CLASS code and are passed 
+      !!through it via common blocks CLASS1 through CLASS8. The table 
+      !!below lists the scalar parameters, their definitions, and their 
+      !!designated values with units.
+      !!\f[
+      !!\begin{tabular} { | l | l | c | c | }
+      !!\hline
+      !!Name   & Definition                                                               & Value          &   Units            \\ \hline
+      !!VKC    & Von Karman Constant                                                      & 0.40           &   -                \\ \hline
+      !!CT     & Drag Coefficient for water                                               & $1.15 10^{-3}$ &   -                \\ \hline
+      !!VMIN   & Minimum wind speed                                                       & 0.1            & $   m s^{-1}     $ \\ \hline 
+      !!TCW    & Thermal conductivity of water                                            & 0.57           & $W m^{-1} K^{-1} $ \\ \hline 
+      !!TCICE  & Thermal conductivity of ice                                              & 2.24           & $W m^{-1} K^{-1} $ \\ \hline 
+      !!TCSAND & Thermal conductivity of sand particles                                   & 2.5            & $W m^{-1} K^{-1} $ \\ \hline 
+      !!TCCLAY & Thermal conductivity of fine mineral particles                           & 2.5            & $W m^{-1} K^{-1} $ \\ \hline 
+      !!TCOM   & Thermal conductivity of organic matter                                   & 0.25           & $W m^{-1} K^{-1} $ \\ \hline 
+      !!TCDRYS & Thermal conductivity of dry mineral soil                                 & 0.275          & $W m^{-1} K^{-1} $ \\ \hline 
+      !!RHOSOL & Density of soil mineral matter                                           & $2.65 10^3  $  & $kg m^{-3}  $      \\ \hline 
+      !!RHOOM  & Density of soil organic matter                                           & $1.30 10^3  $  & $kg m^{-3}  $      \\ \hline 
+      !!HCPW   & Volumetric heat capacity of water                                        & $4.187 10^6 $  & $J m^{-3} K^{-1} $ \\ \hline
+      !!HCPICE & Volumetric heat capacity of ice                                          & $1.9257 10^6$  & $J m^{-3} K^{-1} $ \\ \hline
+      !!HCPSOL & Volumetric heat capacity of mineral matter                               & $2.25 10^6  $  & $J m^{-3} K^{-1} $ \\ \hline
+      !!HCPOM  & Volumetric heat capacity of organic matter                               & $2.50 10^6  $  & $J m^{-3} K^{-1} $ \\ \hline
+      !!HCPSND & Volumetric heat capacity of sand particles                               & $2.13 10^6  $  & $J m^{-3} K^{-1} $ \\ \hline
+      !!HCPCLY & Volumetric heat capacity of fine mineral particles                       & $2.38 10^6  $  & $J m^{-3} K^{-1} $ \\ \hline
+      !!SPHW   & Specific heat of water                                                   & $4.186 10^3 $  & $J kg^{-1} K^{-1}$ \\ \hline
+      !!SPHICE & Specific heat of ice                                                     & $2.10 10^3  $  & $J kg^{-1} K^{-1}$ \\ \hline
+      !!SPHVEG & Specific heat of vegetation matter                                       & $2.70 10^3  $  & $J kg^{-1} K^{-1}$ \\ \hline
+      !!RHOW   & Density of water                                                         & $1.0 10^3   $  & $kg m^{-3}       $ \\ \hline
+      !!RHOICE & Density of ice                                                           & $40.917 10^3$  & $kg m^{-3}       $ \\ \hline
+      !!TCGLAC & Thermal conductivity of ice sheets                                       & 2.24           & $W m^{-1} K^{-1} $ \\ \hline
+      !!CLHMLT & Latent heat of freezing of water                                         & $0.334 10^6 $  & $J kg^{-1}   $     \\ \hline
+      !!CLHVAP & Latent heat of vaporization of water                                     & $2.501 10^6 $  & $J kg^{-1}   $     \\ \hline
+      !!ZOLNG  & Natural log of roughness length of soil                                  & -4.605         & -                  \\ \hline
+      !!ZOLNS  & Natural log of roughness length of snow                                  & -6.908         & -                  \\ \hline
+      !!ZOLNI  & Natural log of roughness length of ice                                   & -6.215         & -                  \\ \hline
+      !!ZORATG & Ratio of soil roughness length for momentum to roughness length for heat & 3.0            & -                  \\ \hline
+      !!ALVSI  & Visible albedo of ice                                                    & 0.95           & -                  \\ \hline
+      !!ALIRI  & Near-infrared albedo of ice                                              & 0.73           & -                  \\ \hline
+      !!ALVSO  & Visible albedo of organic matter                                         & 0.05           & -                  \\ \hline
+      !!ALIRO  & Near-infrared albedo of organic matter                                   & 0.30           & -                  \\ \hline
+      !!ALBRCK & Albedo of rock                                                           & 0.27           & -                  \\ \hline
+      !!\end{tabular}
+      !!\f]
+      !!
+      !!Values are also assigned to several non-scalar parameters, as 
+      !!follows:
+      !!
+      !!1)   The crop growth descriptor array GROWYR (see the 
+      !!     documentation for subroutine APREP);
+      !!
+      !!2)   Three parameters for the four main vegetation categories 
+      !!     recognized by CLASS (needleleaf trees, broadleaf trees, 
+      !!     crops and grass): ZORAT, the ratio of the roughness length 
+      !!     for momentum to the roughness length for heat (currently set 
+      !!     to 1); CANEXT, an attenuation coefficient used in 
+      !!     calculating the sky view factor for vegetation canopies 
+      !!     (variable c in the documentation for subroutine CANALB); and 
+      !!     XLEAF, a leaf dimension factor used in calculating the leaf 
+      !!     boundary resistance (variable Cl in the documentation for 
+      !!     subroutine APREP);
+      !!
+      !!3)   Six hydraulic parameters associated with the three basic 
+      !!     types of organic soils (fibric, hemic and sapric): THPORG, 
+      !!     THRORG, THMORG, BORG, PSISORG and GRKSORG (see the 
+      !!     documentation for subroutine CLASSB). The table below lists 
+      !!     their values, derived from the work of Letts et al. (2000), 
+      !!     alongside the symbols used in the CLASSB documentation.
+      !!
+      !!\f[
+      !!\begin{tabular} { | l | l | c | c | c | }
+      !!\hline
+      !!Name    & Symbol        & Fibric peat   & Hemic peat    & Sapric peat   \\ \hline
+      !!THPORG  & $\theta_p   $ & 0.93          & 0.88          & 0.83          \\ \hline
+      !!BORG    & b             & 2.7           & 6.1           & 12.0          \\ \hline
+      !!GRKSORG & $K_{sat}    $ & $2.8 10^{-4}$ & $2.0 10^{-6}$ & $1.0 10^{-7}$ \\ \hline
+      !!PSISORG & $psi_{sat}  $ & 0.0103        & 0.0102        & 0.0101        \\ \hline
+      !!THMORG  & $theta_{min}$ & 0.04          & 0.15          & 0.22          \\ \hline
+      !!THRORG  & $theta_{ret}$ & 0.275         & 0.62          & 0.705         \\ \hline
+      !!\end{tabular}
+      !!\f]
+      !!
+      !!Finally, if CLASS is being run offline, values must be assigned 
+      !!to the parameters listed in the first table which would normally 
+      !!be assigned in the GCM:
+      !!
+      !!\f[
+      !!\begin{tabular} { | l | l | c | c | }
+      !!\hline
+      !!GCM Name & Definition                    & Value             & Units              \\ \hline
+      !!DELTIM   & Time Step                     & Varies by run     & s                  \\ \hline
+      !!CELZRO   & Freezing point of water       & 273.16            & K                  \\ \hline   
+      !!GAS      & Gas constant                  & 287.04            & $J kg^{-1} K^{-1}$ \\ \hline
+      !!GASV     & Gas constant for water vapour & 461.50            & $J kg^{-1} K^{-1}$ \\ \hline
+      !!G        & Acceleration due to gravity   & 9.80616           & $m s^{-1}        $ \\ \hline  
+      !!SIGMA    & Stefan-Boltzmann constant     & $5.66796 10^{-8}$ & $W m^{-2} K^{-4} $ \\ \hline
+      !!CPRES    & Specific heat of air          & $1.00464 10^3   $ & $J kg^{-1} K^{-1}$ \\ \hline
+      !!CPI      & Pi                            & 3.14159265        & -                  \\ \hline
+      !!\end{tabular}
+      !!\f]
+      !!
+      !!The parameters in common blocks PHYCON and CLASSD2 that do not 
+      !!have corresponding values assigned in the GCM are assigned their 
+      !!RPN values, and the remaining parameters in the GCM common blocks 
+      !!PARAMS, PARAM1, PARAM3 and TIMES are assigned dummy values.
+      !!
       BLOCK DATA 
-C
-C     Purpose: Assign values to parameters in CLASS common blocks. CLASS 
-C     incorporates several kinds of parameters in its common blocks. 
-C     Some are defined specifically for use in the CLASS code; some are 
-C     also shared with the atmospheric model (if running in coupled 
-C     mode).
-C
+
 C     * JAN 09/15 - E.CHAN/D.VERSEGHY. NEW VALUE FOR ALBRCK.
 C     * MAR 13/09 - D.VERSEGHY. REPLACE SURFCON COMMON BLOCK WITH
 C     *                         CLASSD2; NEW VARIABLE ANGMAX
@@ -35,106 +145,7 @@ C
 
 C     * COMMON BLOCKS DEFINED SPECIFICALLY FOR USE IN CLASS.
 
-      !
-      !In routine CLASSBD, values are primarily assigned to the 
-      !parameters that are specific to the CLASS code and are passed 
-      !through it via common blocks CLASS1 through CLASS8. The table 
-      !below lists the scalar parameters, their definitions, and their 
-      !designated values with units.
-      !
-      !----------------------------------------------------------------|
-      !Name   | Definition                    | Value      |   Units   |
-      !----------------------------------------------------------------|
-      !VKC    | Von Karman Constant           | 0.40       |   -       |
-      !----------------------------------------------------------------|
-      !CT     | Drag Coefficient for water    | 1.15*10^-3 |   -       |
-      !----------------------------------------------------------------|
-      !VMIN   | Minimum wind speed            | 0.1        |   m s-1   |
-      !----------------------------------------------------------------|
-      !TCW    | Thermal conductivity of water | 0.57       | W m-1 K-1 |
-      !----------------------------------------------------------------|
-      !TCICE  | Thermal conductivity of ice   | 2.24       | W m-1 K-1 |
-      !----------------------------------------------------------------|
-      !TCSAND | Thermal conductivity of sand  | 2.5        | W m-1 K-1 |
-      !       | particles                     |            |           |
-      !----------------------------------------------------------------|      
-      !TCCLAY | Thermal conductivity of fine  | 2.5        | W m-1 K-1 |
-      !       | mineral particles             |            |           |
-      !----------------------------------------------------------------|
-      !TCOM   | Thermal conductivity of       | 0.25       | W m-1 K-1 |
-      !       | organic matter                |            |           |
-      !----------------------------------------------------------------|
-      !TCDRYS | Thermal conductivity of dry   | 0.275      | W m-1 K-1 |
-      !       | mineral soil                  |            |           |      
-      !----------------------------------------------------------------|
-      !RHOSOL | Density of soil mineral matter| 2.65*10^3  | kg m-3    |
-      !----------------------------------------------------------------|
-      !RHOOM  | Density of soil organic matter| 1.30*10^3  | kg m-3    |
-      !----------------------------------------------------------------|
-      !HCPW   | Volumetric heat capacity of   | 4.187*10^6 | J m-3 K-1 |
-      !       | water                         |            |           |
-      !----------------------------------------------------------------|
-      !HCPICE | Volumetric heat capacity of   | 1.9257*10^6| J m-3 K-1 |
-      !       | ice                           |            |           |
-      !----------------------------------------------------------------|
-      !HCPSOL | Volumetric heat capacity of   | 2.25*10^6  | J m-3 K-1 | 
-      !       | mineral matter                |            |           |
-      !----------------------------------------------------------------|
-      !HCPOM  | Volumetric heat capacity of   | 2.50*10^6  | J m-3 K-1 |
-      !       | organic matter                |            |           |
-      !----------------------------------------------------------------|
-      !HCPSND | Volumetric heat capacity of   | 2.13*10^6  | J m-3 K-1 |
-      !       | sand particles                |            |           |
-      !----------------------------------------------------------------|
-      !HCPCLY | Volumetric heat capacity of   | 2.38*10^6  | J m-3 K-1 |
-      !       | fine mineral particles        |            |           |
-      !----------------------------------------------------------------|
-      !SPHW   | Specific heat of water        | 4.186*10^3 | J kg-1 K-1|
-      !----------------------------------------------------------------|
-      !SPHICE | Specific heat of ice          | 2.10*10^3  | J kg-1 K-1|
-      !----------------------------------------------------------------|
-      !SPHVEG | Specific heat of vegetation   | 2.70*10^3  | J kg-1 K-1|
-      !       | matter                        |            |           |
-      !----------------------------------------------------------------|
-      !RHOW   | Density of water              | 1.0*10^3   | kg m-3    |
-      !----------------------------------------------------------------|
-      !RHOICE | Density of ice                | 0.917*10^3 | kg m-3    |
-      !----------------------------------------------------------------|
-      !TCGLAC | Thermal conductivity of ice   | 2.24       | W m-1 K-1 |
-      !       | sheets                        |            |           |
-      !----------------------------------------------------------------|
-      !CLHMLT | Latent heat of freezing of    | 0.334*10^6 | J kg-1    |
-      !       | water                         |            |           |
-      !----------------------------------------------------------------|
-      !CLHVAP | Latent heat of vaporization   | 2.501*10^6 | J kg-1    |
-      !       | of water                      |            |           |
-      !----------------------------------------------------------------|
-      !ZOLNG  | Natural log of roughness      | -4.605     | -         |
-      !       | length of soil                |            |           |
-      !----------------------------------------------------------------|
-      !ZOLNS  | Natural log of roughness      | -6.908     | -         |
-      !       | length of snow                |            |           |
-      !----------------------------------------------------------------|
-      !ZOLNI  | Natural log of roughness      | -6.215     | -         |
-      !       | length of ice                 |            |           |
-      !----------------------------------------------------------------|
-      !ZORATG | Ratio of soil roughness length| 3.0        | -         |
-      !       | for momentum to roughness     |            |           |
-      !       | length for heat               |            |           |
-      !----------------------------------------------------------------|
-      !ALVSI  | Visible albedo of ice         | 0.95       | -         |
-      !----------------------------------------------------------------|
-      !ALIRI  | Near-infrared albedo of ice   | 0.73       | -         |
-      !----------------------------------------------------------------|
-      !ALVSO  | Visible albedo of organic     | 0.05       | -         |
-      !       | matter                        |            |           |
-      !----------------------------------------------------------------|
-      !ALIRO  | Near-infrared albedo of       | 0.30       | -         |
-      !       | organic matter                |            |           |
-      !----------------------------------------------------------------|
-      !ALBRCK | Albedo of rock                | 0.27       | -         |
-      !----------------------------------------------------------------|
-      !
+      
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
       COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
@@ -182,45 +193,6 @@ C     1       /  0.57,       2.24,       8.0,        2.5,        0.25   /
       DATA      ALVSI,      ALIRI,      ALVSO,      ALIRO,      ALBRCK
      1       /  0.95,       0.73,       0.05,       0.30,       0.16  /
 
-      !Values are also assigned to several non-scalar parameters, as 
-      !follows:
-      !
-      !1)   The crop growth descriptor array GROWYR (see the 
-      !     documentation for subroutine APREP);
-      !2)   Three parameters for the four main vegetation categories 
-      !     recognized by CLASS (needleleaf trees, broadleaf trees, 
-      !     crops and grass): ZORAT, the ratio of the roughness length 
-      !     for momentum to the roughness length for heat (currently set 
-      !     to 1); CANEXT, an attenuation coefficient used in 
-      !     calculating the sky view factor for vegetation canopies 
-      !     (variable c in the documentation for subroutine CANALB); and 
-      !     XLEAF, a leaf dimension factor used in calculating the leaf 
-      !     boundary resistance (variable Cl in the documentation for 
-      !     subroutine APREP);
-      !
-      !3)   Six hydraulic parameters associated with the three basic 
-      !     types of organic soils (fibric, hemic and sapric): THPORG, 
-      !     THRORG, THMORG, BORG, PSISORG and GRKSORG (see the 
-      !     documentation for subroutine CLASSB). The table below lists 
-      !     their values, derived from the work of Letts et al. (2000), 
-      !     alongside the symbols used in the CLASSB documentation.
-      !
-      !----------------------------------------------------------------|
-      !Name    | Symbol    | Fibric peat  | Hemic peat  | Sapric peat  |
-      !----------------------------------------------------------------|
-      !THPORG  | theta_p   | 0.93         | 0.88        | 0.83         |
-      !----------------------------------------------------------------|
-      !BORG    | b         | 2.7          | 6.1         | 12.0         |
-      !----------------------------------------------------------------|
-      !GRKSORG | K_sat     | 2.8*10^-4    | 2.0*10^-6   | 1.0*10^-7    |
-      !----------------------------------------------------------------|
-      !PSISORG | psi_sat   | 0.0103       | 0.0102      | 0.0101       |
-      !----------------------------------------------------------------|
-      !THMORG  | theta_min | 0.04         | 0.15        | 0.22         |
-      !----------------------------------------------------------------|
-      !THRORG  | theta_ret | 0.275        | 0.62        | 0.705        |
-      !----------------------------------------------------------------|
-      !
       DATA GROWYR   /213.,213.,213.,213.,213.,213.,0.,0.,0.,
      1               0.,0.,0., 75.,106.,136.,167.,167.,167.,
      2               273.,273.,273.,273.,273.,273.,0.,0.,0.,
@@ -250,64 +222,38 @@ C
 C
 C    --------------------peatland common block data--------------------\
 
-      data zolnms   /-6.57/   !roughness length as 0.0014 for momentaum
-                              !(Oke 1997, Raddatz et al, 2009)
-      data thpms    /0.98/    !0.89 Price and Whittington 2010
-                              !98.2 (Sphagnum) and 98.9 (feather) in 
-                              !O'Donnell et al. 2009; 0.90 in Berlinger
-                              !et al.2001 
-      data thrms    /0.20/    !Price and Whittington 2010 for upper 5cm 
-                              !moss 0.275/0.6 comparing to 0.39/0.62 in  
-                              !fibric for the feather moss.For spahgnum  
-                              !moss(O'Donnell et al.2009)
-      data thmms    /0.01/    !Price and Whittington 2010
-      data bms      /2.3/     !Berlinger et al.2001(they set 4.0 for peat)
-      data psisms   /0.0103/  !moss and peat using same values in Berlinger 
-                              !et al. 2001)
-      data grksms   /1.83E-3/ !The saturated hydrualic conductivity is  
-                              !much higher in living moss than lower 
-                              !layer (Price et al. 2008). 1.83E-3 for 
-                              !5cm moss, their value of 10cm moss is 
-                              !2.45E-4, similar to fibric here
-      data hcpms    /2.50E6/  !same as hcp of peat in Beringer et al. 2001
-      data sphms    /2.70E3/  !same as that specific heat for vegetation 
-                              !(Berlinger et al 2001)  
-      data rhoms    /40.0/    
-                              !=40.0 Price et al. 2008, Price and
-                              !Whittington 2010 value for feather moss
-                              !is lower than sphagnmum (20 kg/m3 in
-                              !O'Donnell et al. 2009)
-      data slams    /20/ !specific leaf area of moss, 20 m2/kg S
-                              !vensson 1995 sphangum value ranges from 
-                              !13.5~47.3 m2/kg (Lamberty et al. 2007)
+      data zolnms   /-6.57/   !<roughness length as 0.0014 for momentaum
+                              !!(Oke 1997, Raddatz et al, 2009)
+      data thpms    /0.98/    !<0.89 Price and Whittington 2010
+                              !!98.2 (Sphagnum) and 98.9 (feather) in 
+                              !!O'Donnell et al. 2009; 0.90 in Berlinger
+                              !!et al.2001 
+      data thrms    /0.20/    !<Price and Whittington 2010 for upper 5cm 
+                              !!moss 0.275/0.6 comparing to 0.39/0.62 in  
+                              !!fibric for the feather moss.For spahgnum  
+                              !!moss(O'Donnell et al.2009)
+      data thmms    /0.01/    !<Price and Whittington 2010
+      data bms      /2.3/     !<Berlinger et al.2001(they set 4.0 for peat)
+      data psisms   /0.0103/  !<moss and peat using same values in Berlinger 
+                              !!et al. 2001)
+      data grksms   /1.83E-3/ !<The saturated hydrualic conductivity is  
+                              !!much higher in living moss than lower 
+                              !!layer (Price et al. 2008). 1.83E-3 for 
+                              !!5cm moss, their value of 10cm moss is 
+                              !!2.45E-4, similar to fibric here
+      data hcpms    /2.50E6/  !<same as hcp of peat in Beringer et al. 2001
+      data sphms    /2.70E3/  !<same as that specific heat for vegetation 
+                              !!(Berlinger et al 2001)  
+      data rhoms    /40.0/    !<
+                              !!=40.0 Price et al. 2008, Price and
+                              !!Whittington 2010 value for feather moss
+                              !!is lower than sphagnmum (20 kg/m3 in
+                              !!O'Donnell et al. 2009)
+      data slams    /20/ !<specific leaf area of moss, 20 m2/kg S
+                              !!vensson 1995 sphangum value ranges from 
+                              !!13.5~47.3 m2/kg (Lamberty et al. 2007)
 c    ------------------------YW March 23, 2015 -------------------------/
 
-      !
-      !Finally, if CLASS is being run offline, values must be assigned 
-      !to the parameters listed in the first table which would normally 
-      !be assigned in the GCM:
-      !
-      !----------------------------------------------------------------|
-      !GCM Name | Definition                  | Value       | Units    |
-      !----------------------------------------------------------------|
-      !DELTIM   | Time Step                   |Varies by run| s        |
-      !----------------------------------------------------------------|
-      !CELZRO   | Freezing point of water     | 273.16      | K        |    
-      !----------------------------------------------------------------|
-      !GAS      | Gas constant                | 287.04      |J kg-1 K-1|
-      !----------------------------------------------------------------|
-      !GASV     |Gas constant for water vapour| 461.50      |J kg-1 K-1| 
-      !----------------------------------------------------------------|
-      !G        | Acceleration due to gravity | 9.80616     | m s-1    |   
-      !----------------------------------------------------------------|
-      !SIGMA    | Stefan-Boltzmann constant   |5.66796*10^-8| W m-2 K-4|
-      !----------------------------------------------------------------|
-      !CPRES    | Specific heat of air        | 1.00464*10^3|J kg-1 K-1|
-      !----------------------------------------------------------------|
-      !CPI      | Pi                          | 3.14159265  | -        |
-      !----------------------------------------------------------------|
-      !
-C
 C     * ASSIGN VALUES NORMALLY SPECIFIED WITHIN THE GCM.
 C
       DATA      G,          GAS,        CPRES,      GASV
@@ -319,12 +265,6 @@ C     1/         273.16,     5.66796E-8, 900.0   /
 
       DATA      CPI 
      1       /  3.1415926535898    /
-      !
-      !The parameters in common blocks PHYCON and CLASSD2 that do not 
-      !have corresponding values assigned in the GCM are assigned their 
-      !RPN values, and the remaining parameters in the GCM common blocks 
-      !PARAMS, PARAM1, PARAM3 and TIMES are assigned dummy values.
-      !
 C
 C     * ADDITIONAL VALUES FOR RPN AND GCM COMMON BLOCKS.
 C

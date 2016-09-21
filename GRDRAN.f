@@ -1,13 +1,15 @@
+!>\file
+C!Purpose: Quantify movement of liquid water between soil layers 
+C!under non-infiltrating conditions, in response to gravity and 
+C!tension forces.
+C!
       SUBROUTINE GRDRAN(IVEG,THLIQ,THICE,TBARW,FDT,TFDT,BASFLW,TBASFL,
      1                  RUNOFF,TRUNOF,QFG,WLOST,FI,EVAP,R,ZPOND,DT,
      2                  WEXCES,THLMAX,THTEST,THPOR,THLRET,THLMIN,
      3                  BI,PSISAT,GRKSAT,THFC,DELZW,XDRAIN,ISAND,LZF,
      4                  IGRN,IGRD,IGDR,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
 C
-C     Purpose: Quantify movement of liquid water between soil layers 
-C     under non-infiltrating conditions, in response to gravity and 
-C     tension forces.
-C
+
 C     * OCT 18/11 - M.LAZARE.   PASS IN "IGDR" AS AN INPUT FIELD 
 C     *                         (ORIGINATING IN CLASSB) RATHER
 C     *                         THAN REPEATING THE CALCULATION HERE
@@ -90,52 +92,42 @@ C
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER IVEG  !Subarea type flag  
+      INTEGER IVEG  !<Subarea type flag  
       INTEGER IG,IGP1,IGP2,ILG,IL1,IL2,JL,I,J,K,IPTBAD,N 
 C
 C     * INPUT/OUTPUT FIELDS.
 C
-      REAL THLIQ (ILG,IG)   !Volumetric liquid water content of soil 
-                            !layer [m3 m-3] (theta_l)
-      REAL THICE (ILG,IG)   !Volumetric frozen water content of soil 
-                            !layer [m3 m-3] (theta_i)
-      REAL TBARW (ILG,IG)   !Temperature of water in soil layer [C]
-      REAL FDT  (ILG,IGP1)  !Water flow at soil layer interfaces during 
-                            !current time step [m]
-      REAL TFDT  (ILG,IGP1) !Temperature of water flowing between soil 
-                            !layers [C]
+      REAL THLIQ (ILG,IG)   !<Volumetric liquid water content of soil 
+                            !<layer \f$[m^3 m^{-3}] (\theta_l)\f$
+      REAL THICE (ILG,IG)   !<Volumetric frozen water content of soil 
+                            !<layer \f$[m^3 m^{-3}] (\theta_i)\f$
+      REAL TBARW (ILG,IG)   !<Temperature of water in soil layer [C]
+      REAL FDT  (ILG,IGP1)  !<Water flow at soil layer interfaces during 
+                            !<current time step [m]
+      REAL TFDT  (ILG,IGP1) !<Temperature of water flowing between soil layers [C]
 C                        
-      REAL BASFLW(ILG)  !Base flow from bottom of soil column [m]    
-      REAL TBASFL (ILG) !Temperature of base flow from bottom of soil 
-                        !column [K]
-      REAL RUNOFF(ILG)  !Total runoff from soil column [m]
-      REAL TRUNOF (ILG) !Temperature of total runoff from soil column 
-                        ![K]
-      REAL QFG    (ILG) !Evaporation from soil surface (diagnostic) 
-                        ![kg m-2 s-1]
-      REAL WLOST (ILG)  !Residual amount of water that cannot be 
-                        !supplied by surface stores [kg m-2]
+      REAL BASFLW(ILG)  !<Base flow from bottom of soil column [m]    
+      REAL TBASFL (ILG) !<Temperature of base flow from bottom of soil column [K]
+      REAL RUNOFF(ILG)  !<Total runoff from soil column [m]
+      REAL TRUNOF (ILG) !<Temperature of total runoff from soil column [K]
+      REAL QFG    (ILG) !<Evaporation from soil surface (diagnostic) 
+                        !<\f$[kg m^{-2} s^{-1}]\f$
+      REAL WLOST (ILG)  !<Residual amount of water that cannot be 
+                        !<supplied by surface stores \f$[kg m^{-2}]\f$
 C
 C     * INPUT FIELDS.
 C
-      REAL FI    (ILG)  !Fractional coverage of subarea in question on 
-                        !modelled area [ ] (Xi)
-      REAL EVAP  (ILG)  !Evaporation rate from ground surface [m s-1]  
-      REAL R     (ILG)  !Rainfall rate at ground surface [m s-1]  
-      REAL ZPOND (ILG)  !Depth of ponded water on soil surface [m]  
-      REAL DT    (ILG)  !Time period over which water movement takes 
-                        !place [s]
+      REAL FI    (ILG)  !<Fractional coverage of subarea in question on 
+                        !<modelled area [ ] \f$(X_i)\f$
+      REAL EVAP  (ILG)  !<Evaporation rate from ground surface \f$[m s^{-1}]\f$  
+      REAL R     (ILG)  !<Rainfall rate at ground surface \f$[m s^{-1}]\f$
+      REAL ZPOND (ILG)  !<Depth of ponded water on soil surface [m]  
+      REAL DT    (ILG)  !<Time period over which water movement takes place [s]
 C
-      INTEGER              IGRN  (ILG)  !Flag to indicate whether 
-                                        !calculations in subroutine 
-                                        !GRINFL are done
-      INTEGER              LZF   (ILG)  !Index of soil layer in which 
-                                        !wetting front is located
-      INTEGER              IGRD  (ILG)  !Flag to indicate whether 
-                                        !calculations in this subroutine 
-                                        !are to be done
-      INTEGER              IGDR  (ILG)  !Index of soil layer in which 
-                                        !bedrock is encountered
+      INTEGER IGRN  (ILG)  !<Flag to indicate whether calculations in subroutine GRINFL are done
+      INTEGER LZF   (ILG)  !<Index of soil layer in which wetting front is located
+      INTEGER IGRD  (ILG)  !<Flag to indicate whether calculations in this subroutine are to be done
+      INTEGER IGDR  (ILG)  !<Index of soil layer in which bedrock is encountered
 C
 C     * WORK FIELDS.
 C
@@ -144,26 +136,21 @@ C
 C
 C     * SOIL INFORMATION ARRAYS.
 C
-      REAL THPOR (ILG,IG)   !Pore volume in soil layer [m3 m-3] 
-                            !(theta_p) 
-      REAL THLRET(ILG,IG)   !Liquid water retention capacity for organic 
-                            !soil [m3 m-3 ] (theta_l,ret)
-      REAL THLMIN(ILG,IG)   !Residual soil liquid water content 
-                            !remaining after freezing or evaporation 
-                            ![m3 m-3] (theta_l,min)
-      REAL BI    (ILG,IG)   !Clapp and Hornberger empirical “b” 
-                            !parameter [ ] (b)
-      REAL PSISAT(ILG,IG)   !Soil moisture suction at saturation [m] 
-                            !(psi_sat)
-      REAL GRKSAT(ILG,IG)   !Hydraulic conductivity of soil at 
-                            !saturation [m s-1] (Ksat)
-      REAL THFC  (ILG,IG)   !Field capacity [m3 m-3]
-      REAL DELZW (ILG,IG)   !Permeable depth of soil layer [m] 
-                            !(delta_zg,w)
-      REAL XDRAIN(ILG)      !Drainage index for water flow at bottom of 
-                            !soil profile [ ]
+      REAL THPOR (ILG,IG)   !<Pore volume in soil layer \f$[m^3 m^{-3}] (\theta_p)\f$ 
+      REAL THLRET(ILG,IG)   !<Liquid water retention capacity for organic 
+                            !<soil \f$[m^3 m^{-3} ] (\theta_{l,ret})\f$
+      REAL THLMIN(ILG,IG)   !<Residual soil liquid water content 
+                            !<remaining after freezing or evaporation 
+                            !<\f$[m^3 m^{-3}] (\theta_{l,min})\f$
+      REAL BI    (ILG,IG)   !<Clapp and Hornberger empirical "b" parameter [ ] (b)
+      REAL PSISAT(ILG,IG)   !<Soil moisture suction at saturation \f$[m] (\Psi_{sat})\f$
+      REAL GRKSAT(ILG,IG)   !<Hydraulic conductivity of soil at 
+                            !<saturation \f$[m s^{-1}] (K_{sat})\f$
+      REAL THFC  (ILG,IG)   !<Field capacity \f$[m^3 m^{-3}]\f$
+      REAL DELZW (ILG,IG)   !<Permeable depth of soil layer \f$[m] (\Delta_{zg,w})\f$
+      REAL XDRAIN(ILG)      !<Drainage index for water flow at bottom of soil profile [ ]
 C  
-      INTEGER              ISAND (ILG,IG)   !Sand content flag
+      INTEGER ISAND (ILG,IG)!<Sand content flag
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -172,33 +159,27 @@ C
 C
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL DELT     !Time step [s]
-      REAL TFREZ    !Freezing point of water [K]
-      REAL HCPW     !Volumetric heat capacity of water (4.187*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPICE   !Volumetric heat capacity of ice (1.9257*10^6) 
-                    ![J m-3 K-1]
-      REAL HCPSOL   !Volumetric heat capacity of mineral matter 
-                    !(2.25*10^6) [J m-3 K-1]
-      REAL HCPOM    !Volumetric heat capacity of organic matter 
-                    !(2.50*10^6) [J m-3 K-1]
-      REAL HCPSND   !Volumetric heat capacity of sand particles 
-                    !(2.13*10^6) [J m-3 K-1]
-      REAL HCPCLY   !Volumetric heat capacity of fine mineral particles 
-                    !(2.38*10^6) [J m-3 K-1]
-      REAL SPHW     !Specific heat of water (4.186*10^3) [J kg-1 K-1]
-      REAL SPHICE   !Specific heat of ice (2.10*10^3) [J kg-1 K-1]
-      REAL SPHVEG   !Specific heat of vegetation matter (2.70*10^3) 
-                    ![J kg-1 K-1]
-      REAL SPHAIR   !Specific heat of air [J kg-1 K-1]
-      REAL RHOW     !Density of water (1.0*10^3) [kg m-3]
-      REAL RHOICE   !Density of ice (0.917*10^3) [kg m-3]
-      REAL TCGLAC   !Thermal conductivity of ice sheets (2.24) 
-                    ![W m-1 K-1]
-      REAL CLHMLT   !Latent heat of freezing of water (0.334*10^6) 
-                    ![J kg-1]
-      REAL CLHVAP   !Latent heat of vaporization of water (2.501*10^6) 
-                    ![J kg-1]
+      REAL DELT     !<Time step [s]
+      REAL TFREZ    !<Freezing point of water [K]
+      REAL HCPW     !<Volumetric heat capacity of water \f$(4.187 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPICE   !<Volumetric heat capacity of ice \f$(1.9257 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSOL   !<Volumetric heat capacity of mineral matter 
+                    !<\f$(2.25 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPOM    !<Volumetric heat capacity of organic matter 
+                    !<\f$(2.50 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPSND   !<Volumetric heat capacity of sand particles 
+                    !<\f$(2.13 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL HCPCLY   !<Volumetric heat capacity of fine mineral particles 
+                    !<\f$(2.38 * 10^6) [J m^{-3} K^{-1}]\f$
+      REAL SPHW     !<Specific heat of water \f$(4.186 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHICE   !<Specific heat of ice \f$(2.10 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHVEG   !<Specific heat of vegetation matter \f$(2.70 * 10^3) [J kg^{-1} K^{-1}]\f$
+      REAL SPHAIR   !<Specific heat of air \f$[J kg^{-1} K^{-1}]\f$
+      REAL RHOW     !<Density of water \f$(1.0 * 10^3) [kg m^{-3}]\f$
+      REAL RHOICE   !<Density of ice \f$(0.917 * 10^3) [kg m^{-3}]\f$
+      REAL TCGLAC   !<Thermal conductivity of ice sheets \f$(2.24) [W m^{-1} K^{-1}]\f$
+      REAL CLHMLT   !<Latent heat of freezing of water \f$(0.334 * 10^6) [J kg^{-1}]\f$
+      REAL CLHVAP   !<Latent heat of vaporization of water \f$(2.501 * 10^6) [J kg^{-1}]\f$
 C
       COMMON /CLASS1/ DELT,TFREZ
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
@@ -212,16 +193,17 @@ C     * NOT GO THROUGH THIS ROUTINE WHEN IT IS CALLED FROM CLASSW.
 C     * THE INPUT ARRAY "IGRN" HANDLES THIS CONDITION (PASSED AS
 C     * "IZERO" ARRAY WHEN CALLED FROM "WEND" OR THE END OF "GRINFL"). 
 C
-      !In loop 50, the flag IGRD is first set to 1 for all grid cells 
-      !where the calculations in this subroutine are to be performed. 
-      !The necessary conditions are: that the surface being modelled is 
-      !not a glacier or ice sheet (ISAND > -4); that the time period DT 
-      !is greater than zero; that the infiltration calculations in 
-      !subroutine GRINFL are not simultaneously being performed 
-      !(IGRN = 0); and that the rainfall rate and the depth of ponded 
-      !water are both vanishingly small. If any of these conditions is 
-      !not met, IGRD is set to zero.
-      !
+      !>
+      !!In loop 50, the flag IGRD is first set to 1 for all grid cells 
+      !!where the calculations in this subroutine are to be performed. 
+      !!The necessary conditions are: that the surface being modelled is 
+      !!not a glacier or ice sheet (ISAND > -4); that the time period DT 
+      !!is greater than zero; that the infiltration calculations in 
+      !!subroutine GRINFL are not simultaneously being performed 
+      !!(IGRN = 0); and that the rainfall rate and the depth of ponded 
+      !!water are both vanishingly small. If any of these conditions is 
+      !!not met, IGRD is set to zero.
+      !!
       DO 50 I=IL1,IL2
           IF(FI (I).GT.0. .AND. 
      1       ISAND(I,1).GT.-4 .AND.DT(I).GT.0. .AND.IGRN(I).EQ.0 .AND.
@@ -236,29 +218,30 @@ C     * CALCULATE MAXIMUM LIQUID WATER CONTENT OF EACH SOIL LAYER;
 C     * ADJUST GRKSAT FOR VISCOSITY OF WATER AND PRESENCE OF ICE;
 C     * ADJUST THPOR FOR PRESENCE OF ICE.
 C
-      !In loop 100, if the surface being modelled is not an ice sheet 
-      !(ISAND = -4) and if the soil layer in question is not completely 
-      !rock (ISAND = -3), the maximum possible water content of each 
-      !soil layer, THLMAX, is calculated as the maximum of the available 
-      !pore volume THPOR – THICE (where THPOR is the total pore volume 
-      !and THICE is the ice content of the layer), the actual liquid 
-      !water content THLIQ, and the minimum residual liquid water 
-      !content THLMIN. The last two conditions are required because in 
-      !the case of a saturated soil undergoing freezing, since water 
-      !expands when frozen, the sum of the liquid and frozen volumetric 
-      !water contents may be greater than the pore volume, and thus 
-      !THLIQ or THLMIN may be greater than THPOR – THICE. An effective 
-      !saturated hydraulic conductivity GRKSATF of the soil layer is 
-      !also defined, applying an empirical correction for the presence 
-      !of ice. This ice content factor, fice, is calculated from Zhao 
-      !and Gray (1997) as:
-      !
-      !fice = [1.0 – min((THPOR - THLMIN)/THPOR, THICE/THPOR )]^2
-      !
-      !The pore volume of the soil layer is corrected for the presence 
-      !of ice by defining the effective porevolume THPORF as equivalent 
-      !to THLMAX.
-      !
+      !>
+      !!In loop 100, if the surface being modelled is not an ice sheet 
+      !!(ISAND = -4) and if the soil layer in question is not completely 
+      !!rock (ISAND = -3), the maximum possible water content of each 
+      !!soil layer, THLMAX, is calculated as the maximum of the available 
+      !!pore volume THPOR – THICE (where THPOR is the total pore volume 
+      !!and THICE is the ice content of the layer), the actual liquid 
+      !!water content THLIQ, and the minimum residual liquid water 
+      !!content THLMIN. The last two conditions are required because in 
+      !!the case of a saturated soil undergoing freezing, since water 
+      !!expands when frozen, the sum of the liquid and frozen volumetric 
+      !!water contents may be greater than the pore volume, and thus 
+      !!THLIQ or THLMIN may be greater than THPOR – THICE. An effective 
+      !!saturated hydraulic conductivity GRKSATF of the soil layer is 
+      !!also defined, applying an empirical correction for the presence 
+      !!of ice. This ice content factor, fice, is calculated from Zhao 
+      !!and Gray (1997) as:
+      !!
+      !!\f$f_{ice} = [1.0 – min((\theta_p - \theta_{l,min} )/\theta_p , \theta_i / \theta_p )]^2\f$
+      !!
+      !!The pore volume of the soil layer is corrected for the presence 
+      !!of ice by defining the effective porevolume THPORF as equivalent 
+      !!to THLMAX.
+      !!
       DO 100 J=1,IG
       DO 100 I=IL1,IL2
         IF(IGRD(I).GT.0)                             THEN
@@ -279,38 +262,39 @@ C
 C     * CALCULATE THEORETICAL FLOW RATES AT BOTTOM OF PERMEABLE SOIL
 C     * DEPTH AND BETWEEN SOIL LAYERS.
 C
-      !In loops 150 and 200, the theoretical amounts of water FDT 
-      !flowing across the soil layer boundaries are calculated. FDT is 
-      !evaluated as the product of the flow rate F(z) at the given depth 
-      !z, and the period of time (DT) over which the flow is occurring. 
-      !At z=0, the water flux is simply equal to the soil surface 
-      !evaporation rate. Within the soil, the flow rate F at a given 
-      !depth z is obtained using equation 21 from Verseghy (1991):
-      !
-      !F(z) = K(z)*[-b*psi(z)/THLIQ(z) · d(THLIQ)/dz + 1]
-      !
-      !where K(z) is the hydraulic conductivity and psi(z) is the soil 
-      !moisture suction at depth z, and b is an empirical parameter 
-      !developed by Clapp and Hornberger (1978). K(z) and ψ(z) are 
-      !calculated following Clapp and Hornberger as
-      !
-      !K(z) = GRKSAT*(THLIQ/THPOR)^(2b + 3)
-      !psi(z) = PSISAT*(THLIQ/THPOR)^(-b )
-      !
-      !where GRKSAT and PSISAT are the values of K and psi respectively 
-      !at saturation.
-      !
-      !At the bottom of the permeable soil depth, in layer IGDR, if the 
-      !liquid water content of the soil is greater than the field 
-      !capacity, the vertical flow out of the bottom of the soil profile 
-      !is calculated using a relation derived from Soulis et al. (2010):
-      !
-      !F(zb) = GRKSAT · min{1, (THLIQ/THPOR)/[1 – 1/(2b + 3)]}^(2b + 3)
-      !
-      !This flow rate is multiplied by a drainage parameter XDRAIN, 
-      !which is set to 0 if the soil is underlain by an impermeable 
-      !layer (as in a bog), and to 1 otherwise.
-      !
+      !>
+      !!In loops 150 and 200, the theoretical amounts of water FDT 
+      !!flowing across the soil layer boundaries are calculated. FDT is 
+      !!evaluated as the product of the flow rate F(z) at the given depth 
+      !!z, and the period of time (DT) over which the flow is occurring. 
+      !!At z=0, the water flux is simply equal to the soil surface 
+      !!evaporation rate. Within the soil, the flow rate F at a given 
+      !!depth z is obtained using equation 21 from Verseghy (1991):
+      !!
+      !!\f$F(z) = K(z) [-b \Psi(z)/\theta_l(z) \bullet d\theta_l / dz + 1]\f$
+      !!
+      !!where K(z) is the hydraulic conductivity and psi(z) is the soil 
+      !!moisture suction at depth z, and b is an empirical parameter 
+      !!developed by Clapp and Hornberger (1978). K(z) and \f$\Psi(z)\f$ are 
+      !!calculated following Clapp and Hornberger as
+      !!
+      !!\f$K(z) = K_{sat} (\theta_l/\theta_p)^{(2b + 3)}\f$
+      !!\f$\Psi(z) = \Psi_{sat} (\theta_l/\theta_p)^{(-b )}\f$
+      !!
+      !!where \f$K_{sat}\f$ and \f$\Psi_{sat}\f$ are the values of \f$K\f$ and \f$\Psi\f$ respectively 
+      !!at saturation.
+      !!
+      !!At the bottom of the permeable soil depth, in layer IGDR, if the 
+      !!liquid water content of the soil is greater than the field 
+      !!capacity, the vertical flow out of the bottom of the soil profile 
+      !!is calculated using a relation derived from Soulis et al. (2010):
+      !!
+      !!\f$F(z_b ) = K_{sat} \bullet min{1, (\theta_l /\theta_p )/[1 – 1/(2b + 3)]^{(2b + 3)}
+      !!
+      !!This flow rate is multiplied by a drainage parameter XDRAIN, 
+      !!which is set to 0 if the soil is underlain by an impermeable 
+      !!layer (as in a bog), and to 1 otherwise.
+      !!
       DO 150 I=IL1,IL2
           IF(IGRD(I).GT.0)                                          THEN
              FDT(I,1)=-EVAP(I)*DT(I)                                                           
@@ -331,46 +315,49 @@ C
           ENDIF
   150 CONTINUE
 C
-      !
-      !Between soil layers, values of K(z) and psi(z) must be 
-      !determined. This requires the estimation of soil properties at 
-      !the layer interfaces. For THLIQ, THPOR and d(THLIQ)/dz, slightly 
-      !different approaches are followed if the permeable soil layer 
-      !thickness DELZW increases with depth (the normal case), or if it 
-      !decreases between one soil layer and the next (indicating the 
-      !presence of an impermeable barrier at some depth in the second 
-      !layer). In the first case, the pore volume THPBND, liquid water 
-      !content THLBND, and liquid water gradient DTHLDZ are simply 
-      !calculated as arithmetic averages of the values above and below 
-      !the interface. This has the effect of weighting the interface 
-      !values towards the upper layer values, roughly emulating a 
-      !surfaceward exponential decay curve of liquid water content. In 
-      !the second case, in order to avoid a spurious weighting towards 
-      !the lower layer, the gradients of liquid water content and pore 
-      !volume between the upper and lower layers are calculated as 
-      !linear relations, and then solved for the values at the 
-      !interface.
-      !
-      !The Clapp and Hornberger b parameter at the interface is 
-      !calculated as a simple average of the values in the upper and 
-      !lower soil layers. The saturated hydraulic conductivity GRSBND is 
-      !calculated as a harmonic mean, and the saturated soil moisture 
-      !suction PSSBND as a geometric mean, of the top and bottom 
-      !layer values:
-      !
-      !GRSBND = GRKSAT,t*GRKSAT,b*(DELZW,t + DELZW,b)/
-      !                           (GRKSAT,t DELZW,b+ GRKSAT,b DELZW,t )
-      !
-      !PSSBND = PSISAT,t^[DELZW,t/(DELZW,t + DELZW,b)]
-      !         *PSISAT,b^[DELZW,b/(DELZW,t + DELZW,b)]
-      !
-      !Finally, K(z), psi(z) and F(z) at the interface are calculated 
-      !from the equations given above. At the end of the loop, if 
-      !infiltration is occurring, the flow rates between soil layers are 
-      !set to zero behind the soil layer LZF containing the wetting 
-      !front, and the flow rate at the bottom of LZF is constrained to 
-      !be >= 0.
-      !
+      !>
+      !!Between soil layers, values of \f$K(z)\f$ and \f$\Psi(z)\f$ must be 
+      !!determined. This requires the estimation of soil properties at 
+      !!the layer interfaces. For \f$\theta_l\f$, \f$\theta_p\f$ and \f$d(\theta_l)/dz\f$, slightly 
+      !!different approaches are followed if the permeable soil layer 
+      !!thickness DELZW increases with depth (the normal case), or if it 
+      !!decreases between one soil layer and the next (indicating the 
+      !!presence of an impermeable barrier at some depth in the second 
+      !!layer). In the first case, the pore volume THPBND, liquid water 
+      !!content THLBND, and liquid water gradient DTHLDZ are simply 
+      !!calculated as arithmetic averages of the values above and below 
+      !!the interface. This has the effect of weighting the interface 
+      !!values towards the upper layer values, roughly emulating a 
+      !!surfaceward exponential decay curve of liquid water content. In 
+      !!the second case, in order to avoid a spurious weighting towards 
+      !!the lower layer, the gradients of liquid water content and pore 
+      !!volume between the upper and lower layers are calculated as 
+      !!linear relations, and then solved for the values at the 
+      !!interface.
+      !!
+      !!The Clapp and Hornberger b parameter at the interface is 
+      !!calculated as a simple average of the values in the upper and 
+      !!lower soil layers. The saturated hydraulic conductivity \f$K_{sat,bnd}\f$ is 
+      !!calculated as a harmonic mean, and the saturated soil moisture 
+      !!suction \f$\Psi_{sat,bnd}\f$ as a geometric mean, of the top and bottom 
+      !!layer values:
+      !!
+      !!\f$
+      !!K_{sat,bnd} = K_{sat,t} K_{sat,b} 
+      !!( \Delta z_{g,w,,t} + \Delta z_{g,w,,b} ) / ( K_{sat,t} \Delta z_{g,w,b} + K_{sat,b} \Delta z_{g,w,t} )
+      !!\f$
+      !!
+      !!\f$
+      !!\Psi_{sat,bnd} = \Psi_{sat,t}^{\Delta zg,w,t/(\Delta zg,w,t + \Delta zg,w,b)} 
+      !!\Psi_{sat,b}^{\Delta zg,w,b/(\Delta zg,w,t + \Delta zg,w,b)}
+      !!\f$
+      !!
+      !!Finally, K(z), \f$\Psi(z)\f$ and F(z) at the interface are calculated 
+      !!from the equations given above. At the end of the loop, if 
+      !!set to zero behind the soil layer LZF containing the wetting 
+      !!front, and the flow rate at the bottom of LZF is constrained to 
+      !!be \f$\geq\f$ 0.
+      !!
       DO 200 J=1,IG-1                                                             
       DO 200 I=IL1,IL2
           IF(IGRD(I).GT.0)                                     THEN
@@ -420,36 +407,37 @@ C     * CHECK FOR SUSTAINABLE EVAPORATION RATE FROM TOP SOIL LAYER; IF
 C     * LIQUID WATER SUPPLY IS INSUFFICIENT, TRY TO REMOVE WATER FROM 
 C     * FROZEN SOIL MOISTURE.
 C
-      !In the next several loops, checks are carried out to ascertain 
-      !whether the theoretically determined flow rates at the soil layer 
-      !interfaces can be supported by the water contents in the layers. 
-      !At the beginning of loop 250, the soil surface evaporation rate 
-      !is addressed. A trial liquid water content THTEST is calculated 
-      !for the first soil layer, reflecting the removal of the 
-      !evaporated water. If THTEST is less than the minimum soil water 
-      !content, F(0) is set to zero and THLIQ is set to THLMIN. The 
-      !excess surface flux that was not met by the removed liquid water 
-      !is converted to a frozen water content, and an attempt is made to 
-      !remove it from the frozen water in the layer. (The energy 
-      !involved in converting the required frozen water mass to liquid 
-      !water is obtained by decreasing the water temperature of the 
-      !layer.) The frozen water content of the layer is adjusted to 
-      !reflect the removal of the required amount. If the demand exceeds 
-      !the supply of frozen water available, the frozen water content is 
-      !set to zero, the diagnostic evaporative flux QFG at the soil 
-      !surface is adjusted, and the remaining water flux not able to be 
-      !met by the first soil layer is assigned to the variable WLOST.
-      !
-      !In the remainder of the 250 loop, checks are carried out for soil 
-      !layers with liquid water contents already effectively equal to 
-      !THLMIN. If the flux at the top of the layer is upward and that at 
-      !the bottom of the layer is downward, both are set to zero. If 
-      !both are downward, only the flux at the bottom is set to zero; if 
-      !both are upward, only the flux at the top is set to zero. If the 
-      !soil layer is an organic one and the liquid water content is less 
-      !than the layer retention capacity THLRET and the flux at the 
-      !bottom of the layer is downward, it is set to zero.
-      !
+      !>
+      !!In the next several loops, checks are carried out to ascertain 
+      !!whether the theoretically determined flow rates at the soil layer 
+      !!interfaces can be supported by the water contents in the layers. 
+      !!At the beginning of loop 250, the soil surface evaporation rate 
+      !!is addressed. A trial liquid water content THTEST is calculated 
+      !!for the first soil layer, reflecting the removal of the 
+      !!evaporated water. If THTEST is less than the minimum soil water 
+      !!content, F(0) is set to zero and \f$\theta_l\f$ is set to \f$\theta_{l,min}\f$. The 
+      !!excess surface flux that was not met by the removed liquid water 
+      !!is converted to a frozen water content, and an attempt is made to 
+      !!remove it from the frozen water in the layer. (The energy 
+      !!involved in converting the required frozen water mass to liquid 
+      !!water is obtained by decreasing the water temperature of the 
+      !!layer.) The frozen water content of the layer is adjusted to 
+      !!reflect the removal of the required amount. If the demand exceeds 
+      !!the supply of frozen water available, the frozen water content is 
+      !!set to zero, the diagnostic evaporative flux QFG at the soil 
+      !!surface is adjusted, and the remaining water flux not able to be 
+      !!met by the first soil layer is assigned to the variable WLOST.
+      !!
+      !!In the remainder of the 250 loop, checks are carried out for soil 
+      !!layers with liquid water contents already effectively equal to 
+      !!\f$\theta_{l,min}\f$. If the flux at the top of the layer is upward and that at 
+      !!the bottom of the layer is downward, both are set to zero. If 
+      !!both are downward, only the flux at the bottom is set to zero; if 
+      !!both are upward, only the flux at the top is set to zero. If the 
+      !!soil layer is an organic one and the liquid water content is less 
+      !!than the layer retention capacity THLRET and the flux at the 
+      !!bottom of the layer is downward, it is set to zero.
+      !!
       IPTBAD=0                                        
       DO 250 J=1,IG                                                               
       DO 250 I=IL1,IL2
@@ -510,15 +498,16 @@ C
           CALL XIT('GRDRAN',-1)
       ENDIF
 C
-      !In the 300 loop, checks are carried out for soil layers with 
-      !liquid water contents already effectively equal to THLMAX. If the 
-      !flux at the top of the layer is downward and that at the bottom 
-      !of the layer is upward, both are set to zero. If both are 
-      !downward, then if the top flux is greater than the bottom flux, 
-      !it is set equal to the bottom flux. If both are upward, then if 
-      !magnitude of the bottom flux is greater than that of the top 
-      !flux, it is set equal to the top flux.
-      !
+      !>
+      !!In the 300 loop, checks are carried out for soil layers with 
+      !!liquid water contents already effectively equal to THLMAX. If the 
+      !!flux at the top of the layer is downward and that at the bottom 
+      !!of the layer is upward, both are set to zero. If both are 
+      !!downward, then if the top flux is greater than the bottom flux, 
+      !!it is set equal to the bottom flux. If both are upward, then if 
+      !!magnitude of the bottom flux is greater than that of the top 
+      !!flux, it is set equal to the top flux.
+      !!
       DO 300 J=IG,1,-1                                                            
       DO 300 I=IL1,IL2
           IF(IGRD(I).GT.0)                                          THEN
@@ -536,26 +525,27 @@ C
           ENDIF                                                                   
   300 CONTINUE
 C
-      !In the 400 loop, for each soil layer THTEST is recalculated as 
-      !the liquid water content resulting from the updated boundary 
-      !fluxes, and is compared with a residual value THLTHR. For organic 
-      !soil layers deeper than the first layer, THLTHR is set to the 
-      !minimum of THLRET and THLIQ, since only evapotranspiration can 
-      !cause the soil moisture to fall below the retention capacity. 
-      !(The first layer is excepted because surface evaporation can 
-      !drive its moisture content below THLRET.) For mineral soils, 
-      !THLTHR is set to THLMIN. If THTEST < THLTHR, then if the flow at 
-      !the bottom of the soil layer is downward, it is recalculated as 
-      !the sum of the flow at the top of the layer plus the amount of 
-      !water that must be removed to make the liquid water content of 
-      !the layer equal to THLTHR. If the flow at the bottom of the layer 
-      !is upward, the flow at the top of the layer is recalculated as 
-      !the sum of the flow at the bottom of the layer minus the amount 
-      !of water that must be removed to make the liquid water content of 
-      !the layer equal to THLTHR. THTEST of the current layer is then 
-      !reset to THLTHR, and THTEST of the overlying and underlying 
-      !layers (if any) are recalculated using the new interface fluxes.
-      !
+      !>
+      !!In the 400 loop, for each soil layer THTEST is recalculated as 
+      !!the liquid water content resulting from the updated boundary 
+      !!fluxes, and is compared with a residual value THLTHR. For organic 
+      !!soil layers deeper than the first layer, THLTHR is set to the 
+      !!minimum of \f$\theta_{l,ret}\f$ and \f$\theta_l\f$, since only evapotranspiration can 
+      !!cause the soil moisture to fall below the retention capacity. 
+      !!(The first layer is excepted because surface evaporation can 
+      !!drive its moisture content below \f$\theta_{l,ret}\f$.) For mineral soils, 
+      !!\f$\theta_{l,min}\f$ is set to THLMIN. If THTEST < THLTHR, then if the flow at 
+      !!the bottom of the soil layer is downward, it is recalculated as 
+      !!the sum of the flow at the top of the layer plus the amount of 
+      !!water that must be removed to make the liquid water content of 
+      !!the layer equal to THLTHR. If the flow at the bottom of the layer 
+      !!is upward, the flow at the top of the layer is recalculated as 
+      !!the sum of the flow at the bottom of the layer minus the amount 
+      !!of water that must be removed to make the liquid water content of 
+      !!the layer equal to THLTHR. THTEST of the current layer is then 
+      !!reset to THLTHR, and THTEST of the overlying and underlying 
+      !!layers (if any) are recalculated using the new interface fluxes.
+      !!
       DO 400 J=1,IG                                                               
       DO 400 I=IL1,IL2
         IF(IGRD(I).GT.0)                                           THEN
@@ -590,23 +580,24 @@ C
         ENDIF
   400 CONTINUE               
 C
-      !In the 500 loop, for each soil layer THTEST is compared with 
-      !THLMAX. If THTEST > THLMAX, two temporary variables are defined: 
-      !WLIMIT as the amount of water required to raise the liquid water 
-      !content of the soil layer to THLMAX, and WEXCES as the amount of 
-      !water representing the excess of THTEST over THLMAX. If the flux 
-      !at the top of the layer is downward and the flux at the bottom of 
-      !the layer is upward, then if the negative of the flux at the 
-      !bottom of the layer is greater than WLIMIT, it is set equal to 
-      !-WLIMIT and the flux at the top is set to zero; otherwise WEXCES 
-      !is subtracted from the flux at the top. If both the flux at the 
-      !top and the flux at the bottom are downward, then WEXCES is 
-      !subtracted from the flux at the top. If both are upward, then 
-      !WEXCES is added to the flux at the bottom, and a correction is 
-      !applied to the flux at the bottom of the underlying layer. 
-      !Finally, THTEST is recalculated for all the soil layers using the 
-      !new interface fluxes.
-      !
+      !>
+      !!In the 500 loop, for each soil layer THTEST is compared with 
+      !!THLMAX. If THTEST > THLMAX, two temporary variables are defined: 
+      !!WLIMIT as the amount of water required to raise the liquid water 
+      !!content of the soil layer to THLMAX, and WEXCES as the amount of 
+      !!water representing the excess of THTEST over THLMAX. If the flux 
+      !!at the top of the layer is downward and the flux at the bottom of 
+      !!the layer is upward, then if the negative of the flux at the 
+      !!bottom of the layer is greater than WLIMIT, it is set equal to 
+      !!-WLIMIT and the flux at the top is set to zero; otherwise WEXCES 
+      !!is subtracted from the flux at the top. If both the flux at the 
+      !!top and the flux at the bottom are downward, then WEXCES is 
+      !!subtracted from the flux at the top. If both are upward, then 
+      !!WEXCES is added to the flux at the bottom, and a correction is 
+      !!applied to the flux at the bottom of the underlying layer. 
+      !!Finally, THTEST is recalculated for all the soil layers using the 
+      !!new interface fluxes.
+      !!
       DO 500 J=IG,1,-1
       DO 500 I=IL1,IL2
           IF(IGRD(I).GT.0)  THEN
@@ -644,26 +635,27 @@ C                ENDIF
           ENDIF                                                                   
   500 CONTINUE
 C
-      !In the first part of the 600 loop, a correction is performed in 
-      !the unlikely event that as a result of the above adjustments, the 
-      !flux at the bottom of the last permeable soil layer has become 
-      !upward. If this occurs, all of the fluxes above are corrected by 
-      !the inverse of this same amount. However, this will result in a 
-      !small spurious upward water flux at the surface. Since the liquid 
-      !water flows are now accounted for, an attempt is made, as in loop 
-      !250, to remove the required water from the frozen water store in 
-      !the first layer. The excess that cannot be supplied from this 
-      !source is assigned to WLOST.
-      !
-      !In the second part of the 600 loop, the temperatures TFDT of the 
-      !water fluxes at the top and bottom of the layers in the permeable 
-      !soil profile are set equal to the temperatures of the water in 
-      !the first and last layers respectively. The flow at the bottom of 
-      !the profile and the temperature of the flow are used to update 
-      !BASFLW and TBASFL, the baseflow from the current subarea and its 
-      !temperature, and RUNOFF and TRUNOF, the total runoff from the 
-      !grid cell in question and its temperature.
-      !
+      !>
+      !!In the first part of the 600 loop, a correction is performed in 
+      !!the unlikely event that as a result of the above adjustments, the 
+      !!flux at the bottom of the last permeable soil layer has become 
+      !!upward. If this occurs, all of the fluxes above are corrected by 
+      !!the inverse of this same amount. However, this will result in a 
+      !!small spurious upward water flux at the surface. Since the liquid 
+      !!water flows are now accounted for, an attempt is made, as in loop 
+      !!250, to remove the required water from the frozen water store in 
+      !!the first layer. The excess that cannot be supplied from this 
+      !!source is assigned to WLOST.
+      !!
+      !!In the second part of the 600 loop, the temperatures TFDT of the 
+      !!water fluxes at the top and bottom of the layers in the permeable 
+      !!soil profile are set equal to the temperatures of the water in 
+      !!the first and last layers respectively. The flow at the bottom of 
+      !!the profile and the temperature of the flow are used to update 
+      !!BASFLW and TBASFL, the baseflow from the current subarea and its 
+      !!temperature, and RUNOFF and TRUNOF, the total runoff from the 
+      !!grid cell in question and its temperature.
+      !!
       IPTBAD=0
       DO 600 I=IL1,IL2
           IF(IGRD(I).GT.0)                                        THEN
@@ -715,16 +707,16 @@ C
           CALL XIT('GRDRAN',-3)
       ENDIF
 C     
-      !
-      !In the 700 loop, for each successive soil layer the temperature 
-      !of the water flux at the bottom of the layer is first assigned. 
-      !If the flux is downward, TFDT is set to the temperature of the 
-      !water in the current layer; if it is upward, TFDT is set to the 
-      !temperature of the water in the layer below. The temperature of 
-      !the water in the current layer is then updated using the FDT and 
-      !TFDT values at the top and bottom of the layer, and the liquid 
-      !water content of the layer is set to THTEST.
-      !                                                 
+      !>
+      !!In the 700 loop, for each successive soil layer the temperature 
+      !!of the water flux at the bottom of the layer is first assigned. 
+      !!If the flux is downward, TFDT is set to the temperature of the 
+      !!water in the current layer; if it is upward, TFDT is set to the 
+      !!temperature of the water in the layer below. The temperature of 
+      !!the water in the current layer is then updated using the FDT and 
+      !!TFDT values at the top and bottom of the layer, and the liquid 
+      !!water content of the layer is set to THTEST.
+      !!                                                 
       DO 700 J=1,IG
       DO 700 I=IL1,IL2
           IF(IGRD(I).GT.0)                                      THEN
