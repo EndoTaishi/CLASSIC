@@ -90,7 +90,6 @@ integer, parameter :: nmon = 12        !< Number of months in a year
 integer, parameter :: ican        = 4        !< Number of CLASS pfts
 integer, parameter :: ignd        = 20        !< Number of soil layers
 integer, parameter :: icp1        = ican + 1 !
-integer,parameter  :: icc         = 9
 integer,parameter  :: icc=12                 !< Number of CTEM pfts (YW + EVG shrub,DCD shrubs, sedge)
 
 integer,parameter  :: iccp1       = icc + 1  !
@@ -121,7 +120,7 @@ real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 ($g mol^{-1}$)
 logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false.,.false. ]      !YW
 
 !> simple grass matric, define the number and position of grass
-logical, parameter, dimension(icc) :: grass = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true. ]
+logical, parameter, dimension(icc) :: grass = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.true. ]
 
 integer, parameter, dimension(numgrass) :: grass_ind = [ 10, 11,12 ]  !< index of the grass pfts (3 grass pfts at present)        !YW May 11, 2015
 integer, parameter, dimension(numshrubs) :: shrub_ind = [ 6, 7 ]  !not used for now    
@@ -359,6 +358,9 @@ real :: popdthrshld = 300.   !< threshold of population density (people/km2) [Kl
 !      real, parameter :: slope = 0.0204588331  !=abs(0.0-ymin)+abs(1.0-ymax)
 !      real :: ymin, ymax, slope
 
+real :: alpha_fire       !< parameter alpha_fire and f0 used for estimating wind function for fire spread rate
+real :: f0 = 0.05        !< Fire spread rate in the absence of wind  -- Not used in CTEM v 2.0!
+
 !> max. fire spread rate, km/hr
 real, dimension(kk) :: maxsprd = [  0.38, 0.38, 0.00, 0.00, 0.00, &
                                     0.28, 0.28, 0.28, 0.38, 0.38, & !JM edit YW vals to be in line with new vals
@@ -402,10 +404,10 @@ real, dimension(kk) :: frltrstm = [ 0.60, 0.60, 0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00, 0.00, 0.00  ]
 
 !> fraction of root biomass converted to gases due to combustion
-real, dimension(kk) :: frco2rt = frco2rt = [ 0.0, 0.0, 0.0, 0.0, 0.0, &
-                                             0.0, 0.0, 0.0, 0.0, 0.0, &
-                                             0.0, 0.0, 0.0, 0.0, 0.0, &
-                                             0.0, 0.0, 0.0, 0.0, 0.0  ]
+real, dimension(kk) :: frco2rt = [ 0.0, 0.0, 0.0, 0.0, 0.0, &
+                                   0.0, 0.0, 0.0, 0.0, 0.0, &
+                                   0.0, 0.0, 0.0, 0.0, 0.0, &
+                                   0.0, 0.0, 0.0, 0.0, 0.0  ]
 
 !> fraction of root biomass becoming litter after combustion
 real, dimension(kk) :: frltrrt = [ 0.10, 0.10, 0.00, 0.00, 0.00, &
@@ -690,10 +692,10 @@ real, dimension(kk) :: lwrthrsh = [ -50.0, -5.0, 0.0,   0.0,  0.0, &
                                       0.1,  5.0, 0.1,   0.0,  0.0 ]
 
 !> Max. loss rate for cold stress for all 9 pfts, (1/day)
-real, dimension(kk) :: cdlsrtmx = cdlsrtmx = [ 0.10, 0.30, 0.00, 0.00, 0.00, &
-                                               0.30, 0.40, 0.15, 0.10, 0.30, &
-                                               0.15, 0.15, 0.00, 0.00, 0.00, &
-                                               0.15, 0.15, 0.15, 0.00, 0.00 ]
+real, dimension(kk) :: cdlsrtmx = [ 0.10, 0.30, 0.00, 0.00, 0.00, &
+                                    0.30, 0.40, 0.15, 0.10, 0.30, &
+                                    0.15, 0.15, 0.00, 0.00, 0.00, &
+                                    0.15, 0.15, 0.15, 0.00, 0.00 ]
 
 real :: kmort1 = 0.3            !< kmort1, parameter used in growth efficiency mortality formulation
 
@@ -706,10 +708,10 @@ real, dimension(kk) :: maxage   !< Maximum plant age. used to calculate intrinsi
 
 
 !> Leaf life span (in years) for CTEM's 9 pfts
-real, dimension(kk) :: lfespany = lfespany  =   [ 5.00, 1.00, 0.00, 0.00, 0.00, &          !YW July 13, 2015  add 4 PFT slots and 2 with values for shrubs
-                                                  1.50, 1.00, 1.00, 5.00, 0.40, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
-                                                  1.75, 1.75, 0.00, 0.00, 0.00, &
-                                                  1.00, 1.00, 1.00, 0.00, 0.00 ]
+real, dimension(kk) :: lfespany = [ 5.00, 1.00, 0.00, 0.00, 0.00, &          !YW July 13, 2015  add 4 PFT slots and 2 with values for shrubs
+                                    1.50, 1.00, 1.00, 5.00, 0.40, &  !PFT 3 was 1.75 (from IBIS), 2.00 follows LPJ. JM Mar 2014.
+                                    1.75, 1.75, 0.00, 0.00, 0.00, &
+                                    1.00, 1.00, 1.00, 0.00, 0.00 ]
 
 
 real, dimension(kk) :: drlsrtmx !< Max. loss rate for drought stress for all 9 pfts, (1/day) (values differ if using prescribed vs. competition run)
@@ -822,12 +824,6 @@ epsilonr = [ 0.41, 0.21, 0.00, 0.00, 0.00, &
              0.40, 0.15, 0.60, 0.41, 0.21, &  
              0.05, 0.05, 0.00, 0.00, 0.00, &
              0.90, 0.90, 0.40, 0.00, 0.00 ]       !Sedge YW less allocation to root than real grass
-
-
-epsilonr = [ 0.41, 0.21, 0.00, &  ! IN BOTH PRESCRIBED AND COMPETE (TWO VERSIONS)
-             0.40, 0.15, 0.60, &  
-             0.05, 0.05, 0.00, &
-             0.90, 0.90, 0.00 ]
     
 ! mainres.f parameters: ---------
 

@@ -7,7 +7,7 @@ C>\file
      2                  DELZW,ZBOTW,ALGWET,ALGDRY,
      +                  ALGWV,ALGWN,ALGDV,ALGDN,
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,IGRALB
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,IGRALB)
 C
 C     * JUN 24/15 - J. MELTON.  PASS IN IGRALB SO THAT WE CAN SKIP
 C                               USING SOCI IF IGRALB IS 0.

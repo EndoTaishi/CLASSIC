@@ -278,7 +278,7 @@ c    -------------------YW March 27, 2015------------------------------/
         diff1=vgbiomas(i)-pvgbioms(i)
         diff2=(gpp(i)-autores(i)-litrfall(i)-
      &   dstcemls(i)-repro_cost_g(i))*(deltat/963.62)
-        if((abs(diff1-diff2)).gt.(tolrance+0.00003))  !   then !YW the difference for moss litter 
+        if((abs(diff1-diff2)).gt.(tolrance+0.00003)) then !   then !YW the difference for moss litter
                                                             !and biomass can go a bit over the tolerance
           write(6,3001)'vgbiomas(',i,')=',vgbiomas(i)
           write(6,3001)'pvgbioms(',i,')=',pvgbioms(i)

@@ -198,20 +198,10 @@ c
          endif !fcan check.     
 190     continue 
 180   continue 
-<<<<<<< HEAD
-
-c
-
-c     we assume that stem temperature is same as canopy temperature tcan.
-c     using stem and root temperatures we can find their maintenance 
-c     respirations rates
-c
-=======
 !>
 !!we assume that stem temperature is same as canopy temperature tcan.
 !!using stem and root temperatures we can find their maintenance respirations rates
 !!
->>>>>>> develop
       do 200 i = il1, il2
 !>
 !!first find the q10 response function to scale base respiration

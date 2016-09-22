@@ -878,7 +878,7 @@ C
 C
 C     * CONSTANTS AND TEMPORARY VARIABLES.
 C
-      REAL DEGLAT,DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,
+      REAL DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,
      1     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,
      2     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,
      3     TSURF,ACTLYR(NLAT,NMOS),FTABLE(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
@@ -2504,7 +2504,7 @@ C
 
 C
       ENDIF !IF NOT PARALLELRUN
- 
+
 
 C     CTEM FILE TITLES DONE
 C======================= CTEM ========================================== /
@@ -2513,12 +2513,12 @@ C     BEGIN READ IN OF THE .INI FILE
       READ(10,5020) DLATROW(1),DEGLON,ZRFMROW(1),ZRFHROW(1),ZBLDROW(1),
      1              GCROW(1),NLTEST,NMTEST
 
-      JLAT=NINT(DEGLAT)
-      RADJGRD(1)=DEGLAT*PI/180.
-      DLONGRD(1)=DEGLON
-      Z0ORGRD(1)=0.0
-      GGEOGRD(1)=0.0
-C     GGEOGRD(1)=-0.035
+      JLAT=NINT(DLATROW(1))
+      RADJROW(1)=DLATROW(1)*PI/180.
+      DLONROW(1)=DEGLON
+      Z0ORROW(1)=0.0
+      GGEOROW(1)=0.0
+C     GGEOROW(1)=-0.035
 
 
 c    -----FLAG------------read peatland input------------------------------\      
@@ -2564,24 +2564,7 @@ c    -----------------YW March 23, 2015 -------------------------------/
           end if
           READ(10,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
      1                  WFCIROT(I,M),MIDROT(I,M)
-<<<<<<< HEAD
-          READ(10,5080) (SANDROT(I,M,J),J=1,3)
-          READ(10,5080) (CLAYROT(I,M,J),J=1,3)
-          READ(10,5080) (ORGMROT(I,M,J),J=1,3)
-          READ(10,5050) (TBARROT(I,M,J),J=1,3),TCANROT(I,M),
-     1                  TSNOROT(I,M),TPNDROT(I,M)
-          READ(10,5060) (THLQROT(I,M,J),J=1,3),(THICROT(I,M,J),
-     1                  J=1,3),ZPNDROT(I,M)
-c     -------FLAG! read in layer 4 to 10 for peatlands----------------------\
 
-      if (ipeatlandrow(i,m) >0)    then 
-          READ(10,5060) (TBARROT(I,M,J),J=4,10)
-          READ(10,5060) (THLQROT(I,M,J),J=4,10)
-          READ(10,5060) (THICROT(I,M,J),J=4,10)
-      endif
-c     ---------------YW September 01, 2015 ----------------------------/
-C   
-=======
           DO 25 J=1,IGND
              READ(10,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),
      1        CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J),
@@ -2589,18 +2572,9 @@ C
 25        CONTINUE
           READ(10,5050)TCANROT(I,M),TSNOROT(I,M),TPNDROT(I,M),
      1        ZPNDROT(I,M)
->>>>>>> develop
           READ(10,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),
      1                  ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
 50    CONTINUE
-<<<<<<< HEAD
-
-C     ! In CLASS 3.6.2, we include this soil info in the INI file.
-      DO 25 J=1,IGND                     
-          READ(10,*) DELZ(J),ZBOT(J) 
- 25   CONTINUE                            
-=======
->>>>>>> develop
 C
 c     the output year ranges can be read in from the job options file, or not.
 c     if the values should be read in from the .ini file, and not
@@ -3088,7 +3062,7 @@ c    gather peatland variable YW March 19, 2015---------------------- /
      4                       ailcggat, ailcbgat,  ailcgat, zolncgat,
      5                       rmatcgat, rmatctemgat,slaigat,bmasveggat,
      6                 cmasvegcgat,veghghtgat, rootdpthgat,alvsctmgat,
-     7                     alirctmgat, paicgat,  slaicgat 
+     7                     alirctmgat, paicgat,  slaicgat
 c     peatland PFT bio2str YW March 19, 2015---------------------------/ 
      8              ,ipeatlandgat)     
 c
@@ -3308,10 +3282,10 @@ C      hour=(real(ihour)+(real(imin)-real(ihour)*100)/60.)*pi/12.-pi
 
       DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
       DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
-      HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI     
-      COSZ=SIN(RADJGRD(1))*SIN(DECL)+COS(RADJGRD(1))*COS(DECL)*COS(HOUR)
+      HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
+      COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
 ! FLAG!!!!
-!      do i = 1, nltest
+      do i = 1, nltest
 !          CosHourAngel=(sin(-0.83*pi/180)-sin(decl)*sin(radjgrd(1))) /
 !     1                        cos(decl)/cos(radjgrd(1))
 !          if (CosHourAngel > 1.)        then
@@ -4162,13 +4136,13 @@ c    -------------- inputs updated by ctem are above this line ------
      &        hetroresveggat, autoresveggat, litresveggat,
      &           soilcresveggat, nml, ilmos, jlmos, ch4wet1gat,
      &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat,
-     &          ch4soillsgat
+     &          ch4soillsgat,
 c    ---------------- outputs are listed above this line ------------
 c    -------------- moss C in peatlands -------------------------------\
 c
      1    ipeatlandgat,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd,
      2    anmosac_g,rmlmosac_g,gppmosac_g,Cmossmasgat,litrmassmsgat,
-     3    wtabgat,thpgat, bigat, psisgat,grksgat,
+     3    wtabgat, grksgat,
      4    thfcgat, thlwgat, thlqaccgat_m, thicaccgat_m,tfrez,
      5    nppmosgat, armosgat,hpdgat)
 c
@@ -4177,13 +4151,13 @@ c    ----------calculate degree days for mosspht Vmax seasonality------
        do   i = 1, nml
           if (iday == 2)    then
                pdd(i) = 0.               
-          elseif (taaccgat_m(i)>tfrez)           then
-               pdd(i)=pdd(i)+taaccgat_m(i)-tfrez     
+          elseif (taaccgat_t(i)>tfrez)           then
+               pdd(i)=pdd(i)+taaccgat_t(i)-tfrez
           endif
           if (iday ==180)     then 
                cdd(i) = 0.
-          elseif (taaccgat_m(i)<tfrez)            then 
-               cdd(i)=cdd(i)+taaccgat_m(i)-tfrez
+          elseif (taaccgat_t(i)<tfrez)            then
+               cdd(i)=cdd(i)+taaccgat_t(i)-tfrez
           endif
 c----------------update peatland bottom layer depth--------------------       
           if (ipeatlandgat(i) > 0)         then
@@ -4702,6 +4676,7 @@ c
      1                    j=1,icc),(rmlvegrow(i,m,j),j=1,icc),
      2                    ' TILE ',m
               endif
+            end if
             do j = 1,icc
               anvegrow_g(i,j)=anvegrow_g(i,j)+anvegrow(i,m,j)
      1                                        *FAREROT(i,m)
@@ -5156,7 +5131,7 @@ C
 
              endif
              ENDIF
-            ENDIF
+
 c    ----peatland output-----------------------------------------------\
 
         write(99,6999)  WTBLACC, ZSN,PREACC,EVAPACC,ROFACC,g12acc,g23acc

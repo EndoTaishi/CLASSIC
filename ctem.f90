@@ -67,12 +67,12 @@
      &                vgbiomas_veg,  gppveg,   nepveg,   nbpveg,&
      &                  hetrsveg,autoresveg, ltresveg, scresveg,&
      &                 nml,    ilmos, jlmos,  ch4wet1,  ch4wet2,  &
-     &                 wetfdyn, ch4dyn1, ch4dyn2, ch4soills)
+     &                 wetfdyn, ch4dyn1, ch4dyn2, ch4soills, &
 !
 !    ---------------- outputs are listed above this line ------------ 
      &        ipeatland,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd, &
      &                anmoss,rmlmoss,gppmoss, Cmossmas, litrmassms, &
-     &                    wtable,thpor,bi, psisat,grksat, &
+     &                    wtable,grksat, &
      &                    thfc,thlw,thliq,thice,tfrez, &
 !    -------------input above, output and updated variables below------
      &                nppmoss,armoss,hpd)
@@ -530,9 +530,9 @@ real lambdaalt !<
        integer  ipeatland(ilg),iyear,ihour,imin,&
       &         jdsty,jdstd,jdendy,jdendd
       
-       real     wtable(ilg),thpor(ilg,ignd),bi(ilg,ignd),&
+       real     wtable(ilg),&
       &         grksat(ilg,ignd),thfc(ilg,ignd),thlw(ilg,ignd),&  
-      &         psisat(ilg,ignd),thliq(ilg,ignd),thice(ilg,ignd),tfrez
+      &         thliq(ilg,ignd),thice(ilg,ignd),tfrez
      
       real     gppmoss(ilg),rmlmoss(ilg),anmoss(ilg),armoss(ilg), &
      &         nppmoss(ilg), rgmoss(ilg), litresms(ilg), socresp(ilg),&
@@ -1200,7 +1200,7 @@ call    hetresv ( fcanc,      fc, litrmass, soilcmas,&
      &                      il2,   tbarc, psisat, bi,  thliqc,&
      &                     rttempcg,    zbotw,     sort,&
      &                     isand, thicec, &
-     &                 ltrsvgcg, scrsvgcg. ipeatland)
+     &                 ltrsvgcg, scrsvgcg, ipeatland)
 !>
 !! Find heterotrophic respiration rates from bare ground subarea
 
@@ -1412,7 +1412,7 @@ endif
      &                    rmatctem,   gleafmas, stemmass, rootmass,     &
      &                       sort,    nol2pfts,  fcancmx, isand, &
      &                     afrleaf,  afrstem,  afrroot,    wiltsm,&
-     &                     fieldsm, wtstatus, ltstatus
+     &                     fieldsm, wtstatus, ltstatus,&
 !    add peatland parameters YW April 13, 2015 ------------------------ 
      &                   ipeatland, thpor,bi, psisat,grksat,thfc, thlw)      
 

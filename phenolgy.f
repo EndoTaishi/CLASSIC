@@ -616,7 +616,7 @@ c
          endif
 380     continue
 370   continue 
-<<<<<<< HEAD
+! FLAG!
 c
       else          !icc != 9 here icc == 12, 6,7 =shrubs, 8,9 = crops, 
                     ! 10, 11,12 = grass 

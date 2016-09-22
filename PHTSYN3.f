@@ -666,7 +666,6 @@ C
             RC_VEG(I,J)=5000.0
             USESLAI(I,J)=0
             USEAILCG(I,J)=0.0
-            rmatsum(i,j) = 0.0          !YW April 16, 2015 
 201       CONTINUE
 200     CONTINUE
 C

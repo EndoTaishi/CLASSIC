@@ -426,7 +426,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
                      isand, thicec, &
 !    -------------- inputs above this line, outputs below -------------
                     ltresveg, scresveg, &
-                     ipeatland, psisatpt, thporpt, bipt,thicec)    !YW
+                     ipeatland)    !YW
 
 !               Canadian Terrestrial Ecosystem Model (CTEM)
 !           Heterotrophic Respiration Subtoutine For Vegetated Fraction
@@ -500,10 +500,6 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 
       ! Peatland variables:
       integer  ipeatland(ilg)
-      real     psisatpt(ilg,ignd)   !<peatland saturation matric potential
-      real     thporpt(ilg,ignd)    !<peatland porosity
-      real     bipt(ilg,ignd)       !<peatland parameter b of clapp and hornberger
-      real     thice(ilg,ignd)       ! FLAG JM POSSIBLE BUG! WHY TWO THICE? THIS ONE USED IN CALC BUT NO VALUE!
 
 !     ------------------------------------------------------------------
 !!     Constants and parameters are located in ctem_params.f90
@@ -639,19 +635,15 @@ do 130 i = il1, il2
             !the 0.005 below prevents a divide by 0 situation.
             psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thicec(i,j)))**(-b(i,j))
 
-c         peatland psi calculated seperately YW April 08, 2015 !FLAG possible bug - THICE vs. THICEC
-            if (ipeatland(i) >0)          then
-                psisat(i,j) =psisatpt(i,j)
-                b(i,j)= bipt(i,j)
-                thpor(i,j) = thporpt(i,j)
-                if (thliq(i,j)+ thice(i,j)+0.01 < thporpt(i,j)
-     1              .and.  tbar(i,j) <273.16)                   then
+!         FLAG- check on this as I had to change a fair amount what YW had, JM. Sep 21 2016.
+            if (ipeatland(i) >0) then
+                if (thliq(i,j)+ thicec(i,j)+0.01 < thpor(i,j) &
+                   .and.  tbar(i,j) <273.16)                   then
                   psi(i,j) = 0.001
-                elseif (thice(i,j) > thporpt(i,j))    then
+                elseif (thicec(i,j) > thpor(i,j))    then
                   psi(i,j) = 0.001   !set to saturation
-                else
-                  psi(i,j) = psisatpt(i,j)*(thliq(i,j)/(thporpt(i,j)-
-     1                    thice(i,j)))**(-bipt(i,j))
+                !else
+                    ! leave as-is.
                 endif
             endif
 
@@ -717,33 +709,33 @@ c         peatland psi calculated seperately YW April 08, 2015 !FLAG possible bu
         endif
         ltrmoscl(i)=max(0.2,min(1.0,ltrmoscl(i)))
       else                       !is peatland
-c
-c    test psi optimal at psisat    YW April 10, 2015
-c    peatland microbals performs better towards wet environment,
-c    for b = 2.3, thpor = 0.98 as soil layer 1,
-c    thliq = 0.01  0.1   0.2    0.3    0.4    0.5   0.6   0.7    0.8     0.9
-c    psi   =  391  1.0   0.38  0.15   0.08   0.05   0.03  0.022  0.016  0.012
-c
-c    set the upper boundary at 500, optimal psi between 0.05 and 0.03
-c    (Mayono et al. 2013)
-c
-c    limit of ltrmoscalms at saturation YW April 10, 2015
+!
+!    test psi optimal at psisat    YW April 10, 2015
+!    peatland microbals performs better towards wet environment,
+!    for b = 2.3, thpor = 0.98 as soil layer 1,
+!    thliq = 0.01  0.1   0.2    0.3    0.4    0.5   0.6   0.7    0.8     0.9
+!    psi   =  391  1.0   0.38  0.15   0.08   0.05   0.03  0.022  0.016  0.012
+!
+!    set the upper boundary at 500, optimal psi between 0.05 and 0.03
+!    (Mayono et al. 2013)
+!
+!    limit of ltrmoscalms at saturation YW April 10, 2015
           if (psi(i,1).ge. 10000.0) then
                ltrmoscl(i) = 0.2
           elseif (psi(i,1).le. 10000.0 .and.psi(i,1).gt. 6.0) then
-               ltrmoscl(i)=1.0 - 0.8*((log10(psi(i,1))-log10(6.0))
-     1                   /(log10(10000.0)-log10(6.0)))**1.
+               ltrmoscl(i)=1.0 - 0.8*((log10(psi(i,1))-log10(6.0)) &
+                        /(log10(10000.0)-log10(6.0)))**1.
           elseif (psi(i,1).le. 6.0 .and. psi(i,1) .gt. 4.0) then
                ltrmoscl(i)=1.0
           elseif (psi(i,1).le. 4.0 .and. psi(i,1).gt.psisat(i,1))  then
-               ltrmoscl(i)=1.0-0.99*((log10(4.0)-log10(psi(i,1)))/
-     1                   (log10(4.0)-log10(psisat(i,1))))
+               ltrmoscl(i)=1.0-0.99*((log10(4.0)-log10(psi(i,1)))/ &
+                        (log10(4.0)-log10(psisat(i,1))))
           elseif (psi(i,1) .le. psisat(i,1))                     then
                ltrmoscl(i)=0.01
           endif
           ltrmoscl(i)=max(0.0,min(ltrmoscl(i),1.0))
         endif  !peatland
-c    -------------------YW March 30, 2015 -----------------------------/
+!    -------------------YW March 30, 2015 -----------------------------/
 300   continue
 
 !!    use temperature of the litter and soil c pools, and their soil
