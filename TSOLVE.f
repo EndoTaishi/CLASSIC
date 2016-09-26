@@ -108,6 +108,8 @@ C     *                         CLASS VERSION 2.0 (WITH CANOPY).
 C     * APR 11/89 - D.VERSEGHY. ITERATIVE SURFACE TEMPERATURE 
 C     *                         CALCULATIONS FOR SNOW/SOIL.
 C
+      use peatlands_mod, only : mosspht
+
       IMPLICIT NONE
 
 C     * INTEGER CONSTANTS.

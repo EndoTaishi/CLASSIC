@@ -41,7 +41,7 @@
      Z   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
      +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
      +   NBS, ISNOALB,LFSTATUS,DAYL, DAYL_MAX,                                                 
-c    peatland variabels in mosspht.f called in TSOLVC and TSOLVE------
+c    peatland variabels in mosspht subroutine called in TSOLVC and TSOLVE------
      1   ipeatland, bi, ancsmoss,angsmoss, ancmoss, angmoss,
      2   rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,Cmossmas, dmoss,
      3   iyear, iday, ihour,imin,daylength,pdd,cdd)
@@ -1091,7 +1091,7 @@ C
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  
-c    ----------pass variables in mosspht.f-----------------------------\  
+c    ----------pass variables in mosspht subroutine-----------------------------\
      1     ,ipeatland, tbar,thpor,co2conc,pressg, coszs, Cmossmas,dmoss
 c     ------input above, output below-----------------------------------     
      2   ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
@@ -1442,7 +1442,7 @@ C
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
      C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
-c    ----------pass variables in mosspht.f-----------------------------\  
+c    ----------pass variables in mosspht subroutine-----------------------------\
      1     ,ipeatland, tbar, thpor, co2conc,
      2      pressg, coszs, Cmossmas,dmoss
 c     ------input above, output below-----------------------------------     

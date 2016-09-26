@@ -40,6 +40,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -312,7 +313,8 @@ Functions/Subroutines</h2></td></tr>
 <p>broad leaf dcd cold we use daylength and roottemp to initiate leaf offset</p>
 <p>broad leaf dcd dry we still use daylength and roottemp to initiate leaf offset, for the pathological cases of dry dcd trees being further away from the equator then we can imagine. other wise leaf loss will occur due to drought anyway.</p>
 <p>"normal growth" to "fall/harvest" transition for crops is based on specified lai. we harvest if lai of crops reaches a threshold. if lai doesn't reach this threshold (say due to a bad year) we harvest anyway if it starts getting cold, otherwise we don't harvest.</p>
-<p>"normal growth" to "max. growth" transition for grasses</p>
+<pre class="fragment">add a branch for icc =12, j6, 7 = shrubs,j 8,9 = crops, j10,11,12
+= grasses, YW April 15, 2015 -----------------------------------\ </pre><p>"normal growth" to "max. growth" transition for grasses</p>
 <h2>if in "fall/harvest" mode </h2>
 <p>grasses and evg trees do not come into this mode, because they want to stay green if possible. this mode is activated for dcd plants and crops. once in this mode dcd trees loose their leaves and crops are harvested. ndl dcd trees keep loosing their leaves at rate determined by cold stress, bdl dcd trees loose their leaves at a specified rate, and crops are harvested over a period of 15 days. dcd trees and crops stay in "leaf fall/harvest" model until all green leaves are gone at which time they switch into "no leaves" mode, and then wait for the climate to become favourable to go into "max. growth" mode</p>
 <p>check that leaf status of all vegetation types in all grid cells has been updated</p>
@@ -336,7 +338,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Sep 19 2016 10:13:37 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Sep 26 2016 14:40:57 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

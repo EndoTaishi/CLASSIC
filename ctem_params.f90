@@ -630,10 +630,153 @@ real :: tolrnce1 = 0.50  !FLAG would be good to make this consistent with global
 !    line with literature (zhang et al. 2009, luyssaert et al. gcb 2007)
 !    values changed for bsrtstem and bsrtroot. jm 06.2012
 
-real, dimension(kk) :: bsrtstem !<Base respiration rates for stem in kg c/kg c.year at 15 degrees celcius (values differ if using prescribed vs. competition run)
-real, dimension(kk) :: bsrtroot !<Base respiration rates for root in kg c/kg c.year at 15 degrees celcius (values differ if using prescribed vs. competition run)
+real, dimension(kk) :: bsrtstem !< Base respiration rates for stem in kg c/kg c.year at 15 degrees celcius (values differ if using prescribed vs. competition run)
+real, dimension(kk) :: bsrtroot !< Base respiration rates for root in kg c/kg c.year at 15 degrees celcius (values differ if using prescribed vs. competition run)
 
 real :: minlvfr = 0.05          !< Minimum live wood fraction
+
+
+
+! peatlands_mod.f90 parameters:
+
+! mosspht subroutine parameters
+
+real :: rmlmoss25 = 1.1 !< Base dark respiration rate of moss umol/m2/s (best estimate is from fig. 6b in
+                        !! Williams and Flanagan (1998) seasonal variation not considered
+
+real :: tau25m=2321.0   !< tau coefficient (rate at 25 Celcius) iscomputed on the basis of the specificity
+                        !! factor (102.33) times Kco2/Kh2o (28.38) to convert for value in solution to that
+                        !! based in air. The old value was 2321.1. New value (2904.12) Quercus robor (Balaguer
+                        !! et al., 1996). Similar number from Dreyeret al. 2001, Tree Physiol, tau= 2710
+                        !! 2600 from Brooks and Farquhar (1985) used AS A CONSTANT; 2321 Harley et al. (1992)
+
+real :: gasc = 8.314    !< gas constant ($J mol^{-1} K^{-1}$)
+
+real :: ektau =-29000.0 !< $J mol^{-1}$ (Jordan and Ogren, 1984)
+
+real :: kc25= 30.2      !< kinetic coef for CO2 at 25 C (Pa)
+                        !! Based upon:
+                        !! 30.2 Arbutus unedo  (Harley et al., 1986)
+                        !! 40.4 (von Caemmerer et al., 1994)
+                        !! 27.46 deciduous forest understory (Wilson
+                        !! et al. 2000); 30.0 (Collatz et al., 1991)
+                        !! 30.0 Populus tremula,Coylus avelana,Tilia
+                        !! cordata (Kull and Niinemets, 1998)
+
+real :: ko25=24800.0    !< kinetic coef for O2 at 25C (rate)  (Pa)
+                        !! Based upon:
+                        !! 24800 Arbutus unedo (Harley et al.,1986)
+                        !! 41980 deciduous forest understory (Wilson et al. 2000)
+                        !! 30000 (Collatz et al., 1991)
+                        !! 30000 (Kull and Niinemets, 1998) see kc25
+
+real :: ec=63500.0      !< Activation energy for Kc of CO2 ($J mol^{-1}$) at 25C
+                        !! Based upon:
+                        !! 59430 Arbutus unedo (Harley et al., 1986)
+                        !! 80500 deciduous forest understory (Wilson et al., 2000)
+                        !! 63500 mosses and shrubs Tenhunen et al. (1994)
+
+real :: ej=37000.0      !< Activation energy for electron transport, ($J mol^{-1}$)
+                        !! Based upon:
+                        !! 37000 at 25C J mol-1(Farquhar et al.(1980)
+                        !! 55000 J mol-1 at 311K  (Harley & Baldocchi,
+                        !! 1995,PCE) lichis tree
+
+real :: eo=35000.0      !< Activation energy for Ko ($J mol^{-1}$) at 25C
+                        !! Based upon:
+                        !! 36000 Arbutus unedo (Harley et al.,1986)
+                        !! 14500 for deciduous forest understory (Wilson et al., 2000)
+                        !! 35000 mosses and shrubs (Tenhunen et al.,1994)
+
+real :: evc=53000.0     !< Activation energy for carboxylation ($J mol^{-1}$) at 25C
+                        !! Based upon:
+                        !! 53000 (Kirschbaum & Farquhar, 1984)
+                        !! 55000 (at 311K) (Harley & Baldocchi, 1995,PCE)
+
+real :: sj=719.0        !< Constant affecting J at low temperature ($J mol^{-1}$)
+                        !! at 25C; Based upon: 714.0 in Lloyd et al. (1995)
+                        !! Macadamia integrifolia and Litchi chinesis
+
+real :: hj=220300.0     !< Constant affecting J at high temperature ($J mol^{-1}$)
+                        !! at 25C; Based upon: 220300 Macadamia integrifolia
+                        !! and Litchi chinesis Lloyd et al. (1995)
+                        !! 206083 Pinus radiata (Wilson et al. 2000)
+
+real :: alpha_moss=0.21 !< Efficiency of conversion of incident photons
+                        !! into electrons(mol electron/mol photon),
+                        !! not sensitive, alpha = 0.21 Flanagan's
+                        !! value for sphagnum and pleurozium
+                        !! alpha = 0.3 (Seel et al.,1992) for
+                        !! T. ruraliformis and d. palustris
+
+! decp subroutine parameters:
+
+real::     dctmin= 269.0        !< minimum temperature of soil respiration,K (peatland soils)
+
+real::     dcbaset=283.0        !< base temperature for Q10, K (peatland soils)
+
+real::     bsrateltms = 0.20    !< heterotrophic respiration base rate for peatlands (yr-1)
+                                !! Based upon 0.05 (T.Moore unpubished data)
+                                !! for shrubs 0.2 from Moore and around
+                                !! 0,5 for ctem. TM's values is natural
+                                !! condition, CTEM is opt at 15degrees,
+                                !! So TM's values can be scaled up
+                                !! more rates in Aerts 1997, Moore 2007
+
+! peatland parameters used in other subroutines:
+
+real :: zolnms = -6.57      !< natual logarithm of roughness length of moss surface.
+                            !! Based upon:
+                            !! roughness length as 0.0014 for momentum (Oke 1997, Raddatz et al, 2009)
+
+real :: thpms = 0.98        !< pore volume of moss ($m^3/m^3$)
+                            !! Based upon:
+                            !! 0.89 Price and Whittington 2010
+                            !! 98.2 (Sphagnum) and 98.9 (feather) in
+                            !! O'Donnell et al. 2009; 0.90 in Berlinger
+                            !! et al.2001
+
+real :: thrms = 0.20        !< Liquid water retention capacity of moss ($m^3/m^3$)
+                            !! Based upon: Price and Whittington 2010 for upper 5cm
+                            !! moss 0.275/0.6 comparing to 0.39/0.62 in
+                            !! fibric for the feather moss.For spahgnum
+                            !! moss(O'Donnell et al.2009)
+
+real :: thmms = 0.01        !< residual liquid water content after freezing or
+                            !! evaporation of moss ($m^3/m^3$)
+                            !! Based upon: Price and Whittington 2010
+
+real :: bms = 2.3           !< Clapp and Hornberger empirical "b" parameter of moss
+                            !! Based upon: Berlinger et al.2001(they set 4.0 for peat)
+
+real :: psisms =0.0103      !< Soil moisure suction at saturation of moss (m)
+                            !! Based upon: moss and peat using same values in Berlinger
+                            !! et al. 2001)
+
+real :: grksms = 1.83E-3    !< Saturated hydrualic conductivity of moss (m)
+                            !! The saturated hydrualic conductivity is
+                            !! much higher in living moss than lower
+                            !! layer (Price et al. 2008). 1.83E-3 for
+                            !! 5cm moss, their value of 10cm moss is
+                            !! 2.45E-4, similar to fibric here
+
+real :: hcpms = 2.50E6      !< Heat capacity of moss ($J m^{-2} K^{-1}$), same as hcp of peat in Beringer et al. 2001 !FLAG check units, was written as m. JM Sep 26 2016
+
+real :: sphms = 2.70E3      !< Specific heat of moss layer ($J m^{-2} K^{-1}$) ! FLAG check units - written as J/kg/K. JM Sep 26 2016
+                            !! same as that specific heat for vegetation
+                            !! (Berlinger et al 2001)
+
+real :: rhoms = 40.0        !< Density of dry moss ($kg m^{-3}$)
+                            !! Based upon:
+                            !! 40.0 Price et al. 2008, Price and
+                            !! Whittington 2010 value for feather moss
+                            !! is lower than sphagnmum (20 kg/m3 in
+                            !! O'Donnell et al. 2009)
+
+real :: slams = 20.0        !< Specific leaf area of moss ($m^2 kg^{-1}$),
+                            !! Based upon:
+                            !! S vensson 1995 sphangum value ranges from
+                            !! 13.5~47.3 m2/kg (Lamberty et al. 2007)
 
 ! phenology.f parameters: ----------
 

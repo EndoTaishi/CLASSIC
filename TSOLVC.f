@@ -152,6 +152,8 @@ C     * AUG 12/91 - D.VERSEGHY. ITERATIVE TEMPERATURE CALCULATIONS
 C     *                         FOR VEGETATION CANOPY AND UNDERLYING
 C     *                         SURFACE.
 C
+      use peatlands_mod, only : mosspht
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.

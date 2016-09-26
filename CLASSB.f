@@ -62,6 +62,9 @@ C     *                         THERMAL PROPERTIES BASED ON
 C     *                         SAND, CLAY AND ORGANIC MATTER
 C     *                         CONTENT.
 C
+      use ctem_params, only : thpms,thrms,thmms,bms,psisms,grksms,
+     1                       hcpms
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -120,8 +123,7 @@ C
 c    --------peatland variables---------------------------------------\    
 c
       integer ipeatland(nl,nm)
-      real     zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
-     1         sphms,rhoms,slams
+
 c    -----------YW March 23, 2015 -------------------------------------/
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -144,12 +146,7 @@ C
      1           0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
       DATA ALDN /0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,0.37,
      1           0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16/
-c
-c    moss common block parametes YW March 19, 2015 ---------------------\
 
-      common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
-     1                       hcpms, sphms,rhoms,slams
-c    moss common block parametes YW March 19, 2015 ---------------------/
 C---------------------------------------------------------------------
 C
 

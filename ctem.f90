@@ -141,6 +141,7 @@ use landuse_change,     only : luc
 use competition_scheme, only : bioclim, existence, competition
 use disturbance_scheme, only : disturb
 use heterotrophic_respiration, only : hetresg, hetresv
+use peatlands_mod, only : decp
 
 
 

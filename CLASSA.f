@@ -318,7 +318,7 @@ C
                         !!roughness length averaging [m]
       REAL SNOLIM(ILG)  !<Limiting snow depth below which coverage is 
                         !!< 100% \f$[m] (z_{s,lim})\f$
-      REAL ZPLMG0(ILG)  !<Maximum water ponding depth for snow-free 
+      REAL ZPLMG0(ILG)  !<Maximum water ponding depth for snow-free
                         !!subareas (user-specified when running MESH code) [m]
       REAL ZPLMS0(ILG)  !<Maximum water ponding depth for snow-covered 
                         !!subareas (user-specified when running MESH code) [m]
@@ -440,8 +440,6 @@ C
 
 c     ---------------peatland variable --------------------------------\   
       integer  ipeatland(ilg)
-      real     zolnms,thpms,thrms,thmms,bms,psisms,grksms,hcpms,
-     1         sphms,rhoms,slams
 c     ------------------YW March 19, 2015 -----------------------------/   
 
       COMMON /CLASS1/ DELT,TFREZ                                               
@@ -454,9 +452,6 @@ c     ------------------YW March 19, 2015 -----------------------------/
       COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG                   
       COMMON /CLASS7/ CANEXT,XLEAF
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
-      common /peatland/ zolnms,thpms,thrms,thmms,bms,psisms,grksms,
-     1                   hcpms, sphms,rhoms,slams      !YW
-
                                                                                   
 C------------------------------------------------------------------
       !>

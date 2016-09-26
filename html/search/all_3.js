@@ -2,6 +2,7 @@ var searchData=
 [
   ['dayl',['dayl',['../structctem__statevars_1_1veg__rot.html#a3434670d21aed3727e556c080ec76975',1,'ctem_statevars::veg_rot::dayl()'],['../structctem__statevars_1_1veg__gat.html#aac072bc790b9559d215703f5163d0cd1',1,'ctem_statevars::veg_gat::dayl()']]],
   ['dayl_5fmax',['dayl_max',['../structctem__statevars_1_1veg__rot.html#a89bc7330bf3a31409f66d9fb8a1c74ea',1,'ctem_statevars::veg_rot::dayl_max()'],['../structctem__statevars_1_1veg__gat.html#ac47c7699d377f6d573c2a704fb13926d',1,'ctem_statevars::veg_gat::dayl_max()']]],
+  ['decp',['decp',['../group__peat__soil__het__resp.html#gaaae8be8aff383785b6668d179fe84d63',1,'peatlands_mod']]],
   ['defctcur',['defctcur',['../structctem__statevars_1_1veg__gat.html#ae3a96d00e3a3924a0ce827f515d0ab82',1,'ctem_statevars::veg_gat']]],
   ['defctmon',['defctmon',['../structctem__statevars_1_1veg__rot.html#ab9bc71b3863d6336736fd28e18caed2b',1,'ctem_statevars::veg_rot::defctmon()'],['../structctem__statevars_1_1veg__gat.html#a36f851ca400c9b78f44b675d732a8160',1,'ctem_statevars::veg_gat::defctmon()']]],
   ['defmncur',['defmncur',['../structctem__statevars_1_1veg__gat.html#a97909b6438f3810938c18331463e1ddc',1,'ctem_statevars::veg_gat']]],
