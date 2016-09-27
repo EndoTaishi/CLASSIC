@@ -1095,9 +1095,6 @@ c
       real, pointer, dimension(:,:) :: litrfallrow
       real, pointer, dimension(:,:) :: humiftrsrow
 
-      real, pointer, dimension(:,:) :: nppmosrow
-      real, pointer, dimension(:,:) :: armosrow
-
       real, pointer, dimension(:,:,:) :: gppvegrow
       real, pointer, dimension(:,:,:) :: nepvegrow
       real, pointer, dimension(:,:,:) :: nbpvegrow
@@ -1473,7 +1470,7 @@ c
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
 
-      !real, pointer, dimension(:) :: gppmosac_g
+      !real, pointer, dimension(:) :: gppmossac_g
 
     ! Model Switches (rarely changed ones only! The rest are in joboptions file):
 
@@ -1489,42 +1486,41 @@ C
 c=====peatland related parameter declaration March 18, 2015 YW=========\
 
       integer:: ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
-
 c   ----CLASS moss variables-------YW ----------------------------------
-      real  wiltsmrow(nlat,nmos,ignd),  wiltsmgat(ilg,ignd), !NONE USED!!
-     1      fieldsmrow(nlat,nmos,ignd), fieldsmgat(ilg,ignd), !NONE USED!!
-     2      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg), !NONE USED!!
-     3      thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd), ! FLAG meant to be _t?????
+      real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd), ! FLAG meant to be _t?????
      4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd), ! FLAG meant to be _t?????
-     5      hpdgat(ilg), !what is this?
-     6      HourAngle(ilg),   daylength(ilg), CosHourAngel  !REPLACE daylength with usual CTEM var ! other two not used.
-     7      ,pdd(ilg), cdd(ilg) ! Can I replace these with CTEM ones???
+     5      hpdgat(ilg),pdd(ilg), !FLAG PDD need to move this into appropriate place!
+     6      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg)
 c   ----CTEM moss variables--------------------------------------------
-      real  anmosrow(nlat,nmos)  ,      anmosgat(ilg),
-     1      rmlmosrow(nlat,nmos) ,      rmlmosgat(ilg),  
-     2      gppmosrow(nlat,nmos) ,      gppmosgat(ilg),
-     1      armosgat(ilg),  
-     2      nppmosgat(ilg),
-     3      litrmassmsrow(nlat,nmos),   litrmassmsgat(ilg),
-     4      Cmossmasrow(nlat,nmos),     Cmossmasgat(ilg),
-     5      dmossrow(nlat,nmos),        dmossgat(ilg),
-     6      ancsmosgat(ilg) ,           angsmosgat(ilg),
-     7      ancmosgat(ilg) ,            angmosgat(ilg),
-     8      rmlcsmosgat(ilg),           rmlgsmosgat(ilg),
-     9      rmlcmosgat(ilg),            rmlgmosgat(ilg),
-     1      anmosac_g(ilg), rmlmosac_g(ilg)
-c    1      anmosac_g(ilg), rmlmosac_g(ilg),
-     1       ,gppmosac_g(ilg)
-c    1      armosrow(nlat,nmos) ,       armosgat(ilg),  
-c    2      nppmosrow(nlat,nmos) ,      nppmosgat(ilg),
-c   ----common block parametes----------------------- -----------------
-      real  thpms,thrms,thmms,bms,psisms,grksms,hcpms,
-     1         sphms,rhoms,slams
+     1      ,anmossac_g(ilg), rmlmossac_g(ilg) ,gppmossac_g(ilg)
+
+      real, pointer, dimension(:,:) :: anmossrow
+      real, pointer, dimension(:) :: anmossgat
+      real, pointer, dimension(:,:) :: rmlmossrow
+      real, pointer, dimension(:) :: rmlmossgat
+      real, pointer, dimension(:,:) :: gppmossrow
+      real, pointer, dimension(:) :: gppmossgat
+      real, pointer, dimension(:,:) :: nppmossrow
+      real, pointer, dimension(:) :: nppmossgat
+      real, pointer, dimension(:,:) :: armossrow
+      real, pointer, dimension(:) :: armossgat
+      real, pointer, dimension(:,:) :: litrmassmsrow
+      real, pointer, dimension(:) :: litrmassmsgat
+      real, pointer, dimension(:,:) :: Cmossmasrow
+      real, pointer, dimension(:) :: Cmossmasgat
+      real, pointer, dimension(:,:) :: dmossrow
+      real, pointer, dimension(:) :: dmossgat
+
+      real, pointer, dimension(:) :: ancsmoss
+      real, pointer, dimension(:) :: angsmoss
+      real, pointer, dimension(:) :: ancmoss
+      real, pointer, dimension(:) :: angmoss
+      real, pointer, dimension(:) :: rmlcsmoss
+      real, pointer, dimension(:) :: rmlgsmoss
+      real, pointer, dimension(:) :: rmlcmoss
+      real, pointer, dimension(:) :: rmlgmoss
 
 c   definitions of new variables---------------------------------------
-c   -grd = grid average, -acc = daily avarage , 
-c   -gat = after gathering, - row = after scattering
-
 c   ipeatland - peatland flag 0 = no peatland, 1= bog, 2 = fen
 c   g12 - energy flux between soil layer 1 and 2 (W/m2)  
 c   g23 - energy flux between soil layer 2 and 3 (W/m2)  
@@ -1533,26 +1529,10 @@ c   fieldsm - field capacity for peat soil layers (m3/m3)
 C   thliqc - liquid water content of canopy+snow subarea (m3/m3)
 c   thliqg - liquid water content of snow ground subarea (m3/m3) 
 c   hpd - peat depth (m)
-c   litrmassms - C in moss ltter (kg m-2)
-c   Cmossmas -   C in moss biomass (kg m-2)
-c   dmoss -   depth of living moss (m) 
 c   ----------below are moss C fluxes in umol/m2/s----------------------
-c   anmos  -  net photosynthesis rate of moss
-c   rmlmos -  maintenance respiration rate of moss
-c   armos  -  autotrophic respiration of moss
-c   nppmos -  net primary production of moss
-c   gppmos -  gross primaray production of moss 
-c   ancsmos - moss net photosynthesis in canopy snow subarea 
-c   angsmos - moss net photosynthesis in snow ground subarea 
-c   ancmos  - moss net photosyntehsis in canopy ground subarea
-c   angmos  - moss net photosynthesis in bare ground subarea
-c   rmlcsmos- moss maintenance respiration in canopy snow subarea
-c   rmlgsmos- moss maintenance respiration in snow ground subarea
-c   rmlcmos - moss maintenance respiration in canopy ground subarea
-c   rmlgmos - moss maintenance respiration in bare ground subarea
-c   anmosac_g - daily averaged moss net photosynthesis accumulated  
-c   rmlmosac_g- daily averaged moss maintainence respiration 
-c   gppmosac_g- daily averaged gross primary production 
+c   anmossac_g - daily averaged moss net photosynthesis accumulated
+c   rmlmossac_g- daily averaged moss maintainence respiration
+c   gppmossac_g- daily averaged gross primary production
 c=====peatland parameter declaration done March 19, 2015 YW===========/
 
 C=======================================================================
@@ -1741,8 +1721,6 @@ C===================== CTEM ==============================================\
       litrfallrow       => vrot%litrfall
       humiftrsrow       => vrot%humiftrs
 
-      nppmosrow         => vrot%nppmos
-      armosrow          => vrot%armos
 
       gppvegrow         => vrot%gppveg
       nepvegrow         => vrot%nepveg
@@ -1789,6 +1767,15 @@ C===================== CTEM ==============================================\
       annsrplsrow          => vrot%annsrpls
       annpcprow            => vrot%annpcp
       dry_season_lengthrow => vrot%dry_season_length
+
+      anmossrow        => vrot%anmoss
+      rmlmossrow       => vrot%rmlmoss
+      gppmossrow       => vrot%gppmoss
+      nppmossrow       => vrot%nppmoss
+      armossrow        => vrot%armoss
+      litrmassmsrow    => vrot%litrmassms
+      Cmossmasrow      => vrot%Cmossmas
+      dmossrow         => vrot%dmoss
 
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>
       ! GAT:
@@ -1979,6 +1966,23 @@ C===================== CTEM ==============================================\
       pandaysgat        => vgat%pandays
       stdalngat         => vgat%stdaln
 
+      anmossgat        => vgat%anmoss
+      rmlmossgat       => vgat%rmlmoss
+      gppmossgat       => vgat%gppmoss
+      nppmossgat       => vgat%nppmoss
+      armossgat        => vgat%armoss
+      litrmassmsgat    => vgat%litrmassms
+      Cmossmasgat      => vgat%Cmossmas
+      dmossgat         => vgat%dmoss
+      ancsmoss         => vgat%ancsmoss
+      angsmoss         => vgat%angsmoss
+      ancmoss          => vgat%ancmoss
+      angmoss          => vgat%angmoss
+      rmlcsmoss        => vgat%rmlcsmoss
+      rmlgsmoss        => vgat%rmlgsmoss
+      rmlcmoss         => vgat%rmlcmoss
+      rmlgmoss         => vgat%rmlgmoss
+
       ! Mosaic-level (CLASS vars):
 
       PREACC_M          => vrot%PREACC_M
@@ -2115,7 +2119,7 @@ C===================== CTEM ==============================================\
       rmlcsvga_t        => ctem_tile%rmlcsvga_t
       rmlcgvga_t        => ctem_tile%rmlcgvga_t
 
-!      gppmosac_g        => ctem_tile%gppmosac_g
+!      gppmossac_g        => ctem_tile%gppmossac_g
 
 
 !    =================================================================================
@@ -3007,9 +3011,9 @@ c    elements were actually initialized since the loop is really for row
 c    variables. Initialization is now done on all elements, which shouldn't be
 c    a problem. EC - Feb 16, 2016.
 
-      anmosac_g  = 0.0
-      rmlmosac_g = 0.0
-      gppmosac_g = 0.0
+      anmossac_g  = 0.0
+      rmlmossac_g = 0.0
+      gppmossac_g = 0.0
 
       write(6,6990) 'hpdrow=', hpdrow 
       write(6,6990) 'gavgscms=', gavgscmsrow
@@ -3266,23 +3270,12 @@ C      hour=(real(ihour)+(real(imin)-real(ihour)*100)/60.)*pi/12.-pi
       DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
       HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
       COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
-! FLAG!!!!
+
+! FLAG!!!! move to elsewhere?
       do i = 1, nltest
-!          CosHourAngel=(sin(-0.83*pi/180)-sin(decl)*sin(radjgrd(1))) /
-!     1                        cos(decl)/cos(radjgrd(1))
-!          if (CosHourAngel > 1.)        then
-!               daylength(i) = 0.
-!          elseif  (CosHourAngel < -1.)        then
-!               daylength(i) = 24.
-!          else 
-!               HourAngle(i)=acos(CosHourAngel)
-!               daylength(i)=24.0*HourAngle(i)/pi          
-!          endif!
-!
-c     -------initiallize pdd and cdd at the beginning of the year---
+c     -------initiallize pdd at the beginning of the year---
           if (iday ==1)     then 
            pdd(i) = 0.
-           cdd(i) = 0.
           endif
       enddo
 
@@ -3688,8 +3681,8 @@ c
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow
 c    ----gathering of peatland variables YW March 19, 2015 ------------\
-     1    ,anmosrow,rmlmosrow,gppmosrow,armosrow,nppmosrow
-     2    ,anmosgat,rmlmosgat,gppmosgat,armosgat,nppmosgat
+     1    ,anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow
+     2    ,anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat
      3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
      4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
      5    ,thlqaccrow_m, thlqaccgat_m,thicaccrow_m, thicaccgat_m
@@ -3786,10 +3779,10 @@ C
      U  NBS,    ISNOALB,lfstatusgat,daylgat, dayl_maxgat
 c    ---peatland variabels in mosspht.f called in TSOLVC, TSOLVE----- -\  
      1  ,ipeatlandgat, bigat,
-     2  ancsmosgat, angsmosgat, ancmosgat, angmosgat,
-     3  rmlcsmosgat,rmlgsmosgat,rmlcmosgat,rmlgmosgat,
+     2  ancsmoss, angsmoss, ancmoss, angmoss,
+     3  rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,
      4  Cmossmasgat,   dmossgat,  iyear, iday, ihour, imin,
-     5  daylength, pdd, cdd)
+     5  pdd)
 c    --------------------YW March 19, 2015 ----------------------------/
 C
 C-----------------------------------------------------------------------
@@ -3845,11 +3838,11 @@ C
 c    --aggregate moss C fluxes of subareas to grid for ctem.f------------\ 
       do 620 i = 1, nml
          if (ipeatlandgat(i) > 0)                    then
-              anmosgat(i) = fcs(i)*ancsmosgat(i)+fgs(i)*angsmosgat(i)
-     1                       +fc(i)*ancmosgat(i)+fg(i)*angmosgat(i)
-              rmlmosgat(i)= fcs(i)*rmlcsmosgat(i)+fgs(i)*rmlgsmosgat(i)
-     1                      +fc(i)*rmlcmosgat(i)+fg(i)*rmlgmosgat(i)
-              gppmosgat(i) = anmosgat(i) +rmlmosgat(i)
+              anmossgat(i) = fcs(i)*ancsmoss(i)+fgs(i)*angsmoss(i)
+     1                       +fc(i)*ancmoss(i)+fg(i)*angmoss(i)
+              rmlmossgat(i)= fcs(i)*rmlcsmoss(i)+fgs(i)*rmlgsmoss(i)
+     1                      +fc(i)*rmlcmoss(i)+fg(i)*rmlgmoss(i)
+              gppmossgat(i) = anmossgat(i) +rmlmossgat(i)
          endif
 620   continue
 
@@ -3910,9 +3903,9 @@ c
 c    ------------accumulate moss C fluxes to daily---------------------\
 c
           if (ipeatlandgat(i) > 0) then
-            anmosac_g(i) = anmosac_g(i)   + anmosgat(i)
-            rmlmosac_g(i)= rmlmosac_g(i)  + rmlmosgat(i)
-            gppmosac_g(i)= gppmosac_g(i)  + gppmosgat(i)
+            anmossac_g(i) = anmossac_g(i)   + anmossgat(i)
+            rmlmossac_g(i)= rmlmossac_g(i)  + rmlmossgat(i)
+            gppmossac_g(i)= gppmossac_g(i)  + gppmossgat(i)
           endif
 c    -------------------YW March 20, 2015 -----------------------------/
 c
@@ -4051,9 +4044,9 @@ c     stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.
 c     the ratio between stem and capitulum = 7.5 and 7.7 
       do 833 i = 1, nml
         if (ipeatlandgat(i) > 0) then
-          anmosac_g(i) = anmosac_g(i)/real(nday)
-          rmlmosac_g(i)= rmlmosac_g(i)/real(nday)
-          gppmosac_g(i) = gppmosac_g(i)/real(nday)
+          anmossac_g(i) = anmossac_g(i)/real(nday)
+          rmlmossac_g(i)= rmlmossac_g(i)/real(nday)
+          gppmossac_g(i) = gppmossac_g(i)/real(nday)
         endif
 833   continue
 c    ----------------YW March 26, 2015 ---------------------------------/
@@ -4123,31 +4116,21 @@ c    ---------------- outputs are listed above this line ------------
 c    -------------- moss C in peatlands -------------------------------\
 c
      1    ipeatlandgat,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd,
-     2    anmosac_g,rmlmosac_g,gppmosac_g,Cmossmasgat,litrmassmsgat,
+     2    anmossac_g,rmlmossac_g,gppmossac_g,Cmossmasgat,litrmassmsgat,
      3    wtabgat, grksgat,
      4    thfcgat, thlwgat, thlqaccgat_m, thicaccgat_m,tfrez,
-     5    nppmosgat, armosgat,hpdgat)
+     5    nppmossgat, armossgat,hpdgat)
 c
 c    ---------------- YW March 26, 2015  -------------------------------/          
-c    ----------calculate degree days for mosspht Vmax seasonality------
-       do   i = 1, nml
-          if (iday == 2)    then
-               pdd(i) = 0.               
-          elseif (taaccgat_t(i)>tfrez)           then
-               pdd(i)=pdd(i)+taaccgat_t(i)-tfrez
-          endif
-          if (iday ==180)     then 
-               cdd(i) = 0.
-          elseif (taaccgat_t(i)<tfrez)            then
-               cdd(i)=cdd(i)+taaccgat_t(i)-tfrez
-          endif
+
 c----------------update peatland bottom layer depth--------------------       
+         do   i = 1, nml
           if (ipeatlandgat(i) > 0)         then
               dlzwgat(i,ignd)= hpdgat(i)-0.90
               sdepgat(i) = hpdgat(i)
           endif
+         end do
 c================YW August 26, 2015 =======================/ 
-      enddo 
 c
 
 !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
@@ -4354,8 +4337,8 @@ c    ----
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
 C    --------------------scatter peatland variables-------------------\
 c
-     1      anmosrow, rmlmosrow, gppmosrow, armosrow, nppmosrow, 
-     2      anmosgat, rmlmosgat, gppmosgat, armosgat, nppmosgat,
+     1      anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow,
+     2      anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat,
      3      hpdrow,   hpdgat,    litrmassmsrow,   litrmassmsgat,
      4      Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat,
      5      thlqaccrow_m, thlqaccgat_m, thicaccrow_m, thicaccgat_m,    
@@ -5375,9 +5358,9 @@ c     calculate daily outputs from ctem
 c            --------reset peatland accumulators-------------------------------
 c            Originally done only for peatland points, but simpler to just 
 c            reset the entire arrays. EC - Feb 16 2016.
-             anmosac_g  = 0.0
-             rmlmosac_g = 0.0
-             gppmosac_g = 0.0
+             anmossac_g  = 0.0
+             rmlmossac_g = 0.0
+             gppmossac_g = 0.0
              G12ACC     = 0.
              G23ACC     = 0.
 c            ----------------YW March 27, 2015 -------------------------------/

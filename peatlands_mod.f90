@@ -34,7 +34,7 @@ subroutine mosspht(ilg,ignd,isand,iday,qswnv,thliq,tbar,thpor, &
 !         output below
             &    anmoss,rmlmoss,cevapms,ievapms,ipeatland &
 !    testing
-            &    ,iyear, ihour,imin,daylength,pdd,cdd)
+            &    ,iyear, ihour,imin,daylength,pdd)
 
 
 ! History
@@ -99,7 +99,7 @@ integer:: pheno(ilg)    !<phenology flag of mosses, 1 = photosynthesis,
                         !!0 = does not photosynthesis
 real:: parm(ilg)        !<par at the ground (moss layer) surface umol/m2/s
 real:: tsurf(ilg)       !<grid average ground surface temperature in C
-real:: tsurfk(Ilg)      !<grid average ground surface temprature in K
+real:: tsurfk(ilg)      !<grid average ground surface temprature in K
 real:: wmoss(ilg)       !<water content extraporated from the surface
                         !!humidity qg and thliq of the first soil layer
                         !!unit kg water/ kg dw
@@ -147,7 +147,7 @@ real:: mI(ilg), mII(ilg)!coefficients of the solutions for net psn
 real:: temp_b, temp_c, temp_r, temp_q1, temp_q2, temp_jp
 
 !    -----------testing------------YW May 06, 2015 --------------------
-real::  dr2, SWin_ex, pdd(ilg), cdd(ilg), ta(ilg),daylength(ilg)
+real::  dr2, SWin_ex, pdd(ilg), ta(ilg),daylength(ilg)
 !     -----------temporal terms above this line------------------------
 
 real     DELT,TFREZ, HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,&
@@ -159,6 +159,16 @@ COMMON /CLASS1/ DELT,TFREZ
 COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY, &
                 SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE, &
                 TCGLAC,CLHMLT,CLHVAP
+
+
+! Do the
+do   i = 1, ilg
+    if (iday == 2)    then
+        pdd(i) = 0.
+    elseif (tsurfk(i)>tfrez)           then
+        pdd(i)=pdd(i)+(tsurfk(i)-tfrez)*DELT/86400.
+    endif
+end do
 
 !     PHOTOSYNTHESIS COUPLING OR CURVATURE COEFFICIENTS
 !real, parameter :: BETA1 = 0.950
@@ -292,7 +302,7 @@ do 350 i = 1, ilg
     endif
 !
 !      IF (IYEAR ==2008)          THEN
-!      write(90,6991) iday,imin,ihour,pdd,cdd,daylength,vcmax25,tmoss
+!      write(90,6991) iday,imin,ihour,pdd,daylength,vcmax25,tmoss
 !6991  format(3I5,5f9.3)
 !      ENDIF
 

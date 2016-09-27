@@ -1652,9 +1652,9 @@ real, pointer, dimension(:,:) :: soilcresprow
 real, pointer, dimension(:,:) :: rgrow
 real, pointer, dimension(:,:) :: litresrow
 real, pointer, dimension(:,:) :: socresrow
-! Peatland vars: JM FLAG
-real, pointer, dimension(:,:) :: nppmosrow
-real, pointer, dimension(:,:) :: armosrow
+
+real, pointer, dimension(:,:) :: nppmossrow
+real, pointer, dimension(:,:) :: armossrow
 
 real, pointer, dimension(:) :: gpp_g
 real, pointer, dimension(:) :: npp_g
@@ -1833,8 +1833,8 @@ vgbiomasrow       => vrot%vgbiomas
 gavgltmsrow       => vrot%gavgltms
 gavgscmsrow       => vrot%gavgscms
 
-nppmosrow         => vrot%nppmos
-armosrow          => vrot%armos
+nppmossrow         => vrot%nppmoss
+armossrow          => vrot%armoss
       
 bmasvegrow        => vrot%bmasveg
 cmasvegcrow       => vrot%cmasvegc
@@ -2150,8 +2150,8 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
 
 !   ------convert peatland C fluxes to gC/m2/day for output-----------\
     if (ipeatlandrow(i,m) > 0) then
-      nppmosrow(i,m)=nppmosrow(i,m)*1.0377 ! convert to gc/m2.day
-      armosrow(i,m)=armosrow(i,m)*1.0377 ! convert to gc/m2.day
+      nppmossrow(i,m)=nppmossrow(i,m)*1.0377 ! convert to gc/m2.day
+      armossrow(i,m)=armossrow(i,m)*1.0377 ! convert to gc/m2.day
     endif
 !   ------------YW March 27, 2015 FLAG -------------------------------------/
 
@@ -2374,7 +2374,7 @@ do 80 i=1,nltest
 
 !   CT11D_G   convert moss gpp from umol/m2/s to g/m2/day  
     write (93,6993) iday,iyear, &
-          nppmosrow(i,m),armosrow(i,m), &!,gppmosac_g(1)*1.0377, &
+          nppmossrow(i,m),armossrow(i,m), &!,gppmosac_g(1)*1.0377, &
           (fcancmxrow(i,m,j)*gppvegrow(i,m,j),j=1,icc),      &
           (fcancmxrow(i,m,j)*nppvegrow(i,m,j),j=1,icc),      &
           (fcancmxrow(i,m,j)*autoresvegrow(i,m,j),j=1,icc),  &

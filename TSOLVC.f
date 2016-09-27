@@ -30,7 +30,7 @@
 c    pass  variables to the moss subroutines YW March 19, 2015------------\   
      1         ,ipeatland, tbar, thpor, Cmossmas,dmoss
 c    ------input above, output below-----------------------------------    
-     2    ,anmoss,rmlmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+     2    ,anmoss,rmlmoss,iyear, iday, ihour,imin,pdd)
 c    Y.Wu ------------------------------------------------------------/
 
 C
@@ -344,8 +344,7 @@ C
 C     --------define peatland variables--------------------------------\ 
       integer  ipeatland(ilg),ievapms(ilg),iday,ihour,iyear,imin
       real     tbar(ilg,ig),  thmin(ilg,ig), thpor(ilg,ig), 
-     1         bi(ig),   Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
-     3         pdd(ilg),      cdd(ilg)
+     1         bi(ig),   Cmossmas(ilg), dmoss(ilg),pdd(ilg)
 c    ------input above output below------------------------------------
       real     anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
 C    ---------YW March 26, 2015 ---------------------------------------/
@@ -577,7 +576,7 @@ c    -------moss photosynthesis----------------------------------------
 c    ---------------input above output below-------------------
      2         anmoss,rmlmoss,cevapms,ievapms,ipeatland
 c    -----------for testing------------------------------------
-     3         ,iyear, ihour,imin,daylength,pdd,cdd) 
+     3         ,iyear, ihour,imin,DAYL,pdd)
 c    -------YW March 20, 2015 -----------------------------------------
 
       ENDIF

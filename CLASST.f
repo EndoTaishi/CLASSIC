@@ -44,7 +44,7 @@
 c    peatland variabels in mosspht subroutine called in TSOLVC and TSOLVE------
      1   ipeatland, bi, ancsmoss,angsmoss, ancmoss, angmoss,
      2   rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,Cmossmas, dmoss,
-     3   iyear, iday, ihour,imin,daylength,pdd,cdd)
+     3   iyear, iday, ihour,imin,pdd)
 
 C
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
@@ -516,8 +516,7 @@ C
 c    ------------------peatland variables -----------------------------\
 
       integer      ipeatland(ilg),iyear, iday, imin, ihour
-      real     bi(ig), Cmossmas(ilg), dmoss(ilg),daylength(ilg),
-     1         pdd(ilg), cdd(ilg)
+      real     bi(ig), Cmossmas(ilg), dmoss(ilg),pdd(ilg)
 c     ------input above output below this line---------------------------
       real     ancsmoss(ilg),          angsmoss(ilg), 
      1          ancmoss(ilg),           angmoss(ilg),
@@ -908,7 +907,7 @@ c    pass  variables to moss subroutines YW March 19, 2015------------\
      1                ipeatland, tbar, thpor, Cmossmas,dmoss,
 c------input above, output below-----------------------------------
      2                 ancsmoss,rmlcsmoss,iyear,iday,ihour,imin,
-     3                 daylength,pdd,cdd)
+     3                 pdd)
 c    Y.Wu ------------------------------------------------------------/
 
 
@@ -1094,7 +1093,7 @@ C
 c    ----------pass variables in mosspht subroutine-----------------------------\
      1     ,ipeatland, tbar,thpor,co2conc,pressg, coszs, Cmossmas,dmoss
 c     ------input above, output below-----------------------------------     
-     2   ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+     2   ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin,DAYL,pdd)
 C    ---------------YW March 26, 2015 ---------------------------------/      
 c     
           CALL TSPOST(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG,
@@ -1273,8 +1272,7 @@ C
 c    pass  variables to moss subroutines YW March 19, 2015------------\   
      1             ,ipeatland, tbar, thpor, Cmossmas,dmoss,
 c     ------input above, output below-----------------------------------     
-     2               ancmoss,rmlcmoss,iyear, iday, ihour,imin,daylength
-     3              ,pdd,cdd)
+     2               ancmoss,rmlcmoss,iyear, iday, ihour,imin,pdd)
 c    Y.Wu ------------------------------------------------------------/
 
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
@@ -1446,7 +1444,7 @@ c    ----------pass variables in mosspht subroutine-----------------------------
      1     ,ipeatland, tbar, thpor, co2conc,
      2      pressg, coszs, Cmossmas,dmoss
 c     ------input above, output below-----------------------------------     
-     3      ,angmoss,rmlgmoss,iyear, iday, ihour,imin,daylength,pdd,cdd)
+     3      ,angmoss,rmlgmoss,iyear, iday, ihour,imin,DAYL,pdd)
 C    ---------------YW March 26, 2015 ---------------------------------/ 
 C
           CALL TNPOST(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST,

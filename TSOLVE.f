@@ -19,7 +19,7 @@ C!
 !    ------------pass variables in moss subroutine---------------------\  
      5    ,ipeatland,tbar,thpor,co2conc,pressg,coszs,Cmossmas,dmoss,
 !    -----input above, output below-----------------------------------     
-     7       anmoss,rmlmoss,iyear,iday,ihour,imin,daylength,pdd,cdd )
+     7       anmoss,rmlmoss,iyear,iday,ihour,imin,daylength,pdd )
 C    ------------------YW March 26, 2015 ------------------------------/ 
 C
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATE
@@ -224,7 +224,7 @@ c    ---------------Peatland variables YW March 19, 2015 --------------\
       real     tbar(ilg,ig),  thpor(ilg,ig),  bi(ig),  
      2         co2conc(ilg),  pressg(ilg) ,  coszs(ilg),
      3         Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
-     4         pdd(ilg),      cdd(ilg)
+     4         pdd(ilg)
 c    ------input above output below-----------------------------
       real     anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
 c    -------------------YW March 26, 2015 -----------------------------/
@@ -413,7 +413,7 @@ C
 c    --------------input above output below-------------------
      2         anmoss,rmlmoss,cevapms,ievapms, ipeatland
 c    --------------for testing--------------------------------
-     3         ,iyear, ihour,imin,daylength,pdd,cdd) 
+     3         ,iyear, ihour,imin,daylength,pdd)
 c    ------------------YW March 19, 2015 ------------------------------/         
 
       !>

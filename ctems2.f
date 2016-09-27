@@ -90,8 +90,8 @@ c --
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat
 C    --------------------scatter peatland variables-------------------\
 c
-     1    ,anmosrow, rmlmosrow, gppmosrow,armosrow,nppmosrow
-     2    ,anmosgat, rmlmosgat, gppmosgat,armosgat,nppmosgat
+     1    ,anmossrow, rmlmossrow, gppmossrow,armossrow,nppmossrow
+     2    ,anmossgat, rmlmossgat, gppmossgat,armossgat,nppmossgat
      3    ,hpdrow,  hpdgat,   litrmassmsrow, litrmassmsgat
      4    ,Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat
      5    ,thlqaccrow_m , thlqaccgat_m ,thicaccrow_m,thicaccgat_m 
@@ -325,11 +325,11 @@ c   Methane related variables
 
 
 c   Peatland variables   YW March 27, 2015 
-       real    anmosrow(nlat,nmos),     anmosgat(ilg),
-     3         rmlmosrow(nlat,nmos),    rmlmosgat(ilg),
-     4         gppmosrow(nlat,nmos),    gppmosgat(ilg),
-     3         armosrow(nlat,nmos),     armosgat(ilg),
-     4         nppmosrow(nlat,nmos),    nppmosgat(ilg),
+       real    anmossrow(nlat,nmos),     anmossgat(ilg),
+     3         rmlmossrow(nlat,nmos),    rmlmossgat(ilg),
+     4         gppmossrow(nlat,nmos),    gppmossgat(ilg),
+     3         armossrow(nlat,nmos),     armossgat(ilg),
+     4         nppmossrow(nlat,nmos),    nppmossgat(ilg),
      5         hpdrow(nlat,nmos),       hpdgat(ilg),
      6         litrmassmsrow(nlat,nmos),litrmassmsgat(ilg),
      7         Cmossmasrow(nlat,nmos),  Cmossmasgat(ilg),
@@ -550,11 +550,11 @@ c     not in ctemg2. jm jan 8 2013.
 c    scatter peatland variables----------------------------------------\
 !               FLAG JM check on this.
       do 400 k=1,nml 
-          anmosrow(ilmos(k),jlmos(k)) = anmosgat(k)
-          rmlmosrow(ilmos(k),jlmos(k))= rmlmosgat(k)   
-          gppmosrow(ilmos(k),jlmos(k))= gppmosgat(k)   
-          armosrow(ilmos(k),jlmos(k))= armosgat(k)     
-          nppmosrow(ilmos(k),jlmos(k))= nppmosgat(k)   
+          anmossrow(ilmos(k),jlmos(k)) = anmossgat(k)
+          rmlmossrow(ilmos(k),jlmos(k))= rmlmossgat(k)
+          gppmossrow(ilmos(k),jlmos(k))= gppmossgat(k)
+          armossrow(ilmos(k),jlmos(k))= armossgat(k)
+          nppmossrow(ilmos(k),jlmos(k))= nppmossgat(k)
           hpdrow (ilmos(k),jlmos(k))  = hpdgat(k)
           litrmassmsrow(ilmos(k),jlmos(k)) = litrmassmsgat(k) 
           Cmossmasrow(ilmos(k),jlmos(k)) = Cmossmasgat(k)

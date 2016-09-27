@@ -246,8 +246,15 @@ type veg_rot
     real, dimension(nlat,nmos,icc)   :: litrfallveg !<litter fall in \f$kg c/m^2\f$ for each pft
     real, dimension(nlat,nmos,iccp1) :: humiftrsveg !<
 
-    real, dimension(nlat,nmos) :: nppmos !FLAG JM
-    real, dimension(nlat,nmos) :: armos !FLAG JM
+!FLAG need to do resets and initializations for all of these!
+    real, dimension(nlat,nmos) :: anmoss            !<net photosynthetic rate of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(nlat,nmos) :: rmlmoss           !<maintenance respiration rate of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(nlat,nmos) :: gppmoss           !<gross primaray production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(nlat,nmos) :: nppmoss           !<net primary production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(nlat,nmos) :: armoss            !<autotrophic respiration of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(nlat,nmos) :: litrmassms        !<moss litter mass, \f$kg C/m^2\f$
+    real, dimension(nlat,nmos) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
+    real, dimension(nlat,nmos) :: dmoss             !<depth of living moss (m)
 
 
     real, dimension(nlat,nmos,icc)  :: rothrlos !<root death as crops are harvested, \f$kg c/m^2\f$
@@ -479,6 +486,23 @@ type veg_gat
                                        !<all causes (mortality, turnover, and disturbance)
     real, dimension(ilg) :: humiftrs   !<transfer of humidified litter from litter to soil c pool
 
+    real, dimension(ilg) :: anmoss     !<net photosynthetic rate of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: rmlmoss    !<maintenance respiration rate of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: gppmoss    !<gross primaray production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: nppmoss    !<net primary production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: armoss     !<autotrophic respiration of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: litrmassms !<moss litter mass, \f$kg C/m^2\f$
+    real, dimension(ilg) :: Cmossmas   !<C in moss biomass, \f$kg C/m^2\f$
+    real, dimension(ilg) :: dmoss      !<depth of living moss (m)
+    real, dimension(ilg) :: ancsmoss   !<moss net photosynthesis in canopy snow subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: angsmoss   !<moss net photosynthesis in snow ground subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: ancmoss    !<moss net photosynthesis in canopy ground subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: angmoss    !<moss net photosynthesis in bare ground subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: rmlcsmoss  !<moss maintenance respiration in canopy snow subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: rmlgsmoss  !<moss maintenance respiration in ground snow subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: rmlcmoss   !<moss maintenance respiration in canopy ground subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+    real, dimension(ilg) :: rmlgmoss   !<moss maintenance respiration in bare ground subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+
     real, dimension(ilg,icc)   :: gppveg     !<gross primary productity for each pft
     real, dimension(ilg,iccp1) :: nepveg     !<net ecosystem productity for bare fraction expnbaln(i)=0.0 amount
                                              !<of c related to spatial expansion Not used JM Jun 2014 
@@ -551,7 +575,6 @@ type veg_gat
     integer, dimension(ilg)     :: stdaln   !<an integer telling if ctem is operated within gcm (=0) or in stand
                                             !<alone mode (=1). this is used for fire purposes. see comments just
                                             !<above where disturb subroutine is called.
-
 end type veg_gat
 
 type (veg_gat), save, target :: vgat
@@ -1244,9 +1267,12 @@ integer :: j,k,l,m
         vrot%ch4dyn2(j,k)          = 0.0
         vrot%ch4_soills(j,k)       = 0.0
 
-        vrot%nppmos(j,k)           = 0.0
-        vrot%armos(j,k)            = 0.0
-        vrot%hpd(j,k)              = 0.0
+        vrot%nppmoss(j,k)           = 0.0
+        vrot%rmlmoss(j,k)           = 0.0
+        vrot%gppmoss(j,k)           = 0.0
+        vrot%anmoss(j,k)            = 0.0
+        vrot%armoss(j,k)            = 0.0
+        vrot%hpd(j,k)               = 0.0
 
         do l=1,ignd
             vrot%tbaraccrow_m(j,k,l)  = 0.0
