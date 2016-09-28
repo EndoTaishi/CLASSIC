@@ -94,6 +94,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li class="level1"><a href="#runStandAloneMode">Running CLASS-CTEM</a><ul><li class="level2"><a href="#compvsmosaic">One thing to note about composite versus mosaic running of the model</a></li>
 <li class="level2"><a href="#inputs">The Input Files</a><ul><li class="level3"><a href="#MET">The MET file (Meteorological forcings)</a></li>
 <li class="level3"><a href="#INI">The INI file (CLASS's initialization file)</a></li>
+<li class="level3"><a href="#classvals">Typical values of vegetation-related fields for CLASS-only simulations</a></li>
+<li class="level3"><a href="#classtoctem">CLASS and CTEM PFTs</a></li>
 </ul>
 </li>
 </ul>
@@ -177,7 +179,7 @@ Vegetation Data</h2>
 <p>CLASS models the physiological characteristics of trees as remaining constant throughout the year except for the leaf area index and plant area index, which vary seasonally between the limits defined by PAMXROT and PAMNROT. The areal coverage of crops varies from zero in the winter to FCANROT at the height of the growing season, and their physiological characteristics undergo a corresponding cycle. Grasses remain constant year-round. (For full details of these calculations, see the documentation for subroutine APREP). Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for FCANROT, ALVCROT, ALICROT and LNZ0ROT. Thus these arrays have a third dimension of 5 rather than 4.</p>
 <p>Ideally the above vegetation parameters should be measured at the modelled location. Of course this is not always possible, especially when running over a large modelling domain. As a guide, the table in Appendix A provides representative values for the 20 vegetation types recognized by the Canadian GCM. If more than one type of vegetation in a given category is present on the modelled area, the parameters for the category should be areally averaged over the vegetation types present. For the stomatal resistance parameters, typical values of these for the four principal vegetation types are given below:</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \begin{tabular}{ | l | l | l | l | l | l | l | } &amp; RSMN &amp; QA50 &amp; VPDA &amp; VPDB &amp; PSGA &amp; PSGB \\ Needleleaf trees &amp; 200.0 &amp; 30.0 &amp; 0.65 &amp; 1.05 &amp; 100.0 &amp; 5.0 \\ Broadleaf trees &amp; 125.0 &amp; 40.0 &amp; 0.50 &amp; 0.60 &amp; 100.0 &amp; 5.0 \\ Crops &amp; 85.0 &amp; 30.0 &amp; 0.50 &amp; 1.00 &amp; 100.0 &amp; 5.0 \\ Grass &amp; 100.0 &amp; 30.0 &amp; 0.50 &amp; 1.00 &amp; 100.0 &amp; 5.0 \\ \end{tabular} \]" src="form_639.png"/>
+<img class="formulaDsp" alt="\[ \begin{tabular}{ | l | c | c | c | c | c | c | } &amp; RSMN &amp; QA50 &amp; VPDA &amp; VPDB &amp; PSGA &amp; PSGB \\ Needleleaf trees &amp; 200.0 &amp; 30.0 &amp; 0.65 &amp; 1.05 &amp; 100.0 &amp; 5.0 \\ Broadleaf trees &amp; 125.0 &amp; 40.0 &amp; 0.50 &amp; 0.60 &amp; 100.0 &amp; 5.0 \\ Crops &amp; 85.0 &amp; 30.0 &amp; 0.50 &amp; 1.00 &amp; 100.0 &amp; 5.0 \\ Grass &amp; 100.0 &amp; 30.0 &amp; 0.50 &amp; 1.00 &amp; 100.0 &amp; 5.0 \\ \end{tabular} \]" src="form_1882.png"/>
 </p>
 <h2><a class="anchor" id="soilData"></a>
 Soil Data</h2>
@@ -249,8 +251,7 @@ Initialization of Prognostic Variables</h2>
 <p>5) Surface ponded water is a small term and is ephemeral in nature, so ZPNDROT and TPNDROT can both be initialized to zero. TSFSROT is included simply to provide a first guess for the surface temperature iteration in the next time step, so it can be initialized to an arbitrary value. For the snow-covered subareas of the surface it can be set to the freezing point of water; for the snow-free subareas it can be set to the temperature of the first soil layer.</p>
 <h1><a class="anchor" id="runStandAloneMode"></a>
 Running CLASS-CTEM</h1>
-<p>This guide will eventually be housed here, but until then you can also look at this: <a href="https://docs.google.com/document/d/1pzp7UfNe6aVFXe9LI9XMiGUX2pCALk4tU8MqF_UpQLg/edit?usp=sharing">Guide to running CLASS-CTEM in a stand-alone mode</a></p>
-<p>The model code is provided in this git repository. Some points:</p><ol type="1">
+<p>Some points:</p><ol type="1">
 <li><a class="el" href="runclass36ctem_8f.html" title="Principle driver program to run CLASS in stand-alone mode using specified boundary conditions and atm...">runclass36ctem.f</a> is the primary driver via which most input data is read (CTEM's initialization files are read in <a class="el" href="io__driver_8f90.html" title="Central module that handles all CTEM reading and writing of external files. ">io_driver.f90</a>) and subroutines are called.</li>
 <li>The model initialization files include one for CLASS (SITENAME.INI) and one for CTEM (SITENAME.CTM). Examples provided in the Benchmarks folder.</li>
 <li>The file containing meteorological data (SITENAME.MET). Also provided in the Benchmarks folder.</li>
@@ -280,11 +281,46 @@ The INI file (CLASS's initialization file)</h3>
 <p>In addition, CTEM calculates stomatal resistance values so parameters related to CLASS’ stomatal resistance formulation and the associated parameters in the .INI file (RSMN, QA50, VPDA, VPDB, PSGA and PSGB) do not matter.</p>
 <p>If CLASS is being run on its own, without CTEM, proper specification of vegetation related attributes and parameters is crucial.</p>
 <p>Version 2.0 of CTEM adds the capability to divide each cell into several mosaics or ‘tiles’ as mentioned above. When running for multiple tiles, Both the CLASS and CTEM calculations are performed over each tile. The prognostic variables are saved for each tile in addition to grid averaged values.</p>
-<p>A sample .INI file is found in the Benchmarks folder. Below is another example The bold text does not appear in the actual .INI file but is included here to explain the various fields. </p>
-</div></div><!-- contents -->
+<p>A sample .INI file is found in the Benchmarks folder. The INI file has very speficic formatting. You can see it in <a class="el" href="runclass36ctem_8f.html" title="Principle driver program to run CLASS in stand-alone mode using specified boundary conditions and atm...">runclass36ctem.f</a> where the INI file is read and written (search for file units 10 and 100, respectively). Below is an explanation of the variables found in the INI file:</p>
+<ul>
+<li>ZRFM and ZRFH (m): The reference height at which the climate variables (wind speed, temperature and specific humidity) are provided. If the model is driven by the atmospheric model forcing data, these heights would vary by time step. If the model is driven by field data (such as the sample file here), these heights refer to the measurement height of these variables.</li>
+<li>ZBLD (m): Atmospheric blending height. Here it is assigned a value of 50 m.</li>
+<li>GC: GCM surface description variable. For land surface (including inland water) it has a value of -1.</li>
+<li>Plant growth index: CLASS uses specified maximum and minimum leaf area indices (LAIs) for each of its four plant functional types (PFTs). The LAI goes from this minimum to the maximum specified LAI at a specified rate and dependent on the soil temperature. Plant growth index determines what the LAI would be at initialization. This is little tricky if you aren’t familiar with CLASS, so it’s best left at zero. In addition, when coupled to CTEM this doesn’t matter because then CLASS uses LAI simulated by CTEM. When CTEM is switched on then all vegetation-related fields are estimated by CTEM. Competition between PFTs is now simulated and so if a user switches on this option then the fractional coverage of PFTs that grow in a grid cell is also simulated dynamically by CTEM. However, please read the discussion related to each of CTEM’s capabilities associated with each switch further down this user guide.</li>
+<li>NLTEST and NMTEST: Number of grid cells and the number of mosaic tiles. NLTEST can not be greater than NLAT. Also, NMTEST must not be greater than NMOS. Typically this standalone code is run for 1 grid cell (NLTEST=1) with 1 or more mosaic tiles (NMTEST=1 or more).</li>
+<li>RSMN (s m-1), QA50 (W/m2), VPDA, VPDB, PSGA and PSGB: Used in stomatal resistance calculation in CLASS subroutine CANALB. Note that these values do not matter when CTEM is switched on. Typical values for the four CLASS vegetation categories are listed above in section <b>Vegetation Data</b>.</li>
+<li>DRN: Set it to 1 to allow drainage. Set it to 0 if drainage is suppressed at the bottom of the soil layer. Coupling of CLASS 3.6 to CTEM required a lot of tuning because it seems CLASS 3.6 is drier than CLASS 2.7. As a result a value of 0.1 has been lately used the CCCma Earth system model.</li>
+<li>SDEP (m): Depth to bedrock in the soil profile</li>
+<li>XSLP, GRKF, WFSF, WFCI: Parameters used when running MESH code, not used in Version 3.6 of CLASS.</li>
+<li>TBAR, THLQ and THIC: Thin soil layers near the surface equilibrate quickly, but thicker, deeper layers respond more slowly. Long-term biases can be introduced into the simulation if the soil layers temperatures and moisture contents are not initialized accurately. For the moisture contents, it is better to err on the low side, since soil moisture recharge typically takes place on shorter scales than soil moisture loss. Very deep soil temperatures do not have a large effect on surface fluxes, but errors in their initial values can affect hydrological simulations. For rock or ice layers, THLQ and THIC should both be set to zero.</li>
+<li>RCAN (kg/m2): Intercepted liquid water stored on canopy. RCAN can be initialized to zero.</li>
+<li>SCAN (kg/m2): Intercepted frozen water stored on canopy The vegetation canopy has a relatively small heat capacity and water storage capacity relative to the soil, so its temperature and intercepted water stores equilibrate quickly. TCAN can be initialized to the air temperature. SCAN can be initialized to zero.</li>
+<li>SNO (kg/m2): Mass of snow pack.</li>
+<li>ALBS: Snow albedo.</li>
+<li>RHOS (kg/m3): Snow density</li>
+</ul>
+<p>The above three variables and TSNO can be all initialized to 0 in snow-free conditions.</p>
+<ul>
+<li>TPND and ZPND: Surface ponded water is a small term and is ephemeral in nature, so ZPNDROW and TPNDROW can both be initialized to zero.</li>
+<li>GRO: Vegetation growth index, should be initialized to 1 during the growing season and to 0 otherwise. If CTEM is switched on, these values do not matter.</li>
+<li>DELZ and ZBOT: The standard operational configuration for CLASS consists of three soil layers, of thicknesses 0.10 m, 0.25 m and 3.75 m, and thus of bottom depths 0.10, 0.35 and 4.10 m respectively. Version 3.6 supports other options: the third soil layer may be replaced with a larger number of thinner layers, and/or the bottom of the soil profile may be extended below 4.10 m. However, care must be taken not to make the soil layers too thin since this may lead to numerical instability. As a rule of thumb, layer thicknesses should be limited to ≥ 0.25 metres.</li>
+</ul>
+<h3><a class="anchor" id="classvals"></a>
+Typical values of vegetation-related fields for CLASS-only simulations</h3>
+<p>If you run CLASS without CTEM you will need to specify all vegetation-related parameters. The table below shows typical values you may want to use for different vegetation types.</p>
+<p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \begin{tabular}{ | l | c | c | c | c | c | c | c | c | } Biome &amp; CLASS PFT &amp; Visible albedo &amp; Near-infrared Albedo &amp; Roughness length (m) &amp; Max. LAI (m2/m2) &amp; Min. LAI (m2/m2) &amp; Aboveground biomass (kg/m2) &amp; Rooting depth (m) \\ Needleleaf evergreen forest &amp; 1 &amp; 0.03 &amp; 0.19 &amp; 1.5 &amp; 2.0 &amp; 1.6 &amp; 25.0 &amp; 1.0 \\ Needleleaf deciduous forest &amp; 1 &amp; 0.03 &amp; 0.19 &amp; 1.0 &amp; 2.0 &amp; 0.5 &amp; 15.0 &amp; 1.0 \\ Broadleaf evergreen forest &amp; 2 &amp; 0.03 &amp; 0.23 &amp; 3.5 &amp; 8.0 &amp; 8.0 &amp; 50.0 &amp; 5.0 \\ Broadleaf cold deciduous forest &amp; 2 &amp; 0.05 &amp; 0.29 &amp; 2.0 &amp; 6.0 &amp; 0.5 &amp; 20.0 &amp; 2.0 \\ Broadleaf tropical evergreen forest &amp; 2 &amp; 0.03 &amp; 0.23 &amp; 3.0 &amp; 8.0 &amp; 8.0 &amp; 40.0 &amp; 5.0 \\ Broadleaf tropical drought deciduous forest &amp; 2 &amp; 0.05 &amp; 0.29 &amp; 0.8 &amp; 4.0 &amp; 4.0 &amp; 15.0 &amp; 5.0 \\ Broadleaf evergreen shrub &amp; 4 &amp; 0.03 &amp; 0.19 &amp; 0.05 &amp; 2.0 &amp; 2.0 &amp; 2.0 &amp; 0.2 \\ Broadleaf deciduous shrub &amp; 2 &amp; 0.05 &amp; 0.29 &amp; 0.15 &amp; 4.0 &amp; 0.5 &amp; 8.0 &amp; 1.0 \\ Broadleaf thorn shrub &amp; 2 &amp; 0.06 &amp; 0.32 &amp; 0.15 &amp; 3.0 &amp; 3.0 &amp; 8.0 &amp; 5.0 \\ Short grass and forbs &amp; 4 &amp; 0.06 &amp; 0.34 &amp; 0.02 &amp; 3.0 &amp; 3.0 &amp; 1.5 &amp; 1.2 \\ Long grass &amp; 4 &amp; 0.05 &amp; 0.31 &amp; 0.08 &amp; 4.0 &amp; 4.0 &amp; 3.0 &amp; 1.2 \\ Arable &amp; 3 &amp; 0.06 &amp; 0.34 &amp; 0.08 &amp; 4.0 &amp; 0.0 &amp; 2.0 &amp; 1.2 \\ Rice &amp; 3 &amp; 0.06 &amp; 0.36 &amp; 0.08 &amp; 6.5 &amp; 0.0 &amp; 2.0 &amp; 1.2 \\ Sugarcane &amp; 3 &amp; 0.05 &amp; 0.31 &amp; 0.35 &amp; 5.0 &amp; 0.0 &amp; 5.0 &amp; 1.0 \\ Maize &amp; 3 &amp; 0.05 &amp; 0.33 &amp; 0.25 &amp; 4.0 &amp; 0.0 &amp; 5.0 &amp; 1.5 \\ Cotton &amp; 3 &amp; 0.07 &amp; 0.43 &amp; 0.10 &amp; 5.0 &amp; 0.0 &amp; 2.0 &amp; 2.0 \\ Irrigated crop &amp; 3 &amp; 0.07 &amp; 0.36 &amp; 0.08 &amp; 4.0 &amp; 0.0 &amp; 2.0 &amp; 5.0 \\ Tundra &amp; 4 &amp; 0.05 &amp; 0.29 &amp; 0.01 &amp; 1.5 &amp; 1.5 &amp; 0.2 &amp; 0.1 \\ Swamp &amp; 4 &amp; 0.03 &amp; 0.25 &amp; 0.05 &amp; 1.5 &amp; 1.5 &amp; 1.0 &amp; 5.0 \\ Urban &amp; 5 &amp; 0.09 &amp; 0.15 &amp; 1.35 &amp; - &amp; - &amp; - &amp; - \\ \end{tabular} \]" src="form_1884.png"/>
+</p>
+<h3><a class="anchor" id="classtoctem"></a>
+CLASS and CTEM PFTs</h3>
+<p>While CLASS models all physical processes related to energy and water balance for four PFTs, CTEM models its terrestrial ecosystem processes for nine PFTs. The nine PFTs of CTEM, however, line up with CLASS’ four PFTs perfectly as shown in Table 4. Needleleaf trees are divided into their evergreen and deciduous versions, broadleaf trees are divided into evergreen and cold and drought/dry deciduous versions, and crops and grasses are divided into their C3 and C4 versions based on their photosynthetic pathway.</p>
+<p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \begin{tabular}{ | l | c | c | } &amp; CTEM PFTs &amp; CLASS PFTs \\ 1. &amp; Needleleaf Evergreen &amp; Needleleaf \\ 2. &amp; Needleleaf Deciduous &amp; \\ 3. &amp; Broadleaf Evergreen &amp; Broadleaf \\ 4. &amp; Broadleaf Cold Deciduous &amp; \\ 5. &amp; Broadleaf Drought/Dry Deciduous &amp; \\ 6. &amp; C3 Crop &amp; Crops \\ 7. &amp; C4 Crop &amp; \\ 8. &amp; C3 Grass &amp; Grasses \\ 9. &amp; C4 Grass &amp; \\ \end{tabular} \]" src="form_1885.png"/>
+</p>
+ </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 21 2016 15:17:58 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Sep 28 2016 14:59:59 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>
