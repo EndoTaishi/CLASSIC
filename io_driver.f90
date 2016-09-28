@@ -144,6 +144,10 @@ integer, pointer, dimension(:,:,:) :: lfstatusrow
 integer, pointer, dimension(:,:,:) :: pandaysrow
 integer, pointer, dimension(:,:) :: stdaln
 real, pointer, dimension(:,:,:) :: slopefrac
+integer, pointer, dimension(:,:) :: ipeatland
+real, pointer, dimension(:,:) :: Cmossmas
+real, pointer, dimension(:,:) :: litrmassms
+real, pointer, dimension(:,:) :: dmoss
 
 ! local variables
 
@@ -189,7 +193,11 @@ slopefrac         => vrot%slopefrac
 stdaln            => vrot%stdaln
 lfstatusrow       => vrot%lfstatus
 pandaysrow        => vrot%pandays
-      
+ipeatland        => vrot%ipeatland
+Cmossmas         => vrot%Cmossmas
+litrmassms       => vrot%litrmassms
+dmoss            => vrot%dmoss
+
 ! -----------------      
 ! Begin      
 
@@ -242,6 +250,7 @@ read (11,7010) titlec3
         read(11,*) extnprob(i,1)
         read(11,*) prbfrhuc(i,1)
         read(11,*) stdaln(i,1)
+        read(11,*) ipeatland(i,m),Cmossmas(i,m),litrmassms(i,m),dmoss(i,m) ! peatland variables
 
         if (compete .and. inibioclim) then  !read in the bioclimatic parameters
         ! read them into the first tile of each grid cell.

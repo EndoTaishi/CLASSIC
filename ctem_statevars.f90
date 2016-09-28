@@ -246,6 +246,7 @@ type veg_rot
     real, dimension(nlat,nmos,icc)   :: litrfallveg !<litter fall in \f$kg c/m^2\f$ for each pft
     real, dimension(nlat,nmos,iccp1) :: humiftrsveg !<
 
+    integer, dimension(nlat,nmos) :: ipeatland      !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
 !FLAG need to do resets and initializations for all of these!
     real, dimension(nlat,nmos) :: anmoss            !<net photosynthetic rate of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
     real, dimension(nlat,nmos) :: rmlmoss           !<maintenance respiration rate of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
@@ -486,6 +487,7 @@ type veg_gat
                                        !<all causes (mortality, turnover, and disturbance)
     real, dimension(ilg) :: humiftrs   !<transfer of humidified litter from litter to soil c pool
 
+    integer, dimension(ilg) :: ipeatland !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
     real, dimension(ilg) :: anmoss     !<net photosynthetic rate of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
     real, dimension(ilg) :: rmlmoss    !<maintenance respiration rate of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
     real, dimension(ilg) :: gppmoss    !<gross primaray production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?

@@ -357,16 +357,15 @@ C
       REAL,DIMENSION(ILG)            :: ZSNLGAT !<Limiting snow depth below which coverage is < 100% [m]
       REAL,DIMENSION(NLAT,NMOS)      :: ZSNLROT !<
 
-      REAL,DIMENSION(NLAT,NMOS,IGND) :: THLWROT  !<
+      REAL,DIMENSION(NLAT,NMOS,IGND) :: THLWROT  !<Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
       REAL,DIMENSION(ILG,IGND)       :: THLWGAT  !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ZSNOROT  !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGWVROT !<
+      REAL,DIMENSION(NLAT,NMOS)      :: ALGWVROT !<Visible albedo of wet soil for modelled area [ ]
       REAL,DIMENSION(ILG)            :: ALGWVGAT !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGWNROT !<
+      REAL,DIMENSION(NLAT,NMOS)      :: ALGWNROT !<NIR albedo of wet soil for modelled area [ ]
       REAL,DIMENSION(ILG)            :: ALGWNGAT !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGDVROT !<
+      REAL,DIMENSION(NLAT,NMOS)      :: ALGDVROT !<Visible albedo of dry soil for modelled area [ ]
       REAL,DIMENSION(ILG)            :: ALGDVGAT !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGDNROT !<
+      REAL,DIMENSION(NLAT,NMOS)      :: ALGDNROT !<NIR albedo of dry soil for modelled area [ ]
       REAL,DIMENSION(ILG)            :: ALGDNGAT !<
       REAL,DIMENSION(NLAT,NMOS)      :: EMISROT  !<
       REAL,DIMENSION(ILG)            :: EMISGAT  !<
@@ -381,24 +380,14 @@ C
       REAL,DIMENSION(NLAT,NBS)       :: FSSBROL  !<
       REAL,DIMENSION(ILG,NBS)        :: FSSBGAT  !<
 
-      REAL SOCIROT(NLAT,NMOS)                    !<
+      REAL,DIMENSION(NLAT,NMOS)      :: ZSNOROT  !<
+      REAL,DIMENSION(NLAT,NMOS)      :: SOCIROT  !<
 
 C
 C     * ARRAYS ASSOCIATED WITH COMMON BLOCKS.
 C
-      REAL THPORG (  3) !<
-      REAL THRORG (  3) !<
-      REAL THMORG (  3) !<
-      REAL BORG   (  3) !<
-      REAL PSISORG(  3) !<
-      REAL GRKSORG(  3) !<
-C
-      REAL CANEXT(ICAN) !<
-      REAL XLEAF (ICAN) !<
-      REAL ZORAT (ICAN) !<
       REAL DELZ  (IGND) !<
       REAL ZBOT  (IGND) !<
-      REAL GROWYR (  18,4,2) !<
 C
 C     * ATMOSPHERIC AND GRID-CONSTANT INPUT VARIABLES.
 C
@@ -888,10 +877,10 @@ C     * COMMON BLOCK PARAMETERS.
 C
       REAL X1,X2,X3,X4,G,GAS,X5,X6,CPRES,GASV,X7,CPI,X8,CELZRO,X9,
      1     X10,X11,X12,X13,X14,X15,SIGMA,X16,DELTIM,DELT,TFREZ,
-     2     RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,TCSAND,TCCLAY,
+     2     GRAV,SBC,TCSAND,TCCLAY,
      3     TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,
      4     HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,
-     5     CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,ALVSI,ALIRI,ALVSO,ALIRO,
+     5     CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ALVSI,ALIRI,ALVSO,ALIRO,
      6     ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,
      7     ANGMAX,A,B
 
@@ -1485,7 +1474,6 @@ c============= CTEM array declaration done =============================/
 C
 c=====peatland related parameter declaration March 18, 2015 YW=========\
 
-      integer:: ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
 c   ----CLASS moss variables-------YW ----------------------------------
       real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd), ! FLAG meant to be _t?????
      4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd), ! FLAG meant to be _t?????
@@ -1494,6 +1482,8 @@ c   ----CLASS moss variables-------YW ----------------------------------
 c   ----CTEM moss variables--------------------------------------------
      1      ,anmossac_g(ilg), rmlmossac_g(ilg) ,gppmossac_g(ilg)
 
+      integer, pointer, dimension(:,:) :: ipeatlandrow
+      integer, pointer, dimension(:) :: ipeatlandgat
       real, pointer, dimension(:,:) :: anmossrow
       real, pointer, dimension(:) :: anmossgat
       real, pointer, dimension(:,:) :: rmlmossrow
@@ -1521,7 +1511,7 @@ c   ----CTEM moss variables--------------------------------------------
       real, pointer, dimension(:) :: rmlgmoss
 
 c   definitions of new variables---------------------------------------
-c   ipeatland - peatland flag 0 = no peatland, 1= bog, 2 = fen
+
 c   g12 - energy flux between soil layer 1 and 2 (W/m2)  
 c   g23 - energy flux between soil layer 2 and 3 (W/m2)  
 c   wiltsm - wilting point for peat soil layers  (m3/m3)
@@ -1551,15 +1541,13 @@ C     * THE FOLLOWING COMMON BLOCKS ARE DEFINED SPECIFICALLY FOR USE
 C     * IN CLASS, VIA BLOCK DATA AND THE SUBROUTINE "CLASSD".
 C
       COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
+      COMMON /CLASS2/ GRAV,SBC
+      COMMON /CLASS3/ TCSAND,TCCLAY,TCOM,TCDRYS,
      1                RHOSOL,RHOOM
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
-      COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
-      COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG
-      COMMON /CLASS7/ CANEXT,XLEAF
+      COMMON /CLASS6/ PI,ZOLNG,ZOLNS,ZOLNI
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
@@ -1768,6 +1756,7 @@ C===================== CTEM ==============================================\
       annpcprow            => vrot%annpcp
       dry_season_lengthrow => vrot%dry_season_length
 
+      ipeatlandrow     => vrot%ipeatland
       anmossrow        => vrot%anmoss
       rmlmossrow       => vrot%rmlmoss
       gppmossrow       => vrot%gppmoss
@@ -1966,6 +1955,7 @@ C===================== CTEM ==============================================\
       pandaysgat        => vgat%pandays
       stdalngat         => vgat%stdaln
 
+      ipeatlandgat     => vgat%ipeatland
       anmossgat        => vgat%anmoss
       rmlmossgat       => vgat%rmlmoss
       gppmossgat       => vgat%gppmoss
@@ -2261,10 +2251,6 @@ c
      &         status='old')
       endif
 c
-c       peatland input file !FLAG
-        open(unit=17,file=argbuff(1:strlen(argbuff))//'.PT',
-     &         status='old')            !YW March 23, 2015 
-
 c     * CLASS daily and half-hourly output files (monthly and annual are done in io_driver)
 
 c
@@ -2506,26 +2492,6 @@ C     BEGIN READ IN OF THE .INI FILE
       GGEOROW(1)=0.0
 C     GGEOROW(1)=-0.035
 
-
-c    -----FLAG------------read peatland input------------------------------\      
-       do  40 i = 1, nltest
-          do 40 m = 1, nmtest
-             read(17,*) ipeatlandrow(i,m),Cmossmasrow(i,m),
-     1                   litrmassmsrow(i,m),dmossrow(i,m)
-40    continue
-      write(6,*) 'NLTEST=',NLTEST
-      write(6,*) 'NMTEST=',NMTEST
-      write(6,*) 'nlat=', nlat
-      write(6,*) 'nmos=' ,nmos
-      write(6,*) 'ignd=', ignd
-      write(6,*) 'ican=', ican
-      write(6,*) 'icc=', icc
-      write(6,*) 'ipeatland=',ipeatlandrow
-      write(6,6990) 'Cmossmas=',Cmossmasrow
-      write(6,6990) 'litrmassms=',litrmassmsrow
-      write(6,6990) 'dmoss=',dmossrow 
-c    -----------------YW March 23, 2015 -------------------------------/
-
       DO 50 I=1,NLTEST !This should go above the first read(10 but offline nltest is always 1.
       DO 50 M=1,NMTEST
           READ(10,5040) (FCANROT(I,M,J),J=1,ICAN+1),(PAMXROT(I,M,J),
@@ -2614,35 +2580,35 @@ C===================== CTEM =============================================== /
           TACROT (I,M)=TCANROT(I,M)
           QACROT (I,M)=0.5E-2
 
-          IF(IGND.GT.3)                                 THEN
-              DO 65 J=4,IGND
-                if (ipeatlandrow(i,m) == 0) then  !YW September 02, 2015 
-                  TBARROT(I,M,J)=TBARROT(I,M,3)
-                endif                
-                  IF(SDEPROT(I,M).LT.(ZBOT(J-1)+0.001) .AND.
-     1                  SANDROT(I,M,3).GT.-2.5)     THEN
-                      SANDROT(I,M,J)=-3.0
-                      CLAYROT(I,M,J)=-3.0
-                      ORGMROT(I,M,J)=-3.0
-c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
-                    if (ipeatlandrow(i,m) == 0) then
-                      THLQROT(I,M,J)=0.0
-                      THICROT(I,M,J)=0.0
-                    endif
-c      --------------YW September 01, 2015------------------------------ 
-                  ELSE
-                      SANDROT(I,M,J)=SANDROT(I,M,3)
-                      CLAYROT(I,M,J)=CLAYROT(I,M,3)
-                      ORGMROT(I,M,J)=ORGMROT(I,M,3)
-c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
-                    if (ipeatlandrow(i,m) == 0) then
-                      THLQROT(I,M,J)=THLQROT(I,M,3)
-                      THICROT(I,M,J)=THICROT(I,M,3)
-                    endif
-c      --------------YW September 01, 2015------------------------------ 
-                  ENDIF
-65            CONTINUE
-          ENDIF
+!           IF(IGND.GT.3)                                 THEN
+!               DO 65 J=4,IGND
+!                 if (ipeatlandrow(i,m) == 0) then  !YW September 02, 2015
+!                   TBARROT(I,M,J)=TBARROT(I,M,3)
+!                 endif
+!                   IF(SDEPROT(I,M).LT.(ZBOT(J-1)+0.001) .AND.
+!      1                  SANDROT(I,M,3).GT.-2.5)     THEN
+!                       SANDROT(I,M,J)=-3.0
+!                       CLAYROT(I,M,J)=-3.0
+!                       ORGMROT(I,M,J)=-3.0
+! c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
+!                     if (ipeatlandrow(i,m) == 0) then
+!                       THLQROT(I,M,J)=0.0
+!                       THICROT(I,M,J)=0.0
+!                     endif
+! c      --------------YW September 01, 2015------------------------------
+!                   ELSE
+!                       SANDROT(I,M,J)=SANDROT(I,M,3)
+!                       CLAYROT(I,M,J)=CLAYROT(I,M,3)
+!                       ORGMROT(I,M,J)=ORGMROT(I,M,3)
+! c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
+!                     if (ipeatlandrow(i,m) == 0) then
+!                       THLQROT(I,M,J)=THLQROT(I,M,3)
+!                       THICROT(I,M,J)=THICROT(I,M,3)
+!                     endif
+! c      --------------YW September 01, 2015------------------------------
+!                   ENDIF
+! 65            CONTINUE
+!           ENDIF
           DO 75 K=1,6
           DO 75 L=1,50
               ITCTROT(I,M,K,L)=0
@@ -2717,7 +2683,7 @@ c     initialize accumulated array for monthly & yearly output for class
      3            SANDROT,CLAYROT,ORGMROT,SOCIROT,DELZ,ZBOT,
      4            SDEPROT,ISNDROT,IGDRROT,
      5            NLAT,NMOS,1,NLTEST,NMTEST,IGND,IGRALB,
-     6            ipeatlandrow)!YW March 19, 2015
+     6            ipeatlandrow)
 
 5010  FORMAT(2X,6A4)
 5020  FORMAT(5F10.2,F7.1,3I5)
@@ -2976,29 +2942,26 @@ c
 c
 115   continue
 c
-c     FLAG
-c     initlaized the litter and soil C pool for peatland and non-peatland 
-c     differently. In peatland moss litter and soil C pool willl substitute
-c     bare ground (icc+1). --------------------------------------------\
-c
-c     initlaized the litter and soil C pool for peatland and non-peatland 
-c     differently. In peatland moss litter and soil C pool willl substitute
-c     bare ground (icc+1). --------------------------------------------\
+c     Initialize the litter and soil C pool for the BARE ground. This differs
+c     for peatland and non-peatland tiles. If there is no peatland, we just use
+c     the contents of the iccp1 position. In peatland tiles, moss litter is
+c     considered to cover the whole tile. The soil C is calculated based on ...FLAG!!!!!! YW -how does this work? JM
 c
       do 117 i = 1,nltest
         do 117 m = 1,nmtest
-            if (ipeatlandrow(i,m)==0)           then
+            if (ipeatlandrow(i,m)==0) then ! NON-peatland tile
                 gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-fcanrot(i,m,1)-
      &                        fcanrot(i,m,2)-fcanrot(i,m,3)-
      &                        fcanrot(i,m,4))*litrmassrow(i,m,icc+1)
                 gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrot(i,m,1)-
      &                        fcanrot(i,m,2)-fcanrot(i,m,3)-
      &                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
-            else                       !is peatland tile
+            else !peatland tile ! FLAG YW on a peat tile, can only peat grow??? JM
                 gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmassmsrow(i,m)
-                hpdrow(i,m) = sdeprot(i,m)
+                hpdrow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth (FLAG!! YW- Is this correct?-JM)
+                ! The soil carbon on the peatland tiles is assigned based on depth
                 gavgscmsrow(i,m) = 0.487*(4056.6*hpdrow(i,m)**2+
-     &                              72067.0*hpdrow(i,m))/1000       
+     &                              72067.0*hpdrow(i,m))/1000  !FLAG YW - need more info on this JM.
                 vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
             endif
 c              

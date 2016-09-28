@@ -7,8 +7,10 @@ C>\file
      2                  DELZW,ZBOTW,ALGWET,ALGDRY,
      +                  ALGWV,ALGWN,ALGDV,ALGDN,
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,IGRALB)
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,IGRALB,
+     5                  ipeatland)
 C
+C     * SEP 28/16 - J. Melton.  Finish bringing in Yuanqiao Wu's peatland work.
 C     * JUN 24/15 - J. MELTON.  PASS IN IGRALB SO THAT WE CAN SKIP
 C                               USING SOCI IF IGRALB IS 0.
 C     * JAN 15/15 - D.VERSEGHY. CHANGE PSIWLT FOR MINERAL SOILS
@@ -83,49 +85,49 @@ C
       REAL HCPS  (NL,NM,IG) !<Volumetric heat capacity of soil matter \f$[J m^{-3} K^{-1} ] (C_g )\f$
       REAL TCS   (NL,NM,IG) !<Thermal conductivity of soil \f$[W m^{-1} K^{-1} ] (\tau_g )\f$
       REAL THFC  (NL,NM,IG) !<Field capacity \f$[m^3 m^{-3} ] (\theta_{fc} )\f$
-      REAL THLW  (NL,NM,IG) !<
+      REAL THLW  (NL,NM,IG) !<Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
       REAL PSIWLT(NL,NM,IG) !<Soil moisture suction at wilting point [m] \f$(\Psi_{wilt} )\f$
       REAL DELZW (NL,NM,IG) !<Thickness of permeable part of soil layer [m]
       REAL ZBOTW (NL,NM,IG) !<Depth of bottom of permeable part of soil layer [m]
       REAL ALGWET(NL,NM)    !<All-wave albedo of wet soil for modelled area [ ]
       REAL ALGDRY(NL,NM)    !<All-wave albedo of dry soil for modelled area [ ]
-      REAL ALGWV (NL,NM)    !<
-      REAL ALGWN (NL,NM)    !<
-      REAL ALGDV (NL,NM)    !<
-      REAL ALGDN (NL,NM)    !<
+      REAL ALGWV (NL,NM)    !<Visible albedo of wet soil for modelled area [ ]
+      REAL ALGWN (NL,NM)    !<NIR albedo of wet soil for modelled area [ ]
+      REAL ALGDV (NL,NM)    !<Visible albedo of dry soil for modelled area [ ]
+      REAL ALGDN (NL,NM)    !<NIR albedo of dry soil for modelled area [ ]
 C
       INTEGER ISAND (NL,NM,IG) !<Sand content flag
       INTEGER IGDR  (NL,NM) !<Index of soil layer in which bedrock is encountered
 C
 C     * INPUT ARRAYS.
 C
+      integer ipeatland(nl,nm)  !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
       REAL SAND  (NL,NM,IG) !<Percent sand content of soil layer [percent] \f$(X_{sand} )\f$
       REAL CLAY  (NL,NM,IG) !<Percent clay content of soil layer [percent] \f$(X_{clay} )\f$
       REAL ORGM  (NL,NM,IG) !<Percent organic matter content of soil layer [percent]
       REAL DELZ  (IG)       !<Thickness of soil layer [m]
       REAL ZBOT  (IG)       !<Depth of bottom of soil layer [m]
       REAL SDEPTH(NL,NM)    !<Permeable depth of soil column (depth to bedrock) [m] \f$(z_b )\f$
-      REAL SOCI  (NL,NM)   !<
+      REAL SOCI  (NL,NM)    !<
 C
       INTEGER IGRALB !< IF IGRALB IS SET TO 0, THE WET AND DRY SOIL ALBEDOS ARE
                      !! CALCULATED ON THE BASIS OF SOIL TEXTURE.  IF IT IS SET TO 1,
                      !! THEY ARE ASSIGNED VALUES BASED ON THE NCAR CLM SOIL "COLOUR"  DATASET.
-C
-      REAL THPORG (3),      THRORG (3),      THMORG (3),
-     1     BORG   (3),      PSISORG(3),      GRKSORG(3)
 C
 C     * TEMPORARY VARIABLES.
 C
       REAL ALWV(20), ALWN(20), ALDV(20), ALDN(20)
 C
       REAL VSAND,VORG,VFINE,VTOT,AEXP,ABC,THSAND,THFINE,THORG
-C
-c    --------peatland variables---------------------------------------\    
 c
-      integer ipeatland(nl,nm)
-
-c    -----------YW March 23, 2015 -------------------------------------/
 C     * COMMON BLOCK PARAMETERS.
+C
+      REAL THPORG (3)         !<Peat pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
+      REAL THRORG (3)         !<Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
+      REAL THMORG (3)         !<Peat residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
+      REAL BORG   (3)         !<Clapp and Hornberger 'b' value for peat soils [ ]
+      REAL PSISORG(3)         !<Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
+      REAL GRKSORG(3)         !<Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
 C
       REAL TCW,TCICE,TCSAND,TCFINE,TCOM,TCDRYS,RHOSOL,RHOOM,
      1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,SPHW,SPHICE,SPHVEG,
@@ -322,8 +324,8 @@ C
               THLRAT(I,M,J)=0.5**(1.0/(2.0*BI(I,M,J)+3.0))
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
-             if (ipeatland(i,m) > 0 )                      then  !YW
-                  if (j .eq. 1)                                 then
+             if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
+                  if (j .eq. 1) then ! First layer is moss
                       thpor(i,m,j)  = thpms
                       thlret(i,m,j) = thrms
                       thlmin(i,m,j) = thmms
@@ -332,21 +334,21 @@ C
                       grksat(i,m,j) = grksms
                       hcps(i,m,j) = hcpms
                       tcs(i,m,j) = tcom 
-                  elseif (j .eq. 2    )                     then
+                  elseif (j .eq. 2    ) then !Next treated as soil and is fibric peat
                       thpor(i,m,j)  = thporg(1)
                       thlret(i,m,j) = throrg(1) 
                       thlmin(i,m,j) = thmorg(1)
                       bi(i,m,j)     = borg(1)
                       psisat(i,m,j) = psisorg(1)
                       grksat(i,m,j) = grksorg(1)
-                  elseif (j .ge. 3 .and. j .le. 5 )         then
+                  elseif (j .ge. 3 .and. j .le. 5 ) then ! These layers are considered hemic peat
                       thpor(i,m,j)  = thporg(2)
                       thlret(i,m,j) = throrg(2) 
                       thlmin(i,m,j) = thmorg(2)
                       bi(i,m,j)     = borg(2)
                       psisat(i,m,j) = psisorg(2)
                       grksat(i,m,j) = grksorg(2)
-                  else 
+                  else ! Remainder are sapric peat
                       thpor(i,m,j)  = thporg(3)
                       thlret(i,m,j) = throrg(3) 
                       thlmin(i,m,j) = thmorg(3)
@@ -397,17 +399,5 @@ C
           ENDIF
 300   CONTINUE
 C
-
-C    ------------right to screen for monitoring-----------------------\
-
-      DO 400 J=1,IG
-      DO 400 M=1,IM
-      DO 400 I=IL1,IL2
-       write(6,6990) i,m, j,  thpor(i,m,j), thlret(i,m,j),thlmin(i,m,j),
-     1         bi(i,m,j), zbotw(i,m,j), thfc(i,m,j), GRKSAT(i,m,j)
-400   continue
-6990  format(3I4,6F7.2, E10.3)
-C    ------------right to screen for monitoring-----------------------/
-
       RETURN
       END

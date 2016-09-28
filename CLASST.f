@@ -421,7 +421,7 @@ C
       REAL THLRET(ILG,IG) !<Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ]\f$
       REAL THLMIN(ILG,IG) !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
       REAL THFC  (ILG,IG) !<Field capacity \f$[m^3 m^{-3} ]\f$
-      REAL THLW  (ILG,IG)
+      REAL THLW  (ILG,IG) !<Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
       REAL HCPS  (ILG,IG) !<Heat capacity of soil material \f$[J m^{-3} K^{-1} ]\f$
       REAL TCS   (ILG,IG) !<Thermal conductivity of soil particles \f$[W m^{-1} K^{-1} ]\f$
       REAL DELZ  (IG)     !<Overall thickness of soil layer [m]
