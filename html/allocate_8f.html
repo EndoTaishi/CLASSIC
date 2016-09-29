@@ -40,7 +40,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -126,7 +125,7 @@ Functions/Subroutines</h2></td></tr>
 <p>The dynamic allocation fractions are superseded under three conditions. First, during the leaf onset for crops and deciduous trees, all carbon must be allocated to leaves ( <img class="formulaInl" alt="$a_{fL} = 1$" src="form_1018.png"/>, <img class="formulaInl" alt="$a_{fS} = a_{fR} = 0$" src="form_1019.png"/>). Second, the proportion of stem plus root biomasses to leaf biomass must satisfy the relationship: </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{propwoody} C_\mathrm{S} + C_\mathrm{R} = \eta C_\mathrm{L}^{\kappa},\]" src="form_342.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_939.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_940.png"/> and <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_938.png"/> are the carbon in the stem, root and leaves, respectively. The parameter <img class="formulaInl" alt="$\eta$" src="form_1020.png"/> is PFT-specific (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>) and parameter <img class="formulaInl" alt="$\kappa$" src="form_663.png"/> has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters are based on the Frankfurt Biosphere Model (FBM) <a class="el" href="citelist.html#CITEREF_Ludeke1994-px">[35]</a>. This constraint (Eq. propwoody}) is based on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As grasses have no stem component, Eq. (propwoody}) determines their root to shoot ratio (i.e. the ratio of belowground to aboveground biomass). The final condition ensures that a minimum realistic root to shoot ratio is maintained for all PFTs ( <img class="formulaInl" alt="${lr}_{min}$" src="form_1021.png"/>, see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>). Root mass is required for nutrient and water uptake and support for the aboveground biomass. If the minimum root to shoot ratio is not being maintained, carbon is allocated preferentially to roots. </p>
+<p>where <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_939.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_940.png"/> and <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_938.png"/> are the carbon in the stem, root and leaves, respectively. The parameter <img class="formulaInl" alt="$\eta$" src="form_1020.png"/> is PFT-specific (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>) and parameter <img class="formulaInl" alt="$\kappa$" src="form_663.png"/> has a value of 1.6 for trees and crops and 1.2 for grasses. Both parameters are based on the Frankfurt Biosphere Model (FBM) <a class="el" href="citelist.html#CITEREF_Ludeke1994-px">[36]</a>. This constraint (Eq. propwoody}) is based on the physical requirement of sufficient stem and root tissues to support a given leaf biomass. As grasses have no stem component, Eq. (propwoody}) determines their root to shoot ratio (i.e. the ratio of belowground to aboveground biomass). The final condition ensures that a minimum realistic root to shoot ratio is maintained for all PFTs ( <img class="formulaInl" alt="${lr}_{min}$" src="form_1021.png"/>, see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>). Root mass is required for nutrient and water uptake and support for the aboveground biomass. If the minimum root to shoot ratio is not being maintained, carbon is allocated preferentially to roots. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="aa4327082169256da29b83bf41b489db6"></a>
 <div class="memitem">
@@ -276,7 +275,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Sep 26 2016 14:40:56 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 29 2016 15:12:15 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

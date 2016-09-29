@@ -3224,24 +3224,16 @@ C===================== CTEM ============================================ /
 250   CONTINUE
 
 C
-c    ---------Calculate day length for seasonailtiy-------------------
-C      day=real(iday)+(real(ihour)+(real(imin)-real(ihour)*100)/60.)/24.
-C      decl=sin(2.*pi*(284.+day)/365.)*23.45*pi/180.
-C      hour=(real(ihour)+(real(imin)-real(ihour)*100)/60.)*pi/12.-pi                                         
-
       DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
       DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
       HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
       COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
 
 ! FLAG!!!! move to elsewhere?
-      do i = 1, nltest
-c     -------initiallize pdd at the beginning of the year---
+      !-------initiallize pdd at the beginning of the year---
           if (iday ==1)     then 
-           pdd(i) = 0.
+           pdd = 0.
           endif
-      enddo
-
 c    --------------   YW May 06, 2015 ---------------------------------   
 
      

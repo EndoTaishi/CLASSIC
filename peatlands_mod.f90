@@ -1,16 +1,298 @@
 !>\defgroup moss_photosynthesis
-
-!! Moss photosynthesis subroutine
-
+!> Moss photosynthesis subroutine
+!>
+!> Mosses are an important contributor to the primary production and the C
+!! sequestration in peatlands, owing to the low decomposability of the moss
+!! tissue. Sphagnum in peatlands grows at
+!! 20--1600 g biomass m\f$^{-2} \f$/yr and accounts for about 50 \% of
+!! the total peat volume (Turetsky, 2003). We have modified CTEM to include a
+!! moss C pool and moss litter pool along with the related C fluxes, i.e.
+!! photosynthesis, autotrophic respiration, heterotrophic respiration, and
+!! humification. The net photosynthesis of moss (\f$G_m)\f$ is calculated
+!! from the gross photosynthesis (\f$G_{0,m})\f$ and dark respiration
+!! (\f$R_{d,m}\f$):
+!!
+!! \f$ G_m=G_{0,m}-R_{d,m} \f$.
+!!
+!! The moss photosynthesis and dark respiration are calculated using the
+!! Farquhar~(1989) biochemical approach following the MWM (St-Hilaire et al.,
+!! 2010) \cite St-Hilaire2010-5e9 and CTEM (Melton and Arora, 2016) \cite Melton2016-zx, with modifications for integration
+!! with CLASS--CTEM and moss phenology. The leaf-level gross photosynthesis rate
+!! \f$G_{0,m} \f$ (\f$\mu \f$ mol CO\f$_2 \f$ /m \f$^2 \f$/s) is obtained as
+!! the minimum of the transportation limited photosynthesis rates (\f$J_s)\f$ and
+!! the first root of the quadratic solution of the light-limited rate (\f$J_e)\f$
+!! and the Rubisco limited rate (\f$J_c)\f$. A logistic factor (\f$\varsigma\f$) is
+!! added with values 0 or 1 to introduce a seasonal control of moss
+!! photosynthesis. In the MWM, spring photosynthesis starts when the snow depth
+!! is below 0.05 m and the soil temperature at 5 cm depth goes above
+!! 0.5 C (Moore et al., 2006). Since in our case CLASS sets the
+!! minimum depth for melting, discontinuous snow to 0.10 m, this limits the
+!! spring photosynthesis to starting only once the snow is completely melted.
+!!
+!! \f$ G_{0,m} = \quad \varsigma \min \left(J_{s},\frac{(J_{c}+J_{e})\pm
+!! \sqrt{{(J_c +J_ e )}^2 - 4(J_c +J_e)} }{2}\right) \f$
+!!
+!! The dark respiration in mosses (\f$R_{d,m})\f$ is calculated as a function
+!! of the base dark respiration rate (\f$R_{d,m,0})\f$, which has a value of
+!! 1.1 (\f$\mu \f$ mol CO\f$_2 \f$ /m \f$^2 \f$/s) (Adkinson and Humphreys, 2011) scaled
+!! by the moss moisture (\f$f_{m,rd}\f$) and soil temperature functions
+!! (\f$f_{T,rd})\f$. The moss moisture function is based on the volumetric
+!! water content of the moss, \f$\theta_m\f$ (kg water /(kg dry
+!! mass)). The MWM models the relation between water content in mosses and dark
+!! respiration with optimal water content at 5.8 g water per g dry weight,
+!! following the approach in Frolking et al. (1996). We modified the relation
+!! for water content above the optimal water content, based on a recent
+!! discovery of a weak linear positive relation between the dark respiration
+!! rate and the water content above the optimal water content during the late
+!! summer and fall (Adkinson and Humphreys, 2011):
+!!
+!! \f$R_{d,m} = R_{d,m,0} f_{m,rd} f_{T,{rd}}\f$
+!!
+!! \f$ f_{T,{rd}} = (3.22-(0.046 \cdot
+!! T_{moss})^{(T_{moss}-25/10)} \f$
+!!
+!! \f$ f_{m,rd} = 0\f$ for\f$ \theta_{m} <0.4 \f$
+!!
+!! \f$ f_{m,rd} = 0.35 \theta_{m}^{2/3}-0.14\f$ for\f$ 0.4\le \theta_m<5.8 \f$
+!!
+!! \f$ f_{m,rd} = 0.01 \theta_{m} +0.942\f$ for \f$5.8<\theta _{m} \f$
+!!
+!! Photosynthetic photon flux density (PPFD) is measured by the
+!! photosynthetically active radiation (PAR), which is defined as the solar
+!! radiation between 0.4 to 0.7 \f$\mu \f$ mol that can be used by plants via
+!! photosynthesis. In the coupled CLASS--CTEM system, the PAR received by the
+!! moss (PAR\f$_m\f$, unit \f$\mu \f$mol photons m\f$^-2\f$/s is
+!! converted from the visible short-wave radiation reaching the ground (\f$K_{\ast g}\f$,
+!!unit W/m\f$^2\f$) in CLASS by a factor of
+!! 4.6 \f$\mu\f$ mol /m\f$^2\f$/s per W/m\f$^2\f$ (McCree, 1972).
+!! \f$K_{\ast g}\f$ is a function of the incoming short-wave radiation
+!! (\f$K\downarrow \f$, unit: W/m\f$^2\f$), the surface albedo (\f$\alpha_g\f$),
+!! and the canopy transmissivity (\f$\tau _c\f$):
+!!
+!! \f$K_{\ast g} = K \downarrow \tau_{c}\left( 1-\alpha_{g}\right)\f$
+!!
+!! The energy uptake by the moss layer is thus a function of the total incoming
+!! short-wave radiation, the aggregated LAI of the PFTs present, the snow depth,
+!! the fractional vegetation cover, and the soil water content (Verseghy, 2012).
+!! In peatland C models that do not consider vegetation dynamics, the
+!! transmissivity of the vegetation canopy is usually assumed to be constant
+!! (e.g. St-Hilaire et al., 2010) \cite St-Hilaire2010-5e9. Compared with such models, CLASS enables a
+!! more detailed representation of light incident on the moss surface since it
+!! includes partitioning of direct/diffuse and visible/near-IR radiation,
+!! PFT-specific transmissivities, and time-varying LAI and fractional PFT
+!! coverages (Verseghy, 2012) \cite Verseghy2012-c0e.
+!------------------------------------------------------------------------------------
 !>\defgroup peat_soil_het_resp
-
-
+!> Peatland soil heterotrophic respiration
+!>
+!>Over the non-peatland fraction, HR is calculated
+!!as the sum of the respiration from litter and soil carbon pools as in the
+!!original version of CTEM (Arora, 2003). The soil C pool over the
+!!non-peatland areas is assumed to be exponentially distributed with depth
+!!(Arora, 2003). In peatlands a large amount of humic soil is generally
+!!located in the permanently saturated zone and the bulk density increases
+!!with soil depth (Loisel and Garneau, 2010). Thus, the assumption of
+!!exponentially decreasing distribution of C content with increasing soil
+!!depth is not valid in peatlands. We used a quadratic equation to calculate
+!!the distribution of soil C content over depth based on an empirically
+!!determined bulk density profile (Frolking et al., 2001).
+!!
+!!HR over the peatland fraction of a grid cell is modelled using a two-pool
+!!approach with a flexible boundary between the pools that depends on the
+!! depth of the water table:
+!!
+!!
+!! \f$ R_{o}=C_{SOM,o}k_{o}f_{T,{o}} \f$
+!!
+!! \f$ R_{a}=C_{SOM,a}k_{a}f_{T,{a}}f_{anoxic} \f$
+!!
+!! where o and a denote the oxic and anoxic portions of the soil C pool respectively. The respiration rate \f$R\f$ (unit:
+!! \f$\mu mol C m\f$^{-2}\f$/s) is obtained from the respiration rate
+!FLAG GOT TO HERE>>>>
+!! coefficient \f$k\f$ (\unit{\mu}mol\,C\,kg\,C$^{-1}$\,s$^{-1})$, the temperature
+! functions $f_{T}$, the soil C mass $C_{SOM}$ (kg), and a scaling factor
+! $f_{anoxic}$ after Frolking et al.~(2010, 2001), which represents the
+! inhibition of microbial respiration under anoxic conditions. The value of
+! this parameter is uncertain, varying in those two papers between 0.001, 0.025
+! and 0.1. Based on calibration runs using two of the data sets described below
+! (MB-Bog and AB-Fen), we adopted a value of 0.025. $Q_{10}$ is calculated using
+! a hyperbolic tan function of the soil temperatures ($T_{s})$ of the oxic
+! and anoxic zones (Melton and Arora, 2016), which are in turn functions of
+! water table depth (Eq.~10). The $Q_{10}$ values of the anoxic and the oxic
+! zones of the soil are indicated as $Q_{10,{a}}$ and $Q_{10,{o}}$.
+! The values of $k$, $f_{T}$, and $C_{SOM}$ are updated along with the
+! water table depth ($z_{wt}$, unit: m, positive downward) and the peat
+! depth ($z_{p}$, unit: m) at each CTEM time step. The equations for $k$
+! and $C_{SOM}$ are derived from Fig.~2 in Frolking et al.~(2001), and
+! parameterized differently for fens and bogs (Table~3):
+!
+!
+! \begin{align}
+! &\left\{ {\begin{array}{l}
+!  f_{T,{o}} =Q_{10,{o}}^{\left(\int\limits_{0}^{z_{wt}} T_{j} -15\right)/10} \\
+!  f_{T,{a}} =Q_{10,{a}}^{\left(\int\limits_{z_{wt}}^{z_\mathrm{p}} T_{j} -15\right)/10}, \\
+!  \end{array}} \right.\\
+! &Q_{10}=1.44+0.56 {tanh}[0.075\left( 46.0-T_{s} \right)],\\
+! &\left\{ {\begin{array}{l}
+!  T_{s,o}=\int\limits_{0}^{z_{wt}} T_{j} \, /(z_{wt}) \\
+!  T_{s,a}=\int\limits_{z_{wt}}^{z_{p}} T_{j} /(z_{p}-z_{wt}) ,\\
+!  \end{array}} \right.\\
+! &k_{o}=\left\{ {\begin{array}{ll}
+!  0, &  z_{wt}<0 \\
+!  k_{1}\left( 1-e^{k_{2}z_{wt}} \right)+k_{3}z_{wt},& 0.3>_{z{t}}\ge 0 \\
+!  k_{4}e^{k_{5}z_{wt}}+k_{6}z_{wt}+k_{7},& z_{wt}\ge 0.3, \\
+!  \end{array}} \right.\\
+! & \hack{\hbox\bgroup\fontsize{8.7}{8.7}\selectfont$\displaystyle}
+! k_{a}=\left\{ {\begin{array}{ll}
+!  k_{4}e^{k_{5}z_{p}}+{10k}_{6}z_{p}+k_{7},& z_{wt}<0 \\
+!  \left| k_{1}e^{k_{2}z_{wt}}-k_{4}e^{k_{5}z_\mathrm{p}}-k_{3}z_{wt}+k_{8}
+! \right|, & {0.3>z}_{wt}\ge 0 \\
+!  k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_\mathrm{p}-z_{wt} \right), & z_{wt}\ge 0.3, \\
+!  \end{array}} \right. \hack{$\egroup}\\
+! &C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}),\\
+! &C_{SOM,a}= C_{SOM}-C_{SOM,o},
+! \end{align}
+! where 0.487 is a parameter that converts from soil mass to soil C content.
+! The variation of $k_{o}$ and $k_{a}$ with water table depth for
+! bogs and fens is shown in Fig.~2. It will be noted that there is a sharp
+! transition in decomposition rate at a depth of 0.3\,m, reflecting the work of
+! Frolking et al.~(2001). As noted in Sect.~2.1 above, this value is widely accepted
+! as a representative estimate of the depth dividing the acrotelm and catotelm.
+! In reality, of course, this depth will vary among peatlands. When our
+! peatland model is implemented in climate mode, it is planned that spin-up
+! tests will be run to assess the spatial variability of this depth, and
+! adjustments will be made to Eqs.~(13) and (14) if necessary.
+!
+! As only organic soil is considered in peatlands, the peat soil C is updated
+! from the humification (C$_{hum}$, kg\,C\,m$^{-2}$\,day$^{-1})$ and soil
+! respiration from the oxic ($R_{o}$ in kg\,C\,m$^{-2}$\,day$^{-1})$ and
+! anoxic ($R_{a}$ in kg\,C\,m$^{-2}$\,day$^{-1})$ components during the
+! time step:
+! \begin{align}
+! \frac{{dC}_{SOM}}{{d}t} = C_{hum}-R_{o}-R_{a}
+! \end{align}
+! $C_{hum}$ is calculated as a PFT-dependent fraction of the decomposition
+! rate. Values of this coefficient are shown in Table~2 (variable
+! ``humicfac''). At the end of each time step, the peat depth (i.e. the depth
+! of the organic soil) $z_{p}$ is updated from the updated peat C mass
+! (C$_{SOM}$ in kg) by solving the quadratic equation
+! \begin{align}
+! z_{p}=
+! \frac{{-k}_{10}+\sqrt{k_{10}+\frac{4k_{9}{C}_{SOM}}{0.487}}.
+! }{2k_{9}}
+! \end{align}
+! The water table depth $z_{wt}$ is deduced by searching for a soil layer
+! below, which the soil is saturated and above which the soil moisture is at or
+! below the retention capacity with respect to gravitational drainage. Within
+! this soil layer $j$, $z_{wt}$ is calculated as
+! \begin{align}
+! z_{wt}=z_{{b},j}-\Delta z\left[
+! \frac{\theta_{{l},j}+\theta_{i,j}-\theta
+! _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right],
+! \end{align}
+! where $\Delta z$ is the thickness of soil layer (unit: m),
+! $\theta_{{l}}$ and $\theta_{i}$ are the liquid and frozen water contents
+! (unit, m$^{3}$\,m$^{-3})$, $\theta_{ret}$ and $\theta_{p}$ are the
+! water retention capacity and the porosity, and $z_{b}$ (unit: m) is the
+! bottom depth of the soil layer.
+!
+!------------------------------------------------------------------------------------
 !>\file
-
 !>Central module for all peatland-related operations
+!>
+!> The peatland module is published in Geoscientific Model Development (Wu et al. 2016) \cite Wu2016-zt.
+!! A copy of the paper is in the Documentation folder of this git repository.
+!!
+!! -----------------------------------------------------------
+!>To account for the eco-hydrological and biogeochemical interactions among
+!!vegetation, atmosphere and soil in peatlands, the following modifications
+!!were made to the coupled CLASS3.6--CTEM2.0 modelling framework:
+!!
+!!1. The top soil layer was characterized as a moss layer with a higher heat
+!!and hydraulic capacity than a mineral soil layer. The moss layer buffers the
+!!exchange of energy and water at the soil surface and regulates the soil
+!!temperature and moisture (Turetsky et al. 2012) \cite Turetsky2012-qh.
+!!
+!!2. Three peatland vascular PFTs (evergreen shrubs, deciduous shrubs and
+!!sedges) as well as mosses were added to the existing nine CTEM PFTs. These
+!!peatland-specific PFTs are adapted to cold climate and inundated soil with
+!!optimized plant structure (shoot/root ratio, rooting depth), growth strategy
+!!and metabolic acclimations to light, water and temperature.
+!!
+!!3. We considered the soil inundation stress on microbial respiration in the
+!!litter C pool. The original CTEM assumed that litter respiration was not
+!!affected by oxygen deficit as a result of flooding, since litter was always
+!!assumed to have access to air. This assumption does not hold for peatlands
+!!where high water table positions occur routinely.
+!!
+!!4. To provide the framework for future runs coupled to the global earth system model, we separated the soil C balance and heterotrophic respiration
+!!(HR) calculations for peatland and non-peatland fractions for each grid cell
+!!in the global model. Over the non-peatland fraction, we use the original CTEM
+!!approach that aggregates the HR from each PFT weighted by the fractional
+!!cover. Over the peatland fraction the soil C pool and decomposition are
+!!controlled by the water table position, following the two-compartment
+!!approach used in the MWM (St. Hilaire et al. 2010) \cite St-Hilaire2010-5e9.
+!!
+!!The standard configuration of soil layers in CLASS consists of three layers with
+!!thickness of 0.10, 0.25, and 3.75 ,m. Organic soil in CLASS was parameterized
+!!by Letts et al. (2000) \cite Letts2000-pg as fibric, hemic and sapric peat in the three soil
+!!layers respectively, representing fresh, moderately decomposed and highly
+!!decomposed organic matter. Tests of CLASS on peatlands revealed improved
+!!performance in the energy simulations for fens and bogs with this organic
+!!soil parameterization. However, the model overestimated energy and water
+!!fluxes at bog surfaces during dry periods due to the neglect of the moss
+!!cover (Comer et al., 2000).
+!!
+!!To take into account the interaction amongst the moss and the soil layers and
+!!the overlying atmosphere for energy and water transfer, we added a new soil
+!!layer 0.10 m thick above the fibric organic soil to represent living and dead
+!!peatland bryophytes, such as Sphagnum mosses and true mosses
+!!(Bryopsida). The physical characteristics of mosses differ from those of
+!!either the shoots or the roots of vascular plants (Rice et al., 2008). In
+!!particular, mosses can hold more than 30 g of water per gram of biomass
+!!(Robroek et al., 2009). More than 90 \% of the moss leaf volume is
+!!occupied by the water-holding hyaline cells (Rice et al., 2008), which retain
+!!water even when the water table depth declines to 1--10 m below the surface
+!!(Hayward and Clymo, 1982).
+!!
+!!The parameter values of the moss layer for water and energy properties were
+!!derived from a number of recent experiments measuring the hydraulic
+!!properties of mosses (Price et al., 2008 \cite Price2008-fr; Price and Whittington, 2010;
+!!McCarter and Price, 2012). Living mosses range from 2--3 to over
+!!5 cm in height (Rice et al., 2008) and have lower values of dry bulk density
+!!and field capacity than fibric peat (Price et al., 2008) \cite Price2008-fr. Compared to fibric
+!!peat, the saturated hydraulic conductivity of living moss is higher by orders
+!!of magnitude (Price et al., 2008) \cite Price2008-fr and the thermal conductivity is more
+!!affected by the water content (O'Donnell et al., 2009). To fully account for
+!!the effect of mosses, we set the depth of the living moss (\f$z_{m}\f$)
+!!within the top soil (i.e. moss) layer to 3 cm for fens and 4 cm for bogs,
+!!and interpolated its water content \f$w_m\f$ (kg water /(kg dry mass)) from the water content of the overall layer
+!!\f$\theta_{l,1}\f$ (m\f$^3\f$ water /(m soil)\f$^3\f$) and the depth of the
+!!living moss:
+!!
+!!\f$w_m =\frac{z_m\theta_{l,1}\rho_w}{B_m} \f$
+!!
+!!where the dry moss biomass (\f$B_m) \f$ is converted from moss C
+!!(C\f$_m \f$) using the standard conversion factor of 0.46 kg C per kg dry
+!!biomass, \f$\theta _{l,1} \f$ (m\f$^3\f$\,m\f$^{-3}\f$) is the liquid water
+!!content of the top soil layer, and \f$\rho_w \f$ is the density of water
+!!(1000 kg m\f$^{-3} \f$). The maximum and minimum moss water contents were
+!!estimated from a number of observed moss water contents (e.g. Williams and Flanagan, 1998; Robroek et al., 2009). In CLASS, evaporation at the soil
+!!surface is controlled by a soil evaporation efficiency coefficient \f$\beta \f$
+!!(Verseghy, 2012). This parameter is calculated from the liquid water content
+!!and the field capacity of the first soil layer following Lee and
+!!Pielke (1992). For peatlands, \f$\beta \f$ was assumed to be regulated by the
+!!relative moisture of the living moss rather than the ratio of relative liquid
+!!water content of the first soil layer:
+!!
+!!\f$ \beta = 0.25 [ 1- \cos \left( \frac{w_m
+!! -w_{m,min}}{w_m-w_{m,max}} \right)]^{2} \f$
+!!
+!!where \f$w_m \f$, \f$w_{m,max} \f$, and \f$w_{m,min} \f$ are the water content
+!!and the maximum and minimum water contents of the living moss in kg water / (kg dry mass).
+!!
 
 module peatlands_mod
-
 
 ! J. Melton. Sep 26, 2016
 

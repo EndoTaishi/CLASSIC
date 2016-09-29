@@ -326,7 +326,7 @@
 
 
 !>\file
-!!Central module for all disturbance scheme-related operations
+!>Central module for all disturbance scheme-related operations
 module disturbance_scheme
 
 ! J. Melton. Mar 26, 2014

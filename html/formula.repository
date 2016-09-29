@@ -1878,3 +1878,74 @@
 \form#1877:\[ \label{eqn_using_mort_factors_individual} M_{\alpha, i}= C_{\alpha, i} \Theta_{\alpha, i} \left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}} \right) \quad i={L, S, R}. \]
 \form#1878:\[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i, \nonumber \\ i = \mathrm{D}, \mathrm{H}.\label{lithet} \]
 \form#1879:\[ f(\Psi)_\mathrm{H} = 1 - 0.5 \frac{\log(0.04)-\log\vert\Psi\vert} {\log(0.04)-\log\vert\Psi_{sat}\vert}\\ f(\Psi)_D = 1\nonumber; \]
+\form#1880:$kg C/m^2$
+\form#1881:$z_\text{m})$
+\form#1882:$w_\text{m}$
+\form#1883:$^{-1}$
+\form#1884:$\theta_{\text{l},1}$
+\form#1885:$^{3}$
+\form#1886:$^{-3}$
+\form#1887:$z_{m}$
+\form#1888:$w_m$
+\form#1889:$\theta_{l,1}$
+\form#1890:$^3$
+\form#1891:$w_m =\frac{z_m\theta_{l,1}\rho_w}{B_m} $
+\form#1892:$B_m) $
+\form#1893:$_m $
+\form#1894:$\theta _{l,1} $
+\form#1895:$\rho_w $
+\form#1896:$^{-3} $
+\form#1897:$\beta $
+\form#1898:$ \beta = 0.25 [ 1- \cos \left( \frac{w_m -w_{m,min}}{w_m-w_{m,max}} \right)]^{2} $
+\form#1899:$w_m $
+\form#1900:$w_{m,max} $
+\form#1901:$w_{m,min} $
+\form#1902:$^{-2} $
+\form#1903:$G_m)$
+\form#1904:$G_{0,m})$
+\form#1905:$R_{d,m}$
+\form#1906:$ G_m=G_{0,m}-R_{d,m} $
+\form#1907:$G_{0,m} $
+\form#1908:$\mu $
+\form#1909:$_2 $
+\form#1910:$^2 $
+\form#1911:$J_s)$
+\form#1912:$J_e)$
+\form#1913:$J_c)$
+\form#1914:$\varsigma$
+\form#1915:$ G_{0,m} = \nonumber \\ \quad \varsigma \min \left(J_{s},\frac{(J_{c}+J_{e})\pm \sqrt{{(J_c +J_ e )}^2 - 4(J_c +J_e)} }{2}\right) $
+\form#1916:$R_{d,m})$
+\form#1917:$R_{d,m,0})$
+\form#1918:$f_{m,rd}$
+\form#1919:$f_{T,rd})$
+\form#1920:$\theta_m$
+\form#1921:$R_{d,m} = R_{d,m,0} f_{m,rd} f_{T,{rd}}$
+\form#1922:$ f_{T,{rd}} = (3.22-(0.046 \cdot T_{moss})^{(T_{moss}-25/10)} $
+\form#1923:$ f_{m,rd} = 0 for \theta_{m} <0.4 $
+\form#1924:$ f_{m,rd} = 0.35 \theta_{m}^{2/3}-0.14 for 0.4\le \theta_m<5.8 $
+\form#1925:$ f_{m,rd} = 0.01 \theta_{m} +0.942 for 5.8<\theta _{m} $
+\form#1926:$ G_{0,m} = \quad \varsigma \min \left(J_{s},\frac{(J_{c}+J_{e})\pm \sqrt{{(J_c +J_ e )}^2 - 4(J_c +J_e)} }{2}\right) $
+\form#1927:$_m$
+\form#1928:$^-2$
+\form#1929:$K_{\ast g}$
+\form#1930:$^2$
+\form#1931:$\mu$
+\form#1932:$/s per W/m$
+\form#1933:$ (McCree, 1972). $
+\form#1934:$ is a function of the incoming short-wave radiation ($
+\form#1935:$, unit: W/m$
+\form#1936:$), the surface albedo ($
+\form#1937:$\tau _c$
+\form#1938:$K_{\ast g} = K \downarrow \tau_{c}\left( 1-\alpha_{g}\right)$
+\form#1939:$ f_{m,rd} = 0$
+\form#1940:$ \theta_{m} <0.4 $
+\form#1941:$ f_{m,rd} = 0.35 \theta_{m}^{2/3}-0.14$
+\form#1942:$ 0.4\le \theta_m<5.8 $
+\form#1943:$ f_{m,rd} = 0.01 \theta_{m} +0.942$
+\form#1944:$5.8<\theta _{m} $
+\form#1945:$K\downarrow $
+\form#1946:$ R_{o}=C_{SOM,o}k_{o}f_{T,{o}} $
+\form#1947:$ R_{a}=C_{SOM,a}k_{a}f_{T,{a}}f_{anoxic} $
+\form#1948:$R$
+\form#1949:$\mu mol C m$
+\form#1950:$/s) is obtained from the respiration rate coefficient $

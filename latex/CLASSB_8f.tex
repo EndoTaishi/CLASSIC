@@ -8,7 +8,7 @@ Purpose\+: Assign thermal and hydraulic properties to soil layers based on sand/
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{CLASSB_8f_ad124fb79b047c72316aea3d64d4721ee}{classb} (T\+H\+P\+O\+R, T\+H\+L\+R\+E\+T, T\+H\+L\+M\+I\+N, B\+I, P\+S\+I\+S\+A\+T, G\+R\+K\+S\+A\+T, T\+H\+L\+R\+A\+T, H\+C\+P\+S, T\+C\+S, T\+H\+F\+C, T\+H\+L\+W, P\+S\+I\+W\+L\+T, D\+E\+L\+Z\+W, Z\+B\+O\+T\+W, A\+L\+G\+W\+E\+T, A\+L\+G\+D\+R\+Y, A\+L\+G\+W\+V, A\+L\+G\+W\+N, A\+L\+G\+D\+V, A\+L\+G\+D\+N, S\+A\+N\+D, C\+L\+A\+Y, O\+R\+G\+M, S\+O\+C\+I, D\+E\+L\+Z, Z\+B\+O\+T, S\+D\+E\+P\+T\+H, I\+S\+A\+N\+D, I\+G\+D\+R, N\+L, N\+M, I\+L1, I\+L2, I\+M, I\+G, I\+G\+R\+A\+L\+B)
+subroutine \hyperlink{CLASSB_8f_a7ca965fc9694d6dc36fc64713e1b4e2f}{classb} (T\+H\+P\+O\+R, T\+H\+L\+R\+E\+T, T\+H\+L\+M\+I\+N, B\+I, P\+S\+I\+S\+A\+T, G\+R\+K\+S\+A\+T, T\+H\+L\+R\+A\+T, H\+C\+P\+S, T\+C\+S, T\+H\+F\+C, T\+H\+L\+W, P\+S\+I\+W\+L\+T, D\+E\+L\+Z\+W, Z\+B\+O\+T\+W, A\+L\+G\+W\+E\+T, A\+L\+G\+D\+R\+Y, A\+L\+G\+W\+V, A\+L\+G\+W\+N, A\+L\+G\+D\+V, A\+L\+G\+D\+N, S\+A\+N\+D, C\+L\+A\+Y, O\+R\+G\+M, S\+O\+C\+I, D\+E\+L\+Z, Z\+B\+O\+T, S\+D\+E\+P\+T\+H, I\+S\+A\+N\+D, I\+G\+D\+R, N\+L, N\+M, I\+L1, I\+L2, I\+M, I\+G, I\+G\+R\+A\+L\+B, ipeatland)
 \end{DoxyCompactItemize}
 
 
@@ -18,7 +18,7 @@ Purpose\+: Assign thermal and hydraulic properties to soil layers based on sand/
 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{CLASSB_8f_ad124fb79b047c72316aea3d64d4721ee}{}\index{C\+L\+A\+S\+S\+B.\+f@{C\+L\+A\+S\+S\+B.\+f}!classb@{classb}}
+\hypertarget{CLASSB_8f_a7ca965fc9694d6dc36fc64713e1b4e2f}{}\index{C\+L\+A\+S\+S\+B.\+f@{C\+L\+A\+S\+S\+B.\+f}!classb@{classb}}
 \index{classb@{classb}!C\+L\+A\+S\+S\+B.\+f@{C\+L\+A\+S\+S\+B.\+f}}
 \subsubsection[{classb}]{\setlength{\rightskip}{0pt plus 5cm}subroutine classb (
 \begin{DoxyParamCaption}
@@ -57,9 +57,10 @@ Purpose\+: Assign thermal and hydraulic properties to soil layers based on sand/
 \item[{integer}]{I\+L2, }
 \item[{integer}]{I\+M, }
 \item[{integer}]{I\+G, }
-\item[{integer}]{I\+G\+R\+A\+L\+B}
+\item[{integer}]{I\+G\+R\+A\+L\+B, }
+\item[{integer, dimension(nl,nm)}]{ipeatland}
 \end{DoxyParamCaption}
-)}\label{CLASSB_8f_ad124fb79b047c72316aea3d64d4721ee}
+)}\label{CLASSB_8f_a7ca965fc9694d6dc36fc64713e1b4e2f}
 
 \begin{DoxyParams}{Parameters}
 {\em thpor} & Pore volume $[m^3 m^{-3} ] ( \theta_p )$\\
@@ -82,6 +83,8 @@ Purpose\+: Assign thermal and hydraulic properties to soil layers based on sand/
 \hline
 {\em thfc} & Field capacity $[m^3 m^{-3} ] (\theta_{fc} )$\\
 \hline
+{\em thlw} & Soil water content at wilting point, $[m^3 m^{-3} ]$\\
+\hline
 {\em psiwlt} & Soil moisture suction at wilting point \mbox{[}m\mbox{]} $(\Psi_{wilt} )$\\
 \hline
 {\em delzw} & Thickness of permeable part of soil layer \mbox{[}m\mbox{]}\\
@@ -92,9 +95,19 @@ Purpose\+: Assign thermal and hydraulic properties to soil layers based on sand/
 \hline
 {\em algdry} & All-\/wave albedo of dry soil for modelled area \mbox{[} \mbox{]}\\
 \hline
+{\em algwv} & Visible albedo of wet soil for modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em algwn} & N\+I\+R albedo of wet soil for modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em algdv} & Visible albedo of dry soil for modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em algdn} & N\+I\+R albedo of dry soil for modelled area \mbox{[} \mbox{]}\\
+\hline
 {\em isand} & Sand content flag\\
 \hline
 {\em igdr} & Index of soil layer in which bedrock is encountered\\
+\hline
+{\em ipeatland} & Peatland flag\+: 0 = not a peatland, 1= bog, 2 = fen\\
 \hline
 {\em sand} & Percent sand content of soil layer \mbox{[}percent\mbox{]} $(X_{sand} )$\\
 \hline

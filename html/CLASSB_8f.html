@@ -40,7 +40,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -95,13 +94,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:ad124fb79b047c72316aea3d64d4721ee"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CLASSB_8f.html#ad124fb79b047c72316aea3d64d4721ee">classb</a> (THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, THLRAT, HCPS, TCS, THFC, THLW, PSIWLT, DELZW, ZBOTW, ALGWET, ALGDRY, ALGWV, ALGWN, ALGDV, ALGDN, SAND, CLAY, ORGM, SOCI, DELZ, ZBOT, SDEPTH, ISAND, IGDR, NL, NM, IL1, IL2, IM, IG, IGRALB)</td></tr>
-<tr class="separator:ad124fb79b047c72316aea3d64d4721ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ca965fc9694d6dc36fc64713e1b4e2f"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CLASSB_8f.html#a7ca965fc9694d6dc36fc64713e1b4e2f">classb</a> (THPOR, THLRET, THLMIN, BI, PSISAT, GRKSAT, THLRAT, HCPS, TCS, THFC, THLW, PSIWLT, DELZW, ZBOTW, ALGWET, ALGDRY, ALGWV, ALGWN, ALGDV, ALGDN, SAND, CLAY, ORGM, SOCI, DELZ, ZBOT, SDEPTH, ISAND, IGDR, NL, NM, IL1, IL2, IM, IG, IGRALB, ipeatland)</td></tr>
+<tr class="separator:a7ca965fc9694d6dc36fc64713e1b4e2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Purpose: Assign thermal and hydraulic properties to soil layers based on sand/clay content, or soil type. Also calculate permeable thickness of soil layers, and wet and dry surface albedo for mineral soils. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="ad124fb79b047c72316aea3d64d4721ee"></a>
+<a class="anchor" id="a7ca965fc9694d6dc36fc64713e1b4e2f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -319,7 +318,13 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>IGRALB</em>&#160;</td>
+          <td class="paramname"><em>IGRALB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(nl,nm)&#160;</td>
+          <td class="paramname"><em>ipeatland</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -340,13 +345,19 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">hcps</td><td>Volumetric heat capacity of soil matter <img class="formulaInl" alt="$[J m^{-3} K^{-1} ] (C_g )$" src="form_722.png"/></td></tr>
     <tr><td class="paramname">tcs</td><td>Thermal conductivity of soil <img class="formulaInl" alt="$[W m^{-1} K^{-1} ] (\tau_g )$" src="form_723.png"/></td></tr>
     <tr><td class="paramname">thfc</td><td>Field capacity <img class="formulaInl" alt="$[m^3 m^{-3} ] (\theta_{fc} )$" src="form_724.png"/></td></tr>
+    <tr><td class="paramname">thlw</td><td>Soil water content at wilting point, <img class="formulaInl" alt="$[m^3 m^{-3} ]$" src="form_641.png"/></td></tr>
     <tr><td class="paramname">psiwlt</td><td>Soil moisture suction at wilting point [m] <img class="formulaInl" alt="$(\Psi_{wilt} )$" src="form_725.png"/></td></tr>
     <tr><td class="paramname">delzw</td><td>Thickness of permeable part of soil layer [m]</td></tr>
     <tr><td class="paramname">zbotw</td><td>Depth of bottom of permeable part of soil layer [m]</td></tr>
     <tr><td class="paramname">algwet</td><td>All-wave albedo of wet soil for modelled area [ ]</td></tr>
     <tr><td class="paramname">algdry</td><td>All-wave albedo of dry soil for modelled area [ ]</td></tr>
+    <tr><td class="paramname">algwv</td><td>Visible albedo of wet soil for modelled area [ ]</td></tr>
+    <tr><td class="paramname">algwn</td><td>NIR albedo of wet soil for modelled area [ ]</td></tr>
+    <tr><td class="paramname">algdv</td><td>Visible albedo of dry soil for modelled area [ ]</td></tr>
+    <tr><td class="paramname">algdn</td><td>NIR albedo of dry soil for modelled area [ ]</td></tr>
     <tr><td class="paramname">isand</td><td>Sand content flag</td></tr>
     <tr><td class="paramname">igdr</td><td>Index of soil layer in which bedrock is encountered</td></tr>
+    <tr><td class="paramname">ipeatland</td><td>Peatland flag: 0 = not a peatland, 1= bog, 2 = fen</td></tr>
     <tr><td class="paramname">sand</td><td>Percent sand content of soil layer [percent] <img class="formulaInl" alt="$(X_{sand} )$" src="form_726.png"/></td></tr>
     <tr><td class="paramname">clay</td><td>Percent clay content of soil layer [percent] <img class="formulaInl" alt="$(X_{clay} )$" src="form_727.png"/></td></tr>
     <tr><td class="paramname">orgm</td><td>Percent organic matter content of soil layer [percent]</td></tr>
@@ -373,7 +384,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Sep 26 2016 14:40:57 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 29 2016 15:12:15 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

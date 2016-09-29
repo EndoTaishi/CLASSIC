@@ -23,7 +23,18 @@
 !!\end{tabular}
 !!\f]
 !!
-
+!! We introduced three new
+!!PFTs for peatlands: evergreen shrubs, deciduous shrubs, and sedges. Evergreen
+!!shrubs, for example the ericaceous shrubs, are the common dominant vascular
+!!plants in bogs and poor fens while deciduous shrubs, such as the betulaceous
+!!shrubs, often dominate rich fens. Both shrubs are categorized as broadleaf
+!!trees in CLASS morphologically, but their phenological and physiological
+!!characteristics are more similar to those of needleleaf trees. The shrub
+!!tundra ecosystem is situated adjacent to needleleaf forest in the Northern
+!!Hemisphere (Kaplan et al., 2003) and they share similar responses to climate
+!!in ESMs (e.g. Bonan et al., 2002). Table~2 lists the key parameters for the
+!!peatland PFTs used in this model. (The photosynthesis and autotrophic
+!!respiration of vascular PFTs are modelled the same as in the original CTEM.)
 !>\file
 
 module ctem_params

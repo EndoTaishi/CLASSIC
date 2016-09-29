@@ -40,7 +40,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -110,11 +109,11 @@ Functions/Subroutines</h2></td></tr>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}). \]" src="form_120.png"/>
 </p>
-<p>Grasses and crops have <img class="formulaInl" alt="$m_{intr} = 0$" src="form_1088.png"/>. The annual growth-related mortality <img class="formulaInl" alt="$m_{ge}$" src="form_1085.png"/> is calculated using growth efficiency of a PFT over the course of the previous year following <a class="el" href="citelist.html#CITEREF_Prentice1993-xn">[14]</a> and <a class="el" href="citelist.html#CITEREF_Sitch2003-847">[49]</a> as</p>
+<p>Grasses and crops have <img class="formulaInl" alt="$m_{intr} = 0$" src="form_1088.png"/>. The annual growth-related mortality <img class="formulaInl" alt="$m_{ge}$" src="form_1085.png"/> is calculated using growth efficiency of a PFT over the course of the previous year following <a class="el" href="citelist.html#CITEREF_Prentice1993-xn">[14]</a> and <a class="el" href="citelist.html#CITEREF_Sitch2003-847">[51]</a> as</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \]" src="form_122.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$m_{{ge},max}$" src="form_1089.png"/> represents the PFT-specific maximum mortality rate when no growth occurs (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>). <img class="formulaInl" alt="$k_{m}$" src="form_1090.png"/> is a parameter set to <img class="formulaInl" alt="$0.3\,m^{2}\,(g\,C)^{-1}$" src="form_125.png"/>. <img class="formulaInl" alt="$g_\mathrm{e}$" src="form_1091.png"/> is the growth efficiency of the PFT ( <img class="formulaInl" alt="$g\,C\,m^{-2}$" src="form_127.png"/>) calculated based on the maximum LAI ( <img class="formulaInl" alt="$L_{\alpha,max}$" src="form_1092.png"/>; <img class="formulaInl" alt="$m^{2}\,m^{-2}$" src="form_129.png"/>) and the increment in stem and root mass over the course of the previous year ( <img class="formulaInl" alt="$\Delta C_\mathrm{S}$" src="form_1093.png"/> and <img class="formulaInl" alt="$\Delta C_\mathrm{R}$" src="form_1094.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_100.png"/>, respectively) <a class="el" href="citelist.html#CITEREF_Waring1983-wc">[54]</a> </p><p class="formulaDsp">
+<p>where <img class="formulaInl" alt="$m_{{ge},max}$" src="form_1089.png"/> represents the PFT-specific maximum mortality rate when no growth occurs (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>). <img class="formulaInl" alt="$k_{m}$" src="form_1090.png"/> is a parameter set to <img class="formulaInl" alt="$0.3\,m^{2}\,(g\,C)^{-1}$" src="form_125.png"/>. <img class="formulaInl" alt="$g_\mathrm{e}$" src="form_1091.png"/> is the growth efficiency of the PFT ( <img class="formulaInl" alt="$g\,C\,m^{-2}$" src="form_127.png"/>) calculated based on the maximum LAI ( <img class="formulaInl" alt="$L_{\alpha,max}$" src="form_1092.png"/>; <img class="formulaInl" alt="$m^{2}\,m^{-2}$" src="form_129.png"/>) and the increment in stem and root mass over the course of the previous year ( <img class="formulaInl" alt="$\Delta C_\mathrm{S}$" src="form_1093.png"/> and <img class="formulaInl" alt="$\Delta C_\mathrm{R}$" src="form_1094.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_100.png"/>, respectively) <a class="el" href="citelist.html#CITEREF_Waring1983-wc">[58]</a> </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \]" src="form_132.png"/>
 </p>
 <p>Mortality associated with bioclimatic criteria, <img class="formulaInl" alt="$m_{bioclim}$" src="form_943.png"/> ( <img class="formulaInl" alt="$0.25\,yr^{-1}$" src="form_133.png"/>), is applied when climatic conditions in a grid cell become unfavourable for a PFT to exist and ensures that PFTs do not exist outside their bioclimatic envelopes, as explained in the next section.</p>
@@ -221,7 +220,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Sep 26 2016 14:40:57 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 29 2016 15:12:16 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

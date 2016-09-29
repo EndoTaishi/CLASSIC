@@ -11,6 +11,7 @@ var searchData=
   ['disturb_2ef90',['disturb.f90',['../disturb_8f90.html',1,'']]],
   ['disturbance_5fscheme_5fburntobare',['Disturbance_scheme_burntobare',['../group__disturbance__scheme__burntobare.html',1,'']]],
   ['disturbance_5fscheme_5fdisturb',['Disturbance_scheme_disturb',['../group__disturbance__scheme__disturb.html',1,'']]],
+  ['dmoss',['dmoss',['../structctem__statevars_1_1veg__rot.html#a1e51c1f35da7b98ada827a2784d3046a',1,'ctem_statevars::veg_rot::dmoss()'],['../structctem__statevars_1_1veg__gat.html#af2f0850a504fff247ffd5687ec41e05a',1,'ctem_statevars::veg_gat::dmoss()']]],
   ['dofire',['dofire',['../structctem__statevars_1_1ctem__switches.html#acd44b6d02549e9b4605b67e9d677c53a',1,'ctem_statevars::ctem_switches']]],
   ['dowetlands',['dowetlands',['../structctem__statevars_1_1ctem__switches.html#a8784d0eb86363cf7060f8f0e5a882558',1,'ctem_statevars::ctem_switches']]],
   ['drcoef',['drcoef',['../DRCOEF_8f.html#aae5a711d9800a0a042c1cd85f78c87dc',1,'DRCOEF.f']]],
