@@ -1949,3 +1949,68 @@
 \form#1948:$R$
 \form#1949:$\mu mol C m$
 \form#1950:$/s) is obtained from the respiration rate coefficient $
+\form#1951:\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf & evg & dcd & --- & ---& ---\\ \hline broad leaf & evg & dcd-cld & dcd-dry & EVG-shrubs & DCD-shrubs\\ \hline crops & c3 & c4 & --- & ---& ---\\ \hline grasses & c3 & c4 & sedges & ---& ---\\ \hline \end{tabular} \]
+\form#1952:$ ($
+\form#1953:$f_T$
+\form#1954:$C_{SOM}$
+\form#1955:$f_{anoxic}$
+\form#1956:$T_s)$
+\form#1957:$Q_{10,a}$
+\form#1958:$Q_{10,o}$
+\form#1959:$k$
+\form#1960:$ f_{T,o} =Q_{10,o}^{\left(\int\limits_{0}^{z_{wt}} T_{j} -15\right)/10} $
+\form#1961:$ f_{T,{a}} =Q_{10,{a}}^{\left(\int\limits_{z_{wt}}^{z_\mathrm{p}} T_{j} -15\right)/10} $
+\form#1962:$ Q_{10}=1.44+0.56 {tanh}[0.075\left( 46.0-T_{s} \right)] $
+\form#1963:$ T_{s,o}=\int\limits_{0}^{z_{wt}} T_{j} \, /(z_{wt}) $
+\form#1964:$ T_{s,a}=\int\limits_{z_{wt}}^{z_{p}} T_{j} /(z_{p}-z_{wt}) $
+\form#1965:$ k_{o}= 0 $
+\form#1966:$ z_{wt}<0 $
+\form#1967:$ k_{o}= k_{1}\left( 1-e^{k_{2}z_{wt}} \right)+k_{3}z_{wt} $
+\form#1968:$ 0.3>_{z{t}}\ge 0 $
+\form#1969:$ k_{4}e^{k_{5}z_{wt}}+k_{6}z_{wt}+k_{7} $
+\form#1970:$ z_{wt}\ge 0.3 $
+\form#1971:$ k_{a}= k_{4}e^{k_{5}z_{p}}+{10k}_{6}z_{p}+k_{7} $
+\form#1972:$ k_{a} = $
+\form#1973:$ k_1 e^{ k_2 z_{wt} } -$
+\form#1974:$ k_1 e^{ k_2 z_{wt} } - k_4 e^{k_5 z_p} $
+\form#1975:$ k_1 e^{ k_2 z_{wt} } - k_4 e^{k_5 z_p} -k_3 z_{wt}+k_8 $
+\form#1976:$0.3>z_{wt} \ge 0 $
+\form#1977:$ k_{a}= k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_p-z_{wt} \right)$
+\form#1978:$ C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}) $
+\form#1979:$ C_{SOM,a}= C_{SOM}-C_{SOM,o} $
+\form#1980:$k_{o}$
+\form#1981:$k_{a}$
+\form#1982:$_{hum}$
+\form#1983:$R_o$
+\form#1984:$R_a$
+\form#1985:$ \frac{{dC}_{SOM}}{dt} = C_{hum}-R_{o}-R_{a} $
+\form#1986:$C_{hum}$
+\form#1987:$_{SOM}$
+\form#1988:$ z_{p}= \frac{{-k}_{10}+\sqrt{k_{10}+\frac{4k_{9}{C}_{SOM}}{0.487}}. }{2k_{9}} $
+\form#1989:$, $
+\form#1990:$ is calculated as $
+\form#1991:$ is the thickness of soil layer (unit: m), $
+\form#1992:$ z_{wt}=z_{{b},j}-\Delta z\left[ \frac{\theta_{{l},j}+\theta_{i,j}-\theta _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right] $
+\form#1993:$\Delta z $
+\form#1994:$\theta_l $
+\form#1995:$0.3 > z_t \ge 0$
+\form#1996:$ H = \min (10.0C_S^{0.385},45) $
+\form#1997:$ H = (C_S + C_L)^{0.385} $
+\form#1998:$ H = 3.5 (C_{L,g} + 0.55C_{L,b})^{0.5} $
+\form#1999:$C_L$
+\form#2000:$C_S$
+\form#2001:$C_R$
+\form#2002:$\tau_L$
+\form#2003:\[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \]
+\form#2004:$\gamma_L$
+\form#2005:$(\tau_{L,b} = 0.1\,\tau_L$
+\form#2006:$ H = \min(10.0,3.0C_S^{0.385}) $
+\form#2007:$ H = \min(1.0, 0.25(C_S^{0.2})) $
+\form#2008:$ H = = min(1.0,(C_{L,g}+0.55C_{L,b})^{0.3}) $
+\form#2009:$ f_R(z) = 1 - \exp(-\iota z) $
+\form#2010:$d_R$
+\form#2011:$f_R = 0.99$
+\form#2012:\[ \label{rootterm1} d_R = \frac{-\ln(1-f_R)}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \]
+\form#2013:\[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \]
+\form#2014:$\overline{C_R}$
+\form#2015:$\iota = 4.605/d_R$

@@ -256,7 +256,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: litrmassms        !<moss litter mass, \f$kg C/m^2\f$
     real, dimension(nlat,nmos) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
     real, dimension(nlat,nmos) :: dmoss             !<depth of living moss (m)
-
+    real, dimension(nlat,nmos) :: pdd               !<peatland degree days above 0 deg C.
 
     real, dimension(nlat,nmos,icc)  :: rothrlos !<root death as crops are harvested, \f$kg c/m^2\f$
     real, dimension(nlat,nmos,icc)  :: pfcancmx !<previous year's fractional coverages of pfts
@@ -496,6 +496,7 @@ type veg_gat
     real, dimension(ilg) :: litrmassms !<moss litter mass, \f$kg C/m^2\f$
     real, dimension(ilg) :: Cmossmas   !<C in moss biomass, \f$kg C/m^2\f$
     real, dimension(ilg) :: dmoss      !<depth of living moss (m)
+    real, dimension(ilg) :: pdd        !<peatland degree days above 0 deg C.
     real, dimension(ilg) :: ancsmoss   !<moss net photosynthesis in canopy snow subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
     real, dimension(ilg) :: angsmoss   !<moss net photosynthesis in snow ground subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
     real, dimension(ilg) :: ancmoss    !<moss net photosynthesis in canopy ground subarea ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
@@ -856,6 +857,9 @@ type ctem_tile_level
       real, dimension(ilg) :: taaccgat_t       !<
       real, dimension(ilg) :: uvaccgat_t       !<
       real, dimension(ilg) :: vvaccgat_t       !<
+      real, dimension(ilg) :: anmossac_t       !<daily averaged moss net photosynthesis accumulated (/f$\mu mol /m^2 /s\f$)
+      real, dimension(ilg) :: rmlmossac_t      !<daily averaged moss maintainence respiration (/f$\mu mol /m^2 /s\f$)
+      real, dimension(ilg) :: gppmossac_t      !<daily averaged gross primary production (/f$\mu mol /m^2 /s\f$)
       real, dimension(ilg,ignd) :: tbaraccgat_t!<
       real, dimension(ilg,ignd) :: tbarcacc_t  !<
       real, dimension(ilg,ignd) :: tbarcsacc_t !<
@@ -1275,6 +1279,7 @@ integer :: j,k,l,m
         vrot%anmoss(j,k)            = 0.0
         vrot%armoss(j,k)            = 0.0
         vrot%hpd(j,k)               = 0.0
+        vrot%pdd(j,k)               = 0.0
 
         do l=1,ignd
             vrot%tbaraccrow_m(j,k,l)  = 0.0

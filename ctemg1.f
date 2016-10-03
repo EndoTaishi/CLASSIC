@@ -7,17 +7,15 @@ C!              Canadian Terrestrial Ecosystem Model (CTEM)
      c           ailcbgat,    ailcgat,     zolncgat,     rmatcgat,
      d        rmatctemgat,    slaigat,   bmasveggat,  cmasvegcgat,
      e         veghghtgat,rootdpthgat,   alvsctmgat,   alirctmgat,
-     f            paicgat,   slaicgat,   faregat,
+     f            paicgat,   slaicgat,   faregat,    ipeatlandgat,
      g              ilmos,      jlmos,       iwmos,         jwmos,
-     h         nml, 
+     h                nml,
      i        gleafmasrow,bleafmasrow, stemmassrow,   rootmassrow,
      j         fcancmxrow,    zbtwrow,     dlzwrow,       sdeprow,
      k           ailcgrow,   ailcbrow,     ailcrow,      zolncrow,
      l           rmatcrow,rmatctemrow,     slairow,    bmasvegrow,
      m        cmasvegcrow, veghghtrow, rootdpthrow,    alvsctmrow,
-     n         alirctmrow,    paicrow,    slaicrow 
-c      gather peatland variable YW March 19, 2015----------------------/
-     1         ,ipeatlandrow,      ipeatlandgat)
+     n         alirctmrow,    paicrow,    slaicrow,  ipeatlandrow)
 
 c
 c     22  Jul 2013  - Add in module for parameters
@@ -55,6 +53,7 @@ c
      a      rootdpthgat(ilg,icc),
      b      alvsctmgat(ilg,ican),   alirctmgat(ilg,ican),
      c         paicgat(ilg,ican),     slaicgat(ilg,ican)
+      integer    ipeatlandgat(ilg)
 c
       real  gleafmasrow(nlat,nmos,icc),     bleafmasrow(nlat,nmos,icc),
      1      stemmassrow(nlat,nmos,icc),     rootmassrow(nlat,nmos,icc),
@@ -69,14 +68,12 @@ c
      a      rootdpthrow(nlat,nmos,icc),
      b      alvsctmrow(nlat,nmos,ican),     alirctmrow(nlat,nmos,ican),
      c         paicrow(nlat,nmos,ican),       slaicrow(nlat,nmos,ican)
-c    
-c    gather ipeatland here for bio2str  YW March 19, 2015  
-      integer  ipeatlandgat(ilg), ipeatlandrow(nlat,nmos)
+      integer  ipeatlandrow(nlat,nmos)
 c
 c----------------------------------------------------------------------
       do 100 k=1,nml
           sdepgat(k)=sdeprow(ilmos(k),jlmos(k))
-          ipeatlandgat(k)=ipeatlandrow(ilmos(k),jlmos(k))     !YW
+          ipeatlandgat(k)=ipeatlandrow(ilmos(k),jlmos(k))   
           faregat(k) = FAREROT(ilmos(k), jlmos(k))
 
 100   continue

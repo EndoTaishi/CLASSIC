@@ -14,12 +14,12 @@
 !!PFTs (along rows) and CTEM sub-PFTs (along columns)
 !!
 !!\f[
-!!\begin{tabular} { | l | c | c | c | }
+!!\begin{tabular} { | l | c | c | c | c | c | }
 !!\hline
-!!needle leaf &  evg &      dcd &      --- \\ \hline
-!!broad leaf  &  evg &  dcd-cld &  dcd-dry \\ \hline
-!!crops       &   c3 &       c4 &      --- \\ \hline
-!!grasses     &   c3 &       c4 &      --- \\ \hline
+!!needle leaf &  evg &      dcd &      --- & ---& ---\\ \hline
+!!broad leaf  &  evg &  dcd-cld &  dcd-dry & EVG-shrubs & DCD-shrubs\\ \hline
+!!crops       &   c3 &       c4 &      --- & ---& ---\\ \hline
+!!grasses     &   c3 &       c4 &      sedges & ---& ---\\ \hline
 !!\end{tabular}
 !!\f]
 !!

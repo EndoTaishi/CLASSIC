@@ -1459,7 +1459,7 @@ c
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
 
-      !real, pointer, dimension(:) :: gppmossac_g
+      !real, pointer, dimension(:) :: gppmossac_t
 
     ! Model Switches (rarely changed ones only! The rest are in joboptions file):
 
@@ -1475,14 +1475,19 @@ C
 c=====peatland related parameter declaration March 18, 2015 YW=========\
 
 c   ----CLASS moss variables-------YW ----------------------------------
-      real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd), ! FLAG meant to be _t?????
-     4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd), ! FLAG meant to be _t?????
-     5      hpdgat(ilg),pdd(ilg), !FLAG PDD need to move this into appropriate place!
+      real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
+     4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
+     5      hpdgat(ilg),
      6      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg)
-c   ----CTEM moss variables--------------------------------------------
-     1      ,anmossac_g(ilg), rmlmossac_g(ilg) ,gppmossac_g(ilg)
+c   g12 - energy flux between soil layer 1 and 2 (W/m2)
+c   g23 - energy flux between soil layer 2 and 3 (W/m2)
+c   wiltsm - wilting point for peat soil layers  (m3/m3)
+c   fieldsm - field capacity for peat soil layers (m3/m3)
+C   thliqc - liquid water content of canopy+snow subarea (m3/m3)
+c   thliqg - liquid water content of snow ground subarea (m3/m3)
+c   hpd - peat depth (m)
 
-      integer, pointer, dimension(:,:) :: ipeatlandrow
+      integer, pointer, dimension(:,:) :: ipeatlandrow !This is first set in read_from_ctm.
       integer, pointer, dimension(:) :: ipeatlandgat
       real, pointer, dimension(:,:) :: anmossrow
       real, pointer, dimension(:) :: anmossgat
@@ -1500,7 +1505,8 @@ c   ----CTEM moss variables--------------------------------------------
       real, pointer, dimension(:) :: Cmossmasgat
       real, pointer, dimension(:,:) :: dmossrow
       real, pointer, dimension(:) :: dmossgat
-
+      real, pointer, dimension(:,:) :: pddrow
+      real, pointer, dimension(:) :: pddgat
       real, pointer, dimension(:) :: ancsmoss
       real, pointer, dimension(:) :: angsmoss
       real, pointer, dimension(:) :: ancmoss
@@ -1510,20 +1516,9 @@ c   ----CTEM moss variables--------------------------------------------
       real, pointer, dimension(:) :: rmlcmoss
       real, pointer, dimension(:) :: rmlgmoss
 
-c   definitions of new variables---------------------------------------
-
-c   g12 - energy flux between soil layer 1 and 2 (W/m2)  
-c   g23 - energy flux between soil layer 2 and 3 (W/m2)  
-c   wiltsm - wilting point for peat soil layers  (m3/m3)
-c   fieldsm - field capacity for peat soil layers (m3/m3)
-C   thliqc - liquid water content of canopy+snow subarea (m3/m3)
-c   thliqg - liquid water content of snow ground subarea (m3/m3) 
-c   hpd - peat depth (m)
-c   ----------below are moss C fluxes in umol/m2/s----------------------
-c   anmossac_g - daily averaged moss net photosynthesis accumulated
-c   rmlmossac_g- daily averaged moss maintainence respiration
-c   gppmossac_g- daily averaged gross primary production
-c=====peatland parameter declaration done March 19, 2015 YW===========/
+      real, pointer, dimension(:) :: anmossac_t
+      real, pointer, dimension(:) :: rmlmossac_t
+      real, pointer, dimension(:) :: gppmossac_t
 
 C=======================================================================
 C     * PHYSICAL CONSTANTS.
@@ -1765,6 +1760,7 @@ C===================== CTEM ==============================================\
       litrmassmsrow    => vrot%litrmassms
       Cmossmasrow      => vrot%Cmossmas
       dmossrow         => vrot%dmoss
+      pddrow           => vrot%pdd
 
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>
       ! GAT:
@@ -1964,6 +1960,7 @@ C===================== CTEM ==============================================\
       litrmassmsgat    => vgat%litrmassms
       Cmossmasgat      => vgat%Cmossmas
       dmossgat         => vgat%dmoss
+      pddgat           => vgat%pdd
       ancsmoss         => vgat%ancsmoss
       angsmoss         => vgat%angsmoss
       ancmoss          => vgat%ancmoss
@@ -2108,9 +2105,9 @@ C===================== CTEM ==============================================\
       ancgvgac_t        => ctem_tile%ancgvgac_t
       rmlcsvga_t        => ctem_tile%rmlcsvga_t
       rmlcgvga_t        => ctem_tile%rmlcgvga_t
-
-!      gppmossac_g        => ctem_tile%gppmossac_g
-
+      anmossac_t        => ctem_tile%anmossac_t
+      rmlmossac_t       => ctem_tile%rmlmossac_t
+      gppmossac_t       => ctem_tile%gppmossac_t
 
 !    =================================================================================
 !    =================================================================================
@@ -2956,31 +2953,33 @@ c
                 gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrot(i,m,1)-
      &                        fcanrot(i,m,2)-fcanrot(i,m,3)-
      &                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
-            else !peatland tile ! FLAG YW on a peat tile, can only peat grow??? JM
+            else !peatland tile
                 gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmassmsrow(i,m)
-                hpdrow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth (FLAG!! YW- Is this correct?-JM)
-                ! The soil carbon on the peatland tiles is assigned based on depth
+                hpdrow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth (FLAG! I think this should change-JM)
+                ! The soil carbon on the peatland tiles is assigned based on depth. This
+                ! is the same relation as found in decp subroutine.
                 gavgscmsrow(i,m) = 0.487*(4056.6*hpdrow(i,m)**2+
-     &                              72067.0*hpdrow(i,m))/1000  !FLAG YW - need more info on this JM.
+     &                              72067.0*hpdrow(i,m))/1000
                 vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
             endif
 c              
 117   continue
 
 c    Also initialize the accumulators for moss daily C fluxes.
+C    FLAG perhaps move? JM.
 c
 c    Moved out of 117 loop and ipeatlandrow > 0 block where only 1 to nltest 
 c    elements were actually initialized since the loop is really for row 
 c    variables. Initialization is now done on all elements, which shouldn't be
 c    a problem. EC - Feb 16, 2016.
 
-      anmossac_g  = 0.0
-      rmlmossac_g = 0.0
-      gppmossac_g = 0.0
+      anmossac_t  = 0.0
+      rmlmossac_t = 0.0
+      gppmossac_t = 0.0
 
-      write(6,6990) 'hpdrow=', hpdrow 
-      write(6,6990) 'gavgscms=', gavgscmsrow
-      write(6,6990) 'vgbiomas=', vgbiomasrow
+      write(6,*) 'hpdrow=', hpdrow
+      write(6,*) 'gavgscms=', gavgscmsrow
+      write(6,*) 'vgbiomas=', vgbiomasrow
 c    ----------------------------YW March 25, 2015 --------------------/
 c
 
@@ -2993,7 +2992,7 @@ c
      2      ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,
      3      bmasveggat,cmasvegcgat,veghghtgat,
      4      rootdpthgat,alvsctmgat,alirctmgat,
-     5      paicgat,    slaicgat, faregat,
+     5      paicgat,    slaicgat, faregat, ipeatlandgat,
      6      ilmos,jlmos,iwmos,jwmos,
      7      nml,
      8      gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,
@@ -3001,9 +3000,7 @@ c
      a      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
      b      bmasvegrow,cmasvegcrow,veghghtrow,
      c      rootdpthrow,alvsctmrow,alirctmrow,
-     d      paicrow,    slaicrow, FAREROT
-c    gather peatland variable YW March 19, 2015---------------------- /
-     1      ,ipeatlandrow,   ipeatlandgat)
+     d      paicrow,    slaicrow, FAREROT,ipeatlandrow)
 
       call bio2str( gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,
      1                           1,      nml,    fcancmxgat, zbtwgat,
@@ -3011,15 +3008,8 @@ c    gather peatland variable YW March 19, 2015---------------------- /
      4                       ailcggat, ailcbgat,  ailcgat, zolncgat,
      5                       rmatcgat, rmatctemgat,slaigat,bmasveggat,
      6                 cmasvegcgat,veghghtgat, rootdpthgat,alvsctmgat,
-     7                     alirctmgat, paicgat,  slaicgat
-c     peatland PFT bio2str YW March 19, 2015---------------------------/ 
-     8              ,ipeatlandgat)     
+     7                     alirctmgat, paicgat,  slaicgat,ipeatlandgat)
 c
-       write(6,6990)  'veghght =',veghghtgat   !YW
-       write(6,6990)  'rootdpth=',rootdpthgat   !YW
-6990   format(A15,12f6.2)
-
-
       call ctems1(gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,
      1      fcancmxrow,ZBTWROT,DLZWROT,SDEPROT,ailcgrow,ailcbrow,
      2      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
@@ -3076,7 +3066,6 @@ c
 
       endif   ! if (ctem_on)
 c
-!       ! FLAG test JM Dec 18 2015
 !     Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
       do i = 1, nltest
        if (radjrow(1) > 0.) then
@@ -3085,7 +3074,6 @@ c
         call finddaylength(355.0, radjrow(1),dayl_maxrow(i)) !following rest of code, radjrow is always given index of 1 offline.
        end if
       end do
-      ! end FLAG test JM Dec 18 2015
 
 c     ctem initial preparation done
 
@@ -3163,16 +3151,6 @@ c       but only if it was read in during the loop above.
       met_rewound = .false.
 
       endif
-c    ----assign the initial CO2 concentration YW March 19, 2015--------\
-C    add initialization of CO2 concentration at the first time step when 
-C    CO2conc is 0. to fix the floating point problem  
-!           FLAG - wha?
-         do i=1,nltest
-          do m=1,nmtest
-           co2concrow(i,m)=setco2conc
-          enddo
-         enddo
-c    ----YW March 19, 2015---------------------------------------------/
 
 C===================== CTEM ============================================ /
 C
@@ -3228,14 +3206,6 @@ C
       DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
       HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
       COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
-
-! FLAG!!!! move to elsewhere?
-      !-------initiallize pdd at the beginning of the year---
-          if (iday ==1)     then 
-           pdd = 0.
-          endif
-c    --------------   YW May 06, 2015 ---------------------------------   
-
      
       DO 300 I=1,NLTEST
           CSZROW(I)=SIGN(MAX(ABS(COSZ),1.0E-3),COSZ)
@@ -3379,15 +3349,12 @@ c         pfcancmx value is also the nfcancmx value.
       endif   ! at the first day of each year i.e.
 c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
 
-      !       ! FLAG test JM Dec 18 2015
       if (ihour.eq.0.and.imin.eq.0) then ! first time step of the day
       ! Find the daylength of this day
         do i = 1, nltest
           call finddaylength(real(iday), radjrow(1), daylrow(i)) !following rest of code, radjrow is always given index of 1 offline.
         end do
       end if
-      ! end FLAG test JM Dec 18 2015
-
 
 C===================== CTEM ============================================ /
 C
@@ -3404,7 +3371,6 @@ C
      1             NML,NMW,GCROW,FAREROT,MIDROT,
      2             NLAT,NMOS,ILG,1,NLTEST,NMTEST)
 C
-
       CALL CLASSG (TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT,
      1             TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT,
      2             TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT,
@@ -3552,7 +3518,6 @@ C========================================================================
 C
 C===================== CTEM ============================================ \
 C
-
       call ctemg2(fcancmxgat,rmatcgat,zolncgat,paicgat,
      1      ailcgat,     ailcggat,    cmasvegcgat,  slaicgat,
      2      ailcgsgat,   fcancsgat,   fcancgat,     rmatctemgat,
@@ -3593,6 +3558,9 @@ C
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
+     3      anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,
+     4      litrmassmsgat,hpdgat,Cmossmasgat,dmossgat,thlqaccgat_m,
+     5      thicaccgat_m,ipeatlandgat,pddgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,      fcancmxrow,  rmatcrow,    zolncrow,  paicrow,
@@ -3634,15 +3602,10 @@ c
      &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
-     2      annsrplsrow,   annpcprow,  dry_season_lengthrow
-c    ----gathering of peatland variables YW March 19, 2015 ------------\
-     1    ,anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow
-     2    ,anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat
-     3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
-     4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
-     5    ,thlqaccrow_m, thlqaccgat_m,thicaccrow_m, thicaccgat_m
-     6    ,ipeatlandgat)
-c    ----gathering of peatland variables YW March 19, 2015 ------------/
+     2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
+     3      anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,
+     4      litrmassmsrow,hpdrow,Cmossmasrow,dmossrow,
+     5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
 
 C===================== CTEM ============================================ /
 C
@@ -3651,7 +3614,7 @@ C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS; GENERAL VEGETATION
 C     * CHARACTERISTICS.
 
 C     * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM by including: zolnc,
-!     * cmasvegc, alvsctm, alirctm in the arguments.
+!     * cmasvegc, alvsctm, alirctm, ipeatlandgat in the arguments.
 C
       CALL CLASSA    (FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN,
      1                ALVSG,  ALIRG,  ALVSCS, ALIRCS, ALVSSN, ALIRSN,
@@ -3685,10 +3648,8 @@ C
      R                IDAY,   ILG,    1,      NML,  NBS,
      N                JLAT,N, ICAN,   ICAN+1, IGND,   IDISP,  IZREF,
      O                IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     P                ISNOALB,IGRALB, alvsctmgat,alirctmgat
-c     -----------peatland input YW March 19, 2015----------------------\ 
-     &                ,ipeatlandgat)
-c     ----------------------peatland-----------------------------------/     
+     P                ISNOALB,IGRALB, alvsctmgat,alirctmgat,
+     &                ipeatlandgat)
 C
 C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
@@ -3737,7 +3698,7 @@ c    ---peatland variabels in mosspht.f called in TSOLVC, TSOLVE----- -\
      2  ancsmoss, angsmoss, ancmoss, angmoss,
      3  rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,
      4  Cmossmasgat,   dmossgat,  iyear, iday, ihour, imin,
-     5  pdd)
+     5  pddgat)
 c    --------------------YW March 19, 2015 ----------------------------/
 C
 C-----------------------------------------------------------------------
@@ -3858,9 +3819,9 @@ c
 c    ------------accumulate moss C fluxes to daily---------------------\
 c
           if (ipeatlandgat(i) > 0) then
-            anmossac_g(i) = anmossac_g(i)   + anmossgat(i)
-            rmlmossac_g(i)= rmlmossac_g(i)  + rmlmossgat(i)
-            gppmossac_g(i)= gppmossac_g(i)  + gppmossgat(i)
+            anmossac_t(i) = anmossac_t(i)   + anmossgat(i)
+            rmlmossac_t(i)= rmlmossac_t(i)  + rmlmossgat(i)
+            gppmossac_t(i)= gppmossac_t(i)  + gppmossgat(i)
           endif
 c    -------------------YW March 20, 2015 -----------------------------/
 c
@@ -3999,9 +3960,9 @@ c     stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.
 c     the ratio between stem and capitulum = 7.5 and 7.7 
       do 833 i = 1, nml
         if (ipeatlandgat(i) > 0) then
-          anmossac_g(i) = anmossac_g(i)/real(nday)
-          rmlmossac_g(i)= rmlmossac_g(i)/real(nday)
-          gppmossac_g(i) = gppmossac_g(i)/real(nday)
+          anmossac_t(i) = anmossac_t(i)/real(nday)
+          rmlmossac_t(i)= rmlmossac_t(i)/real(nday)
+          gppmossac_t(i) = gppmossac_t(i)/real(nday)
         endif
 833   continue
 c    ----------------YW March 26, 2015 ---------------------------------/
@@ -4071,7 +4032,7 @@ c    ---------------- outputs are listed above this line ------------
 c    -------------- moss C in peatlands -------------------------------\
 c
      1    ipeatlandgat,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd,
-     2    anmossac_g,rmlmossac_g,gppmossac_g,Cmossmasgat,litrmassmsgat,
+     2    anmossac_t,rmlmossac_t,gppmossac_t,Cmossmasgat,litrmassmsgat,
      3    wtabgat, grksgat,
      4    thfcgat, thlwgat, thlqaccgat_m, thicaccgat_m,tfrez,
      5    nppmossgat, armossgat,hpdgat)
@@ -4297,7 +4258,7 @@ c
      3      hpdrow,   hpdgat,    litrmassmsrow,   litrmassmsgat,
      4      Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat,
      5      thlqaccrow_m, thlqaccgat_m, thicaccrow_m, thicaccgat_m,    
-     6      ipeatlandrow, ipeatlandgat)
+     6      ipeatlandrow, ipeatlandgat,pddgat,pddrow)
 c    ---------------YW March 23, 2015 ---------------------------------/
 
 
@@ -5297,6 +5258,21 @@ C=======================================================================
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
      4                       TAROW,QFCROT,ACTLYR,FTABLE)
 
+c            --------reset peatland accumulators-------------------------------
+c            Originally done only for peatland points, but simpler to just
+c            reset the entire arrays. EC - Feb 16 2016.
+!            FLAG these can't be here! They are in the not parallelrun if loop! JM.
+             anmossac_t  = 0.0
+             rmlmossac_t = 0.0
+             gppmossac_t = 0.0
+             G12ACC     = 0.
+             G23ACC     = 0.
+             if (iday == 365) then
+                pddrow     = 0.
+             end if
+c            ----------------YW March 27, 2015 -------------------------------/
+
+
 c     CTEM output and write out
 
       if(.not.parallelrun) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
@@ -5309,16 +5285,6 @@ c     calculate daily outputs from ctem
      2                      onetile_perPFT,ipeatlandrow)
          endif ! if(ncount.eq.nday)
        endif ! if(ctem_on)
-
-c            --------reset peatland accumulators-------------------------------
-c            Originally done only for peatland points, but simpler to just 
-c            reset the entire arrays. EC - Feb 16 2016.
-             anmossac_g  = 0.0
-             rmlmossac_g = 0.0
-             gppmossac_g = 0.0
-             G12ACC     = 0.
-             G23ACC     = 0.
-c            ----------------YW March 27, 2015 -------------------------------/
 
        endif ! if(not.parallelrun)
 

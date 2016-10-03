@@ -42,7 +42,9 @@
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
-
+     2      anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,
+     4      litrmassmsgat,hpdgat,Cmossmasgat,dmossgat,thlqaccgat_m,
+     5      thicaccgat_m,ipeatlandgat,pddgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -84,14 +86,10 @@ c
      &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
-     2      annsrplsrow,   annpcprow,  dry_season_lengthrow
-c    ----gathering of peatland variables YW March 19, 2015 ------------\
-     1    ,anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow
-     2    ,anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat
-     3    ,litrmassmsrow,litrmassmsgat,hpdrow,hpdgat
-     4    ,Cmossmasrow,Cmossmasgat,dmossrow,dmossgat
-     5    ,thlqaccrow_m, thlqaccgat_m,thicaccrow_m,thicaccgat_m
-     6    ,ipeatland)
+     2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
+     3      anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,
+     4      litrmassmsrow,hpdrow,Cmossmasrow,dmossrow,
+     5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
 c    ----gathering of peatland variables YW March 19,
 
 c
@@ -324,7 +322,7 @@ c   Methane related variables
      9       dry_season_lengthrow(nlat,nmos),
      +       dry_season_lengthgat(ilg)
 
-c    --peatland variables YW March 19, 2015 ---------------------------
+c    --peatland variables
       real     anmossrow(nlat,nmos),     anmossgat(ilg),
      1         rmlmossrow(nlat,nmos),    rmlmossgat(ilg),
      2         gppmossrow(nlat,nmos),    gppmossgat(ilg),
@@ -335,8 +333,9 @@ c    --peatland variables YW March 19, 2015 ---------------------------
      7         Cmossmasrow(nlat,nmos),  Cmossmasgat(ilg),
      8         dmossrow(nlat,nmos),dmossgat(ilg),  
      9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
-     1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd)
-      integer  ipeatland(ilg) 
+     1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd),
+     2         pddrow(nlat,nmos), pddgat(ilg)
+      integer  ipeatlandgat(ilg),ipeatlandrow(nlat,nmos)
 
 
 c----------------------------------------------------------------------
@@ -531,8 +530,8 @@ c
           claygat(k,l) = clayrow(ilmos(k),jlmos(k),l)
           orgmgat(k,l) = orgmrow(ilmos(k),jlmos(k),l)
           tbaraccgat_m(k,l) = tbaraccrow_m(ilmos(k),jlmos(k),l)
-          thlqaccgat_m(k,l) = thlqaccrow_m(ilmos(k),jlmos(k),l)  !YW
-          thicaccgat_m(k,l) = thicaccrow_m(ilmos(k),jlmos(k),l)  !YW
+          thlqaccgat_m(k,l) = thlqaccrow_m(ilmos(k),jlmos(k),l)
+          thicaccgat_m(k,l) = thicaccrow_m(ilmos(k),jlmos(k),l)
 250   continue
 c
       do 280 l=1,icc
@@ -547,10 +546,8 @@ c
           rmatcgat(k,l,m) = rmatcrow(ilmos(k),jlmos(k),l,m)
 290   continue
 c
-c    gather peatland related variables  YW March 19, 2015--------------\
-!        FLAG JM check on this.
       do 300 k=1,nml 
-        if (ipeatland(k)>0)                  then
+        ! If peatlands are not present these just gather regardless.
           anmossgat(k) =  anmossrow(ilmos(k),jlmos(k))
           rmlmossgat(k) = rmlmossrow(ilmos(k),jlmos(k))
           gppmossgat(k) = gppmossrow(ilmos(k),jlmos(k))
@@ -559,10 +556,10 @@ c    gather peatland related variables  YW March 19, 2015--------------\
           hpdgat(k)    =    hpdrow(ilmos(k),jlmos(k))
           litrmassmsgat(k) =  litrmassmsrow(ilmos(k),jlmos(k))
           Cmossmasgat(k) = Cmossmasrow(ilmos(k),jlmos(k)) 
-          dmossgat(k) = dmossrow(ilmos(k),jlmos(k)) 
-        endif
+          dmossgat(k) = dmossrow(ilmos(k),jlmos(k))
+          ipeatlandgat(k) = ipeatlandrow(ilmos(k),jlmos(k))
+          pddgat(k)   = pddrow(ilmos(k),jlmos(k))
 300   continue
-c    gather peatland related variables  YW March 19, 2015-------------/
 
       return
       end

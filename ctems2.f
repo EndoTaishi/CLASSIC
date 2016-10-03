@@ -95,7 +95,7 @@ c
      3    ,hpdrow,  hpdgat,   litrmassmsrow, litrmassmsgat
      4    ,Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat
      5    ,thlqaccrow_m , thlqaccgat_m ,thicaccrow_m,thicaccgat_m 
-     6    ,ipeatlandrow,      ipeatlandgat)
+     6    ,ipeatlandrow,      ipeatlandgat,pddgat,pddrow)
 c    ---------------YW March 23, 2015 --------------------
 c
 C     July 12 2013    Bring in the ctem params use statement
@@ -335,7 +335,8 @@ c   Peatland variables   YW March 27, 2015
      7         Cmossmasrow(nlat,nmos),  Cmossmasgat(ilg),
      8         dmossrow(nlat,nmos) ,dmossgat(ilg),
      9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
-     1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd)
+     1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd),
+     2         pddrow(nlat,nmos), pddgat(ilg)
      
       integer  ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
 
@@ -560,6 +561,7 @@ c    scatter peatland variables----------------------------------------\
           Cmossmasrow(ilmos(k),jlmos(k)) = Cmossmasgat(k)
           dmossrow(ilmos(k),jlmos(k)) = dmossgat(k)
           ipeatlandrow(ilmos(k),jlmos(k)) = ipeatlandgat(k)
+          pddrow(ilmos(k),jlmos(k)) = pddgat(k)
 400   continue
 
       return

@@ -27,9 +27,10 @@
      F            RRESID,SRESID,FRTOT,FRTOTS,
      G            FCANCMX,ICTEM,ctem_on,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
-     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC 
-     J            ,ipeatland)          !YW March 19, 2015 
+     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC,
+     J            ipeatland)
 
+C     * SEP  3/16 - J.Melton/Yuanqiao Wu - Bring in peatlands code
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 !
 C     * JAN 14/16 - J.MELTON    IN LOOP 450, MODIFIED SO IT COULD HANDLE >3 SOIL LAYERS
@@ -230,7 +231,8 @@ C
 
 C                                                                                 
 C     * INPUT ARRAYS.                                      
-C                                                                                 
+C
+      integer ipeatland (ilg) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
       REAL FCANMX(ILG,ICP1) !<Maximum fractional coverage of modelled area by vegetation category [ ]
       REAL ZOLN  (ILG,ICP1) !<Natural logarithm of maximum roughness length of vegetation category [ ]
       REAL PAIMAX(ILG,IC)   !<Maximum plant area index of vegetation category [ ]
@@ -319,12 +321,6 @@ C
 C
 C     * NOL2PFTS - NUMBER OF LEVEL 2 CTEM PFTs
 C     * SEE BIO2STR SUBROUTINE FOR EXPLANATION OF OTHER CTEM VARIABLES
-
-C    ---------------peatland variable  --------------------------------\
-C
-      integer ipeatland (ilg)
-
-C    ------------------YW March 19, 2015  -----------------------------/
 
 C     * INTERNAL WORK FIELD.
 C
@@ -1077,15 +1073,15 @@ C
 !!for the ratio between the roughness lengths for momentum and heat for bare soil and snow are also
 !!passed in via common blocks. These are used to derive subarea values of \f$ln(z_{oe})\f$ from \f$ln(z_{om})\f$.
 !!
-                                                                         
+!! In the same loop the roughness length for peatlands is also calculated assuming
+!! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in ctem_params.f90)
+!!
       DO 300 I=IL1,IL2                                                            
           IF(FG(I).GT.0.)                                        THEN             
               IF(ISAND(I,1).NE.-4)                   THEN                         
                   ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))*ZOLNG+            
      1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)           
-C     -----------roughness of the surface is z0 moss for peatlands------\
-
-                  if (ipeatland(i) > 0)      then
+                  if (ipeatland(i) > 0) then ! roughness length of moss surface in peatlands.
                       ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
      1              *zolnms+FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)          
                   endif

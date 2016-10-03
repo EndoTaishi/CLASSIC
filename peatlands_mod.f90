@@ -108,94 +108,89 @@
 !!
 !! where o and a denote the oxic and anoxic portions of the soil C pool respectively. The respiration rate \f$R\f$ (unit:
 !! \f$\mu mol C m\f$^{-2}\f$/s) is obtained from the respiration rate
-!FLAG GOT TO HERE>>>>
-!! coefficient \f$k\f$ (\unit{\mu}mol\,C\,kg\,C$^{-1}$\,s$^{-1})$, the temperature
-! functions $f_{T}$, the soil C mass $C_{SOM}$ (kg), and a scaling factor
-! $f_{anoxic}$ after Frolking et al.~(2010, 2001), which represents the
-! inhibition of microbial respiration under anoxic conditions. The value of
-! this parameter is uncertain, varying in those two papers between 0.001, 0.025
-! and 0.1. Based on calibration runs using two of the data sets described below
-! (MB-Bog and AB-Fen), we adopted a value of 0.025. $Q_{10}$ is calculated using
-! a hyperbolic tan function of the soil temperatures ($T_{s})$ of the oxic
-! and anoxic zones (Melton and Arora, 2016), which are in turn functions of
-! water table depth (Eq.~10). The $Q_{10}$ values of the anoxic and the oxic
-! zones of the soil are indicated as $Q_{10,{a}}$ and $Q_{10,{o}}$.
-! The values of $k$, $f_{T}$, and $C_{SOM}$ are updated along with the
-! water table depth ($z_{wt}$, unit: m, positive downward) and the peat
-! depth ($z_{p}$, unit: m) at each CTEM time step. The equations for $k$
-! and $C_{SOM}$ are derived from Fig.~2 in Frolking et al.~(2001), and
-! parameterized differently for fens and bogs (Table~3):
-!
-!
-! \begin{align}
-! &\left\{ {\begin{array}{l}
-!  f_{T,{o}} =Q_{10,{o}}^{\left(\int\limits_{0}^{z_{wt}} T_{j} -15\right)/10} \\
-!  f_{T,{a}} =Q_{10,{a}}^{\left(\int\limits_{z_{wt}}^{z_\mathrm{p}} T_{j} -15\right)/10}, \\
-!  \end{array}} \right.\\
-! &Q_{10}=1.44+0.56 {tanh}[0.075\left( 46.0-T_{s} \right)],\\
-! &\left\{ {\begin{array}{l}
-!  T_{s,o}=\int\limits_{0}^{z_{wt}} T_{j} \, /(z_{wt}) \\
-!  T_{s,a}=\int\limits_{z_{wt}}^{z_{p}} T_{j} /(z_{p}-z_{wt}) ,\\
-!  \end{array}} \right.\\
-! &k_{o}=\left\{ {\begin{array}{ll}
-!  0, &  z_{wt}<0 \\
-!  k_{1}\left( 1-e^{k_{2}z_{wt}} \right)+k_{3}z_{wt},& 0.3>_{z{t}}\ge 0 \\
-!  k_{4}e^{k_{5}z_{wt}}+k_{6}z_{wt}+k_{7},& z_{wt}\ge 0.3, \\
-!  \end{array}} \right.\\
-! & \hack{\hbox\bgroup\fontsize{8.7}{8.7}\selectfont$\displaystyle}
-! k_{a}=\left\{ {\begin{array}{ll}
-!  k_{4}e^{k_{5}z_{p}}+{10k}_{6}z_{p}+k_{7},& z_{wt}<0 \\
-!  \left| k_{1}e^{k_{2}z_{wt}}-k_{4}e^{k_{5}z_\mathrm{p}}-k_{3}z_{wt}+k_{8}
-! \right|, & {0.3>z}_{wt}\ge 0 \\
-!  k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_\mathrm{p}-z_{wt} \right), & z_{wt}\ge 0.3, \\
-!  \end{array}} \right. \hack{$\egroup}\\
-! &C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}),\\
-! &C_{SOM,a}= C_{SOM}-C_{SOM,o},
-! \end{align}
-! where 0.487 is a parameter that converts from soil mass to soil C content.
-! The variation of $k_{o}$ and $k_{a}$ with water table depth for
-! bogs and fens is shown in Fig.~2. It will be noted that there is a sharp
-! transition in decomposition rate at a depth of 0.3\,m, reflecting the work of
-! Frolking et al.~(2001). As noted in Sect.~2.1 above, this value is widely accepted
-! as a representative estimate of the depth dividing the acrotelm and catotelm.
-! In reality, of course, this depth will vary among peatlands. When our
-! peatland model is implemented in climate mode, it is planned that spin-up
-! tests will be run to assess the spatial variability of this depth, and
-! adjustments will be made to Eqs.~(13) and (14) if necessary.
-!
-! As only organic soil is considered in peatlands, the peat soil C is updated
-! from the humification (C$_{hum}$, kg\,C\,m$^{-2}$\,day$^{-1})$ and soil
-! respiration from the oxic ($R_{o}$ in kg\,C\,m$^{-2}$\,day$^{-1})$ and
-! anoxic ($R_{a}$ in kg\,C\,m$^{-2}$\,day$^{-1})$ components during the
-! time step:
-! \begin{align}
-! \frac{{dC}_{SOM}}{{d}t} = C_{hum}-R_{o}-R_{a}
-! \end{align}
-! $C_{hum}$ is calculated as a PFT-dependent fraction of the decomposition
-! rate. Values of this coefficient are shown in Table~2 (variable
-! ``humicfac''). At the end of each time step, the peat depth (i.e. the depth
-! of the organic soil) $z_{p}$ is updated from the updated peat C mass
-! (C$_{SOM}$ in kg) by solving the quadratic equation
-! \begin{align}
-! z_{p}=
-! \frac{{-k}_{10}+\sqrt{k_{10}+\frac{4k_{9}{C}_{SOM}}{0.487}}.
-! }{2k_{9}}
-! \end{align}
-! The water table depth $z_{wt}$ is deduced by searching for a soil layer
-! below, which the soil is saturated and above which the soil moisture is at or
-! below the retention capacity with respect to gravitational drainage. Within
-! this soil layer $j$, $z_{wt}$ is calculated as
-! \begin{align}
-! z_{wt}=z_{{b},j}-\Delta z\left[
-! \frac{\theta_{{l},j}+\theta_{i,j}-\theta
-! _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right],
-! \end{align}
-! where $\Delta z$ is the thickness of soil layer (unit: m),
-! $\theta_{{l}}$ and $\theta_{i}$ are the liquid and frozen water contents
-! (unit, m$^{3}$\,m$^{-3})$, $\theta_{ret}$ and $\theta_{p}$ are the
-! water retention capacity and the porosity, and $z_{b}$ (unit: m) is the
-! bottom depth of the soil layer.
-!
+!! coefficient \f$k\f$ (\f$\mu\f$ mol C / kg C / s), the temperature
+!! functions \f$f_T\f$, the soil C mass \f$C_{SOM}\f$ (kg), and a scaling factor
+!! \f$f_{anoxic}\f$ after Frolking et al.~(2010, 2001), which represents the
+!! inhibition of microbial respiration under anoxic conditions. The value of
+!! this parameter is uncertain, varying in those two papers between 0.001, 0.025
+!! and 0.1. Based on calibration runs using two of the data sets described below
+!! (MB-Bog and AB-Fen), we adopted a value of 0.025. \f$Q_{10}\f$ is calculated using
+!! a hyperbolic tan function of the soil temperatures (\f$T_s)\f$ of the oxic
+!! and anoxic zones (Melton and Arora, 2016), which are in turn functions of
+!! water table depth. The \f$Q_{10}\f$ values of the anoxic and the oxic
+!! zones of the soil are indicated as \f$Q_{10,a}\f$ and \f$Q_{10,o}\f$.
+!! The values of \f$k\f$, \f$f_T\f$, and \f$C_{SOM}\f$ are updated along with the
+!! water table depth (\f$z_{wt}\f$, unit: m, positive downward) and the peat
+!! depth (\f$z_p\f$, unit: m) at each CTEM time step. The equations for $\fk\f$
+!! and \f$C_{SOM}\f$ are derived from Fig. 2 in Frolking et al. (2001), and
+!! parameterized differently for fens and bogs :
+!!
+!!  \f$ f_{T,o} =Q_{10,o}^{\left(\int\limits_{0}^{z_{wt}} T_{j} -15\right)/10} \f$
+!!
+!!  \f$ f_{T,{a}} =Q_{10,{a}}^{\left(\int\limits_{z_{wt}}^{z_\mathrm{p}} T_{j} -15\right)/10} \f$
+!!
+!! \f$ Q_{10}=1.44+0.56 {tanh}[0.075\left( 46.0-T_{s} \right)] \f$
+!!
+!! \f$ T_{s,o}=\int\limits_{0}^{z_{wt}} T_{j} \, /(z_{wt}) \f$
+!!
+!! \f$ T_{s,a}=\int\limits_{z_{wt}}^{z_{p}} T_{j} /(z_{p}-z_{wt}) \f$
+!!
+!! \f$ k_{o}= 0 \f$ for \f$ z_{wt}<0 \f$
+!!
+!!  \f$ k_{o}= k_{1}\left( 1-e^{k_{2}z_{wt}} \right)+k_{3}z_{wt} \f$ for \f$0.3 > z_t \ge 0\f$
+!!
+!!  \f$ k_{4}e^{k_{5}z_{wt}}+k_{6}z_{wt}+k_{7} \f$ for \f$ z_{wt}\ge 0.3 \f$
+!!
+!! \f$ k_{a}= k_{4}e^{k_{5}z_{p}}+{10k}_{6}z_{p}+k_{7} \f$ for \f$ z_{wt}<0 \f$
+!!
+!! \f$ k_{a} = \f$ | \f$ k_1 e^{ k_2 z_{wt} } - k_4 e^{k_5 z_p} -k_3 z_{wt}+k_8 \f$ for \f$0.3>z_{wt} \ge 0 \f$
+!!
+!! \f$ k_{a}=  k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_p-z_{wt} \right)\f$ for \f$ z_{wt}\ge 0.3 \f$
+!!
+!! \f$ C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}) \f$
+!!
+!!  \f$ C_{SOM,a}= C_{SOM}-C_{SOM,o} \f$
+!!
+!! where 0.487 is a parameter that converts from soil mass to soil C content.
+!! The variation of \f$k_{o}\f$ and \f$k_{a}\f$ with water table depth for
+!! bogs and fens is shown in Fig. 2 of (Wu et al. 2016) \cite Wu2016-zt. It will be noted that there is a sharp
+!! transition in decomposition rate at a depth of 0.3 m, reflecting the work of
+!! Frolking et al. (2001). As noted above, this value is widely accepted
+!! as a representative estimate of the depth dividing the acrotelm and catotelm.
+!! In reality, of course, this depth will vary among peatlands.
+!!
+!! As only organic soil is considered in peatlands, the peat soil C is updated
+!! from the humification (C\f$_{hum}\f$, kg C/ m\f$^2\f$ / day) and soil
+!! respiration from the oxic (\f$R_o\f$ in kg C/ m\f$^2\f$ / day) and
+!! anoxic (\f$R_a\f$ in kg C/ m\f$^2\f$ / day) components during the
+!! time step:
+!!
+!! \f$ \frac{{dC}_{SOM}}{dt} = C_{hum}-R_{o}-R_{a} \f$
+!!
+!! \f$C_{hum}\f$ is calculated as a PFT-dependent fraction of the decomposition
+!! rate. At the end of each time step, the peat depth (i.e. the depth
+!! of the organic soil) \f$z_p\f$ is updated from the updated peat C mass
+!! (C\f$_{SOM}\f$ in kg) by solving the quadratic equation
+!!
+!! \f$ z_{p}=
+!! \frac{{-k}_{10}+\sqrt{k_{10}+\frac{4k_{9}{C}_{SOM}}{0.487}}.
+!! }{2k_{9}} \f$
+!!
+!! The water table depth \f$z_{wt}\f$ is deduced by searching for a soil layer
+!! below, which the soil is saturated and above which the soil moisture is at or
+!! below the retention capacity with respect to gravitational drainage. Within
+!! this soil layer \f$j\f$, \f$z_{wt}\f$ is calculated as
+!!
+!! \f$ z_{wt}=z_{{b},j}-\Delta z\left[
+!! \frac{\theta_{{l},j}+\theta_{i,j}-\theta
+!! _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right] \f$
+!!
+!! where \f$\Delta z \f$ is the thickness of soil layer (unit: m),
+!! \f$\theta_l \f$ and \f$\theta_i\f$ are the liquid and frozen water contents
+!! (unit, m\f$^3\f$ / m\f$^3\f$), \f$\theta_{ret}\f$ and \f$\theta_p\f$ are the
+!! water retention capacity and the porosity, and \f$z_b\f$ (unit: m) is the
+!! bottom depth of the soil layer.
+!!
 !------------------------------------------------------------------------------------
 !>\file
 !>Central module for all peatland-related operations
@@ -429,7 +424,9 @@ real:: mI(ilg), mII(ilg)!coefficients of the solutions for net psn
 real:: temp_b, temp_c, temp_r, temp_q1, temp_q2, temp_jp
 
 !    -----------testing------------YW May 06, 2015 --------------------
-real::  dr2, SWin_ex, pdd(ilg), ta(ilg),daylength(ilg)
+real::  dr2, SWin_ex,ta(ilg)
+real :: daylength(ilg) !in arg
+real :: pdd(ilg)    ! in arg.
 !     -----------temporal terms above this line------------------------
 
 real     DELT,TFREZ, HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,&
@@ -700,19 +697,22 @@ implicit none
 !     inputs-----------------------------------------------------------
 integer  iyear, iday, ihour, imin ,i,j, il1, il2, isand(ilg,ignd)
 integer  jdsty,jdstd,jdendy,jdendd
-integer    ipeatland(ilg) !0 = not peatland, 1 = bog, 2 = fen
-integer:: lewtable(ilg) !layer index of the water table layer
-real     hpd(ilg) , wtable(ilg), tbar(ilg,ignd), &  !(K)
+integer, dimension(ilg), intent(in) :: ipeatland    !<peatland flag, 0 = not peatland, 1 = bog, 2 = fen
+
+real     hpd(ilg) , &  !(K)
             thliq(ilg,ignd),     thice(ilg,ignd),    thpor(ilg,ignd), &
             bi(ilg,ignd),       zbotw(ilg,ignd),    delzw(ilg,ignd), &
             frac(ilg),          tfrez,              litrmassms(ilg)
 
+real, dimension(ilg), intent(in) :: wtable          !< water table (m)
+real, dimension(ilg,ignd), intent(in) :: tbar       !< soil temperature (K)
+
 !     --------------outputs C fluxes in umolCO2/m2/s--------------------
 
-real:: litresms(ilg)        !< moss litter respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
-real:: socresp(ilg)         !< soil C respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
-real:: resoxic(ilg)         !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
-real:: resanoxic(ilg)       !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
+real, dimension(ilg), intent(out) :: litresms        !< moss litter respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
+real, dimension(ilg), intent(out) :: socresp         !< soil C respiration ($\mu mol CO_2 m^{-2} s^{-1}$)
+real, dimension(ilg), intent(out) :: resoxic         !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
+real, dimension(ilg), intent(out) :: resanoxic       !< respiration rate of the oxic compartment ($\mu mol CO_2 m^{-2} s^{-1}$)
 
 !     internal variables------------------------------------------------
 
@@ -734,50 +734,51 @@ real:: litpsims(ilg)        !< matrix potential of litter
 real:: litrq10ms(ilg)       !< q10 coefficient as a functon of T (as in CTEM)
 real:: soilq10o(ilg)        !< q10 coefficient of oxic soil
 real:: soilq10a(ilg)        !< q10 coefficient of anoxic soil
+integer:: lewtable(ilg)     !< layer index of the water table layer
 
 !    ------------------------------------------------------------------
 !
 !    initialization
-do 10 i = il1, il2
-    litresms(i) = 0.0
-    socresp(i) = 0.0
-    resoxic(i) = 0.0
-    resanoxic(i) = 0.0
-10    continue
+litresms(:) = 0.0
+socresp(:) = 0.0
+resoxic(:) = 0.0
+resanoxic(:) = 0.0
+tsoilo(:) = 0.0
+tsoila(:) = 0.0
 
-!    ** calculate soil respiration from peat
+!>    ** calculate soil respiration from peat
 
-!>    find the effective water table depth and the layer index to devide
-!!    the peat soil into two compartment
+!>    find the effective water table depth and the layer index to divide
+!!    the peat soil into two compartments
 
-do 20      i= il1, il2
+do 20 i= il1, il2
     ewtable(i)= wtable(i)
-    if (ewtable(i) .le. 0.0)                then
+    if (ewtable(i) .le. 0.0) then ! flooded
         lewtable(i) = 0
-    elseif (ewtable(i) .le. 0.1)            then
+    elseif (ewtable(i) .le. 0.1) then ! below ground surface but in the moss layer
         lewtable(i) = 1
-    else
+    else ! deeper in the soil column.
         do j = 1, ignd
-            if (ewtable(i) .gt. zbotw(i,j))        then
+            if (ewtable(i) .gt. zbotw(i,j)) then
                 lewtable(i)=j+1
             endif
         enddo
     endif
 
-!>    find the temperature in litter, oxic soil and anoxic soil in kalvin
+!>    find the temperature in litter, oxic soil and anoxic soil in kelvin
 !!    lewtable is the layer index of the water table layer, lewtable = 0
 !!    indicates WTD is above the ground surface.
 !!    Set the oxic layer temperature to dctmin (minimum soil respiration
-!!    temperture) when the entire soil is in the anoxic zone.
+!!    temperature) when the entire soil is in the anoxic zone.
 
-    tsoilo(i) = 0.0
-    tsoila(i) = 0.0
     if (lewtable(i) .eq. 0)   then  !WT is at or above the surface
-        do j = 1, ignd
+        do j = 1, ignd ! so find the temp of the total soil column.
+                       ! FLAG JM - this might not be appropriate for runs with the newer deeper soils and 20 layers! Sep 30 2016.
             tsoila(i) = tsoila(i)+tbar(i,j)*delzw(i,j)
         enddo
         tsoila(i)=tsoila(i)/zbotw(i,ignd)
         tsoilo(i) = dctmin
+
     elseif (lewtable(i) .eq. 1) then     !WT is at the first layer
         tsoilo(i)=tbar(i,1)
         do j= lewtable(i)+1, ignd
@@ -785,6 +786,7 @@ do 20      i= il1, il2
         enddo
         tsoila(i)=(tsoila(i)+tbar(i,1)*(zbotw(i,lewtable(i)) &
                 -ewtable(i)))/(zbotw(i,ignd)-ewtable(i))
+
     else                                !WT is below layer 1
         do j = 1,lewtable(i)-1
             tsoilo(i) = tsoilo(i)+ tbar(i,j)*delzw(i,j)
@@ -798,55 +800,66 @@ do 20      i= il1, il2
                 (zbotw(i,lewtable(i))-ewtable(i)) )/ &
                 (zbotw(i,ignd)-ewtable(i))
     endif
+
 20    continue
 
 !>    calculate the temperature multiplier (ftsocres) for oxic and anoxic
 !!   soil compartments
 
-do 30      i = il1, il2
-        soilq10o(i) = tanhq10(1) + tanhq10(2)* &
-&            ( tanh( tanhq10(3)*(tanhq10(4)-(tsoilo(i)-tfrez))))
+do 30 i = il1, il2
+    soilq10o(i) = tanhq10(1) + tanhq10(2)* ( tanh( tanhq10(3)*(tanhq10(4)-(tsoilo(i)-tfrez))))
+    soilq10a(i) = tanhq10(1) + tanhq10(2)* ( tanh( tanhq10(3)*(tanhq10(4)-(tsoila(i)-tfrez))))
+
     fto(i)= soilq10o(i)**(0.1*(tsoilo(i)-tfrez-15.0))
-        soilq10a(i) = tanhq10(1) + tanhq10(2)* &
-&            ( tanh( tanhq10(3)*(tanhq10(4)-(tsoila(i)-tfrez))))
     fta(i)= soilq10a(i)**(0.1*(tsoila(i)-tfrez-15.0))
 30    continue
 
-!>    find the heterotrophic respiration rate constant in tje oxic and
+!>    find the heterotrophic respiration rate constant in the oxic and
 !!    anoxic (unit in yr-1), based on Fig.2b in Frolking 2001
 
 do 40 i = il1, il2
-    if (ipeatland(i) == 1)               then      !bogs
-        if (ewtable(i) .lt. 0.0)                             then
+    if (ipeatland(i) == 1) then !bogs
+        if (ewtable(i) .lt. 0.0) then !flooded
+
             ratescpo(i)=0.0
             ratescpa(i)=-0.183*exp(-18.0*hpd(i))+0.03*hpd(i)+0.0134
-        elseif (ewtable(i).lt.0.30 .and.ewtable(i).ge.0.0) then
+
+        elseif (ewtable(i).lt.0.30 .and.ewtable(i).ge.0.0) then !within the first 30 cm of surface
+
             ratescpo(i)=0.009*(1-exp(-20.*ewtable(i)))+0.015*ewtable(i)
             ratescpa(i)=0.009*exp(-20.*ewtable(i))-0.183*exp(-18.*hpd(i))-0.015*ewtable(i)+0.0044
-        elseif (ewtable(i) .ge. 0.30)                        then
+
+        elseif (ewtable(i) .ge. 0.30) then !deeper in the soil column
+
             ratescpo(i)=0.0134-0.183*exp(-18.*ewtable(i))+0.003*ewtable(i)
             ratescpa(i)=-0.183*exp(-18.*hpd(i))+0.003*(hpd(i)-wtable(i))+0.183*exp(-18.*ewtable(i))
-!                 ratescpa(i)=-0.183*exp(-18*hpd(i))+0.003*(hpd(i)
-!    1                 -wtable(i))+0.183*exp(-18*ewtable(i))-0.004504   !for continuity
+!           ratescpa(i)=-0.183*exp(-18*hpd(i))+0.003*(hpd(i)-wtable(i))+0.183*exp(-18*ewtable(i))-0.004504   !for continuity
         endif
-    elseif (ipeatland(i) == 2)           then      !fens
-        if (ewtable(i) .lt. 0.0)                             then
+
+    elseif (ipeatland(i) == 2)  then !fens
+        if (ewtable(i) .lt. 0.0) then !flooded
+
             ratescpo(i) = 0.0
             ratescpa(i) = 0.01512 -1.12*exp(-25.*hpd(i))
-        elseif(ewtable(i).lt. 0.30 .and.ewtable(i).ge. 0.0)then
+
+        elseif(ewtable(i).lt. 0.30 .and.ewtable(i).ge. 0.0)then !within the first 30 cm of surface
+
             ratescpo(i) = -0.01*exp(-40.*ewtable(i))+0.015*ewtable(i)+0.01
             ratescpa(i) = abs(-0.01*exp(-40.*ewtable(i))-1.12*exp( &
                             -25.*hpd(i))+0.015*ewtable(i)+0.005119)
-        elseif(ewtable(i) .ge. 0.30)                         then
-        ratescpo(i) = 0.01512-1.12*exp(-25*ewtable(i))
-        ratescpa(i) = -1.12*(exp(-25.*hpd(i))-exp(-25.*ewtable(i)))
+
+        elseif(ewtable(i) .ge. 0.30) then !deeper in the soil column
+
+            ratescpo(i) = 0.01512-1.12*exp(-25*ewtable(i))
+            ratescpa(i) = -1.12*(exp(-25.*hpd(i))-exp(-25.*ewtable(i)))
         endif
     endif
-!!    converts respiration rates from kg c/kg c.year to u-mol co2/kgC/s
+
+!>  Convert respiration rates from kg c/kg c.year to u-mol co2/kgC/s
     ratescpo(i) = 2.64 * ratescpo(i)
     ratescpa(i) = 2.64 * ratescpa(i)
 
-!>    find the carbon storage in oxic and anoxic compartments (Cso. Csa)
+!>    Find the carbon storage in oxic and anoxic compartments (Cso. Csa)
 !!    The water table depth delineates the oxic and anoxic compartments.
 !!    functions (R**2 = 0.9999) determines the carbon content of each
 !!    compartment from a peat bulk density profile based on unpulished
@@ -859,7 +872,7 @@ do 40 i = il1, il2
 
 40    continue
 
-!>    find the soil respiration rate in Cso and Csa umol/m2/s.
+!>    Find the soil respiration rate in Cso and Csa umol/m2/s.
 !!    Moisture multiplier (0.025) indicates rate reduction in decomposition due
 !!    to anoxia (Frolking et al. 2001), only applied to anoxic layer
 do 50 i = il1, il2
@@ -868,20 +881,22 @@ do 50 i = il1, il2
     socresp(i)   = resoxic(i) + resanoxic(i)
 50    continue
 
-!!    **calcualte litter respiration of moss
+!>    **calcualte litter respiration of moss
 
-!!    first find the matrix potential of the soil layers
+!>    first find the matrix potential of the soil layers
 do 60 j = 1, ignd
     do 60 i = il1, il2
         if(isand(i,j).eq.-3.or.isand(i,j).eq.-4) then  !ice or rock
-        psi(i,j) = 10000.0 ! a large number so that ltrmoscl = 0.2
-        else
-        if (thliq(i,j)+ thice(i,j)+0.01 < thpor(i,j).and.  tbar(i,j) <273.16) then
-            psi(i,j) = 0.001
-        elseif (thice(i,j) > thpor(i,j))    then
-            psi(i,j) = 0.001   !set to saturation
-        else
-            psi(i,j)=psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thice(i,j)))**(-bi(i,j))
+
+            psi(i,j) = 10000.0 ! a large number so that ltrmoscl = 0.2
+
+        else ! soils
+            if (thliq(i,j)+ thice(i,j)+0.01 < thpor(i,j).and.  tbar(i,j) <273.16) then
+                psi(i,j) = 0.001
+            elseif (thice(i,j) > thpor(i,j))    then
+                psi(i,j) = 0.001   !set to saturation
+            else
+                psi(i,j)=psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thice(i,j)))**(-bi(i,j))
             endif
     endif
 60    continue

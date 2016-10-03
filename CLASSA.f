@@ -34,11 +34,10 @@ C!
      S                  IDAY,   ILG,    IL1,    IL2, NBS,   
      T                  JL,N,   IC,     ICP1,   IG,     IDISP,  IZREF,
      U                  IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     V                  ISNOALB,IGRALB,ALVSCTM, ALIRCTM 
-c     peatland input YW March 19, 2015---------------------------------\ 
-     &                ,ipeatland)
-c     peatland---------------------------------------------------------/
+     V                  ISNOALB,IGRALB,ALVSCTM, ALIRCTM, ipeatland)
 
+C     * OCT  3/16 - J.Melton    Implementing Yuanqiao Wu's peatland code, added
+C                               ipeatland
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
@@ -437,10 +436,7 @@ C
       REAL ALVSO    !<Visible albedo of organic matter (0.05)
       REAL ALIRO    !<Near-infrared albedo of organic matter (0.30)
       REAL ALBRCK   !<Albedo of rock 
-
-c     ---------------peatland variable --------------------------------\   
-      integer  ipeatland(ilg)
-c     ------------------YW March 19, 2015 -----------------------------/   
+      integer  ipeatland(ilg) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
 
       COMMON /CLASS1/ DELT,TFREZ                                               
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
@@ -555,8 +551,8 @@ C
      F            RRESID,SRESID,FRTOT,FRTOTS, 
      G            FCANCMX,ICTEM,ctem_on,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
-     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC
-     j              ,ipeatland)!YW March 26, 2015 
+     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC,
+     j            ipeatland)
 C
 C     * BARE SOIL ALBEDOS.
 C
