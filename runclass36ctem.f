@@ -2723,24 +2723,8 @@ c     ----------
 
 c     preparation with the input datasets prior to launching run:
 
-      iyear=-99999  ! initialization, forces entry to loop below
-      obswetyr=-99999
-      obslghtyr=-99999
-
-c     find the first year of met data
-
-       do while (iyear .lt. metcylyrst)
-c
-        do i=1,nltest
-          read(12,5300) ihour,imin,iday,iyear,FSSROW(I),FDLROW(i),
-     1         PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
-        enddo
-       enddo
-
-c      back up one space in the met file so it is ready for the next readin
-       backspace(12)
-
        if(obswetf) then
+        obswetyr=-99999
          do while (obswetyr .lt. metcylyrst)
             do i=1,nltest
               ! Read the values into the first tile
@@ -2758,6 +2742,7 @@ c      back up one space in the met file so it is ready for the next readin
        end if
 
        if(obslght) then
+        obslghtyr=-99999
         do while (obslghtyr .lt. metcylyrst)
             do i=1,nltest
               read(17,*) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
@@ -2771,14 +2756,10 @@ c      back up one space in the met file so it is ready for the next readin
          backspace(17)
        end if
 
-c      If you are not cycling over the MET, you can still specify to end on a
-c      year that is shorter than the total climate file length.
-       if (.not. cyclemet) endyr = iyear + ncyear
-
 c      find the popd data to cycle over, popd is only cycled over when the met is cycled.
-       popyr=-99999  ! initialization, forces entry to loop below
 
        if (cyclemet .and. popdon) then
+        popyr=-99999  ! initialization, forces entry to loop below
         do while (popyr .lt. cypopyr)
          do i = 1, nltest
           read(13,5301) popyr,popdinrow(i,1) !place it in the first tile
@@ -2791,10 +2772,32 @@ c      find the popd data to cycle over, popd is only cycled over when the met i
         enddo
        endif
 c
-c     if land use change switch is on then read the fractional coverages
-c     of ctem's 9 pfts for the first year.
+      end if ! ctem_on
+
+      iyear=-99999  ! initialization, forces entry to loop below
+
+c     find the first year of met data
+       do while (iyear .lt. metcylyrst)
 c
-      if (lnduseon .and. transient_run) then
+        do i=1,nltest
+          read(12,5300) ihour,imin,iday,iyear,FSSROW(I),FDLROW(i),
+     1         PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
+        enddo
+       enddo
+
+c      back up one space in the met file so it is ready for the next readin
+       backspace(12)
+
+c      If you are not cycling over the MET, you can still specify to end on a
+c      year that is shorter than the total climate file length.
+       if (.not. cyclemet) endyr = iyear + ncyear
+
+      if (ctem_on) then
+
+c       if land use change switch is on then read the fractional coverages
+c       of ctem's 9 pfts for the first year.
+c
+        if (lnduseon .and. transient_run) then
 
          reach_eof=.false.  !flag for when read to end of luc input file
 
@@ -2806,7 +2809,7 @@ c
 
          if (reach_eof) goto 999
 
-      endif ! if (lnduseon)
+       endif ! if (lnduseon)
 c
 c     with fcancmx calculated above and initialized values of all ctem pools,
 c     find mosaic tile (grid) average vegetation biomass, litter mass, and soil c mass.
@@ -2945,7 +2948,6 @@ c
         end do
 190    continue
 
-      endif   ! if (ctem_on)
 c
 !       ! FLAG test JM Dec 18 2015
 !     Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
@@ -2957,6 +2959,8 @@ c
        end if
       end do
       ! end FLAG test JM Dec 18 2015
+
+      endif   ! if (ctem_on)
 
 c     ctem initial preparation done
 
@@ -3033,7 +3037,7 @@ c       but only if it was read in during the loop above.
 
       met_rewound = .false.
 
-      endif
+      endif !met_rewound
 
 C===================== CTEM ============================================ /
 C
@@ -3067,7 +3071,7 @@ c
             end if
           endif   ! lopcount .gt. 1
 
-C         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
+!         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 C===================== CTEM ============================================ /
 
           FSVHROW(I)=0.5*FSSROW(I)
