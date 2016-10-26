@@ -926,7 +926,7 @@ c
 
        real fsinacc_gat(ilg), flutacc_gat(ilg), flinacc_gat(ilg),
      1      alswacc_gat(ilg), allwacc_gat(ilg), pregacc_gat(ilg),
-     2      altot_gat(ilg),        fsstar_gat,       flstar_gat,
+     2      altotacc_gat(ilg),        fsstar_gat,       flstar_gat,
      3      netrad_gat(ilg),  preacc_gat(ilg)
 
 !     For these below, the corresponding ROWs are defined by CLASS
@@ -1387,18 +1387,18 @@ c
 !     -----------------------
 !     Grid-averaged variables (denoted with an ending of "_g")
 
-      real, pointer ::  fsstar_g
-      real, pointer ::  flstar_g
-      real, pointer ::  qh_g
-      real, pointer ::  qe_g
-      real, pointer ::  snomlt_g
-      real, pointer ::  beg_g
-      real, pointer ::  gtout_g
-      real, pointer ::  tpn_g
-      real, pointer ::  altot_g
-      real, pointer ::  tcn_g
-      real, pointer ::  tsn_g
-      real, pointer ::  zsn_g
+      real, pointer, dimension(:) ::  fsstar_g
+      real, pointer, dimension(:) ::  flstar_g
+      real, pointer, dimension(:) ::  qh_g
+      real, pointer, dimension(:) ::  qe_g
+      real, pointer, dimension(:) ::  snomlt_g
+      real, pointer, dimension(:) ::  beg_g
+      real, pointer, dimension(:) ::  gtout_g
+      real, pointer, dimension(:) ::  tpn_g
+      real, pointer, dimension(:) ::  altot_g
+      real, pointer, dimension(:) ::  tcn_g
+      real, pointer, dimension(:) ::  tsn_g
+      real, pointer, dimension(:) ::  zsn_g
 
       real, pointer, dimension(:) :: WSNOROT_g
       real, pointer, dimension(:) :: ROFSROT_g
@@ -2554,6 +2554,15 @@ C===================== CTEM =============================================== /
 125       CONTINUE
 150   CONTINUE
 
+          alswacc_gat(:)=0.
+          allwacc_gat(:)=0.
+          fsinacc_gat(:)=0.
+          flinacc_gat(:)=0.
+          flutacc_gat(:)=0.
+          pregacc_gat(:)=0.
+          altotacc_gat(:)=0.
+
+
 c     initialize accumulated array for monthly & yearly output for class
 
       call resetclassmon(nltest)
@@ -3611,11 +3620,6 @@ C
 C=======================================================================
 
 C===================== CTEM ============================================ \
-c     * accumulate output data for running ctem.
-c
-      do 660 i=1,nml
-         uvaccgat_t(i)=uvaccgat_t(i)+ulgat(i)
-660   continue
 c
 c     accumulate variables not already accumulated but which are required by
 c     ctem.
@@ -3637,12 +3641,11 @@ c
           tcansacc_t(i)=tcansacc_t(i)+tcans(i)
           taaccgat_t(i)=taaccgat_t(i)+tagat(i)
           vvaccgat_t(i)=vvaccgat_t(i)+ vlgat(i)
+          uvaccgat_t(i)=uvaccgat_t(i)+ulgat(i)
           if (FSSROW(I) .gt. 0.) then
-            altot_gat(i) = altot_gat(i) + (FSSROW(I)-
+            altotacc_gat(i) = altotacc_gat(i) + (FSSROW(I)-
      1                (FSGVGAT(I)+FSGSGAT(I)+FSGGGAT(I)))
      2                /FSSROW(I)
-          else
-            altot_gat(i) = altot_gat(i)
           end if
 c
           do 710 j=1,ignd
@@ -3669,13 +3672,11 @@ c
 c
       if(ncount.eq.nday) then
 c
-      do 855 i=1,nml
-          uvaccgat_t(i)=uvaccgat_t(i)/real(nday)
-          vvaccgat_t(i)=vvaccgat_t(i)/real(nday)
-c
 c         daily averages of accumulated variables for ctem
 c
-          if (ctem_on) then
+        if (ctem_on) then
+
+          do 855 i=1,nml
 c
 c           net radiation and precipitation estimates for ctem's bioclim
 c
@@ -3687,12 +3688,14 @@ c
               allwacc_gat(i)=0.0
             endif
 c
+            uvaccgat_t(i)=uvaccgat_t(i)/real(nday)
+            vvaccgat_t(i)=vvaccgat_t(i)/real(nday)
             fsinacc_gat(i)=fsinacc_gat(i)/real(nday)
             flinacc_gat(i)=flinacc_gat(i)/real(nday)
             flutacc_gat(i)=flutacc_gat(i)/real(nday)
 c
-            altot_gat(i)=altot_gat(i) / real(nday)
-            fsstar_gat=fsinacc_gat(i)*(1.-altot_gat(i))
+            altotacc_gat(i)=altotacc_gat(i) / real(nday)
+            fsstar_gat=fsinacc_gat(i)*(1.-altotacc_gat(i))
             flstar_gat=flinacc_gat(i)-flutacc_gat(i)
             netrad_gat(i)=fsstar_gat+flstar_gat
             preacc_gat(i)=pregacc_gat(i)
@@ -3789,15 +3792,12 @@ c
      &                  wetfrac_mongat(i,month1))
             endif !obswetf
 
-          endif ! if(ctem_on)
 c
 855   continue
 c
 c     Call Canadian Terrestrial Ecosystem Model which operates at a
 c     daily time step, and uses daily accumulated values of variables
 c     simulated by CLASS.
-c
-      if (ctem_on) then
 c
         call ctem ( fcancmxgat, fsnowacc_t,    sandgat,    claygat,
      2                      1,        nml,        iday,    radjgat,
@@ -4079,7 +4079,7 @@ c     reset mosaic accumulator arrays.
           tcanoaccgat_t(i)=0.0
           tcansacc_t(i)=0.0
           taaccgat_t(i)=0.0
-          altot_gat(i) = 0.0
+          altotacc_gat(i) = 0.0
 
           do 715 j=1,ignd
              tbarcacc_t(i,j)=0.0
@@ -4367,18 +4367,18 @@ c
 
 7200      format(1x,i2,1x,i2,i5,i5,9f11.3,9f11.3,2(a6,i2))
 c
-          fsstar_g    =fsstar_g + fsstar*FAREROT(i,m)
-          flstar_g    =flstar_g + flstar*FAREROT(i,m)
-          qh_g        =qh_g     + qh*FAREROT(i,m)
-          qe_g        =qe_g     + qe*FAREROT(i,m)
-          snomlt_g    =snomlt_g + snomlt*FAREROT(i,m)
-          beg_g       =beg_g    + beg*FAREROT(i,m)
-          gtout_g     =gtout_g  + gtout*FAREROT(i,m)
-          tcn_g=tcn_g + tcn*FAREROT(i,m)
-          tsn_g=tsn_g + tsn*FAREROT(i,m)
-          zsn_g=zsn_g + zsn*FAREROT(i,m)
-          altot_g     =altot_g   + altot*FAREROT(i,m)
-          tpn_g       =tpn_g       + tpn*FAREROT(i,m)
+          fsstar_g(i)    =fsstar_g(i) + fsstar*FAREROT(i,m)
+          flstar_g(i)    =flstar_g(i) + flstar*FAREROT(i,m)
+          qh_g(i)        =qh_g(i)     + qh*FAREROT(i,m)
+          qe_g(i)        =qe_g(i)     + qe*FAREROT(i,m)
+          snomlt_g(i)    =snomlt_g(i) + snomlt*FAREROT(i,m)
+          beg_g(i)       =beg_g(i)    + beg*FAREROT(i,m)
+          gtout_g(i)     =gtout_g(i)  + gtout*FAREROT(i,m)
+          tcn_g(i)       =tcn_g(i)    + tcn*FAREROT(i,m)
+          tsn_g(i)       =tsn_g(i)    + tsn*FAREROT(i,m)
+          zsn_g(i)       =zsn_g(i)    + zsn*FAREROT(i,m)
+          altot_g(i)     =altot_g(i)  + altot*FAREROT(i,m)
+          tpn_g(i)       =tpn_g(i)    + tpn*FAREROT(i,m)
 c
           do j=1,ignd
             TBARROT_g(i,j)=TBARROT_g(i,j) + TBARROT(i,m,j)*FAREROT(i,m)
@@ -4451,16 +4451,17 @@ C
      1                 J=1,ICC),(RMLVEGROW_G(I,J),J=1,ICC)
        ENDIF !CTEM_ON
 
-       WRITE(641,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR_G,FLSTAR_G,QH_G,
-     1      QE_G,SNOMLT_G,BEG_G,GTOUT_G,SNOROT_G(I),RHOSROT_G(I),
-     2                   WSNOROT_G(I),ALTOT_G,ROFROT_G(I),
-     3                   TPN_G,ZPNDROT_G(I),CDHROT_G(I),CDMROT_G(I),
-     4                   SFCUROT_G(I),SFCVROT_G(I),UVROW(I)
+       WRITE(641,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR_G(i),FLSTAR_G(i),
+     1                  QH_G(i),QE_G(i),SNOMLT_G(i),BEG_G(i),GTOUT_G(i),
+     2                  SNOROT_G(I),RHOSROT_G(I),WSNOROT_G(I),
+     3                  ALTOT_G(i),ROFROT_G(I),TPN_G(i),ZPNDROT_G(I),
+     4                  CDHROT_G(I),CDMROT_G(I),SFCUROT_G(I),
+     5                  SFCVROT_G(I),UVROW(I)
          WRITE(651,6500) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
      1                   TFREZ,THLQROT_G(I,J),THICROT_G(I,J),J=1,3),
-     2                   TCN_G,RCANROT_G(I),SCANROT_G(I),TSN_G,ZSN_G,
-     3                   TCN_G-(TAROW(I)-TFREZ),TCANO(I)-TFREZ,
-     4                   TACGAT(I)-TFREZ,ACTLYR,FTABLE
+     2                   TCN_G(i),RCANROT_G(I),SCANROT_G(I),TSN_G(i),
+     3                   ZSN_G(i),TCN_G(i)-(TAROW(I)-TFREZ),
+     4                   TCANO(I)-TFREZ,TACGAT(I)-TFREZ,ACTLYR,FTABLE
 C
          IF(IGND.GT.3) THEN
           WRITE(661,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
@@ -4661,6 +4662,12 @@ C     * ACCUMULATE OUTPUT DATA FOR DIURNALLY AVERAGED FIELDS. BOTH GRID
 C       MEAN AND MOSAIC MEAN
 C
       DO 675 I=1,NLTEST
+
+          IF (FSSROW(I) .gt. 0.) then
+            ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)
+     1                   +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
+          END IF
+
       DO 650 M=1,NMTEST
           PREACC(I)=PREACC(I)+PREROW(I)*FAREROT(I,M)*DELT
           GTACC(I)=GTACC(I)+GTROT(I,M)*FAREROT(I,M)
@@ -4671,10 +4678,6 @@ C
           ROFACC(I)=ROFACC(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
           OVRACC(I)=OVRACC(I)+ROFOROT(I,M)*FAREROT(I,M)*DELT
           WTBLACC(I)=WTBLACC(I)+WTABROT(I,M)*FAREROT(I,M)
-          IF (FSSROW(I) .gt. 0.) then
-            ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)
-     1                   +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
-          END IF
           DO 625 J=1,IGND
               TBARACC(I,J)=TBARACC(I,J)+TBARROT(I,M,J)*FAREROT(I,M)
               THLQACC(I,J)=THLQACC(I,J)+THLQROT(I,M,J)*FAREROT(I,M)
@@ -5025,7 +5028,8 @@ C=======================================================================
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
      4                       SNOROT,TAROW,WSNOROT,TBARROT,THLQROT,
      5                       THICROT,TFREZ,QFCROT,QFGROT,QFNROT,
-     6                       QFCLROT,QFCFROT)
+     6                       QFCLROT,QFCFROT,FSGVROT,FSGSROT,
+     7                       FSGGROT)
 
        DO NT=1,NMON
         IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
@@ -5039,7 +5043,7 @@ C=======================================================================
      1                       nltest,nmtest,ALVSROT,FAREROT,FSVHROW,
      2                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
-     4                       TAROW,QFCROT)
+     4                       TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT)
 
 c     CTEM output and write out
 

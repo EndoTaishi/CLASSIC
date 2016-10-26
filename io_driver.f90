@@ -934,9 +934,9 @@ WRITE(81,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
 WRITE(81,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 WRITE(81,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
 WRITE(81,6021)'MONTH','YEAR','SW','LW','QH','QE','SNOACC','WSNOACC','ROFACC','PCP',&
-              'EVAP','TAIR','TRANSP','T/E','GROUNDEVAP','CANOPYEVAP'
+              'EVAP','TAIR','TRANSP','T/E','GROUNDEVAP','CANOPYEVAP','ALTOT'
 WRITE(81,6021)'#','','W/m2','W/m2','W/m2','W/m2','kg/m2','kg/m2','mm.mon','mm.mon',&
-              'mm.mon','degC','mm.mon','ratio','kg/m2/mon','kg/m2/mon'
+              'mm.mon','degC','mm.mon','ratio','kg/m2/mon','kg/m2/mon',' '
 
 OPEN(UNIT=82,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF2M')
 WRITE(82,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
@@ -951,8 +951,8 @@ OPEN(UNIT=83,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1Y')
 WRITE(83,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
 WRITE(83,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 WRITE(83,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
-WRITE(83,6023)'YEAR','SW','LW','QH','QE','ROFACC','PCP','EVAP','TRANSP','T/E'
-WRITE(83,6023)'#','W/m2','W/m2','W/m2','W/m2','mm.yr','mm.yr','mm.yr','mm.yr','ratio'
+WRITE(83,6023)'YEAR','SW','LW','QH','QE','ROFACC','PCP','EVAP','TRANSP','T/E','ALTOT'
+WRITE(83,6023)'#','W/m2','W/m2','W/m2','W/m2','mm.yr','mm.yr','mm.yr','mm.yr','ratio',' '
 
 if (ctem_on) then
 
@@ -1048,9 +1048,9 @@ if (ctem_on) then
     
 end if !>ctem_on & parallelrun
 
-6021  FORMAT(A5,A5,5(A8,1X),A8,A12,7(A12,1X))
+6021  FORMAT(A5,A5,5(A8,1X),A8,A12,8(A12,1X))
 6022  FORMAT(A5,A5,3(A8,1X,2A6,1X))
-6023  FORMAT(A5,4(A8,1X),A12,1X,4(A12,1X))
+6023  FORMAT(A5,4(A8,1X),A12,1X,5(A12,1X))
 6124  FORMAT(A5,A5,14(A12,1X))
 6125  FORMAT(A5,A5,21(A12,1X))
 6126  FORMAT(1X,A5,16(A12,1X))
@@ -1069,7 +1069,7 @@ subroutine class_monthly_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,&
                                   ALVSROT,FAREROT,FSVHROW,ALIRROT,FSIHROW,GTROT,FSSROW, &
                                   FDLROW,HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,SNOROT, &
                                   TAROW,WSNOROT,TBARROT,THLQROT,THICROT,TFREZ,QFCROT, &
-                                  QFGROT,QFNROT,QFCLROT,QFCFROT)
+                                  QFGROT,QFNROT,QFCLROT,QFCFROT,FSGVROT,FSGSROT,FSGGROT)
                            
 use ctem_statevars,     only : class_out,resetclassmon
 use ctem_params, only : nmon, monthend, nlat, nmos, ignd
@@ -1110,6 +1110,9 @@ real, dimension(nlat,nmos), intent(in) :: QFGROT
 real, dimension(nlat,nmos), intent(in) :: QFNROT
 real, dimension(nlat,nmos), intent(in) :: QFCLROT
 real, dimension(nlat,nmos), intent(in) :: QFCFROT
+real, dimension(nlat,nmos), intent(in) :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
+real, dimension(nlat,nmos), intent(in) :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
+real, dimension(nlat,nmos), intent(in) :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
 
 ! pointers
 real, pointer, dimension(:) :: ALVSACC_MO
@@ -1126,6 +1129,7 @@ real, pointer, dimension(:) :: PREACC_MO
 real, pointer, dimension(:) :: EVAPACC_MO
 real, pointer, dimension(:) :: TRANSPACC_MO
 real, pointer, dimension(:) :: TAACC_MO
+real, pointer, dimension(:) :: ALTOTACC_MO
 real, pointer, dimension(:) :: GROUNDEVAP
 real, pointer, dimension(:) :: CANOPYEVAP
 real, pointer :: FSSTAR_MO
@@ -1137,7 +1141,7 @@ real, pointer, dimension(:,:) :: THLQACC_MO
 real, pointer, dimension(:,:) :: THICACC_MO
    
 ! local
-real :: ALTOT_MO
+
 integer :: NT
 integer :: NDMONTH
 integer :: i,m,j
@@ -1168,6 +1172,7 @@ THLQACC_MO        => class_out%THLQACC_MO
 THICACC_MO        => class_out%THICACC_MO
 GROUNDEVAP        => class_out%GROUNDEVAP
 CANOPYEVAP        => class_out%CANOPYEVAP
+ALTOTACC_MO       => class_out%ALTOTACC_MO
 
 ! ------------
 
@@ -1178,12 +1183,13 @@ FSSTAR_MO   =0.0
 FLSTAR_MO   =0.0
 QH_MO       =0.0
 QE_MO       =0.0
-ALTOT_MO    =0.0
 
 DO 820 I=1,NLTEST
 DO 821 M=1,NMTEST
-    ALVSACC_MO(I)=ALVSACC_MO(I)+ALVSROT(I,M)*FAREROT(I,M)*FSVHROW(I)
-    ALIRACC_MO(I)=ALIRACC_MO(I)+ALIRROT(I,M)*FAREROT(I,M)*FSIHROW(I) 
+
+    ! These are presently not being outputted but the code is kept in place if the need arises.
+!     ALVSACC_MO(I)=ALVSACC_MO(I)+ALVSROT(I,M)*FAREROT(I,M)*FSVHROW(I)
+!     ALIRACC_MO(I)=ALIRACC_MO(I)+ALIRROT(I,M)*FAREROT(I,M)*FSIHROW(I)
     FLUTACC_MO(I)=FLUTACC_MO(I)+SBC*GTROT(I,M)**4*FAREROT(I,M)
     FSINACC_MO(I)=FSINACC_MO(I)+FSSROW(I)*FAREROT(I,M)
     FLINACC_MO(I)=FLINACC_MO(I)+FDLROW(I)*FAREROT(I,M)
@@ -1202,6 +1208,11 @@ DO 821 M=1,NMTEST
     PREACC_MO(I) =PREACC_MO(I)+PREROW(I)*FAREROT(I,M)*DELT
     EVAPACC_MO(I)=EVAPACC_MO(I)+QFSROT(I,M)*FAREROT(I,M)*DELT
 
+    IF(FSSROW(I).GT.0.0) THEN
+        ALTOTACC_MO(I)=ALTOTACC_MO(I) + (FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
+                        /FSSROW(I)*FAREROT(I,M)
+    ENDIF
+
     DO 823 J=1,IGND
         TBARACC_MO(I,J)=TBARACC_MO(I,J)+TBARROT(I,M,J)*FAREROT(I,M)
         THLQACC_MO(I,J)=THLQACC_MO(I,J)+THLQROT(I,M,J)*FAREROT(I,M)
@@ -1219,14 +1230,17 @@ DO NT=1,NMON
         NDMONTH=(monthend(NT+1)-monthend(NT))*NDAY
 
         DO 824 I=1,NLTEST
-            IF(FSINACC_MO(I).GT.0.0) THEN
-                ALVSACC_MO(I)=ALVSACC_MO(I)/(FSINACC_MO(I)*0.5)
-                ALIRACC_MO(I)=ALIRACC_MO(I)/(FSINACC_MO(I)*0.5)
-            ELSE
-                ALVSACC_MO(I)=0.0
-                ALIRACC_MO(I)=0.0
-            ENDIF
+
+              ! These are presently not being outputted but the code is kept in place if the need arises.
+!             IF(FSINACC_MO(I).GT.0.0) THEN
+!                 ALVSACC_MO(I)=ALVSACC_MO(I)/(FSINACC_MO(I)*0.5)
+!                 ALIRACC_MO(I)=ALIRACC_MO(I)/(FSINACC_MO(I)*0.5)
+!             ELSE
+!                 ALVSACC_MO(I)=0.0
+!                 ALIRACC_MO(I)=0.0
+!             ENDIF
             
+            ALTOTACC_MO(I) = ALTOTACC_MO(I)/REAL(NDMONTH)
             FLUTACC_MO(I)=FLUTACC_MO(I)/REAL(NDMONTH)
             FSINACC_MO(I)=FSINACC_MO(I)/REAL(NDMONTH)
             FLINACC_MO(I)=FLINACC_MO(I)/REAL(NDMONTH)
@@ -1243,8 +1257,7 @@ DO NT=1,NMON
                 THICACC_MO(I,J)=THICACC_MO(I,J)/REAL(NDMONTH)
             ENDDO
 
-            ALTOT_MO=(ALVSACC_MO(I)+ALIRACC_MO(I))/2.0
-            FSSTAR_MO=FSINACC_MO(I)*(1.-ALTOT_MO)
+            FSSTAR_MO=FSINACC_MO(I)*(1.-ALTOTACC_MO(I))
             FLSTAR_MO=FLINACC_MO(I)-FLUTACC_MO(I)
             QH_MO=HFSACC_MO(I)
             QE_MO=QEVPACC_MO(I)
@@ -1259,7 +1272,8 @@ DO NT=1,NMON
                          QE_MO,SNOACC_MO(I),WSNOACC_MO(I), &
                          ROFACC_MO(I),PREACC_MO(I),EVAPACC_MO(I), &
                          TAACC_MO(I)-TFREZ,TRANSPACC_MO(I),&
-                         tovere,GROUNDEVAP(I),CANOPYEVAP(I)
+                         tovere,GROUNDEVAP(I),CANOPYEVAP(I),&
+                         ALTOTACC_MO(I)
             IF (IGND.GT.3) THEN
             WRITE(82,8103)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
                           THLQACC_MO(I,J),THICACC_MO(I,J),J=1,20) !, &
@@ -1279,7 +1293,7 @@ DO NT=1,NMON
        END IF ! IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)
       END DO ! NMON
 
-8100  FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,7(E12.3,1X),2(A6,I2))
+8100  FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,8(E12.3,1X),2(A6,I2))
 8101  FORMAT(1X,I4,I5,5(F7.2,1X,2F6.3,1X),2(A6,I2))
 8103  FORMAT(1X,I4,I5,20(F7.2,1X,2F6.3,1X),2(A6,I2))
 8102  FORMAT(1X,I4,I5,3(F8.2,1X,2F6.3,1X),2(A6,I2))
@@ -1294,7 +1308,7 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
                             nltest,nmtest,ALVSROT,FAREROT,FSVHROW, &
                             ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW, &
                             HFSROT,ROFROT,PREROW,QFSROT,QEVPROT, &
-                            TAROW,QFCROT)
+                            TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT)
 
 use ctem_statevars,     only : class_out,resetclassyr
 use ctem_params, only : nmon, monthend, nlat, nmos, ignd
@@ -1325,6 +1339,9 @@ real, dimension(nlat,nmos), intent(in) :: QEVPROT
 real, dimension(nlat,nmos), intent(in) :: ROFROT
 real, dimension(nlat,nmos), intent(in) :: QFSROT
 real, dimension(nlat,nmos,ignd), intent(in) :: QFCROT
+real, dimension(nlat,nmos), intent(in) :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
+real, dimension(nlat,nmos), intent(in) :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
+real, dimension(nlat,nmos), intent(in) :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
 
 ! pointers
 real, pointer, dimension(:) :: ALVSACC_YR
@@ -1339,6 +1356,7 @@ real, pointer, dimension(:) :: PREACC_YR
 real, pointer, dimension(:) :: EVAPACC_YR
 real, pointer, dimension(:) :: TRANSPACC_YR
 real, pointer, dimension(:) :: TAACC_YR
+real, pointer, dimension(:) :: ALTOTACC_YR
 real, pointer :: FSSTAR_YR
 real, pointer :: FLSTAR_YR
 real, pointer :: QH_YR
@@ -1366,7 +1384,7 @@ FSSTAR_YR         => class_out%FSSTAR_YR
 FLSTAR_YR         => class_out%FLSTAR_YR
 QH_YR             => class_out%QH_YR
 QE_YR             => class_out%QE_YR
-
+ALTOTACC_YR       => class_out%ALTOTACC_YR
 
 !> Accumulate output data for yearly averaged fields for class grid-mean.
 !> for both parallel mode and stand alone mode
@@ -1378,8 +1396,11 @@ ALTOT_YR    =0.0
 
 DO 827 I=1,NLTEST
     DO 828 M=1,NMTEST
-        ALVSACC_YR(I)=ALVSACC_YR(I)+ALVSROT(I,M)*FAREROT(I,M)*FSVHROW(I)
-        ALIRACC_YR(I)=ALIRACC_YR(I)+ALIRROT(I,M)*FAREROT(I,M)*FSIHROW(I)
+
+          ! These are presently not being outputted but the code is kept in place if the need arises.
+!         ALVSACC_YR(I)=ALVSACC_YR(I)+ALVSROT(I,M)*FAREROT(I,M)*FSVHROW(I)
+!         ALIRACC_YR(I)=ALIRACC_YR(I)+ALIRROT(I,M)*FAREROT(I,M)*FSIHROW(I)
+
         FLUTACC_YR(I)=FLUTACC_YR(I)+SBC*GTROT(I,M)**4*FAREROT(I,M)
         FSINACC_YR(I)=FSINACC_YR(I)+FSSROW(I)*FAREROT(I,M)
         FLINACC_YR(I)=FLINACC_YR(I)+FDLROW(I)*FAREROT(I,M)
@@ -1392,19 +1413,27 @@ DO 827 I=1,NLTEST
         DO J = 1,IGND
             TRANSPACC_YR(I)=TRANSPACC_YR(I)+QFCROT(I,M,J)*FAREROT(I,M)*DELT
         END DO
+        IF(FSSROW(I).GT.0.0) THEN
+           ALTOTACC_YR(I)=ALTOTACC_YR(I) + (FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
+                        /FSSROW(I)*FAREROT(I,M)
+        ENDIF
+
 828    CONTINUE
 827   CONTINUE
 
 IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
 
     DO 829 I=1,NLTEST
-            IF(FSINACC_YR(I).GT.0.0) THEN
-                ALVSACC_YR(I)=ALVSACC_YR(I)/(FSINACC_YR(I)*0.5)
-                ALIRACC_YR(I)=ALIRACC_YR(I)/(FSINACC_YR(I)*0.5)
-            ELSE
-                ALVSACC_YR(I)=0.0
-                ALIRACC_YR(I)=0.0
-            ENDIF
+
+            ! These are presently not being outputted but the code is kept in place if the need arises.
+!             IF(FSINACC_YR(I).GT.0.0) THEN
+!                 ALVSACC_YR(I)=ALVSACC_YR(I)/(FSINACC_YR(I)*0.5)
+!                 ALIRACC_YR(I)=ALIRACC_YR(I)/(FSINACC_YR(I)*0.5)
+!             ELSE
+!                 ALVSACC_YR(I)=0.0
+!                 ALIRACC_YR(I)=0.0
+!             ENDIF
+
             FLUTACC_YR(I)=FLUTACC_YR(I)/(REAL(NDAY)*365.)
             FSINACC_YR(I)=FSINACC_YR(I)/(REAL(NDAY)*365.)
             FLINACC_YR(I)=FLINACC_YR(I)/(REAL(NDAY)*365.)
@@ -1415,9 +1444,9 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
             EVAPACC_YR(I)=EVAPACC_YR(I)
             TRANSPACC_YR(I)=TRANSPACC_YR(I)
             TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*365.)
+            ALTOTACC_YR(I)=ALTOTACC_YR(I)/(REAL(NDAY)*365.)
 
-            ALTOT_YR=(ALVSACC_YR(I)+ALIRACC_YR(I))/2.0
-            FSSTAR_YR=FSINACC_YR(I)*(1.-ALTOT_YR)
+            FSSTAR_YR=FSINACC_YR(I)*(1.-ALTOTACC_YR(I))
             FLSTAR_YR=FLINACC_YR(I)-FLUTACC_YR(I)
             QH_YR=HFSACC_YR(I)
             QE_YR=QEVPACC_YR(I)
@@ -1431,7 +1460,8 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
             WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,&
                           QE_YR,ROFACC_YR(I),PREACC_YR(I),&
                           EVAPACC_YR(I),TRANSPACC_YR(I),&
-                          TRANSPACC_YR(I)/EVAPACC_YR(I)
+                          TRANSPACC_YR(I)/EVAPACC_YR(I), &
+                          ALTOTACC_YR(I)
 
         !> ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
 
@@ -1441,7 +1471,7 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
 
 ENDIF !> IDAY.EQ.365 .AND. NDAY
 
-8103  FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,4(F12.3,1X),2(A5,I1))
+8103  FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,5(F12.3,1X),2(A5,I1))
 
 end subroutine class_annual_aw
 !>@}

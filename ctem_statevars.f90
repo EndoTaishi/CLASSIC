@@ -292,7 +292,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: TCANACC_M !<
     real, dimension(nlat,nmos) :: RCANACC_M !<
     real, dimension(nlat,nmos) :: SCANACC_M !<
-    real, dimension(nlat,nmos) :: ALTOTACC_M !<
+    real, dimension(nlat,nmos) :: ALTOTACC_M !<Daily broadband albedo
     real, dimension(nlat,nmos) :: GROACC_M  !<
     real, dimension(nlat,nmos) :: FSINACC_M !<
     real, dimension(nlat,nmos) :: FLINACC_M !<
@@ -569,6 +569,7 @@ type class_moyr_output
     real, dimension(nlat) :: EVAPACC_MO   !<
     real, dimension(nlat) :: TRANSPACC_MO !<
     real, dimension(nlat) :: TAACC_MO     !<
+    real, dimension(nlat) :: ALTOTACC_MO  !< Broadband albedo
     real, dimension(nlat) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
     real, dimension(nlat) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
 
@@ -595,6 +596,7 @@ type class_moyr_output
     real, dimension(nlat) :: EVAPACC_YR  !<
     real, dimension(nlat) :: TRANSPACC_YR!<
     real, dimension(nlat) :: TAACC_YR    !<
+    real, dimension(nlat) :: ALTOTACC_YR !< Broadband albedo
 
     real :: FSSTAR_YR !<
     real :: FLSTAR_YR !<
@@ -742,18 +744,18 @@ type ctem_gridavg
       real, dimension(nlat,ignd) :: THICROT_g !<
       real, dimension(nlat,ignd) :: GFLXROT_g !<
 
-      real :: fsstar_g !<
-      real :: flstar_g !<
-      real :: qh_g     !<
-      real :: qe_g     !<
-      real :: snomlt_g !<
-      real :: beg_g    !<
-      real :: gtout_g  !<
-      real :: tpn_g    !<
-      real :: altot_g  !<
-      real :: tcn_g    !<
-      real :: tsn_g    !<
-      real :: zsn_g    !<
+      real, dimension(nlat) :: fsstar_g !<
+      real, dimension(nlat) :: flstar_g !<
+      real, dimension(nlat) :: qh_g     !<
+      real, dimension(nlat) :: qe_g     !<
+      real, dimension(nlat) :: snomlt_g !<
+      real, dimension(nlat) :: beg_g    !<
+      real, dimension(nlat) :: gtout_g  !<
+      real, dimension(nlat) :: tpn_g    !<
+      real, dimension(nlat) :: altot_g  !<
+      real, dimension(nlat) :: tcn_g    !<
+      real, dimension(nlat) :: tsn_g    !<
+      real, dimension(nlat) :: zsn_g    !<
 
 end type ctem_gridavg
 
@@ -1370,6 +1372,7 @@ do i=1,nltest
     class_out%TAACC_MO(I)=0.
     class_out%CANOPYEVAP(I)=0.
     class_out%GROUNDEVAP(I)=0.
+    class_out%ALTOTACC_MO(I)=0.
 
     DO J=1,IGND
         class_out%TBARACC_MO(I,J)=0.
@@ -1403,6 +1406,7 @@ do i=1,nltest
           class_out%EVAPACC_YR(I)=0.
           class_out%TRANSPACC_YR(I)=0.
           class_out%TAACC_YR(I)=0.
+          class_out%ALTOTACC_YR(I)=0.
 end do
 
 end subroutine resetclassyr
@@ -1931,20 +1935,23 @@ integer :: i,j
 
         do i = 1, nltest
 
-        ctem_grd%fsstar_g    =0.0 !flag should some of these be per i that are presently not?   JM Jun 2015.
-        ctem_grd%flstar_g    =0.0
-        ctem_grd%qh_g        =0.0
-        ctem_grd%qe_g        =0.0
-        ctem_grd%snomlt_g    =0.0
-        ctem_grd%beg_g       =0.0
-        ctem_grd%gtout_g     =0.0
+        ctem_grd%fsstar_g(i) =0.0
+        ctem_grd%flstar_g(i) =0.0
+        ctem_grd%qh_g(i)     =0.0
+        ctem_grd%qe_g(i)     =0.0
+        ctem_grd%snomlt_g(i) =0.0
+        ctem_grd%beg_g(i)    =0.0
+        ctem_grd%gtout_g(i)  =0.0
         ctem_grd%SNOROT_g(i) =0.0
         ctem_grd%RHOSROT_g(i)=0.0
         ctem_grd%WSNOROT_g(i)=0.0
-        ctem_grd%altot_g     =0.0
+        ctem_grd%altot_g(i)  =0.0
         ctem_grd%ROFROT_g(i) =0.0
-        ctem_grd%tpn_g       =0.0
+        ctem_grd%tpn_g(i)    =0.0
         ctem_grd%ZPNDROT_g(i)=0.0
+        ctem_grd%tcn_g(i)=0.0
+        ctem_grd%tsn_g(i)=0.0
+        ctem_grd%zsn_g(i)=0.0
 
         do j=1,ignd
          ctem_grd%TBARROT_g(i,j)=0.0
@@ -1956,11 +1963,9 @@ integer :: i,j
          ctem_grd%QFCROT_g(i,j)=0.0
         end do
 
-        ctem_grd%tcn_g=0.0
+        
         ctem_grd%RCANROT_g(i) =0.0
         ctem_grd%SCANROT_g(i) =0.0
-        ctem_grd%tsn_g=0.0
-        ctem_grd%zsn_g=0.0
         ctem_grd%TROFROT_g(i)=0.0
         ctem_grd%TROOROT_g(i)=0.0
         ctem_grd%TROBROT_g(i)=0.0
