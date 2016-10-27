@@ -25,12 +25,12 @@
      K                 THLIQ,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                 XDIFFUS,ICTEM,IC,CO2I1,CO2I2,
      M                 ctem_on,SLAI,FCANCMX,L2MAX,
-     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS,
+     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG,
      O                 DAYL,DAYL_MAX
 c    pass  variables to the moss subroutines YW March 19, 2015------------\   
-     1         ,ipeatland, tbar, thpor, Cmossmas,dmoss
+     1         ,ipeatland, Cmossmas,dmoss
 c    ------input above, output below-----------------------------------    
-     2    ,anmoss,rmlmoss,iyear, iday, ihour,imin,pdd)
+     2    ,anmoss,rmlmoss,iday, pdd)
 c    Y.Wu ------------------------------------------------------------/
 
 C
@@ -304,7 +304,7 @@ C
       REAL DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
 
 
-      INTEGER ISAND(ILG,IG),    LFSTATUS(ILG,ICTEM)
+      INTEGER ISAND(ILG,IG)
 C
       LOGICAL ctem_on
 
@@ -342,11 +342,11 @@ C
      3     TZEROT,YEVAP,RAGCO,EZERO,WTRANSP,WTEST
 C
 C     --------define peatland variables--------------------------------\ 
-      integer  ipeatland(ilg),ievapms(ilg),iday,ihour,iyear,imin
-      real     tbar(ilg,ig),  thmin(ilg,ig), thpor(ilg,ig), 
-     1         bi(ig),   Cmossmas(ilg), dmoss(ilg),pdd(ilg)
+      integer  ipeatland(ilg),ievapmoss(ilg),iday
+      real     thmin(ilg,ig),
+     1         Cmossmas(ilg), dmoss(ilg),pdd(ilg)
 c    ------input above output below------------------------------------
-      real     anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
+      real     anmoss(ilg),rmlmoss(ilg),cevapmoss(ilg)
 C    ---------YW March 26, 2015 ---------------------------------------/
 
 C     * COMMON BLOCK PARAMETERS.
@@ -560,8 +560,7 @@ C
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
      4               THFC,  THLW,  FCANCMX,   L2MAX,NOL2PFTS,
      5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG,
-     6              LFSTATUS,DAYL, DAYL_MAX  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
-     7              ,iyear,iday,ihour,imin)        !YW for testing
+     6              DAYL, DAYL_MAX)
 C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
@@ -570,15 +569,12 @@ C
             RC(I)=MIN(RCPHTSYN(I),4999.999)
    70   CONTINUE                                                        
 
-c    -------moss photosynthesis----------------------------------------
-        call  mosspht(ilg,ig,isand,iday,qswnvg,thliq,tbar,thpor,
-     1         co2conc,tgnd,zsnow,delzw,pressg,qac,coszs,Cmossmas,dmoss,
-c    ---------------input above output below-------------------
-     2         anmoss,rmlmoss,cevapms,ievapms,ipeatland
-c    -----------for testing------------------------------------
-     3         ,iyear, ihour,imin,DAYL,pdd)
-c    -------YW March 20, 2015 -----------------------------------------
-
+c    Do moss photosynthesis:
+        if (ipeatland(i) >0) then
+            call  mosspht(ilg,ig,iday,qswnvg,thliq,co2conc,tgnd,zsnow,
+     1                pressg,coszs,Cmossmas,dmoss,anmoss,rmlmoss,
+     2                cevapmoss,ievapmoss,ipeatland,DAYL,pdd)
+        end if
       ENDIF
 C
 C     * ITERATION FOR SURFACE TEMPERATURE OF GROUND UNDER CANOPY.
@@ -715,8 +711,8 @@ c    evaporation coefficient is moss-controlled for peatland-----------\
                   if (ipeatland(i)==0)               then
                       EVBETA(I)=CEVAP(I)
                   else                             
-                      ievap(i) = ievapms(i)
-                      evbeta(i) = cevapms(i)
+                      ievap(i) = ievapmoss(i)
+                      evbeta(i) = cevapmoss(i)
                   endif
 c    YW March 20, 2015 -------JM FLAG-----------------------------------------/
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QAC(I)

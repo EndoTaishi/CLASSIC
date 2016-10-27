@@ -3691,15 +3691,10 @@ C
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
      S  TCSNOW,GSNOW,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-
-     U  NBS,    ISNOALB,lfstatusgat,daylgat, dayl_maxgat
-c    ---peatland variabels in mosspht.f called in TSOLVC, TSOLVE----- -\  
-     1  ,ipeatlandgat, bigat,
-     2  ancsmoss, angsmoss, ancmoss, angmoss,
+     U  NBS,    ISNOALB,daylgat, dayl_maxgat,
+     1  ipeatlandgat, ancsmoss, angsmoss, ancmoss, angmoss,
      3  rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,
-     4  Cmossmasgat,   dmossgat,  iyear, iday, ihour, imin,
-     5  pddgat)
-c    --------------------YW March 19, 2015 ----------------------------/
+     4  Cmossmasgat,   dmossgat,  iday, pddgat)
 C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.
@@ -3749,19 +3744,6 @@ C
      A             DELZ,   FCS,    FGS,    FC,     FG,
      B             1,      NML,    ILG,    IGND,   N    )
 C
-
-!     FLAG!
-c    --aggregate moss C fluxes of subareas to grid for ctem.f------------\ 
-      do 620 i = 1, nml
-         if (ipeatlandgat(i) > 0)                    then
-              anmossgat(i) = fcs(i)*ancsmoss(i)+fgs(i)*angsmoss(i)
-     1                       +fc(i)*ancmoss(i)+fg(i)*angmoss(i)
-              rmlmossgat(i)= fcs(i)*rmlcsmoss(i)+fgs(i)*rmlgsmoss(i)
-     1                      +fc(i)*rmlcmoss(i)+fg(i)*rmlgmoss(i)
-              gppmossgat(i) = anmossgat(i) +rmlmossgat(i)
-         endif
-620   continue
-
 C===================== CTEM ============================================ \
 c     * accumulate output data for running ctem.
 c
@@ -3816,14 +3798,20 @@ c
             rmlcgvga_t(i,j)=rmlcgvga_t(i,j)+rmlcgveggat(i,j)
 713       continue
 c
-c    ------------accumulate moss C fluxes to daily---------------------\
-c
+c    ------------accumulate moss C fluxes to tile level then daily----
+c           FLAG this needs to be checked so it is able to be peatlands on a tile! JM Oct 2016.
           if (ipeatlandgat(i) > 0) then
+            anmossgat(i) = fcs(i)*ancsmoss(i)+fgs(i)*angsmoss(i)
+     1                       +fc(i)*ancmoss(i)+fg(i)*angmoss(i)
+            rmlmossgat(i)= fcs(i)*rmlcsmoss(i)+fgs(i)*rmlgsmoss(i)
+     1                      +fc(i)*rmlcmoss(i)+fg(i)*rmlgmoss(i)
+            gppmossgat(i) = anmossgat(i) +rmlmossgat(i)
+
             anmossac_t(i) = anmossac_t(i)   + anmossgat(i)
             rmlmossac_t(i)= rmlmossac_t(i)  + rmlmossgat(i)
             gppmossac_t(i)= gppmossac_t(i)  + gppmossgat(i)
+
           endif
-c    -------------------YW March 20, 2015 -----------------------------/
 c
 700     continue
       endif !if (ctem_on)
@@ -3883,6 +3871,16 @@ c
               rmlcgvga_t(i,j)=rmlcgvga_t(i,j)/real(nday)
 832         continue
 c
+c     -daily average moss C fluxes for ctem.f-------------------\
+c     Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
+c     stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.2004)
+c     the ratio between stem and capitulum = 7.5 and 7.7
+            if (ipeatlandgat(i) > 0) then
+                anmossac_t(i) = anmossac_t(i)/real(nday)
+                rmlmossac_t(i)= rmlmossac_t(i)/real(nday)
+                gppmossac_t(i) = gppmossac_t(i)/real(nday)
+            endif
+
 c           pass on mean monthly lightning for the current month to ctem
 c           lightng(i)=mlightng(i,month)
 c
@@ -3954,23 +3952,10 @@ c
 c
 855   continue
 c
-c     ---------daily average moss C fluxes for ctem.f-------------------\  
-c     Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
-c     stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.2004)
-c     the ratio between stem and capitulum = 7.5 and 7.7 
-      do 833 i = 1, nml
-        if (ipeatlandgat(i) > 0) then
-          anmossac_t(i) = anmossac_t(i)/real(nday)
-          rmlmossac_t(i)= rmlmossac_t(i)/real(nday)
-          gppmossac_t(i) = gppmossac_t(i)/real(nday)
-        endif
-833   continue
-c    ----------------YW March 26, 2015 ---------------------------------/
 c     Call Canadian Terrestrial Ecosystem Model which operates at a
 c     daily time step, and uses daily accumulated values of variables
 c     simulated by CLASS.
 c
-
       if (ctem_on) then
 c
         call ctem ( fcancmxgat, fsnowacc_t,    sandgat,    claygat,

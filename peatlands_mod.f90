@@ -306,21 +306,17 @@ contains
 
 !! Moss photosynthesis subroutine
 
-subroutine mosspht(ilg,ignd,isand,iday,qswnv,thliq,tbar,thpor, &
-            &    co2conc,tsurfk,zsnow,delzw,pres,qg,coszs,Cmossmas,dmoss, &
-!         output below
-            &    anmoss,rmlmoss,cevapms,ievapms,ipeatland &
-!    testing
-            &    ,iyear, ihour,imin,daylength,pdd)
-
+subroutine mosspht(ilg,ignd,iday,qswnv,thliq,co2conc,tsurfk,zsnow, &
+            &      pres,coszs,Cmossmas,dmoss,anmoss,rmlmoss,cevapmoss, &
+            &      ievapmoss,ipeatland,daylength,pdd)
 
 ! History
 
 ! J. Melton Sep 26 2016
-!   - Bring into rest of model and model formatting, convert to doxygen compatible code
+!   - Bring into rest of model and model formatting, convert to doxygen compatible code,
+!     trim out extraneous.
 
 ! Created by Yuanqiao Wu, 2015
-
 
 ! ----------
 
@@ -331,52 +327,42 @@ implicit none
 
 ! arguments:
 
+integer, intent(in) ::  ilg                     !<
+integer, intent(in) ::  ignd                    !<
+integer, intent(in) ::  iday                    !<
+integer, intent(in) ::  ipeatland(ilg)          !<
+real, dimension(ilg), intent(in) :: qswnv       !< visible short wave radiation = qswnv in TSOLVE
+                                                !! and qswnvg in TSOLVC (W/m2)
+real, dimension(ilg,ignd), intent(in) :: thliq  !<
+real, dimension(ilg), intent(in) :: zsnow       !<
+real, dimension(ilg), intent(in) :: co2conc     !<
+real, dimension(ilg), intent(in) :: daylength   !<
+real, dimension(ilg), intent(in) :: tsurfk      !<grid average ground surface temprature in K
+real, dimension(ilg), intent(in) :: pres        !<
+real, dimension(ilg), intent(in) :: Cmossmas    !< unit kg moss C updated in ctem
+real, dimension(ilg), intent(in) :: dmoss       !< unit m, depth of living moss. assume = 2 cm
+                                                !! can be related to mmoss as a variable
+
+real, dimension(ilg), intent(inout) :: pdd(ilg) !<
+
+integer, dimension(ilg), intent(out) ::  ievapmoss   !< Value is 0 is no evaporation from moss, 1 otherwise
+real, dimension(ilg), intent(out) :: anmoss     !< net photosynthesis (umol/m2/s)
+real, dimension(ilg), intent(out) :: rmlmoss    !< moss autotrophic respiration (umol/m2/s)
+real, dimension(ilg), intent(out) :: cevapmoss  !<evaporation coefficent for moss surface
+
+real coszs(ilg) !remove?
+
+! Local variables
+
 integer i               !>
 integer j               !>
-integer ilg             !>
-integer ignd            !>
-integer isand(ilg,ignd) !>
-integer iday            !>
-integer ihour           !>
-integer iyear           !>
-integer imin            !>
-integer ievapms(ilg)    !>
-integer ipeatland(ilg)  !>
+real :: mmoss(ilg)      !< unit kg moss mass in kg, update later
 
-real:: qswnv(ilg)  !< visible short wave radiation = qswnv in TSOLVE
-                    !! and qswnvg in TSOLVC (W/m2)
-
-!    environment related
-real     thliq(ilg,ignd),    tbar(ilg,ignd),     thpor(ilg,ignd), &
-        bi(ignd),           co2conc(ilg),       &
-        zsnow(ilg),         delzw(ilg,ignd),    pres(ilg), &
-        fcs(ilg),      fgs(ilg),      fc(ilg),       fg(ilg), &
-        qg(ilg),       coszs(ilg)
-!    moss related
-real:: Cmossmas(ilg)    !< unit kg moss C updated in ctem
-real:: mmoss(ilg)       !< unit kg moss mass in kg, update later
-real:: dmoss(ilg)       !< unit m, depth of living moss. assume = 2 cm
-                        !! can be related to mmoss as a variable
-!    ---------------input above this line-------------------------------
-
-real:: anmoss(ilg)      !< net photosynthesis (umol/m2/s)
-real:: rmlmoss(ilg)     !< moss autotrophic respiration (umol/m2/s)
-
-!    ---------------output above this line, parameters below------------
-
-! Local parameters:
-
-real, parameter :: tref = 298.16    !< unit K
-
-! Remainder of parameters stored in ctem_params.f90
-
-! -----------------------
-
-integer:: pheno(ilg)    !<phenology flag of mosses, 1 = photosynthesis,
+integer :: pheno(ilg)   !<phenology flag of mosses, 1 = photosynthesis,
                         !!0 = does not photosynthesis
 real:: parm(ilg)        !<par at the ground (moss layer) surface umol/m2/s
 real:: tsurf(ilg)       !<grid average ground surface temperature in C
-real:: tsurfk(ilg)      !<grid average ground surface temprature in K
+
 real:: wmoss(ilg)       !<water content extraporated from the surface
                         !!humidity qg and thliq of the first soil layer
                         !!unit kg water/ kg dw
@@ -385,7 +371,7 @@ real:: wmosmax(ilg)     !<maximum water content kg water /kg moss
 real:: fwmoss(ilg)      !<relative water content of mosses in g fw /g dw
 real:: dsmoss(ilg)      !<degree of moss saturation = relative water
                         !!content/maximum relative water content
-real:: cevapms(ilg)     !<evaporation coefficent for moss surface
+
 real:: g_moss(ilg)      !<moss conductance umol/m2/s (based on
                         !!Williams and Flanagan,1998 for Sphagnum)
 real:: mwce (ilg)       !<moisture function of dark respiration of moss
@@ -412,33 +398,29 @@ real:: wc(ilg)          !<net co2 assimilation rate limited by
 real:: ws(ilg)          !<net co2 assimilation rate limited by
                         !!sucrose availability (umol/m2/s)=JE IN PHTSYN
 real:: photon(ilg)      !<electron transport rate (umol/m2/s)
+real:: term1(ilg)       !< temporary terms for photosynthesis calculations
+real:: term2(ilg)       !< temporary terms for photosynthesis calculations
+real:: term3(ilg)       !< temporary terms for photosynthesis calculations
+real:: psna(ilg)        !<coefficients for quadratric solution of net photosynthesis
+real:: psnb(ilg)        !<coefficients for quadratric solution of net photosynthesis
+real:: psne(ilg)        !<coefficients for quadratric solution of net photosynthesis
+real:: mI(ilg)          !<coefficients of the solutions for net psn
+real:: mII(ilg)         !<coefficients of the solutions for net psn
 
-!    --------------internal variables above this line------------------
+! Local parameters:
 
-real:: term1(ilg), term2(ilg), term3(ilg)   !temporal terms for
-                        !photosynthesis calculations
-real:: psna(ilg), psnb(ilg), psne(ilg) !coefficients for quadratric
-                        !solution of net photosynthesis
-real:: mI(ilg), mII(ilg)!coefficients of the solutions for net psn
-!real:: beta1, beta2
-real:: temp_b, temp_c, temp_r, temp_q1, temp_q2, temp_jp
+real, parameter :: tref = 298.16    !< unit K
 
-!    -----------testing------------YW May 06, 2015 --------------------
-real::  dr2, SWin_ex,ta(ilg)
-real :: daylength(ilg) !in arg
-real :: pdd(ilg)    ! in arg.
-!     -----------temporal terms above this line------------------------
+! Remainder of parameters stored in ctem_params.f90
 
-real     DELT,TFREZ, HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,SPHW,&
-        SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
-
-!    -------------common block parameters above this line--------------
+!    -------------common block parameters --------------
+real     DELT,TFREZ,RHOW
 
 COMMON /CLASS1/ DELT,TFREZ
-COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY, &
-                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE, &
-                TCGLAC,CLHMLT,CLHVAP
+COMMON /CLASS4/ RHOW
 
+! ...........................
+! Begin calculations:
 
 ! Do the
 do   i = 1, ilg
@@ -458,26 +440,26 @@ end do
 !!    parm is in umol/m2/s and converted from qswnv in W/m2
 
 do 100   i = 1, ilg
-    parm(i)= qswnv(i)*4.6
-    o2(i)  = 20.9/100.0 * pres(i)
-    co2a(i) = co2conc(i)/1000000.0 * pres(i)
-    wj(i)     = 0.0
-    ws(i)     = 0.0
-    wc(i)     = 0.0
-    anmoss(i) = 0.0
-    rmlmoss(i)= 0.0
-    tsurf(i)= tsurfk(i)-tfrez
-    tmossk(i) = tsurfk(i)
-    tmoss(i)= tsurf(i)
+        parm(i)= qswnv(i)*4.6
+        o2(i)  = 20.9/100.0 * pres(i)
+        co2a(i) = co2conc(i)/1000000.0 * pres(i)
+        wj(i)     = 0.0
+        ws(i)     = 0.0
+        wc(i)     = 0.0
+        anmoss(i) = 0.0
+        rmlmoss(i)= 0.0
+        tsurf(i)= tsurfk(i)-tfrez
+        tmossk(i) = tsurfk(i)
+        tmoss(i)= tsurf(i)
 100   continue
 
 !!    phenology  water factor on mosses ,grow when temperature > -4.0
 !!    and snowpack < 0.15 m
 do 200 i = 1, ilg
     if (zsnow(i) .gt. 0.05 .or. tsurf (i) .lt. 0.5)  then
-        pheno(i) = 0.0
+        pheno(i) = 0
     else
-        pheno(i) = 1.0
+        pheno(i) = 1
     endif
 200   continue
 
@@ -489,12 +471,12 @@ do 200 i = 1, ilg
 !!    dmoss is between 2.5 to 5cm based on the species (Lamberty et al. 2006)
 
 do 250   i = 1, ilg
-    mmoss(i) = Cmossmas(i)/0.46
-    wmoss(i)= thliq(i,1)*rhow/(mmoss(i)/dmoss(i))
-    wmosmax(i) = min(45.0, thpms*dmoss(1)*rhow/mmoss(i))
-    wmosmin(i) = max(5.0, thmms*dmoss(1)*rhow/mmoss(i))
-    wmoss(i)= min(wmosmax(i),max(wmosmin(i),wmoss(i)))
-    fwmoss(i)=wmoss(i)+1     !g fresh weight /g dry weight
+        mmoss(i) = Cmossmas(i)/0.46
+        wmoss(i)= thliq(i,1)*rhow/(mmoss(i)/dmoss(i))
+        wmosmax(i) = min(45.0, thpms*dmoss(1)*rhow/mmoss(i))
+        wmosmin(i) = max(5.0, thmms*dmoss(1)*rhow/mmoss(i))
+        wmoss(i)= min(wmosmax(i),max(wmosmin(i),wmoss(i)))
+        fwmoss(i)=wmoss(i)+1.     !g fresh weight /g dry weight
 250   continue
 
 !!    ** moss conductance g_moss umol/m2/s
@@ -504,12 +486,13 @@ do 250   i = 1, ilg
 
 do 300 i = 1, ilg
     if (fwmoss(i) .le. 13.0)      then
-    g_moss(i)=-0.195+0.134*fwmoss(i) - 0.0256*(fwmoss(i)) &
-        **2 + 0.00228*(fwmoss(i))**3 - 0.0000984* &
-        (fwmoss(i))**4 + 0.00000168*(fwmoss(i))**5
+        g_moss(i)=-0.195+0.134*fwmoss(i) - 0.0256*(fwmoss(i)) &
+            **2 + 0.00228*(fwmoss(i))**3 - 0.0000984* &
+            (fwmoss(i))**4 + 0.00000168*(fwmoss(i))**5
     else
-    g_moss (i) = -0.000447 * fwmoss(i) + 0.0489
+        g_moss (i) = -0.000447 * fwmoss(i) + 0.0489
     endif
+
     g_moss (i) = g_moss(i) * 1000000.0
     g_moss(i) = max(0.0, g_moss(i))
 
@@ -520,14 +503,14 @@ do 300 i = 1, ilg
 
     dsmoss(i) = (wmoss(i)-wmosmin(i))/(wmosmax(i)-wmosmin(i))
     if (dsmoss(i) .lt.   0.001)       then
-        ievapms(i) = 0
-        cevapms(i) = 0.
+        ievapmoss(i) = 0
+        cevapmoss(i) = 0.
     elseif (dsmoss(i) .ge. 1.0)       then
-        ievapms(i) = 1
-        cevapms(i) = 1.0
+        ievapmoss(i) = 1
+        cevapmoss(i) = 1.0
     else
-        ievapms(i) = 1
-        cevapms(i) = 0.25*(1.0-cos(3.14159*dsmoss(i)))**2
+        ievapmoss(i) = 1
+        cevapmoss(i) = 0.25*(1.0-cos(3.14159*dsmoss(i)))**2
     endif
 
 
@@ -572,25 +555,19 @@ do 350 i = 1, ilg
 !         endif
 
 !!     use a function that is also valid for the southern hemisphere
-!!      dr2= 1.0+0.033*cos(2.0*pi*day/365.0)    ! dr inverse of solar sun distance
-!!      swin_ex=1367.0*dr2*coszs
     if (daylength(i)>14.0 .and. pdd(i)>200. .and. pdd(i)<2000. ) then
         vcmax25(i) = 14.0
     else
         vcmax25(i) = 6.5
     endif
-!
-!      IF (IYEAR ==2008)          THEN
-!      write(90,6991) iday,imin,ihour,pdd,daylength,vcmax25,tmoss
-!6991  format(3I5,5f9.3)
-!      ENDIF
 
     vcmax(i) = vcmax25(i)*exp((tmossk(i)-tref)*evc/(tref*gasc*tmossk(i)))
 
 !!     calculate ws (phototysnthesis rate limited by transport capacity)
 !!    = js in PHTSYN3
 
-    if (coszs(i).gt.0.0)     THEN
+    !if (coszs(i).gt.0.0)     THEN
+    if (qswnv(i) > 0.) then ! FLAG JM version.
         ws(i) = 0.5*vcmax(i)
     endif
 
@@ -650,24 +627,13 @@ do 400   i = 1, ilg
         mII(i)= 0.0
     endif
     anmoss(i) = (-mI(i)-(mI(i)*mI(i)-4*mII(i))**0.5)/2
-!         anmoss(i) = min(anmoss(i), ws(i))
-    anmoss(i) = pheno(i)*min(anmoss(i), ws(i))   !YW April 22, 2015  add phenology of mosses
+    anmoss(i) = pheno(i)*min(anmoss(i), ws(i))
 400       continue
-
-!    write to output file midday             CT16D_G
-if (iyear .eq. 2004 .and. ihour==12)        then
-    write(98,6998) iday,tmoss,cevapms,fwmoss,thliq(1,1),&
-    dsmoss,g_moss, wmoss,rmlmoss,mwce,q10rmlmos,wmosmax,wmosmin
-
-6998      format(I6,20f12.4)
-endif
 
 return
 end subroutine mosspht
 !>@}
 
-! ---------------------------------------------------------------------------------------------------
-! ---------------------------------------------------------------------------------------------------
 ! ---------------------------------------------------------------------------------------------------
 
 !>\ingroup peat_soil_het_resp

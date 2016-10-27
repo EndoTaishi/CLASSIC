@@ -36,15 +36,13 @@
      V   ICTEM,          ctem_on,       RMATCTEM,       FCANCMX,
      W   L2MAX,          NOL2PFTS,       CFLUXCG,        CFLUXCS,
      X   ANCSVEG,        ANCGVEG,        RMLCSVEG,       RMLCGVEG,
-
      Y   TCSNOW, GSNOW,                                                 
      Z   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
      +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     +   NBS, ISNOALB,LFSTATUS,DAYL, DAYL_MAX,                                                 
-c    peatland variabels in mosspht subroutine called in TSOLVC and TSOLVE------
-     1   ipeatland, bi, ancsmoss,angsmoss, ancmoss, angmoss,
+     +   NBS, ISNOALB,DAYL, DAYL_MAX,
+     1   ipeatland, ancsmoss,angsmoss, ancmoss, angmoss,
      2   rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,Cmossmas, dmoss,
-     3   iyear, iday, ihour,imin,pdd)
+     3   iday,pdd)
 
 C
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
@@ -459,7 +457,6 @@ C
 C
       INTEGER ICTEM               !< 8 (CTEM's PLANT FUNCTIONAL TYPES)
       LOGICAL ctem_on             !< TRUE GIVES COUPLING TO CTEM
-      INTEGER LFSTATUS(ILG,ICTEM) !< LEAF PHENOLOGICAL STATUS (SEE PHENOLOGY)
       REAL DAYL_MAX(ILG)          !< MAXIMUM DAYLENGTH FOR THAT LOCATION
       REAL DAYL(ILG)              !< DAYLENGTH FOR THAT LOCATION
 
@@ -514,10 +511,8 @@ C
      2                     IEVAPC(ILG)
 C
 c    ------------------peatland variables -----------------------------\
-
-      integer      ipeatland(ilg),iyear, iday, imin, ihour
-      real     bi(ig), Cmossmas(ilg), dmoss(ilg),pdd(ilg)
-c     ------input above output below this line---------------------------
+      integer      ipeatland(ilg),iday
+      real         Cmossmas(ilg), dmoss(ilg),pdd(ilg)
       real     ancsmoss(ilg),          angsmoss(ilg), 
      1          ancmoss(ilg),           angmoss(ilg),
      2          rmlcsmoss(ilg),     rmlgsmoss(ilg),     
@@ -901,15 +896,9 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS,
      M                ctem_on,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS,
-     O                DAYL, DAYL_MAX,
-c    pass  variables to moss subroutines YW March 19, 2015------------\   
-     1                ipeatland, tbar, thpor, Cmossmas,dmoss,
-c------input above, output below-----------------------------------
-     2                 ancsmoss,rmlcsmoss,iyear,iday,ihour,imin,
-     3                 pdd)
-c    Y.Wu ------------------------------------------------------------/
-
+     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,
+     O                DAYL, DAYL_MAX,ipeatland, Cmossmas,dmoss,
+     2                 ancsmoss,rmlcsmoss,iday,pdd)
 
           CALL TSPOST(GSNOWC,TSNOCS,WSNOCS,RHOSCS,QMELTC,
      1                GZROCS,TSNBOT,HTCS,HMFN,
@@ -1089,12 +1078,9 @@ C
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,          
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
-     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  
-c    ----------pass variables in mosspht subroutine-----------------------------\
-     1     ,ipeatland, tbar,thpor,co2conc,pressg, coszs, Cmossmas,dmoss
-c     ------input above, output below-----------------------------------     
-     2   ,angsmoss,rmlgsmoss,iyear, iday, ihour,imin,DAYL,pdd)
-C    ---------------YW March 26, 2015 ---------------------------------/      
+     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF,
+     1                ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss,
+     2                angsmoss,rmlgsmoss, iday, DAYL,pdd)
 c     
           CALL TSPOST(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG,
      1                GZROGS,TSNBOT,HTCS,HMFN,
@@ -1267,13 +1253,10 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG,
      M                ctem_on,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS,
-     O                DAYL, DAYL_MAX
-c    pass  variables to moss subroutines YW March 19, 2015------------\   
-     1             ,ipeatland, tbar, thpor, Cmossmas,dmoss,
-c     ------input above, output below-----------------------------------     
-     2               ancmoss,rmlcmoss,iyear, iday, ihour,imin,pdd)
-c    Y.Wu ------------------------------------------------------------/
+     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,
+     O                DAYL, DAYL_MAX,ipeatland, Cmossmas,dmoss,
+     N                ancmoss,rmlcmoss, iday, pdd)
+
 
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
      1                GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSURX,
@@ -1439,13 +1422,9 @@ C
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL, NBS,ISNOALB,         
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
-     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
-c    ----------pass variables in mosspht subroutine-----------------------------\
-     1     ,ipeatland, tbar, thpor, co2conc,
-     2      pressg, coszs, Cmossmas,dmoss
-c     ------input above, output below-----------------------------------     
-     3      ,angmoss,rmlgmoss,iyear, iday, ihour,imin,DAYL,pdd)
-C    ---------------YW March 26, 2015 ---------------------------------/ 
+     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF,
+     1                ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss,
+     3                angmoss,rmlgmoss, iday,DAYL,pdd)
 C
           CALL TNPOST(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST,
      1                GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSURX,

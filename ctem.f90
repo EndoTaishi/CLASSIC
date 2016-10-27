@@ -137,15 +137,14 @@ use ctem_params,        only : kk, pi, zero,&
      &                         kn,iccp1, ican, ilg, nlat,&
      &                         ignd, icc, nmos, l2max, grescoef,&
      &                         humicfac,laimin,laimax,lambdamax,&
-     &                         crop,repro_fraction
+     &                         crop,repro_fraction,grescoefmoss,&
+     &                         rmortmoss,humicfacmoss
 
 use landuse_change,     only : luc
 use competition_scheme, only : bioclim, existence, competition
 use disturbance_scheme, only : disturb
 use heterotrophic_respiration, only : hetresg, hetresv
 use peatlands_mod, only : decp
-
-
 
 implicit none
 
@@ -545,9 +544,7 @@ real lambdaalt !<
      &         litrmassms(ilg), socrestep(ilg), hutrstep_g(ilg),&
      &         hpd(ilg)
 
-      real::   grescoefms = 0.15
-      real::   rmortms = 0.7
-      real::   humicfacms=2.0   
+
 
 !    hpd - peat depth(m)
 !    -----daily averaged C fluxes rates (umol/m2/s) below-----
@@ -573,15 +570,7 @@ real lambdaalt !<
 !    litrmassms - moss litter C
 !    pcmossmas - moss biomass C at the previous time step
 !    plitrmassms - moss litter C at the previous time step
-!    ------parametes below, may be moved to ctem_params---------
-!    grescoefms - growth respiration coefficient
-!    rmortms - moss mortality rate constant (year-1),assumed based on  
-!              lterature (eg. 54g litter/75g biomass in Moore et al,2002)
-!    humicfacms - humification ratio of moss litter, higher in mosses than
-!              vascular pfts because the decomposibility of moss litter is 
-!              lower.It's calibrated over the training sites.
-!
-!    ------------peatland variables done YW March 20, 2015-------------/  
+!    ------------peatland variables done YW March 20, 2015-------------/
 
 
 !>
@@ -1163,21 +1152,20 @@ do 320 j = 1,icc
 330     continue
 320   continue
 !
-!    --------add moss GPP and rml to the grid avarage C fluxes---------\  
-      do 335 i = il1, il2
-          if (ipeatland(i) > 0)                   then      
-               rgmoss(i) = anmoss(i)*grescoefms
-               rml(i)= rml(i) + rmlmoss(i)
-               rm(i) = rm(i)  + rmlmoss(i)
-               rg(i) = rg(i)  + rgmoss (i)
-               armoss(i) = rmlmoss(i) + rgmoss(i) 
-             nppmoss(i) = anmoss(i) - rgmoss(i)
-               npp(i)= npp(i) + nppmoss (i)
-              gpp(i)= gpp(i) + gppmoss(i)              
-               autores(i) = autores(i) + armoss(i) 
-          endif
+!>    Add moss GPP and rml to the grid average C fluxes- FLAG NOT set up with peatlands as a tile! JM Oct 2016.
+do 335 i = il1, il2
+    if (ipeatland(i) > 0) then
+        rgmoss(i) = anmoss(i)*grescoefmoss
+        rml(i)= rml(i) + rmlmoss(i)
+        rm(i) = rm(i)  + rmlmoss(i)
+        rg(i) = rg(i)  + rgmoss (i)
+        armoss(i) = rmlmoss(i) + rgmoss(i)
+        nppmoss(i) = anmoss(i) - rgmoss(i)
+        npp(i)= npp(i) + nppmoss (i)
+        gpp(i)= gpp(i) + gppmoss(i)
+        autores(i) = autores(i) + armoss(i)
+    endif
 335   continue       
-!    -----------YW March 20, 2015 -------------------------------------/
 !
 !     autotrophic respiration part ends
 !
@@ -1372,12 +1360,12 @@ do 470 j = 1,icc
 !    to time step-1, 'deltat/963.62' convert umol/m2/s to kgC/m2/deltat. 
 !    note that hutrstep_g aggregation for icc was done in loop 480
 ! 
-              litrfallms(i)= Cmossmas(i)*rmortms/365*deltat !kgC/m2/day(dt)
+              litrfallms(i)= Cmossmas(i)*rmortmoss/365*deltat !kgC/m2/day(dt)
               ltrestepms(i)= litresms(i)*(1.0/963.62)*deltat   !kgC/m2/dt  
               nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
               socrestep(i) = socres(i)*(1.0/963.62)*deltat     !kgC/m2/dt
               soilresp(i)  = soilresp(i)*(1.0/963.62)*deltat   !kgC/m2/dt
-              humicmstep(i)= humicfacms * ltrestepms(i)        !kgC/m2/dt
+              humicmstep(i)= humicfacmoss * ltrestepms(i)        !kgC/m2/dt
               hutrstep_g(i)= hutrstep_g(i) + humicmstep(i)     !kgC/m2/dt
               humiftrs(i)  = humiftrs(i)+humicmstep(i)*(963.62/deltat)!umol/m2/s
           endif

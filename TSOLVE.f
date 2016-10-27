@@ -17,9 +17,9 @@ C!
      3                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
      4                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
 !    ------------pass variables in moss subroutine---------------------\  
-     5    ,ipeatland,tbar,thpor,co2conc,pressg,coszs,Cmossmas,dmoss,
+     5    ,ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss,
 !    -----input above, output below-----------------------------------     
-     7       anmoss,rmlmoss,iyear,iday,ihour,imin,daylength,pdd )
+     7       anmoss,rmlmoss,iday,daylength,pdd )
 C    ------------------YW March 26, 2015 ------------------------------/ 
 C
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATE
@@ -220,13 +220,12 @@ C      REAL QSWNV,QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO   !YW
       REAL QSWNV(ilg),QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO
 c    ---------------Peatland variables YW March 19, 2015 --------------\
 
-      integer  ipeatland(ilg),iday, ihour, iyear,imin, ievapms(ilg)
-      real     tbar(ilg,ig),  thpor(ilg,ig),  bi(ig),  
-     2         co2conc(ilg),  pressg(ilg) ,  coszs(ilg),
+      integer  ipeatland(ilg),iday, ievapmoss(ilg)
+      real     co2conc(ilg),  pressg(ilg) ,  coszs(ilg),
      3         Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
      4         pdd(ilg)
 c    ------input above output below-----------------------------
-      real     anmoss(ilg),rmlmoss(ilg),cevapms(ilg)
+      real     anmoss(ilg),rmlmoss(ilg),cevapmoss(ilg)
 c    -------------------YW March 26, 2015 -----------------------------/
 C
 C     * COMMON BLOCK PARAMETERS.
@@ -407,14 +406,13 @@ C
           ENDIF
    50 CONTINUE
 
-!!    moss subroutine finds ground evaporation rate and photosynthesis--\ 
-      call  mosspht(ilg,ig, isand,iday,qswnv,thliq,tbar,thpor,
-     1    co2conc,tstart,zsnow,delzw,pressg,qa,coszs,Cmossmas,dmoss,
-c    --------------input above output below-------------------
-     2         anmoss,rmlmoss,cevapms,ievapms, ipeatland
-c    --------------for testing--------------------------------
-     3         ,iyear, ihour,imin,daylength,pdd)
-c    ------------------YW March 19, 2015 ------------------------------/         
+c    Do moss photosynthesis:
+        if (ipeatland(i) >0) then
+!!      moss subroutine finds ground evaporation rate and photosynthesis--\
+            call mosspht(ilg,ig,iday,qswnv,thliq,co2conc,tstart,zsnow,
+     1              pressg,coszs,Cmossmas,dmoss,anmoss,rmlmoss,
+     2              cevapmoss,ievapmoss, ipeatland,daylength,pdd)
+       end if
 
       !>
       !!The 100 continuation line marks the beginning of the surface 
@@ -498,8 +496,8 @@ c    evaporation coefficient evbeta is controled by moss in peatland --\
                   if (ipeatland(i) == 0)                   then 
                        EVBETA(I)=CEVAP(I)
                   else
-                       evbeta(i) = cevapms(i)
-                       ievap(i) = ievapms(i)
+                       evbeta(i) = cevapmoss(i)
+                       ievap(i) = ievapmoss(i)
                   endif
 c    ---------------YW March 19, 2015----------------------------------/
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QA(I)

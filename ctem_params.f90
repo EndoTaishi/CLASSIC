@@ -789,6 +789,15 @@ real :: slams = 20.0        !< Specific leaf area of moss ($m^2 kg^{-1}$),
                             !! S vensson 1995 sphangum value ranges from
                             !! 13.5~47.3 m2/kg (Lamberty et al. 2007)
 
+real::   grescoefmoss = 0.15!< Moss growth respiration coefficient
+
+real::   rmortmoss = 0.7    !< Moss mortality rate constant (year-1),assumed based on
+                            !! literature (eg. 54g litter/75g biomass in Moore et al,2002)
+
+real::   humicfacmoss=2.0   !< Humification ratio of moss litter, higher in mosses than
+                            !!  vascular pfts because the decomposibility of moss litter is
+                            !!  lower.It's calibrated over the training sites.
+
 ! phenology.f parameters: ----------
 
 !> Number of days over which to check if net photosynthetic rate is positive before initiating leaf onset

@@ -159,7 +159,7 @@ C!
      4                       THFC, THLW, FCANCMX,  L2MAX, NOL2PFTS,
 C    ---------------------- INPUTS ABOVE, OUTPUTS BELOW ---------------
      5                        RC,  CO2I1, CO2I2, AN_VEG, RML_VEG,
-     6                        LFSTATUS,DAYL,DAYL_MAX)
+     6                        DAYL,DAYL_MAX)
 
 C     HISTORY:
 C
@@ -332,11 +332,11 @@ C
       REAL TEMP_AN
 C    
       INTEGER ISAND(ILG,IG) !<SAND INDEX.
-      INTEGER SN(KK), LFSTATUS(ILG,ICC) !FLAG test LFSTATUS DEC 4 2014. JM.
+      INTEGER SN(KK)
       REAL DAYL_MAX(ILG)      !< MAXIMUM DAYLENGTH FOR THAT LOCATION
       REAL DAYL(ILG)          !< DAYLENGTH FOR THAT LOCATION
 
-      REAL use_vmax !FLAG test LFSTATUS DEC 4 2014. JM.
+      REAL use_vmax
 C
 C     FOR LIMITING CO2 UPTAKE
 C
