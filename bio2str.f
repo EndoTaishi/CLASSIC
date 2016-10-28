@@ -375,7 +375,7 @@ c
 c     ---------------peatland vegetation-----
         do 280 m = k1c, k2c
           do 290 i = il1, il2
-            if (ipeatland(i) > 0) then
+            if (ipeatland(i) > 0) then ! For peat tiles:
                if (j == 1) then !peatland trees have a different relation than normal.
                  veghght(i,m)=min(3.0*stemmass(i,m)**0.385,10.0)                 
                elseif (j == 2 .and. m >= (k2c-1)) then ! shrubs

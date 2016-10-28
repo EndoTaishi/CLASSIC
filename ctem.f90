@@ -26,9 +26,6 @@
      &                   faregat, onetile_perPFT, wetfrac, slopefrac,&
      &                       bi,     thpor,    thiceg, currlat, &
      &                   ch4conc,       GRAV,    RHOW,  RHOICE,&
-!
-!    -------------- inputs used by ctem are above this line ---------
-!
      &                    stemmass, rootmass, litrmass,  gleafmas,&
      &                    bleafmas, soilcmas,    ailcg,      ailc,&
      &                       zolnc, rmatctem,    rmatc,     ailcb,&
@@ -37,7 +34,6 @@
      &                    gavgltms, gavgscms, stmhrlos,      slai, &
      &                     bmasveg, cmasvegc, colddays,  rothrlos,&
      &                      fcanmx,   alvisc,   alnirc,   gavglai,&
-!    ------- following 5 lines are competition related variables ----
      &                       tcurm, srpcuryr, dftcuryr,inibioclim,&
      &                      tmonth, anpcpcur,  anpecur,   gdd5cur,&
      &                    surmncur, defmncur, srplscur,  defctcur,&
@@ -46,9 +42,6 @@
      &                     aridity, srplsmon, defctmon,  anndefct,&
      &                    annsrpls,  annpcp,dry_season_length,&
      &                    burnvegf, pstemmass, pgleafmass,&
-!
-!    -------------- inputs updated by ctem are above this line ------
-!
      &                        npp,       nep, hetrores,   autores,&
      &                   soilresp,        rm,       rg,       nbp,&
      &                     litres,    socres,      gpp, dstcemls1,&
@@ -72,12 +65,11 @@
      &                 wetfdyn, ch4dyn1, ch4dyn2, ch4soills, &
 !
 !    ---------------- outputs are listed above this line ------------ 
-     &        ipeatland,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd, &
-     &                anmoss,rmlmoss,gppmoss, Cmossmas, litrmassms, &
-     &                    wtable,grksat, &
+     &                 ipeatland, anmoss,rmlmoss,gppmoss,
+     &                 Cmossmas,litrmsmoss, wtable,grksat, &
      &                    thfc,thlw,thliq,thice,tfrez, &
 !    -------------input above, output and updated variables below------
-     &                nppmoss,armoss,hpd)
+     &                nppmoss,armoss,peatdep)
 
 !
 !             Canadian Terrestrial Ecosystem Model (CTEM) 
@@ -215,6 +207,10 @@ real, dimension(ilg,8), intent(in) :: slopefrac         !<
 real, intent(in) :: GRAV                                !<Acceleration due to gravity ($m s^{-1} ), (CLASS param) passed in to avoid the common block structure.
 real, intent(in) :: RHOW                                !<Density of water ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.
 real, intent(in) :: RHOICE                              !<Density of ice ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.
+real, dimension(ilg), intent(in) :: anmoss              !< moss net photoysnthesis -daily averaged C fluxes rates (umol/m2/s)
+real, dimension(ilg), intent(in) :: rmlmoss             !< moss maintainance respiration -daily averaged C fluxes rates (umol/m2/s)
+real, dimension(ilg), intent(in) :: gppmoss             !< moss GPP -daily averaged C fluxes rates (umol/m2/s)
+real, dimension(ilg), intent(in) :: wtable              !< water table (m)
 !
 !     updates
 !
@@ -291,6 +287,8 @@ real, dimension(ilg,icc), intent(inout) ::  geremort    !<
 real, dimension(ilg,icc), intent(inout) :: intrmort     !<
 real, dimension(ilg,icc), intent(inout) ::  burnvegf    !<per PFT fraction burned of that PFT's area
 real, dimension(ilg), intent(inout) :: popdin           !<population density \f$(people / km^2)\f$
+real, dimension(ilg), intent(inout) :: Cmossmas         !< moss biomass C pool (kgC/m2)
+real, dimension(ilg), intent(inout) :: litrmsmoss       !< moss litter C pool (kgC/m2)
 !
 !   outputs
 !
@@ -529,28 +527,27 @@ real repro_cost_g(ilg)  !<
 real lambdaalt !<
 
 !    ------------define peatland related variables--------------------\ 
-       integer  ipeatland(ilg),iyear,ihour,imin,&
-      &         jdsty,jdstd,jdendy,jdendd
+       integer  ipeatland(ilg)
       
-       real     wtable(ilg),&
+       real     ,&
       &         grksat(ilg,ignd),thfc(ilg,ignd),thlw(ilg,ignd),&  
       &         thliq(ilg,ignd),thice(ilg,ignd),tfrez
      
-      real     gppmoss(ilg),rmlmoss(ilg),anmoss(ilg),armoss(ilg), &
+      real     armoss(ilg), &
      &         nppmoss(ilg), rgmoss(ilg), litresms(ilg), socresp(ilg),&
      &         resoxic(ilg), resanoxic(ilg), litrfallms(ilg),&
-     &         Cmossmas(ilg), ltrestepms(ilg), humicmstep(ilg),&
-     &         pcmossmas(ilg), plitrmassms(ilg), nppmosstep(ilg),&     
-     &         litrmassms(ilg), socrestep(ilg), hutrstep_g(ilg),&
-     &         hpd(ilg)
+     &         ltrestepms(ilg), humicmstep(ilg),&
+     &         pcmossmas(ilg), plitrmsmoss(ilg), nppmosstep(ilg),&
+     &         socrestep(ilg), hutrstep_g(ilg),&
+     &         peatdep(ilg)
 
 
 
-!    hpd - peat depth(m)
+!    peatdep - peat depth(m)
 !    -----daily averaged C fluxes rates (umol/m2/s) below-----
-!    gppmoss - moss GPP 
+
 !    rmlmoss - moss maintainance respiration moss 
-!    anmoss  - moss net photoysnthesis  
+
 !    nppmoss - moss net primary production 
 !    rgmoss  - moss growth respiration 
 !    armoss  - moss autotrophic respiration (rmlmoss+rgmoss) 
@@ -566,10 +563,9 @@ real lambdaalt !<
 !    socrestep  - hetretrophic respiration from soil 
 !    hutrstep_g - grid sum of humification from vascualr litter 
 !    ------C pool (kgC/m2) below--------------------------------
-!    Cmossmas - moss biomass C 
-!    litrmassms - moss litter C
+
 !    pcmossmas - moss biomass C at the previous time step
-!    plitrmassms - moss litter C at the previous time step
+!    plitrmsmoss - moss litter C at the previous time step
 !    ------------peatland variables done YW March 20, 2015-------------/
 
 
@@ -989,7 +985,7 @@ do 145 i = il1, il2
 
         if  (ipeatland(i) >  0)                   then
             pCmossmas(i)  = Cmossmas(i)            
-            plitrmassms(i)= litrmassms(i)
+            plitrmsmoss(i)= litrmsmoss(i)
             litrfallms(i) = 0.0
             litresms(i)   = 0.0         
             socresp(i)    = 0.0
@@ -1214,9 +1210,8 @@ call  hetresg  (litrmass, soilcmas,    delzw, thpor, &
 
 !    ------------peat heterotrophic respiration------------------------\
 !
-        call  decp(il1,il2,iyear,iday,ihour,imin,ipeatland,isand,  &
-      &   litrmassms,hpd, wtable,tbar, thliq,thice, thpor,bi,zbotw, &
-      &    delzw,psisat,tfrez,jdsty,jdstd,jdendy,jdendd,  &
+        call  decp(il1,il2,ipeatland,isand,litrmsmoss,peatdep, wtable,tbar, thliq,thice, thpor,bi,zbotw, &
+      &    delzw,psisat,tfrez,  &
 !    -------------- inputs above this line, outputs below -------------
      &    litresms, socresp, resoxic, resanoxic)  
 !    ------------YW March 26, 2015 ------------------------------------/
@@ -1405,7 +1400,7 @@ endif
      &                     afrleaf,  afrstem,  afrroot,    wiltsm,&
      &                     fieldsm, wtstatus, ltstatus,&
 !    add peatland parameters YW April 13, 2015 ------------------------ 
-     &                   ipeatland, thpor,bi, psisat,grksat,thfc, thlw)      
+     &                   ipeatland, thpor,bi, psisat,grksat,thfc,thlw)
 
 !>
 !!Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the 
@@ -1863,7 +1858,7 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
           gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
           if (ipeatland(i)==0)          then       !YW March 20, 2015 
                gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
-          endif    !soil C is calculated from hpd in peatland 
+          endif    !soil C is calculated from peatdep in peatland
           vgbiomas_veg(i,j)=gleafmas(i,j)+&
      &     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j) !vegetation biomass for each pft
 1110    continue
@@ -1878,14 +1873,14 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
              gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
              gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
           else                      
-             litrmassms(i)= litrmassms(i)+litrfallms(i)-&
+             litrmsmoss(i)= litrmsmoss(i)+litrfallms(i)-&
       &                     ltrestepms(i)-humicmstep(i)     !kg/m2
              Cmossmas(i)= Cmossmas(i)+nppmosstep(i)-litrfallms(i)
              vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
              litrfall(i) = litrfall(i) + litrfallms(i)*(963.62/deltat)!umolCO2/m2/s
-             gavgltms(i) = gavgltms(i) + litrmassms(i)
+             gavgltms(i) = gavgltms(i) + litrmsmoss(i)
              gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i)          
-             hpd(i)=(-72067.0+sqrt((72067.0**2.0)-(4.0*4056.6*&
+             peatdep(i)=(-72067.0+sqrt((72067.0**2.0)-(4.0*4056.6*&
      &              (-gavgscms(i)*1000/0.487))))/(2*4056.6)
 
           endif          
@@ -1914,7 +1909,7 @@ if(spinfast.eq.1)then
 !    ----------------balance of the moss C pool YW------------------------\
 !
       &             ipeatland, Cmossmas, pCmossmas, &
-      &             nppmosstep, litrfallms, litrmassms,plitrmassms, &
+      &             nppmosstep, litrfallms, litrmsmoss,plitrmsmoss, &
       &             ltrestepms,humicmstep,socrestep, hutrstep)    
 
 endif
@@ -1941,28 +1936,6 @@ do j = 1, icc
     enddo
 enddo
 !
-!
-!    =============write peatland output files==========================\
-
-             if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
-              if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
-!     CT13D_G
-         write(95,6991) &          
-     &  litrmass(1,6),  tltrleaf(1,6), tltrstem(1,6), tltrroot(1,6), &
-     &  ltresveg(1,6),    humtrsvg(1,6), litrmass(1,7), tltrleaf(1,7),&
-     &  tltrstem(1,7),  tltrroot(1,7), ltresveg(1,7), humtrsvg(1,7),&
-     &  plitrmassms, litrmassms, litrfallms, ltrestepms, humicmstep,&
-     &  nppmosstep,nppmoss,anmoss,rgmoss,rmlmoss,gppmoss,Cmossmas,&
-     &   rmlveg(1,1),rmsveg(1,1), rmrveg(1,1)
-!     CT14D_G
-       write(96,6991) hpd, gavgscms,  hutrstep_g, socrestep,&
-     &  resoxic*(1.0/963.62)*deltat, resanoxic*(1.0/963.62)*deltat,& !kgC/m2/timestep
-     &   socresp,resoxic, resanoxic    !umol/m2/s
-6991   format(30F12.6)
-            endif
-         endif
-!    ==========write file done YW=======================================/
-
 !     -----------------------------------------------------------------
 !
       return

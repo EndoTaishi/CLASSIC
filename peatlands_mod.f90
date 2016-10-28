@@ -321,7 +321,7 @@ subroutine mosspht(ilg,ignd,iday,qswnv,thliq,co2conc,tsurfk,zsnow, &
 ! ----------
 
 use ctem_params, only : rmlmoss25, tau25m,ektau,gasc,kc25,ko25,ec,ej,eo,evc,sj, &
-                        hj,alpha_moss,thpms,thmms
+                        hj,alpha_moss,thpmoss,thmmoss
 
 implicit none
 
@@ -473,8 +473,8 @@ do 200 i = 1, ilg
 do 250   i = 1, ilg
         mmoss(i) = Cmossmas(i)/0.46
         wmoss(i)= thliq(i,1)*rhow/(mmoss(i)/dmoss(i))
-        wmosmax(i) = min(45.0, thpms*dmoss(1)*rhow/mmoss(i))
-        wmosmin(i) = max(5.0, thmms*dmoss(1)*rhow/mmoss(i))
+        wmosmax(i) = min(45.0, thpmoss*dmoss(1)*rhow/mmoss(i))
+        wmosmin(i) = max(5.0, thmmoss*dmoss(1)*rhow/mmoss(i))
         wmoss(i)= min(wmosmax(i),max(wmosmin(i),wmoss(i)))
         fwmoss(i)=wmoss(i)+1.     !g fresh weight /g dry weight
 250   continue
@@ -640,9 +640,9 @@ end subroutine mosspht
 !!@{
 !! grid average peat soil heterotrophic respiration subroutine
 
-subroutine  decp(il1,il2,iyear,iday,ihour,imin,ipeatland,isand, &
-                litrmassms,hpd, wtable,tbar, thliq, thice,thpor,bi,zbotw, &
-                delzw,psisat,tfrez, jdsty,jdstd,jdendy,jdendd, &
+subroutine  decp(il1,il2,ipeatland,isand, &
+                litrmsmoss,peatdep, wtable,tbar, thliq, thice,thpor,bi,zbotw, &
+                delzw,psisat,tfrez,
 !    -------------- inputs above this line, outputs below -------------
                 litresms, socresp, resoxic, resanoxic)
 
@@ -661,14 +661,13 @@ use ctem_params,      only :icc, ilg,ignd,zero,tanhq10,dctmin,dcbaset,bsrateltms
 implicit none
 
 !     inputs-----------------------------------------------------------
-integer  iyear, iday, ihour, imin ,i,j, il1, il2, isand(ilg,ignd)
-integer  jdsty,jdstd,jdendy,jdendd
+integer  i,j, il1, il2, isand(ilg,ignd)
 integer, dimension(ilg), intent(in) :: ipeatland    !<peatland flag, 0 = not peatland, 1 = bog, 2 = fen
 
-real     hpd(ilg) , &  !(K)
+real     peatdep(ilg) , &  !(K)
             thliq(ilg,ignd),     thice(ilg,ignd),    thpor(ilg,ignd), &
             bi(ilg,ignd),       zbotw(ilg,ignd),    delzw(ilg,ignd), &
-            frac(ilg),          tfrez,              litrmassms(ilg)
+            frac(ilg),          tfrez,              litrmsmoss(ilg)
 
 real, dimension(ilg), intent(in) :: wtable          !< water table (m)
 real, dimension(ilg,ignd), intent(in) :: tbar       !< soil temperature (K)
@@ -788,36 +787,36 @@ do 40 i = il1, il2
         if (ewtable(i) .lt. 0.0) then !flooded
 
             ratescpo(i)=0.0
-            ratescpa(i)=-0.183*exp(-18.0*hpd(i))+0.03*hpd(i)+0.0134
+            ratescpa(i)=-0.183*exp(-18.0*peatdep(i))+0.03*peatdep(i)+0.0134
 
         elseif (ewtable(i).lt.0.30 .and.ewtable(i).ge.0.0) then !within the first 30 cm of surface
 
             ratescpo(i)=0.009*(1-exp(-20.*ewtable(i)))+0.015*ewtable(i)
-            ratescpa(i)=0.009*exp(-20.*ewtable(i))-0.183*exp(-18.*hpd(i))-0.015*ewtable(i)+0.0044
+            ratescpa(i)=0.009*exp(-20.*ewtable(i))-0.183*exp(-18.*peatdep(i))-0.015*ewtable(i)+0.0044
 
         elseif (ewtable(i) .ge. 0.30) then !deeper in the soil column
 
             ratescpo(i)=0.0134-0.183*exp(-18.*ewtable(i))+0.003*ewtable(i)
-            ratescpa(i)=-0.183*exp(-18.*hpd(i))+0.003*(hpd(i)-wtable(i))+0.183*exp(-18.*ewtable(i))
-!           ratescpa(i)=-0.183*exp(-18*hpd(i))+0.003*(hpd(i)-wtable(i))+0.183*exp(-18*ewtable(i))-0.004504   !for continuity
+            ratescpa(i)=-0.183*exp(-18.*peatdep(i))+0.003*(peatdep(i)-wtable(i))+0.183*exp(-18.*ewtable(i))
+!           ratescpa(i)=-0.183*exp(-18*peatdep(i))+0.003*(peatdep(i)-wtable(i))+0.183*exp(-18*ewtable(i))-0.004504   !for continuity
         endif
 
     elseif (ipeatland(i) == 2)  then !fens
         if (ewtable(i) .lt. 0.0) then !flooded
 
             ratescpo(i) = 0.0
-            ratescpa(i) = 0.01512 -1.12*exp(-25.*hpd(i))
+            ratescpa(i) = 0.01512 -1.12*exp(-25.*peatdep(i))
 
         elseif(ewtable(i).lt. 0.30 .and.ewtable(i).ge. 0.0)then !within the first 30 cm of surface
 
             ratescpo(i) = -0.01*exp(-40.*ewtable(i))+0.015*ewtable(i)+0.01
             ratescpa(i) = abs(-0.01*exp(-40.*ewtable(i))-1.12*exp( &
-                            -25.*hpd(i))+0.015*ewtable(i)+0.005119)
+                            -25.*peatdep(i))+0.015*ewtable(i)+0.005119)
 
         elseif(ewtable(i) .ge. 0.30) then !deeper in the soil column
 
             ratescpo(i) = 0.01512-1.12*exp(-25*ewtable(i))
-            ratescpa(i) = -1.12*(exp(-25.*hpd(i))-exp(-25.*ewtable(i)))
+            ratescpa(i) = -1.12*(exp(-25.*peatdep(i))-exp(-25.*ewtable(i)))
         endif
     endif
 
@@ -834,7 +833,7 @@ do 40 i = il1, il2
 !!    Moore)
 
     Cso(i) = (4056.6*ewtable(i)**2+72067.0*ewtable(i))*0.487/1000.0
-    Csa(i) = ((4056.6*hpd(i)**2+72067.0*hpd(i))*0.487/1000.0)-Cso(i)
+    Csa(i) = ((4056.6*peatdep(i)**2+72067.0*peatdep(i))*0.487/1000.0)-Cso(i)
 
 40    continue
 
@@ -896,24 +895,24 @@ do 70 i = il1, il2
 
 !!    calculate the litter respiration rate in mosses and converts it
 !!     from kg c/kg c.year to u-mol co2/kg c.s using 2.64
-    litresms(i)=ltrmosclms(i)*litrmassms(i)*bsrateltms*2.64*q10funcms(i)
+    litresms(i)=ltrmosclms(i)*litrmsmoss(i)*bsrateltms*2.64*q10funcms(i)
 70        continue
 
 !     write peat soil respiration details .CT15D_G
-
-if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
-    if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
-
-write(97, 6997) litresms, litpsims(1), psisat(1,1),ltrmosclms, &
-        litrmassms, tbar(1,1), q10funcms ,litrtempms, &
-        ratescpo, ratescpa, Cso,Csa, fto,fta, &
-        resoxic, resanoxic, frac, &
-        tsoila-tfrez, tsoilo-tfrez,ewtable,real(lewtable), &
-        tbar(1,1)-tfrez, tbar(1,2)-tfrez, tbar(1,3)-tfrez, &
-        thliq(1,1)
-6997  format(50f10.3)
-    endif
-endif
+!
+! if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+!     if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
+!
+! write(97, 6997) litresms, litpsims(1), psisat(1,1),ltrmosclms, &
+!         litrmsmoss, tbar(1,1), q10funcms ,litrtempms, &
+!         ratescpo, ratescpa, Cso,Csa, fto,fta, &
+!         resoxic, resanoxic, frac, &
+!         tsoila-tfrez, tsoilo-tfrez,ewtable,real(lewtable), &
+!         tbar(1,1)-tfrez, tbar(1,2)-tfrez, tbar(1,3)-tfrez, &
+!         thliq(1,1)
+! 6997  format(50f10.3)
+!     endif
+! endif
 
 return
 

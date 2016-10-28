@@ -146,7 +146,7 @@ integer, pointer, dimension(:,:) :: stdaln
 real, pointer, dimension(:,:,:) :: slopefrac
 integer, pointer, dimension(:,:) :: ipeatland
 real, pointer, dimension(:,:) :: Cmossmas
-real, pointer, dimension(:,:) :: litrmassms
+real, pointer, dimension(:,:) :: litrmsmoss
 real, pointer, dimension(:,:) :: dmoss
 
 ! local variables
@@ -195,7 +195,7 @@ lfstatusrow       => vrot%lfstatus
 pandaysrow        => vrot%pandays
 ipeatland        => vrot%ipeatland
 Cmossmas         => vrot%Cmossmas
-litrmassms       => vrot%litrmassms
+litrmsmoss       => vrot%litrmsmoss
 dmoss            => vrot%dmoss
 
 ! -----------------      
@@ -250,7 +250,7 @@ read (11,7010) titlec3
         read(11,*) extnprob(i,1)
         read(11,*) prbfrhuc(i,1)
         read(11,*) stdaln(i,1)
-        read(11,*) ipeatland(i,m),Cmossmas(i,m),litrmassms(i,m),dmoss(i,m) ! peatland variables
+        read(11,*) ipeatland(i,m),Cmossmas(i,m),litrmsmoss(i,m),dmoss(i,m) ! peatland variables
 
         if (compete .and. inibioclim) then  !read in the bioclimatic parameters
         ! read them into the first tile of each grid cell.
@@ -3242,7 +3242,7 @@ end subroutine ctem_monthly_aw
 subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT)
 
 ! FLAG FLAG FLAG
-! Moved YW's peatland changes from driver for "hpd". EC - Feb 16, 2016.
+! Moved YW's peatland changes from driver for "peatdep". EC - Feb 16, 2016.
 ! However, they don't affect output, so not sure why these changes were done. 
 ! Perhaps the modifications are not complete?
 
@@ -3345,7 +3345,7 @@ real, pointer, dimension(:,:) :: ch4dyn2_yr_t
 real, pointer, dimension(:,:) :: ch4soills_yr_t
 real, pointer, dimension(:,:) :: veghght_yr_t
 
-real, pointer, dimension(:,:) :: hpd_yr_m
+real, pointer, dimension(:,:) :: peatdep_yr_m
 
 
 logical, pointer, dimension(:,:,:) :: pftexistrow
@@ -3397,7 +3397,7 @@ real, pointer, dimension(:,:,:) :: rootmassrow
 real, pointer, dimension(:,:,:) :: fcancmxrow
 real, pointer, dimension(:,:,:) :: veghghtrow
 
-real, pointer, dimension(:,:) :: hpdrow
+real, pointer, dimension(:,:) :: peatdeprow
 
 real, pointer, dimension(:) :: laimaxg_yr_g
 real, pointer, dimension(:) :: stemmass_yr_g
@@ -3441,7 +3441,7 @@ real, pointer, dimension(:) :: ch4dyn1_yr_g
 real, pointer, dimension(:) :: ch4dyn2_yr_g
 real, pointer, dimension(:) :: ch4soills_yr_g
 real, pointer, dimension(:) :: veghght_yr_g
-real, pointer, dimension(:) :: hpd_yr_g
+real, pointer, dimension(:) :: peatdep_yr_g
 
 ! local
 integer :: i,m,j,nt
@@ -3533,7 +3533,7 @@ ch4dyn1_yr_t          =>ctem_tile_yr%ch4dyn1_yr_t
 ch4dyn2_yr_t          =>ctem_tile_yr%ch4dyn2_yr_t
 ch4soills_yr_t        =>ctem_tile_yr%ch4soills_yr_t
 veghght_yr_t          =>ctem_tile_yr%veghght_yr_t
-hpd_yr_m              =>ctem_tile_yr%hpd_yr_m
+peatdep_yr_m              =>ctem_tile_yr%peatdep_yr_m
 
 
 pftexistrow       => vrot%pftexist
@@ -3585,7 +3585,7 @@ rootmassrow       => vrot%rootmass
 fcancmxrow        => vrot%fcancmx
 veghghtrow        => vrot%veghght
 
-hpdrow            => vrot%hpd
+peatdeprow            => vrot%peatdep
 
 laimaxg_yr_g          =>ctem_grd_yr%laimaxg_yr_g
 stemmass_yr_g         =>ctem_grd_yr%stemmass_yr_g
@@ -3629,7 +3629,7 @@ ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
 ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
 ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
 veghght_yr_g          =>ctem_grd_yr%veghght_yr_g
-hpd_yr_g              =>ctem_grd_yr%hpd_yr_g
+peatdep_yr_g              =>ctem_grd_yr%peatdep_yr_g
 !------------
 
 !> Accumulate yearly outputs
@@ -3678,7 +3678,7 @@ do 882 i=1,nltest
         nep_yr(i,m,iccp1)=nep_yr(i,m,iccp1)+nepvegrow(i,m,iccp1)
         nbp_yr(i,m,iccp1)=nbp_yr(i,m,iccp1)+nbpvegrow(i,m,iccp1)
 
-        hpd_yr_m(i,m)=hpdrow(i,m)      !YW September 04, 2015
+        peatdep_yr_m(i,m)=peatdeprow(i,m)      !YW September 04, 2015
 
 
         !> Accumulate the variables at the per tile level
@@ -3714,7 +3714,7 @@ do 882 i=1,nltest
 925         continue
 
 
-            hpd_yr_g(i)=hpd_yr_g(i)+hpd_yr_m(i,m)*farerot(i,m)    !YW September 04, 2015
+            peatdep_yr_g(i)=peatdep_yr_g(i)+peatdep_yr_m(i,m)*farerot(i,m)    !YW September 04, 2015
             litrmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1)
             soilcmas_yr(i,m,iccp1)=soilcmasrow(i,m,iccp1)
             totcmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1) + soilcmasrow(i,m,iccp1)
@@ -3969,7 +3969,7 @@ do 882 i=1,nltest
 882     continue ! i
 
 ! FLAG  MOVE into resetyearend !!!!
-            hpd_yr_m(i,m)      =0.0      !YW September 04, 2015
+            peatdep_yr_m(i,m)      =0.0      !YW September 04, 2015
 
 if (iday.eq.365) then
 

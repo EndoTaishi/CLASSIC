@@ -668,9 +668,9 @@ C
       REAL,DIMENSION(ILG)       :: UEGAT   !<Friction velocity of air \f$[m s^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: UEROT   !<
       REAL,DIMENSION(NLAT)      :: UEROW   !<
-      REAL,DIMENSION(ILG)       :: WTABGAT !<Depth of water table in soil [m]
-      REAL,DIMENSION(NLAT,NMOS) :: WTABROT !<
-      REAL,DIMENSION(NLAT)      :: WTABROW !<
+      REAL,DIMENSION(ILG)       :: wtableGAT !<Depth of water table in soil [m]
+      REAL,DIMENSION(NLAT,NMOS) :: wtableROT !<
+      REAL,DIMENSION(NLAT)      :: wtableROW !<
       REAL,DIMENSION(ILG)       :: WTRCGAT !<Diagnosed residual water transferred off the vegetation canopy \f$[kg m^{-2} s^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: WTRCROT !<
       REAL,DIMENSION(NLAT)      :: WTRCROW !<
@@ -1063,7 +1063,7 @@ c
       real, pointer, dimension(:,:,:) :: wetfrac_monrow
       real, pointer, dimension(:,:) :: ch4soillsrow
 
-      real, pointer, dimension(:,:) :: hpdrow 
+      real, pointer, dimension(:,:) :: peatdeprow
 
       real, pointer, dimension(:,:) :: lucemcomrow
       real, pointer, dimension(:,:) :: lucltrinrow
@@ -1477,7 +1477,7 @@ c=====peatland related parameter declaration March 18, 2015 YW=========\
 c   ----CLASS moss variables-------YW ----------------------------------
       real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
      4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
-     5      hpdgat(ilg),
+     5      peatdepgat(ilg),
      6      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg)
 c   g12 - energy flux between soil layer 1 and 2 (W/m2)
 c   g23 - energy flux between soil layer 2 and 3 (W/m2)
@@ -1485,7 +1485,7 @@ c   wiltsm - wilting point for peat soil layers  (m3/m3)
 c   fieldsm - field capacity for peat soil layers (m3/m3)
 C   thliqc - liquid water content of canopy+snow subarea (m3/m3)
 c   thliqg - liquid water content of snow ground subarea (m3/m3)
-c   hpd - peat depth (m)
+c   peatdep - peat depth (m)
 
       integer, pointer, dimension(:,:) :: ipeatlandrow !This is first set in read_from_ctm.
       integer, pointer, dimension(:) :: ipeatlandgat
@@ -1499,8 +1499,8 @@ c   hpd - peat depth (m)
       real, pointer, dimension(:) :: nppmossgat
       real, pointer, dimension(:,:) :: armossrow
       real, pointer, dimension(:) :: armossgat
-      real, pointer, dimension(:,:) :: litrmassmsrow
-      real, pointer, dimension(:) :: litrmassmsgat
+      real, pointer, dimension(:,:) :: litrmsmossrow
+      real, pointer, dimension(:) :: litrmsmossgat
       real, pointer, dimension(:,:) :: Cmossmasrow
       real, pointer, dimension(:) :: Cmossmasgat
       real, pointer, dimension(:,:) :: dmossrow
@@ -1683,7 +1683,7 @@ C===================== CTEM ==============================================\
       wetfrac_monrow    => vrot%wetfrac_mon
       ch4soillsrow      => vrot%ch4_soills
 
-      hpdrow            => vrot%hpd
+      peatdeprow            => vrot%peatdep
 
       lucemcomrow       => vrot%lucemcom
       lucltrinrow       => vrot%lucltrin
@@ -1757,7 +1757,7 @@ C===================== CTEM ==============================================\
       gppmossrow       => vrot%gppmoss
       nppmossrow       => vrot%nppmoss
       armossrow        => vrot%armoss
-      litrmassmsrow    => vrot%litrmassms
+      litrmsmossrow    => vrot%litrmsmoss
       Cmossmasrow      => vrot%Cmossmas
       dmossrow         => vrot%dmoss
       pddrow           => vrot%pdd
@@ -1957,7 +1957,7 @@ C===================== CTEM ==============================================\
       gppmossgat       => vgat%gppmoss
       nppmossgat       => vgat%nppmoss
       armossgat        => vgat%armoss
-      litrmassmsgat    => vgat%litrmassms
+      litrmsmossgat    => vgat%litrmsmoss
       Cmossmasgat      => vgat%Cmossmas
       dmossgat         => vgat%dmoss
       pddgat           => vgat%pdd
@@ -2577,35 +2577,6 @@ C===================== CTEM =============================================== /
           TACROT (I,M)=TCANROT(I,M)
           QACROT (I,M)=0.5E-2
 
-!           IF(IGND.GT.3)                                 THEN
-!               DO 65 J=4,IGND
-!                 if (ipeatlandrow(i,m) == 0) then  !YW September 02, 2015
-!                   TBARROT(I,M,J)=TBARROT(I,M,3)
-!                 endif
-!                   IF(SDEPROT(I,M).LT.(ZBOT(J-1)+0.001) .AND.
-!      1                  SANDROT(I,M,3).GT.-2.5)     THEN
-!                       SANDROT(I,M,J)=-3.0
-!                       CLAYROT(I,M,J)=-3.0
-!                       ORGMROT(I,M,J)=-3.0
-! c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
-!                     if (ipeatlandrow(i,m) == 0) then
-!                       THLQROT(I,M,J)=0.0
-!                       THICROT(I,M,J)=0.0
-!                     endif
-! c      --------------YW September 01, 2015------------------------------
-!                   ELSE
-!                       SANDROT(I,M,J)=SANDROT(I,M,3)
-!                       CLAYROT(I,M,J)=CLAYROT(I,M,3)
-!                       ORGMROT(I,M,J)=ORGMROT(I,M,3)
-! c      -----thlqrow, thicrow 4 to 10 are intilized from .INI for peatlands
-!                     if (ipeatlandrow(i,m) == 0) then
-!                       THLQROT(I,M,J)=THLQROT(I,M,3)
-!                       THICROT(I,M,J)=THICROT(I,M,3)
-!                     endif
-! c      --------------YW September 01, 2015------------------------------
-!                   ENDIF
-! 65            CONTINUE
-!           ENDIF
           DO 75 K=1,6
           DO 75 L=1,50
               ITCTROT(I,M,K,L)=0
@@ -2942,7 +2913,7 @@ c
 c     Initialize the litter and soil C pool for the BARE ground. This differs
 c     for peatland and non-peatland tiles. If there is no peatland, we just use
 c     the contents of the iccp1 position. In peatland tiles, moss litter is
-c     considered to cover the whole tile. The soil C is calculated based on ...FLAG!!!!!! YW -how does this work? JM
+c     considered to cover the whole tile.
 c
       do 117 i = 1,nltest
         do 117 m = 1,nmtest
@@ -2954,12 +2925,12 @@ c
      &                        fcanrot(i,m,2)-fcanrot(i,m,3)-
      &                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
             else !peatland tile
-                gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmassmsrow(i,m)
-                hpdrow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth (FLAG! I think this should change-JM)
+                gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmsmossrow(i,m)
+                peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth (FLAG! I think this should change-JM)
                 ! The soil carbon on the peatland tiles is assigned based on depth. This
                 ! is the same relation as found in decp subroutine.
-                gavgscmsrow(i,m) = 0.487*(4056.6*hpdrow(i,m)**2+
-     &                              72067.0*hpdrow(i,m))/1000
+                gavgscmsrow(i,m) = 0.487*(4056.6*peatdeprow(i,m)**2+
+     &                              72067.0*peatdeprow(i,m))/1000
                 vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
             endif
 c              
@@ -2977,7 +2948,7 @@ c    a problem. EC - Feb 16, 2016.
       rmlmossac_t = 0.0
       gppmossac_t = 0.0
 
-      write(6,*) 'hpdrow=', hpdrow
+      write(6,*) 'peatdeprow=', peatdeprow
       write(6,*) 'gavgscms=', gavgscmsrow
       write(6,*) 'vgbiomas=', vgbiomasrow
 c    ----------------------------YW March 25, 2015 --------------------/
@@ -3559,7 +3530,7 @@ C
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      3      anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,
-     4      litrmassmsgat,hpdgat,Cmossmasgat,dmossgat,thlqaccgat_m,
+     4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,thlqaccgat_m,
      5      thicaccgat_m,ipeatlandgat,pddgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
@@ -3604,7 +3575,7 @@ c
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
      3      anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,
-     4      litrmassmsrow,hpdrow,Cmossmasrow,dmossrow,
+     4      litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,
      5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
 
 C===================== CTEM ============================================ /
@@ -3671,7 +3642,7 @@ C
      +  GTBS,   SFCUBS, SFCVBS, USTARBS,
      9  FSGVGAT,FSGSGAT,FSGGGAT,FLGVGAT,FLGSGAT,FLGGGAT,
      A  HFSCGAT,HFSSGAT,HFSGGAT,HEVCGAT,HEVSGAT,HEVGGAT,HMFCGAT,HMFNGAT,
-     B  HTCCGAT,HTCSGAT,HTCGAT, QFCFGAT,QFCLGAT,DRGAT,  WTABGAT,ILMOGAT,
+     B  HTCCGAT,HTCSGAT,HTCGAT, QFCFGAT,QFCLGAT,DRGAT,  wtableGAT,ILMOGAT,
      C  UEGAT,  HBLGAT, TACGAT, QACGAT, ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT,
      D  VPDGAT, TADPGAT,RHOAGAT,FSVHGAT,FSIHGAT,FDLGAT, ULGAT,  VLGAT,
      E  TAGAT,  QAGAT,  PADRGAT,FC,     FG,     FCS,    FGS,    RBCOEF,
@@ -3799,7 +3770,6 @@ c
 713       continue
 c
 c    ------------accumulate moss C fluxes to tile level then daily----
-c           FLAG this needs to be checked so it is able to be peatlands on a tile! JM Oct 2016.
           if (ipeatlandgat(i) > 0) then
             anmossgat(i) = fcs(i)*ancsmoss(i)+fgs(i)*angsmoss(i)
      1                       +fc(i)*ancmoss(i)+fg(i)*angmoss(i)
@@ -3973,7 +3943,6 @@ c
      &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,
      &                  BIGAT,    THPGAT, thicegacc_t,currlat,
      &             ch4concgat,      GRAV, RHOW, RHOICE,
-c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
      e               zolncgat,  rmatctemgat,   rmatcgat,  ailcbgat,
@@ -3990,7 +3959,6 @@ c    -------------- inputs used by ctem are above this line ---------
      1             ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2            annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      &              burnvegfgat, pstemmassgat, pgleafmassgat,
-c    -------------- inputs updated by ctem are above this line ------
      k                 nppgat,      nepgat, hetroresgat, autoresgat,
      l            soilcrespgat,       rmgat,       rggat,      nbpgat,
      m              litresgat,    socresgat,     gppgat, dstcemlsgat,
@@ -4013,22 +3981,19 @@ c    -------------- inputs updated by ctem are above this line ------
      &           soilcresveggat, nml, ilmos, jlmos, ch4wet1gat,
      &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat,
      &          ch4soillsgat,
-c    ---------------- outputs are listed above this line ------------
-c    -------------- moss C in peatlands -------------------------------\
 c
-     1    ipeatlandgat,iyear,ihour,imin,jdsty,jdstd,jdendy,jdendd,
-     2    anmossac_t,rmlmossac_t,gppmossac_t,Cmossmasgat,litrmassmsgat,
-     3    wtabgat, grksgat,
+     1          ipeatlandgat,anmossac_t,rmlmossac_t,gppmossac_t,
+     2          Cmossmasgat,litrmsmossgat,wtablegat, grksgat,
      4    thfcgat, thlwgat, thlqaccgat_m, thicaccgat_m,tfrez,
-     5    nppmossgat, armossgat,hpdgat)
+     5    nppmossgat, armossgat,peatdepgat)
 c
 c    ---------------- YW March 26, 2015  -------------------------------/          
 
 c----------------update peatland bottom layer depth--------------------       
          do   i = 1, nml
           if (ipeatlandgat(i) > 0)         then
-              dlzwgat(i,ignd)= hpdgat(i)-0.90
-              sdepgat(i) = hpdgat(i)
+              dlzwgat(i,ignd)= peatdepgat(i)-0.90
+              sdepgat(i) = peatdepgat(i)
           endif
          end do
 c================YW August 26, 2015 =======================/ 
@@ -4125,7 +4090,7 @@ C
           WTRSROT(ILMOS(K),JLMOS(K))=WTRSGAT(K)
           WTRGROT(ILMOS(K),JLMOS(K))=WTRGGAT(K)
           DRROT  (ILMOS(K),JLMOS(K))=DRGAT  (K)
-          WTABROT(ILMOS(K),JLMOS(K))=WTABGAT(K)
+          wtableROT(ILMOS(K),JLMOS(K))=wtableGAT(K)
           ILMOROT(ILMOS(K),JLMOS(K))=ILMOGAT(K)
           UEROT  (ILMOS(K),JLMOS(K))=UEGAT(K)
           HBLROT (ILMOS(K),JLMOS(K))=HBLGAT(K)
@@ -4240,7 +4205,7 @@ C    --------------------scatter peatland variables-------------------\
 c
      1      anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow,
      2      anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat,
-     3      hpdrow,   hpdgat,    litrmassmsrow,   litrmassmsgat,
+     3      peatdeprow,   peatdepgat,    litrmsmossrow,   litrmsmossgat,
      4      Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat,
      5      thlqaccrow_m, thlqaccgat_m, thicaccrow_m, thicaccgat_m,    
      6      ipeatlandrow, ipeatlandgat,pddgat,pddrow)
@@ -4757,7 +4722,7 @@ C
           WTRSROW(I)=0.
           WTRGROW(I)=0.
           DRROW(I)=0.
-          WTABROW(I)=0.
+          wtableROW(I)=0.
           ILMOROW(I)=0.
           UEROW(I)=0.
           HBLROW(I)=0.
@@ -4828,7 +4793,7 @@ C
           WTRSROW(I)=WTRSROW(I)+WTRSROT(I,M)*FAREROT(I,M)
           WTRGROW(I)=WTRGROW(I)+WTRGROT(I,M)*FAREROT(I,M)
           DRROW(I)=DRROW(I)+DRROT(I,M)*FAREROT(I,M)
-          WTABROW(I)=WTABROW(I)+WTABROT(I,M)*FAREROT(I,M)
+          wtableROW(I)=wtableROW(I)+wtableROT(I,M)*FAREROT(I,M)
           ILMOROW(I)=ILMOROW(I)+ILMOROT(I,M)*FAREROT(I,M)
           UEROW(I)=UEROW(I)+UEROT(I,M)*FAREROT(I,M)
           HBLROW(I)=HBLROW(I)+HBLROT(I,M)*FAREROT(I,M)
@@ -4865,7 +4830,7 @@ C
           HMFNACC(I)=HMFNACC(I)+HMFNROT(I,M)*FAREROT(I,M)
           ROFACC(I)=ROFACC(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
           OVRACC(I)=OVRACC(I)+ROFOROT(I,M)*FAREROT(I,M)*DELT
-          WTBLACC(I)=WTBLACC(I)+WTABROT(I,M)*FAREROT(I,M)
+          WTBLACC(I)=WTBLACC(I)+wtableROT(I,M)*FAREROT(I,M)
           IF (FSSROW(I) .gt. 0.) then
             ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)
      1                   +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
@@ -5061,7 +5026,7 @@ C
           HMFNACC_M(I,M)=HMFNACC_M(I,M)+HMFNROT(I,M)
           ROFACC_M(I,M)=ROFACC_M(I,M)+ROFROT(I,M)*DELT
           OVRACC_M(I,M)=OVRACC_M(I,M)+ROFOROT(I,M)*DELT
-          WTBLACC_M(I,M)=WTBLACC_M(I,M)+WTABROT(I,M)
+          WTBLACC_M(I,M)=WTBLACC_M(I,M)+wtableROT(I,M)
 
           DO 626 J=1,IGND
               TBARACC_M(I,M,J)=TBARACC_M(I,M,J)+TBARROT(I,M,J)

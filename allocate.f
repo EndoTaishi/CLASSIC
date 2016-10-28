@@ -193,9 +193,9 @@ c
      &      (1./(2.*b(i,j)+3.))
           fieldsm(i,j) = thpor(i,j) *  fieldsm(i,j)
 c
-c    soil property of peatlands---------------------------------------\
-
             if (ipeatland(i) >0)          then
+            ! If this is a peatland, overwrite the values just calculated.
+
                 psisat(i,j) =psisatpt(i,j)
                 b(i,j)= bipt(i,j)
                 thpor(i,j) = thporpt(i,j)
@@ -231,26 +231,6 @@ c    --------------YW April 13, 2015-----------------------------------/
 210     continue
 200   continue
 
-c
-c    ---------------add a branch for ignd is not 3 !FLAG WHY??? JM.--------------------\
-c
-!      else         !when ignd is not 3 
-!        do 220 j = 1, icc
-!         do 221 i = il1, il2
-!           if (fcancmx(i,j).gt.0.0)                  then 
-!            do 222 k = 1, ignd
-!              if (rmatctem(i,j,k) > 0.)        then 
-!                avwiltsm(i,j)=avwiltsm(i,j)+wiltsm(i,k)*rmatctem(i,j,k)
-!                afieldsm(i,j)=afieldsm(i,j)+fieldsm(i,k)*rmatctem(i,j,k)
-!                avthliq(i,j) =avthliq(i,j) +thliq(i,k)*rmatctem(i,j,k)                                          
-!              endif
-!222         continue
-!           endif
-!221      continue
-!220     continue
-!      endif         !if ignd  
-c    -----------YW April 16, 2015--------------------------------------/      
-c
 !>
 !!Using liquid soil moisture content together with wilting and field 
 !!capacity soil moisture contents averaged over the root zone, find

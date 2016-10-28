@@ -64,8 +64,8 @@ C     *                         THERMAL PROPERTIES BASED ON
 C     *                         SAND, CLAY AND ORGANIC MATTER
 C     *                         CONTENT.
 C
-      use ctem_params, only : thpms,thrms,thmms,bms,psisms,grksms,
-     1                       hcpms
+      use ctem_params, only : thpmoss,thrmoss,thmmoss,bmoss,psismoss,grksmoss,
+     1                       hcpmoss
 
       IMPLICIT NONE
 C
@@ -324,15 +324,21 @@ C
               THLRAT(I,M,J)=0.5**(1.0/(2.0*BI(I,M,J)+3.0))
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
+              ! If tile is a peatland, then set up as such.
+              ! this setup assumes that the soil has 10 cm
+              ! layers in the top 1 meter.
+              ! FLAG: We should consider here that we don't
+              ! necessarily want the entire soil column as
+              ! peat so should also include the peat depth! JM Oct 2016.
              if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
                   if (j .eq. 1) then ! First layer is moss
-                      thpor(i,m,j)  = thpms
-                      thlret(i,m,j) = thrms
-                      thlmin(i,m,j) = thmms
-                      bi(i,m,j)     = bms
-                      psisat(i,m,j) = psisms
-                      grksat(i,m,j) = grksms
-                      hcps(i,m,j) = hcpms
+                      thpor(i,m,j)  = thpmoss
+                      thlret(i,m,j) = thrmoss
+                      thlmin(i,m,j) = thmmoss
+                      bi(i,m,j)     = bmoss
+                      psisat(i,m,j) = psismoss
+                      grksat(i,m,j) = grksmoss
+                      hcps(i,m,j) = hcpmoss
                       tcs(i,m,j) = tcom 
                   elseif (j .eq. 2    ) then !Next treated as soil and is fibric peat
                       thpor(i,m,j)  = thporg(1)

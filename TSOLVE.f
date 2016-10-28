@@ -15,13 +15,12 @@ C!
      1                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,        
      2                  TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      3                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
-     4                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF
-!    ------------pass variables in moss subroutine---------------------\  
-     5    ,ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss,
-!    -----input above, output below-----------------------------------     
-     7       anmoss,rmlmoss,iday,daylength,pdd )
-C    ------------------YW March 26, 2015 ------------------------------/ 
+     4                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF,
+     5                  ipeatland,co2conc,pressg,coszs,Cmossmas,
+     6                  dmoss,anmoss,rmlmoss,iday,daylength,pdd )
 C
+!     * OCT 30/16 - J. MELTON. Finish implementation of peatland code by
+!                              Yuanqiao Wu.
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATE
 C     *                         ACCORDING TO WATER AVAILABILITY.
 C     * JAN 09/15 - D.VERSEGHY. FIX TO SUPPRESS EVAPORATION FROM ROCK.
@@ -143,6 +142,9 @@ C
       REAL ILMO  (ILG)  !<Inverse of Monin-Obukhov roughness length \f$(m-1]\f$  
       REAL UE    (ILG)  !<Friction velocity of air \f$[m s^{-1}]\f$  
       REAL H     (ILG)  !<Height of the atmospheric boundary layer [m]
+      real anmoss(ilg)  !<
+      real rmlmoss(ilg) !<
+      real cevapmoss(ilg)!<
 C
 C     * INPUT ARRAYS.
 C
@@ -197,6 +199,16 @@ C
       INTEGER ITERCT(ILG,6,50) !<Counter of number of iterations required to
                                !<solve energy balance for four subareas
       INTEGER ISAND(ILG,IG)    !<Sand content flag
+      integer  ipeatland(ilg)
+      integer iday
+      integer ievapmoss(ilg)
+      real  co2conc(ilg)
+      real  pressg(ilg)
+      real coszs(ilg)
+      real Cmossmas(ilg)
+      real dmoss(ilg)
+      real daylength(ilg)
+      real pdd(ilg)
 C
 C     * BAND-DEPENDANT ARRAYS.                                          
 C                                                                       
@@ -216,17 +228,7 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-C      REAL QSWNV,QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO   !YW
       REAL QSWNV(ilg),QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO
-c    ---------------Peatland variables YW March 19, 2015 --------------\
-
-      integer  ipeatland(ilg),iday, ievapmoss(ilg)
-      real     co2conc(ilg),  pressg(ilg) ,  coszs(ilg),
-     3         Cmossmas(ilg), dmoss(ilg),    daylength(ilg),
-     4         pdd(ilg)
-c    ------input above output below-----------------------------
-      real     anmoss(ilg),rmlmoss(ilg),cevapmoss(ilg)
-c    -------------------YW March 26, 2015 -----------------------------/
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -267,13 +269,6 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-C-----------------------------------------------------------------------
-      do i = 1,ilg
-          if (ipeatland(i) > 0)                   then 
-               qswnv(i)=0.0
-          endif
-      enddo
-c    ------------YW March 20, 2015 ------------------------------------/  
 
       !>
       !!For the surface temperature iteration, two alternative schemes 
@@ -293,7 +288,7 @@ C
       IF(ITG.LT.2) THEN
           ITERMX=50                                                     
       ELSE
-          ITERMX=12      !wwas 5 YW March 27, 2015 
+          ITERMX=12      !was 5 YW March 27, 2015
       ENDIF
 C
 C      IF(ISNOW.EQ.0) THEN
@@ -307,6 +302,9 @@ C
       DO I=IL1,IL2                                                      
          QSWNET(I)=0.0                                                  
          QTRANS(I)=0.0                                                  
+         if (ipeatland(i) > 0)                   then
+               qswnv(i)=0.0
+         endif
       END DO                                                            
 C 
       !>
@@ -492,14 +490,14 @@ C
                   EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
               ELSE
-c    evaporation coefficient evbeta is controled by moss in peatland --\                  
+c    evaporation coefficient evbeta is controled by moss in peatland 
                   if (ipeatland(i) == 0)                   then 
                        EVBETA(I)=CEVAP(I)
                   else
                        evbeta(i) = cevapmoss(i)
                        ievap(i) = ievapmoss(i)
                   endif
-c    ---------------YW March 19, 2015----------------------------------/
+
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QA(I)
                   IF(QZERO(I).GT.QA(I) .AND. IEVAP(I).EQ.0) THEN
                       EVBETA(I)=0.0

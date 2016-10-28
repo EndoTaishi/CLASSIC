@@ -762,7 +762,7 @@ C
 c    initialize moss C fluxes YW March 19, 2015 -----------------------\
 C
         do 66 i = il1, il2
-          if (ipeatland(i) > 0)               then          
+          if (ipeatland(i) > 0) then
                ancsmoss(i) = 0.0
                angsmoss(i) = 0.0
                ancmoss(i)  = 0.0

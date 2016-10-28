@@ -21,7 +21,7 @@
 c    --------------moss variables--------------------------------------\
 C
      1              ,ipeatland, Cmossmas, pCmossmas
-     2              ,nppmosstep, litrfallms, litrmassms,plitrmassms,
+     2              ,nppmosstep, litrfallms, litrmsmoss,plitrmsmoss,
      3              ltrestepms,humicmstep,socrestep,hutrstep)    
 c    -----------YW March 20, 2015 -------------------------------------/   
 
@@ -119,7 +119,7 @@ c    ------peatland variables ----------------------------------------\
       integer  ipeatland (ilg)
       real     cmossmas(ilg),      pcmossmas(ilg),
      1         nppmosstep(ilg),    litrfallms(ilg),    
-     2         litrmassms(ilg),    plitrmassms(ilg),
+     2         litrmsmoss(ilg),    plitrmsmoss(ilg),
      3         ltrestepms(ilg),    humicmstep(ilg),
      4         socrestep(ilg),     hutrstep(ilg,icc+1)
 c     ------YW March 27, 2015 -----------------------------------------/  
@@ -253,11 +253,11 @@ c    --------------------add moss C balance----------------------------\
                
 c    -------------------add moss litter pool C balance-----------------
                
-               diff1 = litrmassms(i)- plitrmassms(i)
+               diff1 = litrmsmoss(i)- plitrmsmoss(i)
                diff2 = litrfallms(i)-ltrestepms(i)-humicmstep(i)
                if((abs(diff1-diff2)).gt.tolrance)then
-                   write(6,3001)'litrmassms(',i,')=',litrmassms(i)
-                   write(6,3001)'plitrmassms(',i,')=',plitrmassms(i)
+                   write(6,3001)'litrmsmoss(',i,')=',litrmsmoss(i)
+                   write(6,3001)'plitrmsmoss(',i,')=',plitrmsmoss(i)
                    write(6,3001)'litrfallms(',i,')=',litrfallms(i)
                    write(6,3001)' ltrestepms(',i,')=',ltrestepms(i)
                    write(6,3001)' humicmstep(',i,')=',humicmstep(i)

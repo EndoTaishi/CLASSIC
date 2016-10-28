@@ -92,7 +92,7 @@ C    --------------------scatter peatland variables-------------------\
 c
      1    ,anmossrow, rmlmossrow, gppmossrow,armossrow,nppmossrow
      2    ,anmossgat, rmlmossgat, gppmossgat,armossgat,nppmossgat
-     3    ,hpdrow,  hpdgat,   litrmassmsrow, litrmassmsgat
+     3    ,peatdeprow,  peatdepgat,   litrmsmossrow, litrmsmossgat
      4    ,Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat
      5    ,thlqaccrow_m , thlqaccgat_m ,thicaccrow_m,thicaccgat_m 
      6    ,ipeatlandrow,      ipeatlandgat,pddgat,pddrow)
@@ -330,8 +330,8 @@ c   Peatland variables   YW March 27, 2015
      4         gppmossrow(nlat,nmos),    gppmossgat(ilg),
      3         armossrow(nlat,nmos),     armossgat(ilg),
      4         nppmossrow(nlat,nmos),    nppmossgat(ilg),
-     5         hpdrow(nlat,nmos),       hpdgat(ilg),
-     6         litrmassmsrow(nlat,nmos),litrmassmsgat(ilg),
+     5         peatdeprow(nlat,nmos),       peatdepgat(ilg),
+     6         litrmsmossrow(nlat,nmos),litrmsmossgat(ilg),
      7         Cmossmasrow(nlat,nmos),  Cmossmasgat(ilg),
      8         dmossrow(nlat,nmos) ,dmossgat(ilg),
      9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
@@ -556,8 +556,8 @@ c    scatter peatland variables----------------------------------------\
           gppmossrow(ilmos(k),jlmos(k))= gppmossgat(k)
           armossrow(ilmos(k),jlmos(k))= armossgat(k)
           nppmossrow(ilmos(k),jlmos(k))= nppmossgat(k)
-          hpdrow (ilmos(k),jlmos(k))  = hpdgat(k)
-          litrmassmsrow(ilmos(k),jlmos(k)) = litrmassmsgat(k) 
+          peatdeprow (ilmos(k),jlmos(k))  = peatdepgat(k)
+          litrmsmossrow(ilmos(k),jlmos(k)) = litrmsmossgat(k)
           Cmossmasrow(ilmos(k),jlmos(k)) = Cmossmasgat(k)
           dmossrow(ilmos(k),jlmos(k)) = dmossgat(k)
           ipeatlandrow(ilmos(k),jlmos(k)) = ipeatlandgat(k)

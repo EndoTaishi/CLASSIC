@@ -148,7 +148,7 @@ C     * AUG 12/91 - D.VERSEGHY. CALCULATION OF LAND SURFACE CANOPY
 C     *                         PARAMETERS.
 C
 
-      use ctem_params,        only : zolnms
+      use ctem_params,        only : zolnmoss
 
       IMPLICIT NONE
 C                                                                                 
@@ -1083,7 +1083,7 @@ C
      1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)           
                   if (ipeatland(i) > 0) then ! roughness length of moss surface in peatlands.
                       ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
-     1              *zolnms+FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)          
+     1              *zolnmoss+FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)
                   endif
               ELSE                                                                
                   ZOMLNG(I)=ZOLNI                                                 

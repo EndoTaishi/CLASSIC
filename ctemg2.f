@@ -43,7 +43,7 @@
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      2      anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,
-     4      litrmassmsgat,hpdgat,Cmossmasgat,dmossgat,thlqaccgat_m,
+     4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,thlqaccgat_m,
      5      thicaccgat_m,ipeatlandgat,pddgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
@@ -88,7 +88,7 @@ c
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
      3      anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,
-     4      litrmassmsrow,hpdrow,Cmossmasrow,dmossrow,
+     4      litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,
      5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
 c    ----gathering of peatland variables YW March 19,
 
@@ -328,8 +328,8 @@ c    --peatland variables
      2         gppmossrow(nlat,nmos),    gppmossgat(ilg),
      3         armossrow(nlat,nmos),     armossgat(ilg),
      4         nppmossrow(nlat,nmos),    nppmossgat(ilg),
-     5         hpdrow(nlat,nmos),       hpdgat(ilg),
-     6         litrmassmsrow(nlat,nmos),litrmassmsgat(ilg),
+     5         peatdeprow(nlat,nmos),       peatdepgat(ilg),
+     6         litrmsmossrow(nlat,nmos),litrmsmossgat(ilg),
      7         Cmossmasrow(nlat,nmos),  Cmossmasgat(ilg),
      8         dmossrow(nlat,nmos),dmossgat(ilg),  
      9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
@@ -553,8 +553,8 @@ c
           gppmossgat(k) = gppmossrow(ilmos(k),jlmos(k))
           armossgat(k) =  armossrow(ilmos(k),jlmos(k))
           nppmossgat(k) = nppmossrow(ilmos(k),jlmos(k))
-          hpdgat(k)    =    hpdrow(ilmos(k),jlmos(k))
-          litrmassmsgat(k) =  litrmassmsrow(ilmos(k),jlmos(k))
+          peatdepgat(k)    =    peatdeprow(ilmos(k),jlmos(k))
+          litrmsmossgat(k) =  litrmsmossrow(ilmos(k),jlmos(k))
           Cmossmasgat(k) = Cmossmasrow(ilmos(k),jlmos(k)) 
           dmossgat(k) = dmossrow(ilmos(k),jlmos(k))
           ipeatlandgat(k) = ipeatlandrow(ilmos(k),jlmos(k))

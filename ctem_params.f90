@@ -736,55 +736,55 @@ real::     bsrateltms = 0.20    !< heterotrophic respiration base rate for peatl
 
 ! peatland parameters used in other subroutines:
 
-real :: zolnms = -6.57      !< natual logarithm of roughness length of moss surface.
+real :: zolnmoss = -6.57    !< natual logarithm of roughness length of moss surface.
                             !! Based upon:
                             !! roughness length as 0.0014 for momentum (Oke 1997, Raddatz et al, 2009)
 
-real :: thpms = 0.98        !< pore volume of moss ($m^3/m^3$)
+real :: thpmoss = 0.98      !< pore volume of moss ($m^3/m^3$)
                             !! Based upon:
                             !! 0.89 Price and Whittington 2010
                             !! 98.2 (Sphagnum) and 98.9 (feather) in
                             !! O'Donnell et al. 2009; 0.90 in Berlinger
                             !! et al.2001
 
-real :: thrms = 0.20        !< Liquid water retention capacity of moss ($m^3/m^3$)
+real :: thrmoss = 0.20      !< Liquid water retention capacity of moss ($m^3/m^3$)
                             !! Based upon: Price and Whittington 2010 for upper 5cm
                             !! moss 0.275/0.6 comparing to 0.39/0.62 in
                             !! fibric for the feather moss.For spahgnum
                             !! moss(O'Donnell et al.2009)
 
-real :: thmms = 0.01        !< residual liquid water content after freezing or
+real :: thmmoss = 0.01      !< residual liquid water content after freezing or
                             !! evaporation of moss ($m^3/m^3$)
                             !! Based upon: Price and Whittington 2010
 
-real :: bms = 2.3           !< Clapp and Hornberger empirical "b" parameter of moss
+real :: bmoss = 2.3         !< Clapp and Hornberger empirical "b" parameter of moss
                             !! Based upon: Berlinger et al.2001(they set 4.0 for peat)
 
-real :: psisms =0.0103      !< Soil moisure suction at saturation of moss (m)
+real :: psismoss =0.0103    !< Soil moisure suction at saturation of moss (m)
                             !! Based upon: moss and peat using same values in Berlinger
                             !! et al. 2001)
 
-real :: grksms = 1.83E-3    !< Saturated hydrualic conductivity of moss (m)
+real :: grksmoss = 1.83E-3  !< Saturated hydrualic conductivity of moss (m)
                             !! The saturated hydrualic conductivity is
                             !! much higher in living moss than lower
                             !! layer (Price et al. 2008). 1.83E-3 for
                             !! 5cm moss, their value of 10cm moss is
                             !! 2.45E-4, similar to fibric here
 
-real :: hcpms = 2.50E6      !< Heat capacity of moss ($J m^{-2} K^{-1}$), same as hcp of peat in Beringer et al. 2001 !FLAG check units, was written as m. JM Sep 26 2016
+real :: hcpmoss = 2.50E6      !< Heat capacity of moss ($J m^{-2} K^{-1}$), same as hcp of peat in Beringer et al. 2001 !FLAG check units, was written as m. JM Sep 26 2016
 
-real :: sphms = 2.70E3      !< Specific heat of moss layer ($J m^{-2} K^{-1}$) ! FLAG check units - written as J/kg/K. JM Sep 26 2016
+!real :: sphms = 2.70E3      !< Specific heat of moss layer ($J m^{-2} K^{-1}$) ! FLAG NOT USED also check units - written as J/kg/K. JM Sep 26 2016
                             !! same as that specific heat for vegetation
                             !! (Berlinger et al 2001)
 
-real :: rhoms = 40.0        !< Density of dry moss ($kg m^{-3}$)
+!real :: rhoms = 40.0        !< Density of dry moss ($kg m^{-3}$)  ! FLAG NOT USED JM Oct 2016.
                             !! Based upon:
                             !! 40.0 Price et al. 2008, Price and
                             !! Whittington 2010 value for feather moss
                             !! is lower than sphagnmum (20 kg/m3 in
                             !! O'Donnell et al. 2009)
 
-real :: slams = 20.0        !< Specific leaf area of moss ($m^2 kg^{-1}$),
+!real :: slams = 20.0        !< Specific leaf area of moss ($m^2 kg^{-1}$), ! FLAG NOT USED JM Oct 2016.
                             !! Based upon:
                             !! S vensson 1995 sphangum value ranges from
                             !! 13.5~47.3 m2/kg (Lamberty et al. 2007)

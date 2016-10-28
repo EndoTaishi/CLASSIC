@@ -26,14 +26,10 @@
      L                 XDIFFUS,ICTEM,IC,CO2I1,CO2I2,
      M                 ctem_on,SLAI,FCANCMX,L2MAX,
      N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG,
-     O                 DAYL,DAYL_MAX
-c    pass  variables to the moss subroutines YW March 19, 2015------------\   
-     1         ,ipeatland, Cmossmas,dmoss
-c    ------input above, output below-----------------------------------    
-     2    ,anmoss,rmlmoss,iday, pdd)
-c    Y.Wu ------------------------------------------------------------/
-
+     O                 DAYL,DAYL_MAX,ipeatland, Cmossmas,dmoss,
+     1                 anmoss,rmlmoss,iday, pdd)
 C
+C     * OCT 30/16 - J.Melton    Finish implementation of peatlands by Yuanqiao Wu
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATES
 C     *                         ACCORDING TO WATER AVAILABILITY.
@@ -207,6 +203,9 @@ C
       REAL QFCL  (ILG) !<Evaporation from liquid water on vegetation \f$[kg m^{-2} s^{-1} ]\f$
       REAL HTCC  (ILG) !<Internal energy change of canopy due to changes in temperature and/or mass \f$[W m^{-2} ]\f$ 
       REAL EVAP  (ILG) !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
+      real anmoss(ilg) !<
+      real rmlmoss(ilg)!<
+      real cevapmoss(ilg)!<
 C
 C     * INPUT ARRAYS.
 C
@@ -268,6 +267,14 @@ C
       INTEGER IWATER(ILG) !<Flag indicating condition of surface (dry, water-covered or snow-covered)
       INTEGER IEVAP (ILG) !<Flag indicating whether surface evaporation is occurring or not output variable
       INTEGER ITERCT(ILG,6,50) !<Counter of number of iterations required to solve energy balance for four subareas
+      integer  ipeatland(ilg)!<
+      integer ievapmoss(ilg)!<
+      integer iday          !<
+      real thmin(ilg,ig)    !<
+      real Cmossmas(ilg)    !<
+      real dmoss(ilg)       !<
+      real pdd(ilg)         !<
+
 C
 C     * ARRAYS FOR CTEM.
 C
@@ -335,20 +342,12 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL qswnvg(ilg),  !QSWNVG YW 
+      REAL qswnvg(ilg),
      1     QSWNIG,QSWNIC,HFREZ,HCONV,
      1     RCONV,HCOOL,HMELT,SCONV,HWARM,WCAN,DQ0DT,
      2     DRDT0,QEVAPT,BOWEN,DCFLUX,DXEVAP,TCANT,QEVAPCT,
      3     TZEROT,YEVAP,RAGCO,EZERO,WTRANSP,WTEST
 C
-C     --------define peatland variables--------------------------------\ 
-      integer  ipeatland(ilg),ievapmoss(ilg),iday
-      real     thmin(ilg,ig),
-     1         Cmossmas(ilg), dmoss(ilg),pdd(ilg)
-c    ------input above output below------------------------------------
-      real     anmoss(ilg),rmlmoss(ilg),cevapmoss(ilg)
-C    ---------YW March 26, 2015 ---------------------------------------/
-
 C     * COMMON BLOCK PARAMETERS.
 C
       REAL DELT,TFREZ,RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,HCPW,HCPICE,
@@ -372,11 +371,10 @@ C===================== CTEM =====================================\
 C
       DO I = 1,ILG
         QSWNVC(I)=0.0
-C    initiate QSWNVG to be used in mosspht.f --------------------------\  
+C    initialize QSWNVG to be used in mosspht.f ---
             if (ipeatland(i) >0)       then
                qswnvg(i) = 0.0 
             endif
-C    YW March 20, 2015 ------------------------------------------------/  
       ENDDO
 
 C===================== CTEM =====================================/
@@ -707,14 +705,13 @@ C
                   EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
               ELSE                            
-c    evaporation coefficient is moss-controlled for peatland-----------\  
+c    evaporation coefficient is moss-controlled for peatland--
                   if (ipeatland(i)==0)               then
                       EVBETA(I)=CEVAP(I)
                   else                             
                       ievap(i) = ievapmoss(i)
                       evbeta(i) = cevapmoss(i)
                   endif
-c    YW March 20, 2015 -------JM FLAG-----------------------------------------/
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QAC(I)
                   IF(QZERO(I).GT.QAC(I) .AND. IEVAP(I).EQ.0) THEN
                       EVBETA(I)=0.0

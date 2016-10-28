@@ -211,7 +211,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: lucltrin !<luc related inputs to litter pool, u-mol co2/m2.sec
     real, dimension(nlat,nmos) :: lucsocin !<luc related inputs to soil c pool, u-mol co2/m2.sec
 
-    real, dimension(nlat,nmos) :: hpd  !  EC: Should this go here or elsewhere? JM FLAG look into this
+    real, dimension(nlat,nmos) :: peatdep  !  EC: Should this go here or elsewhere? JM FLAG look into this
 
     real, dimension(nlat,nmos) :: npp      !<net primary productivity
     real, dimension(nlat,nmos) :: nep      !<net ecosystem productivity
@@ -253,7 +253,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: gppmoss           !<gross primaray production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
     real, dimension(nlat,nmos) :: nppmoss           !<net primary production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
     real, dimension(nlat,nmos) :: armoss            !<autotrophic respiration of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
-    real, dimension(nlat,nmos) :: litrmassms        !<moss litter mass, \f$kg C/m^2\f$
+    real, dimension(nlat,nmos) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
     real, dimension(nlat,nmos) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
     real, dimension(nlat,nmos) :: dmoss             !<depth of living moss (m)
     real, dimension(nlat,nmos) :: pdd               !<peatland degree days above 0 deg C.
@@ -493,7 +493,7 @@ type veg_gat
     real, dimension(ilg) :: gppmoss    !<gross primaray production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
     real, dimension(ilg) :: nppmoss    !<net primary production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
     real, dimension(ilg) :: armoss     !<autotrophic respiration of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
-    real, dimension(ilg) :: litrmassms !<moss litter mass, \f$kg C/m^2\f$
+    real, dimension(ilg) :: litrmsmoss !<moss litter mass, \f$kg C/m^2\f$
     real, dimension(ilg) :: Cmossmas   !<C in moss biomass, \f$kg C/m^2\f$
     real, dimension(ilg) :: dmoss      !<depth of living moss (m)
     real, dimension(ilg) :: pdd        !<peatland degree days above 0 deg C.
@@ -1128,7 +1128,7 @@ type ctem_gridavg_annual
     real, dimension(nlat) :: ch4dyn2_yr_g  !<
     real, dimension(nlat) :: ch4soills_yr_g!<
     real, dimension(nlat) :: veghght_yr_g  !<
-    real, dimension(nlat) :: hpd_yr_g  !FLAG JM
+    real, dimension(nlat) :: peatdep_yr_g  !FLAG JM
 
 end type ctem_gridavg_annual
 
@@ -1183,7 +1183,7 @@ type ctem_tileavg_annual
       real, dimension(nlat,nmos) :: ch4dyn2_yr_t  !<
       real, dimension(nlat,nmos) :: ch4soills_yr_t!<
       real, dimension(nlat,nmos) :: veghght_yr_t  !<
-      real, dimension(nlat,nmos) :: hpd_yr_m  !FLAG JM
+      real, dimension(nlat,nmos) :: peatdep_yr_m  !FLAG JM
 
 end type ctem_tileavg_annual
 
@@ -1278,7 +1278,7 @@ integer :: j,k,l,m
         vrot%gppmoss(j,k)           = 0.0
         vrot%anmoss(j,k)            = 0.0
         vrot%armoss(j,k)            = 0.0
-        vrot%hpd(j,k)               = 0.0
+        vrot%peatdep(j,k)               = 0.0
         vrot%pdd(j,k)               = 0.0
 
         do l=1,ignd
@@ -1833,7 +1833,7 @@ do i=1,nltest
     ctem_grd_yr%ch4dyn1_yr_g(i)  =0.0
     ctem_grd_yr%ch4dyn2_yr_g(i)  =0.0
     ctem_grd_yr%ch4soills_yr_g(i)  =0.0
-    ctem_grd_yr%hpd_yr_g(i)  =0.0
+    ctem_grd_yr%peatdep_yr_g(i)  =0.0
 
     do m = 1,nmtest
         ! Tile avg
