@@ -88,7 +88,7 @@ logical :: PARALLELRUN
 logical :: COMPETE_LNDUSE
 integer :: nl ! number of soil layers
 integer :: realyrst
-integer :: tailyrs
+
 character(1) :: tic
 character(len=8) :: fmt ! format descriptor
 character(len=10) :: x1
