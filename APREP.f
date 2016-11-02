@@ -1083,7 +1083,8 @@ C
      1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)           
                   if (ipeatland(i) > 0) then ! roughness length of moss surface in peatlands.
                       ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
-     1              *zolnmoss+FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)
+     1              *zolnmoss+FCANMX(I,5)*(1.0-FSNOW(I))*
+     2               ZOLN(I,5))/FG(I)
                   endif
               ELSE                                                                
                   ZOMLNG(I)=ZOLNI                                                 

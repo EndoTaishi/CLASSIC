@@ -64,8 +64,8 @@ C     *                         THERMAL PROPERTIES BASED ON
 C     *                         SAND, CLAY AND ORGANIC MATTER
 C     *                         CONTENT.
 C
-      use ctem_params, only : thpmoss,thrmoss,thmmoss,bmoss,psismoss,grksmoss,
-     1                       hcpmoss
+      use ctem_params, only : thpmoss,thrmoss,thmmoss,bmoss,psismoss,
+     1                       grksmoss,hcpmoss
 
       IMPLICIT NONE
 C
@@ -339,7 +339,7 @@ C
                       psisat(i,m,j) = psismoss
                       grksat(i,m,j) = grksmoss
                       hcps(i,m,j) = hcpmoss
-                      tcs(i,m,j) = tcom 
+                      tcs(i,m,j) = tcom
                   elseif (j .eq. 2    ) then !Next treated as soil and is fibric peat
                       thpor(i,m,j)  = thporg(1)
                       thlret(i,m,j) = throrg(1) 

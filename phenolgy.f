@@ -39,7 +39,7 @@
 !!
       subroutine phenolgy(gleafmas, bleafmas,     
      1                         il1,      il2,     tbar,    
-     2                       thliq,   wiltsm,  fieldsm,       ta,  
+     2                       thliq,   THLW,  THFC,       ta,
      3                       anveg,     iday,     radl, roottemp,
      4                    rmatctem, stemmass, rootmass,     sort,
      5                    nol2pfts,  fcancmx, isand,
@@ -130,8 +130,8 @@ c
       real ailcg(ilg,icc)         !<green lai
       real ailcb(ilg,icc)         !<brown lai
 c
-      real fieldsm(ilg,ignd)      !<field capacity soil moisture content both calculated in allocate subroutine
-      real wiltsm(ilg,ignd)       !<wilting point soil moisture content
+      real THFC(ilg,ignd)      !<field capacity soil moisture content both calculated in allocate subroutine
+      real THLW(ilg,ignd)       !<wilting point soil moisture content
       real day                    !<
       real radl(ilg)              !<latitude in radians
       real theta                  !<
@@ -874,13 +874,13 @@ c
          if (isand(i,j) .ne. -3) then !for non-bedrock (bedrock keeps the initialization value of 0)
 !         estimate (1-drought stress) 
 !
-          if(thliq(i,j).le.wiltsm(i,j)) then
+          if(thliq(i,j).le.THLW(i,j)) then
             betadrgt(i,j)=0.0
-          else if (thliq(i,j).gt.(wiltsm(i,j)-thice(i,j)) .and.
-     &      (thliq(i,j).lt.(fieldsm(i,j)-thice(i,j)))) then
-            betadrgt(i,j)=(thliq(i,j)-(wiltsm(i,j)-thice(i,j)))
-            betadrgt(i,j)=betadrgt(i,j)/(fieldsm(i,j)-thice(i,j)
-     1                   -wiltsm(i,j))
+          else if (thliq(i,j).gt.(THLW(i,j)-thice(i,j)) .and.
+     &      (thliq(i,j).lt.(THFC(i,j)-thice(i,j)))) then
+            betadrgt(i,j)=(thliq(i,j)-(THLW(i,j)-thice(i,j)))
+            betadrgt(i,j)=betadrgt(i,j)/(THFC(i,j)-thice(i,j)
+     1                   -THLW(i,j))
           else 
             betadrgt(i,j)=1.0
           endif          
@@ -1015,7 +1015,7 @@ c         but this is an adjustable parameter.
 c
 c      write(90,6991)  iday, nrmlloss(1,1),drgtloss(1,1),
 c     1    coldloss(1,1),flhrloss(1,1),drgtstrs(1,1),betadrgt(1,1),
-c     2    thliq(1,1),thice(1,1),wiltsm(1,1),fieldsm(1,1)
+c     2    thliq(1,1),thice(1,1),THLW(1,1),THFC(1,1)
 c6991      format(I5, 12E10.3)
       return
       end

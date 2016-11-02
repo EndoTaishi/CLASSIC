@@ -3642,7 +3642,7 @@ C
      +  GTBS,   SFCUBS, SFCVBS, USTARBS,
      9  FSGVGAT,FSGSGAT,FSGGGAT,FLGVGAT,FLGSGAT,FLGGGAT,
      A  HFSCGAT,HFSSGAT,HFSGGAT,HEVCGAT,HEVSGAT,HEVGGAT,HMFCGAT,HMFNGAT,
-     B  HTCCGAT,HTCSGAT,HTCGAT, QFCFGAT,QFCLGAT,DRGAT,  wtableGAT,ILMOGAT,
+     B  HTCCGAT,HTCSGAT,HTCGAT, QFCFGAT,QFCLGAT,DRGAT,wtableGAT,ILMOGAT,
      C  UEGAT,  HBLGAT, TACGAT, QACGAT, ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT,
      D  VPDGAT, TADPGAT,RHOAGAT,FSVHGAT,FSIHGAT,FDLGAT, ULGAT,  VLGAT,
      E  TAGAT,  QAGAT,  PADRGAT,FC,     FG,     FCS,    FGS,    RBCOEF,
@@ -3981,11 +3981,10 @@ c
      &           soilcresveggat, nml, ilmos, jlmos, ch4wet1gat,
      &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat,
      &          ch4soillsgat,
-c
      1          ipeatlandgat,anmossac_t,rmlmossac_t,gppmossac_t,
-     2          Cmossmasgat,litrmsmossgat,wtablegat, grksgat,
-     4    thfcgat, thlwgat, thlqaccgat_m, thicaccgat_m,tfrez,
-     5    nppmossgat, armossgat,peatdepgat)
+     2          Cmossmasgat,litrmsmossgat,wtablegat,
+     4          THFCGAT, THLWGAT, thlqaccgat_m, thicaccgat_m,
+     5          nppmossgat, armossgat,peatdepgat)
 c
 c    ---------------- YW March 26, 2015  -------------------------------/          
 

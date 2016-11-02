@@ -65,9 +65,9 @@
      &                 wetfdyn, ch4dyn1, ch4dyn2, ch4soills, &
 !
 !    ---------------- outputs are listed above this line ------------ 
-     &                 ipeatland, anmoss,rmlmoss,gppmoss,
-     &                 Cmossmas,litrmsmoss, wtable,grksat, &
-     &                    thfc,thlw,thliq,thice,tfrez, &
+     &                 ipeatland, anmoss,rmlmoss,gppmoss, &
+     &                 Cmossmas,litrmsmoss, wtable, &
+     &                    THFC,THLW,thliq,thice,&
 !    -------------input above, output and updated variables below------
      &                nppmoss,armoss,peatdep)
 
@@ -120,7 +120,7 @@
 !                     to land use change (luc) subroutine and the manner
 !                     in which distrubance is handles. fire now creates
 !                     bare ground which is subsequently available for
-!                     colonization. other changes are also made to keep
+!                     colonization. other changes are also made to keepwiltsm
 !                     everything consistent with changing vegetation
 !                     fractions. 
 !    -----------------------------------------------------------------
@@ -136,7 +136,7 @@ use landuse_change,     only : luc
 use competition_scheme, only : bioclim, existence, competition
 use disturbance_scheme, only : disturb
 use heterotrophic_respiration, only : hetresg, hetresv
-use peatlands_mod, only : decp
+use peatlands_mod, only : hetres_peat
 
 implicit none
 
@@ -159,6 +159,7 @@ integer, intent(in) ::  spinfast                        !<spinup factor for soil
 integer, intent(in) :: il1                              !<il1=1
 integer, intent(in) :: il2                              !<il2=ilg (no. of grid cells in latitude circle)
 integer, dimension(ilg,ignd), intent(in) :: isand       !<
+integer, dimension(ilg), intent(in) :: ipeatland        !< Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
 real, dimension(ilg), intent(in) :: fsnow               !< fraction of snow simulated by class
 real, dimension(ilg,ignd), intent(in) :: sand           !< percentage sand
 real, dimension(ilg,ignd), intent(in) :: clay           !< percentage clay
@@ -170,21 +171,23 @@ real, dimension(ilg,ignd), intent(in) :: tbarc          !< soil temperature for 
 real, dimension(ilg,ignd), intent(in) :: tbarcs         !< soil temperature for canopy over snow subarea
 real, dimension(ilg,ignd), intent(in) :: tbarg          !< soil temperature for ground subarea
 real, dimension(ilg,ignd), intent(in) :: tbargs         !< soil temperature for snow over ground subarea
-real, dimension(ilg,ignd), intent(in) :: psisat !< saturated soil matric potential (m)
-real, dimension(ilg,ignd), intent(in) :: bi     !< Brooks and Corey b term
-real, dimension(ilg,ignd), intent(in) :: thpor  !< Soil porosity
+real, dimension(ilg,ignd), intent(in) :: psisat         !< saturated soil matric potential (m)
+real, dimension(ilg,ignd), intent(in) :: bi             !< Brooks and Corey b term
+real, dimension(ilg,ignd), intent(in) :: thpor          !< Soil porosity
 real, dimension(ilg), intent(in) :: ta                  !< air temp, K
-real, dimension(ilg,ignd), intent(in) :: delzw          !< thicknesses of the 3 soil layers
+real, dimension(ilg,ignd), intent(in) :: delzw          !< thicknesses of the soil layers
 real, dimension(ilg,ignd), intent(in) :: zbotw          !< bottom of soil layers
 real, dimension(ilg), intent(in) :: soildpth            !<soil depth (m)
-real, dimension(ilg,ignd), intent(in) :: thliqc         !< liquid mois. content of 3 soil layers, for canopy
+real, dimension(ilg,ignd), intent(in) :: thliq          !< liquid mois. content of soil layers
+real, dimension(ilg,ignd), intent(in) :: thliqc         !< liquid mois. content of soil layers, for canopy
                                                         !<over snow and canopy over ground subareas
-real, dimension(ilg,ignd), intent(in) :: thliqg         !< liquid mois. content of 3 soil layers, for ground
+real, dimension(ilg,ignd), intent(in) :: thliqg         !< liquid mois. content of soil layers, for ground
                                                         !<and snow over ground subareas
-real, dimension(ilg,ignd), intent(in) :: thicec !< Frozen soil moisture content for canopy
-                                                !<over snow and canopy over ground subareas
-real, dimension(ilg,ignd), intent(in) :: thiceg !< Frozen soil moisture content for ground
-                                                !< and snow over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thice          !< Frozen soil moisture content
+real, dimension(ilg,ignd), intent(in) :: thicec         !< Frozen soil moisture content for canopy
+                                                        !<over snow and canopy over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thiceg         !< Frozen soil moisture content for ground
+                                                        !< and snow over ground subareas
 real, intent(in) :: deltat                              !< CTEM timestep in days
 real, dimension(ilg), intent(in) ::  grclarea           !< area of the grid cell, \f$km^2\f$
 real, dimension(ilg), intent(in) ::  currlat            !< centre latitude of grid cells in degrees
@@ -211,6 +214,8 @@ real, dimension(ilg), intent(in) :: anmoss              !< moss net photoysnthes
 real, dimension(ilg), intent(in) :: rmlmoss             !< moss maintainance respiration -daily averaged C fluxes rates (umol/m2/s)
 real, dimension(ilg), intent(in) :: gppmoss             !< moss GPP -daily averaged C fluxes rates (umol/m2/s)
 real, dimension(ilg), intent(in) :: wtable              !< water table (m)
+real, dimension(ilg,ignd), intent(in) :: THFC           !<
+real, dimension(ilg,ignd), intent(in) :: THLW           !<
 !
 !     updates
 !
@@ -289,6 +294,7 @@ real, dimension(ilg,icc), intent(inout) ::  burnvegf    !<per PFT fraction burne
 real, dimension(ilg), intent(inout) :: popdin           !<population density \f$(people / km^2)\f$
 real, dimension(ilg), intent(inout) :: Cmossmas         !< moss biomass C pool (kgC/m2)
 real, dimension(ilg), intent(inout) :: litrmsmoss       !< moss litter C pool (kgC/m2)
+real, dimension(ilg), intent(inout) :: peatdep          !< peat depth (m)
 !
 !   outputs
 !
@@ -372,6 +378,8 @@ real, dimension(ilg,icc), intent(out) :: tltrroot       !<total root litter fall
 real, dimension(ilg,ican), intent(out) :: paicgat       !<
 real, dimension(ilg,ican), intent(out) :: slaicgat      !<
 real, dimension(ilg,icc), intent(out) :: vgbiomas_veg   !<
+real, dimension(ilg), intent(out) :: armoss             !<autotrophic respiration of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+real, dimension(ilg), intent(out) :: nppmoss            !<net primary production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
 
 ! ---------------------------------------------
 ! Local variables:
@@ -495,8 +503,6 @@ real screstep(ilg,iccp1) !<
 real hutrstep(ilg,iccp1) !<
 !
 real tbarccs(ilg,ignd) !<
-real fieldsm(ilg,ignd) !<
-real wiltsm(ilg,ignd)  !<
 real rootlitr(ilg,icc) !<
 real stemlitr(ilg,icc) !<
 real nppvgstp(ilg,icc) !<
@@ -525,49 +531,19 @@ real add2allo(ilg,icc)  !<
 real reprocost(ilg,icc) !<
 real repro_cost_g(ilg)  !<
 real lambdaalt !<
-
-!    ------------define peatland related variables--------------------\ 
-       integer  ipeatland(ilg)
-      
-       real     ,&
-      &         grksat(ilg,ignd),thfc(ilg,ignd),thlw(ilg,ignd),&  
-      &         thliq(ilg,ignd),thice(ilg,ignd),tfrez
-     
-      real     armoss(ilg), &
-     &         nppmoss(ilg), rgmoss(ilg), litresms(ilg), socresp(ilg),&
-     &         resoxic(ilg), resanoxic(ilg), litrfallms(ilg),&
-     &         ltrestepms(ilg), humicmstep(ilg),&
-     &         pcmossmas(ilg), plitrmsmoss(ilg), nppmosstep(ilg),&
-     &         socrestep(ilg), hutrstep_g(ilg),&
-     &         peatdep(ilg)
-
-
-
-!    peatdep - peat depth(m)
-!    -----daily averaged C fluxes rates (umol/m2/s) below-----
-
-!    rmlmoss - moss maintainance respiration moss 
-
-!    nppmoss - moss net primary production 
-!    rgmoss  - moss growth respiration 
-!    armoss  - moss autotrophic respiration (rmlmoss+rgmoss) 
-!    litresms- moss litter respiration  
-!    socresp - heterotrphic repsiration from peat soil  
-!    resoxic - oxic respiration from peat soil 
-!    resanoxic - anoxic respiration from peat soil
-!    ------accumulated C fluxes (kgC/m2/timestep) below---------
-!    litrfallms - moss litter fall      
-!    ltrestepms - litter respiration from moss    
-!    humicmstep - moss humification 
-!    nppmosstep - moss npp
-!    socrestep  - hetretrophic respiration from soil 
-!    hutrstep_g - grid sum of humification from vascualr litter 
-!    ------C pool (kgC/m2) below--------------------------------
-
-!    pcmossmas - moss biomass C at the previous time step
-!    plitrmsmoss - moss litter C at the previous time step
-!    ------------peatland variables done YW March 20, 2015-------------/
-
+real rgmoss(ilg)        !< moss growth respiration ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+real litresmoss(ilg)    !< moss litter respiration ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+real socres_peat(ilg)   !< heterotrphic repsiration from peat soil ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+real resoxic(ilg)       !< oxic respiration from peat soil ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+real resanoxic(ilg)     !< anoxic respiration from peat soil ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+real litrfallmoss(ilg)  !< moss litter fall (kgC/m2/timestep)
+real ltrestepmoss(ilg)  !< litter respiration from moss (kgC/m2/timestep)
+real humstepmoss(ilg)   !< moss humification (kgC/m2/timestep)
+real pCmossmas(ilg)     !< moss biomass C at the previous time step (kgC/m2)
+real plitrmsmoss(ilg)   !< moss litter C at the previous time step (kgC/m2)
+real nppmosstep(ilg)    !< moss npp (kgC/m2/timestep)
+real socrestep(ilg)     !< heterotrophic respiration from soil (kgC/m2/timestep)
+real hutrstep_g(ilg)    !< grid sum of humification from vascualr litter (kgC/m2/timestep)
 
 !>
 !>     ---------------------------------------------------------------
@@ -981,25 +957,20 @@ do 145 i = il1, il2
     plitmass(i,iccp1)=litrmass(i,iccp1)  !<litter mass over bare fraction
     psocmass(i,iccp1)=soilcmas(i,iccp1)  !<soil c mass over bare fraction
 
-!    ---------initialize peatland variables YW---------------------------\
-
-        if  (ipeatland(i) >  0)                   then
-            pCmossmas(i)  = Cmossmas(i)            
-            plitrmsmoss(i)= litrmsmoss(i)
-            litrfallms(i) = 0.0
-            litresms(i)   = 0.0         
-            socresp(i)    = 0.0
-            resoxic(i)    = 0.0
-            resanoxic(i)  = 0.0
-            ltrestepms(i) = 0.0
-            humicmstep(i) = 0.0
-            nppmosstep(i) = 0.0
-            rgmoss(i)     = 0.0     
-            hutrstep_g(i) = 0.0
-            nppmoss(i)    = 0.0
-            armoss(i)     = 0.0    
-        endif
-!    ---------YW March 20, 2015----------------------------------------/
+    pCmossmas(i)  = Cmossmas(i)
+    plitrmsmoss(i)= litrmsmoss(i)
+    litrfallmoss(i) = 0.0
+    litresmoss(i)   = 0.0
+    socres_peat(i)    = 0.0
+    resoxic(i)    = 0.0
+    resanoxic(i)  = 0.0
+    ltrestepmoss(i) = 0.0
+    humstepmoss(i) = 0.0
+    nppmosstep(i) = 0.0
+    rgmoss(i)     = 0.0
+    hutrstep_g(i) = 0.0
+    nppmoss(i)    = 0.0
+    armoss(i)     = 0.0
 
 145   continue
 
@@ -1148,7 +1119,7 @@ do 320 j = 1,icc
 330     continue
 320   continue
 !
-!>    Add moss GPP and rml to the grid average C fluxes- FLAG NOT set up with peatlands as a tile! JM Oct 2016.
+!>    Add moss GPP and rml to the grid average C fluxes
 do 335 i = il1, il2
     if (ipeatland(i) > 0) then
         rgmoss(i) = anmoss(i)*grescoefmoss
@@ -1176,8 +1147,8 @@ call    hetresv ( fcancs,      fcs, litrmass, soilcmas,&
      &                      delzw, thpor, il1,&
      &                      il2,   tbarcs, psisat, bi,  thliqc,&
      &                     rttempcs,    zbotw,     sort,&
-     &                     isand, thicec, &
-     &                 ltrsvgcs, scrsvgcs, ipeatland)
+     &                     isand, thicec, ipeatland, &
+     &                 ltrsvgcs, scrsvgcs)
 
 !>
 !! Find heterotrophic respiration rates for canopy over ground subarea
@@ -1186,16 +1157,15 @@ call    hetresv ( fcanc,      fc, litrmass, soilcmas,&
      &                      delzw, thpor, il1,&
      &                      il2,   tbarc, psisat, bi,  thliqc,&
      &                     rttempcg,    zbotw,     sort,&
-     &                     isand, thicec, &
-     &                 ltrsvgcg, scrsvgcg, ipeatland)
+     &                     isand, thicec,ipeatland, &
+     &                 ltrsvgcg, scrsvgcg)
 !>
 !! Find heterotrophic respiration rates from bare ground subarea
 
 call  hetresg  (litrmass, soilcmas,   delzw,  thpor, &
      &                      il1,  il2, tbarg, psisat, bi,&
      &                   thliqg,      zbotw, thiceg,   &
-     &                       fg,        0,&
-     &                     isand,&
+     &                       fg,        0, isand,&
      &                   ltrsbrg,  scrsbrg)
 !>
 !! Find heterotrophic respiration rates from snow over ground subarea
@@ -1203,19 +1173,15 @@ call  hetresg  (litrmass, soilcmas,   delzw,  thpor, &
 call  hetresg  (litrmass, soilcmas,    delzw, thpor, &
      &                      il1, il2,  tbargs, psisat, bi,  &
      &                   thliqg,      zbotw,  thiceg, &
-
-     &                      fgs,        1,&
-     &                     isand,&
+     &                      fgs,        1, isand,&
      &                   ltrsbrgs, scrsbrgs)
 
-!    ------------peat heterotrophic respiration------------------------\
-!
-        call  decp(il1,il2,ipeatland,isand,litrmsmoss,peatdep, wtable,tbar, thliq,thice, thpor,bi,zbotw, &
-      &    delzw,psisat,tfrez,  &
-!    -------------- inputs above this line, outputs below -------------
-     &    litresms, socresp, resoxic, resanoxic)  
-!    ------------YW March 26, 2015 ------------------------------------/
+!>
+!! When peatlands aer simulated find the peat heterotrophic respiration
 
+call  hetres_peat(il1,il2,ipeatland,isand,litrmsmoss,peatdep, wtable, &
+        &   tbar, thliq,thice, thpor,bi,zbotw, delzw,psisat,  &
+        &    litresmoss, socres_peat, resoxic, resanoxic)
 
 !>
 !!Find vegetation averaged litter and soil c respiration rates
@@ -1266,10 +1232,10 @@ do 360 j = 1,icc
     socres(i)=socres(i)+fcancmx(i,j)*scresveg(i,j)
 370     continue
 360   continue
-!
-!    -------------add moss and peat soil respiration to the grid--------\     
+!>
+!!    add moss and peat soil respiration to the grid
 !    above have aggregated icc litres and socres, below add iccp1 for 
-!    bareground to the grid sum if it's not peatland. Add litresms to
+!    bareground to the grid sum if it's not peatland. Add litresmoss to
 !    the grid sum and NOT adding iccp1 if it's peatland.    
 !
       do 380 i = il1, il2
@@ -1277,8 +1243,8 @@ do 360 j = 1,icc
               litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,iccp1))
               socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,iccp1))
           else                     !it is peatlands
-              litres(i) = litres(i)+ litresms(i)
-              socres(i) = socresp(i)
+              litres(i) = litres(i)+ litresmoss(i)
+              socres(i) = socres_peat(i)
           endif
               hetrores(i)= litres(i)+socres(i)
               nep(i)=npp(i)-hetrores(i)
@@ -1355,14 +1321,14 @@ do 470 j = 1,icc
 !    to time step-1, 'deltat/963.62' convert umol/m2/s to kgC/m2/deltat. 
 !    note that hutrstep_g aggregation for icc was done in loop 480
 ! 
-              litrfallms(i)= Cmossmas(i)*rmortmoss/365*deltat !kgC/m2/day(dt)
-              ltrestepms(i)= litresms(i)*(1.0/963.62)*deltat   !kgC/m2/dt  
+              litrfallmoss(i)= Cmossmas(i)*rmortmoss/365*deltat !kgC/m2/day(dt)
+              ltrestepmoss(i)= litresmoss(i)*(1.0/963.62)*deltat   !kgC/m2/dt
               nppmosstep(i)= nppmoss(i)*(1.0/963.62)*deltat    !kgC/m2/dt
               socrestep(i) = socres(i)*(1.0/963.62)*deltat     !kgC/m2/dt
               soilresp(i)  = soilresp(i)*(1.0/963.62)*deltat   !kgC/m2/dt
-              humicmstep(i)= humicfacmoss * ltrestepms(i)        !kgC/m2/dt
-              hutrstep_g(i)= hutrstep_g(i) + humicmstep(i)     !kgC/m2/dt
-              humiftrs(i)  = humiftrs(i)+humicmstep(i)*(963.62/deltat)!umol/m2/s
+              humstepmoss(i)= humicfacmoss * ltrestepmoss(i)        !kgC/m2/dt
+              hutrstep_g(i)= hutrstep_g(i) + humstepmoss(i)     !kgC/m2/dt
+              humiftrs(i)  = humiftrs(i)+humstepmoss(i)*(963.62/deltat)!umol/m2/s
           endif
 490   continue
 !    ---------------YW March 20, 2015 ---------------------------------/
@@ -1397,16 +1363,11 @@ endif
      &                     il1, il2,     sand,     clay,  &
      &                    rmatctem,   gleafmas, stemmass, rootmass,     &
      &                       sort,    nol2pfts,  fcancmx, isand, &
-     &                     afrleaf,  afrstem,  afrroot,    wiltsm,&
-     &                     fieldsm, wtstatus, ltstatus,&
-!    add peatland parameters YW April 13, 2015 ------------------------ 
-     &                   ipeatland, thpor,bi, psisat,grksat,thfc,thlw)
+     &                     afrleaf,  afrstem,  afrroot, &
+     &                     wtstatus, ltstatus)
+
 
 !>
-!!Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the 
-!!CLASS part of the model. They are recalculated here in CTEM to avoid passing them through the
-!!coupler in the coupled model. The CTEM calculated versions of fieldsm and wiltsm are also used
-!!in disturb and phenolgy. JM. Jan 14 2015.
 !!
 !!Estimate fraction of npp that is to be used for horizontal
 !!expansion (lambda) during the next day (i.e. this will be determining
@@ -1616,7 +1577,7 @@ do 680 j = 1, ignd
 !!
 call phenolgy(gleafmas, bleafmas, &
      &                         il1,      il2,  tbarccs,&
-     &                      thliqc,   wiltsm,  fieldsm,       ta,&
+     &                      thliqc,     THLW,     THFC,       ta,&
      &                    pheanveg,     iday,     radj, roottemp,&
      &                    rmatctem, stemmass, rootmass,     sort,&
      &                    nol2pfts,  fcancmx,  isand, &
@@ -1754,7 +1715,7 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
 !!any fire by specifying fire extingushing probability equal to 1.
 !!
 call disturb (stemmass, rootmass, gleafmas, bleafmas,&
-     &                      thliqc,   wiltsm,  fieldsm,    uwind,&
+     &                      thliqc,    THLW,      THFC,    uwind,&
      &                       vwind,  lightng,  fcancmx, litrmass,&
      &                    prbfrhuc, rmatctem, extnprob, popdon,&
      &                         il1,      il2,     sort, nol2pfts,&
@@ -1873,11 +1834,11 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
              gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
              gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
           else                      
-             litrmsmoss(i)= litrmsmoss(i)+litrfallms(i)-&
-      &                     ltrestepms(i)-humicmstep(i)     !kg/m2
-             Cmossmas(i)= Cmossmas(i)+nppmosstep(i)-litrfallms(i)
+             litrmsmoss(i)= litrmsmoss(i)+litrfallmoss(i)-&
+      &                     ltrestepmoss(i)-humstepmoss(i)     !kg/m2
+             Cmossmas(i)= Cmossmas(i)+nppmosstep(i)-litrfallmoss(i)
              vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
-             litrfall(i) = litrfall(i) + litrfallms(i)*(963.62/deltat)!umolCO2/m2/s
+             litrfall(i) = litrfall(i) + litrfallmoss(i)*(963.62/deltat)!umolCO2/m2/s
              gavgltms(i) = gavgltms(i) + litrmsmoss(i)
              gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i)          
              peatdep(i)=(-72067.0+sqrt((72067.0**2.0)-(4.0*4056.6*&
@@ -1909,8 +1870,8 @@ if(spinfast.eq.1)then
 !    ----------------balance of the moss C pool YW------------------------\
 !
       &             ipeatland, Cmossmas, pCmossmas, &
-      &             nppmosstep, litrfallms, litrmsmoss,plitrmsmoss, &
-      &             ltrestepms,humicmstep,socrestep, hutrstep)    
+      &             nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss, &
+      &             ltrestepmoss,humstepmoss,socrestep, hutrstep)
 
 endif
 
