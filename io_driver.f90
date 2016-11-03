@@ -1139,6 +1139,7 @@ real, pointer :: QE_MO
 real, pointer, dimension(:,:) :: TBARACC_MO
 real, pointer, dimension(:,:) :: THLQACC_MO
 real, pointer, dimension(:,:) :: THICACC_MO
+integer, pointer, dimension(:) :: altotcntr_m
    
 ! local
 
@@ -1173,6 +1174,7 @@ THICACC_MO        => class_out%THICACC_MO
 GROUNDEVAP        => class_out%GROUNDEVAP
 CANOPYEVAP        => class_out%CANOPYEVAP
 ALTOTACC_MO       => class_out%ALTOTACC_MO
+altotcntr_m       => class_out%altotcntr_m
 
 ! ------------
 
@@ -1209,8 +1211,9 @@ DO 821 M=1,NMTEST
     EVAPACC_MO(I)=EVAPACC_MO(I)+QFSROT(I,M)*FAREROT(I,M)*DELT
 
     IF(FSSROW(I).GT.0.0) THEN
-        ALTOTACC_MO(I)=ALTOTACC_MO(I) + (FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
-                        /FSSROW(I)*FAREROT(I,M)
+        ALTOTACC_MO(I)=ALTOTACC_MO(I) + ((FSSROW(I)-FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M)) &
+                        /FSSROW(I))*FAREROT(I,M)
+        altotcntr_m(i) = altotcntr_m(i) + 1
     ENDIF
 
     DO 823 J=1,IGND
@@ -1239,8 +1242,10 @@ DO NT=1,NMON
 !                 ALVSACC_MO(I)=0.0
 !                 ALIRACC_MO(I)=0.0
 !             ENDIF
-            
-            ALTOTACC_MO(I) = ALTOTACC_MO(I)/REAL(NDMONTH)
+
+            ! Albedo is only counted when sun is above horizon so it uses its own counter.
+            ALTOTACC_MO(I) = ALTOTACC_MO(I)/REAL(altotcntr_m(i))
+
             FLUTACC_MO(I)=FLUTACC_MO(I)/REAL(NDMONTH)
             FSINACC_MO(I)=FSINACC_MO(I)/REAL(NDMONTH)
             FLINACC_MO(I)=FLINACC_MO(I)/REAL(NDMONTH)
@@ -1342,6 +1347,7 @@ real, dimension(nlat,nmos,ignd), intent(in) :: QFCROT
 real, dimension(nlat,nmos), intent(in) :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
 real, dimension(nlat,nmos), intent(in) :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
 real, dimension(nlat,nmos), intent(in) :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
+integer, pointer, dimension(:) :: altotcntr_yr
 
 ! pointers
 real, pointer, dimension(:) :: ALVSACC_YR
@@ -1385,6 +1391,7 @@ FLSTAR_YR         => class_out%FLSTAR_YR
 QH_YR             => class_out%QH_YR
 QE_YR             => class_out%QE_YR
 ALTOTACC_YR       => class_out%ALTOTACC_YR
+altotcntr_yr      => class_out%altotcntr_yr
 
 !> Accumulate output data for yearly averaged fields for class grid-mean.
 !> for both parallel mode and stand alone mode
@@ -1416,6 +1423,7 @@ DO 827 I=1,NLTEST
         IF(FSSROW(I).GT.0.0) THEN
            ALTOTACC_YR(I)=ALTOTACC_YR(I) + (FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
                         /FSSROW(I)*FAREROT(I,M)
+           altotcntr_yr(i) = altotcntr_yr(i) + 1
         ENDIF
 
 828    CONTINUE
@@ -1444,7 +1452,9 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
             EVAPACC_YR(I)=EVAPACC_YR(I)
             TRANSPACC_YR(I)=TRANSPACC_YR(I)
             TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*365.)
-            ALTOTACC_YR(I)=ALTOTACC_YR(I)/(REAL(NDAY)*365.)
+
+            ! Albedo is only counted when sun is above horizon so it uses its own counter.
+            ALTOTACC_YR(I)=ALTOTACC_YR(I)/(REAL(altotcntr_yr(i)))
 
             FSSTAR_YR=FSINACC_YR(I)*(1.-ALTOTACC_YR(I))
             FLSTAR_YR=FLINACC_YR(I)-FLUTACC_YR(I)

@@ -293,6 +293,7 @@ type veg_rot
     real, dimension(nlat,nmos) :: RCANACC_M !<
     real, dimension(nlat,nmos) :: SCANACC_M !<
     real, dimension(nlat,nmos) :: ALTOTACC_M !<Daily broadband albedo
+    integer, dimension(nlat) :: altotcntr_d !<Used to count the number of time steps with the sun above the horizon
     real, dimension(nlat,nmos) :: GROACC_M  !<
     real, dimension(nlat,nmos) :: FSINACC_M !<
     real, dimension(nlat,nmos) :: FLINACC_M !<
@@ -572,6 +573,7 @@ type class_moyr_output
     real, dimension(nlat) :: ALTOTACC_MO  !< Broadband albedo
     real, dimension(nlat) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
     real, dimension(nlat) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
+    integer, dimension(nlat) :: altotcntr_m!< Used to count the number of time steps with the sun above the horizon
 
     real :: FSSTAR_MO !<
     real :: FLSTAR_MO !<
@@ -597,6 +599,7 @@ type class_moyr_output
     real, dimension(nlat) :: TRANSPACC_YR!<
     real, dimension(nlat) :: TAACC_YR    !<
     real, dimension(nlat) :: ALTOTACC_YR !< Broadband albedo
+    integer, dimension(nlat) :: altotcntr_yr !<Used to count the number of time steps with the sun above the horizon
 
     real :: FSSTAR_YR !<
     real :: FLSTAR_YR !<
@@ -1373,6 +1376,7 @@ do i=1,nltest
     class_out%CANOPYEVAP(I)=0.
     class_out%GROUNDEVAP(I)=0.
     class_out%ALTOTACC_MO(I)=0.
+    class_out%altotcntr_m(i)=0
 
     DO J=1,IGND
         class_out%TBARACC_MO(I,J)=0.
@@ -1407,6 +1411,7 @@ do i=1,nltest
           class_out%TRANSPACC_YR(I)=0.
           class_out%TAACC_YR(I)=0.
           class_out%ALTOTACC_YR(I)=0.
+          class_out%altotcntr_yr(i)=0
 end do
 
 end subroutine resetclassyr
@@ -1878,6 +1883,9 @@ integer :: i,m,j
 
 
 DO I=1,NLTEST
+
+    vrot%altotcntr_d(i) = 0
+
   DO M=1,NMTEST
 
         vrot%PREACC_M(i,m) = 0.

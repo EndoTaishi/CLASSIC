@@ -1318,6 +1318,7 @@ c
       real, pointer, dimension(:,:) :: lambdagat
       real, pointer, dimension(:,:) :: ccgat
       real, pointer, dimension(:,:) :: mmgat
+      integer, pointer, dimension(:) :: altotcntr_d
 
       ! Mosaic level:
 
@@ -1702,6 +1703,8 @@ C===================== CTEM ==============================================\
       annsrplsrow          => vrot%annsrpls
       annpcprow            => vrot%annpcp
       dry_season_lengthrow => vrot%dry_season_length
+
+      altotcntr_d       => vrot%altotcntr_d
 
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>
       ! GAT:
@@ -4670,6 +4673,7 @@ C
           IF (FSSROW(I) .gt. 0.) then
             ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)
      1                   +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
+            altotcntr_d(i)=altotcntr_d(i) + 1
           END IF
 
       DO 650 M=1,NMTEST
@@ -4761,7 +4765,7 @@ C
           UVACC(I)=UVACC(I)/REAL(NDAY)
           PRESACC(I)=PRESACC(I)/REAL(NDAY)
           QAACC(I)=QAACC(I)/REAL(NDAY)
-          ALTOTACC(I)=ALTOTACC(I)/REAL(NDAY)
+          ALTOTACC(I)=ALTOTACC(I)/REAL(altotcntr_d(i))
               FSSTAR=FSINACC(I)*(1.-ALTOTACC(I))
               FLSTAR=FLINACC(I)-FLUTACC(I)
               QH=HFSACC(I)
@@ -4889,7 +4893,7 @@ C              CANARE(I)=CANARE(I)+FAREROT(I,M)
           RCANACC_M(I,M)=RCANACC_M(I,M)+RCANROT(I,M)
           SCANACC_M(I,M)=SCANACC_M(I,M)+SCANROT(I,M)
           GROACC_M(I,M)=GROACC_M(I,M)+GROROT(I,M)
-          IF (FSSROW(I) .gt. 0.) THEN
+          IF (FSSROW(I) .gt. 0.) THEN ! we will reuse the altotcount counter values so don't need to do again.
             ALTOTACC_M(I,M)=ALTOTACC_M(I,M) + (FSSROW(I)-
      1                    (FSGVROT(I,M)+FSGSROT(I,M)+
      2                     FSGGROT(I,M)))/FSSROW(I)
@@ -4951,7 +4955,7 @@ C
           UVACC_M(I,M)=UVACC_M(I,M)/REAL(NDAY)
           PRESACC_M(I,M)=PRESACC_M(I,M)/REAL(NDAY)
           QAACC_M(I,M)=QAACC_M(I,M)/REAL(NDAY)
-          ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(NDAY)
+          ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(altotcntr_d(i))
           FSSTAR=FSINACC_M(I,M)*(1.-ALTOTACC_M(I,M))
           FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
           QH=HFSACC_M(I,M)
