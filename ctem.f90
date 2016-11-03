@@ -1103,7 +1103,7 @@ do 300 j = 1, icc
 310     continue
 300   continue
 
-!>Calculate grid-averaged rates of rm, rg, npp, and gpp
+!>Calculate grid/tile-averaged rates of rm, rg, npp, and gpp
 
 do 320 j = 1,icc
   do 330 i = il1, il2
@@ -1119,7 +1119,7 @@ do 320 j = 1,icc
 330     continue
 320   continue
 !
-!>    Add moss GPP and rml to the grid average C fluxes
+!>    Add moss GPP and rml to the grid/tile average C fluxes
 do 335 i = il1, il2
     if (ipeatland(i) > 0) then
         rgmoss(i) = anmoss(i)*grescoefmoss
@@ -1177,7 +1177,7 @@ call  hetresg  (litrmass, soilcmas,    delzw, thpor, &
      &                   ltrsbrgs, scrsbrgs)
 
 !>
-!! When peatlands aer simulated find the peat heterotrophic respiration
+!! When peatlands are simulated find the peat heterotrophic respiration
 
 call  hetres_peat(il1,il2,ipeatland,isand,litrmsmoss,peatdep, wtable, &
         &   tbar, thliq,thice, thpor,bi,zbotw, delzw,psisat,  &
@@ -1234,17 +1234,17 @@ do 360 j = 1,icc
 360   continue
 !>
 !!    add moss and peat soil respiration to the grid
-!    above have aggregated icc litres and socres, below add iccp1 for 
-!    bareground to the grid sum if it's not peatland. Add litresmoss to
-!    the grid sum and NOT adding iccp1 if it's peatland.    
+!!    In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
+!!    bareground (iccp1) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to
+!!    the grid sum but no bareground values as we assume peatlands have no bareground.
 !
       do 380 i = il1, il2
-          if (ipeatland(i) ==0)         then 
+          if (ipeatland(i) ==0) then
               litres(i)=litres(i)+( (fg(i)+fgs(i))*ltresveg(i,iccp1))
               socres(i)=socres(i)+( (fg(i)+fgs(i))*scresveg(i,iccp1))
-          else                     !it is peatlands
-              litres(i) = litres(i)+ litresmoss(i)
-              socres(i) = socres_peat(i)
+          else  ! peatlands
+              litres(i) = litres(i)+ litresmoss(i) !add the moss litter, which is assumed to cover whole tile.
+              socres(i) = socres_peat(i) ! since this is only peatland on this tile, use just the peat value.
           endif
               hetrores(i)= litres(i)+socres(i)
               nep(i)=npp(i)-hetrores(i)
@@ -1262,22 +1262,20 @@ do 420 j = 1, iccp1
 
 !>Update litter and soil c pools
     if (j .ne. iccp1) then
-        litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*&
-    &                   (1.0+humicfac(sort(j))))
+        litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*(1.0+humicfac(sort(j))))
         hutrstep(i,j)=(humicfac(sort(j))* ltrestep(i,j))
     else
-!         only add bareground to total for non-peatlands because for   
-!         peatlands litrmass of bareground is part of the moss litter
-             if (ipeatland(i) == 0)          then    !YW March 20, 2015
-        litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*(1.0+0.45))
-        hutrstep(i,j)=(0.45 * ltrestep(i,j))
-    endif
+!>         Next we add bareground litter mass and humification for non-peatlands. In
+!!         peatlands there is no bareground litter mass since it is the moss layer.
+        if (ipeatland(i) == 0) then
+            litrmass(i,j)=litrmass(i,j)-(ltrestep(i,j)*(1.0+0.45))
+            hutrstep(i,j)=(0.45 * ltrestep(i,j))
+        endif
 
-          endif
+    endif
 !
     humtrsvg(i,j)=hutrstep(i,j)*(963.62/deltat) ! u-mol co2/m2.sec
-    soilcmas(i,j)=soilcmas(i,j) + &
-&          real(spinfast) * (hutrstep(i,j) -  screstep(i,j))
+    soilcmas(i,j)=soilcmas(i,j) + real(spinfast) * (hutrstep(i,j) -  screstep(i,j))
 
     if(litrmass(i,j).lt.zero) litrmass(i,j)=0.0
     if(soilcmas(i,j).lt.zero) soilcmas(i,j)=0.0
@@ -1297,6 +1295,7 @@ do 440 j = 1, icc
 do 460 i = il1, il2
     soilrsvg(i,iccp1)=ltresveg(i,iccp1)+scresveg(i,iccp1)
 460   continue
+
 !>Find grid averaged humification and soil respiration rates
 
 do 470 j = 1,icc
@@ -1306,17 +1305,18 @@ do 470 j = 1,icc
 480     continue
 470   continue
 !
-!    add a peatland branch for soilresp and humiftrs-------------------\  
-!    after aggregation of icc for non-peatlands add iccp1 to the grid  
-!    for peatlands add ms to the grid. Note in loop 430 iccp1 is passed
-!    for peatlands
+!>    After aggregation of humification and soil respiration rates for non-peatlands
+!!   to the grid/tile level, the same must be done for bareground (iccp1).
+!!    For peatlands, we additionally add moss values to the grid (litter respiration
+!!   and moss root respiration). Note in loop 430 iccp1 is passed for peatlands
 !
       do 490 i = il1, il2
-          if (ipeatland(i) ==0 )                  then
+          if (ipeatland(i) ==0 ) then !non peatland
             soilresp(i)=soilresp(i)+( (fg(i)+fgs(i))*soilrsvg(i,iccp1))
             humiftrs(i)=humiftrs(i)+( (fg(i)+fgs(i))*humtrsvg(i,iccp1))
-          else                          !is peatland  
-            soilresp(i) = litres(i)+socres(i)+rmr(i) 
+          else !peatland
+            soilresp(i) = socres(i)+litres(i)+rmr(i) !moss root and litter respiration. No bareground!
+
 !    calculate moss time step C fluxes, '/365*deltat' convert year-1
 !    to time step-1, 'deltat/963.62' convert umol/m2/s to kgC/m2/deltat. 
 !    note that hutrstep_g aggregation for icc was done in loop 480
@@ -1331,7 +1331,7 @@ do 470 j = 1,icc
               humiftrs(i)  = humiftrs(i)+humstepmoss(i)*(963.62/deltat)!umol/m2/s
           endif
 490   continue
-!    ---------------YW March 20, 2015 ---------------------------------/
+!     ------------------------------------------------------------------
 !
 !     heterotrophic respiration part ends
 !
@@ -1817,20 +1817,24 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
           ! store the per PFT litterfall for outputting.
           litrfallveg(i,j)=(tltrleaf(i,j)+tltrstem(i,j)+tltrroot(i,j))
           gavgltms(i)=gavgltms(i)+fcancmx(i,j)*litrmass(i,j)
-          if (ipeatland(i)==0)          then       !YW March 20, 2015 
+
+          if (ipeatland(i)==0) then ! Non-peatlands
                gavgscms(i)=gavgscms(i)+fcancmx(i,j)*soilcmas(i,j)
-          endif    !soil C is calculated from peatdep in peatland
+          !else
+             !Peatland soil C is calculated from peat depth (peatdep) in the peatland
+          endif
           vgbiomas_veg(i,j)=gleafmas(i,j)+&
      &     bleafmas(i,j)+stemmass(i,j)+rootmass(i,j) !vegetation biomass for each pft
 1110    continue
 1100  continue
 !
-!    add peatland branch for grid aggregations-------------------------\
-!    NOTE peatlands soil C is not agregated from plants but updated  
-!    by humification and respiration from the previous stored value
+!>    Add the bare ground values to the grid-average. If a peatland, we assume no bareground and
+!!    add the moss values instead.
+!!    Note: peatland soil C is not aggregated from plants but updated
+!!    by humification and respiration from the previous stored value
 !
       do 1020 i = il1, il2
-          if (ipeatland(i)==0)                              then
+          if (ipeatland(i)==0) then
              gavgltms(i)=gavgltms(i)+( (fg(i)+fgs(i))*litrmass(i,iccp1))
              gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
           else                      
@@ -1840,7 +1844,8 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
              vgbiomas(i) = vgbiomas(i) + Cmossmas(i)
              litrfall(i) = litrfall(i) + litrfallmoss(i)*(963.62/deltat)!umolCO2/m2/s
              gavgltms(i) = gavgltms(i) + litrmsmoss(i)
-             gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i)          
+             gavgscms(i) = pgavscms(i) + hutrstep_g(i)- socrestep(i)
+             ! Calculate the peat depth based on equation 18 in Wu, Verseghy, Melton 2016 GMD.
              peatdep(i)=(-72067.0+sqrt((72067.0**2.0)-(4.0*4056.6*&
      &              (-gavgscms(i)*1000/0.487))))/(2*4056.6)
 
