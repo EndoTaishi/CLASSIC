@@ -1211,8 +1211,8 @@ DO 821 M=1,NMTEST
     EVAPACC_MO(I)=EVAPACC_MO(I)+QFSROT(I,M)*FAREROT(I,M)*DELT
 
     IF(FSSROW(I).GT.0.0) THEN
-        ALTOTACC_MO(I)=ALTOTACC_MO(I) + ((FSSROW(I)-FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M)) &
-                        /FSSROW(I))*FAREROT(I,M)
+        ALTOTACC_MO(I)=ALTOTACC_MO(I) + ( (FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
+                        /FSSROW(I) )*FAREROT(I,M)
         altotcntr_m(i) = altotcntr_m(i) + 1
     ENDIF
 
@@ -1421,8 +1421,8 @@ DO 827 I=1,NLTEST
             TRANSPACC_YR(I)=TRANSPACC_YR(I)+QFCROT(I,M,J)*FAREROT(I,M)*DELT
         END DO
         IF(FSSROW(I).GT.0.0) THEN
-           ALTOTACC_YR(I)=ALTOTACC_YR(I) + (FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
-                        /FSSROW(I)*FAREROT(I,M)
+           ALTOTACC_YR(I)=ALTOTACC_YR(I) + ((FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
+                        /FSSROW(I) )*FAREROT(I,M)
            altotcntr_yr(i) = altotcntr_yr(i) + 1
         ENDIF
 

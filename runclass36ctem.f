@@ -914,7 +914,7 @@ c
      7           climiyear,   popcycleyr,    cypopyr, lucyr,
      8           cylucyr, endyr,bigpftc(1), obswetyr,
      9           cywetldyr, trans_startyr, jmosty, obslghtyr,
-     +          curlatno(ilg), lath, testyr
+     +          curlatno(ilg), lath, testyr,altotcount_ctm(nlat)
 
       real      co2concin,    setco2conc, sumfare,
      1           temp_var, barefrac,  todfrac(ilg,icc),
@@ -2549,6 +2549,7 @@ C===================== CTEM =============================================== /
           UVACC(I)=0.
           PRESACC(I)=0.
           QAACC(I)=0.
+          altotcount_ctm(i)=0
           DO 125 J=1,IGND
               TBARACC(I,J)=0.
               THLQACC(I,J)=0.
@@ -3653,6 +3654,7 @@ c
             altotacc_gat(i) = altotacc_gat(i) + (FSSROW(I)-
      1                (FSGVGAT(I)+FSGSGAT(I)+FSGGGAT(I)))
      2                /FSSROW(I)
+             altotcount_ctm = altotcount_ctm + 1
           end if
 c
           do 710 j=1,ignd
@@ -3701,7 +3703,7 @@ c
             flinacc_gat(i)=flinacc_gat(i)/real(nday)
             flutacc_gat(i)=flutacc_gat(i)/real(nday)
 c
-            altotacc_gat(i)=altotacc_gat(i) / real(nday)
+            altotacc_gat(i)=altotacc_gat(i)/real(altotcount_ctm(i))
             fsstar_gat=fsinacc_gat(i)*(1.-altotacc_gat(i))
             flstar_gat=flinacc_gat(i)-flutacc_gat(i)
             netrad_gat(i)=fsstar_gat+flstar_gat
@@ -4087,6 +4089,7 @@ c     reset mosaic accumulator arrays.
           tcansacc_t(i)=0.0
           taaccgat_t(i)=0.0
           altotacc_gat(i) = 0.0
+          altotcount_ctm(i)=0
 
           do 715 j=1,ignd
              tbarcacc_t(i,j)=0.0
@@ -4893,7 +4896,7 @@ C              CANARE(I)=CANARE(I)+FAREROT(I,M)
           RCANACC_M(I,M)=RCANACC_M(I,M)+RCANROT(I,M)
           SCANACC_M(I,M)=SCANACC_M(I,M)+SCANROT(I,M)
           GROACC_M(I,M)=GROACC_M(I,M)+GROROT(I,M)
-          IF (FSSROW(I) .gt. 0.) THEN ! we will reuse the altotcount counter values so don't need to do again.
+          IF (FSSROW(I) .gt. 0.) THEN ! we will reuse the altotcntr_d counter values so don't need to do again.
             ALTOTACC_M(I,M)=ALTOTACC_M(I,M) + (FSSROW(I)-
      1                    (FSGVROT(I,M)+FSGSROT(I,M)+
      2                     FSGGROT(I,M)))/FSSROW(I)
