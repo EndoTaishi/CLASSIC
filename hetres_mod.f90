@@ -402,6 +402,9 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 
 !     change history:
 
+!     10  April 2015 -Bring in peatland scheme
+!     Y. Wu
+!
 !     30  Jul 2015  - Based on work by Yuanqiao Wu, respiration was found to
 !     J. Melton       behave incorrectly if the soil froze as it thought the water
 !                     was leaving the soil. This is now fixed.
@@ -629,7 +632,7 @@ do 130 i = il1, il2
         ltrmoscl(i)=max(0.2,min(1.0,ltrmoscl(i)))
       else  !is peatland
 !
-!    test psi optimal at psisat    YW April 10, 2015
+!    test psi optimal at psisat
 !    peatland microbals performs better towards wet environment,
 !    for b = 2.3, thpor = 0.98 as soil layer 1,
 !    thliq = 0.01  0.1   0.2    0.3    0.4    0.5   0.6   0.7    0.8     0.9
@@ -638,7 +641,7 @@ do 130 i = il1, il2
 !    set the upper boundary at 500, optimal psi between 0.05 and 0.03
 !    (Mayono et al. 2013)
 !
-!    limit of ltrmoscalms at saturation YW April 10, 2015
+!    limit of ltrmoscalms at saturation
           if (psi(i,1).ge. 10000.0) then
                ltrmoscl(i) = 0.2
           elseif (psi(i,1).le. 10000.0 .and.psi(i,1).gt. 6.0) then

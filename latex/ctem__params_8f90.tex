@@ -74,7 +74,7 @@ subroutine, public \hyperlink{group__ctem__params__initpftpars_ga766b01bfb91b339
 \item 
 \hypertarget{namespacectem__params_afa448c586accb0aa6dade1df419eb2fd}{}integer, parameter {\bfseries ctem\+\_\+params\+::icc} =12\label{namespacectem__params_afa448c586accb0aa6dade1df419eb2fd}
 
-\begin{DoxyCompactList}\small\item\em Number of C\+T\+E\+M pfts (Y\+W + E\+V\+G shrub,D\+C\+D shrubs, sedge) \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Number of C\+T\+E\+M pfts (Peatlands add 3\+: E\+V\+G shrub,D\+C\+D shrubs, sedge) \end{DoxyCompactList}\item 
 \hypertarget{namespacectem__params_a1da4b2c80e21cf1adf10e9c7ee9a2189}{}integer, parameter {\bfseries ctem\+\_\+params\+::iccp1} = icc + 1\label{namespacectem__params_a1da4b2c80e21cf1adf10e9c7ee9a2189}
 
 \item 
@@ -102,6 +102,9 @@ subroutine, public \hyperlink{group__ctem__params__initpftpars_ga766b01bfb91b339
 \hypertarget{namespacectem__params_af53120baccb346b1743b085b6b254026}{}integer, dimension(kk), parameter {\bfseries ctem\+\_\+params\+::modelpft} = \mbox{[} 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0 \mbox{]}\label{namespacectem__params_af53120baccb346b1743b085b6b254026}
 
 \item 
+\hypertarget{namespacectem__params_acbc2ae92278687bbfae38ba501904140}{}character(8), dimension(icc), parameter {\bfseries ctem\+\_\+params\+::pftlist} = \mbox{[} \textquotesingle{}Ndl\+Evg\+Tr\textquotesingle{} , \textquotesingle{}Ndl\+Dcd\+Tr\textquotesingle{}, \textquotesingle{}Bdl\+Evg\+Tr\textquotesingle{},\textquotesingle{}Bdl\+D\+Co\+Tr\textquotesingle{}, \textquotesingle{}Bdl\+D\+Dr\+Tr\textquotesingle{},\textquotesingle{}Bdl\+Evg\+Sh\textquotesingle{},\textquotesingle{}Bdl\+Dcd\+Sh\textquotesingle{},\textquotesingle{}Crop\+C3 \textquotesingle{}, \textquotesingle{}Crop\+C4 \textquotesingle{},\textquotesingle{}Grass\+C3 \textquotesingle{},\textquotesingle{}Grass\+C4 \textquotesingle{},\textquotesingle{}Sedge \textquotesingle{} \mbox{]}\label{namespacectem__params_acbc2ae92278687bbfae38ba501904140}
+
+\item 
 \hypertarget{namespacectem__params_ac9f4780ce317911fbf6daa45a90a8dad}{}real, parameter {\bfseries ctem\+\_\+params\+::seed} = 0.\+001\label{namespacectem__params_ac9f4780ce317911fbf6daa45a90a8dad}
 
 \begin{DoxyCompactList}\small\item\em seed pft fraction, same as in competition  mosaic mode, all tiles are given this as a minimum \end{DoxyCompactList}\item 
@@ -122,7 +125,7 @@ subroutine, public \hyperlink{group__ctem__params__initpftpars_ga766b01bfb91b339
 \begin{DoxyCompactList}\small\item\em simple grass matric, define the number and position of grass \end{DoxyCompactList}\item 
 \hypertarget{namespacectem__params_ac0e6330dd6b8408f75fb25c1a7aa7fcb}{}integer, dimension(numgrass), parameter {\bfseries ctem\+\_\+params\+::grass\+\_\+ind} = \mbox{[} 10, 11,12 \mbox{]}\label{namespacectem__params_ac0e6330dd6b8408f75fb25c1a7aa7fcb}
 
-\begin{DoxyCompactList}\small\item\em index of the grass pfts (3 grass pfts at present) !\+Y\+W May 11, 2015 \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em index of the grass pfts (3 grass pfts at present) \end{DoxyCompactList}\item 
 \hypertarget{namespacectem__params_aec72ba91dc7f74a089a1dfd41f940640}{}integer, dimension(numshrubs), parameter {\bfseries ctem\+\_\+params\+::shrub\+\_\+ind} = \mbox{[} 6, 7 \mbox{]}\label{namespacectem__params_aec72ba91dc7f74a089a1dfd41f940640}
 
 \item 
@@ -430,39 +433,39 @@ $\ast$$\ast$\+Parmlght was increased to 0.\+8 to make it so areas with higher am
 \hypertarget{namespacectem__params_aba3dc779db095e9a91c71fa765ce42c5}{}real {\bfseries ctem\+\_\+params\+::bsrateltms} = 0.\+20\label{namespacectem__params_aba3dc779db095e9a91c71fa765ce42c5}
 
 \begin{DoxyCompactList}\small\item\em heterotrophic respiration base rate for peatlands (yr-\/1) Based upon 0.\+05 (T.\+Moore unpubished data) for shrubs 0.\+2 from Moore and around 0,5 for ctem. T\+M\textquotesingle{}s values is natural condition, C\+T\+E\+M is opt at 15degrees, So T\+M\textquotesingle{}s values can be scaled up more rates in Aerts 1997, Moore 2007 \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_abe1470e353073f75f2abe335f4016d1d}{}real {\bfseries ctem\+\_\+params\+::zolnms} = -\/6.\+57\label{namespacectem__params_abe1470e353073f75f2abe335f4016d1d}
+\hypertarget{namespacectem__params_a2ccf9899714e74accc20f0ac2effd33c}{}real {\bfseries ctem\+\_\+params\+::zolnmoss} = -\/6.\+57\label{namespacectem__params_a2ccf9899714e74accc20f0ac2effd33c}
 
 \begin{DoxyCompactList}\small\item\em natual logarithm of roughness length of moss surface. Based upon\+: roughness length as 0.\+0014 for momentum (Oke 1997, Raddatz et al, 2009) \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_a185de4b0b5fa3c48b51dc78fa11a8111}{}real {\bfseries ctem\+\_\+params\+::thpms} = 0.\+98\label{namespacectem__params_a185de4b0b5fa3c48b51dc78fa11a8111}
+\hypertarget{namespacectem__params_a1f10073e9d589f7bc3240bec9f3d6516}{}real {\bfseries ctem\+\_\+params\+::thpmoss} = 0.\+98\label{namespacectem__params_a1f10073e9d589f7bc3240bec9f3d6516}
 
 \begin{DoxyCompactList}\small\item\em pore volume of moss (\$m$^\wedge$3/m$^\wedge$3\$) Based upon\+: 0.\+89 Price and Whittington 2010 98.\+2 (Sphagnum) and 98.\+9 (feather) in O\textquotesingle{}Donnell et al. 2009; 0.\+90 in Berlinger et al.\+2001 \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_af4042dde8e345c8260586b172ede74d1}{}real {\bfseries ctem\+\_\+params\+::thrms} = 0.\+20\label{namespacectem__params_af4042dde8e345c8260586b172ede74d1}
+\hypertarget{namespacectem__params_aecb4d53264357fb5440a4bb71e5e1c2f}{}real {\bfseries ctem\+\_\+params\+::thrmoss} = 0.\+20\label{namespacectem__params_aecb4d53264357fb5440a4bb71e5e1c2f}
 
 \begin{DoxyCompactList}\small\item\em Liquid water retention capacity of moss (\$m$^\wedge$3/m$^\wedge$3\$) Based upon\+: Price and Whittington 2010 for upper 5cm moss 0.\+275/0.6 comparing to 0.\+39/0.62 in fibric for the feather moss.\+For spahgnum moss(O\textquotesingle{}Donnell et al.\+2009) \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_aab3a6d19ed64eb8eb8a8572cfcb79a09}{}real {\bfseries ctem\+\_\+params\+::thmms} = 0.\+01\label{namespacectem__params_aab3a6d19ed64eb8eb8a8572cfcb79a09}
+\hypertarget{namespacectem__params_a1ec880bc9f809448914c2f7cf94d4493}{}real {\bfseries ctem\+\_\+params\+::thmmoss} = 0.\+01\label{namespacectem__params_a1ec880bc9f809448914c2f7cf94d4493}
 
 \begin{DoxyCompactList}\small\item\em residual liquid water content after freezing or evaporation of moss (\$m$^\wedge$3/m$^\wedge$3\$) Based upon\+: Price and Whittington 2010 \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_a234d2bebc16c2af4a065d245cc519881}{}real {\bfseries ctem\+\_\+params\+::bms} = 2.\+3\label{namespacectem__params_a234d2bebc16c2af4a065d245cc519881}
+\hypertarget{namespacectem__params_a23ae1a2b2657682100b05a0a5554f36f}{}real {\bfseries ctem\+\_\+params\+::bmoss} = 2.\+3\label{namespacectem__params_a23ae1a2b2657682100b05a0a5554f36f}
 
 \begin{DoxyCompactList}\small\item\em Clapp and Hornberger empirical \char`\"{}b\char`\"{} parameter of moss Based upon\+: Berlinger et al.\+2001(they set 4.\+0 for peat) \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_a2993e139bf7a155935eb4b98ebcdef6d}{}real {\bfseries ctem\+\_\+params\+::psisms} =0.\+0103\label{namespacectem__params_a2993e139bf7a155935eb4b98ebcdef6d}
+\hypertarget{namespacectem__params_a01402bac0f2145c50c4b89642cb58a80}{}real {\bfseries ctem\+\_\+params\+::psismoss} =0.\+0103\label{namespacectem__params_a01402bac0f2145c50c4b89642cb58a80}
 
 \begin{DoxyCompactList}\small\item\em Soil moisure suction at saturation of moss (m) Based upon\+: moss and peat using same values in Berlinger et al. 2001) \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_a4d972097396638917b1af8258f5522ed}{}real {\bfseries ctem\+\_\+params\+::grksms} = 1.\+83\+E-\/3\label{namespacectem__params_a4d972097396638917b1af8258f5522ed}
+\hypertarget{namespacectem__params_ac6a30c2dccbba72bd498bed33c71aef4}{}real {\bfseries ctem\+\_\+params\+::grksmoss} = 1.\+83\+E-\/3\label{namespacectem__params_ac6a30c2dccbba72bd498bed33c71aef4}
 
 \begin{DoxyCompactList}\small\item\em Saturated hydrualic conductivity of moss (m) The saturated hydrualic conductivity is much higher in living moss than lower layer (Price et al. 2008). 1.\+83\+E-\/3 for 5cm moss, their value of 10cm moss is 2.\+45\+E-\/4, similar to fibric here. \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_a593ced8e0ba6323986268a82dd8e2932}{}real {\bfseries ctem\+\_\+params\+::hcpms} = 2.\+50\+E6\label{namespacectem__params_a593ced8e0ba6323986268a82dd8e2932}
+\hypertarget{namespacectem__params_a0f0a4776ea1f469d534620de349cc638}{}real {\bfseries ctem\+\_\+params\+::hcpmoss} = 2.\+50\+E6\label{namespacectem__params_a0f0a4776ea1f469d534620de349cc638}
 
 \begin{DoxyCompactList}\small\item\em Heat capacity of moss (\$\+J m$^\wedge$\{-\/2\} K$^\wedge$\{-\/1\}\$), same as hcp of peat in Beringer et al. 2001 !\+F\+L\+A\+G check units, was written as m. J\+M Sep 26 2016. \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_a3e2f054f042fe780406031cd62d85353}{}real {\bfseries ctem\+\_\+params\+::sphms} = 2.\+70\+E3\label{namespacectem__params_a3e2f054f042fe780406031cd62d85353}
+\hypertarget{namespacectem__params_ab81d40d45c446f0354132a51770591b5}{}real {\bfseries ctem\+\_\+params\+::grescoefmoss} = 0.\+15\label{namespacectem__params_ab81d40d45c446f0354132a51770591b5}
 
-\begin{DoxyCompactList}\small\item\em Specific heat of moss layer (\$\+J m$^\wedge$\{-\/2\} K$^\wedge$\{-\/1\}\$) ! F\+L\+A\+G check units -\/ written as J/kg/\+K. J\+M Sep 26 2016 same as that specific heat for vegetation (Berlinger et al 2001) \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_a6906db810ec862d793e7d622e4844876}{}real {\bfseries ctem\+\_\+params\+::rhoms} = 40.\+0\label{namespacectem__params_a6906db810ec862d793e7d622e4844876}
+\begin{DoxyCompactList}\small\item\em Moss growth respiration coefficient. \end{DoxyCompactList}\item 
+\hypertarget{namespacectem__params_aab2faf4382f8e84aa1fe0ae95f1b3a25}{}real {\bfseries ctem\+\_\+params\+::rmortmoss} = 0.\+7\label{namespacectem__params_aab2faf4382f8e84aa1fe0ae95f1b3a25}
 
-\begin{DoxyCompactList}\small\item\em Density of dry moss (\$kg m$^\wedge$\{-\/3\}\$) Based upon\+: 40.\+0 Price et al. 2008, Price and Whittington 2010 value for feather moss is lower than sphagnmum (20 kg/m3 in O\textquotesingle{}Donnell et al. 2009) \end{DoxyCompactList}\item 
-\hypertarget{namespacectem__params_ae2728ff345f2e78d11b2a978101c67f2}{}real {\bfseries ctem\+\_\+params\+::slams} = 20.\+0\label{namespacectem__params_ae2728ff345f2e78d11b2a978101c67f2}
+\begin{DoxyCompactList}\small\item\em Moss mortality rate constant (year-\/1),assumed based on literature (eg. 54g litter/75g biomass in Moore et al,2002) \end{DoxyCompactList}\item 
+\hypertarget{namespacectem__params_aee7e81fdfd02f048571b235327549b35}{}real {\bfseries ctem\+\_\+params\+::humicfacmoss} =2.\+0\label{namespacectem__params_aee7e81fdfd02f048571b235327549b35}
 
-\begin{DoxyCompactList}\small\item\em Specific leaf area of moss (\$m$^\wedge$2 kg$^\wedge$\{-\/1\}\$), Based upon\+: S vensson 1995 sphangum value ranges from 13.\+5$\sim$47.3 m2/kg (Lamberty et al. 2007) \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Humification ratio of moss litter, higher in mosses than vascular pfts because the decomposibility of moss litter is lower.\+It\textquotesingle{}s calibrated over the training sites. \end{DoxyCompactList}\item 
 \hypertarget{namespacectem__params_abae86d324b328aaf473431198d8e3642}{}integer, dimension(kk) {\bfseries ctem\+\_\+params\+::dayschk} = \mbox{[} 7, 7, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 0, 0, 0, 7, 7, 7, 0, 0 \mbox{]}\label{namespacectem__params_abae86d324b328aaf473431198d8e3642}
 
 \begin{DoxyCompactList}\small\item\em Number of days over which to check if net photosynthetic rate is positive before initiating leaf onset. \end{DoxyCompactList}\item 

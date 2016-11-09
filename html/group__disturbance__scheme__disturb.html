@@ -84,8 +84,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Canadian Terrestrial Ecosystem Model (CTEM) Disturbance Subroutine.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="memitem:ga0bed06e74bd06c387ae02bc545bf2a25"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__disturbance__scheme__disturb.html#ga0bed06e74bd06c387ae02bc545bf2a25">disturbance_scheme::disturb</a> (stemmass, rootmass, gleafmas, bleafmas,thliq,wiltsm,fieldsm,uwind,vwind,lightng,fcancmx, litrmass,prbfrhuc, rmatctem, extnprob, popdon,il1,il2,sort, nol2pfts,grclarea,thice,popdin, lucemcom,dofire,currlat,iday,fsnow,isand,</td></tr>
-<tr class="separator:ga0bed06e74bd06c387ae02bc545bf2a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga43f1709a7ea90ed6c9c37f54c2f5478b"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__disturbance__scheme__disturb.html#ga43f1709a7ea90ed6c9c37f54c2f5478b">disturbance_scheme::disturb</a> (stemmass, rootmass, gleafmas, bleafmas,thliq,THLW,THFC,uwind,vwind,lightng,fcancmx, litrmass,prbfrhuc, rmatctem, extnprob, popdon,il1,il2,sort, nol2pfts,grclarea,thice,popdin, lucemcom,dofire,currlat,iday,fsnow,isand,</td></tr>
+<tr class="separator:ga43f1709a7ea90ed6c9c37f54c2f5478b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Canadian Terrestrial Ecosystem Model (CTEM) Disturbance Subroutine. </p>
@@ -187,7 +187,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </p>
 <p>After bare ground generation associated with fire, the thinned biomass is spread uniformly over the remaining fraction of a PFT. However, it is ensured that the carbon density of the remaining biomass does not increase to a value above what it was before the fire occurred. </p>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="ga0bed06e74bd06c387ae02bc545bf2a25"></a>
+<a class="anchor" id="ga43f1709a7ea90ed6c9c37f54c2f5478b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -225,13 +225,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
-          <td class="paramname"><em>wiltsm</em>, </td>
+          <td class="paramname"><em>THLW</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(ilg,ignd)&#160;</td>
-          <td class="paramname"><em>fieldsm</em>, </td>
+          <td class="paramname"><em>THFC</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -385,8 +385,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <tr><td class="paramdir"></td><td class="paramname">gleafmas</td><td>green leaf mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
     <tr><td class="paramdir"></td><td class="paramname">bleafmas</td><td>brown leaf mass</td></tr>
     <tr><td class="paramdir"></td><td class="paramname">thliq</td><td>liquid soil moisture content</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">wiltsm</td><td>wilting point soil moisture content</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">fieldsm</td><td>field capacity soil moisture content</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">thlw</td><td>wilting point soil moisture content</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">thfc</td><td>field capacity soil moisture content</td></tr>
     <tr><td class="paramdir"></td><td class="paramname">uwind</td><td>wind speed, <img class="formulaInl" alt="$m/s$" src="form_615.png"/></td></tr>
     <tr><td class="paramdir"></td><td class="paramname">vwind</td><td>wind speed, <img class="formulaInl" alt="$m/s$" src="form_615.png"/></td></tr>
     <tr><td class="paramdir"></td><td class="paramname">fcancmx</td><td>fractional coverages of ctem's 9 pfts</td></tr>
@@ -480,7 +480,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 3 2016 11:29:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 9 2016 13:20:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

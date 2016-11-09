@@ -90,8 +90,10 @@ c
      3      anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,
      4      litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,
      5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
-c    ----gathering of peatland variables YW March 19,
 
+
+c     March 19 2015   Gathering of peatland variables
+c     Yuanqiao Wu
 c
 C     July 12 2013    Bring in the ctem params use statement
 c     J. Melton

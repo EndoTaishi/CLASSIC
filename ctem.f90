@@ -63,12 +63,9 @@
      &                  hetrsveg,autoresveg, ltresveg, scresveg,&
      &                 nml,    ilmos, jlmos,  ch4wet1,  ch4wet2,  &
      &                 wetfdyn, ch4dyn1, ch4dyn2, ch4soills, &
-!
-!    ---------------- outputs are listed above this line ------------ 
      &                 ipeatland, anmoss,rmlmoss,gppmoss, &
      &                 Cmossmas,litrmsmoss, wtable, &
      &                    THFC,THLW,thliq,thice,&
-!    -------------input above, output and updated variables below------
      &                nppmoss,armoss,peatdep)
 
 !
@@ -1872,11 +1869,9 @@ if(spinfast.eq.1)then
 &                         nep,   litres,   socres, dstcemls1,&
 &                         nbp, litrfall, humiftrs,&
 &                         il1,       il2, &
-!    ----------------balance of the moss C pool YW------------------------\
-!
-      &             ipeatland, Cmossmas, pCmossmas, &
-      &             nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss, &
-      &             ltrestepmoss,humstepmoss,socrestep, hutrstep)
+&             ipeatland, Cmossmas, pCmossmas, &
+&             nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss, &
+&             ltrestepmoss,humstepmoss)
 
 endif
 
@@ -1890,8 +1885,7 @@ call bio2str( gleafmas, bleafmas, stemmass, rootmass,&
      &                          ailcg,    ailcb,     ailc,    zolnc,&
      &                          rmatc, rmatctem,     slai,  bmasveg,&
      &                       cmasvegc,  veghght, rootdpth,   alvisc,&
-     &                         alnirc,  paicgat,  slaicgat,&
-     &                         ipeatland )         !YW March 26, 2015 
+     &                         alnirc,  paicgat,  slaicgat,ipeatland )
 
 !>
 !>Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str

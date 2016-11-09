@@ -3986,15 +3986,14 @@ c
      4          THFCGAT, THLWGAT, thlqaccgat_m, thicaccgat_m,
      5          nppmossgat, armossgat,peatdepgat)
 c
-c    ---------------- YW March 26, 2015  -------------------------------/          
 
 c----------------update peatland bottom layer depth--------------------       
-         do   i = 1, nml
-          if (ipeatlandgat(i) > 0)         then
-              dlzwgat(i,ignd)= peatdepgat(i)-0.90
-              sdepgat(i) = peatdepgat(i)
-          endif
-         end do
+!          do   i = 1, nml                              !FLAG JM - I comment this out for now. I don't think this is what we want.
+!           if (ipeatlandgat(i) > 0)         then
+!               dlzwgat(i,ignd)= peatdepgat(i)-0.90
+!               sdepgat(i) = peatdepgat(i)
+!           endif
+!          end do
 c================YW August 26, 2015 =======================/ 
 c
 
@@ -4156,6 +4155,9 @@ C
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
+     3      anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow,
+     4      peatdeprow,litrmsmossrow,Cmossmasrow,dmossrow,
+     5      ipeatlandrow, pddrow,thlqaccrow_m, thicaccrow_m,
 c    ----
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -4200,15 +4202,9 @@ c    ----
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
-C    --------------------scatter peatland variables-------------------\
-c
-     1      anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow,
      2      anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat,
-     3      peatdeprow,   peatdepgat,    litrmsmossrow,   litrmsmossgat,
-     4      Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat,
-     5      thlqaccrow_m, thlqaccgat_m, thicaccrow_m, thicaccgat_m,    
-     6      ipeatlandrow, ipeatlandgat,pddgat,pddrow)
-c    ---------------YW March 23, 2015 ---------------------------------/
+     3      peatdepgat, litrmsmossgat, Cmossmasgat,dmossgat,
+     5      thlqaccgat_m, thicaccgat_m,ipeatlandgat,pddgat)
 
 
       if(ncount.eq.nday) then

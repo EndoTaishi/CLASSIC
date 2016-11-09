@@ -1,0 +1,88 @@
+\hypertarget{group__turbation}{}\section{Turbation}
+\label{group__turbation}\index{Turbation@{Turbation}}
+
+
+Central module for all soil C processes involving movement of soil C up or down in soil column.  
+
+
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__turbation_gaa54c0aeef1db16c6440fd1b3bc811652}{soilc\+\_\+processes\+::turbation} (il1, il2, delzw, zbotw, isand, actlyr, spinfast, litrmass, soilcmas)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Central module for all soil C processes involving movement of soil C up or down in soil column. 
+
+Simulation of soil C movement due to turbation processes (presently only cryo).
+
+Modelled simply as a diffusion process. 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__turbation_gaa54c0aeef1db16c6440fd1b3bc811652}{}\index{Turbation@{Turbation}!turbation@{turbation}}
+\index{turbation@{turbation}!Turbation@{Turbation}}
+\subsubsection[{turbation}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public soilc\+\_\+processes\+::turbation (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{il1, }
+\item[{integer, intent(in)}]{il2, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{delzw, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{zbotw, }
+\item[{integer, dimension(ilg,ignd), intent(in)}]{isand, }
+\item[{real, dimension(ilg), intent(in)}]{actlyr, }
+\item[{integer, intent(in)}]{spinfast, }
+\item[{real, dimension(ilg,iccp2,ignd), intent(inout)}]{litrmass, }
+\item[{real, dimension(ilg,iccp2,ignd), intent(inout)}]{soilcmas}
+\end{DoxyParamCaption}
+)}\label{group__turbation_gaa54c0aeef1db16c6440fd1b3bc811652}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em il1} & il1=1\\
+\hline
+\mbox{\tt in}  & {\em il2} & il2=ilg\\
+\hline
+\mbox{\tt in}  & {\em spinfast} & spinup factor for soil carbon whose default value is 1. as this factor increases the soil c pool will come into equilibrium faster. Reasonable value for spinfast is between 5 and 10.\\
+\hline
+\mbox{\tt in}  & {\em delzw} & Permeable thickness of soil layer \mbox{[}m\mbox{]}\\
+\hline
+\mbox{\tt in}  & {\em zbotw} & Bottom of soil layers \mbox{[}m\mbox{]}\\
+\hline
+\mbox{\tt in}  & {\em isand} & flag for non-\/permeable layers\\
+\hline
+\mbox{\tt in}  & {\em actlyr} & active layer depth \mbox{[}m\mbox{]}\\
+\hline
+\mbox{\tt in,out}  & {\em litrmass} & litter mass for the 9 pfts + bare in $(kg C/m^2)$\\
+\hline
+\mbox{\tt in,out}  & {\em soilcmas} & soil carbon mass for the 9 pfts + bare in $(kg C/m^2)$ \\
+\hline
+\end{DoxyParams}
+Cryoturbation is assumed to act only if the active layer is shallower than one metre. F\+L\+A\+G
+
+First, find the bottom of the permeable soil column by looking at the isand flags.
+
+Next if the grid cell has some permeable soil (i.\+e. is not bedrock or ice) then take what was found to be the bottom soil layer and
+
+increment two more for our boundary conditions.
+
+Next, allocate the vectors for the tridiagional solver.
+
+We assume that the L\+U\+C pools do not migrate from the first soil layer so we don\textquotesingle{}t include them in our calculations (we don\textquotesingle{}t calculate over position iccp2).
+
+At the start, store the size of the present pool for later comparison
+
+and only do turbation for P\+F\+Ts with some soil C. (assume soil C is always $\sim$$>$ lit). Nextset up the tridiagional solver soil and litter C. In this the first interface is the soil surface (so soil\+C/litter is 0). The position at the bottom (botlyr) is where the soil meets the bedrock so it is also 0 there.
+
+Next, determine the effective diffusion coefficient for each soil layer. This follows \cite{Koven2011-796} It is assumed that there is a linear dependence on depth beyond the active layer with cryoturbation terminating about 3 times the active layer depth (so an active layer of 40 cm would have cryoturbation cease at 1.\+2 m.
+
+Then set up the coefficients for the tridiagonal matrix solver. Derivation here\+: \href{https://en.wikipedia.org/wiki/Crank%E2%80%93Nicolson_method#Example:_1D_diffusion}{\tt https\+://en.\+wikipedia.\+org/wiki/\+Crank\%\+E2\%80\%93\+Nicolson\+\_\+method\#\+Example\+:\+\_\+1\+D\+\_\+diffusion}
+
+Once set up, call tridiagonal solver for the soil C mass\+:
+
+Next call tridiagonal solver for the litter mass\+:
+
+Lastly, put the soil C/litter back into their arrays
+
+We also ensure we have conservation of C by comparing the total C before and after the diffusion and distributing/removing any excess/deficit over the layers we operated on.
+
+(positive amount means we lost some C, negative we gained.)
+
+Finish by deallocate the vectors for the tridiagional solver 

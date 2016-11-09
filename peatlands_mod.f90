@@ -871,7 +871,7 @@ do i= il1, il2
 !!    min moisture factor is at 0.5 for moss litter but at 0.2 for soil).
 
     litpsims(i) = psi(i,1)
-!    limit of ltrmoscalms at saturation YW April 10, 2015
+!    limit of ltrmoscalms at saturation 
     if (litpsims(i) .gt. 10000.0) then
             ltrmosclms(i) = 0.2
         elseif (litpsims(i).le. 10000.0 .and.litpsims(i).gt. 6.0) then

@@ -476,9 +476,9 @@ real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><
 real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html#a3607609cc4766b58b177306d4130c849">lucsocin</a></td></tr>
 <tr class="memdesc:a3607609cc4766b58b177306d4130c849"><td class="mdescLeft">&#160;</td><td class="mdescRight">luc related inputs to soil c pool, u-mol co2/m2.sec <br /></td></tr>
 <tr class="separator:a3607609cc4766b58b177306d4130c849"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0f7868cf2332bc69bcecf13408bb894"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae0f7868cf2332bc69bcecf13408bb894"></a>
-real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><b>hpd</b></td></tr>
-<tr class="separator:ae0f7868cf2332bc69bcecf13408bb894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af28f0440f19a7475b5f0c361d4af2752"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af28f0440f19a7475b5f0c361d4af2752"></a>
+real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><b>peatdep</b></td></tr>
+<tr class="separator:af28f0440f19a7475b5f0c361d4af2752"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25b7905aae5d130f67504f5299b3a207"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a25b7905aae5d130f67504f5299b3a207"></a>
 real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html#a25b7905aae5d130f67504f5299b3a207">npp</a></td></tr>
 <tr class="memdesc:a25b7905aae5d130f67504f5299b3a207"><td class="mdescLeft">&#160;</td><td class="mdescRight">net primary productivity <br /></td></tr>
@@ -608,10 +608,10 @@ real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><
 real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html#afa2d0bf60ea333b0f23e81c6d78186b7">armoss</a></td></tr>
 <tr class="memdesc:afa2d0bf60ea333b0f23e81c6d78186b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">autotrophic respiration of moss ($ mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2? <br /></td></tr>
 <tr class="separator:afa2d0bf60ea333b0f23e81c6d78186b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40ba2e01f8f9ef3f3345e1bd0aaf38e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a40ba2e01f8f9ef3f3345e1bd0aaf38e6"></a>
-real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html#a40ba2e01f8f9ef3f3345e1bd0aaf38e6">litrmassms</a></td></tr>
-<tr class="memdesc:a40ba2e01f8f9ef3f3345e1bd0aaf38e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">moss litter mass, <img class="formulaInl" alt="$kg C/m^2$" src="form_1880.png"/> <br /></td></tr>
-<tr class="separator:a40ba2e01f8f9ef3f3345e1bd0aaf38e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85edecea36b56b79ddfd3a30f77a3830"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85edecea36b56b79ddfd3a30f77a3830"></a>
+real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html#a85edecea36b56b79ddfd3a30f77a3830">litrmsmoss</a></td></tr>
+<tr class="memdesc:a85edecea36b56b79ddfd3a30f77a3830"><td class="mdescLeft">&#160;</td><td class="mdescRight">moss litter mass, <img class="formulaInl" alt="$kg C/m^2$" src="form_1880.png"/> <br /></td></tr>
+<tr class="separator:a85edecea36b56b79ddfd3a30f77a3830"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ad794f1fd0b92dc35e42553475ce9ef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ad794f1fd0b92dc35e42553475ce9ef"></a>
 real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html#a2ad794f1fd0b92dc35e42553475ce9ef">cmossmas</a></td></tr>
 <tr class="memdesc:a2ad794f1fd0b92dc35e42553475ce9ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">C in moss biomass, <img class="formulaInl" alt="$kg C/m^2$" src="form_1880.png"/>. <br /></td></tr>
@@ -620,6 +620,10 @@ real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><
 real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html#a1e51c1f35da7b98ada827a2784d3046a">dmoss</a></td></tr>
 <tr class="memdesc:a1e51c1f35da7b98ada827a2784d3046a"><td class="mdescLeft">&#160;</td><td class="mdescRight">depth of living moss (m) <br /></td></tr>
 <tr class="separator:a1e51c1f35da7b98ada827a2784d3046a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a631c153c6c9083f2282477f31083e3ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a631c153c6c9083f2282477f31083e3ec"></a>
+real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html#a631c153c6c9083f2282477f31083e3ec">pdd</a></td></tr>
+<tr class="memdesc:a631c153c6c9083f2282477f31083e3ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">peatland degree days above 0 deg C. <br /></td></tr>
+<tr class="separator:a631c153c6c9083f2282477f31083e3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b507da454ff945f8594997d5e55495f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b507da454ff945f8594997d5e55495f"></a>
 real, dimension(nlat, nmos, icc)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1veg__rot.html#a9b507da454ff945f8594997d5e55495f">rothrlos</a></td></tr>
 <tr class="memdesc:a9b507da454ff945f8594997d5e55495f"><td class="mdescLeft">&#160;</td><td class="mdescRight">root death as crops are harvested, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/> <br /></td></tr>
@@ -862,7 +866,7 @@ real, dimension(nlat, nmos)&#160;</td><td class="memItemRight" valign="bottom"><
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 3 2016 11:29:14 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 9 2016 13:20:40 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

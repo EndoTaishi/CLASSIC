@@ -1,0 +1,44 @@
+\hypertarget{group__tridiag}{}\section{Tridiagonal\+\_\+solver}
+\label{group__tridiag}\index{Tridiagonal\+\_\+solver@{Tridiagonal\+\_\+solver}}
+
+
+Subroutine to solve triadiagonal system of equations.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__tridiag_ga4fe3cf136177a8b79351094c7755882b}{soilc\+\_\+processes\+::tridiag} (a, b, c, r, u)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Subroutine to solve triadiagonal system of equations. 
+
+Solves for a vector u of size N the tridiagonal linear set using given by equation 2.\+4.\+1 in Numerical recipes in Fortran 90 (\cite{Press2007-bp}) using a serial algorithm. Input vectors b (diagonal elements) and r (right-\/hand side) have size N, while a and c (off-\/diagonal elements) are not defined in the first and last elements, respectively. 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__tridiag_ga4fe3cf136177a8b79351094c7755882b}{}\index{Tridiagonal\+\_\+solver@{Tridiagonal\+\_\+solver}!tridiag@{tridiag}}
+\index{tridiag@{tridiag}!Tridiagonal\+\_\+solver@{Tridiagonal\+\_\+solver}}
+\subsubsection[{tridiag}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public soilc\+\_\+processes\+::tridiag (
+\begin{DoxyParamCaption}
+\item[{real, dimension(\+:), intent(in)}]{a, }
+\item[{real, dimension(\+:), intent(in)}]{b, }
+\item[{real, dimension(\+:), intent(in)}]{c, }
+\item[{real, dimension(\+:), intent(in)}]{r, }
+\item[{real, dimension(\+:), intent(out)}]{u}
+\end{DoxyParamCaption}
+)}\label{group__tridiag_ga4fe3cf136177a8b79351094c7755882b}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em a} & Components of tridiag solver\\
+\hline
+\mbox{\tt in}  & {\em b} & Components of tridiag solver\\
+\hline
+\mbox{\tt in}  & {\em c} & Components of tridiag solver\\
+\hline
+\mbox{\tt in}  & {\em r} & Components of tridiag solver\\
+\hline
+\mbox{\tt out}  & {\em u} & Components of tridiag solver \\
+\hline
+\end{DoxyParams}

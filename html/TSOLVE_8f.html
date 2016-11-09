@@ -94,13 +94,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a459eaf9c736ca9dc289e3e58f902aded"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TSOLVE_8f.html#a459eaf9c736ca9dc289e3e58f902aded">tsolve</a> (ISNOW, FI,QSWNET, QLWOUT, QTRANS, QSENS, QEVAP, EVAP,TZERO, QZERO, GZERO, QMELT, CDH, CDM, RIB, CFLUX,FTEMP, FVAP, ILMO, UE, H,QLWIN, TPOTA, QA, VA, PADRY, RHOAIR,ALVISG, ALNIRG, CRIB, CPHCH, CEVAP, TVIRTA,ZOSCLH, ZOSCLM, ZRSLFH, ZRSLFM, ZOH, ZOM, FCOR,GCONST, GCOEFF, TSTART, PCPR, TRSNOWG, FSSB, ALSNO,THLIQ, THLMIN, DELZW, RHOSNO, ZSNOW,IWATER, IEVAP, ITERCT, ISAND,ISLFD, ITG, ILG, IG, IL1, IL2, JL, NBS, ISNOALB,TSTEP, TVIRTS, EVBETA, Q0SAT, RESID,DCFLXM, CFLUXM, WZERO, TRTOP, A, B,LZZ0, LZZ0T, FM, FH, ITER, NITER, JEVAP, KF</td></tr>
-<tr class="separator:a459eaf9c736ca9dc289e3e58f902aded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25bf2ca54264e7a9a28e831c5b75151e"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TSOLVE_8f.html#a25bf2ca54264e7a9a28e831c5b75151e">tsolve</a> (ISNOW, FI, QSWNET, QLWOUT, QTRANS, QSENS, QEVAP, EVAP, TZERO, QZERO, GZERO, QMELT, CDH, CDM, RIB, CFLUX, FTEMP, FVAP, ILMO, UE, H, QLWIN, TPOTA, QA, VA, PADRY, RHOAIR, ALVISG, ALNIRG, CRIB, CPHCH, CEVAP, TVIRTA, ZOSCLH, ZOSCLM, ZRSLFH, ZRSLFM, ZOH, ZOM, FCOR, GCONST, GCOEFF, TSTART, PCPR, TRSNOWG, FSSB, ALSNO, THLIQ, THLMIN, DELZW, RHOSNO, ZSNOW, IWATER, IEVAP, ITERCT, ISAND, ISLFD, ITG, ILG, IG, IL1, IL2, JL, NBS, ISNOALB, TSTEP, TVIRTS, EVBETA, Q0SAT, RESID, DCFLXM, CFLUXM, WZERO, TRTOP, A, B, LZZ0, LZZ0T, FM, FH, ITER, NITER, JEVAP, KF, ipeatland, co2conc, pressg, coszs, Cmossmas, dmoss, anmoss, rmlmoss, iday, daylength, pdd)</td></tr>
+<tr class="separator:a25bf2ca54264e7a9a28e831c5b75151e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Purpose: Solution of surface energy balance for non-vegetated subareas. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="a459eaf9c736ca9dc289e3e58f902aded"></a>
+<a class="anchor" id="a25bf2ca54264e7a9a28e831c5b75151e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -606,7 +606,73 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer, dimension    (ilg)&#160;</td>
-          <td class="paramname"><em>KF</em>&#160;</td>
+          <td class="paramname"><em>KF</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>ipeatland</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>co2conc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>pressg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>coszs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>Cmossmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>dmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>anmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>rmlmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer&#160;</td>
+          <td class="paramname"><em>iday</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>daylength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>pdd</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -710,7 +776,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 3 2016 11:29:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 9 2016 13:20:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

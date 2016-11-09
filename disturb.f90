@@ -542,10 +542,6 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !     Constants and parameters are located in ctem_params.f90
 !     -----------------------------------------------------------------
 
-!     * if icc /= 9 or ignd /= 3 this subroutine will need changes.
-      IF(ICC.NE.12)      CALL XIT('DISTURB',-1)    !YW January 15, 2016 
-      IF(IGND.NE.10)     CALL XIT('DISTURB',-2)   !YW April 14, 2015 
-
 !>initialize required arrays to zero, or assign value
 
       do 140 j = 1,icc

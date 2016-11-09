@@ -173,7 +173,7 @@ integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_pa
 <tr class="separator:a8b61932a368c557cc3cb7edf6de23e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa448c586accb0aa6dade1df419eb2fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afa448c586accb0aa6dade1df419eb2fd"></a>
 integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::icc</b> =12</td></tr>
-<tr class="memdesc:afa448c586accb0aa6dade1df419eb2fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of CTEM pfts (YW + EVG shrub,DCD shrubs, sedge) <br /></td></tr>
+<tr class="memdesc:afa448c586accb0aa6dade1df419eb2fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of CTEM pfts (Peatlands add 3: EVG shrub,DCD shrubs, sedge) <br /></td></tr>
 <tr class="separator:afa448c586accb0aa6dade1df419eb2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1da4b2c80e21cf1adf10e9c7ee9a2189"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1da4b2c80e21cf1adf10e9c7ee9a2189"></a>
 integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::iccp1</b> = icc + 1</td></tr>
@@ -207,6 +207,9 @@ integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_pa
 <tr class="memitem:af53120baccb346b1743b085b6b254026"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af53120baccb346b1743b085b6b254026"></a>
 integer, dimension(kk), parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::modelpft</b> = [ 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0 ]</td></tr>
 <tr class="separator:af53120baccb346b1743b085b6b254026"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbc2ae92278687bbfae38ba501904140"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acbc2ae92278687bbfae38ba501904140"></a>
+character(8), dimension(icc), parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::pftlist</b> = [ 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','BdlEvgSh','BdlDcdSh','CropC3 ', 'CropC4 ','GrassC3 ','GrassC4 ','Sedge ' ]</td></tr>
+<tr class="separator:acbc2ae92278687bbfae38ba501904140"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9f4780ce317911fbf6daa45a90a8dad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac9f4780ce317911fbf6daa45a90a8dad"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::seed</b> = 0.001</td></tr>
 <tr class="memdesc:ac9f4780ce317911fbf6daa45a90a8dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">seed pft fraction, same as in competition  mosaic mode, all tiles are given this as a minimum <br /></td></tr>
@@ -233,7 +236,7 @@ logical, dimension(icc), parameter&#160;</td><td class="memItemRight" valign="bo
 <tr class="separator:aa3cfb14989b4145f054926e8eea3382f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0e6330dd6b8408f75fb25c1a7aa7fcb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac0e6330dd6b8408f75fb25c1a7aa7fcb"></a>
 integer, dimension(numgrass), parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::grass_ind</b> = [ 10, 11,12 ]</td></tr>
-<tr class="memdesc:ac0e6330dd6b8408f75fb25c1a7aa7fcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">index of the grass pfts (3 grass pfts at present) !YW May 11, 2015 <br /></td></tr>
+<tr class="memdesc:ac0e6330dd6b8408f75fb25c1a7aa7fcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">index of the grass pfts (3 grass pfts at present) <br /></td></tr>
 <tr class="separator:ac0e6330dd6b8408f75fb25c1a7aa7fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec72ba91dc7f74a089a1dfd41f940640"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aec72ba91dc7f74a089a1dfd41f940640"></a>
 integer, dimension(numshrubs), parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::shrub_ind</b> = [ 6, 7 ]</td></tr>
@@ -641,50 +644,50 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::dcbaset<
 real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bsrateltms</b> = 0.20</td></tr>
 <tr class="memdesc:aba3dc779db095e9a91c71fa765ce42c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">heterotrophic respiration base rate for peatlands (yr-1) Based upon 0.05 (T.Moore unpubished data) for shrubs 0.2 from Moore and around 0,5 for ctem. TM's values is natural condition, CTEM is opt at 15degrees, So TM's values can be scaled up more rates in Aerts 1997, Moore 2007 <br /></td></tr>
 <tr class="separator:aba3dc779db095e9a91c71fa765ce42c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe1470e353073f75f2abe335f4016d1d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe1470e353073f75f2abe335f4016d1d"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::zolnms</b> = -6.57</td></tr>
-<tr class="memdesc:abe1470e353073f75f2abe335f4016d1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">natual logarithm of roughness length of moss surface. Based upon: roughness length as 0.0014 for momentum (Oke 1997, Raddatz et al, 2009) <br /></td></tr>
-<tr class="separator:abe1470e353073f75f2abe335f4016d1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a185de4b0b5fa3c48b51dc78fa11a8111"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a185de4b0b5fa3c48b51dc78fa11a8111"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::thpms</b> = 0.98</td></tr>
-<tr class="memdesc:a185de4b0b5fa3c48b51dc78fa11a8111"><td class="mdescLeft">&#160;</td><td class="mdescRight">pore volume of moss ($m^3/m^3$) Based upon: 0.89 Price and Whittington 2010 98.2 (Sphagnum) and 98.9 (feather) in O'Donnell et al. 2009; 0.90 in Berlinger et al.2001 <br /></td></tr>
-<tr class="separator:a185de4b0b5fa3c48b51dc78fa11a8111"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4042dde8e345c8260586b172ede74d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af4042dde8e345c8260586b172ede74d1"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::thrms</b> = 0.20</td></tr>
-<tr class="memdesc:af4042dde8e345c8260586b172ede74d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Liquid water retention capacity of moss ($m^3/m^3$) Based upon: Price and Whittington 2010 for upper 5cm moss 0.275/0.6 comparing to 0.39/0.62 in fibric for the feather moss.For spahgnum moss(O'Donnell et al.2009) <br /></td></tr>
-<tr class="separator:af4042dde8e345c8260586b172ede74d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab3a6d19ed64eb8eb8a8572cfcb79a09"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aab3a6d19ed64eb8eb8a8572cfcb79a09"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::thmms</b> = 0.01</td></tr>
-<tr class="memdesc:aab3a6d19ed64eb8eb8a8572cfcb79a09"><td class="mdescLeft">&#160;</td><td class="mdescRight">residual liquid water content after freezing or evaporation of moss ($m^3/m^3$) Based upon: Price and Whittington 2010 <br /></td></tr>
-<tr class="separator:aab3a6d19ed64eb8eb8a8572cfcb79a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a234d2bebc16c2af4a065d245cc519881"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a234d2bebc16c2af4a065d245cc519881"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bms</b> = 2.3</td></tr>
-<tr class="memdesc:a234d2bebc16c2af4a065d245cc519881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clapp and Hornberger empirical "b" parameter of moss Based upon: Berlinger et al.2001(they set 4.0 for peat) <br /></td></tr>
-<tr class="separator:a234d2bebc16c2af4a065d245cc519881"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2993e139bf7a155935eb4b98ebcdef6d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2993e139bf7a155935eb4b98ebcdef6d"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::psisms</b> =0.0103</td></tr>
-<tr class="memdesc:a2993e139bf7a155935eb4b98ebcdef6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soil moisure suction at saturation of moss (m) Based upon: moss and peat using same values in Berlinger et al. 2001) <br /></td></tr>
-<tr class="separator:a2993e139bf7a155935eb4b98ebcdef6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d972097396638917b1af8258f5522ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4d972097396638917b1af8258f5522ed"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::grksms</b> = 1.83E-3</td></tr>
-<tr class="memdesc:a4d972097396638917b1af8258f5522ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saturated hydrualic conductivity of moss (m) The saturated hydrualic conductivity is much higher in living moss than lower layer (Price et al. 2008). 1.83E-3 for 5cm moss, their value of 10cm moss is 2.45E-4, similar to fibric here. <br /></td></tr>
-<tr class="separator:a4d972097396638917b1af8258f5522ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a593ced8e0ba6323986268a82dd8e2932"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a593ced8e0ba6323986268a82dd8e2932"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::hcpms</b> = 2.50E6</td></tr>
-<tr class="memdesc:a593ced8e0ba6323986268a82dd8e2932"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heat capacity of moss ($J m^{-2} K^{-1}$), same as hcp of peat in Beringer et al. 2001 !FLAG check units, was written as m. JM Sep 26 2016. <br /></td></tr>
-<tr class="separator:a593ced8e0ba6323986268a82dd8e2932"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e2f054f042fe780406031cd62d85353"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3e2f054f042fe780406031cd62d85353"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::sphms</b> = 2.70E3</td></tr>
-<tr class="memdesc:a3e2f054f042fe780406031cd62d85353"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specific heat of moss layer ($J m^{-2} K^{-1}$) ! FLAG check units - written as J/kg/K. JM Sep 26 2016 same as that specific heat for vegetation (Berlinger et al 2001) <br /></td></tr>
-<tr class="separator:a3e2f054f042fe780406031cd62d85353"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6906db810ec862d793e7d622e4844876"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6906db810ec862d793e7d622e4844876"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::rhoms</b> = 40.0</td></tr>
-<tr class="memdesc:a6906db810ec862d793e7d622e4844876"><td class="mdescLeft">&#160;</td><td class="mdescRight">Density of dry moss ($kg m^{-3}$) Based upon: 40.0 Price et al. 2008, Price and Whittington 2010 value for feather moss is lower than sphagnmum (20 kg/m3 in O'Donnell et al. 2009) <br /></td></tr>
-<tr class="separator:a6906db810ec862d793e7d622e4844876"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2728ff345f2e78d11b2a978101c67f2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2728ff345f2e78d11b2a978101c67f2"></a>
-real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::slams</b> = 20.0</td></tr>
-<tr class="memdesc:ae2728ff345f2e78d11b2a978101c67f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specific leaf area of moss ($m^2 kg^{-1}$), Based upon: S vensson 1995 sphangum value ranges from 13.5~47.3 m2/kg (Lamberty et al. 2007) <br /></td></tr>
-<tr class="separator:ae2728ff345f2e78d11b2a978101c67f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ccf9899714e74accc20f0ac2effd33c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ccf9899714e74accc20f0ac2effd33c"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::zolnmoss</b> = -6.57</td></tr>
+<tr class="memdesc:a2ccf9899714e74accc20f0ac2effd33c"><td class="mdescLeft">&#160;</td><td class="mdescRight">natual logarithm of roughness length of moss surface. Based upon: roughness length as 0.0014 for momentum (Oke 1997, Raddatz et al, 2009) <br /></td></tr>
+<tr class="separator:a2ccf9899714e74accc20f0ac2effd33c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f10073e9d589f7bc3240bec9f3d6516"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f10073e9d589f7bc3240bec9f3d6516"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::thpmoss</b> = 0.98</td></tr>
+<tr class="memdesc:a1f10073e9d589f7bc3240bec9f3d6516"><td class="mdescLeft">&#160;</td><td class="mdescRight">pore volume of moss ($m^3/m^3$) Based upon: 0.89 Price and Whittington 2010 98.2 (Sphagnum) and 98.9 (feather) in O'Donnell et al. 2009; 0.90 in Berlinger et al.2001 <br /></td></tr>
+<tr class="separator:a1f10073e9d589f7bc3240bec9f3d6516"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecb4d53264357fb5440a4bb71e5e1c2f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aecb4d53264357fb5440a4bb71e5e1c2f"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::thrmoss</b> = 0.20</td></tr>
+<tr class="memdesc:aecb4d53264357fb5440a4bb71e5e1c2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Liquid water retention capacity of moss ($m^3/m^3$) Based upon: Price and Whittington 2010 for upper 5cm moss 0.275/0.6 comparing to 0.39/0.62 in fibric for the feather moss.For spahgnum moss(O'Donnell et al.2009) <br /></td></tr>
+<tr class="separator:aecb4d53264357fb5440a4bb71e5e1c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ec880bc9f809448914c2f7cf94d4493"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1ec880bc9f809448914c2f7cf94d4493"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::thmmoss</b> = 0.01</td></tr>
+<tr class="memdesc:a1ec880bc9f809448914c2f7cf94d4493"><td class="mdescLeft">&#160;</td><td class="mdescRight">residual liquid water content after freezing or evaporation of moss ($m^3/m^3$) Based upon: Price and Whittington 2010 <br /></td></tr>
+<tr class="separator:a1ec880bc9f809448914c2f7cf94d4493"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23ae1a2b2657682100b05a0a5554f36f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23ae1a2b2657682100b05a0a5554f36f"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bmoss</b> = 2.3</td></tr>
+<tr class="memdesc:a23ae1a2b2657682100b05a0a5554f36f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clapp and Hornberger empirical "b" parameter of moss Based upon: Berlinger et al.2001(they set 4.0 for peat) <br /></td></tr>
+<tr class="separator:a23ae1a2b2657682100b05a0a5554f36f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01402bac0f2145c50c4b89642cb58a80"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01402bac0f2145c50c4b89642cb58a80"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::psismoss</b> =0.0103</td></tr>
+<tr class="memdesc:a01402bac0f2145c50c4b89642cb58a80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soil moisure suction at saturation of moss (m) Based upon: moss and peat using same values in Berlinger et al. 2001) <br /></td></tr>
+<tr class="separator:a01402bac0f2145c50c4b89642cb58a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6a30c2dccbba72bd498bed33c71aef4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac6a30c2dccbba72bd498bed33c71aef4"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::grksmoss</b> = 1.83E-3</td></tr>
+<tr class="memdesc:ac6a30c2dccbba72bd498bed33c71aef4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saturated hydrualic conductivity of moss (m) The saturated hydrualic conductivity is much higher in living moss than lower layer (Price et al. 2008). 1.83E-3 for 5cm moss, their value of 10cm moss is 2.45E-4, similar to fibric here. <br /></td></tr>
+<tr class="separator:ac6a30c2dccbba72bd498bed33c71aef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f0a4776ea1f469d534620de349cc638"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f0a4776ea1f469d534620de349cc638"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::hcpmoss</b> = 2.50E6</td></tr>
+<tr class="memdesc:a0f0a4776ea1f469d534620de349cc638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heat capacity of moss ($J m^{-2} K^{-1}$), same as hcp of peat in Beringer et al. 2001 !FLAG check units, was written as m. JM Sep 26 2016. <br /></td></tr>
+<tr class="separator:a0f0a4776ea1f469d534620de349cc638"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab81d40d45c446f0354132a51770591b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab81d40d45c446f0354132a51770591b5"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::grescoefmoss</b> = 0.15</td></tr>
+<tr class="memdesc:ab81d40d45c446f0354132a51770591b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moss growth respiration coefficient. <br /></td></tr>
+<tr class="separator:ab81d40d45c446f0354132a51770591b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab2faf4382f8e84aa1fe0ae95f1b3a25"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aab2faf4382f8e84aa1fe0ae95f1b3a25"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::rmortmoss</b> = 0.7</td></tr>
+<tr class="memdesc:aab2faf4382f8e84aa1fe0ae95f1b3a25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moss mortality rate constant (year-1),assumed based on literature (eg. 54g litter/75g biomass in Moore et al,2002) <br /></td></tr>
+<tr class="separator:aab2faf4382f8e84aa1fe0ae95f1b3a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee7e81fdfd02f048571b235327549b35"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee7e81fdfd02f048571b235327549b35"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::humicfacmoss</b> =2.0</td></tr>
+<tr class="memdesc:aee7e81fdfd02f048571b235327549b35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Humification ratio of moss litter, higher in mosses than vascular pfts because the decomposibility of moss litter is lower.It's calibrated over the training sites. <br /></td></tr>
+<tr class="separator:aee7e81fdfd02f048571b235327549b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abae86d324b328aaf473431198d8e3642"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abae86d324b328aaf473431198d8e3642"></a>
 integer, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::dayschk</b> = [ 7, 7, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 0, 0, 0, 7, 7, 7, 0, 0 ]</td></tr>
 <tr class="memdesc:abae86d324b328aaf473431198d8e3642"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of days over which to check if net photosynthetic rate is positive before initiating leaf onset. <br /></td></tr>
@@ -822,7 +825,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::soilw_th
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 3 2016 11:29:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 9 2016 13:20:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

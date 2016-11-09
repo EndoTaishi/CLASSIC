@@ -269,6 +269,8 @@ This subroutine is hard-\/coded to handle the standard four vegetation categorie
 \hline
 {\em psignd} & Minimum liquid moisture suction in soil layers \mbox{[}m\mbox{]}\\
 \hline
+{\em ipeatland} & Peatland flag\+: 0 = not a peatland, 1= bog, 2 = fen\\
+\hline
 {\em fcanmx} & Maximum fractional coverage of modelled area by vegetation category \mbox{[} \mbox{]}\\
 \hline
 {\em zoln} & Natural logarithm of maximum roughness length of vegetation category \mbox{[} \mbox{]}\\
@@ -381,6 +383,8 @@ The averaged displacement height d over the vegetated subareas is only calculate
 The averaged roughness length for heat $z_{0e}$ over the subarea is calculated as a geometric mean over the vegetation categories\+: $z_{0e} z_{0mX} = \Pi ( z_{0i}^{2Xi} )$
 
 In loop 300, calculations of the logarithms of the roughness lengths for heat and momentum are performed for the bare ground and snow-\/covered subareas. Background values of $ln(z_{om})$ for soil, snow cover, ice sheets and urban areas are passed into the subroutine through common blocks. In C\+L\+A\+S\+S, urban areas are treated very simply, as areas of bare soil with a high roughness length. The subarea values of $ln(z_{om})$ for bare soil and snow are therefore adjusted for the fractional coverage of urban area. Values for the ratio between the roughness lengths for momentum and heat for bare soil and snow are also passed in via common blocks. These are used to derive subarea values of $ln(z_{oe})$ from $ln(z_{om})$.
+
+In the same loop the roughness length for peatlands is also calculated assuming a natural log of the roughness length of the moss surface is -\/6.\+57 (parameter stored in \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90})
 
 In loop 325, an adjustment is applied to $ln(z_{om})$ if the effect of terrain roughness needs to be taken into account. If the surface orographic roughness length is not vanishingly small, its logarithm, L\+Z0\+O\+R\+O, is calculated. If it is greater than the calculated logarithm of the roughness length for momentum of any of the subareas, these are reset to L\+Z0\+O\+R\+O.
 

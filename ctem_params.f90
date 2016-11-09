@@ -101,7 +101,7 @@ integer, parameter :: nmon = 12        !< Number of months in a year
 integer, parameter :: ican        = 4        !< Number of CLASS pfts
 integer, parameter :: ignd        = 20        !< Number of soil layers
 integer, parameter :: icp1        = ican + 1 !
-integer,parameter  :: icc=12                 !< Number of CTEM pfts (YW + EVG shrub,DCD shrubs, sedge)
+integer,parameter  :: icc=12                 !< Number of CTEM pfts (Peatlands add 3: EVG shrub,DCD shrubs, sedge)
 
 integer,parameter  :: iccp1       = icc + 1  !
 integer, parameter :: l2max       = 5        !
@@ -122,18 +122,23 @@ integer, parameter, dimension(kk) :: modelpft= [ 1,     1,     0,     0,        
                                                  1,     1,     1,     0,        0 ]   ! CLASS PFT 4 GRASS
                              !                  C3      C4     sedge 
 
+character(8), parameter, dimension(icc) :: pftlist = [ 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', &
+                                                     'BdlDDrTr','BdlEvgSh','BdlDcdSh','CropC3  ', &
+                                                     'CropC4  ','GrassC3 ','GrassC4 ','Sedge   ' ]
+
+
 real, parameter :: seed    = 0.001     !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
 real, parameter :: minbare = 1.0e-5 !< minimum bare fraction when running competition on to prevent numerical problems.
 real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 ($g mol^{-1}$)
 
 !> simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
-logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false.,.false. ]      !YW
+logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false.,.false. ]
 
 !> simple grass matric, define the number and position of grass
 logical, parameter, dimension(icc) :: grass = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.true. ]
 
-integer, parameter, dimension(numgrass) :: grass_ind = [ 10, 11,12 ]  !< index of the grass pfts (3 grass pfts at present)        !YW May 11, 2015
+integer, parameter, dimension(numgrass) :: grass_ind = [ 10, 11,12 ]  !< index of the grass pfts (3 grass pfts at present)
 integer, parameter, dimension(numshrubs) :: shrub_ind = [ 6, 7 ]  !not used for now    
 integer, parameter, dimension(numtreepfts) :: tree_ind = [ 1, 2,3,4,5 ]       
 integer, parameter, dimension(numcrops) :: crop_ind = [ 8,9 ]                 

@@ -154,7 +154,8 @@ c
       real totala(ilg,icc)       !<
       real rmat_sum              !< 
 c
-      integer       ipeatland(ilg)      !YW March 19, 2015
+      integer ipeatland(ilg)     !< Peatland flag, non-peatlands are 0.
+      
 c     ---------------------------------------------------------------
 !>     Constants and parameters are located in ctem_params.f90
 !!
@@ -662,7 +663,7 @@ c
 !!fractional coverages at present, we pass a minimum canopy mass
 !!to class so that it doesn't run into numerical problems.
 !!
-!          cmasvegc(i,j)=max(cmasvegc(i,j),3.0)    !YW April 14, 2015 
+!          cmasvegc(i,j)=max(cmasvegc(i,j),3.0)    !YW April 14, 2015 ! FLAG JM - is this okay? Nov 2016.
           cmasvegc(i,j)=max(cmasvegc(i,j),0.1)     
 c
 640     continue

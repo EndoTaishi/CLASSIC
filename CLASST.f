@@ -510,14 +510,13 @@ C
      1                     KF    (ILG),    KF1   (ILG),    KF2   (ILG),
      2                     IEVAPC(ILG)
 C
-c    ------------------peatland variables -----------------------------\
+c    Peatland variables
       integer      ipeatland(ilg),iday
       real         Cmossmas(ilg), dmoss(ilg),pdd(ilg)
       real     ancsmoss(ilg),          angsmoss(ilg), 
      1          ancmoss(ilg),           angmoss(ilg),
      2          rmlcsmoss(ilg),     rmlgsmoss(ilg),     
      3          rmlcmoss(ilg),          rmlgmoss(ilg)
-c    -------------------YW March 19, 2015------------------------------/ 
 c
 C     * TEMPORARY VARIABLES.
 C
@@ -748,34 +747,25 @@ C
       IF (ctem_on) THEN
 C
 C       * INITIALIZE VARIABLES ESTIMATED BY THE PHOTOSYNTHESIS SUBROUTINE
-C       * CALLED FROM WITHIN TSOLVC.
+C       * CALLED FROM WITHIN TSOLVC. Also those of moss for peatlands.
 C
-        DO 65 J=1,ICTEM
         DO 65 I=IL1,IL2
-          ANCSVEG(I,J)=0.0
-          ANCGVEG(I,J)=0.0
-          RMLCSVEG(I,J)=0.0
-          RMLCGVEG(I,J)=0.0
+            ancsmoss(i) = 0.0
+            angsmoss(i) = 0.0
+            ancmoss(i)  = 0.0
+            angmoss(i)  = 0.0
+            rmlcsmoss(i) = 0.0
+            rmlgsmoss(i) = 0.0
+            rmlcmoss(i)  = 0.0
+            rmlgmoss(i)  = 0.0
+
+            DO 65 J=1,ICTEM
+                ANCSVEG(I,J)=0.0
+                ANCGVEG(I,J)=0.0
+                RMLCSVEG(I,J)=0.0
+                RMLCGVEG(I,J)=0.0
    65   CONTINUE
       ENDIF
-C
-c    initialize moss C fluxes YW March 19, 2015 -----------------------\
-C
-        do 66 i = il1, il2
-          if (ipeatland(i) > 0) then
-               ancsmoss(i) = 0.0
-               angsmoss(i) = 0.0
-               ancmoss(i)  = 0.0
-               angmoss(i)  = 0.0     
-               rmlcsmoss(i) = 0.0
-               rmlgsmoss(i) = 0.0
-               rmlcmoss(i)  = 0.0
-               rmlgmoss(i)  = 0.0
-          endif
-66        continue          
-c
-C
-C    initialize moss fluxes done---------------------------------------/
 C
 C     * PREPARATION.
 C

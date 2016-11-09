@@ -17,13 +17,10 @@
      9                          npp,  autores, hetrores,      gpp,
      a                          nep,   litres,   socres, dstcemls,
      b                          nbp, litrfall, humiftrs,
-     c                          il1,      il2
-c    --------------moss variables--------------------------------------\
-C
-     1              ,ipeatland, Cmossmas, pCmossmas
-     2              ,nppmosstep, litrfallms, litrmsmoss,plitrmsmoss,
-     3              ltrestepms,humicmstep,socrestep,hutrstep)    
-c    -----------YW March 20, 2015 -------------------------------------/   
+     c                          il1,      il2,
+     1                          ipeatland, Cmossmas, pCmossmas,
+     2              nppmosstep, litrfallmoss, litrmsmoss,plitrmsmoss,
+     3              ltrestepmoss,humicmosstep)
 
 c     -----------------------------------------------------------------      
 c
@@ -40,20 +37,7 @@ c     V. Arora        between the different pools balance properly to
 c                     make sure that conservation of mass is achieved 
 c                     with in a specified tolerance.
 c
-c     inputs 
-c                 grid averaged fluxes
-c
-c     expnbaln  - amount of c related to spatial expansion
-c
-c                 other variables
-c
-c     deltat    - ctem's time step
-c     icc       - no. of ctem plant function types, currently 8
-c     ilg       - no. of grid cells in latitude circle
-c     fcancmx   - max. fractional coverage of ctem's 9 pfts, but this can be
-c                modified by land-use change, and competition between pfts
-
-      use ctem_params,        only : tolrance, icc, ilg, deltat
+      use ctem_params,        only : tolrance, icc, ilg, deltat,iccp1
 c
       implicit none
 c
@@ -65,8 +49,8 @@ c
       real rootmass(ilg,icc)  !<pools (after being updated): root mass for each of the 9 ctem pfts
       real gleafmas(ilg,icc)  !<pools (after being updated): green leaf mass for each of the 9 ctem pfts
       real bleafmas(ilg,icc)  !<pools (after being updated): brown leaf mass for each of the 9 ctem pfts
-      real litrmass(ilg,icc+1)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell
-      real soilcmas(ilg,icc+1)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell
+      real litrmass(ilg,iccp1)!<pools (after being updated): litter mass over the 9 pfts and the bare fraction of the grid cell
+      real soilcmas(ilg,iccp1)!<pools (after being updated): soil carbon mass over the 9 pfts and the bare fraction of the grid cell
       real ntchlveg(ilg,icc)  !<fluxes for each pft: net change in leaf biomass
       real ntchsveg(ilg,icc)  !<fluxes for each pft: net change in stem biomass
       real ntchrveg(ilg,icc)  !<fluxes for each pft: net change in root biomass the net change is the difference
@@ -79,15 +63,15 @@ c
       real stcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: stem carbon emission losses 
       real rtcaemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: root carbon emission losses 
       real ltrcemls(ilg,icc)  !<fluxes for each pft: carbon emission losses mainly due to fire: litter carbon emission losses
-      real ltresveg(ilg,icc+1)!<fluxes for each pft: litter respiration for each pft + bare fraction 
-      real scresveg(ilg,icc+1)!<fluxes for each pft: soil c respiration for each pft + bare fraction
-      real humtrsvg(ilg,icc+1)!<fluxes for each pft: humification for each pft + bare fraction
+      real ltresveg(ilg,iccp1)!<fluxes for each pft: litter respiration for each pft + bare fraction
+      real scresveg(ilg,iccp1)!<fluxes for each pft: soil c respiration for each pft + bare fraction
+      real humtrsvg(ilg,iccp1)!<fluxes for each pft: humification for each pft + bare fraction
       real pglfmass(ilg,icc)  !<pools (before being updated): previous green leaf mass
       real pblfmass(ilg,icc)  !<pools (before being updated): previous brown leaf mass
       real pstemass(ilg,icc)  !<pools (before being updated): previous stem mass
       real protmass(ilg,icc)  !<pools (before being updated): previous root mass
-      real plitmass(ilg,icc+1)!<pools (before being updated): previous litter mass
-      real psocmass(ilg,icc+1)!<pools (before being updated): previous soil c mass
+      real plitmass(ilg,iccp1)!<pools (before being updated): previous litter mass
+      real psocmass(ilg,iccp1)!<pools (before being updated): previous soil c mass
       real npp(ilg)           !<grid averaged flux: net primary productivity 
       real vgbiomas(ilg)      !<pools (after being updated): grid averaged pools: vegetation biomass
       real pvgbioms(ilg)      !<pools (before being updated): grid average pools: previous vegetation biomass
@@ -106,25 +90,22 @@ c
       real litrfall(ilg)      !<grid averaged flux: combined (leaves, stem, and root) total litter fall rate
       real humiftrs(ilg)      !<grid averaged flux: humification
       real repro_cost(ilg,icc)!<pools (after being updated): amount of C transferred to litter due to reproductive tissues
-          
-!     d         galtcels(ilg),       expnbaln(ilg),   
-
+      integer  ipeatland (ilg)!< Peatland flag, non-peatlands = 0
+      real Cmossmas(ilg)      !< moss biomass C (kgC/m2)
+      real pCmossmas(ilg)     !< moss biomass C at the previous time step (kgC/m2)
+      real nppmosstep(ilg)    !< moss npp (kgC/m2/timestep)
+      real litrfallmoss(ilg)  !< moss litter fall (kgC/m2/timestep)
+      real litrmsmoss(ilg)    !< moss litter C (kgC/m2)
+      real plitrmsmoss(ilg)   !< moss litter C at the previous time step (kgC/m2)
+      real ltrestepmoss(ilg)  !< litter respiration from moss (kgC/m2/timestep)
+      real humicmosstep(ilg)  !< moss humification (kgC/m2/timestep)
       real galtcels(ilg)      !<grid averaged flux: carbon emission losses from litter
       real repro_cost_g(ilg)  !<grid averaged flux: amount of C used to generate reproductive tissues
 c
       real diff1  !<
       real diff2  !<
 c
-c    ------peatland variables ----------------------------------------\
-      integer  ipeatland (ilg)
-      real     cmossmas(ilg),      pcmossmas(ilg),
-     1         nppmosstep(ilg),    litrfallms(ilg),    
-     2         litrmsmoss(ilg),    plitrmsmoss(ilg),
-     3         ltrestepms(ilg),    humicmstep(ilg),
-     4         socrestep(ilg),     hutrstep(ilg,icc+1)
-c     ------YW March 27, 2015 -----------------------------------------/  
-c
-      if(icc.ne.12)                            call xit('balcar',-1)  !YW for peatland
+      if(icc.ne.12)                            call xit('balcar',-1)  !increase to 12 for peatlands
 c
 !>
 !!to check c budget we go through each pool for each vegetation type.
@@ -202,7 +183,7 @@ c         endif
 !!litter over the bare fraction
 !!
         do 280 i = il1, il2
-           if (ipeatland(i)==0)         then      !YW May 11, 2015 
+           if (ipeatland(i)==0) then !Over the non-peatland areas.
           diff1=litrmass(i,icc+1) - plitmass(i,icc+1)
           diff2=( -ltresveg(i,icc+1)-humtrsvg(i,icc+1))*
      &          ( deltat/963.62 )  
@@ -217,7 +198,7 @@ c         endif
 !!
       do 300 j = 1, icc+1
         do 310 i = il1, il2
-         if (ipeatland(i)==0)          then
+         if (ipeatland(i)==0) then !Over the non-peatland regions
           diff1=soilcmas(i,j) - psocmass(i,j)
           diff2=( humtrsvg(i,j)-scresveg(i,j) )*(deltat/963.62)  
           if((abs(diff1-diff2)).gt.tolrance)then
@@ -233,34 +214,35 @@ c         endif
          endif
 310     continue
 300   continue   
-c
-c    --------------------add moss C balance----------------------------\
 
+!>
+!! Moss C balance
+!!
        do 400 i = il1, il2
-           if (ipeatland(i).gt. 0)      then
+           if (ipeatland(i).gt. 0) then !Peatlands only
                diff1 = Cmossmas(i)- pCmossmas(i)
-               diff2 = nppmosstep(i) - litrfallms(i)
+               diff2 = nppmosstep(i) - litrfallmoss(i)
                if((abs(diff1-diff2)).gt.tolrance)then
                    write(6,3001)'Cmossmas(',i,')=',Cmossmas(i)
                    write(6,3001)'pCmossmas(',i,')=',pCmossmas(i)
                    write(6,3001)'nppmosstep(',i,')=',nppmosstep(i)
-                   write(6,3001)' litrfallms(',i,')=',litrfallms(i)
+                   write(6,3001)' litrfallmoss(',i,')=',litrfallmoss(i)
                    write(6,2008)i,abs(diff1-diff2),tolrance
 2008           format('at (i)= (',i3,'),',f12.6,' is greater'
      1         'than our tolerance of ',f12.6,' for moss carbon')
                     call xit('balcar',-11)
                endif
-               
-c    -------------------add moss litter pool C balance-----------------
-               
+!>
+!! Moss litter pool C balance
+!!
                diff1 = litrmsmoss(i)- plitrmsmoss(i)
-               diff2 = litrfallms(i)-ltrestepms(i)-humicmstep(i)
+               diff2 = litrfallmoss(i)-ltrestepmoss(i)-humicmosstep(i)
                if((abs(diff1-diff2)).gt.tolrance)then
                    write(6,3001)'litrmsmoss(',i,')=',litrmsmoss(i)
                    write(6,3001)'plitrmsmoss(',i,')=',plitrmsmoss(i)
-                   write(6,3001)'litrfallms(',i,')=',litrfallms(i)
-                   write(6,3001)' ltrestepms(',i,')=',ltrestepms(i)
-                   write(6,3001)' humicmstep(',i,')=',humicmstep(i)
+                   write(6,3001)'litrfallmoss(',i,')=',litrfallmoss(i)
+                   write(6,3001)' ltrestepmoss(',i,')=',ltrestepmoss(i)
+                   write(6,3001)' humicmosstep(',i,')=',humicmosstep(i)
                    write(6,2009)i,abs(diff1-diff2),tolrance
 2009               format('at (i)= (',i3,'),',f12.6,' is greater
      1             than our tolerance of ',f12.6,' for moss litter')
@@ -268,7 +250,7 @@ c    -------------------add moss litter pool C balance-----------------
                endif
           endif
 400     continue
-c    -------------------YW March 27, 2015------------------------------/
+
 !>
 !!grid averaged fluxes must also balance
 !!

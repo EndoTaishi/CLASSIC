@@ -43,6 +43,9 @@
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
+     3      anmossrow, rmlmossrow, gppmossrow, armossrow,
+     4      nppmossrow,peatdeprow,litrmsmossrow,Cmossmasrow,
+     5      dmossrow, ipeatlandrow,pddrow,thlqaccrow_m,thicaccrow_m,
 c --
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,   fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -87,16 +90,11 @@ c --
      &      ch4dyn2gat, ch4soillsgat,
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
-     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat
-C    --------------------scatter peatland variables-------------------\
-c
-     1    ,anmossrow, rmlmossrow, gppmossrow,armossrow,nppmossrow
-     2    ,anmossgat, rmlmossgat, gppmossgat,armossgat,nppmossgat
-     3    ,peatdeprow,  peatdepgat,   litrmsmossrow, litrmsmossgat
-     4    ,Cmossmasrow, Cmossmasgat,    dmossrow,  dmossgat
-     5    ,thlqaccrow_m , thlqaccgat_m ,thicaccrow_m,thicaccgat_m 
-     6    ,ipeatlandrow,      ipeatlandgat,pddgat,pddrow)
-c    ---------------YW March 23, 2015 --------------------
+     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
+     3      anmossgat, rmlmossgat, gppmossgat,armossgat,
+     4      nppmossgat,peatdepgat,litrmsmossgat,Cmossmasgat,
+     5      dmossgat,ipeatlandgat,pddgat,thlqaccgat_m,thicaccgat_m)
+
 c
 C     July 12 2013    Bring in the ctem params use statement
 c     J. Melton
@@ -324,7 +322,7 @@ c   Methane related variables
      +       dry_season_lengthgat(ilg)
 
 
-c   Peatland variables   YW March 27, 2015 
+c   Peatland variables
        real    anmossrow(nlat,nmos),     anmossgat(ilg),
      3         rmlmossrow(nlat,nmos),    rmlmossgat(ilg),
      4         gppmossrow(nlat,nmos),    gppmossgat(ilg),
@@ -524,8 +522,8 @@ c
           clayrow(ilmos(k),jlmos(k),l)     = claygat(k,l)
           orgmrow(ilmos(k),jlmos(k),l)     = orgmgat(k,l)
           tbaraccrow_m(ilmos(k),jlmos(k),l)= tbaraccgat_m(k,l)
-          thlqaccrow_m(ilmos(k),jlmos(k),l)= thlqaccgat_m(k,l)   !YW
-          thicaccrow_m(ilmos(k),jlmos(k),l)= thicaccgat_m(k,l)   !YW
+          thlqaccrow_m(ilmos(k),jlmos(k),l)= thlqaccgat_m(k,l)
+          thicaccrow_m(ilmos(k),jlmos(k),l)= thicaccgat_m(k,l)
 250   continue
 c
       do 280 l=1,icc
@@ -549,7 +547,6 @@ c     not in ctemg2. jm jan 8 2013.
 300   continue
 
 c    scatter peatland variables----------------------------------------\
-!               FLAG JM check on this.
       do 400 k=1,nml 
           anmossrow(ilmos(k),jlmos(k)) = anmossgat(k)
           rmlmossrow(ilmos(k),jlmos(k))= rmlmossgat(k)

@@ -2,23 +2,23 @@
 \label{ctem_8f90}\index{ctem.\+f90@{ctem.\+f90}}
 
 
-The basic model structure of C\+T\+E\+M includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( $C_\mathrm{L}$, $C_\mathrm{S}$, $C_\mathrm{R}$, $C_\mathrm{D}$, $C_\mathrm{H}$, $kgC m^{-2}$) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate\+\_\+change\+\_\+eqns\} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections.  
+Principle driver for C\+T\+E\+M.  
 
 
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{ctem_8f90_a2b6b15dcac84105200925dab9dfea7aa}{ctem} (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar,popdon,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,compete,netrad,precip,psisat, grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile\+\_\+per\+P\+F\+T, wetfrac, slopefrac,bi,thpor,thiceg, currlat,ch4conc,G\+R\+A\+V,R\+H\+O\+W,R\+H\+O\+I\+C\+E,
+subroutine \hyperlink{ctem_8f90_a13ba037da8ed72b5b014f08f8be649ed}{ctem} (fcancmx, fsnow, sand, clay, il1, il2, iday, radj, tcano, tcans, tbarc, tbarcs, tbarg, tbargs, ta, delzw, ancsveg, ancgveg, rmlcsveg, rmlcgveg, zbotw, thliqc, thliqg, deltat, uwind, vwind, lightng, prbfrhuc, extnprob, stdaln, tbar, popdon, nol2pfts, pfcancmx, nfcancmx, lnduseon, thicec, soildpth, spinfast, todfrac, compete, netrad, precip, psisat, grclarea, popdin, dofire, dowetlands, obswetf, isand, faregat, onetile\+\_\+per\+P\+F\+T, wetfrac, slopefrac, bi, thpor, thiceg, currlat, ch4conc, G\+R\+A\+V, R\+H\+O\+W, R\+H\+O\+I\+C\+E, stemmass, rootmass, litrmass, gleafmas, bleafmas, soilcmas, ailcg, ailc, zolnc, rmatctem, rmatc, ailcb, flhrloss, pandays, lfstatus, grwtheff, lystmmas, lyrotmas, tymaxlai, vgbiomas, gavgltms, gavgscms, stmhrlos, slai, bmasveg, cmasvegc, colddays, rothrlos, fcanmx, alvisc, alnirc, gavglai, tcurm, srpcuryr, dftcuryr, inibioclim, tmonth, anpcpcur, anpecur, gdd5cur, surmncur, defmncur, srplscur, defctcur, geremort, intrmort, lambda, pftexist, twarmm, tcoldm, gdd5, aridity, srplsmon, defctmon, anndefct, annsrpls, annpcp, dry\+\_\+season\+\_\+length, burnvegf, pstemmass, pgleafmass, npp, nep, hetrores, autores, soilresp, rm, rg, nbp, litres, socres, gpp, dstcemls1, litrfall, humiftrs, veghght, rootdpth, litrfallveg, humtrsvg, rml, rms, rmr, tltrleaf, tltrstem, tltrroot, leaflitr, roottemp, afrleaf, afrstem, afrroot, wtstatus, ltstatus, burnfrac, smfunc\+\_\+veg, lucemcom, lucltrin, lucsocin, nppveg, dstcemls3, paicgat, slaicgat, emit\+\_\+co2, emit\+\_\+co, emit\+\_\+ch4, emit\+\_\+nmhc, emit\+\_\+h2, emit\+\_\+nox, emit\+\_\+n2o, emit\+\_\+pm25, emit\+\_\+tpm, emit\+\_\+tc, emit\+\_\+oc, emit\+\_\+bc, bterm\+\_\+veg, lterm, mterm\+\_\+veg, cc, mm, rmlveg, rmsveg, rmrveg, rgveg, vgbiomas\+\_\+veg, gppveg, nepveg, nbpveg, hetrsveg, autoresveg, ltresveg, scresveg, nml, ilmos, jlmos, ch4wet1, ch4wet2, wetfdyn, ch4dyn1, ch4dyn2, ch4soills, ipeatland, anmoss, rmlmoss, gppmoss, Cmossmas, litrmsmoss, wtable, T\+H\+F\+C, T\+H\+L\+W, thliq, thice, nppmoss, armoss, peatdep)
 \end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
+Principle driver for C\+T\+E\+M. 
+
 The basic model structure of C\+T\+E\+M includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( $C_\mathrm{L}$, $C_\mathrm{S}$, $C_\mathrm{R}$, $C_\mathrm{D}$, $C_\mathrm{H}$, $kgC m^{-2}$) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate\+\_\+change\+\_\+eqns\} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections. 
 
-
-
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{ctem_8f90_a2b6b15dcac84105200925dab9dfea7aa}{}\index{ctem.\+f90@{ctem.\+f90}!ctem@{ctem}}
+\hypertarget{ctem_8f90_a13ba037da8ed72b5b014f08f8be649ed}{}\index{ctem.\+f90@{ctem.\+f90}!ctem@{ctem}}
 \index{ctem@{ctem}!ctem.\+f90@{ctem.\+f90}}
 \subsubsection[{ctem}]{\setlength{\rightskip}{0pt plus 5cm}subroutine ctem (
 \begin{DoxyParamCaption}
@@ -83,9 +83,162 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \item[{real, dimension(ilg), intent(in)}]{ch4conc, }
 \item[{real, intent(in)}]{G\+R\+A\+V, }
 \item[{real, intent(in)}]{R\+H\+O\+W, }
-\item[{real, intent(in)}]{R\+H\+O\+I\+C\+E}
+\item[{real, intent(in)}]{R\+H\+O\+I\+C\+E, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{stemmass, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{rootmass, }
+\item[{real, dimension(ilg,iccp1), intent(inout)}]{litrmass, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{gleafmas, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{bleafmas, }
+\item[{real, dimension(ilg,iccp1), intent(inout)}]{soilcmas, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{ailcg, }
+\item[{real, dimension(ilg,ican), intent(inout)}]{ailc, }
+\item[{real, dimension(ilg,ican), intent(inout)}]{zolnc, }
+\item[{real, dimension(ilg,icc,ignd), intent(inout)}]{rmatctem, }
+\item[{real, dimension(ilg,ican,ignd), intent(inout)}]{rmatc, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{ailcb, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{flhrloss, }
+\item[{integer, dimension(ilg,icc), intent(inout)}]{pandays, }
+\item[{integer, dimension(ilg,icc), intent(inout)}]{lfstatus, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{grwtheff, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{lystmmas, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{lyrotmas, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{tymaxlai, }
+\item[{real, dimension(ilg), intent(inout)}]{vgbiomas, }
+\item[{real, dimension(ilg), intent(inout)}]{gavgltms, }
+\item[{real, dimension(ilg), intent(inout)}]{gavgscms, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{stmhrlos, }
+\item[{real, dimension(ilg,icc), intent(out)}]{slai, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{bmasveg, }
+\item[{real, dimension(ilg,ican), intent(inout)}]{cmasvegc, }
+\item[{integer, dimension(ilg,2), intent(inout)}]{colddays, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{rothrlos, }
+\item[{real, dimension(ilg,ican), intent(inout)}]{fcanmx, }
+\item[{real, dimension(ilg,ican), intent(inout)}]{alvisc, }
+\item[{real, dimension(ilg,ican), intent(inout)}]{alnirc, }
+\item[{real, dimension(ilg), intent(inout)}]{gavglai, }
+\item[{real, dimension(ilg), intent(inout)}]{tcurm, }
+\item[{real, dimension(ilg), intent(inout)}]{srpcuryr, }
+\item[{real, dimension(ilg), intent(inout)}]{dftcuryr, }
+\item[{logical, intent(inout)}]{inibioclim, }
+\item[{real, dimension(12,ilg), intent(inout)}]{tmonth, }
+\item[{real, dimension(ilg), intent(inout)}]{anpcpcur, }
+\item[{real, dimension(ilg), intent(inout)}]{anpecur, }
+\item[{real, dimension(ilg), intent(inout)}]{gdd5cur, }
+\item[{real, dimension(ilg), intent(inout)}]{surmncur, }
+\item[{real, dimension(ilg), intent(inout)}]{defmncur, }
+\item[{real, dimension(ilg), intent(inout)}]{srplscur, }
+\item[{real, dimension(ilg), intent(inout)}]{defctcur, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{geremort, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{intrmort, }
+\item[{real, dimension(ilg,icc), intent(out)}]{lambda, }
+\item[{logical, dimension(ilg,icc), intent(inout)}]{pftexist, }
+\item[{real, dimension(ilg), intent(inout)}]{twarmm, }
+\item[{real, dimension(ilg), intent(inout)}]{tcoldm, }
+\item[{real, dimension(ilg), intent(inout)}]{gdd5, }
+\item[{real, dimension(ilg), intent(inout)}]{aridity, }
+\item[{real, dimension(ilg), intent(inout)}]{srplsmon, }
+\item[{real, dimension(ilg), intent(inout)}]{defctmon, }
+\item[{real, dimension(ilg), intent(inout)}]{anndefct, }
+\item[{real, dimension(ilg), intent(inout)}]{annsrpls, }
+\item[{real, dimension(ilg), intent(inout)}]{annpcp, }
+\item[{real, dimension(ilg), intent(inout)}]{dry\+\_\+season\+\_\+length, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{burnvegf, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{pstemmass, }
+\item[{real, dimension(ilg,icc), intent(inout)}]{pgleafmass, }
+\item[{real, dimension(ilg), intent(out)}]{npp, }
+\item[{real, dimension(ilg), intent(out)}]{nep, }
+\item[{real, dimension(ilg), intent(out)}]{hetrores, }
+\item[{real, dimension(ilg), intent(out)}]{autores, }
+\item[{real, dimension(ilg), intent(out)}]{soilresp, }
+\item[{real, dimension(ilg), intent(out)}]{rm, }
+\item[{real, dimension(ilg), intent(out)}]{rg, }
+\item[{real, dimension(ilg), intent(out)}]{nbp, }
+\item[{real, dimension(ilg), intent(out)}]{litres, }
+\item[{real, dimension(ilg), intent(out)}]{socres, }
+\item[{real, dimension(ilg), intent(out)}]{gpp, }
+\item[{real, dimension(ilg), intent(out)}]{dstcemls1, }
+\item[{real, dimension(ilg), intent(out)}]{litrfall, }
+\item[{real, dimension(ilg), intent(out)}]{humiftrs, }
+\item[{real, dimension(ilg,icc), intent(out)}]{veghght, }
+\item[{real, dimension(ilg,icc), intent(out)}]{rootdpth, }
+\item[{real, dimension(ilg,icc), intent(out)}]{litrfallveg, }
+\item[{real, dimension(ilg,iccp1), intent(out)}]{humtrsvg, }
+\item[{real, dimension(ilg), intent(out)}]{rml, }
+\item[{real, dimension(ilg), intent(out)}]{rms, }
+\item[{real, dimension(ilg), intent(out)}]{rmr, }
+\item[{real, dimension(ilg,icc), intent(out)}]{tltrleaf, }
+\item[{real, dimension(ilg,icc), intent(out)}]{tltrstem, }
+\item[{real, dimension(ilg,icc), intent(out)}]{tltrroot, }
+\item[{real, dimension(ilg,icc), intent(out)}]{leaflitr, }
+\item[{real, dimension(ilg,icc), intent(out)}]{roottemp, }
+\item[{real, dimension(ilg,icc), intent(out)}]{afrleaf, }
+\item[{real, dimension(ilg,icc), intent(out)}]{afrstem, }
+\item[{real, dimension(ilg,icc), intent(out)}]{afrroot, }
+\item[{real, dimension(ilg,icc), intent(out)}]{wtstatus, }
+\item[{real, dimension(ilg,icc), intent(out)}]{ltstatus, }
+\item[{real, dimension(ilg), intent(out)}]{burnfrac, }
+\item[{real, dimension(ilg,icc), intent(out)}]{smfunc\+\_\+veg, }
+\item[{real, dimension(ilg), intent(out)}]{lucemcom, }
+\item[{real, dimension(ilg), intent(out)}]{lucltrin, }
+\item[{real, dimension(ilg), intent(out)}]{lucsocin, }
+\item[{real, dimension(ilg,icc), intent(out)}]{nppveg, }
+\item[{real, dimension(ilg), intent(out)}]{dstcemls3, }
+\item[{real, dimension(ilg,ican), intent(out)}]{paicgat, }
+\item[{real, dimension(ilg,ican), intent(out)}]{slaicgat, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+co2, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+co, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+ch4, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+nmhc, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+h2, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+nox, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+n2o, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+pm25, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+tpm, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+tc, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+oc, }
+\item[{real, dimension(ilg,icc), intent(out)}]{emit\+\_\+bc, }
+\item[{real, dimension(ilg,icc), intent(out)}]{bterm\+\_\+veg, }
+\item[{real, dimension(ilg), intent(out)}]{lterm, }
+\item[{real, dimension(ilg,icc), intent(out)}]{mterm\+\_\+veg, }
+\item[{real, dimension(ilg,icc), intent(out)}]{cc, }
+\item[{real, dimension(ilg,icc), intent(out)}]{mm, }
+\item[{real, dimension(ilg,icc), intent(out)}]{rmlveg, }
+\item[{real, dimension(ilg,icc), intent(out)}]{rmsveg, }
+\item[{real, dimension(ilg,icc), intent(out)}]{rmrveg, }
+\item[{real, dimension(ilg,icc), intent(out)}]{rgveg, }
+\item[{real, dimension(ilg,icc), intent(out)}]{vgbiomas\+\_\+veg, }
+\item[{real, dimension(ilg,icc), intent(out)}]{gppveg, }
+\item[{real, dimension(ilg,iccp1), intent(out)}]{nepveg, }
+\item[{real, dimension(ilg,iccp1), intent(out)}]{nbpveg, }
+\item[{real, dimension(ilg,iccp1), intent(out)}]{hetrsveg, }
+\item[{real, dimension(ilg,icc), intent(out)}]{autoresveg, }
+\item[{real, dimension(ilg,iccp1), intent(out)}]{ltresveg, }
+\item[{real, dimension(ilg,iccp1), intent(out)}]{scresveg, }
+\item[{integer}]{nml, }
+\item[{integer, dimension(ilg)}]{ilmos, }
+\item[{integer, dimension(ilg)}]{jlmos, }
+\item[{real, dimension(ilg), intent(out)}]{ch4wet1, }
+\item[{real, dimension(ilg), intent(out)}]{ch4wet2, }
+\item[{real, dimension(ilg), intent(out)}]{wetfdyn, }
+\item[{real, dimension(ilg), intent(out)}]{ch4dyn1, }
+\item[{real, dimension(ilg), intent(out)}]{ch4dyn2, }
+\item[{real, dimension(ilg), intent(out)}]{ch4soills, }
+\item[{integer, dimension(ilg), intent(in)}]{ipeatland, }
+\item[{real, dimension(ilg), intent(in)}]{anmoss, }
+\item[{real, dimension(ilg), intent(in)}]{rmlmoss, }
+\item[{real, dimension(ilg), intent(in)}]{gppmoss, }
+\item[{real, dimension(ilg), intent(inout)}]{Cmossmas, }
+\item[{real, dimension(ilg), intent(inout)}]{litrmsmoss, }
+\item[{real, dimension(ilg), intent(in)}]{wtable, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{T\+H\+F\+C, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{T\+H\+L\+W, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{thliq, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{thice, }
+\item[{real, dimension(ilg), intent(out)}]{nppmoss, }
+\item[{real, dimension(ilg), intent(out)}]{armoss, }
+\item[{real, dimension(ilg), intent(inout)}]{peatdep}
 \end{DoxyParamCaption}
-)}\label{ctem_8f90_a2b6b15dcac84105200925dab9dfea7aa}
+)}\label{ctem_8f90_a13ba037da8ed72b5b014f08f8be649ed}
 
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt in}  & {\em lnduseon} & logical switch to run the land use change subroutine or not.\\
@@ -107,6 +260,8 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \mbox{\tt in}  & {\em il1} & il1=1\\
 \hline
 \mbox{\tt in}  & {\em il2} & il2=ilg (no. of grid cells in latitude circle)\\
+\hline
+\mbox{\tt in}  & {\em ipeatland} & Peatland flag\+: 0 = not a peatland, 1= bog, 2 = fen\\
 \hline
 \mbox{\tt in}  & {\em fsnow} & fraction of snow simulated by class\\
 \hline
@@ -138,15 +293,19 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \hline
 \mbox{\tt in}  & {\em ta} & air temp, K\\
 \hline
-\mbox{\tt in}  & {\em delzw} & thicknesses of the 3 soil layers\\
+\mbox{\tt in}  & {\em delzw} & thicknesses of the soil layers\\
 \hline
 \mbox{\tt in}  & {\em zbotw} & bottom of soil layers\\
 \hline
 \mbox{\tt in}  & {\em soildpth} & soil depth (m)\\
 \hline
-\mbox{\tt in}  & {\em thliqc} & liquid mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas\\
+\mbox{\tt in}  & {\em thliq} & liquid mois. content of soil layers\\
 \hline
-\mbox{\tt in}  & {\em thliqg} & liquid mois. content of 3 soil layers, for ground and snow over ground subareas\\
+\mbox{\tt in}  & {\em thliqc} & liquid mois. content of soil layers, for canopy over snow and canopy over ground subareas\\
+\hline
+\mbox{\tt in}  & {\em thliqg} & liquid mois. content of soil layers, for ground and snow over ground subareas\\
+\hline
+\mbox{\tt in}  & {\em thice} & Frozen soil moisture content\\
 \hline
 \mbox{\tt in}  & {\em thicec} & Frozen soil moisture content for canopy over snow and canopy over ground subareas\\
 \hline
@@ -186,7 +345,23 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \hline
 \mbox{\tt in}  & {\em rhoice} & Density of ice (\$kg m$^\wedge$\{-\/3\}), (C\+L\+A\+S\+S param) passed in to avoid the common block structure.\\
 \hline
+\mbox{\tt in}  & {\em anmoss} & moss net photoysnthesis -\/daily averaged C fluxes rates (umol/m2/s)\\
+\hline
+\mbox{\tt in}  & {\em rmlmoss} & moss maintainance respiration -\/daily averaged C fluxes rates (umol/m2/s)\\
+\hline
+\mbox{\tt in}  & {\em gppmoss} & moss G\+P\+P -\/daily averaged C fluxes rates (umol/m2/s)\\
+\hline
+\mbox{\tt in}  & {\em wtable} & water table (m)\\
+\hline
 \mbox{\tt in,out}  & {\em popdon} & if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes, or if false, read directly from .ctm file\\
+\hline
+\mbox{\tt in,out}  & {\em inibioclim} & switch telling if bioclimatic parameters are being initialized from scratch (false) or being initialized from some spun up values(true).\\
+\hline
+\mbox{\tt in,out}  & {\em pandays} & days with positive net photosynthesis (an) for use in the phenology subroutine\\
+\hline
+\mbox{\tt in,out}  & {\em colddays} & cold days counter for tracking days below a certain temperature threshold for ndl dcd and crop pfts.\\
+\hline
+\mbox{\tt in,out}  & {\em lfstatus} & leaf phenology status\\
 \hline
 \mbox{\tt in,out}  & {\em ancsveg} & net photosynthetic rate for ctems 9 pfts for canopy over snow subarea\\
 \hline
@@ -200,7 +375,227 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \hline
 \mbox{\tt in,out}  & {\em fcancmx} & max. fractional coverage of ctem\textquotesingle{}s 9 pfts, but this can be modified by land-\/use change, and competition between pfts\\
 \hline
+\mbox{\tt in,out}  & {\em rmatc} & fraction of roots for each of class\textquotesingle{} 4 pfts in each soil layer\\
+\hline
+\mbox{\tt in,out}  & {\em surmncur} & number of months with surplus water for current year\\
+\hline
+\mbox{\tt in,out}  & {\em defmncur} & number of months with water deficit for current year\\
+\hline
+\mbox{\tt in,out}  & {\em tcurm} & temperature of the current month (c)\\
+\hline
+\mbox{\tt in,out}  & {\em annpcp} & annual precipitation (mm)\\
+\hline
+\mbox{\tt in,out}  & {\em dry\+\_\+season\+\_\+length} & length of the dry season (months)\\
+\hline
+\mbox{\tt in,out}  & {\em twarmm} & temperature of the warmest month (c)\\
+\hline
+\mbox{\tt in,out}  & {\em tcoldm} & temperature of the coldest month (c)\\
+\hline
+\mbox{\tt in,out}  & {\em gdd5} & growing degree days above 5 c\\
+\hline
+\mbox{\tt in,out}  & {\em aridity} & aridity index, ratio of potential evaporation to precipitation\\
+\hline
+\mbox{\tt in,out}  & {\em srplsmon} & number of months in a year with surplus water i.\+e. precipitation more than potential evaporation\\
+\hline
+\mbox{\tt in,out}  & {\em defctmon} & number of months in a year with water deficit i.\+e. precipitation less than potential evaporation\\
+\hline
+\mbox{\tt in,out}  & {\em tmonth} & monthly temperatures\\
+\hline
+\mbox{\tt in,out}  & {\em anpcpcur} & annual precipitation for current year (mm)\\
+\hline
+\mbox{\tt in,out}  & {\em anpecur} & annual potential evaporation for current year (mm)\\
+\hline
+\mbox{\tt in,out}  & {\em gdd5cur} & growing degree days above 5 c for current year\\
+\hline
+\mbox{\tt in,out}  & {\em srplscur} & water surplus for the current month\\
+\hline
+\mbox{\tt in,out}  & {\em defctcur} & water deficit for the current month\\
+\hline
+\mbox{\tt in,out}  & {\em srpcuryr} & water surplus for the current year\\
+\hline
+\mbox{\tt in,out}  & {\em dftcuryr} & water deficit for the current year\\
+\hline
+\mbox{\tt in,out}  & {\em anndefct} & annual water deficit (mm)\\
+\hline
+\mbox{\tt in,out}  & {\em annsrpls} & annual water surplus (mm)\\
+\hline
+\mbox{\tt in,out}  & {\em stemmass} & stem mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em rootmass} & root mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em litrmass} & litter mass for each of the 9 ctem pfts + bare, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em gleafmas} & green leaf mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em bleafmas} & brown leaf mass for each of the 9 ctem pfts, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em soilcmas} & soil carbon mass for each of the 9 ctem pfts + bare, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em ailcg} & green lai for ctem\textquotesingle{}s 9 pfts\\
+\hline
+\mbox{\tt in,out}  & {\em ailc} & lumped lai for class\textquotesingle{} 4 pfts\\
+\hline
+\mbox{\tt in,out}  & {\em rmatctem} & fraction of roots for each of ctem\textquotesingle{}s 9 pfts in each soil layer\\
+\hline
+\mbox{\tt in,out}  & {\em zolnc} & lumped log of roughness length for class\textquotesingle{} 4 pfts\\
+\hline
+\mbox{\tt in,out}  & {\em ailcb} & brown lai for ctem\textquotesingle{}s 9 pfts. for now we assume only grasses can have brown lai\\
+\hline
+\mbox{\tt in,out}  & {\em vgbiomas} & grid averaged vegetation biomass, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em gavgltms} & grid averaged litter mass, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em gavgscms} & grid averaged soil c mass, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em gavglai} & grid averaged green leaf area index\\
+\hline
+\mbox{\tt in,out}  & {\em bmasveg} & total (gleaf + stem + root) biomass for each ctem pft, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em cmasvegc} & total canopy mass for each of the 4 class pfts. recall that class requires canopy mass as an input, and this is now provided by ctem. $kg/m^2$.\\
+\hline
+\mbox{\tt in,out}  & {\em fcanmx} & fractional coverage of class\textquotesingle{} 4 pfts\\
+\hline
+\mbox{\tt in,out}  & {\em alvisc} & visible albedo for class\textquotesingle{} 4 pfts\\
+\hline
+\mbox{\tt in,out}  & {\em alnirc} & near ir albedo for class\textquotesingle{} 4 pfts\\
+\hline
+\mbox{\tt in,out}  & {\em pstemmass} & stem mass from previous timestep, is value before fire. used by burntobare subroutine\\
+\hline
+\mbox{\tt in,out}  & {\em pgleafmass} & root mass from previous timestep, is value before fire. used by burntobare subroutine\\
+\hline
+\mbox{\tt in,out}  & {\em flhrloss} & fall or harvest loss for deciduous trees and crops, respectively, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em stmhrlos} & stem harvest loss for crops, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em rothrlos} & root death as crops are harvested, $kg c/m^2$\\
+\hline
+\mbox{\tt in,out}  & {\em grwtheff} & growth efficiency. change in biomass per year per unit max. lai ( $kg c/m^2$)/(m2/m2), for use in mortality subroutine\\
+\hline
+\mbox{\tt in,out}  & {\em lystmmas} & stem mass at the end of last year\\
+\hline
+\mbox{\tt in,out}  & {\em lyrotmas} & root mass at the end of last year\\
+\hline
+\mbox{\tt in,out}  & {\em tymaxlai} & this year\textquotesingle{}s maximum lai\\
+\hline
+\mbox{\tt in,out}  & {\em burnvegf} & per P\+F\+T fraction burned of that P\+F\+T\textquotesingle{}s area\\
+\hline
 \mbox{\tt in,out}  & {\em popdin} & population density $(people / km^2)$\\
+\hline
+\mbox{\tt in,out}  & {\em cmossmas} & moss biomass C pool (kg\+C/m2)\\
+\hline
+\mbox{\tt in,out}  & {\em litrmsmoss} & moss litter C pool (kg\+C/m2)\\
+\hline
+\mbox{\tt in,out}  & {\em peatdep} & peat depth (m)\\
+\hline
+\mbox{\tt out}  & {\em ch4soills} & Methane uptake into the soil column $(mg CH_4 m^{-2} s^{-1})$\\
+\hline
+\mbox{\tt out}  & {\em rml} & leaf maintenance respiration (u-\/mol co2/m2.\+sec)\\
+\hline
+\mbox{\tt out}  & {\em gpp} & gross primary productivity\\
+\hline
+\mbox{\tt out}  & {\em slai} & storage/imaginary lai for phenology purposes\\
+\hline
+\mbox{\tt out}  & {\em veghght} & vegetation height (meters)\\
+\hline
+\mbox{\tt out}  & {\em rootdpth} & 99\% soil rooting depth (meters) both veghght \& rootdpth can be used as diagnostics to see how vegetation grows above and below ground, respectively\\
+\hline
+\mbox{\tt out}  & {\em npp} & net primary productivity\\
+\hline
+\mbox{\tt out}  & {\em nep} & net ecosystem productivity\\
+\hline
+\mbox{\tt out}  & {\em hetrores} & heterotrophic respiration\\
+\hline
+\mbox{\tt out}  & {\em autores} & autotrophic respiration\\
+\hline
+\mbox{\tt out}  & {\em soilresp} & soil respiration. this includes root respiration and respiration from litter and soil carbon pools. note that soilresp is different from socres, which is respiration from the soil c pool.\\
+\hline
+\mbox{\tt out}  & {\em rm} & maintenance respiration\\
+\hline
+\mbox{\tt out}  & {\em rg} & growth respiration\\
+\hline
+\mbox{\tt out}  & {\em nbp} & net biome productivity\\
+\hline
+\mbox{\tt out}  & {\em dstcemls1} & carbon emission losses due to disturbance (fire at present) from vegetation\\
+\hline
+\mbox{\tt out}  & {\em litrfall} & total litter fall (from leaves, stem, and root) due to all causes (mortality, turnover, and disturbance)\\
+\hline
+\mbox{\tt out}  & {\em humiftrs} & transfer of humidified litter from litter to soil c pool\\
+\hline
+\mbox{\tt out}  & {\em lucemcom} & land use change (luc) related combustion emission losses, u-\/mol co2/m2.\+sec\\
+\hline
+\mbox{\tt out}  & {\em lucltrin} & luc related inputs to litter pool, u-\/mol co2/m2.\+sec\\
+\hline
+\mbox{\tt out}  & {\em lucsocin} & luc related inputs to soil c pool, u-\/mol co2/m2.\+sec\\
+\hline
+\mbox{\tt out}  & {\em dstcemls3} & carbon emission losses due to disturbance (fire at present) from litter pool\\
+\hline
+\mbox{\tt out}  & {\em rms} & stem maintenance respiration (u-\/mol co2/m2.\+sec)\\
+\hline
+\mbox{\tt out}  & {\em rmr} & root maintenance respiration (u-\/mol co2/m2.\+sec)\\
+\hline
+\mbox{\tt out}  & {\em litres} & litter respiration\\
+\hline
+\mbox{\tt out}  & {\em socres} & soil carbon respiration\\
+\hline
+\mbox{\tt out}  & {\em nppveg} & npp for individual pfts, u-\/mol co2/m2.\+sec\\
+\hline
+\mbox{\tt out}  & {\em roottemp} & root temperature, k\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+co2} & carbon dioxide emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+co} & carbon monoxide emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+ch4} & methane emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+nmhc} & non-\/methane hydrocarbons emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+h2} & hydrogen gas emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+nox} & nitrogen oxides emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+n2o} & nitrous oxide emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+pm25} & particulate matter less than 2.\+5 um in diameter emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+tpm} & total particulate matter emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+tc} & total carbon emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+oc} & organic carbon emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em emit\+\_\+bc} & black carbon emitted from biomass burning in g of compound\\
+\hline
+\mbox{\tt out}  & {\em bterm\+\_\+veg} & biomass term for fire probabilty calc\\
+\hline
+\mbox{\tt out}  & {\em lterm} & lightning term for fire probabilty calc\\
+\hline
+\mbox{\tt out}  & {\em mterm\+\_\+veg} & moisture term for fire probabilty calc\\
+\hline
+\mbox{\tt out}  & {\em afrleaf} & allocation fraction for leaves\\
+\hline
+\mbox{\tt out}  & {\em afrstem} & allocation fraction for stem\\
+\hline
+\mbox{\tt out}  & {\em afrroot} & allocation fraction for root\\
+\hline
+\mbox{\tt out}  & {\em wtstatus} & soil water status used for calculating allocation fractions\\
+\hline
+\mbox{\tt out}  & {\em ltstatus} & light status used for calculating allocation fractions\\
+\hline
+\mbox{\tt out}  & {\em burnfrac} & areal fraction burned due to fire for every grid cell (\%)\\
+\hline
+\mbox{\tt out}  & {\em leaflitr} & leaf litter fall rate (u-\/mol co2/m2.\+sec). this leaf litter does not include litter generated due to mortality/fire\\
+\hline
+\mbox{\tt out}  & {\em smfunc\+\_\+veg} & soil moisture dependence on fire spread rate\\
+\hline
+\mbox{\tt out}  & {\em tltrleaf} & total leaf litter fall rate (u-\/mol co2/m2.\+sec)\\
+\hline
+\mbox{\tt out}  & {\em tltrstem} & total stem litter fall rate (u-\/mol co2/m2.\+sec)\\
+\hline
+\mbox{\tt out}  & {\em tltrroot} & total root litter fall rate (u-\/mol co2/m2.\+sec)\\
+\hline
+\mbox{\tt out}  & {\em armoss} & autotrophic respiration of moss (\$ mol C(?) m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) -\/ F\+L\+A\+G unit is C or C\+O2?\\
+\hline
+\mbox{\tt out}  & {\em nppmoss} & net primary production of moss (\$ mol C(?) m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) -\/ F\+L\+A\+G unit is C or C\+O2?\\
 \hline
  & {\em nol2pfts} & number of level 2 ctem pfts \\
 \hline
@@ -265,7 +660,8 @@ Find vegetation averaged leaf, stem, and root respiration, and gpp using values 
 
 Now that we know maintenance respiration from leaf, stem, and root and gpp, we can find growth respiration for each vegetation
 
-Calculate grid-\/averaged rates of rm, rg, npp, and gpp
+Calculate grid/tile-\/averaged rates of rm, rg, npp, and gpp \begin{DoxyVerb}Add moss GPP and rml to the grid/tile average C fluxes \end{DoxyVerb}
+
 
 \begin{DoxyVerb} Heterotrophic respiration part starts \end{DoxyVerb}
 
@@ -276,31 +672,41 @@ Find heterotrophic respiration rates from bare ground subarea
 
 Find heterotrophic respiration rates from snow over ground subarea
 
+When peatlands are simulated find the peat heterotrophic respiration
+
 Find vegetation averaged litter and soil c respiration rates using values from canopy over ground and canopy over snow subareas
 
 Find litter and soil c respiration rates averaged over the bare fraction of the grid cell using values from ground and snow over ground sub-\/areas.
 
 Find grid averaged litter and soil c respiration rates
 
+\begin{DoxyVerb}add moss and peat soil respiration to the grid
+In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
+bareground (iccp1) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to
+the grid sum but no bareground values as we assume peatlands have no bareground. \end{DoxyVerb}
+
+
 Update the litter and soil c pools based on litter and soil c respiration rates found above. also transfer humidified litter to the soil c pool.
 
 Convert u mol co2/m2.\+sec -\/$>$ $kg c/m^2$ respired over the model time step
 
-Update litter and soil c pools
+Update litter and soil c pools \begin{DoxyVerb}     Next we add bareground litter mass and humification for non-peatlands. In
+     peatlands there is no bareground litter mass since it is the moss layer. \end{DoxyVerb}
+
 
 Estimate soil respiration. this is sum of heterotrophic respiratio and root maintenance respiration.
 
 But over the bare fraction there is no live root.
 
-Find grid averaged humification and soil respiration rates
+Find grid averaged humification and soil respiration rates \begin{DoxyVerb}After aggregation of humification and soil respiration rates for non-peatlands
+\end{DoxyVerb}
+ to the grid/tile level, the same must be done for bareground (iccp1). For peatlands, we additionally add moss values to the grid (litter respiration and moss root respiration). Note in loop 430 iccp1 is passed for peatlands
 
 Find C\+H4 wetland area (if not prescribed) and emissions\+:
 
 Calculate the methane that is oxidized by the soil sink
 
 Estimate allocation fractions for leaf, stem, and root components.
-
-Note\+: fieldsm and wiltsm are calculated in allocate. They are called T\+H\+F\+C and P\+S\+I\+W\+L\+T in the C\+L\+A\+S\+S part of the model. They are recalculated here in C\+T\+E\+M to avoid passing them through the coupler in the coupled model. The C\+T\+E\+M calculated versions of fieldsm and wiltsm are also used in disturb and phenolgy. J\+M. Jan 14 2015.
 
 Estimate fraction of npp that is to be used for horizontal expansion (lambda) during the next day (i.\+e. this will be determining the colonization rate in competition).
 
@@ -361,6 +767,8 @@ units here are $kg c/m^2 .day$
 convert units to u-\/mol co2/m2.\+sec
 
 calculate grid-\/average vegetation biomass, litter mass, and soil carbon mass, and litter fall rate
+
+Add the bare ground values to the grid-\/average. If a peatland, we assume no bareground and add the moss values instead. Note\+: peatland soil C is not aggregated from plants but updated by humification and respiration from the previous stored value
 
 At this stage we have all required fluxes in u-\/mol co2/m2.\+sec and initial (loop 140 and 145) and updated sizes of all pools (in $kg c/m^2$). Now we call the balcar subroutine and make sure that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.
 
