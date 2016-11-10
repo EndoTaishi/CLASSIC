@@ -243,6 +243,8 @@ read (11,7010) titlec3
         read(11,*) (lfstatusrow(i,m,j),j=1,icc)
         read(11,*) (pandaysrow(i,m,j),j=1,icc)
 
+        read(11,*) ipeatland(i,m),Cmossmas(i,m),litrmsmoss(i,m),dmoss(i,m) ! peatland variables
+
 72      continue
 
         read(11,*) (mlightng(i,1,j),j=1,6)  !mean monthly lightning frequency
@@ -250,7 +252,6 @@ read (11,7010) titlec3
         read(11,*) extnprob(i,1)
         read(11,*) prbfrhuc(i,1)
         read(11,*) stdaln(i,1)
-        read(11,*) ipeatland(i,m),Cmossmas(i,m),litrmsmoss(i,m),dmoss(i,m) ! peatland variables
 
         if (compete .and. inibioclim) then  !read in the bioclimatic parameters
         ! read them into the first tile of each grid cell.

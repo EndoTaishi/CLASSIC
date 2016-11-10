@@ -15,7 +15,8 @@ C!              Canadian Terrestrial Ecosystem Model (CTEM)
      k           ailcgrow,   ailcbrow,     ailcrow,      zolncrow,
      l           rmatcrow,rmatctemrow,     slairow,    bmasvegrow,
      m        cmasvegcrow, veghghtrow, rootdpthrow,    alvsctmrow,
-     n         alirctmrow,    paicrow,    slaicrow,  ipeatlandrow)
+     n         alirctmrow,    paicrow,    slaicrow,  FAREROT,
+     o         ipeatlandrow)
 
 c
 c     22  Jul 2013  - Add in module for parameters

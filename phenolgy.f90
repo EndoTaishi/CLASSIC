@@ -584,8 +584,8 @@ do 270 i = il1, il2
 !!
       do 320 i =  il1, il2
         do j = 1, icc
-         if (fcancmx(i,1).gt.0.0) then
-          if(chkmode(i,1).eq.0.and.lfstatus(i,1).eq.2)then
+         if (fcancmx(i,j).gt.0.0) then
+          if(chkmode(i,j).eq.0.and.lfstatus(i,j).eq.2)then
 
             pftkind = pftlist(j)
 
@@ -847,6 +847,7 @@ do 270 i = il1, il2
 !      do 385 i = il1, il2
 !       if (fcancmx(i,6).gt.0.0) then
 !        if(chkmode(i,6).eq.0.and.lfstatus(i,6).eq.2)then
+
           if(ailcg(i,j).lt.lfthrs(i,j).and.ailcg(i,j).gt.zero)then
             lfstatus(i,j)=1         ! go back to "max. growth" mode
             chkmode(i,j)=1

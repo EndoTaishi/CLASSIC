@@ -572,6 +572,7 @@ c    Do moss photosynthesis:
             call  mosspht(ilg,ig,iday,qswnvg,thliq,co2conc,tgnd,zsnow,
      1                pressg,coszs,Cmossmas,dmoss,anmoss,rmlmoss,
      2                cevapmoss,ievapmoss,ipeatland,DAYL,pdd)
+            write(*,*)anmoss(1)
         end if
       ENDIF
 C

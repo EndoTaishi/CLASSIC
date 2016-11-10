@@ -2471,6 +2471,64 @@ C
      1          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',
      2          'SFCU  SFCV  UV')
 
+c    --------write peatland output-------------------------------------\
+
+          write(93,6903) 
+          write(94,6904)
+          write(95,6905)
+          write(96,6906)
+          write(97,6907) 
+          write(98,6908)
+          write(99,6909)
+          
+6903  format (2X,'iday iyear nppmoss   armoss   gppmoss   ',
+     1    'gppveg1  gppveg2  gppveg3  gppveg4   gppveg5   gppveg6  ',
+     2    'gppveg7  gppveg8  gppveg9  gppveg10  gppveg11  gppveg12',
+     3    'nppveg1  nppveg2  nppveg3  nppveg4   nppveg5   nppveg6  ',
+     4    'nppveg7  nppveg8  nppveg9  nppveg10  nppveg11  nppveg12',
+     5    'autoresp1   autoresp2   autoresp3   autoresp4  autoresp5  ',   
+     6    'autoresp6   autoresp7   autoresp8   autoresp9  autoresp10 ',
+     7    'autoresp11  autoresp12  heteresp1   heteresp2  heteresp3  ',
+     8    'heteresp4   heteresp5   heteresp6   heteresp7  heteresp8  ',
+     9    'heteresp9   heteresp10  heteresp11  heteresp12   ',
+     1    'fcancmx1  fcancmx2  fcancmx3  fcancmx4  fcancmx5  fcancmx6 ',   
+     2    'fcancmx7  fcancmx8  fcancmx9  fcancmx10 fcancmx11 fcancmx12')
+6904  format (2X,'iday   iyear   veghght1   veghght2   veghght3   ',   
+     1    'veghght4   veghght5   veghght6   veghght7   veghght8   ',
+     2    'veghght9   veghght10  veghght11  veghght12  rootdpt1   ',
+     3    'rootdpt2   rootdpt3   rootdpt4   rootdpt5   rootdpt6   ',
+     4    'rootdpt7   rootdpt8   rootdpt9   rootdpt10  rootdpt11  ',
+     5    'rootdpt12  ailcg1   ailcg2   ailcg3   ailcg4   ailcg5  ',
+     4    'ailcg6  ailcg7   ailcg8   ailcg9    ailcg10   ailcg11   ',
+     5    'ailcg12     stemmas1    stemmas2   stemmas3   stemmas4   ',
+     6    'stemmas5    stemmas6    stemmas7   stemmas8   stemmas9   ',
+     7    'stemmas10   stemmas11   stemmas12  rootmas1   rootmas2   ',
+     8    'rootmas3   rootmas4   rootmas5   rootmas6    rootmas7    ',
+     9    'rootmas8   rootmas9   rootmas10   rootmas11  rootmas12   ',
+     1    'litrmas1   litrmas2   litrmas3   litrmas4    litrmas5    ',
+     2    'litrmas6   litrmas7   litrmas8   litrmas9    litrmas10   ',
+     3    'litrmas11  litrmas12  gleafmas1  gleafmas2   gleafmas3   ',
+     4    'gleafmas4  gleafmas5  gleafmas6  gleafmas7   gleafmas8   ',
+     5    'gleafmas9  gleafmas10 gleafmas11 gleafmas12  bleafmas1   ',
+     6    'bleafmas2  bleafmas3   bleafmas4  bleafmas5  bleafmas6   ',
+     7    'bleafmas7  bleafmas8   bleafmas9  bleafmas10  bleafmas11 ', 
+     8    'bleafmas12')
+6905  format (2X, 'litrmass6  tlreleaf6  tltrstem6  tltrroot6  ',
+     1    'ltresveg6  humtrsvg6  litrmass7  tltrleaf7  tltrstem7  ',
+     2    'tltrroot7  ltresveg7  humtrsvg7  plitrmassms  litrmassms  ',
+     3    'litrfallms  ltrestepms  humicmstep  nppmosstep  nppmoss  ',
+     4    'anmoss  rgmoss  rmlmoss  gppmoss  Cmossmas  pCmossmas ')
+6906  format (2X, 'hpd  gavgscms  hutrstep_g  socrestep  resoxic  ',
+     1    'resanoxic  socresp(umol/m2/s)  resoxic(umol/m2/s)  ',  
+     2    'resanoxic(umol/m2/s)')  
+6907  format (2X, 'litresms  litpsims  psisat1  ltrmosclms   ',
+     1    'litrmassms  tbar1  q10funcms litrtempms  ratescpo  ', 
+     2    'ratescpa  Cso  Csa  fto  fta  resoxic  resanoxic   ',
+     3    'frac  tsoila  toilo  ewtable  lewtable  tbar1  tbar2  tbar3')	
+6908  format(2X, 'iday  tmoss  cevapms  fwmoss  thliq1  dsmoss  ', 
+     1    'g_moss  wmoss  rmlmoss  mwce  q10rmlmos  wmosmax  wmosmin')
+6909  format(2X,'WTBLACC ZSN PREACC EVAPACC ROFACC g12acc g23acc')     
+c    --------------YW March 30, 2015 ---------------------------------/
 C
       ENDIF !IF NOT PARALLELRUN
 
@@ -2948,9 +3006,10 @@ c    a problem. EC - Feb 16, 2016.
       rmlmossac_t = 0.0
       gppmossac_t = 0.0
 
-      write(6,*) 'peatdeprow=', peatdeprow
-      write(6,*) 'gavgscms=', gavgscmsrow
-      write(6,*) 'vgbiomas=', vgbiomasrow
+      write(6,6990) 'peatdeprow=', peatdeprow
+      write(6,6990) 'gavgscms=', gavgscmsrow
+      write(6,6990) 'vgbiomas=', vgbiomasrow
+6990   format(A15,12f6.2)
 c    ----------------------------YW March 25, 2015 --------------------/
 c
 
@@ -3029,8 +3088,7 @@ c
 
         do i = 1, nml
             ml(i) = 1.0/real(lon) ! wl contains zonal weights, lets find meridional weights
-            grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)
-     1                     *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
+            grclarea(i)=4.*pi*(earthrad**2)*wl(1)*ml(1)*faregat(i)/2.  ! km^2, faregat is areal fraction of each mosaic
                                             ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
         end do
 190    continue
@@ -3988,12 +4046,12 @@ c
 c
 
 c----------------update peatland bottom layer depth--------------------       
-!          do   i = 1, nml                              !FLAG JM - I comment this out for now. I don't think this is what we want.
-!           if (ipeatlandgat(i) > 0)         then
-!               dlzwgat(i,ignd)= peatdepgat(i)-0.90
-!               sdepgat(i) = peatdepgat(i)
-!           endif
-!          end do
+          do   i = 1, nml                              !FLAG JM - I comment this out for now. I don't think this is what we want.
+           if (ipeatlandgat(i) > 0)         then
+               dlzwgat(i,ignd)= peatdepgat(i)-0.90
+               sdepgat(i) = peatdepgat(i)
+           endif
+          end do
 c================YW August 26, 2015 =======================/ 
 c
 
@@ -4261,10 +4319,10 @@ C     * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
 6300  FORMAT(1X,I4,I5,3F9.2,F8.2,F10.2,E12.3,2F12.3,A6,I2)
 6400  FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,5F9.5,2(A6,I2))
 6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,4F8.3,
-     &       2F7.3,2(A6,I2))
+     &       2(A6,I2))
 6600  FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
 6501  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-6601  FORMAT(1X,I2,I3,I5,I6,26(F7.2,2F6.3),26F9.4,2(A6,I2))
+6601  FORMAT(1X,I2,I3,I5,I6,20(F7.2,2F6.3),20F9.4,2(A6,I2))
 !6601  FORMAT(1X,I2,I3,I5,I6,7(F8.2,2F7.3),10F10.4,2(A7,I3))  
 6700  FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))
 6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))
@@ -4512,7 +4570,7 @@ c
 
           endif   ! ctem_on
 
-7200      format(1x,i2,1x,i2,i5,i5,9f11.3,9f11.3,2(a6,i2))
+7200      format(1x,i2,1x,i2,i5,i5,12f11.3,12f11.3,2(a6,i2))
 c
           fsstar_g    =fsstar_g + fsstar*FAREROT(i,m)
           flstar_g    =flstar_g + flstar*FAREROT(i,m)
