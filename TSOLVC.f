@@ -568,12 +568,10 @@ C
    70   CONTINUE                                                        
 
 c    Do moss photosynthesis:
-        if (ipeatland(i) >0) then
-            call  mosspht(ilg,ig,iday,qswnvg,thliq,co2conc,tgnd,zsnow,
-     1                pressg,coszs,Cmossmas,dmoss,anmoss,rmlmoss,
+        call  mosspht(il1,il2,iday,qswnvg,thliq,co2conc,tgnd,zsnow,
+     1                pressg,Cmossmas,dmoss,anmoss,rmlmoss,
      2                cevapmoss,ievapmoss,ipeatland,DAYL,pdd)
-            write(*,*)anmoss(1)
-        end if
+
       ENDIF
 C
 C     * ITERATION FOR SURFACE TEMPERATURE OF GROUND UNDER CANOPY.

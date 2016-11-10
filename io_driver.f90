@@ -1997,6 +1997,10 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
 
     do 10 i = 1,nltest
       do 20 m = 1 , nmtest
+        !   ------convert peatland C fluxes to gC/m2/day for output-----------\
+        nppmossrow(i,m)=nppmossrow(i,m)*1.0377 ! convert to gc/m2.day
+        armossrow(i,m)=armossrow(i,m)*1.0377 ! convert to gc/m2.day
+
         do 30 j=1,icc
             if (fcancmxrow(i,m,j) .gt.0.0) then
 
@@ -2156,14 +2160,8 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
         emit_tc_g(i)  =emit_tc_g(i) + emit_tc_t(i,m)*FAREROT(i,m)
         emit_oc_g(i)  =emit_oc_g(i) + emit_oc_t(i,m)*FAREROT(i,m)
         emit_bc_g(i)  =emit_bc_g(i) + emit_bc_t(i,m)*FAREROT(i,m)
-
-
-!   ------convert peatland C fluxes to gC/m2/day for output-----------\
-    if (ipeatlandrow(i,m) > 0) then
-      nppmossrow(i,m)=nppmossrow(i,m)*1.0377 ! convert to gc/m2.day
-      armossrow(i,m)=armossrow(i,m)*1.0377 ! convert to gc/m2.day
-    endif
-!   ------------YW March 27, 2015 FLAG -------------------------------------/
+       ! nppmoss_g(i)  = nppmoss_g(i) +nppmossrow(i,m)*FAREROT(i,m)
+       ! armoss_g(i)   = armoss_g(i) + armossrow(i,m)*FAREROT(i,m)
 
         do k=1,ignd
             rmatctem_g(i,k)=rmatctem_g(i,k)+rmatctem_t(i,m,k)*FAREROT(i,m)

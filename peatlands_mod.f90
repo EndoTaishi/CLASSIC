@@ -306,8 +306,8 @@ contains
 
 !! Moss photosynthesis subroutine
 
-subroutine mosspht(ilg,ignd,iday,qswnv,thliq,co2conc,tsurfk,zsnow, &
-            &      pres,coszs,Cmossmas,dmoss,anmoss,rmlmoss,cevapmoss, &
+subroutine mosspht(il1,il2,iday,qswnv,thliq,co2conc,tsurfk,zsnow, &
+            &      pres,Cmossmas,dmoss,anmoss,rmlmoss,cevapmoss, &
             &      ievapmoss,ipeatland,daylength,pdd)
 
 ! History
@@ -321,14 +321,14 @@ subroutine mosspht(ilg,ignd,iday,qswnv,thliq,co2conc,tsurfk,zsnow, &
 ! ----------
 
 use ctem_params, only : rmlmoss25, tau25m,ektau,gasc,kc25,ko25,ec,ej,eo,evc,sj, &
-                        hj,alpha_moss,thpmoss,thmmoss
+                        hj,alpha_moss,thpmoss,thmmoss,ilg,ignd
 
 implicit none
 
 ! arguments:
 
-integer, intent(in) ::  ilg                     !<
-integer, intent(in) ::  ignd                    !<
+integer, intent(in) ::  il1                     !<
+integer, intent(in) ::  il2                     !<
 integer, intent(in) ::  iday                    !<
 integer, intent(in) ::  ipeatland(ilg)          !<
 real, dimension(ilg), intent(in) :: qswnv       !< visible short wave radiation = qswnv in TSOLVE
@@ -349,8 +349,6 @@ integer, dimension(ilg), intent(out) ::  ievapmoss   !< Value is 0 is no evapora
 real, dimension(ilg), intent(out) :: anmoss     !< net photosynthesis (umol/m2/s)
 real, dimension(ilg), intent(out) :: rmlmoss    !< moss autotrophic respiration (umol/m2/s)
 real, dimension(ilg), intent(out) :: cevapmoss  !<evaporation coefficent for moss surface
-
-real coszs(ilg) !remove?
 
 ! Local variables
 
@@ -423,7 +421,7 @@ COMMON /CLASS4/ RHOW
 ! Begin calculations:
 
 ! Do the
-do   i = 1, ilg
+do   i = il1, il2
     if (iday == 2)    then
         pdd(i) = 0.
     elseif (tsurfk(i)>tfrez)           then
@@ -439,7 +437,7 @@ end do
 !!    and a scaling factor degree of saturation of the moss layer phenology
 !!    parm is in umol/m2/s and converted from qswnv in W/m2
 
-do 100   i = 1, ilg
+do 100   i = il1, il2
         parm(i)= qswnv(i)*4.6
         o2(i)  = 20.9/100.0 * pres(i)
         co2a(i) = co2conc(i)/1000000.0 * pres(i)
@@ -453,15 +451,19 @@ do 100   i = 1, ilg
         tmoss(i)= tsurf(i)
 100   continue
 
+do 200 i =  il1, il2
+
+  if (ipeatland(i) > 0) then ! only do for peatland regions.
+
+!>
 !!    phenology  water factor on mosses ,grow when temperature > -4.0
 !!    and snowpack < 0.15 m
-do 200 i = 1, ilg
+
     if (zsnow(i) .gt. 0.05 .or. tsurf (i) .lt. 0.5)  then
         pheno(i) = 0
     else
         pheno(i) = 1
     endif
-200   continue
 
 !!    ** water content used for the living moss (depth dmoss)
 !!    dmoss is an input and site specific. Preferably make dmoss a function
@@ -470,21 +472,18 @@ do 200 i = 1, ilg
 !!    (Flanagen and Williams 1998)
 !!    dmoss is between 2.5 to 5cm based on the species (Lamberty et al. 2006)
 
-do 250   i = 1, ilg
         mmoss(i) = Cmossmas(i)/0.46
         wmoss(i)= thliq(i,1)*rhow/(mmoss(i)/dmoss(i))
-        wmosmax(i) = min(45.0, thpmoss*dmoss(1)*rhow/mmoss(i))
-        wmosmin(i) = max(5.0, thmmoss*dmoss(1)*rhow/mmoss(i))
+        wmosmax(i) = min(45.0, thpmoss*dmoss(i)*rhow/mmoss(i))  !FLAG dmoss was (1) not (i)!!
+        wmosmin(i) = max(5.0, thmmoss*dmoss(i)*rhow/mmoss(i))  !FLAG dmoss was (1) not (i)!!
         wmoss(i)= min(wmosmax(i),max(wmosmin(i),wmoss(i)))
         fwmoss(i)=wmoss(i)+1.     !g fresh weight /g dry weight
-250   continue
 
 !!    ** moss conductance g_moss umol/m2/s
 !!   (Williams and Flanagan, 1998 for Sphagnum). follow MWM, fwmoss is
 !!    the mosswat_fd in MWM. Empirical equation is only valid up to
 !!   fwmoss=13, above 13 apply a linear extension to the equation.
 
-do 300 i = 1, ilg
     if (fwmoss(i) .le. 13.0)      then
         g_moss(i)=-0.195+0.134*fwmoss(i) - 0.0256*(fwmoss(i)) &
             **2 + 0.00228*(fwmoss(i))**3 - 0.0000984* &
@@ -527,11 +526,10 @@ do 300 i = 1, ilg
 !              mwce(i) =-0.04*wmoss(i)+1.232 ! in MWM and PDM
         mwce(i)= 0.01*wmoss(i)+0.942
     endif
-300   continue
 
 !!    ** moss dark respiration
 !!    observed range of rmlmoss 0.60 to 1.60 umol/m2/s (e.g. Adkinson 2006)
-do 350 i = 1, ilg
+
     q10rmlmos(i)=(3.22-(0.046*tmoss(i)))**((tmoss(i)-25.0)/10.0)
     rmlmoss(i) = rmlmoss25*mwce(i)*q10rmlmos(i)
 
@@ -539,7 +537,7 @@ do 350 i = 1, ilg
 !!   calculate bc (coefficient used for Wc, limited by Rubisco)
 
     tau(i) = tau25m*exp((tmossk(i)-tref)*ektau/(tref*gasc*tmossk(i)))
-    gamma(i) = .5 * o2(i)/ tau(i)
+    gamma(i) = 0.5 * o2(i)/ tau(i)
     kc(i) = kc25*exp((tmossk(i)-tref)*ec/(tref*gasc*tmossk(i)))
     ko(i) = ko25*exp((tmossk(i)-tref)*eo/(tref*gasc*tmossk(i)))
     bc(i)  = kc(i) * (1.0 + (o2(i)/ ko(i)))
@@ -575,10 +573,10 @@ do 350 i = 1, ilg
 !!    calculate the maximum electorn transport rate Jmax (umol/m2/s)
 !!   1.67 = vcmax25m/jmax25m ratio
 
-    jmax25(i) = 1.67 * vcmax25(1)
+    jmax25(i) = 1.67 * vcmax25(i)  !FLAG vcmax25 was (1) not (i)!!
     term1(i)=exp(((tmossk(i)/tref)-1.)*ej/(gasc * tmossk(i)))
-    term2(i)=1+exp(((tref*sj)-hj)/(tref*gasc))
-    term3(i)=1+exp(((sj*tmossk(i))-hj)/(gasc*tmossk(i)))
+    term2(i)=1.+exp(((tref*sj)-hj)/(tref*gasc))  !FLAG: constant, can be pre-calculated!
+    term3(i)=1.+exp(((sj*tmossk(i))-hj)/(gasc*tmossk(i)))
     jmax(i)=jmax25(i)*term1(i)*term2(i)*term3(i)
     if (jmax(i) .gt. 0.0)              then
         photon(i)=alpha_moss*parm(i)/sqrt(1.0+(alpha_moss**2*parm(i)**2/(jmax(i)**2)))
@@ -598,23 +596,21 @@ do 350 i = 1, ilg
 !!   W = (a Ci - ad) / (e Ci + b)
 !!   Then set a, b, d and e for the quadratic solution for net photosynthesis.
 
-    if(wj(i) < wc(i))then
+    if (wj(i) < wc(i)) then
         psnb(i) = 8. * gamma(i)
         psna(i) = photon(i)
         psne(i) = 4.0
-    elseif(wc(i) < wj(i))then
+    elseif (wc(i) < wj(i)) then
         psnb(i) = bc(i)
         psna(i) = vcmax(i)
         psne(i) = 1.0
     end if
-350    continue
 
 !!    Calculate net and gross photosynthesis by solve the quadratic equation
 !!   first root of solution is net photosynthesis An= min(Wj,Wc) - Rd
 !!   gross photosynthesis GPP = min(Wc,Wj) = An + Rd
 
-do 400   i = 1, ilg
-    if (psna(i) .gt.0.0)                              then
+    if (psna(i) .gt.0.0) then
         mI(i)=rmlmoss(i)-(psnb(i)*g_moss(i)/pres(i)/psne(i)) &
             - (co2a(i)*g_moss(i)/pres(i))-(psna(i)/psne(i))
 
@@ -628,7 +624,10 @@ do 400   i = 1, ilg
     endif
     anmoss(i) = (-mI(i)-(mI(i)*mI(i)-4*mII(i))**0.5)/2
     anmoss(i) = pheno(i)*min(anmoss(i), ws(i))
-400       continue
+
+end if !ipeatland.
+
+200       continue
 
 return
 end subroutine mosspht
