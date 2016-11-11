@@ -408,7 +408,7 @@ c    Do moss photosynthesis:
         if (ipeatland(i) >0) then
 !!      moss subroutine finds ground evaporation rate and photosynthesis--\
             call mosspht(ilg,ig,iday,qswnv,thliq,co2conc,tstart,zsnow,
-     1              pressg,coszs,Cmossmas,dmoss,anmoss,rmlmoss,
+     1              pressg,Cmossmas,dmoss,anmoss,rmlmoss,
      2              cevapmoss,ievapmoss, ipeatland,daylength,pdd)
        end if
 

@@ -1845,7 +1845,6 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
              ! Calculate the peat depth based on equation 18 in Wu, Verseghy, Melton 2016 GMD.
              peatdep(i)=(-72067.0+sqrt((72067.0**2.0)-(4.0*4056.6*&
      &              (-gavgscms(i)*1000/0.487))))/(2*4056.6)
-
           endif          
 1020  continue
 

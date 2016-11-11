@@ -144,10 +144,10 @@ integer, pointer, dimension(:,:,:) :: lfstatusrow
 integer, pointer, dimension(:,:,:) :: pandaysrow
 integer, pointer, dimension(:,:) :: stdaln
 real, pointer, dimension(:,:,:) :: slopefrac
-integer, pointer, dimension(:,:) :: ipeatland
-real, pointer, dimension(:,:) :: Cmossmas
-real, pointer, dimension(:,:) :: litrmsmoss
-real, pointer, dimension(:,:) :: dmoss
+integer, pointer, dimension(:,:) :: ipeatland      !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
+real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
+real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 
 ! local variables
 
@@ -601,6 +601,10 @@ real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
 real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
 real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
 real, pointer, dimension(:,:,:) :: slopefrac       !< Fraction flatter than the slope threshold
+integer, pointer, dimension(:,:) :: ipeatland      !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
+real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
+real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 
 ! local variables
 
@@ -643,7 +647,11 @@ annsrpls          => vrot%annsrpls
 annpcp            => vrot%annpcp
 dry_season_length => vrot%dry_season_length
 slopefrac         => vrot%slopefrac
-      
+ipeatland        => vrot%ipeatland
+Cmossmas         => vrot%Cmossmas
+litrmsmoss       => vrot%litrmsmoss
+dmoss            => vrot%dmoss
+
 ! -----------------      
 ! Begin
 
@@ -726,7 +734,8 @@ do i=1,nltest
     do m=1,nmtest
         write(101,7011) (ailcminrow(i,m,j),j=1,icc)
         write(101,7011) (ailcmaxrow(i,m,j),j=1,icc)
-        write(101,'(9f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
+        !write(101,'(9f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
+        write(101,'(12f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
         write(101,7011) (gleafmasrow(i,m,j),j=1,icc)
         write(101,7011) (bleafmasrow(i,m,j),j=1,icc)
         write(101,7011) (stemmassrow(i,m,j),j=1,icc)
@@ -735,6 +744,8 @@ do i=1,nltest
         write(101,7013) (soilcmasrow(i,m,j),j=1,iccp1)
         write(101,7012) (lfstatusrow(i,m,j),j=1,icc)
         write(101,7012) (pandaysrow(i,m,j),j=1,icc)
+
+        write(101,7015) ipeatland(i,m),Cmossmas(i,m),litrmsmoss(i,m),dmoss(i,m) ! peatland variables
     end do !nmtest
 
     write(101,"(6f8.3)") (mlightng(i,1,j),j=1,6)  !mean monthly lightning frequency
@@ -758,10 +769,15 @@ end do !nltest
 
 close(101)
 
-7011  format(9ES12.5)
-7012  format(9i8)
-7013  format(10ES12.5)
+7011  format(12ES12.5)
+7012  format(12i8)
+7013  format(13ES12.5)
+
+!7011  format(9ES12.5)
+!7012  format(9i8)
+!7013  format(10ES12.5)
 7014  format(5ES12.4)
+7015  format(i8,3ES12.5)
 
 end subroutine write_ctm_rs        
 !>@}

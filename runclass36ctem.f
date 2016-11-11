@@ -4262,8 +4262,7 @@ c    ----
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      2      anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat,
      3      peatdepgat, litrmsmossgat, Cmossmasgat,dmossgat,
-     5      thlqaccgat_m, thicaccgat_m,ipeatlandgat,pddgat)
-
+     4      ipeatlandgat,pddgat,thlqaccgat_m,thicaccgat_m)
 
       if(ncount.eq.nday) then
 
@@ -5018,8 +5017,9 @@ C
 
 c    ----peatland output-----------------------------------------------\
 
-        write(99,6999)  WTBLACC, ZSN,PREACC,EVAPACC,ROFACC,g12acc,g23acc
-6999    format(10f12.3)
+        write(99,6999)  IDAY,IYEAR,WTBLACC(i), ZSN,PREACC(i),EVAPACC(i),
+     1   ROFACC(i),g12acc(i),g23acc(i)
+6999    format(1X,I4,I5,10f12.3)
 c    ----YW March 23, 2015 --------------------------------------------/
         
 C
