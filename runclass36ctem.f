@@ -914,7 +914,7 @@ c
      7           climiyear,   popcycleyr,    cypopyr, lucyr,
      8           cylucyr, endyr,bigpftc(1), obswetyr,
      9           cywetldyr, trans_startyr, jmosty, obslghtyr,
-     +          curlatno(ilg), lath, testyr,altotcount_ctm(nlat)
+     +          curlatno(ilg), lath, testyr,altotcount_ctm(lat)
 
       real      co2concin,    setco2conc, sumfare,
      1           temp_var, barefrac,  todfrac(ilg,icc),
@@ -3650,11 +3650,11 @@ c
           taaccgat_t(i)=taaccgat_t(i)+tagat(i)
           vvaccgat_t(i)=vvaccgat_t(i)+ vlgat(i)
           uvaccgat_t(i)=uvaccgat_t(i)+ulgat(i)
-          if (FSSROW(I) .gt. 0.) then
-            altotacc_gat(i) = altotacc_gat(i) + (FSSROW(I)-
+          if (FSSROW(1) .gt. 0.) then
+            altotacc_gat(i) = altotacc_gat(i) + (FSSROW(1)-
      1                (FSGVGAT(I)+FSGSGAT(I)+FSGGGAT(I)))
-     2                /FSSROW(I)
-             altotcount_ctm = altotcount_ctm + 1
+     2                /FSSROW(1)
+             altotcount_ctm(i) = altotcount_ctm(i) + 1
           end if
 c
           do 710 j=1,ignd
