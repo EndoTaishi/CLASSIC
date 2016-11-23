@@ -288,7 +288,7 @@ real :: repro_fraction = 0.10 !< Fraction of NPP that is used to create reproduc
 ! disturb.f90 parameters: -------------
 ! disturbance parameters: ------------
 
-real, dimension(2) :: bmasthrs_fire = [ 0.2, 1.0 ] !< min. and max. vegetation biomass thresholds to initiate fire, \f$kg c/m^2\f$
+real, dimension(2) :: bmasthrs_fire = [ 0.4, 1.2 ] !< min. and max. vegetation biomass thresholds to initiate fire, \f$kg c/m^2\f$
 
 real :: extnmois_veg  = 0.3  !< extinction moisture content for estimating vegetation fire likeliness due to soil moisture 
 real :: extnmois_duff = 0.5  !< extinction moisture content for estimating duff layer fire likeliness due to soil moisture 
@@ -326,15 +326,15 @@ real, dimension(kk) :: maxsprd = [  0.38, 0.38, 0.00, &
                                     0.00, 0.00, 0.00, &
                                     0.51, 0.75, 0.00 ]  ! new C4 value based on Vivek's literature searches (Jul 14 2016), old =0.51
 !> fraction of green leaf biomass converted to gases due to combustion
-real, dimension(kk) :: frco2glf = [ 0.70, 0.70, 0.00, &
-                                    0.70, 0.70, 0.70, &
+real, dimension(kk) :: frco2glf = [ 0.42, 0.42, 0.00, &
+                                    0.42, 0.42, 0.42, &
                                     0.00, 0.00, 0.00, &
-                                    0.80, 0.80, 0.00 ]
+                                    0.48, 0.48, 0.00 ]
 !> fraction of brown leaf biomass converted to gases due to combustion
 real, dimension(kk) :: frco2blf = [ 0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00, &
-                                    0.90, 0.90, 0.00 ]      
+                                    0.54, 0.54, 0.00 ]
 !> fraction of green leaf biomass becoming litter after combustion
 real, dimension(kk) :: frltrglf = [ 0.20, 0.20, 0.00, &
                                     0.20, 0.20, 0.20, &
@@ -346,8 +346,8 @@ real, dimension(kk) :: frltrblf = [ 0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00, &
                                     0.06, 0.06, 0.00 ]        
 !> fraction of stem biomass converted to gases due to combustion
-real, dimension(kk) :: frco2stm = [ 0.20, 0.20, 0.00, &
-                                    0.20, 0.10, 0.10, &
+real, dimension(kk) :: frco2stm = [ 0.12, 0.12, 0.00, &
+                                    0.12, 0.06, 0.06, &
                                     0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00 ]
 !> fraction of stem biomass becoming litter after combustion
@@ -366,10 +366,10 @@ real, dimension(kk) :: frltrrt = [ 0.10, 0.10, 0.00, &
                                    0.00, 0.00, 0.00, &
                                    0.25, 0.25, 0.00 ]         
 !> fraction of litter burned during fire and emitted as gases
-real, dimension(kk) :: frltrbrn = [ 0.50, 0.50, 0.00, &
-                                    0.60, 0.60, 0.60, &
+real, dimension(kk) :: frltrbrn = [ 0.30, 0.30, 0.00, &
+                                    0.36, 0.36, 0.36, &
                                     0.00, 0.00, 0.00, &
-                                    0.70, 0.70, 0.00 ]
+                                    0.42, 0.42, 0.00 ]
 
 
 !     emissions factors by chemical species
