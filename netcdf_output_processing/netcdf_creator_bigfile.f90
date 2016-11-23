@@ -358,7 +358,7 @@ if (status/=nf90_noerr) call handle_err(status)
 
 !----7
 
-z=realyrst-2
+z=realyrst-1
 write (zchar, '(I4)') z
 daysince='days since '//zchar//'-12-31'
 
