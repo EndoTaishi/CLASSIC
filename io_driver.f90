@@ -1243,8 +1243,12 @@ DO NT=1,NMON
 !                 ALIRACC_MO(I)=0.0
 !             ENDIF
 
-            ! Albedo is only counted when sun is above horizon so it uses its own counter.
-            ALTOTACC_MO(I) = ALTOTACC_MO(I)/REAL(altotcntr_m(i))
+            ! Albedo is only counted when sun is above horizon so it uses its own counter.\
+            if (altotcntr_m(i) > 0) then
+                ALTOTACC_MO(I) = ALTOTACC_MO(I)/REAL(altotcntr_m(i))
+            else
+                ALTOTACC_MO(I) = 0.
+            end if
 
             FLUTACC_MO(I)=FLUTACC_MO(I)/REAL(NDMONTH)
             FSINACC_MO(I)=FSINACC_MO(I)/REAL(NDMONTH)
@@ -1454,7 +1458,11 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
             TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*365.)
 
             ! Albedo is only counted when sun is above horizon so it uses its own counter.
-            ALTOTACC_YR(I)=ALTOTACC_YR(I)/(REAL(altotcntr_yr(i)))
+            if (altotcntr_yr(i) > 0) then
+                ALTOTACC_YR(I)=ALTOTACC_YR(I)/(REAL(altotcntr_yr(i)))
+            else
+                ALTOTACC_YR(I)= 0.
+            end if
 
             FSSTAR_YR=FSINACC_YR(I)*(1.-ALTOTACC_YR(I))
             FLSTAR_YR=FLINACC_YR(I)-FLUTACC_YR(I)

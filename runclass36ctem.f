@@ -3703,7 +3703,11 @@ c
             flinacc_gat(i)=flinacc_gat(i)/real(nday)
             flutacc_gat(i)=flutacc_gat(i)/real(nday)
 c
-            altotacc_gat(i)=altotacc_gat(i)/real(altotcount_ctm(i))
+            if (altotcount_ctm(i) > 0) then
+                altotacc_gat(i)=altotacc_gat(i)/real(altotcount_ctm(i))
+            else
+                altotacc_gat(i)=0.
+            end if
             fsstar_gat=fsinacc_gat(i)*(1.-altotacc_gat(i))
             flstar_gat=flinacc_gat(i)-flutacc_gat(i)
             netrad_gat(i)=fsstar_gat+flstar_gat
@@ -4768,7 +4772,11 @@ C
           UVACC(I)=UVACC(I)/REAL(NDAY)
           PRESACC(I)=PRESACC(I)/REAL(NDAY)
           QAACC(I)=QAACC(I)/REAL(NDAY)
-          ALTOTACC(I)=ALTOTACC(I)/REAL(altotcntr_d(i))
+          if (altotcntr_d(i) > 0) then
+            ALTOTACC(I)=ALTOTACC(I)/REAL(altotcntr_d(i))
+          else
+            ALTOTACC(I)=0.
+          end if
               FSSTAR=FSINACC(I)*(1.-ALTOTACC(I))
               FLSTAR=FLINACC(I)-FLUTACC(I)
               QH=HFSACC(I)

@@ -289,6 +289,7 @@ real :: repro_fraction = 0.10 !< Fraction of NPP that is used to create reproduc
 ! disturbance parameters: ------------
 
 real, dimension(2) :: bmasthrs_fire = [ 0.2, 1.0 ] !< min. and max. vegetation biomass thresholds to initiate fire, \f$kg c/m^2\f$
+
 real :: extnmois_veg  = 0.3  !< extinction moisture content for estimating vegetation fire likeliness due to soil moisture 
 real :: extnmois_duff = 0.5  !< extinction moisture content for estimating duff layer fire likeliness due to soil moisture 
 real :: lwrlthrs      = 0.25 ! FireMIP value: 0.025     
