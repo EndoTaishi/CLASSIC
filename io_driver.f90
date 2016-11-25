@@ -48,6 +48,24 @@ public  :: ctem_monthly_aw      ! Accumulates and writes the CTEM monthly file
 public  :: ctem_annual_aw       ! Accumulates and writes the CTEM annual file
 public  :: close_outfiles       ! Closes the model output files
 
+
+! Variables used in io operations:
+real, dimension(4) :: bounds                    !> Corners of the domain to be simulated (netcdfs)
+integer :: metfid                               !> netcdf file id for the meteorology file
+integer, parameter :: niv = 7                   !> number of meteorology variables
+character(2), dimension(niv), parameter :: vname = [ "lw", "ap", "qa", "pr", "sw", "wi", "ta" ] !< names of the met vars: longwave down, atmos pressure,
+                                                    !! specific humidity, precipitation, shortwave down, wind, air temperature
+
+real, allocatable, dimension(:) :: lonvect      !> vector of all longitudes for this simulation
+real, allocatable, dimension(:) :: latvect      !> vector of all latitudes for this simulation
+
+integer :: srtx                                 !> starting index for this simulation for longitudes
+integer :: srty                                 !> starting index for this simulation for latitudes
+integer :: cntx                                 !> number of grid cells for this simulation in the longitude direction
+integer :: cnty                                 !> number of grid cells for this simulation in the latitude direction
+integer :: endx                                 !> end index for this simulation for longitudes
+integer :: endy                                 !> end index for this simulation for latitudes
+
 contains
 
 !-------------------------------------------------------------------------------------------------------------
@@ -1208,7 +1226,7 @@ FSSTAR_MO   =0.0
 FLSTAR_MO   =0.0
 QH_MO       =0.0
 QE_MO       =0.0
-ALTOT_MO    =0.0
+ALTOTACC_MO =0.0
 ACTLYR_tmp  =0.0
 FTABLE_tmp  =0.0
 

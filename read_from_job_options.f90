@@ -74,7 +74,7 @@ subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ct
                   setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
                   compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
                   islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,& 
-                  jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
+                  jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy,use_netcdf,met_file)
 
 !#ifdef nagf95
 !use f90_unix
@@ -105,6 +105,9 @@ subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ct
 !
 !     25  Apr. 2012 - This subroutine takes in model switches from
 !     J. Melton       a job file and pushes them to RUNCLASSCTEM
+
+use netcdf_drivers, only : parsecoords
+use io_driver, only : bounds
 
 implicit none
 
@@ -204,6 +207,15 @@ logical, intent(out) :: rsfile   !< set this to true if restart files (.ini_rs a
                  		 !< equilibrium after running for a certain years. 
                  		 !< set this to false if restart files are not needed 
                  		 !< (known how many years the model will run)
+
+logical, intent(out) :: use_netcdf      !< If true, the model inputs and outputs are done with netcdf files.
+                                        !! if false, ASCII MET files will be expected. This is retained for use at
+                                        !! the site-level but is discouraged for regional/global simulations. Even when
+                                        !! use_netcdf is set to false the model requires all other inputs in netcdf format
+                                        !! as well all outputs will be netcdf formatted.
+
+character(180), intent(out) :: met_file !< location of the netcdf meteorological dataset
+
 logical, intent(out) :: start_from_rs !< if true, this option copies the _RS INI and CTM files
                                  !< to be the .INI and .CTM files and then starts the run as per normal.
                                  !< it is handy when spinning up so you don't have to do a complicated copying of the
@@ -313,8 +325,8 @@ integer, intent(out) :: isnoalb !< if isnoalb is set to 0, the original two-band
 integer, intent(out) :: igralb  !< if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of 
                                 !< soil texture.  if it is set to 1, they are assigned values based on the ncar clm soil "colour"  dataset.
 
-
 ! -------------
+
 
 namelist /joboptions/ &
   transient_run,      &
@@ -342,6 +354,8 @@ namelist /joboptions/ &
   start_bare,         &
   rsfile,             &
   start_from_rs,      &
+  use_netcdf,         &
+  met_file,           &
   IDISP,              &
   IZREF,              &
   ISLFD,              &
@@ -396,10 +410,15 @@ call getarg(1,jobfile)
 open(10,file=jobfile,status='old')
 
 read(10,nml = joboptions)
-
+write(*,*)met_file
 close(10)
 
 call getarg(2,argbuff)
+
+if (use_netcdf) then
+    call parsecoords(argbuff,bounds)
+    write(*,*)bounds
+end if
 
 end subroutine read_from_job_options
 

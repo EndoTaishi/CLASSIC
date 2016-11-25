@@ -1,30 +1,40 @@
 &joboptions
 
- TRANSIENT_RUN = .FALSE.
- TRANS_STARTYR = 1850
- CTEMLOOP = 5 ,
- CTEM_ON = .TRUE. ,
- NCYEAR = 109 ,
- LNDUSEON = .FALSE. ,   
- SPINFAST = 3 ,
- CYCLEMET = .TRUE. ,
- NUMMETCYLYRS = 30 ,
- METCYLYRST = 1901 ,
- CO2ON = .FALSE. ,
- SETCO2CONC = 285.00 ,
- CH4ON = .FALSE.,
- SETCH4CONC = 1.785 , 
- POPDON = .TRUE. ,
- POPCYCLEYR = 1850 ,
- PARALLELRUN = .FALSE. ,
- DOFIRE = .FALSE. ,
- DOWETLANDS = .FALSE. ,
- OBSWETF = .false. ,
- COMPETE=.FALSE. ,
- INIBIOCLIM=.FALSE. ,
- START_BARE=.FALSE.,
- RSFILE=.TRUE. ,
- START_FROM_RS=.FALSE.,
+ transient_run = .false. ,
+ trans_startyr = 1850 ,
+ ctemloop = 5 ,
+ ncyear = 109 ,
+ cyclemet = .true. ,
+ nummetcylyrs = 30 ,
+ metcylyrst = 1901 ,
+
+ ctem_on = .true. ,
+ spinfast = 3 ,
+
+ lnduseon = .false. ,
+
+ co2on = .false. ,
+ setco2conc = 285.00 ,
+ ch4on = .false.,
+ setch4conc = 1.785 ,
+
+ popdon = .true. ,
+ popcycleyr = 1850 ,
+
+ compete=.false. ,
+ inibioclim=.false. ,
+ start_bare=.false.,
+
+ dofire = .false. ,
+ dowetlands = .false. ,
+ obswetf = .false. ,
+
+ parallelrun = .false. ,
+ rsfile=.true. ,
+ start_from_rs=.false.,
+
+ use_netcdf = .true.,
+ met_file = '/raid/ra40/data/rjm/cruncep2/t63files/cruncepv7_1901_2015_T63.nc' ,
 
  IDISP = 0 ,
  IZREF = 2 ,

@@ -77,6 +77,8 @@ type ctem_switches
     logical :: dowetlands   !<if true allow wetland methane emission
     logical :: obswetf      !<observed wetland fraction
     logical :: transient_run!<
+    logical :: use_netcdf   !< If true all model inputs and outputs are handled via netcdfs
+    character(180) :: met_file !< location of the netcdf meteorological dataset
 
     character(80) :: titlec1!<
     character(80) :: titlec2!<
