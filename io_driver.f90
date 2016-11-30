@@ -59,12 +59,22 @@ character(2), dimension(niv), parameter :: vname = [ "lw", "ap", "qa", "pr", "sw
 real, allocatable, dimension(:) :: lonvect      !> vector of all longitudes for this simulation
 real, allocatable, dimension(:) :: latvect      !> vector of all latitudes for this simulation
 
+real, allocatable, dimension(:,:) :: lw6hr      !> downwelling longwave radiation 6 hrly
+real, allocatable, dimension(:,:) :: ap6hr      !>
+real, allocatable, dimension(:,:) :: qa6hr      !>
+real, allocatable, dimension(:,:) :: pr6hr      !>
+real, allocatable, dimension(:,:) :: sw6hr      !>
+real, allocatable, dimension(:,:) :: wi6hr      !>
+real, allocatable, dimension(:,:) :: ta6hr      !>
+
 integer :: srtx                                 !> starting index for this simulation for longitudes
 integer :: srty                                 !> starting index for this simulation for latitudes
 integer :: cntx                                 !> number of grid cells for this simulation in the longitude direction
 integer :: cnty                                 !> number of grid cells for this simulation in the latitude direction
 integer :: endx                                 !> end index for this simulation for longitudes
 integer :: endy                                 !> end index for this simulation for latitudes
+
+integer :: yearmetst                            !> Year that the met data starts on
 
 contains
 

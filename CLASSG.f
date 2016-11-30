@@ -27,6 +27,7 @@ C!
      H                  VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,
      I                  SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,
      J                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,
+     1                   DLATGAT,
      K                   ILMOS,JLMOS,
      L                   NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS,               
      M                  TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,
@@ -50,7 +51,8 @@ C!
      +                  TAROW,  QAROW,  PRESROW,PREROW, PADRROW,
      +                  VPDROW, TADPROW,RHOAROW,RPCPROW,TRPCROW,
      +                  SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,
-     +                  GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW )
+     +                  GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW,
+     +                  DLATROW)
 
 C     * Dec 30, 2014 - D.Verseghy. Re-introduce ALGW,ALGD.
 C     * Aug 19, 2014 - M.Lazare. New version called by "sfcproc2":      
@@ -321,6 +323,7 @@ C
       REAL RHSIROW( NL) !<Density of fresh snow \f$[kg m^{-3}]\f$
       REAL FCLOROW( NL) !<Fractional cloud cover [ ]
       REAL DLONROW( NL) !<Longitude of grid cell (east of Greenwich) [degrees]
+      REAL DLATROW( NL) !<Latitude of grid cell [degrees]
       REAL GGEOROW( NL) !<Geothermal heat flux at bottom of soil profile 
                         !!\f$[W m^{-2}]\f$
       REAL GUSTROL (NL) !
@@ -341,7 +344,8 @@ C
      5      TADPGAT(ILG), RHOAGAT(ILG), ZBLDGAT(ILG), Z0ORGAT(ILG),     
      6      RPCPGAT(ILG), TRPCGAT(ILG), SPCPGAT(ILG), TSPCGAT(ILG),     
      7      RHSIGAT(ILG), FCLOGAT(ILG), DLONGAT(ILG), GGEOGAT(ILG),     
-     8      GUSTGAT(ILG), RADJGAT(ILG), VMODGAT(ILG), DEPBGAT(ILG) 
+     8      GUSTGAT(ILG), RADJGAT(ILG), VMODGAT(ILG), DEPBGAT(ILG),
+     9      DLATGAT(ILG)
      
       REAL, DIMENSION(ILG,NBS) :: FSDBGAT, FSFBGAT, FSSBGAT             
 C----------------------------------------------------------------------
@@ -417,6 +421,7 @@ c         ZPLSGAT(K)=ZPLSROT(ILMOS(K),JLMOS(K))
           RHSIGAT(K)=RHSIROW(ILMOS(K))
           FCLOGAT(K)=FCLOROW(ILMOS(K))
           DLONGAT(K)=DLONROW(ILMOS(K))
+          DLATGAT(K)=DLATROW(ILMOS(K))
           GGEOGAT(K)=GGEOROW(ILMOS(K))
           GUSTGAT(K)=GUSTROL(ILMOS(K))                                  
           RADJGAT(K)=RADJ   (ILMOS(K))

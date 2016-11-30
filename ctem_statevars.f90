@@ -79,6 +79,7 @@ type ctem_switches
     logical :: transient_run!<
     logical :: use_netcdf   !< If true all model inputs and outputs are handled via netcdfs
     character(180) :: met_file !< location of the netcdf meteorological dataset
+    integer :: met_ts_sec      !< number of seconds per timestep in the meteorological netcdf file.
 
     character(80) :: titlec1!<
     character(80) :: titlec2!<
