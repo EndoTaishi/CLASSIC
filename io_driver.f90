@@ -1208,7 +1208,6 @@ FSSTAR_MO   =0.0
 FLSTAR_MO   =0.0
 QH_MO       =0.0
 QE_MO       =0.0
-ALTOT_MO    =0.0
 ACTLYR_tmp  =0.0
 FTABLE_tmp  =0.0
 

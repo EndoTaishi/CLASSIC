@@ -23,7 +23,7 @@ integer, parameter :: num_land_cells = 1955 !1958 !Remove one because 110_58, 11
 
 real :: fill_value = 1.e38         !value given for empty fields in the NetCDF output files
 
-logical, parameter :: net4 = .false. ! Set to true if you wish to make a netcdf4 output file.
+logical, parameter :: net4 = .true. ! Set to true if you wish to make a netcdf4 output file.
                                      ! NetCDF4 allow unlimited file size and groups. However some
                                      ! things (like cview) are not compatible. Also when running in
                                      ! NetCDF3, you must have different names for each variable as

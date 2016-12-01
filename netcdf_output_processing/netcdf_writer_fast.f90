@@ -179,9 +179,9 @@ do cell = 1,num_land_cells
 
 ! OF1Y
 
-if (.NOT. net4) then
+!if (.NOT. net4) then
    grpid=ncid
-end if
+!end if
 
 inquire(file=trim(folder)//trim(ARGBUFF)//'.OF1Y',exist=lexist)
 if (lexist) then
@@ -215,10 +215,10 @@ if (lexist) then
 
 
 ! Find the group id of annual Class
-if (net4) then
-  status = nf90_inq_ncid(ncid,'CLASS-Annual', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+! if (net4) then
+!   status = nf90_inq_ncid(ncid,'CLASS-Annual', grpid)
+!   if (status /= nf90_noerr) call handle_err(status)
+! end if
 
 do v = 1,numclasvars_a ! begin vars loop
 
@@ -277,23 +277,24 @@ if (lexist) then
 
    close(92)
 
-if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Annual GridAvg', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+! if (net4) then
+!   status = nf90_inq_ncid(ncid,'CTEM-Annual-GridAvg', grpid)
+!   if (status /= nf90_noerr) call handle_err(status)
+! end if
 
 ! First write the pft fractions and pft exist
-do p = 1,ctemnpft ! begin pft loop
+
 
    status = nf90_inq_varid(grpid,trim(CTEM_Y_C_VAR(2)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,pftf(p,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,pftf(:,:),start=[xlon,ylat,1,yrst],count=[1,1,ctemnpft,totyrs])
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_inq_varid(grpid,trim(CTEM_Y_C_VAR(3)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
+   do p = 1,ctemnpft ! begin pft loop
      do y = 1,totyrs  
       if (pftexist(p,y) == 'F') then
          tmpa(p,y)=0.0
@@ -301,11 +302,10 @@ do p = 1,ctemnpft ! begin pft loop
          tmpa(p,y)=1.0       
       end if
      end do
+   end do ! pfts loop
 
-   status = nf90_put_var(grpid,var_id,tmpa(p,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totyrs])
+   status = nf90_put_var(grpid,var_id,tmpa(:,:),start=[xlon,ylat,1,yrst],count=[1,1,ctemnpft,totyrs])
    if (status/=nf90_noerr) call handle_err(status)
-
-end do ! pfts loop
 
 ! Now write the total plant fraction
    status = nf90_inq_varid(grpid,trim(CTEM_Y_C_VAR(1)), var_id)
@@ -354,10 +354,10 @@ if (lexist) then
   
   close(75)
     
-  if (net4) then
-    status = nf90_inq_ncid(ncid,'CTEM-Annual GridAvg', grpid)
-    if (status /= nf90_noerr) call handle_err(status)
-  end if
+!   if (net4) then
+!     status = nf90_inq_ncid(ncid,'CTEM-Annual-GridAvg', grpid)
+!     if (status /= nf90_noerr) call handle_err(status)
+!   end if
 
   do v = 1,numctemvars_a ! begin vars loop
 
@@ -433,22 +433,22 @@ if (lexist) then
   close(750)
   deallocate(tmp)
 
-if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Annual Tiled', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+! if (net4) then
+!   status = nf90_inq_ncid(ncid,'CTEM-Annual-Tiled', grpid)
+!   if (status /= nf90_noerr) call handle_err(status)
+! end if
 
- do l=1,numtiles
+ !do l=1,numtiles
   do v = 1,numctemvars_a ! begin vars loop
 
      status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR_TA(v)), var_id)  !tiled vars
      if (status/=nf90_noerr) call handle_err(status)
 
-     status = nf90_put_var(grpid,var_id,ctem_a_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totyrs])
+     status = nf90_put_var(grpid,var_id,ctem_a_mos(v,:,:),start=[xlon,ylat,1,yrst],count=[1,1,numtiles,totyrs])
      if (status/=nf90_noerr) call handle_err(status)
 
   end do ! vars loop
- end do !tiles loop
+ !end do !tiles loop
 
 9000 continue ! This is a composite run so just move on.
 
@@ -521,36 +521,36 @@ deallocate(ctem_a_mos)
   close(751)
   deallocate(tmp)
 
-if (net4) then
-  status = nf90_inq_ncid(ncid,'CTEM-Annual Tiled', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+! if (net4) then
+!   status = nf90_inq_ncid(ncid,'CTEM-Annual-Tiled', grpid)
+!   if (status /= nf90_noerr) call handle_err(status)
+! end if
+
+do v = 1,numctemvars_a ! begin vars loop
+
+      status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id) !pft level vars
+      if (status/=nf90_noerr) call handle_err(status)
 
  do l=1,numtiles
   do p = 1, ctemnpft
    if (pfts_to_write(l,p)) then
-   do v = 1,numctemvars_a ! begin vars loop
-     if (TILED .and. DOPFTS) then
 
-      status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id) !pft level vars
-      if (status/=nf90_noerr) call handle_err(status)
+     if (TILED .and. DOPFTS) then
 
       status = nf90_put_var(grpid,var_id,ctem_a_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totyrs])
       if (status/=nf90_noerr) call handle_err(status)
 
     else if (DOPFTS .and. .not. TILED) then
 
-      status = nf90_inq_varid(grpid,trim(CTEM_Y_VAR(v)), var_id) !pft level vars
-      if (status/=nf90_noerr) call handle_err(status)
-
       status = nf90_put_var(grpid,var_id,ctem_a_pft(v,p,1,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totyrs])
       if (status/=nf90_noerr) call handle_err(status)
 
     end if
-   end do ! vars loop
+
    end if
   end do ! pft loop
  end do !tiles loop
+end do ! vars loop
 
 ! deallocate arrays
 deallocate(ctem_a_pft)
@@ -589,10 +589,10 @@ if (DOFIRE) then
   
   close(85)
   
-   if (net4) then
-    status = nf90_inq_ncid(ncid,'Annual-Disturbance GridAvg', grpid)
-    if (status /= nf90_noerr) call handle_err(status)
-  end if
+!    if (net4) then
+!     status = nf90_inq_ncid(ncid,'Annual-Disturbance-GridAvg', grpid)
+!     if (status /= nf90_noerr) call handle_err(status)
+!   end if
 
   do v = 1,nctemdistvars_a ! begin vars loop
 
@@ -655,22 +655,22 @@ if (DOFIRE) then
   close(851)
   deallocate(tmpd)
 
-  if (net4) then
-    status = nf90_inq_ncid(ncid,'Annual-Disturbance Tiled', grpid)
-    if (status /= nf90_noerr) call handle_err(status)
-  end if
+!   if (net4) then
+!     status = nf90_inq_ncid(ncid,'Annual-Disturbance-Tiled', grpid)
+!     if (status /= nf90_noerr) call handle_err(status)
+!   end if
 
-  do l=1,numtiles
+!  do l=1,numtiles
    do v = 1,nctemdistvars_a ! begin vars loop
 
       status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR_TA(v)), var_id) !tile avg vars
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_put_var(grpid,var_id,ctem_d_a_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totyrs])
+      status = nf90_put_var(grpid,var_id,ctem_d_a_mos(v,:,:),start=[xlon,ylat,1,yrst],count=[1,1,numtiles,totyrs])
       if (status/=nf90_noerr) call handle_err(status)
 
    end do ! vars loop
-  end do !tiles loop
+  !end do !tiles loop
 
 9150 continue ! This was a composite run so just move on.
 
@@ -719,37 +719,35 @@ if (DOFIRE) then
   close(850)
   deallocate(tmpd)
 
-  if (net4) then
-    status = nf90_inq_ncid(ncid,'Annual-Disturbance PerPFT', grpid)
-    if (status /= nf90_noerr) call handle_err(status)
-  end if
+!   if (net4) then
+!     status = nf90_inq_ncid(ncid,'Annual-Disturbance-PerPFT', grpid)
+!     if (status /= nf90_noerr) call handle_err(status)
+!   end if
+
+do v = 1,nctemdistvars_a  ! begin vars loop
+
+    status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id) !pft level vars
+    if (status/=nf90_noerr) call handle_err(status)
 
  do l=1,numtiles
   do p = 1, ctemnpft
     if (pfts_to_write(l,p)) then ! these were determined by the CTO1Y file.
-     do v = 1,nctemdistvars_a  ! begin vars loop
-      if (TILED .and. DOPFTS) then
 
-        status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id) !pft level vars
-        if (status/=nf90_noerr) call handle_err(status)
+      if (TILED .and. DOPFTS) then
 
         status = nf90_put_var(grpid,var_id,ctem_d_a_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totyrs])
         if (status/=nf90_noerr) call handle_err(status)
 
       else if (DOPFTS .and. .not. TILED) then
 
-        status = nf90_inq_varid(grpid,trim(CTEM_Y_D_VAR(v)), var_id) !pft level vars
-        if (status/=nf90_noerr) call handle_err(status)
-
         status = nf90_put_var(grpid,var_id,ctem_d_a_pft(v,p,1,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totyrs])
         if (status/=nf90_noerr) call handle_err(status)
 
       end if
-
-     end do ! vars loop
-    end if
-  end do ! pft loop
- end do !tiles loop
+      end if
+     end do ! pft loop
+  end do !tiles loop
+ end do ! vars loop
 
   deallocate(ctem_d_a_pft)
 
@@ -789,10 +787,10 @@ if (DOWETLANDS) then
 
   close(900)
   
-   if (net4) then
-    status = nf90_inq_ncid(ncid,'Annual-Methane flux GridAvg', grpid)
-    if (status /= nf90_noerr) call handle_err(status)
-   end if
+!    if (net4) then
+!     status = nf90_inq_ncid(ncid,'Annual-Methane-GridAvg', grpid)
+!     if (status /= nf90_noerr) call handle_err(status)
+!    end if
    
   do v = 1,nctemwetvars_a ! begin vars loop
 
@@ -852,22 +850,22 @@ if (DOWETLANDS) then
   close(901)
   deallocate(tmpd)
 
-  if (net4) then
-    status = nf90_inq_ncid(ncid,'Annual-Wetland Tiled', grpid)
-    if (status /= nf90_noerr) call handle_err(status)
-  end if
+!   if (net4) then
+!     status = nf90_inq_ncid(ncid,'Annual-Wetland-Tiled', grpid)
+!     if (status /= nf90_noerr) call handle_err(status)
+!   end if
 
-  do l=1,numtiles
+  !do l=1,numtiles
    do v = 1,nctemwetvars_a ! begin vars loop
 
       status = nf90_inq_varid(grpid,trim(CTEM_Y_W_T_VAR(v)), var_id) !tile avg vars
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_put_var(grpid,var_id,ctem_w_a_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totyrs])
+      status = nf90_put_var(grpid,var_id,ctem_w_a_mos(v,:,:),start=[xlon,ylat,1,yrst],count=[1,1,numtiles,totyrs])
       if (status/=nf90_noerr) call handle_err(status)
 
    end do ! vars loop
-  end do !tiles loop
+!  end do !tiles loop
 
 10150 continue ! composite run so move on.
 
@@ -935,15 +933,15 @@ do cell = 1,num_land_cells
     numtiles=0
 
 
-if (.NOT. net4) then
+!if (.NOT. net4) then
    grpid=ncid_m
-end if
+!end if
 
 ! Do OF1M first
-if (net4) then
-  status = nf90_inq_ncid(ncid_m,'CLASS-Monthly',grpid) 
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+! if (net4) then
+!   status = nf90_inq_ncid(ncid_m,'CLASS-Monthly',grpid)
+!   if (status /= nf90_noerr) call handle_err(status)
+! end if
 
   inquire(file=trim(folder)//trim(ARGBUFF)//'.OF1M',exist=lexist)
   if (lexist) then
@@ -1030,17 +1028,17 @@ end if !lexist
 
 !----
 ! Write to netcdf file
- do l=1,nl   ! begin soil layer loop
-  do v = 1,3 ! begin vars loop of the three soil vars that are per layer
+! do l=1,nl   ! begin soil layer loop
+  do v = 1,nclassoilvars_m ! begin vars loop
 
    status = nf90_inq_varid(grpid,trim(CLASS_M_S_VAR(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,class_s_m(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totmons])
+   status = nf90_put_var(grpid,var_id,class_s_m(v,:,:),start=[xlon,ylat,1,yrst],count=[1,1,nl,totmons])
    if (status/=nf90_noerr) call handle_err(status)
 
   end do ! vars loop
- end do ! soil layer loop
+! end do ! soil layer loop
 
  do v = 4,nclassoilvars_m ! begin vars loop of the remainder
 
@@ -1098,23 +1096,23 @@ if (COMPETE_LNDUSE) then
 
    close(91)
 
-if (net4) then
-  status = nf90_inq_ncid(ncid_m,'CTEM-Monthly GridAvg', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+! if (net4) then
+!   status = nf90_inq_ncid(ncid_m,'CTEM-Monthly-GridAvg', grpid)
+!   if (status /= nf90_noerr) call handle_err(status)
+! end if
 
 ! First write the pft fractions and pftexist
-  do p = 1,ctemnpft ! begin pft loop
 
    status = nf90_inq_varid(grpid,trim(CTEM_M_C_VAR(2)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
-   status = nf90_put_var(grpid,var_id,mpftf(p,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totmons])
+   status = nf90_put_var(grpid,var_id,mpftf(:,:),start=[xlon,ylat,1,yrst],count=[1,1,ctemnpft,totmons])
    if (status/=nf90_noerr) call handle_err(status)
 
    status = nf90_inq_varid(grpid,trim(CTEM_M_C_VAR(3)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
 
+  do p = 1,ctemnpft ! begin pft loop
      do y = 1,totmons
       if (mpftexist(p,y) == 'F') then
          tmpm(p,y)=0.0
@@ -1122,11 +1120,11 @@ end if
          tmpm(p,y)=1.0
       end if
      end do
-  
-   status = nf90_put_var(grpid,var_id,tmpm(p,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totmons])
+  end do ! pfts loop
+
+   status = nf90_put_var(grpid,var_id,tmpm(:,:),start=[xlon,ylat,1,yrst],count=[1,1,ctemnpft,totmons])
    if (status/=nf90_noerr) call handle_err(status)
 
-  end do ! pfts loop
 
  ! Now write the total plant fraction
    status = nf90_inq_varid(grpid,trim(CTEM_M_C_VAR(1)), var_id)
@@ -1175,10 +1173,10 @@ allocate(ctem_m(numctemvars_m,totmons))
  close(74)
 
 ! MONTHLY
-if (net4) then
-  status = nf90_inq_ncid(ncid_m,'CTEM-Monthly GridAvg', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+! if (net4) then
+!   status = nf90_inq_ncid(ncid_m,'CTEM-Monthly-GridAvg', grpid)
+!   if (status /= nf90_noerr) call handle_err(status)
+! end if
 
  do v = 1,numctemvars_m ! begin vars loop
 
@@ -1257,21 +1255,21 @@ backspace(741)
 
 !----
 ! MONTHLY
-if (net4) then
-  status = nf90_inq_ncid(ncid_m,'CTEM-Monthly Tiled', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+! if (net4) then
+!   status = nf90_inq_ncid(ncid_m,'CTEM-Monthly-Tiled', grpid)
+!   if (status /= nf90_noerr) call handle_err(status)
+! end if
 
  do v = 1,numctemvars_m ! begin vars loop
-   do l = 1,numtiles ! begin tile loop
+   !do l = 1,numtiles ! begin tile loop
 
       status = nf90_inq_varid(grpid,trim(CTEM_M_VAR_TA(v)), var_id)
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_put_var(grpid,var_id,ctem_m_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totmons])
+      status = nf90_put_var(grpid,var_id,ctem_m_mos(v,:,:),start=[xlon,ylat,1,yrst],count=[1,1,numtiles,totmons])
       if (status/=nf90_noerr) call handle_err(status)
 
-   end do
+   !end do
  end do
 
 1123 continue
@@ -1346,36 +1344,33 @@ allocate(tmp(numctemvars_m))
 
 !----
 ! MONTHLY
-if (net4) then
-  status = nf90_inq_ncid(ncid_m,'CTEM-Monthly PFTlevel', grpid)
-  if (status /= nf90_noerr) call handle_err(status)
-end if
+! if (net4) then
+!   status = nf90_inq_ncid(ncid_m,'CTEM-Monthly-PFTlevel', grpid)
+!   if (status /= nf90_noerr) call handle_err(status)
+! end if
+
+do v = 1,numctemvars_m ! begin vars loop
+
+    status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
+    if (status/=nf90_noerr) call handle_err(status)
 
   do p = 1,ctemnpft
    do l = 1,numtiles ! begin tile loop
     if (pfts_to_write(l,p)) then
-     do v = 1,numctemvars_m ! begin vars loop
 
       if (TILED .and. DOPFTS) then
-
-        status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
-        if (status/=nf90_noerr) call handle_err(status)
 
         status = nf90_put_var(grpid,var_id,ctem_m_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totmons])
         if (status/=nf90_noerr) call handle_err(status)
 
       else if (DOPFTS .and. .not. TILED) then
 
-        status = nf90_inq_varid(grpid,trim(CTEM_M_VAR(v)), var_id)
-        if (status/=nf90_noerr) call handle_err(status)
-
         status = nf90_put_var(grpid,var_id,ctem_m_pft(v,p,1,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totmons])
         if (status/=nf90_noerr) call handle_err(status)
 
       end if
-
+     end if
     end do
-   end if
   end do
  end do
 
@@ -1415,10 +1410,10 @@ if (lexist) then
 
     close(84)
 
- if (net4) then
-   status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance GridAvg', grpid)
-   if (status /= nf90_noerr) call handle_err(status)
- end if
+!  if (net4) then
+!    status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance-GridAvg', grpid)
+!    if (status /= nf90_noerr) call handle_err(status)
+!  end if
 
  do v = 1,nctemdistvars_m ! begin vars loop
   
@@ -1476,22 +1471,22 @@ if (TILED) then
    close(841)
    deallocate(tmpd)
 
-  if (net4) then
-    status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance Tiled', grpid)
-    if (status /= nf90_noerr) call handle_err(status)
-  end if
+!   if (net4) then
+!     status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance-Tiled', grpid)
+!     if (status /= nf90_noerr) call handle_err(status)
+!   end if
 
  do v = 1,nctemdistvars_m ! begin vars loop
-   do l = 1,numtiles ! begin tile loop
+   !do l = 1,numtiles ! begin tile loop
 
       status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR_TA(v)), var_id)
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_put_var(grpid,var_id,ctem_d_m_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totmons])
+      status = nf90_put_var(grpid,var_id,ctem_d_m_mos(v,:,:),start=[xlon,ylat,1,yrst],count=[1,1,numtiles,totmons])
       if (status/=nf90_noerr) call handle_err(status)
 
 
-   end do
+   !end do
  end do
 
  deallocate(ctem_d_m_mos)
@@ -1537,36 +1532,32 @@ if (TILED) then
    close(840)
    deallocate(tmpd)
 
-  if (net4) then
-    status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance PFTlevel', grpid)
-    if (status /= nf90_noerr) call handle_err(status)
-  end if
+!   if (net4) then
+!     status = nf90_inq_ncid(ncid_m,'Monthly-Disturbance-PFTlevel', grpid)
+!     if (status /= nf90_noerr) call handle_err(status)
+!   end if
+do v = 1,nctemdistvars_m ! begin vars loop
+
+    status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
+    if (status/=nf90_noerr) call handle_err(status)
 
   do p = 1,ctemnpft
    do l = 1,numtiles ! begin tile loop
     if (pfts_to_write(l,p)) then
-     do v = 1,nctemdistvars_m ! begin vars loop
 
       if (TILED .and. DOPFTS) then
-
-        status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
-        if (status/=nf90_noerr) call handle_err(status)
 
         status = nf90_put_var(grpid,var_id,ctem_d_m_pft(v,p,l,:),start=[xlon,ylat,p,l,yrst],count=[1,1,1,1,totmons])
         if (status/=nf90_noerr) call handle_err(status)
 
       else if (DOPFTS .and. .not. TILED) then
 
-        status = nf90_inq_varid(grpid,trim(CTEM_M_D_VAR(v)), var_id)
-        if (status/=nf90_noerr) call handle_err(status)
-
         status = nf90_put_var(grpid,var_id,ctem_d_m_pft(v,p,1,:),start=[xlon,ylat,p,yrst],count=[1,1,1,totmons])
         if (status/=nf90_noerr) call handle_err(status)
 
       end if
-
+     end if
     end do
-   end if
   end do
  end do
 
@@ -1608,11 +1599,11 @@ if (DOWETLANDS) then
    
    close(910)
 
- if (net4) then
-   status = nf90_inq_ncid(ncid_m,'Monthly-Methane flux GridAvg', grpid)
-   if (status /= nf90_noerr) call handle_err(status)
- end if
- 
+!  if (net4) then
+!    status = nf90_inq_ncid(ncid_m,'Monthly-Methane-GridAvg', grpid)
+!    if (status /= nf90_noerr) call handle_err(status)
+!  end if
+!
  do v = 1,nctemwetvars_m ! begin vars loop
    status = nf90_inq_varid(grpid,trim(CTEM_M_W_VAR(v)), var_id)
    if (status/=nf90_noerr) call handle_err(status)
@@ -1666,21 +1657,21 @@ if (TILED) then
    close(911)
    deallocate(tmpd)
 
-  if (net4) then
-    status = nf90_inq_ncid(ncid_m,'Monthly-Wetland Tiled', grpid)
-    if (status /= nf90_noerr) call handle_err(status)
-  end if
+!   if (net4) then
+!     status = nf90_inq_ncid(ncid_m,'Monthly-Wetland-Tiled', grpid)
+!     if (status /= nf90_noerr) call handle_err(status)
+!   end if
 
  do v = 1,nctemwetvars_m ! begin vars loop
-   do l = 1,numtiles ! begin tile loop
+   !do l = 1,numtiles ! begin tile loop
 
       status = nf90_inq_varid(grpid,trim(CTEM_M_W_T_VAR(v)), var_id)
       if (status/=nf90_noerr) call handle_err(status)
 
-      status = nf90_put_var(grpid,var_id,ctem_w_m_mos(v,l,:),start=[xlon,ylat,l,yrst],count=[1,1,1,totmons])
+      status = nf90_put_var(grpid,var_id,ctem_w_m_mos(v,:,:),start=[xlon,ylat,1,yrst],count=[1,1,numtiles,totmons])
       if (status/=nf90_noerr) call handle_err(status)
 
-   end do
+   !end do
  end do
 
  deallocate(ctem_w_m_mos)
