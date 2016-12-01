@@ -1542,8 +1542,6 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
 
 ! J. Melton Feb 2016.
 
-! FLAG Modified to include YW's peatland changes, originally in the driver. EC - Feb 16, 2016.
-
 use ctem_statevars,     only : ctem_tile, vrot, c_switch, &
                                resetdaily, ctem_grd
 use ctem_params, only : icc,ignd,nmos,iccp1,wtCH4,seed
@@ -2393,7 +2391,7 @@ do 80 i=1,nltest
 !     for just the 1st tile of the 1st grid point.
 !   - Leave gppmosac_g hard-coded to 1 for now, but should be changed!
 !   EC - Feb 2106.
-
+! I think I will just remove these unless they are needed. JM Nov 2016.
     do m=1,nmtest
 
 !   CT11D_G   convert moss gpp from umol/m2/s to g/m2/day  
@@ -3256,11 +3254,6 @@ end subroutine ctem_monthly_aw
 !>@{
 subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT)
 
-! FLAG FLAG FLAG
-! Moved YW's peatland changes from driver for "peatdep". EC - Feb 16, 2016.
-! However, they don't affect output, so not sure why these changes were done. 
-! Perhaps the modifications are not complete?
-
 use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
                                 resetyearend
 use ctem_params, only : icc,iccp1,seed,nmos
@@ -3359,8 +3352,7 @@ real, pointer, dimension(:,:) :: ch4dyn1_yr_t
 real, pointer, dimension(:,:) :: ch4dyn2_yr_t
 real, pointer, dimension(:,:) :: ch4soills_yr_t
 real, pointer, dimension(:,:) :: veghght_yr_t
-
-real, pointer, dimension(:,:) :: peatdep_yr_m
+real, pointer, dimension(:,:) :: peatdep_yr_t
 
 
 logical, pointer, dimension(:,:,:) :: pftexistrow
@@ -3548,7 +3540,7 @@ ch4dyn1_yr_t          =>ctem_tile_yr%ch4dyn1_yr_t
 ch4dyn2_yr_t          =>ctem_tile_yr%ch4dyn2_yr_t
 ch4soills_yr_t        =>ctem_tile_yr%ch4soills_yr_t
 veghght_yr_t          =>ctem_tile_yr%veghght_yr_t
-peatdep_yr_m              =>ctem_tile_yr%peatdep_yr_m
+peatdep_yr_t          =>ctem_tile_yr%peatdep_yr_t
 
 
 pftexistrow       => vrot%pftexist
@@ -3644,7 +3636,7 @@ ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
 ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
 ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
 veghght_yr_g          =>ctem_grd_yr%veghght_yr_g
-peatdep_yr_g              =>ctem_grd_yr%peatdep_yr_g
+peatdep_yr_g          =>ctem_grd_yr%peatdep_yr_g
 !------------
 
 !> Accumulate yearly outputs
@@ -3693,7 +3685,7 @@ do 882 i=1,nltest
         nep_yr(i,m,iccp1)=nep_yr(i,m,iccp1)+nepvegrow(i,m,iccp1)
         nbp_yr(i,m,iccp1)=nbp_yr(i,m,iccp1)+nbpvegrow(i,m,iccp1)
 
-        peatdep_yr_m(i,m)=peatdeprow(i,m)      !YW September 04, 2015
+        peatdep_yr_t(i,m)=peatdeprow(i,m)      !YW September 04, 2015
 
 
         !> Accumulate the variables at the per tile level
@@ -3982,9 +3974,6 @@ do 882 i=1,nltest
 
     endif ! if iday=365
 882     continue ! i
-
-! FLAG  MOVE into resetyearend !!!!
-            peatdep_yr_m(i,m)      =0.0      !YW September 04, 2015
 
 if (iday.eq.365) then
 

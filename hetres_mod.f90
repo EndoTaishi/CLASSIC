@@ -572,16 +572,17 @@ do 130 i = il1, il2
 
 !         FLAG- check on this as I had to change a fair amount what YW had, JM. Sep 21 2016.
 !           Also not sure if it is needed?
-            if (ipeatland(i) >0) then
-                if (thliq(i,j)+ thicec(i,j)+0.01 < thpor(i,j) &
-                   .and.  tbar(i,j) <273.16)                   then
-                  psi(i,j) = 0.001
-                elseif (thicec(i,j) > thpor(i,j))    then
-                  psi(i,j) = 0.001   !set to saturation
-                !else
-                    ! leave as-is.
-                endif
-            endif
+!               JM- Turn off for now, we'll see how testing looks. Nov 2016.
+!             if (ipeatland(i) >0) then
+!                 if (thliq(i,j)+ thicec(i,j)+0.01 < thpor(i,j) &
+!                    .and.  tbar(i,j) <273.16)                   then
+!                   psi(i,j) = 0.001
+!                 elseif (thicec(i,j) > thpor(i,j))    then
+!                   psi(i,j) = 0.001   !set to saturation
+!                 !else
+!                     ! leave as-is.
+!                 endif
+!             endif
 
             if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2

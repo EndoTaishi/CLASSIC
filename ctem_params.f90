@@ -393,7 +393,7 @@ real, dimension(kk) :: frco2glf = [ 0.70, 0.70, 0.00, 0.00, 0.00,&
 real, dimension(kk) :: frco2blf = [ 0.00, 0.00, 0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00, 0.00, 0.00, &
-                                    0.90, 0.90, 0.90, 0.00, 0.00 ] !FLAG JM- can sedge get brown leaves in YW scheme?
+                                    0.90, 0.90, 0.90, 0.00, 0.00 ]
 
 !> fraction of green leaf biomass becoming litter after combustion
 real, dimension(kk) :: frltrglf = [ 0.20, 0.20, 0.00, 0.00, 0.00, &
@@ -433,7 +433,7 @@ real, dimension(kk) :: frltrrt = [ 0.10, 0.10, 0.00, 0.00, 0.00, &
 
 !> fraction of litter burned during fire and emitted as gases
 real, dimension(kk) :: frltrbrn = [ 0.50, 0.50, 0.00, 0.00, 0.00, &
-                                    0.60, 0.60, 0.60, 0.60, 0.60, & !FLAG JM, YW had the shrubs the same as evergreens
+                                    0.60, 0.60, 0.60, 0.60, 0.60, &
                                     0.00, 0.00, 0.00, 0.00, 0.00, &
                                     0.70, 0.70, 0.70, 0.00, 0.00 ]
 
@@ -657,7 +657,7 @@ real :: minlvfr = 0.05          !< Minimum live wood fraction
 
 ! mosspht subroutine parameters
 
-real :: rmlmoss25 = 1.1 !< Base dark respiration rate of moss umol/m2/s (best estimate is from fig. 6b in
+real :: rmlmoss25 = 1.1 !< Base dark respiration rate of moss umol CO2/m2/s (best estimate is from fig. 6b in
                         !! Williams and Flanagan (1998) seasonal variation not considered
 
 real :: tau25m=2321.0   !< tau coefficient (rate at 25 Celcius) iscomputed on the basis of the specificity
@@ -776,7 +776,7 @@ real :: grksmoss = 1.83E-3  !< Saturated hydrualic conductivity of moss (m)
                             !! 5cm moss, their value of 10cm moss is
                             !! 2.45E-4, similar to fibric here
 
-real :: hcpmoss = 2.50E6      !< Heat capacity of moss ($J m^{-2} K^{-1}$), same as hcp of peat in Beringer et al. 2001 !FLAG check units, was written as m. JM Sep 26 2016
+real :: hcpmoss = 2.50E6    !< Volumetric heat capacity of moss ($J m^{-3} K^{-1}$), same as hcp of peat in Beringer et al. 2001  2016
 
 !real :: sphms = 2.70E3      !< Specific heat of moss layer ($J m^{-2} K^{-1}$) ! FLAG NOT USED also check units - written as J/kg/K. JM Sep 26 2016
                             !! same as that specific heat for vegetation

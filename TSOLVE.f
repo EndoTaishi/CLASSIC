@@ -308,7 +308,6 @@ C
       END DO                                                            
 C 
       !>
-      !! FLAG: this comment below likely needs updating!
       !!
       !!In the beginning loop, some preliminary calculations are done. The 
       !!shortwave transmissivity at the surface, TRTOP, is set to zero in 

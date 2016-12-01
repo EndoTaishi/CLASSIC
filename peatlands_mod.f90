@@ -346,8 +346,8 @@ real, dimension(ilg), intent(in) :: dmoss       !< unit m, depth of living moss.
 real, dimension(ilg), intent(inout) :: pdd(ilg) !<
 
 integer, dimension(ilg), intent(out) ::  ievapmoss   !< Value is 0 is no evaporation from moss, 1 otherwise
-real, dimension(ilg), intent(out) :: anmoss     !< net photosynthesis (umol/m2/s)
-real, dimension(ilg), intent(out) :: rmlmoss    !< moss autotrophic respiration (umol/m2/s)
+real, dimension(ilg), intent(out) :: anmoss     !< net photosynthesis (umol CO2/m2/s)
+real, dimension(ilg), intent(out) :: rmlmoss    !< moss autotrophic respiration (umol CO2/m2/s)
 real, dimension(ilg), intent(out) :: cevapmoss  !<evaporation coefficent for moss surface
 
 ! Local variables
@@ -370,7 +370,7 @@ real:: fwmoss(ilg)      !<relative water content of mosses in g fw /g dw
 real:: dsmoss(ilg)      !<degree of moss saturation = relative water
                         !!content/maximum relative water content
 
-real:: g_moss(ilg)      !<moss conductance umol/m2/s (based on
+real:: g_moss(ilg)      !<moss conductance umol CO2/m2/s (based on
                         !!Williams and Flanagan,1998 for Sphagnum)
 real:: mwce (ilg)       !<moisture function of dark respiration of moss
 real:: tmoss(ilg)       !<moss temperature extraporated from the tbar 1
@@ -479,7 +479,7 @@ do 200 i =  il1, il2
         wmoss(i)= min(wmosmax(i),max(wmosmin(i),wmoss(i)))
         fwmoss(i)=wmoss(i)+1.     !g fresh weight /g dry weight
 
-!!    ** moss conductance g_moss umol/m2/s
+!!    ** moss conductance g_moss umol CO2/m2/s
 !!   (Williams and Flanagan, 1998 for Sphagnum). follow MWM, fwmoss is
 !!    the mosswat_fd in MWM. Empirical equation is only valid up to
 !!   fwmoss=13, above 13 apply a linear extension to the equation.

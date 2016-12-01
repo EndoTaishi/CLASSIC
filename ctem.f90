@@ -375,8 +375,8 @@ real, dimension(ilg,icc), intent(out) :: tltrroot       !<total root litter fall
 real, dimension(ilg,ican), intent(out) :: paicgat       !<
 real, dimension(ilg,ican), intent(out) :: slaicgat      !<
 real, dimension(ilg,icc), intent(out) :: vgbiomas_veg   !<
-real, dimension(ilg), intent(out) :: armoss             !<autotrophic respiration of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
-real, dimension(ilg), intent(out) :: nppmoss            !<net primary production of moss ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+real, dimension(ilg), intent(out) :: armoss             !<autotrophic respiration of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+real, dimension(ilg), intent(out) :: nppmoss            !<net primary production of moss ($\mu mol CO2 m^{-2} s^{-1}$)
 
 ! ---------------------------------------------
 ! Local variables:
@@ -528,11 +528,11 @@ real add2allo(ilg,icc)  !<
 real reprocost(ilg,icc) !<
 real repro_cost_g(ilg)  !<
 real lambdaalt !<
-real rgmoss(ilg)        !< moss growth respiration ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
-real litresmoss(ilg)    !< moss litter respiration ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
-real socres_peat(ilg)   !< heterotrphic repsiration from peat soil ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
-real resoxic(ilg)       !< oxic respiration from peat soil ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
-real resanoxic(ilg)     !< anoxic respiration from peat soil ($\mu mol C(?) m^{-2} s^{-1}$) - FLAG unit is C or CO2?
+real rgmoss(ilg)        !< moss growth respiration ($\mu mol CO2 m^{-2} s^{-1}$)
+real litresmoss(ilg)    !< moss litter respiration ($\mu mol CO2 m^{-2} s^{-1}$)
+real socres_peat(ilg)   !< heterotrophic repsiration from peat soil ($\mu mol CO2 m^{-2} s^{-1}$)
+real resoxic(ilg)       !< oxic respiration from peat soil ($\mu mol CO2 m^{-2} s^{-1}$)
+real resanoxic(ilg)     !< anoxic respiration from peat soil ($\mu mol CO2 m^{-2} s^{-1}$)
 real litrfallmoss(ilg)  !< moss litter fall (kgC/m2/timestep)
 real ltrestepmoss(ilg)  !< litter respiration from moss (kgC/m2/timestep)
 real humstepmoss(ilg)   !< moss humification (kgC/m2/timestep)
@@ -1315,7 +1315,7 @@ do 470 j = 1,icc
             soilresp(i) = socres(i)+litres(i)+rmr(i) !moss root and litter respiration. No bareground!
 
 !    calculate moss time step C fluxes, '/365*deltat' convert year-1
-!    to time step-1, 'deltat/963.62' convert umol/m2/s to kgC/m2/deltat. 
+!    to time step-1, 'deltat/963.62' convert umol CO2/m2/s to kgC/m2/deltat.
 !    note that hutrstep_g aggregation for icc was done in loop 480
 ! 
               litrfallmoss(i)= Cmossmas(i)*rmortmoss/365*deltat !kgC/m2/day(dt)
@@ -1424,11 +1424,7 @@ endif !compete
           gppvgstp(i,j)=gppveg(i,j)*(1.0/963.62)*deltat !+ add2allo(i,j)
 
 !>Remove the cost of making reproductive tissues. This cost can only be removed when NPP is positive.
-          !if (compete) then   !FLAG - set up now so only compete on has a reproductive cost. JM
             reprocost(i,j) =max(0.,nppveg(i,j)*repro_fraction)
-          !else
-          !  reprocost(i,j) = 0.
-          !end if
 
 !         Not in use. We now use a constant reproductive cost as the prior formulation
 !         produces perturbations that do not allow closing of the C balance. JM Jun 2014.

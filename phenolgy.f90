@@ -836,7 +836,7 @@ do 270 i = il1, il2
 !         endif
 !380     continue
 !370   continue
-! FLAG!
+
 !
 
 !      else          !icc != 9 here icc == 12, 6,7 =shrubs, 8,9 = crops,
@@ -1038,31 +1038,7 @@ do 410 i = il1, il2
 400       continue
         !endif
 410   continue
-!
-!         YW July 13, 2015  comment out the testing to reverse to 2.0.4
-!       FLAG test done to see impact of no alloc to leaves after 20 days
-!       do i = il1, il2
-!          j = 2 !needle dcd
-!            if (ailcg(i,j).gt.0.0) then
-!              if (iday > 192 .and. radl(i) > 0. .and. lfstatus(i,j).ne.
-!      &             4) then ! north hemi past summer solstice
-!                  lfstatus(i,j) = 3 ! no allocation to leaves permitted
-!              else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.
-!      &               .and. lfstatus(i,j).ne. 4)then  ! southern hemi a
-!                  lfstatus(i,j) = 3 ! no allocation to leaves permitted
-!              end if
-!            endif
-!          j = 4  ! broad dcd
-!            if (ailcg(i,j).gt.0.0) then
-!               if (iday > 192  .and.  radl(i) >0. .and. lfstatus(i,j).n
-!      &             4) then ! north hemi past summer solstice
-!                  lfstatus(i,j) = 3 ! no allocation to leaves permitted
-!               else if ((iday < 172 .and. iday > 10) .and. radl(i) < 0.
-!      &               .and. lfstatus(i,j).ne. 4) then  ! southern hemi
-!                  lfstatus(i,j) = 3 ! no allocation to leaves permitted
-!               end if
-!            endif
-!       end do
+
 
 !>
 !!check that leaf status of all vegetation types in all grid cells has been updated
@@ -1095,20 +1071,6 @@ do 410 i = il1, il2
         do 430 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
          nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(365.0*lfespany(n))))
-!          ! FLAG! TEST Dec 102014 JM. Testing the influence of only al
-!          ! leaf aging turnover when the lfstatus is >1 (so normal allo
-!          ! no alloc to leaves). When lfstatus is 1, it is not applied.
-!            if (j == 2 .or. j == 4) then !only deciduous PFTs
-!                 if (lfstatus(i,j) .ne. 1) then
-!                     nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
-!      &                          (365.0*lfespany(n))))
-!                 else
-!                     nrmlloss(i,j)=0. ! no loss during leaf out.
-!                 end if
-!             else ! pfts other than deciduous
-!                 nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/
-!      &                (365.0*lfespany(n))))
-!             end if  !decid/non
          endif   !fcancmx
     
 430     continue

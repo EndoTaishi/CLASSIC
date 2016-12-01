@@ -3255,7 +3255,7 @@ C
              do i=1,nltest
               if (obswetf) then
 
-              ! FLAG note that this will be read in, regardless of the iyear, if the
+              ! Note that this will be read in, regardless of the iyear, if the
               ! obswetf flag is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
               ! Read into the first tile position
@@ -3271,7 +3271,7 @@ C
               endif !obswetf
 
               if(obslght) then
-              ! FLAG note that this will be read in, regardless of the iyear, if the
+              ! Note that this will be read in, regardless of the iyear, if the
               ! obswetf flag is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
                 read(17,*,end=312) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
@@ -5262,9 +5262,6 @@ C=======================================================================
      4                       TAROW,QFCROT,ACTLYR,FTABLE)
 
 c            --------reset peatland accumulators-------------------------------
-c            Originally done only for peatland points, but simpler to just
-c            reset the entire arrays. EC - Feb 16 2016.
-!            FLAG these can't be here! They are in the not parallelrun if loop! JM.
              anmossac_t  = 0.0
              rmlmossac_t = 0.0
              gppmossac_t = 0.0
