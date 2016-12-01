@@ -358,7 +358,7 @@ if (status/=nf90_noerr) call handle_err(status)
 
 !----7
 
-z=realyrst-2
+z=realyrst-1
 write (zchar, '(I4)') z
 daysince='days since '//zchar//'-12-31'
 
@@ -396,74 +396,102 @@ if (status/=nf90_noerr) call handle_err(status)
 !==============Create the groups====================
 
 
-if (net4) then
-
-  if (.not. MONTHFILE) then
-    status = nf90_def_grp(ncid,'CLASS-Annual', grpid_ann_class)
-    if (status /= nf90_noerr) call handle_err(status)
-  else 
-     status = nf90_def_grp(ncid,'CLASS-Monthly', grpid_mon_class)
-     if (status /= nf90_noerr) call handle_err(status)
-  end if
-
-  if (CTEM) then
-
-    if (.not. MONTHFILE) then
-      status = nf90_def_grp(ncid,'CTEM-Annual GridAvg', grpid_ann_ctem)
-      if (status /= nf90_noerr) call handle_err(status)
-
-      if (DOFIRE) then
-
-          status = nf90_def_grp(grpid_ann_ctem,'Annual-Disturbance GridAvg', grpid_ann_dist)
-          if (status /= nf90_noerr) call handle_err(status)
-
-      end if
-
-      if (DOWETLANDS) then
-          status = nf90_def_grp(grpid_ann_ctem,'Annual-Methane flux GridAvg', grpid_ann_wet)
-          if (status /= nf90_noerr) call handle_err(status)
-      end if
-
-    else !monthly
-
-      status = nf90_def_grp(ncid,'CTEM-Monthly GridAvg', grpid_mon_ctem)
-      if (status /= nf90_noerr) call handle_err(status)
-
-      if (DOFIRE) then
-         status = nf90_def_grp(grpid_mon_ctem,'Monthly-Disturbance GridAvg', grpid_mon_dist)
-         if (status /= nf90_noerr) call handle_err(status)
-      end if
-
-      if (DOWETLANDS) then
-         status = nf90_def_grp(grpid_mon_ctem,'Monthly-Methane flux GridAvg', grpid_mon_wet)
-         if (status /= nf90_noerr) call handle_err(status)
-      end if 
-
-    end if !makemonthly
-
-    if (.not. MONTHFILE) then
-        status = nf90_def_grp(ncid,'CTEM-Annual Tiled', grpid_ann_ctem_t)
-        if (status /= nf90_noerr) call handle_err(status)
-
-        if (DOFIRE) then
-          status = nf90_def_grp(grpid_ann_ctem_t,'Annual-Disturbance Tiled', grpid_ann_dist_t)
-          if (status /= nf90_noerr) call handle_err(status)
-        end if
-  
-     else !monthly
-
-        status = nf90_def_grp(ncid,'CTEM-Monthly Tiled', grpid_mon_ctem_t)
-        if (status /= nf90_noerr) call handle_err(status)
-
-        if (DOFIRE) then
-          status = nf90_def_grp(grpid_mon_ctem_t,'Monthly-Disturbance Tiled', grpid_mon_dist_t)
-          if (status /= nf90_noerr) call handle_err(status)
-        end if
-     end if !makemonthly
-
-  end if  !ctem
-
-else ! netcf3
+! if (net4) then
+!
+!   if (.not. MONTHFILE) then
+!     status = nf90_def_grp(ncid,'CLASS-Annual', grpid_ann_class)
+!     if (status /= nf90_noerr) call handle_err(status)
+!   else
+!      status = nf90_def_grp(ncid,'CLASS-Monthly', grpid_mon_class)
+!      if (status /= nf90_noerr) call handle_err(status)
+!   end if
+!
+!   if (CTEM) then
+!
+!     if (.not. MONTHFILE) then
+!         status = nf90_def_grp(ncid,'CTEM-Annual-GridAvg', grpid_ann_ctem)
+!         if (status /= nf90_noerr) call handle_err(status)
+!
+!         if (DOFIRE) then
+!
+!             status = nf90_def_grp(grpid_ann_ctem,'Annual-Disturbance-GridAvg', grpid_ann_dist)
+!             if (status /= nf90_noerr) call handle_err(status)
+!
+!         end if
+!
+!         if (DOWETLANDS) then
+!             status = nf90_def_grp(grpid_ann_ctem,'Annual-Methane-GridAvg', grpid_ann_wet)
+!             if (status /= nf90_noerr) call handle_err(status)
+!         end if
+!
+!     else !monthly
+!
+!         status = nf90_def_grp(ncid,'CTEM-Monthly-GridAvg', grpid_mon_ctem)
+!         if (status /= nf90_noerr) call handle_err(status)
+!
+!         if (DOFIRE) then
+!             status = nf90_def_grp(grpid_mon_ctem,'Monthly-Disturbance-GridAvg', grpid_mon_dist)
+!             if (status /= nf90_noerr) call handle_err(status)
+!         end if
+!
+!         if (DOWETLANDS) then
+!             status = nf90_def_grp(grpid_mon_ctem,'Monthly-Methane-GridAvg', grpid_mon_wet)
+!             if (status /= nf90_noerr) call handle_err(status)
+!         end if
+!
+!     end if !makemonthly
+!
+!     if (.not. MONTHFILE) then
+!
+!         if (TILED) then
+!             status = nf90_def_grp(ncid,'CTEM-Annual-Tiled', grpid_ann_ctem_t)
+!             if (status /= nf90_noerr) call handle_err(status)
+!
+!
+!             if (DOFIRE) then
+!             status = nf90_def_grp(grpid_ann_ctem_t,'Annual-Disturbance-Tiled', grpid_ann_dist_t)
+!             if (status /= nf90_noerr) call handle_err(status)
+!             end if
+!
+!             if (DOWETLANDS) then
+!             status = nf90_def_grp(grpid_ann_ctem_t,'Annual-Wetlands-Tiled', grpid_ann_we_t)
+!             if (status /= nf90_noerr) call handle_err(status)
+!             end if
+!
+!         end if
+!
+!         if (DOPFTS) then
+!             status = nf90_def_grp(ncid,'Annual-Disturbance-PerPFT', grpid_ann_dist_p)
+!             if (status /= nf90_noerr) call handle_err(status)
+!         end if
+!
+!      else !monthly
+!
+!        if (TILED) then
+!         status = nf90_def_grp(ncid,'CTEM-Monthly-Tiled', grpid_mon_ctem_t)
+!         if (status /= nf90_noerr) call handle_err(status)
+!
+!         if (DOFIRE) then
+!           status = nf90_def_grp(grpid_mon_ctem_t,'Monthly-Disturbance-Tiled', grpid_mon_dist_t)
+!           if (status /= nf90_noerr) call handle_err(status)
+!         end if
+!        end if
+!
+!        if (DOPFTS) then
+!         status = nf90_def_grp(ncid,'CTEM-Monthly-PFTlevel', grpid_mon_ctem_t)
+!         if (status /= nf90_noerr) call handle_err(status)
+!
+!         if (DOFIRE) then
+!           status = nf90_def_grp(grpid_mon_ctem_t,'Monthly-Disturbance-Tiled', grpid_mon_dist_t)
+!           if (status /= nf90_noerr) call handle_err(status)
+!         end if
+!        end if
+!
+!      end if !makemonthly
+!
+!   end if  !ctem
+!
+! else ! netcf3
 
 ! No groups allowed in netcdf3 so set all to ncid value
         grpid_ann_ctem=ncid
@@ -480,7 +508,7 @@ else ! netcf3
         grpid_mon_dist_t=ncid
         grpid_ann_dist_t=ncid
 
-end if
+! end if
 
 status = nf90_enddef(ncid) 
 if (status/=nf90_noerr) call handle_err(status)
@@ -661,11 +689,11 @@ deallocate(timenum)
 
  ! Now do CLASS:
  if (MONTHFILE) then
-    call dothevars(3,tottime,grpid_ann_class,CLASS_M_VAR,CLASS_M_NAME,CLASS_M_UNIT,numclasvars_m,0,nl)
+    call dothevars(3,tottime,grpid_mon_class,CLASS_M_VAR,CLASS_M_NAME,CLASS_M_UNIT,numclasvars_m,0,nl)
     ! Now the soil layer vars
-    call dothevars(4,tottime,grpid_ann_class,CLASS_M_S_VAR,CLASS_M_S_NAME,CLASS_M_S_UNIT,nclassoilvars_m,2,nl) ! specialdim = 2 for the CLASS soil layers
+    call dothevars(4,tottime,grpid_mon_class,CLASS_M_S_VAR,CLASS_M_S_NAME,CLASS_M_S_UNIT,nclassoilvars_m,2,nl) ! specialdim = 2 for the CLASS soil layers
  else ! Annual file
-    call dothevars(3,totyrs,grpid_mon_class,CLASS_Y_VAR,CLASS_Y_NAME,CLASS_Y_UNIT,numclasvars_a,0,nl)
+    call dothevars(3,totyrs,grpid_ann_class,CLASS_Y_VAR,CLASS_Y_NAME,CLASS_Y_UNIT,numclasvars_a,0,nl)
  end if
 
 
@@ -723,25 +751,56 @@ subroutine dothevars(numdims,tottime,grpid,inarray,namearray,unitarray,sizear,sp
    if (numdims == 3) then
         status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,time],varid)
         if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_def_var_chunking(grpid, varid, NF90_CHUNKED, [1,1,tottime])
+        if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_def_var_deflate(grpid, varid, shuffle=1, deflate=1, deflate_level=1)
+        if (status/=nf90_noerr) call handle_err(status)
+
    else if (numdims == 4) then
         if (specialdim == 1) then  !COMPETE_LNDUSE is TRUE
             status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,pft,time],varid)
             if (status/=nf90_noerr) call handle_err(status)
+
+            status = nf90_def_var_chunking(grpid, varid, NF90_CHUNKED, [1,1,ctemnpft,tottime])
+            if (status/=nf90_noerr) call handle_err(status)
+
+            status = nf90_def_var_deflate(grpid, varid, shuffle=1, deflate=1, deflate_level=1)
+            if (status/=nf90_noerr) call handle_err(status)
+
         else if (specialdim == 2) then ! CLASS SOIL
            if (i <= 3) then  !FLAG!!! First three are per layer
             status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,layer,time],varid)
             if (status/=nf90_noerr) call handle_err(status)
-           else ! the rest are not!
-            status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,time],varid)
+
+            status = nf90_def_var_chunking(grpid, varid, NF90_CHUNKED, [1,1,nl,tottime])
             if (status/=nf90_noerr) call handle_err(status)
-           end if
+
+            status = nf90_def_var_deflate(grpid, varid, shuffle=1, deflate=1, deflate_level=1)
+            if (status/=nf90_noerr) call handle_err(status)
+
         else
             status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,tile,time],varid)
             if (status/=nf90_noerr) call handle_err(status)
+
+            status = nf90_def_var_chunking(grpid, varid, NF90_CHUNKED, [1,1,ntile,tottime])
+            if (status/=nf90_noerr) call handle_err(status)
+
+            status = nf90_def_var_deflate(grpid, varid, shuffle=1, deflate=1, deflate_level=1)
+            if (status/=nf90_noerr) call handle_err(status)
+
         end if
    else if (numdims == 5) then
         status = nf90_def_var(grpid,trim(inarray(i)),nf90_float,[lon,lat,pft,tile,time],varid)
         if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_def_var_chunking(grpid, varid, NF90_CHUNKED, [1,1,1,1,tottime])
+        if (status/=nf90_noerr) call handle_err(status)
+
+        status = nf90_def_var_deflate(grpid, varid, shuffle=1, deflate=1, deflate_level=1)
+        if (status/=nf90_noerr) call handle_err(status)
+
    end if
 
    status = nf90_enddef(grpid)
@@ -766,26 +825,25 @@ subroutine dothevars(numdims,tottime,grpid,inarray,namearray,unitarray,sizear,sp
    if (status/=nf90_noerr) call handle_err(status)
 
    if (numdims == 3) then
-        status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,1])
+        status = nf90_put_att(grpid,varid,'_Chunksizes',[1,1,tottime])
         if (status/=nf90_noerr) call handle_err(status)
    else if (numdims == 4) then
         if (specialdim == 1) then  !COMPETE_LNDUSE is TRUE
-            status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,ctemnpft,1])
+            status = nf90_put_att(grpid,varid,'_Chunksizes',[1,1,ctemnpft,tottime])
             if (status/=nf90_noerr) call handle_err(status)
         else if (specialdim == 2) then ! CLASS SOIL
-          if (i <= 3) then  !FLAG!!! First three are per layer
-            status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,nl,1])
+            status = nf90_put_att(grpid,varid,'_Chunksizes',[1,1,nl,tottime])
             if (status/=nf90_noerr) call handle_err(status)
           else ! the rest are not!
             status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,1])
             if (status/=nf90_noerr) call handle_err(status)
           end if
         else
-            status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,ntile,1])
+            status = nf90_put_att(grpid,varid,'_Chunksizes',[1,1,ntile,tottime])
             if (status/=nf90_noerr) call handle_err(status)
         end if
    else if (numdims == 5) then
-        status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,ctemnpft,ntile,1])
+        status = nf90_put_att(grpid,varid,'_Chunksizes',[1,1,1,1,tottime])
         if (status/=nf90_noerr) call handle_err(status)
    end if
 
