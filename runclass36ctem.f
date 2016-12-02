@@ -12,6 +12,9 @@
 C
 C     REVISION HISTORY:
 C
+C     * Dec 1 2016 : Code can now handle leap years in the input MET
+C       Jean-Sebastien Landry
+C
 C     * Aug 31 2016 : Added proper calculation of ALTOT as provided by Diana.
 C       Joe Melton
 C
@@ -914,7 +917,8 @@ c
      7           climiyear,   popcycleyr,    cypopyr, lucyr,
      8           cylucyr, endyr,bigpftc(1), obswetyr,
      9           cywetldyr, trans_startyr, jmosty, obslghtyr,
-     +          curlatno(ilg), lath, testyr,altotcount_ctm(nlat)
+     +          curlatno(ilg), lath, testyr,altotcount_ctm(nlat),
+     +           lghtdy
 
       real      co2concin,    setco2conc, sumfare,
      1           temp_var, barefrac,  todfrac(ilg,icc),
@@ -953,6 +957,7 @@ c
       logical, pointer :: popdon
       logical, pointer :: inibioclim
       logical, pointer :: start_from_rs
+      logical, pointer :: leap
       logical, pointer :: dowetlands
       logical, pointer :: obswetf
       logical, pointer :: transient_run
@@ -1473,6 +1478,9 @@ c
       logical, parameter ::  onetile_perPFT = .False. ! NOTE: This is usually not the behaviour desired unless you are
                                                    ! running with one PFT on each tile and want them to compete for space
                                                    ! across tiles. In general keep this as False. JM Feb 2016.
+
+!     leap year flag (if the switch 'leap' is true, this will be used, otherwise it remains false)
+      logical :: leapnow = .false.
 c
 c============= CTEM array declaration done =============================/
 C
@@ -1525,6 +1533,7 @@ C===================== CTEM ==============================================\
       popdon            => c_switch%popdon
       inibioclim        => c_switch%inibioclim
       start_from_rs     => c_switch%start_from_rs
+      leap              => c_switch%leap         
       dowetlands        => c_switch%dowetlands
       obswetf           => c_switch%obswetf
       transient_run     => c_switch%transient_run
@@ -2050,12 +2059,12 @@ c     all model switches are read in from a namelist file
      1             trans_startyr,ctemloop,ctem_on,ncyear,lnduseon,
      2             spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on,
      3             setco2conc,ch4on,setch4conc,popdon,popcycleyr,
-     4             parallelrun,dofire,
-     4             dowetlands,obswetf,compete,inibioclim,start_bare,
-     5             rsfile,start_from_rs,jmosty,idisp,izref,islfd,ipcp,
-     6             itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,
-     7             igralb,jhhstd,jhhendd,jdstd,jdendd,jhhsty,jhhendy,
-     8             jdsty,jdendy)
+     4             parallelrun,dofire,dowetlands,obswetf,compete,
+     5             inibioclim,start_bare,rsfile,start_from_rs,leap,
+     6             jmosty,idisp,izref,islfd,ipcp,itc,itcg,itg,iwf,ipai,
+     7             ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,jhhendd,
+     8             jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
+
 
 c     Initialize the CTEM parameters
       call initpftpars(compete)
@@ -2649,6 +2658,7 @@ c
             thliqgacc_t(i,j)=0.0
             thliqacc_t(i,j)=0.0
             thicecacc_t(i,j)=0.0
+            thicegacc_t(i,j)=0.0
 112      continue
 123    continue
 c
@@ -2777,7 +2787,7 @@ c      back up one space in the met file so it is ready for the next readin
 
 c      If you are not cycling over the MET, you can still specify to end on a
 c      year that is shorter than the total climate file length.
-       if (.not. cyclemet) endyr = iyear + ncyear
+       if (.not. cyclemet) endyr = iyear + ncyear - 1
 
       if (ctem_on) then
 
@@ -3040,6 +3050,35 @@ C         THE END OF FILE IT WILL GO TO 999.
           READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSSROW(I),
      1        FDLROW(I),PREROW(I),TAROW(I),QAROW(I),UVROW(I),PRESROW(I)
 
+        if (leap.and.(ihour.eq.0).and.(imin.eq.0).and.(iday.eq.1)) then
+          if (mod(iyear,4).ne.0) then !it is a common year
+            leapnow = .false.
+          else if (mod(iyear,100).ne.0) then !it is a leap year
+            leapnow = .true.
+          else if (mod(iyear,400).ne.0) then !it is a common year
+            leapnow = .false.
+          else !it is a leap year
+            leapnow = .true.
+          end if
+
+        ! We do not check the MET files to make sure the incoming MET is in fact
+        ! 366 days if leapnow. You must verify this in your own input files. Later
+        ! in the code it will fail and print an error message to screen warning you
+        ! that your file is not correct.
+          if (leapnow) then ! adjust the calendars and set the error check.
+            monthdays = (/ 31,29,31,30,31,30,31,31,30,31,30,31 /)
+            monthend = (/ 0,31,60,91,121,152,182,213,244,274,305,
+     &                    335,366 /)
+            mmday = (/ 16,46,76,107,137,168,198,229,260,290,321,351 /)
+          else ! common years
+            monthdays = (/ 31,28,31,30,31,30,31,31,30,31,30,31 /)
+            monthend = (/ 0,31,59,90,120,151,181,212,243,273,304,334,
+     &                  365 /)
+            mmday = (/ 16,46,75,106,136,167,197,228,259,289,320,350 /)
+
+          end if
+        end if
+
 C===================== CTEM ============================================ \
 c         Assign the met climate year to climiyear
           climiyear = iyear
@@ -3077,7 +3116,12 @@ C===================== CTEM ============================================ /
 
 C
       DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
-      DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
+      if (leapnow) then 
+        DECL=SIN(2.*PI*(284.+DAY)/366.)*23.45*PI/180.
+      else
+        DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
+      endif 
+
       HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
       COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
 
@@ -3650,6 +3694,7 @@ c
              thliqgacc_t(i,j)=thliqgacc_t(i,j)+thliqg(i,j)
              thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j)
              thicecacc_t(i,j)=thicecacc_t(i,j)+thicec(i,j)
+             thicegacc_t(i,j)=thicegacc_t(i,j)+thiceg(i,j)
 710       continue
 c
           do 713 j = 1, icc
@@ -3712,6 +3757,7 @@ c
               thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
               thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday)
               thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
+              thicegacc_t(i,j)=thicegacc_t(i,j)/real(nday)
 831         continue
 c
             do 832 j = 1, icc
@@ -3726,57 +3772,56 @@ c           lightng(i)=mlightng(i,month)
 c
 c           in a very simple way try to interpolate monthly lightning to
 c           daily lightning
-c
-            if(iday.ge.15.and.iday.le.45)then ! mid jan - mid feb
-              month1=1
-              month2=2
-              xday=iday-15
-            else if(iday.ge.46.and.iday.le.74)then ! mid feb - mid mar
-              month1=2
-              month2=3
-              xday=iday-46
-            else if(iday.ge.75.and.iday.le.105)then ! mid mar - mid apr
-              month1=3
-              month2=4
-              xday=iday-75
-            else if(iday.ge.106.and.iday.le.135)then ! mid apr - mid may
-              month1=4
-              month2=5
-              xday=iday-106
-            else if(iday.ge.136.and.iday.le.165)then ! mid may - mid june
-              month1=5
-              month2=6
-              xday=iday-136
-            else if(iday.ge.166.and.iday.le.196)then ! mid june - mid july
-              month1=6
-              month2=7
-              xday=iday-166
-            else if(iday.ge.197.and.iday.le.227)then ! mid july - mid aug
-              month1=7
-              month2=8
-              xday=iday-197
-            else if(iday.ge.228.and.iday.le.258)then ! mid aug - mid sep
-              month1=8
-              month2=9
-              xday=iday-228
-            else if(iday.ge.259.and.iday.le.288)then ! mid sep - mid oct
-              month1=9
-              month2=10
-              xday=iday-259
-            else if(iday.ge.289.and.iday.le.319)then ! mid oct - mid nov
-              month1=10
-              month2=11
-              xday=iday-289
-            else if(iday.ge.320.and.iday.le.349)then ! mid nov - mid dec
-              month1=11
-              month2=12
-              xday=iday-320
-            else if(iday.ge.350.or.iday.lt.14)then ! mid dec - mid jan
-              month1=12
-              month2=1
-              xday=iday-350
-              if(xday.lt.0)xday=iday
-            endif
+              if(iday.ge.mmday(1)-1.and.iday.lt.mmday(2))then ! >=15,<46.- mid jan - mid feb
+                month1=1
+                month2=2
+                xday=iday-mmday(1)-1
+             else if(iday.ge.mmday(2).and.iday.lt.mmday(3))then ! >=46,<75(76) mid feb - mid mar
+                month1=2
+                month2=3
+                xday=iday-mmday(2)
+              else if(iday.ge.mmday(3).and.iday.lt.mmday(4))then ! >=75(76),<106(107) mid mar - mid apr
+                month1=3
+                month2=4
+                xday=iday-mmday(3)
+              else if(iday.ge.mmday(4).and.iday.lt.mmday(5))then ! >=106(107),<136(137) mid apr - mid may
+                month1=4
+                month2=5
+                xday=iday-mmday(4)
+              else if(iday.ge.mmday(5).and.iday.lt.mmday(6))then ! >=136(137),<167(168) mid may - mid june
+                month1=5
+                month2=6
+                xday=iday-mmday(5)
+              else if(iday.ge.mmday(6).and.iday.lt.mmday(7))then ! >=167(168),<197(198) mid june - mid july
+                month1=6
+                month2=7
+                xday=iday-mmday(6)
+              else if(iday.ge.mmday(7).and.iday.lt.mmday(8))then ! >=197(198), <228(229) mid july - mid aug
+                month1=7
+                month2=8
+                xday=iday-mmday(7)
+              else if(iday.ge.mmday(8).and.iday.lt.mmday(9))then ! >=228(229), < 259(260) mid aug - mid sep
+                month1=8
+                month2=9
+                xday=iday-mmday(8)
+              else if(iday.ge.mmday(9).and.iday.lt.mmday(10))then ! >= 259(260), < 289(290) mid sep - mid oct
+                month1=9
+                month2=10
+                xday=iday-mmday(9)
+              else if(iday.ge.mmday(10).and.iday.lt.mmday(11))then ! >= 289(290), < 320(321) mid oct - mid nov
+                month1=10
+                month2=11
+                xday=iday-mmday(10)
+              else if(iday.ge.mmday(11).and.iday.lt.mmday(12))then ! >=320(321), < 350(351) mid nov - mid dec
+                month1=11
+                month2=12
+                xday=iday-mmday(11)
+              else if(iday.ge.mmday(12).or.iday.lt.mmday(1)-1)then ! >= 350(351) < 15 mid dec - mid jan
+                month1=12
+                month2=1
+                xday=iday-mmday(12)
+                if(xday.lt.0)xday=iday+15
+              endif
 c
             lightng(i)=mlightnggat(i,month1)+(real(xday)/30.0)*
      &                 (mlightnggat(i,month2)-mlightnggat(i,month1))
@@ -4173,17 +4218,20 @@ C
 440   CONTINUE
 
 C
-!      IF(IDAY.GE.182 .AND. IDAY.LE.243)  THEN ! July 1st and Aug 31
+!      IF ((LEAPNOW .AND. IDAY.GE.183 .AND. IDAY.LE.244) .OR. 
+!     &    (.not. LEAPNOW .AND. IDAY.GE.182 .AND. IDAY.LE.243)) THEN
 !          ALAVG=ALAVG+ACTLYR
 !          NAL=NAL+1
 !          IF(ACTLYR.GT.ALMAX) ALMAX=ACTLYR
 !      ENDIF
 C
-!      IF(IDAY.GE.1 .AND. IDAY.LE.59)   THEN  ! Jan 1st and Feb 28th
+!      IF ((LEAPNOW .AND. IDAY.GE.1 .AND. IDAY.LE.60) .OR. 
+!     &    (.not. LEAPNOW .AND. IDAY.GE.1 .AND. IDAY.LE.59)) THEN
 !          FTAVG=FTAVG+FTABLE
 !          NFT=NFT+1
 !          IF(FTABLE.GT.FTMAX) FTMAX=FTABLE
 !      ENDIF
+
 
       if (.not. parallelrun) then ! stand alone mode, include half-hourly
 c                                 ! output for CLASS & CTEM
@@ -4952,7 +5000,11 @@ C
           UVACC_M(I,M)=UVACC_M(I,M)/REAL(NDAY)
           PRESACC_M(I,M)=PRESACC_M(I,M)/REAL(NDAY)
           QAACC_M(I,M)=QAACC_M(I,M)/REAL(NDAY)
-          ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(altotcntr_d(i))
+          if (altotcntr_d(i) > 0) then
+            ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(altotcntr_d(i))
+          else
+            ALTOTACC_M(I,M)=0.
+          end if
           FSSTAR=FSINACC_M(I,M)*(1.-ALTOTACC_M(I,M))
           FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
           QH=HFSACC_M(I,M)
@@ -5046,7 +5098,7 @@ C=======================================================================
      2                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
      4                       TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT,
-     5                       ACTLYR,FTABLE)
+     5                       ACTLYR,FTABLE,leapnow)
 
 c     CTEM output and write out
 
@@ -5084,7 +5136,7 @@ c     initialization is done just before use.
 
 c       Accumulate and possibly write out yearly outputs
             call ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,
-     1                           onetile_perPFT)
+     1                           onetile_perPFT,leapnow)
 
       endif ! if(ncount.eq.nday)
       endif ! if(ctem_on)
@@ -5092,7 +5144,8 @@ c       Accumulate and possibly write out yearly outputs
 C     OPEN AND WRITE TO THE RESTART FILES
 
 
-       IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
+       IF ((leapnow .and.IDAY.EQ.366.AND.NCOUNT.EQ.NDAY) .OR. 
+     &  (.not. leapnow .and.IDAY.EQ.365.AND.NCOUNT.EQ.NDAY)) THEN
 
         WRITE(*,*) !'(6A,5I,13A,5I,9A,5I,6A,5I)')
      1     'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR,
@@ -5170,11 +5223,13 @@ c
             call write_ctm_rs(nltest,nmtest,FCANROT,argbuff)
         endif ! ctem_on
 c
-       endif ! if iday=365
+       endif ! if iday=365/366
       endif ! if generate restart files
 c
 c      check if the model is done running.
-       if (iday.eq.365.and.ncount.eq.nday) then
+
+       if ((leapnow.and.iday.eq.366.and.ncount.eq.nday) .or.
+     &   (.not. leapnow .and.iday.eq.365.and.ncount.eq.nday)) then
 
           if (cyclemet .and. climiyear .ge. metcycendyr) then
 
@@ -5249,8 +5304,8 @@ c      check if the model is done running.
               endif
               cyclemet = .false.
               lopcount = 1
-              endyr = iyear + ncyear  !set the new end year
-
+              endyr = metcylyrst + ncyear - 1  !set the new end year. We assume you are starting from the start of your MET file!
+              
               else
                run_model = .false.
               endif

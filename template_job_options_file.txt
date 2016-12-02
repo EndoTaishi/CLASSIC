@@ -25,6 +25,7 @@
  START_BARE=.FALSE.,
  RSFILE=.TRUE. ,
  START_FROM_RS=.FALSE.,
+ LEAP = .false.,
 
  IDISP = 0 ,
  IZREF = 2 ,

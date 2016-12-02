@@ -8,30 +8,31 @@ OBJ = ctem_params.o ctem_statevars.o APREP.o CLASSBD.o GRALB.o mvidx.o SNOW_ALBV
 #
 BDIR = ../bin
 
-# PGI
+# General running of model:
+
+#-- PGI --
+
 FC=pgf90
-
-# GNU Fortran
-#FC=gfortran
-
-# General running of model (PGI)
-
 FFLAGS = -Bstatic -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
-
 export PGIMACH=linux86-64
 
-# Debugging of model ----------------
+# -- GNU Fortran -- (the -static flag may not work on all machines)
 
-# PGI
-#FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds
+#FC=gfortran
+#FFLAGS = -static -fdefault-real-8 -ffree-line-length-none -O2 -ffpe-trap=invalid,zero,overflow
 
+# -----------------Debugging of model ----------------
+
+#  -- PGI --
+
+#FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm -traceback -Mbounds
 #export PGIMACH=linux86-64
 
-#GNU
-#FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
+# -- GNU --
 
-#-----------------------
+#FFLAGS = -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow
 
+#----------------------------------------------------
 
 # These are the rules to make the targets
 #
