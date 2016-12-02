@@ -42,7 +42,7 @@
      2                       thliq,     sand,      clay,   zbotw,   
      3                        frac,    isnow,      isand,
 c    -------------- inputs above this line, outputs below -------------
-     4                      litres,   socres)  
+     4                      litres,   socres, thiceg)
 c
 c     11  Apr. 2003 - this subroutine calculates heterotrophic respiration
 c     V. Arora        over the bare subarea of a grid cell (i.e. ground only
@@ -94,7 +94,7 @@ c
       real socres(ilg)        !<soil c respiration over the given unvegetated sub-area in umol co2/m2.s
       real clay(ilg,ignd)     !<percentage clay
       real frac(ilg)          !<fraction of ground (fg) or snow over ground (fgs)
-      
+      real thiceg(ilg,ignd)   !<liquid soil moisture content in 3 soil layers for bare ground
       real litrq10          !<
       real soilcq10         !<
       real litrtemp(ilg)    !<litter temperature
@@ -114,6 +114,12 @@ c
       real psi(ilg,ignd)    !<
       real tempq10s(ilg)    !<
       real fcoeff           !<
+
+      real thporg(3)          !<porosity for peat soils
+      real psisorg(3)         !<saturation matric potential for peat soils
+      real borg(3)            !<parameter b of clapp and hornberger for peat soils
+
+      COMMON /CLASS5/ THPORG,BORG,PSISORG
 
 !>
 !>------------------------------------------------------------------
@@ -217,15 +223,22 @@ c
         do 270 i = il1, il2
 c
           if(isand(i,j).eq.-3.or.isand(i,j).eq.-4)then
+            !>set to large number so that ltrmoscl becomes 0.2
             scmotrm (i,j)=0.2
             psi (i,j) = 10000.0 
-!>set to large number so that ltrmoscl becomes 0.2
+
           else 
-!>i.e., sand.ne.-3 or -4
+           if (isand(i,j).eq.-2) then ! peat soils!
+            thpor(i,j)=thporg(min(j,3))
+            b(i,j)=borg(min(j,3))
+            psisat(i,j)=psisorg(min(j,3))
+           else ! mineral soils
             psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
             b(i,j)     = 0.159*clay(i,j)+2.91
             thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
-            psi(i,j)   = psisat(i,j)*(thliq(i,j)/thpor(i,j))**(-b(i,j)) 
+           end if
+            psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 !>the 0.005 prevents a divide by 0 situation.
+     1                   -thiceg(i,j)))**(-b(i,j)) 
 c   
             if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2

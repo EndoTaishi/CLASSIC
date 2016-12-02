@@ -18,12 +18,13 @@
      &                       uwind,    vwind,  lightng,  prbfrhuc, &
      &                    extnprob,   stdaln,     tbar,    popdon, &
      &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
-     &                      thicec, soildpth, spinfast,   todfrac,&
+     &                      thicec, thiceg,soildpth, spinfast,todfrac,&
      &                     compete,   netrad,   precip,  grclarea, &
      &                    popdin, dofire,  dowetlands,obswetf,isand,  &
      &                   faregat, onetile_perPFT, wetfrac, slopefrac,&
      &                   currlat,       THP,       BI,    PSIS, &
      &                   ch4conc,       GRAV,    RHOW,  RHOICE,&
+     &                   leapnow, &
 !
 !    -------------- inputs used by ctem are above this line ---------
 !
@@ -148,6 +149,7 @@ logical, intent(in) :: onetile_perPFT                   !< if you are running wi
                                                         !< how competition is run. Specifically it allows competition between tiles. This
                                                         !< is not recommended for any case where you don't have one PFT in each tile as it
                                                         !< has not been tested for that.
+logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
 integer, intent(in) :: iday                             !<day of year
 integer, intent(in) ::  spinfast                        !<spinup factor for soil carbon whose default value is 1. as this factor increases the
                                                         !<soil c pool will come into equilibrium faster. reasonable value for spinfast is
@@ -167,6 +169,7 @@ real, dimension(ilg,ignd), intent(in) :: tbarcs         !< soil temperature for 
 real, dimension(ilg,ignd), intent(in) :: tbarg          !< soil temperature for ground subarea
 real, dimension(ilg,ignd), intent(in) :: tbargs         !< soil temperature for snow over ground subarea
 real, dimension(ilg,ignd), intent(in) ::  thicec        !<frozen mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas
+real, dimension(ilg,ignd), intent(in) ::  thiceg        !<frozen mois. content of 3 soil layers, for bareground
 real, dimension(ilg), intent(in) :: ta                  !< air temp, K
 real, dimension(ilg,ignd), intent(in) :: delzw          !< thicknesses of the 3 soil layers
 real, dimension(ilg,ignd), intent(in) :: zbotw          !< bottom of soil layers
@@ -550,7 +553,7 @@ if(compete .or. lnduseon)then
 !>Calculate bioclimatic parameters for estimating pfts existence
 
         call  bioclim (iday,       ta,    precip,  netrad,&
-     &                    1,     il2,    ilg,&
+     &                    1,     il2,    ilg, leapnow, &
      &                 tcurm, srpcuryr,  dftcuryr,  inibioclim,&
      &                 tmonth, anpcpcur,   anpecur, gdd5cur,&
      &                 surmncur, defmncur,  srplscur,defctcur,&
@@ -577,7 +580,7 @@ if(compete .or. lnduseon)then
 !!npp estimates changes in fractional coverage of pfts
 !!
             call competition (iday,     1,        il2,      ilg,&
-     &                    nol2pfts, nppveg,   dofire,&
+     &                    nol2pfts, nppveg,   dofire, leapnow,&
      &                    pftexist, geremort, intrmort,&
      &                    gleafmas, bleafmas, stemmass, rootmass,&
      &                    litrmass, soilcmas, grclarea,   lambda,&
@@ -607,7 +610,7 @@ if(compete .or. lnduseon)then
 
          call luc(    il1,      il2,   ilg,  nol2pfts, &
      &                  grclarea, pfcancmx, nfcancmx,     iday,&
-     &                   todfrac,yesfrac_comp,.true.,  compete,&
+     &                   todfrac,yesfrac_comp,.true.,  compete, leapnow,&
      &                  gleafmas, bleafmas, stemmass, rootmass,&
      &                  litrmass, soilcmas, vgbiomas, gavgltms,&
      &                  gavgscms,  fcancmx,   fcanmx,&
@@ -698,7 +701,7 @@ if(compete .or. lnduseon)then
 !>Calculate bioclimatic parameters for estimating pfts existence
 
          call  bioclim (iday,       ta_cmp,    precip_cmp,  netrad_cmp,&
-     &                    1,         nlat,          nlat,&
+     &                    1,         nlat,          nlat,   leapnow, &
      &            tcurm_cmp, srpcuryr_cmp,  dftcuryr_cmp,  inibioclim,&
      &           tmonth_cmp, anpcpcur_cmp,   anpecur_cmp, gdd5cur_cmp,&
      &         surmncur_cmp, defmncur_cmp,  srplscur_cmp,defctcur_cmp,&
@@ -724,7 +727,7 @@ if(compete .or. lnduseon)then
 !!call competition subroutine which on the basis of previous day's npp estimates changes in fractional coverage of pfts
 !!
          call competition (iday,          1,          nlat,        nlat,&
-     &               nol2pfts,   nppveg_cmp, dofire, &
+     &               nol2pfts,   nppveg_cmp, dofire, leapnow, &
      &           pftexist_cmp, geremort_cmp, intrmort_cmp,&
      &           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,&
      &           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,&
@@ -751,7 +754,7 @@ if(compete .or. lnduseon)then
 
          call luc(il1,      nlat,     nlat,     nol2pfts, &
      &           grclarea_cmp,    pfcancmx_cmp, nfcancmx_cmp,     iday,&
-     &           todfrac_cmp,  yesfrac_mos,   .true.,      compete,&
+     &           todfrac_cmp,  yesfrac_mos,   .true., compete, leapnow,&
      &           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,&
      &           litrmass_cmp, soilcmas_cmp, vgbiomas_cmp, gavgltms_cmp,&
      &           gavgscms_cmp,     fare_cmp,   fcanmx_cmp,&
@@ -959,17 +962,18 @@ do 170 i = il1, il2
 !!
 !!Find maintenance respiration for canopy over snow sub-area in umol co2/m2/sec
 !!
+
 call   mainres (fcancs,      fcs,     stemmass,   rootmass,       &
-     &                  il1,&
-     &                   il2,       ta,       tbarcs,   rmatctem,&
+     &                  il1, il2, leapnow, &
+     &                    ta,       tbarcs,   rmatctem,&
      &                  sort, nol2pfts,        isand,&
      &              rmscsveg, rmrcsveg,     rttempcs)
 
 !>Find maintenance respiration for canopy over ground sub-area
 
 call   mainres ( fcanc,       fc,     stemmass,   rootmass,       &
-     &                   il1,&
-     &                   il2,       ta,        tbarc,   rmatctem,&
+     &                   il1, il2, leapnow, &
+     &                    ta,        tbarc,   rmatctem,&
      &                  sort, nol2pfts,        isand,&
      &              rmscgveg, rmrcgveg,     rttempcg)
 
@@ -1100,7 +1104,7 @@ call  hetresg  (litrmass, soilcmas,            &
      &                   thliqg,     sand,      clay,   zbotw,   &
      &                       fg,        0,&
      &                     isand,&
-     &                   ltrsbrg,  scrsbrg)
+     &                   ltrsbrg,  scrsbrg, thiceg)
 !>
 !!Find heterotrophic respiration rates from snow over ground subarea
 !!
@@ -1109,7 +1113,7 @@ call  hetresg  (litrmass, soilcmas,            &
      &                   thliqg,     sand,      clay,   zbotw,   &
      &                      fgs,        1,&
      &                     isand,&
-     &                   ltrsbrgs, scrsbrgs)
+     &                   ltrsbrgs, scrsbrgs, thiceg)
 !>
 !!Find vegetation averaged litter and soil c respiration rates
 !!using values from canopy over ground and canopy over snow subareas
@@ -1467,8 +1471,9 @@ do 680 j = 1, ignd
 !!Call the phenology subroutine, which determines the leaf growth
 !!status, calculates leaf litter, and converts green grass into brown.
 !!
+
 call phenolgy(gleafmas, bleafmas, &
-     &                         il1,      il2,  tbarccs,&
+     &                         il1,      il2, leapnow,  tbarccs,&
      &                      thliqc,   wiltsm,  fieldsm,       ta,&
      &                    pheanveg,     iday,     radj, roottemp,&
      &                    rmatctem, stemmass, rootmass,     sort,&
@@ -1477,13 +1482,12 @@ call phenolgy(gleafmas, bleafmas, &
      &                    colddays)
 
 !    -------------------------------------------------------------------
-
 !>
 !!while leaf litter is calculated in the phenology subroutine, stem
 !!and root turnover is calculated in the turnover subroutine.
 !!
 call turnover (stemmass, rootmass,  lfstatus,    ailcg,&
-     &                          il1,      il2,&
+     &                          il1,      il2,   leapnow,&
      &                         sort, nol2pfts,  fcancmx,&
      &                     stmhrlos, rothrlos,&
      &                     stemlitr, rootlitr)
@@ -1558,9 +1562,9 @@ do 800 j = 1, icc
 !!reduced growth. Mortality is linked to the competition parameterization and generates bare fraction.
 !!
 Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
-     &                     bleafmas,      il1, &
-     &                          il2,     iday,     sort,&
-     &                      fcancmx, lystmmas,     lyrotmas, tymaxlai,&
+     &                     bleafmas,      il1, il2, leapnow, &
+     &                         iday,     sort,  fcancmx,  &
+     &                     lystmmas,     lyrotmas, tymaxlai,&
      &                     grwtheff, stemltrm,     rootltrm, glealtrm,&
      &                     geremort, intrmort)
 !>

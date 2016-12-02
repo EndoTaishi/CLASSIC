@@ -38,7 +38,7 @@
 !!
 !!
       subroutine phenolgy(gleafmas, bleafmas,     
-     1                         il1,      il2,     tbar,    
+     1                         il1,      il2,   leapnow,  tbar,
      2                       thliq,   wiltsm,  fieldsm,       ta,  
      3                       anveg,     iday,     radl, roottemp,
      4                    rmatctem, stemmass, rootmass,     sort,
@@ -77,7 +77,7 @@ c
      2                               ican, cdlsrtmx, drlsrtmx, drgta,
      3                               colda, lwrthrsh, dayschk, coldlmt,
      4                               coldthrs, harvthrs, flhrspan,
-     5                               thrprcnt, roothrsh     
+     5                               thrprcnt, roothrsh
 
       implicit none
 c
@@ -87,6 +87,7 @@ c
       integer iday                !<day of year
       integer n, m, k1, k2
 c
+      logical leapnow             !< true if this year is a leap year. Only used if the switch 'leap' is true.
       integer sort(icc)           !<index for correspondence between 9 pfts and the 12 values in parameters vectors
       integer nol2pfts(ican)      !<number of level 2 ctem pfts
 c
@@ -703,7 +704,15 @@ c
         n = sort(j)
         do 430 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
-         nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(365.0*lfespany(n))))
+
+          if (leapnow) then
+           nrmlloss(i,j)=gleafmas(i,j)*
+     &                   (1.0-exp(-1.0/(366.0*lfespany(n))))
+          else 
+           nrmlloss(i,j)=gleafmas(i,j)*
+     &                   (1.0-exp(-1.0/(365.0*lfespany(n))))
+          endif
+
 !          ! FLAG! TEST Dec 10 2014 JM. Testing the influence of only allowing
 !          ! leaf aging turnover when the lfstatus is >1 (so normal alloc or
 !          ! no alloc to leaves). When lfstatus is 1, it is not applied.
@@ -818,8 +827,15 @@ c
           coldloss(i,j) = 0.0
 !>we assume life span of brown grass is 10% that of green grass
 !!but this is an adjustable parameter.
+
+          if (leapnow) then 
+            nrmlloss(i,j) = bleafmas(i,j)*
+     &       (1.0-exp(-1.0/(0.10*366.0*lfespany(n)))) 
+          else 
           nrmlloss(i,j) = bleafmas(i,j)*
      &      (1.0-exp(-1.0/(0.10*365.0*lfespany(n)))) 
+          endif
+
          endif      
 630     continue
 620   continue 
