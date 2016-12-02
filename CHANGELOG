@@ -1,3 +1,15 @@
+2016-12-02 Joe Melton  joe.melton@canada.ca
+
+    * Version 2.1.1
+
+        - Bug fixes to the albedo outputs
+        - Bug fix in hetresv.f and hetresg.f. If the soil coming in was a peat soil it was being treated like a mineral soil. This could lead to problems where the ice content of soils was more than the (hetres calculated) porosity. Also hetresg was slightly different in calculating psi so I have made them the same.
+        - Fixed bug where class only runs couldn't start at metcyclyrst. Fix was just to move the ctem_on switch so the metcyclyrst can occur with ctem on or off.
+        - Made it so the netcdf maker properly does chunking and compression. This results in much smaller files and perhaps a speed increase.
+        - The code can now deal with leap years in the incoming met files. Thanks to Jean-Sebastien Landry for the code changes. This also means an additional switch in the joboptions script.
+        - Jean-Sebastien Landry also noticed and fixed some bugs in how the model takes monthly lightning data and spreads it out over the days. This is also fixed here.
+
+
 2016-09-01 Joe Melton  joe.melton@canada.ca
 
     * Version 2.1.

@@ -61,9 +61,10 @@ real, parameter :: earthrad = 6371.22 !<radius of earth, km
 real, parameter :: km2tom2  = 1.0e+06  !<changes from \f$km^2\f$ to \f$m^2\f$
 real, parameter :: deltat   = 1.0       !<CTEM's time step in days
 
-integer, parameter, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
-integer, parameter, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] !< calender day at end of each month
-integer, parameter, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !<mid-month day
+! These month arrays are possibly overwritten in runclassctem due to leap years.
+integer, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
+integer, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] !< calender day at end of each month
+integer, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !<mid-month day
 
 integer, parameter :: lon = 128 !< specify gcm resolution for longitude
 integer, parameter :: lat = 64  !< specify gcm resolution for latitude

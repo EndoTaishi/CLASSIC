@@ -16,6 +16,9 @@ c                     pools.
 c
 c     change history:
 c
+C     1 Dec 2016 -    Make it so it works with the organic soils parameterization
+C     J. Melton
+C
 C     30  Jul 2015  - Based on work by Yuanqiao Wu, respiration was found to
 c                     behave incorrectly if the soil froze as it thought the water
 c                     was leaving the soil. This is now fixed.
@@ -81,6 +84,12 @@ c
       real psi(ilg,ignd)      !<
       real tempq10s(ilg,icc)  !<
       real fcoeff             !<
+
+      real thporg(3)          !<porosity for peat soils
+      real psisorg(3)         !<saturation matric potential for peat soils
+      real borg(3)            !<parameter b of clapp and hornberger for peat soils
+
+      COMMON /CLASS5/ THPORG,BORG,PSISORG
 !>
 !>------------------------------------------------------------------
 !!Constants and parameters are located in ctem_params.f90
@@ -204,12 +213,18 @@ c
 c
           if(isand(i,j).eq.-3.or.isand(i,j).eq.-4)then
             scmotrm (i,j)=0.2
-            psi (i,j) = 10000.0 
-!>set to large number so that ltrmoscl becomes 0.2
-          else !> i.e., sand.ne.-3 or -4
+            !>set to large number so that ltrmoscl becomes 0.2
+            psi (i,j) = 10000.0
+          else
+           if (isand(i,j).eq.-2) then ! peat soils!
+            thpor(i,j)=thporg(min(j,3))
+            b(i,j)=borg(min(j,3))
+            psisat(i,j)=psisorg(min(j,3))
+           else ! mineral soils
             psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
             b(i,j)     = 0.159*clay(i,j)+2.91
             thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
+           end if
             psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 !>the 0.005 prevents a divide by 0 situation.
      1                   -thicec(i,j)))**(-b(i,j)) 
 c   

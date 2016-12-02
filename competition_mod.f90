@@ -298,7 +298,7 @@ contains
 !-------------------------------------------------------------------------------------------------------------
 
 subroutine  bioclim (   iday,        ta,   precip,   netrad, &
-                              il1,       il2,      nilg, &
+                              il1,       il2,      nilg,  leapnow, &
                             tcurm,  srpcuryr, dftcuryr,  inibioclim, &
                            tmonth,  anpcpcur,  anpecur,   gdd5cur, &
                          surmncur,  defmncur, srplscur,  defctcur, &
@@ -357,6 +357,7 @@ real, dimension(nilg), intent(in)    :: netrad    !< daily net radiation (w/m2)
 logical, intent(inout) :: inibioclim !< switch telling if bioclimatic parameters are being
                                      !< initialized from scratch (false) or being initialized
                                      !< from some spun up values(true).
+logical, intent(in) :: leapnow       !< true if this year is a leap year. Only used if the switch 'leap' is true.
 real, dimension(nilg), intent(inout) :: tcurm     !< temperature of the current month (c)
 real, dimension(nilg), intent(inout) :: srpcuryr  !< water surplus for the current year
 real, dimension(nilg), intent(inout) :: dftcuryr  !< water deficit for the current year
@@ -457,8 +458,13 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
           gdd5cur(i)=gdd5cur(i)+max(0.0, (ta(i)-273.16-5.0))
           anpcpcur(i)=anpcpcur(i) + precip(i)
 !         net radiation (W/m2) x 12.87 = potential evap (mm)
-          anpecur(i)=anpecur(i) + netrad(i)*12.87*(1.0/365.0)
-          wtrbal=precip(i)-(netrad(i)*12.87*(1.0/365.0))
+          if (leapnow) then 
+            anpecur(i)=anpecur(i) + netrad(i)*12.87*(1.0/366.0)
+            wtrbal=precip(i)-(netrad(i)*12.87*(1.0/366.0))
+          else
+            anpecur(i)=anpecur(i) + netrad(i)*12.87*(1.0/365.0)
+            wtrbal=precip(i)-(netrad(i)*12.87*(1.0/365.0))
+          endif 
           if(wtrbal.ge.0.0)then
             srplscur(i)=srplscur(i)+wtrbal
           else if(wtrbal.lt.0.0)then
@@ -489,7 +495,8 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
 
         endif
 
-        if(iday.eq.365)then
+        if ((.not. leapnow .and. iday.eq.365) .or. & 
+            (leapnow .and. iday.eq.366)) then 
           twcuryr(i)=-9000.0
           tccuryr(i)=9000.0
           if(anpcpcur(i).gt.zero)then
@@ -520,13 +527,16 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
             nmax = min(nmax, 12)
             dry_season_length_curyr(i) = real(nmax)
 
-        endif     !iday=365
+        endif     !iday=365/366
 
 250   continue
 !>
 !!If its the end of year, then find the temperature of the warmest
 !!and the coldest month
-      if(iday.eq.365)then
+
+      if ((.not. leapnow .and. iday.eq.365) .or. & 
+          (leapnow .and. iday.eq.366)) then 
+
           do 270 i = il1, il2
               twcuryr(i)=maxval(tmonth(:,i))
               tccuryr(i)=minval(tmonth(:,i))
@@ -737,7 +747,7 @@ end subroutine existence
 !-------------------------------------------------------------------------------------------------------------
 
 subroutine competition(  iday,      il1,       il2,      nilg, &
-                          nol2pfts,   nppveg,   dofire, &
+                          nol2pfts,   nppveg,   dofire, leapnow, &
                           pftexist,  geremort, intrmort, &
                           gleafmas, bleafmas,  stemmass, rootmass, &
                           litrmass, soilcmas,  grclarea,   lambda, &
@@ -800,6 +810,7 @@ integer, dimension(icc), intent(in) :: sort             !< index for corresponde
                                                         !< size 12 of parameter vectors
 integer, dimension(ican), intent(in) :: nol2pfts        !< number of level 2 ctem pfts
 logical, dimension(nilg,icc), intent(in) :: pftexist    !< indicating pfts exist (T) or not (F)
+logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
 real, dimension(nilg,icc), intent(in) :: geremort       !< growth related mortality (1/day)
 real, dimension(nilg,icc), intent(in) :: intrmort       !< intrinsic (age related) mortality (1/day)
 real, dimension(nilg,icc), intent(in) :: lambda         !< fraction of npp that is used for spatial expansion
@@ -1054,7 +1065,13 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 !!this last term is based on the binary array pftexist.
 !!
           if(.not. pftexist(i,j))then
-            mrtboclm(i,j)=bioclimrt/365.0
+
+            if (leapnow) then 
+              mrtboclm(i,j)=bioclimrt/366.0
+            else 
+              mrtboclm(i,j)=bioclimrt/365.0
+            endif
+
           endif
 
           mortrate(i,j)=geremort(i,j)+intrmort(i,j)+mrtboclm(i,j)
