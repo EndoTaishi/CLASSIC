@@ -13,11 +13,6 @@ implicit none
 public :: openmet
 !public :: readin_met
 public :: read_initialstate
-!public :: soildriver
-!public :: slopedriver
-!public :: openGHGfile
-!public :: readGHGfile
-
 
 contains
 
@@ -30,7 +25,8 @@ subroutine openmet()
 !! 'lat' and 'lon' in the netcdf, respectively. Additionally the names of the meteorology
 !! variables must be the same as those defined in io_driver/vname. The dimensions of this meteorology
 !! file is used to determine the number of grid cells that we will running for the
-!! model simulation. It is vital that all model input files are at the same resolution
+!! model simulation (note - it does not find the number of land cells, only the number of
+!! cells that fit into the region of interest). It is vital that all model input files are at the same resolution
 !! and grid as the meteorology file since we use it to determine the size of the vectors
 !! latvect and lonvect.
 
@@ -136,185 +132,171 @@ end subroutine openmet
 
 ! ! ================================================================================
 
-subroutine readin_met(start_pos,dlat,dlon)
-
-! Read in one year of the MET file at once.
-
-! J. Melton
-! Nov 2016
-
-use typeSizes
-use netcdf
-use netcdf_drivers, only : check_nc
-use io_driver, only : vname,niv,metfid,cntx,cnty,srtx,srty,bounds,lonvect,latvect, &
-                      yearmetst
-use ctem_statevars,     only : c_switch
-use ctem_params, only : nlat
-
-implicit none
-
-! Arguments
-integer, intent(in) :: start_pos            !< first running timestep of the met dataset to read in.
-real, dimension(:), intent(in) :: dlat   !< Latitude of grid cell [degrees]
-real, dimension(:), intent(in) :: dlon   !< Longitude of grid cell (east of Greenwich) [degrees]
-
-! Pointers
-integer, pointer :: met_ts_sec
-
-! Local variables
-integer :: tlen                                 !< total timesteps to readin at once
-integer :: i,y,x,j,mo,px,py
-integer :: clim_mo_read                         !< total number of timesteps to read in
-real, dimension(:,:,:), allocatable :: var_in
-real :: yr_tot
-integer :: varid
-
-! Parameters
-real, parameter :: secinyear = 31536000.    !< Number of seconds in a non-leap year. Needs to be adapted if leap years considered.
-
-! Point pointers
-met_ts_sec        => c_switch%met_ts_sec
-
-!---
-
-!>
-!! First we need to figure out where we start to read in from and how many
-!! timesteps of the met netcdf file we need to read
-
-tlen = int(secinyear / real(met_ts_sec))
-
-  write(0,*)'Reading in ',tlen,' timesteps of met'
-
- clim_mo_read = tlen + 1 - start_pos
-
-allocate(var_in(cntx,cnty,clim_mo_read))
-
-  do i = 1,niv
-
-    call check_nc(nf90_inq_varid(metfid,vname(i),varid))
-    call check_nc(nf90_get_var(metfid,varid,var_in,start=[srtx,srty,start_pos],count=[cntx,cnty,tlen]))
-
-    do y = 1,cnty
-      do x = 1,cntx
-        j = x + 1 * (y-1)
-
-!         if (.not. sv(j)%valid_cell) cycle  ! do not get climate for this gridcell, it is not valid
+! subroutine readin_met(start_pos,dlat,dlon)
 !
-         px = srtx + x-1
-         py = srty + y-1
-         dlon = lonvect(px)
-         dlat = latvect(py)
-
-        ! Fill in the 6 hourly met arrays
-        
-!         ! Set up yearly climate data
-!         select case (i)
-!         case(1)
-!           ibuf(j)%cld = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
+! ! Read in one year of the MET file at once.
 !
-!                   ! Convert cloud cover (in percent) to a fraction
-!           ibuf(j)%cld = 0.01_dp * ibuf(j)%cld
+! ! J. Melton
+! ! Nov 2016
 !
-!         case(2)
-!           ibuf(j)%dtr = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
+! use typeSizes
+! use netcdf
+! use netcdf_drivers, only : check_nc
+! use io_driver, only : vname,niv,metfid,cntx,cnty,srtx,srty,bounds,lonvect,latvect, &
+!                       yearmetst
+! use ctem_statevars,     only : c_switch
+! use ctem_params, only : nlat
 !
-!                   ! Correct the input values for potential inconsistencies
-!           ibuf(j)%dtr = max(ibuf(j)%dtr,0._dp)
+! implicit none
 !
-!         case(3)
-!           ibuf(j)%pre = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
+! ! Arguments
+! integer, intent(in) :: start_pos            !< first running timestep of the met dataset to read in.
+! real, dimension(:), intent(in) :: dlat   !< Latitude of grid cell [degrees]
+! real, dimension(:), intent(in) :: dlon   !< Longitude of grid cell (east of Greenwich) [degrees]
 !
-!                    !FLAG this is a temporary fix for problems with dataset pre amounts
-!                    !JM 09.05.2011
-!                    yr_tot = sum(ibuf(j)%pre)
-!                    do mo = 1,12
-!                    if (ibuf(j)%pre(mo) > 0.9 * yr_tot) ibuf(j)%pre(mo) = ibuf(j)%pre(mo) * 0.01
-!                    end do
+! ! Pointers
+! integer, pointer :: met_ts_sec
 !
-!         case(4)
-!           ibuf(j)%tmp = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
-!         case(5)
-!           ibuf(j)%wet = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
-!         end select
-
-      end do
-
-    end do
-  end do
-
-deallocate(var_in)
-
-end subroutine readin_met
+! ! Local variables
+! integer :: tlen                                 !< total timesteps to readin at once
+! integer :: i,y,x,j,mo,px,py
+! integer :: clim_mo_read                         !< total number of timesteps to read in
+! real, dimension(:,:,:), allocatable :: var_in
+! real :: yr_tot
+! integer :: varid
+!
+! ! Parameters
+! real, parameter :: secinyear = 31536000.    !< Number of seconds in a non-leap year. Needs to be adapted if leap years considered.
+!
+! ! Point pointers
+! met_ts_sec        => c_switch%met_ts_sec
+!
+! !---
+!
+! !>
+! !! First we need to figure out where we start to read in from and how many
+! !! timesteps of the met netcdf file we need to read
+!
+! tlen = int(secinyear / real(met_ts_sec))
+!
+!   write(0,*)'Reading in ',tlen,' timesteps of met'
+!
+!  clim_mo_read = tlen + 1 - start_pos
+!
+! allocate(var_in(cntx,cnty,clim_mo_read))
+!
+!   do i = 1,niv
+!
+!     call check_nc(nf90_inq_varid(metfid,vname(i),varid))
+!     call check_nc(nf90_get_var(metfid,varid,var_in,start=[srtx,srty,start_pos],count=[cntx,cnty,tlen]))  ! FLAG check the y,x order here.
+!
+!     do y = 1,cnty
+!       do x = 1,cntx
+!         j = x + 1 * (y-1)
+!
+! !         if (.not. sv(j)%valid_cell) cycle  ! do not get climate for this gridcell, it is not valid
+! !
+!          px = srtx + x-1
+!          py = srty + y-1
+!          dlon = lonvect(px)
+!          dlat = latvect(py)
+!
+!         ! Fill in the 6 hourly met arrays
+!
+! !         ! Set up yearly climate data
+! !         select case (i)
+! !         case(1)
+! !           ibuf(j)%cld = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
+! !
+! !                   ! Convert cloud cover (in percent) to a fraction
+! !           ibuf(j)%cld = 0.01_dp * ibuf(j)%cld
+! !
+! !         case(2)
+! !           ibuf(j)%dtr = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
+! !
+! !                   ! Correct the input values for potential inconsistencies
+! !           ibuf(j)%dtr = max(ibuf(j)%dtr,0._dp)
+! !
+! !         case(3)
+! !           ibuf(j)%pre = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
+! !
+! !                    !FLAG this is a temporary fix for problems with dataset pre amounts
+! !                    !JM 09.05.2011
+! !                    yr_tot = sum(ibuf(j)%pre)
+! !                    do mo = 1,12
+! !                    if (ibuf(j)%pre(mo) > 0.9 * yr_tot) ibuf(j)%pre(mo) = ibuf(j)%pre(mo) * 0.01
+! !                    end do
+! !
+! !         case(4)
+! !           ibuf(j)%tmp = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
+! !         case(5)
+! !           ibuf(j)%wet = va(i)%scale_factor * real(var_in(x,y,:)) + va(i)%add_offset
+! !         end select
+!
+!       end do
+!
+!     end do
+!   end do
+!
+! deallocate(var_in)
+!
+! end subroutine readin_met
 
 !--------------------------------------------------------------------------------------------
 
-subroutine read_initialstate()
-
+subroutine read_initialstate(nmtest,nltest,ignd,onetile_perPFT) ! FLAG these are just placeholders now. Figure out later what I really want.
 
 ! J. Melton
 ! Nov 2016
 
 use netcdf
 use netcdf_drivers, only : check_nc
-use io_driver, only : initid !vname,niv,metfid,cntx,cnty,srtx,srty,bounds,lonvect,latvect, &
-!                      yearmetst,rsid
-use ctem_statevars,     only : c_switch
+use io_driver, only : cntx,cnty,srtx,srty !vname,niv,metfid,bounds,lonvect,latvect, yearmetst,rsid
+use ctem_statevars,     only : c_switch,vrot
+use class_statevars,    only : class_rot
+! use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero
 
 implicit none
 
-integer, intent(out) :: ignd
-
-! subroutine read_from_ctm(nltest,nmtest,FCANROT,FAREROT,RSMNROT,QA50ROT, &
-!                          VPDAROT,VPDBROT,PSGAROT,PSGBROT,DRNROT,SDEPROT, &
-!                          XSLPROT,GRKFROT,WFSFROT,WFCIROT,MIDROT,SANDROT, &
-!                          CLAYROT,ORGMROT,TBARROT,THLQROT,THICROT,TCANROT, &
-!                          TSNOROT,TPNDROT,ZPNDROT,RCANROT,SCANROT,SNOROT, &
-!                          ALBSROT,RHOSROT,GROROT,argbuff,onetile_perPFT)
-!
-! use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero
-! use ctem_statevars,     only : c_switch,vrot,vgat
-!
-! implicit none
-
-
 ! arguments:
-character(80), intent(in) :: argbuff
-integer, intent(in) :: nltest
+integer, intent(out) :: ignd
+integer, intent(out) :: nltest
 integer, intent(inout) :: nmtest
-real, dimension(nlat,nmos,icp1), intent(inout) :: FCANROT
-real, dimension(nlat,nmos), intent(inout) :: FAREROT
-real, dimension(nlat,nmos,ican), intent(inout) :: RSMNROT
-real, dimension(nlat,nmos,ican), intent(inout) :: QA50ROT
-real, dimension(nlat,nmos,ican), intent(inout) :: VPDAROT
-real, dimension(nlat,nmos,ican), intent(inout) :: VPDBROT
-real, dimension(nlat,nmos,ican), intent(inout) :: PSGAROT
-real, dimension(nlat,nmos,ican), intent(inout) :: PSGBROT
-real, dimension(nlat,nmos), intent(inout) :: DRNROT
-real, dimension(nlat,nmos), intent(inout) :: SDEPROT
-real, dimension(nlat,nmos), intent(inout) :: XSLPROT
-real, dimension(nlat,nmos), intent(inout) :: GRKFROT
-real, dimension(nlat,nmos), intent(inout) :: WFSFROT
-real, dimension(nlat,nmos), intent(inout) :: WFCIROT
-integer, dimension(nlat,nmos), intent(inout) :: MIDROT
-real, dimension(nlat,nmos,ignd), intent(inout) :: SANDROT
-real, dimension(nlat,nmos,ignd), intent(inout) :: CLAYROT
-real, dimension(nlat,nmos,ignd), intent(inout) :: ORGMROT
-real, dimension(nlat,nmos,ignd), intent(inout) :: TBARROT
-real, dimension(nlat,nmos,ignd), intent(inout) :: THLQROT
-real, dimension(nlat,nmos,ignd), intent(inout) :: THICROT
-real, dimension(nlat,nmos), intent(inout) :: TCANROT
-real, dimension(nlat,nmos), intent(inout) :: TSNOROT
-real, dimension(nlat,nmos), intent(inout) :: TPNDROT
-real, dimension(nlat,nmos), intent(inout) :: ZPNDROT
-real, dimension(nlat,nmos), intent(inout) :: RCANROT
-real, dimension(nlat,nmos), intent(inout) :: SCANROT
-real, dimension(nlat,nmos), intent(inout) :: SNOROT
-real, dimension(nlat,nmos), intent(inout) :: ALBSROT
-real, dimension(nlat,nmos), intent(inout) :: RHOSROT
-real, dimension(nlat,nmos), intent(inout) :: GROROT
 logical, intent(in) :: onetile_perPFT
 
 ! pointers:
+real, pointer, dimension(:,:,:) :: FCANROT
+real, pointer, dimension(:,:)   :: FAREROT
+real, pointer, dimension(:,:,:) :: RSMNROT
+real, pointer, dimension(:,:,:) :: QA50ROT
+real, pointer, dimension(:,:,:) :: VPDAROT
+real, pointer, dimension(:,:,:) :: VPDBROT
+real, pointer, dimension(:,:,:) :: PSGAROT
+real, pointer, dimension(:,:,:) :: PSGBROT
+real, pointer, dimension(:,:)   :: DRNROT
+real, pointer, dimension(:,:)   :: SDEPROT
+real, pointer, dimension(:,:)   :: XSLPROT
+real, pointer, dimension(:,:)   :: GRKFROT
+real, pointer, dimension(:,:)   :: WFSFROT
+real, pointer, dimension(:,:)   :: WFCIROT
+integer, pointer, dimension(:,:)   :: MIDROT
+real, pointer, dimension(:,:,:) :: SANDROT
+real, pointer, dimension(:,:,:) :: CLAYROT
+real, pointer, dimension(:,:,:) :: ORGMROT
+real, pointer, dimension(:,:,:) :: TBARROT
+real, pointer, dimension(:,:,:) :: THLQROT
+real, pointer, dimension(:,:,:) :: THICROT
+real, pointer, dimension(:,:)   :: TCANROT
+real, pointer, dimension(:,:)   :: TSNOROT
+real, pointer, dimension(:,:)   :: TPNDROT
+real, pointer, dimension(:,:)   :: ZPNDROT
+real, pointer, dimension(:,:)   :: RCANROT
+real, pointer, dimension(:,:)   :: SCANROT
+real, pointer, dimension(:,:)   :: SNOROT
+real, pointer, dimension(:,:)   :: ALBSROT
+real, pointer, dimension(:,:)   :: RHOSROT
+real, pointer, dimension(:,:)   :: GROROT
+
 logical, pointer :: dofire
 logical, pointer :: compete
 logical, pointer :: inibioclim
@@ -322,9 +304,6 @@ logical, pointer :: dowetlands
 logical, pointer :: start_bare
 logical, pointer :: lnduseon
 logical, pointer :: obswetf
-character(80), pointer :: titlec1
-character(80), pointer :: titlec2
-character(80), pointer :: titlec3
 real, pointer, dimension(:,:,:) :: ailcminrow           !
 real, pointer, dimension(:,:,:) :: ailcmaxrow           !
 real, pointer, dimension(:,:,:) :: dvdfcanrow           !
@@ -357,7 +336,9 @@ real, pointer, dimension(:,:,:) :: slopefrac
 ! local variables
 
 integer :: i,m,j,strlen
-real, dimension(ilg,2) :: crop_temp_frac
+integer :: initid
+!real, dimension(ilg,2) :: crop_temp_frac
+integer, dimension(cnty,cntx) :: maskofregion
 
 ! point pointers:
 dofire            => c_switch%dofire
@@ -367,9 +348,6 @@ dowetlands        => c_switch%dowetlands
 start_bare        => c_switch%start_bare
 lnduseon          => c_switch%lnduseon
 obswetf           => c_switch%obswetf
-titlec1           => c_switch%titlec1
-titlec2           => c_switch%titlec2
-titlec3           => c_switch%titlec3
 ailcminrow        => vrot%ailcmin
 ailcmaxrow        => vrot%ailcmax
 dvdfcanrow        => vrot%dvdfcan
@@ -399,6 +377,39 @@ stdaln            => vrot%stdaln
 lfstatusrow       => vrot%lfstatus
 pandaysrow        => vrot%pandays
 
+FCANROT           => class_rot%FCANROT
+FAREROT           => class_rot%FAREROT
+RSMNROT           => class_rot%RSMNROT
+QA50ROT           => class_rot%QA50ROT
+VPDAROT           => class_rot%VPDAROT
+VPDBROT           => class_rot%VPDBROT
+PSGAROT           => class_rot%PSGAROT
+PSGBROT           => class_rot%PSGBROT
+DRNROT           => class_rot%DRNROT
+SDEPROT           => class_rot%SDEPROT
+XSLPROT           => class_rot%XSLPROT
+GRKFROT           => class_rot%GRKFROT
+WFSFROT           => class_rot%WFSFROT
+WFCIROT           => class_rot%WFCIROT
+MIDROT           => class_rot%MIDROT
+SANDROT           => class_rot%SANDROT
+CLAYROT           => class_rot%CLAYROT
+ORGMROT           => class_rot%ORGMROT
+TBARROT           => class_rot%TBARROT
+THLQROT           => class_rot%THLQROT
+THICROT           => class_rot%THICROT
+TCANROT           => class_rot%TCANROT
+TSNOROT           => class_rot%TSNOROT
+TPNDROT           => class_rot%TPNDROT
+ZPNDROT           => class_rot%ZPNDROT
+RCANROT           => class_rot%RCANROT
+SCANROT           => class_rot%SCANROT
+SNOROT           => class_rot%SNOROT
+ALBSROT           => class_rot%ALBSROT
+RHOSROT           => class_rot%RHOSROT
+GROROT           => class_rot%GROROT
+
+! ----------------------------
 
 !open initial conditions file
 
@@ -409,30 +420,51 @@ call check_nc(nf90_open(trim(init_file),nf90_nowrite,initid))
 call check_nc(nf90_inq_dimid(initid,'layer',dimid))
 call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
 
-!retrieve the number of PFTs ! FUTURE!
+!retrieve the number of PFTs ! FUTURE?
 
-!call check_nc(nf90_inq_dimid(initid,'classpft',dimid))
+! CLASS PFTs
+!call check_nc(nf90_inq_dimid(initid,'ic',dimid))
 !call check_nc(nf90_inquire_dimension(initid,dimid,len=))
+
+! CTEM PFTs
+!call check_nc(nf90_inq_dimid(initid,'icc',dimid))
+!call check_nc(nf90_inquire_dimension(initid,dimid,len=))
+
+
+!Figure out how big our nlat vector is by the number of valid cells in the
+!region we are running. Use the Mask, it is -1 for land. Also get the nmtest value
+!for each of the land cells.
+
+call check_nc(nf90_inq_varid(initid,'Mask',varid))
+call check_nc(nf90_get_var(initid,varid,maskofregion,start=[srty,srtx],count=[cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'nmtest',varid))
+
+nltest=0
+do x = 1, cntx
+    do y = 1, cnty
+        if (maskofregion(y,x) == -1) then ! land cell
+            nltest = nltest + 1
+            call check_nc(nf90_get_var(initid,varid,nmtest,start=[srty,srtx],count=[cnty,cntx]))
+
+        end if
+    end do
+end do
+
+!  NLTEST,NMTEST
+!
 
 ! Allocate arrays to proper dimensions
 
 !
-    call check_nc(nf90_inq_varid(metfid,vname(i),varid))
-    call check_nc(nf90_get_var(metfid,varid,var_in,start=[srtx,srty,start_pos],count=[cntx,cnty,tlen]))
+! Read in the first values
 
-FCANROT(I,M,J),J=1,ICAN+1)
-(LNZ0ROT(I,M,J),J=1,ICAN+1)
-(ALVCROT(I,M,J),J=1,ICAN+1)
-PAMNROT(I,M,J),J=1,ICAN
-PAMXROT(I,M,J),J=1,ICAN)
-CMASROT(I,M,J),J=1,ICAN)
-ALICROT(I,M,J),J=1,ICAN+1)
-ROOTROT(I,M,J),J=1,ICAN
-DRNROT(I,M)
+call check_nc(nf90_inq_varid(initid,'lat',varid))
+call check_nc(nf90_get_var(initid,varid,DLATROW,start=[srty,srtx],count=[cnty,cntx]))
 
-!       READ(10,5020) DLATROW(1),DEGLON,ZRFMROW(1),ZRFHROW(1),ZBLDROW(1),&
-!      &              GCROW(1),NLTEST,NMTEST
-!
+call check_nc(nf90_inq_varid(initid,'lon',varid))
+call check_nc(nf90_get_var(initid,varid,DLONROW,start=[srty,srtx],count=[cnty,cntx]))
+
 !       JLAT=NINT(DLATROW(1))
 !       RADJROW(1)=DLATROW(1)*PI/180.
 !       DLONROW(1)=DEGLON
@@ -440,112 +472,261 @@ DRNROT(I,M)
 !       GGEOROW(1)=0.0
 ! !     GGEOROW(1)=-0.035
 
-!           READ(10,5030) (RSMNROT(I,M,J),J=1,ICAN),&
-!      &                  (QA50ROT(I,M,J),J=1,ICAN)
-!           READ(10,5030) (VPDAROT(I,M,J),J=1,ICAN),&
-!      &                  (VPDBROT(I,M,J),J=1,ICAN)
-!           READ(10,5030) (PSGAROT(I,M,J),J=1,ICAN),&
-!      &                  (PSGBROT(I,M,J),J=1,ICAN)
-!           READ(10,5040) ,SDEPROT(I,M),FAREROT(I,M)
+
+call check_nc(nf90_inq_varid(initid,'ZRFM',varid))
+call check_nc(nf90_get_var(initid,varid,ZRFMROW,start=[srty,srtx],count=[cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ZRFH',varid))
+call check_nc(nf90_get_var(initid,varid,ZRFHROW,start=[srty,srtx],count=[cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
+call check_nc(nf90_get_var(initid,varid,ZBLDROW,start=[srty,srtx],count=[cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
+call check_nc(nf90_get_var(initid,varid,ZBLDROW,start=[srty,srtx],count=[cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'GC',varid))
+call check_nc(nf90_get_var(initid,varid,GCROW,start=[srty,srtx],count=[cnty,cntx]))
+
+! Now get the per tile variables:
+
+call check_nc(nf90_inq_varid(initid,'FCAN',varid))
+call check_nc(nf90_get_var(initid,varid,FCANROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'LNZ0',varid))
+call check_nc(nf90_get_var(initid,varid,LNZ0ROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ALVC',varid))
+call check_nc(nf90_get_var(initid,varid,ALVCROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'PAMN',varid))
+call check_nc(nf90_get_var(initid,varid,PAMNROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'PAMX',varid))
+call check_nc(nf90_get_var(initid,varid,PAMX,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'CMAS',varid))
+call check_nc(nf90_get_var(initid,varid,CMASROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ALIC',varid))
+call check_nc(nf90_get_var(initid,varid,ALICROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ROOT',varid))
+call check_nc(nf90_get_var(initid,varid,ROOTROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'DRN',varid))
+call check_nc(nf90_get_var(initid,varid,DRNROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'RSMN',varid))
+call check_nc(nf90_get_var(initid,varid,RSMNROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'QA50',varid))
+call check_nc(nf90_get_var(initid,varid,QA50,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'VPDA',varid))
+call check_nc(nf90_get_var(initid,varid,VPDAROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'VPDB',varid))
+call check_nc(nf90_get_var(initid,varid,VPDBROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'PSGA',varid))
+call check_nc(nf90_get_var(initid,varid,PSGAROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'PSGB',varid))
+call check_nc(nf90_get_var(initid,varid,PSGBROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'SDEP',varid))
+call check_nc(nf90_get_var(initid,varid,SDEPROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'FARE',varid))
+call check_nc(nf90_get_var(initid,varid,FAREROT,start=[srty,srtx],count=[icnty,cntx]))
+
 !           ! Error check:
 !           if (FAREROT(I,M) .gt. 1.0) then
 !            write(*,*)'FAREROT > 1',FAREROT(I,M)
 !            call XIT('runclass36ctem', -2)
 !           end if
-!           READ(10,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),&
-!      &                  WFCIROT(I,M),MIDROT(I,M)
-!           DO 25 J=1,IGND
-!              READ(10,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),&
-!      &        CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J),&
-!      &        THLQROT(I,M,J),THICROT(I,M,J)
-! 25        CONTINUE
-!           READ(10,5050)TCANROT(I,M),TSNOROT(I,M),TPNDROT(I,M),&
-!      &        ZPNDROT(I,M)
-!           READ(10,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),&
-!      &                  ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
-! 50    CONTINUE
-! !
-! !     the output year ranges can be read in from the job options file, or not.
-! !     if the values should be read in from the .ini file, and not
-! !     from the job options file, the job options file values are set to
-! !     -9999 thus triggering the read in of the .ini file values below
-!       if (jhhstd .eq. -9999) then
-!         read(10,5200) jhhstd,jhhendd,jdstd,jdendd
-!        read(10,5200) jhhsty,jhhendy,jdsty,jdendy
-!       end if
-!
-!       CLOSE(10)
 
+call check_nc(nf90_inq_varid(initid,'XSLP',varid))
+call check_nc(nf90_get_var(initid,varid,XSLPROT,start=[srty,srtx],count=[icnty,cntx]))
 
-! open(unit=11,file=argbuff(1:strlen(argbuff))//'.CTM', status='old')
+call check_nc(nf90_inq_varid(initid,'GRKF',varid))
+call check_nc(nf90_get_var(initid,varid,GRKFROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'WFSF',varid))
+call check_nc(nf90_get_var(initid,varid,WFSFROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'WFCI',varid))
+call check_nc(nf90_get_var(initid,varid,WFCIROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'MID',varid))
+call check_nc(nf90_get_var(initid,varid,MIDROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ZBOT',varid)) !per layer but not per tile (fix?)
+call check_nc(nf90_get_var(initid,varid,ZBOT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'DELZ',varid)) !per layer but not per tile (fix?)
+call check_nc(nf90_get_var(initid,varid,DELZ,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'SAND',varid))
+call check_nc(nf90_get_var(initid,varid,SANDROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'CLAY',varid))
+call check_nc(nf90_get_var(initid,varid,CLAYROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ORGM',varid))
+call check_nc(nf90_get_var(initid,varid,ORGMROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'TBAR',varid))
+call check_nc(nf90_get_var(initid,varid,TBARROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'THLQ',varid))
+call check_nc(nf90_get_var(initid,varid,THLQROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'THIC',varid))
+call check_nc(nf90_get_var(initid,varid,THICROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'TCAN',varid))
+call check_nc(nf90_get_var(initid,varid,TCANROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'TSNO',varid))
+call check_nc(nf90_get_var(initid,varid,TSNOROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'TPND',varid))
+call check_nc(nf90_get_var(initid,varid,TPNDROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ZPND',varid))
+call check_nc(nf90_get_var(initid,varid,ZPNDROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'RCAN',varid))
+call check_nc(nf90_get_var(initid,varid,RCANROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'SCAN',varid))
+call check_nc(nf90_get_var(initid,varid,SCANROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'SNO',varid))
+call check_nc(nf90_get_var(initid,varid,SNOROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ALBS',varid))
+call check_nc(nf90_get_var(initid,varid,ALBSROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'RHOS',varid))
+call check_nc(nf90_get_var(initid,varid,RHOSROT,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'GRO',varid))
+call check_nc(nf90_get_var(initid,varid,GROROT,start=[srty,srtx],count=[icnty,cntx]))
+
+!>The following three variables are needed to run CTEM. 1) min & 2) max leaf area index are needed to break
+!>class lai into dcd and evg for trees (for crops and grasses it doesn't matter much). 3) dvdfcanrow is
+!>needed to divide needle & broad leaf into dcd and evg, and crops & grasses into c3 and c4 fractions.
+
+call check_nc(nf90_inq_varid(initid,'ailcmin',varid))
+call check_nc(nf90_get_var(initid,varid,ailcminrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'ailcmax',varid))
+call check_nc(nf90_get_var(initid,varid,ailcmaxrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'dvdfcan',varid))
+call check_nc(nf90_get_var(initid,varid,dvdfcanrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+
+!>
+!>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
+!>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set
+!>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
+!>
+call check_nc(nf90_inq_varid(initid,'gleafmas',varid))
+call check_nc(nf90_get_var(initid,varid,gleafmasrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'bleafmas',varid))
+call check_nc(nf90_get_var(initid,varid,bleafmasrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'stemmass',varid))
+call check_nc(nf90_get_var(initid,varid,stemmassrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'rootmass',varid))
+call check_nc(nf90_get_var(initid,varid,rootmassrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+
+!>
+!>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
+if (dofire .and. compete) then
+            do j =1,icc
+            pstemmassrow(i,m,j)=stemmassrow(i,m,j)
+            pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
+            end do
+end if
 !
-! read (11,7010) titlec1
-! read (11,7010) titlec2
-! read (11,7010) titlec3
+call check_nc(nf90_inq_varid(initid,'litrmass',varid))
+call check_nc(nf90_get_var(initid,varid,litrmassrow,start=[1,srty,srtx],count=[iccp1,icnty,cntx])) !FLAG per layer?
+
+call check_nc(nf90_inq_varid(initid,'soilcmas',varid))
+call check_nc(nf90_get_var(initid,varid,soilcmasrow,start=[1,srty,srtx],count=[iccp1,icnty,cntx])) !FLAG per layer?
+
+call check_nc(nf90_inq_varid(initid,'lfstatus',varid))
+call check_nc(nf90_get_var(initid,varid,lfstatusrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'pandays',varid))
+call check_nc(nf90_get_var(initid,varid,pandaysrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+
 !
-! 7010  FORMAT(A80)
+! NOT per tile
+call check_nc(nf90_inq_varid(initid,'mlightng',varid))
+call check_nc(nf90_get_var(initid,varid,mlightng,start=[1,srty,srtx],count=[12,icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'extnprob',varid))
+call check_nc(nf90_get_var(initid,varid,extnprob,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'prbfrhuc',varid))
+call check_nc(nf90_get_var(initid,varid,prbfrhuc,start=[srty,srtx],count=[icnty,cntx]))
+
+call check_nc(nf90_inq_varid(initid,'stdaln',varid)) !FLAG - get rid of this? I don't see the use stdaln
+call check_nc(nf90_get_var(initid,varid,stdaln,start=[srty,srtx],count=[icnty,cntx]))
+
+if (compete .and. inibioclim) then  !read in the bioclimatic parameters
+
+    call check_nc(nf90_inq_varid(initid,'twarmm',varid))
+    call check_nc(nf90_get_var(initid,varid,twarmm,start=[srty,srtx],count=[icnty,cntx]))
+
+    call check_nc(nf90_inq_varid(initid,'tcoldm',varid))
+    call check_nc(nf90_get_var(initid,varid,tcoldm,start=[srty,srtx],count=[icnty,cntx]))
+
+    call check_nc(nf90_inq_varid(initid,'gdd5',varid))
+    call check_nc(nf90_get_var(initid,varid,gdd5,start=[srty,srtx],count=[icnty,cntx]))
+
+    call check_nc(nf90_inq_varid(initid,'aridity',varid))
+    call check_nc(nf90_get_var(initid,varid,aridity,start=[srty,srtx],count=[icnty,cntx]))
+
+    call check_nc(nf90_inq_varid(initid,'srplsmon',varid))
+    call check_nc(nf90_get_var(initid,varid,srplsmon,start=[srty,srtx],count=[icnty,cntx]))
+
+    call check_nc(nf90_inq_varid(initid,'defctmon',varid))
+    call check_nc(nf90_get_var(initid,varid,defctmon,start=[srty,srtx],count=[icnty,cntx]))
+
+    call check_nc(nf90_inq_varid(initid,'anndefct',varid))
+    call check_nc(nf90_get_var(initid,varid,anndefct,start=[srty,srtx],count=[icnty,cntx]))
+
+    call check_nc(nf90_inq_varid(initid,'annsrpls',varid))
+    call check_nc(nf90_get_var(initid,varid,annsrpls,start=[srty,srtx],count=[icnty,cntx]))
+
+    call check_nc(nf90_inq_varid(initid,'annpcp',varid))
+    call check_nc(nf90_get_var(initid,varid,annpcp,start=[srty,srtx],count=[icnty,cntx]))
+
+    call check_nc(nf90_inq_varid(initid,'dry_season_length',varid))
+    call check_nc(nf90_get_var(initid,varid,dry_season_length,start=[srty,srtx],count=[icnty,cntx]))
+
+else if (compete .and. .not. inibioclim) then ! set them to zero
+    twarmm(i,1)=0.0
+    tcoldm(i,1)=0.0
+    gdd5(i,1)=0.0
+    aridity(i,1)=0.0
+    srplsmon(i,1)=0.0
+    defctmon(i,1)=0.0
+    anndefct(i,1)=0.0
+    annsrpls(i,1)=0.0
+    annpcp(i,1)=0.0
+    dry_season_length(i,1) = 0.0
+endif
 !
-! !>Read from CTEM initialization file (.CTM)
-!
-!   do 71 i=1,nltest
-!     do 72 m=1,nmtest
-! !>
-! !>The following three variables are needed to run CTEM. 1) min & 2) max leaf area index are needed to break
-! !>class lai into dcd and evg for trees (for crops and grasses it doesn't matter much). 3) dvdfcanrow is
-! !>needed to divide needle & broad leaf into dcd and evg, and crops & grasses into c3 and c4 fractions.
-!         read(11,*) (ailcminrow(i,m,j),j=1,icc)
-!         read(11,*) (ailcmaxrow(i,m,j),j=1,icc)
-!         read(11,*) (dvdfcanrow(i,m,j),j=1,icc)
-! !>
-! !>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
-! !>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set
-! !>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
-! !>
-!         read(11,*) (gleafmasrow(i,m,j),j=1,icc)
-!         read(11,*) (bleafmasrow(i,m,j),j=1,icc)
-!         read(11,*) (stemmassrow(i,m,j),j=1,icc)
-!         read(11,*) (rootmassrow(i,m,j),j=1,icc)
-! !>
-! !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
-!         if (dofire .and. compete) then
-!             do j =1,icc
-!             pstemmassrow(i,m,j)=stemmassrow(i,m,j)
-!             pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
-!             end do
-!         end if
-!
-!         read(11,*) (litrmassrow(i,m,j),j=1,iccp1)
-!         read(11,*) (soilcmasrow(i,m,j),j=1,iccp1)
-!         read(11,*) (lfstatusrow(i,m,j),j=1,icc)
-!         read(11,*) (pandaysrow(i,m,j),j=1,icc)
-!
-! 72      continue
-!
-!         read(11,*) (mlightng(i,1,j),j=1,6)  !mean monthly lightning frequency
-!         read(11,*) (mlightng(i,1,j),j=7,12) !flashes/km2.year, this is spread over other tiles below
-!         read(11,*) extnprob(i,1)
-!         read(11,*) prbfrhuc(i,1)
-!         read(11,*) stdaln(i,1)
-!
-!         if (compete .and. inibioclim) then  !read in the bioclimatic parameters
-!         ! read them into the first tile of each grid cell.
-!         read(11,*) twarmm(i,1), tcoldm(i,1), gdd5(i,1), aridity(i,1),srplsmon(i,1)
-!         read(11,*) defctmon(i,1), anndefct(i,1), annsrpls(i,1), annpcp(i,1), dry_season_length(i,1)
-!
-!         else if (compete .and. .not. inibioclim) then ! set them to zero
-!             twarmm(i,1)=0.0
-!             tcoldm(i,1)=0.0
-!             gdd5(i,1)=0.0
-!             aridity(i,1)=0.0
-!             srplsmon(i,1)=0.0
-!             defctmon(i,1)=0.0
-!             anndefct(i,1)=0.0
-!             annsrpls(i,1)=0.0
-!             annpcp(i,1)=0.0
-!             dry_season_length(i,1) = 0.0
-!         endif
-!
-! !>Take the first tile value now and put it over the other tiles
+! !>Take the first tile value now and put it over the other tiles !FLAG
 !         if (nmtest > 1) then
 !             do m = 2,nmtest
 !                 twarmm(i,m)=twarmm(i,1)
@@ -564,14 +745,17 @@ DRNROT(I,M)
 !                 stdaln(i,m) = stdaln(i,1)
 !             end do
 !         end if
-!         if (dowetlands) then !if true then read wetland fractions into the first tile position
-!           read(11,*) (slopefrac(i,1,j),j=1,8)
-!           if (nmtest > 1) then ! if more tiles then just put the first tile across the rest
-!             do m = 2,nmtest
-!               slopefrac(i,m,:) = slopefrac(i,1,:)
-!             end do
-!           end if
-!         endif
+if (dowetlands) then !if true then read wetland fractions into the first tile position
+
+    call check_nc(nf90_inq_varid(initid,'slopefrac',varid))
+    call check_nc(nf90_get_var(initid,varid,slopefrac,start=[1,srty,srtx],count=[8,icnty,cntx]))
+
+    if (nmtest > 1) then ! if more tiles then just put the first tile across the rest FLAG
+    do m = 2,nmtest
+        slopefrac(i,m,:) = slopefrac(i,1,:)
+    end do
+    end if
+endif
 ! 71    continue
 !
 ! close(11)
@@ -818,162 +1002,5 @@ DRNROT(I,M)
 
 
 end subroutine read_initialstate
-!--------------------------------------------------------------------------------------------
-! subroutine soildriver(soil_path)
-! !new soil driver to take in FAO soil data. Coded Feb 08 JM
-!
-! use netcdf_error
-! use iovariables, only : soil,soilfid,latvect,lonvect,inputsoillen,inputlonlen,inputlatlen,bounds, &
-!                         cntx,cnty,srtx,srty
-! use netcdf
-! use typesizes
-! use arveparams, only : dp
-!
-! implicit none
-!
-! character(180), intent(in) :: soil_path
-! character(100) :: soilfile
-!
-! integer :: i
-! integer :: dimid
-! integer :: varid
-! integer :: xsize
-! integer :: ysize
-! integer :: depthint
-! integer, dimension(1) :: pos
-! integer, dimension(2) :: xpos,ypos
-!
-! !-------------------------
-! !generate file names. Regardless of the path name the input files must always have these names.
-! soilfile  = trim(soil_path)
-!
-! !open soil files
-! status = nf90_open(soilfile,nf90_nowrite,soilfid)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! !find dimensions
-! status = nf90_inq_dimid(soilfid,'lon',dimid)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! status = nf90_inquire_dimension(soilfid,dimid,len=xsize)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! status = nf90_inq_dimid(soilfid,'lat',dimid)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! status = nf90_inquire_dimension(soilfid,dimid,len=ysize)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! status = nf90_inq_dimid(soilfid,'depth',dimid)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! status = nf90_inquire_dimension(soilfid,dimid,len=depthint)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! inputsoillen = xsize * ysize
-! inputlonlen = xsize
-! inputlatlen = ysize
-!
-! !calculate the number and indices of the pixels to be calculated
-! allocate(lonvect(xsize))
-! allocate(latvect(ysize))
-!
-! status = nf90_inq_varid(soilfid,'lon',varid)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! status = nf90_get_var(soilfid,varid,lonvect)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! status = nf90_inq_varid(soilfid,'lat',varid)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! status = nf90_get_var(soilfid,varid,latvect)
-! if (status /= nf90_noerr) call handle_err(status)
-!
-! pos = minloc(abs(lonvect - bounds(1)))
-! xpos(1) = pos(1)
-!
-! pos = minloc(abs(lonvect - bounds(2)))
-! xpos(2) = pos(1)
-!
-! pos = minloc(abs(latvect - bounds(3)))
-! ypos(1) = pos(1)
-!
-! pos = minloc(abs(latvect - bounds(4)))
-! ypos(2) = pos(1)
-!
-! srtx = minval(xpos)
-! srty = minval(ypos)
-!
-! if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
-! cntx = 1 + abs(maxval(xpos) - srtx)
-!
-! if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
-! cnty = 1 + abs(maxval(ypos) - srty)
-!
-! !allocate the vector input buffer for soil data
-!
-! allocate(soil(inputsoillen))
-!
-! do i=1,inputsoillen
-!   allocate(soil(i)%sdto(depthint))
-!   allocate(soil(i)%stpc(depthint))
-!   allocate(soil(i)%clpc(depthint))
-!   allocate(soil(i)%totc(depthint))
-!   allocate(soil(i)%bulk(depthint))
-!   allocate(soil(i)%cfrag(depthint))
-!   allocate(soil(i)%tawc(depthint))
-! end do
-!
-! !create soil diagnostic file here if needed.
-!
-! end subroutine soildriver
-!
-! ! ================================================================================
-!
-! subroutine openGHGfile(infile)
-!
-! implicit none
-!
-! character(80), intent(in) :: infile
-! !---------
-!
-! open(20,file=infile,status='old') ! statue old ensures that it uses an exisiting file
-!
-! !read header row
-! read(20,*) !header
-!
-! end subroutine openGHGfile
-!
-! ! ================================================================================
-! subroutine readGHGfile
-!
-! use statevars, only : CO2
-!
-! implicit none
-!
-! integer :: year
-!
-! !------
-!
-! read(20,*,end=7)year,CO2(1),CO2(2),CO2(3)
-!
-! return
-!
-! !this part handles the end-of-file condition
-!
-! 7 continue
-!
-! rewind(20)
-!
-! read(20,*) !header
-!
-! end subroutine readGHGfile
-!
-! ! ================================================================================
-
-
-
-! !--------------------------------------------
 
 end module input_dataset_drivers

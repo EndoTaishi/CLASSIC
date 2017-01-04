@@ -3343,7 +3343,7 @@
 !>    This opens and reads in the restart files (replacing the INI and CTM
 !!    files). The inputs from this are used to allocate the CLASS and CTEM
 !!    data structures based on the given nlat, nmos, ignd, etc.
-!      call read_initialstate(nlat,nmos,ignd)
+      call read_initialstate(nlat,nmos,ignd)
 
 !     Initialize the CTEM parameters (after read_initialstate)
       call initpftpars(compete)
