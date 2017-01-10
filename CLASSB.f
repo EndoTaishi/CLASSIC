@@ -4,19 +4,28 @@ C>\file
 !!
       SUBROUTINE CLASSB(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
      1                  THLRAT,HCPS,TCS,THFC,THLW,PSIWLT,
-     2                  DELZW,ZBOTW,ALGWET,ALGDRY,
-     +                  ALGWV,ALGWN,ALGDV,ALGDN,
+     2                  DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN,            
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,IGRALB)
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG)                 
 
 C
-C     * JUN 24/15 - J. MELTON.  PASS IN IGRALB SO THAT WE CAN SKIP
-C                               USING SOCI IF IGRALB IS 0.
-C     * JAN 15/15 - D.VERSEGHY. CHANGE PSIWLT FOR MINERAL SOILS
-C     *                         TO A CONSTANT VALUE OF 150 M.
-C     *                         AND ADD NEW VARIABLE THLW.
-C     * AUG 25/14 - M.LAZARE.   PASS IN NEW WET AND DRY SOIL
-C     *                         BRIGHTNESS FIELDS FROM CLM.
+C     * DEC 16/16 - D.VERSEGHY. REMOVE OPTION FOR USING OLD SOIL
+C     *                         WET AND DRY ALBEDOS DETERMINED BY
+C     *                         SOIL TEXTURE ("IGRALB" SWITCH)
+C     * FEB 09/15 - D.VERSEGHY. New version for gcm18 and class 3.6:
+C     *                         - PSIWLT is now a constant value
+C     *                           of 150, the same as used with CTEM.
+C     *                         - A new field THLW (wilting point)
+C     *                           is defined here, the same as used
+C     *                           with CTEM. It is passed out and
+C     *                           used in CLASST.
+C     *                         - Wet and dry albedoes for EACH of
+C     *                           visible and near-ir are defined
+C     *                           using a lookup-table based on the
+C     *                           new soil colour index field SOCI
+C     *                           which is now passed in. These
+C     *                           are known as {ALGWV,ALGWN,ALGDV,ALGDN}
+C     *                           and replace {ALGWET,ALGDRY}.
 C     * NOV 16/13 - M.LAZARE.   FINAL VERSION FOR GCM17:
 C     *                         - REVERT BACK TO CLASS2.7
 C     *                           SPECIFICATION FOR "ALGWET".
@@ -82,8 +91,6 @@ C
       REAL PSIWLT(NL,NM,IG) !<Soil moisture suction at wilting point [m] \f$(\Psi_{wilt} )\f$
       REAL DELZW (NL,NM,IG) !<Thickness of permeable part of soil layer [m]
       REAL ZBOTW (NL,NM,IG) !<Depth of bottom of permeable part of soil layer [m]
-      REAL ALGWET(NL,NM)    !<All-wave albedo of wet soil for modelled area [ ]
-      REAL ALGDRY(NL,NM)    !<All-wave albedo of dry soil for modelled area [ ]
       REAL ALGWV (NL,NM)    !<
       REAL ALGWN (NL,NM)    !<
       REAL ALGDV (NL,NM)    !<
@@ -100,11 +107,7 @@ C
       REAL DELZ  (IG)       !<Thickness of soil layer [m]
       REAL ZBOT  (IG)       !<Depth of bottom of soil layer [m]
       REAL SDEPTH(NL,NM)    !<Permeable depth of soil column (depth to bedrock) [m] \f$(z_b )\f$
-      REAL SOCI  (NL,NM)   !<
-C
-      INTEGER IGRALB !< IF IGRALB IS SET TO 0, THE WET AND DRY SOIL ALBEDOS ARE
-                     !! CALCULATED ON THE BASIS OF SOIL TEXTURE.  IF IT IS SET TO 1,
-                     !! THEY ARE ASSIGNED VALUES BASED ON THE NCAR CLM SOIL "COLOUR"  DATASET.
+      REAL SOCI  (NL,NM)   !<                                             
 C
       REAL THPORG (3),      THRORG (3),      THMORG (3),
      1     BORG   (3),      PSISORG(3),      GRKSORG(3)
@@ -191,10 +194,7 @@ C
               ENDIF
               ZBOTW(I,M,J)=MAX(0.0,ZBOT(J)-DELZ(J))+DELZW(I,M,J)
 150       CONTINUE
-          IF(SAND(I,M,1).GE.0.0) THEN
-              ALGWET(I,M)=0.08+0.0022*SAND(I,M,1)
-              ALGDRY(I,M)=MIN(0.14+0.0046*SAND(I,M,1),0.45)
-              IF (IGRALB .NE. 0) THEN
+          IF(SAND(I,M,1).GE.-3.5) THEN                                   
                 ALGWV(I,M)=ALWV(NINT(SOCI(I,M)))
                 ALGWN(I,M)=ALWN(NINT(SOCI(I,M)))
                 ALGDV(I,M)=ALDV(NINT(SOCI(I,M)))
@@ -205,14 +205,6 @@ C
                 ALGDV(I,M)=0.0
                 ALGDN(I,M)=0.0
               ENDIF
-          ELSE
-              ALGWET(I,M)=0.0
-              ALGDRY(I,M)=0.0
-              ALGWV(I,M)=0.0
-              ALGWN(I,M)=0.0
-              ALGDV(I,M)=0.0
-              ALGDN(I,M)=0.0
-          ENDIF
 200   CONTINUE
 C
 !>

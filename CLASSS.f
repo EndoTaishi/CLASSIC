@@ -16,6 +16,8 @@
      A                   GROGAT, CMAIGAT,TACGAT, QACGAT, WSNOGAT,       
      B                   REFGAT, BCSNGAT,EMISGAT,SALBGAT,CSALGAT)       
 C                                                                       
+C     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT TO
+C     *                        NLAT,NMOS (FOR LAKE MODEL)
 C     * Jun 20, 2014 - M.Lazare. New version for gcm18, called          
 C     *                          by new "sfcproc2":                     
 C     *                          - Adds SALBGAT/SALBROT and             
@@ -102,7 +104,7 @@ C
                              !!Suffix ROT refers to variables on original two-dimensional arrays.
       REAL    QACROT (NL,NT) !<Specific humidity of air within vegetation canopy space \f$[kg kg^{-1} ]\f$
                              !!Suffix ROT refers to variables on original two-dimensional arrays.
-      REAL    WSNOROT(NL,NT) !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
+      REAL    WSNOROT(NL,NM) !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
                              !!Suffix ROT refers to variables on original two-dimensional arrays.
       REAL    CMAIROT(NL,NT) !<Aggregated mass of vegetation canopy \f$[kg m^{-2} ]\f$
                              !!Suffix ROT refers to variables on original two-dimensional arrays.

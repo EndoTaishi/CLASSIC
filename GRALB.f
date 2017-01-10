@@ -2,14 +2,19 @@
 !!Purpose: Calculate visible and near-IR ground albedos.
 !!
       SUBROUTINE GRALB(ALVSG,ALIRG,ALVSGC,ALIRGC,
-     1                 ALGWV,ALGWN,ALGDV,ALGDN,ALGWET,ALGDRY, 
-     +                 THLIQ,FSNOW,ALVSU,ALIRU,FCMXU,                   
-     2                 AGVDAT,AGIDAT,FG,ISAND,  
-     3                 ILG,IG,IL1,IL2,JL,IALG,IGRALB)        
+     1                 ALGWV,ALGWN,ALGDV,ALGDN,
+     2                 THLIQ,FSNOW,ALVSU,ALIRU,FCMXU,                   
+     3                 AGVDAT,AGIDAT,FG,ISAND,  
+     4                 ILG,IG,IL1,IL2,JL,IALG)        
 C
+C     * DEC 15/16 - D.VERSEGHY. ASSIGN ROCK ALBEDO USING SOIL COLOUR
+C     *                         INDEX INSTEAD OF VIA LOOKUP TABLE.
 C     * JAN 16/15 - D.VERSEGHY. CORRECT ACCOUNTING FOR URBAN ALBEDO.
-C     * AUG 25/14 - M.LAZARE.   PASS IN NEW WET AND DRY SOIL BRIGHTNESS
-C     *                         FIELDS FROM CLM.
+C     * FEB 09/15 - D.VERSEGHY. New version for gcm18 and class 3.6:
+C     *                         - Wet and dry albedoes for EACH of
+C     *                           visible and near-ir are passed in
+C     *                           instead of ALGWET and ALGDRY. These
+C     *                           are used to calculate ALISG and ALIRG.
 C     * NOV 16/13 - M.LAZARE.   FINAL VERSION FOR GCM17:                
 C     *                         - REMOVE UNNECESSARY LOWER BOUND        
 C     *                           OF 1.E-5 ON "FURB".                   
@@ -52,7 +57,7 @@ C
 C                
 C     * INTEGER CONSTANTS.
 C
-      INTEGER  ILG,IG,IL1,IL2,JL,IALG,IPTBAD,I,IGRALB 
+      INTEGER  ILG,IG,IL1,IL2,JL,IALG,IPTBAD,I
 C
 C     * OUTPUT ARRAYS.
 C
@@ -63,8 +68,6 @@ C
 C
 C     * INPUT ARRAYS.
 C
-      REAL ALGWET(ILG)    !<All-wave albedo of wet soil for modelled area \f$[ ] (\alpha_{g,wet})\f$
-      REAL ALGDRY(ILG)    !<All-wave albedo of dry soil for modelled area \f$[ ] (\alpha_{g,dry})\f$
       REAL ALGWV (ILG)    !
       REAL ALGWN (ILG)    ! 
       REAL ALGDV (ILG)    !
@@ -170,18 +173,7 @@ C---------------------------------------------------------------------
          IF(IALG.EQ.0)                                          THEN
             IF(ISAND(I,1).GE.0)                          THEN
                 FURB=FCMXU(I)*(1.0-FSNOW(I))                        
-                IF(IGRALB.EQ.0) THEN
-                IF(THLIQ(I,1).GE.0.26) THEN  
-                   ALBSOL=ALGWET(I)            
-                ELSEIF(THLIQ(I,1).LE.0.22) THEN 
-                   ALBSOL=ALGDRY(I)              
-                ELSE                         
-                   ALBSOL=THLIQ(I,1)*(ALGWET(I)-ALGDRY(I))/0.04+
-     1                    ALGDRY(I)-5.50*(ALGWET(I)-ALGDRY(I)) 
-                ENDIF                         
-                ALVSG(I)=2.0*ALBSOL/3.0    
-                ALIRG(I)=2.0*ALVSG(I)     
-                ELSE
+
                    IF(THLIQ(I,1).GE.0.26) THEN                      
                       ALVSG(I)=ALGWV(I)                            
                       ALIRG(I)=ALGWN(I)                           
@@ -194,7 +186,6 @@ C---------------------------------------------------------------------
                       ALIRG(I)=THLIQ(I,1)*(ALGWN(I)-ALGDN(I))/0.04+  
      1                       ALGDN(I)-5.50*(ALGWN(I)-ALGDN(I))       
                    ENDIF                                             
-                ENDIF
 C                                                                       
                 IF(FG(I).GT.0.001)                          THEN
                     ALVSG(I)=((FG(I)-FURB)*ALVSG(I)+FURB*ALVSU(I))/FG(I)
@@ -206,13 +197,8 @@ C
                 ALVSG(I)=ALVSI
                 ALIRG(I)=ALIRI
             ELSE IF(ISAND(I,1).EQ.-3)                    THEN
-                IF(IGRALB.EQ.0) THEN
-                ALVSG(I)=2.0*ALBRCK/3.0                                                        
-                ALIRG(I)=2.0*ALVSG(I)                                                             
-                ELSE
                     ALVSG(I)=ALGDV(I)
                     ALIRG(I)=ALGDN(I)
-                ENDIF
             ELSE IF(ISAND(I,1).EQ.-2)                    THEN
                 ALVSG(I)=ALVSO
                 ALIRG(I)=ALIRO

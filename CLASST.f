@@ -41,6 +41,7 @@
      +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
      +   NBS, ISNOALB,LFSTATUS,DAYL, DAYL_MAX)
 C
+C     * OCT 26/16 - D.VERSEGHY. ADD ZPOND TO TSOLVE CALLS.
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
@@ -1040,7 +1041,7 @@ C
      6                ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
      7                GCONSTS,GCOEFFS,TSFSAV(1,2),PCPR,                 
      +                TRSNOWG,FSSB,ALSNO,                               
-     +                THLIQG,THLMIN,DELZW,RHOSGS,ZSNOW,
+     +                THLIQG,THLMIN,DELZW,RHOSGS,ZSNOW,ZPOND,
      8                IWATER,IEVAP,ITERCT,ISAND,
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,          
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
@@ -1377,7 +1378,7 @@ C
      6                ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
      7                GCONST,GCOEFF,TSFSAV(1,4),PCPR,                   
      +                TRSNOWG,FSSB,ALSNO,                               
-     +                THLIQG,THLMIN,DELZW,ZERO,ZERO,
+     +                THLIQG,THLMIN,DELZW,ZERO,ZERO,ZPOND,
      8                IWATER,IEVAP,ITERCT,ISAND,
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL, NBS,ISNOALB,         
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
