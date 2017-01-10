@@ -10,13 +10,14 @@ C!
      5                  ALVISG,ALNIRG,CRIB,CPHCH,CEVAP,TVIRTA,
      6                  ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
      7                  GCONST,GCOEFF,TSTART,PCPR,TRSNOWG,FSSB,ALSNO,   
-     8                  THLIQ,THLMIN,DELZW,RHOSNO,ZSNOW,
+     8                  THLIQ,THLMIN,DELZW,RHOSNO,ZSNOW,ZPOND,
      +                  IWATER,IEVAP,ITERCT,ISAND, 
      9                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,        
      A                  TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
      C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF)
 C
+C     * OCT 26/16 - D.VERSEGHY. ADD ZPOND TO CALCULATION OF EVPMAX.
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATE
 C     *                         ACCORDING TO WATER AVAILABILITY.
 C     * JAN 09/15 - D.VERSEGHY. FIX TO SUPPRESS EVAPORATION FROM ROCK.
@@ -136,6 +137,7 @@ C
       REAL ILMO  (ILG)  !<Inverse of Monin-Obukhov roughness length \f$(m-1]\f$  
       REAL UE    (ILG)  !<Friction velocity of air \f$[m s^{-1}]\f$  
       REAL H     (ILG)  !<Height of the atmospheric boundary layer [m]
+      REAL ZPOND (ILG)  !<Depth of ponded water on surface [m]
 C
 C     * INPUT ARRAYS.
 C
@@ -374,8 +376,8 @@ C
                   EVPMAX(I)=RHOSNO(I)*ZSNOW(I)/DELT
               ELSE
                   KF(I)=6
-                  EVPMAX(I)=RHOW*(THLIQ(I,1)-THLMIN(I,1))*DELZW(I,1)/
-     1                      DELT
+                  EVPMAX(I)=RHOW*(ZPOND(I)+(THLIQ(I,1)-THLMIN(I,1))*
+     1                      DELZW(I,1))/DELT
               ENDIF
           ENDIF
    50 CONTINUE
