@@ -107,7 +107,7 @@ C
       REAL DELZ  (IG)       !<Thickness of soil layer [m]
       REAL ZBOT  (IG)       !<Depth of bottom of soil layer [m]
       REAL SDEPTH(NL,NM)    !<Permeable depth of soil column (depth to bedrock) [m] \f$(z_b )\f$
-      REAL SOCI  (NL,NM)   !<                                             
+      REAL SOCI  (NL,NM)    !<Soil colour index
 C
       REAL THPORG (3),      THRORG (3),      THMORG (3),
      1     BORG   (3),      PSISORG(3),      GRKSORG(3)
