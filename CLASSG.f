@@ -272,7 +272,6 @@ C
      5        DRNGAT (ILG),      XSLPGAT(ILG),      GRKFGAT(ILG),
      6        WFSFGAT(ILG),      WFCIGAT(ILG),      ALGWVGAT(ILG),      
      7        ALGWNGAT(ILG),     ALGDVGAT(ILG),     ALGDNGAT(ILG),      
-     +        ALGWGAT(ILG),      ALGDGAT(ILG),
      8        ASVDGAT(ILG),      ASIDGAT(ILG),                          
      9        AGVDGAT(ILG),      AGIDGAT(ILG),      ZSNLGAT(ILG),       
      A        ZPLGGAT(ILG),      ZPLSGAT(ILG)                           
@@ -369,21 +368,21 @@ C----------------------------------------------------------------------
           GROGAT (K)=GROROT (ILMOS(K),JLMOS(K))  
           CMAIGAT(K)=CMAIROT(ILMOS(K),JLMOS(K))  
           DRNGAT (K)=DRNROT (ILMOS(K),JLMOS(K))  
-c         XSLPGAT(K)=XSLPROT(ILMOS(K),JLMOS(K))  
-c         GRKFGAT(K)=GRKFROT(ILMOS(K),JLMOS(K))  
-c         WFSFGAT(K)=WFSFROT(ILMOS(K),JLMOS(K))  
-c         WFCIGAT(K)=WFCIROT(ILMOS(K),JLMOS(K))  
+          XSLPGAT(K)=XSLPROT(ILMOS(K),JLMOS(K))                         
+          GRKFGAT(K)=GRKFROT(ILMOS(K),JLMOS(K))                         
+          WFSFGAT(K)=WFSFROT(ILMOS(K),JLMOS(K))                         
+          WFCIGAT(K)=WFCIROT(ILMOS(K),JLMOS(K))                         
           ALGWVGAT(K)=ALGWVROT(ILMOS(K),JLMOS(K))                       
           ALGWNGAT(K)=ALGWNROT(ILMOS(K),JLMOS(K))                       
           ALGDVGAT(K)=ALGDVROT(ILMOS(K),JLMOS(K))                       
           ALGDNGAT(K)=ALGDNROT(ILMOS(K),JLMOS(K))                       
-c         ASVDGAT(K)=ASVDROT(ILMOS(K),JLMOS(K))  
-c         ASIDGAT(K)=ASIDROT(ILMOS(K),JLMOS(K))  
-c         AGVDGAT(K)=AGVDROT(ILMOS(K),JLMOS(K))  
-c         AGIDGAT(K)=AGIDROT(ILMOS(K),JLMOS(K))  
+          ASVDGAT(K)=ASVDROT(ILMOS(K),JLMOS(K))                         
+          ASIDGAT(K)=ASIDROT(ILMOS(K),JLMOS(K))                         
+          AGVDGAT(K)=AGVDROT(ILMOS(K),JLMOS(K))                         
+          AGIDGAT(K)=AGIDROT(ILMOS(K),JLMOS(K))                         
           ZSNLGAT(K)=ZSNLROT(ILMOS(K),JLMOS(K))  
-c         ZPLGGAT(K)=ZPLGROT(ILMOS(K),JLMOS(K))  
-c         ZPLSGAT(K)=ZPLSROT(ILMOS(K),JLMOS(K))  
+          ZPLGGAT(K)=ZPLGROT(ILMOS(K),JLMOS(K))                         
+          ZPLSGAT(K)=ZPLSROT(ILMOS(K),JLMOS(K))                         
           TACGAT (K)=TACROT (ILMOS(K),JLMOS(K))  
           QACGAT (K)=QACROT (ILMOS(K),JLMOS(K))  
           IGDRGAT(K)=IGDRROT(ILMOS(K),JLMOS(K))
@@ -466,10 +465,10 @@ C
           VPDBGAT(K,L)=VPDBROT(ILMOS(K),JLMOS(K),L)
           PSGAGAT(K,L)=PSGAROT(ILMOS(K),JLMOS(K),L)
           PSGBGAT(K,L)=PSGBROT(ILMOS(K),JLMOS(K),L)
-c         PAIDGAT(K,L)=PAIDROT(ILMOS(K),JLMOS(K),L)
-c         HGTDGAT(K,L)=HGTDROT(ILMOS(K),JLMOS(K),L)
-c         ACVDGAT(K,L)=ACVDROT(ILMOS(K),JLMOS(K),L)
-c         ACIDGAT(K,L)=ACIDROT(ILMOS(K),JLMOS(K),L)
+          PAIDGAT(K,L)=PAIDROT(ILMOS(K),JLMOS(K),L)                     
+          HGTDGAT(K,L)=HGTDROT(ILMOS(K),JLMOS(K),L)                     
+          ACVDGAT(K,L)=ACVDROT(ILMOS(K),JLMOS(K),L)                     
+          ACIDGAT(K,L)=ACIDROT(ILMOS(K),JLMOS(K),L)                     
           TSFSGAT(K,L)=TSFSROT(ILMOS(K),JLMOS(K),L)
 400   CONTINUE
 

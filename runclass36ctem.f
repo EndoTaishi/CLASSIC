@@ -2427,7 +2427,7 @@ C     GGEOROW(1)=-0.035
            call XIT('runclass36ctem', -2)
           end if
           READ(10,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
-     1                  WFCIROT(I,M),MIDROT(I,M)
+     1                  WFCIROT(I,M),MIDROT(I,M),SOCIROT(I,M)
           READ(10,5080) (SANDROT(I,M,J),J=1,3)
           READ(10,5080) (CLAYROT(I,M,J),J=1,3)
           READ(10,5080) (ORGMROT(I,M,J),J=1,3)
@@ -2610,7 +2610,7 @@ c     initialize accumulated array for monthly & yearly output for class
 5060  FORMAT(7F10.3)
 5070  FORMAT(2F10.4,F10.2,F10.3,F10.4,F10.3)
 5080  FORMAT(3F10.1)
-5090  FORMAT(4E8.1,I8)
+5090  FORMAT(4E8.1,2I8)
 5200  FORMAT(4I10)
 5300  FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,
      1       F9.4)
@@ -5207,7 +5207,7 @@ C         THE FCANROT FOR THE RS FILE.
      1                      (PSGBROT(I,M,J),J=1,ICAN)
             WRITE(100,5040) DRNROT(I,M),SDEPROT(I,M),FAREROT(I,M)
             WRITE(100,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
-     1                      WFCIROT(I,M),MIDROT(I,M)
+     1                      WFCIROT(I,M),MIDROT(I,M),SOCIROT(I,M)
             WRITE(100,5080) (SANDROT(I,M,J),J=1,3)
             WRITE(100,5080) (CLAYROT(I,M,J),J=1,3)
             WRITE(100,5080) (ORGMROT(I,M,J),J=1,3)
