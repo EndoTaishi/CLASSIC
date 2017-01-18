@@ -538,9 +538,9 @@ C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
-!        DO 70 I =IL1,IL2                                                
-!            RC(I)=MIN(RCPHTSYN(I),4999.999)
-!   70   CONTINUE                                                        
+        DO 70 I =IL1,IL2
+            RC(I)=MIN(RCPHTSYN(I),4999.999)
+   70   CONTINUE
 
       ENDIF
 C
