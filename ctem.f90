@@ -1299,6 +1299,7 @@ do 470 j = 1,icc
   do 480 i = il1, il2
     soilresp(i)=soilresp(i)+fcancmx(i,j)*soilrsvg(i,j)
     humiftrs(i)=humiftrs(i)+fcancmx(i,j)*humtrsvg(i,j)
+    hutrstep_g(i) = hutrstep_g(i)+fcancmx(i,j)*hutrstep(i,j) ! Added from YW's code, otherwise causes xit(-10) in balcar. EC Dec 23 2016.
 480     continue
 470   continue
 !
@@ -1361,7 +1362,7 @@ endif
      &                    rmatctem,   gleafmas, stemmass, rootmass,     &
      &                       sort,    nol2pfts,  fcancmx, isand, &
      &                     afrleaf,  afrstem,  afrroot, &
-     &                     wtstatus, ltstatus)
+     &                     wtstatus, ltstatus, THFC, THLW) ! Added missing THFC/THLW, EC Jan 17,2017.
 
 
 !>

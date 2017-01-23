@@ -41,7 +41,7 @@
      4                        sort, nol2pfts, fcancmx, isand,
 c    5 ------------------ inputs above this line ----------------------   
      6                     afrleaf,  afrstem,  afrroot,
-     7                     wtstatus, ltstatus)
+     7                     wtstatus, ltstatus, THFC, THLW) ! Added missing THFC/THLW, EC Jan 17/2017.
 c    8 ------------------outputs  above this line ---------------------
 
 

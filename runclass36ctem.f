@@ -891,6 +891,7 @@ c
 c     Local variables for coupling CLASS and CTEM
 c
       integer strlen
+      character(len=10) :: int2str
       character*80   titlec1
       character*80   argbuff
       character*160  command
@@ -1374,6 +1375,7 @@ c
       real, pointer, dimension(:,:) :: thliqcacc_t
       real, pointer, dimension(:,:) :: thliqgacc_t
       real, pointer, dimension(:,:) :: thliqacc_t
+      real, pointer, dimension(:,:) :: thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
       real, pointer, dimension(:,:) :: thicecacc_t
       real, pointer, dimension(:,:) :: thicegacc_t
       real, pointer, dimension(:,:) :: ancsvgac_t
@@ -1476,9 +1478,12 @@ C
 c=====peatland related parameter declaration March 18, 2015 YW=========\
 
 c   ----CLASS moss variables-------YW ----------------------------------
-      real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
-     4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
-     5      peatdepgat(ilg),
+!     Replaced thlqaccXXX_m with thliqacc_t and thicaccXXX_m with thiceacc_t. EC Dec 23 2016.
+!     See corresponding changes in calls to ctemg2, ctem, and ctems2.
+!     real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
+!    4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
+!    5      peatdepgat(ilg),
+      real  peatdepgat(ilg),
      6      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg)
 c   g12 - energy flux between soil layer 1 and 2 (W/m2)
 c   g23 - energy flux between soil layer 2 and 3 (W/m2)
@@ -2100,6 +2105,7 @@ C===================== CTEM ==============================================\
       thliqcacc_t       => ctem_tile%thliqcacc_t
       thliqgacc_t       => ctem_tile%thliqgacc_t
       thliqacc_t        => ctem_tile%thliqacc_t
+      thiceacc_t        => ctem_tile%thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
       thicecacc_t       => ctem_tile%thicecacc_t
       thicegacc_t       => ctem_tile%thicegacc_t
       ancsvgac_t        => ctem_tile%ancsvgac_t
@@ -2330,13 +2336,16 @@ C
 
        IF(IGND.GT.3) THEN
           WRITE(62,6012)
+!         Add a least 1 space to labels at the end of continuation lines to prevent
+!         them from being merged with the label on the following line.
+!         Should also fix for proper number of soils layers used. EC Dec 23 2016.
 6012      FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
      1    'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',
-     2    'THI5 TG6  THL6  THI6 TG7  THL7  THI7',
-     3    'TG8  THL8  THI8 TG9  THL9  THI9 TG10  THL10  THI10',
-     4    'TG11  THL11  THI11 TG12  THL12  THI12 TG13  THL13  THI13',
-     5    'TG14  THL14  THI14 TG15  THL15  THI15 TG16  THL16  THI16',
-     6    'TG17  THL17  THI17 TG18  THL18  THI18 TG19  THL19  THI19',
+     2    'THI5 TG6  THL6  THI6 TG7  THL7  THI7 ',
+     3    'TG8  THL8  THI8 TG9  THL9  THI9 TG10  THL10  THI10 ',
+     4    'TG11  THL11  THI11 TG12  THL12  THI12 TG13  THL13  THI13 ',
+     5    'TG14  THL14  THI14 TG15  THL15  THI15 TG16  THL16  THI16 ',
+     6    'TG17  THL17  THI17 TG18  THL18  THI18 TG19  THL19  THI19 ',
      7    'TG20  THL20  THI20 ACTLYR FTABLE')
 
        ELSE
@@ -2788,6 +2797,7 @@ c
             thliqcacc_t(i,j)=0.0
             thliqgacc_t(i,j)=0.0
             thliqacc_t(i,j)=0.0
+            thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
             thicecacc_t(i,j)=0.0
 112      continue
 123    continue
@@ -3196,6 +3206,18 @@ c       but only if it was read in during the loop above.
 
       endif !met_rewound
 
+      !if ( (N.eq.0) .and. (.not. co2on) ) then 
+        ! FLAG: Needs to be reviewed.
+        ! Set initial co2 concentration. Otherwise, if .MET file does not begin 
+        ! at iday=1, ihour=0, and imin=0 (see below), then co2concrow is never set and
+        ! causes a floating exception at line 1255 in PHTSYN3. 
+      !  co2concrow=setco2conc
+        ! However, there are also other problems (e.g. daily output is done at 
+        ! ncount=nday and since there are <nday number of idays in the .MET file,
+        ! the wrong iday is output).
+        ! Simpler to extrapolate .MET file to begin at iday=1,ihour=0,imin=0.  EC Dec 23 2016.
+      !endif
+
 C===================== CTEM ============================================ /
 C
 C     * READ IN METEOROLOGICAL FORCING DATA FOR CURRENT TIME STEP;
@@ -3263,6 +3285,7 @@ C
 C
 C===================== CTEM ============================================ \
 C
+
       ! If needed, read in the accessory input files (popd, wetlands, lightining...)
       if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
 
@@ -3603,8 +3626,9 @@ C
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      3      anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,
-     4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,thlqaccgat_m,
-     5      thicaccgat_m,ipeatlandgat,pddgat,
+     4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,!thlqaccgat_m,
+     5      ipeatlandgat,pddgat,
+!    5      thicaccgat_m,ipeatlandgat,pddgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,      fcancmxrow,  rmatcrow,    zolncrow,  paicrow,
@@ -3649,7 +3673,8 @@ c
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
      3      anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,
      4      litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,
-     5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
+     5      ipeatlandrow,pddrow)
+!    5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
 
 C===================== CTEM ============================================ /
 C
@@ -3826,8 +3851,13 @@ c
              tbargsacc_t(i,j)=tbargsacc_t(i,j)+tbargs(i,j)
              thliqcacc_t(i,j)=thliqcacc_t(i,j)+thliqc(i,j)
              thliqgacc_t(i,j)=thliqgacc_t(i,j)+thliqg(i,j)
-             thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j)
              thicecacc_t(i,j)=thicecacc_t(i,j)+thicec(i,j)
+             ! FLAG: Needs to be reviewed. EC Dec 23 2016.
+             ! YW's original variables were thlqaccgat_m/thicaccgat_m.
+             ! The following 2 variables needs to be passed via ctem to hetres_peat
+             ! (otherwise causes a floating exception at line 863 of peatlands_mod).
+             thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j) ! Not used elsewhere, so assume replacement for thlqaccgat_m
+             thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j) ! New.
 710       continue
 c
           do 713 j = 1, icc
@@ -3902,8 +3932,9 @@ c
 c
               thliqcacc_t(i,j)=thliqcacc_t(i,j)/real(nday)
               thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
-              thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday)
               thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
+              thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday) ! Assume this replaces YW's thlqaccgat_m.
+              thiceacc_t(i,j)=thiceacc_t(i,j)/real(nday) ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
 831         continue
 c
             do 832 j = 1, icc
@@ -4052,8 +4083,9 @@ c
      &          ch4soillsgat,
      1          ipeatlandgat,anmossac_t,rmlmossac_t,gppmossac_t,
      2          Cmossmasgat,litrmsmossgat,wtablegat,
-     4          THFCGAT, THLWGAT, thlqaccgat_m, thicaccgat_m,
+     4          THFCGAT, THLWGAT, thliqacc_t, thiceacc_t,
      5          nppmossgat, armossgat,peatdepgat)
+!    4          THFCGAT, THLWGAT, thlqaccgat_m, thicaccgat_m,
 c
 
 c----------------update peatland bottom layer depth--------------------       
@@ -4226,7 +4258,7 @@ C
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
      3      anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow,
      4      peatdeprow,litrmsmossrow,Cmossmasrow,dmossrow,
-     5      ipeatlandrow, pddrow,thlqaccrow_m, thicaccrow_m,
+     5      ipeatlandrow, pddrow,!thlqaccrow_m, thicaccrow_m,
 c    ----
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -4273,7 +4305,7 @@ c    ----
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      2      anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat,
      3      peatdepgat, litrmsmossgat, Cmossmasgat,dmossgat,
-     4      ipeatlandgat,pddgat,thlqaccgat_m,thicaccgat_m)
+     4      ipeatlandgat,pddgat)!,thlqaccgat_m,thicaccgat_m)
 
       if(ncount.eq.nday) then
 
@@ -4304,6 +4336,7 @@ c     reset mosaic accumulator arrays.
              thliqcacc_t(i,j)=0.0
              thliqgacc_t(i,j)=0.0
              thliqacc_t(i,j)=0.0
+             thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
              thicecacc_t(i,j)=0.0
              thicegacc_t(i,j)=0.0
 715       continue
@@ -4326,14 +4359,16 @@ C     * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
 
 6100  FORMAT(1X,I4,I5,9F8.2,2F8.3,F12.4,F8.2,2(A6,I2))
 6200  FORMAT(1X,I4,I5,3(F8.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,2(A6,I2))
-6201  FORMAT(1X,I4,I5,20(F7.2,2F6.3),2F8.3,2(A6,I2))
+! Instead of using fixed format specifiers for IGND, set the format 
+! dynamically on the write statement. Same for 6601 below. EC Jan 20 2017.
+!6201  FORMAT(1X,I4,I5,20(F7.2,2F6.3),2F8.3,2(A6,I2))
 6300  FORMAT(1X,I4,I5,3F9.2,F8.2,F10.2,E12.3,2F12.3,A6,I2)
 6400  FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,5F9.5,2(A6,I2))
 6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,4F8.3,
      &       2(A6,I2))
 6600  FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
 6501  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-6601  FORMAT(1X,I2,I3,I5,I6,20(F7.2,2F6.3),20F9.4,2(A6,I2))
+!6601  FORMAT(1X,I2,I3,I5,I6,20(F7.2,2F6.3),20F9.4,2(A6,I2))
 !6601  FORMAT(1X,I2,I3,I5,I6,7(F8.2,2F7.3),10F10.4,2(A7,I3))  
 6700  FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))
 6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))
@@ -4500,7 +4535,10 @@ C===================== CTEM =====================================/
      4                   SFCUROT(I,M),SFCVROT(I,M),UVROW(I),' TILE ',m
           IF(IGND.GT.3) THEN
 C===================== CTEM =====================================\
-              write(66,6601) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
+!             write(66,6601) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
+              write(66,'(1X,I2,I3,I5,I6,'//trim(int2str(ignd))//   ! EC Jan 20 2017.
+     &                 '(F7.2,2F6.3),10F9.4,2(A6,I2))')
+     &                 ihour,imin,iday,iyear,(TBARROT(i,m,j)-
      1                 tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,IGND),
      2                 (GFLXROT(i,m,j),j=1,IGND),' TILE ',m
           end if
@@ -4679,10 +4717,16 @@ C
      1                   TFREZ,THLQROT_G(I,J),THICROT_G(I,J),J=1,3),
      2                   TCN_G(i),RCANROT_G(I),SCANROT_G(I),TSN_G(i),
      3                   ZSN_G(i),TCN_G(i)-(TAROW(I)-TFREZ),
-     4                   TCANO(I)-TFREZ,TACGAT(I)-TFREZ,ACTLYR,FTABLE
+     4                   TCANO(I)-TFREZ,TACGAT(I)-TFREZ
+! Format statement 6500 used in 2 places with mis-matching types: ACTLYR/FTABLE are both reals.
+! Temporary work-around: don't output these 2 variables. EC Dec 23 2016.
+!    4                   TCANO(I)-TFREZ,TACGAT(I)-TFREZ,ACTLYR,FTABLE
 C
          IF(IGND.GT.3) THEN
-          WRITE(661,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
+!         WRITE(661,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
+          write(661,'(1X,I2,I3,I5,I6,'//trim(int2str(ignd))//      ! EC Jan 20 2017.
+     &              '(F7.2,2F6.3),10F9.4,2(A6,I2))')
+     &                   IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
      1                   TFREZ,THLQROT_G(I,J),THICROT_G(I,J),J=1,IGND),
      2                   (GFLXROT_G(I,J),J=1,IGND)
          ELSE
@@ -5023,7 +5067,11 @@ C
      1                       BEG,GTOUT,SNOACC(I),RHOSACC(I),
      2                       WSNOACC(I),ALTOTACC(I),ROFACC(I),CUMSNO
               IF(IGND.GT.3) THEN
-                  WRITE(62,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
+
+!                 WRITE(62,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
+                  WRITE(62,'(1X,I4,I5,'//trim(int2str(ignd))//   ! EC Jan 20 2017.
+     &                     '(F7.2,2F6.3),2F8.3,2(A6,I2))')  
+     &                       IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
      1                       THLQACC(I,J),THICACC(I,J),J=1,IGND),
      2                       ACTLYR_G(I),FTABLE_g(I)
               ELSE
@@ -5191,7 +5239,11 @@ C
           UVACC_M(I,M)=UVACC_M(I,M)/REAL(NDAY)
           PRESACC_M(I,M)=PRESACC_M(I,M)/REAL(NDAY)
           QAACC_M(I,M)=QAACC_M(I,M)/REAL(NDAY)
-          ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(altotcntr_d(i))
+          if (altotcntr_d(i) > 0) then ! altotcntr_d(i) could be 0
+            ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(altotcntr_d(i)) 
+          else
+            ALTOTACC_M(I,M)=0.
+          endif
           FSSTAR=FSINACC_M(I,M)*(1.-ALTOTACC_M(I,M))
           FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
           QH=HFSACC_M(I,M)
@@ -5230,7 +5282,10 @@ C
      2                    WSNOACC_M(I,M),ALTOTACC_M(I,M),ROFACC_M(I,M),
      3                    CUMSNO,' TILE ',M
             IF(IGND.GT.3) THEN
-               WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
+!              WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
+               WRITE(621,'(1X,I4,I5,'//trim(int2str(ignd))//   ! EC Jan 20 2017. 
+     &                   '(F7.2,2F6.3),2F8.3,2(A6,I2))')    
+     &                  IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
      1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,IGND)
      2                  ,ACTLYR(I,M), FTABLE(I,M),' TILE ',M
             ELSE
@@ -5687,3 +5742,12 @@ C ============================= CTEM =========================/
       STRLEN = I
       RETURN
       END
+
+      character(len=10) function int2str(i)
+      ! Convert integer to left-justified string.
+      ! Ed Chan - Jan 20, 2017.
+      integer, intent(in) :: i
+      write (int2str,'(I10)') i
+      int2str = adjustl(int2str)
+      end function
+

@@ -703,9 +703,11 @@ real:: soilq10a(ilg)        !< q10 coefficient of anoxic soil
 integer:: lewtable(ilg)     !< layer index of the water table layer
 
 !    -------------common block parameters --------------
-real     TFREZ
+!real     TFREZ
+real     DELT,TFREZ
 
-COMMON /CLASS1/ TFREZ
+!COMMON /CLASS1/ TFREZ
+COMMON /CLASS1/ DELT,TFREZ ! EC Jan 19 2017.
 
 !    ------------------------------------------------------------------
 !

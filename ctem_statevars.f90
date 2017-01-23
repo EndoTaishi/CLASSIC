@@ -873,6 +873,7 @@ type ctem_tile_level
       real, dimension(ilg,ignd) :: thliqcacc_t !<
       real, dimension(ilg,ignd) :: thliqgacc_t !<
       real, dimension(ilg,ignd) :: thliqacc_t  !<
+      real, dimension(ilg,ignd) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
       real, dimension(ilg,ignd) :: thicecacc_t !<
       real, dimension(ilg,ignd) :: thicegacc_t !<
       real, dimension(ilg,icc)  :: ancsvgac_t  !<

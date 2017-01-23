@@ -43,8 +43,9 @@
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      2      anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,
-     4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,thlqaccgat_m,
-     5      thicaccgat_m,ipeatlandgat,pddgat,
+     4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,!thlqaccgat_m,
+     5      ipeatlandgat,pddgat,
+!    5      thicaccgat_m,ipeatlandgat,pddgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,    fcancmxrow,  rmatcrow,    zolncrow,     paicrow,
@@ -89,9 +90,12 @@ c
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
      3      anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,
      4      litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,
-     5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
+     5      ipeatlandrow,pddrow)
+!    5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
 
 
+c     Dec 23 2016     Remove thlqaccXXX_m/thicaccXXX_m
+c     Ed Chan
 c     March 19 2015   Gathering of peatland variables
 c     Yuanqiao Wu
 c
@@ -334,8 +338,8 @@ c    --peatland variables
      6         litrmsmossrow(nlat,nmos),litrmsmossgat(ilg),
      7         Cmossmasrow(nlat,nmos),  Cmossmasgat(ilg),
      8         dmossrow(nlat,nmos),dmossgat(ilg),  
-     9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
-     1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd),
+!    9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
+!    1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd),
      2         pddrow(nlat,nmos), pddgat(ilg)
       integer  ipeatlandgat(ilg),ipeatlandrow(nlat,nmos)
 
@@ -532,8 +536,8 @@ c
           claygat(k,l) = clayrow(ilmos(k),jlmos(k),l)
           orgmgat(k,l) = orgmrow(ilmos(k),jlmos(k),l)
           tbaraccgat_m(k,l) = tbaraccrow_m(ilmos(k),jlmos(k),l)
-          thlqaccgat_m(k,l) = thlqaccrow_m(ilmos(k),jlmos(k),l)
-          thicaccgat_m(k,l) = thicaccrow_m(ilmos(k),jlmos(k),l)
+          !thlqaccgat_m(k,l) = thlqaccrow_m(ilmos(k),jlmos(k),l)
+          !thicaccgat_m(k,l) = thicaccrow_m(ilmos(k),jlmos(k),l)
 250   continue
 c
       do 280 l=1,icc
