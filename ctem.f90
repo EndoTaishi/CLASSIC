@@ -1111,7 +1111,7 @@ call  hetresg  (litrmass, soilcmas,   delzw,  thpor, &
      &                   thliqg,      zbotw, thiceg,   &
      &                       fg,        0,&
      &                     isand,&
-     &                   ltrsbrg,  scrsbrg, thiceg)
+     &                   ltrsbrg,  scrsbrg)
 !>
 !! Find heterotrophic respiration rates from snow over ground subarea
 
@@ -1121,7 +1121,7 @@ call  hetresg  (litrmass, soilcmas,    delzw, thpor, &
 
      &                      fgs,        1,&
      &                     isand,&
-     &                   ltrsbrgs, scrsbrgs, thiceg)
+     &                   ltrsbrgs, scrsbrgs)
 !>
 !!Find vegetation averaged litter and soil c respiration rates
 !!using values from canopy over ground and canopy over snow subareas

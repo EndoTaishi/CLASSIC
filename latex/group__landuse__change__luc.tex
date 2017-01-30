@@ -7,7 +7,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Land Use Change Subroutine.
 
 \begin{DoxyCompactItemize}
 \item 
-subroutine, public \hyperlink{group__landuse__change__luc_ga2c6b3a127a7a9e0357442ba402deb31b}{landuse\+\_\+change\+::luc} (il1,il2,nilg,nol2pfts,grclarea, pfcancmx, nfcancmx,iday,todfrac,yesfrac, interpol,compete,
+subroutine, public \hyperlink{group__landuse__change__luc_gaca416d24f2714c7a7de32fb9fb1033db}{landuse\+\_\+change\+::luc} (il1,il2,nilg,nol2pfts,grclarea, pfcancmx, nfcancmx,iday,todfrac,yesfrac, interpol, compete,leapnow,
 \end{DoxyCompactItemize}
 
 
@@ -21,7 +21,7 @@ A decrease in the area of natural non-\/crop P\+F\+Ts, associated with an increa
 When croplands are abandoned, the area of natural P\+F\+Ts increases. In simulations with prescribed fractional coverage of P\+F\+Ts this results in a decreased carbon density for all model pools as the same amount of carbon is spread over a larger fraction of the grid cell. This reduced density implies that natural vegetation is able to take up carbon as it comes into equilibrium with the driving climate and atmospheric $CO_2$ concentration. This creates the carbon sink associated with abandonment of croplands as natural vegetation grows in its place. In simulations with competition between P\+F\+Ts, the abandoned land is treated as bare ground, which is subsequently available for recolonization, as mentioned above. As natural vegetation expands into bare ground it takes up carbon, again creating the carbon sink associated with abandonment of croplands. The net result is negative L\+U\+C carbon emissions as carbon is taken from atmosphere to grow vegetation over the area that was previously a cropland. 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{group__landuse__change__luc_ga2c6b3a127a7a9e0357442ba402deb31b}{}\index{Landuse\+\_\+change\+\_\+luc@{Landuse\+\_\+change\+\_\+luc}!luc@{luc}}
+\hypertarget{group__landuse__change__luc_gaca416d24f2714c7a7de32fb9fb1033db}{}\index{Landuse\+\_\+change\+\_\+luc@{Landuse\+\_\+change\+\_\+luc}!luc@{luc}}
 \index{luc@{luc}!Landuse\+\_\+change\+\_\+luc@{Landuse\+\_\+change\+\_\+luc}}
 \subsubsection[{luc}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public landuse\+\_\+change\+::luc (
 \begin{DoxyParamCaption}
@@ -36,9 +36,10 @@ When croplands are abandoned, the area of natural P\+F\+Ts increases. In simulat
 \item[{real, dimension(nilg,icc)}]{todfrac, }
 \item[{real, dimension(nilg,icc)}]{yesfrac, }
 \item[{logical}]{interpol, }
-\item[{logical}]{compete}
+\item[{logical}]{compete, }
+\item[{logical}]{leapnow}
 \end{DoxyParamCaption}
-)}\label{group__landuse__change__luc_ga2c6b3a127a7a9e0357442ba402deb31b}
+)}\label{group__landuse__change__luc_gaca416d24f2714c7a7de32fb9fb1033db}
 
 \begin{DoxyParams}{Parameters}
 {\em il1} & il1=1\\
@@ -50,6 +51,8 @@ When croplands are abandoned, the area of natural P\+F\+Ts increases. In simulat
 {\em iday} & day of year\\
 \hline
 {\em nol2pfts} & number of level 2 pfts\\
+\hline
+{\em leapnow} & true if this year is a leap year. Only used if the switch \textquotesingle{}leap\textquotesingle{} is true.\\
 \hline
 {\em interpol} & if todfrac \& yesfrac are provided then interpol must be set to false so that this subroutine doesn\textquotesingle{}t do its own interpolation using pfcancmx and nfcancmx which are year end values\\
 \hline

@@ -2,6 +2,7 @@ var searchData=
 [
   ['lambda',['lambda',['../structctem__statevars_1_1veg__gat.html#aa1ceff5811ea74f40ccec80484d8bf9a',1,'ctem_statevars::veg_gat']]],
   ['leaflitr',['leaflitr',['../structctem__statevars_1_1veg__rot.html#a9012191a2d438f4201c5e923176e511e',1,'ctem_statevars::veg_rot::leaflitr()'],['../structctem__statevars_1_1veg__gat.html#a249db9e49e7ad29f163ba0849436a099',1,'ctem_statevars::veg_gat::leaflitr()']]],
+  ['leap',['leap',['../structctem__statevars_1_1ctem__switches.html#a0d2cee5988b9acc49829041803774a2d',1,'ctem_statevars::ctem_switches']]],
   ['lfstatus',['lfstatus',['../structctem__statevars_1_1veg__rot.html#a1193dbd4a8c0e9d08fd4e432f28b3741',1,'ctem_statevars::veg_rot::lfstatus()'],['../structctem__statevars_1_1veg__gat.html#ae8d0dc8bbf1921db0851bfae95d74716',1,'ctem_statevars::veg_gat::lfstatus()']]],
   ['lightng',['lightng',['../structctem__statevars_1_1veg__gat.html#a8167c3299331c7ed1c7c271efe510e94',1,'ctem_statevars::veg_gat']]],
   ['litres',['litres',['../structctem__statevars_1_1veg__rot.html#aa54e0702f6387c73e1f0abf3d2740569',1,'ctem_statevars::veg_rot::litres()'],['../structctem__statevars_1_1veg__gat.html#a3fc69379e71240c591774478841c9e20',1,'ctem_statevars::veg_gat::litres()']]],

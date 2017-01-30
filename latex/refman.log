@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.12.12)  10 AUG 2016 10:07
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.5.28)  30 JAN 2017 10:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -880,10 +880,10 @@ Now handling font encoding PU ...
 ) (./refman.aux
 (./group__competition__scheme__existence.aux)
 (./group__competition__scheme__competition.aux)
-(./group__ctem__params__initpftpars.aux)
+(./group__ctem__params__initpftpars.aux) (./group__ctem__statevars.aux)
 (./group__disturbance__scheme__disturb.aux)
-(./group__disturbance__scheme__burntobare.aux)
-(./group__io__driver__read__from__ctm.aux)
+(./group__disturbance__scheme__burntobare.aux) (./group__hetresg.aux)
+(./group__hetresv.aux) (./group__io__driver__read__from__ctm.aux)
 (./group__io__driver__write__ctm__rs.aux)
 (./group__io__driver__create__outfiles.aux)
 (./group__io__driver__class__monthly__aw.aux)
@@ -895,7 +895,38 @@ Now handling font encoding PU ...
 (./group__landuse__change__initialize__luc.aux)
 (./group__landuse__change__readin__luc.aux) (./group__landuse__change__luc.aux)
 (./group__landuse__change__adjust__luc__fracs.aux)
-(./group__landuse__change__adjust__fracs__comp.aux))
+(./group__landuse__change__adjust__fracs__comp.aux)
+
+LaTeX Warning: Label `hetres_all' multiply defined.
+
+
+LaTeX Warning: Label `lithet' multiply defined.
+
+
+LaTeX Warning: Label `hyper' multiply defined.
+
+
+LaTeX Warning: Label `lastpsi' multiply defined.
+
+
+LaTeX Warning: Label `cdtoh' multiply defined.
+
+
+LaTeX Warning: Label `LAI_thrs' multiply defined.
+
+
+LaTeX Warning: Label `cltod' multiply defined.
+
+
+LaTeX Warning: Label `gamma_cold' multiply defined.
+
+
+LaTeX Warning: Label `cldls' multiply defined.
+
+
+LaTeX Warning: Label `gamma_dry' multiply defined.
+
+)
 \openout1 = `refman.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 115.
@@ -913,8 +944,7 @@ LaTeX Font Info:    ... okay on input line 115.
 LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 115.
 LaTeX Font Info:    Try loading font information for TS1+cmr on input line 115.
 
-
-(/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
+ (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    ... okay on input line 115.
@@ -1061,20 +1091,25 @@ LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 1.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
 (Font)              scaled to size 8.99994pt on input line 1.
+LaTeX Font Info:    Try loading font information for TS1+phv on input line 14.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1phv.fd
+File: ts1phv.fd 2001/06/04 scalable font definitions for TS1/phv.
+)
+LaTeX Font Info:    Font shape `TS1/phv/m/n' will be
+(Font)              scaled to size 8.99994pt on input line 14.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <7> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 1.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 17.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 6.29996pt on input line 1.
+(Font)              scaled to size 6.29996pt on input line 17.
  [3
 
-] [4] [5] [6] [7]
-[8] [9] [10] [11] [12])
+] [4] [5] [6]
+[7] [8] [9] [10] [11] [12] [13])
 \tf@toc=\write5
 \openout5 = `refman.toc'.
 
- [13] [14
-
-]
+ [14]
 Package hyperref Info: Option `pageanchor' set `true' on input line 138.
 
 Chapter 1.
@@ -1086,8 +1121,6 @@ LaTeX Font Info:    Font shape `T1/phv/b/n' will be
 (Font)              scaled to size 18.66588pt on input line 141.
 LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
 (Font)              scaled to size 18.66588pt on input line 141.
-LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
-(Font)              scaled to size 6.29996pt on input line 141.
 (./index.tex
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 1.
@@ -1095,25 +1128,20 @@ LaTeX Font Info:    Font shape `T1/phv/b/n' will be
 (Font)              scaled to size 12.9599pt on input line 1.
 LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
 (Font)              scaled to size 12.9599pt on input line 1.
-LaTeX Font Info:    Try loading font information for T1+pcr on input line 2.
- (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
-File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-)
-LaTeX Font Info:    Try loading font information for TS1+phv on input line 3.
+LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
+(Font)              scaled to size 6.29996pt on input line 1.
 
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1phv.fd
-File: ts1phv.fd 2001/06/04 scalable font definitions for TS1/phv.
-)
-LaTeX Font Info:    Font shape `TS1/phv/m/n' will be
-(Font)              scaled to size 8.99994pt on input line 3.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
  [1
 
+
 ]
-<schematicDiagramOfClass.png, id=2101, 816.04875pt x 1045.9075pt>
+<schematicDiagramOfClass.png, id=2243, 816.04875pt x 1045.9075pt>
 File: schematicDiagramOfClass.png Graphic file (type png)
 
 <use schematicDiagramOfClass.png>
-Package pdftex.def Info: schematicDiagramOfClass.png used on input line 18.
+Package pdftex.def Info: schematicDiagramOfClass.png used on input line 17.
 (pdftex.def)             Requested size: 274.1656pt x 351.39061pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -1122,92 +1150,124 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 Underfull \vbox (badness 3635) has occurred while \output is active []
 
  [3 <./schematicDiagramOfClass.png>]
-Overfull \hbox (777.3575pt too wide) detected at line 28
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 26.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 10.79993pt on input line 26.
+LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
+(Font)              scaled to size 10.79993pt on input line 26.
+
+Overfull \hbox (115.74539pt too wide) detected at line 27
 []
  []
 
-LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 29.
-LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 10.79993pt on input line 29.
-LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
-(Font)              scaled to size 10.79993pt on input line 29.
-[4] [5] [6] <percentSand.png, id=2134, 901.3675pt x 701.62125pt>
+[4] [5] [6] <percentSand.png, id=2274, 901.3675pt x 701.62125pt>
 File: percentSand.png Graphic file (type png)
 
 <use percentSand.png>
-Package pdftex.def Info: percentSand.png used on input line 113.
+Package pdftex.def Info: percentSand.png used on input line 112.
 (pdftex.def)             Requested size: 451.43909pt x 351.39857pt.
- [7 <./percentSand.png>] [8]) [9] [10
+ [7 <./percentSand.png>] [8] [9]
+LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
+(Font)              scaled to size 8.99994pt on input line 198.
+LaTeX Font Info:    Font shape `TS1/phv/bc/n' will be
+(Font)              scaled to size 8.99994pt on input line 199.
+ [10] [11]
+Overfull \hbox (55.29301pt too wide) detected at line 248
+[]
+ []
+
+
+Overfull \hbox (175.7086pt too wide) detected at line 250
+[]
+ []
+
+[12]) [13] [14
 
 ]
 Chapter 2.
-(./modules.tex) [11] [12
-
-]
+(./md_CONTRIBUTING.tex
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 15.
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+) [15]
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 7.19995pt on input line 43.
+) [16]
 Chapter 3.
-(./annotated.tex) [13] [14
+(./md_README.tex) [17
+
+] [18
 
 ]
 Chapter 4.
+(./modules.tex) [19] [20
+
+]
+Chapter 5.
+(./annotated.tex) [21] [22
+
+]
+Chapter 6.
 (./files.tex
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [15]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+ [23]
+Underfull \vbox (badness 1057) has occurred while \output is active []
 
- [16]
-Underfull \vbox (badness 7168) has occurred while \output is active []
-
- [17])
-[18]
-Chapter 5.
+ [24]
+[25]) [26]
+Chapter 7.
 (./group__competition__scheme__bioclim.tex
-LaTeX Font Info:    Font shape `T1/phv/bc/n' will be
-(Font)              scaled to size 8.99994pt on input line 58.
 LaTeX Font Info:    Font shape `T1/phv/bc/it' in size <10> not available
-(Font)              Font shape `T1/phv/bc/sl' tried instead on input line 58.
+(Font)              Font shape `T1/phv/bc/sl' tried instead on input line 59.
 LaTeX Font Info:    Font shape `T1/phv/bc/sl' will be
-(Font)              scaled to size 8.99994pt on input line 58.
+(Font)              scaled to size 8.99994pt on input line 59.
 LaTeX Font Info:    Font shape `T1/phv/bc/it' in size <7> not available
-(Font)              Font shape `T1/phv/bc/sl' tried instead on input line 58.
+(Font)              Font shape `T1/phv/bc/sl' tried instead on input line 59.
 LaTeX Font Info:    Font shape `T1/phv/bc/sl' will be
-(Font)              scaled to size 6.29996pt on input line 58.
+(Font)              scaled to size 6.29996pt on input line 59.
 
 Underfull \vbox (badness 4217) has occurred while \output is active []
 
- [19
+ [27
 
 ]
-[20]
+[28]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 61.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 62.
 LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
-(Font)              scaled to size 8.99994pt on input line 61.
-) [21]
+(Font)              scaled to size 8.99994pt on input line 62.
+) [29]
 \openout2 = `group__competition__scheme__existence.aux'.
 
- (./group__competition__scheme__existence.tex) [22
+ (./group__competition__scheme__existence.tex) [30
 
 ]
 \openout2 = `group__competition__scheme__competition.aux'.
 
 
-(./group__competition__scheme__competition.tex [23
+(./group__competition__scheme__competition.tex [31
 
 
-]) [24]
+]) [32]
 \openout2 = `group__ctem__params__initpftpars.aux'.
 
 
-(./group__ctem__params__initpftpars.tex) [25
+(./group__ctem__params__initpftpars.tex) [33
+
+
+]
+\openout2 = `group__ctem__statevars.aux'.
+
+ (./group__ctem__statevars.tex)
+[34
 
 
 ]
 \openout2 = `group__disturbance__scheme__disturb.aux'.
 
-
-(./group__disturbance__scheme__disturb.tex
+ (./group__disturbance__scheme__disturb.tex
 Overfull \hbox (121.80423pt too wide) in paragraph at lines 10--11
 []\T1/phv/m/n/10 subroutine, pub-lic [][]disturbance[]_[]scheme[]::disturb[][] 
 (stem-mass, root-mass, gleaf-mas, bleaf-mas,thliq,wiltsm,fieldsm,uwind,vwind,li
@@ -1215,9 +1275,9 @@ ghtng,fcancmx,
  []
 
 
-Overfull \hbox (58.25735pt too wide) in paragraph at lines 10--11
+Overfull \hbox (82.26889pt too wide) in paragraph at lines 10--11
 \T1/phv/m/n/10 litr-mass,prbfrhuc, rmatctem, extnprob, pop-don,il1,il2,sort, no
-l2pfts,grclarea,thice,popdin, lucem-com,dofire,currlat,iday,fsnow, 
+l2pfts,grclarea,thice,popdin, lucem-com,dofire,currlat,iday,fsnow,isand, 
  []
 
 
@@ -1229,16 +1289,16 @@ g$\T1/phv/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 1931) in paragraph at lines 25--25
-\OML/cmm/m/it/10 flashes km[] month[]$\T1/phv/m/n/10 ), re-spec-tively. Sim-i-l
-ar to Eq. (eqn[]:Pb}), be-low the lower thresh-old ( $\OML/cmm/m/it/10 F[]$\T1/
-phv/m/n/10 ;
+Underfull \hbox (badness 1418) in paragraph at lines 25--25
+\OML/cmm/m/it/10 flashes km[] month[]$\T1/phv/m/n/10 ) , re-spec-tively. Sim-i-
+lar to Eq. (eqn[]:Pb}), be-low the lower thresh-old ( $\OML/cmm/m/it/10 F[]$\T1
+/phv/m/n/10 ;
  []
 
-[26
+[35
 
 
-] [27]
+] [36]
 Overfull \hbox (15.18118pt too wide) detected at line 49
 \OML/cmm/m/it/10 h\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 ) = \O
 ML/cmm/m/it/10 h\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 )(1 \OMS
@@ -1249,7 +1309,7 @@ ML/cmm/m/it/10 h\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^^[]\OT1/cmr/m/n/10 )(1 \OMS
 t/10 :
  []
 
-[28]
+[37]
 Underfull \hbox (badness 1859) in paragraph at lines 61--62
 \T1/phv/m/n/10 ( $\OML/cmm/m/it/10 kg C m[]$\T1/phv/m/n/10 ) for its leaf, stem
 , root and lit-ter com-po-nents, mul-ti-plied by a vec-tor of com-bus-tion fac-
@@ -1278,83 +1338,98 @@ Underfull \hbox (badness 1735) in paragraph at lines 65--65
 ]. The cor-re-spond-ing loss of car-bon (
  []
 
-[29]
-Underfull \hbox (badness 7888) in paragraph at lines 160--161
+[38]
+Underfull \hbox (badness 7888) in paragraph at lines 161--162
 []\T1/phv/m/n/10 land use change (luc) re-lated com-bus-tion emis-sion losses, 
 $\OML/cmm/m/it/10 u \OMS/cmsy/m/n/10 ^^@
  []
 
-[30] [31]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [32])
-[33]
+[39] [40]) [41]
 \openout2 = `group__disturbance__scheme__burntobare.aux'.
 
- (./group__disturbance__scheme__burntobare.tex [34
+ (./group__disturbance__scheme__burntobare.tex [42
 
 
-]) [35]
+]) [43]
+\openout2 = `group__hetresg.aux'.
+
+
+(./group__hetresg.tex
+Underfull \hbox (badness 3271) in paragraph at lines 10--11
+[]\T1/phv/m/n/10 subroutine, pub-lic [][]heterotrophic[]_[]respiration[]::hetre
+sg[][] (litr-mass, soil-cmas, delzw,thpor,il1,il2,tbar,psisat,
+ []
+
+[44
+
+
+]) [45] [46]
+\openout2 = `group__hetresv.aux'.
+
+ (./group__hetresv.tex) [47
+
+
+]
 \openout2 = `group__io__driver__read__from__ctm.aux'.
 
 
-(./group__io__driver__read__from__ctm.tex [36
+(./group__io__driver__read__from__ctm.tex [48
 
 
-]) [37]
+]) [49]
 \openout2 = `group__io__driver__write__ctm__rs.aux'.
 
 
-(./group__io__driver__write__ctm__rs.tex) [38
+(./group__io__driver__write__ctm__rs.tex) [50
 
 
 ]
 \openout2 = `group__io__driver__create__outfiles.aux'.
 
 
-(./group__io__driver__create__outfiles.tex) [39
+(./group__io__driver__create__outfiles.tex) [51
 
 
 ]
 \openout2 = `group__io__driver__class__monthly__aw.aux'.
 
 
-(./group__io__driver__class__monthly__aw.tex) [40
+(./group__io__driver__class__monthly__aw.tex) [52
 
 
 ]
 \openout2 = `group__io__driver__class__annual__aw.aux'.
 
 
-(./group__io__driver__class__annual__aw.tex) [41
+(./group__io__driver__class__annual__aw.tex) [53
 
 
 ]
 \openout2 = `group__io__driver__ctem__daily__aw.aux'.
 
 
-(./group__io__driver__ctem__daily__aw.tex [42
+(./group__io__driver__ctem__daily__aw.tex [54
 
 
-]) [43]
+]) [55]
 \openout2 = `group__io__driver__ctem__monthly__aw.aux'.
 
 
-(./group__io__driver__ctem__monthly__aw.tex) [44
+(./group__io__driver__ctem__monthly__aw.tex) [56
 
 
 ]
 \openout2 = `group__io__driver__ctem__annual__aw.aux'.
 
 
-(./group__io__driver__ctem__annual__aw.tex) [45
+(./group__io__driver__ctem__annual__aw.tex) [57
 
 
 ]
 \openout2 = `group__io__driver__close__outfiles.aux'.
 
 
-(./group__io__driver__close__outfiles.tex) [46
+(./group__io__driver__close__outfiles.tex) [58
 
 
 ]
@@ -1366,99 +1441,99 @@ LaTeX Font Info:    Font shape `T1/phv/m/it' in size <7> not available
 (Font)              Font shape `T1/phv/m/sl' tried instead on input line 45.
 LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
 (Font)              scaled to size 6.29996pt on input line 45.
- [47
+ [59
 
 
-]) [48]
+]) [60]
 \openout2 = `group__landuse__change__readin__luc.aux'.
 
 
-(./group__landuse__change__readin__luc.tex) [49
+(./group__landuse__change__readin__luc.tex) [61
 
 
 ]
 \openout2 = `group__landuse__change__luc.aux'.
 
 
-(./group__landuse__change__luc.tex [50
+(./group__landuse__change__luc.tex [62
 
 
-] [51]) [52]
+] [63]) [64]
 \openout2 = `group__landuse__change__adjust__luc__fracs.aux'.
 
 
-(./group__landuse__change__adjust__luc__fracs.tex) [53
+(./group__landuse__change__adjust__luc__fracs.tex) [65
 
 
 ]
 \openout2 = `group__landuse__change__adjust__fracs__comp.aux'.
 
 
-(./group__landuse__change__adjust__fracs__comp.tex) [54
+(./group__landuse__change__adjust__fracs__comp.tex) [66
 
 
 ]
-Chapter 6.
+Chapter 8.
 (./structctem__statevars_1_1class__moyr__output.tex
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <9> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 55.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 73.
 LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
-(Font)              scaled to size 8.09995pt on input line 55.
- [55
+(Font)              scaled to size 8.09995pt on input line 73.
+ [67
 
 
 ])
-(./structctem__statevars_1_1ctem__annual.tex [56])
-(./structctem__statevars_1_1ctem__gridavg.tex [57] [58])
-(./structctem__statevars_1_1ctem__gridavg__annual.tex [59])
-(./structctem__statevars_1_1ctem__gridavg__monthly.tex [60])
-(./structctem__statevars_1_1ctem__monthly.tex [61])
-(./structctem__statevars_1_1ctem__switches.tex [62]
+(./structctem__statevars_1_1ctem__annual.tex [68])
+(./structctem__statevars_1_1ctem__gridavg.tex [69] [70] [71])
+(./structctem__statevars_1_1ctem__gridavg__annual.tex [72])
+(./structctem__statevars_1_1ctem__gridavg__monthly.tex [73])
+(./structctem__statevars_1_1ctem__monthly.tex [74])
+(./structctem__statevars_1_1ctem__switches.tex [75]
 LaTeX Font Info:    Font shape `TS1/phv/m/it' in size <9> not available
 (Font)              Font shape `TS1/phv/m/sl' tried instead on input line 58.
 LaTeX Font Info:    Font shape `TS1/phv/m/sl' will be
 (Font)              scaled to size 8.09995pt on input line 58.
- [63])
-(./structctem__statevars_1_1ctem__tile__level.tex [64])
-(./structctem__statevars_1_1ctem__tileavg__annual.tex [65])
-(./structctem__statevars_1_1ctem__tileavg__monthly.tex [66])
-(./structctem__statevars_1_1veg__gat.tex [67] [68] [69] [70] [71] [72] [73])
-(./structctem__statevars_1_1veg__rot.tex [74] [75] [76] [77] [78] [79] [80])
-[81] [82
+)
+(./structctem__statevars_1_1ctem__tile__level.tex [76] [77])
+(./structctem__statevars_1_1ctem__tileavg__annual.tex [78])
+(./structctem__statevars_1_1ctem__tileavg__monthly.tex [79])
+(./structctem__statevars_1_1veg__gat.tex [80] [81] [82] [83] [84] [85])
+(./structctem__statevars_1_1veg__rot.tex [86] [87] [88] [89] [90] [91] [92])
+[93] [94
 
 ]
-Chapter 7.
-(./allocate_8f.tex [83] [84]) (./APREP_8f.tex [85] [86] [87]
+Chapter 9.
+(./allocate_8f.tex [95] [96]) (./APREP_8f.tex [97] [98] [99]
 Underfull \hbox (badness 922) in paragraph at lines 285--286
 []\T1/phv/m/n/10 Optional user-specified val-ues of height of veg-e-ta-tion cat
 -e-gories to over-ride C[]L[]A[]S[]S-
  []
 
-[88]
+[100]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [89]
+ [101]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [90])
+ [102])
 (./balcar_8f.tex
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [91]
+ [103]
 Underfull \hbox (badness 853) in paragraph at lines 11--12
 []\T1/phv/m/n/10 subroutine [][]bal-car[][] (gleaf-mas, stem-mass, root-mass, b
 leaf-mas, litr-mass, soil-cmas, ntch-lveg, ntchsveg,
  []
 
-[92]
+[104]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [93])
-(./bio2str_8f.tex [94] [95]) (./CANADD_8f.tex
+ [105])
+(./bio2str_8f.tex [106] [107]) (./CANADD_8f.tex
 Underfull \vbox (badness 1527) has occurred while \output is active []
 
- [96]
-[97]
+ [108]
+[109]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 103.
 
@@ -1468,11 +1543,11 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 103.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [98])
-(./CANALB_8f.tex [99]
+ [110])
+(./CANALB_8f.tex [111]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [100]
+ [112]
 Overfull \hbox (38.69536pt too wide) in paragraph at lines 170--171
 []$\OML/cmm/m/it/10 ^^T \OT1/cmr/m/n/10 = 0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 3\
 OML/cmm/m/it/10 =cos\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 Z[]\OT1/cmr/m/n/10 )(\OML
@@ -1501,23 +1576,23 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 194.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [101])
+ [113])
 (./CANVAP_8f.tex
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [102]
-[103]) (./CGROW_8f.tex [104]) (./CHKWAT_8f.tex
+ [114]
+[115]) (./CGROW_8f.tex [116]) (./CHKWAT_8f.tex
 Underfull \vbox (badness 1895) has occurred while \output is active []
 
- [105]
-[106]) (./CLASSA_8f.tex [107]
+ [117]
+[118]) (./CLASSA_8f.tex [119]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [108]
-[109] [110] [111] [112]) (./CLASSB_8f.tex [113]
+ [120]
+[121] [122] [123] [124]) (./CLASSB_8f.tex [125]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [114])
+ [126])
 (./CLASSBD_8f.tex
 Overfull \hbox (18.4171pt too wide) detected at line 13
 []
@@ -1526,28 +1601,28 @@ Overfull \hbox (18.4171pt too wide) detected at line 13
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [115]
+ [127]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [116])
+ [128])
 (./CLASSD_8f.tex
 Underfull \vbox (badness 2726) has occurred while \output is active []
 
- [117])
-(./CLASSG_8f.tex [118]
+ [129])
+(./CLASSG_8f.tex [130]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [119]
+ [131]
 Overfull \vbox (96.14026pt too high) has occurred while \output is active []
 
 
-[120]
+[132]
 Underfull \hbox (badness 922) in paragraph at lines 332--333
 []\T1/phv/m/n/10 Optional user-specified val-ues of height of veg-e-ta-tion cat
 -e-gories to over-ride C[]L[]A[]S[]S-
  []
 
-[121] [122]) (./CLASSI_8f.tex [123]
+[133] [134]) (./CLASSI_8f.tex [135]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 87.
 
@@ -1560,17 +1635,17 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 89.
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 89.
 
-) (./CLASSS_8f.tex [124] [125]) (./CLASST_8f.tex [126]
+) (./CLASSS_8f.tex [136] [137]) (./CLASST_8f.tex [138]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [127]
+ [139]
 Overfull \vbox (36.27972pt too high) has occurred while \output is active []
 
 
-[128] [129] [130] [131] [132]
+[140] [141] [142] [143] [144]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [133]
+ [145]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 715.
 
@@ -1595,7 +1670,7 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 717.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [134]
+ [146]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 729.
 
@@ -1611,26 +1686,17 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 733.
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 733.
 
-) (./CLASSW_8f.tex [135]
+) (./CLASSW_8f.tex [147]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [136]
-[137] [138] [139] [140] [141]) (./CLASSZ_8f.tex
+ [148]
+[149] [150] [151] [152] [153]) (./CLASSZ_8f.tex
 Underfull \vbox (badness 1681) has occurred while \output is active []
 
- [142]
-[143] [144]
+ [154]
+[155] [156]
 
-LaTeX Warning: Command \textendash invalid in math mode on input line 225.
-
-
-LaTeX Warning: Command \textendash invalid in math mode on input line 235.
-
-
-LaTeX Warning: Command \textendash invalid in math mode on input line 235.
-
-
-LaTeX Warning: Command \textendash invalid in math mode on input line 235.
+LaTeX Warning: Command \textendash invalid in math mode on input line 227.
 
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 237.
@@ -1651,13 +1717,16 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 239.
 LaTeX Warning: Command \textendash invalid in math mode on input line 239.
 
 
-LaTeX Warning: Command \textendash invalid in math mode on input line 243.
+LaTeX Warning: Command \textendash invalid in math mode on input line 241.
 
 
-LaTeX Warning: Command \textendash invalid in math mode on input line 243.
+LaTeX Warning: Command \textendash invalid in math mode on input line 241.
 
 
-LaTeX Warning: Command \textendash invalid in math mode on input line 243.
+LaTeX Warning: Command \textendash invalid in math mode on input line 241.
+
+
+LaTeX Warning: Command \textendash invalid in math mode on input line 245.
 
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 245.
@@ -1670,11 +1739,17 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 247.
 
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 247.
+
+
+LaTeX Warning: Command \textendash invalid in math mode on input line 249.
+
+
+LaTeX Warning: Command \textendash invalid in math mode on input line 249.
 
 ) (./competition__map_8f.tex
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [145]
+ [157]
 Overfull \hbox (69.52847pt too wide) in paragraph at lines 11--12
 \T1/phv/m/n/10 mas, bleaf-mas, stem-mass,rootmass, litr-mass, soil-cmas,pftexis
 t,lambda, bmasveg, burn-vegf,add2allo,cc,mm,fcanmx,vgbiomas,
@@ -1686,7 +1761,7 @@ Overfull \hbox (19.66553pt too wide) in paragraph at lines 11--12
 sr-plsmon, de-fct-mon, anndefct,annsrpls,annpcp,dry[]
  []
 
-[146] [147]) (./competition__mod_8f90.tex [148]
+[158] [159]) (./competition__mod_8f90.tex [160]
 Overfull \hbox (49.10162pt too wide) detected at line 58
 [] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 c[]f[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 f
 [] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 f[]\OT1/cmr/m/n/10 ) \OMS/cmsy/m/n/10 ^^@
@@ -1700,7 +1775,7 @@ it/10 f[]\OT1/cmr/m/n/10 ) \OMS/cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 c[]f[]f[] \OMS
 /cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 m[]f[][];
  []
 
-[149]
+[161]
 Underfull \hbox (badness 1342) in paragraph at lines 92--93
 []\T1/phv/m/n/10 The frac-tion of N[]P[]P used for spa-tial ex-pan-sion, $\OT1/
 cmr/m/n/10 ^^C[]$\T1/phv/m/n/10 , is cal-cu-lated us-ing the leaf area in-dex (
@@ -1729,7 +1804,7 @@ mr/m/n/10 25\OML/cmm/m/it/10 LAI[] \OT1/cmr/m/n/10 : []  \OML/cmm/m/it/10 ^^U[]
  \OT1/cmr/m/n/10 = 0[]
  []
 
-) (./competition__unmap_8f.tex [150]
+[162]) (./competition__unmap_8f.tex
 Underfull \hbox (badness 10000) in paragraph at lines 11--12
 \T1/phv/m/n/10 _[]cmp, gleafmas[]_[]cmp, bleafmas[]_[]cmp,stemmass[]_[]cmp, roo
 tmass[]_[]cmp, litrmass[]_[]cmp,soilcmas[]_[]cmp,
@@ -1759,77 +1834,72 @@ Underfull \hbox (badness 10000) in paragraph at lines 11--12
 ncmx[]_[]cmp, nfcancmx[]_[]cmp, pstemmass[]_[]
  []
 
-[151] [152]) (./ctem_8f90.tex
+[163] [164]) (./CONTRIBUTING_8md.tex) (./ctem_8f90.tex [165]
 Overfull \hbox (51.7689pt too wide) in paragraph at lines 11--12
 []\T1/phv/m/n/10 subroutine [][]ctem[][] (fcancmx,fsnow,sand,clay,il1,il2,iday,
 radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg,
  []
 
 
-Underfull \hbox (badness 7203) in paragraph at lines 11--12
-\T1/phv/m/n/10 pf-cancmx, nf-cancmx,lnduseon,thicec, soildpth, spin-fast,todfra
-c,compete,netrad,precip,grclarea,popdin,
- []
-
-[153] [154] [155] [156]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [157]
+ [166]
+Overfull \vbox (130.27689pt too high) has occurred while \output is active []
+
+
+[167]
+Underfull \vbox (badness 1325) has occurred while \output is active []
+
+ [168]
+[169]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [158])
-(./ctem__params_8f90.tex
-Overfull \hbox (26.86925pt too wide) in paragraph at lines 34--35
-[]\T1/phv/m/n/10 integer, di-men-sion(13), pa-ram-e-ter \T1/phv/b/n/10 ctem[]_[
-]params[]::monthend \T1/phv/m/n/10 = [] 0,31,59,90,120,151,181,212,243,273,304,
-334,365
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 46--47
+ [170])
+(./ctem__params_8f90.tex [171]
+Underfull \hbox (badness 10000) in paragraph at lines 51--52
 \T1/phv/m/n/10 75.[]3422,-72.[]5527, -69.[]7628,-66.[]9727,-64.[]1825,-61.[]392
 2,-58.[]6018,-55.[]8114,-53.[]021, -50.[]2305,-47.[]44,-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 46--47
+Underfull \hbox (badness 10000) in paragraph at lines 51--52
 \T1/phv/m/n/10 44.[]6495,-41.[]8589,-39.[]0684,-36.[]2778,-33.[]4872, -30.[]696
 7,-27.[]9061,-25.[]1155,-22.[]3249,-19.[]5343,-16.[]7437,-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 46--47
+Underfull \hbox (badness 10000) in paragraph at lines 51--52
 \T1/phv/m/n/10 13.[]9531, -11.[]1625,-8.[]3718,-5.[]5812,-2.[]7906,0.[]0,2.[]79
 06,5.[]5812,8.[]3718,11.[]16245, 13.[]9531,16.[]7437,19.[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 46--47
+Underfull \hbox (badness 10000) in paragraph at lines 51--52
 \T1/phv/m/n/10 5343,22.[]3249,25.[]1155,27.[]9061,30.[]69665,33.[]4872, 36.[]27
 78,39.[]06835,41.[]8589,44.[]64945,47.[]43995,50.[]
  []
 
 
-Underfull \hbox (badness 2512) in paragraph at lines 46--47
+Underfull \hbox (badness 2512) in paragraph at lines 51--52
 \T1/phv/m/n/10 23045,53.[]02095, 55.[]8114,58.[]6018,61.[]3922,64.[]1825,66.[]9
 727,69.[]7628,72.[]55265,75.[]3422, 78.[]13125,80.[]
  []
 
-[159]
-Overfull \hbox (28.25508pt too wide) in paragraph at lines 109--110
+
+Overfull \hbox (28.25508pt too wide) in paragraph at lines 114--115
 []\T1/phv/m/n/10 logical, di-men-sion(icc), pa-ram-e-ter \T1/phv/b/n/10 ctem[]_
 []params[]::crop \T1/phv/m/n/10 = [] .false.,.false.,.false.,.false.,.false.,.t
 rue.,.true.,.false.,.false.
  []
 
 
-Overfull \hbox (32.94391pt too wide) in paragraph at lines 112--113
+Overfull \hbox (32.94391pt too wide) in paragraph at lines 117--118
 []\T1/phv/m/n/10 logical, di-men-sion(icc), pa-ram-e-ter \T1/phv/b/n/10 ctem[]_
 []params[]::grass \T1/phv/m/n/10 = [] .false.,.false.,.false.,.false.,.false.,.
 false.,.false.,.true.,.true.
  []
 
-[160] [161] [162] [163] [164]) (./ctem__statevars_8f90.tex [165] [166])
+[172] [173] [174] [175] [176] [177]) (./ctem__statevars_8f90.tex [178] [179])
 (./ctemg1_8f.tex) (./ctemg2_8f.tex
 Overfull \hbox (708.70244pt too wide) in paragraph at lines 11--12
 []\T1/phv/m/n/10 subroutine \T1/phv/b/n/10 ctemg2 \T1/phv/m/n/10 (fcancmx-gat,r
@@ -1889,7 +1959,7 @@ Overfull \hbox (55.03809pt too wide) in paragraph at lines 11--12
 at,defctmongat, anndefctgat,annsrplsgat,annpcpgat,dry[]
  []
 
-) (./ctems1_8f.tex [167]) (./ctems2_8f.tex
+[180]) (./ctems1_8f.tex) (./ctems2_8f.tex
 Overfull \hbox (732.46265pt too wide) in paragraph at lines 11--12
 []\T1/phv/m/n/10 subroutine \T1/phv/b/n/10 ctems2 \T1/phv/m/n/10 (fcancmxrow, r
 matcrow, zol-ncrow, paicrow,ailcrow,ailcgrow,cmasvegcrow,slaicrow,ailcgsrow,fca
@@ -1953,7 +2023,7 @@ Underfull \hbox (badness 3209) in paragraph at lines 11--12
 tem-mass-row, pgleaf-mass-row,ch4wet1row,
  []
 
-) (./CWCALC_8f.tex [168]) (./disturb_8f90.tex [169]
+[181]) (./CWCALC_8f.tex [182]) (./disturb_8f90.tex
 Overfull \hbox (121.80423pt too wide) in paragraph at lines 12--13
 []\T1/phv/m/n/10 subroutine, pub-lic [][]disturbance[]_[]scheme[]::disturb[][] 
 (stem-mass, root-mass, gleaf-mas, bleaf-mas,thliq,wiltsm,fieldsm,uwind,vwind,li
@@ -1961,24 +2031,28 @@ ghtng,fcancmx,
  []
 
 
-Overfull \hbox (58.25735pt too wide) in paragraph at lines 12--13
+Overfull \hbox (82.26889pt too wide) in paragraph at lines 12--13
 \T1/phv/m/n/10 litr-mass,prbfrhuc, rmatctem, extnprob, pop-don,il1,il2,sort, no
-l2pfts,grclarea,thice,popdin, lucem-com,dofire,currlat,iday,fsnow, 
+l2pfts,grclarea,thice,popdin, lucem-com,dofire,currlat,iday,fsnow,isand, 
  []
 
-) (./DRCOEF_8f.tex [170]) (./GATPREP_8f.tex [171]) (./GAUSSG_8f.tex)
-(./GRALB_8f.tex [172] [173]) (./GRDRAN_8f.tex [174]
+) (./DRCOEF_8f.tex [183]) (./GATPREP_8f.tex [184]) (./GAUSSG_8f.tex)
+(./GRALB_8f.tex [185] [186]) (./GRDRAN_8f.tex
+Underfull \vbox (badness 4713) has occurred while \output is active []
+
+ [187]
+[188]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 138.
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [175]
+ [189]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [176])
-(./GRINFL_8f.tex [177] [178]
+ [190])
+(./GRINFL_8f.tex [191] [192]
 Underfull \hbox (badness 10000) in paragraph at lines 165--166
 []\T1/phv/m/n/10 Residual soil liq-uid wa-ter con-tent re-main-ing af-ter freez
 -ing or evap-o-ra-tion
@@ -1993,78 +2067,83 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 200.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [179])
-(./hetresg_8f.tex [180] [181] [182]) (./hetresv_8f.tex [183]) (./ICEBAL_8f.tex
-[184] [185]
+ [193])
+(./hetres__mod_8f90.tex
+Underfull \hbox (badness 3271) in paragraph at lines 12--13
+[]\T1/phv/m/n/10 subroutine, pub-lic [][]heterotrophic[]_[]respiration[]::hetre
+sg[][] (litr-mass, soil-cmas, delzw,thpor,il1,il2,tbar,psisat,
+ []
+
+[194]) (./hetresg__old_8f.tex [195] [196]) (./hetresv__old_8f.tex [197]
+[198]) (./ICEBAL_8f.tex [199]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [200]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 157.
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [186]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 171.
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [187])
-(./io__driver_8f90.tex [188]) (./landuse__change__mod_8f90.tex)
-(./mainres_8f.tex [189] [190]) (./mortality_8f.tex [191] [192]) (./mvidx_8f.tex
-) (./ORDLEG_8f.tex [193]) (./phenolgy_8f.tex [194] [195] [196] [197])
-(./PHTSYN3_8f.tex [198] [199] [200]
+ [201])
+(./io__driver_8f90.tex [202]) (./landuse__change__mod_8f90.tex)
+(./mainres_8f.tex [203] [204]) (./mortality_8f.tex [205] [206]) (./mvidx_8f.tex
+[207]) (./oldphen_8f.tex [208] [209] [210] [211]) (./ORDLEG_8f.tex)
+(./phenolgy_8f.tex
+Underfull \hbox (badness 1708) in paragraph at lines 11--12
+[]\T1/phv/m/n/10 subroutine [][]phe-nolgy[][] (gleaf-mas, bleaf-mas,il1,il2,lea
+pnow,tbar,thliq,wiltsm,fieldsm,ta,anveg,iday,radl, root-
+ []
+
+[212] [213] [214] [215]) (./PHTSYN3_8f.tex [216] [217] [218]
 Underfull \hbox (badness 1019) in paragraph at lines 74--74
 []\T1/phv/m/n/10 Canopy ( $\OML/cmm/m/it/10 g[]$\T1/phv/m/n/10 ) and aero-dy-na
 mic ( $\OML/cmm/m/it/10 g[]$\T1/phv/m/n/10 ) con-duc-tance used in above cal-cu
 -la-tions are ex-pressed in units of
  []
 
-LaTeX Font Info:    Font shape `T1/phv/m/n' will be
-(Font)              scaled to size 7.19995pt on input line 78.
-[201]
+[219] [220]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [202]
-[203]) (./read__from__job__options_8f90.tex
+ [221]
+[222]) (./read__from__job__options_8f90.tex
 Underfull \hbox (badness 2020) in paragraph at lines 11--12
 []\T1/phv/m/n/10 subroutine [][]read[]_[]from[]_[]job[]_[]options[][] (arg-buff
 , transient[]_[]run, trans[]_[]startyr, ctem-loop, ctem[]_[]on, ncyear,
  []
 
-[204] [205] [206]
+[223] [224] [225]) (./runclass36ctem_8f.tex [226]) (./SCREENRH_8f.tex)
+(./SLDIAG_8f.tex [227]) (./SNINFL_8f.tex [228]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [207])
-(./runclass36ctem_8f.tex) (./SCREENRH_8f.tex) (./SLDIAG_8f.tex [208])
-(./SNINFL_8f.tex [209]
-Underfull \vbox (badness 3579) has occurred while \output is active []
+ [229])
+(./SNOADD_8f.tex) (./SNOALBA_8f.tex [230] [231]) (./SNOALBW_8f.tex [232])
+(./SNOVAP_8f.tex [233]) (./soil__ch4uptake_8f90.tex [234] [235])
+(./STORVAR_8f.tex) (./SUBCAN_8f.tex [236] [237]) (./TFREEZ_8f.tex
+Underfull \vbox (badness 2671) has occurred while \output is active []
 
- [210])
-(./SNOADD_8f.tex [211]) (./SNOALBA_8f.tex [212]) (./SNOALBW_8f.tex [213])
-(./SNOVAP_8f.tex [214]) (./soil__ch4uptake_8f90.tex [215] [216])
-(./STORVAR_8f.tex) (./SUBCAN_8f.tex [217]) (./TFREEZ_8f.tex [218] [219])
-(./TMCALC_8f.tex
-Underfull \vbox (badness 7722) has occurred while \output is active []
-
- [220]
-[221]
+ [238]
+[239]) (./TMCALC_8f.tex
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [222]
+ [240]
+[241]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [223])
-(./TMELT_8f.tex
-Underfull \vbox (badness 5064) has occurred while \output is active []
+ [242]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [224]
-[225]) (./TNPOST_8f.tex [226]
+ [243])
+(./TMELT_8f.tex [244] [245]) (./TNPOST_8f.tex [246]
 Underfull \hbox (badness 1286) in paragraph at lines 104--105
 []\T1/phv/m/n/10 Multiplier used in equa-tion re-lat-ing ground sur-face heat f
 lux to sur-face tem-per-a-ture
  []
 
+[247]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 127.
 
@@ -2074,20 +2153,17 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 127.
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 127.
 
-) (./TNPREP_8f.tex
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [227]
+) (./TNPREP_8f.tex [248]
 Underfull \hbox (badness 1286) in paragraph at lines 56--57
 []\T1/phv/m/n/10 Multiplier used in equa-tion re-lat-ing ground sur-face heat f
 lux to sur-face tem-per-a-ture
  []
 
-[228]) (./TPREP_8f.tex
-Underfull \vbox (badness 10000) has occurred while \output is active []
+) (./TPREP_8f.tex
+Underfull \vbox (badness 1215) has occurred while \output is active []
 
- [229]
-[230] [231] [232]
+ [249]
+[250] [251] [252]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 388.
 
@@ -2097,24 +2173,27 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 404.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [233]
+ [253]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 414.
 
 ) (./TRIGL_8f.tex
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [234])
-(./TSOLVC_8f.tex [235] [236] [237]
+ [254])
+(./TSOLVC_8f.tex [255] [256] [257]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [238]
+ [258]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [239]
+ [259]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [240]
+ [260]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [261]
 Underfull \hbox (badness 1163) in paragraph at lines 447--448
 \T1/phv/m/n/10 pres-sions, $\OML/cmm/m/it/10 T[]and$\T1/phv/m/n/10 q[]_[]a $\OM
 L/cmm/m/it/10 arethepotentialtemperatureandspecifichumidityoftheairoverlyingthe
@@ -2153,10 +2232,7 @@ tisdeducedthatnotranspirationcanbeoccurring:Thus;$
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [241]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [242]
+ [262]
 Underfull \hbox (badness 832) in paragraph at lines 505--506
 []\T1/phv/m/n/10 After the it-er-a-tion has been com-pleted, if the Newton-[]Ra
 phson method has been used, a check is car-
@@ -2172,15 +2248,15 @@ bove; exceptthat$\T1/phv/m/n/10 {H,c} $\OML/cmm/m/it/10 and$\T1/phv/m/n/10 Q[]_
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [243])
+ [263])
 (./TSOLVE_8f.tex
-Underfull \vbox (badness 1314) has occurred while \output is active []
-
- [244]
-[245]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [246]
+ [264]
+[265]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [266]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 222.
 
@@ -2211,7 +2287,7 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 254.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [247]
+ [267]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 262.
 
@@ -2224,17 +2300,17 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 270.
 ) (./TSPOST_8f.tex
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [248]
-[249]) (./TSPREP_8f.tex [250]) (./turnover_8f.tex [251]) (./TWCALC_8f.tex
-[252] [253]) (./WEND_8f.tex
+ [268]
+[269]) (./TSPREP_8f.tex
+Underfull \vbox (badness 2799) has occurred while \output is active []
+
+ [270])
+(./turnover_8f.tex [271]) (./TWCALC_8f.tex [272] [273]) (./WEND_8f.tex [274]
+[275]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [254]
-[255]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [256])
-(./wetland__methane_8f90.tex [257]) (./WFILL_8f.tex [258]
+ [276])
+(./wetland__methane_8f90.tex [277]) (./WFILL_8f.tex [278]
 
 LaTeX Warning: Command \textendash invalid in math mode on input line 97.
 
@@ -2259,35 +2335,43 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 113.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [259])
-(./WFLOW_8f.tex [260]
+ [279])
+(./WFLOW_8f.tex [280]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [261])
-(./WPREP_8f.tex [262] [263] [264] [265] [266]) (./XIT_8f.tex [267]) [268]
-(./refman.bbl (./refman.brf)
+ [281])
+(./WPREP_8f.tex
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [282]
+[283] [284] [285] [286]) (./XIT_8f.tex
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [287])
+[288] (./refman.bbl (./refman.brf)
 \tf@brf=\write6
 \openout6 = `refman.brf'.
 
- [269
+ [289
 
-] [270]) [271] [272
+] [290]) [291] [292
 
-] (./refman.ind [273
+] (./refman.ind
+[293
 
 
-]
-[274] [275] [276
+] [294] [295] [296
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 280.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 280.
- (./refman.aux (./group__competition__scheme__existence.aux)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 294.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 294.
+ (./refman.aux
+(./group__competition__scheme__existence.aux)
 (./group__competition__scheme__competition.aux)
-(./group__ctem__params__initpftpars.aux)
+(./group__ctem__params__initpftpars.aux) (./group__ctem__statevars.aux)
 (./group__disturbance__scheme__disturb.aux)
-(./group__disturbance__scheme__burntobare.aux)
-(./group__io__driver__read__from__ctm.aux)
+(./group__disturbance__scheme__burntobare.aux) (./group__hetresg.aux)
+(./group__hetresv.aux) (./group__io__driver__read__from__ctm.aux)
 (./group__io__driver__write__ctm__rs.aux)
 (./group__io__driver__create__outfiles.aux)
 (./group__io__driver__class__monthly__aw.aux)
@@ -2300,22 +2384,26 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 280.
 (./group__landuse__change__readin__luc.aux) (./group__landuse__change__luc.aux)
 (./group__landuse__change__adjust__luc__fracs.aux)
 (./group__landuse__change__adjust__fracs__comp.aux))
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 280.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 280.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 294.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 294.
 Package rerunfilecheck Info: File `refman.out' has not changed.
-(rerunfilecheck)             Checksum: 573EA22728A640391183FD6ADDCABDF8;84899.
+(rerunfilecheck)             Checksum: DE8CCCBD88EA51299567E0E49EB15F87;92081.
 Package rerunfilecheck Info: File `refman.brf' has not changed.
-(rerunfilecheck)             Checksum: A2E867CECE0FCC1244117DEECEBB69D1;4892.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 280.
+(rerunfilecheck)             Checksum: FD0E15982D2FDF2EBC412EE15DCAB78D;5793.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 294.
  ) 
 Here is how much of TeX's memory you used:
- 17496 strings out of 494912
- 372691 string characters out of 6177073
- 440371 words of memory out of 5000000
- 18079 multiletter control sequences out of 15000+600000
- 70672 words of font info for 86 fonts, out of 8000000 for 9000
+ 17762 strings out of 494912
+ 379635 string characters out of 6177074
+ 444395 words of memory out of 5000000
+ 18184 multiletter control sequences out of 15000+600000
+ 70663 words of font info for 86 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 48i,16n,43p,4663b,581s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 48i,16n,43p,4663b,577s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
@@ -2335,10 +2423,10 @@ etic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvb8ac
 .pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvbo8ac.pfb></usr
 /share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb>
-Output written on refman.pdf (290 pages, 1716368 bytes).
+Output written on refman.pdf (310 pages, 1778983 bytes).
 PDF statistics:
- 6281 PDF objects out of 7423 (max. 8388607)
- 5905 compressed objects within 60 object streams
- 2087 named destinations out of 2487 (max. 500000)
- 3211 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 6691 PDF objects out of 7423 (max. 8388607)
+ 6292 compressed objects within 63 object streams
+ 2213 named destinations out of 2487 (max. 500000)
+ 3435 words of extra memory for PDF output out of 10000 (max. 10000000)
 

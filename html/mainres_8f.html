@@ -94,8 +94,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:ac938116d4fe4ed360f4fb9fc8ab39db3"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mainres_8f.html#ac938116d4fe4ed360f4fb9fc8ab39db3">mainres</a> (fcan,fct,stemmass,rootmass,il1,il2,tcan,tbar,rmatctem,sort, nol2pfts,isand,</td></tr>
-<tr class="separator:ac938116d4fe4ed360f4fb9fc8ab39db3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86c41356a868e2ef9d08ffb14f45aff5"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mainres_8f.html#a86c41356a868e2ef9d08ffb14f45aff5">mainres</a> (fcan,fct,stemmass,rootmass,il1, il2, leapnow,tcan,tbar,rmatctem,sort, nol2pfts,isand,</td></tr>
+<tr class="separator:a86c41356a868e2ef9d08ffb14f45aff5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Canadian Terrestrial Ecosystem Model (CTEM) Maintenance Respiration Subroutine. </p>
@@ -126,7 +126,7 @@ Functions/Subroutines</h2></td></tr>
 <img class="formulaDsp" alt="\[ NPP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g}. \]" src="form_284.png"/>
 </p>
  </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="ac938116d4fe4ed360f4fb9fc8ab39db3"></a>
+<a class="anchor" id="a86c41356a868e2ef9d08ffb14f45aff5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -165,6 +165,12 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">integer&#160;</td>
           <td class="paramname"><em>il2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical&#160;</td>
+          <td class="paramname"><em>leapnow</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -216,6 +222,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">sort</td><td>index for correspondence between 9 pfts and 12 values in the parameter vectors</td></tr>
     <tr><td class="paramname">nol2pfts</td><td>number of level 2 ctem pfts</td></tr>
     <tr><td class="paramname">isand</td><td>flag for bedrock or ice in a soil layer</td></tr>
+    <tr><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
     <tr><td class="paramname">fcan</td><td>fractional coverage of ctem's 9 pfts over the given sub-area</td></tr>
     <tr><td class="paramname">fct</td><td>sum of all fcan fcan &amp; fct are not used at this time but could be used at some later stage</td></tr>
     <tr><td class="paramname">stemmass</td><td>stem biomass for the 9 pfts in <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
@@ -248,7 +255,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:58 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 30 2017 10:33:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

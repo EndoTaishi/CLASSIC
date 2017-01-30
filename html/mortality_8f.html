@@ -94,8 +94,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a498b6ca22ad5d0ab1cd326d468801750"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mortality_8f.html#a498b6ca22ad5d0ab1cd326d468801750">mortalty</a> (stemmass, rootmass,ailcg, gleafmas,bleafmas,il1,il2,iday, sort,fcancmx,</td></tr>
-<tr class="separator:a498b6ca22ad5d0ab1cd326d468801750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11a826efba70183880f4f963e93c4247"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mortality_8f.html#a11a826efba70183880f4f963e93c4247">mortalty</a> (stemmass, rootmass,ailcg, gleafmas,bleafmas,il1,il2, leapnow,iday, sort,fcancmx,</td></tr>
+<tr class="separator:a11a826efba70183880f4f963e93c4247"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Canadian Terrestrial Ecosystem Model (CTEM) Mortality Subroutine. </p>
@@ -119,7 +119,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Mortality associated with bioclimatic criteria, <img class="formulaInl" alt="$m_{bioclim}$" src="form_943.png"/> ( <img class="formulaInl" alt="$0.25\,yr^{-1}$" src="form_133.png"/>), is applied when climatic conditions in a grid cell become unfavourable for a PFT to exist and ensures that PFTs do not exist outside their bioclimatic envelopes, as explained in the next section.</p>
 <p>The annual mortality rates for <img class="formulaInl" alt="$m_{intr}$" src="form_1084.png"/>, <img class="formulaInl" alt="$m_{ge}$" src="form_1085.png"/> and <img class="formulaInl" alt="$m_{bioclim}$" src="form_943.png"/> are converted to daily rates and applied at the daily time step of the model, while <img class="formulaInl" alt="$m_{dist}$" src="form_937.png"/> is calculated by the fire module of the model based on daily area burned for each PFT as summarized in Appendix fire}. In practice, the <img class="formulaInl" alt="$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha$" src="form_1848.png"/> term of Eq. (compact}) is implemented right after area burnt is calculated. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="a498b6ca22ad5d0ab1cd326d468801750"></a>
+<a class="anchor" id="a11a826efba70183880f4f963e93c4247"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -168,6 +168,12 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">logical&#160;</td>
+          <td class="paramname"><em>leapnow</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">integer&#160;</td>
           <td class="paramname"><em>iday</em>, </td>
         </tr>
@@ -195,6 +201,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">il1</td><td>il1=1</td></tr>
     <tr><td class="paramname">il2</td><td>il2=ilg</td></tr>
     <tr><td class="paramname">iday</td><td>day of the year</td></tr>
+    <tr><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
     <tr><td class="paramname">sort</td><td>index for correspondence between ctem 9 pfts and size 12 of parameters vectors</td></tr>
     <tr><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
     <tr><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
@@ -220,7 +227,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:58 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 30 2017 10:33:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

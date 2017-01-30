@@ -13,7 +13,7 @@ BDIR = ../bin
 #-- PGI --
 
 FC=pgf90
-FFLAGS = -Bstatic -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
+#FFLAGS = -Bstatic -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 export PGIMACH=linux86-64
 
 # -- GNU Fortran -- (the -static flag may not work on all machines)
@@ -25,7 +25,7 @@ export PGIMACH=linux86-64
 
 #  -- PGI --
 
-#FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm -traceback -Mbounds
+FFLAGS = -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm -traceback -Mbounds
 #export PGIMACH=linux86-64
 
 # -- GNU --

@@ -84,13 +84,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Accumulate and write out the monthly CTEM outputs.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="memitem:ga74bdc0fab9f9ccf2d9189b56a514ed6d"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__io__driver__class__monthly__aw.html#ga74bdc0fab9f9ccf2d9189b56a514ed6d">io_driver::class_monthly_aw</a> (IDAY, IYEAR, NCOUNT, NDAY, SBC, DELT, nltest, nmtest, ALVSROT, FAREROT, FSVHROW, ALIRROT, FSIHROW, GTROT, FSSROW, FDLROW, HFSROT, ROFROT, PREROW, QFSROT, QEVPROT, SNOROT, TAROW, WSNOROT, TBARROT, THLQROT, THICROT, TFREZ, QFCROT, QFGROT, QFNROT, QFCLROT, QFCFROT, ACTLYR, FTABLE)</td></tr>
-<tr class="separator:ga74bdc0fab9f9ccf2d9189b56a514ed6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga58c2e12621635a74096a8f7c142f85de"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__io__driver__class__monthly__aw.html#ga58c2e12621635a74096a8f7c142f85de">io_driver::class_monthly_aw</a> (IDAY, IYEAR, NCOUNT, NDAY, SBC, DELT, nltest, nmtest, ALVSROT, FAREROT, FSVHROW, ALIRROT, FSIHROW, GTROT, FSSROW, FDLROW, HFSROT, ROFROT, PREROW, QFSROT, QEVPROT, SNOROT, TAROW, WSNOROT, TBARROT, THLQROT, THICROT, TFREZ, QFCROT, QFGROT, QFNROT, QFCLROT, QFCFROT, FSGVROT, FSGSROT, FSGGROT, ACTLYR, FTABLE)</td></tr>
+<tr class="separator:ga58c2e12621635a74096a8f7c142f85de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Accumulate and write out the monthly CTEM outputs. </p>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="ga74bdc0fab9f9ccf2d9189b56a514ed6d"></a>
+<a class="anchor" id="ga58c2e12621635a74096a8f7c142f85de"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -296,6 +296,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, dimension(nlat,nmos), intent(in)&#160;</td>
+          <td class="paramname"><em>FSGVROT</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nlat,nmos), intent(in)&#160;</td>
+          <td class="paramname"><em>FSGSROT</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nlat,nmos), intent(in)&#160;</td>
+          <td class="paramname"><em>FSGGROT</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(nlat,nmos), intent(in)&#160;</td>
           <td class="paramname"><em>ACTLYR</em>, </td>
         </tr>
         <tr>
@@ -311,6 +329,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">fsgvrot</td><td>Diagnosed net shortwave radiation on vegetation canopy</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fsgsrot</td><td>Diagnosed net shortwave radiation on ground snow surface</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fsggrot</td><td>Diagnosed net shortwave radiation on ground surface </td></tr>
+  </table>
+  </dd>
+</dl>
 <p>Accumulate output data for monthly averaged fields for class grid-mean. for both parallel mode and stand alone mode </p>
 
 </div>
@@ -318,7 +344,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:59 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 30 2017 10:33:40 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

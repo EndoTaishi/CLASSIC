@@ -8,7 +8,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Mortality Subroutine.
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{mortality_8f_a498b6ca22ad5d0ab1cd326d468801750}{mortalty} (stemmass, rootmass,ailcg, gleafmas,bleafmas,il1,il2,iday, sort,fcancmx,
+subroutine \hyperlink{mortality_8f_a11a826efba70183880f4f963e93c4247}{mortalty} (stemmass, rootmass,ailcg, gleafmas,bleafmas,il1,il2, leapnow,iday, sort,fcancmx,
 \end{DoxyCompactItemize}
 
 
@@ -36,7 +36,7 @@ Mortality associated with bioclimatic criteria, $m_{bioclim}$ ( $0.25\,yr^{-1}$)
 The annual mortality rates for $m_{intr}$, $m_{ge}$ and $m_{bioclim}$ are converted to daily rates and applied at the daily time step of the model, while $m_{dist}$ is calculated by the fire module of the model based on daily area burned for each P\+F\+T as summarized in Appendix fire\}. In practice, the $\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha$ term of Eq. (compact\}) is implemented right after area burnt is calculated. 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{mortality_8f_a498b6ca22ad5d0ab1cd326d468801750}{}\index{mortality.\+f@{mortality.\+f}!mortalty@{mortalty}}
+\hypertarget{mortality_8f_a11a826efba70183880f4f963e93c4247}{}\index{mortality.\+f@{mortality.\+f}!mortalty@{mortalty}}
 \index{mortalty@{mortalty}!mortality.\+f@{mortality.\+f}}
 \subsubsection[{mortalty}]{\setlength{\rightskip}{0pt plus 5cm}subroutine mortalty (
 \begin{DoxyParamCaption}
@@ -47,11 +47,12 @@ The annual mortality rates for $m_{intr}$, $m_{ge}$ and $m_{bioclim}$ are conver
 \item[{real, dimension(ilg,icc)}]{bleafmas, }
 \item[{integer}]{il1, }
 \item[{integer}]{il2, }
+\item[{logical}]{leapnow, }
 \item[{integer}]{iday, }
 \item[{integer, dimension(icc)}]{sort, }
 \item[{real, dimension(ilg,icc)}]{fcancmx}
 \end{DoxyParamCaption}
-)}\label{mortality_8f_a498b6ca22ad5d0ab1cd326d468801750}
+)}\label{mortality_8f_a11a826efba70183880f4f963e93c4247}
 
 \begin{DoxyParams}{Parameters}
 {\em il1} & il1=1\\
@@ -59,6 +60,8 @@ The annual mortality rates for $m_{intr}$, $m_{ge}$ and $m_{bioclim}$ are conver
 {\em il2} & il2=ilg\\
 \hline
 {\em iday} & day of the year\\
+\hline
+{\em leapnow} & true if this year is a leap year. Only used if the switch \textquotesingle{}leap\textquotesingle{} is true.\\
 \hline
 {\em sort} & index for correspondence between ctem 9 pfts and size 12 of parameters vectors\\
 \hline

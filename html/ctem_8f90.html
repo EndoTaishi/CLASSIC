@@ -94,13 +94,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a2b6b15dcac84105200925dab9dfea7aa"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem_8f90.html#a2b6b15dcac84105200925dab9dfea7aa">ctem</a> (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar,popdon,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,compete,netrad,precip,psisat, grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile_perPFT, wetfrac, slopefrac,bi,thpor,thiceg, currlat,ch4conc,GRAV,RHOW,RHOICE,</td></tr>
-<tr class="separator:a2b6b15dcac84105200925dab9dfea7aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace1598599f37c24cac37dd963f23b497"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem_8f90.html#ace1598599f37c24cac37dd963f23b497">ctem</a> (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar,popdon,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,compete,netrad,precip,psisat, grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile_perPFT, wetfrac, slopefrac,bi,thpor,thiceg, currlat,ch4conc,GRAV,RHOW,RHOICE,leapnow,</td></tr>
+<tr class="separator:ace1598599f37c24cac37dd963f23b497"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The basic model structure of CTEM includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_938.png"/>, <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_939.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_940.png"/>, <img class="formulaInl" alt="$C_\mathrm{D}$" src="form_941.png"/>, <img class="formulaInl" alt="$C_\mathrm{H}$" src="form_942.png"/>, <img class="formulaInl" alt="$kgC m^{-2}$" src="form_29.png"/>) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate_change_eqns} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="a2b6b15dcac84105200925dab9dfea7aa"></a>
+<a class="anchor" id="ace1598599f37c24cac37dd963f23b497"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -474,7 +474,13 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">real, intent(in)&#160;</td>
-          <td class="paramname"><em>RHOICE</em>&#160;</td>
+          <td class="paramname"><em>RHOICE</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
+          <td class="paramname"><em>leapnow</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -491,6 +497,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dowetlands</td><td>if true allow wetland methane emission</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">obswetf</td><td>if true, use read-in observed wetland fraction</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">onetile_perpft</td><td>if you are running with one tile per PFT in mosaic mode, set to true. Changes how competition is run. Specifically it allows competition between tiles. This is not recommended for any case where you don't have one PFT in each tile as it has not been tested for that.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">iday</td><td>day of year</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">spinfast</td><td>spinup factor for soil carbon whose default value is 1. as this factor increases the soil c pool will come into equilibrium faster. reasonable value for spinfast is between 5 and 10. when spinfast.ne.1 then the balcar subroutine is not run.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">il1</td><td>il1=1</td></tr>
@@ -632,7 +639,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:58 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 30 2017 10:33:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

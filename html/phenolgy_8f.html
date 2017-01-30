@@ -94,8 +94,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a4f89c3f25a6a441c8ec681238b5b3f4d"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="phenolgy_8f.html#a4f89c3f25a6a441c8ec681238b5b3f4d">phenolgy</a> (gleafmas, bleafmas,il1,il2,tbar,thliq,wiltsm,fieldsm,ta,anveg,iday,radl, roottemp,rmatctem, stemmass, rootmass,sort,nol2pfts,fcancmx, isand,</td></tr>
-<tr class="separator:a4f89c3f25a6a441c8ec681238b5b3f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add1d849abdf1b6baf10cfdde1b93ec0b"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="phenolgy_8f.html#add1d849abdf1b6baf10cfdde1b93ec0b">phenolgy</a> (gleafmas, bleafmas,il1,il2,leapnow,tbar,thliq,wiltsm,fieldsm,ta,anveg,iday,radl, roottemp,rmatctem, stemmass, rootmass,sort,nol2pfts,fcancmx, isand,</td></tr>
+<tr class="separator:add1d849abdf1b6baf10cfdde1b93ec0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Canadian Terrestrial Ecosystem Model (CTEM) Phenology, Leaf Turnover &amp; Mortality Subroutine. </p>
@@ -125,7 +125,7 @@ Functions/Subroutines</h2></td></tr>
 </p>
 <p>where <img class="formulaInl" alt="$\Omega_{\mathrm{D},max}$" src="form_1112.png"/> ( <img class="formulaInl" alt="$day^{-1}$" src="form_42.png"/>, see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>) is the maximum drought stress loss rate and <img class="formulaInl" alt="$\phi_{root}$" src="form_622.png"/> (Eq. degsoilsat}) is the degree of soil saturation in the rooting zone. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="a4f89c3f25a6a441c8ec681238b5b3f4d"></a>
+<a class="anchor" id="add1d849abdf1b6baf10cfdde1b93ec0b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -152,6 +152,12 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">integer&#160;</td>
           <td class="paramname"><em>il2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical&#160;</td>
+          <td class="paramname"><em>leapnow</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -261,6 +267,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">il1</td><td>il1=1</td></tr>
     <tr><td class="paramname">il2</td><td>il2=ilg</td></tr>
     <tr><td class="paramname">iday</td><td>day of year</td></tr>
+    <tr><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
     <tr><td class="paramname">sort</td><td>index for correspondence between 9 pfts and the 12 values in parameters vectors</td></tr>
     <tr><td class="paramname">nol2pfts</td><td>number of level 2 ctem pfts</td></tr>
     <tr><td class="paramname">gleafmas</td><td>green or live leaf mass in <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/>, for the 9 pfts</td></tr>
@@ -336,7 +343,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:58 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 30 2017 10:33:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

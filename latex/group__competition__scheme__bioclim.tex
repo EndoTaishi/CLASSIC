@@ -7,7 +7,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Bioclimatic Parameters Estimat
 
 \begin{DoxyCompactItemize}
 \item 
-subroutine, public \hyperlink{group__competition__scheme__bioclim_ga63e17c7f18b8ab7e782acf1b3d957dd8}{competition\+\_\+scheme\+::bioclim} (iday, ta, precip, netrad, il1, il2, nilg, tcurm, srpcuryr, dftcuryr, inibioclim, tmonth, anpcpcur, anpecur, gdd5cur, surmncur, defmncur, srplscur, defctcur, twarmm, tcoldm, gdd5, aridity, srplsmon, defctmon, anndefct, annsrpls, annpcp, dry\+\_\+season\+\_\+length)
+subroutine, public \hyperlink{group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9}{competition\+\_\+scheme\+::bioclim} (iday, ta, precip, netrad, il1, il2, nilg, leapnow, tcurm, srpcuryr, dftcuryr, inibioclim, tmonth, anpcpcur, anpecur, gdd5cur, surmncur, defmncur, srplscur, defctcur, twarmm, tcoldm, gdd5, aridity, srplsmon, defctmon, anndefct, annsrpls, annpcp, dry\+\_\+season\+\_\+length)
 \end{DoxyCompactItemize}
 
 
@@ -21,7 +21,7 @@ The mortality associated with bioclimatic criteria, $m_{bioclim}$, ensures that 
 Equation (efold\}) implies that $63\,{\%}$ of a sudden change in the value of a bioclimatic index $\Delta x$ is reflected in $X(t)$ in $T$ years $(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)$, while $86\,{\%}$ of the change is reflected in $2T$ years $(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86) $. 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{group__competition__scheme__bioclim_ga63e17c7f18b8ab7e782acf1b3d957dd8}{}\index{Competition\+\_\+scheme\+\_\+bioclim@{Competition\+\_\+scheme\+\_\+bioclim}!bioclim@{bioclim}}
+\hypertarget{group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9}{}\index{Competition\+\_\+scheme\+\_\+bioclim@{Competition\+\_\+scheme\+\_\+bioclim}!bioclim@{bioclim}}
 \index{bioclim@{bioclim}!Competition\+\_\+scheme\+\_\+bioclim@{Competition\+\_\+scheme\+\_\+bioclim}}
 \subsubsection[{bioclim}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public competition\+\_\+scheme\+::bioclim (
 \begin{DoxyParamCaption}
@@ -32,6 +32,7 @@ Equation (efold\}) implies that $63\,{\%}$ of a sudden change in the value of a 
 \item[{integer, intent(in)}]{il1, }
 \item[{integer, intent(in)}]{il2, }
 \item[{integer, intent(in)}]{nilg, }
+\item[{logical, intent(in)}]{leapnow, }
 \item[{real, dimension(nilg), intent(inout)}]{tcurm, }
 \item[{real, dimension(nilg), intent(inout)}]{srpcuryr, }
 \item[{real, dimension(nilg), intent(inout)}]{dftcuryr, }
@@ -55,7 +56,7 @@ Equation (efold\}) implies that $63\,{\%}$ of a sudden change in the value of a 
 \item[{real, dimension(nilg), intent(inout)}]{annpcp, }
 \item[{real, dimension(nilg), intent(inout)}]{dry\+\_\+season\+\_\+length}
 \end{DoxyParamCaption}
-)}\label{group__competition__scheme__bioclim_ga63e17c7f18b8ab7e782acf1b3d957dd8}
+)}\label{group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9}
 
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt in}  & {\em iday} & \\

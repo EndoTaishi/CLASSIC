@@ -8,7 +8,7 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{ctem_8f90_a2b6b15dcac84105200925dab9dfea7aa}{ctem} (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar,popdon,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,compete,netrad,precip,psisat, grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile\+\_\+per\+P\+F\+T, wetfrac, slopefrac,bi,thpor,thiceg, currlat,ch4conc,G\+R\+A\+V,R\+H\+O\+W,R\+H\+O\+I\+C\+E,
+subroutine \hyperlink{ctem_8f90_ace1598599f37c24cac37dd963f23b497}{ctem} (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar,popdon,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,compete,netrad,precip,psisat, grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile\+\_\+per\+P\+F\+T, wetfrac, slopefrac,bi,thpor,thiceg, currlat,ch4conc,G\+R\+A\+V,R\+H\+O\+W,R\+H\+O\+I\+C\+E,leapnow,
 \end{DoxyCompactItemize}
 
 
@@ -18,7 +18,7 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{ctem_8f90_a2b6b15dcac84105200925dab9dfea7aa}{}\index{ctem.\+f90@{ctem.\+f90}!ctem@{ctem}}
+\hypertarget{ctem_8f90_ace1598599f37c24cac37dd963f23b497}{}\index{ctem.\+f90@{ctem.\+f90}!ctem@{ctem}}
 \index{ctem@{ctem}!ctem.\+f90@{ctem.\+f90}}
 \subsubsection[{ctem}]{\setlength{\rightskip}{0pt plus 5cm}subroutine ctem (
 \begin{DoxyParamCaption}
@@ -83,9 +83,10 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \item[{real, dimension(ilg), intent(in)}]{ch4conc, }
 \item[{real, intent(in)}]{G\+R\+A\+V, }
 \item[{real, intent(in)}]{R\+H\+O\+W, }
-\item[{real, intent(in)}]{R\+H\+O\+I\+C\+E}
+\item[{real, intent(in)}]{R\+H\+O\+I\+C\+E, }
+\item[{logical, intent(in)}]{leapnow}
 \end{DoxyParamCaption}
-)}\label{ctem_8f90_a2b6b15dcac84105200925dab9dfea7aa}
+)}\label{ctem_8f90_ace1598599f37c24cac37dd963f23b497}
 
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt in}  & {\em lnduseon} & logical switch to run the land use change subroutine or not.\\
@@ -99,6 +100,8 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \mbox{\tt in}  & {\em obswetf} & if true, use read-\/in observed wetland fraction\\
 \hline
 \mbox{\tt in}  & {\em onetile\+\_\+perpft} & if you are running with one tile per P\+F\+T in mosaic mode, set to true. Changes how competition is run. Specifically it allows competition between tiles. This is not recommended for any case where you don\textquotesingle{}t have one P\+F\+T in each tile as it has not been tested for that.\\
+\hline
+\mbox{\tt in}  & {\em leapnow} & true if this year is a leap year. Only used if the switch \textquotesingle{}leap\textquotesingle{} is true.\\
 \hline
 \mbox{\tt in}  & {\em iday} & day of year\\
 \hline

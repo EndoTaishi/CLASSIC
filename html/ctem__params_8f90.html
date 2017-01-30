@@ -122,18 +122,18 @@ real, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_param
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::deltat</b> = 1.0</td></tr>
 <tr class="memdesc:a0eda7d3a6fad697a660806095840a1fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">CTEM's time step in days. <br /></td></tr>
 <tr class="separator:a0eda7d3a6fad697a660806095840a1fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e6a897e05a05448dd97a7f43db4ca7c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e6a897e05a05448dd97a7f43db4ca7c"></a>
-integer, dimension(12), parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::monthdays</b> = [ 31,28,31,30,31,30,31,31,30,31,30,31 ]</td></tr>
-<tr class="memdesc:a0e6a897e05a05448dd97a7f43db4ca7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">days in each month <br /></td></tr>
-<tr class="separator:a0e6a897e05a05448dd97a7f43db4ca7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d87ac1657a5c42906ba3b1ce969e38a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d87ac1657a5c42906ba3b1ce969e38a"></a>
-integer, dimension(13), parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::monthend</b> = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ]</td></tr>
-<tr class="memdesc:a5d87ac1657a5c42906ba3b1ce969e38a"><td class="mdescLeft">&#160;</td><td class="mdescRight">calender day at end of each month <br /></td></tr>
-<tr class="separator:a5d87ac1657a5c42906ba3b1ce969e38a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58f69f717e71febe16cd04879bab73c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58f69f717e71febe16cd04879bab73c9"></a>
-integer, dimension(12), parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::mmday</b> = [ 16,46,75,106,136,167,197,228,259,289,320,350 ]</td></tr>
-<tr class="memdesc:a58f69f717e71febe16cd04879bab73c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">mid-month day <br /></td></tr>
-<tr class="separator:a58f69f717e71febe16cd04879bab73c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ef8efd46b3f253fcaa1d9e7626f63ff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4ef8efd46b3f253fcaa1d9e7626f63ff"></a>
+integer, dimension(12)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::monthdays</b> = [ 31,28,31,30,31,30,31,31,30,31,30,31 ]</td></tr>
+<tr class="memdesc:a4ef8efd46b3f253fcaa1d9e7626f63ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">days in each month <br /></td></tr>
+<tr class="separator:a4ef8efd46b3f253fcaa1d9e7626f63ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3400a32285b1fb0f89ee49346af8a71"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3400a32285b1fb0f89ee49346af8a71"></a>
+integer, dimension(13)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::monthend</b> = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ]</td></tr>
+<tr class="memdesc:aa3400a32285b1fb0f89ee49346af8a71"><td class="mdescLeft">&#160;</td><td class="mdescRight">calender day at end of each month <br /></td></tr>
+<tr class="separator:aa3400a32285b1fb0f89ee49346af8a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe122ccbefaa2e3252ce8574835068c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe122ccbefaa2e3252ce8574835068c1"></a>
+integer, dimension(12)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::mmday</b> = [ 16,46,75,106,136,167,197,228,259,289,320,350 ]</td></tr>
+<tr class="memdesc:afe122ccbefaa2e3252ce8574835068c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">mid-month day <br /></td></tr>
+<tr class="separator:afe122ccbefaa2e3252ce8574835068c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a082002b794ac9ce9b64bf0753a0a350e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a082002b794ac9ce9b64bf0753a0a350e"></a>
 integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::lon</b> = 128</td></tr>
 <tr class="memdesc:a082002b794ac9ce9b64bf0753a0a350e"><td class="mdescLeft">&#160;</td><td class="mdescRight">specify gcm resolution for longitude <br /></td></tr>
@@ -366,7 +366,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::repro_fr
 <tr class="memdesc:a4b02c06a75e1eba7cae5f864b099bb0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fraction of NPP that is used to create reproductive tissues. <br /></td></tr>
 <tr class="separator:a4b02c06a75e1eba7cae5f864b099bb0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62e7197e6f7c9c31dc86998dc8c9ebf2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a62e7197e6f7c9c31dc86998dc8c9ebf2"></a>
-real, dimension(2)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bmasthrs_fire</b> = [ 0.2, 1.0 ]</td></tr>
+real, dimension(2)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bmasthrs_fire</b> = [ 0.4, 1.2 ]</td></tr>
 <tr class="memdesc:a62e7197e6f7c9c31dc86998dc8c9ebf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">min. and max. vegetation biomass thresholds to initiate fire, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/> <br /></td></tr>
 <tr class="separator:a62e7197e6f7c9c31dc86998dc8c9ebf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79ef480de23397cf798e7350991780f3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a79ef480de23397cf798e7350991780f3"></a>
@@ -419,11 +419,11 @@ real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_p
 <tr class="memdesc:a9eac43cb4ce26be279a87b758a8dece2"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. fire spread rate, km/hr <br /></td></tr>
 <tr class="separator:a9eac43cb4ce26be279a87b758a8dece2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a375be0a1145e49eeea706777032433d0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a375be0a1145e49eeea706777032433d0"></a>
-real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::frco2glf</b> = [ 0.70, 0.70, 0.00, 0.70, 0.70, 0.70, 0.00, 0.00, 0.00, 0.80, 0.80, 0.00 ]</td></tr>
+real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::frco2glf</b> = [ 0.42, 0.42, 0.00, 0.42, 0.42, 0.42, 0.00, 0.00, 0.00, 0.48, 0.48, 0.00 ]</td></tr>
 <tr class="memdesc:a375be0a1145e49eeea706777032433d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">fraction of green leaf biomass converted to gases due to combustion <br /></td></tr>
 <tr class="separator:a375be0a1145e49eeea706777032433d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a3a13ca8c1ce9a4b4eafa3ce20308f1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9a3a13ca8c1ce9a4b4eafa3ce20308f1"></a>
-real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::frco2blf</b> = [ 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.90, 0.90, 0.00 ]</td></tr>
+real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::frco2blf</b> = [ 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.54, 0.54, 0.00 ]</td></tr>
 <tr class="memdesc:a9a3a13ca8c1ce9a4b4eafa3ce20308f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">fraction of brown leaf biomass converted to gases due to combustion <br /></td></tr>
 <tr class="separator:a9a3a13ca8c1ce9a4b4eafa3ce20308f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9c6dc0514620728eecf50eb9c37892e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab9c6dc0514620728eecf50eb9c37892e"></a>
@@ -435,7 +435,7 @@ real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_p
 <tr class="memdesc:a665ceea7e9350e769153df8ce09859c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">fraction of brown leaf biomass becoming litter after combustion <br /></td></tr>
 <tr class="separator:a665ceea7e9350e769153df8ce09859c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16e61987713a7f1a1434ff33d5129cbe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16e61987713a7f1a1434ff33d5129cbe"></a>
-real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::frco2stm</b> = [ 0.20, 0.20, 0.00, 0.20, 0.10, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00 ]</td></tr>
+real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::frco2stm</b> = [ 0.12, 0.12, 0.00, 0.12, 0.06, 0.06, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00 ]</td></tr>
 <tr class="memdesc:a16e61987713a7f1a1434ff33d5129cbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">fraction of stem biomass converted to gases due to combustion <br /></td></tr>
 <tr class="separator:a16e61987713a7f1a1434ff33d5129cbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c2ccc3e7359b88d45fd61fdbf47900c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c2ccc3e7359b88d45fd61fdbf47900c"></a>
@@ -451,7 +451,7 @@ real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_p
 <tr class="memdesc:a6081b9662214fa2aa63c3080fc1868ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">fraction of root biomass becoming litter after combustion <br /></td></tr>
 <tr class="separator:a6081b9662214fa2aa63c3080fc1868ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f36ae05e8efb516582037530650eac9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f36ae05e8efb516582037530650eac9"></a>
-real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::frltrbrn</b> = [ 0.50, 0.50, 0.00, 0.60, 0.60, 0.60, 0.00, 0.00, 0.00, 0.70, 0.70, 0.00 ]</td></tr>
+real, dimension(kk)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::frltrbrn</b> = [ 0.30, 0.30, 0.00, 0.36, 0.36, 0.36, 0.00, 0.00, 0.00, 0.42, 0.42, 0.00 ]</td></tr>
 <tr class="memdesc:a7f36ae05e8efb516582037530650eac9"><td class="mdescLeft">&#160;</td><td class="mdescRight">fraction of litter burned during fire and emitted as gases <br /></td></tr>
 <tr class="separator:a7f36ae05e8efb516582037530650eac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07af3ba9ecabbbac0d884937d56e1b7a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a07af3ba9ecabbbac0d884937d56e1b7a"></a>
@@ -696,7 +696,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::soilw_th
  </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:58 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 30 2017 10:33:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

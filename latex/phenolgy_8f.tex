@@ -8,7 +8,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Phenology, Leaf Turnover \& Mo
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{phenolgy_8f_a4f89c3f25a6a441c8ec681238b5b3f4d}{phenolgy} (gleafmas, bleafmas,il1,il2,tbar,thliq,wiltsm,fieldsm,ta,anveg,iday,radl, roottemp,rmatctem, stemmass, rootmass,sort,nol2pfts,fcancmx, isand,
+subroutine \hyperlink{phenolgy_8f_add1d849abdf1b6baf10cfdde1b93ec0b}{phenolgy} (gleafmas, bleafmas,il1,il2,leapnow,tbar,thliq,wiltsm,fieldsm,ta,anveg,iday,radl, roottemp,rmatctem, stemmass, rootmass,sort,nol2pfts,fcancmx, isand,
 \end{DoxyCompactItemize}
 
 
@@ -46,7 +46,7 @@ where $T_{cold}^{leaf}$ is a P\+F\+T-\/specific temperature threshold below whic
 where $\Omega_{\mathrm{D},max}$ ( $day^{-1}$, see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}) is the maximum drought stress loss rate and $\phi_{root}$ (Eq. degsoilsat\}) is the degree of soil saturation in the rooting zone. 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{phenolgy_8f_a4f89c3f25a6a441c8ec681238b5b3f4d}{}\index{phenolgy.\+f@{phenolgy.\+f}!phenolgy@{phenolgy}}
+\hypertarget{phenolgy_8f_add1d849abdf1b6baf10cfdde1b93ec0b}{}\index{phenolgy.\+f@{phenolgy.\+f}!phenolgy@{phenolgy}}
 \index{phenolgy@{phenolgy}!phenolgy.\+f@{phenolgy.\+f}}
 \subsubsection[{phenolgy}]{\setlength{\rightskip}{0pt plus 5cm}subroutine phenolgy (
 \begin{DoxyParamCaption}
@@ -54,6 +54,7 @@ where $\Omega_{\mathrm{D},max}$ ( $day^{-1}$, see also \hyperlink{ctem__params_8
 \item[{real, dimension(ilg,icc)}]{bleafmas, }
 \item[{integer}]{il1, }
 \item[{integer}]{il2, }
+\item[{logical}]{leapnow, }
 \item[{real, dimension(ilg,ignd)}]{tbar, }
 \item[{real, dimension(ilg,ignd)}]{thliq, }
 \item[{real, dimension(ilg,ignd)}]{wiltsm, }
@@ -71,7 +72,7 @@ where $\Omega_{\mathrm{D},max}$ ( $day^{-1}$, see also \hyperlink{ctem__params_8
 \item[{real, dimension(ilg,icc)}]{fcancmx, }
 \item[{integer, dimension(ilg,ignd)}]{isand}
 \end{DoxyParamCaption}
-)}\label{phenolgy_8f_a4f89c3f25a6a441c8ec681238b5b3f4d}
+)}\label{phenolgy_8f_add1d849abdf1b6baf10cfdde1b93ec0b}
 
 \begin{DoxyParams}{Parameters}
 {\em il1} & il1=1\\
@@ -79,6 +80,8 @@ where $\Omega_{\mathrm{D},max}$ ( $day^{-1}$, see also \hyperlink{ctem__params_8
 {\em il2} & il2=ilg\\
 \hline
 {\em iday} & day of year\\
+\hline
+{\em leapnow} & true if this year is a leap year. Only used if the switch \textquotesingle{}leap\textquotesingle{} is true.\\
 \hline
 {\em sort} & index for correspondence between 9 pfts and the 12 values in parameters vectors\\
 \hline

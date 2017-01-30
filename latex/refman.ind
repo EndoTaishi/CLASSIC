@@ -1,424 +1,436 @@
 \begin{theindex}
 
-  \item {A\+P\+R\+E\+P.\+f}, \hyperpage{85}
-    \subitem {aprep}, \hyperpage{86}
+  \item {A\+P\+R\+E\+P.\+f}, \hyperpage{97}
+    \subitem {aprep}, \hyperpage{98}
   \item {allocate}
-    \subitem {allocate.\+f}, \hyperpage{84}
-  \item {allocate.\+f}, \hyperpage{83}
-    \subitem {allocate}, \hyperpage{84}
+    \subitem {allocate.\+f}, \hyperpage{96}
+  \item {allocate.\+f}, \hyperpage{95}
+    \subitem {allocate}, \hyperpage{96}
   \item {aprep}
-    \subitem {A\+P\+R\+E\+P.\+f}, \hyperpage{86}
+    \subitem {A\+P\+R\+E\+P.\+f}, \hyperpage{98}
 
   \indexspace
 
   \item {balcar}
-    \subitem {balcar.\+f}, \hyperpage{92}
-  \item {balcar.\+f}, \hyperpage{92}
-    \subitem {balcar}, \hyperpage{92}
+    \subitem {balcar.\+f}, \hyperpage{104}
+  \item {balcar.\+f}, \hyperpage{104}
+    \subitem {balcar}, \hyperpage{104}
   \item {bio2str}
-    \subitem {bio2str.\+f}, \hyperpage{95}
-  \item {bio2str.\+f}, \hyperpage{94}
-    \subitem {bio2str}, \hyperpage{95}
+    \subitem {bio2str.\+f}, \hyperpage{107}
+  \item {bio2str.\+f}, \hyperpage{106}
+    \subitem {bio2str}, \hyperpage{107}
   \item {bioclim}
-    \subitem {Competition\+\_\+scheme\+\_\+bioclim}, \hyperpage{19}
+    \subitem {Competition\+\_\+scheme\+\_\+bioclim}, \hyperpage{27}
   \item {burntobare}
-    \subitem {Disturbance\+\_\+scheme\+\_\+burntobare}, \hyperpage{34}
+    \subitem {Disturbance\+\_\+scheme\+\_\+burntobare}, \hyperpage{42}
 
   \indexspace
 
-  \item {C\+A\+N\+A\+D\+D.\+f}, \hyperpage{96}
-    \subitem {canadd}, \hyperpage{96}
-  \item {C\+A\+N\+A\+L\+B.\+f}, \hyperpage{99}
-    \subitem {canalb}, \hyperpage{99}
-  \item {C\+A\+N\+V\+A\+P.\+f}, \hyperpage{103}
-    \subitem {canvap}, \hyperpage{103}
-  \item {C\+G\+R\+O\+W.\+f}, \hyperpage{104}
-    \subitem {cgrow}, \hyperpage{105}
-  \item {C\+H\+K\+W\+A\+T.\+f}, \hyperpage{105}
-    \subitem {chkwat}, \hyperpage{105}
-  \item {C\+L\+A\+S\+S\+A.\+f}, \hyperpage{107}
-    \subitem {classa}, \hyperpage{108}
-  \item {C\+L\+A\+S\+S\+B.\+f}, \hyperpage{113}
-    \subitem {classb}, \hyperpage{113}
-  \item {C\+L\+A\+S\+S\+B\+D.\+f}, \hyperpage{115}
-  \item {C\+L\+A\+S\+S\+D.\+f}, \hyperpage{117}
-  \item {C\+L\+A\+S\+S\+G.\+f}, \hyperpage{118}
-    \subitem {classg}, \hyperpage{119}
-  \item {C\+L\+A\+S\+S\+I.\+f}, \hyperpage{123}
-    \subitem {classi}, \hyperpage{123}
-  \item {C\+L\+A\+S\+S\+S.\+f}, \hyperpage{124}
-    \subitem {classs}, \hyperpage{125}
-  \item {C\+L\+A\+S\+S\+T.\+f}, \hyperpage{126}
-    \subitem {classt}, \hyperpage{127}
-  \item {C\+L\+A\+S\+S\+W.\+f}, \hyperpage{136}
-    \subitem {classw}, \hyperpage{136}
-  \item {C\+L\+A\+S\+S\+Z.\+f}, \hyperpage{142}
-    \subitem {classz}, \hyperpage{142}
-  \item {C\+W\+C\+A\+L\+C.\+f}, \hyperpage{168}
-    \subitem {cwcalc}, \hyperpage{169}
+  \item {C\+A\+N\+A\+D\+D.\+f}, \hyperpage{108}
+    \subitem {canadd}, \hyperpage{108}
+  \item {C\+A\+N\+A\+L\+B.\+f}, \hyperpage{111}
+    \subitem {canalb}, \hyperpage{111}
+  \item {C\+A\+N\+V\+A\+P.\+f}, \hyperpage{115}
+    \subitem {canvap}, \hyperpage{115}
+  \item {C\+G\+R\+O\+W.\+f}, \hyperpage{116}
+    \subitem {cgrow}, \hyperpage{117}
+  \item {C\+H\+K\+W\+A\+T.\+f}, \hyperpage{117}
+    \subitem {chkwat}, \hyperpage{117}
+  \item {C\+L\+A\+S\+S\+A.\+f}, \hyperpage{119}
+    \subitem {classa}, \hyperpage{120}
+  \item {C\+L\+A\+S\+S\+B.\+f}, \hyperpage{125}
+    \subitem {classb}, \hyperpage{125}
+  \item {C\+L\+A\+S\+S\+B\+D.\+f}, \hyperpage{127}
+  \item {C\+L\+A\+S\+S\+D.\+f}, \hyperpage{129}
+  \item {C\+L\+A\+S\+S\+G.\+f}, \hyperpage{130}
+    \subitem {classg}, \hyperpage{131}
+  \item {C\+L\+A\+S\+S\+I.\+f}, \hyperpage{135}
+    \subitem {classi}, \hyperpage{135}
+  \item {C\+L\+A\+S\+S\+S.\+f}, \hyperpage{136}
+    \subitem {classs}, \hyperpage{137}
+  \item {C\+L\+A\+S\+S\+T.\+f}, \hyperpage{138}
+    \subitem {classt}, \hyperpage{139}
+  \item {C\+L\+A\+S\+S\+W.\+f}, \hyperpage{148}
+    \subitem {classw}, \hyperpage{148}
+  \item {C\+L\+A\+S\+S\+Z.\+f}, \hyperpage{154}
+    \subitem {classz}, \hyperpage{154}
+  \item {C\+O\+N\+T\+R\+I\+B\+U\+T\+I\+N\+G.\+md}, \hyperpage{165}
+  \item {C\+W\+C\+A\+L\+C.\+f}, \hyperpage{182}
+    \subitem {cwcalc}, \hyperpage{182}
   \item {canadd}
-    \subitem {C\+A\+N\+A\+D\+D.\+f}, \hyperpage{96}
+    \subitem {C\+A\+N\+A\+D\+D.\+f}, \hyperpage{108}
   \item {canalb}
-    \subitem {C\+A\+N\+A\+L\+B.\+f}, \hyperpage{99}
+    \subitem {C\+A\+N\+A\+L\+B.\+f}, \hyperpage{111}
   \item {canvap}
-    \subitem {C\+A\+N\+V\+A\+P.\+f}, \hyperpage{103}
+    \subitem {C\+A\+N\+V\+A\+P.\+f}, \hyperpage{115}
   \item {cgrow}
-    \subitem {C\+G\+R\+O\+W.\+f}, \hyperpage{105}
+    \subitem {C\+G\+R\+O\+W.\+f}, \hyperpage{117}
   \item {chkwat}
-    \subitem {C\+H\+K\+W\+A\+T.\+f}, \hyperpage{105}
+    \subitem {C\+H\+K\+W\+A\+T.\+f}, \hyperpage{117}
   \item {class\+\_\+annual\+\_\+aw}
     \subitem {Io\+\_\+driver\+\_\+class\+\_\+annual\+\_\+aw}, 
-		\hyperpage{41}
+		\hyperpage{53}
   \item {class\+\_\+monthly\+\_\+aw}
     \subitem {Io\+\_\+driver\+\_\+class\+\_\+monthly\+\_\+aw}, 
-		\hyperpage{40}
+		\hyperpage{52}
   \item {classa}
-    \subitem {C\+L\+A\+S\+S\+A.\+f}, \hyperpage{108}
+    \subitem {C\+L\+A\+S\+S\+A.\+f}, \hyperpage{120}
   \item {classb}
-    \subitem {C\+L\+A\+S\+S\+B.\+f}, \hyperpage{113}
+    \subitem {C\+L\+A\+S\+S\+B.\+f}, \hyperpage{125}
   \item {classg}
-    \subitem {C\+L\+A\+S\+S\+G.\+f}, \hyperpage{119}
+    \subitem {C\+L\+A\+S\+S\+G.\+f}, \hyperpage{131}
   \item {classi}
-    \subitem {C\+L\+A\+S\+S\+I.\+f}, \hyperpage{123}
+    \subitem {C\+L\+A\+S\+S\+I.\+f}, \hyperpage{135}
   \item {classs}
-    \subitem {C\+L\+A\+S\+S\+S.\+f}, \hyperpage{125}
+    \subitem {C\+L\+A\+S\+S\+S.\+f}, \hyperpage{137}
   \item {classt}
-    \subitem {C\+L\+A\+S\+S\+T.\+f}, \hyperpage{127}
+    \subitem {C\+L\+A\+S\+S\+T.\+f}, \hyperpage{139}
   \item {classw}
-    \subitem {C\+L\+A\+S\+S\+W.\+f}, \hyperpage{136}
+    \subitem {C\+L\+A\+S\+S\+W.\+f}, \hyperpage{148}
   \item {classz}
-    \subitem {C\+L\+A\+S\+S\+Z.\+f}, \hyperpage{142}
+    \subitem {C\+L\+A\+S\+S\+Z.\+f}, \hyperpage{154}
   \item {close\+\_\+outfiles}
-    \subitem {Io\+\_\+driver\+\_\+close\+\_\+outfiles}, \hyperpage{46}
+    \subitem {Io\+\_\+driver\+\_\+close\+\_\+outfiles}, \hyperpage{58}
   \item {competition}
-    \subitem {Competition\+\_\+scheme\+\_\+competition}, \hyperpage{23}
+    \subitem {Competition\+\_\+scheme\+\_\+competition}, \hyperpage{31}
   \item {competition\+\_\+map}
-    \subitem {competition\+\_\+map.\+f}, \hyperpage{146}
-  \item {competition\+\_\+map.\+f}, \hyperpage{146}
-    \subitem {competition\+\_\+map}, \hyperpage{146}
-  \item {competition\+\_\+mod.\+f90}, \hyperpage{148}
-  \item {Competition\+\_\+scheme\+\_\+bioclim}, \hyperpage{19}
-    \subitem {bioclim}, \hyperpage{19}
-  \item {Competition\+\_\+scheme\+\_\+competition}, \hyperpage{23}
-    \subitem {competition}, \hyperpage{23}
-  \item {Competition\+\_\+scheme\+\_\+existence}, \hyperpage{22}
-    \subitem {existence}, \hyperpage{22}
+    \subitem {competition\+\_\+map.\+f}, \hyperpage{158}
+  \item {competition\+\_\+map.\+f}, \hyperpage{158}
+    \subitem {competition\+\_\+map}, \hyperpage{158}
+  \item {competition\+\_\+mod.\+f90}, \hyperpage{160}
+  \item {Competition\+\_\+scheme\+\_\+bioclim}, \hyperpage{27}
+    \subitem {bioclim}, \hyperpage{27}
+  \item {Competition\+\_\+scheme\+\_\+competition}, \hyperpage{31}
+    \subitem {competition}, \hyperpage{31}
+  \item {Competition\+\_\+scheme\+\_\+existence}, \hyperpage{30}
+    \subitem {existence}, \hyperpage{30}
   \item {competition\+\_\+unmap}
-    \subitem {competition\+\_\+unmap.\+f}, \hyperpage{151}
-  \item {competition\+\_\+unmap.\+f}, \hyperpage{150}
-    \subitem {competition\+\_\+unmap}, \hyperpage{151}
+    \subitem {competition\+\_\+unmap.\+f}, \hyperpage{163}
+  \item {competition\+\_\+unmap.\+f}, \hyperpage{163}
+    \subitem {competition\+\_\+unmap}, \hyperpage{163}
   \item {create\+\_\+outfiles}
-    \subitem {Io\+\_\+driver\+\_\+create\+\_\+outfiles}, \hyperpage{39}
+    \subitem {Io\+\_\+driver\+\_\+create\+\_\+outfiles}, \hyperpage{51}
   \item {ctem}
-    \subitem {ctem.\+f90}, \hyperpage{153}
-  \item {ctem.\+f90}, \hyperpage{153}
-    \subitem {ctem}, \hyperpage{153}
+    \subitem {ctem.\+f90}, \hyperpage{166}
+  \item {ctem.\+f90}, \hyperpage{165}
+    \subitem {ctem}, \hyperpage{166}
   \item {ctem\+\_\+annual\+\_\+aw}
     \subitem {Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}, 
-		\hyperpage{45}
+		\hyperpage{57}
   \item {ctem\+\_\+daily\+\_\+aw}
     \subitem {Io\+\_\+driver\+\_\+ctem\+\_\+daily\+\_\+aw}, 
-		\hyperpage{42}
+		\hyperpage{54}
   \item {ctem\+\_\+monthly\+\_\+aw}
     \subitem {Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw}, 
-		\hyperpage{44}
-  \item {ctem\+\_\+params.\+f90}, \hyperpage{159}
-  \item {Ctem\+\_\+params\+\_\+initpftpars}, \hyperpage{25}
-    \subitem {initpftpars}, \hyperpage{25}
-  \item {ctem\+\_\+statevars.\+f90}, \hyperpage{166}
+		\hyperpage{56}
+  \item {ctem\+\_\+params.\+f90}, \hyperpage{171}
+  \item {Ctem\+\_\+params\+\_\+initpftpars}, \hyperpage{33}
+    \subitem {initpftpars}, \hyperpage{33}
+  \item {Ctem\+\_\+statevars}, \hyperpage{34}
+  \item {ctem\+\_\+statevars.\+f90}, \hyperpage{178}
   \item {ctem\+\_\+statevars\+::class\+\_\+moyr\+\_\+output}, 
-		\hyperpage{55}
-  \item {ctem\+\_\+statevars\+::ctem\+\_\+annual}, \hyperpage{56}
-  \item {ctem\+\_\+statevars\+::ctem\+\_\+gridavg}, \hyperpage{57}
+		\hyperpage{67}
+  \item {ctem\+\_\+statevars\+::ctem\+\_\+annual}, \hyperpage{68}
+  \item {ctem\+\_\+statevars\+::ctem\+\_\+gridavg}, \hyperpage{69}
   \item {ctem\+\_\+statevars\+::ctem\+\_\+gridavg\+\_\+annual}, 
-		\hyperpage{60}
+		\hyperpage{72}
   \item {ctem\+\_\+statevars\+::ctem\+\_\+gridavg\+\_\+monthly}, 
-		\hyperpage{61}
-  \item {ctem\+\_\+statevars\+::ctem\+\_\+monthly}, \hyperpage{62}
-  \item {ctem\+\_\+statevars\+::ctem\+\_\+switches}, \hyperpage{63}
+		\hyperpage{73}
+  \item {ctem\+\_\+statevars\+::ctem\+\_\+monthly}, \hyperpage{74}
+  \item {ctem\+\_\+statevars\+::ctem\+\_\+switches}, \hyperpage{75}
   \item {ctem\+\_\+statevars\+::ctem\+\_\+tile\+\_\+level}, 
-		\hyperpage{64}
+		\hyperpage{76}
   \item {ctem\+\_\+statevars\+::ctem\+\_\+tileavg\+\_\+annual}, 
-		\hyperpage{65}
+		\hyperpage{78}
   \item {ctem\+\_\+statevars\+::ctem\+\_\+tileavg\+\_\+monthly}, 
-		\hyperpage{66}
-  \item {ctem\+\_\+statevars\+::veg\+\_\+gat}, \hyperpage{67}
-  \item {ctem\+\_\+statevars\+::veg\+\_\+rot}, \hyperpage{74}
-  \item {ctemg1.\+f}, \hyperpage{167}
-  \item {ctemg2.\+f}, \hyperpage{167}
-  \item {ctems1.\+f}, \hyperpage{168}
-  \item {ctems2.\+f}, \hyperpage{168}
+		\hyperpage{79}
+  \item {ctem\+\_\+statevars\+::veg\+\_\+gat}, \hyperpage{80}
+  \item {ctem\+\_\+statevars\+::veg\+\_\+rot}, \hyperpage{87}
+  \item {ctemg1.\+f}, \hyperpage{180}
+  \item {ctemg2.\+f}, \hyperpage{180}
+  \item {ctems1.\+f}, \hyperpage{181}
+  \item {ctems2.\+f}, \hyperpage{181}
   \item {cwcalc}
-    \subitem {C\+W\+C\+A\+L\+C.\+f}, \hyperpage{169}
+    \subitem {C\+W\+C\+A\+L\+C.\+f}, \hyperpage{182}
 
   \indexspace
 
-  \item {D\+R\+C\+O\+E\+F.\+f}, \hyperpage{170}
-    \subitem {drcoef}, \hyperpage{170}
+  \item {D\+R\+C\+O\+E\+F.\+f}, \hyperpage{183}
+    \subitem {drcoef}, \hyperpage{184}
   \item {disturb}
-    \subitem {Disturbance\+\_\+scheme\+\_\+disturb}, \hyperpage{30}
-  \item {disturb.\+f90}, \hyperpage{170}
-  \item {Disturbance\+\_\+scheme\+\_\+burntobare}, \hyperpage{34}
-    \subitem {burntobare}, \hyperpage{34}
-  \item {Disturbance\+\_\+scheme\+\_\+disturb}, \hyperpage{26}
-    \subitem {disturb}, \hyperpage{30}
+    \subitem {Disturbance\+\_\+scheme\+\_\+disturb}, \hyperpage{39}
+  \item {disturb.\+f90}, \hyperpage{183}
+  \item {Disturbance\+\_\+scheme\+\_\+burntobare}, \hyperpage{42}
+    \subitem {burntobare}, \hyperpage{42}
+  \item {Disturbance\+\_\+scheme\+\_\+disturb}, \hyperpage{35}
+    \subitem {disturb}, \hyperpage{39}
   \item {drcoef}
-    \subitem {D\+R\+C\+O\+E\+F.\+f}, \hyperpage{170}
+    \subitem {D\+R\+C\+O\+E\+F.\+f}, \hyperpage{184}
 
   \indexspace
 
   \item {existence}
-    \subitem {Competition\+\_\+scheme\+\_\+existence}, \hyperpage{22}
+    \subitem {Competition\+\_\+scheme\+\_\+existence}, \hyperpage{30}
 
   \indexspace
 
-  \item {G\+A\+T\+P\+R\+E\+P.\+f}, \hyperpage{171}
-    \subitem {gatprep}, \hyperpage{171}
-  \item {G\+A\+U\+S\+S\+G.\+f}, \hyperpage{172}
-  \item {G\+R\+A\+L\+B.\+f}, \hyperpage{172}
-    \subitem {gralb}, \hyperpage{173}
-  \item {G\+R\+D\+R\+A\+N.\+f}, \hyperpage{174}
-    \subitem {grdran}, \hyperpage{174}
-  \item {G\+R\+I\+N\+F\+L.\+f}, \hyperpage{177}
-    \subitem {grinfl}, \hyperpage{177}
+  \item {G\+A\+T\+P\+R\+E\+P.\+f}, \hyperpage{184}
+    \subitem {gatprep}, \hyperpage{184}
+  \item {G\+A\+U\+S\+S\+G.\+f}, \hyperpage{185}
+  \item {G\+R\+A\+L\+B.\+f}, \hyperpage{186}
+    \subitem {gralb}, \hyperpage{186}
+  \item {G\+R\+D\+R\+A\+N.\+f}, \hyperpage{187}
+    \subitem {grdran}, \hyperpage{187}
+  \item {G\+R\+I\+N\+F\+L.\+f}, \hyperpage{191}
+    \subitem {grinfl}, \hyperpage{191}
   \item {gatprep}
-    \subitem {G\+A\+T\+P\+R\+E\+P.\+f}, \hyperpage{171}
+    \subitem {G\+A\+T\+P\+R\+E\+P.\+f}, \hyperpage{184}
   \item {gralb}
-    \subitem {G\+R\+A\+L\+B.\+f}, \hyperpage{173}
+    \subitem {G\+R\+A\+L\+B.\+f}, \hyperpage{186}
   \item {grdran}
-    \subitem {G\+R\+D\+R\+A\+N.\+f}, \hyperpage{174}
+    \subitem {G\+R\+D\+R\+A\+N.\+f}, \hyperpage{187}
   \item {grinfl}
-    \subitem {G\+R\+I\+N\+F\+L.\+f}, \hyperpage{177}
+    \subitem {G\+R\+I\+N\+F\+L.\+f}, \hyperpage{191}
 
   \indexspace
 
+  \item {hetres\+\_\+mod.\+f90}, \hyperpage{194}
+  \item {Hetresg}, \hyperpage{44}
+    \subitem {hetresg}, \hyperpage{45}
   \item {hetresg}
-    \subitem {hetresg.\+f}, \hyperpage{182}
-  \item {hetresg.\+f}, \hyperpage{180}
-    \subitem {hetresg}, \hyperpage{182}
+    \subitem {Hetresg}, \hyperpage{45}
+    \subitem {hetresg\+\_\+old.\+f}, \hyperpage{196}
+  \item {hetresg\+\_\+old.\+f}, \hyperpage{195}
+    \subitem {hetresg}, \hyperpage{196}
+  \item {Hetresv}, \hyperpage{47}
+    \subitem {hetresv}, \hyperpage{47}
   \item {hetresv}
-    \subitem {hetresv.\+f}, \hyperpage{183}
-  \item {hetresv.\+f}, \hyperpage{183}
-    \subitem {hetresv}, \hyperpage{183}
+    \subitem {Hetresv}, \hyperpage{47}
+    \subitem {hetresv\+\_\+old.\+f}, \hyperpage{198}
+  \item {hetresv\+\_\+old.\+f}, \hyperpage{197}
+    \subitem {hetresv}, \hyperpage{198}
 
   \indexspace
 
-  \item {I\+C\+E\+B\+A\+L.\+f}, \hyperpage{184}
-    \subitem {icebal}, \hyperpage{185}
+  \item {I\+C\+E\+B\+A\+L.\+f}, \hyperpage{199}
+    \subitem {icebal}, \hyperpage{199}
   \item {icebal}
-    \subitem {I\+C\+E\+B\+A\+L.\+f}, \hyperpage{185}
+    \subitem {I\+C\+E\+B\+A\+L.\+f}, \hyperpage{199}
   \item {initialize\+\_\+luc}
     \subitem {Landuse\+\_\+change\+\_\+initialize\+\_\+luc}, 
-		\hyperpage{47}
+		\hyperpage{59}
   \item {initpftpars}
-    \subitem {Ctem\+\_\+params\+\_\+initpftpars}, \hyperpage{25}
-  \item {io\+\_\+driver.\+f90}, \hyperpage{188}
-  \item {Io\+\_\+driver\+\_\+class\+\_\+annual\+\_\+aw}, \hyperpage{41}
-    \subitem {class\+\_\+annual\+\_\+aw}, \hyperpage{41}
+    \subitem {Ctem\+\_\+params\+\_\+initpftpars}, \hyperpage{33}
+  \item {io\+\_\+driver.\+f90}, \hyperpage{202}
+  \item {Io\+\_\+driver\+\_\+class\+\_\+annual\+\_\+aw}, \hyperpage{53}
+    \subitem {class\+\_\+annual\+\_\+aw}, \hyperpage{53}
   \item {Io\+\_\+driver\+\_\+class\+\_\+monthly\+\_\+aw}, 
-		\hyperpage{40}
-    \subitem {class\+\_\+monthly\+\_\+aw}, \hyperpage{40}
-  \item {Io\+\_\+driver\+\_\+close\+\_\+outfiles}, \hyperpage{46}
-    \subitem {close\+\_\+outfiles}, \hyperpage{46}
-  \item {Io\+\_\+driver\+\_\+create\+\_\+outfiles}, \hyperpage{39}
-    \subitem {create\+\_\+outfiles}, \hyperpage{39}
-  \item {Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}, \hyperpage{45}
-    \subitem {ctem\+\_\+annual\+\_\+aw}, \hyperpage{45}
-  \item {Io\+\_\+driver\+\_\+ctem\+\_\+daily\+\_\+aw}, \hyperpage{42}
-    \subitem {ctem\+\_\+daily\+\_\+aw}, \hyperpage{42}
-  \item {Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw}, \hyperpage{44}
-    \subitem {ctem\+\_\+monthly\+\_\+aw}, \hyperpage{44}
-  \item {Io\+\_\+driver\+\_\+read\+\_\+from\+\_\+ctm}, \hyperpage{36}
-    \subitem {read\+\_\+from\+\_\+ctm}, \hyperpage{36}
-  \item {Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs}, \hyperpage{38}
-    \subitem {write\+\_\+ctm\+\_\+rs}, \hyperpage{38}
+		\hyperpage{52}
+    \subitem {class\+\_\+monthly\+\_\+aw}, \hyperpage{52}
+  \item {Io\+\_\+driver\+\_\+close\+\_\+outfiles}, \hyperpage{58}
+    \subitem {close\+\_\+outfiles}, \hyperpage{58}
+  \item {Io\+\_\+driver\+\_\+create\+\_\+outfiles}, \hyperpage{51}
+    \subitem {create\+\_\+outfiles}, \hyperpage{51}
+  \item {Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}, \hyperpage{57}
+    \subitem {ctem\+\_\+annual\+\_\+aw}, \hyperpage{57}
+  \item {Io\+\_\+driver\+\_\+ctem\+\_\+daily\+\_\+aw}, \hyperpage{54}
+    \subitem {ctem\+\_\+daily\+\_\+aw}, \hyperpage{54}
+  \item {Io\+\_\+driver\+\_\+ctem\+\_\+monthly\+\_\+aw}, \hyperpage{56}
+    \subitem {ctem\+\_\+monthly\+\_\+aw}, \hyperpage{56}
+  \item {Io\+\_\+driver\+\_\+read\+\_\+from\+\_\+ctm}, \hyperpage{48}
+    \subitem {read\+\_\+from\+\_\+ctm}, \hyperpage{48}
+  \item {Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs}, \hyperpage{50}
+    \subitem {write\+\_\+ctm\+\_\+rs}, \hyperpage{50}
 
   \indexspace
 
   \item {Landuse\+\_\+change\+\_\+adjust\+\_\+fracs\+\_\+comp}, 
-		\hyperpage{54}
+		\hyperpage{66}
   \item {Landuse\+\_\+change\+\_\+adjust\+\_\+luc\+\_\+fracs}, 
-		\hyperpage{53}
-  \item {Landuse\+\_\+change\+\_\+initialize\+\_\+luc}, \hyperpage{47}
-    \subitem {initialize\+\_\+luc}, \hyperpage{47}
-  \item {Landuse\+\_\+change\+\_\+luc}, \hyperpage{50}
-    \subitem {luc}, \hyperpage{50}
-  \item {landuse\+\_\+change\+\_\+mod.\+f90}, \hyperpage{189}
-  \item {Landuse\+\_\+change\+\_\+readin\+\_\+luc}, \hyperpage{49}
-    \subitem {readin\+\_\+luc}, \hyperpage{49}
+		\hyperpage{65}
+  \item {Landuse\+\_\+change\+\_\+initialize\+\_\+luc}, \hyperpage{59}
+    \subitem {initialize\+\_\+luc}, \hyperpage{59}
+  \item {Landuse\+\_\+change\+\_\+luc}, \hyperpage{62}
+    \subitem {luc}, \hyperpage{62}
+  \item {landuse\+\_\+change\+\_\+mod.\+f90}, \hyperpage{203}
+  \item {Landuse\+\_\+change\+\_\+readin\+\_\+luc}, \hyperpage{61}
+    \subitem {readin\+\_\+luc}, \hyperpage{61}
   \item {luc}
-    \subitem {Landuse\+\_\+change\+\_\+luc}, \hyperpage{50}
+    \subitem {Landuse\+\_\+change\+\_\+luc}, \hyperpage{62}
 
   \indexspace
 
   \item {mainres}
-    \subitem {mainres.\+f}, \hyperpage{190}
-  \item {mainres.\+f}, \hyperpage{189}
-    \subitem {mainres}, \hyperpage{190}
-  \item {mortality.\+f}, \hyperpage{191}
-    \subitem {mortalty}, \hyperpage{192}
+    \subitem {mainres.\+f}, \hyperpage{205}
+  \item {mainres.\+f}, \hyperpage{204}
+    \subitem {mainres}, \hyperpage{205}
+  \item {mortality.\+f}, \hyperpage{205}
+    \subitem {mortalty}, \hyperpage{206}
   \item {mortalty}
-    \subitem {mortality.\+f}, \hyperpage{192}
+    \subitem {mortality.\+f}, \hyperpage{206}
   \item {mvidx}
-    \subitem {mvidx.\+f}, \hyperpage{193}
-  \item {mvidx.\+f}, \hyperpage{193}
-    \subitem {mvidx}, \hyperpage{193}
+    \subitem {mvidx.\+f}, \hyperpage{207}
+  \item {mvidx.\+f}, \hyperpage{207}
+    \subitem {mvidx}, \hyperpage{207}
 
   \indexspace
 
-  \item {O\+R\+D\+L\+E\+G.\+f}, \hyperpage{194}
+  \item {O\+R\+D\+L\+E\+G.\+f}, \hyperpage{212}
+  \item {oldphen.\+f}, \hyperpage{208}
+    \subitem {phenolgy}, \hyperpage{210}
 
   \indexspace
 
-  \item {P\+H\+T\+S\+Y\+N3.\+f}, \hyperpage{198}
-    \subitem {phtsyn3}, \hyperpage{201}
+  \item {P\+H\+T\+S\+Y\+N3.\+f}, \hyperpage{217}
+    \subitem {phtsyn3}, \hyperpage{220}
   \item {phenolgy}
-    \subitem {phenolgy.\+f}, \hyperpage{196}
-  \item {phenolgy.\+f}, \hyperpage{194}
-    \subitem {phenolgy}, \hyperpage{196}
+    \subitem {oldphen.\+f}, \hyperpage{210}
+    \subitem {phenolgy.\+f}, \hyperpage{214}
+  \item {phenolgy.\+f}, \hyperpage{212}
+    \subitem {phenolgy}, \hyperpage{214}
   \item {phtsyn3}
-    \subitem {P\+H\+T\+S\+Y\+N3.\+f}, \hyperpage{201}
+    \subitem {P\+H\+T\+S\+Y\+N3.\+f}, \hyperpage{220}
 
   \indexspace
 
   \item {read\+\_\+from\+\_\+ctm}
     \subitem {Io\+\_\+driver\+\_\+read\+\_\+from\+\_\+ctm}, 
-		\hyperpage{36}
+		\hyperpage{48}
   \item {read\+\_\+from\+\_\+job\+\_\+options}
     \subitem {read\+\_\+from\+\_\+job\+\_\+options.\+f90}, 
-		\hyperpage{205}
-  \item {read\+\_\+from\+\_\+job\+\_\+options.\+f90}, \hyperpage{204}
-    \subitem {read\+\_\+from\+\_\+job\+\_\+options}, \hyperpage{205}
+		\hyperpage{224}
+  \item {read\+\_\+from\+\_\+job\+\_\+options.\+f90}, \hyperpage{223}
+    \subitem {read\+\_\+from\+\_\+job\+\_\+options}, \hyperpage{224}
   \item {readin\+\_\+luc}
-    \subitem {Landuse\+\_\+change\+\_\+readin\+\_\+luc}, \hyperpage{49}
-  \item {runclass36ctem.\+f}, \hyperpage{208}
+    \subitem {Landuse\+\_\+change\+\_\+readin\+\_\+luc}, \hyperpage{61}
+  \item {runclass36ctem.\+f}, \hyperpage{226}
 
   \indexspace
 
-  \item {S\+C\+R\+E\+E\+N\+R\+H.\+f}, \hyperpage{208}
-  \item {S\+L\+D\+I\+A\+G.\+f}, \hyperpage{208}
-    \subitem {sldiag}, \hyperpage{209}
-  \item {S\+N\+I\+N\+F\+L.\+f}, \hyperpage{209}
-    \subitem {sninfl}, \hyperpage{210}
-  \item {S\+N\+O\+A\+D\+D.\+f}, \hyperpage{211}
-    \subitem {snoadd}, \hyperpage{211}
-  \item {S\+N\+O\+A\+L\+B\+A.\+f}, \hyperpage{212}
-    \subitem {snoalba}, \hyperpage{212}
-  \item {S\+N\+O\+A\+L\+B\+W.\+f}, \hyperpage{213}
-    \subitem {snoalbw}, \hyperpage{214}
-  \item {S\+N\+O\+V\+A\+P.\+f}, \hyperpage{214}
-    \subitem {snovap}, \hyperpage{215}
-  \item {S\+T\+O\+R\+V\+A\+R.\+f}, \hyperpage{217}
-    \subitem {storvar}, \hyperpage{217}
-  \item {S\+U\+B\+C\+A\+N.\+f}, \hyperpage{217}
-    \subitem {subcan}, \hyperpage{218}
+  \item {S\+C\+R\+E\+E\+N\+R\+H.\+f}, \hyperpage{227}
+  \item {S\+L\+D\+I\+A\+G.\+f}, \hyperpage{227}
+    \subitem {sldiag}, \hyperpage{227}
+  \item {S\+N\+I\+N\+F\+L.\+f}, \hyperpage{228}
+    \subitem {sninfl}, \hyperpage{228}
+  \item {S\+N\+O\+A\+D\+D.\+f}, \hyperpage{230}
+    \subitem {snoadd}, \hyperpage{230}
+  \item {S\+N\+O\+A\+L\+B\+A.\+f}, \hyperpage{231}
+    \subitem {snoalba}, \hyperpage{231}
+  \item {S\+N\+O\+A\+L\+B\+W.\+f}, \hyperpage{232}
+    \subitem {snoalbw}, \hyperpage{232}
+  \item {S\+N\+O\+V\+A\+P.\+f}, \hyperpage{233}
+    \subitem {snovap}, \hyperpage{233}
+  \item {S\+T\+O\+R\+V\+A\+R.\+f}, \hyperpage{236}
+    \subitem {storvar}, \hyperpage{236}
+  \item {S\+U\+B\+C\+A\+N.\+f}, \hyperpage{236}
+    \subitem {subcan}, \hyperpage{236}
   \item {sldiag}
-    \subitem {S\+L\+D\+I\+A\+G.\+f}, \hyperpage{209}
+    \subitem {S\+L\+D\+I\+A\+G.\+f}, \hyperpage{227}
   \item {sninfl}
-    \subitem {S\+N\+I\+N\+F\+L.\+f}, \hyperpage{210}
+    \subitem {S\+N\+I\+N\+F\+L.\+f}, \hyperpage{228}
   \item {snoadd}
-    \subitem {S\+N\+O\+A\+D\+D.\+f}, \hyperpage{211}
+    \subitem {S\+N\+O\+A\+D\+D.\+f}, \hyperpage{230}
   \item {snoalba}
-    \subitem {S\+N\+O\+A\+L\+B\+A.\+f}, \hyperpage{212}
+    \subitem {S\+N\+O\+A\+L\+B\+A.\+f}, \hyperpage{231}
   \item {snoalbw}
-    \subitem {S\+N\+O\+A\+L\+B\+W.\+f}, \hyperpage{214}
+    \subitem {S\+N\+O\+A\+L\+B\+W.\+f}, \hyperpage{232}
   \item {snovap}
-    \subitem {S\+N\+O\+V\+A\+P.\+f}, \hyperpage{215}
+    \subitem {S\+N\+O\+V\+A\+P.\+f}, \hyperpage{233}
   \item {soil\+\_\+ch4uptake}
-    \subitem {soil\+\_\+ch4uptake.\+f90}, \hyperpage{216}
-  \item {soil\+\_\+ch4uptake.\+f90}, \hyperpage{216}
-    \subitem {soil\+\_\+ch4uptake}, \hyperpage{216}
+    \subitem {soil\+\_\+ch4uptake.\+f90}, \hyperpage{235}
+  \item {soil\+\_\+ch4uptake.\+f90}, \hyperpage{234}
+    \subitem {soil\+\_\+ch4uptake}, \hyperpage{235}
   \item {storvar}
-    \subitem {S\+T\+O\+R\+V\+A\+R.\+f}, \hyperpage{217}
+    \subitem {S\+T\+O\+R\+V\+A\+R.\+f}, \hyperpage{236}
   \item {subcan}
-    \subitem {S\+U\+B\+C\+A\+N.\+f}, \hyperpage{218}
+    \subitem {S\+U\+B\+C\+A\+N.\+f}, \hyperpage{236}
 
   \indexspace
 
-  \item {T\+F\+R\+E\+E\+Z.\+f}, \hyperpage{218}
-    \subitem {tfreez}, \hyperpage{219}
-  \item {T\+M\+C\+A\+L\+C.\+f}, \hyperpage{220}
-    \subitem {tmcalc}, \hyperpage{220}
-  \item {T\+M\+E\+L\+T.\+f}, \hyperpage{224}
-    \subitem {tmelt}, \hyperpage{225}
-  \item {T\+N\+P\+O\+S\+T.\+f}, \hyperpage{226}
-    \subitem {tnpost}, \hyperpage{226}
-  \item {T\+N\+P\+R\+E\+P.\+f}, \hyperpage{228}
-    \subitem {tnprep}, \hyperpage{228}
-  \item {T\+P\+R\+E\+P.\+f}, \hyperpage{229}
-    \subitem {tprep}, \hyperpage{229}
-  \item {T\+R\+I\+G\+L.\+f}, \hyperpage{235}
-    \subitem {trigl}, \hyperpage{235}
-  \item {T\+S\+O\+L\+V\+C.\+f}, \hyperpage{235}
-    \subitem {tsolvc}, \hyperpage{236}
-  \item {T\+S\+O\+L\+V\+E.\+f}, \hyperpage{244}
-    \subitem {tsolve}, \hyperpage{245}
-  \item {T\+S\+P\+O\+S\+T.\+f}, \hyperpage{249}
-    \subitem {tspost}, \hyperpage{249}
-  \item {T\+S\+P\+R\+E\+P.\+f}, \hyperpage{250}
-    \subitem {tsprep}, \hyperpage{251}
-  \item {T\+W\+C\+A\+L\+C.\+f}, \hyperpage{252}
-    \subitem {twcalc}, \hyperpage{253}
+  \item {T\+F\+R\+E\+E\+Z.\+f}, \hyperpage{238}
+    \subitem {tfreez}, \hyperpage{238}
+  \item {T\+M\+C\+A\+L\+C.\+f}, \hyperpage{241}
+    \subitem {tmcalc}, \hyperpage{241}
+  \item {T\+M\+E\+L\+T.\+f}, \hyperpage{244}
+    \subitem {tmelt}, \hyperpage{244}
+  \item {T\+N\+P\+O\+S\+T.\+f}, \hyperpage{246}
+    \subitem {tnpost}, \hyperpage{247}
+  \item {T\+N\+P\+R\+E\+P.\+f}, \hyperpage{248}
+    \subitem {tnprep}, \hyperpage{248}
+  \item {T\+P\+R\+E\+P.\+f}, \hyperpage{249}
+    \subitem {tprep}, \hyperpage{250}
+  \item {T\+R\+I\+G\+L.\+f}, \hyperpage{255}
+    \subitem {trigl}, \hyperpage{255}
+  \item {T\+S\+O\+L\+V\+C.\+f}, \hyperpage{255}
+    \subitem {tsolvc}, \hyperpage{256}
+  \item {T\+S\+O\+L\+V\+E.\+f}, \hyperpage{265}
+    \subitem {tsolve}, \hyperpage{265}
+  \item {T\+S\+P\+O\+S\+T.\+f}, \hyperpage{269}
+    \subitem {tspost}, \hyperpage{269}
+  \item {T\+S\+P\+R\+E\+P.\+f}, \hyperpage{270}
+    \subitem {tsprep}, \hyperpage{271}
+  \item {T\+W\+C\+A\+L\+C.\+f}, \hyperpage{273}
+    \subitem {twcalc}, \hyperpage{273}
   \item {tfreez}
-    \subitem {T\+F\+R\+E\+E\+Z.\+f}, \hyperpage{219}
+    \subitem {T\+F\+R\+E\+E\+Z.\+f}, \hyperpage{238}
   \item {tmcalc}
-    \subitem {T\+M\+C\+A\+L\+C.\+f}, \hyperpage{220}
+    \subitem {T\+M\+C\+A\+L\+C.\+f}, \hyperpage{241}
   \item {tmelt}
-    \subitem {T\+M\+E\+L\+T.\+f}, \hyperpage{225}
+    \subitem {T\+M\+E\+L\+T.\+f}, \hyperpage{244}
   \item {tnpost}
-    \subitem {T\+N\+P\+O\+S\+T.\+f}, \hyperpage{226}
+    \subitem {T\+N\+P\+O\+S\+T.\+f}, \hyperpage{247}
   \item {tnprep}
-    \subitem {T\+N\+P\+R\+E\+P.\+f}, \hyperpage{228}
+    \subitem {T\+N\+P\+R\+E\+P.\+f}, \hyperpage{248}
   \item {tprep}
-    \subitem {T\+P\+R\+E\+P.\+f}, \hyperpage{229}
+    \subitem {T\+P\+R\+E\+P.\+f}, \hyperpage{250}
   \item {trigl}
-    \subitem {T\+R\+I\+G\+L.\+f}, \hyperpage{235}
+    \subitem {T\+R\+I\+G\+L.\+f}, \hyperpage{255}
   \item {tsolvc}
-    \subitem {T\+S\+O\+L\+V\+C.\+f}, \hyperpage{236}
+    \subitem {T\+S\+O\+L\+V\+C.\+f}, \hyperpage{256}
   \item {tsolve}
-    \subitem {T\+S\+O\+L\+V\+E.\+f}, \hyperpage{245}
+    \subitem {T\+S\+O\+L\+V\+E.\+f}, \hyperpage{265}
   \item {tspost}
-    \subitem {T\+S\+P\+O\+S\+T.\+f}, \hyperpage{249}
+    \subitem {T\+S\+P\+O\+S\+T.\+f}, \hyperpage{269}
   \item {tsprep}
-    \subitem {T\+S\+P\+R\+E\+P.\+f}, \hyperpage{251}
+    \subitem {T\+S\+P\+R\+E\+P.\+f}, \hyperpage{271}
   \item {turnover}
-    \subitem {turnover.\+f}, \hyperpage{252}
-  \item {turnover.\+f}, \hyperpage{251}
-    \subitem {turnover}, \hyperpage{252}
+    \subitem {turnover.\+f}, \hyperpage{272}
+  \item {turnover.\+f}, \hyperpage{272}
+    \subitem {turnover}, \hyperpage{272}
   \item {twcalc}
-    \subitem {T\+W\+C\+A\+L\+C.\+f}, \hyperpage{253}
+    \subitem {T\+W\+C\+A\+L\+C.\+f}, \hyperpage{273}
 
   \indexspace
 
-  \item {W\+E\+N\+D.\+f}, \hyperpage{254}
-    \subitem {wend}, \hyperpage{254}
-  \item {W\+F\+I\+L\+L.\+f}, \hyperpage{258}
-    \subitem {wfill}, \hyperpage{258}
-  \item {W\+F\+L\+O\+W.\+f}, \hyperpage{260}
-    \subitem {wflow}, \hyperpage{260}
-  \item {W\+P\+R\+E\+P.\+f}, \hyperpage{262}
-    \subitem {wprep}, \hyperpage{263}
+  \item {W\+E\+N\+D.\+f}, \hyperpage{274}
+    \subitem {wend}, \hyperpage{274}
+  \item {W\+F\+I\+L\+L.\+f}, \hyperpage{278}
+    \subitem {wfill}, \hyperpage{278}
+  \item {W\+F\+L\+O\+W.\+f}, \hyperpage{280}
+    \subitem {wflow}, \hyperpage{280}
+  \item {W\+P\+R\+E\+P.\+f}, \hyperpage{282}
+    \subitem {wprep}, \hyperpage{282}
   \item {wend}
-    \subitem {W\+E\+N\+D.\+f}, \hyperpage{254}
+    \subitem {W\+E\+N\+D.\+f}, \hyperpage{274}
   \item {wetland\+\_\+methane}
-    \subitem {wetland\+\_\+methane.\+f90}, \hyperpage{257}
-  \item {wetland\+\_\+methane.\+f90}, \hyperpage{257}
-    \subitem {wetland\+\_\+methane}, \hyperpage{257}
+    \subitem {wetland\+\_\+methane.\+f90}, \hyperpage{277}
+  \item {wetland\+\_\+methane.\+f90}, \hyperpage{277}
+    \subitem {wetland\+\_\+methane}, \hyperpage{277}
   \item {wfill}
-    \subitem {W\+F\+I\+L\+L.\+f}, \hyperpage{258}
+    \subitem {W\+F\+I\+L\+L.\+f}, \hyperpage{278}
   \item {wflow}
-    \subitem {W\+F\+L\+O\+W.\+f}, \hyperpage{260}
+    \subitem {W\+F\+L\+O\+W.\+f}, \hyperpage{280}
   \item {wprep}
-    \subitem {W\+P\+R\+E\+P.\+f}, \hyperpage{263}
+    \subitem {W\+P\+R\+E\+P.\+f}, \hyperpage{282}
   \item {write\+\_\+ctm\+\_\+rs}
     \subitem {Io\+\_\+driver\+\_\+write\+\_\+ctm\+\_\+rs}, 
-		\hyperpage{38}
+		\hyperpage{50}
 
   \indexspace
 
-  \item {X\+I\+T.\+f}, \hyperpage{267}
-    \subitem {xit}, \hyperpage{268}
+  \item {X\+I\+T.\+f}, \hyperpage{288}
+    \subitem {xit}, \hyperpage{288}
   \item {xit}
-    \subitem {X\+I\+T.\+f}, \hyperpage{268}
+    \subitem {X\+I\+T.\+f}, \hyperpage{288}
 
 \end{theindex}

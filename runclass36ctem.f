@@ -2082,7 +2082,6 @@ c
 C     INITIALIZATION FOR COUPLING CLASS AND CTEM
 C
        call initrowvars()
-       call resetclassaccum(nltest,nmtest)
 
        IMONTH = 0
 
@@ -2443,6 +2442,8 @@ c     -9999 thus triggering the read in of the .ini file values below
       end if
 
       CLOSE(10)
+
+      call resetclassaccum(nltest,nmtest)
 C
 C====================== CTEM =========================================== \
 C
