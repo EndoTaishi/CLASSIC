@@ -5342,11 +5342,11 @@ C=======================================================================
      5  ACTLYR,FTABLE)
 
 c            --------reset peatland accumulators-------------------------------
-             anmossac_t  = 0.0
-             rmlmossac_t = 0.0
-             gppmossac_t = 0.0
-             G12ACC     = 0.
-             G23ACC     = 0.
+!            anmossac_t  = 0.0 
+!            rmlmossac_t = 0.0
+!            gppmossac_t = 0.0
+!            G12ACC     = 0.
+!            G23ACC     = 0.
              if (iday == 365) then
                 pddrow     = 0.
              end if
@@ -5361,6 +5361,13 @@ c     calculate daily outputs from ctem
           call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
      1                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea,
      2                      onetile_perPFT,ipeatlandrow)
+c            --------reset peatland accumulators-------------------------------
+!            Note: these must be reset only at the end of a day. EC Jan 30 2017.
+             anmossac_t  = 0.0 
+             rmlmossac_t = 0.0
+             gppmossac_t = 0.0
+             G12ACC     = 0.
+             G23ACC     = 0.
          endif ! if(ncount.eq.nday)
        endif ! if(ctem_on)
 

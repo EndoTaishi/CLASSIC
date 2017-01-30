@@ -404,12 +404,14 @@ C
    50 CONTINUE
 
 c    Do moss photosynthesis:
-        if (ipeatland(i) >0) then
+!       if (ipeatland(i) >0) then  ! FLAG: Outside of do-loop, so i=2 after last loop
+                                   !       which is out-of-bounds for ipeatland(ilg=1). EC Jan 30 2017.
 !!      moss subroutine finds ground evaporation rate and photosynthesis--\
-            call mosspht(ilg,ig,iday,qswnv,thliq,co2conc,tstart,zsnow,
+!           call mosspht(ilg,ig,iday,qswnv,thliq,co2conc,tstart,zsnow,
+            call mosspht(il1,il2,iday,qswnv,thliq,co2conc,tstart,zsnow, ! EC Jan 30 2017.
      1              pressg,Cmossmas,dmoss,anmoss,rmlmoss,
      2              cevapmoss,ievapmoss, ipeatland,daylength,pdd)
-       end if
+!      end if
 
       !>
       !!The 100 continuation line marks the beginning of the surface 
