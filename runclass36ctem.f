@@ -3856,6 +3856,7 @@ c
      &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,
      &                  BIGAT,    THPGAT, thicegacc_t,currlat,
      &             ch4concgat,      GRAV, RHOW, RHOICE,
+     &              leapnow,
 c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
@@ -3898,7 +3899,6 @@ c    -------------- inputs updated by ctem are above this line ------
      &          ch4soillsgat)
 c    ---------------- outputs are listed above this line ------------
 c
-
 !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
 !     to reset here, prior to ctems2.
         do i = 1, nml

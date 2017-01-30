@@ -171,9 +171,9 @@ real, dimension(ilg,ignd), intent(in) :: tbarc          !< soil temperature for 
 real, dimension(ilg,ignd), intent(in) :: tbarcs         !< soil temperature for canopy over snow subarea
 real, dimension(ilg,ignd), intent(in) :: tbarg          !< soil temperature for ground subarea
 real, dimension(ilg,ignd), intent(in) :: tbargs         !< soil temperature for snow over ground subarea
-real, dimension(ilg,ignd), intent(in) :: psisat !< saturated soil matric potential (m)
-real, dimension(ilg,ignd), intent(in) :: bi     !< Brooks and Corey b term
-real, dimension(ilg,ignd), intent(in) :: thpor  !< Soil porosity
+real, dimension(ilg,ignd), intent(in) :: psisat         !< Saturated soil matric potential (m)
+real, dimension(ilg,ignd), intent(in) :: bi             !< Brooks and Corey/Clapp and Hornberger b term
+real, dimension(ilg,ignd), intent(in) :: thpor          !< Soil total porosity \f$(cm^3 cm^{-3})\f$ - daily average
 real, dimension(ilg), intent(in) :: ta                  !< air temp, K
 real, dimension(ilg,ignd), intent(in) :: delzw          !< thicknesses of the 3 soil layers
 real, dimension(ilg,ignd), intent(in) :: zbotw          !< bottom of soil layers
@@ -182,10 +182,10 @@ real, dimension(ilg,ignd), intent(in) :: thliqc         !< liquid mois. content 
                                                         !<over snow and canopy over ground subareas
 real, dimension(ilg,ignd), intent(in) :: thliqg         !< liquid mois. content of 3 soil layers, for ground
                                                         !<and snow over ground subareas
-real, dimension(ilg,ignd), intent(in) :: thicec !< Frozen soil moisture content for canopy
-                                                !<over snow and canopy over ground subareas
-real, dimension(ilg,ignd), intent(in) :: thiceg !< Frozen soil moisture content for ground
-                                                !< and snow over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thicec         !< Frozen soil moisture content for canopy
+                                                        !<over snow and canopy over ground subareas
+real, dimension(ilg,ignd), intent(in) :: thiceg         !< Frozen soil moisture content for ground
+                                                        !< and snow over ground subareas
 real, intent(in) :: deltat                              !< CTEM timestep in days
 real, dimension(ilg), intent(in) ::  grclarea           !< area of the grid cell, \f$km^2\f$
 real, dimension(ilg), intent(in) ::  currlat            !< centre latitude of grid cells in degrees
@@ -967,7 +967,6 @@ do 170 i = il1, il2
 !!
 !!Find maintenance respiration for canopy over snow sub-area in umol co2/m2/sec
 !!
-
 call   mainres (fcancs,      fcs,     stemmass,   rootmass,       &
      &                  il1, il2, leapnow, &
      &                    ta,       tbarcs,   rmatctem,&
@@ -1118,7 +1117,6 @@ call  hetresg  (litrmass, soilcmas,   delzw,  thpor, &
 call  hetresg  (litrmass, soilcmas,    delzw, thpor, &
      &                      il1, il2,  tbargs, psisat, bi,  &
      &                   thliqg,      zbotw,  thiceg, &
-
      &                      fgs,        1,&
      &                     isand,&
      &                   ltrsbrgs, scrsbrgs)
@@ -1732,7 +1730,6 @@ call disturb (stemmass, rootmass, gleafmas, bleafmas,&
         gavgscms(i)=gavgscms(i)+( (fg(i)+fgs(i))*soilcmas(i,iccp1))
 
 1020  continue
-
 !     -----------------------------------------------------------------
 !>
 !>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145) 
