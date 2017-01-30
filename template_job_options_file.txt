@@ -41,7 +41,6 @@
  IALS = 0 ,
  IALG = 0 ,
  isnoalb = 0,
- igralb = 0,
 
  JHHSTD = 1 ,
  JHHENDD = 365 ,

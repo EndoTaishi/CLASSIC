@@ -17,33 +17,33 @@ C!
      9                   THFCGAT,THLWGAT,PSIWGAT,DLZWGAT,ZBTWGAT,
      A                   VMODGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,TACGAT, 
      B                   QACGAT, DRNGAT, XSLPGAT,GRKFGAT,WFSFGAT,
-     C                   WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT,ALGDNGAT,
-     +                   ALGWGAT,ALGDGAT,ASVDGAT,ASIDGAT,AGVDGAT,
-     D                  AGIDGAT,ISNDGAT,RADJGAT,ZBLDGAT,Z0ORGAT,
-     E                  ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT, FSVHGAT,
-     F                   FSIHGAT,FSDBGAT,FSFBGAT,FSSBGAT,CSZGAT,        
-     +                   FSGGAT, FLGGAT, FDLGAT, ULGAT,  VLGAT,         
-     G                  TAGAT,  QAGAT,  PRESGAT,PREGAT, PADRGAT,
-     H                  VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,
-     I                  SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,
-     J                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,
-     K                   ILMOS,JLMOS,
-     L                   NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS,               
-     M                  TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,
-     N                  TBASROT,ALBSROT,TSNOROT,RHOSROT,SNOROT, 
-     O                  TCANROT,RCANROT,SCANROT,GROROT, CMAIROT,
-     P                  FCANROT,LNZ0ROT,ALVCROT,ALICROT,PAMXROT,
-     Q                  PAMNROT,CMASROT,ROOTROT,RSMNROT,QA50ROT,
-     R                  VPDAROT,VPDBROT,PSGAROT,PSGBROT,PAIDROT,
-     S                  HGTDROT,ACVDROT,ACIDROT,TSFSROT,WSNOROT,
-     T                  THPROT, THRROT, THMROT, BIROT,  PSISROT,
-     U                  GRKSROT,THRAROT,HCPSROT,TCSROT, IGDRROT,
-     V                   THFCROT,THLWROT,PSIWROT,DLZWROT,ZBTWROT,
-     W                   VMODL,  ZSNLROT,ZPLGROT,ZPLSROT,TACROT, 
-     X                   QACROT, DRNROT, XSLPROT,GRKFROT,WFSFROT,
-     Y                   WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,
-     =                   ALGWROT,ALGDROT,ASVDROT,ASIDROT,AGVDROT,    
-     Z                  AGIDROT,ISNDROT,RADJ   ,ZBLDROW,Z0ORROW,
+     C                   WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT,
+     D                   ALGDNGAT,ASVDGAT,ASIDGAT,AGVDGAT,
+     E                   AGIDGAT,ISNDGAT,RADJGAT,ZBLDGAT,Z0ORGAT,       
+     F                   ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT, FSVHGAT,       
+     G                   FSIHGAT,FSDBGAT,FSFBGAT,FSSBGAT,CSZGAT,        
+     H                   FSGGAT, FLGGAT, FDLGAT, ULGAT,  VLGAT,         
+     I                   TAGAT,  QAGAT,  PRESGAT,PREGAT, PADRGAT,       
+     J                   VPDGAT, TADPGAT,RHOAGAT,RPCPGAT,TRPCGAT,       
+     K                   SPCPGAT,TSPCGAT,RHSIGAT,FCLOGAT,DLONGAT,       
+     L                   GGEOGAT,GUSTGAT,REFGAT, BCSNGAT,DEPBGAT,       
+     M                   ILMOS,JLMOS,
+     N                   NML,NL,NT,NM,ILG,IG,IC,ICP1,NBS,               
+     O                   TBARROT,THLQROT,THICROT,TPNDROT,ZPNDROT,       
+     P                   TBASROT,ALBSROT,TSNOROT,RHOSROT,SNOROT,        
+     Q                   TCANROT,RCANROT,SCANROT,GROROT, CMAIROT,       
+     R                   FCANROT,LNZ0ROT,ALVCROT,ALICROT,PAMXROT,       
+     S                   PAMNROT,CMASROT,ROOTROT,RSMNROT,QA50ROT,       
+     T                   VPDAROT,VPDBROT,PSGAROT,PSGBROT,PAIDROT,       
+     U                   HGTDROT,ACVDROT,ACIDROT,TSFSROT,WSNOROT,       
+     V                   THPROT, THRROT, THMROT, BIROT,  PSISROT,       
+     W                   GRKSROT,THRAROT,HCPSROT,TCSROT, IGDRROT,       
+     X                   THFCROT,THLWROT,PSIWROT,DLZWROT,ZBTWROT,
+     Y                   VMODL,  ZSNLROT,ZPLGROT,ZPLSROT,TACROT, 
+     Z                   QACROT, DRNROT, XSLPROT,GRKFROT,WFSFROT,
+     +                   WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT,
+     +                   ALGDNROT,ASVDROT,ASIDROT,AGVDROT,    
+     +                   AGIDROT,ISNDROT,RADJ   ,ZBLDROW,Z0ORROW,       
      +                  ZRFMROW,ZRFHROW,ZDMROW, ZDHROW, FSVHROW,
      +                   FSIHROW,FSDBROL,FSFBROL,FSSBROL,CSZROW,        
      +                   FSGROL, FLGROL, FDLROL, ULROW,  VLROW,         
@@ -52,8 +52,11 @@ C!
      +                  SPCPROW,TSPCROW,RHSIROW,FCLOROW,DLONROW,
      +                  GGEOROW,GUSTROL,REFROT, BCSNROT,DEPBROW )
 
-C     * Dec 30, 2014 - D.Verseghy. Re-introduce ALGW,ALGD.
-C     * Aug 19, 2014 - M.Lazare. New version called by "sfcproc2":      
+C                                                                       
+C     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT,ASVDROT,
+C     *                        ASIDROT TO NLAT,NMOS (FOR LAKE MODEL)
+C     * Jan 16, 2015 - M.Lazare. New version called by "sfcproc3":      
+C     *                          - Add THLW.
 C     *                          - {ALGWV,ALGWN,ALGDV,ALGDN} replace    
 C     *                            {ALGW,ALGD}.                         
 C     *                          - FSG,FLG,GUST added.                  
@@ -125,7 +128,7 @@ C
       REAL TACROT (NL,NT)   !<Temperature of air within vegetation canopy [K]
       REAL QACROT (NL,NT)   !<Specific humidity of air within vegetation 
                             !!canopy \f$[kg kg^{-1}]\f$
-      REAL WSNOROT(NL,NT)   !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
+      REAL WSNOROT(NL,NM)   !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
       REAL REFROT(NL,NM)    !
       REAL BCSNROT(NL,NM)   !
 C
@@ -239,12 +242,10 @@ C
       REAL ALGWNROT(NL,NT)      !
       REAL ALGDVROT(NL,NT)      !
       REAL ALGDNROT(NL,NT)      !
-      REAL ALGWROT(NL,NT)       !<Reference albedo for saturated soil [ ]
-      REAL ALGDROT(NL,NT)       !<Reference albedo for dry soil [ ]
-      REAL ASVDROT(NL,NT)       !<Optional user-specified value of snow 
+      REAL ASVDROT(NL,NM)       !<Optional user-specified value of snow 
                                 !!visible albedo to override CLASS-
                                 !!calculated value [ ]
-      REAL ASIDROT(NL,NT)       !<Optional user-specified value of snow 
+      REAL ASIDROT(NL,NM)       !<Optional user-specified value of snow 
                                 !!near-infrared albedo to override CLASS-
                                 !!calculated value [ ]
       REAL AGVDROT(NL,NT)       !<Optional user-specified value of ground 
@@ -271,7 +272,6 @@ C
      5        DRNGAT (ILG),      XSLPGAT(ILG),      GRKFGAT(ILG),
      6        WFSFGAT(ILG),      WFCIGAT(ILG),      ALGWVGAT(ILG),      
      7        ALGWNGAT(ILG),     ALGDVGAT(ILG),     ALGDNGAT(ILG),      
-     +        ALGWGAT(ILG),      ALGDGAT(ILG),
      8        ASVDGAT(ILG),      ASIDGAT(ILG),                          
      9        AGVDGAT(ILG),      AGIDGAT(ILG),      ZSNLGAT(ILG),       
      A        ZPLGGAT(ILG),      ZPLSGAT(ILG)                           
@@ -368,23 +368,21 @@ C----------------------------------------------------------------------
           GROGAT (K)=GROROT (ILMOS(K),JLMOS(K))  
           CMAIGAT(K)=CMAIROT(ILMOS(K),JLMOS(K))  
           DRNGAT (K)=DRNROT (ILMOS(K),JLMOS(K))  
-c         XSLPGAT(K)=XSLPROT(ILMOS(K),JLMOS(K))  
-c         GRKFGAT(K)=GRKFROT(ILMOS(K),JLMOS(K))  
-c         WFSFGAT(K)=WFSFROT(ILMOS(K),JLMOS(K))  
-c         WFCIGAT(K)=WFCIROT(ILMOS(K),JLMOS(K))  
+          XSLPGAT(K)=XSLPROT(ILMOS(K),JLMOS(K))                         
+          GRKFGAT(K)=GRKFROT(ILMOS(K),JLMOS(K))                         
+          WFSFGAT(K)=WFSFROT(ILMOS(K),JLMOS(K))                         
+          WFCIGAT(K)=WFCIROT(ILMOS(K),JLMOS(K))                         
           ALGWVGAT(K)=ALGWVROT(ILMOS(K),JLMOS(K))                       
           ALGWNGAT(K)=ALGWNROT(ILMOS(K),JLMOS(K))                       
           ALGDVGAT(K)=ALGDVROT(ILMOS(K),JLMOS(K))                       
           ALGDNGAT(K)=ALGDNROT(ILMOS(K),JLMOS(K))                       
-          ALGWGAT(K)=ALGWROT(ILMOS(K),JLMOS(K))  
-          ALGDGAT(K)=ALGDROT(ILMOS(K),JLMOS(K))  
-c         ASVDGAT(K)=ASVDROT(ILMOS(K),JLMOS(K))  
-c         ASIDGAT(K)=ASIDROT(ILMOS(K),JLMOS(K))  
-c         AGVDGAT(K)=AGVDROT(ILMOS(K),JLMOS(K))  
-c         AGIDGAT(K)=AGIDROT(ILMOS(K),JLMOS(K))  
+          ASVDGAT(K)=ASVDROT(ILMOS(K),JLMOS(K))                         
+          ASIDGAT(K)=ASIDROT(ILMOS(K),JLMOS(K))                         
+          AGVDGAT(K)=AGVDROT(ILMOS(K),JLMOS(K))                         
+          AGIDGAT(K)=AGIDROT(ILMOS(K),JLMOS(K))                         
           ZSNLGAT(K)=ZSNLROT(ILMOS(K),JLMOS(K))  
-c         ZPLGGAT(K)=ZPLGROT(ILMOS(K),JLMOS(K))  
-c         ZPLSGAT(K)=ZPLSROT(ILMOS(K),JLMOS(K))  
+          ZPLGGAT(K)=ZPLGROT(ILMOS(K),JLMOS(K))                         
+          ZPLSGAT(K)=ZPLSROT(ILMOS(K),JLMOS(K))                         
           TACGAT (K)=TACROT (ILMOS(K),JLMOS(K))  
           QACGAT (K)=QACROT (ILMOS(K),JLMOS(K))  
           IGDRGAT(K)=IGDRROT(ILMOS(K),JLMOS(K))
@@ -467,10 +465,10 @@ C
           VPDBGAT(K,L)=VPDBROT(ILMOS(K),JLMOS(K),L)
           PSGAGAT(K,L)=PSGAROT(ILMOS(K),JLMOS(K),L)
           PSGBGAT(K,L)=PSGBROT(ILMOS(K),JLMOS(K),L)
-c         PAIDGAT(K,L)=PAIDROT(ILMOS(K),JLMOS(K),L)
-c         HGTDGAT(K,L)=HGTDROT(ILMOS(K),JLMOS(K),L)
-c         ACVDGAT(K,L)=ACVDROT(ILMOS(K),JLMOS(K),L)
-c         ACIDGAT(K,L)=ACIDROT(ILMOS(K),JLMOS(K),L)
+          PAIDGAT(K,L)=PAIDROT(ILMOS(K),JLMOS(K),L)                     
+          HGTDGAT(K,L)=HGTDROT(ILMOS(K),JLMOS(K),L)                     
+          ACVDGAT(K,L)=ACVDROT(ILMOS(K),JLMOS(K),L)                     
+          ACIDGAT(K,L)=ACIDROT(ILMOS(K),JLMOS(K),L)                     
           TSFSGAT(K,L)=TSFSROT(ILMOS(K),JLMOS(K),L)
 400   CONTINUE
 

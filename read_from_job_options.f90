@@ -73,7 +73,7 @@ subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ct
                   ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
                   setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
                   compete,inibioclim,start_bare,rsfile,start_from_rs,leap,jmosty,idisp,izref, &
-                  islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,& 
+                  islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,jhhstd,&
                   jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
 !#ifdef nagf95
@@ -82,7 +82,10 @@ subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ct
 
 !       History:
 !
-!     9 Nov 2016     - Add the "leap" switch for leap years (.TRUE. if leap years 
+!     10 Jan 2017    - igralb no longer supported so removed
+!     J. Melton
+!
+!     9 Nov 2016     - Add the "leap" switch for leap years (.TRUE. if leap years
 !     J.-S. Landry     in the .MET file have data for 366 days, .FALSE. if not) 
 !
 !     28  Jul  2016  - Add ability to have changing CO2 but cycling climate
@@ -316,10 +319,6 @@ integer, intent(out) :: jdendy  !< simulation year (iyear) to stop writing the d
 integer, intent(out) :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.  
                                 !< if it is set to 1, the new four-band routines are used.
 
-integer, intent(out) :: igralb  !< if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of 
-                                !< soil texture.  if it is set to 1, they are assigned values based on the ncar clm soil "colour"  dataset.
-
-
 ! -------------
 
 namelist /joboptions/ &
@@ -363,7 +362,6 @@ namelist /joboptions/ &
   IALS,               &
   IALG,               &
   isnoalb,            &
-  igralb,             & 
   jhhstd,             &
   jhhendd,            &
   jdstd,              &

@@ -8,6 +8,11 @@
      1                   NML,NMW,GCROW,FAREA,MOSID,
      2                   NL,NM,ILG,IL1,IL2,IM)
 C
+C     * JAN 12/17 - D.VERSEGHY. NOTE: THIS VERSION OF GATPREP
+C     *                         IS DESIGNED SPECIFICALLY FOR LAND.
+C     *                         THE VERSION CURRENTLY USED IN THE AGCM
+C     *                         (SINCE JAN. 2014) HAS BEEN GENERALIZED 
+C     *                         FOR LAND, LAKES AND WATER/ICE.
 C     * DEC 28/11 - D.VERSEGHY. CHANGE ILGM BACK TO ILG AND
 C     *                         ILG TO NL FOR CONSISTENCY WITH
 C     *                         BOTH STAND-ALONE AND GCM

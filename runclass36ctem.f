@@ -141,7 +141,6 @@ C
       INTEGER ITC    !<Flag to select iteration scheme for canopy temperature
       INTEGER ITCG   !<Flag to select iteration scheme for surface under canopy
       INTEGER isnoalb!<
-      INTEGER igralb !<
 
       INTEGER NLTEST  !<Number of grid cells being modelled for this run
       INTEGER NMTEST  !<Number of mosaic tiles per grid cell being modelled for this run
@@ -263,10 +262,6 @@ C
       REAL,DIMENSION(NLAT,NMOS)      :: AGIDROT !<
       REAL,DIMENSION(ILG)            :: AGVDGAT !<Optional user-specified value of ground visible albedo to override CLASS-calculated value [ ]
       REAL,DIMENSION(NLAT,NMOS)      :: AGVDROT !<
-      REAL,DIMENSION(ILG)            :: ALGDGAT !<Reference albedo for dry soil [ ]
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGDROT !<
-      REAL,DIMENSION(ILG)            :: ALGWGAT !<Reference albedo for saturated soil [ ]
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGWROT !<
       REAL,DIMENSION(ILG,ICP1)       :: ALICGAT !<Background average near-infrared albedo of vegetation category [ ]
       REAL,DIMENSION(NLAT,NMOS,ICP1) :: ALICROT !<
       REAL,DIMENSION(ILG,ICP1)       :: ALVCGAT !<Background average visible albedo of vegetation category [ ]
@@ -2062,7 +2057,7 @@ c     all model switches are read in from a namelist file
      4             parallelrun,dofire,dowetlands,obswetf,compete,
      5             inibioclim,start_bare,rsfile,start_from_rs,leap,
      6             jmosty,idisp,izref,islfd,ipcp,itc,itcg,itg,iwf,ipai,
-     7             ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,jhhendd,
+     7             ihgt,ialc,ials,ialg,isnoalb,jhhstd,jhhendd,
      8             jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
 
@@ -2586,11 +2581,11 @@ c     initialize accumulated array for monthly & yearly output for class
 
       CALL CLASSB(THPROT,THRROT,THMROT,BIROT,PSISROT,GRKSROT,
      1            THRAROT,HCPSROT,TCSROT,THFCROT,THLWROT,PSIWROT,
-     2            DLZWROT,ZBTWROT,ALGWROT,ALGDROT,
+     2            DLZWROT,ZBTWROT,
      +            ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,
      3            SANDROT,CLAYROT,ORGMROT,SOCIROT,DELZ,ZBOT,
      4            SDEPROT,ISNDROT,IGDRROT,
-     5            NLAT,NMOS,1,NLTEST,NMTEST,IGND,IGRALB)
+     5            NLAT,NMOS,1,NLTEST,NMTEST,IGND)
 
 5010  FORMAT(2X,6A4)
 5020  FORMAT(5F10.2,F7.1,3I5)
@@ -3302,8 +3297,8 @@ C
      9             THFCGAT,THLWGAT,PSIWGAT,DLZWGAT,ZBTWGAT,
      A             VMODGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,TACGAT,
      B             QACGAT,DRNGAT, XSLPGAT,GRKFGAT,WFSFGAT,
-     C             WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT,ALGDNGAT,
-     +             ALGWGAT,ALGDGAT,ASVDGAT,ASIDGAT,AGVDGAT,
+     C             WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT,
+     +             ALGDNGAT,ASVDGAT,ASIDGAT,AGVDGAT,
      D             AGIDGAT,ISNDGAT,RADJGAT,ZBLDGAT,Z0ORGAT,
      E             ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT, FSVHGAT,
      F             FSIHGAT,FSDBGAT,FSFBGAT,FSSBGAT,CSZGAT,
@@ -3326,8 +3321,8 @@ C
      V             THFCROT,THLWROT,PSIWROT,DLZWROT,ZBTWROT,
      W             VMODROW,ZSNLROT,ZPLGROT,ZPLSROT,TACROT,
      X             QACROT,DRNROT, XSLPROT,GRKFROT,WFSFROT,
-     Y             WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,
-     +             ALGWROT,ALGDROT,ASVDROT,ASIDROT,AGVDROT,
+     Y             WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT,
+     +             ALGDNROT,ASVDROT,ASIDROT,AGVDROT,
      Z             AGIDROT,ISNDROT,RADJROW,ZBLDROW,Z0ORROW,
      +             ZRFMROW,ZRFHROW,ZDMROW, ZDHROW, FSVHROW,
      +             FSIHROW,FSDBROL,FSFBROL,FSSBROL,CSZROW,
@@ -3545,7 +3540,7 @@ C
      C                FCANGAT,LNZ0GAT,ALVCGAT,ALICGAT,PAMXGAT,PAMNGAT,
      D                CMASGAT,ROOTGAT,RSMNGAT,QA50GAT,VPDAGAT,VPDBGAT,
      E                PSGAGAT,PSGBGAT,PAIDGAT,HGTDGAT,ACVDGAT,ACIDGAT,
-     F                ASVDGAT,ASIDGAT,AGVDGAT,AGIDGAT,ALGWGAT,ALGDGAT,
+     F                ASVDGAT,ASIDGAT,AGVDGAT,AGIDGAT,
      +                ALGWVGAT,ALGWNGAT,ALGDVGAT,ALGDNGAT,
      G                THLQGAT,THICGAT,TBARGAT,RCANGAT,SCANGAT,TCANGAT,
      H                GROGAT, SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,ZBLDGAT,
@@ -3561,7 +3556,7 @@ C
      R                IDAY,   ILG,    1,      NML,  NBS,
      N                JLAT,N, ICAN,   ICAN+1, IGND,   IDISP,  IZREF,
      O                IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     P                ISNOALB,IGRALB, alvsctmgat,alirctmgat )
+     P                ISNOALB,alvsctmgat,alirctmgat )
 C
 C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.

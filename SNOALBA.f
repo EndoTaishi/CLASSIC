@@ -9,6 +9,7 @@ C!
      3                   ALVSG, ALIRG,                                  
      4                   ILG,IG,IL1,IL2,JL,IALS,NBS,ISNOALB)            
 C
+C     * JAN 27/16 - D.VERSEGHY. REFINE CALCULATIONS OF ALVSSN AND ALIRSN.
 C     * NOV 16/13 - J.COLE.     Final version for gcm17:                
 C     *                         - Fixes to get the proper BC mixing ratio in 
 C     *                           snow, which required passing in and using  
@@ -161,11 +162,11 @@ C------------------------------------------------------------------
          IF(ALBSNO(I).LT.0.50.AND.ALBSNO(I).GT.0.499) ALBSNO(I)=0.50                      
          IF(FSNOW(I).GT.0.0 .AND. IALS.EQ.0)              THEN  
              IF(ALBSNO(I).GT.0.70)                    THEN
-                 ALVSSN(I)=0.79*(ALBSNO(I)-0.70)+0.84                                         
-                 ALIRSN(I)=1.21*(ALBSNO(I)-0.70)+0.56                                         
+                 ALVSSN(I)=0.7857*ALBSNO(I)+0.2900
+                 ALIRSN(I)=1.2142*ALBSNO(I)-0.2900
              ELSE
-                 ALVSSN(I)=0.97*(ALBSNO(I)-0.50)+0.62                                         
-                 ALIRSN(I)=1.03*(ALBSNO(I)-0.50)+0.38                                         
+                 ALVSSN(I)=0.9706*ALBSNO(I)+0.1347
+                 ALIRSN(I)=1.0294*ALBSNO(I)-0.1347
              ENDIF
              IF(ALVSSN(I).GT.0.999.OR.ALVSSN(I).LT.0.001) IPTBAD=I
              IF(ALIRSN(I).GT.0.999.OR.ALIRSN(I).LT.0.001) IPTBAD=I
