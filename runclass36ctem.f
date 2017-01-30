@@ -372,7 +372,7 @@ C
       REAL,DIMENSION(ILG)            :: ALGDVGAT !<
       REAL,DIMENSION(ILG)            :: ALGDNGAT !<
       REAL,DIMENSION(ILG)            :: EMISGAT  !<
-      REAL SOCIROT(NLAT,NMOS)                    !<
+      REAL,DIMENSION(NLAT,NMOS)      :: SOCIROT  !<
 C
       REAL,DIMENSION(ILG,NBS) :: FSDBGAT !<
       REAL,DIMENSION(ILG,NBS) :: FSFBGAT !<
@@ -2415,7 +2415,7 @@ C     GGEOROW(1)=-0.035
            call XIT('runclass36ctem', -2)
           end if
           READ(10,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
-     1                  WFCIROT(I,M),MIDROT(I,M)
+     1                  WFCIROT(I,M),MIDROT(I,M),SOCIROT(I,M)
           DO 25 J=1,IGND
              READ(10,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),
      1        CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J),
@@ -2594,7 +2594,7 @@ c     initialize accumulated array for monthly & yearly output for class
 5050  FORMAT(4F10.2)
 5070  FORMAT(2F10.4,F10.2,F10.3,F10.4,F10.3)
 5080  FORMAT(2F8.2,3F10.1,3F10.3)
-5090  FORMAT(4E8.1,I8)
+5090  FORMAT(4E8.1,I8,F8.0)
 5200  FORMAT(4I10)
 5300  FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,
      1       F9.4)
@@ -5192,7 +5192,7 @@ C         THE FCANROT FOR THE RS FILE.
      1                      (PSGBROT(I,M,J),J=1,ICAN)
             WRITE(100,5040) DRNROT(I,M),SDEPROT(I,M),FAREROT(I,M)
             WRITE(100,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
-     1                      WFCIROT(I,M),MIDROT(I,M)
+     1                      WFCIROT(I,M),MIDROT(I,M),SOCIROT(I,M)
             DO J=1,IGND
              WRITE(100,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),
      1         CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J)-273.16,

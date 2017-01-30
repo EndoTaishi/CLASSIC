@@ -194,7 +194,7 @@ C
               ENDIF
               ZBOTW(I,M,J)=MAX(0.0,ZBOT(J)-DELZ(J))+DELZW(I,M,J)
 150       CONTINUE
-          IF(SAND(I,M,1).GE.-3.5) THEN                                   
+          IF(SAND(I,M,1).GE.-3.5) THEN
                 ALGWV(I,M)=ALWV(NINT(SOCI(I,M)))
                 ALGWN(I,M)=ALWN(NINT(SOCI(I,M)))
                 ALGDV(I,M)=ALDV(NINT(SOCI(I,M)))
