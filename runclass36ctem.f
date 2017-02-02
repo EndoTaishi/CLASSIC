@@ -2799,6 +2799,7 @@ c
             thliqacc_t(i,j)=0.0
             thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
             thicecacc_t(i,j)=0.0
+            thicegacc_t(i,j)=0.0 ! EC Jan 31 2017.
 112      continue
 123    continue
 c
@@ -3413,6 +3414,8 @@ c         pfcancmx value is also the nfcancmx value.
 
           endif ! lnduseon/cyclemet
 
+          pddrow=0 ! EC Jan 31 2017.
+
       endif   ! at the first day of each year i.e.
 c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
 
@@ -3858,6 +3861,7 @@ c
              ! (otherwise causes a floating exception at line 863 of peatlands_mod).
              thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j) ! Not used elsewhere, so assume replacement for thlqaccgat_m
              thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j) ! New.
+             thicegacc_t(i,j)=thicegacc_t(i,j)+thiceg(i,j)    ! EC Jan 31 2017. 
 710       continue
 c
           do 713 j = 1, icc
@@ -3933,6 +3937,7 @@ c
               thliqcacc_t(i,j)=thliqcacc_t(i,j)/real(nday)
               thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
               thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
+              thicegacc_t(i,j)=thicegacc_t(i,j)/real(nday) ! EC Jan 31 2017.
               thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday) ! Assume this replaces YW's thlqaccgat_m.
               thiceacc_t(i,j)=thiceacc_t(i,j)/real(nday) ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
 831         continue
@@ -4087,14 +4092,22 @@ c
      5          nppmossgat, armossgat,peatdepgat)
 !    4          THFCGAT, THLWGAT, thlqaccgat_m, thicaccgat_m,
 c
-
+c    ----------calculate degree days for mosspht Vmax seasonality------
+       do   i = 1, nml
+          ! Do this here instead of inside mosspht (only once per day). EC Jan 31 2017.
+          !if (iday == 2)    then
+          !     pddgat(i) = 0.
+          !elseif (taaccgat_t(i)>tfrez)           then
+          if (taaccgat_t(i)>tfrez)           then
+               pddgat(i)=pddgat(i)+taaccgat_t(i)-tfrez
+          endif
 c----------------update peatland bottom layer depth--------------------       
-          do   i = 1, nml                              !FLAG JM - I comment this out for now. I don't think this is what we want.
+!         do   i = 1, nml                              !FLAG JM - I comment this out for now. I don't think this is what we want.
            if (ipeatlandgat(i) > 0)         then
                dlzwgat(i,ignd)= peatdepgat(i)-0.90
                sdepgat(i) = peatdepgat(i)
            endif
-          end do
+       end do
 c================YW August 26, 2015 =======================/ 
 c
 
@@ -5347,9 +5360,9 @@ c            --------reset peatland accumulators-------------------------------
 !            gppmossac_t = 0.0
 !            G12ACC     = 0.
 !            G23ACC     = 0.
-             if (iday == 365) then
-                pddrow     = 0.
-             end if
+!            if (iday == 365) then
+!               pddrow     = 0.
+!            end if
 c            ----------------YW March 27, 2015 -------------------------------/
 c     CTEM output and write out
 

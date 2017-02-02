@@ -424,14 +424,15 @@ COMMON /CLASS4/ x1,x2,x3,x4,x5,x6, &      ! EC Jan 24 2017.
 ! ...........................
 ! Begin calculations:
 
-! Do the
-do   i = il1, il2
-    if (iday == 2)    then
-        pdd(i) = 0.
-    elseif (tsurfk(i)>tfrez)           then
-        pdd(i)=pdd(i)+(tsurfk(i)-tfrez)*DELT/86400.
-    endif
-end do
+! Move this back to driver, otherwise this is computed at each time step 
+! and potentially over each of the 4 subareas as well. EC Jan 31 2017.
+!do   i = il1, il2
+!    if (iday == 2)    then
+!        pdd(i) = 0.
+!    elseif (tsurfk(i)>tfrez)           then
+!        pdd(i)=pdd(i)+(tsurfk(i)-tfrez)*DELT/86400.
+!    endif
+!end do
 
 !     PHOTOSYNTHESIS COUPLING OR CURVATURE COEFFICIENTS
 !real, parameter :: BETA1 = 0.950
