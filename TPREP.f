@@ -696,20 +696,30 @@ C
               TCBOTC(I,J)=TCSAND
               TCBOTG(I,J)=TCSAND
           ELSEIF(ISAND(I,J).EQ.-2)                          THEN 
-              IF(J.EQ.IG .AND. (THLIQG(I,J)+THICEG(I,J)).LT.
-     1            (THPOR(I,J)-0.01)) IWTABL(I)=1
-              IF(IWTABL(I).EQ.0)                               THEN !YW
-                  IF ((THLIQG(I,J)+THICEG(I,J)).GT.(THPOR(I,J)-0.01))
-     1                                                 THEN 
-                      WTABLE(I)=ZBOTW(I,J)-DELZW(I,J)
-                  ELSEIF (WTABLE(I).LT.9000.0)             THEN
-                      WTABLE(I)=ZBOTW(I,J)-DELZW(I,J)*MIN(1.0,
-     1                          (THLIQG(I,J)+THICEG(I,J)-THLRET(I,J))/
-     2                          (THPOR(I,J)-THLRET(I,J)))
-                      IWTABL(I)=1
-                  ENDIF          
+!             FLAG - Needs to be reviewed.   EC Feb 03 2017.
+!                    For some peatland cases, thliqg+thiceg > thpor-0.01 at bottom layer
+!                    and wtable remains 9999, causing wrong values of socres_peat
+!                    to be computed in hetres_peat, leading to crash in ctem loop 1020
+!                    during calculation of peatdep.
+!                    Testing shows that commenting out the following IF condition
+!                    produces the same WTABLE as YW's original code, except that the 
+!                    crash is avoided.
+!                    Removing the check for WTABLE<9000 also doesn't change the result.
+!                    This ensures that the water table is at least in the last layer.
+!             IF(J.EQ.IG .AND. (THLIQG(I,J)+THICEG(I,J)).LT.
+!    1            (THPOR(I,J)-0.01)) IWTABL(I)=1
+              IF(IWTABL(I).EQ.0)                                THEN !YW
+                IF ((THLIQG(I,J)+THICEG(I,J)).GT.(THPOR(I,J)-0.01)) THEN
+                  WTABLE(I)=ZBOTW(I,J)-DELZW(I,J)
+                !ELSEIF (WTABLE(I).LT.9000.0)             THEN    
+                ELSE
+                  WTABLE(I)=ZBOTW(I,J)-DELZW(I,J)*MIN(1.0,
+     1                      (THLIQG(I,J)+THICEG(I,J)-THLRET(I,J))/
+     2                      (THPOR(I,J)-THLRET(I,J)))
+                  IWTABL(I)=1
+                ENDIF          
               ENDIF    
-             IF (THLIQG(I,J).GT.(THLRET(I,J)+0.0001)) THEN
+              IF (THLIQG(I,J).GT.(THLRET(I,J)+0.0001)) THEN
                   SATRAT=MIN((THLRET(I,J)+THICEG(I,J))/
      1                   THPOR(I,J), 1.0)              
                   THLSAT=THLIQG(I,J)/(THLIQG(I,J)+THICEG(I,J))          
@@ -719,7 +729,7 @@ C
                   TCSATF(I)=TCICE*THPOR(I,J)+TCS(I,J)*(1.0-THPOR(I,J))
                   TCRATU=0.6*SATRAT/(1.0-0.4*SATRAT)
                   TCRATF=0.25*SATRAT/(1.0-0.75*SATRAT)
-                  TCSOLU=(TCSATU(I)-TCDRY)*TCRATU+TCDRY                              
+                  TCSOLU=(TCSATU(I)-TCDRY)*TCRATU+TCDRY
                   TCSOLF=(TCSATF(I)-TCDRY)*TCRATF+TCDRY
                   TCSOIL=TCSOLU*THLSAT+TCSOLF*THISAT
                   IF(DELZW(I,J).GT.0.0) THEN

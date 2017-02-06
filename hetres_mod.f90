@@ -567,22 +567,24 @@ do 130 i = il1, il2
                                ! ltrmoscl becomes 0.2
           else ! i.e., sand.ne.-3 or -4
 
-            !the 0.005 below prevents a divide by 0 situation.
-            psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thicec(i,j)))**(-b(i,j))
-
-!         FLAG- check on this as I had to change a fair amount what YW had, JM. Sep 21 2016.
+!           FLAG- check on this as I had to change a fair amount what YW had, JM. Sep 21 2016.
 !           Also not sure if it is needed?
-!               JM- Turn off for now, we'll see how testing looks. Nov 2016.
-!             if (ipeatland(i) >0) then
-!                 if (thliq(i,j)+ thicec(i,j)+0.01 < thpor(i,j) &
-!                    .and.  tbar(i,j) <273.16)                   then
-!                   psi(i,j) = 0.001
-!                 elseif (thicec(i,j) > thpor(i,j))    then
-!                   psi(i,j) = 0.001   !set to saturation
-!                 !else
-!                     ! leave as-is.
-!                 endif
-!             endif
+!           JM - Turn off for now, we'll see how testing looks. Nov 2016.
+!           EC - Re-implemented as peatland testing shows that in some situations, can get an invalid operation
+!                if thpor+0.005-thicec < 0. Note: same approach as in hetres_peat.  Feb 06 2017.
+
+            if (ipeatland(i) >0) then
+                if ( thliq(i,j)+thicec(i,j)+0.01 < thpor(i,j) .and. tbar(i,j) < 273.16 ) then
+                  psi(i,j) = 0.001
+                elseif ( thicec(i,j) > thpor(i,j) ) then
+                  psi(i,j) = 0.001   !set to saturation
+                else
+                  psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thicec(i,j)))**(-b(i,j))
+                endif
+            else
+              ! the 0.005 below prevents a divide by 0 situation.
+              psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thicec(i,j)))**(-b(i,j))
+            endif
 
             if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2
