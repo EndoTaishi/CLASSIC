@@ -690,21 +690,14 @@ contains
 
 !=================================================================================
 
-subroutine alloc_class_vars(nlat,nmos,ignd)
+subroutine alloc_class_vars()
 
-use ctem_params, only : ican, nbs, icp1
+use ctem_params, only : ican, nbs, icp1, nlat,nmos,ignd, ilg
 
 implicit none
 
-integer, intent(in) :: nlat
-integer, intent(in) :: nmos
-integer, intent(in) :: ignd
+! ------------------
 
-integer :: ilg
-
-!-----------
-
-ilg = nlat * nmos
 
 !ilg
 allocate(class_gat% ILMOS   (ilg))

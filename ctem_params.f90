@@ -82,15 +82,15 @@ real, parameter, dimension(lat+1) :: edgelat = &
                                     78.13125,80.91925,83.7047,86.48015,90.0 ]
 ! ----
 ! Model state
-integer, parameter :: nlat = 1         !
-integer, parameter :: nmos = 10        !< Number of mosaic tiles
-integer, parameter :: ilg  = nlat*nmos !
+integer :: nlat = 1       !< Number of cells we are running
+integer :: nmos = 10       !< Number of mosaic tiles
+integer :: ilg = 20
+integer :: ignd = 10        !< Number of soil layers
 
 ! ----
 ! Plant-related
 
 integer, parameter :: ican        = 4        !< Number of CLASS pfts
-integer, parameter :: ignd        = 20        !< Number of soil layers
 integer, parameter :: icp1        = ican + 1 !
 integer,parameter  :: icc         = 9        !< Number of CTEM pfts
 integer,parameter  :: iccp1       = icc + 1  !

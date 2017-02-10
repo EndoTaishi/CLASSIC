@@ -641,81 +641,71 @@ type veg_gat
 
 end type veg_gat
 
-type (veg_gat), save, target :: vgat
+type (veg_gat), allocatable, save, target :: vgat
 !=================================================================================
 !>CLASS's monthly outputs
 type class_moyr_output
 
 !   MONTHLY OUTPUT FOR CLASS GRID-MEAN
 
+! allocated with nlat:
+    real, allocatable, dimension(:) :: ALVSACC_MO   !<
+    real, allocatable, dimension(:) :: ALIRACC_MO   !<
+    real, allocatable, dimension(:) :: FLUTACC_MO   !<
+    real, allocatable, dimension(:) :: FSINACC_MO   !<
+    real, allocatable, dimension(:) :: FLINACC_MO   !<
+    real, allocatable, dimension(:) :: HFSACC_MO    !<
+    real, allocatable, dimension(:) :: QEVPACC_MO   !<
+    real, allocatable, dimension(:) :: SNOACC_MO    !<
+    real, allocatable, dimension(:) :: WSNOACC_MO   !<
+    real, allocatable, dimension(:) :: ROFACC_MO    !<
+    real, allocatable, dimension(:) :: PREACC_MO    !<
+    real, allocatable, dimension(:) :: EVAPACC_MO   !<
+    real, allocatable, dimension(:) :: TRANSPACC_MO !<
+    real, allocatable, dimension(:) :: TAACC_MO     !<
+    real, allocatable, dimension(:) :: ACTLYR_MO
+    real, allocatable, dimension(:) :: FTABLE_MO
+    real, allocatable, dimension(:) :: ACTLYR_MIN_MO
+    real, allocatable, dimension(:) :: ACTLYR_MAX_MO
+    real, allocatable, dimension(:) :: FTABLE_MIN_MO
+    real, allocatable, dimension(:) :: FTABLE_MAX_MO
+    real, allocatable, dimension(:) :: ALTOTACC_MO  !< Broadband albedo
+    real, allocatable, dimension(:) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
+    real, allocatable, dimension(:) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
+    integer, allocatable, dimension(:) :: altotcntr_m!< Used to count the number of time steps with the sun above the horizon
 
-    real, dimension(nlat) :: ALVSACC_MO   !<
-    real, dimension(nlat) :: ALIRACC_MO   !<
-    real, dimension(nlat) :: FLUTACC_MO   !<
-    real, dimension(nlat) :: FSINACC_MO   !<
-    real, dimension(nlat) :: FLINACC_MO   !<
-    real, dimension(nlat) :: HFSACC_MO    !<
-    real, dimension(nlat) :: QEVPACC_MO   !<
-    real, dimension(nlat) :: SNOACC_MO    !<
-    real, dimension(nlat) :: WSNOACC_MO   !<
-    real, dimension(nlat) :: ROFACC_MO    !<
-    real, dimension(nlat) :: PREACC_MO    !<
-    real, dimension(nlat) :: EVAPACC_MO   !<
-    real, dimension(nlat) :: TRANSPACC_MO !<
-    real, dimension(nlat) :: TAACC_MO     !<
-    real, dimension(nlat) :: ACTLYR_MO
-    real, dimension(nlat) :: FTABLE_MO
-    real, dimension(nlat) :: ACTLYR_MIN_MO
-    real, dimension(nlat) :: ACTLYR_MAX_MO
-    real, dimension(nlat) :: FTABLE_MIN_MO
-    real, dimension(nlat) :: FTABLE_MAX_MO
-    real, dimension(nlat) :: ALTOTACC_MO  !< Broadband albedo
-    real, dimension(nlat) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
-    real, dimension(nlat) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
-    integer, dimension(nlat) :: altotcntr_m!< Used to count the number of time steps with the sun above the horizon
-
-    real :: FSSTAR_MO !<
-    real :: FLSTAR_MO !<
-    real :: QH_MO     !<
-    real :: QE_MO     !<
-
-    real, dimension(nlat,ignd) :: TBARACC_MO !<
-    real, dimension(nlat,ignd) :: THLQACC_MO !<
-    real, dimension(nlat,ignd) :: THICACC_MO !<
+! allocated with nlat,ignd:
+    real, allocatable, dimension(:,:) :: TBARACC_MO !<
+    real, allocatable, dimension(:,:) :: THLQACC_MO !<
+    real, allocatable, dimension(:,:) :: THICACC_MO !<
 
 !   YEARLY OUTPUT FOR CLASS GRID-MEAN
 
-    real, dimension(nlat) :: ALVSACC_YR  !<
-    real, dimension(nlat) :: ALIRACC_YR  !<
-    real, dimension(nlat) :: FLUTACC_YR  !<
-    real, dimension(nlat) :: FSINACC_YR  !<
-    real, dimension(nlat) :: FLINACC_YR  !<
-    real, dimension(nlat) :: HFSACC_YR   !<
-    real, dimension(nlat) :: QEVPACC_YR  !<
-    real, dimension(nlat) :: ROFACC_YR   !<
-    real, dimension(nlat) :: PREACC_YR   !<
-    real, dimension(nlat) :: EVAPACC_YR  !<
-    real, dimension(nlat) :: TRANSPACC_YR!<
-    real, dimension(nlat) :: TAACC_YR    !<
-    real, dimension(nlat) :: ACTLYR_YR
-    real, dimension(nlat) :: ACTLYR_MIN_YR
-    real, dimension(nlat) :: ACTLYR_MAX_YR
-    real, dimension(nlat) :: FTABLE_YR
-    real, dimension(nlat) :: FTABLE_MIN_YR
-    real, dimension(nlat) :: FTABLE_MAX_YR
-    real, dimension(nlat) :: ALTOTACC_YR !< Broadband albedo
-    integer, dimension(nlat) :: altotcntr_yr !<Used to count the number of time steps with the sun above the horizon
-
-
-    real :: FSSTAR_YR !<
-    real :: FLSTAR_YR !<
-    real :: QH_YR     !<
-    real :: QE_YR     !<
+    real, allocatable, dimension(:) :: ALVSACC_YR  !<
+    real, allocatable, dimension(:) :: ALIRACC_YR  !<
+    real, allocatable, dimension(:) :: FLUTACC_YR  !<
+    real, allocatable, dimension(:) :: FSINACC_YR  !<
+    real, allocatable, dimension(:) :: FLINACC_YR  !<
+    real, allocatable, dimension(:) :: HFSACC_YR   !<
+    real, allocatable, dimension(:) :: QEVPACC_YR  !<
+    real, allocatable, dimension(:) :: ROFACC_YR   !<
+    real, allocatable, dimension(:) :: PREACC_YR   !<
+    real, allocatable, dimension(:) :: EVAPACC_YR  !<
+    real, allocatable, dimension(:) :: TRANSPACC_YR!<
+    real, allocatable, dimension(:) :: TAACC_YR    !<
+    real, allocatable, dimension(:) :: ACTLYR_YR
+    real, allocatable, dimension(:) :: ACTLYR_MIN_YR
+    real, allocatable, dimension(:) :: ACTLYR_MAX_YR
+    real, allocatable, dimension(:) :: FTABLE_YR
+    real, allocatable, dimension(:) :: FTABLE_MIN_YR
+    real, allocatable, dimension(:) :: FTABLE_MAX_YR
+    real, allocatable, dimension(:) :: ALTOTACC_YR !< Broadband albedo
+    integer, allocatable, dimension(:) :: altotcntr_yr !<Used to count the number of time steps with the sun above the horizon
 
 
 end type class_moyr_output
 
-type (class_moyr_output), save, target :: class_out
+type (class_moyr_output), allocatable, save, target :: class_out
 
 !=================================================================================
 !>CTEM's grid average variables
@@ -723,156 +713,157 @@ type ctem_gridavg
 
 ! Grid-averaged variables (denoted with an ending of "_g")
 
-      real, dimension(nlat) :: WSNOROT_g !<
-      real, dimension(nlat) :: ROFSROT_g !<
-      real, dimension(nlat) :: SNOROT_g  !<
-      real, dimension(nlat) :: RHOSROT_g !<
-      real, dimension(nlat) :: ROFROT_g  !<
-      real, dimension(nlat) :: ZPNDROT_g !<
-      real, dimension(nlat) :: RCANROT_g !<
-      real, dimension(nlat) :: SCANROT_g !<
-      real, dimension(nlat) :: TROFROT_g !<
-      real, dimension(nlat) :: TROOROT_g !<
-      real, dimension(nlat) :: TROBROT_g !<
-      real, dimension(nlat) :: ROFOROT_g !<
-      real, dimension(nlat) :: ROFBROT_g !<
-      real, dimension(nlat) :: TROSROT_g !<
-      real, dimension(nlat) :: FSGVROT_g !<
-      real, dimension(nlat) :: FSGSROT_g !<
-      real, dimension(nlat) :: FLGVROT_g !<
-      real, dimension(nlat) :: FLGSROT_g !<
-      real, dimension(nlat) :: HFSCROT_g !<
-      real, dimension(nlat) :: HFSSROT_g !<
-      real, dimension(nlat) :: HEVCROT_g !<
-      real, dimension(nlat) :: HEVSROT_g !<
-      real, dimension(nlat) :: HMFCROT_g !<
-      real, dimension(nlat) :: HMFNROT_g !<
-      real, dimension(nlat) :: HTCSROT_g !<
-      real, dimension(nlat) :: HTCCROT_g !<
-      real, dimension(nlat) :: FSGGROT_g !<
-      real, dimension(nlat) :: FLGGROT_g !<
-      real, dimension(nlat) :: HFSGROT_g !<
-      real, dimension(nlat) :: HEVGROT_g !<
-      real, dimension(nlat) :: CDHROT_g  !<
-      real, dimension(nlat) :: CDMROT_g  !<
-      real, dimension(nlat) :: SFCUROT_g !<
-      real, dimension(nlat) :: SFCVROT_g !<
-      real, dimension(nlat) :: ACTLYR_g
-      real, dimension(nlat) :: FTABLE_g
-      real, dimension(nlat) :: fc_g      !<
-      real, dimension(nlat) :: fg_g      !<
-      real, dimension(nlat) :: fcs_g     !<
-      real, dimension(nlat) :: fgs_g     !<
-      real, dimension(nlat) :: PCFCROT_g !<
-      real, dimension(nlat) :: PCLCROT_g !<
-      real, dimension(nlat) :: PCPGROT_g !<
-      real, dimension(nlat) :: QFCFROT_g !<
-      real, dimension(nlat) :: QFGROT_g  !<
-      real, dimension(nlat,ignd) :: QFCROT_g !<
-      real, dimension(nlat) :: ROFCROT_g  !<
-      real, dimension(nlat) :: ROFNROT_g  !<
-      real, dimension(nlat) :: WTRSROT_g  !<
-      real, dimension(nlat) :: WTRGROT_g  !<
-      real, dimension(nlat) :: PCPNROT_g  !<
-      real, dimension(nlat) :: QFCLROT_g  !<
-      real, dimension(nlat) :: QFNROT_g   !<
-      real, dimension(nlat) :: WTRCROT_g  !<
-      real, dimension(nlat) :: gpp_g      !<
-      real, dimension(nlat) :: npp_g      !<
-      real, dimension(nlat) :: nbp_g      !<
-      real, dimension(nlat) :: socres_g   !<
-      real, dimension(nlat) :: autores_g  !<
-      real, dimension(nlat) :: litres_g   !<
-      real, dimension(nlat) :: dstcemls3_g!<
-      real, dimension(nlat) :: litrfall_g !<
-      real, dimension(nlat) :: rml_g      !<
-      real, dimension(nlat) :: rms_g      !<
-      real, dimension(nlat) :: rg_g       !<
-      real, dimension(nlat) :: leaflitr_g !<
-      real, dimension(nlat) :: tltrstem_g !<
-      real, dimension(nlat) :: tltrroot_g !<
-      real, dimension(nlat) :: nep_g      !<
-      real, dimension(nlat) :: hetrores_g !<
-      real, dimension(nlat) :: dstcemls_g !<
-      real, dimension(nlat) :: humiftrs_g !<
-      real, dimension(nlat) :: rmr_g      !<
-      real, dimension(nlat) :: tltrleaf_g !<
-      real, dimension(nlat) :: gavgltms_g !<
+! allocated with nlat:
+      real, allocatable, dimension(:) :: WSNOROT_g !<
+      real, allocatable, dimension(:) :: ROFSROT_g !<
+      real, allocatable, dimension(:) :: SNOROT_g  !<
+      real, allocatable, dimension(:) :: RHOSROT_g !<
+      real, allocatable, dimension(:) :: ROFROT_g  !<
+      real, allocatable, dimension(:) :: ZPNDROT_g !<
+      real, allocatable, dimension(:) :: RCANROT_g !<
+      real, allocatable, dimension(:) :: SCANROT_g !<
+      real, allocatable, dimension(:) :: TROFROT_g !<
+      real, allocatable, dimension(:) :: TROOROT_g !<
+      real, allocatable, dimension(:) :: TROBROT_g !<
+      real, allocatable, dimension(:) :: ROFOROT_g !<
+      real, allocatable, dimension(:) :: ROFBROT_g !<
+      real, allocatable, dimension(:) :: TROSROT_g !<
+      real, allocatable, dimension(:) :: FSGVROT_g !<
+      real, allocatable, dimension(:) :: FSGSROT_g !<
+      real, allocatable, dimension(:) :: FLGVROT_g !<
+      real, allocatable, dimension(:) :: FLGSROT_g !<
+      real, allocatable, dimension(:) :: HFSCROT_g !<
+      real, allocatable, dimension(:) :: HFSSROT_g !<
+      real, allocatable, dimension(:) :: HEVCROT_g !<
+      real, allocatable, dimension(:) :: HEVSROT_g !<
+      real, allocatable, dimension(:) :: HMFCROT_g !<
+      real, allocatable, dimension(:) :: HMFNROT_g !<
+      real, allocatable, dimension(:) :: HTCSROT_g !<
+      real, allocatable, dimension(:) :: HTCCROT_g !<
+      real, allocatable, dimension(:) :: FSGGROT_g !<
+      real, allocatable, dimension(:) :: FLGGROT_g !<
+      real, allocatable, dimension(:) :: HFSGROT_g !<
+      real, allocatable, dimension(:) :: HEVGROT_g !<
+      real, allocatable, dimension(:) :: CDHROT_g  !<
+      real, allocatable, dimension(:) :: CDMROT_g  !<
+      real, allocatable, dimension(:) :: SFCUROT_g !<
+      real, allocatable, dimension(:) :: SFCVROT_g !<
+      real, allocatable, dimension(:) :: ACTLYR_g
+      real, allocatable, dimension(:) :: FTABLE_g
+      real, allocatable, dimension(:) :: fc_g      !<
+      real, allocatable, dimension(:) :: fg_g      !<
+      real, allocatable, dimension(:) :: fcs_g     !<
+      real, allocatable, dimension(:) :: fgs_g     !<
+      real, allocatable, dimension(:) :: PCFCROT_g !<
+      real, allocatable, dimension(:) :: PCLCROT_g !<
+      real, allocatable, dimension(:) :: PCPGROT_g !<
+      real, allocatable, dimension(:) :: QFCFROT_g !<
+      real, allocatable, dimension(:) :: QFGROT_g  !<
+      real, allocatable, dimension(:,:) :: QFCROT_g !<
+      real, allocatable, dimension(:) :: ROFCROT_g  !<
+      real, allocatable, dimension(:) :: ROFNROT_g  !<
+      real, allocatable, dimension(:) :: WTRSROT_g  !<
+      real, allocatable, dimension(:) :: WTRGROT_g  !<
+      real, allocatable, dimension(:) :: PCPNROT_g  !<
+      real, allocatable, dimension(:) :: QFCLROT_g  !<
+      real, allocatable, dimension(:) :: QFNROT_g   !<
+      real, allocatable, dimension(:) :: WTRCROT_g  !<
+      real, allocatable, dimension(:) :: gpp_g      !<
+      real, allocatable, dimension(:) :: npp_g      !<
+      real, allocatable, dimension(:) :: nbp_g      !<
+      real, allocatable, dimension(:) :: socres_g   !<
+      real, allocatable, dimension(:) :: autores_g  !<
+      real, allocatable, dimension(:) :: litres_g   !<
+      real, allocatable, dimension(:) :: dstcemls3_g!<
+      real, allocatable, dimension(:) :: litrfall_g !<
+      real, allocatable, dimension(:) :: rml_g      !<
+      real, allocatable, dimension(:) :: rms_g      !<
+      real, allocatable, dimension(:) :: rg_g       !<
+      real, allocatable, dimension(:) :: leaflitr_g !<
+      real, allocatable, dimension(:) :: tltrstem_g !<
+      real, allocatable, dimension(:) :: tltrroot_g !<
+      real, allocatable, dimension(:) :: nep_g      !<
+      real, allocatable, dimension(:) :: hetrores_g !<
+      real, allocatable, dimension(:) :: dstcemls_g !<
+      real, allocatable, dimension(:) :: humiftrs_g !<
+      real, allocatable, dimension(:) :: rmr_g      !<
+      real, allocatable, dimension(:) :: tltrleaf_g !<
+      real, allocatable, dimension(:) :: gavgltms_g !<
 
-      real, dimension(nlat) :: vgbiomas_g !<
-      real, dimension(nlat) :: gavglai_g  !<
-      real, dimension(nlat) :: gavgscms_g !<
-      real, dimension(nlat) :: gleafmas_g !<
-      real, dimension(nlat) :: bleafmas_g !<
-      real, dimension(nlat) :: stemmass_g !<
-      real, dimension(nlat) :: rootmass_g !<
-      real, dimension(nlat) :: litrmass_g !<
-      real, dimension(nlat) :: soilcmas_g !<
-      real, dimension(nlat) :: slai_g     !<
-      real, dimension(nlat) :: ailcg_g    !<
-      real, dimension(nlat) :: ailcb_g    !<
-      real, dimension(nlat) :: veghght_g  !<
-      real, dimension(nlat) :: rootdpth_g !<
-      real, dimension(nlat) :: roottemp_g !<
-      real, dimension(nlat) :: totcmass_g !<
-      real, dimension(nlat) :: tcanoacc_out_g!<
-      real, dimension(nlat) :: burnfrac_g !<
-      real, dimension(nlat) :: smfuncveg_g!<
-      real, dimension(nlat) :: lucemcom_g !<
-      real, dimension(nlat) :: lucltrin_g !<
-      real, dimension(nlat) :: lucsocin_g !<
-      real, dimension(nlat) :: emit_co2_g !<
-      real, dimension(nlat) :: emit_co_g  !<
-      real, dimension(nlat) :: emit_ch4_g !<
-      real, dimension(nlat) :: emit_nmhc_g!<
-      real, dimension(nlat) :: emit_h2_g  !<
-      real, dimension(nlat) :: emit_nox_g !<
-      real, dimension(nlat) :: emit_n2o_g !<
-      real, dimension(nlat) :: emit_pm25_g!<
-      real, dimension(nlat) :: emit_tpm_g !<
-      real, dimension(nlat) :: emit_tc_g  !<
-      real, dimension(nlat) :: emit_oc_g  !<
-      real, dimension(nlat) :: emit_bc_g  !<
-      real, dimension(nlat) :: bterm_g    !<
-      real, dimension(nlat) :: lterm_g    !<
-      real, dimension(nlat) :: mterm_g    !<
-      real, dimension(nlat) :: ch4wet1_g  !<
-      real, dimension(nlat) :: ch4wet2_g  !<
-      real, dimension(nlat) :: wetfdyn_g  !<
-      real, dimension(nlat) :: ch4dyn1_g  !<
-      real, dimension(nlat) :: ch4dyn2_g  !<
-      real, dimension(nlat) :: ch4_soills_g   !<
-      real, dimension(nlat,icc) :: afrleaf_g  !<
-      real, dimension(nlat,icc) :: afrstem_g  !<
-      real, dimension(nlat,icc) :: afrroot_g  !<
-      real, dimension(nlat,icc) :: lfstatus_g !<
-      real, dimension(nlat,icc) :: rmlvegrow_g!<
-      real, dimension(nlat,icc) :: anvegrow_g !<
-      real, dimension(nlat,ignd) :: rmatctem_g!<
-      real, dimension(nlat,ignd) :: HMFGROT_g !<
-      real, dimension(nlat,ignd) :: HTCROT_g  !<
-      real, dimension(nlat,ignd) :: TBARROT_g !<
-      real, dimension(nlat,ignd) :: THLQROT_g !<
-      real, dimension(nlat,ignd) :: THICROT_g !<
-      real, dimension(nlat,ignd) :: GFLXROT_g !<
+      real, allocatable, dimension(:) :: vgbiomas_g !<
+      real, allocatable, dimension(:) :: gavglai_g  !<
+      real, allocatable, dimension(:) :: gavgscms_g !<
+      real, allocatable, dimension(:) :: gleafmas_g !<
+      real, allocatable, dimension(:) :: bleafmas_g !<
+      real, allocatable, dimension(:) :: stemmass_g !<
+      real, allocatable, dimension(:) :: rootmass_g !<
+      real, allocatable, dimension(:) :: litrmass_g !<
+      real, allocatable, dimension(:) :: soilcmas_g !<
+      real, allocatable, dimension(:) :: slai_g     !<
+      real, allocatable, dimension(:) :: ailcg_g    !<
+      real, allocatable, dimension(:) :: ailcb_g    !<
+      real, allocatable, dimension(:) :: veghght_g  !<
+      real, allocatable, dimension(:) :: rootdpth_g !<
+      real, allocatable, dimension(:) :: roottemp_g !<
+      real, allocatable, dimension(:) :: totcmass_g !<
+      real, allocatable, dimension(:) :: tcanoacc_out_g!<
+      real, allocatable, dimension(:) :: burnfrac_g !<
+      real, allocatable, dimension(:) :: smfuncveg_g!<
+      real, allocatable, dimension(:) :: lucemcom_g !<
+      real, allocatable, dimension(:) :: lucltrin_g !<
+      real, allocatable, dimension(:) :: lucsocin_g !<
+      real, allocatable, dimension(:) :: emit_co2_g !<
+      real, allocatable, dimension(:) :: emit_co_g  !<
+      real, allocatable, dimension(:) :: emit_ch4_g !<
+      real, allocatable, dimension(:) :: emit_nmhc_g!<
+      real, allocatable, dimension(:) :: emit_h2_g  !<
+      real, allocatable, dimension(:) :: emit_nox_g !<
+      real, allocatable, dimension(:) :: emit_n2o_g !<
+      real, allocatable, dimension(:) :: emit_pm25_g!<
+      real, allocatable, dimension(:) :: emit_tpm_g !<
+      real, allocatable, dimension(:) :: emit_tc_g  !<
+      real, allocatable, dimension(:) :: emit_oc_g  !<
+      real, allocatable, dimension(:) :: emit_bc_g  !<
+      real, allocatable, dimension(:) :: bterm_g    !<
+      real, allocatable, dimension(:) :: lterm_g    !<
+      real, allocatable, dimension(:) :: mterm_g    !<
+      real, allocatable, dimension(:) :: ch4wet1_g  !<
+      real, allocatable, dimension(:) :: ch4wet2_g  !<
+      real, allocatable, dimension(:) :: wetfdyn_g  !<
+      real, allocatable, dimension(:) :: ch4dyn1_g  !<
+      real, allocatable, dimension(:) :: ch4dyn2_g  !<
+      real, allocatable, dimension(:) :: ch4_soills_g   !<
+      real, allocatable, dimension(:,:) :: afrleaf_g  !<
+      real, allocatable, dimension(:,:) :: afrstem_g  !<
+      real, allocatable, dimension(:,:) :: afrroot_g  !<
+      real, allocatable, dimension(:,:) :: lfstatus_g !<
+      real, allocatable, dimension(:,:) :: rmlvegrow_g!<
+      real, allocatable, dimension(:,:) :: anvegrow_g !<
+      real, allocatable, dimension(:,:) :: rmatctem_g!<
+      real, allocatable, dimension(:,:) :: HMFGROT_g !<
+      real, allocatable, dimension(:,:) :: HTCROT_g  !<
+      real, allocatable, dimension(:,:) :: TBARROT_g !<
+      real, allocatable, dimension(:,:) :: THLQROT_g !<
+      real, allocatable, dimension(:,:) :: THICROT_g !<
+      real, allocatable, dimension(:,:) :: GFLXROT_g !<
 
-      real, dimension(nlat) :: fsstar_g !<
-      real, dimension(nlat) :: flstar_g !<
-      real, dimension(nlat) :: qh_g     !<
-      real, dimension(nlat) :: qe_g     !<
-      real, dimension(nlat) :: snomlt_g !<
-      real, dimension(nlat) :: beg_g    !<
-      real, dimension(nlat) :: gtout_g  !<
-      real, dimension(nlat) :: tpn_g    !<
-      real, dimension(nlat) :: altot_g  !<
-      real, dimension(nlat) :: tcn_g    !<
-      real, dimension(nlat) :: tsn_g    !<
-      real, dimension(nlat) :: zsn_g    !<
+      real, allocatable, dimension(:) :: fsstar_g !<
+      real, allocatable, dimension(:) :: flstar_g !<
+      real, allocatable, dimension(:) :: qh_g     !<
+      real, allocatable, dimension(:) :: qe_g     !<
+      real, allocatable, dimension(:) :: snomlt_g !<
+      real, allocatable, dimension(:) :: beg_g    !<
+      real, allocatable, dimension(:) :: gtout_g  !<
+      real, allocatable, dimension(:) :: tpn_g    !<
+      real, allocatable, dimension(:) :: altot_g  !<
+      real, allocatable, dimension(:) :: tcn_g    !<
+      real, allocatable, dimension(:) :: tsn_g    !<
+      real, allocatable, dimension(:) :: zsn_g    !<
 
 
 end type ctem_gridavg
 
-type (ctem_gridavg), save, target :: ctem_grd
+type (ctem_gridavg), allocatable, save, target :: ctem_grd
 
 !=================================================================================
 !>CTEM's variables per tile
@@ -880,67 +871,72 @@ type ctem_tile_level
 
 !   Tile-level variables (denoted by an ending of "_t")
 
-      real, dimension(nlat,nmos) :: leaflitr_t !<
-      real, dimension(nlat,nmos) :: tltrleaf_t !<
-      real, dimension(nlat,nmos) :: tltrstem_t !<
-      real, dimension(nlat,nmos) :: tltrroot_t !<
-      real, dimension(nlat,nmos) :: ailcg_t    !<
-      real, dimension(nlat,nmos) :: ailcb_t    !<
-      real, dimension(nlat,nmos,ignd) :: rmatctem_t !<
-      real, dimension(nlat,nmos) :: veghght_t  !<
-      real, dimension(nlat,nmos) :: rootdpth_t !<
-      real, dimension(nlat,nmos) :: roottemp_t !<
-      real, dimension(nlat,nmos) :: slai_t     !<
-      real, dimension(nlat,nmos) :: afrroot_t  !<
-      real, dimension(nlat,nmos) :: afrleaf_t  !<
-      real, dimension(nlat,nmos) :: afrstem_t  !<
-      real, dimension(nlat,nmos) :: laimaxg_t  !<
-      real, dimension(nlat,nmos) :: stemmass_t !<
-      real, dimension(nlat,nmos) :: rootmass_t !<
-      real, dimension(nlat,nmos) :: litrmass_t !<
-      real, dimension(nlat,nmos) :: gleafmas_t !<
-      real, dimension(nlat,nmos) :: bleafmas_t !<
-      real, dimension(nlat,nmos) :: soilcmas_t !<
-      real, dimension(nlat,nmos) :: emit_co2_t !<
-      real, dimension(nlat,nmos) :: emit_co_t  !<
-      real, dimension(nlat,nmos) :: emit_ch4_t !<
-      real, dimension(nlat,nmos) :: emit_nmhc_t!<
-      real, dimension(nlat,nmos) :: emit_h2_t  !<
-      real, dimension(nlat,nmos) :: emit_nox_t !<
-      real, dimension(nlat,nmos) :: emit_n2o_t !<
-      real, dimension(nlat,nmos) :: emit_pm25_t!<
-      real, dimension(nlat,nmos) :: emit_tpm_t !<
-      real, dimension(nlat,nmos) :: emit_tc_t  !<
-      real, dimension(nlat,nmos) :: emit_oc_t  !<
-      real, dimension(nlat,nmos) :: emit_bc_t  !<
-      real, dimension(nlat,nmos) :: bterm_t    !<
-      real, dimension(nlat,nmos) :: mterm_t    !<
-      real, dimension(nlat,nmos) :: smfuncveg_t!<
+! allocated with nlat,nmos:
+      real, allocatable, dimension(:,:) :: leaflitr_t !<
+      real, allocatable, dimension(:,:) :: tltrleaf_t !<
+      real, allocatable, dimension(:,:) :: tltrstem_t !<
+      real, allocatable, dimension(:,:) :: tltrroot_t !<
+      real, allocatable, dimension(:,:) :: ailcg_t    !<
+      real, allocatable, dimension(:,:) :: ailcb_t    !<
+      real, allocatable, dimension(:,:,:) :: rmatctem_t !< nlat,nmos,ignd
+      real, allocatable, dimension(:,:) :: veghght_t  !<
+      real, allocatable, dimension(:,:) :: rootdpth_t !<
+      real, allocatable, dimension(:,:) :: roottemp_t !<
+      real, allocatable, dimension(:,:) :: slai_t     !<
+      real, allocatable, dimension(:,:) :: afrroot_t  !<
+      real, allocatable, dimension(:,:) :: afrleaf_t  !<
+      real, allocatable, dimension(:,:) :: afrstem_t  !<
+      real, allocatable, dimension(:,:) :: laimaxg_t  !<
+      real, allocatable, dimension(:,:) :: stemmass_t !<
+      real, allocatable, dimension(:,:) :: rootmass_t !<
+      real, allocatable, dimension(:,:) :: litrmass_t !<
+      real, allocatable, dimension(:,:) :: gleafmas_t !<
+      real, allocatable, dimension(:,:) :: bleafmas_t !<
+      real, allocatable, dimension(:,:) :: soilcmas_t !<
+      real, allocatable, dimension(:,:) :: emit_co2_t !<
+      real, allocatable, dimension(:,:) :: emit_co_t  !<
+      real, allocatable, dimension(:,:) :: emit_ch4_t !<
+      real, allocatable, dimension(:,:) :: emit_nmhc_t!<
+      real, allocatable, dimension(:,:) :: emit_h2_t  !<
+      real, allocatable, dimension(:,:) :: emit_nox_t !<
+      real, allocatable, dimension(:,:) :: emit_n2o_t !<
+      real, allocatable, dimension(:,:) :: emit_pm25_t!<
+      real, allocatable, dimension(:,:) :: emit_tpm_t !<
+      real, allocatable, dimension(:,:) :: emit_tc_t  !<
+      real, allocatable, dimension(:,:) :: emit_oc_t  !<
+      real, allocatable, dimension(:,:) :: emit_bc_t  !<
+      real, allocatable, dimension(:,:) :: bterm_t    !<
+      real, allocatable, dimension(:,:) :: mterm_t    !<
+      real, allocatable, dimension(:,:) :: smfuncveg_t!<
 
-      real, dimension(ilg) :: fsnowacc_t       !<
-      real, dimension(ilg) :: tcansacc_t       !<
-      real, dimension(ilg) :: tcanoaccgat_t    !<
-      real, dimension(ilg) :: taaccgat_t       !<
-      real, dimension(ilg) :: uvaccgat_t       !<
-      real, dimension(ilg) :: vvaccgat_t       !<
-      real, dimension(ilg,ignd) :: tbaraccgat_t!<
-      real, dimension(ilg,ignd) :: tbarcacc_t  !<
-      real, dimension(ilg,ignd) :: tbarcsacc_t !<
-      real, dimension(ilg,ignd) :: tbargacc_t  !<
-      real, dimension(ilg,ignd) :: tbargsacc_t !<
-      real, dimension(ilg,ignd) :: thliqcacc_t !<
-      real, dimension(ilg,ignd) :: thliqgacc_t !<
-      real, dimension(ilg,ignd) :: thliqacc_t  !<
-      real, dimension(ilg,ignd) :: thicecacc_t !<
-      real, dimension(ilg,ignd) :: thicegacc_t !<
-      real, dimension(ilg,icc)  :: ancsvgac_t  !<
-      real, dimension(ilg,icc)  :: ancgvgac_t  !<
-      real, dimension(ilg,icc)  :: rmlcsvga_t  !<
-      real, dimension(ilg,icc)  :: rmlcgvga_t  !<
+      real, allocatable, dimension(:) :: fsnowacc_t       !<
+      real, allocatable, dimension(:) :: tcansacc_t       !<
+      real, allocatable, dimension(:) :: tcanoaccgat_t    !<
+      real, allocatable, dimension(:) :: taaccgat_t       !<
+      real, allocatable, dimension(:) :: uvaccgat_t       !<
+      real, allocatable, dimension(:) :: vvaccgat_t       !<
+
+! allocated with ilg,ignd:
+      real, allocatable, dimension(:,:) :: tbaraccgat_t!<
+      real, allocatable, dimension(:,:) :: tbarcacc_t  !<
+      real, allocatable, dimension(:,:) :: tbarcsacc_t !<
+      real, allocatable, dimension(:,:) :: tbargacc_t  !<
+      real, allocatable, dimension(:,:) :: tbargsacc_t !<
+      real, allocatable, dimension(:,:) :: thliqcacc_t !<
+      real, allocatable, dimension(:,:) :: thliqgacc_t !<
+      real, allocatable, dimension(:,:) :: thliqacc_t  !<
+      real, allocatable, dimension(:,:) :: thicecacc_t !<
+      real, allocatable, dimension(:,:) :: thicegacc_t !<
+
+! allocated with ilg,icc:
+      real, allocatable, dimension(:,:) :: ancsvgac_t  !<
+      real, allocatable, dimension(:,:) :: ancgvgac_t  !<
+      real, allocatable, dimension(:,:) :: rmlcsvga_t  !<
+      real, allocatable, dimension(:,:) :: rmlcgvga_t  !<
 
 end type ctem_tile_level
 
-type (ctem_tile_level), save, target :: ctem_tile
+type (ctem_tile_level), allocatable, save, target :: ctem_tile
 
 !=================================================================================
 !>CTEM's variables monthly averaged (per pft)
@@ -948,43 +944,45 @@ type ctem_monthly
 
 !     Tile-level monthly variables (denoted by name ending in "_mo_t")
 
-      real, dimension(nlat,nmos,icc)   :: laimaxg_mo    !<
-      real, dimension(nlat,nmos,icc)   :: stemmass_mo   !<
-      real, dimension(nlat,nmos,icc)   :: rootmass_mo   !<
-      real, dimension(nlat,nmos,icc)   :: litrfallveg_mo!<
-      real, dimension(nlat,nmos,iccp1) :: humiftrsveg_mo!<
-      real, dimension(nlat,nmos,icc)   :: npp_mo        !<
-      real, dimension(nlat,nmos,icc)   :: gpp_mo        !<
-      real, dimension(nlat,nmos,icc)   :: vgbiomas_mo   !<
-      real, dimension(nlat,nmos,icc)   :: autores_mo    !<
-      real, dimension(nlat,nmos,iccp1) :: totcmass_mo   !<
-      real, dimension(nlat,nmos,iccp1) :: litrmass_mo   !<
-      real, dimension(nlat,nmos,iccp1) :: soilcmas_mo   !<
-      real, dimension(nlat,nmos,iccp1) :: nep_mo        !<
-      real, dimension(nlat,nmos,iccp1) :: litres_mo     !<
-      real, dimension(nlat,nmos,iccp1) :: soilcres_mo   !<
-      real, dimension(nlat,nmos,iccp1) :: hetrores_mo   !<
-      real, dimension(nlat,nmos,iccp1) :: nbp_mo        !<
-      real, dimension(nlat,nmos,icc) :: emit_co2_mo  !<
-      real, dimension(nlat,nmos,icc) :: emit_co_mo   !<
-      real, dimension(nlat,nmos,icc) :: emit_ch4_mo  !<
-      real, dimension(nlat,nmos,icc) :: emit_nmhc_mo !<
-      real, dimension(nlat,nmos,icc) :: emit_h2_mo   !<
-      real, dimension(nlat,nmos,icc) :: emit_nox_mo  !<
-      real, dimension(nlat,nmos,icc) :: emit_n2o_mo  !<
-      real, dimension(nlat,nmos,icc) :: emit_pm25_mo !<
-      real, dimension(nlat,nmos,icc) :: emit_tpm_mo  !<
-      real, dimension(nlat,nmos,icc) :: emit_tc_mo   !<
-      real, dimension(nlat,nmos,icc) :: emit_oc_mo   !<
-      real, dimension(nlat,nmos,icc) :: emit_bc_mo   !<
-      real, dimension(nlat,nmos,icc) :: burnfrac_mo  !<
-      real, dimension(nlat,nmos,icc) :: bterm_mo     !<
-      real, dimension(nlat,nmos,icc) :: mterm_mo     !<
-      real, dimension(nlat,nmos,icc) :: smfuncveg_mo !<
+! allocated with nlat,nmos,icc/iccp1:
+
+      real, allocatable, dimension(:,:,:)   :: laimaxg_mo    !<
+      real, allocatable, dimension(:,:,:)   :: stemmass_mo   !<
+      real, allocatable, dimension(:,:,:)   :: rootmass_mo   !<
+      real, allocatable, dimension(:,:,:)   :: litrfallveg_mo!<
+      real, allocatable, dimension(:,:,:) :: humiftrsveg_mo!<
+      real, allocatable, dimension(:,:,:)   :: npp_mo        !<
+      real, allocatable, dimension(:,:,:)   :: gpp_mo        !<
+      real, allocatable, dimension(:,:,:)   :: vgbiomas_mo   !<
+      real, allocatable, dimension(:,:,:)   :: autores_mo    !<
+      real, allocatable, dimension(:,:,:) :: totcmass_mo   !<
+      real, allocatable, dimension(:,:,:) :: litrmass_mo   !<
+      real, allocatable, dimension(:,:,:) :: soilcmas_mo   !<
+      real, allocatable, dimension(:,:,:) :: nep_mo        !<
+      real, allocatable, dimension(:,:,:) :: litres_mo     !<
+      real, allocatable, dimension(:,:,:) :: soilcres_mo   !<
+      real, allocatable, dimension(:,:,:) :: hetrores_mo   !<
+      real, allocatable, dimension(:,:,:) :: nbp_mo        !<
+      real, allocatable, dimension(:,:,:) :: emit_co2_mo  !<
+      real, allocatable, dimension(:,:,:) :: emit_co_mo   !<
+      real, allocatable, dimension(:,:,:) :: emit_ch4_mo  !<
+      real, allocatable, dimension(:,:,:) :: emit_nmhc_mo !<
+      real, allocatable, dimension(:,:,:) :: emit_h2_mo   !<
+      real, allocatable, dimension(:,:,:) :: emit_nox_mo  !<
+      real, allocatable, dimension(:,:,:) :: emit_n2o_mo  !<
+      real, allocatable, dimension(:,:,:) :: emit_pm25_mo !<
+      real, allocatable, dimension(:,:,:) :: emit_tpm_mo  !<
+      real, allocatable, dimension(:,:,:) :: emit_tc_mo   !<
+      real, allocatable, dimension(:,:,:) :: emit_oc_mo   !<
+      real, allocatable, dimension(:,:,:) :: emit_bc_mo   !<
+      real, allocatable, dimension(:,:,:) :: burnfrac_mo  !<
+      real, allocatable, dimension(:,:,:) :: bterm_mo     !<
+      real, allocatable, dimension(:,:,:) :: mterm_mo     !<
+      real, allocatable, dimension(:,:,:) :: smfuncveg_mo !<
 
 end type ctem_monthly
 
-type (ctem_monthly), save, target :: ctem_mo
+type (ctem_monthly), allocatable, save, target :: ctem_mo
 
 !=================================================================================
 !>CTEM's grid average monthly values
@@ -992,53 +990,54 @@ type ctem_gridavg_monthly
 
 !  Grid averaged monthly variables (denoted by name ending in "_mo_g")
 
-    real, dimension(nlat) :: laimaxg_mo_g  !<
-    real, dimension(nlat) :: stemmass_mo_g !<
-    real, dimension(nlat) :: rootmass_mo_g !<
-    real, dimension(nlat) :: litrmass_mo_g !<
-    real, dimension(nlat) :: soilcmas_mo_g !<
-    real, dimension(nlat) :: litrfall_mo_g !<
-    real, dimension(nlat) :: humiftrs_mo_g !<
-    real, dimension(nlat) :: npp_mo_g      !<
-    real, dimension(nlat) :: gpp_mo_g      !<
-    real, dimension(nlat) :: nep_mo_g      !<
-    real, dimension(nlat) :: nbp_mo_g      !<
-    real, dimension(nlat) :: hetrores_mo_g !<
-    real, dimension(nlat) :: autores_mo_g  !<
-    real, dimension(nlat) :: litres_mo_g   !<
-    real, dimension(nlat) :: soilcres_mo_g !<
-    real, dimension(nlat) :: vgbiomas_mo_g !<
-    real, dimension(nlat) :: totcmass_mo_g !<
-    real, dimension(nlat) :: emit_co2_mo_g !<
-    real, dimension(nlat) :: emit_co_mo_g  !<
-    real, dimension(nlat) :: emit_ch4_mo_g !<
-    real, dimension(nlat) :: emit_nmhc_mo_g!<
-    real, dimension(nlat) :: emit_h2_mo_g  !<
-    real, dimension(nlat) :: emit_nox_mo_g !<
-    real, dimension(nlat) :: emit_n2o_mo_g !<
-    real, dimension(nlat) :: emit_pm25_mo_g!<
-    real, dimension(nlat) :: emit_tpm_mo_g !<
-    real, dimension(nlat) :: emit_tc_mo_g  !<
-    real, dimension(nlat) :: emit_oc_mo_g  !<
-    real, dimension(nlat) :: emit_bc_mo_g  !<
-    real, dimension(nlat) :: smfuncveg_mo_g!<
-    real, dimension(nlat) :: luc_emc_mo_g  !<
-    real, dimension(nlat) :: lucltrin_mo_g !<
-    real, dimension(nlat) :: lucsocin_mo_g !<
-    real, dimension(nlat) :: burnfrac_mo_g !<
-    real, dimension(nlat) :: bterm_mo_g    !<
-    real, dimension(nlat) :: lterm_mo_g    !<
-    real, dimension(nlat) :: mterm_mo_g    !<
-    real, dimension(nlat) :: ch4wet1_mo_g  !<
-    real, dimension(nlat) :: ch4wet2_mo_g  !<
-    real, dimension(nlat) :: wetfdyn_mo_g  !<
-    real, dimension(nlat) :: ch4dyn1_mo_g  !<
-    real, dimension(nlat) :: ch4dyn2_mo_g  !<
-    real, dimension(nlat) :: ch4soills_mo_g!<
+! allocated with nlat:
+    real, allocatable, dimension(:) :: laimaxg_mo_g  !<
+    real, allocatable, dimension(:) :: stemmass_mo_g !<
+    real, allocatable, dimension(:) :: rootmass_mo_g !<
+    real, allocatable, dimension(:) :: litrmass_mo_g !<
+    real, allocatable, dimension(:) :: soilcmas_mo_g !<
+    real, allocatable, dimension(:) :: litrfall_mo_g !<
+    real, allocatable, dimension(:) :: humiftrs_mo_g !<
+    real, allocatable, dimension(:) :: npp_mo_g      !<
+    real, allocatable, dimension(:) :: gpp_mo_g      !<
+    real, allocatable, dimension(:) :: nep_mo_g      !<
+    real, allocatable, dimension(:) :: nbp_mo_g      !<
+    real, allocatable, dimension(:) :: hetrores_mo_g !<
+    real, allocatable, dimension(:) :: autores_mo_g  !<
+    real, allocatable, dimension(:) :: litres_mo_g   !<
+    real, allocatable, dimension(:) :: soilcres_mo_g !<
+    real, allocatable, dimension(:) :: vgbiomas_mo_g !<
+    real, allocatable, dimension(:) :: totcmass_mo_g !<
+    real, allocatable, dimension(:) :: emit_co2_mo_g !<
+    real, allocatable, dimension(:) :: emit_co_mo_g  !<
+    real, allocatable, dimension(:) :: emit_ch4_mo_g !<
+    real, allocatable, dimension(:) :: emit_nmhc_mo_g!<
+    real, allocatable, dimension(:) :: emit_h2_mo_g  !<
+    real, allocatable, dimension(:) :: emit_nox_mo_g !<
+    real, allocatable, dimension(:) :: emit_n2o_mo_g !<
+    real, allocatable, dimension(:) :: emit_pm25_mo_g!<
+    real, allocatable, dimension(:) :: emit_tpm_mo_g !<
+    real, allocatable, dimension(:) :: emit_tc_mo_g  !<
+    real, allocatable, dimension(:) :: emit_oc_mo_g  !<
+    real, allocatable, dimension(:) :: emit_bc_mo_g  !<
+    real, allocatable, dimension(:) :: smfuncveg_mo_g!<
+    real, allocatable, dimension(:) :: luc_emc_mo_g  !<
+    real, allocatable, dimension(:) :: lucltrin_mo_g !<
+    real, allocatable, dimension(:) :: lucsocin_mo_g !<
+    real, allocatable, dimension(:) :: burnfrac_mo_g !<
+    real, allocatable, dimension(:) :: bterm_mo_g    !<
+    real, allocatable, dimension(:) :: lterm_mo_g    !<
+    real, allocatable, dimension(:) :: mterm_mo_g    !<
+    real, allocatable, dimension(:) :: ch4wet1_mo_g  !<
+    real, allocatable, dimension(:) :: ch4wet2_mo_g  !<
+    real, allocatable, dimension(:) :: wetfdyn_mo_g  !<
+    real, allocatable, dimension(:) :: ch4dyn1_mo_g  !<
+    real, allocatable, dimension(:) :: ch4dyn2_mo_g  !<
+    real, allocatable, dimension(:) :: ch4soills_mo_g!<
 
 end type ctem_gridavg_monthly
 
-type (ctem_gridavg_monthly), save, target :: ctem_grd_mo
+type (ctem_gridavg_monthly), allocatable, save, target :: ctem_grd_mo
 
 !=================================================================================
 !>CTEM's variables per tile monthly values
@@ -1046,54 +1045,56 @@ type ctem_tileavg_monthly
 
 !     Tile-level monthly variables (denoted by name ending in "_mo_t")
 
-      real, dimension(nlat,nmos) :: laimaxg_mo_t  !<
-      real, dimension(nlat,nmos) :: stemmass_mo_t !<
-      real, dimension(nlat,nmos) :: rootmass_mo_t !<
-      real, dimension(nlat,nmos) :: litrfall_mo_t !<
-      real, dimension(nlat,nmos) :: humiftrs_mo_t !<
-      real, dimension(nlat,nmos) :: npp_mo_t      !<
-      real, dimension(nlat,nmos) :: gpp_mo_t      !<
-      real, dimension(nlat,nmos) :: vgbiomas_mo_t !<
-      real, dimension(nlat,nmos) :: autores_mo_t  !<
-      real, dimension(nlat,nmos) :: totcmass_mo_t !<
-      real, dimension(nlat,nmos) :: litrmass_mo_t !<
-      real, dimension(nlat,nmos) :: soilcmas_mo_t !<
-      real, dimension(nlat,nmos) :: nep_mo_t      !<
-      real, dimension(nlat,nmos) :: litres_mo_t   !<
-      real, dimension(nlat,nmos) :: soilcres_mo_t !<
-      real, dimension(nlat,nmos) :: hetrores_mo_t !<
-      real, dimension(nlat,nmos) :: nbp_mo_t      !<
-      real, dimension(nlat,nmos) :: emit_co2_mo_t !<
-      real, dimension(nlat,nmos) :: emit_co_mo_t  !<
-      real, dimension(nlat,nmos) :: emit_ch4_mo_t !<
-      real, dimension(nlat,nmos) :: emit_nmhc_mo_t!<
-      real, dimension(nlat,nmos) :: emit_h2_mo_t  !<
-      real, dimension(nlat,nmos) :: emit_nox_mo_t !<
-      real, dimension(nlat,nmos) :: emit_n2o_mo_t !<
-      real, dimension(nlat,nmos) :: emit_pm25_mo_t!<
-      real, dimension(nlat,nmos) :: emit_tpm_mo_t !<
-      real, dimension(nlat,nmos) :: emit_tc_mo_t  !<
-      real, dimension(nlat,nmos) :: emit_oc_mo_t  !<
-      real, dimension(nlat,nmos) :: emit_bc_mo_t  !<
-      real, dimension(nlat,nmos) :: burnfrac_mo_t !<
-      real, dimension(nlat,nmos) :: smfuncveg_mo_t!<
-      real, dimension(nlat,nmos) :: bterm_mo_t    !<
-      real, dimension(nlat,nmos) :: luc_emc_mo_t  !<
-      real, dimension(nlat,nmos) :: lterm_mo_t    !<
-      real, dimension(nlat,nmos) :: lucsocin_mo_t !<
-      real, dimension(nlat,nmos) :: mterm_mo_t    !<
-      real, dimension(nlat,nmos) :: lucltrin_mo_t !<
-      real, dimension(nlat,nmos) :: ch4wet1_mo_t  !<
-      real, dimension(nlat,nmos) :: ch4wet2_mo_t  !<
-      real, dimension(nlat,nmos) :: wetfdyn_mo_t  !<
-      real, dimension(nlat,nmos) :: ch4dyn1_mo_t  !<
-      real, dimension(nlat,nmos) :: ch4dyn2_mo_t  !<
-      real, dimension(nlat,nmos) :: ch4soills_mo_t!<
-      real, dimension(nlat,nmos) :: wind_mo_t     !<
+! allocated with nlat,nmos:
+
+      real, allocatable, dimension(:,:) :: laimaxg_mo_t  !<
+      real, allocatable, dimension(:,:) :: stemmass_mo_t !<
+      real, allocatable, dimension(:,:) :: rootmass_mo_t !<
+      real, allocatable, dimension(:,:) :: litrfall_mo_t !<
+      real, allocatable, dimension(:,:) :: humiftrs_mo_t !<
+      real, allocatable, dimension(:,:) :: npp_mo_t      !<
+      real, allocatable, dimension(:,:) :: gpp_mo_t      !<
+      real, allocatable, dimension(:,:) :: vgbiomas_mo_t !<
+      real, allocatable, dimension(:,:) :: autores_mo_t  !<
+      real, allocatable, dimension(:,:) :: totcmass_mo_t !<
+      real, allocatable, dimension(:,:) :: litrmass_mo_t !<
+      real, allocatable, dimension(:,:) :: soilcmas_mo_t !<
+      real, allocatable, dimension(:,:) :: nep_mo_t      !<
+      real, allocatable, dimension(:,:) :: litres_mo_t   !<
+      real, allocatable, dimension(:,:) :: soilcres_mo_t !<
+      real, allocatable, dimension(:,:) :: hetrores_mo_t !<
+      real, allocatable, dimension(:,:) :: nbp_mo_t      !<
+      real, allocatable, dimension(:,:) :: emit_co2_mo_t !<
+      real, allocatable, dimension(:,:) :: emit_co_mo_t  !<
+      real, allocatable, dimension(:,:) :: emit_ch4_mo_t !<
+      real, allocatable, dimension(:,:) :: emit_nmhc_mo_t!<
+      real, allocatable, dimension(:,:) :: emit_h2_mo_t  !<
+      real, allocatable, dimension(:,:) :: emit_nox_mo_t !<
+      real, allocatable, dimension(:,:) :: emit_n2o_mo_t !<
+      real, allocatable, dimension(:,:) :: emit_pm25_mo_t!<
+      real, allocatable, dimension(:,:) :: emit_tpm_mo_t !<
+      real, allocatable, dimension(:,:) :: emit_tc_mo_t  !<
+      real, allocatable, dimension(:,:) :: emit_oc_mo_t  !<
+      real, allocatable, dimension(:,:) :: emit_bc_mo_t  !<
+      real, allocatable, dimension(:,:) :: burnfrac_mo_t !<
+      real, allocatable, dimension(:,:) :: smfuncveg_mo_t!<
+      real, allocatable, dimension(:,:) :: bterm_mo_t    !<
+      real, allocatable, dimension(:,:) :: luc_emc_mo_t  !<
+      real, allocatable, dimension(:,:) :: lterm_mo_t    !<
+      real, allocatable, dimension(:,:) :: lucsocin_mo_t !<
+      real, allocatable, dimension(:,:) :: mterm_mo_t    !<
+      real, allocatable, dimension(:,:) :: lucltrin_mo_t !<
+      real, allocatable, dimension(:,:) :: ch4wet1_mo_t  !<
+      real, allocatable, dimension(:,:) :: ch4wet2_mo_t  !<
+      real, allocatable, dimension(:,:) :: wetfdyn_mo_t  !<
+      real, allocatable, dimension(:,:) :: ch4dyn1_mo_t  !<
+      real, allocatable, dimension(:,:) :: ch4dyn2_mo_t  !<
+      real, allocatable, dimension(:,:) :: ch4soills_mo_t!<
+      real, allocatable, dimension(:,:) :: wind_mo_t     !<
 
 end type ctem_tileavg_monthly
 
-type (ctem_tileavg_monthly), save, target :: ctem_tile_mo
+type (ctem_tileavg_monthly), allocatable, save, target :: ctem_tile_mo
 
 
 !=================================================================================
@@ -1104,42 +1105,44 @@ type ctem_annual
 ! c      Annual output for CTEM mosaic variables:
 ! c      (denoted by name ending in "_yr_m")
 !
-      real, dimension(nlat,nmos,icc) :: laimaxg_yr   !<
-      real, dimension(nlat,nmos,icc) :: stemmass_yr  !<
-      real, dimension(nlat,nmos,icc) :: rootmass_yr  !<
-      real, dimension(nlat,nmos,icc) :: npp_yr       !<
-      real, dimension(nlat,nmos,icc) :: gpp_yr       !<
-      real, dimension(nlat,nmos,icc) :: vgbiomas_yr  !<
-      real, dimension(nlat,nmos,icc) :: autores_yr   !<
-      real, dimension(nlat,nmos,iccp1) :: totcmass_yr!<
-      real, dimension(nlat,nmos,iccp1) :: litrmass_yr!<
-      real, dimension(nlat,nmos,iccp1) :: soilcmas_yr!<
-      real, dimension(nlat,nmos,iccp1) :: nep_yr     !<
-      real, dimension(nlat,nmos,iccp1) :: litres_yr  !<
-      real, dimension(nlat,nmos,iccp1) :: soilcres_yr!<
-      real, dimension(nlat,nmos,iccp1) :: hetrores_yr!<
-      real, dimension(nlat,nmos,iccp1) :: nbp_yr     !<
-      real, dimension(nlat,nmos,icc) :: emit_co2_yr  !<
-      real, dimension(nlat,nmos,icc) :: emit_co_yr   !<
-      real, dimension(nlat,nmos,icc) :: emit_ch4_yr  !<
-      real, dimension(nlat,nmos,icc) :: emit_nmhc_yr !<
-      real, dimension(nlat,nmos,icc) :: emit_h2_yr   !<
-      real, dimension(nlat,nmos,icc) :: emit_nox_yr  !<
-      real, dimension(nlat,nmos,icc) :: emit_n2o_yr  !<
-      real, dimension(nlat,nmos,icc) :: emit_pm25_yr !<
-      real, dimension(nlat,nmos,icc) :: emit_tpm_yr  !<
-      real, dimension(nlat,nmos,icc) :: emit_tc_yr   !<
-      real, dimension(nlat,nmos,icc) :: emit_oc_yr   !<
-      real, dimension(nlat,nmos,icc) :: emit_bc_yr   !<
-      real, dimension(nlat,nmos,icc) :: bterm_yr     !<
-      real, dimension(nlat,nmos,icc) :: mterm_yr     !<
-      real, dimension(nlat,nmos,icc) :: burnfrac_yr  !<
-      real, dimension(nlat,nmos,icc) :: smfuncveg_yr !<
-      real, dimension(nlat,nmos,icc) :: veghght_yr   !<
+! allocated with nlat,nmos,icc/iccp1:
+
+      real, allocatable, dimension(:,:,:) :: laimaxg_yr   !<
+      real, allocatable, dimension(:,:,:) :: stemmass_yr  !<
+      real, allocatable, dimension(:,:,:) :: rootmass_yr  !<
+      real, allocatable, dimension(:,:,:) :: npp_yr       !<
+      real, allocatable, dimension(:,:,:) :: gpp_yr       !<
+      real, allocatable, dimension(:,:,:) :: vgbiomas_yr  !<
+      real, allocatable, dimension(:,:,:) :: autores_yr   !<
+      real, allocatable, dimension(:,:,:) :: totcmass_yr!<
+      real, allocatable, dimension(:,:,:) :: litrmass_yr!<
+      real, allocatable, dimension(:,:,:) :: soilcmas_yr!<
+      real, allocatable, dimension(:,:,:) :: nep_yr     !<
+      real, allocatable, dimension(:,:,:) :: litres_yr  !<
+      real, allocatable, dimension(:,:,:) :: soilcres_yr!<
+      real, allocatable, dimension(:,:,:) :: hetrores_yr!<
+      real, allocatable, dimension(:,:,:) :: nbp_yr     !<
+      real, allocatable, dimension(:,:,:) :: emit_co2_yr  !<
+      real, allocatable, dimension(:,:,:) :: emit_co_yr   !<
+      real, allocatable, dimension(:,:,:) :: emit_ch4_yr  !<
+      real, allocatable, dimension(:,:,:) :: emit_nmhc_yr !<
+      real, allocatable, dimension(:,:,:) :: emit_h2_yr   !<
+      real, allocatable, dimension(:,:,:) :: emit_nox_yr  !<
+      real, allocatable, dimension(:,:,:) :: emit_n2o_yr  !<
+      real, allocatable, dimension(:,:,:) :: emit_pm25_yr !<
+      real, allocatable, dimension(:,:,:) :: emit_tpm_yr  !<
+      real, allocatable, dimension(:,:,:) :: emit_tc_yr   !<
+      real, allocatable, dimension(:,:,:) :: emit_oc_yr   !<
+      real, allocatable, dimension(:,:,:) :: emit_bc_yr   !<
+      real, allocatable, dimension(:,:,:) :: bterm_yr     !<
+      real, allocatable, dimension(:,:,:) :: mterm_yr     !<
+      real, allocatable, dimension(:,:,:) :: burnfrac_yr  !<
+      real, allocatable, dimension(:,:,:) :: smfuncveg_yr !<
+      real, allocatable, dimension(:,:,:) :: veghght_yr   !<
 
 end type ctem_annual
 
-type (ctem_annual), save, target :: ctem_yr
+type (ctem_annual), allocatable, save, target :: ctem_yr
 
 !=================================================================================
 
@@ -1149,52 +1152,53 @@ type ctem_gridavg_annual
 ! Annual output for CTEM grid-averaged variables:
 ! (denoted by name ending in "_yr_g")
 
-    real, dimension(nlat) :: laimaxg_yr_g  !<
-    real, dimension(nlat) :: stemmass_yr_g !<
-    real, dimension(nlat) :: rootmass_yr_g !<
-    real, dimension(nlat) :: litrmass_yr_g !<
-    real, dimension(nlat) :: soilcmas_yr_g !<
-    real, dimension(nlat) :: npp_yr_g      !<
-    real, dimension(nlat) :: gpp_yr_g      !<
-    real, dimension(nlat) :: nep_yr_g      !<
-    real, dimension(nlat) :: nbp_yr_g      !<
-    real, dimension(nlat) :: hetrores_yr_g !<
-    real, dimension(nlat) :: autores_yr_g  !<
-    real, dimension(nlat) :: litres_yr_g   !<
-    real, dimension(nlat) :: soilcres_yr_g !<
-    real, dimension(nlat) :: vgbiomas_yr_g !<
-    real, dimension(nlat) :: totcmass_yr_g !<
-    real, dimension(nlat) :: emit_co2_yr_g !<
-    real, dimension(nlat) :: emit_co_yr_g  !<
-    real, dimension(nlat) :: emit_ch4_yr_g !<
-    real, dimension(nlat) :: emit_nmhc_yr_g!<
-    real, dimension(nlat) :: emit_h2_yr_g  !<
-    real, dimension(nlat) :: emit_nox_yr_g !<
-    real, dimension(nlat) :: emit_n2o_yr_g !<
-    real, dimension(nlat) :: emit_pm25_yr_g!<
-    real, dimension(nlat) :: emit_tpm_yr_g !<
-    real, dimension(nlat) :: emit_tc_yr_g  !<
-    real, dimension(nlat) :: emit_oc_yr_g  !<
-    real, dimension(nlat) :: emit_bc_yr_g  !<
-    real, dimension(nlat) :: smfuncveg_yr_g!<
-    real, dimension(nlat) :: luc_emc_yr_g  !<
-    real, dimension(nlat) :: lucltrin_yr_g !<
-    real, dimension(nlat) :: lucsocin_yr_g !<
-    real, dimension(nlat) :: burnfrac_yr_g !<
-    real, dimension(nlat) :: bterm_yr_g    !<
-    real, dimension(nlat) :: lterm_yr_g    !<
-    real, dimension(nlat) :: mterm_yr_g    !<
-    real, dimension(nlat) :: ch4wet1_yr_g  !<
-    real, dimension(nlat) :: ch4wet2_yr_g  !<
-    real, dimension(nlat) :: wetfdyn_yr_g  !<
-    real, dimension(nlat) :: ch4dyn1_yr_g  !<
-    real, dimension(nlat) :: ch4dyn2_yr_g  !<
-    real, dimension(nlat) :: ch4soills_yr_g!<
-    real, dimension(nlat) :: veghght_yr_g  !<
+! allocated with nlat:
+    real, allocatable, dimension(:) :: laimaxg_yr_g  !<
+    real, allocatable, dimension(:) :: stemmass_yr_g !<
+    real, allocatable, dimension(:) :: rootmass_yr_g !<
+    real, allocatable, dimension(:) :: litrmass_yr_g !<
+    real, allocatable, dimension(:) :: soilcmas_yr_g !<
+    real, allocatable, dimension(:) :: npp_yr_g      !<
+    real, allocatable, dimension(:) :: gpp_yr_g      !<
+    real, allocatable, dimension(:) :: nep_yr_g      !<
+    real, allocatable, dimension(:) :: nbp_yr_g      !<
+    real, allocatable, dimension(:) :: hetrores_yr_g !<
+    real, allocatable, dimension(:) :: autores_yr_g  !<
+    real, allocatable, dimension(:) :: litres_yr_g   !<
+    real, allocatable, dimension(:) :: soilcres_yr_g !<
+    real, allocatable, dimension(:) :: vgbiomas_yr_g !<
+    real, allocatable, dimension(:) :: totcmass_yr_g !<
+    real, allocatable, dimension(:) :: emit_co2_yr_g !<
+    real, allocatable, dimension(:) :: emit_co_yr_g  !<
+    real, allocatable, dimension(:) :: emit_ch4_yr_g !<
+    real, allocatable, dimension(:) :: emit_nmhc_yr_g!<
+    real, allocatable, dimension(:) :: emit_h2_yr_g  !<
+    real, allocatable, dimension(:) :: emit_nox_yr_g !<
+    real, allocatable, dimension(:) :: emit_n2o_yr_g !<
+    real, allocatable, dimension(:) :: emit_pm25_yr_g!<
+    real, allocatable, dimension(:) :: emit_tpm_yr_g !<
+    real, allocatable, dimension(:) :: emit_tc_yr_g  !<
+    real, allocatable, dimension(:) :: emit_oc_yr_g  !<
+    real, allocatable, dimension(:) :: emit_bc_yr_g  !<
+    real, allocatable, dimension(:) :: smfuncveg_yr_g!<
+    real, allocatable, dimension(:) :: luc_emc_yr_g  !<
+    real, allocatable, dimension(:) :: lucltrin_yr_g !<
+    real, allocatable, dimension(:) :: lucsocin_yr_g !<
+    real, allocatable, dimension(:) :: burnfrac_yr_g !<
+    real, allocatable, dimension(:) :: bterm_yr_g    !<
+    real, allocatable, dimension(:) :: lterm_yr_g    !<
+    real, allocatable, dimension(:) :: mterm_yr_g    !<
+    real, allocatable, dimension(:) :: ch4wet1_yr_g  !<
+    real, allocatable, dimension(:) :: ch4wet2_yr_g  !<
+    real, allocatable, dimension(:) :: wetfdyn_yr_g  !<
+    real, allocatable, dimension(:) :: ch4dyn1_yr_g  !<
+    real, allocatable, dimension(:) :: ch4dyn2_yr_g  !<
+    real, allocatable, dimension(:) :: ch4soills_yr_g!<
+    real, allocatable, dimension(:) :: veghght_yr_g  !<
 
 end type ctem_gridavg_annual
 
-type (ctem_gridavg_annual), save, target :: ctem_grd_yr
+type (ctem_gridavg_annual), allocatable, save, target :: ctem_grd_yr
 
 !=================================================================================
 !>CTEM's variables per tile annual values
@@ -1203,73 +1207,66 @@ type ctem_tileavg_annual
 ! c      Annual output for CTEM mosaic variables:
 ! c      (denoted by name ending in "_yr_m")
 !
-      real, dimension(nlat,nmos) :: laimaxg_yr_t  !<
-      real, dimension(nlat,nmos) :: stemmass_yr_t !<
-      real, dimension(nlat,nmos) :: rootmass_yr_t !<
-      real, dimension(nlat,nmos) :: npp_yr_t      !<
-      real, dimension(nlat,nmos) :: gpp_yr_t      !<
-      real, dimension(nlat,nmos) :: vgbiomas_yr_t !<
-      real, dimension(nlat,nmos) :: autores_yr_t  !<
-      real, dimension(nlat,nmos) :: totcmass_yr_t !<
-      real, dimension(nlat,nmos) :: litrmass_yr_t !<
-      real, dimension(nlat,nmos) :: soilcmas_yr_t !<
-      real, dimension(nlat,nmos) :: nep_yr_t      !<
-      real, dimension(nlat,nmos) :: litres_yr_t   !<
-      real, dimension(nlat,nmos) :: soilcres_yr_t !<
-      real, dimension(nlat,nmos) :: hetrores_yr_t !<
-      real, dimension(nlat,nmos) :: nbp_yr_t      !<
-      real, dimension(nlat,nmos) :: emit_co2_yr_t !<
-      real, dimension(nlat,nmos) :: emit_co_yr_t  !<
-      real, dimension(nlat,nmos) :: emit_ch4_yr_t !<
-      real, dimension(nlat,nmos) :: emit_nmhc_yr_t!<
-      real, dimension(nlat,nmos) :: emit_h2_yr_t  !<
-      real, dimension(nlat,nmos) :: emit_nox_yr_t !<
-      real, dimension(nlat,nmos) :: emit_n2o_yr_t !<
-      real, dimension(nlat,nmos) :: emit_pm25_yr_t!<
-      real, dimension(nlat,nmos) :: emit_tpm_yr_t !<
-      real, dimension(nlat,nmos) :: emit_tc_yr_t  !<
-      real, dimension(nlat,nmos) :: emit_oc_yr_t  !<
-      real, dimension(nlat,nmos) :: emit_bc_yr_t  !<
-      real, dimension(nlat,nmos) :: burnfrac_yr_t !<
-      real, dimension(nlat,nmos) :: smfuncveg_yr_t!<
-      real, dimension(nlat,nmos) :: bterm_yr_t    !<
-      real, dimension(nlat,nmos) :: luc_emc_yr_t  !<
-      real, dimension(nlat,nmos) :: lterm_yr_t    !<
-      real, dimension(nlat,nmos) :: lucsocin_yr_t !<
-      real, dimension(nlat,nmos) :: mterm_yr_t    !<
-      real, dimension(nlat,nmos) :: lucltrin_yr_t !<
-      real, dimension(nlat,nmos) :: ch4wet1_yr_t  !<
-      real, dimension(nlat,nmos) :: ch4wet2_yr_t  !<
-      real, dimension(nlat,nmos) :: wetfdyn_yr_t  !<
-      real, dimension(nlat,nmos) :: ch4dyn1_yr_t  !<
-      real, dimension(nlat,nmos) :: ch4dyn2_yr_t  !<
-      real, dimension(nlat,nmos) :: ch4soills_yr_t!<
-      real, dimension(nlat,nmos) :: veghght_yr_t  !<
+! allocated with nlat,nmos:
+      real, allocatable, dimension(:,:) :: laimaxg_yr_t  !<
+      real, allocatable, dimension(:,:) :: stemmass_yr_t !<
+      real, allocatable, dimension(:,:) :: rootmass_yr_t !<
+      real, allocatable, dimension(:,:) :: npp_yr_t      !<
+      real, allocatable, dimension(:,:) :: gpp_yr_t      !<
+      real, allocatable, dimension(:,:) :: vgbiomas_yr_t !<
+      real, allocatable, dimension(:,:) :: autores_yr_t  !<
+      real, allocatable, dimension(:,:) :: totcmass_yr_t !<
+      real, allocatable, dimension(:,:) :: litrmass_yr_t !<
+      real, allocatable, dimension(:,:) :: soilcmas_yr_t !<
+      real, allocatable, dimension(:,:) :: nep_yr_t      !<
+      real, allocatable, dimension(:,:) :: litres_yr_t   !<
+      real, allocatable, dimension(:,:) :: soilcres_yr_t !<
+      real, allocatable, dimension(:,:) :: hetrores_yr_t !<
+      real, allocatable, dimension(:,:) :: nbp_yr_t      !<
+      real, allocatable, dimension(:,:) :: emit_co2_yr_t !<
+      real, allocatable, dimension(:,:) :: emit_co_yr_t  !<
+      real, allocatable, dimension(:,:) :: emit_ch4_yr_t !<
+      real, allocatable, dimension(:,:) :: emit_nmhc_yr_t!<
+      real, allocatable, dimension(:,:) :: emit_h2_yr_t  !<
+      real, allocatable, dimension(:,:) :: emit_nox_yr_t !<
+      real, allocatable, dimension(:,:) :: emit_n2o_yr_t !<
+      real, allocatable, dimension(:,:) :: emit_pm25_yr_t!<
+      real, allocatable, dimension(:,:) :: emit_tpm_yr_t !<
+      real, allocatable, dimension(:,:) :: emit_tc_yr_t  !<
+      real, allocatable, dimension(:,:) :: emit_oc_yr_t  !<
+      real, allocatable, dimension(:,:) :: emit_bc_yr_t  !<
+      real, allocatable, dimension(:,:) :: burnfrac_yr_t !<
+      real, allocatable, dimension(:,:) :: smfuncveg_yr_t!<
+      real, allocatable, dimension(:,:) :: bterm_yr_t    !<
+      real, allocatable, dimension(:,:) :: luc_emc_yr_t  !<
+      real, allocatable, dimension(:,:) :: lterm_yr_t    !<
+      real, allocatable, dimension(:,:) :: lucsocin_yr_t !<
+      real, allocatable, dimension(:,:) :: mterm_yr_t    !<
+      real, allocatable, dimension(:,:) :: lucltrin_yr_t !<
+      real, allocatable, dimension(:,:) :: ch4wet1_yr_t  !<
+      real, allocatable, dimension(:,:) :: ch4wet2_yr_t  !<
+      real, allocatable, dimension(:,:) :: wetfdyn_yr_t  !<
+      real, allocatable, dimension(:,:) :: ch4dyn1_yr_t  !<
+      real, allocatable, dimension(:,:) :: ch4dyn2_yr_t  !<
+      real, allocatable, dimension(:,:) :: ch4soills_yr_t!<
+      real, allocatable, dimension(:,:) :: veghght_yr_t  !<
 
 end type ctem_tileavg_annual
 
-type (ctem_tileavg_annual), save, target :: ctem_tile_yr
+type (ctem_tileavg_annual), allocatable, save, target :: ctem_tile_yr
 
 
 contains
 
 !=================================================================================
 
-subroutine alloc_ctem_vars(nlat,nmos,ignd) !ilg as argument?
+subroutine alloc_ctem_vars()
 
-use ctem_params, only : ican, icc, iccp1
+use ctem_params, only : ican, icc, iccp1,ilg,nlat,nmos,ignd
 
 implicit none
 
-integer, intent(in) :: nlat
-integer, intent(in) :: nmos
-integer, intent(in) :: ignd
-
-integer :: ilg
-
 !-----------
-
-ilg = nlat * nmos
 
 ! allocated with nlat,nmos, icc:
 
@@ -1675,6 +1672,500 @@ allocate(vgat%slopefrac (ilg,8))
 allocate(vgat%mlightng (ilg,12))
 allocate(vgat%wetfrac_mon (ilg,12))
 allocate(vgat%tmonth (12,ilg))
+
+! allocated with nlat:
+allocate(class_out%ALVSACC_MO(nlat))
+allocate(class_out%ALIRACC_MO (nlat))
+allocate(class_out%FLUTACC_MO (nlat))
+allocate(class_out%FSINACC_MO (nlat))
+allocate(class_out%FLINACC_MO (nlat))
+allocate(class_out%HFSACC_MO (nlat))
+allocate(class_out%QEVPACC_MO (nlat))
+allocate(class_out%SNOACC_MO (nlat))
+allocate(class_out%WSNOACC_MO (nlat))
+allocate(class_out%ROFACC_MO (nlat))
+allocate(class_out%PREACC_MO (nlat))
+allocate(class_out%EVAPACC_MO (nlat))
+allocate(class_out%TRANSPACC_MO (nlat))
+allocate(class_out%TAACC_MO (nlat))
+allocate(class_out%ACTLYR_MO (nlat))
+allocate(class_out%FTABLE_MO (nlat))
+allocate(class_out%ACTLYR_MIN_MO (nlat))
+allocate(class_out%ACTLYR_MAX_MO (nlat))
+allocate(class_out%FTABLE_MIN_MO (nlat))
+allocate(class_out%FTABLE_MAX_MO (nlat))
+allocate(class_out%ALTOTACC_MO (nlat))
+allocate(class_out%GROUNDEVAP (nlat))
+allocate(class_out%CANOPYEVAP (nlat))
+allocate(class_out%altotcntr_m (nlat))
+
+! allocated with nlat,ignd:
+allocate(class_out%TBARACC_MO (nlat,ignd))
+allocate(class_out%THLQACC_MO (nlat,ignd))
+allocate(class_out%THICACC_MO (nlat,ignd))
+allocate(class_out%ALVSACC_YR (nlat))
+allocate(class_out%ALIRACC_YR (nlat))
+allocate(class_out%FLUTACC_YR (nlat))
+allocate(class_out%FSINACC_YR (nlat))
+allocate(class_out%FLINACC_YR (nlat))
+allocate(class_out%HFSACC_YR (nlat))
+allocate(class_out%QEVPACC_YR (nlat))
+allocate(class_out%ROFACC_YR (nlat))
+allocate(class_out%PREACC_YR (nlat))
+allocate(class_out%EVAPACC_YR (nlat))
+allocate(class_out%TRANSPACC_YR (nlat))
+allocate(class_out%TAACC_YR (nlat))
+allocate(class_out%ACTLYR_YR (nlat))
+allocate(class_out%ACTLYR_MIN_YR (nlat))
+allocate(class_out%ACTLYR_MAX_YR (nlat))
+allocate(class_out%FTABLE_YR (nlat))
+allocate(class_out%FTABLE_MIN_YR (nlat))
+allocate(class_out%FTABLE_MAX_YR (nlat))
+allocate(class_out%ALTOTACC_YR (nlat))
+allocate(class_out%altotcntr_yr (nlat))
+
+allocate(ctem_grd%WSNOROT_g (nlat))
+allocate(ctem_grd%ROFSROT_g (nlat))
+allocate(ctem_grd%SNOROT_g (nlat))
+allocate(ctem_grd%RHOSROT_g (nlat))
+allocate(ctem_grd%ROFROT_g (nlat))
+allocate(ctem_grd%ZPNDROT_g (nlat))
+allocate(ctem_grd%RCANROT_g (nlat))
+allocate(ctem_grd%SCANROT_g (nlat))
+allocate(ctem_grd%TROFROT_g (nlat))
+allocate(ctem_grd%TROOROT_g (nlat))
+allocate(ctem_grd%TROBROT_g (nlat))
+allocate(ctem_grd%ROFOROT_g (nlat))
+allocate(ctem_grd%ROFBROT_g (nlat))
+allocate(ctem_grd%TROSROT_g (nlat))
+allocate(ctem_grd%FSGVROT_g (nlat))
+allocate(ctem_grd%FSGSROT_g (nlat))
+allocate(ctem_grd%FLGVROT_g (nlat))
+allocate(ctem_grd%FLGSROT_g (nlat))
+allocate(ctem_grd%HFSCROT_g (nlat))
+allocate(ctem_grd%HFSSROT_g (nlat))
+allocate(ctem_grd%HEVCROT_g (nlat))
+allocate(ctem_grd%HEVSROT_g (nlat))
+allocate(ctem_grd%HMFCROT_g (nlat))
+allocate(ctem_grd%HMFNROT_g (nlat))
+allocate(ctem_grd%HTCSROT_g (nlat))
+allocate(ctem_grd%HTCCROT_g (nlat))
+allocate(ctem_grd%FSGGROT_g (nlat))
+allocate(ctem_grd%FLGGROT_g (nlat))
+allocate(ctem_grd%HFSGROT_g (nlat))
+allocate(ctem_grd%HEVGROT_g (nlat))
+allocate(ctem_grd%CDHROT_g (nlat))
+allocate(ctem_grd%CDMROT_g (nlat))
+allocate(ctem_grd%SFCUROT_g (nlat))
+allocate(ctem_grd%SFCVROT_g (nlat))
+allocate(ctem_grd%ACTLYR_g (nlat))
+allocate(ctem_grd%FTABLE_g (nlat))
+allocate(ctem_grd%fc_g (nlat))
+allocate(ctem_grd%fg_g (nlat))
+allocate(ctem_grd%fcs_g (nlat))
+allocate(ctem_grd%fgs_g (nlat))
+allocate(ctem_grd%PCFCROT_g (nlat))
+allocate(ctem_grd%PCLCROT_g (nlat))
+allocate(ctem_grd%PCPGROT_g (nlat))
+allocate(ctem_grd%QFCFROT_g (nlat))
+allocate(ctem_grd%QFGROT_g (nlat))
+allocate(ctem_grd%ROFCROT_g (nlat))
+allocate(ctem_grd%QFCROT_g (nlat,ignd))
+allocate(ctem_grd%ROFNROT_g (nlat))
+allocate(ctem_grd%WTRSROT_g (nlat))
+allocate(ctem_grd%WTRGROT_g (nlat))
+allocate(ctem_grd%PCPNROT_g (nlat))
+allocate(ctem_grd%QFCLROT_g (nlat))
+allocate(ctem_grd%QFNROT_g (nlat))
+allocate(ctem_grd%WTRCROT_g (nlat))
+allocate(ctem_grd%gpp_g (nlat))
+allocate(ctem_grd%npp_g (nlat))
+allocate(ctem_grd%nbp_g (nlat))
+allocate(ctem_grd%socres_g (nlat))
+allocate(ctem_grd%autores_g (nlat))
+allocate(ctem_grd%litres_g (nlat))
+allocate(ctem_grd%dstcemls3_g (nlat))
+allocate(ctem_grd%litrfall_g (nlat))
+allocate(ctem_grd%rml_g (nlat))
+allocate(ctem_grd%rms_g (nlat))
+allocate(ctem_grd%rg_g (nlat))
+allocate(ctem_grd%leaflitr_g (nlat))
+allocate(ctem_grd%tltrstem_g (nlat))
+allocate(ctem_grd%tltrroot_g (nlat))
+allocate(ctem_grd%nep_g (nlat))
+allocate(ctem_grd%hetrores_g (nlat))
+allocate(ctem_grd%dstcemls_g (nlat))
+allocate(ctem_grd%humiftrs_g (nlat))
+allocate(ctem_grd%rmr_g (nlat))
+allocate(ctem_grd%tltrleaf_g (nlat))
+allocate(ctem_grd%gavgltms_g (nlat))
+allocate(ctem_grd%vgbiomas_g (nlat))
+allocate(ctem_grd%gavglai_g (nlat))
+allocate(ctem_grd%gavgscms_g (nlat))
+allocate(ctem_grd%gleafmas_g (nlat))
+allocate(ctem_grd%bleafmas_g (nlat))
+allocate(ctem_grd%stemmass_g (nlat))
+allocate(ctem_grd%rootmass_g (nlat))
+allocate(ctem_grd%litrmass_g (nlat))
+allocate(ctem_grd%soilcmas_g (nlat))
+allocate(ctem_grd%slai_g (nlat))
+allocate(ctem_grd%ailcg_g (nlat))
+allocate(ctem_grd%ailcb_g (nlat))
+allocate(ctem_grd%veghght_g (nlat))
+allocate(ctem_grd%rootdpth_g (nlat))
+allocate(ctem_grd%roottemp_g (nlat))
+allocate(ctem_grd%totcmass_g (nlat))
+allocate(ctem_grd%tcanoacc_out_g (nlat))
+allocate(ctem_grd%burnfrac_g (nlat))
+allocate(ctem_grd%smfuncveg_g (nlat))
+allocate(ctem_grd%lucemcom_g (nlat))
+allocate(ctem_grd%lucltrin_g (nlat))
+allocate(ctem_grd%lucsocin_g (nlat))
+allocate(ctem_grd%emit_co2_g (nlat))
+allocate(ctem_grd%emit_co_g (nlat))
+allocate(ctem_grd%emit_ch4_g (nlat))
+allocate(ctem_grd%emit_nmhc_g (nlat))
+allocate(ctem_grd%emit_h2_g (nlat))
+allocate(ctem_grd%emit_nox_g (nlat))
+allocate(ctem_grd%emit_n2o_g (nlat))
+allocate(ctem_grd%emit_pm25_g (nlat))
+allocate(ctem_grd%emit_tpm_g (nlat))
+allocate(ctem_grd%emit_tc_g (nlat))
+allocate(ctem_grd%emit_oc_g (nlat))
+allocate(ctem_grd%emit_bc_g (nlat))
+allocate(ctem_grd%bterm_g (nlat))
+allocate(ctem_grd%lterm_g (nlat))
+allocate(ctem_grd%mterm_g (nlat))
+allocate(ctem_grd%ch4wet1_g (nlat))
+allocate(ctem_grd%ch4wet2_g (nlat))
+allocate(ctem_grd%wetfdyn_g (nlat))
+allocate(ctem_grd%ch4dyn1_g (nlat))
+allocate(ctem_grd%ch4dyn2_g (nlat))
+allocate(ctem_grd%ch4_soills_g (nlat))
+allocate(ctem_grd%afrleaf_g (nlat,icc))
+allocate(ctem_grd%afrstem_g (nlat,icc))
+allocate(ctem_grd%afrroot_g (nlat,icc))
+allocate(ctem_grd%lfstatus_g (nlat,icc))
+allocate(ctem_grd%rmlvegrow_g (nlat,icc))
+allocate(ctem_grd%anvegrow_g(nlat,icc))
+allocate(ctem_grd%rmatctem_g (nlat,ignd))
+allocate(ctem_grd%HMFGROT_g (nlat,ignd))
+allocate(ctem_grd%HTCROT_g(nlat,ignd))
+allocate(ctem_grd%TBARROT_g (nlat,ignd))
+allocate(ctem_grd%THLQROT_g (nlat,ignd))
+allocate(ctem_grd%THICROT_g (nlat,ignd))
+allocate(ctem_grd%GFLXROT_g (nlat,ignd))
+allocate(ctem_grd%fsstar_g (nlat))
+allocate(ctem_grd%flstar_g (nlat))
+allocate(ctem_grd%qh_g(nlat))
+allocate(ctem_grd%qe_g (nlat))
+allocate(ctem_grd%snomlt_g (nlat))
+allocate(ctem_grd%beg_g (nlat))
+allocate(ctem_grd%gtout_g (nlat))
+allocate(ctem_grd%tpn_g (nlat))
+allocate(ctem_grd%altot_g(nlat))
+allocate(ctem_grd%tcn_g (nlat))
+allocate(ctem_grd%tsn_g (nlat))
+allocate(ctem_grd%zsn_g (nlat))
+
+allocate(ctem_tile%leaflitr_t (nlat,nmos))
+allocate(ctem_tile%tltrleaf_t (nlat,nmos))
+allocate(ctem_tile%tltrstem_t (nlat,nmos))
+allocate(ctem_tile%tltrroot_t (nlat,nmos))
+allocate(ctem_tile%ailcg_t (nlat,nmos))
+allocate(ctem_tile%ailcb_t (nlat,nmos))
+allocate(ctem_tile%rmatctem_t (nlat,nmos,ignd))
+allocate(ctem_tile%veghght_t (nlat,nmos))
+allocate(ctem_tile%rootdpth_t (nlat,nmos))
+allocate(ctem_tile%roottemp_t (nlat,nmos))
+allocate(ctem_tile%slai_t (nlat,nmos))
+allocate(ctem_tile%afrroot_t (nlat,nmos))
+allocate(ctem_tile%afrleaf_t (nlat,nmos))
+allocate(ctem_tile%afrstem_t (nlat,nmos))
+allocate(ctem_tile%laimaxg_t (nlat,nmos))
+allocate(ctem_tile%stemmass_t (nlat,nmos))
+allocate(ctem_tile%rootmass_t (nlat,nmos))
+allocate(ctem_tile%litrmass_t (nlat,nmos))
+allocate(ctem_tile%gleafmas_t (nlat,nmos))
+allocate(ctem_tile%bleafmas_t(nlat,nmos))
+allocate(ctem_tile%soilcmas_t (nlat,nmos))
+allocate(ctem_tile%emit_co2_t (nlat,nmos))
+allocate(ctem_tile%emit_co_t (nlat,nmos))
+allocate(ctem_tile%emit_ch4_t (nlat,nmos))
+allocate(ctem_tile%emit_nmhc_t (nlat,nmos))
+allocate(ctem_tile%emit_h2_t (nlat,nmos))
+allocate(ctem_tile%emit_nox_t (nlat,nmos))
+allocate(ctem_tile%emit_n2o_t (nlat,nmos))
+allocate(ctem_tile%emit_pm25_t (nlat,nmos))
+allocate(ctem_tile%emit_tpm_t (nlat,nmos))
+allocate(ctem_tile%emit_tc_t (nlat,nmos))
+allocate(ctem_tile%emit_oc_t (nlat,nmos))
+allocate(ctem_tile%emit_bc_t (nlat,nmos))
+allocate(ctem_tile%bterm_t (nlat,nmos))
+allocate(ctem_tile%mterm_t (nlat,nmos))
+allocate(ctem_tile%smfuncveg_t (nlat,nmos))
+allocate(ctem_tile%fsnowacc_t (ilg))
+allocate(ctem_tile%tcansacc_t (ilg))
+allocate(ctem_tile%tcanoaccgat_t (ilg))
+allocate(ctem_tile%taaccgat_t (ilg))
+allocate(ctem_tile%uvaccgat_t (ilg))
+allocate(ctem_tile%vvaccgat_t (ilg))
+allocate(ctem_tile%tbaraccgat_t (ilg,ignd))
+allocate(ctem_tile%tbarcacc_t (ilg,ignd))
+allocate(ctem_tile%tbarcsacc_t (ilg,ignd))
+allocate(ctem_tile%tbargacc_t (ilg,ignd))
+allocate(ctem_tile%tbargsacc_t (ilg,ignd))
+allocate(ctem_tile%thliqcacc_t (ilg,ignd))
+allocate(ctem_tile%thliqgacc_t (ilg,ignd))
+allocate(ctem_tile%thliqacc_t (ilg,ignd))
+allocate(ctem_tile%thicecacc_t (ilg,ignd))
+allocate(ctem_tile%thicegacc_t (ilg,ignd))
+allocate(ctem_tile%ancsvgac_t (ilg,icc))
+allocate(ctem_tile%ancgvgac_t (ilg,icc))
+allocate(ctem_tile%rmlcsvga_t (ilg,icc))
+allocate(ctem_tile%rmlcgvga_t (ilg,icc))
+
+allocate(ctem_mo%laimaxg_mo (nlat,nmos,icc))
+allocate(ctem_mo%stemmass_mo (nlat,nmos,icc))
+allocate(ctem_mo%rootmass_mo (nlat,nmos,icc))
+allocate(ctem_mo%litrfallveg_mo (nlat,nmos,icc))
+allocate(ctem_mo%npp_mo (nlat,nmos,icc))
+allocate(ctem_mo%gpp_mo (nlat,nmos,icc))
+allocate(ctem_mo%vgbiomas_mo (nlat,nmos,icc))
+allocate(ctem_mo%autores_mo (nlat,nmos,icc))
+allocate(ctem_mo%humiftrsveg_mo (nlat,nmos,iccp1))
+allocate(ctem_mo%totcmass_mo (nlat,nmos,iccp1))
+allocate(ctem_mo%litrmass_mo (nlat,nmos,iccp1))
+allocate(ctem_mo%soilcmas_mo (nlat,nmos,iccp1))
+allocate(ctem_mo%nep_mo (nlat,nmos,iccp1))
+allocate(ctem_mo%litres_mo (nlat,nmos,iccp1))
+allocate(ctem_mo%soilcres_mo (nlat,nmos,iccp1))
+allocate(ctem_mo%hetrores_mo (nlat,nmos,iccp1))
+allocate(ctem_mo%nbp_mo (nlat,nmos,iccp1))
+allocate(ctem_mo%emit_co2_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_co_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_ch4_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_nmhc_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_h2_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_nox_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_n2o_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_pm25_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_tpm_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_tc_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_oc_mo (nlat,nmos,icc))
+allocate(ctem_mo%emit_bc_mo (nlat,nmos,icc))
+allocate(ctem_mo%burnfrac_mo (nlat,nmos,icc))
+allocate(ctem_mo%bterm_mo (nlat,nmos,icc))
+allocate(ctem_mo%mterm_mo (nlat,nmos,icc))
+allocate(ctem_mo%smfuncveg_mo (nlat,nmos,icc))
+
+allocate(ctem_grd_mo%laimaxg_mo_g (nlat))
+allocate(ctem_grd_mo%stemmass_mo_g (nlat))
+allocate(ctem_grd_mo%rootmass_mo_g (nlat))
+allocate(ctem_grd_mo%litrmass_mo_g (nlat))
+allocate(ctem_grd_mo%soilcmas_mo_g (nlat))
+allocate(ctem_grd_mo%litrfall_mo_g (nlat))
+allocate(ctem_grd_mo%humiftrs_mo_g (nlat))
+allocate(ctem_grd_mo%npp_mo_g (nlat))
+allocate(ctem_grd_mo%gpp_mo_g (nlat))
+allocate(ctem_grd_mo%nep_mo_g (nlat))
+allocate(ctem_grd_mo%nbp_mo_g (nlat))
+allocate(ctem_grd_mo%hetrores_mo_g (nlat))
+allocate(ctem_grd_mo%autores_mo_g (nlat))
+allocate(ctem_grd_mo%litres_mo_g (nlat))
+allocate(ctem_grd_mo%soilcres_mo_g (nlat))
+allocate(ctem_grd_mo%vgbiomas_mo_g (nlat))
+allocate(ctem_grd_mo%totcmass_mo_g (nlat))
+allocate(ctem_grd_mo%emit_co2_mo_g (nlat))
+allocate(ctem_grd_mo%emit_co_mo_g (nlat))
+allocate(ctem_grd_mo%emit_ch4_mo_g (nlat))
+allocate(ctem_grd_mo%emit_nmhc_mo_g (nlat))
+allocate(ctem_grd_mo%emit_h2_mo_g (nlat))
+allocate(ctem_grd_mo%emit_nox_mo_g (nlat))
+allocate(ctem_grd_mo%emit_n2o_mo_g (nlat))
+allocate(ctem_grd_mo%emit_pm25_mo_g (nlat))
+allocate(ctem_grd_mo%emit_tpm_mo_g (nlat))
+allocate(ctem_grd_mo%emit_tc_mo_g (nlat))
+allocate(ctem_grd_mo%emit_oc_mo_g (nlat))
+allocate(ctem_grd_mo%emit_bc_mo_g (nlat))
+allocate(ctem_grd_mo%smfuncveg_mo_g (nlat))
+allocate(ctem_grd_mo%luc_emc_mo_g (nlat))
+allocate(ctem_grd_mo%lucltrin_mo_g (nlat))
+allocate(ctem_grd_mo%lucsocin_mo_g (nlat))
+allocate(ctem_grd_mo%burnfrac_mo_g (nlat))
+allocate(ctem_grd_mo%bterm_mo_g (nlat))
+allocate(ctem_grd_mo%lterm_mo_g(nlat))
+allocate(ctem_grd_mo%mterm_mo_g (nlat))
+allocate(ctem_grd_mo%ch4wet1_mo_g (nlat))
+allocate(ctem_grd_mo%ch4wet2_mo_g (nlat))
+allocate(ctem_grd_mo%wetfdyn_mo_g (nlat))
+allocate(ctem_grd_mo%ch4dyn1_mo_g (nlat))
+allocate(ctem_grd_mo%ch4dyn2_mo_g (nlat))
+allocate(ctem_grd_mo%ch4soills_mo_g (nlat))
+
+allocate(ctem_tile_mo%laimaxg_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%stemmass_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%rootmass_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%litrfall_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%humiftrs_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%npp_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%gpp_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%vgbiomas_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%autores_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%totcmass_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%litrmass_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%soilcmas_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%nep_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%litres_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%soilcres_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%hetrores_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%nbp_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_co2_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_co_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_ch4_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_nmhc_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_h2_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_nox_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_n2o_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_pm25_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_tpm_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_tc_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_oc_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%emit_bc_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%burnfrac_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%smfuncveg_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%bterm_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%luc_emc_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%lterm_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%lucsocin_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%mterm_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%lucltrin_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%ch4wet1_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%ch4wet2_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%wetfdyn_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%ch4dyn1_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%ch4dyn2_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%ch4soills_mo_t (nlat,nmos))
+allocate(ctem_tile_mo%wind_mo_t (nlat,nmos))
+
+allocate(ctem_yr%laimaxg_yr (nlat,nmos,icc))
+allocate(ctem_yr%stemmass_yr (nlat,nmos,icc))
+allocate(ctem_yr%rootmass_yr (nlat,nmos,icc))
+allocate(ctem_yr%npp_yr (nlat,nmos,icc))
+allocate(ctem_yr%gpp_yr (nlat,nmos,icc))
+allocate(ctem_yr%vgbiomas_yr (nlat,nmos,icc))
+allocate(ctem_yr%autores_yr (nlat,nmos,icc))
+allocate(ctem_yr%totcmass_yr (nlat,nmos,iccp1))
+allocate(ctem_yr%litrmass_yr (nlat,nmos,iccp1))
+allocate(ctem_yr%soilcmas_yr (nlat,nmos,iccp1))
+allocate(ctem_yr%nep_yr (nlat,nmos,iccp1))
+allocate(ctem_yr%litres_yr (nlat,nmos,iccp1))
+allocate(ctem_yr%soilcres_yr (nlat,nmos,iccp1))
+allocate(ctem_yr%hetrores_yr (nlat,nmos,iccp1))
+allocate(ctem_yr%nbp_yr (nlat,nmos,iccp1))
+allocate(ctem_yr%emit_co2_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_co_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_ch4_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_nmhc_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_h2_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_nox_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_n2o_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_pm25_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_tpm_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_tc_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_oc_yr (nlat,nmos,icc))
+allocate(ctem_yr%emit_bc_yr (nlat,nmos,icc))
+allocate(ctem_yr%bterm_yr (nlat,nmos,icc))
+allocate(ctem_yr%mterm_yr (nlat,nmos,icc))
+allocate(ctem_yr%burnfrac_yr (nlat,nmos,icc))
+allocate(ctem_yr%smfuncveg_yr (nlat,nmos,icc))
+allocate(ctem_yr%veghght_yr (nlat,nmos,icc))
+
+allocate(ctem_grd_yr%laimaxg_yr_g (nlat))
+allocate(ctem_grd_yr%stemmass_yr_g (nlat))
+allocate(ctem_grd_yr%rootmass_yr_g (nlat))
+allocate(ctem_grd_yr%litrmass_yr_g (nlat))
+allocate(ctem_grd_yr%soilcmas_yr_g (nlat))
+allocate(ctem_grd_yr%npp_yr_g (nlat))
+allocate(ctem_grd_yr%gpp_yr_g (nlat))
+allocate(ctem_grd_yr%nep_yr_g (nlat))
+allocate(ctem_grd_yr%nbp_yr_g (nlat))
+allocate(ctem_grd_yr%hetrores_yr_g (nlat))
+allocate(ctem_grd_yr%autores_yr_g (nlat))
+allocate(ctem_grd_yr%litres_yr_g (nlat))
+allocate(ctem_grd_yr%soilcres_yr_g (nlat))
+allocate(ctem_grd_yr%vgbiomas_yr_g (nlat))
+allocate(ctem_grd_yr%totcmass_yr_g (nlat))
+allocate(ctem_grd_yr%emit_co2_yr_g (nlat))
+allocate(ctem_grd_yr%emit_co_yr_g (nlat))
+allocate(ctem_grd_yr%emit_ch4_yr_g (nlat))
+allocate(ctem_grd_yr%emit_nmhc_yr_g (nlat))
+allocate(ctem_grd_yr%emit_h2_yr_g (nlat))
+allocate(ctem_grd_yr%emit_nox_yr_g (nlat))
+allocate(ctem_grd_yr%emit_n2o_yr_g (nlat))
+allocate(ctem_grd_yr%emit_pm25_yr_g (nlat))
+allocate(ctem_grd_yr%emit_tpm_yr_g (nlat))
+allocate(ctem_grd_yr%emit_tc_yr_g (nlat))
+allocate(ctem_grd_yr%emit_oc_yr_g (nlat))
+allocate(ctem_grd_yr%emit_bc_yr_g (nlat))
+allocate(ctem_grd_yr%smfuncveg_yr_g (nlat))
+allocate(ctem_grd_yr%luc_emc_yr_g (nlat))
+allocate(ctem_grd_yr%lucltrin_yr_g (nlat))
+allocate(ctem_grd_yr%lucsocin_yr_g (nlat))
+allocate(ctem_grd_yr%burnfrac_yr_g (nlat))
+allocate(ctem_grd_yr%bterm_yr_g (nlat))
+allocate(ctem_grd_yr%lterm_yr_g (nlat))
+allocate(ctem_grd_yr%mterm_yr_g (nlat))
+allocate(ctem_grd_yr%ch4wet1_yr_g (nlat))
+allocate(ctem_grd_yr%ch4wet2_yr_g (nlat))
+allocate(ctem_grd_yr%wetfdyn_yr_g (nlat))
+allocate(ctem_grd_yr%ch4dyn1_yr_g (nlat))
+allocate(ctem_grd_yr%ch4dyn2_yr_g (nlat))
+allocate(ctem_grd_yr%ch4soills_yr_g (nlat))
+allocate(ctem_grd_yr%veghght_yr_g (nlat))
+
+allocate(ctem_tile_yr%laimaxg_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%stemmass_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%rootmass_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%npp_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%gpp_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%vgbiomas_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%autores_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%totcmass_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%litrmass_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%soilcmas_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%nep_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%litres_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%soilcres_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%hetrores_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%nbp_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_co2_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_co_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_ch4_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_nmhc_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_h2_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_nox_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_n2o_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_pm25_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_tpm_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_tc_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_oc_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%emit_bc_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%burnfrac_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%smfuncveg_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%bterm_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%luc_emc_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%lterm_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%lucsocin_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%mterm_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%lucltrin_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%ch4wet1_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%ch4wet2_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%wetfdyn_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%ch4dyn1_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%ch4dyn2_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%ch4soills_yr_t (nlat,nmos))
+allocate(ctem_tile_yr%veghght_yr_t (nlat,nmos))
 
 end subroutine alloc_ctem_vars
 

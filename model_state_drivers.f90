@@ -242,7 +242,12 @@ end subroutine openmet
 
 !--------------------------------------------------------------------------------------------
 
-subroutine read_modelsetup(nmtest,nltest)!,ignd) 
+subroutine read_modelsetup()
+
+!> This reads in the model setup from the netcdf initialization file.
+!> The number of latitudes (nlat) and the maximum number of mosaics (nmos)
+!> is read from the netcdf. ilg is then calculated. The number of soil layers
+!> is also set from the netcdf.
 
 ! J. Melton
 ! Feb 2017
@@ -251,15 +256,9 @@ use netcdf
 use netcdf_drivers, only : check_nc
 use io_driver, only : initid,cntx,cnty,srtx,srty,bounds,lonvect,latvect
 use ctem_statevars,     only : c_switch
-
+use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
 
 implicit none
-
-! arguments:
-integer :: ignd  !flag temp intent
-!integer, intent(out) :: ignd  !flag temp intent
-integer, intent(out) :: nltest  !flag temp intent
-integer, intent(out) :: nmtest  !flag temp intent
 
 ! pointers:
 character(180), pointer         :: init_file
@@ -323,28 +322,32 @@ if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
 if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
  cnty = 1 + abs(maxval(ypos) - srty)
 
-!> The size of nltest should then be cntx x cnty. We later take in GC to determine
+!> The size of nlat should then be cntx x cnty. We later take in GC to determine
 !! which cells are valid land cells and use that in GATPREP to make it so we only
 !! do computations over the valid land cells.
 
-nltest = cntx * cnty
+nlat = cntx * cnty
 
-!> Retrieve the number of soil layers
+!> Retrieve the number of soil layers (set ignd!)
 
 call check_nc(nf90_inq_dimid(initid,'layer',dimid))
 call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
 
-!> To determine nmtest, we use the largest number in the input file variable nmtest
-!! for the region we are running. 
+!> To determine nmos, we use the largest number in the input file variable nmtest
+!! for the region we are running.
 
 allocate(nmarray(cnty,cntx))
 
 call check_nc(nf90_inq_varid(initid,'nmtest',varid))
 call check_nc(nf90_get_var(initid,varid,nmarray,start=[srty,srtx],count=[cnty,cntx]))
 
-nmtest = maxval(nmarray)
+nmos= maxval(nmarray)
 
 deallocate(nmarray)
+
+!> Lastly we determine the size of ilg which is nlat time nmoos
+
+ilg = nlat * nmos
 
 end subroutine read_modelsetup
 

@@ -1177,10 +1177,10 @@ real, pointer, dimension(:) :: FTABLE_MAX_MO
 real, pointer, dimension(:) :: ALTOTACC_MO
 real, pointer, dimension(:) :: GROUNDEVAP
 real, pointer, dimension(:) :: CANOPYEVAP
-real, pointer :: FSSTAR_MO
-real, pointer :: FLSTAR_MO
-real, pointer :: QH_MO
-real, pointer :: QE_MO
+! real, pointer :: FSSTAR_MO
+! real, pointer :: FLSTAR_MO
+! real, pointer :: QH_MO
+! real, pointer :: QE_MO
 real, pointer, dimension(:,:) :: TBARACC_MO
 real, pointer, dimension(:,:) :: THLQACC_MO
 real, pointer, dimension(:,:) :: THICACC_MO
@@ -1195,6 +1195,10 @@ integer :: IMONTH
 real :: tovere
 real, dimension(nlat) :: ACTLYR_tmp
 real, dimension(nlat) :: FTABLE_tmp
+real :: FSSTAR_MO
+real :: FLSTAR_MO
+real :: QH_MO
+real :: QE_MO
 
 ! point pointers
 ALVSACC_MO        => class_out%ALVSACC_MO  
@@ -1211,10 +1215,10 @@ PREACC_MO         => class_out%PREACC_MO
 EVAPACC_MO        => class_out%EVAPACC_MO
 TRANSPACC_MO      => class_out%TRANSPACC_MO
 TAACC_MO          => class_out%TAACC_MO
-FSSTAR_MO         => class_out%FSSTAR_MO
-FLSTAR_MO         => class_out%FLSTAR_MO
-QH_MO             => class_out%QH_MO
-QE_MO             => class_out%QE_MO  
+! FSSTAR_MO         => class_out%FSSTAR_MO
+! FLSTAR_MO         => class_out%FLSTAR_MO
+! QH_MO             => class_out%QH_MO
+! QE_MO             => class_out%QE_MO
 TBARACC_MO        => class_out%TBARACC_MO
 THLQACC_MO        => class_out%THLQACC_MO    
 THICACC_MO        => class_out%THICACC_MO
@@ -1447,15 +1451,19 @@ real, pointer, dimension(:) :: TAACC_YR
 real, pointer, dimension(:) :: ACTLYR_YR
 real, pointer, dimension(:) :: FTABLE_YR
 real, pointer, dimension(:) :: ALTOTACC_YR
-real, pointer :: FSSTAR_YR
-real, pointer :: FLSTAR_YR
-real, pointer :: QH_YR
-real, pointer :: QE_YR
+! real, pointer :: FSSTAR_YR
+! real, pointer :: FLSTAR_YR
+! real, pointer :: QH_YR
+! real, pointer :: QE_YR
 
 !local
 integer :: i,m,j
 real :: ALTOT_YR
 real :: tovere
+real :: FSSTAR_YR
+real :: FLSTAR_YR
+real :: QH_YR
+real :: QE_YR
 
 !point pointers
 ALVSACC_YR        => class_out%ALVSACC_YR
@@ -1470,10 +1478,10 @@ PREACC_YR         => class_out%PREACC_YR
 EVAPACC_YR        => class_out%EVAPACC_YR
 TRANSPACC_YR      => class_out%TRANSPACC_YR
 TAACC_YR          => class_out%TAACC_YR
-FSSTAR_YR         => class_out%FSSTAR_YR
-FLSTAR_YR         => class_out%FLSTAR_YR
-QH_YR             => class_out%QH_YR
-QE_YR             => class_out%QE_YR
+! FSSTAR_YR         => class_out%FSSTAR_YR
+! FLSTAR_YR         => class_out%FLSTAR_YR
+! QH_YR             => class_out%QH_YR
+! QE_YR             => class_out%QE_YR
 ACTLYR_YR         => class_out%ACTLYR_YR
 FTABLE_YR         => class_out%FTABLE_YR
 ALTOTACC_YR       => class_out%ALTOTACC_YR

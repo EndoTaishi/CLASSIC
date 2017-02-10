@@ -109,7 +109,9 @@
      &                               resetmonthend,resetyearend,&
      &                               resetclassaccum,ctem_grd,&
      &                               ctem_tile,resetgridavg,&
-     &                               finddaylength,alloc_ctem_vars
+     &                               finddaylength,alloc_ctem_vars,&
+     &                               ctem_mo,ctem_grd_mo,ctem_tile_mo, &
+     &                               ctem_yr,ctem_grd_yr,ctem_tile_yr
 
       use class_statevars,    only : alloc_class_vars,class_gat,class_rot
 
@@ -1604,14 +1606,13 @@
       real, allocatable, dimension(:,:)  :: rgmgat !(ilg,ignd)
       real, allocatable, dimension(:,:)  :: sandgat !(ilg,ignd)
       real, allocatable, dimension(:,:)  :: claygat !(ilg,ignd)
+      real, allocatable, dimension(:,:)  :: orgmgat !(ilg,ignd)
       real, allocatable, dimension(:)    :: xdiffusgat !(ilg) ! the corresponding ROW is CLASS's XDIFFUS
       real, allocatable, dimension(:)    :: faregat !(ilg)   ! the ROT is FAREROT
       real, allocatable, dimension(:,:)  :: FTABLE !(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
       real, allocatable, dimension(:,:)  :: ACTLYR !(NLAT,NMOS)
 
        real fsstar_gat, flstar_gat !FLAG should these have more dimensions? JM Feb 2016.
-
-
 
       ! Model switches:
       logical, pointer :: ctem_on
@@ -2829,6 +2830,9 @@
       met_file          => c_switch%met_file
       init_file         => c_switch%init_file
 
+      ! Allocate the ctem structure vrot
+      allocate(vrot)
+
       tcanrs            => vrot%tcanrs
       tsnors            => vrot%tsnors
       tpndrs            => vrot%tpndrs
@@ -3010,6 +3014,9 @@
 
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>
       ! GAT:
+
+      ! Allocate the ctem structure vgat
+      allocate(vgat)
 
       lightng           => vgat%lightng
       tcanoaccgat_out   => vgat%tcanoaccgat_out
@@ -3234,6 +3241,9 @@
 
       ! grid-averaged (CLASS vars)
 
+      ! Allocate the ctem structure ctem_grd
+      allocate(ctem_grd)
+
       WSNOROT_g         => ctem_grd%WSNOROT_g
       ROFSROT_g         => ctem_grd%ROFSROT_g
       SNOROT_g          => ctem_grd%SNOROT_g
@@ -3312,6 +3322,9 @@
 
       ! mosaic level variables (CLASS):
 
+      ! Allocate the ctem structure ctem_tile
+      allocate(ctem_tile)
+
       fsnowacc_t        => ctem_tile%fsnowacc_t
       tcansacc_t        => ctem_tile%tcansacc_t
       tcanoaccgat_t     => ctem_tile%tcanoaccgat_t
@@ -3336,8 +3349,11 @@
 !    =================================================================================
 !    =================================================================================
 
-!    Declarations are complete, run preparations begin
+!    Allocate some other data structures:
+    allocate(class_out,ctem_mo,ctem_grd_mo,ctem_tile_mo, &
+      &      ctem_yr,ctem_grd_yr,ctem_tile_yr)
 
+!    Declarations are complete, run preparations begin
       CALL CLASSD
 
 !     all model switches are read in from a namelist file
@@ -3353,9 +3369,11 @@
      &             jdsty,jdendy,use_netcdf,met_file,init_file)
 
      
-!> First we set up the run boundaries based on the metadata in the initialization netcdf file.     
-      call read_modelsetup(nltest,nmtest) !,ignd)
-      write(*,*)'done read model setup'
+!> First we set up the run boundaries based on the metadata in the initialization netcdf file.
+!! In read_modelsetup we use the netcdf to set the nlat, nmos, ignd, and ilg constants.
+
+      call read_modelsetup()
+      write(*,*)'done read model setup',nlat,nmos,ilg,ignd
 !>     Open the met netcdf file. This also sets up the run boundaries
 !!     based on the metadata in the netcdf. It is important to ensure the
 !!     netcdf is of the same dimensions as the intended output files.
@@ -3371,40 +3389,44 @@
 !     Initialize the CTEM parameters (after read_initialstate)
       call initpftpars(compete)
       write(*,*)'after inits pftpars'
-      call alloc_class_vars(nlat,nmos,ignd)
 
-      call alloc_ctem_vars(nlat,nmos,ignd)
+!> Now that we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
+!! CTEM variable structures.
+      call alloc_class_vars()
+
+      call alloc_ctem_vars()
 
       ! Allocate the local variables that rely on nlat, ilg, etc.
-      allocate(curlatno()) !ilg
-      allocate(altotcount_ctm()) !nlat
-      allocate(todfrac())  !(ilg,icc)
-      allocate(barf())  !(nlat,nmos)
-      allocate(currlat()) !(ilg)
-      allocate(wl()) !(lat)
-      allocate(grclarea()) !(ilg)
-      allocate(wossl()) !(lat)
-      allocate(sl()) !(lat)
-      allocate(radl()) !(lat)
-      allocate(cl()) !(lat)
-      allocate(ml()) !(ilg)
-      allocate(fsinacc_gat()) !(ilg)
-      allocate(flutacc_gat()) !(ilg)
-      allocate(flinacc_gat()) !(ilg)
-      allocate(alswacc_gat()) !(ilg)
-      allocate(allwacc_gat()) !(ilg)
-      allocate(pregacc_gat()) !(ilg)
-      allocate(altotacc_gat()) !(ilg)
-      allocate(netrad_gat()) !(ilg)
-      allocate(preacc_gat()) !(ilg)
-      allocate(sdepgat()) !(ilg)
-      allocate(rgmgat()) !(ilg,ignd)
-      allocate(sandgat()) !(ilg,ignd)
-      allocate(claygat()) !(ilg,ignd)
-      allocate(xdiffusgat()) !(ilg) ! the corresponding ROW is CLASS's XDIFFUS
-      allocate(faregat()) !(ilg)   ! the ROT is FAREROT
-      allocate(FTABLE()) !(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
-      allocate(ACTLYR()) !(NLAT,NMOS)
+      allocate(curlatno(ilg))
+      allocate(altotcount_ctm(nlat))
+      allocate(todfrac(ilg,icc))
+      allocate(barf(nlat,nmos))  !(nlat,nmos)
+      allocate(currlat(ilg)) !(ilg)
+      allocate(wl(lat)) !(lat)
+      allocate(grclarea(ilg)) !(ilg)
+      allocate(wossl(lat)) !(lat)
+      allocate(sl(lat)) !(lat)
+      allocate(radl(lat)) !(lat)
+      allocate(cl(lat)) !(lat)
+      allocate(ml(ilg)) !(ilg)
+      allocate(fsinacc_gat(ilg)) !(ilg)
+      allocate(flutacc_gat(ilg)) !(ilg)
+      allocate(flinacc_gat(ilg)) !(ilg)
+      allocate(alswacc_gat(ilg)) !(ilg)
+      allocate(allwacc_gat(ilg)) !(ilg)
+      allocate(pregacc_gat(ilg)) !(ilg)
+      allocate(altotacc_gat(ilg)) !(ilg)
+      allocate(netrad_gat(ilg)) !(ilg)
+      allocate(preacc_gat(ilg)) !(ilg)
+      allocate(sdepgat(ilg)) !(ilg)
+      allocate(rgmgat(ilg,ignd)) !(ilg,ignd)
+      allocate(sandgat(ilg,ignd)) !(ilg,ignd)
+      allocate(claygat(ilg,ignd)) !(ilg,ignd)
+      allocate(orgmgat(ilg,ignd)) !(ilg,ignd)
+      allocate(xdiffusgat(ilg)) !(ilg) ! the corresponding ROW is CLASS's XDIFFUS
+      allocate(faregat(ilg)) !(ilg)   ! the ROT is FAREROT
+      allocate(FTABLE(nlat,nmos)) !(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
+      allocate(ACTLYR(nlat,nmos)) !(NLAT,NMOS)
 
 
 write(*,*)'after inits class'
