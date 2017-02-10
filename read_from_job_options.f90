@@ -74,7 +74,7 @@ subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ct
                   setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
                   compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
                   islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,& 
-                  jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy,use_netcdf,met_file,met_ts_sec)
+                  jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy,use_netcdf,met_file,init_file)
 
 !#ifdef nagf95
 !use f90_unix
@@ -216,7 +216,8 @@ logical, intent(out) :: use_netcdf      !< If true, the model inputs and outputs
 
 character(180), intent(out) :: met_file !< location of the netcdf meteorological dataset
 
-integer, intent(out) :: met_ts_sec   !< number of seconds per timestep in the meteorological netcdf file.
+character(180), intent(out) :: init_file !< location of the netcdf initialization file
+
 
 logical, intent(out) :: start_from_rs !< if true, this option copies the _RS INI and CTM files
                                  !< to be the .INI and .CTM files and then starts the run as per normal.
@@ -358,7 +359,7 @@ namelist /joboptions/ &
   start_from_rs,      &
   use_netcdf,         &
   met_file,           &
-  met_ts_sec,         &
+  init_file,         &
   IDISP,              &
   IZREF,              &
   ISLFD,              &

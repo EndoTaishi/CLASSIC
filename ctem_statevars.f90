@@ -25,6 +25,7 @@ use ctem_params,  only : initpftpars, nlat, nmos, ilg, nmon,ican, ignd,icp1, icc
 
 implicit none
 
+public :: alloc_ctem_vars
 public :: initrowvars
 public :: resetclassmon
 public :: resetclassyr
@@ -36,7 +37,8 @@ public :: resetgridavg
 public :: finddaylength
 
 !=================================================================================
-!>switches for running CTEM, read from the joboptions file
+!>switches for running the model, read from the joboptions file
+
 type ctem_switches
 
     logical :: ctem_on     !<
@@ -77,10 +79,103 @@ type ctem_switches
     logical :: dowetlands   !<if true allow wetland methane emission
     logical :: obswetf      !<observed wetland fraction
     logical :: transient_run!<
-    logical :: use_netcdf   !< If true all model inputs and outputs are handled via netcdfs
-    character(180) :: met_file !< location of the netcdf meteorological dataset
-    integer :: met_ts_sec      !< number of seconds per timestep in the meteorological netcdf file.
+    logical :: use_netcdf        !< If true all model inputs and outputs are handled via netcdfs
+    character(180) :: met_file   !< location of the netcdf meteorological dataset
+    character(180) :: init_file  !< location of the netcdf initialization file
 
+    ! CLASS switches:
+!     
+!     integer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
+!                                  !< because the atmospheric model considers these to be part
+!                                  !< of the "terrain".
+!                                  !< if idisp=1, vegetation displacement heights are calculated.
+! 
+!     integer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
+!                                  !< to lie at the ground surface.
+!                                  !< if izref=2, the bottom of the atmospheric model is taken
+!                                  !< to lie at the local roughness height.
+! 
+!     integer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
+!                                  !< and the original gcm set of screen-level diagnostic calculations 
+!                                  !< is done.
+!                                  !< if islfd=1, drcoef is called for surface stability corrections
+!                                  !< and sldiag is called for screen-level diagnostic calculations. 
+!                                  !< if islfd=2, flxsurfz is called for surface stability corrections
+!                                  !< and diasurf is called for screen-level diagnostic calculations. 
+! 
+!     integer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
+!                                  !< if ipcp=2, a linear partitioning of precipitation betweeen 
+!                                  !< rainfall and snowfall is done between 0 c and 2 c.
+!                                  !< if ipcp=3, rainfall and snowfall are partitioned according to
+!                                  !< a polynomial curve between 0 c and 6 c.
+! 
+!     integer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
+!                                 !< the ground surface slope is not modelled.
+!                                 !< if iwf=n (0<n<4), the watflood calculations of overland flow 
+!                                 !< and interflow are performed; interflow is drawn from the top 
+!                                 !< n soil layers.
+! 
+!     integer :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
+!                            !< be used in calculating the canopy or ground surface temperature
+!                            !< respectively.  if the switch is set to 1, a bisection method is
+!                            !< used; if to 2, the newton-raphson method is used.
+!     integer :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
+!                            !< be used in calculating the canopy or ground surface temperature
+!                            !< respectively.  if the switch is set to 1, a bisection method is
+!                            !< used; if to 2, the newton-raphson method is used.
+!     integer :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
+!                            !< be used in calculating the canopy or ground surface temperature
+!                            !< respectively.  if the switch is set to 1, a bisection method is
+!                            !< used; if to 2, the newton-raphson method is used.
+!    
+!     integer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+!                            !< plant area index, vegetation height, canopy albedo, snow albedo
+!                            !< and soil albedo respectively calculated by class are used.
+!                            !< if any of these switches is set to 1, the value of the
+!                            !< corresponding parameter calculated by class is overridden by
+!                            !< a user-supplied input value.  
+!     integer :: IHGT !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+!                            !< plant area index, vegetation height, canopy albedo, snow albedo
+!                            !< and soil albedo respectively calculated by class are used.
+!                            !< if any of these switches is set to 1, the value of the
+!                            !< corresponding parameter calculated by class is overridden by
+!                            !< a user-supplied input value. 
+!     integer :: IALC !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+!                            !< plant area index, vegetation height, canopy albedo, snow albedo
+!                            !< and soil albedo respectively calculated by class are used.
+!                            !< if any of these switches is set to 1, the value of the
+!                            !< corresponding parameter calculated by class is overridden by
+!                            !< a user-supplied input value. 
+!     integer :: IALS !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+!                            !< plant area index, vegetation height, canopy albedo, snow albedo
+!                            !< and soil albedo respectively calculated by class are used.
+!                            !< if any of these switches is set to 1, the value of the
+!                            !< corresponding parameter calculated by class is overridden by
+!                            !< a user-supplied input value. 
+!     integer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+!                            !< plant area index, vegetation height, canopy albedo, snow albedo
+!                            !< and soil albedo respectively calculated by class are used.
+!                            !< if any of these switches is set to 1, the value of the
+!                            !< corresponding parameter calculated by class is overridden by
+!                            !< a user-supplied input value. 
+! 
+!     ! -------------
+!     ! >>>> note: if you wish to use the values in the .ini file, set all to -9999 in the job options file
+!     !            and the .ini file will be used.
+! 
+!     integer :: jhhstd  !< day of the year to start writing the half-hourly output
+!     integer :: jhhendd !< day of the year to stop writing the half-hourly output
+!     integer :: jdstd   !< day of the year to start writing the daily output
+!     integer :: jdendd  !< day of the year to stop writing the daily output
+!     integer :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
+!     integer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
+!     integer :: jdsty   !< simulation year (iyear) to start writing the daily output
+!     integer :: jdendy  !< simulation year (iyear) to stop writing the daily output
+! 
+! 
+!     integer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.  
+!                                 !< if it is set to 1, the new four-band routines are used.
+                                
     character(80) :: titlec1!<
     character(80) :: titlec2!<
     character(80) :: titlec3!<
@@ -93,246 +188,240 @@ type (ctem_switches), save, target :: c_switch
 !>CTEM's 'rot' vars
 type veg_rot
 
-    ! This is the basic data structure that contains the state variables
-    ! for the Plant Functional Type (PFT). The dimensions are nlat,nmos,{icc,iccp1}
-
-    real, dimension(nlat,nmos,icc) :: ailcmin      !<
-    real, dimension(nlat,nmos,icc) :: ailcmax      !<
-    real, dimension(nlat,nmos,icc) :: dvdfcan      !<
-    real, dimension(nlat,nmos,icc) :: gleafmas     !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,icc) :: bleafmas     !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,icc) :: stemmass     !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,icc) :: rootmass     !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,icc) :: pstemmass    !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
-    real, dimension(nlat,nmos,icc) :: pgleafmass   !<root mass from previous timestep, is value before fire. used by burntobare subroutine
-    real, dimension(nlat,nmos,icc) :: fcancmx      !<max. fractional coverage of ctem's 9 pfts, but this can be
+    logical, allocatable, dimension(:,:,:) :: pftexist  !<logical array indicating pfts exist (t) or not (f)
+    integer, allocatable, dimension(:,:,:) :: lfstatus  !<leaf phenology status
+    integer, allocatable, dimension(:,:,:) :: pandays   !<days with positive net photosynthesis (an) for use in
+                                                   !<the phenology subroutine
+    real, allocatable, dimension(:,:,:) :: ailcmin      !<
+    real, allocatable, dimension(:,:,:) :: ailcmax      !<
+    real, allocatable, dimension(:,:,:) :: dvdfcan      !<
+    real, allocatable, dimension(:,:,:) :: gleafmas     !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: bleafmas     !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: stemmass     !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: rootmass     !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: pstemmass    !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, allocatable, dimension(:,:,:) :: pgleafmass   !<root mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, allocatable, dimension(:,:,:) :: fcancmx      !<max. fractional coverage of ctem's 9 pfts, but this can be
                                                    !<modified by land-use change, and competition between pfts
-    real, dimension(nlat,nmos) :: gavglai          !<grid averaged green leaf area index
-
-    real, dimension(nlat,nmos,ican) :: zolnc       !<lumped log of roughness length for class' 4 pfts
-    real, dimension(nlat,nmos,ican) :: ailc        !<lumped lai for class' 4 pfts
-
-    real, dimension(nlat,nmos,icc) :: ailcg        !<green lai for ctem's 9 pfts
-    real, dimension(nlat,nmos,icc) :: ailcgs       !<GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
-    real, dimension(nlat,nmos,icc) :: fcancs       !<FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
-    real, dimension(nlat,nmos,icc) :: fcanc        !<FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
-
-    real, dimension(nlat,nmos) :: co2conc          !<ATMOS. CO2 CONC. IN PPM
-    real, dimension(nlat,nmos) :: ch4conc          !<
-
-    real, dimension(nlat,nmos,icc) :: co2i1cg      !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-    real, dimension(nlat,nmos,icc) :: co2i1cs      !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i1cg)
-    real, dimension(nlat,nmos,icc) :: co2i2cg      !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-    real, dimension(nlat,nmos,icc) :: co2i2cs      !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i2cg)
-    real, dimension(nlat,nmos,icc) :: ancsveg      !<net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
-    real, dimension(nlat,nmos,icc) :: ancgveg      !<net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
-    real, dimension(nlat,nmos,icc) :: rmlcsveg     !<leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
-    real, dimension(nlat,nmos,icc) :: rmlcgveg     !<leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
-    real, dimension(nlat,nmos,icc) :: slai         !<storage/imaginary lai for phenology purposes
-    real, dimension(nlat,nmos,icc) :: ailcb        !<brown lai for ctem's 9 pfts. for now we assume only grasses can have brown lai
-    real, dimension(nlat,nmos)     :: canres       !<
-    real, dimension(nlat,nmos,icc) :: flhrloss     !<fall or harvest loss for deciduous trees and crops, respectively, \f$kg c/m^2\f$il1
-    real, dimension(nlat,nmos,icc) :: grwtheff     !<growth efficiency. change in biomass per year per unit max.
+    real, allocatable, dimension(:,:,:) :: ailcg        !<green lai for ctem's 9 pfts
+    real, allocatable, dimension(:,:,:) :: ailcgs       !<GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
+    real, allocatable, dimension(:,:,:) :: fcancs       !<FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
+    real, allocatable, dimension(:,:,:) :: fcanc        !<FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER SNOW
+    real, allocatable, dimension(:,:,:) :: co2i1cg      !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+    real, allocatable, dimension(:,:,:) :: co2i1cs      !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i1cg)
+    real, allocatable, dimension(:,:,:) :: co2i2cg      !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+    real, allocatable, dimension(:,:,:) :: co2i2cs      !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i2cg)
+    real, allocatable, dimension(:,:,:) :: ancsveg      !<net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
+    real, allocatable, dimension(:,:,:) :: ancgveg      !<net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
+    real, allocatable, dimension(:,:,:) :: rmlcsveg     !<leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
+    real, allocatable, dimension(:,:,:) :: rmlcgveg     !<leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
+    real, allocatable, dimension(:,:,:) :: slai         !<storage/imaginary lai for phenology purposes
+    real, allocatable, dimension(:,:,:) :: ailcb        !<brown lai for ctem's 9 pfts. for now we assume only grasses can have brown lai
+    real, allocatable, dimension(:,:,:) :: flhrloss     !<fall or harvest loss for deciduous trees and crops, respectively, \f$kg c/m^2\f$il1
+    real, allocatable, dimension(:,:,:) :: grwtheff     !<growth efficiency. change in biomass per year per unit max.
                                                    !<lai (\f$kg c/m^2\f$)/(m2/m2), for use in mortality subroutine
-    real, dimension(nlat,nmos,icc) :: lystmmas     !<stem mass at the end of last year
-    real, dimension(nlat,nmos,icc) :: lyrotmas     !<root mass at the end of last year
-    real, dimension(nlat,nmos,icc) :: tymaxlai     !<this year's maximum lai
-    real, dimension(nlat,nmos)     :: vgbiomas     !<grid averaged vegetation biomass, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos)     :: gavgltms     !<grid averaged litter mass, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos)     :: gavgscms     !<grid averaged soil c mass, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,icc) :: stmhrlos     !<stem harvest loss for crops, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,ican,ignd) :: rmatc  !<fraction of roots for each of class' 4 pfts in each soil layer
-    real, dimension(nlat,nmos,icc,ignd) :: rmatctem!<fraction of roots for each of ctem's 9 pfts in each soil layer
-    real, dimension(nlat,nmos,iccp1) :: litrmass   !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,iccp1) :: soilcmas   !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,icc) :: vgbiomas_veg !<vegetation biomass for each pft
+    real, allocatable, dimension(:,:,:) :: lystmmas     !<stem mass at the end of last year
+    real, allocatable, dimension(:,:,:) :: lyrotmas     !<root mass at the end of last year
+    real, allocatable, dimension(:,:,:) :: tymaxlai     !<this year's maximum lai
+    real, allocatable, dimension(:,:,:) :: stmhrlos     !<stem harvest loss for crops, \f$kg c/m^2\f$                                                   
+    real, allocatable, dimension(:,:,:) :: vgbiomas_veg !<vegetation biomass for each pft
+    real, allocatable, dimension(:,:,:) :: emit_co2     !<carbon dioxide
+    real, allocatable, dimension(:,:,:) :: emit_co      !<carbon monoxide
+    real, allocatable, dimension(:,:,:) :: emit_ch4     !<methane
+    real, allocatable, dimension(:,:,:) :: emit_nmhc    !<non-methane hydrocarbons
+    real, allocatable, dimension(:,:,:) :: emit_h2      !<hydrogen gas
+    real, allocatable, dimension(:,:,:) :: emit_nox     !<nitrogen oxides
+    real, allocatable, dimension(:,:,:) :: emit_n2o     !<nitrous oxide
+    real, allocatable, dimension(:,:,:) :: emit_pm25    !<particulate matter less than 2.5 um in diameter
+    real, allocatable, dimension(:,:,:) :: emit_tpm     !<total particulate matter
+    real, allocatable, dimension(:,:,:) :: emit_tc      !<total carbon
+    real, allocatable, dimension(:,:,:) :: emit_oc      !<organic carbon
+    real, allocatable, dimension(:,:,:) :: emit_bc      !<black carbon
+    real, allocatable, dimension(:,:,:) :: burnvegf     !<per PFT fraction burned of that PFT's area
+    real, allocatable, dimension(:,:,:) :: smfuncveg    !<
+    real, allocatable, dimension(:,:,:) :: bterm        !<biomass term for fire probabilty calc                                
+    real, allocatable, dimension(:,:,:) :: mterm        !<moisture term for fire probabilty calc
+    real, allocatable, dimension(:,:,:) :: bmasveg      !<total (gleaf + stem + root) biomass for each ctem pft, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: veghght      !<vegetation height (meters)
+    real, allocatable, dimension(:,:,:) :: rootdpth     !<99% soil rooting depth (meters)
+                                                   !<both veghght & rootdpth can be used as diagnostics to see
+                                                   !<how vegetation grows above and below ground, respectively
+    real, allocatable, dimension(:,:,:) :: tltrleaf     !<total leaf litter fall rate (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:,:) :: tltrstem     !<total stem litter fall rate (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:,:) :: tltrroot     !<total root litter fall rate (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:,:) :: leaflitr     !<leaf litter fall rate (u-mol co2/m2.sec). this leaf litter 
+                                                   !<does not include litter generated due to mortality/fire
+    real, allocatable, dimension(:,:,:) :: roottemp     !<root temperature, k
+    real, allocatable, dimension(:,:,:) :: afrleaf      !<allocation fraction for leaves
+    real, allocatable, dimension(:,:,:) :: afrstem      !<allocation fraction for stem
+    real, allocatable, dimension(:,:,:) :: afrroot      !<allocation fraction for root
+    real, allocatable, dimension(:,:,:) :: wtstatus     !<soil water status used for calculating allocation fractions
+    real, allocatable, dimension(:,:,:) :: ltstatus     !<light status used for calculating allocation fractions
+    real, allocatable, dimension(:,:,:) :: gppveg       !<!gross primary productity for each pft
+    real, allocatable, dimension(:,:,:) :: nppveg       !<npp for individual pfts,  u-mol co2/m2.sec
+    real, allocatable, dimension(:,:,:) :: autoresveg   !<
+    real, allocatable, dimension(:,:,:) :: rmlvegacc    !<
+    real, allocatable, dimension(:,:,:) :: rmsveg       !<stem maintenance resp. rate for each pft
+    real, allocatable, dimension(:,:,:) :: rmrveg       !<root maintenance resp. rate for each pft
+    real, allocatable, dimension(:,:,:) :: rgveg        !<growth resp. rate for each pft
+    real, allocatable, dimension(:,:,:) :: litrfallveg  !<litter fall in \f$kg c/m^2\f$ for each pft
+    real, allocatable, dimension(:,:,:) :: rothrlos     !<root death as crops are harvested, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: pfcancmx     !<previous year's fractional coverages of pfts
+    real, allocatable, dimension(:,:,:) :: nfcancmx     !<next year's fractional coverages of pfts
+    real, allocatable, dimension(:,:,:) :: anveg        !<net photosynthesis rate for each pft
+    real, allocatable, dimension(:,:,:) :: rmlveg       !<leaf maintenance resp. rate for each pft
+    
+! allocated with nlat,nmos:   
+    integer, allocatable, dimension(:,:)     :: icount         !<
+    integer, allocatable, dimension(:,:)     :: stdaln         !<an integer telling if ctem is operated within gcm (=0) or in stand
+                                                        !<alone mode (=1). this is used for fire purposes. see comments just
+                                                        !<above where disturb subroutine is called.
+    real, allocatable, dimension(:,:) :: gavglai               !<grid averaged green leaf area index
+    real, allocatable, dimension(:,:) :: co2conc               !<ATMOS. CO2 CONC. IN PPM
+    real, allocatable, dimension(:,:) :: ch4conc               !<
+    real, allocatable, dimension(:,:) :: canres                !<
+    real, allocatable, dimension(:,:) :: vgbiomas              !<grid averaged vegetation biomass, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: gavgltms              !<grid averaged litter mass, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: gavgscms              !<grid averaged soil c mass, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: burnfrac              !<areal fraction burned due to fire for every grid cell (%)
+    real, allocatable, dimension(:,:) :: popdin                !<population density \f$(people / km^2)\f$
+    real, allocatable, dimension(:,:) :: lterm                 !<lightning term for fire probabilty calc
+    real, allocatable, dimension(:,:) :: extnprob              !<fire extingusinging probability
+    real, allocatable, dimension(:,:) :: prbfrhuc              !<probability of fire due to human causes
+    real, allocatable, dimension(:,:) :: rml                   !<leaf maintenance respiration (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:) :: rms                   !<stem maintenance respiration (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:) :: rmr                   !<root maintenance respiration (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:) :: ch4wet1               !<methane flux from wetlands calculated using hetrores in umol ch4/m2.s
+    real, allocatable, dimension(:,:) :: ch4wet2               !<methane flux from wetlands calculated using npp in umol ch4/m2.s
+    real, allocatable, dimension(:,:) :: wetfdyn               !<dynamic wetland fraction
+    real, allocatable, dimension(:,:) :: ch4dyn1               !<methane flux from wetlands calculated using hetrores 
+                                                        !<and wetfdyn, in umol ch4/m2.s
+    real, allocatable, dimension(:,:) :: ch4dyn2               !<methane flux from wetlands calculated using npp and wetfdyn, 
+                                                        !<in umol ch4/m2.s
+    real, allocatable, dimension(:,:) :: ch4_soills            !<Methane uptake into the soil column ($mg CH_4 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:,:) :: lucemcom              !<land use change (luc) related combustion emission losses, u-mol co2/m2.sec
+    real, allocatable, dimension(:,:) :: lucltrin              !<luc related inputs to litter pool, u-mol co2/m2.sec
+    real, allocatable, dimension(:,:) :: lucsocin              !<luc related inputs to soil c pool, u-mol co2/m2.sec
+    real, allocatable, dimension(:,:) :: npp                   !<net primary productivity
+    real, allocatable, dimension(:,:) :: nep                   !<net ecosystem productivity
+    real, allocatable, dimension(:,:) :: nbp                   !<net biome productivity
+    real, allocatable, dimension(:,:) :: gpp                   !<gross primary productivity
+    real, allocatable, dimension(:,:) :: hetrores              !<heterotrophic respiration
+    real, allocatable, dimension(:,:) :: autores               !<autotrophic respiration
+    real, allocatable, dimension(:,:) :: soilcresp             !<
+    real, allocatable, dimension(:,:) :: rm                    !<maintenance respiration
+    real, allocatable, dimension(:,:) :: rg                    !<growth respiration
+    real, allocatable, dimension(:,:) :: litres                !<litter respiration
+    real, allocatable, dimension(:,:) :: socres                !<soil carbon respiration
+    real, allocatable, dimension(:,:) :: dstcemls              !<carbon emission losses due to disturbance, mainly fire
+    real, allocatable, dimension(:,:) :: litrfall              !<total litter fall (from leaves, stem, and root) due to 
+                                                        !<all causes (mortality, turnover, and disturbance)
+    real, allocatable, dimension(:,:) :: humiftrs              !<transfer of humidified litter from litter to soil c pool
+    real, allocatable, dimension(:,:) :: cfluxcg               !<
+    real, allocatable, dimension(:,:) :: cfluxcs               !<
+    real, allocatable, dimension(:,:) :: dstcemls3             !<carbon emission losses due to disturbance (fire at present) from litter pool
+    real, allocatable, dimension(:,:) :: PREACC_M              !<
+    real, allocatable, dimension(:,:) :: GTACC_M               !<
+    real, allocatable, dimension(:,:) :: QEVPACC_M             !<
+    real, allocatable, dimension(:,:) :: HFSACC_M              !<
+    real, allocatable, dimension(:,:) :: HMFNACC_M             !<
+    real, allocatable, dimension(:,:) :: ROFACC_M              !<
+    real, allocatable, dimension(:,:) :: SNOACC_M              !<
+    real, allocatable, dimension(:,:) :: OVRACC_M              !<
+    real, allocatable, dimension(:,:) :: WTBLACC_M             !<
+    real, allocatable, dimension(:,:) :: ALVSACC_M             !<
+    real, allocatable, dimension(:,:) :: ALIRACC_M             !<
+    real, allocatable, dimension(:,:) :: RHOSACC_M             !<
+    real, allocatable, dimension(:,:) :: TSNOACC_M             !<
+    real, allocatable, dimension(:,:) :: WSNOACC_M             !<
+    real, allocatable, dimension(:,:) :: SNOARE_M              !<
+    real, allocatable, dimension(:,:) :: TCANACC_M             !<
+    real, allocatable, dimension(:,:) :: RCANACC_M             !<
+    real, allocatable, dimension(:,:) :: SCANACC_M             !<
+    real, allocatable, dimension(:,:) :: ALTOTACC_M            !<Daily broadband albedo
+    real, allocatable, dimension(:,:) :: GROACC_M              !<
+    real, allocatable, dimension(:,:) :: FSINACC_M             !<
+    real, allocatable, dimension(:,:) :: FLINACC_M             !<
+    real, allocatable, dimension(:,:) :: TAACC_M               !<
+    real, allocatable, dimension(:,:) :: UVACC_M               !<
+    real, allocatable, dimension(:,:) :: PRESACC_M             !<
+    real, allocatable, dimension(:,:) :: QAACC_M               !<
+    real, allocatable, dimension(:,:) :: EVAPACC_M             !<
+    real, allocatable, dimension(:,:) :: FLUTACC_M             !<
+    real, allocatable, dimension(:,:) :: tcanrs                !<
+    real, allocatable, dimension(:,:) :: tsnors                !<
+    real, allocatable, dimension(:,:) :: tpndrs                !<
+    real, allocatable, dimension(:,:) :: tcanoaccrow_m         !<
+    real, allocatable, dimension(:,:) :: uvaccrow_m            !<
+    real, allocatable, dimension(:,:) :: vvaccrow_m            !<
+    real, allocatable, dimension(:,:) :: tcanoaccrow_out       !<
+    real, allocatable, dimension(:,:) :: qevpacc_m_save        !<
+    real, allocatable, dimension(:,:) :: twarmm                !< temperature of the warmest month (c)
+    real, allocatable, dimension(:,:) :: tcoldm                !< temperature of the coldest month (c)
+    real, allocatable, dimension(:,:) :: gdd5                  !< growing degree days above 5 c
+    real, allocatable, dimension(:,:) :: aridity               !< aridity index, ratio of potential evaporation to precipitation
+    real, allocatable, dimension(:,:) :: srplsmon              !< number of months in a year with surplus water i.e. precipitation more than potential evaporation
+    real, allocatable, dimension(:,:) :: defctmon              !< number of months in a year with water deficit i.e. precipitation less than potential evaporation
+    real, allocatable, dimension(:,:) :: anndefct              !< annual water deficit (mm)
+    real, allocatable, dimension(:,:) :: annsrpls              !< annual water surplus (mm)
+    real, allocatable, dimension(:,:) :: annpcp                !< annual precipitation (mm)
+    real, allocatable, dimension(:,:) :: dry_season_length     !< length of dry season (months)
 
-    ! c     Fire-related variables
-
-    real, dimension(nlat,nmos,icc) :: emit_co2     !<carbon dioxide
-    real, dimension(nlat,nmos,icc) :: emit_co      !<carbon monoxide
-    real, dimension(nlat,nmos,icc) :: emit_ch4     !<methane
-    real, dimension(nlat,nmos,icc) :: emit_nmhc    !<non-methane hydrocarbons
-    real, dimension(nlat,nmos,icc) :: emit_h2      !<hydrogen gas
-    real, dimension(nlat,nmos,icc) :: emit_nox     !<nitrogen oxides
-    real, dimension(nlat,nmos,icc) :: emit_n2o     !<nitrous oxide
-    real, dimension(nlat,nmos,icc) :: emit_pm25    !<particulate matter less than 2.5 um in diameter
-    real, dimension(nlat,nmos,icc) :: emit_tpm     !<total particulate matter
-    real, dimension(nlat,nmos,icc) :: emit_tc      !<total carbon
-    real, dimension(nlat,nmos,icc) :: emit_oc      !<organic carbon
-    real, dimension(nlat,nmos,icc) :: emit_bc      !<black carbon
-    real, dimension(nlat,nmos)     :: burnfrac     !<areal fraction burned due to fire for every grid cell (%)
-    real, dimension(nlat,nmos,icc) :: burnvegf     !<per PFT fraction burned of that PFT's area
-    real, dimension(nlat,nmos,icc) :: smfuncveg    !<
-    real, dimension(nlat,nmos)     :: popdin       !<population density \f$(people / km^2)\f$
-    real, dimension(nlat,nmos,icc) :: bterm        !<biomass term for fire probabilty calc
-    real, dimension(nlat,nmos)     :: lterm        !<lightning term for fire probabilty calc
-    real, dimension(nlat,nmos,icc) :: mterm        !<moisture term for fire probabilty calc
-
-    real, dimension(nlat,nmos)     :: extnprob     !<fire extingusinging probability
-    real, dimension(nlat,nmos)     :: prbfrhuc     !<probability of fire due to human causes
-    real, dimension(nlat,nmos,12)  :: mlightng     !<
-    real, dimension(nlat) :: dayl_max !< maximum daylength for that location (hours)
-    real, dimension(nlat) :: dayl     !< daylength for that location (hours)
-
-
-    real, dimension(nlat,nmos,icc)  :: bmasveg  !<total (gleaf + stem + root) biomass for each ctem pft, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,ican) :: cmasvegc !<total canopy mass for each of the 4 class pfts. recall that
-                                                !<class requires canopy mass as an input, and this is now provided by ctem. \f$kg/m^2\f$.
-    real, dimension(nlat,nmos,icc)  :: veghght  !<vegetation height (meters)
-    real, dimension(nlat,nmos,icc)  :: rootdpth !<99% soil rooting depth (meters)
-                                                !<both veghght & rootdpth can be used as diagnostics to see
-                                                !<how vegetation grows above and below ground, respectively
-    real, dimension(nlat,nmos)      :: rml      !<leaf maintenance respiration (u-mol co2/m2.sec)
-    real, dimension(nlat,nmos)      :: rms      !<stem maintenance respiration (u-mol co2/m2.sec)
-    real, dimension(nlat,nmos,icc)  :: tltrleaf !<total leaf litter fall rate (u-mol co2/m2.sec)
-    real, dimension(nlat,nmos,icc)  :: tltrstem !<total stem litter fall rate (u-mol co2/m2.sec)
-    real, dimension(nlat,nmos,icc)  :: tltrroot !<total root litter fall rate (u-mol co2/m2.sec)
-    real, dimension(nlat,nmos,icc)  :: leaflitr !<leaf litter fall rate (u-mol co2/m2.sec). this leaf litter 
-                                                !<does not include litter generated due to mortality/fire
-    real, dimension(nlat,nmos,icc)  :: roottemp !<root temperature, k
-    real, dimension(nlat,nmos,icc)  :: afrleaf  !<allocation fraction for leaves
-    real, dimension(nlat,nmos,icc)  :: afrstem  !<allocation fraction for stem
-    real, dimension(nlat,nmos,icc)  :: afrroot  !<allocation fraction for root
-    real, dimension(nlat,nmos,icc)  :: wtstatus !<soil water status used for calculating allocation fractions
-    real, dimension(nlat,nmos,icc)  :: ltstatus !<light status used for calculating allocation fractions
-    real, dimension(nlat,nmos)      :: rmr      !<root maintenance respiration (u-mol co2/m2.sec)
-
-    real, dimension(nlat,nmos,8)  :: slopefrac  !<prescribed fraction of wetlands based on slope
-                                                !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
-    real, dimension(nlat,nmos)    :: ch4wet1    !<methane flux from wetlands calculated using hetrores in umol ch4/m2.s
-    real, dimension(nlat,nmos)    :: ch4wet2    !<methane flux from wetlands calculated using npp in umol ch4/m2.s
-    real, dimension(nlat,nmos)    :: wetfdyn    !<dynamic wetland fraction
-    real, dimension(nlat,nmos)    :: ch4dyn1    !<methane flux from wetlands calculated using hetrores 
-                                                !<and wetfdyn, in umol ch4/m2.s
-    real, dimension(nlat,nmos)    :: ch4dyn2    !<methane flux from wetlands calculated using npp and wetfdyn, 
-                                                !<in umol ch4/m2.s
-    real, dimension(nlat,nmos,12) :: wetfrac_mon!<
-    real, dimension(nlat,nmos)    :: ch4_soills !<Methane uptake into the soil column ($mg CH_4 m^{-2} s^{-1}$)
-
-    real, dimension(nlat,nmos) :: lucemcom !<land use change (luc) related combustion emission losses, u-mol co2/m2.sec
-    real, dimension(nlat,nmos) :: lucltrin !<luc related inputs to litter pool, u-mol co2/m2.sec
-    real, dimension(nlat,nmos) :: lucsocin !<luc related inputs to soil c pool, u-mol co2/m2.sec
-
-    real, dimension(nlat,nmos) :: npp      !<net primary productivity
-    real, dimension(nlat,nmos) :: nep      !<net ecosystem productivity
-    real, dimension(nlat,nmos) :: nbp      !<net biome productivity
-    real, dimension(nlat,nmos) :: gpp      !<gross primary productivity
-    real, dimension(nlat,nmos) :: hetrores !<heterotrophic respiration
-    real, dimension(nlat,nmos) :: autores  !<autotrophic respiration
-    real, dimension(nlat,nmos) :: soilcresp!<
-    real, dimension(nlat,nmos) :: rm       !<maintenance respiration
-    real, dimension(nlat,nmos) :: rg       !<growth respiration
-    real, dimension(nlat,nmos) :: litres   !<litter respiration
-    real, dimension(nlat,nmos) :: socres   !<soil carbon respiration
-    real, dimension(nlat,nmos) :: dstcemls !<carbon emission losses due to disturbance, mainly fire
-    real, dimension(nlat,nmos) :: litrfall !<total litter fall (from leaves, stem, and root) due to 
-                                           !<all causes (mortality, turnover, and disturbance)
-    real, dimension(nlat,nmos) :: humiftrs !<transfer of humidified litter from litter to soil c pool
-
-    real, dimension(nlat,nmos,icc)   :: gppveg      !<!gross primary productity for each pft
-    real, dimension(nlat,nmos,iccp1) :: nepveg      !<net ecosystem productity for bare fraction expnbaln(i)=0.0 amount
+    
+! allocated with nlat,nmos,ican:     
+    real, allocatable, dimension(:,:,:) :: zolnc            !<lumped log of roughness length for class' 4 pfts
+    real, allocatable, dimension(:,:,:) :: ailc             !<lumped lai for class' 4 pfts
+    real, allocatable, dimension(:,:,:) :: cmasvegc         !<total canopy mass for each of the 4 class pfts. recall that
+                                                        !<class requires canopy mass as an input, and this is now provided by ctem. \f$kg/m^2\f$.
+    real, allocatable, dimension(:,:,:) :: alvsctm          !<
+    real, allocatable, dimension(:,:,:) :: paic             !<plant area index for class' 4 pfts. this is the sum of leaf
+                                                        !<area index and stem area index.
+    real, allocatable, dimension(:,:,:) :: slaic            !<storage lai. this will be used as min. lai that class sees
+                                                        !<so that it doesn't blow up in its stomatal conductance calculations.
+    real, allocatable, dimension(:,:,:) :: alirctm          !<
+    real, allocatable, dimension(:,:,:) :: csum             !<
+    
+! allocated with nlat,nmos,ignd:        
+    real, allocatable, dimension(:,:,:) :: TBARACC_M        !<
+    real, allocatable, dimension(:,:,:) :: THLQACC_M        !<
+    real, allocatable, dimension(:,:,:) :: THICACC_M        !<
+    real, allocatable, dimension(:,:,:) :: THALACC_M        !<
+    real, allocatable, dimension(:,:,:) :: tbaraccrow_m     !<
+    
+! allocated with nlat,nmos,ican,ignd:       
+    real, allocatable, dimension(:,:,:,:) :: rmatc       !<fraction of roots for each of class' 4 pfts in each soil layer
+ 
+ ! allocated with nlat,nmos,icc,ignd: 
+    real, allocatable, dimension(:,:,:,:) :: rmatctem     !<fraction of roots for each of ctem's 9 pfts in each soil layer
+    
+! allocated with nlat,nmos,iccp1:     
+    real, allocatable, dimension(:,:,:) :: litrmass    !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: soilcmas    !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: nepveg      !<net ecosystem productity for bare fraction expnbaln(i)=0.0 amount
                                                     !<of c related to spatial expansion Not used JM Jun 2014 
                                                     !<OR net ecosystem productity for each pft
-    real, dimension(nlat,nmos,iccp1) :: nbpveg      !<net biome productity for bare fraction OR net biome productity for each pft
-    real, dimension(nlat,nmos,icc)   :: nppveg      !<npp for individual pfts,  u-mol co2/m2.sec
-    real, dimension(nlat,nmos,iccp1) :: hetroresveg !<
-    real, dimension(nlat,nmos,icc)   :: autoresveg  !<
-    real, dimension(nlat,nmos,iccp1) :: litresveg   !<
-    real, dimension(nlat,nmos,iccp1) :: soilcresveg !<
-    real, dimension(nlat,nmos,icc)   :: rmlvegacc   !<
-    real, dimension(nlat,nmos,icc)   :: rmsveg      !<stem maintenance resp. rate for each pft
-    real, dimension(nlat,nmos,icc)   :: rmrveg      !<root maintenance resp. rate for each pft
-    real, dimension(nlat,nmos,icc)   :: rgveg       !<growth resp. rate for each pft
-    real, dimension(nlat,nmos,icc)   :: litrfallveg !<litter fall in \f$kg c/m^2\f$ for each pft
-    real, dimension(nlat,nmos,iccp1) :: humiftrsveg !<
-
-    real, dimension(nlat,nmos,icc)  :: rothrlos !<root death as crops are harvested, \f$kg c/m^2\f$
-    real, dimension(nlat,nmos,icc)  :: pfcancmx !<previous year's fractional coverages of pfts
-    real, dimension(nlat,nmos,icc)  :: nfcancmx !<next year's fractional coverages of pfts
-    real, dimension(nlat,nmos,ican) :: alvsctm  !<
-    real, dimension(nlat,nmos,ican) :: paic     !<plant area index for class' 4 pfts. this is the sum of leaf
-                                                !<area index and stem area index.
-    real, dimension(nlat,nmos,ican) :: slaic    !<storage lai. this will be used as min. lai that class sees
-                                                !<so that it doesn't blow up in its stomatal conductance calculations.
-    real, dimension(nlat,nmos,ican) :: alirctm  !<
-    real, dimension(nlat,nmos)      :: cfluxcg  !<
-    real, dimension(nlat,nmos)      :: cfluxcs  !<
-    real, dimension(nlat,nmos)      :: dstcemls3!<carbon emission losses due to disturbance (fire at present) from litter pool
-    real, dimension(nlat,nmos,icc)  :: anveg    !<net photosynthesis rate for each pft
-    real, dimension(nlat,nmos,icc)  :: rmlveg   !<leaf maintenance resp. rate for each pft
-
-    logical, dimension(nlat,nmos,icc) :: pftexist !<logical array indicating pfts exist (t) or not (f)
-    integer, dimension(nlat,nmos,2)   :: colddays !<cold days counter for tracking days below a certain
-                                                  !<temperature threshold for ndl dcd and crop pfts.
-    integer, dimension(nlat,nmos)     :: icount   !<
-    integer, dimension(nlat,nmos,icc) :: lfstatus !<leaf phenology status
-    integer, dimension(nlat,nmos,icc) :: pandays  !<days with positive net photosynthesis (an) for use in
-                                                  !<the phenology subroutine
-    integer, dimension(nlat,nmos)     :: stdaln   !<an integer telling if ctem is operated within gcm (=0) or in stand
-                                                  !<alone mode (=1). this is used for fire purposes. see comments just
-                                                  !<above where disturb subroutine is called.
-
-    real, dimension(nlat,nmos) :: PREACC_M  !<
-    real, dimension(nlat,nmos) :: GTACC_M   !<
-    real, dimension(nlat,nmos) :: QEVPACC_M !<
-    real, dimension(nlat,nmos) :: HFSACC_M  !<
-    real, dimension(nlat,nmos) :: HMFNACC_M !<
-    real, dimension(nlat,nmos) :: ROFACC_M  !<
-    real, dimension(nlat,nmos) :: SNOACC_M  !<
-    real, dimension(nlat,nmos) :: OVRACC_M  !<
-    real, dimension(nlat,nmos) :: WTBLACC_M !<
-    real, dimension(nlat,nmos,ignd) :: TBARACC_M !<
-    real, dimension(nlat,nmos,ignd) :: THLQACC_M !<
-    real, dimension(nlat,nmos,ignd) :: THICACC_M !<
-    real, dimension(nlat,nmos,ignd) :: THALACC_M !<
-    real, dimension(nlat,nmos) :: ALVSACC_M !<
-    real, dimension(nlat,nmos) :: ALIRACC_M !<
-    real, dimension(nlat,nmos) :: RHOSACC_M !<
-    real, dimension(nlat,nmos) :: TSNOACC_M !<
-    real, dimension(nlat,nmos) :: WSNOACC_M !<
-    real, dimension(nlat,nmos) :: SNOARE_M  !<
-    real, dimension(nlat,nmos) :: TCANACC_M !<
-    real, dimension(nlat,nmos) :: RCANACC_M !<
-    real, dimension(nlat,nmos) :: SCANACC_M !<
-    real, dimension(nlat,nmos) :: ALTOTACC_M !<Daily broadband albedo
-    integer, dimension(nlat) :: altotcntr_d !<Used to count the number of time steps with the sun above the horizon
-    real, dimension(nlat,nmos) :: GROACC_M  !<
-    real, dimension(nlat,nmos) :: FSINACC_M !<
-    real, dimension(nlat,nmos) :: FLINACC_M !<
-    real, dimension(nlat,nmos) :: TAACC_M   !<
-    real, dimension(nlat,nmos) :: UVACC_M   !<
-    real, dimension(nlat,nmos) :: PRESACC_M !<
-    real, dimension(nlat,nmos) :: QAACC_M   !<
-    real, dimension(nlat,nmos) :: EVAPACC_M !<
-    real, dimension(nlat,nmos) :: FLUTACC_M !<
-
-    real, dimension(nlat,nmos) :: tcanrs    !<
-    real, dimension(nlat,nmos) :: tsnors    !<
-    real, dimension(nlat,nmos) :: tpndrs    !<
-    real, dimension(nlat,nmos,ican) :: csum        !<
-    real, dimension(nlat,nmos,ignd) :: tbaraccrow_m!<
-    real, dimension(nlat,nmos) :: tcanoaccrow_m    !<
-    real, dimension(nlat,nmos) :: uvaccrow_m       !<
-    real, dimension(nlat,nmos) :: vvaccrow_m       !<
-
-    real, dimension(nlat,nmos) :: tcanoaccrow_out  !<
-    real, dimension(nlat,nmos) :: qevpacc_m_save   !<
-
-    real, dimension(nlat,nmos) :: twarmm    !< temperature of the warmest month (c)
-    real, dimension(nlat,nmos) :: tcoldm    !< temperature of the coldest month (c)
-    real, dimension(nlat,nmos) :: gdd5      !< growing degree days above 5 c
-    real, dimension(nlat,nmos) :: aridity   !< aridity index, ratio of potential evaporation to precipitation
-    real, dimension(nlat,nmos) :: srplsmon  !< number of months in a year with surplus water i.e. precipitation more than potential evaporation
-    real, dimension(nlat,nmos) :: defctmon  !< number of months in a year with water deficit i.e. precipitation less than potential evaporation
-    real, dimension(nlat,nmos) :: anndefct  !< annual water deficit (mm)
-    real, dimension(nlat,nmos) :: annsrpls  !< annual water surplus (mm)
-    real, dimension(nlat,nmos) :: annpcp    !< annual precipitation (mm)
-    real, dimension(nlat,nmos) :: dry_season_length!< length of dry season (months)
+    real, allocatable, dimension(:,:,:) :: nbpveg      !<net biome productity for bare fraction OR net biome productity for each pft
+    real, allocatable, dimension(:,:,:) :: hetroresveg !<
+    real, allocatable, dimension(:,:,:) :: litresveg   !<
+    real, allocatable, dimension(:,:,:) :: soilcresveg !<
+    real, allocatable, dimension(:,:,:) :: humiftrsveg !<
+    
+! allocated with nlat,nmos,{some number}: 
+    integer, allocatable, dimension(:,:,:):: colddays          !<cold days counter for tracking days below a certain
+                                                        !<temperature threshold for ndl dcd and crop pfts.
+    real, allocatable, dimension(:,:,:)  :: slopefrac          !<prescribed fraction of wetlands based on slope
+                                                        !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
+    real, allocatable, dimension(:,:,:) :: mlightng           !<
+    real, allocatable, dimension(:,:,:) :: wetfrac_mon        !<
+    
+! allocated with nlat:     
+    real, allocatable, dimension(:)    :: dayl_max        !< maximum daylength for that location (hours)
+    real, allocatable, dimension(:)    :: dayl            !< daylength for that location (hours)
+    integer, allocatable, dimension(:) :: altotcntr_d     !<Used to count the number of time steps with the sun above the horizon
 
 end type veg_rot
 
-type (veg_rot), save, target :: vrot
+type (veg_rot), allocatable, save, target :: vrot
 
 !=================================================================================
 !>CTEM's 'gat' vars
@@ -341,214 +430,214 @@ type veg_gat
     ! This is the basic data structure that contains the state variables
     ! for the Plant Functional Type (PFT). The dimensions are ilg,{icc,iccp1}
 
-    real, dimension(ilg,icc) :: ailcmin    !<
-    real, dimension(ilg,icc) :: ailcmax    !<
-    real, dimension(ilg,icc) :: dvdfcan    !<
-    real, dimension(ilg,icc) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(ilg,icc) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(ilg,icc) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(ilg,icc) :: rootmass   !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
-    real, dimension(ilg,icc) :: pstemmass  !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
-    real, dimension(ilg,icc) :: pgleafmass !<root mass from previous timestep, is value before fire. used by burntobare subroutine
-    real, dimension(ilg,icc) :: fcancmx    !<max. fractional coverage of ctem's 9 pfts, but this can be
-                                           !<modified by land-use change, and competition between pfts
-    real, dimension(ilg) :: gavglai        !<grid averaged green leaf area index
+    real, allocatable,dimension(:,:) :: ailcmin     !<
+    real, allocatable, dimension(:,:) :: ailcmax    !<
+    real, allocatable, dimension(:,:) :: dvdfcan    !<
+    real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: rootmass   !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: pstemmass  !<stem mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, allocatable, dimension(:,:) :: pgleafmass !<root mass from previous timestep, is value before fire. used by burntobare subroutine
+    real, allocatable, dimension(:,:) :: fcancmx    !<max. fractional coverage of ctem's 9 pfts, but this can be
+                                                    !<modified by land-use change, and competition between pfts
+    real, allocatable, dimension(:) :: gavglai        !<grid averaged green leaf area index
 
-    real, dimension(ilg) :: lightng        !<total lightning frequency, flashes/km2.year
-    real, dimension(ilg) :: tcanoaccgat_out!<
+    real, allocatable, dimension(:) :: lightng        !<total lightning frequency, flashes/km2.year
+    real, allocatable, dimension(:) :: tcanoaccgat_out!<
 
-    real, dimension(ilg,ican) :: zolnc     !<lumped log of roughness length for class' 4 pfts
-    real, dimension(ilg,ican) :: ailc      !<lumped lai for class' 4 pfts
+    real, allocatable, dimension(:,:) :: zolnc     !<lumped log of roughness length for class' 4 pfts
+    real, allocatable, dimension(:,:) :: ailc      !<lumped lai for class' 4 pfts
 
-    real, dimension(ilg,icc) :: ailcg      !<green lai for ctem's 9 pfts
-    real, dimension(ilg,icc) :: ailcgs     !<GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
-    real, dimension(ilg,icc) :: fcancs     !<FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
-    real, dimension(ilg,icc) :: fcanc      !<FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
+    real, allocatable, dimension(:,:) :: ailcg      !<green lai for ctem's 9 pfts
+    real, allocatable, dimension(:,:) :: ailcgs     !<GREEN LAI FOR CANOPY OVER SNOW SUB-AREA
+    real, allocatable, dimension(:,:) :: fcancs     !<FRACTION OF CANOPY OVER SNOW FOR CTEM's 9 PFTs
+    real, allocatable, dimension(:,:) :: fcanc      !<FRACTIONAL COVERAGE OF 8 CARBON PFTs, CANOPY OVER GROUND
 
-    real, dimension(ilg)     :: co2conc    !<ATMOS. CO2 CONC. IN PPM
-    real, dimension(ilg)     :: ch4conc    !<
+    real, allocatable, dimension(:)     :: co2conc    !<ATMOS. CO2 CONC. IN PPM
+    real, allocatable, dimension(:)     :: ch4conc    !<
 
-    real, dimension(ilg,icc) :: co2i1cg    !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-    real, dimension(ilg,icc) :: co2i1cs    !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i1cg)
-    real, dimension(ilg,icc) :: co2i2cg    !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
-    real, dimension(ilg,icc) :: co2i2cs    !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i2cg)
-    real, dimension(ilg,icc) :: ancsveg    !<net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
-    real, dimension(ilg,icc) :: ancgveg    !<net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
-    real, dimension(ilg,icc) :: rmlcsveg   !<leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
-    real, dimension(ilg,icc) :: rmlcgveg   !<leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
-    real, dimension(ilg,icc) :: slai       !<storage/imaginary lai for phenology purposes
-    real, dimension(ilg,icc) :: ailcb      !<brown lai for ctem's 9 pfts. for now we assume only grasses can have brown lai
-    real, dimension(ilg)     :: canres     !<
-    real, dimension(ilg,icc) :: flhrloss   !<fall or harvest loss for deciduous trees and crops, respectively, \f$kg c/m^2\f$il1
+    real, allocatable, dimension(:,:) :: co2i1cg    !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER GROUND SUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+    real, allocatable, dimension(:,:) :: co2i1cs    !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i1cg)
+    real, allocatable, dimension(:,:) :: co2i2cg    !<INTERCELLULAR CO2 CONC FOR 8 PFTs FOR CANOPY OVER SNOWSUBAREA (Pa) - FOR SINGLE/SUNLIT LEAF
+    real, allocatable, dimension(:,:) :: co2i2cs    !<SAME AS ABOVE BUT FOR SHADED LEAF (above being co2i2cg)
+    real, allocatable, dimension(:,:) :: ancsveg    !<net photosynthetic rate for ctems 9 pfts for canopy over snow subarea
+    real, allocatable, dimension(:,:) :: ancgveg    !<net photosynthetic rate for ctems 9 pfts for canopy over ground subarea
+    real, allocatable, dimension(:,:) :: rmlcsveg   !<leaf respiration rate for ctems 9 pfts forcanopy over snow subarea
+    real, allocatable, dimension(:,:) :: rmlcgveg   !<leaf respiration rate for ctems 9 pfts forcanopy over ground subarea
+    real, allocatable, dimension(:,:) :: slai       !<storage/imaginary lai for phenology purposes
+    real, allocatable, dimension(:,:) :: ailcb      !<brown lai for ctem's 9 pfts. for now we assume only grasses can have brown lai
+    real, allocatable, dimension(:)   :: canres     !<
+    real, allocatable, dimension(:,:) :: flhrloss   !<fall or harvest loss for deciduous trees and crops, respectively, \f$kg c/m^2\f$il1
 
-    real, dimension(ilg,icc) :: grwtheff   !<growth efficiency. change in biomass per year per unit max.
-                                           !<lai (\f$kg c/m^2\f$)/(m2/m2), for use in mortality subroutine
-    real, dimension(ilg,icc) :: lystmmas   !<stem mass at the end of last year
-    real, dimension(ilg,icc) :: lyrotmas   !<root mass at the end of last year
-    real, dimension(ilg,icc) :: tymaxlai   !<this year's maximum lai
-    real, dimension(ilg)     :: vgbiomas   !<grid averaged vegetation biomass, \f$kg c/m^2\f$
-    real, dimension(ilg)     :: gavgltms   !<grid averaged litter mass, \f$kg c/m^2\f$
-    real, dimension(ilg)     :: gavgscms   !<grid averaged soil c mass, \f$kg c/m^2\f$
-    real, dimension(ilg,icc) :: stmhrlos   !<stem harvest loss for crops, \f$kg c/m^2\f$
-    real, dimension(ilg,ican,ignd) :: rmatc!<fraction of roots for each of class' 4 pfts in each soil layer
-    real, dimension(ilg,icc,ignd) :: rmatctem!<fraction of roots for each of ctem's 9 pfts in each soil layer
-    real, dimension(ilg,iccp1) :: litrmass   !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, dimension(ilg,iccp1) :: soilcmas   !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
-    real, dimension(ilg,icc) :: vgbiomas_veg !<vegetation biomass for each pft
+    real, allocatable, dimension(:,:) :: grwtheff   !<growth efficiency. change in biomass per year per unit max.
+                                                    !<lai (\f$kg c/m^2\f$)/(m2/m2), for use in mortality subroutine
+    real, allocatable, dimension(:,:) :: lystmmas   !<stem mass at the end of last year
+    real, allocatable, dimension(:,:) :: lyrotmas   !<root mass at the end of last year
+    real, allocatable, dimension(:,:) :: tymaxlai   !<this year's maximum lai
+    real, allocatable, dimension(:)   :: vgbiomas   !<grid averaged vegetation biomass, \f$kg c/m^2\f$
+    real, allocatable, dimension(:)   :: gavgltms   !<grid averaged litter mass, \f$kg c/m^2\f$
+    real, allocatable, dimension(:)   :: gavgscms   !<grid averaged soil c mass, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: stmhrlos   !<stem harvest loss for crops, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:,:) :: rmatc    !<fraction of roots for each of class' 4 pfts in each soil layer
+    real, allocatable, dimension(:,:,:) :: rmatctem !<fraction of roots for each of ctem's 9 pfts in each soil layer
+    real, allocatable, dimension(:,:) :: litrmass   !<litter mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: soilcmas   !<soil carbon mass for each of the 9 ctem pfts + bare, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: vgbiomas_veg !<vegetation biomass for each pft
 
-    real, dimension(ilg,icc) :: emit_co2   !<carbon dioxide
-    real, dimension(ilg,icc) :: emit_co    !<carbon monoxide
-    real, dimension(ilg,icc) :: emit_ch4   !<methane
-    real, dimension(ilg,icc) :: emit_nmhc  !<non-methane hydrocarbons
-    real, dimension(ilg,icc) :: emit_h2    !<hydrogen gas
-    real, dimension(ilg,icc) :: emit_nox   !<nitrogen oxides
-    real, dimension(ilg,icc) :: emit_n2o   !<nitrous oxide
-    real, dimension(ilg,icc) :: emit_pm25  !<particulate matter less than 2.5 um in diameter
-    real, dimension(ilg,icc) :: emit_tpm   !<total particulate matter
-    real, dimension(ilg,icc) :: emit_tc    !<total carbon
-    real, dimension(ilg,icc) :: emit_oc    !<organic carbon
-    real, dimension(ilg,icc) :: emit_bc    !<black carbon
-    real, dimension(ilg)     :: burnfrac   !<areal fraction burned due to fire for every grid cell (%)
-    real, dimension(ilg,icc) :: burnvegf   !<per PFT fraction burned of that PFT's area
-    real, dimension(ilg,icc) :: smfuncveg  !<
-    real, dimension(ilg)     :: popdin     !<population density (people / \f$km^2\f$)
-    real, dimension(ilg,icc) :: bterm      !<biomass term for fire probabilty calc
-    real, dimension(ilg)     :: lterm      !<lightning term for fire probabilty calc
-    real, dimension(ilg,icc) :: mterm      !<moisture term for fire probabilty calc
+    real, allocatable, dimension(:,:) :: emit_co2   !<carbon dioxide
+    real, allocatable, dimension(:,:) :: emit_co    !<carbon monoxide
+    real, allocatable, dimension(:,:) :: emit_ch4   !<methane
+    real, allocatable, dimension(:,:) :: emit_nmhc  !<non-methane hydrocarbons
+    real, allocatable, dimension(:,:) :: emit_h2    !<hydrogen gas
+    real, allocatable, dimension(:,:) :: emit_nox   !<nitrogen oxides
+    real, allocatable, dimension(:,:) :: emit_n2o   !<nitrous oxide
+    real, allocatable, dimension(:,:) :: emit_pm25  !<particulate matter less than 2.5 um in diameter
+    real, allocatable, dimension(:,:) :: emit_tpm   !<total particulate matter
+    real, allocatable, dimension(:,:) :: emit_tc    !<total carbon
+    real, allocatable, dimension(:,:) :: emit_oc    !<organic carbon
+    real, allocatable, dimension(:,:) :: emit_bc    !<black carbon
+    real, allocatable, dimension(:)   :: burnfrac   !<areal fraction burned due to fire for every grid cell (%)
+    real, allocatable, dimension(:,:) :: burnvegf   !<per PFT fraction burned of that PFT's area
+    real, allocatable, dimension(:,:) :: smfuncveg  !<
+    real, allocatable, dimension(:)   :: popdin     !<population density (people / \f$km^2\f$)
+    real, allocatable, dimension(:,:) :: bterm      !<biomass term for fire probabilty calc
+    real, allocatable, dimension(:)   :: lterm      !<lightning term for fire probabilty calc
+    real, allocatable, dimension(:,:) :: mterm      !<moisture term for fire probabilty calc
 
-    real, dimension(ilg)     :: extnprob   !<fire extingusinging probability
-    real, dimension(ilg)     :: prbfrhuc   !<probability of fire due to human causes
-    real, dimension(ilg,12)  :: mlightng   !<
-    real, dimension(ilg)     :: dayl_max   !< maximum daylength for that location (hours)
-    real, dimension(ilg)     :: dayl       !< daylength for that location (hours)
+    real, allocatable, dimension(:)     :: extnprob   !<fire extingusinging probability
+    real, allocatable, dimension(:)     :: prbfrhuc   !<probability of fire due to human causes
+    real, allocatable, dimension(:,:)   :: mlightng   !<
+    real, allocatable, dimension(:)     :: dayl_max   !< maximum daylength for that location (hours)
+    real, allocatable, dimension(:)     :: dayl       !< daylength for that location (hours)
 
-    real, dimension(ilg,icc) :: bmasveg    !<total (gleaf + stem + root) biomass for each ctem pft, \f$kg c/m^2\f$
-    real, dimension(ilg,ican) :: cmasvegc  !<total canopy mass for each of the 4 class pfts. recall that
-                                           !<class requires canopy mass as an input, and this is now provided by ctem. \f$kg/m^2\f$.
-    real, dimension(ilg,icc) :: veghght    !<vegetation height (meters)
-    real, dimension(ilg,icc) :: rootdpth   !<99% soil rooting depth (meters)
-                                           !<both veghght & rootdpth can be used as diagnostics to see
-                                           !<how vegetation grows above and below ground, respectively
-    real, dimension(ilg)     :: rml        !<leaf maintenance respiration (u-mol co2/m2.sec)
-    real, dimension(ilg)     :: rms        !<stem maintenance respiration (u-mol co2/m2.sec)
-    real, dimension(ilg,icc) :: tltrleaf   !<total leaf litter fall rate (u-mol co2/m2.sec)
-    real, dimension(ilg,icc) :: tltrstem   !<total stem litter fall rate (u-mol co2/m2.sec)
-    real, dimension(ilg,icc) :: tltrroot   !<total root litter fall rate (u-mol co2/m2.sec)
-    real, dimension(ilg,icc) :: leaflitr   !<leaf litter fall rate (u-mol co2/m2.sec). this leaf litter 
-                                           !<does not include litter generated due to mortality/fire
-    real, dimension(ilg,icc) :: roottemp   !<root temperature, k
-    real, dimension(ilg,icc) :: afrleaf    !<allocation fraction for leaves
-    real, dimension(ilg,icc) :: afrstem    !<allocation fraction for stem
-    real, dimension(ilg,icc) :: afrroot    !<allocation fraction for root
-    real, dimension(ilg,icc) :: wtstatus   !<soil water status used for calculating allocation fractions
-    real, dimension(ilg,icc) :: ltstatus   !<light status used for calculating allocation fractions
-    real, dimension(ilg)     :: rmr        !<root maintenance respiration (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:) :: bmasveg    !<total (gleaf + stem + root) biomass for each ctem pft, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: cmasvegc   !<total canopy mass for each of the 4 class pfts. recall that
+                                                    !<class requires canopy mass as an input, and this is now provided by ctem. \f$kg/m^2\f$.
+    real, allocatable, dimension(:,:) :: veghght    !<vegetation height (meters)
+    real, allocatable, dimension(:,:) :: rootdpth   !<99% soil rooting depth (meters)
+                                                    !<both veghght & rootdpth can be used as diagnostics to see
+                                                    !<how vegetation grows above and below ground, respectively
+    real, allocatable, dimension(:)   :: rml        !<leaf maintenance respiration (u-mol co2/m2.sec)
+    real, allocatable, dimension(:)   :: rms        !<stem maintenance respiration (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:) :: tltrleaf   !<total leaf litter fall rate (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:) :: tltrstem   !<total stem litter fall rate (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:) :: tltrroot   !<total root litter fall rate (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:) :: leaflitr   !<leaf litter fall rate (u-mol co2/m2.sec). this leaf litter
+                                                    !<does not include litter generated due to mortality/fire
+    real, allocatable, dimension(:,:) :: roottemp   !<root temperature, k
+    real, allocatable, dimension(:,:) :: afrleaf    !<allocation fraction for leaves
+    real, allocatable, dimension(:,:) :: afrstem    !<allocation fraction for stem
+    real, allocatable, dimension(:,:) :: afrroot    !<allocation fraction for root
+    real, allocatable, dimension(:,:) :: wtstatus   !<soil water status used for calculating allocation fractions
+    real, allocatable, dimension(:,:) :: ltstatus   !<light status used for calculating allocation fractions
+    real, allocatable, dimension(:)   :: rmr        !<root maintenance respiration (u-mol co2/m2.sec)
 
-    real, dimension(ilg,8)  :: slopefrac   !<prescribed fraction of wetlands based on slope
-                                           !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
-    real, dimension(ilg)    :: wetfrac_pres!<
-    real, dimension(ilg,12) :: wetfrac_mon !<
-    real, dimension(ilg)    :: ch4wet1    !<methane flux from wetlands calculated using hetrores in umol ch4/m2.s
-    real, dimension(ilg)    :: ch4wet2    !<methane flux from wetlands calculated using npp in umol ch4/m2.s
-    real, dimension(ilg)    :: wetfdyn    !<dynamic wetland fraction
-    real, dimension(ilg)    :: ch4dyn1    !<methane flux from wetlands calculated using hetrores 
-                                          !<and wetfdyn, in umol ch4/m2.s
-    real, dimension(ilg)    :: ch4dyn2    !<methane flux from wetlands calculated using npp and wetfdyn, 
-                                          !<in umol ch4/m2.s
-    real, dimension(ilg)    :: ch4_soills !<Methane uptake into the soil column ($mg CH_4 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:,:) :: slopefrac      !<prescribed fraction of wetlands based on slope
+                                                        !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
+    real, allocatable, dimension(:)    :: wetfrac_pres  !<
+    real, allocatable, dimension(:,:)  :: wetfrac_mon   !<
+    real, allocatable, dimension(:)    :: ch4wet1       !<methane flux from wetlands calculated using hetrores in umol ch4/m2.s
+    real, allocatable, dimension(:)    :: ch4wet2       !<methane flux from wetlands calculated using npp in umol ch4/m2.s
+    real, allocatable, dimension(:)    :: wetfdyn       !<dynamic wetland fraction
+    real, allocatable, dimension(:)    :: ch4dyn1       !<methane flux from wetlands calculated using hetrores
+                                                        !<and wetfdyn, in umol ch4/m2.s
+    real, allocatable, dimension(:)    :: ch4dyn2       !<methane flux from wetlands calculated using npp and wetfdyn,
+                                                        !<in umol ch4/m2.s
+    real, allocatable, dimension(:)    :: ch4_soills    !<Methane uptake into the soil column ($mg CH_4 m^{-2} s^{-1}$)
 
-    real, dimension(ilg) :: lucemcom   !<land use change (luc) related combustion emission losses, u-mol co2/m2.sec
-    real, dimension(ilg) :: lucltrin   !<luc related inputs to litter pool, u-mol co2/m2.sec
-    real, dimension(ilg) :: lucsocin   !<luc related inputs to soil c pool, u-mol co2/m2.sec
+    real, allocatable, dimension(:) :: lucemcom   !<land use change (luc) related combustion emission losses, u-mol co2/m2.sec
+    real, allocatable, dimension(:) :: lucltrin   !<luc related inputs to litter pool, u-mol co2/m2.sec
+    real, allocatable, dimension(:) :: lucsocin   !<luc related inputs to soil c pool, u-mol co2/m2.sec
 
-    real, dimension(ilg) :: npp        !<net primary productivity
-    real, dimension(ilg) :: nep        !<net ecosystem productivity
-    real, dimension(ilg) :: nbp        !<net biome productivity
-    real, dimension(ilg) :: gpp        !<gross primary productivity
-    real, dimension(ilg) :: hetrores   !<heterotrophic respiration
-    real, dimension(ilg) :: autores    !<autotrophic respiration
-    real, dimension(ilg) :: soilcresp  !<
-    real, dimension(ilg) :: rm         !<maintenance respiration
-    real, dimension(ilg) :: rg         !<growth respiration
-    real, dimension(ilg) :: litres     !<litter respiration
-    real, dimension(ilg) :: socres     !<soil carbon respiration
-    real, dimension(ilg) :: dstcemls   !<carbon emission losses due to disturbance, mainly fire
-    real, dimension(ilg) :: litrfall   !<total litter fall (from leaves, stem, and root) due to 
-                                       !<all causes (mortality, turnover, and disturbance)
-    real, dimension(ilg) :: humiftrs   !<transfer of humidified litter from litter to soil c pool
+    real, allocatable, dimension(:) :: npp        !<net primary productivity
+    real, allocatable, dimension(:) :: nep        !<net ecosystem productivity
+    real, allocatable, dimension(:) :: nbp        !<net biome productivity
+    real, allocatable, dimension(:) :: gpp        !<gross primary productivity
+    real, allocatable, dimension(:) :: hetrores   !<heterotrophic respiration
+    real, allocatable, dimension(:) :: autores    !<autotrophic respiration
+    real, allocatable, dimension(:) :: soilcresp  !<
+    real, allocatable, dimension(:) :: rm         !<maintenance respiration
+    real, allocatable, dimension(:) :: rg         !<growth respiration
+    real, allocatable, dimension(:) :: litres     !<litter respiration
+    real, allocatable, dimension(:) :: socres     !<soil carbon respiration
+    real, allocatable, dimension(:) :: dstcemls   !<carbon emission losses due to disturbance, mainly fire
+    real, allocatable, dimension(:) :: litrfall   !<total litter fall (from leaves, stem, and root) due to
+                                                  !<all causes (mortality, turnover, and disturbance)
+    real, allocatable, dimension(:) :: humiftrs   !<transfer of humidified litter from litter to soil c pool
 
-    real, dimension(ilg,icc)   :: gppveg     !<gross primary productity for each pft
-    real, dimension(ilg,iccp1) :: nepveg     !<net ecosystem productity for bare fraction expnbaln(i)=0.0 amount
-                                             !<of c related to spatial expansion Not used JM Jun 2014 
-                                             !<OR net ecosystem productity for each pft
-    real, dimension(ilg,iccp1) :: nbpveg     !<net biome productity for bare fraction OR net biome productity for each pft
-    real, dimension(ilg,icc)   :: nppveg     !<npp for individual pfts,  u-mol co2/m2.sec
-    real, dimension(ilg,iccp1) :: hetroresveg!<
-    real, dimension(ilg,icc)   :: autoresveg !<
-    real, dimension(ilg,iccp1) :: litresveg  !<
-    real, dimension(ilg,iccp1) :: soilcresveg!<
-    real, dimension(ilg,icc)   :: rmlvegacc  !<
-    real, dimension(ilg,icc)   :: rmsveg     !<stem maintenance resp. rate for each pft
-    real, dimension(ilg,icc)   :: rmrveg     !<root maintenance resp. rate for each pft
-    real, dimension(ilg,icc)   :: rgveg      !<growth resp. rate for each pft
-    real, dimension(ilg,icc)   :: litrfallveg!<litter fall in \f$kg c/m^2\f$ for each pft
-    real, dimension(ilg,iccp1) :: humiftrsveg!<
+    real, allocatable, dimension(:,:) :: gppveg     !<gross primary productity for each pft
+    real, allocatable, dimension(:,:) :: nepveg     !<net ecosystem productity for bare fraction expnbaln(i)=0.0 amount
+                                                    !<of c related to spatial expansion Not used JM Jun 2014
+                                                    !<OR net ecosystem productity for each pft
+    real, allocatable, dimension(:,:) :: nbpveg     !<net biome productity for bare fraction OR net biome productity for each pft
+    real, allocatable, dimension(:,:) :: nppveg     !<npp for individual pfts,  u-mol co2/m2.sec
+    real, allocatable, dimension(:,:) :: hetroresveg!<
+    real, allocatable, dimension(:,:) :: autoresveg !<
+    real, allocatable, dimension(:,:) :: litresveg  !<
+    real, allocatable, dimension(:,:) :: soilcresveg!<
+    real, allocatable, dimension(:,:) :: rmlvegacc  !<
+    real, allocatable, dimension(:,:) :: rmsveg     !<stem maintenance resp. rate for each pft
+    real, allocatable, dimension(:,:) :: rmrveg     !<root maintenance resp. rate for each pft
+    real, allocatable, dimension(:,:) :: rgveg      !<growth resp. rate for each pft
+    real, allocatable, dimension(:,:) :: litrfallveg!<litter fall in \f$kg c/m^2\f$ for each pft
+    real, allocatable, dimension(:,:) :: humiftrsveg!<
 
-    real, dimension(ilg,icc)  :: rothrlos !<root death as crops are harvested, \f$kg c/m^2\f$
-    real, dimension(ilg,icc)  :: pfcancmx !<previous year's fractional coverages of pfts
-    real, dimension(ilg,icc)  :: nfcancmx !<next year's fractional coverages of pfts
-    real, dimension(ilg,ican) :: alvsctm  !<
-    real, dimension(ilg,ican) :: paic     !<plant area index for class' 4 pfts. this is the sum of leaf
-                                          !<area index and stem area index.
-    real, dimension(ilg,ican) :: slaic    !<storage lai. this will be used as min. lai that class sees
-                                          !<so that it doesn't blow up in its stomatal conductance calculations.
-    real, dimension(ilg,ican) :: alirctm  !<
-    real, dimension(ilg)      :: cfluxcg  !<
-    real, dimension(ilg)      :: cfluxcs  !<
-    real, dimension(ilg)      :: dstcemls3!<carbon emission losses due to disturbance (fire at present) from litter pool
-    real, dimension(ilg,icc)  :: anveg    !<net photosynthesis rate for each pft
-    real, dimension(ilg,icc)  :: rmlveg   !<leaf maintenance resp. rate for each pft
+    real, allocatable, dimension(:,:) :: rothrlos !<root death as crops are harvested, \f$kg c/m^2\f$
+    real, allocatable, dimension(:,:) :: pfcancmx !<previous year's fractional coverages of pfts
+    real, allocatable, dimension(:,:) :: nfcancmx !<next year's fractional coverages of pfts
+    real, allocatable, dimension(:,:) :: alvsctm  !<
+    real, allocatable, dimension(:,:) :: paic     !<plant area index for class' 4 pfts. this is the sum of leaf
+                                                  !<area index and stem area index.
+    real, allocatable, dimension(:,:) :: slaic    !<storage lai. this will be used as min. lai that class sees
+                                                  !<so that it doesn't blow up in its stomatal conductance calculations.
+    real, allocatable, dimension(:,:) :: alirctm  !<
+    real, allocatable, dimension(:)   :: cfluxcg  !<
+    real, allocatable, dimension(:)   :: cfluxcs  !<
+    real, allocatable, dimension(:)   :: dstcemls3!<carbon emission losses due to disturbance (fire at present) from litter pool
+    real, allocatable, dimension(:,:) :: anveg    !<net photosynthesis rate for each pft
+    real, allocatable, dimension(:,:) :: rmlveg   !<leaf maintenance resp. rate for each pft
 
-    real, dimension(ilg) :: twarmm            !< temperature of the warmest month (c)
-    real, dimension(ilg) :: tcoldm            !< temperature of the coldest month (c)
-    real, dimension(ilg) :: gdd5              !< growing degree days above 5 c
-    real, dimension(ilg) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
-    real, dimension(ilg) :: srplsmon          !< number of months in a year with surplus water i.e. precipitation more than potential evaporation
-    real, dimension(ilg) :: defctmon          !< number of months in a year with water deficit i.e. precipitation less than potential evaporation
-    real, dimension(ilg) :: anndefct          !< annual water deficit (mm)
-    real, dimension(ilg) :: annsrpls          !< annual water surplus (mm)
-    real, dimension(ilg) :: annpcp            !< annual precipitation (mm)
-    real, dimension(ilg) :: dry_season_length !< length of dry season (months)
+    real, allocatable, dimension(:) :: twarmm            !< temperature of the warmest month (c)
+    real, allocatable, dimension(:) :: tcoldm            !< temperature of the coldest month (c)
+    real, allocatable, dimension(:) :: gdd5              !< growing degree days above 5 c
+    real, allocatable, dimension(:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
+    real, allocatable, dimension(:) :: srplsmon          !< number of months in a year with surplus water i.e. precipitation more than potential evaporation
+    real, allocatable, dimension(:) :: defctmon          !< number of months in a year with water deficit i.e. precipitation less than potential evaporation
+    real, allocatable, dimension(:) :: anndefct          !< annual water deficit (mm)
+    real, allocatable, dimension(:) :: annsrpls          !< annual water surplus (mm)
+    real, allocatable, dimension(:) :: annpcp            !< annual precipitation (mm)
+    real, allocatable, dimension(:) :: dry_season_length !< length of dry season (months)
 
     ! These go into CTEM and are used to keep track of the bioclim limits.
-    real, dimension(ilg) :: tcurm     !<temperature of the current month (c)
-    real, dimension(ilg) :: srpcuryr  !<water surplus for the current year
-    real, dimension(ilg) :: dftcuryr  !<water deficit for the current year
-    real, dimension(12,ilg) :: tmonth !<monthly temperatures
-    real, dimension(ilg) :: anpcpcur  !<annual precipitation for current year (mm)
-    real, dimension(ilg) :: anpecur   !<annual potential evaporation for current year (mm)
-    real, dimension(ilg) :: gdd5cur   !<growing degree days above 5 c for current year
-    real, dimension(ilg) :: surmncur  !<number of months with surplus water for current year
-    real, dimension(ilg) :: defmncur  !<number of months with water deficit for current year
-    real, dimension(ilg) :: srplscur  !<water surplus for the current month
-    real, dimension(ilg) :: defctcur  !<water deficit for the current month
+    real, allocatable, dimension(:) :: tcurm     !<temperature of the current month (c)
+    real, allocatable, dimension(:) :: srpcuryr  !<water surplus for the current year
+    real, allocatable, dimension(:) :: dftcuryr  !<water deficit for the current year
+    real, allocatable, dimension(:,:) :: tmonth  !<monthly temperatures
+    real, allocatable, dimension(:) :: anpcpcur  !<annual precipitation for current year (mm)
+    real, allocatable, dimension(:) :: anpecur   !<annual potential evaporation for current year (mm)
+    real, allocatable, dimension(:) :: gdd5cur   !<growing degree days above 5 c for current year
+    real, allocatable, dimension(:) :: surmncur  !<number of months with surplus water for current year
+    real, allocatable, dimension(:) :: defmncur  !<number of months with water deficit for current year
+    real, allocatable, dimension(:) :: srplscur  !<water surplus for the current month
+    real, allocatable, dimension(:) :: defctcur  !<water deficit for the current month
 
-    real, dimension(ilg,icc) :: geremort !<growth efficiency related mortality (1/day)
-    real, dimension(ilg,icc) :: intrmort !<intrinsic (age related) mortality (1/day)
-    real, dimension(ilg,icc) :: lambda   !<Used to determine the colonization rate
-    real, dimension(ilg,icc) :: cc       !<colonization rate & mortality rate
-    real, dimension(ilg,icc) :: mm       !<colonization rate & mortality rate
+    real, allocatable, dimension(:,:) :: geremort !<growth efficiency related mortality (1/day)
+    real, allocatable, dimension(:,:) :: intrmort !<intrinsic (age related) mortality (1/day)
+    real, allocatable, dimension(:,:) :: lambda   !<Used to determine the colonization rate
+    real, allocatable, dimension(:,:) :: cc       !<colonization rate & mortality rate
+    real, allocatable, dimension(:,:) :: mm       !<colonization rate & mortality rate
 
-    logical, dimension(ilg,icc) :: pftexist !<logical array indicating pfts exist (t) or not (f)
-    integer, dimension(ilg,2)   :: colddays !<cold days counter for tracking days below a certain
-                                            !<temperature threshold for ndl dcd and crop pfts.
-    integer, dimension(ilg)     :: icount   !<
-    integer, dimension(ilg,icc) :: lfstatus !<leaf phenology status
-    integer, dimension(ilg,icc) :: pandays  !<days with positive net photosynthesis (an) for use in
-                                            !<the phenology subroutine
-    integer, dimension(ilg)     :: stdaln   !<an integer telling if ctem is operated within gcm (=0) or in stand
-                                            !<alone mode (=1). this is used for fire purposes. see comments just
-                                            !<above where disturb subroutine is called.
+    logical, allocatable, dimension(:,:) :: pftexist !<logical array indicating pfts exist (t) or not (f)
+    integer, allocatable, dimension(:,:) :: colddays !<cold days counter for tracking days below a certain
+                                                     !<temperature threshold for ndl dcd and crop pfts.
+    integer, allocatable, dimension(:)   :: icount   !<
+    integer, allocatable, dimension(:,:) :: lfstatus !<leaf phenology status
+    integer, allocatable, dimension(:,:) :: pandays  !<days with positive net photosynthesis (an) for use in
+                                                     !<the phenology subroutine
+    integer, allocatable, dimension(:)   :: stdaln   !<an integer telling if ctem is operated within gcm (=0) or in stand
+                                                     !<alone mode (=1). this is used for fire purposes. see comments just
+                                                     !<above where disturb subroutine is called.
 
 end type veg_gat
 
@@ -1165,6 +1254,432 @@ type (ctem_tileavg_annual), save, target :: ctem_tile_yr
 contains
 
 !=================================================================================
+
+subroutine alloc_ctem_vars(nlat,nmos,ignd) !ilg as argument?
+
+use ctem_params, only : ican, icc, iccp1
+
+implicit none
+
+integer, intent(in) :: nlat
+integer, intent(in) :: nmos
+integer, intent(in) :: ignd
+
+integer :: ilg
+
+!-----------
+
+ilg = nlat * nmos
+
+! allocated with nlat,nmos, icc:
+
+allocate(vrot%ailcmin(nlat,nmos,icc))
+allocate(vrot%pftexist(nlat,nmos,icc))
+allocate(vrot%lfstatus(nlat,nmos,icc))
+allocate(vrot%pandays (nlat,nmos,icc))
+allocate(vrot%ailcmin (nlat,nmos,icc))
+allocate(vrot%ailcmax (nlat,nmos,icc))
+allocate(vrot%dvdfcan (nlat,nmos,icc))
+allocate(vrot%gleafmas(nlat,nmos,icc))
+allocate(vrot%bleafmas(nlat,nmos,icc))
+allocate(vrot%stemmass(nlat,nmos,icc))
+allocate(vrot%rootmass(nlat,nmos,icc))
+allocate(vrot%pstemmass (nlat,nmos,icc))
+allocate(vrot%pgleafmass (nlat,nmos,icc))
+allocate(vrot%fcancmx (nlat,nmos,icc))
+allocate(vrot%ailcg   (nlat,nmos,icc))
+allocate(vrot%ailcgs  (nlat,nmos,icc))
+allocate(vrot%fcancs  (nlat,nmos,icc))
+allocate(vrot%fcanc   (nlat,nmos,icc))
+allocate(vrot%co2i1cg (nlat,nmos,icc))
+allocate(vrot%co2i1cs (nlat,nmos,icc))
+allocate(vrot%co2i2cg (nlat,nmos,icc))
+allocate(vrot%co2i2cs (nlat,nmos,icc))
+allocate(vrot%ancsveg (nlat,nmos,icc))
+allocate(vrot%ancgveg (nlat,nmos,icc))
+allocate(vrot%rmlcsveg(nlat,nmos,icc))
+allocate(vrot%rmlcgveg(nlat,nmos,icc))
+allocate(vrot%slai    (nlat,nmos,icc))
+allocate(vrot%ailcb   (nlat,nmos,icc))
+allocate(vrot%flhrloss(nlat,nmos,icc))
+allocate(vrot%grwtheff(nlat,nmos,icc))
+allocate(vrot%lystmmas(nlat,nmos,icc))
+allocate(vrot%lyrotmas(nlat,nmos,icc))
+allocate(vrot%tymaxlai(nlat,nmos,icc))
+allocate(vrot%stmhrlos(nlat,nmos,icc))
+allocate(vrot%vgbiomas_veg(nlat,nmos,icc))
+allocate(vrot%emit_co2(nlat,nmos,icc))
+allocate(vrot%emit_co (nlat,nmos,icc))
+allocate(vrot%emit_ch4(nlat,nmos,icc))
+allocate(vrot%emit_nmhc(nlat,nmos,icc))
+allocate(vrot%emit_h2 (nlat,nmos,icc))
+allocate(vrot%emit_nox(nlat,nmos,icc))
+allocate(vrot%emit_n2o(nlat,nmos,icc))
+allocate(vrot%emit_pm25(nlat,nmos,icc))
+allocate(vrot%emit_tpm(nlat,nmos,icc))
+allocate(vrot%emit_tc (nlat,nmos,icc))
+allocate(vrot%emit_oc (nlat,nmos,icc))
+allocate(vrot%emit_bc (nlat,nmos,icc))
+allocate(vrot%burnvegf(nlat,nmos,icc))
+allocate(vrot%smfuncveg(nlat,nmos,icc))
+allocate(vrot%bterm   (nlat,nmos,icc))
+allocate(vrot%mterm   (nlat,nmos,icc))
+allocate(vrot%bmasveg (nlat,nmos,icc))
+allocate(vrot%veghght (nlat,nmos,icc))
+allocate(vrot%rootdpth(nlat,nmos,icc))
+allocate(vrot%tltrleaf(nlat,nmos,icc))
+allocate(vrot%tltrstem(nlat,nmos,icc))
+allocate(vrot%tltrroot(nlat,nmos,icc))
+allocate(vrot%leaflitr(nlat,nmos,icc))
+allocate(vrot%roottemp(nlat,nmos,icc))
+allocate(vrot%afrleaf (nlat,nmos,icc))
+allocate(vrot%afrstem (nlat,nmos,icc))
+allocate(vrot%afrroot (nlat,nmos,icc))
+allocate(vrot%wtstatus(nlat,nmos,icc))
+allocate(vrot%ltstatus(nlat,nmos,icc))
+allocate(vrot%gppveg  (nlat,nmos,icc))
+allocate(vrot%nppveg  (nlat,nmos,icc))
+allocate(vrot%autoresveg(nlat,nmos,icc))
+allocate(vrot%rmlvegacc (nlat,nmos,icc))
+allocate(vrot%rmsveg  (nlat,nmos,icc))
+allocate(vrot%rmrveg  (nlat,nmos,icc))
+allocate(vrot%rgveg   (nlat,nmos,icc))
+allocate(vrot%litrfallveg(nlat,nmos,icc))
+allocate(vrot%rothrlos(nlat,nmos,icc))
+allocate(vrot%pfcancmx(nlat,nmos,icc))
+allocate(vrot%nfcancmx(nlat,nmos,icc))
+allocate(vrot%anveg   (nlat,nmos,icc))
+allocate(vrot%rmlveg  (nlat,nmos,icc))
+    
+! allocated with nlat,nmos:   
+allocate(vrot%icount(nlat,nmos))
+allocate(vrot%stdaln(nlat,nmos))
+allocate(vrot%gavglai (nlat,nmos))
+allocate(vrot%co2conc (nlat,nmos))
+allocate(vrot%ch4conc (nlat,nmos))
+allocate(vrot%canres  (nlat,nmos))
+allocate(vrot%vgbiomas(nlat,nmos))
+allocate(vrot%gavgltms(nlat,nmos))
+allocate(vrot%gavgscms(nlat,nmos))
+allocate(vrot%burnfrac(nlat,nmos))
+allocate(vrot%popdin  (nlat,nmos))
+allocate(vrot%lterm   (nlat,nmos))
+allocate(vrot%extnprob(nlat,nmos))
+allocate(vrot%prbfrhuc(nlat,nmos))
+allocate(vrot%rml     (nlat,nmos))
+allocate(vrot%rms     (nlat,nmos))
+allocate(vrot%rmr     (nlat,nmos))
+allocate(vrot%ch4wet1 (nlat,nmos))
+allocate(vrot%ch4wet2 (nlat,nmos))
+allocate(vrot%wetfdyn (nlat,nmos))
+allocate(vrot%ch4dyn1 (nlat,nmos))
+allocate(vrot%ch4dyn2 (nlat,nmos))
+allocate(vrot%ch4_soills(nlat,nmos))
+allocate(vrot%lucemcom(nlat,nmos))
+allocate(vrot%lucltrin(nlat,nmos))
+allocate(vrot%lucsocin(nlat,nmos))
+allocate(vrot%npp     (nlat,nmos))
+allocate(vrot%nep     (nlat,nmos))
+allocate(vrot%nbp     (nlat,nmos))
+allocate(vrot%gpp     (nlat,nmos))
+allocate(vrot%hetrores(nlat,nmos))
+allocate(vrot%autores (nlat,nmos))
+allocate(vrot%soilcresp(nlat,nmos))
+allocate(vrot%rm      (nlat,nmos))
+allocate(vrot%rg      (nlat,nmos))
+allocate(vrot%litres  (nlat,nmos))
+allocate(vrot%socres  (nlat,nmos))
+allocate(vrot%dstcemls(nlat,nmos))
+allocate(vrot%litrfall(nlat,nmos))
+allocate(vrot%humiftrs(nlat,nmos))
+allocate(vrot%cfluxcg (nlat,nmos))
+allocate(vrot%cfluxcs (nlat,nmos))
+allocate(vrot%dstcemls3 (nlat,nmos))
+allocate(vrot%PREACC_M(nlat,nmos))
+allocate(vrot%GTACC_M (nlat,nmos))
+allocate(vrot%QEVPACC_M (nlat,nmos))
+allocate(vrot%HFSACC_M(nlat,nmos))
+allocate(vrot%HMFNACC_M (nlat,nmos))
+allocate(vrot%ROFACC_M(nlat,nmos))
+allocate(vrot%SNOACC_M(nlat,nmos))
+allocate(vrot%OVRACC_M(nlat,nmos))
+allocate(vrot%WTBLACC_M(nlat,nmos))
+allocate(vrot%ALVSACC_M(nlat,nmos))
+allocate(vrot%ALIRACC_M(nlat,nmos))
+allocate(vrot%RHOSACC_M(nlat,nmos))
+allocate(vrot%TSNOACC_M(nlat,nmos))
+allocate(vrot%WSNOACC_M(nlat,nmos))
+allocate(vrot%SNOARE_M(nlat,nmos))
+allocate(vrot%TCANACC_M(nlat,nmos))
+allocate(vrot%RCANACC_M(nlat,nmos))
+allocate(vrot%SCANACC_M(nlat,nmos))
+allocate(vrot%ALTOTACC_M(nlat,nmos))
+allocate(vrot%GROACC_M(nlat,nmos))
+allocate(vrot%FSINACC_M (nlat,nmos))
+allocate(vrot%FLINACC_M(nlat,nmos))
+allocate(vrot%TAACC_M (nlat,nmos))
+allocate(vrot%UVACC_M (nlat,nmos))
+allocate(vrot%PRESACC_M (nlat,nmos))
+allocate(vrot%QAACC_M (nlat,nmos))
+allocate(vrot%EVAPACC_M (nlat,nmos))
+allocate(vrot%FLUTACC_M(nlat,nmos))
+allocate(vrot%tcanrs  (nlat,nmos))
+allocate(vrot%tsnors  (nlat,nmos))
+allocate(vrot%tpndrs  (nlat,nmos))
+allocate(vrot%tcanoaccrow_m(nlat,nmos))
+allocate(vrot%uvaccrow_m(nlat,nmos))
+allocate(vrot%vvaccrow_m (nlat,nmos))
+allocate(vrot%tcanoaccrow_out (nlat,nmos))
+allocate(vrot%qevpacc_m_save(nlat,nmos))
+allocate(vrot%twarmm  (nlat,nmos))
+allocate(vrot%tcoldm  (nlat,nmos))
+allocate(vrot%gdd5    (nlat,nmos))
+allocate(vrot%aridity (nlat,nmos))
+allocate(vrot%srplsmon(nlat,nmos))
+allocate(vrot%defctmon(nlat,nmos))
+allocate(vrot%anndefct(nlat,nmos))
+allocate(vrot%annsrpls(nlat,nmos))
+allocate(vrot%annpcp  (nlat,nmos))
+allocate(vrot%dry_season_length(nlat,nmos))
+
+! allocated with nlat,nmos,ican:     
+allocate(vrot%zolnc(nlat,nmos,ican))
+allocate(vrot%ailc(nlat,nmos,ican))
+allocate(vrot%cmasvegc(nlat,nmos,ican))
+allocate(vrot%alvsctm(nlat,nmos,ican))
+allocate(vrot%paic(nlat,nmos,ican))
+allocate(vrot%slaic(nlat,nmos,ican))
+allocate(vrot%alirctm(nlat,nmos,ican))
+allocate(vrot%csum(nlat,nmos,ican))
+    
+! allocated with nlat,nmos,ignd:        
+allocate(vrot%TBARACC_M(nlat,nmos,ignd))
+allocate(vrot%THLQACC_M(nlat,nmos,ignd))
+allocate(vrot%THICACC_M(nlat,nmos,ignd))
+allocate(vrot%THALACC_M(nlat,nmos,ignd))
+allocate(vrot%tbaraccrow_m(nlat,nmos,ignd))
+    
+! allocated with nlat,nmos,ican,ignd:       
+allocate(vrot%rmatc(nlat,nmos,ican,ignd))
+ 
+ ! allocated with nlat,nmos,icc,ignd: 
+allocate(vrot%rmatctem(nlat,nmos,icc,ignd))
+    
+! allocated with nlat,nmos,iccp1:     
+allocate(vrot%litrmass(nlat,nmos,iccp1))
+allocate(vrot%soilcmas(nlat,nmos,iccp1))
+allocate(vrot%nepveg(nlat,nmos,iccp1))
+allocate(vrot%nbpveg(nlat,nmos,iccp1))
+allocate(vrot%hetroresveg(nlat,nmos,iccp1))
+allocate(vrot%litresveg(nlat,nmos,iccp1))
+allocate(vrot%soilcresveg(nlat,nmos,iccp1))
+allocate(vrot%humiftrsveg(nlat,nmos,iccp1))
+    
+! allocated with nlat,nmos,{some number}: 
+allocate(vrot%colddays(nlat,nmos,2))
+allocate(vrot%slopefrac(nlat,nmos,8))
+allocate(vrot%mlightng(nlat,nmos,12))
+allocate(vrot%wetfrac_mon(nlat,nmos,12))
+    
+! allocated with nlat:     
+allocate(vrot%dayl_max(nlat))
+allocate(vrot%dayl(nlat))
+allocate(vrot%altotcntr_d(nlat))
+
+! Now on to the veg_gat vars
+
+ilg = nlat * nmos
+
+! allocated with ilg
+
+allocate(vgat%icount(ilg))
+allocate(vgat%gavglai (ilg))
+allocate(vgat%lightng (ilg))
+allocate(vgat%tcanoaccgat_out (ilg))
+allocate(vgat%co2conc (ilg))
+allocate(vgat%ch4conc (ilg))
+allocate(vgat%canres (ilg))
+allocate(vgat%vgbiomas (ilg))
+allocate(vgat%gavgltms (ilg))
+allocate(vgat%gavgscms (ilg))
+allocate(vgat%lterm (ilg))
+allocate(vgat%ch4wet1 (ilg))
+allocate(vgat%ch4wet2 (ilg))
+allocate(vgat%wetfdyn (ilg))
+allocate(vgat%ch4dyn1 (ilg))
+allocate(vgat%ch4dyn2 (ilg))
+allocate(vgat%ch4_soills (ilg))
+allocate(vgat%lucemcom (ilg))
+allocate(vgat%lucltrin (ilg))
+allocate(vgat%lucsocin (ilg))
+allocate(vgat%npp (ilg))
+allocate(vgat%nep (ilg))
+allocate(vgat%nbp (ilg))
+allocate(vgat%gpp (ilg))
+allocate(vgat%hetrores (ilg))
+allocate(vgat%autores (ilg))
+allocate(vgat%soilcresp (ilg))
+allocate(vgat%rm (ilg))
+allocate(vgat%rg (ilg))
+allocate(vgat%litres (ilg))
+allocate(vgat%socres (ilg))
+allocate(vgat%dstcemls (ilg))
+allocate(vgat%litrfall (ilg))
+allocate(vgat%humiftrs (ilg))
+allocate(vgat%rml (ilg))
+allocate(vgat%rms (ilg))
+allocate(vgat%rmr (ilg))
+allocate(vgat%burnfrac (ilg))
+allocate(vgat%popdin (ilg))
+allocate(vgat%extnprob (ilg))
+allocate(vgat%prbfrhuc (ilg))
+allocate(vgat%dayl_max (ilg))
+allocate(vgat%dayl (ilg))
+allocate(vgat%wetfrac_pres (ilg))
+allocate(vgat%twarmm (ilg))
+allocate(vgat%tcoldm (ilg))
+allocate(vgat%gdd5 (ilg))
+allocate(vgat%aridity (ilg))
+allocate(vgat%srplsmon (ilg))
+allocate(vgat%defctmon (ilg))
+allocate(vgat%anndefct (ilg))
+allocate(vgat%annsrpls (ilg))
+allocate(vgat%annpcp (ilg))
+allocate(vgat%dry_season_length (ilg))
+allocate(vgat%cfluxcg (ilg))
+allocate(vgat%cfluxcs (ilg))
+allocate(vgat%dstcemls3 (ilg))
+allocate(vgat%tcurm (ilg))
+allocate(vgat%srpcuryr (ilg))
+allocate(vgat%dftcuryr (ilg))
+allocate(vgat%anpcpcur (ilg))
+allocate(vgat%anpecur (ilg))
+allocate(vgat%gdd5cur (ilg))
+allocate(vgat%surmncur (ilg))
+allocate(vgat%defmncur (ilg))
+allocate(vgat%srplscur (ilg))
+allocate(vgat%defctcur (ilg))
+allocate(vgat%stdaln (ilg))
+
+! allocated with ilg, icc
+allocate(vgat%ailcmin (ilg,icc))
+allocate(vgat%ailcmax (ilg,icc))
+allocate(vgat%dvdfcan (ilg,icc))
+allocate(vgat%gleafmas (ilg,icc))
+allocate(vgat%bleafmas (ilg,icc))
+allocate(vgat%stemmass (ilg,icc))
+allocate(vgat%rootmass (ilg,icc))
+allocate(vgat%pstemmass (ilg,icc))
+allocate(vgat%pgleafmass (ilg,icc))
+allocate(vgat%fcancmx (ilg,icc))
+allocate(vgat%ailcg (ilg,icc))
+allocate(vgat%ailcgs (ilg,icc))
+allocate(vgat%fcancs (ilg,icc))
+allocate(vgat%fcanc (ilg,icc))
+allocate(vgat%co2i1cg (ilg,icc))
+allocate(vgat%co2i1cs (ilg,icc))
+allocate(vgat%co2i2cg (ilg,icc))
+allocate(vgat%co2i2cs (ilg,icc))
+allocate(vgat%ancsveg (ilg,icc))
+allocate(vgat%ancgveg (ilg,icc))
+allocate(vgat%rmlcsveg (ilg,icc))
+allocate(vgat%rmlcgveg (ilg,icc))
+allocate(vgat%slai (ilg,icc))
+allocate(vgat%ailcb (ilg,icc))
+allocate(vgat%flhrloss (ilg,icc))
+allocate(vgat%grwtheff (ilg,icc))
+allocate(vgat%lystmmas (ilg,icc))
+allocate(vgat%lyrotmas (ilg,icc))
+allocate(vgat%tymaxlai (ilg,icc))
+allocate(vgat%stmhrlos (ilg,icc))
+allocate(vgat%vgbiomas_veg (ilg,icc))
+allocate(vgat%emit_co2 (ilg,icc))
+allocate(vgat%emit_co (ilg,icc))
+allocate(vgat%emit_ch4 (ilg,icc))
+allocate(vgat%emit_nmhc (ilg,icc))
+allocate(vgat%emit_h2 (ilg,icc))
+allocate(vgat%emit_nox (ilg,icc))
+allocate(vgat%emit_n2o (ilg,icc))
+allocate(vgat%emit_pm25 (ilg,icc))
+allocate(vgat%emit_tpm (ilg,icc))
+allocate(vgat%emit_tc (ilg,icc))
+allocate(vgat%emit_oc (ilg,icc))
+allocate(vgat%emit_bc (ilg,icc))
+allocate(vgat%burnvegf (ilg,icc))
+allocate(vgat%smfuncveg (ilg,icc))
+allocate(vgat%bterm (ilg,icc))
+allocate(vgat%mterm (ilg,icc))
+allocate(vgat%bmasveg (ilg,icc))
+allocate(vgat%veghght (ilg,icc))
+allocate(vgat%rootdpth (ilg,icc))
+allocate(vgat%tltrleaf (ilg,icc))
+allocate(vgat%tltrstem (ilg,icc))
+allocate(vgat%tltrroot (ilg,icc))
+allocate(vgat%leaflitr (ilg,icc))
+allocate(vgat%roottemp (ilg,icc))
+allocate(vgat%afrleaf (ilg,icc))
+allocate(vgat%afrstem (ilg,icc))
+allocate(vgat%afrroot (ilg,icc))
+allocate(vgat%wtstatus (ilg,icc))
+allocate(vgat%ltstatus (ilg,icc))
+allocate(vgat%gppveg (ilg,icc))
+allocate(vgat%nppveg (ilg,icc))
+allocate(vgat%autoresveg (ilg,icc))
+allocate(vgat%rmlvegacc (ilg,icc))
+allocate(vgat%rmsveg (ilg,icc))
+allocate(vgat%rmrveg (ilg,icc))
+allocate(vgat%rgveg (ilg,icc))
+allocate(vgat%litrfallveg (ilg,icc))
+allocate(vgat%anveg (ilg,icc))
+allocate(vgat%rmlveg (ilg,icc))
+allocate(vgat%geremort (ilg,icc))
+allocate(vgat%intrmort (ilg,icc))
+allocate(vgat%lambda (ilg,icc))
+allocate(vgat%cc (ilg,icc))
+allocate(vgat%mm (ilg,icc))
+allocate(vgat%pftexist (ilg,icc))
+allocate(vgat%rothrlos (ilg,icc))
+allocate(vgat%pfcancmx (ilg,icc))
+allocate(vgat%nfcancmx (ilg,icc))
+allocate(vgat%lfstatus (ilg,icc))
+allocate(vgat%pandays (ilg,icc))
+
+! allocated with ilg, ican:
+allocate(vgat%zolnc (ilg,ican))
+allocate(vgat%ailc (ilg,ican))
+allocate(vgat%cmasvegc (ilg,ican))
+allocate(vgat%alvsctm (ilg,ican))
+allocate(vgat%paic (ilg,ican))
+allocate(vgat%slaic (ilg,ican))
+allocate(vgat%alirctm (ilg,ican))
+
+! allocated with ilg, iccp1:
+allocate(vgat%litrmass (ilg,iccp1))
+allocate(vgat%soilcmas (ilg,iccp1))
+allocate(vgat%nepveg (ilg,iccp1))
+allocate(vgat%nbpveg (ilg,iccp1))
+allocate(vgat%hetroresveg (ilg,iccp1))
+allocate(vgat%litresveg (ilg,iccp1))
+allocate(vgat%soilcresveg (ilg,iccp1))
+allocate(vgat%humiftrsveg (ilg,iccp1))
+
+! allocated with ilg, ican, ignd:
+allocate(vgat%rmatc (ilg,ican,ignd))
+
+! allocated with ilg, icc, ignd:
+allocate(vgat%rmatctem (ilg,icc,ignd))
+
+! allocated with ilg, icc, {some number}:
+allocate(vgat%colddays (ilg,2))
+allocate(vgat%slopefrac (ilg,8))
+allocate(vgat%mlightng (ilg,12))
+allocate(vgat%wetfrac_mon (ilg,12))
+allocate(vgat%tmonth (12,ilg))
+
+end subroutine alloc_ctem_vars
+
+! -----------------------------------------------------
+
 
 subroutine initrowvars()
 

@@ -12,7 +12,8 @@ implicit none
 
 public :: openmet
 !public :: readin_met
-public :: read_initialstate
+public :: read_modelsetup
+!public :: read_initialstate
 
 contains
 
@@ -42,7 +43,6 @@ use ctem_statevars,     only : c_switch
 implicit none
 
 character(180), pointer :: met_file
-!character(180) :: climatefile
 
 integer :: i
 integer :: xsize
@@ -59,15 +59,15 @@ met_file          => c_switch%met_file
 
 !---
 !open climate file
-
+write(*,*)met_file
 call check_nc(nf90_open(trim(met_file),nf90_nowrite,metfid))
 
 !retrieve dimensions
 
-call check_nc(nf90_inq_dimid(metfid,'lon',dimid))
-call check_nc(nf90_inquire_dimension(metfid,dimid,len=xsize))
-call check_nc(nf90_inq_dimid(metfid,'lat',dimid))
-call check_nc(nf90_inquire_dimension(metfid,dimid,len=ysize))
+!call check_nc(nf90_inq_dimid(metfid,'lon',dimid))
+!call check_nc(nf90_inquire_dimension(metfid,dimid,len=xsize))
+!call check_nc(nf90_inq_dimid(metfid,'lat',dimid))
+!call check_nc(nf90_inquire_dimension(metfid,dimid,len=ysize))
 call check_nc(nf90_inq_dimid(metfid,'time',dimid))
 call check_nc(nf90_inquire_dimension(metfid,dimid,len=timelen))
 
@@ -83,18 +83,16 @@ end do
 
 !calculate the number and indices of the pixels to be calculated
 
-allocate(lonvect(xsize))
-allocate(latvect(ysize))
+!allocate(lonvect(xsize))
+!allocate(latvect(ysize))
 
 ! Figure out the size of the area to be simulated
 
-call check_nc(nf90_inq_varid(metfid,'lon',varid))
-call check_nc(nf90_get_var(metfid,varid,lonvect))
-call check_nc(nf90_inq_varid(metfid,'lat',varid))
-call check_nc(nf90_get_var(metfid,varid,latvect))
-
-call check_nc(nf90_inq_varid(metfid,'lat',varid))
-call check_nc(nf90_get_var(metfid,varid,latvect))
+! call check_nc(nf90_inq_varid(metfid,'lon',varid))
+! call check_nc(nf90_get_var(metfid,varid,lonvect))
+! 
+! call check_nc(nf90_inq_varid(metfid,'lat',varid))
+! call check_nc(nf90_get_var(metfid,varid,latvect))
 
 call check_nc(nf90_inq_varid(metfid,'time',varid))
 call check_nc(nf90_get_var(metfid,varid,timestart,start=(/1,1,1/),count=(/1,1,1/)))
@@ -107,26 +105,26 @@ yearmetst = int((timestart(1,1,1) - 101.)/10000.) ! This is based on the MET fil
 
 ! Based on the bounds, we make vectors of the cells to be run:
 
-pos = minloc(abs(lonvect - bounds(1)))
-xpos(1) = pos(1)
-
-pos = minloc(abs(lonvect - bounds(2)))
-xpos(2) = pos(1)
-
-pos = minloc(abs(latvect - bounds(3)))
-ypos(1) = pos(1)
-
-pos = minloc(abs(latvect - bounds(4)))
-ypos(2) = pos(1)
-
-srtx = minval(xpos)
-srty = minval(ypos)
-
-if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
- cntx = 1 + abs(maxval(xpos) - srtx)
-
-if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
- cnty = 1 + abs(maxval(ypos) - srty)
+! pos = minloc(abs(lonvect - bounds(1)))
+! xpos(1) = pos(1)
+! 
+! pos = minloc(abs(lonvect - bounds(2)))
+! xpos(2) = pos(1)
+! 
+! pos = minloc(abs(latvect - bounds(3)))
+! ypos(1) = pos(1)
+! 
+! pos = minloc(abs(latvect - bounds(4)))
+! ypos(2) = pos(1)
+! 
+! srtx = minval(xpos)
+! srty = minval(ypos)
+! 
+! if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
+!  cntx = 1 + abs(maxval(xpos) - srtx)
+! 
+! if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
+!  cnty = 1 + abs(maxval(ypos) - srty)
 
 end subroutine openmet
 
@@ -244,518 +242,696 @@ end subroutine openmet
 
 !--------------------------------------------------------------------------------------------
 
-subroutine read_initialstate(nmtest,nltest,ignd,onetile_perPFT) ! FLAG these are just placeholders now. Figure out later what I really want.
+subroutine read_modelsetup(nmtest,nltest)!,ignd) 
 
 ! J. Melton
-! Nov 2016
+! Feb 2017
 
 use netcdf
 use netcdf_drivers, only : check_nc
-use io_driver, only : cntx,cnty,srtx,srty !vname,niv,metfid,bounds,lonvect,latvect, yearmetst,rsid
-use ctem_statevars,     only : c_switch,vrot
-use class_statevars,    only : class_rot
-! use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero
+use io_driver, only : initid,cntx,cnty,srtx,srty,bounds,lonvect,latvect
+use ctem_statevars,     only : c_switch
+
 
 implicit none
 
 ! arguments:
-integer, intent(out) :: ignd
-integer, intent(out) :: nltest
-integer, intent(inout) :: nmtest
-logical, intent(in) :: onetile_perPFT
+integer :: ignd  !flag temp intent
+!integer, intent(out) :: ignd  !flag temp intent
+integer, intent(out) :: nltest  !flag temp intent
+integer, intent(out) :: nmtest  !flag temp intent
 
 ! pointers:
-real, pointer, dimension(:,:,:) :: FCANROT
-real, pointer, dimension(:,:)   :: FAREROT
-real, pointer, dimension(:,:,:) :: RSMNROT
-real, pointer, dimension(:,:,:) :: QA50ROT
-real, pointer, dimension(:,:,:) :: VPDAROT
-real, pointer, dimension(:,:,:) :: VPDBROT
-real, pointer, dimension(:,:,:) :: PSGAROT
-real, pointer, dimension(:,:,:) :: PSGBROT
-real, pointer, dimension(:,:)   :: DRNROT
-real, pointer, dimension(:,:)   :: SDEPROT
-real, pointer, dimension(:,:)   :: XSLPROT
-real, pointer, dimension(:,:)   :: GRKFROT
-real, pointer, dimension(:,:)   :: WFSFROT
-real, pointer, dimension(:,:)   :: WFCIROT
-integer, pointer, dimension(:,:)   :: MIDROT
-real, pointer, dimension(:,:,:) :: SANDROT
-real, pointer, dimension(:,:,:) :: CLAYROT
-real, pointer, dimension(:,:,:) :: ORGMROT
-real, pointer, dimension(:,:,:) :: TBARROT
-real, pointer, dimension(:,:,:) :: THLQROT
-real, pointer, dimension(:,:,:) :: THICROT
-real, pointer, dimension(:,:)   :: TCANROT
-real, pointer, dimension(:,:)   :: TSNOROT
-real, pointer, dimension(:,:)   :: TPNDROT
-real, pointer, dimension(:,:)   :: ZPNDROT
-real, pointer, dimension(:,:)   :: RCANROT
-real, pointer, dimension(:,:)   :: SCANROT
-real, pointer, dimension(:,:)   :: SNOROT
-real, pointer, dimension(:,:)   :: ALBSROT
-real, pointer, dimension(:,:)   :: RHOSROT
-real, pointer, dimension(:,:)   :: GROROT
+character(180), pointer         :: init_file
 
-logical, pointer :: dofire
-logical, pointer :: compete
-logical, pointer :: inibioclim
-logical, pointer :: dowetlands
-logical, pointer :: start_bare
-logical, pointer :: lnduseon
-logical, pointer :: obswetf
-real, pointer, dimension(:,:,:) :: ailcminrow           !
-real, pointer, dimension(:,:,:) :: ailcmaxrow           !
-real, pointer, dimension(:,:,:) :: dvdfcanrow           !
-real, pointer, dimension(:,:,:) :: gleafmasrow          !
-real, pointer, dimension(:,:,:) :: bleafmasrow          !
-real, pointer, dimension(:,:,:) :: stemmassrow          !
-real, pointer, dimension(:,:,:) :: rootmassrow          !
-real, pointer, dimension(:,:,:) :: pstemmassrow         !
-real, pointer, dimension(:,:,:) :: pgleafmassrow        !
-real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
-real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
-real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
-real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
-real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
-real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
-real, pointer, dimension(:,:) :: anndefct          !< annual water deficit (mm)
-real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
-real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
-real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
-real, pointer, dimension(:,:,:) :: litrmassrow
-real, pointer, dimension(:,:,:) :: soilcmasrow
-real, pointer, dimension(:,:) :: extnprob
-real, pointer, dimension(:,:) :: prbfrhuc
-real, pointer, dimension(:,:,:) :: mlightng
-integer, pointer, dimension(:,:,:) :: lfstatusrow
-integer, pointer, dimension(:,:,:) :: pandaysrow
-integer, pointer, dimension(:,:) :: stdaln
-real, pointer, dimension(:,:,:) :: slopefrac
-
-! local variables
-
-integer :: i,m,j,strlen
-integer :: initid
-!real, dimension(ilg,2) :: crop_temp_frac
-integer, dimension(cnty,cntx) :: maskofregion
+integer :: dimid
+integer :: varid
+integer :: xsize, ysize
+integer, dimension(1) :: pos
+integer, dimension(2) :: xpos,ypos
+integer, dimension(:,:), allocatable :: nmarray
 
 ! point pointers:
-dofire            => c_switch%dofire
-compete           => c_switch%compete
-inibioclim        => c_switch%inibioclim
-dowetlands        => c_switch%dowetlands
-start_bare        => c_switch%start_bare
-lnduseon          => c_switch%lnduseon
-obswetf           => c_switch%obswetf
-ailcminrow        => vrot%ailcmin
-ailcmaxrow        => vrot%ailcmax
-dvdfcanrow        => vrot%dvdfcan
-gleafmasrow       => vrot%gleafmas
-bleafmasrow       => vrot%bleafmas
-stemmassrow       => vrot%stemmass
-rootmassrow       => vrot%rootmass
-pstemmassrow      => vrot%pstemmass
-pgleafmassrow     => vrot%pgleafmass
-twarmm            => vrot%twarmm
-tcoldm            => vrot%tcoldm
-gdd5              => vrot%gdd5
-aridity           => vrot%aridity
-srplsmon          => vrot%srplsmon
-defctmon          => vrot%defctmon
-anndefct          => vrot%anndefct
-annsrpls          => vrot%annsrpls
-annpcp            => vrot%annpcp
-dry_season_length => vrot%dry_season_length
-litrmassrow       => vrot%litrmass
-soilcmasrow       => vrot%soilcmas
-extnprob          => vrot%extnprob
-prbfrhuc          => vrot%prbfrhuc
-mlightng          => vrot%mlightng
-slopefrac         => vrot%slopefrac
-stdaln            => vrot%stdaln
-lfstatusrow       => vrot%lfstatus
-pandaysrow        => vrot%pandays
+init_file         => c_switch%init_file
 
-FCANROT           => class_rot%FCANROT
-FAREROT           => class_rot%FAREROT
-RSMNROT           => class_rot%RSMNROT
-QA50ROT           => class_rot%QA50ROT
-VPDAROT           => class_rot%VPDAROT
-VPDBROT           => class_rot%VPDBROT
-PSGAROT           => class_rot%PSGAROT
-PSGBROT           => class_rot%PSGBROT
-DRNROT           => class_rot%DRNROT
-SDEPROT           => class_rot%SDEPROT
-XSLPROT           => class_rot%XSLPROT
-GRKFROT           => class_rot%GRKFROT
-WFSFROT           => class_rot%WFSFROT
-WFCIROT           => class_rot%WFCIROT
-MIDROT           => class_rot%MIDROT
-SANDROT           => class_rot%SANDROT
-CLAYROT           => class_rot%CLAYROT
-ORGMROT           => class_rot%ORGMROT
-TBARROT           => class_rot%TBARROT
-THLQROT           => class_rot%THLQROT
-THICROT           => class_rot%THICROT
-TCANROT           => class_rot%TCANROT
-TSNOROT           => class_rot%TSNOROT
-TPNDROT           => class_rot%TPNDROT
-ZPNDROT           => class_rot%ZPNDROT
-RCANROT           => class_rot%RCANROT
-SCANROT           => class_rot%SCANROT
-SNOROT           => class_rot%SNOROT
-ALBSROT           => class_rot%ALBSROT
-RHOSROT           => class_rot%RHOSROT
-GROROT           => class_rot%GROROT
+! ------------
 
-! ----------------------------
-
-!open initial conditions file
+!> First, open initial conditions file.
 
 call check_nc(nf90_open(trim(init_file),nf90_nowrite,initid))
 
-!retrieve the number of soil layers
+!> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for 
+!! names of longitude and latitude.
+
+call check_nc(nf90_inq_dimid(initid,'lon',dimid))
+call check_nc(nf90_inquire_dimension(initid,dimid,len=xsize))
+
+call check_nc(nf90_inq_dimid(initid,'lat',dimid))
+call check_nc(nf90_inquire_dimension(initid,dimid,len=ysize))
+
+!calculate the number and indices of the pixels to be calculated
+
+allocate(lonvect(xsize))
+allocate(latvect(ysize))
+
+call check_nc(nf90_inq_varid(initid,'lon',varid))
+call check_nc(nf90_get_var(initid,varid,lonvect))
+
+call check_nc(nf90_inq_varid(initid,'lat',varid))
+call check_nc(nf90_get_var(initid,varid,latvect))
+
+! Based on the bounds, we make vectors of the cells to be run:
+
+pos = minloc(abs(lonvect - bounds(1)))
+xpos(1) = pos(1)
+
+pos = minloc(abs(lonvect - bounds(2)))
+xpos(2) = pos(1)
+
+pos = minloc(abs(latvect - bounds(3)))
+ypos(1) = pos(1)
+
+pos = minloc(abs(latvect - bounds(4)))
+ypos(2) = pos(1)
+
+srtx = minval(xpos)
+srty = minval(ypos)
+
+if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
+ cntx = 1 + abs(maxval(xpos) - srtx)
+
+if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
+ cnty = 1 + abs(maxval(ypos) - srty)
+
+!> The size of nltest should then be cntx x cnty. We later take in GC to determine
+!! which cells are valid land cells and use that in GATPREP to make it so we only
+!! do computations over the valid land cells.
+
+nltest = cntx * cnty
+
+!> Retrieve the number of soil layers
 
 call check_nc(nf90_inq_dimid(initid,'layer',dimid))
 call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
 
-!retrieve the number of PFTs ! FUTURE?
+!> To determine nmtest, we use the largest number in the input file variable nmtest
+!! for the region we are running. 
 
-! CLASS PFTs
-!call check_nc(nf90_inq_dimid(initid,'ic',dimid))
-!call check_nc(nf90_inquire_dimension(initid,dimid,len=))
-
-! CTEM PFTs
-!call check_nc(nf90_inq_dimid(initid,'icc',dimid))
-!call check_nc(nf90_inquire_dimension(initid,dimid,len=))
-
-
-!Figure out how big our nlat vector is by the number of valid cells in the
-!region we are running. Use the Mask, it is -1 for land. Also get the nmtest value
-!for each of the land cells.
-
-call check_nc(nf90_inq_varid(initid,'Mask',varid))
-call check_nc(nf90_get_var(initid,varid,maskofregion,start=[srty,srtx],count=[cnty,cntx]))
+allocate(nmarray(cnty,cntx))
 
 call check_nc(nf90_inq_varid(initid,'nmtest',varid))
-
-nltest=0
-do x = 1, cntx
-    do y = 1, cnty
-        if (maskofregion(y,x) == -1) then ! land cell
-            nltest = nltest + 1
-            call check_nc(nf90_get_var(initid,varid,nmtest,start=[srty,srtx],count=[cnty,cntx]))
-
-        end if
-    end do
-end do
-
-!  NLTEST,NMTEST
-!
-
-! Allocate arrays to proper dimensions
-
-!
-! Read in the first values
-
-call check_nc(nf90_inq_varid(initid,'lat',varid))
-call check_nc(nf90_get_var(initid,varid,DLATROW,start=[srty,srtx],count=[cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'lon',varid))
-call check_nc(nf90_get_var(initid,varid,DLONROW,start=[srty,srtx],count=[cnty,cntx]))
-
-!       JLAT=NINT(DLATROW(1))
-!       RADJROW(1)=DLATROW(1)*PI/180.
-!       DLONROW(1)=DEGLON
-!       Z0ORROW(1)=0.0
-!       GGEOROW(1)=0.0
-! !     GGEOROW(1)=-0.035
-
-
-call check_nc(nf90_inq_varid(initid,'ZRFM',varid))
-call check_nc(nf90_get_var(initid,varid,ZRFMROW,start=[srty,srtx],count=[cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ZRFH',varid))
-call check_nc(nf90_get_var(initid,varid,ZRFHROW,start=[srty,srtx],count=[cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
-call check_nc(nf90_get_var(initid,varid,ZBLDROW,start=[srty,srtx],count=[cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
-call check_nc(nf90_get_var(initid,varid,ZBLDROW,start=[srty,srtx],count=[cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'GC',varid))
-call check_nc(nf90_get_var(initid,varid,GCROW,start=[srty,srtx],count=[cnty,cntx]))
-
-! Now get the per tile variables:
-
-call check_nc(nf90_inq_varid(initid,'FCAN',varid))
-call check_nc(nf90_get_var(initid,varid,FCANROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'LNZ0',varid))
-call check_nc(nf90_get_var(initid,varid,LNZ0ROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ALVC',varid))
-call check_nc(nf90_get_var(initid,varid,ALVCROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'PAMN',varid))
-call check_nc(nf90_get_var(initid,varid,PAMNROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'PAMX',varid))
-call check_nc(nf90_get_var(initid,varid,PAMX,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'CMAS',varid))
-call check_nc(nf90_get_var(initid,varid,CMASROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ALIC',varid))
-call check_nc(nf90_get_var(initid,varid,ALICROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ROOT',varid))
-call check_nc(nf90_get_var(initid,varid,ROOTROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'DRN',varid))
-call check_nc(nf90_get_var(initid,varid,DRNROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'RSMN',varid))
-call check_nc(nf90_get_var(initid,varid,RSMNROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'QA50',varid))
-call check_nc(nf90_get_var(initid,varid,QA50,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'VPDA',varid))
-call check_nc(nf90_get_var(initid,varid,VPDAROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'VPDB',varid))
-call check_nc(nf90_get_var(initid,varid,VPDBROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'PSGA',varid))
-call check_nc(nf90_get_var(initid,varid,PSGAROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'PSGB',varid))
-call check_nc(nf90_get_var(initid,varid,PSGBROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'SDEP',varid))
-call check_nc(nf90_get_var(initid,varid,SDEPROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'FARE',varid))
-call check_nc(nf90_get_var(initid,varid,FAREROT,start=[srty,srtx],count=[icnty,cntx]))
-
-!           ! Error check:
-!           if (FAREROT(I,M) .gt. 1.0) then
-!            write(*,*)'FAREROT > 1',FAREROT(I,M)
-!            call XIT('runclass36ctem', -2)
-!           end if
-
-call check_nc(nf90_inq_varid(initid,'XSLP',varid))
-call check_nc(nf90_get_var(initid,varid,XSLPROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'GRKF',varid))
-call check_nc(nf90_get_var(initid,varid,GRKFROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'WFSF',varid))
-call check_nc(nf90_get_var(initid,varid,WFSFROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'WFCI',varid))
-call check_nc(nf90_get_var(initid,varid,WFCIROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'MID',varid))
-call check_nc(nf90_get_var(initid,varid,MIDROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ZBOT',varid)) !per layer but not per tile (fix?)
-call check_nc(nf90_get_var(initid,varid,ZBOT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'DELZ',varid)) !per layer but not per tile (fix?)
-call check_nc(nf90_get_var(initid,varid,DELZ,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'SAND',varid))
-call check_nc(nf90_get_var(initid,varid,SANDROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'CLAY',varid))
-call check_nc(nf90_get_var(initid,varid,CLAYROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ORGM',varid))
-call check_nc(nf90_get_var(initid,varid,ORGMROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'TBAR',varid))
-call check_nc(nf90_get_var(initid,varid,TBARROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'THLQ',varid))
-call check_nc(nf90_get_var(initid,varid,THLQROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'THIC',varid))
-call check_nc(nf90_get_var(initid,varid,THICROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'TCAN',varid))
-call check_nc(nf90_get_var(initid,varid,TCANROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'TSNO',varid))
-call check_nc(nf90_get_var(initid,varid,TSNOROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'TPND',varid))
-call check_nc(nf90_get_var(initid,varid,TPNDROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ZPND',varid))
-call check_nc(nf90_get_var(initid,varid,ZPNDROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'RCAN',varid))
-call check_nc(nf90_get_var(initid,varid,RCANROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'SCAN',varid))
-call check_nc(nf90_get_var(initid,varid,SCANROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'SNO',varid))
-call check_nc(nf90_get_var(initid,varid,SNOROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ALBS',varid))
-call check_nc(nf90_get_var(initid,varid,ALBSROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'RHOS',varid))
-call check_nc(nf90_get_var(initid,varid,RHOSROT,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'GRO',varid))
-call check_nc(nf90_get_var(initid,varid,GROROT,start=[srty,srtx],count=[icnty,cntx]))
-
-!>The following three variables are needed to run CTEM. 1) min & 2) max leaf area index are needed to break
-!>class lai into dcd and evg for trees (for crops and grasses it doesn't matter much). 3) dvdfcanrow is
-!>needed to divide needle & broad leaf into dcd and evg, and crops & grasses into c3 and c4 fractions.
-
-call check_nc(nf90_inq_varid(initid,'ailcmin',varid))
-call check_nc(nf90_get_var(initid,varid,ailcminrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'ailcmax',varid))
-call check_nc(nf90_get_var(initid,varid,ailcmaxrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'dvdfcan',varid))
-call check_nc(nf90_get_var(initid,varid,dvdfcanrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
-
-!>
-!>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
-!>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set
-!>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
-!>
-call check_nc(nf90_inq_varid(initid,'gleafmas',varid))
-call check_nc(nf90_get_var(initid,varid,gleafmasrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'bleafmas',varid))
-call check_nc(nf90_get_var(initid,varid,bleafmasrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'stemmass',varid))
-call check_nc(nf90_get_var(initid,varid,stemmassrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'rootmass',varid))
-call check_nc(nf90_get_var(initid,varid,rootmassrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
-
-!>
-!>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
-if (dofire .and. compete) then
-            do j =1,icc
-            pstemmassrow(i,m,j)=stemmassrow(i,m,j)
-            pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
-            end do
-end if
-!
-call check_nc(nf90_inq_varid(initid,'litrmass',varid))
-call check_nc(nf90_get_var(initid,varid,litrmassrow,start=[1,srty,srtx],count=[iccp1,icnty,cntx])) !FLAG per layer?
-
-call check_nc(nf90_inq_varid(initid,'soilcmas',varid))
-call check_nc(nf90_get_var(initid,varid,soilcmasrow,start=[1,srty,srtx],count=[iccp1,icnty,cntx])) !FLAG per layer?
-
-call check_nc(nf90_inq_varid(initid,'lfstatus',varid))
-call check_nc(nf90_get_var(initid,varid,lfstatusrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'pandays',varid))
-call check_nc(nf90_get_var(initid,varid,pandaysrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
-
-!
-! NOT per tile
-call check_nc(nf90_inq_varid(initid,'mlightng',varid))
-call check_nc(nf90_get_var(initid,varid,mlightng,start=[1,srty,srtx],count=[12,icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'extnprob',varid))
-call check_nc(nf90_get_var(initid,varid,extnprob,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'prbfrhuc',varid))
-call check_nc(nf90_get_var(initid,varid,prbfrhuc,start=[srty,srtx],count=[icnty,cntx]))
-
-call check_nc(nf90_inq_varid(initid,'stdaln',varid)) !FLAG - get rid of this? I don't see the use stdaln
-call check_nc(nf90_get_var(initid,varid,stdaln,start=[srty,srtx],count=[icnty,cntx]))
-
-if (compete .and. inibioclim) then  !read in the bioclimatic parameters
-
-    call check_nc(nf90_inq_varid(initid,'twarmm',varid))
-    call check_nc(nf90_get_var(initid,varid,twarmm,start=[srty,srtx],count=[icnty,cntx]))
-
-    call check_nc(nf90_inq_varid(initid,'tcoldm',varid))
-    call check_nc(nf90_get_var(initid,varid,tcoldm,start=[srty,srtx],count=[icnty,cntx]))
-
-    call check_nc(nf90_inq_varid(initid,'gdd5',varid))
-    call check_nc(nf90_get_var(initid,varid,gdd5,start=[srty,srtx],count=[icnty,cntx]))
-
-    call check_nc(nf90_inq_varid(initid,'aridity',varid))
-    call check_nc(nf90_get_var(initid,varid,aridity,start=[srty,srtx],count=[icnty,cntx]))
-
-    call check_nc(nf90_inq_varid(initid,'srplsmon',varid))
-    call check_nc(nf90_get_var(initid,varid,srplsmon,start=[srty,srtx],count=[icnty,cntx]))
-
-    call check_nc(nf90_inq_varid(initid,'defctmon',varid))
-    call check_nc(nf90_get_var(initid,varid,defctmon,start=[srty,srtx],count=[icnty,cntx]))
-
-    call check_nc(nf90_inq_varid(initid,'anndefct',varid))
-    call check_nc(nf90_get_var(initid,varid,anndefct,start=[srty,srtx],count=[icnty,cntx]))
-
-    call check_nc(nf90_inq_varid(initid,'annsrpls',varid))
-    call check_nc(nf90_get_var(initid,varid,annsrpls,start=[srty,srtx],count=[icnty,cntx]))
-
-    call check_nc(nf90_inq_varid(initid,'annpcp',varid))
-    call check_nc(nf90_get_var(initid,varid,annpcp,start=[srty,srtx],count=[icnty,cntx]))
-
-    call check_nc(nf90_inq_varid(initid,'dry_season_length',varid))
-    call check_nc(nf90_get_var(initid,varid,dry_season_length,start=[srty,srtx],count=[icnty,cntx]))
-
-else if (compete .and. .not. inibioclim) then ! set them to zero
-    twarmm(i,1)=0.0
-    tcoldm(i,1)=0.0
-    gdd5(i,1)=0.0
-    aridity(i,1)=0.0
-    srplsmon(i,1)=0.0
-    defctmon(i,1)=0.0
-    anndefct(i,1)=0.0
-    annsrpls(i,1)=0.0
-    annpcp(i,1)=0.0
-    dry_season_length(i,1) = 0.0
-endif
-!
-! !>Take the first tile value now and put it over the other tiles !FLAG
-!         if (nmtest > 1) then
-!             do m = 2,nmtest
-!                 twarmm(i,m)=twarmm(i,1)
-!                 tcoldm(i,m)=tcoldm(i,1)
-!                 gdd5(i,m)=gdd5(i,1)
-!                 aridity(i,m)=aridity(i,1)
-!                 srplsmon(i,m)=srplsmon(i,1)
-!                 defctmon(i,m)=defctmon(i,1)
-!                 anndefct(i,m)=anndefct(i,1)
-!                 annsrpls(i,m)=annsrpls(i,1)
-!                 annpcp(i,m)=annpcp(i,1)
-!                 dry_season_length(i,m) =dry_season_length(i,1)
-!                 mlightng(i,m,:) = mlightng(i,1,:)
-!                 extnprob(i,m) = extnprob(i,1)
-!                 prbfrhuc(i,m) = prbfrhuc(i,1)
-!                 stdaln(i,m) = stdaln(i,1)
-!             end do
+call check_nc(nf90_get_var(initid,varid,nmarray,start=[srty,srtx],count=[cnty,cntx]))
+
+nmtest = maxval(nmarray)
+
+deallocate(nmarray)
+
+end subroutine read_modelsetup
+
+
+!--------------------------------------------------------------------------------------------
+
+! subroutine read_initialstate(nmtest,nltest,ignd,onetile_perPFT) ! FLAG these are just placeholders now. Figure out later what I really want.
+! 
+! ! J. Melton
+! ! Nov 2016
+! 
+! use netcdf
+! use netcdf_drivers, only : check_nc
+! 
+! use io_driver, only : vname,niv,metfid,cntx,cnty,srtx,srty,bounds,lonvect,latvect, &
+!                       yearmetst
+! use ctem_statevars,     only : c_switch,vrot
+! use class_statevars,    only : alloc_class_vars,class_rot
+! 
+! ! use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero
+! 
+! implicit none
+! 
+! ! arguments:
+! integer, intent(inout) :: ignd  !flag temp intent
+! integer, intent(inout) :: nltest  !flag temp intent
+! integer, intent(inout) :: nmtest  !flag temp intent
+! logical, intent(in) :: onetile_perPFT !flag temp intent
+! 
+! ! pointers:
+! character(180), pointer         :: init_file
+! 
+! real, pointer, dimension(:,:,:) :: FCANROT
+! real, pointer, dimension(:,:)   :: FAREROT
+! real, pointer, dimension(:,:,:) :: RSMNROT
+! real, pointer, dimension(:,:,:) :: QA50ROT
+! real, pointer, dimension(:,:,:) :: VPDAROT
+! real, pointer, dimension(:,:,:) :: VPDBROT
+! real, pointer, dimension(:,:,:) :: PSGAROT
+! real, pointer, dimension(:,:,:) :: PSGBROT
+! real, pointer, dimension(:,:)   :: DRNROT
+! real, pointer, dimension(:,:)   :: SDEPROT
+! real, pointer, dimension(:,:)   :: XSLPROT
+! real, pointer, dimension(:,:)   :: GRKFROT
+! real, pointer, dimension(:,:)   :: WFSFROT
+! real, pointer, dimension(:,:)   :: WFCIROT
+! integer, pointer, dimension(:,:)   :: MIDROT
+! real, pointer, dimension(:,:,:) :: SANDROT
+! real, pointer, dimension(:,:,:) :: CLAYROT
+! real, pointer, dimension(:,:,:) :: ORGMROT
+! real, pointer, dimension(:,:,:) :: TBARROT
+! real, pointer, dimension(:,:,:) :: THLQROT
+! real, pointer, dimension(:,:,:) :: THICROT
+! real, pointer, dimension(:,:)   :: TCANROT
+! real, pointer, dimension(:,:)   :: TSNOROT
+! real, pointer, dimension(:,:)   :: TPNDROT
+! real, pointer, dimension(:,:)   :: ZPNDROT
+! real, pointer, dimension(:,:)   :: RCANROT
+! real, pointer, dimension(:,:)   :: SCANROT
+! real, pointer, dimension(:,:)   :: SNOROT
+! real, pointer, dimension(:,:)   :: ALBSROT
+! real, pointer, dimension(:,:)   :: RHOSROT
+! real, pointer, dimension(:,:)   :: GROROT
+! 
+! logical, pointer :: dofire
+! logical, pointer :: compete
+! logical, pointer :: inibioclim
+! logical, pointer :: dowetlands
+! logical, pointer :: start_bare
+! logical, pointer :: lnduseon
+! logical, pointer :: obswetf
+! real, pointer, dimension(:,:,:) :: ailcminrow           !
+! real, pointer, dimension(:,:,:) :: ailcmaxrow           !
+! real, pointer, dimension(:,:,:) :: dvdfcanrow           !
+! real, pointer, dimension(:,:,:) :: gleafmasrow          !
+! real, pointer, dimension(:,:,:) :: bleafmasrow          !
+! real, pointer, dimension(:,:,:) :: stemmassrow          !
+! real, pointer, dimension(:,:,:) :: rootmassrow          !
+! real, pointer, dimension(:,:,:) :: pstemmassrow         !
+! real, pointer, dimension(:,:,:) :: pgleafmassrow        !
+! real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
+! real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
+! real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
+! real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
+! real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
+! real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
+! real, pointer, dimension(:,:) :: anndefct          !< annual water deficit (mm)
+! real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
+! real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
+! real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
+! real, pointer, dimension(:,:,:) :: litrmassrow
+! real, pointer, dimension(:,:,:) :: soilcmasrow
+! real, pointer, dimension(:,:) :: extnprob
+! real, pointer, dimension(:,:) :: prbfrhuc
+! real, pointer, dimension(:,:,:) :: mlightng
+! integer, pointer, dimension(:,:,:) :: lfstatusrow
+! integer, pointer, dimension(:,:,:) :: pandaysrow
+! integer, pointer, dimension(:,:) :: stdaln
+! real, pointer, dimension(:,:,:) :: slopefrac
+! 
+! ! local variables
+! 
+! integer :: i,m,j,strlen,x,y
+! ! integer :: dimid
+! ! integer :: varid
+! ! integer :: xsize, ysize
+! ! integer, dimension(1) :: pos
+! ! integer, dimension(2) :: xpos,ypos
+! 
+! !real, dimension(ilg,2) :: crop_temp_frac
+! integer, dimension(:,:), allocatable :: maskofregion
+! 
+! ! point pointers:
+! init_file         => c_switch%init_file
+! dofire            => c_switch%dofire
+! compete           => c_switch%compete
+! inibioclim        => c_switch%inibioclim
+! dowetlands        => c_switch%dowetlands
+! start_bare        => c_switch%start_bare
+! lnduseon          => c_switch%lnduseon
+! obswetf           => c_switch%obswetf
+! ailcminrow        => vrot%ailcmin
+! ailcmaxrow        => vrot%ailcmax
+! dvdfcanrow        => vrot%dvdfcan
+! gleafmasrow       => vrot%gleafmas
+! bleafmasrow       => vrot%bleafmas
+! stemmassrow       => vrot%stemmass
+! rootmassrow       => vrot%rootmass
+! pstemmassrow      => vrot%pstemmass
+! pgleafmassrow     => vrot%pgleafmass
+! twarmm            => vrot%twarmm
+! tcoldm            => vrot%tcoldm
+! gdd5              => vrot%gdd5
+! aridity           => vrot%aridity
+! srplsmon          => vrot%srplsmon
+! defctmon          => vrot%defctmon
+! anndefct          => vrot%anndefct
+! annsrpls          => vrot%annsrpls
+! annpcp            => vrot%annpcp
+! dry_season_length => vrot%dry_season_length
+! litrmassrow       => vrot%litrmass
+! soilcmasrow       => vrot%soilcmas
+! extnprob          => vrot%extnprob
+! prbfrhuc          => vrot%prbfrhuc
+! mlightng          => vrot%mlightng
+! slopefrac         => vrot%slopefrac
+! stdaln            => vrot%stdaln
+! lfstatusrow       => vrot%lfstatus
+! pandaysrow        => vrot%pandays
+! 
+! FCANROT           => class_rot%FCANROT
+! FAREROT           => class_rot%FAREROT
+! RSMNROT           => class_rot%RSMNROT
+! QA50ROT           => class_rot%QA50ROT
+! VPDAROT           => class_rot%VPDAROT
+! VPDBROT           => class_rot%VPDBROT
+! PSGAROT           => class_rot%PSGAROT
+! PSGBROT           => class_rot%PSGBROT
+! DRNROT            => class_rot%DRNROT
+! SDEPROT           => class_rot%SDEPROT
+! XSLPROT           => class_rot%XSLPROT
+! GRKFROT           => class_rot%GRKFROT
+! WFSFROT           => class_rot%WFSFROT
+! WFCIROT           => class_rot%WFCIROT
+! MIDROT            => class_rot%MIDROT
+! SANDROT           => class_rot%SANDROT
+! CLAYROT           => class_rot%CLAYROT
+! ORGMROT           => class_rot%ORGMROT
+! TBARROT           => class_rot%TBARROT
+! THLQROT           => class_rot%THLQROT
+! THICROT           => class_rot%THICROT
+! TCANROT           => class_rot%TCANROT
+! TSNOROT           => class_rot%TSNOROT
+! TPNDROT           => class_rot%TPNDROT
+! ZPNDROT           => class_rot%ZPNDROT
+! RCANROT           => class_rot%RCANROT
+! SCANROT           => class_rot%SCANROT
+! SNOROT            => class_rot%SNOROT
+! ALBSROT           => class_rot%ALBSROT
+! RHOSROT           => class_rot%RHOSROT
+! GROROT            => class_rot%GROROT
+! 
+! ! ----------------------------
+! 
+! !> First, open initial conditions file.
+! 
+! call check_nc(nf90_open(trim(init_file),nf90_nowrite,initid))
+! 
+! !retrieve dimensions
+! 
+! call check_nc(nf90_inq_dimid(initid,'lon',dimid))
+! call check_nc(nf90_inquire_dimension(initid,dimid,len=xsize))
+! 
+! call check_nc(nf90_inq_dimid(initid,'lat',dimid))
+! call check_nc(nf90_inquire_dimension(initid,dimid,len=ysize))
+! 
+! !calculate the number and indices of the pixels to be calculated
+! 
+! allocate(lonvect(xsize))
+! allocate(latvect(ysize))
+! 
+! call check_nc(nf90_inq_varid(initid,'lon',varid))
+! call check_nc(nf90_get_var(initid,varid,lonvect))
+! 
+! call check_nc(nf90_inq_varid(initid,'lat',varid))
+! call check_nc(nf90_get_var(initid,varid,latvect))
+! 
+! ! Based on the bounds, we make vectors of the cells to be run:
+! 
+! pos = minloc(abs(lonvect - bounds(1)))
+! xpos(1) = pos(1)
+! 
+! pos = minloc(abs(lonvect - bounds(2)))
+! xpos(2) = pos(1)
+! 
+! pos = minloc(abs(latvect - bounds(3)))
+! ypos(1) = pos(1)
+! 
+! pos = minloc(abs(latvect - bounds(4)))
+! ypos(2) = pos(1)
+! 
+! srtx = minval(xpos)
+! srty = minval(ypos)
+! 
+! if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
+!  cntx = 1 + abs(maxval(xpos) - srtx)
+! 
+! if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
+!  cnty = 1 + abs(maxval(ypos) - srty)
+! 
+! !> cntx and cnty are the numbers of possible cells in the y and x directions
+! !! however there is likely less actual valid cells (cells containing land). We
+! !! next determine them.
+! 
+! write(*,*)'total is then ',cnty,'by ',cntx
+! allocate(maskofregion(cnty,cntx))
+! 
+! !> Retrieve the number of soil layers
+! 
+! call check_nc(nf90_inq_dimid(initid,'layer',dimid))
+! call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
+! 
+! !retrieve the number of PFTs ! FUTURE?
+! 
+! ! CLASS PFTs
+! !call check_nc(nf90_inq_dimid(initid,'ic',dimid))
+! !call check_nc(nf90_inquire_dimension(initid,dimid,len=))
+! 
+! ! CTEM PFTs
+! !call check_nc(nf90_inq_dimid(initid,'icc',dimid))
+! !call check_nc(nf90_inquire_dimension(initid,dimid,len=))
+! 
+! 
+! !Figure out how big our nlat vector is by the number of valid cells in the
+! !region we are running. Use the Mask, it is -1 for land. Also get the nmtest value
+! !for each of the land cells.
+! 
+! call check_nc(nf90_inq_varid(initid,'Mask',varid))
+! call check_nc(nf90_get_var(initid,varid,maskofregion,start=[srty,srtx],count=[cnty,cntx]))
+! 
+! ! call check_nc(nf90_inq_varid(initid,'GC',varid))
+! ! call check_nc(nf90_get_var(initid,varid,GCROW,start=[srty,srtx],count=[cnty,cntx]))
+! 
+! !call check_nc(nf90_inq_varid(initid,'nmtest',varid))
+! !call check_nc(nf90_get_var(initid,varid,nmtest,start=[srty,srtx],count=[1,1]))
+! !write(*,*)nmtest
+! nltest=0
+! 
+! do x = 1, cntx
+!     do y = 1, cnty
+!         if (maskofregion(y,x) == -1) then ! land cell
+!             nltest = nltest + 1
+!             
+!             !call check_nc(nf90_get_var(initid,varid,nmtest,start=[srty+y,srtx+x],count=[1,1]))
+!             !write(*,*)x,y,nmtest
 !         end if
-if (dowetlands) then !if true then read wetland fractions into the first tile position
+!     end do
+! end do
+! ! 
+! write(*,*)'nltest',nltest
+! 
+! 
+! ! !  NLTEST,NMTEST
+! ! !
+! ! 
+! ! ! Allocate arrays to proper dimensions
+! ! 
+! call alloc_class_vars(nlat,nmos,ignd)
+! ! !
+! ! ! Read in the first values
+! ! 
+! ! call check_nc(nf90_inq_varid(initid,'lat',varid))
+! ! call check_nc(nf90_get_var(initid,varid,DLATROW,start=[srty,srtx],count=[cnty,cntx]))
+! ! 
+! ! call check_nc(nf90_inq_varid(initid,'lon',varid))
+! ! call check_nc(nf90_get_var(initid,varid,DLONROW,start=[srty,srtx],count=[cnty,cntx]))
+! ! 
+! ! !       JLAT=NINT(DLATROW(1))
+! ! !       RADJROW(1)=DLATROW(1)*PI/180.
+! ! !       DLONROW(1)=DEGLON
+! !       Z0ORROW(1)=0.0
+! !       GGEOROW(1)=0.0
+! ! !     GGEOROW(1)=-0.035
+! 
+! 
+! call check_nc(nf90_inq_varid(initid,'ZRFM',varid))
+! call check_nc(nf90_get_var(initid,varid,ZRFMROW,start=[srty,srtx],count=[cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ZRFH',varid))
+! call check_nc(nf90_get_var(initid,varid,ZRFHROW,start=[srty,srtx],count=[cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
+! call check_nc(nf90_get_var(initid,varid,ZBLDROW,start=[srty,srtx],count=[cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
+! call check_nc(nf90_get_var(initid,varid,ZBLDROW,start=[srty,srtx],count=[cnty,cntx]))
+! 
 
-    call check_nc(nf90_inq_varid(initid,'slopefrac',varid))
-    call check_nc(nf90_get_var(initid,varid,slopefrac,start=[1,srty,srtx],count=[8,icnty,cntx]))
-
-    if (nmtest > 1) then ! if more tiles then just put the first tile across the rest FLAG
-    do m = 2,nmtest
-        slopefrac(i,m,:) = slopefrac(i,1,:)
-    end do
-    end if
-endif
+! 
+! ! Now get the per tile variables:
+! 
+! call check_nc(nf90_inq_varid(initid,'FCAN',varid))
+! call check_nc(nf90_get_var(initid,varid,FCANROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'LNZ0',varid))
+! call check_nc(nf90_get_var(initid,varid,LNZ0ROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ALVC',varid))
+! call check_nc(nf90_get_var(initid,varid,ALVCROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'PAMN',varid))
+! call check_nc(nf90_get_var(initid,varid,PAMNROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'PAMX',varid))
+! call check_nc(nf90_get_var(initid,varid,PAMX,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'CMAS',varid))
+! call check_nc(nf90_get_var(initid,varid,CMASROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ALIC',varid))
+! call check_nc(nf90_get_var(initid,varid,ALICROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ROOT',varid))
+! call check_nc(nf90_get_var(initid,varid,ROOTROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'DRN',varid))
+! call check_nc(nf90_get_var(initid,varid,DRNROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'RSMN',varid))
+! call check_nc(nf90_get_var(initid,varid,RSMNROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'QA50',varid))
+! call check_nc(nf90_get_var(initid,varid,QA50,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'VPDA',varid))
+! call check_nc(nf90_get_var(initid,varid,VPDAROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'VPDB',varid))
+! call check_nc(nf90_get_var(initid,varid,VPDBROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'PSGA',varid))
+! call check_nc(nf90_get_var(initid,varid,PSGAROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'PSGB',varid))
+! call check_nc(nf90_get_var(initid,varid,PSGBROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'SDEP',varid))
+! call check_nc(nf90_get_var(initid,varid,SDEPROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'FARE',varid))
+! call check_nc(nf90_get_var(initid,varid,FAREROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! !           ! Error check:
+! !           if (FAREROT(I,M) .gt. 1.0) then
+! !            write(*,*)'FAREROT > 1',FAREROT(I,M)
+! !            call XIT('runclass36ctem', -2)
+! !           end if
+! 
+! call check_nc(nf90_inq_varid(initid,'XSLP',varid))
+! call check_nc(nf90_get_var(initid,varid,XSLPROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'GRKF',varid))
+! call check_nc(nf90_get_var(initid,varid,GRKFROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'WFSF',varid))
+! call check_nc(nf90_get_var(initid,varid,WFSFROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'WFCI',varid))
+! call check_nc(nf90_get_var(initid,varid,WFCIROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'MID',varid))
+! call check_nc(nf90_get_var(initid,varid,MIDROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ZBOT',varid)) !per layer but not per tile (fix?)
+! call check_nc(nf90_get_var(initid,varid,ZBOT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'DELZ',varid)) !per layer but not per tile (fix?)
+! call check_nc(nf90_get_var(initid,varid,DELZ,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'SAND',varid))
+! call check_nc(nf90_get_var(initid,varid,SANDROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'CLAY',varid))
+! call check_nc(nf90_get_var(initid,varid,CLAYROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ORGM',varid))
+! call check_nc(nf90_get_var(initid,varid,ORGMROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'TBAR',varid))
+! call check_nc(nf90_get_var(initid,varid,TBARROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'THLQ',varid))
+! call check_nc(nf90_get_var(initid,varid,THLQROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'THIC',varid))
+! call check_nc(nf90_get_var(initid,varid,THICROT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'TCAN',varid))
+! call check_nc(nf90_get_var(initid,varid,TCANROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'TSNO',varid))
+! call check_nc(nf90_get_var(initid,varid,TSNOROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'TPND',varid))
+! call check_nc(nf90_get_var(initid,varid,TPNDROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ZPND',varid))
+! call check_nc(nf90_get_var(initid,varid,ZPNDROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'RCAN',varid))
+! call check_nc(nf90_get_var(initid,varid,RCANROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'SCAN',varid))
+! call check_nc(nf90_get_var(initid,varid,SCANROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'SNO',varid))
+! call check_nc(nf90_get_var(initid,varid,SNOROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ALBS',varid))
+! call check_nc(nf90_get_var(initid,varid,ALBSROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'RHOS',varid))
+! call check_nc(nf90_get_var(initid,varid,RHOSROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'GRO',varid))
+! call check_nc(nf90_get_var(initid,varid,GROROT,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! !>The following three variables are needed to run CTEM. 1) min & 2) max leaf area index are needed to break
+! !>class lai into dcd and evg for trees (for crops and grasses it doesn't matter much). 3) dvdfcanrow is
+! !>needed to divide needle & broad leaf into dcd and evg, and crops & grasses into c3 and c4 fractions.
+! 
+! call check_nc(nf90_inq_varid(initid,'ailcmin',varid))
+! call check_nc(nf90_get_var(initid,varid,ailcminrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'ailcmax',varid))
+! call check_nc(nf90_get_var(initid,varid,ailcmaxrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'dvdfcan',varid))
+! call check_nc(nf90_get_var(initid,varid,dvdfcanrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+! 
+! !>
+! !>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
+! !>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set
+! !>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
+! !>
+! call check_nc(nf90_inq_varid(initid,'gleafmas',varid))
+! call check_nc(nf90_get_var(initid,varid,gleafmasrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'bleafmas',varid))
+! call check_nc(nf90_get_var(initid,varid,bleafmasrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'stemmass',varid))
+! call check_nc(nf90_get_var(initid,varid,stemmassrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'rootmass',varid))
+! call check_nc(nf90_get_var(initid,varid,rootmassrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+! 
+! !>
+! !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
+! if (dofire .and. compete) then
+!             do j =1,icc
+!             pstemmassrow(i,m,j)=stemmassrow(i,m,j)
+!             pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
+!             end do
+! end if
+! !
+! call check_nc(nf90_inq_varid(initid,'litrmass',varid))
+! call check_nc(nf90_get_var(initid,varid,litrmassrow,start=[1,srty,srtx],count=[iccp1,icnty,cntx])) !FLAG per layer?
+! 
+! call check_nc(nf90_inq_varid(initid,'soilcmas',varid))
+! call check_nc(nf90_get_var(initid,varid,soilcmasrow,start=[1,srty,srtx],count=[iccp1,icnty,cntx])) !FLAG per layer?
+! 
+! call check_nc(nf90_inq_varid(initid,'lfstatus',varid))
+! call check_nc(nf90_get_var(initid,varid,lfstatusrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'pandays',varid))
+! call check_nc(nf90_get_var(initid,varid,pandaysrow,start=[1,srty,srtx],count=[icc,icnty,cntx]))
+! 
+! !
+! ! NOT per tile
+! call check_nc(nf90_inq_varid(initid,'mlightng',varid))
+! call check_nc(nf90_get_var(initid,varid,mlightng,start=[1,srty,srtx],count=[12,icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'extnprob',varid))
+! call check_nc(nf90_get_var(initid,varid,extnprob,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'prbfrhuc',varid))
+! call check_nc(nf90_get_var(initid,varid,prbfrhuc,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! call check_nc(nf90_inq_varid(initid,'stdaln',varid)) !FLAG - get rid of this? I don't see the use stdaln
+! call check_nc(nf90_get_var(initid,varid,stdaln,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! if (compete .and. inibioclim) then  !read in the bioclimatic parameters
+! 
+!     call check_nc(nf90_inq_varid(initid,'twarmm',varid))
+!     call check_nc(nf90_get_var(initid,varid,twarmm,start=[srty,srtx],count=[icnty,cntx]))
+! 
+!     call check_nc(nf90_inq_varid(initid,'tcoldm',varid))
+!     call check_nc(nf90_get_var(initid,varid,tcoldm,start=[srty,srtx],count=[icnty,cntx]))
+! 
+!     call check_nc(nf90_inq_varid(initid,'gdd5',varid))
+!     call check_nc(nf90_get_var(initid,varid,gdd5,start=[srty,srtx],count=[icnty,cntx]))
+! 
+!     call check_nc(nf90_inq_varid(initid,'aridity',varid))
+!     call check_nc(nf90_get_var(initid,varid,aridity,start=[srty,srtx],count=[icnty,cntx]))
+! 
+!     call check_nc(nf90_inq_varid(initid,'srplsmon',varid))
+!     call check_nc(nf90_get_var(initid,varid,srplsmon,start=[srty,srtx],count=[icnty,cntx]))
+! 
+!     call check_nc(nf90_inq_varid(initid,'defctmon',varid))
+!     call check_nc(nf90_get_var(initid,varid,defctmon,start=[srty,srtx],count=[icnty,cntx]))
+! 
+!     call check_nc(nf90_inq_varid(initid,'anndefct',varid))
+!     call check_nc(nf90_get_var(initid,varid,anndefct,start=[srty,srtx],count=[icnty,cntx]))
+! 
+!     call check_nc(nf90_inq_varid(initid,'annsrpls',varid))
+!     call check_nc(nf90_get_var(initid,varid,annsrpls,start=[srty,srtx],count=[icnty,cntx]))
+! 
+!     call check_nc(nf90_inq_varid(initid,'annpcp',varid))
+!     call check_nc(nf90_get_var(initid,varid,annpcp,start=[srty,srtx],count=[icnty,cntx]))
+! 
+!     call check_nc(nf90_inq_varid(initid,'dry_season_length',varid))
+!     call check_nc(nf90_get_var(initid,varid,dry_season_length,start=[srty,srtx],count=[icnty,cntx]))
+! 
+! else if (compete .and. .not. inibioclim) then ! set them to zero
+!     twarmm(i,1)=0.0
+!     tcoldm(i,1)=0.0
+!     gdd5(i,1)=0.0
+!     aridity(i,1)=0.0
+!     srplsmon(i,1)=0.0
+!     defctmon(i,1)=0.0
+!     anndefct(i,1)=0.0
+!     annsrpls(i,1)=0.0
+!     annpcp(i,1)=0.0
+!     dry_season_length(i,1) = 0.0
+! endif
+! !
+! ! !>Take the first tile value now and put it over the other tiles !FLAG
+! !         if (nmtest > 1) then
+! !             do m = 2,nmtest
+! !                 twarmm(i,m)=twarmm(i,1)
+! !                 tcoldm(i,m)=tcoldm(i,1)
+! !                 gdd5(i,m)=gdd5(i,1)
+! !                 aridity(i,m)=aridity(i,1)
+! !                 srplsmon(i,m)=srplsmon(i,1)
+! !                 defctmon(i,m)=defctmon(i,1)
+! !                 anndefct(i,m)=anndefct(i,1)
+! !                 annsrpls(i,m)=annsrpls(i,1)
+! !                 annpcp(i,m)=annpcp(i,1)
+! !                 dry_season_length(i,m) =dry_season_length(i,1)
+! !                 mlightng(i,m,:) = mlightng(i,1,:)
+! !                 extnprob(i,m) = extnprob(i,1)
+! !                 prbfrhuc(i,m) = prbfrhuc(i,1)
+! !                 stdaln(i,m) = stdaln(i,1)
+! !             end do
+! !         end if
+! if (dowetlands) then !if true then read wetland fractions into the first tile position
+! 
+!     call check_nc(nf90_inq_varid(initid,'slopefrac',varid))
+!     call check_nc(nf90_get_var(initid,varid,slopefrac,start=[1,srty,srtx],count=[8,icnty,cntx]))
+! 
+!     if (nmtest > 1) then ! if more tiles then just put the first tile across the rest FLAG
+!     do m = 2,nmtest
+!         slopefrac(i,m,:) = slopefrac(i,1,:)
+!     end do
+!     end if
+! endif
 ! 71    continue
 !
 ! close(11)
@@ -1001,6 +1177,6 @@ endif
 !       end if !if (compete/landuseon .and. start_bare)
 
 
-end subroutine read_initialstate
+!end subroutine read_initialstate
 
 end module input_dataset_drivers

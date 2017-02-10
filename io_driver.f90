@@ -52,6 +52,8 @@ public  :: close_outfiles       ! Closes the model output files
 ! Variables used in io operations:
 real, dimension(4) :: bounds                    !> Corners of the domain to be simulated (netcdfs)
 integer :: metfid                               !> netcdf file id for the meteorology file
+integer :: initid                               !> netcdf file id for the model initialization file
+integer :: rs_id                                !> netcdf file id for the model restart file
 integer, parameter :: niv = 7                   !> number of meteorology variables
 character(2), dimension(niv), parameter :: vname = [ "lw", "ap", "qa", "pr", "sw", "wi", "ta" ] !< names of the met vars: longwave down, atmos pressure,
                                                     !! specific humidity, precipitation, shortwave down, wind, air temperature

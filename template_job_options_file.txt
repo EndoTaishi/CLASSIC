@@ -35,7 +35,7 @@
 
  use_netcdf = .true.,
  met_file = '/raid/ra40/data/rjm/cruncep2/t63files/cruncepv7_1901_2015_T63.nc' ,
- met_ts_sec = 21600 ,
+ init_file = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_initialization.nc'
 
  IDISP = 0 ,
  IZREF = 2 ,

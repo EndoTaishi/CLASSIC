@@ -12,25 +12,25 @@
 !
 !     REVISION HISTORY:
 !
-!     * Aug 312016 : Added proper calculation of ALTOT as provided by Diana.
+!     * Aug 31 2016 : Added proper calculation of ALTOT as provided by Diana.
 !       Joe Melton
 !
 !     * Mar 9  2016 : For consistency I have changed all inputs (except MET) to be adopted into the row/gat
 !     * Joe Melton    framework. This means that a per gridcell value is then also assigned per tile. This
 !                     just makes it easier to deal with in the model code since it fits into the loops like the vars.
 !
-!     * Feb 102016 : Trimmed CTEM secondary vars from driver. They are not used, so can find in io_driver
+!     * Feb 10 2016 : Trimmed CTEM secondary vars from driver. They are not used, so can find in io_driver
 !     * Joe Melton
 !
-!     * JAN 62015
+!     * JAN 6 2015
 !     * Joe Melton : Added the soil methane sink subroutine
 !
-!     * JUL 22015
+!     * JUL 2 2015
 !     * JOE MELTON : Took many calculations out of this driver and into subroutines. Introduced
 !                    modular structure and made CTEM vars into pointers. Harmonized CLASS v. 3.6.1
 !                    code with CTEM code and into this driver to produce CLASS v. 3.6.2.
 !
-!     * JAN 142014
+!     * JAN 14 2014
 !     * JOE MELTON : Harmonized the field capacity and wilting point calculations between CLASS and CTEM.
 !                    took the code out of runclassctem and it is now fully done within CLASSB. Harmonized names too.
 !
@@ -109,7 +109,7 @@
      &                               resetmonthend,resetyearend,&
      &                               resetclassaccum,ctem_grd,&
      &                               ctem_tile,resetgridavg,&
-     &                               finddaylength
+     &                               finddaylength,alloc_ctem_vars
 
       use class_statevars,    only : alloc_class_vars,class_gat,class_rot
 
@@ -119,7 +119,7 @@
      &                               close_outfiles,ctem_daily_aw,&
      &                               class_annual_aw
 
-      use input_dataset_drivers, only : openmet,readin_met
+       use input_dataset_drivers, only : openmet, read_modelsetup !read_initialstate, ,readin_met
 
 
       implicit none
@@ -190,7 +190,7 @@
     integer, pointer, dimension(:) :: JLMOS     !<Index of mosaic tile corresponding to current element of gathered vector of land surface variables [ ]
     integer, pointer, dimension(:) :: IWMOS     !<Index of grid cell corresponding to current element of gathered vector of inland water body variables [ ]
     integer, pointer, dimension(:) :: JWMOS     !<Index of mosaic tile corresponding to current element of gathered vector of inland water body variables [ ]
-   integer, pointer, dimension(:) :: IGDRGAT   !<Index of soil layer in which bedrock is encountered
+    integer, pointer, dimension(:) :: IGDRGAT   !<Index of soil layer in which bedrock is encountered
 
     real, pointer, dimension(:) :: DELZ    !<
     real, pointer, dimension(:) :: ZBOT    !<
@@ -1541,7 +1541,7 @@
       REAL DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,&
      &     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,&
      &     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,&
-     &     TSURF,ACTLYR(NLAT,NMOS),FTABLE(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
+     &     TSURF
 !
 !     * COMMON BLOCK PARAMETERS.
 !
@@ -1574,27 +1574,44 @@
      &           climiyear,   popcycleyr,    cypopyr, lucyr,&
      &           cylucyr, endyr,bigpftc(1), obswetyr,&
      &           cywetldyr, trans_startyr, jmosty, obslghtyr,&
-     &          curlatno(ilg), lath, testyr,altotcount_ctm(nlat)
+     &           lath, testyr
 
       real      co2concin,    setco2conc, sumfare,&
-     &           temp_var, barefrac,  todfrac(ilg,icc),&
-     &           ch4concin, setch4conc,barf(nlat,nmos)
+     &           temp_var, barefrac,ch4concin, setch4conc
 
-      real      currlat(ilg),            wl(lat),    grclarea(ilg),&
-     &             radl(lat),          wossl(lat),        sl(lat),&
-     &               cl(lat),             ml(ilg)
+      integer, allocatable, dimension(:) :: curlatno !ilg
+      integer, allocatable, dimension(:) :: altotcount_ctm !nlat
+      real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)
+      real, allocatable, dimension(:,:)  :: barf  !(nlat,nmos)
+      real, allocatable, dimension(:)    :: currlat !(ilg)
+      real, allocatable, dimension(:)    :: wl !(lat)
+      real, allocatable, dimension(:)    :: grclarea !(ilg)
+      real, allocatable, dimension(:)    :: wossl !(lat)
+      real, allocatable, dimension(:)    :: sl !(lat)
+      real, allocatable, dimension(:)    :: radl !(lat)
+      real, allocatable, dimension(:)    :: cl !(lat)
+      real, allocatable, dimension(:)    :: ml !(ilg)
+      real, allocatable, dimension(:)    :: fsinacc_gat !(ilg)
+      real, allocatable, dimension(:)    :: flutacc_gat !(ilg)
+      real, allocatable, dimension(:)    :: flinacc_gat !(ilg)
+      real, allocatable, dimension(:)    :: alswacc_gat !(ilg)
+      real, allocatable, dimension(:)    :: allwacc_gat !(ilg)
+      real, allocatable, dimension(:)    :: pregacc_gat !(ilg)
+      real, allocatable, dimension(:)    :: altotacc_gat !(ilg)
+      real, allocatable, dimension(:)    :: netrad_gat !(ilg)
+      real, allocatable, dimension(:)    :: preacc_gat !(ilg)
+      real, allocatable, dimension(:)    :: sdepgat !(ilg)
+      real, allocatable, dimension(:,:)  :: rgmgat !(ilg,ignd)
+      real, allocatable, dimension(:,:)  :: sandgat !(ilg,ignd)
+      real, allocatable, dimension(:,:)  :: claygat !(ilg,ignd)
+      real, allocatable, dimension(:)    :: xdiffusgat !(ilg) ! the corresponding ROW is CLASS's XDIFFUS
+      real, allocatable, dimension(:)    :: faregat !(ilg)   ! the ROT is FAREROT
+      real, allocatable, dimension(:,:)  :: FTABLE !(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
+      real, allocatable, dimension(:,:)  :: ACTLYR !(NLAT,NMOS)
 
-       real fsinacc_gat(ilg), flutacc_gat(ilg), flinacc_gat(ilg),&
-     &      alswacc_gat(ilg), allwacc_gat(ilg), pregacc_gat(ilg),&
-     &      altotacc_gat(ilg),        fsstar_gat,       flstar_gat,&
-     &      netrad_gat(ilg),  preacc_gat(ilg)
+       real fsstar_gat, flstar_gat !FLAG should these have more dimensions? JM Feb 2016.
 
-!     For these below, the corresponding ROWs are defined by CLASS
 
-      real  sdepgat(ilg),       orgmgat(ilg,ignd),&
-     &      sandgat(ilg,ignd),  claygat(ilg,ignd),&
-     &      xdiffusgat(ilg),& ! the corresponding ROW is CLASS's XDIFFUS
-     &      faregat(ilg) ! the ROT is FAREROT
 
       ! Model switches:
       logical, pointer :: ctem_on
@@ -1618,7 +1635,7 @@
       logical, pointer :: transient_run
       logical, pointer :: use_netcdf
       character(180), pointer :: met_file
-      integer, pointer :: met_ts_sec
+      character(180), pointer :: init_file
 
       ! ROW vars:
       logical, pointer, dimension(:,:,:) :: pftexistrow
@@ -2810,7 +2827,7 @@
       transient_run     => c_switch%transient_run
       use_netcdf        => c_switch%use_netcdf
       met_file          => c_switch%met_file
-      met_ts_sec        => c_switch%met_ts_sec
+      init_file         => c_switch%init_file
 
       tcanrs            => vrot%tcanrs
       tsnors            => vrot%tsnors
@@ -3333,24 +3350,64 @@
      &             rsfile,start_from_rs,jmosty,idisp,izref,islfd,ipcp,&
      &             itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,&
      &             igralb,jhhstd,jhhendd,jdstd,jdendd,jhhsty,jhhendy,&
-     &             jdsty,jdendy,use_netcdf,met_file,met_ts_sec)
+     &             jdsty,jdendy,use_netcdf,met_file,init_file)
 
+     
+!> First we set up the run boundaries based on the metadata in the initialization netcdf file.     
+      call read_modelsetup(nltest,nmtest) !,ignd)
+      write(*,*)'done read model setup'
 !>     Open the met netcdf file. This also sets up the run boundaries
 !!     based on the metadata in the netcdf. It is important to ensure the
 !!     netcdf is of the same dimensions as the intended output files.
+!!     Based upon the bounds used to call the model, this will figure out how 
+!!     big the NLAT vector is.
       call openmet()
-
+      write(*,*)'done openmet'
 !>    This opens and reads in the restart files (replacing the INI and CTM
 !!    files). The inputs from this are used to allocate the CLASS and CTEM
 !!    data structures based on the given nlat, nmos, ignd, etc.
-      call read_initialstate(nlat,nmos,ignd)
+      !call read_initialstate(onetile_perPFT)
 
 !     Initialize the CTEM parameters (after read_initialstate)
       call initpftpars(compete)
-
-
+      write(*,*)'after inits pftpars'
       call alloc_class_vars(nlat,nmos,ignd)
 
+      call alloc_ctem_vars(nlat,nmos,ignd)
+
+      ! Allocate the local variables that rely on nlat, ilg, etc.
+      allocate(curlatno()) !ilg
+      allocate(altotcount_ctm()) !nlat
+      allocate(todfrac())  !(ilg,icc)
+      allocate(barf())  !(nlat,nmos)
+      allocate(currlat()) !(ilg)
+      allocate(wl()) !(lat)
+      allocate(grclarea()) !(ilg)
+      allocate(wossl()) !(lat)
+      allocate(sl()) !(lat)
+      allocate(radl()) !(lat)
+      allocate(cl()) !(lat)
+      allocate(ml()) !(ilg)
+      allocate(fsinacc_gat()) !(ilg)
+      allocate(flutacc_gat()) !(ilg)
+      allocate(flinacc_gat()) !(ilg)
+      allocate(alswacc_gat()) !(ilg)
+      allocate(allwacc_gat()) !(ilg)
+      allocate(pregacc_gat()) !(ilg)
+      allocate(altotacc_gat()) !(ilg)
+      allocate(netrad_gat()) !(ilg)
+      allocate(preacc_gat()) !(ilg)
+      allocate(sdepgat()) !(ilg)
+      allocate(rgmgat()) !(ilg,ignd)
+      allocate(sandgat()) !(ilg,ignd)
+      allocate(claygat()) !(ilg,ignd)
+      allocate(xdiffusgat()) !(ilg) ! the corresponding ROW is CLASS's XDIFFUS
+      allocate(faregat()) !(ilg)   ! the ROT is FAREROT
+      allocate(FTABLE()) !(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
+      allocate(ACTLYR()) !(NLAT,NMOS)
+
+
+write(*,*)'after inits class'
       !call readin_met(1,dlatgat,dlongat)
 !
 !     checking the time spent for running model

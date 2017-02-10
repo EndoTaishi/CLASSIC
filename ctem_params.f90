@@ -64,11 +64,12 @@ real, parameter :: deltat   = 1.0       !<CTEM's time step in days
 integer, parameter, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
 integer, parameter, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] !< calender day at end of each month
 integer, parameter, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !<mid-month day
+integer, parameter :: nmon = 12        !< Number of months in a year
 
-integer, parameter :: lon = 128 !< specify gcm resolution for longitude
-integer, parameter :: lat = 64  !< specify gcm resolution for latitude
+integer, parameter :: lon = 128 !< specify gcm resolution for longitude !FLAG - read in from netcdf!
+integer, parameter :: lat = 64  !< specify gcm resolution for latitude !FLAG - read in from netcdf!
 
-!> latitudes of the edges of the gcm grid cells for 128/x64 resolution
+!> latitudes of the edges of the gcm grid cells for 128/x64 resolution !FLAG - read in from netcdf!
 real, parameter, dimension(lat+1) :: edgelat = &
                                     [ -90.0,-86.4802,-83.7047,-80.9193,-78.1313,-75.3422,-72.5527, &
                                     -69.7628,-66.9727,-64.1825,-61.3922,-58.6018,-55.8114,-53.021, &
@@ -84,7 +85,7 @@ real, parameter, dimension(lat+1) :: edgelat = &
 integer, parameter :: nlat = 1         !
 integer, parameter :: nmos = 10        !< Number of mosaic tiles
 integer, parameter :: ilg  = nlat*nmos !
-integer, parameter :: nmon = 12        !< Number of months in a year
+
 ! ----
 ! Plant-related
 
@@ -98,7 +99,7 @@ integer, parameter :: kk          = 12       !< product of class pfts and l2max
 integer, parameter :: numcrops    = 2        !< number of crop pfts
 integer, parameter :: numtreepfts = 5        !< number of tree pfts
 integer, parameter :: numgrass    = 2        !< number of grass pfts
-integer, parameter :: nbs         = 4        !
+integer, parameter :: nbs         = 4        !< number of bands for snow albedo calculation
 
 !> Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
 integer, parameter, dimension(kk) :: modelpft = [ 1,     1,     0,  &  ! CLASS PFT 1 NDL
@@ -111,8 +112,8 @@ integer, parameter, dimension(kk) :: modelpft = [ 1,     1,     0,  &  ! CLASS P
                               !                  C3      C4
 
 
-real, parameter :: seed    = 0.001     !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
-real, parameter :: minbare = 1.0e-5 !< minimum bare fraction when running competition on to prevent numerical problems.
+real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
+real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
 real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 ($g mol^{-1}$)
 
