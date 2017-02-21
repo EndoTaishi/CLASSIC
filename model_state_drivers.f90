@@ -13,7 +13,7 @@ implicit none
 public :: openmet
 !public :: readin_met
 public :: read_modelsetup
-!public :: read_initialstate
+public :: read_initialstate
 
 contains
 
@@ -300,7 +300,6 @@ call check_nc(nf90_inq_varid(initid,'lat',varid))
 call check_nc(nf90_get_var(initid,varid,latvect))
 
 ! Based on the bounds, we make vectors of the cells to be run:
-
 pos = minloc(abs(lonvect - bounds(1)))
 xpos(1) = pos(1)
 
@@ -321,7 +320,7 @@ if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
 
 if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
  cnty = 1 + abs(maxval(ypos) - srty)
-
+write(*,*)srtx,cntx,srty,cnty
 !> The size of nlat should then be cntx x cnty. We later take in GC to determine
 !! which cells are valid land cells and use that in GATPREP to make it so we only
 !! do computations over the valid land cells.
@@ -354,308 +353,209 @@ end subroutine read_modelsetup
 
 !--------------------------------------------------------------------------------------------
 
-! subroutine read_initialstate(nmtest,nltest,ignd,onetile_perPFT) ! FLAG these are just placeholders now. Figure out later what I really want.
+subroutine read_initialstate(onetile_perPFT) 
+
+! J. Melton
+! Nov 2016
+
+use netcdf
+use netcdf_drivers, only : check_nc
+use io_driver, only : initid,cntx,cnty,srtx,srty
+use ctem_statevars,     only : c_switch,vrot
+use class_statevars,    only : alloc_class_vars,class_rot
+ use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero
+
+implicit none
+
+! arguments:
+logical, intent(in) :: onetile_perPFT !flag temp intent
+
+! pointers:
+character(180), pointer         :: init_file
+
+real, pointer, dimension(:,:,:) :: FCANROT
+real, pointer, dimension(:,:)   :: FAREROT
+real, pointer, dimension(:,:,:) :: RSMNROT
+real, pointer, dimension(:,:,:) :: QA50ROT
+real, pointer, dimension(:,:,:) :: VPDAROT
+real, pointer, dimension(:,:,:) :: VPDBROT
+real, pointer, dimension(:,:,:) :: PSGAROT
+real, pointer, dimension(:,:,:) :: PSGBROT
+real, pointer, dimension(:,:)   :: DRNROT
+real, pointer, dimension(:,:)   :: SDEPROT
+real, pointer, dimension(:,:)   :: XSLPROT
+real, pointer, dimension(:,:)   :: GRKFROT
+real, pointer, dimension(:,:)   :: WFSFROT
+real, pointer, dimension(:,:)   :: WFCIROT
+integer, pointer, dimension(:,:)   :: MIDROT
+real, pointer, dimension(:,:,:) :: SANDROT
+real, pointer, dimension(:,:,:) :: CLAYROT
+real, pointer, dimension(:,:,:) :: ORGMROT
+real, pointer, dimension(:,:,:) :: TBARROT
+real, pointer, dimension(:,:,:) :: THLQROT
+real, pointer, dimension(:,:,:) :: THICROT
+real, pointer, dimension(:,:)   :: TCANROT
+real, pointer, dimension(:,:)   :: TSNOROT
+real, pointer, dimension(:,:)   :: TPNDROT
+real, pointer, dimension(:,:)   :: ZPNDROT
+real, pointer, dimension(:,:)   :: RCANROT
+real, pointer, dimension(:,:)   :: SCANROT
+real, pointer, dimension(:,:)   :: SNOROT
+real, pointer, dimension(:,:)   :: ALBSROT
+real, pointer, dimension(:,:)   :: RHOSROT
+real, pointer, dimension(:,:)   :: GROROT
+real, pointer, dimension(:)     :: ZRFHROW !<
+real, pointer, dimension(:)     :: ZRFMROW !<
+
+logical, pointer :: dofire
+logical, pointer :: compete
+logical, pointer :: inibioclim
+logical, pointer :: dowetlands
+logical, pointer :: start_bare
+logical, pointer :: lnduseon
+logical, pointer :: obswetf
+real, pointer, dimension(:,:,:) :: ailcminrow           !
+real, pointer, dimension(:,:,:) :: ailcmaxrow           !
+real, pointer, dimension(:,:,:) :: dvdfcanrow           !
+real, pointer, dimension(:,:,:) :: gleafmasrow          !
+real, pointer, dimension(:,:,:) :: bleafmasrow          !
+real, pointer, dimension(:,:,:) :: stemmassrow          !
+real, pointer, dimension(:,:,:) :: rootmassrow          !
+real, pointer, dimension(:,:,:) :: pstemmassrow         !
+real, pointer, dimension(:,:,:) :: pgleafmassrow        !
+real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
+real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
+real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
+real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
+real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
+real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
+real, pointer, dimension(:,:) :: anndefct          !< annual water deficit (mm)
+real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
+real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
+real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
+real, pointer, dimension(:,:,:) :: litrmassrow
+real, pointer, dimension(:,:,:) :: soilcmasrow
+real, pointer, dimension(:,:) :: extnprob
+real, pointer, dimension(:,:) :: prbfrhuc
+real, pointer, dimension(:,:,:) :: mlightng
+integer, pointer, dimension(:,:,:) :: lfstatusrow
+integer, pointer, dimension(:,:,:) :: pandaysrow
+integer, pointer, dimension(:,:) :: stdaln
+real, pointer, dimension(:,:,:) :: slopefrac
+
+! local variables
+
+integer :: i,m,j,x,y,varid,k
+!real, dimension(ilg,2) :: crop_temp_frac
+real, allocatable, dimension(:,:) :: temptwod
+
+! point pointers:
+init_file         => c_switch%init_file
+dofire            => c_switch%dofire
+compete           => c_switch%compete
+inibioclim        => c_switch%inibioclim
+dowetlands        => c_switch%dowetlands
+start_bare        => c_switch%start_bare
+lnduseon          => c_switch%lnduseon
+obswetf           => c_switch%obswetf
+ailcminrow        => vrot%ailcmin
+ailcmaxrow        => vrot%ailcmax
+dvdfcanrow        => vrot%dvdfcan
+gleafmasrow       => vrot%gleafmas
+bleafmasrow       => vrot%bleafmas
+stemmassrow       => vrot%stemmass
+rootmassrow       => vrot%rootmass
+pstemmassrow      => vrot%pstemmass
+pgleafmassrow     => vrot%pgleafmass
+twarmm            => vrot%twarmm
+tcoldm            => vrot%tcoldm
+gdd5              => vrot%gdd5
+aridity           => vrot%aridity
+srplsmon          => vrot%srplsmon
+defctmon          => vrot%defctmon
+anndefct          => vrot%anndefct
+annsrpls          => vrot%annsrpls
+annpcp            => vrot%annpcp
+dry_season_length => vrot%dry_season_length
+litrmassrow       => vrot%litrmass
+soilcmasrow       => vrot%soilcmas
+extnprob          => vrot%extnprob
+prbfrhuc          => vrot%prbfrhuc
+mlightng          => vrot%mlightng
+slopefrac         => vrot%slopefrac
+stdaln            => vrot%stdaln
+lfstatusrow       => vrot%lfstatus
+pandaysrow        => vrot%pandays
+
+FCANROT           => class_rot%FCANROT
+FAREROT           => class_rot%FAREROT
+RSMNROT           => class_rot%RSMNROT
+QA50ROT           => class_rot%QA50ROT
+VPDAROT           => class_rot%VPDAROT
+VPDBROT           => class_rot%VPDBROT
+PSGAROT           => class_rot%PSGAROT
+PSGBROT           => class_rot%PSGBROT
+DRNROT            => class_rot%DRNROT
+SDEPROT           => class_rot%SDEPROT
+XSLPROT           => class_rot%XSLPROT
+GRKFROT           => class_rot%GRKFROT
+WFSFROT           => class_rot%WFSFROT
+WFCIROT           => class_rot%WFCIROT
+MIDROT            => class_rot%MIDROT
+SANDROT           => class_rot%SANDROT
+CLAYROT           => class_rot%CLAYROT
+ORGMROT           => class_rot%ORGMROT
+TBARROT           => class_rot%TBARROT
+THLQROT           => class_rot%THLQROT
+THICROT           => class_rot%THICROT
+TCANROT           => class_rot%TCANROT
+TSNOROT           => class_rot%TSNOROT
+TPNDROT           => class_rot%TPNDROT
+ZPNDROT           => class_rot%ZPNDROT
+RCANROT           => class_rot%RCANROT
+SCANROT           => class_rot%SCANROT
+SNOROT            => class_rot%SNOROT
+ALBSROT           => class_rot%ALBSROT
+RHOSROT           => class_rot%RHOSROT
+GROROT            => class_rot%GROROT
+ZRFHROW           => class_rot%ZRFHROW
+ZRFMROW           => class_rot%ZRFMROW
+
+
+! ----------------------------
 ! 
-! ! J. Melton
-! ! Nov 2016
+!  call check_nc(nf90_inq_varid(initid,'lat',varid))
+!  call check_nc(nf90_get_var(initid,varid,DLATROW,start=[srty,srtx],count=[cnty,cntx]))
+!  
+!  call check_nc(nf90_inq_varid(initid,'lon',varid))
+!  call check_nc(nf90_get_var(initid,varid,DLONROW,start=[srty,srtx],count=[cnty,cntx]))
 ! 
-! use netcdf
-! use netcdf_drivers, only : check_nc
-! 
-! use io_driver, only : vname,niv,metfid,cntx,cnty,srtx,srty,bounds,lonvect,latvect, &
-!                       yearmetst
-! use ctem_statevars,     only : c_switch,vrot
-! use class_statevars,    only : alloc_class_vars,class_rot
-! 
-! ! use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero
-! 
-! implicit none
-! 
-! ! arguments:
-! integer, intent(inout) :: ignd  !flag temp intent
-! integer, intent(inout) :: nltest  !flag temp intent
-! integer, intent(inout) :: nmtest  !flag temp intent
-! logical, intent(in) :: onetile_perPFT !flag temp intent
-! 
-! ! pointers:
-! character(180), pointer         :: init_file
-! 
-! real, pointer, dimension(:,:,:) :: FCANROT
-! real, pointer, dimension(:,:)   :: FAREROT
-! real, pointer, dimension(:,:,:) :: RSMNROT
-! real, pointer, dimension(:,:,:) :: QA50ROT
-! real, pointer, dimension(:,:,:) :: VPDAROT
-! real, pointer, dimension(:,:,:) :: VPDBROT
-! real, pointer, dimension(:,:,:) :: PSGAROT
-! real, pointer, dimension(:,:,:) :: PSGBROT
-! real, pointer, dimension(:,:)   :: DRNROT
-! real, pointer, dimension(:,:)   :: SDEPROT
-! real, pointer, dimension(:,:)   :: XSLPROT
-! real, pointer, dimension(:,:)   :: GRKFROT
-! real, pointer, dimension(:,:)   :: WFSFROT
-! real, pointer, dimension(:,:)   :: WFCIROT
-! integer, pointer, dimension(:,:)   :: MIDROT
-! real, pointer, dimension(:,:,:) :: SANDROT
-! real, pointer, dimension(:,:,:) :: CLAYROT
-! real, pointer, dimension(:,:,:) :: ORGMROT
-! real, pointer, dimension(:,:,:) :: TBARROT
-! real, pointer, dimension(:,:,:) :: THLQROT
-! real, pointer, dimension(:,:,:) :: THICROT
-! real, pointer, dimension(:,:)   :: TCANROT
-! real, pointer, dimension(:,:)   :: TSNOROT
-! real, pointer, dimension(:,:)   :: TPNDROT
-! real, pointer, dimension(:,:)   :: ZPNDROT
-! real, pointer, dimension(:,:)   :: RCANROT
-! real, pointer, dimension(:,:)   :: SCANROT
-! real, pointer, dimension(:,:)   :: SNOROT
-! real, pointer, dimension(:,:)   :: ALBSROT
-! real, pointer, dimension(:,:)   :: RHOSROT
-! real, pointer, dimension(:,:)   :: GROROT
-! 
-! logical, pointer :: dofire
-! logical, pointer :: compete
-! logical, pointer :: inibioclim
-! logical, pointer :: dowetlands
-! logical, pointer :: start_bare
-! logical, pointer :: lnduseon
-! logical, pointer :: obswetf
-! real, pointer, dimension(:,:,:) :: ailcminrow           !
-! real, pointer, dimension(:,:,:) :: ailcmaxrow           !
-! real, pointer, dimension(:,:,:) :: dvdfcanrow           !
-! real, pointer, dimension(:,:,:) :: gleafmasrow          !
-! real, pointer, dimension(:,:,:) :: bleafmasrow          !
-! real, pointer, dimension(:,:,:) :: stemmassrow          !
-! real, pointer, dimension(:,:,:) :: rootmassrow          !
-! real, pointer, dimension(:,:,:) :: pstemmassrow         !
-! real, pointer, dimension(:,:,:) :: pgleafmassrow        !
-! real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
-! real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
-! real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
-! real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
-! real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
-! real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
-! real, pointer, dimension(:,:) :: anndefct          !< annual water deficit (mm)
-! real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
-! real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
-! real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
-! real, pointer, dimension(:,:,:) :: litrmassrow
-! real, pointer, dimension(:,:,:) :: soilcmasrow
-! real, pointer, dimension(:,:) :: extnprob
-! real, pointer, dimension(:,:) :: prbfrhuc
-! real, pointer, dimension(:,:,:) :: mlightng
-! integer, pointer, dimension(:,:,:) :: lfstatusrow
-! integer, pointer, dimension(:,:,:) :: pandaysrow
-! integer, pointer, dimension(:,:) :: stdaln
-! real, pointer, dimension(:,:,:) :: slopefrac
-! 
-! ! local variables
-! 
-! integer :: i,m,j,strlen,x,y
-! ! integer :: dimid
-! ! integer :: varid
-! ! integer :: xsize, ysize
-! ! integer, dimension(1) :: pos
-! ! integer, dimension(2) :: xpos,ypos
-! 
-! !real, dimension(ilg,2) :: crop_temp_frac
-! integer, dimension(:,:), allocatable :: maskofregion
-! 
-! ! point pointers:
-! init_file         => c_switch%init_file
-! dofire            => c_switch%dofire
-! compete           => c_switch%compete
-! inibioclim        => c_switch%inibioclim
-! dowetlands        => c_switch%dowetlands
-! start_bare        => c_switch%start_bare
-! lnduseon          => c_switch%lnduseon
-! obswetf           => c_switch%obswetf
-! ailcminrow        => vrot%ailcmin
-! ailcmaxrow        => vrot%ailcmax
-! dvdfcanrow        => vrot%dvdfcan
-! gleafmasrow       => vrot%gleafmas
-! bleafmasrow       => vrot%bleafmas
-! stemmassrow       => vrot%stemmass
-! rootmassrow       => vrot%rootmass
-! pstemmassrow      => vrot%pstemmass
-! pgleafmassrow     => vrot%pgleafmass
-! twarmm            => vrot%twarmm
-! tcoldm            => vrot%tcoldm
-! gdd5              => vrot%gdd5
-! aridity           => vrot%aridity
-! srplsmon          => vrot%srplsmon
-! defctmon          => vrot%defctmon
-! anndefct          => vrot%anndefct
-! annsrpls          => vrot%annsrpls
-! annpcp            => vrot%annpcp
-! dry_season_length => vrot%dry_season_length
-! litrmassrow       => vrot%litrmass
-! soilcmasrow       => vrot%soilcmas
-! extnprob          => vrot%extnprob
-! prbfrhuc          => vrot%prbfrhuc
-! mlightng          => vrot%mlightng
-! slopefrac         => vrot%slopefrac
-! stdaln            => vrot%stdaln
-! lfstatusrow       => vrot%lfstatus
-! pandaysrow        => vrot%pandays
-! 
-! FCANROT           => class_rot%FCANROT
-! FAREROT           => class_rot%FAREROT
-! RSMNROT           => class_rot%RSMNROT
-! QA50ROT           => class_rot%QA50ROT
-! VPDAROT           => class_rot%VPDAROT
-! VPDBROT           => class_rot%VPDBROT
-! PSGAROT           => class_rot%PSGAROT
-! PSGBROT           => class_rot%PSGBROT
-! DRNROT            => class_rot%DRNROT
-! SDEPROT           => class_rot%SDEPROT
-! XSLPROT           => class_rot%XSLPROT
-! GRKFROT           => class_rot%GRKFROT
-! WFSFROT           => class_rot%WFSFROT
-! WFCIROT           => class_rot%WFCIROT
-! MIDROT            => class_rot%MIDROT
-! SANDROT           => class_rot%SANDROT
-! CLAYROT           => class_rot%CLAYROT
-! ORGMROT           => class_rot%ORGMROT
-! TBARROT           => class_rot%TBARROT
-! THLQROT           => class_rot%THLQROT
-! THICROT           => class_rot%THICROT
-! TCANROT           => class_rot%TCANROT
-! TSNOROT           => class_rot%TSNOROT
-! TPNDROT           => class_rot%TPNDROT
-! ZPNDROT           => class_rot%ZPNDROT
-! RCANROT           => class_rot%RCANROT
-! SCANROT           => class_rot%SCANROT
-! SNOROT            => class_rot%SNOROT
-! ALBSROT           => class_rot%ALBSROT
-! RHOSROT           => class_rot%RHOSROT
-! GROROT            => class_rot%GROROT
-! 
-! ! ----------------------------
-! 
-! !> First, open initial conditions file.
-! 
-! call check_nc(nf90_open(trim(init_file),nf90_nowrite,initid))
-! 
-! !retrieve dimensions
-! 
-! call check_nc(nf90_inq_dimid(initid,'lon',dimid))
-! call check_nc(nf90_inquire_dimension(initid,dimid,len=xsize))
-! 
-! call check_nc(nf90_inq_dimid(initid,'lat',dimid))
-! call check_nc(nf90_inquire_dimension(initid,dimid,len=ysize))
-! 
-! !calculate the number and indices of the pixels to be calculated
-! 
-! allocate(lonvect(xsize))
-! allocate(latvect(ysize))
-! 
-! call check_nc(nf90_inq_varid(initid,'lon',varid))
-! call check_nc(nf90_get_var(initid,varid,lonvect))
-! 
-! call check_nc(nf90_inq_varid(initid,'lat',varid))
-! call check_nc(nf90_get_var(initid,varid,latvect))
-! 
-! ! Based on the bounds, we make vectors of the cells to be run:
-! 
-! pos = minloc(abs(lonvect - bounds(1)))
-! xpos(1) = pos(1)
-! 
-! pos = minloc(abs(lonvect - bounds(2)))
-! xpos(2) = pos(1)
-! 
-! pos = minloc(abs(latvect - bounds(3)))
-! ypos(1) = pos(1)
-! 
-! pos = minloc(abs(latvect - bounds(4)))
-! ypos(2) = pos(1)
-! 
-! srtx = minval(xpos)
-! srty = minval(ypos)
-! 
-! if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
-!  cntx = 1 + abs(maxval(xpos) - srtx)
-! 
-! if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
-!  cnty = 1 + abs(maxval(ypos) - srty)
-! 
-! !> cntx and cnty are the numbers of possible cells in the y and x directions
-! !! however there is likely less actual valid cells (cells containing land). We
-! !! next determine them.
-! 
-! write(*,*)'total is then ',cnty,'by ',cntx
-! allocate(maskofregion(cnty,cntx))
-! 
-! !> Retrieve the number of soil layers
-! 
-! call check_nc(nf90_inq_dimid(initid,'layer',dimid))
-! call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
-! 
-! !retrieve the number of PFTs ! FUTURE?
-! 
-! ! CLASS PFTs
-! !call check_nc(nf90_inq_dimid(initid,'ic',dimid))
-! !call check_nc(nf90_inquire_dimension(initid,dimid,len=))
-! 
-! ! CTEM PFTs
-! !call check_nc(nf90_inq_dimid(initid,'icc',dimid))
-! !call check_nc(nf90_inquire_dimension(initid,dimid,len=))
-! 
-! 
-! !Figure out how big our nlat vector is by the number of valid cells in the
-! !region we are running. Use the Mask, it is -1 for land. Also get the nmtest value
-! !for each of the land cells.
-! 
-! call check_nc(nf90_inq_varid(initid,'Mask',varid))
-! call check_nc(nf90_get_var(initid,varid,maskofregion,start=[srty,srtx],count=[cnty,cntx]))
-! 
-! ! call check_nc(nf90_inq_varid(initid,'GC',varid))
-! ! call check_nc(nf90_get_var(initid,varid,GCROW,start=[srty,srtx],count=[cnty,cntx]))
-! 
-! !call check_nc(nf90_inq_varid(initid,'nmtest',varid))
-! !call check_nc(nf90_get_var(initid,varid,nmtest,start=[srty,srtx],count=[1,1]))
-! !write(*,*)nmtest
-! nltest=0
-! 
-! do x = 1, cntx
-!     do y = 1, cnty
-!         if (maskofregion(y,x) == -1) then ! land cell
-!             nltest = nltest + 1
-!             
-!             !call check_nc(nf90_get_var(initid,varid,nmtest,start=[srty+y,srtx+x],count=[1,1]))
-!             !write(*,*)x,y,nmtest
-!         end if
-!     end do
+! !       JLAT=NINT(DLATROW(1))
+! !       RADJROW(1)=DLATROW(1)*PI/180.
+! !       DLONROW(1)=DEGLON
+!       Z0ORROW(1)=0.0
+!       GGEOROW(1)=0.0
+! !     GGEOROW(1)=-0.035
+write(*,*)'in readinitial'
+write(*,*)initid
+
+allocate(temptwod(cnty,cntx))
+
+call check_nc(nf90_inq_varid(initid,'ZRFM',varid))
+write(*,*)'varid',varid ,nlat,cntx,cnty
+call check_nc(nf90_get_var(initid,varid,ZRFHROW,start=[srty,srtx],count=[cnty,cntx]))
+write(*,*)ZRFHROW
+! k = 0
+! do y = 1, cnty
+!   do x = 1, cntx
+!     k = k+1
+!     write(*,*)k,y,x,temptwod(y,x),size(zrfhrow)
+!     ZRFHROW(k) = temptwod(y,x)
+!   end do
 ! end do
-! ! 
-! write(*,*)'nltest',nltest
-! 
-! 
-! ! !  NLTEST,NMTEST
-! ! !
-! ! 
-! ! ! Allocate arrays to proper dimensions
-! ! 
-! call alloc_class_vars(nlat,nmos,ignd)
-! ! !
-! ! ! Read in the first values
-! ! 
-! ! call check_nc(nf90_inq_varid(initid,'lat',varid))
-! ! call check_nc(nf90_get_var(initid,varid,DLATROW,start=[srty,srtx],count=[cnty,cntx]))
-! ! 
-! ! call check_nc(nf90_inq_varid(initid,'lon',varid))
-! ! call check_nc(nf90_get_var(initid,varid,DLONROW,start=[srty,srtx],count=[cnty,cntx]))
-! ! 
-! ! !       JLAT=NINT(DLATROW(1))
-! ! !       RADJROW(1)=DLATROW(1)*PI/180.
-! ! !       DLONROW(1)=DEGLON
-! !       Z0ORROW(1)=0.0
-! !       GGEOROW(1)=0.0
-! ! !     GGEOROW(1)=-0.035
-! 
-! 
-! call check_nc(nf90_inq_varid(initid,'ZRFM',varid))
-! call check_nc(nf90_get_var(initid,varid,ZRFMROW,start=[srty,srtx],count=[cnty,cntx]))
-! 
+
+
+! ZRFMROW
 ! call check_nc(nf90_inq_varid(initid,'ZRFH',varid))
 ! call check_nc(nf90_get_var(initid,varid,ZRFHROW,start=[srty,srtx],count=[cnty,cntx]))
 ! 
@@ -715,11 +615,12 @@ end subroutine read_modelsetup
 ! call check_nc(nf90_get_var(initid,varid,PSGBROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'SDEP',varid))
-! call check_nc(nf90_get_var(initid,varid,SDEPROT,start=[srty,srtx],count=[icnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,SDEPROT,start=[srty,srtx],count=[cnty,cntx]))
 ! 
-! call check_nc(nf90_inq_varid(initid,'FARE',varid))
-! call check_nc(nf90_get_var(initid,varid,FAREROT,start=[srty,srtx],count=[icnty,cntx]))
-! 
+!  call check_nc(nf90_inq_varid(initid,'FARE',varid))
+!  call check_nc(nf90_get_var(initid,varid,FAREROT,start=[srty,srtx],count=[cnty,cntx]))
+!  write(*,*)FAREROT
+! ! 
 ! !           ! Error check:
 ! !           if (FAREROT(I,M) .gt. 1.0) then
 ! !            write(*,*)'FAREROT > 1',FAREROT(I,M)
@@ -727,13 +628,13 @@ end subroutine read_modelsetup
 ! !           end if
 ! 
 ! call check_nc(nf90_inq_varid(initid,'XSLP',varid))
-! call check_nc(nf90_get_var(initid,varid,XSLPROT,start=[srty,srtx],count=[icnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,XSLPROT,start=[srty,srtx],count=[cnty,cntx]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'GRKF',varid))
-! call check_nc(nf90_get_var(initid,varid,GRKFROT,start=[srty,srtx],count=[icnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,GRKFROT,start=[srty,srtx],count=[cnty,cntx]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'WFSF',varid))
-! call check_nc(nf90_get_var(initid,varid,WFSFROT,start=[srty,srtx],count=[icnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,WFSFROT,start=[srty,srtx],count=[cnty,cntx]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'WFCI',varid))
 ! call check_nc(nf90_get_var(initid,varid,WFCIROT,start=[srty,srtx],count=[icnty,cntx]))
@@ -939,6 +840,7 @@ end subroutine read_modelsetup
 !
 ! close(11)
 !
+! FLAG - after done read in close the netcdf!
 !
 ! !>Check that a competition or luc run has the correct number of mosaics. if it is not a start_bare run, then nmtest should equal nmos
 !       if (onetile_perPFT .and. (compete .or. lnduseon) .and. .not. start_bare) then
@@ -1180,6 +1082,6 @@ end subroutine read_modelsetup
 !       end if !if (compete/landuseon .and. start_bare)
 
 
-!end subroutine read_initialstate
+end subroutine read_initialstate
 
 end module input_dataset_drivers

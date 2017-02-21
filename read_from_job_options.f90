@@ -403,7 +403,10 @@ argcount = iargc()
          write(*,*)'  descriptions of the various variables '
          write(*,*)'  can be found in read_from_job_options.f90 '
          write(*,*)' '
-         write(*,*)'- site_name is the prefix of your input files '
+         write(*,*)'- longitude/longitude/latitude/latitude '
+         write(*,*)'  e.g. 105/125/40/60 '
+         write(*,*)'  if you want only run one site, put the same'
+         write(*,*)'  value for each pair. '
          write(*,*)' '
          stop
       end if
@@ -414,14 +417,13 @@ call getarg(1,jobfile)
 open(10,file=jobfile,status='old')
 
 read(10,nml = joboptions)
-write(*,*)met_file
+
 close(10)
 
 call getarg(2,argbuff)
 
 if (use_netcdf) then
     call parsecoords(argbuff,bounds)
-    write(*,*)bounds
 end if
 
 end subroutine read_from_job_options

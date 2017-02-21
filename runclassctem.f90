@@ -121,7 +121,7 @@
      &                               close_outfiles,ctem_daily_aw,&
      &                               class_annual_aw
 
-       use input_dataset_drivers, only : openmet, read_modelsetup !read_initialstate, ,readin_met
+       use input_dataset_drivers, only : openmet, read_modelsetup, read_initialstate !,readin_met
 
 
       implicit none
@@ -3381,12 +3381,8 @@
 !!     big the NLAT vector is.
       call openmet()
       write(*,*)'done openmet'
-!>    This opens and reads in the restart files (replacing the INI and CTM
-!!    files). The inputs from this are used to allocate the CLASS and CTEM
-!!    data structures based on the given nlat, nmos, ignd, etc.
-      !call read_initialstate(onetile_perPFT)
 
-!     Initialize the CTEM parameters (after read_initialstate)
+!     Initialize the CTEM parameters
       call initpftpars(compete)
       write(*,*)'after inits pftpars'
 
@@ -3428,6 +3424,11 @@
       allocate(FTABLE(nlat,nmos)) !(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
       allocate(ACTLYR(nlat,nmos)) !(NLAT,NMOS)
 
+      !>    This opens and reads in the restart files (replacing the INI and CTM
+!!    files). The inputs from this are used to allocate the CLASS and CTEM
+!!    data structures based on the given nlat, nmos, ignd, etc.
+      call read_initialstate(onetile_perPFT)
+      write(*,*)zrfmrow
 
 write(*,*)'after inits class'
       !call readin_met(1,dlatgat,dlongat)
