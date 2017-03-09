@@ -173,31 +173,23 @@ c
 !!which bio2str subroutine calculates. rmatctem can thus be used 
 !!to find average root temperature for each plant functional type 
 !!
-      do 180 j = 1, icc
-        do 190 i = il1, il2
-         if (fcan(i,j) .gt. 0.) then
-          roottemp(i,j)=tbar(i,1)*rmatctem(i,j,1) + 
-     &       tbar(i,2)*rmatctem(i,j,2) +  
-     &       tbar(i,3)*rmatctem(i,j,3)
-          roottemp(i,j)=roottemp(i,j) /
-     &       (rmatctem(i,j,1)+rmatctem(i,j,2)+rmatctem(i,j,3))
+      ! Initial code for > 3 soil layers. YW April 14, 2015
+      ! Removed code for <= 3 soil layers (superfluous) and added division by sum
+      ! of rmatctem, which was missing (similar code in allocate.f). EC Feb 10 2017.
 
-c
-c        make sure that i do not use temperatures from 2nd and 3rd layers
-c        if they are bed rock
-c
-          if(isand(i,3).eq.-3)then ! third layer bed rock
-            roottemp(i,j)=tbar(i,1)*rmatctem(i,j,1) + 
-     &        tbar(i,2)*rmatctem(i,j,2)   
-            roottemp(i,j)=roottemp(i,j) /
-     &        (rmatctem(i,j,1)+rmatctem(i,j,2))
-          endif         
-          if(isand(i,2).eq.-3)then ! second layer bed rock
-            roottemp(i,j)=tbar(i,1)
-          endif    
-         endif !fcan check.     
-190     continue 
-180   continue 
+        do j = 1, icc
+          do  i = il1, il2
+            if (fcan(i,j) .gt. 0.) then
+              do  k= 1, ignd
+                if (isand(i,k) .ge. -2)           then
+                  roottemp(i,j)=roottemp(i,j)+tbar(i,k)*rmatctem(i,j,k)
+                  tot_rmat(i,j) = tot_rmat(i,j)+rmatctem(i,j,k)
+                endif
+              enddo
+              roottemp(i,j)=roottemp(i,j)/tot_rmat(i,j)
+            endif
+          enddo
+        enddo
 !>
 !!we assume that stem temperature is same as canopy temperature tcan.
 !!using stem and root temperatures we can find their maintenance respirations rates

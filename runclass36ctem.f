@@ -2156,7 +2156,8 @@ c
 C     INITIALIZATION FOR COUPLING CLASS AND CTEM
 C
        call initrowvars()
-       call resetclassaccum(nltest,nmtest)
+       !call resetclassaccum(nltest,nmtest)
+       call resetclassaccum(nlat,nmos) ! EC Feb 20, 2017
 
        IMONTH = 0
 
