@@ -14,6 +14,8 @@ public :: openmet
 !public :: readin_met
 public :: read_modelsetup
 public :: read_initialstate
+private :: map
+private :: map3d
 
 contains
 
@@ -320,7 +322,7 @@ if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
 
 if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
  cnty = 1 + abs(maxval(ypos) - srty)
-write(*,*)srtx,cntx,srty,cnty
+
 !> The size of nlat should then be cntx x cnty. We later take in GC to determine
 !! which cells are valid land cells and use that in GATPREP to make it so we only
 !! do computations over the valid land cells.
@@ -338,13 +340,13 @@ call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
 allocate(nmarray(cnty,cntx))
 
 call check_nc(nf90_inq_varid(initid,'nmtest',varid))
-call check_nc(nf90_get_var(initid,varid,nmarray,start=[srty,srtx],count=[cnty,cntx]))
+call check_nc(nf90_get_var(initid,varid,nmarray,start=[srtx,srty],count=[cntx,cnty]))
 
 nmos= maxval(nmarray)
 
 deallocate(nmarray)
 
-!> Lastly we determine the size of ilg which is nlat time nmoos
+!> Lastly we determine the size of ilg which is nlat times nmos
 
 ilg = nlat * nmos
 
@@ -406,6 +408,8 @@ real, pointer, dimension(:,:)   :: RHOSROT
 real, pointer, dimension(:,:)   :: GROROT
 real, pointer, dimension(:)     :: ZRFHROW !<
 real, pointer, dimension(:)     :: ZRFMROW !<
+real, pointer, dimension(:) :: GCROW   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
+real, pointer, dimension(:) :: ZBLDROW !<
 
 logical, pointer :: dofire
 logical, pointer :: compete
@@ -448,6 +452,7 @@ real, pointer, dimension(:,:,:) :: slopefrac
 integer :: i,m,j,x,y,varid,k
 !real, dimension(ilg,2) :: crop_temp_frac
 real, allocatable, dimension(:,:) :: temptwod
+real, allocatable, dimension(:,:,:) :: temp3d
 
 ! point pointers:
 init_file         => c_switch%init_file
@@ -520,105 +525,131 @@ RHOSROT           => class_rot%RHOSROT
 GROROT            => class_rot%GROROT
 ZRFHROW           => class_rot%ZRFHROW
 ZRFMROW           => class_rot%ZRFMROW
-
-
+GCROW             => class_rot% GCROW
+ZBLDROW           => class_rot% ZBLDROW
 ! ----------------------------
+
+allocate(temptwod(cntx,cnty))
+
 ! 
 !  call check_nc(nf90_inq_varid(initid,'lat',varid))
-!  call check_nc(nf90_get_var(initid,varid,DLATROW,start=[srty,srtx],count=[cnty,cntx]))
-!  
+!  call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+!
+!  write(*,*)'lats ',temptwod
+!
+!
 !  call check_nc(nf90_inq_varid(initid,'lon',varid))
-!  call check_nc(nf90_get_var(initid,varid,DLONROW,start=[srty,srtx],count=[cnty,cntx]))
-! 
+!  call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+!
+
 ! !       JLAT=NINT(DLATROW(1))
 ! !       RADJROW(1)=DLATROW(1)*PI/180.
 ! !       DLONROW(1)=DEGLON
 !       Z0ORROW(1)=0.0
 !       GGEOROW(1)=0.0
 ! !     GGEOROW(1)=-0.035
-write(*,*)'in readinitial'
-write(*,*)initid
 
-allocate(temptwod(cnty,cntx))
+
 
 call check_nc(nf90_inq_varid(initid,'ZRFM',varid))
-write(*,*)'varid',varid ,nlat,cntx,cnty
-call check_nc(nf90_get_var(initid,varid,ZRFHROW,start=[srty,srtx],count=[cnty,cntx]))
-write(*,*)ZRFHROW
-! k = 0
-! do y = 1, cnty
-!   do x = 1, cntx
-!     k = k+1
-!     write(*,*)k,y,x,temptwod(y,x),size(zrfhrow)
-!     ZRFHROW(k) = temptwod(y,x)
-!   end do
-! end do
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+ZRFMROW = map(temptwod)
 
+call check_nc(nf90_inq_varid(initid,'ZRFH',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+ZRFHROW = map(temptwod)
 
-! ZRFMROW
-! call check_nc(nf90_inq_varid(initid,'ZRFH',varid))
-! call check_nc(nf90_get_var(initid,varid,ZRFHROW,start=[srty,srtx],count=[cnty,cntx]))
-! 
-! call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
-! call check_nc(nf90_get_var(initid,varid,ZBLDROW,start=[srty,srtx],count=[cnty,cntx]))
-! 
-! call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
-! call check_nc(nf90_get_var(initid,varid,ZBLDROW,start=[srty,srtx],count=[cnty,cntx]))
-! 
+call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+ZBLDROW = map(temptwod)
 
-! 
-! ! Now get the per tile variables:
-! 
-! call check_nc(nf90_inq_varid(initid,'FCAN',varid))
-! call check_nc(nf90_get_var(initid,varid,FCANROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+call check_nc(nf90_inq_varid(initid,'GC',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+GCROW = map(temptwod)
+
+call check_nc(nf90_inq_varid(initid,'DRN',varid))
+call check_nc(nf90_get_var(initid,varid,DRNROT,start=[srtx,srty],count=[cntx,cnty]))
+!DRNROT = map(temptwod)
+
+call check_nc(nf90_inq_varid(initid,'SDEP',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+SDEPROT = map(temptwod)
+
+ call check_nc(nf90_inq_varid(initid,'FARE',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+FAREROT = map(temptwod)
+
+call check_nc(nf90_inq_varid(initid,'XSLP',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+XSLPROT = map(temptwod)
+
+call check_nc(nf90_inq_varid(initid,'GRKF',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+GRKFROT = map(temptwod)
+
+call check_nc(nf90_inq_varid(initid,'WFSF',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+WFSFROT = map(temptwod)
+
+call check_nc(nf90_inq_varid(initid,'WFCI',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+WFCIROT = map(temptwod)
+
+call check_nc(nf90_inq_varid(initid,'MID',varid))
+call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+MIDROT = map(temptwod)
+
+deallocate(temptwod)
+
+! Now get the 3D variables:
+
+allocate(temp3d(cntx,cnty))
+
+call check_nc(nf90_inq_varid(initid,'FCAN',varid))
+call check_nc(nf90_get_var(initid,varid,temp3d,start=[1,srtx,srty],count=[icp1,cntx,cnty]))
+FCANROT = map3d(temp3d)
+
 ! 
 ! call check_nc(nf90_inq_varid(initid,'LNZ0',varid))
-! call check_nc(nf90_get_var(initid,varid,LNZ0ROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,LNZ0ROT,start=[1,srtx,srty],count=[icp1,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'ALVC',varid))
-! call check_nc(nf90_get_var(initid,varid,ALVCROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,ALVCROT,start=[1,srtx,srty],count=[icp1,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'PAMN',varid))
-! call check_nc(nf90_get_var(initid,varid,PAMNROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,PAMNROT,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'PAMX',varid))
-! call check_nc(nf90_get_var(initid,varid,PAMX,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,PAMX,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'CMAS',varid))
-! call check_nc(nf90_get_var(initid,varid,CMASROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,CMASROT,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'ALIC',varid))
-! call check_nc(nf90_get_var(initid,varid,ALICROT,start=[1,srty,srtx],count=[icp1,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,ALICROT,start=[1,srtx,srty],count=[icp1,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'ROOT',varid))
-! call check_nc(nf90_get_var(initid,varid,ROOTROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,ROOTROT,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
-! call check_nc(nf90_inq_varid(initid,'DRN',varid))
-! call check_nc(nf90_get_var(initid,varid,DRNROT,start=[srty,srtx],count=[icnty,cntx]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'RSMN',varid))
-! call check_nc(nf90_get_var(initid,varid,RSMNROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,RSMNROT,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'QA50',varid))
-! call check_nc(nf90_get_var(initid,varid,QA50,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,QA50,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'VPDA',varid))
-! call check_nc(nf90_get_var(initid,varid,VPDAROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,VPDAROT,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'VPDB',varid))
-! call check_nc(nf90_get_var(initid,varid,VPDBROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,VPDBROT,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'PSGA',varid))
-! call check_nc(nf90_get_var(initid,varid,PSGAROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,PSGAROT,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
 ! call check_nc(nf90_inq_varid(initid,'PSGB',varid))
-! call check_nc(nf90_get_var(initid,varid,PSGBROT,start=[1,srty,srtx],count=[ic,cnty,cntx]))
+! call check_nc(nf90_get_var(initid,varid,PSGBROT,start=[1,srtx,srty],count=[ic,cntx,cnty]))
 ! 
-! call check_nc(nf90_inq_varid(initid,'SDEP',varid))
-! call check_nc(nf90_get_var(initid,varid,SDEPROT,start=[srty,srtx],count=[cnty,cntx]))
-! 
-!  call check_nc(nf90_inq_varid(initid,'FARE',varid))
-!  call check_nc(nf90_get_var(initid,varid,FAREROT,start=[srty,srtx],count=[cnty,cntx]))
 !  write(*,*)FAREROT
 ! ! 
 ! !           ! Error check:
@@ -627,21 +658,7 @@ write(*,*)ZRFHROW
 ! !            call XIT('runclass36ctem', -2)
 ! !           end if
 ! 
-! call check_nc(nf90_inq_varid(initid,'XSLP',varid))
-! call check_nc(nf90_get_var(initid,varid,XSLPROT,start=[srty,srtx],count=[cnty,cntx]))
-! 
-! call check_nc(nf90_inq_varid(initid,'GRKF',varid))
-! call check_nc(nf90_get_var(initid,varid,GRKFROT,start=[srty,srtx],count=[cnty,cntx]))
-! 
-! call check_nc(nf90_inq_varid(initid,'WFSF',varid))
-! call check_nc(nf90_get_var(initid,varid,WFSFROT,start=[srty,srtx],count=[cnty,cntx]))
-! 
-! call check_nc(nf90_inq_varid(initid,'WFCI',varid))
-! call check_nc(nf90_get_var(initid,varid,WFCIROT,start=[srty,srtx],count=[icnty,cntx]))
-! 
-! call check_nc(nf90_inq_varid(initid,'MID',varid))
-! call check_nc(nf90_get_var(initid,varid,MIDROT,start=[srty,srtx],count=[icnty,cntx]))
-! 
+!
 ! call check_nc(nf90_inq_varid(initid,'ZBOT',varid)) !per layer but not per tile (fix?)
 ! call check_nc(nf90_get_var(initid,varid,ZBOT,start=[1,srty,srtx],count=[ignd,icnty,cntx]))
 ! 
@@ -1083,5 +1100,35 @@ write(*,*)ZRFHROW
 
 
 end subroutine read_initialstate
+
+function map(twodin) result(out)
+    use io_driver, only : cntx,cnty
+    real, intent(in), dimension(:,:) :: twodin ! input
+    real, dimension(:)             :: out ! output
+    integer :: x,y,k
+    k = 0
+    do x = 1, cntx
+        do y = 1, cnty
+            k = k+1
+            out(k) = twodin(x,y)
+        end do
+    end do
+
+end function map
+
+function map3d(threedin) result(out)
+    use io_driver, only : cntx,cnty
+    real, intent(in), dimension(:,:,:) :: threedin ! input
+    real, dimension(:,:)             :: out ! output
+    integer :: x,y,k
+    k = 0
+    do x = 1, cntx
+        do y = 1, cnty
+            k = k+1
+            out(:,k) = threedin(:,x,y)
+        end do
+    end do
+
+end function map3d
 
 end module input_dataset_drivers

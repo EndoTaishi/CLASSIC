@@ -406,7 +406,8 @@ argcount = iargc()
          write(*,*)'- longitude/longitude/latitude/latitude '
          write(*,*)'  e.g. 105/125/40/60 '
          write(*,*)'  if you want only run one site, put the same'
-         write(*,*)'  value for each pair. '
+         write(*,*)'  value for each pair. The longitudes follow'
+         write(*,*)'  the same convention as your initialization file'
          write(*,*)' '
          stop
       end if

@@ -3373,7 +3373,7 @@
 !! In read_modelsetup we use the netcdf to set the nlat, nmos, ignd, and ilg constants.
 
       call read_modelsetup()
-      write(*,*)'done read model setup',nlat,nmos,ilg,ignd
+      write(*,*)'done read model setup: nlat',nlat,'nmos ',nmos,'ignd ',ignd
 !>     Open the met netcdf file. This also sets up the run boundaries
 !!     based on the metadata in the netcdf. It is important to ensure the
 !!     netcdf is of the same dimensions as the intended output files.
