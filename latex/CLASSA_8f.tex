@@ -471,3 +471,8 @@ In the first loop, the depth of snow $z_s$ is calculated from the snow mass $W_s
 If the calculated value of $z_s$ is less than the limiting snow depth $z_{s,lim}$, the snow cover is deemed to be discontinuous. The fractional snow coverage $X_s$ of the modelled area is evaluated as $ X_s = z_s / z_{s,lim} $ and the snow depth is reset to $z_{s,lim}$. The water content of the snow pack is corrected according to the new snow fractional area.
 
 The subarea albedo and transmissivity arrays (for canopy, bare ground, canopy over snow and snow over bare ground) are next initialized to zero, and the four C\+L\+A\+S\+S\+A subsidiary subroutines are called in turn\+: A\+P\+R\+E\+P to evaluate various model parameters for the four subareas, S\+N\+O\+A\+L\+B\+A to calculate the snow albedo and transmissivity, G\+R\+A\+L\+B to calculate the ground surface albedo, and C\+A\+N\+A\+L\+B to calculate the canopy albedo, transmissivity and stomatal resistance. Finally, the overall visible and near-\/ infrared albedos for the modelled area are determined as weighted averages over the four subareas.
+
+Here is the call graph for this function\+:
+% FIG 0
+
+

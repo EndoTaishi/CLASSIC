@@ -519,3 +519,14 @@ In loop 675, if there is frozen water stored on the canopy and the canopy temper
 For the locations over which melting or freezing of water on the canopy has occurred, the surface fluxes must now be recalculated to reflect the modified canopy temperature and humidity. If N\+I\+T $>$ 0, first D\+R\+C\+O\+E\+F or F\+L\+X\+S\+U\+R\+F\+Z is called to re-\/evaluate the surface turbulent transfer coefficients over all locations where I\+T\+E\+R has been set to 1. Loops 700 and 750 repeat the calculations done in loops 475 and 500, to obtain the surface transfer coefficients. Loop 800 repeats the calculations of the surface fluxes done in loop 525.
 
 At the end of the subroutine, some final diagnostic and clean-\/up calculations are performed. If the evaporation rate from the canopy, E\+V\+A\+P\+C, is very small, it is added to the residual of the canopy energy balance equation, R\+E\+S\+I\+D, and then reset to zero. The overall residual is added to the sensible heat flux from the canopy. The energy balance of the surface underlying the canopy is then re-\/evaluated to take into account the new value of the canopy longwave radiation. If the surface temperature is close to 0 C, the residual of the equation is assigned to Q\+M\+E\+L\+T\+G, representing the energy associated with melting or freezing of water at the surface; otherwise it is assigned to the ground heat flux. If the water vapour flux is towards the canopy, the water sublimated or condensed is assigned to interception storage\+: to S\+N\+O\+C\+A\+N if S\+N\+O\+C\+A\+N $>$ 0 (for consistency with the definition of C\+P\+H\+C\+H\+C), and to R\+A\+I\+C\+A\+N otherwise. The diagnostic water vapour flux variables Q\+F\+C\+F and Q\+F\+C\+L, and the diagnostic change of canopy heat storage H\+T\+C\+C, are updated accordingly, and the canopy heat capacity C\+H\+C\+A\+P is recalculated; E\+V\+A\+P\+C is added to the diagnostic variable E\+V\+A\+P and then reset to zero. Finally, the net shortwave radiation, outgoing longwave radiation, sensible and latent heat fluxes are calculated for the whole canopy-\/ground surface ensemble; the evaporation rates are converted to $m s^{-1}$ ; and the iteration counter I\+T\+E\+R\+C\+T is updated for the level corresponding to the subarea type and the value of N\+I\+T\+E\+R.
+
+Here is the call graph for this function\+:
+% FIG 0
+
+
+
+
+Here is the caller graph for this function\+:
+% FIG 1
+
+

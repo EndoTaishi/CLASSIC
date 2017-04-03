@@ -381,19 +381,6 @@ C
       REAL,DIMENSION(NLAT,NMOS)      :: ZSNOROT  !<
       REAL,DIMENSION(NLAT,NMOS)      :: SOCIROT  !<
 
-      REAL,DIMENSION(ILG,IGND)       :: THLWGAT  !<
-      REAL,DIMENSION(ILG)            :: ALGWVGAT !<
-      REAL,DIMENSION(ILG)            :: ALGWNGAT !<
-      REAL,DIMENSION(ILG)            :: ALGDVGAT !<
-      REAL,DIMENSION(ILG)            :: ALGDNGAT !<
-      REAL,DIMENSION(ILG)            :: EMISGAT  !<
-      REAL,DIMENSION(NLAT,NMOS)      :: SOCIROT  !<
-C
-      REAL,DIMENSION(ILG,NBS) :: FSDBGAT !<
-      REAL,DIMENSION(ILG,NBS) :: FSFBGAT !<
-      REAL,DIMENSION(ILG,NBS) :: FSSBGAT !<
-      REAL,DIMENSION(ILG,NBS) :: SALBGAT !<
-      REAL,DIMENSION(ILG,NBS) :: CSALGAT !<
 C
 C     * ARRAYS ASSOCIATED WITH COMMON BLOCKS.
 C
@@ -2175,8 +2162,7 @@ C     INITIALIZATION FOR COUPLING CLASS AND CTEM
 C
        call initrowvars()
 
-       !call resetclassaccum(nltest,nmtest)
-       call resetclassaccum(nlat,nmos) ! FLAG EC Feb 20, 2017
+       call resetclassaccum(nlat,nmos)
 
 
        IMONTH = 0
@@ -2958,7 +2944,7 @@ c       of ctem's 9 pfts for the first year.
 c
         if (lnduseon .and. transient_run) then
 
-         reach_eof=.false.  !flag for when read to end of luc input file
+         reach_eof=.false.  !marker for when read to end of luc input file
 
          call initialize_luc(iyear,argbuff,nmtest,nltest,
      1                     nol2pfts,cyclemet,
@@ -3030,7 +3016,7 @@ c
      &                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
             else !peatland tile
                 gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmsmossrow(i,m)
-                peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth (FLAG! I think this should change-JM)
+                peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth
                 ! The soil carbon on the peatland tiles is assigned based on depth. This
                 ! is the same relation as found in decp subroutine.
                 gavgscmsrow(i,m) = 0.487*(4056.6*peatdeprow(i,m)**2+
@@ -3350,7 +3336,7 @@ C
               if (obswetf) then
 
               ! Note that this will be read in, regardless of the iyear, if the
-              ! obswetf flag is true. This means you have to be restarting from a run
+              ! obswetf marker is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
               ! Read into the first tile position
                  read(16,*,end=1001) obswetyr,
@@ -3366,7 +3352,7 @@ C
 
               if(obslght) then
               ! Note that this will be read in, regardless of the iyear, if the
-              ! obswetf flag is true. This means you have to be restarting from a run
+              ! obswetf marker is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
                 read(17,*,end=312) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
                 if (nmtest > 1) then
@@ -4148,25 +4134,19 @@ c    -------------- inputs used by ctem are above this line ---------
      2          Cmossmasgat,litrmsmossgat,wtablegat,
      4          THFCGAT, THLWGAT, thliqacc_t, thiceacc_t,
      5          nppmossgat, armossgat,peatdepgat)
-!    4          THFCGAT, THLWGAT, thlqaccgat_m, thicaccgat_m,
 c
-c    ----------calculate degree days for mosspht Vmax seasonality------
+c    ----------calculate degree days for mosspht Vmax seasonality (only once per day)------
        do   i = 1, nml
-          ! Do this here instead of inside mosspht (only once per day). EC Jan 31 2017.
-          !if (iday == 2)    then
-          !     pddgat(i) = 0.
-          !elseif (taaccgat_t(i)>tfrez)           then
           if (taaccgat_t(i)>tfrez)           then
                pddgat(i)=pddgat(i)+taaccgat_t(i)-tfrez
           endif
 c----------------update peatland bottom layer depth--------------------       
-!         do   i = 1, nml                              !FLAG JM - I comment this out for now. I don't think this is what we want.
            if (ipeatlandgat(i) > 0)         then
                dlzwgat(i,ignd)= peatdepgat(i)-0.90
                sdepgat(i) = peatdepgat(i)
            endif
        end do
-c================YW August 26, 2015 =======================/ 
+
 c
 !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
 !     to reset here, prior to ctems2.
@@ -5417,17 +5397,6 @@ C=======================================================================
      4                       TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT,
      5                       ACTLYR,FTABLE,leapnow)
 
-c            ---FLAG duplicate?-----reset peatland accumulators-------------------------------
-!            anmossac_t  = 0.0 
-!            rmlmossac_t = 0.0
-!            gppmossac_t = 0.0
-!            G12ACC     = 0.
-!            G23ACC     = 0.
-!            if (iday == 365) then
-!               pddrow     = 0.
-!            end if
-c            ----------------YW March 27, 2015 -------------------------------/
-
 c     CTEM output and write out
 
       if(.not.parallelrun) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
@@ -5438,6 +5407,7 @@ c     calculate daily outputs from ctem
           call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
      1                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea,
      2                      onetile_perPFT,ipeatlandrow)
+
 c            --------reset peatland accumulators-------------------------------
 !            Note: these must be reset only at the end of a day. EC Jan 30 2017.
              anmossac_t  = 0.0 
@@ -5445,6 +5415,7 @@ c            --------reset peatland accumulators-------------------------------
              gppmossac_t = 0.0
              G12ACC     = 0.
              G23ACC     = 0.
+
          endif ! if(ncount.eq.nday)
        endif ! if(ctem_on)
 

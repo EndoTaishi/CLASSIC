@@ -423,12 +423,28 @@ Functions/Subroutines</h2></td></tr>
 <p>In the second part of the 600 loop, the temperatures TFDT of the water fluxes at the top and bottom of the layers in the permeable soil profile are set equal to the temperatures of the water in the first and last layers respectively. The flow at the bottom of the profile and the temperature of the flow are used to update BASFLW and TBASFL, the baseflow from the current subarea and its temperature, and RUNOFF and TRUNOF, the total runoff from the grid cell in question and its temperature.</p>
 <p>In the 700 loop, for each successive soil layer the temperature of the water flux at the bottom of the layer is first assigned. If the flux is downward, TFDT is set to the temperature of the water in the current layer; if it is upward, TFDT is set to the temperature of the water in the layer below. The temperature of the water in the current layer is then updated using the FDT and TFDT values at the top and bottom of the layer, and the liquid water content of the layer is set to THTEST.</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="GRDRAN_8f_a9d02aa9115635af052981eec146b1042_cgraph.png" border="0" usemap="#GRDRAN_8f_a9d02aa9115635af052981eec146b1042_cgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="GRDRAN_8f_a9d02aa9115635af052981eec146b1042_icgraph.png" border="0" usemap="#GRDRAN_8f_a9d02aa9115635af052981eec146b1042_icgraph" alt=""/></div>
+<!-- MAP 1 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 3 2017 14:39:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 15:35:54 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

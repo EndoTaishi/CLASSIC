@@ -777,12 +777,28 @@ Functions/Subroutines</h2></td></tr>
 <p>Finally, a check is performed to ensure that TZERO is not less than 0 C if ponded water is present on the surface (IWATER = 1) or greater than 0 C if snow is present on the surface (IWATER = 2), or greater than zero if the surface is an ice sheet (ISAND = -4). If any of these cases is true, TZERO is reset to the freezing point, and q(0) and <img class="formulaInl" alt="$T(0)_v$" src="form_1662.png"/> are recalculated. DRCOEF or FLXSURFZ are called, and their calculations are performed for all locations meeting these criteria. The components of the surface energy balance are recalculated; the residual amount is assigned to the energy associated with phase change of water at the surface, QMELT, and RESID is set to zero. If QMELT &lt; 0, i.e. if there is freezing taking place, the evaporation flux QEVAP is added to it and then reset to zero (since if ponded water is freezing, it is unavailable for evaporation).</p>
 <p>In the last half of the loop, some final adjustments are made to a few variables. If the evaporation flux is vanishingly small, it is added to RESID and reset to zero. If an anomalous case has arisen in which QMELT &lt; 0 over a snow-covered surface or QMELT &gt; 0 over a snow-free surface, QMELT is added to the heat flux into the surface and then reset to zero. Any remaining residual flux is added to <img class="formulaInl" alt="$Q_H$" src="form_1396.png"/>. The shortwave radiation transmitted into the surface is added back to the net shortwave radiation for diagnostic purposes. The surface vapour flux is converted into units of <img class="formulaInl" alt="$m s^{-1}$" src="form_1730.png"/>. Lastly, the iteration counter ITERCT is updated for the level corresponding to the subarea type and the value of NITER.</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2_cgraph.png" border="0" usemap="#TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2_cgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2_icgraph.png" border="0" usemap="#TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2_icgraph" alt=""/></div>
+<!-- MAP 1 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 3 2017 14:39:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 15:35:54 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

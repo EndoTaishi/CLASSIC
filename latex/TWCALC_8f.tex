@@ -98,3 +98,8 @@ If the soil layer temperature is less than 0 C and the volumetric liquid water c
 If the soil layer temperature is greater than 0 C and the volumetric ice content $\theta_i$ of the layer is greater than zero, the ice content T\+H\+M\+E\+L\+T that can be melted by the available energy is calculated from $C_e$ and $T_g$. For each layer, if T\+H\+M\+E\+L\+T $\leq$ T\+H\+I\+C\+E, all of the available energy is used to melt part of the frozen water content of the permeable part of the layer, the amount of energy involved is subtracted from H\+T\+C and added to H\+M\+F\+G, $C_g$ is recalculated and the layer temperature is set to 0 C. Otherwise, all of the frozen water content of the layer is converted to liquid water, and H\+M\+F\+G and H\+T\+C are recalculated to reflect this. Then $C_g$ is recomputed, and the remaining energy is applied to increasing the temperature of the soil layer (both the permeable and impermeable portions) using $C_e$.
 
 In the final cleanup, the internal energy calculations for this subroutine are completed, and the first half of a new set of internal energy calculations is done to span the subroutines treating ground water movement, which will be completed in subroutine T\+M\+C\+A\+L\+C. Lastly, T\+B\+A\+R\+W, the liquid water temperature of each soil layer, is assigned using T\+B\+A\+R.
+
+Here is the caller graph for this function\+:
+% FIG 0
+
+

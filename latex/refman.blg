@@ -23,46 +23,48 @@ A level-1 auxiliary file: group__landuse__change__readin__luc.aux
 A level-1 auxiliary file: group__landuse__change__luc.aux
 A level-1 auxiliary file: group__landuse__change__adjust__luc__fracs.aux
 A level-1 auxiliary file: group__landuse__change__adjust__fracs__comp.aux
+A level-1 auxiliary file: group__moss__photosynthesis.aux
+A level-1 auxiliary file: group__peat__soil__het__resp.aux
 The style file: plain.bst
 Database file #1: bibTmpFile_1.bib
-You've used 55 entries,
+You've used 60 entries,
             2118 wiz_defined-function locations,
-            913 strings with 16346 characters,
-and the built_in function-call counts, 20529 in all, are:
-= -- 2017
-> -- 1129
+            950 strings with 17663 characters,
+and the built_in function-call counts, 22731 in all, are:
+= -- 2222
+> -- 1284
 < -- 3
-+ -- 460
-- -- 389
-* -- 1746
-:= -- 3490
-add.period$ -- 167
-call.type$ -- 55
-change.case$ -- 358
++ -- 523
+- -- 445
+* -- 1956
+:= -- 3870
+add.period$ -- 182
+call.type$ -- 60
+change.case$ -- 401
 chr.to.int$ -- 0
-cite$ -- 55
-duplicate$ -- 621
-empty$ -- 1440
-format.name$ -- 389
-if$ -- 4072
+cite$ -- 60
+duplicate$ -- 676
+empty$ -- 1573
+format.name$ -- 445
+if$ -- 4496
 int.to.chr$ -- 0
-int.to.str$ -- 55
-missing$ -- 53
-newline$ -- 278
-num.names$ -- 112
-pop$ -- 271
+int.to.str$ -- 60
+missing$ -- 58
+newline$ -- 303
+num.names$ -- 122
+pop$ -- 304
 preamble$ -- 1
-purify$ -- 304
+purify$ -- 342
 quote$ -- 0
-skip$ -- 419
+skip$ -- 454
 stack$ -- 0
-substring$ -- 1482
-swap$ -- 72
+substring$ -- 1624
+swap$ -- 77
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 220
+type$ -- 240
 warning$ -- 0
-while$ -- 207
-width$ -- 57
-write$ -- 604
+while$ -- 226
+width$ -- 62
+write$ -- 659

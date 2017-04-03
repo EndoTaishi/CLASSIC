@@ -120,3 +120,8 @@ The 400 loop addresses the infiltration process under saturated conditions. Such
 In the 500 loop, if I\+S\+I\+M\+P $<$ 0 (i.\+e. water movement has occurred), the time remaining in the current time step is recalculated. If the wetting front is at a soil layer boundary, if the time remaining is non-\/zero, if the wetting front is still within the modelled soil column, and if the calculated water content behind the wetting front is greater than zero, F\+M\+A\+X is updated, and L\+Z\+F and N\+I\+N\+F are incremented by 1. The N\+I\+N\+F level of the T\+M\+O\+V\+E matrix is set to the water temperature of the new soil layer.
 
 At the end of the iteration pass, checks are done in the 600 loop to ascertain whether the number of iteration passes is still less than N\+E\+N\+D, whether either ponded water still exists or rain is still falling, and whether there is still time remaining in the current time step. If these conditions are all fulfilled, the counter N\+P\+N\+T\+S representing the number of points in the current vector of mosaic tiles for which infiltration is still occurring is incremented by 1. Otherwise, the iteration flag for the current tile is changed from 1 to 0, signaling the end of the saturated infiltration calculations for that tile.
+
+Here is the caller graph for this function\+:
+% FIG 0
+
+

@@ -469,12 +469,20 @@ Functions/Subroutines</h2></td></tr>
 <p>In the remaining parts of the code, the actual adjustment of ice layer positions is performed. First the levels of the available depth matrix ZRMDR are set to the ice layer thicknesses; the matrix ZMAT is initialized to zero; and each level J of WMOVE and TMOVE from 2 to the bottom of the ice profile is set to the value of DELZ and TBAR respectively of the J-1 ice level. The ZMAT matrix represents the depth of each ice layer J that is occupied by ice from level K in the layer movement matrix WMOVE after the layer adjustments are complete. In the 700 loop, starting at the top of the ice profile, an attempt is made to assign each layer of WMOVE in turn to the K,J level of ZMAT. If the calculated value of ZMAT is greater than the available depth ZRMDR of the layer, ZMAT is set to ZRMDR, WMOVE is decremented by ZRMDR, and ZRMDR is set to zero. Otherwise the calculated value of ZMAT is accepted, ZRMDR is decremented by ZMAT, and WMOVE is set to zero.</p>
 <p>Finally, the 900 loop is performed over each ice layer J to determine the new layer temperature. The temperature adjustment variable TADD is initialized to zero, and then incremented by the temperature TMOVE of each level K weighted by the corresponding K,J level of ZMAT, and finally by the original layer temperature weighted by the corresponding level of ZRMDR. The layer temperature is reset to TADD normalized by DELZ, and the updating of HTC, begun at the end of the 300 loop, is completed.</p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="ICEBAL_8f_abefb862d3860a7222b2eaa981efb2701_icgraph.png" border="0" usemap="#ICEBAL_8f_abefb862d3860a7222b2eaa981efb2701_icgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 3 2017 14:39:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 15:35:54 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

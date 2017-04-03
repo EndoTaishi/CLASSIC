@@ -1257,12 +1257,20 @@ Functions/Subroutines</h2></td></tr>
 <p>In the 700 loop, the temperature of each soil layer is calculated as a weighted average over the four subareas. In the case of the third soil layer., if the standard three-layer configuration is being modelled (with a very thick third soil layer of 3.75 m), the subarea layer temperatures TBARCS/GS/C/G and the layer heat capacities HCPCS/GS/C/G apply to the permeable depth DELZW of the layer, and the bedrock temperature TBASE and the rock heat capacity HCPSND to the remainder, DELZ-DELZW. The averaging is carried out accordingly. In all other soil layers, the layer temperature applies to the whole thickness, whose heat capacity is a weighted average of HCPCS/GS/C/G over DELZW and HCPSND over DELZ-DELZW. The volumetric liquid water content THLIQ, the volumetric frozen water content THICE, and the heat flux at the soil layer interfaces GFLUX are calculated as simple weighted averages over the subareas. A flag is set to trigger a call to abort if the soil layer temperature is less than -100 C or greater than 100 C, and after the end of the loop, a call to abort is performed if the flag is greater than zero.</p>
 <p>Finally, subroutine CGROW is called to update the vegetation growth index.</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="CLASSW_8f_aac1827011ed2ca61bd0274e83d1f80ad_cgraph.png" border="0" usemap="#CLASSW_8f_aac1827011ed2ca61bd0274e83d1f80ad_cgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 3 2017 14:39:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 15:35:54 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

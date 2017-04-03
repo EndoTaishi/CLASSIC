@@ -234,12 +234,20 @@ Functions/Subroutines</h2></td></tr>
 <p>If HSNWRM &gt; HRCOOL and HSNWRM &lt; (HRCOOL + HRFREZ), the energy sink of the snow pack is sufficient to cool the rainfall to 0 C, but not to freeze all of it. HRFREZ is therefore recalculated as HSNWRM – HRCOOL, and used to determine a depth of rain to be frozen, ZFREZ. The energy used in the freezing is added to HMFN and HTCS. The frozen rainfall is applied to increasing the density of the snow pack as above; if the calculated density exceeds that of ice, RHOSNO and ZSNOW are recalculated. The water available for retention in the snow pack, WAVAIL, is obtained as the sum of the unfrozen rainfall and WSNOW, and compared to the water retention capacity of the snow pack. If WAVAIL is greater than the water retention capacity, WSNOW is set to the capacity value and WAVAIL is recalculated. Otherwise WSNOW is set to WAVAIL and WAVAIL is set to zero. The heat capacity of the snow is recalculated, R is calculated from WAVAIL, and TR and TSNOW are set to zero.</p>
 <p>Finally, the calculation of the change in internal energy is completed, and the rainfall rate leaving the bottom of the snow pack and reaching the soil is added to the diagnostic variables PCPG and ROFN.</p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="SNINFL_8f_a40705488cafaec0ed712b2b926c1d67d_icgraph.png" border="0" usemap="#SNINFL_8f_a40705488cafaec0ed712b2b926c1d67d_icgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 3 2017 14:39:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 15:35:54 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

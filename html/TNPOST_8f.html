@@ -339,12 +339,20 @@ Functions/Subroutines</h2></td></tr>
 <p>The temperature TBARPR of the first soil layer over the subarea in question can then be obtained by disaggregating the ponded water temperature from the lumped layer temperature using the respective heat capacities of the ponded water and the soil layer. (The heat capacity of the soil is determined as the weighted average of HCP over the permeable thickness DELZW, and the heat capacity of rock, HCPSND, over the impermeable thickness, DELZ-DELZW.) Both the ponded water temperature and the soil layer temperature are converted to C. Lastly, if there is ponded water on the surface (IWATER = 1) and QFREZG, the surface energy available for phase change of water, is positive (indicating an energy source), or if there is snow on the ground (IWATER = 2) and QFREZG is negative (indicating an energy sink), or if there is no liquid or frozen water on the surface (IWATER = 0), QFREZG is added to the heat flux into the ground, GZERO, and then reset to zero.</p>
 <p>In loop 200, the subarea soil layer temperatures TBARPR are set for the remaining soil layers. In all cases the temperature of the layer is set to that for the modelled area, TBAR, converted to C, except in the case of the third soil layer if the standard three-layer configuration is being modelled (with a very thick third soil layer of 3.75 m). In this case TBARPR and the layer heat capacity HCP are considered to apply to the permeable depth DELZW of the layer, and the bedrock temperature TBASE and the rock heat capacity HCPSND apply to the remainder, DELZ-DELZW. The disaggregation of TBARPR from TBAR and TBASE is carried out on this basis. TBARPR for this layer is also converted to C.</p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="TNPOST_8f_a1d7de0e4ebe964e4c638efcb49b3c740_icgraph.png" border="0" usemap="#TNPOST_8f_a1d7de0e4ebe964e4c638efcb49b3c740_icgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 3 2017 14:39:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 15:35:54 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

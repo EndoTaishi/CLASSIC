@@ -86,3 +86,8 @@ If H\+A\+D\+D $>$ H\+C\+O\+N\+V, the amount of available energy is sufficient to
 After the I\+F block, the diagnostic variable H\+M\+F\+N describing melting or freezing of water in the snow pack is updated using R\+M\+E\+L\+T\+S, the temperature of the rainfall rate reaching the soil is updated using T\+R\+M\+E\+L\+T, and R\+M\+E\+L\+T is added to the rainfall rate R. Q\+M\+E\+L\+T is set to zero, and a flag variable R\+A\+L\+B, used later in subroutine S\+N\+O\+A\+L\+B\+W, is set to the rainfall rate reaching the ground.
 
 In the 200 loop, a check is performed to see whether Q\+M\+E\+L\+T is still greater than zero and the modelled area is not an ice sheet (I\+S\+A\+N\+D $>$ -\/4). In this case Q\+M\+E\+L\+T is added to the ground heat flux G\+Z\+E\+R\+O, and the internal energy diagnostics H\+T\+C\+S and H\+T\+C for the snow and soil respectively are corrected. The flag variable R\+A\+L\+B is evaluated as above.
+
+Here is the caller graph for this function\+:
+% FIG 0
+
+

@@ -121,3 +121,14 @@ In loop 100, for canopy-\/covered subareas, the intercepted rain R\+A\+I\+C\+A\+
 In the 150 loop, for all areas that are not continental ice sheets (I\+S\+A\+N\+D=-\/4), the liquid water content in each soil layer is checked to ensure that it is not larger than the pore volume and that it is not smaller than the minimum liquid water content (except for rock layers). The ice content is similarly checked to ensure that the sum of it, converted to an equivalent liquid water content, plus the minimum water content, is not greater than the pore volume (except for rock layers). It is also checked to ensure that if it is negative, it is vanishingly small.
 
 Finally, in loop 300, the overall water balance B\+A\+L is calculated and compared to B\+A\+L\+L\+M\+T. B\+A\+L is evaluated as the residual of the precipitation, the evaporation, the runoff, the water loss term W\+L\+O\+S\+T, the change in canopy intercepted liquid and frozen water (for vegetation-\/covered areas), the change in surface ponded water, the change in snow pack and snow liquid water content (for snow-\/covered areas), and the changes in the soil layer liquid and frozen water contents. If the absolute value of B\+A\+L is greater than B\+A\+L\+L\+M\+T, a flag is set, all of the terms entering B\+A\+L are printed out, and a call to X\+I\+T is performed.
+
+Here is the call graph for this function\+:
+% FIG 0
+
+
+
+
+Here is the caller graph for this function\+:
+% FIG 1
+
+
