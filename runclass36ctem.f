@@ -14,6 +14,9 @@ C     REVISION HISTORY:
 C
 C     * Dec 1 2016 : Code can now handle leap years in the input MET
 C       Jean-Sebastien Landry
+
+C     * Sep 26 2016 : Bring in Yuanqiao Wu's peatland parameterization.
+C       Joe Melton
 C
 C     * Aug 31 2016 : Added proper calculation of ALTOT as provided by Diana.
 C       Joe Melton
@@ -272,14 +275,14 @@ C
       REAL,DIMENSION(NLAT,NMOS)      :: ASVDROT !<
       REAL,DIMENSION(ILG,IGND)       :: BIGAT   !<Clapp and Hornberger empirical “b” parameter [ ]
       REAL,DIMENSION(NLAT,NMOS,IGND) :: BIROT   !<
-      REAL CLAYROT(NLAT,NMOS,IGND)              !<Percentage clay content of soil
+      REAL,DIMENSION(NLAT,NMOS,IGND) :: CLAYROT !<Percentage clay content of soil
       REAL,DIMENSION(ILG,ICAN)       :: CMASGAT !<Maximum canopy mass for vegetation category \f$[kg m^{-2} ]\f$
       REAL,DIMENSION(NLAT,NMOS,ICAN) :: CMASROT !<
       REAL,DIMENSION(ILG,IGND)       :: DLZWGAT !<Permeable thickness of soil layer [m]
       REAL,DIMENSION(NLAT,NMOS,IGND) :: DLZWROT !<
       REAL,DIMENSION(ILG)            :: DRNGAT  !<Drainage index at bottom of soil profile [ ]
       REAL,DIMENSION(NLAT,NMOS)      :: DRNROT  !<
-      REAL FAREROT(NLAT,NMOS)                   !<Fractional coverage of mosaic tile on modelled area
+      REAL,DIMENSION(NLAT,NMOS)      :: FAREROT !<Fractional coverage of mosaic tile on modelled area
       REAL,DIMENSION(ILG,ICP1)       :: FCANGAT !<Maximum fractional coverage of modelled area by vegetation category [ ]
       REAL,DIMENSION(NLAT,NMOS,ICP1) :: FCANROT !<
       REAL,DIMENSION(ILG)            :: GRKFGAT !<WATROF parameter used when running MESH code [ ]
@@ -290,14 +293,14 @@ C
       REAL,DIMENSION(NLAT,NMOS,IGND) :: HCPSROT !<
       REAL,DIMENSION(ILG,ICAN)       :: HGTDGAT !<Optional user-specified values of height of vegetation categories to override CLASS-calculated values [m]
       REAL,DIMENSION(NLAT,NMOS,ICAN) :: HGTDROT !<
-      INTEGER IGDRGAT(ILG)                      !<Index of soil layer in which bedrock is encountered
-      INTEGER IGDRROT(NLAT,NMOS)                !<
-      INTEGER ISNDGAT(ILG,IGND)                 !<Integer identifier associated with sand content
-      INTEGER ISNDROT(NLAT,NMOS,IGND)           !<
+      INTEGER,DIMENSION(ILG)         :: IGDRGAT !<Index of soil layer in which bedrock is encountered
+      INTEGER,DIMENSION(NLAT,NMOS)   :: IGDRROT !<
+      INTEGER,DIMENSION(ILG,IGND)    :: ISNDGAT !<Integer identifier associated with sand content
+      INTEGER,DIMENSION(NLAT,NMOS,IGND):: ISNDROT !<
       REAL,DIMENSION(ILG,ICP1)       :: LNZ0GAT !<Natural logarithm of maximum roughness length of vegetation category [ ]
       REAL,DIMENSION(NLAT,NMOS,ICP1) :: LNZ0ROT !<
-      INTEGER MIDROT (NLAT,NMOS)                !<Mosaic tile type identifier (1 for land surface, 0 for inland lake)
-      REAL ORGMROT(NLAT,NMOS,IGND)              !<Percentage organic matter content of soil
+      INTEGER,DIMENSION(NLAT,NMOS)   :: MIDROT  !<Mosaic tile type identifier (1 for land surface, 0 for inland lake)
+      REAL,DIMENSION(NLAT,NMOS,IGND) :: ORGMROT !<Percentage organic matter content of soil
       REAL,DIMENSION(ILG,ICAN)       :: PAIDGAT !<Optional user-specified value of plant area indices of vegetation categories to override CLASS-calculated values [ ]
       REAL,DIMENSION(NLAT,NMOS,ICAN) :: PAIDROT !<
       REAL,DIMENSION(ILG,ICAN)       :: PAMNGAT !<Minimum plant area index of vegetation category [ ]
@@ -312,14 +315,15 @@ C
       REAL,DIMENSION(NLAT,NMOS,IGND) :: PSISROT !<
       REAL,DIMENSION(ILG,IGND)       :: PSIWGAT !<Soil moisture suction at wilting point [m]
       REAL,DIMENSION(NLAT,NMOS,IGND) :: PSIWROT !<
-      REAL,DIMENSION(ILG,ICAN)       :: QA50GAT !<Reference value of incoming shortwave radiation for vegetation category (used in stomatal resistance calculation) \f$[W m^{-2} ]\f$
+      REAL,DIMENSION(ILG,ICAN)       :: QA50GAT !<Reference value of incoming shortwave radiation for vegetation category
+                                                !!(used in stomatal resistance calculation) \f$[W m^{-2} ]\f$
       REAL,DIMENSION(NLAT,NMOS,ICAN) :: QA50ROT !<
       REAL,DIMENSION(ILG,ICAN)       :: ROOTGAT !<Maximum rooting depth of vegetation category [m]
       REAL,DIMENSION(NLAT,NMOS,ICAN) :: ROOTROT !<
       REAL,DIMENSION(ILG,ICAN)       :: RSMNGAT !<Minimum stomatal resistance of vegetation category \f$[s m^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS,ICAN) :: RSMNROT !<
-      REAL SANDROT(NLAT,NMOS,IGND)              !<Percentage sand content of soil
-      REAL SDEPROT(NLAT,NMOS)                   !<Depth to bedrock in the soil profile
+      REAL,DIMENSION(NLAT,NMOS,IGND) :: SANDROT !<Percentage sand content of soil
+      REAL,DIMENSION(NLAT,NMOS)      :: SDEPROT !<Depth to bedrock in the soil profile
       REAL,DIMENSION(ILG,IGND)       :: TCSGAT  !<Thermal conductivity of soil particles \f$[W m^{-1} K^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS,IGND) :: TCSROT  !<
       REAL,DIMENSION(ILG,IGND)       :: THFCGAT !<Field capacity \f$[m^3 m^{-3} ]\f$
@@ -351,20 +355,31 @@ C
       REAL,DIMENSION(ILG)            :: ZSNLGAT !<Limiting snow depth below which coverage is < 100% [m]
       REAL,DIMENSION(NLAT,NMOS)      :: ZSNLROT !<
 
-
-
-      REAL,DIMENSION(NLAT,NMOS,IGND) :: THLWROT  !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ZSNOROT  !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGWVROT !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGWNROT !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGDVROT !<
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGDNROT !<
+      REAL,DIMENSION(NLAT,NMOS,IGND) :: THLWROT  !<Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
+      REAL,DIMENSION(ILG,IGND)       :: THLWGAT  !<
+      REAL,DIMENSION(NLAT,NMOS)      :: ALGWVROT !<Visible albedo of wet soil for modelled area [ ]
+      REAL,DIMENSION(ILG)            :: ALGWVGAT !<
+      REAL,DIMENSION(NLAT,NMOS)      :: ALGWNROT !<NIR albedo of wet soil for modelled area [ ]
+      REAL,DIMENSION(ILG)            :: ALGWNGAT !<
+      REAL,DIMENSION(NLAT,NMOS)      :: ALGDVROT !<Visible albedo of dry soil for modelled area [ ]
+      REAL,DIMENSION(ILG)            :: ALGDVGAT !<
+      REAL,DIMENSION(NLAT,NMOS)      :: ALGDNROT !<NIR albedo of dry soil for modelled area [ ]
+      REAL,DIMENSION(ILG)            :: ALGDNGAT !<
       REAL,DIMENSION(NLAT,NMOS)      :: EMISROT  !<
+      REAL,DIMENSION(ILG)            :: EMISGAT  !<
       REAL,DIMENSION(NLAT,NMOS,NBS)  :: SALBROT  !<
+      REAL,DIMENSION(ILG,NBS)        :: SALBGAT  !<
       REAL,DIMENSION(NLAT,NMOS,NBS)  :: CSALROT  !<
+      REAL,DIMENSION(ILG,NBS)        :: CSALGAT  !<
       REAL,DIMENSION(NLAT,NBS)       :: FSDBROL  !<
+      REAL,DIMENSION(ILG,NBS)        :: FSDBGAT  !<
+      REAL,DIMENSION(ILG,NBS)        :: FSFBGAT  !<
       REAL,DIMENSION(NLAT,NBS)       :: FSFBROL  !<
       REAL,DIMENSION(NLAT,NBS)       :: FSSBROL  !<
+      REAL,DIMENSION(ILG,NBS)        :: FSSBGAT  !<
+
+      REAL,DIMENSION(NLAT,NMOS)      :: ZSNOROT  !<
+      REAL,DIMENSION(NLAT,NMOS)      :: SOCIROT  !<
 
       REAL,DIMENSION(ILG,IGND)       :: THLWGAT  !<
       REAL,DIMENSION(ILG)            :: ALGWVGAT !<
@@ -382,19 +397,8 @@ C
 C
 C     * ARRAYS ASSOCIATED WITH COMMON BLOCKS.
 C
-      REAL THPORG (  3) !<
-      REAL THRORG (  3) !<
-      REAL THMORG (  3) !<
-      REAL BORG   (  3) !<
-      REAL PSISORG(  3) !<
-      REAL GRKSORG(  3) !<
-C
-      REAL CANEXT(ICAN) !<
-      REAL XLEAF (ICAN) !<
-      REAL ZORAT (ICAN) !<
       REAL DELZ  (IGND) !<
       REAL ZBOT  (IGND) !<
-      REAL GROWYR (  18,4,2) !<
 C
 C     * ATMOSPHERIC AND GRID-CONSTANT INPUT VARIABLES.
 C
@@ -461,8 +465,6 @@ C
       REAL,DIMENSION(ILG)  :: ZRFMGAT !<Reference height associated with forcing wind speed [m]
       REAL,DIMENSION(NLAT) :: ZRFMROW !<
 
-
-
       REAL,DIMENSION(NLAT) :: UVROW   !<
       REAL,DIMENSION(NLAT) :: XDIFFUS !<
       REAL,DIMENSION(NLAT) :: Z0ORROW !<
@@ -472,14 +474,14 @@ C
       REAL,DIMENSION(NLAT) :: PRENROW !<
       REAL,DIMENSION(NLAT) :: CLDTROW !<
       REAL,DIMENSION(NLAT) :: FSGROL  !<
-      REAL,DIMENSION(NLAT) :: FLGROL  !<
-      REAL,DIMENSION(NLAT) :: GUSTROL !<
-      REAL,DIMENSION(NLAT) :: DEPBROW !<
-C
       REAL,DIMENSION(ILG)  :: FSGGAT  !<
+      REAL,DIMENSION(NLAT) :: FLGROL  !<
       REAL,DIMENSION(ILG)  :: FLGGAT  !<
+      REAL,DIMENSION(NLAT) :: GUSTROL !<
       REAL,DIMENSION(ILG)  :: GUSTGAT !<
+      REAL,DIMENSION(NLAT) :: DEPBROW !<
       REAL,DIMENSION(ILG)  :: DEPBGAT !<
+
       REAL,DIMENSION(ILG)  :: GTBS    !<
       REAL,DIMENSION(ILG)  :: SFCUBS  !<
       REAL,DIMENSION(ILG)  :: SFCVBS  !<
@@ -533,9 +535,9 @@ C
       REAL,DIMENSION(ILG)       :: GAGAT   !<Diagnosed product of drag coefficient and wind speed over modelled area \f$[m s^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: GAROT   !<
       REAL,DIMENSION(NLAT)      :: GAROW   !<
-      REAL GFLXGAT(ILG,IGND)               !<Heat conduction between soil layers \f$[W m^{-2} ]\f$
-      REAL GFLXROT(NLAT,NMOS,IGND)         !<
-      REAL GFLXROW(NLAT,IGND)              !<
+      REAL,DIMENSION(ILG,IGND)  :: GFLXGAT !<Heat conduction between soil layers \f$[W m^{-2} ]\f$
+      REAL,DIMENSION(NLAT,NMOS,IGND) :: GFLXROT !<
+      REAL,DIMENSION(NLAT,IGND) :: GFLXROW !<
       REAL,DIMENSION(ILG)       :: GTGAT   !<Diagnosed effective surface black-body temperature [K]
       REAL,DIMENSION(NLAT,NMOS) :: GTROT   !<
       REAL,DIMENSION(NLAT)      :: GTROW   !<
@@ -566,15 +568,15 @@ C
       REAL,DIMENSION(ILG)       :: HMFCGAT !<Diagnosed energy associated with phase change of water on vegetation \f$[W m^{-2} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: HMFCROT !<
       REAL,DIMENSION(NLAT)      :: HMFCROW !<
-      REAL HMFGGAT(ILG,IGND)               !<Diagnosed energy associated with phase change of water in soil layers \f$[W m^{-2} ]\f$
-      REAL HMFGROT(NLAT,NMOS,IGND)         !<
-      REAL HMFGROW(NLAT,IGND)              !<
+      REAL,DIMENSION(ILG,IGND)  :: HMFGGAT !<Diagnosed energy associated with phase change of water in soil layers \f$[W m^{-2} ]\f$
+      REAL,DIMENSION(NLAT,NMOS,IGND) :: HMFGROT !<
+      REAL,DIMENSION(NLAT,IGND) :: HMFGROW !<
       REAL,DIMENSION(ILG)       :: HMFNGAT !<Diagnosed energy associated with phase change of water in snow pack \f$[W m^{-2} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: HMFNROT !<
       REAL,DIMENSION(NLAT)      :: HMFNROW !<
-      REAL HTCGAT (ILG,IGND)               !<Diagnosed internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2} ]\f$
-      REAL HTCROT (NLAT,NMOS,IGND)         !<
-      REAL HTCROW (NLAT,IGND)              !<
+      REAL,DIMENSION(ILG,IGND)  :: HTCGAT  !<Diagnosed internal energy change of soil layer due to conduction and/or change in mass \f$[W m^{-2} ]\f$
+      REAL,DIMENSION(NLAT,NMOS,IGND) :: HTCROT !<
+      REAL,DIMENSION(NLAT,IGND) :: HTCROW  !<
       REAL,DIMENSION(ILG)       :: HTCCGAT !<Diagnosed internal energy change of vegetation canopy due to conduction and/or change in mass \f$[W m^{-2} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: HTCCROT !<
       REAL,DIMENSION(NLAT)      :: HTCCROW !<
@@ -584,9 +586,10 @@ C
       REAL,DIMENSION(ILG)       :: ILMOGAT !<Inverse of Monin-Obukhov roughness length \f$(m^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: ILMOROT !<
       REAL,DIMENSION(NLAT)      :: ILMOROW !<
-      INTEGER ISUM(6)                      !<Total number of iterations required to solve surface energy balance for the elements of the four subareas for the current run
-      INTEGER ITCTGAT(ILG,6,50)            !<Counter of number of iterations required to solve surface energy balance for the elements of the four subareas
-      INTEGER ITCTROT(NLAT,NMOS,6,50)      !<
+      INTEGER, DIMENSION(6)     :: ISUM    !<Total number of iterations required to solve surface energy balance for
+                                           !!the elements of the four subareas for the current run
+      INTEGER,DIMENSION(ILG,6,50):: ITCTGAT !<Counter of number of iterations required to solve surface energy balance for the elements of the four subareas
+      INTEGER,DIMENSION(NLAT,NMOS,6,50) :: ITCTROT !<
       REAL,DIMENSION(ILG)       :: PCFCGAT !<Diagnosed frozen precipitation intercepted by vegetation \f$[kg m^{-2} s^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: PCFCROT !<
       REAL,DIMENSION(NLAT)      :: PCFCROW !<
@@ -605,9 +608,9 @@ C
       REAL,DIMENSION(ILG)       :: QEVPGAT !<Diagnosed total surface latent heat flux over modelled area \f$[W m^{-2} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: QEVPROT !<
       REAL,DIMENSION(NLAT)      :: QEVPROW !<
-      REAL QFCGAT (ILG,IGND)               !<Diagnosed vapour flux from transpiration over modelled area \f$[W m^{-2} ]\f$
-      REAL QFCROT (NLAT,NMOS,IGND)         !<
-      REAL QFCROW (NLAT,IGND)              !<
+      REAL,DIMENSION(ILG,IGND)  :: QFCGAT  !<Diagnosed vapour flux from transpiration over modelled area \f$[W m^{-2} ]\f$
+      REAL,DIMENSION(NLAT,NMOS,IGND) :: QFCROT !<
+      REAL,DIMENSION(NLAT,IGND) :: QFCROW  !<
       REAL,DIMENSION(ILG)       :: QFCFGAT !<Diagnosed vapour flux from frozen water on vegetation \f$[kg m^{-2} s^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: QFCFROT !<
       REAL,DIMENSION(NLAT)      :: QFCFROW !<
@@ -676,9 +679,9 @@ C
       REAL,DIMENSION(ILG)       :: UEGAT   !<Friction velocity of air \f$[m s^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: UEROT   !<
       REAL,DIMENSION(NLAT)      :: UEROW   !<
-      REAL,DIMENSION(ILG)       :: WTABGAT !<Depth of water table in soil [m]
-      REAL,DIMENSION(NLAT,NMOS) :: WTABROT !<
-      REAL,DIMENSION(NLAT)      :: WTABROW !<
+      REAL,DIMENSION(ILG)       :: wtableGAT !<Depth of water table in soil [m]
+      REAL,DIMENSION(NLAT,NMOS) :: wtableROT !<
+      REAL,DIMENSION(NLAT)      :: wtableROW !<
       REAL,DIMENSION(ILG)       :: WTRCGAT !<Diagnosed residual water transferred off the vegetation canopy \f$[kg m^{-2} s^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS) :: WTRCROT !<
       REAL,DIMENSION(NLAT)      :: WTRCROW !<
@@ -730,10 +733,10 @@ C     * CALCULATING TIME AVERAGES.)
       REAL,DIMENSION(NLAT) :: SCANACC !<Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
       REAL,DIMENSION(NLAT) :: SNOACC  !<Mass of snow pack \f$[kg m^{-2} ]\f$
       REAL,DIMENSION(NLAT) :: TAACC   !<Air temperature at reference height [K]
-      REAL TBARACC(NLAT,IGND)         !<Temperature of soil layers [K]
-      REAL THALACC(NLAT,IGND)         !<Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$
-      REAL THICACC(NLAT,IGND)         !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
-      REAL THLQACC(NLAT,IGND)         !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
+      REAL,DIMENSION(NLAT,IGND) :: TBARACC !<Temperature of soil layers [K]
+      REAL,DIMENSION(NLAT,IGND) :: THALACC !<Total volumetric water content of soil layers \f$[m^3 m^{-3} ]\f$
+      REAL,DIMENSION(NLAT,IGND) :: THICACC !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
+      REAL,DIMENSION(NLAT,IGND) :: THLQACC !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
       REAL,DIMENSION(NLAT) :: TCANACC !<Vegetation canopy temperature [K]
       REAL,DIMENSION(NLAT) :: TSNOACC !<Snowpack temperature [K]
       REAL,DIMENSION(NLAT) :: UVACC   !<Wind speed \f$[m s^{-1} ]\f$
@@ -765,114 +768,114 @@ C     * SUBSECTIONS OF CLASS ("CLASSA", "CLASST" AND "CLASSW").
       REAL,DIMENSION(ILG,IGND) :: TCTOPG !<
       REAL,DIMENSION(ILG,IGND) :: TCBOTG !<
 C
-      REAL FC     (ILG)  !<
-      REAL FG     (ILG)  !<
-      REAL FCS    (ILG)  !<
-      REAL FGS    (ILG)  !<
-      REAL RBCOEF (ILG)  !<
-      REAL ZSNOW  (ILG)  !<
-      REAL FSVF   (ILG)  !<
-      REAL FSVFS  (ILG)  !<
-      REAL ALVSCN (ILG)  !<
-      REAL ALIRCN (ILG)  !<
-      REAL ALVSG  (ILG)  !<
-      REAL ALIRG  (ILG)  !<
-      REAL ALVSCS (ILG)  !<
-      REAL ALIRCS (ILG)  !<
-      REAL ALVSSN (ILG)  !<
-      REAL ALIRSN (ILG)  !<
-      REAL ALVSGC (ILG)  !<
-      REAL ALIRGC (ILG)  !<
-      REAL ALVSSC (ILG)  !<
-      REAL ALIRSC (ILG)  !<
-      REAL TRVSCN (ILG)  !<
-      REAL TRIRCN (ILG)  !<
-      REAL TRVSCS (ILG)  !<
-      REAL TRIRCS (ILG)  !<
-      REAL RC     (ILG)  !<
-      REAL RCS    (ILG)  !<
-      REAL FRAINC (ILG)  !<
-      REAL FSNOWC (ILG)  !<
-      REAL FRAICS (ILG)  !<
-      REAL FSNOCS (ILG)  !<
-      REAL CMASSC (ILG)  !<
-      REAL CMASCS (ILG)  !<
-      REAL DISP   (ILG)  !<
-      REAL DISPS  (ILG)  !<
-      REAL ZOMLNC (ILG)  !<
-      REAL ZOELNC (ILG)  !<
-      REAL ZOMLNG (ILG)  !<
-      REAL ZOELNG (ILG)  !<
-      REAL ZOMLCS (ILG)  !<
-      REAL ZOELCS (ILG)  !<
-      REAL ZOMLNS (ILG)  !<
-      REAL ZOELNS (ILG)  !<
-      REAL TRSNOWC (ILG) !<
-      REAL CHCAP  (ILG)  !<
-      REAL CHCAPS (ILG)  !<
-      REAL GZEROC (ILG)  !<
-      REAL GZEROG (ILG)  !<
-      REAL GZROCS (ILG)  !<
-      REAL GZROGS (ILG)  !<
-      REAL G12C   (ILG)  !<
-      REAL G12G   (ILG)  !<
-      REAL G12CS  (ILG)  !<
-      REAL G12GS  (ILG)  !<
-      REAL G23C   (ILG)  !<
-      REAL G23G   (ILG)  !<
-      REAL G23CS  (ILG)  !<
-      REAL G23GS  (ILG)  !<
-      REAL QFREZC (ILG)  !<
-      REAL QFREZG (ILG)  !<
-      REAL QMELTC (ILG)  !<
-      REAL QMELTG (ILG)  !<
-      REAL EVAPC  (ILG)  !<
-      REAL EVAPCG (ILG)  !<
-      REAL EVAPG  (ILG)  !<
-      REAL EVAPCS (ILG)  !<
-      REAL EVPCSG (ILG)  !<
-      REAL EVAPGS (ILG)  !<
-      REAL TCANO  (ILG)  !<
-      REAL TCANS  (ILG)  !<
-      REAL RAICAN (ILG)  !<
-      REAL SNOCAN (ILG)  !<
-      REAL RAICNS (ILG)  !<
-      REAL SNOCNS (ILG)  !<
-      REAL CWLCAP (ILG)  !<
-      REAL CWFCAP (ILG)  !<
-      REAL CWLCPS (ILG)  !<
-      REAL CWFCPS (ILG)  !<
-      REAL TSNOCS (ILG)  !<
-      REAL TSNOGS (ILG)  !<
-      REAL RHOSCS (ILG)  !<
-      REAL RHOSGS (ILG)  !<
-      REAL WSNOCS (ILG)  !<
-      REAL WSNOGS (ILG)  !<
-      REAL TPONDC (ILG)  !<
-      REAL TPONDG (ILG)  !<
-      REAL TPNDCS (ILG)  !<
-      REAL TPNDGS (ILG)  !<
-      REAL ZPLMCS (ILG)  !<
-      REAL ZPLMGS (ILG)  !<
-      REAL ZPLIMC (ILG)  !<
-      REAL ZPLIMG (ILG)  !<
+      REAL,DIMENSION(ILG) :: FC       !<
+      REAL,DIMENSION(ILG) :: FG       !<
+      REAL,DIMENSION(ILG) :: FCS      !<
+      REAL,DIMENSION(ILG) :: FGS      !<
+      REAL,DIMENSION(ILG) :: RBCOEF   !<
+      REAL,DIMENSION(ILG) :: ZSNOW    !<
+      REAL,DIMENSION(ILG) :: FSVF     !<
+      REAL,DIMENSION(ILG) :: FSVFS    !<
+      REAL,DIMENSION(ILG) :: ALVSCN   !<
+      REAL,DIMENSION(ILG) :: ALIRCN   !<
+      REAL,DIMENSION(ILG) :: ALVSG    !<
+      REAL,DIMENSION(ILG) :: ALIRG    !<
+      REAL,DIMENSION(ILG) :: ALVSCS   !<
+      REAL,DIMENSION(ILG) :: ALIRCS   !<
+      REAL,DIMENSION(ILG) :: ALVSSN   !<
+      REAL,DIMENSION(ILG) :: ALIRSN   !<
+      REAL,DIMENSION(ILG) :: ALVSGC   !<
+      REAL,DIMENSION(ILG) :: ALIRGC   !<
+      REAL,DIMENSION(ILG) :: ALVSSC   !<
+      REAL,DIMENSION(ILG) :: ALIRSC   !<
+      REAL,DIMENSION(ILG) :: TRVSCN   !<
+      REAL,DIMENSION(ILG) :: TRIRCN   !<
+      REAL,DIMENSION(ILG) :: TRVSCS   !<
+      REAL,DIMENSION(ILG) :: TRIRCS   !<
+      REAL,DIMENSION(ILG) :: RC       !<
+      REAL,DIMENSION(ILG) :: RCS      !<
+      REAL,DIMENSION(ILG) :: FRAINC   !<
+      REAL,DIMENSION(ILG) :: FSNOWC   !<
+      REAL,DIMENSION(ILG) :: FRAICS   !<
+      REAL,DIMENSION(ILG) :: FSNOCS   !<
+      REAL,DIMENSION(ILG) :: CMASSC   !<
+      REAL,DIMENSION(ILG) :: CMASCS   !<
+      REAL,DIMENSION(ILG) :: DISP     !<
+      REAL,DIMENSION(ILG) :: DISPS    !<
+      REAL,DIMENSION(ILG) :: ZOMLNC   !<
+      REAL,DIMENSION(ILG) :: ZOELNC   !<
+      REAL,DIMENSION(ILG) :: ZOMLNG   !<
+      REAL,DIMENSION(ILG) :: ZOELNG   !<
+      REAL,DIMENSION(ILG) :: ZOMLCS   !<
+      REAL,DIMENSION(ILG) :: ZOELCS   !<
+      REAL,DIMENSION(ILG) :: ZOMLNS   !<
+      REAL,DIMENSION(ILG) :: ZOELNS   !<
+      REAL,DIMENSION(ILG) :: TRSNOWC  !<
+      REAL,DIMENSION(ILG) :: CHCAP    !<
+      REAL,DIMENSION(ILG) :: CHCAPS   !<
+      REAL,DIMENSION(ILG) :: GZEROC   !<
+      REAL,DIMENSION(ILG) :: GZEROG   !<
+      REAL,DIMENSION(ILG) :: GZROCS   !<
+      REAL,DIMENSION(ILG) :: GZROGS   !<
+      REAL,DIMENSION(ILG) :: G12C     !<
+      REAL,DIMENSION(ILG) :: G12G     !<
+      REAL,DIMENSION(ILG) :: G12CS    !<
+      REAL,DIMENSION(ILG) :: G12GS    !<
+      REAL,DIMENSION(ILG) :: G23C     !<
+      REAL,DIMENSION(ILG) :: G23G     !<
+      REAL,DIMENSION(ILG) :: G23CS    !<
+      REAL,DIMENSION(ILG) :: G23GS    !<
+      REAL,DIMENSION(ILG) :: QFREZC   !<
+      REAL,DIMENSION(ILG) :: QFREZG   !<
+      REAL,DIMENSION(ILG) :: QMELTC   !<
+      REAL,DIMENSION(ILG) :: QMELTG   !<
+      REAL,DIMENSION(ILG) :: EVAPC    !<
+      REAL,DIMENSION(ILG) :: EVAPCG   !<
+      REAL,DIMENSION(ILG) :: EVAPG    !<
+      REAL,DIMENSION(ILG) :: EVAPCS   !<
+      REAL,DIMENSION(ILG) :: EVPCSG   !<
+      REAL,DIMENSION(ILG) :: EVAPGS   !<
+      REAL,DIMENSION(ILG) :: TCANO    !<
+      REAL,DIMENSION(ILG) :: TCANS    !<
+      REAL,DIMENSION(ILG) :: RAICAN   !<
+      REAL,DIMENSION(ILG) :: SNOCAN   !<
+      REAL,DIMENSION(ILG) :: RAICNS   !<
+      REAL,DIMENSION(ILG) :: SNOCNS   !<
+      REAL,DIMENSION(ILG) :: CWLCAP   !<
+      REAL,DIMENSION(ILG) :: CWFCAP   !<
+      REAL,DIMENSION(ILG) :: CWLCPS   !<
+      REAL,DIMENSION(ILG) :: CWFCPS   !<
+      REAL,DIMENSION(ILG) :: TSNOCS   !<
+      REAL,DIMENSION(ILG) :: TSNOGS   !<
+      REAL,DIMENSION(ILG) :: RHOSCS   !<
+      REAL,DIMENSION(ILG) :: RHOSGS   !<
+      REAL,DIMENSION(ILG) :: WSNOCS   !<
+      REAL,DIMENSION(ILG) :: WSNOGS   !<
+      REAL,DIMENSION(ILG) :: TPONDC   !<
+      REAL,DIMENSION(ILG) :: TPONDG   !<
+      REAL,DIMENSION(ILG) :: TPNDCS   !<
+      REAL,DIMENSION(ILG) :: TPNDGS   !<
+      REAL,DIMENSION(ILG) :: ZPLMCS   !<
+      REAL,DIMENSION(ILG) :: ZPLMGS   !<
+      REAL,DIMENSION(ILG) :: ZPLIMC   !<
+      REAL,DIMENSION(ILG) :: ZPLIMG   !<
 C
-      REAL ALTG(ILG,NBS)    !<
-      REAL ALSNO(ILG,NBS)   !<
-      REAL TRSNOWG(ILG,NBS) !<
+      REAL,DIMENSION(ILG,NBS) :: ALTG    !<
+      REAL,DIMENSION(ILG,NBS) :: ALSNO   !<
+      REAL,DIMENSION(ILG,NBS) :: TRSNOWG !<
 
 C
 C     * DIAGNOSTIC ARRAYS USED FOR CHECKING ENERGY AND WATER
 C     * BALANCES.
 C
-      REAL CTVSTP(ILG) !<
-      REAL CTSSTP(ILG) !<
-      REAL CT1STP(ILG) !<
-      REAL CT2STP(ILG) !<
-      REAL CT3STP(ILG) !<
-      REAL WTVSTP(ILG) !<
-      REAL WTSSTP(ILG) !<
-      REAL WTGSTP(ILG) !<
+      REAL,DIMENSION(ILG) :: CTVSTP !<
+      REAL,DIMENSION(ILG) :: CTSSTP !<
+      REAL,DIMENSION(ILG) :: CT1STP !<
+      REAL,DIMENSION(ILG) :: CT2STP !<
+      REAL,DIMENSION(ILG) :: CT3STP !<
+      REAL,DIMENSION(ILG) :: WTVSTP !<
+      REAL,DIMENSION(ILG) :: WTSSTP !<
+      REAL,DIMENSION(ILG) :: WTGSTP !<
 C
 C     * CONSTANTS AND TEMPORARY VARIABLES.
 C
@@ -885,10 +888,10 @@ C     * COMMON BLOCK PARAMETERS.
 C
       REAL X1,X2,X3,X4,G,GAS,X5,X6,CPRES,GASV,X7,CPI,X8,CELZRO,X9,
      1     X10,X11,X12,X13,X14,X15,SIGMA,X16,DELTIM,DELT,TFREZ,
-     2     RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,TCSAND,TCCLAY,
+     2     GRAV,SBC,TCSAND,TCCLAY,
      3     TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,
      4     HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,
-     5     CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,ALVSI,ALIRI,ALVSO,ALIRO,
+     5     CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ALVSI,ALIRI,ALVSO,ALIRO,
      6     ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,
      7     ANGMAX,A,B
 
@@ -899,6 +902,7 @@ c
 c     Local variables for coupling CLASS and CTEM
 c
       integer strlen
+      character(len=10) :: int2str
       character*80   titlec1
       character*80   argbuff
       character*160  command
@@ -1073,6 +1077,8 @@ c
       real, pointer, dimension(:,:,:) :: wetfrac_monrow
       real, pointer, dimension(:,:) :: ch4soillsrow
 
+      real, pointer, dimension(:,:) :: peatdeprow
+
       real, pointer, dimension(:,:) :: lucemcomrow
       real, pointer, dimension(:,:) :: lucltrinrow
       real, pointer, dimension(:,:) :: lucsocinrow
@@ -1130,6 +1136,7 @@ c
       real, pointer, dimension(:,:) :: annsrplsrow
       real, pointer, dimension(:,:) :: annpcprow
       real, pointer, dimension(:,:) :: dry_season_lengthrow
+
 
 
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
@@ -1355,6 +1362,8 @@ c
       real, pointer, dimension(:,:) :: EVAPACC_M
       real, pointer, dimension(:,:) :: FLUTACC_M
 
+
+
 !      Outputs
 
        real, pointer, dimension(:,:) :: tcanoaccrow_out
@@ -1362,6 +1371,7 @@ c
        real, pointer, dimension(:,:) :: qevpacc_m_save
 
 !     -----------------------
+
 !      Tile-level variables (denoted by an ending of "_t")
 
       real, pointer, dimension(:) :: fsnowacc_t
@@ -1378,6 +1388,7 @@ c
       real, pointer, dimension(:,:) :: thliqcacc_t
       real, pointer, dimension(:,:) :: thliqgacc_t
       real, pointer, dimension(:,:) :: thliqacc_t
+      real, pointer, dimension(:,:) :: thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
       real, pointer, dimension(:,:) :: thicecacc_t
       real, pointer, dimension(:,:) :: thicegacc_t
       real, pointer, dimension(:,:) :: ancsvgac_t
@@ -1464,6 +1475,8 @@ c
       real, pointer, dimension(:,:) :: THICROT_g
       real, pointer, dimension(:,:) :: GFLXROT_g
 
+      !real, pointer, dimension(:) :: gppmossac_t
+
     ! Model Switches (rarely changed ones only! The rest are in joboptions file):
 
       logical, parameter :: obslght = .false.  ! if true the observed lightning will be used. False means you will use the
@@ -1479,6 +1492,57 @@ c
 c
 c============= CTEM array declaration done =============================/
 C
+c=====peatland related parameter declaration March 18, 2015 YW=========\
+
+c   ----CLASS moss variables-------YW ----------------------------------
+!     Replaced thlqaccXXX_m with thliqacc_t and thicaccXXX_m with thiceacc_t. EC Dec 23 2016.
+!     See corresponding changes in calls to ctemg2, ctem, and ctems2.
+!     real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
+!    4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
+!    5      peatdepgat(ilg),
+      real  peatdepgat(ilg),
+     6      g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg)
+c   g12 - energy flux between soil layer 1 and 2 (W/m2)
+c   g23 - energy flux between soil layer 2 and 3 (W/m2)
+c   wiltsm - wilting point for peat soil layers  (m3/m3)
+c   fieldsm - field capacity for peat soil layers (m3/m3)
+C   thliqc - liquid water content of canopy+snow subarea (m3/m3)
+c   thliqg - liquid water content of snow ground subarea (m3/m3)
+c   peatdep - peat depth (m)
+
+      integer, pointer, dimension(:,:) :: ipeatlandrow !This is first set in read_from_ctm.
+      integer, pointer, dimension(:) :: ipeatlandgat
+      real, pointer, dimension(:,:) :: anmossrow
+      real, pointer, dimension(:) :: anmossgat
+      real, pointer, dimension(:,:) :: rmlmossrow
+      real, pointer, dimension(:) :: rmlmossgat
+      real, pointer, dimension(:,:) :: gppmossrow
+      real, pointer, dimension(:) :: gppmossgat
+      real, pointer, dimension(:,:) :: nppmossrow
+      real, pointer, dimension(:) :: nppmossgat
+      real, pointer, dimension(:,:) :: armossrow
+      real, pointer, dimension(:) :: armossgat
+      real, pointer, dimension(:,:) :: litrmsmossrow
+      real, pointer, dimension(:) :: litrmsmossgat
+      real, pointer, dimension(:,:) :: Cmossmasrow
+      real, pointer, dimension(:) :: Cmossmasgat
+      real, pointer, dimension(:,:) :: dmossrow
+      real, pointer, dimension(:) :: dmossgat
+      real, pointer, dimension(:,:) :: pddrow
+      real, pointer, dimension(:) :: pddgat
+      real, pointer, dimension(:) :: ancsmoss
+      real, pointer, dimension(:) :: angsmoss
+      real, pointer, dimension(:) :: ancmoss
+      real, pointer, dimension(:) :: angmoss
+      real, pointer, dimension(:) :: rmlcsmoss
+      real, pointer, dimension(:) :: rmlgsmoss
+      real, pointer, dimension(:) :: rmlcmoss
+      real, pointer, dimension(:) :: rmlgmoss
+
+      real, pointer, dimension(:) :: anmossac_t
+      real, pointer, dimension(:) :: rmlmossac_t
+      real, pointer, dimension(:) :: gppmossac_t
+
 C=======================================================================
 C     * PHYSICAL CONSTANTS.
 C     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
@@ -1495,15 +1559,13 @@ C     * THE FOLLOWING COMMON BLOCKS ARE DEFINED SPECIFICALLY FOR USE
 C     * IN CLASS, VIA BLOCK DATA AND THE SUBROUTINE "CLASSD".
 C
       COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
+      COMMON /CLASS2/ GRAV,SBC
+      COMMON /CLASS3/ TCSAND,TCCLAY,TCOM,TCDRYS,
      1                RHOSOL,RHOOM
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
-      COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
-      COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG
-      COMMON /CLASS7/ CANEXT,XLEAF
+      COMMON /CLASS6/ PI,ZOLNG,ZOLNS,ZOLNI
       COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
@@ -1645,6 +1707,8 @@ C===================== CTEM ==============================================\
       wetfrac_monrow    => vrot%wetfrac_mon
       ch4soillsrow      => vrot%ch4_soills
 
+      peatdeprow            => vrot%peatdep
+
       lucemcomrow       => vrot%lucemcom
       lucltrinrow       => vrot%lucltrin
       lucsocinrow       => vrot%lucsocin
@@ -1663,6 +1727,7 @@ C===================== CTEM ==============================================\
       dstcemlsrow       => vrot%dstcemls
       litrfallrow       => vrot%litrfall
       humiftrsrow       => vrot%humiftrs
+
 
       gppvegrow         => vrot%gppveg
       nepvegrow         => vrot%nepveg
@@ -1709,7 +1774,16 @@ C===================== CTEM ==============================================\
       annsrplsrow          => vrot%annsrpls
       annpcprow            => vrot%annpcp
       dry_season_lengthrow => vrot%dry_season_length
-
+      ipeatlandrow     => vrot%ipeatland
+      anmossrow        => vrot%anmoss
+      rmlmossrow       => vrot%rmlmoss
+      gppmossrow       => vrot%gppmoss
+      nppmossrow       => vrot%nppmoss
+      armossrow        => vrot%armoss
+      litrmsmossrow    => vrot%litrmsmoss
+      Cmossmasrow      => vrot%Cmossmas
+      dmossrow         => vrot%dmoss
+      pddrow           => vrot%pdd
       altotcntr_d       => vrot%altotcntr_d
 
       ! >>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1901,6 +1975,25 @@ C===================== CTEM ==============================================\
       pandaysgat        => vgat%pandays
       stdalngat         => vgat%stdaln
 
+      ipeatlandgat     => vgat%ipeatland
+      anmossgat        => vgat%anmoss
+      rmlmossgat       => vgat%rmlmoss
+      gppmossgat       => vgat%gppmoss
+      nppmossgat       => vgat%nppmoss
+      armossgat        => vgat%armoss
+      litrmsmossgat    => vgat%litrmsmoss
+      Cmossmasgat      => vgat%Cmossmas
+      dmossgat         => vgat%dmoss
+      pddgat           => vgat%pdd
+      ancsmoss         => vgat%ancsmoss
+      angsmoss         => vgat%angsmoss
+      ancmoss          => vgat%ancmoss
+      angmoss          => vgat%angmoss
+      rmlcsmoss        => vgat%rmlcsmoss
+      rmlgsmoss        => vgat%rmlgsmoss
+      rmlcmoss         => vgat%rmlcmoss
+      rmlgmoss         => vgat%rmlgmoss
+
       ! Mosaic-level (CLASS vars):
 
       PREACC_M          => vrot%PREACC_M
@@ -2030,12 +2123,16 @@ C===================== CTEM ==============================================\
       thliqcacc_t       => ctem_tile%thliqcacc_t
       thliqgacc_t       => ctem_tile%thliqgacc_t
       thliqacc_t        => ctem_tile%thliqacc_t
+      thiceacc_t        => ctem_tile%thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
       thicecacc_t       => ctem_tile%thicecacc_t
       thicegacc_t       => ctem_tile%thicegacc_t
       ancsvgac_t        => ctem_tile%ancsvgac_t
       ancgvgac_t        => ctem_tile%ancgvgac_t
       rmlcsvga_t        => ctem_tile%rmlcsvga_t
       rmlcgvga_t        => ctem_tile%rmlcgvga_t
+      anmossac_t        => ctem_tile%anmossac_t
+      rmlmossac_t       => ctem_tile%rmlmossac_t
+      gppmossac_t       => ctem_tile%gppmossac_t
 
 !    =================================================================================
 !    =================================================================================
@@ -2078,6 +2175,10 @@ C     INITIALIZATION FOR COUPLING CLASS AND CTEM
 C
        call initrowvars()
 
+       !call resetclassaccum(nltest,nmtest)
+       call resetclassaccum(nlat,nmos) ! FLAG EC Feb 20, 2017
+
+
        IMONTH = 0
 
        do 11 i=1,nlat
@@ -2101,7 +2202,7 @@ c       find the final year of the cycling met
 c       metcylyrst is defined in the joboptions file
         metcycendyr = metcylyrst + nummetcylyrs - 1
       endif
-
+      
 c     if cycling met (and not doing a transient run), find the popd and luc year to cycle with.
 c     it is assumed that you always want to cycle the popd and luc
 c     on the same year to be consistent. so if you are cycling the
@@ -2176,6 +2277,7 @@ c
       endif
 c
 c     * CLASS daily and half-hourly output files (monthly and annual are done in io_driver)
+
 c
       if (.not. parallelrun) then ! stand alone mode, includes half-hourly and daily output
        OPEN(UNIT=61,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1_G')  ! GRID-LEVEL DAILY OUTPUT FROM CLASS
@@ -2200,7 +2302,21 @@ c
        OPEN(UNIT=681,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF8_G')
        OPEN(UNIT=691,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF9_G')
        end if
-
+       
+C    peatland output-FLAG!!---------------------------------------------\ 
+      open(unit=93,file=argbuff(1:strlen(argbuff))//'.CT11D_G') !peatland GPP components
+      open(unit=94,file=argbuff(1:strlen(argbuff))//'.CT12D_G') !peatland vegetation height & lai 
+      open(unit=95,file=argbuff(1:strlen(argbuff))//'.CT13D_G') !peatland C pools (in ctem.f)  
+      open(unit=96,file=argbuff(1:strlen(argbuff))//'.CT14D_G') !peatland soil resp (in ctem.f)       
+      open(unit=97,file=argbuff(1:strlen(argbuff))//'.CT15D_G') !peatland decompositon components (in decp.f)     
+      open(unit=98,file=argbuff(1:strlen(argbuff))//'.CT16D_G') !peatland moss photosynthesis midday sub-areas(mosspht.f)
+      open(unit=99,file=argbuff(1:strlen(argbuff))//'.CT17D_G') !peatland water balance
+      open(unit=90,file=argbuff(1:strlen(argbuff))//'.CT18Y_G') !peatland depth information 
+      
+C    YW March 25, 2015 ----------------------------------------------/
+c
+C=======================================================================
+C
 C     * READ AND PROCESS INITIALIZATION AND BACKGROUND INFORMATION.
 C     * FIRST, MODEL RUN SPECIFICATIONS.
 
@@ -2241,13 +2357,16 @@ C
 
        IF(IGND.GT.3) THEN
           WRITE(62,6012)
+!         Add a least 1 space to labels at the end of continuation lines to prevent
+!         them from being merged with the label on the following line.
+!         Should also fix for proper number of soils layers used. EC Dec 23 2016.
 6012      FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',
      1    'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',
-     2    'THI5 TG6  THL6  THI6 TG7  THL7  THI7',
-     3    'TG8  THL8  THI8 TG9  THL9  THI9 TG10  THL10  THI10',
-     4    'TG11  THL11  THI11 TG12  THL12  THI12 TG13  THL13  THI13',
-     5    'TG14  THL14  THI14 TG15  THL15  THI15 TG16  THL16  THI16',
-     6    'TG17  THL17  THI17 TG18  THL18  THI18 TG19  THL19  THI19',
+     2    'THI5 TG6  THL6  THI6 TG7  THL7  THI7 ',
+     3    'TG8  THL8  THI8 TG9  THL9  THI9 TG10  THL10  THI10 ',
+     4    'TG11  THL11  THI11 TG12  THL12  THI12 TG13  THL13  THI13 ',
+     5    'TG14  THL14  THI14 TG15  THL15  THI15 TG16  THL16  THI16 ',
+     6    'TG17  THL17  THI17 TG18  THL18  THI18 TG19  THL19  THI19 ',
      7    'TG20  THL20  THI20 ACTLYR FTABLE')
 
        ELSE
@@ -2307,6 +2426,15 @@ C
        WRITE(67,6017)
 !     6017  FORMAT(2X,'WCAN SCAN CWLCAP CWFCAP FC FG FCS FGS CDH ', !runclass formatted.
 !     1          'TCANO TCANS ALBS')
+       WRITE(68,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+       WRITE(68,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+       WRITE(68,6018) 
+       WRITE(69,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
+       WRITE(69,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
+       WRITE(69,6019) 
+C
+
+
 6017  FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',
      1  'TROF     TROO     TROS     TROB      ROF     ROFO   ',
      2  '  ROFS        ROFB         FCS        FGS        FC       FG')
@@ -2374,14 +2502,72 @@ C
      1          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',
      2          'SFCU  SFCV  UV')
 
+c    --------write peatland output-------------------------------------\
+
+          write(93,6903) 
+          write(94,6904)
+          write(95,6905)
+          write(96,6906)
+          write(97,6907) 
+          write(98,6908)
+          write(99,6909)
+          
+6903  format (2X,'iday iyear nppmoss   armoss   gppmoss   ',
+     1    'gppveg1  gppveg2  gppveg3  gppveg4   gppveg5   gppveg6  ',
+     2    'gppveg7  gppveg8  gppveg9  gppveg10  gppveg11  gppveg12',
+     3    'nppveg1  nppveg2  nppveg3  nppveg4   nppveg5   nppveg6  ',
+     4    'nppveg7  nppveg8  nppveg9  nppveg10  nppveg11  nppveg12',
+     5    'autoresp1   autoresp2   autoresp3   autoresp4  autoresp5  ',   
+     6    'autoresp6   autoresp7   autoresp8   autoresp9  autoresp10 ',
+     7    'autoresp11  autoresp12  heteresp1   heteresp2  heteresp3  ',
+     8    'heteresp4   heteresp5   heteresp6   heteresp7  heteresp8  ',
+     9    'heteresp9   heteresp10  heteresp11  heteresp12   ',
+     1    'fcancmx1  fcancmx2  fcancmx3  fcancmx4  fcancmx5  fcancmx6 ',   
+     2    'fcancmx7  fcancmx8  fcancmx9  fcancmx10 fcancmx11 fcancmx12')
+6904  format (2X,'iday   iyear   veghght1   veghght2   veghght3   ',   
+     1    'veghght4   veghght5   veghght6   veghght7   veghght8   ',
+     2    'veghght9   veghght10  veghght11  veghght12  rootdpt1   ',
+     3    'rootdpt2   rootdpt3   rootdpt4   rootdpt5   rootdpt6   ',
+     4    'rootdpt7   rootdpt8   rootdpt9   rootdpt10  rootdpt11  ',
+     5    'rootdpt12  ailcg1   ailcg2   ailcg3   ailcg4   ailcg5  ',
+     4    'ailcg6  ailcg7   ailcg8   ailcg9    ailcg10   ailcg11   ',
+     5    'ailcg12     stemmas1    stemmas2   stemmas3   stemmas4   ',
+     6    'stemmas5    stemmas6    stemmas7   stemmas8   stemmas9   ',
+     7    'stemmas10   stemmas11   stemmas12  rootmas1   rootmas2   ',
+     8    'rootmas3   rootmas4   rootmas5   rootmas6    rootmas7    ',
+     9    'rootmas8   rootmas9   rootmas10   rootmas11  rootmas12   ',
+     1    'litrmas1   litrmas2   litrmas3   litrmas4    litrmas5    ',
+     2    'litrmas6   litrmas7   litrmas8   litrmas9    litrmas10   ',
+     3    'litrmas11  litrmas12  gleafmas1  gleafmas2   gleafmas3   ',
+     4    'gleafmas4  gleafmas5  gleafmas6  gleafmas7   gleafmas8   ',
+     5    'gleafmas9  gleafmas10 gleafmas11 gleafmas12  bleafmas1   ',
+     6    'bleafmas2  bleafmas3   bleafmas4  bleafmas5  bleafmas6   ',
+     7    'bleafmas7  bleafmas8   bleafmas9  bleafmas10  bleafmas11 ', 
+     8    'bleafmas12')
+6905  format (2X, 'litrmass6  tlreleaf6  tltrstem6  tltrroot6  ',
+     1    'ltresveg6  humtrsvg6  litrmass7  tltrleaf7  tltrstem7  ',
+     2    'tltrroot7  ltresveg7  humtrsvg7  plitrmassms  litrmassms  ',
+     3    'litrfallms  ltrestepms  humicmstep  nppmosstep  nppmoss  ',
+     4    'anmoss  rgmoss  rmlmoss  gppmoss  Cmossmas  pCmossmas ')
+6906  format (2X, 'hpd  gavgscms  hutrstep_g  socrestep  resoxic  ',
+     1    'resanoxic  socresp(umol/m2/s)  resoxic(umol/m2/s)  ',  
+     2    'resanoxic(umol/m2/s)')  
+6907  format (2X, 'litresms  litpsims  psisat1  ltrmosclms   ',
+     1    'litrmassms  tbar1  q10funcms litrtempms  ratescpo  ', 
+     2    'ratescpa  Cso  Csa  fto  fta  resoxic  resanoxic   ',
+     3    'frac  tsoila  toilo  ewtable  lewtable  tbar1  tbar2  tbar3')	
+6908  format(2X, 'iday  tmoss  cevapms  fwmoss  thliq1  dsmoss  ', 
+     1    'g_moss  wmoss  rmlmoss  mwce  q10rmlmos  wmosmax  wmosmin')
+6909  format(2X,'WTBLACC ZSN PREACC EVAPACC ROFACC g12acc g23acc')     
+c    --------------YW March 30, 2015 ---------------------------------/
 C
-       ENDIF !IF NOT PARALLELRUN
+      ENDIF !IF NOT PARALLELRUN
+
 
 C     CTEM FILE TITLES DONE
 C======================= CTEM ========================================== /
 
 C     BEGIN READ IN OF THE .INI FILE
-
       READ(10,5020) DLATROW(1),DEGLON,ZRFMROW(1),ZRFHROW(1),ZBLDROW(1),
      1              GCROW(1),NLTEST,NMTEST
 
@@ -2481,27 +2667,6 @@ C===================== CTEM =============================================== /
           TACROT (I,M)=TCANROT(I,M)
           QACROT (I,M)=0.5E-2
 
-          ! FLAG!!! THIS NEEDS TO CHANGE FOR PERMAFROST WORK!! These values will be provided and written out!! JM Jan 8 2016.
-!           IF(IGND.GT.3)                                 THEN
-!               DO 65 J=4,IGND
-!                   TBARROT(I,M,J)=TBARROT(I,M,3)
-!                   IF(SDEPROT(I,M).LT.(ZBOT(J-1)+0.001) .AND.
-!      1                  SANDROT(I,M,3).GT.-2.5)     THEN
-!                       SANDROT(I,M,J)=-3.0
-!                       CLAYROT(I,M,J)=-3.0
-!                       ORGMROT(I,M,J)=-3.0
-!                       THLQROT(I,M,J)=0.0
-!                       THICROT(I,M,J)=0.0
-!                   ELSE
-!                       SANDROT(I,M,J)=SANDROT(I,M,3)
-!                       CLAYROT(I,M,J)=CLAYROT(I,M,3)
-!                       ORGMROT(I,M,J)=ORGMROT(I,M,3)
-!                       THLQROT(I,M,J)=THLQROT(I,M,3)
-!                       THICROT(I,M,J)=THICROT(I,M,3)
-!                   ENDIF
-! 65            CONTINUE
-!           ENDIF
-
           DO 75 K=1,6
           DO 75 L=1,50
               ITCTROT(I,M,K,L)=0
@@ -2585,7 +2750,7 @@ c     initialize accumulated array for monthly & yearly output for class
      +            ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,
      3            SANDROT,CLAYROT,ORGMROT,SOCIROT,DELZ,ZBOT,
      4            SDEPROT,ISNDROT,IGDRROT,
-     5            NLAT,NMOS,1,NLTEST,NMTEST,IGND)
+     5            NLAT,NMOS,1,NLTEST,NMTEST,IGND,ipeatlandrow)
 
 5010  FORMAT(2X,6A4)
 5020  FORMAT(5F10.2,F7.1,3I5)
@@ -2653,6 +2818,7 @@ c
             thliqcacc_t(i,j)=0.0
             thliqgacc_t(i,j)=0.0
             thliqacc_t(i,j)=0.0
+            thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
             thicecacc_t(i,j)=0.0
             thicegacc_t(i,j)=0.0
 112      continue
@@ -2823,7 +2989,7 @@ c
           do 116 j = 1, icc
             vgbiomasrow(i,m)=vgbiomasrow(i,m)+fcancmxrow(i,m,j)*
      &        (gleafmasrow(i,m,j)+stemmassrow(i,m,j)+
-     &         rootmassrow(i,m,j)+bleafmasrow(i,m,j))
+     &         rootmassrow(i,m,j)+bleafmasrow(i,m,j))     
             gavgltmsrow(i,m)=gavgltmsrow(i,m)+fcancmxrow(i,m,j)*
      &                       litrmassrow(i,m,j)
             gavgscmsrow(i,m)=gavgscmsrow(i,m)+fcancmxrow(i,m,j)*
@@ -2848,16 +3014,49 @@ c
 c
 115   continue
 c
+c     Initialize the litter and soil C pool for the BARE ground. This differs
+c     for peatland and non-peatland tiles. If there is no peatland, we just use
+c     the contents of the iccp1 position. In peatland tiles, moss litter is
+c     considered to cover the whole tile.
+c
       do 117 i = 1,nltest
         do 117 m = 1,nmtest
-         gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-FCANROT(i,m,1)-
-     &       FCANROT(i,m,2)-
-     &    FCANROT(i,m,3)-FCANROT(i,m,4))*litrmassrow(i,m,icc+1)
-         gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-FCANROT(i,m,1)-
-     &   FCANROT(i,m,2)-
-     &    FCANROT(i,m,3)-FCANROT(i,m,4))*soilcmasrow(i,m,icc+1)
-c
+            if (ipeatlandrow(i,m)==0) then ! NON-peatland tile
+                gavgltmsrow(i,m)=gavgltmsrow(i,m)+ (1.0-fcanrot(i,m,1)-
+     &                        fcanrot(i,m,2)-fcanrot(i,m,3)-
+     &                        fcanrot(i,m,4))*litrmassrow(i,m,icc+1)
+                gavgscmsrow(i,m)=gavgscmsrow(i,m)+ (1.0-fcanrot(i,m,1)-
+     &                        fcanrot(i,m,2)-fcanrot(i,m,3)-
+     &                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
+            else !peatland tile
+                gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmsmossrow(i,m)
+                peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth (FLAG! I think this should change-JM)
+                ! The soil carbon on the peatland tiles is assigned based on depth. This
+                ! is the same relation as found in decp subroutine.
+                gavgscmsrow(i,m) = 0.487*(4056.6*peatdeprow(i,m)**2+
+     &                              72067.0*peatdeprow(i,m))/1000
+                vgbiomasrow(i,m)=vgbiomasrow(i,m)+Cmossmasrow(i,m)
+            endif
+c              
 117   continue
+
+c    Also initialize the accumulators for moss daily C fluxes.
+C    FLAG perhaps move? JM.
+c
+c    Moved out of 117 loop and ipeatlandrow > 0 block where only 1 to nltest 
+c    elements were actually initialized since the loop is really for row 
+c    variables. Initialization is now done on all elements, which shouldn't be
+c    a problem. EC - Feb 16, 2016.
+
+      anmossac_t  = 0.0
+      rmlmossac_t = 0.0
+      gppmossac_t = 0.0
+
+      write(6,6990) 'peatdeprow=', peatdeprow
+      write(6,6990) 'gavgscms=', gavgscmsrow
+      write(6,6990) 'vgbiomas=', vgbiomasrow
+6990   format(A15,12f6.2)
+c    ----------------------------YW March 25, 2015 --------------------/
 c
 
       CALL GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,
@@ -2869,7 +3068,7 @@ c
      2      ailcgat,zolncgat,rmatcgat,rmatctemgat,slaigat,
      3      bmasveggat,cmasvegcgat,veghghtgat,
      4      rootdpthgat,alvsctmgat,alirctmgat,
-     5      paicgat,    slaicgat, faregat,
+     5      paicgat,    slaicgat, faregat, ipeatlandgat,
      6      ilmos,jlmos,iwmos,jwmos,
      7      nml,
      8      gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,
@@ -2877,7 +3076,7 @@ c
      a      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
      b      bmasvegrow,cmasvegcrow,veghghtrow,
      c      rootdpthrow,alvsctmrow,alirctmrow,
-     d      paicrow,    slaicrow, FAREROT)
+     d      paicrow,    slaicrow, FAREROT,ipeatlandrow)
 
       call bio2str( gleafmasgat,bleafmasgat,stemmassgat,rootmassgat,
      1                           1,      nml,    fcancmxgat, zbtwgat,
@@ -2885,8 +3084,8 @@ c
      4                       ailcggat, ailcbgat,  ailcgat, zolncgat,
      5                       rmatcgat, rmatctemgat,slaigat,bmasveggat,
      6                 cmasvegcgat,veghghtgat, rootdpthgat,alvsctmgat,
-     7                     alirctmgat, paicgat,  slaicgat )
-
+     7                     alirctmgat, paicgat,  slaicgat,ipeatlandgat)
+c
       call ctems1(gleafmasrow,bleafmasrow,stemmassrow,rootmassrow,
      1      fcancmxrow,ZBTWROT,DLZWROT,SDEPROT,ailcgrow,ailcbrow,
      2      ailcrow,zolncrow,rmatcrow,rmatctemrow,slairow,
@@ -2935,14 +3134,12 @@ c
 
         do i = 1, nml
             ml(i) = 1.0/real(lon) ! wl contains zonal weights, lets find meridional weights
-            grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)
-     1                     *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
+            grclarea(i)=4.*pi*(earthrad**2)*wl(1)*ml(1)*faregat(i)/2.  ! km^2, faregat is areal fraction of each mosaic
                                             ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
         end do
 190    continue
 
 c
-!       ! FLAG test JM Dec 18 2015
 !     Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
       do i = 1, nltest
        if (radjrow(1) > 0.) then
@@ -2951,7 +3148,6 @@ c
         call finddaylength(355.0, radjrow(1),dayl_maxrow(i)) !following rest of code, radjrow is always given index of 1 offline.
        end if
       end do
-      ! end FLAG test JM Dec 18 2015
 
       endif   ! if (ctem_on)
 
@@ -3031,6 +3227,18 @@ c       but only if it was read in during the loop above.
       met_rewound = .false.
 
       endif !met_rewound
+
+      !if ( (N.eq.0) .and. (.not. co2on) ) then 
+        ! FLAG: Needs to be reviewed.
+        ! Set initial co2 concentration. Otherwise, if .MET file does not begin 
+        ! at iday=1, ihour=0, and imin=0 (see below), then co2concrow is never set and
+        ! causes a floating exception at line 1255 in PHTSYN3. 
+      !  co2concrow=setco2conc
+        ! However, there are also other problems (e.g. daily output is done at 
+        ! ncount=nday and since there are <nday number of idays in the .MET file,
+        ! the wrong iday is output).
+        ! Simpler to extrapolate .MET file to begin at iday=1,ihour=0,imin=0.  EC Dec 23 2016.
+      !endif
 
 C===================== CTEM ============================================ /
 C
@@ -3120,7 +3328,7 @@ C
 
       HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
       COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
-
+     
       DO 300 I=1,NLTEST
           CSZROW(I)=SIGN(MAX(ABS(COSZ),1.0E-3),COSZ)
           IF(PREROW(I).GT.0.) THEN
@@ -3133,13 +3341,15 @@ C
 C
 C===================== CTEM ============================================ \
 C
+
       ! If needed, read in the accessory input files (popd, wetlands, lightining...)
       if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
 
             if (ctem_on) then
              do i=1,nltest
               if (obswetf) then
-              ! FLAG note that this will be read in, regardless of the iyear, if the
+
+              ! Note that this will be read in, regardless of the iyear, if the
               ! obswetf flag is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
               ! Read into the first tile position
@@ -3155,7 +3365,7 @@ C
               endif !obswetf
 
               if(obslght) then
-              ! FLAG note that this will be read in, regardless of the iyear, if the
+              ! Note that this will be read in, regardless of the iyear, if the
               ! obswetf flag is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
                 read(17,*,end=312) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
@@ -3164,6 +3374,7 @@ C
                     mlightngrow(i,m,:) = mlightngrow(i,1,:)
                   end do
                 end if
+
 312             continue !if end of file, just keep using the last year of lighting data.
               end if !obslight
              end do
@@ -3258,27 +3469,27 @@ c         pfcancmx value is also the nfcancmx value.
 
           endif ! lnduseon/cyclemet
 
+          pddrow=0 ! EC Jan 31 2017.
+
       endif   ! at the first day of each year i.e.
 c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
 
-      !       ! FLAG test JM Dec 18 2015
       if (ihour.eq.0.and.imin.eq.0) then ! first time step of the day
       ! Find the daylength of this day
         do i = 1, nltest
           call finddaylength(real(iday), radjrow(1), daylrow(i)) !following rest of code, radjrow is always given index of 1 offline.
         end do
       end if
-      ! end FLAG test JM Dec 18 2015
-
 
 C===================== CTEM ============================================ /
 C
+
       CALL CLASSI(VPDROW,TADPROW,PADRROW,RHOAROW,RHSIROW,
      1            RPCPROW,TRPCROW,SPCPROW,TSPCROW,TAROW,QAROW,
      2            PREROW,RPREROW,SPREROW,PRESROW,
      3            IPCP,NLAT,1,NLTEST)
 
-C
+
       CUMSNO=CUMSNO+SPCPROW(1)*RHSIROW(1)*DELT
 C
       CALL GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,
@@ -3472,6 +3683,10 @@ C
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
+     3      anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,
+     4      litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,!thlqaccgat_m,
+     5      ipeatlandgat,pddgat,
+!    5      thicaccgat_m,ipeatlandgat,pddgat,
 c
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,      fcancmxrow,  rmatcrow,    zolncrow,  paicrow,
@@ -3513,8 +3728,12 @@ c
      &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
-     2      annsrplsrow,   annpcprow,  dry_season_lengthrow)
-c
+     2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
+     3      anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,
+     4      litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,
+     5      ipeatlandrow,pddrow)
+!    5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow)
+
 C===================== CTEM ============================================ /
 C
 C-----------------------------------------------------------------------
@@ -3522,7 +3741,7 @@ C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS; GENERAL VEGETATION
 C     * CHARACTERISTICS.
 
 C     * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM by including: zolnc,
-!     * cmasvegc, alvsctm, alirctm in the arguments.
+!     * cmasvegc, alvsctm, alirctm, ipeatlandgat in the arguments.
 C
       CALL CLASSA    (FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN,
      1                ALVSG,  ALIRG,  ALVSCS, ALIRCS, ALVSSN, ALIRSN,
@@ -3556,14 +3775,15 @@ C
      R                IDAY,   ILG,    1,      NML,  NBS,
      N                JLAT,N, ICAN,   ICAN+1, IGND,   IDISP,  IZREF,
      O                IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     P                ISNOALB,alvsctmgat,alirctmgat )
+     P                ISNOALB,alvsctmgat,alirctmgat,ipeatlandgat )
 C
 C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
 
 C          * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM
-!          * by including in the arguments: lfstatus
+c          * by including in the arguments: lfstatus
 C
+C          
       CALL CLASST     (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,
      1  THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG,
      2  GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,   G12CS,  G12GS,
@@ -3577,7 +3797,7 @@ C
      +  GTBS,   SFCUBS, SFCVBS, USTARBS,
      9  FSGVGAT,FSGSGAT,FSGGGAT,FLGVGAT,FLGSGAT,FLGGGAT,
      A  HFSCGAT,HFSSGAT,HFSGGAT,HEVCGAT,HEVSGAT,HEVGGAT,HMFCGAT,HMFNGAT,
-     B  HTCCGAT,HTCSGAT,HTCGAT, QFCFGAT,QFCLGAT,DRGAT,  WTABGAT,ILMOGAT,
+     B  HTCCGAT,HTCSGAT,HTCGAT, QFCFGAT,QFCLGAT,DRGAT,wtableGAT,ILMOGAT,
      C  UEGAT,  HBLGAT, TACGAT, QACGAT, ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT,
      D  VPDGAT, TADPGAT,RHOAGAT,FSVHGAT,FSIHGAT,FDLGAT, ULGAT,  VLGAT,
      E  TAGAT,  QAGAT,  PADRGAT,FC,     FG,     FCS,    FGS,    RBCOEF,
@@ -3597,7 +3817,10 @@ C
      R  CFLUXCSGAT,ANCSVEGGAT,ANCGVEGGAT,RMLCSVEGGAT,RMLCGVEGGAT,
      S  TCSNOW,GSNOW,ITC,ITCG,ITG,    ILG,    1,NML,  JLAT,N, ICAN,
      T  IGND,   IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     U  NBS,    ISNOALB,lfstatusgat,daylgat, dayl_maxgat)
+     U  NBS,    ISNOALB,daylgat, dayl_maxgat,
+     1  ipeatlandgat, ancsmoss, angsmoss, ancmoss, angmoss,
+     3  rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,
+     4  Cmossmasgat,   dmossgat,  iday, pddgat)
 C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.
@@ -3633,9 +3856,8 @@ C
      R                  JLAT,   ICAN,   IGND,   IGND+1, IGND+2,
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
 
-C========================================================================
-C
-      CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP,
+C       
+      CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, 
      1             WTVSTP, WTSSTP, WTGSTP,
      2             FSGVGAT,FLGVGAT,HFSCGAT,HEVCGAT,HMFCGAT,HTCCGAT,
      3             FSGSGAT,FLGSGAT,HFSSGAT,HEVSGAT,HMFNGAT,HTCSGAT,
@@ -3648,8 +3870,6 @@ C
      A             DELZ,   FCS,    FGS,    FC,     FG,
      B             1,      NML,    ILG,    IGND,   N    )
 C
-C=======================================================================
-
 C===================== CTEM ============================================ \
 c
 c     accumulate variables not already accumulated but which are required by
@@ -3688,9 +3908,16 @@ c
              tbargsacc_t(i,j)=tbargsacc_t(i,j)+tbargs(i,j)
              thliqcacc_t(i,j)=thliqcacc_t(i,j)+thliqc(i,j)
              thliqgacc_t(i,j)=thliqgacc_t(i,j)+thliqg(i,j)
-             thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j)
              thicecacc_t(i,j)=thicecacc_t(i,j)+thicec(i,j)
-             thicegacc_t(i,j)=thicegacc_t(i,j)+thiceg(i,j)
+
+             ! FLAG: Needs to be reviewed. EC Dec 23 2016.
+             ! YW's original variables were thlqaccgat_m/thicaccgat_m.
+             ! The following 2 variables needs to be passed via ctem to hetres_peat
+             ! (otherwise causes a floating exception at line 863 of peatlands_mod).
+             thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j) ! Not used elsewhere, so assume replacement for thlqaccgat_m
+             thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j) ! New.
+             thicegacc_t(i,j)=thicegacc_t(i,j)+thiceg(i,j)    ! EC Jan 31 2017. 
+
 710       continue
 c
           do 713 j = 1, icc
@@ -3699,6 +3926,20 @@ c
             rmlcsvga_t(i,j)=rmlcsvga_t(i,j)+rmlcsveggat(i,j)
             rmlcgvga_t(i,j)=rmlcgvga_t(i,j)+rmlcgveggat(i,j)
 713       continue
+c
+c    ------------accumulate moss C fluxes to tile level then daily----
+          if (ipeatlandgat(i) > 0) then
+            anmossgat(i) = fcs(i)*ancsmoss(i)+fgs(i)*angsmoss(i)
+     1                       +fc(i)*ancmoss(i)+fg(i)*angmoss(i)
+            rmlmossgat(i)= fcs(i)*rmlcsmoss(i)+fgs(i)*rmlgsmoss(i)
+     1                      +fc(i)*rmlcmoss(i)+fg(i)*rmlgmoss(i)
+            gppmossgat(i) = anmossgat(i) +rmlmossgat(i)
+
+            anmossac_t(i) = anmossac_t(i)   + anmossgat(i)
+            rmlmossac_t(i)= rmlmossac_t(i)  + rmlmossgat(i)
+            gppmossac_t(i)= gppmossac_t(i)  + gppmossgat(i)
+
+          endif
 c
 700     continue
       endif !if (ctem_on)
@@ -3751,9 +3992,11 @@ c
 c
               thliqcacc_t(i,j)=thliqcacc_t(i,j)/real(nday)
               thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
-              thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday)
               thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
-              thicegacc_t(i,j)=thicegacc_t(i,j)/real(nday)
+
+              thicegacc_t(i,j)=thicegacc_t(i,j)/real(nday) ! EC Jan 31 2017.
+              thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday) ! Assume this replaces YW's thlqaccgat_m.
+              thiceacc_t(i,j)=thiceacc_t(i,j)/real(nday) ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
 831         continue
 c
             do 832 j = 1, icc
@@ -3763,6 +4006,16 @@ c
               rmlcgvga_t(i,j)=rmlcgvga_t(i,j)/real(nday)
 832         continue
 c
+c     -daily average moss C fluxes for ctem.f-------------------\
+c     Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
+c     stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.2004)
+c     the ratio between stem and capitulum = 7.5 and 7.7
+            if (ipeatlandgat(i) > 0) then
+                anmossac_t(i) = anmossac_t(i)/real(nday)
+                rmlmossac_t(i)= rmlmossac_t(i)/real(nday)
+                gppmossac_t(i) = gppmossac_t(i)/real(nday)
+            endif
+
 c           pass on mean monthly lightning for the current month to ctem
 c           lightng(i)=mlightng(i,month)
 c
@@ -3869,7 +4122,6 @@ c    -------------- inputs used by ctem are above this line ---------
      1             ariditygat, srplsmongat,  defctmongat, anndefctgat,
      2            annsrplsgat,   annpcpgat,  dry_season_lengthgat,
      &              burnvegfgat, pstemmassgat, pgleafmassgat,
-c    -------------- inputs updated by ctem are above this line ------
      k                 nppgat,      nepgat, hetroresgat, autoresgat,
      l            soilcrespgat,       rmgat,       rggat,      nbpgat,
      m              litresgat,    socresgat,     gppgat, dstcemlsgat,
@@ -3891,8 +4143,30 @@ c    -------------- inputs updated by ctem are above this line ------
      &        hetroresveggat, autoresveggat, litresveggat,
      &           soilcresveggat, nml, ilmos, jlmos, ch4wet1gat,
      &          ch4wet2gat, wetfdyngat, ch4dyn1gat, ch4dyn2gat,
-     &          ch4soillsgat)
-c    ---------------- outputs are listed above this line ------------
+     &          ch4soillsgat,
+     1          ipeatlandgat,anmossac_t,rmlmossac_t,gppmossac_t,
+     2          Cmossmasgat,litrmsmossgat,wtablegat,
+     4          THFCGAT, THLWGAT, thliqacc_t, thiceacc_t,
+     5          nppmossgat, armossgat,peatdepgat)
+!    4          THFCGAT, THLWGAT, thlqaccgat_m, thicaccgat_m,
+c
+c    ----------calculate degree days for mosspht Vmax seasonality------
+       do   i = 1, nml
+          ! Do this here instead of inside mosspht (only once per day). EC Jan 31 2017.
+          !if (iday == 2)    then
+          !     pddgat(i) = 0.
+          !elseif (taaccgat_t(i)>tfrez)           then
+          if (taaccgat_t(i)>tfrez)           then
+               pddgat(i)=pddgat(i)+taaccgat_t(i)-tfrez
+          endif
+c----------------update peatland bottom layer depth--------------------       
+!         do   i = 1, nml                              !FLAG JM - I comment this out for now. I don't think this is what we want.
+           if (ipeatlandgat(i) > 0)         then
+               dlzwgat(i,ignd)= peatdepgat(i)-0.90
+               sdepgat(i) = peatdepgat(i)
+           endif
+       end do
+c================YW August 26, 2015 =======================/ 
 c
 !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
 !     to reset here, prior to ctems2.
@@ -3985,7 +4259,7 @@ C
           WTRSROT(ILMOS(K),JLMOS(K))=WTRSGAT(K)
           WTRGROT(ILMOS(K),JLMOS(K))=WTRGGAT(K)
           DRROT  (ILMOS(K),JLMOS(K))=DRGAT  (K)
-          WTABROT(ILMOS(K),JLMOS(K))=WTABGAT(K)
+          wtableROT(ILMOS(K),JLMOS(K))=wtableGAT(K)
           ILMOROT(ILMOS(K),JLMOS(K))=ILMOGAT(K)
           UEROT  (ILMOS(K),JLMOS(K))=UEGAT(K)
           HBLROT (ILMOS(K),JLMOS(K))=HBLGAT(K)
@@ -4007,7 +4281,6 @@ C
 420       CONTINUE
 430   CONTINUE
 C
-
 C
 C===================== CTEM ============================================ \
 C
@@ -4053,6 +4326,9 @@ C
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
+     3      anmossrow, rmlmossrow, gppmossrow, armossrow, nppmossrow,
+     4      peatdeprow,litrmsmossrow,Cmossmasrow,dmossrow,
+     5      ipeatlandrow, pddrow,!thlqaccrow_m, thicaccrow_m,
 c    ----
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,     fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -4096,7 +4372,10 @@ c    ----
      &      wetfdyngat, ch4dyn1gat, ch4dyn2gat,ch4soillsgat,
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
-     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat)
+     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
+     2      anmossgat, rmlmossgat, gppmossgat, armossgat, nppmossgat,
+     3      peatdepgat, litrmsmossgat, Cmossmasgat,dmossgat,
+     4      ipeatlandgat,pddgat)!,thlqaccgat_m,thicaccgat_m)
 
       if(ncount.eq.nday) then
 
@@ -4127,6 +4406,7 @@ c     reset mosaic accumulator arrays.
              thliqcacc_t(i,j)=0.0
              thliqgacc_t(i,j)=0.0
              thliqacc_t(i,j)=0.0
+             thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
              thicecacc_t(i,j)=0.0
              thicegacc_t(i,j)=0.0
 715       continue
@@ -4149,16 +4429,20 @@ C     * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
 
 6100  FORMAT(1X,I4,I5,9F8.2,2F8.3,F12.4,F8.2,2(A6,I2))
 6200  FORMAT(1X,I4,I5,3(F8.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,2(A6,I2))
-6201  FORMAT(1X,I4,I5,20(F7.2,2F6.3),2F8.3,2(A6,I2))
+! Instead of using fixed format specifiers for IGND, set the format 
+! dynamically on the write statement. Same for 6601 below. EC Jan 20 2017.
+!6201  FORMAT(1X,I4,I5,20(F7.2,2F6.3),2F8.3,2(A6,I2))
 6300  FORMAT(1X,I4,I5,3F9.2,F8.2,F10.2,E12.3,2F12.3,A6,I2)
 6400  FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,5F9.5,2(A6,I2))
 6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,4F8.3,
-     &       2F7.3,2(A6,I2))
+     &       2(A6,I2))
 6600  FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
 6501  FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-6601  FORMAT(1X,I2,I3,I5,I6,26(F7.2,2F6.3),26F9.4,2(A6,I2))
+!6601  FORMAT(1X,I2,I3,I5,I6,20(F7.2,2F6.3),20F9.4,2(A6,I2))
+!6601  FORMAT(1X,I2,I3,I5,I6,7(F8.2,2F7.3),10F10.4,2(A7,I3))  
 6700  FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))
 6800  FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))
+!6800  FORMAT(1X,I2,I3,I5,I6,3X,22(F12.4,3X),2(A7,2I2))   
 6900  FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))
 C
 C===================== CTEM ============================================ \
@@ -4324,7 +4608,10 @@ C===================== CTEM =====================================/
      4                   SFCUROT(I,M),SFCVROT(I,M),UVROW(I),' TILE ',m
           IF(IGND.GT.3) THEN
 C===================== CTEM =====================================\
-              write(66,6601) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
+!             write(66,6601) ihour,imin,iday,iyear,(TBARROT(i,m,j)-
+              write(66,'(1X,I2,I3,I5,I6,'//trim(int2str(ignd))//   ! EC Jan 20 2017.
+     &                 '(F7.2,2F6.3),10F9.4,2(A6,I2))')
+     &                 ihour,imin,iday,iyear,(TBARROT(i,m,j)-
      1                 tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,IGND),
      2                 (GFLXROT(i,m,j),j=1,IGND),' TILE ',m
           end if
@@ -4394,10 +4681,9 @@ c
               write(71,7200)ihour,imin,iday,iyear,(anvegrow(i,m,j),
      1                    j=1,icc),(rmlvegrow(i,m,j),j=1,icc),
      2                    ' TILE ',m
-            endif
-           end if
-
-           do j = 1,icc
+              endif
+            end if
+            do j = 1,icc
               anvegrow_g(i,j)=anvegrow_g(i,j)+anvegrow(i,m,j)
      1                                        *FAREROT(i,m)
               rmlvegrow_g(i,j)=rmlvegrow_g(i,j)+rmlvegrow(i,m,j)
@@ -4406,7 +4692,7 @@ c
 
           endif   ! ctem_on
 
-7200      format(1x,i2,1x,i2,i5,i5,9f11.3,9f11.3,2(a6,i2))
+7200      format(1x,i2,1x,i2,i5,i5,12f11.3,12f11.3,2(a6,i2))
 c
           fsstar_g(i)    =fsstar_g(i) + fsstar*FAREROT(i,m)
           flstar_g(i)    =flstar_g(i) + flstar*FAREROT(i,m)
@@ -4505,9 +4791,16 @@ C
      2                   TCN_G(i),RCANROT_G(I),SCANROT_G(I),TSN_G(i),
      3                   ZSN_G(i),TCN_G(i)-(TAROW(I)-TFREZ),
      4                   TCANO(I)-TFREZ,TACGAT(I)-TFREZ
+! FLAG Format statement 6500 used in 2 places with mis-matching types: ACTLYR/FTABLE are both reals.
+! Temporary work-around: don't output these 2 variables. EC Dec 23 2016.
+!    4                   TCANO(I)-TFREZ,TACGAT(I)-TFREZ,ACTLYR,FTABLE
+
 C
          IF(IGND.GT.3) THEN
-          WRITE(661,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
+!         WRITE(661,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
+          write(661,'(1X,I2,I3,I5,I6,'//trim(int2str(ignd))//      ! EC Jan 20 2017.
+     &              '(F7.2,2F6.3),10F9.4,2(A6,I2))')
+     &                   IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
      1                   TFREZ,THLQROT_G(I,J),THICROT_G(I,J),J=1,IGND),
      2                   (GFLXROT_G(I,J),J=1,IGND)
          ELSE
@@ -4612,10 +4905,12 @@ C
           WTRSROW(I)=0.
           WTRGROW(I)=0.
           DRROW(I)=0.
-          WTABROW(I)=0.
+          wtableROW(I)=0.
           ILMOROW(I)=0.
           UEROW(I)=0.
           HBLROW(I)=0.
+          G12GRD(I)= 0.       !YW March 27, 2015  
+          G23GRD(I)= 0.       !YW March 27, 2015 
           DO 500 J=1,IGND
               HMFGROW(I,J)=0.
               HTCROW(I,J)=0.
@@ -4681,10 +4976,14 @@ C
           WTRSROW(I)=WTRSROW(I)+WTRSROT(I,M)*FAREROT(I,M)
           WTRGROW(I)=WTRGROW(I)+WTRGROT(I,M)*FAREROT(I,M)
           DRROW(I)=DRROW(I)+DRROT(I,M)*FAREROT(I,M)
-          WTABROW(I)=WTABROW(I)+WTABROT(I,M)*FAREROT(I,M)
+          wtableROW(I)=wtableROW(I)+wtableROT(I,M)*FAREROT(I,M)
           ILMOROW(I)=ILMOROW(I)+ILMOROT(I,M)*FAREROT(I,M)
           UEROW(I)=UEROW(I)+UEROT(I,M)*FAREROT(I,M)
           HBLROW(I)=HBLROW(I)+HBLROT(I,M)*FAREROT(I,M)
+          G12GRD(I)=G12C(I)*FC(I)+G12G(I)*FG(I)+G12CS(I)*FCS(I)+
+     1    G12GS(I)*FGS(I)     !YW March 27, 2015 
+          G23GRD(I)=G23C(I)*FC(I)+G23G(I)*FG(I)+G23CS(I)*FCS(I)+
+     1    G23GS(I)*FGS(I)     !YW March 27, 2015 
           DO 550 J=1,IGND
               HMFGROW(I,J)=HMFGROW(I,J)+HMFGROT(I,M,J)*FAREROT(I,M)
               HTCROW(I,J)=HTCROW(I,J)+HTCROT(I,M,J)*FAREROT(I,M)
@@ -4721,7 +5020,11 @@ C
           HMFNACC(I)=HMFNACC(I)+HMFNROT(I,M)*FAREROT(I,M)
           ROFACC(I)=ROFACC(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
           OVRACC(I)=OVRACC(I)+ROFOROT(I,M)*FAREROT(I,M)*DELT
-          WTBLACC(I)=WTBLACC(I)+WTABROT(I,M)*FAREROT(I,M)
+          WTBLACC(I)=WTBLACC(I)+wtableROT(I,M)*FAREROT(I,M)
+          IF (FSSROW(I) .gt. 0.) then
+            ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)
+     1                   +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
+          END IF
           DO 625 J=1,IGND
               TBARACC(I,J)=TBARACC(I,J)+TBARROT(I,M,J)*FAREROT(I,M)
               THLQACC(I,J)=THLQACC(I,J)+THLQROT(I,M,J)*FAREROT(I,M)
@@ -4752,6 +5055,8 @@ C
           UVACC(I)=UVACC(I)+UVROW(I)*FAREROT(I,M)
           PRESACC(I)=PRESACC(I)+PRESROW(I)*FAREROT(I,M)
           QAACC(I)=QAACC(I)+QAROW(I)*FAREROT(I,M)
+          G12ACC(I)=G12ACC(I)+G12GRD(I)*FAREROT(I,M)  !YW March 23, 2015 
+          G23ACC(I)=G23ACC(I)+G23GRD(I)*FAREROT(I,M)  !YW March 23, 2015
 650   CONTINUE
 675   CONTINUE
 C
@@ -4836,7 +5141,11 @@ C
      1                       BEG,GTOUT,SNOACC(I),RHOSACC(I),
      2                       WSNOACC(I),ALTOTACC(I),ROFACC(I),CUMSNO
               IF(IGND.GT.3) THEN
-                  WRITE(62,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
+
+!                 WRITE(62,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
+                  WRITE(62,'(1X,I4,I5,'//trim(int2str(ignd))//   ! EC Jan 20 2017.
+     &                     '(F7.2,2F6.3),2F8.3,2(A6,I2))')  
+     &                       IDAY,IYEAR,(TBARACC(I,J)-TFREZ,
      1                       THLQACC(I,J),THICACC(I,J),J=1,IGND),
      2                       ACTLYR_G(I),FTABLE_g(I)
               ELSE
@@ -4850,7 +5159,15 @@ C
      2                       QAACC(I),PREACC(I),EVAPACC(I)
 
              endif
-            ENDIF
+             ENDIF
+
+c    ----peatland output-----------------------------------------------\
+
+        write(99,6999)  IDAY,IYEAR,WTBLACC(i), ZSN,PREACC(i),EVAPACC(i),
+     1   ROFACC(i),g12acc(i),g23acc(i)
+6999    format(1X,I4,I5,10f12.3)
+c    ----YW March 23, 2015 --------------------------------------------/
+        
 C
 C     * RESET ACCUMULATOR ARRAYS.
 C
@@ -4908,7 +5225,7 @@ C
           HMFNACC_M(I,M)=HMFNACC_M(I,M)+HMFNROT(I,M)
           ROFACC_M(I,M)=ROFACC_M(I,M)+ROFROT(I,M)*DELT
           OVRACC_M(I,M)=OVRACC_M(I,M)+ROFOROT(I,M)*DELT
-          WTBLACC_M(I,M)=WTBLACC_M(I,M)+WTABROT(I,M)
+          WTBLACC_M(I,M)=WTBLACC_M(I,M)+wtableROT(I,M)
 
           DO 626 J=1,IGND
               TBARACC_M(I,M,J)=TBARACC_M(I,M,J)+TBARROT(I,M,J)
@@ -4996,11 +5313,12 @@ C
           UVACC_M(I,M)=UVACC_M(I,M)/REAL(NDAY)
           PRESACC_M(I,M)=PRESACC_M(I,M)/REAL(NDAY)
           QAACC_M(I,M)=QAACC_M(I,M)/REAL(NDAY)
-          if (altotcntr_d(i) > 0) then
-            ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(altotcntr_d(i))
+          if (altotcntr_d(i) > 0) then ! altotcntr_d(i) could be 0
+            ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(altotcntr_d(i)) 
           else
             ALTOTACC_M(I,M)=0.
-          end if
+          endif
+
           FSSTAR=FSINACC_M(I,M)*(1.-ALTOTACC_M(I,M))
           FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
           QH=HFSACC_M(I,M)
@@ -5039,7 +5357,10 @@ C
      2                    WSNOACC_M(I,M),ALTOTACC_M(I,M),ROFACC_M(I,M),
      3                    CUMSNO,' TILE ',M
             IF(IGND.GT.3) THEN
-               WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
+!              WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
+               WRITE(621,'(1X,I4,I5,'//trim(int2str(ignd))//   ! EC Jan 20 2017. 
+     &                   '(F7.2,2F6.3),2F8.3,2(A6,I2))')    
+     &                  IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,
      1                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,IGND)
      2                  ,ACTLYR(I,M), FTABLE(I,M),' TILE ',M
             ELSE
@@ -5096,17 +5417,34 @@ C=======================================================================
      4                       TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT,
      5                       ACTLYR,FTABLE,leapnow)
 
+c            ---FLAG duplicate?-----reset peatland accumulators-------------------------------
+!            anmossac_t  = 0.0 
+!            rmlmossac_t = 0.0
+!            gppmossac_t = 0.0
+!            G12ACC     = 0.
+!            G23ACC     = 0.
+!            if (iday == 365) then
+!               pddrow     = 0.
+!            end if
+c            ----------------YW March 27, 2015 -------------------------------/
+
 c     CTEM output and write out
 
       if(.not.parallelrun) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
 
 c     calculate daily outputs from ctem
-
        if (ctem_on) then
          if(ncount.eq.nday) then
           call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
      1                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea,
-     2                      onetile_perPFT)
+     2                      onetile_perPFT,ipeatlandrow)
+c            --------reset peatland accumulators-------------------------------
+!            Note: these must be reset only at the end of a day. EC Jan 30 2017.
+             anmossac_t  = 0.0 
+             rmlmossac_t = 0.0
+             gppmossac_t = 0.0
+             G12ACC     = 0.
+             G23ACC     = 0.
          endif ! if(ncount.eq.nday)
        endif ! if(ctem_on)
 
@@ -5135,6 +5473,7 @@ c       Accumulate and possibly write out yearly outputs
      1                           onetile_perPFT,leapnow)
 
       endif ! if(ncount.eq.nday)
+
       endif ! if(ctem_on)
 
 C     OPEN AND WRITE TO THE RESTART FILES
@@ -5222,6 +5561,11 @@ c
        endif ! if iday=365/366
       endif ! if generate restart files
 c
+7011  format(12f8.2)     !YW April 14, 2015 
+7012  format(12i8)        !FLAG, needed?
+7013  format(13f8.2) !FLAG, needed?
+c
+c
 c      check if the model is done running.
 
        if ((leapnow.and.iday.eq.366.and.ncount.eq.nday) .or.
@@ -5232,6 +5576,7 @@ c      check if the model is done running.
             lopcount = lopcount+1
 
              if(lopcount.le.ctemloop .and. .not. transient_run)then
+        
 
               rewind(12)   ! rewind met file
 
@@ -5448,6 +5793,18 @@ C     CLOSE THE INPUT FILES TOO
       CLOSE(13)
       CLOSE(14)
 
+c    ---------------close peatland output and input files--------------\
+
+      close(17)
+      close(93)
+      close(94)
+      close(95)
+      close(96)
+      close(97)
+      close(98)
+      close(99)
+c    ----------------------YW March 27, 2015 -------------------------/
+
          CALL EXIT
       END IF
 
@@ -5472,3 +5829,12 @@ C ============================= CTEM =========================/
       STRLEN = I
       RETURN
       END
+
+      character(len=10) function int2str(i)
+      ! Convert integer to left-justified string.
+      ! Ed Chan - Jan 20, 2017.
+      integer, intent(in) :: i
+      write (int2str,'(I10)') i
+      int2str = adjustl(int2str)
+      end function
+

@@ -27,8 +27,10 @@
      F            RRESID,SRESID,FRTOT,FRTOTS,
      G            FCANCMX,ICTEM,ctem_on,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
-     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC )
+     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC,
+     J            ipeatland)
 
+C     * SEP  3/16 - J.Melton/Yuanqiao Wu - Bring in peatlands code
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 !
 C     * JAN 14/16 - J.MELTON    IN LOOP 450, MODIFIED SO IT COULD HANDLE >3 SOIL LAYERS
@@ -145,6 +147,9 @@ C     *                                  FOR MODEL VERSION GCM7.
 C     * AUG 12/91 - D.VERSEGHY. CALCULATION OF LAND SURFACE CANOPY 
 C     *                         PARAMETERS.
 C
+
+      use ctem_params,        only : zolnmoss
+
       IMPLICIT NONE
 C                                                                                 
 C     * INTEGER CONSTANTS.
@@ -226,7 +231,8 @@ C
 
 C                                                                                 
 C     * INPUT ARRAYS.                                      
-C                                                                                 
+C
+      integer ipeatland (ilg) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
       REAL FCANMX(ILG,ICP1) !<Maximum fractional coverage of modelled area by vegetation category [ ]
       REAL ZOLN  (ILG,ICP1) !<Natural logarithm of maximum roughness length of vegetation category [ ]
       REAL PAIMAX(ILG,IC)   !<Maximum plant area index of vegetation category [ ]
@@ -339,6 +345,7 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG     
       COMMON /CLASS7/ CANEXT,XLEAF
+
 C-----------------------------------------------------------------------          
       IF(IC.NE.4)                               CALL XIT('APREP',-2)
 C
@@ -1066,12 +1073,19 @@ C
 !!for the ratio between the roughness lengths for momentum and heat for bare soil and snow are also
 !!passed in via common blocks. These are used to derive subarea values of \f$ln(z_{oe})\f$ from \f$ln(z_{om})\f$.
 !!
-                                                                         
+!! In the same loop the roughness length for peatlands is also calculated assuming
+!! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in ctem_params.f90)
+!!
       DO 300 I=IL1,IL2                                                            
           IF(FG(I).GT.0.)                                        THEN             
               IF(ISAND(I,1).NE.-4)                   THEN                         
                   ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))*ZOLNG+            
      1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)           
+                  if (ipeatland(i) > 0) then ! roughness length of moss surface in peatlands.
+                      ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
+     1              *zolnmoss+FCANMX(I,5)*(1.0-FSNOW(I))*
+     2               ZOLN(I,5))/FG(I)
+                  endif
               ELSE                                                                
                   ZOMLNG(I)=ZOLNI                                                 
               ENDIF                                                               
@@ -1240,7 +1254,6 @@ C
 !!                                                                 
       DO 450 J=1,IC                                                               
       DO 450 I=IL1,IL2                                                            
-
         IF (ctem_on) THEN
          DO K = 1,IG
           RMAT(I,J,K)=RMATC(I,J,K)
@@ -1273,7 +1286,8 @@ C
      3                FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
      5                (FC(I)+FCS(I))    
-        ENDIF               
+        ENDIF
+                       
   450 CONTINUE                                                                    
 C                                                                                 
       DO 500 J=1,IG                                                               

@@ -102,6 +102,7 @@ c
          endif 
 
         endif
+
         if(rootlife(n).gt.zero)then
          if (leapnow) then 
           nrmlrtlr(i,j)=rootmass(i,j)*

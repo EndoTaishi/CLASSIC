@@ -18,7 +18,7 @@
      D   HTCC,   HTCS,   HTC,    QFCF,   QFCL,   DRAG,   WTABLE, ILMO,    
      E   UE,     HBL,    TAC,    QAC,    ZREFM,  ZREFH,  ZDIAGM, ZDIAGH, 
      F   VPD,    TADP,   RHOAIR, QSWINV, QSWINI, QLWIN,  UWIND,  VWIND,   
-     G   TA,     QA,     PADRY,  FC,     FG,     FCS,    FGS,    RBCOEF,
+     G   TA,     QA,     PADRY,  FC,     FG,     FCS,    FGS,    RBCOEF,     
      H   FSVF,   FSVFS,  PRESSG, VMOD,   ALVSCN, ALIRCN, ALVSG,  ALIRG,  
      I   ALVSCS, ALIRCS, ALVSSN, ALIRSN, ALVSGC, ALIRGC, ALVSSC, ALIRSC,
      J   TRVSCN, TRIRCN, TRVSCS, TRIRCS, RC,     RCS,    WTRG,   QLWAVG,
@@ -39,13 +39,18 @@
      Y   TCSNOW, GSNOW,                                                 
      Z   ITC,    ITCG,   ITG,    ILG,    IL1,IL2,JL,N,   IC,     
      +   IG,     IZREF,  ISLFD,  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI,
-     +   NBS, ISNOALB,LFSTATUS,DAYL, DAYL_MAX)
+     +   NBS, ISNOALB,DAYL, DAYL_MAX,
+     1   ipeatland, ancsmoss,angsmoss, ancmoss, angmoss,
+     2   rmlcsmoss,rmlgsmoss,rmlcmoss,rmlgmoss,Cmossmas, dmoss,
+     3   iday,pdd)
+
 C
 C     * OCT 26/16 - D.VERSEGHY. ADD ZPOND TO TSOLVE CALLS.
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
 C     * JUL 22/15 - D.VERSEGHY. CHANGES TO TSOLVC AND TSOLVE CALLS.
+C     * FEB 27/15 - J. MELTON - WILTSM AND FIELDSM ARE RENAMED THLW AND THFC, RESPECTIVELY.
 C     * FEB 09/15 - D.VERSEGHY. New version for gcm18 and class 3.6:
 C     *                         - Revised calls to revised TPREP for
 C     *                           initialization of SRH and SLDIAG.
@@ -61,6 +66,7 @@ C     * JUN 21/13 - M.LAZARE.   REVISED CALL TO TPREP TO SUPPORT ADDING
 C     *                         INITIALIZATION OF "GSNOW".              
 C     * JUN 10/13 - M.LAZARE/   ADD SUPPORT FOR "ISNOALB" FORMULATION.  
 C     *             M.NAMAZI.                                           
+C
 C     * NOV 11/11 - M.LAZARE.   IMPLEMENT CTEM (INITIALIZATION OF FIELDS
 C     *                         NEAR BEGINNING AND TWO REVISED CALLS TO 
 C     *                         TSOLVC).                 
@@ -414,7 +420,7 @@ C
       REAL THLRET(ILG,IG) !<Liquid water retention capacity for organic soil \f$[m^3 m^{-3} ]\f$
       REAL THLMIN(ILG,IG) !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ]\f$
       REAL THFC  (ILG,IG) !<Field capacity \f$[m^3 m^{-3} ]\f$
-      REAL THLW  (ILG,IG)
+      REAL THLW  (ILG,IG) !<Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
       REAL HCPS  (ILG,IG) !<Heat capacity of soil material \f$[J m^{-3} K^{-1} ]\f$
       REAL TCS   (ILG,IG) !<Thermal conductivity of soil particles \f$[W m^{-1} K^{-1} ]\f$
       REAL DELZ  (IG)     !<Overall thickness of soil layer [m]
@@ -452,7 +458,6 @@ C
 C
       INTEGER ICTEM               !< 8 (CTEM's PLANT FUNCTIONAL TYPES)
       LOGICAL ctem_on             !< TRUE GIVES COUPLING TO CTEM
-      INTEGER LFSTATUS(ILG,ICTEM) !< LEAF PHENOLOGICAL STATUS (SEE PHENOLOGY)
       REAL DAYL_MAX(ILG)          !< MAXIMUM DAYLENGTH FOR THAT LOCATION
       REAL DAYL(ILG)              !< DAYLENGTH FOR THAT LOCATION
 
@@ -506,6 +511,14 @@ C
      1                     KF    (ILG),    KF1   (ILG),    KF2   (ILG),
      2                     IEVAPC(ILG)
 C
+c    Peatland variables
+      integer      ipeatland(ilg),iday
+      real         Cmossmas(ilg), dmoss(ilg),pdd(ilg)
+      real     ancsmoss(ilg),          angsmoss(ilg), 
+     1          ancmoss(ilg),           angmoss(ilg),
+     2          rmlcsmoss(ilg),     rmlgsmoss(ilg),     
+     3          rmlcmoss(ilg),          rmlgmoss(ilg)
+c
 C     * TEMPORARY VARIABLES.
 C
       REAL THTOT,CA,CB,WACSAT,QACSAT,RATIOM,RATIOH,FACTM,FACTH          
@@ -735,14 +748,23 @@ C
       IF (ctem_on) THEN
 C
 C       * INITIALIZE VARIABLES ESTIMATED BY THE PHOTOSYNTHESIS SUBROUTINE
-C       * CALLED FROM WITHIN TSOLVC.
+C       * CALLED FROM WITHIN TSOLVC. Also those of moss for peatlands.
 C
-        DO 65 J=1,ICTEM
         DO 65 I=IL1,IL2
-          ANCSVEG(I,J)=0.0
-          ANCGVEG(I,J)=0.0
-          RMLCSVEG(I,J)=0.0
-          RMLCGVEG(I,J)=0.0
+            ancsmoss(i) = 0.0
+            angsmoss(i) = 0.0
+            ancmoss(i)  = 0.0
+            angmoss(i)  = 0.0
+            rmlcsmoss(i) = 0.0
+            rmlgsmoss(i) = 0.0
+            rmlcmoss(i)  = 0.0
+            rmlgmoss(i)  = 0.0
+
+            DO 65 J=1,ICTEM
+                ANCSVEG(I,J)=0.0
+                ANCGVEG(I,J)=0.0
+                RMLCSVEG(I,J)=0.0
+                RMLCGVEG(I,J)=0.0
    65   CONTINUE
       ENDIF
 C
@@ -865,8 +887,9 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CS,CO2I2CS,
      M                ctem_on,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,LFSTATUS,
-     O                DAYL, DAYL_MAX)
+     N                NOL2PFTS,CFLUXCS,ANCSVEG,RMLCSVEG,
+     O                DAYL, DAYL_MAX,ipeatland, Cmossmas,dmoss,
+     2                 ancsmoss,rmlcsmoss,iday,pdd)
 
           CALL TSPOST(GSNOWC,TSNOCS,WSNOCS,RHOSCS,QMELTC,
      1                GZROCS,TSNBOT,HTCS,HMFN,
@@ -1046,7 +1069,10 @@ C
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,          
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
-     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF  )
+     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF,
+     1                ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss,
+     2                angsmoss,rmlgsmoss, iday, DAYL,pdd)
+c     
           CALL TSPOST(GSNOWG,TSNOGS,WSNOGS,RHOSGS,QMELTG,
      1                GZROGS,TSNBOT,HTCS,HMFN,
      2                GCONSTS,GCOEFFS,GCONST,GCOEFF,TBAR,
@@ -1193,6 +1219,7 @@ C
      +                FC,ZPOND,TBAR1P,DELZ,TCSNOW,ZSNOW,
      3                ISAND,ILG,IL1,IL2,JL,IG                      )    
           ISNOW=0
+
           CALL TSOLVC(ISNOW,FC,
      1                QSWX,QSWNC,QSWNG,QLWX,QLWOC,QLWOG,QTRANS,
      2                QSENSX,QSENSC,QSENSG,QEVAPX,QEVAPC,QEVAPG,EVAPC,
@@ -1217,8 +1244,11 @@ C
      K                THLIQC,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                XDIFFUS,ICTEM,IC,CO2I1CG,CO2I2CG,
      M                ctem_on,SLAI,FCANCMX,L2MAX,
-     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,LFSTATUS,
-     O                DAYL, DAYL_MAX)
+     N                NOL2PFTS,CFLUXCG,ANCGVEG,RMLCGVEG,
+     O                DAYL, DAYL_MAX,ipeatland, Cmossmas,dmoss,
+     N                ancmoss,rmlcmoss, iday, pdd)
+
+
           CALL TNPOST(TBARC,G12C,G23C,TPONDC,GZEROC,QFREZC,GCONST,
      1                GCOEFF,TBAR,TCTOPC,TCBOTC,HCPC,ZPOND,TSURX,
      2                TBASE,TBAR1P,A1,A2,B1,B2,C2,FC,IWATER,
@@ -1383,7 +1413,10 @@ C
      9                ISLFD,ITG,ILG,IG,IL1,IL2,JL, NBS,ISNOALB,         
      A                TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                DCFLXM,CFLUXM,WZERO,TRTOPG,AC,BC,                 
-     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF )
+     C                LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF,
+     1                ipeatland,co2conc,pressg,coszs,Cmossmas,dmoss,
+     3                angmoss,rmlgmoss, iday,DAYL,pdd)
+C
           CALL TNPOST(TBARG,G12G,G23G,TPONDG,GZEROG,QFREZG,GCONST,
      1                GCOEFF,TBAR,TCTOPG,TCBOTG,HCPG,ZPOND,TSURX,
      2                TBASE,TBAR1P,A1,A2,B1,B2,C2,FG,IWATER,
@@ -1504,5 +1537,6 @@ C
   500 CONTINUE
 
 C                                                         
+
       RETURN                                                                      
       END        

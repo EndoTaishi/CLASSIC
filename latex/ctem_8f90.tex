@@ -2,7 +2,7 @@
 \label{ctem_8f90}\index{ctem.\+f90@{ctem.\+f90}}
 
 
-The basic model structure of C\+T\+E\+M includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( $C_\mathrm{L}$, $C_\mathrm{S}$, $C_\mathrm{R}$, $C_\mathrm{D}$, $C_\mathrm{H}$, $kgC m^{-2}$) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate\+\_\+change\+\_\+eqns\} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections.  
+Principle driver for C\+T\+E\+M.  
 
 
 \subsection*{Functions/\+Subroutines}
@@ -13,9 +13,9 @@ subroutine \hyperlink{ctem_8f90_ace1598599f37c24cac37dd963f23b497}{ctem} (fcancm
 
 
 \subsection{Detailed Description}
+Principle driver for C\+T\+E\+M. 
+
 The basic model structure of C\+T\+E\+M includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( $C_\mathrm{L}$, $C_\mathrm{S}$, $C_\mathrm{R}$, $C_\mathrm{D}$, $C_\mathrm{H}$, $kgC m^{-2}$) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate\+\_\+change\+\_\+eqns\} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections. 
-
-
 
 \subsection{Function/\+Subroutine Documentation}
 \hypertarget{ctem_8f90_ace1598599f37c24cac37dd963f23b497}{}\index{ctem.\+f90@{ctem.\+f90}!ctem@{ctem}}
@@ -133,23 +133,23 @@ The basic model structure of C\+T\+E\+M includes three live vegetation component
 \hline
 \mbox{\tt in}  & {\em tbargs} & soil temperature for snow over ground subarea\\
 \hline
-\mbox{\tt in}  & {\em psisat} & saturated soil matric potential (m)\\
+\mbox{\tt in}  & {\em psisat} & Saturated soil matric potential (m)\\
 \hline
-\mbox{\tt in}  & {\em bi} & Brooks and Corey b term\\
+\mbox{\tt in}  & {\em bi} & Brooks and Corey/\+Clapp and Hornberger b term\\
 \hline
-\mbox{\tt in}  & {\em thpor} & Soil porosity\\
+\mbox{\tt in}  & {\em thpor} & Soil total porosity $(cm^3 cm^{-3})$ -\/ daily average\\
 \hline
 \mbox{\tt in}  & {\em ta} & air temp, K\\
 \hline
-\mbox{\tt in}  & {\em delzw} & thicknesses of the 3 soil layers\\
+\mbox{\tt in}  & {\em delzw} & thicknesses of the soil layers\\
 \hline
 \mbox{\tt in}  & {\em zbotw} & bottom of soil layers\\
 \hline
 \mbox{\tt in}  & {\em soildpth} & soil depth (m)\\
 \hline
-\mbox{\tt in}  & {\em thliqc} & liquid mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas\\
+\mbox{\tt in}  & {\em thliqc} & liquid mois. content of soil layers, for canopy over snow and canopy over ground subareas\\
 \hline
-\mbox{\tt in}  & {\em thliqg} & liquid mois. content of 3 soil layers, for ground and snow over ground subareas\\
+\mbox{\tt in}  & {\em thliqg} & liquid mois. content of soil layers, for ground and snow over ground subareas\\
 \hline
 \mbox{\tt in}  & {\em thicec} & Frozen soil moisture content for canopy over snow and canopy over ground subareas\\
 \hline
@@ -268,7 +268,8 @@ Find vegetation averaged leaf, stem, and root respiration, and gpp using values 
 
 Now that we know maintenance respiration from leaf, stem, and root and gpp, we can find growth respiration for each vegetation
 
-Calculate grid-\/averaged rates of rm, rg, npp, and gpp
+Calculate grid/tile-\/averaged rates of rm, rg, npp, and gpp \begin{DoxyVerb}Add moss GPP and rml to the grid/tile average C fluxes \end{DoxyVerb}
+
 
 \begin{DoxyVerb} Heterotrophic respiration part starts \end{DoxyVerb}
 
@@ -279,31 +280,41 @@ Find heterotrophic respiration rates from bare ground subarea
 
 Find heterotrophic respiration rates from snow over ground subarea
 
+When peatlands are simulated find the peat heterotrophic respiration
+
 Find vegetation averaged litter and soil c respiration rates using values from canopy over ground and canopy over snow subareas
 
 Find litter and soil c respiration rates averaged over the bare fraction of the grid cell using values from ground and snow over ground sub-\/areas.
 
 Find grid averaged litter and soil c respiration rates
 
+\begin{DoxyVerb}add moss and peat soil respiration to the grid
+In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
+bareground (iccp1) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to
+the grid sum but no bareground values as we assume peatlands have no bareground. \end{DoxyVerb}
+
+
 Update the litter and soil c pools based on litter and soil c respiration rates found above. also transfer humidified litter to the soil c pool.
 
 Convert u mol co2/m2.\+sec -\/$>$ $kg c/m^2$ respired over the model time step
 
-Update litter and soil c pools
+Update litter and soil c pools \begin{DoxyVerb}     Next we add bareground litter mass and humification for non-peatlands. In
+     peatlands there is no bareground litter mass since it is the moss layer. \end{DoxyVerb}
+
 
 Estimate soil respiration. this is sum of heterotrophic respiratio and root maintenance respiration.
 
 But over the bare fraction there is no live root.
 
-Find grid averaged humification and soil respiration rates
+Find grid averaged humification and soil respiration rates \begin{DoxyVerb}After aggregation of humification and soil respiration rates for non-peatlands
+\end{DoxyVerb}
+ to the grid/tile level, the same must be done for bareground (iccp1). For peatlands, we additionally add moss values to the grid (litter respiration and moss root respiration). Note in loop 430 iccp1 is passed for peatlands
 
 Find C\+H4 wetland area (if not prescribed) and emissions\+:
 
 Calculate the methane that is oxidized by the soil sink
 
 Estimate allocation fractions for leaf, stem, and root components.
-
-Note\+: fieldsm and wiltsm are calculated in allocate. They are called T\+H\+F\+C and P\+S\+I\+W\+L\+T in the C\+L\+A\+S\+S part of the model. They are recalculated here in C\+T\+E\+M to avoid passing them through the coupler in the coupled model. The C\+T\+E\+M calculated versions of fieldsm and wiltsm are also used in disturb and phenolgy. J\+M. Jan 14 2015.
 
 Estimate fraction of npp that is to be used for horizontal expansion (lambda) during the next day (i.\+e. this will be determining the colonization rate in competition).
 
@@ -364,6 +375,8 @@ units here are $kg c/m^2 .day$
 convert units to u-\/mol co2/m2.\+sec
 
 calculate grid-\/average vegetation biomass, litter mass, and soil carbon mass, and litter fall rate
+
+Add the bare ground values to the grid-\/average. If a peatland, we assume no bareground and add the moss values instead. Note\+: peatland soil C is not aggregated from plants but updated by humification and respiration from the previous stored value
 
 At this stage we have all required fluxes in u-\/mol co2/m2.\+sec and initial (loop 140 and 145) and updated sizes of all pools (in $kg c/m^2$). Now we call the balcar subroutine and make sure that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.
 

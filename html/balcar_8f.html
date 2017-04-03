@@ -94,14 +94,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a2da2e88e712caa3c98e7f3f5c77b852a"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balcar_8f.html#a2da2e88e712caa3c98e7f3f5c77b852a">balcar</a> (gleafmas, stemmass, rootmass, bleafmas, litrmass, soilcmas, ntchlveg, ntchsveg, ntchrveg, tltrleaf, tltrstem, tltrroot, glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, ltresveg, scresveg, humtrsvg, pglfmass, pblfmass, pstemass, protmass, plitmass, psocmass, vgbiomas, repro_cost, pvgbioms, gavgltms, pgavltms, gavgscms, pgavscms, galtcels, repro_cost_g, npp, autores, hetrores, gpp, nep, litres, socres, dstcemls, nbp, litrfall, humiftrs, il1, il2)</td></tr>
-<tr class="separator:a2da2e88e712caa3c98e7f3f5c77b852a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a922db81c881d66b3cf76a5a72ea4586a"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balcar_8f.html#a922db81c881d66b3cf76a5a72ea4586a">balcar</a> (gleafmas, stemmass, rootmass, bleafmas, litrmass, soilcmas, ntchlveg, ntchsveg, ntchrveg, tltrleaf, tltrstem, tltrroot, glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, ltresveg, scresveg, humtrsvg, pglfmass, pblfmass, pstemass, protmass, plitmass, psocmass, vgbiomas, repro_cost, pvgbioms, gavgltms, pgavltms, gavgscms, pgavscms, galtcels, repro_cost_g, npp, autores, hetrores, gpp, nep, litres, socres, dstcemls, nbp, litrfall, humiftrs, il1, il2, ipeatland, Cmossmas, pCmossmas, nppmosstep, litrfallmoss, litrmsmoss, plitrmsmoss, ltrestepmoss, humicmosstep)</td></tr>
+<tr class="separator:a922db81c881d66b3cf76a5a72ea4586a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Canadian Terrestrial Ecosystem Model (CTEM) Carbon Balance Subroutine. </p>
 <p>unless mentioned all pools are in kg c/m2 unless mentioned all fluxes are in units of u-mol co2/m2.sec </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="a2da2e88e712caa3c98e7f3f5c77b852a"></a>
+<a class="anchor" id="a922db81c881d66b3cf76a5a72ea4586a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -132,13 +132,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc+1)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp1)&#160;</td>
           <td class="paramname"><em>litrmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc+1)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp1)&#160;</td>
           <td class="paramname"><em>soilcmas</em>, </td>
         </tr>
         <tr>
@@ -210,19 +210,19 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc+1)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp1)&#160;</td>
           <td class="paramname"><em>ltresveg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc+1)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp1)&#160;</td>
           <td class="paramname"><em>scresveg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc+1)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp1)&#160;</td>
           <td class="paramname"><em>humtrsvg</em>, </td>
         </tr>
         <tr>
@@ -252,13 +252,13 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc+1)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp1)&#160;</td>
           <td class="paramname"><em>plitmass</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(ilg,icc+1)&#160;</td>
+          <td class="paramtype">real, dimension(ilg,iccp1)&#160;</td>
           <td class="paramname"><em>psocmass</em>, </td>
         </tr>
         <tr>
@@ -391,7 +391,61 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>il2</em>&#160;</td>
+          <td class="paramname"><em>il2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension (ilg)&#160;</td>
+          <td class="paramname"><em>ipeatland</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>Cmossmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>pCmossmas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>nppmosstep</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>litrfallmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>litrmsmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>plitrmsmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>ltrestepmoss</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real, dimension(ilg)&#160;</td>
+          <td class="paramname"><em>humicmosstep</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -448,6 +502,15 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">litrfall</td><td>grid averaged flux: combined (leaves, stem, and root) total litter fall rate</td></tr>
     <tr><td class="paramname">humiftrs</td><td>grid averaged flux: humification</td></tr>
     <tr><td class="paramname">repro_cost</td><td>pools (after being updated): amount of C transferred to litter due to reproductive tissues</td></tr>
+    <tr><td class="paramname">ipeatland</td><td>Peatland flag, non-peatlands = 0</td></tr>
+    <tr><td class="paramname">cmossmas</td><td>moss biomass C (kgC/m2)</td></tr>
+    <tr><td class="paramname">pcmossmas</td><td>moss biomass C at the previous time step (kgC/m2)</td></tr>
+    <tr><td class="paramname">nppmosstep</td><td>moss npp (kgC/m2/timestep)</td></tr>
+    <tr><td class="paramname">litrfallmoss</td><td>moss litter fall (kgC/m2/timestep)</td></tr>
+    <tr><td class="paramname">litrmsmoss</td><td>moss litter C (kgC/m2)</td></tr>
+    <tr><td class="paramname">plitrmsmoss</td><td>moss litter C at the previous time step (kgC/m2)</td></tr>
+    <tr><td class="paramname">ltrestepmoss</td><td>litter respiration from moss (kgC/m2/timestep)</td></tr>
+    <tr><td class="paramname">humicmosstep</td><td>moss humification (kgC/m2/timestep)</td></tr>
     <tr><td class="paramname">galtcels</td><td>grid averaged flux: carbon emission losses from litter</td></tr>
     <tr><td class="paramname">repro_cost_g</td><td>grid averaged flux: amount of C used to generate reproductive tissues </td></tr>
   </table>
@@ -460,6 +523,8 @@ Functions/Subroutines</h2></td></tr>
 <p>litter over all pfts</p>
 <p>litter over the bare fraction</p>
 <p>soil carbon over the bare fraction</p>
+<p>Moss C balance</p>
+<p>Moss litter pool C balance</p>
 <p>grid averaged fluxes must also balance</p>
 <p>vegetation biomass</p>
 <p>litter</p>
@@ -470,7 +535,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jan 30 2017 10:33:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 14:39:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

@@ -326,7 +326,7 @@
 
 
 !>\file
-!!Central module for all disturbance scheme-related operations
+!>Central module for all disturbance scheme-related operations
 module disturbance_scheme
 
 ! J. Melton. Mar 26, 2014
@@ -346,7 +346,7 @@ contains
 !!@{
 
 subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
-                            thliq,   wiltsm,  fieldsm,    uwind, &
+                            thliq,   THLW,  THFC,    uwind, &
                             vwind,  lightng,  fcancmx, litrmass, &    
                          prbfrhuc, rmatctem, extnprob, popdon,   &
                               il1,      il2,     sort, nol2pfts, &
@@ -435,8 +435,8 @@ real :: rootmass(ilg,icc)  !<root mass for each of the 9 ctem pfts, \f$kg c/m^2\
 real :: gleafmas(ilg,icc)  !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
 real :: bleafmas(ilg,icc)  !<brown leaf mass
 real :: thliq(ilg,ignd)    !<liquid soil moisture content
-real :: wiltsm(ilg,ignd)   !<wilting point soil moisture content
-real :: fieldsm(ilg,ignd)  !<field capacity soil moisture content
+real :: THLW(ilg,ignd)   !<wilting point soil moisture content
+real :: THFC(ilg,ignd)  !<field capacity soil moisture content
 real :: uwind(ilg)         !<wind speed, \f$m/s\f$
 real :: vwind(ilg)         !<wind speed, \f$m/s\f$
 real :: fcancmx(ilg,icc)   !<fractional coverages of ctem's 9 pfts
@@ -541,9 +541,6 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !     ------------------------------------------------------------------
 !     Constants and parameters are located in ctem_params.f90
 !     -----------------------------------------------------------------
-
-!     * if icc /= 9 this subroutine will need changes.
-      IF(ICC.NE.9)      CALL XIT('DISTURB',-1)
 
 !>initialize required arrays to zero, or assign value
 
@@ -698,7 +695,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
         if (fsnow(i) .eq. 0.) then
           do j = 1, ignd
            if (isand(i,j) .gt. -2) then
-            betadrgt(i,j)=min(1.0,max(0.0,(thliq(i,j)+thice(i,j)-wiltsm(i,j))/(fieldsm(i,j)-wiltsm(i,j))))
+            betadrgt(i,j)=min(1.0,max(0.0,(thliq(i,j)+thice(i,j)-THLW(i,j))/(THFC(i,j)-THLW(i,j))))
            else
             betadrgt(i,j)=1.0
            end if
@@ -732,7 +729,8 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !           end if
 
          endif
-
+!       write(6,6990) j, drgtstrs(1,j), avgdryns, surface_duff_f
+!6990   format(i3, 10f7.3)
 330     continue
 320   continue
 

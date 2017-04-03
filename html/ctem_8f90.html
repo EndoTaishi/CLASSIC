@@ -89,7 +89,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>The basic model structure of CTEM includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_938.png"/>, <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_939.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_940.png"/>, <img class="formulaInl" alt="$C_\mathrm{D}$" src="form_941.png"/>, <img class="formulaInl" alt="$C_\mathrm{H}$" src="form_942.png"/>, <img class="formulaInl" alt="$kgC m^{-2}$" src="form_29.png"/>) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate_change_eqns} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections.  
+<p>Principle driver for CTEM.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -98,7 +98,8 @@ Functions/Subroutines</h2></td></tr>
 <tr class="separator:ace1598599f37c24cac37dd963f23b497"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The basic model structure of CTEM includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_938.png"/>, <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_939.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_940.png"/>, <img class="formulaInl" alt="$C_\mathrm{D}$" src="form_941.png"/>, <img class="formulaInl" alt="$C_\mathrm{H}$" src="form_942.png"/>, <img class="formulaInl" alt="$kgC m^{-2}$" src="form_29.png"/>) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate_change_eqns} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections. </p>
+<div class="textblock"><p>Principle driver for CTEM. </p>
+<p>The basic model structure of CTEM includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_938.png"/>, <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_939.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_940.png"/>, <img class="formulaInl" alt="$C_\mathrm{D}$" src="form_941.png"/>, <img class="formulaInl" alt="$C_\mathrm{H}$" src="form_942.png"/>, <img class="formulaInl" alt="$kgC m^{-2}$" src="form_29.png"/>) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate_change_eqns} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="ace1598599f37c24cac37dd963f23b497"></a>
 <div class="memitem">
@@ -513,15 +514,15 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tbarcs</td><td>soil temperature for canopy over snow subarea</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tbarg</td><td>soil temperature for ground subarea</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tbargs</td><td>soil temperature for snow over ground subarea</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">psisat</td><td>saturated soil matric potential (m)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">bi</td><td>Brooks and Corey b term</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thpor</td><td>Soil porosity</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">psisat</td><td>Saturated soil matric potential (m)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bi</td><td>Brooks and Corey/Clapp and Hornberger b term</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thpor</td><td>Soil total porosity <img class="formulaInl" alt="$(cm^3 cm^{-3})$" src="form_1503.png"/> - daily average</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ta</td><td>air temp, K</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">delzw</td><td>thicknesses of the 3 soil layers</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">delzw</td><td>thicknesses of the soil layers</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">zbotw</td><td>bottom of soil layers</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">soildpth</td><td>soil depth (m)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thliqc</td><td>liquid mois. content of 3 soil layers, for canopy over snow and canopy over ground subareas</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thliqg</td><td>liquid mois. content of 3 soil layers, for ground and snow over ground subareas</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thliqc</td><td>liquid mois. content of soil layers, for canopy over snow and canopy over ground subareas</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thliqg</td><td>liquid mois. content of soil layers, for ground and snow over ground subareas</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thicec</td><td>Frozen soil moisture content for canopy over snow and canopy over ground subareas</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thiceg</td><td>Frozen soil moisture content for ground and snow over ground subareas</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">deltat</td><td>CTEM timestep in days</td></tr>
@@ -583,23 +584,26 @@ Functions/Subroutines</h2></td></tr>
 <p>If ailcg/gleafmas is zero, i.e. real leaves are not on, then make maintenance respiration and gpp from storage/imaginary lai equal to zero so that we don't use these numbers in carbon budget.</p>
 <p>Find vegetation averaged leaf, stem, and root respiration, and gpp using values from canopy over ground and canopy over snow subareas</p>
 <p>Now that we know maintenance respiration from leaf, stem, and root and gpp, we can find growth respiration for each vegetation</p>
-<p>Calculate grid-averaged rates of rm, rg, npp, and gpp</p>
-<pre class="fragment"> Heterotrophic respiration part starts </pre><p>Find heterotrophic respiration rates for canopy over ground subarea</p>
+<p>Calculate grid/tile-averaged rates of rm, rg, npp, and gpp </p><pre class="fragment">Add moss GPP and rml to the grid/tile average C fluxes </pre><pre class="fragment"> Heterotrophic respiration part starts </pre><p>Find heterotrophic respiration rates for canopy over ground subarea</p>
 <p>Find heterotrophic respiration rates from bare ground subarea</p>
 <p>Find heterotrophic respiration rates from snow over ground subarea</p>
+<p>When peatlands are simulated find the peat heterotrophic respiration</p>
 <p>Find vegetation averaged litter and soil c respiration rates using values from canopy over ground and canopy over snow subareas</p>
 <p>Find litter and soil c respiration rates averaged over the bare fraction of the grid cell using values from ground and snow over ground sub-areas.</p>
 <p>Find grid averaged litter and soil c respiration rates</p>
-<p>Update the litter and soil c pools based on litter and soil c respiration rates found above. also transfer humidified litter to the soil c pool.</p>
+<pre class="fragment">add moss and peat soil respiration to the grid
+In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
+bareground (iccp1) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to
+the grid sum but no bareground values as we assume peatlands have no bareground. </pre><p>Update the litter and soil c pools based on litter and soil c respiration rates found above. also transfer humidified litter to the soil c pool.</p>
 <p>Convert u mol co2/m2.sec -&gt; <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/> respired over the model time step</p>
-<p>Update litter and soil c pools</p>
-<p>Estimate soil respiration. this is sum of heterotrophic respiratio and root maintenance respiration.</p>
+<p>Update litter and soil c pools </p><pre class="fragment">     Next we add bareground litter mass and humification for non-peatlands. In
+     peatlands there is no bareground litter mass since it is the moss layer. </pre><p>Estimate soil respiration. this is sum of heterotrophic respiratio and root maintenance respiration.</p>
 <p>But over the bare fraction there is no live root.</p>
-<p>Find grid averaged humification and soil respiration rates</p>
+<p>Find grid averaged humification and soil respiration rates </p><pre class="fragment">After aggregation of humification and soil respiration rates for non-peatlands
+</pre><p> to the grid/tile level, the same must be done for bareground (iccp1). For peatlands, we additionally add moss values to the grid (litter respiration and moss root respiration). Note in loop 430 iccp1 is passed for peatlands</p>
 <p>Find CH4 wetland area (if not prescribed) and emissions:</p>
 <p>Calculate the methane that is oxidized by the soil sink</p>
 <p>Estimate allocation fractions for leaf, stem, and root components.</p>
-<p>Note: fieldsm and wiltsm are calculated in allocate. They are called THFC and PSIWLT in the CLASS part of the model. They are recalculated here in CTEM to avoid passing them through the coupler in the coupled model. The CTEM calculated versions of fieldsm and wiltsm are also used in disturb and phenolgy. JM. Jan 14 2015.</p>
 <p>Estimate fraction of npp that is to be used for horizontal expansion (lambda) during the next day (i.e. this will be determining the colonization rate in competition).</p>
 <p>We use the following new function to smooth the transition for lambda as an abrupt linear increase does not give good results. JM Jun 2014</p>
 <p>If tree and leaves still coming out, or if npp is negative, then do not expand</p>
@@ -630,6 +634,7 @@ Functions/Subroutines</h2></td></tr>
 <p>units here are <img class="formulaInl" alt="$kg c/m^2 .day$" src="form_1400.png"/></p>
 <p>convert units to u-mol co2/m2.sec</p>
 <p>calculate grid-average vegetation biomass, litter mass, and soil carbon mass, and litter fall rate</p>
+<p>Add the bare ground values to the grid-average. If a peatland, we assume no bareground and add the moss values instead. Note: peatland soil C is not aggregated from plants but updated by humification and respiration from the previous stored value</p>
 <p>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145) and updated sizes of all pools (in <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/>). Now we call the balcar subroutine and make sure that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.</p>
 <p>Finally find vegetation structural attributes which can be passed to the land surface scheme using leaf, stem, and root biomass.</p>
 <p>Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str</p>
@@ -639,7 +644,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jan 30 2017 10:33:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 14:39:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

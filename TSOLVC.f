@@ -25,9 +25,11 @@
      K                 THLIQ,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                 XDIFFUS,ICTEM,IC,CO2I1,CO2I2,
      M                 ctem_on,SLAI,FCANCMX,L2MAX,
-     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS,
-     O                 DAYL,DAYL_MAX)
+     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG,
+     O                 DAYL,DAYL_MAX,ipeatland, Cmossmas,dmoss,
+     1                 anmoss,rmlmoss,iday, pdd)
 C
+C     * OCT 30/16 - J.Melton    Finish implementation of peatlands by Yuanqiao Wu
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATES
 C     *                         ACCORDING TO WATER AVAILABILITY.
@@ -146,6 +148,8 @@ C     * AUG 12/91 - D.VERSEGHY. ITERATIVE TEMPERATURE CALCULATIONS
 C     *                         FOR VEGETATION CANOPY AND UNDERLYING
 C     *                         SURFACE.
 C
+      use peatlands_mod, only : mosspht
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -199,6 +203,9 @@ C
       REAL QFCL  (ILG) !<Evaporation from liquid water on vegetation \f$[kg m^{-2} s^{-1} ]\f$
       REAL HTCC  (ILG) !<Internal energy change of canopy due to changes in temperature and/or mass \f$[W m^{-2} ]\f$ 
       REAL EVAP  (ILG) !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
+      real anmoss(ilg) !<
+      real rmlmoss(ilg)!<
+      real cevapmoss(ilg)!<
 C
 C     * INPUT ARRAYS.
 C
@@ -260,6 +267,14 @@ C
       INTEGER IWATER(ILG) !<Flag indicating condition of surface (dry, water-covered or snow-covered)
       INTEGER IEVAP (ILG) !<Flag indicating whether surface evaporation is occurring or not output variable
       INTEGER ITERCT(ILG,6,50) !<Counter of number of iterations required to solve energy balance for four subareas
+      integer  ipeatland(ilg)!<
+      integer ievapmoss(ilg)!<
+      integer iday          !<
+      real thmin(ilg,ig)    !<
+      real Cmossmas(ilg)    !<
+      real dmoss(ilg)       !<
+      real pdd(ilg)         !<
+
 C
 C     * ARRAYS FOR CTEM.
 C
@@ -296,7 +311,7 @@ C
       REAL DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
 
 
-      INTEGER ISAND(ILG,IG),    LFSTATUS(ILG,ICTEM)
+      INTEGER ISAND(ILG,IG)
 C
       LOGICAL ctem_on
 
@@ -327,7 +342,8 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL QSWNVG,QSWNIG,QSWNIC,HFREZ,HCONV,
+      REAL qswnvg(ilg),
+     1     QSWNIG,QSWNIC,HFREZ,HCONV,
      1     RCONV,HCOOL,HMELT,SCONV,HWARM,WCAN,DQ0DT,
      2     DRDT0,QEVAPT,BOWEN,DCFLUX,DXEVAP,TCANT,QEVAPCT,
      3     TZEROT,YEVAP,RAGCO,EZERO,WTRANSP,WTEST
@@ -355,13 +371,18 @@ C===================== CTEM =====================================\
 C
       DO I = 1,ILG
         QSWNVC(I)=0.0
+C    initialize QSWNVG to be used in mosspht.f ---
+            if (ipeatland(i) >0)       then
+               qswnvg(i) = 0.0 
+            endif
       ENDDO
+
 C===================== CTEM =====================================/
 C
       IF(ITCG.LT.2) THEN
           ITERMX=50
       ELSE
-          ITERMX=5
+          ITERMX=12      !was 5 YW March 27, 2015 
       ENDIF
 C      IF(ISNOW.EQ.0) THEN
 C          EZERO=0.0
@@ -457,13 +478,17 @@ C
               ELSE
                   TRTOP(I)=TRSNOW(I)
               ENDIF
-              QSWNVG=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I))
+
+c    calculate visible short wave radiation QSWNVG on the ground for moss
+c    photosynthesis ---------------------------------------------------\
+              qswnvg(i)=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I)) 
               QSWNIG=QSWINI(I)*TRNIRC(I)*(1.0-ALNIRG(I))
-              QSWNG(I)=QSWNVG+QSWNIG
-              QTRANS(I)=QSWNG(I)*TRTOP(I)
-              QSWNG(I)=QSWNG(I)-QTRANS(I)
-              QSWNVC(I)=QSWINV(I)*(1.0-ALVISC(I))-QSWNVG
-              QSWNIC=QSWINI(I)*(1.0-ALNIRC(I))-QSWNIG
+              QSWNG(i)=qswnvg(i)+QSWNIG                    
+              QTRANS(I)=QSWNG(I)*TRTOP(I)   
+              QSWNG(I)=QSWNG(I)-QTRANS(I)  
+              QSWNVC(I)=QSWINV(I)*(1.0-ALVISC(I))-qswnvg(i)
+c    QSWNVG is changed to qswnvg(i) YW March 20, 2015 -----------------/
+              QSWNIC=QSWINI(I)*(1.0-ALNIRC(I))-QSWNIG    
               QSWNC(I)=QSWNVC(I)+QSWNIC
               IF(ABS(TCAN(I)).LT.1.0E-3)        TCAN(I)=TPOTA(I)
               QLWOC(I)=SBC*TCAN(I)*TCAN(I)*TCAN(I)*TCAN(I)
@@ -489,7 +514,7 @@ C
                   CPHCHC(I)=CLHVAP+CLHMLT
               ELSE
                   CPHCHC(I)=CLHVAP
-              ENDIF
+              ENDIF              
               RBINV(I)=RBCOEF(I)*SQRT(VAC(I))
               IF (RBINV(I) .LE. 0.) CALL XIT('TSOLVC',0)
               ! If RBINV is <= 0, it is possible your INI file is missing
@@ -533,7 +558,7 @@ C
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
      4               THFC,  THLW,  FCANCMX,   L2MAX,NOL2PFTS,
      5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG,
-     6              LFSTATUS,DAYL, DAYL_MAX)  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
+     6              DAYL, DAYL_MAX)
 C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
@@ -541,6 +566,11 @@ C
         DO 70 I =IL1,IL2
             RC(I)=MIN(RCPHTSYN(I),4999.999)
    70   CONTINUE
+
+c    Do moss photosynthesis:
+        call  mosspht(il1,il2,iday,qswnvg,thliq,co2conc,tgnd,zsnow,
+     1                pressg,Cmossmas,dmoss,anmoss,rmlmoss,
+     2                cevapmoss,ievapmoss,ipeatland,DAYL,pdd)
 
       ENDIF
 C
@@ -673,8 +703,14 @@ C
               IF(IWATER(I).GT.0)                              THEN
                   EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
-              ELSE
-                  EVBETA(I)=CEVAP(I)
+              ELSE                            
+c    evaporation coefficient is moss-controlled for peatland--
+                  if (ipeatland(i)==0)               then
+                      EVBETA(I)=CEVAP(I)
+                  else                             
+                      ievap(i) = ievapmoss(i)
+                      evbeta(i) = cevapmoss(i)
+                  endif
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QAC(I)
                   IF(QZERO(I).GT.QAC(I) .AND. IEVAP(I).EQ.0) THEN
                       EVBETA(I)=0.0
@@ -709,7 +745,7 @@ C
               IF(NITER(I).EQ.ITERMX .AND. ITER(I).EQ.1)    ITER(I)=-1
           ENDIF
 125   CONTINUE
-C
+C     
       IF(ITCG.LT.2) THEN
 C
 C     * OPTION #1: BISECTION ITERATION METHOD.

@@ -144,6 +144,10 @@ integer, pointer, dimension(:,:,:) :: lfstatusrow
 integer, pointer, dimension(:,:,:) :: pandaysrow
 integer, pointer, dimension(:,:) :: stdaln
 real, pointer, dimension(:,:,:) :: slopefrac
+integer, pointer, dimension(:,:) :: ipeatland      !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
+real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
+real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 
 ! local variables
 
@@ -189,7 +193,11 @@ slopefrac         => vrot%slopefrac
 stdaln            => vrot%stdaln
 lfstatusrow       => vrot%lfstatus
 pandaysrow        => vrot%pandays
-      
+ipeatland        => vrot%ipeatland
+Cmossmas         => vrot%Cmossmas
+litrmsmoss       => vrot%litrmsmoss
+dmoss            => vrot%dmoss
+
 ! -----------------      
 ! Begin      
 
@@ -234,6 +242,8 @@ read (11,7010) titlec3
         read(11,*) (soilcmasrow(i,m,j),j=1,iccp1)
         read(11,*) (lfstatusrow(i,m,j),j=1,icc)
         read(11,*) (pandaysrow(i,m,j),j=1,icc)
+
+        read(11,*) ipeatland(i,m),Cmossmas(i,m),litrmsmoss(i,m),dmoss(i,m) ! peatland variables
 
 72      continue
 
@@ -591,6 +601,10 @@ real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
 real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
 real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
 real, pointer, dimension(:,:,:) :: slopefrac       !< Fraction flatter than the slope threshold
+integer, pointer, dimension(:,:) :: ipeatland      !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
+real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
+real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 
 ! local variables
 
@@ -633,7 +647,11 @@ annsrpls          => vrot%annsrpls
 annpcp            => vrot%annpcp
 dry_season_length => vrot%dry_season_length
 slopefrac         => vrot%slopefrac
-      
+ipeatland        => vrot%ipeatland
+Cmossmas         => vrot%Cmossmas
+litrmsmoss       => vrot%litrmsmoss
+dmoss            => vrot%dmoss
+
 ! -----------------      
 ! Begin
 
@@ -716,7 +734,8 @@ do i=1,nltest
     do m=1,nmtest
         write(101,7011) (ailcminrow(i,m,j),j=1,icc)
         write(101,7011) (ailcmaxrow(i,m,j),j=1,icc)
-        write(101,'(9f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
+        !write(101,'(9f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
+        write(101,'(12f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
         write(101,7011) (gleafmasrow(i,m,j),j=1,icc)
         write(101,7011) (bleafmasrow(i,m,j),j=1,icc)
         write(101,7011) (stemmassrow(i,m,j),j=1,icc)
@@ -725,6 +744,8 @@ do i=1,nltest
         write(101,7013) (soilcmasrow(i,m,j),j=1,iccp1)
         write(101,7012) (lfstatusrow(i,m,j),j=1,icc)
         write(101,7012) (pandaysrow(i,m,j),j=1,icc)
+
+        write(101,7015) ipeatland(i,m),Cmossmas(i,m),litrmsmoss(i,m),dmoss(i,m) ! peatland variables
     end do !nmtest
 
     write(101,"(6f8.3)") (mlightng(i,1,j),j=1,6)  !mean monthly lightning frequency
@@ -748,10 +769,15 @@ end do !nltest
 
 close(101)
 
-7011  format(9ES12.5)
-7012  format(9i8)
-7013  format(10ES12.5)
+7011  format(12ES12.5)
+7012  format(12i8)
+7013  format(13ES12.5)
+
+!7011  format(9ES12.5)
+!7012  format(9i8)
+!7013  format(10ES12.5)
 7014  format(5ES12.4)
+7015  format(i8,3ES12.5)
 
 end subroutine write_ctm_rs        
 !>@}
@@ -1158,6 +1184,7 @@ integer, pointer, dimension(:) :: altotcntr_m
    
 ! local
 
+real :: ALTOT_MO
 integer :: NT
 integer :: NDMONTH
 integer :: i,m,j
@@ -1208,6 +1235,7 @@ FSSTAR_MO   =0.0
 FLSTAR_MO   =0.0
 QH_MO       =0.0
 QE_MO       =0.0
+ALTOT_MO    =0.0
 ACTLYR_tmp  =0.0
 FTABLE_tmp  =0.0
 
@@ -1569,7 +1597,7 @@ end subroutine class_annual_aw
 !>@{
 
 
-subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT)
+subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT,ipeatlandrow)
 
 ! Accumulate and write out the daily CTEM outputs
 
@@ -1593,6 +1621,8 @@ integer, intent(in) :: jdendd
 integer, intent(in) :: jdendy
 real, intent(in), dimension(:) :: grclarea
 logical, intent(in) :: onetile_perPFT
+
+integer, intent(in), dimension(:,:) :: ipeatlandrow
 
 ! pointers
 
@@ -1708,6 +1738,9 @@ real, pointer, dimension(:,:) :: rgrow
 real, pointer, dimension(:,:) :: litresrow
 real, pointer, dimension(:,:) :: socresrow
 
+real, pointer, dimension(:,:) :: nppmossrow
+real, pointer, dimension(:,:) :: armossrow
+
 real, pointer, dimension(:) :: gpp_g
 real, pointer, dimension(:) :: npp_g
 real, pointer, dimension(:) :: nbp_g
@@ -1779,6 +1812,8 @@ real, pointer, dimension(:,:) :: lfstatus_g
 real, pointer, dimension(:,:) :: rmlvegrow_g
 real, pointer, dimension(:,:) :: anvegrow_g
 real, pointer, dimension(:,:) :: rmatctem_g
+
+!real, pointer, dimension(:) :: gppmosac_g
 
 real, pointer, dimension(:,:,:) :: bmasvegrow
 real, pointer, dimension(:,:,:) :: cmasvegcrow
@@ -1865,6 +1900,9 @@ rootmassrow       => vrot%rootmass
 flhrlossrow       => vrot%flhrloss
 dstcemls3row      => vrot%dstcemls3
 lfstatusrow       => vrot%lfstatus
+
+!gppmosac_g        => ctem_tile%gppmosac_g
+
 tcanoaccrow_out   => vrot%tcanoaccrow_out
 npprow            => vrot%npp
 neprow            => vrot%nep
@@ -1879,6 +1917,10 @@ socresrow         => vrot%socres
 vgbiomasrow       => vrot%vgbiomas
 gavgltmsrow       => vrot%gavgltms
 gavgscmsrow       => vrot%gavgscms
+
+nppmossrow         => vrot%nppmoss
+armossrow          => vrot%armoss
+      
 bmasvegrow        => vrot%bmasveg
 cmasvegcrow       => vrot%cmasvegc
 veghghtrow        => vrot%veghght
@@ -2016,6 +2058,7 @@ rmlvegrow_g       => ctem_grd%rmlvegrow_g
 anvegrow_g        => ctem_grd%anvegrow_g
 rmatctem_g        => ctem_grd%rmatctem_g    
 
+
 !       ---------------------------------------------------------
 
 !>write daily ctem results
@@ -2029,6 +2072,10 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
 
     do 10 i = 1,nltest
       do 20 m = 1 , nmtest
+        !   ------convert peatland C fluxes to gC/m2/day for output-----------\
+        nppmossrow(i,m)=nppmossrow(i,m)*1.0377 ! convert to gc/m2.day
+        armossrow(i,m)=armossrow(i,m)*1.0377 ! convert to gc/m2.day
+
         do 30 j=1,icc
             if (fcancmxrow(i,m,j) .gt.0.0) then
 
@@ -2189,10 +2236,13 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
         emit_tc_g(i)  =emit_tc_g(i) + emit_tc_t(i,m)*FAREROT(i,m)
         emit_oc_g(i)  =emit_oc_g(i) + emit_oc_t(i,m)*FAREROT(i,m)
         emit_bc_g(i)  =emit_bc_g(i) + emit_bc_t(i,m)*FAREROT(i,m)
+       ! nppmoss_g(i)  = nppmoss_g(i) +nppmossrow(i,m)*FAREROT(i,m)
+       ! armoss_g(i)   = armoss_g(i) + armossrow(i,m)*FAREROT(i,m)
 
         do k=1,ignd
             rmatctem_g(i,k)=rmatctem_g(i,k)+rmatctem_t(i,m,k)*FAREROT(i,m)
         end do
+
 
 70 continue !nmtest
 60 continue !nltest
@@ -2394,7 +2444,43 @@ do 80 i=1,nltest
                  ch4soills_g(i),' GRDAV'
     endif
 
+! FLAG FLAG FLAG
+!   ---------------peatland outputs-----------------------------------\
+!   - Note that YW's original code used a mixture of gat/row variables.
+!     The gat variables are replaced with row versions except for
+!     gppmosac_g which has no row version equivalent. Needs to be scattered out? 
+!   - Also note that in YW's original code the arrays were hard-coded 
+!     for just the 1st tile of the 1st grid point.
+!   - Leave gppmosac_g hard-coded to 1 for now, but should be changed!
+!   EC - Feb 2106.
+! I think I will just remove these unless they are needed. JM Nov 2016.
+    do m=1,nmtest
+
+!   CT11D_G   convert moss gpp from umol/m2/s to g/m2/day  
+    write (93,6993) iday,iyear, &
+          nppmossrow(i,m),armossrow(i,m), &!,gppmosac_g(1)*1.0377, &
+          (fcancmxrow(i,m,j)*gppvegrow(i,m,j),j=1,icc),      &
+          (fcancmxrow(i,m,j)*nppvegrow(i,m,j),j=1,icc),      &
+          (fcancmxrow(i,m,j)*autoresvegrow(i,m,j),j=1,icc),  &
+          (fcancmxrow(i,m,j)*hetroresvegrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j),j=1,icc)
+!   CT12D_G
+    write (94,6993) iday,iyear,(veghghtrow(i,m,j),j=1,icc), &
+          (rootdpthrow(i,m,j),j=1,icc),(ailcgrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*stemmassrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*rootmassrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*litrmassrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*gleafmasrow(i,m,j),j=1,icc), &
+          (fcancmxrow(i,m,j)*bleafmasrow(i,m,j),j=1,icc)
+
+    enddo
+
+6993 format(2i5,100f12.6)
+
+!   ----------------YW March 27, 2015 -------------------------------/
+
     if (compete .or. lnduseon) then
+
         sumfare=0.0
         if (onetile_perPFT) then
             do m=1,nmos
@@ -3253,6 +3339,7 @@ logical, pointer :: compete
 logical, pointer :: dowetlands
 logical, pointer :: obswetf
 
+
 real, pointer, dimension(:,:,:) :: laimaxg_yr
 real, pointer, dimension(:,:,:) :: stemmass_yr
 real, pointer, dimension(:,:,:) :: rootmass_yr
@@ -3328,6 +3415,8 @@ real, pointer, dimension(:,:) :: ch4dyn1_yr_t
 real, pointer, dimension(:,:) :: ch4dyn2_yr_t
 real, pointer, dimension(:,:) :: ch4soills_yr_t
 real, pointer, dimension(:,:) :: veghght_yr_t
+real, pointer, dimension(:,:) :: peatdep_yr_t
+
 
 logical, pointer, dimension(:,:,:) :: pftexistrow
 real, pointer, dimension(:,:,:) :: gppvegrow
@@ -3378,6 +3467,8 @@ real, pointer, dimension(:,:,:) :: rootmassrow
 real, pointer, dimension(:,:,:) :: fcancmxrow
 real, pointer, dimension(:,:,:) :: veghghtrow
 
+real, pointer, dimension(:,:) :: peatdeprow
+
 real, pointer, dimension(:) :: laimaxg_yr_g
 real, pointer, dimension(:) :: stemmass_yr_g
 real, pointer, dimension(:) :: rootmass_yr_g
@@ -3420,6 +3511,7 @@ real, pointer, dimension(:) :: ch4dyn1_yr_g
 real, pointer, dimension(:) :: ch4dyn2_yr_g
 real, pointer, dimension(:) :: ch4soills_yr_g
 real, pointer, dimension(:) :: veghght_yr_g
+real, pointer, dimension(:) :: peatdep_yr_g
 
 ! local
 integer :: i,m,j,nt
@@ -3512,6 +3604,8 @@ ch4dyn1_yr_t          =>ctem_tile_yr%ch4dyn1_yr_t
 ch4dyn2_yr_t          =>ctem_tile_yr%ch4dyn2_yr_t
 ch4soills_yr_t        =>ctem_tile_yr%ch4soills_yr_t
 veghght_yr_t          =>ctem_tile_yr%veghght_yr_t
+peatdep_yr_t          =>ctem_tile_yr%peatdep_yr_t
+
 
 pftexistrow       => vrot%pftexist
 gppvegrow         => vrot%gppveg
@@ -3562,6 +3656,8 @@ rootmassrow       => vrot%rootmass
 fcancmxrow        => vrot%fcancmx
 veghghtrow        => vrot%veghght
 
+peatdeprow            => vrot%peatdep
+
 laimaxg_yr_g          =>ctem_grd_yr%laimaxg_yr_g
 stemmass_yr_g         =>ctem_grd_yr%stemmass_yr_g
 rootmass_yr_g         =>ctem_grd_yr%rootmass_yr_g
@@ -3604,7 +3700,8 @@ ch4dyn1_yr_g          =>ctem_grd_yr%ch4dyn1_yr_g
 ch4dyn2_yr_g          =>ctem_grd_yr%ch4dyn2_yr_g
 ch4soills_yr_g        =>ctem_grd_yr%ch4soills_yr_g
 veghght_yr_g          =>ctem_grd_yr%veghght_yr_g
-!>------------
+peatdep_yr_g          =>ctem_grd_yr%peatdep_yr_g
+!------------
 
 !> Accumulate yearly outputs
 
@@ -3659,6 +3756,9 @@ do 882 i=1,nltest
         nep_yr(i,m,iccp1)=nep_yr(i,m,iccp1)+nepvegrow(i,m,iccp1)
         nbp_yr(i,m,iccp1)=nbp_yr(i,m,iccp1)+nbpvegrow(i,m,iccp1)
 
+        peatdep_yr_t(i,m)=peatdeprow(i,m)      !YW September 04, 2015
+
+
         !> Accumulate the variables at the per tile level
         lterm_yr_t(i,m)=lterm_yr_t(i,m)+(ltermrow(i,m)*(1./daysinyr))
         wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./daysinyr))
@@ -3675,7 +3775,6 @@ do 882 i=1,nltest
 
     if ((.not. leapnow .and.iday.eq.365) .or.(leapnow .and.iday.eq.366)) then
 
-
         do 900 m = 1, nmtest
 
             do 925 j=1,icc
@@ -3691,9 +3790,12 @@ do 882 i=1,nltest
 
 925         continue
 
+
+            peatdep_yr_g(i)=peatdep_yr_g(i)+peatdep_yr_t(i,m)*farerot(i,m)    !YW September 04, 2015
             litrmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1)
             soilcmas_yr(i,m,iccp1)=soilcmasrow(i,m,iccp1)
             totcmass_yr(i,m,iccp1)=litrmassrow(i,m,iccp1) + soilcmasrow(i,m,iccp1)
+
 
             barefrac=1.0
 

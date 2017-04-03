@@ -84,13 +84,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Accumulate and write out the daily CTEM outputs.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="memitem:ga2bf58d7f6363b0469ee120bd8090de6f"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__io__driver__ctem__daily__aw.html#ga2bf58d7f6363b0469ee120bd8090de6f">io_driver::ctem_daily_aw</a> (nltest, nmtest, iday, FAREROT, iyear, jdstd, jdsty, jdendd, jdendy, grclarea, onetile_perPFT)</td></tr>
-<tr class="separator:ga2bf58d7f6363b0469ee120bd8090de6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaabb54fc6376839cc19d2b3591a963802"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__io__driver__ctem__daily__aw.html#gaabb54fc6376839cc19d2b3591a963802">io_driver::ctem_daily_aw</a> (nltest, nmtest, iday, FAREROT, iyear, jdstd, jdsty, jdendd, jdendy, grclarea, onetile_perPFT, ipeatlandrow)</td></tr>
+<tr class="separator:gaabb54fc6376839cc19d2b3591a963802"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Accumulate and write out the daily CTEM outputs. </p>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="ga2bf58d7f6363b0469ee120bd8090de6f"></a>
+<a class="anchor" id="gaabb54fc6376839cc19d2b3591a963802"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -158,7 +158,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">logical, intent(in)&#160;</td>
-          <td class="paramname"><em>onetile_perPFT</em>&#160;</td>
+          <td class="paramname"><em>onetile_perPFT</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">integer, dimension(:,:), intent(in)&#160;</td>
+          <td class="paramname"><em>ipeatlandrow</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -202,7 +208,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jan 30 2017 10:33:40 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 14:39:14 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

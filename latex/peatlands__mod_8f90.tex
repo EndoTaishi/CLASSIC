@@ -1,0 +1,50 @@
+\hypertarget{peatlands__mod_8f90}{}\section{peatlands\+\_\+mod.\+f90 File Reference}
+\label{peatlands__mod_8f90}\index{peatlands\+\_\+mod.\+f90@{peatlands\+\_\+mod.\+f90}}
+
+
+Central module for all peatland-\/related operations.  
+
+
+\subsection*{Functions/\+Subroutines}
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__moss__photosynthesis_ga74c6ae528153d57336622db389f4bdd3}{peatlands\+\_\+mod\+::mosspht} (il1, il2, iday, qswnv, thliq, co2conc, tsurfk, zsnow, pres, Cmossmas, dmoss, anmoss, rmlmoss, cevapmoss, ievapmoss, ipeatland, daylength, pdd)
+\end{DoxyCompactItemize}
+
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__peat__soil__het__resp_gaed12b76ec8925a4bc3105f8ae7a36888}{peatlands\+\_\+mod\+::hetres\+\_\+peat} (il1, il2, ipeatland, isand, litrmsmoss, peatdep, wtable, tbar, thliq, thice, thpor, bi, zbotw, delzw, psisat, litresms, socresp, resoxic, resanoxic)
+\begin{DoxyCompactList}\small\item\em grid average peat soil heterotrophic respiration subroutine \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+
+\subsection{Detailed Description}
+Central module for all peatland-\/related operations. 
+
+The peatland module is published in Geoscientific Model Development (Wu et al. 2016) \cite{Wu2016-zt}. A copy of the paper is in the Documentation folder of this git repository. 
+
+ To account for the eco-\/hydrological and biogeochemical interactions among vegetation, atmosphere and soil in peatlands, the following modifications were made to the coupled C\+L\+A\+S\+S3.\+6--C\+T\+E\+M2.\+0 modelling framework\+:
+
+
+\begin{DoxyEnumerate}
+\item The top soil layer was characterized as a moss layer with a higher heat and hydraulic capacity than a mineral soil layer. The moss layer buffers the exchange of energy and water at the soil surface and regulates the soil temperature and moisture (Turetsky et al. 2012) \cite{Turetsky2012-qh}.
+\item Three peatland vascular P\+F\+Ts (evergreen shrubs, deciduous shrubs and sedges) as well as mosses were added to the existing nine C\+T\+E\+M P\+F\+Ts. These peatland-\/specific P\+F\+Ts are adapted to cold climate and inundated soil with optimized plant structure (shoot/root ratio, rooting depth), growth strategy and metabolic acclimations to light, water and temperature.
+\item We considered the soil inundation stress on microbial respiration in the litter C pool. The original C\+T\+E\+M assumed that litter respiration was not affected by oxygen deficit as a result of flooding, since litter was always assumed to have access to air. This assumption does not hold for peatlands where high water table positions occur routinely.
+\item To provide the framework for future runs coupled to the global earth system model, we separated the soil C balance and heterotrophic respiration (H\+R) calculations for peatland and non-\/peatland fractions for each grid cell in the global model. Over the non-\/peatland fraction, we use the original C\+T\+E\+M approach that aggregates the H\+R from each P\+F\+T weighted by the fractional cover. Over the peatland fraction the soil C pool and decomposition are controlled by the water table position, following the two-\/compartment approach used in the M\+W\+M (St. Hilaire et al. 2010) \cite{St-Hilaire2010-5e9}.
+\end{DoxyEnumerate}
+
+The standard configuration of soil layers in C\+L\+A\+S\+S consists of three layers with thickness of 0.\+10, 0.\+25, and 3.\+75 ,m. Organic soil in C\+L\+A\+S\+S was parameterized by Letts et al. (2000) \cite{Letts2000-pg} as fibric, hemic and sapric peat in the three soil layers respectively, representing fresh, moderately decomposed and highly decomposed organic matter. Tests of C\+L\+A\+S\+S on peatlands revealed improved performance in the energy simulations for fens and bogs with this organic soil parameterization. However, the model overestimated energy and water fluxes at bog surfaces during dry periods due to the neglect of the moss cover (Comer et al., 2000).
+
+To take into account the interaction amongst the moss and the soil layers and the overlying atmosphere for energy and water transfer, we added a new soil layer 0.\+10 m thick above the fibric organic soil to represent living and dead peatland bryophytes, such as Sphagnum mosses and true mosses (Bryopsida). The physical characteristics of mosses differ from those of either the shoots or the roots of vascular plants (Rice et al., 2008). In particular, mosses can hold more than 30 g of water per gram of biomass (Robroek et al., 2009). More than 90 \% of the moss leaf volume is occupied by the water-\/holding hyaline cells (Rice et al., 2008), which retain water even when the water table depth declines to 1--10 m below the surface (Hayward and Clymo, 1982).
+
+The parameter values of the moss layer for water and energy properties were derived from a number of recent experiments measuring the hydraulic properties of mosses (Price et al., 2008 \cite{Price2008-fr}; Price and Whittington, 2010; Mc\+Carter and Price, 2012). Living mosses range from 2--3 to over 5 cm in height (Rice et al., 2008) and have lower values of dry bulk density and field capacity than fibric peat (Price et al., 2008) \cite{Price2008-fr}. Compared to fibric peat, the saturated hydraulic conductivity of living moss is higher by orders of magnitude (Price et al., 2008) \cite{Price2008-fr} and the thermal conductivity is more affected by the water content (O\textquotesingle{}Donnell et al., 2009). To fully account for the effect of mosses, we set the depth of the living moss ( $z_{m}$) within the top soil (i.\+e. moss) layer to 3 cm for fens and 4 cm for bogs, and interpolated its water content $w_m$ (kg water /(kg dry mass)) from the water content of the overall layer $\theta_{l,1}$ (m $^3$ water /(m soil) $^3$) and the depth of the living moss\+:
+
+$w_m =\frac{z_m\theta_{l,1}\rho_w}{B_m} $
+
+where the dry moss biomass ( $B_m) $ is converted from moss C (C $_m $) using the standard conversion factor of 0.\+46 kg C per kg dry biomass, $\theta _{l,1} $ (m $^3$\textbackslash{},m $^{-3}$) is the liquid water content of the top soil layer, and $\rho_w $ is the density of water (1000 kg m $^{-3} $). The maximum and minimum moss water contents were estimated from a number of observed moss water contents (e.\+g. Williams and Flanagan, 1998; Robroek et al., 2009). In C\+L\+A\+S\+S, evaporation at the soil surface is controlled by a soil evaporation efficiency coefficient $\beta $ (Verseghy, 2012). This parameter is calculated from the liquid water content and the field capacity of the first soil layer following Lee and Pielke (1992). For peatlands, $\beta $ was assumed to be regulated by the relative moisture of the living moss rather than the ratio of relative liquid water content of the first soil layer\+:
+
+$ \beta = 0.25 [ 1- \cos \left( \frac{w_m -w_{m,min}}{w_m-w_{m,max}} \right)]^{2} $
+
+where $w_m $, $w_{m,max} $, and $w_{m,min} $ are the water content and the maximum and minimum water contents of the living moss in kg water / (kg dry mass). 

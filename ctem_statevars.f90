@@ -213,6 +213,8 @@ type veg_rot
     real, dimension(nlat,nmos) :: lucltrin !<luc related inputs to litter pool, u-mol co2/m2.sec
     real, dimension(nlat,nmos) :: lucsocin !<luc related inputs to soil c pool, u-mol co2/m2.sec
 
+    real, dimension(nlat,nmos) :: peatdep  !< peat depth (m)
+
     real, dimension(nlat,nmos) :: npp      !<net primary productivity
     real, dimension(nlat,nmos) :: nep      !<net ecosystem productivity
     real, dimension(nlat,nmos) :: nbp      !<net biome productivity
@@ -245,6 +247,18 @@ type veg_rot
     real, dimension(nlat,nmos,icc)   :: rgveg       !<growth resp. rate for each pft
     real, dimension(nlat,nmos,icc)   :: litrfallveg !<litter fall in \f$kg c/m^2\f$ for each pft
     real, dimension(nlat,nmos,iccp1) :: humiftrsveg !<
+
+    integer, dimension(nlat,nmos) :: ipeatland      !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+!FLAG need to do resets and initializations for all of these!
+    real, dimension(nlat,nmos) :: anmoss            !<net photosynthetic rate of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(nlat,nmos) :: rmlmoss           !<maintenance respiration rate of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(nlat,nmos) :: gppmoss           !<gross primaray production of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(nlat,nmos) :: nppmoss           !<net primary production of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(nlat,nmos) :: armoss            !<autotrophic respiration of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(nlat,nmos) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
+    real, dimension(nlat,nmos) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
+    real, dimension(nlat,nmos) :: dmoss             !<depth of living moss (m)
+    real, dimension(nlat,nmos) :: pdd               !<peatland degree days above 0 deg C.
 
     real, dimension(nlat,nmos,icc)  :: rothrlos !<root death as crops are harvested, \f$kg c/m^2\f$
     real, dimension(nlat,nmos,icc)  :: pfcancmx !<previous year's fractional coverages of pfts
@@ -476,6 +490,25 @@ type veg_gat
                                        !<all causes (mortality, turnover, and disturbance)
     real, dimension(ilg) :: humiftrs   !<transfer of humidified litter from litter to soil c pool
 
+    integer, dimension(ilg) :: ipeatland !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+    real, dimension(ilg) :: anmoss     !<net photosynthetic rate of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: rmlmoss    !<maintenance respiration rate of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: gppmoss    !<gross primaray production of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: nppmoss    !<net primary production of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: armoss     !<autotrophic respiration of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: litrmsmoss !<moss litter mass, \f$kg C/m^2\f$
+    real, dimension(ilg) :: Cmossmas   !<C in moss biomass, \f$kg C/m^2\f$
+    real, dimension(ilg) :: dmoss      !<depth of living moss (m)
+    real, dimension(ilg) :: pdd        !<peatland degree days above 0 deg C.
+    real, dimension(ilg) :: ancsmoss   !<moss net photosynthesis in canopy snow subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: angsmoss   !<moss net photosynthesis in snow ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: ancmoss    !<moss net photosynthesis in canopy ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: angmoss    !<moss net photosynthesis in bare ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: rmlcsmoss  !<moss maintenance respiration in canopy snow subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: rmlgsmoss  !<moss maintenance respiration in ground snow subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: rmlcmoss   !<moss maintenance respiration in canopy ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, dimension(ilg) :: rmlgmoss   !<moss maintenance respiration in bare ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+
     real, dimension(ilg,icc)   :: gppveg     !<gross primary productity for each pft
     real, dimension(ilg,iccp1) :: nepveg     !<net ecosystem productity for bare fraction expnbaln(i)=0.0 amount
                                              !<of c related to spatial expansion Not used JM Jun 2014 
@@ -548,7 +581,6 @@ type veg_gat
     integer, dimension(ilg)     :: stdaln   !<an integer telling if ctem is operated within gcm (=0) or in stand
                                             !<alone mode (=1). this is used for fire purposes. see comments just
                                             !<above where disturb subroutine is called.
-
 end type veg_gat
 
 type (veg_gat), save, target :: vgat
@@ -615,7 +647,6 @@ type class_moyr_output
     real, dimension(nlat) :: FTABLE_MAX_YR
     real, dimension(nlat) :: ALTOTACC_YR !< Broadband albedo
     integer, dimension(nlat) :: altotcntr_yr !<Used to count the number of time steps with the sun above the horizon
-
 
     real :: FSSTAR_YR !<
     real :: FLSTAR_YR !<
@@ -833,6 +864,9 @@ type ctem_tile_level
       real, dimension(ilg) :: taaccgat_t       !<
       real, dimension(ilg) :: uvaccgat_t       !<
       real, dimension(ilg) :: vvaccgat_t       !<
+      real, dimension(ilg) :: anmossac_t       !<daily averaged moss net photosynthesis accumulated (/f$\mu mol /m^2 /s\f$)
+      real, dimension(ilg) :: rmlmossac_t      !<daily averaged moss maintainence respiration (/f$\mu mol /m^2 /s\f$)
+      real, dimension(ilg) :: gppmossac_t      !<daily averaged gross primary production (/f$\mu mol /m^2 /s\f$)
       real, dimension(ilg,ignd) :: tbaraccgat_t!<
       real, dimension(ilg,ignd) :: tbarcacc_t  !<
       real, dimension(ilg,ignd) :: tbarcsacc_t !<
@@ -841,6 +875,7 @@ type ctem_tile_level
       real, dimension(ilg,ignd) :: thliqcacc_t !<
       real, dimension(ilg,ignd) :: thliqgacc_t !<
       real, dimension(ilg,ignd) :: thliqacc_t  !<
+      real, dimension(ilg,ignd) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
       real, dimension(ilg,ignd) :: thicecacc_t !<
       real, dimension(ilg,ignd) :: thicegacc_t !<
       real, dimension(ilg,icc)  :: ancsvgac_t  !<
@@ -1101,6 +1136,7 @@ type ctem_gridavg_annual
     real, dimension(nlat) :: ch4dyn2_yr_g  !<
     real, dimension(nlat) :: ch4soills_yr_g!<
     real, dimension(nlat) :: veghght_yr_g  !<
+    real, dimension(nlat) :: peatdep_yr_g  !<
 
 end type ctem_gridavg_annual
 
@@ -1155,10 +1191,12 @@ type ctem_tileavg_annual
       real, dimension(nlat,nmos) :: ch4dyn2_yr_t  !<
       real, dimension(nlat,nmos) :: ch4soills_yr_t!<
       real, dimension(nlat,nmos) :: veghght_yr_t  !<
+      real, dimension(nlat,nmos) :: peatdep_yr_t  !<
 
 end type ctem_tileavg_annual
 
 type (ctem_tileavg_annual), save, target :: ctem_tile_yr
+
 
 
 contains
@@ -1243,6 +1281,13 @@ integer :: j,k,l,m
         vrot%ch4dyn2(j,k)          = 0.0
         vrot%ch4_soills(j,k)       = 0.0
 
+        vrot%nppmoss(j,k)           = 0.0
+        vrot%rmlmoss(j,k)           = 0.0
+        vrot%gppmoss(j,k)           = 0.0
+        vrot%anmoss(j,k)            = 0.0
+        vrot%armoss(j,k)            = 0.0
+        vrot%peatdep(j,k)           = 0.0
+        vrot%pdd(j,k)               = 0.0
 
         do l=1,ignd
             vrot%tbaraccrow_m(j,k,l)  = 0.0
@@ -1800,6 +1845,7 @@ do i=1,nltest
     ctem_grd_yr%ch4dyn1_yr_g(i)  =0.0
     ctem_grd_yr%ch4dyn2_yr_g(i)  =0.0
     ctem_grd_yr%ch4soills_yr_g(i)  =0.0
+    ctem_grd_yr%peatdep_yr_g(i)  =0.0
 
     do m = 1,nmtest
         ! Tile avg
@@ -1845,6 +1891,7 @@ do i=1,nltest
         ctem_tile_yr%ch4dyn1_yr_t(i,m)  =0.0
         ctem_tile_yr%ch4dyn2_yr_t(i,m)  =0.0
         ctem_tile_yr%ch4soills_yr_t(i,m)  =0.0
+        ctem_tile_yr%peatdep_yr_t(i,m)  =0.0
 
         do j=1,icc
             ! per pft

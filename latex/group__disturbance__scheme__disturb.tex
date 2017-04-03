@@ -7,7 +7,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Disturbance Subroutine.
 
 \begin{DoxyCompactItemize}
 \item 
-subroutine, public \hyperlink{group__disturbance__scheme__disturb_ga0bed06e74bd06c387ae02bc545bf2a25}{disturbance\+\_\+scheme\+::disturb} (stemmass, rootmass, gleafmas, bleafmas,thliq,wiltsm,fieldsm,uwind,vwind,lightng,fcancmx, litrmass,prbfrhuc, rmatctem, extnprob, popdon,il1,il2,sort, nol2pfts,grclarea,thice,popdin, lucemcom,dofire,currlat,iday,fsnow,isand,
+subroutine, public \hyperlink{group__disturbance__scheme__disturb_ga43f1709a7ea90ed6c9c37f54c2f5478b}{disturbance\+\_\+scheme\+::disturb} (stemmass, rootmass, gleafmas, bleafmas,thliq,T\+H\+L\+W,T\+H\+F\+C,uwind,vwind,lightng,fcancmx, litrmass,prbfrhuc, rmatctem, extnprob, popdon,il1,il2,sort, nol2pfts,grclarea,thice,popdin, lucemcom,dofire,currlat,iday,fsnow,isand,
 \end{DoxyCompactItemize}
 
 
@@ -75,7 +75,7 @@ When C\+T\+E\+M is run with prescribed P\+F\+T fractional cover, the area of P\+
 After bare ground generation associated with fire, the thinned biomass is spread uniformly over the remaining fraction of a P\+F\+T. However, it is ensured that the carbon density of the remaining biomass does not increase to a value above what it was before the fire occurred. 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{group__disturbance__scheme__disturb_ga0bed06e74bd06c387ae02bc545bf2a25}{}\index{Disturbance\+\_\+scheme\+\_\+disturb@{Disturbance\+\_\+scheme\+\_\+disturb}!disturb@{disturb}}
+\hypertarget{group__disturbance__scheme__disturb_ga43f1709a7ea90ed6c9c37f54c2f5478b}{}\index{Disturbance\+\_\+scheme\+\_\+disturb@{Disturbance\+\_\+scheme\+\_\+disturb}!disturb@{disturb}}
 \index{disturb@{disturb}!Disturbance\+\_\+scheme\+\_\+disturb@{Disturbance\+\_\+scheme\+\_\+disturb}}
 \subsubsection[{disturb}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public disturbance\+\_\+scheme\+::disturb (
 \begin{DoxyParamCaption}
@@ -84,8 +84,8 @@ After bare ground generation associated with fire, the thinned biomass is spread
 \item[{real, dimension(ilg,icc)}]{gleafmas, }
 \item[{real, dimension(ilg,icc)}]{bleafmas, }
 \item[{real, dimension(ilg,ignd)}]{thliq, }
-\item[{real, dimension(ilg,ignd)}]{wiltsm, }
-\item[{real, dimension(ilg,ignd)}]{fieldsm, }
+\item[{real, dimension(ilg,ignd)}]{T\+H\+L\+W, }
+\item[{real, dimension(ilg,ignd)}]{T\+H\+F\+C, }
 \item[{real, dimension(ilg)}]{uwind, }
 \item[{real, dimension(ilg)}]{vwind, }
 \item[{real, dimension(ilg)}]{lightng, }
@@ -109,7 +109,7 @@ After bare ground generation associated with fire, the thinned biomass is spread
 \item[{real, dimension(ilg)}]{fsnow, }
 \item[{integer, dimension(ilg,ignd)}]{isand}
 \end{DoxyParamCaption}
-)}\label{group__disturbance__scheme__disturb_ga0bed06e74bd06c387ae02bc545bf2a25}
+)}\label{group__disturbance__scheme__disturb_ga43f1709a7ea90ed6c9c37f54c2f5478b}
 
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt in}  & {\em popdon} & if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes, or if false, read directly from .ctm file\\
@@ -134,9 +134,9 @@ After bare ground generation associated with fire, the thinned biomass is spread
 \hline
  & {\em thliq} & liquid soil moisture content\\
 \hline
- & {\em wiltsm} & wilting point soil moisture content\\
+ & {\em thlw} & wilting point soil moisture content\\
 \hline
- & {\em fieldsm} & field capacity soil moisture content\\
+ & {\em thfc} & field capacity soil moisture content\\
 \hline
  & {\em uwind} & wind speed, $m/s$\\
 \hline

@@ -15,8 +15,12 @@ C!
      9                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,        
      A                  TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
-     C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF)
+     C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF,
+     5                  ipeatland,co2conc,pressg,coszs,Cmossmas,
+     6                  dmoss,anmoss,rmlmoss,iday,daylength,pdd )
 C
+!     * OCT 30/16 - J. MELTON. Finish implementation of peatland code by
+!                              Yuanqiao Wu.
 C     * OCT 26/16 - D.VERSEGHY. ADD ZPOND TO CALCULATION OF EVPMAX.
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATE
 C     *                         ACCORDING TO WATER AVAILABILITY.
@@ -104,6 +108,8 @@ C     *                         CLASS VERSION 2.0 (WITH CANOPY).
 C     * APR 11/89 - D.VERSEGHY. ITERATIVE SURFACE TEMPERATURE 
 C     *                         CALCULATIONS FOR SNOW/SOIL.
 C
+      use peatlands_mod, only : mosspht
+
       IMPLICIT NONE
 
 C     * INTEGER CONSTANTS.
@@ -138,6 +144,9 @@ C
       REAL UE    (ILG)  !<Friction velocity of air \f$[m s^{-1}]\f$  
       REAL H     (ILG)  !<Height of the atmospheric boundary layer [m]
       REAL ZPOND (ILG)  !<Depth of ponded water on surface [m]
+      real anmoss(ilg)  !<
+      real rmlmoss(ilg) !<
+      real cevapmoss(ilg)!<
 C
 C     * INPUT ARRAYS.
 C
@@ -192,6 +201,16 @@ C
       INTEGER ITERCT(ILG,6,50) !<Counter of number of iterations required to
                                !<solve energy balance for four subareas
       INTEGER ISAND(ILG,IG)    !<Sand content flag
+      integer  ipeatland(ilg)
+      integer iday
+      integer ievapmoss(ilg)
+      real  co2conc(ilg)
+      real  pressg(ilg)
+      real coszs(ilg)
+      real Cmossmas(ilg)
+      real dmoss(ilg)
+      real daylength(ilg)
+      real pdd(ilg)
 C
 C     * BAND-DEPENDANT ARRAYS.                                          
 C                                                                       
@@ -211,7 +230,7 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL QSWNV,QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO
+      REAL QSWNV(ilg),QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -252,7 +271,7 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-C-----------------------------------------------------------------------
+
       !>
       !!For the surface temperature iteration, two alternative schemes 
       !!are offered: the bisection method (selected if the flag ITG = 1) 
@@ -271,7 +290,7 @@ C
       IF(ITG.LT.2) THEN
           ITERMX=50                                                     
       ELSE
-          ITERMX=5
+          ITERMX=12      !was 5 YW March 27, 2015
       ENDIF
 C
 C      IF(ISNOW.EQ.0) THEN
@@ -285,10 +304,12 @@ C
       DO I=IL1,IL2                                                      
          QSWNET(I)=0.0                                                  
          QTRANS(I)=0.0                                                  
+         if (ipeatland(i) > 0)                   then
+               qswnv(i)=0.0
+         endif
       END DO                                                            
 C 
       !>
-      !! FLAG: this comment below likely needs updating!
       !!
       !!In the beginning loop, some preliminary calculations are done. The 
       !!shortwave transmissivity at the surface, TRTOP, is set to zero in 
@@ -311,7 +332,7 @@ C
          DO I=IL1,IL2                                                   
           IF(FI(I).GT.0.)                                          THEN
                TRTOP(I,1)=0.                                            
-               QSWNV=FSSB(I,1)*(1.0-ALVISG(I))                          
+               QSWNV(i)=FSSB(I,1)*(1.0-ALVISG(I)) !YW QSWNV to QSWNV(i)                          
                IF (ISNOALB .EQ. 0) THEN                                 
                   QSWNI=FSSB(I,2)*(1.0-ALNIRG(I))                       
                ELSE IF (ISNOALB .EQ. 1) THEN                            
@@ -320,19 +341,21 @@ C
                      QSWNI=QSWNI+FSSB(I,IB)*(1.0-ALNIRG(I))             
                   END DO ! IB                                           
               ENDIF 
-              QSWNET(I)=QSWNV+QSWNI           
-               QTRANS(I)=QSWNET(I)*TRTOP(I,1)                           
+              QSWNET(I)=QSWNV(i)+QSWNI           
+              QTRANS(I)=QSWNET(I)*TRTOP(I,1)                           
               QSWNET(I)=QSWNET(I)-QTRANS(I) 
             END IF                                                      
          END DO ! I                                                     
+ 
       ELSE                                                              
+ 
          IF (ISNOALB .EQ. 0) THEN ! Use the existing snow albedo and transmission 
             DO I=IL1,IL2                                                
                IF(FI(I).GT.0.) THEN                                     
                   TRTOP(I,1)=TRSNOWG(I,1)                               
-                  QSWNV=FSSB(I,1)*(1.0-ALSNO(I,1))                      
+                  QSWNV(i)=FSSB(I,1)*(1.0-ALSNO(I,1))  !YW QSWNV to QSWNV(i)     
                   QSWNI=FSSB(I,2)*(1.0-ALSNO(I,2))                      
-                  QSWNET(I)=QSWNV+QSWNI                                 
+                  QSWNET(I)=QSWNV(i)+QSWNI                                 
                   QTRANS(I)=QSWNET(I)*TRTOP(I,1)                        
                   QSWNET(I)=QSWNET(I)-QTRANS(I)                         
                END IF                                                   
@@ -346,9 +369,9 @@ C
                DO I=IL1,IL2                                             
                   IF(FI(I).GT.0.) THEN                                  
                      TRTOP(I,IB)=TRSNOWG(I,IB)                          
-                     QSWNV=FSSB(I,IB)*(1.0-ALSNO(I,IB))                 
+                     QSWNV(i)=FSSB(I,IB)*(1.0-ALSNO(I,IB))                 
                      QSWNET(I)=QSWNET(I)+FSSB(I,IB)*(1.0-ALSNO(I,IB))   
-                     QTRANS(I)=QTRANS(I)+QSWNV*TRTOP(I,IB)              
+                     QTRANS(I)=QTRANS(I)+QSWNV(i)*TRTOP(I,IB)              
                   END IF                                                
                END DO ! I                                               
             END DO ! IB                                                 
@@ -381,6 +404,17 @@ C
               ENDIF
           ENDIF
    50 CONTINUE
+
+c    Do moss photosynthesis:
+!       if (ipeatland(i) >0) then  ! FLAG: Outside of do-loop, so i=2 after last loop
+                                   !       which is out-of-bounds for ipeatland(ilg=1). EC Jan 30 2017.
+!!      moss subroutine finds ground evaporation rate and photosynthesis--\
+!           call mosspht(ilg,ig,iday,qswnv,thliq,co2conc,tstart,zsnow,
+            call mosspht(il1,il2,iday,qswnv,thliq,co2conc,tstart,zsnow, ! EC Jan 30 2017.
+     1              pressg,Cmossmas,dmoss,anmoss,rmlmoss,
+     2              cevapmoss,ievapmoss, ipeatland,daylength,pdd)
+!      end if
+
       !>
       !!The 100 continuation line marks the beginning of the surface 
       !!temperature iteration sequence. First the flags NIT (indicating 
@@ -459,7 +493,14 @@ C
                   EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
               ELSE
-                  EVBETA(I)=CEVAP(I)
+c    evaporation coefficient evbeta is controled by moss in peatland 
+                  if (ipeatland(i) == 0)                   then 
+                       EVBETA(I)=CEVAP(I)
+                  else
+                       evbeta(i) = cevapmoss(i)
+                       ievap(i) = ievapmoss(i)
+                  endif
+
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QA(I)
                   IF(QZERO(I).GT.QA(I) .AND. IEVAP(I).EQ.0) THEN
                       EVBETA(I)=0.0

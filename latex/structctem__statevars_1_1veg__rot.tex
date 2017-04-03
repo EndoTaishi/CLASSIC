@@ -296,6 +296,9 @@ C\+T\+E\+M\textquotesingle{}s \textquotesingle{}rot\textquotesingle{} vars.
 \hypertarget{structctem__statevars_1_1veg__rot_a3607609cc4766b58b177306d4130c849}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a3607609cc4766b58b177306d4130c849}{lucsocin}\label{structctem__statevars_1_1veg__rot_a3607609cc4766b58b177306d4130c849}
 
 \begin{DoxyCompactList}\small\item\em luc related inputs to soil c pool, u-\/mol co2/m2.\+sec \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_af28f0440f19a7475b5f0c361d4af2752}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_af28f0440f19a7475b5f0c361d4af2752}{peatdep}\label{structctem__statevars_1_1veg__rot_af28f0440f19a7475b5f0c361d4af2752}
+
+\begin{DoxyCompactList}\small\item\em peat depth (m) \end{DoxyCompactList}\item 
 \hypertarget{structctem__statevars_1_1veg__rot_a25b7905aae5d130f67504f5299b3a207}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a25b7905aae5d130f67504f5299b3a207}{npp}\label{structctem__statevars_1_1veg__rot_a25b7905aae5d130f67504f5299b3a207}
 
 \begin{DoxyCompactList}\small\item\em net primary productivity \end{DoxyCompactList}\item 
@@ -380,6 +383,36 @@ C\+T\+E\+M\textquotesingle{}s \textquotesingle{}rot\textquotesingle{} vars.
 \hypertarget{structctem__statevars_1_1veg__rot_ae8f41446d6babb17b839cbce5bc57051}{}real, dimension(nlat, nmos, iccp1) {\bfseries humiftrsveg}\label{structctem__statevars_1_1veg__rot_ae8f41446d6babb17b839cbce5bc57051}
 
 \item 
+\hypertarget{structctem__statevars_1_1veg__rot_a5cccb8e6c6c86842a297828716082a84}{}integer, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a5cccb8e6c6c86842a297828716082a84}{ipeatland}\label{structctem__statevars_1_1veg__rot_a5cccb8e6c6c86842a297828716082a84}
+
+\begin{DoxyCompactList}\small\item\em Peatland flag\+: 0 = not a peatland, 1= bog, 2 = fen. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_a9ef53574282335e75956bc2899f47468}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a9ef53574282335e75956bc2899f47468}{anmoss}\label{structctem__statevars_1_1veg__rot_a9ef53574282335e75956bc2899f47468}
+
+\begin{DoxyCompactList}\small\item\em net photosynthetic rate of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_a9560d1e17f435c07ac6e3719d933f4bf}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a9560d1e17f435c07ac6e3719d933f4bf}{rmlmoss}\label{structctem__statevars_1_1veg__rot_a9560d1e17f435c07ac6e3719d933f4bf}
+
+\begin{DoxyCompactList}\small\item\em maintenance respiration rate of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_a66b01806864cdb443aa1450bee82c350}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a66b01806864cdb443aa1450bee82c350}{gppmoss}\label{structctem__statevars_1_1veg__rot_a66b01806864cdb443aa1450bee82c350}
+
+\begin{DoxyCompactList}\small\item\em gross primaray production of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_acf50ec8d43f20d7b9ad9d5bdc0e8cbda}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_acf50ec8d43f20d7b9ad9d5bdc0e8cbda}{nppmoss}\label{structctem__statevars_1_1veg__rot_acf50ec8d43f20d7b9ad9d5bdc0e8cbda}
+
+\begin{DoxyCompactList}\small\item\em net primary production of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_afa2d0bf60ea333b0f23e81c6d78186b7}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_afa2d0bf60ea333b0f23e81c6d78186b7}{armoss}\label{structctem__statevars_1_1veg__rot_afa2d0bf60ea333b0f23e81c6d78186b7}
+
+\begin{DoxyCompactList}\small\item\em autotrophic respiration of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_a85edecea36b56b79ddfd3a30f77a3830}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a85edecea36b56b79ddfd3a30f77a3830}{litrmsmoss}\label{structctem__statevars_1_1veg__rot_a85edecea36b56b79ddfd3a30f77a3830}
+
+\begin{DoxyCompactList}\small\item\em moss litter mass, $kg C/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_a2ad794f1fd0b92dc35e42553475ce9ef}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a2ad794f1fd0b92dc35e42553475ce9ef}{cmossmas}\label{structctem__statevars_1_1veg__rot_a2ad794f1fd0b92dc35e42553475ce9ef}
+
+\begin{DoxyCompactList}\small\item\em C in moss biomass, $kg C/m^2$. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_a1e51c1f35da7b98ada827a2784d3046a}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a1e51c1f35da7b98ada827a2784d3046a}{dmoss}\label{structctem__statevars_1_1veg__rot_a1e51c1f35da7b98ada827a2784d3046a}
+
+\begin{DoxyCompactList}\small\item\em depth of living moss (m) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__rot_a631c153c6c9083f2282477f31083e3ec}{}real, dimension(nlat, nmos) \hyperlink{structctem__statevars_1_1veg__rot_a631c153c6c9083f2282477f31083e3ec}{pdd}\label{structctem__statevars_1_1veg__rot_a631c153c6c9083f2282477f31083e3ec}
+
+\begin{DoxyCompactList}\small\item\em peatland degree days above 0 deg C. \end{DoxyCompactList}\item 
 \hypertarget{structctem__statevars_1_1veg__rot_a9b507da454ff945f8594997d5e55495f}{}real, dimension(nlat, nmos, icc) \hyperlink{structctem__statevars_1_1veg__rot_a9b507da454ff945f8594997d5e55495f}{rothrlos}\label{structctem__statevars_1_1veg__rot_a9b507da454ff945f8594997d5e55495f}
 
 \begin{DoxyCompactList}\small\item\em root death as crops are harvested, $kg c/m^2$ \end{DoxyCompactList}\item 

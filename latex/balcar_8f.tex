@@ -8,7 +8,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Carbon Balance Subroutine.
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{balcar_8f_a2da2e88e712caa3c98e7f3f5c77b852a}{balcar} (gleafmas, stemmass, rootmass, bleafmas, litrmass, soilcmas, ntchlveg, ntchsveg, ntchrveg, tltrleaf, tltrstem, tltrroot, glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, ltresveg, scresveg, humtrsvg, pglfmass, pblfmass, pstemass, protmass, plitmass, psocmass, vgbiomas, repro\+\_\+cost, pvgbioms, gavgltms, pgavltms, gavgscms, pgavscms, galtcels, repro\+\_\+cost\+\_\+g, npp, autores, hetrores, gpp, nep, litres, socres, dstcemls, nbp, litrfall, humiftrs, il1, il2)
+subroutine \hyperlink{balcar_8f_a922db81c881d66b3cf76a5a72ea4586a}{balcar} (gleafmas, stemmass, rootmass, bleafmas, litrmass, soilcmas, ntchlveg, ntchsveg, ntchrveg, tltrleaf, tltrstem, tltrroot, glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, ltresveg, scresveg, humtrsvg, pglfmass, pblfmass, pstemass, protmass, plitmass, psocmass, vgbiomas, repro\+\_\+cost, pvgbioms, gavgltms, pgavltms, gavgscms, pgavscms, galtcels, repro\+\_\+cost\+\_\+g, npp, autores, hetrores, gpp, nep, litres, socres, dstcemls, nbp, litrfall, humiftrs, il1, il2, ipeatland, Cmossmas, p\+Cmossmas, nppmosstep, litrfallmoss, litrmsmoss, plitrmsmoss, ltrestepmoss, humicmosstep)
 \end{DoxyCompactItemize}
 
 
@@ -18,7 +18,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Carbon Balance Subroutine.
 unless mentioned all pools are in kg c/m2 unless mentioned all fluxes are in units of u-\/mol co2/m2.\+sec 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{balcar_8f_a2da2e88e712caa3c98e7f3f5c77b852a}{}\index{balcar.\+f@{balcar.\+f}!balcar@{balcar}}
+\hypertarget{balcar_8f_a922db81c881d66b3cf76a5a72ea4586a}{}\index{balcar.\+f@{balcar.\+f}!balcar@{balcar}}
 \index{balcar@{balcar}!balcar.\+f@{balcar.\+f}}
 \subsubsection[{balcar}]{\setlength{\rightskip}{0pt plus 5cm}subroutine balcar (
 \begin{DoxyParamCaption}
@@ -26,8 +26,8 @@ unless mentioned all pools are in kg c/m2 unless mentioned all fluxes are in uni
 \item[{real, dimension(ilg,icc)}]{stemmass, }
 \item[{real, dimension(ilg,icc)}]{rootmass, }
 \item[{real, dimension(ilg,icc)}]{bleafmas, }
-\item[{real, dimension(ilg,icc+1)}]{litrmass, }
-\item[{real, dimension(ilg,icc+1)}]{soilcmas, }
+\item[{real, dimension(ilg,iccp1)}]{litrmass, }
+\item[{real, dimension(ilg,iccp1)}]{soilcmas, }
 \item[{real, dimension(ilg,icc)}]{ntchlveg, }
 \item[{real, dimension(ilg,icc)}]{ntchsveg, }
 \item[{real, dimension(ilg,icc)}]{ntchrveg, }
@@ -39,15 +39,15 @@ unless mentioned all pools are in kg c/m2 unless mentioned all fluxes are in uni
 \item[{real, dimension(ilg,icc)}]{stcaemls, }
 \item[{real, dimension(ilg,icc)}]{rtcaemls, }
 \item[{real, dimension(ilg,icc)}]{ltrcemls, }
-\item[{real, dimension(ilg,icc+1)}]{ltresveg, }
-\item[{real, dimension(ilg,icc+1)}]{scresveg, }
-\item[{real, dimension(ilg,icc+1)}]{humtrsvg, }
+\item[{real, dimension(ilg,iccp1)}]{ltresveg, }
+\item[{real, dimension(ilg,iccp1)}]{scresveg, }
+\item[{real, dimension(ilg,iccp1)}]{humtrsvg, }
 \item[{real, dimension(ilg,icc)}]{pglfmass, }
 \item[{real, dimension(ilg,icc)}]{pblfmass, }
 \item[{real, dimension(ilg,icc)}]{pstemass, }
 \item[{real, dimension(ilg,icc)}]{protmass, }
-\item[{real, dimension(ilg,icc+1)}]{plitmass, }
-\item[{real, dimension(ilg,icc+1)}]{psocmass, }
+\item[{real, dimension(ilg,iccp1)}]{plitmass, }
+\item[{real, dimension(ilg,iccp1)}]{psocmass, }
 \item[{real, dimension(ilg)}]{vgbiomas, }
 \item[{real, dimension(ilg,icc)}]{repro\+\_\+cost, }
 \item[{real, dimension(ilg)}]{pvgbioms, }
@@ -69,9 +69,18 @@ unless mentioned all pools are in kg c/m2 unless mentioned all fluxes are in uni
 \item[{real, dimension(ilg)}]{litrfall, }
 \item[{real, dimension(ilg)}]{humiftrs, }
 \item[{integer}]{il1, }
-\item[{integer}]{il2}
+\item[{integer}]{il2, }
+\item[{integer, dimension (ilg)}]{ipeatland, }
+\item[{real, dimension(ilg)}]{Cmossmas, }
+\item[{real, dimension(ilg)}]{p\+Cmossmas, }
+\item[{real, dimension(ilg)}]{nppmosstep, }
+\item[{real, dimension(ilg)}]{litrfallmoss, }
+\item[{real, dimension(ilg)}]{litrmsmoss, }
+\item[{real, dimension(ilg)}]{plitrmsmoss, }
+\item[{real, dimension(ilg)}]{ltrestepmoss, }
+\item[{real, dimension(ilg)}]{humicmosstep}
 \end{DoxyParamCaption}
-)}\label{balcar_8f_a2da2e88e712caa3c98e7f3f5c77b852a}
+)}\label{balcar_8f_a922db81c881d66b3cf76a5a72ea4586a}
 
 \begin{DoxyParams}{Parameters}
 {\em il1} & other variables\+: il1=1\\
@@ -166,6 +175,24 @@ unless mentioned all pools are in kg c/m2 unless mentioned all fluxes are in uni
 \hline
 {\em repro\+\_\+cost} & pools (after being updated)\+: amount of C transferred to litter due to reproductive tissues\\
 \hline
+{\em ipeatland} & Peatland flag, non-\/peatlands = 0\\
+\hline
+{\em cmossmas} & moss biomass C (kg\+C/m2)\\
+\hline
+{\em pcmossmas} & moss biomass C at the previous time step (kg\+C/m2)\\
+\hline
+{\em nppmosstep} & moss npp (kg\+C/m2/timestep)\\
+\hline
+{\em litrfallmoss} & moss litter fall (kg\+C/m2/timestep)\\
+\hline
+{\em litrmsmoss} & moss litter C (kg\+C/m2)\\
+\hline
+{\em plitrmsmoss} & moss litter C at the previous time step (kg\+C/m2)\\
+\hline
+{\em ltrestepmoss} & litter respiration from moss (kg\+C/m2/timestep)\\
+\hline
+{\em humicmosstep} & moss humification (kg\+C/m2/timestep)\\
+\hline
 {\em galtcels} & grid averaged flux\+: carbon emission losses from litter\\
 \hline
 {\em repro\+\_\+cost\+\_\+g} & grid averaged flux\+: amount of C used to generate reproductive tissues \\
@@ -184,6 +211,10 @@ litter over all pfts
 litter over the bare fraction
 
 soil carbon over the bare fraction
+
+Moss C balance
+
+Moss litter pool C balance
 
 grid averaged fluxes must also balance
 

@@ -94,8 +94,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a4d9e6acff97bbaca36f374552dbca674"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="read__from__job__options_8f90.html#a4d9e6acff97bbaca36f374552dbca674">read_from_job_options</a> (argbuff, transient_run, trans_startyr, ctemloop, ctem_on, ncyear, lnduseon, spinfast, cyclemet, nummetcylyrs, metcylyrst, co2on, setco2conc, ch4on, setch4conc, popdon, popcycleyr, parallelrun, dofire, dowetlands, obswetf, compete, inibioclim, start_bare, rsfile, start_from_rs, leap, jmosty, idisp, izref, islfd, ipcp, itc, itcg, itg, iwf, ipai, ihgt, ialc, ials, ialg, isnoalb, igralb, jhhstd, jhhendd, jdstd, jdendd, jhhsty, jhhendy, jdsty, jdendy)</td></tr>
-<tr class="separator:a4d9e6acff97bbaca36f374552dbca674"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20cec43eab235567e47a309edb57d040"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="read__from__job__options_8f90.html#a20cec43eab235567e47a309edb57d040">read_from_job_options</a> (argbuff, transient_run, trans_startyr, ctemloop, ctem_on, ncyear, lnduseon, spinfast, cyclemet, nummetcylyrs, metcylyrst, co2on, setco2conc, ch4on, setch4conc, popdon, popcycleyr, parallelrun, dofire, dowetlands, obswetf, compete, inibioclim, start_bare, rsfile, start_from_rs, leap, jmosty, idisp, izref, islfd, ipcp, itc, itcg, itg, iwf, ipai, ihgt, ialc, ials, ialg, isnoalb, jhhstd, jhhendd, jdstd, jdendd, jhhsty, jhhendy, jdsty, jdendy)</td></tr>
+<tr class="separator:a20cec43eab235567e47a309edb57d040"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Canadian Terrestrial Ecosystem Model (CTEM) Joboptions Read-In Subroutine. </p>
@@ -120,7 +120,7 @@ Functions/Subroutines</h2></td></tr>
  trans_startyr = 2000, &lt;&ndash; whatever year you want to start at <br />
  CYCLEMET = .FALSE. , &lt;&ndash; note this is set to FALSE. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="a4d9e6acff97bbaca36f374552dbca674"></a>
+<a class="anchor" id="a20cec43eab235567e47a309edb57d040"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -380,12 +380,6 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer, intent(out)&#160;</td>
-          <td class="paramname"><em>igralb</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, intent(out)&#160;</td>
           <td class="paramname"><em>jhhstd</em>, </td>
         </tr>
         <tr>
@@ -487,8 +481,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">jhhendy</td><td>simulation year (iyear) to stop writing the half-hourly output</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">jdsty</td><td>simulation year (iyear) to start writing the daily output</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">jdendy</td><td>simulation year (iyear) to stop writing the daily output</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">isnoalb</td><td>if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used.</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">igralb</td><td>if igralb is set to 0, the wet and dry soil albedos are calculated on the basis of soil texture. if it is set to 1, they are assigned values based on the ncar clm soil "colour" dataset. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">isnoalb</td><td>if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used. </td></tr>
   </table>
   </dd>
 </dl>
@@ -498,7 +491,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jan 30 2017 10:33:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 3 2017 14:39:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

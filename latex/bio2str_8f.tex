@@ -2,7 +2,7 @@
 \label{bio2str_8f}\index{bio2str.\+f@{bio2str.\+f}}
 
 
-Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Biomass To Structural Attributes Conversion Subroutine.  
+Biomass To Structural Attributes Conversion Subroutine.  
 
 
 \subsection*{Functions/\+Subroutines}
@@ -13,27 +13,45 @@ subroutine \hyperlink{bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919}{bio2str} (gl
 
 
 \subsection{Detailed Description}
-Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Biomass To Structural Attributes Conversion Subroutine. 
+Biomass To Structural Attributes Conversion Subroutine. 
 
-The time-\/varying biomass in the leaves ( $C_\mathrm{L}$), stem ( $C_\mathrm{S}$) and root ( $C_\mathrm{R}$) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by C\+L\+A\+S\+S.
+The time-\/varying biomass in the leaves ( $C_L$), stem ( $C_S$) and root ( $C_R$) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by C\+L\+A\+S\+S.
 
-Leaf biomass is converted to L\+A\+I using specific leaf area ( ${SLA}$, $m^2\,(kg\,C)^{-1}$), which itself is assumed to be a function of leaf lifespan ( $\tau_\mathrm{L}$; see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90})
+Leaf biomass is converted to L\+A\+I using specific leaf area ( ${SLA}$, $m^2\,(kg\,C)^{-1}$), which itself is assumed to be a function of leaf lifespan ( $\tau_L$; see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90})
 
-\[ \label{sla} SLA= \gamma_\mathrm{L}\tau_\mathrm{L}^{-0.5}\\ LAI = C_\mathrm{L}SLA\nonumber \]
+\[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \]
 
-where $\gamma_\mathrm{L}$ is a constant with value equal to $25\,m^2\,(kg\,C)^{-1}\,yr^{0.5}$.
+where $\gamma_L$ is a constant with value equal to $25\,m^2\,(kg\,C)^{-1}\,yr^{0.5}$. The vegetation height ( $H$; $m$) is calculated for tree, crop and grass P\+F\+Ts as
 
-The vegetation height ( $H$; $m$) is calculated for tree, crop and grass P\+F\+Ts as \[\label{height} H = \begin{cases} \min\left(10.0C_\mathrm{S}^{0.385},45\right) trees\\ (C_\mathrm{S} + C_\mathrm{L})^{0.385} crops\\ 3.5 (C_{L,g} + 0.55\,C_{L,b})^{0.5} grasses,\\ \end{cases} \] where $C_{L,g}$ is the green leaf biomass and $C_{L,b}$ is the brown leaf biomass that is scaled by 0.\+55 to reduce its contribution to the plant height. C\+T\+E\+M explicitly tracks brown leaf mass for grass P\+F\+Ts. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly $(\tau_{L,b} = 0.1\,\tau_\mathrm{L}$).
+$ H = \min (10.0C_S^{0.385},45) $ for trees
 
-C\+T\+E\+M dynamically simulates root distribution and depth in soil following \cite{Arora2003838}. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth $z$ is given by \[ \label{fracroo} f_\mathrm{R}(z) = 1 - \exp(-\iota z). \]
+$ H = (C_S + C_L)^{0.385} $ for crops
 
-Rooting depth ( $d_\mathrm{R}$; $m$), which is defined to be the depth containing $99\,{\%}$ of the root mass, is found by setting $z$ equal to $d_\mathrm{R}$ and $f_\mathrm{R} = 0.99$, which yields \[ \label{rootterm1} d_\mathrm{R} = \frac{-\ln(1-f_\mathrm{R})}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \]
+$ H = 3.5 (C_{L,g} + 0.55C_{L,b})^{0.5} $ for grasses
 
-The parameter $\iota$ that describes the exponential root distribution is calculated as \[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_\mathrm{R}}}{C_\mathrm{R}} \right)^{0.8}, \]
+where $C_{L,g}$ is the green leaf biomass and $C_{L,b}$ is the brown leaf biomass that is scaled by 0.\+55 to reduce its contribution to the plant height. C\+T\+E\+M explicitly tracks brown leaf mass for grass P\+F\+Ts. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly $(\tau_{L,b} = 0.1\,\tau_L$).
 
-where $\overline{\iota}$ represents the P\+F\+T-\/specific mean root distribution profile parameter and $\overline{C_\mathrm{R}}$ the average root biomass derived from \cite{Jackson1996-va} (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}). Equation (iota\}) yields a lower (higher) value of $\iota$ than $\overline{\iota}$ when root biomass $C_\mathrm{R}$ is higher (lower) than the P\+F\+T-\/specific mean root biomass $\overline{C_\mathrm{R}}$, resulting in a deeper (shallower) root profile than the mean root profile.
+In peatlands the vegetation height is calculated as (Wu et al. 2016) \cite{Wu2016-zt}
 
-The rooting depth $d_\mathrm{R}$ is checked to ensure it does not exceed the soil depth. If so, $d_\mathrm{R}$ is set to the soil depth and $\iota$ is recalculated as $\iota = 4.605/d_\mathrm{R}$ (see Eq. rootterm1\} for derivation of 4.\+605 term). The new value of $\iota$ is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model\textquotesingle{}s soil layers. 
+$ H = \min(10.0,3.0C_S^{0.385}) $ for trees
+
+$ H = \min(1.0, 0.25(C_S^{0.2})) $ for shrubs
+
+$ H = = min(1.0,(C_{L,g}+0.55C_{L,b})^{0.3}) $ for grasses and sedges
+
+C\+T\+E\+M dynamically simulates root distribution and depth in soil following (Arora and Boer, 2003) \cite{Arora2003838}. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth $z$ is given by
+
+$ f_R(z) = 1 - \exp(-\iota z) $
+
+Rooting depth ( $d_R$; $m$), which is defined to be the depth containing $99\,{\%}$ of the root mass, is found by setting $z$ equal to $d_R$ and $f_R = 0.99$, which yields
+
+\[ \label{rootterm1} d_R = \frac{-\ln(1-f_R)}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \]
+
+The parameter $\iota$ that describes the exponential root distribution is calculated as \[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \]
+
+where $\overline{\iota}$ represents the P\+F\+T-\/specific mean root distribution profile parameter and $\overline{C_R}$ the average root biomass derived from Jackson et al. (1996) \cite{Jackson1996-va} (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}). Equation for $\iota$ above yields a lower (higher) value of $\iota$ than $\overline{\iota}$ when root biomass $C_R$ is higher (lower) than the P\+F\+T-\/specific mean root biomass $\overline{C_R}$, resulting in a deeper (shallower) root profile than the mean root profile.
+
+The rooting depth $d_R$ is checked to ensure it does not exceed the soil depth. If so, $d_R$ is set to the soil depth and $\iota$ is recalculated as $\iota = 4.605/d_R$ (see Eq. rootterm1\} for derivation of 4.\+605 term). The new value of $\iota$ is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model\textquotesingle{}s soil layers. 
 
 \subsection{Function/\+Subroutine Documentation}
 \hypertarget{bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919}{}\index{bio2str.\+f@{bio2str.\+f}!bio2str@{bio2str}}
@@ -107,6 +125,8 @@ class uses log of roughness length (zoln) as an input parameter. when vegetation
 \item convert stem biomass into vegetation height for trees and crops, and convert leaf biomass into vegetation height for grass
 \item convert vegetation height into roughness length \& take its log
 \item lump this for ctem\textquotesingle{}s 9 pfts into class\textquotesingle{} 4 pfts
+
+Determine the vegetation height of the peatland shrubs shrubs in mbbog maximum 0.\+3 m average 0.\+18 m (Bubier et al. 2011) grass and herbs avg 0.\+3m, min 0.\+05 max 0.\+8 low shrub avg 0.\+82, min 0.\+10, max 2.\+00 tall shrub avg.\+3.\+76, min 2.\+3, max 5.\+00 (Hopkinson et al. 2005) The Canadian wetland vegetation classification graminoids include grass,rush,reed,sedge forb is all non-\/graminoids herbaceous plants shrubs dwarf $<$0.\+1m, low (0.\+1 to 0.\+5), medium 0.\+5 to 1.\+5, tall $>$1.\+5 trees $>$ 5 m
 \end{DoxyEnumerate}
 
 ------ 3. estimating fraction of roots in each soil layer for ----- ------ ctem\textquotesingle{}s each vegetation type, using root biomass -----

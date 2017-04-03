@@ -37,7 +37,7 @@ C!
       !!SPHICE & Specific heat of ice                                                     & $2.10 10^3  $  & $J kg^{-1} K^{-1}$ \\ \hline
       !!SPHVEG & Specific heat of vegetation matter                                       & $2.70 10^3  $  & $J kg^{-1} K^{-1}$ \\ \hline
       !!RHOW   & Density of water                                                         & $1.0 10^3   $  & $kg m^{-3}       $ \\ \hline
-      !!RHOICE & Density of ice                                                           & $40.917 10^3$  & $kg m^{-3}       $ \\ \hline
+      !!RHOICE & Density of ice                                                           & $0.917 10^3$  & $kg m^{-3}       $ \\ \hline
       !!TCGLAC & Thermal conductivity of ice sheets                                       & 2.24           & $W m^{-1} K^{-1} $ \\ \hline
       !!CLHMLT & Latent heat of freezing of water                                         & $0.334 10^6 $  & $J kg^{-1}   $     \\ \hline
       !!CLHVAP & Latent heat of vaporization of water                                     & $2.501 10^6 $  & $J kg^{-1}   $     \\ \hline

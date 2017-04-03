@@ -5,7 +5,7 @@
 !!
 !!Heterotrophic Respiration Subroutine For Bare Fraction
 !!
-!!
+!! FLAG This needs to be edited for the peatland changes!
 !!Heterotrophic respiration, \f$R_\mathrm{h}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), in CTEM is
 !!based on respiration from the litter (which includes contributions from the stem, leaf
 !!and root components), \f$R_{h,D}\f$, and soil carbon, \f$R_{h,H}\f$, pools,
@@ -133,7 +133,7 @@ contains
 subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
                     il1,      il2,     tbar,  psisat, b, &
                     thliq,    zbotw,   thiceg, &
-                        frac,    isnow,      isand, &
+                    frac,    isnow,      isand, &
 !    -------------- inputs above this line, outputs below -------------
                       litres,   socres)
 
@@ -251,22 +251,6 @@ implicit none
 
       do 240 i = il1, il2
 
-!         zcarbon=3.0/a                 ! 95% depth
-!
-!         if(zcarbon.le.zbotw(i,1)) then
-!             fracarb(i,1)=1.0             ! fraction of carbon in soil layers
-!         else
-!             fcoeff=exp(-a*zcarbon)
-!             fracarb(i,1)=1.0-(exp(-a*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
-!             if(zcarbon.le.zbotw(i,2)) then
-!                 fracarb(i,2)=1.0-fracarb(i,1)
-!                 fracarb(i,3)=0.0
-!             else
-!                 fracarb(i,3)=(exp(-a*zbotw(i,2))-fcoeff)/(1.0-fcoeff)
-!                 fracarb(i,2)=1.0-fracarb(i,1)-fracarb(i,3)
-!             endif
-!         endif
-! New, allows for many soil layers:
         zcarbon = 3.0 / a
         zcarb_g = 0.0
         do j=1,ignd
@@ -286,21 +270,7 @@ implicit none
 245       continue
 
         ! -------------
-        !solctemp(i)=tbar(i,1)*fracarb(i,1) +tbar(i,2)*fracarb(i,2) +tbar(i,3)*fracarb(i,3)
-        !solctemp(i)=solctemp(i) /(fracarb(i,1)+fracarb(i,2)+fracarb(i,3))
         solctemp(i) = sum(tbar(i,:)*fracarb(i,:))/ sum(fracarb(i,:))
-
-
-!       make sure we don't use temperatures of 2nd and 3rd soil layers
-!       if they are specified bedrock via sand -3 flag
-!        JM NOTE: This is not needed. zbotw already accounts for bedrock.
-!         if(isand(i,3).eq.-3)then ! third layer bed rock
-!           solctemp(i)=tbar(i,1)*fracarb(i,1) +tbar(i,2)*fracarb(i,2)
-!           solctemp(i)=solctemp(i) /(fracarb(i,1)+fracarb(i,2))
-!         endif
-!         if(isand(i,2).eq.-3)then ! second layer bed rock
-!           solctemp(i)=tbar(i,1)
-!         endif
 
 240   continue
 
@@ -317,12 +287,8 @@ implicit none
             scmotrm (i,j)=0.2
             psi (i,j) = 10000.0 ! set to large number so that
                                ! ltrmoscl becomes 0.2
-          else ! i.e., sand.ne.-3 or -4
 
-!            psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
-!            b(i,j)     = 0.159*clay(i,j)+2.91
-!            thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
-!            psi(i,j)   = psisat(i,j)*(thliq(i,j)/thpor(i,j))**(-b(i,j))
+          else ! i.e., sand.ne.-3 or -4
 
             psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thiceg(i,j)))**(-b(i,j))
 
@@ -423,7 +389,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
                       delzw,  thpor, il1, &
                       il2,     tbar,   psisat, b, thliq,  &
                      roottemp,    zbotw,     sort, &
-                     isand, thicec, &
+                     isand, thicec, ipeatland, &
 !    -------------- inputs above this line, outputs below -------------
                     ltresveg, scresveg)
 
@@ -436,6 +402,9 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
 
 !     change history:
 
+!     10  April 2015 -Bring in peatland scheme
+!     Y. Wu
+!
 !     30  Jul 2015  - Based on work by Yuanqiao Wu, respiration was found to
 !     J. Melton       behave incorrectly if the soil froze as it thought the water
 !                     was leaving the soil. This is now fixed.
@@ -463,6 +432,8 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
       integer i, j, k
       integer sort(icc) !<index for correspondence between 9 pfts and 12 values in the parameters vectors
       integer isand(ilg,ignd) !<
+      integer  ipeatland(ilg) !<
+
       real fcan(ilg,icc)      !<fractional coverage of ctem's 9 pfts
       real fct(ilg)           !<sum of all fcan, fcan & fct are not used at this time but could be used at some later stage
       real litrmass(ilg,icc+1)!<litter mass for the 9 pfts + bare in \f$kg c/m^2\f$
@@ -496,6 +467,7 @@ subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
       real psi(ilg,ignd)      !<
       real tempq10s(ilg,icc)  !<
       real fcoeff             !<
+
 
 !     ------------------------------------------------------------------
 !!     Constants and parameters are located in ctem_params.f90
@@ -553,23 +525,6 @@ do 130 i = il1, il2
         do 240 i = il1, il2
          if (fcan(i,j) .gt. 0.) then
 
-!           zcarbon=3.0/abar(sort(j))                ! 95% depth
-!           if(zcarbon.le.zbotw(i,1)) then
-!               fracarb(i,j,1)=1.0             ! fraction of carbon in
-!               fracarb(i,j,2)=0.0             ! soil layers
-!               fracarb(i,j,3)=0.0
-!           else
-!               fcoeff=exp(-abar(sort(j))*zcarbon)
-!               fracarb(i,j,1)=1.0-(exp(-abar(sort(j))*zbotw(i,1))-fcoeff)/(1.0-fcoeff)
-!               if(zcarbon.le.zbotw(i,2)) then
-!                   fracarb(i,j,2)=1.0-fracarb(i,j,1)
-!                   fracarb(i,j,3)=0.0
-!               else
-!                   fracarb(i,j,3)=(exp(-abar(sort(j))*zbotw(i,2))-fcoeff)/(1.0-fcoeff)
-!                   fracarb(i,j,2)=1.0-fracarb(i,j,1)-fracarb(i,j,3)
-!               endif
-!           endif
-        ! New, allows for many soil layers:
         zcarbon = 3.0 / abar(sort(j))
         zcarb_g = 0.0
         do k=1,ignd
@@ -590,20 +545,8 @@ do 130 i = il1, il2
           end if
 245       continue
 
-!           solctemp(i,j)=tbar(i,1)*fracarb(i,j,1) +tbar(i,2)*fracarb(i,j,2) +tbar(i,3)*fracarb(i,j,3)
-!           solctemp(i,j)=solctemp(i,j) /(fracarb(i,j,1)+fracarb(i,j,2)+fracarb(i,j,3))
           solctemp(i,j) = sum(tbar(i,:)*fracarb(i,j,:))/ sum(fracarb(i,j,:))
 
-!<         make sure we don't use temperatures of 2nd and 3rd soil layers
-!!         if they are specified bedrock via sand -3 flag
-
-!           if(isand(i,3).eq.-3)then ! third layer bed rock
-!             solctemp(i,j)=tbar(i,1)*fracarb(i,j,1) +tbar(i,2)*fracarb(i,j,2)
-!             solctemp(i,j)=solctemp(i,j) /(fracarb(i,j,1)+fracarb(i,j,2))
-!           endif
-!           if(isand(i,2).eq.-3)then ! second layer bed rock
-!             solctemp(i,j)=tbar(i,1)
-!           endif
         endif
 240     continue
 230   continue
@@ -624,12 +567,24 @@ do 130 i = il1, il2
                                ! ltrmoscl becomes 0.2
           else ! i.e., sand.ne.-3 or -4
 
-!             psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
-!             b(i,j)     = 0.159*clay(i,j)+2.91
-!             thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
+!           FLAG- check on this as I had to change a fair amount what YW had, JM. Sep 21 2016.
+!           Also not sure if it is needed?
+!           JM - Turn off for now, we'll see how testing looks. Nov 2016.
+!           EC - Re-implemented as peatland testing shows that in some situations, can get an invalid operation
+!                if thpor+0.005-thicec < 0. Note: same approach as in hetres_peat.  Feb 06 2017.
 
-            !the 0.005 below prevents a divide by 0 situation.
-            psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thicec(i,j)))**(-b(i,j))
+            if (ipeatland(i) >0) then
+                if ( thliq(i,j)+thicec(i,j)+0.01 < thpor(i,j) .and. tbar(i,j) < 273.16 ) then
+                  psi(i,j) = 0.001
+                elseif ( thicec(i,j) > thpor(i,j) ) then
+                  psi(i,j) = 0.001   !set to saturation
+                else
+                  psi(i,j) = psisat(i,j)*(thliq(i,j)/(thpor(i,j)-thicec(i,j)))**(-b(i,j))
+                endif
+            else
+              ! the 0.005 below prevents a divide by 0 situation.
+              psi(i,j)   = psisat(i,j)*(thliq(i,j)/(thpor(i,j)+0.005 -thicec(i,j)))**(-b(i,j))
+            endif
 
             if(psi(i,j).ge.10000.0) then
               scmotrm(i,j)=0.2
@@ -653,20 +608,6 @@ do 130 i = il1, il2
          if (fcan(i,j) .gt. 0.) then
 
           socmoscl(i,j) = sum(scmotrm(i,:)*fracarb(i,j,:)) / sum(fracarb(i,j,:))
-!           socmoscl(i,j) = scmotrm(i,1)*fracarb(i,j,1) +scmotrm(i,2)*fracarb(i,j,2) +scmotrm(i,3)*fracarb(i,j,3)
-!           socmoscl(i,j) = socmoscl(i,j) /(fracarb(i,j,1)+fracarb(i,j,2)+fracarb(i,j,3))
-
-!         make sure we don't use scmotrm of 2nd and 3rd soil layers
-!         if they are specified bedrock via sand -3 flag
-
-!           if(isand(i,3).eq.-3)then ! third layer bed rock
-!             socmoscl(i,j) = scmotrm(i,1)*fracarb(i,j,1) +scmotrm(i,2)*fracarb(i,j,2)
-!             socmoscl(i,j) = socmoscl(i,j) /(fracarb(i,j,1)+fracarb(i,j,2))
-!           endif
-!           if(isand(i,2).eq.-3)then ! second layer bed rock
-!             socmoscl(i,j) = scmotrm(i,1)
-!           endif
-
           socmoscl(i,j)=max(0.2,min(1.0,socmoscl(i,j)))
 
          endif
@@ -683,6 +624,7 @@ do 130 i = il1, il2
 !!     psi(i,1) calculated in loops 260 and 270 above.
 
       do 300 i = il1, il2
+      if (ipeatland(i) == 0)        then   !not peatland
         if(psi(i,1).gt.10000.0) then
           ltrmoscl(i)=0.2
         else if( psi(i,1).le.10000.0 .and. psi(i,1).gt.6.0 ) then
@@ -691,6 +633,33 @@ do 130 i = il1, il2
           ltrmoscl(i)=1.0
         endif
         ltrmoscl(i)=max(0.2,min(1.0,ltrmoscl(i)))
+      else  !is peatland
+!
+!    test psi optimal at psisat
+!    peatland microbals performs better towards wet environment,
+!    for b = 2.3, thpor = 0.98 as soil layer 1,
+!    thliq = 0.01  0.1   0.2    0.3    0.4    0.5   0.6   0.7    0.8     0.9
+!    psi   =  391  1.0   0.38  0.15   0.08   0.05   0.03  0.022  0.016  0.012
+!
+!    set the upper boundary at 500, optimal psi between 0.05 and 0.03
+!    (Mayono et al. 2013)
+!
+!    limit of ltrmoscalms at saturation
+          if (psi(i,1).ge. 10000.0) then
+               ltrmoscl(i) = 0.2
+          elseif (psi(i,1).le. 10000.0 .and.psi(i,1).gt. 6.0) then
+               ltrmoscl(i)=1.0 - 0.8*((log10(psi(i,1))-log10(6.0)) &
+                        /(log10(10000.0)-log10(6.0)))**1.
+          elseif (psi(i,1).le. 6.0 .and. psi(i,1) .gt. 4.0) then
+               ltrmoscl(i)=1.0
+          elseif (psi(i,1).le. 4.0 .and. psi(i,1).gt.psisat(i,1))  then
+               ltrmoscl(i)=1.0-0.99*((log10(4.0)-log10(psi(i,1)))/ &
+                        (log10(4.0)-log10(psisat(i,1))))
+          elseif (psi(i,1) .le. psisat(i,1))                     then
+               ltrmoscl(i)=0.01
+          endif
+          ltrmoscl(i)=max(0.0,min(ltrmoscl(i),1.0))
+        endif  !peatland
 300   continue
 
 !!    use temperature of the litter and soil c pools, and their soil

@@ -8,7 +8,7 @@ Purpose\+: Calculate visible and near-\/\+I\+R ground albedos.
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{GRALB_8f_af8208db48e4bd17f925ba5a654bce8bf}{gralb} (A\+L\+V\+S\+G, A\+L\+I\+R\+G, A\+L\+V\+S\+G\+C, A\+L\+I\+R\+G\+C, A\+L\+G\+W\+V, A\+L\+G\+W\+N, A\+L\+G\+D\+V, A\+L\+G\+D\+N, A\+L\+G\+W\+E\+T, A\+L\+G\+D\+R\+Y, T\+H\+L\+I\+Q, F\+S\+N\+O\+W, A\+L\+V\+S\+U, A\+L\+I\+R\+U, F\+C\+M\+X\+U, A\+G\+V\+D\+A\+T, A\+G\+I\+D\+A\+T, F\+G, I\+S\+A\+N\+D, I\+L\+G, I\+G, I\+L1, I\+L2, J\+L, I\+A\+L\+G, I\+G\+R\+A\+L\+B)
+subroutine \hyperlink{GRALB_8f_a99502ab3789165086e450da1aef1ecd5}{gralb} (A\+L\+V\+S\+G, A\+L\+I\+R\+G, A\+L\+V\+S\+G\+C, A\+L\+I\+R\+G\+C, A\+L\+G\+W\+V, A\+L\+G\+W\+N, A\+L\+G\+D\+V, A\+L\+G\+D\+N, T\+H\+L\+I\+Q, F\+S\+N\+O\+W, A\+L\+V\+S\+U, A\+L\+I\+R\+U, F\+C\+M\+X\+U, A\+G\+V\+D\+A\+T, A\+G\+I\+D\+A\+T, F\+G, I\+S\+A\+N\+D, I\+L\+G, I\+G, I\+L1, I\+L2, J\+L, I\+A\+L\+G)
 \end{DoxyCompactItemize}
 
 
@@ -18,7 +18,7 @@ Purpose\+: Calculate visible and near-\/\+I\+R ground albedos.
 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{GRALB_8f_af8208db48e4bd17f925ba5a654bce8bf}{}\index{G\+R\+A\+L\+B.\+f@{G\+R\+A\+L\+B.\+f}!gralb@{gralb}}
+\hypertarget{GRALB_8f_a99502ab3789165086e450da1aef1ecd5}{}\index{G\+R\+A\+L\+B.\+f@{G\+R\+A\+L\+B.\+f}!gralb@{gralb}}
 \index{gralb@{gralb}!G\+R\+A\+L\+B.\+f@{G\+R\+A\+L\+B.\+f}}
 \subsubsection[{gralb}]{\setlength{\rightskip}{0pt plus 5cm}subroutine gralb (
 \begin{DoxyParamCaption}
@@ -30,8 +30,6 @@ Purpose\+: Calculate visible and near-\/\+I\+R ground albedos.
 \item[{real, dimension (ilg)}]{A\+L\+G\+W\+N, }
 \item[{real, dimension (ilg)}]{A\+L\+G\+D\+V, }
 \item[{real, dimension (ilg)}]{A\+L\+G\+D\+N, }
-\item[{real, dimension(ilg)}]{A\+L\+G\+W\+E\+T, }
-\item[{real, dimension(ilg)}]{A\+L\+G\+D\+R\+Y, }
 \item[{real, dimension (ilg,ig)}]{T\+H\+L\+I\+Q, }
 \item[{real, dimension (ilg)}]{F\+S\+N\+O\+W, }
 \item[{real, dimension (ilg)}]{A\+L\+V\+S\+U, }
@@ -46,10 +44,9 @@ Purpose\+: Calculate visible and near-\/\+I\+R ground albedos.
 \item[{integer}]{I\+L1, }
 \item[{integer}]{I\+L2, }
 \item[{integer}]{J\+L, }
-\item[{integer}]{I\+A\+L\+G, }
-\item[{integer}]{I\+G\+R\+A\+L\+B}
+\item[{integer}]{I\+A\+L\+G}
 \end{DoxyParamCaption}
-)}\label{GRALB_8f_af8208db48e4bd17f925ba5a654bce8bf}
+)}\label{GRALB_8f_a99502ab3789165086e450da1aef1ecd5}
 
 \begin{DoxyParams}{Parameters}
 {\em alvsg} & Visible albedo of bare ground $[ ] (\alpha_{g,VIS})$\\
@@ -59,10 +56,6 @@ Purpose\+: Calculate visible and near-\/\+I\+R ground albedos.
 {\em alvsgc} & Visible albedo of ground under vegetation canopy \mbox{[} \mbox{]}\\
 \hline
 {\em alirgc} & Near-\/\+I\+R albedo of ground under vegetation canopy \mbox{[} \mbox{]}\\
-\hline
-{\em algwet} & All-\/wave albedo of wet soil for modelled area $[ ] (\alpha_{g,wet})$\\
-\hline
-{\em algdry} & All-\/wave albedo of dry soil for modelled area $[ ] (\alpha_{g,dry})$\\
 \hline
 {\em thliq} & Volumetric liquid water content of soil layers $[m^3 m^{-3}]$\\
 \hline
