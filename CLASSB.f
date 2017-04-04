@@ -8,6 +8,8 @@ C>\file
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
      4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)                 
 C
+C     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY, somehow it worked
+C                               Change to TCCLAY for consistency with rest of model.
 C     * DEC 16/16 - D.VERSEGHY. REMOVE OPTION FOR USING OLD SOIL
 C     *                         WET AND DRY ALBEDOS DETERMINED BY
 C     *                         SOIL TEXTURE ("IGRALB" SWITCH)
@@ -139,11 +141,11 @@ C
       REAL PSISORG(3)         !<Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
       REAL GRKSORG(3)         !<Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
 C
-      REAL TCW,TCICE,TCSAND,TCFINE,TCOM,TCDRYS,RHOSOL,RHOOM,
+      REAL TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
      1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,SPHW,SPHICE,SPHVEG,
      2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
 C
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCFINE,TCOM,TCDRYS,
+      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
      1                RHOSOL,RHOOM
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
@@ -384,7 +386,7 @@ C
               HCPS(I,M,J)=(HCPSND*THSAND+HCPFIN*THFINE+
      1            HCPOM*THORG)/(1.0-THPOR(I,M,J))
               TCS(I,M,J)=(TCSAND*THSAND+TCOM*THORG+
-     1            TCFINE*THFINE)/(1.0-THPOR(I,M,J))
+     1            TCCLAY*THFINE)/(1.0-THPOR(I,M,J))
               IF(J.NE.IGDR(I,M))                       THEN
                   THFC(I,M,J)=THPOR(I,M,J)*(1.157E-9/GRKSAT(I,M,J))**
      1                (1.0/(2.0*BI(I,M,J)+3.0))
