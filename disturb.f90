@@ -697,7 +697,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
            if (isand(i,j) .gt. -2) then
             betadrgt(i,j)=min(1.0,max(0.0,(thliq(i,j)+thice(i,j)-THLW(i,j))/(THFC(i,j)-THLW(i,j))))
            else
-            betadrgt(i,j)=0.
+            betadrgt(i,j)=1.0
            end if
           end do        
         end if

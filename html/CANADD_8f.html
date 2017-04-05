@@ -311,12 +311,20 @@ Functions/Subroutines</h2></td></tr>
 <p> where <img class="formulaInl" alt="$C_c$" src="form_1190.png"/> represents the canopy heat capacity, <img class="formulaInl" alt="$T_c$" src="form_1191.png"/> the canopy temperature, <img class="formulaInl" alt="$\Delta t$" src="form_1192.png"/> the length of the time step, and <img class="formulaInl" alt="$X_i$" src="form_566.png"/> the fractional coverage of the subarea under consideration relative to the modelled area.</p>
 <p>Finally, the rainfall and snowfall temperatures are converted to degrees C. (In the absence of precipitation, both are set equal to the surface temperature of the subarea to avoid floating point errors in later subroutines.) For subareas with a snow cover (IWATER = 2), the water running off the canopy and the precipitation incident on the snow pack are updated using RDRIP and SDRIP. For subareas without snow cover (IWATER = 1), the water running off the canopy is updated using RDRIP and SDRIP, the precipitation incident on the snow pack is augmented by SDRIP, and the precipitation incident on bare ground is augmented by RDRIP.</p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="CANADD_8f_ae4481b561c2022da57ec7a4dacf6a9df_icgraph.png" border="0" usemap="#CANADD_8f_ae4481b561c2022da57ec7a4dacf6a9df_icgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:34 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:29 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

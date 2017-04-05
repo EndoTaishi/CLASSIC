@@ -86,7 +86,6 @@ C
       INTEGER ITC    !<Switch to select iteration scheme for canopy temperature
       INTEGER ITCG   !<Switch to select iteration scheme for surface under canopy
       INTEGER isnoalb!<Switch to model snow albedo in two or more wavelength bands
-      INTEGER igralb !<
 
       INTEGER NLTEST  !<Number of grid cells being modelled for this run
       INTEGER NMTEST  !<Number of mosaic tiles per grid cell being modelled for this run
@@ -208,10 +207,6 @@ C
       REAL,DIMENSION(NLAT,NMOS)      :: AGIDROT !<
       REAL,DIMENSION(ILG)            :: AGVDGAT !<Optional user-specified value of ground visible albedo to override CLASS-calculated value [ ]
       REAL,DIMENSION(NLAT,NMOS)      :: AGVDROT !<
-      REAL,DIMENSION(ILG)            :: ALGDGAT !<Reference albedo for dry soil [ ]
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGDROT !<
-      REAL,DIMENSION(ILG)            :: ALGWGAT !<Reference albedo for saturated soil [ ]
-      REAL,DIMENSION(NLAT,NMOS)      :: ALGWROT !<
       REAL,DIMENSION(ILG,ICP1)       :: ALICGAT !<Background average near-infrared albedo of vegetation category [ ]
       REAL,DIMENSION(NLAT,NMOS,ICP1) :: ALICROT !<
       REAL,DIMENSION(ILG,ICP1)       :: ALVCGAT !<Background average visible albedo of vegetation category [ ]
@@ -850,7 +845,8 @@ c
      7           climiyear,   popcycleyr,    cypopyr, lucyr,
      8           cylucyr, endyr,bigpftc(1), obswetyr,
      9           cywetldyr, trans_startyr, jmosty, obslghtyr,
-     +          curlatno(ilg), lath, testyr,altotcount_ctm(nlat)
+     +          curlatno(ilg), lath, testyr,altotcount_ctm(nlat),
+     +           lghtdy
 
       real      co2concin,    setco2conc, sumfare,
      1           temp_var, barefrac,  todfrac(ilg,icc),
@@ -889,6 +885,7 @@ c
       logical, pointer :: popdon
       logical, pointer :: inibioclim
       logical, pointer :: start_from_rs
+      logical, pointer :: leap
       logical, pointer :: dowetlands
       logical, pointer :: obswetf
       logical, pointer :: transient_run
@@ -1417,6 +1414,10 @@ c
     ! If you intend to have LUC BETWEEN tiles then set this to true:
       logical, parameter ::  onetile_perPFT = .False. ! NOTE: This is usually not the behaviour desired unless you are
                                                    ! running with one PFT on each tile and want them to compete for space
+                                                   ! across tiles. In general keep this as False. JM Feb 2016.
+
+!     leap year flag (if the switch 'leap' is true, this will be used, otherwise it remains false)
+      logical :: leapnow = .false.
 c
 c============= CTEM array declaration done =============================/
 C
@@ -1524,6 +1525,7 @@ C===================== CTEM ==============================================\
       popdon            => c_switch%popdon
       inibioclim        => c_switch%inibioclim
       start_from_rs     => c_switch%start_from_rs
+      leap              => c_switch%leap         
       dowetlands        => c_switch%dowetlands
       obswetf           => c_switch%obswetf
       transient_run     => c_switch%transient_run
@@ -2086,12 +2088,12 @@ c     all model switches are read in from a namelist file
      1             trans_startyr,ctemloop,ctem_on,ncyear,lnduseon,
      2             spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on,
      3             setco2conc,ch4on,setch4conc,popdon,popcycleyr,
-     4             parallelrun,dofire,
-     4             dowetlands,obswetf,compete,inibioclim,start_bare,
-     5             rsfile,start_from_rs,jmosty,idisp,izref,islfd,ipcp,
-     6             itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,
-     7             igralb,jhhstd,jhhendd,jdstd,jdendd,jhhsty,jhhendy,
-     8             jdsty,jdendy)
+     4             parallelrun,dofire,dowetlands,obswetf,compete,
+     5             inibioclim,start_bare,rsfile,start_from_rs,leap,
+     6             jmosty,idisp,izref,islfd,ipcp,itc,itcg,itg,iwf,ipai,
+     7             ihgt,ialc,ials,ialg,isnoalb,jhhstd,jhhendd,
+     8             jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
+
 
 c     Initialize the CTEM parameters
       call initpftpars(compete)
@@ -2109,8 +2111,9 @@ c
 C     INITIALIZATION FOR COUPLING CLASS AND CTEM
 C
        call initrowvars()
-       !call resetclassaccum(nltest,nmtest)
-       call resetclassaccum(nlat,nmos) ! EC Feb 20, 2017
+
+       call resetclassaccum(nlat,nmos)
+
 
        IMONTH = 0
 
@@ -2563,8 +2566,7 @@ C     GGEOROW(1)=-0.035
            call XIT('runclass36ctem', -2)
           end if
           READ(10,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
-     1                  WFCIROT(I,M),MIDROT(I,M)
-
+     1                  WFCIROT(I,M),MIDROT(I,M),SOCIROT(I,M)
           DO 25 J=1,IGND
              READ(10,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),
      1        CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J),
@@ -2586,6 +2588,8 @@ c     -9999 thus triggering the read in of the .ini file values below
       end if
 
       CLOSE(10)
+
+      call resetclassaccum(nltest,nmtest)
 C
 C====================== CTEM =========================================== \
 C
@@ -2718,12 +2722,11 @@ c     initialize accumulated array for monthly & yearly output for class
 
       CALL CLASSB(THPROT,THRROT,THMROT,BIROT,PSISROT,GRKSROT,
      1            THRAROT,HCPSROT,TCSROT,THFCROT,THLWROT,PSIWROT,
-     2            DLZWROT,ZBTWROT,ALGWROT,ALGDROT,
+     2            DLZWROT,ZBTWROT,
      +            ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,
      3            SANDROT,CLAYROT,ORGMROT,SOCIROT,DELZ,ZBOT,
      4            SDEPROT,ISNDROT,IGDRROT,
-     5            NLAT,NMOS,1,NLTEST,NMTEST,IGND,IGRALB,
-     6            ipeatlandrow)
+     5            NLAT,NMOS,1,NLTEST,NMTEST,IGND,ipeatlandrow)
 
 5010  FORMAT(2X,6A4)
 5020  FORMAT(5F10.2,F7.1,3I5)
@@ -2732,7 +2735,7 @@ c     initialize accumulated array for monthly & yearly output for class
 5050  FORMAT(4F10.2)
 5070  FORMAT(2F10.4,F10.2,F10.3,F10.4,F10.3)
 5080  FORMAT(2F8.2,3F10.1,3F10.3)
-5090  FORMAT(4E8.1,I8)
+5090  FORMAT(4E8.1,I8,F8.0)
 5200  FORMAT(4I10)
 5300  FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,
      1       F9.4)
@@ -2793,7 +2796,7 @@ c
             thliqacc_t(i,j)=0.0
             thiceacc_t(i,j)=0.0  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
             thicecacc_t(i,j)=0.0
-            thicegacc_t(i,j)=0.0 ! EC Jan 31 2017.
+            thicegacc_t(i,j)=0.0
 112      continue
 123    continue
 c
@@ -2922,7 +2925,7 @@ c      back up one space in the met file so it is ready for the next readin
 
 c      If you are not cycling over the MET, you can still specify to end on a
 c      year that is shorter than the total climate file length.
-       if (.not. cyclemet) endyr = iyear + ncyear
+       if (.not. cyclemet) endyr = iyear + ncyear - 1
 
       if (ctem_on) then
 
@@ -2931,7 +2934,7 @@ c       of ctem's 9 pfts for the first year.
 c
         if (lnduseon .and. transient_run) then
 
-         reach_eof=.false.  !flag for when read to end of luc input file
+         reach_eof=.false.  !marker for when read to end of luc input file
 
          call initialize_luc(iyear,argbuff,nmtest,nltest,
      1                     nol2pfts,cyclemet,
@@ -3003,7 +3006,7 @@ c
      &                        fcanrot(i,m,4))*soilcmasrow(i,m,icc+1)
             else !peatland tile
                 gavgltmsrow(i,m)= gavgltmsrow(i,m)+litrmsmossrow(i,m)
-                peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth (FLAG! I think this should change-JM)
+                peatdeprow(i,m) = sdeprot(i,m) !the peatdepth is set to the soil depth
                 ! The soil carbon on the peatland tiles is assigned based on depth. This
                 ! is the same relation as found in decp subroutine.
                 gavgscmsrow(i,m) = 0.487*(4056.6*peatdeprow(i,m)**2+
@@ -3255,6 +3258,35 @@ C         THE END OF FILE IT WILL GO TO 999.
           READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSSROW(I),
      1        FDLROW(I),PREROW(I),TAROW(I),QAROW(I),UVROW(I),PRESROW(I)
 
+        if (leap.and.(ihour.eq.0).and.(imin.eq.0).and.(iday.eq.1)) then
+          if (mod(iyear,4).ne.0) then !it is a common year
+            leapnow = .false.
+          else if (mod(iyear,100).ne.0) then !it is a leap year
+            leapnow = .true.
+          else if (mod(iyear,400).ne.0) then !it is a common year
+            leapnow = .false.
+          else !it is a leap year
+            leapnow = .true.
+          end if
+
+        ! We do not check the MET files to make sure the incoming MET is in fact
+        ! 366 days if leapnow. You must verify this in your own input files. Later
+        ! in the code it will fail and print an error message to screen warning you
+        ! that your file is not correct.
+          if (leapnow) then ! adjust the calendars and set the error check.
+            monthdays = (/ 31,29,31,30,31,30,31,31,30,31,30,31 /)
+            monthend = (/ 0,31,60,91,121,152,182,213,244,274,305,
+     &                    335,366 /)
+            mmday = (/ 16,46,76,107,137,168,198,229,260,290,321,351 /)
+          else ! common years
+            monthdays = (/ 31,28,31,30,31,30,31,31,30,31,30,31 /)
+            monthend = (/ 0,31,59,90,120,151,181,212,243,273,304,334,
+     &                  365 /)
+            mmday = (/ 16,46,75,106,136,167,197,228,259,289,320,350 /)
+
+          end if
+        end if
+
 C===================== CTEM ============================================ \
 c         Assign the met climate year to climiyear
           climiyear = iyear
@@ -3292,7 +3324,12 @@ C===================== CTEM ============================================ /
 
 C
       DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
-      DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
+      if (leapnow) then 
+        DECL=SIN(2.*PI*(284.+DAY)/366.)*23.45*PI/180.
+      else
+        DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
+      endif 
+
       HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
       COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
      
@@ -3317,7 +3354,7 @@ C
               if (obswetf) then
 
               ! Note that this will be read in, regardless of the iyear, if the
-              ! obswetf flag is true. This means you have to be restarting from a run
+              ! obswetf marker is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
               ! Read into the first tile position
                  read(16,*,end=1001) obswetyr,
@@ -3333,7 +3370,7 @@ C
 
               if(obslght) then
               ! Note that this will be read in, regardless of the iyear, if the
-              ! obswetf flag is true. This means you have to be restarting from a run
+              ! obswetf marker is true. This means you have to be restarting from a run
               ! that ends the year prior to the first year in this file.
                 read(17,*,end=312) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
                 if (nmtest > 1) then
@@ -3482,8 +3519,8 @@ C
      9             THFCGAT,THLWGAT,PSIWGAT,DLZWGAT,ZBTWGAT,
      A             VMODGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,TACGAT,
      B             QACGAT,DRNGAT, XSLPGAT,GRKFGAT,WFSFGAT,
-     C             WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT,ALGDNGAT,
-     +             ALGWGAT,ALGDGAT,ASVDGAT,ASIDGAT,AGVDGAT,
+     C             WFCIGAT,ALGWVGAT,ALGWNGAT,ALGDVGAT,
+     +             ALGDNGAT,ASVDGAT,ASIDGAT,AGVDGAT,
      D             AGIDGAT,ISNDGAT,RADJGAT,ZBLDGAT,Z0ORGAT,
      E             ZRFMGAT,ZRFHGAT,ZDMGAT, ZDHGAT, FSVHGAT,
      F             FSIHGAT,FSDBGAT,FSFBGAT,FSSBGAT,CSZGAT,
@@ -3506,8 +3543,8 @@ C
      V             THFCROT,THLWROT,PSIWROT,DLZWROT,ZBTWROT,
      W             VMODROW,ZSNLROT,ZPLGROT,ZPLSROT,TACROT,
      X             QACROT,DRNROT, XSLPROT,GRKFROT,WFSFROT,
-     Y             WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT,ALGDNROT,
-     +             ALGWROT,ALGDROT,ASVDROT,ASIDROT,AGVDROT,
+     Y             WFCIROT,ALGWVROT,ALGWNROT,ALGDVROT,
+     +             ALGDNROT,ASVDROT,ASIDROT,AGVDROT,
      Z             AGIDROT,ISNDROT,RADJROW,ZBLDROW,Z0ORROW,
      +             ZRFMROW,ZRFHROW,ZDMROW, ZDHROW, FSVHROW,
      +             FSIHROW,FSDBROL,FSFBROL,FSSBROL,CSZROW,
@@ -3737,7 +3774,7 @@ C
      C                FCANGAT,LNZ0GAT,ALVCGAT,ALICGAT,PAMXGAT,PAMNGAT,
      D                CMASGAT,ROOTGAT,RSMNGAT,QA50GAT,VPDAGAT,VPDBGAT,
      E                PSGAGAT,PSGBGAT,PAIDGAT,HGTDGAT,ACVDGAT,ACIDGAT,
-     F                ASVDGAT,ASIDGAT,AGVDGAT,AGIDGAT,ALGWGAT,ALGDGAT,
+     F                ASVDGAT,ASIDGAT,AGVDGAT,AGIDGAT,
      +                ALGWVGAT,ALGWNGAT,ALGDVGAT,ALGDNGAT,
      G                THLQGAT,THICGAT,TBARGAT,RCANGAT,SCANGAT,TCANGAT,
      H                GROGAT, SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,ZBLDGAT,
@@ -3753,8 +3790,7 @@ C
      R                IDAY,   ILG,    1,      NML,  NBS,
      N                JLAT,N, ICAN,   ICAN+1, IGND,   IDISP,  IZREF,
      O                IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     P                ISNOALB,IGRALB, alvsctmgat,alirctmgat,
-     &                ipeatlandgat)
+     P                ISNOALB,alvsctmgat,alirctmgat,ipeatlandgat )
 C
 C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
@@ -3892,6 +3928,7 @@ c
              thliqcacc_t(i,j)=thliqcacc_t(i,j)+thliqc(i,j)
              thliqgacc_t(i,j)=thliqgacc_t(i,j)+thliqg(i,j)
              thicecacc_t(i,j)=thicecacc_t(i,j)+thicec(i,j)
+
              ! FLAG: Needs to be reviewed. EC Dec 23 2016.
              ! YW's original variables were thlqaccgat_m/thicaccgat_m.
              ! The following 2 variables needs to be passed via ctem to hetres_peat
@@ -3899,6 +3936,7 @@ c
              thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j) ! Not used elsewhere, so assume replacement for thlqaccgat_m
              thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j) ! New.
              thicegacc_t(i,j)=thicegacc_t(i,j)+thiceg(i,j)    ! EC Jan 31 2017. 
+
 710       continue
 c
           do 713 j = 1, icc
@@ -3974,6 +4012,7 @@ c
               thliqcacc_t(i,j)=thliqcacc_t(i,j)/real(nday)
               thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
               thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
+
               thicegacc_t(i,j)=thicegacc_t(i,j)/real(nday) ! EC Jan 31 2017.
               thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday) ! Assume this replaces YW's thlqaccgat_m.
               thiceacc_t(i,j)=thiceacc_t(i,j)/real(nday) ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
@@ -4001,57 +4040,56 @@ c           lightng(i)=mlightng(i,month)
 c
 c           in a very simple way try to interpolate monthly lightning to
 c           daily lightning
-c
-            if(iday.ge.15.and.iday.le.45)then ! mid jan - mid feb
-              month1=1
-              month2=2
-              xday=iday-15
-            else if(iday.ge.46.and.iday.le.74)then ! mid feb - mid mar
-              month1=2
-              month2=3
-              xday=iday-46
-            else if(iday.ge.75.and.iday.le.105)then ! mid mar - mid apr
-              month1=3
-              month2=4
-              xday=iday-75
-            else if(iday.ge.106.and.iday.le.135)then ! mid apr - mid may
-              month1=4
-              month2=5
-              xday=iday-106
-            else if(iday.ge.136.and.iday.le.165)then ! mid may - mid june
-              month1=5
-              month2=6
-              xday=iday-136
-            else if(iday.ge.166.and.iday.le.196)then ! mid june - mid july
-              month1=6
-              month2=7
-              xday=iday-166
-            else if(iday.ge.197.and.iday.le.227)then ! mid july - mid aug
-              month1=7
-              month2=8
-              xday=iday-197
-            else if(iday.ge.228.and.iday.le.258)then ! mid aug - mid sep
-              month1=8
-              month2=9
-              xday=iday-228
-            else if(iday.ge.259.and.iday.le.288)then ! mid sep - mid oct
-              month1=9
-              month2=10
-              xday=iday-259
-            else if(iday.ge.289.and.iday.le.319)then ! mid oct - mid nov
-              month1=10
-              month2=11
-              xday=iday-289
-            else if(iday.ge.320.and.iday.le.349)then ! mid nov - mid dec
-              month1=11
-              month2=12
-              xday=iday-320
-            else if(iday.ge.350.or.iday.lt.14)then ! mid dec - mid jan
-              month1=12
-              month2=1
-              xday=iday-350
-              if(xday.lt.0)xday=iday
-            endif
+              if(iday.ge.mmday(1)-1.and.iday.lt.mmday(2))then ! >=15,<46.- mid jan - mid feb
+                month1=1
+                month2=2
+                xday=iday-mmday(1)-1
+             else if(iday.ge.mmday(2).and.iday.lt.mmday(3))then ! >=46,<75(76) mid feb - mid mar
+                month1=2
+                month2=3
+                xday=iday-mmday(2)
+              else if(iday.ge.mmday(3).and.iday.lt.mmday(4))then ! >=75(76),<106(107) mid mar - mid apr
+                month1=3
+                month2=4
+                xday=iday-mmday(3)
+              else if(iday.ge.mmday(4).and.iday.lt.mmday(5))then ! >=106(107),<136(137) mid apr - mid may
+                month1=4
+                month2=5
+                xday=iday-mmday(4)
+              else if(iday.ge.mmday(5).and.iday.lt.mmday(6))then ! >=136(137),<167(168) mid may - mid june
+                month1=5
+                month2=6
+                xday=iday-mmday(5)
+              else if(iday.ge.mmday(6).and.iday.lt.mmday(7))then ! >=167(168),<197(198) mid june - mid july
+                month1=6
+                month2=7
+                xday=iday-mmday(6)
+              else if(iday.ge.mmday(7).and.iday.lt.mmday(8))then ! >=197(198), <228(229) mid july - mid aug
+                month1=7
+                month2=8
+                xday=iday-mmday(7)
+              else if(iday.ge.mmday(8).and.iday.lt.mmday(9))then ! >=228(229), < 259(260) mid aug - mid sep
+                month1=8
+                month2=9
+                xday=iday-mmday(8)
+              else if(iday.ge.mmday(9).and.iday.lt.mmday(10))then ! >= 259(260), < 289(290) mid sep - mid oct
+                month1=9
+                month2=10
+                xday=iday-mmday(9)
+              else if(iday.ge.mmday(10).and.iday.lt.mmday(11))then ! >= 289(290), < 320(321) mid oct - mid nov
+                month1=10
+                month2=11
+                xday=iday-mmday(10)
+              else if(iday.ge.mmday(11).and.iday.lt.mmday(12))then ! >=320(321), < 350(351) mid nov - mid dec
+                month1=11
+                month2=12
+                xday=iday-mmday(11)
+              else if(iday.ge.mmday(12).or.iday.lt.mmday(1)-1)then ! >= 350(351) < 15 mid dec - mid jan
+                month1=12
+                month2=1
+                xday=iday-mmday(12)
+                if(xday.lt.0)xday=iday+15
+              endif
 c
             lightng(i)=mlightnggat(i,month1)+(real(xday)/30.0)*
      &                 (mlightnggat(i,month2)-mlightnggat(i,month1))
@@ -4085,6 +4123,8 @@ c
      &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,
      &                  BIGAT,    THPGAT, thicegacc_t,currlat,
      &             ch4concgat,      GRAV, RHOW, RHOICE,
+     &              leapnow,
+c    -------------- inputs used by ctem are above this line ---------
      c            stemmassgat, rootmassgat, litrmassgat, gleafmasgat,
      d            bleafmasgat, soilcmasgat,    ailcggat,    ailcgat,
      e               zolncgat,  rmatctemgat,   rmatcgat,  ailcbgat,
@@ -4127,27 +4167,20 @@ c
      2          Cmossmasgat,litrmsmossgat,wtablegat,
      4          THFCGAT, THLWGAT, thliqacc_t, thiceacc_t,
      5          nppmossgat, armossgat,peatdepgat)
-!    4          THFCGAT, THLWGAT, thlqaccgat_m, thicaccgat_m,
 c
-c    ----------calculate degree days for mosspht Vmax seasonality------
+c    ----------calculate degree days for mosspht Vmax seasonality (only once per day)------
        do   i = 1, nml
-          ! Do this here instead of inside mosspht (only once per day). EC Jan 31 2017.
-          !if (iday == 2)    then
-          !     pddgat(i) = 0.
-          !elseif (taaccgat_t(i)>tfrez)           then
           if (taaccgat_t(i)>tfrez)           then
                pddgat(i)=pddgat(i)+taaccgat_t(i)-tfrez
           endif
 c----------------update peatland bottom layer depth--------------------       
-!         do   i = 1, nml                              !FLAG JM - I comment this out for now. I don't think this is what we want.
            if (ipeatlandgat(i) > 0)         then
                dlzwgat(i,ignd)= peatdepgat(i)-0.90
                sdepgat(i) = peatdepgat(i)
            endif
        end do
-c================YW August 26, 2015 =======================/ 
-c
 
+c
 !     reset mosaic accumulator arrays. These are scattered in ctems2 so we need
 !     to reset here, prior to ctems2.
         do i = 1, nml
@@ -4481,17 +4514,20 @@ C
 440   CONTINUE
 
 C
-!      IF(IDAY.GE.182 .AND. IDAY.LE.243)  THEN ! July 1st and Aug 31
+!      IF ((LEAPNOW .AND. IDAY.GE.183 .AND. IDAY.LE.244) .OR. 
+!     &    (.not. LEAPNOW .AND. IDAY.GE.182 .AND. IDAY.LE.243)) THEN
 !          ALAVG=ALAVG+ACTLYR
 !          NAL=NAL+1
 !          IF(ACTLYR.GT.ALMAX) ALMAX=ACTLYR
 !      ENDIF
 C
-!      IF(IDAY.GE.1 .AND. IDAY.LE.59)   THEN  ! Jan 1st and Feb 28th
+!      IF ((LEAPNOW .AND. IDAY.GE.1 .AND. IDAY.LE.60) .OR. 
+!     &    (.not. LEAPNOW .AND. IDAY.GE.1 .AND. IDAY.LE.59)) THEN
 !          FTAVG=FTAVG+FTABLE
 !          NFT=NFT+1
 !          IF(FTABLE.GT.FTMAX) FTMAX=FTABLE
 !      ENDIF
+
 
       if (.not. parallelrun) then ! stand alone mode, include half-hourly
 c                                 ! output for CLASS & CTEM
@@ -4771,9 +4807,10 @@ C
      2                   TCN_G(i),RCANROT_G(I),SCANROT_G(I),TSN_G(i),
      3                   ZSN_G(i),TCN_G(i)-(TAROW(I)-TFREZ),
      4                   TCANO(I)-TFREZ,TACGAT(I)-TFREZ
-! Format statement 6500 used in 2 places with mis-matching types: ACTLYR/FTABLE are both reals.
+! FLAG Format statement 6500 used in 2 places with mis-matching types: ACTLYR/FTABLE are both reals.
 ! Temporary work-around: don't output these 2 variables. EC Dec 23 2016.
 !    4                   TCANO(I)-TFREZ,TACGAT(I)-TFREZ,ACTLYR,FTABLE
+
 C
          IF(IGND.GT.3) THEN
 !         WRITE(661,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-
@@ -5297,6 +5334,7 @@ C
           else
             ALTOTACC_M(I,M)=0.
           endif
+
           FSSTAR=FSINACC_M(I,M)*(1.-ALTOTACC_M(I,M))
           FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
           QH=HFSACC_M(I,M)
@@ -5379,6 +5417,7 @@ C=======================================================================
      5                       THICROT,TFREZ,QFCROT,QFGROT,QFNROT,
      6                       QFCLROT,QFCFROT,FSGVROT,FSGSROT,
      7                       FSGGROT,ACTLYR,FTABLE)
+
        DO NT=1,NMON
         IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
          IMONTH=NT
@@ -5392,18 +5431,8 @@ C=======================================================================
      2                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,
      3                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,
      4                       TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT,
-     5  ACTLYR,FTABLE)
+     5                       ACTLYR,FTABLE,leapnow)
 
-c            --------reset peatland accumulators-------------------------------
-!            anmossac_t  = 0.0 
-!            rmlmossac_t = 0.0
-!            gppmossac_t = 0.0
-!            G12ACC     = 0.
-!            G23ACC     = 0.
-!            if (iday == 365) then
-!               pddrow     = 0.
-!            end if
-c            ----------------YW March 27, 2015 -------------------------------/
 c     CTEM output and write out
 
       if(.not.parallelrun) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
@@ -5414,6 +5443,7 @@ c     calculate daily outputs from ctem
           call ctem_daily_aw(nltest,nmtest,iday,FAREROT,
      1                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea,
      2                      onetile_perPFT,ipeatlandrow)
+
 c            --------reset peatland accumulators-------------------------------
 !            Note: these must be reset only at the end of a day. EC Jan 30 2017.
              anmossac_t  = 0.0 
@@ -5421,6 +5451,7 @@ c            --------reset peatland accumulators-------------------------------
              gppmossac_t = 0.0
              G12ACC     = 0.
              G23ACC     = 0.
+
          endif ! if(ncount.eq.nday)
        endif ! if(ctem_on)
 
@@ -5446,7 +5477,7 @@ c     initialization is done just before use.
 
 c       Accumulate and possibly write out yearly outputs
             call ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,
-     1                           onetile_perPFT)
+     1                           onetile_perPFT,leapnow)
 
       endif ! if(ncount.eq.nday)
 
@@ -5455,7 +5486,8 @@ c       Accumulate and possibly write out yearly outputs
 C     OPEN AND WRITE TO THE RESTART FILES
 
 
-       IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
+       IF ((leapnow .and.IDAY.EQ.366.AND.NCOUNT.EQ.NDAY) .OR. 
+     &  (.not. leapnow .and.IDAY.EQ.365.AND.NCOUNT.EQ.NDAY)) THEN
 
         WRITE(*,*) !'(6A,5I,13A,5I,9A,5I,6A,5I)')
      1     'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR,
@@ -5506,7 +5538,7 @@ C         THE FCANROT FOR THE RS FILE.
      1                      (PSGBROT(I,M,J),J=1,ICAN)
             WRITE(100,5040) DRNROT(I,M),SDEPROT(I,M),FAREROT(I,M)
             WRITE(100,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),
-     1                      WFCIROT(I,M),MIDROT(I,M)
+     1                      WFCIROT(I,M),MIDROT(I,M),SOCIROT(I,M)
             DO J=1,IGND
              WRITE(100,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),
      1         CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J)-273.16,
@@ -5533,7 +5565,7 @@ c
             call write_ctm_rs(nltest,nmtest,FCANROT,argbuff)
         endif ! ctem_on
 c
-       endif ! if iday=365
+       endif ! if iday=365/366
       endif ! if generate restart files
 c
 7011  format(12f8.2)     !YW April 14, 2015 
@@ -5542,7 +5574,9 @@ c
 c
 c
 c      check if the model is done running.
-       if (iday.eq.365.and.ncount.eq.nday) then
+
+       if ((leapnow.and.iday.eq.366.and.ncount.eq.nday) .or.
+     &   (.not. leapnow .and.iday.eq.365.and.ncount.eq.nday)) then
 
           if (cyclemet .and. climiyear .ge. metcycendyr) then
 
@@ -5618,8 +5652,8 @@ c      check if the model is done running.
               endif
               cyclemet = .false.
               lopcount = 1
-              endyr = iyear + ncyear  !set the new end year
-
+              endyr = metcylyrst + ncyear - 1  !set the new end year. We assume you are starting from the start of your MET file!
+              
               else
                run_model = .false.
               endif

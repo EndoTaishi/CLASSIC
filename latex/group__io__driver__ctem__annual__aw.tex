@@ -2,7 +2,7 @@
 \label{group__io__driver__ctem__annual__aw}\index{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}}
 \begin{DoxyCompactItemize}
 \item 
-subroutine, public \hyperlink{group__io__driver__ctem__annual__aw_gaa6ada5ef78fbb766b38f457c954348b4}{io\+\_\+driver\+::ctem\+\_\+annual\+\_\+aw} (nltest, nmtest, iday, F\+A\+R\+E\+R\+O\+T, iyear, onetile\+\_\+per\+P\+F\+T)
+subroutine, public \hyperlink{group__io__driver__ctem__annual__aw_gafd1b038009ed17a4f1046e11b88cf383}{io\+\_\+driver\+::ctem\+\_\+annual\+\_\+aw} (nltest, nmtest, iday, F\+A\+R\+E\+R\+O\+T, iyear, onetile\+\_\+per\+P\+F\+T, leapnow)
 \end{DoxyCompactItemize}
 
 
@@ -10,7 +10,7 @@ subroutine, public \hyperlink{group__io__driver__ctem__annual__aw_gaa6ada5ef78fb
 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{group__io__driver__ctem__annual__aw_gaa6ada5ef78fbb766b38f457c954348b4}{}\index{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}!ctem\+\_\+annual\+\_\+aw@{ctem\+\_\+annual\+\_\+aw}}
+\hypertarget{group__io__driver__ctem__annual__aw_gafd1b038009ed17a4f1046e11b88cf383}{}\index{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}!ctem\+\_\+annual\+\_\+aw@{ctem\+\_\+annual\+\_\+aw}}
 \index{ctem\+\_\+annual\+\_\+aw@{ctem\+\_\+annual\+\_\+aw}!Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw@{Io\+\_\+driver\+\_\+ctem\+\_\+annual\+\_\+aw}}
 \subsubsection[{ctem\+\_\+annual\+\_\+aw}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public io\+\_\+driver\+::ctem\+\_\+annual\+\_\+aw (
 \begin{DoxyParamCaption}
@@ -19,9 +19,15 @@ subroutine, public \hyperlink{group__io__driver__ctem__annual__aw_gaa6ada5ef78fb
 \item[{integer, intent(in)}]{iday, }
 \item[{real, dimension(\+:,\+:), intent(in)}]{F\+A\+R\+E\+R\+O\+T, }
 \item[{integer, intent(in)}]{iyear, }
-\item[{logical, intent(in)}]{onetile\+\_\+per\+P\+F\+T}
+\item[{logical, intent(in)}]{onetile\+\_\+per\+P\+F\+T, }
+\item[{logical, intent(in)}]{leapnow}
 \end{DoxyParamCaption}
-)}\label{group__io__driver__ctem__annual__aw_gaa6ada5ef78fbb766b38f457c954348b4}
+)}\label{group__io__driver__ctem__annual__aw_gafd1b038009ed17a4f1046e11b88cf383}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em leapnow} & true if this year is a leap year. Only used if the switch \textquotesingle{}leap\textquotesingle{} is true. \\
+\hline
+\end{DoxyParams}
 Accumulate yearly outputs
 
 Accumulate the variables at the per P\+F\+T level

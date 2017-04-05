@@ -6,7 +6,7 @@
 !!\f[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\f]
 !!
       subroutine turnover (stemmass, rootmass,  lfstatus,    ailcg,
-     1                          il1,      il2,   
+     1                          il1,      il2,   leapnow,
      2                         sort, nol2pfts,  fcancmx,
 c    3 ------------------ inputs above this line ----------------------   
      4                     stmhrlos, rothrlos,
@@ -45,6 +45,7 @@ c
       integer n
       integer m
       integer k1,  k2
+      logical :: leapnow     !< true if this year is a leap year. Only used if the switch 'leap' is true.
 c
       integer sort(icc)      !<index for correspondence between 9 ctem pfts and size 12 of parameter vectors
       integer nol2pfts(ican) !<number of level 2 ctem pfts
@@ -91,10 +92,25 @@ c
        do 210 i = il1, il2
        if (fcancmx(i,j).gt.0.0) then
         if(stemlife(n).gt.zero)then
-         nrmlsmlr(i,j)=stemmass(i,j)*(1.0-exp(-1.0/(365.0*stemlife(n))))  
+
+         if (leapnow) then 
+          nrmlsmlr(i,j)=stemmass(i,j)*
+     &                  (1.0-exp(-1.0/(366.0*stemlife(n))))  
+         else 
+          nrmlsmlr(i,j)=stemmass(i,j)*
+     &                  (1.0-exp(-1.0/(365.0*stemlife(n))))  
+         endif 
+
         endif
-        if( rootlife(n).gt.zero)then
-         nrmlrtlr(i,j)=rootmass(i,j)*(1.0-exp(-1.0/(365.0*rootlife(n))))  
+
+        if(rootlife(n).gt.zero)then
+         if (leapnow) then 
+          nrmlrtlr(i,j)=rootmass(i,j)*
+     &                  (1.0-exp(-1.0/(366.0*rootlife(n))))  
+         else 
+          nrmlrtlr(i,j)=rootmass(i,j)*
+     &                  (1.0-exp(-1.0/(365.0*rootlife(n))))  
+         endif 
         endif
        endif
 210    continue

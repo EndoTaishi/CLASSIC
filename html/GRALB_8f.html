@@ -94,13 +94,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:af8208db48e4bd17f925ba5a654bce8bf"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="GRALB_8f.html#af8208db48e4bd17f925ba5a654bce8bf">gralb</a> (ALVSG, ALIRG, ALVSGC, ALIRGC, ALGWV, ALGWN, ALGDV, ALGDN, ALGWET, ALGDRY, THLIQ, FSNOW, ALVSU, ALIRU, FCMXU, AGVDAT, AGIDAT, FG, ISAND, ILG, IG, IL1, IL2, JL, IALG, IGRALB)</td></tr>
-<tr class="separator:af8208db48e4bd17f925ba5a654bce8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99502ab3789165086e450da1aef1ecd5"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="GRALB_8f.html#a99502ab3789165086e450da1aef1ecd5">gralb</a> (ALVSG, ALIRG, ALVSGC, ALIRGC, ALGWV, ALGWN, ALGDV, ALGDN, THLIQ, FSNOW, ALVSU, ALIRU, FCMXU, AGVDAT, AGIDAT, FG, ISAND, ILG, IG, IL1, IL2, JL, IALG)</td></tr>
+<tr class="separator:a99502ab3789165086e450da1aef1ecd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Purpose: Calculate visible and near-IR ground albedos. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="af8208db48e4bd17f925ba5a654bce8bf"></a>
+<a class="anchor" id="a99502ab3789165086e450da1aef1ecd5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -151,18 +151,6 @@ Functions/Subroutines</h2></td></tr>
           <td></td>
           <td class="paramtype">real, dimension (ilg)&#160;</td>
           <td class="paramname"><em>ALGDN</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>ALGWET</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>ALGDRY</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -252,13 +240,7 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>IALG</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer&#160;</td>
-          <td class="paramname"><em>IGRALB</em>&#160;</td>
+          <td class="paramname"><em>IALG</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -273,8 +255,6 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">alirg</td><td>Near-IR albedo of bare ground <img class="formulaInl" alt="$[ ] (\alpha_{g,NIR})$" src="form_1407.png"/></td></tr>
     <tr><td class="paramname">alvsgc</td><td>Visible albedo of ground under vegetation canopy [ ]</td></tr>
     <tr><td class="paramname">alirgc</td><td>Near-IR albedo of ground under vegetation canopy [ ]</td></tr>
-    <tr><td class="paramname">algwet</td><td>All-wave albedo of wet soil for modelled area <img class="formulaInl" alt="$[ ] (\alpha_{g,wet})$" src="form_1408.png"/></td></tr>
-    <tr><td class="paramname">algdry</td><td>All-wave albedo of dry soil for modelled area <img class="formulaInl" alt="$[ ] (\alpha_{g,dry})$" src="form_1409.png"/></td></tr>
     <tr><td class="paramname">thliq</td><td>Volumetric liquid water content of soil layers <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_759.png"/></td></tr>
     <tr><td class="paramname">alvsu</td><td>Visible albedo of urban part of modelled area <img class="formulaInl" alt="$[ ] (alpha_{u,VIS})$" src="form_1410.png"/></td></tr>
     <tr><td class="paramname">aliru</td><td>Near-IR albedo of urban part of modelled area <img class="formulaInl" alt="$[ ] (alpha_{u,NIR})$" src="form_1411.png"/></td></tr>
@@ -304,12 +284,28 @@ Functions/Subroutines</h2></td></tr>
 <p>The above calculations are all performed if the flag IALG is set to zero. If IALG is set to one, indicating that assigned ground albedos are to be used instead of calculated values, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_770.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_771.png"/> are set to the assigned values AGVDAT and AGIDAT respectively.</p>
 <p>Lastly, the ground values of visible and near-IR albedo under the vegetation canopy are currently set equal to the open values (this approach is currently under review).</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="GRALB_8f_a99502ab3789165086e450da1aef1ecd5_cgraph.png" border="0" usemap="#GRALB_8f_a99502ab3789165086e450da1aef1ecd5_cgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="GRALB_8f_a99502ab3789165086e450da1aef1ecd5_icgraph.png" border="0" usemap="#GRALB_8f_a99502ab3789165086e450da1aef1ecd5_icgraph" alt=""/></div>
+<!-- MAP 1 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:35 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:30 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

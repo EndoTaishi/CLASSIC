@@ -290,12 +290,20 @@ Functions/Subroutines</h2></td></tr>
 <p>The average soil layer temperature, <img class="formulaInl" alt="$T_{av}(\Delta z)$" src="form_1446.png"/>, can be obtained by integrating the resulting equation for T(z) between 0 and <img class="formulaInl" alt="$\Delta z$" src="form_600.png"/>. Making use of all of the above expressions, recognizing that the heat fluxes and temperatures at the bottoms of layers 1 and 2 must equal the heat fluxes and temperatures at the tops of layers 2 and 3 respectively, and neglecting as a first approximation the heat flux at the bottom of the third layer, a linear equation can be derived relating G(0) to T(0) at the soil surface, where the slope and intercept of the equation are functions only of the average temperatures, thicknesses, and top and bottom thermal conductivities of the three soil layers.</p>
 <p>In the subroutine loop, first the depth corresponding to TBAR1P (the lumped temperature of the first soil layer and the ponded water) is calculated, as the sum of the first soil layer thickness and the ponded water depth. If the ponded water depth is not vanishingly small, the surface water flag IWATER is set to 1; otherwise it is set to 0 for soils and 2 for ice sheets (indicated by ISAND = -4). If IWATER = 2, indicating a frozen water surface, the latent heat of vaporization, CPHCHG, is set to the value for sublimation (by adding the latent heat of melting to the latent heat of vaporization). If there is a snow pack present, the thermal conductivity at the top of the ground surface is calculated as the harmonic mean of the thermal conductivity at the top of the first soil layer and that of the snow pack. Finally, a series of work arrays is evaluated and is used to calculate the slope and intercept, GCOEFF and GCONST, of the equation relating G(0) to T(0) at the ground surface.</p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="TNPREP_8f_ab5cfd35272325655f17bcc52acb00535_icgraph.png" border="0" usemap="#TNPREP_8f_ab5cfd35272325655f17bcc52acb00535_icgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:35 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:30 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

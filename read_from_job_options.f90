@@ -72,8 +72,8 @@
 subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ctem_on, &
                   ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
                   setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
-                  compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
-                  islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,& 
+                  compete,inibioclim,start_bare,rsfile,start_from_rs,leap,jmosty,idisp,izref, &
+                  islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,jhhstd,&
                   jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy)
 
 !#ifdef nagf95
@@ -81,6 +81,12 @@ subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ct
 !#endif
 
 !       History:
+!
+!     10 Jan 2017    - igralb no longer supported so removed
+!     J. Melton
+!
+!     9 Nov 2016     - Add the "leap" switch for leap years (.TRUE. if leap years
+!     J.-S. Landry     in the .MET file have data for 366 days, .FALSE. if not) 
 !
 !     28  Jul  2016  - Add ability to have changing CO2 but cycling climate
 !     J. Melton        this was for the TRENDY project but generally useful so
@@ -210,6 +216,9 @@ logical, intent(out) :: start_from_rs !< if true, this option copies the _RS INI
                                  !< RS files to restart from them. NOTE! This will not work on hadar or spica, instead
                                  !< you have to manually move the files and set this to .false.
                                  
+logical, intent(out) :: leap     !< set to true if all/some leap years in the .MET file have data for 366 days 
+                                 !< also accounts for leap years in .MET when cycling over meteorology (cyclemet) 
+
 integer, intent(out) :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right 
                                   !< from the start then put in a negative number (like -9999), if you never want to have monthly
                                   !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR                                 
@@ -324,10 +333,6 @@ integer, intent(out) :: isnoalb !< This switch selects which option to use for t
                                 !< bands, and the direct/diffuse solar partitioning and the prognostic black carbon
                                 !< content of the snow pack are also required.
 
-integer, intent(out) :: igralb  !< if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of 
-                                !< soil texture.  if it is set to 1, they are assigned values based on the ncar clm soil "colour"  dataset.
-
-
 ! -------------
 
 namelist /joboptions/ &
@@ -356,6 +361,7 @@ namelist /joboptions/ &
   start_bare,         &
   rsfile,             &
   start_from_rs,      &
+  leap,               &   
   IDISP,              &
   IZREF,              &
   ISLFD,              &
@@ -370,7 +376,6 @@ namelist /joboptions/ &
   IALS,               &
   IALG,               &
   isnoalb,            &
-  igralb,             & 
   jhhstd,             &
   jhhendd,            &
   jdstd,              &

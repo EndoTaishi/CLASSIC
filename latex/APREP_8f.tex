@@ -403,3 +403,14 @@ In loop 600, the sky view factor $\chi$ of the ground underlying the canopy is c
 In the 650 loop, the fraction of the total transpiration of water by plants that is extracted from each soil layer is determined. This is done by weighting the values of F\+R\+O\+O\+T calculated above by the relative soil moisture suction in each layer\+: $( \Psi_w - \Psi_i )/( \Psi_w - \Psi_{sat} )$ where $\Psi_i$ , the soil moisture suction in the layer, is obtained as $\Psi_i = \Psi_{sat} ( \theta_{l,i} / \theta_p )^{-b}$ In these equations $\Psi_w$ is the soil moisture suction at the wilting point, $\Psi_{sat}$ is the suction at saturation, $\theta_{l,i}$ is the volumetric liquid water content of the soil layer, $\theta_p$ is the pore volume, and b is an empirical parameter developed by Clapp and Hornberger (1978). The layer values of F\+R\+O\+O\+T are then re-\/normalized so that their sum adds up to unity. In this loop, the representative soil moisture suction P\+S\+I\+G\+N\+D is also calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of $\Psi_i$ and $\Psi_w$ over all the soil layers.
 
 Finally, in loop 800 the aggregated canopy plant area indices P\+A\+I\+C\+A\+N and P\+A\+I\+C\+N\+S are set back to their original values, from the modified values used for the snow interception calculations above; and if C\+L\+A\+S\+S is being run coupled with C\+T\+E\+M, a set of C\+T\+E\+M-\/related calculations is performed.
+
+Here is the call graph for this function\+:
+% FIG 0
+
+
+
+
+Here is the caller graph for this function\+:
+% FIG 1
+
+

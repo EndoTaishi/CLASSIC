@@ -412,27 +412,17 @@ real, parameter :: tref = 298.16    !< unit K
 ! Remainder of parameters stored in ctem_params.f90
 
 !    -------------common block parameters --------------
-!real     DELT,TFREZ,RHOW
-real     DELT,TFREZ,RHOW,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14 
+real     DELT,TFREZ,RHOW
+!real     DELT,TFREZ,RHOW,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14
 
 COMMON /CLASS1/ DELT,TFREZ
-!COMMON /CLASS4/ RHOW
-COMMON /CLASS4/ x1,x2,x3,x4,x5,x6, &      ! EC Jan 24 2017.
-                x7,x8,x9,x10,RHOW,x11, &
-                x12,x13,x14
+COMMON /CLASS4/ RHOW
+!COMMON /CLASS4/ x1,x2,x3,x4,x5,x6, &      ! EC Jan 24 2017.
+!                x7,x8,x9,x10,RHOW,x11, &
+!                x12,x13,x14
 
 ! ...........................
 ! Begin calculations:
-
-! Move this back to driver, otherwise this is computed at each time step 
-! and potentially over each of the 4 subareas as well. EC Jan 31 2017.
-!do   i = il1, il2
-!    if (iday == 2)    then
-!        pdd(i) = 0.
-!    elseif (tsurfk(i)>tfrez)           then
-!        pdd(i)=pdd(i)+(tsurfk(i)-tfrez)*DELT/86400.
-!    endif
-!end do
 
 !     PHOTOSYNTHESIS COUPLING OR CURVATURE COEFFICIENTS
 !real, parameter :: BETA1 = 0.950
@@ -578,7 +568,7 @@ do 200 i =  il1, il2
 !!    calculate the maximum electorn transport rate Jmax (umol/m2/s)
 !!   1.67 = vcmax25m/jmax25m ratio
 
-    jmax25(i) = 1.67 * vcmax25(i)  !FLAG vcmax25 was (1) not (i)!!
+    jmax25(i) = 1.67 * vcmax25(i)
     term1(i)=exp(((tmossk(i)/tref)-1.)*ej/(gasc * tmossk(i)))
     term2(i)=1.+exp(((tref*sj)-hj)/(tref*gasc))  !FLAG: constant, can be pre-calculated!
     term3(i)=1.+exp(((sj*tmossk(i))-hj)/(gasc*tmossk(i)))

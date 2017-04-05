@@ -8,7 +8,7 @@ Purpose\+: Solution of surface energy balance for non-\/vegetated subareas.
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{TSOLVE_8f_a25bf2ca54264e7a9a28e831c5b75151e}{tsolve} (I\+S\+N\+O\+W, F\+I, Q\+S\+W\+N\+E\+T, Q\+L\+W\+O\+U\+T, Q\+T\+R\+A\+N\+S, Q\+S\+E\+N\+S, Q\+E\+V\+A\+P, E\+V\+A\+P, T\+Z\+E\+R\+O, Q\+Z\+E\+R\+O, G\+Z\+E\+R\+O, Q\+M\+E\+L\+T, C\+D\+H, C\+D\+M, R\+I\+B, C\+F\+L\+U\+X, F\+T\+E\+M\+P, F\+V\+A\+P, I\+L\+M\+O, U\+E, H, Q\+L\+W\+I\+N, T\+P\+O\+T\+A, Q\+A, V\+A, P\+A\+D\+R\+Y, R\+H\+O\+A\+I\+R, A\+L\+V\+I\+S\+G, A\+L\+N\+I\+R\+G, C\+R\+I\+B, C\+P\+H\+C\+H, C\+E\+V\+A\+P, T\+V\+I\+R\+T\+A, Z\+O\+S\+C\+L\+H, Z\+O\+S\+C\+L\+M, Z\+R\+S\+L\+F\+H, Z\+R\+S\+L\+F\+M, Z\+O\+H, Z\+O\+M, F\+C\+O\+R, G\+C\+O\+N\+S\+T, G\+C\+O\+E\+F\+F, T\+S\+T\+A\+R\+T, P\+C\+P\+R, T\+R\+S\+N\+O\+W\+G, F\+S\+S\+B, A\+L\+S\+N\+O, T\+H\+L\+I\+Q, T\+H\+L\+M\+I\+N, D\+E\+L\+Z\+W, R\+H\+O\+S\+N\+O, Z\+S\+N\+O\+W, I\+W\+A\+T\+E\+R, I\+E\+V\+A\+P, I\+T\+E\+R\+C\+T, I\+S\+A\+N\+D, I\+S\+L\+F\+D, I\+T\+G, I\+L\+G, I\+G, I\+L1, I\+L2, J\+L, N\+B\+S, I\+S\+N\+O\+A\+L\+B, T\+S\+T\+E\+P, T\+V\+I\+R\+T\+S, E\+V\+B\+E\+T\+A, Q0\+S\+A\+T, R\+E\+S\+I\+D, D\+C\+F\+L\+X\+M, C\+F\+L\+U\+X\+M, W\+Z\+E\+R\+O, T\+R\+T\+O\+P, A, B, L\+Z\+Z0, L\+Z\+Z0\+T, F\+M, F\+H, I\+T\+E\+R, N\+I\+T\+E\+R, J\+E\+V\+A\+P, K\+F, ipeatland, co2conc, pressg, coszs, Cmossmas, dmoss, anmoss, rmlmoss, iday, daylength, pdd)
+subroutine \hyperlink{TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2}{tsolve} (I\+S\+N\+O\+W, F\+I, Q\+S\+W\+N\+E\+T, Q\+L\+W\+O\+U\+T, Q\+T\+R\+A\+N\+S, Q\+S\+E\+N\+S, Q\+E\+V\+A\+P, E\+V\+A\+P, T\+Z\+E\+R\+O, Q\+Z\+E\+R\+O, G\+Z\+E\+R\+O, Q\+M\+E\+L\+T, C\+D\+H, C\+D\+M, R\+I\+B, C\+F\+L\+U\+X, F\+T\+E\+M\+P, F\+V\+A\+P, I\+L\+M\+O, U\+E, H, Q\+L\+W\+I\+N, T\+P\+O\+T\+A, Q\+A, V\+A, P\+A\+D\+R\+Y, R\+H\+O\+A\+I\+R, A\+L\+V\+I\+S\+G, A\+L\+N\+I\+R\+G, C\+R\+I\+B, C\+P\+H\+C\+H, C\+E\+V\+A\+P, T\+V\+I\+R\+T\+A, Z\+O\+S\+C\+L\+H, Z\+O\+S\+C\+L\+M, Z\+R\+S\+L\+F\+H, Z\+R\+S\+L\+F\+M, Z\+O\+H, Z\+O\+M, F\+C\+O\+R, G\+C\+O\+N\+S\+T, G\+C\+O\+E\+F\+F, T\+S\+T\+A\+R\+T, P\+C\+P\+R, T\+R\+S\+N\+O\+W\+G, F\+S\+S\+B, A\+L\+S\+N\+O, T\+H\+L\+I\+Q, T\+H\+L\+M\+I\+N, D\+E\+L\+Z\+W, R\+H\+O\+S\+N\+O, Z\+S\+N\+O\+W, Z\+P\+O\+N\+D, I\+W\+A\+T\+E\+R, I\+E\+V\+A\+P, I\+T\+E\+R\+C\+T, I\+S\+A\+N\+D, I\+S\+L\+F\+D, I\+T\+G, I\+L\+G, I\+G, I\+L1, I\+L2, J\+L, N\+B\+S, I\+S\+N\+O\+A\+L\+B, T\+S\+T\+E\+P, T\+V\+I\+R\+T\+S, E\+V\+B\+E\+T\+A, Q0\+S\+A\+T, R\+E\+S\+I\+D, D\+C\+F\+L\+X\+M, C\+F\+L\+U\+X\+M, W\+Z\+E\+R\+O, T\+R\+T\+O\+P, A, B, L\+Z\+Z0, L\+Z\+Z0\+T, F\+M, F\+H, I\+T\+E\+R, N\+I\+T\+E\+R, J\+E\+V\+A\+P, K\+F, ipeatland, co2conc, pressg, coszs, Cmossmas, dmoss, anmoss, rmlmoss, iday, daylength, pdd)
 \end{DoxyCompactItemize}
 
 
@@ -18,7 +18,7 @@ Purpose\+: Solution of surface energy balance for non-\/vegetated subareas.
 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{TSOLVE_8f_a25bf2ca54264e7a9a28e831c5b75151e}{}\index{T\+S\+O\+L\+V\+E.\+f@{T\+S\+O\+L\+V\+E.\+f}!tsolve@{tsolve}}
+\hypertarget{TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2}{}\index{T\+S\+O\+L\+V\+E.\+f@{T\+S\+O\+L\+V\+E.\+f}!tsolve@{tsolve}}
 \index{tsolve@{tsolve}!T\+S\+O\+L\+V\+E.\+f@{T\+S\+O\+L\+V\+E.\+f}}
 \subsubsection[{tsolve}]{\setlength{\rightskip}{0pt plus 5cm}subroutine tsolve (
 \begin{DoxyParamCaption}
@@ -74,6 +74,7 @@ Purpose\+: Solution of surface energy balance for non-\/vegetated subareas.
 \item[{real, dimension(ilg,ig)}]{D\+E\+L\+Z\+W, }
 \item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+O, }
 \item[{real, dimension(ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{Z\+P\+O\+N\+D, }
 \item[{integer, dimension(ilg)}]{I\+W\+A\+T\+E\+R, }
 \item[{integer, dimension (ilg)}]{I\+E\+V\+A\+P, }
 \item[{integer, dimension(ilg,6,50)}]{I\+T\+E\+R\+C\+T, }
@@ -118,7 +119,7 @@ Purpose\+: Solution of surface energy balance for non-\/vegetated subareas.
 \item[{real, dimension(ilg)}]{daylength, }
 \item[{real, dimension(ilg)}]{pdd}
 \end{DoxyParamCaption}
-)}\label{TSOLVE_8f_a25bf2ca54264e7a9a28e831c5b75151e}
+)}\label{TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2}
 
 \begin{DoxyParams}{Parameters}
 {\em isnow} & Flag indicating presence or absence of snow\\
@@ -160,6 +161,8 @@ Purpose\+: Solution of surface energy balance for non-\/vegetated subareas.
 {\em ue} & Friction velocity of air $[m s^{-1}]$\\
 \hline
 {\em h} & Height of the atmospheric boundary layer \mbox{[}m\mbox{]}\\
+\hline
+{\em zpond} & Depth of ponded water on surface \mbox{[}m\mbox{]}\\
 \hline
 {\em fi} & Fractional coverage of subarea in question on modelled area \mbox{[} \mbox{]}\\
 \hline
@@ -287,3 +290,14 @@ At this point a check is performed for unphysical values of the surface temperat
 Finally, a check is performed to ensure that T\+Z\+E\+R\+O is not less than 0 C if ponded water is present on the surface (I\+W\+A\+T\+E\+R = 1) or greater than 0 C if snow is present on the surface (I\+W\+A\+T\+E\+R = 2), or greater than zero if the surface is an ice sheet (I\+S\+A\+N\+D = -\/4). If any of these cases is true, T\+Z\+E\+R\+O is reset to the freezing point, and q(0) and $T(0)_v$ are recalculated. D\+R\+C\+O\+E\+F or F\+L\+X\+S\+U\+R\+F\+Z are called, and their calculations are performed for all locations meeting these criteria. The components of the surface energy balance are recalculated; the residual amount is assigned to the energy associated with phase change of water at the surface, Q\+M\+E\+L\+T, and R\+E\+S\+I\+D is set to zero. If Q\+M\+E\+L\+T $<$ 0, i.\+e. if there is freezing taking place, the evaporation flux Q\+E\+V\+A\+P is added to it and then reset to zero (since if ponded water is freezing, it is unavailable for evaporation).
 
 In the last half of the loop, some final adjustments are made to a few variables. If the evaporation flux is vanishingly small, it is added to R\+E\+S\+I\+D and reset to zero. If an anomalous case has arisen in which Q\+M\+E\+L\+T $<$ 0 over a snow-\/covered surface or Q\+M\+E\+L\+T $>$ 0 over a snow-\/free surface, Q\+M\+E\+L\+T is added to the heat flux into the surface and then reset to zero. Any remaining residual flux is added to $Q_H$. The shortwave radiation transmitted into the surface is added back to the net shortwave radiation for diagnostic purposes. The surface vapour flux is converted into units of $m s^{-1}$. Lastly, the iteration counter I\+T\+E\+R\+C\+T is updated for the level corresponding to the subarea type and the value of N\+I\+T\+E\+R.
+
+Here is the call graph for this function\+:
+% FIG 0
+
+
+
+
+Here is the caller graph for this function\+:
+% FIG 1
+
+

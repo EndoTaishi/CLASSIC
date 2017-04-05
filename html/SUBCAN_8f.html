@@ -228,12 +228,20 @@ Functions/Subroutines</h2></td></tr>
 <p>After this section, any remaining evaporative flux is compared to the rainfall rate. The sum RADD is calculated as R – EVAPG. If RADD is greater than zero, the rainfall rate is set to RADD and EVAPG is set to zero. Otherwise EVAPG is set to –RADD, and R and TR are set to zero.</p>
 <p>Analogous calculations are done for IWATER = 1 (bare ground under the canopy). In this case EVAPG is assumed in the first instance to be evaporation or condensation. Thus the first step is to compare it to the rainfall rate, and the same steps are followed as in the paragraph above. Afterwards, any remaining vapour flux is compared to the snowfall rate. If SADD is positive (downward), EVAPG, which is now considered to be absorbed into the snowfall rate, is subtracted from the ground vapour flux QFG and added to the snow vapour flux QFN. If SADD is negative (upward), S, which has now been absorbed into the evaporative flux, is subtracted from the snow precipitation flux PCPN and added to the ground precipitation flux PCPG.</p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="SUBCAN_8f_a7821b148b27a4db899e0cdf8ece2379a_icgraph.png" border="0" usemap="#SUBCAN_8f_a7821b148b27a4db899e0cdf8ece2379a_icgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:35 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:30 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

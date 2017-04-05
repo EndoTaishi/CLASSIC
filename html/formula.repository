@@ -1878,158 +1878,140 @@
 \form#1877:\[ \label{eqn_using_mort_factors_individual} M_{\alpha, i}= C_{\alpha, i} \Theta_{\alpha, i} \left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}} \right) \quad i={L, S, R}. \]
 \form#1878:\[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i, \nonumber \\ i = \mathrm{D}, \mathrm{H}.\label{lithet} \]
 \form#1879:\[ f(\Psi)_\mathrm{H} = 1 - 0.5 \frac{\log(0.04)-\log\vert\Psi\vert} {\log(0.04)-\log\vert\Psi_{sat}\vert}\\ f(\Psi)_D = 1\nonumber; \]
-\form#1880:$kg C/m^2$
-\form#1881:$z_\text{m})$
-\form#1882:$w_\text{m}$
-\form#1883:$^{-1}$
-\form#1884:$\theta_{\text{l},1}$
-\form#1885:$^{3}$
-\form#1886:$^{-3}$
-\form#1887:$z_{m}$
-\form#1888:$w_m$
-\form#1889:$\theta_{l,1}$
-\form#1890:$^3$
-\form#1891:$w_m =\frac{z_m\theta_{l,1}\rho_w}{B_m} $
-\form#1892:$B_m) $
-\form#1893:$_m $
-\form#1894:$\theta _{l,1} $
-\form#1895:$\rho_w $
-\form#1896:$^{-3} $
-\form#1897:$\beta $
-\form#1898:$ \beta = 0.25 [ 1- \cos \left( \frac{w_m -w_{m,min}}{w_m-w_{m,max}} \right)]^{2} $
-\form#1899:$w_m $
-\form#1900:$w_{m,max} $
-\form#1901:$w_{m,min} $
-\form#1902:$^{-2} $
-\form#1903:$G_m)$
-\form#1904:$G_{0,m})$
-\form#1905:$R_{d,m}$
-\form#1906:$ G_m=G_{0,m}-R_{d,m} $
-\form#1907:$G_{0,m} $
-\form#1908:$\mu $
-\form#1909:$_2 $
-\form#1910:$^2 $
-\form#1911:$J_s)$
-\form#1912:$J_e)$
-\form#1913:$J_c)$
-\form#1914:$\varsigma$
-\form#1915:$ G_{0,m} = \nonumber \\ \quad \varsigma \min \left(J_{s},\frac{(J_{c}+J_{e})\pm \sqrt{{(J_c +J_ e )}^2 - 4(J_c +J_e)} }{2}\right) $
-\form#1916:$R_{d,m})$
-\form#1917:$R_{d,m,0})$
-\form#1918:$f_{m,rd}$
-\form#1919:$f_{T,rd})$
-\form#1920:$\theta_m$
-\form#1921:$R_{d,m} = R_{d,m,0} f_{m,rd} f_{T,{rd}}$
-\form#1922:$ f_{T,{rd}} = (3.22-(0.046 \cdot T_{moss})^{(T_{moss}-25/10)} $
-\form#1923:$ f_{m,rd} = 0 for \theta_{m} <0.4 $
-\form#1924:$ f_{m,rd} = 0.35 \theta_{m}^{2/3}-0.14 for 0.4\le \theta_m<5.8 $
-\form#1925:$ f_{m,rd} = 0.01 \theta_{m} +0.942 for 5.8<\theta _{m} $
-\form#1926:$ G_{0,m} = \quad \varsigma \min \left(J_{s},\frac{(J_{c}+J_{e})\pm \sqrt{{(J_c +J_ e )}^2 - 4(J_c +J_e)} }{2}\right) $
-\form#1927:$_m$
-\form#1928:$^-2$
-\form#1929:$K_{\ast g}$
-\form#1930:$^2$
-\form#1931:$\mu$
-\form#1932:$/s per W/m$
-\form#1933:$ (McCree, 1972). $
-\form#1934:$ is a function of the incoming short-wave radiation ($
-\form#1935:$, unit: W/m$
-\form#1936:$), the surface albedo ($
-\form#1937:$\tau _c$
-\form#1938:$K_{\ast g} = K \downarrow \tau_{c}\left( 1-\alpha_{g}\right)$
-\form#1939:$ f_{m,rd} = 0$
-\form#1940:$ \theta_{m} <0.4 $
-\form#1941:$ f_{m,rd} = 0.35 \theta_{m}^{2/3}-0.14$
-\form#1942:$ 0.4\le \theta_m<5.8 $
-\form#1943:$ f_{m,rd} = 0.01 \theta_{m} +0.942$
-\form#1944:$5.8<\theta _{m} $
-\form#1945:$K\downarrow $
+\form#1880:$C_L$
+\form#1881:$C_S$
+\form#1882:$C_R$
+\form#1883:$\tau_L$
+\form#1884:\[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \]
+\form#1885:$\gamma_L$
+\form#1886:$ H = \min (10.0C_S^{0.385},45) $
+\form#1887:$ H = (C_S + C_L)^{0.385} $
+\form#1888:$ H = 3.5 (C_{L,g} + 0.55C_{L,b})^{0.5} $
+\form#1889:$(\tau_{L,b} = 0.1\,\tau_L$
+\form#1890:$ H = \min(10.0,3.0C_S^{0.385}) $
+\form#1891:$ H = \min(1.0, 0.25(C_S^{0.2})) $
+\form#1892:$ H = = min(1.0,(C_{L,g}+0.55C_{L,b})^{0.3}) $
+\form#1893:$ f_R(z) = 1 - \exp(-\iota z) $
+\form#1894:$d_R$
+\form#1895:$f_R = 0.99$
+\form#1896:\[ \label{rootterm1} d_R = \frac{-\ln(1-f_R)}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \]
+\form#1897:\[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \]
+\form#1898:$\overline{C_R}$
+\form#1899:$\iota = 4.605/d_R$
+\form#1900:$[m^3 m^{-3} ] (\theta_{wilt})$
+\form#1901:$\theta_{wilt}$
+\form#1902:$\theta_{wilt} = \theta_p (\theta_{wilt} / \Psi_{sat} )^{-1/b} $
+\form#1903:\[ \begin{tabular} { | l | l | c | c | } \hline Name & Definition & Value & Units \\ \hline VKC & Von Karman Constant & 0.40 & - \\ \hline CT & Drag Coefficient for water & $1.15 10^{-3}$ & - \\ \hline VMIN & Minimum wind speed & 0.1 & $ m s^{-1} $ \\ \hline TCW & Thermal conductivity of water & 0.57 & $W m^{-1} K^{-1} $ \\ \hline TCICE & Thermal conductivity of ice & 2.24 & $W m^{-1} K^{-1} $ \\ \hline TCSAND & Thermal conductivity of sand particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCCLAY & Thermal conductivity of fine mineral particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCOM & Thermal conductivity of organic matter & 0.25 & $W m^{-1} K^{-1} $ \\ \hline TCDRYS & Thermal conductivity of dry mineral soil & 0.275 & $W m^{-1} K^{-1} $ \\ \hline RHOSOL & Particle density of soil mineral matter & $2.65 10^3 $ & $kg m^{-3} $ \\ \hline RHOOM & Particle density of soil organic matter & $1.30 10^3 $ & $kg m^{-3} $ \\ \hline HCPW & Volumetric heat capacity of water & $4.187 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPICE & Volumetric heat capacity of ice & $1.9257 10^6$ & $J m^{-3} K^{-1} $ \\ \hline HCPSOL & Volumetric heat capacity of mineral matter & $2.25 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPOM & Volumetric heat capacity of organic matter & $2.50 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPSND & Volumetric heat capacity of sand particles & $2.13 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPCLY & Volumetric heat capacity of fine mineral particles & $2.38 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline SPHW & Specific heat of water & $4.186 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHICE & Specific heat of ice & $2.10 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHVEG & Specific heat of vegetation matter & $2.70 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline RHOW & Density of water & $1.0 10^3 $ & $kg m^{-3} $ \\ \hline RHOICE & Density of ice & $0.917 10^3$ & $kg m^{-3} $ \\ \hline TCGLAC & Thermal conductivity of ice sheets & 2.24 & $W m^{-1} K^{-1} $ \\ \hline CLHMLT & Latent heat of freezing of water & $0.334 10^6 $ & $J kg^{-1} $ \\ \hline CLHVAP & Latent heat of vaporization of water & $2.501 10^6 $ & $J kg^{-1} $ \\ \hline ZOLNG & Natural log of roughness length of soil & -4.605 & - \\ \hline ZOLNS & Natural log of roughness length of snow & -6.908 & - \\ \hline ZOLNI & Natural log of roughness length of ice & -6.215 & - \\ \hline ZORATG & Ratio of soil roughness length for momentum to roughness length for heat & 3.0 & - \\ \hline ALVSI & Visible albedo of ice & 0.95 & - \\ \hline ALIRI & Near-infrared albedo of ice & 0.73 & - \\ \hline ALVSO & Visible albedo of organic matter & 0.05 & - \\ \hline ALIRO & Near-infrared albedo of organic matter & 0.30 & - \\ \hline ALBRCK & Albedo of rock & 0.16 & - \\ \hline \end{tabular} \]
+\form#1904:\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf & evg & dcd & --- & ---& ---\\ \hline broad leaf & evg & dcd-cld & dcd-dry & EVG-shrubs & DCD-shrubs\\ \hline crops & c3 & c4 & --- & ---& ---\\ \hline grasses & c3 & c4 & sedges & ---& ---\\ \hline \end{tabular} \]
+\form#1905:$kg C/m^2$
+\form#1906:\[ \begin{tabular}{ | l | l || l | } 1.0 & April 1989 & Basic thermal and hydrological model of snow and soil. \\ 2.0 & August 1991 & Addition of vegetation thermal and hydrological model. \\ 2.1 & May 1993 & Full vectorization of code to enable efficienr running on vector supercomputers. \\ 2.2 & April 1994 & Augmentation of diagnostic calculations; incorporation of in-line comments throughout; development \\ & & of a parallel stand-alone version of the model for use with field data. \\ 2.3 & December 1994 & Revisions to diagnostic calculations; new near-surface atmospheric stability functions. \\ 2.4 & August 1995 & Complete set of water budget diagnostic calculations; parametrizations of organic soils and \\ & &rock soils; allowance for inhomegeneity between soil layers; incorporation of variable \\ & & surface detention capacity. \\ 2.5 & January 1996 & Completion of energy budget diagnostic calculations. \\ 2.6 & August 1997 & Revisions to surface stability function calculations. \\ 2.7 & December 1997 & Incorporation of variable soil permeable depth; calculation of soil thermal and hydraulic properties based on textural composition; modified surface temperature iteration scheme. \\ 3.0 & December 2002 & Improved treatment of soil evaporation; complete treatment of organic soils; new canopy conductance formulation; preliminary routines for lateral movement of soil water; enhanced snow density and snow interception; improved turbulent transfer from vegetation; mosaic formulation. \\ 3.1 & April 2005 & Faster surface temperature iteration scheme; refinements to leaf boundary resistance formulation; improved treatment of snow sublimation and interception; transition to Fortran 90 and single precision variables. \\ 3.2 & May 2006 & Option for multiple soil layers at depth; additional liquid water content of snow pack; revised radiation transmission in vegetation. \\ 3.3 & December 2006 & Separate temperature profile curve fit for snow and soil; multiple-layer option for ice sheets; water and energy balance checks for each time step; modifications to soil hydraulic conductivity calculations. \\ 3.4 & April 2008 & Streamline and clean up code; updated soil thermal conductivity calculations; revisions to handling of water stored on vegetation. \\ 3.5 & December 2010 & Updated field capacity calculation; revised treatment of water on canopy; reworked calculation of baseflow. \\ 3.6 & December 2011 & Revised ponding depth over organic soils; revised snow albedo refreshment threshold; new snow thermal conductivity algorithm; interface with Canadian Terrestrial Ecosystem Model (CTEM). \\ 3.6.1 & December 2016 & New treatment of bare soil albedo; new optional four-band snow albedo formulation; fixes to guard against overshoots in water drawdown by evapotranspiration; upper limit on snow depth. \\ \end{tabular} \]
+\form#1907:\[ \begin{tabular}{ | l | c | c | c | c | c | c | } & RSMN & QA50 & VPDA & VPDB & PSGA & PSGB \\ Needleleaf trees & 200.0 & 30.0 & 0.65 & 1.05 & 100.0 & 5.0 \\ Broadleaf trees & 125.0 & 40.0 & 0.50 & 0.60 & 100.0 & 5.0 \\ Crops & 85.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\ Grass & 100.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\ \end{tabular} \]
+\form#1908:\[ \begin{tabular}{ | l | c | c | c | c | c | c | c | c | } Biome & CLASS PFT & Visible albedo & Near-infrared Albedo & Roughness length (m) \\ Needleleaf evergreen forest & 1 & 0.03 & 0.19 & 1.5 \\ Needleleaf deciduous forest & 1 & 0.03 & 0.19 & 1.0 \\ Broadleaf evergreen forest & 2 & 0.03 & 0.23 & 3.5 \\ Broadleaf cold deciduous forest & 2 & 0.05 & 0.29 & 2.0 \\ Broadleaf tropical evergreen forest & 2 & 0.03 & 0.23 & 3.0 \\ Broadleaf tropical drought deciduous forest & 2 & 0.05 & 0.29 & 0.8 \\ Broadleaf evergreen shrub & 4 & 0.03 & 0.19 & 0.05 \\ Broadleaf deciduous shrub & 2 & 0.05 & 0.29 & 0.15 \\ Broadleaf thorn shrub & 2 & 0.06 & 0.32 & 0.15 \\ Short grass and forbs & 4 & 0.06 & 0.34 & 0.02 \\ Long grass & 4 & 0.05 & 0.31 & 0.08 \\ Arable & 3 & 0.06 & 0.34 & 0.08 \\ Rice & 3 & 0.06 & 0.36 & 0.08 \\ Sugarcane & 3 & 0.05 & 0.31 & 0.35 \\ Maize & 3 & 0.05 & 0.33 & 0.25 \\ Cotton & 3 & 0.07 & 0.43 & 0.10 \\ Irrigated crop & 3 & 0.07 & 0.36 & 0.08 \\ Tundra & 4 & 0.05 & 0.29 & 0.01 \\ Swamp & 4 & 0.03 & 0.25 & 0.05 \\ Urban & 5 & 0.09 & 0.15 & 1.35 \\ \end{tabular} \]
+\form#1909:\[ \begin{tabular}{ | l | c | c | c | c | c | c | c | c | } Biome & CLASS PFT & Max. LAI (m2/m2) & Min. LAI (m2/m2) & Aboveground biomass (kg/m2) & Rooting depth (m) \\ Needleleaf evergreen forest & 1 & 2.0 & 1.6 & 25.0 & 1.0 \\ Needleleaf deciduous forest & 1 & 2.0 & 0.5 & 15.0 & 1.0 \\ Broadleaf evergreen forest & 2 & 8.0 & 8.0 & 50.0 & 5.0 \\ Broadleaf cold deciduous forest & 6.0 & 0.5 & 20.0 & 2.0 \\ Broadleaf tropical evergreen forest & 8.0 & 8.0 & 40.0 & 5.0 \\ Broadleaf tropical drought deciduous forest & 4.0 & 4.0 & 15.0 & 5.0 \\ Broadleaf evergreen shrub & 2.0 & 2.0 & 2.0 & 0.2 \\ Broadleaf deciduous shrub & 4.0 & 0.5 & 8.0 & 1.0 \\ Broadleaf thorn shrub & 3.0 & 3.0 & 8.0 & 5.0 \\ Short grass and forbs & 3.0 & 3.0 & 1.5 & 1.2 \\ Long grass & 4.0 & 4.0 & 3.0 & 1.2 \\ Arable & 4.0 & 0.0 & 2.0 & 1.2 \\ Rice & 6.5 & 0.0 & 2.0 & 1.2 \\ Sugarcane & 5.0 & 0.0 & 5.0 & 1.0 \\ Maize & 4.0 & 0.0 & 5.0 & 1.5 \\ Cotton & 5.0 & 0.0 & 2.0 & 2.0 \\ Irrigated crop & 4.0 & 0.0 & 2.0 & 5.0 \\ Tundra & 1.5 & 1.5 & 0.2 & 0.1 \\ Swamp & 1.5 & 1.5 & 1.0 & 5.0 \\ Urban & - & - & - & - \\ \end{tabular} \]
+\form#1910:\[ \begin{tabular}{ | l | c | c | } & CTEM PFTs & CLASS PFTs \\ 1. & Needleleaf Evergreen & Needleleaf \\ 2. & Needleleaf Deciduous & \\ 3. & Broadleaf Evergreen & Broadleaf \\ 4. & Broadleaf Cold Deciduous & \\ 5. & Broadleaf Drought/Dry Deciduous & \\ 6. & C3 Crop & Crops \\ 7. & C4 Crop & \\ 8. & C3 Grass & Grasses \\ 9. & C4 Grass & \\ \end{tabular} \]
+\form#1911:$^{-2} $
+\form#1912:$G_m)$
+\form#1913:$G_{0,m})$
+\form#1914:$R_{d,m}$
+\form#1915:$ G_m=G_{0,m}-R_{d,m} $
+\form#1916:$G_{0,m} $
+\form#1917:$\mu $
+\form#1918:$_2 $
+\form#1919:$^2 $
+\form#1920:$J_s)$
+\form#1921:$J_e)$
+\form#1922:$J_c)$
+\form#1923:$\varsigma$
+\form#1924:$ G_{0,m} = \quad \varsigma \min \left(J_{s},\frac{(J_{c}+J_{e})\pm \sqrt{{(J_c +J_ e )}^2 - 4(J_c +J_e)} }{2}\right) $
+\form#1925:$R_{d,m})$
+\form#1926:$R_{d,m,0})$
+\form#1927:$f_{m,rd}$
+\form#1928:$f_{T,rd})$
+\form#1929:$\theta_m$
+\form#1930:$R_{d,m} = R_{d,m,0} f_{m,rd} f_{T,{rd}}$
+\form#1931:$ f_{T,{rd}} = (3.22-(0.046 \cdot T_{moss})^{(T_{moss}-25/10)} $
+\form#1932:$ f_{m,rd} = 0$
+\form#1933:$ \theta_{m} <0.4 $
+\form#1934:$ f_{m,rd} = 0.35 \theta_{m}^{2/3}-0.14$
+\form#1935:$ 0.4\le \theta_m<5.8 $
+\form#1936:$ f_{m,rd} = 0.01 \theta_{m} +0.942$
+\form#1937:$5.8<\theta _{m} $
+\form#1938:$_m$
+\form#1939:$^-2$
+\form#1940:$K_{\ast g}$
+\form#1941:$^2$
+\form#1942:$\mu$
+\form#1943:$K\downarrow $
+\form#1944:$\tau _c$
+\form#1945:$K_{\ast g} = K \downarrow \tau_{c}\left( 1-\alpha_{g}\right)$
 \form#1946:$ R_{o}=C_{SOM,o}k_{o}f_{T,{o}} $
 \form#1947:$ R_{a}=C_{SOM,a}k_{a}f_{T,{a}}f_{anoxic} $
 \form#1948:$R$
 \form#1949:$\mu mol C m$
 \form#1950:$/s) is obtained from the respiration rate coefficient $
-\form#1951:\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf & evg & dcd & --- & ---& ---\\ \hline broad leaf & evg & dcd-cld & dcd-dry & EVG-shrubs & DCD-shrubs\\ \hline crops & c3 & c4 & --- & ---& ---\\ \hline grasses & c3 & c4 & sedges & ---& ---\\ \hline \end{tabular} \]
-\form#1952:$ ($
-\form#1953:$f_T$
-\form#1954:$C_{SOM}$
-\form#1955:$f_{anoxic}$
-\form#1956:$T_s)$
-\form#1957:$Q_{10,a}$
-\form#1958:$Q_{10,o}$
-\form#1959:$k$
-\form#1960:$ f_{T,o} =Q_{10,o}^{\left(\int\limits_{0}^{z_{wt}} T_{j} -15\right)/10} $
-\form#1961:$ f_{T,{a}} =Q_{10,{a}}^{\left(\int\limits_{z_{wt}}^{z_\mathrm{p}} T_{j} -15\right)/10} $
-\form#1962:$ Q_{10}=1.44+0.56 {tanh}[0.075\left( 46.0-T_{s} \right)] $
-\form#1963:$ T_{s,o}=\int\limits_{0}^{z_{wt}} T_{j} \, /(z_{wt}) $
-\form#1964:$ T_{s,a}=\int\limits_{z_{wt}}^{z_{p}} T_{j} /(z_{p}-z_{wt}) $
-\form#1965:$ k_{o}= 0 $
-\form#1966:$ z_{wt}<0 $
-\form#1967:$ k_{o}= k_{1}\left( 1-e^{k_{2}z_{wt}} \right)+k_{3}z_{wt} $
-\form#1968:$ 0.3>_{z{t}}\ge 0 $
-\form#1969:$ k_{4}e^{k_{5}z_{wt}}+k_{6}z_{wt}+k_{7} $
-\form#1970:$ z_{wt}\ge 0.3 $
-\form#1971:$ k_{a}= k_{4}e^{k_{5}z_{p}}+{10k}_{6}z_{p}+k_{7} $
-\form#1972:$ k_{a} = $
-\form#1973:$ k_1 e^{ k_2 z_{wt} } -$
-\form#1974:$ k_1 e^{ k_2 z_{wt} } - k_4 e^{k_5 z_p} $
-\form#1975:$ k_1 e^{ k_2 z_{wt} } - k_4 e^{k_5 z_p} -k_3 z_{wt}+k_8 $
-\form#1976:$0.3>z_{wt} \ge 0 $
-\form#1977:$ k_{a}= k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_p-z_{wt} \right)$
-\form#1978:$ C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}) $
-\form#1979:$ C_{SOM,a}= C_{SOM}-C_{SOM,o} $
-\form#1980:$k_{o}$
-\form#1981:$k_{a}$
-\form#1982:$_{hum}$
-\form#1983:$R_o$
-\form#1984:$R_a$
-\form#1985:$ \frac{{dC}_{SOM}}{dt} = C_{hum}-R_{o}-R_{a} $
-\form#1986:$C_{hum}$
-\form#1987:$_{SOM}$
-\form#1988:$ z_{p}= \frac{{-k}_{10}+\sqrt{k_{10}+\frac{4k_{9}{C}_{SOM}}{0.487}}. }{2k_{9}} $
-\form#1989:$, $
-\form#1990:$ is calculated as $
-\form#1991:$ is the thickness of soil layer (unit: m), $
-\form#1992:$ z_{wt}=z_{{b},j}-\Delta z\left[ \frac{\theta_{{l},j}+\theta_{i,j}-\theta _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right] $
-\form#1993:$\Delta z $
-\form#1994:$\theta_l $
-\form#1995:$0.3 > z_t \ge 0$
-\form#1996:$ H = \min (10.0C_S^{0.385},45) $
-\form#1997:$ H = (C_S + C_L)^{0.385} $
-\form#1998:$ H = 3.5 (C_{L,g} + 0.55C_{L,b})^{0.5} $
-\form#1999:$C_L$
-\form#2000:$C_S$
-\form#2001:$C_R$
-\form#2002:$\tau_L$
-\form#2003:\[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \]
-\form#2004:$\gamma_L$
-\form#2005:$(\tau_{L,b} = 0.1\,\tau_L$
-\form#2006:$ H = \min(10.0,3.0C_S^{0.385}) $
-\form#2007:$ H = \min(1.0, 0.25(C_S^{0.2})) $
-\form#2008:$ H = = min(1.0,(C_{L,g}+0.55C_{L,b})^{0.3}) $
-\form#2009:$ f_R(z) = 1 - \exp(-\iota z) $
-\form#2010:$d_R$
-\form#2011:$f_R = 0.99$
-\form#2012:\[ \label{rootterm1} d_R = \frac{-\ln(1-f_R)}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \]
-\form#2013:\[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \]
-\form#2014:$\overline{C_R}$
-\form#2015:$\iota = 4.605/d_R$
-\form#2016:\[ \begin{tabular} { | l | l | c | c | } \hline Name & Definition & Value & Units \\ \hline VKC & Von Karman Constant & 0.40 & - \\ \hline CT & Drag Coefficient for water & $1.15 10^{-3}$ & - \\ \hline VMIN & Minimum wind speed & 0.1 & $ m s^{-1} $ \\ \hline TCW & Thermal conductivity of water & 0.57 & $W m^{-1} K^{-1} $ \\ \hline TCICE & Thermal conductivity of ice & 2.24 & $W m^{-1} K^{-1} $ \\ \hline TCSAND & Thermal conductivity of sand particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCCLAY & Thermal conductivity of fine mineral particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCOM & Thermal conductivity of organic matter & 0.25 & $W m^{-1} K^{-1} $ \\ \hline TCDRYS & Thermal conductivity of dry mineral soil & 0.275 & $W m^{-1} K^{-1} $ \\ \hline RHOSOL & Density of soil mineral matter & $2.65 10^3 $ & $kg m^{-3} $ \\ \hline RHOOM & Density of soil organic matter & $1.30 10^3 $ & $kg m^{-3} $ \\ \hline HCPW & Volumetric heat capacity of water & $4.187 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPICE & Volumetric heat capacity of ice & $1.9257 10^6$ & $J m^{-3} K^{-1} $ \\ \hline HCPSOL & Volumetric heat capacity of mineral matter & $2.25 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPOM & Volumetric heat capacity of organic matter & $2.50 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPSND & Volumetric heat capacity of sand particles & $2.13 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPCLY & Volumetric heat capacity of fine mineral particles & $2.38 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline SPHW & Specific heat of water & $4.186 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHICE & Specific heat of ice & $2.10 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHVEG & Specific heat of vegetation matter & $2.70 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline RHOW & Density of water & $1.0 10^3 $ & $kg m^{-3} $ \\ \hline RHOICE & Density of ice & $0.917 10^3$ & $kg m^{-3} $ \\ \hline TCGLAC & Thermal conductivity of ice sheets & 2.24 & $W m^{-1} K^{-1} $ \\ \hline CLHMLT & Latent heat of freezing of water & $0.334 10^6 $ & $J kg^{-1} $ \\ \hline CLHVAP & Latent heat of vaporization of water & $2.501 10^6 $ & $J kg^{-1} $ \\ \hline ZOLNG & Natural log of roughness length of soil & -4.605 & - \\ \hline ZOLNS & Natural log of roughness length of snow & -6.908 & - \\ \hline ZOLNI & Natural log of roughness length of ice & -6.215 & - \\ \hline ZORATG & Ratio of soil roughness length for momentum to roughness length for heat & 3.0 & - \\ \hline ALVSI & Visible albedo of ice & 0.95 & - \\ \hline ALIRI & Near-infrared albedo of ice & 0.73 & - \\ \hline ALVSO & Visible albedo of organic matter & 0.05 & - \\ \hline ALIRO & Near-infrared albedo of organic matter & 0.30 & - \\ \hline ALBRCK & Albedo of rock & 0.27 & - \\ \hline \end{tabular} \]
-\form#2017:\[{LAI}_{thrs} = L_f \left[ {SLA}\left(\frac{C_S + C_R}{\eta}\right)^{1/\kappa} \right].\]
-\form#2018:$L_f$
-\form#2019:$\Omega_N$
-\form#2020:$\Omega_C$
-\form#2021:$\Omega_D$
-\form#2022:$D_L$
-\form#2023:\[ \label{cltod} D_L = C_L[1 - \exp(-\Omega_N - \Omega_C - \Omega_{D})],\]
-\form#2024:$\Omega_N= 1/365 \tau_L$
-\form#2025:\[ \label{gamma_cold} \Omega_C = \Omega_{C,max}L_{cold}^3, \]
-\form#2026:\[ \label{cldls} L_{cold} = \begin{cases} 1, \quad T_a < \left(T_{cold}^{leaf} - 5\right) \\ 1 - \frac{T_a - \left(T_{cold}^{leaf} - 5\right)}{5}, \\ \quad T_{cold}^{leaf} > T_a > (T_{cold}^{leaf} - 5) \\ 0, \quad T_a > T_{cold}^{leaf} ,\\ \end{cases} \]
-\form#2027:\[ \label{gamma_dry} \Omega_{D} = \Omega_{D,max}\,(1-\phi_{root})^3, \]
-\form#2028:$\Omega_{D,max}$
-\form#2029:\[ \begin{tabular}{ | l | l || l | } 1.0 & April 1989 & Basic thermal and hydrological model of snow and soil. \\ 2.0 & August 1991 & Addition of vegetation thermal and hydrological model. \\ 2.1 & May 1993 & Full vectorization of code to enable efficienr running on vector supercomputers. \\ 2.2 & April 1994 & Augmentation of diagnostic calculations; incorporation of in-line comments throughout; development of a parallel stand-alone version of the model for use with field data. \\ 2.3 & December 1994 & Revisions to diagnostic calculations; new near-surface atmospheric stability functions. \\ 2.4 & August 1995 & Complete set of water budget diagnostic calculations; parametrizations of organic soils and rock soils; allowance for inhomegeneity between soil layers; incorporation of variable surface detention capacity. \\ 2.5 & January 1996 & Completion of energy budget diagnostic calculations. \\ 2.6 & August 1997 & Revisions to surface stability function calculations. \\ 2.7 & December 1997 & Incorporation of variable soil permeable depth; calculation of soil thermal and hydraulic properties based on textural composition; modified surface temperature iteration scheme. \\ 3.0 & December 2002 & Improved treatment of soil evaporation; complete treatment of organic soils; new canopy conductance formulation; preliminary routines for lateral movement of soil water; enhanced snow density and snow interception; improved turbulent transfer from vegetation; mosaic formulation. \\ 3.1 & April 2005 & Faster surface temperature iteration scheme; refinements to leaf boundary resistance formulation; improved treatment of snow sublimation and interception; transition to Fortran 90 and single precision variables. \\ 3.2 & May 2006 & Option for multiple soil layers at depth; additional liquid water content of snow pack; revised radiation transmission in vegetation. \\ 3.3 & December 2006 & Separate temperature profile curve fit for snow and soil; multiple-layer option for ice sheets; water and energy balance checks for each time step; modifications to soil hydraulic conductivity calculations. \\ 3.4 & April 2008 & Streamline and clean up code; updated soil thermal conductivity calculations; revisions to handling of water stored on vegetation. \\ 3.5 & December 2010 & Updated field capacity calculation; revised treatment of water on canopy; reworked calculation of baseflow. \\ 3.6 & December 2011 & Revised ponding depth over organic soils; revised snow albedo refreshment threshold; new snow thermal conductivity algorithm; interface with Canadian Terrestrial Ecosystem Model (CTEM). \\ 3.6.1 & December 2016 & New treatment of bare soil albedo; new optional four-band snow albedo formulation; fixes to guard against overshoots in water drawdown by evapotranspiration; upper limit on snow depth. \\ \end{tabular} \]
-\form#2030:$[m^3 m^{-3} ] (\theta_{wilt})$
-\form#2031:\[ \begin{tabular} { | l | l | c | c | } \hline Name & Definition & Value & Units \\ \hline VKC & Von Karman Constant & 0.40 & - \\ \hline CT & Drag Coefficient for water & $1.15 10^{-3}$ & - \\ \hline VMIN & Minimum wind speed & 0.1 & $ m s^{-1} $ \\ \hline TCW & Thermal conductivity of water & 0.57 & $W m^{-1} K^{-1} $ \\ \hline TCICE & Thermal conductivity of ice & 2.24 & $W m^{-1} K^{-1} $ \\ \hline TCSAND & Thermal conductivity of sand particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCCLAY & Thermal conductivity of fine mineral particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCOM & Thermal conductivity of organic matter & 0.25 & $W m^{-1} K^{-1} $ \\ \hline TCDRYS & Thermal conductivity of dry mineral soil & 0.275 & $W m^{-1} K^{-1} $ \\ \hline RHOSOL & Particle density of soil mineral matter & $2.65 10^3 $ & $kg m^{-3} $ \\ \hline RHOOM & Particle density of soil organic matter & $1.30 10^3 $ & $kg m^{-3} $ \\ \hline HCPW & Volumetric heat capacity of water & $4.187 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPICE & Volumetric heat capacity of ice & $1.9257 10^6$ & $J m^{-3} K^{-1} $ \\ \hline HCPSOL & Volumetric heat capacity of mineral matter & $2.25 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPOM & Volumetric heat capacity of organic matter & $2.50 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPSND & Volumetric heat capacity of sand particles & $2.13 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPCLY & Volumetric heat capacity of fine mineral particles & $2.38 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline SPHW & Specific heat of water & $4.186 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHICE & Specific heat of ice & $2.10 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHVEG & Specific heat of vegetation matter & $2.70 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline RHOW & Density of water & $1.0 10^3 $ & $kg m^{-3} $ \\ \hline RHOICE & Density of ice & $0.917 10^3$ & $kg m^{-3} $ \\ \hline TCGLAC & Thermal conductivity of ice sheets & 2.24 & $W m^{-1} K^{-1} $ \\ \hline CLHMLT & Latent heat of freezing of water & $0.334 10^6 $ & $J kg^{-1} $ \\ \hline CLHVAP & Latent heat of vaporization of water & $2.501 10^6 $ & $J kg^{-1} $ \\ \hline ZOLNG & Natural log of roughness length of soil & -4.605 & - \\ \hline ZOLNS & Natural log of roughness length of snow & -6.908 & - \\ \hline ZOLNI & Natural log of roughness length of ice & -6.215 & - \\ \hline ZORATG & Ratio of soil roughness length for momentum to roughness length for heat & 3.0 & - \\ \hline ALVSI & Visible albedo of ice & 0.95 & - \\ \hline ALIRI & Near-infrared albedo of ice & 0.73 & - \\ \hline ALVSO & Visible albedo of organic matter & 0.05 & - \\ \hline ALIRO & Near-infrared albedo of organic matter & 0.30 & - \\ \hline ALBRCK & Albedo of rock & 0.16 & - \\ \hline \end{tabular} \]
-\form#2032:$\theta_{wilt}$
-\form#2033:$\theta_{wilt} = \theta_p \bullet (\theta_{wilt} / \Psi_{sat} )^{-1/b} $
-\form#2034:$\theta_{wilt} = \theta_p (\theta_{wilt} / \Psi_{sat} )^{-1/b} $
+\form#1951:$ ($
+\form#1952:$f_T$
+\form#1953:$C_{SOM}$
+\form#1954:$f_{anoxic}$
+\form#1955:$T_s)$
+\form#1956:$Q_{10,a}$
+\form#1957:$Q_{10,o}$
+\form#1958:$k$
+\form#1959:$ f_{T,o} =Q_{10,o}^{\left(\int\limits_{0}^{z_{wt}} T_{j} -15\right)/10} $
+\form#1960:$ f_{T,{a}} =Q_{10,{a}}^{\left(\int\limits_{z_{wt}}^{z_\mathrm{p}} T_{j} -15\right)/10} $
+\form#1961:$ Q_{10}=1.44+0.56 {tanh}[0.075\left( 46.0-T_{s} \right)] $
+\form#1962:$ T_{s,o}=\int\limits_{0}^{z_{wt}} T_{j} \, /(z_{wt}) $
+\form#1963:$ T_{s,a}=\int\limits_{z_{wt}}^{z_{p}} T_{j} /(z_{p}-z_{wt}) $
+\form#1964:$ k_{o}= 0 $
+\form#1965:$ z_{wt}<0 $
+\form#1966:$ k_{o}= k_{1}\left( 1-e^{k_{2}z_{wt}} \right)+k_{3}z_{wt} $
+\form#1967:$0.3 > z_t \ge 0$
+\form#1968:$ k_{4}e^{k_{5}z_{wt}}+k_{6}z_{wt}+k_{7} $
+\form#1969:$ z_{wt}\ge 0.3 $
+\form#1970:$ k_{a}= k_{4}e^{k_{5}z_{p}}+{10k}_{6}z_{p}+k_{7} $
+\form#1971:$ k_{a} = $
+\form#1972:$ k_1 e^{ k_2 z_{wt} } - k_4 e^{k_5 z_p} -k_3 z_{wt}+k_8 $
+\form#1973:$0.3>z_{wt} \ge 0 $
+\form#1974:$ k_{a}= k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_p-z_{wt} \right)$
+\form#1975:$ C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}) $
+\form#1976:$ C_{SOM,a}= C_{SOM}-C_{SOM,o} $
+\form#1977:$k_{o}$
+\form#1978:$k_{a}$
+\form#1979:$_{hum}$
+\form#1980:$R_o$
+\form#1981:$R_a$
+\form#1982:$ \frac{{dC}_{SOM}}{dt} = C_{hum}-R_{o}-R_{a} $
+\form#1983:$C_{hum}$
+\form#1984:$_{SOM}$
+\form#1985:$ z_{p}= \frac{{-k}_{10}+\sqrt{k_{10}+\frac{4k_{9}{C}_{SOM}}{0.487}}. }{2k_{9}} $
+\form#1986:$ z_{wt}=z_{{b},j}-\Delta z\left[ \frac{\theta_{{l},j}+\theta_{i,j}-\theta _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right] $
+\form#1987:$\Delta z $
+\form#1988:$\theta_l $
+\form#1989:$^3$
+\form#1990:$z_{m}$
+\form#1991:$w_m$
+\form#1992:$\theta_{l,1}$
+\form#1993:$w_m =\frac{z_m\theta_{l,1}\rho_w}{B_m} $
+\form#1994:$B_m) $
+\form#1995:$_m $
+\form#1996:$\theta _{l,1} $
+\form#1997:$^{-3}$
+\form#1998:$\rho_w $
+\form#1999:$^{-3} $
+\form#2000:$\beta $
+\form#2001:$ \beta = 0.25 [ 1- \cos \left( \frac{w_m -w_{m,min}}{w_m-w_{m,max}} \right)]^{2} $
+\form#2002:$w_m $
+\form#2003:$w_{m,max} $
+\form#2004:$w_{m,min} $
+\form#2005:\[{LAI}_{thrs} = L_f \left[ {SLA}\left(\frac{C_S + C_R}{\eta}\right)^{1/\kappa} \right].\]
+\form#2006:$L_f$
+\form#2007:$\Omega_N$
+\form#2008:$\Omega_C$
+\form#2009:$\Omega_D$
+\form#2010:$D_L$
+\form#2011:\[ \label{cltod} D_L = C_L[1 - \exp(-\Omega_N - \Omega_C - \Omega_{D})],\]
+\form#2012:$\Omega_N= 1/365 \tau_L$
+\form#2013:\[ \label{gamma_cold} \Omega_C = \Omega_{C,max}L_{cold}^3, \]
+\form#2014:\[ \label{cldls} L_{cold} = \begin{cases} 1, \quad T_a < \left(T_{cold}^{leaf} - 5\right) \\ 1 - \frac{T_a - \left(T_{cold}^{leaf} - 5\right)}{5}, \\ \quad T_{cold}^{leaf} > T_a > (T_{cold}^{leaf} - 5) \\ 0, \quad T_a > T_{cold}^{leaf} ,\\ \end{cases} \]
+\form#2015:\[ \label{gamma_dry} \Omega_{D} = \Omega_{D,max}\,(1-\phi_{root})^3, \]
+\form#2016:$\Omega_{D,max}$

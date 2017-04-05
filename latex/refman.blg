@@ -4,8 +4,11 @@ The top-level auxiliary file: refman.aux
 A level-1 auxiliary file: group__competition__scheme__existence.aux
 A level-1 auxiliary file: group__competition__scheme__competition.aux
 A level-1 auxiliary file: group__ctem__params__initpftpars.aux
+A level-1 auxiliary file: group__ctem__statevars.aux
 A level-1 auxiliary file: group__disturbance__scheme__disturb.aux
 A level-1 auxiliary file: group__disturbance__scheme__burntobare.aux
+A level-1 auxiliary file: group__hetresg.aux
+A level-1 auxiliary file: group__hetresv.aux
 A level-1 auxiliary file: group__io__driver__read__from__ctm.aux
 A level-1 auxiliary file: group__io__driver__write__ctm__rs.aux
 A level-1 auxiliary file: group__io__driver__create__outfiles.aux
@@ -20,46 +23,48 @@ A level-1 auxiliary file: group__landuse__change__readin__luc.aux
 A level-1 auxiliary file: group__landuse__change__luc.aux
 A level-1 auxiliary file: group__landuse__change__adjust__luc__fracs.aux
 A level-1 auxiliary file: group__landuse__change__adjust__fracs__comp.aux
+A level-1 auxiliary file: group__moss__photosynthesis.aux
+A level-1 auxiliary file: group__peat__soil__het__resp.aux
 The style file: plain.bst
 Database file #1: bibTmpFile_1.bib
-You've used 50 entries,
+You've used 60 entries,
             2118 wiz_defined-function locations,
-            874 strings with 15157 characters,
-and the built_in function-call counts, 18829 in all, are:
-= -- 1851
-> -- 1041
+            950 strings with 17663 characters,
+and the built_in function-call counts, 22731 in all, are:
+= -- 2222
+> -- 1284
 < -- 3
-+ -- 425
-- -- 359
-* -- 1604
-:= -- 3197
-add.period$ -- 152
-call.type$ -- 50
-change.case$ -- 328
++ -- 523
+- -- 445
+* -- 1956
+:= -- 3870
+add.period$ -- 182
+call.type$ -- 60
+change.case$ -- 401
 chr.to.int$ -- 0
-cite$ -- 50
-duplicate$ -- 567
-empty$ -- 1317
-format.name$ -- 359
-if$ -- 3736
+cite$ -- 60
+duplicate$ -- 676
+empty$ -- 1573
+format.name$ -- 445
+if$ -- 4496
 int.to.chr$ -- 0
-int.to.str$ -- 50
-missing$ -- 48
-newline$ -- 253
-num.names$ -- 102
-pop$ -- 249
+int.to.str$ -- 60
+missing$ -- 58
+newline$ -- 303
+num.names$ -- 122
+pop$ -- 304
 preamble$ -- 1
-purify$ -- 279
+purify$ -- 342
 quote$ -- 0
-skip$ -- 382
+skip$ -- 454
 stack$ -- 0
-substring$ -- 1364
-swap$ -- 67
+substring$ -- 1624
+swap$ -- 77
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 200
+type$ -- 240
 warning$ -- 0
-while$ -- 190
-width$ -- 52
-write$ -- 550
+while$ -- 226
+width$ -- 62
+write$ -- 659

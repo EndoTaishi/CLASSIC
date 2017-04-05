@@ -719,12 +719,28 @@ Functions/Subroutines</h2></td></tr>
 <p>In loop 400, a test is carried out to determine whether saturated conditions are already present in the soil. Generally it is assumed that a period of unsaturated flow occurs initially, so the flag IFILL is set to 1, the depth of the wetting front ZF is set to zero, and the flag LZF indicating the index of the soil layer in which the wetting front occurs is set to 1. If a pond is present on the soil surface or if the hydraulic conductivity if the first soil layer is very small, it is deemed that saturated flow begins immediately, so IFILL is set to zero. Then each soil layer is checked in turn, to ascertain whether the liquid water content is greater than THLINF. If so, it is concluded that saturated flow is occurring in this layer; ZF is set to ZBOTW, the depth of the bottom of the soil layer, LZF is set to the index of the next layer, and IFILL is set to zero. For each layer found to be undergoing saturated flow, its water content is stored in the J+1 level of the water movement matrix WMOVE, and its water temperature is stored in the J+1 level of the matrix TMOVE. The counter NINF is set to the number of soil layers behind and including the one with the wetting front, plus 2.</p>
 <p>A series of subroutines is called to complete the infiltration calculations. Subroutine WFILL treats the period of unsaturated flow up the point when saturated flow begins. Subroutine WFLOW treats the period of saturated flow. Subroutine WEND reassigns liquid water contents and temperatures at the conclusion of the infiltration period. THLIQ, THICE and TBARW are then set to the corresponding updated values of THLIQX, THICEX and TBARWX. The average depth of the wetting front in the soil layer in which it occurs, the index of the soil layer, and the moisture content behind the wetting front are stored in output variables ZFAV, LZFAV and THLINV respectively. Finally, if there is any time remaining in the current time step following the infiltration period, subroutine GRDRAN is called to treat the movement of soil water over the remainder of the time step.</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4_cgraph.png" border="0" usemap="#GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4_cgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4_icgraph.png" border="0" usemap="#GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4_icgraph" alt=""/></div>
+<!-- MAP 1 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:35 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:30 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

@@ -17,6 +17,8 @@
      A                   GROGAT, CMAIGAT,TACGAT, QACGAT, WSNOGAT,       
      B                   REFGAT, BCSNGAT,EMISGAT,SALBGAT,CSALGAT)       
 C                                                                       
+C     * DEC 23/16 - M.LAZARE.  PROMOTE DIMENSIONS OF WSNOROT TO
+C     *                        NLAT,NMOS (FOR LAKE MODEL)
 C     * Jun 20, 2014 - M.Lazare. New version for gcm18, called          
 C     *                          by new "sfcproc2":                     
 C     *                          - Adds SALBGAT/SALBROT and             

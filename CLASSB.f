@@ -6,12 +6,16 @@ C>\file
      1                  THLRAT,HCPS,TCS,THFC,THLW,PSIWLT,
      2                  DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN,            
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)
-
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)                 
 C
+C     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY, somehow it worked
+C                               Change to TCCLAY for consistency with rest of model.
 C     * DEC 16/16 - D.VERSEGHY. REMOVE OPTION FOR USING OLD SOIL
 C     *                         WET AND DRY ALBEDOS DETERMINED BY
 C     *                         SOIL TEXTURE ("IGRALB" SWITCH)
+C     * SEP 28/16 - J. Melton.  Finish bringing in Yuanqiao Wu's peatland work.
+C     * JUN 24/15 - J. MELTON.  PASS IN IGRALB SO THAT WE CAN SKIP
+C                               USING SOCI IF IGRALB IS 0.
 C     * FEB 09/15 - D.VERSEGHY. New version for gcm18 and class 3.6:
 C     *                         - PSIWLT is now a constant value
 C     *                           of 150, the same as used with CTEM.
@@ -26,6 +30,11 @@ C     *                           new soil colour index field SOCI
 C     *                           which is now passed in. These
 C     *                           are known as {ALGWV,ALGWN,ALGDV,ALGDN}
 C     *                           and replace {ALGWET,ALGDRY}.
+C     * JAN 15/15 - D.VERSEGHY. CHANGE PSIWLT FOR MINERAL SOILS
+C     *                         TO A CONSTANT VALUE OF 150 M.
+C     *                         AND ADD NEW VARIABLE THLW.
+C     * AUG 25/14 - M.LAZARE.   PASS IN NEW WET AND DRY SOIL
+C     *                         BRIGHTNESS FIELDS FROM CLM.
 C     * NOV 16/13 - M.LAZARE.   FINAL VERSION FOR GCM17:
 C     *                         - REVERT BACK TO CLASS2.7
 C     *                           SPECIFICATION FOR "ALGWET".
@@ -127,11 +136,11 @@ C
       REAL PSISORG(3)         !<Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
       REAL GRKSORG(3)         !<Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
 C
-      REAL TCW,TCICE,TCSAND,TCFINE,TCOM,TCDRYS,RHOSOL,RHOOM,
+      REAL TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
      1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,SPHW,SPHICE,SPHVEG,
      2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
 C
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCFINE,TCOM,TCDRYS,
+      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
      1                RHOSOL,RHOOM
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
@@ -379,7 +388,6 @@ C
      1            HCPOM*THORG)/(1.0-THPOR(I,M,J))
               TCS(I,M,J)=(TCSAND*THSAND+TCOM*THORG+
      1            TCFINE*THFINE)/(1.0-THPOR(I,M,J))
-              write(*,*)TCFINE
               IF(J.NE.IGDR(I,M))                       THEN
                   THFC(I,M,J)=THPOR(I,M,J)*(1.157E-9/GRKSAT(I,M,J))**
      1                (1.0/(2.0*BI(I,M,J)+3.0))

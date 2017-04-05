@@ -8,7 +8,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Maintenance Respiration Subrou
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{mainres_8f_ac938116d4fe4ed360f4fb9fc8ab39db3}{mainres} (fcan,fct,stemmass,rootmass,il1,il2,tcan,tbar,rmatctem,sort, nol2pfts,isand,
+subroutine \hyperlink{mainres_8f_a86c41356a868e2ef9d08ffb14f45aff5}{mainres} (fcan,fct,stemmass,rootmass,il1, il2, leapnow,tcan,tbar,rmatctem,sort, nol2pfts,isand,
 \end{DoxyCompactItemize}
 
 
@@ -26,7 +26,7 @@ The $Q_{10}$ value used in Eq. (r\+\_\+msr\}) is not assumed to be constant but 
 Growth respiration, $R_\mathrm{g}$ ( $mol\,CO_2\,m^{-2}\,s^{-1}$), is estimated as a fraction ( $\epsilon_\mathrm{g}=0.15$) of the positive gross canopy photosynthetic rate after maintenance respiration has been accounted for \[ \label{growth_res} R_\mathrm{g}=\epsilon_\mathrm{g}\max[0,(G_{canopy} - R_\mathrm{m})]. \] Finally, net primary productivity ( $NPP$) is calculated as \[ NPP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g}. \] 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{mainres_8f_ac938116d4fe4ed360f4fb9fc8ab39db3}{}\index{mainres.\+f@{mainres.\+f}!mainres@{mainres}}
+\hypertarget{mainres_8f_a86c41356a868e2ef9d08ffb14f45aff5}{}\index{mainres.\+f@{mainres.\+f}!mainres@{mainres}}
 \index{mainres@{mainres}!mainres.\+f@{mainres.\+f}}
 \subsubsection[{mainres}]{\setlength{\rightskip}{0pt plus 5cm}subroutine mainres (
 \begin{DoxyParamCaption}
@@ -36,6 +36,7 @@ Growth respiration, $R_\mathrm{g}$ ( $mol\,CO_2\,m^{-2}\,s^{-1}$), is estimated 
 \item[{real, dimension(ilg,icc)}]{rootmass, }
 \item[{integer}]{il1, }
 \item[{integer}]{il2, }
+\item[{logical}]{leapnow, }
 \item[{real, dimension(ilg)}]{tcan, }
 \item[{real, dimension(ilg,ignd)}]{tbar, }
 \item[{real, dimension(ilg,icc,ignd)}]{rmatctem, }
@@ -43,7 +44,7 @@ Growth respiration, $R_\mathrm{g}$ ( $mol\,CO_2\,m^{-2}\,s^{-1}$), is estimated 
 \item[{integer, dimension(ican)}]{nol2pfts, }
 \item[{integer, dimension(ilg,ignd)}]{isand}
 \end{DoxyParamCaption}
-)}\label{mainres_8f_ac938116d4fe4ed360f4fb9fc8ab39db3}
+)}\label{mainres_8f_a86c41356a868e2ef9d08ffb14f45aff5}
 
 \begin{DoxyParams}{Parameters}
 {\em il1} & il1=1\\
@@ -55,6 +56,8 @@ Growth respiration, $R_\mathrm{g}$ ( $mol\,CO_2\,m^{-2}\,s^{-1}$), is estimated 
 {\em nol2pfts} & number of level 2 ctem pfts\\
 \hline
 {\em isand} & flag for bedrock or ice in a soil layer\\
+\hline
+{\em leapnow} & true if this year is a leap year. Only used if the switch \textquotesingle{}leap\textquotesingle{} is true.\\
 \hline
 {\em fcan} & fractional coverage of ctem\textquotesingle{}s 9 pfts over the given sub-\/area\\
 \hline
@@ -104,3 +107,8 @@ convert kg c/m2.\+day -\/$>$ u mol co2/m2.\+sec
 root respiration
 
 convert kg c/m2.\+day -\/$>$ u mol co2/m2.\+sec 
+
+Here is the caller graph for this function\+:
+% FIG 0
+
+

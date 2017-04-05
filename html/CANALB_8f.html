@@ -524,12 +524,28 @@ Functions/Subroutines</h2></td></tr>
 <p><img class="formulaInl" alt="$X/r_c = \Sigma (X_i / r_{c,i})$" src="form_712.png"/></p>
 <p>The calculations described above pertaining to stomatal resistances are performed in loops 850, 900 and 950. In the 850 loop, <img class="formulaInl" alt="$f(T_a)$" src="form_698.png"/> is evaluated. In the 900 loop, for each vegetation category in turn, <img class="formulaInl" alt="$f(\Delta e)$" src="form_713.png"/>, <img class="formulaInl" alt="$f(\Psi_s)$" src="form_708.png"/> and <img class="formulaInl" alt="$r_{c,i}$" src="form_695.png"/> are determined. <img class="formulaInl" alt="$r_{c,i}$" src="form_695.png"/> is assigned upper and lower limits of 5000 and 10 <img class="formulaInl" alt="$s m^{-1}$" src="form_714.png"/> respectively, and the accumulated stomatal resistance for the canopy is incremented by <img class="formulaInl" alt="$X_i / r_{c,i}$" src="form_715.png"/>. In loop 950, FRMAX, the maximum value of FROOT, the fraction of transpiration apportioned to each soil layer, is determined. If FRMAX is vanishingly small, transpiration is suppressed by setting the stomatal resistances over the vegetated subareas to a large number. If the incoming visible radiation is small, the stomatal resistances are likewise set to a large number. Otherwise, the stomatal resistance of vegetation over snow is set to a large number, and the normalized, aggregated stomatal resistance of vegetation over soil is obtained by inverting the accumulated value.</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="CANALB_8f_ad01e3318e7b9408fb2f037378ffb6589_cgraph.png" border="0" usemap="#CANALB_8f_ad01e3318e7b9408fb2f037378ffb6589_cgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="CANALB_8f_ad01e3318e7b9408fb2f037378ffb6589_icgraph.png" border="0" usemap="#CANALB_8f_ad01e3318e7b9408fb2f037378ffb6589_icgraph" alt=""/></div>
+<!-- MAP 1 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:34 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:29 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

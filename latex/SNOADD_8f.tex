@@ -73,3 +73,8 @@ where $C_s$ represents the volumetric heat capacity of the snow pack, $T_s$ its 
 The amount of snow incident at the given time step, S\+N\+O\+F\+A\+L, is calculated from S and the timestep length D\+E\+L\+T. If S\+N\+O\+F\+A\+L $\geq$ 0.\+1 mm, the snow albedo is set to the fresh snow value of 0.\+84. Otherwise, if the snow is falling on bare ground, its initial albedo is set to the old snow value of 0.\+50. The heat capacity of the precipitating snow, H\+C\+P\+S\+N\+P, is calculated from the fresh snow density R\+H\+O\+S\+N\+I and the heat capacity and density of ice. The new temperature of the snow pack is calculated as a weighted average of its old temperature, weighted by the snow depth Z\+S\+N\+O\+W and heat capacity H\+C\+P\+S\+N\+O, and the snowfall temperature, weighted by S\+N\+O\+F\+A\+L and H\+C\+P\+S\+N\+P. The new density of snow is calculated as a weighted average of the original density R\+H\+O\+S\+N\+O and R\+H\+O\+S\+N\+I, and the new snow depth is calculated as Z\+S\+N\+O\+W + S\+N\+O\+F\+A\+L. Finally, the new heat capacity of the snow pack is obtained from the heat capacities of ice and water $C_i$ and $C_w$, the snow, ice and water densities $\rho_s$ $rho_i$, and $\rho_w$, and the water content and depth of the snow pack $w_s$ and $z_s$, as\+:
 
 $C_s = C_i [ \rho_s /\rho_i ] + C_w w_s /[\rho_w z_s]$
+
+Here is the caller graph for this function\+:
+% FIG 0
+
+

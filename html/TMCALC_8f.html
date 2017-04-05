@@ -451,12 +451,20 @@ Functions/Subroutines</h2></td></tr>
 <p>If the soil layer temperature is less than 0 C and the volumetric liquid water content THLIQ of the layer is greater than the residual water content THLMIN, the water content THFREZ that can be frozen by the available energy sink is calculated from TBAR and the weighted average of HCP and HCPSND. If THFREZ <img class="formulaInl" alt="$\leq$" src="form_12.png"/> THLIQ - THLMIN, all of the available energy sink is used to freeze part of the liquid water content in the permeable part of the soil layer. The amount of energy involved is subtracted from HTC and added to HMFG. THFREZ is subtracted from THLIQ, converted to an ice volume and added to THICE. HCP is recalculated, and the layer temperature is set to 0 C. Otherwise, all of the liquid water content of the layer above THLMIN is converted to frozen water, and HMFG and HTC are recalculated to reflect this. HCP is recomputed, and the remaining energy sink HADD is applied to decreasing the temperature of the soil layer.</p>
 <p>If the soil layer temperature is greater than 0 C and the volumetric ice content THICE of the layer is greater than zero, the ice content THMELT that can be melted by the available energy is calculated from TBAR and the weighted average of HCP and HCPSND. If THMELT <img class="formulaInl" alt="$\leq$" src="form_12.png"/> THICE, all of the available energy is used to melt part of the frozen water content of the permeable part of the layer. The amount of energy involved is subtracted from HTC and added to HMFG. THMELT is subtracted from THICE, converted to a liquid water volume and added to THLIQ; HCP is recalculated and the layer temperature is set to 0 C. Otherwise, all of the frozen water content of the layer is converted to liquid water, and HMFG and HTC are recalculated to reflect this. HCP is recomputed, and the remaining energy HADD is applied to increasing the temperature of the soil layer.</p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="TMCALC_8f_a5ad5bd585e1ef7d89e9862d0bacd3c51_icgraph.png" border="0" usemap="#TMCALC_8f_a5ad5bd585e1ef7d89e9862d0bacd3c51_icgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:35 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:30 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

@@ -8,7 +8,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Stem And Root Turnover Subrout
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{turnover_8f_a3cab47e670d977409bfe234418add754}{turnover} (stemmass, rootmass,lfstatus,ailcg,il1,il2,sort, nol2pfts,fcancmx,
+subroutine \hyperlink{turnover_8f_adaaa94be49886167722ab507a931c4fe}{turnover} (stemmass, rootmass,lfstatus,ailcg,il1,il2,leapnow,sort, nol2pfts,fcancmx,
 \end{DoxyCompactItemize}
 
 
@@ -18,7 +18,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Stem And Root Turnover Subrout
 The turnover of stem and root components is modelled via their P\+F\+T-\/dependent specified lifetimes. The litter generation ( $kg\,C\,m^{-2}$ $day^{-1}$) associated with turnover of stem ( $D_\mathrm{S}$) and root ( $D_\mathrm{R}$) components is calculated based on the amount of biomass in the respective components ( $C_\mathrm{S}, C_\mathrm{R}$; $kg\,C\,m^{-2}$) and their respective turnover timescales ( $\tau_\mathrm{S}$ and $\tau_\mathrm{R}$; $yr$; see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}) as \[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\] 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{turnover_8f_a3cab47e670d977409bfe234418add754}{}\index{turnover.\+f@{turnover.\+f}!turnover@{turnover}}
+\hypertarget{turnover_8f_adaaa94be49886167722ab507a931c4fe}{}\index{turnover.\+f@{turnover.\+f}!turnover@{turnover}}
 \index{turnover@{turnover}!turnover.\+f@{turnover.\+f}}
 \subsubsection[{turnover}]{\setlength{\rightskip}{0pt plus 5cm}subroutine turnover (
 \begin{DoxyParamCaption}
@@ -28,11 +28,12 @@ The turnover of stem and root components is modelled via their P\+F\+T-\/depende
 \item[{real, dimension(ilg,icc)}]{ailcg, }
 \item[{integer}]{il1, }
 \item[{integer}]{il2, }
+\item[{logical}]{leapnow, }
 \item[{integer, dimension(icc)}]{sort, }
 \item[{integer, dimension(ican)}]{nol2pfts, }
 \item[{real, dimension(ilg,icc)}]{fcancmx}
 \end{DoxyParamCaption}
-)}\label{turnover_8f_a3cab47e670d977409bfe234418add754}
+)}\label{turnover_8f_adaaa94be49886167722ab507a931c4fe}
 
 \begin{DoxyParams}{Parameters}
 {\em il1} & il1=1\\
@@ -40,6 +41,8 @@ The turnover of stem and root components is modelled via their P\+F\+T-\/depende
 {\em il2} & il2=ilg\\
 \hline
 {\em lfstatus} & leaf status. an integer indicating if leaves are in \char`\"{}max. growth\char`\"{}, \char`\"{}normal growth\char`\"{}, \char`\"{}fall/harvest\char`\"{}, or \char`\"{}no leaves\char`\"{} mode. see phenolgy subroutine for more details.\\
+\hline
+{\em leapnow} & true if this year is a leap year. Only used if the switch \textquotesingle{}leap\textquotesingle{} is true.\\
 \hline
 {\em sort} & index for correspondence between 9 ctem pfts and size 12 of parameter vectors\\
 \hline
@@ -71,3 +74,8 @@ if crops are in harvest mode then we start harvesting stem as well. if stem has 
 stem/root harvest/death for crops
 
 add stem and root litter from all sources
+
+Here is the caller graph for this function\+:
+% FIG 0
+
+

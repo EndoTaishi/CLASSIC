@@ -833,6 +833,10 @@ subroutine dothevars(numdims,tottime,grpid,inarray,namearray,unitarray,sizear,sp
             if (status/=nf90_noerr) call handle_err(status)
         else if (specialdim == 2) then ! CLASS SOIL
             status = nf90_put_att(grpid,varid,'_Chunksizes',[1,1,nl,tottime])
+<<<<<<< HEAD
+
+=======
+>>>>>>> peatland_ec
             if (status/=nf90_noerr) call handle_err(status)
           else ! the rest are not!
             status = nf90_put_att(grpid,varid,'_Chunksizes',[cnty,cntx,1])

@@ -1038,12 +1038,28 @@ Functions/Subroutines</h2></td></tr>
 <p>In the 650 loop, the fraction of the total transpiration of water by plants that is extracted from each soil layer is determined. This is done by weighting the values of FROOT calculated above by the relative soil moisture suction in each layer: <img class="formulaInl" alt="$( \Psi_w - \Psi_i )/( \Psi_w - \Psi_{sat} )$" src="form_607.png"/> where <img class="formulaInl" alt="$\Psi_i$" src="form_608.png"/> , the soil moisture suction in the layer, is obtained as <img class="formulaInl" alt="$\Psi_i = \Psi_{sat} ( \theta_{l,i} / \theta_p )^{-b}$" src="form_609.png"/> In these equations <img class="formulaInl" alt="$\Psi_w$" src="form_610.png"/> is the soil moisture suction at the wilting point, <img class="formulaInl" alt="$\Psi_{sat}$" src="form_611.png"/> is the suction at saturation, <img class="formulaInl" alt="$\theta_{l,i}$" src="form_612.png"/> is the volumetric liquid water content of the soil layer, <img class="formulaInl" alt="$\theta_p$" src="form_613.png"/> is the pore volume, and b is an empirical parameter developed by Clapp and Hornberger (1978). The layer values of FROOT are then re-normalized so that their sum adds up to unity. In this loop, the representative soil moisture suction PSIGND is also calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of <img class="formulaInl" alt="$\Psi_i$" src="form_608.png"/> and <img class="formulaInl" alt="$\Psi_w$" src="form_610.png"/> over all the soil layers.</p>
 <p>Finally, in loop 800 the aggregated canopy plant area indices PAICAN and PAICNS are set back to their original values, from the modified values used for the snow interception calculations above; and if CLASS is being run coupled with CTEM, a set of CTEM-related calculations is performed.</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="APREP_8f_a5fe4fa336815bc509d646edae0744405_cgraph.png" border="0" usemap="#APREP_8f_a5fe4fa336815bc509d646edae0744405_cgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="APREP_8f_a5fe4fa336815bc509d646edae0744405_icgraph.png" border="0" usemap="#APREP_8f_a5fe4fa336815bc509d646edae0744405_icgraph" alt=""/></div>
+<!-- MAP 1 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:34 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:29 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

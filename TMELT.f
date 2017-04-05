@@ -5,6 +5,7 @@ C!
      1                 HMFN,HTCS,HTC,FI,HCPSNO,RHOSNO,WSNOW,
      2                 ISAND,IG,ILG,IL1,IL2,JL)
 C                                                                                 
+C     * APR 22/16 - D.VERSEGHY. BUG FIX IN CALCULATION OF HTCS.
 C     * JAN 06/09 - D.VERSEGHY/M.LAZARE. SPLIT 100 LOOP INTO TWO.
 C     * MAR 24/06 - D.VERSEGHY. ALLOW FOR PRESENCE OF WATER IN SNOW.
 C     * SEP 24/04 - D.VERSEGHY. ADD "IMPLICIT NONE" COMMAND.
@@ -150,7 +151,7 @@ C-----------------------------------------------------------------------
                       TSNOW (I)=0.0                                                               
                       WSNOW (I)=0.0
                       HTCS (I)=HTCS(I)-FI(I)*(QMELT(I)-CLHMLT*RMELTS*
-     1                         RHOW-HADD/DELT)
+     1                         RHOW)
                   ENDIF             
                   !>
                   !!After the IF block, the diagnostic variable HMFN 

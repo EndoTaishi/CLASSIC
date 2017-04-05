@@ -72,9 +72,10 @@ real, parameter :: earthrad = 6371.22 !<radius of earth, km
 real, parameter :: km2tom2  = 1.0e+06  !<changes from \f$km^2\f$ to \f$m^2\f$
 real, parameter :: deltat   = 1.0       !<CTEM's time step in days
 
-integer, parameter, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
-integer, parameter, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] !< calender day at end of each month
-integer, parameter, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !<mid-month day
+! These month arrays are possibly overwritten in runclassctem due to leap years.
+integer, dimension(12) :: monthdays = [ 31,28,31,30,31,30,31,31,30,31,30,31 ] !< days in each month
+integer, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,334,365 ] !< calender day at end of each month
+integer, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !<mid-month day
 
 integer, parameter :: lon = 128 !< specify gcm resolution for longitude
 integer, parameter :: lat = 64  !< specify gcm resolution for latitude
@@ -345,7 +346,7 @@ real :: repro_fraction = 0.10 !< Fraction of NPP that is used to create reproduc
 
 ! disturbance parameters: ------------
 
-real, dimension(2) :: bmasthrs_fire = [ 0.2, 1.0 ] !< min. and max. vegetation biomass thresholds to initiate fire, \f$kg c/m^2\f$
+real, dimension(2) :: bmasthrs_fire = [ 0.4, 1.2 ] !< min. and max. vegetation biomass thresholds to initiate fire, \f$kg c/m^2\f$
 
 real :: extnmois_veg  = 0.3  !< extinction moisture content for estimating vegetation fire likeliness due to soil moisture 
 
@@ -386,16 +387,17 @@ real, dimension(kk) :: maxsprd = [  0.38, 0.38, 0.00, 0.00, 0.00, &
                                     0.51, 0.75, 0.51, 0.00, 0.00 ]
 
 !> fraction of green leaf biomass converted to gases due to combustion
-real, dimension(kk) :: frco2glf = [ 0.70, 0.70, 0.00, 0.00, 0.00,&
-                                    0.70, 0.70, 0.70, 0.70, 0.70, &
+real, dimension(kk) :: frco2glf = [ 0.42, 0.42, 0.00, 0.00, 0.00,&
+                                    0.42, 0.42, 0.42, 0.42, 0.42, &
                                     0.00, 0.00, 0.00, 0.00, 0.00, &
-                                    0.80, 0.80, 0.80, 0.00, 0.00 ]
+                                    0.48, 0.48, 0.48, 0.00, 0.00 ]
 
 !> fraction of brown leaf biomass converted to gases due to combustion
 real, dimension(kk) :: frco2blf = [ 0.00, 0.00, 0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00, 0.00, 0.00, &
-                                    0.90, 0.90, 0.90, 0.00, 0.00 ]
+                                    0.54, 0.54, 0.54, 0.00, 0.00 ]
+
 
 !> fraction of green leaf biomass becoming litter after combustion
 real, dimension(kk) :: frltrglf = [ 0.20, 0.20, 0.00, 0.00, 0.00, &
@@ -410,8 +412,8 @@ real, dimension(kk) :: frltrblf = [ 0.00, 0.00, 0.00, 0.00, 0.00, &
                                     0.06, 0.06, 0.06, 0.00, 0.00 ]
 
 !> fraction of stem biomass converted to gases due to combustion
-real, dimension(kk) :: frco2stm = [ 0.20, 0.20, 0.00, 0.00, 0.00, &
-                                    0.20, 0.10, 0.10, 0.20, 0.20, &
+real, dimension(kk) :: frco2stm = [ 0.12, 0.12, 0.00, 0.00, 0.00, &
+                                    0.12, 0.06, 0.06, 0.12, 0.12, &
                                     0.00, 0.00, 0.00, 0.00, 0.00, &
                                     0.00, 0.00, 0.00, 0.00, 0.00 ]
 
@@ -434,10 +436,11 @@ real, dimension(kk) :: frltrrt = [ 0.10, 0.10, 0.00, 0.00, 0.00, &
                                    0.25, 0.25, 0.25, 0.00, 0.00 ]
 
 !> fraction of litter burned during fire and emitted as gases
-real, dimension(kk) :: frltrbrn = [ 0.50, 0.50, 0.00, 0.00, 0.00, &
-                                    0.60, 0.60, 0.60, 0.60, 0.60, &
+real, dimension(kk) :: frltrbrn = [ 0.30, 0.30, 0.00, 0.00, 0.00, &
+                                    0.36, 0.36, 0.36, 0.36, 0.36, &
                                     0.00, 0.00, 0.00, 0.00, 0.00, &
-                                    0.70, 0.70, 0.70, 0.00, 0.00 ]
+                                    0.42, 0.42, 0.42, 0.00, 0.00 ]
+
 
 !> pft prevalence for stand replacing fire events (based on resistance to fire damage, ie. cambial kill)(unitless)
 real, dimension(kk) :: standreplace = [ 0.20, 0.20, 0.00, 0.00, 0.00, &

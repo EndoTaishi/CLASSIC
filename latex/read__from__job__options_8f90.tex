@@ -8,7 +8,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Joboptions Read-\/\+In Subrout
 \subsection*{Functions/\+Subroutines}
 \begin{DoxyCompactItemize}
 \item 
-subroutine \hyperlink{read__from__job__options_8f90_a59635532072b59aa5db6bd717cebb79b}{read\+\_\+from\+\_\+job\+\_\+options} (argbuff, transient\+\_\+run, trans\+\_\+startyr, ctemloop, ctem\+\_\+on, ncyear, lnduseon, spinfast, cyclemet, nummetcylyrs, metcylyrst, co2on, setco2conc, ch4on, setch4conc, popdon, popcycleyr, parallelrun, dofire, dowetlands, obswetf, compete, inibioclim, start\+\_\+bare, rsfile, start\+\_\+from\+\_\+rs, jmosty, idisp, izref, islfd, ipcp, itc, itcg, itg, iwf, ipai, ihgt, ialc, ials, ialg, isnoalb, igralb, jhhstd, jhhendd, jdstd, jdendd, jhhsty, jhhendy, jdsty, jdendy)
+subroutine \hyperlink{read__from__job__options_8f90_a20cec43eab235567e47a309edb57d040}{read\+\_\+from\+\_\+job\+\_\+options} (argbuff, transient\+\_\+run, trans\+\_\+startyr, ctemloop, ctem\+\_\+on, ncyear, lnduseon, spinfast, cyclemet, nummetcylyrs, metcylyrst, co2on, setco2conc, ch4on, setch4conc, popdon, popcycleyr, parallelrun, dofire, dowetlands, obswetf, compete, inibioclim, start\+\_\+bare, rsfile, start\+\_\+from\+\_\+rs, leap, jmosty, idisp, izref, islfd, ipcp, itc, itcg, itg, iwf, ipai, ihgt, ialc, ials, ialg, isnoalb, jhhstd, jhhendd, jdstd, jdendd, jhhsty, jhhendy, jdsty, jdendy)
 \end{DoxyCompactItemize}
 
 
@@ -45,7 +45,7 @@ If you want a transient run that does not spin over climate at the start, you ne
  C\+Y\+C\+L\+E\+M\+E\+T = .F\+A\+L\+S\+E. , $<$-- note this is set to F\+A\+L\+S\+E. 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{read__from__job__options_8f90_a59635532072b59aa5db6bd717cebb79b}{}\index{read\+\_\+from\+\_\+job\+\_\+options.\+f90@{read\+\_\+from\+\_\+job\+\_\+options.\+f90}!read\+\_\+from\+\_\+job\+\_\+options@{read\+\_\+from\+\_\+job\+\_\+options}}
+\hypertarget{read__from__job__options_8f90_a20cec43eab235567e47a309edb57d040}{}\index{read\+\_\+from\+\_\+job\+\_\+options.\+f90@{read\+\_\+from\+\_\+job\+\_\+options.\+f90}!read\+\_\+from\+\_\+job\+\_\+options@{read\+\_\+from\+\_\+job\+\_\+options}}
 \index{read\+\_\+from\+\_\+job\+\_\+options@{read\+\_\+from\+\_\+job\+\_\+options}!read\+\_\+from\+\_\+job\+\_\+options.\+f90@{read\+\_\+from\+\_\+job\+\_\+options.\+f90}}
 \subsubsection[{read\+\_\+from\+\_\+job\+\_\+options}]{\setlength{\rightskip}{0pt plus 5cm}subroutine read\+\_\+from\+\_\+job\+\_\+options (
 \begin{DoxyParamCaption}
@@ -75,6 +75,7 @@ If you want a transient run that does not spin over climate at the start, you ne
 \item[{logical, intent(out)}]{start\+\_\+bare, }
 \item[{logical, intent(out)}]{rsfile, }
 \item[{logical, intent(out)}]{start\+\_\+from\+\_\+rs, }
+\item[{logical, intent(out)}]{leap, }
 \item[{integer, intent(out)}]{jmosty, }
 \item[{integer, intent(out)}]{idisp, }
 \item[{integer, intent(out)}]{izref, }
@@ -90,7 +91,6 @@ If you want a transient run that does not spin over climate at the start, you ne
 \item[{integer, intent(out)}]{ials, }
 \item[{integer, intent(out)}]{ialg, }
 \item[{integer, intent(out)}]{isnoalb, }
-\item[{integer, intent(out)}]{igralb, }
 \item[{integer, intent(out)}]{jhhstd, }
 \item[{integer, intent(out)}]{jhhendd, }
 \item[{integer, intent(out)}]{jdstd, }
@@ -100,7 +100,7 @@ If you want a transient run that does not spin over climate at the start, you ne
 \item[{integer, intent(out)}]{jdsty, }
 \item[{integer, intent(out)}]{jdendy}
 \end{DoxyParamCaption}
-)}\label{read__from__job__options_8f90_a59635532072b59aa5db6bd717cebb79b}
+)}\label{read__from__job__options_8f90_a20cec43eab235567e47a309edb57d040}
 
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt out}  & {\em transient\+\_\+run} & true if the run is a transient run. With this flag set set to .true., you can cycle over nummetcyclyrs of climate a ctemloop number of times then continue on through the climate the reason for this is to allow a transient from 1850 on, but only having the climate from 1901 while having the other inputs from 1850. See the bottom of this subroutine for an example of how to set this correctly.\\
@@ -153,6 +153,8 @@ If you want a transient run that does not spin over climate at the start, you ne
 \hline
 \mbox{\tt out}  & {\em start\+\_\+from\+\_\+rs} & if true, this option copies the \+\_\+\+R\+S I\+N\+I and C\+T\+M files to be the .I\+N\+I and .C\+T\+M files and then starts the run as per normal. it is handy when spinning up so you don\textquotesingle{}t have to do a complicated copying of the R\+S files to restart from them. N\+O\+T\+E! This will not work on hadar or spica, instead you have to manually move the files and set this to .false.\\
 \hline
+\mbox{\tt out}  & {\em leap} & set to true if all/some leap years in the .M\+E\+T file have data for 366 days also accounts for leap years in .M\+E\+T when cycling over meteorology (cyclemet)\\
+\hline
 \mbox{\tt out}  & {\em jmosty} & Year to start writing out the monthly output files. If you want to write monthly outputs right from the start then put in a negative number (like -\/9999), if you never want to have monthly outputs put a large positive number (like 9999). This is given in the same timescale as I\+Y\+E\+A\+R\\
 \hline
 \mbox{\tt out}  & {\em idisp} & if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the \char`\"{}terrain\char`\"{}. if idisp=1, vegetation displacement heights are calculated.\\
@@ -197,8 +199,6 @@ If you want a transient run that does not spin over climate at the start, you ne
 \hline
 \mbox{\tt out}  & {\em jdendy} & simulation year (iyear) to stop writing the daily output\\
 \hline
-\mbox{\tt out}  & {\em isnoalb} & This switch selects which option to use for the snow albedo. If I\+S\+N\+O\+A\+L\+B=0, snow albedos are calculated for the visible and near-\/infrared wavelength ranges. If I\+S\+N\+O\+A\+L\+B=1, a more complex approach is used which evaluates the snow albedos in the visible and in three near-\/infrared wavelength bands. Note that if the latter option is chosen, the incoming solar radiation must be provided in these four wavelength bands, and the direct/diffuse solar partitioning and the prognostic black carbon content of the snow pack are also required.\\
-\hline
-\mbox{\tt out}  & {\em igralb} & if igralb is set to 0, the wet and dry soil albedos are calculated on the basis of soil texture. if it is set to 1, they are assigned values based on the ncar clm soil \char`\"{}colour\char`\"{} dataset. \\
+\mbox{\tt out}  & {\em isnoalb} & This switch selects which option to use for the snow albedo. If I\+S\+N\+O\+A\+L\+B=0, snow albedos are calculated for the visible and near-\/infrared wavelength ranges. If I\+S\+N\+O\+A\+L\+B=1, a more complex approach is used which evaluates the snow albedos in the visible and in three near-\/infrared wavelength bands. Note that if the latter option is chosen, the incoming solar radiation must be provided in these four wavelength bands, and the direct/diffuse solar partitioning and the prognostic black carbon content of the snow pack are also required. \\
 \hline
 \end{DoxyParams}

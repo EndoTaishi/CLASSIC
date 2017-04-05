@@ -223,12 +223,20 @@ Functions/Subroutines</h2></td></tr>
 <p>The amount of snow incident at the given time step, SNOFAL, is calculated from S and the timestep length DELT. If SNOFAL <img class="formulaInl" alt="$\geq$" src="form_10.png"/> 0.1 mm, the snow albedo is set to the fresh snow value of 0.84. Otherwise, if the snow is falling on bare ground, its initial albedo is set to the old snow value of 0.50. The heat capacity of the precipitating snow, HCPSNP, is calculated from the fresh snow density RHOSNI and the heat capacity and density of ice. The new temperature of the snow pack is calculated as a weighted average of its old temperature, weighted by the snow depth ZSNOW and heat capacity HCPSNO, and the snowfall temperature, weighted by SNOFAL and HCPSNP. The new density of snow is calculated as a weighted average of the original density RHOSNO and RHOSNI, and the new snow depth is calculated as ZSNOW + SNOFAL. Finally, the new heat capacity of the snow pack is obtained from the heat capacities of ice and water <img class="formulaInl" alt="$C_i$" src="form_1080.png"/> and <img class="formulaInl" alt="$C_w$" src="form_1464.png"/>, the snow, ice and water densities <img class="formulaInl" alt="$\rho_s$" src="form_1465.png"/> <img class="formulaInl" alt="$rho_i$" src="form_1466.png"/>, and <img class="formulaInl" alt="$\rho_w$" src="form_1467.png"/>, and the water content and depth of the snow pack <img class="formulaInl" alt="$w_s$" src="form_1468.png"/> and <img class="formulaInl" alt="$z_s$" src="form_571.png"/>, as:</p>
 <p><img class="formulaInl" alt="$C_s = C_i [ \rho_s /\rho_i ] + C_w w_s /[\rho_w z_s]$" src="form_1469.png"/></p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="SNOADD_8f_af7d261f12e703bc9bfc7bd0a543d51ae_icgraph.png" border="0" usemap="#SNOADD_8f_af7d261f12e703bc9bfc7bd0a543d51ae_icgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:35 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:30 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

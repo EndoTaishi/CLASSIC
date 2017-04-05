@@ -74,6 +74,8 @@ type ctem_switches
                            !<then starts the run as per normal. it is handy when spinning up so you don't have to do a
                            !<complicated copying of the RS files to restart from them. NOTE! This will not work on
                            !<hadar or spica, instead you have to manually move the files and set this to .false.    
+    logical :: leap        !< set to true if all/some leap years in the .MET file have data for 366 days
+                           !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
     logical :: dowetlands   !<if true allow wetland methane emission
     logical :: obswetf      !<observed wetland fraction
     logical :: transient_run!<

@@ -563,9 +563,9 @@ C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
-        DO 70 I =IL1,IL2                                                
+        DO 70 I =IL1,IL2
             RC(I)=MIN(RCPHTSYN(I),4999.999)
-   70   CONTINUE                                                        
+   70   CONTINUE
 
 c    Do moss photosynthesis:
         call  mosspht(il1,il2,iday,qswnvg,thliq,co2conc,tgnd,zsnow,
@@ -1423,7 +1423,6 @@ C
 !!IEVAPC for the current location is set to 1.
 !!
         DO 600 I=IL1,IL2
-!          if (tvirta(i) .gt. 100.) then !flag! TEMP FIX! JM July 8 2013.
           IEVAPC(I)=0
           IF(ITER(I).EQ.-1)                   THEN
             TCANT=TVIRTA(I)/(1.0+0.61*QCAN(I))
@@ -1462,7 +1461,6 @@ C
                IEVAPC(I)=1
             ENDIF
           ENDIF
-!         end if
   600   CONTINUE
 !>
 !!After loop 600, calls to DRCOEF or FLXSURFZ are performed to re-evaluate the surface turbulent

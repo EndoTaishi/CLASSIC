@@ -94,8 +94,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a59635532072b59aa5db6bd717cebb79b"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="read__from__job__options_8f90.html#a59635532072b59aa5db6bd717cebb79b">read_from_job_options</a> (argbuff, transient_run, trans_startyr, ctemloop, ctem_on, ncyear, lnduseon, spinfast, cyclemet, nummetcylyrs, metcylyrst, co2on, setco2conc, ch4on, setch4conc, popdon, popcycleyr, parallelrun, dofire, dowetlands, obswetf, compete, inibioclim, start_bare, rsfile, start_from_rs, jmosty, idisp, izref, islfd, ipcp, itc, itcg, itg, iwf, ipai, ihgt, ialc, ials, ialg, isnoalb, igralb, jhhstd, jhhendd, jdstd, jdendd, jhhsty, jhhendy, jdsty, jdendy)</td></tr>
-<tr class="separator:a59635532072b59aa5db6bd717cebb79b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20cec43eab235567e47a309edb57d040"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="read__from__job__options_8f90.html#a20cec43eab235567e47a309edb57d040">read_from_job_options</a> (argbuff, transient_run, trans_startyr, ctemloop, ctem_on, ncyear, lnduseon, spinfast, cyclemet, nummetcylyrs, metcylyrst, co2on, setco2conc, ch4on, setch4conc, popdon, popcycleyr, parallelrun, dofire, dowetlands, obswetf, compete, inibioclim, start_bare, rsfile, start_from_rs, leap, jmosty, idisp, izref, islfd, ipcp, itc, itcg, itg, iwf, ipai, ihgt, ialc, ials, ialg, isnoalb, jhhstd, jhhendd, jdstd, jdendd, jhhsty, jhhendy, jdsty, jdendy)</td></tr>
+<tr class="separator:a20cec43eab235567e47a309edb57d040"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Canadian Terrestrial Ecosystem Model (CTEM) Joboptions Read-In Subroutine. </p>
@@ -120,7 +120,7 @@ Functions/Subroutines</h2></td></tr>
  trans_startyr = 2000, &lt;&ndash; whatever year you want to start at <br />
  CYCLEMET = .FALSE. , &lt;&ndash; note this is set to FALSE. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="a59635532072b59aa5db6bd717cebb79b"></a>
+<a class="anchor" id="a20cec43eab235567e47a309edb57d040"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -283,6 +283,12 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">logical, intent(out)&#160;</td>
+          <td class="paramname"><em>leap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">integer, intent(out)&#160;</td>
           <td class="paramname"><em>jmosty</em>, </td>
         </tr>
@@ -374,12 +380,6 @@ Functions/Subroutines</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer, intent(out)&#160;</td>
-          <td class="paramname"><em>igralb</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, intent(out)&#160;</td>
           <td class="paramname"><em>jhhstd</em>, </td>
         </tr>
         <tr>
@@ -458,6 +458,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">start_bare</td><td>set this to true if competition is true, and if you wish to start from bare ground. if this is set to false, the ini and ctm file info will be used to set up the run. NOTE: This still keeps the crop fractions (while setting all pools to zero)</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">rsfile</td><td>set this to true if restart files (.ini_rs and .ctm_rs) are written at the end of each year. these files are necessary for checking whether the model reaches equilibrium after running for a certain years. set this to false if restart files are not needed (known how many years the model will run)</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">start_from_rs</td><td>if true, this option copies the _RS INI and CTM files to be the .INI and .CTM files and then starts the run as per normal. it is handy when spinning up so you don't have to do a complicated copying of the RS files to restart from them. NOTE! This will not work on hadar or spica, instead you have to manually move the files and set this to .false.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">leap</td><td>set to true if all/some leap years in the .MET file have data for 366 days also accounts for leap years in .MET when cycling over meteorology (cyclemet)</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">jmosty</td><td>Year to start writing out the monthly output files. If you want to write monthly outputs right from the start then put in a negative number (like -9999), if you never want to have monthly outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">idisp</td><td>if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the "terrain". if idisp=1, vegetation displacement heights are calculated.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">izref</td><td>if izref=1, the bottom of the atmospheric model is taken to lie at the ground surface. if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.</td></tr>
@@ -480,8 +481,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">jhhendy</td><td>simulation year (iyear) to stop writing the half-hourly output</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">jdsty</td><td>simulation year (iyear) to start writing the daily output</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">jdendy</td><td>simulation year (iyear) to stop writing the daily output</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">isnoalb</td><td>This switch selects which option to use for the snow albedo. If ISNOALB=0, snow albedos are calculated for the visible and near-infrared wavelength ranges. If ISNOALB=1, a more complex approach is used which evaluates the snow albedos in the visible and in three near-infrared wavelength bands. Note that if the latter option is chosen, the incoming solar radiation must be provided in these four wavelength bands, and the direct/diffuse solar partitioning and the prognostic black carbon content of the snow pack are also required.</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">igralb</td><td>if igralb is set to 0, the wet and dry soil albedos are calculated on the basis of soil texture. if it is set to 1, they are assigned values based on the ncar clm soil "colour" dataset. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">isnoalb</td><td>This switch selects which option to use for the snow albedo. If ISNOALB=0, snow albedos are calculated for the visible and near-infrared wavelength ranges. If ISNOALB=1, a more complex approach is used which evaluates the snow albedos in the visible and in three near-infrared wavelength bands. Note that if the latter option is chosen, the incoming solar radiation must be provided in these four wavelength bands, and the direct/diffuse solar partitioning and the prognostic black carbon content of the snow pack are also required. </td></tr>
   </table>
   </dd>
 </dl>
@@ -491,7 +491,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:35 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:30 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

@@ -94,13 +94,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:a25bf2ca54264e7a9a28e831c5b75151e"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TSOLVE_8f.html#a25bf2ca54264e7a9a28e831c5b75151e">tsolve</a> (ISNOW, FI, QSWNET, QLWOUT, QTRANS, QSENS, QEVAP, EVAP, TZERO, QZERO, GZERO, QMELT, CDH, CDM, RIB, CFLUX, FTEMP, FVAP, ILMO, UE, H, QLWIN, TPOTA, QA, VA, PADRY, RHOAIR, ALVISG, ALNIRG, CRIB, CPHCH, CEVAP, TVIRTA, ZOSCLH, ZOSCLM, ZRSLFH, ZRSLFM, ZOH, ZOM, FCOR, GCONST, GCOEFF, TSTART, PCPR, TRSNOWG, FSSB, ALSNO, THLIQ, THLMIN, DELZW, RHOSNO, ZSNOW, IWATER, IEVAP, ITERCT, ISAND, ISLFD, ITG, ILG, IG, IL1, IL2, JL, NBS, ISNOALB, TSTEP, TVIRTS, EVBETA, Q0SAT, RESID, DCFLXM, CFLUXM, WZERO, TRTOP, A, B, LZZ0, LZZ0T, FM, FH, ITER, NITER, JEVAP, KF, ipeatland, co2conc, pressg, coszs, Cmossmas, dmoss, anmoss, rmlmoss, iday, daylength, pdd)</td></tr>
-<tr class="separator:a25bf2ca54264e7a9a28e831c5b75151e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e73723f0d6d00d8dc1c69c462493fe2"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TSOLVE_8f.html#a6e73723f0d6d00d8dc1c69c462493fe2">tsolve</a> (ISNOW, FI, QSWNET, QLWOUT, QTRANS, QSENS, QEVAP, EVAP, TZERO, QZERO, GZERO, QMELT, CDH, CDM, RIB, CFLUX, FTEMP, FVAP, ILMO, UE, H, QLWIN, TPOTA, QA, VA, PADRY, RHOAIR, ALVISG, ALNIRG, CRIB, CPHCH, CEVAP, TVIRTA, ZOSCLH, ZOSCLM, ZRSLFH, ZRSLFM, ZOH, ZOM, FCOR, GCONST, GCOEFF, TSTART, PCPR, TRSNOWG, FSSB, ALSNO, THLIQ, THLMIN, DELZW, RHOSNO, ZSNOW, ZPOND, IWATER, IEVAP, ITERCT, ISAND, ISLFD, ITG, ILG, IG, IL1, IL2, JL, NBS, ISNOALB, TSTEP, TVIRTS, EVBETA, Q0SAT, RESID, DCFLXM, CFLUXM, WZERO, TRTOP, A, B, LZZ0, LZZ0T, FM, FH, ITER, NITER, JEVAP, KF, ipeatland, co2conc, pressg, coszs, Cmossmas, dmoss, anmoss, rmlmoss, iday, daylength, pdd)</td></tr>
+<tr class="separator:a6e73723f0d6d00d8dc1c69c462493fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Purpose: Solution of surface energy balance for non-vegetated subareas. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="a25bf2ca54264e7a9a28e831c5b75151e"></a>
+<a class="anchor" id="a6e73723f0d6d00d8dc1c69c462493fe2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -419,6 +419,12 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">real, dimension (ilg)&#160;</td>
+          <td class="paramname"><em>ZPOND</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">integer, dimension(ilg)&#160;</td>
           <td class="paramname"><em>IWATER</em>, </td>
         </tr>
@@ -703,6 +709,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">ilmo</td><td>Inverse of Monin-Obukhov roughness length <img class="formulaInl" alt="$(m-1]$" src="form_1738.png"/></td></tr>
     <tr><td class="paramname">ue</td><td>Friction velocity of air <img class="formulaInl" alt="$[m s^{-1}]$" src="form_782.png"/></td></tr>
     <tr><td class="paramname">h</td><td>Height of the atmospheric boundary layer [m]</td></tr>
+    <tr><td class="paramname">zpond</td><td>Depth of ponded water on surface [m]</td></tr>
     <tr><td class="paramname">fi</td><td>Fractional coverage of subarea in question on modelled area [ ]</td></tr>
     <tr><td class="paramname">qlwin</td><td>Downwelling longwave radiation at bottom of atmosphere <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
     <tr><td class="paramname">tpota</td><td>Potential temperature of air at reference height <img class="formulaInl" alt="$[K] (T_{a,pot})$" src="form_1739.png"/></td></tr>
@@ -770,12 +777,28 @@ Functions/Subroutines</h2></td></tr>
 <p>Finally, a check is performed to ensure that TZERO is not less than 0 C if ponded water is present on the surface (IWATER = 1) or greater than 0 C if snow is present on the surface (IWATER = 2), or greater than zero if the surface is an ice sheet (ISAND = -4). If any of these cases is true, TZERO is reset to the freezing point, and q(0) and <img class="formulaInl" alt="$T(0)_v$" src="form_1662.png"/> are recalculated. DRCOEF or FLXSURFZ are called, and their calculations are performed for all locations meeting these criteria. The components of the surface energy balance are recalculated; the residual amount is assigned to the energy associated with phase change of water at the surface, QMELT, and RESID is set to zero. If QMELT &lt; 0, i.e. if there is freezing taking place, the evaporation flux QEVAP is added to it and then reset to zero (since if ponded water is freezing, it is unavailable for evaporation).</p>
 <p>In the last half of the loop, some final adjustments are made to a few variables. If the evaporation flux is vanishingly small, it is added to RESID and reset to zero. If an anomalous case has arisen in which QMELT &lt; 0 over a snow-covered surface or QMELT &gt; 0 over a snow-free surface, QMELT is added to the heat flux into the surface and then reset to zero. Any remaining residual flux is added to <img class="formulaInl" alt="$Q_H$" src="form_1396.png"/>. The shortwave radiation transmitted into the surface is added back to the net shortwave radiation for diagnostic purposes. The surface vapour flux is converted into units of <img class="formulaInl" alt="$m s^{-1}$" src="form_1730.png"/>. Lastly, the iteration counter ITERCT is updated for the level corresponding to the subarea type and the value of NITER.</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2_cgraph.png" border="0" usemap="#TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2_cgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2_icgraph.png" border="0" usemap="#TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2_icgraph" alt=""/></div>
+<!-- MAP 1 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:35 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:30 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

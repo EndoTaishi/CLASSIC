@@ -1103,7 +1103,8 @@ subroutine class_monthly_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,&
                                   ALVSROT,FAREROT,FSVHROW,ALIRROT,FSIHROW,GTROT,FSSROW, &
                                   FDLROW,HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,SNOROT, &
                                   TAROW,WSNOROT,TBARROT,THLQROT,THICROT,TFREZ,QFCROT, &
-QFGROT,QFNROT,QFCLROT,QFCFROT,FSGVROT,FSGSROT,FSGGROT,ACTLYR,FTABLE)
+                                  QFGROT,QFNROT,QFCLROT,QFCFROT,FSGVROT,FSGSROT,FSGGROT,&
+                                  ACTLYR,FTABLE)
                            
 use ctem_statevars,     only : class_out,resetclassmon
 use ctem_params, only : nmon, monthend, nlat, nmos, ignd
@@ -1390,8 +1391,8 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
                             nltest,nmtest,ALVSROT,FAREROT,FSVHROW, &
                             ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW, &
                             HFSROT,ROFROT,PREROW,QFSROT,QEVPROT, &
-TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT,ACTLYR,FTABLE)
-
+                            TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT, &
+                            ACTLYR,FTABLE,leapnow)
 
 use ctem_statevars,     only : class_out,resetclassyr
 use ctem_params, only : nmon, monthend, nlat, nmos, ignd
@@ -1405,6 +1406,7 @@ integer, intent(in) :: NCOUNT
 integer, intent(in) :: NDAY
 integer, intent(in) :: nltest
 integer, intent(in) :: nmtest
+logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
 real, intent(in) :: SBC
 real, intent(in) :: DELT
 real, dimension(nlat), intent(in) :: FSSROW
@@ -1454,6 +1456,7 @@ real, pointer :: QE_YR
 integer :: i,m,j
 real :: ALTOT_YR
 real :: tovere
+real :: daysinyr
 
 !point pointers
 ALVSACC_YR        => class_out%ALVSACC_YR
@@ -1504,8 +1507,10 @@ DO 827 I=1,NLTEST
         DO J = 1,IGND
             TRANSPACC_YR(I)=TRANSPACC_YR(I)+QFCROT(I,M,J)*FAREROT(I,M)*DELT
         END DO
+
         !ACTLYR_MO(I) = ACTLYR_MO(I) + ACTLYR(I,M) * FAREROT(I,M)
         !FTABLE_MO(I) = FTABLE_MO(I) + FTABLE(I,M) * FAREROT(I,M)
+
         IF(FSSROW(I).GT.0.0) THEN
            ALTOTACC_YR(I)=ALTOTACC_YR(I) + ((FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)+FSGGROT(I,M))) &
                         /FSSROW(I) )*FAREROT(I,M)
@@ -1515,7 +1520,9 @@ DO 827 I=1,NLTEST
 828    CONTINUE
 827   CONTINUE
 
-IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
+IF ((.not.leapnow .AND.IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) .OR. & 
+    (leapnow .AND.IDAY.EQ.366.AND.NCOUNT.EQ.NDAY)) THEN 
+
 
     DO 829 I=1,NLTEST
 
@@ -1528,16 +1535,22 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
 !                 ALIRACC_YR(I)=0.0
 !             ENDIF
 
-            FLUTACC_YR(I)=FLUTACC_YR(I)/(REAL(NDAY)*365.)
-            FSINACC_YR(I)=FSINACC_YR(I)/(REAL(NDAY)*365.)
-            FLINACC_YR(I)=FLINACC_YR(I)/(REAL(NDAY)*365.)
-            HFSACC_YR(I) =HFSACC_YR(I)/(REAL(NDAY)*365.)
-            QEVPACC_YR(I)=QEVPACC_YR(I)/(REAL(NDAY)*365.)
+            if (leapnow) then
+                daysinyr=366.
+            else
+                daysinyr=365.
+            end if
+
+            FLUTACC_YR(I)=FLUTACC_YR(I)/(REAL(NDAY)*daysinyr)
+            FSINACC_YR(I)=FSINACC_YR(I)/(REAL(NDAY)*daysinyr)
+            FLINACC_YR(I)=FLINACC_YR(I)/(REAL(NDAY)*daysinyr)
+            HFSACC_YR(I) =HFSACC_YR(I)/(REAL(NDAY)*daysinyr)
+            QEVPACC_YR(I)=QEVPACC_YR(I)/(REAL(NDAY)*daysinyr)
             ROFACC_YR(I) =ROFACC_YR(I)
             PREACC_YR(I) =PREACC_YR(I)
             EVAPACC_YR(I)=EVAPACC_YR(I)
             TRANSPACC_YR(I)=TRANSPACC_YR(I)
-            TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*365.)
+            TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*daysinyr)
 
             ! Albedo is only counted when sun is above horizon so it uses its own counter.
             if (altotcntr_yr(i) > 0) then
@@ -1568,7 +1581,7 @@ IF (IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) THEN
 
 829 CONTINUE ! I
 
-ENDIF !> IDAY.EQ.365 .AND. NDAY
+ENDIF !> IDAY.EQ.365/366 .AND. NDAY
 
 8103  FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,5(F12.3,1X),2(A5,I1))
 
@@ -2112,8 +2125,9 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
     !>Aggregate to the tile avg vars:
     do 60 i=1,nltest
       do 70 m=1,nmtest
+        barefrac = 1.0
         do j=1,icc
-
+            barefrac = barefrac - fcancmxrow(i,m,j)
             leaflitr_t(i,m)=leaflitr_t(i,m)+leaflitrrow(i,m,j)*fcancmxrow(i,m,j)
             tltrleaf_t(i,m)=tltrleaf_t(i,m)+tltrleafrow(i,m,j)*fcancmxrow(i,m,j)
             tltrstem_t(i,m)=tltrstem_t(i,m)+tltrstemrow(i,m,j)*fcancmxrow(i,m,j)
@@ -2155,8 +2169,8 @@ if ((iyear .ge. jdsty).and.(iyear.le.jdendy))then
         enddo !icc
 
         !>Do the bare ground also:
-        litrmass_t(i,m) = litrmass_t(i,m) + litrmassrow(i,m,iccp1)*fcancmxrow(i,m,iccp1)
-        soilcmas_t(i,m) = soilcmas_t(i,m) + soilcmasrow(i,m,iccp1)*fcancmxrow(i,m,iccp1)
+        litrmass_t(i,m) = litrmass_t(i,m) + litrmassrow(i,m,iccp1)*barefrac
+        soilcmas_t(i,m) = soilcmas_t(i,m) + soilcmasrow(i,m,iccp1)*barefrac
 
     !>Calculation of grid averaged variables
 
@@ -3302,7 +3316,7 @@ end subroutine ctem_monthly_aw
 !==============================================================================================================
 !>\ingroup io_driver_ctem_annual_aw
 !>@{
-subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT)
+subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT,leapnow)
 
 use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
                                 resetyearend
@@ -3317,6 +3331,7 @@ integer, intent(in) :: iday
 real, intent(in), dimension(:,:) :: FAREROT
 integer, intent(in) :: iyear
 logical, intent(in) :: onetile_perPFT
+logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
 
 ! pointers
 
@@ -3504,6 +3519,7 @@ real, pointer, dimension(:) :: peatdep_yr_g
 integer :: i,m,j,nt
 real :: barefrac
 real :: sumfare
+real :: daysinyr
 integer :: NDMONTH
 integer :: IMONTH
 
@@ -3717,8 +3733,15 @@ do 882 i=1,nltest
             emit_tc_yr(i,m,j)=emit_tc_yr(i,m,j)+emit_tcrow(i,m,j)
             emit_oc_yr(i,m,j)=emit_oc_yr(i,m,j)+emit_ocrow(i,m,j)
             emit_bc_yr(i,m,j)=emit_bc_yr(i,m,j)+emit_bcrow(i,m,j)
-            bterm_yr(i,m,j)=bterm_yr(i,m,j)+(btermrow(i,m,j)*(1./365.))
-            mterm_yr(i,m,j)=mterm_yr(i,m,j)+(mtermrow(i,m,j)*(1./365.))
+
+            if (leapnow) then
+                daysinyr=366.
+            else
+                daysinyr=365.
+            end if
+
+            bterm_yr(i,m,j)=bterm_yr(i,m,j)+(btermrow(i,m,j)*(1./daysinyr))
+            mterm_yr(i,m,j)=mterm_yr(i,m,j)+(mtermrow(i,m,j)*(1./daysinyr))
             smfuncveg_yr(i,m,j)=smfuncveg_yr(i,m,j)+(smfuncvegrow(i,m,j) * (1./365.))
             hetrores_yr(i,m,j)=hetrores_yr(i,m,j)+hetroresvegrow(i,m,j)
             autores_yr(i,m,j)=autores_yr(i,m,j)+autoresvegrow(i,m,j)
@@ -3739,8 +3762,8 @@ do 882 i=1,nltest
 
 
         !> Accumulate the variables at the per tile level
-        lterm_yr_t(i,m)=lterm_yr_t(i,m)+(ltermrow(i,m)*(1./365.))
-        wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./365.))
+        lterm_yr_t(i,m)=lterm_yr_t(i,m)+(ltermrow(i,m)*(1./daysinyr))
+        wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./daysinyr))
         luc_emc_yr_t(i,m)=luc_emc_yr_t(i,m)+lucemcomrow(i,m)
         lucsocin_yr_t(i,m)=lucsocin_yr_t(i,m)+lucsocinrow(i,m)
         lucltrin_yr_t(i,m)=lucltrin_yr_t(i,m)+lucltrinrow(i,m)
@@ -3752,8 +3775,7 @@ do 882 i=1,nltest
 
 883 continue ! m
 
-
-    if (iday.eq.365) then
+    if ((.not. leapnow .and.iday.eq.365) .or.(leapnow .and.iday.eq.366)) then
 
         do 900 m = 1, nmtest
 
@@ -4022,10 +4044,10 @@ do 882 i=1,nltest
                     ch4soills_yr_g(i),' GRDAV '
         endif
 
-    endif ! if iday=365
+    endif ! if iday=365/366
 882     continue ! i
 
-if (iday.eq.365) then
+if ((.not.leapnow .and.iday.eq.365).or.(leapnow .and.iday.eq.366)) then
 
 !> Reset all annual vars in preparation:
     call resetyearend(nltest,nmtest)

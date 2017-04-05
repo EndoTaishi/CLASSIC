@@ -84,13 +84,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Canadian Terrestrial Ecosystem Model (CTEM) PFT Competition Subroutine.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="memitem:ga42c6fcccc542b3c3711cae7881d30665"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__competition__scheme__competition.html#ga42c6fcccc542b3c3711cae7881d30665">competition_scheme::competition</a> (iday, il1, il2, nilg, nol2pfts, nppveg, dofire, pftexist, geremort, intrmort, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, grclarea, lambda, burnvegf, sort, pstemmass, pgleafmass, fcancmx, fcanmx, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)</td></tr>
-<tr class="separator:ga42c6fcccc542b3c3711cae7881d30665"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga008cbfcefd33aaccb8f2b81cf8326451"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__competition__scheme__competition.html#ga008cbfcefd33aaccb8f2b81cf8326451">competition_scheme::competition</a> (iday, il1, il2, nilg, nol2pfts, nppveg, dofire, leapnow, pftexist, geremort, intrmort, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, grclarea, lambda, burnvegf, sort, pstemmass, pgleafmass, fcancmx, fcanmx, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)</td></tr>
+<tr class="separator:ga008cbfcefd33aaccb8f2b81cf8326451"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Canadian Terrestrial Ecosystem Model (CTEM) PFT Competition Subroutine. </p>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="ga42c6fcccc542b3c3711cae7881d30665"></a>
+<a class="anchor" id="ga008cbfcefd33aaccb8f2b81cf8326451"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -135,6 +135,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td></td>
           <td class="paramtype">logical, intent(in)&#160;</td>
           <td class="paramname"><em>dofire</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
+          <td class="paramname"><em>leapnow</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -332,12 +338,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>and finally we check the c balance. we were supposed to use a fraction of npp for competition. some of it is used for expansion (this is what we save for allocation), and the rest becomes litter. so for each pft the total c mass in vegetation and litter pools must all add up to the same value as before competition.</p>
 <p>check balance over the bare fraction </p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="group__competition__scheme__competition_ga008cbfcefd33aaccb8f2b81cf8326451_icgraph.png" border="0" usemap="#group__competition__scheme__competition_ga008cbfcefd33aaccb8f2b81cf8326451_icgraph" alt=""/></div>
+<!-- MAP 0 -->
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 4 2017 18:26:35 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 10:21:30 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>
