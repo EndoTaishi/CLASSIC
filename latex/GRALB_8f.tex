@@ -57,6 +57,14 @@ Purpose\+: Calculate visible and near-\/\+I\+R ground albedos.
 \hline
 {\em alirgc} & Near-\/\+I\+R albedo of ground under vegetation canopy \mbox{[} \mbox{]}\\
 \hline
+{\em algwv} & Visible albedo of wet soil for modelled area $[ ] (alpha_{g,NIR,wet})$\\
+\hline
+{\em algwn} & Near-\/infrared albedo of wet soil for modelled area $[ ] (alpha_{g,NIR,wet})$\\
+\hline
+{\em algdv} & Visible albedo of dry soil for modelled area $[ ] (alpha_{g,VIS,dry})$\\
+\hline
+{\em algdn} & Near-\/infrared albedo of dry soil for modelled area $[ ] (alpha_{g,NIR,dry})$\\
+\hline
 {\em thliq} & Volumetric liquid water content of soil layers $[m^3 m^{-3}]$\\
 \hline
 {\em alvsu} & Visible albedo of urban part of modelled area $[ ] (alpha_{u,VIS})$\\
@@ -69,40 +77,39 @@ Purpose\+: Calculate visible and near-\/\+I\+R ground albedos.
 \hline
 {\em agidat} & Assigned value of near-\/\+I\+R albedo of ground – optional \mbox{[} \mbox{]}\\
 \hline
+{\em fg} & Fractional coverage of bare soil on modelled area $[ ] (X_g)$\\
+\hline
+{\em fsnow} & Fractional coverage of snow on modelled area \mbox{[} \mbox{]}\\
+\hline
 {\em isand} & Soil type flag based on sand content, assigned in subroutine C\+L\+A\+S\+S\+B \\
 \hline
 \end{DoxyParams}
-If the I\+S\+A\+N\+D flag for the surface soil layer is greater than zero (indicating mineral soil), the visible and near-\/\+I\+R open ground albedos, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$, are calculated on the basis of the wet and dry ground albedos $\alpha_{g,wet}$ and $\alpha_{g,dry}$ which were assigned for the modelled area in C\+L\+A\+S\+S\+B. Idso et al. (1975) found a correlation between the soil liquid moisture content in the top 10 cm of soil (represented in C\+L\+A\+S\+S by that of the first soil layer, $\theta_{1,1}$) and the total surface albedo $\alpha_{g,T}$\+: for liquid water contents less than 0.\+22 $m^3 m^{-3}$, $\alpha_{g,T}$ took on the value of $\alpha_{g,dry}$; for liquid water contents greater than 0.\+26 $m^3 m^{-3}$, $\alpha_{g,T}$ took on the value of $\alpha_{g,wet}$. For values of $\theta_{1,1}$ between these two limits, a linear relationship is assumed\+:
+If the I\+S\+A\+N\+D flag for the surface soil layer is greater than or equal to zero (indicating mineral soil), first the urban area not covered by snow is evaluated. Next the visible and near-\/\+I\+R open ground albedos, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$, for each wavelength range, are calculated on the basis of the wet and dry ground albedos $\alpha_{g,wet}$ and $\alpha_{g,dry}$ which were assigned for the modelled area in C\+L\+A\+S\+S\+B. Idso et al. (1975) found a correlation between the soil liquid moisture content in the top 10 cm of soil (represented in C\+L\+A\+S\+S by that of the first soil layer, $\theta_{1,1}$) and the total surface albedo $\alpha_{g,T}$\+: for water contents less than 0.\+22 $m^3 m^{-3}$, $\alpha_{g,T}$ took on the value of $\alpha_{g,dry}$; for liquid water contents greater than 0.\+26 $m^3 m^{-3}$, $\alpha_{g,T}$ took on the value of $\alpha_{g,wet}$. For values of $\theta_{1,1}$ between these two limits, a linear relationship is assumed\+:
 
 $[\alpha_{g,T} - \alpha_{g,dry} ] / [\theta_{l,1} - 0.22] = [\alpha_{g,wet} - \alpha_{g,dry} ]/[0.26 - 0.22]$
 
-Thus, in G\+R\+A\+L\+B $\alpha_{g,T}$ is calculated as follows\+:
+Thus, in G\+R\+A\+L\+B for each of the two wavelength ranges $\alpha_{g}$ is calculated as follows\+:
 
 $\alpha_{g,T} = \alpha_{g,dry}$ $\theta_{l,1} \leq 0.22 $ ~\newline
  $\alpha_{g,T} = \theta_{l,1} [\alpha_{g,wet} - \alpha_{g,dry} ]/0.04 - 5.50 [\alpha_{g,wet} - \alpha_{g,dry} ] + \alpha_{g,dry} $ $0.22 < \theta_{l,1} < 0.26 $ ~\newline
  $\alpha_{g,T} = \alpha{g,wet} $ $ 0.26 \leq \theta_{l,1}$
 
-The total albedo is partitioned into values for the visible and near-\/\+I\+R albedo by making use of the observation that in the case of mineral soils, the near-\/\+I\+R albedo is typically twice that of the visible albedo (e.\+g. Dickinson, 1983). Since the partitioning of incoming shortwave radiation into visible and near-\/\+I\+R can be approximated as 50\+:50 on average, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ can be calculated as
+Afterwards, a correction is applied to $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ in order to account for the possible presence of urban surfaces over the modelled area. Visible and near-\/\+I\+R albedos are assigned for local urban areas, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$, as part of the background data (see the section on “\+Data Requirements”). A weighted average over the bare soil area $X_g$ is calculated from the fractional snow-\/free urban area $X_u$ as\+:
 
-$\alpha_{g,VIS} = 2.0 \alpha_{g,T} /3.0$ ~\newline
- $\alpha_{g,NIR} = 2.0 \alpha_{g,VIS}$
-
-Finally, a correction is applied to $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ in order to account for the possible presence of urban areas over the modelled area. Visible and near-\/\+I\+R albedos are assigned for local urban areas, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$, as part of the background data (see the section on “\+Data Requirements”). A weighted average is calculated from the fractional urban area $X_u$ as\+:
-
-$\alpha_{g,VIS} = X_u \alpha_{u,VIS} + [1.0-X_u ] \alpha_{g,VIS}$~\newline
- $\alpha_{g,NIR} = X_u \alpha_{u,NIR} + [1.0-X_u ] \alpha_{g,NIR}$
+$\alpha_{g,VIS} = [X_u \alpha_{u,VIS} + (X_g-X_u ) \alpha_{g,VIS}] / X_g $~\newline
+ $\alpha_{g,NIR} = [X_u \alpha_{u,NIR} + (1.0-X_u ) \alpha_{g,NIR}] / X_g $
 
 If the soil on the modelled area is not mineral, i.\+e. if the I\+S\+A\+N\+D flag is less than zero, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ are determined as follows\+:
 
 If I\+S\+A\+N\+D = -\/2, indicating organic soil, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ are assigned values of 0.\+05 and 0.\+30 respectively from the lookup tables in the block data subroutine C\+L\+A\+S\+S\+B\+D, corresponding to average measured values reported in Comer et al. (2000).
 
-If I\+S\+A\+N\+D = -\/3, indicating rock at the surface, $\alpha_{g,T}$ is given a value of 0.\+27 from C\+L\+A\+S\+S\+B\+D, based on typical literature values (e.\+g. Sellers, 1974), and this is partitioned into values of $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ as above.
+If I\+S\+A\+N\+D = -\/3, indicating rock at the surface, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ are assigned the dry ground values from C\+L\+A\+S\+S\+B.
 
 If I\+S\+A\+N\+D = -\/4, indicating continental ice sheet or glacier, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ are assigned values of 0.\+95 and 073 from C\+L\+A\+S\+S\+B\+D, reflecting values reported for Antarctica (e.\+g. Sellers, 1974).
 
 The above calculations are all performed if the flag I\+A\+L\+G is set to zero. If I\+A\+L\+G is set to one, indicating that assigned ground albedos are to be used instead of calculated values, $\alpha_{g,VIS}$ and $\alpha_{g,NIR}$ are set to the assigned values A\+G\+V\+D\+A\+T and A\+G\+I\+D\+A\+T respectively.
 
-Lastly, the ground values of visible and near-\/\+I\+R albedo under the vegetation canopy are currently set equal to the open values (this approach is currently under review).
+Lastly, the ground values of visible and near-\/\+I\+R albedo under the vegetation canopy are currently set equal to the open values (this approach is under review).
 
 Here is the call graph for this function\+:
 % FIG 0

@@ -2015,3 +2015,23 @@
 \form#2014:\[ \label{cldls} L_{cold} = \begin{cases} 1, \quad T_a < \left(T_{cold}^{leaf} - 5\right) \\ 1 - \frac{T_a - \left(T_{cold}^{leaf} - 5\right)}{5}, \\ \quad T_{cold}^{leaf} > T_a > (T_{cold}^{leaf} - 5) \\ 0, \quad T_a > T_{cold}^{leaf} ,\\ \end{cases} \]
 \form#2015:\[ \label{gamma_dry} \Omega_{D} = \Omega_{D,max}\,(1-\phi_{root})^3, \]
 \form#2016:$\Omega_{D,max}$
+\form#2017:$[ ] (alpha_{g,NIR,wet})$
+\form#2018:$[ ] (alpha_{g,VIS,dry})$
+\form#2019:$[ ] (alpha_{g,NIR,dry})$
+\form#2020:$[ ] (X_g)$
+\form#2021:$\alpha_{g}$
+\form#2022:$X_g$
+\form#2023:$\alpha_{g,VIS} = [X_u \alpha_{u,VIS} + (X_g-X_u ) \alpha_{g,VIS}] / X_g $
+\form#2024:$\alpha_{g,NIR} = [X_u \alpha_{u,NIR} + (1.0-X_u ) \alpha_{g,NIR}] / X_g $
+\form#2025:$[ ] (\tau_{s,c})$
+\form#2026:$[ ] (\tau_{s,g})$
+\form#2027:$\alpha_{s,VIS} = 0.7857 \alpha_{s,T} + 0.2900$
+\form#2028:$\alpha_{s,NIR} = 1.2142 \alpha_{s,T} - 0.2900$
+\form#2029:$\alpha_{s,VIS} = 0.9706 \alpha_{s,T} + 0.1347$
+\form#2030:$\alpha_{s,NIR} = 1.0294 \alpha_{s,T} - 0.1347$
+\form#2031:$\tau_{s,c}$
+\form#2032:$\tau_{s,c} = exp[-25.0 z_s]$
+\form#2033:$\tau_{s,g}$
+\form#2034:$ \theta_{wilt}$
+\form#2035:$ \theta_{wilt} $
+\form#2036:$ \theta_{wilt} = \theta_p (\theta_{wilt} / \Psi_{sat} )^{-1/b} $

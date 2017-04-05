@@ -1163,6 +1163,7 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">isnoalb</td><td>Switch to model snow albedo in two or more wavelength bands</td></tr>
     <tr><td class="paramname">fc</td><td>Subarea fractional coverage of modelled area [ ]</td></tr>
     <tr><td class="paramname">fg</td><td>Subarea fractional coverage of modelled area [ ]</td></tr>
     <tr><td class="paramname">fcs</td><td>Subarea fractional coverage of modelled area [ ]</td></tr>
@@ -1218,7 +1219,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">zplmcs</td><td>Maximum water ponding depth for ground under snow under canopy [m]</td></tr>
     <tr><td class="paramname">zplmgs</td><td>Maximum water ponding depth for ground under snow [m]</td></tr>
     <tr><td class="paramname">rbcoef</td><td>Parameter for calculation of leaf boundary resistance</td></tr>
-    <tr><td class="paramname">trsnowc</td><td>Short-wave transmissivity of snow pack [ ]</td></tr>
+    <tr><td class="paramname">trsnowc</td><td>Short-wave transmissivity of snow pack under vegetation [ ]</td></tr>
     <tr><td class="paramname">zsnow</td><td>Depth of snow pack <img class="formulaInl" alt="$[m] (z_s)$" src="form_811.png"/></td></tr>
     <tr><td class="paramname">wsnow</td><td>Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_780.png"/></td></tr>
     <tr><td class="paramname">alvs</td><td>Diagnosed total visible albedo of land surface [ ]</td></tr>
@@ -1230,9 +1231,12 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">wtrg</td><td>Diagnosed residual water transferred into or out of the soil <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_779.png"/></td></tr>
     <tr><td class="paramname">cmai</td><td>Aggregated mass of vegetation canopy <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_780.png"/></td></tr>
     <tr><td class="paramname">fsnow</td><td>Diagnosed fractional snow coverage [ ]</td></tr>
-    <tr><td class="paramname">froot</td><td>Fraction of total transpiration contributed by soil layer [ ]</td></tr>
-    <tr><td class="paramname">froots</td><td>Fraction of total transpiration contributed by snow-covered soil layer [ ]</td></tr>
+    <tr><td class="paramname">froot</td><td>Fraction of total transpiration contributed by soil layer over snow-free subarea [ ]</td></tr>
+    <tr><td class="paramname">froots</td><td>Fraction of total transpiration contributed by snow-covered subarea [ ]</td></tr>
     <tr><td class="paramname">htc</td><td>Diagnosed internal energy change of soil layer due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
+    <tr><td class="paramname">trsnowg</td><td>Short-wave transmissivity of snow pack in bare areas [ ]</td></tr>
+    <tr><td class="paramname">altg</td><td>Total albedo in each modelled wavelength band [ ]</td></tr>
+    <tr><td class="paramname">alsno</td><td>Albedo of snow in each modelled wavelength band [ ]</td></tr>
     <tr><td class="paramname">fcanmx</td><td>Maximum fractional coverage of modelled area by vegetation category [ ]</td></tr>
     <tr><td class="paramname">zoln</td><td>Natural logarithm of maximum roughness length of vegetation category [ ]</td></tr>
     <tr><td class="paramname">alvsc</td><td>Background average visible albedo of vegetation category [ ]</td></tr>
@@ -1284,6 +1288,10 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">zplmg0</td><td>Maximum water ponding depth for snow-free subareas (user-specified when running MESH code) [m]</td></tr>
     <tr><td class="paramname">zplms0</td><td>Maximum water ponding depth for snow-covered subareas (user-specified when running MESH code) [m]</td></tr>
     <tr><td class="paramname">radj</td><td>Latitude of grid cell (positive north of equator) [rad]</td></tr>
+    <tr><td class="paramname">refsno</td><td>Snow grain size (for ISNOALB=1 option) [m]</td></tr>
+    <tr><td class="paramname">bcsno</td><td>Black carbon mixing ratio (for ISNOALB=1 option) <img class="formulaInl" alt="$[kg m^{-3}]$" src="form_1180.png"/></td></tr>
+    <tr><td class="paramname">fsdb</td><td>Direct solar radiation in each modelled wavelength band <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
+    <tr><td class="paramname">fsfb</td><td>Diffuse solar radiation in each modelled wavelength band <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
     <tr><td class="paramname">delzw</td><td>Permeable thickness of soil layer [m]</td></tr>
     <tr><td class="paramname">zbotw</td><td>Depth to permeable bottom of soil layer [m]</td></tr>
     <tr><td class="paramname">thpor</td><td>Pore volume in soil layer <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_759.png"/></td></tr>
@@ -1300,7 +1308,7 @@ Functions/Subroutines</h2></td></tr>
 </dl>
 <p>In the first loop, the depth of snow <img class="formulaInl" alt="$z_s$" src="form_571.png"/> is calculated from the snow mass <img class="formulaInl" alt="$W_s$" src="form_572.png"/> and density <img class="formulaInl" alt="$\varrho_s$" src="form_1225.png"/> as: <img class="formulaInl" alt="$ z_s = W_s / \varrho_s. $" src="form_1226.png"/></p>
 <p>If the calculated value of <img class="formulaInl" alt="$z_s$" src="form_571.png"/> is less than the limiting snow depth <img class="formulaInl" alt="$z_{s,lim}$" src="form_1227.png"/>, the snow cover is deemed to be discontinuous. The fractional snow coverage <img class="formulaInl" alt="$X_s$" src="form_1228.png"/> of the modelled area is evaluated as <img class="formulaInl" alt="$ X_s = z_s / z_{s,lim} $" src="form_1229.png"/> and the snow depth is reset to <img class="formulaInl" alt="$z_{s,lim}$" src="form_1227.png"/>. The water content of the snow pack is corrected according to the new snow fractional area.</p>
-<p>The subarea albedo and transmissivity arrays (for canopy, bare ground, canopy over snow and snow over bare ground) are next initialized to zero, and the four CLASSA subsidiary subroutines are called in turn: APREP to evaluate various model parameters for the four subareas, SNOALBA to calculate the snow albedo and transmissivity, GRALB to calculate the ground surface albedo, and CANALB to calculate the canopy albedo, transmissivity and stomatal resistance. Finally, the overall visible and near- infrared albedos for the modelled area are determined as weighted averages over the four subareas.</p>
+<p>The subarea albedo and transmissivity arrays (for canopy, bare ground, canopy over snow and snow over bare ground) are next initialized to zero, and the four CLASSA subsidiary subroutines are called in turn: APREP to evaluate various model parameters for the four subareas, GRALB to calculate the ground surface albedo, SNOALBA to calculate the snow albedo and transmissivity, and CANALB to calculate the canopy albedo, transmissivity and stomatal resistance. Finally, the overall visible, near-infrared and total albedos for the modelled area are determined as weighted averages over the four subareas.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -1315,7 +1323,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 5 2017 10:21:29 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 11:23:10 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>
