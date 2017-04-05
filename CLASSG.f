@@ -126,7 +126,7 @@ C
       REAL QACROT (NL,NT)   !<Specific humidity of air within vegetation 
                             !!canopy \f$[kg kg^{-1}]\f$
       REAL WSNOROT(NL,NT)   !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
-      REAL REFROT(NL,NM)    !
+      REAL REFROT(NL,NM)    !<Snow grain size (for ISNOALB=1 option)
       REAL BCSNROT(NL,NM)   !<Black carbon mixing ratio (for ISNOALB=1 option)  [kg m-3]
 C
       REAL    TBARGAT(ILG,IG),   THLQGAT(ILG,IG),   THICGAT(ILG,IG), 
@@ -225,7 +225,7 @@ C
       REAL TCSROT (NL,NT,IG)    !<Thermal conductivity of soil particles 
                                 !!\f$[W m^{-1} K^{-1}]\f$
       REAL THFCROT(NL,NT,IG)    !<Field capacity \f$[m^3 m^{-3}]\f$
-      REAL THLWROT(NL,NT,IG)    !<Wilting point \f$[m^3 m^{-3}]\f$
+      REAL THLWROT(NL,NT,IG)    !<Liquid water content at wilting point \f$[m^3 m^{-3}]\f$
       REAL PSIWROT(NL,NT,IG)    !<Soil moisture suction at wilting point 
                                 !![m]
       REAL DLZWROT(NL,NT,IG)    !<Permeable thickness of soil layer [m]
@@ -323,7 +323,7 @@ C
       REAL DLONROW( NL) !<Longitude of grid cell (east of Greenwich) [degrees]
       REAL GGEOROW( NL) !<Geothermal heat flux at bottom of soil profile 
                         !!\f$[W m^{-2}]\f$
-      REAL GUSTROL (NL) !
+      REAL GUSTROL (NL) !<Wind gustiness factor  [  ]
       REAL RADJ   ( NL) !<Latitude of grid cell (positive north of equator) [rad]
       REAL VMODL  ( NL) !<Wind speed at reference height \f$[m s^{-1}]\f$
       REAL DEPBROW (NL) !Black carbon deposition rate  [kg m-2 s-1]

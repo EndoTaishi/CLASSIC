@@ -220,7 +220,7 @@ C
 !!depending on soil type. Values of ISAND greater than or equal to zero indicate mineral soil. The pore volume \f$\theta_p\f$ ,
 !!the saturated hydraulic conductivity \f$K_{sat}\f$ , and the soil moisture suction at saturation \f$\Psi\f$ sat are calculated from
 !!the percentage sand content \f$X_{sand}\f$ , and the hydraulic parameter b is calculated from the percentage clay
-!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc:
+!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc :
 !!\f$\theta_p = (-0.126 X_{sand} +48.9)/100.0\f$
 !!\f$b = 0.159 X_{clay} + 2.91\f$
 !!\f$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)\f$

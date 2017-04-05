@@ -295,6 +295,8 @@ Purpose\+: Gather variables from two-\/dimensional arrays (latitude circle x mos
 \hline
 {\em wsnorot} & Liquid water content of snow pack $[kg m^{-2}]$\\
 \hline
+{\em bcsnrot} & Black carbon mixing ratio (for I\+S\+N\+O\+A\+L\+B=1 option) \mbox{[}kg m-\/3\mbox{]}\\
+\hline
 {\em ilmos} & Index of latitude grid cell corresponding to current element of gathered vector of land surface variables \mbox{[} \mbox{]}\\
 \hline
 {\em jlmos} & Index of mosaic tile corresponding to current element of gathered vector of land surface variables \mbox{[} \mbox{]}\\
@@ -373,6 +375,14 @@ Purpose\+: Gather variables from two-\/dimensional arrays (latitude circle x mos
 \hline
 {\em wfcirot} & W\+A\+T\+R\+O\+F parameter used when running M\+E\+S\+H code \mbox{[} \mbox{]}\\
 \hline
+{\em algwvrot} & Reference visible albedo for saturated soil \mbox{[} \mbox{]}\\
+\hline
+{\em algwnrot} & Reference near-\/infrared albedo for saturated soil \mbox{[} \mbox{]}\\
+\hline
+{\em algdvrot} & Reference visible albedo for dry soil \mbox{[} \mbox{]}\\
+\hline
+{\em algdnrot} & Reference near-\/infrared albedo for dry soil \mbox{[} \mbox{]}\\
+\hline
 {\em algwrot} & Reference albedo for saturated soil \mbox{[} \mbox{]}\\
 \hline
 {\em algdrot} & Reference albedo for dry soil \mbox{[} \mbox{]}\\
@@ -408,6 +418,10 @@ Purpose\+: Gather variables from two-\/dimensional arrays (latitude circle x mos
 {\em fsihrow} & Near-\/infrared radiation incident on horizontal surface $[W m^{-2}]$\\
 \hline
 {\em cszrow} & Cosine of solar zenith angle \mbox{[} \mbox{]}\\
+\hline
+{\em fsgrol} & Total shortwave radiation absorbed by land surface \mbox{[}W m-\/2\mbox{]}\\
+\hline
+{\em flgrol} & Total longwave radiation absorbed by land surface \mbox{[}W m-\/2\mbox{]}\\
 \hline
 {\em fdlrol} & Downwelling longwave radiation at bottom of atmosphere $[W m^{-2}]$\\
 \hline
@@ -453,6 +467,12 @@ Purpose\+: Gather variables from two-\/dimensional arrays (latitude circle x mos
 \hline
 {\em radj} & Latitude of grid cell (positive north of equator) \mbox{[}rad\mbox{]}\\
 \hline
-{\em vmodl} & Wind speed at reference height $[m s^{-1}]$ \\
+{\em vmodl} & Wind speed at reference height $[m s^{-1}]$\\
+\hline
+{\em fsdbrol} & Direct solar radiation in each modelled wavelength band \mbox{[}W m-\/2\mbox{]}\\
+\hline
+{\em fsfbrol} & Diffuse solar radiation in each modelled wavelength band \mbox{[}W m-\/2\mbox{]}\\
+\hline
+{\em fssbrol} & Total solar radiation in each modelled wavelength band \mbox{[}W m-\/2\mbox{]} \\
 \hline
 \end{DoxyParams}
