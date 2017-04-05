@@ -66,6 +66,8 @@ Rest of the initialization variables are needed to run C\+T\+E\+M but if startin
 
 If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
 
+If this grid cell has peatlands in it then the ipeatland flag is set to 1 (bog), or 2 (fen) otherwise it is 0 (no peatland). the other variables then are the carbon in moss biomass, the moss litter mass, and depth of living moss.
+
 Take the first tile value now and put it over the other tiles
 
 Check that a competition or luc run has the correct number of mosaics. if it is not a start\+\_\+bare run, then nmtest should equal nmos

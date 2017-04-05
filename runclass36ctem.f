@@ -10,61 +10,6 @@
 
       PROGRAM RUNCLASS36CTEM
 C
-C     REVISION HISTORY:
-C
-C     * Sep 26 2016 : Bring in Yuanqiao Wu's peatland parameterization.
-C       Joe Melton
-C
-C     * Aug 31 2016 : Added proper calculation of ALTOT as provided by Diana.
-C       Joe Melton
-C
-C     * Mar 9  2016 : For consistency I have changed all inputs (except MET) to be adopted into the row/gat
-C     * Joe Melton    framework. This means that a per gridcell value is then also assigned per tile. This
-C                     just makes it easier to deal with in the model code since it fits into the loops like the vars.
-C
-C     * Feb 10 2016 : Trimmed CTEM secondary vars from driver. They are not used, so can find in io_driver
-C     * Joe Melton
-C
-C     * JAN 6 2015
-C     * Joe Melton : Added the soil methane sink subroutine
-C
-C     * JUL 2 2015
-C     * JOE MELTON : Took many calculations out of this driver and into subroutines. Introduced
-C                    modular structure and made CTEM vars into pointers. Harmonized CLASS v. 3.6.1
-C                    code with CTEM code and into this driver to produce CLASS v. 3.6.2.
-C
-C     * JAN 14 2014
-C     * JOE MELTON : Harmonized the field capacity and wilting point calculations between CLASS and CTEM.
-C                    took the code out of runclassctem and it is now fully done within CLASSB. Harmonized names too.
-C
-C     * JUN 2014
-C     * RUDRA SHRESTHA : ADD IN WETLAND CODE
-C
-C     * JUL 2013
-C     * JOE MELTON : REMOVED CTEM1 AND CTEM2 OPTIONS, REPLACED WITH CTEM_ON. INTRODUCE
-C                                  MODULES. RESTRUCTURE OUTPUTS AND CTEM VARIABLE DECLARATIONS
-C                                  OUTPUTS ARE NOW THE SAME FOR BOTH MOSAIC AND COMPOSITE MODES
-C
-C     * DEC 2012
-C     * JOE MELTON : REMOVED GOTO STATEMENTS, CLEANED UP AND FIXED INCONSISTENCIES
-C                                  IN HOW INPUT DATA READ IN. ALSO MADE LUC WORK FOR
-C                                  BOTH COMPOSITE AND MOSAIC APPROACHES.
-C
-C     * OCT 2012
-C     * YIRAN PENG AND JOE MELTON: BRING IN COMPETITION TO 3.6 AND MAKE IT
-C                                  SO THE MODEL CAN START FROM BARE GROUND
-C                                  OR FROM THE INI AND CTM FILES INPUTS
-C
-C     * SEP 2012
-C     * JOE MELTON: COUPLED CLASS3.6 AND CTEM
-C
-C     * NOV 2011
-C     * YIRAN PENG AND VIVEK ARORA: COUPLED CLASS3.5 AND CTEM
-C
-C     * SEPT 8, 2009
-C     * RONG LI AND VIVEK ARORA: COUPLED CLASS3.4 AND CTEM
-C
-C=======================================================================
 !>
 !!------------------------------------------------------------------
 !! ## Dimension statements.
@@ -126,21 +71,21 @@ C=======================================================================
 C
 C     * INTEGER CONSTANTS.
 C
-      INTEGER IDISP  !<Flag governing treatment of vegetation displacement height
-      INTEGER IZREF  !<Flag governing treatment of surface roughness length
-      INTEGER ISLFD  !<Flag governing options for surface stability functions and diagnostic calculations
-      INTEGER IPCP   !<Flag selecting algorithm for dividing precipitation between rainfall and snowfall
-      INTEGER IWF    !<Flag governing lateral soil water flow calculations
-      INTEGER IPAI   !<Flag to enable use of user-specified plant area index
-      INTEGER IHGT   !<Flag to enable use of user-specified vegetation height
-      INTEGER IALC   !<Flag to enable use of user-specified canopy albedo
-      INTEGER IALS   !<Flag to enable use of user-specified snow albedo
-      INTEGER IALG   !<Flag to enable use of user-specified ground albedo
+      INTEGER IDISP  !<Switch governing treatment of vegetation displacement height
+      INTEGER IZREF  !<Switch governing treatment of surface roughness length
+      INTEGER ISLFD  !<Switch governing options for surface stability functions and diagnostic calculations
+      INTEGER IPCP   !<Switch selecting algorithm for dividing precipitation between rainfall and snowfall
+      INTEGER IWF    !<Switch governing lateral soil water flow calculations
+      INTEGER IPAI   !<Switch to enable use of user-specified plant area index
+      INTEGER IHGT   !<Switch to enable use of user-specified vegetation height
+      INTEGER IALC   !<Switch to enable use of user-specified canopy albedo
+      INTEGER IALS   !<Switch to enable use of user-specified snow albedo
+      INTEGER IALG   !<Switch to enable use of user-specified ground albedo
       INTEGER N      !<
-      INTEGER ITG    !<Flag to select iteration scheme for ground or snow surface
-      INTEGER ITC    !<Flag to select iteration scheme for canopy temperature
-      INTEGER ITCG   !<Flag to select iteration scheme for surface under canopy
-      INTEGER isnoalb!<
+      INTEGER ITG    !<Switch to select iteration scheme for ground or snow surface
+      INTEGER ITC    !<Switch to select iteration scheme for canopy temperature
+      INTEGER ITCG   !<Switch to select iteration scheme for surface under canopy
+      INTEGER isnoalb!<Switch to model snow albedo in two or more wavelength bands
       INTEGER igralb !<
 
       INTEGER NLTEST  !<Number of grid cells being modelled for this run
@@ -154,8 +99,8 @@ C
       INTEGER IMIN    !<Minutes elapsed in current hour
       INTEGER IDAY    !<Julian day of the year
       INTEGER IYEAR   !<Year of run
-      INTEGER NML     !<Counter representing number of mosaic tiles on modelled domain that are land
-      INTEGER NMW     !<Counter representing number of mosaic tiles on modelled domain that are lakes
+      INTEGER NML     !<Total number of mosaic tiles in land surface gather vectors
+      INTEGER NMW     !<Total number of inland lake mosaic tiles in land surface gather vectors
       INTEGER JLAT    !<Integer index corresponding to latitude of grid cell
       INTEGER NLANDCS !<Number of modelled areas that contain subareas of canopy over snow
       INTEGER NLANDGS !<Number of modelled areas that contain subareas of snow over bare ground
@@ -163,7 +108,7 @@ C
       INTEGER NLANDG  !<Number of modelled areas that contain subareas of bare ground
       INTEGER NLANDI  !<Number of modelled areas that are ice sheets
       INTEGER I,J,K,L,M
-      INTEGER NTLD    !<
+      INTEGER NTLD    !<Number of CLASS mosaic tiles per latitude grid cell in land surface scatter vectors
 C
       INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11
       INTEGER ITA        !<
@@ -325,7 +270,7 @@ C
       REAL,DIMENSION(ILG,ICAN)       :: RSMNGAT !<Minimum stomatal resistance of vegetation category \f$[s m^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS,ICAN) :: RSMNROT !<
       REAL,DIMENSION(NLAT,NMOS,IGND) :: SANDROT !<Percentage sand content of soil
-      REAL,DIMENSION(NLAT,NMOS)      :: SDEPROT !<Depth to bedrock in the soil profile
+      REAL,DIMENSION(NLAT,NMOS)      :: SDEPROT !<Depth to bedrock in the soil profile [m]
       REAL,DIMENSION(ILG,IGND)       :: TCSGAT  !<Thermal conductivity of soil particles \f$[W m^{-1} K^{-1} ]\f$
       REAL,DIMENSION(NLAT,NMOS,IGND) :: TCSROT  !<
       REAL,DIMENSION(ILG,IGND)       :: THFCGAT !<Field capacity \f$[m^3 m^{-3} ]\f$
@@ -377,11 +322,11 @@ C
       REAL,DIMENSION(ILG,NBS)        :: FSDBGAT  !<
       REAL,DIMENSION(ILG,NBS)        :: FSFBGAT  !<
       REAL,DIMENSION(NLAT,NBS)       :: FSFBROL  !<
-      REAL,DIMENSION(NLAT,NBS)       :: FSSBROL  !<
+      REAL,DIMENSION(NLAT,NBS)       :: FSSBROL  !<Total solar radiation in each modelled wavelength band  [W m-2]
       REAL,DIMENSION(ILG,NBS)        :: FSSBGAT  !<
 
       REAL,DIMENSION(NLAT,NMOS)      :: ZSNOROT  !<
-      REAL,DIMENSION(NLAT,NMOS)      :: SOCIROT  !<
+      REAL,DIMENSION(NLAT,NMOS)      :: SOCIROT  !<Soil colour index  [  ]
 
 C
 C     * ARRAYS ASSOCIATED WITH COMMON BLOCKS.
@@ -1480,6 +1425,7 @@ c=====peatland related parameter declaration March 18, 2015 YW=========\
 c   ----CLASS moss variables-------YW ----------------------------------
 !     Replaced thlqaccXXX_m with thliqacc_t and thicaccXXX_m with thiceacc_t. EC Dec 23 2016.
 !     See corresponding changes in calls to ctemg2, ctem, and ctems2.
+
 !     real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
 !    4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
 !    5      peatdepgat(ilg),
@@ -1527,6 +1473,11 @@ c   peatdep - peat depth (m)
       real, pointer, dimension(:) :: gppmossac_t
 
 C=======================================================================
+
+!> After the DIMENSION statements and variable declarations, the common blocks are defined
+!> and the values of the parameters are assigned through the external BLOCK DATA routine
+!> CLASSBD and a call to the subroutine CLASSD (see the appropriate section.)
+
 C     * PHYSICAL CONSTANTS.
 C     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
 C     * WITHIN THE GCM.
@@ -2119,7 +2070,9 @@ C===================== CTEM ==============================================\
 !    =================================================================================
 !    =================================================================================
 
-!    Declarations are complete, run preparations begin
+!>    The grid-average height for the momentum diagnostic variables, ZDMROW, and for the
+!>    energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer
+!>    height of 10 m and to the screen height of 2 m respectively.  The soil colour index SOCIROT is assigned a representative value.
 
       CALL CLASSD
 
@@ -2547,9 +2500,33 @@ C
 C     CTEM FILE TITLES DONE
 C======================= CTEM ========================================== /
 
-C     BEGIN READ IN OF THE .INI FILE
+    !> Next the first data line in the “ini” file is read, which contains several basic pieces of information:
+
+    !> 1) DEGLAT and DEGLON, the latitude (positive northward, negative southward) and longitude (east of Greenwich), in degrees.
+
+    !> 2) ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables
+    !> (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data, these heights
+    !> would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
+    !> refer to the measurement height of these variables, which is fixed.
+
+    !> 3) ZBLDROW, the atmospheric blending height.  Technically this variable depends on the length scale of the
+    !> patches of roughness elements on the land surface, but this is difficult to ascertain.  Here it is assigned a value of 50 m.
+
+    !> 4) GCROW, the GCM surface descriptor variable.  For land surfaces (including inland water) it has a value of -1.
+
+    !>5) NLTEST and NMTEST, the number of grid cells and the number of mosaic tiles per grid cell for this test run.
+    !> As noted above, the benchmark version of the driver is set up to handle one grid cell with one mosaic tile,
+    !> so NLTEST and NMTEST are each assigned values of 1 in the “ini” file, and all of the ROW input variables have
+    !> only one entry.  If it were desired to run different data sets with more tiles or grid cells, a loop or
+    !> loops would have to be introduced into the READ statements, and additional lines in the “ini” file,
+    !> to read in the necessary information.
+
       READ(10,5020) DLATROW(1),DEGLON,ZRFMROW(1),ZRFHROW(1),ZBLDROW(1),
      1              GCROW(1),NLTEST,NMTEST
+
+    !> In the following lines of code the parameter JLAT is calculated from DEGLAT as the nearest integer value,
+    !> and DEGLON is converted to radians and stored in the array RADJROW.  DEGLON is stored as is in DLONROW.
+    !> The orographic roughness length, Z0ORROW, and the geothermal heat flux, GGEOROW, are set to zero for this application.
 
       JLAT=NINT(DLATROW(1))
       RADJROW(1)=DLATROW(1)*PI/180.
@@ -2557,6 +2534,11 @@ C     BEGIN READ IN OF THE .INI FILE
       Z0ORROW(1)=0.0
       GGEOROW(1)=0.0
 C     GGEOROW(1)=-0.035
+
+    !> In the 50 loop, vegetation and soil information are read over each of the NLTEST x NMTEST modelled areas and
+    !> mosaic tiles (= 1 in the benchmark simulation).  The first twelve lines deal with background data.
+    !> The last three lines deal with initialization data for the CLASS prognostic variables.
+    !> (For more details on these data see the section on “Data Requirements” in the manual).
 
       DO 50 I=1,NLTEST !This should go above the first read(10 but offline nltest is always 1.
       DO 50 M=1,NMTEST
@@ -2622,7 +2604,14 @@ c     read from ctem initialization file (.CTM)
 c
 C===================== CTEM =============================================== /
 
-!     Complete some initial set up work:
+    !> In the 100 and 150 loops, further initial calculations are done.  In the 100
+    !> loop the temperatures that were read from the “ini” file are converted to degrees K,
+    !> and initial values are assigned to secondary prognostic variables.  The limiting snow
+    !> depth, ZSNL, is assigned its operational value of 0.10 m.  An option is included to
+    !> extrapolate soil information to layers below the third layer, if more are being
+    !> modelled and if no measured data are available for them.  (This loop is to be
+    !< commented out or deleted if data are actually available.)  In the 150 loop,
+    !> the daily average accumulator arrays are initialized to zero.
 
       DO 100 I=1,NLTEST
       DO 100 M=1,NMTEST
@@ -2722,6 +2711,10 @@ c     initialize accumulated array for monthly & yearly output for class
       !FTAVG=0.0
       !FTMAX=0.0
       !FTABLE=0.0
+
+    !> As the last step in the initialization sequence, the subroutine CLASSB is
+    !> called, to assign soil thermal and hydraulic properties on the basis of the
+    !> textural information read in for each of the soil layers.
 
       CALL CLASSB(THPROT,THRROT,THMROT,BIROT,PSISROT,GRKSROT,
      1            THRAROT,HCPSROT,TCSROT,THFCROT,THLWROT,PSIWROT,
@@ -3137,6 +3130,11 @@ C===================== CTEM ============================================ /
 
 C     **** LAUNCH RUN. ****
 
+    !> The timestep counter N for the run is initialized to 0, the daily
+    !> averaging counter NCOUNT is set to 1, and the total number of
+    !> timesteps in the day NDAY is calculated as the number of seconds
+    !> in a day (86400) divided by the timestep length DELT.
+
       N=0
       NCOUNT=1
       NDAY=86400/NINT(DELT)
@@ -3145,6 +3143,29 @@ C===================== CTEM ============================================ \
 
       run_model=.true.
       met_rewound=.false.
+
+      !> The 200 continuation line marks the beginning of the time stepping loop
+      !> for the actual run.  N is incremented by 1, and the atmospheric forcing
+      !> data for the current time step are read in for each grid cell or modelled
+      !> area (see the section on “Data Requirements”).  In the dataset associated
+      !> with the benchmark run, only the total incoming shortwave radiation FSDOWN
+      !> is available; it is partitioned 50:50 between the incoming visible (FSVHROW)
+      !> and near-infrared (FSIHROW) radiation.  The first two elements of the
+      !> generalized incoming radiation array, FSSBROL (used for both the ISNOALB=0
+      !> and ISNOALB=1 options) are set to FSVHROW and FSIHROW respectively.
+      !> The air temperature TAROW is converted from degrees C to K.  The zonal
+      !> (ULROW) and meridional (VLROW) components of the wind speed are not
+      !> available at the benchmark site; only the overall wind speed UVROW is
+      !> measured.  However, CLASS does not require wind direction for its calculations,
+      !> so ULROW is arbitrarily assigned the value of UVROW and VLROW is set to zero for
+      !> this run.  The input wind speed VMODROW is assigned the value of UVROW.
+      !> The cosine of the solar zenith angle COSZ is calculated from the day of
+      !> the year, the hour, the minute and the latitude using basic radiation geometry,
+      !> and (avoiding vanishingly small numbers) is assigned to CSZROW.  The fractional
+      !> cloud cover FCLOROW is not available at the benchmark site; a rough estimate is
+      !> obtained by setting it to 1 when precipitation is occurring, and to the fraction
+      !> of incoming diffuse radiation XDIFFUS otherwise (assumed to be 1 when the sun
+      !> is at the horizon, and 0.10 when it is at the zenith).
 
 200   continue
 
@@ -3430,6 +3451,8 @@ c             ! if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
 C===================== CTEM ============================================ /
 C
 
+    !>CLASSI evaluates a series of derived atmospheric variables
+
       CALL CLASSI(VPDROW,TADPROW,PADRROW,RHOAROW,RHSIROW,
      1            RPCPROW,TRPCROW,SPCPROW,TSPCROW,TAROW,QAROW,
      2            PREROW,RPREROW,SPREROW,PRESROW,
@@ -3438,10 +3461,15 @@ C
 
       CUMSNO=CUMSNO+SPCPROW(1)*RHSIROW(1)*DELT
 C
+    !> GATPREP assigns values to vectors governing the gather-scatter operations
+
       CALL GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,
      1             NML,NMW,GCROW,FAREROT,MIDROT,
      2             NLAT,NMOS,ILG,1,NLTEST,NMTEST)
 C
+    !> CLASSG performs the gather operation, gathering variables from their
+    !> positions as mosaic tiles within the modelled areas to long vectors of mosaic tiles
+
       CALL CLASSG (TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT,
      1             TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT,
      2             TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT,
@@ -3572,6 +3600,8 @@ C
 C
 C========================================================================
 C
+    !> CLASSZ does the initial calculations for the energy and water balance checks;
+
       CALL CLASSZ (0,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP,
      1             WTVSTP, WTSSTP, WTGSTP,
      2             FSGVGAT,FLGVGAT,HFSCGAT,HEVCGAT,HMFCGAT,HTCCGAT,
@@ -3686,6 +3716,8 @@ C-----------------------------------------------------------------------
 C     * ALBEDO AND TRANSMISSIVITY CALCULATIONS; GENERAL VEGETATION
 C     * CHARACTERISTICS.
 
+    !> CLASSA manages the calculation of albedos and other surface parameters;
+
 C     * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM by including: zolnc,
 !     * cmasvegc, alvsctm, alirctm, ipeatlandgat in the arguments.
 C
@@ -3726,6 +3758,8 @@ C
 C
 C-----------------------------------------------------------------------
 C          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
+
+    !> CLASST calls the subroutines associated with the surface energy balance calculations
 
 C          * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM
 c          * by including in the arguments: lfstatus
@@ -3772,6 +3806,7 @@ C
 C-----------------------------------------------------------------------
 C          * WATER BUDGET CALCULATIONS.
 C
+    !> CLASSW calls the subroutines associated with the surface water balance calculations
 
           CALL CLASSW  (THLQGAT,THICGAT,TBARGAT,TCANGAT,RCANGAT,SCANGAT,
      1                  ROFGAT, TROFGAT,SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,
@@ -3804,6 +3839,7 @@ C
      S                  NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
 
 C       
+    !> CLASSZ completes the energy and water balance checks for the current time step
       CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, 
      1             WTVSTP, WTSSTP, WTGSTP,
      2             FSGVGAT,FLGVGAT,HFSCGAT,HEVCGAT,HMFCGAT,HTCCGAT,
@@ -4128,6 +4164,9 @@ c
 
 C===================== CTEM ============================================ /
 C
+    !> CLASSS performs the scatter operation, scattering the variables from
+    !>the long vectors of mosaic tiles back onto the configuration of mosaic tiles within grid cells.
+    
       CALL CLASSS (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT,
      1             ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT,
      2             SNOROT, GTROT, TCANROT,RCANROT,SCANROT,

@@ -250,15 +250,24 @@ integer, intent(out) :: iwf     !< if iwf=0, only overland flow and baseflow are
 INTEGER, INTENT(OUT) :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
                            !< be used in calculating the canopy or ground surface temperature
                            !< respectively.  if the switch is set to 1, a bisection method is
-                           !< used; if to 2, the newton-raphson method is used.
+                           !< used; if to 2, the newton-raphson method is used.(Note: Recently
+                           !< problems have been discovered with the Newton-Raphson scheme,
+                           !< involving instabilities and occasional failure to converge,
+                           !<so currently users are advised not to select this option.)
 INTEGER, INTENT(OUT) :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
                            !< be used in calculating the canopy or ground surface temperature
                            !< respectively.  if the switch is set to 1, a bisection method is
-                           !< used; if to 2, the newton-raphson method is used.
+                           !< used; if to 2, the newton-raphson method is used.(Note: Recently
+                           !< problems have been discovered with the Newton-Raphson scheme,
+                           !< involving instabilities and occasional failure to converge,
+                           !<so currently users are advised not to select this option.)
 INTEGER, INTENT(OUT) :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
                            !< be used in calculating the canopy or ground surface temperature
                            !< respectively.  if the switch is set to 1, a bisection method is
-                           !< used; if to 2, the newton-raphson method is used.
+                           !< used; if to 2, the newton-raphson method is used.(Note: Recently
+                           !< problems have been discovered with the Newton-Raphson scheme,
+                           !< involving instabilities and occasional failure to converge,
+                           !<so currently users are advised not to select this option.) 
    
 INTEGER, INTENT(OUT) :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
                            !< plant area index, vegetation height, canopy albedo, snow albedo
@@ -307,8 +316,13 @@ integer, intent(out) :: jdsty   !< simulation year (iyear) to start writing the 
 integer, intent(out) :: jdendy  !< simulation year (iyear) to stop writing the daily output
 
 
-integer, intent(out) :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.  
-                                !< if it is set to 1, the new four-band routines are used.
+integer, intent(out) :: isnoalb !< This switch selects which option to use for the snow albedo.  If ISNOALB=0, snow
+                                !< albedos are calculated for the visible and near-infrared wavelength ranges.  If
+                                !< ISNOALB=1, a more complex approach is used which evaluates the snow albedos in the
+                                !< visible and in three near-infrared wavelength bands.  Note that if the latter option
+                                !< is chosen, the incoming solar radiation must be provided in these four wavelength
+                                !< bands, and the direct/diffuse solar partitioning and the prognostic black carbon
+                                !< content of the snow pack are also required.
 
 integer, intent(out) :: igralb  !< if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of 
                                 !< soil texture.  if it is set to 1, they are assigned values based on the ncar clm soil "colour"  dataset.

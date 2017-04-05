@@ -243,6 +243,8 @@ read (11,7010) titlec3
         read(11,*) (lfstatusrow(i,m,j),j=1,icc)
         read(11,*) (pandaysrow(i,m,j),j=1,icc)
 
+!> If this grid cell has peatlands in it then the ipeatland flag is set to 1 (bog), or 2 (fen) otherwise it is 0 (no peatland).
+!> the other variables then are the carbon in moss biomass, the moss litter mass, and depth of living moss.
         read(11,*) ipeatland(i,m),Cmossmas(i,m),litrmsmoss(i,m),dmoss(i,m) ! peatland variables
 
 72      continue

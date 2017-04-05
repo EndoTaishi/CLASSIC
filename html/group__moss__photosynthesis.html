@@ -84,14 +84,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Moss photosynthesis subroutine.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="memitem:ga84f8b27aaf29d0ca4b5c06e3972951a5"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__moss__photosynthesis.html#ga84f8b27aaf29d0ca4b5c06e3972951a5">peatlands_mod::mosspht</a> (ilg, ignd, iday, qswnv, thliq, co2conc, tsurfk, zsnow, pres, coszs, Cmossmas, dmoss, anmoss, rmlmoss, cevapmoss, ievapmoss, ipeatland, daylength, pdd)</td></tr>
-<tr class="separator:ga84f8b27aaf29d0ca4b5c06e3972951a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga74c6ae528153d57336622db389f4bdd3"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__moss__photosynthesis.html#ga74c6ae528153d57336622db389f4bdd3">peatlands_mod::mosspht</a> (il1, il2, iday, qswnv, thliq, co2conc, tsurfk, zsnow, pres, Cmossmas, dmoss, anmoss, rmlmoss, cevapmoss, ievapmoss, ipeatland, daylength, pdd)</td></tr>
+<tr class="separator:ga74c6ae528153d57336622db389f4bdd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Moss photosynthesis subroutine. </p>
 <p>Mosses are an important contributor to the primary production and the C sequestration in peatlands, owing to the low decomposability of the moss tissue. Sphagnum in peatlands grows at 20&ndash;1600 g biomass m <img class="formulaInl" alt="$^{-2} $" src="form_1902.png"/>/yr and accounts for about 50 % of the total peat volume (Turetsky, 2003). We have modified CTEM to include a moss C pool and moss litter pool along with the related C fluxes, i.e. photosynthesis, autotrophic respiration, heterotrophic respiration, and humification. The net photosynthesis of moss ( <img class="formulaInl" alt="$G_m)$" src="form_1903.png"/> is calculated from the gross photosynthesis ( <img class="formulaInl" alt="$G_{0,m})$" src="form_1904.png"/> and dark respiration ( <img class="formulaInl" alt="$R_{d,m}$" src="form_1905.png"/>):</p>
 <p><img class="formulaInl" alt="$ G_m=G_{0,m}-R_{d,m} $" src="form_1906.png"/>.</p>
-<p>The moss photosynthesis and dark respiration are calculated using the Farquhar~(1989) biochemical approach following the MWM (St-Hilaire et al., 2010) <a class="el" href="citelist.html#CITEREF_St-Hilaire2010-5e9">[52]</a> and CTEM (Melton and Arora, 2016) <a class="el" href="citelist.html#CITEREF_Melton2016-zx">[39]</a>, with modifications for integration with CLASS&ndash;CTEM and moss phenology. The leaf-level gross photosynthesis rate <img class="formulaInl" alt="$G_{0,m} $" src="form_1907.png"/> ( <img class="formulaInl" alt="$\mu $" src="form_1908.png"/> mol CO <img class="formulaInl" alt="$_2 $" src="form_1909.png"/> /m <img class="formulaInl" alt="$^2 $" src="form_1910.png"/>/s) is obtained as the minimum of the transportation limited photosynthesis rates ( <img class="formulaInl" alt="$J_s)$" src="form_1911.png"/> and the first root of the quadratic solution of the light-limited rate ( <img class="formulaInl" alt="$J_e)$" src="form_1912.png"/> and the Rubisco limited rate ( <img class="formulaInl" alt="$J_c)$" src="form_1913.png"/>. A logistic factor ( <img class="formulaInl" alt="$\varsigma$" src="form_1914.png"/>) is added with values 0 or 1 to introduce a seasonal control of moss photosynthesis. In the MWM, spring photosynthesis starts when the snow depth is below 0.05 m and the soil temperature at 5 cm depth goes above 0.5 C (Moore et al., 2006). Since in our case CLASS sets the minimum depth for melting, discontinuous snow to 0.10 m, this limits the spring photosynthesis to starting only once the snow is completely melted.</p>
+<p>The moss photosynthesis and dark respiration are calculated using the Farquhar~(1989) biochemical approach following the MWM (St-Hilaire et al., 2010) <a class="el" href="citelist.html#CITEREF_St-Hilaire2010-5e9">[55]</a> and CTEM (Melton and Arora, 2016) <a class="el" href="citelist.html#CITEREF_Melton2016-zx">[41]</a>, with modifications for integration with CLASS&ndash;CTEM and moss phenology. The leaf-level gross photosynthesis rate <img class="formulaInl" alt="$G_{0,m} $" src="form_1907.png"/> ( <img class="formulaInl" alt="$\mu $" src="form_1908.png"/> mol CO <img class="formulaInl" alt="$_2 $" src="form_1909.png"/> /m <img class="formulaInl" alt="$^2 $" src="form_1910.png"/>/s) is obtained as the minimum of the transportation limited photosynthesis rates ( <img class="formulaInl" alt="$J_s)$" src="form_1911.png"/> and the first root of the quadratic solution of the light-limited rate ( <img class="formulaInl" alt="$J_e)$" src="form_1912.png"/> and the Rubisco limited rate ( <img class="formulaInl" alt="$J_c)$" src="form_1913.png"/>. A logistic factor ( <img class="formulaInl" alt="$\varsigma$" src="form_1914.png"/>) is added with values 0 or 1 to introduce a seasonal control of moss photosynthesis. In the MWM, spring photosynthesis starts when the snow depth is below 0.05 m and the soil temperature at 5 cm depth goes above 0.5 C (Moore et al., 2006). Since in our case CLASS sets the minimum depth for melting, discontinuous snow to 0.10 m, this limits the spring photosynthesis to starting only once the snow is completely melted.</p>
 <p><img class="formulaInl" alt="$ G_{0,m} = \quad \varsigma \min \left(J_{s},\frac{(J_{c}+J_{e})\pm \sqrt{{(J_c +J_ e )}^2 - 4(J_c +J_e)} }{2}\right) $" src="form_1926.png"/></p>
 <p>The dark respiration in mosses ( <img class="formulaInl" alt="$R_{d,m})$" src="form_1916.png"/> is calculated as a function of the base dark respiration rate ( <img class="formulaInl" alt="$R_{d,m,0})$" src="form_1917.png"/>, which has a value of 1.1 ( <img class="formulaInl" alt="$\mu $" src="form_1908.png"/> mol CO <img class="formulaInl" alt="$_2 $" src="form_1909.png"/> /m <img class="formulaInl" alt="$^2 $" src="form_1910.png"/>/s) (Adkinson and Humphreys, 2011) scaled by the moss moisture ( <img class="formulaInl" alt="$f_{m,rd}$" src="form_1918.png"/>) and soil temperature functions ( <img class="formulaInl" alt="$f_{T,rd})$" src="form_1919.png"/>. The moss moisture function is based on the volumetric water content of the moss, <img class="formulaInl" alt="$\theta_m$" src="form_1920.png"/> (kg water /(kg dry mass)). The MWM models the relation between water content in mosses and dark respiration with optimal water content at 5.8 g water per g dry weight, following the approach in Frolking et al. (1996). We modified the relation for water content above the optimal water content, based on a recent discovery of a weak linear positive relation between the dark respiration rate and the water content above the optimal water content during the late summer and fall (Adkinson and Humphreys, 2011):</p>
 <p><img class="formulaInl" alt="$R_{d,m} = R_{d,m,0} f_{m,rd} f_{T,{rd}}$" src="form_1921.png"/></p>
@@ -101,9 +101,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p><img class="formulaInl" alt="$ f_{m,rd} = 0.01 \theta_{m} +0.942$" src="form_1943.png"/> for <img class="formulaInl" alt="$5.8<\theta _{m} $" src="form_1944.png"/></p>
 <p>Photosynthetic photon flux density (PPFD) is measured by the photosynthetically active radiation (PAR), which is defined as the solar radiation between 0.4 to 0.7 <img class="formulaInl" alt="$\mu $" src="form_1908.png"/> mol that can be used by plants via photosynthesis. In the coupled CLASS&ndash;CTEM system, the PAR received by the moss (PAR <img class="formulaInl" alt="$_m$" src="form_1927.png"/>, unit <img class="formulaInl" alt="$\mu $" src="form_1908.png"/>mol photons m <img class="formulaInl" alt="$^-2$" src="form_1928.png"/>/s is converted from the visible short-wave radiation reaching the ground ( <img class="formulaInl" alt="$K_{\ast g}$" src="form_1929.png"/>, unit W/m <img class="formulaInl" alt="$^2$" src="form_1930.png"/>) in CLASS by a factor of 4.6 <img class="formulaInl" alt="$\mu$" src="form_1931.png"/> mol /m <img class="formulaInl" alt="$^2$" src="form_1930.png"/>/s per W/m <img class="formulaInl" alt="$^2$" src="form_1930.png"/> (McCree, 1972). <img class="formulaInl" alt="$K_{\ast g}$" src="form_1929.png"/> is a function of the incoming short-wave radiation ( <img class="formulaInl" alt="$K\downarrow $" src="form_1945.png"/>, unit: W/m <img class="formulaInl" alt="$^2$" src="form_1930.png"/>), the surface albedo ( <img class="formulaInl" alt="$\alpha_g$" src="form_1602.png"/>), and the canopy transmissivity ( <img class="formulaInl" alt="$\tau _c$" src="form_1937.png"/>):</p>
 <p><img class="formulaInl" alt="$K_{\ast g} = K \downarrow \tau_{c}\left( 1-\alpha_{g}\right)$" src="form_1938.png"/></p>
-<p>The energy uptake by the moss layer is thus a function of the total incoming short-wave radiation, the aggregated LAI of the PFTs present, the snow depth, the fractional vegetation cover, and the soil water content (Verseghy, 2012). In peatland C models that do not consider vegetation dynamics, the transmissivity of the vegetation canopy is usually assumed to be constant (e.g. St-Hilaire et al., 2010) <a class="el" href="citelist.html#CITEREF_St-Hilaire2010-5e9">[52]</a>. Compared with such models, CLASS enables a more detailed representation of light incident on the moss surface since it includes partitioning of direct/diffuse and visible/near-IR radiation, PFT-specific transmissivities, and time-varying LAI and fractional PFT coverages (Verseghy, 2012) <a class="el" href="citelist.html#CITEREF_Verseghy2012-c0e">[55]</a>. </p>
+<p>The energy uptake by the moss layer is thus a function of the total incoming short-wave radiation, the aggregated LAI of the PFTs present, the snow depth, the fractional vegetation cover, and the soil water content (Verseghy, 2012). In peatland C models that do not consider vegetation dynamics, the transmissivity of the vegetation canopy is usually assumed to be constant (e.g. St-Hilaire et al., 2010) <a class="el" href="citelist.html#CITEREF_St-Hilaire2010-5e9">[55]</a>. Compared with such models, CLASS enables a more detailed representation of light incident on the moss surface since it includes partitioning of direct/diffuse and visible/near-IR radiation, PFT-specific transmissivities, and time-varying LAI and fractional PFT coverages (Verseghy, 2012) <a class="el" href="citelist.html#CITEREF_Verseghy2012-c0e">[58]</a>. </p>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="ga84f8b27aaf29d0ca4b5c06e3972951a5"></a>
+<a class="anchor" id="ga74c6ae528153d57336622db389f4bdd3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -111,13 +111,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="memname">subroutine, public peatlands_mod::mosspht </td>
           <td>(</td>
           <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>ilg</em>, </td>
+          <td class="paramname"><em>il1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>ignd</em>, </td>
+          <td class="paramname"><em>il2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -160,12 +160,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td></td>
           <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>pres</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(ilg)&#160;</td>
-          <td class="paramname"><em>coszs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -235,19 +229,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <tr><td class="paramdir">[in]</td><td class="paramname">cmossmas</td><td>unit kg moss C updated in ctem</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dmoss</td><td>unit m, depth of living moss. assume = 2 cm can be related to mmoss as a variable</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">ievapmoss</td><td>Value is 0 is no evaporation from moss, 1 otherwise</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">anmoss</td><td>net photosynthesis (umol/m2/s)</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">rmlmoss</td><td>moss autotrophic respiration (umol/m2/s)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">anmoss</td><td>net photosynthesis (umol CO2/m2/s)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rmlmoss</td><td>moss autotrophic respiration (umol CO2/m2/s)</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">cevapmoss</td><td>evaporation coefficent for moss surface </td></tr>
   </table>
   </dd>
 </dl>
+<p>phenology water factor on mosses ,grow when temperature &gt; -4.0 and snowpack &lt; 0.15 m </p>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 9 2016 13:20:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 4 2017 18:16:57 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

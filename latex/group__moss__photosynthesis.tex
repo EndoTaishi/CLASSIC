@@ -7,7 +7,7 @@ Moss photosynthesis subroutine.
 
 \begin{DoxyCompactItemize}
 \item 
-subroutine, public \hyperlink{group__moss__photosynthesis_ga84f8b27aaf29d0ca4b5c06e3972951a5}{peatlands\+\_\+mod\+::mosspht} (ilg, ignd, iday, qswnv, thliq, co2conc, tsurfk, zsnow, pres, coszs, Cmossmas, dmoss, anmoss, rmlmoss, cevapmoss, ievapmoss, ipeatland, daylength, pdd)
+subroutine, public \hyperlink{group__moss__photosynthesis_ga74c6ae528153d57336622db389f4bdd3}{peatlands\+\_\+mod\+::mosspht} (il1, il2, iday, qswnv, thliq, co2conc, tsurfk, zsnow, pres, Cmossmas, dmoss, anmoss, rmlmoss, cevapmoss, ievapmoss, ipeatland, daylength, pdd)
 \end{DoxyCompactItemize}
 
 
@@ -41,12 +41,12 @@ $K_{\ast g} = K \downarrow \tau_{c}\left( 1-\alpha_{g}\right)$
 The energy uptake by the moss layer is thus a function of the total incoming short-\/wave radiation, the aggregated L\+A\+I of the P\+F\+Ts present, the snow depth, the fractional vegetation cover, and the soil water content (Verseghy, 2012). In peatland C models that do not consider vegetation dynamics, the transmissivity of the vegetation canopy is usually assumed to be constant (e.\+g. St-\/\+Hilaire et al., 2010) \cite{St-Hilaire2010-5e9}. Compared with such models, C\+L\+A\+S\+S enables a more detailed representation of light incident on the moss surface since it includes partitioning of direct/diffuse and visible/near-\/\+I\+R radiation, P\+F\+T-\/specific transmissivities, and time-\/varying L\+A\+I and fractional P\+F\+T coverages (Verseghy, 2012) \cite{Verseghy2012-c0e}. 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{group__moss__photosynthesis_ga84f8b27aaf29d0ca4b5c06e3972951a5}{}\index{Moss\+\_\+photosynthesis@{Moss\+\_\+photosynthesis}!mosspht@{mosspht}}
+\hypertarget{group__moss__photosynthesis_ga74c6ae528153d57336622db389f4bdd3}{}\index{Moss\+\_\+photosynthesis@{Moss\+\_\+photosynthesis}!mosspht@{mosspht}}
 \index{mosspht@{mosspht}!Moss\+\_\+photosynthesis@{Moss\+\_\+photosynthesis}}
 \subsubsection[{mosspht}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public peatlands\+\_\+mod\+::mosspht (
 \begin{DoxyParamCaption}
-\item[{integer, intent(in)}]{ilg, }
-\item[{integer, intent(in)}]{ignd, }
+\item[{integer, intent(in)}]{il1, }
+\item[{integer, intent(in)}]{il2, }
 \item[{integer, intent(in)}]{iday, }
 \item[{real, dimension(ilg), intent(in)}]{qswnv, }
 \item[{real, dimension(ilg,ignd), intent(in)}]{thliq, }
@@ -54,7 +54,6 @@ The energy uptake by the moss layer is thus a function of the total incoming sho
 \item[{real, dimension(ilg), intent(in)}]{tsurfk, }
 \item[{real, dimension(ilg), intent(in)}]{zsnow, }
 \item[{real, dimension(ilg), intent(in)}]{pres, }
-\item[{real, dimension(ilg)}]{coszs, }
 \item[{real, dimension(ilg), intent(in)}]{Cmossmas, }
 \item[{real, dimension(ilg), intent(in)}]{dmoss, }
 \item[{real, dimension(ilg), intent(out)}]{anmoss, }
@@ -65,7 +64,7 @@ The energy uptake by the moss layer is thus a function of the total incoming sho
 \item[{real, dimension(ilg), intent(in)}]{daylength, }
 \item[{real, dimension(ilg), intent(inout)}]{pdd}
 \end{DoxyParamCaption}
-)}\label{group__moss__photosynthesis_ga84f8b27aaf29d0ca4b5c06e3972951a5}
+)}\label{group__moss__photosynthesis_ga74c6ae528153d57336622db389f4bdd3}
 
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt in}  & {\em qswnv} & visible short wave radiation = qswnv in T\+S\+O\+L\+V\+E and qswnvg in T\+S\+O\+L\+V\+C (W/m2)\\
@@ -78,10 +77,11 @@ The energy uptake by the moss layer is thus a function of the total incoming sho
 \hline
 \mbox{\tt out}  & {\em ievapmoss} & Value is 0 is no evaporation from moss, 1 otherwise\\
 \hline
-\mbox{\tt out}  & {\em anmoss} & net photosynthesis (umol/m2/s)\\
+\mbox{\tt out}  & {\em anmoss} & net photosynthesis (umol C\+O2/m2/s)\\
 \hline
-\mbox{\tt out}  & {\em rmlmoss} & moss autotrophic respiration (umol/m2/s)\\
+\mbox{\tt out}  & {\em rmlmoss} & moss autotrophic respiration (umol C\+O2/m2/s)\\
 \hline
 \mbox{\tt out}  & {\em cevapmoss} & evaporation coefficent for moss surface \\
 \hline
 \end{DoxyParams}
+phenology water factor on mosses ,grow when temperature $>$ -\/4.\+0 and snowpack $<$ 0.\+15 m 

@@ -1,0 +1,12 @@
+digraph "phtsyn3"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="phtsyn3",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="tsolvc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$TSOLVC_8f.html#a824dab26436ace6ad8f0f9e2f6908ce2"];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="classt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$CLASST_8f.html#afc821376816034a0c657e69bb4b06a24"];
+}

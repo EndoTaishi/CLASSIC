@@ -148,10 +148,11 @@ real, dimension(lat+1), parameter&#160;</td><td class="memItemRight" valign="bot
 <tr class="separator:ae540e0248a149a2d22fb9888a8cb113e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed4f6795fdebbed671839f1af3b98a9e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed4f6795fdebbed671839f1af3b98a9e"></a>
 integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::nlat</b> = 1</td></tr>
+<tr class="memdesc:aed4f6795fdebbed671839f1af3b98a9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of latitude grid cells in land surface scatter vectors. <br /></td></tr>
 <tr class="separator:aed4f6795fdebbed671839f1af3b98a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc702cf69e445c30a2cf60576fdd86f2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acc702cf69e445c30a2cf60576fdd86f2"></a>
-integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::nmos</b> = 10</td></tr>
-<tr class="memdesc:acc702cf69e445c30a2cf60576fdd86f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of mosaic tiles. <br /></td></tr>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::nmos</b> = 1</td></tr>
+<tr class="memdesc:acc702cf69e445c30a2cf60576fdd86f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of mosaic tiles per latitude grid cell in land surface scatter vectors. <br /></td></tr>
 <tr class="separator:acc702cf69e445c30a2cf60576fdd86f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95fae29beaeaf9da9c112dbb76ab02db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95fae29beaeaf9da9c112dbb76ab02db"></a>
 integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::ilg</b> = nlat*nmos</td></tr>
@@ -165,7 +166,7 @@ integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_pa
 <tr class="memdesc:af834d482b4eec80d530f6f6afc9fc5b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of CLASS pfts. <br /></td></tr>
 <tr class="separator:af834d482b4eec80d530f6f6afc9fc5b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa84174d70bc4dcedb2b6edeb859f1507"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa84174d70bc4dcedb2b6edeb859f1507"></a>
-integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::ignd</b> = 20</td></tr>
+integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::ignd</b> = 10</td></tr>
 <tr class="memdesc:aa84174d70bc4dcedb2b6edeb859f1507"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of soil layers. <br /></td></tr>
 <tr class="separator:aa84174d70bc4dcedb2b6edeb859f1507"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b61932a368c557cc3cb7edf6de23e22"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b61932a368c557cc3cb7edf6de23e22"></a>
@@ -203,6 +204,7 @@ integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_pa
 <tr class="separator:a850eefc04333d2fa8736f5d43754b79f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e8ba7b501ad6afcb7260b6b4711ae86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1e8ba7b501ad6afcb7260b6b4711ae86"></a>
 integer, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::nbs</b> = 4</td></tr>
+<tr class="memdesc:a1e8ba7b501ad6afcb7260b6b4711ae86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of modelled shortwave radiation wavelength bands for ISNOALB=1 (set to 4) <br /></td></tr>
 <tr class="separator:a1e8ba7b501ad6afcb7260b6b4711ae86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af53120baccb346b1743b085b6b254026"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af53120baccb346b1743b085b6b254026"></a>
 integer, dimension(kk), parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::modelpft</b> = [ 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0 ]</td></tr>
@@ -582,7 +584,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::minlvfr<
 <tr class="separator:afd2af8cee888fd84bf7e89a6a2b5c981"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acedcadb21474712e7f4a90bfb98ee661"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acedcadb21474712e7f4a90bfb98ee661"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::rmlmoss25</b> = 1.1</td></tr>
-<tr class="memdesc:acedcadb21474712e7f4a90bfb98ee661"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base dark respiration rate of moss umol/m2/s (best estimate is from fig. 6b in Williams and Flanagan (1998) seasonal variation not considered. <br /></td></tr>
+<tr class="memdesc:acedcadb21474712e7f4a90bfb98ee661"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base dark respiration rate of moss umol CO2/m2/s (best estimate is from fig. 6b in Williams and Flanagan (1998) seasonal variation not considered. <br /></td></tr>
 <tr class="separator:acedcadb21474712e7f4a90bfb98ee661"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26fe22d544842a462db3a764fb43effd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a26fe22d544842a462db3a764fb43effd"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::tau25m</b> =2321.0</td></tr>
@@ -674,7 +676,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::grksmoss
 <tr class="separator:ac6a30c2dccbba72bd498bed33c71aef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f0a4776ea1f469d534620de349cc638"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f0a4776ea1f469d534620de349cc638"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::hcpmoss</b> = 2.50E6</td></tr>
-<tr class="memdesc:a0f0a4776ea1f469d534620de349cc638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Heat capacity of moss ($J m^{-2} K^{-1}$), same as hcp of peat in Beringer et al. 2001 !FLAG check units, was written as m. JM Sep 26 2016. <br /></td></tr>
+<tr class="memdesc:a0f0a4776ea1f469d534620de349cc638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Volumetric heat capacity of moss ($J m^{-3} K^{-1}$), same as hcp of peat in Beringer et al. 2001 2016. <br /></td></tr>
 <tr class="separator:a0f0a4776ea1f469d534620de349cc638"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab81d40d45c446f0354132a51770591b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab81d40d45c446f0354132a51770591b5"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::grescoefmoss</b> = 0.15</td></tr>
@@ -825,7 +827,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::soilw_th
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 9 2016 13:20:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 4 2017 18:16:56 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

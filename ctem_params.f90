@@ -92,9 +92,9 @@ real, parameter, dimension(lat+1) :: edgelat = &
                                     78.13125,80.91925,83.7047,86.48015,90.0 ]
 ! ----
 ! Model state
-integer, parameter :: nlat = 1         !
+integer, parameter :: nlat = 1         !<Number of latitude grid cells in land surface scatter vectors
 !integer, parameter :: nmos = 10        !< Number of mosaic tiles
-integer, parameter :: nmos = 1         !< Number of mosaic tiles
+integer, parameter :: nmos = 1         !< Total number of mosaic tiles per latitude grid cell in land surface scatter vectors
 integer, parameter :: ilg  = nlat*nmos !
 integer, parameter :: nmon = 12        !< Number of months in a year
 ! ----
@@ -112,7 +112,7 @@ integer, parameter :: numcrops    = 2        !< number of crop pfts
 integer, parameter :: numtreepfts = 5        !< number of tree pfts
 integer, parameter :: numgrass    = 3        !< number of grass pfts
 integer, parameter :: numshrubs   = 2        !< number of shrubs pfts
-integer, parameter :: nbs         = 4        !
+integer, parameter :: nbs         = 4        !<Number of modelled shortwave radiation wavelength bands for ISNOALB=1 (set to 4)
 
 ! Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
 integer, parameter, dimension(kk) :: modelpft= [ 1,     1,     0,     0,        0, &  ! CLASS PFT 1 NDL

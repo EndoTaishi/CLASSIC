@@ -1,0 +1,12 @@
+digraph "cwcalc"
+{
+ // INTERACTIVE_SVG=YES
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="cwcalc",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="classt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$CLASST_8f.html#afc821376816034a0c657e69bb4b06a24"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="classw",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$CLASSW_8f.html#aac1827011ed2ca61bd0274e83d1f80ad"];
+}

@@ -315,6 +315,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>The following three variables are needed to run CTEM. 1) min &amp; 2) max leaf area index are needed to break class lai into dcd and evg for trees (for crops and grasses it doesn't matter much). 3) dvdfcanrow is needed to divide needle &amp; broad leaf into dcd and evg, and crops &amp; grasses into c3 and c4 fractions.</p>
 <p>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.</p>
 <p>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.</p>
+<p>If this grid cell has peatlands in it then the ipeatland flag is set to 1 (bog), or 2 (fen) otherwise it is 0 (no peatland). the other variables then are the carbon in moss biomass, the moss litter mass, and depth of living moss.</p>
 <p>Take the first tile value now and put it over the other tiles</p>
 <p>Check that a competition or luc run has the correct number of mosaics. if it is not a start_bare run, then nmtest should equal nmos</p>
 <p>if this run uses the competition or lnduseon parameterization and starts from bare ground, set up the model state here. this overwrites what was read in from the .ini and .ctm files. for composite runs (the composite set up is after this one for mosaics)</p>
@@ -338,7 +339,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 9 2016 13:20:39 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 4 2017 18:16:57 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>
