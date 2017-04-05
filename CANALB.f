@@ -123,8 +123,6 @@ C
                             !!calculated value [ ]
       REAL AIL   (ILG,IC)   !<Leaf area index of vegetation category over 
                             !!bare ground \f$[ ] (\Lambda)\f$
-      REAL FROOT (ILG,IG)   !<Fraction of water-accessing vegetation 
-                            !!roots in soil layer [ ]
 C
 C     * 1-D INPUT ARRAYS.
 C
@@ -244,11 +242,9 @@ C----------------------------------------------------------------------
       !!closure. The presence of snow on the canopy will increase the 
       !!albedo; this increase will be larger in the visible range of the 
       !!spectrum, since the visible albedo of vegetation is typically 
-      !!very small. Making use of data presented by Leonard and Eschner 
-      !!(1968), the visible albedo of snow-covered vegetation is set to 
-      !!0.17. The near-infrared albedo, being larger in magnitude, will 
-      !!be affected to a lesser degree, and is therefore set to the 
-      !!background near-infrared albedo plus 0.04.
+      !!very small. Making use of data presented in Bartlett et al. (2015),
+      !! the visible albedo of snow-covered vegetation is set to
+      !!0.27 and near-infrared albedo to 0.38.
       !!
       !!If the canopy closure is incomplete, a fraction chi of the ground 
       !!or snow under the canopy will be visible through gaps in it. This 
@@ -277,7 +273,8 @@ C
       EXPMAX2=0.5680
       EXPMAX3=0.2132
       !!
-      !>At the beginning of the subroutine, a series of work arrays is 
+      !>At the beginning of the subroutine, values are assigned to
+      !! exponentiation terms and a series of work arrays is
       !!initialized to zero. Then the transmissivity and albedo of each 
       !!vegetation category are calculated in turn, first over bare soil 
       !!and then over a snow pack. After each of the latter sets of 
@@ -789,11 +786,7 @@ C-----------------------------------------------------------------------
       !!category in turn, \f$f(\Delta e)\f$, \f$f(\Psi_s)\f$ and \f$r_{c,i}\f$ are determined. \f$r_{c,i}\f$ 
       !!is assigned upper and lower limits of 5000 and 10 \f$s m^{-1}\f$ 
       !!respectively, and the accumulated stomatal resistance for the 
-      !!canopy is incremented by \f$X_i / r_{c,i}\f$. In loop 950, FRMAX, the 
-      !!maximum value of FROOT, the fraction of transpiration apportioned 
-      !!to each soil layer, is determined. If FRMAX is vanishingly small, 
-      !!transpiration is suppressed by setting the stomatal resistances 
-      !!over the vegetated subareas to a large number. If the incoming 
+      !!canopy is incremented by \f$X_i / r_{c,i}\f$. In loop 950, if the incoming
       !!visible radiation is small, the stomatal resistances are likewise 
       !!set to a large number. Otherwise, the stomatal resistance of 
       !!vegetation over snow is set to a large number, and the 
