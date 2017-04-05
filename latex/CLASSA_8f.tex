@@ -201,6 +201,8 @@ Purpose\+: Organize calculation of radiation-\/related and other surface paramet
 )}\label{CLASSA_8f_a4ba5845339f63dd223722f0e0593c72e}
 
 \begin{DoxyParams}{Parameters}
+{\em isnoalb} & Switch to model snow albedo in two or more wavelength bands\\
+\hline
 {\em fc} & Subarea fractional coverage of modelled area \mbox{[} \mbox{]}\\
 \hline
 {\em fg} & Subarea fractional coverage of modelled area \mbox{[} \mbox{]}\\
@@ -311,7 +313,7 @@ Purpose\+: Organize calculation of radiation-\/related and other surface paramet
 \hline
 {\em rbcoef} & Parameter for calculation of leaf boundary resistance\\
 \hline
-{\em trsnowc} & Short-\/wave transmissivity of snow pack \mbox{[} \mbox{]}\\
+{\em trsnowc} & Short-\/wave transmissivity of snow pack under vegetation \mbox{[} \mbox{]}\\
 \hline
 {\em zsnow} & Depth of snow pack $[m] (z_s)$\\
 \hline
@@ -335,11 +337,17 @@ Purpose\+: Organize calculation of radiation-\/related and other surface paramet
 \hline
 {\em fsnow} & Diagnosed fractional snow coverage \mbox{[} \mbox{]}\\
 \hline
-{\em froot} & Fraction of total transpiration contributed by soil layer \mbox{[} \mbox{]}\\
+{\em froot} & Fraction of total transpiration contributed by soil layer over snow-\/free subarea \mbox{[} \mbox{]}\\
 \hline
-{\em froots} & Fraction of total transpiration contributed by snow-\/covered soil layer \mbox{[} \mbox{]}\\
+{\em froots} & Fraction of total transpiration contributed by snow-\/covered subarea \mbox{[} \mbox{]}\\
 \hline
 {\em htc} & Diagnosed internal energy change of soil layer due to conduction and/or change in mass $[W m^{-2}]$\\
+\hline
+{\em trsnowg} & Short-\/wave transmissivity of snow pack in bare areas \mbox{[} \mbox{]}\\
+\hline
+{\em altg} & Total albedo in each modelled wavelength band \mbox{[} \mbox{]}\\
+\hline
+{\em alsno} & Albedo of snow in each modelled wavelength band \mbox{[} \mbox{]}\\
 \hline
 {\em fcanmx} & Maximum fractional coverage of modelled area by vegetation category \mbox{[} \mbox{]}\\
 \hline
@@ -443,6 +451,14 @@ Purpose\+: Organize calculation of radiation-\/related and other surface paramet
 \hline
 {\em radj} & Latitude of grid cell (positive north of equator) \mbox{[}rad\mbox{]}\\
 \hline
+{\em refsno} & Snow grain size (for I\+S\+N\+O\+A\+L\+B=1 option) \mbox{[}m\mbox{]}\\
+\hline
+{\em bcsno} & Black carbon mixing ratio (for I\+S\+N\+O\+A\+L\+B=1 option) $[kg m^{-3}]$\\
+\hline
+{\em fsdb} & Direct solar radiation in each modelled wavelength band $[W m^{-2}]$\\
+\hline
+{\em fsfb} & Diffuse solar radiation in each modelled wavelength band $[W m^{-2}]$\\
+\hline
 {\em delzw} & Permeable thickness of soil layer \mbox{[}m\mbox{]}\\
 \hline
 {\em zbotw} & Depth to permeable bottom of soil layer \mbox{[}m\mbox{]}\\
@@ -470,7 +486,7 @@ In the first loop, the depth of snow $z_s$ is calculated from the snow mass $W_s
 
 If the calculated value of $z_s$ is less than the limiting snow depth $z_{s,lim}$, the snow cover is deemed to be discontinuous. The fractional snow coverage $X_s$ of the modelled area is evaluated as $ X_s = z_s / z_{s,lim} $ and the snow depth is reset to $z_{s,lim}$. The water content of the snow pack is corrected according to the new snow fractional area.
 
-The subarea albedo and transmissivity arrays (for canopy, bare ground, canopy over snow and snow over bare ground) are next initialized to zero, and the four C\+L\+A\+S\+S\+A subsidiary subroutines are called in turn\+: A\+P\+R\+E\+P to evaluate various model parameters for the four subareas, S\+N\+O\+A\+L\+B\+A to calculate the snow albedo and transmissivity, G\+R\+A\+L\+B to calculate the ground surface albedo, and C\+A\+N\+A\+L\+B to calculate the canopy albedo, transmissivity and stomatal resistance. Finally, the overall visible and near-\/ infrared albedos for the modelled area are determined as weighted averages over the four subareas.
+The subarea albedo and transmissivity arrays (for canopy, bare ground, canopy over snow and snow over bare ground) are next initialized to zero, and the four C\+L\+A\+S\+S\+A subsidiary subroutines are called in turn\+: A\+P\+R\+E\+P to evaluate various model parameters for the four subareas, G\+R\+A\+L\+B to calculate the ground surface albedo, S\+N\+O\+A\+L\+B\+A to calculate the snow albedo and transmissivity, and C\+A\+N\+A\+L\+B to calculate the canopy albedo, transmissivity and stomatal resistance. Finally, the overall visible, near-\/infrared and total albedos for the modelled area are determined as weighted averages over the four subareas.
 
 Here is the call graph for this function\+:\nopagebreak
 \begin{figure}[H]
