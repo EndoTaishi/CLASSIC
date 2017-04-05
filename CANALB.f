@@ -123,8 +123,6 @@ C
                             !!calculated value [ ]
       REAL AIL   (ILG,IC)   !<Leaf area index of vegetation category over 
                             !!bare ground \f$[ ] (\Lambda)\f$
-      REAL FROOT (ILG,IG)   !<Fraction of water-accessing vegetation 
-                            !!roots in soil layer [ ]
 C
 C     * 1-D INPUT ARRAYS.
 C
@@ -275,7 +273,8 @@ C
       EXPMAX2=0.5680
       EXPMAX3=0.2132
       !!
-      !>At the beginning of the subroutine, values are assigned to exponentiation terms and a series of work arrays is
+      !>At the beginning of the subroutine, values are assigned to
+      !! exponentiation terms and a series of work arrays is
       !!initialized to zero. Then the transmissivity and albedo of each 
       !!vegetation category are calculated in turn, first over bare soil 
       !!and then over a snow pack. After each of the latter sets of 

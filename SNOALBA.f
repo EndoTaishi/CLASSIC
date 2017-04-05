@@ -46,7 +46,10 @@ C
 C    
 C     * INTEGER CONSTANTS.
 C
-      INTEGER ILG,IG,IL1,IL2,JL,IALS,IPTBAD,I,IB,NBS,ISNOALB            
+      INTEGER ILG,IG,IL1,IL2,JL,IALS,IPTBAD,I,IB
+
+      INTEGER NBS       !<Number of modelled shortwave radiation wavelength bands
+      INTEGER ISNOALB   !< Switch to model snow albedo in two or more wavelength bands
 C
 C     * OUTPUT ARRAYS.
 C
@@ -58,19 +61,19 @@ C
                         !<vegetation canopy [ ]
       REAL ALIRSC(ILG)  !<Near-IR albedo of snow on ground under 
                         !<vegetation canopy [ ]
-      REAL TRSNOWC(ILG) !<Transmissivity of snow to shortwave radiation 
-                        !<\f$[ ] (\tau_s)\f$
-      REAL ALSNO (ILG,NBS) !<
-      REAL TRSNOWG(ILG,NBS)!<
-      REAL ALVSG  (ILG)    !<
-      REAL ALIRG  (ILG)    !<
+      REAL TRSNOWC(ILG) !<Transmissivity of snow under vegetation to shortwave radiation
+                        !<\f$[ ] (\tau_{s,c})\f$
+      REAL ALSNO (ILG,NBS) !<Albedo of snow in each modelled wavelength band  [  ]
+      REAL TRSNOWG(ILG,NBS)!<Transmissivity of snow in bare areas to shortwave radiation \f$[ ] (\tau_{s,g})\f$
+      REAL ALVSG  (ILG)    !<Near-IR albedo f bare ground  [  ]
+      REAL ALIRG  (ILG)    !<Visible albedo of bare ground  [  ]
       
 
 C
 C     * INPUT ARRAYS.
 C
-      REAL FSDB(ILG,NBS)!
-      REAL FSFB(ILG,NBS)!
+      REAL FSDB(ILG,NBS)!<Direct solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
+      REAL FSFB(ILG,NBS)!<Diffuse solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
       REAL ALBSNO(ILG)  !<All-wave albedo of snow pack \f$[ ] (\alpha_{s,T})\f$  
       REAL ZSNOW (ILG)  !<Depth of snow \f$[m] (z_s)\f$
       REAL FSNOW (ILG)  !<Fractional coverage of snow on grid cell [ ]
@@ -78,11 +81,11 @@ C
                         !<optional [ ]
       REAL ASIDAT(ILG)  !<Assigned value of near-IR albedo of snow pack – 
                         !<optional [ ]
-      REAL REFSN (ILG)  !
-      REAL BCSN  (ILG)  !
-      REAL CSZ   (ILG)  !
-      REAL SNO   (ILG)  !
-      REAL RHOSNO(ILG)  !
+      REAL REFSN (ILG)  !<Snow grain size  [m]
+      REAL BCSN  (ILG)  !<Black carbon mixing ratio \f$[kg m^{-3}]\f$
+      REAL CSZ   (ILG)  !<Cosine of solar zenith angle  [  ]
+      REAL SNO   (ILG)  !<Mass of snow pack \f$[kg m^{-2}]\f$
+      REAL RHOSNO(ILG)  !<Density of snow pack  \f$[kg m^{-3}]\f$
 
 C
 C     * LOCAL ARRAYS                                                    
@@ -128,8 +131,8 @@ C------------------------------------------------------------------
       !!
       !!or, simplifying:
       !!
-      !!\f$\alpha_{s,VIS} = 0.79[\alpha_{s,T} - 0.70] + 0.84\f$
-      !!\f$\alpha_{s,NIR} = 1.21[\alpha_{s,T} - 0.70] + 0.56\f$
+      !!\f$\alpha_{s,VIS} = 0.7857 \alpha_{s,T} + 0.2900\f$
+      !!\f$\alpha_{s,NIR} = 1.2142 \alpha_{s,T} - 0.2900\f$
       !!
       !!For melting snow:
       !!
@@ -138,8 +141,8 @@ C------------------------------------------------------------------
       !!
       !!or, simplifying:
       !!
-      !!\f$\alpha_{s,VIS} = 0.97[\alpha_{s,T} - 0.50] + 0.62\f$
-      !!\f$\alpha_{s,NIR} = 1.03[\alpha_{s,T} - 0.50] + 0.38\f$
+      !!\f$\alpha_{s,VIS} = 0.9706 \alpha_{s,T} + 0.1347\f$
+      !!\f$\alpha_{s,NIR} = 1.0294 \alpha_{s,T} - 0.1347\f$
       !!
       !!The above calculations are performed if the flag IALS is set to 
       !!zero. If IALS is set to one, indicating that assigned snow 
@@ -150,13 +153,23 @@ C------------------------------------------------------------------
       !!expected to change if a canopy litterfall parametrization is 
       !!developed).
       !!
-      !!The transmissivity of snow \f$\tau_s\f$ is calculated from the snow depth 
+      !!The transmissivity of snow under vegetation \f$\tau_{s,c}\f$ is
+      !! then calculated from the snow depth
       !!ZSNOW using Beer’s law, with an empirical extinction coefficient 
       !!of \f$25.0 m^{-1}\f$ derived from the literature (Grenfell and Maykut, 
       !!1977; Thomas, 1963):
       !!
-      !!\f$\tau_s = exp[-25.0 z_s]\f$
+      !!\f$\tau_{s,c} = exp[-25.0 z_s]\f$
       !!
+      !!If the ISNOALB switch is set to zero, the value of ALSNO in the first
+      !!wavelength band is set to the previously calculated value of \f$\alpha_{s,VIS}\f$
+      !!and the values for the remaining bands are set to the previously calculated value
+      !! of \f$\alpha_{s,NIR}\f$; the value of \f$\tau_{s,g}\f$  is set to \f$\tau_{s,c}\f$.
+      !!If the ISNOALB switch is set to 1, a new parameterization for the snow albedo and
+      !!transmissivity in four shortwave radiation bands (one visible and three near-IR)
+      !!is used, according to Cole et al. (2017).  This parameterization incorporates
+      !!the effects of snow grain size and black carbon content, and makes use of lookup
+      !!tables contained in the CCCma subroutines SNOW_ALBVAL and SNOW_TRANVAL.
       IPTBAD=0
       DO 100 I=IL1,IL2                                           
          IF(ALBSNO(I).LT.0.50.AND.ALBSNO(I).GT.0.499) ALBSNO(I)=0.50                      

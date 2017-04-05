@@ -128,7 +128,9 @@ C
 C     * INTEGER CONSTANTS.
 C
       INTEGER IDAY,ILG,IL1,IL2,JL,IC,ICP1,IG,IDISP,IZREF,IWF,
-     1        IPAI,IHGT,IALC,IALS,IALG,I,J,N, NBS, ISNOALB
+     1        IPAI,IHGT,IALC,IALS,IALG,I,J,N, NBS
+
+      INTEGER ISNOALB !<Switch to model snow albedo in two or more wavelength bands
 C
 C     * OUTPUT ARRAYS.
 C
@@ -205,7 +207,7 @@ C
                         !!snow under canopy [m]
       REAL ZPLMGS(ILG)  !<Maximum water ponding depth for ground under snow [m]
       REAL RBCOEF(ILG)  !<Parameter for calculation of leaf boundary resistance
-      REAL TRSNOWC(ILG) !<Short-wave transmissivity of snow pack [ ] 
+      REAL TRSNOWC(ILG) !<Short-wave transmissivity of snow pack under vegetation  [  ]
       REAL ZSNOW (ILG)  !<Depth of snow pack \f$[m] (z_s)\f$ 
       REAL WSNOW (ILG)  !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
       REAL ALVS  (ILG)  !<Diagnosed total visible albedo of land surface [ ]
@@ -223,15 +225,15 @@ C
       REAL CMAI  (ILG)  !<Aggregated mass of vegetation canopy \f$[kg m^{-2}]\f$
       REAL FSNOW (ILG)  !<Diagnosed fractional snow coverage [ ]
 C
-      REAL FROOT (ILG,IG)   !<Fraction of total transpiration contributed by soil layer [ ] 
+      REAL FROOT (ILG,IG)   !<Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
       REAL FROOTS(ILG,IG)   !<Fraction of total transpiration contributed 
-                            !!by snow-covered soil layer [ ] 
+                            !!by snow-covered subarea [ ]
       REAL HTC   (ILG,IG)   !<Diagnosed internal energy change of soil 
                             !!layer due to conduction and/or change in mass \f$[W m^{-2}]\f$
 
-      REAL TRSNOWG(ILG,NBS) !!
-      REAL ALTG(ILG,NBS)    !!
-      REAL ALSNO(ILG,NBS)   !!
+      REAL TRSNOWG(ILG,NBS) !<Short-wave transmissivity of snow pack in bare areas  [  ]
+      REAL ALTG(ILG,NBS)    !<Total albedo in each modelled wavelength band  [  ]
+      REAL ALSNO(ILG,NBS)   !<Albedo of snow in each modelled wavelength band  [  ]
 C
 C     * INPUT ARRAYS DEPENDENT ON LONGITUDE.
 C  
@@ -323,10 +325,10 @@ C
       REAL ZPLMS0(ILG)  !<Maximum water ponding depth for snow-covered 
                         !!subareas (user-specified when running MESH code) [m]
       REAL RADJ  (ILG)  !<Latitude of grid cell (positive north of equator) [rad]
-      REAL REFSNO(ILG)  !! 
-      REAL BCSNO(ILG)   !! 
-      REAL FSDB(ILG,NBS) !!
-      REAL FSFB(ILG,NBS) !!
+      REAL REFSNO(ILG)  !<Snow grain size (for ISNOALB=1 option)  [m]
+      REAL BCSNO(ILG)   !<Black carbon mixing ratio (for ISNOALB=1 option)  \f$[kg m^{-3}]\f$
+      REAL FSDB(ILG,NBS) !<Direct solar radiation in each modelled wavelength band  \f$[W m^{-2}]\f$
+      REAL FSFB(ILG,NBS) !<Diffuse solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
 C
 C    * SOIL PROPERTY ARRAYS.
 C
@@ -468,12 +470,11 @@ C------------------------------------------------------------------
       !!ground, canopy over snow and snow over bare ground) are next 
       !!initialized to zero, and the four CLASSA subsidiary subroutines 
       !!are called in turn: APREP to evaluate various model parameters 
-      !!for the four subareas, SNOALBA to calculate the snow albedo and 
-      !!transmissivity, GRALB to calculate the ground surface albedo, and 
-      !!CANALB to calculate the canopy albedo, transmissivity and 
-      !!stomatal resistance. Finally, the overall visible and near-
-      !!infrared albedos for the modelled area are determined as weighted 
-      !!averages over the four subareas.
+      !!for the four subareas, GRALB to calculate the ground surface albedo,
+      !!SNOALBA to calculate the snow albedo and transmissivity, and CANALB
+      !!to calculate the canopy albedo, transmissivity and stomatal resistance.
+      !!Finally, the overall visible, near-infrared and total albedos for the
+      !!modelled area are determined as weighted averages over the four subareas.
       !!
 C     * CALCULATION OF SNOW DEPTH ZSNOW AND FRACTIONAL SNOW COVER
 C     * FSNOW; INITIALIZATION OF COMPUTATIONAL ARRAYS. 
