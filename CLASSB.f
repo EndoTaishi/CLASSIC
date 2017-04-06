@@ -78,8 +78,8 @@ C     *                         THERMAL PROPERTIES BASED ON
 C     *                         SAND, CLAY AND ORGANIC MATTER
 C     *                         CONTENT.
 C
-      use ctem_params, only : thpms,thrms,thmms,bms,psisms,grksms,
-     1                       hcpms
+      use ctem_params, only : thpmoss,thrmoss,thmmoss,bmoss,psismoss,
+     1                       grksmoss,hcpmoss
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -357,13 +357,13 @@ C
               ! This overwrites the previous assignments.
              if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
                   if (j .eq. 1) then ! First layer is moss
-                      thpor(i,m,j)  = thpms
-                      thlret(i,m,j) = thrms
-                      thlmin(i,m,j) = thmms
-                      bi(i,m,j)     = bms
-                      psisat(i,m,j) = psisms
-                      grksat(i,m,j) = grksms
-                      hcps(i,m,j) = hcpms
+                      thpor(i,m,j)  = thpmoss
+                      thlret(i,m,j) = thrmoss
+                      thlmin(i,m,j) = thmmoss
+                      bi(i,m,j)     = bmoss
+                      psisat(i,m,j) = psismoss
+                      grksat(i,m,j) = grksmoss
+                      hcps(i,m,j) = hcpmoss
                       tcs(i,m,j) = tcom
                   end if
              end if
@@ -385,7 +385,7 @@ C
               HCPS(I,M,J)=(HCPSND*THSAND+HCPFIN*THFINE+
      1            HCPOM*THORG)/(1.0-THPOR(I,M,J))
               TCS(I,M,J)=(TCSAND*THSAND+TCOM*THORG+
-     1            TCFINE*THFINE)/(1.0-THPOR(I,M,J))
+     1            TCCLAY*THFINE)/(1.0-THPOR(I,M,J))
               IF(J.NE.IGDR(I,M))                       THEN
                   THFC(I,M,J)=THPOR(I,M,J)*(1.157E-9/GRKSAT(I,M,J))**
      1                (1.0/(2.0*BI(I,M,J)+3.0))
@@ -406,14 +406,15 @@ C
               ! This overwrites the previous assignments.
              if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
                   if (j .eq. 1) then ! First layer is moss
-                      thpor(i,m,j)  = thpms
-                      thlret(i,m,j) = thrms
-                      thlmin(i,m,j) = thmms
-                      bi(i,m,j)     = bms
-                      psisat(i,m,j) = psisms
-                      grksat(i,m,j) = grksms
-                      hcps(i,m,j) = hcpms
+                      thpor(i,m,j)  = thpmoss
+                      thlret(i,m,j) = thrmoss
+                      thlmin(i,m,j) = thmmoss
+                      bi(i,m,j)     = bmoss
+                      psisat(i,m,j) = psismoss
+                      grksat(i,m,j) = grksmoss
+                      hcps(i,m,j) = hcpmoss
                       tcs(i,m,j) = tcom
+
                   end if
              end if
 
