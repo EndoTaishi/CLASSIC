@@ -242,7 +242,7 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 \item[{real, dimension(ilg,ictem)}]{R\+M\+L\+C\+S\+V\+E\+G, }
 \item[{real, dimension(ilg,ictem)}]{R\+M\+L\+C\+G\+V\+E\+G, }
 \item[{real, dimension(ilg)}]{T\+C\+S\+N\+O\+W, }
-\item[{real, dimension(ilg)}]{G\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{G\+S\+N\+O\+W, }
 \item[{integer}]{I\+T\+C, }
 \item[{integer}]{I\+T\+C\+G, }
 \item[{integer}]{I\+T\+G, }
@@ -290,6 +290,8 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 {\em nlandg} & Number of modelled areas that contain subareas of canopy over bare ground / bare ground / canopy over snow /snow\\
 \hline
 {\em nlandi} & Number of modelled areas that are ice sheets \mbox{[} \mbox{]}\\
+\hline
+{\em isnoalb} & Switch to model snow albedo in two or more wavelength bands\\
 \hline
 {\em itc} & Flag to select iteration scheme for canopy temperature\\
 \hline
@@ -361,6 +363,10 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 \hline
 {\em gt} & Diagnosed effective surface black-\/body temperature $[K] (T_{0,eff} )$\\
 \hline
+{\em gtbs} & Surface temperature for C\+C\+Cma black carbon scheme \mbox{[}K\mbox{]}\\
+\hline
+{\em gsnow} & Heat conduction into surface of snow pack $[W m^{-2} ]$\\
+\hline
 {\em gzeroc} & Subarea heat flux at soil surface $[W m^{-2} ]$\\
 \hline
 {\em gzerog} & Subarea heat flux at soil surface $[W m^{-2} ]$\\
@@ -431,6 +437,10 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 \hline
 {\em rhosgs} & Density of snow in bare areas $[kg m^{-3} ]$\\
 \hline
+{\em sfcubs} & Zonal surface wind velocity for C\+C\+Cma black carbon scheme $[m s^{-1} ]$\\
+\hline
+{\em sfcvbs} & Meridional surface wind velocity for C\+C\+Cma black carbon scheme $[m s^{-1} ]$\\
+\hline
 {\em snocan} & Intercepted frozen water stored on canopy over ground $[kg m^{-2} ]$\\
 \hline
 {\em snocns} & Intercepted frozen water stored on canopy over snow $[kg m^{-2} ]$\\
@@ -467,6 +477,8 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 \hline
 {\em tctopg} & Thermal conductivity of soil at top of layer $[W m^{-1} K^{-1} ]$\\
 \hline
+{\em tcsnow} & Thermal conductivity of snow $[W m^{-1} K^{-1} ]$\\
+\hline
 {\em tflux} & Product of surface drag coefficient, wind speed and surface-\/air temperature difference $[K m s^{-1} ]$\\
 \hline
 {\em thicec} & Frozen water content of soil layers under vegetation $[m^3 m^{-3} ]$\\
@@ -492,6 +504,8 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 {\em tsnogs} & Temperature of snow pack in bare areas \mbox{[}K\mbox{]}\\
 \hline
 {\em ue} & Friction velocity of air $[m s^{-1} ]$\\
+\hline
+{\em ustarbs} & Friction velocity for C\+C\+Cma black carbon scheme $[m s^{-1} ]$\\
 \hline
 {\em wsnocs} & Liquid water content of snow pack under vegetation $[kg m^{-2} ]$\\
 \hline
@@ -548,6 +562,8 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 {\em pressg} & Surface atmospheric pressure \mbox{[}Pa\mbox{]}\\
 \hline
 {\em vmod} & Wind speed at reference height $[m s^{-1} ]$\\
+\hline
+{\em alsno} & Albedo of snow in each modelled wavelength band \mbox{[} \mbox{]}\\
 \hline
 {\em alvscn} & Visible/near-\/\+I\+R albedo of vegetation over bare ground \mbox{[} \mbox{]}\\
 \hline
@@ -629,6 +645,10 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 \hline
 {\em zsnow} & Depth of snow pack \mbox{[}m\mbox{]}\\
 \hline
+{\em trsnowc} & Transmissivity of snow under vegetation to shortwave radiation \mbox{[} \mbox{]}\\
+\hline
+{\em trsnowg} & Transmissivity of snow in bare areas to shortwave radiation \mbox{[} \mbox{]}\\
+\hline
 {\em rhosno} & Density of snow $[kg m^{-3} ]$\\
 \hline
 {\em wsnow} & Liquid water content of snow pack $[kg m^{-2} ]$\\
@@ -636,6 +656,8 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 {\em radj} & Latitude of grid cell (positive north of equator) \mbox{[}rad\mbox{]} $(\varphi)$\\
 \hline
 {\em pcpr} & Surface precipitation rate $[kg m^{-2} s^{-1} ]$\\
+\hline
+{\em fssb} & Total solar radiation in each modelled wavelength band $[W m^{-2} ]$\\
 \hline
 {\em tbar} & Temperature of soil layers \mbox{[}K\mbox{]}\\
 \hline
@@ -662,6 +684,10 @@ Purpose\+: Call subroutines to perform surface energy budget calculations.
 {\em delzw} & Permeable thickness of soil layer \mbox{[}m\mbox{]}\\
 \hline
 {\em zbotw} & Depth to permeable bottom of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em froot} & Fraction of total transpiration contributed by soil layer over snow-\/free subarea \mbox{[} \mbox{]}\\
+\hline
+{\em froots} & Fraction of total transpiration contributed by soil layer over snow-\/covered subarea \mbox{[} \mbox{]}\\
 \hline
 {\em isand} & Sand content flag\\
 \hline
@@ -734,9 +760,9 @@ At this point calls are made to a series of subroutines addressing the calculati
 
 \[ \begin{tabular} { | l | l | c | c | c | c | } \hline & & CS & GS & C & G \\ \hline CWCALC & Freezing/thawing of liquid/frozen water on canopy & YES & & YES & \\ \hline TNPREP & Set coefficients for temperature calculations in soil & YES & YES & YES & YES \\ \hline TSPREP & Set coefficients for temperature calculations of snow & YES & YES & & \\ \hline TSOLVC & Calculate components of canopy energy balance & YES & & YES & \\ \hline TSOLVE & Calculate components of ground or snow energy balance & & YES & & YES \\ \hline TSPOST & Heat conduction in snow pack & YES & YES & & \\ \hline TNPOST & Heat conduction in soil & YES & YES & YES & YES \\ \hline \end{tabular} \]
 
-After these calls, various diagnostic calculations are performed. First the screen-\/level temperature and humidity, and the anemometer-\/level zonal and meridional wind speeds, are calculated. Three options are provided for doing this, indicated by the flag I\+S\+L\+F\+D. If I\+S\+L\+F\+D = 0, the simple approach used in the Canadian G\+C\+M is selected. The ratio of the square root of the surface drag coefficient for momentum, $C_{DM}$ , to that of the neutral drag coefficient $C_{DN}$ , is calculated for the screen height $z_s$ (R\+A\+T\+F\+C1) and the anemometer height (R\+A\+T\+F\+C\+A1), to give a measure of the degree of atmospheric instability. If the bulk Richardson number R\+I\+B is positive (indicating stable conditions), R\+A\+T\+F\+C1 is adopted for the screen-\/level calculations; if R\+I\+B is negative (indicating unstable conditions), the ratio used is the minimum of the ratio of the drag coefficient for heat $C_{DH}$ to $C_{DN}$ , and $(z_s / z_{ref} )^{1/3}$ , a measure of the depth of the convection. These ratios are applied to the calculation of the screen and anemometer level variables. If the ratios are large, indicating strong coupling with the atmosphere, the screen level variables tend to the values at the reference height; if the ratio is small, they tend to the values at the surface. At the end of the loop, the C\+C\+Cma subroutine S\+C\+R\+E\+E\+N\+R\+H is called to evaluate the screen-\/level relative humidity.
+After these calls, various diagnostic calculations are performed. First the screen-\/level temperature and humidity, and the anemometer-\/level zonal and meridional wind speeds, are calculated. Three options are provided for doing this, indicated by the flag I\+S\+L\+F\+D. If I\+S\+L\+F\+D = 0, a simple similarity-\/based approach is used. (This is currently the standard option in the A\+G\+C\+M.) The ratio (R\+A\+T\+I\+O\+M) of the square root of the surface drag coefficient for momentum $C_{DM}$ to that of the neutral drag coefficient $C_{DN}$ for the anemometer height is calculated, and an analogous calculation is performed for the ratio (R\+A\+T\+I\+O\+H) of the square root of the surface drag coefficient for heat $C_{DH}$ to that of the neutral drag coefficient for the screen height $z_s$, to give a measure of the degree of atmospheric instability. If the bulk Richardson number R\+I\+B is negative (indicating unstable conditions), the ratio used for the temperature and humidity is the minimum of R\+A\+T\+I\+O\+H and ( $z_s$ / $z_{ref}$)$^\wedge$(1/3), a measure of the depth of convection. These ratios are applied to the calculation of the screen and anemometer level variables. If the ratios are large, indicating strong coupling with the atmosphere, the screen level variables tend toward the values at the reference height; if the ratio is small, they tend to the values at the surface. At the end of the block of code, the C\+C\+Cma subroutine S\+C\+R\+E\+E\+N\+R\+H is called to evaluate the screen-\/level relative humidity, and the grid-\/cell average values of the screen and anemometer level diagnostic variables are incremented. For the bare soil subarea, the zonal and meridional anemometer-\/level wind speeds, the friction velocity and the surface temperature are saved separately as inputs to the C\+C\+Cma black carbon deposition scheme (Namazi et al., 2015) \cite{Namazi2015-wz}.
 
-If I\+S\+L\+F\+D= 1 or 2, the more rigorous calculations in subroutines S\+L\+D\+I\+A\+G and D\+I\+A\+S\+U\+R\+F\+Z are followed. The calculations done in S\+L\+D\+I\+A\+G are consistent with the modelling approach used in subroutine D\+R\+C\+O\+E\+F to determine the atmospheric stability functions, so when I\+S\+L\+F\+D = 1, D\+R\+C\+O\+E\+F and S\+L\+D\+I\+A\+G are called. The calculations done in D\+I\+A\+S\+U\+R\+F\+Z are consistent with the modelling approach used in subroutine F\+L\+X\+S\+U\+R\+F\+Z for the atmospheric stability functions, so when I\+S\+L\+F\+D = 2, F\+L\+X\+S\+U\+R\+F\+Z and D\+I\+A\+S\+U\+R\+F\+Z are called.
+If I\+S\+L\+F\+D= 1 or 2, the more complex calculations in subroutines S\+L\+D\+I\+A\+G and D\+I\+A\+S\+U\+R\+F\+Z are followed for the screen-\/level and anemometer-\/level diagnostics. The calculations done in S\+L\+D\+I\+A\+G are consistent with the modelling approach used in subroutine D\+R\+C\+O\+E\+F to determine the atmospheric stability functions, so when I\+S\+L\+F\+D = 1, D\+R\+C\+O\+E\+F and S\+L\+D\+I\+A\+G are called. The calculations done in D\+I\+A\+S\+U\+R\+F\+Z are consistent with the modelling approach used in subroutine F\+L\+X\+S\+U\+R\+F\+Z for the atmospheric stability functions, so when I\+S\+L\+F\+D = 2, F\+L\+X\+S\+U\+R\+F\+Z and D\+I\+A\+S\+U\+R\+F\+Z are called.
 
 A number of additional diagnostic variables are calculated as weighted averages over the four subareas. For the most part, these calculations are straightforward; only the calculation of the porential evapotranspiration $E_p$ (E\+V\+P\+P\+O\+T) involves some complexity. $E_p$ is defined as the evapotranspiration that would occur under ambient atmospheric conditions if the soil were completely saturated and the vegetation canopy were completely water-\/covered, i.\+e. if there were no surface resistances to evaporation\+: $E_p = \rho_a C_{DH} v_a [q_{0,sat} – q_a ]$ where $\rho_a$ is the density of air and $q_{0,sat}$ is the saturated specific humidity at the surface. For the ground or snow surface $q_{0,sat}$ was calculated in subroutine T\+S\+O\+L\+V\+E. For the canopy, the saturated specific humidity at the canopy air temperature, $q_{ac,sat}$ , is used. This is obtained from the mixing ratio at saturation, $w_{ac,sat}$ \+: $q_{ac,sat} = w_{ac,sat} /[1 + w_{ac,sat} ]$
 
@@ -744,9 +770,14 @@ The mixing ratio is a function of the saturation vapour pressure $e_{ac,sat}$ at
 
 A standard empirical equation for the saturation vapour pressure dependence on the temperature T is used\+: \[e_{sat} = 611.0 exp[17.269(T – T_f )/(T – 35.86)] T \geq T_f \] \[e_{sat} = 611.0 exp[21.874(T – T_f )/(T – 7.66)] T < T_f \] where $T_f$ is the freezing point.
 
-At the end of the code dealing with the four subareas, several more diagnostic variables are evaluated. Again, these calculations are generally straightforward. The effective black-\/body surface temperature $T_{0,eff}$ is obtained by inverting the Stefan-\/\+Boltzmann equation\+: $L\uparrow = \sigma T_{0,eff}^4$ where $L\uparrow$ is the outgoing longwave radiation and $\sigma$ is the Stefan-\/\+Boltzmann constant. The evaporation efficiency parameter E\+V\+A\+P\+B is calculated as the ratio of the actual evapotranspiration to the potential evapotranspiration.
+At the end of the blocks of code dealing with the four subareas, several more diagnostic variables are evaluated. Again, these calculations are generally straightforward. The effective black-\/body surface temperature $T_{0,eff}$ is obtained by inverting the Stefan-\/\+Boltzmann equation\+: $L\uparrow = \sigma T_{0,eff}^4$ where $L\uparrow$ is the outgoing longwave radiation and $\sigma$ is the Stefan-\/\+Boltzmann constant. The evaporation efficiency parameter E\+V\+A\+P\+B is calculated as the ratio of the actual evapotranspiration to the potential evapotranspiration.
 
-Here is the call graph for this function\+:
-% FIG 0
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{CLASST_8f_afc821376816034a0c657e69bb4b06a24_cgraph}
+\end{center}
+\end{figure}
 
 

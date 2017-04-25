@@ -104,7 +104,7 @@ C------------------------------------------------------------------
       !!coefficients depending on whether the snow is dry or melting. In 
       !!this subroutine, the visible and near-IR components of the snow 
       !!albedo are diagnosed from the total albedo. According to the 
-      !!literature (Aguado, 1985; Robinson and Kukla, 1984; Dirmhirn and 
+      !!literature (Aguado, 1985 \cite Aguado1985-fv ; Robinson and Kukla, 1984; Dirmhirn and
       !!Eaton, 1975), the following represent typical snow albedos for 
       !!fresh snow, old dry snow and melting snow:
       !!

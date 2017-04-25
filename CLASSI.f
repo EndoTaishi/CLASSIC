@@ -206,7 +206,7 @@ C
           !!\f$T_a = 1.0 C\f$. If IPCP = 3, the precipitation is assumed to be 
           !!entirely snowfall when \f$T_a \leq 0 C\f$, and entirely rainfall when 
           !!\f$T_a \geq 6.0 C\f$, and between the two a polynomial function 
-          !!presented by Auer (1974) is used, relating the fraction of 
+          !!presented by Auer (1974) \cite Auer1974-fd is used, relating the fraction of
           !!the precipitation that is snowfall, \f$X_{sf}\f$, to \f$T_a\f$:
           !!\f[
           !!X_{sf} = [0.0202 T_a^6 – 0.3660 T_a^5 + 2.0399 T_a^4 – 1.5089 T_a^3

@@ -115,7 +115,8 @@ C
 C     * INTEGER CONSTANTS.
 C
       INTEGER ISNOW !<Flag indicating presence or absence of snow
-      INTEGER ISLFD,ITG,ILG,IG,IL1,IL2,JL,I,IB,NBS,ISNOALB
+      INTEGER ISLFD,ITG,ILG,IG,IL1,IL2,JL,I,IB,NBS
+      INTEGER ISNOALB !<Switch to model snow albedo in two or more wavelength bands
 C
       INTEGER NUMIT,NIT,IBAD,ITERMX
 C
@@ -187,12 +188,17 @@ C
                         !<iteration [K]  
       REAL FCOR  (ILG)  !<Coriolis parameter \f$[s^{-1}]\f$  
       REAL PCPR  (ILG)  !<Surface precipitation rate \f$[kg m^{-2} s^{-1}]\f$
-      REAL RHOSNO(ILG)
-      REAL ZSNOW(ILG)
+      REAL RHOSNO(ILG)  !<Density of snow  \f$[kg m^{-3}]\f$
+      REAL ZSNOW(ILG)   !<Depth of snow pack  [m]  \f$(z_s)\f$
 
-      REAL THLIQ(ILG,IG)
-      REAL THLMIN(ILG,IG)
-      REAL DELZW(ILG,IG)
+      REAL THLIQ(ILG,IG)    !<Volumetric liquid water content of soil layers \f$[m^{3} m^{-3}]\f$
+      REAL THLMIN(ILG,IG)   !<Residual soil liquid water content remaining after freezing or evaporation  \f$[m^{3} m^{-3}]\f$
+      REAL DELZW(ILG,IG)    !<Permeable thickness of soil layer  [m]
+      REAL TRSNOWG(ILG,NBS) !<Short-wave transmissivity of snow pack over bare ground  [  ]
+      REAL ALSNO(ILG,NBS)   !<Albedo of snow in each modelled wavelength band  [  ]
+      REAL FSSB(ILG,NBS)    !<Total solar radiation in each modelled wavelength band  \f$[W m^{-2}]\f$
+      REAL TRTOP(ILG,NBS)   !<
+
 C
       INTEGER IWATER(ILG)  !<Flag indicating condition of surface
                            !<(dry, water-covered or snow-covered)
@@ -201,6 +207,7 @@ C
       INTEGER ITERCT(ILG,6,50) !<Counter of number of iterations required to
                                !<solve energy balance for four subareas
       INTEGER ISAND(ILG,IG)    !<Sand content flag
+
       integer  ipeatland(ilg)
       integer iday
       integer ievapmoss(ilg)
@@ -212,11 +219,6 @@ C
       real daylength(ilg)
       real pdd(ilg)
 C
-C     * BAND-DEPENDANT ARRAYS.                                          
-C                                                                       
-      REAL TRSNOWG(ILG,NBS), ALSNO(ILG,NBS), FSSB(ILG,NBS),             
-     1     TRTOP  (ILG,NBS)    
-C                                                                       
 C     * INTERNAL WORK ARRAYS.
 C
       REAL TSTEP (ILG),    TVIRTS(ILG),    EVBETA(ILG),    Q0SAT (ILG),
@@ -276,14 +278,12 @@ C
       !!For the surface temperature iteration, two alternative schemes 
       !!are offered: the bisection method (selected if the flag ITG = 1) 
       !!and the Newton-Raphson method (selected if ITG = 2). In the first 
-      !!case, the maximum number of iterations ITERMX is set to 12, and 
+      !!case, the maximum number of iterations ITERMX is set to 50, and
       !!in the second case it is set to 5. An optional windless transfer 
       !!coefficient EZERO is available, which can be used, following the 
-      !!recommendations of Brown et al. (2006), to prevent the sensible 
+      !!recommendations of Brown et al. (2006) \cite Brown2006-ec, to prevent the sensible
       !!heat flux over snow packs from becoming vanishingly small under 
-      !!highly stable conditions. If the snow cover flag ISNOW is zero 
-      !!(indicating bare ground), EZERO is set to zero; if ISNOW=1, EZERO 
-      !!is set to \f$2.0 W m^{-2} K^{-1}\f$.
+      !!highly stable conditions. Currently, EZERO is set to zero.
       !!
 C     * INITIALIZATION AND PRE-ITERATION SEQUENCE.
 C
@@ -311,22 +311,37 @@ C
 C 
       !>
       !!
-      !!In the beginning loop, some preliminary calculations are done. The 
-      !!shortwave transmissivity at the surface, TRTOP, is set to zero in 
-      !!the absence of a snow pack, and to the transmissivity of snow 
-      !!TRSNOW otherwise. The net shortwave radiation at the surface, 
-      !!QSWNET, is calculated as the sum of the incoming visible and 
-      !!near-infrared shortwave radiation, weighted according to one 
-      !!minus their respective albedos. This average value is corrected 
-      !!for the amount of radiation transmitted into the surface, 
-      !!obtained using TRTOP. The initial value of the surface 
-      !!temperature TZERO is set to TSTART, which contains the value of 
-      !!TZERO from the previous time step, and the first step in the 
-      !!iteration sequence, TSTEP, is set to 1.0 K. The flag ITER is set 
-      !!to 1 for each element of the set of modelled areas, indicating 
-      !!that its surface temperature has not yet been found. The 
-      !!iteration counter NITER is initialized to 1 for each element. 
-      !!Initial values are assigned to several other variables.
+      !!In the next section, calculations of surface net and transmitted
+      !!shortwave radiation are done depending on whether a snow pack is present
+      !!(ISNOW=1) and whether the incoming shortwave radiation is being supplied
+      !!in two bands (one visible and one near-IR, ISNOALB=0) or four bands
+      !!(one visible and three near-IR, ISNOALB=1).  For each band the net
+      !!shortwave radiation is calculated as the incoming radiation multiplied
+      !!by one minus the appropriate albedo.  If there is no snow present the
+      !!shortwave transmissivity at the surface is set to zero and the absorbed
+      !!visible radiation is calculated from the first radiation band.  If
+      !!ISNOALB=0 the absorbed near-IR radiation is calculated from the second
+      !!band and if ISNOALB=1 it is calculated from the sum of the second to
+      !!fourth bands.  The total net shortwave radiation QSWNET  is then evaluated.
+      !!If a snow pack is present, then if ISNOALB=0 the calculations are done
+      !!separately for the visible and near-IR bands; if ISNOALB=1, they are done
+      !!separately over the four wavelength bands. The transmissivity is calculated
+      !!as an average value for ISNOALB=0, and separately for the four wavelength
+      !!ranges for ISNOALB=1. The net shortwave radiation at the surface is
+      !!obtained from the sum of the net values in each wavelength band,
+      !!corrected for the respective loss by transmission into the surface.
+
+      !!In the 50 loop, the initial value of the surface temperature TZERO
+      !!is set to TSTART, which contains the value of TZERO from the previous
+      !!time step, and the first step in the iteration sequence, TSTEP, is
+      !!set to 1.0 K.  The flag ITER is set to 1 for each element of the set
+      !!of modelled areas, indicating that its surface temperature has not
+      !!yet been found.  The iteration counter NITER is initialized to 1 for
+      !!each element.  Initial values are assigned to several other variables.
+      !!In particular, the maximum evaporation from the ground surface that
+      !!can be sustained for the current time step is specified as the total
+      !!snow mass if snow is present, otherwise as the water ponded on the
+      !!surface plus the total available water in the first soil layer.
       !!                                                                      
       IF(ISNOW. EQ. 0)    THEN ! Use usual snow-free bare soil formulation
          DO I=IL1,IL2                                                   
@@ -573,7 +588,9 @@ C
         !!
         !!\f$E(0) = \rho_a C_{DH} v_a [Q(0) – q_a]\f$
         !!
-        !!\f$Q_E\f$ is obtained by multiplying E(0) by the latent heat of 
+        !!The evaporation rate is constrained to be less than or equal to the
+        !!maximum rate evaluated earlier in the subroutine.  \f$Q_E\f$ is
+        !!obtained by multiplying E(0) by the latent heat of
         !!vaporization at the surface. The ground heat flux G(0) is 
         !!determined as a linear function of T(0) (see documentation for 
         !!subroutines TNPREP and TSPREP). It can be seen that each of the 
@@ -804,7 +821,7 @@ C
       !>
       !!At this point a check is performed for unphysical values of the 
       !!surface temperature, i.e. for values greater than 100 C or less 
-      !!than -100 C. If such values are encountered, an error message is 
+      !!than -250 C. If such values are encountered, an error message is
       !!printed and a call to abort is carried out.
       !!
 C

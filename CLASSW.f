@@ -197,8 +197,8 @@ C
       REAL TSUBFL(ILG)  !<Temperature of interflow from sides of soil column [K]
       REAL TBASFL(ILG)  !<Temperature of base flow from bottom of soil column [K]
       REAL EVAP  (ILG)  !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1}]\f$
-      REAL QFLUX (ILG)  !<
-      REAL RHOAIR (ILG) !<
+      REAL QFLUX (ILG)  !<Product of surface drag coefficient, wind speed and surface-air specific humidity difference \f$[m s^{-1}]\f$
+      REAL RHOAIR (ILG) !<Density of air \f$[kg m^{-3}]\f$
 C
       REAL QFC  (ILG,IG) !<Water removed from soil layers by transpiration \f$[kg m^{-2} s^{-1}]\f$
       REAL HMFG (ILG,IG) !<Diagnosed energy associated with phase change of water in soil layers \f$[W m^{-2}]\f$
@@ -233,8 +233,8 @@ C
       REAL TCBOTC(ILG,IG)   !<Thermal conductivity of soil at bottom of layer (vegetation over ground) \f$[W m^{-1} K^{-1}]\f$    
       REAL TCTOPG(ILG,IG)   !<Thermal conductivity of soil at top of layer (bare ground) \f$[W m^{-1} K^{-1}]\f$
       REAL TCBOTG(ILG,IG)   !<Thermal conductivity of soil at bottom of layer (bare ground) \f$[W m^{-1} K^{-1}]\f$
-      REAL FROOT (ILG,IG)   !<Fraction of total transpiration contributed by soil layer [ ]
-      REAL FROOTS (ILG,IG)  !<Fraction of total transpiration contributed by snow-covered soil layer [ ]
+      REAL FROOT (ILG,IG)   !<Fraction of total transpiration contributed by soil layer over snow-free subarea [ ]
+      REAL FROOTS (ILG,IG)  !<Fraction of total transpiration contributed by soil layer over snow-covered subarea [ ]
       REAL TSFSAV(ILG,4)    !<Ground surface temperature over subarea [K]
 C
       REAL FC    (ILG) !<Subarea fractional coverage of modelled area [ ]
@@ -794,7 +794,7 @@ C
       !!residual amounts of evaporative demand over the four subareas 
       !!that could not be supplied by surface stores (WLSTCS, WLSTGS, 
       !!WLOSTC and WLOSTG, variables that are defined internally in this 
-      !!subroutine).
+      !!subroutine), and the diagnostic variable QFLUX is evaluated.
       !!
       !!The temperature of the vegetation canopy TCAN and the amount of 
       !!intercepted liquid water RCAN are calculated as weighted averages 
@@ -817,7 +817,7 @@ C
       !!small, then as in the case of intercepted water, it is added to 
       !!the overland flow and to the total runoff, and their respective 
       !!temperatures are recalculated. The diagnostic array HTC is 
-      !!updated, and ZPOND and TPOND are set to zero.
+      !!updated, ZPOND is set to zero and TPOND is set to 0 \f$^o\f$C.
       !!
 C
 C     * AVERAGE RUNOFF AND PROGNOSTIC VARIABLES OVER FOUR GRID CELL
@@ -929,10 +929,15 @@ C
       !!the snow pack WSNOW is obtained as a weighted average over the CS 
       !!and GS subareas (assuming that freshly fallen snow does not yet 
       !!contain liquid water); and the snow mass is determined from ZSNOW 
-      !!and RHOSNO. As in the case of intercepted and ponded water, if 
+      !!and RHOSNO. Upper and lower limits apply to the snow pack.  If the
+      !!snow depth exceeds 10 m, the excess snow and its associated liquid
+      !!water content are added to the overland flow and the total runoff,
+      !!the respective temperatures of the latter are recalculated and the
+      !!diagnostic arrays ROFN, PCPG and HTCS are updated. As in the case
+      !!of intercepted and ponded water, if
       !!the snow mass is vanishingly small it and its liquid water 
       !!content are added to the overland flow and to the total runoff, 
-      !!and their respective temperatures are recalculated. The 
+      !!and their respective temperatures are recalculated, the
       !!diagnostic arrays ROFN, PCPG and HTCS are updated, and TSNOW, 
       !!RHOSNO, SNO and WSNOW are set to zero. Flags are set to trigger 
       !!calls to abort if TSNOW is less than 0 K or greater than 0.001 C. 

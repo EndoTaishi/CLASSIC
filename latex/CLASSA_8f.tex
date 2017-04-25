@@ -472,7 +472,12 @@ If the calculated value of $z_s$ is less than the limiting snow depth $z_{s,lim}
 
 The subarea albedo and transmissivity arrays (for canopy, bare ground, canopy over snow and snow over bare ground) are next initialized to zero, and the four C\+L\+A\+S\+S\+A subsidiary subroutines are called in turn\+: A\+P\+R\+E\+P to evaluate various model parameters for the four subareas, S\+N\+O\+A\+L\+B\+A to calculate the snow albedo and transmissivity, G\+R\+A\+L\+B to calculate the ground surface albedo, and C\+A\+N\+A\+L\+B to calculate the canopy albedo, transmissivity and stomatal resistance. Finally, the overall visible and near-\/ infrared albedos for the modelled area are determined as weighted averages over the four subareas.
 
-Here is the call graph for this function\+:
-% FIG 0
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=278pt]{CLASSA_8f_a4ba5845339f63dd223722f0e0593c72e_cgraph}
+\end{center}
+\end{figure}
 
 

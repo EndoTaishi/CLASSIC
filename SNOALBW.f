@@ -1,4 +1,4 @@
-!>\file
+!!>\file
 C!Purpose: Calculate decrease in snow albedo and increase in density 
 C!due to aging.
 C!
@@ -87,11 +87,12 @@ C----------------------------------------------------------------------
       !>
       !!The albedo and density of snow are modelled using empirical 
       !!exponential decay functions. In the absence
-      !!of any fresh snowfall the snow albedo \f$\alpha_s\f$ is assumed to decrease 
+      !!of snowfall exceeding the snow albedo refreshment threshold (set to 0.0001 m
+      !!here and in SNOADD),  the snow albedo \f$\alpha_s\f$ is assumed to decrease
       !!exponentially with time from a fresh
       !!snow value of 0.84 to a background old snow value \f$\alpha_{s,old}\f$ using an 
       !!expression based on data given in
-      !!Aguado (1985), Robinson and Kukla (1984) and Dirmhirn and Eaton 
+      !!Aguado (1985) \cite Aguado1985-fv, Robinson and Kukla (1984) and Dirmhirn and Eaton
       !!(1975):
       !!
       !!\f$\alpha_s (t+1) = [\alpha_s (t) - \alpha_{s,old}] exp [-0.01 \Delta t / 3600] + \alpha_{s,old}\f$

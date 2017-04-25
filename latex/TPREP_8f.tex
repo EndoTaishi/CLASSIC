@@ -270,6 +270,8 @@ Purpose\+: Initialize subarea variables and calculate various parameters for sur
 \hline
 {\em qaccs} & Specific humidity of air within vegetation canopy space over snow $[kg kg^{-1}]$\\
 \hline
+{\em gsnow} & Diagnostic heat flux at snow surface for use in C\+C\+Cma black carbon deposition scheme $[W m^{-2}]$\\
+\hline
 {\em st} & Diagnosed screen-\/level air temperature \mbox{[}K\mbox{]}\\
 \hline
 {\em su} & Diagnosed anemometer-\/level zonal wind $[m s^{-1}]$\\
@@ -277,6 +279,8 @@ Purpose\+: Initialize subarea variables and calculate various parameters for sur
 {\em sv} & Diagnosed anemometer-\/level meridional wind $[m s^{-1}]$\\
 \hline
 {\em sq} & Diagnosed screen-\/level specific humidity $[kg kg^{-1}]$\\
+\hline
+{\em srh} & Diagnosed screen-\/level relative humidity \mbox{[}\%\mbox{]}\\
 \hline
 {\em cdh} & Surface drag coefficient for heat \mbox{[} \mbox{]}\\
 \hline
@@ -440,7 +444,12 @@ In the 500 loop, thermal conductivities are calculated for the top and bottom of
 
 Finally, in loop 600, a variable T\+B\+A\+R1\+P is evaluated, representing the weighted average value of the first layer soil temperature and the ponded water, if any. (The heat capacity of the soil is determined as the weighted average of H\+C\+P\+G over the permeable thickness D\+E\+L\+Z\+W, and the heat capacity of rock, H\+C\+P\+S\+N\+D, over the impermeable thickness, D\+E\+L\+Z-\/\+D\+E\+L\+Z\+W.)
 
-Here is the caller graph for this function\+:
-% FIG 0
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=198pt]{TPREP_8f_a7e4916d23e9c1a0300f168e58bbf7ae4_icgraph}
+\end{center}
+\end{figure}
 
 

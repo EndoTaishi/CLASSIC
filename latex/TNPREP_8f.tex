@@ -98,7 +98,12 @@ The average soil layer temperature, $T_{av}(\Delta z)$, can be obtained by integ
 
 In the subroutine loop, first the depth corresponding to T\+B\+A\+R1\+P (the lumped temperature of the first soil layer and the ponded water) is calculated, as the sum of the first soil layer thickness and the ponded water depth. If the ponded water depth is not vanishingly small, the surface water flag I\+W\+A\+T\+E\+R is set to 1; otherwise it is set to 0 for soils and 2 for ice sheets (indicated by I\+S\+A\+N\+D = -\/4). If I\+W\+A\+T\+E\+R = 2, indicating a frozen water surface, the latent heat of vaporization, C\+P\+H\+C\+H\+G, is set to the value for sublimation (by adding the latent heat of melting to the latent heat of vaporization). If there is a snow pack present, the thermal conductivity at the top of the ground surface is calculated as the harmonic mean of the thermal conductivity at the top of the first soil layer and that of the snow pack. Finally, a series of work arrays is evaluated and is used to calculate the slope and intercept, G\+C\+O\+E\+F\+F and G\+C\+O\+N\+S\+T, of the equation relating G(0) to T(0) at the ground surface.
 
-Here is the caller graph for this function\+:
-% FIG 0
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=204pt]{TNPREP_8f_ab5cfd35272325655f17bcc52acb00535_icgraph}
+\end{center}
+\end{figure}
 
 

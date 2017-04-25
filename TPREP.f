@@ -204,7 +204,7 @@ C
       REAL QACCO (ILG)  !<Specific humidity of air within vegetation canopy space over bare ground \f$[kg kg^{-1}]\f$
       REAL TACCS (ILG)  !<Temperature of air within vegetation canopy space over snow [K]
       REAL QACCS (ILG)  !<Specific humidity of air within vegetation canopy space over snow \f$[kg kg^{-1}]\f$
-      REAL GSNOW (ILG)  !<
+      REAL GSNOW (ILG)  !<Diagnostic heat flux at snow surface for use in CCCma black carbon deposition scheme \f$[W m^{-2}]\f$
  
 C
 C     * DIAGNOSTIC ARRAYS.
@@ -213,7 +213,7 @@ C
       REAL SU    (ILG)  !<Diagnosed anemometer-level zonal wind \f$[m s^{-1}]\f$ 
       REAL SV    (ILG)  !<Diagnosed anemometer-level meridional wind \f$[m s^{-1}]\f$ 
       REAL SQ    (ILG)  !<Diagnosed screen-level specific humidity \f$[kg kg^{-1}]\f$
-      REAL SRH   (ILG)  !<
+      REAL SRH   (ILG)  !<Diagnosed screen-level relative humidity  [%]
       REAL CDH   (ILG)  !<Surface drag coefficient for heat [ ] 
       REAL CDM   (ILG)  !<Surface drag coefficient for momentum [ ]
       REAL QSENS (ILG)  !<Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2}]\f$

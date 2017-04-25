@@ -97,7 +97,12 @@ $C_s = C_i [\rho_s / \rho_i ] + C_w w_s /[\rho_w z_s]$
 
 If the sublimation rate is positive, the depth of the snow pack Z\+L\+O\+S\+T that is sublimated over the time step is calculated from E\+V\+A\+P using R\+H\+O\+S\+N\+O. If Z\+L\+O\+S\+T $\leq$ Z\+S\+N\+O\+W, the snow depth is reduced and H\+C\+P\+S\+N\+O is recalculated. Otherwise the deficit amount Z\+R\+E\+M is calculated from Z\+L\+O\+S\+T – Z\+S\+N\+O\+W and converted to a depth of water. This amount is further converted to an evaporation rate by applying a correction factor of $(L_m+ L_v)/L_v$, where $L_m$ is the latent heat of melting and $L_v$ is the latent heat of vaporization (to account for the fact that the energy is now being used to evaporate water instead of sublimate snow). This necessarily leads to a small discrepancy between the overall vapour flux for the subarea that was originally calculated in C\+L\+A\+S\+S\+T, and the actual change of water storage in the subarea, and therefore this discrepancy is added to the housekeeping variable W\+L\+O\+S\+T for use in the water balance checks done later in C\+H\+K\+W\+A\+T. If there was liquid water in the snow pack, W\+S\+N\+O\+W, it is assigned to overall runoff R\+U\+N\+O\+F\+F, and to overland flow O\+V\+R\+F\+L\+W. The resulting temperatures of the runoff and overland flow, T\+R\+U\+N\+O\+F and T\+O\+V\+R\+F\+L, are recalculated as weighted averages using the original runoff amounts and temperatures, and the original snow temperature T\+S\+N\+O\+W for W\+S\+N\+O\+W. The snow depth, heat capacity, temperature and water content are all set to zero. Finally, since Z\+R\+E\+M now becomes soil evaporation rather than snow sublimation, the diagnostic variables Q\+F\+N and Q\+F\+G, representing the vapour flux from snow and soil respectively, are adjusted to reflect this.
 
-Here is the caller graph for this function\+:
-% FIG 0
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{SNOVAP_8f_a64f8b35d4ad3e8ced53867425e4500d3_icgraph}
+\end{center}
+\end{figure}
 
 

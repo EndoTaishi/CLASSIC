@@ -121,7 +121,12 @@ In the 500 loop, if I\+S\+I\+M\+P $<$ 0 (i.\+e. water movement has occurred), th
 
 At the end of the iteration pass, checks are done in the 600 loop to ascertain whether the number of iteration passes is still less than N\+E\+N\+D, whether either ponded water still exists or rain is still falling, and whether there is still time remaining in the current time step. If these conditions are all fulfilled, the counter N\+P\+N\+T\+S representing the number of points in the current vector of mosaic tiles for which infiltration is still occurring is incremented by 1. Otherwise, the iteration flag for the current tile is changed from 1 to 0, signaling the end of the saturated infiltration calculations for that tile.
 
-Here is the caller graph for this function\+:
-% FIG 0
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=280pt]{WFLOW_8f_a7a3409d93e2e44adae8e38e9ddd99f97_icgraph}
+\end{center}
+\end{figure}
 
 

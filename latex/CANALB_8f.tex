@@ -225,13 +225,23 @@ $X/r_c = \Sigma (X_i / r_{c,i})$
 
 The calculations described above pertaining to stomatal resistances are performed in loops 850, 900 and 950. In the 850 loop, $f(T_a)$ is evaluated. In the 900 loop, for each vegetation category in turn, $f(\Delta e)$, $f(\Psi_s)$ and $r_{c,i}$ are determined. $r_{c,i}$ is assigned upper and lower limits of 5000 and 10 $s m^{-1}$ respectively, and the accumulated stomatal resistance for the canopy is incremented by $X_i / r_{c,i}$. In loop 950, F\+R\+M\+A\+X, the maximum value of F\+R\+O\+O\+T, the fraction of transpiration apportioned to each soil layer, is determined. If F\+R\+M\+A\+X is vanishingly small, transpiration is suppressed by setting the stomatal resistances over the vegetated subareas to a large number. If the incoming visible radiation is small, the stomatal resistances are likewise set to a large number. Otherwise, the stomatal resistance of vegetation over snow is set to a large number, and the normalized, aggregated stomatal resistance of vegetation over soil is obtained by inverting the accumulated value.
 
-Here is the call graph for this function\+:
-% FIG 0
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=192pt]{CANALB_8f_ad01e3318e7b9408fb2f037378ffb6589_cgraph}
+\end{center}
+\end{figure}
 
 
 
 
-Here is the caller graph for this function\+:
-% FIG 1
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=208pt]{CANALB_8f_ad01e3318e7b9408fb2f037378ffb6589_icgraph}
+\end{center}
+\end{figure}
 
 

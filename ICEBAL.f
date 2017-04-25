@@ -461,9 +461,9 @@ C
   400 CONTINUE  
       !>
       !!In the next loops, the ice layers are adjusted upward to account for addition of mass at the surface by
-      !!conversion of snow to ice. Snow is converted to ice if the mass of the snow pack exceeds \f$100 kg m^{-2}\f$, or
+      !!conversion of snow to ice. Snow is converted to ice if the depth of the snow pack exceeds 10 m, or
       !!if the density exceeds \f$900 kg m^{-3}\f$ (approaching that of ice). In the first case the excess over
-      !!and above \f$100 kg m^{-2}\f$ is converted; in the second, the whole snow pack is converted. 
+      !!and above 10 m is converted; in the second, the whole snow pack is converted.
       !!These calculations are performed
       !!in the 500 loop, bracketed by a calculation of the change in internal energy of the snow pack, HTCS. In
       !!both cases the first level of the ice level movement matrix WMOVE is set to the amount of snow that is

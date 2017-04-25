@@ -197,7 +197,7 @@ C
       INTEGER ISNOW  !<
       INTEGER N      !<
       INTEGER NBS    !<
-      INTEGER ISNOALB!<  
+      INTEGER ISNOALB!<Switch to model snow albedo in two or more wavelength bands
 C
       INTEGER ITC   !<Flag to select iteration scheme for canopy temperature
       INTEGER ITCG  !<Flag to select iteration scheme for surface under canopy
@@ -248,7 +248,8 @@ C
       REAL G23G  (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
       REAL G23GS (ILG) !<Subarea heat flux between second and third soil layers \f$[W m^{-2} ]\f$
       REAL GT    (ILG) !<Diagnosed effective surface black-body temperature \f$[K] (T_{0,eff} )\f$
-      REAL GTBS  (ILG) !<
+      REAL GTBS  (ILG) !<Surface temperature for CCCma black carbon scheme  [K]
+      REAL GSNOW (ILG) !<Heat conduction into surface of snow pack  \f$[W m^{-2} ]\f$
       REAL GZEROC(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
       REAL GZEROG(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
       REAL GZROCS(ILG) !<Subarea heat flux at soil surface \f$[W m^{-2} ]\f$
@@ -293,8 +294,8 @@ C
       REAL RHOSCS(ILG) !<Density of snow under vegetation \f$[kg m^{-3} ]\f$
       REAL RHOSGS(ILG) !<Density of snow in bare areas \f$[kg m^{-3} ]\f$
       REAL RIB   (ILG) !<
-      REAL SFCUBS(ILG) !<
-      REAL SFCVBS(ILG) !<
+      REAL SFCUBS(ILG) !<Zonal surface wind velocity for CCCma black carbon scheme  \f$[m s^{-1} ]\f$
+      REAL SFCVBS(ILG) !<Meridional surface wind velocity for CCCma black carbon scheme  \f$[m s^{-1} ]\f$
       REAL SNOCAN(ILG) !<Intercepted frozen water stored on canopy over ground \f$[kg m^{-2} ]\f$
       REAL SNOCNS(ILG) !<Intercepted frozen water stored on canopy over snow \f$[kg m^{-2} ]\f$
       REAL SQ    (ILG) !<Diagnosed screen-level specific humidity \f$[kg kg^{-1} ]\f$
@@ -314,6 +315,7 @@ C
       REAL TCBOTG(ILG,IG) !<Thermal conductivity of soil at bottom of layer \f$[W m^{-1} K^{-1} ]\f$
       REAL TCTOPC(ILG,IG) !<Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
       REAL TCTOPG(ILG,IG) !<Thermal conductivity of soil at top of layer \f$[W m^{-1} K^{-1} ]\f$
+      REAL TCSNOW(ILG)    !<Thermal conductivity of snow  \f$[W m^{-1} K^{-1} ]\f$
       REAL TFLUX (ILG)    !<Product of surface drag coefficient, wind speed and surface-air 
                           !<temperature difference \f$[K m s^{-1} ]\f$
       REAL THICEC(ILG,IG) !<Frozen water content of soil layers under vegetation \f$[m^3 m^{-3} ]\f$
@@ -329,7 +331,7 @@ C
       REAL TSNOGS(ILG)    !<Temperature of snow pack in bare areas [K]
 
       REAL UE    (ILG)  !<Friction velocity of air \f$[m s^{-1} ]\f$
-      REAL USTARBS(ILG) !<
+      REAL USTARBS(ILG) !<Friction velocity for CCCma black carbon scheme  \f$[m s^{-1} ]\f$
       REAL WSNOCS(ILG)  !<Liquid water content of snow pack under vegetation \f$[kg m^{-2} ]\f$
       REAL WSNOGS(ILG)  !<Liquid water content of snow pack in bare areas \f$[kg m^{-2} ]\f$
       REAL WTABLE(ILG)  !<Depth of water table in soil [m]
@@ -362,6 +364,7 @@ C
       REAL FSVFS (ILG) !<Sky view factor for snow under canopy [ ]
       REAL PRESSG(ILG) !<Surface atmospheric pressure [Pa]
       REAL VMOD  (ILG) !<Wind speed at reference height \f$[m s^{-1} ]\f$
+      REAL ALSNO(ILG,NBS) !<Albedo of snow in each modelled wavelength band  [  ]
       REAL ALVSCN(ILG) !<Visible/near-IR albedo of vegetation over bare ground [ ]
       REAL ALIRCN(ILG) !<Visible/near-IR albedo of vegetation over bare ground [ ]
       REAL ALVSG (ILG) !<Visible/near-IR albedo of open bare ground [ ]
@@ -402,14 +405,13 @@ C
       REAL TCAN  (ILG) !<Vegetation canopy temperature [K]
       REAL TSNOW (ILG) !<Snowpack temperature [K]
       REAL ZSNOW (ILG) !<Depth of snow pack [m]
-      REAL TRSNOWC(ILG)!<
+      REAL TRSNOWC(ILG)!<Transmissivity of snow under vegetation to shortwave radiation  [  ]
+      REAL TRSNOWG(ILG,NBS) !<Transmissivity of snow in bare areas to shortwave radiation  [  ]
       REAL RHOSNO(ILG) !<Density of snow \f$[kg m^{-3} ]\f$
       REAL WSNOW (ILG) !<Liquid water content of snow pack \f$[kg m^{-2} ]\f$
       REAL RADJ  (ILG) !<Latitude of grid cell (positive north of equator) [rad] \f$(\varphi)\f$
       REAL PCPR  (ILG) !<Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
-C                                                                       
-      REAL TRSNOWG(ILG,NBS), ALSNO(ILG,NBS), FSSB(ILG,NBS)              
-C     
+      REAL FSSB(ILG,NBS)  !<Total solar radiation in each modelled wavelength band  \f$[W m^{-2} ]\f$
       REAL TBAR  (ILG,IG) !<Temperature of soil layers [K]
       REAL THLIQ (ILG,IG) !<Volumetric liquid water content of soil layers \f$[m^3 m^{-3} ]\f$
       REAL THICE (ILG,IG) !<Volumetric frozen water content of soil layers \f$[m^3 m^{-3} ]\f$
@@ -426,8 +428,8 @@ C
       REAL DELZ  (IG)     !<Overall thickness of soil layer [m]
       REAL DELZW (ILG,IG) !<Permeable thickness of soil layer [m]
       REAL ZBOTW (ILG,IG) !<Depth to permeable bottom of soil layer [m]
-      REAL FROOT (ILG,IG)
-      REAL FROOTS(ILG,IG)
+      REAL FROOT (ILG,IG) !<Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
+      REAL FROOTS(ILG,IG) !<Fraction of total transpiration contributed by soil layer over snow-covered subarea  [  ]
 C
       INTEGER  ISAND (ILG,IG) !<Sand content flag
 C
@@ -468,8 +470,8 @@ C
       REAL VA    (ILG),   ZRSLDM(ILG),   ZRSLDH(ILG),   ZRSLFM(ILG),   
      1     ZRSLFH(ILG),   ZDSLM (ILG),   ZDSLH (ILG),   TPOTA (ILG),   
      2     TVIRTA(ILG),   CRIB  (ILG),   CPHCHC(ILG),   CPHCHG(ILG),   
-     3     HCPSCS(ILG),   HCPSGS(ILG),   TCSNOW(ILG),   CEVAP (ILG),   
-     4     TBAR1P(ILG),   GSNOWC(ILG),   GSNOWG(ILG),   GSNOW(ILG) ,    
+     3     HCPSCS(ILG),   HCPSGS(ILG),   CEVAP (ILG),
+     4     TBAR1P(ILG),   GSNOWC(ILG),   GSNOWG(ILG),
      5     GDENOM(ILG),   GCOEFF(ILG),   GCONST(ILG),   
      6     TSNBOT(ILG),   GCOEFFS(ILG),  GCONSTS(ILG),
      7     A1    (ILG),   A2    (ILG),   B1    (ILG),   B2    (ILG),   
@@ -660,19 +662,25 @@ C
 !!
 !!After these calls, various diagnostic calculations are performed. First the screen-level temperature and
 !!humidity, and the anemometer-level zonal and meridional wind speeds, are calculated. Three options are
-!!provided for doing this, indicated by the flag ISLFD. If ISLFD = 0, the simple approach used in the
-!!Canadian GCM is selected. The ratio of the square root of the surface drag coefficient for momentum,
-!!\f$C_{DM}\f$ , to that of the neutral drag coefficient \f$C_{DN}\f$ , is calculated for the screen height \f$z_s\f$ (RATFC1) and the
-!!anemometer height (RATFCA1), to give a measure of the degree of atmospheric instability. If the bulk
-!!Richardson number RIB is positive (indicating stable conditions), RATFC1 is adopted for the screen-level
-!!calculations; if RIB is negative (indicating unstable conditions), the ratio used is the minimum of the ratio
-!!of the drag coefficient for heat \f$C_{DH}\f$ to \f$C_{DN}\f$ , and \f$(z_s / z_{ref} )^{1/3}\f$ , a measure of the depth of the convection.
-!!These ratios are applied to the calculation of the screen and anemometer level variables. If the ratios are
-!!large, indicating strong coupling with the atmosphere, the screen level variables tend to the values at the
-!!reference height; if the ratio is small, they tend to the values at the surface. At the end of the loop, the
-!!CCCma subroutine SCREENRH is called to evaluate the screen-level relative humidity.
+!!provided for doing this, indicated by the flag ISLFD.  If ISLFD = 0, a simple similarity-based approach
+!!is used.  (This is currently the standard option in the AGCM.)  The ratio (RATIOM) of the square root
+!!of the surface drag coefficient for momentum \f$C_{DM}\f$ to that of the neutral drag coefficient \f$C_{DN}\f$ for the
+!!anemometer height is calculated, and an analogous calculation is performed for the ratio (RATIOH) of
+!!the square root of the surface drag coefficient for heat \f$C_{DH}\f$ to that of the neutral drag coefficient
+!!for the screen height \f$z_s\f$, to give a measure of the degree of atmospheric instability.  If the bulk
+!!Richardson number RIB  is negative (indicating unstable conditions), the ratio used for the temperature
+!!and humidity is the minimum of RATIOH and (\f$z_s\f$ / \f$z_{ref}\f$)^(1/3), a measure of the depth of convection.  These
+!!ratios are applied to the calculation of the screen and anemometer level variables.  If the ratios are
+!!large, indicating strong coupling with the atmosphere, the screen level variables tend toward the values
+!!at the reference height; if the ratio is small, they tend to the values at the surface.  At the end of the
+!!block of code, the CCCma subroutine SCREENRH is called to evaluate the screen-level relative humidity, and
+!!the grid-cell average values of the screen and anemometer level diagnostic variables are incremented.  For
+!!the bare soil subarea, the zonal and meridional anemometer-level wind speeds, the friction velocity and the
+!!surface temperature are saved separately as inputs to the CCCma black carbon deposition scheme
+!!(Namazi et al., 2015) \cite Namazi2015-wz.
 !!
-!!If ISLFD= 1 or 2, the more rigorous calculations in subroutines SLDIAG and DIASURFZ are followed.
+!!If ISLFD= 1 or 2, the more complex calculations in subroutines SLDIAG and DIASURFZ are followed
+!!for the screen-level and anemometer-level diagnostics.
 !!The calculations done in SLDIAG are consistent with the modelling approach used in subroutine
 !!DRCOEF to determine the atmospheric stability functions, so when ISLFD = 1, DRCOEF and
 !!SLDIAG are called. The calculations done in DIASURFZ are consistent with the modelling approach
@@ -699,7 +707,7 @@ C
 !!\f[e_{sat} = 611.0 exp[21.874(T – T_f )/(T – 7.66)]       T < T_f \f]
 !!where \f$T_f\f$ is the freezing point.
 !!
-!!At the end of the code dealing with the four subareas, several more diagnostic variables are evaluated.
+!!At the end of the blocks of code dealing with the four subareas, several more diagnostic variables are evaluated.
 !!Again, these calculations are generally straightforward. The effective black-body surface temperature \f$T_{0,eff}\f$
 !!is obtained by inverting the Stefan-Boltzmann equation:
 !!\f$L\uparrow = \sigma T_{0,eff}^4\f$

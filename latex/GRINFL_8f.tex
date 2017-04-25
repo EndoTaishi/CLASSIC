@@ -219,13 +219,23 @@ In loop 400, a test is carried out to determine whether saturated conditions are
 
 A series of subroutines is called to complete the infiltration calculations. Subroutine W\+F\+I\+L\+L treats the period of unsaturated flow up the point when saturated flow begins. Subroutine W\+F\+L\+O\+W treats the period of saturated flow. Subroutine W\+E\+N\+D reassigns liquid water contents and temperatures at the conclusion of the infiltration period. T\+H\+L\+I\+Q, T\+H\+I\+C\+E and T\+B\+A\+R\+W are then set to the corresponding updated values of T\+H\+L\+I\+Q\+X, T\+H\+I\+C\+E\+X and T\+B\+A\+R\+W\+X. The average depth of the wetting front in the soil layer in which it occurs, the index of the soil layer, and the moisture content behind the wetting front are stored in output variables Z\+F\+A\+V, L\+Z\+F\+A\+V and T\+H\+L\+I\+N\+V respectively. Finally, if there is any time remaining in the current time step following the infiltration period, subroutine G\+R\+D\+R\+A\+N is called to treat the movement of soil water over the remainder of the time step.
 
-Here is the call graph for this function\+:
-% FIG 0
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=342pt]{GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4_cgraph}
+\end{center}
+\end{figure}
 
 
 
 
-Here is the caller graph for this function\+:
-% FIG 1
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=202pt]{GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4_icgraph}
+\end{center}
+\end{figure}
 
 

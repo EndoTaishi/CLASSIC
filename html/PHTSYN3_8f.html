@@ -102,7 +102,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Photosynthesis and canopy conductance</p>
 <p>Net photosynthesis</p>
 <p>All biogeochemical processes in CTEM are simulated at a daily time step except gross photosynthetic uptake and associated calculation of canopy conductance, which are simulated on a half hour time step with CLASS. The photosynthesis module of CTEM calculates the net canopy photosynthesis rate, which, together with atmospheric <img class="formulaInl" alt="$CO_2$" src="form_19.png"/> concentration and vapour pressure or relative humidity, is used to calculate canopy conductance. This canopy conductance is then used by CLASS in its energy and water balance calculations.</p>
-<p>The photosynthesis parametrization is based upon the approach of <a class="el" href="citelist.html#CITEREF_Farquhar1980-96e">[20]</a> and <a class="el" href="citelist.html#CITEREF_Collatz1991-5bc">[15]</a> <a class="el" href="citelist.html#CITEREF_Collatz1992-jf">[16]</a> as implemented in SiB2 <a class="el" href="citelist.html#CITEREF_Sellers1996-bh">[49]</a> and MOSES <a class="el" href="citelist.html#CITEREF_Cox1999-ia">[17]</a> with some minor modifications as described in <a class="el" href="citelist.html#CITEREF_Arora2003-3b7">[11]</a>. <a class="el" href="citelist.html#CITEREF_Arora2003-3b7">[11]</a> outlines four possible configurations for the model based on choice of a <img class="formulaInl" alt="$\textit{big-leaf}$" src="form_157.png"/> or <img class="formulaInl" alt="$\textit{two-leaf}$" src="form_158.png"/> (sunlight and shaded leaves) mode and stomatal conductance formulations based on either <a class="el" href="citelist.html#CITEREF_Ball1987-ou">[12]</a> or <a class="el" href="citelist.html#CITEREF_Leuning1995-ab">[32]</a>. The <a class="el" href="citelist.html#CITEREF_Ball1987-ou">[12]</a> formulation uses relative humidity while <a class="el" href="citelist.html#CITEREF_Leuning1995-ab">[32]</a> uses vapour pressure deficit in calculation of canopy conductance. While the model remains capable of all four possible configurations, in practice, the model is usually run using the big-leaf parametrization with the stomatal conductance formulation of <a class="el" href="citelist.html#CITEREF_Leuning1995-ab">[32]</a>, which is the configuration described here. The original description of the CTEM photosynthesis parametrization in <a class="el" href="citelist.html#CITEREF_Arora2003-3b7">[11]</a> did not include discussion of all the PFTs simulated by CTEM, which we expand upon here and also include changes to the parametrization since version 1.0.</p>
+<p>The photosynthesis parametrization is based upon the approach of <a class="el" href="citelist.html#CITEREF_Farquhar1980-96e">[20]</a> and <a class="el" href="citelist.html#CITEREF_Collatz1991-5bc">[15]</a> <a class="el" href="citelist.html#CITEREF_Collatz1992-jf">[16]</a> as implemented in SiB2 <a class="el" href="citelist.html#CITEREF_Sellers1996-bh">[50]</a> and MOSES <a class="el" href="citelist.html#CITEREF_Cox1999-ia">[17]</a> with some minor modifications as described in <a class="el" href="citelist.html#CITEREF_Arora2003-3b7">[11]</a>. <a class="el" href="citelist.html#CITEREF_Arora2003-3b7">[11]</a> outlines four possible configurations for the model based on choice of a <img class="formulaInl" alt="$\textit{big-leaf}$" src="form_157.png"/> or <img class="formulaInl" alt="$\textit{two-leaf}$" src="form_158.png"/> (sunlight and shaded leaves) mode and stomatal conductance formulations based on either <a class="el" href="citelist.html#CITEREF_Ball1987-ou">[12]</a> or <a class="el" href="citelist.html#CITEREF_Leuning1995-ab">[32]</a>. The <a class="el" href="citelist.html#CITEREF_Ball1987-ou">[12]</a> formulation uses relative humidity while <a class="el" href="citelist.html#CITEREF_Leuning1995-ab">[32]</a> uses vapour pressure deficit in calculation of canopy conductance. While the model remains capable of all four possible configurations, in practice, the model is usually run using the big-leaf parametrization with the stomatal conductance formulation of <a class="el" href="citelist.html#CITEREF_Leuning1995-ab">[32]</a>, which is the configuration described here. The original description of the CTEM photosynthesis parametrization in <a class="el" href="citelist.html#CITEREF_Arora2003-3b7">[11]</a> did not include discussion of all the PFTs simulated by CTEM, which we expand upon here and also include changes to the parametrization since version 1.0.</p>
 <p>The gross leaf photosynthesis rate, <img class="formulaInl" alt="$G_\mathrm{o}$" src="form_1113.png"/>, depends upon the maximum assimilation rate allowed by the light ($J_{e}$), Rubisco ( <img class="formulaInl" alt="$J_\mathrm{c}$" src="form_1114.png"/>) and transport capacity ( <img class="formulaInl" alt="$J_\mathrm{s}$" src="form_1115.png"/>). The limitation placed on <img class="formulaInl" alt="$G_\mathrm{o}$" src="form_1113.png"/> by the amount of available light is calculated as ( <img class="formulaInl" alt="$mol\,CO_2\,m^{-2}\,s^{-1}$" src="form_1044.png"/>)</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \label{J_e} J_\mathrm{e} = \begin{cases} \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants\\ \varepsilon\,(1-{\nu})I,\quad C_4 plants, \end{cases} \]" src="form_650.png"/>
@@ -460,7 +460,8 @@ Functions/Subroutines</h2></td></tr>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c_cgraph.png" border="0" usemap="#PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c_cgraph" alt=""/></div>
-<!-- MAP 0 -->
+<map name="PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c_cgraph" id="PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c_cgraph">
+<area shape="rect" id="node2" href="XIT_8f.html#aea43fe3205a9aaa600859d61b69d580c" title="xit" alt="" coords="123,5,162,32"/></map>
 </div>
 </p>
 
@@ -468,7 +469,8 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c_icgraph.png" border="0" usemap="#PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c_icgraph" alt=""/></div>
-<!-- MAP 1 -->
+<map name="PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c_icgraph" id="PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c_icgraph">
+<area shape="rect" id="node2" href="TSOLVC_8f.html#a824dab26436ace6ad8f0f9e2f6908ce2" title="tsolvc" alt="" coords="123,5,181,32"/><area shape="rect" id="node3" href="CLASST_8f.html#afc821376816034a0c657e69bb4b06a24" title="classt" alt="" coords="230,5,287,32"/></map>
 </div>
 </p>
 
@@ -477,7 +479,7 @@ Here is the caller graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 3 2017 15:35:54 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 25 2017 14:33:40 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

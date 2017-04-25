@@ -177,13 +177,23 @@ In the second part of the 600 loop, the temperatures T\+F\+D\+T of the water flu
 
 In the 700 loop, for each successive soil layer the temperature of the water flux at the bottom of the layer is first assigned. If the flux is downward, T\+F\+D\+T is set to the temperature of the water in the current layer; if it is upward, T\+F\+D\+T is set to the temperature of the water in the layer below. The temperature of the water in the current layer is then updated using the F\+D\+T and T\+F\+D\+T values at the top and bottom of the layer, and the liquid water content of the layer is set to T\+H\+T\+E\+S\+T.
 
-Here is the call graph for this function\+:
-% FIG 0
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{GRDRAN_8f_a9d02aa9115635af052981eec146b1042_cgraph}
+\end{center}
+\end{figure}
 
 
 
 
-Here is the caller graph for this function\+:
-% FIG 1
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{GRDRAN_8f_a9d02aa9115635af052981eec146b1042_icgraph}
+\end{center}
+\end{figure}
 
 
