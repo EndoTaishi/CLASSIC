@@ -171,6 +171,7 @@ c
           coldlsrt(i,j)=0.0        
           coldloss(i,j)=0.0        
           lfthrs(i,j)=0.0          
+          flhrloss(i,j)=0.0
 150     continue                  
 140   continue
 !>
