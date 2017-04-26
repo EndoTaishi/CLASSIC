@@ -181,7 +181,7 @@ C----------------------------------------------------------------------
       !!\f$\tau_c = exp[-\kappa \Lambda_p]\f$
       !!where \f$\kappa\f$ is the canopy extinction coefficient and \f$\Lambda_p\f$ is the 
       !!plant area index. The extinction coefficient is calculated after 
-      !!Goudriaan (1988) as
+      !!Goudriaan (1988) \cite Gold1958-ng as
       !!\f$\kappa = \epsilon O/cos(Z)\f$
       !!where epsilon is a correction factor less than or equal to 1, 
       !!accounting for forward-scattering of radiation and non-random 
@@ -223,7 +223,7 @@ C----------------------------------------------------------------------
       !!
       !!Integration of the cloudy-sky transmissivity \f$tau_{c,cloudy}\f$ over 
       !!the sky hemisphere is performed using a simple weighting function 
-      !!proposed by Goudriaan (1988):
+      !!proposed by Goudriaan (1988) \cite Gold1958-ng :
       !!
       !!\f$\tau_{c,cloudy} = 0.3 \tau_c(Z=15^o) + 0.5 \tau_c(Z=45^o) + 0.2 \tau_c(Z=75^o)\f$
       !!
@@ -764,7 +764,7 @@ C-----------------------------------------------------------------------
       !!category. If \f$c_{v2}\f$ is greater than zero, the first form is used; 
       !!if not, the second form is used. The soil moisture suction 
       !!function \f$f(\Psi_s)\f$ is expressed, following Choudhury and Idso 
-      !!(1985) and Fisher et al. (1981), as:
+      !!(1985) \cite Choudhury1985-mm and Fisher et al. (1981) \cite Fisher1981-xf , as:
       !!
       !!\f$f(\Psi_s) = 1 + (\Psi_s / c_{\Psi 1})^{c \Psi 2}\f$
       !!

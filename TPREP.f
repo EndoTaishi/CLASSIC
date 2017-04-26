@@ -635,9 +635,9 @@ C
       !!\f$\lambda_{dry} = 0.30 exp(-2.0 \theta_p)    (organic)\f$
       !!
       !!The saturated thermal conductivity \f$\lambda_{sat}\f$ is calculated by 
-      !!Cote and Konrad as a geometric mean of the conductivities of the 
+      !!Cote and Konrad (2005) \cite Cote2005-ew as a geometric mean of the conductivities of the
       !!soil components. However, other researchers (e.g. Zhang et al., 
-      !!2008) have found the linear averaging used by de Vries (1963) to 
+      !!2008) have found the linear averaging used by de Vries (1963) \cite Vries1963-ti to
       !!be more generally accurate:
       !!
       !!\f$lambda_{sat} = lambda_w \theta_p + \lambda_s (1 - \theta_p)   (unfrozen)\f$

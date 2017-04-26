@@ -313,7 +313,7 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>In subroutine SNOALBW, called at the end of CLASSW, the change of total snow albedo over the current time step is calculated using an empirical exponential decay function, which has different coefficients depending on whether the snow is dry or melting. In this subroutine, the visible and near-IR components of the snow albedo are diagnosed from the total albedo. According to the literature (Aguado, 1985 <a class="el" href="citelist.html#CITEREF_Aguado1985-fv">[1]</a> ; Robinson and Kukla, 1984; Dirmhirn and Eaton, 1975), the following represent typical snow albedos for fresh snow, old dry snow and melting snow:</p>
+<p>In subroutine SNOALBW, called at the end of CLASSW, the change of total snow albedo over the current time step is calculated using an empirical exponential decay function, which has different coefficients depending on whether the snow is dry or melting. In this subroutine, the visible and near-IR components of the snow albedo are diagnosed from the total albedo. According to the literature (Aguado, 1985 <a class="el" href="citelist.html#CITEREF_Aguado1985-fv">[1]</a> ; Robinson and Kukla, 1984; Dirmhirn and Eaton, 1975 <a class="el" href="citelist.html#CITEREF_Dirmhirn1975-vx">[31]</a> ), the following represent typical snow albedos for fresh snow, old dry snow and melting snow:</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | } \hline &amp; Total albedo &amp; Visible albedo &amp; Near-IR albedo \\ \hline Fresh snow &amp; 0.84 &amp; 0.95 &amp; 0.73 \\ \hline Old dry snow &amp; 0.70 &amp; 0.84 &amp; 0.56 \\ \hline Melting snow &amp; 0.50 &amp; 0.62 &amp; 0.38 \\ \hline \end{tabular} \]" src="form_1474.png"/>
 </p>
@@ -326,7 +326,7 @@ Functions/Subroutines</h2></td></tr>
 <p>or, simplifying:</p>
 <p><img class="formulaInl" alt="$\alpha_{s,VIS} = 0.9706 \alpha_{s,T} + 0.1347$" src="form_2029.png"/> <img class="formulaInl" alt="$\alpha_{s,NIR} = 1.0294 \alpha_{s,T} - 0.1347$" src="form_2030.png"/></p>
 <p>The above calculations are performed if the flag IALS is set to zero. If IALS is set to one, indicating that assigned snow albedos are to be used instead of calculated values, <img class="formulaInl" alt="$\alpha_{s,VIS}$" src="form_1475.png"/> and <img class="formulaInl" alt="$\alpha_{s,NIR}$" src="form_1476.png"/> are set to the assigned values ASVDAT and ASIDAT respectively. The sub-canopy values of visible and near-IR albedo are currently set equal to the open snowpack values (this is expected to change if a canopy litterfall parametrization is developed).</p>
-<p>The transmissivity of snow under vegetation <img class="formulaInl" alt="$\tau_{s,c}$" src="form_2031.png"/> is then calculated from the snow depth ZSNOW using Beer’s law, with an empirical extinction coefficient of <img class="formulaInl" alt="$25.0 m^{-1}$" src="form_1487.png"/> derived from the literature (Grenfell and Maykut, 1977; Thomas, 1963):</p>
+<p>The transmissivity of snow under vegetation <img class="formulaInl" alt="$\tau_{s,c}$" src="form_2031.png"/> is then calculated from the snow depth ZSNOW using Beer’s law, with an empirical extinction coefficient of <img class="formulaInl" alt="$25.0 m^{-1}$" src="form_1487.png"/> derived from the literature (Grenfell and Maykut, 1977 <a class="el" href="citelist.html#CITEREF_Grenfell1977-pi">[39]</a> ; Thomas, 1963):</p>
 <p><img class="formulaInl" alt="$\tau_{s,c} = exp[-25.0 z_s]$" src="form_2032.png"/></p>
 <p>If the ISNOALB switch is set to zero, the value of ALSNO in the first wavelength band is set to the previously calculated value of <img class="formulaInl" alt="$\alpha_{s,VIS}$" src="form_1475.png"/> and the values for the remaining bands are set to the previously calculated value of <img class="formulaInl" alt="$\alpha_{s,NIR}$" src="form_1476.png"/>; the value of <img class="formulaInl" alt="$\tau_{s,g}$" src="form_2033.png"/> is set to <img class="formulaInl" alt="$\tau_{s,c}$" src="form_2031.png"/>. If the ISNOALB switch is set to 1, a new parameterization for the snow albedo and transmissivity in four shortwave radiation bands (one visible and three near-IR) is used, according to Cole et al. (2017). This parameterization incorporates the effects of snow grain size and black carbon content, and makes use of lookup tables contained in the CCCma subroutines SNOW_ALBVAL and SNOW_TRANVAL.</p>
 <p>Convert the units of the snow grain size and BC mixing ratio Snow grain size from meters to microns and BC from <img class="formulaInl" alt="$kg BC/m^3$" src="form_1489.png"/> to ng BC/kg SNOW</p>
@@ -354,7 +354,7 @@ Here is the caller graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 25 2017 15:37:32 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 26 2017 12:30:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

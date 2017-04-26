@@ -398,7 +398,7 @@ C
 !!method (selected if the flag ITCG = 1) and the Newton-Raphson method (selected if ITCG = 2). In the
 !!first case, the maximum number of iterations ITERMX is set to 12, and in the second case it is set to 5.
 !!An optional windless transfer coefficient EZERO is made available, which can be used, following the
-!!recommendations of Brown et al. (2006), to prevent the sensible heat flux over snow packs from
+!!recommendations of Brown et al. (2006) \cite Brown2006-ec, to prevent the sensible heat flux over snow packs from
 !!becoming vanishingly small under highly stable conditions. If the snow cover flag ISNOW is zero
 !!(indicating bare ground), EZERO is set to zero; if ISNOW=1, EZERO is set to \f$2.0 W m^{-2} K^{-1}\f$ . The
 !!surface transfer coefficient under conditions of free convection, RAGCO, is set to \f$1.9 x 10^{-3}\f$ (see the
@@ -456,7 +456,7 @@ C
 !!RB, and its inverse RBINV, are calculated using the wind speed in the canopy air space, VAC, and a
 !!coefficient RBCOEF evaluated in subroutine APREP. This coefficient is formulated after Bartlett (2004),
 !!who developed an expression for the inverse of the leaf boundary resistance, \f$1/r_b\f$ , drawing on the analysis
-!!of Bonan (1996) and McNaughton and van den Hurk (1995), of the form:
+!!of Bonan (1996) \cite Bonan1996-as and McNaughton and van den Hurk (1995), of the form:
 !!
 !!\f$1/r_b = v_{ac}^{1/2} \sigma f_i \gamma_i \Lambda_i^{1/2} /0.75 [1 - exp(-0.75 \Lambda_i^{1/2})]\f$
 !!
@@ -616,7 +616,7 @@ C
 !!neutral conditions, turbulent fluxes are negligible. If the virtual potential temperature of the surface is
 !!more than 1 K greater than that of the canopy air, free convection conditions are assumed. Townsend's
 !!(1964) equation for the surface-air transfer coefficient, or the inverse of the surface resistance \f$r_{a,,g}\f$ , is used
-!!in a form derived from the analysis of Deardorff (1972):
+!!in a form derived from the analysis of Deardorff (1972) \cite Deardorff1972-ay :
 !!\f$1/r_{a,,g} = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]^{1/3}\f$
 !!
 !!The first derivative of the transfer coefficient with respect to the surface temperature is calculated for use
@@ -1010,7 +1010,7 @@ C
 !!FLXSURFZ is called.
 !!
 !!Next, canopy parameters and turbulent transfer coefficients are calculated prior to evaluating the terms of
-!!the surface energy balance equation. If ITC = 1, the analysis of Garratt (1992) is followed. The sensible
+!!the surface energy balance equation. If ITC = 1, the analysis of Garratt (1992) \cite Garratt1992-dt is followed. The sensible
 !!and latent heat fluxes from the canopy air to the overlying atmosphere, \f$Q_H\f$ and \f$Q_E\f$ , are obtained as the
 !!sums of the sensible and latent heat fluxes from the canopy to the canopy air, \f$Q_{H,c}\f$ and \f$Q_{E,c}\f$ , and from the
 !!underlying surface to the canopy air, \f$Q_{H,g}\f$ and \f$Q_{E,g}\f$ :

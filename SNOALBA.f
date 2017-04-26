@@ -108,7 +108,7 @@ C------------------------------------------------------------------
       !!this subroutine, the visible and near-IR components of the snow 
       !!albedo are diagnosed from the total albedo. According to the 
       !!literature (Aguado, 1985 \cite Aguado1985-fv ; Robinson and Kukla, 1984; Dirmhirn and
-      !!Eaton, 1975), the following represent typical snow albedos for 
+      !!Eaton, 1975 \cite Dirmhirn1975-vx ), the following represent typical snow albedos for
       !!fresh snow, old dry snow and melting snow:
       !!
       !!\f[
@@ -157,7 +157,7 @@ C------------------------------------------------------------------
       !! then calculated from the snow depth
       !!ZSNOW using Beer’s law, with an empirical extinction coefficient 
       !!of \f$25.0 m^{-1}\f$ derived from the literature (Grenfell and Maykut, 
-      !!1977; Thomas, 1963):
+      !!1977 \cite Grenfell1977-pi ; Thomas, 1963):
       !!
       !!\f$\tau_{s,c} = exp[-25.0 z_s]\f$
       !!

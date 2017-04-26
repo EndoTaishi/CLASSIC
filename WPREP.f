@@ -521,7 +521,7 @@ C
       !!turn. Additional variables are initialized, and an empirical 
       !!correction is applied to the saturated hydraulic conductivity in 
       !!each of the soil layers over the subarea, to account for the 
-      !!viscosity of water at the layer temperature (Dingman, 2002):
+      !!viscosity of water at the layer temperature (Dingman, 2002) \cite Lawrence_Dingman2002-sq :
       !!
       !!\f$K_{sat}' = (1.7915 * 10^{-3}) K_{sat} / [(2.0319 * 10^{-4})+(1.5883 * 10^{-3}) exp(-T_g^{0.9}/22.0)]\f$
       !!

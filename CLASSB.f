@@ -234,14 +234,14 @@ C
 !!depending on soil type. Values of ISAND greater than zero indicate mineral soil. The pore volume \f$\theta_p\f$ ,
 !!the saturated hydraulic conductivity \f$K_{sat}\f$ , and the soil moisture suction at saturation \f$\Psi\f$ sat are calculated from
 !!the percentage sand content \f$X_{sand}\f$ , and the hydraulic parameter b is calculated from the percentage clay
-!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984):
+!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc:
 !!\f$\theta_p = (-0.126 X_{sand} +48.9)/100.0\f$
 !!\f$b = 0.159 X_{clay} + 2.91\f$
 !!\f$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)\f$
 !!\f$K_{sat} = 7.0556 x 10 -6 exp(0.0352 X_{sand} - 2.035)\f$
 !!
 !!The fractional saturation of the soil at half the saturated hydraulic conductivity, \f$f_{inf}\f$ , is calculated by
-!!inverting the Clapp and Hornberger (1978) expression relating hydraulic conductivity \f$K\f$ to liquid water
+!!inverting the Clapp and Hornberger (1978) \cite Clapp1978-898 expression relating hydraulic conductivity \f$K\f$ to liquid water
 !!content of the soil \f$\theta_l\f$ :
 !!\f$K = K_{sat} (\theta_l / \theta_p ) (2b + 3)\f$
 !!

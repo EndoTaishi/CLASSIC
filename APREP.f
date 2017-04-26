@@ -794,7 +794,7 @@ C
       !!For snow interception on the canopy, a modified calculation of the plant area indices \f$\Lambda_{p,0}\f$ and \f$\Lambda_{p,s}\f$ is
       !!performed, assigning a weight of 0.7 to the plant area index of needleleaf trees, to account for the effect
       !!of needle clumping. The interception capacity for snow, \f$W_{f,max}\f$, is calculated following Bartlett et al.
-      !!(2006), using a relation developed by Schmidt and Gluns (1991):
+      !!(2006) \cite Bartlett2006-xp, using a relation developed by Schmidt and Gluns (1991):
       !!\f$W_{f,max} = 6.0 \Lambda_p [0.27 + 46.0 \rho_{s,f} ]\f$
       !!where \f$\rho_{s,f} is the density of fresh snow. As was done for the intercepted liquid water, if either the average
       !!amount of snow on the canopy, SNCAN, or the total cancpy coverage is less than a small threshold value,
@@ -1019,7 +1019,7 @@ C
 !!\f$X ln(d) = \Sigma [X_i ln(d_i)]\f$
 !!where X is the fractional coverage of the subarea. The averaged roughness length for momentum \f$z_{0m}\f$
 !!over the subarea is determined based on the assumption that averaging should be performed on the basis
-!!of the drag coefficient formulation. Thus, following Delage et al. (1999), and after Mason (1988):
+!!of the drag coefficient formulation. Thus, following Delage et al. (1999) \cite Delage1999-vj, and after Mason (1988):
 !!\f$X/ln^2 (z_b /z_{0m}) = \Sigma [X_i /ln^2 (z_b /z_{0i})]\f$
 !!
 !!The averaged roughness length for heat \f$z_{0e}\f$ over the subarea is calculated as a geometric mean over the
@@ -1234,7 +1234,7 @@ C
 !!rooting depth ZROOT is set to the background maximum value, except in the case of crops, for which it
 !!is set to the maximum scaled by GROWA. If the soil permeable depth is less than ZROOT, ZROOT is
 !!set to this depth instead. Values are then assigned in the matrix RMAT, which stores the fraction of roots
-!!in each vegetation category for each soil layer. According to Feddes et al. (1974), the fractional root
+!!in each vegetation category for each soil layer. According to Feddes et al. (1974) \cite Feddes1974-ff , the fractional root
 !!volume R(z) below a depth z is well represented for many varieties of plants by the following exponential
 !!function:
 !!\f$R(z) = a_1 exp(-3.0z) + a_2.\f$
@@ -1354,7 +1354,7 @@ C
 !!\f$\Psi_i = \Psi_{sat} ( \theta_{l,i} / \theta_p )^{-b}\f$
 !!In these equations \f$\Psi_w\f$ is the soil moisture suction at the wilting point, \f$\Psi_{sat}\f$ is the suction at 
 !!saturation, \f$\theta_{l,i}\f$ is the volumetric liquid water content of the soil layer, \f$\theta_p\f$ is the pore 
-!!volume, and b is an empirical parameter developed by Clapp and Hornberger (1978). The layer values of FROOT and FROOTS are then
+!!volume, and b is an empirical parameter developed by Clapp and Hornberger (1978) \cite Clapp1978-898. The layer values of FROOT and FROOTS are then
 !!re-normalized so that their sum adds up to unity. In this loop, the representative soil moisture suction PSIGND is also
 !!calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of \f$\Psi_i\f$ and
 !!\f$\Psi_w\f$ over all the soil layers.

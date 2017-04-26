@@ -138,7 +138,7 @@ C---------------------------------------------------------------------
       !!If ISAND = -2, indicating organic soil, \f$\alpha_{g,VIS}\f$ and \f$\alpha_{g,NIR}\f$ are 
       !!assigned values of 0.05 and 0.30 respectively from the lookup 
       !!tables in the block data subroutine CLASSBD, corresponding to 
-      !!average measured values reported in Comer et al. (2000).
+      !!average measured values reported in Comer et al. (2000) \cite Comer2000-mz.
       !!
       !!If ISAND = -3, indicating rock at the surface, \f$\alpha_{g,VIS}\f$ and
       !!\f$\alpha_{g,NIR}\f$ are assigned the dry ground values from CLASSB.

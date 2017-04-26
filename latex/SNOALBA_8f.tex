@@ -102,7 +102,7 @@ Purpose\+: Diagnose snowpack visible and near-\/\+I\+R albedos given the all-\/w
 {\em rhosno} & Density of snow pack $[kg m^{-3}]$ \\
 \hline
 \end{DoxyParams}
-In subroutine S\+N\+O\+A\+L\+B\+W, called at the end of C\+L\+A\+S\+S\+W, the change of total snow albedo over the current time step is calculated using an empirical exponential decay function, which has different coefficients depending on whether the snow is dry or melting. In this subroutine, the visible and near-\/\+I\+R components of the snow albedo are diagnosed from the total albedo. According to the literature (Aguado, 1985 \cite{Aguado1985-fv} ; Robinson and Kukla, 1984; Dirmhirn and Eaton, 1975), the following represent typical snow albedos for fresh snow, old dry snow and melting snow\+:
+In subroutine S\+N\+O\+A\+L\+B\+W, called at the end of C\+L\+A\+S\+S\+W, the change of total snow albedo over the current time step is calculated using an empirical exponential decay function, which has different coefficients depending on whether the snow is dry or melting. In this subroutine, the visible and near-\/\+I\+R components of the snow albedo are diagnosed from the total albedo. According to the literature (Aguado, 1985 \cite{Aguado1985-fv} ; Robinson and Kukla, 1984; Dirmhirn and Eaton, 1975 \cite{Dirmhirn1975-vx} ), the following represent typical snow albedos for fresh snow, old dry snow and melting snow\+:
 
 \[ \begin{tabular} { | l | c | c | c | } \hline & Total albedo & Visible albedo & Near-IR albedo \\ \hline Fresh snow & 0.84 & 0.95 & 0.73 \\ \hline Old dry snow & 0.70 & 0.84 & 0.56 \\ \hline Melting snow & 0.50 & 0.62 & 0.38 \\ \hline \end{tabular} \]
 
@@ -124,7 +124,7 @@ $\alpha_{s,VIS} = 0.9706 \alpha_{s,T} + 0.1347$ $\alpha_{s,NIR} = 1.0294 \alpha_
 
 The above calculations are performed if the flag I\+A\+L\+S is set to zero. If I\+A\+L\+S is set to one, indicating that assigned snow albedos are to be used instead of calculated values, $\alpha_{s,VIS}$ and $\alpha_{s,NIR}$ are set to the assigned values A\+S\+V\+D\+A\+T and A\+S\+I\+D\+A\+T respectively. The sub-\/canopy values of visible and near-\/\+I\+R albedo are currently set equal to the open snowpack values (this is expected to change if a canopy litterfall parametrization is developed).
 
-The transmissivity of snow under vegetation $\tau_{s,c}$ is then calculated from the snow depth Z\+S\+N\+O\+W using Beer’s law, with an empirical extinction coefficient of $25.0 m^{-1}$ derived from the literature (Grenfell and Maykut, 1977; Thomas, 1963)\+:
+The transmissivity of snow under vegetation $\tau_{s,c}$ is then calculated from the snow depth Z\+S\+N\+O\+W using Beer’s law, with an empirical extinction coefficient of $25.0 m^{-1}$ derived from the literature (Grenfell and Maykut, 1977 \cite{Grenfell1977-pi} ; Thomas, 1963)\+:
 
 $\tau_{s,c} = exp[-25.0 z_s]$
 

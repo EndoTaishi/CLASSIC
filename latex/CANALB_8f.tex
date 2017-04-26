@@ -163,7 +163,7 @@ Purpose\+: Calculate vegetation albedos, transmissivities and stomatal resistanc
 {\em alirsc} & Visible/near-\/\+I\+R albedo of snow under vegetation \mbox{[} \mbox{]} \\
 \hline
 \end{DoxyParams}
-The transmissivity $\tau_c$ of a vegetation canopy to shortwave radiation is obtained by applying a form of Beer’s law of radiation transfer in non-\/scattering media\+: $\tau_c = exp[-\kappa \Lambda_p]$ where $\kappa$ is the canopy extinction coefficient and $\Lambda_p$ is the plant area index. The extinction coefficient is calculated after Goudriaan (1988) as $\kappa = \epsilon O/cos(Z)$ where epsilon is a correction factor less than or equal to 1, accounting for forward-\/scattering of radiation and non-\/random leaf distributions (i.\+e. clumping), O represents the mean projected leaf area fraction perpendicular to the incoming radiation, and Z is the zenith angle of the incoming radiation. For crops, grass and needleleaf trees, the distribution of leaf angles is assumed to be spherical, and thus O = 0.\+5. For broadleaf trees, the preferred leaf orientation tends to be horizontal; thus O = cos(\+Z).
+The transmissivity $\tau_c$ of a vegetation canopy to shortwave radiation is obtained by applying a form of Beer’s law of radiation transfer in non-\/scattering media\+: $\tau_c = exp[-\kappa \Lambda_p]$ where $\kappa$ is the canopy extinction coefficient and $\Lambda_p$ is the plant area index. The extinction coefficient is calculated after Goudriaan (1988) \cite{Gold1958-ng} as $\kappa = \epsilon O/cos(Z)$ where epsilon is a correction factor less than or equal to 1, accounting for forward-\/scattering of radiation and non-\/random leaf distributions (i.\+e. clumping), O represents the mean projected leaf area fraction perpendicular to the incoming radiation, and Z is the zenith angle of the incoming radiation. For crops, grass and needleleaf trees, the distribution of leaf angles is assumed to be spherical, and thus O = 0.\+5. For broadleaf trees, the preferred leaf orientation tends to be horizontal; thus O = cos(\+Z).
 
 In the clear-\/sky case, incoming shortwave radiation is dominated by the direct beam; thus, the transmissivity for clear skies $\tau_{c,0}$ is evaluated by simply setting Z to $Z_s$, the solar zenith angle. An extensive search of the literature for values of epsilon appropriate to the four vegetation categories yielded the following results for the extinction coefficient\+:
 
@@ -177,13 +177,13 @@ In the case of overcast skies, the hemispherical distribution of incoming shortw
 
 $D(Z) = D(0) [(1 + 1.23cosZ)/2.23].$
 
-Integration of the cloudy-\/sky transmissivity $tau_{c,cloudy}$ over the sky hemisphere is performed using a simple weighting function proposed by Goudriaan (1988)\+:
+Integration of the cloudy-\/sky transmissivity $tau_{c,cloudy}$ over the sky hemisphere is performed using a simple weighting function proposed by Goudriaan (1988) \cite{Gold1958-ng} \+:
 
 $\tau_{c,cloudy} = 0.3 \tau_c(Z=15^o) + 0.5 \tau_c(Z=45^o) + 0.2 \tau_c(Z=75^o)$
 
 The albedo $\alpha_c$ of a vegetation canopy is, like the transmissivity, dependent in principle on the zenith angle Z of the incoming radiation and the mean projected leaf area fraction O. However, in practice the observed diurnal and seasonal variation of vegetation albedo tends to be slight for closed canopies or for radiation zenith angles larger than a few degrees. Since the former is generally true in the tropics and the latter in the extratropics, the diurnal variation of visible and near-\/infrared canopy albedo is neglected in C\+L\+A\+S\+S.
 
-Corrections are applied to the average albedos to account for the effects of intercepted snow on the canopy and incomplete canopy closure. The presence of snow on the canopy will increase the albedo; this increase will be larger in the visible range of the spectrum, since the visible albedo of vegetation is typically very small. Making use of data presented in Bartlett et al. (2015) {\bfseries [Bartlett2015-\/gw]}, the visible albedo of snow-\/covered vegetation is set to 0.\+27 and near-\/infrared albedo to 0.\+38.
+Corrections are applied to the average albedos to account for the effects of intercepted snow on the canopy and incomplete canopy closure. The presence of snow on the canopy will increase the albedo; this increase will be larger in the visible range of the spectrum, since the visible albedo of vegetation is typically very small. Making use of data presented in Bartlett et al. (2015) \cite{Bartlett2015-gw}, the visible albedo of snow-\/covered vegetation is set to 0.\+27 and near-\/infrared albedo to 0.\+38.
 
 If the canopy closure is incomplete, a fraction chi of the ground or snow under the canopy will be visible through gaps in it. This fraction is equal to the sky view factor of the underlying surface, which is calculated using an equation analogous to that for the canopy transmissivity, as an exponential function of the plant area index $\Lambda_p$\+:
 
@@ -215,7 +215,7 @@ The air temperature function $f(T_a)$ has a value of 1 for temperatures between 
 
 $f( \Delta e) = [( \Delta e/10.0)^{cv2}]/c_{v1}$ and $f(\Delta e) = 1/[exp(-c_{v1} \Delta e/10.0)]$
 
-where $c_{v1}$ and $c_{v2}$ are parameters depending on the vegetation category. If $c_{v2}$ is greater than zero, the first form is used; if not, the second form is used. The soil moisture suction function $f(\Psi_s)$ is expressed, following Choudhury and Idso (1985) and Fisher et al. (1981), as\+:
+where $c_{v1}$ and $c_{v2}$ are parameters depending on the vegetation category. If $c_{v2}$ is greater than zero, the first form is used; if not, the second form is used. The soil moisture suction function $f(\Psi_s)$ is expressed, following Choudhury and Idso (1985) \cite{Choudhury1985-mm} and Fisher et al. (1981) \cite{Fisher1981-xf} , as\+:
 
 $f(\Psi_s) = 1 + (\Psi_s / c_{\Psi 1})^{c \Psi 2}$
 

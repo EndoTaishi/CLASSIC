@@ -236,7 +236,7 @@
 !!performance in the energy simulations for fens and bogs with this organic
 !!soil parameterization. However, the model overestimated energy and water
 !!fluxes at bog surfaces during dry periods due to the neglect of the moss
-!!cover (Comer et al., 2000).
+!!cover (Comer et al., 2000) \cite Comer2000-mz.
 !!
 !!To take into account the interaction amongst the moss and the soil layers and
 !!the overlying atmosphere for energy and water transfer, we added a new soil

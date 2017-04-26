@@ -93,7 +93,7 @@ C----------------------------------------------------------------------
       !!snow value of 0.84 to a background old snow value \f$\alpha_{s,old}\f$ using an 
       !!expression based on data given in
       !!Aguado (1985) \cite Aguado1985-fv, Robinson and Kukla (1984) and Dirmhirn and Eaton
-      !!(1975):
+      !!(1975) \cite Dirmhirn1975-vx :
       !!
       !!\f$\alpha_s (t+1) = [\alpha_s (t) - \alpha_{s,old}] exp [-0.01 \Delta t / 3600] + \alpha_{s,old}\f$
       !!
@@ -110,13 +110,13 @@ C----------------------------------------------------------------------
       !!
       !!The empirical constant \f$A_s\f$ is assigned a value of 450.0 for cold 
       !!snow packs, and 700.0 for snow packs near
-      !!the melting point, following Brown et al. (2006).
+      !!the melting point, following Brown et al. (2006) \cite Brown2006-ec.
       !!
       !!The density of snow \f$\rho_s\f$ increases exponentially with time from its 
       !!fresh snow value to the background old
       !!snow density calculated above, according to an expression 
       !!analogous to that for albedo, derived from the
-      !!field measurements of Longley (1960) and Gold (1958):
+      !!field measurements of Longley (1960) and Gold (1958) \cite Gold1958-ng:
       !!
       !!\f$\rho_s (t+1) = [\rho_s (t) - \rho_{s,max} ] exp [-0.01 \Delta t/3600] + \rho{s,max}\f$
       !!
