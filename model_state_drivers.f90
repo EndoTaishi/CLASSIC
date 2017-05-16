@@ -571,43 +571,43 @@ call check_nc(nf90_inq_varid(initid,'DRN',varid))
 call check_nc(nf90_get_var(initid,varid,DRNROT,start=[srtx,srty],count=[cntx,cnty]))
 !DRNROT = map(temptwod)
 
-call check_nc(nf90_inq_varid(initid,'SDEP',varid))
-call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-SDEPROT = map(temptwod)
-
- call check_nc(nf90_inq_varid(initid,'FARE',varid))
-call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-FAREROT = map(temptwod)
-
-call check_nc(nf90_inq_varid(initid,'XSLP',varid))
-call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-XSLPROT = map(temptwod)
-
-call check_nc(nf90_inq_varid(initid,'GRKF',varid))
-call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-GRKFROT = map(temptwod)
-
-call check_nc(nf90_inq_varid(initid,'WFSF',varid))
-call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-WFSFROT = map(temptwod)
-
-call check_nc(nf90_inq_varid(initid,'WFCI',varid))
-call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-WFCIROT = map(temptwod)
-
-call check_nc(nf90_inq_varid(initid,'MID',varid))
-call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-MIDROT = map(temptwod)
+! call check_nc(nf90_inq_varid(initid,'SDEP',varid))
+! call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+! SDEPROT = map(temptwod)
+!
+!  call check_nc(nf90_inq_varid(initid,'FARE',varid))
+! call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+! FAREROT = map(temptwod)
+!
+! call check_nc(nf90_inq_varid(initid,'XSLP',varid))
+! call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+! XSLPROT = map(temptwod)
+!
+! call check_nc(nf90_inq_varid(initid,'GRKF',varid))
+! call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+! GRKFROT = map(temptwod)
+!
+! call check_nc(nf90_inq_varid(initid,'WFSF',varid))
+! call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+! WFSFROT = map(temptwod)
+!
+! call check_nc(nf90_inq_varid(initid,'WFCI',varid))
+! call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+! WFCIROT = map(temptwod)
+!
+! call check_nc(nf90_inq_varid(initid,'MID',varid))
+! call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+! MIDROT = map(temptwod)
 
 deallocate(temptwod)
 
 ! Now get the 3D variables:
 
-allocate(temp3d(cntx,cnty))
-
-call check_nc(nf90_inq_varid(initid,'FCAN',varid))
-call check_nc(nf90_get_var(initid,varid,temp3d,start=[1,srtx,srty],count=[icp1,cntx,cnty]))
-FCANROT = map3d(temp3d)
+! allocate(temp3d(cntx,cnty))
+!
+! call check_nc(nf90_inq_varid(initid,'FCAN',varid))
+! call check_nc(nf90_get_var(initid,varid,temp3d,start=[1,srtx,srty],count=[icp1,cntx,cnty]))
+! FCANROT = map3d(temp3d)
 
 ! 
 ! call check_nc(nf90_inq_varid(initid,'LNZ0',varid))

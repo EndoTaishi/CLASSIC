@@ -396,7 +396,7 @@ argcount = iargc()
        if(argcount .ne. 2)then
          write(*,*)'usage is as follows'
          write(*,*)' '
-         write(*,*)'CLASS36CTEM joboptions_file site_name'
+         write(*,*)'CLASSIC joboptions_file site_name'
          write(*,*)' '
          write(*,*)'- joboptions_file - an example can be found '
          write(*,*)'  in the src folder - template_job_options_file.txt.'
