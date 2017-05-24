@@ -69,7 +69,7 @@
 !!
 !! If doing methane then the CH4 switches should be the same as the CO2 ones.
 !!
-subroutine read_from_job_options(argbuff,transient_run,trans_startyr,ctemloop,ctem_on, &
+subroutine read_from_job_options(lonindex,latindex,transient_run,trans_startyr,ctemloop,ctem_on, &
                   ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
                   setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
                   compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
@@ -114,7 +114,8 @@ implicit none
 ! -------------
 ! ctem model switches
 
-character(80), intent(out) :: argbuff !prefix of file names
+!character(80), intent(out) :: argbuff !prefix of file names
+integer, intent(out) :: latindex,lonindex
 
 logical, intent(out) :: transient_run !< true if the run is a transient run. With this flag set
                                  !< set to .true., you can cycle over nummetcyclyrs of climate a
@@ -393,21 +394,21 @@ integer :: argcount, iargc
 
 argcount = iargc()
 
-       if(argcount .ne. 2)then
-         write(*,*)'usage is as follows'
+       if(argcount .ne. 3)then
+         write(*,*)'usage is as follows (assuming you are using the MPI wrapper)'
          write(*,*)' '
-         write(*,*)'CLASSIC joboptions_file site_name'
+         write(*,*)'CLASSIC joboptions_file long_cell_index lat_cell_index'
          write(*,*)' '
          write(*,*)'- joboptions_file - an example can be found '
          write(*,*)'  in the src folder - template_job_options_file.txt.'
          write(*,*)'  descriptions of the various variables '
          write(*,*)'  can be found in read_from_job_options.f90 '
          write(*,*)' '
-         write(*,*)'- longitude/longitude/latitude/latitude '
-         write(*,*)'  e.g. 105/125/40/60 '
-         write(*,*)'  if you want only run one site, put the same'
-         write(*,*)'  value for each pair. The longitudes follow'
-         write(*,*)'  the same convention as your initialization file'
+         write(*,*)'- longitude gridcell index '
+         write(*,*)'  e.g. 105 '
+         write(*,*)'- latitude gridcell index '
+         write(*,*)'  e.g. 40 '
+         write(*,*)'  if you want only run in single site mode use "1 1".'
          write(*,*)' '
          stop
       end if
@@ -421,11 +422,11 @@ read(10,nml = joboptions)
 
 close(10)
 
-call getarg(2,argbuff)
-
-if (use_netcdf) then
-    call parsecoords(argbuff,bounds)
-end if
+call getarg(2,lonindex)
+call getarg(3,latindex)
+!if (use_netcdf) then
+!    call parsecoords(argbuff,bounds)
+!end if
 
 end subroutine read_from_job_options
 

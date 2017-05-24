@@ -74,6 +74,9 @@
 
       implicit none
 
+      ! Flag test
+      integer :: lonindex, latindex
+
 !
 !     * INTEGER CONSTANTS.
 !
@@ -3305,7 +3308,7 @@
       CALL CLASSD
 
 !     all model switches are read in from a namelist file #ED - is it problem for each process to access one ASCII job options file?
-      call read_from_job_options(argbuff,transient_run,&
+      call read_from_job_options(lonindex,latindex,transient_run,&
      &             trans_startyr,ctemloop,ctem_on,ncyear,lnduseon,&
      &             spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on,&
      &             setco2conc,ch4on,setch4conc,popdon,popcycleyr,&
