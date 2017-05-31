@@ -168,7 +168,7 @@ integer, dimension(nlat,nmos,icc-numcrops) :: indexposj ! temp var
 integer, dimension(nlat,nmos,icc-numcrops) :: indexposm ! temp var
 real :: temp
 integer :: j,m,i,n,k
-integer :: k2,k1,strlen
+integer :: k2,k1
 
 !>-------------------------
 !> Initialize barefraction to 1.0
@@ -183,7 +183,7 @@ pftarrays=0.
 
 !>open the luc file
 
-open(unit=15,file=lucdat(1:strlen(lucdat))//'.LUC')
+open(unit=15,file=trim(lucdat)//'.LUC')
 
 !>Skip first three rows:
 read(15,*)

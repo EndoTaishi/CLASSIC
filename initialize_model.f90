@@ -56,7 +56,7 @@ init_file         => c_switch%init_file
 
 call check_nc(nf90_open(trim(init_file),nf90_nowrite,initid))
 
-!> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for 
+!> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for
 !! names of longitude and latitude.
 
 call check_nc(nf90_inq_dimid(initid,'lon',dimid))

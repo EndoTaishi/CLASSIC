@@ -177,7 +177,7 @@ real, pointer, dimension(:,:,:) :: slopefrac
 
 ! local variables
 
-integer :: i,m,j,strlen
+integer :: i,m,j
 real, dimension(ilg,2) :: crop_temp_frac
 
 ! point pointers:
@@ -223,7 +223,7 @@ pandaysrow        => vrot%pandays
 ! -----------------      
 ! Begin      
 
-open(unit=11,file=argbuff(1:strlen(argbuff))//'.CTM', status='old')
+open(unit=11,file=trim(argbuff)//'.CTM', status='old')
 
 read (11,7010) titlec1
 read (11,7010) titlec2
@@ -624,7 +624,7 @@ real, pointer, dimension(:,:,:) :: slopefrac       !< Fraction flatter than the 
 
 ! local variables
 
-integer :: i,m,j,strlen
+integer :: i,m,j
 integer :: k1c,k2c,n
 real, dimension(icc) :: rnded_pft
 
@@ -667,7 +667,7 @@ slopefrac         => vrot%slopefrac
 ! -----------------      
 ! Begin
 
-open(unit=101,file=argbuff(1:strlen(argbuff))//'.CTM_RS')
+open(unit=101,file=trim(argbuff)//'.CTM_RS')
 
 write(101,7010) titlec1
 write(101,7010) titlec2
@@ -815,7 +815,6 @@ logical, pointer :: obswetf
 logical, pointer :: parallelrun
 
 ! local variables:
-integer :: strlen
 character(80) :: titlec1, titlec2, titlec3
 
 ! point pointers:
@@ -842,26 +841,26 @@ parallelrun       => c_switch%parallelrun
 if (.not. parallelrun .and. ctem_on) then !>stand alone mode, includes half-hourly and daily output
 
     !>ctem half hourly output files
-    open(unit=71, file=argbuff(1:strlen(argbuff))//'.CT01H_M')  
-    open(unit=711,file=argbuff(1:strlen(argbuff))//'.CT01H_G')
+    open(unit=71, file=trim(argbuff)//'.CT01H_M')
+    open(unit=711,file=trim(argbuff)//'.CT01H_G')
 
     !>ctem daily output files
-    open(unit=72,file=argbuff(1:strlen(argbuff))//'.CT01D')
-    open(unit=73,file=argbuff(1:strlen(argbuff))//'.CT02D')
-    open(unit=74,file=argbuff(1:strlen(argbuff))//'.CT03D')
-    open(unit=75,file=argbuff(1:strlen(argbuff))//'.CT04D')
-    !open(unit=76,file=argbuff(1:strlen(argbuff))//'.CT05D') !FLAG. this one is turned off for now. You can turn on but go through the vars to make sure all is ok.
+    open(unit=72,file=trim(argbuff)//'.CT01D')
+    open(unit=73,file=trim(argbuff)//'.CT02D')
+    open(unit=74,file=trim(argbuff)//'.CT03D')
+    open(unit=75,file=trim(argbuff)//'.CT04D')
+    !open(unit=76,file=trim(argbuff)//'.CT05D') !FLAG. this one is turned off for now. You can turn on but go through the vars to make sure all is ok.
 
     if (dofire .or. lnduseon) then
-    open(unit=77,file=argbuff(1:strlen(argbuff))//'.CT06D') ! disturbance vars
+    open(unit=77,file=trim(argbuff)//'.CT06D') ! disturbance vars
     endif
 
     if (compete .or. lnduseon) then
-        open(unit=78,file=argbuff(1:strlen(argbuff))//'.CT07D') ! competition
+        open(unit=78,file=trim(argbuff)//'.CT07D') ! competition
     end if
 
     if (dowetlands .or. obswetf) then
-        open(unit=79,file=argbuff(1:strlen(argbuff))//'.CT08D') ! Methane(Wetland)
+        open(unit=79,file=trim(argbuff)//'.CT08D') ! Methane(Wetland)
     endif 
 
 endif ! parallelrun & ctem_on
@@ -965,7 +964,7 @@ end if !>ctem_on & not parallelrun
 
 !> CLASS MONTHLY FOR BOTH PARALLEL MODE AND STAND ALONE MODE
 
-OPEN(UNIT=81,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1M')
+OPEN(UNIT=81,FILE=trim(argbuff)//'.OF1M')
 WRITE(81,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
 WRITE(81,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 WRITE(81,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
@@ -974,7 +973,7 @@ WRITE(81,6021)'MONTH','YEAR','SW','LW','QH','QE','SNOACC','WSNOACC','ROFACC','PC
 WRITE(81,6021)'#','','W/m2','W/m2','W/m2','W/m2','kg/m2','kg/m2','mm.mon','mm.mon',&
               'mm.mon','degC','mm.mon','ratio','kg/m2/mon','kg/m2/mon',' '
 
-OPEN(UNIT=82,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF2M')
+OPEN(UNIT=82,FILE=trim(argbuff)//'.OF2M')
 WRITE(82,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
 WRITE(82,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 WRITE(82,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
@@ -983,7 +982,7 @@ WRITE(82,6022)'#','','deg','m3/m3','m3/m3','deg','m3/m3','m3/m3','deg','m3/m3','
 
 !> CLASS YEARLY OUTPUT FILES
 
-OPEN(UNIT=83,FILE=ARGBUFF(1:STRLEN(ARGBUFF))//'.OF1Y')
+OPEN(UNIT=83,FILE=trim(argbuff)//'.OF1Y')
 WRITE(83,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
 WRITE(83,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
 WRITE(83,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
@@ -992,7 +991,7 @@ WRITE(83,6023)'#','W/m2','W/m2','W/m2','W/m2','mm.yr','mm.yr','mm.yr','mm.yr','r
 
 if (ctem_on) then
 
-    open(unit=84,file=argbuff(1:strlen(argbuff))//'.CT01M') !> CTEM monthly output files
+    open(unit=84,file=trim(argbuff)//'.CT01M') !> CTEM monthly output files
     write(84,6001) title1,title2,title3,title4,title5,title6
     write(84,6002) name1,name2,name3,name4,name5,name6
     write(84,6003) place1,place2,place3,place4,place5,place6
@@ -1003,7 +1002,7 @@ if (ctem_on) then
              'g/m2.mon','g/m2.mon','gC/m2.mon','gC/m2.mon','gC/m2.mon','gC/m2.mon','gC/m2.mon'
     
     if (dofire .or. lnduseon) then
-        open(unit=85,file=argbuff(1:strlen(argbuff))//'.CT06M') !> Monthly disturbance
+        open(unit=85,file=trim(argbuff)//'.CT06M') !> Monthly disturbance
         write(85,6001) title1,title2,title3,title4,title5,title6
         write(85,6002) name1,name2,name3,name4,name5,name6
         write(85,6003) place1,place2,place3,place4,place5,place6
@@ -1015,7 +1014,7 @@ if (ctem_on) then
             '%','prob/mon','prob/mon','prob/mon','km/h'
     end if
 
-    open(unit=86,file=argbuff(1:strlen(argbuff))//'.CT01Y') !> CTEM yearly output files
+    open(unit=86,file=trim(argbuff)//'.CT01Y') !> CTEM yearly output files
     write(86,6001) title1,title2,title3,title4,title5,title6
     write(86,6002) name1,name2,name3,name4,name5,name6
     write(86,6003) place1,place2,place3,place4,place5,place6
@@ -1027,7 +1026,7 @@ if (ctem_on) then
                   'gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','gC/m2.yr','m'
 
     if (dofire .or. lnduseon) then
-        open(unit=87,file=argbuff(1:strlen(argbuff))//'.CT06Y') !> Annual disturbance
+        open(unit=87,file=trim(argbuff)//'.CT06Y') !> Annual disturbance
         write(87,6001) title1,title2,title3,title4,title5,title6
         write(87,6002) name1,name2,name3,name4,name5,name6
         write(87,6003) place1,place2,place3,place4,place5,place6
@@ -1042,7 +1041,7 @@ if (ctem_on) then
 
     if (compete .or. lnduseon) then
 
-        open(unit=88,file=argbuff(1:strlen(argbuff))//'.CT07M')!> ctem pft fractions MONTHLY
+        open(unit=88,file=trim(argbuff)//'.CT07M')!> ctem pft fractions MONTHLY
         write(88,6001) title1,title2,title3,title4,title5,title6
         write(88,6002) name1,name2,name3,name4,name5,name6
         write(88,6003) place1,place2,place3,place4,place5,place6
@@ -1051,7 +1050,7 @@ if (ctem_on) then
                       'FRAC#8','FRAC#9','FRAC#10','SUMCHECK','PFT existence for each of the 9 pfts'
         write(88,6128)'#','','%','%','%','%','%','%','%','%','%','%','%'
 
-        open(unit=89,file=argbuff(1:strlen(argbuff))//'.CT07Y')!> ctem pft fractions YEARLY
+        open(unit=89,file=trim(argbuff)//'.CT07Y')!> ctem pft fractions YEARLY
         write(89,6001) title1,title2,title3,title4,title5,title6
         write(89,6002) name1,name2,name3,name4,name5,name6
         write(89,6003) place1,place2,place3,place4,place5,place6
@@ -1064,7 +1063,7 @@ if (ctem_on) then
 
     if (dowetlands .or. obswetf) then
 
-        open(unit=91,file=argbuff(1:strlen(argbuff))//'.CT08M') !>Methane(wetland) MONTHLY
+        open(unit=91,file=trim(argbuff)//'.CT08M') !>Methane(wetland) MONTHLY
         write(91,6001) title1,title2,title3,title4,title5,title6
         write(91,6002) name1,name2,name3,name4,name5,name6
         write(91,6003) place1,place2,place3,place4,place5,place6
@@ -1072,7 +1071,7 @@ if (ctem_on) then
         write(91,6230)'MONTH','YEAR','CH4WET1','CH4WET2','WETFDYN','CH4DYN1','CH4DYN2','SOILUPTAKE'
         write(91,6230)'#','','gCH4/M2.MON','gCH4/M2.MON','fraction','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON'
 
-        open(unit=92,file=argbuff(1:strlen(argbuff))//'.CT08Y')  !>Methane(wetland) YEARLY
+        open(unit=92,file=trim(argbuff)//'.CT08Y')  !>Methane(wetland) YEARLY
         write(92,6001) title1,title2,title3,title4,title5,title6
         write(92,6002) name1,name2,name3,name4,name5,name6
         write(92,6003) place1,place2,place3,place4,place5,place6

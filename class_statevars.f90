@@ -700,329 +700,329 @@ implicit none
 
 
 !ilg
-allocate(class_gat% ILMOS   (ilg))
-allocate(class_gat% JLMOS   (ilg))
-allocate(class_gat% IWMOS   (ilg))
-allocate(class_gat% JWMOS   (ilg))
-allocate(class_gat%IGDRGAT  (ilg))
-allocate(class_gat% DELZ    (ilg))
-allocate(class_gat% ZBOT    (ilg))
-allocate(class_gat% ALBSGAT (ilg))
-allocate(class_gat% CMAIGAT (ilg))
-allocate(class_gat% GROGAT  (ilg))
-allocate(class_gat% QACGAT  (ilg))
-allocate(class_gat%RCANGAT(ilg))
-allocate(class_gat%RHOSGAT(ilg))
-allocate(class_gat%SCANGAT(ilg))
-allocate(class_gat%SNOGAT(ilg))
-allocate(class_gat%TACGAT(ilg))
-allocate(class_gat%TBASGAT(ilg))
-allocate(class_gat%TCANGAT(ilg))
-allocate(class_gat%TPNDGAT(ilg))
-allocate(class_gat%TSNOGAT(ilg))
-allocate(class_gat%WSNOGAT(ilg))
-allocate(class_gat%ZPNDGAT(ilg))
-allocate(class_gat%REFGAT(ilg))
-allocate(class_gat%BCSNGAT(ilg))
-allocate(class_gat%AGIDGAT(ilg))
-allocate(class_gat%AGVDGAT(ilg))
-allocate(class_gat%ALGDGAT(ilg))
-allocate(class_gat%ALGWGAT(ilg))
-allocate(class_gat%ASIDGAT(ilg))
-allocate(class_gat%ASVDGAT(ilg))
-allocate(class_gat%DRNGAT(ilg))
-allocate(class_gat%GRKFGAT(ilg))
-allocate(class_gat%WFCIGAT(ilg))
-allocate(class_gat%WFSFGAT(ilg))
-allocate(class_gat%XSLPGAT(ilg))
-allocate(class_gat%ZPLGGAT(ilg))
-allocate(class_gat%ZPLSGAT(ilg))
-allocate(class_gat%ZSNLGAT(ilg))
-allocate(class_gat%ALGWVGAT(ilg))
-allocate(class_gat%ALGWNGAT(ilg))
-allocate(class_gat%ALGDVGAT(ilg))
-allocate(class_gat%ALGDNGAT(ilg))
-allocate(class_gat%EMISGAT(ilg))
-allocate(class_gat%CSZGAT(ilg))
-allocate(class_gat%DLONGAT(ilg))
-allocate(class_gat%DLATGAT(ilg))
-allocate(class_gat%FCLOGAT(ilg))
-allocate(class_gat%FDLGAT(ilg))
-allocate(class_gat%FSIHGAT(ilg))
-allocate(class_gat%FSVHGAT(ilg))
-allocate(class_gat%GGEOGAT(ilg))
-allocate(class_gat%PADRGAT(ilg))
-allocate(class_gat%PREGAT(ilg))
-allocate(class_gat%PRESGAT(ilg))
-allocate(class_gat%QAGAT(ilg))
-allocate(class_gat%RADJGAT(ilg))
-allocate(class_gat%RHOAGAT(ilg))
-allocate(class_gat%RHSIGAT(ilg))
-allocate(class_gat%RPCPGAT(ilg))
-allocate(class_gat%SPCPGAT(ilg))
-allocate(class_gat%TAGAT(ilg))
-allocate(class_gat%TADPGAT(ilg))
-allocate(class_gat%TRPCGAT(ilg))
-allocate(class_gat%TSPCGAT(ilg))
-allocate(class_gat%ULGAT(ilg))
-allocate(class_gat%VLGAT(ilg))
-allocate(class_gat%VMODGAT(ilg))
-allocate(class_gat%VPDGAT(ilg))
-allocate(class_gat%Z0ORGAT(ilg))
-allocate(class_gat%ZBLDGAT(ilg))
-allocate(class_gat%ZDHGAT(ilg))
-allocate(class_gat%ZDMGAT(ilg))
-allocate(class_gat%ZRFHGAT(ilg))
-allocate(class_gat%ZRFMGAT(ilg))
-allocate(class_gat%FSGGAT(ilg))
-allocate(class_gat%FLGGAT(ilg))
-allocate(class_gat%GUSTGAT(ilg))
-allocate(class_gat%DEPBGAT(ilg))
-allocate(class_gat%GTBS(ilg))
-allocate(class_gat%SFCUBS(ilg))
-allocate(class_gat%SFCVBS(ilg))
-allocate(class_gat%USTARBS(ilg))
-allocate(class_gat%TCSNOW(ilg))
-allocate(class_gat%GSNOW(ilg))
-allocate(class_gat%ALIRGAT(ilg))
-allocate(class_gat%ALVSGAT(ilg))
-allocate(class_gat%CDHGAT(ilg))
-allocate(class_gat%CDMGAT(ilg))
-allocate(class_gat%DRGAT(ilg))
-allocate(class_gat%EFGAT(ilg))
-allocate(class_gat%FLGGGAT(ilg))
-allocate(class_gat%FLGSGAT(ilg))
-allocate(class_gat%FLGVGAT(ilg))
-allocate(class_gat%FSGGGAT(ilg))
-allocate(class_gat% FSGSGAT (ilg))
-allocate(class_gat% FSGVGAT (ilg))
-allocate(class_gat% FSNOGAT (ilg))
-allocate(class_gat% GAGAT   (ilg))
-allocate(class_gat% GTGAT   (ilg))
-allocate(class_gat% HBLGAT  (ilg))
-allocate(class_gat% HEVCGAT (ilg))
-allocate(class_gat% HEVGGAT (ilg))
-allocate(class_gat% HEVSGAT (ilg))
-allocate(class_gat% HFSGAT  (ilg))
-allocate(class_gat% HFSCGAT (ilg))
-allocate(class_gat% HFSGGAT (ilg))
-allocate(class_gat% HFSSGAT (ilg))
-allocate(class_gat% HMFCGAT (ilg))
-allocate(class_gat% HMFNGAT (ilg))
-allocate(class_gat% HTCCGAT (ilg))
-allocate(class_gat% HTCSGAT (ilg))
-allocate(class_gat% ILMOGAT (ilg))
-allocate(class_gat% PCFCGAT (ilg))
-allocate(class_gat% PCLCGAT (ilg))
-allocate(class_gat% PCPGGAT (ilg))
-allocate(class_gat% PCPNGAT (ilg))
-allocate(class_gat% PETGAT  (ilg))
-allocate(class_gat% QEVPGAT (ilg))
-allocate(class_gat% QFCFGAT (ilg))
-allocate(class_gat% QFCLGAT (ilg))
-allocate(class_gat% QFGGAT  (ilg))
-allocate(class_gat% QFNGAT  (ilg))
-allocate(class_gat% QFSGAT  (ilg))
-allocate(class_gat% QFXGAT  (ilg))
-allocate(class_gat% QGGAT   (ilg))
-allocate(class_gat% ROFGAT  (ilg))
-allocate(class_gat% ROFBGAT (ilg))
-allocate(class_gat% ROFCGAT (ilg))
-allocate(class_gat% ROFNGAT (ilg))
-allocate(class_gat% ROFOGAT (ilg))
-allocate(class_gat% ROFSGAT (ilg))
-allocate(class_gat% ROVGGAT (ilg))
-allocate(class_gat% SFCQGAT (ilg))
-allocate(class_gat% SFCTGAT (ilg))
-allocate(class_gat% SFCUGAT (ilg))
-allocate(class_gat% SFCVGAT (ilg))
-allocate(class_gat% TFXGAT  (ilg))
-allocate(class_gat% TROBGAT (ilg))
-allocate(class_gat% TROFGAT (ilg))
-allocate(class_gat% TROOGAT (ilg))
-allocate(class_gat% TROSGAT (ilg))
-allocate(class_gat% UEGAT   (ilg))
-allocate(class_gat% WTABGAT (ilg))
-allocate(class_gat% WTRCGAT (ilg))
-allocate(class_gat% WTRGGAT (ilg))
-allocate(class_gat% WTRSGAT (ilg))
-allocate(class_gat% QLWOGAT (ilg))
-allocate(class_gat% SFRHGAT (ilg))
-allocate(class_gat% FTEMP   (ilg))
-allocate(class_gat% FVAP    (ilg))
-allocate(class_gat% RIB     (ilg))
-allocate(class_gat% FC      (ilg))
-allocate(class_gat% FG      (ilg))
-allocate(class_gat% FCS     (ilg))
-allocate(class_gat% FGS     (ilg))
-allocate(class_gat% RBCOEF  (ilg))
-allocate(class_gat% ZSNOW   (ilg))
-allocate(class_gat% FSVF    (ilg))
-allocate(class_gat% FSVFS   (ilg))
-allocate(class_gat% ALVSCN  (ilg))
-allocate(class_gat% ALIRCN  (ilg))
-allocate(class_gat% ALVSG   (ilg))
-allocate(class_gat% ALIRG   (ilg))
-allocate(class_gat% ALVSCS  (ilg))
-allocate(class_gat% ALIRCS  (ilg))
-allocate(class_gat% ALVSSN  (ilg))
-allocate(class_gat% ALIRSN  (ilg))
-allocate(class_gat% ALVSGC  (ilg))
-allocate(class_gat% ALIRGC  (ilg))
-allocate(class_gat% ALVSSC  (ilg))
-allocate(class_gat% ALIRSC  (ilg))
-allocate(class_gat% TRVSCN  (ilg))
-allocate(class_gat% TRIRCN  (ilg))
-allocate(class_gat%TRVSCS  (ilg))
-allocate(class_gat%TRIRCS  (ilg))
-allocate(class_gat%RC      (ilg))
-allocate(class_gat%RCS     (ilg))
-allocate(class_gat%FRAINC  (ilg))
-allocate(class_gat%FSNOWC  (ilg))
-allocate(class_gat%FRAICS  (ilg))
-allocate(class_gat%FSNOCS  (ilg))
-allocate(class_gat%CMASSC  (ilg))
-allocate(class_gat%CMASCS  (ilg))
-allocate(class_gat%DISP    (ilg))
-allocate(class_gat%DISPS   (ilg))
-allocate(class_gat%ZOMLNC  (ilg))
-allocate(class_gat%ZOELNC  (ilg))
-allocate(class_gat%ZOMLNG  (ilg))
-allocate(class_gat%ZOELNG  (ilg))
-allocate(class_gat%ZOMLCS  (ilg))
-allocate(class_gat%ZOELCS  (ilg))
-allocate(class_gat%ZOMLNS  (ilg))
-allocate(class_gat%ZOELNS  (ilg))
-allocate(class_gat%TRSNOWC (ilg))
-allocate(class_gat%CHCAP   (ilg))
-allocate(class_gat%CHCAPS  (ilg))
-allocate(class_gat%GZEROC  (ilg))
-allocate(class_gat%GZEROG  (ilg))
-allocate(class_gat%GZROCS  (ilg))
-allocate(class_gat%GZROGS  (ilg))
-allocate(class_gat%G12C    (ilg))
-allocate(class_gat%G12G    (ilg))
-allocate(class_gat%G12CS   (ilg))
-allocate(class_gat%G12GS   (ilg))
-allocate(class_gat%G23C    (ilg))
-allocate(class_gat%G23G    (ilg))
-allocate(class_gat%G23CS   (ilg))
-allocate(class_gat%G23GS   (ilg))
-allocate(class_gat%QFREZC  (ilg))
-allocate(class_gat%QFREZG  (ilg))
-allocate(class_gat%QMELTC  (ilg))
-allocate(class_gat%QMELTG  (ilg))
-allocate(class_gat%EVAPC   (ilg))
-allocate(class_gat%EVAPCG  (ilg))
-allocate(class_gat%EVAPG   (ilg))
-allocate(class_gat%EVAPCS  (ilg))
-allocate(class_gat%EVPCSG  (ilg))
-allocate(class_gat%EVAPGS  (ilg))
-allocate(class_gat%TCANO   (ilg))
-allocate(class_gat%TCANS   (ilg))
-allocate(class_gat%RAICAN  (ilg))
-allocate(class_gat%SNOCAN  (ilg))
-allocate(class_gat%RAICNS  (ilg))
-allocate(class_gat%SNOCNS  (ilg))
-allocate(class_gat%CWLCAP  (ilg))
-allocate(class_gat%CWFCAP  (ilg))
-allocate(class_gat%CWLCPS  (ilg))
-allocate(class_gat%CWFCPS  (ilg))
-allocate(class_gat%TSNOCS  (ilg))
-allocate(class_gat%TSNOGS  (ilg))
-allocate(class_gat%RHOSCS  (ilg))
-allocate(class_gat%RHOSGS  (ilg))
-allocate(class_gat%WSNOCS  (ilg))
-allocate(class_gat%WSNOGS  (ilg))
-allocate(class_gat%TPONDC  (ilg))
-allocate(class_gat%TPONDG  (ilg))
-allocate(class_gat%TPNDCS  (ilg))
-allocate(class_gat%TPNDGS  (ilg))
-allocate(class_gat%ZPLMCS  (ilg))
-allocate(class_gat%ZPLMGS  (ilg))
-allocate(class_gat%ZPLIMC  (ilg))
-allocate(class_gat%ZPLIMG  (ilg))
-allocate(class_gat%CTVSTP (ilg))
-allocate(class_gat%CTSSTP (ilg))
-allocate(class_gat%CT1STP (ilg))
-allocate(class_gat%CT2STP (ilg))
-allocate(class_gat%CT3STP (ilg))
-allocate(class_gat%WTVSTP (ilg))
-allocate(class_gat%WTSSTP (ilg))
-allocate(class_gat%WTGSTP (ilg))
+allocate(class_gat% ILMOS   (ilg),&
+         class_gat% JLMOS   (ilg),&
+         class_gat% IWMOS   (ilg),&
+         class_gat% JWMOS   (ilg),&
+         class_gat%IGDRGAT  (ilg),&
+         class_gat% DELZ    (ilg),&
+         class_gat% ZBOT    (ilg),&
+         class_gat% ALBSGAT (ilg),&
+         class_gat% CMAIGAT (ilg),&
+         class_gat% GROGAT  (ilg),&
+         class_gat% QACGAT  (ilg),&
+         class_gat%RCANGAT(ilg),&
+         class_gat%RHOSGAT(ilg),&
+         class_gat%SCANGAT(ilg),&
+         class_gat%SNOGAT(ilg),&
+         class_gat%TACGAT(ilg),&
+         class_gat%TBASGAT(ilg),&
+         class_gat%TCANGAT(ilg),&
+         class_gat%TPNDGAT(ilg),&
+         class_gat%TSNOGAT(ilg),&
+         class_gat%WSNOGAT(ilg),&
+         class_gat%ZPNDGAT(ilg),&
+         class_gat%REFGAT(ilg),&
+         class_gat%BCSNGAT(ilg),&
+         class_gat%AGIDGAT(ilg),&
+         class_gat%AGVDGAT(ilg),&
+         class_gat%ALGDGAT(ilg),&
+         class_gat%ALGWGAT(ilg),&
+         class_gat%ASIDGAT(ilg),&
+         class_gat%ASVDGAT(ilg),&
+         class_gat%DRNGAT(ilg),&
+         class_gat%GRKFGAT(ilg),&
+         class_gat%WFCIGAT(ilg),&
+         class_gat%WFSFGAT(ilg),&
+         class_gat%XSLPGAT(ilg),&
+         class_gat%ZPLGGAT(ilg),&
+         class_gat%ZPLSGAT(ilg),&
+         class_gat%ZSNLGAT(ilg),&
+         class_gat%ALGWVGAT(ilg),&
+         class_gat%ALGWNGAT(ilg),&
+         class_gat%ALGDVGAT(ilg),&
+         class_gat%ALGDNGAT(ilg),&
+         class_gat%EMISGAT(ilg),&
+         class_gat%CSZGAT(ilg),&
+         class_gat%DLONGAT(ilg),&
+         class_gat%DLATGAT(ilg),&
+         class_gat%FCLOGAT(ilg),&
+         class_gat%FDLGAT(ilg),&
+         class_gat%FSIHGAT(ilg),&
+         class_gat%FSVHGAT(ilg),&
+         class_gat%GGEOGAT(ilg),&
+         class_gat%PADRGAT(ilg),&
+         class_gat%PREGAT(ilg),&
+         class_gat%PRESGAT(ilg),&
+         class_gat%QAGAT(ilg),&
+         class_gat%RADJGAT(ilg),&
+         class_gat%RHOAGAT(ilg),&
+         class_gat%RHSIGAT(ilg),&
+         class_gat%RPCPGAT(ilg),&
+         class_gat%SPCPGAT(ilg),&
+         class_gat%TAGAT(ilg),&
+         class_gat%TADPGAT(ilg),&
+         class_gat%TRPCGAT(ilg),&
+         class_gat%TSPCGAT(ilg),&
+         class_gat%ULGAT(ilg),&
+         class_gat%VLGAT(ilg),&
+         class_gat%VMODGAT(ilg),&
+         class_gat%VPDGAT(ilg),&
+         class_gat%Z0ORGAT(ilg),&
+         class_gat%ZBLDGAT(ilg),&
+         class_gat%ZDHGAT(ilg),&
+         class_gat%ZDMGAT(ilg),&
+         class_gat%ZRFHGAT(ilg),&
+         class_gat%ZRFMGAT(ilg),&
+         class_gat%FSGGAT(ilg),&
+         class_gat%FLGGAT(ilg),&
+         class_gat%GUSTGAT(ilg),&
+         class_gat%DEPBGAT(ilg),&
+         class_gat%GTBS(ilg),&
+         class_gat%SFCUBS(ilg),&
+         class_gat%SFCVBS(ilg),&
+         class_gat%USTARBS(ilg),&
+         class_gat%TCSNOW(ilg),&
+         class_gat%GSNOW(ilg),&
+         class_gat%ALIRGAT(ilg),&
+         class_gat%ALVSGAT(ilg),&
+         class_gat%CDHGAT(ilg),&
+         class_gat%CDMGAT(ilg),&
+         class_gat%DRGAT(ilg),&
+         class_gat%EFGAT(ilg),&
+         class_gat%FLGGGAT(ilg),&
+         class_gat%FLGSGAT(ilg),&
+         class_gat%FLGVGAT(ilg),&
+         class_gat%FSGGGAT(ilg),&
+         class_gat% FSGSGAT (ilg),&
+         class_gat% FSGVGAT (ilg),&
+         class_gat% FSNOGAT (ilg),&
+         class_gat% GAGAT   (ilg),&
+         class_gat% GTGAT   (ilg),&
+         class_gat% HBLGAT  (ilg),&
+         class_gat% HEVCGAT (ilg),&
+         class_gat% HEVGGAT (ilg),&
+         class_gat% HEVSGAT (ilg),&
+         class_gat% HFSGAT  (ilg),&
+         class_gat% HFSCGAT (ilg),&
+         class_gat% HFSGGAT (ilg),&
+         class_gat% HFSSGAT (ilg),&
+         class_gat% HMFCGAT (ilg),&
+         class_gat% HMFNGAT (ilg),&
+         class_gat% HTCCGAT (ilg),&
+         class_gat% HTCSGAT (ilg),&
+         class_gat% ILMOGAT (ilg),&
+         class_gat% PCFCGAT (ilg),&
+         class_gat% PCLCGAT (ilg),&
+         class_gat% PCPGGAT (ilg),&
+         class_gat% PCPNGAT (ilg),&
+         class_gat% PETGAT  (ilg),&
+         class_gat% QEVPGAT (ilg),&
+         class_gat% QFCFGAT (ilg),&
+         class_gat% QFCLGAT (ilg),&
+         class_gat% QFGGAT  (ilg),&
+         class_gat% QFNGAT  (ilg),&
+         class_gat% QFSGAT  (ilg),&
+         class_gat% QFXGAT  (ilg),&
+         class_gat% QGGAT   (ilg),&
+         class_gat% ROFGAT  (ilg),&
+         class_gat% ROFBGAT (ilg),&
+         class_gat% ROFCGAT (ilg),&
+         class_gat% ROFNGAT (ilg),&
+         class_gat% ROFOGAT (ilg),&
+         class_gat% ROFSGAT (ilg),&
+         class_gat% ROVGGAT (ilg),&
+         class_gat% SFCQGAT (ilg),&
+         class_gat% SFCTGAT (ilg),&
+         class_gat% SFCUGAT (ilg),&
+         class_gat% SFCVGAT (ilg),&
+         class_gat% TFXGAT  (ilg),&
+         class_gat% TROBGAT (ilg),&
+         class_gat% TROFGAT (ilg),&
+         class_gat% TROOGAT (ilg),&
+         class_gat% TROSGAT (ilg),&
+         class_gat% UEGAT   (ilg),&
+         class_gat% WTABGAT (ilg),&
+         class_gat% WTRCGAT (ilg),&
+         class_gat% WTRGGAT (ilg),&
+         class_gat% WTRSGAT (ilg),&
+         class_gat% QLWOGAT (ilg),&
+         class_gat% SFRHGAT (ilg),&
+         class_gat% FTEMP   (ilg),&
+         class_gat% FVAP    (ilg),&
+         class_gat% RIB     (ilg),&
+         class_gat% FC      (ilg),&
+         class_gat% FG      (ilg),&
+         class_gat% FCS     (ilg),&
+         class_gat% FGS     (ilg),&
+         class_gat% RBCOEF  (ilg),&
+         class_gat% ZSNOW   (ilg),&
+         class_gat% FSVF    (ilg),&
+         class_gat% FSVFS   (ilg),&
+         class_gat% ALVSCN  (ilg),&
+         class_gat% ALIRCN  (ilg),&
+         class_gat% ALVSG   (ilg),&
+         class_gat% ALIRG   (ilg),&
+         class_gat% ALVSCS  (ilg),&
+         class_gat% ALIRCS  (ilg),&
+         class_gat% ALVSSN  (ilg),&
+         class_gat% ALIRSN  (ilg),&
+         class_gat% ALVSGC  (ilg),&
+         class_gat% ALIRGC  (ilg),&
+         class_gat% ALVSSC  (ilg),&
+         class_gat% ALIRSC  (ilg),&
+         class_gat% TRVSCN  (ilg),&
+         class_gat% TRIRCN  (ilg),&
+         class_gat%TRVSCS  (ilg),&
+         class_gat%TRIRCS  (ilg),&
+         class_gat%RC      (ilg),&
+         class_gat%RCS     (ilg),&
+         class_gat%FRAINC  (ilg),&
+         class_gat%FSNOWC  (ilg),&
+         class_gat%FRAICS  (ilg),&
+         class_gat%FSNOCS  (ilg),&
+         class_gat%CMASSC  (ilg),&
+         class_gat%CMASCS  (ilg),&
+         class_gat%DISP    (ilg),&
+         class_gat%DISPS   (ilg),&
+         class_gat%ZOMLNC  (ilg),&
+         class_gat%ZOELNC  (ilg),&
+         class_gat%ZOMLNG  (ilg),&
+         class_gat%ZOELNG  (ilg),&
+         class_gat%ZOMLCS  (ilg),&
+         class_gat%ZOELCS  (ilg),&
+         class_gat%ZOMLNS  (ilg),&
+         class_gat%ZOELNS  (ilg),&
+         class_gat%TRSNOWC (ilg),&
+         class_gat%CHCAP   (ilg),&
+         class_gat%CHCAPS  (ilg),&
+         class_gat%GZEROC  (ilg),&
+         class_gat%GZEROG  (ilg),&
+         class_gat%GZROCS  (ilg),&
+         class_gat%GZROGS  (ilg),&
+         class_gat%G12C    (ilg),&
+         class_gat%G12G    (ilg),&
+         class_gat%G12CS   (ilg),&
+         class_gat%G12GS   (ilg),&
+         class_gat%G23C    (ilg),&
+         class_gat%G23G    (ilg),&
+         class_gat%G23CS   (ilg),&
+         class_gat%G23GS   (ilg),&
+         class_gat%QFREZC  (ilg),&
+         class_gat%QFREZG  (ilg),&
+         class_gat%QMELTC  (ilg),&
+         class_gat%QMELTG  (ilg),&
+         class_gat%EVAPC   (ilg),&
+         class_gat%EVAPCG  (ilg),&
+         class_gat%EVAPG   (ilg),&
+         class_gat%EVAPCS  (ilg),&
+         class_gat%EVPCSG  (ilg),&
+         class_gat%EVAPGS  (ilg),&
+         class_gat%TCANO   (ilg),&
+         class_gat%TCANS   (ilg),&
+         class_gat%RAICAN  (ilg),&
+         class_gat%SNOCAN  (ilg),&
+         class_gat%RAICNS  (ilg),&
+         class_gat%SNOCNS  (ilg),&
+         class_gat%CWLCAP  (ilg),&
+         class_gat%CWFCAP  (ilg),&
+         class_gat%CWLCPS  (ilg),&
+         class_gat%CWFCPS  (ilg),&
+         class_gat%TSNOCS  (ilg),&
+         class_gat%TSNOGS  (ilg),&
+         class_gat%RHOSCS  (ilg),&
+         class_gat%RHOSGS  (ilg),&
+         class_gat%WSNOCS  (ilg),&
+         class_gat%WSNOGS  (ilg),&
+         class_gat%TPONDC  (ilg),&
+         class_gat%TPONDG  (ilg),&
+         class_gat%TPNDCS  (ilg),&
+         class_gat%TPNDGS  (ilg),&
+         class_gat%ZPLMCS  (ilg),&
+         class_gat%ZPLMGS  (ilg),&
+         class_gat%ZPLIMC  (ilg),&
+         class_gat%ZPLIMG  (ilg),&
+         class_gat%CTVSTP (ilg),&
+         class_gat%CTSSTP (ilg),&
+         class_gat%CT1STP (ilg),&
+         class_gat%CT2STP (ilg),&
+         class_gat%CT3STP (ilg),&
+         class_gat%WTVSTP (ilg),&
+         class_gat%WTSSTP (ilg),&
+         class_gat%WTGSTP (ilg))
 
 ! These will be allocated the dimension: 'ilg, ignd'
-allocate(class_gat% ISNDGAT (ilg,ignd))
-allocate(class_gat% TBARGAT (ilg,ignd))
-allocate(class_gat% THICGAT (ilg,ignd))
-allocate(class_gat% THLQGAT (ilg,ignd))
-allocate(class_gat% BIGAT   (ilg,ignd))
-allocate(class_gat% DLZWGAT (ilg,ignd))
-allocate(class_gat% GRKSGAT (ilg,ignd))
-allocate(class_gat% HCPSGAT (ilg,ignd))
-allocate(class_gat% PSISGAT (ilg,ignd))
-allocate(class_gat% PSIWGAT (ilg,ignd))
-allocate(class_gat% TCSGAT  (ilg,ignd))
-allocate(class_gat% THFCGAT (ilg,ignd))
-allocate(class_gat% THMGAT  (ilg,ignd))
-allocate(class_gat% THPGAT  (ilg,ignd))
-allocate(class_gat% THRGAT  (ilg,ignd))
-allocate(class_gat% THRAGAT (ilg,ignd))
-allocate(class_gat% ZBTWGAT (ilg,ignd))
-allocate(class_gat% THLWGAT (ilg,ignd))
-allocate(class_gat% GFLXGAT (ilg,ignd))
-allocate(class_gat% HMFGGAT (ilg,ignd))
-allocate(class_gat% HTCGAT  (ilg,ignd))
-allocate(class_gat% QFCGAT  (ilg,ignd))
-allocate(class_gat% TBARC  (ilg,ignd))
-allocate(class_gat% TBARG  (ilg,ignd))
-allocate(class_gat% TBARCS (ilg,ignd))
-allocate(class_gat% TBARGS (ilg,ignd))
-allocate(class_gat% THLIQC (ilg,ignd))
-allocate(class_gat% THLIQG (ilg,ignd))
-allocate(class_gat% THICEC (ilg,ignd))
-allocate(class_gat% THICEG (ilg,ignd))
-allocate(class_gat% FROOT  (ilg,ignd))
-allocate(class_gat% HCPC   (ilg,ignd))
-allocate(class_gat% HCPG   (ilg,ignd))
-allocate(class_gat% FROOTS (ilg,ignd))
-allocate(class_gat% TCTOPC (ilg,ignd))
-allocate(class_gat% TCBOTC (ilg,ignd))
-allocate(class_gat% TCTOPG (ilg,ignd))
-allocate(class_gat% TCBOTG (ilg,ignd))
+allocate(class_gat% ISNDGAT (ilg,ignd),&
+         class_gat% TBARGAT (ilg,ignd),&
+         class_gat% THICGAT (ilg,ignd),&
+         class_gat% THLQGAT (ilg,ignd),&
+         class_gat% BIGAT   (ilg,ignd),&
+         class_gat% DLZWGAT (ilg,ignd),&
+         class_gat% GRKSGAT (ilg,ignd),&
+         class_gat% HCPSGAT (ilg,ignd),&
+         class_gat% PSISGAT (ilg,ignd),&
+         class_gat% PSIWGAT (ilg,ignd),&
+         class_gat% TCSGAT  (ilg,ignd),&
+         class_gat% THFCGAT (ilg,ignd),&
+         class_gat% THMGAT  (ilg,ignd),&
+         class_gat% THPGAT  (ilg,ignd),&
+         class_gat% THRGAT  (ilg,ignd),&
+         class_gat% THRAGAT (ilg,ignd),&
+         class_gat% ZBTWGAT (ilg,ignd),&
+         class_gat% THLWGAT (ilg,ignd),&
+         class_gat% GFLXGAT (ilg,ignd),&
+         class_gat% HMFGGAT (ilg,ignd),&
+         class_gat% HTCGAT  (ilg,ignd),&
+         class_gat% QFCGAT  (ilg,ignd),&
+         class_gat% TBARC  (ilg,ignd),&
+         class_gat% TBARG  (ilg,ignd),&
+         class_gat% TBARCS (ilg,ignd),&
+         class_gat% TBARGS (ilg,ignd),&
+         class_gat% THLIQC (ilg,ignd),&
+         class_gat% THLIQG (ilg,ignd),&
+         class_gat% THICEC (ilg,ignd),&
+         class_gat% THICEG (ilg,ignd),&
+         class_gat% FROOT  (ilg,ignd),&
+         class_gat% HCPC   (ilg,ignd),&
+         class_gat% HCPG   (ilg,ignd),&
+         class_gat% FROOTS (ilg,ignd),&
+         class_gat% TCTOPC (ilg,ignd),&
+         class_gat% TCBOTC (ilg,ignd),&
+         class_gat% TCTOPG (ilg,ignd),&
+         class_gat% TCBOTG (ilg,ignd))
 
 ! These will be allocated the dimension: 'ilg, ican'
-allocate(class_gat% ACIDGAT (ilg,ican))
-allocate(class_gat% ACVDGAT (ilg,ican))
-allocate(class_gat% CMASGAT (ilg,ican))
-allocate(class_gat% HGTDGAT (ilg,ican))
-allocate(class_gat% PAIDGAT (ilg,ican))
-allocate(class_gat% PAMNGAT (ilg,ican))
-allocate(class_gat% PAMXGAT (ilg,ican))
-allocate(class_gat% PSGAGAT (ilg,ican))
-allocate(class_gat% PSGBGAT (ilg,ican))
-allocate(class_gat% QA50GAT (ilg,ican))
-allocate(class_gat% ROOTGAT (ilg,ican))
-allocate(class_gat% RSMNGAT (ilg,ican))
-allocate(class_gat% VPDAGAT (ilg,ican))
-allocate(class_gat% VPDBGAT (ilg,ican))
+allocate(class_gat% ACIDGAT (ilg,ican),&
+         class_gat% ACVDGAT (ilg,ican),&
+         class_gat% CMASGAT (ilg,ican),&
+         class_gat% HGTDGAT (ilg,ican),&
+         class_gat% PAIDGAT (ilg,ican),&
+         class_gat% PAMNGAT (ilg,ican),&
+         class_gat% PAMXGAT (ilg,ican),&
+         class_gat% PSGAGAT (ilg,ican),&
+         class_gat% PSGBGAT (ilg,ican),&
+         class_gat% QA50GAT (ilg,ican),&
+         class_gat% ROOTGAT (ilg,ican),&
+         class_gat% RSMNGAT (ilg,ican),&
+         class_gat% VPDAGAT (ilg,ican),&
+         class_gat% VPDBGAT (ilg,ican))
 
 
 ! These will be allocated the dimension: 'ilg, icp1'
-allocate(class_gat% ALICGAT (ilg,icp1))
-allocate(class_gat% ALVCGAT (ilg,icp1))
-allocate(class_gat% FCANGAT (ilg,icp1))
-allocate(class_gat% LNZ0GAT (ilg,icp1))
+allocate(class_gat% ALICGAT (ilg,icp1),&
+         class_gat% ALVCGAT (ilg,icp1),&
+         class_gat% FCANGAT (ilg,icp1),&
+         class_gat% LNZ0GAT (ilg,icp1))
 
 ! These will be allocated the dimension: 'ilg, nbs'
-allocate(class_gat% FSDBGAT (ilg,nbs))
-allocate(class_gat% FSFBGAT (ilg,nbs))
-allocate(class_gat% FSSBGAT (ilg,nbs))
-allocate(class_gat% SALBGAT (ilg,nbs))
-allocate(class_gat% CSALGAT (ilg,nbs))
-allocate(class_gat% ALTG    (ilg,nbs))
-allocate(class_gat% ALSNO   (ilg,nbs))
-allocate(class_gat% TRSNOWG (ilg,nbs))
+allocate(class_gat% FSDBGAT (ilg,nbs),&
+         class_gat% FSFBGAT (ilg,nbs),&
+         class_gat% FSSBGAT (ilg,nbs),&
+         class_gat% SALBGAT (ilg,nbs),&
+         class_gat% CSALGAT (ilg,nbs),&
+         class_gat% ALTG    (ilg,nbs),&
+         class_gat% ALSNO   (ilg,nbs),&
+         class_gat% TRSNOWG (ilg,nbs))
 
 ! These will be allocated the dimension: 'ilg, 4'
 allocate(class_gat% TSFSGAT (ilg,4))
@@ -1035,314 +1035,314 @@ allocate(class_gat% ITCTGAT (ilg,6,50))
 
 ! These will be allocated the dimension: 'nlat'
 
-allocate(class_rot% ALIRACC (nlat))
-allocate(class_rot% ALVSACC (nlat))
-allocate(class_rot% EVAPACC (nlat))
-allocate(class_rot% FLINACC (nlat))
-allocate(class_rot% FLUTACC (nlat))
-allocate(class_rot% FSINACC (nlat))
-allocate(class_rot% GROACC  (nlat))
-allocate(class_rot% GTACC   (nlat))
-allocate(class_rot% HFSACC  (nlat))
-allocate(class_rot% HMFNACC (nlat))
-allocate(class_rot% OVRACC  (nlat))
-allocate(class_rot% PREACC  (nlat))
-allocate(class_rot% PRESACC (nlat))
-allocate(class_rot% QAACC   (nlat))
-allocate(class_rot% QEVPACC (nlat))
-allocate(class_rot% RCANACC (nlat))
-allocate(class_rot% RHOSACC (nlat))
-allocate(class_rot% ROFACC  (nlat))
-allocate(class_rot% SCANACC (nlat))
-allocate(class_rot% SNOACC  (nlat))
-allocate(class_rot% TAACC   (nlat))
-allocate(class_rot% TCANACC (nlat))
-allocate(class_rot% TSNOACC (nlat))
-allocate(class_rot% UVACC   (nlat))
-allocate(class_rot% WSNOACC (nlat))
-allocate(class_rot% WTBLACC (nlat))
-allocate(class_rot% ALTOTACC(nlat))
-allocate(class_rot% CANARE  (nlat))
-allocate(class_rot% SNOARE  (nlat))
-allocate(class_rot% CSZROW  (nlat))
-allocate(class_rot% DLONROW (nlat))
-allocate(class_rot% DLATROW (nlat))
-allocate(class_rot% FCLOROW (nlat))
-allocate(class_rot% FDLROW  (nlat))
-allocate(class_rot% FSIHROW (nlat))
-allocate(class_rot% FSVHROW (nlat))
-allocate(class_rot% GCROW   (nlat))
-allocate(class_rot% GGEOROW (nlat))
-allocate(class_rot% PADRROW (nlat))
-allocate(class_rot% PREROW  (nlat))
-allocate(class_rot% PRESROW (nlat))
-allocate(class_rot% QAROW   (nlat))
-allocate(class_rot% RADJROW (nlat))
-allocate(class_rot% RHOAROW (nlat))
-allocate(class_rot% RHSIROW (nlat))
-allocate(class_rot% RPCPROW (nlat))
-allocate(class_rot% RPREROW (nlat))
-allocate(class_rot% SPCPROW (nlat))
-allocate(class_rot% SPREROW (nlat))
-allocate(class_rot% TAROW   (nlat))
-allocate(class_rot% TADPROW (nlat))
-allocate(class_rot% TRPCROW (nlat))
-allocate(class_rot% TSPCROW (nlat))
-allocate(class_rot% ULROW   (nlat))
-allocate(class_rot% VLROW   (nlat))
-allocate(class_rot% VMODROW (nlat))
-allocate(class_rot% VPDROW  (nlat))
-allocate(class_rot% ZBLDROW (nlat))
-allocate(class_rot% ZDHROW  (nlat))
-allocate(class_rot% ZDMROW  (nlat))
-allocate(class_rot% ZRFHROW (nlat))
-allocate(class_rot% ZRFMROW (nlat))
-allocate(class_rot% UVROW   (nlat))
-allocate(class_rot% XDIFFUS (nlat))
-allocate(class_rot% Z0ORROW (nlat))
-allocate(class_rot% FSSROW  (nlat))
-allocate(class_rot% PRENROW (nlat))
-allocate(class_rot% CLDTROW (nlat))
-allocate(class_rot% FSGROL  (nlat))
-allocate(class_rot% FLGROL  (nlat))
-allocate(class_rot% GUSTROL (nlat))
-allocate(class_rot% DEPBROW (nlat))
-allocate(class_rot% ALIRROW (nlat))
-allocate(class_rot% ALVSROW (nlat))
-allocate(class_rot% CDHROW  (nlat))
-allocate(class_rot% CDMROW  (nlat))
-allocate(class_rot% DRROW   (nlat))
-allocate(class_rot% EFROW   (nlat))
-allocate(class_rot% FLGGROW (nlat))
-allocate(class_rot% FLGSROW (nlat))
-allocate(class_rot% FLGVROW (nlat))
-allocate(class_rot% FSGGROW (nlat))
-allocate(class_rot% FSGSROW (nlat))
-allocate(class_rot% FSGVROW (nlat))
-allocate(class_rot% FSNOROW (nlat))
-allocate(class_rot% GAROW   (nlat))
-allocate(class_rot% GTROW   (nlat))
-allocate(class_rot% HBLROW  (nlat))
-allocate(class_rot% HEVCROW (nlat))
-allocate(class_rot% HEVGROW (nlat))
-allocate(class_rot% HEVSROW (nlat))
-allocate(class_rot% HFSROW  (nlat))
-allocate(class_rot% HFSCROW (nlat))
-allocate(class_rot% HFSGROW (nlat))
-allocate(class_rot% HFSSROW (nlat))
-allocate(class_rot% HMFCROW (nlat))
-allocate(class_rot% HMFNROW (nlat))
-allocate(class_rot% HTCCROW (nlat))
-allocate(class_rot% HTCSROW (nlat))
-allocate(class_rot% ILMOROW (nlat))
-allocate(class_rot% PCFCROW (nlat))
-allocate(class_rot% PCLCROW (nlat))
-allocate(class_rot% PCPGROW (nlat))
-allocate(class_rot% PCPNROW (nlat))
-allocate(class_rot% PETROW  (nlat))
-allocate(class_rot% QEVPROW (nlat))
-allocate(class_rot% QFCFROW (nlat))
-allocate(class_rot% QFCLROW (nlat))
-allocate(class_rot% QFGROW  (nlat))
-allocate(class_rot% QFNROW  (nlat))
-allocate(class_rot% QFSROW  (nlat))
-allocate(class_rot% QFXROW  (nlat))
-allocate(class_rot% QGROW   (nlat))
-allocate(class_rot% ROFROW  (nlat))
-allocate(class_rot% ROFBROW (nlat))
-allocate(class_rot% ROFCROW (nlat))
-allocate(class_rot% ROFNROW (nlat))
-allocate(class_rot% ROFOROW (nlat))
-allocate(class_rot% ROFSROW (nlat))
-allocate(class_rot% ROVGROW (nlat))
-allocate(class_rot% SFCQROW (nlat))
-allocate(class_rot% SFCTROW (nlat))
-allocate(class_rot% SFCUROW (nlat))
-allocate(class_rot% SFCVROW (nlat))
-allocate(class_rot% TFXROW  (nlat))
-allocate(class_rot% UEROW   (nlat))
-allocate(class_rot% WTABROW (nlat))
-allocate(class_rot% WTRCROW (nlat))
-allocate(class_rot% WTRGROW (nlat))
-allocate(class_rot% WTRSROW (nlat))
-allocate(class_rot% SFRHROW (nlat))
+allocate(class_rot% ALIRACC (nlat),&
+         class_rot% ALVSACC (nlat),&
+         class_rot% EVAPACC (nlat),&
+         class_rot% FLINACC (nlat),&
+         class_rot% FLUTACC (nlat),&
+         class_rot% FSINACC (nlat),&
+         class_rot% GROACC  (nlat),&
+         class_rot% GTACC   (nlat),&
+         class_rot% HFSACC  (nlat),&
+         class_rot% HMFNACC (nlat),&
+         class_rot% OVRACC  (nlat),&
+         class_rot% PREACC  (nlat),&
+         class_rot% PRESACC (nlat),&
+         class_rot% QAACC   (nlat),&
+         class_rot% QEVPACC (nlat),&
+         class_rot% RCANACC (nlat),&
+         class_rot% RHOSACC (nlat),&
+         class_rot% ROFACC  (nlat),&
+         class_rot% SCANACC (nlat),&
+         class_rot% SNOACC  (nlat),&
+         class_rot% TAACC   (nlat),&
+         class_rot% TCANACC (nlat),&
+         class_rot% TSNOACC (nlat),&
+         class_rot% UVACC   (nlat),&
+         class_rot% WSNOACC (nlat),&
+         class_rot% WTBLACC (nlat),&
+         class_rot% ALTOTACC(nlat),&
+         class_rot% CANARE  (nlat),&
+         class_rot% SNOARE  (nlat),&
+         class_rot% CSZROW  (nlat),&
+         class_rot% DLONROW (nlat),&
+         class_rot% DLATROW (nlat),&
+         class_rot% FCLOROW (nlat),&
+         class_rot% FDLROW  (nlat),&
+         class_rot% FSIHROW (nlat),&
+         class_rot% FSVHROW (nlat),&
+         class_rot% GCROW   (nlat),&
+         class_rot% GGEOROW (nlat),&
+         class_rot% PADRROW (nlat),&
+         class_rot% PREROW  (nlat),&
+         class_rot% PRESROW (nlat),&
+         class_rot% QAROW   (nlat),&
+         class_rot% RADJROW (nlat),&
+         class_rot% RHOAROW (nlat),&
+         class_rot% RHSIROW (nlat),&
+         class_rot% RPCPROW (nlat),&
+         class_rot% RPREROW (nlat),&
+         class_rot% SPCPROW (nlat),&
+         class_rot% SPREROW (nlat),&
+         class_rot% TAROW   (nlat),&
+         class_rot% TADPROW (nlat),&
+         class_rot% TRPCROW (nlat),&
+         class_rot% TSPCROW (nlat),&
+         class_rot% ULROW   (nlat),&
+         class_rot% VLROW   (nlat),&
+         class_rot% VMODROW (nlat),&
+         class_rot% VPDROW  (nlat),&
+         class_rot% ZBLDROW (nlat),&
+         class_rot% ZDHROW  (nlat),&
+         class_rot% ZDMROW  (nlat),&
+         class_rot% ZRFHROW (nlat),&
+         class_rot% ZRFMROW (nlat),&
+         class_rot% UVROW   (nlat),&
+         class_rot% XDIFFUS (nlat),&
+         class_rot% Z0ORROW (nlat),&
+         class_rot% FSSROW  (nlat),&
+         class_rot% PRENROW (nlat),&
+         class_rot% CLDTROW (nlat),&
+         class_rot% FSGROL  (nlat),&
+         class_rot% FLGROL  (nlat),&
+         class_rot% GUSTROL (nlat),&
+         class_rot% DEPBROW (nlat),&
+         class_rot% ALIRROW (nlat),&
+         class_rot% ALVSROW (nlat),&
+         class_rot% CDHROW  (nlat),&
+         class_rot% CDMROW  (nlat),&
+         class_rot% DRROW   (nlat),&
+         class_rot% EFROW   (nlat),&
+         class_rot% FLGGROW (nlat),&
+         class_rot% FLGSROW (nlat),&
+         class_rot% FLGVROW (nlat),&
+         class_rot% FSGGROW (nlat),&
+         class_rot% FSGSROW (nlat),&
+         class_rot% FSGVROW (nlat),&
+         class_rot% FSNOROW (nlat),&
+         class_rot% GAROW   (nlat),&
+         class_rot% GTROW   (nlat),&
+         class_rot% HBLROW  (nlat),&
+         class_rot% HEVCROW (nlat),&
+         class_rot% HEVGROW (nlat),&
+         class_rot% HEVSROW (nlat),&
+         class_rot% HFSROW  (nlat),&
+         class_rot% HFSCROW (nlat),&
+         class_rot% HFSGROW (nlat),&
+         class_rot% HFSSROW (nlat),&
+         class_rot% HMFCROW (nlat),&
+         class_rot% HMFNROW (nlat),&
+         class_rot% HTCCROW (nlat),&
+         class_rot% HTCSROW (nlat),&
+         class_rot% ILMOROW (nlat),&
+         class_rot% PCFCROW (nlat),&
+         class_rot% PCLCROW (nlat),&
+         class_rot% PCPGROW (nlat),&
+         class_rot% PCPNROW (nlat),&
+         class_rot% PETROW  (nlat),&
+         class_rot% QEVPROW (nlat),&
+         class_rot% QFCFROW (nlat),&
+         class_rot% QFCLROW (nlat),&
+         class_rot% QFGROW  (nlat),&
+         class_rot% QFNROW  (nlat),&
+         class_rot% QFSROW  (nlat),&
+         class_rot% QFXROW  (nlat),&
+         class_rot% QGROW   (nlat),&
+         class_rot% ROFROW  (nlat),&
+         class_rot% ROFBROW (nlat),&
+         class_rot% ROFCROW (nlat),&
+         class_rot% ROFNROW (nlat),&
+         class_rot% ROFOROW (nlat),&
+         class_rot% ROFSROW (nlat),&
+         class_rot% ROVGROW (nlat),&
+         class_rot% SFCQROW (nlat),&
+         class_rot% SFCTROW (nlat),&
+         class_rot% SFCUROW (nlat),&
+         class_rot% SFCVROW (nlat),&
+         class_rot% TFXROW  (nlat),&
+         class_rot% UEROW   (nlat),&
+         class_rot% WTABROW (nlat),&
+         class_rot% WTRCROW (nlat),&
+         class_rot% WTRGROW (nlat),&
+         class_rot% WTRSROW (nlat),&
+         class_rot% SFRHROW (nlat))
 
     ! These will be allocated the dimension: 'nlat,nmos'
 
-allocate(class_rot% IGDRROT (nlat,nmos))
-allocate(class_rot% MIDROT  (nlat,nmos))
-allocate(class_rot% ALBSROT (nlat,nmos))
-allocate(class_rot% CMAIROT (nlat,nmos))
-allocate(class_rot% GROROT  (nlat,nmos))
-allocate(class_rot% QACROT  (nlat,nmos))
-allocate(class_rot% RCANROT (nlat,nmos))
-allocate(class_rot% RHOSROT (nlat,nmos))
-allocate(class_rot% SCANROT (nlat,nmos))
-allocate(class_rot% SNOROT  (nlat,nmos))
-allocate(class_rot% TACROT  (nlat,nmos))
-allocate(class_rot% TBASROT (nlat,nmos))
-allocate(class_rot% TCANROT (nlat,nmos))
-allocate(class_rot% TPNDROT (nlat,nmos))
-allocate(class_rot% TSNOROT (nlat,nmos))
-allocate(class_rot% WSNOROT (nlat,nmos))
-allocate(class_rot% ZPNDROT (nlat,nmos))
-allocate(class_rot% REFROT  (nlat,nmos))
-allocate(class_rot% BCSNROT (nlat,nmos))
-allocate(class_rot% AGIDROT (nlat,nmos))
-allocate(class_rot% AGVDROT (nlat,nmos))
-allocate(class_rot% ALGDROT (nlat,nmos))
-allocate(class_rot% ALGWROT (nlat,nmos))
-allocate(class_rot% ASIDROT (nlat,nmos))
-allocate(class_rot% ASVDROT (nlat,nmos))
-allocate(class_rot% DRNROT  (nlat,nmos))
-allocate(class_rot% FAREROT (nlat,nmos))
-allocate(class_rot% GRKFROT (nlat,nmos))
-allocate(class_rot% WFCIROT (nlat,nmos))
-allocate(class_rot% WFSFROT (nlat,nmos))
-allocate(class_rot% XSLPROT (nlat,nmos))
-allocate(class_rot% ZPLGROT (nlat,nmos))
-allocate(class_rot% ZPLSROT (nlat,nmos))
-allocate(class_rot% ZSNLROT (nlat,nmos))
-allocate(class_rot% ZSNOROT  (nlat,nmos))
-allocate(class_rot% ALGWVROT (nlat,nmos))
-allocate(class_rot% ALGWNROT (nlat,nmos))
-allocate(class_rot% ALGDVROT (nlat,nmos))
-allocate(class_rot% ALGDNROT (nlat,nmos))
-allocate(class_rot% EMISROT  (nlat,nmos))
-allocate(class_rot% ALIRROT (nlat,nmos))
-allocate(class_rot% ALVSROT (nlat,nmos))
-allocate(class_rot% CDHROT  (nlat,nmos))
-allocate(class_rot% CDMROT  (nlat,nmos))
-allocate(class_rot% DRROT   (nlat,nmos))
-allocate(class_rot% EFROT   (nlat,nmos))
-allocate(class_rot% FLGGROT (nlat,nmos))
-allocate(class_rot% FLGSROT (nlat,nmos))
-allocate(class_rot% FLGVROT (nlat,nmos))
-allocate(class_rot% FSGGROT (nlat,nmos))
-allocate(class_rot% FSGSROT (nlat,nmos))
-allocate(class_rot% FSGVROT (nlat,nmos))
-allocate(class_rot% FSNOROT (nlat,nmos))
-allocate(class_rot% GAROT   (nlat,nmos))
-allocate(class_rot% GTROT   (nlat,nmos))
-allocate(class_rot% HBLROT  (nlat,nmos))
-allocate(class_rot% HEVCROT (nlat,nmos))
-allocate(class_rot% HEVGROT (nlat,nmos))
-allocate(class_rot% HEVSROT (nlat,nmos))
-allocate(class_rot% HFSROT  (nlat,nmos))
-allocate(class_rot% HFSCROT (nlat,nmos))
-allocate(class_rot% HFSGROT (nlat,nmos))
-allocate(class_rot% HFSSROT (nlat,nmos))
-allocate(class_rot% HMFCROT (nlat,nmos))
-allocate(class_rot% HMFNROT (nlat,nmos))
-allocate(class_rot% HTCCROT (nlat,nmos))
-allocate(class_rot% SDEPROT (nlat,nmos))
-allocate(class_rot% SOCIROT  (nlat,nmos))
-allocate(class_rot% HTCSROT (nlat,nmos))
-allocate(class_rot% ILMOROT (nlat,nmos))
-allocate(class_rot% PCFCROT (nlat,nmos))
-allocate(class_rot% PCLCROT (nlat,nmos))
-allocate(class_rot% PCPGROT (nlat,nmos))
-allocate(class_rot% PCPNROT (nlat,nmos))
-allocate(class_rot% PETROT  (nlat,nmos))
-allocate(class_rot% QEVPROT (nlat,nmos))
-allocate(class_rot% QFCFROT (nlat,nmos))
-allocate(class_rot% QFCLROT (nlat,nmos))
-allocate(class_rot% QFGROT  (nlat,nmos))
-allocate(class_rot% QFNROT  (nlat,nmos))
-allocate(class_rot% QFSROT  (nlat,nmos))
-allocate(class_rot% QFXROT  (nlat,nmos))
-allocate(class_rot% QGROT   (nlat,nmos))
-allocate(class_rot% ROFROT  (nlat,nmos))
-allocate(class_rot% ROFBROT (nlat,nmos))
-allocate(class_rot% ROFCROT (nlat,nmos))
-allocate(class_rot% ROFNROT (nlat,nmos))
-allocate(class_rot% ROFOROT (nlat,nmos))
-allocate(class_rot% ROFSROT (nlat,nmos))
-allocate(class_rot% ROVGROT (nlat,nmos))
-allocate(class_rot% SFCQROT (nlat,nmos))
-allocate(class_rot% SFCTROT (nlat,nmos))
-allocate(class_rot% SFCUROT (nlat,nmos))
-allocate(class_rot% SFCVROT (nlat,nmos))
-allocate(class_rot% TFXROT  (nlat,nmos))
-allocate(class_rot% TROBROT (nlat,nmos))
-allocate(class_rot% TROFROT (nlat,nmos))
-allocate(class_rot% TROOROT (nlat,nmos))
-allocate(class_rot% TROSROT (nlat,nmos))
-allocate(class_rot% UEROT   (nlat,nmos))
-allocate(class_rot% WTABROT (nlat,nmos))
-allocate(class_rot% WTRCROT (nlat,nmos))
-allocate(class_rot% WTRGROT (nlat,nmos))
-allocate(class_rot% WTRSROT (nlat,nmos))
-allocate(class_rot% SFRHROT (nlat,nmos))
+allocate(class_rot% IGDRROT (nlat,nmos),&
+         class_rot% MIDROT  (nlat,nmos),&
+         class_rot% ALBSROT (nlat,nmos),&
+         class_rot% CMAIROT (nlat,nmos),&
+         class_rot% GROROT  (nlat,nmos),&
+         class_rot% QACROT  (nlat,nmos),&
+         class_rot% RCANROT (nlat,nmos),&
+         class_rot% RHOSROT (nlat,nmos),&
+         class_rot% SCANROT (nlat,nmos),&
+         class_rot% SNOROT  (nlat,nmos),&
+         class_rot% TACROT  (nlat,nmos),&
+         class_rot% TBASROT (nlat,nmos),&
+         class_rot% TCANROT (nlat,nmos),&
+         class_rot% TPNDROT (nlat,nmos),&
+         class_rot% TSNOROT (nlat,nmos),&
+         class_rot% WSNOROT (nlat,nmos),&
+         class_rot% ZPNDROT (nlat,nmos),&
+         class_rot% REFROT  (nlat,nmos),&
+         class_rot% BCSNROT (nlat,nmos),&
+         class_rot% AGIDROT (nlat,nmos),&
+         class_rot% AGVDROT (nlat,nmos),&
+         class_rot% ALGDROT (nlat,nmos),&
+         class_rot% ALGWROT (nlat,nmos),&
+         class_rot% ASIDROT (nlat,nmos),&
+         class_rot% ASVDROT (nlat,nmos),&
+         class_rot% DRNROT  (nlat,nmos),&
+         class_rot% FAREROT (nlat,nmos),&
+         class_rot% GRKFROT (nlat,nmos),&
+         class_rot% WFCIROT (nlat,nmos),&
+         class_rot% WFSFROT (nlat,nmos),&
+         class_rot% XSLPROT (nlat,nmos),&
+         class_rot% ZPLGROT (nlat,nmos),&
+         class_rot% ZPLSROT (nlat,nmos),&
+         class_rot% ZSNLROT (nlat,nmos),&
+         class_rot% ZSNOROT  (nlat,nmos),&
+         class_rot% ALGWVROT (nlat,nmos),&
+         class_rot% ALGWNROT (nlat,nmos),&
+         class_rot% ALGDVROT (nlat,nmos),&
+         class_rot% ALGDNROT (nlat,nmos),&
+         class_rot% EMISROT  (nlat,nmos),&
+         class_rot% ALIRROT (nlat,nmos),&
+         class_rot% ALVSROT (nlat,nmos),&
+         class_rot% CDHROT  (nlat,nmos),&
+         class_rot% CDMROT  (nlat,nmos),&
+         class_rot% DRROT   (nlat,nmos),&
+         class_rot% EFROT   (nlat,nmos),&
+         class_rot% FLGGROT (nlat,nmos),&
+         class_rot% FLGSROT (nlat,nmos),&
+         class_rot% FLGVROT (nlat,nmos),&
+         class_rot% FSGGROT (nlat,nmos),&
+         class_rot% FSGSROT (nlat,nmos),&
+         class_rot% FSGVROT (nlat,nmos),&
+         class_rot% FSNOROT (nlat,nmos),&
+         class_rot% GAROT   (nlat,nmos),&
+         class_rot% GTROT   (nlat,nmos),&
+         class_rot% HBLROT  (nlat,nmos),&
+         class_rot% HEVCROT (nlat,nmos),&
+         class_rot% HEVGROT (nlat,nmos),&
+         class_rot% HEVSROT (nlat,nmos),&
+         class_rot% HFSROT  (nlat,nmos),&
+         class_rot% HFSCROT (nlat,nmos),&
+         class_rot% HFSGROT (nlat,nmos),&
+         class_rot% HFSSROT (nlat,nmos),&
+         class_rot% HMFCROT (nlat,nmos),&
+         class_rot% HMFNROT (nlat,nmos),&
+         class_rot% HTCCROT (nlat,nmos),&
+         class_rot% SDEPROT (nlat,nmos),&
+         class_rot% SOCIROT  (nlat,nmos),&
+         class_rot% HTCSROT (nlat,nmos),&
+         class_rot% ILMOROT (nlat,nmos),&
+         class_rot% PCFCROT (nlat,nmos),&
+         class_rot% PCLCROT (nlat,nmos),&
+         class_rot% PCPGROT (nlat,nmos),&
+         class_rot% PCPNROT (nlat,nmos),&
+         class_rot% PETROT  (nlat,nmos),&
+         class_rot% QEVPROT (nlat,nmos),&
+         class_rot% QFCFROT (nlat,nmos),&
+         class_rot% QFCLROT (nlat,nmos),&
+         class_rot% QFGROT  (nlat,nmos),&
+         class_rot% QFNROT  (nlat,nmos),&
+         class_rot% QFSROT  (nlat,nmos),&
+         class_rot% QFXROT  (nlat,nmos),&
+         class_rot% QGROT   (nlat,nmos),&
+         class_rot% ROFROT  (nlat,nmos),&
+         class_rot% ROFBROT (nlat,nmos),&
+         class_rot% ROFCROT (nlat,nmos),&
+         class_rot% ROFNROT (nlat,nmos),&
+         class_rot% ROFOROT (nlat,nmos),&
+         class_rot% ROFSROT (nlat,nmos),&
+         class_rot% ROVGROT (nlat,nmos),&
+         class_rot% SFCQROT (nlat,nmos),&
+         class_rot% SFCTROT (nlat,nmos),&
+         class_rot% SFCUROT (nlat,nmos),&
+         class_rot% SFCVROT (nlat,nmos),&
+         class_rot% TFXROT  (nlat,nmos),&
+         class_rot% TROBROT (nlat,nmos),&
+         class_rot% TROFROT (nlat,nmos),&
+         class_rot% TROOROT (nlat,nmos),&
+         class_rot% TROSROT (nlat,nmos),&
+         class_rot% UEROT   (nlat,nmos),&
+         class_rot% WTABROT (nlat,nmos),&
+         class_rot% WTRCROT (nlat,nmos),&
+         class_rot% WTRGROT (nlat,nmos),&
+         class_rot% WTRSROT (nlat,nmos),&
+         class_rot% SFRHROT (nlat,nmos))
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
-allocate(class_rot% ISNDROT (nlat,nmos,ignd))
-allocate(class_rot% TBARROT (nlat,nmos,ignd))
-allocate(class_rot% THICROT (nlat,nmos,ignd))
-allocate(class_rot% THLQROT (nlat,nmos,ignd))
-allocate(class_rot% BIROT   (nlat,nmos,ignd))
-allocate(class_rot% DLZWROT (nlat,nmos,ignd))
-allocate(class_rot% GRKSROT (nlat,nmos,ignd))
-allocate(class_rot% HCPSROT (nlat,nmos,ignd))
-allocate(class_rot% SANDROT (nlat,nmos,ignd))
-allocate(class_rot% CLAYROT (nlat,nmos,ignd))
-allocate(class_rot% ORGMROT (nlat,nmos,ignd))
-allocate(class_rot% PSISROT (nlat,nmos,ignd))
-allocate(class_rot% PSIWROT (nlat,nmos,ignd))
-allocate(class_rot% TCSROT  (nlat,nmos,ignd))
-allocate(class_rot% THFCROT (nlat,nmos,ignd))
-allocate(class_rot% THMROT  (nlat,nmos,ignd))
-allocate(class_rot% THPROT  (nlat,nmos,ignd))
-allocate(class_rot% THRROT  (nlat,nmos,ignd))
-allocate(class_rot% THRAROT (nlat,nmos,ignd))
-allocate(class_rot% ZBTWROT (nlat,nmos,ignd))
-allocate(class_rot% THLWROT (nlat,nmos,ignd))
-allocate(class_rot% GFLXROT (nlat,nmos,ignd))
-allocate(class_rot% HMFGROT (nlat,nmos,ignd))
-allocate(class_rot% HTCROT  (nlat,nmos,ignd))
-allocate(class_rot% QFCROT  (nlat,nmos,ignd))
+allocate(class_rot% ISNDROT (nlat,nmos,ignd),&
+         class_rot% TBARROT (nlat,nmos,ignd),&
+         class_rot% THICROT (nlat,nmos,ignd),&
+         class_rot% THLQROT (nlat,nmos,ignd),&
+         class_rot% BIROT   (nlat,nmos,ignd),&
+         class_rot% DLZWROT (nlat,nmos,ignd),&
+         class_rot% GRKSROT (nlat,nmos,ignd),&
+         class_rot% HCPSROT (nlat,nmos,ignd),&
+         class_rot% SANDROT (nlat,nmos,ignd),&
+         class_rot% CLAYROT (nlat,nmos,ignd),&
+         class_rot% ORGMROT (nlat,nmos,ignd),&
+         class_rot% PSISROT (nlat,nmos,ignd),&
+         class_rot% PSIWROT (nlat,nmos,ignd),&
+         class_rot% TCSROT  (nlat,nmos,ignd),&
+         class_rot% THFCROT (nlat,nmos,ignd),&
+         class_rot% THMROT  (nlat,nmos,ignd),&
+         class_rot% THPROT  (nlat,nmos,ignd),&
+         class_rot% THRROT  (nlat,nmos,ignd),&
+         class_rot% THRAROT (nlat,nmos,ignd),&
+         class_rot% ZBTWROT (nlat,nmos,ignd),&
+         class_rot% THLWROT (nlat,nmos,ignd),&
+         class_rot% GFLXROT (nlat,nmos,ignd),&
+         class_rot% HMFGROT (nlat,nmos,ignd),&
+         class_rot% HTCROT  (nlat,nmos,ignd),&
+         class_rot% QFCROT  (nlat,nmos,ignd))
 
     ! These will be allocated the dimension: 'nlat,nmos,ican'
-allocate(class_rot% ACIDROT (nlat,nmos,ican))
-allocate(class_rot% ACVDROT (nlat,nmos,ican))
-allocate(class_rot% CMASROT (nlat,nmos,ican))
-allocate(class_rot% HGTDROT (nlat,nmos,ican))
-allocate(class_rot% PAIDROT (nlat,nmos,ican))
-allocate(class_rot% PAMNROT (nlat,nmos,ican))
-allocate(class_rot% PAMXROT (nlat,nmos,ican))
-allocate(class_rot% PSGAROT (nlat,nmos,ican))
-allocate(class_rot% PSGBROT (nlat,nmos,ican))
-allocate(class_rot% QA50ROT (nlat,nmos,ican))
-allocate(class_rot% ROOTROT (nlat,nmos,ican))
-allocate(class_rot% RSMNROT (nlat,nmos,ican))
-allocate(class_rot% VPDAROT (nlat,nmos,ican))
-allocate(class_rot% VPDBROT (nlat,nmos,ican))
+allocate(class_rot% ACIDROT (nlat,nmos,ican),&
+         class_rot% ACVDROT (nlat,nmos,ican),&
+         class_rot% CMASROT (nlat,nmos,ican),&
+         class_rot% HGTDROT (nlat,nmos,ican),&
+         class_rot% PAIDROT (nlat,nmos,ican),&
+         class_rot% PAMNROT (nlat,nmos,ican),&
+         class_rot% PAMXROT (nlat,nmos,ican),&
+         class_rot% PSGAROT (nlat,nmos,ican),&
+         class_rot% PSGBROT (nlat,nmos,ican),&
+         class_rot% QA50ROT (nlat,nmos,ican),&
+         class_rot% ROOTROT (nlat,nmos,ican),&
+         class_rot% RSMNROT (nlat,nmos,ican),&
+         class_rot% VPDAROT (nlat,nmos,ican),&
+         class_rot% VPDBROT (nlat,nmos,ican))
 
     ! These will be allocated the dimension: 'nlat,nmos,icp1'
-allocate(class_rot% ALICROT (nlat,nmos,icp1))
-allocate(class_rot% ALVCROT (nlat,nmos,icp1))
-allocate(class_rot% FCANROT (nlat,nmos,icp1))
-allocate(class_rot% LNZ0ROT (nlat,nmos,icp1))
+allocate(class_rot% ALICROT (nlat,nmos,icp1),&
+         class_rot% ALVCROT (nlat,nmos,icp1),&
+         class_rot% FCANROT (nlat,nmos,icp1),&
+         class_rot% LNZ0ROT (nlat,nmos,icp1))
 
     ! These will be allocated the dimension: 'nlat,nmos,nbs'
-allocate(class_rot% SALBROT  (nlat,nmos,nbs))
-allocate(class_rot% CSALROT  (nlat,nmos,nbs))
+allocate(class_rot% SALBROT  (nlat,nmos,nbs),&
+         class_rot% CSALROT  (nlat,nmos,nbs))
 
     ! These will be allocated the dimension: 'nlat,nbs'
-allocate(class_rot% FSDBROL  (nlat,nbs))
-allocate(class_rot% FSFBROL  (nlat,nbs))
-allocate(class_rot% FSSBROL  (nlat,nbs))
+allocate(class_rot% FSDBROL  (nlat,nbs),&
+         class_rot% FSFBROL  (nlat,nbs),&
+         class_rot% FSSBROL  (nlat,nbs))
 
     ! These will be allocated the dimension: 'nlat,ignd'
 
-allocate(class_rot% TBARACC (nlat,ignd))
-allocate(class_rot% THALACC (nlat,ignd))
-allocate(class_rot% THICACC (nlat,ignd))
-allocate(class_rot% THLQACC (nlat,ignd))
-allocate(class_rot% GFLXROW (nlat,ignd))
-allocate(class_rot% HMFGROW (nlat,ignd))
-allocate(class_rot% HTCROW  (nlat,ignd))
-allocate(class_rot% QFCROW  (nlat,ignd))
+allocate(class_rot% TBARACC (nlat,ignd),&
+         class_rot% THALACC (nlat,ignd),&
+         class_rot% THICACC (nlat,ignd),&
+         class_rot% THLQACC (nlat,ignd),&
+         class_rot% GFLXROW (nlat,ignd),&
+         class_rot% HMFGROW (nlat,ignd),&
+         class_rot% HTCROW  (nlat,ignd),&
+         class_rot% QFCROW  (nlat,ignd))
 
     ! These will be allocated the dimension: 'nlat,nmos,6,50'
 allocate(class_rot% ITCTROT (nlat,nmos,6,50))

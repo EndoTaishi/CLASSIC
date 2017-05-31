@@ -44,13 +44,28 @@ type ctem_switches
     logical :: ctem_on     !<
     logical :: parallelrun !<set this to be true if model is run in parallel mode for 
                            !<multiple grid cells, output is limited to monthly & yearly 
-                    	   !<grid-mean only. else the run is in stand alone mode, in which 
-                     	   !<output includes half-hourly and daily and mosaic-mean as well.
+                            !<grid-mean only. else the run is in stand alone mode, in which
+                            !<output includes half-hourly and daily and mosaic-mean as well.
     logical :: cyclemet    !<to cycle over only a fixed number of years 
-                 	   !<(nummetcylyrs) starting at a certain year (metcylyrst)
-                 	   !<if cyclemet, then put co2on = false and set an appopriate setco2conc, also
-                 	   !<if popdon is true, it will choose the popn and luc data for year
-                 	   !<metcylyrst and cycle on that.
+                        !<(nummetcylyrs) starting at a certain year (metcylyrst)
+                        !<if cyclemet, then put co2on = false and set an appopriate setco2conc, also
+                        !<if popdon is true, it will choose the popn and luc data for year
+                        !<metcylyrst and cycle on that.
+    integer :: ctemloop !< no. of times the .met file is to be read. this
+                                 !< option is useful to see how ctem's c pools
+                                 !< equilibrate when driven with same climate data
+                                 !< over and over again.
+    integer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
+                             !! are not doing a transient run, set to a negative value (like -9999)
+    integer :: ncyear   !< no. of years in the .met file.
+    integer :: spinfast !< set this to a higher number up to 10 to spin up
+                         !< soil carbon pool faster
+    integer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
+                             !< ignored if cyclemet is false
+    integer, pointer :: metcylyrst   !< climate year to start the spin up on
+                             !< ignored if cyclemet is false
+    real :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
+    real :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
     logical :: dofire      !<boolean, if true allow fire, if false no fire.
     logical :: run_model   !<
     logical :: met_rewound !<
@@ -69,6 +84,10 @@ type ctem_switches
                            !<same input file as the \f$CO_2\f$ one.
     logical :: popdon      !<if set true use population density data to calculate fire extinguishing probability and
                            !<probability of fire due to human causes, or if false, read directly from .ctm file
+    integer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
+                         !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
+                                 !< this defaults to -9999, which will then cause the model to cycle on
+                                 !< whatever is the first year in the popd and luc datasets
     logical :: inibioclim  !<switch telling if bioclimatic parameters are being initialized
                            !<from scratch (false) or being initialized from some spun up
                            !<values(true).
@@ -82,99 +101,107 @@ type ctem_switches
     logical :: use_netcdf        !< If true all model inputs and outputs are handled via netcdfs
     character(180) :: met_file   !< location of the netcdf meteorological dataset
     character(180) :: init_file  !< location of the netcdf initialization file
+    integer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
+                                  !< from the start then put in a negative number (like -9999), if you never want to have monthly
+                                  !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR
+
 
     ! CLASS switches:
-!     
-!     integer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
-!                                  !< because the atmospheric model considers these to be part
-!                                  !< of the "terrain".
-!                                  !< if idisp=1, vegetation displacement heights are calculated.
-! 
-!     integer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
-!                                  !< to lie at the ground surface.
-!                                  !< if izref=2, the bottom of the atmospheric model is taken
-!                                  !< to lie at the local roughness height.
-! 
-!     integer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
-!                                  !< and the original gcm set of screen-level diagnostic calculations 
-!                                  !< is done.
-!                                  !< if islfd=1, drcoef is called for surface stability corrections
-!                                  !< and sldiag is called for screen-level diagnostic calculations. 
-!                                  !< if islfd=2, flxsurfz is called for surface stability corrections
-!                                  !< and diasurf is called for screen-level diagnostic calculations. 
-! 
-!     integer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
-!                                  !< if ipcp=2, a linear partitioning of precipitation betweeen 
-!                                  !< rainfall and snowfall is done between 0 c and 2 c.
-!                                  !< if ipcp=3, rainfall and snowfall are partitioned according to
-!                                  !< a polynomial curve between 0 c and 6 c.
-! 
-!     integer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
-!                                 !< the ground surface slope is not modelled.
-!                                 !< if iwf=n (0<n<4), the watflood calculations of overland flow 
-!                                 !< and interflow are performed; interflow is drawn from the top 
-!                                 !< n soil layers.
-! 
-!     integer :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
-!                            !< be used in calculating the canopy or ground surface temperature
-!                            !< respectively.  if the switch is set to 1, a bisection method is
-!                            !< used; if to 2, the newton-raphson method is used.
-!     integer :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
-!                            !< be used in calculating the canopy or ground surface temperature
-!                            !< respectively.  if the switch is set to 1, a bisection method is
-!                            !< used; if to 2, the newton-raphson method is used.
-!     integer :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
-!                            !< be used in calculating the canopy or ground surface temperature
-!                            !< respectively.  if the switch is set to 1, a bisection method is
-!                            !< used; if to 2, the newton-raphson method is used.
-!    
-!     integer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
-!                            !< plant area index, vegetation height, canopy albedo, snow albedo
-!                            !< and soil albedo respectively calculated by class are used.
-!                            !< if any of these switches is set to 1, the value of the
-!                            !< corresponding parameter calculated by class is overridden by
-!                            !< a user-supplied input value.  
-!     integer :: IHGT !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
-!                            !< plant area index, vegetation height, canopy albedo, snow albedo
-!                            !< and soil albedo respectively calculated by class are used.
-!                            !< if any of these switches is set to 1, the value of the
-!                            !< corresponding parameter calculated by class is overridden by
-!                            !< a user-supplied input value. 
-!     integer :: IALC !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
-!                            !< plant area index, vegetation height, canopy albedo, snow albedo
-!                            !< and soil albedo respectively calculated by class are used.
-!                            !< if any of these switches is set to 1, the value of the
-!                            !< corresponding parameter calculated by class is overridden by
-!                            !< a user-supplied input value. 
-!     integer :: IALS !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
-!                            !< plant area index, vegetation height, canopy albedo, snow albedo
-!                            !< and soil albedo respectively calculated by class are used.
-!                            !< if any of these switches is set to 1, the value of the
-!                            !< corresponding parameter calculated by class is overridden by
-!                            !< a user-supplied input value. 
-!     integer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
-!                            !< plant area index, vegetation height, canopy albedo, snow albedo
-!                            !< and soil albedo respectively calculated by class are used.
-!                            !< if any of these switches is set to 1, the value of the
-!                            !< corresponding parameter calculated by class is overridden by
-!                            !< a user-supplied input value. 
-! 
-!     ! -------------
-!     ! >>>> note: if you wish to use the values in the .ini file, set all to -9999 in the job options file
-!     !            and the .ini file will be used.
-! 
-!     integer :: jhhstd  !< day of the year to start writing the half-hourly output
-!     integer :: jhhendd !< day of the year to stop writing the half-hourly output
-!     integer :: jdstd   !< day of the year to start writing the daily output
-!     integer :: jdendd  !< day of the year to stop writing the daily output
-!     integer :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
-!     integer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
-!     integer :: jdsty   !< simulation year (iyear) to start writing the daily output
-!     integer :: jdendy  !< simulation year (iyear) to stop writing the daily output
-! 
-! 
-!     integer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.  
-!                                 !< if it is set to 1, the new four-band routines are used.
+
+    integer :: igralb  !< if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of
+                                !< soil texture.  if it is set to 1, they are assigned values based on the ncar clm soil "colour"  dataset.
+
+
+    integer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
+                                 !< because the atmospheric model considers these to be part
+                                 !< of the "terrain".
+                                 !< if idisp=1, vegetation displacement heights are calculated.
+
+    integer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
+                                 !< to lie at the ground surface.
+                                 !< if izref=2, the bottom of the atmospheric model is taken
+                                 !< to lie at the local roughness height.
+
+    integer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
+                                 !< and the original gcm set of screen-level diagnostic calculations
+                                 !< is done.
+                                 !< if islfd=1, drcoef is called for surface stability corrections
+                                 !< and sldiag is called for screen-level diagnostic calculations.
+                                 !< if islfd=2, flxsurfz is called for surface stability corrections
+                                 !< and diasurf is called for screen-level diagnostic calculations.
+
+    integer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
+                                 !< if ipcp=2, a linear partitioning of precipitation betweeen
+                                 !< rainfall and snowfall is done between 0 c and 2 c.
+                                 !< if ipcp=3, rainfall and snowfall are partitioned according to
+                                 !< a polynomial curve between 0 c and 6 c.
+
+    integer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
+                                !< the ground surface slope is not modelled.
+                                !< if iwf=n (0<n<4), the watflood calculations of overland flow
+                                !< and interflow are performed; interflow is drawn from the top
+                                !< n soil layers.
+
+    integer :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
+                           !< be used in calculating the canopy or ground surface temperature
+                           !< respectively.  if the switch is set to 1, a bisection method is
+                           !< used; if to 2, the newton-raphson method is used.
+    integer :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
+                           !< be used in calculating the canopy or ground surface temperature
+                           !< respectively.  if the switch is set to 1, a bisection method is
+                           !< used; if to 2, the newton-raphson method is used.
+    integer :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
+                           !< be used in calculating the canopy or ground surface temperature
+                           !< respectively.  if the switch is set to 1, a bisection method is
+                           !< used; if to 2, the newton-raphson method is used.
+
+    integer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                           !< plant area index, vegetation height, canopy albedo, snow albedo
+                           !< and soil albedo respectively calculated by class are used.
+                           !< if any of these switches is set to 1, the value of the
+                           !< corresponding parameter calculated by class is overridden by
+                           !< a user-supplied input value.
+    integer :: IHGT !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                           !< plant area index, vegetation height, canopy albedo, snow albedo
+                           !< and soil albedo respectively calculated by class are used.
+                           !< if any of these switches is set to 1, the value of the
+                           !< corresponding parameter calculated by class is overridden by
+                           !< a user-supplied input value.
+    integer :: IALC !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                           !< plant area index, vegetation height, canopy albedo, snow albedo
+                           !< and soil albedo respectively calculated by class are used.
+                           !< if any of these switches is set to 1, the value of the
+                           !< corresponding parameter calculated by class is overridden by
+                           !< a user-supplied input value.
+    integer :: IALS !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                           !< plant area index, vegetation height, canopy albedo, snow albedo
+                           !< and soil albedo respectively calculated by class are used.
+                           !< if any of these switches is set to 1, the value of the
+                           !< corresponding parameter calculated by class is overridden by
+                           !< a user-supplied input value.
+    integer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                           !< plant area index, vegetation height, canopy albedo, snow albedo
+                           !< and soil albedo respectively calculated by class are used.
+                           !< if any of these switches is set to 1, the value of the
+                           !< corresponding parameter calculated by class is overridden by
+                           !< a user-supplied input value.
+
+    ! -------------
+    ! >>>> note: if you wish to use the values in the .ini file, set all to -9999 in the job options file
+    !            and the .ini file will be used.
+
+    integer :: jhhstd  !< day of the year to start writing the half-hourly output
+    integer :: jhhendd !< day of the year to stop writing the half-hourly output
+    integer :: jdstd   !< day of the year to start writing the daily output
+    integer :: jdendd  !< day of the year to stop writing the daily output
+    integer :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
+    integer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
+    integer :: jdsty   !< simulation year (iyear) to start writing the daily output
+    integer :: jdendy  !< simulation year (iyear) to stop writing the daily output
+
+
+    integer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
+                                !< if it is set to 1, the new four-band routines are used.
                                 
     character(80) :: titlec1!<
     character(80) :: titlec2!<
@@ -1262,7 +1289,7 @@ contains
 
 subroutine alloc_ctem_vars()
 
-use ctem_params, only : ican, icc, iccp1,ilg,nlat,nmos,ignd
+use ctem_params, only : ican, icc,iccp1,ilg,nlat,nmos,ignd
 
 implicit none
 
@@ -1270,218 +1297,218 @@ implicit none
 
 ! allocated with nlat,nmos, icc:
 
-allocate(vrot%ailcmin(nlat,nmos,icc))
-allocate(vrot%pftexist(nlat,nmos,icc))
-allocate(vrot%lfstatus(nlat,nmos,icc))
-allocate(vrot%pandays (nlat,nmos,icc))
-allocate(vrot%ailcmin (nlat,nmos,icc))
-allocate(vrot%ailcmax (nlat,nmos,icc))
-allocate(vrot%dvdfcan (nlat,nmos,icc))
-allocate(vrot%gleafmas(nlat,nmos,icc))
-allocate(vrot%bleafmas(nlat,nmos,icc))
-allocate(vrot%stemmass(nlat,nmos,icc))
-allocate(vrot%rootmass(nlat,nmos,icc))
-allocate(vrot%pstemmass (nlat,nmos,icc))
-allocate(vrot%pgleafmass (nlat,nmos,icc))
-allocate(vrot%fcancmx (nlat,nmos,icc))
-allocate(vrot%ailcg   (nlat,nmos,icc))
-allocate(vrot%ailcgs  (nlat,nmos,icc))
-allocate(vrot%fcancs  (nlat,nmos,icc))
-allocate(vrot%fcanc   (nlat,nmos,icc))
-allocate(vrot%co2i1cg (nlat,nmos,icc))
-allocate(vrot%co2i1cs (nlat,nmos,icc))
-allocate(vrot%co2i2cg (nlat,nmos,icc))
-allocate(vrot%co2i2cs (nlat,nmos,icc))
-allocate(vrot%ancsveg (nlat,nmos,icc))
-allocate(vrot%ancgveg (nlat,nmos,icc))
-allocate(vrot%rmlcsveg(nlat,nmos,icc))
-allocate(vrot%rmlcgveg(nlat,nmos,icc))
-allocate(vrot%slai    (nlat,nmos,icc))
-allocate(vrot%ailcb   (nlat,nmos,icc))
-allocate(vrot%flhrloss(nlat,nmos,icc))
-allocate(vrot%grwtheff(nlat,nmos,icc))
-allocate(vrot%lystmmas(nlat,nmos,icc))
-allocate(vrot%lyrotmas(nlat,nmos,icc))
-allocate(vrot%tymaxlai(nlat,nmos,icc))
-allocate(vrot%stmhrlos(nlat,nmos,icc))
-allocate(vrot%vgbiomas_veg(nlat,nmos,icc))
-allocate(vrot%emit_co2(nlat,nmos,icc))
-allocate(vrot%emit_co (nlat,nmos,icc))
-allocate(vrot%emit_ch4(nlat,nmos,icc))
-allocate(vrot%emit_nmhc(nlat,nmos,icc))
-allocate(vrot%emit_h2 (nlat,nmos,icc))
-allocate(vrot%emit_nox(nlat,nmos,icc))
-allocate(vrot%emit_n2o(nlat,nmos,icc))
-allocate(vrot%emit_pm25(nlat,nmos,icc))
-allocate(vrot%emit_tpm(nlat,nmos,icc))
-allocate(vrot%emit_tc (nlat,nmos,icc))
-allocate(vrot%emit_oc (nlat,nmos,icc))
-allocate(vrot%emit_bc (nlat,nmos,icc))
-allocate(vrot%burnvegf(nlat,nmos,icc))
-allocate(vrot%smfuncveg(nlat,nmos,icc))
-allocate(vrot%bterm   (nlat,nmos,icc))
-allocate(vrot%mterm   (nlat,nmos,icc))
-allocate(vrot%bmasveg (nlat,nmos,icc))
-allocate(vrot%veghght (nlat,nmos,icc))
-allocate(vrot%rootdpth(nlat,nmos,icc))
-allocate(vrot%tltrleaf(nlat,nmos,icc))
-allocate(vrot%tltrstem(nlat,nmos,icc))
-allocate(vrot%tltrroot(nlat,nmos,icc))
-allocate(vrot%leaflitr(nlat,nmos,icc))
-allocate(vrot%roottemp(nlat,nmos,icc))
-allocate(vrot%afrleaf (nlat,nmos,icc))
-allocate(vrot%afrstem (nlat,nmos,icc))
-allocate(vrot%afrroot (nlat,nmos,icc))
-allocate(vrot%wtstatus(nlat,nmos,icc))
-allocate(vrot%ltstatus(nlat,nmos,icc))
-allocate(vrot%gppveg  (nlat,nmos,icc))
-allocate(vrot%nppveg  (nlat,nmos,icc))
-allocate(vrot%autoresveg(nlat,nmos,icc))
-allocate(vrot%rmlvegacc (nlat,nmos,icc))
-allocate(vrot%rmsveg  (nlat,nmos,icc))
-allocate(vrot%rmrveg  (nlat,nmos,icc))
-allocate(vrot%rgveg   (nlat,nmos,icc))
-allocate(vrot%litrfallveg(nlat,nmos,icc))
-allocate(vrot%rothrlos(nlat,nmos,icc))
-allocate(vrot%pfcancmx(nlat,nmos,icc))
-allocate(vrot%nfcancmx(nlat,nmos,icc))
-allocate(vrot%anveg   (nlat,nmos,icc))
-allocate(vrot%rmlveg  (nlat,nmos,icc))
+allocate(vrot%ailcmin(nlat,nmos,icc),&
+         vrot%pftexist(nlat,nmos,icc),&
+         vrot%lfstatus(nlat,nmos,icc),&
+         vrot%pandays (nlat,nmos,icc),&
+         vrot%ailcmin (nlat,nmos,icc),&
+         vrot%ailcmax (nlat,nmos,icc),&
+         vrot%dvdfcan (nlat,nmos,icc),&
+         vrot%gleafmas(nlat,nmos,icc),&
+         vrot%bleafmas(nlat,nmos,icc),&
+         vrot%stemmass(nlat,nmos,icc),&
+         vrot%rootmass(nlat,nmos,icc),&
+         vrot%pstemmass (nlat,nmos,icc),&
+         vrot%pgleafmass (nlat,nmos,icc),&
+         vrot%fcancmx (nlat,nmos,icc),&
+         vrot%ailcg   (nlat,nmos,icc),&
+         vrot%ailcgs  (nlat,nmos,icc),&
+         vrot%fcancs  (nlat,nmos,icc),&
+         vrot%fcanc   (nlat,nmos,icc),&
+         vrot%co2i1cg (nlat,nmos,icc),&
+         vrot%co2i1cs (nlat,nmos,icc),&
+         vrot%co2i2cg (nlat,nmos,icc),&
+         vrot%co2i2cs (nlat,nmos,icc),&
+         vrot%ancsveg (nlat,nmos,icc),&
+         vrot%ancgveg (nlat,nmos,icc),&
+         vrot%rmlcsveg(nlat,nmos,icc),&
+         vrot%rmlcgveg(nlat,nmos,icc),&
+         vrot%slai    (nlat,nmos,icc),&
+         vrot%ailcb   (nlat,nmos,icc),&
+         vrot%flhrloss(nlat,nmos,icc),&
+         vrot%grwtheff(nlat,nmos,icc),&
+         vrot%lystmmas(nlat,nmos,icc),&
+         vrot%lyrotmas(nlat,nmos,icc),&
+         vrot%tymaxlai(nlat,nmos,icc),&
+         vrot%stmhrlos(nlat,nmos,icc),&
+         vrot%vgbiomas_veg(nlat,nmos,icc),&
+         vrot%emit_co2(nlat,nmos,icc),&
+         vrot%emit_co (nlat,nmos,icc),&
+         vrot%emit_ch4(nlat,nmos,icc),&
+         vrot%emit_nmhc(nlat,nmos,icc),&
+         vrot%emit_h2 (nlat,nmos,icc),&
+         vrot%emit_nox(nlat,nmos,icc),&
+         vrot%emit_n2o(nlat,nmos,icc),&
+         vrot%emit_pm25(nlat,nmos,icc),&
+         vrot%emit_tpm(nlat,nmos,icc),&
+         vrot%emit_tc (nlat,nmos,icc),&
+         vrot%emit_oc (nlat,nmos,icc),&
+         vrot%emit_bc (nlat,nmos,icc),&
+         vrot%burnvegf(nlat,nmos,icc),&
+         vrot%smfuncveg(nlat,nmos,icc),&
+         vrot%bterm   (nlat,nmos,icc),&
+         vrot%mterm   (nlat,nmos,icc),&
+         vrot%bmasveg (nlat,nmos,icc),&
+         vrot%veghght (nlat,nmos,icc),&
+         vrot%rootdpth(nlat,nmos,icc),&
+         vrot%tltrleaf(nlat,nmos,icc),&
+         vrot%tltrstem(nlat,nmos,icc),&
+         vrot%tltrroot(nlat,nmos,icc),&
+         vrot%leaflitr(nlat,nmos,icc),&
+         vrot%roottemp(nlat,nmos,icc),&
+         vrot%afrleaf (nlat,nmos,icc),&
+         vrot%afrstem (nlat,nmos,icc),&
+         vrot%afrroot (nlat,nmos,icc),&
+         vrot%wtstatus(nlat,nmos,icc),&
+         vrot%ltstatus(nlat,nmos,icc),&
+         vrot%gppveg  (nlat,nmos,icc),&
+         vrot%nppveg  (nlat,nmos,icc),&
+         vrot%autoresveg(nlat,nmos,icc),&
+         vrot%rmlvegacc (nlat,nmos,icc),&
+         vrot%rmsveg  (nlat,nmos,icc),&
+         vrot%rmrveg  (nlat,nmos,icc),&
+         vrot%rgveg   (nlat,nmos,icc),&
+         vrot%litrfallveg(nlat,nmos,icc),&
+         vrot%rothrlos(nlat,nmos,icc),&
+         vrot%pfcancmx(nlat,nmos,icc),&
+         vrot%nfcancmx(nlat,nmos,icc),&
+         vrot%anveg   (nlat,nmos,icc),&
+         vrot%rmlveg  (nlat,nmos,icc),&
     
 ! allocated with nlat,nmos:   
-allocate(vrot%icount(nlat,nmos))
-allocate(vrot%stdaln(nlat,nmos))
-allocate(vrot%gavglai (nlat,nmos))
-allocate(vrot%co2conc (nlat,nmos))
-allocate(vrot%ch4conc (nlat,nmos))
-allocate(vrot%canres  (nlat,nmos))
-allocate(vrot%vgbiomas(nlat,nmos))
-allocate(vrot%gavgltms(nlat,nmos))
-allocate(vrot%gavgscms(nlat,nmos))
-allocate(vrot%burnfrac(nlat,nmos))
-allocate(vrot%popdin  (nlat,nmos))
-allocate(vrot%lterm   (nlat,nmos))
-allocate(vrot%extnprob(nlat,nmos))
-allocate(vrot%prbfrhuc(nlat,nmos))
-allocate(vrot%rml     (nlat,nmos))
-allocate(vrot%rms     (nlat,nmos))
-allocate(vrot%rmr     (nlat,nmos))
-allocate(vrot%ch4wet1 (nlat,nmos))
-allocate(vrot%ch4wet2 (nlat,nmos))
-allocate(vrot%wetfdyn (nlat,nmos))
-allocate(vrot%ch4dyn1 (nlat,nmos))
-allocate(vrot%ch4dyn2 (nlat,nmos))
-allocate(vrot%ch4_soills(nlat,nmos))
-allocate(vrot%lucemcom(nlat,nmos))
-allocate(vrot%lucltrin(nlat,nmos))
-allocate(vrot%lucsocin(nlat,nmos))
-allocate(vrot%npp     (nlat,nmos))
-allocate(vrot%nep     (nlat,nmos))
-allocate(vrot%nbp     (nlat,nmos))
-allocate(vrot%gpp     (nlat,nmos))
-allocate(vrot%hetrores(nlat,nmos))
-allocate(vrot%autores (nlat,nmos))
-allocate(vrot%soilcresp(nlat,nmos))
-allocate(vrot%rm      (nlat,nmos))
-allocate(vrot%rg      (nlat,nmos))
-allocate(vrot%litres  (nlat,nmos))
-allocate(vrot%socres  (nlat,nmos))
-allocate(vrot%dstcemls(nlat,nmos))
-allocate(vrot%litrfall(nlat,nmos))
-allocate(vrot%humiftrs(nlat,nmos))
-allocate(vrot%cfluxcg (nlat,nmos))
-allocate(vrot%cfluxcs (nlat,nmos))
-allocate(vrot%dstcemls3 (nlat,nmos))
-allocate(vrot%PREACC_M(nlat,nmos))
-allocate(vrot%GTACC_M (nlat,nmos))
-allocate(vrot%QEVPACC_M (nlat,nmos))
-allocate(vrot%HFSACC_M(nlat,nmos))
-allocate(vrot%HMFNACC_M (nlat,nmos))
-allocate(vrot%ROFACC_M(nlat,nmos))
-allocate(vrot%SNOACC_M(nlat,nmos))
-allocate(vrot%OVRACC_M(nlat,nmos))
-allocate(vrot%WTBLACC_M(nlat,nmos))
-allocate(vrot%ALVSACC_M(nlat,nmos))
-allocate(vrot%ALIRACC_M(nlat,nmos))
-allocate(vrot%RHOSACC_M(nlat,nmos))
-allocate(vrot%TSNOACC_M(nlat,nmos))
-allocate(vrot%WSNOACC_M(nlat,nmos))
-allocate(vrot%SNOARE_M(nlat,nmos))
-allocate(vrot%TCANACC_M(nlat,nmos))
-allocate(vrot%RCANACC_M(nlat,nmos))
-allocate(vrot%SCANACC_M(nlat,nmos))
-allocate(vrot%ALTOTACC_M(nlat,nmos))
-allocate(vrot%GROACC_M(nlat,nmos))
-allocate(vrot%FSINACC_M (nlat,nmos))
-allocate(vrot%FLINACC_M(nlat,nmos))
-allocate(vrot%TAACC_M (nlat,nmos))
-allocate(vrot%UVACC_M (nlat,nmos))
-allocate(vrot%PRESACC_M (nlat,nmos))
-allocate(vrot%QAACC_M (nlat,nmos))
-allocate(vrot%EVAPACC_M (nlat,nmos))
-allocate(vrot%FLUTACC_M(nlat,nmos))
-allocate(vrot%tcanrs  (nlat,nmos))
-allocate(vrot%tsnors  (nlat,nmos))
-allocate(vrot%tpndrs  (nlat,nmos))
-allocate(vrot%tcanoaccrow_m(nlat,nmos))
-allocate(vrot%uvaccrow_m(nlat,nmos))
-allocate(vrot%vvaccrow_m (nlat,nmos))
-allocate(vrot%tcanoaccrow_out (nlat,nmos))
-allocate(vrot%qevpacc_m_save(nlat,nmos))
-allocate(vrot%twarmm  (nlat,nmos))
-allocate(vrot%tcoldm  (nlat,nmos))
-allocate(vrot%gdd5    (nlat,nmos))
-allocate(vrot%aridity (nlat,nmos))
-allocate(vrot%srplsmon(nlat,nmos))
-allocate(vrot%defctmon(nlat,nmos))
-allocate(vrot%anndefct(nlat,nmos))
-allocate(vrot%annsrpls(nlat,nmos))
-allocate(vrot%annpcp  (nlat,nmos))
-allocate(vrot%dry_season_length(nlat,nmos))
+         vrot%icount(nlat,nmos),&
+         vrot%stdaln(nlat,nmos),&
+         vrot%gavglai (nlat,nmos),&
+         vrot%co2conc (nlat,nmos),&
+         vrot%ch4conc (nlat,nmos),&
+         vrot%canres  (nlat,nmos),&
+         vrot%vgbiomas(nlat,nmos),&
+         vrot%gavgltms(nlat,nmos),&
+         vrot%gavgscms(nlat,nmos),&
+         vrot%burnfrac(nlat,nmos),&
+         vrot%popdin  (nlat,nmos),&
+         vrot%lterm   (nlat,nmos),&
+         vrot%extnprob(nlat,nmos),&
+         vrot%prbfrhuc(nlat,nmos),&
+         vrot%rml     (nlat,nmos),&
+         vrot%rms     (nlat,nmos),&
+         vrot%rmr     (nlat,nmos),&
+         vrot%ch4wet1 (nlat,nmos),&
+         vrot%ch4wet2 (nlat,nmos),&
+         vrot%wetfdyn (nlat,nmos),&
+         vrot%ch4dyn1 (nlat,nmos),&
+         vrot%ch4dyn2 (nlat,nmos),&
+         vrot%ch4_soills(nlat,nmos),&
+         vrot%lucemcom(nlat,nmos),&
+         vrot%lucltrin(nlat,nmos),&
+         vrot%lucsocin(nlat,nmos),&
+         vrot%npp     (nlat,nmos),&
+         vrot%nep     (nlat,nmos),&
+         vrot%nbp     (nlat,nmos),&
+         vrot%gpp     (nlat,nmos),&
+         vrot%hetrores(nlat,nmos),&
+         vrot%autores (nlat,nmos),&
+         vrot%soilcresp(nlat,nmos),&
+         vrot%rm      (nlat,nmos),&
+         vrot%rg      (nlat,nmos),&
+         vrot%litres  (nlat,nmos),&
+         vrot%socres  (nlat,nmos),&
+         vrot%dstcemls(nlat,nmos),&
+         vrot%litrfall(nlat,nmos),&
+         vrot%humiftrs(nlat,nmos),&
+         vrot%cfluxcg (nlat,nmos),&
+         vrot%cfluxcs (nlat,nmos),&
+         vrot%dstcemls3 (nlat,nmos),&
+         vrot%PREACC_M(nlat,nmos),&
+         vrot%GTACC_M (nlat,nmos),&
+         vrot%QEVPACC_M (nlat,nmos),&
+         vrot%HFSACC_M(nlat,nmos),&
+         vrot%HMFNACC_M (nlat,nmos),&
+         vrot%ROFACC_M(nlat,nmos),&
+         vrot%SNOACC_M(nlat,nmos),&
+         vrot%OVRACC_M(nlat,nmos),&
+         vrot%WTBLACC_M(nlat,nmos),&
+         vrot%ALVSACC_M(nlat,nmos),&
+         vrot%ALIRACC_M(nlat,nmos),&
+         vrot%RHOSACC_M(nlat,nmos),&
+         vrot%TSNOACC_M(nlat,nmos),&
+         vrot%WSNOACC_M(nlat,nmos),&
+         vrot%SNOARE_M(nlat,nmos),&
+         vrot%TCANACC_M(nlat,nmos),&
+         vrot%RCANACC_M(nlat,nmos),&
+         vrot%SCANACC_M(nlat,nmos),&
+         vrot%ALTOTACC_M(nlat,nmos),&
+         vrot%GROACC_M(nlat,nmos),&
+         vrot%FSINACC_M (nlat,nmos),&
+         vrot%FLINACC_M(nlat,nmos),&
+         vrot%TAACC_M (nlat,nmos),&
+         vrot%UVACC_M (nlat,nmos),&
+         vrot%PRESACC_M (nlat,nmos),&
+         vrot%QAACC_M (nlat,nmos),&
+         vrot%EVAPACC_M (nlat,nmos),&
+         vrot%FLUTACC_M(nlat,nmos),&
+         vrot%tcanrs  (nlat,nmos),&
+         vrot%tsnors  (nlat,nmos),&
+         vrot%tpndrs  (nlat,nmos),&
+         vrot%tcanoaccrow_m(nlat,nmos),&
+         vrot%uvaccrow_m(nlat,nmos),&
+         vrot%vvaccrow_m (nlat,nmos),&
+         vrot%tcanoaccrow_out (nlat,nmos),&
+         vrot%qevpacc_m_save(nlat,nmos),&
+         vrot%twarmm  (nlat,nmos),&
+         vrot%tcoldm  (nlat,nmos),&
+         vrot%gdd5    (nlat,nmos),&
+         vrot%aridity (nlat,nmos),&
+         vrot%srplsmon(nlat,nmos),&
+         vrot%defctmon(nlat,nmos),&
+         vrot%anndefct(nlat,nmos),&
+         vrot%annsrpls(nlat,nmos),&
+         vrot%annpcp  (nlat,nmos),&
+         vrot%dry_season_length(nlat,nmos),&
 
 ! allocated with nlat,nmos,ican:     
-allocate(vrot%zolnc(nlat,nmos,ican))
-allocate(vrot%ailc(nlat,nmos,ican))
-allocate(vrot%cmasvegc(nlat,nmos,ican))
-allocate(vrot%alvsctm(nlat,nmos,ican))
-allocate(vrot%paic(nlat,nmos,ican))
-allocate(vrot%slaic(nlat,nmos,ican))
-allocate(vrot%alirctm(nlat,nmos,ican))
-allocate(vrot%csum(nlat,nmos,ican))
+         vrot%zolnc(nlat,nmos,ican),&
+         vrot%ailc(nlat,nmos,ican),&
+         vrot%cmasvegc(nlat,nmos,ican),&
+         vrot%alvsctm(nlat,nmos,ican),&
+         vrot%paic(nlat,nmos,ican),&
+         vrot%slaic(nlat,nmos,ican),&
+         vrot%alirctm(nlat,nmos,ican),&
+         vrot%csum(nlat,nmos,ican),&
     
 ! allocated with nlat,nmos,ignd:        
-allocate(vrot%TBARACC_M(nlat,nmos,ignd))
-allocate(vrot%THLQACC_M(nlat,nmos,ignd))
-allocate(vrot%THICACC_M(nlat,nmos,ignd))
-allocate(vrot%THALACC_M(nlat,nmos,ignd))
-allocate(vrot%tbaraccrow_m(nlat,nmos,ignd))
+         vrot%TBARACC_M(nlat,nmos,ignd),&
+         vrot%THLQACC_M(nlat,nmos,ignd),&
+         vrot%THICACC_M(nlat,nmos,ignd),&
+         vrot%THALACC_M(nlat,nmos,ignd),&
+         vrot%tbaraccrow_m(nlat,nmos,ignd),&
     
 ! allocated with nlat,nmos,ican,ignd:       
-allocate(vrot%rmatc(nlat,nmos,ican,ignd))
+         vrot%rmatc(nlat,nmos,ican,ignd),&
  
  ! allocated with nlat,nmos,icc,ignd: 
-allocate(vrot%rmatctem(nlat,nmos,icc,ignd))
+         vrot%rmatctem(nlat,nmos,icc,ignd),&
     
 ! allocated with nlat,nmos,iccp1:     
-allocate(vrot%litrmass(nlat,nmos,iccp1))
-allocate(vrot%soilcmas(nlat,nmos,iccp1))
-allocate(vrot%nepveg(nlat,nmos,iccp1))
-allocate(vrot%nbpveg(nlat,nmos,iccp1))
-allocate(vrot%hetroresveg(nlat,nmos,iccp1))
-allocate(vrot%litresveg(nlat,nmos,iccp1))
-allocate(vrot%soilcresveg(nlat,nmos,iccp1))
-allocate(vrot%humiftrsveg(nlat,nmos,iccp1))
+         vrot%litrmass(nlat,nmos,iccp1),&
+         vrot%soilcmas(nlat,nmos,iccp1),&
+         vrot%nepveg(nlat,nmos,iccp1),&
+         vrot%nbpveg(nlat,nmos,iccp1),&
+         vrot%hetroresveg(nlat,nmos,iccp1),&
+         vrot%litresveg(nlat,nmos,iccp1),&
+         vrot%soilcresveg(nlat,nmos,iccp1),&
+         vrot%humiftrsveg(nlat,nmos,iccp1),&
     
 ! allocated with nlat,nmos,{some number}: 
-allocate(vrot%colddays(nlat,nmos,2))
-allocate(vrot%slopefrac(nlat,nmos,8))
-allocate(vrot%mlightng(nlat,nmos,12))
-allocate(vrot%wetfrac_mon(nlat,nmos,12))
+         vrot%colddays(nlat,nmos,2),&
+         vrot%slopefrac(nlat,nmos,8),&
+         vrot%mlightng(nlat,nmos,12),&
+         vrot%wetfrac_mon(nlat,nmos,12),&
     
 ! allocated with nlat:     
-allocate(vrot%dayl_max(nlat))
-allocate(vrot%dayl(nlat))
-allocate(vrot%altotcntr_d(nlat))
+         vrot%dayl_max(nlat),&
+         vrot%dayl(nlat),&
+         vrot%altotcntr_d(nlat))
 
 ! Now on to the veg_gat vars
 
@@ -1489,683 +1516,683 @@ ilg = nlat * nmos
 
 ! allocated with ilg
 
-allocate(vgat%icount(ilg))
-allocate(vgat%gavglai (ilg))
-allocate(vgat%lightng (ilg))
-allocate(vgat%tcanoaccgat_out (ilg))
-allocate(vgat%co2conc (ilg))
-allocate(vgat%ch4conc (ilg))
-allocate(vgat%canres (ilg))
-allocate(vgat%vgbiomas (ilg))
-allocate(vgat%gavgltms (ilg))
-allocate(vgat%gavgscms (ilg))
-allocate(vgat%lterm (ilg))
-allocate(vgat%ch4wet1 (ilg))
-allocate(vgat%ch4wet2 (ilg))
-allocate(vgat%wetfdyn (ilg))
-allocate(vgat%ch4dyn1 (ilg))
-allocate(vgat%ch4dyn2 (ilg))
-allocate(vgat%ch4_soills (ilg))
-allocate(vgat%lucemcom (ilg))
-allocate(vgat%lucltrin (ilg))
-allocate(vgat%lucsocin (ilg))
-allocate(vgat%npp (ilg))
-allocate(vgat%nep (ilg))
-allocate(vgat%nbp (ilg))
-allocate(vgat%gpp (ilg))
-allocate(vgat%hetrores (ilg))
-allocate(vgat%autores (ilg))
-allocate(vgat%soilcresp (ilg))
-allocate(vgat%rm (ilg))
-allocate(vgat%rg (ilg))
-allocate(vgat%litres (ilg))
-allocate(vgat%socres (ilg))
-allocate(vgat%dstcemls (ilg))
-allocate(vgat%litrfall (ilg))
-allocate(vgat%humiftrs (ilg))
-allocate(vgat%rml (ilg))
-allocate(vgat%rms (ilg))
-allocate(vgat%rmr (ilg))
-allocate(vgat%burnfrac (ilg))
-allocate(vgat%popdin (ilg))
-allocate(vgat%extnprob (ilg))
-allocate(vgat%prbfrhuc (ilg))
-allocate(vgat%dayl_max (ilg))
-allocate(vgat%dayl (ilg))
-allocate(vgat%wetfrac_pres (ilg))
-allocate(vgat%twarmm (ilg))
-allocate(vgat%tcoldm (ilg))
-allocate(vgat%gdd5 (ilg))
-allocate(vgat%aridity (ilg))
-allocate(vgat%srplsmon (ilg))
-allocate(vgat%defctmon (ilg))
-allocate(vgat%anndefct (ilg))
-allocate(vgat%annsrpls (ilg))
-allocate(vgat%annpcp (ilg))
-allocate(vgat%dry_season_length (ilg))
-allocate(vgat%cfluxcg (ilg))
-allocate(vgat%cfluxcs (ilg))
-allocate(vgat%dstcemls3 (ilg))
-allocate(vgat%tcurm (ilg))
-allocate(vgat%srpcuryr (ilg))
-allocate(vgat%dftcuryr (ilg))
-allocate(vgat%anpcpcur (ilg))
-allocate(vgat%anpecur (ilg))
-allocate(vgat%gdd5cur (ilg))
-allocate(vgat%surmncur (ilg))
-allocate(vgat%defmncur (ilg))
-allocate(vgat%srplscur (ilg))
-allocate(vgat%defctcur (ilg))
-allocate(vgat%stdaln (ilg))
+allocate(vgat%icount(ilg),&
+         vgat%gavglai (ilg),&
+         vgat%lightng (ilg),&
+         vgat%tcanoaccgat_out (ilg),&
+         vgat%co2conc (ilg),&
+         vgat%ch4conc (ilg),&
+         vgat%canres (ilg),&
+         vgat%vgbiomas (ilg),&
+         vgat%gavgltms (ilg),&
+         vgat%gavgscms (ilg),&
+         vgat%lterm (ilg),&
+         vgat%ch4wet1 (ilg),&
+         vgat%ch4wet2 (ilg),&
+         vgat%wetfdyn (ilg),&
+         vgat%ch4dyn1 (ilg),&
+         vgat%ch4dyn2 (ilg),&
+         vgat%ch4_soills (ilg),&
+         vgat%lucemcom (ilg),&
+         vgat%lucltrin (ilg),&
+         vgat%lucsocin (ilg),&
+         vgat%npp (ilg),&
+         vgat%nep (ilg),&
+         vgat%nbp (ilg),&
+         vgat%gpp (ilg),&
+         vgat%hetrores (ilg),&
+         vgat%autores (ilg),&
+         vgat%soilcresp (ilg),&
+         vgat%rm (ilg),&
+         vgat%rg (ilg),&
+         vgat%litres (ilg),&
+         vgat%socres (ilg),&
+         vgat%dstcemls (ilg),&
+         vgat%litrfall (ilg),&
+         vgat%humiftrs (ilg),&
+         vgat%rml (ilg),&
+         vgat%rms (ilg),&
+         vgat%rmr (ilg),&
+         vgat%burnfrac (ilg),&
+         vgat%popdin (ilg),&
+         vgat%extnprob (ilg),&
+         vgat%prbfrhuc (ilg),&
+         vgat%dayl_max (ilg),&
+         vgat%dayl (ilg),&
+         vgat%wetfrac_pres (ilg),&
+         vgat%twarmm (ilg),&
+         vgat%tcoldm (ilg),&
+         vgat%gdd5 (ilg),&
+         vgat%aridity (ilg),&
+         vgat%srplsmon (ilg),&
+         vgat%defctmon (ilg),&
+         vgat%anndefct (ilg),&
+         vgat%annsrpls (ilg),&
+         vgat%annpcp (ilg),&
+         vgat%dry_season_length (ilg),&
+         vgat%cfluxcg (ilg),&
+         vgat%cfluxcs (ilg),&
+         vgat%dstcemls3 (ilg),&
+         vgat%tcurm (ilg),&
+         vgat%srpcuryr (ilg),&
+         vgat%dftcuryr (ilg),&
+         vgat%anpcpcur (ilg),&
+         vgat%anpecur (ilg),&
+         vgat%gdd5cur (ilg),&
+         vgat%surmncur (ilg),&
+         vgat%defmncur (ilg),&
+         vgat%srplscur (ilg),&
+         vgat%defctcur (ilg),&
+         vgat%stdaln (ilg),&
 
 ! allocated with ilg, icc
-allocate(vgat%ailcmin (ilg,icc))
-allocate(vgat%ailcmax (ilg,icc))
-allocate(vgat%dvdfcan (ilg,icc))
-allocate(vgat%gleafmas (ilg,icc))
-allocate(vgat%bleafmas (ilg,icc))
-allocate(vgat%stemmass (ilg,icc))
-allocate(vgat%rootmass (ilg,icc))
-allocate(vgat%pstemmass (ilg,icc))
-allocate(vgat%pgleafmass (ilg,icc))
-allocate(vgat%fcancmx (ilg,icc))
-allocate(vgat%ailcg (ilg,icc))
-allocate(vgat%ailcgs (ilg,icc))
-allocate(vgat%fcancs (ilg,icc))
-allocate(vgat%fcanc (ilg,icc))
-allocate(vgat%co2i1cg (ilg,icc))
-allocate(vgat%co2i1cs (ilg,icc))
-allocate(vgat%co2i2cg (ilg,icc))
-allocate(vgat%co2i2cs (ilg,icc))
-allocate(vgat%ancsveg (ilg,icc))
-allocate(vgat%ancgveg (ilg,icc))
-allocate(vgat%rmlcsveg (ilg,icc))
-allocate(vgat%rmlcgveg (ilg,icc))
-allocate(vgat%slai (ilg,icc))
-allocate(vgat%ailcb (ilg,icc))
-allocate(vgat%flhrloss (ilg,icc))
-allocate(vgat%grwtheff (ilg,icc))
-allocate(vgat%lystmmas (ilg,icc))
-allocate(vgat%lyrotmas (ilg,icc))
-allocate(vgat%tymaxlai (ilg,icc))
-allocate(vgat%stmhrlos (ilg,icc))
-allocate(vgat%vgbiomas_veg (ilg,icc))
-allocate(vgat%emit_co2 (ilg,icc))
-allocate(vgat%emit_co (ilg,icc))
-allocate(vgat%emit_ch4 (ilg,icc))
-allocate(vgat%emit_nmhc (ilg,icc))
-allocate(vgat%emit_h2 (ilg,icc))
-allocate(vgat%emit_nox (ilg,icc))
-allocate(vgat%emit_n2o (ilg,icc))
-allocate(vgat%emit_pm25 (ilg,icc))
-allocate(vgat%emit_tpm (ilg,icc))
-allocate(vgat%emit_tc (ilg,icc))
-allocate(vgat%emit_oc (ilg,icc))
-allocate(vgat%emit_bc (ilg,icc))
-allocate(vgat%burnvegf (ilg,icc))
-allocate(vgat%smfuncveg (ilg,icc))
-allocate(vgat%bterm (ilg,icc))
-allocate(vgat%mterm (ilg,icc))
-allocate(vgat%bmasveg (ilg,icc))
-allocate(vgat%veghght (ilg,icc))
-allocate(vgat%rootdpth (ilg,icc))
-allocate(vgat%tltrleaf (ilg,icc))
-allocate(vgat%tltrstem (ilg,icc))
-allocate(vgat%tltrroot (ilg,icc))
-allocate(vgat%leaflitr (ilg,icc))
-allocate(vgat%roottemp (ilg,icc))
-allocate(vgat%afrleaf (ilg,icc))
-allocate(vgat%afrstem (ilg,icc))
-allocate(vgat%afrroot (ilg,icc))
-allocate(vgat%wtstatus (ilg,icc))
-allocate(vgat%ltstatus (ilg,icc))
-allocate(vgat%gppveg (ilg,icc))
-allocate(vgat%nppveg (ilg,icc))
-allocate(vgat%autoresveg (ilg,icc))
-allocate(vgat%rmlvegacc (ilg,icc))
-allocate(vgat%rmsveg (ilg,icc))
-allocate(vgat%rmrveg (ilg,icc))
-allocate(vgat%rgveg (ilg,icc))
-allocate(vgat%litrfallveg (ilg,icc))
-allocate(vgat%anveg (ilg,icc))
-allocate(vgat%rmlveg (ilg,icc))
-allocate(vgat%geremort (ilg,icc))
-allocate(vgat%intrmort (ilg,icc))
-allocate(vgat%lambda (ilg,icc))
-allocate(vgat%cc (ilg,icc))
-allocate(vgat%mm (ilg,icc))
-allocate(vgat%pftexist (ilg,icc))
-allocate(vgat%rothrlos (ilg,icc))
-allocate(vgat%pfcancmx (ilg,icc))
-allocate(vgat%nfcancmx (ilg,icc))
-allocate(vgat%lfstatus (ilg,icc))
-allocate(vgat%pandays (ilg,icc))
+         vgat%ailcmin (ilg,icc),&
+         vgat%ailcmax (ilg,icc),&
+         vgat%dvdfcan (ilg,icc),&
+         vgat%gleafmas (ilg,icc),&
+         vgat%bleafmas (ilg,icc),&
+         vgat%stemmass (ilg,icc),&
+         vgat%rootmass (ilg,icc),&
+         vgat%pstemmass (ilg,icc),&
+         vgat%pgleafmass (ilg,icc),&
+         vgat%fcancmx (ilg,icc),&
+         vgat%ailcg (ilg,icc),&
+         vgat%ailcgs (ilg,icc),&
+         vgat%fcancs (ilg,icc),&
+         vgat%fcanc (ilg,icc),&
+         vgat%co2i1cg (ilg,icc),&
+         vgat%co2i1cs (ilg,icc),&
+         vgat%co2i2cg (ilg,icc),&
+         vgat%co2i2cs (ilg,icc),&
+         vgat%ancsveg (ilg,icc),&
+         vgat%ancgveg (ilg,icc),&
+         vgat%rmlcsveg (ilg,icc),&
+         vgat%rmlcgveg (ilg,icc),&
+         vgat%slai (ilg,icc),&
+         vgat%ailcb (ilg,icc),&
+         vgat%flhrloss (ilg,icc),&
+         vgat%grwtheff (ilg,icc),&
+         vgat%lystmmas (ilg,icc),&
+         vgat%lyrotmas (ilg,icc),&
+         vgat%tymaxlai (ilg,icc),&
+         vgat%stmhrlos (ilg,icc),&
+         vgat%vgbiomas_veg (ilg,icc),&
+         vgat%emit_co2 (ilg,icc),&
+         vgat%emit_co (ilg,icc),&
+         vgat%emit_ch4 (ilg,icc),&
+         vgat%emit_nmhc (ilg,icc),&
+         vgat%emit_h2 (ilg,icc),&
+         vgat%emit_nox (ilg,icc),&
+         vgat%emit_n2o (ilg,icc),&
+         vgat%emit_pm25 (ilg,icc),&
+         vgat%emit_tpm (ilg,icc),&
+         vgat%emit_tc (ilg,icc),&
+         vgat%emit_oc (ilg,icc),&
+         vgat%emit_bc (ilg,icc),&
+         vgat%burnvegf (ilg,icc),&
+         vgat%smfuncveg (ilg,icc),&
+         vgat%bterm (ilg,icc),&
+         vgat%mterm (ilg,icc),&
+         vgat%bmasveg (ilg,icc),&
+         vgat%veghght (ilg,icc),&
+         vgat%rootdpth (ilg,icc),&
+         vgat%tltrleaf (ilg,icc),&
+         vgat%tltrstem (ilg,icc),&
+         vgat%tltrroot (ilg,icc),&
+         vgat%leaflitr (ilg,icc),&
+         vgat%roottemp (ilg,icc),&
+         vgat%afrleaf (ilg,icc),&
+         vgat%afrstem (ilg,icc),&
+         vgat%afrroot (ilg,icc),&
+         vgat%wtstatus (ilg,icc),&
+         vgat%ltstatus (ilg,icc),&
+         vgat%gppveg (ilg,icc),&
+         vgat%nppveg (ilg,icc),&
+         vgat%autoresveg (ilg,icc),&
+         vgat%rmlvegacc (ilg,icc),&
+         vgat%rmsveg (ilg,icc),&
+         vgat%rmrveg (ilg,icc),&
+         vgat%rgveg (ilg,icc),&
+         vgat%litrfallveg (ilg,icc),&
+         vgat%anveg (ilg,icc),&
+         vgat%rmlveg (ilg,icc),&
+         vgat%geremort (ilg,icc),&
+         vgat%intrmort (ilg,icc),&
+         vgat%lambda (ilg,icc),&
+         vgat%cc (ilg,icc),&
+         vgat%mm (ilg,icc),&
+         vgat%pftexist (ilg,icc),&
+         vgat%rothrlos (ilg,icc),&
+         vgat%pfcancmx (ilg,icc),&
+         vgat%nfcancmx (ilg,icc),&
+         vgat%lfstatus (ilg,icc),&
+         vgat%pandays (ilg,icc),&
 
 ! allocated with ilg, ican:
-allocate(vgat%zolnc (ilg,ican))
-allocate(vgat%ailc (ilg,ican))
-allocate(vgat%cmasvegc (ilg,ican))
-allocate(vgat%alvsctm (ilg,ican))
-allocate(vgat%paic (ilg,ican))
-allocate(vgat%slaic (ilg,ican))
-allocate(vgat%alirctm (ilg,ican))
+         vgat%zolnc (ilg,ican),&
+         vgat%ailc (ilg,ican),&
+         vgat%cmasvegc (ilg,ican),&
+         vgat%alvsctm (ilg,ican),&
+         vgat%paic (ilg,ican),&
+         vgat%slaic (ilg,ican),&
+         vgat%alirctm (ilg,ican),&
 
 ! allocated with ilg, iccp1:
-allocate(vgat%litrmass (ilg,iccp1))
-allocate(vgat%soilcmas (ilg,iccp1))
-allocate(vgat%nepveg (ilg,iccp1))
-allocate(vgat%nbpveg (ilg,iccp1))
-allocate(vgat%hetroresveg (ilg,iccp1))
-allocate(vgat%litresveg (ilg,iccp1))
-allocate(vgat%soilcresveg (ilg,iccp1))
-allocate(vgat%humiftrsveg (ilg,iccp1))
+         vgat%litrmass (ilg,iccp1),&
+         vgat%soilcmas (ilg,iccp1),&
+         vgat%nepveg (ilg,iccp1),&
+         vgat%nbpveg (ilg,iccp1),&
+         vgat%hetroresveg (ilg,iccp1),&
+         vgat%litresveg (ilg,iccp1),&
+         vgat%soilcresveg (ilg,iccp1),&
+         vgat%humiftrsveg (ilg,iccp1),&
 
 ! allocated with ilg, ican, ignd:
-allocate(vgat%rmatc (ilg,ican,ignd))
+         vgat%rmatc (ilg,ican,ignd),&
 
 ! allocated with ilg, icc, ignd:
-allocate(vgat%rmatctem (ilg,icc,ignd))
+         vgat%rmatctem (ilg,icc,ignd),&
 
 ! allocated with ilg, icc, {some number}:
-allocate(vgat%colddays (ilg,2))
-allocate(vgat%slopefrac (ilg,8))
-allocate(vgat%mlightng (ilg,12))
-allocate(vgat%wetfrac_mon (ilg,12))
-allocate(vgat%tmonth (12,ilg))
+         vgat%colddays (ilg,2),&
+         vgat%slopefrac (ilg,8),&
+         vgat%mlightng (ilg,12),&
+         vgat%wetfrac_mon (ilg,12),&
+         vgat%tmonth (12,ilg),&
 
 ! allocated with nlat:
-allocate(class_out%ALVSACC_MO(nlat))
-allocate(class_out%ALIRACC_MO (nlat))
-allocate(class_out%FLUTACC_MO (nlat))
-allocate(class_out%FSINACC_MO (nlat))
-allocate(class_out%FLINACC_MO (nlat))
-allocate(class_out%HFSACC_MO (nlat))
-allocate(class_out%QEVPACC_MO (nlat))
-allocate(class_out%SNOACC_MO (nlat))
-allocate(class_out%WSNOACC_MO (nlat))
-allocate(class_out%ROFACC_MO (nlat))
-allocate(class_out%PREACC_MO (nlat))
-allocate(class_out%EVAPACC_MO (nlat))
-allocate(class_out%TRANSPACC_MO (nlat))
-allocate(class_out%TAACC_MO (nlat))
-allocate(class_out%ACTLYR_MO (nlat))
-allocate(class_out%FTABLE_MO (nlat))
-allocate(class_out%ACTLYR_MIN_MO (nlat))
-allocate(class_out%ACTLYR_MAX_MO (nlat))
-allocate(class_out%FTABLE_MIN_MO (nlat))
-allocate(class_out%FTABLE_MAX_MO (nlat))
-allocate(class_out%ALTOTACC_MO (nlat))
-allocate(class_out%GROUNDEVAP (nlat))
-allocate(class_out%CANOPYEVAP (nlat))
-allocate(class_out%altotcntr_m (nlat))
+         class_out%ALVSACC_MO(nlat),&
+         class_out%ALIRACC_MO (nlat),&
+         class_out%FLUTACC_MO (nlat),&
+         class_out%FSINACC_MO (nlat),&
+         class_out%FLINACC_MO (nlat),&
+         class_out%HFSACC_MO (nlat),&
+         class_out%QEVPACC_MO (nlat),&
+         class_out%SNOACC_MO (nlat),&
+         class_out%WSNOACC_MO (nlat),&
+         class_out%ROFACC_MO (nlat),&
+         class_out%PREACC_MO (nlat),&
+         class_out%EVAPACC_MO (nlat),&
+         class_out%TRANSPACC_MO (nlat),&
+         class_out%TAACC_MO (nlat),&
+         class_out%ACTLYR_MO (nlat),&
+         class_out%FTABLE_MO (nlat),&
+         class_out%ACTLYR_MIN_MO (nlat),&
+         class_out%ACTLYR_MAX_MO (nlat),&
+         class_out%FTABLE_MIN_MO (nlat),&
+         class_out%FTABLE_MAX_MO (nlat),&
+         class_out%ALTOTACC_MO (nlat),&
+         class_out%GROUNDEVAP (nlat),&
+         class_out%CANOPYEVAP (nlat),&
+         class_out%altotcntr_m (nlat),&
 
 ! allocated with nlat,ignd:
-allocate(class_out%TBARACC_MO (nlat,ignd))
-allocate(class_out%THLQACC_MO (nlat,ignd))
-allocate(class_out%THICACC_MO (nlat,ignd))
-allocate(class_out%ALVSACC_YR (nlat))
-allocate(class_out%ALIRACC_YR (nlat))
-allocate(class_out%FLUTACC_YR (nlat))
-allocate(class_out%FSINACC_YR (nlat))
-allocate(class_out%FLINACC_YR (nlat))
-allocate(class_out%HFSACC_YR (nlat))
-allocate(class_out%QEVPACC_YR (nlat))
-allocate(class_out%ROFACC_YR (nlat))
-allocate(class_out%PREACC_YR (nlat))
-allocate(class_out%EVAPACC_YR (nlat))
-allocate(class_out%TRANSPACC_YR (nlat))
-allocate(class_out%TAACC_YR (nlat))
-allocate(class_out%ACTLYR_YR (nlat))
-allocate(class_out%ACTLYR_MIN_YR (nlat))
-allocate(class_out%ACTLYR_MAX_YR (nlat))
-allocate(class_out%FTABLE_YR (nlat))
-allocate(class_out%FTABLE_MIN_YR (nlat))
-allocate(class_out%FTABLE_MAX_YR (nlat))
-allocate(class_out%ALTOTACC_YR (nlat))
-allocate(class_out%altotcntr_yr (nlat))
+         class_out%TBARACC_MO (nlat,ignd),&
+         class_out%THLQACC_MO (nlat,ignd),&
+         class_out%THICACC_MO (nlat,ignd),&
+         class_out%ALVSACC_YR (nlat),&
+         class_out%ALIRACC_YR (nlat),&
+         class_out%FLUTACC_YR (nlat),&
+         class_out%FSINACC_YR (nlat),&
+         class_out%FLINACC_YR (nlat),&
+         class_out%HFSACC_YR (nlat),&
+         class_out%QEVPACC_YR (nlat),&
+         class_out%ROFACC_YR (nlat),&
+         class_out%PREACC_YR (nlat),&
+         class_out%EVAPACC_YR (nlat),&
+         class_out%TRANSPACC_YR (nlat),&
+         class_out%TAACC_YR (nlat),&
+         class_out%ACTLYR_YR (nlat),&
+         class_out%ACTLYR_MIN_YR (nlat),&
+         class_out%ACTLYR_MAX_YR (nlat),&
+         class_out%FTABLE_YR (nlat),&
+         class_out%FTABLE_MIN_YR (nlat),&
+         class_out%FTABLE_MAX_YR (nlat),&
+         class_out%ALTOTACC_YR (nlat),&
+         class_out%altotcntr_yr (nlat),&
 
-allocate(ctem_grd%WSNOROT_g (nlat))
-allocate(ctem_grd%ROFSROT_g (nlat))
-allocate(ctem_grd%SNOROT_g (nlat))
-allocate(ctem_grd%RHOSROT_g (nlat))
-allocate(ctem_grd%ROFROT_g (nlat))
-allocate(ctem_grd%ZPNDROT_g (nlat))
-allocate(ctem_grd%RCANROT_g (nlat))
-allocate(ctem_grd%SCANROT_g (nlat))
-allocate(ctem_grd%TROFROT_g (nlat))
-allocate(ctem_grd%TROOROT_g (nlat))
-allocate(ctem_grd%TROBROT_g (nlat))
-allocate(ctem_grd%ROFOROT_g (nlat))
-allocate(ctem_grd%ROFBROT_g (nlat))
-allocate(ctem_grd%TROSROT_g (nlat))
-allocate(ctem_grd%FSGVROT_g (nlat))
-allocate(ctem_grd%FSGSROT_g (nlat))
-allocate(ctem_grd%FLGVROT_g (nlat))
-allocate(ctem_grd%FLGSROT_g (nlat))
-allocate(ctem_grd%HFSCROT_g (nlat))
-allocate(ctem_grd%HFSSROT_g (nlat))
-allocate(ctem_grd%HEVCROT_g (nlat))
-allocate(ctem_grd%HEVSROT_g (nlat))
-allocate(ctem_grd%HMFCROT_g (nlat))
-allocate(ctem_grd%HMFNROT_g (nlat))
-allocate(ctem_grd%HTCSROT_g (nlat))
-allocate(ctem_grd%HTCCROT_g (nlat))
-allocate(ctem_grd%FSGGROT_g (nlat))
-allocate(ctem_grd%FLGGROT_g (nlat))
-allocate(ctem_grd%HFSGROT_g (nlat))
-allocate(ctem_grd%HEVGROT_g (nlat))
-allocate(ctem_grd%CDHROT_g (nlat))
-allocate(ctem_grd%CDMROT_g (nlat))
-allocate(ctem_grd%SFCUROT_g (nlat))
-allocate(ctem_grd%SFCVROT_g (nlat))
-allocate(ctem_grd%ACTLYR_g (nlat))
-allocate(ctem_grd%FTABLE_g (nlat))
-allocate(ctem_grd%fc_g (nlat))
-allocate(ctem_grd%fg_g (nlat))
-allocate(ctem_grd%fcs_g (nlat))
-allocate(ctem_grd%fgs_g (nlat))
-allocate(ctem_grd%PCFCROT_g (nlat))
-allocate(ctem_grd%PCLCROT_g (nlat))
-allocate(ctem_grd%PCPGROT_g (nlat))
-allocate(ctem_grd%QFCFROT_g (nlat))
-allocate(ctem_grd%QFGROT_g (nlat))
-allocate(ctem_grd%ROFCROT_g (nlat))
-allocate(ctem_grd%QFCROT_g (nlat,ignd))
-allocate(ctem_grd%ROFNROT_g (nlat))
-allocate(ctem_grd%WTRSROT_g (nlat))
-allocate(ctem_grd%WTRGROT_g (nlat))
-allocate(ctem_grd%PCPNROT_g (nlat))
-allocate(ctem_grd%QFCLROT_g (nlat))
-allocate(ctem_grd%QFNROT_g (nlat))
-allocate(ctem_grd%WTRCROT_g (nlat))
-allocate(ctem_grd%gpp_g (nlat))
-allocate(ctem_grd%npp_g (nlat))
-allocate(ctem_grd%nbp_g (nlat))
-allocate(ctem_grd%socres_g (nlat))
-allocate(ctem_grd%autores_g (nlat))
-allocate(ctem_grd%litres_g (nlat))
-allocate(ctem_grd%dstcemls3_g (nlat))
-allocate(ctem_grd%litrfall_g (nlat))
-allocate(ctem_grd%rml_g (nlat))
-allocate(ctem_grd%rms_g (nlat))
-allocate(ctem_grd%rg_g (nlat))
-allocate(ctem_grd%leaflitr_g (nlat))
-allocate(ctem_grd%tltrstem_g (nlat))
-allocate(ctem_grd%tltrroot_g (nlat))
-allocate(ctem_grd%nep_g (nlat))
-allocate(ctem_grd%hetrores_g (nlat))
-allocate(ctem_grd%dstcemls_g (nlat))
-allocate(ctem_grd%humiftrs_g (nlat))
-allocate(ctem_grd%rmr_g (nlat))
-allocate(ctem_grd%tltrleaf_g (nlat))
-allocate(ctem_grd%gavgltms_g (nlat))
-allocate(ctem_grd%vgbiomas_g (nlat))
-allocate(ctem_grd%gavglai_g (nlat))
-allocate(ctem_grd%gavgscms_g (nlat))
-allocate(ctem_grd%gleafmas_g (nlat))
-allocate(ctem_grd%bleafmas_g (nlat))
-allocate(ctem_grd%stemmass_g (nlat))
-allocate(ctem_grd%rootmass_g (nlat))
-allocate(ctem_grd%litrmass_g (nlat))
-allocate(ctem_grd%soilcmas_g (nlat))
-allocate(ctem_grd%slai_g (nlat))
-allocate(ctem_grd%ailcg_g (nlat))
-allocate(ctem_grd%ailcb_g (nlat))
-allocate(ctem_grd%veghght_g (nlat))
-allocate(ctem_grd%rootdpth_g (nlat))
-allocate(ctem_grd%roottemp_g (nlat))
-allocate(ctem_grd%totcmass_g (nlat))
-allocate(ctem_grd%tcanoacc_out_g (nlat))
-allocate(ctem_grd%burnfrac_g (nlat))
-allocate(ctem_grd%smfuncveg_g (nlat))
-allocate(ctem_grd%lucemcom_g (nlat))
-allocate(ctem_grd%lucltrin_g (nlat))
-allocate(ctem_grd%lucsocin_g (nlat))
-allocate(ctem_grd%emit_co2_g (nlat))
-allocate(ctem_grd%emit_co_g (nlat))
-allocate(ctem_grd%emit_ch4_g (nlat))
-allocate(ctem_grd%emit_nmhc_g (nlat))
-allocate(ctem_grd%emit_h2_g (nlat))
-allocate(ctem_grd%emit_nox_g (nlat))
-allocate(ctem_grd%emit_n2o_g (nlat))
-allocate(ctem_grd%emit_pm25_g (nlat))
-allocate(ctem_grd%emit_tpm_g (nlat))
-allocate(ctem_grd%emit_tc_g (nlat))
-allocate(ctem_grd%emit_oc_g (nlat))
-allocate(ctem_grd%emit_bc_g (nlat))
-allocate(ctem_grd%bterm_g (nlat))
-allocate(ctem_grd%lterm_g (nlat))
-allocate(ctem_grd%mterm_g (nlat))
-allocate(ctem_grd%ch4wet1_g (nlat))
-allocate(ctem_grd%ch4wet2_g (nlat))
-allocate(ctem_grd%wetfdyn_g (nlat))
-allocate(ctem_grd%ch4dyn1_g (nlat))
-allocate(ctem_grd%ch4dyn2_g (nlat))
-allocate(ctem_grd%ch4_soills_g (nlat))
-allocate(ctem_grd%afrleaf_g (nlat,icc))
-allocate(ctem_grd%afrstem_g (nlat,icc))
-allocate(ctem_grd%afrroot_g (nlat,icc))
-allocate(ctem_grd%lfstatus_g (nlat,icc))
-allocate(ctem_grd%rmlvegrow_g (nlat,icc))
-allocate(ctem_grd%anvegrow_g(nlat,icc))
-allocate(ctem_grd%rmatctem_g (nlat,ignd))
-allocate(ctem_grd%HMFGROT_g (nlat,ignd))
-allocate(ctem_grd%HTCROT_g(nlat,ignd))
-allocate(ctem_grd%TBARROT_g (nlat,ignd))
-allocate(ctem_grd%THLQROT_g (nlat,ignd))
-allocate(ctem_grd%THICROT_g (nlat,ignd))
-allocate(ctem_grd%GFLXROT_g (nlat,ignd))
-allocate(ctem_grd%fsstar_g (nlat))
-allocate(ctem_grd%flstar_g (nlat))
-allocate(ctem_grd%qh_g(nlat))
-allocate(ctem_grd%qe_g (nlat))
-allocate(ctem_grd%snomlt_g (nlat))
-allocate(ctem_grd%beg_g (nlat))
-allocate(ctem_grd%gtout_g (nlat))
-allocate(ctem_grd%tpn_g (nlat))
-allocate(ctem_grd%altot_g(nlat))
-allocate(ctem_grd%tcn_g (nlat))
-allocate(ctem_grd%tsn_g (nlat))
-allocate(ctem_grd%zsn_g (nlat))
+         ctem_grd%WSNOROT_g (nlat),&
+         ctem_grd%ROFSROT_g (nlat),&
+         ctem_grd%SNOROT_g (nlat),&
+         ctem_grd%RHOSROT_g (nlat),&
+         ctem_grd%ROFROT_g (nlat),&
+         ctem_grd%ZPNDROT_g (nlat),&
+         ctem_grd%RCANROT_g (nlat),&
+         ctem_grd%SCANROT_g (nlat),&
+         ctem_grd%TROFROT_g (nlat),&
+         ctem_grd%TROOROT_g (nlat),&
+         ctem_grd%TROBROT_g (nlat),&
+         ctem_grd%ROFOROT_g (nlat),&
+         ctem_grd%ROFBROT_g (nlat),&
+         ctem_grd%TROSROT_g (nlat),&
+         ctem_grd%FSGVROT_g (nlat),&
+         ctem_grd%FSGSROT_g (nlat),&
+         ctem_grd%FLGVROT_g (nlat),&
+         ctem_grd%FLGSROT_g (nlat),&
+         ctem_grd%HFSCROT_g (nlat),&
+         ctem_grd%HFSSROT_g (nlat),&
+         ctem_grd%HEVCROT_g (nlat),&
+         ctem_grd%HEVSROT_g (nlat),&
+         ctem_grd%HMFCROT_g (nlat),&
+         ctem_grd%HMFNROT_g (nlat),&
+         ctem_grd%HTCSROT_g (nlat),&
+         ctem_grd%HTCCROT_g (nlat),&
+         ctem_grd%FSGGROT_g (nlat),&
+         ctem_grd%FLGGROT_g (nlat),&
+         ctem_grd%HFSGROT_g (nlat),&
+         ctem_grd%HEVGROT_g (nlat),&
+         ctem_grd%CDHROT_g (nlat),&
+         ctem_grd%CDMROT_g (nlat),&
+         ctem_grd%SFCUROT_g (nlat),&
+         ctem_grd%SFCVROT_g (nlat),&
+         ctem_grd%ACTLYR_g (nlat),&
+         ctem_grd%FTABLE_g (nlat),&
+         ctem_grd%fc_g (nlat),&
+         ctem_grd%fg_g (nlat),&
+         ctem_grd%fcs_g (nlat),&
+         ctem_grd%fgs_g (nlat),&
+         ctem_grd%PCFCROT_g (nlat),&
+         ctem_grd%PCLCROT_g (nlat),&
+         ctem_grd%PCPGROT_g (nlat),&
+         ctem_grd%QFCFROT_g (nlat),&
+         ctem_grd%QFGROT_g (nlat),&
+         ctem_grd%ROFCROT_g (nlat),&
+         ctem_grd%QFCROT_g (nlat,ignd),&
+         ctem_grd%ROFNROT_g (nlat),&
+         ctem_grd%WTRSROT_g (nlat),&
+         ctem_grd%WTRGROT_g (nlat),&
+         ctem_grd%PCPNROT_g (nlat),&
+         ctem_grd%QFCLROT_g (nlat),&
+         ctem_grd%QFNROT_g (nlat),&
+         ctem_grd%WTRCROT_g (nlat),&
+         ctem_grd%gpp_g (nlat),&
+         ctem_grd%npp_g (nlat),&
+         ctem_grd%nbp_g (nlat),&
+         ctem_grd%socres_g (nlat),&
+         ctem_grd%autores_g (nlat),&
+         ctem_grd%litres_g (nlat),&
+         ctem_grd%dstcemls3_g (nlat),&
+         ctem_grd%litrfall_g (nlat),&
+         ctem_grd%rml_g (nlat),&
+         ctem_grd%rms_g (nlat),&
+         ctem_grd%rg_g (nlat),&
+         ctem_grd%leaflitr_g (nlat),&
+         ctem_grd%tltrstem_g (nlat),&
+         ctem_grd%tltrroot_g (nlat),&
+         ctem_grd%nep_g (nlat),&
+         ctem_grd%hetrores_g (nlat),&
+         ctem_grd%dstcemls_g (nlat),&
+         ctem_grd%humiftrs_g (nlat),&
+         ctem_grd%rmr_g (nlat),&
+         ctem_grd%tltrleaf_g (nlat),&
+         ctem_grd%gavgltms_g (nlat),&
+         ctem_grd%vgbiomas_g (nlat),&
+         ctem_grd%gavglai_g (nlat),&
+         ctem_grd%gavgscms_g (nlat),&
+         ctem_grd%gleafmas_g (nlat),&
+         ctem_grd%bleafmas_g (nlat),&
+         ctem_grd%stemmass_g (nlat),&
+         ctem_grd%rootmass_g (nlat),&
+         ctem_grd%litrmass_g (nlat),&
+         ctem_grd%soilcmas_g (nlat),&
+         ctem_grd%slai_g (nlat),&
+         ctem_grd%ailcg_g (nlat),&
+         ctem_grd%ailcb_g (nlat),&
+         ctem_grd%veghght_g (nlat),&
+         ctem_grd%rootdpth_g (nlat),&
+         ctem_grd%roottemp_g (nlat),&
+         ctem_grd%totcmass_g (nlat),&
+         ctem_grd%tcanoacc_out_g (nlat),&
+         ctem_grd%burnfrac_g (nlat),&
+         ctem_grd%smfuncveg_g (nlat),&
+         ctem_grd%lucemcom_g (nlat),&
+         ctem_grd%lucltrin_g (nlat),&
+         ctem_grd%lucsocin_g (nlat),&
+         ctem_grd%emit_co2_g (nlat),&
+         ctem_grd%emit_co_g (nlat),&
+         ctem_grd%emit_ch4_g (nlat),&
+         ctem_grd%emit_nmhc_g (nlat),&
+         ctem_grd%emit_h2_g (nlat),&
+         ctem_grd%emit_nox_g (nlat),&
+         ctem_grd%emit_n2o_g (nlat),&
+         ctem_grd%emit_pm25_g (nlat),&
+         ctem_grd%emit_tpm_g (nlat),&
+         ctem_grd%emit_tc_g (nlat),&
+         ctem_grd%emit_oc_g (nlat),&
+         ctem_grd%emit_bc_g (nlat),&
+         ctem_grd%bterm_g (nlat),&
+         ctem_grd%lterm_g (nlat),&
+         ctem_grd%mterm_g (nlat),&
+         ctem_grd%ch4wet1_g (nlat),&
+         ctem_grd%ch4wet2_g (nlat),&
+         ctem_grd%wetfdyn_g (nlat),&
+         ctem_grd%ch4dyn1_g (nlat),&
+         ctem_grd%ch4dyn2_g (nlat),&
+         ctem_grd%ch4_soills_g (nlat),&
+         ctem_grd%afrleaf_g (nlat,icc),&
+         ctem_grd%afrstem_g (nlat,icc),&
+         ctem_grd%afrroot_g (nlat,icc),&
+         ctem_grd%lfstatus_g (nlat,icc),&
+         ctem_grd%rmlvegrow_g (nlat,icc),&
+         ctem_grd%anvegrow_g(nlat,icc),&
+         ctem_grd%rmatctem_g (nlat,ignd),&
+         ctem_grd%HMFGROT_g (nlat,ignd),&
+         ctem_grd%HTCROT_g(nlat,ignd),&
+         ctem_grd%TBARROT_g (nlat,ignd),&
+         ctem_grd%THLQROT_g (nlat,ignd),&
+         ctem_grd%THICROT_g (nlat,ignd),&
+         ctem_grd%GFLXROT_g (nlat,ignd),&
+         ctem_grd%fsstar_g (nlat),&
+         ctem_grd%flstar_g (nlat),&
+         ctem_grd%qh_g(nlat),&
+         ctem_grd%qe_g (nlat),&
+         ctem_grd%snomlt_g (nlat),&
+         ctem_grd%beg_g (nlat),&
+         ctem_grd%gtout_g (nlat),&
+         ctem_grd%tpn_g (nlat),&
+         ctem_grd%altot_g(nlat),&
+         ctem_grd%tcn_g (nlat),&
+         ctem_grd%tsn_g (nlat),&
+         ctem_grd%zsn_g (nlat),&
 
-allocate(ctem_tile%leaflitr_t (nlat,nmos))
-allocate(ctem_tile%tltrleaf_t (nlat,nmos))
-allocate(ctem_tile%tltrstem_t (nlat,nmos))
-allocate(ctem_tile%tltrroot_t (nlat,nmos))
-allocate(ctem_tile%ailcg_t (nlat,nmos))
-allocate(ctem_tile%ailcb_t (nlat,nmos))
-allocate(ctem_tile%rmatctem_t (nlat,nmos,ignd))
-allocate(ctem_tile%veghght_t (nlat,nmos))
-allocate(ctem_tile%rootdpth_t (nlat,nmos))
-allocate(ctem_tile%roottemp_t (nlat,nmos))
-allocate(ctem_tile%slai_t (nlat,nmos))
-allocate(ctem_tile%afrroot_t (nlat,nmos))
-allocate(ctem_tile%afrleaf_t (nlat,nmos))
-allocate(ctem_tile%afrstem_t (nlat,nmos))
-allocate(ctem_tile%laimaxg_t (nlat,nmos))
-allocate(ctem_tile%stemmass_t (nlat,nmos))
-allocate(ctem_tile%rootmass_t (nlat,nmos))
-allocate(ctem_tile%litrmass_t (nlat,nmos))
-allocate(ctem_tile%gleafmas_t (nlat,nmos))
-allocate(ctem_tile%bleafmas_t(nlat,nmos))
-allocate(ctem_tile%soilcmas_t (nlat,nmos))
-allocate(ctem_tile%emit_co2_t (nlat,nmos))
-allocate(ctem_tile%emit_co_t (nlat,nmos))
-allocate(ctem_tile%emit_ch4_t (nlat,nmos))
-allocate(ctem_tile%emit_nmhc_t (nlat,nmos))
-allocate(ctem_tile%emit_h2_t (nlat,nmos))
-allocate(ctem_tile%emit_nox_t (nlat,nmos))
-allocate(ctem_tile%emit_n2o_t (nlat,nmos))
-allocate(ctem_tile%emit_pm25_t (nlat,nmos))
-allocate(ctem_tile%emit_tpm_t (nlat,nmos))
-allocate(ctem_tile%emit_tc_t (nlat,nmos))
-allocate(ctem_tile%emit_oc_t (nlat,nmos))
-allocate(ctem_tile%emit_bc_t (nlat,nmos))
-allocate(ctem_tile%bterm_t (nlat,nmos))
-allocate(ctem_tile%mterm_t (nlat,nmos))
-allocate(ctem_tile%smfuncveg_t (nlat,nmos))
-allocate(ctem_tile%fsnowacc_t (ilg))
-allocate(ctem_tile%tcansacc_t (ilg))
-allocate(ctem_tile%tcanoaccgat_t (ilg))
-allocate(ctem_tile%taaccgat_t (ilg))
-allocate(ctem_tile%uvaccgat_t (ilg))
-allocate(ctem_tile%vvaccgat_t (ilg))
-allocate(ctem_tile%tbaraccgat_t (ilg,ignd))
-allocate(ctem_tile%tbarcacc_t (ilg,ignd))
-allocate(ctem_tile%tbarcsacc_t (ilg,ignd))
-allocate(ctem_tile%tbargacc_t (ilg,ignd))
-allocate(ctem_tile%tbargsacc_t (ilg,ignd))
-allocate(ctem_tile%thliqcacc_t (ilg,ignd))
-allocate(ctem_tile%thliqgacc_t (ilg,ignd))
-allocate(ctem_tile%thliqacc_t (ilg,ignd))
-allocate(ctem_tile%thicecacc_t (ilg,ignd))
-allocate(ctem_tile%thicegacc_t (ilg,ignd))
-allocate(ctem_tile%ancsvgac_t (ilg,icc))
-allocate(ctem_tile%ancgvgac_t (ilg,icc))
-allocate(ctem_tile%rmlcsvga_t (ilg,icc))
-allocate(ctem_tile%rmlcgvga_t (ilg,icc))
+         ctem_tile%leaflitr_t (nlat,nmos),&
+         ctem_tile%tltrleaf_t (nlat,nmos),&
+         ctem_tile%tltrstem_t (nlat,nmos),&
+         ctem_tile%tltrroot_t (nlat,nmos),&
+         ctem_tile%ailcg_t (nlat,nmos),&
+         ctem_tile%ailcb_t (nlat,nmos),&
+         ctem_tile%rmatctem_t (nlat,nmos,ignd),&
+         ctem_tile%veghght_t (nlat,nmos),&
+         ctem_tile%rootdpth_t (nlat,nmos),&
+         ctem_tile%roottemp_t (nlat,nmos),&
+         ctem_tile%slai_t (nlat,nmos),&
+         ctem_tile%afrroot_t (nlat,nmos),&
+         ctem_tile%afrleaf_t (nlat,nmos),&
+         ctem_tile%afrstem_t (nlat,nmos),&
+         ctem_tile%laimaxg_t (nlat,nmos),&
+         ctem_tile%stemmass_t (nlat,nmos),&
+         ctem_tile%rootmass_t (nlat,nmos),&
+         ctem_tile%litrmass_t (nlat,nmos),&
+         ctem_tile%gleafmas_t (nlat,nmos),&
+         ctem_tile%bleafmas_t(nlat,nmos),&
+         ctem_tile%soilcmas_t (nlat,nmos),&
+         ctem_tile%emit_co2_t (nlat,nmos),&
+         ctem_tile%emit_co_t (nlat,nmos),&
+         ctem_tile%emit_ch4_t (nlat,nmos),&
+         ctem_tile%emit_nmhc_t (nlat,nmos),&
+         ctem_tile%emit_h2_t (nlat,nmos),&
+         ctem_tile%emit_nox_t (nlat,nmos),&
+         ctem_tile%emit_n2o_t (nlat,nmos),&
+         ctem_tile%emit_pm25_t (nlat,nmos),&
+         ctem_tile%emit_tpm_t (nlat,nmos),&
+         ctem_tile%emit_tc_t (nlat,nmos),&
+         ctem_tile%emit_oc_t (nlat,nmos),&
+         ctem_tile%emit_bc_t (nlat,nmos),&
+         ctem_tile%bterm_t (nlat,nmos),&
+         ctem_tile%mterm_t (nlat,nmos),&
+         ctem_tile%smfuncveg_t (nlat,nmos),&
+         ctem_tile%fsnowacc_t (ilg),&
+         ctem_tile%tcansacc_t (ilg),&
+         ctem_tile%tcanoaccgat_t (ilg),&
+         ctem_tile%taaccgat_t (ilg),&
+         ctem_tile%uvaccgat_t (ilg),&
+         ctem_tile%vvaccgat_t (ilg),&
+         ctem_tile%tbaraccgat_t (ilg,ignd),&
+         ctem_tile%tbarcacc_t (ilg,ignd),&
+         ctem_tile%tbarcsacc_t (ilg,ignd),&
+         ctem_tile%tbargacc_t (ilg,ignd),&
+         ctem_tile%tbargsacc_t (ilg,ignd),&
+         ctem_tile%thliqcacc_t (ilg,ignd),&
+         ctem_tile%thliqgacc_t (ilg,ignd),&
+         ctem_tile%thliqacc_t (ilg,ignd),&
+         ctem_tile%thicecacc_t (ilg,ignd),&
+         ctem_tile%thicegacc_t (ilg,ignd),&
+         ctem_tile%ancsvgac_t (ilg,icc),&
+         ctem_tile%ancgvgac_t (ilg,icc),&
+         ctem_tile%rmlcsvga_t (ilg,icc),&
+         ctem_tile%rmlcgvga_t (ilg,icc),&
 
-allocate(ctem_mo%laimaxg_mo (nlat,nmos,icc))
-allocate(ctem_mo%stemmass_mo (nlat,nmos,icc))
-allocate(ctem_mo%rootmass_mo (nlat,nmos,icc))
-allocate(ctem_mo%litrfallveg_mo (nlat,nmos,icc))
-allocate(ctem_mo%npp_mo (nlat,nmos,icc))
-allocate(ctem_mo%gpp_mo (nlat,nmos,icc))
-allocate(ctem_mo%vgbiomas_mo (nlat,nmos,icc))
-allocate(ctem_mo%autores_mo (nlat,nmos,icc))
-allocate(ctem_mo%humiftrsveg_mo (nlat,nmos,iccp1))
-allocate(ctem_mo%totcmass_mo (nlat,nmos,iccp1))
-allocate(ctem_mo%litrmass_mo (nlat,nmos,iccp1))
-allocate(ctem_mo%soilcmas_mo (nlat,nmos,iccp1))
-allocate(ctem_mo%nep_mo (nlat,nmos,iccp1))
-allocate(ctem_mo%litres_mo (nlat,nmos,iccp1))
-allocate(ctem_mo%soilcres_mo (nlat,nmos,iccp1))
-allocate(ctem_mo%hetrores_mo (nlat,nmos,iccp1))
-allocate(ctem_mo%nbp_mo (nlat,nmos,iccp1))
-allocate(ctem_mo%emit_co2_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_co_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_ch4_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_nmhc_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_h2_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_nox_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_n2o_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_pm25_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_tpm_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_tc_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_oc_mo (nlat,nmos,icc))
-allocate(ctem_mo%emit_bc_mo (nlat,nmos,icc))
-allocate(ctem_mo%burnfrac_mo (nlat,nmos,icc))
-allocate(ctem_mo%bterm_mo (nlat,nmos,icc))
-allocate(ctem_mo%mterm_mo (nlat,nmos,icc))
-allocate(ctem_mo%smfuncveg_mo (nlat,nmos,icc))
+         ctem_mo%laimaxg_mo (nlat,nmos,icc),&
+         ctem_mo%stemmass_mo (nlat,nmos,icc),&
+         ctem_mo%rootmass_mo (nlat,nmos,icc),&
+         ctem_mo%litrfallveg_mo (nlat,nmos,icc),&
+         ctem_mo%npp_mo (nlat,nmos,icc),&
+         ctem_mo%gpp_mo (nlat,nmos,icc),&
+         ctem_mo%vgbiomas_mo (nlat,nmos,icc),&
+         ctem_mo%autores_mo (nlat,nmos,icc),&
+         ctem_mo%humiftrsveg_mo (nlat,nmos,iccp1),&
+         ctem_mo%totcmass_mo (nlat,nmos,iccp1),&
+         ctem_mo%litrmass_mo (nlat,nmos,iccp1),&
+         ctem_mo%soilcmas_mo (nlat,nmos,iccp1),&
+         ctem_mo%nep_mo (nlat,nmos,iccp1),&
+         ctem_mo%litres_mo (nlat,nmos,iccp1),&
+         ctem_mo%soilcres_mo (nlat,nmos,iccp1),&
+         ctem_mo%hetrores_mo (nlat,nmos,iccp1),&
+         ctem_mo%nbp_mo (nlat,nmos,iccp1),&
+         ctem_mo%emit_co2_mo (nlat,nmos,icc),&
+         ctem_mo%emit_co_mo (nlat,nmos,icc),&
+         ctem_mo%emit_ch4_mo (nlat,nmos,icc),&
+         ctem_mo%emit_nmhc_mo (nlat,nmos,icc),&
+         ctem_mo%emit_h2_mo (nlat,nmos,icc),&
+         ctem_mo%emit_nox_mo (nlat,nmos,icc),&
+         ctem_mo%emit_n2o_mo (nlat,nmos,icc),&
+         ctem_mo%emit_pm25_mo (nlat,nmos,icc),&
+         ctem_mo%emit_tpm_mo (nlat,nmos,icc),&
+         ctem_mo%emit_tc_mo (nlat,nmos,icc),&
+         ctem_mo%emit_oc_mo (nlat,nmos,icc),&
+         ctem_mo%emit_bc_mo (nlat,nmos,icc),&
+         ctem_mo%burnfrac_mo (nlat,nmos,icc),&
+         ctem_mo%bterm_mo (nlat,nmos,icc),&
+         ctem_mo%mterm_mo (nlat,nmos,icc),&
+         ctem_mo%smfuncveg_mo (nlat,nmos,icc),&
 
-allocate(ctem_grd_mo%laimaxg_mo_g (nlat))
-allocate(ctem_grd_mo%stemmass_mo_g (nlat))
-allocate(ctem_grd_mo%rootmass_mo_g (nlat))
-allocate(ctem_grd_mo%litrmass_mo_g (nlat))
-allocate(ctem_grd_mo%soilcmas_mo_g (nlat))
-allocate(ctem_grd_mo%litrfall_mo_g (nlat))
-allocate(ctem_grd_mo%humiftrs_mo_g (nlat))
-allocate(ctem_grd_mo%npp_mo_g (nlat))
-allocate(ctem_grd_mo%gpp_mo_g (nlat))
-allocate(ctem_grd_mo%nep_mo_g (nlat))
-allocate(ctem_grd_mo%nbp_mo_g (nlat))
-allocate(ctem_grd_mo%hetrores_mo_g (nlat))
-allocate(ctem_grd_mo%autores_mo_g (nlat))
-allocate(ctem_grd_mo%litres_mo_g (nlat))
-allocate(ctem_grd_mo%soilcres_mo_g (nlat))
-allocate(ctem_grd_mo%vgbiomas_mo_g (nlat))
-allocate(ctem_grd_mo%totcmass_mo_g (nlat))
-allocate(ctem_grd_mo%emit_co2_mo_g (nlat))
-allocate(ctem_grd_mo%emit_co_mo_g (nlat))
-allocate(ctem_grd_mo%emit_ch4_mo_g (nlat))
-allocate(ctem_grd_mo%emit_nmhc_mo_g (nlat))
-allocate(ctem_grd_mo%emit_h2_mo_g (nlat))
-allocate(ctem_grd_mo%emit_nox_mo_g (nlat))
-allocate(ctem_grd_mo%emit_n2o_mo_g (nlat))
-allocate(ctem_grd_mo%emit_pm25_mo_g (nlat))
-allocate(ctem_grd_mo%emit_tpm_mo_g (nlat))
-allocate(ctem_grd_mo%emit_tc_mo_g (nlat))
-allocate(ctem_grd_mo%emit_oc_mo_g (nlat))
-allocate(ctem_grd_mo%emit_bc_mo_g (nlat))
-allocate(ctem_grd_mo%smfuncveg_mo_g (nlat))
-allocate(ctem_grd_mo%luc_emc_mo_g (nlat))
-allocate(ctem_grd_mo%lucltrin_mo_g (nlat))
-allocate(ctem_grd_mo%lucsocin_mo_g (nlat))
-allocate(ctem_grd_mo%burnfrac_mo_g (nlat))
-allocate(ctem_grd_mo%bterm_mo_g (nlat))
-allocate(ctem_grd_mo%lterm_mo_g(nlat))
-allocate(ctem_grd_mo%mterm_mo_g (nlat))
-allocate(ctem_grd_mo%ch4wet1_mo_g (nlat))
-allocate(ctem_grd_mo%ch4wet2_mo_g (nlat))
-allocate(ctem_grd_mo%wetfdyn_mo_g (nlat))
-allocate(ctem_grd_mo%ch4dyn1_mo_g (nlat))
-allocate(ctem_grd_mo%ch4dyn2_mo_g (nlat))
-allocate(ctem_grd_mo%ch4soills_mo_g (nlat))
+         ctem_grd_mo%laimaxg_mo_g (nlat),&
+         ctem_grd_mo%stemmass_mo_g (nlat),&
+         ctem_grd_mo%rootmass_mo_g (nlat),&
+         ctem_grd_mo%litrmass_mo_g (nlat),&
+         ctem_grd_mo%soilcmas_mo_g (nlat),&
+         ctem_grd_mo%litrfall_mo_g (nlat),&
+         ctem_grd_mo%humiftrs_mo_g (nlat),&
+         ctem_grd_mo%npp_mo_g (nlat),&
+         ctem_grd_mo%gpp_mo_g (nlat),&
+         ctem_grd_mo%nep_mo_g (nlat),&
+         ctem_grd_mo%nbp_mo_g (nlat),&
+         ctem_grd_mo%hetrores_mo_g (nlat),&
+         ctem_grd_mo%autores_mo_g (nlat),&
+         ctem_grd_mo%litres_mo_g (nlat),&
+         ctem_grd_mo%soilcres_mo_g (nlat),&
+         ctem_grd_mo%vgbiomas_mo_g (nlat),&
+         ctem_grd_mo%totcmass_mo_g (nlat),&
+         ctem_grd_mo%emit_co2_mo_g (nlat),&
+         ctem_grd_mo%emit_co_mo_g (nlat),&
+         ctem_grd_mo%emit_ch4_mo_g (nlat),&
+         ctem_grd_mo%emit_nmhc_mo_g (nlat),&
+         ctem_grd_mo%emit_h2_mo_g (nlat),&
+         ctem_grd_mo%emit_nox_mo_g (nlat),&
+         ctem_grd_mo%emit_n2o_mo_g (nlat),&
+         ctem_grd_mo%emit_pm25_mo_g (nlat),&
+         ctem_grd_mo%emit_tpm_mo_g (nlat),&
+         ctem_grd_mo%emit_tc_mo_g (nlat),&
+         ctem_grd_mo%emit_oc_mo_g (nlat),&
+         ctem_grd_mo%emit_bc_mo_g (nlat),&
+         ctem_grd_mo%smfuncveg_mo_g (nlat),&
+         ctem_grd_mo%luc_emc_mo_g (nlat),&
+         ctem_grd_mo%lucltrin_mo_g (nlat),&
+         ctem_grd_mo%lucsocin_mo_g (nlat),&
+         ctem_grd_mo%burnfrac_mo_g (nlat),&
+         ctem_grd_mo%bterm_mo_g (nlat),&
+         ctem_grd_mo%lterm_mo_g(nlat),&
+         ctem_grd_mo%mterm_mo_g (nlat),&
+         ctem_grd_mo%ch4wet1_mo_g (nlat),&
+         ctem_grd_mo%ch4wet2_mo_g (nlat),&
+         ctem_grd_mo%wetfdyn_mo_g (nlat),&
+         ctem_grd_mo%ch4dyn1_mo_g (nlat),&
+         ctem_grd_mo%ch4dyn2_mo_g (nlat),&
+         ctem_grd_mo%ch4soills_mo_g (nlat),&
 
-allocate(ctem_tile_mo%laimaxg_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%stemmass_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%rootmass_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%litrfall_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%humiftrs_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%npp_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%gpp_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%vgbiomas_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%autores_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%totcmass_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%litrmass_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%soilcmas_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%nep_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%litres_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%soilcres_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%hetrores_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%nbp_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_co2_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_co_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_ch4_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_nmhc_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_h2_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_nox_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_n2o_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_pm25_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_tpm_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_tc_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_oc_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%emit_bc_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%burnfrac_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%smfuncveg_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%bterm_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%luc_emc_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%lterm_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%lucsocin_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%mterm_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%lucltrin_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%ch4wet1_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%ch4wet2_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%wetfdyn_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%ch4dyn1_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%ch4dyn2_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%ch4soills_mo_t (nlat,nmos))
-allocate(ctem_tile_mo%wind_mo_t (nlat,nmos))
+         ctem_tile_mo%laimaxg_mo_t (nlat,nmos),&
+         ctem_tile_mo%stemmass_mo_t (nlat,nmos),&
+         ctem_tile_mo%rootmass_mo_t (nlat,nmos),&
+         ctem_tile_mo%litrfall_mo_t (nlat,nmos),&
+         ctem_tile_mo%humiftrs_mo_t (nlat,nmos),&
+         ctem_tile_mo%npp_mo_t (nlat,nmos),&
+         ctem_tile_mo%gpp_mo_t (nlat,nmos),&
+         ctem_tile_mo%vgbiomas_mo_t (nlat,nmos),&
+         ctem_tile_mo%autores_mo_t (nlat,nmos),&
+         ctem_tile_mo%totcmass_mo_t (nlat,nmos),&
+         ctem_tile_mo%litrmass_mo_t (nlat,nmos),&
+         ctem_tile_mo%soilcmas_mo_t (nlat,nmos),&
+         ctem_tile_mo%nep_mo_t (nlat,nmos),&
+         ctem_tile_mo%litres_mo_t (nlat,nmos),&
+         ctem_tile_mo%soilcres_mo_t (nlat,nmos),&
+         ctem_tile_mo%hetrores_mo_t (nlat,nmos),&
+         ctem_tile_mo%nbp_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_co2_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_co_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_ch4_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_nmhc_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_h2_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_nox_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_n2o_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_pm25_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_tpm_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_tc_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_oc_mo_t (nlat,nmos),&
+         ctem_tile_mo%emit_bc_mo_t (nlat,nmos),&
+         ctem_tile_mo%burnfrac_mo_t (nlat,nmos),&
+         ctem_tile_mo%smfuncveg_mo_t (nlat,nmos),&
+         ctem_tile_mo%bterm_mo_t (nlat,nmos),&
+         ctem_tile_mo%luc_emc_mo_t (nlat,nmos),&
+         ctem_tile_mo%lterm_mo_t (nlat,nmos),&
+         ctem_tile_mo%lucsocin_mo_t (nlat,nmos),&
+         ctem_tile_mo%mterm_mo_t (nlat,nmos),&
+         ctem_tile_mo%lucltrin_mo_t (nlat,nmos),&
+         ctem_tile_mo%ch4wet1_mo_t (nlat,nmos),&
+         ctem_tile_mo%ch4wet2_mo_t (nlat,nmos),&
+         ctem_tile_mo%wetfdyn_mo_t (nlat,nmos),&
+         ctem_tile_mo%ch4dyn1_mo_t (nlat,nmos),&
+         ctem_tile_mo%ch4dyn2_mo_t (nlat,nmos),&
+         ctem_tile_mo%ch4soills_mo_t (nlat,nmos),&
+         ctem_tile_mo%wind_mo_t (nlat,nmos),&
 
-allocate(ctem_yr%laimaxg_yr (nlat,nmos,icc))
-allocate(ctem_yr%stemmass_yr (nlat,nmos,icc))
-allocate(ctem_yr%rootmass_yr (nlat,nmos,icc))
-allocate(ctem_yr%npp_yr (nlat,nmos,icc))
-allocate(ctem_yr%gpp_yr (nlat,nmos,icc))
-allocate(ctem_yr%vgbiomas_yr (nlat,nmos,icc))
-allocate(ctem_yr%autores_yr (nlat,nmos,icc))
-allocate(ctem_yr%totcmass_yr (nlat,nmos,iccp1))
-allocate(ctem_yr%litrmass_yr (nlat,nmos,iccp1))
-allocate(ctem_yr%soilcmas_yr (nlat,nmos,iccp1))
-allocate(ctem_yr%nep_yr (nlat,nmos,iccp1))
-allocate(ctem_yr%litres_yr (nlat,nmos,iccp1))
-allocate(ctem_yr%soilcres_yr (nlat,nmos,iccp1))
-allocate(ctem_yr%hetrores_yr (nlat,nmos,iccp1))
-allocate(ctem_yr%nbp_yr (nlat,nmos,iccp1))
-allocate(ctem_yr%emit_co2_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_co_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_ch4_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_nmhc_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_h2_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_nox_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_n2o_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_pm25_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_tpm_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_tc_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_oc_yr (nlat,nmos,icc))
-allocate(ctem_yr%emit_bc_yr (nlat,nmos,icc))
-allocate(ctem_yr%bterm_yr (nlat,nmos,icc))
-allocate(ctem_yr%mterm_yr (nlat,nmos,icc))
-allocate(ctem_yr%burnfrac_yr (nlat,nmos,icc))
-allocate(ctem_yr%smfuncveg_yr (nlat,nmos,icc))
-allocate(ctem_yr%veghght_yr (nlat,nmos,icc))
+         ctem_yr%laimaxg_yr (nlat,nmos,icc),&
+         ctem_yr%stemmass_yr (nlat,nmos,icc),&
+         ctem_yr%rootmass_yr (nlat,nmos,icc),&
+         ctem_yr%npp_yr (nlat,nmos,icc),&
+         ctem_yr%gpp_yr (nlat,nmos,icc),&
+         ctem_yr%vgbiomas_yr (nlat,nmos,icc),&
+         ctem_yr%autores_yr (nlat,nmos,icc),&
+         ctem_yr%totcmass_yr (nlat,nmos,iccp1),&
+         ctem_yr%litrmass_yr (nlat,nmos,iccp1),&
+         ctem_yr%soilcmas_yr (nlat,nmos,iccp1),&
+         ctem_yr%nep_yr (nlat,nmos,iccp1),&
+         ctem_yr%litres_yr (nlat,nmos,iccp1),&
+         ctem_yr%soilcres_yr (nlat,nmos,iccp1),&
+         ctem_yr%hetrores_yr (nlat,nmos,iccp1),&
+         ctem_yr%nbp_yr (nlat,nmos,iccp1),&
+         ctem_yr%emit_co2_yr (nlat,nmos,icc),&
+         ctem_yr%emit_co_yr (nlat,nmos,icc),&
+         ctem_yr%emit_ch4_yr (nlat,nmos,icc),&
+         ctem_yr%emit_nmhc_yr (nlat,nmos,icc),&
+         ctem_yr%emit_h2_yr (nlat,nmos,icc),&
+         ctem_yr%emit_nox_yr (nlat,nmos,icc),&
+         ctem_yr%emit_n2o_yr (nlat,nmos,icc),&
+         ctem_yr%emit_pm25_yr (nlat,nmos,icc),&
+         ctem_yr%emit_tpm_yr (nlat,nmos,icc),&
+         ctem_yr%emit_tc_yr (nlat,nmos,icc),&
+         ctem_yr%emit_oc_yr (nlat,nmos,icc),&
+         ctem_yr%emit_bc_yr (nlat,nmos,icc),&
+         ctem_yr%bterm_yr (nlat,nmos,icc),&
+         ctem_yr%mterm_yr (nlat,nmos,icc),&
+         ctem_yr%burnfrac_yr (nlat,nmos,icc),&
+         ctem_yr%smfuncveg_yr (nlat,nmos,icc),&
+         ctem_yr%veghght_yr (nlat,nmos,icc),&
 
-allocate(ctem_grd_yr%laimaxg_yr_g (nlat))
-allocate(ctem_grd_yr%stemmass_yr_g (nlat))
-allocate(ctem_grd_yr%rootmass_yr_g (nlat))
-allocate(ctem_grd_yr%litrmass_yr_g (nlat))
-allocate(ctem_grd_yr%soilcmas_yr_g (nlat))
-allocate(ctem_grd_yr%npp_yr_g (nlat))
-allocate(ctem_grd_yr%gpp_yr_g (nlat))
-allocate(ctem_grd_yr%nep_yr_g (nlat))
-allocate(ctem_grd_yr%nbp_yr_g (nlat))
-allocate(ctem_grd_yr%hetrores_yr_g (nlat))
-allocate(ctem_grd_yr%autores_yr_g (nlat))
-allocate(ctem_grd_yr%litres_yr_g (nlat))
-allocate(ctem_grd_yr%soilcres_yr_g (nlat))
-allocate(ctem_grd_yr%vgbiomas_yr_g (nlat))
-allocate(ctem_grd_yr%totcmass_yr_g (nlat))
-allocate(ctem_grd_yr%emit_co2_yr_g (nlat))
-allocate(ctem_grd_yr%emit_co_yr_g (nlat))
-allocate(ctem_grd_yr%emit_ch4_yr_g (nlat))
-allocate(ctem_grd_yr%emit_nmhc_yr_g (nlat))
-allocate(ctem_grd_yr%emit_h2_yr_g (nlat))
-allocate(ctem_grd_yr%emit_nox_yr_g (nlat))
-allocate(ctem_grd_yr%emit_n2o_yr_g (nlat))
-allocate(ctem_grd_yr%emit_pm25_yr_g (nlat))
-allocate(ctem_grd_yr%emit_tpm_yr_g (nlat))
-allocate(ctem_grd_yr%emit_tc_yr_g (nlat))
-allocate(ctem_grd_yr%emit_oc_yr_g (nlat))
-allocate(ctem_grd_yr%emit_bc_yr_g (nlat))
-allocate(ctem_grd_yr%smfuncveg_yr_g (nlat))
-allocate(ctem_grd_yr%luc_emc_yr_g (nlat))
-allocate(ctem_grd_yr%lucltrin_yr_g (nlat))
-allocate(ctem_grd_yr%lucsocin_yr_g (nlat))
-allocate(ctem_grd_yr%burnfrac_yr_g (nlat))
-allocate(ctem_grd_yr%bterm_yr_g (nlat))
-allocate(ctem_grd_yr%lterm_yr_g (nlat))
-allocate(ctem_grd_yr%mterm_yr_g (nlat))
-allocate(ctem_grd_yr%ch4wet1_yr_g (nlat))
-allocate(ctem_grd_yr%ch4wet2_yr_g (nlat))
-allocate(ctem_grd_yr%wetfdyn_yr_g (nlat))
-allocate(ctem_grd_yr%ch4dyn1_yr_g (nlat))
-allocate(ctem_grd_yr%ch4dyn2_yr_g (nlat))
-allocate(ctem_grd_yr%ch4soills_yr_g (nlat))
-allocate(ctem_grd_yr%veghght_yr_g (nlat))
+         ctem_grd_yr%laimaxg_yr_g (nlat),&
+         ctem_grd_yr%stemmass_yr_g (nlat),&
+         ctem_grd_yr%rootmass_yr_g (nlat),&
+         ctem_grd_yr%litrmass_yr_g (nlat),&
+         ctem_grd_yr%soilcmas_yr_g (nlat),&
+         ctem_grd_yr%npp_yr_g (nlat),&
+         ctem_grd_yr%gpp_yr_g (nlat),&
+         ctem_grd_yr%nep_yr_g (nlat),&
+         ctem_grd_yr%nbp_yr_g (nlat),&
+         ctem_grd_yr%hetrores_yr_g (nlat),&
+         ctem_grd_yr%autores_yr_g (nlat),&
+         ctem_grd_yr%litres_yr_g (nlat),&
+         ctem_grd_yr%soilcres_yr_g (nlat),&
+         ctem_grd_yr%vgbiomas_yr_g (nlat),&
+         ctem_grd_yr%totcmass_yr_g (nlat),&
+         ctem_grd_yr%emit_co2_yr_g (nlat),&
+         ctem_grd_yr%emit_co_yr_g (nlat),&
+         ctem_grd_yr%emit_ch4_yr_g (nlat),&
+         ctem_grd_yr%emit_nmhc_yr_g (nlat),&
+         ctem_grd_yr%emit_h2_yr_g (nlat),&
+         ctem_grd_yr%emit_nox_yr_g (nlat),&
+         ctem_grd_yr%emit_n2o_yr_g (nlat),&
+         ctem_grd_yr%emit_pm25_yr_g (nlat),&
+         ctem_grd_yr%emit_tpm_yr_g (nlat),&
+         ctem_grd_yr%emit_tc_yr_g (nlat),&
+         ctem_grd_yr%emit_oc_yr_g (nlat),&
+         ctem_grd_yr%emit_bc_yr_g (nlat),&
+         ctem_grd_yr%smfuncveg_yr_g (nlat),&
+         ctem_grd_yr%luc_emc_yr_g (nlat),&
+         ctem_grd_yr%lucltrin_yr_g (nlat),&
+         ctem_grd_yr%lucsocin_yr_g (nlat),&
+         ctem_grd_yr%burnfrac_yr_g (nlat),&
+         ctem_grd_yr%bterm_yr_g (nlat),&
+         ctem_grd_yr%lterm_yr_g (nlat),&
+         ctem_grd_yr%mterm_yr_g (nlat),&
+         ctem_grd_yr%ch4wet1_yr_g (nlat),&
+         ctem_grd_yr%ch4wet2_yr_g (nlat),&
+         ctem_grd_yr%wetfdyn_yr_g (nlat),&
+         ctem_grd_yr%ch4dyn1_yr_g (nlat),&
+         ctem_grd_yr%ch4dyn2_yr_g (nlat),&
+         ctem_grd_yr%ch4soills_yr_g (nlat),&
+         ctem_grd_yr%veghght_yr_g (nlat),&
 
-allocate(ctem_tile_yr%laimaxg_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%stemmass_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%rootmass_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%npp_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%gpp_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%vgbiomas_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%autores_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%totcmass_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%litrmass_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%soilcmas_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%nep_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%litres_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%soilcres_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%hetrores_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%nbp_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_co2_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_co_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_ch4_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_nmhc_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_h2_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_nox_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_n2o_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_pm25_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_tpm_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_tc_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_oc_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%emit_bc_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%burnfrac_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%smfuncveg_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%bterm_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%luc_emc_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%lterm_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%lucsocin_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%mterm_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%lucltrin_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%ch4wet1_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%ch4wet2_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%wetfdyn_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%ch4dyn1_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%ch4dyn2_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%ch4soills_yr_t (nlat,nmos))
-allocate(ctem_tile_yr%veghght_yr_t (nlat,nmos))
+         ctem_tile_yr%laimaxg_yr_t (nlat,nmos),&
+         ctem_tile_yr%stemmass_yr_t (nlat,nmos),&
+         ctem_tile_yr%rootmass_yr_t (nlat,nmos),&
+         ctem_tile_yr%npp_yr_t (nlat,nmos),&
+         ctem_tile_yr%gpp_yr_t (nlat,nmos),&
+         ctem_tile_yr%vgbiomas_yr_t (nlat,nmos),&
+         ctem_tile_yr%autores_yr_t (nlat,nmos),&
+         ctem_tile_yr%totcmass_yr_t (nlat,nmos),&
+         ctem_tile_yr%litrmass_yr_t (nlat,nmos),&
+         ctem_tile_yr%soilcmas_yr_t (nlat,nmos),&
+         ctem_tile_yr%nep_yr_t (nlat,nmos),&
+         ctem_tile_yr%litres_yr_t (nlat,nmos),&
+         ctem_tile_yr%soilcres_yr_t (nlat,nmos),&
+         ctem_tile_yr%hetrores_yr_t (nlat,nmos),&
+         ctem_tile_yr%nbp_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_co2_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_co_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_ch4_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_nmhc_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_h2_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_nox_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_n2o_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_pm25_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_tpm_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_tc_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_oc_yr_t (nlat,nmos),&
+         ctem_tile_yr%emit_bc_yr_t (nlat,nmos),&
+         ctem_tile_yr%burnfrac_yr_t (nlat,nmos),&
+         ctem_tile_yr%smfuncveg_yr_t (nlat,nmos),&
+         ctem_tile_yr%bterm_yr_t (nlat,nmos),&
+         ctem_tile_yr%luc_emc_yr_t (nlat,nmos),&
+         ctem_tile_yr%lterm_yr_t (nlat,nmos),&
+         ctem_tile_yr%lucsocin_yr_t (nlat,nmos),&
+         ctem_tile_yr%mterm_yr_t (nlat,nmos),&
+         ctem_tile_yr%lucltrin_yr_t (nlat,nmos),&
+         ctem_tile_yr%ch4wet1_yr_t (nlat,nmos),&
+         ctem_tile_yr%ch4wet2_yr_t (nlat,nmos),&
+         ctem_tile_yr%wetfdyn_yr_t (nlat,nmos),&
+         ctem_tile_yr%ch4dyn1_yr_t (nlat,nmos),&
+         ctem_tile_yr%ch4dyn2_yr_t (nlat,nmos),&
+         ctem_tile_yr%ch4soills_yr_t (nlat,nmos),&
+         ctem_tile_yr%veghght_yr_t (nlat,nmos))
 
 end subroutine alloc_ctem_vars
 
@@ -3084,8 +3111,8 @@ real :: decli               ! temp var
 real :: term                ! temp var
 
     theta=0.2163108 + 2.0*atan(0.9671396*tan(0.0086*(solday-186.0)))
-    decli=asin(0.39795*cos(theta))    !declination !note I see that CLASS does this also but with different formula...
-    term=(sin(radl)*sin(decli))/(cos(radl)*cos(decli))
+    decli=asin(0.39795*cos(theta))      !declination !note I see that CLASS does this also but with different formula...
+    term=(sin(radl)*sin(decli))  /(cos(radl)*cos(decli))
     term=max(-1.0,min(term,1.0))
     daylength=24.0-(24.0/pi)*acos(term)
 

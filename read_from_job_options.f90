@@ -69,7 +69,7 @@
 !!
 !! If doing methane then the CH4 switches should be the same as the CO2 ones.
 !!
-subroutine read_from_job_options(lonindex,latindex,transient_run,trans_startyr,ctemloop,ctem_on, &
+subroutine read_from_job_options(transient_run,trans_startyr,ctemloop,ctem_on, &
                   ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
                   setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
                   compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
@@ -108,16 +108,14 @@ subroutine read_from_job_options(lonindex,latindex,transient_run,trans_startyr,c
 
 use netcdf_drivers, only : parsecoords
 use io_driver, only : bounds
+use ctem_statevars,     only : c_switch
 
 implicit none
 
 ! -------------
 ! ctem model switches
 
-!character(80), intent(out) :: argbuff !prefix of file names
-integer, intent(out) :: latindex,lonindex
-
-logical, intent(out) :: transient_run !< true if the run is a transient run. With this flag set
+logical, pointer :: transient_run !< true if the run is a transient run. With this flag set
                                  !< set to .true., you can cycle over nummetcyclyrs of climate a
                                  !< ctemloop number of times then continue on through the climate
                                  !< the reason for this is to allow a transient from 1850 on, but 
@@ -125,125 +123,125 @@ logical, intent(out) :: transient_run !< true if the run is a transient run. Wit
                                  !< from 1850. See the bottom of this subroutine for an example of how to 
                                  !< set this correctly.  
                                  
-integer, intent(out) :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
+integer, pointer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
                                       !! are not doing a transient run, set to a negative value (like -9999)
 
-integer, intent(out) :: ctemloop !< no. of times the .met file is to be read. this
+integer, pointer :: ctemloop !< no. of times the .met file is to be read. this
                     	         !< option is useful to see how ctem's c pools
                     	         !< equilibrate when driven with same climate data
                     	         !< over and over again.
 
-logical, intent(out) :: ctem_on  !< set this to true for using ctem simulated dynamic
+logical, pointer :: ctem_on  !< set this to true for using ctem simulated dynamic
  				 !< lai and canopy mass, else class simulated specified
                  		 !< lai and canopy mass are used. with this switch on,
                  		 !< all ctem subroutines are run.
 
-integer, intent(out) :: ncyear   !< no. of years in the .met file. 
+integer, pointer :: ncyear   !< no. of years in the .met file.
 
-logical, intent(out) :: lnduseon !< set this to 1 if land use change is to be
+logical, pointer :: lnduseon !< set this to 1 if land use change is to be
                  		 !< implimented by reading in the fractions of 9 ctem
                 		 !< pfts from a file. keep in mind that once on, luc read-in is
                                  !< also influenced by the cyclemet and popcycleyr switches
 
-integer, intent(out) :: spinfast !< set this to a higher number up to 10 to spin up
+integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
                  		 !< soil carbon pool faster
 
-logical, intent(out) :: cyclemet !< to cycle over only a fixed number of years 
+logical, pointer :: cyclemet !< to cycle over only a fixed number of years
                  		 !< (nummetcylyrs) starting at a certain year (metcylyrst)
                  		 !< if cyclemet, then put co2on = false and set an appopriate setco2conc, also
                  		 !< if popdon is true, it will choose the popn and luc data for year
                  		 !< metcylyrst and cycle on that.
 
-integer, intent(out) :: nummetcylyrs !< years of the climate file to spin up on repeatedly
+integer, pointer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
                  		     !< ignored if cyclemet is false
 
-integer, intent(out) :: metcylyrst   !< climate year to start the spin up on
+integer, pointer :: metcylyrst   !< climate year to start the spin up on
                  		     !< ignored if cyclemet is false
 
-logical, intent(out) :: co2on    !< use co2 time series, set to false if cyclemet is true
+logical, pointer :: co2on    !< use co2 time series, set to false if cyclemet is true
 
-real, intent(out) :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
+real, pointer :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
 
-logical, intent(out) :: ch4on    !< use CH4 time series, set to false if cyclemet is true
+logical, pointer :: ch4on    !< use CH4 time series, set to false if cyclemet is true
                                  !< the CO2 timeseries is in the same input file as the CO2 one.
 
-real, intent(out) :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
+real, pointer :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
 
-logical, intent(out) :: popdon   !< if set true use population density data to calculate fire extinguishing 
+logical, pointer :: popdon   !< if set true use population density data to calculate fire extinguishing
                  		 !< probability and probability of fire due to human causes, 
                  		 !< or if false, read directly from .ctm file
 
-integer, intent(out) :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
+integer, pointer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
                 		 !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
                                  !< this defaults to -9999, which will then cause the model to cycle on
                                  !< whatever is the first year in the popd and luc datasets
 
-logical, intent(out) :: parallelrun !< set this to be true if model is run in parallel mode for 
+logical, pointer :: parallelrun !< set this to be true if model is run in parallel mode for
                             	!< multiple grid cells, output is limited to monthly & yearly 
                     		!< grid-mean only. else the run is in stand alone mode, in which 
                      		!< output includes half-hourly and daily and mosaic-mean as well.
 
-logical, intent(out) :: dofire  !< if true the fire/disturbance subroutine will be used.
+logical, pointer :: dofire  !< if true the fire/disturbance subroutine will be used.
 
-logical, intent(out) :: dowetlands !< if true the ch4wetland subroutine will be used.
+logical, pointer :: dowetlands !< if true the ch4wetland subroutine will be used.
 
-logical, intent(out) :: obswetf !< if true the observed wetland fraction will be used.
+logical, pointer :: obswetf !< if true the observed wetland fraction will be used.
 
-logical, intent(out) :: compete !< set this to true if competition between pfts is
+logical, pointer :: compete !< set this to true if competition between pfts is
                  		!< to be implimented
 
-logical, intent(out) :: inibioclim  !< set this to true if competition between pfts is
+logical, pointer :: inibioclim  !< set this to true if competition between pfts is
                  		    !< to be implimented and you have the mean climate values
                                     !< in the ctm files.
 
-logical, intent(out) :: start_bare !<set this to true if competition is true, and if you wish
+logical, pointer :: start_bare !<set this to true if competition is true, and if you wish
                                  !< to start from bare ground. if this is set to false, the 
                                  !< ini and ctm file info will be used to set up the run. 
                                  !< NOTE: This still keeps the crop fractions (while setting all pools to
                                  !< zero)
 
-logical, intent(out) :: rsfile   !< set this to true if restart files (.ini_rs and .ctm_rs)   
+logical, pointer :: rsfile   !< set this to true if restart files (.ini_rs and .ctm_rs)
                  		 !< are written at the end of each year. these files are  
                  		 !< necessary for checking whether the model reaches 
                  		 !< equilibrium after running for a certain years. 
                  		 !< set this to false if restart files are not needed 
                  		 !< (known how many years the model will run)
 
-logical, intent(out) :: use_netcdf      !< If true, the model inputs and outputs are done with netcdf files.
+logical, pointer :: use_netcdf      !< If true, the model inputs and outputs are done with netcdf files.
                                         !! if false, ASCII MET files will be expected. This is retained for use at
                                         !! the site-level but is discouraged for regional/global simulations. Even when
                                         !! use_netcdf is set to false the model requires all other inputs in netcdf format
                                         !! as well all outputs will be netcdf formatted.
 
-character(180), intent(out) :: met_file !< location of the netcdf meteorological dataset
+character(180), pointer :: met_file !< location of the netcdf meteorological dataset
 
-character(180), intent(out) :: init_file !< location of the netcdf initialization file
+character(180), pointer :: init_file !< location of the netcdf initialization file
 
 
-logical, intent(out) :: start_from_rs !< if true, this option copies the _RS INI and CTM files
+logical, pointer :: start_from_rs !< if true, this option copies the _RS INI and CTM files
                                  !< to be the .INI and .CTM files and then starts the run as per normal.
                                  !< it is handy when spinning up so you don't have to do a complicated copying of the
                                  !< RS files to restart from them. NOTE! This will not work on hadar or spica, instead
                                  !< you have to manually move the files and set this to .false.
                                  
-integer, intent(out) :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right 
+integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
                                   !< from the start then put in a negative number (like -9999), if you never want to have monthly
                                   !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR                                 
 
 ! -------------
 ! class model switches
 
-integer, intent(out) :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
+integer, pointer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
 				 !< because the atmospheric model considers these to be part
 				 !< of the "terrain".
 				 !< if idisp=1, vegetation displacement heights are calculated.
 
-integer, intent(out) :: izref    !< if izref=1, the bottom of the atmospheric model is taken
+integer, pointer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
 				 !< to lie at the ground surface.
 				 !< if izref=2, the bottom of the atmospheric model is taken
 				 !< to lie at the local roughness height.
 
-integer, intent(out) :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
+integer, pointer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
 				 !< and the original gcm set of screen-level diagnostic calculations 
 				 !< is done.
 				 !< if islfd=1, drcoef is called for surface stability corrections
@@ -251,56 +249,56 @@ integer, intent(out) :: islfd    !< if islfd=0, drcoef is called for surface sta
 				 !< if islfd=2, flxsurfz is called for surface stability corrections
 				 !< and diasurf is called for screen-level diagnostic calculations. 
 
-integer, intent(out) :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
+integer, pointer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
 				 !< if ipcp=2, a linear partitioning of precipitation betweeen 
 				 !< rainfall and snowfall is done between 0 c and 2 c.
 				 !< if ipcp=3, rainfall and snowfall are partitioned according to
 				 !< a polynomial curve between 0 c and 6 c.
 
-integer, intent(out) :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
+integer, pointer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
 				!< the ground surface slope is not modelled.
 				!< if iwf=n (0<n<4), the watflood calculations of overland flow 
 				!< and interflow are performed; interflow is drawn from the top 
 				!< n soil layers.
 
-INTEGER, INTENT(OUT) :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
+INTEGER, pointer :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
                            !< be used in calculating the canopy or ground surface temperature
                            !< respectively.  if the switch is set to 1, a bisection method is
                            !< used; if to 2, the newton-raphson method is used.
-INTEGER, INTENT(OUT) :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
+INTEGER, pointer :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
                            !< be used in calculating the canopy or ground surface temperature
                            !< respectively.  if the switch is set to 1, a bisection method is
                            !< used; if to 2, the newton-raphson method is used.
-INTEGER, INTENT(OUT) :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
+INTEGER, pointer :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
                            !< be used in calculating the canopy or ground surface temperature
                            !< respectively.  if the switch is set to 1, a bisection method is
                            !< used; if to 2, the newton-raphson method is used.
    
-INTEGER, INTENT(OUT) :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+INTEGER, pointer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
                            !< plant area index, vegetation height, canopy albedo, snow albedo
                            !< and soil albedo respectively calculated by class are used.
                            !< if any of these switches is set to 1, the value of the
                            !< corresponding parameter calculated by class is overridden by
                            !< a user-supplied input value.  
-INTEGER, INTENT(OUT) :: IHGT !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+INTEGER, pointer :: IHGT !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
                            !< plant area index, vegetation height, canopy albedo, snow albedo
                            !< and soil albedo respectively calculated by class are used.
                            !< if any of these switches is set to 1, the value of the
                            !< corresponding parameter calculated by class is overridden by
                            !< a user-supplied input value. 
-INTEGER, INTENT(OUT) :: IALC !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+INTEGER, pointer :: IALC !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
                            !< plant area index, vegetation height, canopy albedo, snow albedo
                            !< and soil albedo respectively calculated by class are used.
                            !< if any of these switches is set to 1, the value of the
                            !< corresponding parameter calculated by class is overridden by
                            !< a user-supplied input value. 
-INTEGER, INTENT(OUT) :: IALS !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+INTEGER, pointer :: IALS !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
                            !< plant area index, vegetation height, canopy albedo, snow albedo
                            !< and soil albedo respectively calculated by class are used.
                            !< if any of these switches is set to 1, the value of the
                            !< corresponding parameter calculated by class is overridden by
                            !< a user-supplied input value. 
-INTEGER, INTENT(OUT) :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of 
+INTEGER, pointer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
                            !< plant area index, vegetation height, canopy albedo, snow albedo
                            !< and soil albedo respectively calculated by class are used.
                            !< if any of these switches is set to 1, the value of the
@@ -313,21 +311,79 @@ INTEGER, INTENT(OUT) :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the
 ! >>>> note: if you wish to use the values in the .ini file, set all to -9999 in the job options file
 !            and the .ini file will be used.
 
-integer, intent(out) :: jhhstd  !< day of the year to start writing the half-hourly output
-integer, intent(out) :: jhhendd !< day of the year to stop writing the half-hourly output
-integer, intent(out) :: jdstd   !< day of the year to start writing the daily output
-integer, intent(out) :: jdendd  !< day of the year to stop writing the daily output
-integer, intent(out) :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
-integer, intent(out) :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
-integer, intent(out) :: jdsty   !< simulation year (iyear) to start writing the daily output
-integer, intent(out) :: jdendy  !< simulation year (iyear) to stop writing the daily output
+integer, pointer :: jhhstd  !< day of the year to start writing the half-hourly output
+integer, pointer :: jhhendd !< day of the year to stop writing the half-hourly output
+integer, pointer :: jdstd   !< day of the year to start writing the daily output
+integer, pointer :: jdendd  !< day of the year to stop writing the daily output
+integer, pointer :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
+integer, pointer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
+integer, pointer :: jdsty   !< simulation year (iyear) to start writing the daily output
+integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
 
 
-integer, intent(out) :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.  
+integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
                                 !< if it is set to 1, the new four-band routines are used.
 
-integer, intent(out) :: igralb  !< if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of 
+integer, pointer :: igralb  !< if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of
                                 !< soil texture.  if it is set to 1, they are assigned values based on the ncar clm soil "colour"  dataset.
+
+character(140) :: jobfile
+character(80) :: argbuff
+integer :: argcount, iargc
+
+! Point pointers:
+transient_run   => c_switch%transient_run
+trans_startyr   => c_switch%trans_startyr
+ctemloop        => c_switch%ctemloop
+ctem_on         => c_switch%ctem_on
+ncyear          => c_switch%ncyear
+lnduseon        => c_switch%lnduseon
+spinfast        => c_switch%spinfast
+cyclemet        => c_switch%cyclemet
+nummetcylyrs    => c_switch%nummetcylyrs
+metcylyrst      => c_switch%metcylyrst
+co2on           => c_switch%co2on
+setco2conc      => c_switch%setco2conc
+ch4on           => c_switch%ch4on
+setch4conc      => c_switch%setch4conc
+popdon          => c_switch%popdon
+popcycleyr      => c_switch%popcycleyr
+parallelrun     => c_switch%parallelrun
+dofire          => c_switch%dofire
+dowetlands      => c_switch%dowetlands
+obswetf         => c_switch%obswetf
+compete         => c_switch%compete
+inibioclim      => c_switch%inibioclim
+start_bare      => c_switch%start_bare
+rsfile          => c_switch%rsfile
+start_from_rs   => c_switch%start_from_rs
+use_netcdf      => c_switch%use_netcdf
+met_file        => c_switch%met_file
+init_file       => c_switch%init_file
+IDISP           => c_switch%IDISP
+IZREF           => c_switch%IZREF
+ISLFD           => c_switch%ISLFD
+IPCP            => c_switch%IPCP
+ITC             => c_switch%ITC
+ITCG            => c_switch%ITCG
+ITG             => c_switch%ITG
+IWF             => c_switch%IWF
+IPAI            => c_switch%IPAI
+IHGT            => c_switch%IHGT
+IALC            => c_switch%IALC
+IALS            => c_switch%IALS
+IALG            => c_switch%IALG
+isnoalb         => c_switch%isnoalb
+igralb          => c_switch%igralb
+jhhstd          => c_switch%jhhstd
+jhhendd         => c_switch%jhhendd
+jdstd           => c_switch%jdstd
+jdendd          => c_switch%jdendd
+jhhsty          => c_switch%jhhsty
+jhhendy         => c_switch%jhhendy
+jdsty           => c_switch%jdsty
+jdendy          => c_switch%jdendy
+jmosty          => c_switch%jmosty
 
 ! -------------
 
@@ -386,33 +442,26 @@ namelist /joboptions/ &
   jdendy,             &
   jmosty
 
-character(140) :: jobfile
-integer :: argcount, iargc 
-
 !-------------------------
 !read the joboptions
 
 argcount = iargc()
 
-       if(argcount .ne. 3)then
-         write(*,*)'usage is as follows (assuming you are using the MPI wrapper)'
+       if(argcount .ne. 2)then
+         write(*,*)'Usage is as follows'
          write(*,*)' '
-         write(*,*)'CLASSIC joboptions_file long_cell_index lat_cell_index'
+         write(*,*)'CLASSIC joboptions_file longitude/latitude'
          write(*,*)' '
          write(*,*)'- joboptions_file - an example can be found '
          write(*,*)'  in the src folder - template_job_options_file.txt.'
          write(*,*)'  descriptions of the various variables '
          write(*,*)'  can be found in read_from_job_options.f90 '
          write(*,*)' '
-         write(*,*)'- longitude gridcell index '
-         write(*,*)'  e.g. 105 '
-         write(*,*)'- latitude gridcell index '
-         write(*,*)'  e.g. 40 '
-         write(*,*)'  if you want only run in single site mode use "1 1".'
+         write(*,*)'- longitude/latitude '
+         write(*,*)'  e.g. 105.23/40.91 '
          write(*,*)' '
          stop
       end if
-
 
 call getarg(1,jobfile)
 
@@ -422,11 +471,11 @@ read(10,nml = joboptions)
 
 close(10)
 
-call getarg(2,lonindex)
-call getarg(3,latindex)
-!if (use_netcdf) then
-!    call parsecoords(argbuff,bounds)
-!end if
+call getarg(2,argbuff)
+
+if (use_netcdf) then
+    call parsecoords(argbuff,bounds)
+end if
 
 end subroutine read_from_job_options
 

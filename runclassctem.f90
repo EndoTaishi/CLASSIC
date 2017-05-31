@@ -69,7 +69,7 @@
      &                               close_outfiles,ctem_daily_aw,&
      &                               class_annual_aw
 
-       use input_dataset_drivers, only : openmet, read_modelsetup, read_initialstate !,readin_met
+       use input_dataset_drivers, only : read_modelsetup, read_initialstate !,readin_met
 
 
       implicit none
@@ -3337,7 +3337,7 @@
 !!     netcdf is of the same dimensions as the intended output files.
 !!     Based upon the bounds used to call the model, this will figure out how 
 !!     big the NLAT vector is.
-      call openmet()
+      !call openmet()
       write(*,*)'done openmet'
 
 !     Initialize the CTEM parameters

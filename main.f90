@@ -1,6 +1,6 @@
 !>\file
-!! Principle driver program to run CLASS in stand-alone mode using specified boundary
-!! conditions and atmospheric forcing, coupled to CTEM.
+!! Principle driver program to run CLASSIC in stand-alone mode using specified boundary
+!! conditions and atmospheric forcing.
 !!
 !! # Overview
 !!
@@ -8,7 +8,15 @@
 !! and the coupling between CLASS and CTEM, writes the CLASS sub-monthly outputs, and
 !! closes the run.
 
-      PROGRAM RUNCLASS36CTEM
+module main_driver
+
+implicit none
+
+public :: CLASSIC_driver
+
+contains
+
+subroutine CLASSIC_driver()
 !
 !>
 !!------------------------------------------------------------------
@@ -67,12 +75,16 @@
      &                               write_ctm_rs, class_monthly_aw,&
      &                               ctem_annual_aw,ctem_monthly_aw,&
      &                               close_outfiles,ctem_daily_aw,&
-     &                               class_annual_aw
+     &                               class_annual_aw,bounds
 
-       use input_dataset_drivers, only : openmet, read_modelsetup, read_initialstate !,readin_met
+       use input_dataset_drivers, only : read_modelsetup, read_initialstate !openmet, ,readin_met
 
 
       implicit none
+
+      ! Flag test
+      real :: longitude, latitude
+
 
 !
 !     * INTEGER CONSTANTS.
@@ -3304,30 +3316,93 @@
 !    Declarations are complete, run preparations begin
       CALL CLASSD
 
-!     all model switches are read in from a namelist file #ED - is it problem for each process to access one ASCII job options file?
-      call read_from_job_options(argbuff,transient_run,&
-     &             trans_startyr,ctemloop,ctem_on,ncyear,lnduseon,&
-     &             spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on,&
-     &             setco2conc,ch4on,setch4conc,popdon,popcycleyr,&
-     &             parallelrun,dofire,&
-     &             dowetlands,obswetf,compete,inibioclim,start_bare,&
-     &             rsfile,start_from_rs,jmosty,idisp,izref,islfd,ipcp,&
-     &             itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,&
-     &             igralb,jhhstd,jhhendd,jdstd,jdendd,jhhsty,jhhendy,&
-     &             jdsty,jdendy,use_netcdf,met_file,init_file)
-
-
 !> First we set up the run boundaries based on the metadata in the initialization netcdf file.
-!! In read_modelsetup we use the netcdf to set the nlat, nmos, ignd, and ilg constants.
-! #ED - this subroutine has the basics that will go into the MPI driver:
+!! The bounds are used to find the srtx and srty in the netcdf file, placing the gridcell on the
+!! domain of the input/output netcdfs. In read_modelsetup we use the netcdf to set the nmos, ignd,
+!!and ilg constants. It also opens the initial conditions file that is used in read_initialstate.
       call read_modelsetup()
 
+!     Initialize the CTEM parameters
+      call initpftpars(compete)
 
-      write(*,*)'done read model setup: nlat',nlat,'nmos ',nmos,'ignd ',ignd
+!> Now that we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
+!! CTEM variable structures.
+      call alloc_class_vars()
+      call alloc_ctem_vars()
 
-      end program
+      ! Allocate the local variables that rely on nlat, ilg, etc.
+      allocate(curlatno(ilg),&
+               altotcount_ctm(nlat),&
+               todfrac(ilg,icc),&
+               barf(nlat,nmos),&
+               currlat(ilg),&
+               wl(lat),&
+               grclarea(ilg),&
+               wossl(lat),&
+               sl(lat),&
+               radl(lat),&
+               cl(lat),&
+               ml(ilg),&
+               fsinacc_gat(ilg),&
+               flutacc_gat(ilg),&
+               flinacc_gat(ilg),&
+               alswacc_gat(ilg),&
+               allwacc_gat(ilg),&
+               pregacc_gat(ilg),&
+               altotacc_gat(ilg),&
+               netrad_gat(ilg),&
+               preacc_gat(ilg),&
+               sdepgat(ilg),&
+               rgmgat(ilg,ignd),&
+               sandgat(ilg,ignd),&
+               claygat(ilg,ignd),&
+               orgmgat(ilg,ignd),&
+               xdiffusgat(ilg),& ! the corresponding ROW is CLASS's XDIFFUS
+               faregat(ilg),&    ! the ROT is FAREROT
+               FTABLE(nlat,nmos),&
+               ACTLYR(nlat,nmos))
 
-      ! #ED - we should be able to get rid of this later, but need it now.
+!>    This opens and reads in the restart files (replacing the INI and CTM
+!!    files). The inputs from this are used to allocate the CLASS and CTEM
+!!    data structures based on the given nlat, nmos, ignd, etc.
+
+      ! #ED - this is just started but is working at present. This needs to be expanded to
+      ! all restart variables.
+      call read_initialstate(onetile_perPFT)
+      write(*,*)zrfmrow
+        print *,'after readinitialstate'
+! #ED - ignore after this.
+!>     Open the met netcdf file. This also sets up the run boundaries
+!!     based on the metadata in the netcdf. It is important to ensure the
+!!     netcdf is of the same dimensions as the intended output files.
+!!     Based upon the bounds used to call the model, this will figure out how
+!!     big the NLAT vector is.
+!      call openmet()
+!      write(*,*)'done openmet'
+
+      ! #ED - later on, we will read in the MET forcing data using netcdf like this
+      ! at present we have to still rely on the ASCII text files so this is commented
+      ! out (and also not really coded up).
+
+      !call readin_met(1,dlatgat,dlongat)
+!
+!     checking the time spent for running model
+!
+!      call idate(today)
+!      call itime(now)
+!      write(*,1000)   today(2), today(1), 2000+today(3), now
+! 1000 format( 'start date: ', i2.2, '/', i2.2, '/', i4.4,
+!     &      '; start time: ', i2.2, ':', i2.2, ':', i2.2 )
+!
+!     INITIALIZATION FOR COUPLING CLASS AND CTEM
+!
+       call initrowvars()
+       call resetclassaccum(nltest,nmtest)
+
+      end subroutine CLASSIC_driver
+
+      ! #ED - we will be able to get rid of this later, but we do need it now for
+      ! subroutines that are linked to this.
       INTEGER FUNCTION STRLEN(ST)
       INTEGER       I
       CHARACTER     ST*(*)
@@ -3338,4 +3413,6 @@
       STRLEN = I
       RETURN
       END
+
+      end module main_driver
 
