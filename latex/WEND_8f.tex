@@ -122,3 +122,24 @@ The values in the three-\/dimensional matrix Z\+M\+A\+T are initialized to zero.
 As a result of the above processes, the liquid water content and temperature of each soil layer (excluding the bottom, dummy layer) will be a combined result of infiltration processes (W\+A\+D\+D, T\+A\+D\+D), redistribution processes (W\+D\+R\+A, T\+D\+R\+A), and water in the layer that has remained unaffected (W\+R\+E\+M, T\+R\+E\+M). For each layer, W\+A\+D\+D is calculated by summing over the respective Z\+M\+A\+T values corresponding to that layer multiplied by T\+H\+L\+I\+N\+F, and T\+A\+D\+D by summing over the Z\+M\+A\+T and T\+H\+L\+I\+N\+F values multiplied by the respective T\+M\+O\+V\+E values. W\+R\+E\+M is obtained as the product of the original water content T\+H\+L\+I\+Q\+X multiplied by Z\+R\+M\+D\+R, and T\+R\+E\+M as the product of the water temperature T\+B\+A\+R\+W\+X, T\+H\+L\+I\+Q\+X and Z\+R\+M\+D\+R. For the soil layer containing the wetting front, a check is carried out to determine whether the liquid moisture content resulting from the infiltration and drainage processes, T\+H\+I\+N\+F\+L, is less than the residual liquid moisture content T\+H\+L\+M\+I\+N. If so, the flow F\+D\+T at the bottom of the layer is recalculated as the value required to keep T\+H\+L\+I\+Q\+X at T\+H\+L\+M\+I\+N. W\+D\+R\+A is obtained from the difference between the water fluxes F\+D\+T at the top and bottom of the layer, supplied by G\+R\+D\+R\+A\+N, and T\+D\+R\+A is obtained from the water fluxes F\+D\+T and their corresponding temperatures T\+F\+D\+T. Finally, T\+H\+L\+I\+Q\+X is calculated as the sum of W\+A\+D\+D, W\+R\+E\+M and W\+D\+R\+A normalized by D\+E\+L\+Z\+X, and T\+B\+A\+R\+W\+X as the sum of T\+A\+D\+D, T\+R\+E\+M and T\+D\+R\+A normalized by the product of T\+H\+L\+I\+Q\+X and D\+E\+L\+Z\+X.
 
 Lastly, the base flow B\+A\+S\+F\+L\+W at the bottom of the soil profile and its temperature T\+B\+A\+S\+F\+L are calculated. If the wetting front is located in the dummy soil layer below the soil profile, B\+A\+S\+F\+L\+W is obtained by summing over the Z\+M\+A\+T values for the I\+G\+P1 level, multiplied by the dummy layer T\+H\+L\+I\+N\+F value and the fractional coverage F\+I of the modelled subarea. T\+B\+A\+S\+F\+L is similarly obtained as the weighted average of the original T\+B\+A\+S\+F\+L and the values of T\+M\+O\+V\+E corresponding to the Z\+M\+A\+T values. The overall subarea runoff R\+U\+N\+O\+F\+F and its temperature T\+R\+U\+N\+O\+F are calculated in the same manner without the F\+I weightings. Otherwise, the baseflow and total runoff are obtained from the value of F\+D\+T at the bottom of the I\+G\+D\+R layer, and their temperatures from the values of T\+F\+D\+T and F\+D\+T.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=266pt]{WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=278pt]{WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_icgraph}
+\end{center}
+\end{figure}
+
+

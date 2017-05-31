@@ -1,7 +1,7 @@
 var searchData=
 [
   ['read_5ffrom_5fctm',['read_from_ctm',['../group__io__driver__read__from__ctm.html#ga754f9c8c8e4e916e436474006963eae9',1,'io_driver']]],
-  ['read_5ffrom_5fjob_5foptions',['read_from_job_options',['../read__from__job__options_8f90.html#a59635532072b59aa5db6bd717cebb79b',1,'read_from_job_options.f90']]],
+  ['read_5ffrom_5fjob_5foptions',['read_from_job_options',['../read__from__job__options_8f90.html#a20cec43eab235567e47a309edb57d040',1,'read_from_job_options.f90']]],
   ['read_5ffrom_5fjob_5foptions_2ef90',['read_from_job_options.f90',['../read__from__job__options_8f90.html',1,'']]],
   ['readin_5fluc',['readin_luc',['../group__landuse__change__readin__luc.html#ga1d8b9a30b4c5c7692e39f3933bc2e13a',1,'landuse_change']]],
   ['rg',['rg',['../structctem__statevars_1_1veg__rot.html#ae7e8419e467277cc89b7090796a9519b',1,'ctem_statevars::veg_rot::rg()'],['../structctem__statevars_1_1veg__gat.html#a9478e34a7affbb08d2dfc4440a2e3f38',1,'ctem_statevars::veg_gat::rg()']]],
@@ -11,7 +11,13 @@ var searchData=
   ['rmatctem',['rmatctem',['../structctem__statevars_1_1veg__rot.html#ae4329fea98593110342ac80618b65efe',1,'ctem_statevars::veg_rot::rmatctem()'],['../structctem__statevars_1_1veg__gat.html#a035474978a3f15fd37807c1f9113cbc6',1,'ctem_statevars::veg_gat::rmatctem()']]],
   ['rml',['rml',['../structctem__statevars_1_1veg__rot.html#a10230d76614145054d3a7195bcdd9ee8',1,'ctem_statevars::veg_rot::rml()'],['../structctem__statevars_1_1veg__gat.html#a2587b21d77389d025197409c7f6bbc6d',1,'ctem_statevars::veg_gat::rml()']]],
   ['rmlcgveg',['rmlcgveg',['../structctem__statevars_1_1veg__rot.html#a0d1a5abf2370c25e7daeef98aba5326c',1,'ctem_statevars::veg_rot::rmlcgveg()'],['../structctem__statevars_1_1veg__gat.html#a8de3455b071ac09d386f053a354ff392',1,'ctem_statevars::veg_gat::rmlcgveg()']]],
+  ['rmlcmoss',['rmlcmoss',['../structctem__statevars_1_1veg__gat.html#a6c138212d6d5f165f401cf9109f75513',1,'ctem_statevars::veg_gat']]],
+  ['rmlcsmoss',['rmlcsmoss',['../structctem__statevars_1_1veg__gat.html#a67762db2e026c84ab4c1f888d1a716a1',1,'ctem_statevars::veg_gat']]],
   ['rmlcsveg',['rmlcsveg',['../structctem__statevars_1_1veg__rot.html#acc4da954bb1531f6c7ce0427f6e8cc21',1,'ctem_statevars::veg_rot::rmlcsveg()'],['../structctem__statevars_1_1veg__gat.html#a07528b7feffe67997312d503039bbbb3',1,'ctem_statevars::veg_gat::rmlcsveg()']]],
+  ['rmlgmoss',['rmlgmoss',['../structctem__statevars_1_1veg__gat.html#a1b444eb1fd23d9db75733a4025cc16dc',1,'ctem_statevars::veg_gat']]],
+  ['rmlgsmoss',['rmlgsmoss',['../structctem__statevars_1_1veg__gat.html#a13837107586848cdf708ca7d97047fd5',1,'ctem_statevars::veg_gat']]],
+  ['rmlmoss',['rmlmoss',['../structctem__statevars_1_1veg__rot.html#a9560d1e17f435c07ac6e3719d933f4bf',1,'ctem_statevars::veg_rot::rmlmoss()'],['../structctem__statevars_1_1veg__gat.html#ad6f99989dfd17eee75af3d6c79890339',1,'ctem_statevars::veg_gat::rmlmoss()']]],
+  ['rmlmossac_5ft',['rmlmossac_t',['../structctem__statevars_1_1ctem__tile__level.html#afd0d6ecb23fdf6f6697a3c3034750dea',1,'ctem_statevars::ctem_tile_level']]],
   ['rmlveg',['rmlveg',['../structctem__statevars_1_1veg__rot.html#ad9aec62ab0c237b063115c945a974484',1,'ctem_statevars::veg_rot::rmlveg()'],['../structctem__statevars_1_1veg__gat.html#ae0cc8f257424a7fea8d06048f1bcbf4f',1,'ctem_statevars::veg_gat::rmlveg()']]],
   ['rmr',['rmr',['../structctem__statevars_1_1veg__rot.html#aa1c1151a260bfce041ab912a65bf43a3',1,'ctem_statevars::veg_rot::rmr()'],['../structctem__statevars_1_1veg__gat.html#a89a5ae93075993071b4e6355ee747113',1,'ctem_statevars::veg_gat::rmr()']]],
   ['rmrveg',['rmrveg',['../structctem__statevars_1_1veg__rot.html#af9034ec5872237f7add2d43f73def6b0',1,'ctem_statevars::veg_rot::rmrveg()'],['../structctem__statevars_1_1veg__gat.html#a3f8cb62e7e0d54f2821353eafb048285',1,'ctem_statevars::veg_gat::rmrveg()']]],

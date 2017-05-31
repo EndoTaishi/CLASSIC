@@ -1,0 +1,69 @@
+This contribution guide is only a draft.
+
+C\+L\+A\+S\+S-\/\+C\+T\+E\+M code uses an self-\/documenting tool called Doxygen. All new code should follow the doyxgen conventions and formatting.
+
+\section*{Doxygen}
+
+\subsection*{Overview}
+
+Doxygen is a tool for producing documentation from commented code. For input it supports many code languages, including Fortran. Both fixed form code such as Fortran 77 (extension .f or .for) and free form code such as Fortran 90 (extension .f90) are recognized. There are many different supported outputs, including La\+Te\+X and H\+T\+M\+L.
+
+\subsection*{Quick Start (if you have made change to the code and doxygen comments)}
+
+
+\begin{DoxyEnumerate}
+\item \href{http://www.stack.nl/~dimitri/doxygen/download.html}{\tt Download Doxygen} to your computer
+\end{DoxyEnumerate}
+\begin{DoxyEnumerate}
+\item Run the command \textquotesingle{}doxygen Doxyfile\textquotesingle{}.
+\end{DoxyEnumerate}
+\begin{DoxyEnumerate}
+\item View the produced H\+T\+M\+L by opening \textquotesingle{}index.\+html\textquotesingle{} from within the newly created \textquotesingle{}html\textquotesingle{} folder within your current directory.
+\end{DoxyEnumerate}
+\begin{DoxyEnumerate}
+\item View the produced La\+Te\+X pdf by using the created makefile\+:
+\begin{DoxyItemize}
+\item Run \textquotesingle{}make\textquotesingle{} on the command line in the \textquotesingle{}latex\textquotesingle{} folder in your current project\textquotesingle{}s directory.
+\item Open the new pdf \textquotesingle{}refman.\+pdf\textquotesingle{}
+\end{DoxyItemize}
+\end{DoxyEnumerate}
+
+\subsection*{Documenting The Code Through Comments Doxygen Recognizes}
+
+Doxygen will ignore regular code comments. Thus comments meant to be purely internal to the code can still be made. Commenting is slightly different depending on the version of Fortran being used.
+
+\subsubsection*{Free Form Fortran (.f90)}
+
+Start a comment the regular way with a \textquotesingle{}!\textquotesingle{} and then add either \textquotesingle{}$<$\textquotesingle{} or \textquotesingle{}$>$\textquotesingle{} to make it into a comment block that Doxygen will recognize. To continue the comment on another line \textquotesingle{}!!\textquotesingle{} may also be used instead of \textquotesingle{}!$>$\textquotesingle{}.
+
+\subsubsection*{Fixed Form Fortran (.f, .for)}
+
+On a new line (not directly after other code) start a regular comment with the capital letter \textquotesingle{}C\textquotesingle{}, then add either \textquotesingle{}$<$\textquotesingle{} or \textquotesingle{}$>$\textquotesingle{}. Comments can again be carried onto another line either using \textquotesingle{}C!\textquotesingle{} or \textquotesingle{}C$>$\textquotesingle{}. It also appears to be fine for the older structured code to also use the newer style\textquotesingle{}s type of comment.
+
+\subsubsection*{\textquotesingle{}$<$\textquotesingle{} versus \textquotesingle{}$>$\textquotesingle{}}
+
+\textquotesingle{}$>$\textquotesingle{} \+: This indicates to Doxygen that the comment refers to the code after the comment. \textquotesingle{}$<$\textquotesingle{} \+: This indicates to Doxygen that the comment refers to the code before the comment.
+
+For example; \begin{DoxyVerb}top fortran code snippet
+!> comment 1
+middle fortran code snippet
+!< comment 2
+bottom fortran code snippet
+\end{DoxyVerb}
+
+
+will have both comments being related to the middle code snippet.
+
+As copied from the \textquotesingle{}getting started\textquotesingle{} documentation page\+: \char`\"{}\+Place a special documentation block in front of the declaration or definition of the member, class or namespace.
+\+For file, class and namespace members it is also allowed to place the documentation directly after the member.\char`\"{}
+
+In general, comment blocks must be before the code (and thus use \textquotesingle{}!$>$\textquotesingle{} and \textquotesingle{}!!\textquotesingle{} but not \textquotesingle{}!$<$\textquotesingle{}), with a few exceptions such as class and namespace members.
+
+\subsubsection*{Beyond Standard Comment Blocks}
+
+To make \textquotesingle{}pretty\textquotesingle{} formatting, you can use \href{http://daringfireball.net/projects/markdown/syntax}{\tt markdown} and doyxgen will understand it (the switch for this is turned on in our doxyfile).
+
+Sometimes there is information that should be documented but is not necessarily related to any particular part of the code. In this case structural commands or other specific commands can be put directly before the comment to tell Doxygen where to put the documentation.
+
+For example\+: \begin{DoxyVerb}!>\end{DoxyVerb}
+ 

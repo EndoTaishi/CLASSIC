@@ -1,0 +1,146 @@
+\hypertarget{group__peat__soil__het__resp}{}\section{Peat\+\_\+soil\+\_\+het\+\_\+resp}
+\label{group__peat__soil__het__resp}\index{Peat\+\_\+soil\+\_\+het\+\_\+resp@{Peat\+\_\+soil\+\_\+het\+\_\+resp}}
+
+
+Peatland soil heterotrophic respiration.  
+
+
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__peat__soil__het__resp_gaed12b76ec8925a4bc3105f8ae7a36888}{peatlands\+\_\+mod\+::hetres\+\_\+peat} (il1, il2, ipeatland, isand, litrmsmoss, peatdep, wtable, tbar, thliq, thice, thpor, bi, zbotw, delzw, psisat, litresms, socresp, resoxic, resanoxic)
+\begin{DoxyCompactList}\small\item\em grid average peat soil heterotrophic respiration subroutine \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Peatland soil heterotrophic respiration. 
+
+Over the non-\/peatland fraction, H\+R is calculated as the sum of the respiration from litter and soil carbon pools as in the original version of C\+T\+E\+M (Arora, 2003). The soil C pool over the non-\/peatland areas is assumed to be exponentially distributed with depth (Arora, 2003). In peatlands a large amount of humic soil is generally located in the permanently saturated zone and the bulk density increases with soil depth (Loisel and Garneau, 2010). Thus, the assumption of exponentially decreasing distribution of C content with increasing soil depth is not valid in peatlands. We used a quadratic equation to calculate the distribution of soil C content over depth based on an empirically determined bulk density profile (Frolking et al., 2001).
+
+H\+R over the peatland fraction of a grid cell is modelled using a two-\/pool approach with a flexible boundary between the pools that depends on the depth of the water table\+:
+
+$ R_{o}=C_{SOM,o}k_{o}f_{T,{o}} $
+
+$ R_{a}=C_{SOM,a}k_{a}f_{T,{a}}f_{anoxic} $
+
+where o and a denote the oxic and anoxic portions of the soil C pool respectively. The respiration rate $R$ (unit\+: $\mu mol C m$$^\wedge$\{-\/2\} $/s) is obtained from the respiration rate coefficient $ $ ($\$ mol C / kg C / s), the temperature functions $f_T$, the soil C mass $C_{SOM}$ (kg), and a scaling factor $f_{anoxic}$ after Frolking et al.$\sim$(2010, 2001), which represents the inhibition of microbial respiration under anoxic conditions. The value of this parameter is uncertain, varying in those two papers between 0.\+001, 0.\+025 and 0.\+1. Based on calibration runs using two of the data sets described below (M\+B-\/\+Bog and A\+B-\/\+Fen), we adopted a value of 0.\+025. $Q_{10}$ is calculated using a hyperbolic tan function of the soil temperatures ( $T_s)$ of the oxic and anoxic zones (Melton and Arora, 2016), which are in turn functions of water table depth. The $Q_{10}$ values of the anoxic and the oxic zones of the soil are indicated as $Q_{10,a}$ and $Q_{10,o}$. The values of $k$, $f_T$, and $C_{SOM}$ are updated along with the water table depth ( $z_{wt}$, unit\+: m, positive downward) and the peat depth ( $z_p$, unit\+: m) at each C\+T\+E\+M time step. The equations for \$\$ and $C_{SOM}$ are derived from Fig. 2 in Frolking et al. (2001), and parameterized differently for fens and bogs \+:
+
+$ f_{T,o} =Q_{10,o}^{\left(\int\limits_{0}^{z_{wt}} T_{j} -15\right)/10} $
+
+$ f_{T,{a}} =Q_{10,{a}}^{\left(\int\limits_{z_{wt}}^{z_\mathrm{p}} T_{j} -15\right)/10} $
+
+$ Q_{10}=1.44+0.56 {tanh}[0.075\left( 46.0-T_{s} \right)] $
+
+$ T_{s,o}=\int\limits_{0}^{z_{wt}} T_{j} \, /(z_{wt}) $
+
+$ T_{s,a}=\int\limits_{z_{wt}}^{z_{p}} T_{j} /(z_{p}-z_{wt}) $
+
+$ k_{o}= 0 $ for $ z_{wt}<0 $
+
+$ k_{o}= k_{1}\left( 1-e^{k_{2}z_{wt}} \right)+k_{3}z_{wt} $ for $0.3 > z_t \ge 0$
+
+$ k_{4}e^{k_{5}z_{wt}}+k_{6}z_{wt}+k_{7} $ for $ z_{wt}\ge 0.3 $
+
+$ k_{a}= k_{4}e^{k_{5}z_{p}}+{10k}_{6}z_{p}+k_{7} $ for $ z_{wt}<0 $
+
+$ k_{a} = $ $\vert$ $ k_1 e^{ k_2 z_{wt} } - k_4 e^{k_5 z_p} -k_3 z_{wt}+k_8 $ for $0.3>z_{wt} \ge 0 $
+
+$ k_{a}= k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_p-z_{wt} \right)$ for $ z_{wt}\ge 0.3 $
+
+$ C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}) $
+
+$ C_{SOM,a}= C_{SOM}-C_{SOM,o} $
+
+where 0.\+487 is a parameter that converts from soil mass to soil C content. The variation of $k_{o}$ and $k_{a}$ with water table depth for bogs and fens is shown in Fig. 2 of (Wu et al. 2016) \cite{Wu2016-zt}. It will be noted that there is a sharp transition in decomposition rate at a depth of 0.\+3 m, reflecting the work of Frolking et al. (2001). As noted above, this value is widely accepted as a representative estimate of the depth dividing the acrotelm and catotelm. In reality, of course, this depth will vary among peatlands.
+
+As only organic soil is considered in peatlands, the peat soil C is updated from the humification (C $_{hum}$, kg C/ m $^2$ / day) and soil respiration from the oxic ( $R_o$ in kg C/ m $^2$ / day) and anoxic ( $R_a$ in kg C/ m $^2$ / day) components during the time step\+:
+
+$ \frac{{dC}_{SOM}}{dt} = C_{hum}-R_{o}-R_{a} $
+
+$C_{hum}$ is calculated as a P\+F\+T-\/dependent fraction of the decomposition rate. At the end of each time step, the peat depth (i.\+e. the depth of the organic soil) $z_p$ is updated from the updated peat C mass (C $_{SOM}$ in kg) by solving the quadratic equation
+
+$ z_{p}= \frac{{-k}_{10}+\sqrt{k_{10}+\frac{4k_{9}{C}_{SOM}}{0.487}}. }{2k_{9}} $
+
+The water table depth $z_{wt}$ is deduced by searching for a soil layer below, which the soil is saturated and above which the soil moisture is at or below the retention capacity with respect to gravitational drainage. Within this soil layer $j$, $z_{wt}$ is calculated as
+
+$ z_{wt}=z_{{b},j}-\Delta z\left[ \frac{\theta_{{l},j}+\theta_{i,j}-\theta _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right] $
+
+where $\Delta z $ is the thickness of soil layer (unit\+: m), $\theta_l $ and $\theta_i$ are the liquid and frozen water contents (unit, m $^3$ / m $^3$), $\theta_{ret}$ and $\theta_p$ are the water retention capacity and the porosity, and $z_b$ (unit\+: m) is the bottom depth of the soil layer. 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__peat__soil__het__resp_gaed12b76ec8925a4bc3105f8ae7a36888}{}\index{Peat\+\_\+soil\+\_\+het\+\_\+resp@{Peat\+\_\+soil\+\_\+het\+\_\+resp}!hetres\+\_\+peat@{hetres\+\_\+peat}}
+\index{hetres\+\_\+peat@{hetres\+\_\+peat}!Peat\+\_\+soil\+\_\+het\+\_\+resp@{Peat\+\_\+soil\+\_\+het\+\_\+resp}}
+\subsubsection[{hetres\+\_\+peat}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public peatlands\+\_\+mod\+::hetres\+\_\+peat (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{il1, }
+\item[{integer, intent(in)}]{il2, }
+\item[{integer, dimension(ilg), intent(in)}]{ipeatland, }
+\item[{integer, dimension(ilg,ignd), intent(in)}]{isand, }
+\item[{real, dimension(ilg), intent(in)}]{litrmsmoss, }
+\item[{real, dimension(ilg), intent(in)}]{peatdep, }
+\item[{real, dimension(ilg), intent(in)}]{wtable, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{tbar, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{thliq, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{thice, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{thpor, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{bi, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{zbotw, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{delzw, }
+\item[{real, dimension(ilg,ignd), intent(in)}]{psisat, }
+\item[{real, dimension(ilg), intent(out)}]{litresms, }
+\item[{real, dimension(ilg), intent(out)}]{socresp, }
+\item[{real, dimension(ilg), intent(out)}]{resoxic, }
+\item[{real, dimension(ilg), intent(out)}]{resanoxic}
+\end{DoxyParamCaption}
+)}\label{group__peat__soil__het__resp_gaed12b76ec8925a4bc3105f8ae7a36888}
+
+
+grid average peat soil heterotrophic respiration subroutine 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em ipeatland} & peatland flag, 0 = not peatland, 1 = bog, 2 = fen\\
+\hline
+\mbox{\tt in}  & {\em psisat} & saturated matrix potential in soil (m)\\
+\hline
+\mbox{\tt in}  & {\em wtable} & water table (m)\\
+\hline
+\mbox{\tt in}  & {\em tbar} & soil temperature (K)\\
+\hline
+\mbox{\tt out}  & {\em litresms} & moss litter respiration (\$ mol C\+O\+\_\+2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$)\\
+\hline
+\mbox{\tt out}  & {\em socresp} & soil C respiration (\$ mol C\+O\+\_\+2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$)\\
+\hline
+\mbox{\tt out}  & {\em resoxic} & respiration rate of the oxic compartment (\$ mol C\+O\+\_\+2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$)\\
+\hline
+\mbox{\tt out}  & {\em resanoxic} & respiration rate of the oxic compartment (\$ mol C\+O\+\_\+2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \\
+\hline
+\end{DoxyParams}
+$\ast$$\ast$ calculate soil respiration from peat
+
+find the effective water table depth and the layer index to divide the peat soil into two compartments
+
+find the temperature in litter, oxic soil and anoxic soil in kelvin lewtable is the layer index of the water table layer, lewtable = 0 indicates W\+T\+D is above the ground surface. Set the oxic layer temperature to dctmin (minimum soil respiration temperature) when the entire soil is in the anoxic zone.
+
+calculate the temperature multiplier (ftsocres) for oxic and anoxic soil compartments
+
+find the heterotrophic respiration rate constant in the oxic and anoxic (unit in yr-\/1), based on Fig.\+2b in Frolking 2001
+
+Convert respiration rates from kg c/kg c.\+year to u-\/mol co2/kg\+C/s
+
+Find the carbon storage in oxic and anoxic compartments (Cso. Csa) The water table depth delineates the oxic and anoxic compartments. functions (R$\ast$$\ast$2 = 0.\+9999) determines the carbon content of each compartment from a peat bulk density profile based on unpulished data from P.\+J.\+H. Richard (described in fig. 1, Frokling et al.(2001) conversion of peat into carbon with 48.\+7\% (Mer Bleue unpublished data, Moore)
+
+Find the soil respiration rate in Cso and Csa umol/m2/s. Moisture multiplier (0.\+025) indicates rate reduction in decomposition due to anoxia (Frolking et al. 2001), only applied to anoxic layer
+
+$\ast$$\ast$calcualte litter respiration of moss
+
+first find the matrix potential of the soil layers 
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=294pt]{group__peat__soil__het__resp_gaed12b76ec8925a4bc3105f8ae7a36888_icgraph}
+\end{center}
+\end{figure}
+
+

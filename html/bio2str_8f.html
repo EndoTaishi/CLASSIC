@@ -89,7 +89,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>Canadian Terrestrial Ecosystem Model (CTEM) Biomass To Structural Attributes Conversion Subroutine.  
+<p>Biomass To Structural Attributes Conversion Subroutine.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -98,28 +98,32 @@ Functions/Subroutines</h2></td></tr>
 <tr class="separator:a3bc457fd89cd3f3af038e068b38b5919"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Canadian Terrestrial Ecosystem Model (CTEM) Biomass To Structural Attributes Conversion Subroutine. </p>
-<p>The time-varying biomass in the leaves ( <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_938.png"/>), stem ( <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_939.png"/>) and root ( <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_940.png"/>) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.</p>
-<p>Leaf biomass is converted to LAI using specific leaf area ( <img class="formulaInl" alt="${SLA}$" src="form_388.png"/>, <img class="formulaInl" alt="$m^2\,(kg\,C)^{-1}$" src="form_389.png"/>), which itself is assumed to be a function of leaf lifespan ( <img class="formulaInl" alt="$\tau_\mathrm{L}$" src="form_1022.png"/>; see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>)</p>
+<div class="textblock"><p>Biomass To Structural Attributes Conversion Subroutine. </p>
+<p>The time-varying biomass in the leaves ( <img class="formulaInl" alt="$C_L$" src="form_1880.png"/>), stem ( <img class="formulaInl" alt="$C_S$" src="form_1881.png"/>) and root ( <img class="formulaInl" alt="$C_R$" src="form_1882.png"/>) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.</p>
+<p>Leaf biomass is converted to LAI using specific leaf area ( <img class="formulaInl" alt="${SLA}$" src="form_388.png"/>, <img class="formulaInl" alt="$m^2\,(kg\,C)^{-1}$" src="form_389.png"/>), which itself is assumed to be a function of leaf lifespan ( <img class="formulaInl" alt="$\tau_L$" src="form_1883.png"/>; see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>)</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{sla} SLA= \gamma_\mathrm{L}\tau_\mathrm{L}^{-0.5}\\ LAI = C_\mathrm{L}SLA\nonumber \]" src="form_390.png"/>
+<img class="formulaDsp" alt="\[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \]" src="form_1884.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$\gamma_\mathrm{L}$" src="form_1023.png"/> is a constant with value equal to <img class="formulaInl" alt="$25\,m^2\,(kg\,C)^{-1}\,yr^{0.5}$" src="form_392.png"/>.</p>
-<p>The vegetation height ( <img class="formulaInl" alt="$H$" src="form_1024.png"/>; <img class="formulaInl" alt="$m$" src="form_20.png"/>) is calculated for tree, crop and grass PFTs as </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[\label{height} H = \begin{cases} \min\left(10.0C_\mathrm{S}^{0.385},45\right) trees\\ (C_\mathrm{S} + C_\mathrm{L})^{0.385} crops\\ 3.5 (C_{L,g} + 0.55\,C_{L,b})^{0.5} grasses,\\ \end{cases} \]" src="form_394.png"/>
-</p>
-<p> where <img class="formulaInl" alt="$C_{L,g}$" src="form_1025.png"/> is the green leaf biomass and <img class="formulaInl" alt="$C_{L,b}$" src="form_1026.png"/> is the brown leaf biomass that is scaled by 0.55 to reduce its contribution to the plant height. CTEM explicitly tracks brown leaf mass for grass PFTs. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly <img class="formulaInl" alt="$(\tau_{L,b} = 0.1\,\tau_\mathrm{L}$" src="form_1027.png"/>).</p>
-<p>CTEM dynamically simulates root distribution and depth in soil following <a class="el" href="citelist.html#CITEREF_Arora2003838">[3]</a>. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth <img class="formulaInl" alt="$z$" src="form_1028.png"/> is given by </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{fracroo} f_\mathrm{R}(z) = 1 - \exp(-\iota z). \]" src="form_399.png"/>
-</p>
-<p>Rooting depth ( <img class="formulaInl" alt="$d_\mathrm{R}$" src="form_1029.png"/>; <img class="formulaInl" alt="$m$" src="form_20.png"/>), which is defined to be the depth containing <img class="formulaInl" alt="$99\,{\%}$" src="form_401.png"/> of the root mass, is found by setting <img class="formulaInl" alt="$z$" src="form_1028.png"/> equal to <img class="formulaInl" alt="$d_\mathrm{R}$" src="form_1029.png"/> and <img class="formulaInl" alt="$f_\mathrm{R} = 0.99$" src="form_1030.png"/>, which yields </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{rootterm1} d_\mathrm{R} = \frac{-\ln(1-f_\mathrm{R})}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \]" src="form_403.png"/>
+<p>where <img class="formulaInl" alt="$\gamma_L$" src="form_1885.png"/> is a constant with value equal to <img class="formulaInl" alt="$25\,m^2\,(kg\,C)^{-1}\,yr^{0.5}$" src="form_392.png"/>. The vegetation height ( <img class="formulaInl" alt="$H$" src="form_1024.png"/>; <img class="formulaInl" alt="$m$" src="form_20.png"/>) is calculated for tree, crop and grass PFTs as</p>
+<p><img class="formulaInl" alt="$ H = \min (10.0C_S^{0.385},45) $" src="form_1886.png"/> for trees</p>
+<p><img class="formulaInl" alt="$ H = (C_S + C_L)^{0.385} $" src="form_1887.png"/> for crops</p>
+<p><img class="formulaInl" alt="$ H = 3.5 (C_{L,g} + 0.55C_{L,b})^{0.5} $" src="form_1888.png"/> for grasses</p>
+<p>where <img class="formulaInl" alt="$C_{L,g}$" src="form_1025.png"/> is the green leaf biomass and <img class="formulaInl" alt="$C_{L,b}$" src="form_1026.png"/> is the brown leaf biomass that is scaled by 0.55 to reduce its contribution to the plant height. CTEM explicitly tracks brown leaf mass for grass PFTs. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly <img class="formulaInl" alt="$(\tau_{L,b} = 0.1\,\tau_L$" src="form_1889.png"/>).</p>
+<p>In peatlands the vegetation height is calculated as (Wu et al. 2016) <a class="el" href="citelist.html#CITEREF_Wu2016-zt">[80]</a></p>
+<p><img class="formulaInl" alt="$ H = \min(10.0,3.0C_S^{0.385}) $" src="form_1890.png"/> for trees</p>
+<p><img class="formulaInl" alt="$ H = \min(1.0, 0.25(C_S^{0.2})) $" src="form_1891.png"/> for shrubs</p>
+<p><img class="formulaInl" alt="$ H = = min(1.0,(C_{L,g}+0.55C_{L,b})^{0.3}) $" src="form_1892.png"/> for grasses and sedges</p>
+<p>CTEM dynamically simulates root distribution and depth in soil following (Arora and Boer, 2003) <a class="el" href="citelist.html#CITEREF_Arora2003838">[4]</a>. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth <img class="formulaInl" alt="$z$" src="form_1028.png"/> is given by</p>
+<p><img class="formulaInl" alt="$ f_R(z) = 1 - \exp(-\iota z) $" src="form_1893.png"/></p>
+<p>Rooting depth ( <img class="formulaInl" alt="$d_R$" src="form_1894.png"/>; <img class="formulaInl" alt="$m$" src="form_20.png"/>), which is defined to be the depth containing <img class="formulaInl" alt="$99\,{\%}$" src="form_401.png"/> of the root mass, is found by setting <img class="formulaInl" alt="$z$" src="form_1028.png"/> equal to <img class="formulaInl" alt="$d_R$" src="form_1894.png"/> and <img class="formulaInl" alt="$f_R = 0.99$" src="form_1895.png"/>, which yields</p>
+<p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \label{rootterm1} d_R = \frac{-\ln(1-f_R)}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \]" src="form_1896.png"/>
 </p>
 <p>The parameter <img class="formulaInl" alt="$\iota$" src="form_1031.png"/> that describes the exponential root distribution is calculated as </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_\mathrm{R}}}{C_\mathrm{R}} \right)^{0.8}, \]" src="form_405.png"/>
+<img class="formulaDsp" alt="\[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \]" src="form_1897.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$\overline{\iota}$" src="form_1032.png"/> represents the PFT-specific mean root distribution profile parameter and <img class="formulaInl" alt="$\overline{C_\mathrm{R}}$" src="form_1033.png"/> the average root biomass derived from <a class="el" href="citelist.html#CITEREF_Jackson1996-va">[24]</a> (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>). Equation (iota}) yields a lower (higher) value of <img class="formulaInl" alt="$\iota$" src="form_1031.png"/> than <img class="formulaInl" alt="$\overline{\iota}$" src="form_1032.png"/> when root biomass <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_940.png"/> is higher (lower) than the PFT-specific mean root biomass <img class="formulaInl" alt="$\overline{C_\mathrm{R}}$" src="form_1033.png"/>, resulting in a deeper (shallower) root profile than the mean root profile.</p>
-<p>The rooting depth <img class="formulaInl" alt="$d_\mathrm{R}$" src="form_1029.png"/> is checked to ensure it does not exceed the soil depth. If so, <img class="formulaInl" alt="$d_\mathrm{R}$" src="form_1029.png"/> is set to the soil depth and <img class="formulaInl" alt="$\iota$" src="form_1031.png"/> is recalculated as <img class="formulaInl" alt="$\iota = 4.605/d_\mathrm{R}$" src="form_1034.png"/> (see Eq. rootterm1} for derivation of 4.605 term). The new value of <img class="formulaInl" alt="$\iota$" src="form_1031.png"/> is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers. </p>
+<p>where <img class="formulaInl" alt="$\overline{\iota}$" src="form_1032.png"/> represents the PFT-specific mean root distribution profile parameter and <img class="formulaInl" alt="$\overline{C_R}$" src="form_1898.png"/> the average root biomass derived from Jackson et al. (1996) <a class="el" href="citelist.html#CITEREF_Jackson1996-va">[42]</a> (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutin...">ctem_params.f90</a>). Equation for <img class="formulaInl" alt="$\iota$" src="form_1031.png"/> above yields a lower (higher) value of <img class="formulaInl" alt="$\iota$" src="form_1031.png"/> than <img class="formulaInl" alt="$\overline{\iota}$" src="form_1032.png"/> when root biomass <img class="formulaInl" alt="$C_R$" src="form_1882.png"/> is higher (lower) than the PFT-specific mean root biomass <img class="formulaInl" alt="$\overline{C_R}$" src="form_1898.png"/>, resulting in a deeper (shallower) root profile than the mean root profile.</p>
+<p>The rooting depth <img class="formulaInl" alt="$d_R$" src="form_1894.png"/> is checked to ensure it does not exceed the soil depth. If so, <img class="formulaInl" alt="$d_R$" src="form_1894.png"/> is set to the soil depth and <img class="formulaInl" alt="$\iota$" src="form_1031.png"/> is recalculated as <img class="formulaInl" alt="$\iota = 4.605/d_R$" src="form_1899.png"/> (see Eq. rootterm1} for derivation of 4.605 term). The new value of <img class="formulaInl" alt="$\iota$" src="form_1031.png"/> is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="a3bc457fd89cd3f3af038e068b38b5919"></a>
 <div class="memitem">
@@ -229,7 +233,9 @@ Functions/Subroutines</h2></td></tr>
 <ol type="1">
 <li>convert stem biomass into vegetation height for trees and crops, and convert leaf biomass into vegetation height for grass</li>
 <li>convert vegetation height into roughness length &amp; take its log</li>
-<li>lump this for ctem's 9 pfts into class' 4 pfts</li>
+<li><p class="startli">lump this for ctem's 9 pfts into class' 4 pfts</p>
+<p class="startli">Determine the vegetation height of the peatland shrubs shrubs in mbbog maximum 0.3 m average 0.18 m (Bubier et al. 2011) grass and herbs avg 0.3m, min 0.05 max 0.8 low shrub avg 0.82, min 0.10, max 2.00 tall shrub avg.3.76, min 2.3, max 5.00 (Hopkinson et al. 2005) The Canadian wetland vegetation classification graminoids include grass,rush,reed,sedge forb is all non-graminoids herbaceous plants shrubs dwarf &lt;0.1m, low (0.1 to 0.5), medium 0.5 to 1.5, tall &gt;1.5 trees &gt; 5 m</p>
+</li>
 </ol>
 <p>&mdash;&mdash; 3. estimating fraction of roots in each soil layer for &ndash;&mdash; &mdash;&mdash; ctem's each vegetation type, using root biomass &ndash;&mdash;</p>
 <p>estimate parameter b of variable root profile parameterization</p>
@@ -249,12 +255,30 @@ Functions/Subroutines</h2></td></tr>
 <p>if there is no vegetation canopy mass will be abszero. this should essentially mean more bare ground, but since we are not changing fractional coverages at present, we pass a minimum canopy mass to class so that it doesn't run into numerical problems.</p>
 <p>&mdash; 6. calculate albedo for class' 4 pfts based on specified -&mdash; ---&mdash; albedos of ctem 9 pfts and their fractional coveraes --&mdash;</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919_cgraph.png" border="0" usemap="#bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919_cgraph" alt=""/></div>
+<map name="bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919_cgraph" id="bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919_cgraph">
+<area shape="rect" id="node2" href="XIT_8f.html#aea43fe3205a9aaa600859d61b69d580c" title="xit" alt="" coords="115,5,154,32"/></map>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919_icgraph.png" border="0" usemap="#bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919_icgraph" alt=""/></div>
+<map name="bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919_icgraph" id="bio2str_8f_a3bc457fd89cd3f3af038e068b38b5919_icgraph">
+<area shape="rect" id="node2" href="ctem_8f90.html#ace1598599f37c24cac37dd963f23b497" title="ctem" alt="" coords="115,5,165,32"/></map>
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:58 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 26 2017 12:30:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

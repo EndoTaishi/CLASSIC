@@ -25,9 +25,11 @@
      K                 THLIQ,THFC,THLW,ISAND,IG,COSZS,PRESSG,
      L                 XDIFFUS,ICTEM,IC,CO2I1,CO2I2,
      M                 ctem_on,SLAI,FCANCMX,L2MAX,
-     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG, LFSTATUS,
-     O                 DAYL,DAYL_MAX)
+     N                 NOL2PFTS,CFLUXV,ANVEG,RMLVEG,
+     O                 DAYL,DAYL_MAX,ipeatland, Cmossmas,dmoss,
+     1                 anmoss,rmlmoss,iday, pdd)
 C
+C     * OCT 30/16 - J.Melton    Finish implementation of peatlands by Yuanqiao Wu
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATES
 C     *                         ACCORDING TO WATER AVAILABILITY.
@@ -146,6 +148,8 @@ C     * AUG 12/91 - D.VERSEGHY. ITERATIVE TEMPERATURE CALCULATIONS
 C     *                         FOR VEGETATION CANOPY AND UNDERLYING
 C     *                         SURFACE.
 C
+      use peatlands_mod, only : mosspht
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -199,6 +203,9 @@ C
       REAL QFCL  (ILG) !<Evaporation from liquid water on vegetation \f$[kg m^{-2} s^{-1} ]\f$
       REAL HTCC  (ILG) !<Internal energy change of canopy due to changes in temperature and/or mass \f$[W m^{-2} ]\f$ 
       REAL EVAP  (ILG) !<Diagnosed total surface water vapour flux over modelled area \f$[kg m^{-2} s^{-1} ]\f$
+      real anmoss(ilg) !<
+      real rmlmoss(ilg)!<
+      real cevapmoss(ilg)!<
 C
 C     * INPUT ARRAYS.
 C
@@ -250,16 +257,25 @@ C
 
       REAL CMASS (ILG) !<Mass of vegetation canopy \f$[kg m^{-2} ]\f$
       REAL PCPR  (ILG) !<Surface precipitation rate \f$[kg m^{-2} s^{-1} ]\f$
-      REAL RHOSNO(ILG) !<
-      REAL ZSNOW (ILG) !<
+      REAL RHOSNO(ILG) !<Density of snow  \f$[kg m^{-3} ]\f$
+      REAL ZSNOW (ILG) !<Depth of snow pack  [m] \f$(z_s)\f$
 C
-      REAL FROOT (ILG,IG) !<
-      REAL THLMIN(ILG,IG) !<
-      REAL DELZW(ILG,IG) !<
+      REAL FROOT (ILG,IG) !<Fraction of total transpiration contributed by soil layer  [  ]
+      REAL THLMIN(ILG,IG) !<Residual soil liquid water content remaining after freezing or evaporation \f$[m^{3} m^{-3} ]\f$
+      REAL THLIQ(ILG,IG)  !<Volumetric liquid water content of soil layers  \f$[m^{3} m^{-3} ]\f$
+      REAL DELZW(ILG,IG) !<Permeable thickness of soil layer  [m]
 C
       INTEGER IWATER(ILG) !<Flag indicating condition of surface (dry, water-covered or snow-covered)
       INTEGER IEVAP (ILG) !<Flag indicating whether surface evaporation is occurring or not output variable
       INTEGER ITERCT(ILG,6,50) !<Counter of number of iterations required to solve energy balance for four subareas
+      integer  ipeatland(ilg)!<
+      integer ievapmoss(ilg)!<
+      integer iday          !<
+      real thmin(ilg,ig)    !<
+      real Cmossmas(ilg)    !<
+      real dmoss(ilg)       !<
+      real pdd(ilg)         !<
+
 C
 C     * ARRAYS FOR CTEM.
 C
@@ -288,7 +304,7 @@ C
      1     CO2I1(ILG,ICTEM),     CO2I2(ILG,ICTEM),          COSZS(ILG),
      3          PRESSG(ILG),         XDIFFUS(ILG),     SLAI(ILG,ICTEM),
      4                     RMATCTEM(ILG,ICTEM,IG),  FCANCMX(ILG,ICTEM),
-     5     ANVEG(ILG,ICTEM),    RMLVEG(ILG,ICTEM),       THLIQ(ILG,IG),
+     5     ANVEG(ILG,ICTEM),    RMLVEG(ILG,ICTEM),
      6         THFC(ILG,IG),       THLW(ILG,IG),      CFLUXV(ILG),
      7       CFLUXV_IN(ILG)
 
@@ -296,7 +312,7 @@ C
       REAL DAYL(ILG)          ! DAYLENGTH FOR THAT LOCATION
 
 
-      INTEGER ISAND(ILG,IG),    LFSTATUS(ILG,ICTEM)
+      INTEGER ISAND(ILG,IG)
 C
       LOGICAL ctem_on
 
@@ -327,7 +343,8 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL QSWNVG,QSWNIG,QSWNIC,HFREZ,HCONV,
+      REAL qswnvg(ilg),
+     1     QSWNIG,QSWNIC,HFREZ,HCONV,
      1     RCONV,HCOOL,HMELT,SCONV,HWARM,WCAN,DQ0DT,
      2     DRDT0,QEVAPT,BOWEN,DCFLUX,DXEVAP,TCANT,QEVAPCT,
      3     TZEROT,YEVAP,RAGCO,EZERO,WTRANSP,WTEST
@@ -355,13 +372,18 @@ C===================== CTEM =====================================\
 C
       DO I = 1,ILG
         QSWNVC(I)=0.0
+C    initialize QSWNVG to be used in mosspht.f ---
+            if (ipeatland(i) >0)       then
+               qswnvg(i) = 0.0 
+            endif
       ENDDO
+
 C===================== CTEM =====================================/
 C
       IF(ITCG.LT.2) THEN
           ITERMX=50
       ELSE
-          ITERMX=5
+          ITERMX=12      !was 5 YW March 27, 2015 
       ENDIF
 C      IF(ISNOW.EQ.0) THEN
 C          EZERO=0.0
@@ -376,7 +398,7 @@ C
 !!method (selected if the flag ITCG = 1) and the Newton-Raphson method (selected if ITCG = 2). In the
 !!first case, the maximum number of iterations ITERMX is set to 12, and in the second case it is set to 5.
 !!An optional windless transfer coefficient EZERO is made available, which can be used, following the
-!!recommendations of Brown et al. (2006), to prevent the sensible heat flux over snow packs from
+!!recommendations of Brown et al. (2006) \cite Brown2006-ec, to prevent the sensible heat flux over snow packs from
 !!becoming vanishingly small under highly stable conditions. If the snow cover flag ISNOW is zero
 !!(indicating bare ground), EZERO is set to zero; if ISNOW=1, EZERO is set to \f$2.0 W m^{-2} K^{-1}\f$ . The
 !!surface transfer coefficient under conditions of free convection, RAGCO, is set to \f$1.9 x 10^{-3}\f$ (see the
@@ -434,7 +456,7 @@ C
 !!RB, and its inverse RBINV, are calculated using the wind speed in the canopy air space, VAC, and a
 !!coefficient RBCOEF evaluated in subroutine APREP. This coefficient is formulated after Bartlett (2004),
 !!who developed an expression for the inverse of the leaf boundary resistance, \f$1/r_b\f$ , drawing on the analysis
-!!of Bonan (1996) and McNaughton and van den Hurk (1995), of the form:
+!!of Bonan (1996) \cite Bonan1996-as and McNaughton and van den Hurk (1995), of the form:
 !!
 !!\f$1/r_b = v_{ac}^{1/2} \sigma f_i \gamma_i \Lambda_i^{1/2} /0.75 [1 - exp(-0.75 \Lambda_i^{1/2})]\f$
 !!
@@ -445,7 +467,10 @@ C
 !!initial temperature of the canopy, TCANO, is set to the current canopy temperature. The first step in the
 !!iteration sequence, TSTEP, is set to 1.0 K. The flag ITER is set to 1 for each element of the set of
 !!modelled areas, indicating that its surface temperature has not yet been found. The iteration counter
-!!NITER is initialized to 1 for each element. Initial values are assigned to other variables.
+!!NITER is initialized to 1 for each element. Initial values are assigned to other variables.In particular,
+!!the maximum evaporation from the ground surface that can be sustained for the current time step is
+!!specified as the total snow mass if snow is present, otherwise as the total available water in the first
+!!soil layer.
 !!
 !!(At this point in the code, if CLASS is being run in coupled mode with CTEM, the CTEM subroutine
 !!PHTSYN3 is called. These lines are commented out for uncoupled runs.)
@@ -457,13 +482,17 @@ C
               ELSE
                   TRTOP(I)=TRSNOW(I)
               ENDIF
-              QSWNVG=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I))
+
+c    calculate visible short wave radiation QSWNVG on the ground for moss
+c    photosynthesis ---------------------------------------------------\
+              qswnvg(i)=QSWINV(I)*TRVISC(I)*(1.0-ALVISG(I)) 
               QSWNIG=QSWINI(I)*TRNIRC(I)*(1.0-ALNIRG(I))
-              QSWNG(I)=QSWNVG+QSWNIG
-              QTRANS(I)=QSWNG(I)*TRTOP(I)
-              QSWNG(I)=QSWNG(I)-QTRANS(I)
-              QSWNVC(I)=QSWINV(I)*(1.0-ALVISC(I))-QSWNVG
-              QSWNIC=QSWINI(I)*(1.0-ALNIRC(I))-QSWNIG
+              QSWNG(i)=qswnvg(i)+QSWNIG                    
+              QTRANS(I)=QSWNG(I)*TRTOP(I)   
+              QSWNG(I)=QSWNG(I)-QTRANS(I)  
+              QSWNVC(I)=QSWINV(I)*(1.0-ALVISC(I))-qswnvg(i)
+c    QSWNVG is changed to qswnvg(i) YW March 20, 2015 -----------------/
+              QSWNIC=QSWINI(I)*(1.0-ALNIRC(I))-QSWNIG    
               QSWNC(I)=QSWNVC(I)+QSWNIC
               IF(ABS(TCAN(I)).LT.1.0E-3)        TCAN(I)=TPOTA(I)
               QLWOC(I)=SBC*TCAN(I)*TCAN(I)*TCAN(I)*TCAN(I)
@@ -489,7 +518,7 @@ C
                   CPHCHC(I)=CLHVAP+CLHMLT
               ELSE
                   CPHCHC(I)=CLHVAP
-              ENDIF
+              ENDIF              
               RBINV(I)=RBCOEF(I)*SQRT(VAC(I))
               IF (RBINV(I) .LE. 0.) CALL XIT('TSOLVC',0)
               ! If RBINV is <= 0, it is possible your INI file is missing
@@ -533,14 +562,19 @@ C
      3                   IL1,   IL2,       IG,   ICTEM,   ISNOW,  SLAI,
      4               THFC,  THLW,  FCANCMX,   L2MAX,NOL2PFTS,
      5              RCPHTSYN, CO2I1,    CO2I2,   ANVEG,  RMLVEG,
-     6              LFSTATUS,DAYL, DAYL_MAX)  !FLAG TEST LFSTATUS is new and brought in to test. JM Dec 4.
+     6              DAYL, DAYL_MAX)
 C
 C       * KEEP CLASS RC FOR BONEDRY POINTS (DIANA'S FLAG OF 1.E20) SUCH
 C       * THAT WE GET (BALT-BEG) CONSERVATION.
 C
-        DO 70 I =IL1,IL2                                                
+        DO 70 I =IL1,IL2
             RC(I)=MIN(RCPHTSYN(I),4999.999)
-   70   CONTINUE                                                        
+   70   CONTINUE
+
+c    Do moss photosynthesis:
+        call  mosspht(il1,il2,iday,qswnvg,thliq,co2conc,tgnd,zsnow,
+     1                pressg,Cmossmas,dmoss,anmoss,rmlmoss,
+     2                cevapmoss,ievapmoss,ipeatland,DAYL,pdd)
 
       ENDIF
 C
@@ -582,7 +616,7 @@ C
 !!neutral conditions, turbulent fluxes are negligible. If the virtual potential temperature of the surface is
 !!more than 1 K greater than that of the canopy air, free convection conditions are assumed. Townsend's
 !!(1964) equation for the surface-air transfer coefficient, or the inverse of the surface resistance \f$r_{a,,g}\f$ , is used
-!!in a form derived from the analysis of Deardorff (1972):
+!!in a form derived from the analysis of Deardorff (1972) \cite Deardorff1972-ay :
 !!\f$1/r_{a,,g} = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]^{1/3}\f$
 !!
 !!The first derivative of the transfer coefficient with respect to the surface temperature is calculated for use
@@ -615,6 +649,7 @@ C
 !!the surface, E(0), is calculated as
 !!\f$E(0) = \rho_a [q(0) - q_{a,c} ]/r_{a,,g}\f$
 !!
+!!The evaporation rate is constrained to be less than or equal to the maximum rate evaluated earlier in the subroutine.
 !!\f$Q_E\f$ is obtained by multiplying E(0) by the latent heat of vaporization at the surface. The heat flux into the
 !!surface G(0) is determined as a linear function of T(0) (see documentation for subroutines TNPREP and
 !!TSPREP). It can be seen that each of the terms of the surface energy balance is a function of a single
@@ -673,8 +708,14 @@ C
               IF(IWATER(I).GT.0)                              THEN
                   EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
-              ELSE
-                  EVBETA(I)=CEVAP(I)
+              ELSE                            
+c    evaporation coefficient is moss-controlled for peatland--
+                  if (ipeatland(i)==0)               then
+                      EVBETA(I)=CEVAP(I)
+                  else                             
+                      ievap(i) = ievapmoss(i)
+                      evbeta(i) = cevapmoss(i)
+                  endif
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QAC(I)
                   IF(QZERO(I).GT.QAC(I) .AND. IEVAP(I).EQ.0) THEN
                       EVBETA(I)=0.0
@@ -709,7 +750,7 @@ C
               IF(NITER(I).EQ.ITERMX .AND. ITER(I).EQ.1)    ITER(I)=-1
           ENDIF
 125   CONTINUE
-C
+C     
       IF(ITCG.LT.2) THEN
 C
 C     * OPTION #1: BISECTION ITERATION METHOD.
@@ -850,8 +891,7 @@ C
 !!associated with phase change of water at the surface, QMELTG, and RESID is set to zero.
 !!
 !!In the last part of the loop, some final adjustments are made to a few other variables. If the evaporation
-!!flux is vanishingly small, it is added to RESID and reset to zero. If both RESID and \f$Q_{E,g}\f$ are not small,
-!!and if the precipitation rate is vanishingly small, RESID is added to Q E,g ; otherwise RESID is added to
+!!flux is vanishingly small, it is added to RESID and reset to zero. Any remaining RESID is added to
 !!\f$Q_{H,g}\f$ . Lastly, the iteration counter ITERCT is updated for the level corresponding to the subarea type and
 !!the value of NITER.
 !!
@@ -912,8 +952,9 @@ C
 !!The flag ITER is set to 1 for each
 !!element of the set of modelled areas, indicating that its surface temperature has not yet been found. The
 !!iteration counter NITER is initialized to 1 for each element. The first step in the iteration sequence,
-!!TSTEP, is set to 1.0 K. Initial values are assigned to other variables. After exiting the loop, the
-!!maximum number of iterations ITERMX is set to 12 if ITC = 1, and to 5 if ITC = 2.
+!!TSTEP, is set to 1.0 K. Initial values are assigned to other variables. In the following 350 loop, the water
+!!available for transpiration, WAVAIL, is evaluated for each soil layer.  Lastly, after exiting the loop, the
+!!maximum number of iterations ITERMX is set to 50 if ITC = 1, and to 5 if ITC = 2.
 !!
       DO 300 I=IL1,IL2
           IF(FI(I).GT.0.)                                          THEN
@@ -969,7 +1010,7 @@ C
 !!FLXSURFZ is called.
 !!
 !!Next, canopy parameters and turbulent transfer coefficients are calculated prior to evaluating the terms of
-!!the surface energy balance equation. If ITC = 1, the analysis of Garratt (1992) is followed. The sensible
+!!the surface energy balance equation. If ITC = 1, the analysis of Garratt (1992) \cite Garratt1992-dt is followed. The sensible
 !!and latent heat fluxes from the canopy air to the overlying atmosphere, \f$Q_H\f$ and \f$Q_E\f$ , are obtained as the
 !!sums of the sensible and latent heat fluxes from the canopy to the canopy air, \f$Q_{H,c}\f$ and \f$Q_{E,c}\f$ , and from the
 !!underlying surface to the canopy air, \f$Q_{H,g}\f$ and \f$Q_{E,g}\f$ :
@@ -1199,11 +1240,12 @@ C
 !!flux is downward, or if the stomatal resistance is less than a limiting high value of \f$5000 s m^{-1}\f$ , the canopy
 !!vapour flux \f$E_c\f$ (that is, \f$Q_{E,c} /L_v\f$ ) is calculated as above and the flag IEVAPC is set to 1; otherwise \f$E_c\f$ and
 !!IEVAPC are both set to zero and \f$q_c\f$ is set to \f$q_a\f$ . If the water vapour flux is towards the canopy and the
-!!canopy temperature is greater than the air dew point temperature, the flux is set to zero. If there is
-!!intercepted water on the canopy, a limiting evaporation flux EVPWET is calculated as the rate required to
-!!sublimate all of the intercepted snow if \f$F_s > 0\f$, or all of the intercepted rain otherwise. If the canopy is
-!!more than half covered by intercepted water and the calculated canopy vapour flux is greater than
-!!EVPWET, it is reset to EVPWET and IEVAPC is set to zero. \f$Q_{E,c}\f$ is calculated from \f$E_c\f$ and \f$\Delta Q_{S,c}\f$ is
+!!canopy temperature is greater than the air dew point temperature, the flux is set to zero. In the following IF block,
+!!checks are done to ensure that the calculated canopy evapotranspiration flux will not exceed the available water.
+!!If intercepted snow is present on the canopy, the maximum evapotranspiration is set to this amount.  Otherwise,
+!!if the calculated evapotranspiration rate exceeds the liquid water stored on the canopy, the rate is tested to
+!!ensure that the additional transpiration does not exhaust the available soil water weighted according to the root
+!!distribution. \f$Q_{E,c}\f$ is calculated from \f$E_c\f$ and \f$\Delta Q_{S,c}\f$ is
 !!obtained as
 !!
 !!\f$\Delta Q_{S,c} = C_c [T_c - T_{c,o} ]/ \Delta t\f$
@@ -1387,7 +1429,6 @@ C
 !!IEVAPC for the current location is set to 1.
 !!
         DO 600 I=IL1,IL2
-!          if (tvirta(i) .gt. 100.) then !flag! TEMP FIX! JM July 8 2013.
           IEVAPC(I)=0
           IF(ITER(I).EQ.-1)                   THEN
             TCANT=TVIRTA(I)/(1.0+0.61*QCAN(I))
@@ -1426,7 +1467,6 @@ C
                IEVAPC(I)=1
             ENDIF
           ENDIF
-!         end if
   600   CONTINUE
 !>
 !!After loop 600, calls to DRCOEF or FLXSURFZ are performed to re-evaluate the surface turbulent
@@ -1740,6 +1780,25 @@ C
           ENDIF
   800 CONTINUE
 C
+!>
+!!At the end of the subroutine, some final diagnostic and clean-up calculations are performed. If the
+!!evaporation rate from the canopy, EVAPC, is very small, it is added to the residual of the canopy energy
+!!balance equation, RESID, and then reset to zero. The overall residual is added to the sensible heat flux
+!!from the canopy. The energy balance of the surface underlying the canopy is then re-evaluated to take
+!!into account the new value of the canopy longwave radiation. If the surface temperature is close to 0 C,
+!!the residual of the equation is assigned to QMELTG, representing the energy associated with melting or
+!!freezing of water at the surface; otherwise it is assigned to the ground heat flux. If the water vapour flux
+!!is towards the canopy, the water sublimated or condensed is assigned to interception storage: to
+!!SNOCAN if SNOCAN > 0 (for consistency with the definition of CPHCHC), and to RAICAN
+!!otherwise. The diagnostic water vapour flux variables QFCF and QFCL, and the diagnostic change of
+!!canopy heat storage HTCC, are updated accordingly, and the canopy heat capacity CHCAP is
+!!recalculated; EVAPC is added to the diagnostic variable EVAP and then reset to zero. The net
+!!shortwave radiation, outgoing longwave radiation, sensible and latent heat fluxes are calculated for the
+!!whole canopy-ground surface ensemble; the evaporation rates are converted to \f$m s^{-1}\f$ ; and the iteration
+!!counter ITERCT is updated for the level corresponding to the subarea type and the value of NITER. Finally,
+!!the fraction of water removed by transpiration from each soil layer is updated according to the fractions
+!!determined above on the basis of water availability.
+!!
       DO 850 I=IL1,IL2
           IF(FI(I).GT.0.)                                          THEN
               IF(ABS(EVAPC(I)).LT.1.0E-8) THEN
@@ -1802,23 +1861,7 @@ C
           ENDIF                                                         
   950 CONTINUE
 C
-!>
-!!At the end of the subroutine, some final diagnostic and clean-up calculations are performed. If the
-!!evaporation rate from the canopy, EVAPC, is very small, it is added to the residual of the canopy energy
-!!balance equation, RESID, and then reset to zero. The overall residual is added to the sensible heat flux
-!!from the canopy. The energy balance of the surface underlying the canopy is then re-evaluated to take
-!!into account the new value of the canopy longwave radiation. If the surface temperature is close to 0 C,
-!!the residual of the equation is assigned to QMELTG, representing the energy associated with melting or
-!!freezing of water at the surface; otherwise it is assigned to the ground heat flux. If the water vapour flux
-!!is towards the canopy, the water sublimated or condensed is assigned to interception storage: to
-!!SNOCAN if SNOCAN > 0 (for consistency with the definition of CPHCHC), and to RAICAN
-!!otherwise. The diagnostic water vapour flux variables QFCF and QFCL, and the diagnostic change of
-!!canopy heat storage HTCC, are updated accordingly, and the canopy heat capacity CHCAP is
-!!recalculated; EVAPC is added to the diagnostic variable EVAP and then reset to zero. Finally, the net
-!!shortwave radiation, outgoing longwave radiation, sensible and latent heat fluxes are calculated for the
-!!whole canopy-ground surface ensemble; the evaporation rates are converted to \f$m s^{-1}\f$ ; and the iteration
-!!counter ITERCT is updated for the level corresponding to the subarea type and the value of NITER.
-!!
+
       RETURN
       END
 

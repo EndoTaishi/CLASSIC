@@ -26,9 +26,8 @@
 !!
 !!
       subroutine mortalty (stemmass, rootmass,    ailcg, gleafmas,
-     1                     bleafmas,     il1, 
-     2                          il2,     iday, sort,
-     3                      fcancmx,
+     1                     bleafmas,     il1,  il2, leapnow,
+     2                     iday, sort,  fcancmx,
 c    + ------------------ inputs above this line ----------------------   
      4                     lystmmas, lyrotmas, tymaxlai, grwtheff,
 c    + -------------- inputs updated above this line ------------------
@@ -66,6 +65,7 @@ c
       integer iday   !<day of the year
       integer n      !<
 c
+      logical leapnow   !< true if this year is a leap year. Only used if the switch 'leap' is true.
       integer sort(icc) !<index for correspondence between ctem 9 pfts and size 12 of parameters vectors
 c
       real stemmass(ilg,icc) !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
@@ -122,7 +122,8 @@ c
             tymaxlai(i,j)=ailcg(i,j)
           endif
 c
-          if(iday.eq.365)then
+          if ((.not. leapnow.and.iday.eq.365) .or.
+     &        (leapnow.and.iday.eq.366)) then
             if(tymaxlai(i,j).gt.zero)then
               grwtheff(i,j)= ( (stemmass(i,j)+rootmass(i,j))-
      &         (lystmmas(i,j)+lyrotmas(i,j)) )/tymaxlai(i,j) 
@@ -140,8 +141,12 @@ c
 !!
           geremort(i,j)=mxmortge(n)/(1.0+kmort1*grwtheff(i,j))
 c
-!>convert (1/year) rate into (1/day) rate   
-          geremort(i,j)=geremort(i,j)/365.0
+!>convert (1/year) rate into (1/day) rate 
+          if (leapnow) then 
+            geremort(i,j)=geremort(i,j)/366.0
+          else 
+            geremort(i,j)=geremort(i,j)/365.0
+          endif 
          endif
 210     continue
 200   continue
@@ -162,7 +167,11 @@ c
            endif
 
 !>convert (1/year) rate into (1/day) rate   
-          intrmort(i,j)=intrmort(i,j)/365.0
+          if (leapnow) then 
+            intrmort(i,j)=intrmort(i,j)/366.0
+          else 
+            intrmort(i,j)=intrmort(i,j)/365.0
+          endif
          endif
 260     continue
 250   continue 

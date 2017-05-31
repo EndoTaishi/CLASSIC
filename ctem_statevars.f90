@@ -20,7 +20,7 @@ module ctem_statevars
 
 ! J. Melton Apr 2015
 
-use ctem_params,  only : initpftpars, nlat, nmos, ilg, nmon,ican, ignd,icp1, icc, iccp1, &
+use ctem_params,  only : initpftpars, nlat, nmos, ilg, ican, ignd,icp1, icc, iccp1, &
                     monthend, mmday,modelpft, l2max,deltat, abszero, monthdays,seed, crop, NBS
 
 implicit none
@@ -95,6 +95,8 @@ type ctem_switches
                            !<then starts the run as per normal. it is handy when spinning up so you don't have to do a
                            !<complicated copying of the RS files to restart from them. NOTE! This will not work on
                            !<hadar or spica, instead you have to manually move the files and set this to .false.    
+    logical :: leap        !< set to true if all/some leap years in the .MET file have data for 366 days
+                           !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
     logical :: dowetlands   !<if true allow wetland methane emission
     logical :: obswetf      !<observed wetland fraction
     logical :: transient_run!<
@@ -105,12 +107,7 @@ type ctem_switches
                                   !< from the start then put in a negative number (like -9999), if you never want to have monthly
                                   !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR
 
-
     ! CLASS switches:
-
-    integer :: igralb  !< if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of
-                                !< soil texture.  if it is set to 1, they are assigned values based on the ncar clm soil "colour"  dataset.
-
 
     integer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
                                  !< because the atmospheric model considers these to be part
@@ -298,6 +295,7 @@ type veg_rot
     real, allocatable, dimension(:,:,:) :: anveg        !<net photosynthesis rate for each pft
     real, allocatable, dimension(:,:,:) :: rmlveg       !<leaf maintenance resp. rate for each pft
     
+
 ! allocated with nlat,nmos:   
     integer, allocatable, dimension(:,:)     :: icount         !<
     integer, allocatable, dimension(:,:)     :: stdaln         !<an integer telling if ctem is operated within gcm (=0) or in stand
@@ -394,7 +392,18 @@ type veg_rot
     real, allocatable, dimension(:,:) :: annpcp                !< annual precipitation (mm)
     real, allocatable, dimension(:,:) :: dry_season_length     !< length of dry season (months)
 
-    
+    integer, allocatable, dimension(:,:) :: ipeatland !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+    real, allocatable, dimension(:,:) :: litrmsmoss
+    real, allocatable, dimension(:,:) :: Cmossmas
+    real, allocatable, dimension(:,:) :: dmoss
+    real, allocatable, dimension(:,:) :: nppmoss
+    real, allocatable, dimension(:,:) :: rmlmoss
+    real, allocatable, dimension(:,:) :: gppmoss
+    real, allocatable, dimension(:,:) :: anmoss
+    real, allocatable, dimension(:,:) :: armoss
+    real, allocatable, dimension(:,:) :: peatdep
+    real, allocatable, dimension(:,:) :: pdd
+
 ! allocated with nlat,nmos,ican:     
     real, allocatable, dimension(:,:,:) :: zolnc            !<lumped log of roughness length for class' 4 pfts
     real, allocatable, dimension(:,:,:) :: ailc             !<lumped lai for class' 4 pfts
@@ -414,7 +423,7 @@ type veg_rot
     real, allocatable, dimension(:,:,:) :: THICACC_M        !<
     real, allocatable, dimension(:,:,:) :: THALACC_M        !<
     real, allocatable, dimension(:,:,:) :: tbaraccrow_m     !<
-    
+
 ! allocated with nlat,nmos,ican,ignd:       
     real, allocatable, dimension(:,:,:,:) :: rmatc       !<fraction of roots for each of class' 4 pfts in each soil layer
  
@@ -597,6 +606,26 @@ type veg_gat
     real, allocatable, dimension(:,:) :: nepveg     !<net ecosystem productity for bare fraction expnbaln(i)=0.0 amount
                                                     !<of c related to spatial expansion Not used JM Jun 2014
                                                     !<OR net ecosystem productity for each pft
+
+    integer, allocatable, dimension(:) :: ipeatland !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+    real, allocatable, dimension(:) :: anmoss     !<net photosynthetic rate of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: rmlmoss    !<maintenance respiration rate of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: gppmoss    !<gross primaray production of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: nppmoss    !<net primary production of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: armoss     !<autotrophic respiration of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: litrmsmoss !<moss litter mass, \f$kg C/m^2\f$
+    real, allocatable, dimension(:) :: Cmossmas   !<C in moss biomass, \f$kg C/m^2\f$
+    real, allocatable, dimension(:) :: dmoss      !<depth of living moss (m)
+    real, allocatable, dimension(:) :: pdd        !<peatland degree days above 0 deg C.
+    real, allocatable, dimension(:) :: ancsmoss   !<moss net photosynthesis in canopy snow subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: angsmoss   !<moss net photosynthesis in snow ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: ancmoss    !<moss net photosynthesis in canopy ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: angmoss    !<moss net photosynthesis in bare ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: rmlcsmoss  !<moss maintenance respiration in canopy snow subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: rmlgsmoss  !<moss maintenance respiration in ground snow subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: rmlcmoss   !<moss maintenance respiration in canopy ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: rmlgmoss   !<moss maintenance respiration in bare ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+
     real, allocatable, dimension(:,:) :: nbpveg     !<net biome productity for bare fraction OR net biome productity for each pft
     real, allocatable, dimension(:,:) :: nppveg     !<npp for individual pfts,  u-mol co2/m2.sec
     real, allocatable, dimension(:,:) :: hetroresveg!<
@@ -665,7 +694,6 @@ type veg_gat
     integer, allocatable, dimension(:)   :: stdaln   !<an integer telling if ctem is operated within gcm (=0) or in stand
                                                      !<alone mode (=1). this is used for fire purposes. see comments just
                                                      !<above where disturb subroutine is called.
-
 end type veg_gat
 
 type (veg_gat), allocatable, save, target :: vgat
@@ -1222,6 +1250,7 @@ type ctem_gridavg_annual
     real, allocatable, dimension(:) :: ch4dyn2_yr_g  !<
     real, allocatable, dimension(:) :: ch4soills_yr_g!<
     real, allocatable, dimension(:) :: veghght_yr_g  !<
+    real, allocatable, dimension(:) :: peatdep_yr_g  !<
 
 end type ctem_gridavg_annual
 
@@ -1277,10 +1306,12 @@ type ctem_tileavg_annual
       real, allocatable, dimension(:,:) :: ch4dyn2_yr_t  !<
       real, allocatable, dimension(:,:) :: ch4soills_yr_t!<
       real, allocatable, dimension(:,:) :: veghght_yr_t  !<
+      real, allocatable, dimension(:,:) :: peatdep_yr_t  !<
 
 end type ctem_tileavg_annual
 
 type (ctem_tileavg_annual), allocatable, save, target :: ctem_tile_yr
+
 
 
 contains
@@ -1465,6 +1496,17 @@ allocate(vrot%ailcmin(nlat,nmos,icc),&
          vrot%annsrpls(nlat,nmos),&
          vrot%annpcp  (nlat,nmos),&
          vrot%dry_season_length(nlat,nmos),&
+         vrot%ipeatland(nlat,nmos),&
+         vrot%litrmsmoss(nlat,nmos),&
+         vrot%Cmossmas(nlat,nmos),&
+         vrot%dmoss(nlat,nmos),&
+         vrot%nppmoss(nlat,nmos),&
+         vrot%rmlmoss(nlat,nmos),&
+         vrot%gppmoss(nlat,nmos),&
+         vrot%anmoss(nlat,nmos),&
+         vrot%armoss(nlat,nmos),&
+         vrot%peatdep(nlat,nmos),&
+         vrot%pdd(nlat,nmos),&
 
 ! allocated with nlat,nmos,ican:     
          vrot%zolnc(nlat,nmos,ican),&
@@ -1483,7 +1525,7 @@ allocate(vrot%ailcmin(nlat,nmos,icc),&
          vrot%THALACC_M(nlat,nmos,ignd),&
          vrot%tbaraccrow_m(nlat,nmos,ignd),&
     
-! allocated with nlat,nmos,ican,ignd:       
+! allocated with nlat,nmos,ican,ignd:
          vrot%rmatc(nlat,nmos,ican,ignd),&
  
  ! allocated with nlat,nmos,icc,ignd: 
@@ -1584,6 +1626,24 @@ allocate(vgat%icount(ilg),&
          vgat%srplscur (ilg),&
          vgat%defctcur (ilg),&
          vgat%stdaln (ilg),&
+         vgat%ipeatland (ilg),&
+         vgat%anmoss (ilg),&
+         vgat%rmlmoss (ilg),&
+         vgat%gppmoss (ilg),&
+         vgat%nppmoss (ilg),&
+         vgat%armoss  (ilg),&
+         vgat%litrmsmoss (ilg),&
+         vgat%Cmossmas (ilg),&
+         vgat%dmoss (ilg),&
+         vgat%pdd   (ilg),&
+         vgat%ancsmoss (ilg),&
+         vgat%angsmoss (ilg),&
+         vgat%ancmoss (ilg),&
+         vgat%angmoss (ilg),&
+         vgat%rmlcsmoss (ilg),&
+         vgat%rmlgsmoss (ilg),&
+         vgat%rmlcmoss (ilg),&
+         vgat%rmlgmoss (ilg),&
 
 ! allocated with ilg, icc
          vgat%ailcmin (ilg,icc),&
@@ -2150,6 +2210,7 @@ allocate(vgat%icount(ilg),&
          ctem_grd_yr%ch4dyn2_yr_g (nlat),&
          ctem_grd_yr%ch4soills_yr_g (nlat),&
          ctem_grd_yr%veghght_yr_g (nlat),&
+         ctem_grd_yr%peatdep_yr_g (nlat),&
 
          ctem_tile_yr%laimaxg_yr_t (nlat,nmos),&
          ctem_tile_yr%stemmass_yr_t (nlat,nmos),&
@@ -2192,7 +2253,8 @@ allocate(vgat%icount(ilg),&
          ctem_tile_yr%ch4dyn1_yr_t (nlat,nmos),&
          ctem_tile_yr%ch4dyn2_yr_t (nlat,nmos),&
          ctem_tile_yr%ch4soills_yr_t (nlat,nmos),&
-         ctem_tile_yr%veghght_yr_t (nlat,nmos))
+         ctem_tile_yr%veghght_yr_t (nlat,nmos),&
+         ctem_tile_yr%peatdep_yr_t (nlat,nmos))
 
 end subroutine alloc_ctem_vars
 
@@ -2277,6 +2339,13 @@ integer :: j,k,l,m
         vrot%ch4dyn2(j,k)          = 0.0
         vrot%ch4_soills(j,k)       = 0.0
 
+        vrot%nppmoss(j,k)           = 0.0
+        vrot%rmlmoss(j,k)           = 0.0
+        vrot%gppmoss(j,k)           = 0.0
+        vrot%anmoss(j,k)            = 0.0
+        vrot%armoss(j,k)            = 0.0
+        vrot%peatdep(j,k)           = 0.0
+        vrot%pdd(j,k)               = 0.0
 
         do l=1,ignd
             vrot%tbaraccrow_m(j,k,l)  = 0.0
@@ -2834,6 +2903,7 @@ do i=1,nltest
     ctem_grd_yr%ch4dyn1_yr_g(i)  =0.0
     ctem_grd_yr%ch4dyn2_yr_g(i)  =0.0
     ctem_grd_yr%ch4soills_yr_g(i)  =0.0
+    ctem_grd_yr%peatdep_yr_g(i)  =0.0
 
     do m = 1,nmtest
         ! Tile avg
@@ -2879,6 +2949,7 @@ do i=1,nltest
         ctem_tile_yr%ch4dyn1_yr_t(i,m)  =0.0
         ctem_tile_yr%ch4dyn2_yr_t(i,m)  =0.0
         ctem_tile_yr%ch4soills_yr_t(i,m)  =0.0
+        ctem_tile_yr%peatdep_yr_t(i,m)  =0.0
 
         do j=1,icc
             ! per pft

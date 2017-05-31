@@ -81,12 +81,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
-<tr class="memitem:gaa6ada5ef78fbb766b38f457c954348b4"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__io__driver__ctem__annual__aw.html#gaa6ada5ef78fbb766b38f457c954348b4">io_driver::ctem_annual_aw</a> (nltest, nmtest, iday, FAREROT, iyear, onetile_perPFT)</td></tr>
-<tr class="separator:gaa6ada5ef78fbb766b38f457c954348b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafd1b038009ed17a4f1046e11b88cf383"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__io__driver__ctem__annual__aw.html#gafd1b038009ed17a4f1046e11b88cf383">io_driver::ctem_annual_aw</a> (nltest, nmtest, iday, FAREROT, iyear, onetile_perPFT, leapnow)</td></tr>
+<tr class="separator:gafd1b038009ed17a4f1046e11b88cf383"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="gaa6ada5ef78fbb766b38f457c954348b4"></a>
+<a class="anchor" id="gafd1b038009ed17a4f1046e11b88cf383"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -124,7 +124,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">logical, intent(in)&#160;</td>
-          <td class="paramname"><em>onetile_perPFT</em>&#160;</td>
+          <td class="paramname"><em>onetile_perPFT</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
+          <td class="paramname"><em>leapnow</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -133,7 +139,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
         </tr>
       </table>
 </div><div class="memdoc">
-<hr/>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true. </td></tr>
+  </table>
+  </dd>
+</dl>
 <p>Accumulate yearly outputs</p>
 <p>Accumulate the variables at the per PFT level</p>
 <p>Also do the bare fraction amounts</p>
@@ -158,7 +169,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:59 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 26 2017 12:30:14 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

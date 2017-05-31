@@ -27,8 +27,10 @@
      F            RRESID,SRESID,FRTOT,FRTOTS,
      G            FCANCMX,ICTEM,ctem_on,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
-     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC )
+     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC,
+     J            ipeatland)
 
+C     * SEP  3/16 - J.Melton/Yuanqiao Wu - Bring in peatlands code
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 !
 C     * JAN 14/16 - J.MELTON    IN LOOP 450, MODIFIED SO IT COULD HANDLE >3 SOIL LAYERS
@@ -145,6 +147,9 @@ C     *                                  FOR MODEL VERSION GCM7.
 C     * AUG 12/91 - D.VERSEGHY. CALCULATION OF LAND SURFACE CANOPY 
 C     *                         PARAMETERS.
 C
+
+      use ctem_params,        only : zolnmoss
+
       IMPLICIT NONE
 C                                                                                 
 C     * INTEGER CONSTANTS.
@@ -209,8 +214,8 @@ C
       REAL WTRG  (ILG) !<Diagnosed residual water transferred into or out of the soil [\f$kg m^{-2} s^{-1}\f$]
       REAL CMAI  (ILG) !<Aggregated mass of vegetation canopy [\f$kg m^{-2}\f$]
 
-      REAL FROOT (ILG,IG) !<Fraction of total transpiration contributed by soil layer [ ]
-      REAL FROOTS(ILG,IG) !<
+      REAL FROOT (ILG,IG) !<Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
+      REAL FROOTS(ILG,IG) !<Fraction of total transpiration contributed by soil layer over snow-covered subarea  [  ]
       REAL HTC   (ILG,IG) !<Diagnosed internal energy change of soil layer
                           !!due to conduction and/or change in mass [\f$W m^{-2}\f$]
 
@@ -226,7 +231,8 @@ C
 
 C                                                                                 
 C     * INPUT ARRAYS.                                      
-C                                                                                 
+C
+      integer ipeatland (ilg) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
       REAL FCANMX(ILG,ICP1) !<Maximum fractional coverage of modelled area by vegetation category [ ]
       REAL ZOLN  (ILG,ICP1) !<Natural logarithm of maximum roughness length of vegetation category [ ]
       REAL PAIMAX(ILG,IC)   !<Maximum plant area index of vegetation category [ ]
@@ -339,6 +345,7 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG     
       COMMON /CLASS7/ CANEXT,XLEAF
+
 C-----------------------------------------------------------------------          
       IF(IC.NE.4)                               CALL XIT('APREP',-2)
 C
@@ -504,17 +511,18 @@ C
           HS(I,4)=MAX(H(I,4)-ZSNOW(I),1.0E-3)                                       
 
       !>
-      !!If CLASS is being run uncoupled to CTEM, a second branch now occurs, depending on the value of the
-      !!flag IPAI. If IPAI=0, the values of plant area index calculated by CLASS are to be used. For all four
-      !!vegetation categories, the plant area index over snow-free ground, PAI, is determined by interpolating
-      !!between the annual maximum and minimum plant area indices using the growth index. If IPAI=1, plant
+      !!Next a second branch occurs, depending on the value of the
+      !!flag IPAI. If IPAI=0, the values of plant area index calculated by CLASS or CTEM are used. If CTEM is
+      !!turned on (ICTEMMOD=1), the plant area index values over snow-free ground, PAI, for the four vegetation
+      !!categories are set to the CTEM-generated values.  If not, PAI, is determined for each vegetation category by interpolating
+      !!between the annual maximum and minimum plant area indices using their respective growth index. If IPAI=1, plant
       !!area index values specified by the user are utilized instead. For trees, the plant area index over snow-
       !!covered ground, PAIS, is set to PAI. For crops and grass, if H>0, PAIS is set to PAI scaled by the ratio
       !!of HS/H; otherwise, it is set to zero. Lastly, the leaf area indices for the four vegetation categories over
-      !!snow-free ground, AIL, are determined from the PAI values. For needleleaf trees, AIL is estimated as
+      !!snow-free ground, AIL, are determined. If CTEM is turned on, these are assigned using the CTEM-generated
+      !!values.  If not, they are calculated on the basis of the PAI values. For needleleaf trees, AIL is estimated as
       !!0.90 PAI; for broadleaf trees it is estimated as the excess PAI over the annual minimum value. For crops
-      !!and grass AIL is assumed to be equal to PAI. (If CLASS is being run coupled to CTEM, the CTEM-
-      !!generated values of PAI and AIL are used instead.)
+      !!and grass AIL is assumed to be equal to PAI.
       !!    
           IF(IPAI.EQ.0) THEN
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
@@ -618,7 +626,7 @@ C
       !!trees, FCAN is set to the maximum coverage FCANMX of the vegetation category, scaled by the snow-
       !!free fraction of the modelled area, 1-FSNOW. For crops and grass, this calculation is modified for cases
       !!where the plant area index has been calculated as falling below a threshold value owing to growth stage or
-      !!burying by snow. (If CLASS is being run coupled to CTEM, this threshold value is set to 0.05; otherwise
+      !!burying by snow. This threshold value is assigned a value of 1.0; otherwise
       !!it is set to 1.) In such cases the vegetation coverage is assumed to become discontinuous, and so an
       !!additional multiplication by PAI is performed to produce a reduced value of FCAN, and PAI is reset to
       !!the threshold value. An identical procedure is followed to determine the FCANS values.
@@ -786,7 +794,7 @@ C
       !!For snow interception on the canopy, a modified calculation of the plant area indices \f$\Lambda_{p,0}\f$ and \f$\Lambda_{p,s}\f$ is
       !!performed, assigning a weight of 0.7 to the plant area index of needleleaf trees, to account for the effect
       !!of needle clumping. The interception capacity for snow, \f$W_{f,max}\f$, is calculated following Bartlett et al.
-      !!(2006), using a relation developed by Schmidt and Gluns (1991):
+      !!(2006) \cite Bartlett2006-xp, using a relation developed by Schmidt and Gluns (1991):
       !!\f$W_{f,max} = 6.0 \Lambda_p [0.27 + 46.0 \rho_{s,f} ]\f$
       !!where \f$\rho_{s,f} is the density of fresh snow. As was done for the intercepted liquid water, if either the average
       !!amount of snow on the canopy, SNCAN, or the total cancpy coverage is less than a small threshold value,
@@ -1011,7 +1019,7 @@ C
 !!\f$X ln(d) = \Sigma [X_i ln(d_i)]\f$
 !!where X is the fractional coverage of the subarea. The averaged roughness length for momentum \f$z_{0m}\f$
 !!over the subarea is determined based on the assumption that averaging should be performed on the basis
-!!of the drag coefficient formulation. Thus, following Delage et al. (1999), and after Mason (1988):
+!!of the drag coefficient formulation. Thus, following Delage et al. (1999) \cite Delage1999-vj, and after Mason (1988):
 !!\f$X/ln^2 (z_b /z_{0m}) = \Sigma [X_i /ln^2 (z_b /z_{0i})]\f$
 !!
 !!The averaged roughness length for heat \f$z_{0e}\f$ over the subarea is calculated as a geometric mean over the
@@ -1066,12 +1074,19 @@ C
 !!for the ratio between the roughness lengths for momentum and heat for bare soil and snow are also
 !!passed in via common blocks. These are used to derive subarea values of \f$ln(z_{oe})\f$ from \f$ln(z_{om})\f$.
 !!
-                                                                         
+!! In the same loop the roughness length for peatlands is also calculated assuming
+!! a natural log of the roughness length of the moss surface is -6.57 (parameter stored in ctem_params.f90)
+!!
       DO 300 I=IL1,IL2                                                            
           IF(FG(I).GT.0.)                                        THEN             
               IF(ISAND(I,1).NE.-4)                   THEN                         
                   ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))*ZOLNG+            
      1                      FCANMX(I,5)*(1.0-FSNOW(I))*ZOLN(I,5))/FG(I)           
+                  if (ipeatland(i) > 0) then ! roughness length of moss surface in peatlands.
+                      ZOMLNG(I)=((FG(I)-FCANMX(I,5)*(1.0-FSNOW(I)))            
+     1              *zolnmoss+FCANMX(I,5)*(1.0-FSNOW(I))*
+     2               ZOLN(I,5))/FG(I)
+                  endif
               ELSE                                                                
                   ZOMLNG(I)=ZOLNI                                                 
               ENDIF                                                               
@@ -1219,7 +1234,7 @@ C
 !!rooting depth ZROOT is set to the background maximum value, except in the case of crops, for which it
 !!is set to the maximum scaled by GROWA. If the soil permeable depth is less than ZROOT, ZROOT is
 !!set to this depth instead. Values are then assigned in the matrix RMAT, which stores the fraction of roots
-!!in each vegetation category for each soil layer. According to Feddes et al. (1974), the fractional root
+!!in each vegetation category for each soil layer. According to Feddes et al. (1974) \cite Feddes1974-ff , the fractional root
 !!volume R(z) below a depth z is well represented for many varieties of plants by the following exponential
 !!function:
 !!\f$R(z) = a_1 exp(-3.0z) + a_2.\f$
@@ -1229,8 +1244,8 @@ C
 !!between R(z) evaluated at the top \f$(z_T)\f$ and bottom \f$(z_B)\f$ of the interval:
 !!\f$R(\Delta z) = [exp(-3.0z_T) - exp(-3.0z_B)]/ [1 - exp(-3.0z_r)]\f$
 !!
-!!The total fraction of roots in each soil layer, FROOT, can then be determined as a weighted average over
-!!the four vegetation categories.
+!!The total fraction of roots in each soil layer, FROOT for snow-free areas and FROOTS for snow-covered areas,
+!!can then be determined as weighted averages over the four vegetation categories.
 !!
 !!In loop 450, a leaf boundary resistance parameter \f$C_{rb}\f$ , incorporating the plant area indices of the four
 !!vegetation subareas, is also calculated for later use in subroutine TSOLVC:
@@ -1240,7 +1255,6 @@ C
 !!                                                                 
       DO 450 J=1,IC                                                               
       DO 450 I=IL1,IL2                                                            
-
         IF (ctem_on) THEN
          DO K = 1,IG
           RMAT(I,J,K)=RMATC(I,J,K)
@@ -1273,7 +1287,8 @@ C
      3                FCANS(I,J)*XLEAF(J)*(SQRT(PAIS(I,J))/0.75)*
      4                (1.0-EXP(-0.75*SQRT(PAIS(I,J)))))/
      5                (FC(I)+FCS(I))    
-        ENDIF               
+        ENDIF
+                       
   450 CONTINUE                                                                    
 C                                                                                 
       DO 500 J=1,IG                                                               
@@ -1333,13 +1348,13 @@ C
 
 !>
 !!In the 650 loop, the fraction of the total transpiration of water by plants that is extracted from each soil
-!!layer is determined. This is done by weighting the values of FROOT calculated above by the relative soil
+!!layer is determined. This is done by weighting the values of FROOT and FROOTS calculated above by the relative soil
 !!moisture suction in each layer: \f$( \Psi_w - \Psi_i )/( \Psi_w - \Psi_{sat} )\f$
 !!where \f$\Psi_i\f$ , the soil moisture suction in the layer, is obtained as
 !!\f$\Psi_i = \Psi_{sat} ( \theta_{l,i} / \theta_p )^{-b}\f$
 !!In these equations \f$\Psi_w\f$ is the soil moisture suction at the wilting point, \f$\Psi_{sat}\f$ is the suction at 
 !!saturation, \f$\theta_{l,i}\f$ is the volumetric liquid water content of the soil layer, \f$\theta_p\f$ is the pore 
-!!volume, and b is an empirical parameter developed by Clapp and Hornberger (1978). The layer values of FROOT are then 
+!!volume, and b is an empirical parameter developed by Clapp and Hornberger (1978) \cite Clapp1978-898. The layer values of FROOT and FROOTS are then
 !!re-normalized so that their sum adds up to unity. In this loop, the representative soil moisture suction PSIGND is also
 !!calculated for later use in the vegetation stomatal resistance formulation, as the minimum value of \f$\Psi_i\f$ and
 !!\f$\Psi_w\f$ over all the soil layers.

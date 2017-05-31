@@ -524,7 +524,7 @@ At the end of the 100 loop, a preliminary calculation of the precipitation diagn
 
 The rainfall incident on the vegetation, P\+C\+L\+C, is summed over the vegetated subareas F\+C and F\+C\+S, minus the fraction that falls through the gaps in the canopy (denoted by the sky view factors F\+S\+V\+F and F\+S\+V\+F\+S respectively). The rainfall incident on the snowpack P\+C\+P\+N is the sum of the rainfall on the snow-\/ covered bare area F\+G\+S, and that on the snow under the gaps in the canopy in subarea F\+C\+S. The rainfall incident on bare ground, P\+C\+P\+G, is the sum of the rainfall on the snow-\/free bare area F\+G, and that on the ground under the gaps in the canopy in subarea F\+C. The snowfall incident on the vegetation, P\+C\+F\+C, as in the case of rainfall, is summed over the vegetation subareas F\+C and F\+C\+S, minus the fraction that falls through the gaps in the canopy. The remaining amount is assigned to snowfall incident on the snow pack, P\+C\+P\+N.
 
-In loops 200 to 550, each of the four subareas is addressed in turn. Additional variables are initialized, and an empirical correction is applied to the saturated hydraulic conductivity in each of the soil layers over the subarea, to account for the viscosity of water at the layer temperature (Dingman, 2002)\+:
+In loops 200 to 550, each of the four subareas is addressed in turn. Additional variables are initialized, and an empirical correction is applied to the saturated hydraulic conductivity in each of the soil layers over the subarea, to account for the viscosity of water at the layer temperature (Dingman, 2002) \cite{Lawrence_Dingman2002-sq} \+:
 
 $K_{sat}' = (1.7915 * 10^{-3}) K_{sat} / [(2.0319 * 10^{-4})+(1.5883 * 10^{-3}) exp(-T_g^{0.9}/22.0)]$
 
@@ -535,3 +535,13 @@ For the purposes of the subsequent water balance calculations done in the other 
 Finally, ponded water and snow pack physical characteristics are set, including the snow heat capacity, which is calculated from the heat capacities of ice and water $C_i$ and $C_w$, the snow, ice and water densities $\rho_s$ $\rho_i$, and $\rho_w$, and the water content and depth of the snow pack $w_s$ and $z_s$, as follows\+:
 
 $C_s = C_i [\rho_s /\rho_i] + C_w w_s /[\rho_w z_s]$
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=208pt]{WPREP_8f_a8bd6e495bd4674e569184609d67fa736_icgraph}
+\end{center}
+\end{figure}
+
+

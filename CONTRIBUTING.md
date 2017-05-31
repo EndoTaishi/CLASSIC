@@ -13,8 +13,8 @@ including Fortran. Both fixed form code such as Fortran 77 (extension .f or .for
    1. Run the command 'doxygen Doxyfile'.
    1. View the produced HTML by opening 'index.html' from within the newly created 'html' folder within your current directory.
    1. View the produced LaTeX pdf by using the created makefile:
-      A. Run 'make' on the command line in the 'latex' folder in your current project's directory.
-      A. Open the new pdf 'refman.pdf'
+       - Run 'make' on the command line in the 'latex' folder in your current project's directory.
+       - Open the new pdf 'refman.pdf'
 
 ## Documenting The Code Through Comments Doxygen Recognizes
 Doxygen will ignore regular code comments. Thus comments meant to be purely internal to the code can still be made. 

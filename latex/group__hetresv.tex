@@ -1,0 +1,80 @@
+\hypertarget{group__hetresv}{}\section{Hetresv}
+\label{group__hetresv}\index{Hetresv@{Hetresv}}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__hetresv_gabafd1229b9f5bc311e761b6ce707025a}{heterotrophic\+\_\+respiration\+::hetresv} (fcan,fct, litrmass, soilcmas,delzw,thpor, il1,il2,tbar,psisat, b, thliq,roottemp,zbotw,sort,isand, thicec, ipeatland,
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__hetresv_gabafd1229b9f5bc311e761b6ce707025a}{}\index{Hetresv@{Hetresv}!hetresv@{hetresv}}
+\index{hetresv@{hetresv}!Hetresv@{Hetresv}}
+\subsubsection[{hetresv}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public heterotrophic\+\_\+respiration\+::hetresv (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg,icc)}]{fcan, }
+\item[{real, dimension(ilg)}]{fct, }
+\item[{real, dimension(ilg,icc+1)}]{litrmass, }
+\item[{real, dimension(ilg,icc+1)}]{soilcmas, }
+\item[{real, dimension(ilg,ignd)}]{delzw, }
+\item[{real, dimension(ilg,ignd)}]{thpor, }
+\item[{integer}]{il1, }
+\item[{integer}]{il2, }
+\item[{real, dimension(ilg,ignd)}]{tbar, }
+\item[{real, dimension(ilg,ignd)}]{psisat, }
+\item[{real, dimension(ilg,ignd)}]{b, }
+\item[{real, dimension(ilg,ignd)}]{thliq, }
+\item[{real, dimension(ilg,icc)}]{roottemp, }
+\item[{real, dimension(ilg,ignd)}]{zbotw, }
+\item[{integer, dimension(icc)}]{sort, }
+\item[{integer, dimension(ilg,ignd)}]{isand, }
+\item[{real, dimension(ilg,ignd)}]{thicec, }
+\item[{integer, dimension(ilg)}]{ipeatland}
+\end{DoxyParamCaption}
+)}\label{group__hetresv_gabafd1229b9f5bc311e761b6ce707025a}
+
+\begin{DoxyParams}{Parameters}
+{\em il1} & il1=1\\
+\hline
+{\em il2} & il2=ilg\\
+\hline
+{\em sort} & index for correspondence between 9 pfts and 12 values in the parameters vectors\\
+\hline
+{\em fcan} & fractional coverage of ctem\textquotesingle{}s 9 pfts\\
+\hline
+{\em fct} & sum of all fcan, fcan \& fct are not used at this time but could be used at some later stage\\
+\hline
+{\em litrmass} & litter mass for the 9 pfts + bare in $kg c/m^2$\\
+\hline
+{\em tbar} & soil temperature, k\\
+\hline
+{\em soilcmas} & soil carbon mass for the 9 pfts + bare in $kg c/m^2$\\
+\hline
+{\em thliq} & liquid soil moisture content in 3 soil layers\\
+\hline
+{\em roottemp} & root temperature as estimated in mainres subroutine\\
+\hline
+{\em zbotw} & bottom of soil layers\\
+\hline
+{\em thicec} & liquid soil moisture content in 3 soil layers in canopy covered subarea\\
+\hline
+{\em psisat} & saturation matric potential\\
+\hline
+{\em b} & parameter b of clapp and hornberger\\
+\hline
+{\em thpor} & porosity \\
+\hline
+\end{DoxyParams}
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=278pt]{group__hetresv_gabafd1229b9f5bc311e761b6ce707025a_icgraph}
+\end{center}
+\end{figure}
+
+

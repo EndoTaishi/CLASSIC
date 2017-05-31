@@ -7,7 +7,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) P\+F\+T Competition Subroutine
 
 \begin{DoxyCompactItemize}
 \item 
-subroutine, public \hyperlink{group__competition__scheme__competition_ga42c6fcccc542b3c3711cae7881d30665}{competition\+\_\+scheme\+::competition} (iday, il1, il2, nilg, nol2pfts, nppveg, dofire, pftexist, geremort, intrmort, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, grclarea, lambda, burnvegf, sort, pstemmass, pgleafmass, fcancmx, fcanmx, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)
+subroutine, public \hyperlink{group__competition__scheme__competition_ga008cbfcefd33aaccb8f2b81cf8326451}{competition\+\_\+scheme\+::competition} (iday, il1, il2, nilg, nol2pfts, nppveg, dofire, leapnow, pftexist, geremort, intrmort, gleafmas, bleafmas, stemmass, rootmass, litrmass, soilcmas, grclarea, lambda, burnvegf, sort, pstemmass, pgleafmass, fcancmx, fcanmx, vgbiomas, gavgltms, gavgscms, bmasveg, add2allo, colrate, mortrate)
 \end{DoxyCompactItemize}
 
 
@@ -17,7 +17,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) P\+F\+T Competition Subroutine
 
 
 \subsection{Function/\+Subroutine Documentation}
-\hypertarget{group__competition__scheme__competition_ga42c6fcccc542b3c3711cae7881d30665}{}\index{Competition\+\_\+scheme\+\_\+competition@{Competition\+\_\+scheme\+\_\+competition}!competition@{competition}}
+\hypertarget{group__competition__scheme__competition_ga008cbfcefd33aaccb8f2b81cf8326451}{}\index{Competition\+\_\+scheme\+\_\+competition@{Competition\+\_\+scheme\+\_\+competition}!competition@{competition}}
 \index{competition@{competition}!Competition\+\_\+scheme\+\_\+competition@{Competition\+\_\+scheme\+\_\+competition}}
 \subsubsection[{competition}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public competition\+\_\+scheme\+::competition (
 \begin{DoxyParamCaption}
@@ -28,6 +28,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) P\+F\+T Competition Subroutine
 \item[{integer, dimension(ican), intent(in)}]{nol2pfts, }
 \item[{real, dimension(nilg,icc), intent(inout)}]{nppveg, }
 \item[{logical, intent(in)}]{dofire, }
+\item[{logical, intent(in)}]{leapnow, }
 \item[{logical, dimension(nilg,icc), intent(in)}]{pftexist, }
 \item[{real, dimension(nilg,icc), intent(in)}]{geremort, }
 \item[{real, dimension(nilg,icc), intent(in)}]{intrmort, }
@@ -53,7 +54,7 @@ Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) P\+F\+T Competition Subroutine
 \item[{real, dimension(nilg,icc), intent(out)}]{colrate, }
 \item[{real, dimension(nilg,icc), intent(out)}]{mortrate}
 \end{DoxyParamCaption}
-)}\label{group__competition__scheme__competition_ga42c6fcccc542b3c3711cae7881d30665}
+)}\label{group__competition__scheme__competition_ga008cbfcefd33aaccb8f2b81cf8326451}
 
 \begin{DoxyParams}[1]{Parameters}
 \mbox{\tt in}  & {\em iday} & \\
@@ -131,3 +132,13 @@ update grid averaged vegetation biomass, and litter and soil c densities
 and finally we check the c balance. we were supposed to use a fraction of npp for competition. some of it is used for expansion (this is what we save for allocation), and the rest becomes litter. so for each pft the total c mass in vegetation and litter pools must all add up to the same value as before competition.
 
 check balance over the bare fraction 
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=262pt]{group__competition__scheme__competition_ga008cbfcefd33aaccb8f2b81cf8326451_icgraph}
+\end{center}
+\end{figure}
+
+

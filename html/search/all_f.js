@@ -12,8 +12,6 @@ var searchData=
   ['snoadd_2ef',['SNOADD.f',['../SNOADD_8f.html',1,'']]],
   ['snoalba',['snoalba',['../SNOALBA_8f.html#a414a4eaf6a7d196c40633aa1c1ab2159',1,'SNOALBA.f']]],
   ['snoalba_2ef',['SNOALBA.f',['../SNOALBA_8f.html',1,'']]],
-  ['snoalbw',['snoalbw',['../SNOALBW_8f.html#aa22cbc1a38c6f3907d9201392f600902',1,'SNOALBW.f']]],
-  ['snoalbw_2ef',['SNOALBW.f',['../SNOALBW_8f.html',1,'']]],
   ['snovap',['snovap',['../SNOVAP_8f.html#a64f8b35d4ad3e8ced53867425e4500d3',1,'SNOVAP.f']]],
   ['snovap_2ef',['SNOVAP.f',['../SNOVAP_8f.html',1,'']]],
   ['socres',['socres',['../structctem__statevars_1_1veg__rot.html#a361e3f2a91d8f8796d1ce582e7a7c254',1,'ctem_statevars::veg_rot::socres()'],['../structctem__statevars_1_1veg__gat.html#a324309f92e7e12ee6d29fe12695d1551',1,'ctem_statevars::veg_gat::socres()']]],

@@ -10,13 +10,18 @@ C!
      5                  ALVISG,ALNIRG,CRIB,CPHCH,CEVAP,TVIRTA,
      6                  ZOSCLH,ZOSCLM,ZRSLFH,ZRSLFM,ZOH,ZOM,FCOR,
      7                  GCONST,GCOEFF,TSTART,PCPR,TRSNOWG,FSSB,ALSNO,   
-     8                  THLIQ,THLMIN,DELZW,RHOSNO,ZSNOW,
+     8                  THLIQ,THLMIN,DELZW,RHOSNO,ZSNOW,ZPOND,
      +                  IWATER,IEVAP,ITERCT,ISAND, 
      9                  ISLFD,ITG,ILG,IG,IL1,IL2,JL,NBS,ISNOALB,        
      A                  TSTEP,TVIRTS,EVBETA,Q0SAT,RESID,
      B                  DCFLXM,CFLUXM,WZERO,TRTOP,A,B,
-     C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF)
+     C                  LZZ0,LZZ0T,FM,FH,ITER,NITER,JEVAP,KF,
+     5                  ipeatland,co2conc,pressg,coszs,Cmossmas,
+     6                  dmoss,anmoss,rmlmoss,iday,daylength,pdd )
 C
+!     * OCT 30/16 - J. MELTON. Finish implementation of peatland code by
+!                              Yuanqiao Wu.
+C     * OCT 26/16 - D.VERSEGHY. ADD ZPOND TO CALCULATION OF EVPMAX.
 C     * JUL 22/15 - D.VERSEGHY. LIMIT CALCULATED EVAPORATION RATE
 C     *                         ACCORDING TO WATER AVAILABILITY.
 C     * JAN 09/15 - D.VERSEGHY. FIX TO SUPPRESS EVAPORATION FROM ROCK.
@@ -103,12 +108,15 @@ C     *                         CLASS VERSION 2.0 (WITH CANOPY).
 C     * APR 11/89 - D.VERSEGHY. ITERATIVE SURFACE TEMPERATURE 
 C     *                         CALCULATIONS FOR SNOW/SOIL.
 C
+      use peatlands_mod, only : mosspht
+
       IMPLICIT NONE
 
 C     * INTEGER CONSTANTS.
 C
       INTEGER ISNOW !<Flag indicating presence or absence of snow
-      INTEGER ISLFD,ITG,ILG,IG,IL1,IL2,JL,I,IB,NBS,ISNOALB
+      INTEGER ISLFD,ITG,ILG,IG,IL1,IL2,JL,I,IB,NBS
+      INTEGER ISNOALB !<Switch to model snow albedo in two or more wavelength bands
 C
       INTEGER NUMIT,NIT,IBAD,ITERMX
 C
@@ -136,6 +144,10 @@ C
       REAL ILMO  (ILG)  !<Inverse of Monin-Obukhov roughness length \f$(m-1]\f$  
       REAL UE    (ILG)  !<Friction velocity of air \f$[m s^{-1}]\f$  
       REAL H     (ILG)  !<Height of the atmospheric boundary layer [m]
+      REAL ZPOND (ILG)  !<Depth of ponded water on surface [m]
+      real anmoss(ilg)  !<
+      real rmlmoss(ilg) !<
+      real cevapmoss(ilg)!<
 C
 C     * INPUT ARRAYS.
 C
@@ -176,12 +188,17 @@ C
                         !<iteration [K]  
       REAL FCOR  (ILG)  !<Coriolis parameter \f$[s^{-1}]\f$  
       REAL PCPR  (ILG)  !<Surface precipitation rate \f$[kg m^{-2} s^{-1}]\f$
-      REAL RHOSNO(ILG)
-      REAL ZSNOW(ILG)
+      REAL RHOSNO(ILG)  !<Density of snow  \f$[kg m^{-3}]\f$
+      REAL ZSNOW(ILG)   !<Depth of snow pack  [m]  \f$(z_s)\f$
 
-      REAL THLIQ(ILG,IG)
-      REAL THLMIN(ILG,IG)
-      REAL DELZW(ILG,IG)
+      REAL THLIQ(ILG,IG)    !<Volumetric liquid water content of soil layers \f$[m^{3} m^{-3}]\f$
+      REAL THLMIN(ILG,IG)   !<Residual soil liquid water content remaining after freezing or evaporation  \f$[m^{3} m^{-3}]\f$
+      REAL DELZW(ILG,IG)    !<Permeable thickness of soil layer  [m]
+      REAL TRSNOWG(ILG,NBS) !<Short-wave transmissivity of snow pack over bare ground  [  ]
+      REAL ALSNO(ILG,NBS)   !<Albedo of snow in each modelled wavelength band  [  ]
+      REAL FSSB(ILG,NBS)    !<Total solar radiation in each modelled wavelength band  \f$[W m^{-2}]\f$
+      REAL TRTOP(ILG,NBS)   !<
+
 C
       INTEGER IWATER(ILG)  !<Flag indicating condition of surface
                            !<(dry, water-covered or snow-covered)
@@ -190,12 +207,18 @@ C
       INTEGER ITERCT(ILG,6,50) !<Counter of number of iterations required to
                                !<solve energy balance for four subareas
       INTEGER ISAND(ILG,IG)    !<Sand content flag
+
+      integer  ipeatland(ilg)
+      integer iday
+      integer ievapmoss(ilg)
+      real  co2conc(ilg)
+      real  pressg(ilg)
+      real coszs(ilg)
+      real Cmossmas(ilg)
+      real dmoss(ilg)
+      real daylength(ilg)
+      real pdd(ilg)
 C
-C     * BAND-DEPENDANT ARRAYS.                                          
-C                                                                       
-      REAL TRSNOWG(ILG,NBS), ALSNO(ILG,NBS), FSSB(ILG,NBS),             
-     1     TRTOP  (ILG,NBS)    
-C                                                                       
 C     * INTERNAL WORK ARRAYS.
 C
       REAL TSTEP (ILG),    TVIRTS(ILG),    EVBETA(ILG),    Q0SAT (ILG),
@@ -209,7 +232,7 @@ C
 C
 C     * TEMPORARY VARIABLES.
 C
-      REAL QSWNV,QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO
+      REAL QSWNV(ilg),QSWNI,DCFLUX,DRDT0,TZEROT,QEVAPT,BOWEN,EZERO
 C
 C     * COMMON BLOCK PARAMETERS.
 C
@@ -250,26 +273,24 @@ C
      2                TCGLAC,CLHMLT,CLHVAP
       COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
       COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-C-----------------------------------------------------------------------
+
       !>
       !!For the surface temperature iteration, two alternative schemes 
       !!are offered: the bisection method (selected if the flag ITG = 1) 
       !!and the Newton-Raphson method (selected if ITG = 2). In the first 
-      !!case, the maximum number of iterations ITERMX is set to 12, and 
+      !!case, the maximum number of iterations ITERMX is set to 50, and
       !!in the second case it is set to 5. An optional windless transfer 
       !!coefficient EZERO is available, which can be used, following the 
-      !!recommendations of Brown et al. (2006), to prevent the sensible 
+      !!recommendations of Brown et al. (2006) \cite Brown2006-ec, to prevent the sensible
       !!heat flux over snow packs from becoming vanishingly small under 
-      !!highly stable conditions. If the snow cover flag ISNOW is zero 
-      !!(indicating bare ground), EZERO is set to zero; if ISNOW=1, EZERO 
-      !!is set to \f$2.0 W m^{-2} K^{-1}\f$.
+      !!highly stable conditions. Currently, EZERO is set to zero.
       !!
 C     * INITIALIZATION AND PRE-ITERATION SEQUENCE.
 C
       IF(ITG.LT.2) THEN
           ITERMX=50                                                     
       ELSE
-          ITERMX=5
+          ITERMX=12      !was 5 YW March 27, 2015
       ENDIF
 C
 C      IF(ISNOW.EQ.0) THEN
@@ -283,33 +304,50 @@ C
       DO I=IL1,IL2                                                      
          QSWNET(I)=0.0                                                  
          QTRANS(I)=0.0                                                  
+         if (ipeatland(i) > 0)                   then
+               qswnv(i)=0.0
+         endif
       END DO                                                            
 C 
       !>
-      !! FLAG: this comment below likely needs updating!
       !!
-      !!In the beginning loop, some preliminary calculations are done. The 
-      !!shortwave transmissivity at the surface, TRTOP, is set to zero in 
-      !!the absence of a snow pack, and to the transmissivity of snow 
-      !!TRSNOW otherwise. The net shortwave radiation at the surface, 
-      !!QSWNET, is calculated as the sum of the incoming visible and 
-      !!near-infrared shortwave radiation, weighted according to one 
-      !!minus their respective albedos. This average value is corrected 
-      !!for the amount of radiation transmitted into the surface, 
-      !!obtained using TRTOP. The initial value of the surface 
-      !!temperature TZERO is set to TSTART, which contains the value of 
-      !!TZERO from the previous time step, and the first step in the 
-      !!iteration sequence, TSTEP, is set to 1.0 K. The flag ITER is set 
-      !!to 1 for each element of the set of modelled areas, indicating 
-      !!that its surface temperature has not yet been found. The 
-      !!iteration counter NITER is initialized to 1 for each element. 
-      !!Initial values are assigned to several other variables.
+      !!In the next section, calculations of surface net and transmitted
+      !!shortwave radiation are done depending on whether a snow pack is present
+      !!(ISNOW=1) and whether the incoming shortwave radiation is being supplied
+      !!in two bands (one visible and one near-IR, ISNOALB=0) or four bands
+      !!(one visible and three near-IR, ISNOALB=1).  For each band the net
+      !!shortwave radiation is calculated as the incoming radiation multiplied
+      !!by one minus the appropriate albedo.  If there is no snow present the
+      !!shortwave transmissivity at the surface is set to zero and the absorbed
+      !!visible radiation is calculated from the first radiation band.  If
+      !!ISNOALB=0 the absorbed near-IR radiation is calculated from the second
+      !!band and if ISNOALB=1 it is calculated from the sum of the second to
+      !!fourth bands.  The total net shortwave radiation QSWNET  is then evaluated.
+      !!If a snow pack is present, then if ISNOALB=0 the calculations are done
+      !!separately for the visible and near-IR bands; if ISNOALB=1, they are done
+      !!separately over the four wavelength bands. The transmissivity is calculated
+      !!as an average value for ISNOALB=0, and separately for the four wavelength
+      !!ranges for ISNOALB=1. The net shortwave radiation at the surface is
+      !!obtained from the sum of the net values in each wavelength band,
+      !!corrected for the respective loss by transmission into the surface.
+
+      !!In the 50 loop, the initial value of the surface temperature TZERO
+      !!is set to TSTART, which contains the value of TZERO from the previous
+      !!time step, and the first step in the iteration sequence, TSTEP, is
+      !!set to 1.0 K.  The flag ITER is set to 1 for each element of the set
+      !!of modelled areas, indicating that its surface temperature has not
+      !!yet been found.  The iteration counter NITER is initialized to 1 for
+      !!each element.  Initial values are assigned to several other variables.
+      !!In particular, the maximum evaporation from the ground surface that
+      !!can be sustained for the current time step is specified as the total
+      !!snow mass if snow is present, otherwise as the water ponded on the
+      !!surface plus the total available water in the first soil layer.
       !!                                                                      
       IF(ISNOW. EQ. 0)    THEN ! Use usual snow-free bare soil formulation
          DO I=IL1,IL2                                                   
           IF(FI(I).GT.0.)                                          THEN
                TRTOP(I,1)=0.                                            
-               QSWNV=FSSB(I,1)*(1.0-ALVISG(I))                          
+               QSWNV(i)=FSSB(I,1)*(1.0-ALVISG(I)) !YW QSWNV to QSWNV(i)                          
                IF (ISNOALB .EQ. 0) THEN                                 
                   QSWNI=FSSB(I,2)*(1.0-ALNIRG(I))                       
                ELSE IF (ISNOALB .EQ. 1) THEN                            
@@ -318,19 +356,21 @@ C
                      QSWNI=QSWNI+FSSB(I,IB)*(1.0-ALNIRG(I))             
                   END DO ! IB                                           
               ENDIF 
-              QSWNET(I)=QSWNV+QSWNI           
-               QTRANS(I)=QSWNET(I)*TRTOP(I,1)                           
+              QSWNET(I)=QSWNV(i)+QSWNI           
+              QTRANS(I)=QSWNET(I)*TRTOP(I,1)                           
               QSWNET(I)=QSWNET(I)-QTRANS(I) 
             END IF                                                      
          END DO ! I                                                     
+ 
       ELSE                                                              
+ 
          IF (ISNOALB .EQ. 0) THEN ! Use the existing snow albedo and transmission 
             DO I=IL1,IL2                                                
                IF(FI(I).GT.0.) THEN                                     
                   TRTOP(I,1)=TRSNOWG(I,1)                               
-                  QSWNV=FSSB(I,1)*(1.0-ALSNO(I,1))                      
+                  QSWNV(i)=FSSB(I,1)*(1.0-ALSNO(I,1))  !YW QSWNV to QSWNV(i)     
                   QSWNI=FSSB(I,2)*(1.0-ALSNO(I,2))                      
-                  QSWNET(I)=QSWNV+QSWNI                                 
+                  QSWNET(I)=QSWNV(i)+QSWNI                                 
                   QTRANS(I)=QSWNET(I)*TRTOP(I,1)                        
                   QSWNET(I)=QSWNET(I)-QTRANS(I)                         
                END IF                                                   
@@ -344,9 +384,9 @@ C
                DO I=IL1,IL2                                             
                   IF(FI(I).GT.0.) THEN                                  
                      TRTOP(I,IB)=TRSNOWG(I,IB)                          
-                     QSWNV=FSSB(I,IB)*(1.0-ALSNO(I,IB))                 
+                     QSWNV(i)=FSSB(I,IB)*(1.0-ALSNO(I,IB))                 
                      QSWNET(I)=QSWNET(I)+FSSB(I,IB)*(1.0-ALSNO(I,IB))   
-                     QTRANS(I)=QTRANS(I)+QSWNV*TRTOP(I,IB)              
+                     QTRANS(I)=QTRANS(I)+QSWNV(i)*TRTOP(I,IB)              
                   END IF                                                
                END DO ! I                                               
             END DO ! IB                                                 
@@ -374,11 +414,22 @@ C
                   EVPMAX(I)=RHOSNO(I)*ZSNOW(I)/DELT
               ELSE
                   KF(I)=6
-                  EVPMAX(I)=RHOW*(THLIQ(I,1)-THLMIN(I,1))*DELZW(I,1)/
-     1                      DELT
+                  EVPMAX(I)=RHOW*(ZPOND(I)+(THLIQ(I,1)-THLMIN(I,1))*
+     1                      DELZW(I,1))/DELT
               ENDIF
           ENDIF
    50 CONTINUE
+
+c    Do moss photosynthesis:
+!       if (ipeatland(i) >0) then  ! FLAG: Outside of do-loop, so i=2 after last loop
+                                   !       which is out-of-bounds for ipeatland(ilg=1). EC Jan 30 2017.
+!!      moss subroutine finds ground evaporation rate and photosynthesis--\
+!           call mosspht(ilg,ig,iday,qswnv,thliq,co2conc,tstart,zsnow,
+            call mosspht(il1,il2,iday,qswnv,thliq,co2conc,tstart,zsnow, ! EC Jan 30 2017.
+     1              pressg,Cmossmas,dmoss,anmoss,rmlmoss,
+     2              cevapmoss,ievapmoss, ipeatland,daylength,pdd)
+!      end if
+
       !>
       !!The 100 continuation line marks the beginning of the surface 
       !!temperature iteration sequence. First the flags NIT (indicating 
@@ -457,7 +508,14 @@ C
                   EVBETA(I)=1.0
                   QZERO(I)=Q0SAT(I)
               ELSE
-                  EVBETA(I)=CEVAP(I)
+c    evaporation coefficient evbeta is controled by moss in peatland 
+                  if (ipeatland(i) == 0)                   then 
+                       EVBETA(I)=CEVAP(I)
+                  else
+                       evbeta(i) = cevapmoss(i)
+                       ievap(i) = ievapmoss(i)
+                  endif
+
                   QZERO(I)=EVBETA(I)*Q0SAT(I)+(1.0-EVBETA(I))*QA(I)
                   IF(QZERO(I).GT.QA(I) .AND. IEVAP(I).EQ.0) THEN
                       EVBETA(I)=0.0
@@ -530,7 +588,9 @@ C
         !!
         !!\f$E(0) = \rho_a C_{DH} v_a [Q(0) – q_a]\f$
         !!
-        !!\f$Q_E\f$ is obtained by multiplying E(0) by the latent heat of 
+        !!The evaporation rate is constrained to be less than or equal to the
+        !!maximum rate evaluated earlier in the subroutine.  \f$Q_E\f$ is
+        !!obtained by multiplying E(0) by the latent heat of
         !!vaporization at the surface. The ground heat flux G(0) is 
         !!determined as a linear function of T(0) (see documentation for 
         !!subroutines TNPREP and TSPREP). It can be seen that each of the 
@@ -761,7 +821,7 @@ C
       !>
       !!At this point a check is performed for unphysical values of the 
       !!surface temperature, i.e. for values greater than 100 C or less 
-      !!than -100 C. If such values are encountered, an error message is 
+      !!than -250 C. If such values are encountered, an error message is
       !!printed and a call to abort is carried out.
       !!
 C

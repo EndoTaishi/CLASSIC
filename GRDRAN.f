@@ -275,7 +275,7 @@ C
       !!
       !!where K(z) is the hydraulic conductivity and psi(z) is the soil 
       !!moisture suction at depth z, and b is an empirical parameter 
-      !!developed by Clapp and Hornberger (1978). K(z) and \f$\Psi(z)\f$ are 
+      !!developed by Clapp and Hornberger (1978) \cite Clapp1978-898. K(z) and \f$\Psi(z)\f$ are
       !!calculated following Clapp and Hornberger as
       !!
       !!\f$K(z) = K_{sat} (\theta_l/\theta_p)^{(2b + 3)}\f$

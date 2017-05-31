@@ -11,7 +11,7 @@
 !>Canadian Terrestrial Ecosystem Model (CTEM) 
 !>Land Use Change Subroutine
 !!
-!!The land use change (LUC) module of CTEM is based on \cite Arora2010-416 and briefly
+!!The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) \cite Arora2010-416 and briefly
 !! described here. When the area of crop PFTs changes, CTEM generates LUC emissions.
 !! In the simulation where fractional coverage of PFTs is specified, the changes in
 !! fractional coverage of crop PFTs are made consistent with changes in the
@@ -440,10 +440,10 @@ subroutine readin_luc(iyear,nmtest,nltest,lucyr, &
 
 !     9  Jan. 2013  - this subroutine takes in luc information from
 !     J. Melton       a luc file annually and adapts them for runclassctem
-!	
+!    
 !     7  Feb. 2014  - Adapt it to work with competition
 !     J. Melton 
-	      
+           
 use ctem_params,        only : nmos,nlat,icc,seed,crop
 
 implicit none
@@ -558,7 +558,7 @@ end subroutine readin_luc
 
 subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1    
                         grclarea, pfcancmx, nfcancmx,      iday,    & !2    
-                         todfrac,  yesfrac, interpol,   compete,    & !3    
+                         todfrac,  yesfrac, interpol,compete,  leapnow, & !3
 !    ----------------------- inputs above this line -------------       
                          gleafmas, bleafmas, stemmass, rootmass,    & !4  
                          litrmass, soilcmas, vgbiomas, gavgltms,    & !5   
@@ -596,7 +596,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       use ctem_params,        only : icc, ican, zero, km2tom2, iccp1, &
                                      combust, paper, furniture, bmasthrs, &
                                      tolrnce1, tolrance, crop, numcrops, &
-                                     minbare      
+                                     minbare
 
       implicit none
 
@@ -610,7 +610,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       integer treatind(nilg,icc)!<treatment index for combust, paper, & furniture
       integer bareiord(nilg)    !<bare fraction increases or decreases
       integer lrgstpft(1)       !<
-
+      logical leapnow           !< true if this year is a leap year. Only used if the switch 'leap' is true.
       logical  interpol         !<if todfrac & yesfrac are provided then interpol must be set to false so that 
                                 !<this subroutine doesn't do its own interpolation using pfcancmx and nfcancmx 
                                 !<which are year end values
@@ -699,7 +699,13 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             pfcancmx(i,j)=yesfrac(i,j)
           end if
           delfrac(i,j)=nfcancmx(i,j)-pfcancmx(i,j) !change in fraction
-          delfrac(i,j)=delfrac(i,j)/365.0
+
+          if (leapnow) then 
+            delfrac(i,j)=delfrac(i,j)/366.0
+          else 
+            delfrac(i,j)=delfrac(i,j)/365.0
+          endif
+
           fcancmx(i,j)=pfcancmx(i,j)+(real(iday)*delfrac(i,j)) !  current day
           fcancmy(i,j)=pfcancmx(i,j)+(real(iday-1)*delfrac(i,j)) ! previous day
 
@@ -1270,7 +1276,8 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
        endif
 
       do 800 j = 1, icc
-          if(iday.eq.365)then
+          if((.not. leapnow .and.iday.eq.365) .or. & 
+             (leapnow.and.iday.eq.366)) then
             pfcancmx(i,j)=nfcancmx(i,j)
           endif
 800   continue

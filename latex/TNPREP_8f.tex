@@ -97,3 +97,13 @@ $G(0) = - \lambda_t T'(0)$ $G(\Delta z) = - \lambda_b T'(\Delta z)$
 The average soil layer temperature, $T_{av}(\Delta z)$, can be obtained by integrating the resulting equation for T(z) between 0 and $\Delta z$. Making use of all of the above expressions, recognizing that the heat fluxes and temperatures at the bottoms of layers 1 and 2 must equal the heat fluxes and temperatures at the tops of layers 2 and 3 respectively, and neglecting as a first approximation the heat flux at the bottom of the third layer, a linear equation can be derived relating G(0) to T(0) at the soil surface, where the slope and intercept of the equation are functions only of the average temperatures, thicknesses, and top and bottom thermal conductivities of the three soil layers.
 
 In the subroutine loop, first the depth corresponding to T\+B\+A\+R1\+P (the lumped temperature of the first soil layer and the ponded water) is calculated, as the sum of the first soil layer thickness and the ponded water depth. If the ponded water depth is not vanishingly small, the surface water flag I\+W\+A\+T\+E\+R is set to 1; otherwise it is set to 0 for soils and 2 for ice sheets (indicated by I\+S\+A\+N\+D = -\/4). If I\+W\+A\+T\+E\+R = 2, indicating a frozen water surface, the latent heat of vaporization, C\+P\+H\+C\+H\+G, is set to the value for sublimation (by adding the latent heat of melting to the latent heat of vaporization). If there is a snow pack present, the thermal conductivity at the top of the ground surface is calculated as the harmonic mean of the thermal conductivity at the top of the first soil layer and that of the snow pack. Finally, a series of work arrays is evaluated and is used to calculate the slope and intercept, G\+C\+O\+E\+F\+F and G\+C\+O\+N\+S\+T, of the equation relating G(0) to T(0) at the ground surface.
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=204pt]{TNPREP_8f_ab5cfd35272325655f17bcc52acb00535_icgraph}
+\end{center}
+\end{figure}
+
+

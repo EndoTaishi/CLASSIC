@@ -950,10 +950,12 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">qacco</td><td>Specific humidity of air within vegetation canopy space over bare ground <img class="formulaInl" alt="$[kg kg^{-1}]$" src="form_1230.png"/></td></tr>
     <tr><td class="paramname">taccs</td><td>Temperature of air within vegetation canopy space over snow [K]</td></tr>
     <tr><td class="paramname">qaccs</td><td>Specific humidity of air within vegetation canopy space over snow <img class="formulaInl" alt="$[kg kg^{-1}]$" src="form_1230.png"/></td></tr>
+    <tr><td class="paramname">gsnow</td><td>Diagnostic heat flux at snow surface for use in CCCma black carbon deposition scheme <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
     <tr><td class="paramname">st</td><td>Diagnosed screen-level air temperature [K]</td></tr>
     <tr><td class="paramname">su</td><td>Diagnosed anemometer-level zonal wind <img class="formulaInl" alt="$[m s^{-1}]$" src="form_782.png"/></td></tr>
     <tr><td class="paramname">sv</td><td>Diagnosed anemometer-level meridional wind <img class="formulaInl" alt="$[m s^{-1}]$" src="form_782.png"/></td></tr>
     <tr><td class="paramname">sq</td><td>Diagnosed screen-level specific humidity <img class="formulaInl" alt="$[kg kg^{-1}]$" src="form_1230.png"/></td></tr>
+    <tr><td class="paramname">srh</td><td>Diagnosed screen-level relative humidity [%]</td></tr>
     <tr><td class="paramname">cdh</td><td>Surface drag coefficient for heat [ ]</td></tr>
     <tr><td class="paramname">cdm</td><td>Surface drag coefficient for momentum [ ]</td></tr>
     <tr><td class="paramname">qsens</td><td>Diagnosed total surface sensible heat flux over modelled area <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
@@ -1035,18 +1037,27 @@ Unfrozen organic soils: <img class="formulaInl" alt="$\kappa = 0.6$" src="form_1
 Frozen organic soils: <img class="formulaInl" alt="$\kappa = 0.25$" src="form_1585.png"/></p>
 <p>The dry thermal conductivity <img class="formulaInl" alt="$lambda_{dry}$" src="form_1586.png"/> is calculated using an empirical relationship based on the pore volume <img class="formulaInl" alt="$\theta_p$" src="form_613.png"/>, with different coefficients for mineral and organic soils:</p>
 <p><img class="formulaInl" alt="$\lambda_{dry} = 0.75 exp(-2.76 \theta_p) (mineral)$" src="form_1587.png"/> <img class="formulaInl" alt="$\lambda_{dry} = 0.30 exp(-2.0 \theta_p) (organic)$" src="form_1588.png"/></p>
-<p>The saturated thermal conductivity <img class="formulaInl" alt="$\lambda_{sat}$" src="form_1589.png"/> is calculated by Cote and Konrad as a geometric mean of the conductivities of the soil components. However, other researchers (e.g. Zhang et al., 2008) have found the linear averaging used by de Vries (1963) to be more generally accurate:</p>
+<p>The saturated thermal conductivity <img class="formulaInl" alt="$\lambda_{sat}$" src="form_1589.png"/> is calculated by Cote and Konrad (2005) <a class="el" href="citelist.html#CITEREF_Cote2005-ew">[28]</a> as a geometric mean of the conductivities of the soil components. However, other researchers (e.g. Zhang et al., 2008) have found the linear averaging used by de Vries (1963) <a class="el" href="citelist.html#CITEREF_Vries1963-ti">[77]</a> to be more generally accurate:</p>
 <p><img class="formulaInl" alt="$lambda_{sat} = lambda_w \theta_p + \lambda_s (1 - \theta_p) (unfrozen)$" src="form_1590.png"/> <img class="formulaInl" alt="$lambda_{sat} = lambda_i \theta_p + \lambda_s (1 - \theta_p) (frozen)$" src="form_1591.png"/></p>
 <p>where <img class="formulaInl" alt="$\lambda_w$" src="form_1592.png"/> is the thermal conductivity of water, <img class="formulaInl" alt="$\lambda_i$" src="form_1440.png"/> is that of ice and <img class="formulaInl" alt="$\lambda_s$" src="form_1568.png"/> is that of the soil particles.</p>
 <p>In the 500 loop, thermal conductivities are calculated for the top and bottom of each soil layer. The degree of saturation SATRAT is calculated as the sum of liquid and frozen water contents, <img class="formulaInl" alt="$\theta_w$" src="form_1593.png"/> and <img class="formulaInl" alt="$\theta_i$" src="form_1419.png"/>, divided by the pore volume. In organic soils, if the liquid water content of the soil layer is above the retention capacity <img class="formulaInl" alt="$\theta_{ret}$" src="form_742.png"/>, <img class="formulaInl" alt="$\theta_w$" src="form_1593.png"/> at the top of the soil layer is assumed to be equal to <img class="formulaInl" alt="$\theta_{re}$" src="form_1594.png"/> and <img class="formulaInl" alt="$S_r$" src="form_1578.png"/> at the bottom of the layer is assumed to be 1. The relative liquid and frozen water contents, THLSAT and THISAT, are calculated from <img class="formulaInl" alt="$\theta_w$" src="form_1593.png"/> and <img class="formulaInl" alt="$\theta_i$" src="form_1419.png"/> normalized by <img class="formulaInl" alt="$\theta_w + \theta_i$" src="form_1595.png"/>. The dry thermal conductivity, and the saturated thermal conductivity for unfrozen and frozen conditions, are evaluated using the equations above. The unfrozen and frozen relative thermal conductivity, TCRATU and TCRATF, are obtained from SATRAT and the appropriate values of the empirical coefficient <img class="formulaInl" alt="$\kappa$" src="form_663.png"/>. For mineral soils, <img class="formulaInl" alt="$\kappa$" src="form_663.png"/> is obtained as a weighted average over the percent sand content (ISAND converted to a real value) and the percentage of fine material (assumed to be 100-ISAND). The unfrozen and frozen soil thermal conductivities, TCSOLU and TCSOLF, are then calculated from TCRATU, TCRATF, and the dry and saturated thermal conductivities; and the actual thermal conductivity of the soil, TCSOIL, is determined as the average of TCSOLU and TCSOLF, weighted according to the relative liquid and frozen water contents THLSAT and THISAT. If the permeable thickness of the layer, DELZW, is greater than zero, the thermal conductivity at the top of the layer is set to TCSOIL; otherwise it is set to the rock value, TCSAND. If DELZW is less than the thermal thickness of the layer DELZ, the thermal conductivity at the bottom of the layer is set to TCSAND; otherwise it is set to TCSOIL. (In the case of organic soils in the latter branch, if <img class="formulaInl" alt="$\theta_w$" src="form_1593.png"/> was greater than <img class="formulaInl" alt="$\theta_{ret}$" src="form_742.png"/>, the thermal conductivity at the bottom of the layer is set to the average of the saturated unfrozen and frozen values, weighted by THLSAT and THISAT.) Finally, if there is ponded water present on the soil surface, the thermal conductivity at the top of the first soil layer is treated as varying linearly from the calculated soil thermal conductivity if the pond depth ZPOND is zero, to the thermal conductivity of water if ZPOND <img class="formulaInl" alt="$\geq 10^{-2} m$" src="form_1596.png"/>.</p>
 <p>Finally, in loop 600, a variable TBAR1P is evaluated, representing the weighted average value of the first layer soil temperature and the ponded water, if any. (The heat capacity of the soil is determined as the weighted average of HCPG over the permeable thickness DELZW, and the heat capacity of rock, HCPSND, over the impermeable thickness, DELZ-DELZW.)</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="TPREP_8f_a7e4916d23e9c1a0300f168e58bbf7ae4_icgraph.png" border="0" usemap="#TPREP_8f_a7e4916d23e9c1a0300f168e58bbf7ae4_icgraph" alt=""/></div>
+<map name="TPREP_8f_a7e4916d23e9c1a0300f168e58bbf7ae4_icgraph" id="TPREP_8f_a7e4916d23e9c1a0300f168e58bbf7ae4_icgraph">
+<area shape="rect" id="node2" href="CLASST_8f.html#afc821376816034a0c657e69bb4b06a24" title="classt" alt="" coords="105,5,162,32"/></map>
+</div>
+</p>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:59 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 26 2017 12:30:14 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

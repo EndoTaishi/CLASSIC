@@ -270,6 +270,8 @@ Purpose\+: Initialize subarea variables and calculate various parameters for sur
 \hline
 {\em qaccs} & Specific humidity of air within vegetation canopy space over snow $[kg kg^{-1}]$\\
 \hline
+{\em gsnow} & Diagnostic heat flux at snow surface for use in C\+C\+Cma black carbon deposition scheme $[W m^{-2}]$\\
+\hline
 {\em st} & Diagnosed screen-\/level air temperature \mbox{[}K\mbox{]}\\
 \hline
 {\em su} & Diagnosed anemometer-\/level zonal wind $[m s^{-1}]$\\
@@ -277,6 +279,8 @@ Purpose\+: Initialize subarea variables and calculate various parameters for sur
 {\em sv} & Diagnosed anemometer-\/level meridional wind $[m s^{-1}]$\\
 \hline
 {\em sq} & Diagnosed screen-\/level specific humidity $[kg kg^{-1}]$\\
+\hline
+{\em srh} & Diagnosed screen-\/level relative humidity \mbox{[}\%\mbox{]}\\
 \hline
 {\em cdh} & Surface drag coefficient for heat \mbox{[} \mbox{]}\\
 \hline
@@ -430,7 +434,7 @@ The dry thermal conductivity $lambda_{dry}$ is calculated using an empirical rel
 
 $\lambda_{dry} = 0.75 exp(-2.76 \theta_p) (mineral)$ $\lambda_{dry} = 0.30 exp(-2.0 \theta_p) (organic)$
 
-The saturated thermal conductivity $\lambda_{sat}$ is calculated by Cote and Konrad as a geometric mean of the conductivities of the soil components. However, other researchers (e.\+g. Zhang et al., 2008) have found the linear averaging used by de Vries (1963) to be more generally accurate\+:
+The saturated thermal conductivity $\lambda_{sat}$ is calculated by Cote and Konrad (2005) \cite{Cote2005-ew} as a geometric mean of the conductivities of the soil components. However, other researchers (e.\+g. Zhang et al., 2008) have found the linear averaging used by de Vries (1963) \cite{Vries1963-ti} to be more generally accurate\+:
 
 $lambda_{sat} = lambda_w \theta_p + \lambda_s (1 - \theta_p) (unfrozen)$ $lambda_{sat} = lambda_i \theta_p + \lambda_s (1 - \theta_p) (frozen)$
 
@@ -439,3 +443,13 @@ where $\lambda_w$ is the thermal conductivity of water, $\lambda_i$ is that of i
 In the 500 loop, thermal conductivities are calculated for the top and bottom of each soil layer. The degree of saturation S\+A\+T\+R\+A\+T is calculated as the sum of liquid and frozen water contents, $\theta_w$ and $\theta_i$, divided by the pore volume. In organic soils, if the liquid water content of the soil layer is above the retention capacity $\theta_{ret}$, $\theta_w$ at the top of the soil layer is assumed to be equal to $\theta_{re}$ and $S_r$ at the bottom of the layer is assumed to be 1. The relative liquid and frozen water contents, T\+H\+L\+S\+A\+T and T\+H\+I\+S\+A\+T, are calculated from $\theta_w$ and $\theta_i$ normalized by $\theta_w + \theta_i$. The dry thermal conductivity, and the saturated thermal conductivity for unfrozen and frozen conditions, are evaluated using the equations above. The unfrozen and frozen relative thermal conductivity, T\+C\+R\+A\+T\+U and T\+C\+R\+A\+T\+F, are obtained from S\+A\+T\+R\+A\+T and the appropriate values of the empirical coefficient $\kappa$. For mineral soils, $\kappa$ is obtained as a weighted average over the percent sand content (I\+S\+A\+N\+D converted to a real value) and the percentage of fine material (assumed to be 100-\/\+I\+S\+A\+N\+D). The unfrozen and frozen soil thermal conductivities, T\+C\+S\+O\+L\+U and T\+C\+S\+O\+L\+F, are then calculated from T\+C\+R\+A\+T\+U, T\+C\+R\+A\+T\+F, and the dry and saturated thermal conductivities; and the actual thermal conductivity of the soil, T\+C\+S\+O\+I\+L, is determined as the average of T\+C\+S\+O\+L\+U and T\+C\+S\+O\+L\+F, weighted according to the relative liquid and frozen water contents T\+H\+L\+S\+A\+T and T\+H\+I\+S\+A\+T. If the permeable thickness of the layer, D\+E\+L\+Z\+W, is greater than zero, the thermal conductivity at the top of the layer is set to T\+C\+S\+O\+I\+L; otherwise it is set to the rock value, T\+C\+S\+A\+N\+D. If D\+E\+L\+Z\+W is less than the thermal thickness of the layer D\+E\+L\+Z, the thermal conductivity at the bottom of the layer is set to T\+C\+S\+A\+N\+D; otherwise it is set to T\+C\+S\+O\+I\+L. (In the case of organic soils in the latter branch, if $\theta_w$ was greater than $\theta_{ret}$, the thermal conductivity at the bottom of the layer is set to the average of the saturated unfrozen and frozen values, weighted by T\+H\+L\+S\+A\+T and T\+H\+I\+S\+A\+T.) Finally, if there is ponded water present on the soil surface, the thermal conductivity at the top of the first soil layer is treated as varying linearly from the calculated soil thermal conductivity if the pond depth Z\+P\+O\+N\+D is zero, to the thermal conductivity of water if Z\+P\+O\+N\+D $\geq 10^{-2} m$.
 
 Finally, in loop 600, a variable T\+B\+A\+R1\+P is evaluated, representing the weighted average value of the first layer soil temperature and the ponded water, if any. (The heat capacity of the soil is determined as the weighted average of H\+C\+P\+G over the permeable thickness D\+E\+L\+Z\+W, and the heat capacity of rock, H\+C\+P\+S\+N\+D, over the impermeable thickness, D\+E\+L\+Z-\/\+D\+E\+L\+Z\+W.)
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=198pt]{TPREP_8f_a7e4916d23e9c1a0300f168e58bbf7ae4_icgraph}
+\end{center}
+\end{figure}
+
+

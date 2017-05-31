@@ -1,32 +1,45 @@
 !>\file
-C!           Canadian Terrestrial Ecosystem Model (CTEM)
-C!        Biomass To Structural Attributes Conversion Subroutine 
+!!        Biomass To Structural Attributes Conversion Subroutine
 !!
 !!
-!!The time-varying biomass in the leaves (\f$C_\mathrm{L}\f$), stem (\f$C_\mathrm{S}\f$) and root (\f$C_\mathrm{R}\f$) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.
+!!The time-varying biomass in the leaves (\f$C_L\f$), stem (\f$C_S\f$) and root (\f$C_R\f$) components is used to calculate the structural attributes of vegetation for the energy and water balance calculations by CLASS.
 !!
-!!Leaf biomass is converted to LAI using specific leaf area (\f${SLA}\f$, \f$m^2\,(kg\,C)^{-1}\f$), which itself is assumed to be a function of leaf lifespan (\f$\tau_\mathrm{L}\f$; see also ctem_params.f90)
+!!Leaf biomass is converted to LAI using specific leaf area (\f${SLA}\f$, \f$m^2\,(kg\,C)^{-1}\f$), which itself is assumed to be a function of leaf lifespan (\f$\tau_L\f$; see also ctem_params.f90)
 !!
-!!\f[ \label{sla} SLA= \gamma_\mathrm{L}\tau_\mathrm{L}^{-0.5}\\ LAI = C_\mathrm{L}SLA\nonumber \f]
+!!\f[ \label{sla} SLA= \gamma_L\tau_L^{-0.5}\\ LAI = C_LSLA\nonumber \f]
 !!
-!!where \f$\gamma_\mathrm{L}\f$ is a constant with value equal to \f$25\,m^2\,(kg\,C)^{-1}\,yr^{0.5}\f$.
+!!where \f$\gamma_L\f$ is a constant with value equal to \f$25\,m^2\,(kg\,C)^{-1}\,yr^{0.5}\f$. The vegetation height (\f$H\f$; \f$m\f$) is calculated for tree, crop and grass PFTs as
 !!
-!!The vegetation height (\f$H\f$; \f$m\f$) is calculated for tree, crop and grass PFTs as
-!!\f[\label{height} H = \begin{cases} \min\left(10.0C_\mathrm{S}^{0.385},45\right) trees\\ (C_\mathrm{S} + C_\mathrm{L})^{0.385} crops\\ 3.5 (C_{L,g} + 0.55\,C_{L,b})^{0.5} grasses,\\ \end{cases} \f]
-!!where \f$C_{L,g}\f$ is the green leaf biomass and \f$C_{L,b}\f$ is the brown leaf biomass that is scaled by 0.55 to reduce its contribution to the plant height. CTEM explicitly tracks brown leaf mass for grass PFTs. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly \f$(\tau_{L,b} = 0.1\,\tau_\mathrm{L}\f$).
+!!\f$ H = \min (10.0C_S^{0.385},45) \f$ for trees
 !!
-!!CTEM dynamically simulates root distribution and depth in soil following \cite Arora2003838. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth \f$z\f$ is given by
-!!\f[ \label{fracroo} f_\mathrm{R}(z) = 1 - \exp(-\iota z). \f]
+!!\f$ H = (C_S + C_L)^{0.385} \f$ for crops
 !!
-!!Rooting depth (\f$d_\mathrm{R}\f$; \f$m\f$), which is defined to be the depth containing \f$99\,{\%}\f$ of the root mass, is found by setting \f$z\f$ equal to \f$d_\mathrm{R}\f$ and \f$f_\mathrm{R} = 0.99\f$, which yields
-!!\f[ \label{rootterm1} d_\mathrm{R} = \frac{-\ln(1-f_\mathrm{R})}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \f]
+!!\f$ H = 3.5 (C_{L,g} + 0.55C_{L,b})^{0.5} \f$ for  grasses
+!!
+!!where \f$C_{L,g}\f$ is the green leaf biomass and \f$C_{L,b}\f$ is the brown leaf biomass that is scaled by 0.55 to reduce its contribution to the plant height. CTEM explicitly tracks brown leaf mass for grass PFTs. The turnover of green grass leaves, due to normal aging or stress from drought and/or cold, does not contribute to litter pool directly as the leaves first turn brown. The brown leaves themselves turnover to litter relatively rapidly \f$(\tau_{L,b} = 0.1\,\tau_L\f$).
+!!
+!! In peatlands the vegetation height is calculated as (Wu et al. 2016) \cite Wu2016-zt
+!!
+!!\f$ H = \min(10.0,3.0C_S^{0.385}) \f$ for trees
+!!
+!!\f$ H = \min(1.0, 0.25(C_S^{0.2})) \f$ for shrubs
+!!
+!!\f$ H = = min(1.0,(C_{L,g}+0.55C_{L,b})^{0.3}) \f$ for grasses and sedges
+!!
+!!CTEM dynamically simulates root distribution and depth in soil following (Arora and Boer, 2003) \cite Arora2003838. The root distribution takes an exponential form and roots grow and deepen with increasing root biomass. The cumulative root fraction at depth \f$z\f$ is given by
+!!
+!!\f$ f_R(z) = 1 - \exp(-\iota z) \f$
+!!
+!!Rooting depth (\f$d_R\f$; \f$m\f$), which is defined to be the depth containing \f$99\,{\%}\f$ of the root mass, is found by setting \f$z\f$ equal to \f$d_R\f$ and \f$f_R = 0.99\f$, which yields
+!!
+!!\f[ \label{rootterm1} d_R = \frac{-\ln(1-f_R)}{\iota} = \frac{-\ln(1 - 0.99)}{\iota} = \frac{4.605}{\iota}. \f]
 !!
 !!The parameter \f$\iota\f$ that describes the exponential root distribution is calculated as
-!!\f[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_\mathrm{R}}}{C_\mathrm{R}} \right)^{0.8}, \f]
+!!\f[ \label{iota} \iota = \overline{\iota} \left(\frac{\overline{C_R}}{C_R} \right)^{0.8}, \f]
 !!
-!!where \f$\overline{\iota}\f$ represents the PFT-specific mean root distribution profile parameter and \f$\overline{C_\mathrm{R}}\f$ the average root biomass derived from \cite Jackson1996-va (see also ctem_params.f90). Equation (\ref{iota}) yields a lower (higher) value of \f$\iota\f$ than \f$\overline{\iota}\f$ when root biomass \f$C_\mathrm{R}\f$ is higher (lower) than the PFT-specific mean root biomass \f$\overline{C_\mathrm{R}}\f$, resulting in a deeper (shallower) root profile than the mean root profile.
+!!where \f$\overline{\iota}\f$ represents the PFT-specific mean root distribution profile parameter and \f$\overline{C_R}\f$ the average root biomass derived from Jackson et al. (1996) \cite Jackson1996-va (see also ctem_params.f90). Equation for \f$\iota\f$ above yields a lower (higher) value of \f$\iota\f$ than \f$\overline{\iota}\f$ when root biomass \f$C_R\f$ is higher (lower) than the PFT-specific mean root biomass \f$\overline{C_R}\f$, resulting in a deeper (shallower) root profile than the mean root profile.
 !!
-!!The rooting depth \f$d_\mathrm{R}\f$ is checked to ensure it does not exceed the soil depth. If so, \f$d_\mathrm{R}\f$ is set to the soil depth and \f$\iota\f$ is recalculated as \f$\iota = 4.605/d_\mathrm{R}\f$ (see Eq. \ref{rootterm1} for derivation of 4.605 term). The new value of \f$\iota\f$ is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers.
+!!The rooting depth \f$d_R\f$ is checked to ensure it does not exceed the soil depth. If so, \f$d_R\f$ is set to the soil depth and \f$\iota\f$ is recalculated as \f$\iota = 4.605/d_R\f$ (see Eq. \ref{rootterm1} for derivation of 4.605 term). The new value of \f$\iota\f$ is used to determine the root distribution profile adjusted to the shallower depth. Finally, the root distribution profile is used to calculate fraction of roots in each of the model's soil layers.
 !!
 !!
       subroutine    bio2str( gleafmas, bleafmas, stemmass, rootmass,                        
@@ -36,7 +49,7 @@ c    4--------------- inputs above this line, outputs below --------
      5                          ailcg,    ailcb,     ailc,    zolnc,
      6                          rmatc, rmatctem,     slai,  bmasveg,
      7                       cmasvegc,  veghght, rootdpth,   alvisc,
-     8                         alnirc,     paic,    slaic )
+     8                         alnirc,     paic,    slaic,ipeatland)
 c
 c     ----------------------------------------------------------------
 c
@@ -141,6 +154,8 @@ c
       real totala(ilg,icc)       !<
       real rmat_sum              !< 
 c
+      integer ipeatland(ilg)     !< Peatland flag, non-peatlands are 0.
+      
 c     ---------------------------------------------------------------
 !>     Constants and parameters are located in ctem_params.f90
 !!
@@ -288,6 +303,7 @@ c
 210     continue
 200   continue
 c
+
       do 230 j = 1, ican
         do 240 i = il1, il2
 c
@@ -322,6 +338,17 @@ c
 !!
 !!3. lump this for ctem's 9 pfts into class' 4 pfts
 !!
+
+!>    Determine the vegetation height of the peatland shrubs
+!!    shrubs in mbbog maximum 0.3 m average 0.18 m (Bubier et al. 2011)
+!!    grass and herbs avg 0.3m, min 0.05 max 0.8
+!!   low shrub avg 0.82, min 0.10, max 2.00 
+!!   tall shrub avg.3.76, min 2.3, max 5.00 (Hopkinson et al. 2005)
+!!   The Canadian wetland vegetation classification
+!!   graminoids include grass,rush,reed,sedge
+!!   forb is all non-graminoids herbaceous plants
+!!   shrubs dwarf <0.1m, low (0.1 to 0.5), medium 0.5 to 1.5, tall >1.5 
+!!   trees > 5 m  
       k1c=0
       do 250 j = 1, ican
         if(j.eq.1) then
@@ -345,6 +372,23 @@ c
 c
 270       continue
 260     continue
+
+c     ---------------peatland vegetation-----
+        do 280 m = k1c, k2c
+          do 290 i = il1, il2
+            if (ipeatland(i) > 0) then ! For peat tiles:
+               if (j == 1) then !peatland trees have a different relation than normal.
+                 veghght(i,m)=min(3.0*stemmass(i,m)**0.385,10.0)                 
+               elseif (j == 2 .and. m >= (k2c-1)) then ! shrubs
+                 veghght(i,m)=min(1.0, 0.25*(stemmass(i,m)**0.2))  !last 2 pft in ican2 are shrubs 
+               elseif (j == 4 ) then !grasses and sedges
+                 veghght(i,m) = min(1.0,(gleafmas(i,m)+fracbofg
+     1                               *bleafmas(i,m))**0.3)              
+               endif
+            endif
+290       continue
+280     continue
+c
 250   continue
 c
       k1c=0
@@ -411,7 +455,6 @@ c
             useb(i,m)=b(m)
             usealpha(i,m)=alpha(sort(m))
             rootdpth(i,m) = (4.605*(rootmass(i,m)**alpha(sort(m))))/b(m)
-
 !>
 !!if estimated rooting depth is greater than soil depth, or
 !!the maximum rooting depth then adjust rooting depth and
@@ -430,6 +473,7 @@ c
                 a(i,m)=4.605/rootdpth(i,m)
               endif
             else
+            
               if(rootmass(i,m).le.abszero)then
                 a(i,m)=100.0
               else
@@ -477,7 +521,8 @@ c
             end if
 
             etmp(i,j,1)=exp(-a(i,j)*zbotw(i,1))
-            rmatctem(i,j,1)=(1.0-etmp(i,j,1))/totala(i,j)
+            rmatctem(i,j,1)=(1.0-etmp(i,j,1))/totala(i,j)            
+          
             if (kend .eq. 2) then
 !>if rootdepth is shallower than the bottom of 2nd layer
                etmp(i,j,kend)=exp(-a(i,j)*zroot)
@@ -495,8 +540,8 @@ c
               etmp(i,j,kend)=exp(-a(i,j)*zroot)
               rmatctem(i,j,kend)=(etmp(i,j,kend-1)-etmp(i,j,kend))
      1                          /totala(i,j)
-            endif
-           endif
+            endif   !if kend
+           endif    !zroot
 c
 410     continue
 400   continue
@@ -533,11 +578,9 @@ c
         k2c = k1c + nol2pfts(j) - 1
         do 430 m = k1c, k2c
           do 440 i = il1, il2
-c   
-            do 441 k = 1, ignd
+               do 441 k = 1, ignd
               rmatc(i,j,k)=rmatc(i,j,k)+(fcancmx(i,m)*rmatctem(i,m,k))  
-441         continue
-c
+441            continue
 440       continue
 430     continue
 420   continue
@@ -620,7 +663,8 @@ c
 !!fractional coverages at present, we pass a minimum canopy mass
 !!to class so that it doesn't run into numerical problems.
 !!
-          cmasvegc(i,j)=max(cmasvegc(i,j),3.0)
+!          cmasvegc(i,j)=max(cmasvegc(i,j),3.0)    !YW April 14, 2015 ! FLAG JM - is this okay? Nov 2016.
+          cmasvegc(i,j)=max(cmasvegc(i,j),0.1)     
 c
 640     continue
 630   continue
@@ -643,6 +687,8 @@ c
 720       continue
 710     continue
 700   continue
+c
+
 c
       do 730 j = 1, ican
         do 740 i = il1, il2

@@ -72,3 +72,13 @@ If there is liquid water stored on the canopy and the canopy temperature is less
 If there is frozen water stored on the canopy and the canopy temperature is greater than 0 C, the available energy for melting, H\+M\+E\+L\+T, is calculated from C\+H\+C\+A\+P and the difference between T\+C\+A\+N and 0 C, and compared with H\+C\+O\+N\+V, calculated as the energy required to melt all of the frozen water on the canopy. If H\+M\+E\+L\+T $\leq$ H\+C\+O\+N\+V, the amount of frozen water that can be melted is calculated using the latent heat of melting. The fractional coverages of frozen and liquid water F\+S\+N\+O\+W\+C and F\+R\+A\+I\+N\+C and their masses S\+N\+O\+C\+A\+N and R\+A\+I\+C\+A\+N are adjusted accordingly, T\+C\+A\+N is set to 0 C, and the amount of energy involved is subtracted from H\+T\+C\+C and added to H\+M\+F\+C. Otherwise, all of the intercepted frozen water is converted to liquid water, and the energy available for warming the canopy is calculated as H\+W\+A\+R\+M = H\+M\+E\+L\+T – H\+C\+O\+N\+V. This available energy is applied to increasing the temperature of the canopy, using the specific heats of the canopy elements, and the amount of energy that was involved in the phase change is subtracted from H\+T\+C\+C and added to H\+M\+F\+C.
 
 In the final cleanup, the canopy heat capacity is recomputed and the remaining internal energy calculations are completed.
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{CWCALC_8f_a1c51886dfe7782b7a65415cc66561efb_icgraph}
+\end{center}
+\end{figure}
+
+

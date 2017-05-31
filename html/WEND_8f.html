@@ -473,12 +473,30 @@ Functions/Subroutines</h2></td></tr>
 <p>As a result of the above processes, the liquid water content and temperature of each soil layer (excluding the bottom, dummy layer) will be a combined result of infiltration processes (WADD, TADD), redistribution processes (WDRA, TDRA), and water in the layer that has remained unaffected (WREM, TREM). For each layer, WADD is calculated by summing over the respective ZMAT values corresponding to that layer multiplied by THLINF, and TADD by summing over the ZMAT and THLINF values multiplied by the respective TMOVE values. WREM is obtained as the product of the original water content THLIQX multiplied by ZRMDR, and TREM as the product of the water temperature TBARWX, THLIQX and ZRMDR. For the soil layer containing the wetting front, a check is carried out to determine whether the liquid moisture content resulting from the infiltration and drainage processes, THINFL, is less than the residual liquid moisture content THLMIN. If so, the flow FDT at the bottom of the layer is recalculated as the value required to keep THLIQX at THLMIN. WDRA is obtained from the difference between the water fluxes FDT at the top and bottom of the layer, supplied by GRDRAN, and TDRA is obtained from the water fluxes FDT and their corresponding temperatures TFDT. Finally, THLIQX is calculated as the sum of WADD, WREM and WDRA normalized by DELZX, and TBARWX as the sum of TADD, TREM and TDRA normalized by the product of THLIQX and DELZX.</p>
 <p>Lastly, the base flow BASFLW at the bottom of the soil profile and its temperature TBASFL are calculated. If the wetting front is located in the dummy soil layer below the soil profile, BASFLW is obtained by summing over the ZMAT values for the IGP1 level, multiplied by the dummy layer THLINF value and the fractional coverage FI of the modelled subarea. TBASFL is similarly obtained as the weighted average of the original TBASFL and the values of TMOVE corresponding to the ZMAT values. The overall subarea runoff RUNOFF and its temperature TRUNOF are calculated in the same manner without the FI weightings. Otherwise, the baseflow and total runoff are obtained from the value of FDT at the bottom of the IGDR layer, and their temperatures from the values of TFDT and FDT.</p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_cgraph.png" border="0" usemap="#WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_cgraph" alt=""/></div>
+<map name="WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_cgraph" id="WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_cgraph">
+<area shape="rect" id="node2" href="GRDRAN_8f.html#a9d02aa9115635af052981eec146b1042" title="grdran" alt="" coords="107,5,165,32"/><area shape="rect" id="node3" href="XIT_8f.html#aea43fe3205a9aaa600859d61b69d580c" title="xit" alt="" coords="214,5,253,32"/></map>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_icgraph.png" border="0" usemap="#WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_icgraph" alt=""/></div>
+<map name="WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_icgraph" id="WEND_8f_aef71fcd76a2c9c23bd3d07a80231ca8b_icgraph">
+<area shape="rect" id="node2" href="GRINFL_8f.html#aac6f2d3fad2a7b2c287fb2b821ba61f4" title="grinfl" alt="" coords="107,5,157,32"/><area shape="rect" id="node3" href="CLASSW_8f.html#aac1827011ed2ca61bd0274e83d1f80ad" title="classw" alt="" coords="206,5,269,32"/></map>
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:59 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 26 2017 12:30:14 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

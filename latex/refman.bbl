@@ -1,5 +1,12 @@
 \begin{thebibliography}{10}
 
+\bibitem{Alton2017-pd}
+Paul~B Alton.
+\newblock Retrieval of seasonal rubisco-limited photosynthetic capacity at
+  global {FLUXNET} sites from hyperspectral satellite remote sensing: Impact on
+  carbon modelling.
+\newblock {\em Agric. For. Meteorol.}, 232:74--88, 15~January 2017.
+
 \bibitem{Andreae2001-e04}
 M.~O. Andreae and P.~Merlet.
 \newblock Emission of trace gases and aerosols from biomass burning.
@@ -68,6 +75,14 @@ Timothy~J Ball, Ian~E Woodrow, and Joseph~A Berry.
 \newblock In {\em Progress in Photosynthesis Research}, pages 221--224.
   Springer Netherlands, 1~January 1987.
 
+\bibitem{Bauerle2012-c29}
+William~L Bauerle, Ram Oren, Danielle~A Way, Song~S Qian, Paul~C Stoy, Peter~E
+  Thornton, Joseph~D Bowden, Forrest~M Hoffman, and Robert~F Reynolds.
+\newblock Photoperiodic regulation of the seasonal pattern of photosynthetic
+  capacity and the implications for carbon cycling.
+\newblock {\em Proc. Natl. Acad. Sci. U. S. A.}, 109(22):8612--8617, 29~May
+  2012.
+
 \bibitem{Prentice1993-xn}
 I~Colin~Prentice, Martin~T Sykes, and Wolfgang Cramer.
 \newblock A simulation model for the transient effects of climate change on
@@ -97,6 +112,12 @@ P~M Cox, R~A Betts, C~B Bunton, R.~L.~H. Essery, P~R Rowntree, and J~Smith.
 PM~Cox.
 \newblock Description of the {TRIFFID} dynamic global vegetation model.
 \newblock Technical Report~24, Hadley Centre, 2001.
+
+\bibitem{Curry2007-du}
+Charles~L Curry.
+\newblock Modeling the soil consumption of atmospheric methane at the global
+  scale.
+\newblock {\em Global Biogeochem. Cycles}, 21(4):GB4012, 1~December 2007.
 
 \bibitem{Farquhar1980-96e}
 G~D Farquhar, S~von Caemmerer, and J~A Berry.
@@ -165,6 +186,13 @@ Christopher~J. Kucharik, Jonathan~A. Foley, Christine Delire, Veronica~A.
   balance, carbon balance, and vegetation structure.
 \newblock {\em Global Biogeochem. Cycles}, 14(3):795--825, 2000.
 
+\bibitem{Letts2000-pg}
+Matthew~G Letts, Nigel~T Roulet, Neil~T Comer, Michael~R Skarupa, and Diana~L
+  Verseghy.
+\newblock Parametrization of peatland hydraulic properties for the canadian
+  land surface scheme.
+\newblock {\em Atmosphere-Ocean}, 38(1):141--160, 2000.
+
 \bibitem{Leuning1995-ab}
 R~Leuning.
 \newblock A critical appraisal of a combined stomatal-photosynthesis model for
@@ -207,6 +235,12 @@ J~R Melton and V~K Arora.
   schemes: implications for estimation of the terrestrial carbon sink.
 \newblock {\em Biogeosciences}, 11(4):1021--1036, 21~February 2014.
 
+\bibitem{Melton2016-zx}
+J~R Melton and V~K Arora.
+\newblock Competition between plant functional types in the canadian
+  terrestrial ecosystem model ({CTEM}) v. 2.0.
+\newblock {\em Geoscientific Model Development}, 27~January 2016.
+
 \bibitem{Migliavacca2013-eh}
 M.~Migliavacca, A.~Dosio, S.~Kloster, D.~S. Ward, A.~Camia, R.~Houborg,
   T.~Houston~Durrant, N.~Khabarov, A.~A. Krasovskii, J.~San Miguel-Ayanz, and
@@ -214,6 +248,12 @@ M.~Migliavacca, A.~Dosio, S.~Kloster, D.~S. Ward, A.~Camia, R.~Houborg,
 \newblock Modeling burned area in europe with the community land model.
 \newblock {\em Journal of Geophysical Research: Biogeosciences},
   118(1):265--279, 2013.
+
+\bibitem{Miyazawa2006-so}
+Yoshiyuki Miyazawa and Kihachiro Kikuzawa.
+\newblock Physiological basis of seasonal trend in leaf photosynthesis of five
+  evergreen broad-leaved species in a temperate deciduous forest.
+\newblock {\em Tree Physiol.}, 26(2):249--256, February 2006.
 
 \bibitem{Moorcroft2001-co}
 P~R Moorcroft, G~C Hurtt, and S~W Pacala.
@@ -238,6 +278,13 @@ Colin Price and David Rind.
 \newblock What determines the cloud-to-ground lightning fraction in
   thunderstorms?
 \newblock {\em Geophys. Res. Lett.}, 20(6):463--466, 1993.
+
+\bibitem{Price2008-fr}
+Jonathan~S Price, Peter~N Whittington, David~E Elrick, Strack Maria, Brunet
+  Nathalie, and Faux Erica.
+\newblock A method to determine unsaturated hydraulic conductivity in living
+  and undecomposed moss.
+\newblock {\em Soil Sci. Soc. Am. J.}, 72(2):487, 2008.
 
 \bibitem{Reich1998-zr}
 P~B Reich, M~B Walters, M~G Tjoelker, D~Vanderklein, and C~Buschena.
@@ -272,11 +319,25 @@ S.~Sitch, B.~Smith, I.~C. Prentice, A.~Arneth, A.~Bondeau, W.~Cramer, J.~O.
   carbon cycling in the {LPJ} dynamic global vegetation model.
 \newblock {\em Glob. Chang. Biol.}, 9(2):161--185, 2003.
 
+\bibitem{St-Hilaire2010-5e9}
+F.~St-Hilaire, J.~Wu, N.~T. Roulet, S.~Frolking, P.~M. Lafleur, E.~R.
+  Humphreys, and V.~Arora.
+\newblock {McGill} wetland model: evaluation of a peatland carbon simulator
+  developed for global assessments.
+\newblock {\em Biogeosciences}, 7(11):3517--3530, 9~November 2010.
+
 \bibitem{Tjoelker2001-uz}
 Mark~G Tjoelker, Jacek Oleksyn, and Peter~B Reich.
 \newblock Modelling respiration of vegetation: evidence for a general
   temperature-dependent {Q10}.
 \newblock {\em Glob. Chang. Biol.}, 7(2):223--230, 2001.
+
+\bibitem{Turetsky2012-qh}
+M~R Turetsky, B~Bond-Lamberty, E~Euskirchen, J~Talbot, S~Frolking, A~D McGuire,
+  and E-S Tuittila.
+\newblock The resilience and functional role of moss in boreal and arctic
+  ecosystems.
+\newblock {\em New Phytol.}, 196(1):49--67, 1~October 2012.
 
 \bibitem{Verseghy2012-c0e}
 D~Verseghy.
@@ -300,6 +361,13 @@ R~H Waring.
 \newblock Estimating forest growth and efficiency in relation to canopy leaf
   area.
 \newblock {\em Adv. Ecol. Res.}, 1983.
+
+\bibitem{Wu2016-zt}
+Yuanqiao Wu, Diana~L Verseghy, and Joe~R Melton.
+\newblock Integrating peatlands into the coupled canadian land surface scheme
+  ({CLASS}) v3.6 and the canadian terrestrial ecosystem model ({CTEM}) v2.0.
+\newblock {\em Geoscientific Model Development}, 9(8):2639--2663, 11~August
+  2016.
 
 \bibitem{Xu2003-d75}
 Liukang Xu and Dennis~D Baldocchi.

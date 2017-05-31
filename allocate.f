@@ -40,10 +40,12 @@
      2                    rmatctem, gleafmas, stemmass, rootmass,
      4                        sort, nol2pfts, fcancmx, isand,
 c    5 ------------------ inputs above this line ----------------------   
-     6                     afrleaf,  afrstem,  afrroot,  wiltsm,
-     7                     fieldsm, wtstatus, ltstatus)
+     6                     afrleaf,  afrstem,  afrroot,
+     7                     wtstatus, ltstatus, THFC, THLW) ! Added missing THFC/THLW, EC Jan 17/2017.
 c    8 ------------------outputs  above this line ---------------------
-c
+
+
+
 C     22  Jul 2015  - The code with rmatctem was not set up for >3 soil layers.
 C     J. Melton       Fixed that and also brought in isand so that the layers of
 C                     bedrock won't have their rmat used.
@@ -78,7 +80,6 @@ c
      3                               caroot, consallo, rtsrmin, aldrlfon
 c
       implicit none
-
       integer il1 !<input: il1=1
       integer il2 !<input: il2=ilg
       integer i, j, k
@@ -95,21 +96,14 @@ c
       real   ailcg(ilg,icc) !<input: green or live leaf area index
       real   ailcb(ilg,icc) !<input: brown or dead leaf area index
       real   thliq(ilg,ignd) !<input: liquid soil moisture content in 3 soil layers
-      real   wiltsm(ilg,ignd) !<output: wilting point soil moisture content (called PSIWLT in CLASS, but
-                              !<calculated again here to avoid passing through coupler)
-      real   fieldsm(ilg,ignd) !<output: field capacity soil moisture content (called THFC in CLASS, but
-                               !<calculated again here to avoid passing through coupler)
+      real   THLW(ilg,ignd) !<input: wilting point soil moisture content
+      real   THFC(ilg,ignd) !<input: field capacity soil moisture content
       real   rootmass(ilg,icc) !<input: root mass for each of the 9 ctem pfts, kg c/m2
       real   rmatctem(ilg,icc,ignd) !<input: fraction of roots in each soil layer for each pft
       real   gleafmas(ilg,icc) !<input: green or live leaf mass in kg c/m2, for the 9 pfts
       real   stemmass(ilg,icc) !<input: stem mass for each of the 9 ctem pfts, kg c/m2
-
       real   sand(ilg,ignd) !<input: percentage sand
       real   clay(ilg,ignd) !<input: percentage clay
-      real   thpor(ilg,ignd)
-      real   psisat(ilg,ignd)
-      real   b(ilg,ignd)
-      real   grksat(ilg,ignd)
 c
       real   afrleaf(ilg,icc) !<output: allocation fraction for leaves
       real   afrstem(ilg,icc) !<output: allocation fraction for stem
@@ -117,7 +111,7 @@ c
       real   fcancmx(ilg,icc) !<input: max. fractional coverage of ctem's 9 pfts, but this can be
                               !<modified by land-use change, and competition between pfts
 c
-      real  avwiltsm(ilg,icc),  afieldsm(ilg,icc),    avthliq(ilg,icc)
+      real  avTHLW(ilg,icc),  aTHFC(ilg,icc),    avthliq(ilg,icc)
       real  wtstatus(ilg,icc) !<output: soil water status (0 dry -> 1 wet)
       real  ltstatus(ilg,icc) !<output: light status
       real  nstatus(ilg,icc)
@@ -143,8 +137,8 @@ c
             astem(i,j)=0.0    !<temporary variable
             aroot(i,j)=0.0    !<temporary variable
                               !<averaged over the root zone
-          avwiltsm(i,j)=0.0   !<wilting point soil moisture
-          afieldsm(i,j)=0.0   !<field capacity soil moisture
+          avTHLW(i,j)=0.0   !<wilting point soil moisture
+          aTHFC(i,j)=0.0   !<field capacity soil moisture
           avthliq(i,j)=0.0    !<liquid soil moisture content
           tot_rmat_ctem(i,j)= 0.0 !<temp var.
 c
@@ -162,30 +156,6 @@ c
 c     initialization ends    
 c
 c     ------------------------------------------------------------------
-!>Estimate field capacity and wilting point soil moisture contents
-!!
-!!Wilting point corresponds to matric potential of 150 m
-!!field capacity corresponds to hydarulic conductivity of
-!!0.10 mm/day -> 1.157x1e-09 m/s
-!!
-      do 160 j = 1, ignd
-        do 170 i = il1, il2
-c
-          psisat(i,j)= (10.0**(-0.0131*sand(i,j)+1.88))/100.0
-          grksat(i,j)= (10.0**(0.0153*sand(i,j)-0.884))*7.0556e-6
-          thpor(i,j) = (-0.126*sand(i,j)+48.9)/100.0
-          b(i,j)     = 0.159*clay(i,j)+2.91
-c
-          wiltsm(i,j) = (150./psisat(i,j))**(-1.0/b(i,j))
-          wiltsm(i,j) = thpor(i,j) * wiltsm(i,j)
-c
-          fieldsm(i,j) = (1.157e-09/grksat(i,j))**
-     &      (1./(2.*b(i,j)+3.))
-          fieldsm(i,j) = thpor(i,j) *  fieldsm(i,j)
-c
-170     continue
-160   continue
-
 !>
 !!Calculate liquid soil moisture content, and wilting and field capacity 
 !!soil moisture contents averaged over the root zone. note that while
@@ -198,36 +168,38 @@ c
          if (fcancmx(i,j).gt.0.0) then 
           do 215 n = 1, ignd
            if (isand(i,n) .ne. -3) then !Only for non-bedrock
-            avwiltsm(i,j) = avwiltsm(i,j) + wiltsm(i,n)*rmatctem(i,j,n)
-            afieldsm(i,j) = afieldsm(i,j) + fieldsm(i,n)*rmatctem(i,j,n)
+            avTHLW(i,j) = avTHLW(i,j) + THLW(i,n)*rmatctem(i,j,n)
+            aTHFC(i,j) = aTHFC(i,j) + THFC(i,n)*rmatctem(i,j,n)
             avthliq(i,j)  = avthliq(i,j) + thliq(i,n)*rmatctem(i,j,n)
             tot_rmat_ctem(i,j) = tot_rmat_ctem(i,j) + rmatctem(i,j,n)
            end if
 215       continue
-          avwiltsm(i,j) = avwiltsm(i,j) / tot_rmat_ctem(i,j)
-          afieldsm(i,j) = afieldsm(i,j) / tot_rmat_ctem(i,j)
+          avTHLW(i,j) = avTHLW(i,j) / tot_rmat_ctem(i,j)
+          aTHFC(i,j) = aTHFC(i,j) / tot_rmat_ctem(i,j)
           avthliq(i,j)  = avthliq(i,j) / tot_rmat_ctem(i,j)
          end if
 210     continue
 200   continue
+
 !>
 !!Using liquid soil moisture content together with wilting and field 
 !!capacity soil moisture contents averaged over the root zone, find
 !!soil water status.
 !!
+
       do 230 j = 1, icc
         do 240 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
-          if(avthliq(i,j).le.avwiltsm(i,j))then
+          if(avthliq(i,j).le.avTHLW(i,j))then
             wtstatus(i,j)=0.0
-          else if(avthliq(i,j).gt.avwiltsm(i,j).and.
-     &    avthliq(i,j).lt.afieldsm(i,j))then
-            wtstatus(i,j)=(avthliq(i,j)-avwiltsm(i,j))/
-     &      (afieldsm(i,j)-avwiltsm(i,j))
+          else if(avthliq(i,j).gt.avTHLW(i,j).and.
+     &    avthliq(i,j).lt.aTHFC(i,j))then
+            wtstatus(i,j)=(avthliq(i,j)-avTHLW(i,j))/
+     &      (aTHFC(i,j)-avTHLW(i,j))
           else
             wtstatus(i,j)=1.0
           endif
-         endif
+         endif                
 240     continue
 230   continue
 !>

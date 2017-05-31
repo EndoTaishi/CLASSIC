@@ -43,6 +43,9 @@
      &      twarmmrow,    tcoldmrow,     gdd5row,
      1      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,
      2      annsrplsrow,   annpcprow,  dry_season_lengthrow,
+     3      anmossrow, rmlmossrow, gppmossrow, armossrow,
+     4      nppmossrow,peatdeprow,litrmsmossrow,Cmossmasrow,
+     5      dmossrow, ipeatlandrow,pddrow,!thlqaccrow_m,thicaccrow_m,
 c --
      r      ilmos,       jlmos,       iwmos,        jwmos,
      s      nml,   fcancmxgat,  rmatcgat,    zolncgat,     paicgat,
@@ -82,11 +85,18 @@ c --
      &      btermgat,     ltermgat,   mtermgat,
      &      nbpveggat, hetroresveggat, autoresveggat,litresveggat,
      &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,
+
      &      ch4wet1gat, ch4wet2gat, wetfdyngat, ch4dyn1gat,
      &      ch4dyn2gat, ch4soillsgat,
      &      twarmmgat,    tcoldmgat,     gdd5gat,
      1      ariditygat, srplsmongat,  defctmongat, anndefctgat,
-     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat)
+     2      annsrplsgat,   annpcpgat,  dry_season_lengthgat,
+     3      anmossgat, rmlmossgat, gppmossgat,armossgat,
+     4      nppmossgat,peatdepgat,litrmsmossgat,Cmossmasgat,
+     5      dmossgat,ipeatlandgat,pddgat)!,thlqaccgat_m,thicaccgat_m)
+
+c     Dec 23 2016     Remove thlqaccXXX_m/thicaccXXX_m
+c     Ed Chan
 c
 C     July 12 2013    Bring in the ctem params use statement
 c     J. Melton
@@ -314,6 +324,22 @@ c   Methane related variables
      +       dry_season_lengthgat(ilg)
 
 
+c   Peatland variables
+       real    anmossrow(nlat,nmos),     anmossgat(ilg),
+     3         rmlmossrow(nlat,nmos),    rmlmossgat(ilg),
+     4         gppmossrow(nlat,nmos),    gppmossgat(ilg),
+     3         armossrow(nlat,nmos),     armossgat(ilg),
+     4         nppmossrow(nlat,nmos),    nppmossgat(ilg),
+     5         peatdeprow(nlat,nmos),       peatdepgat(ilg),
+     6         litrmsmossrow(nlat,nmos),litrmsmossgat(ilg),
+     7         Cmossmasrow(nlat,nmos),  Cmossmasgat(ilg),
+     8         dmossrow(nlat,nmos) ,dmossgat(ilg),
+!    9         thlqaccrow_m(nlat,nmos,ignd), thlqaccgat_m(ilg,ignd),
+!    1         thicaccrow_m(nlat,nmos,ignd), thicaccgat_m(ilg,ignd),
+     2         pddrow(nlat,nmos), pddgat(ilg)
+     
+      integer  ipeatlandrow(nlat,nmos), ipeatlandgat(ilg)
+
 c----------------------------------------------------------------------
       do 100 k=1,nml
           sdeprow(ilmos(k),jlmos(k))        = sdepgat(k)
@@ -403,6 +429,7 @@ c
           pstemmassrow(ilmos(k),jlmos(k),l)  = pstemmassgat(k,l)
           pgleafmassrow(ilmos(k),jlmos(k),l)  = pgleafmassgat(k,l)
           gleafmasrow(ilmos(k),jlmos(k),l)  = gleafmasgat(k,l)
+          pgleafmassrow(ilmos(k),jlmos(k),l)  = pgleafmassgat(k,l)
           bleafmasrow(ilmos(k),jlmos(k),l)  = bleafmasgat(k,l)
           ailcbrow(ilmos(k),jlmos(k),l)     = ailcbgat(k,l)   
           flhrlossrow(ilmos(k),jlmos(k),l)  = flhrlossgat(k,l)
@@ -497,6 +524,8 @@ c
           clayrow(ilmos(k),jlmos(k),l)     = claygat(k,l)
           orgmrow(ilmos(k),jlmos(k),l)     = orgmgat(k,l)
           tbaraccrow_m(ilmos(k),jlmos(k),l)= tbaraccgat_m(k,l)
+          !thlqaccrow_m(ilmos(k),jlmos(k),l)= thlqaccgat_m(k,l)
+          !thicaccrow_m(ilmos(k),jlmos(k),l)= thicaccgat_m(k,l)
 250   continue
 c
       do 280 l=1,icc
@@ -518,6 +547,21 @@ c     not in ctemg2. jm jan 8 2013.
        do 300 k=1,nml
           fcanrow(ilmos(k),jlmos(k),l)     = fcangat(k,l)  
 300   continue
+
+c    scatter peatland variables----------------------------------------\
+      do 400 k=1,nml 
+          anmossrow(ilmos(k),jlmos(k)) = anmossgat(k)
+          rmlmossrow(ilmos(k),jlmos(k))= rmlmossgat(k)
+          gppmossrow(ilmos(k),jlmos(k))= gppmossgat(k)
+          armossrow(ilmos(k),jlmos(k))= armossgat(k)
+          nppmossrow(ilmos(k),jlmos(k))= nppmossgat(k)
+          peatdeprow (ilmos(k),jlmos(k))  = peatdepgat(k)
+          litrmsmossrow(ilmos(k),jlmos(k)) = litrmsmossgat(k)
+          Cmossmasrow(ilmos(k),jlmos(k)) = Cmossmasgat(k)
+          dmossrow(ilmos(k),jlmos(k)) = dmossgat(k)
+          ipeatlandrow(ilmos(k),jlmos(k)) = ipeatlandgat(k)
+          pddrow(ilmos(k),jlmos(k)) = pddgat(k)
+400   continue
 
       return
       end

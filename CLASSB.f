@@ -4,14 +4,32 @@ C>\file
 !!
       SUBROUTINE CLASSB(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
      1                  THLRAT,HCPS,TCS,THFC,THLW,PSIWLT,
-     2                  DELZW,ZBOTW,ALGWET,ALGDRY,
-     +                  ALGWV,ALGWN,ALGDV,ALGDN,
+     2                  DELZW,ZBOTW,ALGWV,ALGWN,ALGDV,ALGDN,            
      3                  SAND,CLAY,ORGM,SOCI,DELZ,ZBOT,SDEPTH,
-     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,IGRALB)
-
+     4                  ISAND,IGDR,NL,NM,IL1,IL2,IM,IG,ipeatland)                 
 C
+C     * APR 4/17  - J. Melton   TCFINE was here in place of TCCLAY, somehow it worked
+C                               Change to TCCLAY for consistency with rest of model.
+C     * DEC 16/16 - D.VERSEGHY. REMOVE OPTION FOR USING OLD SOIL
+C     *                         WET AND DRY ALBEDOS DETERMINED BY
+C     *                         SOIL TEXTURE ("IGRALB" SWITCH)
+C     * SEP 28/16 - J. Melton.  Finish bringing in Yuanqiao Wu's peatland work.
 C     * JUN 24/15 - J. MELTON.  PASS IN IGRALB SO THAT WE CAN SKIP
 C                               USING SOCI IF IGRALB IS 0.
+C     * FEB 09/15 - D.VERSEGHY. New version for gcm18 and class 3.6:
+C     *                         - PSIWLT is now a constant value
+C     *                           of 150, the same as used with CTEM.
+C     *                         - A new field THLW (wilting point)
+C     *                           is defined here, the same as used
+C     *                           with CTEM. It is passed out and
+C     *                           used in CLASST.
+C     *                         - Wet and dry albedoes for EACH of
+C     *                           visible and near-ir are defined
+C     *                           using a lookup-table based on the
+C     *                           new soil colour index field SOCI
+C     *                           which is now passed in. These
+C     *                           are known as {ALGWV,ALGWN,ALGDV,ALGDN}
+C     *                           and replace {ALGWET,ALGDRY}.
 C     * JAN 15/15 - D.VERSEGHY. CHANGE PSIWLT FOR MINERAL SOILS
 C     *                         TO A CONSTANT VALUE OF 150 M.
 C     *                         AND ADD NEW VARIABLE THLW.
@@ -20,6 +38,9 @@ C     *                         BRIGHTNESS FIELDS FROM CLM.
 C     * NOV 16/13 - M.LAZARE.   FINAL VERSION FOR GCM17:
 C     *                         - REVERT BACK TO CLASS2.7
 C     *                           SPECIFICATION FOR "ALGWET".
+C
+C     * FEB 26/15 - J.MELTON.   - MAKE WILTING POINT THE SAME AS CTEM 
+C                                 WITH A VALUE OF 150 M.
 C     * NOV 11/11 - M.LAZARE.   - IMPLEMENT CTEM CHOICE OF
 C     *                           ALGDRY DETERMINED BY ADDED
 C     *                           PASSED SWITCH "ICTEMMOD".
@@ -60,6 +81,9 @@ C     *                         THERMAL PROPERTIES BASED ON
 C     *                         SAND, CLAY AND ORGANIC MATTER
 C     *                         CONTENT.
 C
+      use ctem_params, only : thpmoss,thrmoss,thmmoss,bmoss,psismoss,
+     1                       grksmoss,hcpmoss
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -78,50 +102,50 @@ C
       REAL HCPS  (NL,NM,IG) !<Volumetric heat capacity of soil matter \f$[J m^{-3} K^{-1} ] (C_g )\f$
       REAL TCS   (NL,NM,IG) !<Thermal conductivity of soil \f$[W m^{-1} K^{-1} ] (\tau_g )\f$
       REAL THFC  (NL,NM,IG) !<Field capacity \f$[m^3 m^{-3} ] (\theta_{fc} )\f$
-      REAL THLW  (NL,NM,IG) !<
+      REAL THLW  (NL,NM,IG) !<Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
       REAL PSIWLT(NL,NM,IG) !<Soil moisture suction at wilting point [m] \f$(\Psi_{wilt} )\f$
       REAL DELZW (NL,NM,IG) !<Thickness of permeable part of soil layer [m]
       REAL ZBOTW (NL,NM,IG) !<Depth of bottom of permeable part of soil layer [m]
-      REAL ALGWET(NL,NM)    !<All-wave albedo of wet soil for modelled area [ ]
-      REAL ALGDRY(NL,NM)    !<All-wave albedo of dry soil for modelled area [ ]
-      REAL ALGWV (NL,NM)    !<
-      REAL ALGWN (NL,NM)    !<
-      REAL ALGDV (NL,NM)    !<
-      REAL ALGDN (NL,NM)    !<
+      REAL ALGWV (NL,NM)    !<Visible albedo of wet soil for modelled area [ ]
+      REAL ALGWN (NL,NM)    !<NIR albedo of wet soil for modelled area [ ]
+      REAL ALGDV (NL,NM)    !<Visible albedo of dry soil for modelled area [ ]
+      REAL ALGDN (NL,NM)    !<NIR albedo of dry soil for modelled area [ ]
 C
       INTEGER ISAND (NL,NM,IG) !<Sand content flag
       INTEGER IGDR  (NL,NM) !<Index of soil layer in which bedrock is encountered
 C
 C     * INPUT ARRAYS.
 C
+      integer ipeatland(nl,nm)  !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
       REAL SAND  (NL,NM,IG) !<Percent sand content of soil layer [percent] \f$(X_{sand} )\f$
       REAL CLAY  (NL,NM,IG) !<Percent clay content of soil layer [percent] \f$(X_{clay} )\f$
       REAL ORGM  (NL,NM,IG) !<Percent organic matter content of soil layer [percent]
       REAL DELZ  (IG)       !<Thickness of soil layer [m]
       REAL ZBOT  (IG)       !<Depth of bottom of soil layer [m]
       REAL SDEPTH(NL,NM)    !<Permeable depth of soil column (depth to bedrock) [m] \f$(z_b )\f$
-      REAL SOCI  (NL,NM)   !<
+      REAL SOCI  (NL,NM)    !<Soil colour index
 C
-      INTEGER IGRALB !< IF IGRALB IS SET TO 0, THE WET AND DRY SOIL ALBEDOS ARE
-                     !! CALCULATED ON THE BASIS OF SOIL TEXTURE.  IF IT IS SET TO 1,
-                     !! THEY ARE ASSIGNED VALUES BASED ON THE NCAR CLM SOIL "COLOUR"  DATASET.
-C
-      REAL THPORG (3),      THRORG (3),      THMORG (3),
-     1     BORG   (3),      PSISORG(3),      GRKSORG(3)
 C
 C     * TEMPORARY VARIABLES.
 C
       REAL ALWV(20), ALWN(20), ALDV(20), ALDN(20)
 C
       REAL VSAND,VORG,VFINE,VTOT,AEXP,ABC,THSAND,THFINE,THORG
-C
+c
 C     * COMMON BLOCK PARAMETERS.
 C
-      REAL TCW,TCICE,TCSAND,TCFINE,TCOM,TCDRYS,RHOSOL,RHOOM,
+      REAL THPORG (3)         !<Peat pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
+      REAL THRORG (3)         !<Peat liquid water retention capacity for organic soil \f$[m^3 m^{-3} ] (\theta_{ret} )\f$
+      REAL THMORG (3)         !<Peat residual soil liquid water content remaining after freezing or evaporation \f$[m^3 m^{-3} ] (\theta_{min} )\f$
+      REAL BORG   (3)         !<Clapp and Hornberger 'b' value for peat soils [ ]
+      REAL PSISORG(3)         !<Peat soil moisture suction at saturation [m] \f$(\Psi_{sat} )\f$
+      REAL GRKSORG(3)         !<Peat hydraulic conductivity of soil at saturation \f$[m s^{-1} ] (K_{sat} )\f$
+C
+      REAL TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,RHOSOL,RHOOM,
      1     HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,SPHW,SPHICE,SPHVEG,
      2     SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,CLHVAP
 C
-      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCFINE,TCOM,TCDRYS,
+      COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,
      1                RHOSOL,RHOOM
       COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPFIN,
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
@@ -136,6 +160,7 @@ C
      1           0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
       DATA ALDN /0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,0.37,
      1           0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16/
+
 C---------------------------------------------------------------------
 C
 
@@ -191,10 +216,7 @@ C
               ENDIF
               ZBOTW(I,M,J)=MAX(0.0,ZBOT(J)-DELZ(J))+DELZW(I,M,J)
 150       CONTINUE
-          IF(SAND(I,M,1).GE.0.0) THEN
-              ALGWET(I,M)=0.08+0.0022*SAND(I,M,1)
-              ALGDRY(I,M)=MIN(0.14+0.0046*SAND(I,M,1),0.45)
-              IF (IGRALB .NE. 0) THEN
+          IF(SAND(I,M,1).GE.-3.5) THEN
                 ALGWV(I,M)=ALWV(NINT(SOCI(I,M)))
                 ALGWN(I,M)=ALWN(NINT(SOCI(I,M)))
                 ALGDV(I,M)=ALDV(NINT(SOCI(I,M)))
@@ -205,14 +227,6 @@ C
                 ALGDV(I,M)=0.0
                 ALGDN(I,M)=0.0
               ENDIF
-          ELSE
-              ALGWET(I,M)=0.0
-              ALGDRY(I,M)=0.0
-              ALGWV(I,M)=0.0
-              ALGWN(I,M)=0.0
-              ALGDV(I,M)=0.0
-              ALGDN(I,M)=0.0
-          ENDIF
 200   CONTINUE
 C
 !>
@@ -220,14 +234,14 @@ C
 !!depending on soil type. Values of ISAND greater than zero indicate mineral soil. The pore volume \f$\theta_p\f$ ,
 !!the saturated hydraulic conductivity \f$K_{sat}\f$ , and the soil moisture suction at saturation \f$\Psi\f$ sat are calculated from
 !!the percentage sand content \f$X_{sand}\f$ , and the hydraulic parameter b is calculated from the percentage clay
-!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984):
+!!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc:
 !!\f$\theta_p = (-0.126 X_{sand} +48.9)/100.0\f$
 !!\f$b = 0.159 X_{clay} + 2.91\f$
 !!\f$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)\f$
 !!\f$K_{sat} = 7.0556 x 10 -6 exp(0.0352 X_{sand} - 2.035)\f$
 !!
 !!The fractional saturation of the soil at half the saturated hydraulic conductivity, \f$f_{inf}\f$ , is calculated by
-!!inverting the Clapp and Hornberger (1978) expression relating hydraulic conductivity \f$K\f$ to liquid water
+!!inverting the Clapp and Hornberger (1978) \cite Clapp1978-898 expression relating hydraulic conductivity \f$K\f$ to liquid water
 !!content of the soil \f$\theta_l\f$ :
 !!\f$K = K_{sat} (\theta_l / \theta_p ) (2b + 3)\f$
 !!
@@ -256,8 +270,11 @@ C
 !!\f$\theta_{fc} = \theta_p /(b-1) \bullet (\Psi_{sat} b/ z_b )^{1/b} \bullet [(3b+2)^{(b-1)/b} - (2b+2)^{(b-1)/b} ]\f$
 !!
 !!The soil moisture suction \f$\Psi_{wilt}\f$ at the wilting point (the liquid water content at which plant roots can no
-!!longer draw water from the soil) is set to 150 m.
-
+!!longer draw water from the soil) is assigned a textbook value of 150.0 m. The liquid water content at the wilting point,
+!! \f$ \theta_{wilt} \f$, is determined from \f$\Psi_{wilt}\f$ by inverting the calculated from the saturated soil moisture
+!!suction using the Clapp and Hornberger (1978) \cite Clapp1978-898 expression for soil moisture suction as a function of
+!!liquid water content: \f$ \theta_{wilt} = \theta_p (\theta_{wilt} / \Psi_{sat} )^{-1/b} \f$
+!!
 !!Organic soils are flagged with an ISAND value of -2. For these soils, the variables \f$\theta_p\f$ , b, \f$K_{sat}\f$ , \f$\Psi_{sat}\f$ , \f$\theta_{min}\f$ , and
 !!\f$\theta_{ret}\f$ are assigned values based on the peat texture (fibric, hemic or sapric). These values are obtained from
 !!the arrays in common block CLASS5 (see the CLASSBD documentation above). The current default is
@@ -310,6 +327,46 @@ C
               THLRAT(I,M,J)=0.5**(1.0/(2.0*BI(I,M,J)+3.0))
               HCPS(I,M,J)=HCPOM
               TCS(I,M,J)=TCOM
+              ! If tile is a peatland, then set up as such.
+              ! this setup assumes that the soil has 10 cm
+              ! layers in the top 1 meter.
+              ! FLAG: We should consider here that we don't
+              ! necessarily want the entire soil column as
+              ! peat so should also include the peat depth! JM Oct 2016.
+             if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
+                  if (j .eq. 1) then ! First layer is moss
+                      thpor(i,m,j)  = thpmoss
+                      thlret(i,m,j) = thrmoss
+                      thlmin(i,m,j) = thmmoss
+                      bi(i,m,j)     = bmoss
+                      psisat(i,m,j) = psismoss
+                      grksat(i,m,j) = grksmoss
+                      hcps(i,m,j) = hcpmoss
+                      tcs(i,m,j) = tcom
+                  elseif (j .eq. 2    ) then !Next treated as soil and is fibric peat
+                      thpor(i,m,j)  = thporg(1)
+                      thlret(i,m,j) = throrg(1) 
+                      thlmin(i,m,j) = thmorg(1)
+                      bi(i,m,j)     = borg(1)
+                      psisat(i,m,j) = psisorg(1)
+                      grksat(i,m,j) = grksorg(1)
+                  elseif (j .ge. 3 .and. j .le. 5 ) then ! These layers are considered hemic peat
+                      thpor(i,m,j)  = thporg(2)
+                      thlret(i,m,j) = throrg(2) 
+                      thlmin(i,m,j) = thmorg(2)
+                      bi(i,m,j)     = borg(2)
+                      psisat(i,m,j) = psisorg(2)
+                      grksat(i,m,j) = grksorg(2)
+                  else ! Remainder are sapric peat
+                      thpor(i,m,j)  = thporg(3)
+                      thlret(i,m,j) = throrg(3) 
+                      thlmin(i,m,j) = thmorg(3)
+                      bi(i,m,j)     = borg(3)
+                      psisat(i,m,j) = psisorg(3)
+                      grksat(i,m,j) = grksorg(3)
+                  endif                                      
+                  thlrat(i,m,j) = 0.5**(1.0/(2.0*bi(i,m,j)+3.0)) 
+              endif
               THFC(I,M,J)=THLRET(I,M,J)
               THLW(I,M,J)=THLMIN(I,M,J)
               PSIWLT(I,M,J)=PSISAT(I,M,J)*(THLMIN(I,M,J)/
@@ -332,7 +389,7 @@ C
               HCPS(I,M,J)=(HCPSND*THSAND+HCPFIN*THFINE+
      1            HCPOM*THORG)/(1.0-THPOR(I,M,J))
               TCS(I,M,J)=(TCSAND*THSAND+TCOM*THORG+
-     1            TCFINE*THFINE)/(1.0-THPOR(I,M,J))
+     1            TCCLAY*THFINE)/(1.0-THPOR(I,M,J))
               IF(J.NE.IGDR(I,M))                       THEN
                   THFC(I,M,J)=THPOR(I,M,J)*(1.157E-9/GRKSAT(I,M,J))**
      1                (1.0/(2.0*BI(I,M,J)+3.0))

@@ -69,18 +69,19 @@
 !!
 !! If doing methane then the CH4 switches should be the same as the CO2 ones.
 !!
-subroutine read_from_job_options(transient_run,trans_startyr,ctemloop,ctem_on, &
-                  ncyear,lnduseon,spinfast,cyclemet,nummetcylyrs,metcylyrst,co2on, &
-                  setco2conc,ch4on,setch4conc,popdon,popcycleyr,parallelrun,dofire,dowetlands,obswetf,&
-                  compete,inibioclim,start_bare,rsfile,start_from_rs,jmosty,idisp,izref, &
-                  islfd,ipcp,itc,itcg,itg,iwf,ipai,ihgt,ialc,ials,ialg,isnoalb,igralb,jhhstd,& 
-                  jhhendd,jdstd,jdendd,jhhsty,jhhendy,jdsty,jdendy,use_netcdf,met_file,init_file)
+subroutine read_from_job_options()
 
 !#ifdef nagf95
 !use f90_unix
 !#endif
 
 !       History:
+!
+!     10 Jan 2017    - igralb no longer supported so removed
+!     J. Melton
+!
+!     9 Nov 2016     - Add the "leap" switch for leap years (.TRUE. if leap years
+!     J.-S. Landry     in the .MET file have data for 366 days, .FALSE. if not) 
 !
 !     28  Jul  2016  - Add ability to have changing CO2 but cycling climate
 !     J. Melton        this was for the TRENDY project but generally useful so
@@ -213,9 +214,9 @@ logical, pointer :: use_netcdf      !< If true, the model inputs and outputs are
                                         !! use_netcdf is set to false the model requires all other inputs in netcdf format
                                         !! as well all outputs will be netcdf formatted.
 
-character(180), pointer :: met_file !< location of the netcdf meteorological dataset
+character(:), pointer :: met_file !< location of the netcdf meteorological dataset
 
-character(180), pointer :: init_file !< location of the netcdf initialization file
+character(:), pointer :: init_file !< location of the netcdf initialization file
 
 
 logical, pointer :: start_from_rs !< if true, this option copies the _RS INI and CTM files
@@ -225,6 +226,10 @@ logical, pointer :: start_from_rs !< if true, this option copies the _RS INI and
                                  !< you have to manually move the files and set this to .false.
                                  
 integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
+
+logical, pointer :: leap     !< set to true if all/some leap years in the .MET file have data for 366 days 
+                                 !< also accounts for leap years in .MET when cycling over meteorology (cyclemet) 
+
                                   !< from the start then put in a negative number (like -9999), if you never want to have monthly
                                   !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR                                 
 
@@ -324,9 +329,6 @@ integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily
 integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
                                 !< if it is set to 1, the new four-band routines are used.
 
-integer, pointer :: igralb  !< if igralb is set to 0, the wet and dry soil albedos are  calculated on the basis of
-                                !< soil texture.  if it is set to 1, they are assigned values based on the ncar clm soil "colour"  dataset.
-
 character(140) :: jobfile
 character(80) :: argbuff
 integer :: argcount, iargc
@@ -374,7 +376,7 @@ IALC            => c_switch%IALC
 IALS            => c_switch%IALS
 IALG            => c_switch%IALG
 isnoalb         => c_switch%isnoalb
-igralb          => c_switch%igralb
+leap            => c_switch%leap
 jhhstd          => c_switch%jhhstd
 jhhendd         => c_switch%jhhendd
 jdstd           => c_switch%jdstd
@@ -384,7 +386,6 @@ jhhendy         => c_switch%jhhendy
 jdsty           => c_switch%jdsty
 jdendy          => c_switch%jdendy
 jmosty          => c_switch%jmosty
-
 ! -------------
 
 
@@ -399,6 +400,7 @@ namelist /joboptions/ &
   cyclemet,           &
   nummetcylyrs,       &
   metcylyrst,         &
+  leap,               &
   co2on,              &
   setco2conc,         &
   ch4on,              &
@@ -431,7 +433,6 @@ namelist /joboptions/ &
   IALS,               &
   IALG,               &
   isnoalb,            &
-  igralb,             & 
   jhhstd,             &
   jhhendd,            &
   jdstd,              &

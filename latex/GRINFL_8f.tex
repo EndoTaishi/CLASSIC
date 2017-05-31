@@ -197,7 +197,7 @@ In loop 100, a series of local arrays T\+H\+L\+I\+Q\+X, T\+H\+I\+C\+E\+X, T\+B\+
 
 $f_{ice} = [1.0 – min(1.0, \theta_i / \theta_p )]^2$
 
-To further account for the presence of ice, a modified pore volume T\+H\+P\+O\+R\+F for the soil layer is calculated as the maximum of the available pore volume $\theta_p$ – $\theta_i$ (where $\theta_p$ is the total pore volume and $\theta_i$ is the ice content of the layer), the actual liquid water content $\theta_l$, and the minimum residual liquid water content $\theta_{l,min}$. (The last two conditions are required because in the case of a saturated soil undergoing freezing, since water expands when frozen, the sum of the liquid and frozen volumetric water contents may be greater than the pore volume, and thus $\theta_l$ or $\theta_{l,min}$ may be greater than $\theta_p$ – $\theta_i$.) Finally, the water content T\+H\+L\+I\+N\+F and the hydraulic conductivity G\+R\+K\+I\+N\+F behind the wetting front are evaluated, following the analysis of Green and Ampt (1911) and treating the change in soil moisture due to infiltration as a downward-\/propagating square wave. T\+H\+L\+I\+N\+F is calculated as the maximum of $f_{inf} ( \theta_p – \theta_i)$, $\theta_l$, and $\theta_{l,min}$, where $f_{inf}$ represents the fractional saturation of the soil behind the wetting front, corresponding to a hydraulic conductivity of half the saturated value (this correction is applied in order to account for the fact that as infiltration occurs, a small amount of air is usually trapped in the soil). G\+R\+K\+I\+N\+F is calculated from G\+R\+K\+S\+A\+T\+F, T\+H\+L\+I\+N\+F and T\+H\+P\+O\+R\+F, using the classic Clapp and Hornberger (1978) equation
+To further account for the presence of ice, a modified pore volume T\+H\+P\+O\+R\+F for the soil layer is calculated as the maximum of the available pore volume $\theta_p$ – $\theta_i$ (where $\theta_p$ is the total pore volume and $\theta_i$ is the ice content of the layer), the actual liquid water content $\theta_l$, and the minimum residual liquid water content $\theta_{l,min}$. (The last two conditions are required because in the case of a saturated soil undergoing freezing, since water expands when frozen, the sum of the liquid and frozen volumetric water contents may be greater than the pore volume, and thus $\theta_l$ or $\theta_{l,min}$ may be greater than $\theta_p$ – $\theta_i$.) Finally, the water content T\+H\+L\+I\+N\+F and the hydraulic conductivity G\+R\+K\+I\+N\+F behind the wetting front are evaluated, following the analysis of Green and Ampt (1911) \cite{Green1911-gy} and treating the change in soil moisture due to infiltration as a downward-\/propagating square wave. T\+H\+L\+I\+N\+F is calculated as the maximum of $f_{inf} ( \theta_p – \theta_i)$, $\theta_l$, and $\theta_{l,min}$, where $f_{inf}$ represents the fractional saturation of the soil behind the wetting front, corresponding to a hydraulic conductivity of half the saturated value (this correction is applied in order to account for the fact that as infiltration occurs, a small amount of air is usually trapped in the soil). G\+R\+K\+I\+N\+F is calculated from G\+R\+K\+S\+A\+T\+F, T\+H\+L\+I\+N\+F and T\+H\+P\+O\+R\+F, using the classic Clapp and Hornberger (1978) \cite{Clapp1978-898} equation
 
 $K(z) = K_{sat} ( \theta_l / \theta_p)^{(2b + 3)}$
 
@@ -218,3 +218,24 @@ where $\Psi_{sat}$ is the soil moisture suction at saturation.
 In loop 400, a test is carried out to determine whether saturated conditions are already present in the soil. Generally it is assumed that a period of unsaturated flow occurs initially, so the flag I\+F\+I\+L\+L is set to 1, the depth of the wetting front Z\+F is set to zero, and the flag L\+Z\+F indicating the index of the soil layer in which the wetting front occurs is set to 1. If a pond is present on the soil surface or if the hydraulic conductivity if the first soil layer is very small, it is deemed that saturated flow begins immediately, so I\+F\+I\+L\+L is set to zero. Then each soil layer is checked in turn, to ascertain whether the liquid water content is greater than T\+H\+L\+I\+N\+F. If so, it is concluded that saturated flow is occurring in this layer; Z\+F is set to Z\+B\+O\+T\+W, the depth of the bottom of the soil layer, L\+Z\+F is set to the index of the next layer, and I\+F\+I\+L\+L is set to zero. For each layer found to be undergoing saturated flow, its water content is stored in the J+1 level of the water movement matrix W\+M\+O\+V\+E, and its water temperature is stored in the J+1 level of the matrix T\+M\+O\+V\+E. The counter N\+I\+N\+F is set to the number of soil layers behind and including the one with the wetting front, plus 2.
 
 A series of subroutines is called to complete the infiltration calculations. Subroutine W\+F\+I\+L\+L treats the period of unsaturated flow up the point when saturated flow begins. Subroutine W\+F\+L\+O\+W treats the period of saturated flow. Subroutine W\+E\+N\+D reassigns liquid water contents and temperatures at the conclusion of the infiltration period. T\+H\+L\+I\+Q, T\+H\+I\+C\+E and T\+B\+A\+R\+W are then set to the corresponding updated values of T\+H\+L\+I\+Q\+X, T\+H\+I\+C\+E\+X and T\+B\+A\+R\+W\+X. The average depth of the wetting front in the soil layer in which it occurs, the index of the soil layer, and the moisture content behind the wetting front are stored in output variables Z\+F\+A\+V, L\+Z\+F\+A\+V and T\+H\+L\+I\+N\+V respectively. Finally, if there is any time remaining in the current time step following the infiltration period, subroutine G\+R\+D\+R\+A\+N is called to treat the movement of soil water over the remainder of the time step.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=342pt]{GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=202pt]{GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4_icgraph}
+\end{center}
+\end{figure}
+
+

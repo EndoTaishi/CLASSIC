@@ -204,7 +204,7 @@ C
       REAL QACCO (ILG)  !<Specific humidity of air within vegetation canopy space over bare ground \f$[kg kg^{-1}]\f$
       REAL TACCS (ILG)  !<Temperature of air within vegetation canopy space over snow [K]
       REAL QACCS (ILG)  !<Specific humidity of air within vegetation canopy space over snow \f$[kg kg^{-1}]\f$
-      REAL GSNOW (ILG)  !<
+      REAL GSNOW (ILG)  !<Diagnostic heat flux at snow surface for use in CCCma black carbon deposition scheme \f$[W m^{-2}]\f$
  
 C
 C     * DIAGNOSTIC ARRAYS.
@@ -213,7 +213,7 @@ C
       REAL SU    (ILG)  !<Diagnosed anemometer-level zonal wind \f$[m s^{-1}]\f$ 
       REAL SV    (ILG)  !<Diagnosed anemometer-level meridional wind \f$[m s^{-1}]\f$ 
       REAL SQ    (ILG)  !<Diagnosed screen-level specific humidity \f$[kg kg^{-1}]\f$
-      REAL SRH   (ILG)  !<
+      REAL SRH   (ILG)  !<Diagnosed screen-level relative humidity  [%]
       REAL CDH   (ILG)  !<Surface drag coefficient for heat [ ] 
       REAL CDM   (ILG)  !<Surface drag coefficient for momentum [ ]
       REAL QSENS (ILG)  !<Diagnosed total surface sensible heat flux over modelled area \f$[W m^{-2}]\f$
@@ -289,6 +289,8 @@ C
 C     * INTERNAL WORK FIELDS FOR THIS ROUTINE.                                    
 C                                                                                 
       REAL FVEG  (ILG),   TCSATU(ILG),   TCSATF(ILG)
+C
+      INTEGER IWTABL(ILG)
 C
 C     * TEMPORARY VARIABLES.
 C
@@ -375,7 +377,7 @@ C
 C     * INITIALIZE 1-D INTERNAL WORK FIELDS AND DIAGNOSTIC ARRAYS.
 C                                                                                 
       DO 100 I=IL1,IL2                                                            
-          FVEG  (I)=FC(I)+FCS(I)                                                
+          FVEG  (I)=FC(I)+FCS(I)                                                  
           IF(TCAN(I).GT.5.0) THEN
               TCANS (I)=TCAN(I)  
               TCANO (I)=TCAN(I) 
@@ -454,6 +456,7 @@ C
           FVAPX (I)=0.
           RIBX  (I)=0.
           WTABLE(I)=9999.
+          IWTABL(I)=0
   100 CONTINUE                                                                    
 C                                                                                 
 C     * SURFACE EVAPORATION EFFICIENCY FOR BARE SOIL ENERGY BALANCE
@@ -575,7 +578,7 @@ C             TCSNOW(I)=2.576E-6*RHOSNO(I)*RHOSNO(I)+0.074
               TCSNOW(I)=0.0
           ENDIF                                                                   
   400 CONTINUE                                                                    
-C                
+C                                                                                 
 C     * THERMAL CONDUCTIVITIES OF SOIL LAYERS AND DEPTH OF WATER
 C     * TABLE IN ORGANIC SOILS.                                         
 C        
@@ -632,9 +635,9 @@ C
       !!\f$\lambda_{dry} = 0.30 exp(-2.0 \theta_p)    (organic)\f$
       !!
       !!The saturated thermal conductivity \f$\lambda_{sat}\f$ is calculated by 
-      !!Cote and Konrad as a geometric mean of the conductivities of the 
+      !!Cote and Konrad (2005) \cite Cote2005-ew as a geometric mean of the conductivities of the
       !!soil components. However, other researchers (e.g. Zhang et al., 
-      !!2008) have found the linear averaging used by de Vries (1963) to 
+      !!2008) have found the linear averaging used by de Vries (1963) \cite Vries1963-ti to
       !!be more generally accurate:
       !!
       !!\f$lambda_{sat} = lambda_w \theta_p + \lambda_s (1 - \theta_p)   (unfrozen)\f$
@@ -693,12 +696,29 @@ C
               TCBOTC(I,J)=TCSAND
               TCBOTG(I,J)=TCSAND
           ELSEIF(ISAND(I,J).EQ.-2)                          THEN 
-              IF ((THLIQG(I,J)+THICEG(I,J)).GT.(THLRET(I,J)+0.0001)) 
-     1                                                 THEN
+!             FLAG - Needs to be reviewed.   EC Feb 03 2017.
+!                    For some peatland cases, thliqg+thiceg > thpor-0.01 at bottom layer
+!                    and wtable remains 9999, causing wrong values of socres_peat
+!                    to be computed in hetres_peat, leading to crash in ctem loop 1020
+!                    during calculation of peatdep.
+!                    Testing shows that commenting out the following IF condition
+!                    produces the same WTABLE as YW's original code, except that the 
+!                    crash is avoided.
+!                    Removing the check for WTABLE<9000 also doesn't change the result.
+!                    This ensures that the water table is at least in the last layer.
+!             IF(J.EQ.IG .AND. (THLIQG(I,J)+THICEG(I,J)).LT.
+!    1            (THPOR(I,J)-0.01)) IWTABL(I)=1
+              IF(IWTABL(I).EQ.0)                                THEN !YW
+                IF ((THLIQG(I,J)+THICEG(I,J)).GT.(THPOR(I,J)-0.01)) THEN
+                  WTABLE(I)=ZBOTW(I,J)-DELZW(I,J)
+                !ELSEIF (WTABLE(I).LT.9000.0)             THEN    
+                ELSE
                   WTABLE(I)=ZBOTW(I,J)-DELZW(I,J)*MIN(1.0,
      1                      (THLIQG(I,J)+THICEG(I,J)-THLRET(I,J))/
      2                      (THPOR(I,J)-THLRET(I,J)))
-              ENDIF
+                  IWTABL(I)=1
+                ENDIF          
+              ENDIF    
               IF (THLIQG(I,J).GT.(THLRET(I,J)+0.0001)) THEN
                   SATRAT=MIN((THLRET(I,J)+THICEG(I,J))/
      1                   THPOR(I,J), 1.0)              
@@ -709,7 +729,7 @@ C
                   TCSATF(I)=TCICE*THPOR(I,J)+TCS(I,J)*(1.0-THPOR(I,J))
                   TCRATU=0.6*SATRAT/(1.0-0.4*SATRAT)
                   TCRATF=0.25*SATRAT/(1.0-0.75*SATRAT)
-                  TCSOLU=(TCSATU(I)-TCDRY)*TCRATU+TCDRY                              
+                  TCSOLU=(TCSATU(I)-TCDRY)*TCRATU+TCDRY
                   TCSOLF=(TCSATF(I)-TCDRY)*TCRATF+TCDRY
                   TCSOIL=TCSOLU*THLSAT+TCSOLF*THISAT
                   IF(DELZW(I,J).GT.0.0) THEN
@@ -826,6 +846,7 @@ C
               TBAR1P(I)=TBAR(I,1)
           ENDIF
   600 CONTINUE
-C
+C         
+6990           format(I3, F6.2)
       RETURN                                                                      
       END 

@@ -18,6 +18,7 @@ C!
      C                  NEND,ISIMP,IGDR,
      D                  IG,IGP1,IGP2,ILG,IL1,IL2,JL,N)
 C
+C     * JAN 10/17 - J. Melton   Fix below no longer needed. Removed.
 C     * JUL 06/12 - D.VERSEGHY. FIX FOR EVAPORATION OVER ROCK.
 C     * OCT 18/11 - M.LAZARE.   PASS IN "IGDR" AS AN INPUT FIELD 
 C     *                         (ORIGINATING IN CLASSB) TO
@@ -189,22 +190,7 @@ C
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
-C
-C     * CHECK FOR SUSTAINABLE EVAPORATION RATE IN CASES OF PONDED
-C     * WATER OVER ROCK.
-C
-      DO 50 I=IL1,IL2
-          IF(ZPOND(I).GT.0. .AND. ISAND(I,1).EQ.-3)     THEN
-              IF(ZPOND(I).GT.(EVAP(I)*DELT)) THEN
-                  ZPOND(I)=ZPOND(I)-EVAP(I)*DELT
-              ELSE
-                  WLOST(I)=WLOST(I)+(EVAP(I)*DELT-ZPOND(I))*RHOW
-                  ZPOND(I)=0.0
-              ENDIF
-              EVAP(I)=0.0
-          ENDIF
-   50 CONTINUE
-C
+
 C     * DETERMINE POINTS WHICH SATISFY CONDITIONS FOR THESE CALCULATIONS
 C     * AND STORE THEM AS HAVING NON-ZERO VALUES FOR WORK ARRAY "IGRN".
 C
@@ -258,7 +244,7 @@ C
       !!volume, and thus \f$\theta_l\f$ or \f$\theta_{l,min}\f$ may be greater than 
       !!\f$\theta_p\f$ – \f$\theta_i\f$.) Finally, the water content THLINF and the 
       !!hydraulic conductivity GRKINF behind the wetting front are 
-      !!evaluated, following the analysis of Green and Ampt (1911) and 
+      !!evaluated, following the analysis of Green and Ampt (1911) \cite Green1911-gy and
       !!treating the change in soil moisture due to infiltration as a 
       !!downward-propagating square wave. THLINF is calculated as the 
       !!maximum of \f$f_{inf} ( \theta_p – \theta_i)\f$, \f$\theta_l\f$, and \f$\theta_{l,min}\f$, where \f$f_{inf}\f$ 
@@ -268,7 +254,7 @@ C
       !!account for the fact that as infiltration occurs, a small amount 
       !!of air is usually trapped in the soil). GRKINF is calculated from 
       !!GRKSATF, THLINF and THPORF, using the classic Clapp and 
-      !!Hornberger (1978) equation
+      !!Hornberger (1978) \cite Clapp1978-898 equation
       !!
       !!\f$K(z) = K_{sat} ( \theta_l / \theta_p)^{(2b + 3)}\f$
       !!

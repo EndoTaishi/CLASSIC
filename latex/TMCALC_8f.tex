@@ -177,3 +177,13 @@ In the 700 loop, checks are carried out to determine whether, as a result of the
 If the soil layer temperature is less than 0 C and the volumetric liquid water content T\+H\+L\+I\+Q of the layer is greater than the residual water content T\+H\+L\+M\+I\+N, the water content T\+H\+F\+R\+E\+Z that can be frozen by the available energy sink is calculated from T\+B\+A\+R and the weighted average of H\+C\+P and H\+C\+P\+S\+N\+D. If T\+H\+F\+R\+E\+Z $\leq$ T\+H\+L\+I\+Q -\/ T\+H\+L\+M\+I\+N, all of the available energy sink is used to freeze part of the liquid water content in the permeable part of the soil layer. The amount of energy involved is subtracted from H\+T\+C and added to H\+M\+F\+G. T\+H\+F\+R\+E\+Z is subtracted from T\+H\+L\+I\+Q, converted to an ice volume and added to T\+H\+I\+C\+E. H\+C\+P is recalculated, and the layer temperature is set to 0 C. Otherwise, all of the liquid water content of the layer above T\+H\+L\+M\+I\+N is converted to frozen water, and H\+M\+F\+G and H\+T\+C are recalculated to reflect this. H\+C\+P is recomputed, and the remaining energy sink H\+A\+D\+D is applied to decreasing the temperature of the soil layer.
 
 If the soil layer temperature is greater than 0 C and the volumetric ice content T\+H\+I\+C\+E of the layer is greater than zero, the ice content T\+H\+M\+E\+L\+T that can be melted by the available energy is calculated from T\+B\+A\+R and the weighted average of H\+C\+P and H\+C\+P\+S\+N\+D. If T\+H\+M\+E\+L\+T $\leq$ T\+H\+I\+C\+E, all of the available energy is used to melt part of the frozen water content of the permeable part of the layer. The amount of energy involved is subtracted from H\+T\+C and added to H\+M\+F\+G. T\+H\+M\+E\+L\+T is subtracted from T\+H\+I\+C\+E, converted to a liquid water volume and added to T\+H\+L\+I\+Q; H\+C\+P is recalculated and the layer temperature is set to 0 C. Otherwise, all of the frozen water content of the layer is converted to liquid water, and H\+M\+F\+G and H\+T\+C are recalculated to reflect this. H\+C\+P is recomputed, and the remaining energy H\+A\+D\+D is applied to increasing the temperature of the soil layer.
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=210pt]{TMCALC_8f_a5ad5bd585e1ef7d89e9862d0bacd3c51_icgraph}
+\end{center}
+\end{figure}
+
+

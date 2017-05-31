@@ -143,7 +143,7 @@ In loops 150 and 200, the theoretical amounts of water F\+D\+T flowing across th
 
 $F(z) = K(z) [-b \Psi(z)/\theta_l(z) \bullet d\theta_l / dz + 1]$
 
-where K(z) is the hydraulic conductivity and psi(z) is the soil moisture suction at depth z, and b is an empirical parameter developed by Clapp and Hornberger (1978). K(z) and $\Psi(z)$ are calculated following Clapp and Hornberger as
+where K(z) is the hydraulic conductivity and psi(z) is the soil moisture suction at depth z, and b is an empirical parameter developed by Clapp and Hornberger (1978) \cite{Clapp1978-898}. K(z) and $\Psi(z)$ are calculated following Clapp and Hornberger as
 
 $K(z) = K_{sat} (\theta_l/\theta_p)^{(2b + 3)}$ $\Psi(z) = \Psi_{sat} (\theta_l/\theta_p)^{(-b )}$
 
@@ -176,3 +176,24 @@ In the first part of the 600 loop, a correction is performed in the unlikely eve
 In the second part of the 600 loop, the temperatures T\+F\+D\+T of the water fluxes at the top and bottom of the layers in the permeable soil profile are set equal to the temperatures of the water in the first and last layers respectively. The flow at the bottom of the profile and the temperature of the flow are used to update B\+A\+S\+F\+L\+W and T\+B\+A\+S\+F\+L, the baseflow from the current subarea and its temperature, and R\+U\+N\+O\+F\+F and T\+R\+U\+N\+O\+F, the total runoff from the grid cell in question and its temperature.
 
 In the 700 loop, for each successive soil layer the temperature of the water flux at the bottom of the layer is first assigned. If the flux is downward, T\+F\+D\+T is set to the temperature of the water in the current layer; if it is upward, T\+F\+D\+T is set to the temperature of the water in the layer below. The temperature of the water in the current layer is then updated using the F\+D\+T and T\+F\+D\+T values at the top and bottom of the layer, and the liquid water content of the layer is set to T\+H\+T\+E\+S\+T.
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{GRDRAN_8f_a9d02aa9115635af052981eec146b1042_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{GRDRAN_8f_a9d02aa9115635af052981eec146b1042_icgraph}
+\end{center}
+\end{figure}
+
+

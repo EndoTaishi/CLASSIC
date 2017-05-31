@@ -45,8 +45,8 @@
 
 
       subroutine mainres (  fcan,      fct,     stemmass,   rootmass, 
-     1                       il1,
-     2                       il2,     tcan,         tbar,   rmatctem,
+     1                       il1, il2, leapnow,
+     2                       tcan,         tbar,   rmatctem,
      3                      sort, nol2pfts,        isand,
 c    -------------- inputs above this line, outputs below ----------
      4                      rmsveg, rmrveg,     roottemp)
@@ -80,7 +80,7 @@ c     ilg       - no. of grid cells in latitude circle
 c     ican      - number of class pfts, currently 4
 c
       use ctem_params,        only : icc, ilg, ignd, ican, kk, zero, 
-     1                               bsrtstem, bsrtroot, minlvfr 
+     1                               bsrtstem, bsrtroot, minlvfr
 
       implicit none
 c
@@ -92,6 +92,7 @@ c
       integer nol2pfts(ican) !<number of level 2 ctem pfts
       integer k1,   k2,  m
       integer isand(ilg,ignd) !<flag for bedrock or ice in a soil layer
+      logical leapnow        !< true if this year is a leap year. Only used if the switch 'leap' is true.
 c
       real fcan(ilg,icc)     !<fractional coverage of ctem's 9 pfts over the given sub-area
       real fct(ilg)          !<sum of all fcan fcan & fct are not used at this time but could be used at some later stage
@@ -173,19 +174,23 @@ c
 !!which bio2str subroutine calculates. rmatctem can thus be used 
 !!to find average root temperature for each plant functional type 
 !!
-      do 180 j = 1, icc
-        do 190 i = il1, il2
-         if (fcan(i,j) .gt. 0.) then
-          do 195 n = 1, ignd
-           if (isand(i,n) .ne. -3) then !Only for non-bedrock
-            roottemp(i,j)= roottemp(i,j)+ tbar(i,n)*rmatctem(i,j,n)
-            tot_rmat(i,j)=tot_rmat(i,j) + rmatctem(i,j,n)
-           end if
-195       continue
-          roottemp(i,j)=roottemp(i,j) / tot_rmat(i,j)
-         endif !fcan check.     
-190     continue 
-180   continue 
+      ! Initial code for > 3 soil layers. YW April 14, 2015
+      ! Removed code for <= 3 soil layers (superfluous) and added division by sum
+      ! of rmatctem, which was missing (similar code in allocate.f). EC Feb 10 2017.
+
+        do j = 1, icc
+          do  i = il1, il2
+            if (fcan(i,j) .gt. 0.) then
+              do  k= 1, ignd
+                if (isand(i,k) .ge. -2)           then
+                  roottemp(i,j)=roottemp(i,j)+tbar(i,k)*rmatctem(i,j,k)
+                  tot_rmat(i,j) = tot_rmat(i,j)+rmatctem(i,j,k)
+                endif
+              enddo
+              roottemp(i,j)=roottemp(i,j)/tot_rmat(i,j)
+            endif
+          enddo
+        enddo
 !>
 !!we assume that stem temperature is same as canopy temperature tcan.
 !!using stem and root temperatures we can find their maintenance respirations rates
@@ -214,8 +219,13 @@ c
 !!an example.). Long-term acclimation to temperature could be occuring 
 !!see King et al. 2006 Nature SOM for a possible approach. JM.
 !!
-          rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*
-     &     (bsrtstem(sort(j))/365.0)
+          if (leapnow) then
+            rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*
+     &       (bsrtstem(sort(j))/366.0)
+          else 
+            rmsveg(i,j)=stemmass(i,j)* livstmfr(i,j)* q10func*
+     &       (bsrtstem(sort(j))/365.0)
+          endif 
 !>
 !>convert kg c/m2.day -> u mol co2/m2.sec
           rmsveg(i,j)= rmsveg(i,j) * 963.62
@@ -229,8 +239,13 @@ c
           endif
 c
           q10func = q10**(0.1*(roottemp(i,j)-288.16))
-          rmrveg(i,j)=rootmass(i,j)* livrotfr(i,j)* q10func*
-     &     (bsrtroot(sort(j))/365.0)
+          if (leapnow) then 
+            rmrveg(i,j)=rootmass(i,j)* livrotfr(i,j)* q10func*
+     &       (bsrtroot(sort(j))/366.0)
+          else 
+            rmrveg(i,j)=rootmass(i,j)* livrotfr(i,j)* q10func*
+     &        (bsrtroot(sort(j))/365.0)
+          endif 
 c
 !>convert kg c/m2.day -> u mol co2/m2.sec
           rmrveg(i,j)= rmrveg(i,j) * 963.62 

@@ -292,7 +292,7 @@ C
                   THTRAN=RLOST(I)*FROOT(I,J)/(RHOW*DELZW(I,J))                      
               ELSE
                   THTRAN=0.0
-              ENDIF
+              ENDIF     
               IF(THPOR(I,J).LT.THLMIN(I,J))           THEN
                   THLLIM=THPOR(I,J)
               ELSE

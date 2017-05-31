@@ -18,7 +18,7 @@ C!
      D                  FCANMX, ZOLN,   ALVSC,  ALIRC,  PAIMAX, PAIMIN, 
      E                  CWGTMX, ZRTMAX, RSMIN,  QA50,   VPDA,   VPDB,
      F                  PSIGA,  PSIGB,  PAIDAT, HGTDAT, ACVDAT, ACIDAT, 
-     G                  ASVDAT, ASIDAT, AGVDAT, AGIDAT, ALGWET, ALGDRY, 
+     G                  ASVDAT, ASIDAT, AGVDAT, AGIDAT, 
      +                  ALGWV,  ALGWN,  ALGDV,  ALGDN,  
      H                  THLIQ,  THICE,  TBAR,   RCAN,   SNCAN,  TCAN,   
      I                  GROWTH, SNO,    TSNOW,  RHOSNO, ALBSNO, ZBLEND,
@@ -34,13 +34,18 @@ C!
      S                  IDAY,   ILG,    IL1,    IL2, NBS,   
      T                  JL,N,   IC,     ICP1,   IG,     IDISP,  IZREF,
      U                  IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,
-     V                  ISNOALB,IGRALB,ALVSCTM, ALIRCTM )
+     V                  ISNOALB,ALVSCTM, ALIRCTM , ipeatland)
 
+C     * OCT  3/16 - J.Melton    Implementing Yuanqiao Wu's peatland code, added
+C                               ipeatland
 C     * AUG 30/16 - J.Melton    Replace ICTEMMOD with ctem_on (logical switch).
 C     * AUG 04/15 - M.LAZARE.   SPLIT FROOT INTO TWO ARRAYS, FOR CANOPY
 C     *                         AREAS WITH AND WITHOUT SNOW.
-C     * AUG 25/14 - M.LAZARE.   PASS IN NEW WET AND DRY SOIL BRIGHTNESS
-C     *                         FIELDS FROM CLM.
+C     * FEB 09/15 - D.VERSEGHY. New version for gcm18 and class 3.6:
+C     *                         - {ALGWV,ALGWN,ALGDV,ALGDN} are passed
+C     *                           in (originating in CLASSB) and then
+C     *                           passed into GRALB, instead of 
+C     *                           {ALGWET,ALGDRY}.
 C     * NOV 16/13 - J.COLE.     FINAL VERSION FOR GCM17:                
 C     *                         - PASS "RHOSNO"IN TO SNOALBA TO         
 C     *                           CALCULATE THE PROPER BC MIXING RATIO  
@@ -123,7 +128,9 @@ C
 C     * INTEGER CONSTANTS.
 C
       INTEGER IDAY,ILG,IL1,IL2,JL,IC,ICP1,IG,IDISP,IZREF,IWF,
-     1        IPAI,IHGT,IALC,IALS,IALG,I,J,N, NBS, ISNOALB,IGRALB 
+     1        IPAI,IHGT,IALC,IALS,IALG,I,J,N, NBS
+
+      INTEGER ISNOALB !<Switch to model snow albedo in two or more wavelength bands
 C
 C     * OUTPUT ARRAYS.
 C
@@ -200,7 +207,7 @@ C
                         !!snow under canopy [m]
       REAL ZPLMGS(ILG)  !<Maximum water ponding depth for ground under snow [m]
       REAL RBCOEF(ILG)  !<Parameter for calculation of leaf boundary resistance
-      REAL TRSNOWC(ILG) !<Short-wave transmissivity of snow pack [ ] 
+      REAL TRSNOWC(ILG) !<Short-wave transmissivity of snow pack under vegetation  [  ]
       REAL ZSNOW (ILG)  !<Depth of snow pack \f$[m] (z_s)\f$ 
       REAL WSNOW (ILG)  !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
       REAL ALVS  (ILG)  !<Diagnosed total visible albedo of land surface [ ]
@@ -218,15 +225,15 @@ C
       REAL CMAI  (ILG)  !<Aggregated mass of vegetation canopy \f$[kg m^{-2}]\f$
       REAL FSNOW (ILG)  !<Diagnosed fractional snow coverage [ ]
 C
-      REAL FROOT (ILG,IG)   !<Fraction of total transpiration contributed by soil layer [ ] 
+      REAL FROOT (ILG,IG)   !<Fraction of total transpiration contributed by soil layer over snow-free subarea  [  ]
       REAL FROOTS(ILG,IG)   !<Fraction of total transpiration contributed 
-                            !!by snow-covered soil layer [ ] 
+                            !!by snow-covered subarea [ ]
       REAL HTC   (ILG,IG)   !<Diagnosed internal energy change of soil 
                             !!layer due to conduction and/or change in mass \f$[W m^{-2}]\f$
 
-      REAL TRSNOWG(ILG,NBS) !!
-      REAL ALTG(ILG,NBS)    !!
-      REAL ALSNO(ILG,NBS)   !!
+      REAL TRSNOWG(ILG,NBS) !<Short-wave transmissivity of snow pack in bare areas  [  ]
+      REAL ALTG(ILG,NBS)    !<Total albedo in each modelled wavelength band  [  ]
+      REAL ALSNO(ILG,NBS)   !<Albedo of snow in each modelled wavelength band  [  ]
 C
 C     * INPUT ARRAYS DEPENDENT ON LONGITUDE.
 C  
@@ -292,8 +299,6 @@ C
       REAL ALGWN(ILG)   !<Reference albedo for saturated soil (NIR) [ ]
       REAL ALGDV(ILG)   !<Reference albedo for dry soil (visible) [ ]
       REAL ALGDN(ILG)   !<Reference albedo for dry soil (NIR) [ ] 
-      REAL ALGWET(ILG)  !<Reference albedo for saturated soil [ ]
-      REAL ALGDRY(ILG)  !<Reference albedo for dry soil [ ] 
       REAL RHOSNI(ILG)  !<Density of fresh snow \f$[kg m^{-3}]\f$ 
       REAL Z0ORO (ILG)  !<Orographic roughness length [m]
       REAL RCAN  (ILG)  !<Intercepted liquid water stored on canopy \f$[kg m^{-2}]\f$ 
@@ -315,15 +320,15 @@ C
                         !!roughness length averaging [m]
       REAL SNOLIM(ILG)  !<Limiting snow depth below which coverage is 
                         !!< 100% \f$[m] (z_{s,lim})\f$
-      REAL ZPLMG0(ILG)  !<Maximum water ponding depth for snow-free 
+      REAL ZPLMG0(ILG)  !<Maximum water ponding depth for snow-free
                         !!subareas (user-specified when running MESH code) [m]
       REAL ZPLMS0(ILG)  !<Maximum water ponding depth for snow-covered 
                         !!subareas (user-specified when running MESH code) [m]
       REAL RADJ  (ILG)  !<Latitude of grid cell (positive north of equator) [rad]
-      REAL REFSNO(ILG)  !! 
-      REAL BCSNO(ILG)   !! 
-      REAL FSDB(ILG,NBS) !!
-      REAL FSFB(ILG,NBS) !!
+      REAL REFSNO(ILG)  !<Snow grain size (for ISNOALB=1 option)  [m]
+      REAL BCSNO(ILG)   !<Black carbon mixing ratio (for ISNOALB=1 option)  \f$[kg m^{-3}]\f$
+      REAL FSDB(ILG,NBS) !<Direct solar radiation in each modelled wavelength band  \f$[W m^{-2}]\f$
+      REAL FSFB(ILG,NBS) !<Diffuse solar radiation in each modelled wavelength band \f$[W m^{-2}]\f$
 C
 C    * SOIL PROPERTY ARRAYS.
 C
@@ -434,6 +439,7 @@ C
       REAL ALVSO    !<Visible albedo of organic matter (0.05)
       REAL ALIRO    !<Near-infrared albedo of organic matter (0.30)
       REAL ALBRCK   !<Albedo of rock 
+      integer  ipeatland(ilg) !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
 
       COMMON /CLASS1/ DELT,TFREZ                                               
       COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
@@ -464,12 +470,11 @@ C------------------------------------------------------------------
       !!ground, canopy over snow and snow over bare ground) are next 
       !!initialized to zero, and the four CLASSA subsidiary subroutines 
       !!are called in turn: APREP to evaluate various model parameters 
-      !!for the four subareas, SNOALBA to calculate the snow albedo and 
-      !!transmissivity, GRALB to calculate the ground surface albedo, and 
-      !!CANALB to calculate the canopy albedo, transmissivity and 
-      !!stomatal resistance. Finally, the overall visible and near-
-      !!infrared albedos for the modelled area are determined as weighted 
-      !!averages over the four subareas.
+      !!for the four subareas, GRALB to calculate the ground surface albedo,
+      !!SNOALBA to calculate the snow albedo and transmissivity, and CANALB
+      !!to calculate the canopy albedo, transmissivity and stomatal resistance.
+      !!Finally, the overall visible, near-infrared and total albedos for the
+      !!modelled area are determined as weighted averages over the four subareas.
       !!
 C     * CALCULATION OF SNOW DEPTH ZSNOW AND FRACTIONAL SNOW COVER
 C     * FSNOW; INITIALIZATION OF COMPUTATIONAL ARRAYS. 
@@ -548,15 +553,16 @@ C
      F            RRESID,SRESID,FRTOT,FRTOTS, 
      G            FCANCMX,ICTEM,ctem_on,RMATC,
      H            AILC,PAIC,AILCG,L2MAX,NOL2PFTS,
-     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC)
+     I            AILCGS,FCANCS,FCANC,ZOLNC,CMASVEGC,SLAIC,
+     j            ipeatland)
 C
 C     * BARE SOIL ALBEDOS.
 C
       CALL GRALB(ALVSG,ALIRG,ALVSGC,ALIRGC,
-     1            ALGWV,ALGWN,ALGDV,ALGDN,ALGWET,ALGDRY,
+     1            ALGWV,ALGWN,ALGDV,ALGDN,
      +            THLIQ,FSNOW,ALVSC(1,5),ALIRC(1,5),                    
      2            FCANMX(1,5),AGVDAT,AGIDAT,FG,ISAND, 
-     3            ILG,IG,IL1,IL2,JL,IALG,IGRALB)
+     3            ILG,IG,IL1,IL2,JL,IALG)
                                                                         
                                                                         
 C     * SNOW ALBEDOS AND TRANSMISSIVITY.                                

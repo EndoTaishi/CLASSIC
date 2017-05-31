@@ -273,12 +273,21 @@ Functions/Subroutines</h2></td></tr>
 <p><img class="formulaInl" alt="$C_s = C_i [\rho_s / \rho_i ] + C_w w_s /[\rho_w z_s]$" src="form_1499.png"/></p>
 <p>If the sublimation rate is positive, the depth of the snow pack ZLOST that is sublimated over the time step is calculated from EVAP using RHOSNO. If ZLOST <img class="formulaInl" alt="$\leq$" src="form_12.png"/> ZSNOW, the snow depth is reduced and HCPSNO is recalculated. Otherwise the deficit amount ZREM is calculated from ZLOST – ZSNOW and converted to a depth of water. This amount is further converted to an evaporation rate by applying a correction factor of <img class="formulaInl" alt="$(L_m+ L_v)/L_v$" src="form_1500.png"/>, where <img class="formulaInl" alt="$L_m$" src="form_1501.png"/> is the latent heat of melting and <img class="formulaInl" alt="$L_v$" src="form_1502.png"/> is the latent heat of vaporization (to account for the fact that the energy is now being used to evaporate water instead of sublimate snow). This necessarily leads to a small discrepancy between the overall vapour flux for the subarea that was originally calculated in CLASST, and the actual change of water storage in the subarea, and therefore this discrepancy is added to the housekeeping variable WLOST for use in the water balance checks done later in CHKWAT. If there was liquid water in the snow pack, WSNOW, it is assigned to overall runoff RUNOFF, and to overland flow OVRFLW. The resulting temperatures of the runoff and overland flow, TRUNOF and TOVRFL, are recalculated as weighted averages using the original runoff amounts and temperatures, and the original snow temperature TSNOW for WSNOW. The snow depth, heat capacity, temperature and water content are all set to zero. Finally, since ZREM now becomes soil evaporation rather than snow sublimation, the diagnostic variables QFN and QFG, representing the vapour flux from snow and soil respectively, are adjusted to reflect this.</p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="SNOVAP_8f_a64f8b35d4ad3e8ced53867425e4500d3_icgraph.png" border="0" usemap="#SNOVAP_8f_a64f8b35d4ad3e8ced53867425e4500d3_icgraph" alt=""/></div>
+<map name="SNOVAP_8f_a64f8b35d4ad3e8ced53867425e4500d3_icgraph" id="SNOVAP_8f_a64f8b35d4ad3e8ced53867425e4500d3_icgraph">
+<area shape="rect" id="node2" href="CLASSW_8f.html#aac1827011ed2ca61bd0274e83d1f80ad" title="classw" alt="" coords="118,5,181,32"/></map>
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:58 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 26 2017 12:30:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

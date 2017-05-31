@@ -84,8 +84,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Canadian Terrestrial Ecosystem Model (CTEM) Bioclimatic Parameters Estimation Subroutine.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="memitem:ga63e17c7f18b8ab7e782acf1b3d957dd8"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__competition__scheme__bioclim.html#ga63e17c7f18b8ab7e782acf1b3d957dd8">competition_scheme::bioclim</a> (iday, ta, precip, netrad, il1, il2, nilg, tcurm, srpcuryr, dftcuryr, inibioclim, tmonth, anpcpcur, anpecur, gdd5cur, surmncur, defmncur, srplscur, defctcur, twarmm, tcoldm, gdd5, aridity, srplsmon, defctmon, anndefct, annsrpls, annpcp, dry_season_length)</td></tr>
-<tr class="separator:ga63e17c7f18b8ab7e782acf1b3d957dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8976936d6f76c8619f6602153b8355f9"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__competition__scheme__bioclim.html#ga8976936d6f76c8619f6602153b8355f9">competition_scheme::bioclim</a> (iday, ta, precip, netrad, il1, il2, nilg, leapnow, tcurm, srpcuryr, dftcuryr, inibioclim, tmonth, anpcpcur, anpecur, gdd5cur, surmncur, defmncur, srplscur, defctcur, twarmm, tcoldm, gdd5, aridity, srplsmon, defctmon, anndefct, annsrpls, annpcp, dry_season_length)</td></tr>
+<tr class="separator:ga8976936d6f76c8619f6602153b8355f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Canadian Terrestrial Ecosystem Model (CTEM) Bioclimatic Parameters Estimation Subroutine. </p>
@@ -95,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </p>
 <p>Equation (efold}) implies that <img class="formulaInl" alt="$63\,{\%}$" src="form_150.png"/> of a sudden change in the value of a bioclimatic index <img class="formulaInl" alt="$\Delta x$" src="form_952.png"/> is reflected in <img class="formulaInl" alt="$X(t)$" src="form_950.png"/> in <img class="formulaInl" alt="$T$" src="form_953.png"/> years <img class="formulaInl" alt="$(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)$" src="form_954.png"/>, while <img class="formulaInl" alt="$86\,{\%}$" src="form_154.png"/> of the change is reflected in <img class="formulaInl" alt="$2T$" src="form_955.png"/> years <img class="formulaInl" alt="$(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86) $" src="form_1862.png"/>. </p>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="ga63e17c7f18b8ab7e782acf1b3d957dd8"></a>
+<a class="anchor" id="ga8976936d6f76c8619f6602153b8355f9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -140,6 +140,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           <td></td>
           <td class="paramtype">integer, intent(in)&#160;</td>
           <td class="paramname"><em>nilg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">logical, intent(in)&#160;</td>
+          <td class="paramname"><em>leapnow</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -294,12 +300,30 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>If its the end of year, then find the temperature of the warmest and the coldest month</p>
 <p>Update long term moving average of bioclimatic parameters in an e-folding sense </p>
 
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9_cgraph.png" border="0" usemap="#group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9_cgraph" alt=""/></div>
+<map name="group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9_cgraph" id="group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9_cgraph">
+<area shape="rect" id="node2" href="XIT_8f.html#aea43fe3205a9aaa600859d61b69d580c" title="xit" alt="" coords="198,12,237,39"/></map>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9_icgraph.png" border="0" usemap="#group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9_icgraph" alt=""/></div>
+<map name="group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9_icgraph" id="group__competition__scheme__bioclim_ga8976936d6f76c8619f6602153b8355f9_icgraph">
+<area shape="rect" id="node2" href="ctem_8f90.html#ace1598599f37c24cac37dd963f23b497" title="ctem" alt="" coords="197,12,248,39"/></map>
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:59 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 26 2017 12:30:14 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

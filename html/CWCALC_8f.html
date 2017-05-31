@@ -217,12 +217,21 @@ Functions/Subroutines</h2></td></tr>
 <p>If there is frozen water stored on the canopy and the canopy temperature is greater than 0 C, the available energy for melting, HMELT, is calculated from CHCAP and the difference between TCAN and 0 C, and compared with HCONV, calculated as the energy required to melt all of the frozen water on the canopy. If HMELT <img class="formulaInl" alt="$\leq$" src="form_12.png"/> HCONV, the amount of frozen water that can be melted is calculated using the latent heat of melting. The fractional coverages of frozen and liquid water FSNOWC and FRAINC and their masses SNOCAN and RAICAN are adjusted accordingly, TCAN is set to 0 C, and the amount of energy involved is subtracted from HTCC and added to HMFC. Otherwise, all of the intercepted frozen water is converted to liquid water, and the energy available for warming the canopy is calculated as HWARM = HMELT – HCONV. This available energy is applied to increasing the temperature of the canopy, using the specific heats of the canopy elements, and the amount of energy that was involved in the phase change is subtracted from HTCC and added to HMFC.</p>
 <p>In the final cleanup, the canopy heat capacity is recomputed and the remaining internal energy calculations are completed.</p>
 
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="CWCALC_8f_a1c51886dfe7782b7a65415cc66561efb_icgraph.png" border="0" usemap="#CWCALC_8f_a1c51886dfe7782b7a65415cc66561efb_icgraph" alt=""/></div>
+<map name="CWCALC_8f_a1c51886dfe7782b7a65415cc66561efb_icgraph" id="CWCALC_8f_a1c51886dfe7782b7a65415cc66561efb_icgraph">
+<area shape="rect" id="node2" href="CLASST_8f.html#afc821376816034a0c657e69bb4b06a24" title="classt" alt="" coords="121,5,178,32"/><area shape="rect" id="node3" href="CLASSW_8f.html#aac1827011ed2ca61bd0274e83d1f80ad" title="classw" alt="" coords="118,56,181,83"/></map>
+</div>
+</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 28 2016 14:59:58 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 26 2017 12:30:13 for CLASS-CTEM by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>
