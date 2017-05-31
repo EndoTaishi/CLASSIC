@@ -1,81 +1,22 @@
 !>\file
-!!Canadian Terrestrial Ecosystem Model (CTEM) 
-!!Joboptions Read-In Subroutine 
-!!
-!! EXAMPLES:
-!!
-!! To set up a transient run that does a cycling of the climate at the start:
-!!
-!! In the example below the model will run from 1851 - 2012 using a climate dataset that
-!! spans 1901 - 2012. The LUC, POPD, CO2 files all span 1850 - 2012. The climate dataset will
-!! cycle over 25 years of climate (NUMMETCYLYRS; from 1901 - 1925) twice (CTEMLOOP) for the 
-!! period 1851 - 1900 while the CO2, POPD, and LUC all run from 1851 - 1900 in their respective
-!! files (Each file will search for 1851 at the start so skipping 1850). Once 1901 is hit
-!! the MET file no longer cycles and simply runs, like the other input files, until
-!! it reaches its end (year 2012).
-!!
-!! (only the relevant switches are shown below) \n
-!! transient_run = .true. \n
-!! trans_startyr = 1851 \n
-!! CTEMLOOP = 2 ,  <-- note this is set to the number of loops that NUMMETCYLYRS must make to match up with the other datasets. \n
-!! NCYEAR = 112 , \n
-!! LNDUSEON = .TRUE. , \n
-!! CYCLEMET = .TRUE. ,  <-- note this is set to TRUE. \n
-!! NUMMETCYLYRS = 25 ,  <-- note this times ctemloop should allow the datasets to match up (e.g. 1850 + 2*25 yrs ends in 1900) \n
-!! METCYLYRST = 1901 , \n
-!! CO2ON = .TRUE. , \n
-!! POPDON = .TRUE. , \n
-!! OBSWETF = .false. ,
-!!
-!! If you are doing methane then this would be true like the CO2 switches
-!!
-!! ------------------------------
-!!
-!! If you want a transient run that does not spin over climate at the start, you need to change from above the following:
-!!
-!! (only the relevant switches are shown below) \n
-!! trans_startyr = 2000, <-- whatever year you want to start at \n
-!! CYCLEMET = .FALSE. ,  <-- note this is set to FALSE.
-!!
-! +++++++++++++++++++++++++++++++
-!!
-!! If you want a transient CO2 run that DOES spin over climate, you need to change from above the following:
+!> Module for parsing command line arguments to program and reading joboptions files.
+module readjobopts
 
-!! (only the relevant switches are shown below) \n
-!! trans_startyr = 2000, <-- whatever year you want the CO2 to start at (note: the run will end at the end of the CO2 file)\n
-!! CO2ON = .TRUE.\n
-!! SETCO2CONC = 285.00 , <-- Now ignored.\n
-!!
-!! ------------------------------
-!!
-!! To set up a spinup run:
-!!
-!! This example runs the model over 125 years. The climate cycles from 1901 - 1925 five times. No LUC happens,
-!! the POPD is set at the 1850 value read in from the POPD file and the CO2 concentration is fixed at SETCO2CONC.
-!!
-!! (only the relevant switches are shown below) \n
-!! transient_run = .false. \n
-!! CTEMLOOP = 5 ,  \n
-!! NCYEAR = 112 ,  <-- Note this should be just be the length of the climate dataset but could be less if you want. \n
-!! LNDUSEON = .false. , \n
-!! CYCLEMET = .TRUE. ,  <-- note this is set to TRUE. \n
-!! NUMMETCYLYRS = 25 ,  <-- note this is however many years you want. \n
-!! METCYLYRST = 1901 , \n
-!! CO2ON = .false. , \n
-!! SETCO2CONC = 285.00 , <-- set to your own appropriate value. \n
-!! POPDON = .TRUE. , <-- note keep this on uses the POPD file, setting false uses the INI file value \n
-!! POPCYCLEYR = 1850 , \n
-!! OBSWETF = .false. ,
-!!
-!! If doing methane then the CH4 switches should be the same as the CO2 ones.
-!!
+implicit none
+
+public :: read_from_job_options
+public :: parsecoords
+
+contains
+
+! ---------------------------------------------------
+
 subroutine read_from_job_options()
 
-!#ifdef nagf95
-!use f90_unix
-!#endif
-
 !       History:
+!
+!     31 May 2017    - Convert to module, getting ready for new driver.
+!     J. Melton
 !
 !     10 Jan 2017    - igralb no longer supported so removed
 !     J. Melton
@@ -107,7 +48,6 @@ subroutine read_from_job_options()
 !     25  Apr. 2012 - This subroutine takes in model switches from
 !     J. Melton       a job file and pushes them to RUNCLASSCTEM
 
-use netcdf_drivers, only : parsecoords
 use io_driver, only : bounds
 use ctem_statevars,     only : c_switch
 
@@ -133,7 +73,7 @@ integer, pointer :: ctemloop !< no. of times the .met file is to be read. this
                     	         !< over and over again.
 
 logical, pointer :: ctem_on  !< set this to true for using ctem simulated dynamic
- 				 !< lai and canopy mass, else class simulated specified
+                         !< lai and canopy mass, else class simulated specified
                  		 !< lai and canopy mass are used. with this switch on,
                  		 !< all ctem subroutines are run.
 
@@ -201,13 +141,6 @@ logical, pointer :: start_bare !<set this to true if competition is true, and if
                                  !< NOTE: This still keeps the crop fractions (while setting all pools to
                                  !< zero)
 
-logical, pointer :: rsfile   !< set this to true if restart files (.ini_rs and .ctm_rs)
-                 		 !< are written at the end of each year. these files are  
-                 		 !< necessary for checking whether the model reaches 
-                 		 !< equilibrium after running for a certain years. 
-                 		 !< set this to false if restart files are not needed 
-                 		 !< (known how many years the model will run)
-
 logical, pointer :: use_netcdf      !< If true, the model inputs and outputs are done with netcdf files.
                                         !! if false, ASCII MET files will be expected. This is retained for use at
                                         !! the site-level but is discouraged for regional/global simulations. Even when
@@ -218,14 +151,8 @@ character(:), pointer :: met_file !< location of the netcdf meteorological datas
 
 character(:), pointer :: init_file !< location of the netcdf initialization file
 
+character(:), pointer :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
 
-logical, pointer :: start_from_rs !< if true, this option copies the _RS INI and CTM files
-                                 !< to be the .INI and .CTM files and then starts the run as per normal.
-                                 !< it is handy when spinning up so you don't have to do a complicated copying of the
-                                 !< RS files to restart from them. NOTE! This will not work on hadar or spica, instead
-                                 !< you have to manually move the files and set this to .false.
-                                 
-integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
 
 logical, pointer :: leap     !< set to true if all/some leap years in the .MET file have data for 366 days 
                                  !< also accounts for leap years in .MET when cycling over meteorology (cyclemet) 
@@ -310,11 +237,11 @@ INTEGER, pointer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the val
                            !< corresponding parameter calculated by class is overridden by
                            !< a user-supplied input value. 
 
-! -------------
-! classctem output switches
+integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
+                                !< if it is set to 1, the new four-band routines are used.
 
-! >>>> note: if you wish to use the values in the .ini file, set all to -9999 in the job options file
-!            and the .ini file will be used.
+! -------------
+! Output switches
 
 integer, pointer :: jhhstd  !< day of the year to start writing the half-hourly output
 integer, pointer :: jhhendd !< day of the year to stop writing the half-hourly output
@@ -324,14 +251,78 @@ integer, pointer :: jhhsty  !< simulation year (iyear) to start writing the half
 integer, pointer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
 integer, pointer :: jdsty   !< simulation year (iyear) to start writing the daily output
 integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
-
-
-integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
-                                !< if it is set to 1, the new four-band routines are used.
+integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
+logical, pointer :: doperpftoutput    !< Switch for making extra output files that are at the per PFT level
+logical, pointer :: dopertileoutput    !< Switch for making extra output files that are at the per tile level
+logical, pointer :: domonthoutput    !< Switch for making monthly output files (annual are always outputted)
+logical, pointer :: dodayoutput    !< Switch for making daily output files (annual are always outputted)
+logical, pointer :: dohhoutput    !< Switch for making half hourly output files (annual are always outputted)
+character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
 
 character(140) :: jobfile
 character(80) :: argbuff
 integer :: argcount, iargc
+
+! Order of the namelist and order in the file don't have to match.
+
+namelist /joboptions/ &
+ transient_run, &
+ trans_startyr, &
+ ctemloop, &
+ ncyear, &
+ cyclemet, &
+ nummetcylyrs, &
+ metcylyrst, &
+ leap, &
+ ctem_on, &
+ spinfast, &
+ lnduseon, &
+ co2on, &
+ setco2conc, &
+ ch4on, &
+ setch4conc, &
+ compete, &
+ inibioclim, &
+ start_bare, &
+ dofire, &
+ popdon, &
+ popcycleyr, &
+ dowetlands, &
+ obswetf, &
+ parallelrun, &
+ use_netcdf, &
+ met_file, &
+ init_file, &
+ rs_file_to_overwrite, &
+ IDISP, &
+ IZREF, &
+ ISLFD, &
+ IPCP, &
+ ITC, &
+ ITCG, &
+ ITG, &
+ IWF, &
+ IPAI, &
+ IHGT, &
+ IALC, &
+ IALS, &
+ IALG, &
+ isnoalb, &
+ doperpftoutput, &
+ dopertileoutput, &
+ dohhoutput, &
+ JHHSTD, &
+ JHHENDD, &
+ JHHSTY, &
+ JHHENDY, &
+ dodayoutput, &
+ JDSTD, &
+ JDENDD, &
+ JDSTY, &
+ JDENDY, &
+ domonthoutput, &
+ JMOSTY, &
+ Comment
 
 ! Point pointers:
 transient_run   => c_switch%transient_run
@@ -357,8 +348,7 @@ obswetf         => c_switch%obswetf
 compete         => c_switch%compete
 inibioclim      => c_switch%inibioclim
 start_bare      => c_switch%start_bare
-rsfile          => c_switch%rsfile
-start_from_rs   => c_switch%start_from_rs
+rs_file_to_overwrite => c_switch%rs_file_to_overwrite
 use_netcdf      => c_switch%use_netcdf
 met_file        => c_switch%met_file
 init_file       => c_switch%init_file
@@ -386,62 +376,12 @@ jhhendy         => c_switch%jhhendy
 jdsty           => c_switch%jdsty
 jdendy          => c_switch%jdendy
 jmosty          => c_switch%jmosty
-! -------------
-
-
-namelist /joboptions/ &
-  transient_run,      &
-  trans_startyr,      &
-  ctemloop,           &
-  ctem_on,            &
-  ncyear,             &
-  lnduseon,           &
-  spinfast,           &
-  cyclemet,           &
-  nummetcylyrs,       &
-  metcylyrst,         &
-  leap,               &
-  co2on,              &
-  setco2conc,         &
-  ch4on,              &
-  setch4conc,         &
-  popdon,             &
-  popcycleyr,         &
-  parallelrun,        &
-  dofire,             &
-  dowetlands,         &
-  obswetf,            &
-  compete,            &
-  inibioclim,         &
-  start_bare,         &
-  rsfile,             &
-  start_from_rs,      &
-  use_netcdf,         &
-  met_file,           &
-  init_file,         &
-  IDISP,              &
-  IZREF,              &
-  ISLFD,              &
-  IPCP,               &
-  ITC,                &
-  ITCG,               &
-  ITG,                &
-  IWF,                &
-  IPAI,               &
-  IHGT,               &
-  IALC,               &
-  IALS,               &
-  IALG,               &
-  isnoalb,            &
-  jhhstd,             &
-  jhhendd,            &
-  jdstd,              &
-  jdendd,             &
-  jhhsty,             &
-  jhhendy,            &
-  jdsty,              &
-  jdendy,             &
-  jmosty
+doperpftoutput  => c_switch%doperpftoutput
+dopertileoutput => c_switch%dopertileoutput
+domonthoutput   => c_switch%domonthoutput
+dodayoutput     => c_switch%dodayoutput
+dohhoutput      => c_switch%dohhoutput
+Comment         => c_switch%Comment
 
 !-------------------------
 !read the joboptions
@@ -466,7 +406,7 @@ argcount = iargc()
 
 call getarg(1,jobfile)
 
-open(10,file=jobfile,status='old')
+open(10,file=jobfile,action='read',status='old')
 
 read(10,nml = joboptions)
 
@@ -480,3 +420,115 @@ end if
 
 end subroutine read_from_job_options
 
+! ----------------------------------------------------------------------------------
+
+subroutine parsecoords(coordstring,val)
+
+!subroutine to parse a coordinate string
+
+implicit none
+
+character(45),      intent(in)  :: coordstring
+real, dimension(4), intent(out) :: val
+
+character(10), dimension(4) :: cval = '0'
+
+integer :: i
+integer :: lasti = 1
+integer :: part  = 1
+
+do i=1,len_trim(coordstring)
+  if (coordstring(i:i) == '/') then
+    cval(part) = coordstring(lasti:i-1)
+    lasti=i+1
+    part = part + 1
+  end if
+end do
+
+cval(part) = coordstring(lasti:i-1)
+
+read(cval,*)val
+
+if (part < 4) then
+  val(3)=val(2)
+  val(4)=val(3)
+  val(2)=val(1)
+end if
+
+end subroutine parsecoords
+
+!>\defgroup read_from_job_options
+!!
+!!Joboptions Read-In Subroutine
+!!
+!! EXAMPLES:
+!!
+!! To set up a transient run that does a cycling of the climate at the start:
+!!
+!! In the example below the model will run from 1851 - 2012 using a climate dataset that
+!! spans 1901 - 2012. The LUC, POPD, CO2 files all span 1850 - 2012. The climate dataset will
+!! cycle over 25 years of climate (NUMMETCYLYRS; from 1901 - 1925) twice (CTEMLOOP) for the
+!! period 1851 - 1900 while the CO2, POPD, and LUC all run from 1851 - 1900 in their respective
+!! files (Each file will search for 1851 at the start so skipping 1850). Once 1901 is hit
+!! the MET file no longer cycles and simply runs, like the other input files, until
+!! it reaches its end (year 2012).
+!!
+!! (only the relevant switches are shown below) \n
+!! transient_run = .true. \n
+!! trans_startyr = 1851 \n
+!! CTEMLOOP = 2 ,  <-- note this is set to the number of loops that NUMMETCYLYRS must make to match up with the other datasets. \n
+!! NCYEAR = 112 , \n
+!! LNDUSEON = .TRUE. , \n
+!! CYCLEMET = .TRUE. ,  <-- note this is set to TRUE. \n
+!! NUMMETCYLYRS = 25 ,  <-- note this times ctemloop should allow the datasets to match up (e.g. 1850 + 2*25 yrs ends in 1900) \n
+!! METCYLYRST = 1901 , \n
+!! CO2ON = .TRUE. , \n
+!! POPDON = .TRUE. , \n
+!! OBSWETF = .false. ,
+!!
+!! If you are doing methane then this would be true like the CO2 switches
+!!
+!! ------------------------------
+!!
+!! If you want a transient run that does not spin over climate at the start, you need to change from above the following:
+!!
+!! (only the relevant switches are shown below) \n
+!! trans_startyr = 2000, <-- whatever year you want to start at \n
+!! CYCLEMET = .FALSE. ,  <-- note this is set to FALSE.
+!!
+! +++++++++++++++++++++++++++++++
+!!
+!! If you want a transient CO2 run that DOES spin over climate, you need to change from above the following:
+
+!! (only the relevant switches are shown below) \n
+!! trans_startyr = 2000, <-- whatever year you want the CO2 to start at (note: the run will end at the end of the CO2 file)\n
+!! CO2ON = .TRUE.\n
+!! SETCO2CONC = 285.00 , <-- Now ignored.\n
+!!
+!! ------------------------------
+!!
+!! To set up a spinup run:
+!!
+!! This example runs the model over 125 years. The climate cycles from 1901 - 1925 five times. No LUC happens,
+!! the POPD is set at the 1850 value read in from the POPD file and the CO2 concentration is fixed at SETCO2CONC.
+!!
+!! (only the relevant switches are shown below) \n
+!! transient_run = .false. \n
+!! CTEMLOOP = 5 ,  \n
+!! NCYEAR = 112 ,  <-- Note this should be just be the length of the climate dataset but could be less if you want. \n
+!! LNDUSEON = .false. , \n
+!! CYCLEMET = .TRUE. ,  <-- note this is set to TRUE. \n
+!! NUMMETCYLYRS = 25 ,  <-- note this is however many years you want. \n
+!! METCYLYRST = 1901 , \n
+!! CO2ON = .false. , \n
+!! SETCO2CONC = 285.00 , <-- set to your own appropriate value. \n
+!! POPDON = .TRUE. , <-- note keep this on uses the POPD file, setting false uses the INI file value \n
+!! POPCYCLEYR = 1850 , \n
+!! OBSWETF = .false. ,
+!!
+!! If doing methane then the CH4 switches should be the same as the CO2 ones.
+!!
+!>\defgroup parsecoords
+!! Parses the bounds info given during the call for the model from the command line.
+
+end module readjobopts

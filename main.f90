@@ -77,14 +77,12 @@ subroutine CLASSIC_driver()
      &                               close_outfiles,ctem_daily_aw,&
      &                               class_annual_aw,bounds
 
-       use input_dataset_drivers, only : read_modelsetup, read_initialstate !openmet, ,readin_met
-
+      use model_state_drivers, only : read_initialstate
 
       implicit none
 
       ! Flag test
       real :: longitude, latitude
-
 
 !
 !     * INTEGER CONSTANTS.
@@ -1590,7 +1588,6 @@ subroutine CLASSIC_driver()
       logical, pointer :: ch4on
       logical, pointer :: popdon
       logical, pointer :: inibioclim
-      logical, pointer :: start_from_rs
       logical, pointer :: dowetlands
       logical, pointer :: obswetf
       logical, pointer :: transient_run
@@ -2782,7 +2779,6 @@ subroutine CLASSIC_driver()
       ch4on             => c_switch%ch4on
       popdon            => c_switch%popdon
       inibioclim        => c_switch%inibioclim
-      start_from_rs     => c_switch%start_from_rs
       dowetlands        => c_switch%dowetlands
       obswetf           => c_switch%obswetf
       transient_run     => c_switch%transient_run
@@ -3316,16 +3312,10 @@ subroutine CLASSIC_driver()
 !    Declarations are complete, run preparations begin
       CALL CLASSD
 
-!> First we set up the run boundaries based on the metadata in the initialization netcdf file.
-!! The bounds are used to find the srtx and srty in the netcdf file, placing the gridcell on the
-!! domain of the input/output netcdfs. In read_modelsetup we use the netcdf to set the nmos, ignd,
-!!and ilg constants. It also opens the initial conditions file that is used in read_initialstate.
-      call read_modelsetup()
-
 !     Initialize the CTEM parameters
       call initpftpars(compete)
 
-!> Now that we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
+!> Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
 !! CTEM variable structures.
       call alloc_class_vars()
       call alloc_ctem_vars()
@@ -3362,15 +3352,12 @@ subroutine CLASSIC_driver()
                FTABLE(nlat,nmos),&
                ACTLYR(nlat,nmos))
 
-!>    This opens and reads in the restart files (replacing the INI and CTM
-!!    files). The inputs from this are used to allocate the CLASS and CTEM
-!!    data structures based on the given nlat, nmos, ignd, etc.
-
-      ! #ED - this is just started but is working at present. This needs to be expanded to
-      ! all restart variables.
-      call read_initialstate(onetile_perPFT)
+!>    This reads in from the restart file (replacing the INI and CTM
+!!    files).
+      call read_initialstate()
       write(*,*)zrfmrow
         print *,'after readinitialstate'
+
 ! #ED - ignore after this.
 !>     Open the met netcdf file. This also sets up the run boundaries
 !!     based on the metadata in the netcdf. It is important to ensure the
@@ -3400,19 +3387,6 @@ subroutine CLASSIC_driver()
        call resetclassaccum(nltest,nmtest)
 
       end subroutine CLASSIC_driver
-
-      ! #ED - we will be able to get rid of this later, but we do need it now for
-      ! subroutines that are linked to this.
-      INTEGER FUNCTION STRLEN(ST)
-      INTEGER       I
-      CHARACTER     ST*(*)
-      I = LEN(ST)
-      DO WHILE (ST(I:I) .EQ. ' ')
-        I = I - 1
-      ENDDO
-      STRLEN = I
-      RETURN
-      END
 
       end module main_driver
 

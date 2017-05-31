@@ -91,10 +91,6 @@ type ctem_switches
     logical :: inibioclim  !<switch telling if bioclimatic parameters are being initialized
                            !<from scratch (false) or being initialized from some spun up
                            !<values(true).
-    logical :: start_from_rs!<if true, this option copies the _RS INI and CTM files to be the .INI and .CTM files and
-                           !<then starts the run as per normal. it is handy when spinning up so you don't have to do a
-                           !<complicated copying of the RS files to restart from them. NOTE! This will not work on
-                           !<hadar or spica, instead you have to manually move the files and set this to .false.    
     logical :: leap        !< set to true if all/some leap years in the .MET file have data for 366 days
                            !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
     logical :: dowetlands   !<if true allow wetland methane emission
@@ -103,9 +99,16 @@ type ctem_switches
     logical :: use_netcdf        !< If true all model inputs and outputs are handled via netcdfs
     character(180) :: met_file   !< location of the netcdf meteorological dataset
     character(180) :: init_file  !< location of the netcdf initialization file
+    character(180) :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
+    character(180) :: Comment   !< Comment about the run that will be written to the output netcdfs
     integer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
                                   !< from the start then put in a negative number (like -9999), if you never want to have monthly
                                   !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR
+    logical :: doperpftoutput    !< Switch for making extra output files that are at the per PFT level
+    logical :: dopertileoutput    !< Switch for making extra output files that are at the per tile level
+    logical :: domonthoutput    !< Switch for making monthly output files (annual are always outputted)
+    logical :: dodayoutput    !< Switch for making daily output files (annual are always outputted)
+    logical :: dohhoutput    !< Switch for making half hourly output files (annual are always outputted)
 
     ! CLASS switches:
 
@@ -1328,8 +1331,7 @@ implicit none
 
 ! allocated with nlat,nmos, icc:
 
-allocate(vrot%ailcmin(nlat,nmos,icc),&
-         vrot%pftexist(nlat,nmos,icc),&
+allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%lfstatus(nlat,nmos,icc),&
          vrot%pandays (nlat,nmos,icc),&
          vrot%ailcmin (nlat,nmos,icc),&

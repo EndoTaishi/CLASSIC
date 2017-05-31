@@ -1,9 +1,9 @@
-module input_dataset_drivers
+module model_state_drivers
 
-! This is the central driver to read in, and write out
-! all model state variables (replaces INI and CTM files)
-! as well as the model inputs such as MET, population density,
-! land use change etc.
+!> This is the central driver to read in, and write out
+!! all model state variables (replacing INI and CTM files)
+!! as well as the model inputs such as MET, population density,
+!! land use change, CO2 etc.
 
 ! J. Melton
 ! Nov 2016
@@ -22,9 +22,9 @@ contains
 subroutine read_modelsetup()
 
 !> This reads in the model setup from the netcdf initialization file.
-!> The number of latitudes (nlat) and the maximum number of mosaics (nmos)
-!> is read from the netcdf. ilg is then calculated. The number of soil layers
-!> is also set from the netcdf.
+!> The number of latitudes is always 1 offline while the maximum number of
+!> mosaics (nmos), the number of soil layers (ignd), are read from the netcdf.
+!> ilg is then calculated from nlat and nmos.
 
 ! J. Melton
 ! Feb 2017
@@ -46,6 +46,7 @@ integer :: xsize, ysize
 integer, dimension(1) :: pos
 integer, dimension(2) :: xpos,ypos
 integer, dimension(:,:), allocatable :: nmarray
+real, dimension(:), allocatable :: all_lon,all_lat
 
 ! point pointers:
 init_file         => c_switch%init_file
@@ -67,35 +68,35 @@ call check_nc(nf90_inquire_dimension(initid,dimid,len=ysize))
 
 !calculate the number and indices of the pixels to be calculated
 
-allocate(lonvect(xsize))
-allocate(latvect(ysize))
+allocate(all_lon(xsize),&
+         all_lat(ysize))
 
 call check_nc(nf90_inq_varid(initid,'lon',varid))
-call check_nc(nf90_get_var(initid,varid,lonvect))
+call check_nc(nf90_get_var(initid,varid,all_lon))
 
 call check_nc(nf90_inq_varid(initid,'lat',varid))
-call check_nc(nf90_get_var(initid,varid,latvect))
+call check_nc(nf90_get_var(initid,varid,all_lat))
 
 ! Based on the bounds, we make vectors of the cells to be run:
-pos = minloc(abs(lonvect - bounds(1)))
+pos = minloc(abs(all_lon - bounds(1)))
 xpos(1) = pos(1)
 
-pos = minloc(abs(lonvect - bounds(2)))
+pos = minloc(abs(all_lon - bounds(2)))
 xpos(2) = pos(1)
 
-pos = minloc(abs(latvect - bounds(3)))
+pos = minloc(abs(all_lat - bounds(3)))
 ypos(1) = pos(1)
 
-pos = minloc(abs(latvect - bounds(4)))
+pos = minloc(abs(all_lat - bounds(4)))
 ypos(2) = pos(1)
 
 srtx = minval(xpos)
 srty = minval(ypos)
 
-if (lonvect(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
+if (all_lon(srtx) < bounds(1) .and. bounds(2) /= bounds(1)) srtx = srtx + 1
  cntx = 1 + abs(maxval(xpos) - srtx)
 
-if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
+if (all_lat(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
  cnty = 1 + abs(maxval(ypos) - srty)
 
 !> The size of nlat should then be cntx x cnty. We later take in GC to determine
@@ -103,6 +104,12 @@ if (latvect(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
 !! do computations over the valid land cells.
 
 nlat = cntx * cnty
+
+!> Save the longitudes and latitudes over the region of interest for making the
+!! output files.
+allocate(lonvect(cntx),&
+         latvect(cnty),&
+         nmarray(cnty,cntx))
 
 !> Retrieve the number of soil layers (set ignd!)
 
@@ -112,14 +119,14 @@ call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
 !> To determine nmos, we use the largest number in the input file variable nmtest
 !! for the region we are running.
 
-allocate(nmarray(cnty,cntx))
-
 call check_nc(nf90_inq_varid(initid,'nmtest',varid))
 call check_nc(nf90_get_var(initid,varid,nmarray,start=[srtx,srty],count=[cntx,cnty]))
 
 nmos= maxval(nmarray)
 
-deallocate(nmarray)
+deallocate(nmarray,&
+           all_lat,&
+           all_lon)
 
 !> Lastly we determine the size of ilg which is nlat times nmos
 
@@ -130,7 +137,7 @@ end subroutine read_modelsetup
 
 !--------------------------------------------------------------------------------------------
 
-subroutine read_initialstate(onetile_perPFT) 
+subroutine read_initialstate()
 
 ! J. Melton
 ! Nov 2016
@@ -143,9 +150,6 @@ use class_statevars,    only : alloc_class_vars,class_rot
  use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero
 
 implicit none
-
-! arguments:
-logical, intent(in) :: onetile_perPFT !flag temp intent
 
 ! pointers:
 character(180), pointer         :: init_file
@@ -306,17 +310,6 @@ ZBLDROW           => class_rot% ZBLDROW
 
 allocate(temptwod(cntx,cnty))
 
-! 
-!  call check_nc(nf90_inq_varid(initid,'lat',varid))
-!  call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!
-!  write(*,*)'lats ',temptwod
-!
-!
-!  call check_nc(nf90_inq_varid(initid,'lon',varid))
-!  call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!
-
 ! !       JLAT=NINT(DLATROW(1))
 ! !       RADJROW(1)=DLATROW(1)*PI/180.
 ! !       DLONROW(1)=DEGLON
@@ -324,23 +317,21 @@ allocate(temptwod(cntx,cnty))
 !       GGEOROW(1)=0.0
 ! !     GGEOROW(1)=-0.035
 
-
-
 call check_nc(nf90_inq_varid(initid,'ZRFM',varid))
 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-ZRFMROW = map(temptwod)
+ZRFMROW = map(temptwod,nlat)
 
 call check_nc(nf90_inq_varid(initid,'ZRFH',varid))
 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-ZRFHROW = map(temptwod)
+ZRFHROW = map(temptwod,nlat)
 
 call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-ZBLDROW = map(temptwod)
+ZBLDROW = map(temptwod,nlat)
 
 call check_nc(nf90_inq_varid(initid,'GC',varid))
 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-GCROW = map(temptwod)
+GCROW = map(temptwod,nlat)
 
 call check_nc(nf90_inq_varid(initid,'DRN',varid))
 call check_nc(nf90_get_var(initid,varid,DRNROT,start=[srtx,srty],count=[cntx,cnty]))
@@ -634,171 +625,10 @@ deallocate(temptwod)
 !
 ! FLAG - after done read in close the netcdf!
 !
-! !>Check that a competition or luc run has the correct number of mosaics. if it is not a start_bare run, then nmtest should equal nmos
-!       if (onetile_perPFT .and. (compete .or. lnduseon) .and. .not. start_bare) then
-!         if (nmtest .ne. nmos) then
-!            write(6,*)'compete or luc runs that do not start from bare'
-!            write(6,*)'ground need the number of mosaics to equal icc+1'
-!            write(6,*)'nmtest = ',nmtest,' nmos = ',nmos
-!             call xit('runclass36ctem', -2)
-!         endif
-!       endif
-! !>
 ! !>if this run uses the competition or lnduseon parameterization and starts from bare ground, set up the model state here. this
 ! !>overwrites what was read in from the .ini and .ctm files. for composite runs (the composite set up is after this one for mosaics)
 !       if ((compete .or. lnduseon) .and. start_bare) then
 !
-!        if (onetile_perPFT) then
-! !>
-! !!store the read-in crop fractions as we keep them even when we start bare.
-! !!FLAG: this is setup assuming that crops are in mosaics 6 and 7. JM Apr 9 2014.
-!          do i=1,nltest
-!           crop_temp_frac(i,1)=FAREROT(i,6)
-!           crop_temp_frac(i,2)=FAREROT(i,7)
-!          end do
-!
-! !>check the number of mosaics that came from the .ini file
-!         if (nmtest .ne. nmos) then
-!
-! !>we need to transfer some initial parameterization info to all mosaics, so set all values to that of the first mosaic.
-!          do i=1,nltest
-!           do m=nmtest+1,nmos
-!
-!            do j=1,ican
-!              RSMNROT(i,m,j)=RSMNROT(i,1,j)
-!              QA50ROT(i,m,j)=QA50ROT(i,1,j)
-!              VPDAROT(i,m,j)=VPDAROT(i,1,j)
-!              VPDBROT(i,m,j)=VPDBROT(i,1,j)
-!              PSGAROT(i,m,j)=PSGAROT(i,1,j)
-!              PSGBROT(i,m,j)=PSGBROT(i,1,j)
-!            enddo
-!
-!            DRNROT(i,m)=DRNROT(i,1)
-!            SDEPROT(i,m)=SDEPROT(i,1)
-!            FAREROT(i,m)=FAREROT(i,1)
-!            XSLPROT(i,m)=XSLPROT(i,1)
-!            GRKFROT(i,m)=GRKFROT(i,1)
-!            WFSFROT(i,m)=WFSFROT(i,1)
-!            WFCIROT(i,m)=WFCIROT(i,1)
-!            MIDROT(i,m)=MIDROT(i,1)
-!
-!            do j=1,3
-!             SANDROT(i,m,j)=SANDROT(i,1,j)
-!             CLAYROT(i,m,j)=CLAYROT(i,1,j)
-!             ORGMROT(i,m,j)=ORGMROT(i,1,j)
-!             TBARROT(i,m,j)=TBARROT(i,1,j)
-!             THLQROT(i,m,j)=THLQROT(i,1,j)
-!             THICROT(i,m,j)=THICROT(i,1,j)
-!            enddo
-!
-!            TCANROT(i,m)=TCANROT(i,1)
-!            TSNOROT(i,m)=TSNOROT(i,1)
-!            TPNDROT(i,m)=TPNDROT(i,1)
-!            ZPNDROT(i,m)=ZPNDROT(i,1)
-!            RCANROT(i,m)=RCANROT(i,1)
-!            SCANROT(i,m)=SCANROT(i,1)
-!            SNOROT(i,m)=SNOROT(i,1)
-!            ALBSROT(i,m)=ALBSROT(i,1)
-!            RHOSROT(i,m)=RHOSROT(i,1)
-!            GROROT(i,m)=GROROT(i,1)
-!            do j=1,icc
-!              lfstatusrow(i,m,j) = 4
-!            enddo !j
-!
-!           enddo !m
-!          enddo !i
-!
-! !>set the number of mosaics to icc+1
-!         nmtest=nmos
-!
-!         endif  !>if (nmtest .ne. nmos)
-!
-! !>set the initial conditions for the pfts
-! ! (bah, this is such an inelegant way to do this, but oh well...)
-!
-! !>initalize to zero
-!         FCANROT=0.0
-!         dvdfcanrow=0.0
-!         FAREROT=0.0
-!
-!         do i=1,nltest
-!          do m=1,nmtest
-!
-! !>set the seed amount for each pft in its mosaic
-!           if (compete .or. lnduseon) then
-!             if (m .lt. icc+1) then
-!              FAREROT(i,m)=seed
-!             else
-!              FAREROT(i,m)=1.0 - (real(icc) * seed)
-!             endif
-!           endif
-!
-!           do j = 1,icc
-!             ailcminrow(i,m,j)=0.0
-!             ailcmaxrow(i,m,j)=0.0
-!             gleafmasrow(i,m,j)=0.0
-!             bleafmasrow(i,m,j)=0.0
-!             stemmassrow(i,m,j)=0.0
-!             rootmassrow(i,m,j)=0.0
-!             lfstatusrow(i,m,j)=4
-!             pandaysrow(i,m,j)=0
-!           enddo
-!
-!           lfstatusrow(i,m,1)=2
-!
-!           do j = 1,iccp1
-!             litrmassrow(i,m,j)=0.
-!             soilcmasrow(i,m,j)=0.
-!           enddo
-!
-! !>initial conditions always required
-!           dvdfcanrow(i,m,1)=1.0  !ndl
-!           dvdfcanrow(i,m,3)=1.0  !bdl
-!           dvdfcanrow(i,m,6)=1.0  !crop
-!           dvdfcanrow(i,m,8)=1.0  !grasses
-!
-! !>then adjusted below for the actual mosaic makeup
-!           if (m .le. 2) then                     !ndl
-!            FCANROT(i,m,1)=1.0
-!            if (m .eq. 2) then
-!              dvdfcanrow(i,m,1)=0.0
-!              dvdfcanrow(i,m,2)=1.0
-!            endif
-!           elseif (m .ge. 3 .and. m .le. 5) then  !bdl
-!            FCANROT(i,m,2)=1.0
-!            if (m .eq. 4) then
-!              dvdfcanrow(i,m,3)=0.0
-!              dvdfcanrow(i,m,4)=1.0
-!            endif
-!            if (m .eq. 5) then
-!              dvdfcanrow(i,m,3)=0.0
-!              dvdfcanrow(i,m,5)=1.0
-!            endif
-!           elseif (m .eq. 6 .or. m .eq. 7) then  !crop
-!            FCANROT(i,m,3)=1.0
-!            if (m .eq. 7) then
-!              dvdfcanrow(i,m,6)=0.0
-!              dvdfcanrow(i,m,7)=1.0
-!            endif
-!           elseif (m .eq. 8 .or. m .eq. 9) then  !grasses
-!            FCANROT(i,m,4)=1.0
-!            if (m .eq. 9) then
-!              dvdfcanrow(i,m,8)=0.0
-!              dvdfcanrow(i,m,9)=1.0
-!            endif
-!           else                                  !bare/urban?
-!            FCANROT(i,m,5)=1.0
-!            endif !mosaic adjustments
-!          enddo  !m
-!         enddo  !i
-!
-!
-!          do i=1,nltest
-!           FAREROT(i,6)=crop_temp_frac(i,1)
-!           FAREROT(i,7)=crop_temp_frac(i,2)
-!          end do
-!
-!       else if (.not. onetile_perPFT) then
 ! !>set up for composite runs when start_bare is on and compete or landuseon
 !
 ! !>store the read-in crop fractions as we keep them even when we start bare.
@@ -870,17 +700,19 @@ deallocate(temptwod)
 !             end do !nmtest
 !          end do !nltest
 !
-!       end if ! mosaic / composite
 !       end if !if (compete/landuseon .and. start_bare)
 
 
 end subroutine read_initialstate
 
-function map(twodin) result(out)
+function map(twodin,outsize) result(out)
     use io_driver, only : cntx,cnty
+    integer, intent(in) :: outsize
     real, intent(in), dimension(:,:) :: twodin ! input
-    real, dimension(:)             :: out ! output
+    real, dimension(outsize)  :: out ! output
+
     integer :: x,y,k
+
     k = 0
     do x = 1, cntx
         do y = 1, cnty
@@ -891,10 +723,11 @@ function map(twodin) result(out)
 
 end function map
 
-function map3d(threedin) result(out)
+function map3d(threedin,dimone,dimtwo) result(out)
     use io_driver, only : cntx,cnty
+    integer, intent(in) :: dimone,dimtwo
     real, intent(in), dimension(:,:,:) :: threedin ! input
-    real, dimension(:,:)             :: out ! output
+    real, dimension(dimone,dimtwo)             :: out ! output
     integer :: x,y,k
     k = 0
     do x = 1, cntx
@@ -906,4 +739,4 @@ function map3d(threedin) result(out)
 
 end function map3d
 
-end module input_dataset_drivers
+end module model_state_drivers

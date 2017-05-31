@@ -16,27 +16,28 @@
 
  co2on = .false. ,
  setco2conc = 285.00 ,
+
  ch4on = .false.,
  setch4conc = 1.785 ,
-
- popdon = .true. ,
- popcycleyr = 1850 ,
 
  compete=.false. ,
  inibioclim=.false. ,
  start_bare=.false.,
 
  dofire = .false. ,
+ popdon = .true. ,
+ popcycleyr = 1850 ,
+
  dowetlands = .false. ,
  obswetf = .false. ,
 
  parallelrun = .false. ,
- rsfile=.true. ,
- start_from_rs=.false.,
 
  use_netcdf = .true.,
+
  met_file = '/raid/ra40/data/rjm/cruncep2/t63files/cruncepv7_1901_2015_T63.nc' ,
- init_file = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_initialization.nc'
+ init_file = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_initialization.nc' ,
+ rs_file_to_overwrite = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_restart.nc' ,
 
  IDISP = 0 ,
  IZREF = 2 ,
@@ -53,21 +54,29 @@
  IALG = 0 ,
  isnoalb = 0,
 
+ doperpftoutput = .true. ,
+ dopertileoutput = .true. ,
+
+ dohhoutput = .false. ,
  JHHSTD = 1 ,
  JHHENDD = 365 ,
- JDSTD = 1 ,
- JDENDD = 365 ,
  JHHSTY = 2901 ,
  JHHENDY = 3010 ,
+
+ dodayoutput = .false. ,
+ JDSTD = 1 ,
+ JDENDD = 365 ,
  JDSTY = 2901 ,
  JDENDY = 2999 ,
+
+ domonthoutput = .true. ,
  JMOSTY = 1000 ,
- 
+
+ Comment = ' test ' ,
+
 /
 
-This area is for comments about the run. 
+This area is for comments about the run. The comment above will be written to the netcdf output files.
 
-Note: START_FROM_RS must be .false. on spica/hadar. The system call does not work when
-operating in the open_mp script.
  
 

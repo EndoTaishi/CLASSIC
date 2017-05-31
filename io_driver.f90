@@ -54,12 +54,36 @@ real, dimension(4) :: bounds                    !> Corners of the domain to be s
 integer :: metfid                               !> netcdf file id for the meteorology file
 integer :: initid                               !> netcdf file id for the model initialization file
 integer :: rs_id                                !> netcdf file id for the model restart file
+real, allocatable, dimension(:) :: lonvect      !> vector of all longitudes for the region of this simulation
+real, allocatable, dimension(:) :: latvect      !> vector of all latitudes for the region of this simulation
+integer :: srtx                                 !> starting index for this simulation for longitudes
+integer :: srty                                 !> starting index for this simulation for latitudes
+integer :: cntx                                 !> number of grid cells for this simulation in the longitude direction
+integer :: cnty                                 !> number of grid cells for this simulation in the latitude direction
+real, dimension(2) :: xrange
+real, dimension(2) :: yrange
+
+type infopak
+    character(30) :: shortname = ' '        !<
+    character(30) :: time_freq = ''         !< Time frequency of variable: half-hourly, daily, monthly, annually
+    character(400) :: long_name = ' '       !< Long name of the variable
+    character(30) :: units  = ' '           !< Units of the variable
+    character(30) :: standard_name = ' '    !<
+    character(30) :: nameincode = ' '       !<
+    character(80) :: comment = ' '          !<
+    logical :: includebare = .false.        !< If true then expand the PFT list for a final position that is the bare ground.
+end type
+
+type (infopak) :: winfo        ! Outputs are per PFT, per tile, grid average values, or per soil layer
+
+real, parameter :: fill_value = 1.e38         !value given for empty fields in the NetCDF output files
+character(30) :: timestart = "seconds since 1801-1-1"
+
+
+! Variables used in met forcing reads
 integer, parameter :: niv = 7                   !> number of meteorology variables
 character(2), dimension(niv), parameter :: vname = [ "lw", "ap", "qa", "pr", "sw", "wi", "ta" ] !< names of the met vars: longwave down, atmos pressure,
                                                     !! specific humidity, precipitation, shortwave down, wind, air temperature
-
-real, allocatable, dimension(:) :: lonvect      !> vector of all longitudes for this simulation
-real, allocatable, dimension(:) :: latvect      !> vector of all latitudes for this simulation
 
 real, allocatable, dimension(:,:) :: lw6hr      !> downwelling longwave radiation 6 hrly
 real, allocatable, dimension(:,:) :: ap6hr      !>
@@ -68,15 +92,9 @@ real, allocatable, dimension(:,:) :: pr6hr      !>
 real, allocatable, dimension(:,:) :: sw6hr      !>
 real, allocatable, dimension(:,:) :: wi6hr      !>
 real, allocatable, dimension(:,:) :: ta6hr      !>
-
-integer :: srtx                                 !> starting index for this simulation for longitudes
-integer :: srty                                 !> starting index for this simulation for latitudes
-integer :: cntx                                 !> number of grid cells for this simulation in the longitude direction
-integer :: cnty                                 !> number of grid cells for this simulation in the latitude direction
-integer :: endx                                 !> end index for this simulation for longitudes
-integer :: endy                                 !> end index for this simulation for latitudes
-
 integer :: yearmetst                            !> Year that the met data starts on
+
+
 
 contains
 
