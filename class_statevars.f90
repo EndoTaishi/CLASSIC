@@ -359,7 +359,7 @@ type class_gather
 
 end type class_gather
 
-type (class_gather), allocatable, save, target :: class_gat
+type (class_gather), save, target :: class_gat
 
 ! ================================================================================
 
@@ -684,7 +684,7 @@ type class_rotated
 
 end type class_rotated
 
-type (class_rotated), allocatable, save, target :: class_rot
+type (class_rotated), save, target :: class_rot
 
 contains
 
@@ -697,7 +697,6 @@ use ctem_params, only : ican, nbs, icp1, nlat,nmos,ignd, ilg
 implicit none
 
 ! ------------------
-
 
 !ilg
 allocate(class_gat% ILMOS   (ilg),&

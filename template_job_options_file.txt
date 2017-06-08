@@ -7,6 +7,7 @@
  cyclemet = .true. ,
  nummetcylyrs = 30 ,
  metcylyrst = 1901 ,
+
  leap = .false.,
 
  ctem_on = .true. ,
@@ -38,6 +39,7 @@
  met_file = '/raid/ra40/data/rjm/cruncep2/t63files/cruncepv7_1901_2015_T63.nc' ,
  init_file = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_initialization.nc' ,
  rs_file_to_overwrite = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_restart.nc' ,
+ output_directory = '/home/rjm/Documents/CTEM/test'
 
  IDISP = 0 ,
  IZREF = 2 ,
@@ -74,7 +76,7 @@
 
  Comment = ' test ' ,
 
-/
+ /
 
 This area is for comments about the run. The comment above will be written to the netcdf output files.
 

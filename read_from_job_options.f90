@@ -153,6 +153,7 @@ character(:), pointer :: init_file !< location of the netcdf initialization file
 
 character(:), pointer :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
 
+character(:), pointer :: output_directory !< Directory where the output netcdfs will be placed
 
 logical, pointer :: leap     !< set to true if all/some leap years in the .MET file have data for 366 days 
                                  !< also accounts for leap years in .MET when cycling over meteorology (cyclemet) 
@@ -294,6 +295,7 @@ namelist /joboptions/ &
  met_file, &
  init_file, &
  rs_file_to_overwrite, &
+ output_directory, &
  IDISP, &
  IZREF, &
  ISLFD, &
@@ -349,6 +351,7 @@ compete         => c_switch%compete
 inibioclim      => c_switch%inibioclim
 start_bare      => c_switch%start_bare
 rs_file_to_overwrite => c_switch%rs_file_to_overwrite
+output_directory => c_switch%output_directory
 use_netcdf      => c_switch%use_netcdf
 met_file        => c_switch%met_file
 init_file       => c_switch%init_file
@@ -381,7 +384,7 @@ dopertileoutput => c_switch%dopertileoutput
 domonthoutput   => c_switch%domonthoutput
 dodayoutput     => c_switch%dodayoutput
 dohhoutput      => c_switch%dohhoutput
-Comment         => c_switch%Comment
+ Comment         => c_switch%Comment
 
 !-------------------------
 !read the joboptions

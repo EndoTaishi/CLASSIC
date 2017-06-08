@@ -56,6 +56,8 @@ CLASSIC: $(OBJ)
 
 .PHONY: clean
 
+all: CLASSIC
+
 clean:
 	rm -f *.o *.mod *~ core CLASSIC
 

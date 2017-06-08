@@ -1197,10 +1197,12 @@ subroutine setup_nc(kindout)
     character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
     logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
                                        !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
+    character(:), pointer :: output_directory !< Directory where the output netcdfs will be placed
 
     ! Point pointers
     leap => c_switch%leap
     Comment => c_switch%Comment
+    output_directory => c_switch%output_directory
 
     ! ---------
 
@@ -1209,23 +1211,22 @@ subroutine setup_nc(kindout)
 
     ! Make the output file name
     if (kindout == 'pertil') then
-        filename = trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '_pertil.nc'
+        filename = trim(output_directory)//'/'// trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '_pertil.nc'
     else if (kindout == 'perpft') then
-        filename = trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '_perpft.nc'
+        filename = trim(output_directory)//'/'// trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '_perpft.nc'
     else
-        filename = trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '.nc'
+        filename = trim(output_directory)//'/'// trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '.nc'
     end if
 
 
     call check_nc(nf90_create(filename,cmode=nf90_netcdf4,ncid=ncid))
-    call check_nc(nf90_put_att(ncid,nf90_global,'title','CLASSIC netCDF output file'))
+    call check_nc(nf90_put_att(ncid,nf90_global,'title','CLASSIC output file'))
 
     call date_and_time(today,now)
 
     call check_nc(nf90_put_att(ncid,nf90_global,'timestamp',today//' '//now(1:4)))
     call check_nc(nf90_put_att(ncid,nf90_global,'Conventions','COARDS'))
     call check_nc(nf90_put_att(ncid,nf90_global,'node_offset',1))
-    call check_nc(nf90_put_att(ncid,nf90_global,'_Format',"netCDF-4"))
 
     !----1 - Longitude
     call check_nc(nf90_def_dim(ncid,'lon',cntx,lon))
@@ -1288,7 +1289,6 @@ subroutine setup_nc(kindout)
     call check_nc(nf90_put_att(ncid,varid,'_Chunksizes',1))
     call check_nc(nf90_put_att(ncid,varid,'_Endianness',"little"))
 
-
     call check_nc(nf90_enddef(ncid))
 
      ! Fill in the dimension variables and define the model output vars
@@ -1335,7 +1335,9 @@ subroutine setup_nc(kindout)
 
     call check_nc(nf90_put_att(ncid,varid,'long_name',varinfo%long_name))
     call check_nc(nf90_put_att(ncid,varid,'units',varinfo%units))
-    call check_nc(nf90_put_att(ncid,varid,'_FillValue',fill_value))
+
+    !call check_nc(nf90_put_att(ncid,varid,'_FillValue',fill_value)) !FLAG this is not working at present.
+
     call check_nc(nf90_put_att(ncid,varid,'missing_value',fill_value))
     call check_nc(nf90_put_att(ncid,varid,'_Storage',"chunked"))
     call check_nc(nf90_put_att(ncid,varid,'_DeflateLevel',1))

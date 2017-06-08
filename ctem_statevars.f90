@@ -62,7 +62,7 @@ type ctem_switches
                          !< soil carbon pool faster
     integer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
                              !< ignored if cyclemet is false
-    integer, pointer :: metcylyrst   !< climate year to start the spin up on
+    integer :: metcylyrst   !< climate year to start the spin up on
                              !< ignored if cyclemet is false
     real :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
     real :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
@@ -101,6 +101,7 @@ type ctem_switches
     character(180) :: init_file  !< location of the netcdf initialization file
     character(180) :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
     character(180) :: Comment   !< Comment about the run that will be written to the output netcdfs
+    character(180) :: output_directory !< Directory where the output netcdfs will be placed
     integer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
                                   !< from the start then put in a negative number (like -9999), if you never want to have monthly
                                   !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR
@@ -460,7 +461,7 @@ type veg_rot
 
 end type veg_rot
 
-type (veg_rot), allocatable, save, target :: vrot
+type (veg_rot), save, target :: vrot
 
 !=================================================================================
 !>CTEM's 'gat' vars
@@ -699,7 +700,7 @@ type veg_gat
                                                      !<above where disturb subroutine is called.
 end type veg_gat
 
-type (veg_gat), allocatable, save, target :: vgat
+type (veg_gat), save, target :: vgat
 !=================================================================================
 !>CLASS's monthly outputs
 type class_moyr_output
@@ -763,7 +764,7 @@ type class_moyr_output
 
 end type class_moyr_output
 
-type (class_moyr_output), allocatable, save, target :: class_out
+type (class_moyr_output), save, target :: class_out
 
 !=================================================================================
 !>CTEM's grid average variables
@@ -921,7 +922,7 @@ type ctem_gridavg
 
 end type ctem_gridavg
 
-type (ctem_gridavg), allocatable, save, target :: ctem_grd
+type (ctem_gridavg), save, target :: ctem_grd
 
 !=================================================================================
 !>CTEM's variables per tile
@@ -994,7 +995,7 @@ type ctem_tile_level
 
 end type ctem_tile_level
 
-type (ctem_tile_level), allocatable, save, target :: ctem_tile
+type (ctem_tile_level), save, target :: ctem_tile
 
 !=================================================================================
 !>CTEM's variables monthly averaged (per pft)
@@ -1040,7 +1041,7 @@ type ctem_monthly
 
 end type ctem_monthly
 
-type (ctem_monthly), allocatable, save, target :: ctem_mo
+type (ctem_monthly), save, target :: ctem_mo
 
 !=================================================================================
 !>CTEM's grid average monthly values
@@ -1095,7 +1096,7 @@ type ctem_gridavg_monthly
 
 end type ctem_gridavg_monthly
 
-type (ctem_gridavg_monthly), allocatable, save, target :: ctem_grd_mo
+type (ctem_gridavg_monthly), save, target :: ctem_grd_mo
 
 !=================================================================================
 !>CTEM's variables per tile monthly values
@@ -1152,7 +1153,7 @@ type ctem_tileavg_monthly
 
 end type ctem_tileavg_monthly
 
-type (ctem_tileavg_monthly), allocatable, save, target :: ctem_tile_mo
+type (ctem_tileavg_monthly), save, target :: ctem_tile_mo
 
 
 !=================================================================================
@@ -1200,7 +1201,7 @@ type ctem_annual
 
 end type ctem_annual
 
-type (ctem_annual), allocatable, save, target :: ctem_yr
+type (ctem_annual), save, target :: ctem_yr
 
 !=================================================================================
 
@@ -1257,7 +1258,7 @@ type ctem_gridavg_annual
 
 end type ctem_gridavg_annual
 
-type (ctem_gridavg_annual), allocatable, save, target :: ctem_grd_yr
+type (ctem_gridavg_annual), save, target :: ctem_grd_yr
 
 !=================================================================================
 !>CTEM's variables per tile annual values
@@ -1313,7 +1314,7 @@ type ctem_tileavg_annual
 
 end type ctem_tileavg_annual
 
-type (ctem_tileavg_annual), allocatable, save, target :: ctem_tile_yr
+type (ctem_tileavg_annual), save, target :: ctem_tile_yr
 
 
 
