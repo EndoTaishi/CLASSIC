@@ -41,7 +41,7 @@ public :: finddaylength
 
 type ctem_switches
 
-    logical :: ctem_on     !<
+    logical :: ctem_on     !<True if this run includes CTEM
     logical :: parallelrun !<set this to be true if model is run in parallel mode for 
                            !<multiple grid cells, output is limited to monthly & yearly 
                             !<grid-mean only. else the run is in stand alone mode, in which

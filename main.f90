@@ -12,7 +12,7 @@ module main_driver
 
 contains
 
-    subroutine CLASSIC_driver()
+    subroutine CLASSIC_driver(longitude, latitude)
         !
         !>
         !!------------------------------------------------------------------
@@ -78,7 +78,7 @@ contains
         implicit none
 
         ! Flag test
-        real :: longitude, latitude
+        real, intent(in) :: longitude, latitude
 
         !
         !     * INTEGER CONSTANTS.
@@ -3293,7 +3293,11 @@ contains
         !    =================================================================================
         !    =================================================================================
 
-        ! Declarations are complete, run preparations begin
+        ! Put the lat and long arguments into the row structure.
+        DLATROW(1) = latitude
+        DLONROW(1) = longitude
+
+        ! Prepare CLASS parameters
         CALL CLASSD
 
         ! Initialize the CTEM parameters

@@ -31,7 +31,7 @@ program CLASSIC
     call read_modelsetup()
 
     !> Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
-    !! CTEM variable structures. This has to be done here.
+    !! CTEM variable structures. This has to be done outside of CLASSIC_driver.
     call alloc_class_vars()
     call alloc_ctem_vars()
 
@@ -48,7 +48,7 @@ program CLASSIC
 
     !> Then we call the main model driver. This performs read ins of model inputs, all model calculations,
     !! writes to output files, and writes to a model restart file.
-    call CLASSIC_driver()
+    call CLASSIC_driver(longitude,latitude)
 
 
 end program
