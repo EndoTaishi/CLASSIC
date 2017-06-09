@@ -1,0 +1,251 @@
+&classicparams
+
+modelpft(1:5)  = 1,     1,     0,     0,        0,   ! CLASS PFT 1 NDL
+!               EVG    DCD
+modelpft(6:10) = 1,     1,     1,     1,        1,   ! CLASS PFT 2 BDL
+!               EVG  DCD-CLD DCD-DRY EVG-shrubs DCD-shrubs
+modelpft(11:15)= 1,     1,     0,     0,        0,   ! CLASS PFT 3 CROP
+!               C3      C4
+modelpft(16:20)= 1,     1,     1,     0,        0,   ! CLASS PFT 4 GRASS
+!              C3      C4     sedge
+
+pftlist = 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','BdlEvgSh','BdlDcdSh','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ','Sedge   ',
+
+!Canopy light/nitrogen extinction coefficient
+kn(1:5)    =0.50, 0.50, 0.00, 0.00, 0.00,
+kn(6:10)   =0.50, 0.50, 0.50, 0.50, 0.50,
+kn(11:15)  =0.40, 0.48, 0.00, 0.00, 0.00,
+kn(16:20)  =0.46, 0.44, 0.46, 0.00, 0.00,
+
+!Allocation parameters:
+
+!omega, Parameter used in allocation formulae (prescribed run values!)
+omega(1:5)   =  0.80, 0.50, 0.00, 0.00, 0.00,
+omega(6:10)  =  0.80, 0.80, 0.80, 0.80, 0.50,
+omega(11:15) =  0.05, 0.05, 0.00, 0.00, 0.00,
+omega(16:20) =  1.00, 1.00, 1.00, 0.00, 0.00,
+
+!epsilon_l, Parameter used in allocation formulae (prescribed run values!)
+epsilonl(1:5)     =  0.20, 0.06, 0.00, 0.00, 0.00,
+epsilonl(6:10)    =  0.35, 0.35, 0.25, 0.20, 0.06,
+epsilonl(11:15)   =  0.80, 0.80, 0.00, 0.80, 0.80,
+epsilonl(16:20)   =  0.01, 0.01, 0.01, 0.00, 0.00,
+
+!epsilon_s, Parameter used in allocation formulae (prescribed run values!)
+epsilons(1:5)     =  0.15, 0.05, 0.00, 0.00, 0.00,
+epsilons(6:10)    =  0.05, 0.10, 0.10, 0.15, 0.05,
+epsilons(11:15)   =  0.15, 0.15, 0.00, 0.00, 0.00,
+epsilons(16:20)   =  0.00, 0.00, 0.00, 0.00, 0.00,
+
+!epsilon_r, Parameter used in allocation formulae (prescribed run values!)
+epsilonr(1:5)     =  0.65, 0.89, 0.00, 0.00, 0.00,
+epsilonr(6:10)    =  0.60, 0.55, 0.65, 0.65, 0.89,
+epsilonr(11:15)   =  0.05, 0.05, 0.00, 0.00, 0.00,
+epsilonr(16:20)   =  0.99, 0.99, 0.99, 0.00, 0.00,
+
+!Minimum root:shoot ratio mostly for support and stability
+rtsrmin(1:5)     =  0.16, 0.16, 0.00, 0.00, 0.00,
+rtsrmin(6:10)    =  0.16, 0.16, 0.32, 0.16, 0.16,
+rtsrmin(11:15)   =  0.16, 0.16, 0.00, 0.00, 0.00,
+rtsrmin(16:20)   =  0.50, 0.50, 0.30, 0.00, 0.00,  !YW sedge has less roots fraction than the real grass
+
+!Allocation to leaves during leaf onset
+aldrlfon(1:5)     =  1.00, 1.00, 0.00, 0.00, 0.00,
+aldrlfon(6:10)    =  1.00, 1.00, 1.00, 1.00, 1.00,
+aldrlfon(11:15)   =  1.00, 1.00, 0.00, 0.00, 0.00,
+aldrlfon(16:20)   =  1.00, 1.00, 1.00, 0.00, 0.00,
+
+!Constant allocation fractions to leaves if not using dynamic allocation. (NOT thoroughly tested, and using dynamic allocation is preferable)
+caleaf(1:5)     =  0.275, 0.300, 0.000, 0.000, 0.000,
+caleaf(6:10)    =  0.200, 0.250, 0.250, 0.275, 0.300,
+caleaf(11:15)   =  0.400, 0.400, 0.000, 0.000, 0.000,
+caleaf(16:20)   =  0.450, 0.450, 0.450, 0.000, 0.000,
+
+!Constant allocation fractions to stem if not using dynamic allocation. (NOT thoroughly tested, and using dynamic allocation is preferable)
+castem(1:5)     =  0.475, 0.450, 0.000, 0.000, 0.000,
+castem(6:10)    =  0.370, 0.400, 0.400, 0.475, 0.450,
+castem(11:15)   =  0.150, 0.150, 0.000, 0.000, 0.000,
+castem(16:20)   =  0.000, 0.000, 0.000, 0.000, 0.000,
+
+!Constant allocation fractions to roots if not using dynamic allocation. (NOT thoroughly tested, and using dynamic allocation is preferable)
+caroot(1:5)     =  0.250, 0.250, 0.000, 0.000, 0.000,
+caroot(6:10)    =  0.430, 0.350, 0.350, 0.250, 0.250,
+caroot(11:15)   =  0.450, 0.450, 0.000, 0.000, 0.000,
+caroot(16:20)   =  0.550, 0.550, 0.550, 0.000, 0.000,
+
+! bio2str.f parameters: ---------
+
+!> parameter determining average root profile
+abar(1:5)     =  4.70, 5.86, 0.00, 0.00, 0.00,
+abar(6:10)    =  3.87, 3.46, 3.97, 8.50, 9.50, !shrubs in should have large abar because of Water restrictions
+abar(11:15)   =  3.97, 3.97, 0.00, 0.00, 0.00,  !so that rootdepth is shallower
+abar(16:20)   =  5.86, 4.92, 9.50, 0.00, 0.00,
+
+!> average root biomass (kg c/m2) for ctem's 8 pfts used for estimating rooting profile
+avertmas(1:5)     =  1.85, 1.45, 0.00, 0.00, 0.00,
+avertmas(6:10)    =  2.45, 2.10, 2.10, 1.50, 1.20, !shrubs root biomass lower than trees YW
+avertmas(11:15)   =  0.10, 0.10, 0.00, 0.00, 0.00,
+avertmas(16:20)   =  0.70, 0.70, 0.20, 0.00, 0.00, !Herbaceous above/below biomass ratio is 2.91 vs graminoids 0.63 in Tundra (Koerner & Renhardt 1987)
+
+!> parameter determining how the roots grow
+alpha(1:5)     =  0.80, 0.80, 0.00, 0.00, 0.00,
+alpha(6:10)    =  0.80, 0.80, 0.80, 0.80, 0.80,
+alpha(11:15)   =  0.80, 0.80, 0.00, 0.00, 0.00,
+alpha(16:20)   =  0.80, 0.80, 0.80, 0.00, 0.00,
+
+!> storage/imaginary lai is this percentage of maximum leaf area index that a given root+stem biomass can support
+prcnslai(1:5)     =  7.5, 7.5, 0.0, 0.0, 0.0,
+prcnslai(6:10)    =  7.5, 7.5, 7.5, 7.5, 7.5,
+prcnslai(11:15)   =  7.5, 7.5, 0.0, 0.0, 0.0,
+prcnslai(16:20)   =  2.5, 2.5, 2.5, 0.0, 0.0,
+
+!> minimum storage lai. this is what the model uses as lai when growing vegetation for scratch. consider these as model seeds.
+minslai(1:5)     =  0.3, 0.3, 0.0, 0.0, 0.0,
+minslai(6:10)    =  0.3, 0.3, 0.3, 0.3, 0.3,
+minslai(11:15)   =  0.2, 0.2, 0.0, 0.0, 0.0,
+minslai(16:20)   =  0.2, 0.2, 0.2, 0.0, 0.0,
+
+!> maximum rooting depth. this is used so that the rooting depths simulated by ctem's variable rooting depth parameterzation are
+!> constrained to realistic values visible and near ir albedos of the 9 ctem pfts
+mxrtdpth(1:5)     =  3.00, 3.00, 0.00, 0.00, 0.00,
+mxrtdpth(6:10)    =  5.00, 5.00, 3.00, 1.00, 1.00, !YW peatland shrubs lower values April 22, 2015
+mxrtdpth(11:15)   =  2.00, 2.00, 0.00, 0.00, 0.00,
+mxrtdpth(16:20)   =  1.00, 1.00, 1.00, 0.00, 0.00,
+
+!> visible albedos of the 9 ctem pfts
+albvis(1:5)     =  3.00, 3.00, 0.00, 0.00, 0.00,
+albvis(6:10)    =  3.00, 5.00, 5.00, 3.00, 3.00,
+albvis(11:15)   =  5.50, 5.50, 0.00, 0.00, 0.00,
+albvis(16:20)   =  5.00, 6.00, 5.00, 0.00, 0.00,
+
+!> near IR albedos of the 9 ctem pfts
+albnir(1:5)     =  19.0, 19.0, 0.00, 0.00, 0.00,
+albnir(6:10)    =  23.0, 29.0, 29.0, 19.0, 19.0,
+albnir(11:15)   =  34.0, 34.0, 0.00, 0.00, 0.00,
+albnir(16:20)   =  30.0, 34.0, 30.0, 0.00, 0.00,
+
+!! competition_mod.f90 parameters: ------
+
+!! the model basically uses the temperature of the coldest month as
+!! the major constraint for pft distribution. a range of the coldest
+!! month temperature is prescribed for each pft within which pfts are
+!! allowed to exist. in addition for tropical broadleaf drought
+!! deciduous trees measure(s) of aridity (function of precipitation
+!! and potential evaporation) are used.
+
+! existence subroutine:
+
+!> minimum coldest month temperature
+tcoldmin(1:5)     =  -999.9, -999.9,   0.0,    0.0,    0.0,
+tcoldmin(6:10)    =  2.5,  -35.0,   4.0, -999.0, -999.0,
+tcoldmin(11:15)   =  -999.9, -999.9,   0.0,    0.0,    0.0,
+tcoldmin(16:20)   =  -999.9, -999.9,-999.9,    0.0,    0.0,
+
+!> maximum coldest month temperature
+tcoldmax(1:5)     =  18.0,  -28.0,   0.0,    0.0,    0.0,
+tcoldmax(6:10)    =  999.9,   16.0, 900.0,   18.0,  -28.0,
+tcoldmax(11:15)   =  999.9,  999.9,   0.0,    0.0,    0.0,
+tcoldmax(16:20)   =  999.9,  999.9, 999.9,    0.0,    0.0,
+
+!> maximum warmest month temperature
+twarmmax(1:5)     =  99.9,  25.0,  0.0,   0.0,   0.0,
+twarmmax(6:10)    =  99.9,  99.9, 99.9,  99.9,  25.0,
+twarmmax(11:15)   =  99.9,  99.9,  0.0,   0.0,   0.0,
+twarmmax(16:20)   =  99.9,  99.9, 99.9,   0.0,   0.0,
+
+!> minimum gdd above 5 c required to exist
+gdd5lmt(1:5)     =  375.0,  600.0,  0.0,   0.0,   0.0,
+gdd5lmt(6:10)    =  1200.0,  300.0,  9.9, 375.0, 600.0,
+gdd5lmt(11:15)   =  9.9,    9.9,  0.0,   0.0,   0.0,
+gdd5lmt(16:20)   =  9.9,    9.9,  9.9,   0.0,   0.0,
+
+!> aridity index limit for broadleaf drought/dry deciduous trees
+aridlmt(1:5)     = 9.9,  9.9,  0.0,  0.0,  0.0,
+aridlmt(6:10)    = 9.9,  9.9,  0.9,  9.9,  9.9,
+aridlmt(11:15)   = 9.9,  9.9,  0.0,  0.0,  0.0,
+aridlmt(16:20)   = 9.9,  9.9,  9.9,  0.0,  0.0,
+
+!> minimum length of dry season for PFT to exist
+dryseasonlmt(1:5)     = 9.0,  99.9,    0.0,   0.0,  0.0,
+dryseasonlmt(6:10)    = 99.9,  99.9,    5.5,   9.0, 99.9,
+dryseasonlmt(11:15)   = 99.9,  99.9,    0.0,   0.0,  0.0,
+dryseasonlmt(16:20)   = 99.9,  99.9,   99.9,   0.0,  0.0,
+
+!> multiplying factor for converting biomass density to sapling density
+! smaller numbers give faster colonization rates.
+bio2sap(1:5)     = 0.32, 0.20, 0.00, 0.00, 0.00,
+bio2sap(6:10)    = 0.08, 0.14, 0.13, 0.32, 0.20,
+bio2sap(11:15)   = 0.00, 0.00, 0.00, 0.00, 0.00,
+bio2sap(16:20)   = 0.20, 0.20, 0.20, 0.00, 0.00,
+
+!< mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
+bioclimrt = 0.25,
+
+! ctem.f parameters: ----------
+
+!> Growth respiration coefficient
+grescoef(1:5)     = 0.15, 0.15, 0.00, 0.00, 0.00,
+grescoef(6:10)    = 0.15, 0.15, 0.15, 0.15, 0.15,
+grescoef(11:15)   = 0.15, 0.15, 0.00, 0.00, 0.00,
+grescoef(16:20)   = 0.15, 0.15, 0.15, 0.00, 0.00,
+
+!> Humification factor - used for transferring carbon from litter into soil c pool
+humicfac(1:5)     = 0.42, 0.42, 0.00, 0.00, 0.00,
+humicfac(6:10)    = 0.53, 0.48, 0.48, 0.42, 0.42,
+humicfac(11:15)   = 0.10, 0.10, 0.00, 0.00, 0.00,
+humicfac(16:20)   = 0.42, 0.42, 0.42, 0.00, 0.00,
+
+!> Minimum lai below which a pft doesn't expand
+laimin(1:5)     = 1.0,   1.0,  0.0, 0.0, 0.0,
+laimin(6:10)    = 1.5,   1.0,  1.0, 1.0, 1.0,
+laimin(11:15)   = 1.0,   1.0,  0.0, 0.0, 0.0,
+laimin(16:20)   = 0.01, 0.01, 0.01, 0.0, 0.0,
+
+!> Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
+laimax(1:5)     = 4.0, 3.0, 0.0, 0.0, 0.0,
+laimax(6:10)    = 6.0, 5.0, 5.0, 4.0, 3.0,
+laimax(11:15)   = 8.0, 8.0, 0.0, 0.0, 0.0,
+laimax(16:20)   = 4.0, 4.0, 4.0, 0.0, 0.0,
+
+!< Max. fraction of npp that is allocated for reproduction/colonization
+lambdamax      = 0.10,
+
+!< Fraction of NPP that is used to create reproductive tissues
+repro_fraction = 0.10,
+
+! disturbance parameters: ------------
+
+!< min. and max. vegetation biomass thresholds to initiate fire, \f$kg c/m^2\f$
+bmasthrs_fire = 0.4, 1.2,
+
+!< extinction moisture content for estimating vegetation fire likeliness due to soil moisture
+extnmois_veg  = 0.3,
+
+!< extinction moisture content for estimating duff layer fire likeliness due to soil moisture
+extnmois_duff = 0.5,
+
+!< lower cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year ! FireMIP value: 0.025
+lwrlthrs      = 0.25,
+
+!< higher cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year ! FireMIP value: 1.0
+hgrlthrs      = 10.0,
+
+!>parameter m (mean) and b of logistic distribution used for \n
+!>**Parmlght was increased to 0.8 to make it so areas with higher amounts of
+!>lightning have higher lterm. The saturation is still the same, but the
+!>increase is more gradual at low lightning density. JM
+parmlght    = 0.8,
+parblght    = 0.1,    !< estimating fire likelihood due to lightning
+
+!< typical area representing ctem's fire parameterization (km2) ! FireMIP value: 300.0
+reparea     = 500.0,
+
+!< threshold of population density (people/km2) [Kloster et al., biogeosci. 2010]
+popdthrshld = 300.0,
+
+!< Fire spread rate in the absence of wind
+f0 = 0.05,
+
+
+/
+

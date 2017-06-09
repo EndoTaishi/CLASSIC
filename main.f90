@@ -46,12 +46,12 @@ contains
         !!     in this driver. We access the variables and parameters
         !!     through use statements for modules:
 
-        use ctem_params,        only : initpftpars,nlat,nmos,ilg,nmon,&
+        use ctem_params,        only : nlat,nmos,ilg,nmon,&
             &                               ican, ignd,icp1, icc, iccp1,&
             &                               monthend, mmday,modelpft, l2max,&
             &                                deltat, abszero, monthdays,seed,&
-            &                                crop, NBS, lat, edgelat,earthrad,&
-            &                                lon
+            &                                NBS, lat, edgelat,earthrad,&
+            &                                lon,readin_params,crop!,initpftpars,
 
         use landuse_change,     only : initialize_luc, readin_luc
 
@@ -3301,7 +3301,9 @@ contains
         CALL CLASSD
 
         ! Initialize the CTEM parameters
-        call initpftpars(compete)
+        call readin_params()
+
+        !call initpftpars(compete)
 
         ! Allocate the local variables that rely on nlat, ilg, etc.
         allocate(curlatno(ilg),&

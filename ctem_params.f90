@@ -60,12 +60,13 @@ module ctem_params
 
 implicit none
 
-public :: initpftpars
+!public :: initpftpars
+public :: readin_params
 
 ! Constants
 
 real, parameter :: zero     = 1.0e-20
-real, parameter :: abszero  = 1e-12    !<this one is for runclassctem.f and allocate.f 
+real, parameter :: abszero  = 1e-12    !<this one is for runclassctem.f and allocate.f
 
 real, parameter :: pi       = 3.1415926535898d0
 real, parameter :: earthrad = 6371.22 !<radius of earth, km
@@ -94,44 +95,43 @@ real, parameter, dimension(lat+1) :: edgelat = &
                                     78.13125,80.91925,83.7047,86.48015,90.0 ]
 ! ----
 ! Model state
-integer :: nlat = 1         !< Number of cells we are running
-integer :: nmos = 10        !< Number of mosaic tiles
+integer :: nlat = 1         !< Number of cells we are running, read in from the initialization file
+integer :: nmos = 10        !< Number of mosaic tiles, read in from the initialization file
 integer :: ilg = 10         !< nlat x nmos
-integer :: ignd = 20        !< Number of soil layers
+integer :: ignd = 20        !< Number of soil layers, read in from the initialization file
+
 ! ----
 ! Plant-related
-integer, parameter :: ican        = 4        !< Number of CLASS pfts
+integer, parameter :: ican        = 4        !< Number of CLASS pfts, read in from the initialization file
 integer, parameter :: icp1        = ican + 1 !
 integer,parameter  :: icc=12                 !< Number of CTEM pfts (Peatlands add 3: EVG shrub,DCD shrubs, sedge)
 
 integer,parameter  :: iccp1       = icc + 1  !
+
+real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
+real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
+real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
+real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 ($g mol^{-1}$)
+
+
+integer, parameter :: nbs         = 4        !
+
+
+real :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
+                            ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
+
+!> Logical switch for using constant allocation factors (default value is false)
+logical :: consallo = .false.
+
+
+! How to fit this stuff in?
+
 integer, parameter :: l2max       = 5        !
 integer, parameter :: kk          = 20       !< product of class pfts and l2max
 integer, parameter :: numcrops    = 2        !< number of crop pfts
 integer, parameter :: numtreepfts = 5        !< number of tree pfts
 integer, parameter :: numgrass    = 3        !< number of grass pfts
 integer, parameter :: numshrubs   = 2        !< number of shrubs pfts
-integer, parameter :: nbs         = 4        !
-
-! Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
-integer, parameter, dimension(kk) :: modelpft= [ 1,     1,     0,     0,        0, &  ! CLASS PFT 1 NDL
-                             !                  EVG    DCD   
-                                                 1,     1,     1,     1,        1, &  ! CLASS PFT 2 BDL
-                             !                  EVG  DCD-CLD DCD-DRY EVG-shrubs DCD-shrubs
-                                                 1,     1,     0,     0,        0,&  ! CLASS PFT 3 CROP
-                             !                  C3      C4  
-                                                 1,     1,     1,     0,        0 ]   ! CLASS PFT 4 GRASS
-                             !                  C3      C4     sedge 
-
-character(8), parameter, dimension(icc) :: pftlist = [ 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', &
-                                                     'BdlDDrTr','BdlEvgSh','BdlDcdSh','CropC3  ', &
-                                                     'CropC4  ','GrassC3 ','GrassC4 ','Sedge   ' ]
-
-
-real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
-real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
-real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
-real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 ($g mol^{-1}$)
 
 !> simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
 logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false.,.false. ]
@@ -140,120 +140,43 @@ logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.
 logical, parameter, dimension(icc) :: grass = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.true. ]
 
 integer, parameter, dimension(numgrass) :: grass_ind = [ 10, 11,12 ]  !< index of the grass pfts (3 grass pfts at present)
-integer, parameter, dimension(numshrubs) :: shrub_ind = [ 6, 7 ]  !not used for now    
-integer, parameter, dimension(numtreepfts) :: tree_ind = [ 1, 2,3,4,5 ]       
-integer, parameter, dimension(numcrops) :: crop_ind = [ 8,9 ]                 
-
-!==========================================================================================================================
-
-! PFT specific parameters:
-
-! Parameters used in more than one subroutine:
-
-real :: tolrance = 0.0001d0 !< our tolerance for balancing c budget in kg c/m2 in one day (differs when competition on or not)
-                            ! YW May 12, 2015 in peatland the C balance gap reaches 0.00016.
-
-!> Canopy light/nitrogen extinction coefficient
-!> (kn -> CAREFUL: Separate set defined in PHTSYN3.f!)
-real, dimension(kk) :: kn= [ 0.50, 0.50, 0.00, 0.00, 0.00, &
-                             0.50, 0.50, 0.50, 0.50, 0.50, &
-                             0.40, 0.48, 0.00, 0.00, 0.00, &
-                             0.46, 0.44, 0.46, 0.00, 0.00 ]
+integer, parameter, dimension(numshrubs) :: shrub_ind = [ 6, 7 ]  !not used for now
+integer, parameter, dimension(numtreepfts) :: tree_ind = [ 1, 2,3,4,5 ]
+integer, parameter, dimension(numcrops) :: crop_ind = [ 8,9 ]
 
 
-! allocate.f parameters: ---------------------------------
+! Read in from the namelist
+
+integer, dimension(kk) :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
+character(8), dimension(kk) :: pftlist  !<List of PFTs
+real, dimension(kk) :: kn               !< Canopy light/nitrogen extinction coefficient; CAREFUL: Separate set defined in PHTSYN3.f!
+
+!allocate.f parameters: ---------------------------------
 
 real, dimension(kk) :: omega            !< omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
 real, dimension(kk) :: epsilonl         !< Epsilon leaf, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
 real, dimension(kk) :: epsilons         !< Epsilon stem, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
 real, dimension(kk) :: epsilonr         !< Epsilon root, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
-
-
-!> Logical switch for using constant allocation factors (default value is false)
-logical :: consallo = .false.  
-
-!> Minimum root:shoot ratio mostly for support and stability                  
-real, dimension(kk) :: rtsrmin = [ 0.16, 0.16, 0.00, 0.00, 0.00, &
-                                   0.16, 0.16, 0.32, 0.16, 0.16, &
-                                   0.16, 0.16, 0.00, 0.00, 0.00, &
-                                   0.50, 0.50, 0.30, 0.00, 0.00 ]       !YW sedge has less roots fraction than the real grass
-
-!> Allocation to leaves during leaf onset
-real, dimension(kk) :: aldrlfon = [ 1.00, 1.00, 0.00, 0.00, 0.00, &
-                                    1.00, 1.00, 1.00, 1.00, 1.00, &
-                                    1.00, 1.00, 0.00, 0.00, 0.00, &
-                                    1.00, 1.00, 1.00, 0.00, 0.00 ]
-
-!> Constant allocation fractions to leaves if not using dynamic allocation. (NOT thoroughly tested, and using dynamic allocation is preferable)
-real, dimension(kk) :: caleaf = [ 0.275, 0.300, 0.000, 0.000, 0.000, &
-                                  0.200, 0.250, 0.250, 0.275, 0.300, &
-                                  0.400, 0.400, 0.000, 0.000, 0.000, &
-                                  0.450, 0.450, 0.450, 0.000, 0.000]
-
-!> Constant allocation fractions to stem if not using dynamic allocation. (NOT thoroughly tested, and using dynamic allocation is preferable)
-real, dimension(kk) :: castem = [ 0.475, 0.450, 0.000, 0.000, 0.000, &
-                                  0.370, 0.400, 0.400, 0.475, 0.450, &
-                                  0.150, 0.150, 0.000, 0.000, 0.000, &
-                                  0.000, 0.000, 0.000, 0.000, 0.000 ]
-
-!> Constant allocation fractions to roots if not using dynamic allocation. (NOT thoroughly tested, and using dynamic allocation is preferable)
-real, dimension(kk) :: caroot = [ 0.250, 0.250, 0.000, 0.000, 0.000, &
-                                  0.430, 0.350, 0.350, 0.250, 0.250, &
-                                  0.450, 0.450, 0.000, 0.000, 0.000, &
-                                  0.550, 0.550, 0.550, 0.000, 0.000 ]
+real, dimension(kk) :: rtsrmin          !< Minimum root:shoot ratio mostly for support and stability
+real, dimension(kk) :: aldrlfon         !< Allocation to leaves during leaf onset
+real, dimension(kk) :: caleaf           !< Constant allocation fractions to leaves if not using dynamic allocation.
+                                        !!(NOT thoroughly tested, and using dynamic allocation is preferable)
+real, dimension(kk) :: castem           !< Constant allocation fractions to stem if not using dynamic allocation.
+                                        !!(NOT thoroughly tested, and using dynamic allocation is preferable)
+real, dimension(kk) :: caroot           !< Constant allocation fractions to roots if not using dynamic allocation.
+                                        !!(NOT thoroughly tested, and using dynamic allocation is preferable)
 
 ! bio2str.f parameters: ---------
 
-!> parameter determining average root profile
-real, dimension(kk) :: abar    = [ 4.70, 5.86, 0.00, 0.00, 0.00, &
-                                   3.87, 3.46, 3.97, 8.50, 9.50, &  !shrubs in should have large abar because of Water restrictions
-                                   3.97, 3.97, 0.00, 0.00, 0.00, &  !so that rootdepth is shallower
-                                   5.86, 4.92, 9.50, 0.00, 0.00 ]
-
-
-!> average root biomass (kg c/m2) for ctem's 8 pfts used for estimating rooting profile  
-real, dimension(kk) :: avertmas = [ 1.85, 1.45, 0.00, 0.00, 0.00, &
-                                    2.45, 2.10, 2.10, 1.50, 1.20, & !shrubs root biomass lower than trees YW
-                                    0.10, 0.10, 0.00, 0.00, 0.00, &
-                                    0.70, 0.70, 0.20, 0.00, 0.00 ] !Herbaceous above/below biomass ratio is 2.91 vs graminoids 0.63
-                                                  !in Tundra (Koerner & Renhardt 1987)
-
-!> parameter determining how the roots grow
-real, dimension(kk) :: alpha   = [ 0.80, 0.80, 0.00, 0.00, 0.00, &
-                                   0.80, 0.80, 0.80, 0.80, 0.80, &
-                                   0.80, 0.80, 0.00, 0.00, 0.00, &
-                                   0.80, 0.80, 0.80, 0.00, 0.00 ]
-
-!> storage/imaginary lai is this percentage of maximum leaf area index that a given root+stem biomass can support
-real, dimension(kk) :: prcnslai = [ 7.5, 7.5, 0.0, 0.0, 0.0, &
-                                    7.5, 7.5, 7.5, 7.5, 7.5, &
-                                    7.5, 7.5, 0.0, 0.0, 0.0 ,&
-                                    2.5, 2.5, 2.5, 0.0, 0.0 ]
-
-!> minimum storage lai. this is what the model uses as lai when growing vegetation for scratch. consider these as model seeds.
-real, dimension(kk) :: minslai = [ 0.3, 0.3, 0.0, 0.0, 0.0, &
-                                   0.3, 0.3, 0.3, 0.3, 0.3, &
-                                   0.2, 0.2, 0.0, 0.0, 0.0, &
-                                   0.2, 0.2, 0.2, 0.0, 0.0  ]
-
-!> maximum rooting depth. this is used so that the rooting depths simulated by ctem's variable rooting depth parameterzation are
-!> constrained to realistic values visible and near ir albedos of the 9 ctem pfts
-real, dimension(kk) :: mxrtdpth = [ 3.00, 3.00, 0.00, 0.00, 0.00, &
-                                    5.00, 5.00, 3.00, 1.00, 1.00, & !YW peatland shrubs lower values April 22, 2015
-                                    2.00, 2.00, 0.00, 0.00, 0.00, &
-                                    1.00, 1.00, 1.00, 0.00, 0.00 ]
-
-!> visible albedos of the 9 ctem pfts
-real, dimension(kk) :: albvis = [ 3.00, 3.00, 0.00, 0.00, 0.00, &
-                                  3.00, 5.00, 5.00, 3.00, 3.00, &
-                                  5.50, 5.50, 0.00, 0.00, 0.00, &
-                                  5.00, 6.00, 5.00, 0.00, 0.00 ]
-
-!> near IR albedos of the 9 ctem pfts
-real, dimension(kk) :: albnir = [ 19.0, 19.0, 0.00, 0.00, 0.00, &
-                                  23.0, 29.0, 29.0, 19.0, 19.0, &
-                                  34.0, 34.0, 0.00, 0.00, 0.00, &
-                                  30.0, 34.0, 30.0, 0.00, 0.00 ]
+real, dimension(kk) :: abar             !< parameter determining average root profile
+real, dimension(kk) :: avertmas         !< average root biomass (kg c/m2) for ctem's 8 pfts used for estimating rooting profile
+real, dimension(kk) :: alpha            !< parameter determining how the roots grow
+real, dimension(kk) :: prcnslai         !< storage/imaginary lai is this percentage of maximum leaf area index that a given root+stem biomass can support
+real, dimension(kk) :: minslai          !< minimum storage lai. this is what the model uses as lai when growing vegetation for scratch. consider these as model seeds.
+real, dimension(kk) :: mxrtdpth         !< maximum rooting depth. this is used so that the rooting depths simulated by ctem's variable rooting depth parameterzation are
+                                        !< constrained to realistic values
+real, dimension(kk) :: albvis           !< visible albedos of the ctem pfts
+real, dimension(kk) :: albnir           !< near IR albedos of the 9 ctem pfts
 
 !! competition_mod.f90 parameters: ------
 
@@ -266,117 +189,289 @@ real, dimension(kk) :: albnir = [ 19.0, 19.0, 0.00, 0.00, 0.00, &
 
 ! existence subroutine:
 
-!> minimum coldest month temperature
-real, dimension(kk) :: tcoldmin = [-999.9, -999.9,   0.0,    0.0,    0.0, &
-                                      2.5,  -35.0,   4.0, -999.0, -999.0, &
-                                   -999.9, -999.9,   0.0,    0.0,    0.0, &
-                                   -999.9, -999.9,-999.9,    0.0,    0.0 ]
+real, dimension(kk) :: tcoldmin         !< minimum coldest month temperature
+real, dimension(kk) :: tcoldmax         !< maximum coldest month temperature
+real, dimension(kk) :: twarmmax         !< maximum warmest month temperature
+real, dimension(kk) :: gdd5lmt          !< minimum gdd above 5 c required to exist
+real, dimension(kk) :: aridlmt          !< aridity index limit for broadleaf drought/dry deciduous trees
+real, dimension(kk) :: dryseasonlmt     !< minimum length of dry season for PFT to exist
+real, dimension(kk) :: bio2sap          !< multiplying factor for converting biomass density to sapling density
+                                        !! smaller numbers give faster colonization rates.
+real :: bioclimrt                       !< mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
 
-!> maximum coldest month temperature
-real, dimension(kk) :: tcoldmax = [ 18.0,  -28.0,   0.0,    0.0,    0.0, &
-                                   999.9,   16.0, 900.0,   18.0,  -28.0, &
-                                   999.9,  999.9,   0.0,    0.0,    0.0, &
-                                   999.9,  999.9, 999.9,    0.0,    0.0  ]
+! ctem.f parameters: ----------
 
-!> maximum warmest month temperature
-real, dimension(kk) :: twarmmax = [ 99.9,  25.0,  0.0,   0.0,   0.0,   &
-                                    99.9,  99.9, 99.9,  99.9,  25.0,   &
-                                    99.9,  99.9,  0.0,   0.0,   0.0,   &
-                                    99.9,  99.9, 99.9,   0.0,   0.0 ]
-
-!> minimum gdd above 5 c required to exist
-real, dimension(kk) :: gdd5lmt = [ 375.0,  600.0,  0.0,   0.0,   0.0, &
-                                  1200.0,  300.0,  9.9, 375.0, 600.0, &
-                                     9.9,    9.9,  0.0,   0.0,   0.0, &
-                                     9.9,    9.9,  9.9,   0.0,   0.0 ]
-
-!> aridity index limit for broadleaf drought/dry deciduous trees
-real, dimension(kk) :: aridlmt = [ 9.9,  9.9,  0.0,  0.0,  0.0, &
-                                   9.9,  9.9,  0.9,  9.9,  9.9, &
-                                   9.9,  9.9,  0.0,  0.0,  0.0, &
-                                   9.9,  9.9,  9.9,  0.0,  0.0 ]
-
-!> minimum length of dry season for PFT to exist
-real, dimension(kk) :: dryseasonlmt =[  9.0,  99.9,    0.0,   0.0,  0.0, &
-                                       99.9,  99.9,    5.5,   9.0, 99.9, &
-                                       99.9,  99.9,    0.0,   0.0,  0.0, &
-                                       99.9,  99.9,   99.9,   0.0,  0.0 ]
-
-
-!> multiplying factor for converting biomass density to sapling density
-! smaller numbers give faster colonization rates.
-real, dimension(kk) :: bio2sap = [ 0.32, 0.20, 0.00, 0.00, 0.00, &
-                                   0.08, 0.14, 0.13, 0.32, 0.20, &
-                                   0.00, 0.00, 0.00, 0.00, 0.00, &
-                                   0.20, 0.20, 0.20, 0.00, 0.00 ]
-
-real :: bioclimrt = 0.25 !< mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
-
-! ctem.f parameters: ---------- 
-
-!> Growth respiration coefficient 
-real, dimension(kk) :: grescoef = [ 0.15, 0.15, 0.00, 0.00, 0.00, &
-                                    0.15, 0.15, 0.15, 0.15, 0.15, &
-                                    0.15, 0.15, 0.00, 0.00, 0.00, &
-                                    0.15, 0.15, 0.15, 0.00, 0.00 ]
-
-
-!> Humification factor - used for transferring carbon from litter into soil c pool
-real, dimension(kk) :: humicfac = [ 0.42, 0.42, 0.00, 0.00, 0.00, &
-                                    0.53, 0.48, 0.48, 0.42, 0.42, &
-                                    0.10, 0.10, 0.00, 0.00, 0.00, &
-                                    0.42, 0.42, 0.42, 0.00, 0.00 ]
-
-!> Minimum lai below which a pft doesn't expand
-real, dimension(kk) :: laimin = [ 1.0,   1.0,  0.0, 0.0, 0.0, &
-                                  1.5,   1.0,  1.0, 1.0, 1.0, &
-                                  1.0,   1.0,  0.0, 0.0, 0.0, &
-                                  0.01, 0.01, 0.01, 0.0, 0.0 ]
-!> Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
-real, dimension(kk) :: laimax = [ 4.0, 3.0, 0.0, 0.0, 0.0, &
-                                  6.0, 5.0, 5.0, 4.0, 3.0, &
-                                  8.0, 8.0, 0.0, 0.0, 0.0, &
-                                  4.0, 4.0, 4.0, 0.0, 0.0 ]
-
-real :: lambdamax      = 0.10 !< Max. fraction of npp that is allocated for reproduction/colonization
-
-real :: repro_fraction = 0.10 !< Fraction of NPP that is used to create reproductive tissues
+real, dimension(kk) :: grescoef         !< Growth respiration coefficient
+real, dimension(kk) :: humicfac         !< Humification factor - used for transferring carbon from litter into soil c pool
+real, dimension(kk) :: laimin           !< Minimum lai below which a pft doesn't expand
+real, dimension(kk) :: laimax           !< Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
+real :: lambdamax                       !< Max. fraction of npp that is allocated for reproduction/colonization
+real :: repro_fraction                  !< Fraction of NPP that is used to create reproductive tissues
 
 ! disturbance parameters: ------------
 
-real, dimension(2) :: bmasthrs_fire = [ 0.4, 1.2 ] !< min. and max. vegetation biomass thresholds to initiate fire, \f$kg c/m^2\f$
-
-real :: extnmois_veg  = 0.3  !< extinction moisture content for estimating vegetation fire likeliness due to soil moisture 
-
-real :: extnmois_duff = 0.5  !< extinction moisture content for estimating duff layer fire likeliness due to soil moisture 
-
-real :: lwrlthrs      = 0.25 ! FireMIP value: 0.025     
-                             !< lower cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
-
-real :: hgrlthrs      = 10.0 ! FireMIP value: 1.0       
-                             !< higher cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
+real, dimension(2) :: bmasthrs_fire !< min. and max. vegetation biomass thresholds to initiate fire, \f$kg c/m^2\f$
+real :: extnmois_veg                !< extinction moisture content for estimating vegetation fire likeliness due to soil moisture
+real :: extnmois_duff               !< extinction moisture content for estimating duff layer fire likeliness due to soil moisture
+real :: lwrlthrs                    !< lower cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
+                                    ! FireMIP value: 0.025
+real :: hgrlthrs                    !< higher cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
+                                    ! FireMIP value: 1.0
 
 !>parameter m (mean) and b of logistic distribution used for \n
 !>**Parmlght was increased to 0.8 to make it so areas with higher amounts of
-!>lightning have higher lterm. The saturation is still the same, but the 
+!>lightning have higher lterm. The saturation is still the same, but the
 !>increase is more gradual at low lightning density. JM
-real :: parmlght    = 0.8
-real :: parblght    = 0.1    !< estimating fire likelihood due to lightning
+real :: parmlght
+real :: parblght                    !< estimating fire likelihood due to lightning
+real :: reparea                     !< typical area representing ctem's fire parameterization (km2)
+real :: popdthrshld                 !< threshold of population density (people/km2) [Kloster et al., biogeosci. 2010]
+real :: f0                          !< Fire spread rate in the absence of wind
 
-real :: reparea     = 500.0  !1000  ! FireMIP value: 300.0
-                             !< typical area representing ctem's fire parameterization (km2)
 
-real :: popdthrshld = 300.   !< threshold of population density (people/km2) [Kloster et al., biogeosci. 2010]
+!============================================================================
+! !Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
+! integer, parameter, dimension(kk) :: modelpft= [ 1,     1,     0,     0,        0, &  ! CLASS PFT 1 NDL
+!                              !                  EVG    DCD
+!                                                  1,     1,     1,     1,        1, &  ! CLASS PFT 2 BDL
+!                              !                  EVG  DCD-CLD DCD-DRY EVG-shrubs DCD-shrubs
+!                                                  1,     1,     0,     0,        0,&  ! CLASS PFT 3 CROP
+!                              !                  C3      C4
+!                                                  1,     1,     1,     0,        0 ]   ! CLASS PFT 4 GRASS
+!                              !                  C3      C4     sedge
+!
+! character(8), parameter, dimension(icc) :: pftlist = [ 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', &
+!                                                      'BdlDDrTr','BdlEvgSh','BdlDcdSh','CropC3  ', &
+!                                                      'CropC4  ','GrassC3 ','GrassC4 ','Sedge   ' ]
+!Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
+!
+! ! PFT specific parameters:
+!
+! ! Parameters used in more than one subroutine:
+!
+!
+!> Canopy light/nitrogen extinction coefficient
+!> (kn -> CAREFUL: Separate set defined in PHTSYN3.f!)
+! real, dimension(kk) :: kn != [ 0.50, 0.50, 0.00, 0.00, 0.00, &
+!                           !   0.50, 0.50, 0.50, 0.50, 0.50, &
+!                           !   0.40, 0.48, 0.00, 0.00, 0.00, &
+!                           !   0.46, 0.44, 0.46, 0.00, 0.00 ]
 
-!     **These values were being calculated each time, they shouldn't be as they
-!     are just parameters. JM
-!      real, parameter :: ymin = 0.01798621     !=1.0/( 1.0+exp((parmlght-0.0)/parblght) )
-!      real, parameter :: ymax = 0.9975273768   !=1.0/( 1.0+exp((parmlght-1.0)/parblght) )
-!      real, parameter :: slope = 0.0204588331  !=abs(0.0-ymin)+abs(1.0-ymax)
-!      real :: ymin, ymax, slope
+!allocate.f parameters: ---------------------------------
 
-real :: alpha_fire       !< parameter alpha_fire and f0 used for estimating wind function for fire spread rate
-real :: f0 = 0.05        !< Fire spread rate in the absence of wind  -- Not used in CTEM v 2.0!
+! real, dimension(kk) :: omega            !< omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+! real, dimension(kk) :: epsilonl         !< Epsilon leaf, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+! real, dimension(kk) :: epsilons         !< Epsilon stem, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+! real, dimension(kk) :: epsilonr         !< Epsilon root, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+
+! !> Logical switch for using constant allocation factors (default value is false)
+! logical :: consallo = .false.
+
+! !> Minimum root:shoot ratio mostly for support and stability
+! real, dimension(kk) :: rtsrmin = [ 0.16, 0.16, 0.00, 0.00, 0.00, &
+!                                    0.16, 0.16, 0.32, 0.16, 0.16, &
+!                                    0.16, 0.16, 0.00, 0.00, 0.00, &
+!                                    0.50, 0.50, 0.30, 0.00, 0.00 ]       !YW sedge has less roots fraction than the real grass
+!
+! !> Allocation to leaves during leaf onset
+! real, dimension(kk) :: aldrlfon = [ 1.00, 1.00, 0.00, 0.00, 0.00, &
+!                                     1.00, 1.00, 1.00, 1.00, 1.00, &
+!                                     1.00, 1.00, 0.00, 0.00, 0.00, &
+!                                     1.00, 1.00, 1.00, 0.00, 0.00 ]
+!
+! !> Constant allocation fractions to leaves if not using dynamic allocation. (NOT thoroughly tested, and using dynamic allocation is preferable)
+! real, dimension(kk) :: caleaf = [ 0.275, 0.300, 0.000, 0.000, 0.000, &
+!                                   0.200, 0.250, 0.250, 0.275, 0.300, &
+!                                   0.400, 0.400, 0.000, 0.000, 0.000, &
+!                                   0.450, 0.450, 0.450, 0.000, 0.000]
+!
+! !> Constant allocation fractions to stem if not using dynamic allocation. (NOT thoroughly tested, and using dynamic allocation is preferable)
+! real, dimension(kk) :: castem = [ 0.475, 0.450, 0.000, 0.000, 0.000, &
+!                                   0.370, 0.400, 0.400, 0.475, 0.450, &
+!                                   0.150, 0.150, 0.000, 0.000, 0.000, &
+!                                   0.000, 0.000, 0.000, 0.000, 0.000 ]
+!
+! !> Constant allocation fractions to roots if not using dynamic allocation. (NOT thoroughly tested, and using dynamic allocation is preferable)
+! real, dimension(kk) :: caroot = [ 0.250, 0.250, 0.000, 0.000, 0.000, &
+!                                   0.430, 0.350, 0.350, 0.250, 0.250, &
+!                                   0.450, 0.450, 0.000, 0.000, 0.000, &
+!                                   0.550, 0.550, 0.550, 0.000, 0.000 ]
+
+! ! bio2str.f parameters: ---------
+!
+! !> parameter determining average root profile
+! real, dimension(kk) :: abar    = [ 4.70, 5.86, 0.00, 0.00, 0.00, &
+!                                    3.87, 3.46, 3.97, 8.50, 9.50, &  !shrubs in should have large abar because of Water restrictions
+!                                    3.97, 3.97, 0.00, 0.00, 0.00, &  !so that rootdepth is shallower
+!                                    5.86, 4.92, 9.50, 0.00, 0.00 ]
+!
+!
+! !> average root biomass (kg c/m2) for ctem's 8 pfts used for estimating rooting profile
+! real, dimension(kk) :: avertmas = [ 1.85, 1.45, 0.00, 0.00, 0.00, &
+!                                     2.45, 2.10, 2.10, 1.50, 1.20, & !shrubs root biomass lower than trees YW
+!                                     0.10, 0.10, 0.00, 0.00, 0.00, &
+!                                     0.70, 0.70, 0.20, 0.00, 0.00 ] !Herbaceous above/below biomass ratio is 2.91 vs graminoids 0.63
+!                                                   !in Tundra (Koerner & Renhardt 1987)
+!
+! !> parameter determining how the roots grow
+! real, dimension(kk) :: alpha   = [ 0.80, 0.80, 0.00, 0.00, 0.00, &
+!                                    0.80, 0.80, 0.80, 0.80, 0.80, &
+!                                    0.80, 0.80, 0.00, 0.00, 0.00, &
+!                                    0.80, 0.80, 0.80, 0.00, 0.00 ]
+!
+! !> storage/imaginary lai is this percentage of maximum leaf area index that a given root+stem biomass can support
+! real, dimension(kk) :: prcnslai = [ 7.5, 7.5, 0.0, 0.0, 0.0, &
+!                                     7.5, 7.5, 7.5, 7.5, 7.5, &
+!                                     7.5, 7.5, 0.0, 0.0, 0.0 ,&
+!                                     2.5, 2.5, 2.5, 0.0, 0.0 ]
+!
+! !> minimum storage lai. this is what the model uses as lai when growing vegetation for scratch. consider these as model seeds.
+! real, dimension(kk) :: minslai = [ 0.3, 0.3, 0.0, 0.0, 0.0, &
+!                                    0.3, 0.3, 0.3, 0.3, 0.3, &
+!                                    0.2, 0.2, 0.0, 0.0, 0.0, &
+!                                    0.2, 0.2, 0.2, 0.0, 0.0  ]
+!
+! !> maximum rooting depth. this is used so that the rooting depths simulated by ctem's variable rooting depth parameterzation are
+! !> constrained to realistic values visible and near ir albedos of the 9 ctem pfts
+! real, dimension(kk) :: mxrtdpth = [ 3.00, 3.00, 0.00, 0.00, 0.00, &
+!                                     5.00, 5.00, 3.00, 1.00, 1.00, & !YW peatland shrubs lower values April 22, 2015
+!                                     2.00, 2.00, 0.00, 0.00, 0.00, &
+!                                     1.00, 1.00, 1.00, 0.00, 0.00 ]
+!
+! !> visible albedos of the 9 ctem pfts
+! real, dimension(kk) :: albvis = [ 3.00, 3.00, 0.00, 0.00, 0.00, &
+!                                   3.00, 5.00, 5.00, 3.00, 3.00, &
+!                                   5.50, 5.50, 0.00, 0.00, 0.00, &
+!                                   5.00, 6.00, 5.00, 0.00, 0.00 ]
+!
+! !> near IR albedos of the 9 ctem pfts
+! real, dimension(kk) :: albnir = [ 19.0, 19.0, 0.00, 0.00, 0.00, &
+!                                   23.0, 29.0, 29.0, 19.0, 19.0, &
+!                                   34.0, 34.0, 0.00, 0.00, 0.00, &
+!                                   30.0, 34.0, 30.0, 0.00, 0.00 ]
+
+! !! competition_mod.f90 parameters: ------
+!
+! !! the model basically uses the temperature of the coldest month as
+! !! the major constraint for pft distribution. a range of the coldest
+! !! month temperature is prescribed for each pft within which pfts are
+! !! allowed to exist. in addition for tropical broadleaf drought
+! !! deciduous trees measure(s) of aridity (function of precipitation
+! !! and potential evaporation) are used.
+!
+! ! existence subroutine:
+!
+! !> minimum coldest month temperature
+! real, dimension(kk) :: tcoldmin = [-999.9, -999.9,   0.0,    0.0,    0.0, &
+!                                       2.5,  -35.0,   4.0, -999.0, -999.0, &
+!                                    -999.9, -999.9,   0.0,    0.0,    0.0, &
+!                                    -999.9, -999.9,-999.9,    0.0,    0.0 ]
+!
+! !> maximum coldest month temperature
+! real, dimension(kk) :: tcoldmax = [ 18.0,  -28.0,   0.0,    0.0,    0.0, &
+!                                    999.9,   16.0, 900.0,   18.0,  -28.0, &
+!                                    999.9,  999.9,   0.0,    0.0,    0.0, &
+!                                    999.9,  999.9, 999.9,    0.0,    0.0  ]
+!
+! !> maximum warmest month temperature
+! real, dimension(kk) :: twarmmax = [ 99.9,  25.0,  0.0,   0.0,   0.0,   &
+!                                     99.9,  99.9, 99.9,  99.9,  25.0,   &
+!                                     99.9,  99.9,  0.0,   0.0,   0.0,   &
+!                                     99.9,  99.9, 99.9,   0.0,   0.0 ]
+!
+! !> minimum gdd above 5 c required to exist
+! real, dimension(kk) :: gdd5lmt = [ 375.0,  600.0,  0.0,   0.0,   0.0, &
+!                                   1200.0,  300.0,  9.9, 375.0, 600.0, &
+!                                      9.9,    9.9,  0.0,   0.0,   0.0, &
+!                                      9.9,    9.9,  9.9,   0.0,   0.0 ]
+!
+! !> aridity index limit for broadleaf drought/dry deciduous trees
+! real, dimension(kk) :: aridlmt = [ 9.9,  9.9,  0.0,  0.0,  0.0, &
+!                                    9.9,  9.9,  0.9,  9.9,  9.9, &
+!                                    9.9,  9.9,  0.0,  0.0,  0.0, &
+!                                    9.9,  9.9,  9.9,  0.0,  0.0 ]
+!
+! !> minimum length of dry season for PFT to exist
+! real, dimension(kk) :: dryseasonlmt =[  9.0,  99.9,    0.0,   0.0,  0.0, &
+!                                        99.9,  99.9,    5.5,   9.0, 99.9, &
+!                                        99.9,  99.9,    0.0,   0.0,  0.0, &
+!                                        99.9,  99.9,   99.9,   0.0,  0.0 ]
+!
+!
+! !> multiplying factor for converting biomass density to sapling density
+! ! smaller numbers give faster colonization rates.
+! real, dimension(kk) :: bio2sap = [ 0.32, 0.20, 0.00, 0.00, 0.00, &
+!                                    0.08, 0.14, 0.13, 0.32, 0.20, &
+!                                    0.00, 0.00, 0.00, 0.00, 0.00, &
+!                                    0.20, 0.20, 0.20, 0.00, 0.00 ]
+!
+! real :: bioclimrt = 0.25 !< mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
+
+! ! ctem.f parameters: ----------
+!
+! !> Growth respiration coefficient
+! real, dimension(kk) :: grescoef = [ 0.15, 0.15, 0.00, 0.00, 0.00, &
+!                                     0.15, 0.15, 0.15, 0.15, 0.15, &
+!                                     0.15, 0.15, 0.00, 0.00, 0.00, &
+!                                     0.15, 0.15, 0.15, 0.00, 0.00 ]
+!
+!
+! !> Humification factor - used for transferring carbon from litter into soil c pool
+! real, dimension(kk) :: humicfac = [ 0.42, 0.42, 0.00, 0.00, 0.00, &
+!                                     0.53, 0.48, 0.48, 0.42, 0.42, &
+!                                     0.10, 0.10, 0.00, 0.00, 0.00, &
+!                                     0.42, 0.42, 0.42, 0.00, 0.00 ]
+!
+! !> Minimum lai below which a pft doesn't expand
+! real, dimension(kk) :: laimin = [ 1.0,   1.0,  0.0, 0.0, 0.0, &
+!                                   1.5,   1.0,  1.0, 1.0, 1.0, &
+!                                   1.0,   1.0,  0.0, 0.0, 0.0, &
+!                                   0.01, 0.01, 0.01, 0.0, 0.0 ]
+! !> Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
+! real, dimension(kk) :: laimax = [ 4.0, 3.0, 0.0, 0.0, 0.0, &
+!                                   6.0, 5.0, 5.0, 4.0, 3.0, &
+!                                   8.0, 8.0, 0.0, 0.0, 0.0, &
+!                                   4.0, 4.0, 4.0, 0.0, 0.0 ]
+!
+! real :: lambdamax      = 0.10 !< Max. fraction of npp that is allocated for reproduction/colonization
+!
+! real :: repro_fraction = 0.10 !< Fraction of NPP that is used to create reproductive tissues
+
+! ! disturbance parameters: ------------
+!
+! real, dimension(2) :: bmasthrs_fire = [ 0.4, 1.2 ] !< min. and max. vegetation biomass thresholds to initiate fire, \f$kg c/m^2\f$
+!
+! real :: extnmois_veg  = 0.3  !< extinction moisture content for estimating vegetation fire likeliness due to soil moisture
+!
+! real :: extnmois_duff = 0.5  !< extinction moisture content for estimating duff layer fire likeliness due to soil moisture
+!
+! real :: lwrlthrs      = 0.25 ! FireMIP value: 0.025
+!                              !< lower cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
+!
+! real :: hgrlthrs      = 10.0 ! FireMIP value: 1.0
+!                              !< higher cloud-to-ground lightning threshold for fire likelihood flashes/km^2.year
+!
+! !>parameter m (mean) and b of logistic distribution used for \n
+! !>**Parmlght was increased to 0.8 to make it so areas with higher amounts of
+! !>lightning have higher lterm. The saturation is still the same, but the
+! !>increase is more gradual at low lightning density. JM
+! real :: parmlght    = 0.8
+! real :: parblght    = 0.1    !< estimating fire likelihood due to lightning
+!
+! real :: reparea     = 500.0  !1000  ! FireMIP value: 300.0
+!                              !< typical area representing ctem's fire parameterization (km2)
+!
+! real :: popdthrshld = 300.   !< threshold of population density (people/km2) [Kloster et al., biogeosci. 2010]
+!
+! !     **These values were being calculated each time, they shouldn't be as they
+! !     are just parameters. JM
+! !      real, parameter :: ymin = 0.01798621     !=1.0/( 1.0+exp((parmlght-0.0)/parblght) )
+! !      real, parameter :: ymax = 0.9975273768   !=1.0/( 1.0+exp((parmlght-1.0)/parblght) )
+! !      real, parameter :: slope = 0.0204588331  !=abs(0.0-ymin)+abs(1.0-ymax)
+! !      real :: ymin, ymax, slope
+!
+! real :: alpha_fire       !< parameter alpha_fire and f0 used for estimating wind function for fire spread rate
+! real :: f0 = 0.05        !< Fire spread rate in the absence of wind  -- Not used in CTEM v 2.0!
 
 !> max. fire spread rate, km/hr
 real, dimension(kk) :: maxsprd = [  0.38, 0.38, 0.00, 0.00, 0.00, &
@@ -447,10 +542,10 @@ real, dimension(kk) :: standreplace = [ 0.20, 0.20, 0.00, 0.00, 0.00, &
                                         0.25, 0.25, 0.25, 0.00, 0.00 ]
 
 !     emissions factors by chemical species
-!     
+!
 !     Values are from Andreae 2011 as described in Li et al. 2012
 !     Biogeosci. Units: g species / (kg DOM)
- 
+
 !     Andreae 2011 as described in Li et al. 2012
 !> pft-specific emission factors for CO2,g species / (kg DOM)
 real, dimension(kk) :: emif_co2 = [ 1576.0, 1576.0,   0.00,   0.00,   0.00, &
@@ -461,9 +556,9 @@ real, dimension(kk) :: emif_co2 = [ 1576.0, 1576.0,   0.00,   0.00,   0.00, &
 !    values from Wiedinmyer et al. 2011
 !real, dimension(kk) :: emif_co2 = [ 1514.0, 1514.0,   0.00, &
 !             1643.0, 1630.0, 1716.0, &
-!             1537.0, 1537.0,   0.00, & 
+!             1537.0, 1537.0,   0.00, &
 !             1692.0, 1692.0,   0.00 ]
- 
+
 !     Andreae 2011 as described in Li et al. 2012
 !> pft-specific emission factors for CO,g species / (kg DOM)
 real, dimension(kk) :: emif_co = [ 106.0, 106.0, 0.00,  0.00,  0.00, &
@@ -524,7 +619,7 @@ real, dimension(kk) :: emif_nox = [ 3.24, 3.24, 0.00, 0.00, 0.00, &
 !             3.50, 3.50, 0.00, &
 !             2.80, 2.80, 0.00 ]
 
-!     Andreae 2011 as described in Li et al. 2012 
+!     Andreae 2011 as described in Li et al. 2012
 !> pft-specific emission factors for N2O,g species / (kg DOM)
 real, dimension(kk) :: emif_n2o = [ 0.26, 0.26, 0.00, 0.00, 0.00, &
                                     0.23, 0.26, 0.20, 0.26, 0.26, &
@@ -544,7 +639,7 @@ real, dimension(kk) :: emif_pm25 = [ 12.7, 12.7,  0.0,  0.0,  0.0, &
 !real, dimension(kk) :: emif_pm25 = [ 13.0, 13.0, 0.0, &
 !               9.7, 13.0, 9.3, &
 !               5.8,  5.8, 0.0, &
-!               5.4,  5.4, 0.0 ] 
+!               5.4,  5.4, 0.0 ]
 
 !     Andreae 2011 as described in Li et al. 2012
 !> pft-specific emission factors for total particulate matter,g species / (kg DOM)
@@ -580,7 +675,7 @@ real, dimension(kk) :: emif_oc = [ 9.1, 9.1, 0.0, 0.0, 0.0, &
                                    9.1, 3.2, 0.0, 0.0, 0.0, &
                                    9.1, 3.2, 9.1, 0.0, 0.0 ]
 
-!    values from Wiedinmyer et al. 2011 
+!    values from Wiedinmyer et al. 2011
 !real, dimension(kk) :: emif_oc = [ 7.8, 7.8, 0.0, &
 !            4.7, 9.2, 6.6, &
 !            3.3, 3.3, 0.0, &
@@ -639,7 +734,7 @@ real, dimension(3) :: furniture = [ 0.15, 0.00, 0.00 ] !< how much deforested/ch
 real, dimension(2) :: bmasthrs  = [ 4.0, 1.0 ]         !< biomass thresholds for determining if deforested area is a forest, a shrubland, or a bush kg c/m2
 
 real :: tolrnce1 = 0.50  !FLAG would be good to make this consistent with global tolerance so only one value.
-                         !< kg c, tolerance of total c balance 
+                         !< kg c, tolerance of total c balance
 
 ! mainres.f parameters: ----------
 
@@ -832,7 +927,7 @@ real, dimension(kk) :: kappa =[ 1.6, 1.6, 0.0, 0.0, 0.0, &
                                 1.6, 1.6, 1.6, 1.6, 1.6, &
                                 1.6, 1.6, 0.0, 0.0, 0.0, &
                                 1.2, 1.2, 1.2, 0.0, 0.0 ]
-  
+
 real, dimension(2) :: flhrspan = [ 17.0, 45.0 ]  !< Harvest span (time in days over which crops are harvested,  15 days),
                                                  !< and  fall span (time in days over which bdl cold dcd plants shed their leaves,  30 days)
 
@@ -917,22 +1012,22 @@ real, dimension(kk) :: rootlife = [ 13.8,13.2, 0.0,  0.0,  0.0, &
                                      3.0, 3.0, 0.0,  0.0,  0.0, &
                                      3.0, 3.0, 3.0,  0.0,  0.0  ]
 
-real :: stmhrspn = 17.0 !< Stem harvest span. same as crop harvest span. period in days over which crops are harvested. 
+real :: stmhrspn = 17.0 !< Stem harvest span. same as crop harvest span. period in days over which crops are harvested.
 
 ! wetland_methane.f90 parameters: ------------
 
 !>methane to carbon dioxide flux scaling factor.\n
-!>Rita Wania's thesis suggests about 0.25, but we get a better agreement to outputs from the Walter's model if we use 0.16. 
-!>Note that this scaling factor likely is temperature dependent, and increases with temperature, but it is difficult to 
+!>Rita Wania's thesis suggests about 0.25, but we get a better agreement to outputs from the Walter's model if we use 0.16.
+!>Note that this scaling factor likely is temperature dependent, and increases with temperature, but it is difficult to
 !>know the function, so leave constant for now ratio is \f$mol ch_4\f$ to \f$mol co_2\f$
 !real :: ratioch4     = 0.16  ! old value.
 real :: ratioch4     = 0.135 ! New value based on Vivek's work of Aug 2016.
 
 !>ratio of wetland to upland respiration\n
 !>Use the heterotrophic respiration outputs for soil and litter as the ecosystem basis.  These were summed as "hetrores".
-!>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration 
+!>This respiration is for upland soils; we multiply by wtdryres as the ratio of wetland to upland respiration
 !>based on literature measurements: Dalva et al. 1997 found 0.5 factor; Segers 1998 found a 0.4 factor. use 0.45 here (unitless)
-real :: wtdryres     = 0.45                       
+real :: wtdryres     = 0.45
 real :: factor2      = 0.015  !< constant value for secondary (ch4wet2) methane emissions calculation
 real :: lat_thrshld1 = 40.0   !< Northern zone for wetland determination (degrees North)
 real :: lat_thrshld2 = -35.0  !< Boundary with southern zone for wetland determination (degrees North)
@@ -961,7 +1056,7 @@ logical, intent(in) :: compete
 !   =============                                                     ==========================
 !   ********************************************************************************************
 
-if (compete) then 
+if (compete) then
 
 ! These parameters are used when competition is on. If you are using
 ! prescribed PFT fractional cover, then the parameters after this section
@@ -975,37 +1070,37 @@ if (compete) then
 ! allocation in forest ecosystems, Glob. Chang. Biol., 13(10), 2089–2109, 2007. Further
 ! tuning was performed on these basic values. JM Dec 20 2013.
 
-omega = [ 0.80, 0.50, 0.00, 0.00, 0.00, & 
-          0.80, 0.45, 0.80, 0.80, 0.50, &  
+omega = [ 0.80, 0.50, 0.00, 0.00, 0.00, &
+          0.80, 0.45, 0.80, 0.80, 0.50, &
           0.05, 0.05, 0.00, 0.00, 0.00, &
           1.00, 1.00, 1.00, 0.00, 0.00 ]
 
-epsilonl = [ 0.19, 0.45, 0.00, 0.00, 0.00, &  
-             0.39, 0.50, 0.30, 0.19, 0.45, &  
+epsilonl = [ 0.19, 0.45, 0.00, 0.00, 0.00, &
+             0.39, 0.50, 0.30, 0.19, 0.45, &
              0.80, 0.80, 0.00, 0.00, 0.00, &
              0.10, 0.10, 0.60, 0.00, 0.00]        !Sedge YW less allocation to root than real grass
 
 
 epsilons = [ 0.40, 0.34, 0.00, 0.00, 0.00, &
-             0.21, 0.35, 0.10, 0.40, 0.34, & 
+             0.21, 0.35, 0.10, 0.40, 0.34, &
              0.15, 0.15, 0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00, 0.00, 0.00 ]
 
-epsilonr = [ 0.41, 0.21, 0.00, 0.00, 0.00, &  
-             0.40, 0.15, 0.60, 0.41, 0.21, &  
+epsilonr = [ 0.41, 0.21, 0.00, 0.00, 0.00, &
+             0.40, 0.15, 0.60, 0.41, 0.21, &
              0.05, 0.05, 0.00, 0.00, 0.00, &
              0.90, 0.90, 0.40, 0.00, 0.00 ]       !Sedge YW less allocation to root than real grass
-    
+
 ! mainres.f parameters: ---------
 
 bsrtstem = [ 0.0700, 0.0550, 0.0000, 0.0000, 0.0000, &
-             0.0500, 0.0335, 0.0350, 0.0700, 0.0335, &  
-             0.0365, 0.0365, 0.0000, 0.0000, 0.0000, & 
+             0.0500, 0.0335, 0.0350, 0.0700, 0.0335, &
+             0.0365, 0.0365, 0.0000, 0.0000, 0.0000, &
              0.0000, 0.0000, 0.0000, 0.0000, 0.0000 ] ! no stem component for grasses
 
 bsrtroot = [ 0.5000, 0.2850, 0.0000, 0.0000, 0.0000, &
-             0.4000, 0.2250, 0.1500, 0.5000, 0.2850, & 
-             0.1600, 0.1600, 0.0000, 0.0000, 0.0000, & 
+             0.4000, 0.2250, 0.1500, 0.5000, 0.2850, &
+             0.1600, 0.1600, 0.0000, 0.0000, 0.0000, &
              0.1000, 0.1000, 0.1000, 0.0000, 0.0000 ]
 
 ! mortality.f parameters: ---------
@@ -1016,18 +1111,18 @@ maxage = [ 800., 500.,   0.,   0.,   0., &
              0.,   0.,   0.,   0.,   0. ]
 
 
-mxmortge = [ 0.005, 0.005, 0.000, 0.000, 0.000, & 
-             0.005, 0.005, 0.005, 0.005, 0.005, & 
-             0.000, 0.000, 0.000, 0.000, 0.000, & 
-             0.050, 0.100, 0.050, 0.000, 0.000 ] 
+mxmortge = [ 0.005, 0.005, 0.000, 0.000, 0.000, &
+             0.005, 0.005, 0.005, 0.005, 0.005, &
+             0.000, 0.000, 0.000, 0.000, 0.000, &
+             0.050, 0.100, 0.050, 0.000, 0.000 ]
 
 ! phenology.f parameters: ---------
 
 
 drlsrtmx = [ 0.006 , 0.005, 0.000, 0.000, 0.000, &
-             0.010 , 0.025, 0.030, 0.006, 0.005, & 
+             0.010 , 0.025, 0.030, 0.006, 0.005, &
              0.005 , 0.005, 0.000, 0.000, 0.000, &
-             0.020 , 0.020, 0.020, 0.000, 0.000 ] 
+             0.020 , 0.020, 0.020, 0.000, 0.000 ]
 
 
 else ! Prescribed PFT fractional cover
@@ -1038,29 +1133,29 @@ else ! Prescribed PFT fractional cover
 !   =============                                                     ==========================
 !   ********************************************************************************************
 
-! These parameters are used when the PFT fractional cover is read in from the 
+! These parameters are used when the PFT fractional cover is read in from the
 ! CTM and INI files, or when LUC is on, the LUC file.
 
 
 ! allocate.f parameters: --------------
 
-omega = [ 0.80, 0.50, 0.00, 0.00, 0.00, & 
+omega = [ 0.80, 0.50, 0.00, 0.00, 0.00, &
           0.80, 0.80, 0.80, 0.80, 0.50, &
           0.05, 0.05, 0.00, 0.00, 0.00, &
           1.00, 1.00, 1.00, 0.00, 0.00 ]
 
-epsilonl = [ 0.20, 0.06, 0.00, 0.00, 0.00, &  
-             0.35, 0.35, 0.25, 0.20, 0.06, &  
+epsilonl = [ 0.20, 0.06, 0.00, 0.00, 0.00, &
+             0.35, 0.35, 0.25, 0.20, 0.06, &
              0.80, 0.80, 0.00, 0.80, 0.80, &
              0.01, 0.01, 0.01, 0.00, 0.00 ]
 
 epsilons = [ 0.15, 0.05, 0.00, 0.00, 0.00, &
-             0.05, 0.10, 0.10, 0.15, 0.05, & 
+             0.05, 0.10, 0.10, 0.15, 0.05, &
              0.15, 0.15, 0.00, 0.00, 0.00, &
              0.00, 0.00, 0.00, 0.00, 0.00 ]
 
-epsilonr = [ 0.65, 0.89, 0.00, 0.00, 0.00, &  
-             0.60, 0.55, 0.65, 0.65, 0.89, &  
+epsilonr = [ 0.65, 0.89, 0.00, 0.00, 0.00, &
+             0.60, 0.55, 0.65, 0.65, 0.89, &
              0.05, 0.05, 0.00, 0.00, 0.00, &
              0.99, 0.99, 0.99, 0.00, 0.00 ]
 
@@ -1080,14 +1175,14 @@ bsrtroot = [ 0.5000, 0.2850, 0.0000, 0.0000, 0.0000, &
 ! mortality.f parameters: ---------
 
 maxage = [ 250.0, 400.0,   0.0,   0.0,   0.0,  &    !same as comp
-           600.0, 250.0, 500.0, 250.0, 400.0,  &  
+           600.0, 250.0, 500.0, 250.0, 400.0,  &
              0.0,   0.0,   0.0,   0.0,   0.0,  &
              0.0,   0.0,   0.0,   0.0,   0.0 ]
 
 mxmortge = [ 0.005, 0.005,  0.00,  0.00,  0.00, &   ! Same as competition except for grasses.
-             0.005, 0.005, 0.005, 0.005, 0.005, & 
-              0.00,  0.00,  0.00,  0.00,  0.00, & 
-              0.00,  0.00,  0.00,  0.00,  0.00 ] 
+             0.005, 0.005, 0.005, 0.005, 0.005, &
+              0.00,  0.00,  0.00,  0.00,  0.00, &
+              0.00,  0.00,  0.00,  0.00,  0.00 ]
 
 
 ! phenology.f parameters: ---------
@@ -1097,10 +1192,78 @@ mxmortge = [ 0.005, 0.005,  0.00,  0.00,  0.00, &   ! Same as competition except
 drlsrtmx = [ 0.0025, 0.005, 0.000, 0.000, 0.000, &
              0.005, 0.005, 0.025, 0.0025, 0.005, &
              0.005, 0.005, 0.000,  0.000, 0.000, &
-             0.050, 0.050, 0.050,  0.000, 0.000 ]    
+             0.050, 0.050, 0.050,  0.000, 0.000 ]
 
 end if
 
 end subroutine initpftpars
+ !----------------------------------------------------\
+
+subroutine readin_params
+
+!>\ingroup readin_params
+!!@{
+
+implicit none
+
+namelist /classicparams/ &
+    modelpft,&
+    pftlist,&
+    kn, &
+    omega,&
+    epsilonl,&
+    epsilons,&
+    epsilonr,&
+    rtsrmin,&
+    aldrlfon,&
+    caleaf,&
+    castem,&
+    caroot,&
+    abar,&
+    avertmas,&
+    alpha,&
+    prcnslai,&
+    minslai,&
+    mxrtdpth,&
+    albvis,&
+    albnir,&
+    tcoldmin,&
+    tcoldmax,&
+    twarmmax,&
+    gdd5lmt,&
+    aridlmt,&
+    dryseasonlmt,&
+    bio2sap,&
+    bioclimrt,&
+    grescoef,&
+    humicfac,&
+    laimin,&
+    laimax,&
+    lambdamax,&
+    repro_fraction,&
+    bmasthrs_fire,&
+    extnmois_veg,&
+    extnmois_duff,&
+    lwrlthrs,&
+    hgrlthrs,&
+    parmlght,&
+    parblght,&
+    reparea,&
+    popdthrshld,&
+    f0
+
+
+open(10,file='template_run_parameters.txt',action='read',status='old')
+
+read(10,nml = classicparams)
+
+close(10)
+
+print *,popdthrshld
+
+! FLAG ASSIGN the compete values vs. prescribed here!!!
+
+end subroutine readin_params
+
 !>@}
 end module ctem_params

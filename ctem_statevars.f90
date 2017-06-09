@@ -20,7 +20,7 @@ module ctem_statevars
 
 ! J. Melton Apr 2015
 
-use ctem_params,  only : initpftpars, nlat, nmos, ilg, ican, ignd,icp1, icc, iccp1, &
+use ctem_params,  only : nlat, nmos, ilg, ican, ignd,icp1, icc, iccp1, &
                     monthend, mmday,modelpft, l2max,deltat, abszero, monthdays,seed, crop, NBS
 
 implicit none
