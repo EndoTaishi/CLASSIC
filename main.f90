@@ -3301,9 +3301,7 @@ contains
         CALL CLASSD
 
         ! Initialize the CTEM parameters
-        call readin_params()
-
-        !call initpftpars(compete)
+        call readin_params(compete)
 
         ! Allocate the local variables that rely on nlat, ilg, etc.
         allocate(curlatno(ilg),&

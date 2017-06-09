@@ -98,12 +98,6 @@ contains
         if (all_lat(srty) < bounds(3) .and. bounds(4) /= bounds(3)) srty = srty + 1
         cnty = 1 + abs(maxval(ypos) - srty)
 
-        !> The size of nlat should then be cntx x cnty. We later take in GC to determine
-        !! which cells are valid land cells and use that in GATPREP to make it so we only
-        !! do computations over the valid land cells.
-
-        nlat = cntx * cnty
-
         !> Save the longitudes and latitudes over the region of interest for making the
         !! output files.
         allocate(lonvect(cntx),&
