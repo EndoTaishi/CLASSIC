@@ -14,6 +14,7 @@ BDIR = ../bin
 
 # GNU Fortran
 FC=gfortran
+MPIC=mpif90
 NETCDFDIR=${HOME}/Public/NETCDF_GF
 
 FC := $(shell $(NETCDFDIR)/bin/nf-config --fc)
@@ -34,9 +35,6 @@ LDLIBS += $(shell $(NETCDFDIR)/bin/nc-config --libs)
 # PGI
 #FFLAGS += -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds
 
-
-
-
 #GNU
 FFLAGS += -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow -L/usr/local/zlib-1.2.5/lib -lz -lcurl
 
@@ -48,13 +46,16 @@ LDLIBS += -ldl -lz -lm -lhdf5_hl -lhdf5
 #
 
 %.o: %.f90
-	$(FC) $(FFLAGS) -c $< -o $@
+	$(MPIC) $(FFLAGS) -c $< -o $@
+
+%.o: %.F90
+	$(MPIC) $(FFLAGS) -c $< -o $@
 
 %.mod : %.f90
-	$(FC) $(FFLAGS) -c $< -mod $@
+	$(MPIC) $(FFLAGS) -c $< -mod $@
 
 CLASSIC: $(OBJ)
-	$(FC) $(FFLAGS) -o $(BDIR)/CLASSIC $(OBJ) $(LDLIBS)
+	$(MPIC) $(FFLAGS) -o $(BDIR)/CLASSIC $(OBJ) $(LDLIBS)
 	 #rm -f *.o *.mod
 
 .PHONY: clean

@@ -2,28 +2,32 @@
 !! Principle driver program to run CLASSIC in stand-alone mode using specified boundary
 !! conditions and atmospheric forcing.
 program CLASSIC
-    use io_driver, only             : bounds,lonvect,latvect
-    use model_state_drivers, only   : read_modelsetup
-    use netcdf_drivers, only        : create_out_netcdf
-    use readjobopts, only           : read_from_job_options
-    use main_driver, only           : CLASSIC_driver
-    use ctem_statevars, only        : alloc_ctem_vars
-    use class_statevars, only       : alloc_class_vars
+    use mpi
+    use io_driver,              only : bounds,lonvect,latvect
+    use model_state_drivers,    only : read_modelsetup
+    use netcdf_drivers,         only : create_out_netcdf
+    use readjobopts,            only : read_from_job_options
+    use main_driver,            only : CLASSIC_driver
+    use ctem_statevars,         only : alloc_ctem_vars
+    use class_statevars,        only : alloc_class_vars
     implicit none
     real                            :: longitude, latitude
+    double precision                :: time
+    integer                         :: ierr, rank, size
 
-! MAIN PROGRAM
+    ! MAIN PROGRAM
+    call initializeParallel         ! Initialize the MPI session
     call loadProjectConfiguration   ! Load the project config file
     call loadModelSetup             ! Load the model setup information
     call allocateVariables          ! Allocate variables
-    call generateOutputFiles        ! Generate the output files
+    !call generateOutputFiles        ! Generate the output files
     call processModel               ! Process the model
-! END MAIN PROGRAM
-
+    call finalizeParallel           ! Shut down MPI session
+    ! END MAIN PROGRAM
 contains
-!> Set up the longitude and latitude of this gridcell based on the bounds
-!> Then we call the main model driver. This performs read ins of model inputs, all model calculations,
-!! writes to output files, and writes to a model restart file.
+    !> Set up the longitude and latitude of this gridcell based on the bounds
+    !> Then we call the main model driver. This performs read ins of model inputs, all model calculations,
+    !! writes to output files, and writes to a model restart file.
     subroutine processModel
         longitude = bounds(1)
         latitude = bounds(3)
@@ -31,33 +35,46 @@ contains
         !call CLASSIC_driver()
     end subroutine processModel
 
-!> This parses the command line arguments. All model switches are read in from a
-!! namelist file. This sets up the run options and points to input files as needed.
+    subroutine initializeParallel
+        call MPI_INIT(ierr)
+        time = MPI_WTIME()
+        call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierr)
+        call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierr)
+        print*, "I'm process (rank)", rank, "out of a total of", size
+    end subroutine initializeParallel
+
+    !> This parses the command line arguments. All model switches are read in from a
+    !! namelist file. This sets up the run options and points to input files as needed.
     subroutine loadProjectConfiguration
         call read_from_job_options()
     end subroutine loadProjectConfiguration
 
-!> Next we set up the run boundaries based on the metadata in the initialization netcdf file.
-!! The bounds given as an argument to CLASSIC are used to find the start points (srtx and srty)
-!! in the netcdf file, placing the gridcell on the domain of the input/output netcdfs. In
-!! read_modelsetup we use the netcdf to set the nmos, ignd,and ilg constants. It also opens
-!! the initial conditions file that is used below in read_initialstate.
+    !> Next we set up the run boundaries based on the metadata in the initialization netcdf file.
+    !! The bounds given as an argument to CLASSIC are used to find the start points (srtx and srty)
+    !! in the netcdf file, placing the gridcell on the domain of the input/output netcdfs. In
+    !! read_modelsetup we use the netcdf to set the nmos, ignd,and ilg constants. It also opens
+    !! the initial conditions file that is used below in read_initialstate.
     subroutine loadModelSetup
         call read_modelsetup()
     end subroutine loadModelSetup
 
-!> Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
-!! CTEM variable structures. This has to be done here.
+    !> Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
+    !! CTEM variable structures. This has to be done here.
     subroutine allocateVariables
         call alloc_class_vars()
         call alloc_ctem_vars()
     end subroutine allocateVariables
 
-!> Next we create all the output files for the model run based on options in the joboptions file
-!! and the parameters of the initilization netcdf file.
+    !> Next we create all the output files for the model run based on options in the joboptions file
+    !! and the parameters of the initilization netcdf file.
     subroutine generateOutputFiles
         call create_out_netcdf()
     end subroutine generateOutputFiles
+
+    subroutine finalizeParallel
+        call MPI_FINALIZE(ierr)
+    end subroutine finalizeParallel
+
 end program CLASSIC
 
 
