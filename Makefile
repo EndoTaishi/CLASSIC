@@ -35,12 +35,14 @@ LDLIBS += $(shell $(NETCDFDIR)/bin/nc-config --libs)
 #FFLAGS += -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds
 
 
+
+
 #GNU
 FFLAGS += -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow -L/usr/local/zlib-1.2.5/lib -lz -lcurl
 
 #-----------------------
 
-LDLIBS += -lhdf5_hl -lhdf5 -ldl -lz -lm
+LDLIBS += -ldl -lz -lm -lhdf5_hl -lhdf5
 
 # These are the rules to make the targets
 #
@@ -52,7 +54,8 @@ LDLIBS += -lhdf5_hl -lhdf5 -ldl -lz -lm
 	$(FC) $(FFLAGS) -c $< -mod $@
 
 CLASSIC: $(OBJ)
-	 $(FC) $(FFLAGS) -o $(BDIR)/CLASSIC $(OBJ) $(LDLIBS)
+	$(FC) $(FFLAGS) -o $(BDIR)/CLASSIC $(OBJ) $(LDLIBS)
+	 #rm -f *.o *.mod
 
 .PHONY: clean
 
