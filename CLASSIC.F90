@@ -1,5 +1,4 @@
-! Authors: Joe Melton and Ed Wisernig
-
+! Joe Melton and Ed Wisernig @ 2017
 program CLASSIC
     use mpi
     use io_driver,              only : bounds,lonvect,latvect
@@ -10,24 +9,22 @@ program CLASSIC
     use main_driver,            only : CLASSIC_driver
     use ctem_statevars,         only : alloc_ctem_vars
     use class_statevars,        only : alloc_class_vars
+    use supportFunctions,       only : isMainProcess
     implicit none
-    integer, parameter              :: mainProcess = 0
     double precision                :: time
     integer                         :: ierr, rank, size, i, cell, blocks, remainder
 
-                                                ! MAIN PROGRAM
-    call initializeParallelEnvironment          ! Initialize the MPI and PnetCDF session
-    call readFromJobOptions                     ! Load the project config file
-    call readModelSetup                         ! Load the model setup information
-    if (isMainProcess()) then                   ! Execute only on the main thread
-        call createOutputNetcdf                 ! Generate the output files
+                                            ! MAIN PROGRAM
+    call initializeParallelEnvironment      ! Initialize the MPI and PnetCDF session
+    call readFromJobOptions                 ! Load the project config file
+    call readModelSetup                     ! Load the model setup information
+    if (isMainProcess(rank)) then           ! Execute the following only on the main thread
+        call createOutputNetcdf             ! Generate the output files
     endif
-    call processLandCells                       ! Process the land grid cells, in parallel
-    call finalizeParallelEnvironment            ! Close PnetCDF and shut down the MPI session
-                                                ! END MAIN PROGRAM
-
+    call processLandCells                   ! Process the land grid cells, in parallel
+    call finalizeParallelEnvironment        ! Close PnetCDF and shut down the MPI session
+                                            ! END MAIN PROGRAM
 contains
-
     ! PROCESS LAND CELLS
     ! This section processes all of the land cells. There are validCount valid(i.e. land) cells, stored in validLon and validLat
     subroutine processLandCells
@@ -60,15 +57,4 @@ contains
         ! HERE - PnetCDF close session code comes here
         call MPI_FINALIZE(ierr)
     end subroutine finalizeParallelEnvironment
-
-    ! IS MAIN PROCESS
-    ! This section checks to see if we're on the main process of not
-    logical function isMainProcess()
-        implicit none
-        if (rank == mainProcess) then
-            isMainProcess = .true.
-        else
-            isMainProcess = .false.
-        endif
-    end function isMainProcess
 end program CLASSIC
