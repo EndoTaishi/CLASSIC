@@ -15,21 +15,21 @@ program CLASSIC
     double precision                :: time
     integer                         :: ierr, rank, size, i, cell, blocks, remainder
 
-    ! MAIN PROGRAM
+                                                ! MAIN PROGRAM
     call initializeParallelEnvironment          ! Initialize the MPI and PnetCDF session
     call readFromJobOptions                     ! Load the project config file
     call readModelSetup                         ! Load the model setup information
-    if (isMainProcess()) then
+    if (isMainProcess()) then                   ! Execute only on the main thread
         call createOutputNetcdf                 ! Generate the output files
     endif
-    call processLandCells                       ! Process the model
+    call processLandCells                       ! Process the land grid cells, in parallel
     call finalizeParallelEnvironment            ! Close PnetCDF and shut down the MPI session
-    ! END MAIN PROGRAM
+                                                ! END MAIN PROGRAM
 
 contains
 
     ! PROCESS LAND CELLS
-    ! This section processes all of the land cells
+    ! This section processes all of the land cells. There are validCount valid(i.e. land) cells, stored in validLon and validLat
     subroutine processLandCells
         call alloc_class_vars()
         call alloc_ctem_vars()
