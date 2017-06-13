@@ -131,8 +131,8 @@ contains
                 if (mask(i,j) .eq. -1) then
                     !print*, "(", i, ",", j, ") or (", lonvect(i + srtx - 1), ",", latvect(j + srty - 1), ") is land"
                     validCount = validCount + 1
-                    validLon(validCount) = i + srtx - 1
-                    validLat(validCount) = j + srty - 1
+                    validLon(validCount) = all_lon(i + srtx - 1)
+                    validLat(validCount) = all_lat(j + srty - 1)
                 endif
             enddo
         enddo

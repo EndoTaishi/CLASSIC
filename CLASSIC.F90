@@ -18,7 +18,7 @@ program CLASSIC
     call initializeParallelEnvironment      ! Initialize the MPI and PnetCDF session
     call readFromJobOptions                 ! Load the project config file
     call readModelSetup                     ! Load the model setup information
-    if (isMainProcess(rank)) then           ! Execute the following only on the main thread
+    if (isMainProcess(rank)) then           ! Execute the following only on the main thread (see supportFunctions.f90)
         call createOutputNetcdf             ! Generate the output files
     endif
     call processLandCells                   ! Process the land grid cells, in parallel
