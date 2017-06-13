@@ -695,6 +695,7 @@ type veg_gat
     integer, allocatable, dimension(:,:) :: lfstatus !<leaf phenology status
     integer, allocatable, dimension(:,:) :: pandays  !<days with positive net photosynthesis (an) for use in
                                                      !<the phenology subroutine
+    real, allocatable, dimension(:) :: grclarea      !<area of the grid cell, \f$km^2\f$
     integer, allocatable, dimension(:)   :: stdaln   !<an integer telling if ctem is operated within gcm (=0) or in stand
                                                      !<alone mode (=1). this is used for fire purposes. see comments just
                                                      !<above where disturb subroutine is called.
@@ -1561,7 +1562,8 @@ ilg = nlat * nmos
 
 ! allocated with ilg
 
-allocate(vgat%icount(ilg),&
+allocate(vgat%grclarea(ilg),&
+         vgat%icount(ilg),&
          vgat%gavglai (ilg),&
          vgat%lightng (ilg),&
          vgat%tcanoaccgat_out (ilg),&

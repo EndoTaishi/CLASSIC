@@ -62,11 +62,10 @@ public :: readin_params
 ! Constants
 
 real, parameter :: zero     = 1.0e-20
-real, parameter :: abszero  = 1e-12    !<this one is for runclassctem.f and allocate.f
-
+real, parameter :: abszero  = 1e-12     !<this one is for runclassctem.f and allocate.f
 real, parameter :: pi       = 3.1415926535898d0
-real, parameter :: earthrad = 6371.22 !<radius of earth, km
-real, parameter :: km2tom2  = 1.0e+06  !<changes from \f$km^2\f$ to \f$m^2\f$
+real, parameter :: earthrad = 6371.22   !<radius of earth, km
+real, parameter :: km2tom2  = 1.0e+06   !<changes from \f$km^2\f$ to \f$m^2\f$
 real, parameter :: deltat   = 1.0       !<CTEM's time step in days
 
 ! These month arrays are possibly overwritten in runclassctem due to leap years.
@@ -75,20 +74,6 @@ integer, dimension(13) :: monthend  = [ 0,31,59,90,120,151,181,212,243,273,304,3
 integer, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320,350 ] !<mid-month day
 integer, parameter :: nmon = 12 !< Number of months in a year
 
-integer, parameter :: lon = 128 !< specify gcm resolution for longitude !FLAG - read in from netcdf!
-integer, parameter :: lat = 64  !< specify gcm resolution for latitude !FLAG - read in from netcdf!
-
-!> latitudes of the edges of the gcm grid cells for 128/x64 resolution !FLAG - read in from netcdf!
-real, parameter, dimension(lat+1) :: edgelat = &
-                                    [ -90.0,-86.4802,-83.7047,-80.9193,-78.1313,-75.3422,-72.5527, &
-                                    -69.7628,-66.9727,-64.1825,-61.3922,-58.6018,-55.8114,-53.021, &
-                                    -50.2305,-47.44,-44.6495,-41.8589,-39.0684,-36.2778,-33.4872, &
-                                    -30.6967,-27.9061,-25.1155,-22.3249,-19.5343,-16.7437,-13.9531, &
-                                    -11.1625,-8.3718,-5.5812,-2.7906,0.0,2.7906,5.5812,8.3718,11.16245, &
-                                    13.9531,16.7437,19.5343,22.3249,25.1155,27.9061,30.69665,33.4872, &
-                                    36.2778,39.06835,41.8589,44.64945,47.43995,50.23045,53.02095, &
-                                    55.8114,58.6018,61.3922,64.1825,66.9727,69.7628,72.55265,75.3422, &
-                                    78.13125,80.91925,83.7047,86.48015,90.0 ]
 ! ----
 ! Model state
 integer, parameter :: nlat = 1         !< Number of cells we are running, read in from the initialization file. Offline this always 1.
@@ -110,8 +95,7 @@ real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running comp
 real, parameter :: c2dom   = 450.0    !< gc / kg dry organic matter \nconversion factor from carbon to dry organic matter value is from Li et al. 2012 biogeosci
 real, parameter :: wtCH4   = 16.044   !< Molar mass of CH4 ($g mol^{-1}$)
 
-
-integer, parameter :: nbs         = 4        !
+integer, parameter :: nbs = 4         !
 
 real :: gasc = 8.314    !< gas constant ($J mol^{-1} K^{-1}$)  !FLAG is there no global one I can use?
 
@@ -149,6 +133,7 @@ integer, parameter, dimension(numcrops) :: crop_ind = [ 8,9 ]
 
 integer, dimension(kk) :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
 character(8), dimension(kk) :: pftlist  !<List of PFTs
+character(8), dimension(kk) :: vegtype  !<Type of vegetation, options: Tree, Grass, Crop, Shrub
 real, dimension(kk) :: kn               !< Canopy light/nitrogen extinction coefficient; CAREFUL: Separate set defined in PHTSYN3.f!
 
 !allocate.f parameters:
@@ -414,6 +399,7 @@ real, dimension(kk):: drlsrtmx_compete
 
 namelist /classicparams/ &
     modelpft,&
+    vegtype, &
     pftlist,&
     kn, &
     omega,&

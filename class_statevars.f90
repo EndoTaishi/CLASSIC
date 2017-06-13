@@ -568,7 +568,7 @@ type class_rotated
     real, allocatable, dimension(:,:) :: HMFNROT !<
     real, allocatable, dimension(:,:) :: HTCCROT !<
     real, allocatable, dimension(:,:) :: SDEPROT !<Depth to bedrock in the soil profile
-    real, allocatable, dimension(:,:) :: SOCIROT  !<
+    real, allocatable, dimension(:,:) :: SOCIROT !<
     real, allocatable, dimension(:,:) :: HTCSROT !<
     real, allocatable, dimension(:,:) :: ILMOROT !<
     real, allocatable, dimension(:,:) :: PCFCROT !<
@@ -1235,7 +1235,7 @@ allocate(class_rot% IGDRROT (nlat,nmos),&
          class_rot% HMFNROT (nlat,nmos),&
          class_rot% HTCCROT (nlat,nmos),&
          class_rot% SDEPROT (nlat,nmos),&
-         class_rot% SOCIROT  (nlat,nmos),&
+         class_rot% SOCIROT (nlat,nmos),&
          class_rot% HTCSROT (nlat,nmos),&
          class_rot% ILMOROT (nlat,nmos),&
          class_rot% PCFCROT (nlat,nmos),&

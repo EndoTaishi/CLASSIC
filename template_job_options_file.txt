@@ -1,5 +1,8 @@
 &joboptions
 
+ ! See the manual (html/index.html) for explanation of these options. Alternatively, read_from_job_option.f90 also explains
+ ! them in more detail.
+
  transient_run = .false. ,
  trans_startyr = 1850 ,
  ctemloop = 5 ,
@@ -37,9 +40,8 @@
  use_netcdf = .true.,
 
  met_file = '/raid/ra40/data/rjm/cruncep2/t63files/cruncepv7_1901_2015_T63.nc' ,
- init_file = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_initialization.nc' ,
+ init_file = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_initialization_peatlands.nc' ,
  rs_file_to_overwrite = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_restart.nc' ,
- output_directory = '/home/rjm/Documents/CTEM/test'
 
  IDISP = 0 ,
  IZREF = 2 ,
@@ -55,6 +57,9 @@
  IALS = 0 ,
  IALG = 0 ,
  isnoalb = 0,
+
+ ! Output options:
+ output_directory = '/home/rjm/Documents/CTEM/test'
 
  doperpftoutput = .true. ,
  dopertileoutput = .true. ,

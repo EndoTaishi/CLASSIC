@@ -11,8 +11,8 @@ module model_state_drivers
     implicit none
 
     private
-    public :: read_modelsetup
-    public :: read_initialstate
+    public  :: read_modelsetup
+    public  :: read_initialstate
 
 contains
 
@@ -41,7 +41,7 @@ contains
 
         integer :: dimid
         integer :: varid
-        integer :: xsize, ysize
+        integer :: totlon,totlat
         integer, dimension(1) :: pos
         integer, dimension(2) :: xpos,ypos
         integer, dimension(:,:), allocatable :: nmarray
@@ -60,15 +60,15 @@ contains
         !! names of longitude and latitude.
 
         call check_nc(nf90_inq_dimid(initid,'lon',dimid))
-        call check_nc(nf90_inquire_dimension(initid,dimid,len=xsize))
+        call check_nc(nf90_inquire_dimension(initid,dimid,len=totlon))
 
         call check_nc(nf90_inq_dimid(initid,'lat',dimid))
-        call check_nc(nf90_inquire_dimension(initid,dimid,len=ysize))
+        call check_nc(nf90_inquire_dimension(initid,dimid,len=totlat))
 
         !calculate the number and indices of the pixels to be calculated
 
-        allocate(all_lon(xsize),&
-            all_lat(ysize))
+        allocate(all_lon(totlon),&
+            all_lat(totlat))
 
         call check_nc(nf90_inq_varid(initid,'lon',varid))
         call check_nc(nf90_get_var(initid,varid,all_lon))
@@ -141,9 +141,9 @@ contains
         use netcdf
         use netcdf_drivers, only : check_nc
         use io_driver, only : initid,cntx,cnty,srtx,srty
-        use ctem_statevars,     only : c_switch,vrot
-        use class_statevars,    only : class_rot
-        use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero
+        use ctem_statevars,     only : c_switch,vrot,vgat
+        use class_statevars,    only : class_rot,class_gat
+        use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero,pi
 
         implicit none
 
@@ -176,8 +176,8 @@ contains
         real, pointer, dimension(:,:,:) :: TBARROT
         real, pointer, dimension(:,:,:) :: THLQROT
         real, pointer, dimension(:,:,:) :: THICROT
-!        real, pointer, dimension(:,:,:) :: DELZ
-!        real, pointer, dimension(:,:,:) :: ZBOT
+        real, pointer, dimension(:)     :: DELZ
+        real, pointer, dimension(:)     :: ZBOT
         real, pointer, dimension(:,:)   :: TCANROT
         real, pointer, dimension(:,:)   :: TSNOROT
         real, pointer, dimension(:,:)   :: TPNDROT
@@ -194,6 +194,10 @@ contains
         real, pointer, dimension(:)     :: DLONROW !<
         real, pointer, dimension(:)     :: GCROW   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
         real, pointer, dimension(:)     :: ZBLDROW !<
+        real, pointer, dimension(:)     :: RADJROW !<Latitude of grid cell (positive north of equator) [rad]
+        real, pointer, dimension(:)     :: Z0ORROW !<
+        real, pointer, dimension(:)     :: GGEOROW !<Geothermal heat flux at bottom of soil profile \f$[W m^{-2} ]\f$
+        real, pointer, dimension(:,:)   :: SOCIROT
 
         logical, pointer :: ctem_on
         logical, pointer :: dofire
@@ -231,6 +235,11 @@ contains
         integer, pointer, dimension(:,:,:) :: pandaysrow
         integer, pointer, dimension(:,:) :: stdaln
         real, pointer, dimension(:,:,:) :: slopefrac
+        integer, pointer, dimension(:,:) :: ipeatland      !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+        real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
+        real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
+        real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
+        real, pointer, dimension(:) :: grclarea            !<area of the grid cell, \f$km^2\f$
 
         ! local variables
 
@@ -278,6 +287,12 @@ contains
         stdaln            => vrot%stdaln
         lfstatusrow       => vrot%lfstatus
         pandaysrow        => vrot%pandays
+        ipeatland         => vrot%ipeatland
+        Cmossmas          => vrot%Cmossmas
+        litrmsmoss        => vrot%litrmsmoss
+        dmoss             => vrot%dmoss
+
+        grclarea          => vgat%grclarea
 
         FCANROT           => class_rot%FCANROT
         FAREROT           => class_rot%FAREROT
@@ -294,8 +309,8 @@ contains
         WFSFROT           => class_rot%WFSFROT
         WFCIROT           => class_rot%WFCIROT
         MIDROT            => class_rot%MIDROT
-!        DELZ              => class_rot%DELZ
-!        ZBOT              => class_rot%ZBOT
+        DELZ              => class_gat%DELZ
+        ZBOT              => class_gat%ZBOT
         SANDROT           => class_rot%SANDROT
         CLAYROT           => class_rot%CLAYROT
         ORGMROT           => class_rot%ORGMROT
@@ -325,15 +340,21 @@ contains
         ROOTROT           => class_rot%ROOTROT
         DLATROW           => class_rot%DLATROW
         DLONROW           => class_rot%DLONROW
+        RADJROW           => class_rot%RADJROW
+        Z0ORROW           => class_rot%Z0ORROW
+        GGEOROW           => class_rot%GGEOROW
+        SOCIROT           => class_rot%SOCIROT
 
         ! ----------------------------
 
-!         JLAT=NINT(DLATROW(1))
-!         RADJROW(1)=DLATROW(1)*PI/180.
-!         DLONROW(1)=DEGLON
-!         Z0ORROW(1)=0.0
-!         GGEOROW(1)=0.0
-        !     GGEOROW(1)=-0.035  !commented out in original code.
+
+
+
+        do i = 1,nlat
+         RADJROW(i)=DLATROW(i)*PI/180.
+         Z0ORROW(i)=0.0
+         GGEOROW(i)=0.0
+        end do
 
         allocate(temptwod(cntx,cnty))
 
@@ -353,6 +374,14 @@ contains
         call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
         GCROW = reshape(temptwod,[ nlat ] )
 
+        call check_nc(nf90_inq_varid(initid,'ZBOT',varid)) !make per tile in the future
+        call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+        ZBOT = reshape(temptwod,[nlat])
+
+        call check_nc(nf90_inq_varid(initid,'DELZ',varid)) !make per tile in the future
+        call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+        DELZ = reshape(temptwod,[nlat])
+
         deallocate(temptwod)
 
         ! Now get the 3D variables:
@@ -365,20 +394,25 @@ contains
         call check_nc(nf90_inq_varid(initid,'SDEP',varid))
         call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
         SDEPROT = reshape(temp3d,[ nlat,nmos ] )
-        !
-        !call check_nc(nf90_inq_varid(initid,'FARE',varid))
-        !call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
-        !FAREROT = reshape(temp3d,[ nlat,nmos ] )
-        !
-                !  write(*,*)FAREROT
-        ! !
-        ! !           ! Error check:
-        ! !           if (FAREROT(I,M) .gt. 1.0) then
-        ! !            write(*,*)'FAREROT > 1',FAREROT(I,M)
-        ! !            call XIT('runclass36ctem', -2)
-        ! !           end if
-        !
-        !
+
+        call check_nc(nf90_inq_varid(initid,'SOCI',varid)) !make per tile in the future
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        SOCIROT = reshape(temp3d,[nlat,nmos])
+
+        call check_nc(nf90_inq_varid(initid,'FARE',varid))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        FAREROT = reshape(temp3d,[ nlat,nmos ] )
+
+        ! Error check:
+        do i = 1,nlat
+            do m = 1,nmos
+                if (FAREROT(i,m) .gt. 1.0) then
+                    print *,'FAREROT > 1',FAREROT(I,M)
+                    call XIT('read_initialstate', -1)
+                end if
+            enddo
+        enddo
+
         call check_nc(nf90_inq_varid(initid,'XSLP',varid))
         call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
         XSLPROT = reshape(temp3d,[ nlat,nmos ] )
@@ -435,26 +469,14 @@ contains
         call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
         GROROT = reshape(temp3d,[ nlat,nmos ] )
 
+        deallocate(temp3d)
         allocate(temp3di(cntx,cnty,nmos)) !this is an integer
 
         call check_nc(nf90_inq_varid(initid,'MID',varid))
         call check_nc(nf90_get_var(initid,varid,temp3di,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
         MIDROT = reshape(temp3di,[ nlat,nmos ] )
 
-        deallocate(temp3d)
         deallocate(temp3di)
-
-!         allocate(temp3d(cntx,cnty,ignd))
-!
-!         call check_nc(nf90_inq_varid(initid,'ZBOT',varid)) !per layer but not per tile (fix?)
-!         call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ignd]))
-!         ZBOT = reshape(temp4d,[nlat,ignd])
-!
-!         call check_nc(nf90_inq_varid(initid,'DELZ',varid)) !per layer but not per tile (fix?)
-!         call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ignd]))
-!         DELZ = reshape(temp4d,[nlat,ignd])
-!
-!         deallocate(temp3d)
 
         ! Now get the 4D variables:
 
@@ -558,84 +580,121 @@ contains
 
             allocate(temptwod(cntx,cnty))
 
-!             call check_nc(nf90_inq_varid(initid,'extnprob',varid))
-!             call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!             extnprob = reshape(temptwod,[ nlat ] )
-!
-!             call check_nc(nf90_inq_varid(initid,'prbfrhuc',varid))
-!             call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!             prbfrhuc = reshape(temptwod,[ nlat ] )
+            ! The next three are in ilg dimension so read in from nlat and spread to all tiles.
+            call check_nc(nf90_inq_varid(initid,'grclarea',varid))
+            call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+            grclarea = reshape(temptwod,[ nlat ] )
+            print *,grclarea
+
+            call check_nc(nf90_inq_varid(initid,'extnprob',varid))
+            call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+            extnprob(:,1) = reshape(temptwod,[ nlat ] )
+
+            call check_nc(nf90_inq_varid(initid,'prbfrhuc',varid))
+            call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+            prbfrhuc(:,1) = reshape(temptwod,[ nlat ] )
+
+            do i = 1,nmos
+                grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
+                extnprob(:,i) = extnprob(:,1)
+                prbfrhuc(:,i) = prbfrhuc(:,1)
+            end do
 
             deallocate(temptwod)
 
             allocate(temp3d(cntx,cnty,12))
 
-!             call check_nc(nf90_inq_varid(initid,'mlightng',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,12]))
-!             mlightng = reshape(temp3d,[ nlat, 12 ] )
+            call check_nc(nf90_inq_varid(initid,'mlightng',varid))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,12]))
+            mlightng(:,1,:) = reshape(temp3d,[ nlat, 12 ] )
+
+            do i = 1,nmos
+                mlightng(:,i,:) = mlightng(:,1,:)
+            end do
 
             deallocate(temp3d)
+
+            allocate(temp3d(cntx,cnty,nmos))
+
+            call check_nc(nf90_inq_varid(initid,'ipeatland',varid))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            ipeatland = reshape(temp3d,[ nlat,nmos ] )
+
+            call check_nc(nf90_inq_varid(initid,'Cmossmas',varid))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            Cmossmas = reshape(temp3d,[ nlat,nmos ] )
+
+            call check_nc(nf90_inq_varid(initid,'litrmsmoss',varid))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            litrmsmoss = reshape(temp3d,[ nlat,nmos ] )
+
+            call check_nc(nf90_inq_varid(initid,'dmoss',varid))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            dmoss = reshape(temp3d,[ nlat,nmos ] )
+
+            deallocate(temp3d)
+
             allocate(temp4d(cntx,cnty,icc,nmos))
 
             !>The following three variables are needed to run CTEM. 1) min & 2) max leaf area index are needed to break
             !>class lai into dcd and evg for trees (for crops and grasses it doesn't matter much). 3) dvdfcanrow is
             !>needed to divide needle & broad leaf into dcd and evg, and crops & grasses into c3 and c4 fractions.
 
-!             call check_nc(nf90_inq_varid(initid,'ailcmin',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             ailcminrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             call check_nc(nf90_inq_varid(initid,'ailcmax',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             ailcmaxrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             call check_nc(nf90_inq_varid(initid,'dvdfcan',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             dvdfcanrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             !>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
-!             !>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set
-!             !>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
-!
-!             call check_nc(nf90_inq_varid(initid,'gleafmas',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             gleafmasrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             call check_nc(nf90_inq_varid(initid,'bleafmas',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             bleafmasrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             call check_nc(nf90_inq_varid(initid,'stemmass',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             stemmassrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             call check_nc(nf90_inq_varid(initid,'rootmass',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             rootmassrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
-!             if (dofire .and. compete) then
-!                         do j =1,icc
-!                             pstemmassrow(i,m,j)=stemmassrow(i,m,j)
-!                             pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
-!                         end do
-!             end if
-!
-!             call check_nc(nf90_inq_varid(initid,'litrmass',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             litrmassrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             call check_nc(nf90_inq_varid(initid,'soilcmas',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             soilcmasrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             call check_nc(nf90_inq_varid(initid,'lfstatus',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             lfstatusrow = reshape(temp4d,[nlat,nmos,icc])
-!
-!             call check_nc(nf90_inq_varid(initid,'pandays',varid))
-!             call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
-!             pandaysrow = reshape(temp4d,[nlat,nmos,icc])
+            call check_nc(nf90_inq_varid(initid,'ailcmin',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            ailcminrow = reshape(temp4d,[nlat,nmos,icc])
+
+            call check_nc(nf90_inq_varid(initid,'ailcmax',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            ailcmaxrow = reshape(temp4d,[nlat,nmos,icc])
+
+            call check_nc(nf90_inq_varid(initid,'dvdfcan',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            dvdfcanrow = reshape(temp4d,[nlat,nmos,icc])
+
+            !>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
+            !>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set
+            !>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
+
+            call check_nc(nf90_inq_varid(initid,'gleafmas',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            gleafmasrow = reshape(temp4d,[nlat,nmos,icc])
+
+            call check_nc(nf90_inq_varid(initid,'bleafmas',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            bleafmasrow = reshape(temp4d,[nlat,nmos,icc])
+
+            call check_nc(nf90_inq_varid(initid,'stemmass',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            stemmassrow = reshape(temp4d,[nlat,nmos,icc])
+
+            call check_nc(nf90_inq_varid(initid,'rootmass',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            rootmassrow = reshape(temp4d,[nlat,nmos,icc])
+
+            !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
+            if (dofire .and. compete) then
+                        do j =1,icc
+                            pstemmassrow(i,m,j)=stemmassrow(i,m,j)
+                            pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
+                        end do
+            end if
+
+            call check_nc(nf90_inq_varid(initid,'litrmass',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            litrmassrow = reshape(temp4d,[nlat,nmos,icc])
+
+            call check_nc(nf90_inq_varid(initid,'soilcmas',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            soilcmasrow = reshape(temp4d,[nlat,nmos,icc])
+
+            call check_nc(nf90_inq_varid(initid,'lfstatus',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            lfstatusrow = reshape(temp4d,[nlat,nmos,icc])
+
+            call check_nc(nf90_inq_varid(initid,'pandays',varid))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            pandaysrow = reshape(temp4d,[nlat,nmos,icc])
 
             !call check_nc(nf90_inq_varid(initid,'stdaln',varid)) !FLAG - get rid of this? I don't see the use of stdaln
             !call check_nc(nf90_get_var(initid,varid,stdaln,start=[srty,srtx],count=[icnty,cntx]))
@@ -646,47 +705,61 @@ contains
 
                 allocate(temptwod(cntx,cnty))
 
-!                 call check_nc(nf90_inq_varid(initid,'twarmm',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 twarmm = reshape(temptwod,[ nlat ] )
-!
-!                 call check_nc(nf90_inq_varid(initid,'tcoldm',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 tcoldm = reshape(temptwod,[ nlat ] )
-!
-!                 call check_nc(nf90_inq_varid(initid,'gdd5',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 gdd5 = reshape(temptwod,[ nlat ] )
-!
-!                 call check_nc(nf90_inq_varid(initid,'aridity',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 aridity = reshape(temptwod,[ nlat ] )
-!
-!                 call check_nc(nf90_inq_varid(initid,'srplsmon',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 srplsmon = reshape(temptwod,[ nlat ] )
-!
-!                 call check_nc(nf90_inq_varid(initid,'defctmon',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 defctmon = reshape(temptwod,[ nlat ] )
-!
-!                 call check_nc(nf90_inq_varid(initid,'anndefct',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 anndefct = reshape(temptwod,[ nlat ] )
-!
-!                 call check_nc(nf90_inq_varid(initid,'annsrpls',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 annsrpls = reshape(temptwod,[ nlat ] )
-!
-!                 call check_nc(nf90_inq_varid(initid,'annpcp',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 annpcp = reshape(temptwod,[ nlat ] )
-!
-!                 call check_nc(nf90_inq_varid(initid,'dry_season_length',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
-!                 dry_season_length = reshape(temptwod,[ nlat ] )
+                call check_nc(nf90_inq_varid(initid,'twarmm',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                twarmm(:,1) = reshape(temptwod,[ nlat ] )
+
+                call check_nc(nf90_inq_varid(initid,'tcoldm',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                tcoldm(:,1) = reshape(temptwod,[ nlat ] )
+
+                call check_nc(nf90_inq_varid(initid,'gdd5',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                gdd5(:,1) = reshape(temptwod,[ nlat ] )
+
+                call check_nc(nf90_inq_varid(initid,'aridity',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                aridity(:,1) = reshape(temptwod,[ nlat ] )
+
+                call check_nc(nf90_inq_varid(initid,'srplsmon',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                srplsmon(:,1) = reshape(temptwod,[ nlat ] )
+
+                call check_nc(nf90_inq_varid(initid,'defctmon',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                defctmon(:,1) = reshape(temptwod,[ nlat ] )
+
+                call check_nc(nf90_inq_varid(initid,'anndefct',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                anndefct(:,1) = reshape(temptwod,[ nlat ] )
+
+                call check_nc(nf90_inq_varid(initid,'annsrpls',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                annsrpls(:,1) = reshape(temptwod,[ nlat ] )
+
+                call check_nc(nf90_inq_varid(initid,'annpcp',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                annpcp(:,1) = reshape(temptwod,[ nlat ] )
+
+                call check_nc(nf90_inq_varid(initid,'dry_season_length',varid))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                dry_season_length(:,1) = reshape(temptwod,[ nlat ] )
 
                 deallocate(temptwod)
+
+                !>Take the first tile value now and put it over the other tiles
+                do m = 1,nmos
+                    twarmm(:,m)=twarmm(:,1)
+                    tcoldm(:,m)=tcoldm(:,1)
+                    gdd5(:,m)=gdd5(:,1)
+                    aridity(:,m)=aridity(:,1)
+                    srplsmon(:,m)=srplsmon(:,1)
+                    defctmon(:,m)=defctmon(:,1)
+                    anndefct(:,m)=anndefct(:,1)
+                    annsrpls(:,m)=annsrpls(:,1)
+                    annpcp(:,m)=annpcp(:,1)
+                    dry_season_length(:,m) =dry_season_length(:,1)
+                end do
 
             else if (compete .and. .not. inibioclim) then ! set them to zero
 
@@ -703,44 +776,16 @@ contains
 
             endif
 
-            !FLAG why are these vars per tile??!
-            ! This below should now not be needed.
-            ! !>Take the first tile value now and put it over the other tiles
-            !         if (nmtest > 1) then
-            !             do m = 2,nmtest
-            !                 twarmm(i,m)=twarmm(i,1)
-            !                 tcoldm(i,m)=tcoldm(i,1)
-            !                 gdd5(i,m)=gdd5(i,1)
-            !                 aridity(i,m)=aridity(i,1)
-            !                 srplsmon(i,m)=srplsmon(i,1)
-            !                 defctmon(i,m)=defctmon(i,1)
-            !                 anndefct(i,m)=anndefct(i,1)
-            !                 annsrpls(i,m)=annsrpls(i,1)
-            !                 annpcp(i,m)=annpcp(i,1)
-            !                 dry_season_length(i,m) =dry_season_length(i,1)
-            !                 mlightng(i,m,:) = mlightng(i,1,:)
-            !                 extnprob(i,m) = extnprob(i,1)
-            !                 prbfrhuc(i,m) = prbfrhuc(i,1)
-            !                 stdaln(i,m) = stdaln(i,1)
-            !             end do
-            !         end if
-
             if (dowetlands) then !if true then read wetland fractions into the first tile position
 
-                allocate(temp3d(cntx,cnty,8))
+                allocate(temp4d(cntx,cnty,nmos,8))
 
-!                 call check_nc(nf90_inq_varid(initid,'slopefrac',varid))
-!                 call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,8]))
-!                 slopefrac = reshape(temp3d,[ nlat, 8 ] )
+                call check_nc(nf90_inq_varid(initid,'slopefrac',varid))
+                call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,nmos,8]))
+                slopefrac = reshape(temp4d,[ nlat,nmos, 8 ] )
 
-                deallocate(temp3d)
+                deallocate(temp4d)
 
-                ! FLAG assumedly this is no longer required.
-!                 if (nmtest > 1) then ! if more tiles then just put the first tile across the rest FLAG
-!                     do m = 2,nmtest
-!                         slopefrac(i,m,:) = slopefrac(i,1,:)
-!                     end do
-!                 end if
             endif
 
             !>if this run uses the competition or lnduseon parameterization and starts from bare ground, set up the model state here. this
@@ -777,7 +822,7 @@ contains
 !                     end do
 !                 end do
 
-                do i=1,nlat  !FLAG change to nlat
+                do i=1,nlat
                     do m = 1,nmos
 
                         !>initial conditions always required
@@ -824,5 +869,6 @@ contains
         end if !ctem_on
 
     end subroutine read_initialstate
+
 
 end module model_state_drivers

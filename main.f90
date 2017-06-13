@@ -50,8 +50,8 @@ contains
             &                               ican, ignd,icp1, icc, iccp1,&
             &                               monthend, mmday,modelpft, l2max,&
             &                                deltat, abszero, monthdays,seed,&
-            &                                NBS, lat, edgelat,earthrad,&
-            &                                lon,readin_params,crop!,initpftpars,
+            &                                NBS, earthrad,&
+            &                                readin_params,crop
 
         use landuse_change,     only : initialize_luc, readin_luc
 
@@ -1486,7 +1486,7 @@ contains
 
         !     * CONSTANTS AND TEMPORARY VARIABLES.
         !
-        REAL DEGLON,DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,&
+        REAL DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,&
             &     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,&
             &     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,&
             &     TSURF
@@ -1521,8 +1521,7 @@ contains
             &           nol2pfts(4),  popyr, metcylyrst, metcycendyr,&
             &           climiyear,   popcycleyr,    cypopyr, lucyr,&
             &           cylucyr, endyr,bigpftc(1), obswetyr,&
-            &           cywetldyr, trans_startyr, jmosty, obslghtyr,&
-            &           lath, testyr
+            &           cywetldyr, trans_startyr, jmosty, obslghtyr,testyr
 
         real      co2concin,    setco2conc, sumfare,&
             &           temp_var, barefrac,ch4concin, setch4conc
@@ -1532,13 +1531,6 @@ contains
         real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)
         real, allocatable, dimension(:,:)  :: barf  !(nlat,nmos)
         real, allocatable, dimension(:)    :: currlat !(ilg)
-        real, allocatable, dimension(:)    :: wl !(lat)
-        real, allocatable, dimension(:)    :: grclarea !(ilg)
-        real, allocatable, dimension(:)    :: wossl !(lat)
-        real, allocatable, dimension(:)    :: sl !(lat)
-        real, allocatable, dimension(:)    :: radl !(lat)
-        real, allocatable, dimension(:)    :: cl !(lat)
-        real, allocatable, dimension(:)    :: ml !(ilg)
         real, allocatable, dimension(:)    :: fsinacc_gat !(ilg)
         real, allocatable, dimension(:)    :: flutacc_gat !(ilg)
         real, allocatable, dimension(:)    :: flinacc_gat !(ilg)
@@ -1670,7 +1662,7 @@ contains
         real, pointer, dimension(:,:,:) :: mlightngrow
         real, pointer, dimension(:) :: dayl_maxrow
         real, pointer, dimension(:) :: daylrow
-
+        real, pointer, dimension(:) :: grclarea
 
         real, pointer, dimension(:,:,:) :: bmasvegrow
         real, pointer, dimension(:,:,:) :: cmasvegcrow
@@ -2132,9 +2124,6 @@ contains
         COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
         !
         !===================== CTEM ==============================================\
-        !allocate(class_gat)
-        !allocate(class_rot)
-
 
         ! Point the CLASS pointers
 
@@ -2774,9 +2763,6 @@ contains
         met_file          => c_switch%met_file
         init_file         => c_switch%init_file
 
-        ! Allocate the ctem structure vrot
-        !allocate(vrot)
-
         tcanrs            => vrot%tcanrs
         tsnors            => vrot%tsnors
         tpndrs            => vrot%tpndrs
@@ -2959,9 +2945,7 @@ contains
         ! >>>>>>>>>>>>>>>>>>>>>>>>>>
         ! GAT:
 
-        ! Allocate the ctem structure vgat
-        !allocate(vgat)
-
+        grclarea          => vgat%grclarea
         lightng           => vgat%lightng
         tcanoaccgat_out   => vgat%tcanoaccgat_out
 
@@ -3293,14 +3277,16 @@ contains
         !    =================================================================================
         !    =================================================================================
 
-        ! Put the lat and long arguments into the row structure.
+        ! Put the lat and long arguments that were passed from the main
+        ! program into the row structure.
         DLATROW(1) = latitude
+        JLAT=NINT(DLATROW(1))
         DLONROW(1) = longitude
 
         ! Prepare CLASS parameters
         CALL CLASSD
 
-        ! Initialize the CTEM parameters
+        ! Initialize the CTEM parameters, this reads them in from a namelist file.
         call readin_params(compete)
 
         ! Allocate the local variables that rely on nlat, ilg, etc.
@@ -3309,13 +3295,6 @@ contains
             todfrac(ilg,icc),&
             barf(nlat,nmos),&
             currlat(ilg),&
-            wl(lat),&
-            grclarea(ilg),&
-            wossl(lat),&
-            sl(lat),&
-            radl(lat),&
-            cl(lat),&
-            ml(ilg),&
             fsinacc_gat(ilg),&
             flutacc_gat(ilg),&
             flinacc_gat(ilg),&
@@ -3335,8 +3314,8 @@ contains
             FTABLE(nlat,nmos),&
             ACTLYR(nlat,nmos))
 
-        !>    This reads in from the restart file (replacing the INI and CTM
-        !!    files).
+        !>    Read in the initial model conditions from the restart file
+        !!    (replacing the INI and CTM files).
         call read_initialstate()
 
         print *,'after readinitialstate'
@@ -3349,10 +3328,6 @@ contains
         !!     big the NLAT vector is.
         !      call openmet()
         !      write(*,*)'done openmet'
-
-        ! #ED - later on, we will read in the MET forcing data using netcdf like this
-        ! at present we have to still rely on the ASCII text files so this is commented
-        ! out (and also not really coded up).
 
         !call readin_met(1,dlatgat,dlongat)
         !
@@ -4188,46 +4163,7 @@ contains
 !                                                 &      bmasveggat,cmasvegcgat,veghghtgat,&
 !                                                 &      rootdpthgat,alvsctmgat,alirctmgat,&
 !                                                 &      paicgat,    slaicgat)
-!
-!                                             ! LUC and disturbance need to know the area of the gridcell. Find it here and pass into CTEM
-!
-!                                             do i = 1, nml
-!                                                 currlat(i)=radjrow(1)*180.0/pi !following rest of code, radjrow is always given index of 1 offline.
-!                                                 curlatno(i)=0
-!                                             end do
-!
-!                                             ! Find current latitude number
-!                                             do k = 1, lat
-!                                                 do i = 1, nml
-!                                                     if(currlat(i).ge.edgelat(k).and.&
-!                                                         &      currlat(i).lt.edgelat(k+1))then
-!                                                         curlatno(i)=k
-!                                                     endif
-!                                                 end do
-!                                             end do
-!
-!                                             do 190 j = 1, nml
-!                                                 if(curlatno(j).eq.0)then
-!                                                     write(6,2000)j
-! 2000                                                format('cannot find current latitude no. for i = ',i3)
-!                                                     call xit ('driver',-5)
-!                                                 endif
-!
-!                                                 do i = 1,nml
-!                                                     lath = curlatno(i)/2
-!                                                     call gaussg(lath,sl,wl,cl,radl,wossl)
-!                                                     call trigl(lath,sl,wl,cl,radl,wossl)
-!                                                 enddo
-!
-!
-!                                                 do i = 1, nml
-!                                                     ml(i) = 1.0/real(lon) ! wl contains zonal weights, lets find meridional weights
-!                                                     grclarea(i) = 4.0*pi*(earthrad**2)*wl(1)*ml(1)&
-!                                                         &                     *faregat(i)/2.0  ! km^2, faregat is areal fraction of each mosaic
-!                                                                                     ! dividing by 2.0 because wl(1 to lat) add to 2.0 not 1.0
-!                                                 end do
-! 190                                         continue
-!
+!!
 !                                             !
 !                                             !       ! FLAG test JM Dec 182015
 !                                             !     Find the maximum daylength at this location for day 172 = June 21st - summer solstice.

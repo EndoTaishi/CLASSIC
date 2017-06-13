@@ -20,6 +20,8 @@ modelpft(16:20)= 1,     1,     1,     0,        0,   ! CLASS PFT 4 GRASS
 
 pftlist = 'NdlEvgTr' , 'NdlDcdTr', 'BdlEvgTr','BdlDCoTr', 'BdlDDrTr','BdlEvgSh','BdlDcdSh','CropC3  ','CropC4  ','GrassC3 ','GrassC4 ','Sedge   ',
 
+vegtype = 'Tree',      'Tree',     'Tree',    'Tree',     'Tree',    'Shrub',   'Shrub',   'Crop',    'Crop',    'Grass',   'Grass',    'Grass',
+
 !Canopy light/nitrogen extinction coefficient
 kn(1:5)    =0.50, 0.50, 0.00, 0.00, 0.00,
 kn(6:10)   =0.50, 0.50, 0.50, 0.50, 0.50,
