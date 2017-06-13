@@ -1,80 +1,74 @@
-!>\file
-!! Principle driver program to run CLASSIC in stand-alone mode using specified boundary
-!! conditions and atmospheric forcing.
+! Authors: Joe Melton and Ed Wisernig
+
 program CLASSIC
     use mpi
     use io_driver,              only : bounds,lonvect,latvect
-    use model_state_drivers,    only : read_modelsetup
-    use netcdf_drivers,         only : create_out_netcdf
-    use readjobopts,            only : read_from_job_options
+    use io_driver,              only : validCount,validLon,validLat
+    use model_state_drivers,    only : readModelSetup
+    use netcdf_drivers,         only : createOutputNetcdf
+    use readjobopts,            only : readFromJobOptions
     use main_driver,            only : CLASSIC_driver
     use ctem_statevars,         only : alloc_ctem_vars
     use class_statevars,        only : alloc_class_vars
     implicit none
-    real                            :: longitude, latitude
+    integer, parameter              :: mainProcess = 0
     double precision                :: time
-    integer                         :: ierr, rank, size
+    integer                         :: ierr, rank, size, i, cell, blocks, remainder
 
     ! MAIN PROGRAM
-    call initializeParallel         ! Initialize the MPI session
-    call loadProjectConfiguration   ! Load the project config file
-    call loadModelSetup             ! Load the model setup information
-    call allocateVariables          ! Allocate variables
-    !call generateOutputFiles        ! Generate the output files
-    call processModel               ! Process the model
-    call finalizeParallel           ! Shut down MPI session
+    call initializeParallelEnvironment          ! Initialize the MPI and PnetCDF session
+    call readFromJobOptions                     ! Load the project config file
+    call readModelSetup                         ! Load the model setup information
+    if (isMainProcess()) then
+        call createOutputNetcdf                 ! Generate the output files
+    endif
+    call processLandCells                       ! Process the model
+    call finalizeParallelEnvironment            ! Close PnetCDF and shut down the MPI session
     ! END MAIN PROGRAM
-contains
-    !> Set up the longitude and latitude of this gridcell based on the bounds
-    !> Then we call the main model driver. This performs read ins of model inputs, all model calculations,
-    !! writes to output files, and writes to a model restart file.
-    subroutine processModel
-        longitude = bounds(1)
-        latitude = bounds(3)
-        print *,longitude,latitude
-        !call CLASSIC_driver()
-    end subroutine processModel
 
-    subroutine initializeParallel
+contains
+
+    ! PROCESS LAND CELLS
+    ! This section processes all of the land cells
+    subroutine processLandCells
+        call alloc_class_vars()
+        call alloc_ctem_vars()
+
+        blocks = validCount / size + 1          ! The number of processing blocks
+        remainder = mod(validCount, size)       ! The number of cells for the last block
+        do i = 1, blocks - 1                    ! Go through every block except for the last one
+            cell = (i - 1) * size + rank + 1
+            call CLASSIC_driver(cell)
+        enddo
+        cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells (NEEDS BETTER DESCRIPTION)
+        if (rank < remainder) call CLASSIC_driver(cell)
+    end subroutine processLandCells
+
+    ! INITIALIZE MPI and PnetCDf
+    ! This section initializes the MPI environment and PnetCDF files
+    subroutine initializeParallelEnvironment
         call MPI_INIT(ierr)
         time = MPI_WTIME()
         call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierr)
         call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierr)
-        print*, "I'm process (rank)", rank, "out of a total of", size
-    end subroutine initializeParallel
+        ! HERE - PnetCDF init code comes here
+    end subroutine initializeParallelEnvironment
 
-    !> This parses the command line arguments. All model switches are read in from a
-    !! namelist file. This sets up the run options and points to input files as needed.
-    subroutine loadProjectConfiguration
-        call read_from_job_options()
-    end subroutine loadProjectConfiguration
-
-    !> Next we set up the run boundaries based on the metadata in the initialization netcdf file.
-    !! The bounds given as an argument to CLASSIC are used to find the start points (srtx and srty)
-    !! in the netcdf file, placing the gridcell on the domain of the input/output netcdfs. In
-    !! read_modelsetup we use the netcdf to set the nmos, ignd,and ilg constants. It also opens
-    !! the initial conditions file that is used below in read_initialstate.
-    subroutine loadModelSetup
-        call read_modelsetup()
-    end subroutine loadModelSetup
-
-    !> Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
-    !! CTEM variable structures. This has to be done here.
-    subroutine allocateVariables
-        call alloc_class_vars()
-        call alloc_ctem_vars()
-    end subroutine allocateVariables
-
-    !> Next we create all the output files for the model run based on options in the joboptions file
-    !! and the parameters of the initilization netcdf file.
-    subroutine generateOutputFiles
-        call create_out_netcdf()
-    end subroutine generateOutputFiles
-
-    subroutine finalizeParallel
+    ! FINALIZE MPI and PnetCDF
+    ! This section wraps up the whole MPI and PnetCDF megillah
+    subroutine finalizeParallelEnvironment
+        ! HERE - PnetCDF close session code comes here
         call MPI_FINALIZE(ierr)
-    end subroutine finalizeParallel
+    end subroutine finalizeParallelEnvironment
 
+    ! IS MAIN PROCESS
+    ! This section checks to see if we're on the main process of not
+    logical function isMainProcess()
+        implicit none
+        if (rank == mainProcess) then
+            isMainProcess = .true.
+        else
+            isMainProcess = .false.
+        endif
+    end function isMainProcess
 end program CLASSIC
-
-

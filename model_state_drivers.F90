@@ -7,10 +7,9 @@ module model_state_drivers
 
     ! J. Melton
     ! Nov 2016
-
     implicit none
 
-    public :: read_modelsetup
+    public :: readModelSetup
     public :: read_initialstate
     private :: map
     private :: map3d
@@ -21,7 +20,7 @@ contains
 
     !---
 
-    subroutine read_modelsetup()
+    subroutine readModelSetup()
 
         !> This reads in the model setup from the netcdf initialization file.
         !> The number of latitudes is always 1 offline while the maximum number of
@@ -30,10 +29,9 @@ contains
 
         ! J. Melton
         ! Feb 2017
-
         use netcdf
         use netcdf_drivers, only : check_nc
-        use io_driver, only : initid,cntx,cnty,srtx,srty,bounds,lonvect,latvect
+        use io_driver, only : initid,cntx,cnty,srtx,srty,bounds,lonvect,latvect,validCount,validLon,validLat
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
 
@@ -41,8 +39,9 @@ contains
 
         ! pointers:
         character(180), pointer         :: init_file
+        integer, allocatable, dimension(:,:) :: mask
 
-        integer :: dimid
+        integer :: dimid, i, j
         integer :: varid
         integer :: xsize, ysize
         integer, dimension(1) :: pos
@@ -70,7 +69,7 @@ contains
         !calculate the number and indices of the pixels to be calculated
 
         allocate(all_lon(xsize),&
-            all_lat(ysize))
+        all_lat(ysize))
 
         call check_nc(nf90_inq_varid(initid,'lon',varid))
         call check_nc(nf90_get_var(initid,varid,all_lon))
@@ -109,8 +108,8 @@ contains
         !> Save the longitudes and latitudes over the region of interest for making the
         !! output files.
         allocate(lonvect(cntx),&
-            latvect(cnty),&
-            nmarray(cnty,cntx))
+        latvect(cnty),&
+        nmarray(cnty,cntx))
 
         lonvect = all_lon(srtx:srtx+cntx-1)
         latvect = all_lat(srty:srty+cnty-1)
@@ -119,6 +118,25 @@ contains
 
         call check_nc(nf90_inq_dimid(initid,'layer',dimid))
         call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
+
+        !print*, bounds
+        !print*, "got ", cntx, " for cntx and ", cnty, " for cnty and ", srtx, " for srtx and ", srty, " for srty"
+        allocate(mask(cntx, cnty))
+        call check_nc(nf90_inq_varid(initid,'Mask',varid))
+        call check_nc(nf90_get_var(initid,varid,mask,start=[srtx,srty],count=[cntx,cnty]))
+        validCount = 0
+        do i = 1, cntx
+            do j = 1, cnty
+                !if (mask(i,j) .eq. 0) print*, " (", i, ",", j, ") or (", lonvect(i + srtx - 1), ",", latvect(j + srty - 1), ") is ocean"
+                if (mask(i,j) .eq. -1) then
+                    !print*, "(", i, ",", j, ") or (", lonvect(i + srtx - 1), ",", latvect(j + srty - 1), ") is land"
+                    validCount = validCount + 1
+                    validLon(validCount) = i + srtx - 1
+                    validLat(validCount) = j + srty - 1
+                endif
+            enddo
+        enddo
+        deallocate(mask)
 
         !> To determine nmos, we use the largest number in the input file variable nmtest
         !! for the region we are running.
@@ -129,14 +147,13 @@ contains
         nmos= maxval(nmarray)
 
         deallocate(nmarray,&
-            all_lat,&
-            all_lon)
+        all_lat,&
+        all_lon)
 
         !> Lastly we determine the size of ilg which is nlat times nmos
 
         ilg = nlat * nmos
-
-    end subroutine read_modelsetup
+    end subroutine readModelSetup
 
 
     !--------------------------------------------------------------------------------------------
@@ -391,7 +408,7 @@ contains
 
         ! Now get the 4D variables:
 
-         allocate(temp4d(nmos,icp1,cntx,cnty))
+        allocate(temp4d(nmos,icp1,cntx,cnty))
 
         call check_nc(nf90_inq_varid(initid,'FCAN',varid))
         call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty],count=[cntx,cnty]))
