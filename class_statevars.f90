@@ -28,8 +28,6 @@ type class_gather
     integer, allocatable, dimension(:) :: JWMOS     !<Index of mosaic tile corresponding to current element of gathered vector of inland water body variables [ ]
     integer, allocatable, dimension(:) :: IGDRGAT   !<Index of soil layer in which bedrock is encountered
 
-    real, allocatable, dimension(:) :: DELZ    !<
-    real, allocatable, dimension(:) :: ZBOT    !<
     real, allocatable, dimension(:) :: ALBSGAT !<Snow albedo [ ]
     real, allocatable, dimension(:) :: CMAIGAT !<Aggregated mass of vegetation canopy \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:) :: GROGAT  !<Vegetation growth index [ ]
@@ -169,6 +167,7 @@ type class_gather
     real, allocatable, dimension(:) :: WTRCGAT !<Diagnosed residual water transferred off the vegetation canopy \f$[kg m^{-2} s^{-1} ]\f$
     real, allocatable, dimension(:) :: WTRGGAT !<Diagnosed residual water transferred into or out of the soil \f$[kg m^{-2} s^{-1} ]\f$
     real, allocatable, dimension(:) :: WTRSGAT !<Diagnosed residual water transferred into or out of the snow pack \f$[kg m^{-2} s^{-1} ]\f$
+    real, allocatable, dimension(:) :: wtableGAT !<Depth of water table in soil [m]
     real, allocatable, dimension(:) :: QLWOGAT !<
     real, allocatable, dimension(:) :: SFRHGAT !<
     real, allocatable, dimension(:) :: FTEMP   !<
@@ -277,6 +276,10 @@ type class_gather
     real, allocatable, dimension(:) :: WTVSTP !<
     real, allocatable, dimension(:) :: WTSSTP !<
     real, allocatable, dimension(:) :: WTGSTP !<
+
+! These will be allocated the dimension: 'ignd'
+    real, allocatable, dimension(:) :: DELZ    !<
+    real, allocatable, dimension(:) :: ZBOT    !<
 
 ! These will be allocated the dimension: 'ilg, ignd'
     integer, allocatable, dimension(:,:) :: ISNDGAT !<Integer identifier associated with sand content
@@ -498,6 +501,7 @@ type class_rotated
     real, allocatable, dimension(:) :: WTRGROW !<
     real, allocatable, dimension(:) :: WTRSROW !<
     real, allocatable, dimension(:) :: SFRHROW !<
+    real, allocatable, dimension(:) :: wtableROW !<
 
     ! These will be allocated the dimension: 'nlat,nmos'
 
@@ -606,6 +610,7 @@ type class_rotated
     real, allocatable, dimension(:,:) :: WTRGROT !<
     real, allocatable, dimension(:,:) :: WTRSROT !<
     real, allocatable, dimension(:,:) :: SFRHROT !<
+    real, allocatable, dimension(:,:) :: wtableROT !<
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
     integer, allocatable, dimension(:,:,:) :: ISNDROT !<
@@ -704,8 +709,6 @@ allocate(class_gat% ILMOS   (ilg),&
          class_gat% IWMOS   (ilg),&
          class_gat% JWMOS   (ilg),&
          class_gat%IGDRGAT  (ilg),&
-         class_gat% DELZ    (ilg),&
-         class_gat% ZBOT    (ilg),&
          class_gat% ALBSGAT (ilg),&
          class_gat% CMAIGAT (ilg),&
          class_gat% GROGAT  (ilg),&
@@ -845,6 +848,7 @@ allocate(class_gat% ILMOS   (ilg),&
          class_gat% WTRCGAT (ilg),&
          class_gat% WTRGGAT (ilg),&
          class_gat% WTRSGAT (ilg),&
+         class_gat% wtableGAT (ilg),&
          class_gat% QLWOGAT (ilg),&
          class_gat% SFRHGAT (ilg),&
          class_gat% FTEMP   (ilg),&
@@ -949,6 +953,10 @@ allocate(class_gat% ILMOS   (ilg),&
          class_gat%WTVSTP (ilg),&
          class_gat%WTSSTP (ilg),&
          class_gat%WTGSTP (ilg))
+
+! These will be allocated the dimension: 'ignd'
+allocate(class_gat% DELZ   (ignd),&
+         class_gat% ZBOT   (ignd))
 
 ! These will be allocated the dimension: 'ilg, ignd'
 allocate(class_gat% ISNDGAT (ilg,ignd),&
@@ -1164,7 +1172,8 @@ allocate(class_rot% ALIRACC (nlat),&
          class_rot% WTRCROW (nlat),&
          class_rot% WTRGROW (nlat),&
          class_rot% WTRSROW (nlat),&
-         class_rot% SFRHROW (nlat))
+         class_rot% SFRHROW (nlat),&
+         class_rot% wtableROW (nlat))
 
     ! These will be allocated the dimension: 'nlat,nmos'
 
@@ -1272,7 +1281,8 @@ allocate(class_rot% IGDRROT (nlat,nmos),&
          class_rot% WTRCROT (nlat,nmos),&
          class_rot% WTRGROT (nlat,nmos),&
          class_rot% WTRSROT (nlat,nmos),&
-         class_rot% SFRHROT (nlat,nmos))
+         class_rot% SFRHROT (nlat,nmos),&
+         class_rot% wtableROT(nlat,nmos))
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
 allocate(class_rot% ISNDROT (nlat,nmos,ignd),&

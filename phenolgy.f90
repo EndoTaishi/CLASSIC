@@ -92,7 +92,7 @@
 !!
 !!
 subroutine phenolgy(gleafmas, bleafmas,  &
-             &           il1,      il2,     tbar, &
+             &           il1,      il2, leapnow,  tbar, &
              &          thliq,   THLW,  THFC,       ta,&
              &           anveg,     iday,     radl, roottemp,&
              &       rmatctem, stemmass, rootmass,     sort,&
@@ -150,6 +150,7 @@ subroutine phenolgy(gleafmas, bleafmas,  &
       integer isand(ilg,ignd) !<
       integer n, m, k1, k2
 !
+      logical leapnow             !< true if this year is a leap year. Only used if the switch 'leap' is true.
       integer sort(icc)           !<index for correspondence between 9 pfts and the 12 values in parameters vectors
       integer nol2pfts(ican)      !<number of level 2 ctem pfts
 !
@@ -249,7 +250,6 @@ subroutine phenolgy(gleafmas, bleafmas,  &
 !!subroutine for more details. 
 !!
       do 170 j = 1,icc
-
         sla(j) = 25.0*(lfespany(sort(j))**(-0.50))
         if(specsla(sort(j)).gt.zero) sla(j)=specsla(sort(j))
 
@@ -1070,9 +1070,12 @@ do 410 i = il1, il2
         n = sort(j)
         do 430 i = il1, il2
          if (fcancmx(i,j).gt.0.0) then 
-         nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(365.0*lfespany(n))))
+          if (leapnow) then
+           nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(366.0*lfespany(n))))
+          else
+           nrmlloss(i,j)=gleafmas(i,j)*(1.0-exp(-1.0/(365.0*lfespany(n))))
+          endif
          endif   !fcancmx
-    
 430     continue
 420   continue
 !>
@@ -1180,9 +1183,13 @@ do 410 i = il1, il2
           coldloss(i,j) = 0.0
 !>we assume life span of brown grass is 10% that of green grass
 !!but this is an adjustable parameter.
-          nrmlloss(i,j) = bleafmas(i,j)*&
-     &      (1.0-exp(-1.0/(0.10*365.0*lfespany(n)))) 
+          if (leapnow) then
+            nrmlloss(i,j) = bleafmas(i,j)*(1.0-exp(-1.0/(0.10*366.0*lfespany(n))))
+          else
+            nrmlloss(i,j) = bleafmas(i,j)*(1.0-exp(-1.0/(0.10*365.0*lfespany(n))))
+          endif
          endif
+
 630     continue
     end if
 620   continue

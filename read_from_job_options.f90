@@ -153,6 +153,8 @@ character(:), pointer :: init_file !< location of the netcdf initialization file
 
 character(:), pointer :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
 
+character(:), pointer :: runparams_file  !< location of the namelist file containing the model parameters
+
 character(:), pointer :: output_directory !< Directory where the output netcdfs will be placed
 
 logical, pointer :: leap     !< set to true if all/some leap years in the .MET file have data for 366 days 
@@ -295,6 +297,7 @@ namelist /joboptions/ &
  met_file, &
  init_file, &
  rs_file_to_overwrite, &
+ runparams_file, &
  output_directory, &
  IDISP, &
  IZREF, &
@@ -354,6 +357,7 @@ rs_file_to_overwrite => c_switch%rs_file_to_overwrite
 output_directory => c_switch%output_directory
 use_netcdf      => c_switch%use_netcdf
 met_file        => c_switch%met_file
+runparams_file  => c_switch%runparams_file
 init_file       => c_switch%init_file
 IDISP           => c_switch%IDISP
 IZREF           => c_switch%IZREF

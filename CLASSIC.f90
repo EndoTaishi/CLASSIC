@@ -8,9 +8,10 @@ program CLASSIC
     use model_state_drivers, only : read_modelsetup
     use netcdf_drivers, only : create_out_netcdf
     use readjobopts, only : read_from_job_options
-    use main_driver, only : CLASSIC_driver
+    use main, only : main_driver
     use ctem_statevars, only : alloc_ctem_vars
     use class_statevars, only : alloc_class_vars
+    use ctem_params, only : nlat
 
     implicit none
 
@@ -18,6 +19,8 @@ program CLASSIC
     real :: longitude, latitude
 
     ! ------------
+
+    nlat = 1
 
     !> This parses the command line arguments. All model switches are read in from a
     !! namelist file. This sets up the run options and points to input files as needed.
@@ -52,7 +55,7 @@ program CLASSIC
 
     !> Then we call the main model driver. This performs read ins of model inputs, all model calculations,
     !! writes to output files, and writes to a model restart file.
-    call CLASSIC_driver(longitude,latitude)
+    call main_driver(longitude,latitude)
     ! #######
 
 end program

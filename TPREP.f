@@ -686,7 +686,7 @@ C
       !!water if ZPOND \f$\geq 10^{-2} m\f$.
       !!                                                                        
       DO 500 J=IG,1,-1
-      DO 500 I=IL1,IL2                                                            
+      DO 500 I=IL1,IL2
           IF    (ISAND(I,1).EQ.-4)                              THEN          
               TCTOPG(I,J)=TCGLAC                                                     
               TCBOTG(I,J)=TCGLAC
@@ -785,6 +785,7 @@ C
                   ENDIF
               ENDIF    
           ELSE
+            
               SATRAT=MIN((THLIQG(I,J)+THICEG(I,J))/
      1               THPOR(I,J), 1.0)              
               THLSAT=THLIQG(I,J)/(THLIQG(I,J)+THICEG(I,J))          

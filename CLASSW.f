@@ -618,6 +618,9 @@ C
      5                    TADD,ZMOVE,TBOT,DELZ,ISAND,ICONT,
      6                    IWF,IG,IGP1,IGP2,ILG,IL1,IL2,JL,N )
           ENDIF
+          print *,'before grinfl'
+          print *,'shape',shape(fdt)
+          print *,fdt(1,1)
           CALL GRINFL(2,THLQGS,THICGS,TBRWGS,BASFLW,TBASFL,RUNFGS,
      1                TRNFGS,ZFAV,LZFAV,THLINV,QFG,WLSTGS,
      2                FGS,EVAPGS,RPCGS,TRPCGS,TPNDGS,ZPNDGS,

@@ -75,10 +75,8 @@ integer, dimension(12) :: mmday     = [ 16,46,75,106,136,167,197,228,259,289,320
 integer, parameter :: nmon = 12 !< Number of months in a year
 
 ! ----
-! Model state
-integer, parameter :: nlat = 1         !< Number of cells we are running, read in from the initialization file. Offline this always 1.
-
 ! Read in from the netcdf initialization file:
+integer :: nlat        !< Number of cells we are running, read in from the initialization file. Offline this always 1.
 integer :: nmos        !< Number of mosaic tiles, read in from the initialization file
 integer :: ilg         !< nlat x nmos
 integer :: ignd        !< Number of soil layers, read in from the initialization file
@@ -377,7 +375,7 @@ real :: soilw_thrshS   !< Soil wetness threshold in the South zone
 
 contains
 
-subroutine readin_params(compete)
+subroutine readin_params(runparams_file,compete)
 
 !>\ingroup readin_params
 !!@{
@@ -386,6 +384,7 @@ implicit none
 
 !>true if the competition scheme is on.
 logical, intent(in) :: compete
+character(180), intent(in) :: runparams_file  !< location of the namelist file containing the model parameters
 
 real, dimension(kk):: omega_compete
 real, dimension(kk):: epsilonl_compete
@@ -548,7 +547,7 @@ namelist /classicparams/ &
     soilw_thrshS
 
 ! ----------
-open(10,file='template_run_parameters.txt',action='read',status='old')
+open(10,file=trim(runparams_file),action='read',status='old')
 
 read(10,nml = classicparams)
 

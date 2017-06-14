@@ -597,7 +597,7 @@ end subroutine read_from_ctm
 !>\ingroup io_driver_write_ctm_rs
 !>@{
 
-subroutine write_ctm_rs(nltest,nmtest,FCANROT,argbuff)
+subroutine write_ctm_rs(nltest,nmtest,FCANROT)
 
 !   After a set period is complete the restart file for CTEM (.CTM_RS) is written
 !   this restart file contains all of the CTEM level information needed to 
@@ -609,7 +609,6 @@ use ctem_statevars,     only : c_switch,vrot,vgat
 implicit none
 
 ! arguments:
-character(80), intent(in) :: argbuff
 integer, intent(in) :: nltest
 integer, intent(inout) :: nmtest
 real, dimension(nlat,nmos,icp1), intent(inout) :: FCANROT
@@ -703,7 +702,7 @@ dmoss            => vrot%dmoss
 ! -----------------      
 ! Begin
 
-open(unit=101,file=trim(argbuff)//'.CTM_RS')
+open(unit=101,file='test.CTM_RS')
 
 write(101,7010) titlec1
 write(101,7010) titlec2
@@ -834,8 +833,7 @@ end subroutine write_ctm_rs
 !>\ingroup io_driver_create_outfiles
 !>@{
 
-subroutine create_outfiles(argbuff,title1, title2, title3, title4, title5, title6, name1, name2, name3, &
-                           name4, name5, name6, place1 ,place2, place3, place4, place5, place6)
+subroutine create_outfiles()
 
 !   All output files are initialized in this subroutine
 use ctem_statevars,     only : c_switch,vrot,vgat
@@ -843,8 +841,8 @@ use ctem_statevars,     only : c_switch,vrot,vgat
 implicit none
 
 ! arguments:
-character(80), intent(in) :: argbuff
-character(4), intent(in) :: title1, title2, title3, title4, &
+character(80) :: argbuff = 'test'
+character(4) :: title1, title2, title3, title4, &
                             title5, title6, name1, name2, name3, &
                             name4, name5, name6, place1 ,place2, &
                             place3, place4, place5, place6
@@ -909,76 +907,75 @@ if (.not. parallelrun .and. ctem_on) then !>stand alone mode, includes half-hour
 
 endif ! parallelrun & ctem_on
 
-
 !===========================
 !
 !     CTEM FILE TITLES
 !
 if (ctem_on .and. .not. parallelrun) then
-    write(71,6001) title1,title2,title3,title4,title5,title6
-    write(71,6002) name1,name2,name3,name4,name5,name6
-    write(71,6003) place1,place2,place3,place4,place5,place6
+    write(71,6001) 'test'
+    write(71,6002) 'test'
+    write(71,6003) 'test'
     write(71,7020)
     write(71,7030)
     
-    write(72,6001) title1,title2,title3,title4,title5,title6
-    write(72,6002) name1,name2,name3,name4,name5,name6
-    write(72,6003) place1,place2,place3,place4,place5,place6
+    write(72,6001) 'test'
+    write(72,6002) 'test'
+    write(72,6003) 'test'
     write(72,7020)
     write(72,7040)
 
-    write(73,6001) title1,title2,title3,title4,title5,title6
-    write(73,6002) name1,name2,name3,name4,name5,name6
-    write(73,6003) place1,place2,place3,place4,place5,place6
+    write(73,6001) 'test'
+    write(73,6002) 'test'
+    write(73,6003) 'test'
     write(73,7020)
     write(73,7050)
 
-    write(74,6001) title1,title2,title3,title4,title5,title6
-    write(74,6002) name1,name2,name3,name4,name5,name6
-    write(74,6003) place1,place2,place3,place4,place5,place6
+    write(74,6001) 'test'
+    write(74,6002) 'test'
+    write(74,6003) 'test'
     write(74,7020)
     write(74,7061)
 
-    write(75,6001) title1,title2,title3,title4,title5,title6
-    write(75,6002) name1,name2,name3,name4,name5,name6
-    write(75,6003) place1,place2,place3,place4,place5,place6
+    write(75,6001) 'test'
+    write(75,6002) 'test'
+    write(75,6003) 'test'
     write(75,7020)
     write(75,7070)
 
-    !write(76,6001) title1,title2,title3,title4,title5,title6
-    !write(76,6002) name1,name2,name3,name4,name5,name6
-    !write(76,6003) place1,place2,place3,place4,place5,place6
+    !write(76,6001) 'test'
+    !write(76,6002) 'test'
+    !write(76,6003) 'test'
     !write(76,7020)
     !write(76,7080)
 
     if (dofire .or. lnduseon) then
-        write(77,6001) title1,title2,title3,title4,title5,title6
-        write(77,6002) name1,name2,name3,name4,name5,name6
-        write(77,6003) place1,place2,place3,place4,place5,place6
+        write(77,6001) 'test'
+        write(77,6002) 'test'
+        write(77,6003) 'test'
         write(77,7021)
         write(77,7110)
         write(77,7111)
     end if
 
-    write(711,6001) title1,title2,title3,title4,title5,title6
-    write(711,6002) name1,name2,name3,name4,name5,name6
-    write(711,6003) place1,place2,place3,place4,place5,place6
+    write(711,6001) 'test'
+    write(711,6002) 'test'
+    write(711,6003) 'test'
     write(711,7020)
     write(711,7030)
 
     if (compete .or. lnduseon) then
-        write(78,6001) title1,title2,title3,title4,title5,title6
-        write(78,6002) name1,name2,name3,name4,name5,name6
-        write(78,6003) place1,place2,place3,place4,place5,place6
+        write(78,6001) 'test'
+        write(78,6002) 'test'
+        write(78,6003) 'test'
         write(78,7020)
         write(78,7075)
     end if
 
     ! methane(wetland) variables
     if (dowetlands .or. obswetf) then
-        write(79,6001) title1,title2,title3,title4,title5,title6
-        write(79,6002) name1,name2,name3,name4,name5,name6
-        write(79,6003) place1,place2,place3,place4,place5,place6
+        write(79,6001) 'test'
+        write(79,6002) 'test'
+        write(79,6003) 'test'
         write(79,7020)
         write(79,7112)
         write(79,7113)
@@ -1009,36 +1006,36 @@ end if !>ctem_on & not parallelrun
 !> CLASS MONTHLY FOR BOTH PARALLEL MODE AND STAND ALONE MODE
 
 OPEN(UNIT=81,FILE=trim(argbuff)//'.OF1M')
-WRITE(81,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
-WRITE(81,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-WRITE(81,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
+WRITE(81,6001) 'test'
+WRITE(81,6002) 'test'
+WRITE(81,6003) 'test'
 WRITE(81,6021)'MONTH','YEAR','SW','LW','QH','QE','SNOACC','WSNOACC','ROFACC','PCP',&
               'EVAP','TAIR','TRANSP','T/E','GROUNDEVAP','CANOPYEVAP','ALTOT'
 WRITE(81,6021)'#','','W/m2','W/m2','W/m2','W/m2','kg/m2','kg/m2','mm.mon','mm.mon',&
               'mm.mon','degC','mm.mon','ratio','kg/m2/mon','kg/m2/mon',' '
 
 OPEN(UNIT=82,FILE=trim(argbuff)//'.OF2M')
-WRITE(82,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
-WRITE(82,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-WRITE(82,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
+WRITE(82,6001) 'test'
+WRITE(82,6002) 'test'
+WRITE(82,6003) 'test'
 WRITE(82,6022)'MONTH','YEAR','TG1','THL1','THI1','TG2','THL2','THI2','TG3','THL3','THI3'
 WRITE(82,6022)'#','','deg','m3/m3','m3/m3','deg','m3/m3','m3/m3','deg','m3/m3','m3/m3'
 
 !> CLASS YEARLY OUTPUT FILES
 
 OPEN(UNIT=83,FILE=trim(argbuff)//'.OF1Y')
-WRITE(83,6001) TITLE1,TITLE2,TITLE3,TITLE4,TITLE5,TITLE6
-WRITE(83,6002) NAME1,NAME2,NAME3,NAME4,NAME5,NAME6
-WRITE(83,6003) PLACE1,PLACE2,PLACE3,PLACE4,PLACE5,PLACE6
+WRITE(83,6001) 'test'
+WRITE(83,6002) 'test'
+WRITE(83,6003) 'test'
 WRITE(83,6023)'YEAR','SW','LW','QH','QE','ROFACC','PCP','EVAP','TRANSP','T/E','ALTOT'
 WRITE(83,6023)'#','W/m2','W/m2','W/m2','W/m2','mm.yr','mm.yr','mm.yr','mm.yr','ratio',' '
 
 if (ctem_on) then
 
     open(unit=84,file=trim(argbuff)//'.CT01M') !> CTEM monthly output files
-    write(84,6001) title1,title2,title3,title4,title5,title6
-    write(84,6002) name1,name2,name3,name4,name5,name6
-    write(84,6003) place1,place2,place3,place4,place5,place6
+    write(84,6001) 'test'
+    write(84,6002) 'test'
+    write(84,6003) 'test'
     write(84,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY RESULTS'
     write(84,6124)'MONTH','YEAR','LAIMAXG','VGBIOMAS','LITTER','SOIL_C','NPP','GPP','NEP','NBP','HETRES',&
              'AUTORES','LITRES','SOILCRES','LITRFALL','HUMIFTRS'
@@ -1047,9 +1044,9 @@ if (ctem_on) then
     
     if (dofire .or. lnduseon) then
         open(unit=85,file=trim(argbuff)//'.CT06M') !> Monthly disturbance
-        write(85,6001) title1,title2,title3,title4,title5,title6
-        write(85,6002) name1,name2,name3,name4,name5,name6
-        write(85,6003) place1,place2,place3,place4,place5,place6
+        write(85,6001) 'test'
+        write(85,6002) 'test'
+        write(85,6003) 'test'
         write(85,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY RESULTS FOR DISTURBANCES'
         write(85,6125)'MONTH','YEAR','CO2','CO','CH4','NMHC','H2','NOX','N2O','PM25','TPM','TC','OC','BC',&
             'SMFUNCVEG','LUC_CO2_E','LUC_LTRIN','LUC_SOCIN','BURNFRAC','BTERM','LTERM','MTERM','WIND'
@@ -1059,9 +1056,9 @@ if (ctem_on) then
     end if
 
     open(unit=86,file=trim(argbuff)//'.CT01Y') !> CTEM yearly output files
-    write(86,6001) title1,title2,title3,title4,title5,title6
-    write(86,6002) name1,name2,name3,name4,name5,name6
-    write(86,6003) place1,place2,place3,place4,place5,place6
+    write(86,6001) 'test'
+    write(86,6002) 'test'
+    write(86,6003) 'test'
     write(86,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS'
     write(86,6126)'YEAR','LAIMAXG','VGBIOMAS','STEMMASS','ROOTMASS','LITRMASS','SOILCMAS','TOTCMASS', &
                   'ANNUALNPP','ANNUALGPP','ANNUALNEP','ANNUALNBP','ANNHETRSP','ANAUTORSP','ANNLITRES', &
@@ -1071,9 +1068,9 @@ if (ctem_on) then
 
     if (dofire .or. lnduseon) then
         open(unit=87,file=trim(argbuff)//'.CT06Y') !> Annual disturbance
-        write(87,6001) title1,title2,title3,title4,title5,title6
-        write(87,6002) name1,name2,name3,name4,name5,name6
-        write(87,6003) place1,place2,place3,place4,place5,place6
+        write(87,6001) 'test'
+        write(87,6002) 'test'
+        write(87,6003) 'test'
         write(87,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS FOR DISTURBANCES'
         write(87,6127)'YEAR','ANNUALCO2','ANNUALCO','ANNUALCH4','ANN_NMHC','ANNUAL_H2','ANNUALNOX','ANNUALN2O',&
                       'ANN_PM25','ANNUALTPM','ANNUAL_TC','ANNUAL_OC','ANNUAL_BC','ASMFUNCVEG',&
@@ -1086,18 +1083,18 @@ if (ctem_on) then
     if (compete .or. lnduseon) then
 
         open(unit=88,file=trim(argbuff)//'.CT07M')!> ctem pft fractions MONTHLY
-        write(88,6001) title1,title2,title3,title4,title5,title6
-        write(88,6002) name1,name2,name3,name4,name5,name6
-        write(88,6003) place1,place2,place3,place4,place5,place6
+        write(88,6001) 'test'
+        write(88,6002) 'test'
+        write(88,6003) 'test'
         write(88,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY RESULTS'
         write(88,6128)'MONTH','YEAR','FRAC#1','FRAC#2','FRAC#3','FRAC#4','FRAC#5','FRAC#6','FRAC#7',&
                       'FRAC#8','FRAC#9','FRAC#10','SUMCHECK','PFT existence for each of the 9 pfts'
         write(88,6128)'#','','%','%','%','%','%','%','%','%','%','%','%'
 
         open(unit=89,file=trim(argbuff)//'.CT07Y')!> ctem pft fractions YEARLY
-        write(89,6001) title1,title2,title3,title4,title5,title6
-        write(89,6002) name1,name2,name3,name4,name5,name6
-        write(89,6003) place1,place2,place3,place4,place5,place6
+        write(89,6001) 'test'
+        write(89,6002) 'test'
+        write(89,6003) 'test'
         write(89,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS'
         write(89,6129)'YEAR','FRAC#1','FRAC#2','FRAC#3','FRAC#4','FRAC#5','FRAC#6','FRAC#7',&
                       'FRAC#8','FRAC#9','FRAC#10','SUMCHECK','PFT existence for each of the 9 pfts'
@@ -1108,17 +1105,17 @@ if (ctem_on) then
     if (dowetlands .or. obswetf) then
 
         open(unit=91,file=trim(argbuff)//'.CT08M') !>Methane(wetland) MONTHLY
-        write(91,6001) title1,title2,title3,title4,title5,title6
-        write(91,6002) name1,name2,name3,name4,name5,name6
-        write(91,6003) place1,place2,place3,place4,place5,place6
+        write(91,6001) 'test'
+        write(91,6002) 'test'
+        write(91,6003) 'test'
         write(91,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) MONTHLY RESULTS'
         write(91,6230)'MONTH','YEAR','CH4WET1','CH4WET2','WETFDYN','CH4DYN1','CH4DYN2','SOILUPTAKE'
         write(91,6230)'#','','gCH4/M2.MON','gCH4/M2.MON','fraction','gCH4/M2.MON','gCH4/M2.MON','gCH4/M2.MON'
 
         open(unit=92,file=trim(argbuff)//'.CT08Y')  !>Methane(wetland) YEARLY
-        write(92,6001) title1,title2,title3,title4,title5,title6
-        write(92,6002) name1,name2,name3,name4,name5,name6
-        write(92,6003) place1,place2,place3,place4,place5,place6
+        write(92,6001) 'test'
+        write(92,6002) 'test'
+        write(92,6003) 'test'
         write(92,*)'#CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) YEARLY RESULTS'
         write(92,6232)'YEAR','CH4WET1','CH4WET2','WETFDYN','CH4DYN1','CH4DYN2','SOILUPTAKE'
         write(92,6232)'#','gCH4/M2.YR','gCH4/M2.YR','fraction','gCH4/M2.YR','gCH4/M2.YR','gCH4/M2.YR'

@@ -100,6 +100,7 @@ type ctem_switches
     character(180) :: met_file   !< location of the netcdf meteorological dataset
     character(180) :: init_file  !< location of the netcdf initialization file
     character(180) :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
+    character(180) :: runparams_file  !< location of the namelist file containing the model parameters
     character(180) :: Comment   !< Comment about the run that will be written to the output netcdfs
     character(180) :: output_directory !< Directory where the output netcdfs will be placed
     integer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
@@ -975,6 +976,9 @@ type ctem_tile_level
       real, allocatable, dimension(:) :: taaccgat_t       !<
       real, allocatable, dimension(:) :: uvaccgat_t       !<
       real, allocatable, dimension(:) :: vvaccgat_t       !<
+      real, allocatable, dimension(:) :: anmossac_t       !<daily averaged moss net photosynthesis accumulated (/f$\mu mol /m^2 /s\f$)
+      real, allocatable, dimension(:) :: rmlmossac_t      !<daily averaged moss maintainence respiration (/f$\mu mol /m^2 /s\f$)
+      real, allocatable, dimension(:) :: gppmossac_t      !<daily averaged gross primary production (/f$\mu mol /m^2 /s\f$)
 
 ! allocated with ilg,ignd:
       real, allocatable, dimension(:,:) :: tbaraccgat_t!<
@@ -987,6 +991,7 @@ type ctem_tile_level
       real, allocatable, dimension(:,:) :: thliqacc_t  !<
       real, allocatable, dimension(:,:) :: thicecacc_t !<
       real, allocatable, dimension(:,:) :: thicegacc_t !<
+      real, allocatable, dimension(:,:) :: thiceacc_t  !< Added in place of YW's thicaccgat_m. EC Dec 23 2016.
 
 ! allocated with ilg,icc:
       real, allocatable, dimension(:,:) :: ancsvgac_t  !<
@@ -2002,6 +2007,9 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile%taaccgat_t (ilg),&
          ctem_tile%uvaccgat_t (ilg),&
          ctem_tile%vvaccgat_t (ilg),&
+         ctem_tile%anmossac_t (ilg),&
+         ctem_tile%rmlmossac_t (ilg),&
+         ctem_tile%gppmossac_t (ilg),&
          ctem_tile%tbaraccgat_t (ilg,ignd),&
          ctem_tile%tbarcacc_t (ilg,ignd),&
          ctem_tile%tbarcsacc_t (ilg,ignd),&
@@ -2012,6 +2020,7 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile%thliqacc_t (ilg,ignd),&
          ctem_tile%thicecacc_t (ilg,ignd),&
          ctem_tile%thicegacc_t (ilg,ignd),&
+         ctem_tile%thiceacc_t (ilg,ignd),&
          ctem_tile%ancsvgac_t (ilg,icc),&
          ctem_tile%ancgvgac_t (ilg,icc),&
          ctem_tile%rmlcsvga_t (ilg,icc),&

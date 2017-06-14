@@ -97,7 +97,7 @@ contains
 !>\ingroup landuse_change_initialize_luc
 !>@{
 
-subroutine initialize_luc(iyear,lucdat,nmtest,nltest,&
+subroutine initialize_luc(iyear,nmtest,nltest,&
                           nol2pfts,cyclemet,   &
                           cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,  &
                           pfcancmxrow,fcancmxrow,reach_eof,start_bare,&
@@ -132,7 +132,6 @@ implicit none
 
 ! inputs
 integer, intent(in) :: iyear
-character(80), intent(in) :: lucdat
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
 integer, dimension(ican), intent(in) :: nol2pfts
@@ -183,7 +182,7 @@ pftarrays=0.
 
 !>open the luc file
 
-open(unit=15,file=trim(lucdat)//'.LUC')
+open(unit=15,file='test.LUC')
 
 !>Skip first three rows:
 read(15,*)
