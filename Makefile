@@ -9,15 +9,15 @@ OBJ = ctem_params.o ctem_statevars.o  peatlands_mod.o class_statevars.o APREP.o 
 BDIR = ../bin
 
 # PGI
-FC=pgf90
-NETCDFDIR=${HOME}/Public/NETCDF_PGI
+#FC=pgf90
+#NETCDFDIR=${HOME}/Public/NETCDF_PGI
 
 # GNU Fortran
-#FC=gfortran
-#NETCDFDIR=${HOME}/Public/NETCDF_GF
+FC=gfortran
+NETCDFDIR=${HOME}/Public/NETCDF_GF
 
 export LD_LIBRARY_PATH=$HOME/Public/NETCDF_GF/lib/
-export LD_LIBRARY_PATH=$HOME/Public/NETCDF_PGI/lib/
+#export LD_LIBRARY_PATH=$HOME/Public/NETCDF_PGI/lib/
 
 FC := $(shell $(NETCDFDIR)/bin/nf-config --fc)
 FFLAGS := $(shell $(NETCDFDIR)/bin/nf-config --fflags)
@@ -28,18 +28,14 @@ LDLIBS += $(shell $(NETCDFDIR)/bin/nc-config --libs)
 
 #FFLAGS += -Bstatic -r8 -O2 -gopt -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp
 
-#export PGIVER=11.6
-
-#export PGIMACH=linux86-64
-
 # Debugging of model ----------------
 
 # PGI
-FFLAGS += -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds
+#FFLAGS += -r8 -Minform,warn -g -Mbyteswapio -Mbackslash -Mpreprocess -Kieee -uname -Ktrap=fp,align,denorm,unf -traceback -Mbounds
 
 
 #GNU
-#FFLAGS += -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow -L/usr/local/zlib-1.2.5/lib -lz -lcurl
+FFLAGS += -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow -L/usr/local/zlib-1.2.5/lib -lz -lcurl
 
 #-----------------------
 

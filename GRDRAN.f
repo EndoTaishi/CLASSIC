@@ -186,7 +186,7 @@ C
      1                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,
      2                TCGLAC,CLHMLT,CLHVAP
 C-----------------------------------------------------------------------
-      print*,'enter',IVEG
+
 C     * DETERMINE POINTS WHICH SATISFY CONDITIONS FOR THESE CALCULATIONS
 C     * AND STORE THEM AS HAVING NON-ZERO VALUES FOR WORK ARRAY "IGRD".
 C     * NOTE THAT POINTS WHICH GO THROUGH THE ROUTINE "GRINFL" SHOULD
@@ -298,7 +298,6 @@ C
       !!
 
       DO 150 I=IL1,IL2
-      print *,i,'igrd',igrd(i)
           IF(IGRD(I).GT.0)                                          THEN
              FDT(I,1)=-EVAP(I)*DT(I)                                                           
              IF(DELZW(I,IGDR(I)).GT.0.0001)                      THEN
@@ -405,7 +404,6 @@ C     2                (DELZW(I,J)+DELZW(I,J+1)))
             ENDIF
           ENDIF
   200 CONTINUE 
-            print *,'aft 200',fdt
 C                               
 C     * CHECK FOR SUSTAINABLE EVAPORATION RATE FROM TOP SOIL LAYER; IF
 C     * LIQUID WATER SUPPLY IS INSUFFICIENT, TRY TO REMOVE WATER FROM 
@@ -443,10 +441,7 @@ C
       !!bottom of the layer is downward, it is set to zero.
       !!
       IPTBAD=0
-      print *,ilg,igp1
-      print *,'fd',fdt
-      print *,'del',delzw
-      DO 250 J=1,IG                                                               
+      DO 250 J=1,IG
       DO 250 I=IL1,IL2
           IF(IGRD(I).GT.0 .AND. J.EQ.1 .AND. FDT(I,J).LT.0. .AND.
      1                          DELZW(I,J).GT.0.0)             THEN 

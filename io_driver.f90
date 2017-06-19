@@ -53,7 +53,7 @@ public  :: close_outfiles       ! Closes the model output files
 real, dimension(4) :: bounds                    !> Corners of the domain to be simulated (netcdfs)
 integer :: metfid                               !> netcdf file id for the meteorology file
 integer :: initid                               !> netcdf file id for the model initialization file
-integer :: rs_id                                !> netcdf file id for the model restart file
+integer :: rsid                                 !> netcdf file id for the model restart file
 real, allocatable, dimension(:) :: lonvect      !> vector of all longitudes for the region of this simulation
 real, allocatable, dimension(:) :: latvect      !> vector of all latitudes for the region of this simulation
 integer :: srtx                                 !> starting index for this simulation for longitudes
@@ -620,7 +620,6 @@ logical, pointer :: dowetlands
 character(80), pointer :: titlec1
 character(80), pointer :: titlec2
 character(80), pointer :: titlec3
-integer, pointer, dimension(:,:) :: icountrow
 real, pointer, dimension(:,:,:) :: dvdfcanrow           !
 real, pointer, dimension(:,:,:) :: fcancmxrow
 real, pointer, dimension(:,:,:) :: ailcminrow           !
@@ -658,6 +657,7 @@ real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 integer :: i,m,j
 integer :: k1c,k2c,n
 real, dimension(icc) :: rnded_pft
+integer, dimension(nlat,nmos) :: icountrow
 
 ! point pointers:
 lnduseon          => c_switch%lnduseon
@@ -666,7 +666,6 @@ dowetlands        => c_switch%dowetlands
 titlec1           => c_switch%titlec1
 titlec2           => c_switch%titlec2
 titlec3           => c_switch%titlec3
-icountrow         => vrot%icount
 dvdfcanrow        => vrot%dvdfcan
 fcancmxrow        => vrot%fcancmx
 ailcminrow        => vrot%ailcmin

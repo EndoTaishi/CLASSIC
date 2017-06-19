@@ -302,7 +302,6 @@ type veg_rot
     
 
 ! allocated with nlat,nmos:   
-    integer, allocatable, dimension(:,:)     :: icount         !<
     integer, allocatable, dimension(:,:)     :: stdaln         !<an integer telling if ctem is operated within gcm (=0) or in stand
                                                         !<alone mode (=1). this is used for fire purposes. see comments just
                                                         !<above where disturb subroutine is called.
@@ -692,7 +691,6 @@ type veg_gat
     logical, allocatable, dimension(:,:) :: pftexist !<logical array indicating pfts exist (t) or not (f)
     integer, allocatable, dimension(:,:) :: colddays !<cold days counter for tracking days below a certain
                                                      !<temperature threshold for ndl dcd and crop pfts.
-    integer, allocatable, dimension(:)   :: icount   !<
     integer, allocatable, dimension(:,:) :: lfstatus !<leaf phenology status
     integer, allocatable, dimension(:,:) :: pandays  !<days with positive net photosynthesis (an) for use in
                                                      !<the phenology subroutine
@@ -1416,7 +1414,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%rmlveg  (nlat,nmos,icc),&
     
 ! allocated with nlat,nmos:   
-         vrot%icount(nlat,nmos),&
          vrot%stdaln(nlat,nmos),&
          vrot%gavglai (nlat,nmos),&
          vrot%co2conc (nlat,nmos),&
@@ -1568,7 +1565,6 @@ ilg = nlat * nmos
 ! allocated with ilg
 
 allocate(vgat%grclarea(ilg),&
-         vgat%icount(ilg),&
          vgat%gavglai (ilg),&
          vgat%lightng (ilg),&
          vgat%tcanoaccgat_out (ilg),&
@@ -2314,7 +2310,6 @@ integer :: j,k,l,m
 !         vrot%QAACC_M(j,k) = 0.
 !         vrot%EVAPACC_M(j,k) = 0.
 !         vrot%FLUTACC_M(j,k) = 0.
-        vrot%icount(j,k)           = 0
         vrot%co2conc(j,k)          = 0.0
         vrot%npp(j,k)              = 0.0
         vrot%nep(j,k)              = 0.0

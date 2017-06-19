@@ -5,7 +5,7 @@
 
  transient_run = .false. ,
  trans_startyr = 1850 ,
- ctemloop = 5 ,
+ ctemloop = 1 ,
  ncyear = 109 ,
  cyclemet = .true. ,
  nummetcylyrs = 30 ,

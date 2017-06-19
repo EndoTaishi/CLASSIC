@@ -13,6 +13,7 @@ module model_state_drivers
     private
     public  :: read_modelsetup
     public  :: read_initialstate
+    public  :: write_restart
 
 contains
 
@@ -30,7 +31,7 @@ contains
 
         use netcdf
         use netcdf_drivers, only : check_nc
-        use io_driver, only : initid,cntx,cnty,srtx,srty,bounds,lonvect,latvect
+        use io_driver, only : initid,rsid,cntx,cnty,srtx,srty,bounds,lonvect,latvect
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
 
@@ -38,6 +39,7 @@ contains
 
         ! pointers:
         character(180), pointer         :: init_file
+        character(180), pointer         :: rs_file_to_overwrite
 
         integer :: dimid
         integer :: varid
@@ -49,6 +51,7 @@ contains
 
         ! point pointers:
         init_file         => c_switch%init_file
+        rs_file_to_overwrite => c_switch%rs_file_to_overwrite
 
         ! ------------
 
@@ -124,9 +127,13 @@ contains
             all_lat,&
             all_lon)
 
-        !> Lastly we determine the size of ilg which is nlat times nmos
+        !> Determine the size of ilg which is nlat times nmos
 
         ilg = nlat * nmos
+
+        !> Lastly, open the restart file so it is ready to be written to.
+
+        call check_nc(nf90_open(trim(rs_file_to_overwrite),nf90_share,rsid))
 
     end subroutine read_modelsetup
 
@@ -501,10 +508,6 @@ contains
         call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
         PAMXROT = reshape(temp4d,[nlat,nmos,ican])
 
-        call check_nc(nf90_inq_varid(initid,'PAMX',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
-        PAMXROT = reshape(temp4d,[nlat,nmos,ican])
-
         call check_nc(nf90_inq_varid(initid,'CMAS',varid))
         call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
         CMASROT = reshape(temp4d,[nlat,nmos,ican])
@@ -606,6 +609,20 @@ contains
             !    ZBOT(i,:) = ZBOT(1,:)
             !    DELZ(i,:) = DELZ(1,:)
             !end do
+
+            ! Check that the THIC and THLQ values are set to zero for soil layers
+            ! that are non-permeable (bedrock).
+            do i = 1,nlat
+                do j = 1,nmos
+                    do m = 1,ignd-1
+                        if (zbot(m) > SDEPROT(i,j) .and. zbot(m+1) > SDEPROT(i,j)) then
+                            THLQROT(i,j,m:ignd) = 0.
+                            THICROT(i,j,m:ignd) = 0.
+                            exit
+                        end if
+                    end do
+                end do
+            end do
 
             deallocate(temp3d)
 
@@ -887,5 +904,264 @@ contains
 
     end subroutine read_initialstate
 
+    subroutine write_restart()
+
+        !! Write out the model restart file to netcdf. We only write out the variables that the model
+        !! influences
+
+        ! J. Melton
+        ! Jun 2017
+
+        use netcdf
+        use netcdf_drivers, only : check_nc
+        use io_driver, only : rsid,cntx,cnty,srtx,srty
+        use ctem_statevars,     only : c_switch,vrot,vgat
+        use class_statevars,    only : class_rot,class_gat
+        use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,l2max,modelpft
+
+        implicit none
+
+        ! pointers:
+        real, pointer, dimension(:,:,:) :: FCANROT
+        real, pointer, dimension(:,:)   :: FAREROT
+        real, pointer, dimension(:,:,:) :: TBARROT
+        real, pointer, dimension(:,:,:) :: THLQROT
+        real, pointer, dimension(:,:,:) :: THICROT
+        real, pointer, dimension(:,:)   :: TCANROT
+        real, pointer, dimension(:,:)   :: TSNOROT
+        real, pointer, dimension(:,:)   :: TPNDROT
+        real, pointer, dimension(:,:)   :: ZPNDROT
+        real, pointer, dimension(:,:)   :: RCANROT
+        real, pointer, dimension(:,:)   :: SCANROT
+        real, pointer, dimension(:,:)   :: SNOROT
+        real, pointer, dimension(:,:)   :: ALBSROT
+        real, pointer, dimension(:,:)   :: RHOSROT
+        real, pointer, dimension(:,:)   :: GROROT
+
+        logical, pointer :: ctem_on
+        logical, pointer :: dofire
+        logical, pointer :: compete
+        logical, pointer :: inibioclim
+        logical, pointer :: dowetlands
+        logical, pointer :: start_bare
+        logical, pointer :: lnduseon
+        logical, pointer :: obswetf
+        real, pointer, dimension(:,:,:) :: ailcminrow           !
+        real, pointer, dimension(:,:,:) :: ailcmaxrow           !
+        real, pointer, dimension(:,:,:) :: dvdfcanrow           !
+        real, pointer, dimension(:,:,:) :: fcancmxrow           !
+        real, pointer, dimension(:,:,:) :: gleafmasrow          !
+        real, pointer, dimension(:,:,:) :: bleafmasrow          !
+        real, pointer, dimension(:,:,:) :: stemmassrow          !
+        real, pointer, dimension(:,:,:) :: rootmassrow          !
+        real, pointer, dimension(:,:,:) :: pstemmassrow         !
+        real, pointer, dimension(:,:,:) :: pgleafmassrow        !
+        real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
+        real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
+        real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
+        real, pointer, dimension(:,:) :: aridity           !< aridity index, ratio of potential evaporation to precipitation
+        real, pointer, dimension(:,:) :: srplsmon          !< number of months in a year with surplus water i.e.precipitation more than potential evaporation
+        real, pointer, dimension(:,:) :: defctmon          !< number of months in a year with water deficit i.e.precipitation less than potential evaporation
+        real, pointer, dimension(:,:) :: anndefct          !< annual water deficit (mm)
+        real, pointer, dimension(:,:) :: annsrpls          !< annual water surplus (mm)
+        real, pointer, dimension(:,:) :: annpcp            !< annual precipitation (mm)
+        real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
+        real, pointer, dimension(:,:,:) :: litrmassrow
+        real, pointer, dimension(:,:,:) :: soilcmasrow
+        real, pointer, dimension(:,:) :: extnprob
+        real, pointer, dimension(:,:) :: prbfrhuc
+        integer, pointer, dimension(:,:,:) :: lfstatusrow
+        integer, pointer, dimension(:,:,:) :: pandaysrow
+        integer, pointer, dimension(:,:) :: ipeatlandrow   !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+        real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
+        real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
+        real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
+
+        ! local variables
+
+        integer :: i,m,j,x,y,varid,k,k1c,k2c,n
+        real, dimension(ilg,2) :: crop_temp_frac
+        real, allocatable, dimension(:,:) :: temptwod
+        real, allocatable, dimension(:,:,:) :: temp3d
+        integer, allocatable, dimension(:,:,:) :: temp3di
+        real, allocatable, dimension(:,:,:,:) :: temp4d
+        integer, allocatable, dimension(:,:,:,:) :: temp4di
+
+        integer, dimension(nlat,nmos) :: icountrow
+        real, dimension(icc) :: rnded_pft
+
+        ! point pointers:
+        ctem_on           => c_switch%ctem_on
+        dofire            => c_switch%dofire
+        compete           => c_switch%compete
+        inibioclim        => c_switch%inibioclim
+        dowetlands        => c_switch%dowetlands
+        start_bare        => c_switch%start_bare
+        lnduseon          => c_switch%lnduseon
+        obswetf           => c_switch%obswetf
+
+        ailcminrow        => vrot%ailcmin
+        ailcmaxrow        => vrot%ailcmax
+        dvdfcanrow        => vrot%dvdfcan
+        fcancmxrow        => vrot%fcancmx
+        gleafmasrow       => vrot%gleafmas
+        bleafmasrow       => vrot%bleafmas
+        stemmassrow       => vrot%stemmass
+        rootmassrow       => vrot%rootmass
+        pstemmassrow      => vrot%pstemmass
+        pgleafmassrow     => vrot%pgleafmass
+        twarmm            => vrot%twarmm
+        tcoldm            => vrot%tcoldm
+        gdd5              => vrot%gdd5
+        aridity           => vrot%aridity
+        srplsmon          => vrot%srplsmon
+        defctmon          => vrot%defctmon
+        anndefct          => vrot%anndefct
+        annsrpls          => vrot%annsrpls
+        annpcp            => vrot%annpcp
+        dry_season_length => vrot%dry_season_length
+        litrmassrow       => vrot%litrmass
+        soilcmasrow       => vrot%soilcmas
+        extnprob          => vrot%extnprob
+        prbfrhuc          => vrot%prbfrhuc
+        lfstatusrow       => vrot%lfstatus
+        pandaysrow        => vrot%pandays
+        ipeatlandrow      => vrot%ipeatland
+        Cmossmas          => vrot%Cmossmas
+        litrmsmoss        => vrot%litrmsmoss
+        dmoss             => vrot%dmoss
+
+        FCANROT           => class_rot%FCANROT
+        FAREROT           => class_rot%FAREROT
+        TBARROT           => class_rot%TBARROT
+        THLQROT           => class_rot%THLQROT
+        THICROT           => class_rot%THICROT
+        TCANROT           => class_rot%TCANROT
+        TSNOROT           => class_rot%TSNOROT
+        TPNDROT           => class_rot%TPNDROT
+        ZPNDROT           => class_rot%ZPNDROT
+        RCANROT           => class_rot%RCANROT
+        SCANROT           => class_rot%SCANROT
+        SNOROT            => class_rot%SNOROT
+        ALBSROT           => class_rot%ALBSROT
+        RHOSROT           => class_rot%RHOSROT
+        GROROT            => class_rot%GROROT
+
+
+!         allocate(temp3d(cntx,cnty,nmos))
+!
+!         call check_nc(nf90_inq_varid(rsid,'FARE',varid))
+!         temp3d = reshape(FAREROT,[ cntx,cnty,nmos ] )
+!         print *,temp3d, size(temp3d),srtx,srty
+!         call check_nc(nf90_put_var(rsid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+!         print *,'pass'
+! !         call check_nc(nf90_inq_varid(initid,'FCAN',varid))
+! !         temp3d = reshape(FCANROT,[ cntx,cnty,nmos ] )
+! !         print *,FCANROT
+! !         print *,temp3d
+! !         call check_nc(nf90_put_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+! !         allocate(temp4d(cntx,cnty,icp1,nmos))
+! !
+! !         call check_nc(nf90_inq_varid(initid,'FCAN',varid))
+! !         call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icp1,nmos]))
+! !         FCANROT = reshape(temp4d,[nlat,nmos,icp1])
+!
+!         deallocate(temp3d)
+
+
+        !> if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
+        if (lnduseon .or. compete ) then
+            icountrow=0
+            do j = 1, ican
+                do i = 1,nlat
+                    do m = 1,nmos
+                        k1c = (j-1)*l2max + 1
+                        k2c = k1c + (l2max - 1)
+                        do n = k1c, k2c
+                            if (modelpft(n) .eq. 1) then
+                                icountrow(i,m) = icountrow(i,m) + 1
+                                if (FCANROT(i,m,j) .gt. 0.) then
+                                    dvdfcanrow(i,m,icountrow(i,m)) = fcancmxrow(i,m,icountrow(i,m))/FCANROT(i,m,j)
+                                else
+                                    dvdfcanrow(i,m,icountrow(i,m)) = 0.
+                                end if
+                            end if !modelpft
+                        end do !n
+                        !> check to ensure that the dvdfcanrow's add up to 1 across a class-level pft
+                        if (dvdfcanrow(i,m,1) .eq. 0. .and. dvdfcanrow(i,m,2) .eq. 0.) then
+                            dvdfcanrow(i,m,1)=1.0
+                        else if (dvdfcanrow(i,m,3) .eq. 0. .and. dvdfcanrow(i,m,4) .eq. 0. .and. dvdfcanrow(i,m,5) .eq. 0.) then
+                            dvdfcanrow(i,m,3)=1.0
+                        else if (dvdfcanrow(i,m,6) .eq. 0. .and. dvdfcanrow(i,m,7) .eq. 0.) then
+                            dvdfcanrow(i,m,6)=1.0
+                        else if (dvdfcanrow(i,m,8) .eq. 0. .and. dvdfcanrow(i,m,9) .eq. 0.) then
+                            dvdfcanrow(i,m,8)=1.0
+                        end if
+                    end do !m
+                enddo !i
+            enddo !j
+
+            do i=1,nlat
+                do m=1,nmos
+                    do j = 1, icc
+                        !>Lastly check if the different pfts accidently add up > 1.0 after rounding to the number of sig figs used in the output
+                        !>this rounds to 3 decimal places. if you are found to be over or under, arbitrarily reduce one of the pfts. the amount of
+                        !>the change will be inconsequential.
+                        rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 1000.0))/ 1000.0
+                        dvdfcanrow(i,m,j) = rnded_pft(j)
+                    end do
+
+                    if (dvdfcanrow(i,m,1) + dvdfcanrow(i,m,2) .ne. 1.0) then
+                        dvdfcanrow(i,m,1) = 1.0 - rnded_pft(2)
+                        dvdfcanrow(i,m,2) = rnded_pft(2)
+                    end if
+                    if (dvdfcanrow(i,m,3) + dvdfcanrow(i,m,4) +  dvdfcanrow(i,m,5) .ne. 1.0) then
+                        dvdfcanrow(i,m,3) = 1.0 - rnded_pft(4) - rnded_pft(5)
+                        dvdfcanrow(i,m,4) = rnded_pft(4)
+                        dvdfcanrow(i,m,5) = rnded_pft(5)
+                    end if
+                    if (dvdfcanrow(i,m,6) + dvdfcanrow(i,m,7) .ne. 1.0) then
+                        dvdfcanrow(i,m,6) = 1.0 - rnded_pft(7)
+                        dvdfcanrow(i,m,7) = rnded_pft(7)
+                    end if
+                    if (dvdfcanrow(i,m,8) + dvdfcanrow(i,m,9) .ne. 1.0) then
+                        dvdfcanrow(i,m,8) = 1.0 - rnded_pft(9)
+                        dvdfcanrow(i,m,9) = rnded_pft(9)
+                    end if
+                enddo
+            enddo
+        end if !lnuse/compete
+
+! do i=1,nltest
+!     do m=1,nmtest
+!         write(101,7011) (ailcminrow(i,m,j),j=1,icc)
+!         write(101,7011) (ailcmaxrow(i,m,j),j=1,icc)
+!         !write(101,'(9f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
+!         write(101,'(12f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
+!         write(101,7011) (gleafmasrow(i,m,j),j=1,icc)
+!         write(101,7011) (bleafmasrow(i,m,j),j=1,icc)
+!         write(101,7011) (stemmassrow(i,m,j),j=1,icc)
+!         write(101,7011) (rootmassrow(i,m,j),j=1,icc)
+!         write(101,7013) (litrmassrow(i,m,j),j=1,iccp1)
+!         write(101,7013) (soilcmasrow(i,m,j),j=1,iccp1)
+!         write(101,7012) (lfstatusrow(i,m,j),j=1,icc)
+!         write(101,7012) (pandaysrow(i,m,j),j=1,icc)
+!
+!         write(101,7015) ipeatland(i,m),Cmossmas(i,m),litrmsmoss(i,m),dmoss(i,m) ! peatland variables
+!     end do !nmtest
+!
+!     write(101,"(6f8.3)") (mlightng(i,1,j),j=1,6)  !mean monthly lightning frequency
+!     write(101,"(6f8.3)") (mlightng(i,1,j),j=7,12) !flashes/km2.year, use the first tile since all the same.
+!     write(101,"(f8.2)") extnprob(i,1)
+!     write(101,"(f8.2)") prbfrhuc(i,1)
+!     write(101,"(i4)") stdaln(i,1)
+!
+!     if (compete) then
+!     !>We can write out the first tile value since these are the same across an entire gridcell.
+!         write(101,7014)twarmm(i,1),tcoldm(i,1),gdd5(i,1),aridity(i,1),srplsmon(i,1)
+!         write(101,7014)defctmon(i,1),anndefct(i,1),annsrpls(i,1), annpcp(i,1),dry_season_length(i,1)
+!     end if
+
+    end subroutine write_restart
 
 end module model_state_drivers

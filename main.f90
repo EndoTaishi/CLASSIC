@@ -73,31 +73,12 @@ contains
             &                               close_outfiles,ctem_daily_aw,&
             &                               class_annual_aw,bounds
 
-        use model_state_drivers, only : read_initialstate
+        use model_state_drivers, only : read_initialstate,write_restart
 
         implicit none
 
         ! Flag test
         real, intent(in) :: longitude, latitude
-
-        !
-        !     * INTEGER CONSTANTS.
-        !
-        INTEGER IDISP  !<Flag governing treatment of vegetation displacement height
-        INTEGER IZREF  !<Flag governing treatment of surface roughness length
-        INTEGER ISLFD  !<Flag governing options for surface stability functions and diagnostic calculations
-        INTEGER IPCP   !<Flag selecting algorithm for dividing precipitation between rainfall and snowfall
-        INTEGER IWF    !<Flag governing lateral soil water flow calculations
-        INTEGER IPAI   !<Flag to enable use of user-specified plant area index
-        INTEGER IHGT   !<Flag to enable use of user-specified vegetation height
-        INTEGER IALC   !<Flag to enable use of user-specified canopy albedo
-        INTEGER IALS   !<Flag to enable use of user-specified snow albedo
-        INTEGER IALG   !<Flag to enable use of user-specified ground albedo
-        INTEGER ITG    !<Flag to select iteration scheme for ground or snow surface
-        INTEGER ITC    !<Flag to select iteration scheme for canopy temperature
-        INTEGER ITCG   !<Flag to select iteration scheme for surface under canopy
-        INTEGER isnoalb!<
-        INTEGER igralb !<
 
         INTEGER NLTEST  !<Number of grid cells being modelled for this run
         INTEGER NMTEST  !<Number of mosaic tiles per grid cell being modelled for this run
@@ -147,10 +128,10 @@ contains
 
         ! These will be allocated the dimension: 'ilg'
 
-        integer, pointer, dimension(:) :: ILMOS     !<Index of grid cell corresponding to current element of gathered vector of land surface variables [ ]
-        integer, pointer, dimension(:) :: JLMOS     !<Index of mosaic tile corresponding to current element of gathered vector of land surface variables [ ]
-        integer, pointer, dimension(:) :: IWMOS     !<Index of grid cell corresponding to current element of gathered vector of inland water body variables [ ]
-        integer, pointer, dimension(:) :: JWMOS     !<Index of mosaic tile corresponding to current element of gathered vector of inland water body variables [ ]
+        integer, pointer, dimension(:) :: ILMOS !<Index of gridcell corresponding to current element of gathered vector of land surface variables [ ]
+        integer, pointer, dimension(:) :: JLMOS !<Index of mosaic tile corresponding to current element of gathered vector of land surface variables [ ]
+        integer, pointer, dimension(:) :: IWMOS !<Index of gridcell corresponding to current element of gathered vector of inland water body variables [ ]
+        integer, pointer, dimension(:) :: JWMOS !<Index of mosaic tile corresponding to current element of gathered vector of inland water body variables [ ]
         integer, pointer, dimension(:) :: IGDRGAT   !<Index of soil layer in which bedrock is encountered
 
         real, pointer, dimension(:) :: ALBSGAT !<Snow albedo [ ]
@@ -676,7 +657,7 @@ contains
         real, pointer, dimension(:,:) :: FSGVROT !<
         real, pointer, dimension(:,:) :: FSNOROT !<
         real, pointer, dimension(:,:) :: GAROT   !<
-        real, pointer, dimension(:,:) :: GTROT   !<
+        real, pointer, dimension(:,:) :: GTROT   !<Diagnosed effective surface black-body temperature [K]
         real, pointer, dimension(:,:) :: HBLROT  !<
         real, pointer, dimension(:,:) :: HEVCROT !<
         real, pointer, dimension(:,:) :: HEVGROT !<
@@ -846,18 +827,110 @@ contains
         !     Local variables for coupling CLASS and CTEM
         !
 
-        integer   lopcount,  isumc,     k1c,       k2c,&
-            &           jhhstd,    jhhendd,   jdstd,   jdendd,&
-            &           jhhsty,     jhhendy,   jdsty,   jdendy,&
-            &           month1,     month2,      xday,  ctemloop,&
-            &           nummetcylyrs, ncyear,  co2yr,   spinfast,&
-            &           nol2pfts(4),  popyr, metcylyrst, metcycendyr,&
-            &           climiyear,   popcycleyr,    cypopyr, lucyr,&
-            &           cylucyr, endyr,bigpftc(1), obswetyr,&
-            &           cywetldyr, trans_startyr, jmosty, obslghtyr,testyr
+        integer   lopcount,  isumc,k1c,k2c,month1,month2,xday, co2yr, &
+            &           nol2pfts(4),popyr, metcycendyr,climiyear,cypopyr,lucyr,&
+            &           cylucyr, endyr,bigpftc(1), obswetyr,obslghtyr,testyr
 
-        real      co2concin,    setco2conc, sumfare,&
-            &           temp_var, barefrac,ch4concin, setch4conc
+        real      co2concin,sumfare,temp_var, barefrac, ch4concin
+        integer, allocatable, dimension(:,:) :: icountrow  !FLAG move out.
+
+        integer, pointer :: metcylyrst   !< climate year to start the spin up on
+                                    !< ignored if cyclemet is false
+        integer, pointer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
+                                            !! are not doing a transient run, set to a negative value (like -9999)
+        integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
+                                !< soil carbon pool faster
+        integer, pointer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
+                                    !< ignored if cyclemet is false
+        integer, pointer :: ctemloop !< no. of times the .met file is to be read. this
+                                        !< option is useful to see how ctem's c pools
+                                        !< equilibrate when driven with same climate data
+                                        !< over and over again.
+        integer, pointer :: ncyear   !< no. of years in the .met file.
+        integer, pointer :: jhhstd  !< day of the year to start writing the half-hourly output
+        integer, pointer :: jhhendd !< day of the year to stop writing the half-hourly output
+        integer, pointer :: jdstd   !< day of the year to start writing the daily output
+        integer, pointer :: jdendd  !< day of the year to stop writing the daily output
+        integer, pointer :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
+        integer, pointer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
+        integer, pointer :: jdsty   !< simulation year (iyear) to start writing the daily output
+        integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
+        integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
+        real, pointer :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
+        real, pointer :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
+        integer, pointer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
+                                 !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
+                                 !< this defaults to -9999, which will then cause the model to cycle on
+                                 !< whatever is the first year in the popd and luc datasets
+        integer, pointer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
+                        !< because the atmospheric model considers these to be part
+                        !< of the "terrain".
+                        !< if idisp=1, vegetation displacement heights are calculated.
+        integer, pointer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
+                        !< to lie at the ground surface.
+                        !< if izref=2, the bottom of the atmospheric model is taken
+                        !< to lie at the local roughness height.
+        integer, pointer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
+                        !< and the original gcm set of screen-level diagnostic calculations
+                        !< is done.
+                        !< if islfd=1, drcoef is called for surface stability corrections
+                        !< and sldiag is called for screen-level diagnostic calculations.
+                        !< if islfd=2, flxsurfz is called for surface stability corrections
+                        !< and diasurf is called for screen-level diagnostic calculations.
+        integer, pointer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
+                        !< if ipcp=2, a linear partitioning of precipitation betweeen
+                        !< rainfall and snowfall is done between 0 c and 2 c.
+                        !< if ipcp=3, rainfall and snowfall are partitioned according to
+                        !< a polynomial curve between 0 c and 6 c.
+        integer, pointer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
+                        !< the ground surface slope is not modelled.
+                        !< if iwf=n (0<n<4), the watflood calculations of overland flow
+                        !< and interflow are performed; interflow is drawn from the top
+                        !< n soil layers.
+        INTEGER, pointer :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
+                                !< be used in calculating the canopy or ground surface temperature
+                                !< respectively.  if the switch is set to 1, a bisection method is
+                                !< used; if to 2, the newton-raphson method is used.
+        INTEGER, pointer :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
+                                !< be used in calculating the canopy or ground surface temperature
+                                !< respectively.  if the switch is set to 1, a bisection method is
+                                !< used; if to 2, the newton-raphson method is used.
+        INTEGER, pointer :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
+                                !< be used in calculating the canopy or ground surface temperature
+                                !< respectively.  if the switch is set to 1, a bisection method is
+                                !< used; if to 2, the newton-raphson method is used.
+        INTEGER, pointer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                                !< plant area index, vegetation height, canopy albedo, snow albedo
+                                !< and soil albedo respectively calculated by class are used.
+                                !< if any of these switches is set to 1, the value of the
+                                !< corresponding parameter calculated by class is overridden by
+                                !< a user-supplied input value.
+        INTEGER, pointer :: IHGT !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                                !< plant area index, vegetation height, canopy albedo, snow albedo
+                                !< and soil albedo respectively calculated by class are used.
+                                !< if any of these switches is set to 1, the value of the
+                                !< corresponding parameter calculated by class is overridden by
+                                !< a user-supplied input value.
+        INTEGER, pointer :: IALC !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                                !< plant area index, vegetation height, canopy albedo, snow albedo
+                                !< and soil albedo respectively calculated by class are used.
+                                !< if any of these switches is set to 1, the value of the
+                                !< corresponding parameter calculated by class is overridden by
+                                !< a user-supplied input value.
+        INTEGER, pointer :: IALS !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                                !< plant area index, vegetation height, canopy albedo, snow albedo
+                                !< and soil albedo respectively calculated by class are used.
+                                !< if any of these switches is set to 1, the value of the
+                                !< corresponding parameter calculated by class is overridden by
+                                !< a user-supplied input value.
+        INTEGER, pointer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
+                                !< plant area index, vegetation height, canopy albedo, snow albedo
+                                !< and soil albedo respectively calculated by class are used.
+                                !< if any of these switches is set to 1, the value of the
+                                !< corresponding parameter calculated by class is overridden by
+                                !< a user-supplied input value.
+        integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
+                                        !< if it is set to 1, the new four-band routines are used.
 
         integer, allocatable, dimension(:) :: altotcount_ctm !nlat
         real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)
@@ -911,7 +984,6 @@ contains
         ! ROW vars:
         logical, pointer, dimension(:,:,:) :: pftexistrow
         integer, pointer, dimension(:,:,:) :: colddaysrow
-        integer, pointer, dimension(:,:) :: icountrow
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
         integer, pointer, dimension(:,:) :: stdalnrow
@@ -1089,7 +1161,6 @@ contains
 
         logical, pointer, dimension(:,:) :: pftexistgat
         integer, pointer, dimension(:,:) :: colddaysgat
-        integer, pointer, dimension(:) :: icountgat
         integer, pointer, dimension(:,:) :: lfstatusgat
         integer, pointer, dimension(:,:) :: pandaysgat
         integer, pointer, dimension(:) :: stdalngat
@@ -1330,7 +1401,7 @@ contains
         real, pointer, dimension(:,:) :: thliqcacc_t
         real, pointer, dimension(:,:) :: thliqgacc_t
         real, pointer, dimension(:,:) :: thliqacc_t
-      real, pointer, dimension(:,:) :: thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+        real, pointer, dimension(:,:) :: thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
         real, pointer, dimension(:,:) :: thicecacc_t
         real, pointer, dimension(:,:) :: thicegacc_t
         real, pointer, dimension(:,:) :: ancsvgac_t
@@ -1434,82 +1505,86 @@ contains
         !     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
         !     * WITHIN THE GCM.
 
-!     leap year flag (if the switch 'leap' is true, this will be used, otherwise it remains false)
-      logical :: leapnow = .false.
+        ! leap year flag (if the switch 'leap' is true, this will be used, otherwise it remains false)
+        logical :: leapnow = .false.
 
-!   ----CLASS moss variables-------YW ----------------------------------
-!     Replaced thlqaccXXX_m with thliqacc_t and thicaccXXX_m with thiceacc_t. EC Dec 23 2016.
-!     See corresponding changes in calls to ctemg2, ctem, and ctems2.
-!     real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
-!    4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
-!    5      peatdepgat(ilg),
-      real  peatdepgat(ilg),g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg)
-!   g12 - energy flux between soil layer 1 and 2 (W/m2)
-!   g23 - energy flux between soil layer 2 and 3 (W/m2)
-!   wiltsm - wilting point for peat soil layers  (m3/m3)
-!   fieldsm - field capacity for peat soil layers (m3/m3)
-!   thliqc - liquid water content of canopy+snow subarea (m3/m3)
-!   thliqg - liquid water content of snow ground subarea (m3/m3)
-!   peatdep - peat depth (m)
+        !   ----CLASS moss variables-------YW ----------------------------------
+        !     Replaced thlqaccXXX_m with thliqacc_t and thicaccXXX_m with thiceacc_t. EC Dec 23 2016.
+        !     See corresponding changes in calls to ctemg2, ctem, and ctems2.
+        !     real  thlqaccgat_m(ilg,ignd),     thlqaccrow_m(nlat,nmos,ignd),
+        !    4      thicaccgat_m(ilg,ignd),     thicaccrow_m(nlat,nmos,ignd),
+        !    5      peatdepgat(ilg),
+        real  peatdepgat(ilg),g12grd(ilg), g23grd(ilg),   g12acc(ilg), g23acc(ilg)
+        !   g12 - energy flux between soil layer 1 and 2 (W/m2)
+        !   g23 - energy flux between soil layer 2 and 3 (W/m2)
+        !   wiltsm - wilting point for peat soil layers  (m3/m3)
+        !   fieldsm - field capacity for peat soil layers (m3/m3)
+        !   thliqc - liquid water content of canopy+snow subarea (m3/m3)
+        !   thliqg - liquid water content of snow ground subarea (m3/m3)
+        !   peatdep - peat depth (m)
 
-      integer, pointer, dimension(:,:) :: ipeatlandrow !This is first set in read_from_ctm.
-      integer, pointer, dimension(:) :: ipeatlandgat
-      real, pointer, dimension(:,:) :: anmossrow
-      real, pointer, dimension(:) :: anmossgat
-      real, pointer, dimension(:,:) :: rmlmossrow
-      real, pointer, dimension(:) :: rmlmossgat
-      real, pointer, dimension(:,:) :: gppmossrow
-      real, pointer, dimension(:) :: gppmossgat
-      real, pointer, dimension(:,:) :: nppmossrow
-      real, pointer, dimension(:) :: nppmossgat
-      real, pointer, dimension(:,:) :: armossrow
-      real, pointer, dimension(:) :: armossgat
-      real, pointer, dimension(:,:) :: litrmsmossrow
-      real, pointer, dimension(:) :: litrmsmossgat
-      real, pointer, dimension(:,:) :: Cmossmasrow
-      real, pointer, dimension(:) :: Cmossmasgat
-      real, pointer, dimension(:,:) :: dmossrow
-      real, pointer, dimension(:) :: dmossgat
-      real, pointer, dimension(:,:) :: pddrow
-      real, pointer, dimension(:) :: pddgat
-      real, pointer, dimension(:) :: ancsmoss
-      real, pointer, dimension(:) :: angsmoss
-      real, pointer, dimension(:) :: ancmoss
-      real, pointer, dimension(:) :: angmoss
-      real, pointer, dimension(:) :: rmlcsmoss
-      real, pointer, dimension(:) :: rmlgsmoss
-      real, pointer, dimension(:) :: rmlcmoss
-      real, pointer, dimension(:) :: rmlgmoss
+        integer, pointer, dimension(:,:) :: ipeatlandrow !This is first set in read_from_ctm.
+        integer, pointer, dimension(:) :: ipeatlandgat
+        real, pointer, dimension(:,:) :: anmossrow
+        real, pointer, dimension(:) :: anmossgat
+        real, pointer, dimension(:,:) :: rmlmossrow
+        real, pointer, dimension(:) :: rmlmossgat
+        real, pointer, dimension(:,:) :: gppmossrow
+        real, pointer, dimension(:) :: gppmossgat
+        real, pointer, dimension(:,:) :: nppmossrow
+        real, pointer, dimension(:) :: nppmossgat
+        real, pointer, dimension(:,:) :: armossrow
+        real, pointer, dimension(:) :: armossgat
+        real, pointer, dimension(:,:) :: litrmsmossrow
+        real, pointer, dimension(:) :: litrmsmossgat
+        real, pointer, dimension(:,:) :: Cmossmasrow
+        real, pointer, dimension(:) :: Cmossmasgat
+        real, pointer, dimension(:,:) :: dmossrow
+        real, pointer, dimension(:) :: dmossgat
+        real, pointer, dimension(:,:) :: pddrow
+        real, pointer, dimension(:) :: pddgat
+        real, pointer, dimension(:) :: ancsmoss
+        real, pointer, dimension(:) :: angsmoss
+        real, pointer, dimension(:) :: ancmoss
+        real, pointer, dimension(:) :: angmoss
+        real, pointer, dimension(:) :: rmlcsmoss
+        real, pointer, dimension(:) :: rmlgsmoss
+        real, pointer, dimension(:) :: rmlcmoss
+        real, pointer, dimension(:) :: rmlgmoss
 
-      real, pointer, dimension(:) :: anmossac_t
-      real, pointer, dimension(:) :: rmlmossac_t
-      real, pointer, dimension(:) :: gppmossac_t
-!=======================================================================
-!     * PHYSICAL CONSTANTS.
-!     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
-!     * WITHIN THE GCM.
+        real, pointer, dimension(:) :: anmossac_t
+        real, pointer, dimension(:) :: rmlmossac_t
+        real, pointer, dimension(:) :: gppmossac_t
 
-      COMMON /PARAMS/ X1,    X2,    X3,    X4,   G,GAS,   X5,&
-                     X6,    CPRES, GASV,  X7
+        !=======================================================================
+        !     * PHYSICAL CONSTANTS.
+        !     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
+        !     * WITHIN THE GCM.
+
+        COMMON /PARAMS/ X1,    X2,    X3,    X4,   G,GAS,   X5,&
+                        X6,    CPRES, GASV,  X7
         COMMON /PARAM1/ CPI,   X8,    CELZRO,X9,    X10,    X11
         COMMON /PARAM3/ X12,   X13,   X14,   X15,   SIGMA,  X16
-      COMMON  /TIMES/ DELTIM,K1,    K2,    K3,    K4,     K5,&
-                     K6,    K7,    K8,    K9,    K10,    K11
-!
-!     * THE FOLLOWING COMMON BLOCKS ARE DEFINED SPECIFICALLY FOR USE
-!     * IN CLASS, VIA BLOCK DATA AND THE SUBROUTINE "CLASSD".
-!
+        COMMON  /TIMES/ DELTIM,K1,    K2,    K3,    K4,     K5,&
+                        K6,    K7,    K8,    K9,    K10,    K11
+        !
+        !     * THE FOLLOWING COMMON BLOCKS ARE DEFINED SPECIFICALLY FOR USE
+        !     * IN CLASS, VIA BLOCK DATA AND THE SUBROUTINE "CLASSD".
+        !
         COMMON /CLASS1/ DELT,TFREZ
-      COMMON /CLASS2/ GRAV,SBC
-      COMMON /CLASS3/ TCSAND,TCCLAY,TCOM,TCDRYS,&
-                     RHOSOL,RHOOM
-      COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,&
-                     SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,&
-                     TCGLAC,CLHMLT,CLHVAP
-      COMMON /CLASS6/ PI,ZOLNG,ZOLNS,ZOLNI
+        COMMON /CLASS2/ RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN
+        COMMON /CLASS3/ TCW,TCICE,TCSAND,TCCLAY,TCOM,TCDRYS,&
+        &                RHOSOL,RHOOM
+        COMMON /CLASS4/ HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,HCPCLY,&
+        &                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,&
+        &                TCGLAC,CLHMLT,CLHVAP
+        COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
+        COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG
+        COMMON /CLASS7/ CANEXT,XLEAF
         COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
         COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
         COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
+
         !
         !===================== CTEM ==============================================\
 
@@ -2144,8 +2219,11 @@ contains
         rsfile            => c_switch%rsfile
         lnduseon          => c_switch%lnduseon
         co2on             => c_switch%co2on
+        setco2conc        => c_switch%setco2conc
         ch4on             => c_switch%ch4on
+        setch4conc        => c_switch%setch4conc
         popdon            => c_switch%popdon
+        popcycleyr        => c_switch%popcycleyr
         inibioclim        => c_switch%inibioclim
         leap              => c_switch%leap         
         dowetlands        => c_switch%dowetlands
@@ -2155,6 +2233,35 @@ contains
         met_file          => c_switch%met_file
         init_file         => c_switch%init_file
         runparams_file    => c_switch%runparams_file
+        jhhstd            => c_switch%jhhstd
+        jhhendd           => c_switch%jhhendd
+        jdstd             => c_switch%jdstd
+        jdendd            => c_switch%jdendd
+        jhhsty            => c_switch%jhhsty
+        jhhendy           => c_switch%jhhendy
+        jdsty             => c_switch%jdsty
+        jdendy            => c_switch%jdendy
+        jmosty            => c_switch%jmosty
+        ctemloop          => c_switch%ctemloop
+        nummetcylyrs      => c_switch%nummetcylyrs
+        ncyear            => c_switch%ncyear
+        spinfast          => c_switch%spinfast
+        trans_startyr     => c_switch%trans_startyr
+        IDISP             => c_switch%IDISP
+        IZREF             => c_switch%IZREF
+        ISLFD             => c_switch%ISLFD
+        IPCP              => c_switch%IPCP
+        ITC               => c_switch%ITC
+        ITCG              => c_switch%ITCG
+        ITG               => c_switch%ITG
+        IWF               => c_switch%IWF
+        IPAI              => c_switch%IPAI
+        IHGT              => c_switch%IHGT
+        IALC              => c_switch%IALC
+        IALS              => c_switch%IALS
+        IALG              => c_switch%IALG
+        isnoalb           => c_switch%isnoalb
+        metcylyrst        => c_switch%metcylyrst
 
         tcanrs            => vrot%tcanrs
         tsnors            => vrot%tsnors
@@ -2318,7 +2425,6 @@ contains
 
         pftexistrow       => vrot%pftexist
         colddaysrow       => vrot%colddays
-        icountrow         => vrot%icount
         lfstatusrow       => vrot%lfstatus
         pandaysrow        => vrot%pandays
         stdalnrow         => vrot%stdaln
@@ -2531,29 +2637,29 @@ contains
 
         pftexistgat       => vgat%pftexist
         colddaysgat       => vgat%colddays
-        icountgat         => vgat%icount
         lfstatusgat       => vgat%lfstatus
         pandaysgat        => vgat%pandays
         stdalngat         => vgat%stdaln
 
-      ipeatlandgat     => vgat%ipeatland
-      anmossgat        => vgat%anmoss
-      rmlmossgat       => vgat%rmlmoss
-      gppmossgat       => vgat%gppmoss
-      nppmossgat       => vgat%nppmoss
-      armossgat        => vgat%armoss
-      litrmsmossgat    => vgat%litrmsmoss
-      Cmossmasgat      => vgat%Cmossmas
-      dmossgat         => vgat%dmoss
-      pddgat           => vgat%pdd
-      ancsmoss         => vgat%ancsmoss
-      angsmoss         => vgat%angsmoss
-      ancmoss          => vgat%ancmoss
-      angmoss          => vgat%angmoss
-      rmlcsmoss        => vgat%rmlcsmoss
-      rmlgsmoss        => vgat%rmlgsmoss
-      rmlcmoss         => vgat%rmlcmoss
-      rmlgmoss         => vgat%rmlgmoss
+        ipeatlandgat     => vgat%ipeatland
+        anmossgat        => vgat%anmoss
+        rmlmossgat       => vgat%rmlmoss
+        gppmossgat       => vgat%gppmoss
+        nppmossgat       => vgat%nppmoss
+        armossgat        => vgat%armoss
+        litrmsmossgat    => vgat%litrmsmoss
+        Cmossmasgat      => vgat%Cmossmas
+        dmossgat         => vgat%dmoss
+        pddgat           => vgat%pdd
+        ancsmoss         => vgat%ancsmoss
+        angsmoss         => vgat%angsmoss
+        ancmoss          => vgat%ancmoss
+        angmoss          => vgat%angmoss
+        rmlcsmoss        => vgat%rmlcsmoss
+        rmlgsmoss        => vgat%rmlgsmoss
+        rmlcmoss         => vgat%rmlcmoss
+        rmlgmoss         => vgat%rmlgmoss
+
         ! Mosaic-level (CLASS vars):
 
         PREACC_M          => vrot%PREACC_M
@@ -2690,14 +2796,15 @@ contains
         ancgvgac_t        => ctem_tile%ancgvgac_t
         rmlcsvga_t        => ctem_tile%rmlcsvga_t
         rmlcgvga_t        => ctem_tile%rmlcgvga_t
-      anmossac_t        => ctem_tile%anmossac_t
-      rmlmossac_t       => ctem_tile%rmlmossac_t
-      gppmossac_t       => ctem_tile%gppmossac_t
+        anmossac_t        => ctem_tile%anmossac_t
+        rmlmossac_t       => ctem_tile%rmlmossac_t
+        gppmossac_t       => ctem_tile%gppmossac_t
+
+        !    =================================================================================
 
         nltest = nlat
         nmtest = nmos
-        !    =================================================================================
-        !    =================================================================================
+        NTLD=NMOS
 
         ! Put the lat and long arguments that were passed from the main
         ! program into the row structure.
@@ -2712,7 +2819,7 @@ contains
         call readin_params(runparams_file,compete)
 
         ! Allocate the local variables that rely on nlat, ilg, etc.
-        allocate(&
+        allocate(&  !FLAG move these into external data structures!
             altotcount_ctm(nlat),&
             todfrac(ilg,icc),&
             barf(nlat,nmos),&
@@ -2733,23 +2840,12 @@ contains
             xdiffusgat(ilg),& ! the corresponding ROW is CLASS's XDIFFUS
             faregat(ilg),&    ! the ROT is FAREROT
             FTABLE(nlat,nmos),&
-            ACTLYR(nlat,nmos))
+            ACTLYR(nlat,nmos),&
+            icountrow(nlat,nmos))
 
-        !>    Read in the initial model conditions from the restart file
-        !!    (replacing the INI and CTM files).
-        call read_initialstate()
+        call initrowvars()
+        call resetclassaccum(nlat,nmos)
 
-        ! #ED - ignore after this.
-        !>     Open the met netcdf file. This also sets up the run boundaries
-        !!     based on the metadata in the netcdf. It is important to ensure the
-        !!     netcdf is of the same dimensions as the intended output files.
-        !!     Based upon the bounds used to call the model, this will figure out how
-        !!     big the NLAT vector is.
-        !      call openmet()
-        !      write(*,*)'done openmet'
-
-        !call readin_met(1,dlatgat,dlongat)
-        !
         !     checking the time spent for running model
         !
         !      call idate(today)
@@ -2760,14 +2856,12 @@ contains
         !
         !     INITIALIZATION FOR COUPLING CLASS AND CTEM
         !
-        call initrowvars()
-       call resetclassaccum(nlat,nmos)
 
         IMONTH = 0
         lopcount = 1   ! initialize loop count to 1.
         ZDMROW(1)=10.0
         ZDHROW(1)=2.0
-        NTLD=NMOS
+
         CUMSNO = 0.0
 
         do 11 i=1,nlat
@@ -2824,6 +2918,17 @@ contains
 
         open(unit=12,file='test.MET',&
             &      status='old')
+
+        !>     Open the met netcdf file. This also sets up the run boundaries
+        !!     based on the metadata in the netcdf. It is important to ensure the
+        !!     netcdf is of the same dimensions as the intended output files.
+        !!     Based upon the bounds used to call the model, this will figure out how
+        !!     big the NLAT vector is.
+        !      call openmet()
+        !      write(*,*)'done openmet'
+
+        !call readin_met(1,dlatgat,dlongat)
+        !
 
         !     luc file is opened in initialize_luc subroutine
 
@@ -3107,8 +3212,9 @@ contains
 
         ENDIF !IF NOT PARALLELRUN
 
-
-      call resetclassaccum(nltest,nmtest)
+        !>    Read in the initial model conditions from the restart file
+        !!    (replacing the INI and CTM files).
+        call read_initialstate()
 
         !     Complete some initial set up work:
 
@@ -3280,6 +3386,7 @@ contains
             ! initialization file. this is to divide needle leaf and broad leaf
             ! into dcd and evg, and crops and grasses into c3 and c4.
 
+            icountrow=0
             do 113 j = 1, ican
                 do 114 i=1,nltest
                     do 114 m=1,nmtest
@@ -3690,7 +3797,7 @@ contains
                     end if
                 endif   ! lopcount .gt. 1
 
-                !         write(*,*)'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
+                !print*,'year=',iyear,'day=',iday,' hour=',ihour,' min=',imin
 
                 FSVHROW(I)=0.5*FSSROW(I)
                 FSIHROW(I)=0.5*FSSROW(I)
@@ -3785,7 +3892,7 @@ contains
                 !         If co2on is true, read co2concin from input datafile and
                 !         overwrite co2concrow, otherwise set to constant value.
                 !         Same applies to CH4.
-
+                co2yr =-9999
                 if(co2on .or. ch4on) then
                     if (transient_run) then
                         testyr = iyear
@@ -3874,7 +3981,7 @@ contains
                         NML,NMW,GCROW,FAREROT,MIDROT,&
                         NLAT,NMOS,ILG,1,NLTEST,NMTEST)
 
-      CALL CLASSG (TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT,&
+            CALL CLASSG (TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT,&
                   TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT,&
                   TCANGAT,RCANGAT,SCANGAT,GROGAT, CMAIGAT,&
                   FCANGAT,LNZ0GAT,ALVCGAT,ALICGAT,PAMXGAT,&
@@ -4005,107 +4112,107 @@ contains
             !========================================================================
             !
             CALL CLASSZ (0,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP,&
-                &             WTVSTP, WTSSTP, WTGSTP,&
-                &             FSGVGAT,FLGVGAT,HFSCGAT,HEVCGAT,HMFCGAT,HTCCGAT,&
-                &             FSGSGAT,FLGSGAT,HFSSGAT,HEVSGAT,HMFNGAT,HTCSGAT,&
-                &             FSGGGAT,FLGGGAT,HFSGGAT,HEVGGAT,HMFGGAT,HTCGAT,&
-                &             PCFCGAT,PCLCGAT,QFCFGAT,QFCLGAT,ROFCGAT,WTRCGAT,&
-                &             PCPNGAT,QFNGAT, ROFNGAT,WTRSGAT,PCPGGAT,QFGGAT,&
-                &             QFCGAT, ROFGAT, WTRGGAT,CMAIGAT,RCANGAT,SCANGAT,&
-                &             TCANGAT,SNOGAT, WSNOGAT,TSNOGAT,THLQGAT,THICGAT,&
-                &             HCPSGAT,THPGAT, DLZWGAT,TBARGAT,ZPNDGAT,TPNDGAT,&
-                &             DELZ,   FCS,    FGS,    FC,     FG,&
-                &             1,      NML,    ILG,    IGND,   N    )
+                    WTVSTP, WTSSTP, WTGSTP,&
+                    FSGVGAT,FLGVGAT,HFSCGAT,HEVCGAT,HMFCGAT,HTCCGAT,&
+                    FSGSGAT,FLGSGAT,HFSSGAT,HEVSGAT,HMFNGAT,HTCSGAT,&
+                    FSGGGAT,FLGGGAT,HFSGGAT,HEVGGAT,HMFGGAT,HTCGAT,&
+                    PCFCGAT,PCLCGAT,QFCFGAT,QFCLGAT,ROFCGAT,WTRCGAT,&
+                    PCPNGAT,QFNGAT, ROFNGAT,WTRSGAT,PCPGGAT,QFGGAT,&
+                    QFCGAT, ROFGAT, WTRGGAT,CMAIGAT,RCANGAT,SCANGAT,&
+                    TCANGAT,SNOGAT, WSNOGAT,TSNOGAT,THLQGAT,THICGAT,&
+                    HCPSGAT,THPGAT, DLZWGAT,TBARGAT,ZPNDGAT,TPNDGAT,&
+                    DELZ,   FCS,    FGS,    FC,     FG,&
+                    1,      NML,    ILG,    IGND,   N    )
 
             call ctemg2(fcancmxgat,rmatcgat,zolncgat,paicgat,&
-                &      ailcgat,     ailcggat,    cmasvegcgat,  slaicgat,&
-                &      ailcgsgat,   fcancsgat,   fcancgat,     rmatctemgat,&
-                &      co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat,&
-                &      co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat,&
-                &      cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,&
-                &      rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
-                &      sandgat,     claygat,     orgmgat,&
-                &      anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,&
-                &      uvaccgat_t,  vvaccgat_t,  mlightnggat,  prbfrhucgat,&
-                &      extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,&
-                &      stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
-                &      bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,&
-                &      pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,&
-                &      lyrotmasgat, tymaxlaigat, vgbiomasgat,  gavgltmsgat,&
-                &      stmhrlosgat, bmasveggat,  colddaysgat,  rothrlosgat,&
-                &      alvsctmgat,  alirctmgat,  gavglaigat,   nppgat,&
-                &      nepgat,      hetroresgat, autoresgat,   soilcrespgat,&
-                &      rmgat,       rggat,       nbpgat,       litresgat,&
-                &      socresgat,   gppgat,      dstcemlsgat,  litrfallgat,&
-                &      humiftrsgat, veghghtgat,  rootdpthgat,  rmlgat,&
-                &      rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,&
-                &      tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,&
-                &      afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,&
-                &      burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,&
-                &      lucsocingat, nppveggat,   dstcemls3gat, popdingat,&
-                &      faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,&
-                &      rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,&
-                &      gppveggat,   nepveggat,   ailcmingat,   ailcmaxgat,&
-                &      emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,&
-                &      emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,&
-                &      emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,&
-                &      btermgat,     ltermgat,   mtermgat, daylgat,dayl_maxgat,&
-                &      nbpveggat,    hetroresveggat, autoresveggat,litresveggat,&
-                &      soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,&
-                &      ch4wet1gat, ch4wet2gat,  slopefracgat, wetfrac_mongat,&
-                &      wetfdyngat, ch4dyn1gat,  ch4dyn2gat, ch4soillsgat,&
-                &      twarmmgat,    tcoldmgat,     gdd5gat,&
-                &      ariditygat, srplsmongat,  defctmongat, anndefctgat,&
-                &      annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
-                        anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,&
-                        litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,& !thlqaccgat_m,&
-                            ipeatlandgat,pddgat,&
-            !          thicaccgat_m,ipeatlandgat,pddgat,& this line commented out.
-                &      ilmos,       jlmos,       iwmos,        jwmos,&
-                &      nml,      fcancmxrow,  rmatcrow,    zolncrow,  paicrow,&
-                &      ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,&
-                &      ailcgsrow,   fcancsrow,   fcancrow,     rmatctemrow,&
-                &      co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,&
-                &      co2i2csrow,  xdiffus,     slairow,      cfluxcgrow,&
-                &      cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,&
-                &      rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
-                &      SANDROT,     CLAYROT,     ORGMROT,&
-                &      anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,&
-                &      uvaccrow_m,  vvaccrow_m,  mlightngrow,  prbfrhucrow,&
-                &      extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,&
-                &      stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
-                &      bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,&
-                &      pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,&
-                &      lyrotmasrow, tymaxlairow, vgbiomasrow,  gavgltmsrow,&
-                &      stmhrlosrow, bmasvegrow,  colddaysrow,  rothrlosrow,&
-                &      alvsctmrow,  alirctmrow,  gavglairow,   npprow,&
-                &      neprow,      hetroresrow, autoresrow,   soilcresprow,&
-                &      rmrow,       rgrow,       nbprow,       litresrow,&
-                &      socresrow,   gpprow,      dstcemlsrow,  litrfallrow,&
-                &      humiftrsrow, veghghtrow,  rootdpthrow,  rmlrow,&
-                &      rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,&
-                &      tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,&
-                &      afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,&
-                &      burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,&
-                &      lucsocinrow, nppvegrow,   dstcemls3row, popdinrow,&
-                &      FAREROT,     gavgscmsrow, rmlvegaccrow, pftexistrow,&
-                &      rmsvegrow,   rmrvegrow,   rgvegrow,    vgbiomas_vegrow,&
-                &      gppvegrow,   nepvegrow,   ailcminrow,   ailcmaxrow,&
-                &      emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,&
-                &      emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,&
-                &      emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,&
-                &      btermrow,     ltermrow,   mtermrow, daylrow, dayl_maxrow,&
-                &      nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,&
-                &      soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,&
-                &      ch4wet1row, ch4wet2row,  slopefracrow, wetfrac_monrow,&
-                &      wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,&
-                &      twarmmrow,    tcoldmrow,     gdd5row,&
-                &      aridityrow, srplsmonrow,  defctmonrow, anndefctrow,&
-                &      annsrplsrow,   annpcprow,  dry_season_lengthrow,&
-                        anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,&
-                            litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,&
-                        ipeatlandrow,pddrow)
-                !    5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow) this line commented out.
+                    ailcgat,     ailcggat,    cmasvegcgat,  slaicgat,&
+                    ailcgsgat,   fcancsgat,   fcancgat,     rmatctemgat,&
+                    co2concgat,  co2i1cggat,  co2i1csgat,   co2i2cggat,&
+                    co2i2csgat,  xdiffusgat,  slaigat,      cfluxcggat,&
+                    cfluxcsgat,  ancsveggat,  ancgveggat,   rmlcsveggat,&
+                    rmlcgveggat, canresgat,   sdepgat,      ch4concgat,&
+                    sandgat,     claygat,     orgmgat,&
+                    anveggat,    rmlveggat,   tcanoaccgat_t,tbaraccgat_t,&
+                    uvaccgat_t,  vvaccgat_t,  mlightnggat,  prbfrhucgat,&
+                    extnprobgat, stdalngat,   pfcancmxgat,  nfcancmxgat,&
+                    stemmassgat, rootmassgat, litrmassgat,  gleafmasgat,&
+                    bleafmasgat, soilcmasgat, ailcbgat,     flhrlossgat,&
+                    pandaysgat,  lfstatusgat, grwtheffgat,  lystmmasgat,&
+                    lyrotmasgat, tymaxlaigat, vgbiomasgat,  gavgltmsgat,&
+                    stmhrlosgat, bmasveggat,  colddaysgat,  rothrlosgat,&
+                    alvsctmgat,  alirctmgat,  gavglaigat,   nppgat,&
+                    nepgat,      hetroresgat, autoresgat,   soilcrespgat,&
+                    rmgat,       rggat,       nbpgat,       litresgat,&
+                    socresgat,   gppgat,      dstcemlsgat,  litrfallgat,&
+                    humiftrsgat, veghghtgat,  rootdpthgat,  rmlgat,&
+                    rmsgat,      rmrgat,      tltrleafgat,  tltrstemgat,&
+                    tltrrootgat, leaflitrgat, roottempgat,  afrleafgat,&
+                    afrstemgat,  afrrootgat,  wtstatusgat,  ltstatusgat,&
+                    burnfracgat, smfuncveggat, lucemcomgat,  lucltringat,&
+                    lucsocingat, nppveggat,   dstcemls3gat, popdingat,&
+                    faregat,     gavgscmsgat, rmlvegaccgat, pftexistgat,&
+                    rmsveggat,   rmrveggat,   rgveggat,    vgbiomas_veggat,&
+                    gppveggat,   nepveggat,   ailcmingat,   ailcmaxgat,&
+                    emit_co2gat,  emit_cogat, emit_ch4gat,  emit_nmhcgat,&
+                    emit_h2gat,   emit_noxgat,emit_n2ogat,  emit_pm25gat,&
+                    emit_tpmgat,  emit_tcgat, emit_ocgat,   emit_bcgat,&
+                    btermgat,     ltermgat,   mtermgat, daylgat,dayl_maxgat,&
+                    nbpveggat,    hetroresveggat, autoresveggat,litresveggat,&
+                    soilcresveggat, burnvegfgat, pstemmassgat, pgleafmassgat,&
+                    ch4wet1gat, ch4wet2gat,  slopefracgat, wetfrac_mongat,&
+                    wetfdyngat, ch4dyn1gat,  ch4dyn2gat, ch4soillsgat,&
+                    twarmmgat,    tcoldmgat,     gdd5gat,&
+                    ariditygat, srplsmongat,  defctmongat, anndefctgat,&
+                    annsrplsgat,   annpcpgat,  dry_season_lengthgat,&
+                    anmossgat,rmlmossgat,gppmossgat,armossgat,nppmossgat,&
+                    litrmsmossgat,peatdepgat,Cmossmasgat,dmossgat,& !thlqaccgat_m,&
+                    ipeatlandgat,pddgat,&
+        !          thicaccgat_m,ipeatlandgat,pddgat,& this line commented out.
+                    ilmos,       jlmos,       iwmos,        jwmos,&
+                    nml,      fcancmxrow,  rmatcrow,    zolncrow,  paicrow,&
+                    ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,&
+                    ailcgsrow,   fcancsrow,   fcancrow,     rmatctemrow,&
+                    co2concrow,  co2i1cgrow,  co2i1csrow,   co2i2cgrow,&
+                    co2i2csrow,  xdiffus,     slairow,      cfluxcgrow,&
+                    cfluxcsrow,  ancsvegrow,  ancgvegrow,   rmlcsvegrow,&
+                    rmlcgvegrow, canresrow,   SDEPROT,      ch4concrow,&
+                    SANDROT,     CLAYROT,     ORGMROT,&
+                    anvegrow,    rmlvegrow,   tcanoaccrow_m,tbaraccrow_m,&
+                    uvaccrow_m,  vvaccrow_m,  mlightngrow,  prbfrhucrow,&
+                    extnprobrow, stdalnrow,   pfcancmxrow,  nfcancmxrow,&
+                    stemmassrow, rootmassrow, litrmassrow,  gleafmasrow,&
+                    bleafmasrow, soilcmasrow, ailcbrow,     flhrlossrow,&
+                    pandaysrow,  lfstatusrow, grwtheffrow,  lystmmasrow,&
+                    lyrotmasrow, tymaxlairow, vgbiomasrow,  gavgltmsrow,&
+                    stmhrlosrow, bmasvegrow,  colddaysrow,  rothrlosrow,&
+                    alvsctmrow,  alirctmrow,  gavglairow,   npprow,&
+                    neprow,      hetroresrow, autoresrow,   soilcresprow,&
+                    rmrow,       rgrow,       nbprow,       litresrow,&
+                    socresrow,   gpprow,      dstcemlsrow,  litrfallrow,&
+                    humiftrsrow, veghghtrow,  rootdpthrow,  rmlrow,&
+                    rmsrow,      rmrrow,      tltrleafrow,  tltrstemrow,&
+                    tltrrootrow, leaflitrrow, roottemprow,  afrleafrow,&
+                    afrstemrow,  afrrootrow,  wtstatusrow,  ltstatusrow,&
+                    burnfracrow, smfuncvegrow, lucemcomrow,  lucltrinrow,&
+                    lucsocinrow, nppvegrow,   dstcemls3row, popdinrow,&
+                    FAREROT,     gavgscmsrow, rmlvegaccrow, pftexistrow,&
+                    rmsvegrow,   rmrvegrow,   rgvegrow,    vgbiomas_vegrow,&
+                    gppvegrow,   nepvegrow,   ailcminrow,   ailcmaxrow,&
+                    emit_co2row,  emit_corow, emit_ch4row,  emit_nmhcrow,&
+                    emit_h2row,   emit_noxrow,emit_n2orow,  emit_pm25row,&
+                    emit_tpmrow,  emit_tcrow, emit_ocrow,   emit_bcrow,&
+                    btermrow,     ltermrow,   mtermrow, daylrow, dayl_maxrow,&
+                    nbpvegrow,    hetroresvegrow, autoresvegrow,litresvegrow,&
+                    soilcresvegrow, burnvegfrow, pstemmassrow, pgleafmassrow,&
+                    ch4wet1row, ch4wet2row,  slopefracrow, wetfrac_monrow,&
+                    wetfdynrow, ch4dyn1row, ch4dyn2row, ch4soillsrow,&
+                    twarmmrow,    tcoldmrow,     gdd5row,&
+                    aridityrow, srplsmonrow,  defctmonrow, anndefctrow,&
+                    annsrplsrow,   annpcprow,  dry_season_lengthrow,&
+                    anmossrow,rmlmossrow,gppmossrow,armossrow,nppmossrow,&
+                    litrmsmossrow,peatdeprow,Cmossmasrow,dmossrow,&
+                    ipeatlandrow,pddrow)
+            !    5      thlqaccrow_m,thicaccrow_m,ipeatlandrow,pddrow) this line commented out.
 
             !-----------------------------------------------------------------------
             !* ALBEDO AND TRANSMISSIVITY CALCULATIONS; GENERAL VEGETATION
@@ -4115,38 +4222,38 @@ contains
             !     * cmasvegc, alvsctm, alirctm, ipeatlandgat in the arguments.
 
             CALL CLASSA    (FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN,&
-                     ALVSG,  ALIRG,  ALVSCS, ALIRCS, ALVSSN, ALIRSN,&
-                     ALVSGC, ALIRGC, ALVSSC, ALIRSC, TRVSCN, TRIRCN,&
-                     TRVSCS, TRIRCS, FSVF,   FSVFS,&
-                     RAICAN, RAICNS, SNOCAN, SNOCNS, FRAINC, FSNOWC,&
-                     FRAICS, FSNOCS, DISP,   DISPS,  ZOMLNC, ZOMLCS,&
-                     ZOELNC, ZOELCS, ZOMLNG, ZOMLNS, ZOELNG, ZOELNS,&
-                     CHCAP,  CHCAPS, CMASSC, CMASCS, CWLCAP, CWFCAP,&
-                     CWLCPS, CWFCPS, RC,     RCS,    RBCOEF, FROOT,&
-                     FROOTS, ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, ZSNOW,&
-                     WSNOGAT,ALVSGAT,ALIRGAT,HTCCGAT,HTCSGAT,HTCGAT,&
+                    ALVSG,  ALIRG,  ALVSCS, ALIRCS, ALVSSN, ALIRSN,&
+                    ALVSGC, ALIRGC, ALVSSC, ALIRSC, TRVSCN, TRIRCN,&
+                    TRVSCS, TRIRCS, FSVF,   FSVFS,&
+                    RAICAN, RAICNS, SNOCAN, SNOCNS, FRAINC, FSNOWC,&
+                    FRAICS, FSNOCS, DISP,   DISPS,  ZOMLNC, ZOMLCS,&
+                    ZOELNC, ZOELCS, ZOMLNG, ZOMLNS, ZOELNG, ZOELNS,&
+                    CHCAP,  CHCAPS, CMASSC, CMASCS, CWLCAP, CWFCAP,&
+                    CWLCPS, CWFCPS, RC,     RCS,    RBCOEF, FROOT,&
+                    FROOTS, ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, ZSNOW,&
+                    WSNOGAT,ALVSGAT,ALIRGAT,HTCCGAT,HTCSGAT,HTCGAT,&
                     ALTG,   ALSNO,  TRSNOWC,TRSNOWG,&
-                     WTRCGAT,WTRSGAT,WTRGGAT,CMAIGAT,FSNOGAT,&
-                     FCANGAT,LNZ0GAT,ALVCGAT,ALICGAT,PAMXGAT,PAMNGAT,&
-                     CMASGAT,ROOTGAT,RSMNGAT,QA50GAT,VPDAGAT,VPDBGAT,&
-                     PSGAGAT,PSGBGAT,PAIDGAT,HGTDGAT,ACVDGAT,ACIDGAT,&
-                     ASVDGAT,ASIDGAT,AGVDGAT,AGIDGAT,&
-                     ALGWVGAT,ALGWNGAT,ALGDVGAT,ALGDNGAT,&
-                     THLQGAT,THICGAT,TBARGAT,RCANGAT,SCANGAT,TCANGAT,&
-                     GROGAT, SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,ZBLDGAT,&
-                     Z0ORGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,&
-                     FCLOGAT,TAGAT,  VPDGAT, RHOAGAT,CSZGAT,&
-                     FSDBGAT,FSFBGAT,REFGAT, BCSNGAT,&
-                     FSVHGAT,RADJGAT,DLONGAT,RHSIGAT,DELZ,   DLZWGAT,&
-                     ZBTWGAT,THPGAT, THMGAT, PSISGAT,BIGAT,  PSIWGAT,&
-                     HCPSGAT,ISNDGAT,&
-                     FCANCMXGAT,ICC,ctem_on,RMATCGAT,ZOLNCGAT,&
-                     CMASVEGCGAT,AILCGAT,PAICGAT,L2MAX, NOL2PFTS,&
+                    WTRCGAT,WTRSGAT,WTRGGAT,CMAIGAT,FSNOGAT,&
+                    FCANGAT,LNZ0GAT,ALVCGAT,ALICGAT,PAMXGAT,PAMNGAT,&
+                    CMASGAT,ROOTGAT,RSMNGAT,QA50GAT,VPDAGAT,VPDBGAT,&
+                    PSGAGAT,PSGBGAT,PAIDGAT,HGTDGAT,ACVDGAT,ACIDGAT,&
+                    ASVDGAT,ASIDGAT,AGVDGAT,AGIDGAT,&
+                    ALGWVGAT,ALGWNGAT,ALGDVGAT,ALGDNGAT,&
+                    THLQGAT,THICGAT,TBARGAT,RCANGAT,SCANGAT,TCANGAT,&
+                    GROGAT, SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,ZBLDGAT,&
+                    Z0ORGAT,ZSNLGAT,ZPLGGAT,ZPLSGAT,&
+                    FCLOGAT,TAGAT,  VPDGAT, RHOAGAT,CSZGAT,&
+                    FSDBGAT,FSFBGAT,REFGAT, BCSNGAT,&
+                    FSVHGAT,RADJGAT,DLONGAT,RHSIGAT,DELZ,   DLZWGAT,&
+                    ZBTWGAT,THPGAT, THMGAT, PSISGAT,BIGAT,  PSIWGAT,&
+                    HCPSGAT,ISNDGAT,&
+                    FCANCMXGAT,ICC,ctem_on,RMATCGAT,ZOLNCGAT,&
+                    CMASVEGCGAT,AILCGAT,PAICGAT,L2MAX, NOL2PFTS,&
                     SLAICGAT,AILCGGAT,AILCGSGAT,FCANCGAT,FCANCSGAT,&
-                     IDAY,   ILG,    1,      NML,  NBS,&
-                     JLAT,N, ICAN,   ICAN+1, IGND,   IDISP,  IZREF,&
+                    IDAY,   ILG,    1,      NML,  NBS,&
+                    JLAT,N, ICAN,   ICAN+1, IGND,   IDISP,  IZREF,&
                     IWF,    IPAI,   IHGT,   IALC,   IALS,   IALG,&
-                     ISNOALB,alvsctmgat,alirctmgat,ipeatlandgat )
+                    ISNOALB,alvsctmgat,alirctmgat,ipeatlandgat )
 
             !-----------------------------------------------------------------------
             !          * SURFACE TEMPERATURE AND FLUX CALCULATIONS.
@@ -4194,51 +4301,50 @@ contains
 
             !-----------------------------------------------------------------------
             !          * WATER BUDGET CALCULATIONS.
-            print *,'enter classw'
             CALL CLASSW  (THLQGAT,THICGAT,TBARGAT,TCANGAT,RCANGAT,SCANGAT,&
-                       ROFGAT, TROFGAT,SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,&
-                       WSNOGAT,ZPNDGAT,TPNDGAT,GROGAT, TBASGAT,GFLXGAT,&
-                       PCFCGAT,PCLCGAT,PCPNGAT,PCPGGAT,QFCFGAT,QFCLGAT,&
-                       QFNGAT, QFGGAT, QFCGAT, HMFCGAT,HMFGGAT,HMFNGAT,&
-                       HTCCGAT,HTCSGAT,HTCGAT, ROFCGAT,ROFNGAT,ROVGGAT,&
-                       WTRSGAT,WTRGGAT,ROFOGAT,ROFSGAT,ROFBGAT,&
-                       TROOGAT,TROSGAT,TROBGAT,QFSGAT, QFXGAT, RHOAGAT,&
-                       TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,&
-                       THICEC, THICEG, HCPC,   HCPG,   RPCPGAT,TRPCGAT,&
-                       SPCPGAT,TSPCGAT,PREGAT, TAGAT,  RHSIGAT,GGEOGAT,&
-                       FC,     FG,     FCS,    FGS,    TPONDC, TPONDG,&
-                       TPNDCS, TPNDGS, EVAPC,  EVAPCG, EVAPG,  EVAPCS,&
-                       EVPCSG, EVAPGS, QFREZC, QFREZG, QMELTC, QMELTG,&
-                       RAICAN, SNOCAN, RAICNS, SNOCNS, FSVF,    FSVFS,&
-                       CWLCAP, CWFCAP, CWLCPS, CWFCPS, TCANO,&
-                       TCANS,  CHCAP,  CHCAPS, CMASSC, CMASCS, ZSNOW,&
-                       GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,&
-                       G12CS,  G12GS,  G23C,   G23G,   G23CS,  G23GS,&
-                       TSNOCS, TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS,&
-                       ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, TSFSGAT,&
-                       TCTOPC, TCBOTC, TCTOPG, TCBOTG, FROOT,   FROOTS,&
-                       THPGAT, THRGAT, THMGAT, BIGAT,  PSISGAT,GRKSGAT,&
-                       THRAGAT,THFCGAT,DRNGAT, HCPSGAT,DELZ,&
-                       DLZWGAT,ZBTWGAT,XSLPGAT,GRKFGAT,WFSFGAT,WFCIGAT,&
-                       ISNDGAT,IGDRGAT,&
-                       IWF,    ILG,    1,      NML,    N,&
-                       JLAT,   ICAN,   IGND,   IGND+1, IGND+2,&
-                       NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
+                    ROFGAT, TROFGAT,SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,&
+                    WSNOGAT,ZPNDGAT,TPNDGAT,GROGAT, TBASGAT,GFLXGAT,&
+                    PCFCGAT,PCLCGAT,PCPNGAT,PCPGGAT,QFCFGAT,QFCLGAT,&
+                    QFNGAT, QFGGAT, QFCGAT, HMFCGAT,HMFGGAT,HMFNGAT,&
+                    HTCCGAT,HTCSGAT,HTCGAT, ROFCGAT,ROFNGAT,ROVGGAT,&
+                    WTRSGAT,WTRGGAT,ROFOGAT,ROFSGAT,ROFBGAT,&
+                    TROOGAT,TROSGAT,TROBGAT,QFSGAT, QFXGAT, RHOAGAT,&
+                    TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,&
+                    THICEC, THICEG, HCPC,   HCPG,   RPCPGAT,TRPCGAT,&
+                    SPCPGAT,TSPCGAT,PREGAT, TAGAT,  RHSIGAT,GGEOGAT,&
+                    FC,     FG,     FCS,    FGS,    TPONDC, TPONDG,&
+                    TPNDCS, TPNDGS, EVAPC,  EVAPCG, EVAPG,  EVAPCS,&
+                    EVPCSG, EVAPGS, QFREZC, QFREZG, QMELTC, QMELTG,&
+                    RAICAN, SNOCAN, RAICNS, SNOCNS, FSVF,    FSVFS,&
+                    CWLCAP, CWFCAP, CWLCPS, CWFCPS, TCANO,&
+                    TCANS,  CHCAP,  CHCAPS, CMASSC, CMASCS, ZSNOW,&
+                    GZEROC, GZEROG, GZROCS, GZROGS, G12C,   G12G,&
+                    G12CS,  G12GS,  G23C,   G23G,   G23CS,  G23GS,&
+                    TSNOCS, TSNOGS, WSNOCS, WSNOGS, RHOSCS, RHOSGS,&
+                    ZPLIMC, ZPLIMG, ZPLMCS, ZPLMGS, TSFSGAT,&
+                    TCTOPC, TCBOTC, TCTOPG, TCBOTG, FROOT,   FROOTS,&
+                    THPGAT, THRGAT, THMGAT, BIGAT,  PSISGAT,GRKSGAT,&
+                    THRAGAT,THFCGAT,DRNGAT, HCPSGAT,DELZ,&
+                    DLZWGAT,ZBTWGAT,XSLPGAT,GRKFGAT,WFSFGAT,WFCIGAT,&
+                    ISNDGAT,IGDRGAT,&
+                    IWF,    ILG,    1,      NML,    N,&
+                    JLAT,   ICAN,   IGND,   IGND+1, IGND+2,&
+                    NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
 
             !========================================================================
 
             CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP,&
-                &             WTVSTP, WTSSTP, WTGSTP,&
-                &             FSGVGAT,FLGVGAT,HFSCGAT,HEVCGAT,HMFCGAT,HTCCGAT,&
-                &             FSGSGAT,FLGSGAT,HFSSGAT,HEVSGAT,HMFNGAT,HTCSGAT,&
-                &             FSGGGAT,FLGGGAT,HFSGGAT,HEVGGAT,HMFGGAT,HTCGAT,&
-                &             PCFCGAT,PCLCGAT,QFCFGAT,QFCLGAT,ROFCGAT,WTRCGAT,&
-                &             PCPNGAT,QFNGAT, ROFNGAT,WTRSGAT,PCPGGAT,QFGGAT,&
-                &             QFCGAT, ROFGAT, WTRGGAT,CMAIGAT,RCANGAT,SCANGAT,&
-                &             TCANGAT,SNOGAT, WSNOGAT,TSNOGAT,THLQGAT,THICGAT,&
-                &             HCPSGAT,THPGAT, DLZWGAT,TBARGAT,ZPNDGAT,TPNDGAT,&
-                &             DELZ,   FCS,    FGS,    FC,     FG,&
-                &             1,      NML,    ILG,    IGND,   N    )
+                    WTVSTP, WTSSTP, WTGSTP,&
+                    FSGVGAT,FLGVGAT,HFSCGAT,HEVCGAT,HMFCGAT,HTCCGAT,&
+                    FSGSGAT,FLGSGAT,HFSSGAT,HEVSGAT,HMFNGAT,HTCSGAT,&
+                    FSGGGAT,FLGGGAT,HFSGGAT,HEVGGAT,HMFGGAT,HTCGAT,&
+                    PCFCGAT,PCLCGAT,QFCFGAT,QFCLGAT,ROFCGAT,WTRCGAT,&
+                    PCPNGAT,QFNGAT, ROFNGAT,WTRSGAT,PCPGGAT,QFGGAT,&
+                    QFCGAT, ROFGAT, WTRGGAT,CMAIGAT,RCANGAT,SCANGAT,&
+                    TCANGAT,SNOGAT, WSNOGAT,TSNOGAT,THLQGAT,THICGAT,&
+                    HCPSGAT,THPGAT, DLZWGAT,TBARGAT,ZPNDGAT,TPNDGAT,&
+                    DELZ,   FCS,    FGS,    FC,     FG,&
+                    1,      NML,    ILG,    IGND,   N    )
 
             !
             !     accumulate variables not already accumulated but which are required by
@@ -5742,80 +5848,81 @@ contains
 
                 WRITE(*,*)& !'(6A,5I,13A,5I,9A,5I,6A,5I)')&
                     'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR,'CO2YEAR =',co2yr,'LUCYR=',lucyr
+                call write_restart()
 
-                IF (RSFILE) THEN
-                    !       WRITE .INI_RS FOR CLASS RESTART DATA
-
-                    OPEN(UNIT=100,FILE='test.INI_RS')
-
-                    WRITE(100,5010) 'test'
-                    WRITE(100,5010) 'test'
-                    WRITE(100,5010) 'test'
-!                                                WRITE(100,5020)DLATROW(1),DEGLON,ZRFMROW(1),ZRFHROW(1),&
-!                                                    &                 ZBLDROW(1),GCROW(1),NLTEST,NMTEST
-                    DO I=1,NLTEST
-                        DO M=1,NMTEST
-
-                            !         IF START_BARE (SO EITHER COMPETE OR LNDUSEON), THEN WE NEED TO CREATE
-                            !         THE FCANROT FOR THE RS FILE.
-                            IF (START_BARE .AND. onetile_perPFT) THEN
-                                IF (M .LE. 2) THEN                     !NDL
-                                    FCANROT(I,M,1)=1.0
-                                ELSEIF (M .GE. 3 .AND. M .LE. 5) THEN  !BDL
-                                    FCANROT(I,M,2)=1.0
-                                ELSEIF (M .EQ. 6 .OR. M .EQ. 7) THEN  !CROP
-                                    FCANROT(I,M,3)=1.0
-                                ELSEIF (M .EQ. 8 .OR. M .EQ. 9) THEN  !GRASSES
-                                    FCANROT(I,M,4)=1.0
-                                ELSE                                  !BARE
-                                    FCANROT(I,M,5)=1.0
-                                ENDIF
-                            ENDIF !START_BARE/onetile_perPFT
-
-                            WRITE(100,5040) (FCANROT(I,M,J),J=1,ICAN+1),(PAMXROT(I,M,J),&
-                                &                      J=1,ICAN)
-                            WRITE(100,5040) (LNZ0ROT(I,M,J),J=1,ICAN+1),(PAMNROT(I,M,J),&
-                                &                      J=1,ICAN)
-                            WRITE(100,5040) (ALVCROT(I,M,J),J=1,ICAN+1),(CMASROT(I,M,J),&
-                                &                      J=1,ICAN)
-                            WRITE(100,5040) (ALICROT(I,M,J),J=1,ICAN+1),(ROOTROT(I,M,J),&
-                                &                      J=1,ICAN)
-                            WRITE(100,5030) (RSMNROT(I,M,J),J=1,ICAN),&
-                                &                      (QA50ROT(I,M,J),J=1,ICAN)
-                            WRITE(100,5030) (VPDAROT(I,M,J),J=1,ICAN),&
-                                &                      (VPDBROT(I,M,J),J=1,ICAN)
-                            WRITE(100,5030) (PSGAROT(I,M,J),J=1,ICAN),&
-                                &                      (PSGBROT(I,M,J),J=1,ICAN)
-                            WRITE(100,5040) DRNROT(I,M),SDEPROT(I,M),FAREROT(I,M)
-                            WRITE(100,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),&
-                                            WFCIROT(I,M),MIDROT(I,M),SOCIROT(I,M)
-                            DO J=1,IGND
-                                WRITE(100,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),&
-                                    &         CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J)-273.16,&
-                                    &         THLQROT(I,M,J),THICROT(I,M,J)
-                            END DO
-                            !           Temperatures are in degree C
-                            IF (TCANROT(I,M).NE.0.0) TCANRS(I,M)=TCANROT(I,M)-273.16
-                            IF (TSNOROT(I,M).NE.0.0) TSNORS(I,M)=TSNOROT(I,M)-273.16
-                            IF (TPNDROT(I,M).NE.0.0) TPNDRS(I,M)=TPNDROT(I,M)-273.16
-                            WRITE(100,5050)TCANRS(I,M),TSNORS(I,M),TPNDRS(I,M),&
-                                &         ZPNDROT(I,M)
-                            WRITE(100,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),&
-                                &                      ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
-                        ENDDO
-                    ENDDO
-
-                    WRITE(100,5200) JHHSTD,JHHENDD,JDSTD,JDENDD
-                    WRITE(100,5200) JHHSTY,JHHENDY,JDSTY,JDENDY
-                    CLOSE(100)
-
-                    ! write .CTM_RS for ctem restart data
-
-                    if (ctem_on) then
-                        call write_ctm_rs(nltest,nmtest,FCANROT)
-                    endif
-                endif ! if iday=365/366
-            endif ! if generate restart files
+!                 IF (RSFILE) THEN
+!                     !       WRITE .INI_RS FOR CLASS RESTART DATA
+!
+!                     OPEN(UNIT=100,FILE='test.INI_RS')
+!
+!                     WRITE(100,5010) 'test'
+!                     WRITE(100,5010) 'test'
+!                     WRITE(100,5010) 'test'
+! !                                                WRITE(100,5020)DLATROW(1),DEGLON,ZRFMROW(1),ZRFHROW(1),&
+! !                                                    &                 ZBLDROW(1),GCROW(1),NLTEST,NMTEST
+!                     DO I=1,NLTEST
+!                         DO M=1,NMTEST
+!
+!                             !         IF START_BARE (SO EITHER COMPETE OR LNDUSEON), THEN WE NEED TO CREATE
+!                             !         THE FCANROT FOR THE RS FILE.
+!                             IF (START_BARE .AND. onetile_perPFT) THEN
+!                                 IF (M .LE. 2) THEN                     !NDL
+!                                     FCANROT(I,M,1)=1.0
+!                                 ELSEIF (M .GE. 3 .AND. M .LE. 5) THEN  !BDL
+!                                     FCANROT(I,M,2)=1.0
+!                                 ELSEIF (M .EQ. 6 .OR. M .EQ. 7) THEN  !CROP
+!                                     FCANROT(I,M,3)=1.0
+!                                 ELSEIF (M .EQ. 8 .OR. M .EQ. 9) THEN  !GRASSES
+!                                     FCANROT(I,M,4)=1.0
+!                                 ELSE                                  !BARE
+!                                     FCANROT(I,M,5)=1.0
+!                                 ENDIF
+!                             ENDIF !START_BARE/onetile_perPFT
+!
+!                             WRITE(100,5040) (FCANROT(I,M,J),J=1,ICAN+1),(PAMXROT(I,M,J),&
+!                                 &                      J=1,ICAN)
+!                             WRITE(100,5040) (LNZ0ROT(I,M,J),J=1,ICAN+1),(PAMNROT(I,M,J),&
+!                                 &                      J=1,ICAN)
+!                             WRITE(100,5040) (ALVCROT(I,M,J),J=1,ICAN+1),(CMASROT(I,M,J),&
+!                                 &                      J=1,ICAN)
+!                             WRITE(100,5040) (ALICROT(I,M,J),J=1,ICAN+1),(ROOTROT(I,M,J),&
+!                                 &                      J=1,ICAN)
+!                             WRITE(100,5030) (RSMNROT(I,M,J),J=1,ICAN),&
+!                                 &                      (QA50ROT(I,M,J),J=1,ICAN)
+!                             WRITE(100,5030) (VPDAROT(I,M,J),J=1,ICAN),&
+!                                 &                      (VPDBROT(I,M,J),J=1,ICAN)
+!                             WRITE(100,5030) (PSGAROT(I,M,J),J=1,ICAN),&
+!                                 &                      (PSGBROT(I,M,J),J=1,ICAN)
+!                             WRITE(100,5040) DRNROT(I,M),SDEPROT(I,M),FAREROT(I,M)
+!                             WRITE(100,5090) XSLPROT(I,M),GRKFROT(I,M),WFSFROT(I,M),&
+!                                             WFCIROT(I,M),MIDROT(I,M),SOCIROT(I,M)
+!                             DO J=1,IGND
+!                                 WRITE(100,5080) ZBOT(J),DELZ(J),SANDROT(I,M,J),&
+!                                     &         CLAYROT(I,M,J),ORGMROT(I,M,J),TBARROT(I,M,J)-273.16,&
+!                                     &         THLQROT(I,M,J),THICROT(I,M,J)
+!                             END DO
+!                             !           Temperatures are in degree C
+!                             IF (TCANROT(I,M).NE.0.0) TCANRS(I,M)=TCANROT(I,M)-273.16
+!                             IF (TSNOROT(I,M).NE.0.0) TSNORS(I,M)=TSNOROT(I,M)-273.16
+!                             IF (TPNDROT(I,M).NE.0.0) TPNDRS(I,M)=TPNDROT(I,M)-273.16
+!                             WRITE(100,5050)TCANRS(I,M),TSNORS(I,M),TPNDRS(I,M),&
+!                                 &         ZPNDROT(I,M)
+!                             WRITE(100,5070) RCANROT(I,M),SCANROT(I,M),SNOROT(I,M),&
+!                                 &                      ALBSROT(I,M),RHOSROT(I,M),GROROT(I,M)
+!                         ENDDO
+!                     ENDDO
+!
+!                     WRITE(100,5200) JHHSTD,JHHENDD,JDSTD,JDENDD
+!                     WRITE(100,5200) JHHSTY,JHHENDY,JDSTY,JDENDY
+!                     CLOSE(100)
+!
+!                     ! write .CTM_RS for ctem restart data
+!
+!                     if (ctem_on) then
+!                         call write_ctm_rs(nltest,nmtest,FCANROT)
+!                     endif
+                 endif ! if iday=365/366
+!             endif ! if generate restart files
                                         !
 7011  format(12f8.2)     !YW April 14, 2015
 7012  format(12i8)        !FLAG, needed?
