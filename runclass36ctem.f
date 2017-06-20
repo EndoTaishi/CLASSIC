@@ -372,7 +372,7 @@ C
       REAL,DIMENSION(ILG)            :: ALGDVGAT !<
       REAL,DIMENSION(ILG)            :: ALGDNGAT !<
       REAL,DIMENSION(ILG)            :: EMISGAT  !<
-      REAL SOCIROT(NLAT,NMOS)                    !<
+      integer SOCIROT(NLAT,NMOS)                    !<
 C
       REAL,DIMENSION(ILG,NBS) :: FSDBGAT !<
       REAL,DIMENSION(ILG,NBS) :: FSFBGAT !<
