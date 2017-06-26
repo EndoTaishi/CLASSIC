@@ -49,7 +49,7 @@ program CLASSIC
     print *,longitude,latitude
 
     !> Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
-    !! CTEM variable structures. This has to be done outside of CLASSIC_driver.
+    !! CTEM variable structures. This has to be done before call to main_driver.
     call alloc_class_vars()
     call alloc_ctem_vars()
 

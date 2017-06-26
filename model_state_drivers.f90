@@ -133,7 +133,8 @@ contains
 
         !> Lastly, open the restart file so it is ready to be written to.
 
-        call check_nc(nf90_open(trim(rs_file_to_overwrite),nf90_share,rsid))
+        !call check_nc(nf90_open(trim(rs_file_to_overwrite),nf90_share,rsid)) !I don't know why but share doesn't work on vic servers... JM
+        call check_nc(nf90_open(trim(rs_file_to_overwrite),nf90_write,rsid))
 
     end subroutine read_modelsetup
 
@@ -902,7 +903,12 @@ contains
 
         end if !ctem_on
 
+    ! We are done with the file so close it:
+    call check_nc(nf90_close(initid))
+
     end subroutine read_initialstate
+
+    !---------------------------------------------------------------------------------------------
 
     subroutine write_restart()
 
@@ -915,9 +921,9 @@ contains
         use netcdf
         use netcdf_drivers, only : check_nc
         use io_driver, only : rsid,cntx,cnty,srtx,srty
-        use ctem_statevars,     only : c_switch,vrot,vgat
-        use class_statevars,    only : class_rot,class_gat
-        use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,l2max,modelpft
+        use ctem_statevars,     only : c_switch,vrot
+        use class_statevars,    only : class_rot
+        use ctem_params,        only : icc,iccp1,nmos,ignd,icp1,nlat,ican,l2max,modelpft
 
         implicit none
 
@@ -939,13 +945,8 @@ contains
         real, pointer, dimension(:,:)   :: GROROT
 
         logical, pointer :: ctem_on
-        logical, pointer :: dofire
         logical, pointer :: compete
-        logical, pointer :: inibioclim
-        logical, pointer :: dowetlands
-        logical, pointer :: start_bare
         logical, pointer :: lnduseon
-        logical, pointer :: obswetf
         real, pointer, dimension(:,:,:) :: ailcminrow           !
         real, pointer, dimension(:,:,:) :: ailcmaxrow           !
         real, pointer, dimension(:,:,:) :: dvdfcanrow           !
@@ -954,8 +955,6 @@ contains
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
         real, pointer, dimension(:,:,:) :: stemmassrow          !
         real, pointer, dimension(:,:,:) :: rootmassrow          !
-        real, pointer, dimension(:,:,:) :: pstemmassrow         !
-        real, pointer, dimension(:,:,:) :: pgleafmassrow        !
         real, pointer, dimension(:,:) :: twarmm            !< temperature of the warmest month (c)
         real, pointer, dimension(:,:) :: tcoldm            !< temperature of the coldest month (c)
         real, pointer, dimension(:,:) :: gdd5              !< growing degree days above 5 c
@@ -968,11 +967,8 @@ contains
         real, pointer, dimension(:,:) :: dry_season_length !< length of dry season (months)
         real, pointer, dimension(:,:,:) :: litrmassrow
         real, pointer, dimension(:,:,:) :: soilcmasrow
-        real, pointer, dimension(:,:) :: extnprob
-        real, pointer, dimension(:,:) :: prbfrhuc
         integer, pointer, dimension(:,:,:) :: lfstatusrow
         integer, pointer, dimension(:,:,:) :: pandaysrow
-        integer, pointer, dimension(:,:) :: ipeatlandrow   !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
         real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
@@ -980,26 +976,13 @@ contains
         ! local variables
 
         integer :: i,m,j,x,y,varid,k,k1c,k2c,n
-        real, dimension(ilg,2) :: crop_temp_frac
-        real, allocatable, dimension(:,:) :: temptwod
-        real, allocatable, dimension(:,:,:) :: temp3d
-        integer, allocatable, dimension(:,:,:) :: temp3di
-        real, allocatable, dimension(:,:,:,:) :: temp4d
-        integer, allocatable, dimension(:,:,:,:) :: temp4di
-
         integer, dimension(nlat,nmos) :: icountrow
         real, dimension(icc) :: rnded_pft
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
-        dofire            => c_switch%dofire
         compete           => c_switch%compete
-        inibioclim        => c_switch%inibioclim
-        dowetlands        => c_switch%dowetlands
-        start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
-        obswetf           => c_switch%obswetf
-
         ailcminrow        => vrot%ailcmin
         ailcmaxrow        => vrot%ailcmax
         dvdfcanrow        => vrot%dvdfcan
@@ -1008,8 +991,6 @@ contains
         bleafmasrow       => vrot%bleafmas
         stemmassrow       => vrot%stemmass
         rootmassrow       => vrot%rootmass
-        pstemmassrow      => vrot%pstemmass
-        pgleafmassrow     => vrot%pgleafmass
         twarmm            => vrot%twarmm
         tcoldm            => vrot%tcoldm
         gdd5              => vrot%gdd5
@@ -1022,15 +1003,11 @@ contains
         dry_season_length => vrot%dry_season_length
         litrmassrow       => vrot%litrmass
         soilcmasrow       => vrot%soilcmas
-        extnprob          => vrot%extnprob
-        prbfrhuc          => vrot%prbfrhuc
         lfstatusrow       => vrot%lfstatus
         pandaysrow        => vrot%pandays
-        ipeatlandrow      => vrot%ipeatland
         Cmossmas          => vrot%Cmossmas
         litrmsmoss        => vrot%litrmsmoss
         dmoss             => vrot%dmoss
-
         FCANROT           => class_rot%FCANROT
         FAREROT           => class_rot%FAREROT
         TBARROT           => class_rot%TBARROT
@@ -1048,119 +1025,196 @@ contains
         GROROT            => class_rot%GROROT
 
 
-!         allocate(temp3d(cntx,cnty,nmos))
-!
-!         call check_nc(nf90_inq_varid(rsid,'FARE',varid))
-!         temp3d = reshape(FAREROT,[ cntx,cnty,nmos ] )
-!         print *,temp3d, size(temp3d),srtx,srty
-!         call check_nc(nf90_put_var(rsid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
-!         print *,'pass'
-! !         call check_nc(nf90_inq_varid(initid,'FCAN',varid))
-! !         temp3d = reshape(FCANROT,[ cntx,cnty,nmos ] )
-! !         print *,FCANROT
-! !         print *,temp3d
-! !         call check_nc(nf90_put_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
-! !         allocate(temp4d(cntx,cnty,icp1,nmos))
-! !
-! !         call check_nc(nf90_inq_varid(initid,'FCAN',varid))
-! !         call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icp1,nmos]))
-! !         FCANROT = reshape(temp4d,[nlat,nmos,icp1])
-!
-!         deallocate(temp3d)
+        call check_nc(nf90_inq_varid(rsid,'FARE',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(FAREROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
 
+        call check_nc(nf90_inq_varid(rsid,'FCAN',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(FCANROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
 
-        !> if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
-        if (lnduseon .or. compete ) then
-            icountrow=0
-            do j = 1, ican
-                do i = 1,nlat
-                    do m = 1,nmos
-                        k1c = (j-1)*l2max + 1
-                        k2c = k1c + (l2max - 1)
-                        do n = k1c, k2c
-                            if (modelpft(n) .eq. 1) then
-                                icountrow(i,m) = icountrow(i,m) + 1
-                                if (FCANROT(i,m,j) .gt. 0.) then
-                                    dvdfcanrow(i,m,icountrow(i,m)) = fcancmxrow(i,m,icountrow(i,m))/FCANROT(i,m,j)
-                                else
-                                    dvdfcanrow(i,m,icountrow(i,m)) = 0.
-                                end if
-                            end if !modelpft
-                        end do !n
-                        !> check to ensure that the dvdfcanrow's add up to 1 across a class-level pft
-                        if (dvdfcanrow(i,m,1) .eq. 0. .and. dvdfcanrow(i,m,2) .eq. 0.) then
-                            dvdfcanrow(i,m,1)=1.0
-                        else if (dvdfcanrow(i,m,3) .eq. 0. .and. dvdfcanrow(i,m,4) .eq. 0. .and. dvdfcanrow(i,m,5) .eq. 0.) then
-                            dvdfcanrow(i,m,3)=1.0
-                        else if (dvdfcanrow(i,m,6) .eq. 0. .and. dvdfcanrow(i,m,7) .eq. 0.) then
-                            dvdfcanrow(i,m,6)=1.0
-                        else if (dvdfcanrow(i,m,8) .eq. 0. .and. dvdfcanrow(i,m,9) .eq. 0.) then
-                            dvdfcanrow(i,m,8)=1.0
+        call check_nc(nf90_inq_varid(rsid,'FCAN',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(FCANROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'TBAR',varid))  ! Convert to deg C
+        call check_nc(nf90_put_var(rsid,varid,reshape(TBARROT,[ cntx,cnty,ignd,nmos ] )-273.16,start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'THLQ',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(THLQROT,[ cntx,cnty,ignd,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'THIC',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(THICROT,[ cntx,cnty,ignd,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'TCAN',varid)) ! Convert to deg C
+        call check_nc(nf90_put_var(rsid,varid,reshape(TCANROT,[ cntx,cnty,nmos ] )-273.16,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'TSNO',varid)) ! Convert to deg C
+        call check_nc(nf90_put_var(rsid,varid,reshape(TSNOROT,[ cntx,cnty,nmos ] )-273.16,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'TPND',varid)) ! Convert to deg C
+        call check_nc(nf90_put_var(rsid,varid,reshape(TPNDROT,[ cntx,cnty,nmos ] )-273.16,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'ZPND',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(ZPNDROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'RCAN',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(RCANROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'SCAN',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(SCANROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'SNO',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(SNOROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'ALBS',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(ALBSROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'RHOS',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(RHOSROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        call check_nc(nf90_inq_varid(rsid,'GRO',varid))
+        call check_nc(nf90_put_var(rsid,varid,reshape(GROROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+        if (ctem_on) then
+
+            !> if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
+            if (lnduseon .or. compete ) then
+                icountrow=0
+                do j = 1, ican
+                    do i = 1,nlat
+                        do m = 1,nmos
+                            k1c = (j-1)*l2max + 1
+                            k2c = k1c + (l2max - 1)
+                            do n = k1c, k2c
+                                if (modelpft(n) .eq. 1) then
+                                    icountrow(i,m) = icountrow(i,m) + 1
+                                    if (FCANROT(i,m,j) .gt. 0.) then
+                                        dvdfcanrow(i,m,icountrow(i,m)) = fcancmxrow(i,m,icountrow(i,m))/FCANROT(i,m,j)
+                                    else
+                                        dvdfcanrow(i,m,icountrow(i,m)) = 0.
+                                    end if
+                                end if !modelpft
+                            end do !n
+                            !> check to ensure that the dvdfcanrow's add up to 1 across a class-level pft
+                            if (dvdfcanrow(i,m,1) .eq. 0. .and. dvdfcanrow(i,m,2) .eq. 0.) then
+                                dvdfcanrow(i,m,1)=1.0
+                            else if (dvdfcanrow(i,m,3) .eq. 0. .and. dvdfcanrow(i,m,4) .eq. 0. .and. dvdfcanrow(i,m,5) .eq. 0.) then
+                                dvdfcanrow(i,m,3)=1.0
+                            else if (dvdfcanrow(i,m,6) .eq. 0. .and. dvdfcanrow(i,m,7) .eq. 0.) then
+                                dvdfcanrow(i,m,6)=1.0
+                            else if (dvdfcanrow(i,m,8) .eq. 0. .and. dvdfcanrow(i,m,9) .eq. 0.) then
+                                dvdfcanrow(i,m,8)=1.0
+                            end if
+                        end do !m
+                    enddo !i
+                enddo !j
+
+                do i=1,nlat
+                    do m=1,nmos
+                        do j = 1, icc
+                            !>Lastly check if the different pfts accidently add up > 1.0 after rounding to the number of sig figs used in the output
+                            !>this rounds to 3 decimal places. if you are found to be over or under, arbitrarily reduce one of the pfts. the amount of
+                            !>the change will be inconsequential.
+                            rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 1000.0))/ 1000.0
+                            dvdfcanrow(i,m,j) = rnded_pft(j)
+                        end do
+
+                        if (dvdfcanrow(i,m,1) + dvdfcanrow(i,m,2) .ne. 1.0) then
+                            dvdfcanrow(i,m,1) = 1.0 - rnded_pft(2)
+                            dvdfcanrow(i,m,2) = rnded_pft(2)
                         end if
-                    end do !m
-                enddo !i
-            enddo !j
-
-            do i=1,nlat
-                do m=1,nmos
-                    do j = 1, icc
-                        !>Lastly check if the different pfts accidently add up > 1.0 after rounding to the number of sig figs used in the output
-                        !>this rounds to 3 decimal places. if you are found to be over or under, arbitrarily reduce one of the pfts. the amount of
-                        !>the change will be inconsequential.
-                        rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 1000.0))/ 1000.0
-                        dvdfcanrow(i,m,j) = rnded_pft(j)
-                    end do
-
-                    if (dvdfcanrow(i,m,1) + dvdfcanrow(i,m,2) .ne. 1.0) then
-                        dvdfcanrow(i,m,1) = 1.0 - rnded_pft(2)
-                        dvdfcanrow(i,m,2) = rnded_pft(2)
-                    end if
-                    if (dvdfcanrow(i,m,3) + dvdfcanrow(i,m,4) +  dvdfcanrow(i,m,5) .ne. 1.0) then
-                        dvdfcanrow(i,m,3) = 1.0 - rnded_pft(4) - rnded_pft(5)
-                        dvdfcanrow(i,m,4) = rnded_pft(4)
-                        dvdfcanrow(i,m,5) = rnded_pft(5)
-                    end if
-                    if (dvdfcanrow(i,m,6) + dvdfcanrow(i,m,7) .ne. 1.0) then
-                        dvdfcanrow(i,m,6) = 1.0 - rnded_pft(7)
-                        dvdfcanrow(i,m,7) = rnded_pft(7)
-                    end if
-                    if (dvdfcanrow(i,m,8) + dvdfcanrow(i,m,9) .ne. 1.0) then
-                        dvdfcanrow(i,m,8) = 1.0 - rnded_pft(9)
-                        dvdfcanrow(i,m,9) = rnded_pft(9)
-                    end if
+                        if (dvdfcanrow(i,m,3) + dvdfcanrow(i,m,4) +  dvdfcanrow(i,m,5) .ne. 1.0) then
+                            dvdfcanrow(i,m,3) = 1.0 - rnded_pft(4) - rnded_pft(5)
+                            dvdfcanrow(i,m,4) = rnded_pft(4)
+                            dvdfcanrow(i,m,5) = rnded_pft(5)
+                        end if
+                        if (dvdfcanrow(i,m,6) + dvdfcanrow(i,m,7) .ne. 1.0) then
+                            dvdfcanrow(i,m,6) = 1.0 - rnded_pft(7)
+                            dvdfcanrow(i,m,7) = rnded_pft(7)
+                        end if
+                        if (dvdfcanrow(i,m,8) + dvdfcanrow(i,m,9) .ne. 1.0) then
+                            dvdfcanrow(i,m,8) = 1.0 - rnded_pft(9)
+                            dvdfcanrow(i,m,9) = rnded_pft(9)
+                        end if
+                    enddo
                 enddo
-            enddo
-        end if !lnuse/compete
+            end if !lnuse/compete
 
-! do i=1,nltest
-!     do m=1,nmtest
-!         write(101,7011) (ailcminrow(i,m,j),j=1,icc)
-!         write(101,7011) (ailcmaxrow(i,m,j),j=1,icc)
-!         !write(101,'(9f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
-!         write(101,'(12f8.3)') (dvdfcanrow(i,m,j),j=1,icc)
-!         write(101,7011) (gleafmasrow(i,m,j),j=1,icc)
-!         write(101,7011) (bleafmasrow(i,m,j),j=1,icc)
-!         write(101,7011) (stemmassrow(i,m,j),j=1,icc)
-!         write(101,7011) (rootmassrow(i,m,j),j=1,icc)
-!         write(101,7013) (litrmassrow(i,m,j),j=1,iccp1)
-!         write(101,7013) (soilcmasrow(i,m,j),j=1,iccp1)
-!         write(101,7012) (lfstatusrow(i,m,j),j=1,icc)
-!         write(101,7012) (pandaysrow(i,m,j),j=1,icc)
-!
-!         write(101,7015) ipeatland(i,m),Cmossmas(i,m),litrmsmoss(i,m),dmoss(i,m) ! peatland variables
-!     end do !nmtest
-!
-!     write(101,"(6f8.3)") (mlightng(i,1,j),j=1,6)  !mean monthly lightning frequency
-!     write(101,"(6f8.3)") (mlightng(i,1,j),j=7,12) !flashes/km2.year, use the first tile since all the same.
-!     write(101,"(f8.2)") extnprob(i,1)
-!     write(101,"(f8.2)") prbfrhuc(i,1)
-!     write(101,"(i4)") stdaln(i,1)
-!
-!     if (compete) then
-!     !>We can write out the first tile value since these are the same across an entire gridcell.
-!         write(101,7014)twarmm(i,1),tcoldm(i,1),gdd5(i,1),aridity(i,1),srplsmon(i,1)
-!         write(101,7014)defctmon(i,1),anndefct(i,1),annsrpls(i,1), annpcp(i,1),dry_season_length(i,1)
-!     end if
+            call check_nc(nf90_inq_varid(rsid,'ailcmin',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(ailcminrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'ailcmax',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(ailcmaxrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'dvdfcan',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(dvdfcanrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'gleafmas',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(gleafmasrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'bleafmas',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(bleafmasrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'stemmass',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(stemmassrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'rootmass',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(bleafmasrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'litrmass',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(litrmassrow,[ cntx,cnty,iccp1,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,iccp1,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'soilcmas',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(soilcmasrow,[ cntx,cnty,iccp1,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,iccp1,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'lfstatus',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(lfstatusrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'pandays',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(pandaysrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'Cmossmas',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(Cmossmas,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'litrmsmoss',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(litrmsmoss,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+            call check_nc(nf90_inq_varid(rsid,'dmoss',varid))
+            call check_nc(nf90_put_var(rsid,varid,reshape(dmoss,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+
+            if (compete) then
+
+                call check_nc(nf90_inq_varid(rsid,'twarmm',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(twarmm,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+                call check_nc(nf90_inq_varid(rsid,'tcoldm',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(tcoldm,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+                call check_nc(nf90_inq_varid(rsid,'gdd5',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(gdd5,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+                call check_nc(nf90_inq_varid(rsid,'aridity',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(aridity,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+                call check_nc(nf90_inq_varid(rsid,'srplsmon',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(srplsmon,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+                call check_nc(nf90_inq_varid(rsid,'defctmon',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(defctmon,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+                call check_nc(nf90_inq_varid(rsid,'anndefct',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(anndefct,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+                call check_nc(nf90_inq_varid(rsid,'annsrpls',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(annsrpls,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+                call check_nc(nf90_inq_varid(rsid,'annpcp',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(annpcp,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+                call check_nc(nf90_inq_varid(rsid,'dry_season_length',varid))
+                call check_nc(nf90_put_var(rsid,varid,reshape(dry_season_length,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+
+            end if ! compete
+
+        end if !ctem_on
 
     end subroutine write_restart
 
