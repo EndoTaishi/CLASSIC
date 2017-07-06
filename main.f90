@@ -67,11 +67,11 @@ contains
 
         use class_statevars,    only : class_gat,class_rot
 
-        use io_driver,          only : read_from_ctm, create_outfiles,&
-            &                               write_ctm_rs, class_monthly_aw,&
+        use io_driver,          only : create_outfiles,class_monthly_aw,&
             &                               ctem_annual_aw,ctem_monthly_aw,&
             &                               close_outfiles,ctem_daily_aw,&
             &                               class_annual_aw,bounds
+
 
         use model_state_drivers, only : read_initialstate,write_restart
 
@@ -812,13 +812,13 @@ contains
         !     * COMMON BLOCK PARAMETERS.
         !
         REAL X1,X2,X3,X4,G,GAS,X5,X6,CPRES,GASV,X7,CPI,X8,CELZRO,X9,&
-            &     X10,X11,X12,X13,X14,X15,SIGMA,X16,DELTIM,DELT,TFREZ,&
-            &     RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,TCSAND,TCCLAY,&
-            &     TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,&
-            &     HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,&
-            &     CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,ALVSI,ALIRI,ALVSO,ALIRO,&
-            &     ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,&
-            &     ANGMAX,A,B
+        X10,X11,X12,X13,X14,X15,SIGMA,X16,DELTIM,DELT,TFREZ,&
+        RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,TCSAND,TCCLAY,&
+        TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,&
+        HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,&
+        CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,ALVSI,ALIRI,ALVSO,ALIRO,&
+        ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,&
+        ANGMAX,A,B
 
 
         !
@@ -826,7 +826,6 @@ contains
         !
         !     Local variables for coupling CLASS and CTEM
         !
-
         integer   lopcount,  isumc,k1c,k2c,month1,month2,xday, co2yr, &
             &           nol2pfts(4),popyr, metcycendyr,climiyear,cypopyr,lucyr,&
             &           cylucyr, endyr,bigpftc(1), obswetyr,obslghtyr,testyr
@@ -931,7 +930,6 @@ contains
                                 !< a user-supplied input value.
         integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
                                         !< if it is set to 1, the new four-band routines are used.
-
         integer, allocatable, dimension(:) :: altotcount_ctm !nlat
         real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)
         real, allocatable, dimension(:,:)  :: barf  !(nlat,nmos)

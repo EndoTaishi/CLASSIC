@@ -7,18 +7,17 @@ module netcdf_drivers
 
     implicit none
 
-    public :: create_out_netcdf
+    public :: createOutputNetcdf
     public :: setup_nc
     !public :: write_nc
     !public :: netcdf_output
-    public :: netcdf_close
+    !public :: netcdf_close
     public :: check_nc
 
-    contains
+contains
 
     !--------------------------------------------------------------------------
-
-    subroutine create_out_netcdf()
+    subroutine createOutputNetcdf()
 
         use netcdf
         use io_driver, only :  winfo
@@ -57,6 +56,7 @@ module netcdf_drivers
         ! Give the needed info
 
         ! Physics variables:
+
         winfo%shortname = 'rss'
         winfo%standard_name = 'Net Shortwave Surface Radiation'
         winfo%long_name = 'Net downward shortwave radiation at the surface'
@@ -82,7 +82,7 @@ module netcdf_drivers
         if (domonth) then
             winfo%time_freq = 'monthly'
             winfo%nameincode = 'flstar_mo'
-                call setup_nc('pergrd')
+            call setup_nc('pergrd')
         end if
 
         winfo%shortname = 'hfss'
@@ -118,9 +118,9 @@ module netcdf_drivers
             winfo%standard_name = 'Surface Snow Amount'
             winfo%time_freq = 'monthly'
             winfo%long_name ='The mass of surface snow on the land portion of the grid cell'//&
-                            ' divided by the land area in the grid cell;'// &
-                            'reported as missing where the land fraction is 0;'// &
-                            'excludes snow on vegetation canopy or on sea ice.'
+            ' divided by the land area in the grid cell;'// &
+            'reported as missing where the land fraction is 0;'// &
+            'excludes snow on vegetation canopy or on sea ice.'
             winfo%units = 'kg/$m^2$'
             winfo%nameincode = 'snoacc_mo'
             call setup_nc('pergrd')
@@ -131,8 +131,8 @@ module netcdf_drivers
             winfo%standard_name = 'Liquid water content of snow pack'
             winfo%time_freq = 'monthly'
             winfo%long_name = 'The total mass of liquid water contained interstitially within the'//&
-                            ' whole depth of the snow pack of the land portion of a grid cell'// &
-                            ' divided by the area of the land portion of the cell.'
+            ' whole depth of the snow pack of the land portion of a grid cell'// &
+            ' divided by the area of the land portion of the cell.'
             winfo%units = 'kg/$m^2$'
             winfo%nameincode = 'wsnoacc_mo'
             call setup_nc('pergrd')
@@ -141,7 +141,7 @@ module netcdf_drivers
         winfo%shortname = 'mrro'
         winfo%standard_name = 'Total Run-off'
         winfo%long_name = 'The total run-off (including drainage through the base of the soil model)'//&
-                        ' per unit area leaving the land portion of the grid cell.'
+        ' per unit area leaving the land portion of the grid cell.'
         winfo%time_freq = 'annually'
         winfo%units = 'mm/year'
         winfo%nameincode = 'rofacc_yr'
@@ -172,7 +172,7 @@ module netcdf_drivers
         winfo%shortname = 'evspsbl'
         winfo%standard_name = 'Evaporation'
         winfo%long_name = 'Evaporation at surface: flux of water into the atmosphere due to'//&
-                        ' conversion of both liquid and solid phases to vapor (from underlying surface and vegetation)'
+        ' conversion of both liquid and solid phases to vapor (from underlying surface and vegetation)'
         winfo%time_freq = 'annually'
         winfo%units = 'mm/year'
         winfo%nameincode = 'evapacc_yr'
@@ -258,7 +258,7 @@ module netcdf_drivers
             winfo%standard_name = 'Liquid water content of soil layer'
             winfo%time_freq = 'monthly'
             winfo%long_name = 'In each soil layer, the mass of water in liquid phase.'//&
-                            ' Reported as "missing" for grid cells occupied entirely by "sea"'
+            ' Reported as "missing" for grid cells occupied entirely by "sea"'
             winfo%units = '$m^3$/$m^3$'
             winfo%nameincode = 'THLQACC_MO'
             call setup_nc('perlay')  !per soil layer
@@ -269,7 +269,7 @@ module netcdf_drivers
             winfo%standard_name = 'Frozen water content of soil layer'
             winfo%time_freq = 'monthly'
             winfo%long_name = 'In each soil layer, the mass of water in ice phase.'//&
-                            ' Reported as "missing" for grid cells occupied entirely by "sea"'
+            ' Reported as "missing" for grid cells occupied entirely by "sea"'
             winfo%units = '$m^3$/$m^3$'
             winfo%nameincode = 'THICACC_MO'
             call setup_nc('perlay')  !per soil layer
@@ -499,7 +499,7 @@ module netcdf_drivers
             winfo%standard_name = 'Total Carbon in All Terrestrial Carbon Pools'
             winfo%time_freq = 'annually'
             winfo%long_name = ' Report missing data over ocean grid cells. For fractional'//&
-                            ' land report value averaged over the land fraction.'
+            ' land report value averaged over the land fraction.'
             winfo%units = 'kg C/$m^2$'
             winfo%nameincode = 'totcmass_yr_g'
             call setup_nc('pergrd')
@@ -594,11 +594,11 @@ module netcdf_drivers
             winfo%standard_name = 'Net Carbon Mass Flux out of Atmosphere due to Net Ecosystem Productivity on Land'
             winfo%time_freq = 'annually'
             winfo%long_name = 'Natural flux of CO2 (expressed as a mass flux of carbon) from the atmosphere'//&
-                            ' to the land calculated as the difference between uptake associated will photosynthesis'//&
-                            ' and the release of CO2 from the sum of plant and soil respiration and fire. Positive'//&
-                            ' flux is into the land. emissions from natural fires and human ignition fires as '//&
-                            'calculated by the fire module of the dynamic vegetation model, but excluding any'//&
-                            ' CO2 flux from fire included in fLuc (CO2 Flux to Atmosphere from Land Use Change).'
+            ' to the land calculated as the difference between uptake associated will photosynthesis'//&
+            ' and the release of CO2 from the sum of plant and soil respiration and fire. Positive'//&
+            ' flux is into the land. emissions from natural fires and human ignition fires as '//&
+            'calculated by the fire module of the dynamic vegetation model, but excluding any'//&
+            ' CO2 flux from fire included in fLuc (CO2 Flux to Atmosphere from Land Use Change).'
             winfo%units = 'kg C/$m^2$'
             winfo%nameincode = 'nep_yr_g'
             call setup_nc('pergrd')
@@ -630,8 +630,8 @@ module netcdf_drivers
             winfo%standard_name = 'Net Carbon Mass Flux out of Atmosphere due to Net Biospheric Productivity on Land'
             winfo%time_freq = 'annually'
             winfo%long_name = 'This is the net mass flux of carbon from atmosphere into land, calculated as photosynthesis'//&
-                            ' MINUS the sum of plant and soil respiration, carbon fluxes from fire, harvest, grazing'//&
-                            ' and land use change. Positive flux is into the land.'
+            ' MINUS the sum of plant and soil respiration, carbon fluxes from fire, harvest, grazing'//&
+            ' and land use change. Positive flux is into the land.'
             winfo%units = 'kg C/$m^2$'
             winfo%nameincode = 'nbp_yr_g'
             call setup_nc('pergrd')
@@ -663,7 +663,7 @@ module netcdf_drivers
             winfo%standard_name = 'Carbon Mass Flux into Atmosphere due to Heterotrophic Respiration on Land'
             winfo%time_freq = 'annually'
             winfo%long_name = 'Carbon mass flux per unit area into atmosphere due to heterotrophic'//&
-                            ' respiration on land (respiration by consumers)'
+            ' respiration on land (respiration by consumers)'
             winfo%units = 'kg C/$m^2$'
             winfo%nameincode = 'hetrores_yr_g'
             call setup_nc('pergrd')
@@ -826,9 +826,9 @@ module netcdf_drivers
                 winfo%standard_name = 'Carbon Mass Flux into Atmosphere due to CO2 Emission from Fire'
                 winfo%time_freq = 'annually'
                 winfo%long_name = 'CO2 emissions (expressed as a CO2 mass flux per unit area) from'//&
-                                'natural fires and human ignition fires as calculated by the fire module'//&
-                                ' of the dynamic vegetation model, but excluding any CO2 flux from fire'//&
-                                ' included in fLuc (CO2 Flux to Atmosphere from Land Use Change)'
+                'natural fires and human ignition fires as calculated by the fire module'//&
+                ' of the dynamic vegetation model, but excluding any CO2 flux from fire'//&
+                ' included in fLuc (CO2 Flux to Atmosphere from Land Use Change)'
                 winfo%units = 'g CO$_2$ $m^{-2}$ year$^{-1}$'
                 winfo%nameincode = 'emit_co2_yr_g'
                 call setup_nc('pergrd')
@@ -863,8 +863,8 @@ module netcdf_drivers
                 winfo%standard_name = 'Carbon Mass Flux into Atmosphere due to CH4 Emission from Fire'
                 winfo%time_freq = 'annually'
                 winfo%long_name = 'CH4 emissions (expressed as a CH4 mass flux per unit area) from'//&
-                                'natural fires and human ignition fires as calculated by the fire module'//&
-                                ' of the dynamic vegetation model'
+                'natural fires and human ignition fires as calculated by the fire module'//&
+                ' of the dynamic vegetation model'
                 winfo%units = 'g CH$_4$ $m^{-2}$ year$^{-1}$'
                 winfo%nameincode = 'emit_ch4_yr_g'
                 call setup_nc('pergrd')
@@ -899,7 +899,7 @@ module netcdf_drivers
                 winfo%standard_name = 'Percentage of Entire Grid cell that is Covered by Burnt Vegetation (All Classes)'
                 winfo%time_freq = 'annually'
                 winfo%long_name = 'Percentage of grid cell burned due to all fires including natural'//&
-                                ' and anthropogenic fires'
+                ' and anthropogenic fires'
                 winfo%units = 'fraction'
                 winfo%nameincode = 'burnfrac_yr_g'
                 call setup_nc('pergrd')
@@ -935,7 +935,7 @@ module netcdf_drivers
                 winfo%standard_name = 'Deforested biomass that goes into atmosphere as a result of anthropogenic land use change'
                 winfo%time_freq = 'annually'
                 winfo%long_name = 'When land use change results in deforestation of natural vegetation '//&
-                                '(trees or grasslands) then natural biomass is removed.'
+                '(trees or grasslands) then natural biomass is removed.'
                 winfo%units = 'g C $m^{-2}$ year$^{-1}$'
                 winfo%nameincode = 'luc_emc_yr_g'
                 call setup_nc('pergrd')
@@ -970,7 +970,7 @@ module netcdf_drivers
                 winfo%standard_name = 'Deforested biomass that goes into litter as a result of anthropogenic land use change'
                 winfo%time_freq = 'annually'
                 winfo%long_name = 'When land use change results in deforestation of natural vegetation '//&
-                                '(trees or grasslands) then natural biomass is removed and some transferred to litter.'
+                '(trees or grasslands) then natural biomass is removed and some transferred to litter.'
                 winfo%units = 'g C $m^{-2}$ year$^{-1}$'
                 winfo%nameincode = 'lucltrin_yr_g'
                 call setup_nc('pergrd')
@@ -1005,7 +1005,7 @@ module netcdf_drivers
                 winfo%standard_name = 'Deforested biomass that goes into soil as a result of anthropogenic land use change'
                 winfo%time_freq = 'annually'
                 winfo%long_name = 'When land use change results in deforestation of natural vegetation '//&
-                                '(trees or grasslands) then natural biomass is removed and some transferred to soil.'
+                '(trees or grasslands) then natural biomass is removed and some transferred to soil.'
                 winfo%units = 'g C $m^{-2}$ year$^{-1}$'
                 winfo%nameincode = 'lucsocin_yr_g'
                 call setup_nc('pergrd')
@@ -1167,7 +1167,7 @@ module netcdf_drivers
         end if !ctem_on
 
 
-    end subroutine create_out_netcdf
+    end subroutine createOutputNetcdf
 
     ! !=======================================================================
 
@@ -1175,7 +1175,7 @@ module netcdf_drivers
 
         use netcdf
         use io_driver, only :  infopak,winfo,lonvect,latvect,srtx,srty,cntx,cnty,&
-                         yrange,xrange, fill_value, timestart
+        yrange,xrange, fill_value, timestart
         use ctem_statevars,     only : c_switch
         use ctem_params,        only : ignd,icc,nmos
 
@@ -1196,7 +1196,7 @@ module netcdf_drivers
 
         character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
         logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
-                                        !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
+                                           !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
         character(:), pointer :: output_directory !< Directory where the output netcdfs will be placed
 
         ! Point pointers
@@ -1217,7 +1217,6 @@ module netcdf_drivers
         else
             filename = trim(output_directory)//'/'// trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '.nc'
         end if
-
 
         call check_nc(nf90_create(filename,cmode=nf90_netcdf4,ncid=ncid))
         call check_nc(nf90_put_att(ncid,nf90_global,'title','CLASSIC output file'))
@@ -1350,60 +1349,59 @@ module netcdf_drivers
 
     end subroutine setup_nc
 
-!  !=============================================================================
-!
-! subroutine write_nc(towrite,kindout)
-!
-!     use netcdf
-!     use outinfo, only :  infopak,winfo,lonvect,latvect,srtx,srty,cntx,cnty,&
-!                          yrange,xrange,nmos,icc, fill_value
-!     use ctem_params, only : ignd,icc,
-!
-!     implicit none
-!
-!     character(6), intent(in) :: kindout    !either perpft, pertil, perlay, or pergrd
-!     real, dimension(:,:,:), intent(in) :: towrite
-!
-!     type(infopak) :: varinfo
-!     integer :: ncid, varid, tile, pft, layer, time, i
-!     character(80) :: filename
-!     ! ------
-!
-!     varinfo = winfo
-!
-!     if (kindout == 'pertil') then
-!         filename = trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '_pertil.nc'
-!     else if (kindout == 'perpft') then
-!         filename = trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '_perpft.nc'
-!     else
-!         filename = trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '.nc'
-!     end if
-!
-!     call check_nc(nf90_open(filename,nf90_write,ncid))
-!     call check_nc(nf90_inq_varid(ncid,trim(varinfo%shortname), varid))
-!     call check_nc(nf90_put_var(ncid,varid,towrite))!,start=[1,1,yrst],count=[1,1,totyrs]))
-        !call check_nc(nf90_close(ncid))
-!
-!
-!
-! end subroutine write_nc
+    !  !=============================================================================
+    !
+    ! subroutine write_nc(towrite,kindout)
+    !
+    !     use netcdf
+    !     use outinfo, only :  infopak,winfo,lonvect,latvect,srtx,srty,cntx,cnty,&
+    !                          yrange,xrange,nmos,icc, fill_value
+    !     use ctem_params, only : ignd,icc,
+    !
+    !     implicit none
+    !
+    !     character(6), intent(in) :: kindout    !either perpft, pertil, perlay, or pergrd
+    !     real, dimension(:,:,:), intent(in) :: towrite
+    !
+    !     type(infopak) :: varinfo
+    !     integer :: ncid, varid, tile, pft, layer, time, i
+    !     character(80) :: filename
+    !     ! ------
+    !
+    !     varinfo = winfo
+    !
+    !     if (kindout == 'pertil') then
+    !         filename = trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '_pertil.nc'
+    !     else if (kindout == 'perpft') then
+    !         filename = trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '_perpft.nc'
+    !     else
+    !         filename = trim(varinfo%shortname) // '_' // trim(varinfo%time_freq) // '.nc'
+    !     end if
+    !
+    !     call check_nc(nf90_open(filename,nf90_write,ncid))
+    !     call check_nc(nf90_inq_varid(ncid,trim(varinfo%shortname), varid))
+    !     call check_nc(nf90_put_var(ncid,varid,towrite))!,start=[1,1,yrst],count=[1,1,totyrs]))
+    !     call check_nc(nf90_close(ncid))
+    !
+    !
+    !
+    ! end subroutine write_nc
 
-    !=============================================================================
-
-    subroutine netcdf_close(ncid)
-
-        use netcdf
-
-        implicit none
-
-        integer, intent(in) :: ncid
-
-        call check_nc(nf90_close(ncid))
-
-    end subroutine netcdf_close
-
+    !  !=============================================================================
+    !
+    ! subroutine netcdf_close()
+    !
+    ! use netcdf
+    ! use netcdf_error
+    !
+    ! implicit none
+    !
+    ! status = nf90_close(ncid)
+    ! if (status/=nf90_noerr) call handle_err(status)
+    !
+    ! end subroutine netcdf_close
+    !
     !=======================================================================
-
 
     subroutine check_nc(status)
 
@@ -1424,6 +1422,6 @@ module netcdf_drivers
 
     end subroutine check_nc
 
-    !=======================================================================
+!=======================================================================
 
 end module netcdf_drivers

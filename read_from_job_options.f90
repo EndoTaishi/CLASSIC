@@ -2,212 +2,212 @@
 !> Module for parsing command line arguments to program and reading joboptions files.
 module readjobopts
 
-implicit none
+    implicit none
 
 public :: read_from_job_options
-public :: parsecoords
+    public :: parsecoords
 
 contains
 
-! ---------------------------------------------------
+    ! ---------------------------------------------------
 
 subroutine read_from_job_options()
 
-!       History:
-!
-!     31 May 2017    - Convert to module, getting ready for new driver.
-!     J. Melton
-!
-!     10 Jan 2017    - igralb no longer supported so removed
-!     J. Melton
-!
-!     9 Nov 2016     - Add the "leap" switch for leap years (.TRUE. if leap years
-!     J.-S. Landry     in the .MET file have data for 366 days, .FALSE. if not) 
-!
-!     28  Jul  2016  - Add ability to have changing CO2 but cycling climate
-!     J. Melton        this was for the TRENDY project but generally useful so
-!                      keep in.
-!     3   Feb  2016 - Remove mosaic flag. It is no longer required.
-!     J. Melton
+        !       History:
+        !
+        !     31 May 2017    - Convert to module, getting ready for new driver.
+        !     J. Melton
+        !
+        !     10 Jan 2017    - igralb no longer supported so removed
+        !     J. Melton
+        !
+        !     9 Nov 2016     - Add the "leap" switch for leap years (.TRUE. if leap years
+        !     J.-S. Landry     in the .MET file have data for 366 days, .FALSE. if not)
+        !
+        !     28  Jul  2016  - Add ability to have changing CO2 but cycling climate
+        !     J. Melton        this was for the TRENDY project but generally useful so
+        !                      keep in.
+        !     3   Feb  2016 - Remove mosaic flag. It is no longer required.
+        !     J. Melton
 
-!     20  Mar. 2015 - Add in new CLASS flags for snow albedos -igralb & isnoalb
-!     J. Melton
+        !     20  Mar. 2015 - Add in new CLASS flags for snow albedos -igralb & isnoalb
+        !     J. Melton
 
-!     4   Sep. 2014 - Add in the transient_run flag.
-!     J. Melton
-!
-!     2   Jul. 2013 - Removed ctem1 and ctem2, replaced with ctem_on
-!     J. Melton
-!
-!     25  Jun. 2013 - Added inibioclim switch for compete runs
-!     J. Melton
-!
-!     17  Oct. 2012 - Added the start_bare switch for compete runs
-!     J. Melton
-!
-!     25  Apr. 2012 - This subroutine takes in model switches from
-!     J. Melton       a job file and pushes them to RUNCLASSCTEM
+        !     4   Sep. 2014 - Add in the transient_run flag.
+        !     J. Melton
+        !
+        !     2   Jul. 2013 - Removed ctem1 and ctem2, replaced with ctem_on
+        !     J. Melton
+        !
+        !     25  Jun. 2013 - Added inibioclim switch for compete runs
+        !     J. Melton
+        !
+        !     17  Oct. 2012 - Added the start_bare switch for compete runs
+        !     J. Melton
+        !
+        !     25  Apr. 2012 - This subroutine takes in model switches from
+        !     J. Melton       a job file and pushes them to RUNCLASSCTEM
 
-use io_driver, only : bounds
-use ctem_statevars,     only : c_switch
+        use io_driver, only : bounds
+        use ctem_statevars,     only : c_switch
 
-implicit none
+        implicit none
 
-! -------------
-! ctem model switches
+        ! -------------
+        ! ctem model switches
 
-logical, pointer :: transient_run !< true if the run is a transient run. With this flag set
-                                 !< set to .true., you can cycle over nummetcyclyrs of climate a
-                                 !< ctemloop number of times then continue on through the climate
-                                 !< the reason for this is to allow a transient from 1850 on, but 
-                                 !< only having the climate from 1901 while having the other inputs 
-                                 !< from 1850. See the bottom of this subroutine for an example of how to 
-                                 !< set this correctly.  
+        logical, pointer :: transient_run !< true if the run is a transient run. With this flag set
+                                         !< set to .true., you can cycle over nummetcyclyrs of climate a
+                                         !< ctemloop number of times then continue on through the climate
+                                         !< the reason for this is to allow a transient from 1850 on, but
+                                         !< only having the climate from 1901 while having the other inputs
+                                         !< from 1850. See the bottom of this subroutine for an example of how to
+                                         !< set this correctly.
                                  
-integer, pointer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
-                                      !! are not doing a transient run, set to a negative value (like -9999)
+        integer, pointer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
+                                              !! are not doing a transient run, set to a negative value (like -9999)
 
-integer, pointer :: ctemloop !< no. of times the .met file is to be read. this
-                    	         !< option is useful to see how ctem's c pools
-                    	         !< equilibrate when driven with same climate data
-                    	         !< over and over again.
+        integer, pointer :: ctemloop !< no. of times the .met file is to be read. this
+                    	                 !< option is useful to see how ctem's c pools
+                    	                 !< equilibrate when driven with same climate data
+                    	                 !< over and over again.
 
-logical, pointer :: ctem_on  !< set this to true for using ctem simulated dynamic
-                         !< lai and canopy mass, else class simulated specified
-                 		 !< lai and canopy mass are used. with this switch on,
-                 		 !< all ctem subroutines are run.
+        logical, pointer :: ctem_on  !< set this to true for using ctem simulated dynamic
+                                 !< lai and canopy mass, else class simulated specified
+                 		         !< lai and canopy mass are used. with this switch on,
+                 		         !< all ctem subroutines are run.
 
-integer, pointer :: ncyear   !< no. of years in the .met file.
+        integer, pointer :: ncyear   !< no. of years in the .met file.
 
-logical, pointer :: lnduseon !< set this to 1 if land use change is to be
-                 		 !< implimented by reading in the fractions of 9 ctem
-                		 !< pfts from a file. keep in mind that once on, luc read-in is
-                                 !< also influenced by the cyclemet and popcycleyr switches
+        logical, pointer :: lnduseon !< set this to 1 if land use change is to be
+                 		         !< implimented by reading in the fractions of 9 ctem
+                		         !< pfts from a file. keep in mind that once on, luc read-in is
+                                         !< also influenced by the cyclemet and popcycleyr switches
 
-integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
-                 		 !< soil carbon pool faster
+        integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
+                 		         !< soil carbon pool faster
 
-logical, pointer :: cyclemet !< to cycle over only a fixed number of years
-                 		 !< (nummetcylyrs) starting at a certain year (metcylyrst)
-                 		 !< if cyclemet, then put co2on = false and set an appopriate setco2conc, also
-                 		 !< if popdon is true, it will choose the popn and luc data for year
-                 		 !< metcylyrst and cycle on that.
+        logical, pointer :: cyclemet !< to cycle over only a fixed number of years
+                 		         !< (nummetcylyrs) starting at a certain year (metcylyrst)
+                 		         !< if cyclemet, then put co2on = false and set an appopriate setco2conc, also
+                 		         !< if popdon is true, it will choose the popn and luc data for year
+                 		         !< metcylyrst and cycle on that.
 
-integer, pointer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
-                 		     !< ignored if cyclemet is false
+        integer, pointer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
+                 		             !< ignored if cyclemet is false
 
-integer, pointer :: metcylyrst   !< climate year to start the spin up on
-                 		     !< ignored if cyclemet is false
+        integer, pointer :: metcylyrst   !< climate year to start the spin up on
+                 		             !< ignored if cyclemet is false
 
-logical, pointer :: co2on    !< use co2 time series, set to false if cyclemet is true
+        logical, pointer :: co2on    !< use co2 time series, set to false if cyclemet is true
 
-real, pointer :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
+        real, pointer :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
 
-logical, pointer :: ch4on    !< use CH4 time series, set to false if cyclemet is true
-                                 !< the CO2 timeseries is in the same input file as the CO2 one.
+        logical, pointer :: ch4on    !< use CH4 time series, set to false if cyclemet is true
+                                         !< the CO2 timeseries is in the same input file as the CO2 one.
 
-real, pointer :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
+        real, pointer :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
 
-logical, pointer :: popdon   !< if set true use population density data to calculate fire extinguishing
-                 		 !< probability and probability of fire due to human causes, 
-                 		 !< or if false, read directly from .ctm file
+        logical, pointer :: popdon   !< if set true use population density data to calculate fire extinguishing
+                 		         !< probability and probability of fire due to human causes,
+                 		         !< or if false, read directly from .ctm file
 
-integer, pointer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
-                		 !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
-                                 !< this defaults to -9999, which will then cause the model to cycle on
-                                 !< whatever is the first year in the popd and luc datasets
+        integer, pointer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
+                		         !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
+                                         !< this defaults to -9999, which will then cause the model to cycle on
+                                         !< whatever is the first year in the popd and luc datasets
 
-logical, pointer :: parallelrun !< set this to be true if model is run in parallel mode for
-                            	!< multiple grid cells, output is limited to monthly & yearly 
-                    		!< grid-mean only. else the run is in stand alone mode, in which 
-                     		!< output includes half-hourly and daily and mosaic-mean as well.
+        logical, pointer :: parallelrun !< set this to be true if model is run in parallel mode for
+                            	        !< multiple grid cells, output is limited to monthly & yearly
+                    		        !< grid-mean only. else the run is in stand alone mode, in which
+                     		        !< output includes half-hourly and daily and mosaic-mean as well.
 
-logical, pointer :: dofire  !< if true the fire/disturbance subroutine will be used.
+        logical, pointer :: dofire  !< if true the fire/disturbance subroutine will be used.
 
-logical, pointer :: dowetlands !< if true the ch4wetland subroutine will be used.
+        logical, pointer :: dowetlands !< if true the ch4wetland subroutine will be used.
 
-logical, pointer :: obswetf !< if true the observed wetland fraction will be used.
+        logical, pointer :: obswetf !< if true the observed wetland fraction will be used.
 
-logical, pointer :: compete !< set this to true if competition between pfts is
-                 		!< to be implimented
+        logical, pointer :: compete !< set this to true if competition between pfts is
+                 		        !< to be implimented
 
-logical, pointer :: inibioclim  !< set this to true if competition between pfts is
-                 		    !< to be implimented and you have the mean climate values
-                                    !< in the ctm files.
+        logical, pointer :: inibioclim  !< set this to true if competition between pfts is
+                 		            !< to be implimented and you have the mean climate values
+                                            !< in the ctm files.
 
-logical, pointer :: start_bare !<set this to true if competition is true, and if you wish
-                                 !< to start from bare ground. if this is set to false, the 
-                                 !< ini and ctm file info will be used to set up the run. 
-                                 !< NOTE: This still keeps the crop fractions (while setting all pools to
-                                 !< zero)
+        logical, pointer :: start_bare !<set this to true if competition is true, and if you wish
+                                         !< to start from bare ground. if this is set to false, the
+                                         !< ini and ctm file info will be used to set up the run.
+                                         !< NOTE: This still keeps the crop fractions (while setting all pools to
+                                         !< zero)
 
-logical, pointer :: use_netcdf      !< If true, the model inputs and outputs are done with netcdf files.
-                                        !! if false, ASCII MET files will be expected. This is retained for use at
-                                        !! the site-level but is discouraged for regional/global simulations. Even when
-                                        !! use_netcdf is set to false the model requires all other inputs in netcdf format
-                                        !! as well all outputs will be netcdf formatted.
+        logical, pointer :: use_netcdf      !< If true, the model inputs and outputs are done with netcdf files.
+                                                !! if false, ASCII MET files will be expected. This is retained for use at
+                                                !! the site-level but is discouraged for regional/global simulations. Even when
+                                                !! use_netcdf is set to false the model requires all other inputs in netcdf format
+                                                !! as well all outputs will be netcdf formatted.
 
-character(:), pointer :: met_file !< location of the netcdf meteorological dataset
+        character(:), pointer :: met_file !< location of the netcdf meteorological dataset
 
-character(:), pointer :: init_file !< location of the netcdf initialization file
+        character(:), pointer :: init_file !< location of the netcdf initialization file
 
-character(:), pointer :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
+        character(:), pointer :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
 
 character(:), pointer :: runparams_file  !< location of the namelist file containing the model parameters
 
 character(:), pointer :: output_directory !< Directory where the output netcdfs will be placed
 
-logical, pointer :: leap     !< set to true if all/some leap years in the .MET file have data for 366 days 
-                                 !< also accounts for leap years in .MET when cycling over meteorology (cyclemet) 
+        logical, pointer :: leap     !< set to true if all/some leap years in the .MET file have data for 366 days
+                                         !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
 
-                                  !< from the start then put in a negative number (like -9999), if you never want to have monthly
-                                  !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR                                 
+                                          !< from the start then put in a negative number (like -9999), if you never want to have monthly
+                                          !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR
 
-! -------------
-! class model switches
+        ! -------------
+        ! class model switches
 
-integer, pointer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
-				 !< because the atmospheric model considers these to be part
-				 !< of the "terrain".
-				 !< if idisp=1, vegetation displacement heights are calculated.
+        integer, pointer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
+				         !< because the atmospheric model considers these to be part
+				         !< of the "terrain".
+				         !< if idisp=1, vegetation displacement heights are calculated.
 
-integer, pointer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
-				 !< to lie at the ground surface.
-				 !< if izref=2, the bottom of the atmospheric model is taken
-				 !< to lie at the local roughness height.
+        integer, pointer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
+				         !< to lie at the ground surface.
+				         !< if izref=2, the bottom of the atmospheric model is taken
+				         !< to lie at the local roughness height.
 
-integer, pointer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
-				 !< and the original gcm set of screen-level diagnostic calculations 
-				 !< is done.
-				 !< if islfd=1, drcoef is called for surface stability corrections
-				 !< and sldiag is called for screen-level diagnostic calculations. 
-				 !< if islfd=2, flxsurfz is called for surface stability corrections
-				 !< and diasurf is called for screen-level diagnostic calculations. 
+        integer, pointer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
+				         !< and the original gcm set of screen-level diagnostic calculations
+				         !< is done.
+				         !< if islfd=1, drcoef is called for surface stability corrections
+				         !< and sldiag is called for screen-level diagnostic calculations.
+				         !< if islfd=2, flxsurfz is called for surface stability corrections
+				         !< and diasurf is called for screen-level diagnostic calculations.
 
-integer, pointer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
-				 !< if ipcp=2, a linear partitioning of precipitation betweeen 
-				 !< rainfall and snowfall is done between 0 c and 2 c.
-				 !< if ipcp=3, rainfall and snowfall are partitioned according to
-				 !< a polynomial curve between 0 c and 6 c.
+        integer, pointer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
+				         !< if ipcp=2, a linear partitioning of precipitation betweeen
+				         !< rainfall and snowfall is done between 0 c and 2 c.
+				         !< if ipcp=3, rainfall and snowfall are partitioned according to
+				         !< a polynomial curve between 0 c and 6 c.
 
-integer, pointer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
-				!< the ground surface slope is not modelled.
-				!< if iwf=n (0<n<4), the watflood calculations of overland flow 
-				!< and interflow are performed; interflow is drawn from the top 
-				!< n soil layers.
+        integer, pointer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
+				        !< the ground surface slope is not modelled.
+				        !< if iwf=n (0<n<4), the watflood calculations of overland flow
+				        !< and interflow are performed; interflow is drawn from the top
+				        !< n soil layers.
 
-INTEGER, pointer :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
-                           !< be used in calculating the canopy or ground surface temperature
-                           !< respectively.  if the switch is set to 1, a bisection method is
-                           !< used; if to 2, the newton-raphson method is used.
-INTEGER, pointer :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
-                           !< be used in calculating the canopy or ground surface temperature
-                           !< respectively.  if the switch is set to 1, a bisection method is
-                           !< used; if to 2, the newton-raphson method is used.
-INTEGER, pointer :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
-                           !< be used in calculating the canopy or ground surface temperature
-                           !< respectively.  if the switch is set to 1, a bisection method is
-                           !< used; if to 2, the newton-raphson method is used.
+        INTEGER, pointer :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
+                                   !< be used in calculating the canopy or ground surface temperature
+                                   !< respectively.  if the switch is set to 1, a bisection method is
+                                   !< used; if to 2, the newton-raphson method is used.
+        INTEGER, pointer :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
+                                   !< be used in calculating the canopy or ground surface temperature
+                                   !< respectively.  if the switch is set to 1, a bisection method is
+                                   !< used; if to 2, the newton-raphson method is used.
+        INTEGER, pointer :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
+                                   !< be used in calculating the canopy or ground surface temperature
+                                   !< respectively.  if the switch is set to 1, a bisection method is
+                                   !< used; if to 2, the newton-raphson method is used.
    
 INTEGER, pointer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
                            !< plant area index, vegetation height, canopy albedo, snow albedo

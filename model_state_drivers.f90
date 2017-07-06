@@ -7,7 +7,6 @@ module model_state_drivers
 
     ! J. Melton
     ! Nov 2016
-
     implicit none
 
     private
@@ -28,10 +27,10 @@ contains
 
         ! J. Melton
         ! Feb 2017
-
         use netcdf
         use netcdf_drivers, only : check_nc
-        use io_driver, only : initid,rsid,cntx,cnty,srtx,srty,bounds,lonvect,latvect
+        use io_driver, only : initid,rsid,cntx,cnty,srtx,srty,bounds,lonvect,latvect,&
+                              validCount,validLon,validLat
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
 
@@ -40,8 +39,9 @@ contains
         ! pointers:
         character(180), pointer         :: init_file
         character(180), pointer         :: rs_file_to_overwrite
+        integer, allocatable, dimension(:,:) :: mask
 
-        integer :: dimid
+        integer :: dimid, i, j
         integer :: varid
         integer :: totlon,totlat
         integer, dimension(1) :: pos
@@ -56,7 +56,6 @@ contains
         ! ------------
 
         !> First, open initial conditions file.
-
         call check_nc(nf90_open(trim(init_file),nf90_nowrite,initid))
 
         !> Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for
@@ -71,7 +70,7 @@ contains
         !calculate the number and indices of the pixels to be calculated
 
         allocate(all_lon(totlon),&
-            all_lat(totlat))
+                 all_lat(totlat))
 
         call check_nc(nf90_inq_varid(initid,'lon',varid))
         call check_nc(nf90_get_var(initid,varid,all_lon))
@@ -104,8 +103,10 @@ contains
         !> Save the longitudes and latitudes over the region of interest for making the
         !! output files.
         allocate(lonvect(cntx),&
-            latvect(cnty),&
-            nmarray(cnty,cntx))
+                 latvect(cnty),&
+                 validLat(cnty),&
+                 validLon(cntx),&
+                 nmarray(cnty,cntx))
 
         lonvect = all_lon(srtx:srtx+cntx-1)
         latvect = all_lat(srty:srty+cnty-1)
@@ -114,6 +115,25 @@ contains
 
         call check_nc(nf90_inq_dimid(initid,'layer',dimid))
         call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
+
+        !print*, bounds
+        !print*, "got ", cntx, " for cntx and ", cnty, " for cnty and ", srtx, " for srtx and ", srty, " for srty"
+        allocate(mask(cntx, cnty))
+        call check_nc(nf90_inq_varid(initid,'Mask',varid))
+        call check_nc(nf90_get_var(initid,varid,mask,start=[srtx,srty],count=[cntx,cnty]))
+        validCount = 0
+        do i = 1, cntx
+            do j = 1, cnty
+                !if (mask(i,j) .eq. 0) print*, " (", i, ",", j, ") or (", lonvect(i + srtx - 1), ",", latvect(j + srty - 1), ") is ocean"
+                if (mask(i,j) .eq. -1) then
+                    !print*, "(", i, ",", j, ") or (", lonvect(i + srtx - 1), ",", latvect(j + srty - 1), ") is land"
+                    validCount = validCount + 1
+                    validLon(validCount) = all_lon(i + srtx - 1)
+                    validLat(validCount) = all_lat(j + srty - 1)
+                endif
+            enddo
+        enddo
+        deallocate(mask)
 
         !> To determine nmos, we use the largest number in the input file variable nmtest
         !! for the region we are running.
@@ -124,13 +144,12 @@ contains
         nmos= maxval(nmarray)
 
         deallocate(nmarray,&
-            all_lat,&
-            all_lon)
+                   all_lat,&
+                   all_lon)
 
         !> Determine the size of ilg which is nlat times nmos
 
         ilg = nlat * nmos
-
         !> Lastly, open the restart file so it is ready to be written to.
 
         !call check_nc(nf90_open(trim(rs_file_to_overwrite),nf90_share,rsid)) !I don't know why but share doesn't work on vic servers... JM
