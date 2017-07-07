@@ -7,17 +7,17 @@ module netcdf_drivers
 
     implicit none
 
-    public :: createOutputNetcdf
+    public :: create_out_netcdf
     public :: setup_nc
     !public :: write_nc
     !public :: netcdf_output
-    !public :: netcdf_close
+    public :: netcdf_close
     public :: check_nc
 
 contains
 
     !--------------------------------------------------------------------------
-    subroutine createOutputNetcdf()
+    subroutine create_out_netcdf()
 
         use netcdf
         use io_driver, only :  winfo
@@ -1167,7 +1167,7 @@ contains
         end if !ctem_on
 
 
-    end subroutine createOutputNetcdf
+    end subroutine create_out_netcdf
 
     ! !=======================================================================
 
@@ -1387,20 +1387,19 @@ contains
     !
     ! end subroutine write_nc
 
-    !  !=============================================================================
-    !
-    ! subroutine netcdf_close()
-    !
-    ! use netcdf
-    ! use netcdf_error
-    !
-    ! implicit none
-    !
-    ! status = nf90_close(ncid)
-    ! if (status/=nf90_noerr) call handle_err(status)
-    !
-    ! end subroutine netcdf_close
-    !
+    !=============================================================================
+
+    subroutine netcdf_close(ncid)
+
+        use netcdf
+
+        implicit none
+
+        integer, intent(in) :: ncid
+
+        call check_nc(nf90_close(ncid))
+
+    end subroutine netcdf_close
     !=======================================================================
 
     subroutine check_nc(status)

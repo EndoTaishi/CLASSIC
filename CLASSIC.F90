@@ -1,6 +1,8 @@
 !>\file
 !! Principle driver program to run CLASSIC in stand-alone mode using specified boundary
-!! conditions and atmospheric forcing.
+!! conditions and atmospheric forcing. Depending upon the compiler options chosen, this
+!! program will either run in MPI mode for use on parallel computing environments or
+!! in serial mode for use in running at single sites.
 !!
 program CLASSIC
 
@@ -25,25 +27,28 @@ program CLASSIC
 
     ! MAIN PROGRAM
 
-    !! Initialize the MPI and PnetCDF session
+    ! Initialize the MPI and PnetCDF session
     call initializeParallelEnvironment
 
-    !> Load the project config file. This parses the command line arguments. !!All model switches are read in from a namelist file. This sets up the !!run options and points to input files as needed.
+    ! Load the project config file. This parses the command line arguments.
+    ! All model switches are read in from a namelist file. This sets up the
+    ! run options and points to input files as needed.
     call read_from_job_options()
 
-    !! Load the model setup information based on the metadata in the
-    !! initialization netcdf file. The bounds given as an argument to
-    !! CLASSIC are used to find the start points (srtx and srty)
-    !! in the netcdf file, placing the gridcell on the domain of the
-    !!input/output netcdfs. In read_modelsetup we use the netcdf to set
-    !! the nmos, ignd,and ilg constants. It also opens the initial conditions !! file that is used below in read_initialstate.
+    ! Load the model setup information based on the metadata in the
+    ! initialization netcdf file. The bounds given as an argument to
+    ! CLASSIC are used to find the start points (srtx and srty)
+    ! in the netcdf file, placing the gridcell on the domain of the
+    ! input/output netcdfs. In read_modelsetup we use the netcdf to set
+    ! the nmos, ignd,and ilg constants. It also opens the initial conditions
+    ! file that is used below in read_initialstate.
     call read_modelsetup()
 
-    !! Execute the following only on the main thread (see supportFunctions.f90)
+    ! Execute the following only on the main thread (see supportFunctions.f90)
     if (isMainProcess(rank)) then
 
-        !! Generate the output files based on options in the joboptions file
-        !! and the parameters of the initilization netcdf file.
+        ! Generate the output files based on options in the joboptions file
+        ! and the parameters of the initilization netcdf file.
         call create_out_netcdf
 
     endif
@@ -56,16 +61,17 @@ program CLASSIC
 
     ! END MAIN PROGRAM
 
-contains
+    !------------------
+
+    contains
 
     subroutine processLandCells
 
         ! PROCESS LAND CELLS
         ! This section processes all of the land cells. There are validCount valid(i.e. land) cells, stored in validLon and validLat
 
-        !! Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
-        !! CTEM variable structures. This has to be done before call to main_driver.
-
+        ! Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
+        ! CTEM variable structures. This has to be done before call to main_driver.
         call alloc_class_vars()
         call alloc_ctem_vars()
 
@@ -82,7 +88,10 @@ contains
 
     end subroutine processLandCells
 
+    !------------------
+
     subroutine initializeParallelEnvironment
+
         ! INITIALIZE MPI and PnetCDf
         ! This section initializes the MPI environment and PnetCDF files
 
@@ -95,6 +104,7 @@ contains
     end subroutine initializeParallelEnvironment
 
     subroutine finalizeParallelEnvironment
+
         ! FINALIZE MPI and PnetCDF
         ! This section wraps up the whole MPI and PnetCDF megillah
 

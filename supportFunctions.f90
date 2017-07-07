@@ -1,10 +1,16 @@
 module supportFunctions
+
     implicit none
+
     integer, parameter              :: mainProcess = 0
+
 contains
-    ! IS MAIN PROCESS?
-    ! This section checks to see if we're on the main process of not
+
     logical function isMainProcess(currentProcess)
+
+        ! IS MAIN PROCESS?
+        ! This section checks to see if we're on the main process of not
+
         implicit none
 
         integer, intent(in)             :: currentProcess
@@ -13,5 +19,7 @@ contains
         else
             isMainProcess = .false.
         endif
+
     end function isMainProcess
+
 end module supportFunctions
