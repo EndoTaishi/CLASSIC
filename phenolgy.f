@@ -170,7 +170,11 @@ c
           coldstrs(i,j)=0.0        
           coldlsrt(i,j)=0.0        
           coldloss(i,j)=0.0        
+<<<<<<< HEAD
           lfthrs(i,j)=0.0
+=======
+          lfthrs(i,j)=0.0          
+>>>>>>> fcce73bd854ed3663e98ad223d07ce378af33d1b
           flhrloss(i,j)=0.0
 150     continue                  
 140   continue
