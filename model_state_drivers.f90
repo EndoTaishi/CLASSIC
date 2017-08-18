@@ -29,8 +29,8 @@ contains
         ! Feb 2017
         use netcdf
         use netcdf_drivers, only : check_nc
-        use io_driver, only : initid,rsid,cntx,cnty,srtx,srty,bounds,lonvect,latvect,&
-                              validCount,validLon,validLat
+        use io_driver, only : initid,rsid,bounds,lonvect,latvect,&
+                              validCount,validLon,validLat,validLonIndex,validLatIndex
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
 
@@ -41,7 +41,7 @@ contains
         character(180), pointer         :: rs_file_to_overwrite
         integer, allocatable, dimension(:,:) :: mask
 
-        integer :: dimid, i, j
+        integer :: dimid, i, j,cntx,cnty,srtx,srty
         integer :: varid
         integer :: totlon,totlat
         integer, dimension(1) :: pos
@@ -50,8 +50,8 @@ contains
         real, dimension(:), allocatable :: all_lon,all_lat
 
         ! point pointers:
-        init_file         => c_switch%init_file
-        rs_file_to_overwrite => c_switch%rs_file_to_overwrite
+        init_file               => c_switch%init_file
+        rs_file_to_overwrite    => c_switch%rs_file_to_overwrite
 
         ! ------------
 
@@ -68,7 +68,6 @@ contains
         call check_nc(nf90_inquire_dimension(initid,dimid,len=totlat))
 
         !calculate the number and indices of the pixels to be calculated
-
         allocate(all_lon(totlon),&
                  all_lat(totlat))
 
@@ -106,7 +105,9 @@ contains
                  latvect(cnty),&
                  validLat(cnty),&
                  validLon(cntx),&
-                 nmarray(cnty,cntx))
+                 validLatIndex(cnty),&
+                 validLonIndex(cntx),&
+                 nmarray(1,1))
 
         lonvect = all_lon(srtx:srtx+cntx-1)
         latvect = all_lat(srty:srty+cnty-1)
@@ -116,30 +117,32 @@ contains
         call check_nc(nf90_inq_dimid(initid,'layer',dimid))
         call check_nc(nf90_inquire_dimension(initid,dimid,len=ignd))
 
-        !print*, bounds
-        !print*, "got ", cntx, " for cntx and ", cnty, " for cnty and ", srtx, " for srtx and ", srty, " for srty"
         allocate(mask(cntx, cnty))
         call check_nc(nf90_inq_varid(initid,'Mask',varid))
-        call check_nc(nf90_get_var(initid,varid,mask,start=[srtx,srty],count=[cntx,cnty]))
+        call check_nc(nf90_get_var(initid,varid,mask,start=[srtx,srty],count=[1,1]))
+
         validCount = 0
         do i = 1, cntx
             do j = 1, cnty
-                !if (mask(i,j) .eq. 0) print*, " (", i, ",", j, ") or (", lonvect(i + srtx - 1), ",", latvect(j + srty - 1), ") is ocean"
                 if (mask(i,j) .eq. -1) then
-                    !print*, "(", i, ",", j, ") or (", lonvect(i + srtx - 1), ",", latvect(j + srty - 1), ") is land"
+                    !print*, "(", i, ",", j, ") or (", all_lon(i + srtx - 1), ",", all_lat(j + srty - 1), ") is land"
                     validCount = validCount + 1
                     validLon(validCount) = all_lon(i + srtx - 1)
+                    validLonIndex(validCount) = i + srtx - 1
                     validLat(validCount) = all_lat(j + srty - 1)
+                    validLatIndex(validCount) = j + srty - 1
                 endif
             enddo
         enddo
         deallocate(mask)
 
+        nlat = 1 !validCount
+
         !> To determine nmos, we use the largest number in the input file variable nmtest
         !! for the region we are running.
 
         call check_nc(nf90_inq_varid(initid,'nmtest',varid))
-        call check_nc(nf90_get_var(initid,varid,nmarray,start=[srtx,srty],count=[cntx,cnty]))
+        call check_nc(nf90_get_var(initid,varid,nmarray,start=[srtx,srty],count=[1,1]))
 
         nmos= maxval(nmarray)
 
@@ -150,6 +153,7 @@ contains
         !> Determine the size of ilg which is nlat times nmos
 
         ilg = nlat * nmos
+
         !> Lastly, open the restart file so it is ready to be written to.
 
         !call check_nc(nf90_open(trim(rs_file_to_overwrite),nf90_share,rsid)) !I don't know why but share doesn't work on vic servers... JM
@@ -160,19 +164,22 @@ contains
 
     !--------------------------------------------------------------------------------------------
 
-    subroutine read_initialstate()
+    subroutine read_initialstate(lonIndex,latIndex)
 
         ! J. Melton
         ! Nov 2016
 
         use netcdf
         use netcdf_drivers, only : check_nc
-        use io_driver, only : initid,cntx,cnty,srtx,srty
+        use io_driver, only : initid
         use ctem_statevars,     only : c_switch,vrot,vgat
         use class_statevars,    only : class_rot,class_gat
         use ctem_params,        only : icc,iccp1,nmos,seed,ignd,ilg,icp1,nlat,ican,abszero,pi
 
         implicit none
+
+        ! arguments
+        integer, intent(in) :: lonIndex,latIndex
 
         ! pointers:
         real, pointer, dimension(:,:,:) :: FCANROT
@@ -381,44 +388,44 @@ contains
          GGEOROW(i)=0.0
         end do
 
-        allocate(temptwod(cntx,cnty))
+        allocate(temptwod(1,1))
 
         call check_nc(nf90_inq_varid(initid,'ZRFM',varid))
-        call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+        call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
         ZRFMROW = reshape(temptwod,[ nlat ] )
 
         call check_nc(nf90_inq_varid(initid,'ZRFH',varid))
-        call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+        call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
         ZRFHROW = reshape(temptwod,[ nlat ] )
 
         call check_nc(nf90_inq_varid(initid,'ZBLD',varid))
-        call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+        call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
         ZBLDROW = reshape(temptwod,[ nlat ] )
 
         call check_nc(nf90_inq_varid(initid,'GC',varid))
-        call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+        call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
         GCROW = reshape(temptwod,[ nlat ] )
 
         deallocate(temptwod)
 
         ! Now get the 3D variables:
 
-        allocate(temp3d(cntx,cnty,nmos))
+        allocate(temp3d(1,1,nmos))
 
         call check_nc(nf90_inq_varid(initid,'DRN',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         DRNROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'SDEP',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         SDEPROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'SOCI',varid)) !make per tile in the future
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         SOCIROT = reshape(temp3d,[nlat,nmos])
 
         call check_nc(nf90_inq_varid(initid,'FARE',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         FAREROT = reshape(temp3d,[ nlat,nmos ] )
 
         ! Error check:
@@ -432,179 +439,179 @@ contains
         enddo
 
         call check_nc(nf90_inq_varid(initid,'XSLP',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         XSLPROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'GRKF',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         GRKFROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'WFSF',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         WFSFROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'WFCI',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         WFCIROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'TCAN',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         TCANROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'TSNO',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         TSNOROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'TPND',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         TPNDROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'ZPND',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         ZPNDROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'RCAN',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         RCANROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'SCAN',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         SCANROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'SNO',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         SNOROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'ALBS',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         ALBSROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'RHOS',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         RHOSROT = reshape(temp3d,[ nlat,nmos ] )
 
         call check_nc(nf90_inq_varid(initid,'GRO',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         GROROT = reshape(temp3d,[ nlat,nmos ] )
 
         deallocate(temp3d)
-        allocate(temp3di(cntx,cnty,nmos)) !this is an integer
+        allocate(temp3di(1,1,nmos)) !this is an integer
 
         call check_nc(nf90_inq_varid(initid,'MID',varid))
-        call check_nc(nf90_get_var(initid,varid,temp3di,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp3di,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
         MIDROT = reshape(temp3di,[ nlat,nmos ] )
 
         deallocate(temp3di)
 
         ! Now get the 4D variables:
 
-        allocate(temp4d(cntx,cnty,icp1,nmos))
+        allocate(temp4d(1,1,icp1,nmos))
 
         call check_nc(nf90_inq_varid(initid,'FCAN',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icp1,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icp1,nmos]))
         FCANROT = reshape(temp4d,[nlat,nmos,icp1])
 
         call check_nc(nf90_inq_varid(initid,'LNZ0',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icp1,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icp1,nmos]))
         LNZ0ROT = reshape(temp4d,[nlat,nmos,icp1])
 
         call check_nc(nf90_inq_varid(initid,'ALVC',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icp1,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icp1,nmos]))
         ALVCROT = reshape(temp4d,[nlat,nmos,icp1])
 
         call check_nc(nf90_inq_varid(initid,'ALIC',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icp1,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icp1,nmos]))
         ALICROT = reshape(temp4d,[nlat,nmos,icp1])
 
         deallocate(temp4d)
 
-        allocate(temp4d(cntx,cnty,ican,nmos))
+        allocate(temp4d(1,1,ican,nmos))
 
         call check_nc(nf90_inq_varid(initid,'PAMN',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         PAMNROT = reshape(temp4d,[nlat,nmos,ican])
 
         call check_nc(nf90_inq_varid(initid,'PAMX',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         PAMXROT = reshape(temp4d,[nlat,nmos,ican])
 
         call check_nc(nf90_inq_varid(initid,'CMAS',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         CMASROT = reshape(temp4d,[nlat,nmos,ican])
 
         call check_nc(nf90_inq_varid(initid,'ROOT',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         ROOTROT = reshape(temp4d,[nlat,nmos,ican])
 
         call check_nc(nf90_inq_varid(initid,'RSMN',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         RSMNROT = reshape(temp4d,[nlat,nmos,ican])
 
         call check_nc(nf90_inq_varid(initid,'QA50',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         QA50ROT = reshape(temp4d,[nlat,nmos,ican])
 
         call check_nc(nf90_inq_varid(initid,'VPDA',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         VPDAROT = reshape(temp4d,[nlat,nmos,ican])
 
         call check_nc(nf90_inq_varid(initid,'VPDB',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         VPDBROT = reshape(temp4d,[nlat,nmos,ican])
 
         call check_nc(nf90_inq_varid(initid,'PSGA',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         PSGAROT = reshape(temp4d,[nlat,nmos,ican])
 
         call check_nc(nf90_inq_varid(initid,'PSGB',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ican,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ican,nmos]))
         PSGBROT = reshape(temp4d,[nlat,nmos,ican])
 
         deallocate(temp4d)
 
-        allocate(temp4d(cntx,cnty,ignd,nmos))
+        allocate(temp4d(1,1,ignd,nmos))
 
         call check_nc(nf90_inq_varid(initid,'SAND',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ignd,nmos]))
         SANDROT = reshape(temp4d,[nlat,nmos,ignd])
 
         call check_nc(nf90_inq_varid(initid,'CLAY',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ignd,nmos]))
         CLAYROT = reshape(temp4d,[nlat,nmos,ignd])
 
         call check_nc(nf90_inq_varid(initid,'ORGM',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ignd,nmos]))
         ORGMROT = reshape(temp4d,[nlat,nmos,ignd])
 
         call check_nc(nf90_inq_varid(initid,'TBAR',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ignd,nmos]))
         TBARROT = reshape(temp4d,[nlat,nmos,ignd])
 
         call check_nc(nf90_inq_varid(initid,'THLQ',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ignd,nmos]))
         THLQROT = reshape(temp4d,[nlat,nmos,ignd])
 
         call check_nc(nf90_inq_varid(initid,'THIC',varid))
-        call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+        call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,ignd,nmos]))
         THICROT = reshape(temp4d,[nlat,nmos,ignd])
 
         deallocate(temp4d)
 
         if (ctem_on) then
 
-            allocate(temptwod(cntx,cnty))
+            allocate(temptwod(1,1))
 
             ! The next are in ilg dimension so read in from nlat and spread to all tiles.
             call check_nc(nf90_inq_varid(initid,'grclarea',varid))
-            call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+            call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
             grclarea = reshape(temptwod,[ nlat ] )
 
             call check_nc(nf90_inq_varid(initid,'extnprob',varid))
-            call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+            call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
             extnprob(:,1) = reshape(temptwod,[ nlat ] )
 
             call check_nc(nf90_inq_varid(initid,'prbfrhuc',varid))
-            call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+            call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
             prbfrhuc(:,1) = reshape(temptwod,[ nlat ] )
 
             do i = 1,nmos
@@ -615,14 +622,14 @@ contains
 
             deallocate(temptwod)
 
-            allocate(temp3d(cntx,cnty,ignd))
+            allocate(temp3d(1,1,ignd))
 
             call check_nc(nf90_inq_varid(initid,'ZBOT',varid)) !make per tile in the future
-            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,ignd]))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,ignd]))
             ZBOT = reshape(temp3d,[ignd])
 
             call check_nc(nf90_inq_varid(initid,'DELZ',varid)) !make per tile in the future
-            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,ignd]))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,ignd]))
             DELZ = reshape(temp3d,[ignd])
 
             !do i = 1,nmos
@@ -647,10 +654,10 @@ contains
             deallocate(temp3d)
 
 
-            allocate(temp3d(cntx,cnty,12))
+            allocate(temp3d(1,1,12))
 
             call check_nc(nf90_inq_varid(initid,'mlightng',varid))
-            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,12]))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,12]))
             mlightng(:,1,:) = reshape(temp3d,[ nlat, 12 ] )
 
             do i = 1,nmos
@@ -659,47 +666,47 @@ contains
 
             deallocate(temp3d)
 
-            allocate(temp3di(cntx,cnty,nmos)) !this is an integer
+            allocate(temp3di(1,1,nmos)) !this is an integer
 
                 call check_nc(nf90_inq_varid(initid,'ipeatland',varid))
-                call check_nc(nf90_get_var(initid,varid,temp3di,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+                call check_nc(nf90_get_var(initid,varid,temp3di,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
                 ipeatlandrow = reshape(temp3di,[ nlat,nmos ] )
 
             deallocate(temp3di)
 
-            allocate(temp3d(cntx,cnty,nmos))
+            allocate(temp3d(1,1,nmos))
 
 
             call check_nc(nf90_inq_varid(initid,'Cmossmas',varid))
-            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
             Cmossmas = reshape(temp3d,[ nlat,nmos ] )
 
             call check_nc(nf90_inq_varid(initid,'litrmsmoss',varid))
-            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
             litrmsmoss = reshape(temp3d,[ nlat,nmos ] )
 
             call check_nc(nf90_inq_varid(initid,'dmoss',varid))
-            call check_nc(nf90_get_var(initid,varid,temp3d,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp3d,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
             dmoss = reshape(temp3d,[ nlat,nmos ] )
 
             deallocate(temp3d)
 
-            allocate(temp4d(cntx,cnty,icc,nmos))
+            allocate(temp4d(1,1,icc,nmos))
 
             !>The following three variables are needed to run CTEM. 1) min & 2) max leaf area index are needed to break
             !>class lai into dcd and evg for trees (for crops and grasses it doesn't matter much). 3) dvdfcanrow is
             !>needed to divide needle & broad leaf into dcd and evg, and crops & grasses into c3 and c4 fractions.
 
             call check_nc(nf90_inq_varid(initid,'ailcmin',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             ailcminrow = reshape(temp4d,[nlat,nmos,icc])
 
             call check_nc(nf90_inq_varid(initid,'ailcmax',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             ailcmaxrow = reshape(temp4d,[nlat,nmos,icc])
 
             call check_nc(nf90_inq_varid(initid,'dvdfcan',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             dvdfcanrow = reshape(temp4d,[nlat,nmos,icc])
 
             !>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
@@ -707,19 +714,19 @@ contains
             !>stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.
 
             call check_nc(nf90_inq_varid(initid,'gleafmas',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             gleafmasrow = reshape(temp4d,[nlat,nmos,icc])
 
             call check_nc(nf90_inq_varid(initid,'bleafmas',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             bleafmasrow = reshape(temp4d,[nlat,nmos,icc])
 
             call check_nc(nf90_inq_varid(initid,'stemmass',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             stemmassrow = reshape(temp4d,[nlat,nmos,icc])
 
             call check_nc(nf90_inq_varid(initid,'rootmass',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             rootmassrow = reshape(temp4d,[nlat,nmos,icc])
 
             !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
@@ -731,23 +738,23 @@ contains
             end if
 
             call check_nc(nf90_inq_varid(initid,'litrmass',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             litrmassrow = reshape(temp4d,[nlat,nmos,icc])
 
             call check_nc(nf90_inq_varid(initid,'soilcmas',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             soilcmasrow = reshape(temp4d,[nlat,nmos,icc])
 
             deallocate(temp4d)
 
-            allocate(temp4di(cntx,cnty,icc,nmos))
+            allocate(temp4di(1,1,icc,nmos))
 
             call check_nc(nf90_inq_varid(initid,'lfstatus',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4di,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4di,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             lfstatusrow = reshape(temp4di,[nlat,nmos,icc])
 
             call check_nc(nf90_inq_varid(initid,'pandays',varid))
-            call check_nc(nf90_get_var(initid,varid,temp4di,start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_get_var(initid,varid,temp4di,start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
             pandaysrow = reshape(temp4di,[nlat,nmos,icc])
 
             !call check_nc(nf90_inq_varid(initid,'stdaln',varid)) !FLAG - get rid of this? I don't see the use of stdaln
@@ -757,46 +764,46 @@ contains
 
             if (compete .and. inibioclim) then  !read in the bioclimatic parameters
 
-                allocate(temptwod(cntx,cnty))
+                allocate(temptwod(1,1))
 
                 call check_nc(nf90_inq_varid(initid,'twarmm',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 twarmm(:,1) = reshape(temptwod,[ nlat ] )
 
                 call check_nc(nf90_inq_varid(initid,'tcoldm',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 tcoldm(:,1) = reshape(temptwod,[ nlat ] )
 
                 call check_nc(nf90_inq_varid(initid,'gdd5',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 gdd5(:,1) = reshape(temptwod,[ nlat ] )
 
                 call check_nc(nf90_inq_varid(initid,'aridity',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 aridity(:,1) = reshape(temptwod,[ nlat ] )
 
                 call check_nc(nf90_inq_varid(initid,'srplsmon',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 srplsmon(:,1) = reshape(temptwod,[ nlat ] )
 
                 call check_nc(nf90_inq_varid(initid,'defctmon',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 defctmon(:,1) = reshape(temptwod,[ nlat ] )
 
                 call check_nc(nf90_inq_varid(initid,'anndefct',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 anndefct(:,1) = reshape(temptwod,[ nlat ] )
 
                 call check_nc(nf90_inq_varid(initid,'annsrpls',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 annsrpls(:,1) = reshape(temptwod,[ nlat ] )
 
                 call check_nc(nf90_inq_varid(initid,'annpcp',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 annpcp(:,1) = reshape(temptwod,[ nlat ] )
 
                 call check_nc(nf90_inq_varid(initid,'dry_season_length',varid))
-                call check_nc(nf90_get_var(initid,varid,temptwod,start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_get_var(initid,varid,temptwod,start=[lonIndex,latIndex],count=[1,1]))
                 dry_season_length(:,1) = reshape(temptwod,[ nlat ] )
 
                 deallocate(temptwod)
@@ -832,10 +839,10 @@ contains
 
             if (dowetlands) then !if true then read wetland fractions into the first tile position
 
-                allocate(temp4d(cntx,cnty,nmos,8))
+                allocate(temp4d(1,1,nmos,8))
 
                 call check_nc(nf90_inq_varid(initid,'slopefrac',varid))
-                call check_nc(nf90_get_var(initid,varid,temp4d,start=[srtx,srty,1,1],count=[cntx,cnty,nmos,8]))
+                call check_nc(nf90_get_var(initid,varid,temp4d,start=[lonIndex,latIndex,1,1],count=[1,1,nmos,8]))
                 slopefrac = reshape(temp4d,[ nlat,nmos, 8 ] )
 
                 deallocate(temp4d)
@@ -929,7 +936,7 @@ contains
 
     !---------------------------------------------------------------------------------------------
 
-    subroutine write_restart()
+    subroutine write_restart(lonIndex,latIndex)
 
         !! Write out the model restart file to netcdf. We only write out the variables that the model
         !! influences
@@ -939,12 +946,15 @@ contains
 
         use netcdf
         use netcdf_drivers, only : check_nc
-        use io_driver, only : rsid,cntx,cnty,srtx,srty
+        use io_driver, only : rsid
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
         use ctem_params,        only : icc,iccp1,nmos,ignd,icp1,nlat,ican,l2max,modelpft
 
         implicit none
+
+        ! arguments
+        integer, intent(in) :: lonIndex,latIndex
 
         ! pointers:
         real, pointer, dimension(:,:,:) :: FCANROT
@@ -1045,52 +1055,52 @@ contains
 
 
         call check_nc(nf90_inq_varid(rsid,'FARE',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(FAREROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(FAREROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'FCAN',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(FCANROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(FCANROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'FCAN',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(FCANROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(FCANROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'TBAR',varid))  ! Convert to deg C
-        call check_nc(nf90_put_var(rsid,varid,reshape(TBARROT,[ cntx,cnty,ignd,nmos ] )-273.16,start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(TBARROT,[ 1,1,ignd,nmos ] )-273.16,start=[lonIndex,latIndex,1,1],count=[1,1,ignd,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'THLQ',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(THLQROT,[ cntx,cnty,ignd,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(THLQROT,[ 1,1,ignd,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,ignd,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'THIC',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(THICROT,[ cntx,cnty,ignd,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,ignd,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(THICROT,[ 1,1,ignd,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,ignd,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'TCAN',varid)) ! Convert to deg C
-        call check_nc(nf90_put_var(rsid,varid,reshape(TCANROT,[ cntx,cnty,nmos ] )-273.16,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(TCANROT,[ 1,1,nmos ] )-273.16,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'TSNO',varid)) ! Convert to deg C
-        call check_nc(nf90_put_var(rsid,varid,reshape(TSNOROT,[ cntx,cnty,nmos ] )-273.16,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(TSNOROT,[ 1,1,nmos ] )-273.16,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'TPND',varid)) ! Convert to deg C
-        call check_nc(nf90_put_var(rsid,varid,reshape(TPNDROT,[ cntx,cnty,nmos ] )-273.16,start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(TPNDROT,[ 1,1,nmos ] )-273.16,start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'ZPND',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(ZPNDROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(ZPNDROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'RCAN',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(RCANROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(RCANROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'SCAN',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(SCANROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(SCANROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'SNO',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(SNOROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(SNOROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'ALBS',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(ALBSROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(ALBSROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'RHOS',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(RHOSROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(RHOSROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         call check_nc(nf90_inq_varid(rsid,'GRO',varid))
-        call check_nc(nf90_put_var(rsid,varid,reshape(GROROT,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+        call check_nc(nf90_put_var(rsid,varid,reshape(GROROT,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
         if (ctem_on) then
 
@@ -1158,78 +1168,78 @@ contains
             end if !lnuse/compete
 
             call check_nc(nf90_inq_varid(rsid,'ailcmin',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(ailcminrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(ailcminrow,[ 1,1,icc,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'ailcmax',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(ailcmaxrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(ailcmaxrow,[ 1,1,icc,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'dvdfcan',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(dvdfcanrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(dvdfcanrow,[ 1,1,icc,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'gleafmas',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(gleafmasrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(gleafmasrow,[ 1,1,icc,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'bleafmas',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(bleafmasrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(bleafmasrow,[ 1,1,icc,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'stemmass',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(stemmassrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(stemmassrow,[ 1,1,icc,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'rootmass',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(bleafmasrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(bleafmasrow,[ 1,1,icc,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'litrmass',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(litrmassrow,[ cntx,cnty,iccp1,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,iccp1,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(litrmassrow,[ 1,1,iccp1,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,iccp1,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'soilcmas',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(soilcmasrow,[ cntx,cnty,iccp1,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,iccp1,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(soilcmasrow,[ 1,1,iccp1,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,iccp1,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'lfstatus',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(lfstatusrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(lfstatusrow,[ 1,1,icc,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'pandays',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(pandaysrow,[ cntx,cnty,icc,nmos ] ),start=[srtx,srty,1,1],count=[cntx,cnty,icc,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(pandaysrow,[ 1,1,icc,nmos ] ),start=[lonIndex,latIndex,1,1],count=[1,1,icc,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'Cmossmas',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(Cmossmas,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(Cmossmas,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'litrmsmoss',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(litrmsmoss,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(litrmsmoss,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
             call check_nc(nf90_inq_varid(rsid,'dmoss',varid))
-            call check_nc(nf90_put_var(rsid,varid,reshape(dmoss,[ cntx,cnty,nmos ] ),start=[srtx,srty,1],count=[cntx,cnty,nmos]))
+            call check_nc(nf90_put_var(rsid,varid,reshape(dmoss,[ 1,1,nmos ] ),start=[lonIndex,latIndex,1],count=[1,1,nmos]))
 
             if (compete) then
 
                 call check_nc(nf90_inq_varid(rsid,'twarmm',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(twarmm,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(twarmm,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
                 call check_nc(nf90_inq_varid(rsid,'tcoldm',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(tcoldm,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(tcoldm,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
                 call check_nc(nf90_inq_varid(rsid,'gdd5',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(gdd5,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(gdd5,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
                 call check_nc(nf90_inq_varid(rsid,'aridity',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(aridity,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(aridity,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
                 call check_nc(nf90_inq_varid(rsid,'srplsmon',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(srplsmon,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(srplsmon,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
                 call check_nc(nf90_inq_varid(rsid,'defctmon',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(defctmon,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(defctmon,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
                 call check_nc(nf90_inq_varid(rsid,'anndefct',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(anndefct,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(anndefct,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
                 call check_nc(nf90_inq_varid(rsid,'annsrpls',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(annsrpls,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(annsrpls,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
                 call check_nc(nf90_inq_varid(rsid,'annpcp',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(annpcp,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(annpcp,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
                 call check_nc(nf90_inq_varid(rsid,'dry_season_length',varid))
-                call check_nc(nf90_put_var(rsid,varid,reshape(dry_season_length,[ cntx,cnty ] ),start=[srtx,srty],count=[cntx,cnty]))
+                call check_nc(nf90_put_var(rsid,varid,reshape(dry_season_length,[ 1,1 ] ),start=[lonIndex,latIndex],count=[1,1]))
 
             end if ! compete
 

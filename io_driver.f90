@@ -66,7 +66,7 @@ real, dimension(2) :: xrange
 real, dimension(2) :: yrange
 integer :: validCount   !> number of land cells that the model will run over
 real, allocatable, dimension(:)  :: validLon, validLat !> arrays of the longitude or latitude of land cells
-
+integer, allocatable, dimension(:)  :: validLonIndex, validLatIndex !> arrays of indexes of the longitude or latitude of land cells
 real, parameter :: fill_value = 1.e38         !value given for empty fields in the NetCDF output files
 character(30) :: timestart = "seconds since 1801-1-1"
 

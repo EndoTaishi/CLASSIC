@@ -6,24 +6,24 @@ OBJ = ctem_params.o ctem_statevars.o  peatlands_mod.o class_statevars.o APREP.o 
 BDIR = ../bin
 
 # GNU Fortran
-FC=gfortran
+FC=mpif90 #gfortran
 MPIC=mpif90
 NETCDFDIR=${HOME}/Public/NETCDF_GF
 
 export LD_LIBRARY_PATH=$HOME/Public/NETCDF_GF/lib/
 
-FC := $(shell $(NETCDFDIR)/bin/nf-config --fc)
+#FC := $(shell $(NETCDFDIR)/bin/nf-config --fc)
 FFLAGS := $(shell $(NETCDFDIR)/bin/nf-config --fflags)
 LDLIBS := $(shell $(NETCDFDIR)/bin/nf-config --flibs)
 LDLIBS += $(shell $(NETCDFDIR)/bin/nc-config --libs)
 
 # Optimized running of model ----------------
-#FFLAGS += -O3
+#FFLAGS += -O3 -ffree-line-length-none
 
 # Debugging of model ----------------
 
 #GNU
-FFLAGS += -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -Waliasing -Wampersand -Wconversion -Wsurprising -Wintrinsics-std -Wno-tabs -Wintrinsic-shadow -L/usr/local/zlib-1.2.5/lib -lz -lcurl
+FFLAGS += -g -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -Wall -Wextra
 
 # Other option is -Og which allows optimization but still debugs well.
 

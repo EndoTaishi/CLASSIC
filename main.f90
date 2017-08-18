@@ -12,7 +12,7 @@ module main
 
 contains
 
-    subroutine main_driver(longitude, latitude)
+    subroutine main_driver(longitude, latitude, lonIndex, latIndex)
         !
         !>
         !!------------------------------------------------------------------
@@ -79,6 +79,7 @@ contains
 
         ! Flag test
         real, intent(in) :: longitude, latitude
+        integer, intent(in) :: lonIndex, latIndex
 
         INTEGER NLTEST  !<Number of grid cells being modelled for this run
         INTEGER NMTEST  !<Number of mosaic tiles per grid cell being modelled for this run
@@ -2800,6 +2801,7 @@ contains
 
         !    =================================================================================
 
+        ! FLAG - later figure out if I need the nltest, nmtest vars. - JM
         nltest = nlat
         nmtest = nmos
         NTLD=NMOS
@@ -2814,6 +2816,7 @@ contains
         CALL CLASSD
 
         ! Initialize the CTEM parameters, this reads them in from a namelist file.
+        ! FLAG may convert to xml later - JM
         call readin_params(runparams_file,compete)
 
         ! Allocate the local variables that rely on nlat, ilg, etc.
@@ -2990,11 +2993,6 @@ contains
       open(unit=90,file='test.CT18Y_G') !peatland depth information
       
 !    YW March 25, 2015 ----------------------------------------------/
-
-       ! Set up the CTEM half-hourly, daily, monthly and yearly files (if any needed), also
-       ! setup the CLASS monthly and annual output files:
-
-       call create_outfiles()
 
         IF(CTEM_ON) THEN
 
@@ -3212,8 +3210,8 @@ contains
 
         !>    Read in the initial model conditions from the restart file
         !!    (replacing the INI and CTM files).
-        call read_initialstate()
-
+        call read_initialstate(lonIndex,latIndex)
+        goto 5123 !FLAG!!
         !     Complete some initial set up work:
 
         DO 100 I=1,NLTEST
@@ -5846,7 +5844,10 @@ contains
 
                 WRITE(*,*)& !'(6A,5I,13A,5I,9A,5I,6A,5I)')&
                     'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR,'CO2YEAR =',co2yr,'LUCYR=',lucyr
-                call write_restart()
+5123    continue
+                print*,'starting to write restart'
+                call write_restart(lonIndex,latIndex)
+                print*,'done write restart'
 
             endif ! if iday=365/366
                                         !
