@@ -1,9 +1,10 @@
 #define dataPack type(dataPackage)
-module serialFileIOModule
+module fileIOModule
     use netcdf
     use dataTransferModule
     implicit none
 contains
+    ! File APIs
     integer function ncOpen(fileName, omode)
         implicit none
         character(*), intent(in)    :: fileName
@@ -282,4 +283,4 @@ contains
         ncGetDimLen = dimLen
     end function ncGetDimLen
 
-end module serialFileIOModule
+end module fileIOModule

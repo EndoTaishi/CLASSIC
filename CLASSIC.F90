@@ -7,8 +7,9 @@
 program CLASSIC
 
     ! Joe Melton and Ed Wisernig @ 2017
-
+#if PARALLEL
     use mpi
+#endif
     use io_driver
     use model_state_drivers,    only : read_modelsetup
     use netcdf_drivers,         only : create_out_netcdf
@@ -43,25 +44,25 @@ program CLASSIC
     ! that is written to later.
     call read_modelsetup
 
-    ! Execute the following only on the main thread (see supportFunctions.f90)
-    if (isMainProcess(rank)) then
-
-        ! Generate the output files based on options in the joboptions file
-        ! and the parameters of the initilization netcdf file.
-        !call create_out_netcdf
-        ready_to_go = .true.
-
-    endif
-
-    ! The other threads will wait until the output files are all finished being
-    ! created above.
-    call MPI_BCAST(ready_to_go, 1, MPI_LOGICAL, 0, MPI_COMM_WORLD, ierr)
+!    ! Execute the following only on the main thread (see supportFunctions.f90)
+!    if (isMainProcess(rank)) then
+!
+!        ! Generate the output files based on options in the joboptions file
+!        ! and the parameters of the initilization netcdf file.
+!        !call create_out_netcdf
+!        ready_to_go = .true.
+!
+!    endif
+!
+!    ! The other threads will wait until the output files are all finished being
+!    ! created above.
+!    call MPI_BCAST(ready_to_go, 1, MPI_LOGICAL, 0, MPI_COMM_WORLD, ierr)
 
     ! Run model over the land grid cells, in parallel
     call processLandCells
 
     ! Shut down the MPI session
-    call MPI_FINALIZE(ierr)
+    !call MPI_FINALIZE(ierr)
 
     ! END MAIN PROGRAM
 
@@ -97,6 +98,8 @@ program CLASSIC
     !------------------
 
     subroutine initializeParallelEnvironment
+        implicit none
+#if PARALLEL
 
         ! INITIALIZE MPI
         ! This section initializes the MPI environment
@@ -105,7 +108,7 @@ program CLASSIC
         time = MPI_WTIME()
         call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierr)
         call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierr)
-        
+#endif
     end subroutine initializeParallelEnvironment
 
     !------------------
