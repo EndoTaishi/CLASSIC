@@ -12,7 +12,7 @@ program CLASSIC
 #endif
     use io_driver
     use model_state_drivers,    only : read_modelsetup
-    use netcdf_drivers,         only : create_out_netcdf
+    !use netcdf_drivers,         only : create_out_netcdf
     use readjobopts,            only : read_from_job_options
     use main,                   only : main_driver
     use ctem_statevars,         only : alloc_ctem_vars
@@ -44,33 +44,35 @@ program CLASSIC
     ! that is written to later.
     call read_modelsetup
 
-!    ! Execute the following only on the main thread (see supportFunctions.f90)
-!    if (isMainProcess(rank)) then
-!
-!        ! Generate the output files based on options in the joboptions file
-!        ! and the parameters of the initilization netcdf file.
-!        !call create_out_netcdf
-!        ready_to_go = .true.
-!
-!    endif
-!
-!    ! The other threads will wait until the output files are all finished being
-!    ! created above.
-!    call MPI_BCAST(ready_to_go, 1, MPI_LOGICAL, 0, MPI_COMM_WORLD, ierr)
+#if PARALLEL
+    ! Execute the following only on the main thread (see supportFunctions.f90)
+    if (isMainProcess(rank)) then
 
+        ! Generate the output files based on options in the joboptions file
+        ! and the parameters of the initilization netcdf file.
+        !call create_out_netcdf
+        ready_to_go = .true.
+
+    endif
+
+    ! The other threads will wait until the output files are all finished being
+    ! created above.
+    call MPI_BCAST(ready_to_go, 1, MPI_LOGICAL, 0, MPI_COMM_WORLD, ierr)
+#endif
     ! Run model over the land grid cells, in parallel
     call processLandCells
 
     ! Shut down the MPI session
-    !call MPI_FINALIZE(ierr)
+    call finalizeParallelEnvironment
 
-    ! END MAIN PROGRAM
+! END MAIN PROGRAM
 
-    !------------------
+!------------------
 
-    contains
+contains
 
     subroutine processLandCells
+        implicit none
 
         ! PROCESS LAND CELLS
         ! This section runs the model over all of the land cells. There are validCount valid(i.e. land) cells, stored in validLon
@@ -91,7 +93,7 @@ program CLASSIC
 
         cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells (NEEDS BETTER DESCRIPTION)
         if (rank < remainder) call main_driver(validLon(cell),validLat(cell),&
-                                               validLonIndex(cell),validLatIndex(cell))
+        validLonIndex(cell),validLatIndex(cell))
 
     end subroutine processLandCells
 
@@ -100,16 +102,21 @@ program CLASSIC
     subroutine initializeParallelEnvironment
         implicit none
 #if PARALLEL
-
-        ! INITIALIZE MPI
-        ! This section initializes the MPI environment
-
         call MPI_INIT(ierr)
         time = MPI_WTIME()
         call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierr)
         call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierr)
 #endif
     end subroutine initializeParallelEnvironment
+
+    !------------------
+
+    subroutine finalizeParallelEnvironment
+        implicit none
+#if PARALLEL
+        call MPI_FINALIZE(ierr)
+#endif
+    end subroutine finalizeParallelEnvironment
 
     !------------------
 

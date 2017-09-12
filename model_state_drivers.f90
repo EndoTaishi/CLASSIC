@@ -27,8 +27,8 @@ contains
 
         ! J. Melton
         ! Feb 2017
-        use netcdf
-        use netcdf_drivers, only : check_nc
+        !use netcdf
+        !use netcdf_drivers, only : check_nc
         !use fileIOModule, only : ncOpen, ncGetDimLen, ncGet1DVar, ncGet2DVar, ncGetDimValues
         use io_driver, only : initid,rsid,bounds,lonvect,latvect,&
                               validCount,validLon,validLat,validLonIndex,validLatIndex
@@ -1010,7 +1010,8 @@ contains
         end if !ctem_on
 
     ! We are done with the file so close it:
-    call check_nc(nf90_close(initid))
+    !call check_nc(nf90_close(initid))
+    call ncClose(initid)
 
     end subroutine read_initialstate
 
@@ -1024,7 +1025,7 @@ contains
         ! J. Melton
         ! Jun 2017
 
-        use netcdf
+        !use netcdf
         !use netcdf_drivers, only : check_nc
         !use serialFileIOModule
         use io_driver, only : rsid
