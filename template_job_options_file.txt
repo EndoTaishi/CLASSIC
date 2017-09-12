@@ -40,9 +40,9 @@
  use_netcdf = .true.,
 
  met_file = '/raid/ra40/data/rjm/CRUNCEP_MET_data/t63files/cruncepv7_1901_2015_T63.nc' ,
- init_file = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_initialization_peatlands.nc' ,
- rs_file_to_overwrite = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_restart.nc' ,
- runparams_file = '/home/rjm/Documents/CTEM/CLASS36CTEM/src/template_run_parameters.txt' ,
+ init_file = 'initFile.nc' ,
+ rs_file_to_overwrite = 'restartFile.nc' ,
+ runparams_file = 'template_run_parameters.txt' ,
 
  IDISP = 0 ,
  IZREF = 2 ,
