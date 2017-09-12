@@ -2910,6 +2910,14 @@ contains
             cylucyr = popcycleyr !-9999
         end if
 
+
+! FLAG testing for Ed!!! (moved up)
+        call read_initialstate(lonIndex,latIndex)
+                print*,'starting to write restart'
+                call write_restart(lonIndex,latIndex)
+                print*,'done write restart'
+stop
+
         !     CTEM initialization done
 
         !     open files for reading and writing. these are for coupled model (class_ctem)
@@ -5848,8 +5856,9 @@ contains
                 print*,'starting to write restart'
                 call write_restart(lonIndex,latIndex)
                 print*,'done write restart'
-
             endif ! if iday=365/366
+
+
                                         !
 7011  format(12f8.2)     !YW April 14, 2015
 7012  format(12i8)        !FLAG, needed?

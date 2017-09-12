@@ -42,7 +42,7 @@
  met_file = '/raid/ra40/data/rjm/CRUNCEP_MET_data/t63files/cruncepv7_1901_2015_T63.nc' ,
  init_file = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_initialization_peatlands.nc' ,
  rs_file_to_overwrite = '/home/rjm/Documents/CTEM/Model_restart_netcdf/CLASSCTEM_restart.nc' ,
- runparams_file = '/home/rjm/Documents/CLASSIC/ConfigurationFiles/template_run_parameters.txt' ,
+ runparams_file = 'ConfigurationFiles/template_run_parameters.txt' ,
 
  IDISP = 0 ,
  IZREF = 2 ,
@@ -61,7 +61,7 @@
 
  ! Output options:
  output_directory = '/home/rjm/Documents/CTEM/test'
- xmlFile = '/home/rjm/Documents/CLASSIC/ConfigurationFiles/outputVariableDescriptors.xml'
+ xmlFile = 'ConfigurationFiles/outputVariableDescriptors.xml'
 
  doperpftoutput = .true. ,
  dopertileoutput = .true. ,

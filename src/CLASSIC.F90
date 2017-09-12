@@ -14,7 +14,7 @@ program CLASSIC
     use model_state_drivers,    only : read_modelsetup
     !use netcdf_drivers,         only : create_out_netcdf
     use xmlManager,             only : loadoutputDescriptor
-    use outputManager,          only : generateOutputVariables
+    !use outputManager,          only : generateOutputVariables
     use readjobopts,            only : read_from_job_options
     use main,                   only : main_driver
     use ctem_statevars,         only : alloc_ctem_vars
@@ -56,7 +56,7 @@ program CLASSIC
         ! Generate the output files based on options in the joboptions file
         ! and the parameters of the initilization netcdf file.
         !call create_out_netcdf
-        call generateOutputVariables
+        !call generateOutputVariables
 
         ready_to_go = .true.
 

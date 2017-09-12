@@ -4,7 +4,7 @@ module readjobopts
 
     implicit none
 
-public :: read_from_job_options
+    public :: read_from_job_options
     public :: parsecoords
 
 contains
@@ -416,7 +416,7 @@ argcount = iargc()
       end if
 
 call getarg(1,jobfile)
-
+print*,jobfile
 open(10,file=jobfile,action='read',status='old')
 
 read(10,nml = joboptions)
