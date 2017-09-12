@@ -1,0 +1,123 @@
+\hypertarget{CHKWAT_8f}{}\section{src/\+C\+H\+K\+W\+A\+T.f File Reference}
+\label{CHKWAT_8f}\index{src/\+C\+H\+K\+W\+A\+T.\+f@{src/\+C\+H\+K\+W\+A\+T.\+f}}
+
+
+Purpose\+: Check for closure of surface water budget, and for unphysical values of certain variables.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{CHKWAT_8f_ae24f10ada6d260b942e1b64c3dc5a310}{chkwat} (I\+S\+F\+C, P\+C\+P\+R, E\+V\+A\+P, R\+U\+N\+O\+F\+F, W\+L\+O\+S\+T, R\+A\+I\+C\+A\+N, S\+N\+O\+C\+A\+N, R\+A\+I\+C\+N\+I, S\+N\+O\+C\+N\+I, Z\+P\+O\+N\+D, Z\+P\+O\+N\+D\+I, T\+H\+L\+I\+Q, T\+H\+I\+C\+E, T\+H\+L\+I\+Q\+I, T\+H\+I\+C\+E\+I, Z\+S\+N\+O\+W, R\+H\+O\+S\+N\+O, X\+S\+N\+O\+W, S\+N\+O\+W\+I, W\+S\+N\+O\+W, W\+S\+N\+O\+W\+I, F\+C\+S, F\+G\+S, F\+I, B\+A\+L, T\+H\+P\+O\+R, T\+H\+L\+M\+I\+N, D\+E\+L\+Z\+W, I\+S\+A\+N\+D, I\+G, I\+L\+G, I\+L1, I\+L2, J\+L, N)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Check for closure of surface water budget, and for unphysical values of certain variables. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{CHKWAT_8f_ae24f10ada6d260b942e1b64c3dc5a310}{}\index{C\+H\+K\+W\+A\+T.\+f@{C\+H\+K\+W\+A\+T.\+f}!chkwat@{chkwat}}
+\index{chkwat@{chkwat}!C\+H\+K\+W\+A\+T.\+f@{C\+H\+K\+W\+A\+T.\+f}}
+\subsubsection[{chkwat}]{\setlength{\rightskip}{0pt plus 5cm}subroutine chkwat (
+\begin{DoxyParamCaption}
+\item[{integer}]{I\+S\+F\+C, }
+\item[{real, dimension  (ilg)}]{P\+C\+P\+R, }
+\item[{real, dimension  (ilg)}]{E\+V\+A\+P, }
+\item[{real, dimension(ilg)}]{R\+U\+N\+O\+F\+F, }
+\item[{real, dimension (ilg)}]{W\+L\+O\+S\+T, }
+\item[{real, dimension(ilg)}]{R\+A\+I\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{S\+N\+O\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{R\+A\+I\+C\+N\+I, }
+\item[{real, dimension(ilg)}]{S\+N\+O\+C\+N\+I, }
+\item[{real, dimension (ilg)}]{Z\+P\+O\+N\+D, }
+\item[{real, dimension(ilg)}]{Z\+P\+O\+N\+D\+I, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+L\+I\+Q, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+I\+C\+E, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+I\+Q\+I, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+C\+E\+I, }
+\item[{real, dimension (ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+O, }
+\item[{real, dimension (ilg)}]{X\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{S\+N\+O\+W\+I, }
+\item[{real, dimension (ilg)}]{W\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{W\+S\+N\+O\+W\+I, }
+\item[{real, dimension   (ilg)}]{F\+C\+S, }
+\item[{real, dimension   (ilg)}]{F\+G\+S, }
+\item[{real, dimension    (ilg)}]{F\+I, }
+\item[{real, dimension   (ilg)}]{B\+A\+L, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+P\+O\+R, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+M\+I\+N, }
+\item[{real, dimension (ilg,ig)}]{D\+E\+L\+Z\+W, }
+\item[{integer, dimension (ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{N}
+\end{DoxyParamCaption}
+)}\label{CHKWAT_8f_ae24f10ada6d260b942e1b64c3dc5a310}
+
+\begin{DoxyParams}{Parameters}
+{\em pcpr} & Precipitation rate over modelled subarea $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em evap} & Evapotranspiration rate over modelled subarea $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em runoff} & Total runoff over modelled subarea \mbox{[}m\mbox{]}\\
+\hline
+{\em wlost} & Residual amount of water that cannot be supplied by surface stores $[kg m^{-2}]$\\
+\hline
+{\em raican} & Intercepted liquid water on canopy at end of time step $[kg m^{-2}]$\\
+\hline
+{\em snocan} & Intercepted frozen water on canopy at end of time step $[kg m^{-2}]$\\
+\hline
+{\em raicni} & Intercepted liquid water on canopy at beginning of time step $[kg m^{-2}]$\\
+\hline
+{\em snocni} & Intercepted frozen water on canopy at beginning of time step $[kg m^{-2}]$\\
+\hline
+{\em zpond} & Depth of ponded water on ground at end of time step \mbox{[}m\mbox{]}\\
+\hline
+{\em zpondi} & Depth of ponded water on ground at beginning of time step \mbox{[}m\mbox{]}\\
+\hline
+{\em zsnow} & Depth of snow pack \mbox{[}m\mbox{]}\\
+\hline
+{\em rhosno} & Density of snow pack $[kg m^{-3}]$\\
+\hline
+{\em xsnow} & Switch to indicate presence of snow cover \mbox{[} \mbox{]}\\
+\hline
+{\em snowi} & Snow pack mass at beginning of time step $[kg m^{-2}]$\\
+\hline
+{\em wsnow} & Liquid water content of snow pack at end of time step $[kg m^{-2}]$\\
+\hline
+{\em wsnowi} & Liquid water content of snow pack at beginning of time step $[kg m^{-2}]$\\
+\hline
+{\em fcs} & Fractional coverage of canopy over snow on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fgs} & Fractional coverage of snow over bare ground on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fi} & Fractional coverage of subarea in question on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em thliq} & Volumetric liquid water content of soil layers at end of time step $[m^3 m^{-3}]$\\
+\hline
+{\em thice} & Volumetric frozen water content of soil layers at end of time step $[m^3 m^{-3}]$\\
+\hline
+{\em thliqi} & Volumetric frozen water content of soil layers at beginning of time step $[m^3 m^{-3}]$\\
+\hline
+{\em thicei} & Volumetric frozen water content of soil layers at beginning of time step $[m^3 m^{-3}]$\\
+\hline
+{\em thpor} & Pore volume in soil layer $[m^3 m^{-3}]$\\
+\hline
+{\em thlmin} & Residual soil liquid water content remaining after freezing or evaporation $[m^3 m^{-3}]$\\
+\hline
+{\em delzw} & Permeable depth of soil layer \mbox{[}m\mbox{]} \\
+\hline
+\end{DoxyParams}
+This subroutine is called from C\+L\+A\+S\+S\+W to perform water balance checks for each of the four subareas. The flag I\+S\+F\+C indicates which subarea is being addressed\+: I\+S\+F\+C=1 for vegetation over snow, I\+S\+F\+C=2 for snow over bare ground, I\+S\+F\+C=3 for vegetation over bare ground, and I\+S\+F\+C=4 for bare ground. If a problem is discovered, a flag is set to the index of the modelled area, and a call to X\+I\+T is performed with an error message. Checks for unphysical values of certain water balance variables are performed against an accuracy limit A\+C\+C\+L\+M\+T, currently set to $1x10^{-3} kg m^{-2}$ or $m^3 m^{-3}$. The overall water balance of the subarea is checked against an accuracy limit B\+A\+L\+L\+M\+T, currently set to $1x10^{-1} kg m^{-2}$. (These values reflect expected roundoff errors associated with 32-\/bit computation.)
+
+In loop 100, for canopy-\/covered subareas, the intercepted rain R\+A\+I\+C\+A\+N and snow S\+N\+O\+C\+A\+N are checked to ensure that if they are negative, they are vanishingly small. A similar check is done for the runoff.
+
+In the 150 loop, for all areas that are not continental ice sheets (I\+S\+A\+N\+D=-\/4), the liquid water content in each soil layer is checked to ensure that it is not larger than the pore volume and that it is not smaller than the minimum liquid water content (except for rock layers). The ice content is similarly checked to ensure that the sum of it, converted to an equivalent liquid water content, plus the minimum water content, is not greater than the pore volume (except for rock layers). It is also checked to ensure that if it is negative, it is vanishingly small.
+
+Finally, in loop 300, the overall water balance B\+A\+L is calculated and compared to B\+A\+L\+L\+M\+T. B\+A\+L is evaluated as the residual of the precipitation, the evaporation, the runoff, the water loss term W\+L\+O\+S\+T, the change in canopy intercepted liquid and frozen water (for vegetation-\/covered areas), the change in surface ponded water, the change in snow pack and snow liquid water content (for snow-\/covered areas), and the changes in the soil layer liquid and frozen water contents. If the absolute value of B\+A\+L is greater than B\+A\+L\+L\+M\+T, a flag is set, all of the terms entering B\+A\+L are printed out, and a call to X\+I\+T is performed.

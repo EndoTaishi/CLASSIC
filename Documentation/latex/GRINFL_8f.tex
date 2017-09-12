@@ -1,0 +1,220 @@
+\hypertarget{GRINFL_8f}{}\section{src/\+G\+R\+I\+N\+F\+L.f File Reference}
+\label{GRINFL_8f}\index{src/\+G\+R\+I\+N\+F\+L.\+f@{src/\+G\+R\+I\+N\+F\+L.\+f}}
+
+
+Purpose\+: Quantify movement of liquid water between soil layers under conditions of infiltration.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4}{grinfl} (I\+V\+E\+G, T\+H\+L\+I\+Q, T\+H\+I\+C\+E, T\+B\+A\+R\+W, B\+A\+S\+F\+L\+W, T\+B\+A\+S\+F\+L, R\+U\+N\+O\+F\+F, T\+R\+U\+N\+O\+F, Z\+F\+A\+V, L\+Z\+F\+A\+V, T\+H\+L\+I\+N\+V, Q\+F\+G, W\+L\+O\+S\+T, F\+I, E\+V\+A\+P, R, T\+R, T\+P\+O\+N\+D, Z\+P\+O\+N\+D, D\+T, Z\+M\+A\+T, W\+M\+O\+V\+E, T\+M\+O\+V\+E, T\+H\+L\+I\+Q\+X, T\+H\+I\+C\+E\+X, T\+B\+A\+R\+W\+X, D\+E\+L\+Z\+X, Z\+B\+O\+T\+X, F\+D\+T, T\+F\+D\+T, P\+S\+I\+F, T\+H\+L\+I\+N\+F, G\+R\+K\+I\+N\+F, T\+H\+L\+M\+A\+X, T\+H\+T\+E\+S\+T, Z\+R\+M\+D\+R, F\+D\+U\+M\+M\+Y, T\+D\+U\+M\+M\+Y, T\+H\+L\+D\+U\+M, T\+H\+I\+D\+U\+M, T\+D\+U\+M\+W, T\+R\+M\+D\+R, Z\+F, F\+M\+A\+X, T\+U\+S\+E\+D, R\+D\+U\+M\+M\+Y, Z\+E\+R\+O, W\+E\+X\+C\+E\+S, F\+D\+T\+B\+N\+D, W\+A\+D\+D, T\+A\+D\+D, W\+A\+D\+J, T\+I\+M\+P\+N\+D, D\+Z\+F, D\+T\+F\+L\+O\+W, T\+H\+L\+N\+L\+Z, T\+H\+L\+Q\+L\+Z, D\+Z\+D\+I\+S\+P, W\+D\+I\+S\+P, W\+A\+B\+S, T\+H\+P\+O\+R, T\+H\+L\+R\+E\+T, T\+H\+L\+M\+I\+N, B\+I, P\+S\+I\+S\+A\+T, G\+R\+K\+S\+A\+T, T\+H\+L\+R\+A\+T, T\+H\+F\+C, D\+E\+L\+Z\+W, Z\+B\+O\+T\+W, X\+D\+R\+A\+I\+N, D\+E\+L\+Z, I\+S\+A\+N\+D, I\+G\+R\+N, I\+G\+R\+D, I\+F\+I\+L\+L, I\+Z\+E\+R\+O, L\+Z\+F, N\+I\+N\+F, I\+F\+I\+N\+D, I\+T\+E\+R, N\+E\+N\+D, I\+S\+I\+M\+P, I\+G\+D\+R, I\+G, I\+G\+P1, I\+G\+P2, I\+L\+G, I\+L1, I\+L2, J\+L, N)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Quantify movement of liquid water between soil layers under conditions of infiltration. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4}{}\index{G\+R\+I\+N\+F\+L.\+f@{G\+R\+I\+N\+F\+L.\+f}!grinfl@{grinfl}}
+\index{grinfl@{grinfl}!G\+R\+I\+N\+F\+L.\+f@{G\+R\+I\+N\+F\+L.\+f}}
+\subsubsection[{grinfl}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grinfl (
+\begin{DoxyParamCaption}
+\item[{integer}]{I\+V\+E\+G, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+L\+I\+Q, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+I\+C\+E, }
+\item[{real, dimension (ilg,ig)}]{T\+B\+A\+R\+W, }
+\item[{real, dimension(ilg)}]{B\+A\+S\+F\+L\+W, }
+\item[{real, dimension(ilg)}]{T\+B\+A\+S\+F\+L, }
+\item[{real, dimension(ilg)}]{R\+U\+N\+O\+F\+F, }
+\item[{real, dimension(ilg)}]{T\+R\+U\+N\+O\+F, }
+\item[{real, dimension  (ilg)}]{Z\+F\+A\+V, }
+\item[{integer, dimension (ilg)}]{L\+Z\+F\+A\+V, }
+\item[{real, dimension(ilg)}]{T\+H\+L\+I\+N\+V, }
+\item[{real, dimension   (ilg)}]{Q\+F\+G, }
+\item[{real, dimension (ilg)}]{W\+L\+O\+S\+T, }
+\item[{real, dimension    (ilg)}]{F\+I, }
+\item[{real, dimension  (ilg)}]{E\+V\+A\+P, }
+\item[{real, dimension     (ilg)}]{R, }
+\item[{real, dimension    (ilg)}]{T\+R, }
+\item[{real, dimension (ilg)}]{T\+P\+O\+N\+D, }
+\item[{real, dimension (ilg)}]{Z\+P\+O\+N\+D, }
+\item[{real, dimension    (ilg)}]{D\+T, }
+\item[{real, dimension  (ilg,igp2,igp1)}]{Z\+M\+A\+T, }
+\item[{real, dimension (ilg,igp2)}]{W\+M\+O\+V\+E, }
+\item[{real, dimension (ilg,igp2)}]{T\+M\+O\+V\+E, }
+\item[{real, dimension(ilg,igp1)}]{T\+H\+L\+I\+Q\+X, }
+\item[{real, dimension(ilg,igp1)}]{T\+H\+I\+C\+E\+X, }
+\item[{real, dimension(ilg,igp1)}]{T\+B\+A\+R\+W\+X, }
+\item[{real, dimension (ilg,igp1)}]{D\+E\+L\+Z\+X, }
+\item[{real, dimension (ilg,igp1)}]{Z\+B\+O\+T\+X, }
+\item[{real, dimension   (ilg,igp1)}]{F\+D\+T, }
+\item[{real, dimension  (ilg,igp1)}]{T\+F\+D\+T, }
+\item[{real, dimension  (ilg,igp1)}]{P\+S\+I\+F, }
+\item[{real, dimension(ilg,igp1)}]{T\+H\+L\+I\+N\+F, }
+\item[{real, dimension(ilg,igp1)}]{G\+R\+K\+I\+N\+F, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+M\+A\+X, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+T\+E\+S\+T, }
+\item[{real, dimension (ilg,igp1)}]{Z\+R\+M\+D\+R, }
+\item[{real, dimension(ilg,igp1)}]{F\+D\+U\+M\+M\+Y, }
+\item[{real, dimension(ilg,igp1)}]{T\+D\+U\+M\+M\+Y, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+D\+U\+M, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+D\+U\+M, }
+\item[{real, dimension (ilg,ig)}]{T\+D\+U\+M\+W, }
+\item[{real, dimension (ilg)}]{T\+R\+M\+D\+R, }
+\item[{real, dimension    (ilg)}]{Z\+F, }
+\item[{real, dimension  (ilg)}]{F\+M\+A\+X, }
+\item[{real, dimension (ilg)}]{T\+U\+S\+E\+D, }
+\item[{real, dimension(ilg)}]{R\+D\+U\+M\+M\+Y, }
+\item[{real, dimension  (ilg)}]{Z\+E\+R\+O, }
+\item[{real, dimension(ilg)}]{W\+E\+X\+C\+E\+S, }
+\item[{real, dimension(ilg)}]{F\+D\+T\+B\+N\+D, }
+\item[{real, dimension  (ilg)}]{W\+A\+D\+D, }
+\item[{real, dimension  (ilg)}]{T\+A\+D\+D, }
+\item[{real, dimension  (ilg)}]{W\+A\+D\+J, }
+\item[{real, dimension(ilg)}]{T\+I\+M\+P\+N\+D, }
+\item[{real, dimension   (ilg)}]{D\+Z\+F, }
+\item[{real, dimension(ilg)}]{D\+T\+F\+L\+O\+W, }
+\item[{real, dimension(ilg)}]{T\+H\+L\+N\+L\+Z, }
+\item[{real, dimension(ilg)}]{T\+H\+L\+Q\+L\+Z, }
+\item[{real, dimension(ilg)}]{D\+Z\+D\+I\+S\+P, }
+\item[{real, dimension (ilg)}]{W\+D\+I\+S\+P, }
+\item[{real, dimension  (ilg)}]{W\+A\+B\+S, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+P\+O\+R, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+R\+E\+T, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+M\+I\+N, }
+\item[{real, dimension    (ilg,ig)}]{B\+I, }
+\item[{real, dimension(ilg,ig)}]{P\+S\+I\+S\+A\+T, }
+\item[{real, dimension(ilg,ig)}]{G\+R\+K\+S\+A\+T, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+R\+A\+T, }
+\item[{real, dimension  (ilg,ig)}]{T\+H\+F\+C, }
+\item[{real, dimension (ilg,ig)}]{D\+E\+L\+Z\+W, }
+\item[{real, dimension (ilg,ig)}]{Z\+B\+O\+T\+W, }
+\item[{real, dimension(ilg)}]{X\+D\+R\+A\+I\+N, }
+\item[{real, dimension(ig)}]{D\+E\+L\+Z, }
+\item[{integer, dimension (ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{integer, dimension  (ilg)}]{I\+G\+R\+N, }
+\item[{integer, dimension  (ilg)}]{I\+G\+R\+D, }
+\item[{integer, dimension (ilg)}]{I\+F\+I\+L\+L, }
+\item[{integer, dimension (ilg)}]{I\+Z\+E\+R\+O, }
+\item[{integer, dimension   (ilg)}]{L\+Z\+F, }
+\item[{integer, dimension  (ilg)}]{N\+I\+N\+F, }
+\item[{integer, dimension (ilg)}]{I\+F\+I\+N\+D, }
+\item[{integer, dimension  (ilg)}]{I\+T\+E\+R, }
+\item[{integer, dimension  (ilg)}]{N\+E\+N\+D, }
+\item[{integer, dimension (ilg)}]{I\+S\+I\+M\+P, }
+\item[{integer, dimension  (ilg)}]{I\+G\+D\+R, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+G\+P1, }
+\item[{integer}]{I\+G\+P2, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{N}
+\end{DoxyParamCaption}
+)}\label{GRINFL_8f_aac6f2d3fad2a7b2c287fb2b821ba61f4}
+
+\begin{DoxyParams}{Parameters}
+{\em iveg} & Subarea type flag\\
+\hline
+{\em thliq} & Volumetric liquid water content of soil layer $[m^3 m^{-3}] (\theta_l)$\\
+\hline
+{\em thice} & Volumetric frozen water content of soil layer $[m^3 m^{-3}] (\theta_i)$\\
+\hline
+{\em tbarw} & Temperature of water in soil layer \mbox{[}C\mbox{]}\\
+\hline
+{\em basflw} & Base flow from bottom of soil column \mbox{[}m\mbox{]}\\
+\hline
+{\em tbasfl} & Temperature of base flow from bottom of soil column \mbox{[}K\mbox{]}\\
+\hline
+{\em runoff} & Total runoff from soil column \mbox{[}m\mbox{]}\\
+\hline
+{\em trunof} & Temperature of total runoff from soil column \mbox{[}K\mbox{]}\\
+\hline
+{\em qfg} & Evaporation from soil surface (diagnostic) $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em wlost} & Residual amount of water that cannot be supplied by surface stores $[kg m^{-2}]$\\
+\hline
+{\em zfav} & Average depth of wetting front over current time step \mbox{[}m\mbox{]}\\
+\hline
+{\em thlinv} & Liquid water content behind the wetting front $[m^3 m^{-3}]$\\
+\hline
+{\em lzfav} & Soil layer index in which the average position of the wetting front occurs\\
+\hline
+{\em fi} & Fractional coverage of subarea in question on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em evap} & Evaporation rate from ground surface $[m s^{-1}]$\\
+\hline
+{\em r} & Rainfall rate at ground surface $[m s^{-1}]$\\
+\hline
+{\em tr} & Temperature of rainfall \mbox{[}C\mbox{]}\\
+\hline
+{\em tpond} & Temperature of ponded water \mbox{[}C\mbox{]}\\
+\hline
+{\em zpond} & Depth of ponded water on soil surface \mbox{[}m\mbox{]}\\
+\hline
+{\em dt} & Time period over which water movement takes place \mbox{[}s\mbox{]}\\
+\hline
+{\em thpor} & Pore volume in soil layer $[m^3 m^{-3}] (\theta_p)$\\
+\hline
+{\em thlret} & Liquid water retention capacity for organic soil $[m^3 m^{-3}] (\theta_{l,ret})$\\
+\hline
+{\em thlmin} & Residual soil liquid water content remaining after freezing or evaporation $[m^3 m^{-3}] (theta_{l,min})$\\
+\hline
+{\em bi} & Clapp and Hornberger empirical \char`\"{}b\char`\"{} parameter \mbox{[} \mbox{]} (b)\\
+\hline
+{\em psisat} & Soil moisture suction at saturation $[m] (\Psi_{sat})$\\
+\hline
+{\em grksat} & Hydraulic conductivity of soil at saturation $[m s^{-1}] (K_{sat})$\\
+\hline
+{\em thlrat} & Fractional saturation of soil behind the wetting front $[ ] (f_{inf})$\\
+\hline
+{\em thfc} & Field capacity $[m^3 m^{-3}]$\\
+\hline
+{\em delzw} & Permeable depth of soil layer $[m] (\Delta z_{g,w})$\\
+\hline
+{\em zbotw} & Depth to permeable bottom of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em xdrain} & Drainage index for water flow at bottom of soil profile \mbox{[} \mbox{]}\\
+\hline
+{\em delz} & Overall thickness of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em isand} & Sand content flag\\
+\hline
+{\em igrn} & Flag to indicate whether calculations in this subroutine are to be done\\
+\hline
+{\em igrd} & Flag to indicate whether calculations in subroutine G\+R\+D\+R\+A\+N are to be done\\
+\hline
+{\em igdr} & Index of soil layer in which bedrock is encountered \\
+\hline
+\end{DoxyParams}
+In loop 50, the flag I\+G\+R\+N is first set to 1 for all grid cells where the calculations in this subroutine are to be performed. The necessary conditions are\+: that the surface being modelled is not a glacier or ice sheet (I\+S\+A\+N\+D $>$ -\/4); that the time period D\+T is greater than zero; and that either the rainfall rate is greater than zero or that ponded water exists on the surface. If any of these conditions is not met, I\+G\+R\+N is set to zero.
+
+In loop 100, a series of local arrays T\+H\+L\+I\+Q\+X, T\+H\+I\+C\+E\+X, T\+B\+A\+R\+W\+X, D\+E\+L\+Z\+X and Z\+B\+O\+T\+X are defined for use in the subsequent infiltration calculations, with a “y” dimension of I\+G+1, where I\+G is the number of soil layers. The entries from 1 to I\+G are set equal to the corresponding values in T\+H\+L\+I\+Q, T\+H\+I\+C\+E, T\+B\+A\+R\+W, D\+E\+L\+Z\+W and Z\+B\+O\+T\+W. An effective saturated hydraulic conductivity G\+R\+K\+S\+A\+T\+F is calculated for each soil layer, applying an empirical correction for the presence of ice. This ice content factor, $f_{ice}$, is calculated from Zhao and Gray (1997) as\+:
+
+$f_{ice} = [1.0 – min(1.0, \theta_i / \theta_p )]^2$
+
+To further account for the presence of ice, a modified pore volume T\+H\+P\+O\+R\+F for the soil layer is calculated as the maximum of the available pore volume $\theta_p$ – $\theta_i$ (where $\theta_p$ is the total pore volume and $\theta_i$ is the ice content of the layer), the actual liquid water content $\theta_l$, and the minimum residual liquid water content $\theta_{l,min}$. (The last two conditions are required because in the case of a saturated soil undergoing freezing, since water expands when frozen, the sum of the liquid and frozen volumetric water contents may be greater than the pore volume, and thus $\theta_l$ or $\theta_{l,min}$ may be greater than $\theta_p$ – $\theta_i$.) Finally, the water content T\+H\+L\+I\+N\+F and the hydraulic conductivity G\+R\+K\+I\+N\+F behind the wetting front are evaluated, following the analysis of Green and Ampt (1911) \cite{Green1911-gy} and treating the change in soil moisture due to infiltration as a downward-\/propagating square wave. T\+H\+L\+I\+N\+F is calculated as the maximum of $f_{inf} ( \theta_p – \theta_i)$, $\theta_l$, and $\theta_{l,min}$, where $f_{inf}$ represents the fractional saturation of the soil behind the wetting front, corresponding to a hydraulic conductivity of half the saturated value (this correction is applied in order to account for the fact that as infiltration occurs, a small amount of air is usually trapped in the soil). G\+R\+K\+I\+N\+F is calculated from G\+R\+K\+S\+A\+T\+F, T\+H\+L\+I\+N\+F and T\+H\+P\+O\+R\+F, using the classic Clapp and Hornberger (1978) \cite{Clapp1978-898} equation
+
+$K(z) = K_{sat} ( \theta_l / \theta_p)^{(2b + 3)}$
+
+where K(z) is the hydraulic conductivity at a depth z, $K_{sat}$ is the hydraulic conductivity at saturation, $\theta_p$ is the pore volume and b is an empirical coefficient.
+
+In loop 150, values for the I\+G+1 entries in each of the above arrays are assigned. If the permeable thickness D\+E\+L\+Z\+W of the I\+G layer is less than its overall thickness D\+E\+L\+Z (indicating the presence of bedrock) the I\+G+1 entries are set to 0; otherwise they are set to the values for the I\+G layer in the case of T\+H\+L\+I\+Q\+X, T\+H\+I\+C\+E\+X, T\+B\+A\+R\+W\+X and T\+H\+L\+I\+N\+F, and for D\+E\+L\+Z\+X and Z\+B\+O\+T\+X they are set to large positive numbers. G\+R\+K\+I\+N\+F is set to the value for the I\+G layer multiplied by the drainage parameter X\+D\+R\+A\+I\+N, which takes a value of 0 if the soil is underlain by an impermeable layer (as in a bog), and a value of 1 otherwise.
+
+In loop 200, the soil water suction across the wetting front psi\+\_\+f is calculated for each soil layer, using equation 25 in Verseghy (1991)\+:
+
+$\Psi_f = b[\Psi_{inf} K_{inf} - \Psi(z) K(z)]/[K_{inf} (b+3)]$
+
+where $\Psi_{inf}$ and $K_{inf}$ are the soil moisture suction and the hydraulic conductivity behind the wetting front, and $\Psi(z)$ and $K(z)$ are the soil moisture suction and the hydraulic conductivity ahead of the wetting front. The soil moisture suction values are obtained using the classic Clapp and Hornberger (1978) equation\+:
+
+$\Psi(z) = \Psi_{sat} (\theta_l / \theta_p )^{(-b)}$
+
+where $\Psi_{sat}$ is the soil moisture suction at saturation.
+
+In loop 400, a test is carried out to determine whether saturated conditions are already present in the soil. Generally it is assumed that a period of unsaturated flow occurs initially, so the flag I\+F\+I\+L\+L is set to 1, the depth of the wetting front Z\+F is set to zero, and the flag L\+Z\+F indicating the index of the soil layer in which the wetting front occurs is set to 1. If a pond is present on the soil surface or if the hydraulic conductivity if the first soil layer is very small, it is deemed that saturated flow begins immediately, so I\+F\+I\+L\+L is set to zero. Then each soil layer is checked in turn, to ascertain whether the liquid water content is greater than T\+H\+L\+I\+N\+F. If so, it is concluded that saturated flow is occurring in this layer; Z\+F is set to Z\+B\+O\+T\+W, the depth of the bottom of the soil layer, L\+Z\+F is set to the index of the next layer, and I\+F\+I\+L\+L is set to zero. For each layer found to be undergoing saturated flow, its water content is stored in the J+1 level of the water movement matrix W\+M\+O\+V\+E, and its water temperature is stored in the J+1 level of the matrix T\+M\+O\+V\+E. The counter N\+I\+N\+F is set to the number of soil layers behind and including the one with the wetting front, plus 2.
+
+A series of subroutines is called to complete the infiltration calculations. Subroutine W\+F\+I\+L\+L treats the period of unsaturated flow up the point when saturated flow begins. Subroutine W\+F\+L\+O\+W treats the period of saturated flow. Subroutine W\+E\+N\+D reassigns liquid water contents and temperatures at the conclusion of the infiltration period. T\+H\+L\+I\+Q, T\+H\+I\+C\+E and T\+B\+A\+R\+W are then set to the corresponding updated values of T\+H\+L\+I\+Q\+X, T\+H\+I\+C\+E\+X and T\+B\+A\+R\+W\+X. The average depth of the wetting front in the soil layer in which it occurs, the index of the soil layer, and the moisture content behind the wetting front are stored in output variables Z\+F\+A\+V, L\+Z\+F\+A\+V and T\+H\+L\+I\+N\+V respectively. Finally, if there is any time remaining in the current time step following the infiltration period, subroutine G\+R\+D\+R\+A\+N is called to treat the movement of soil water over the remainder of the time step.

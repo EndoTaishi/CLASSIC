@@ -1,0 +1,37 @@
+\hypertarget{group__read__from__job__options}{}\section{Read\+\_\+from\+\_\+job\+\_\+options}
+\label{group__read__from__job__options}\index{Read\+\_\+from\+\_\+job\+\_\+options@{Read\+\_\+from\+\_\+job\+\_\+options}}
+
+
+Joboptions Read-\/\+In Subroutine.  
+
+
+Joboptions Read-\/\+In Subroutine. 
+
+E\+X\+A\+M\+P\+L\+E\+S\+:
+
+To set up a transient run that does a cycling of the climate at the start\+:
+
+In the example below the model will run from 1851 -\/ 2012 using a climate dataset that spans 1901 -\/ 2012. The L\+U\+C, P\+O\+P\+D, C\+O2 files all span 1850 -\/ 2012. The climate dataset will cycle over 25 years of climate (N\+U\+M\+M\+E\+T\+C\+Y\+L\+Y\+R\+S; from 1901 -\/ 1925) twice (C\+T\+E\+M\+L\+O\+O\+P) for the period 1851 -\/ 1900 while the C\+O2, P\+O\+P\+D, and L\+U\+C all run from 1851 -\/ 1900 in their respective files (Each file will search for 1851 at the start so skipping 1850). Once 1901 is hit the M\+E\+T file no longer cycles and simply runs, like the other input files, until it reaches its end (year 2012).
+
+(only the relevant switches are shown below) ~\newline
+ transient\+\_\+run = .true. ~\newline
+ trans\+\_\+startyr = 1851 ~\newline
+ C\+T\+E\+M\+L\+O\+O\+P = 2 , $<$-- note this is set to the number of loops that N\+U\+M\+M\+E\+T\+C\+Y\+L\+Y\+R\+S must make to match up with the other datasets. ~\newline
+ N\+C\+Y\+E\+A\+R = 112 , ~\newline
+ L\+N\+D\+U\+S\+E\+O\+N = .T\+R\+U\+E. , ~\newline
+ C\+Y\+C\+L\+E\+M\+E\+T = .T\+R\+U\+E. , $<$-- note this is set to T\+R\+U\+E. ~\newline
+ N\+U\+M\+M\+E\+T\+C\+Y\+L\+Y\+R\+S = 25 , $<$-- note this times ctemloop should allow the datasets to match up (e.\+g. 1850 + 2$\ast$25 yrs ends in 1900) ~\newline
+ M\+E\+T\+C\+Y\+L\+Y\+R\+S\+T = 1901 , ~\newline
+ C\+O2\+O\+N = .T\+R\+U\+E. , ~\newline
+ P\+O\+P\+D\+O\+N = .T\+R\+U\+E. , ~\newline
+ O\+B\+S\+W\+E\+T\+F = .false. ,
+
+If you are doing methane then this would be true like the C\+O2 switches 
+
+
+
+If you want a transient run that does not spin over climate at the start, you need to change from above the following\+:
+
+(only the relevant switches are shown below) ~\newline
+ trans\+\_\+startyr = 2000, $<$-- whatever year you want to start at ~\newline
+ C\+Y\+C\+L\+E\+M\+E\+T = .F\+A\+L\+S\+E. , $<$-- note this is set to F\+A\+L\+S\+E. 

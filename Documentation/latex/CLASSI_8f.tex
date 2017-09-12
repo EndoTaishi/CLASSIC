@@ -1,0 +1,95 @@
+\hypertarget{CLASSI_8f}{}\section{src/\+C\+L\+A\+S\+S\+I.f File Reference}
+\label{CLASSI_8f}\index{src/\+C\+L\+A\+S\+S\+I.\+f@{src/\+C\+L\+A\+S\+S\+I.\+f}}
+
+
+Purpose\+: Evaluate atmospheric variables and rainfall/snowfall rates over modelled area.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{CLASSI_8f_a4e0212f4e58542e09cc303c2a0054949}{classi} (V\+P\+D, T\+A\+D\+P, P\+A\+D\+R\+Y, R\+H\+O\+A\+I\+R, R\+H\+O\+S\+N\+I, R\+P\+C\+P, T\+R\+P\+C\+P, S\+P\+C\+P, T\+S\+P\+C\+P, T\+A, Q\+A, P\+C\+P\+R, R\+R\+A\+T\+E, S\+R\+A\+T\+E, P\+R\+E\+S\+S\+G, I\+P\+C\+P, N\+L, I\+L1, I\+L2)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Evaluate atmospheric variables and rainfall/snowfall rates over modelled area. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{CLASSI_8f_a4e0212f4e58542e09cc303c2a0054949}{}\index{C\+L\+A\+S\+S\+I.\+f@{C\+L\+A\+S\+S\+I.\+f}!classi@{classi}}
+\index{classi@{classi}!C\+L\+A\+S\+S\+I.\+f@{C\+L\+A\+S\+S\+I.\+f}}
+\subsubsection[{classi}]{\setlength{\rightskip}{0pt plus 5cm}subroutine classi (
+\begin{DoxyParamCaption}
+\item[{real, dimension   (nl)}]{V\+P\+D, }
+\item[{real, dimension  (nl)}]{T\+A\+D\+P, }
+\item[{real, dimension (nl)}]{P\+A\+D\+R\+Y, }
+\item[{real, dimension(nl)}]{R\+H\+O\+A\+I\+R, }
+\item[{real, dimension(nl)}]{R\+H\+O\+S\+N\+I, }
+\item[{real, dimension  (nl)}]{R\+P\+C\+P, }
+\item[{real, dimension (nl)}]{T\+R\+P\+C\+P, }
+\item[{real, dimension  (nl)}]{S\+P\+C\+P, }
+\item[{real, dimension (nl)}]{T\+S\+P\+C\+P, }
+\item[{real, dimension    (nl)}]{T\+A, }
+\item[{real, dimension    (nl)}]{Q\+A, }
+\item[{real, dimension  (nl)}]{P\+C\+P\+R, }
+\item[{real, dimension (nl)}]{R\+R\+A\+T\+E, }
+\item[{real, dimension (nl)}]{S\+R\+A\+T\+E, }
+\item[{real, dimension(nl)}]{P\+R\+E\+S\+S\+G, }
+\item[{integer}]{I\+P\+C\+P, }
+\item[{integer}]{N\+L, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2}
+\end{DoxyParamCaption}
+)}\label{CLASSI_8f_a4e0212f4e58542e09cc303c2a0054949}
+
+\begin{DoxyParams}{Parameters}
+{\em vpd} & Vapour pressure deficit of air $[mb] (e_d)$\\
+\hline
+{\em tadp} & Dew point temperature of air \mbox{[}K\mbox{]}\\
+\hline
+{\em padry} & Partial pressure of dry air $[Pa] (p_{dry})$\\
+\hline
+{\em rhoair} & Density of air $[kg m^{-3}] (\rho_a)$\\
+\hline
+{\em rhosni} & Density of fresh snow $[kg m^{-3}] (\rho_{s,i})$\\
+\hline
+{\em rpcp} & Calculated rainfall rate over modelled area $[m s^{-1}]$\\
+\hline
+{\em trpcp} & Rainfall temperature over modelled area \mbox{[}C\mbox{]}\\
+\hline
+{\em spcp} & Calculated snowfall rate over modelled area $[m s^{-1}]$\\
+\hline
+{\em tspcp} & Snowfall temperature over modelled area \mbox{[}C\mbox{]}\\
+\hline
+{\em ta} & Air temperature at reference height $[K] (T_a)$\\
+\hline
+{\em qa} & Specific humidity at reference height $[kg kg^{-1}] (q_a)$\\
+\hline
+{\em pressg} & Surface atmospheric pressure $[Pa] (p)$\\
+\hline
+{\em pcpr} & Precipitation rate over modelled area $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em rrate} & Input rainfall rate over modelled area $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em srate} & Input snowfall rate over modelled area $[kg m^{-2} s^{-1}]$ \\
+\hline
+\end{DoxyParams}
+In the first section, the air vapour pressure deficit, dry air pressure, air density and dew point temperature are calculated. The vapour pressure deficit $e_d$ (in units of mb) is obtained from the saturated and actual vapour pressures of the air, $e_a$ and $e_{a,sat}$ respectively (in units of Pa), as $e_d = [e_{a,sat} - e_a] /100.0$
+
+The air vapour pressure is obtained from the specific humidity $q_a$ using the formula
+
+$e_a = q_a p /[0.622 + 0.378 q_a ]$
+
+where p is the surface atmospheric pressure. For the saturated vapour pressure, a standard empirical equation is utilized relating $e_{a,sat}$ to the temperature $T_a$ and the freezing point $T_f$\+:
+
+$e_{a,sat} = 611.0 exp[17.269*(T_a – T_f)/(T_a – 35.86)]$ $T_a \geq T_f$
+
+$e_{a,sat} = 611.0 exp[21.874 (T_a – T_f)/(T_a – 7.66)]$ $T_a < T_f$
+
+The partial pressure of dry air, $p_{dry}$, is obtained by subtracting $e_a$ from p, and the density of the air is calculated as the sum of the densities of the dry air and the water vapour\+: $\rho_a = p_{dry} / R_d T_a + e_a / R_v T_a$
+
+where $R_d$ and $R_v$ are the gas constants for dry air and water vapour respectively. The dew point temperature of the air is evaluated by substituting $e_a$ for $e_{a,sat}$ on the left-\/hand side of the appropriate equation above, and solving for $T_a$.
+
+Finally, if I\+P\+C\+P = 4, this indicates that the partitioning between rainfall and snowfall has been done outside of C\+L\+A\+S\+S. The rainfall and snowfall rates R\+R\+A\+T\+E and S\+R\+A\+T\+E that have been passed into the subroutine are therefore simply assigned to R\+P\+C\+P and S\+P\+C\+P.

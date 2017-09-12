@@ -1,0 +1,207 @@
+\hypertarget{competition__map_8f}{}\section{src/competition\+\_\+map.f File Reference}
+\label{competition__map_8f}\index{src/competition\+\_\+map.\+f@{src/competition\+\_\+map.\+f}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Mapping For Competition Subroutine.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{competition__map_8f_a854a6eedf534eff4dd50075b3a321744}{competition\+\_\+map} (nml, ilmos, jlmos, grclarea,faregat,fcancmx,nppveg, geremort,intrmort, gleafmas, bleafmas, stemmass,rootmass, litrmass, soilcmas,pftexist,lambda, bmasveg, burnvegf,add2allo,cc,mm,fcanmx,vgbiomas, gavgltms, gavgscms,ta, precip, netrad,tcurm, srpcuryr,dftcuryr,tmonth, anpcpcur, anpecur,gdd5cur, surmncur, defmncur, srplscur,defctcur,twarmm,tcoldm,gdd5,aridity, srplsmon, defctmon, anndefct,annsrpls,annpcp,dry\+\_\+season\+\_\+length,lucemcom,lucltrin, lucsocin,pfcancmx,nfcancmx, pstemmass,pgleafmass,
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Mapping For Competition Subroutine. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{competition__map_8f_a854a6eedf534eff4dd50075b3a321744}{}\index{competition\+\_\+map.\+f@{competition\+\_\+map.\+f}!competition\+\_\+map@{competition\+\_\+map}}
+\index{competition\+\_\+map@{competition\+\_\+map}!competition\+\_\+map.\+f@{competition\+\_\+map.\+f}}
+\subsubsection[{competition\+\_\+map}]{\setlength{\rightskip}{0pt plus 5cm}subroutine competition\+\_\+map (
+\begin{DoxyParamCaption}
+\item[{integer}]{nml, }
+\item[{integer, dimension(ilg)}]{ilmos, }
+\item[{integer, dimension(ilg)}]{jlmos, }
+\item[{real, dimension(ilg)}]{grclarea, }
+\item[{real, dimension(ilg)}]{faregat, }
+\item[{real, dimension(ilg,icc)}]{fcancmx, }
+\item[{real, dimension(ilg,icc)}]{nppveg, }
+\item[{real, dimension(ilg,icc)}]{geremort, }
+\item[{real, dimension(ilg,icc)}]{intrmort, }
+\item[{real, dimension(ilg,icc)}]{gleafmas, }
+\item[{real, dimension(ilg,icc)}]{bleafmas, }
+\item[{real, dimension(ilg,icc)}]{stemmass, }
+\item[{real, dimension(ilg,icc)}]{rootmass, }
+\item[{real, dimension(ilg,iccp1)}]{litrmass, }
+\item[{real, dimension(ilg,iccp1)}]{soilcmas, }
+\item[{logical, dimension(ilg,icc)}]{pftexist, }
+\item[{real, dimension(ilg,icc)}]{lambda, }
+\item[{real, dimension(ilg,icc)}]{bmasveg, }
+\item[{real, dimension(ilg,icc)}]{burnvegf, }
+\item[{real, dimension(ilg,icc)}]{add2allo, }
+\item[{real, dimension(ilg,icc)}]{cc, }
+\item[{real, dimension(ilg,icc)}]{mm, }
+\item[{real, dimension(ilg,ican)}]{fcanmx, }
+\item[{real, dimension(ilg)}]{vgbiomas, }
+\item[{real, dimension(ilg)}]{gavgltms, }
+\item[{real, dimension(ilg)}]{gavgscms, }
+\item[{real, dimension(ilg)}]{ta, }
+\item[{real, dimension(ilg)}]{precip, }
+\item[{real, dimension(ilg)}]{netrad, }
+\item[{real, dimension(ilg)}]{tcurm, }
+\item[{real, dimension(ilg)}]{srpcuryr, }
+\item[{real, dimension(ilg)}]{dftcuryr, }
+\item[{real, dimension(12,ilg)}]{tmonth, }
+\item[{real, dimension(ilg)}]{anpcpcur, }
+\item[{real, dimension(ilg)}]{anpecur, }
+\item[{real, dimension(ilg)}]{gdd5cur, }
+\item[{real, dimension(ilg)}]{surmncur, }
+\item[{real, dimension(ilg)}]{defmncur, }
+\item[{real, dimension(ilg)}]{srplscur, }
+\item[{real, dimension(ilg)}]{defctcur, }
+\item[{real, dimension(ilg)}]{twarmm, }
+\item[{real, dimension(ilg)}]{tcoldm, }
+\item[{real, dimension(ilg)}]{gdd5, }
+\item[{real, dimension(ilg)}]{aridity, }
+\item[{real, dimension(ilg)}]{srplsmon, }
+\item[{real, dimension(ilg)}]{defctmon, }
+\item[{real, dimension(ilg)}]{anndefct, }
+\item[{real, dimension(ilg)}]{annsrpls, }
+\item[{real, dimension(ilg)}]{annpcp, }
+\item[{real, dimension(ilg)}]{dry\+\_\+season\+\_\+length, }
+\item[{real, dimension(ilg)}]{lucemcom, }
+\item[{real, dimension(ilg)}]{lucltrin, }
+\item[{real, dimension(ilg)}]{lucsocin, }
+\item[{real, dimension(ilg,icc)}]{pfcancmx, }
+\item[{real, dimension(ilg,icc)}]{nfcancmx, }
+\item[{real, dimension(ilg,icc)}]{pstemmass, }
+\item[{real, dimension(ilg,icc)}]{pgleafmass}
+\end{DoxyParamCaption}
+)}\label{competition__map_8f_a854a6eedf534eff4dd50075b3a321744}
+
+\begin{DoxyParams}{Parameters}
+{\em nml} & nml total number of mosaic tiles with pft fractions larger than 1, see gatprep.\+f\\
+\hline
+{\em ilmos} & indices for scattering, see gatprep.\+f\\
+\hline
+{\em jlmos} & indices for scattering, see gatprep.\+f\\
+\hline
+{\em fcancmx} & fractional coverage of ctem\textquotesingle{}s 10 pfts in each mosaic\\
+\hline
+{\em faregat} & fractional coverage of each ctem pft in each mosaic tile\\
+\hline
+{\em grclarea} & area of the grid cell, $km^2$\\
+\hline
+{\em nppveg} & npp for each pft type /m2 of vegetated area \mbox{[}u-\/mol co2-\/c/m2.\+sec\mbox{]}\\
+\hline
+{\em geremort} & growth related mortality (1/day)\\
+\hline
+{\em intrmort} & intrinsic (age related) mortality (1/day)\\
+\hline
+{\em gleafmas} & green leaf mass for each of the 10 ctem pfts, $kg c/m^2$\\
+\hline
+{\em bleafmas} & brown leaf mass for each of the 10 ctem pfts, $kg c/m^2$\\
+\hline
+{\em stemmass} & stem mass for each of the 10 ctem pfts, $kg c/m^2$\\
+\hline
+{\em rootmass} & root mass for each of the 10 ctem pfts, $kg c/m^2$\\
+\hline
+{\em litrmass} & litter mass for each of the 10 ctem pfts + bare, $kg c/m^2$\\
+\hline
+{\em soilcmas} & soil carbon mass for each of the 10 ctem pfts + bare, $kg c/m^2$\\
+\hline
+{\em lambda} & fraction of npp that is used for horizontal expansion\\
+\hline
+{\em bmasveg} & total (gleaf + stem + root) biomass for each ctem pft, $kg c/m^2$\\
+\hline
+{\em burnvegf} & fractional areas burned, for ctem pfts\\
+\hline
+{\em add2allo} & npp $kg c/m^2$.day that is used for expansion and subsequently allocated to leaves, stem, and root via the allocation part of the model.\\
+\hline
+{\em cc} & colonization rate \& mortality rate\\
+\hline
+{\em mm} & colonization rate \& mortality rate\\
+\hline
+{\em fcanmx} & fractional coverage of class\textquotesingle{} 4 pfts\\
+\hline
+{\em vgbiomas} & grid averaged vegetation biomass, $kg c/m^2$\\
+\hline
+{\em gavgltms} & grid averaged litter mass, $kg c/m^2$\\
+\hline
+{\em gavgscms} & grid averaged soil c mass, $kg c/m^2$\\
+\hline
+{\em lucemcom} & land use change (luc) related combustion emission losses, u-\/mol co2/m2.\+sec\\
+\hline
+{\em lucltrin} & luc related inputs to litter pool, u-\/mol co2/m2.\+sec\\
+\hline
+{\em lucsocin} & luc related inputs to soil c pool, u-\/mol co2/m2.\+sec\\
+\hline
+{\em pfcancmx} & previous year\textquotesingle{}s fractional coverages of pfts\\
+\hline
+{\em nfcancmx} & next year\textquotesingle{}s fractional coverages of pfts\\
+\hline
+{\em pftexist} & logical array indicating pfts exist (t) or not (f)\\
+\hline
+{\em ta} & mean daily temperature, k\\
+\hline
+{\em precip} & daily precipitation (mm/day)\\
+\hline
+{\em netrad} & daily net radiation (w/m2)\\
+\hline
+{\em tcurm} & temperature of the current month (c)\\
+\hline
+{\em srpcuryr} & water surplus for the current year\\
+\hline
+{\em dftcuryr} & water deficit for the current year\\
+\hline
+{\em tmonth} & monthly temperatures\\
+\hline
+{\em anpcpcur} & annual precipitation for current year (mm)\\
+\hline
+{\em anpecur} & annual potential evaporation for current year (mm)\\
+\hline
+{\em gdd5cur} & growing degree days above 5 c for current year\\
+\hline
+{\em surmncur} & number of months with surplus water for current year\\
+\hline
+{\em defmncur} & number of months with water deficit for current year\\
+\hline
+{\em srplscur} & water surplus for the current month\\
+\hline
+{\em defctcur} & water deficit for the current month\\
+\hline
+{\em twarmm} & temperature of the warmest month (c)\\
+\hline
+{\em tcoldm} & temperature of the coldest month (c)\\
+\hline
+{\em gdd5} & growing degree days above 5 c\\
+\hline
+{\em aridity} & aridity index, ratio of potential evaporation to precipitation\\
+\hline
+{\em srplsmon} & number of months in a year with surplus water i.\+e. precipitation more than potential evaporation\\
+\hline
+{\em defctmon} & number of months in a year with water deficit i.\+e. precipitation less than potential evaporation\\
+\hline
+{\em anndefct} & annual water deficit (mm)\\
+\hline
+{\em annsrpls} & annual water surplus (mm)\\
+\hline
+{\em annpcp} & annual precipitation (mm)\\
+\hline
+{\em dry\+\_\+season\+\_\+length} & length of dry season (months) \\
+\hline
+\end{DoxyParams}
+
+
+ parameters used
+
+note the structure of parameter vectors which clearly shows the class pfts (along rows) and ctem sub-\/pfts (along columns)
+
+\subsubsection*{\[ \begin{tabular} { | l | c | c | c | } \hline needle leaf & evg1 & evg2 & dcd \\ \hline broad leaf & evg & dcd-cld & dcd-dry \\ \hline crops & c3 & c4 & --- \\ \hline grasses & c3 & c4 & --- \\ \hline \end{tabular} \] }
+
+scattering the pft index in each mosaic (fcancmx) to pft index in each mosaic of each grid cell (fcancmxrow) nml, ilmos and jlmos are referring to gatprep.\+f
+
+mapping the pft areal fraction in each mosaic of each grid cell (farerow) to pft fraction in each grid cell (fare\+\_\+cmp)

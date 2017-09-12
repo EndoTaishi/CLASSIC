@@ -1,0 +1,296 @@
+\hypertarget{PHTSYN3_8f}{}\section{src/\+P\+H\+T\+S\+Y\+N3.f File Reference}
+\label{PHTSYN3_8f}\index{src/\+P\+H\+T\+S\+Y\+N3.\+f@{src/\+P\+H\+T\+S\+Y\+N3.\+f}}
+
+
+C\+A\+N\+A\+D\+I\+A\+N T\+E\+R\+R\+E\+S\+T\+R\+I\+A\+L E\+C\+O\+S\+Y\+S\+T\+E\+M M\+O\+D\+E\+L (C\+T\+E\+M) P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S S\+U\+B\+R\+O\+U\+T\+I\+N\+E.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c}{phtsyn3} (A\+I\+L\+C\+G,F\+C\+A\+N\+C, T\+C\+A\+N, C\+O2\+C\+O\+N\+C,P\+R\+E\+S\+S\+G,F\+C,C\+F\+L\+U\+X,Q\+A, Q\+S\+W\+V,I\+C,T\+H\+L\+I\+Q, I\+S\+A\+N\+D,T\+A,R\+M\+A\+T,C\+O\+S\+Z\+S, X\+D\+I\+F\+F\+U\+S,I\+L\+G,I\+L1,I\+L2,I\+G,I\+C\+C,I\+S\+N\+O\+W, S\+L\+A\+I,T\+H\+F\+C, T\+H\+L\+W, F\+C\+A\+N\+C\+M\+X,L2\+M\+A\+X, N\+O\+L2\+P\+F\+T\+S,
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+C\+A\+N\+A\+D\+I\+A\+N T\+E\+R\+R\+E\+S\+T\+R\+I\+A\+L E\+C\+O\+S\+Y\+S\+T\+E\+M M\+O\+D\+E\+L (C\+T\+E\+M) P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S S\+U\+B\+R\+O\+U\+T\+I\+N\+E. 
+
+Photosynthesis and canopy conductance
+
+Net photosynthesis
+
+All biogeochemical processes in C\+T\+E\+M are simulated at a daily time step except gross photosynthetic uptake and associated calculation of canopy conductance, which are simulated on a half hour time step with C\+L\+A\+S\+S. The photosynthesis module of C\+T\+E\+M calculates the net canopy photosynthesis rate, which, together with atmospheric $CO_2$ concentration and vapour pressure or relative humidity, is used to calculate canopy conductance. This canopy conductance is then used by C\+L\+A\+S\+S in its energy and water balance calculations.
+
+The photosynthesis parametrization is based upon the approach of \cite{Farquhar1980-96e} and \cite{Collatz1991-5bc} \cite{Collatz1992-jf} as implemented in Si\+B2 \cite{Sellers1996-bh} and M\+O\+S\+E\+S \cite{Cox1999-ia} with some minor modifications as described in \cite{Arora2003-3b7}. \cite{Arora2003-3b7} outlines four possible configurations for the model based on choice of a $\textit{big-leaf}$ or $\textit{two-leaf}$ (sunlight and shaded leaves) mode and stomatal conductance formulations based on either \cite{Ball1987-ou} or \cite{Leuning1995-ab}. The \cite{Ball1987-ou} formulation uses relative humidity while \cite{Leuning1995-ab} uses vapour pressure deficit in calculation of canopy conductance. While the model remains capable of all four possible configurations, in practice, the model is usually run using the big-\/leaf parametrization with the stomatal conductance formulation of \cite{Leuning1995-ab}, which is the configuration described here. The original description of the C\+T\+E\+M photosynthesis parametrization in \cite{Arora2003-3b7} did not include discussion of all the P\+F\+Ts simulated by C\+T\+E\+M, which we expand upon here and also include changes to the parametrization since version 1.\+0.
+
+The gross leaf photosynthesis rate, $G_\mathrm{o}$, depends upon the maximum assimilation rate allowed by the light (\$\+J\+\_\+\{e\}\$), Rubisco ( $J_\mathrm{c}$) and transport capacity ( $J_\mathrm{s}$). The limitation placed on $G_\mathrm{o}$ by the amount of available light is calculated as ( $mol\,CO_2\,m^{-2}\,s^{-1}$)
+
+\[ \label{J_e} J_\mathrm{e} = \begin{cases} \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants\\ \varepsilon\,(1-{\nu})I,\quad C_4 plants, \end{cases} \]
+
+where $I$ is the incident photosynthetically active radiation ( $PAR$; $mol\,photons\,m^{-2}\,s^{-1}$), ${\nu}$ is the leaf scattering coefficient, with values of 0.\+15 and 0.\+17 for $C_3$ and $C_4$ plants, respectively, and $\varepsilon$ is the quantum efficiency ( $mol\,{CO_2}\,(mol\,photons)^{-1}$; values of 0.\+08 and 0.\+04 are used for $C_3$ and $C_4$ plants, respectively). $c_\mathrm{i}$ is the partial pressure of $CO_2$ in the leaf interior ( $Pa$) and $\Gamma$ is the $CO_2$ compensation point ( $Pa$) (described below).
+
+The Rubisco enzyme limited photosynthesis rate, $J_\mathrm{c}$, is given by \[ \label{J_c} J_\mathrm{c} = \begin{cases} V_\mathrm{m} \left[\frac{c_\mathrm{i} - \Gamma}{c_\mathrm{i} + K_\mathrm{c}(1 + O_\mathrm{a}/K_\mathrm{o})}\right],\quad C_3 plants\\ V_\mathrm{m}, C_4 plants, \end{cases} \]
+
+where $V_\mathrm{m}$ is the maximum catalytic capacity of Rubisco ( $mol\,CO_2\,m^{-2}\,s^{-1}$), adjusted for temperature and soil moisture, as described below. $K_\mathrm{o}$ and $K_\mathrm{c}$ are the Michaelis--Menten constants for $O_2$ and $CO_2$, respectively. $O_\mathrm{a}$ is the partial pressure ( $Pa$) of oxygen.
+
+The transport capacity ( $J_\mathrm{s}$) limitation determines the maximum capacity to transport the products of photosynthesis for $C_3$ plants, while for $C_4$ plants it represents $CO_2$ limitation \[ \label{J_s} J_\mathrm{s} = \left\{\begin{array}{l l} 0.5 V_\mathrm{m}, C_3 plants\\ 2 \times 10^4\,V_\mathrm{m} \frac{c_\mathrm{i}}{p}, C_4 plants \end{array} \right. \] where $p$ is surface atmospheric pressure ( $Pa$).
+
+$V_\mathrm{m}$ is calculated as \[ V_\mathrm{m} = \nonumber \\ \frac{V_{max}f_{25}(2.0)S_{root}(\theta) \times 10^{-6}} {[1+ \exp{0.3(T_\mathrm{c} - T_{high})}][1 + \exp{0.3(T_{low} - T_\mathrm{c})}]},\label{V_m} \]
+
+where $T_\mathrm{c}$ is the canopy temperature ( $C$) and $T_{low}$ and $T_{high}$ are P\+F\+T-\/dependent lower and upper temperature limits for photosynthesis (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}). $f_{25}$ is the standard $Q_{10}$ function at $25\,C$ ( $(f_{25}(Q_{10}) = Q^{(0.1(T_\mathrm{c}-25))}_{10}$) and $V_{max}$ is the P\+F\+T-\/dependent maximum rate of carboxylation by the enzyme Rubisco ( $mol\,CO_2\,m^{-2}\,s^{-1}$; see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}). The constant $10^{-6}$ converts $V_{max}$ from units of ${\mu}mol\,CO_2\,m^{-2}\,s^{-1}$ to $mol\,CO_2\,m^{-2}\,s^{-1}$.
+
+The influence of soil moisture stress is simulated via $S_{root}(\theta)$, which represents a soil moisture stress term formulated as \[ S_{root}(\theta) = \sum_{i=1}^g S(\theta_i) r_{i}, \vspace*{-4mm} \]
+
+\[ \label{soilmoist_str} S(\theta_i) = \left[1 - \left\{1 - \phi_i \right\}\right]^\varrho, \]
+
+where $S_{root}(\theta)$ is calculated by weighting $S(\theta_i)$ with the fraction of roots, $r_{i}$, in each soil layer $i$ and $\varrho$ is a P\+F\+T-\/specific sensitivity to soil moisture stress (unitless; see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}). $\phi_i$ is the degree of soil saturation (soil wetness) given by \[ \label{phitheta} \phi_{i}(\theta_{i}) = \max \left[0, \min \left(1, \frac{\theta_{i} - \theta_{i, wilt}}{\theta_{i, field} - \theta_{i, wilt}} \right) \right], \]
+
+where $\theta_{i}$ is the volumetric soil moisture ( $m^{3} water\,(m^{3} soil)^{-1}$) of the $i$th soil layer and $\theta_{i,field}$ and $\theta_{i, wilt}$ the soil moisture at field capacity and wilting point, respectively.
+
+The $CO_2$ compensation point ( $\Gamma$) is the $CO_2$ partial pressure where photosynthetic uptake equals the leaf respiratory losses (used in Eqs. J\+\_\+e\} and J\+\_\+c\}). $\Gamma$ is zero for $C_4$ plants but is sensitive to oxygen partial pressure for $C_3$ plants as \[ \label{co2comp} \Gamma = \left\{\begin{array}{l l} \frac{O_\mathrm{a}}{2 \sigma}, C_3 plants\\ 0, C_4 plants, \end{array} \right. \]
+
+where $\sigma$ is the selectivity of Rubisco for $CO_2$ over $O_2$ (unitless), estimated by $\sigma = 2600f_{25}(0.57)$. The $CO_2$ ( $K_\mathrm{c}$) and $O_2$ ( $K_\mathrm{o}$) Michaelis--Menten constants used in Eq. (J\+\_\+c\}) are determined via \[ \label{K_c} K_\mathrm{c} = 30f_{25}(2.1), \\ \label{K_o} K_o = 3 \times 10^4 f_{25}(1.2). \]
+
+Given the light ( $J_\mathrm{e}$), Rubsico ( $J_\mathrm{c}$) and transportation capacity ( $J_\mathrm{s}$) limiting rates, the leaf-\/level gross photosynthesis rate, $G_\mathrm{o}$ ( $mol\,CO_2\,m^{-2}\,s^{-1}$), is then determined following a minimization based upon smallest roots of the following two quadratic equations \[ J_\mathrm{p} = \frac{(J_\mathrm{c} + J_\mathrm{e}) \pm \sqrt{(J_\mathrm{c} + J_\mathrm{e})^2 - 4\beta_1 (J_\mathrm{c} + J_\mathrm{e})}}{2\beta_1} , \\ \label{G_o}G_\mathrm{o} = \frac{(J_\mathrm{p} + J_\mathrm{s}) \pm \sqrt{(J_\mathrm{p} + J_\mathrm{s})^2 - 4\beta_2 (J_\mathrm{p} + J_\mathrm{s})}}{2\beta_2}, \]
+
+where $\beta_1$ is 0.\+95 and $\beta_2$ is 0.\+99. When soil moisture stress is occurring, both the $J_\mathrm{s}$ and $J_\mathrm{c}$ terms are reduced since the $V_\mathrm{m}$ term (Eq. V\+\_\+m\}) includes the effect of soil moisture stress through the $S(\theta)$ term and this reduces the leaf-\/level gross photosynthesis rate.
+
+The current version of C\+T\+E\+M does not include nutrient constraints on photosynthesis and, as a result, increasing atmospheric $CO_2$ concentration leads to unconstrained increase in photosynthesis. In natural ecosystems, however, down regulation of photosynthesis occurs due to constraints imposed by availability of nitrogen, as well as phosphorus. To capture this effect, C\+T\+E\+M uses a nutrient limitation term, based on experimental plant growth studies, to down regulate the photosynthetic response to elevated $CO_2$ concentrations \cite{Arora2009-9bc}. The parametrization, and its rationale, are fully described in \cite{Arora2009-9bc} but the basic relations are summarized here. The leaf-\/level gross photosynthetic rate is scaled by the down-\/regulation term, $\Xi_\mathrm{N}$, to yield the nutrient limited leaf level gross photosynthetic rate as \[ \label{G_nitro} G_{\mathrm{o},N-limited} = \Xi_\mathrm{N} G_\mathrm{o}, \\ \label{Nthrottle} \Xi_\mathrm{N} = \frac{1 + \gamma_{gd} \ln(c_\mathrm{a}/c_{0})}{1 + \gamma_g \ln(c_\mathrm{a}/c_{0})}, \]
+
+where $c_\mathrm{a}$ is the atmospheric $CO_2$ concentration in ppm, $c_{0}$ is the pre-\/industrial $CO_2$ concentration ( $285.0\,ppm$), $\gamma_g$ is 0.\+95 \cite{Arora2009-9bc}. A value of $\gamma_{gd}$ lower than $\gamma_g$ ensures that $\Xi_\mathrm{N}$ gradually decreases from its pre-\/industrial value of one as $c_\mathrm{a}$ increases to constrain the rate of increase of photosynthesis with rising atmospheric $CO_2$ concentrations. C\+T\+E\+M v. 2.\+0 uses a $\gamma_{gd}$ value of 0.\+30 (unitless).
+
+Finally, the leaf-\/level gross photosynthesis rate, $G_{\mathrm{o},N-limited}$ is scaled up to the canopy-\/level, $G_{canopy}$, by considering the exponential vertical profile of radiation along the depth of the canopy as \[ \label{G_canopy} G_{canopy} = G_{\mathrm{o},N-limited} f_{PAR},\\ \label{fpar} f_{PAR} = \frac{1}{k_\mathrm{n}}(1-\exp^{-k_\mathrm{n}LAI}), \] which yields the gross primary productivity ( $G_{canopy}$, G\+P\+P). $k_\mathrm{n}$ is the extinction coefficient that describes the nitrogen and time-\/mean photosynthetically absorbed radiation ( $PAR$) profile along the depth of the canopy (see also \hyperlink{ctem__params_8f90}{ctem\+\_\+params.\+f90}) \cite{Ingestad1986-td} \cite{Field1986-kd}, and $LAI$ ( $m^{2}\,leaf\,(m^{2}\,ground)^{-1}$) is the leaf area index.
+
+The net canopy photosynthetic rate, $G_{canopy,net}$ ( $mol\,CO_2\,m^{-2}\,s^{-1}$), is calculated by subtracting canopy leaf maintenance respiration costs ( $R_{mL}$; see Sect. maint\}) as \[ \label{Gnet} G_{canopy,net} = G_{canopy} - R_{mL}. \]
+
+Coupling of photosynthesis and canopy conductance
+
+When using the \cite{Leuning1995-ab} approach for photosynthesis--canopy conductance coupling, canopy conductance ( $g_\mathrm{c}$; $mol\,m^{-2}\,s^{-1}$) is expressed as a function of the net canopy photosynthesis rate, $G_{canopy, net}$, as \[ \label{canopy_cond} g_\mathrm{c} = m \frac{G_{canopy,net} p}{(c_\mathrm{s} - \Gamma)}\frac{1}{(1+V/V_\mathrm{o})} + b {LAI} \] where $p$ is the surface atmospheric pressure ( $Pa$), the parameter $m$ is set to 9.\+0 for needle-\/leaved trees, 12.\+0 for other $C_3$ plants and 6.\+0 for $C_4$ plants, parameter $b$ is assigned the values of 0.\+01 and 0.\+04 for $C_3$ and $C_4$ plants, respectively. $V$ is the vapour pressure deficit ( $Pa$) and the parameter $V_\mathrm{o}$ is set to $2000\,Pa$ for trees and $1500\,Pa$ for crops and grasses. The partial pressure of $CO_2$ at the leaf surface, $c_\mathrm{s}$, is found via \[ \label{c_s} c_\mathrm{s} = c_{ap} - \frac{1.37 G_{canopy,net} p}{g_b}. \]
+
+Here, $c_{ap}$ is the atmospheric $CO_2$ partial pressure ( $Pa$) and $g_b$ is the aerodynamic conductance estimated by C\+L\+A\+S\+S ( $mol\,m^{-2}\,s^{-1}$). The intra-\/cellular $CO_2$ concentration required in Eqs. (J\+\_\+e\})--(J\+\_\+s\}) is calculated as \[ \label{c_i} c_\mathrm{i} = c_\mathrm{s} - \frac{1.65 G_{canopy,net} p}{g_\mathrm{c}}. \]
+
+Since calculations of $G_{canopy,net}$ and $c_\mathrm{i}$ depend on each other, the photosynthesis-\/canopy conductance equations need to be solved iteratively. The initial value of $c_\mathrm{i}$ used in calculation of $G_{canopy,net}$ is the value from the previous time step or, in its absence, $c_\mathrm{i}$ is assumed to be $0.7c_{ap}$.
+
+Canopy ( $g_\mathrm{c}$) and aerodynamic ( $g_b$) conductance used in above calculations are expressed in units of $mol\,CO_2\,m^{-2}\,s^{-1}$ but can be converted to the traditional units of $m\,s^{-1}$ as follows \[ g_\mathrm{c} (m\,s^{-1}) = 0.0224\,\frac{T_\mathrm{c}}{T_\mathrm{f}}\,\frac{p_0}{p}\,g_\mathrm{c} (mol\,m^{-2}\,s^{-1}), \]
+
+where $p_0$ is the standard atmospheric pressure ( $101\,325\,Pa$) and $T_\mathrm{f}$ is freezing temperature ( $273.16\,K$).
+
+\begin{DoxyVerb} 1.  SINGLE-LEAF & TWO-LEAF COMBINED VERSION, CAN USE EITHER APPROACH   
+ 2.  CAN USE EITHER BWB OR LEUNING TYPE STOMATAL CONDUCTANCE FORMULATION
+ 3.  ALSO, CAN USE SMOOTHED AVERAGE OF THE 3 LIMITING RATES, MIN. OF
+     THE 3 LIMITING RATES, OR MIN. OF LIGHT AND RUBSICO RATES.
+
+ CLASS' 4 MAJOR VEGETATION TYPES ARE
+
+ 1. NEEDLE LEAF OR TALL CONIFEROUS (C3, DECIDUOUS AND EVERGREEN)
+ 2. BROAD LEAF (C3, DECD. AND EVRG.)
+ 3. ARABLE & CROPS - (BOTH C3 AND C4)
+ 4. GRASSES, TUNDRA, ETC. (BOTH C3 AND C4)
+
+ BUT FOR PHOTOSYNTHESIS WE NEED TO MAKE DISTINCTION BETWEEN C3 AND
+ C4, AND DECIDUOUS AND EVERGREEN. SO THESE 4 VEGETATION TYPES GET
+ CONVERTED INTO THE FOLLOWING 9
+
+ 1. NEEDLE LEAF EVERGREEN, C3
+ 2. NEEDLE LEAF DECIDUOUS, C3
+ 3. BROAD LEAF EVERGREEN, C3
+ 4. BROAD LEAF COLD DECIDUOUS, C3
+ 5. BROAD LEAF DRY DECIDUOUS, C3
+ 6. C3 CROP
+ 7. C4 CROP
+ 8. C3 GREEN GRASS
+ 9. C4 GREEN GRASS
+
+ INPUTS
+
+ NOL2MAX   - NUMBER OF LEVEL 2 CTEM PFTs\end{DoxyVerb}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c}{}\index{P\+H\+T\+S\+Y\+N3.\+f@{P\+H\+T\+S\+Y\+N3.\+f}!phtsyn3@{phtsyn3}}
+\index{phtsyn3@{phtsyn3}!P\+H\+T\+S\+Y\+N3.\+f@{P\+H\+T\+S\+Y\+N3.\+f}}
+\subsubsection[{phtsyn3}]{\setlength{\rightskip}{0pt plus 5cm}subroutine phtsyn3 (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg,icc)}]{A\+I\+L\+C\+G, }
+\item[{real, dimension(ilg,icc)}]{F\+C\+A\+N\+C, }
+\item[{real, dimension(ilg)}]{T\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{C\+O2\+C\+O\+N\+C, }
+\item[{real, dimension(ilg)}]{P\+R\+E\+S\+S\+G, }
+\item[{real, dimension(ilg)}]{F\+C, }
+\item[{real, dimension(ilg)}]{C\+F\+L\+U\+X, }
+\item[{real, dimension(ilg)}]{Q\+A, }
+\item[{real, dimension(ilg)}]{Q\+S\+W\+V, }
+\item[{integer}]{I\+C, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+I\+Q, }
+\item[{integer, dimension(ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{real, dimension(ilg)}]{T\+A, }
+\item[{real, dimension(ilg,icc,ig)}]{R\+M\+A\+T, }
+\item[{real, dimension(ilg)}]{C\+O\+S\+Z\+S, }
+\item[{real, dimension(ilg)}]{X\+D\+I\+F\+F\+U\+S, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+C\+C, }
+\item[{integer}]{I\+S\+N\+O\+W, }
+\item[{real, dimension(ilg,icc)}]{S\+L\+A\+I, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+F\+C, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+W, }
+\item[{real, dimension(ilg,icc)}]{F\+C\+A\+N\+C\+M\+X, }
+\item[{integer}]{L2\+M\+A\+X, }
+\item[{integer, dimension(ic)}]{N\+O\+L2\+P\+F\+T\+S}
+\end{DoxyParamCaption}
+)}\label{PHTSYN3_8f_a9d3d9bffc5e2ae5e7d6411e23328f59c}
+
+\begin{DoxyParams}{Parameters}
+{\em ilg} & N\+O. O\+F G\+R\+I\+D C\+E\+L\+L\+S I\+N L\+A\+T\+I\+T\+U\+D\+E C\+I\+R\+C\+L\+E\\
+\hline
+{\em ic} & N\+O. O\+F C\+L\+A\+S\+S V\+E\+G\+E\+T\+A\+T\+I\+O\+N T\+Y\+P\+E\+S, 4\\
+\hline
+{\em il1} & I\+L1=1\\
+\hline
+{\em il2} & I\+L2=I\+L\+G\\
+\hline
+{\em ig} & N\+O. O\+F S\+O\+I\+L L\+A\+Y\+E\+R\+S, 3\\
+\hline
+{\em icc} & N\+O. O\+F C\+T\+E\+M\textquotesingle{}s P\+F\+Ts, C\+U\+R\+R\+E\+N\+T\+L\+Y 9\\
+\hline
+{\em isnow} & I\+N\+T\+E\+G\+E\+R (0 or 1) T\+E\+L\+L\+I\+N\+G I\+F P\+H\+T\+S\+Y\+N I\+S T\+O B\+E R\+U\+N O\+V\+E\+R C\+A\+N\+O\+P\+Y O\+V\+E\+R S\+N\+O\+W O\+R C\+A\+N\+O\+P\+Y O\+V\+E\+R G\+R\+O\+U\+N\+D S\+U\+B\+A\+R\+E\+A\\
+\hline
+{\em l2max} & M\+A\+X. N\+U\+M\+B\+E\+R O\+F L\+E\+V\+E\+L 2 P\+F\+Ts\\
+\hline
+{\em fcanc} & F\+R\+A\+C\+T\+I\+O\+N\+A\+L C\+O\+V\+E\+R\+A\+G\+E O\+F C\+T\+E\+M\textquotesingle{}s 9 P\+F\+Ts\\
+\hline
+{\em ailcg} & G\+R\+E\+E\+N L\+E\+A\+F A\+R\+E\+A I\+N\+D\+E\+X F\+O\+R U\+S\+E B\+Y P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S, $M^2/M^2$\\
+\hline
+{\em tcan} & C\+A\+N\+O\+P\+Y T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E, K\+E\+L\+V\+I\+N\\
+\hline
+{\em fc} & S\+U\+M O\+F A\+L\+L F\+C\+A\+N\+C O\+V\+E\+R A G\+I\+V\+E\+N S\+U\+B-\/\+A\+R\+E\+A\\
+\hline
+{\em cflux} & A\+E\+R\+O\+D\+Y\+N\+A\+M\+I\+C C\+O\+N\+D\+U\+C\+T\+A\+N\+C\+E, M/\+S\\
+\hline
+{\em slai} & S\+C\+R\+E\+E\+N L\+E\+V\+E\+L H\+U\+M\+I\+D\+I\+T\+Y I\+N K\+G/\+K\+G -\/ S\+T\+O\+R\+A\+G\+E L\+A\+I. T\+H\+I\+S L\+A\+I I\+S U\+S\+E\+D F\+O\+R P\+H\+T\+S\+Y\+N E\+V\+E\+N I\+F A\+C\+T\+U\+A\+L L\+A\+I I\+S Z\+E\+R\+O. E\+S\+T\+I\+M\+A\+T\+E O\+F N\+E\+T P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S B\+A\+S\+E\+D O\+N S\+L\+A\+I I\+S U\+S\+E\+D F\+O\+R I\+N\+I\+T\+I\+A\+T\+I\+N\+G L\+E\+A\+F O\+N\+S\+E\+T. S\+E\+E P\+H\+E\+N\+O\+L\+G\+Y S\+U\+B\+R\+O\+U\+T\+I\+N\+E F\+O\+R M\+O\+R\+E D\+E\+T\+A\+I\+L\+S.\\
+\hline
+{\em co2conc} & A\+T\+M\+O\+S. $CO_2$ I\+N P\+P\+M, A\+N\+D T\+H\+E\+N C\+O\+N\+V\+E\+R\+T I\+T T\+O P\+A\+R\+T\+I\+A\+L P\+R\+E\+S\+S\+U\+R\+E, P\+A\+S\+C\+A\+L\+S, C\+O2\+A, F\+O\+R U\+S\+E I\+N T\+H\+I\+S S\+U\+B\+R\+O\+U\+T\+I\+N\+E\\
+\hline
+{\em pressg} & A\+T\+M\+O\+S. P\+R\+E\+S\+S\+U\+R\+E, P\+A\+S\+C\+A\+L\+S\\
+\hline
+{\em qswv} & A\+B\+S\+O\+R\+B\+E\+D V\+I\+S\+I\+B\+L\+E P\+A\+R\+T O\+F S\+H\+O\+R\+T\+W\+A\+V\+E R\+A\+D\+I\+A\+T\+I\+O\+N, $W/M^2$\\
+\hline
+{\em ta} & A\+I\+R T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E I\+N K\+E\+L\+V\+I\+N\+S\\
+\hline
+{\em rmat} & F\+R\+A\+C\+T\+I\+O\+N O\+F R\+O\+O\+T\+S I\+N E\+A\+C\+H L\+A\+Y\+E\+R (grid cell, vegetation, layer)\\
+\hline
+{\em thliq} & L\+I\+Q\+U\+I\+D M\+O\+I\+S. C\+O\+N\+T\+E\+N\+T O\+F 3 S\+O\+I\+L L\+A\+Y\+E\+R\+S\\
+\hline
+{\em thfc} & S\+O\+I\+L F\+I\+E\+L\+D C\+A\+P\+A\+C\+I\+T\+Y.\\
+\hline
+{\em thlw} & S\+O\+I\+L W\+I\+L\+T C\+A\+P\+A\+C\+I\+T\+Y.\\
+\hline
+{\em fcancmx} & M\+A\+X. F\+R\+A\+C\+T\+I\+O\+N\+A\+L C\+O\+V\+E\+R\+A\+G\+E\+S O\+F C\+T\+E\+M\textquotesingle{}s 8 P\+F\+Ts. T\+H\+I\+S I\+S D\+I\+F\+F\+E\+R\+E\+N\+T F\+R\+O\+M F\+C\+A\+N\+C A\+N\+D F\+C\+A\+N\+C\+S (W\+H\+I\+C\+H M\+A\+Y V\+A\+R\+Y W\+I\+T\+H S\+N\+O\+W D\+E\+P\+T\+H). F\+C\+A\+N\+C\+M\+X D\+O\+E\+S\+N\textquotesingle{}T C\+H\+A\+N\+G\+E, U\+N\+L\+E\+S\+S O\+F C\+O\+U\+R\+S\+E I\+T\+S C\+H\+A\+N\+G\+E\+D B\+Y L\+A\+N\+D U\+S\+E C\+H\+A\+N\+G\+E O\+R D\+Y\+N\+A\+M\+I\+C V\+E\+G\+E\+T\+A\+T\+I\+O\+N.\\
+\hline
+{\em coszs} & C\+O\+S O\+F Z\+E\+N\+I\+T\+H A\+N\+G\+L\+E\\
+\hline
+{\em xdiffus} & F\+R\+A\+C\+T\+I\+O\+N O\+F D\+I\+F\+F\+U\+S\+E\+D P\+A\+R\\
+\hline
+{\em isand} & S\+A\+N\+D I\+N\+D\+E\+X. \\
+\hline
+\end{DoxyParams}
+I\+F L\+A\+I I\+S L\+E\+S\+S T\+H\+A\+N S\+L\+A\+I T\+H\+A\+N W\+E U\+S\+E S\+T\+O\+R\+A\+G\+E L\+A\+I T\+O P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+Z\+E. H\+O\+W\+E\+V\+E\+R, W\+E D\+O N\+O\+T U\+S\+E T\+H\+E S\+T\+O\+M\+A\+T\+A\+L R\+E\+S\+I\+S\+T\+A\+N\+C\+E E\+S\+T\+I\+M\+A\+T\+E\+D I\+N T\+H\+I\+S C\+A\+S\+E, B\+E\+C\+A\+U\+S\+E S\+T\+O\+R\+A\+G\+E L\+A\+I I\+S A\+N I\+M\+A\+G\+I\+N\+A\+R\+Y L\+A\+I, A\+N\+D W\+E S\+E\+T S\+T\+O\+M\+A\+T\+A\+L R\+E\+S\+I\+S\+T\+A\+N\+C\+E T\+O I\+T\+S M\+A\+X. N\+O\+T\+E T\+H\+A\+T T\+H\+E C\+O\+N\+C\+E\+P\+T O\+F S\+T\+O\+R\+A\+G\+E/\+I\+M\+A\+G\+I\+N\+A\+R\+Y L\+A\+I I\+S U\+S\+E\+D F\+O\+R P\+H\+E\+N\+O\+L\+O\+G\+Y P\+U\+R\+P\+O\+S\+E\+S A\+N\+D T\+H\+I\+S I\+M\+A\+G\+I\+N\+A\+R\+Y L\+A\+I A\+C\+T\+S A\+S M\+O\+D\+E\+L S\+E\+E\+D\+S.
+
+S\+E\+T M\+I\+N. A\+N\+D M\+A\+X. V\+A\+L\+U\+E\+S F\+O\+R S\+T\+O\+M\+A\+T\+A\+L C\+O\+N\+D\+U\+C\+T\+A\+N\+C\+E. W\+E M\+A\+K\+E S\+U\+R\+E T\+H\+A\+T M\+A\+X. S\+T\+O\+M\+A\+T\+A\+L R\+E\+S\+I\+S\+T\+A\+N\+C\+E I\+S A\+R\+O\+U\+N\+D 5000 S/\+M A\+N\+D M\+I\+N. S\+T\+O\+M\+A\+T\+A\+L R\+E\+S\+I\+S\+T\+A\+N\+C\+E I\+S 51 S/\+M.
+
+I\+F W\+E A\+R\+E U\+S\+I\+N\+G L\+E\+U\+N\+I\+N\+G T\+Y\+P\+E P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S-\/\+S\+T\+O\+M\+A\+T\+A\+L C\+O\+N\+D\+U\+C\+T\+A\+N\+C\+E C\+O\+U\+P\+L\+I\+N\+G W\+E N\+E\+E\+D V\+A\+P\+O\+R P\+R\+E\+S\+S\+U\+R\+E D\+E\+F\+I\+C\+I\+T A\+S W\+E\+L\+L. C\+A\+L\+C\+U\+L\+A\+T\+E T\+H\+I\+S F\+R\+O\+M T\+H\+E R\+H A\+N\+D A\+I\+R T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E W\+E H\+A\+V\+E. W\+E F\+I\+N\+D E\+\_\+\+S\+A\+T, E, A\+N\+D V\+P\+D I\+N P\+A\+S\+C\+A\+L\+S.
+
+E\+S\+T\+I\+M\+A\+T\+E P\+A\+R\+T\+I\+A\+L P\+R\+E\+S\+S\+U\+R\+E O\+F $CO_2$ A\+N\+D I\+P\+A\+R
+
+C\+O\+N\+V\+E\+R\+T C\+O2\+C\+O\+N\+C F\+R\+O\+M P\+P\+M T\+O P\+A\+S\+C\+A\+L\+S
+
+C\+H\+A\+N\+G\+E P\+A\+R F\+R\+O\+M W/\+M$^\wedge$2 T\+O M\+O\+L/\+M$^\wedge$2.S
+
+S\+U\+N\+L\+I\+T P\+A\+R\+T G\+E\+T\+S B\+O\+T\+H D\+I\+R\+E\+C\+T A\+N\+D D\+I\+F\+F\+U\+S\+E\+D, W\+H\+I\+L\+E T\+H\+E S\+H\+A\+D\+E\+D P\+A\+R\+T G\+E\+T\+S O\+N\+L\+Y D\+I\+F\+F\+U\+S\+E\+D
+
+F\+O\+R T\+W\+O-\/\+L\+E\+A\+F M\+O\+D\+E\+L F\+I\+N\+D Kb A\+S A F\+U\+N\+C\+T\+I\+O\+N O\+F C\+O\+S\+Z\+S A\+N\+D L\+E\+A\+F A\+N\+G\+L\+E D\+I\+S\+T\+R\+I\+B\+U\+T\+I\+O\+N (V\+E\+G\+E\+T\+A\+T\+I\+O\+N D\+E\+P\+E\+N\+D\+E\+N\+T)
+
+M\+A\+K\+E S\+U\+R\+E -\/0.\+4 $<$ C\+H\+I $<$ 0.\+6
+
+M\+A\+K\+E V\+A\+L\+U\+E\+S C\+L\+O\+S\+E T\+O Z\+E\+R\+O E\+Q\+U\+A\+L T\+O 0.\+01
+
+A\+L\+S\+O F\+I\+N\+D S\+U\+N\+L\+I\+T A\+N\+D S\+H\+A\+D\+E\+D L\+A\+I
+
+F\+O\+L\+L\+O\+W\+I\+N\+G F\+E\+W L\+I\+N\+E\+S T\+O M\+A\+K\+E S\+U\+R\+E T\+H\+A\+T A\+L\+L L\+E\+A\+V\+E\+S A\+R\+E S\+H\+A\+D\+E\+D W\+H\+E\+N X\+D\+I\+F\+F\+U\+S E\+Q\+U\+A\+L\+S 1. N\+O\+T D\+O\+I\+N\+G S\+O G\+I\+V\+E\+S E\+R\+R\+A\+T\+I\+C R\+E\+S\+U\+L\+T\+S W\+H\+E\+N T\+W\+O L\+E\+A\+F O\+P\+T\+I\+O\+N I\+S U\+S\+E\+D
+
+F\+I\+N\+D F\+P\+A\+R -\/ F\+A\+C\+T\+O\+R F\+O\+R S\+C\+A\+L\+I\+N\+G P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S T\+O C\+A\+N\+O\+P\+Y B\+A\+S\+E\+D O\+N A\+S\+S\+U\+M\+P\+T\+I\+O\+N T\+H\+A\+T N\+I\+T\+R\+O\+G\+E\+N I\+S O\+P\+T\+I\+M\+A\+L\+L\+Y D\+I\+S\+T\+R\+I\+B\+U\+T\+E\+D. T\+H\+E T\+W\+O-\/\+L\+E\+A\+F M\+O\+D\+E\+L I\+S N\+O\+T T\+H\+A\+T D\+I\+F\+F\+E\+R\+E\+N\+T F\+R\+O\+M T\+H\+E S\+I\+N\+G\+L\+E-\/\+L\+E\+A\+F M\+O\+D\+E\+L. A\+L\+L W\+E D\+O I\+S U\+S\+E T\+W\+O S\+C\+A\+L\+I\+N\+G F\+A\+C\+T\+O\+R\+S (I.\+E. S\+C\+A\+L\+I\+N\+G F\+R\+O\+M L\+E\+A\+F T\+O C\+A\+N\+O\+P\+Y) I\+N\+S\+T\+E\+A\+D O\+F O\+N\+E, A\+N\+D T\+H\+U\+S P\+E\+R\+F\+O\+R\+M C\+A\+L\+C\+U\+L\+A\+T\+I\+O\+N\+S T\+W\+I\+C\+E, A\+N\+D I\+N T\+H\+E E\+N\+D A\+D\+D C\+O\+N\+D\+U\+C\+T\+A\+N\+C\+E A\+N\+D N\+E\+T P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S F\+R\+O\+M T\+H\+E T\+W\+O L\+E\+A\+V\+E\+S T\+O G\+E\+T T\+H\+E T\+O\+T\+A\+L.
+
+I\+F A\+L\+L R\+A\+D\+I\+A\+T\+I\+O\+N I\+S D\+I\+F\+F\+U\+S\+E\+D, T\+H\+E\+N A\+L\+L L\+E\+A\+V\+E\+S A\+R\+E S\+H\+A\+D\+E\+D, A\+N\+D W\+E A\+D\+J\+U\+S\+T F\+P\+A\+Rs A\+C\+C\+O\+R\+D\+I\+N\+G\+L\+Y. W\+I\+T\+H\+O\+U\+T T\+H\+I\+S T\+H\+E T\+W\+O L\+E\+A\+F M\+O\+D\+E\+L\+S M\+A\+Y B\+E\+H\+A\+V\+E E\+R\+R\+A\+T\+I\+C\+A\+L\+L\+Y
+
+F\+I\+N\+D Vmax,canopy, T\+H\+A\+T I\+S Vmax S\+C\+A\+L\+E\+D B\+Y L\+A\+I F\+O\+R T\+H\+E S\+I\+N\+G\+L\+E L\+E\+A\+F M\+O\+D\+E\+L
+
+-\/------------ Changing Vcmax seasonally -----------------------
+
+Based on \cite{Bauerle2012-c29} and \cite{Alton2017-pd} there is good evidence for the Vcmax varying throughout the season for deciduous tree species. We are adopting a parameterization based upon their paper with some differences. We don\textquotesingle{}t apply it to evergreens like they suggest. Their paper had only one evergreen species and other papers (\cite{Miyazawa2006-so}) don\textquotesingle{}t seem to back that up. Grasses and crops are also not affected by the dayl. \cite{Alton2017-pd} seems to indicate that all P\+F\+Ts except B\+D\+L-\/\+E\+V\+G tropical should vary intra-\/annually (see their figure 8).
+
+The two leaf is assumed to be affect by the insolation seasonal cycle the same for each sun/shade leaf
+
+-\/------------ Changing Vcmax seasonally -----------------------///
+
+F\+I\+N\+D Vm,unstressed (D\+U\+E T\+O W\+A\+T\+E\+R) B\+U\+T S\+T\+R\+E\+S\+S\+E\+D D\+U\+E T\+O T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E
+
+A\+S\+S\+U\+M\+I\+N\+G T\+H\+A\+T S\+U\+N\+L\+I\+T A\+N\+D S\+H\+A\+D\+E\+D T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E\+S A\+R\+E S\+A\+M\+E
+
+C\+A\+L\+C\+U\+L\+A\+T\+E S\+O\+I\+L M\+O\+I\+S S\+T\+R\+E\+S\+S T\+O A\+C\+C\+O\+U\+N\+T F\+O\+R R\+E\+D\+U\+C\+T\+I\+O\+N I\+N P\+H\+O\+T\+O\+S\+Y\+N D\+U\+E T\+O L\+O\+W S\+O\+I\+L M\+O\+I\+S\+T\+U\+R\+E, T\+H\+R\+E\+E S\+T\+E\+P\+S H\+E\+R\+E -\/$>$ 1. F\+I\+N\+D W\+I\+L\+T\+I\+N\+G P\+O\+I\+N\+T A\+N\+D F\+I\+E\+L\+D C\+A\+P\+A\+C\+I\+T\+Y S\+O\+I\+L M\+O\+I\+S. C\+O\+N\+T\+E\+N\+T F\+O\+R A\+L\+L T\+H\+R\+E\+E L\+A\+Y\+E\+R\+S.
+\begin{DoxyEnumerate}
+\item U\+S\+I\+N\+G T\+H\+E\+S\+E F\+I\+N\+D T\+H\+E S\+O\+I\+L M\+O\+I\+S\+T\+U\+R\+E S\+T\+R\+E\+S\+S T\+E\+R\+M F\+O\+R A\+L\+L T\+H\+R\+E\+E L\+A\+Y\+E\+R\+S, A\+N\+D 3. A\+V\+E\+R\+A\+G\+E T\+H\+I\+S S\+O\+I\+L M\+O\+I\+S\+T\+U\+R\+E S\+T\+R\+E\+S\+S T\+E\+R\+M O\+V\+E\+R T\+H\+E 3 L\+A\+Y\+E\+R\+S U\+S\+I\+N\+G F\+R\+A\+C\+T\+I\+O\+N O\+F R\+O\+O\+T\+S P\+R\+E\+S\+E\+N\+T I\+N E\+A\+C\+H L\+A\+Y\+E\+R F\+O\+R E\+A\+C\+H P\+F\+T. N\+O\+T\+E T\+H\+A\+T W\+H\+I\+L\+E S\+O\+I\+L M\+O\+I\+S\+T\+U\+R\+E I\+S U\+N\+I\+F\+O\+R\+M O\+V\+E\+R A\+N E\+N\+T\+I\+R\+E G\+C\+M G\+R\+I\+D C\+E\+L\+L, T\+H\+E S\+O\+I\+L M\+O\+I\+S\+T\+U\+R\+E S\+T\+R\+E\+S\+S F\+O\+R E\+A\+C\+H P\+F\+T I\+S N\+O\+T B\+E\+C\+A\+U\+S\+E O\+F D\+I\+F\+F\+E\+R\+E\+N\+C\+E\+S I\+N R\+O\+O\+T D\+I\+S\+T\+R\+I\+B\+U\+T\+I\+O\+N.
+\end{DoxyEnumerate}
+
+W\+I\+L\+T\+I\+N\+G P\+O\+I\+N\+T C\+O\+R\+R\+E\+S\+P\+O\+N\+D\+S T\+O M\+A\+T\+R\+I\+C P\+O\+T\+E\+N\+T\+I\+A\+L O\+F 150 M F\+I\+E\+L\+D C\+A\+P\+A\+C\+I\+T\+Y C\+O\+R\+R\+E\+S\+P\+O\+N\+D\+S T\+O H\+Y\+D\+A\+R\+U\+L\+I\+C C\+O\+N\+D\+U\+C\+T\+I\+V\+I\+T\+Y O\+F 0.\+10 M\+M/\+D\+A\+Y -\/$>$ 1.\+157x1\+E-\/09 M/\+S
+
+U\+S\+E S\+O\+I\+L M\+O\+I\+S\+T\+U\+R\+E F\+U\+N\+C\+T\+I\+O\+N T\+O M\+A\+K\+E Vm,unstressed -\/$>$ Vm S\+T\+R\+E\+S\+S\+E\+D
+
+F\+I\+N\+D T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E D\+E\+P\+E\+N\+D\+E\+N\+T P\+A\+R\+A\+M\+E\+T\+E\+R V\+A\+L\+U\+E\+S
+
+F\+I\+N\+D R\+U\+B\+I\+S\+C\+O S\+P\+E\+C\+I\+F\+I\+C\+I\+T\+Y F\+O\+R $CO_2$ R\+E\+L\+A\+T\+I\+V\+E T\+O $O_2$ -\/ S\+I\+G\+M\+A
+
+F\+I\+N\+D $CO_2$ C\+O\+M\+P\+E\+N\+S\+A\+T\+I\+O\+N P\+O\+I\+N\+T U\+S\+I\+N\+G R\+U\+B\+I\+S\+C\+O S\+P\+E\+C\+I\+F\+I\+C\+I\+T\+Y -\/ T\+G\+A\+M\+M\+A. K\+E\+E\+P I\+N M\+I\+N\+D T\+H\+A\+T $CO_2$ C\+O\+M\+P\+E\+N\+S\+A\+T\+I\+O\+N P\+O\+I\+N\+T F\+O\+R C4 P\+L\+A\+N\+T\+S I\+S Z\+E\+R\+O, S\+O T\+H\+E F\+O\+L\+L\+O\+W\+I\+N\+G V\+A\+L\+U\+E I\+S R\+E\+L\+E\+V\+A\+N\+T F\+O\+R C3 P\+L\+A\+N\+T\+S O\+N\+L\+Y
+
+E\+S\+T\+I\+M\+A\+T\+E M\+I\+C\+H\+E\+L\+I\+S-\/\+M\+E\+N\+T\+O\+N C\+O\+N\+S\+T\+A\+N\+T\+S F\+O\+R $CO_2$ (Kc) and $O_2$ (Ko) T\+O B\+E U\+S\+E\+D L\+A\+T\+E\+R F\+O\+R E\+S\+T\+I\+M\+A\+T\+I\+N\+G R\+U\+B\+I\+S\+C\+O L\+I\+M\+I\+T\+E\+D P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+T\+I\+C R\+A\+T\+E
+
+C\+H\+O\+O\+S\+E A V\+A\+L\+U\+E O\+F I\+N\+T\+E\+R\+C\+E\+L\+L\+U\+L\+A\+R $CO_2$ C\+O\+N\+C\+E\+N\+T\+R\+A\+T\+I\+O\+N $(CO_2i)$ I\+F S\+T\+A\+R\+T\+I\+N\+G F\+O\+R T\+H\+E F\+I\+R\+S\+T T\+I\+M\+E, O\+R U\+S\+E V\+A\+L\+U\+E F\+R\+O\+M T\+H\+E P\+R\+E\+V\+I\+O\+U\+S T\+I\+M\+E S\+T\+E\+P
+
+E\+S\+T\+I\+M\+A\+T\+E R\+U\+B\+I\+S\+C\+O L\+I\+M\+I\+T\+E\+D P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+T\+I\+C R\+A\+T\+E
+
+E\+S\+T\+I\+M\+A\+T\+E P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+T\+I\+C R\+A\+T\+E L\+I\+M\+I\+T\+E\+D B\+Y A\+V\+A\+I\+L\+A\+B\+L\+E L\+I\+G\+H\+T
+
+E\+S\+T\+I\+M\+A\+T\+E P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+T\+I\+C R\+A\+T\+E L\+I\+M\+I\+T\+E\+D B\+Y T\+R\+A\+N\+S\+P\+O\+R\+T C\+A\+P\+A\+C\+I\+T\+Y
+
+I\+N\+C\+L\+U\+D\+E N\+U\+T\+R\+I\+E\+N\+T L\+I\+M\+I\+T\+A\+T\+I\+O\+N E\+F\+F\+E\+C\+T B\+Y D\+O\+W\+N-\/\+R\+E\+G\+U\+L\+A\+T\+I\+N\+G P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S N\+\_\+\+E\+F\+F\+E\+C\+T D\+E\+C\+R\+E\+A\+S\+E\+S F\+R\+O\+M 1.\+0 A\+S $CO_2$ I\+N\+C\+R\+E\+A\+S\+E\+S A\+B\+O\+V\+E 288 P\+P\+M.
+
+L\+I\+M\+I\+T N\+\_\+\+E\+F\+F\+E\+C\+T T\+O M\+A\+X O\+F 1.\+0 S\+O T\+H\+A\+T N\+O U\+P-\/\+R\+E\+G\+U\+L\+A\+T\+I\+O\+N O\+C\+C\+U\+R\+S
+
+F\+I\+N\+D T\+H\+E S\+M\+O\+O\+T\+H\+E\+D A\+V\+E\+R\+A\+G\+E O\+F T\+H\+R\+E\+E P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+T\+I\+C R\+A\+T\+E\+S J\+C, J\+E, A\+N\+D J\+S U\+S\+I\+N\+G C\+O\+L\+L\+A\+T\+Z\textquotesingle{}S T\+W\+O Q\+U\+A\+D\+R\+A\+T\+I\+C E\+Q\+U\+A\+T\+I\+O\+N\+S, O\+R F\+I\+N\+D T\+H\+E M\+I\+N. O\+F T\+H\+I\+S T\+W\+O R\+A\+T\+E\+S O\+R F\+I\+N\+D M\+I\+N. O\+F J\+C A\+N\+D J\+E.
+
+D\+O\+W\+N-\/\+R\+E\+G\+U\+L\+A\+T\+E P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S F\+O\+R C3 P\+L\+A\+N\+T\+S
+
+E\+S\+T\+I\+M\+A\+T\+E L\+E\+A\+F M\+A\+I\+N\+T\+E\+N\+A\+N\+C\+E R\+E\+S\+P\+I\+R\+A\+T\+I\+O\+N R\+A\+T\+E\+S A\+N\+D N\+E\+T P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+T\+I\+C R\+A\+T\+E. T\+H\+I\+S N\+E\+T P\+H\+O\+S\+Y\+N\+T\+H\+E\+T\+I\+C R\+A\+T\+E I\+S /\+M$^\wedge$2 O\+F V\+E\+G\+E\+T\+A\+T\+E\+D L\+A\+N\+D.
+
+R\+E\+C\+E\+N\+T S\+T\+U\+D\+I\+E\+S S\+H\+O\+W Rm\+L I\+S L\+E\+S\+S T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E S\+E\+N\+S\+I\+T\+I\+V\+E T\+H\+A\+N P\+H\+O\+T\+O\+S\+Y\+N\+T\+H\+E\+S\+I\+S D\+U\+R\+I\+N\+G D\+A\+Y, T\+H\+A\+T\textquotesingle{}S W\+H\+Y A S\+M\+A\+L\+L Q10 V\+A\+L\+U\+E I\+S U\+S\+E\+D D\+U\+R\+I\+N\+G D\+A\+Y.
+
+F\+I\+N\+D $CO_2$ C\+O\+N\+C\+E\+N\+T\+R\+A\+T\+I\+O\+N A\+T L\+E\+A\+F S\+U\+R\+F\+A\+C\+E F\+O\+R A\+L\+L V\+E\+G\+E\+T\+A\+T\+I\+O\+N T\+Y\+P\+E\+S. A\+L\+T\+H\+O\+U\+G\+H W\+E A\+R\+E F\+I\+N\+D\+I\+N\+G $CO_2$ C\+O\+N\+C A\+T T\+H\+E L\+E\+A\+F S\+U\+R\+F\+A\+C\+E S\+E\+P\+A\+R\+A\+T\+E\+L\+Y F\+O\+R A\+L\+L V\+E\+G\+E\+T\+A\+T\+I\+O\+N T\+Y\+P\+E\+S, T\+H\+E B\+I\+G A\+S\+S\+U\+M\+P\+T\+I\+O\+N H\+E\+R\+E I\+S T\+H\+A\+T T\+H\+E A\+E\+R\+O\+D\+Y\+N\+A\+M\+I\+C C\+O\+N\+D\+U\+C\+T\+A\+N\+C\+E I\+S S\+A\+M\+E O\+V\+E\+R A\+L\+L V\+E\+G\+E\+T\+A\+T\+I\+O\+N T\+Y\+P\+E\+S. C\+L\+A\+S\+S F\+I\+N\+D\+S A\+E\+R\+O\+D\+Y\+N\+A\+M\+I\+C R\+E\+S\+I\+S\+T\+A\+N\+C\+E O\+V\+E\+R A\+L\+L T\+H\+E 4 S\+U\+B-\/\+A\+R\+E\+A\+S, B\+U\+T N\+O\+T F\+O\+R D\+I\+F\+F\+E\+R\+E\+N\+T V\+E\+G\+E\+T\+A\+T\+I\+O\+N T\+Y\+P\+E\+S W\+I\+T\+H\+I\+N A S\+U\+B-\/\+A\+R\+E\+A. A\+L\+S\+O C\+H\+A\+N\+G\+E A\+E\+R\+O\+D\+Y\+N\+A\+M\+I\+C C\+O\+N\+D\+U\+C\+T\+A\+N\+C\+E, C\+F\+L\+U\+X, F\+R\+O\+M M/\+S T\+O $MOL/M^2/S$
+
+F\+I\+N\+D S\+T\+O\+M\+A\+T\+A\+L C\+O\+N\+D\+U\+C\+T\+A\+N\+C\+E A\+S P\+E\+R B\+A\+L\+L-\/\+W\+O\+O\+D\+R\+O\+W-\/\+B\+E\+R\+R\+Y F\+O\+R\+M\+U\+L\+A\+T\+I\+O\+N U\+S\+E\+D B\+Y C\+O\+L\+L\+A\+T\+Z E\+T A\+L. O\+R U\+S\+E T\+H\+E L\+E\+U\+N\+I\+N\+G T\+Y\+P\+E F\+O\+R\+M\+U\+L\+A\+T\+I\+O\+N W\+H\+I\+C\+H U\+S\+E\+S V\+P\+D I\+N\+S\+T\+E\+A\+D O\+F R\+H
+
+I\+F L\+I\+G\+H\+T I\+S T\+O\+O L\+E\+S\+S M\+A\+K\+E P\+A\+R\+A\+M\+E\+T\+E\+R B\+B V\+E\+R\+Y S\+M\+A\+L\+L
+
+F\+I\+N\+D T\+H\+E I\+N\+T\+E\+R\+C\+E\+L\+L\+U\+L\+A\+R $CO_2$ C\+O\+N\+C\+E\+N\+T\+R\+A\+T\+I\+O\+N B\+A\+S\+E\+D O\+N E\+S\+T\+I\+M\+A\+T\+E\+D V\+A\+L\+U\+E O\+F G\+C
+
+S\+E\+E I\+F W\+E H\+A\+V\+E P\+E\+R\+F\+O\+R\+M\+E\+D T\+H\+E R\+E\+Q\+U\+I\+R\+E\+D N\+O. O\+F I\+T\+E\+R\+A\+T\+I\+O\+N\+S, I\+F N\+O\+T T\+H\+E\+N W\+E G\+O B\+A\+C\+K A\+N\+D D\+O A\+N\+O\+T\+H\+E\+R I\+T\+E\+R\+A\+T\+I\+O\+N
+
+W\+H\+E\+N R\+E\+Q\+U\+I\+R\+E\+D N\+O. O\+F I\+T\+E\+R\+A\+T\+I\+O\+N\+S H\+A\+V\+E B\+E\+E\+N P\+E\+R\+F\+O\+R\+M\+E\+D T\+H\+E\+N F\+I\+N\+D S\+T\+O\+M\+A\+T\+A\+L C\+O\+N\+D\+U\+C\+T\+A\+N\+C\+E\+S F\+O\+R A\+L\+L V\+E\+G\+E\+T\+A\+T\+I\+O\+N T\+Y\+P\+E\+S I\+N M/\+S A\+N\+D T\+H\+E\+N U\+S\+E C\+O\+N\+D\+U\+C\+T\+A\+N\+C\+E\+S T\+O F\+I\+N\+D R\+E\+S\+I\+S\+T\+A\+N\+C\+E\+S. G\+C\+T\+U I\+M\+P\+L\+I\+E\+S G\+C I\+N T\+R\+A\+D\+I\+T\+I\+O\+N\+A\+L U\+N\+I\+T\+S O\+F M/\+S
+
+D\+O\+N\textquotesingle{}T W\+A\+N\+T T\+O R\+E\+D\+U\+C\+E R\+E\+S\+I\+S\+T\+A\+N\+C\+E A\+T N\+I\+G\+H\+T T\+O L\+E\+S\+S T\+H\+A\+N O\+U\+R M\+A\+X. V\+A\+L\+U\+E O\+F A\+R\+O\+U\+N\+D 5000 S/\+M
+
+I\+F U\+S\+I\+N\+G S\+T\+O\+R\+A\+G\+E L\+A\+I T\+H\+E\+N W\+E S\+E\+T S\+T\+O\+M\+A\+T\+A\+L R\+E\+S\+I\+S\+T\+A\+N\+C\+E T\+O I\+T\+S M\+A\+X\+I\+M\+U\+M V\+A\+L\+U\+E.
+
+A\+N\+D F\+I\+N\+A\+L\+L\+Y T\+A\+K\+E W\+E\+I\+G\+H\+T\+E\+D A\+V\+E\+R\+A\+G\+E O\+F R\+C\+\_\+\+V\+E\+G B\+A\+S\+E\+D O\+N F\+R\+A\+C\+T\+I\+O\+N\+A\+L C\+O\+V\+E\+R\+A\+G\+E O\+F O\+U\+R 4 V\+E\+G\+E\+T\+A\+T\+I\+O\+N T\+Y\+P\+E\+S
+
+C\+O\+N\+V\+E\+R\+T A\+N\+\_\+\+V\+E\+G A\+N\+D R\+M\+L\+\_\+\+V\+E\+G T\+O u-\/\+M\+O\+L C\+O2/\+M2.\+S\+E\+C

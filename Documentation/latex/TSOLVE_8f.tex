@@ -1,0 +1,310 @@
+\hypertarget{TSOLVE_8f}{}\section{src/\+T\+S\+O\+L\+V\+E.f File Reference}
+\label{TSOLVE_8f}\index{src/\+T\+S\+O\+L\+V\+E.\+f@{src/\+T\+S\+O\+L\+V\+E.\+f}}
+
+
+Purpose\+: Solution of surface energy balance for non-\/vegetated subareas.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2}{tsolve} (I\+S\+N\+O\+W, F\+I, Q\+S\+W\+N\+E\+T, Q\+L\+W\+O\+U\+T, Q\+T\+R\+A\+N\+S, Q\+S\+E\+N\+S, Q\+E\+V\+A\+P, E\+V\+A\+P, T\+Z\+E\+R\+O, Q\+Z\+E\+R\+O, G\+Z\+E\+R\+O, Q\+M\+E\+L\+T, C\+D\+H, C\+D\+M, R\+I\+B, C\+F\+L\+U\+X, F\+T\+E\+M\+P, F\+V\+A\+P, I\+L\+M\+O, U\+E, H, Q\+L\+W\+I\+N, T\+P\+O\+T\+A, Q\+A, V\+A, P\+A\+D\+R\+Y, R\+H\+O\+A\+I\+R, A\+L\+V\+I\+S\+G, A\+L\+N\+I\+R\+G, C\+R\+I\+B, C\+P\+H\+C\+H, C\+E\+V\+A\+P, T\+V\+I\+R\+T\+A, Z\+O\+S\+C\+L\+H, Z\+O\+S\+C\+L\+M, Z\+R\+S\+L\+F\+H, Z\+R\+S\+L\+F\+M, Z\+O\+H, Z\+O\+M, F\+C\+O\+R, G\+C\+O\+N\+S\+T, G\+C\+O\+E\+F\+F, T\+S\+T\+A\+R\+T, P\+C\+P\+R, T\+R\+S\+N\+O\+W\+G, F\+S\+S\+B, A\+L\+S\+N\+O, T\+H\+L\+I\+Q, T\+H\+L\+M\+I\+N, D\+E\+L\+Z\+W, R\+H\+O\+S\+N\+O, Z\+S\+N\+O\+W, Z\+P\+O\+N\+D, I\+W\+A\+T\+E\+R, I\+E\+V\+A\+P, I\+T\+E\+R\+C\+T, I\+S\+A\+N\+D, I\+S\+L\+F\+D, I\+T\+G, I\+L\+G, I\+G, I\+L1, I\+L2, J\+L, N\+B\+S, I\+S\+N\+O\+A\+L\+B, T\+S\+T\+E\+P, T\+V\+I\+R\+T\+S, E\+V\+B\+E\+T\+A, Q0\+S\+A\+T, R\+E\+S\+I\+D, D\+C\+F\+L\+X\+M, C\+F\+L\+U\+X\+M, W\+Z\+E\+R\+O, T\+R\+T\+O\+P, A, B, L\+Z\+Z0, L\+Z\+Z0\+T, F\+M, F\+H, I\+T\+E\+R, N\+I\+T\+E\+R, J\+E\+V\+A\+P, K\+F, ipeatland, co2conc, pressg, coszs, Cmossmas, dmoss, anmoss, rmlmoss, iday, daylength, pdd)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Solution of surface energy balance for non-\/vegetated subareas. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2}{}\index{T\+S\+O\+L\+V\+E.\+f@{T\+S\+O\+L\+V\+E.\+f}!tsolve@{tsolve}}
+\index{tsolve@{tsolve}!T\+S\+O\+L\+V\+E.\+f@{T\+S\+O\+L\+V\+E.\+f}}
+\subsubsection[{tsolve}]{\setlength{\rightskip}{0pt plus 5cm}subroutine tsolve (
+\begin{DoxyParamCaption}
+\item[{integer}]{I\+S\+N\+O\+W, }
+\item[{real, dimension    (ilg)}]{F\+I, }
+\item[{real, dimension(ilg)}]{Q\+S\+W\+N\+E\+T, }
+\item[{real, dimension(ilg)}]{Q\+L\+W\+O\+U\+T, }
+\item[{real, dimension(ilg)}]{Q\+T\+R\+A\+N\+S, }
+\item[{real, dimension (ilg)}]{Q\+S\+E\+N\+S, }
+\item[{real, dimension (ilg)}]{Q\+E\+V\+A\+P, }
+\item[{real, dimension  (ilg)}]{E\+V\+A\+P, }
+\item[{real, dimension (ilg)}]{T\+Z\+E\+R\+O, }
+\item[{real, dimension (ilg)}]{Q\+Z\+E\+R\+O, }
+\item[{real, dimension (ilg)}]{G\+Z\+E\+R\+O, }
+\item[{real, dimension (ilg)}]{Q\+M\+E\+L\+T, }
+\item[{real, dimension   (ilg)}]{C\+D\+H, }
+\item[{real, dimension   (ilg)}]{C\+D\+M, }
+\item[{real, dimension   (ilg)}]{R\+I\+B, }
+\item[{real, dimension (ilg)}]{C\+F\+L\+U\+X, }
+\item[{real, dimension (ilg)}]{F\+T\+E\+M\+P, }
+\item[{real, dimension  (ilg)}]{F\+V\+A\+P, }
+\item[{real, dimension  (ilg)}]{I\+L\+M\+O, }
+\item[{real, dimension    (ilg)}]{U\+E, }
+\item[{real, dimension     (ilg)}]{H, }
+\item[{real, dimension (ilg)}]{Q\+L\+W\+I\+N, }
+\item[{real, dimension (ilg)}]{T\+P\+O\+T\+A, }
+\item[{real, dimension    (ilg)}]{Q\+A, }
+\item[{real, dimension    (ilg)}]{V\+A, }
+\item[{real, dimension (ilg)}]{P\+A\+D\+R\+Y, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+A\+I\+R, }
+\item[{real, dimension(ilg)}]{A\+L\+V\+I\+S\+G, }
+\item[{real, dimension(ilg)}]{A\+L\+N\+I\+R\+G, }
+\item[{real, dimension  (ilg)}]{C\+R\+I\+B, }
+\item[{real, dimension (ilg)}]{C\+P\+H\+C\+H, }
+\item[{real, dimension (ilg)}]{C\+E\+V\+A\+P, }
+\item[{real, dimension(ilg)}]{T\+V\+I\+R\+T\+A, }
+\item[{real, dimension(ilg)}]{Z\+O\+S\+C\+L\+H, }
+\item[{real, dimension(ilg)}]{Z\+O\+S\+C\+L\+M, }
+\item[{real, dimension(ilg)}]{Z\+R\+S\+L\+F\+H, }
+\item[{real, dimension(ilg)}]{Z\+R\+S\+L\+F\+M, }
+\item[{real, dimension   (ilg)}]{Z\+O\+H, }
+\item[{real, dimension   (ilg)}]{Z\+O\+M, }
+\item[{real, dimension  (ilg)}]{F\+C\+O\+R, }
+\item[{real, dimension(ilg)}]{G\+C\+O\+N\+S\+T, }
+\item[{real, dimension(ilg)}]{G\+C\+O\+E\+F\+F, }
+\item[{real, dimension(ilg)}]{T\+S\+T\+A\+R\+T, }
+\item[{real, dimension  (ilg)}]{P\+C\+P\+R, }
+\item[{real, dimension(ilg,nbs)}]{T\+R\+S\+N\+O\+W\+G, }
+\item[{real, dimension(ilg,nbs)}]{F\+S\+S\+B, }
+\item[{real, dimension(ilg,nbs)}]{A\+L\+S\+N\+O, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+I\+Q, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+M\+I\+N, }
+\item[{real, dimension(ilg,ig)}]{D\+E\+L\+Z\+W, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+O, }
+\item[{real, dimension(ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{Z\+P\+O\+N\+D, }
+\item[{integer, dimension(ilg)}]{I\+W\+A\+T\+E\+R, }
+\item[{integer, dimension (ilg)}]{I\+E\+V\+A\+P, }
+\item[{integer, dimension(ilg,6,50)}]{I\+T\+E\+R\+C\+T, }
+\item[{integer, dimension(ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{integer}]{I\+S\+L\+F\+D, }
+\item[{integer}]{I\+T\+G, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{N\+B\+S, }
+\item[{integer}]{I\+S\+N\+O\+A\+L\+B, }
+\item[{real, dimension (ilg)}]{T\+S\+T\+E\+P, }
+\item[{real, dimension(ilg)}]{T\+V\+I\+R\+T\+S, }
+\item[{real, dimension(ilg)}]{E\+V\+B\+E\+T\+A, }
+\item[{real, dimension (ilg)}]{Q0\+S\+A\+T, }
+\item[{real, dimension (ilg)}]{R\+E\+S\+I\+D, }
+\item[{real, dimension(ilg)}]{D\+C\+F\+L\+X\+M, }
+\item[{real, dimension(ilg)}]{C\+F\+L\+U\+X\+M, }
+\item[{real, dimension (ilg)}]{W\+Z\+E\+R\+O, }
+\item[{real, dimension(ilg,nbs)}]{T\+R\+T\+O\+P, }
+\item[{real, dimension     (ilg)}]{A, }
+\item[{real, dimension     (ilg)}]{B, }
+\item[{real, dimension  (ilg)}]{L\+Z\+Z0, }
+\item[{real, dimension (ilg)}]{L\+Z\+Z0\+T, }
+\item[{real, dimension    (ilg)}]{F\+M, }
+\item[{real, dimension    (ilg)}]{F\+H, }
+\item[{integer, dimension  (ilg)}]{I\+T\+E\+R, }
+\item[{integer, dimension (ilg)}]{N\+I\+T\+E\+R, }
+\item[{integer, dimension (ilg)}]{J\+E\+V\+A\+P, }
+\item[{integer, dimension    (ilg)}]{K\+F, }
+\item[{integer, dimension(ilg)}]{ipeatland, }
+\item[{real, dimension(ilg)}]{co2conc, }
+\item[{real, dimension(ilg)}]{pressg, }
+\item[{real, dimension(ilg)}]{coszs, }
+\item[{real, dimension(ilg)}]{Cmossmas, }
+\item[{real, dimension(ilg)}]{dmoss, }
+\item[{real, dimension(ilg)}]{anmoss, }
+\item[{real, dimension(ilg)}]{rmlmoss, }
+\item[{integer}]{iday, }
+\item[{real, dimension(ilg)}]{daylength, }
+\item[{real, dimension(ilg)}]{pdd}
+\end{DoxyParamCaption}
+)}\label{TSOLVE_8f_a6e73723f0d6d00d8dc1c69c462493fe2}
+
+\begin{DoxyParams}{Parameters}
+{\em isnow} & Flag indicating presence or absence of snow\\
+\hline
+{\em isnoalb} & Switch to model snow albedo in two or more wavelength bands\\
+\hline
+{\em qswnet} & Net shortwave radiation at surface $[W m^{-2}]$\\
+\hline
+{\em qlwout} & Upwelling longwave radiation at surface $[W m^{-2}]$ (L)\\
+\hline
+{\em qtrans} & Shortwave radiation transmitted into surface $[W m^{-2}]$\\
+\hline
+{\em qsens} & Sensible heat flux from surface $[W m^{-2}] (Q_H )$\\
+\hline
+{\em qevap} & Latent heat flux from surface $[W m^{-2}] (Q_E)$\\
+\hline
+{\em evap} & Evaporation rate at surface $[kg m^{-2} s^{-1}] (E(0))$\\
+\hline
+{\em tzero} & Temperature at surface $[K] (T(0))$\\
+\hline
+{\em qzero} & Specific humidity at surface $[kg kg^{-1}] (q(0))$\\
+\hline
+{\em gzero} & Heat flux into surface $[W m^{-2}] (G(0))$\\
+\hline
+{\em qmelt} & Heat available for melting snow or freezing water at the surface $[W m^{-2}]$\\
+\hline
+{\em cdh} & Surface drag coefficient for heat $[ ] (C_{DH}) $\\
+\hline
+{\em cdm} & Surface drag coefficient for momentum \mbox{[} \mbox{]}\\
+\hline
+{\em rib} & Bulk Richardson number at surface \mbox{[} \mbox{]}\\
+\hline
+{\em cflux} & Product of surface drag coefficient and wind speed $[m s^{-1}]$\\
+\hline
+{\em ftemp} & Product of surface-\/air temperature gradient, drag coefficient and wind speed $[K m s^{-1}]$\\
+\hline
+{\em fvap} & Product of surface-\/air humidity gradient, drag coefficient and wind speed $[kg kg^{-1} m s^{-1}]$\\
+\hline
+{\em ilmo} & Inverse of Monin-\/\+Obukhov roughness length $(m-1]$\\
+\hline
+{\em ue} & Friction velocity of air $[m s^{-1}]$\\
+\hline
+{\em h} & Height of the atmospheric boundary layer \mbox{[}m\mbox{]}\\
+\hline
+{\em zpond} & Depth of ponded water on surface \mbox{[}m\mbox{]}\\
+\hline
+{\em fi} & Fractional coverage of subarea in question on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em qlwin} & Downwelling longwave radiation at bottom of atmosphere $[W m^{-2}]$\\
+\hline
+{\em tpota} & Potential temperature of air at reference height $[K] (T_{a,pot})$\\
+\hline
+{\em qa} & Specific humidity at reference height $[kg kg^{-1}] (q_a)$\\
+\hline
+{\em va} & Wind speed at reference height $[m s^{-1}] (v_a)$\\
+\hline
+{\em padry} & Partial pressure of dry air $[Pa] (p_{dry})$\\
+\hline
+{\em rhoair} & Density of air $[kg m^{-3}] (\rho_a)$\\
+\hline
+{\em alvisg} & Visible albedo of ground surface \mbox{[} \mbox{]}\\
+\hline
+{\em alnirg} & Near-\/\+I\+R albedo of ground surface \mbox{[} \mbox{]}\\
+\hline
+{\em crib} & Richardson number coefficient $[K^{-1}]$\\
+\hline
+{\em cphch} & Latent heat of vaporization at surface $[J kg^{-1}]$\\
+\hline
+{\em cevap} & Soil evaporation efficiency coefficient $[ ] (\beta)$\\
+\hline
+{\em tvirta} & Virtual potential temperature of air at reference height \mbox{[}K\mbox{]}\\
+\hline
+{\em zosclh} & Ratio of roughness length for heat to reference height for temperature and humidity \mbox{[} \mbox{]}\\
+\hline
+{\em zosclm} & Ratio of roughness length for momentum to reference height for wind speed \mbox{[} \mbox{]}\\
+\hline
+{\em zrslfh} & Difference between reference height for temperature and humidity and height at which extrapolated wind speed goes to zero \mbox{[}m\mbox{]}\\
+\hline
+{\em zrslfm} & Difference between reference height for wind speed and height at which extrapolated wind speed goes to zero \mbox{[}m\mbox{]}\\
+\hline
+{\em zoh} & Surface roughness length for heat \mbox{[}m\mbox{]}\\
+\hline
+{\em zom} & Surface roughness length for momentum \mbox{[}m\mbox{]}\\
+\hline
+{\em gconst} & Intercept used in equation relating surface heat flux to surface temperature $[W m^{-2}]$\\
+\hline
+{\em gcoeff} & Multiplier used in equation relating surface heat flux to surface temperature $[W m^{-2} K^{-1}]$\\
+\hline
+{\em tstart} & Starting point for surface temperature iteration \mbox{[}K\mbox{]}\\
+\hline
+{\em fcor} & Coriolis parameter $[s^{-1}]$\\
+\hline
+{\em pcpr} & Surface precipitation rate $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em rhosno} & Density of snow $[kg m^{-3}]$\\
+\hline
+{\em zsnow} & Depth of snow pack \mbox{[}m\mbox{]} $(z_s)$\\
+\hline
+{\em thliq} & Volumetric liquid water content of soil layers $[m^{3} m^{-3}]$\\
+\hline
+{\em thlmin} & Residual soil liquid water content remaining after freezing or evaporation $[m^{3} m^{-3}]$\\
+\hline
+{\em delzw} & Permeable thickness of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em trsnowg} & Short-\/wave transmissivity of snow pack over bare ground \mbox{[} \mbox{]}\\
+\hline
+{\em alsno} & Albedo of snow in each modelled wavelength band \mbox{[} \mbox{]}\\
+\hline
+{\em fssb} & Total solar radiation in each modelled wavelength band $[W m^{-2}]$\\
+\hline
+{\em iwater} & Flag indicating condition of surface (dry, water-\/covered or snow-\/covered)\\
+\hline
+{\em ievap} & Flag indicating whether surface evaporation is occurring or not\\
+\hline
+{\em iterct} & Counter of number of iterations required to solve energy balance for four subareas\\
+\hline
+{\em isand} & Sand content flag \\
+\hline
+\end{DoxyParams}
+For the surface temperature iteration, two alternative schemes are offered\+: the bisection method (selected if the flag I\+T\+G = 1) and the Newton-\/\+Raphson method (selected if I\+T\+G = 2). In the first case, the maximum number of iterations I\+T\+E\+R\+M\+X is set to 50, and in the second case it is set to 5. An optional windless transfer coefficient E\+Z\+E\+R\+O is available, which can be used, following the recommendations of Brown et al. (2006) \cite{Brown2006-ec}, to prevent the sensible heat flux over snow packs from becoming vanishingly small under highly stable conditions. Currently, E\+Z\+E\+R\+O is set to zero.
+
+In the next section, calculations of surface net and transmitted shortwave radiation are done depending on whether a snow pack is present (I\+S\+N\+O\+W=1) and whether the incoming shortwave radiation is being supplied in two bands (one visible and one near-\/\+I\+R, I\+S\+N\+O\+A\+L\+B=0) or four bands (one visible and three near-\/\+I\+R, I\+S\+N\+O\+A\+L\+B=1). For each band the net shortwave radiation is calculated as the incoming radiation multiplied by one minus the appropriate albedo. If there is no snow present the shortwave transmissivity at the surface is set to zero and the absorbed visible radiation is calculated from the first radiation band. If I\+S\+N\+O\+A\+L\+B=0 the absorbed near-\/\+I\+R radiation is calculated from the second band and if I\+S\+N\+O\+A\+L\+B=1 it is calculated from the sum of the second to fourth bands. The total net shortwave radiation Q\+S\+W\+N\+E\+T is then evaluated. If a snow pack is present, then if I\+S\+N\+O\+A\+L\+B=0 the calculations are done separately for the visible and near-\/\+I\+R bands; if I\+S\+N\+O\+A\+L\+B=1, they are done separately over the four wavelength bands. The transmissivity is calculated as an average value for I\+S\+N\+O\+A\+L\+B=0, and separately for the four wavelength ranges for I\+S\+N\+O\+A\+L\+B=1. The net shortwave radiation at the surface is obtained from the sum of the net values in each wavelength band, corrected for the respective loss by transmission into the surface.
+
+The 100 continuation line marks the beginning of the surface temperature iteration sequence. First the flags N\+I\+T (indicating that there are still locations at the beginning of the current iteration step for which the surface temperature has not yet been found) and N\+U\+M\+I\+T (indicating that there are still locations at the end of the current iteration step for which the surface temperature has not yet been found) are set to zero. Loop 150 is then performed over the set of modelled areas. If I\+T\+E\+R=1, N\+I\+T is incremented by one, and the initial value of the surface transfer coefficient C\+F\+L\+U\+X\+M for this iteration pass is set to its value from the previous pass. The virtual temperature at the surface, $T(0)_v$, is obtained using the standard expression (see documentation for subroutine C\+L\+A\+S\+S\+T)\+:
+
+$T(0)_v = T(0) [1 + 0.61 q(0)]$
+
+where T(0) is the surface temperature and q(0) is the specific humidity at the surface. The surface humidity can be obtained from the saturated specific humidity $q(0)_{sat}$ by making use of the definition of the surface evaporation efficiency $\beta$\+:
+
+$\beta = [q(0) – q_a]/[q(0)_{sat} - q_a]$
+
+where $q_a$ is the specific humidity of the air at the reference height. This expression is inverted to obtain an expression for q(0). The saturated specific humidity $q(0)_{sat}$ is determined from the mixing ratio at saturation, $w(0)_{sat}$\+:
+
+$q(0)_{sat} = w(0)_{sat}/[1 + w(0)_{sat}]$
+
+The saturation mixing ratio is a function of the saturation vapour pressure $e(0)_{sat}$ at the surface\+:
+
+$w(0)_{sat} = 0.622 e(0)_{sat}/(p_{dry})$
+
+where $p_{dry}$ is the partial pressure of dry air. A standard empirical equation for the saturation vapour pressure dependence on the temperature T is used\+:
+
+$e_{sat} = 611.0 exp[17.269 (T – T_f)/(T – 35.86)] T \geq T_f$ $e_{sat} = 611.0 exp[21.874 (T – T_f)/(T – 7.66)] T < T_f$
+
+where $T_f$ is the freezing point. If there is a snow cover or ponded water present on the surface (I\+W\+A\+T\+E\+R $>$ 0), the surface evaporation efficiency E\+V\+B\+E\+T\+A is set to 1 and q(0) is set to $q(0)_{sat}$. Otherwise E\+V\+B\+E\+T\+A is set to C\+E\+V\+A\+P, the value obtained in subroutine T\+P\+R\+E\+P on the basis of ambient conditions, and q(0) is calculated as above. If $q(0) > q_a$ and the evaporation flag I\+E\+V\+A\+P has been set to zero, E\+V\+B\+E\+T\+A is reset to zero and q(0) is reset to $q_a$. Finally, $T(0)_v$ is determined using the equation above.
+
+If N\+I\+T $>$ 0, a subroutine is called to evaluate the stability-\/ corrected surface drag coefficients for heat and momentum. The subroutine selection is made on the basis of the flag I\+S\+L\+F\+D. If I\+S\+L\+F\+D=1, indicating that the calculations are to be consistent with C\+C\+Cma conventions, subroutine D\+R\+C\+O\+E\+F is called; if I\+S\+L\+F\+D=2, indicating that the calculations are to be consistent with R\+P\+N conventions, subroutine F\+L\+X\+S\+U\+R\+F\+Z is called.
+
+In loop 175, the terms of the surface energy balance are evaluated. The energy balance equation is written as\+:
+
+$K_* + L_* - Q_H – Q_E – G(0) = 0$
+
+where $K_*$ is the net shortwave radiation, $L_*$ is the net longwave radiation, $Q_H$ is the sensible heat flux, $Q_E$ is the latent heat flux, and G(0) is the conduction into the surface. $K_*$ was evaluated earlier in loop 50. $L_*$ is obtained as the difference between the downwelling radiation $L \downarrow$ and the upwelling radiation $L \uparrow$, which in turn is determined using the Stefan-\/ Boltzmann equation\+:
+
+$L \uparrow = \sigma T(0)^4$
+
+where $\sigma$ is the Stefan-\/\+Boltzmann constant. (It is assumed that natural surfaces, because of their radiative complexity, act as effective black bodies, so that their emissivity can be taken to be 1.) The sensible heat flux is given by
+
+$Q_H = [\rho_a c_p C_{DH} v_a + \epsilon_0] [T(0) – T_{a,pot}]$
+
+where $\rho_a$ is the density of the air, $c_p$ is its specific heat, $C_{DH}$ is the surface drag coefficient for heat, and $v_a$ and $T_{a,pot}$ are the wind speed and potential temperature respectively at the reference height. (Note in the code that the variable C\+F\+L\+U\+X, evaluated in subroutine D\+R\+C\+O\+E\+F or F\+L\+X\+S\+U\+R\+F\+Z, represents the product of $C_{DH}$ and $v_a$.) The windless transfer coefficient $\epsilon_0$, evaluated at the beginning of the subroutine, is used only under stable conditions, i.\+e. if $T(0) < T_{a,pot}$. The evaporation rate at the surface, E(0), is calculated as
+
+$E(0) = \rho_a C_{DH} v_a [Q(0) – q_a]$
+
+The evaporation rate is constrained to be less than or equal to the maximum rate evaluated earlier in the subroutine. $Q_E$ is obtained by multiplying E(0) by the latent heat of vaporization at the surface. The ground heat flux G(0) is determined as a linear function of T(0) (see documentation for subroutines T\+N\+P\+R\+E\+P and T\+S\+P\+R\+E\+P). It can be seen that each of the terms of the surface energy balance is a function of a single unknown, T(0) or T\+Z\+E\+R\+O. The residual R\+E\+S\+I\+D of the energy balance is now evaluated on the basis of the current estimation for T\+Z\+E\+R\+O. If the absolute value of R\+E\+S\+I\+D is less than $5.0 W m^{-2}$, or if the absolute value of the iteration step T\+S\+T\+E\+P most recently used is less than 0.\+01 K, the surface temperature is deemed to have been found and I\+T\+E\+R is set to 0. If the iteration counter N\+I\+T\+E\+R is equal to the maximum number and I\+T\+E\+R is still 1, I\+T\+E\+R is set to -\/1.
+
+In the following section, the iteration sequence is moved ahead a step. If I\+T\+G = 1, then if N\+I\+T $>$ 0 and if I\+T\+E\+R for the array element in question is 1, the calculations for the bisection method of solution are performed. If N\+I\+T\+E\+R = 1 (indicating that this is the first step in the iteration), then if R\+E\+S\+I\+D $>$ 0 (indicating that the current value for T\+Z\+E\+R\+O had undershot the correct value), T\+Z\+E\+R\+O is incremented by 1 K; otherwise it is decremented by 1 K. If this is not the first step in the iteration, then if R\+E\+S\+I\+D $>$0 and T\+S\+T\+E\+P $<$ 0 (indicating that T\+Z\+E\+R\+O has undershot the correct value and the last temperature increment had been a negative one) or if R\+E\+S\+I\+D $<$ 0 and T\+S\+T\+E\+P $>$ 0 (indicating that T\+Z\+E\+R\+O has overshot the correct value and the last temperature increment had been a positive one), T\+S\+T\+E\+P is divided in half and its sign changed. T\+S\+T\+E\+P is then added to T\+Z\+E\+R\+O. The iteration counter N\+I\+T\+E\+R and the flag N\+U\+M\+I\+T are each incremented by one. The next loop contains an optional set of print statements that are executed if I\+T\+E\+R=-\/1, that is if a solution for the surface temperature has not been found within the prescribed maximum number of iteration steps. Finally, if N\+U\+M\+I\+T $>$ 0, the iteration cycle is repeated from line 100 on.
+
+If I\+T\+G = 2, then if N\+I\+T $>$ 0 and if I\+T\+E\+R for the array element in question is 1, the calculations for the Newton-\/\+Raphson method of iteration are performed. In this approach, the value $x_{n+1}$ used at each iteration step is obtained from the value $x_n$ at the previous step as follows\+:
+
+$x_{n+1} = x_n – f(x_n)/f'(x_n)$
+
+Identifying $x_n$ with T\+Z\+E\+R\+O and $f(x_n)$ with the surface energy balance equation, it can be seen that the second term on the right-\/hand side corresponds to T\+S\+T\+E\+P; the numerator is equal to R\+E\+S\+I\+D and the denominator to the first derivative of the energy balance equation evaluated at T\+Z\+E\+R\+O, which in turn is equal to the sum of the derivatives of the individual terms\+:
+
+$d( L \uparrow )/dT = -4 \sigma T(0)^3$
+
+$d(Q_H)/dT = \rho_a c_p {C_{DH} v_a + [T(0) – T_{a,pot}] d(C_{DH} v_a)/dT}$
+
+$d(Q_E)/dT = L_v \rho_a{C_{DH} v_a dq(0)/dT+ [q(0) – q_a] d(C_{DH} v_a)/dT}$
+
+and d\+G(0)/d\+T is equal to the coefficient multiplying T\+Z\+E\+R\+O in the equation for G(0). ( $L_v$ is the latent heat of vaporization at the surface.) At the end of the calculations the iteration counter N\+I\+T\+E\+R and the flag N\+U\+M\+I\+T are each incremented by one, and upon exiting the loop, if N\+U\+M\+I\+T $>$ 0, the iteration cycle is repeated from line 100 on.
+
+After the iteration has been completed, N\+U\+M\+I\+T is reset to zero and a check is carried out to ascertain whether convergence has not been reached (i.\+e. whether I\+T\+E\+R = -\/1) for any location. In such cases it is assumed that conditions of near-\/neutral stability at the surface are the cause of the difficulty in finding a solution. A trial value of T\+Z\+E\+R\+O is calculated using the virtual potential temperature of the air. If R\+E\+S\+I\+D $>$ $50 W m^{-2}$, T\+Z\+E\+R\+O is set to this trial value. The values of q(0) and the components of the surface energy balance are recalculated as above, except that $Q_H$ and $Q_E$ are assumed as a first approximation to be zero. R\+E\+S\+I\+D is determined on this basis. If R\+E\+S\+I\+D is positive, it is assigned to $Q_E$; otherwise R\+E\+S\+I\+D is divided equally between $Q_H$ and $Q_E$, except in the case of an absolutely dry surface, in which case $Q_E$ is set to zero and $Q_H$ to R\+E\+S\+I\+D. R\+E\+S\+I\+D is reset to zero, E(0) is obtained from $Q_E$, and $T(0)_v$ is recalculated. The flag J\+E\+V\+A\+P for the location is set to 1, and N\+U\+M\+I\+T is incremented by 1. If N\+U\+M\+I\+T $>$ 0 at the end of this loop, D\+R\+C\+O\+E\+F or F\+L\+X\+S\+U\+R\+F are called again, and their calculations are performed for any location where J\+E\+V\+A\+P is 1, to ensure consistency with the new surface temperature and humidity.
+
+At this point a check is performed for unphysical values of the surface temperature, i.\+e. for values greater than 100 C or less than -\/250 C. If such values are encountered, an error message is printed and a call to abort is carried out.
+
+Finally, a check is performed to ensure that T\+Z\+E\+R\+O is not less than 0 C if ponded water is present on the surface (I\+W\+A\+T\+E\+R = 1) or greater than 0 C if snow is present on the surface (I\+W\+A\+T\+E\+R = 2), or greater than zero if the surface is an ice sheet (I\+S\+A\+N\+D = -\/4). If any of these cases is true, T\+Z\+E\+R\+O is reset to the freezing point, and q(0) and $T(0)_v$ are recalculated. D\+R\+C\+O\+E\+F or F\+L\+X\+S\+U\+R\+F\+Z are called, and their calculations are performed for all locations meeting these criteria. The components of the surface energy balance are recalculated; the residual amount is assigned to the energy associated with phase change of water at the surface, Q\+M\+E\+L\+T, and R\+E\+S\+I\+D is set to zero. If Q\+M\+E\+L\+T $<$ 0, i.\+e. if there is freezing taking place, the evaporation flux Q\+E\+V\+A\+P is added to it and then reset to zero (since if ponded water is freezing, it is unavailable for evaporation).
+
+In the last half of the loop, some final adjustments are made to a few variables. If the evaporation flux is vanishingly small, it is added to R\+E\+S\+I\+D and reset to zero. If an anomalous case has arisen in which Q\+M\+E\+L\+T $<$ 0 over a snow-\/covered surface or Q\+M\+E\+L\+T $>$ 0 over a snow-\/free surface, Q\+M\+E\+L\+T is added to the heat flux into the surface and then reset to zero. Any remaining residual flux is added to $Q_H$. The shortwave radiation transmitted into the surface is added back to the net shortwave radiation for diagnostic purposes. The surface vapour flux is converted into units of $m s^{-1}$. Lastly, the iteration counter I\+T\+E\+R\+C\+T is updated for the level corresponding to the subarea type and the value of N\+I\+T\+E\+R.

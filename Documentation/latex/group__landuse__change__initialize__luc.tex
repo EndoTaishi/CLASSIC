@@ -1,0 +1,103 @@
+\hypertarget{group__landuse__change__initialize__luc}{}\section{Landuse\+\_\+change\+\_\+initialize\+\_\+luc}
+\label{group__landuse__change__initialize__luc}\index{Landuse\+\_\+change\+\_\+initialize\+\_\+luc@{Landuse\+\_\+change\+\_\+initialize\+\_\+luc}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) L\+U\+C Initial Read-\/\+In Subroutine.  
+
+
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__landuse__change__initialize__luc_gaba5d08f48edbf30aa51b5b4afd03ddfb}{landuse\+\_\+change\+::initialize\+\_\+luc} (iyear, nmtest, nltest, nol2pfts, cyclemet, cylucyr, lucyr, fcanrow, farerow, nfcancmxrow, pfcancmxrow, fcancmxrow, reach\+\_\+eof, start\+\_\+bare, compete, onetile\+\_\+per\+P\+F\+T)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) L\+U\+C Initial Read-\/\+In Subroutine. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{group__landuse__change__initialize__luc_gaba5d08f48edbf30aa51b5b4afd03ddfb}{}\index{Landuse\+\_\+change\+\_\+initialize\+\_\+luc@{Landuse\+\_\+change\+\_\+initialize\+\_\+luc}!initialize\+\_\+luc@{initialize\+\_\+luc}}
+\index{initialize\+\_\+luc@{initialize\+\_\+luc}!Landuse\+\_\+change\+\_\+initialize\+\_\+luc@{Landuse\+\_\+change\+\_\+initialize\+\_\+luc}}
+\subsubsection[{initialize\+\_\+luc}]{\setlength{\rightskip}{0pt plus 5cm}subroutine, public landuse\+\_\+change\+::initialize\+\_\+luc (
+\begin{DoxyParamCaption}
+\item[{integer, intent(in)}]{iyear, }
+\item[{integer, intent(in)}]{nmtest, }
+\item[{integer, intent(in)}]{nltest, }
+\item[{integer, dimension(ican), intent(in)}]{nol2pfts, }
+\item[{logical, intent(in)}]{cyclemet, }
+\item[{integer, intent(in)}]{cylucyr, }
+\item[{integer, intent(out)}]{lucyr, }
+\item[{real, dimension(nlat,nmos,icp1), intent(inout)}]{fcanrow, }
+\item[{real, dimension(nlat,nmos), intent(inout)}]{farerow, }
+\item[{real, dimension(nlat,nmos,icc), intent(out)}]{nfcancmxrow, }
+\item[{real, dimension(nlat,nmos,icc), intent(out)}]{pfcancmxrow, }
+\item[{real, dimension(nlat,nmos,icc), intent(out)}]{fcancmxrow, }
+\item[{logical, intent(inout)}]{reach\+\_\+eof, }
+\item[{logical, intent(in)}]{start\+\_\+bare, }
+\item[{logical, intent(in)}]{compete, }
+\item[{logical, intent(in)}]{onetile\+\_\+per\+P\+F\+T}
+\end{DoxyParamCaption}
+)}\label{group__landuse__change__initialize__luc_gaba5d08f48edbf30aa51b5b4afd03ddfb}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em onetile\+\_\+perpft} & if you are running with one tile per P\+F\+T in mosaic mode, set to true. Changes how competition is run. Specifically it allows competition between tiles. This is not recommended for any case where you don\textquotesingle{}t have one P\+F\+T in each tile as it has not been tested for that. \\
+\hline
+\end{DoxyParams}
+
+
+ Initialize barefraction to 1.\+0
+
+reset the composite fcanrow as it is appended on later in a loop
+
+it is the first year, so prepare the luc data\+:
+
+open the luc file
+
+Skip first three rows\+:
+
+get first year of luc data note we load the nfcancmx, not pfcancmx array. this is because this nfcancmx value is passed to the pfcancmx array at the start of each simulation year
+
+next update our luc data if either of the following conditions are met\+:
+
+1) we are cycling the met data and the luc year we just read in is less than the year we want to cycle over (assuming it is not defaulted to -\/9999) or,
+
+2) we are not cycling over the met data so we just want to get the same year of luc data as the met data we read in above in preparation for our transient run.
+
+If you are running with start\+\_\+bare on, take in only the crop fractions, set rest to seed. If compete, but not start bare, then just make sure you have at least seed for each pft.
+
+not starting bare, but still make sure you have at least seed
+
+Keep track of the non-\/crop nfcancmx for use in loop below. pftarrays keeps track of the nfcancmxrow for all non-\/crops indexposj and indexposm store the index values of the non-\/crops in a continuous array for use later. n and k are then the indexes used by these arrays.
+
+check that in making these seed fraction we haven\textquotesingle{}t made our total fraction more than 1.\+0.
+
+Find out which of the non-\/crop P\+F\+Ts covers the largest area.
+
+j is then the nmos index and m is the icc index of the P\+F\+T with the largest area
+
+Reduce the most dominant P\+F\+T by barf and minbare. The extra amount is to ensure we don\textquotesingle{}t have trouble later with an extremely small bare fraction. barf is a negative value.
+
+Find out which of the non-\/crop P\+F\+Ts covers the largest area.
+
+j is then the nmos index and m is the icc index of the P\+F\+T with the largest area
+
+Reduce the most dominant P\+F\+T by barf and minbare. The extra amount is to ensure we don\textquotesingle{}t have trouble later with an extremely small bare fraction. barf is a negative value.
+
+get fcans for use by class using the nfcancmxs just read in
+
+this tile has some plants so overwrite the seed fraction with an actual fraction
+
+note\+: the seed fraction has already been assigned in runclassctem prior to entering this subroutine.
+
+(re)find the bare fraction for farerow(i,iccp1)
+
+check that the bare fraction is possible ($>$0) and if not then reduce the other pfts proportionally to make a non-\/negative bare ground fraction.
+
+competition requires a \textquotesingle{}seed\textquotesingle{} fraction so make sure the bare ground is also that big. for prescribed runs you just need it to be possible ($>$0).
+
+assign the present pft fractions from those just read in
+
+back up one year in the luc file this is because we were setting things up here, we will later call readin\+\_\+luc so want the file to be rewound prior to that to the proper start year.
+
+end of the luc file is reached. close and tell main program to exit 

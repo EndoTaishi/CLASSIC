@@ -1,0 +1,585 @@
+\hypertarget{structctem__statevars_1_1veg__gat}{}\section{ctem\+\_\+statevars\+:\+:veg\+\_\+gat Type Reference}
+\label{structctem__statevars_1_1veg__gat}\index{ctem\+\_\+statevars\+::veg\+\_\+gat@{ctem\+\_\+statevars\+::veg\+\_\+gat}}
+
+
+C\+T\+E\+M\textquotesingle{}s \textquotesingle{}gat\textquotesingle{} vars.  
+
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a9c93444724cdfdd9855bf3b9258df9c2}{}real, dimension(\+:,\+:), allocatable {\bfseries ailcmin}\label{structctem__statevars_1_1veg__gat_a9c93444724cdfdd9855bf3b9258df9c2}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa36214d9c1d4f3afa6a47c4b2aaad4f0}{}real, dimension(\+:,\+:), allocatable {\bfseries ailcmax}\label{structctem__statevars_1_1veg__gat_aa36214d9c1d4f3afa6a47c4b2aaad4f0}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a39cfb7d9118f5871dc60af5d703e031c}{}real, dimension(\+:,\+:), allocatable {\bfseries dvdfcan}\label{structctem__statevars_1_1veg__gat_a39cfb7d9118f5871dc60af5d703e031c}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a44073d053264531b571e6a59abd081df}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a44073d053264531b571e6a59abd081df}{gleafmas}\label{structctem__statevars_1_1veg__gat_a44073d053264531b571e6a59abd081df}
+
+\begin{DoxyCompactList}\small\item\em green leaf mass for each of the 9 ctem pfts, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a0adf3e8544766c0c2b1aa5bf5a35f166}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a0adf3e8544766c0c2b1aa5bf5a35f166}{bleafmas}\label{structctem__statevars_1_1veg__gat_a0adf3e8544766c0c2b1aa5bf5a35f166}
+
+\begin{DoxyCompactList}\small\item\em brown leaf mass for each of the 9 ctem pfts, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a4cf22e19ec4bc215b27c608da8cb0d9e}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a4cf22e19ec4bc215b27c608da8cb0d9e}{stemmass}\label{structctem__statevars_1_1veg__gat_a4cf22e19ec4bc215b27c608da8cb0d9e}
+
+\begin{DoxyCompactList}\small\item\em stem mass for each of the 9 ctem pfts, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_adb6e33fa44a382d663a602046c0c9d4e}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_adb6e33fa44a382d663a602046c0c9d4e}{rootmass}\label{structctem__statevars_1_1veg__gat_adb6e33fa44a382d663a602046c0c9d4e}
+
+\begin{DoxyCompactList}\small\item\em root mass for each of the 9 ctem pfts, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a0ae762376124ff7672a145cead19f404}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a0ae762376124ff7672a145cead19f404}{pstemmass}\label{structctem__statevars_1_1veg__gat_a0ae762376124ff7672a145cead19f404}
+
+\begin{DoxyCompactList}\small\item\em stem mass from previous timestep, is value before fire. used by burntobare subroutine \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a19f24e06942e439d9a53aa1bd181335c}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a19f24e06942e439d9a53aa1bd181335c}{pgleafmass}\label{structctem__statevars_1_1veg__gat_a19f24e06942e439d9a53aa1bd181335c}
+
+\begin{DoxyCompactList}\small\item\em root mass from previous timestep, is value before fire. used by burntobare subroutine \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_afdd9fd0f57241ca0b665c065977eace5}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_afdd9fd0f57241ca0b665c065977eace5}{fcancmx}\label{structctem__statevars_1_1veg__gat_afdd9fd0f57241ca0b665c065977eace5}
+
+\begin{DoxyCompactList}\small\item\em max. fractional coverage of ctem\textquotesingle{}s 9 pfts, but this can be modified by land-\/use change, and competition between pfts \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ac1dd257ff4997aaa914c15bde7110ce9}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ac1dd257ff4997aaa914c15bde7110ce9}{gavglai}\label{structctem__statevars_1_1veg__gat_ac1dd257ff4997aaa914c15bde7110ce9}
+
+\begin{DoxyCompactList}\small\item\em grid averaged green leaf area index \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a90c2b0eb853f7b917ceb8a61b131946a}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a90c2b0eb853f7b917ceb8a61b131946a}{lightng}\label{structctem__statevars_1_1veg__gat_a90c2b0eb853f7b917ceb8a61b131946a}
+
+\begin{DoxyCompactList}\small\item\em total lightning frequency, flashes/km2.\+year \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a9a6c9756ce71c4b085415658104bde10}{}real, dimension(\+:), allocatable {\bfseries tcanoaccgat\+\_\+out}\label{structctem__statevars_1_1veg__gat_a9a6c9756ce71c4b085415658104bde10}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a9304bfce535adc97f11cf9fa84f079f6}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a9304bfce535adc97f11cf9fa84f079f6}{zolnc}\label{structctem__statevars_1_1veg__gat_a9304bfce535adc97f11cf9fa84f079f6}
+
+\begin{DoxyCompactList}\small\item\em lumped log of roughness length for class\textquotesingle{} 4 pfts \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5ffd5d1af64c31f2a79746a0a31601f9}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a5ffd5d1af64c31f2a79746a0a31601f9}{ailc}\label{structctem__statevars_1_1veg__gat_a5ffd5d1af64c31f2a79746a0a31601f9}
+
+\begin{DoxyCompactList}\small\item\em lumped lai for class\textquotesingle{} 4 pfts \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa07707a816b5904a8e8181bd4d1a716d}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa07707a816b5904a8e8181bd4d1a716d}{ailcg}\label{structctem__statevars_1_1veg__gat_aa07707a816b5904a8e8181bd4d1a716d}
+
+\begin{DoxyCompactList}\small\item\em green lai for ctem\textquotesingle{}s 9 pfts \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa278358bdfce2adb922ae5384790bfdb}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa278358bdfce2adb922ae5384790bfdb}{ailcgs}\label{structctem__statevars_1_1veg__gat_aa278358bdfce2adb922ae5384790bfdb}
+
+\begin{DoxyCompactList}\small\item\em G\+R\+E\+E\+N L\+A\+I F\+O\+R C\+A\+N\+O\+P\+Y O\+V\+E\+R S\+N\+O\+W S\+U\+B-\/\+A\+R\+E\+A. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a2c17cb1f29f7178d4cba05cc321a2b07}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a2c17cb1f29f7178d4cba05cc321a2b07}{fcancs}\label{structctem__statevars_1_1veg__gat_a2c17cb1f29f7178d4cba05cc321a2b07}
+
+\begin{DoxyCompactList}\small\item\em F\+R\+A\+C\+T\+I\+O\+N O\+F C\+A\+N\+O\+P\+Y O\+V\+E\+R S\+N\+O\+W F\+O\+R C\+T\+E\+M\textquotesingle{}s 9 P\+F\+Ts. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a32ee03512d87091110c312e0d8a3643d}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a32ee03512d87091110c312e0d8a3643d}{fcanc}\label{structctem__statevars_1_1veg__gat_a32ee03512d87091110c312e0d8a3643d}
+
+\begin{DoxyCompactList}\small\item\em F\+R\+A\+C\+T\+I\+O\+N\+A\+L C\+O\+V\+E\+R\+A\+G\+E O\+F 8 C\+A\+R\+B\+O\+N P\+F\+Ts, C\+A\+N\+O\+P\+Y O\+V\+E\+R G\+R\+O\+U\+N\+D. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aaae77d1710d5d5734696d4ebe860215f}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aaae77d1710d5d5734696d4ebe860215f}{co2conc}\label{structctem__statevars_1_1veg__gat_aaae77d1710d5d5734696d4ebe860215f}
+
+\begin{DoxyCompactList}\small\item\em A\+T\+M\+O\+S. C\+O2 C\+O\+N\+C. I\+N P\+P\+M. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a58c9eb2d0e44eff8d71e04633e2dc9f8}{}real, dimension(\+:), allocatable {\bfseries ch4conc}\label{structctem__statevars_1_1veg__gat_a58c9eb2d0e44eff8d71e04633e2dc9f8}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ad39f9033916b32a7c0a8f88adb9f572a}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ad39f9033916b32a7c0a8f88adb9f572a}{co2i1cg}\label{structctem__statevars_1_1veg__gat_ad39f9033916b32a7c0a8f88adb9f572a}
+
+\begin{DoxyCompactList}\small\item\em I\+N\+T\+E\+R\+C\+E\+L\+L\+U\+L\+A\+R C\+O2 C\+O\+N\+C F\+O\+R 8 P\+F\+Ts F\+O\+R C\+A\+N\+O\+P\+Y O\+V\+E\+R G\+R\+O\+U\+N\+D S\+U\+B\+A\+R\+E\+A (Pa) -\/ F\+O\+R S\+I\+N\+G\+L\+E/\+S\+U\+N\+L\+I\+T L\+E\+A\+F. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_afe830c699b0e8e2100cb5bc021280df6}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_afe830c699b0e8e2100cb5bc021280df6}{co2i1cs}\label{structctem__statevars_1_1veg__gat_afe830c699b0e8e2100cb5bc021280df6}
+
+\begin{DoxyCompactList}\small\item\em S\+A\+M\+E A\+S A\+B\+O\+V\+E B\+U\+T F\+O\+R S\+H\+A\+D\+E\+D L\+E\+A\+F (above being co2i1cg) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a6619c71c34b2eadacdc7308c0153bb35}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a6619c71c34b2eadacdc7308c0153bb35}{co2i2cg}\label{structctem__statevars_1_1veg__gat_a6619c71c34b2eadacdc7308c0153bb35}
+
+\begin{DoxyCompactList}\small\item\em I\+N\+T\+E\+R\+C\+E\+L\+L\+U\+L\+A\+R C\+O2 C\+O\+N\+C F\+O\+R 8 P\+F\+Ts F\+O\+R C\+A\+N\+O\+P\+Y O\+V\+E\+R S\+N\+O\+W\+S\+U\+B\+A\+R\+E\+A (Pa) -\/ F\+O\+R S\+I\+N\+G\+L\+E/\+S\+U\+N\+L\+I\+T L\+E\+A\+F. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a444a9c51751df3c542eed6291dc74439}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a444a9c51751df3c542eed6291dc74439}{co2i2cs}\label{structctem__statevars_1_1veg__gat_a444a9c51751df3c542eed6291dc74439}
+
+\begin{DoxyCompactList}\small\item\em S\+A\+M\+E A\+S A\+B\+O\+V\+E B\+U\+T F\+O\+R S\+H\+A\+D\+E\+D L\+E\+A\+F (above being co2i2cg) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa1085f84025de40354de942f54dc1dca}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa1085f84025de40354de942f54dc1dca}{ancsveg}\label{structctem__statevars_1_1veg__gat_aa1085f84025de40354de942f54dc1dca}
+
+\begin{DoxyCompactList}\small\item\em net photosynthetic rate for ctems 9 pfts for canopy over snow subarea \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a46d22af43c838443e5effee35058f3be}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a46d22af43c838443e5effee35058f3be}{ancgveg}\label{structctem__statevars_1_1veg__gat_a46d22af43c838443e5effee35058f3be}
+
+\begin{DoxyCompactList}\small\item\em net photosynthetic rate for ctems 9 pfts for canopy over ground subarea \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a2ae371cd07c26c25be3af7d03ffe0b33}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a2ae371cd07c26c25be3af7d03ffe0b33}{rmlcsveg}\label{structctem__statevars_1_1veg__gat_a2ae371cd07c26c25be3af7d03ffe0b33}
+
+\begin{DoxyCompactList}\small\item\em leaf respiration rate for ctems 9 pfts forcanopy over snow subarea \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ac7288d4b3196e658d159e65862699eb8}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ac7288d4b3196e658d159e65862699eb8}{rmlcgveg}\label{structctem__statevars_1_1veg__gat_ac7288d4b3196e658d159e65862699eb8}
+
+\begin{DoxyCompactList}\small\item\em leaf respiration rate for ctems 9 pfts forcanopy over ground subarea \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a7686062d379d2d3daf042fd9ab7f3c4f}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a7686062d379d2d3daf042fd9ab7f3c4f}{slai}\label{structctem__statevars_1_1veg__gat_a7686062d379d2d3daf042fd9ab7f3c4f}
+
+\begin{DoxyCompactList}\small\item\em storage/imaginary lai for phenology purposes \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ad7c09fc4054fbd66ac5946eb788f6196}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ad7c09fc4054fbd66ac5946eb788f6196}{ailcb}\label{structctem__statevars_1_1veg__gat_ad7c09fc4054fbd66ac5946eb788f6196}
+
+\begin{DoxyCompactList}\small\item\em brown lai for ctem\textquotesingle{}s 9 pfts. for now we assume only grasses can have brown lai \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ac3efe48505c9a66cf270ad3d4cbfff9b}{}real, dimension(\+:), allocatable {\bfseries canres}\label{structctem__statevars_1_1veg__gat_ac3efe48505c9a66cf270ad3d4cbfff9b}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a4138f3446187a04a02e37b16c976d544}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a4138f3446187a04a02e37b16c976d544}{flhrloss}\label{structctem__statevars_1_1veg__gat_a4138f3446187a04a02e37b16c976d544}
+
+\begin{DoxyCompactList}\small\item\em fall or harvest loss for deciduous trees and crops, respectively, $kg c/m^2$il1 \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_af0398c580fa5ffdbd29992e25dc2d75a}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_af0398c580fa5ffdbd29992e25dc2d75a}{grwtheff}\label{structctem__statevars_1_1veg__gat_af0398c580fa5ffdbd29992e25dc2d75a}
+
+\begin{DoxyCompactList}\small\item\em growth efficiency. change in biomass per year per unit max. lai ( $kg c/m^2$)/(m2/m2), for use in mortality subroutine \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ab9e0ed17b680c8c61acc7c5bfe2bca53}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ab9e0ed17b680c8c61acc7c5bfe2bca53}{lystmmas}\label{structctem__statevars_1_1veg__gat_ab9e0ed17b680c8c61acc7c5bfe2bca53}
+
+\begin{DoxyCompactList}\small\item\em stem mass at the end of last year \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a73c08c1c116bed7223b8f606e5c2fe11}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a73c08c1c116bed7223b8f606e5c2fe11}{lyrotmas}\label{structctem__statevars_1_1veg__gat_a73c08c1c116bed7223b8f606e5c2fe11}
+
+\begin{DoxyCompactList}\small\item\em root mass at the end of last year \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a9e160a0b98c2305233c32ce4c9228393}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a9e160a0b98c2305233c32ce4c9228393}{tymaxlai}\label{structctem__statevars_1_1veg__gat_a9e160a0b98c2305233c32ce4c9228393}
+
+\begin{DoxyCompactList}\small\item\em this year\textquotesingle{}s maximum lai \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_acfa7110618f33145f34c3bc3e5f943ae}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_acfa7110618f33145f34c3bc3e5f943ae}{vgbiomas}\label{structctem__statevars_1_1veg__gat_acfa7110618f33145f34c3bc3e5f943ae}
+
+\begin{DoxyCompactList}\small\item\em grid averaged vegetation biomass, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a191a120cb8571265716e71f6b943f547}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a191a120cb8571265716e71f6b943f547}{gavgltms}\label{structctem__statevars_1_1veg__gat_a191a120cb8571265716e71f6b943f547}
+
+\begin{DoxyCompactList}\small\item\em grid averaged litter mass, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a33e9dd968fe676f019aa910c99118d99}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a33e9dd968fe676f019aa910c99118d99}{gavgscms}\label{structctem__statevars_1_1veg__gat_a33e9dd968fe676f019aa910c99118d99}
+
+\begin{DoxyCompactList}\small\item\em grid averaged soil c mass, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_af5fb179faddbf6c47296ae0873adbe47}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_af5fb179faddbf6c47296ae0873adbe47}{stmhrlos}\label{structctem__statevars_1_1veg__gat_af5fb179faddbf6c47296ae0873adbe47}
+
+\begin{DoxyCompactList}\small\item\em stem harvest loss for crops, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a315761d1d6eb5e503ae8d602eab82bcd}{}real, dimension(\+:,\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a315761d1d6eb5e503ae8d602eab82bcd}{rmatc}\label{structctem__statevars_1_1veg__gat_a315761d1d6eb5e503ae8d602eab82bcd}
+
+\begin{DoxyCompactList}\small\item\em fraction of roots for each of class\textquotesingle{} 4 pfts in each soil layer \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a8dbc92d60413fae1d6cc5ebd9d86cecb}{}real, dimension(\+:,\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a8dbc92d60413fae1d6cc5ebd9d86cecb}{rmatctem}\label{structctem__statevars_1_1veg__gat_a8dbc92d60413fae1d6cc5ebd9d86cecb}
+
+\begin{DoxyCompactList}\small\item\em fraction of roots for each of ctem\textquotesingle{}s 9 pfts in each soil layer \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_af72a4bf240784fd713cbfca356a75678}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_af72a4bf240784fd713cbfca356a75678}{litrmass}\label{structctem__statevars_1_1veg__gat_af72a4bf240784fd713cbfca356a75678}
+
+\begin{DoxyCompactList}\small\item\em litter mass for each of the 9 ctem pfts + bare, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_acaa6becbd5fb7f590ff9cda9f43baa12}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_acaa6becbd5fb7f590ff9cda9f43baa12}{soilcmas}\label{structctem__statevars_1_1veg__gat_acaa6becbd5fb7f590ff9cda9f43baa12}
+
+\begin{DoxyCompactList}\small\item\em soil carbon mass for each of the 9 ctem pfts + bare, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ab5e6fb1a7fe746e4f79086cf516f486f}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ab5e6fb1a7fe746e4f79086cf516f486f}{vgbiomas\+\_\+veg}\label{structctem__statevars_1_1veg__gat_ab5e6fb1a7fe746e4f79086cf516f486f}
+
+\begin{DoxyCompactList}\small\item\em vegetation biomass for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a3c0874ca6e5215438a569e6bd136865a}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a3c0874ca6e5215438a569e6bd136865a}{emit\+\_\+co2}\label{structctem__statevars_1_1veg__gat_a3c0874ca6e5215438a569e6bd136865a}
+
+\begin{DoxyCompactList}\small\item\em carbon dioxide \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a342d1e23f24d9283196bca9111f61c49}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a342d1e23f24d9283196bca9111f61c49}{emit\+\_\+co}\label{structctem__statevars_1_1veg__gat_a342d1e23f24d9283196bca9111f61c49}
+
+\begin{DoxyCompactList}\small\item\em carbon monoxide \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a6515c41e7fe48a1946fd70fe0869fc82}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a6515c41e7fe48a1946fd70fe0869fc82}{emit\+\_\+ch4}\label{structctem__statevars_1_1veg__gat_a6515c41e7fe48a1946fd70fe0869fc82}
+
+\begin{DoxyCompactList}\small\item\em methane \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a26d81115331aebd062e51aecfee347e5}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a26d81115331aebd062e51aecfee347e5}{emit\+\_\+nmhc}\label{structctem__statevars_1_1veg__gat_a26d81115331aebd062e51aecfee347e5}
+
+\begin{DoxyCompactList}\small\item\em non-\/methane hydrocarbons \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a71c956bbe575a1b74a262f5f7f1d2a8b}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a71c956bbe575a1b74a262f5f7f1d2a8b}{emit\+\_\+h2}\label{structctem__statevars_1_1veg__gat_a71c956bbe575a1b74a262f5f7f1d2a8b}
+
+\begin{DoxyCompactList}\small\item\em hydrogen gas \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a470419c5b224dec25c733680aa9d920d}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a470419c5b224dec25c733680aa9d920d}{emit\+\_\+nox}\label{structctem__statevars_1_1veg__gat_a470419c5b224dec25c733680aa9d920d}
+
+\begin{DoxyCompactList}\small\item\em nitrogen oxides \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa26d0b024a4d39ac0021eecf50c123e6}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa26d0b024a4d39ac0021eecf50c123e6}{emit\+\_\+n2o}\label{structctem__statevars_1_1veg__gat_aa26d0b024a4d39ac0021eecf50c123e6}
+
+\begin{DoxyCompactList}\small\item\em nitrous oxide \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa9cf764643bbd2fe844828051b9d1c0b}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa9cf764643bbd2fe844828051b9d1c0b}{emit\+\_\+pm25}\label{structctem__statevars_1_1veg__gat_aa9cf764643bbd2fe844828051b9d1c0b}
+
+\begin{DoxyCompactList}\small\item\em particulate matter less than 2.\+5 um in diameter \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a758189398f80927f951577878c7dee0e}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a758189398f80927f951577878c7dee0e}{emit\+\_\+tpm}\label{structctem__statevars_1_1veg__gat_a758189398f80927f951577878c7dee0e}
+
+\begin{DoxyCompactList}\small\item\em total particulate matter \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a0c2e89e81cbcf9915a719e6e10f390ac}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a0c2e89e81cbcf9915a719e6e10f390ac}{emit\+\_\+tc}\label{structctem__statevars_1_1veg__gat_a0c2e89e81cbcf9915a719e6e10f390ac}
+
+\begin{DoxyCompactList}\small\item\em total carbon \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a820ef83297d7de3c68fffa589db841f8}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a820ef83297d7de3c68fffa589db841f8}{emit\+\_\+oc}\label{structctem__statevars_1_1veg__gat_a820ef83297d7de3c68fffa589db841f8}
+
+\begin{DoxyCompactList}\small\item\em organic carbon \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a59a7d44154bb3a85668a84726a57709d}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a59a7d44154bb3a85668a84726a57709d}{emit\+\_\+bc}\label{structctem__statevars_1_1veg__gat_a59a7d44154bb3a85668a84726a57709d}
+
+\begin{DoxyCompactList}\small\item\em black carbon \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a1a311685a3cd4112ef9ca1ec166347fe}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a1a311685a3cd4112ef9ca1ec166347fe}{burnfrac}\label{structctem__statevars_1_1veg__gat_a1a311685a3cd4112ef9ca1ec166347fe}
+
+\begin{DoxyCompactList}\small\item\em areal fraction burned due to fire for every grid cell (\%) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a93e2f6b40b49ca383377fc0093fba3a6}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a93e2f6b40b49ca383377fc0093fba3a6}{burnvegf}\label{structctem__statevars_1_1veg__gat_a93e2f6b40b49ca383377fc0093fba3a6}
+
+\begin{DoxyCompactList}\small\item\em per P\+F\+T fraction burned of that P\+F\+T\textquotesingle{}s area \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ab7a04f88673bf862f4884ab875d4bfa8}{}real, dimension(\+:,\+:), allocatable {\bfseries smfuncveg}\label{structctem__statevars_1_1veg__gat_ab7a04f88673bf862f4884ab875d4bfa8}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a4dcfaba8c4d2dd26f4e196d8a65d2748}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a4dcfaba8c4d2dd26f4e196d8a65d2748}{popdin}\label{structctem__statevars_1_1veg__gat_a4dcfaba8c4d2dd26f4e196d8a65d2748}
+
+\begin{DoxyCompactList}\small\item\em population density (people / $km^2$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a6eb79d568f9890a7ad8e2f3a16d9f738}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a6eb79d568f9890a7ad8e2f3a16d9f738}{bterm}\label{structctem__statevars_1_1veg__gat_a6eb79d568f9890a7ad8e2f3a16d9f738}
+
+\begin{DoxyCompactList}\small\item\em biomass term for fire probabilty calc \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ad4222f05ad91a35cbf93949168c1147e}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ad4222f05ad91a35cbf93949168c1147e}{lterm}\label{structctem__statevars_1_1veg__gat_ad4222f05ad91a35cbf93949168c1147e}
+
+\begin{DoxyCompactList}\small\item\em lightning term for fire probabilty calc \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a0e57f50703b9b67cccbe16943d08010c}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a0e57f50703b9b67cccbe16943d08010c}{mterm}\label{structctem__statevars_1_1veg__gat_a0e57f50703b9b67cccbe16943d08010c}
+
+\begin{DoxyCompactList}\small\item\em moisture term for fire probabilty calc \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ad8dd263bec147a6546cd2d25a4e264b9}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ad8dd263bec147a6546cd2d25a4e264b9}{extnprob}\label{structctem__statevars_1_1veg__gat_ad8dd263bec147a6546cd2d25a4e264b9}
+
+\begin{DoxyCompactList}\small\item\em fire extingusinging probability \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ad153239061ee42519093d78da948ef33}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ad153239061ee42519093d78da948ef33}{prbfrhuc}\label{structctem__statevars_1_1veg__gat_ad153239061ee42519093d78da948ef33}
+
+\begin{DoxyCompactList}\small\item\em probability of fire due to human causes \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ac758c71f220c5bcfe33859a4c4940b0e}{}real, dimension(\+:,\+:), allocatable {\bfseries mlightng}\label{structctem__statevars_1_1veg__gat_ac758c71f220c5bcfe33859a4c4940b0e}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a50dcc9d5196dc4bee52dedb1d41d767c}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a50dcc9d5196dc4bee52dedb1d41d767c}{dayl\+\_\+max}\label{structctem__statevars_1_1veg__gat_a50dcc9d5196dc4bee52dedb1d41d767c}
+
+\begin{DoxyCompactList}\small\item\em maximum daylength for that location (hours) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_afa3f97466f063a79fe303a14ed59b37f}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_afa3f97466f063a79fe303a14ed59b37f}{dayl}\label{structctem__statevars_1_1veg__gat_afa3f97466f063a79fe303a14ed59b37f}
+
+\begin{DoxyCompactList}\small\item\em daylength for that location (hours) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a7c2a10c4526ca44bf403eaba254d892d}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a7c2a10c4526ca44bf403eaba254d892d}{bmasveg}\label{structctem__statevars_1_1veg__gat_a7c2a10c4526ca44bf403eaba254d892d}
+
+\begin{DoxyCompactList}\small\item\em total (gleaf + stem + root) biomass for each ctem pft, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ae45c14d17078cba9bf543985573739bc}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ae45c14d17078cba9bf543985573739bc}{cmasvegc}\label{structctem__statevars_1_1veg__gat_ae45c14d17078cba9bf543985573739bc}
+
+\begin{DoxyCompactList}\small\item\em total canopy mass for each of the 4 class pfts. recall that class requires canopy mass as an input, and this is now provided by ctem. $kg/m^2$. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ab8bd8bda137701aba71a47c3e6fb9bc0}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ab8bd8bda137701aba71a47c3e6fb9bc0}{veghght}\label{structctem__statevars_1_1veg__gat_ab8bd8bda137701aba71a47c3e6fb9bc0}
+
+\begin{DoxyCompactList}\small\item\em vegetation height (meters) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_adc00bce954810bf5c168fa7730100b08}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_adc00bce954810bf5c168fa7730100b08}{rootdpth}\label{structctem__statevars_1_1veg__gat_adc00bce954810bf5c168fa7730100b08}
+
+\begin{DoxyCompactList}\small\item\em 99\% soil rooting depth (meters) both veghght \& rootdpth can be used as diagnostics to see how vegetation grows above and below ground, respectively \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a02e381ae54a98e5108f982cee4769439}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a02e381ae54a98e5108f982cee4769439}{rml}\label{structctem__statevars_1_1veg__gat_a02e381ae54a98e5108f982cee4769439}
+
+\begin{DoxyCompactList}\small\item\em leaf maintenance respiration (u-\/mol co2/m2.\+sec) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a042f7f1e9506affa6f56e9a16bfa12b0}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a042f7f1e9506affa6f56e9a16bfa12b0}{rms}\label{structctem__statevars_1_1veg__gat_a042f7f1e9506affa6f56e9a16bfa12b0}
+
+\begin{DoxyCompactList}\small\item\em stem maintenance respiration (u-\/mol co2/m2.\+sec) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a830cc50ca1a865156b362b49713f1129}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a830cc50ca1a865156b362b49713f1129}{tltrleaf}\label{structctem__statevars_1_1veg__gat_a830cc50ca1a865156b362b49713f1129}
+
+\begin{DoxyCompactList}\small\item\em total leaf litter fall rate (u-\/mol co2/m2.\+sec) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a67f478deeda02c603657f160e7c79330}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a67f478deeda02c603657f160e7c79330}{tltrstem}\label{structctem__statevars_1_1veg__gat_a67f478deeda02c603657f160e7c79330}
+
+\begin{DoxyCompactList}\small\item\em total stem litter fall rate (u-\/mol co2/m2.\+sec) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a98232677c52b169dd7d66d2ffa4eb925}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a98232677c52b169dd7d66d2ffa4eb925}{tltrroot}\label{structctem__statevars_1_1veg__gat_a98232677c52b169dd7d66d2ffa4eb925}
+
+\begin{DoxyCompactList}\small\item\em total root litter fall rate (u-\/mol co2/m2.\+sec) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ad317444c57232a7cb390eddf2e2b39cc}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ad317444c57232a7cb390eddf2e2b39cc}{leaflitr}\label{structctem__statevars_1_1veg__gat_ad317444c57232a7cb390eddf2e2b39cc}
+
+\begin{DoxyCompactList}\small\item\em leaf litter fall rate (u-\/mol co2/m2.\+sec). this leaf litter does not include litter generated due to mortality/fire \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a3c2b2018ca9fccff9d9f70ba3c8363ab}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a3c2b2018ca9fccff9d9f70ba3c8363ab}{roottemp}\label{structctem__statevars_1_1veg__gat_a3c2b2018ca9fccff9d9f70ba3c8363ab}
+
+\begin{DoxyCompactList}\small\item\em root temperature, k \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa78bfdc1d005c92664ed2fafb724ef67}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa78bfdc1d005c92664ed2fafb724ef67}{afrleaf}\label{structctem__statevars_1_1veg__gat_aa78bfdc1d005c92664ed2fafb724ef67}
+
+\begin{DoxyCompactList}\small\item\em allocation fraction for leaves \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a194883b004cfcfd925d7e7c2688b29c5}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a194883b004cfcfd925d7e7c2688b29c5}{afrstem}\label{structctem__statevars_1_1veg__gat_a194883b004cfcfd925d7e7c2688b29c5}
+
+\begin{DoxyCompactList}\small\item\em allocation fraction for stem \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a761d02e761e0451993829ecbfaca4250}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a761d02e761e0451993829ecbfaca4250}{afrroot}\label{structctem__statevars_1_1veg__gat_a761d02e761e0451993829ecbfaca4250}
+
+\begin{DoxyCompactList}\small\item\em allocation fraction for root \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aaf2604f7f0b16ae6495f686b2cf74de7}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aaf2604f7f0b16ae6495f686b2cf74de7}{wtstatus}\label{structctem__statevars_1_1veg__gat_aaf2604f7f0b16ae6495f686b2cf74de7}
+
+\begin{DoxyCompactList}\small\item\em soil water status used for calculating allocation fractions \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a4042caf2c51ccb4baa1cccc129d30416}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a4042caf2c51ccb4baa1cccc129d30416}{ltstatus}\label{structctem__statevars_1_1veg__gat_a4042caf2c51ccb4baa1cccc129d30416}
+
+\begin{DoxyCompactList}\small\item\em light status used for calculating allocation fractions \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a75f5eb3bd289496bc0ddaec9672c6c5b}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a75f5eb3bd289496bc0ddaec9672c6c5b}{rmr}\label{structctem__statevars_1_1veg__gat_a75f5eb3bd289496bc0ddaec9672c6c5b}
+
+\begin{DoxyCompactList}\small\item\em root maintenance respiration (u-\/mol co2/m2.\+sec) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_adc5c7fa8fb8054fc5cfe0ea0851fe7fb}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_adc5c7fa8fb8054fc5cfe0ea0851fe7fb}{slopefrac}\label{structctem__statevars_1_1veg__gat_adc5c7fa8fb8054fc5cfe0ea0851fe7fb}
+
+\begin{DoxyCompactList}\small\item\em prescribed fraction of wetlands based on slope only(0.\+025, 0.\+05, 0.\+1, 0.\+15, 0.\+20, 0.\+25, 0.\+3 and 0.\+35 percent slope thresholds) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa7a8f8aa3bde4a2877e36d9fad9716f0}{}real, dimension(\+:), allocatable {\bfseries wetfrac\+\_\+pres}\label{structctem__statevars_1_1veg__gat_aa7a8f8aa3bde4a2877e36d9fad9716f0}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a338ceedcbfbb4e76ca0f1c7734f450cd}{}real, dimension(\+:,\+:), allocatable {\bfseries wetfrac\+\_\+mon}\label{structctem__statevars_1_1veg__gat_a338ceedcbfbb4e76ca0f1c7734f450cd}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ac99ca0240b54241d3045dbfbd46e83c9}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ac99ca0240b54241d3045dbfbd46e83c9}{ch4wet1}\label{structctem__statevars_1_1veg__gat_ac99ca0240b54241d3045dbfbd46e83c9}
+
+\begin{DoxyCompactList}\small\item\em methane flux from wetlands calculated using hetrores in umol ch4/m2.\+s \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5e88723e69339ab0ce00db365184e9c4}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a5e88723e69339ab0ce00db365184e9c4}{ch4wet2}\label{structctem__statevars_1_1veg__gat_a5e88723e69339ab0ce00db365184e9c4}
+
+\begin{DoxyCompactList}\small\item\em methane flux from wetlands calculated using npp in umol ch4/m2.\+s \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aec6ed9e74a5bc50612a7c6507889b9fc}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aec6ed9e74a5bc50612a7c6507889b9fc}{wetfdyn}\label{structctem__statevars_1_1veg__gat_aec6ed9e74a5bc50612a7c6507889b9fc}
+
+\begin{DoxyCompactList}\small\item\em dynamic wetland fraction \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a9ec9833a16dbbb2b7465272da6924d9b}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a9ec9833a16dbbb2b7465272da6924d9b}{ch4dyn1}\label{structctem__statevars_1_1veg__gat_a9ec9833a16dbbb2b7465272da6924d9b}
+
+\begin{DoxyCompactList}\small\item\em methane flux from wetlands calculated using hetrores and wetfdyn, in umol ch4/m2.\+s \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a79a2527c12e709fb46b03a7b167511c9}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a79a2527c12e709fb46b03a7b167511c9}{ch4dyn2}\label{structctem__statevars_1_1veg__gat_a79a2527c12e709fb46b03a7b167511c9}
+
+\begin{DoxyCompactList}\small\item\em methane flux from wetlands calculated using npp and wetfdyn, in umol ch4/m2.\+s \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5da13376de8ebf44de19c03fffc63e68}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a5da13376de8ebf44de19c03fffc63e68}{ch4\+\_\+soills}\label{structctem__statevars_1_1veg__gat_a5da13376de8ebf44de19c03fffc63e68}
+
+\begin{DoxyCompactList}\small\item\em Methane uptake into the soil column (\$mg C\+H\+\_\+4 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5e4ce2fef4b5c4653d0c8d12b77b6b00}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a5e4ce2fef4b5c4653d0c8d12b77b6b00}{lucemcom}\label{structctem__statevars_1_1veg__gat_a5e4ce2fef4b5c4653d0c8d12b77b6b00}
+
+\begin{DoxyCompactList}\small\item\em land use change (luc) related combustion emission losses, u-\/mol co2/m2.\+sec \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa3d9e02c11f4d41d8199b352c45815c5}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa3d9e02c11f4d41d8199b352c45815c5}{lucltrin}\label{structctem__statevars_1_1veg__gat_aa3d9e02c11f4d41d8199b352c45815c5}
+
+\begin{DoxyCompactList}\small\item\em luc related inputs to litter pool, u-\/mol co2/m2.\+sec \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a9945abd11d50ee3284a31c7f5e637515}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a9945abd11d50ee3284a31c7f5e637515}{lucsocin}\label{structctem__statevars_1_1veg__gat_a9945abd11d50ee3284a31c7f5e637515}
+
+\begin{DoxyCompactList}\small\item\em luc related inputs to soil c pool, u-\/mol co2/m2.\+sec \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a501f510a904f3a3e4caefc7a4887944f}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a501f510a904f3a3e4caefc7a4887944f}{npp}\label{structctem__statevars_1_1veg__gat_a501f510a904f3a3e4caefc7a4887944f}
+
+\begin{DoxyCompactList}\small\item\em net primary productivity \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a1cc723b7a9e952e3382eea75cd06bbdf}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a1cc723b7a9e952e3382eea75cd06bbdf}{nep}\label{structctem__statevars_1_1veg__gat_a1cc723b7a9e952e3382eea75cd06bbdf}
+
+\begin{DoxyCompactList}\small\item\em net ecosystem productivity \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a1f1b1b1b3cdc359416b8c6b0fe021a5b}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a1f1b1b1b3cdc359416b8c6b0fe021a5b}{nbp}\label{structctem__statevars_1_1veg__gat_a1f1b1b1b3cdc359416b8c6b0fe021a5b}
+
+\begin{DoxyCompactList}\small\item\em net biome productivity \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a4a8f8280579abb43ba45622eb8843619}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a4a8f8280579abb43ba45622eb8843619}{gpp}\label{structctem__statevars_1_1veg__gat_a4a8f8280579abb43ba45622eb8843619}
+
+\begin{DoxyCompactList}\small\item\em gross primary productivity \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a94f1f3bff0aa6f9a21a02ca3a9873534}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a94f1f3bff0aa6f9a21a02ca3a9873534}{hetrores}\label{structctem__statevars_1_1veg__gat_a94f1f3bff0aa6f9a21a02ca3a9873534}
+
+\begin{DoxyCompactList}\small\item\em heterotrophic respiration \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a942674b2acacfdfd954be4c89db0a0a5}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a942674b2acacfdfd954be4c89db0a0a5}{autores}\label{structctem__statevars_1_1veg__gat_a942674b2acacfdfd954be4c89db0a0a5}
+
+\begin{DoxyCompactList}\small\item\em autotrophic respiration \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a6d45138a98ba6ae2d6ce9dc43ce9469e}{}real, dimension(\+:), allocatable {\bfseries soilcresp}\label{structctem__statevars_1_1veg__gat_a6d45138a98ba6ae2d6ce9dc43ce9469e}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5b98239856fd31fbea3b9c159238b611}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a5b98239856fd31fbea3b9c159238b611}{rm}\label{structctem__statevars_1_1veg__gat_a5b98239856fd31fbea3b9c159238b611}
+
+\begin{DoxyCompactList}\small\item\em maintenance respiration \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a0cb81cb5789d875f9ecaf191968aaacd}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a0cb81cb5789d875f9ecaf191968aaacd}{rg}\label{structctem__statevars_1_1veg__gat_a0cb81cb5789d875f9ecaf191968aaacd}
+
+\begin{DoxyCompactList}\small\item\em growth respiration \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a654f2e60d1a7b70c681dd92fd9770efb}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a654f2e60d1a7b70c681dd92fd9770efb}{litres}\label{structctem__statevars_1_1veg__gat_a654f2e60d1a7b70c681dd92fd9770efb}
+
+\begin{DoxyCompactList}\small\item\em litter respiration \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a9fc2d363fee91ddf65599a0e909347d0}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a9fc2d363fee91ddf65599a0e909347d0}{socres}\label{structctem__statevars_1_1veg__gat_a9fc2d363fee91ddf65599a0e909347d0}
+
+\begin{DoxyCompactList}\small\item\em soil carbon respiration \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ae1c1a7679fe55d62f6cf19924f6d1e3d}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ae1c1a7679fe55d62f6cf19924f6d1e3d}{dstcemls}\label{structctem__statevars_1_1veg__gat_ae1c1a7679fe55d62f6cf19924f6d1e3d}
+
+\begin{DoxyCompactList}\small\item\em carbon emission losses due to disturbance, mainly fire \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a8b34b4d469e6592357a525089104f398}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a8b34b4d469e6592357a525089104f398}{litrfall}\label{structctem__statevars_1_1veg__gat_a8b34b4d469e6592357a525089104f398}
+
+\begin{DoxyCompactList}\small\item\em total litter fall (from leaves, stem, and root) due to all causes (mortality, turnover, and disturbance) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_af75055fc0dbe5b6ea3395b663f17ec9b}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_af75055fc0dbe5b6ea3395b663f17ec9b}{humiftrs}\label{structctem__statevars_1_1veg__gat_af75055fc0dbe5b6ea3395b663f17ec9b}
+
+\begin{DoxyCompactList}\small\item\em transfer of humidified litter from litter to soil c pool \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a04ee0ffdae22e33d02dfc6bb9c9f99cf}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a04ee0ffdae22e33d02dfc6bb9c9f99cf}{gppveg}\label{structctem__statevars_1_1veg__gat_a04ee0ffdae22e33d02dfc6bb9c9f99cf}
+
+\begin{DoxyCompactList}\small\item\em gross primary productity for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ae439221581c0d86ffc4f15f9040ee021}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ae439221581c0d86ffc4f15f9040ee021}{nepveg}\label{structctem__statevars_1_1veg__gat_ae439221581c0d86ffc4f15f9040ee021}
+
+\begin{DoxyCompactList}\small\item\em net ecosystem productity for bare fraction expnbaln(i)=0.\+0 amount of c related to spatial expansion Not used J\+M Jun 2014 O\+R net ecosystem productity for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a79caec6eedb8e3b4ebe64ccc10a271ec}{}integer, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a79caec6eedb8e3b4ebe64ccc10a271ec}{ipeatland}\label{structctem__statevars_1_1veg__gat_a79caec6eedb8e3b4ebe64ccc10a271ec}
+
+\begin{DoxyCompactList}\small\item\em Peatland flag\+: 0 = not a peatland, 1= bog, 2 = fen. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a09595ff6c3f40002e19a89818735c3c6}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a09595ff6c3f40002e19a89818735c3c6}{anmoss}\label{structctem__statevars_1_1veg__gat_a09595ff6c3f40002e19a89818735c3c6}
+
+\begin{DoxyCompactList}\small\item\em net photosynthetic rate of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a275201a23094afd77dfb229ad89e5fb5}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a275201a23094afd77dfb229ad89e5fb5}{rmlmoss}\label{structctem__statevars_1_1veg__gat_a275201a23094afd77dfb229ad89e5fb5}
+
+\begin{DoxyCompactList}\small\item\em maintenance respiration rate of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a36725fdf5452d19d0ef332981c03308b}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a36725fdf5452d19d0ef332981c03308b}{gppmoss}\label{structctem__statevars_1_1veg__gat_a36725fdf5452d19d0ef332981c03308b}
+
+\begin{DoxyCompactList}\small\item\em gross primaray production of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa0546dc918fa34774425531a61c2f7bf}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa0546dc918fa34774425531a61c2f7bf}{nppmoss}\label{structctem__statevars_1_1veg__gat_aa0546dc918fa34774425531a61c2f7bf}
+
+\begin{DoxyCompactList}\small\item\em net primary production of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a0a2e08422cb7d609b4eeb3c4520caa1a}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a0a2e08422cb7d609b4eeb3c4520caa1a}{armoss}\label{structctem__statevars_1_1veg__gat_a0a2e08422cb7d609b4eeb3c4520caa1a}
+
+\begin{DoxyCompactList}\small\item\em autotrophic respiration of moss (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a8875c81026660b9dd172037bf09c9d88}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a8875c81026660b9dd172037bf09c9d88}{litrmsmoss}\label{structctem__statevars_1_1veg__gat_a8875c81026660b9dd172037bf09c9d88}
+
+\begin{DoxyCompactList}\small\item\em moss litter mass, $kg C/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a7520bff40a0b797b63e8b56405a7571a}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a7520bff40a0b797b63e8b56405a7571a}{cmossmas}\label{structctem__statevars_1_1veg__gat_a7520bff40a0b797b63e8b56405a7571a}
+
+\begin{DoxyCompactList}\small\item\em C in moss biomass, $kg C/m^2$. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a05858c9032f521bdebc866c7e0bea762}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a05858c9032f521bdebc866c7e0bea762}{dmoss}\label{structctem__statevars_1_1veg__gat_a05858c9032f521bdebc866c7e0bea762}
+
+\begin{DoxyCompactList}\small\item\em depth of living moss (m) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ac0b72784571732ded0e933429f556ffe}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ac0b72784571732ded0e933429f556ffe}{pdd}\label{structctem__statevars_1_1veg__gat_ac0b72784571732ded0e933429f556ffe}
+
+\begin{DoxyCompactList}\small\item\em peatland degree days above 0 deg C. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a544cb35279f72e9609d283396e716a18}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a544cb35279f72e9609d283396e716a18}{ancsmoss}\label{structctem__statevars_1_1veg__gat_a544cb35279f72e9609d283396e716a18}
+
+\begin{DoxyCompactList}\small\item\em moss net photosynthesis in canopy snow subarea (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a3aec3739923ac04dd8677450d8d08708}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a3aec3739923ac04dd8677450d8d08708}{angsmoss}\label{structctem__statevars_1_1veg__gat_a3aec3739923ac04dd8677450d8d08708}
+
+\begin{DoxyCompactList}\small\item\em moss net photosynthesis in snow ground subarea (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a6e0e481b9a68829da7ef78b1b6846092}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a6e0e481b9a68829da7ef78b1b6846092}{ancmoss}\label{structctem__statevars_1_1veg__gat_a6e0e481b9a68829da7ef78b1b6846092}
+
+\begin{DoxyCompactList}\small\item\em moss net photosynthesis in canopy ground subarea (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a813f911e77cb265487141919016cbfa9}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a813f911e77cb265487141919016cbfa9}{angmoss}\label{structctem__statevars_1_1veg__gat_a813f911e77cb265487141919016cbfa9}
+
+\begin{DoxyCompactList}\small\item\em moss net photosynthesis in bare ground subarea (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a0f9639e702fc134aaebefc205e465703}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a0f9639e702fc134aaebefc205e465703}{rmlcsmoss}\label{structctem__statevars_1_1veg__gat_a0f9639e702fc134aaebefc205e465703}
+
+\begin{DoxyCompactList}\small\item\em moss maintenance respiration in canopy snow subarea (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a04946cbc0a0283ebf48af654fe75675a}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a04946cbc0a0283ebf48af654fe75675a}{rmlgsmoss}\label{structctem__statevars_1_1veg__gat_a04946cbc0a0283ebf48af654fe75675a}
+
+\begin{DoxyCompactList}\small\item\em moss maintenance respiration in ground snow subarea (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a2d27c61781a2828d5e8d2887a41d665e}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a2d27c61781a2828d5e8d2887a41d665e}{rmlcmoss}\label{structctem__statevars_1_1veg__gat_a2d27c61781a2828d5e8d2887a41d665e}
+
+\begin{DoxyCompactList}\small\item\em moss maintenance respiration in canopy ground subarea (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a9349282a5315f549d16b04d8c55f1cb7}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a9349282a5315f549d16b04d8c55f1cb7}{rmlgmoss}\label{structctem__statevars_1_1veg__gat_a9349282a5315f549d16b04d8c55f1cb7}
+
+\begin{DoxyCompactList}\small\item\em moss maintenance respiration in bare ground subarea (\$ mol C\+O2 m$^\wedge$\{-\/2\} s$^\wedge$\{-\/1\}\$) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aeea0970f5288e4b7bfced83715d5b8e5}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aeea0970f5288e4b7bfced83715d5b8e5}{nbpveg}\label{structctem__statevars_1_1veg__gat_aeea0970f5288e4b7bfced83715d5b8e5}
+
+\begin{DoxyCompactList}\small\item\em net biome productity for bare fraction O\+R net biome productity for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5e36a186d9a6518e2caac836c949c246}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a5e36a186d9a6518e2caac836c949c246}{nppveg}\label{structctem__statevars_1_1veg__gat_a5e36a186d9a6518e2caac836c949c246}
+
+\begin{DoxyCompactList}\small\item\em npp for individual pfts, u-\/mol co2/m2.\+sec \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a6539c2924d8fc188fea124ce949e3f32}{}real, dimension(\+:,\+:), allocatable {\bfseries hetroresveg}\label{structctem__statevars_1_1veg__gat_a6539c2924d8fc188fea124ce949e3f32}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a2b10d1555288a3d7cc024b625f4262d4}{}real, dimension(\+:,\+:), allocatable {\bfseries autoresveg}\label{structctem__statevars_1_1veg__gat_a2b10d1555288a3d7cc024b625f4262d4}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a20602c33f92d3751a3f06a58f1c92eb9}{}real, dimension(\+:,\+:), allocatable {\bfseries litresveg}\label{structctem__statevars_1_1veg__gat_a20602c33f92d3751a3f06a58f1c92eb9}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5bc027b05df8e7ebc6377adea267561a}{}real, dimension(\+:,\+:), allocatable {\bfseries soilcresveg}\label{structctem__statevars_1_1veg__gat_a5bc027b05df8e7ebc6377adea267561a}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aea3869abe2b921f0765d6d7746359403}{}real, dimension(\+:,\+:), allocatable {\bfseries rmlvegacc}\label{structctem__statevars_1_1veg__gat_aea3869abe2b921f0765d6d7746359403}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_adf01fdc6c6306971f82f31e00f03f655}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_adf01fdc6c6306971f82f31e00f03f655}{rmsveg}\label{structctem__statevars_1_1veg__gat_adf01fdc6c6306971f82f31e00f03f655}
+
+\begin{DoxyCompactList}\small\item\em stem maintenance resp. rate for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a2c34f49dd41b553c1b4b8f848e55bb0a}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a2c34f49dd41b553c1b4b8f848e55bb0a}{rmrveg}\label{structctem__statevars_1_1veg__gat_a2c34f49dd41b553c1b4b8f848e55bb0a}
+
+\begin{DoxyCompactList}\small\item\em root maintenance resp. rate for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a94750f7e8dc54be964e6b5017841b090}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a94750f7e8dc54be964e6b5017841b090}{rgveg}\label{structctem__statevars_1_1veg__gat_a94750f7e8dc54be964e6b5017841b090}
+
+\begin{DoxyCompactList}\small\item\em growth resp. rate for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a215a35c8fdddc2721e1871f4192ba3ea}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a215a35c8fdddc2721e1871f4192ba3ea}{litrfallveg}\label{structctem__statevars_1_1veg__gat_a215a35c8fdddc2721e1871f4192ba3ea}
+
+\begin{DoxyCompactList}\small\item\em litter fall in $kg c/m^2$ for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a6ab1e19ea49af92a6e7fa84b2c6668ee}{}real, dimension(\+:,\+:), allocatable {\bfseries humiftrsveg}\label{structctem__statevars_1_1veg__gat_a6ab1e19ea49af92a6e7fa84b2c6668ee}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5becee2f494120bd61a0d067a68086d2}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a5becee2f494120bd61a0d067a68086d2}{rothrlos}\label{structctem__statevars_1_1veg__gat_a5becee2f494120bd61a0d067a68086d2}
+
+\begin{DoxyCompactList}\small\item\em root death as crops are harvested, $kg c/m^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a3c978263649aba6951c799b2c6b42ddc}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a3c978263649aba6951c799b2c6b42ddc}{pfcancmx}\label{structctem__statevars_1_1veg__gat_a3c978263649aba6951c799b2c6b42ddc}
+
+\begin{DoxyCompactList}\small\item\em previous year\textquotesingle{}s fractional coverages of pfts \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ab6b5b611465625a9c6d956d2bff9b8ed}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ab6b5b611465625a9c6d956d2bff9b8ed}{nfcancmx}\label{structctem__statevars_1_1veg__gat_ab6b5b611465625a9c6d956d2bff9b8ed}
+
+\begin{DoxyCompactList}\small\item\em next year\textquotesingle{}s fractional coverages of pfts \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a504e30e8f3f900f780ea671621055fb6}{}real, dimension(\+:,\+:), allocatable {\bfseries alvsctm}\label{structctem__statevars_1_1veg__gat_a504e30e8f3f900f780ea671621055fb6}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a486e4bf2f3f79c764873dc14c2af6cb1}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a486e4bf2f3f79c764873dc14c2af6cb1}{paic}\label{structctem__statevars_1_1veg__gat_a486e4bf2f3f79c764873dc14c2af6cb1}
+
+\begin{DoxyCompactList}\small\item\em plant area index for class\textquotesingle{} 4 pfts. this is the sum of leaf area index and stem area index. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a6ed9e274cbbb78a1392380964fe0b326}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a6ed9e274cbbb78a1392380964fe0b326}{slaic}\label{structctem__statevars_1_1veg__gat_a6ed9e274cbbb78a1392380964fe0b326}
+
+\begin{DoxyCompactList}\small\item\em storage lai. this will be used as min. lai that class sees so that it doesn\textquotesingle{}t blow up in its stomatal conductance calculations. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a439347539c6caed5611e790168d00009}{}real, dimension(\+:,\+:), allocatable {\bfseries alirctm}\label{structctem__statevars_1_1veg__gat_a439347539c6caed5611e790168d00009}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a20ca585c5c9a5b5c60dcdcb6c9fb344f}{}real, dimension(\+:), allocatable {\bfseries cfluxcg}\label{structctem__statevars_1_1veg__gat_a20ca585c5c9a5b5c60dcdcb6c9fb344f}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aefbe93397c0e2866eb3ec46c302b082c}{}real, dimension(\+:), allocatable {\bfseries cfluxcs}\label{structctem__statevars_1_1veg__gat_aefbe93397c0e2866eb3ec46c302b082c}
+
+\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a57250abcb799f3da3e35c43be1578bfd}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a57250abcb799f3da3e35c43be1578bfd}{dstcemls3}\label{structctem__statevars_1_1veg__gat_a57250abcb799f3da3e35c43be1578bfd}
+
+\begin{DoxyCompactList}\small\item\em carbon emission losses due to disturbance (fire at present) from litter pool \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_afcfa84d09cd5873caea4f6acc1d7d5bd}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_afcfa84d09cd5873caea4f6acc1d7d5bd}{anveg}\label{structctem__statevars_1_1veg__gat_afcfa84d09cd5873caea4f6acc1d7d5bd}
+
+\begin{DoxyCompactList}\small\item\em net photosynthesis rate for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5f2179983ff14b5333b08c362735c4c9}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a5f2179983ff14b5333b08c362735c4c9}{rmlveg}\label{structctem__statevars_1_1veg__gat_a5f2179983ff14b5333b08c362735c4c9}
+
+\begin{DoxyCompactList}\small\item\em leaf maintenance resp. rate for each pft \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a6f21785182abb5694306d94bf0f760d8}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a6f21785182abb5694306d94bf0f760d8}{twarmm}\label{structctem__statevars_1_1veg__gat_a6f21785182abb5694306d94bf0f760d8}
+
+\begin{DoxyCompactList}\small\item\em temperature of the warmest month (c) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a66444e12e822ef9c9e76b3d394deeb88}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a66444e12e822ef9c9e76b3d394deeb88}{tcoldm}\label{structctem__statevars_1_1veg__gat_a66444e12e822ef9c9e76b3d394deeb88}
+
+\begin{DoxyCompactList}\small\item\em temperature of the coldest month (c) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a8e221a161b99dfbf9ed119b20d10fa63}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a8e221a161b99dfbf9ed119b20d10fa63}{gdd5}\label{structctem__statevars_1_1veg__gat_a8e221a161b99dfbf9ed119b20d10fa63}
+
+\begin{DoxyCompactList}\small\item\em growing degree days above 5 c \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a15e5cd9b1f6b98a935cf5b32b27d3538}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a15e5cd9b1f6b98a935cf5b32b27d3538}{aridity}\label{structctem__statevars_1_1veg__gat_a15e5cd9b1f6b98a935cf5b32b27d3538}
+
+\begin{DoxyCompactList}\small\item\em aridity index, ratio of potential evaporation to precipitation \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_afe1bebb7494fe1a26c90e0aeb78f9057}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_afe1bebb7494fe1a26c90e0aeb78f9057}{srplsmon}\label{structctem__statevars_1_1veg__gat_afe1bebb7494fe1a26c90e0aeb78f9057}
+
+\begin{DoxyCompactList}\small\item\em number of months in a year with surplus water i.\+e. precipitation more than potential evaporation \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa459886f5bf5254b2ea1c5efaa169586}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa459886f5bf5254b2ea1c5efaa169586}{defctmon}\label{structctem__statevars_1_1veg__gat_aa459886f5bf5254b2ea1c5efaa169586}
+
+\begin{DoxyCompactList}\small\item\em number of months in a year with water deficit i.\+e. precipitation less than potential evaporation \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_acfbe5bc4153ee014ee9f2faa0811232e}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_acfbe5bc4153ee014ee9f2faa0811232e}{anndefct}\label{structctem__statevars_1_1veg__gat_acfbe5bc4153ee014ee9f2faa0811232e}
+
+\begin{DoxyCompactList}\small\item\em annual water deficit (mm) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a264b5bd5b9273836cdf43f10aae11716}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a264b5bd5b9273836cdf43f10aae11716}{annsrpls}\label{structctem__statevars_1_1veg__gat_a264b5bd5b9273836cdf43f10aae11716}
+
+\begin{DoxyCompactList}\small\item\em annual water surplus (mm) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a3832d6dab74d31b1883490548f442c39}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a3832d6dab74d31b1883490548f442c39}{annpcp}\label{structctem__statevars_1_1veg__gat_a3832d6dab74d31b1883490548f442c39}
+
+\begin{DoxyCompactList}\small\item\em annual precipitation (mm) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_afd694d2842ef60fa471d031bd2ac44f5}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_afd694d2842ef60fa471d031bd2ac44f5}{dry\+\_\+season\+\_\+length}\label{structctem__statevars_1_1veg__gat_afd694d2842ef60fa471d031bd2ac44f5}
+
+\begin{DoxyCompactList}\small\item\em length of dry season (months) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ab543a860077df8524a51fb05e9893ab0}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ab543a860077df8524a51fb05e9893ab0}{tcurm}\label{structctem__statevars_1_1veg__gat_ab543a860077df8524a51fb05e9893ab0}
+
+\begin{DoxyCompactList}\small\item\em temperature of the current month (c) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a955a2918c3d658ea0378ad3909da4ce5}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a955a2918c3d658ea0378ad3909da4ce5}{srpcuryr}\label{structctem__statevars_1_1veg__gat_a955a2918c3d658ea0378ad3909da4ce5}
+
+\begin{DoxyCompactList}\small\item\em water surplus for the current year \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_adbed4deaa344359df285e7476707d019}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_adbed4deaa344359df285e7476707d019}{dftcuryr}\label{structctem__statevars_1_1veg__gat_adbed4deaa344359df285e7476707d019}
+
+\begin{DoxyCompactList}\small\item\em water deficit for the current year \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ad7c7edc8f8611b10968a324ae9c6e303}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ad7c7edc8f8611b10968a324ae9c6e303}{tmonth}\label{structctem__statevars_1_1veg__gat_ad7c7edc8f8611b10968a324ae9c6e303}
+
+\begin{DoxyCompactList}\small\item\em monthly temperatures \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ac3a5e654dea77b023fc42b2d674e896a}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ac3a5e654dea77b023fc42b2d674e896a}{anpcpcur}\label{structctem__statevars_1_1veg__gat_ac3a5e654dea77b023fc42b2d674e896a}
+
+\begin{DoxyCompactList}\small\item\em annual precipitation for current year (mm) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a7164664eeb24d6ca8ca4e90ae28d6937}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a7164664eeb24d6ca8ca4e90ae28d6937}{anpecur}\label{structctem__statevars_1_1veg__gat_a7164664eeb24d6ca8ca4e90ae28d6937}
+
+\begin{DoxyCompactList}\small\item\em annual potential evaporation for current year (mm) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a1c7556abbb4db1f29bbceda762c65cdb}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a1c7556abbb4db1f29bbceda762c65cdb}{gdd5cur}\label{structctem__statevars_1_1veg__gat_a1c7556abbb4db1f29bbceda762c65cdb}
+
+\begin{DoxyCompactList}\small\item\em growing degree days above 5 c for current year \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a1807426243ac62f71bc83d83daaab012}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a1807426243ac62f71bc83d83daaab012}{surmncur}\label{structctem__statevars_1_1veg__gat_a1807426243ac62f71bc83d83daaab012}
+
+\begin{DoxyCompactList}\small\item\em number of months with surplus water for current year \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a26aadfe13cbcaf938f07d4058095c0f9}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a26aadfe13cbcaf938f07d4058095c0f9}{defmncur}\label{structctem__statevars_1_1veg__gat_a26aadfe13cbcaf938f07d4058095c0f9}
+
+\begin{DoxyCompactList}\small\item\em number of months with water deficit for current year \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_aa073015b721f01f8071ea8bae13ea295}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_aa073015b721f01f8071ea8bae13ea295}{srplscur}\label{structctem__statevars_1_1veg__gat_aa073015b721f01f8071ea8bae13ea295}
+
+\begin{DoxyCompactList}\small\item\em water surplus for the current month \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a23db04fef112615f0104caa850a522f2}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a23db04fef112615f0104caa850a522f2}{defctcur}\label{structctem__statevars_1_1veg__gat_a23db04fef112615f0104caa850a522f2}
+
+\begin{DoxyCompactList}\small\item\em water deficit for the current month \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a50dade8c51c5a099c05013c246569d0f}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a50dade8c51c5a099c05013c246569d0f}{geremort}\label{structctem__statevars_1_1veg__gat_a50dade8c51c5a099c05013c246569d0f}
+
+\begin{DoxyCompactList}\small\item\em growth efficiency related mortality (1/day) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_acc2d305d85a52c0db34f26fd0f52afb5}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_acc2d305d85a52c0db34f26fd0f52afb5}{intrmort}\label{structctem__statevars_1_1veg__gat_acc2d305d85a52c0db34f26fd0f52afb5}
+
+\begin{DoxyCompactList}\small\item\em intrinsic (age related) mortality (1/day) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_abbccacdea04d42346d27951d422a7ddb}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_abbccacdea04d42346d27951d422a7ddb}{lambda}\label{structctem__statevars_1_1veg__gat_abbccacdea04d42346d27951d422a7ddb}
+
+\begin{DoxyCompactList}\small\item\em Used to determine the colonization rate. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ab33ad041d62b918b16476556675cd591}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ab33ad041d62b918b16476556675cd591}{cc}\label{structctem__statevars_1_1veg__gat_ab33ad041d62b918b16476556675cd591}
+
+\begin{DoxyCompactList}\small\item\em colonization rate \& mortality rate \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_af01e93180c530d054b39d8cda85fc244}{}real, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_af01e93180c530d054b39d8cda85fc244}{mm}\label{structctem__statevars_1_1veg__gat_af01e93180c530d054b39d8cda85fc244}
+
+\begin{DoxyCompactList}\small\item\em colonization rate \& mortality rate \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_ac9d704a1e06056c439d16c811ec9d398}{}logical, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_ac9d704a1e06056c439d16c811ec9d398}{pftexist}\label{structctem__statevars_1_1veg__gat_ac9d704a1e06056c439d16c811ec9d398}
+
+\begin{DoxyCompactList}\small\item\em logical array indicating pfts exist (t) or not (f) \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a9cde68139aa292c16c412ac9ecf9dd34}{}integer, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a9cde68139aa292c16c412ac9ecf9dd34}{colddays}\label{structctem__statevars_1_1veg__gat_a9cde68139aa292c16c412ac9ecf9dd34}
+
+\begin{DoxyCompactList}\small\item\em cold days counter for tracking days below a certain temperature threshold for ndl dcd and crop pfts. \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a049661941e7cc95ee7aef84631864bfe}{}integer, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a049661941e7cc95ee7aef84631864bfe}{lfstatus}\label{structctem__statevars_1_1veg__gat_a049661941e7cc95ee7aef84631864bfe}
+
+\begin{DoxyCompactList}\small\item\em leaf phenology status \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a4a1259f16b017a5656e9e067f0db96e3}{}integer, dimension(\+:,\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a4a1259f16b017a5656e9e067f0db96e3}{pandays}\label{structctem__statevars_1_1veg__gat_a4a1259f16b017a5656e9e067f0db96e3}
+
+\begin{DoxyCompactList}\small\item\em days with positive net photosynthesis (an) for use in the phenology subroutine \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a91f5c7f28b46c39b9caa9a4b07431aa7}{}real, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a91f5c7f28b46c39b9caa9a4b07431aa7}{grclarea}\label{structctem__statevars_1_1veg__gat_a91f5c7f28b46c39b9caa9a4b07431aa7}
+
+\begin{DoxyCompactList}\small\item\em area of the grid cell, $km^2$ \end{DoxyCompactList}\item 
+\hypertarget{structctem__statevars_1_1veg__gat_a5d55217087f887d2739abe479418ed62}{}integer, dimension(\+:), allocatable \hyperlink{structctem__statevars_1_1veg__gat_a5d55217087f887d2739abe479418ed62}{stdaln}\label{structctem__statevars_1_1veg__gat_a5d55217087f887d2739abe479418ed62}
+
+\begin{DoxyCompactList}\small\item\em an integer telling if ctem is operated within gcm (=0) or in stand alone mode (=1). this is used for fire purposes. see comments just above where disturb subroutine is called. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+C\+T\+E\+M\textquotesingle{}s \textquotesingle{}gat\textquotesingle{} vars. 
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/\hyperlink{ctem__statevars_8f90}{ctem\+\_\+statevars.\+f90}\end{DoxyCompactItemize}

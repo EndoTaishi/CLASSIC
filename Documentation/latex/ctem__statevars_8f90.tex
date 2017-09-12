@@ -1,0 +1,126 @@
+\hypertarget{ctem__statevars_8f90}{}\section{src/ctem\+\_\+statevars.f90 File Reference}
+\label{ctem__statevars_8f90}\index{src/ctem\+\_\+statevars.\+f90@{src/ctem\+\_\+statevars.\+f90}}
+
+
+this module contains the variable type structures\+:  
+
+
+\subsection*{Data Types}
+\begin{DoxyCompactItemize}
+\item 
+type \hyperlink{structctem__statevars_1_1ctem__switches}{ctem\+\_\+statevars\+::ctem\+\_\+switches}
+\begin{DoxyCompactList}\small\item\em switches for running the model, read from the joboptions file \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1veg__rot}{ctem\+\_\+statevars\+::veg\+\_\+rot}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s \textquotesingle{}rot\textquotesingle{} vars. \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1veg__gat}{ctem\+\_\+statevars\+::veg\+\_\+gat}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s \textquotesingle{}gat\textquotesingle{} vars. \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1class__moyr__output}{ctem\+\_\+statevars\+::class\+\_\+moyr\+\_\+output}
+\begin{DoxyCompactList}\small\item\em C\+L\+A\+S\+S\textquotesingle{}s monthly outputs. \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1ctem__gridavg}{ctem\+\_\+statevars\+::ctem\+\_\+gridavg}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s grid average variables. \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1ctem__tile__level}{ctem\+\_\+statevars\+::ctem\+\_\+tile\+\_\+level}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s variables per tile. \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1ctem__monthly}{ctem\+\_\+statevars\+::ctem\+\_\+monthly}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s variables monthly averaged (per pft) \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1ctem__gridavg__monthly}{ctem\+\_\+statevars\+::ctem\+\_\+gridavg\+\_\+monthly}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s grid average monthly values. \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1ctem__tileavg__monthly}{ctem\+\_\+statevars\+::ctem\+\_\+tileavg\+\_\+monthly}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s variables per tile monthly values. \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1ctem__annual}{ctem\+\_\+statevars\+::ctem\+\_\+annual}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s average annual values (per P\+F\+T) \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1ctem__gridavg__annual}{ctem\+\_\+statevars\+::ctem\+\_\+gridavg\+\_\+annual}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s grid average annual values. \end{DoxyCompactList}\item 
+type \hyperlink{structctem__statevars_1_1ctem__tileavg__annual}{ctem\+\_\+statevars\+::ctem\+\_\+tileavg\+\_\+annual}
+\begin{DoxyCompactList}\small\item\em C\+T\+E\+M\textquotesingle{}s variables per tile annual values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespacectem__statevars_ad342e3a360b7b12a40b1c80a251d95b9}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::alloc\+\_\+ctem\+\_\+vars} ()\label{namespacectem__statevars_ad342e3a360b7b12a40b1c80a251d95b9}
+
+\item 
+\hypertarget{namespacectem__statevars_a069aa6fb4b132ef4fe61febb61d40ec1}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::initrowvars} ()\label{namespacectem__statevars_a069aa6fb4b132ef4fe61febb61d40ec1}
+
+\item 
+\hypertarget{namespacectem__statevars_ae0b072c8e351526245a583646e778fe6}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::resetclassmon} (nltest)\label{namespacectem__statevars_ae0b072c8e351526245a583646e778fe6}
+
+\item 
+\hypertarget{namespacectem__statevars_aeba858367dfd67125a0f77f94496d163}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::resetclassyr} (nltest)\label{namespacectem__statevars_aeba858367dfd67125a0f77f94496d163}
+
+\item 
+\hypertarget{namespacectem__statevars_af1d0ff0bbf816233f2b51362f1ccb523}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::resetdaily} (nltest, nmtest)\label{namespacectem__statevars_af1d0ff0bbf816233f2b51362f1ccb523}
+
+\item 
+\hypertarget{namespacectem__statevars_afcc1311f7dd0743cf4002b0d2635e824}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::resetmonthend} (nltest, nmtest)\label{namespacectem__statevars_afcc1311f7dd0743cf4002b0d2635e824}
+
+\item 
+\hypertarget{namespacectem__statevars_a090f13e5df0ad3551010689fcf82a0ac}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::resetyearend} (nltest, nmtest)\label{namespacectem__statevars_a090f13e5df0ad3551010689fcf82a0ac}
+
+\item 
+\hypertarget{namespacectem__statevars_ac5b2a6004c5c8f833b1ec04ef0d8674f}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::resetclassaccum} (nltest, nmtest)\label{namespacectem__statevars_ac5b2a6004c5c8f833b1ec04ef0d8674f}
+
+\item 
+\hypertarget{namespacectem__statevars_a424132cbb7cede85302f098c104b6b81}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::resetgridavg} (nltest)\label{namespacectem__statevars_a424132cbb7cede85302f098c104b6b81}
+
+\item 
+\hypertarget{namespacectem__statevars_ad9e9f0c26eb20456932853a6fc897631}{}subroutine, public {\bfseries ctem\+\_\+statevars\+::finddaylength} (solday, radl, daylength)\label{namespacectem__statevars_ad9e9f0c26eb20456932853a6fc897631}
+
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespacectem__statevars_ae5b8eaa631db6fcf2adc586a8ffdb722}{}type(ctem\+\_\+switches), target, save {\bfseries ctem\+\_\+statevars\+::c\+\_\+switch}\label{namespacectem__statevars_ae5b8eaa631db6fcf2adc586a8ffdb722}
+
+\item 
+\hypertarget{namespacectem__statevars_ac60177625fa0d946b94065134b1f37a2}{}type(veg\+\_\+rot), target, save {\bfseries ctem\+\_\+statevars\+::vrot}\label{namespacectem__statevars_ac60177625fa0d946b94065134b1f37a2}
+
+\item 
+\hypertarget{namespacectem__statevars_ae21be54e6097f1f897ddbb5a7265d301}{}type(veg\+\_\+gat), target, save {\bfseries ctem\+\_\+statevars\+::vgat}\label{namespacectem__statevars_ae21be54e6097f1f897ddbb5a7265d301}
+
+\item 
+\hypertarget{namespacectem__statevars_a1b383361faf075e17b8f4376d478f469}{}type(class\+\_\+moyr\+\_\+output), target, save {\bfseries ctem\+\_\+statevars\+::class\+\_\+out}\label{namespacectem__statevars_a1b383361faf075e17b8f4376d478f469}
+
+\item 
+\hypertarget{namespacectem__statevars_ab8cd13b4bb2133f86012aa72a85253de}{}type(ctem\+\_\+gridavg), target, save {\bfseries ctem\+\_\+statevars\+::ctem\+\_\+grd}\label{namespacectem__statevars_ab8cd13b4bb2133f86012aa72a85253de}
+
+\item 
+\hypertarget{namespacectem__statevars_a35e3e81a8d12b67b5bc48767779ffe4d}{}type(ctem\+\_\+tile\+\_\+level), target, save {\bfseries ctem\+\_\+statevars\+::ctem\+\_\+tile}\label{namespacectem__statevars_a35e3e81a8d12b67b5bc48767779ffe4d}
+
+\item 
+\hypertarget{namespacectem__statevars_a1935b531e4ef11e55fdaf77f816c9269}{}type(ctem\+\_\+monthly), target, save {\bfseries ctem\+\_\+statevars\+::ctem\+\_\+mo}\label{namespacectem__statevars_a1935b531e4ef11e55fdaf77f816c9269}
+
+\item 
+\hypertarget{namespacectem__statevars_a0e6e53463d563093cfacf19a1358ec1c}{}type(ctem\+\_\+gridavg\+\_\+monthly), target, save {\bfseries ctem\+\_\+statevars\+::ctem\+\_\+grd\+\_\+mo}\label{namespacectem__statevars_a0e6e53463d563093cfacf19a1358ec1c}
+
+\item 
+\hypertarget{namespacectem__statevars_af68043090dc6cd2c0615eb7d4b550b18}{}type(ctem\+\_\+tileavg\+\_\+monthly), target, save {\bfseries ctem\+\_\+statevars\+::ctem\+\_\+tile\+\_\+mo}\label{namespacectem__statevars_af68043090dc6cd2c0615eb7d4b550b18}
+
+\item 
+\hypertarget{namespacectem__statevars_aa83b75c65f5aa4de37ef1f55a6a54193}{}type(ctem\+\_\+annual), target, save {\bfseries ctem\+\_\+statevars\+::ctem\+\_\+yr}\label{namespacectem__statevars_aa83b75c65f5aa4de37ef1f55a6a54193}
+
+\item 
+\hypertarget{namespacectem__statevars_a3fe8917df668048f8e960e0c5c8427e3}{}type(ctem\+\_\+gridavg\+\_\+annual), target, save {\bfseries ctem\+\_\+statevars\+::ctem\+\_\+grd\+\_\+yr}\label{namespacectem__statevars_a3fe8917df668048f8e960e0c5c8427e3}
+
+\item 
+\hypertarget{namespacectem__statevars_a74e5918629cea2b5e0e8cd50b271f917}{}type(ctem\+\_\+tileavg\+\_\+annual), target, save {\bfseries ctem\+\_\+statevars\+::ctem\+\_\+tile\+\_\+yr}\label{namespacectem__statevars_a74e5918629cea2b5e0e8cd50b271f917}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+this module contains the variable type structures\+: 
+
+
+\begin{DoxyEnumerate}
+\item c\+\_\+switch -\/ switches for running C\+T\+E\+M, read from the joboptions file
+\item vrot -\/ C\+T\+E\+M\textquotesingle{}s \textquotesingle{}rot\textquotesingle{} vars
+\item vgat -\/ C\+T\+E\+M\textquotesingle{}s \textquotesingle{}gat\textquotesingle{} vars
+\item class\+\_\+out -\/ C\+L\+A\+S\+S\textquotesingle{}s monthly outputs
+\item ctem\+\_\+grd -\/ C\+T\+E\+M\textquotesingle{}s grid average variables
+\item ctem\+\_\+tile -\/ C\+T\+E\+M\textquotesingle{}s variables per tile
+\item ctem\+\_\+mo -\/ C\+T\+E\+M\textquotesingle{}s variables monthly averaged (per pft)
+\item ctem\+\_\+grd\+\_\+mo -\/ C\+T\+E\+M\textquotesingle{}s grid average monthly values
+\item ctem\+\_\+tile\+\_\+mo -\/ C\+T\+E\+M\textquotesingle{}s variables per tile monthly values
+\item ctem\+\_\+yr -\/ C\+T\+E\+M\textquotesingle{}s average annual values (per P\+F\+T)
+\item ctem\+\_\+grd\+\_\+yr -\/ C\+T\+E\+M\textquotesingle{}s grid average annual values
+\item ctem\+\_\+tile\+\_\+yr -\/ C\+T\+E\+M\textquotesingle{}s variables per tile annual values 
+\end{DoxyEnumerate}

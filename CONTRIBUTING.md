@@ -10,7 +10,7 @@ including Fortran. Both fixed form code such as Fortran 77 (extension .f or .for
 
 ## Quick Start (if you have made change to the code and doxygen comments)
    1. [Download Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html) to your computer
-   1. Run the command 'doxygen Doxyfile'.
+   1. Enter 'doxygen Doxyfile'.
    1. View the produced HTML by opening 'index.html' from within the newly created 'html' folder within your current directory.
    1. View the produced LaTeX pdf by using the created makefile:
        - Run 'make' on the command line in the 'latex' folder in your current project's directory.

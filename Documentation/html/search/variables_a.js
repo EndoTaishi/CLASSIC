@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['lambda',['lambda',['../structctem__statevars_1_1veg__gat.html#abbccacdea04d42346d27951d422a7ddb',1,'ctem_statevars::veg_gat']]],
+  ['leaflitr',['leaflitr',['../structctem__statevars_1_1veg__rot.html#ab2740dee9ed3bc2684ecf0da3c5c4e10',1,'ctem_statevars::veg_rot::leaflitr()'],['../structctem__statevars_1_1veg__gat.html#ad317444c57232a7cb390eddf2e2b39cc',1,'ctem_statevars::veg_gat::leaflitr()']]],
+  ['leap',['leap',['../structctem__statevars_1_1ctem__switches.html#a0d2cee5988b9acc49829041803774a2d',1,'ctem_statevars::ctem_switches']]],
+  ['lfstatus',['lfstatus',['../structctem__statevars_1_1veg__rot.html#aba3a27482e8bcfcab7e241defa7b9038',1,'ctem_statevars::veg_rot::lfstatus()'],['../structctem__statevars_1_1veg__gat.html#a049661941e7cc95ee7aef84631864bfe',1,'ctem_statevars::veg_gat::lfstatus()']]],
+  ['lightng',['lightng',['../structctem__statevars_1_1veg__gat.html#a90c2b0eb853f7b917ceb8a61b131946a',1,'ctem_statevars::veg_gat']]],
+  ['litres',['litres',['../structctem__statevars_1_1veg__rot.html#a2a4438301aa9f1920c70cd055ac0c64e',1,'ctem_statevars::veg_rot::litres()'],['../structctem__statevars_1_1veg__gat.html#a654f2e60d1a7b70c681dd92fd9770efb',1,'ctem_statevars::veg_gat::litres()']]],
+  ['litrfall',['litrfall',['../structctem__statevars_1_1veg__rot.html#ac6480cd6c98f68577256aeb75d6dfdbd',1,'ctem_statevars::veg_rot::litrfall()'],['../structctem__statevars_1_1veg__gat.html#a8b34b4d469e6592357a525089104f398',1,'ctem_statevars::veg_gat::litrfall()']]],
+  ['litrfallveg',['litrfallveg',['../structctem__statevars_1_1veg__rot.html#af1fd6752f635bd6ee257457c6c2d22e5',1,'ctem_statevars::veg_rot::litrfallveg()'],['../structctem__statevars_1_1veg__gat.html#a215a35c8fdddc2721e1871f4192ba3ea',1,'ctem_statevars::veg_gat::litrfallveg()']]],
+  ['litrmass',['litrmass',['../structctem__statevars_1_1veg__rot.html#a14b56165e69b106d277c23c63e322a07',1,'ctem_statevars::veg_rot::litrmass()'],['../structctem__statevars_1_1veg__gat.html#af72a4bf240784fd713cbfca356a75678',1,'ctem_statevars::veg_gat::litrmass()']]],
+  ['litrmsmoss',['litrmsmoss',['../structctem__statevars_1_1veg__gat.html#a8875c81026660b9dd172037bf09c9d88',1,'ctem_statevars::veg_gat']]],
+  ['lnduseon',['lnduseon',['../structctem__statevars_1_1ctem__switches.html#a88a5da5983fd89ae543d125e6e9cc7b0',1,'ctem_statevars::ctem_switches']]],
+  ['lnz0gat',['lnz0gat',['../structclass__statevars_1_1class__gather.html#afe1b493d02667082659d23bea633cfec',1,'class_statevars::class_gather']]],
+  ['long_5fname',['long_name',['../structio__driver_1_1infopak.html#a913b19d61355d59172842fba858ab65b',1,'io_driver::infopak']]],
+  ['lterm',['lterm',['../structctem__statevars_1_1veg__rot.html#a5652727ff038bb13b5be2279b5418dfd',1,'ctem_statevars::veg_rot::lterm()'],['../structctem__statevars_1_1veg__gat.html#ad4222f05ad91a35cbf93949168c1147e',1,'ctem_statevars::veg_gat::lterm()']]],
+  ['ltstatus',['ltstatus',['../structctem__statevars_1_1veg__rot.html#a5e10f20bfba8f3321ddebbe164d70376',1,'ctem_statevars::veg_rot::ltstatus()'],['../structctem__statevars_1_1veg__gat.html#a4042caf2c51ccb4baa1cccc129d30416',1,'ctem_statevars::veg_gat::ltstatus()']]],
+  ['lucemcom',['lucemcom',['../structctem__statevars_1_1veg__rot.html#aaf7b4033868af21f1fe6f7ce16829798',1,'ctem_statevars::veg_rot::lucemcom()'],['../structctem__statevars_1_1veg__gat.html#a5e4ce2fef4b5c4653d0c8d12b77b6b00',1,'ctem_statevars::veg_gat::lucemcom()']]],
+  ['lucltrin',['lucltrin',['../structctem__statevars_1_1veg__rot.html#abe065c997626550175c3b098914840b4',1,'ctem_statevars::veg_rot::lucltrin()'],['../structctem__statevars_1_1veg__gat.html#aa3d9e02c11f4d41d8199b352c45815c5',1,'ctem_statevars::veg_gat::lucltrin()']]],
+  ['lucsocin',['lucsocin',['../structctem__statevars_1_1veg__rot.html#a8abbde4c483ab277f0cb371586f7e2dc',1,'ctem_statevars::veg_rot::lucsocin()'],['../structctem__statevars_1_1veg__gat.html#a9945abd11d50ee3284a31c7f5e637515',1,'ctem_statevars::veg_gat::lucsocin()']]],
+  ['lyrotmas',['lyrotmas',['../structctem__statevars_1_1veg__rot.html#ae95794630e8c0ce681bb7f35985b38b9',1,'ctem_statevars::veg_rot::lyrotmas()'],['../structctem__statevars_1_1veg__gat.html#a73c08c1c116bed7223b8f606e5c2fe11',1,'ctem_statevars::veg_gat::lyrotmas()']]],
+  ['lystmmas',['lystmmas',['../structctem__statevars_1_1veg__rot.html#a8e533f301001b882a885e65d4495baae',1,'ctem_statevars::veg_rot::lystmmas()'],['../structctem__statevars_1_1veg__gat.html#ab9e0ed17b680c8c61acc7c5bfe2bca53',1,'ctem_statevars::veg_gat::lystmmas()']]]
+];

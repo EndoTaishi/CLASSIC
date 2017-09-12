@@ -1,0 +1,26 @@
+\hypertarget{disturb_8f90}{}\section{src/disturb.f90 File Reference}
+\label{disturb_8f90}\index{src/disturb.\+f90@{src/disturb.\+f90}}
+
+
+Update fractional coverages of pfts to take into account the area burnt by fire. Adjust all pools with new densities in their new areas and increase bare fraction.  
+
+
+\subsection*{Functions/\+Subroutines}
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__disturbance__scheme__disturb_ga43f1709a7ea90ed6c9c37f54c2f5478b}{disturbance\+\_\+scheme\+::disturb} (stemmass, rootmass, gleafmas, bleafmas,thliq,T\+H\+L\+W,T\+H\+F\+C,uwind,vwind,lightng,fcancmx, litrmass,prbfrhuc, rmatctem, extnprob, popdon,il1,il2,sort, nol2pfts,grclarea,thice,popdin, lucemcom,dofire,currlat,iday,fsnow,isand,
+\end{DoxyCompactItemize}
+
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__disturbance__scheme__burntobare_gae72fa0c94541c3e88a45d71f2442be9c}{disturbance\+\_\+scheme\+::burntobare} (il1, il2, nilg, sort, pvgbioms, pgavltms, pgavscms, fcancmx, burnvegf, stemmass, rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, nppveg)
+\end{DoxyCompactItemize}
+
+
+
+\subsection{Detailed Description}
+Update fractional coverages of pfts to take into account the area burnt by fire. Adjust all pools with new densities in their new areas and increase bare fraction. 
+
+And while we are doing this also run a small check to make sure grid averaged quantities do not get messed up. Central module for all disturbance scheme-\/related operations 

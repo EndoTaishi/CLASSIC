@@ -1,0 +1,537 @@
+\hypertarget{WPREP_8f}{}\section{src/\+W\+P\+R\+E\+P.f File Reference}
+\label{WPREP_8f}\index{src/\+W\+P\+R\+E\+P.\+f@{src/\+W\+P\+R\+E\+P.\+f}}
+
+
+Purpose\+: Initialize subarea variables for surface water budget calculations, and perform preliminary calculations for diagnostic variables.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{WPREP_8f_a8bd6e495bd4674e569184609d67fa736}{wprep} (T\+H\+L\+Q\+C\+O, T\+H\+L\+Q\+G\+O, T\+H\+L\+Q\+C\+S, T\+H\+L\+Q\+G\+S, T\+H\+I\+C\+C\+O, T\+H\+I\+C\+G\+O, T\+H\+I\+C\+C\+S, T\+H\+I\+C\+G\+S, H\+C\+P\+C\+O, H\+C\+P\+G\+O, H\+C\+P\+C\+S, H\+C\+P\+G\+S, G\+R\+K\+S\+C, G\+R\+K\+S\+G, G\+R\+K\+S\+C\+S, G\+R\+K\+S\+G\+S, S\+P\+C\+C, S\+P\+C\+G, S\+P\+C\+C\+S, S\+P\+C\+G\+S, T\+S\+P\+C\+C, T\+S\+P\+C\+G, T\+S\+P\+C\+C\+S, T\+S\+P\+C\+G\+S, R\+P\+C\+C, R\+P\+C\+G, R\+P\+C\+C\+S, R\+P\+C\+G\+S, T\+R\+P\+C\+C, T\+R\+P\+C\+G, T\+R\+P\+C\+C\+S, T\+R\+P\+C\+G\+S, E\+V\+P\+I\+C, E\+V\+P\+I\+G, E\+V\+P\+I\+C\+S, E\+V\+P\+I\+G\+S, Z\+P\+O\+N\+D\+C, Z\+P\+O\+N\+D\+G, Z\+P\+N\+D\+C\+S, Z\+P\+N\+D\+G\+S, X\+S\+N\+O\+W\+C, X\+S\+N\+O\+W\+G, X\+S\+N\+O\+C\+S, X\+S\+N\+O\+G\+S, Z\+S\+N\+O\+W\+C, Z\+S\+N\+O\+W\+G, Z\+S\+N\+O\+C\+S, Z\+S\+N\+O\+G\+S, A\+L\+B\+S\+C, A\+L\+B\+S\+G, A\+L\+B\+S\+C\+S, A\+L\+B\+S\+G\+S, R\+H\+O\+S\+C, R\+H\+O\+S\+G, H\+C\+P\+S\+C, H\+C\+P\+S\+G, H\+C\+P\+S\+C\+S, H\+C\+P\+S\+G\+S, R\+U\+N\+F\+C, R\+U\+N\+F\+G, R\+U\+N\+F\+C\+S, R\+U\+N\+F\+G\+S, T\+R\+U\+N\+F\+C, T\+R\+U\+N\+F\+G, T\+R\+N\+F\+C\+S, T\+R\+N\+F\+G\+S, T\+B\+A\+S\+C, T\+B\+A\+S\+G, T\+B\+A\+S\+C\+S, T\+B\+A\+S\+G\+S, G\+F\+L\+X\+C, G\+F\+L\+X\+G, G\+F\+L\+X\+C\+S, G\+F\+L\+X\+G\+S, S\+U\+B\+L\+C, S\+U\+B\+L\+C\+S, W\+L\+O\+S\+T\+C, W\+L\+O\+S\+T\+G, W\+L\+S\+T\+C\+S, W\+L\+S\+T\+G\+S, R\+A\+C, R\+A\+C\+S, S\+N\+C, S\+N\+C\+S, T\+S\+N\+O\+W\+C, T\+S\+N\+O\+W\+G, O\+V\+R\+F\+L\+W, S\+U\+B\+F\+L\+W, B\+A\+S\+F\+L\+W, T\+O\+V\+R\+F\+L, T\+S\+U\+B\+F\+L, T\+B\+A\+S\+F\+L, P\+C\+F\+C, P\+C\+L\+C, P\+C\+P\+N, P\+C\+P\+G, Q\+F\+C\+F, Q\+F\+C\+L, Q\+F\+N, Q\+F\+G, Q\+F\+C, H\+M\+F\+G, R\+O\+V\+G, R\+O\+F\+C, R\+O\+F\+N, T\+R\+U\+N\+O\+F, T\+H\+L\+I\+Q\+X, T\+H\+I\+C\+E\+X, T\+H\+L\+D\+U\+M, T\+H\+I\+D\+U\+M, D\+T, R\+D\+U\+M\+M\+Y, Z\+E\+R\+O, I\+Z\+E\+R\+O, D\+E\+L\+Z\+Z, F\+C, F\+G, F\+C\+S, F\+G\+S, T\+H\+L\+I\+Q\+C, T\+H\+L\+I\+Q\+G, T\+H\+I\+C\+E\+C, T\+H\+I\+C\+E\+G, H\+C\+P\+C, H\+C\+P\+G, T\+B\+A\+R\+C, T\+B\+A\+R\+G, T\+B\+A\+R\+C\+S, T\+B\+A\+R\+G\+S, T\+B\+A\+S\+E, T\+S\+U\+R\+X, F\+S\+V\+F, F\+S\+V\+F\+S, R\+A\+I\+C\+A\+N, S\+N\+O\+C\+A\+N, R\+A\+I\+C\+N\+S, S\+N\+O\+C\+N\+S, E\+V\+A\+P\+C, E\+V\+A\+P\+C\+G, E\+V\+A\+P\+G, E\+V\+A\+P\+C\+S, E\+V\+P\+C\+S\+G, E\+V\+A\+P\+G\+S, R\+P\+C\+P, T\+R\+P\+C\+P, S\+P\+C\+P, T\+S\+P\+C\+P, R\+H\+O\+S\+N\+I, Z\+P\+O\+N\+D, Z\+S\+N\+O\+W, A\+L\+B\+S\+N\+O, W\+S\+N\+O\+C\+S, W\+S\+N\+O\+G\+S, R\+H\+O\+S\+C\+S, R\+H\+O\+S\+G\+S, T\+H\+P\+O\+R, H\+C\+P\+S, G\+R\+K\+S\+A\+T, I\+S\+A\+N\+D, D\+E\+L\+Z\+W, D\+E\+L\+Z, I\+L\+G, I\+L1, I\+L2, J\+L, I\+G, I\+G\+P1, N\+L\+A\+N\+D\+C\+S, N\+L\+A\+N\+D\+G\+S, N\+L\+A\+N\+D\+C, N\+L\+A\+N\+D\+G, R\+A\+D\+D, S\+A\+D\+D)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Initialize subarea variables for surface water budget calculations, and perform preliminary calculations for diagnostic variables. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{WPREP_8f_a8bd6e495bd4674e569184609d67fa736}{}\index{W\+P\+R\+E\+P.\+f@{W\+P\+R\+E\+P.\+f}!wprep@{wprep}}
+\index{wprep@{wprep}!W\+P\+R\+E\+P.\+f@{W\+P\+R\+E\+P.\+f}}
+\subsubsection[{wprep}]{\setlength{\rightskip}{0pt plus 5cm}subroutine wprep (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+Q\+C\+O, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+Q\+G\+O, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+Q\+C\+S, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+Q\+G\+S, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+C\+C\+O, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+C\+G\+O, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+C\+C\+S, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+C\+G\+S, }
+\item[{real, dimension (ilg,ig)}]{H\+C\+P\+C\+O, }
+\item[{real, dimension (ilg,ig)}]{H\+C\+P\+G\+O, }
+\item[{real, dimension (ilg,ig)}]{H\+C\+P\+C\+S, }
+\item[{real, dimension (ilg,ig)}]{H\+C\+P\+G\+S, }
+\item[{real, dimension (ilg,ig)}]{G\+R\+K\+S\+C, }
+\item[{real, dimension (ilg,ig)}]{G\+R\+K\+S\+G, }
+\item[{real, dimension(ilg,ig)}]{G\+R\+K\+S\+C\+S, }
+\item[{real, dimension(ilg,ig)}]{G\+R\+K\+S\+G\+S, }
+\item[{real, dimension  (ilg)}]{S\+P\+C\+C, }
+\item[{real, dimension  (ilg)}]{S\+P\+C\+G, }
+\item[{real, dimension (ilg)}]{S\+P\+C\+C\+S, }
+\item[{real, dimension (ilg)}]{S\+P\+C\+G\+S, }
+\item[{real, dimension (ilg)}]{T\+S\+P\+C\+C, }
+\item[{real, dimension (ilg)}]{T\+S\+P\+C\+G, }
+\item[{real, dimension(ilg)}]{T\+S\+P\+C\+C\+S, }
+\item[{real, dimension(ilg)}]{T\+S\+P\+C\+G\+S, }
+\item[{real, dimension  (ilg)}]{R\+P\+C\+C, }
+\item[{real, dimension  (ilg)}]{R\+P\+C\+G, }
+\item[{real, dimension (ilg)}]{R\+P\+C\+C\+S, }
+\item[{real, dimension (ilg)}]{R\+P\+C\+G\+S, }
+\item[{real, dimension (ilg)}]{T\+R\+P\+C\+C, }
+\item[{real, dimension (ilg)}]{T\+R\+P\+C\+G, }
+\item[{real, dimension(ilg)}]{T\+R\+P\+C\+C\+S, }
+\item[{real, dimension(ilg)}]{T\+R\+P\+C\+G\+S, }
+\item[{real, dimension (ilg)}]{E\+V\+P\+I\+C, }
+\item[{real, dimension (ilg)}]{E\+V\+P\+I\+G, }
+\item[{real, dimension(ilg)}]{E\+V\+P\+I\+C\+S, }
+\item[{real, dimension(ilg)}]{E\+V\+P\+I\+G\+S, }
+\item[{real, dimension(ilg)}]{Z\+P\+O\+N\+D\+C, }
+\item[{real, dimension(ilg)}]{Z\+P\+O\+N\+D\+G, }
+\item[{real, dimension(ilg)}]{Z\+P\+N\+D\+C\+S, }
+\item[{real, dimension(ilg)}]{Z\+P\+N\+D\+G\+S, }
+\item[{real, dimension(ilg)}]{X\+S\+N\+O\+W\+C, }
+\item[{real, dimension(ilg)}]{X\+S\+N\+O\+W\+G, }
+\item[{real, dimension(ilg)}]{X\+S\+N\+O\+C\+S, }
+\item[{real, dimension(ilg)}]{X\+S\+N\+O\+G\+S, }
+\item[{real, dimension(ilg)}]{Z\+S\+N\+O\+W\+C, }
+\item[{real, dimension(ilg)}]{Z\+S\+N\+O\+W\+G, }
+\item[{real, dimension(ilg)}]{Z\+S\+N\+O\+C\+S, }
+\item[{real, dimension(ilg)}]{Z\+S\+N\+O\+G\+S, }
+\item[{real, dimension (ilg)}]{A\+L\+B\+S\+C, }
+\item[{real, dimension (ilg)}]{A\+L\+B\+S\+G, }
+\item[{real, dimension(ilg)}]{A\+L\+B\+S\+C\+S, }
+\item[{real, dimension(ilg)}]{A\+L\+B\+S\+G\+S, }
+\item[{real, dimension (ilg)}]{R\+H\+O\+S\+C, }
+\item[{real, dimension (ilg)}]{R\+H\+O\+S\+G, }
+\item[{real, dimension (ilg)}]{H\+C\+P\+S\+C, }
+\item[{real, dimension (ilg)}]{H\+C\+P\+S\+G, }
+\item[{real, dimension(ilg)}]{H\+C\+P\+S\+C\+S, }
+\item[{real, dimension(ilg)}]{H\+C\+P\+S\+G\+S, }
+\item[{real, dimension (ilg)}]{R\+U\+N\+F\+C, }
+\item[{real, dimension (ilg)}]{R\+U\+N\+F\+G, }
+\item[{real, dimension(ilg)}]{R\+U\+N\+F\+C\+S, }
+\item[{real, dimension(ilg)}]{R\+U\+N\+F\+G\+S, }
+\item[{real, dimension(ilg)}]{T\+R\+U\+N\+F\+C, }
+\item[{real, dimension(ilg)}]{T\+R\+U\+N\+F\+G, }
+\item[{real, dimension(ilg)}]{T\+R\+N\+F\+C\+S, }
+\item[{real, dimension(ilg)}]{T\+R\+N\+F\+G\+S, }
+\item[{real, dimension (ilg)}]{T\+B\+A\+S\+C, }
+\item[{real, dimension (ilg)}]{T\+B\+A\+S\+G, }
+\item[{real, dimension(ilg)}]{T\+B\+A\+S\+C\+S, }
+\item[{real, dimension(ilg)}]{T\+B\+A\+S\+G\+S, }
+\item[{real, dimension (ilg,ig)}]{G\+F\+L\+X\+C, }
+\item[{real, dimension (ilg,ig)}]{G\+F\+L\+X\+G, }
+\item[{real, dimension(ilg,ig)}]{G\+F\+L\+X\+C\+S, }
+\item[{real, dimension(ilg,ig)}]{G\+F\+L\+X\+G\+S, }
+\item[{real, dimension (ilg)}]{S\+U\+B\+L\+C, }
+\item[{real, dimension(ilg)}]{S\+U\+B\+L\+C\+S, }
+\item[{real, dimension(ilg)}]{W\+L\+O\+S\+T\+C, }
+\item[{real, dimension(ilg)}]{W\+L\+O\+S\+T\+G, }
+\item[{real, dimension(ilg)}]{W\+L\+S\+T\+C\+S, }
+\item[{real, dimension(ilg)}]{W\+L\+S\+T\+G\+S, }
+\item[{real, dimension   (ilg)}]{R\+A\+C, }
+\item[{real, dimension  (ilg)}]{R\+A\+C\+S, }
+\item[{real, dimension   (ilg)}]{S\+N\+C, }
+\item[{real, dimension  (ilg)}]{S\+N\+C\+S, }
+\item[{real, dimension(ilg)}]{T\+S\+N\+O\+W\+C, }
+\item[{real, dimension(ilg)}]{T\+S\+N\+O\+W\+G, }
+\item[{real, dimension(ilg)}]{O\+V\+R\+F\+L\+W, }
+\item[{real, dimension(ilg)}]{S\+U\+B\+F\+L\+W, }
+\item[{real, dimension(ilg)}]{B\+A\+S\+F\+L\+W, }
+\item[{real, dimension(ilg)}]{T\+O\+V\+R\+F\+L, }
+\item[{real, dimension(ilg)}]{T\+S\+U\+B\+F\+L, }
+\item[{real, dimension(ilg)}]{T\+B\+A\+S\+F\+L, }
+\item[{real, dimension  (ilg)}]{P\+C\+F\+C, }
+\item[{real, dimension  (ilg)}]{P\+C\+L\+C, }
+\item[{real, dimension  (ilg)}]{P\+C\+P\+N, }
+\item[{real, dimension  (ilg)}]{P\+C\+P\+G, }
+\item[{real, dimension  (ilg)}]{Q\+F\+C\+F, }
+\item[{real, dimension  (ilg)}]{Q\+F\+C\+L, }
+\item[{real, dimension   (ilg)}]{Q\+F\+N, }
+\item[{real, dimension   (ilg)}]{Q\+F\+G, }
+\item[{real, dimension   (ilg,ig)}]{Q\+F\+C, }
+\item[{real, dimension  (ilg,ig)}]{H\+M\+F\+G, }
+\item[{real, dimension  (ilg)}]{R\+O\+V\+G, }
+\item[{real, dimension  (ilg)}]{R\+O\+F\+C, }
+\item[{real, dimension  (ilg)}]{R\+O\+F\+N, }
+\item[{real, dimension(ilg)}]{T\+R\+U\+N\+O\+F, }
+\item[{real, dimension(ilg,igp1)}]{T\+H\+L\+I\+Q\+X, }
+\item[{real, dimension(ilg,igp1)}]{T\+H\+I\+C\+E\+X, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+D\+U\+M, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+D\+U\+M, }
+\item[{real, dimension    (ilg)}]{D\+T, }
+\item[{real, dimension(ilg)}]{R\+D\+U\+M\+M\+Y, }
+\item[{real, dimension  (ilg)}]{Z\+E\+R\+O, }
+\item[{integer, dimension (ilg)}]{I\+Z\+E\+R\+O, }
+\item[{real, dimension (ilg,ig)}]{D\+E\+L\+Z\+Z, }
+\item[{real, dimension    (ilg)}]{F\+C, }
+\item[{real, dimension    (ilg)}]{F\+G, }
+\item[{real, dimension   (ilg)}]{F\+C\+S, }
+\item[{real, dimension   (ilg)}]{F\+G\+S, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+I\+Q\+C, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+L\+I\+Q\+G, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+C\+E\+C, }
+\item[{real, dimension(ilg,ig)}]{T\+H\+I\+C\+E\+G, }
+\item[{real, dimension  (ilg,ig)}]{H\+C\+P\+C, }
+\item[{real, dimension  (ilg,ig)}]{H\+C\+P\+G, }
+\item[{real, dimension (ilg,ig)}]{T\+B\+A\+R\+C, }
+\item[{real, dimension (ilg,ig)}]{T\+B\+A\+R\+G, }
+\item[{real, dimension(ilg,ig)}]{T\+B\+A\+R\+C\+S, }
+\item[{real, dimension(ilg,ig)}]{T\+B\+A\+R\+G\+S, }
+\item[{real, dimension (ilg)}]{T\+B\+A\+S\+E, }
+\item[{real, dimension(ilg,4)}]{T\+S\+U\+R\+X, }
+\item[{real, dimension  (ilg)}]{F\+S\+V\+F, }
+\item[{real, dimension (ilg)}]{F\+S\+V\+F\+S, }
+\item[{real, dimension(ilg)}]{R\+A\+I\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{S\+N\+O\+C\+A\+N, }
+\item[{real, dimension(ilg)}]{R\+A\+I\+C\+N\+S, }
+\item[{real, dimension(ilg)}]{S\+N\+O\+C\+N\+S, }
+\item[{real, dimension (ilg)}]{E\+V\+A\+P\+C, }
+\item[{real, dimension(ilg)}]{E\+V\+A\+P\+C\+G, }
+\item[{real, dimension (ilg)}]{E\+V\+A\+P\+G, }
+\item[{real, dimension(ilg)}]{E\+V\+A\+P\+C\+S, }
+\item[{real, dimension(ilg)}]{E\+V\+P\+C\+S\+G, }
+\item[{real, dimension(ilg)}]{E\+V\+A\+P\+G\+S, }
+\item[{real, dimension  (ilg)}]{R\+P\+C\+P, }
+\item[{real, dimension (ilg)}]{T\+R\+P\+C\+P, }
+\item[{real, dimension  (ilg)}]{S\+P\+C\+P, }
+\item[{real, dimension (ilg)}]{T\+S\+P\+C\+P, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+I, }
+\item[{real, dimension (ilg)}]{Z\+P\+O\+N\+D, }
+\item[{real, dimension (ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{A\+L\+B\+S\+N\+O, }
+\item[{real, dimension(ilg)}]{W\+S\+N\+O\+C\+S, }
+\item[{real, dimension(ilg)}]{W\+S\+N\+O\+G\+S, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+C\+S, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+G\+S, }
+\item[{real, dimension (ilg,ig)}]{T\+H\+P\+O\+R, }
+\item[{real, dimension  (ilg,ig)}]{H\+C\+P\+S, }
+\item[{real, dimension(ilg,ig)}]{G\+R\+K\+S\+A\+T, }
+\item[{integer, dimension (ilg,ig)}]{I\+S\+A\+N\+D, }
+\item[{real, dimension (ilg,ig)}]{D\+E\+L\+Z\+W, }
+\item[{real, dimension  (ig)}]{D\+E\+L\+Z, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{I\+G, }
+\item[{integer}]{I\+G\+P1, }
+\item[{integer}]{N\+L\+A\+N\+D\+C\+S, }
+\item[{integer}]{N\+L\+A\+N\+D\+G\+S, }
+\item[{integer}]{N\+L\+A\+N\+D\+C, }
+\item[{integer}]{N\+L\+A\+N\+D\+G, }
+\item[{real, dimension  (ilg)}]{R\+A\+D\+D, }
+\item[{real, dimension  (ilg)}]{S\+A\+D\+D}
+\end{DoxyParamCaption}
+)}\label{WPREP_8f_a8bd6e495bd4674e569184609d67fa736}
+
+\begin{DoxyParams}{Parameters}
+{\em thlqco} & Subarea volumetric liquid water content of soil layers $[m^3 m^{-3}]$\\
+\hline
+{\em thlqgo} & Subarea volumetric liquid water content of soil layers $[m^3 m^{-3}]$\\
+\hline
+{\em thlqcs} & Subarea volumetric liquid water content of soil layers $[m^3 m^{-3}]$\\
+\hline
+{\em thlqgs} & Subarea volumetric liquid water content of soil layers $[m^3 m^{-3}]$\\
+\hline
+{\em thicco} & Subarea volumetric frozen water content of soil layers $[m^3 m^{-3}] (\theta_i)$\\
+\hline
+{\em thicgo} & Subarea volumetric frozen water content of soil layers $[m^3 m^{-3}] (\theta_i)$\\
+\hline
+{\em thiccs} & Subarea volumetric frozen water content of soil layers $[m^3 m^{-3}] (\theta_i)$\\
+\hline
+{\em thicgs} & Subarea volumetric frozen water content of soil layers $[m^3 m^{-3}] (\theta_i)$\\
+\hline
+{\em hcpco} & Subarea heat capacity of soil layers $[J m^{-3} K^{-1}]$\\
+\hline
+{\em hcpgo} & Subarea heat capacity of soil layers $[J m^{-3} K^{-1}]$\\
+\hline
+{\em hcpcs} & Subarea heat capacity of soil layers $[J m^{-3} K^{-1}]$\\
+\hline
+{\em hcpgs} & Subarea heat capacity of soil layers $[J m^{-3} K^{-1}]$\\
+\hline
+{\em grksc} & Subarea saturated hydraulic conductivity $[m s^{-1}] (K_{sat})$\\
+\hline
+{\em grksg} & Subarea saturated hydraulic conductivity $[m s^{-1}] (K_{sat})$\\
+\hline
+{\em grkscs} & Subarea saturated hydraulic conductivity $[m s^{-1}] (K_{sat})$\\
+\hline
+{\em grksgs} & Subarea saturated hydraulic conductivity $[m s^{-1}] (K_{sat})$\\
+\hline
+{\em gflxc} & Subarea heat flux between soil layers $[W m^{-2}]$\\
+\hline
+{\em gflxg} & Subarea heat flux between soil layers $[W m^{-2}]$\\
+\hline
+{\em gflxcs} & Subarea heat flux between soil layers $[W m^{-2}]$\\
+\hline
+{\em gflxgs} & Subarea heat flux between soil layers $[W m^{-2}]$\\
+\hline
+{\em thldum} & Internal C\+L\+A\+S\+S\+W dummy variable for soil frozen water $[m^3 m^{-3}]$\\
+\hline
+{\em thidum} & Internal C\+L\+A\+S\+S\+W dummy variable for soil frozen water $[m^3 m^{-3}]$\\
+\hline
+{\em qfc} & Water removed from soil layers by transpiration $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em hmfg} & Energy associated with phase change of water in soil layers $[W m^{-2}]$\\
+\hline
+{\em thliqx} & Internal C\+L\+A\+S\+S\+W work array for soil frozen water $[m^3 m^{-3}]$\\
+\hline
+{\em thicex} & Internal C\+L\+A\+S\+S\+W work array for soil frozen water $[m^3 m^{-3}]$\\
+\hline
+{\em spcc} & Subarea snowfall rate $[m s^{-1}]$\\
+\hline
+{\em spcg} & Subarea snowfall rate $[m s^{-1}]$\\
+\hline
+{\em spccs} & Subarea snowfall rate $[m s^{-1}]$\\
+\hline
+{\em spcgs} & Subarea snowfall rate $[m s^{-1}]$\\
+\hline
+{\em tspcc} & Subarea snowfall temperature \mbox{[}K/\+C\mbox{]}\\
+\hline
+{\em tspcg} & Subarea snowfall temperature \mbox{[}K/\+C\mbox{]}\\
+\hline
+{\em tspccs} & Subarea snowfall temperature \mbox{[}K/\+C\mbox{]}\\
+\hline
+{\em tspcgs} & Subarea snowfall temperature \mbox{[}K/\+C\mbox{]}\\
+\hline
+{\em rpcc} & Subarea rainfall rate $[m s^{-1}]$\\
+\hline
+{\em rpcg} & Subarea rainfall rate $[m s^{-1}]$\\
+\hline
+{\em rpccs} & Subarea rainfall rate $[m s^{-1}]$\\
+\hline
+{\em rpcgs} & Subarea rainfall rate $[m s^{-1}]$\\
+\hline
+{\em trpcc} & Subarea rainfall temperature \mbox{[}K/\+C\mbox{]}\\
+\hline
+{\em trpcg} & Subarea rainfall temperature \mbox{[}K/\+C\mbox{]}\\
+\hline
+{\em trpccs} & Subarea rainfall temperature \mbox{[}K/\+C\mbox{]}\\
+\hline
+{\em trpcgs} & Subarea rainfall temperature \mbox{[}K/\+C\mbox{]}\\
+\hline
+{\em evpic} & Subarea evapotranspiration rate going into C\+L\+A\+S\+S\+W $[m s^{-1}]$\\
+\hline
+{\em evpig} & Subarea evapotranspiration rate going into C\+L\+A\+S\+S\+W $[m s^{-1}]$\\
+\hline
+{\em evpics} & Subarea evapotranspiration rate going into C\+L\+A\+S\+S\+W $[m s^{-1}]$\\
+\hline
+{\em evpigs} & Subarea evapotranspiration rate going into C\+L\+A\+S\+S\+W $[m s^{-1}]$\\
+\hline
+{\em zpondc} & Subarea depth of surface ponded water \mbox{[}m\mbox{]}\\
+\hline
+{\em zpondg} & Subarea depth of surface ponded water \mbox{[}m\mbox{]}\\
+\hline
+{\em zpndcs} & Subarea depth of surface ponded water \mbox{[}m\mbox{]}\\
+\hline
+{\em zpndgs} & Subarea depth of surface ponded water \mbox{[}m\mbox{]}\\
+\hline
+{\em xsnowc} & Subarea fractional snow coverage \mbox{[} \mbox{]}\\
+\hline
+{\em xsnowg} & Subarea fractional snow coverage \mbox{[} \mbox{]}\\
+\hline
+{\em xsnocs} & Subarea fractional snow coverage \mbox{[} \mbox{]}\\
+\hline
+{\em xsnogs} & Subarea fractional snow coverage \mbox{[} \mbox{]}\\
+\hline
+{\em zsnowc} & Subarea depth of snow pack\\
+\hline
+{\em zsnowg} & Subarea depth of snow pack\\
+\hline
+{\em zsnocs} & Subarea depth of snow pack\\
+\hline
+{\em zsnogs} & Subarea depth of snow pack\\
+\hline
+{\em albsc} & Subarea snow albedo \mbox{[} \mbox{]}\\
+\hline
+{\em albsg} & Subarea snow albedo \mbox{[} \mbox{]}\\
+\hline
+{\em albscs} & Subarea snow albedo \mbox{[} \mbox{]}\\
+\hline
+{\em albsgs} & Subarea snow albedo \mbox{[} \mbox{]}\\
+\hline
+{\em rhosc} & Subarea snow density $[kg m^{-3}]$\\
+\hline
+{\em rhosg} & Subarea snow density $[kg m^{-3}]$\\
+\hline
+{\em hcpsc} & Subarea heat capacity of snow $[J m^{-3} K^{-1}] (C_s)$\\
+\hline
+{\em hcpsg} & Subarea heat capacity of snow $[J m^{-3} K^{-1}] (C_s)$\\
+\hline
+{\em hcpscs} & Subarea heat capacity of snow $[J m^{-3} K^{-1}] (C_s)$\\
+\hline
+{\em hcpsgs} & Subarea heat capacity of snow $[J m^{-3} K^{-1}] (C_s)$\\
+\hline
+{\em runfc} & Subarea total runoff \mbox{[}m\mbox{]}\\
+\hline
+{\em runfg} & Subarea total runoff \mbox{[}m\mbox{]}\\
+\hline
+{\em runfcs} & Subarea total runoff \mbox{[}m\mbox{]}\\
+\hline
+{\em runfgs} & Subarea total runoff \mbox{[}m\mbox{]}\\
+\hline
+{\em trunfc} & Subarea total runoff temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em trunfg} & Subarea total runoff temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em trnfcs} & Subarea total runoff temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em trnfgs} & Subarea total runoff temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em tbasc} & Subarea temperature of bedrock in third soil layer \mbox{[}C\mbox{]}\\
+\hline
+{\em tbasg} & Subarea temperature of bedrock in third soil layer \mbox{[}C\mbox{]}\\
+\hline
+{\em tbascs} & Subarea temperature of bedrock in third soil layer \mbox{[}C\mbox{]}\\
+\hline
+{\em tbasgs} & Subarea temperature of bedrock in third soil layer \mbox{[}C\mbox{]}\\
+\hline
+{\em sublc} & Subarea sublimation rate from vegetation $[m s^{-1}]$\\
+\hline
+{\em sublcs} & Subarea sublimation rate from vegetation $[m s^{-1}]$\\
+\hline
+{\em wlostc} & Subarea residual water not met by surface stores $[kg m^{-2}]$\\
+\hline
+{\em wlostg} & Subarea residual water not met by surface stores $[kg m^{-2}]$\\
+\hline
+{\em wlstcs} & Subarea residual water not met by surface stores $[kg m^{-2}]$\\
+\hline
+{\em wlstgs} & Subarea residual water not met by surface stores $[kg m^{-2}]$\\
+\hline
+{\em rac} & Subarea liquid water on canopy going into C\+L\+A\+S\+S\+W $[kg m^{-2}]$\\
+\hline
+{\em racs} & Subarea liquid water on canopy going into C\+L\+A\+S\+S\+W $[kg m^{-2}]$\\
+\hline
+{\em snc} & Subarea frozen water on canopy going into C\+L\+A\+S\+S\+W $[kg m^{-2}]$\\
+\hline
+{\em sncs} & Subarea frozen water on canopy going into C\+L\+A\+S\+S\+W $[kg m^{-2}]$\\
+\hline
+{\em tsnowc} & Subarea snowpack temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em tsnowg} & Subarea snowpack temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em ovrflw} & Overland flow from top of soil column \mbox{[}m\mbox{]}\\
+\hline
+{\em subflw} & Interflow from sides of soil column \mbox{[}m\mbox{]}\\
+\hline
+{\em basflw} & Base flow from bottom of soil column \mbox{[}m\mbox{]}\\
+\hline
+{\em tovrfl} & Temperature of overland flow from top of soil column \mbox{[}K\mbox{]}\\
+\hline
+{\em tsubfl} & Temperature of interflow from sides of soil column \mbox{[}K\mbox{]}\\
+\hline
+{\em tbasfl} & Temperature of base flow from bottom of soil column \mbox{[}K\mbox{]}\\
+\hline
+{\em pcfc} & Frozen precipitation intercepted by vegetation $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em pclc} & Liquid precipitation intercepted by vegetation $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em pcpn} & Precipitation incident on snow pack $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em pcpg} & Precipitation incident on ground $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em qfcf} & Sublimation from frozen water on vegetation $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em qfcl} & Evaporation from liquid water on vegetation $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em qfn} & Sublimation from snow pack $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em qfg} & Evaporation from ground $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em rovg} & Liquid/frozen water runoff from vegetation to ground surface $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em rofc} & Liquid/frozen water runoff from vegetation $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em rofn} & Liquid water runoff from snow pack $[kg m^{-2} s^{-1}]$\\
+\hline
+{\em trunof} & Temperature of total runoff \mbox{[}K\mbox{]}\\
+\hline
+{\em dt} & Time stepping variable used in G\+R\+I\+N\+F\+L/\+G\+R\+D\+R\+A\+N \mbox{[}s\mbox{]}\\
+\hline
+{\em rdummy} & Dummy variable\\
+\hline
+{\em zero} & Zero vector used in several subroutines \mbox{[} \mbox{]}\\
+\hline
+{\em izero} & Zero integer flag used in G\+R\+I\+N\+F\+L\\
+\hline
+{\em fc} & Subarea fractional coverage of modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fg} & Subarea fractional coverage of modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fcs} & Subarea fractional coverage of modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fgs} & Subarea fractional coverage of modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em fsvf} & Sky view factor of ground under vegetation canopy \mbox{[} \mbox{]}\\
+\hline
+{\em fsvfs} & Sky view factor of snow under vegetation canopy \mbox{[} \mbox{]}\\
+\hline
+{\em raican} & Intercepted liquid water stored on canopy over ground $[kg m^{-2}]$\\
+\hline
+{\em snocan} & Intercepted frozen water stored on canopy over ground $[kg m^{-2}]$\\
+\hline
+{\em raicns} & Intercepted liquid water stored on canopy over snow $[kg m^{-2}]$\\
+\hline
+{\em snocns} & Intercepted frozen water stored on canopy over snow $[kg m^{-2}]$\\
+\hline
+{\em evapc} & Evaporation from vegetation over ground $[m s^{-1}]$\\
+\hline
+{\em evapcg} & Evaporation from ground under vegetation $[m s^{-1}]$\\
+\hline
+{\em evapg} & Evaporation from bare ground $[m s^{-1}]$\\
+\hline
+{\em evapcs} & Evaporation from vegetation over snow $[m s^{-1}]$\\
+\hline
+{\em evpcsg} & Evaporation from snow under vegetation $[m s^{-1}]$\\
+\hline
+{\em evapgs} & Evaporation from snow on bare ground $[m s^{-1}]$\\
+\hline
+{\em rpcp} & Rainfall rate over modelled area $[m s^{-1}]$\\
+\hline
+{\em spcp} & Snowfall rate over modelled area $[m s^{-1}]$\\
+\hline
+{\em tspcp} & Snowfall temperature over modelled area \mbox{[}C\mbox{]}\\
+\hline
+{\em rhosni} & Density of fresh snow $[kg m^{-3}]$\\
+\hline
+{\em zpond} & Depth of ponded water on surface \mbox{[}m\mbox{]}\\
+\hline
+{\em zsnow} & Depth of snow pack $[m] (z_s)$\\
+\hline
+{\em albsno} & Albedo of snow \mbox{[} \mbox{]}\\
+\hline
+{\em wsnocs} & Liquid water content of snow pack under vegetation $[kg m^{-2}] (w_s)$\\
+\hline
+{\em wsnogs} & Liquid water content of snow pack in bare areas $[kg m^{-2}] (w_s)$\\
+\hline
+{\em rhoscs} & Density of snow under vegetation $[kg m^{-3}] (\rho_s)$\\
+\hline
+{\em rhosgs} & Density of snow in bare areas $[kg m^{-3}] (\rho_s)$\\
+\hline
+{\em tbase} & Temperature of bedrock in third soil layer \mbox{[}K\mbox{]}\\
+\hline
+{\em tsurx} & Ground surface temperature over subarea \mbox{[}K\mbox{]}\\
+\hline
+{\em thliqc} & Liquid water content of soil layers under vegetation $[m^3 m^{-3}]$\\
+\hline
+{\em thliqg} & Liquid water content of soil layers in bare areas $[m^3 m^{-3}]$\\
+\hline
+{\em thicec} & Frozen water content of soil layers under vegetation $[m^3 m^{-3}]$\\
+\hline
+{\em thiceg} & Frozen water content of soil layers in bare areas $[m^3 m^{-3}]$\\
+\hline
+{\em tbarc} & Subarea temperatures of soil layers $[C] (T_g)$\\
+\hline
+{\em tbarg} & Subarea temperatures of soil layers $[C] (T_g)$\\
+\hline
+{\em tbarcs} & Subarea temperatures of soil layers $[C] (T_g)$\\
+\hline
+{\em tbargs} & Subarea temperatures of soil layers $[C] (T_g)$\\
+\hline
+{\em hcpc} & Heat capacity of soil layers under vegetation $[J m^{-3} K^{-1}]$\\
+\hline
+{\em thpor} & Pore volume in soil layer $[m^3 m^{-3}] (\theta_p)$\\
+\hline
+{\em hcps} & Heat capacity of soil material $[J m^{-3} K^{-1}]$\\
+\hline
+{\em grksat} & Saturated hydraulic conductivity of soil layers $[m s^{-1}]$\\
+\hline
+{\em delzz} & Soil layer depth variable used in T\+W\+C\+A\+L\+C/\+T\+M\+C\+A\+L\+C \mbox{[}m\mbox{]}\\
+\hline
+{\em delzw} & Permeable thickness of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em delz} & Overall thickness of soil layer \mbox{[}m\mbox{]}\\
+\hline
+{\em isand} & Sand content flag \\
+\hline
+\end{DoxyParams}
+In the first three loops, various subarea arrays and internal C\+L\+A\+S\+S\+W variables are initialized.
+
+At the end of the 100 loop, a preliminary calculation of the precipitation diagnostics over the four subareas is carried out, as follows\+:
+
+The rainfall incident on the vegetation, P\+C\+L\+C, is summed over the vegetated subareas F\+C and F\+C\+S, minus the fraction that falls through the gaps in the canopy (denoted by the sky view factors F\+S\+V\+F and F\+S\+V\+F\+S respectively). The rainfall incident on the snowpack P\+C\+P\+N is the sum of the rainfall on the snow-\/ covered bare area F\+G\+S, and that on the snow under the gaps in the canopy in subarea F\+C\+S. The rainfall incident on bare ground, P\+C\+P\+G, is the sum of the rainfall on the snow-\/free bare area F\+G, and that on the ground under the gaps in the canopy in subarea F\+C. The snowfall incident on the vegetation, P\+C\+F\+C, as in the case of rainfall, is summed over the vegetation subareas F\+C and F\+C\+S, minus the fraction that falls through the gaps in the canopy. The remaining amount is assigned to snowfall incident on the snow pack, P\+C\+P\+N.
+
+In loops 200 to 550, each of the four subareas is addressed in turn. Additional variables are initialized, and an empirical correction is applied to the saturated hydraulic conductivity in each of the soil layers over the subarea, to account for the viscosity of water at the layer temperature (Dingman, 2002) \cite{Lawrence_Dingman2002-sq} \+:
+
+$K_{sat}' = (1.7915 * 10^{-3}) K_{sat} / [(2.0319 * 10^{-4})+(1.5883 * 10^{-3}) exp(-T_g^{0.9}/22.0)]$
+
+Next, a preliminary calculation of the water vapour flux diagnostics for each subarea is carried out. Over the vegetated subareas, first the canopy evaporative flux is assigned to sublimation if there is snow present on the canopy (since it is assumed that any water present exists within or underneath the snow). Then, if the sublimation rate is upward, it is assigned to the diagnostic variable Q\+F\+C\+F; if it is downward, the portion of the flux corresponding to the canopy-\/covered area is assigned to Q\+F\+C\+F and that corresponding to the gap area to Q\+F\+N. Similarly, if the evaporation rate is upward it is assigned to the diagnostic variable Q\+F\+C\+L; if it is downward, the flux corresponding to the canopy-\/covered area is assigned to Q\+F\+C\+L and that corresponding to the gap area to Q\+F\+N over subarea F\+C\+S and to Q\+F\+G over subarea F\+C. Over the non-\/vegetated subareas, the evaporation rates are assigned to Q\+F\+N for subarea G\+S, and to Q\+F\+G for subarea G.
+
+For the purposes of the subsequent water balance calculations done in the other C\+L\+A\+S\+S\+W subroutines, the subarea snowfall is lumped together with any simultaneously occurring sublimation, and the subarea rainfall with any simultaneously occurring evaporation. Depending on whether the sum of the snowfall and the sublimation, and the sum of the rainfall and the evaporation, are positive (downward) or negative (upward), corrections are applied to the appropriate diagnostic variables, and the snowfall/rainfall are set to the net flux if downward and the sublimation/evaporation are set to the net flux if upward. The smaller of the two fluxes in the sums are set to zero.
+
+Finally, ponded water and snow pack physical characteristics are set, including the snow heat capacity, which is calculated from the heat capacities of ice and water $C_i$ and $C_w$, the snow, ice and water densities $\rho_s$ $\rho_i$, and $\rho_w$, and the water content and depth of the snow pack $w_s$ and $z_s$, as follows\+:
+
+$C_s = C_i [\rho_s /\rho_i] + C_w w_s /[\rho_w z_s]$

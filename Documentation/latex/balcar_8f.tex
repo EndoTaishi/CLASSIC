@@ -1,0 +1,225 @@
+\hypertarget{balcar_8f}{}\section{src/balcar.f File Reference}
+\label{balcar_8f}\index{src/balcar.\+f@{src/balcar.\+f}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Carbon Balance Subroutine.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{balcar_8f_a922db81c881d66b3cf76a5a72ea4586a}{balcar} (gleafmas, stemmass, rootmass, bleafmas, litrmass, soilcmas, ntchlveg, ntchsveg, ntchrveg, tltrleaf, tltrstem, tltrroot, glcaemls, blcaemls, stcaemls, rtcaemls, ltrcemls, ltresveg, scresveg, humtrsvg, pglfmass, pblfmass, pstemass, protmass, plitmass, psocmass, vgbiomas, repro\+\_\+cost, pvgbioms, gavgltms, pgavltms, gavgscms, pgavscms, galtcels, repro\+\_\+cost\+\_\+g, npp, autores, hetrores, gpp, nep, litres, socres, dstcemls, nbp, litrfall, humiftrs, il1, il2, ipeatland, Cmossmas, p\+Cmossmas, nppmosstep, litrfallmoss, litrmsmoss, plitrmsmoss, ltrestepmoss, humicmosstep)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Carbon Balance Subroutine. 
+
+unless mentioned all pools are in kg c/m2 unless mentioned all fluxes are in units of u-\/mol co2/m2.\+sec 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{balcar_8f_a922db81c881d66b3cf76a5a72ea4586a}{}\index{balcar.\+f@{balcar.\+f}!balcar@{balcar}}
+\index{balcar@{balcar}!balcar.\+f@{balcar.\+f}}
+\subsubsection[{balcar}]{\setlength{\rightskip}{0pt plus 5cm}subroutine balcar (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg,icc)}]{gleafmas, }
+\item[{real, dimension(ilg,icc)}]{stemmass, }
+\item[{real, dimension(ilg,icc)}]{rootmass, }
+\item[{real, dimension(ilg,icc)}]{bleafmas, }
+\item[{real, dimension(ilg,iccp1)}]{litrmass, }
+\item[{real, dimension(ilg,iccp1)}]{soilcmas, }
+\item[{real, dimension(ilg,icc)}]{ntchlveg, }
+\item[{real, dimension(ilg,icc)}]{ntchsveg, }
+\item[{real, dimension(ilg,icc)}]{ntchrveg, }
+\item[{real, dimension(ilg,icc)}]{tltrleaf, }
+\item[{real, dimension(ilg,icc)}]{tltrstem, }
+\item[{real, dimension(ilg,icc)}]{tltrroot, }
+\item[{real, dimension(ilg,icc)}]{glcaemls, }
+\item[{real, dimension(ilg,icc)}]{blcaemls, }
+\item[{real, dimension(ilg,icc)}]{stcaemls, }
+\item[{real, dimension(ilg,icc)}]{rtcaemls, }
+\item[{real, dimension(ilg,icc)}]{ltrcemls, }
+\item[{real, dimension(ilg,iccp1)}]{ltresveg, }
+\item[{real, dimension(ilg,iccp1)}]{scresveg, }
+\item[{real, dimension(ilg,iccp1)}]{humtrsvg, }
+\item[{real, dimension(ilg,icc)}]{pglfmass, }
+\item[{real, dimension(ilg,icc)}]{pblfmass, }
+\item[{real, dimension(ilg,icc)}]{pstemass, }
+\item[{real, dimension(ilg,icc)}]{protmass, }
+\item[{real, dimension(ilg,iccp1)}]{plitmass, }
+\item[{real, dimension(ilg,iccp1)}]{psocmass, }
+\item[{real, dimension(ilg)}]{vgbiomas, }
+\item[{real, dimension(ilg,icc)}]{repro\+\_\+cost, }
+\item[{real, dimension(ilg)}]{pvgbioms, }
+\item[{real, dimension(ilg)}]{gavgltms, }
+\item[{real, dimension(ilg)}]{pgavltms, }
+\item[{real, dimension(ilg)}]{gavgscms, }
+\item[{real, dimension(ilg)}]{pgavscms, }
+\item[{real, dimension(ilg)}]{galtcels, }
+\item[{real, dimension(ilg)}]{repro\+\_\+cost\+\_\+g, }
+\item[{real, dimension(ilg)}]{npp, }
+\item[{real, dimension(ilg)}]{autores, }
+\item[{real, dimension(ilg)}]{hetrores, }
+\item[{real, dimension(ilg)}]{gpp, }
+\item[{real, dimension(ilg)}]{nep, }
+\item[{real, dimension(ilg)}]{litres, }
+\item[{real, dimension(ilg)}]{socres, }
+\item[{real, dimension(ilg)}]{dstcemls, }
+\item[{real, dimension(ilg)}]{nbp, }
+\item[{real, dimension(ilg)}]{litrfall, }
+\item[{real, dimension(ilg)}]{humiftrs, }
+\item[{integer}]{il1, }
+\item[{integer}]{il2, }
+\item[{integer, dimension (ilg)}]{ipeatland, }
+\item[{real, dimension(ilg)}]{Cmossmas, }
+\item[{real, dimension(ilg)}]{p\+Cmossmas, }
+\item[{real, dimension(ilg)}]{nppmosstep, }
+\item[{real, dimension(ilg)}]{litrfallmoss, }
+\item[{real, dimension(ilg)}]{litrmsmoss, }
+\item[{real, dimension(ilg)}]{plitrmsmoss, }
+\item[{real, dimension(ilg)}]{ltrestepmoss, }
+\item[{real, dimension(ilg)}]{humicmosstep}
+\end{DoxyParamCaption}
+)}\label{balcar_8f_a922db81c881d66b3cf76a5a72ea4586a}
+
+\begin{DoxyParams}{Parameters}
+{\em il1} & other variables\+: il1=1\\
+\hline
+{\em il2} & other variables\+: il2=ilg\\
+\hline
+{\em stemmass} & pools (after being updated)\+: stem mass for each of the 9 ctem pfts\\
+\hline
+{\em rootmass} & pools (after being updated)\+: root mass for each of the 9 ctem pfts\\
+\hline
+{\em gleafmas} & pools (after being updated)\+: green leaf mass for each of the 9 ctem pfts\\
+\hline
+{\em bleafmas} & pools (after being updated)\+: brown leaf mass for each of the 9 ctem pfts\\
+\hline
+{\em litrmass} & pools (after being updated)\+: litter mass over the 9 pfts and the bare fraction of the grid cell\\
+\hline
+{\em soilcmas} & pools (after being updated)\+: soil carbon mass over the 9 pfts and the bare fraction of the grid cell\\
+\hline
+{\em ntchlveg} & fluxes for each pft\+: net change in leaf biomass\\
+\hline
+{\em ntchsveg} & fluxes for each pft\+: net change in stem biomass\\
+\hline
+{\em ntchrveg} & fluxes for each pft\+: net change in root biomass the net change is the difference between allocation and autotrophic respiratory fluxes\\
+\hline
+{\em tltrleaf} & fluxes for each pft\+: total leaf litter falling rate\\
+\hline
+{\em tltrstem} & fluxes for each pft\+: total stem litter falling rate\\
+\hline
+{\em tltrroot} & fluxes for each pft\+: total root litter falling rate\\
+\hline
+{\em glcaemls} & fluxes for each pft\+: carbon emission losses mainly due to fire\+: green leaf carbon emission losses\\
+\hline
+{\em blcaemls} & fluxes for each pft\+: carbon emission losses mainly due to fire\+: brown leaf carbon emission losses\\
+\hline
+{\em stcaemls} & fluxes for each pft\+: carbon emission losses mainly due to fire\+: stem carbon emission losses\\
+\hline
+{\em rtcaemls} & fluxes for each pft\+: carbon emission losses mainly due to fire\+: root carbon emission losses\\
+\hline
+{\em ltrcemls} & fluxes for each pft\+: carbon emission losses mainly due to fire\+: litter carbon emission losses\\
+\hline
+{\em ltresveg} & fluxes for each pft\+: litter respiration for each pft + bare fraction\\
+\hline
+{\em scresveg} & fluxes for each pft\+: soil c respiration for each pft + bare fraction\\
+\hline
+{\em humtrsvg} & fluxes for each pft\+: humification for each pft + bare fraction\\
+\hline
+{\em pglfmass} & pools (before being updated)\+: previous green leaf mass\\
+\hline
+{\em pblfmass} & pools (before being updated)\+: previous brown leaf mass\\
+\hline
+{\em pstemass} & pools (before being updated)\+: previous stem mass\\
+\hline
+{\em protmass} & pools (before being updated)\+: previous root mass\\
+\hline
+{\em plitmass} & pools (before being updated)\+: previous litter mass\\
+\hline
+{\em psocmass} & pools (before being updated)\+: previous soil c mass\\
+\hline
+{\em npp} & grid averaged flux\+: net primary productivity\\
+\hline
+{\em vgbiomas} & pools (after being updated)\+: grid averaged pools\+: vegetation biomass\\
+\hline
+{\em pvgbioms} & pools (before being updated)\+: grid average pools\+: previous vegetation biomass\\
+\hline
+{\em gavgltms} & pools (after being updated)\+: grid averaged pools\+: litter mass\\
+\hline
+{\em pgavltms} & pools (before being updated)\+: grid average pools\+: previous litter mass\\
+\hline
+{\em gavgscms} & pools (after being updated)\+: grid averaged pools\+: soil carbon mass\\
+\hline
+{\em pgavscms} & pools (before being updated)\+: grid average pools\+: previous soil c mass\\
+\hline
+{\em autores} & grid averaged flux\+: autotrophic respiration\\
+\hline
+{\em hetrores} & grid averaged flux\+: heterotrophic respiration\\
+\hline
+{\em gpp} & grid averaged flux\+: gross primary productivity\\
+\hline
+{\em nep} & grid averaged flux\+: net primary productivity\\
+\hline
+{\em litres} & grid averaged flux\+: litter respiration\\
+\hline
+{\em socres} & grid averaged flux\+: soil carbon respiration\\
+\hline
+{\em dstcemls} & grid averaged flux\+: carbon emission losses due to disturbance, mainly fire\\
+\hline
+{\em nbp} & grid averaged flux\+: net biome productivity\\
+\hline
+{\em litrfall} & grid averaged flux\+: combined (leaves, stem, and root) total litter fall rate\\
+\hline
+{\em humiftrs} & grid averaged flux\+: humification\\
+\hline
+{\em repro\+\_\+cost} & pools (after being updated)\+: amount of C transferred to litter due to reproductive tissues\\
+\hline
+{\em ipeatland} & Peatland flag, non-\/peatlands = 0\\
+\hline
+{\em cmossmas} & moss biomass C (kg\+C/m2)\\
+\hline
+{\em pcmossmas} & moss biomass C at the previous time step (kg\+C/m2)\\
+\hline
+{\em nppmosstep} & moss npp (kg\+C/m2/timestep)\\
+\hline
+{\em litrfallmoss} & moss litter fall (kg\+C/m2/timestep)\\
+\hline
+{\em litrmsmoss} & moss litter C (kg\+C/m2)\\
+\hline
+{\em plitrmsmoss} & moss litter C at the previous time step (kg\+C/m2)\\
+\hline
+{\em ltrestepmoss} & litter respiration from moss (kg\+C/m2/timestep)\\
+\hline
+{\em humicmosstep} & moss humification (kg\+C/m2/timestep)\\
+\hline
+{\em galtcels} & grid averaged flux\+: carbon emission losses from litter\\
+\hline
+{\em repro\+\_\+cost\+\_\+g} & grid averaged flux\+: amount of C used to generate reproductive tissues \\
+\hline
+\end{DoxyParams}
+to check c budget we go through each pool for each vegetation type.
+
+green and brown leaves
+
+stem
+
+root
+
+litter over all pfts
+
+litter over the bare fraction
+
+soil carbon over the bare fraction
+
+Moss C balance
+
+Moss litter pool C balance
+
+grid averaged fluxes must also balance
+
+vegetation biomass
+
+litter
+
+soil carbon

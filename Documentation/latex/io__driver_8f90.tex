@@ -1,0 +1,300 @@
+\hypertarget{io__driver_8f90}{}\section{src/io\+\_\+driver.f90 File Reference}
+\label{io__driver_8f90}\index{src/io\+\_\+driver.\+f90@{src/io\+\_\+driver.\+f90}}
+
+
+Central module that handles all C\+T\+E\+M reading and writing of external files.  
+
+
+\subsection*{Data Types}
+\begin{DoxyCompactItemize}
+\item 
+type \hyperlink{structio__driver_1_1infopak}{io\+\_\+driver\+::infopak}
+\begin{DoxyCompactList}\small\item\em This data structure is used to set up the output netcdf files. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions/\+Subroutines}
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__create__outfiles_ga8106ac1290e2f83ed1ea0015a8a351f4}{io\+\_\+driver\+::create\+\_\+outfiles} ()
+\end{DoxyCompactItemize}
+
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__class__monthly__aw_ga58c2e12621635a74096a8f7c142f85de}{io\+\_\+driver\+::class\+\_\+monthly\+\_\+aw} (I\+D\+A\+Y, I\+Y\+E\+A\+R, N\+C\+O\+U\+N\+T, N\+D\+A\+Y, S\+B\+C, D\+E\+L\+T, nltest, nmtest, A\+L\+V\+S\+R\+O\+T, F\+A\+R\+E\+R\+O\+T, F\+S\+V\+H\+R\+O\+W, A\+L\+I\+R\+R\+O\+T, F\+S\+I\+H\+R\+O\+W, G\+T\+R\+O\+T, F\+S\+S\+R\+O\+W, F\+D\+L\+R\+O\+W, H\+F\+S\+R\+O\+T, R\+O\+F\+R\+O\+T, P\+R\+E\+R\+O\+W, Q\+F\+S\+R\+O\+T, Q\+E\+V\+P\+R\+O\+T, S\+N\+O\+R\+O\+T, T\+A\+R\+O\+W, W\+S\+N\+O\+R\+O\+T, T\+B\+A\+R\+R\+O\+T, T\+H\+L\+Q\+R\+O\+T, T\+H\+I\+C\+R\+O\+T, T\+F\+R\+E\+Z, Q\+F\+C\+R\+O\+T, Q\+F\+G\+R\+O\+T, Q\+F\+N\+R\+O\+T, Q\+F\+C\+L\+R\+O\+T, Q\+F\+C\+F\+R\+O\+T, F\+S\+G\+V\+R\+O\+T, F\+S\+G\+S\+R\+O\+T, F\+S\+G\+G\+R\+O\+T, A\+C\+T\+L\+Y\+R, F\+T\+A\+B\+L\+E)
+\end{DoxyCompactItemize}
+
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__class__annual__aw_ga0f389a580ed1952081408efc5dee850b}{io\+\_\+driver\+::class\+\_\+annual\+\_\+aw} (I\+D\+A\+Y, I\+Y\+E\+A\+R, N\+C\+O\+U\+N\+T, N\+D\+A\+Y, S\+B\+C, D\+E\+L\+T, nltest, nmtest, A\+L\+V\+S\+R\+O\+T, F\+A\+R\+E\+R\+O\+T, F\+S\+V\+H\+R\+O\+W, A\+L\+I\+R\+R\+O\+T, F\+S\+I\+H\+R\+O\+W, G\+T\+R\+O\+T, F\+S\+S\+R\+O\+W, F\+D\+L\+R\+O\+W, H\+F\+S\+R\+O\+T, R\+O\+F\+R\+O\+T, P\+R\+E\+R\+O\+W, Q\+F\+S\+R\+O\+T, Q\+E\+V\+P\+R\+O\+T, T\+A\+R\+O\+W, Q\+F\+C\+R\+O\+T, F\+S\+G\+V\+R\+O\+T, F\+S\+G\+S\+R\+O\+T, F\+S\+G\+G\+R\+O\+T, A\+C\+T\+L\+Y\+R, F\+T\+A\+B\+L\+E, leapnow)
+\end{DoxyCompactItemize}
+
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__ctem__daily__aw_gaabb54fc6376839cc19d2b3591a963802}{io\+\_\+driver\+::ctem\+\_\+daily\+\_\+aw} (nltest, nmtest, iday, F\+A\+R\+E\+R\+O\+T, iyear, jdstd, jdsty, jdendd, jdendy, grclarea, onetile\+\_\+per\+P\+F\+T, ipeatlandrow)
+\end{DoxyCompactItemize}
+
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__ctem__monthly__aw_gaefba66acca4c5138cfa2500f7a030022}{io\+\_\+driver\+::ctem\+\_\+monthly\+\_\+aw} (nltest, nmtest, iday, F\+A\+R\+E\+R\+O\+T, iyear, nday, onetile\+\_\+per\+P\+F\+T)
+\end{DoxyCompactItemize}
+
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__ctem__annual__aw_gafd1b038009ed17a4f1046e11b88cf383}{io\+\_\+driver\+::ctem\+\_\+annual\+\_\+aw} (nltest, nmtest, iday, F\+A\+R\+E\+R\+O\+T, iyear, onetile\+\_\+per\+P\+F\+T, leapnow)
+\end{DoxyCompactItemize}
+
+{\bf }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__io__driver__close__outfiles_gacf096c34ff9fe20cee7785281362d9b6}{io\+\_\+driver\+::close\+\_\+outfiles} ()
+\end{DoxyCompactItemize}
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespaceio__driver_ac2db283431c25c0208231daa311d1206}{}real, dimension(4) {\bfseries io\+\_\+driver\+::bounds}\label{namespaceio__driver_ac2db283431c25c0208231daa311d1206}
+
+\item 
+\hypertarget{namespaceio__driver_a1f48d14e931a91cb17da7c4c9811aa15}{}real, dimension(4) {\bfseries io\+\_\+driver\+::corners}\label{namespaceio__driver_a1f48d14e931a91cb17da7c4c9811aa15}
+
+\item 
+\hypertarget{namespaceio__driver_a5ac3477e316a81290535a8c66d43ac44}{}real, dimension(\+:), allocatable, parameter {\bfseries io\+\_\+driver\+::of}\label{namespaceio__driver_a5ac3477e316a81290535a8c66d43ac44}
+
+\item 
+\hypertarget{namespaceio__driver_ab6ecb6f2223fb67b352c4c7ec179233b}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::the}\label{namespaceio__driver_ab6ecb6f2223fb67b352c4c7ec179233b}
+
+\item 
+\hypertarget{namespaceio__driver_af8c24d9e3573d3db6ba9e44b40acb95d}{}real, dimension(4) {\bfseries io\+\_\+driver\+::domain}\label{namespaceio__driver_af8c24d9e3573d3db6ba9e44b40acb95d}
+
+\item 
+\hypertarget{namespaceio__driver_ae1fb67c331e428065c93787a6226d032}{}real, dimension(4) {\bfseries io\+\_\+driver\+::to}\label{namespaceio__driver_ae1fb67c331e428065c93787a6226d032}
+
+\item 
+\hypertarget{namespaceio__driver_ae5fab4c3251a23871047b9f38c8e5830}{}real, dimension(4) {\bfseries io\+\_\+driver\+::be}\label{namespaceio__driver_ae5fab4c3251a23871047b9f38c8e5830}
+
+\item 
+\hypertarget{namespaceio__driver_a8df6af6f6d97507e408cf25e5fab490a}{}real, dimension(netcdfs) {\bfseries io\+\_\+driver\+::simulated}\label{namespaceio__driver_a8df6af6f6d97507e408cf25e5fab490a}
+
+\item 
+\hypertarget{namespaceio__driver_ac7fcc74c4d008f60a99ab24cdd3744d3}{}integer {\bfseries io\+\_\+driver\+::metfid}\label{namespaceio__driver_ac7fcc74c4d008f60a99ab24cdd3744d3}
+
+\item 
+\hypertarget{namespaceio__driver_a09e9ea074aea92dde6c9e5132ca71d08}{}integer {\bfseries io\+\_\+driver\+::netcdf}\label{namespaceio__driver_a09e9ea074aea92dde6c9e5132ca71d08}
+
+\item 
+\hypertarget{namespaceio__driver_ac194268935610899e2ea862568b327de}{}integer {\bfseries io\+\_\+driver\+::file}\label{namespaceio__driver_ac194268935610899e2ea862568b327de}
+
+\item 
+\hypertarget{namespaceio__driver_a3a0f67989999b05fd0effa0f2aebd60b}{}integer {\bfseries io\+\_\+driver\+::id}\label{namespaceio__driver_a3a0f67989999b05fd0effa0f2aebd60b}
+
+\item 
+\hypertarget{namespaceio__driver_ae16c5c088c4fdf79957d194536ebd3f0}{}integer, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::for}\label{namespaceio__driver_ae16c5c088c4fdf79957d194536ebd3f0}
+
+\item 
+\hypertarget{namespaceio__driver_abebf1e79e82df65405dc2a0347a8b7aa}{}integer, parameter {\bfseries io\+\_\+driver\+::meteorology}\label{namespaceio__driver_abebf1e79e82df65405dc2a0347a8b7aa}
+
+\item 
+\hypertarget{namespaceio__driver_a9e2b67e7bc840d6141a51d7c3bac5d2f}{}integer {\bfseries io\+\_\+driver\+::initid}\label{namespaceio__driver_a9e2b67e7bc840d6141a51d7c3bac5d2f}
+
+\item 
+\hypertarget{namespaceio__driver_a7a3d41ae917d287c6f6cfc11d3ecd8fd}{}integer {\bfseries io\+\_\+driver\+::model}\label{namespaceio__driver_a7a3d41ae917d287c6f6cfc11d3ecd8fd}
+
+\item 
+\hypertarget{namespaceio__driver_ace2d9268780f10e85ca253f2bb77ec18}{}integer {\bfseries io\+\_\+driver\+::initialization}\label{namespaceio__driver_ace2d9268780f10e85ca253f2bb77ec18}
+
+\item 
+\hypertarget{namespaceio__driver_a63ffe8d89b62a1ac8a58c840e86426c9}{}integer {\bfseries io\+\_\+driver\+::rsid}\label{namespaceio__driver_a63ffe8d89b62a1ac8a58c840e86426c9}
+
+\item 
+\hypertarget{namespaceio__driver_a33088b1824e92707659e7cff21e5fda8}{}integer {\bfseries io\+\_\+driver\+::restart}\label{namespaceio__driver_a33088b1824e92707659e7cff21e5fda8}
+
+\item 
+\hypertarget{namespaceio__driver_a2f85981326c1a44f2022a3573a859612}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::lonvect}\label{namespaceio__driver_a2f85981326c1a44f2022a3573a859612}
+
+\item 
+\hypertarget{namespaceio__driver_ae02998f9058178e7d11f21c8b331e76b}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::vector}\label{namespaceio__driver_ae02998f9058178e7d11f21c8b331e76b}
+
+\item 
+\hypertarget{namespaceio__driver_a2be06239621f5384fd771b03e3324973}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::all}\label{namespaceio__driver_a2be06239621f5384fd771b03e3324973}
+
+\item 
+\hypertarget{namespaceio__driver_ab8b0239125dd35fc419beb0c1e33fa1d}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::longitudes}\label{namespaceio__driver_ab8b0239125dd35fc419beb0c1e33fa1d}
+
+\item 
+\hypertarget{namespaceio__driver_a725f924d03078a609e67b3d75d8d8b7c}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::region}\label{namespaceio__driver_a725f924d03078a609e67b3d75d8d8b7c}
+
+\item 
+\hypertarget{namespaceio__driver_ab26a6cf5298cffd4593e08cf8c5fa069}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::this}\label{namespaceio__driver_ab26a6cf5298cffd4593e08cf8c5fa069}
+
+\item 
+\hypertarget{namespaceio__driver_acffb03fef3de7ce1cc537c8a46c6f2ce}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::simulation}\label{namespaceio__driver_acffb03fef3de7ce1cc537c8a46c6f2ce}
+
+\item 
+\hypertarget{namespaceio__driver_a584cb5f9e4ecded65f6bdf2dee9d2eba}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::latvect}\label{namespaceio__driver_a584cb5f9e4ecded65f6bdf2dee9d2eba}
+
+\item 
+\hypertarget{namespaceio__driver_a030548266e234075c85574f3dbd14191}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::latitudes}\label{namespaceio__driver_a030548266e234075c85574f3dbd14191}
+
+\item 
+\hypertarget{namespaceio__driver_a4137a00cdd8ceee0cec0a74539ba7344}{}integer {\bfseries io\+\_\+driver\+::srtx}\label{namespaceio__driver_a4137a00cdd8ceee0cec0a74539ba7344}
+
+\item 
+\hypertarget{namespaceio__driver_aa0897488f7973e2954f4c54aa50f666a}{}integer {\bfseries io\+\_\+driver\+::starting}\label{namespaceio__driver_aa0897488f7973e2954f4c54aa50f666a}
+
+\item 
+\hypertarget{namespaceio__driver_a7bc2c651ce5080ed74bbeb4eef056ad0}{}integer {\bfseries io\+\_\+driver\+::index}\label{namespaceio__driver_a7bc2c651ce5080ed74bbeb4eef056ad0}
+
+\item 
+\hypertarget{namespaceio__driver_aeaefe0a3ff1a1f942ca9c24d825ec5dd}{}integer {\bfseries io\+\_\+driver\+::srty}\label{namespaceio__driver_aeaefe0a3ff1a1f942ca9c24d825ec5dd}
+
+\item 
+\hypertarget{namespaceio__driver_a791599e5e97596b34ffdb7ac198d477e}{}integer {\bfseries io\+\_\+driver\+::cntx}\label{namespaceio__driver_a791599e5e97596b34ffdb7ac198d477e}
+
+\item 
+\hypertarget{namespaceio__driver_a5fbf89a707a4bd6b1419968c90f79b26}{}integer, parameter {\bfseries io\+\_\+driver\+::number}\label{namespaceio__driver_a5fbf89a707a4bd6b1419968c90f79b26}
+
+\item 
+\hypertarget{namespaceio__driver_a839c9dfbee195ed2225b66d67496fe89}{}integer {\bfseries io\+\_\+driver\+::grid}\label{namespaceio__driver_a839c9dfbee195ed2225b66d67496fe89}
+
+\item 
+\hypertarget{namespaceio__driver_a7e44733fcf2a44baf06c28b85fd9727f}{}integer, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::cells}\label{namespaceio__driver_a7e44733fcf2a44baf06c28b85fd9727f}
+
+\item 
+\hypertarget{namespaceio__driver_a3646dc3b980f550fd9e9998333d3ad58}{}integer {\bfseries io\+\_\+driver\+::in}\label{namespaceio__driver_a3646dc3b980f550fd9e9998333d3ad58}
+
+\item 
+\hypertarget{namespaceio__driver_ae1ecf2d4ca02a326735ede13ad79cdf7}{}integer, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::longitude}\label{namespaceio__driver_ae1ecf2d4ca02a326735ede13ad79cdf7}
+
+\item 
+\hypertarget{namespaceio__driver_a124297f2858b86f218e1e5c59d300c68}{}integer {\bfseries io\+\_\+driver\+::direction}\label{namespaceio__driver_a124297f2858b86f218e1e5c59d300c68}
+
+\item 
+\hypertarget{namespaceio__driver_a07842be8b8749e3f0fa9e085d7daf0ca}{}integer {\bfseries io\+\_\+driver\+::cnty}\label{namespaceio__driver_a07842be8b8749e3f0fa9e085d7daf0ca}
+
+\item 
+\hypertarget{namespaceio__driver_af5f13a3da369445842e0850d6a4d33bf}{}integer, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::latitude}\label{namespaceio__driver_af5f13a3da369445842e0850d6a4d33bf}
+
+\item 
+\hypertarget{namespaceio__driver_ad43824dcc2ac43047423edd81531afa9}{}real, dimension(2) {\bfseries io\+\_\+driver\+::xrange}\label{namespaceio__driver_ad43824dcc2ac43047423edd81531afa9}
+
+\item 
+\hypertarget{namespaceio__driver_aea18f5bf684bab14b9f681f337abbc13}{}real, dimension(2) {\bfseries io\+\_\+driver\+::yrange}\label{namespaceio__driver_aea18f5bf684bab14b9f681f337abbc13}
+
+\item 
+\hypertarget{namespaceio__driver_a543f680dc96216a388458ceac9c5e4ba}{}integer {\bfseries io\+\_\+driver\+::validcount}\label{namespaceio__driver_a543f680dc96216a388458ceac9c5e4ba}
+
+\item 
+\hypertarget{namespaceio__driver_a6100fa06a4a3e9e9ac6fc58446cad6e4}{}integer, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::land}\label{namespaceio__driver_a6100fa06a4a3e9e9ac6fc58446cad6e4}
+
+\item 
+\hypertarget{namespaceio__driver_a11e41df50e08f8dee70e71d8c9ebf866}{}integer {\bfseries io\+\_\+driver\+::that}\label{namespaceio__driver_a11e41df50e08f8dee70e71d8c9ebf866}
+
+\item 
+\hypertarget{namespaceio__driver_acce5fac21a4f67d050c8e7bc60eb7004}{}integer {\bfseries io\+\_\+driver\+::will}\label{namespaceio__driver_acce5fac21a4f67d050c8e7bc60eb7004}
+
+\item 
+\hypertarget{namespaceio__driver_a682678764fa19208b5d21137385b0401}{}integer {\bfseries io\+\_\+driver\+::run}\label{namespaceio__driver_a682678764fa19208b5d21137385b0401}
+
+\item 
+\hypertarget{namespaceio__driver_a879e122a360f7e8c449b94c08a7f6ac4}{}integer {\bfseries io\+\_\+driver\+::over}\label{namespaceio__driver_a879e122a360f7e8c449b94c08a7f6ac4}
+
+\item 
+\hypertarget{namespaceio__driver_a6b647b138424e0c73174a3ef05773640}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::validlon}\label{namespaceio__driver_a6b647b138424e0c73174a3ef05773640}
+
+\item 
+\hypertarget{namespaceio__driver_a12be399bef871b63c54c69761702f576}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::validlat}\label{namespaceio__driver_a12be399bef871b63c54c69761702f576}
+
+\item 
+\hypertarget{namespaceio__driver_a0679545fe038496d3c8e7f03638e72d5}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::arrays}\label{namespaceio__driver_a0679545fe038496d3c8e7f03638e72d5}
+
+\item 
+\hypertarget{namespaceio__driver_a0f2077bc5d7238938463510744ca42dc}{}real, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::or}\label{namespaceio__driver_a0f2077bc5d7238938463510744ca42dc}
+
+\item 
+\hypertarget{namespaceio__driver_a53a8c1868dbe750b9f44b2b8879da3b0}{}integer, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::validlonindex}\label{namespaceio__driver_a53a8c1868dbe750b9f44b2b8879da3b0}
+
+\item 
+\hypertarget{namespaceio__driver_ab39d14d3f5ae1e6afbc5b76bdce93272}{}integer, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::validlatindex}\label{namespaceio__driver_ab39d14d3f5ae1e6afbc5b76bdce93272}
+
+\item 
+\hypertarget{namespaceio__driver_ae8ad87ee087202c23d052faa53c79c3f}{}integer, dimension(\+:), allocatable {\bfseries io\+\_\+driver\+::indexes}\label{namespaceio__driver_ae8ad87ee087202c23d052faa53c79c3f}
+
+\item 
+\hypertarget{namespaceio__driver_a3a9171cd2fcf056b7725b50a51fecad5}{}real, parameter {\bfseries io\+\_\+driver\+::fill\+\_\+value} = 1.e38\label{namespaceio__driver_a3a9171cd2fcf056b7725b50a51fecad5}
+
+\item 
+\hypertarget{namespaceio__driver_adbd849c7ab596533f1a66bec18b1c166}{}character(30) {\bfseries io\+\_\+driver\+::timestart} = \char`\"{}seconds since 1801-\/1-\/1\char`\"{}\label{namespaceio__driver_adbd849c7ab596533f1a66bec18b1c166}
+
+\item 
+\hypertarget{namespaceio__driver_af047ea740ca0d848d153f630afa40bda}{}type(infopak) {\bfseries io\+\_\+driver\+::winfo}\label{namespaceio__driver_af047ea740ca0d848d153f630afa40bda}
+
+\item 
+\hypertarget{namespaceio__driver_a7973cc9e7cf23e47964781a0f9e52b88}{}integer, parameter {\bfseries io\+\_\+driver\+::niv} = 7\label{namespaceio__driver_a7973cc9e7cf23e47964781a0f9e52b88}
+
+\item 
+\hypertarget{namespaceio__driver_a6675c2a9dae923a29212739c61645567}{}integer, parameter {\bfseries io\+\_\+driver\+::variables}\label{namespaceio__driver_a6675c2a9dae923a29212739c61645567}
+
+\item 
+\hypertarget{namespaceio__driver_ae1fa7fda7cfcbaf606b2dbd14a06f41c}{}character(2), dimension(niv), parameter {\bfseries io\+\_\+driver\+::vname} = \mbox{[} \char`\"{}lw\char`\"{}, \char`\"{}ap\char`\"{}, \char`\"{}qa\char`\"{}, \char`\"{}pr\char`\"{}, \char`\"{}sw\char`\"{}, \char`\"{}wi\char`\"{}, \char`\"{}ta\char`\"{} \mbox{]}\label{namespaceio__driver_ae1fa7fda7cfcbaf606b2dbd14a06f41c}
+
+\begin{DoxyCompactList}\small\item\em names of the met vars\+: longwave down, atmos pressure, specific humidity, precipitation, shortwave down, wind, air temperature \end{DoxyCompactList}\item 
+\hypertarget{namespaceio__driver_ac5475b80a0a6d230c6261122649216c7}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::lw6hr}\label{namespaceio__driver_ac5475b80a0a6d230c6261122649216c7}
+
+\item 
+\hypertarget{namespaceio__driver_a82106d7c42ea9e188344ebe4e1d22eb4}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::downwelling}\label{namespaceio__driver_a82106d7c42ea9e188344ebe4e1d22eb4}
+
+\item 
+\hypertarget{namespaceio__driver_a1c99cd38fb51a2e6f0749107a68d2270}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::longwave}\label{namespaceio__driver_a1c99cd38fb51a2e6f0749107a68d2270}
+
+\item 
+\hypertarget{namespaceio__driver_a9096efa40412e64f96a598629d2dd224}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::radiation}\label{namespaceio__driver_a9096efa40412e64f96a598629d2dd224}
+
+\item 
+\hypertarget{namespaceio__driver_a17d71f1c9fc6ab958cd0e7d3d2049318}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::hrly}\label{namespaceio__driver_a17d71f1c9fc6ab958cd0e7d3d2049318}
+
+\item 
+\hypertarget{namespaceio__driver_a51b6943a89ea1560c9ded84f0931d5a3}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::ap6hr}\label{namespaceio__driver_a51b6943a89ea1560c9ded84f0931d5a3}
+
+\item 
+\hypertarget{namespaceio__driver_a7b9958f7e0b7f4746a3392c9ee2a12b0}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::qa6hr}\label{namespaceio__driver_a7b9958f7e0b7f4746a3392c9ee2a12b0}
+
+\item 
+\hypertarget{namespaceio__driver_aefe67ef39727a61296b63959f40ef108}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::pr6hr}\label{namespaceio__driver_aefe67ef39727a61296b63959f40ef108}
+
+\item 
+\hypertarget{namespaceio__driver_a3907ea87cb9e46159bcd93bf30662269}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::sw6hr}\label{namespaceio__driver_a3907ea87cb9e46159bcd93bf30662269}
+
+\item 
+\hypertarget{namespaceio__driver_a23ef62e6105a05c8aa02b0437dd96699}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::wi6hr}\label{namespaceio__driver_a23ef62e6105a05c8aa02b0437dd96699}
+
+\item 
+\hypertarget{namespaceio__driver_a5f0debf13a0ecc7226a10b98b9654ef2}{}real, dimension(\+:,\+:), allocatable {\bfseries io\+\_\+driver\+::ta6hr}\label{namespaceio__driver_a5f0debf13a0ecc7226a10b98b9654ef2}
+
+\item 
+\hypertarget{namespaceio__driver_a944680f1f7ba8e9412bb787d4c733b8e}{}integer {\bfseries io\+\_\+driver\+::yearmetst}\label{namespaceio__driver_a944680f1f7ba8e9412bb787d4c733b8e}
+
+\item 
+\hypertarget{namespaceio__driver_a60ac80c337165b997105079e0dfd760f}{}integer {\bfseries io\+\_\+driver\+::year}\label{namespaceio__driver_a60ac80c337165b997105079e0dfd760f}
+
+\item 
+\hypertarget{namespaceio__driver_a1729f82bd75ef619be1d036f9dd7fdcf}{}integer {\bfseries io\+\_\+driver\+::met}\label{namespaceio__driver_a1729f82bd75ef619be1d036f9dd7fdcf}
+
+\item 
+\hypertarget{namespaceio__driver_ad56323d90fc742e3b67df8313e50f5ac}{}integer {\bfseries io\+\_\+driver\+::data}\label{namespaceio__driver_ad56323d90fc742e3b67df8313e50f5ac}
+
+\item 
+\hypertarget{namespaceio__driver_a56032ba5fa5bf083b686b5ec2a0c7172}{}integer {\bfseries io\+\_\+driver\+::starts}\label{namespaceio__driver_a56032ba5fa5bf083b686b5ec2a0c7172}
+
+\item 
+\hypertarget{namespaceio__driver_aa7c14131a3e022204d6162fc91d1e125}{}integer {\bfseries io\+\_\+driver\+::on}\label{namespaceio__driver_aa7c14131a3e022204d6162fc91d1e125}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Central module that handles all C\+T\+E\+M reading and writing of external files. 
+

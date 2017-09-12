@@ -1,0 +1,112 @@
+\hypertarget{TSPOST_8f}{}\section{src/\+T\+S\+P\+O\+S\+T.f File Reference}
+\label{TSPOST_8f}\index{src/\+T\+S\+P\+O\+S\+T.\+f@{src/\+T\+S\+P\+O\+S\+T.\+f}}
+
+
+Purpose\+: Snow temperature calculations and cleanup after surface energy budget calculations.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{TSPOST_8f_aea20a5bd0b4d139bb0537c5e0a79788f}{tspost} (G\+S\+N\+O\+W, T\+S\+N\+O\+W, W\+S\+N\+O\+W, R\+H\+O\+S\+N\+O, Q\+M\+E\+L\+T\+G, G\+Z\+E\+R\+O, T\+S\+N\+B\+O\+T, H\+T\+C\+S, H\+M\+F\+N, G\+C\+O\+N\+S\+T\+S, G\+C\+O\+E\+F\+F\+S, G\+C\+O\+N\+S\+T, G\+C\+O\+E\+F\+F, T\+B\+A\+R, T\+S\+U\+R\+F, Z\+S\+N\+O\+W, T\+C\+S\+N\+O\+W, H\+C\+P\+S\+N\+O, Q\+T\+R\+A\+N\+S, F\+I, D\+E\+L\+Z, I\+L\+G, I\+L1, I\+L2, J\+L, I\+G)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Purpose\+: Snow temperature calculations and cleanup after surface energy budget calculations. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{TSPOST_8f_aea20a5bd0b4d139bb0537c5e0a79788f}{}\index{T\+S\+P\+O\+S\+T.\+f@{T\+S\+P\+O\+S\+T.\+f}!tspost@{tspost}}
+\index{tspost@{tspost}!T\+S\+P\+O\+S\+T.\+f@{T\+S\+P\+O\+S\+T.\+f}}
+\subsubsection[{tspost}]{\setlength{\rightskip}{0pt plus 5cm}subroutine tspost (
+\begin{DoxyParamCaption}
+\item[{real, dimension (ilg)}]{G\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{T\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{W\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{R\+H\+O\+S\+N\+O, }
+\item[{real, dimension(ilg)}]{Q\+M\+E\+L\+T\+G, }
+\item[{real, dimension (ilg)}]{G\+Z\+E\+R\+O, }
+\item[{real, dimension(ilg)}]{T\+S\+N\+B\+O\+T, }
+\item[{real, dimension  (ilg)}]{H\+T\+C\+S, }
+\item[{real, dimension  (ilg)}]{H\+M\+F\+N, }
+\item[{real, dimension(ilg)}]{G\+C\+O\+N\+S\+T\+S, }
+\item[{real, dimension(ilg)}]{G\+C\+O\+E\+F\+F\+S, }
+\item[{real, dimension(ilg)}]{G\+C\+O\+N\+S\+T, }
+\item[{real, dimension(ilg)}]{G\+C\+O\+E\+F\+F, }
+\item[{real, dimension(ilg,ig)}]{T\+B\+A\+R, }
+\item[{real, dimension (ilg)}]{T\+S\+U\+R\+F, }
+\item[{real, dimension (ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{T\+C\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{H\+C\+P\+S\+N\+O, }
+\item[{real, dimension(ilg)}]{Q\+T\+R\+A\+N\+S, }
+\item[{real, dimension    (ilg)}]{F\+I, }
+\item[{real, dimension  (ig)}]{D\+E\+L\+Z, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L, }
+\item[{integer}]{I\+G}
+\end{DoxyParamCaption}
+)}\label{TSPOST_8f_aea20a5bd0b4d139bb0537c5e0a79788f}
+
+\begin{DoxyParams}{Parameters}
+{\em gzero} & Heat conduction into soil surface $[W m^{-2}] (G(\Delta z_s))$\\
+\hline
+{\em tsnbot} & Temperature at bottom of snow pack \mbox{[}K\mbox{]}\\
+\hline
+{\em gsnow} & Heat conduction into surface of snow pack $[W m^{-2}] (G(0))$\\
+\hline
+{\em tsnow} & Snowpack temperature $[K/C] (T_s)$\\
+\hline
+{\em wsnow} & Liquid water content of snow pack $[kg m^{-2}] (w_s)$\\
+\hline
+{\em rhosno} & Density of snow $[kg m^{-3}] (\rho_s)$\\
+\hline
+{\em qmeltg} & Available energy to be applied to melting of snow $[W m^{-2}]$\\
+\hline
+{\em htcs} & Internal energy change of snow pack due to conduction and/or change in mass $[W m^{-2}] (I_s)$\\
+\hline
+{\em hmfn} & Energy associated with phase change of water in snow pack $[W m^{-2}]$\\
+\hline
+{\em tsurf} & Snow surface temperature \mbox{[}K\mbox{]}\\
+\hline
+{\em zsnow} & Depth of snow pack $[m] (\Delta z_s)$\\
+\hline
+{\em tcsnow} & Thermal conductivity of snow $[W m^{-1} K^{-1}]$\\
+\hline
+{\em hcpsno} & Heat capacity of snow $[J m^{-3} K^1] (C_s)$\\
+\hline
+{\em qtrans} & Shortwave radiation transmitted through the snow pack $[W m^{-2}]$\\
+\hline
+{\em gconst} & Intercept used in equation relating snow surface heat flux to snow surface temperature $[W m^{-2}]$\\
+\hline
+{\em gcoeff} & Multiplier used in equation relating snow surface heat flux to snow surface temperature $[W m^{-2} K^{-1}]$\\
+\hline
+{\em fi} & Fractional coverage of subarea in question on modelled area $[ ] (X_i)$\\
+\hline
+{\em gconsts} & Intercept used in equation relating snow surface heat flux to snow surface temperature $[W m^{-2}]$\\
+\hline
+{\em gcoeffs} & Multiplier used in equation relating snow surface heat flux to snow surface temperature $[W m^{-2} K^{-1}]$\\
+\hline
+{\em tbar} & Temperatures of soil layers, averaged over modelled area \mbox{[}K\mbox{]}\\
+\hline
+{\em delz} & Overall thickness of soil layer \mbox{[}m\mbox{]} \\
+\hline
+\end{DoxyParams}
+In the 100 loop, the heat flux into the snow surface (without adjustments that may have been applied relating to partitioning of the residual of the surface energy balance among the surface flux terms) is calculated from the snow surface temperature T\+S\+U\+R\+F, using the G\+C\+O\+E\+F\+F\+S and G\+C\+O\+N\+S\+T\+S terms (see documentation of subroutine T\+S\+P\+R\+E\+P). The temperature at the bottom of the snow pack, T\+S\+N\+B\+O\+T, is then calculated. Currently T\+S\+N\+B\+O\+T is determined as a simple average of the temperatures of the snow and the first soil layer, weighted according to their respective depths (and constrained to be $\leq$ 0 C), but this is under review. The heat flux into the soil surface is then evaluated from T\+S\+N\+B\+O\+T and the G\+C\+O\+E\+F\+F and G\+C\+O\+N\+S\+T terms (see documentation of subroutine T\+N\+P\+R\+E\+P). If the energy to be applied to the melting of snow, Q\+M\+E\+L\+T\+G, is negative (indicating an energy sink), Q\+M\+E\+L\+T\+G is added to the heat flux into the ground, G\+Z\+E\+R\+O, and reset to zero. The temperature of the snow pack is then stepped forward using the heat fluxes at the top and bottom of the snow pack, G(0) and $G(\Delta z_s)$\+:
+
+$\Delta T_s = [G(0) - G(\Delta z_s)] \Delta t /(C_s \Delta z_s)$
+
+where $C_s$ is the snow heat capacity, $\Delta t$ the time step and $\Delta z_s$ the snow depth. If the new snow temperature is greater than zero, the excess amount of heat is calculated and added to Q\+M\+E\+L\+T\+G and subtracted from G\+S\+N\+O\+W, and T\+S\+N\+O\+W is reset to 0 C. Finally, the shortwave radiation transmitted through the snow pack, Q\+T\+R\+A\+N\+S, is added to G\+Z\+E\+R\+O.
+
+In the 200 loop, since liquid water is assumed only to exist in the snow pack if it is at 0 C, a check is carried out to determine whether the liquid water content W\+S\+N\+O\+W $>$ 0 at the same time as the snow temperature T\+S\+N\+O\+W $<$ 0. If so, the change of internal energy $I_s$ of the snow pack as a result of this phase change is calculated as the difference in $I_s$ between the beginning and end of the loop\+:
+
+$\Delta I_s = X_i \Delta [C_s T_s]/ \Delta t$
+
+where $X_i$ represents the fractional coverage of the subarea under consideration relative to the modelled area. The total energy sink H\+A\+D\+D available to freeze liquid water in the snow pack is calculated from T\+S\+N\+O\+W, and the amount of energy H\+C\+O\+N\+V required to freeze all the available water is calculated from W\+S\+N\+O\+W. If H\+A\+D\+D $<$ H\+C\+O\+N\+V, only part of W\+S\+N\+O\+W is frozen; this amount W\+F\+R\+E\+Z is calculated from H\+A\+D\+D and subtracted from W\+S\+N\+O\+W, the snow temperature is reset to 0 C, the frozen water is used to update the snow density, and the snow heat capacity is recalculated\+:
+
+$C_s = C_i [\rho_s /\rho_i] + C_w w_s/[\rho_w \Delta z_s]$
+
+where $C_i$ and $C_w$ are the heat capacities of ice and water respectively, $w_s$ is the snow water content and $\rho_s$, $\rho_i$ and $\rho_w$ are the densities of snow, ice and water respectively. If H\+A\+D\+D $>$ H\+C\+O\+N\+V, the available energy sink is sufficient to freeze all of W\+S\+N\+O\+W. H\+A\+D\+D is recalculated as H\+A\+D\+D – H\+C\+O\+N\+V, W\+F\+R\+E\+Z is set to W\+S\+N\+O\+W and added to the snow density, W\+S\+N\+O\+W is set to zero, the snow heat capacity is recalculated and H\+A\+D\+D is used to determine a new value of T\+S\+N\+O\+W. Finally, W\+F\+R\+E\+Z is used to update the diagnostic variables H\+M\+F\+N describing phase changes of water in the snow pack, and the change in internal energy H\+T\+C\+S.

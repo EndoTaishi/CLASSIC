@@ -1,0 +1,79 @@
+\hypertarget{TSPREP_8f}{}\section{src/\+T\+S\+P\+R\+E\+P.f File Reference}
+\label{TSPREP_8f}\index{src/\+T\+S\+P\+R\+E\+P.\+f@{src/\+T\+S\+P\+R\+E\+P.\+f}}
+
+
+Calculate coefficients for solution of snow pack heat conduction.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{TSPREP_8f_acec92f86df665884ec221b869cfa7f7a}{tsprep} (G\+C\+O\+E\+F\+F\+S, G\+C\+O\+N\+S\+T\+S, C\+P\+H\+C\+H\+G, I\+W\+A\+T\+E\+R, F\+I, Z\+S\+N\+O\+W, T\+S\+N\+O\+W, T\+C\+S\+N\+O\+W, I\+L\+G, I\+L1, I\+L2, J\+L)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Calculate coefficients for solution of snow pack heat conduction. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{TSPREP_8f_acec92f86df665884ec221b869cfa7f7a}{}\index{T\+S\+P\+R\+E\+P.\+f@{T\+S\+P\+R\+E\+P.\+f}!tsprep@{tsprep}}
+\index{tsprep@{tsprep}!T\+S\+P\+R\+E\+P.\+f@{T\+S\+P\+R\+E\+P.\+f}}
+\subsubsection[{tsprep}]{\setlength{\rightskip}{0pt plus 5cm}subroutine tsprep (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg)}]{G\+C\+O\+E\+F\+F\+S, }
+\item[{real, dimension(ilg)}]{G\+C\+O\+N\+S\+T\+S, }
+\item[{real, dimension(ilg)}]{C\+P\+H\+C\+H\+G, }
+\item[{integer, dimension(ilg)}]{I\+W\+A\+T\+E\+R, }
+\item[{real, dimension    (ilg)}]{F\+I, }
+\item[{real, dimension (ilg)}]{Z\+S\+N\+O\+W, }
+\item[{real, dimension (ilg)}]{T\+S\+N\+O\+W, }
+\item[{real, dimension(ilg)}]{T\+C\+S\+N\+O\+W, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L}
+\end{DoxyParamCaption}
+)}\label{TSPREP_8f_acec92f86df665884ec221b869cfa7f7a}
+
+\begin{DoxyParams}{Parameters}
+{\em gcoeffs} & Multiplier used in equation relating snow surface heat flux to snow surface temperature $[W m^{-2} K^{-1}]$\\
+\hline
+{\em gconsts} & Intercept used in equation relating snow surface heat flux to snow surface temperature $[W m^{-2} ]$\\
+\hline
+{\em cphchg} & Latent heat of sublimation $[J kg^{-1}]$\\
+\hline
+{\em iwater} & Flag indicating condition of surface (dry, water-\/covered or snow-\/covered)\\
+\hline
+{\em fi} & Fractional coverage of subarea in question on modelled area \mbox{[} \mbox{]}\\
+\hline
+{\em zsnow} & Depth of snow pack $[m] (\Delta z_s)$\\
+\hline
+{\em tsnow} & Snowpack temperature $[K] (T_s(\Delta z_s))$\\
+\hline
+{\em tcsnow} & Thermal conductivity of snow $[W m^{-1} K^{-1}]$ \\
+\hline
+\end{DoxyParams}
+In this subroutine, coefficients are derived for an equation relating the heat flux at the snow surface to the snow surface temperature. It is assumed that the variation of temperature T with depth z in the snow pack can be modelled by using a quadratic equation\+:
+
+$T(z) = (1/2) a z^2 + b z + c$
+
+By substituting 0 for z in the above equation and in the expressions for its first and second derivatives, it can be shown that a = T\char`\"{}(0), b = T\textquotesingle{}(0), and c = T(0). The term T\char`\"{}(0) can be evaluated from the expression for the first derivative evaluated at the bottom of the snow pack, $T(\Delta z_s)$\+:
+
+$T"(0) = [T'(\Delta z_s) - T'(0)]/ \Delta z_s$
+
+The temperature gradient T\textquotesingle{}(0) at the snow surface is related to the surface heat flux G(0) by the snow thermal conductivity $\lambda_s$\+:
+
+$G(0) = -\lambda_s T'(0)$
+
+The average snow temperature, $T_s(\Delta z_s)$, can be obtained by integrating the resulting equation for T(z) between 0 and $\Delta z_s$. Making use of all of the above expressions, and assuming as a first approximation that the heat flux at the bottom of the snow pack is zero, a linear equation can be derived relating G(0) to T(0)\+:
+
+$G(0) = 3 \lambda_s / \Delta z_s [T(0) - T_s(\Delta z_s)]$
+
+Just four calculations are performed in this subroutine. The slope and intercept of the G(0) vs. T(0) relation, G\+C\+O\+E\+F\+F and G\+C\+O\+N\+S\+T, are evaluated as $3 \lambda_s / \Delta z_s$ and $-3 \lambda_s T_s(\Delta z_s)/ \Delta z_s$ respectively; the flag I\+W\+A\+T\+E\+R is set to 2, indicating a snow surface; and the latent heat of vaporization at the surface, C\+P\+H\+C\+H\+G, is set to the value for sublimation (by adding the latent heat of melting to the latent heat of vaporization).
+
+
+\begin{DoxyItemize}
+\item C\+A\+L\+C\+U\+L\+A\+T\+E C\+O\+E\+F\+F\+I\+C\+I\+E\+N\+T\+S.
+\end{DoxyItemize}

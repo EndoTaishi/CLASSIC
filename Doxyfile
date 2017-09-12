@@ -32,7 +32,7 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "CLASS-CTEM"
+PROJECT_NAME           = "CLASSIC"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
@@ -687,7 +687,7 @@ LAYOUT_FILE            =
 # LATEX_BIB_STYLE. To use this feature you need bibtex and perl available in the
 # search path. See also \cite for info how to create references.
 
-CITE_BIB_FILES         = biblio.bib
+CITE_BIB_FILES         = Documentation/biblio.bib
 
 #---------------------------------------------------------------------------
 # Configuration options related to warning and progress messages
@@ -714,7 +714,7 @@ WARNINGS               = YES
 # will automatically be disabled.
 # The default value is: YES.
 
-WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_UNDOCUMENTED   = NO
 
 # If the WARN_IF_DOC_ERROR tag is set to YES, doxygen will generate warnings for
 # potential errors in the documentation, such as not documenting some parameters
@@ -758,7 +758,7 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  =
+INPUT                  = src
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -846,7 +846,7 @@ EXAMPLE_RECURSIVE      = NO
 # that contain images that are to be included in the documentation (see the
 # \image command).
 
-IMAGE_PATH             = ./imagesForDoxygen
+IMAGE_PATH             = Documentation/imagesForDoxygen
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -894,7 +894,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = doxygenMainPage.md
+USE_MDFILE_AS_MAINPAGE = ./doxygenMainPage.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
@@ -1023,7 +1023,7 @@ GENERATE_HTML          = YES
 # The default directory is: html.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_OUTPUT            = html
+HTML_OUTPUT            = Documentation/html
 
 # The HTML_FILE_EXTENSION tag can be used to specify the file extension for each
 # generated HTML page (for example: .htm, .php, .asp).
@@ -1370,7 +1370,7 @@ DISABLE_INDEX          = NO
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-GENERATE_TREEVIEW      = NO
+GENERATE_TREEVIEW      = YES
 
 # The ENUM_VALUES_PER_LINE tag can be used to set the number of enum values that
 # doxygen will group on one line in the generated HTML documentation.
@@ -1566,7 +1566,7 @@ GENERATE_LATEX         = YES
 # The default directory is: latex.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-LATEX_OUTPUT           = latex
+LATEX_OUTPUT           = Documentation/latex
 
 # The LATEX_CMD_NAME tag can be used to specify the LaTeX command name to be
 # invoked.
@@ -2064,7 +2064,7 @@ PERL_PATH              = /usr/bin/perl
 # powerful graphs.
 # The default value is: YES.
 
-CLASS_DIAGRAMS         = YES
+CLASS_DIAGRAMS         = NO
 
 # You can define message sequence charts within doxygen comments using the \msc
 # command. Doxygen will then run the mscgen tool (see:
@@ -2095,7 +2095,7 @@ HIDE_UNDOC_RELATIONS   = YES
 # set to NO
 # The default value is: NO.
 
-HAVE_DOT               = YES
+HAVE_DOT               = NO
 
 # The DOT_NUM_THREADS specifies the number of dot invocations doxygen is allowed
 # to run in parallel. When set to 0 doxygen will base this on the number of
@@ -2122,7 +2122,7 @@ DOT_FONTNAME           = Helvetica
 # Minimum value: 4, maximum value: 24, default value: 10.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_FONTSIZE           = 1
+DOT_FONTSIZE           = 10
 
 # By default doxygen will tell dot to use the default font as specified with
 # DOT_FONTNAME. If you specify a different font using DOT_FONTNAME you can set

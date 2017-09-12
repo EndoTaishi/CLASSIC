@@ -1,0 +1,89 @@
+\hypertarget{SLDIAG_8f}{}\section{src/\+S\+L\+D\+I\+A\+G.f File Reference}
+\label{SLDIAG_8f}\index{src/\+S\+L\+D\+I\+A\+G.\+f@{src/\+S\+L\+D\+I\+A\+G.\+f}}
+
+
+C\+A\+L\+C\+U\+L\+A\+T\+E\+S N\+E\+A\+R S\+U\+R\+F\+A\+C\+E O\+U\+T\+P\+U\+T V\+A\+R\+I\+A\+B\+L\+E\+S.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{SLDIAG_8f_ad70c758db99cc5fdf4cabbcd33447dd2}{sldiag} (S\+U\+T, S\+V\+T, S\+T\+T, S\+Q\+T, C\+D\+M, C\+D\+H, U\+A, V\+A, T\+A, Q\+A, T0, Q0, Z0\+M, Z0\+E, F, Z\+A, Z\+U, Z\+T, I\+L\+G, I\+L1, I\+L2, J\+L)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+C\+A\+L\+C\+U\+L\+A\+T\+E\+S N\+E\+A\+R S\+U\+R\+F\+A\+C\+E O\+U\+T\+P\+U\+T V\+A\+R\+I\+A\+B\+L\+E\+S. 
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{SLDIAG_8f_ad70c758db99cc5fdf4cabbcd33447dd2}{}\index{S\+L\+D\+I\+A\+G.\+f@{S\+L\+D\+I\+A\+G.\+f}!sldiag@{sldiag}}
+\index{sldiag@{sldiag}!S\+L\+D\+I\+A\+G.\+f@{S\+L\+D\+I\+A\+G.\+f}}
+\subsubsection[{sldiag}]{\setlength{\rightskip}{0pt plus 5cm}subroutine sldiag (
+\begin{DoxyParamCaption}
+\item[{real, dimension(ilg)}]{S\+U\+T, }
+\item[{real, dimension(ilg)}]{S\+V\+T, }
+\item[{real, dimension(ilg)}]{S\+T\+T, }
+\item[{real, dimension(ilg)}]{S\+Q\+T, }
+\item[{real, dimension(ilg)}]{C\+D\+M, }
+\item[{real, dimension(ilg)}]{C\+D\+H, }
+\item[{real, dimension(ilg)}]{U\+A, }
+\item[{real, dimension(ilg)}]{V\+A, }
+\item[{real, dimension(ilg)}]{T\+A, }
+\item[{real, dimension(ilg)}]{Q\+A, }
+\item[{real, dimension(ilg)}]{T0, }
+\item[{real, dimension(ilg)}]{Q0, }
+\item[{real, dimension(ilg)}]{Z0\+M, }
+\item[{real, dimension(ilg)}]{Z0\+E, }
+\item[{real, dimension(ilg)}]{F, }
+\item[{real, dimension(ilg)}]{Z\+A, }
+\item[{real, dimension(ilg)}]{Z\+U, }
+\item[{real, dimension(ilg)}]{Z\+T, }
+\item[{integer}]{I\+L\+G, }
+\item[{integer}]{I\+L1, }
+\item[{integer}]{I\+L2, }
+\item[{integer}]{J\+L}
+\end{DoxyParamCaption}
+)}\label{SLDIAG_8f_ad70c758db99cc5fdf4cabbcd33447dd2}
+
+\begin{DoxyParams}{Parameters}
+{\em ilg} & N\+U\+M\+B\+E\+R O\+F P\+O\+I\+N\+T\+S T\+O B\+E T\+R\+E\+A\+T\+E\+D\\
+\hline
+{\em sut} & U C\+O\+M\+P\+O\+N\+E\+N\+T O\+F T\+H\+E W\+I\+N\+D A\+T Z\+U\\
+\hline
+{\em svt} & V C\+O\+M\+P\+O\+N\+E\+N\+T O\+F T\+H\+E W\+I\+N\+D A\+T Z\+U\\
+\hline
+{\em stt} & T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E A\+T Z\+T\\
+\hline
+{\em sqt} & S\+P\+E\+C\+I\+F\+I\+C H\+U\+M\+I\+D\+I\+T\+Y A\+T Z\+T\\
+\hline
+{\em cdm} & D\+R\+A\+G C\+O\+E\+F\+F\+I\+C\+I\+E\+N\+T\\
+\hline
+{\em cdh} & T\+R\+A\+S\+F\+E\+R C\+O\+E\+F\+F\+I\+C\+I\+E\+N\+T F\+O\+R H\+E\+A\+T A\+N\+D M\+O\+I\+S\+T\+U\+R\+E\\
+\hline
+{\em ua} & U C\+O\+M\+P\+O\+N\+E\+N\+T O\+F T\+H\+E W\+I\+N\+D A\+T Z\+A\\
+\hline
+{\em va} & V C\+O\+M\+P\+O\+N\+E\+N\+T O\+F T\+H\+E W\+I\+N\+D A\+T Z\+A\\
+\hline
+{\em ta} & P\+O\+T\+E\+N\+T\+I\+A\+L T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E A\+T Z\+A\\
+\hline
+{\em qa} & S\+P\+E\+C\+I\+F\+I\+C H\+U\+M\+I\+D\+I\+T\+Y A\+T R\+E\+F\+E\+R\+E\+N\+C\+E H\+E\+I\+G\+H\+T\\
+\hline
+{\em z0m} & R\+O\+U\+G\+H\+N\+E\+S\+S L\+E\+N\+G\+T\+H F\+O\+R M\+O\+M\+E\+N\+T\+U\+M\\
+\hline
+{\em z0e} & R\+O\+U\+G\+H\+N\+E\+S\+S L\+E\+N\+G\+T\+H F\+O\+R H\+E\+A\+T A\+N\+D M\+O\+I\+S\+T\+U\+R\+E\\
+\hline
+{\em f} & F\+R\+A\+C\+T\+I\+O\+N O\+F G\+R\+I\+D P\+O\+I\+N\+T A\+F\+F\+E\+C\+T\+E\+D B\+Y P\+R\+O\+C\+E\+S\+S\\
+\hline
+{\em t0} & T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E A\+T B\+O\+T\+T\+O\+M O\+F S\+U\+R\+F\+A\+C\+E L\+A\+Y\+E\+R\\
+\hline
+{\em q0} & S\+P\+E\+C\+I\+F\+I\+C H\+U\+M\+I\+D\+I\+T\+Y A\+T B\+O\+T\+T\+O\+M O\+F S\+U\+R\+F\+A\+C\+E L\+A\+Y\+E\+R\\
+\hline
+{\em za} & T\+O\+P O\+F S\+U\+R\+F\+A\+C\+E L\+A\+Y\+E\+R\\
+\hline
+{\em zu} & H\+E\+I\+G\+H\+T O\+F O\+U\+T\+P\+U\+T W\+I\+N\+D\\
+\hline
+{\em zt} & H\+E\+I\+G\+H\+T O\+F O\+U\+T\+P\+U\+T T\+E\+M\+P\+E\+R\+A\+T\+U\+R\+E A\+N\+D H\+U\+M\+I\+D\+I\+T\+Y \\
+\hline
+\end{DoxyParams}
