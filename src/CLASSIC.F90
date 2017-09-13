@@ -7,8 +7,11 @@
 program CLASSIC
 
     ! Joe Melton and Ed Wisernig @ 2017
-
+#if PARALLEL
     use mpi
+#endif
+
+
     use io_driver,              only : bounds,validCount,validLon,validLat, &
                                        validLonIndex,validLatIndex
     use model_state_drivers,    only : read_modelsetup
@@ -50,6 +53,7 @@ program CLASSIC
     call loadoutputDescriptor()
 
 
+#if PARALLEL
     ! Execute the following only on the main thread (see supportFunctions.f90)
     if (isMainProcess(rank)) then
 
@@ -65,20 +69,21 @@ program CLASSIC
     ! The other threads will wait until the output files are all finished being
     ! created above.
     call MPI_BCAST(ready_to_go, 1, MPI_LOGICAL, 0, MPI_COMM_WORLD, ierr)
-
+#endif
     ! Run model over the land grid cells, in parallel
     call processLandCells
 
     ! Shut down the MPI session
-    call MPI_FINALIZE(ierr)
+    call finalizeParallelEnvironment
 
-    ! END MAIN PROGRAM
+! END MAIN PROGRAM
 
-    !------------------
+!------------------
 
-    contains
+contains
 
     subroutine processLandCells
+        implicit none
 
         ! PROCESS LAND CELLS
         ! This section runs the model over all of the land cells. There are validCount valid(i.e. land) cells, stored in validLon and validLat
@@ -99,23 +104,30 @@ program CLASSIC
 
         cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells (NEEDS BETTER DESCRIPTION)
         if (rank < remainder) call main_driver(validLon(cell),validLat(cell),&
-                                               validLonIndex(cell),validLatIndex(cell))
+        validLonIndex(cell),validLatIndex(cell))
 
     end subroutine processLandCells
 
     !------------------
 
     subroutine initializeParallelEnvironment
-
-        ! INITIALIZE MPI
-        ! This section initializes the MPI environment
-
+        implicit none
+#if PARALLEL
         call MPI_INIT(ierr)
         time = MPI_WTIME()
         call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierr)
         call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierr)
-        
+#endif
     end subroutine initializeParallelEnvironment
+
+    !------------------
+
+    subroutine finalizeParallelEnvironment
+        implicit none
+#if PARALLEL
+        call MPI_FINALIZE(ierr)
+#endif
+    end subroutine finalizeParallelEnvironment
 
     !------------------
 

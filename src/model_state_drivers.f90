@@ -1,5 +1,5 @@
 module model_state_drivers
-
+    use fileIOModule
     !> This is the central driver to read in, and write out
     !! all model state variables (replacing INI and CTM files)
     !! as well as the model inputs such as MET, population density,
@@ -9,7 +9,7 @@ module model_state_drivers
     ! Nov 2016
     implicit none
 
-    private
+    !private
     public  :: read_modelsetup
     public  :: read_initialstate
     public  :: write_restart
@@ -27,9 +27,9 @@ contains
 
         ! J. Melton
         ! Feb 2017
-        use netcdf
-        use netcdf_drivers, only : check_nc
-        use serialFileIOModule, only : ncOpen, ncGetDimLen, ncGet1DVar, ncGet2DVar, ncGetDimValues
+        !use netcdf
+        !use netcdf_drivers, only : check_nc
+        !use fileIOModule, only : ncOpen, ncGetDimLen, ncGet1DVar, ncGet2DVar, ncGetDimValues
         use io_driver, only : initid,rsid,bounds,lonvect,latvect,&
                               validCount,validLon,validLat,validLonIndex,validLatIndex
         use ctem_statevars,     only : c_switch
@@ -184,7 +184,7 @@ contains
         !use netcdf
         !use netcdf_drivers, only : check_nc
         use io_driver, only : initid
-        use serialFileIOModule
+        !use serialFileIOModule
         use ctem_statevars,     only : c_switch,vrot,vgat
         use class_statevars,    only : class_rot,class_gat
         use ctem_params,        only : icc,iccp1,nmos,ignd,ilg,icp1,nlat,ican,abszero,pi
@@ -1010,7 +1010,8 @@ contains
         end if !ctem_on
 
     ! We are done with the file so close it:
-    call check_nc(nf90_close(initid))
+    !call check_nc(nf90_close(initid))
+    call ncClose(initid)
 
     end subroutine read_initialstate
 
@@ -1024,9 +1025,9 @@ contains
         ! J. Melton
         ! Jun 2017
 
-        use netcdf
+        !use netcdf
         !use netcdf_drivers, only : check_nc
-        use serialFileIOModule
+        !use serialFileIOModule
         use io_driver, only : rsid
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
