@@ -29,8 +29,6 @@ contains
         character(:), pointer    :: xmlFile
         xmlFile         => c_switch%xmlFile
 
-        print*,xmlFile
-
         call xml_process(xmlFile, attribs, data, startfunc, datafunc, endfunc, 0, error)
 
     end subroutine loadoutputDescriptor

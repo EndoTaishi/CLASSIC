@@ -51,7 +51,8 @@ contains
             &                               monthend, mmday,modelpft, l2max,&
             &                                deltat, abszero, monthdays,seed,&
             &                                NBS, earthrad,&
-            &                                readin_params,crop
+            &                                readin_params,crop,&
+            &                                allocateParamsCTEM
 
         use landuse_change,     only : initialize_luc, readin_luc
 
@@ -70,7 +71,7 @@ contains
         use io_driver,          only : create_outfiles,class_monthly_aw,&
             &                               ctem_annual_aw,ctem_monthly_aw,&
             &                               close_outfiles,ctem_daily_aw,&
-            &                               class_annual_aw,bounds
+            &                               class_annual_aw
 
 
         use model_state_drivers, only : read_initialstate,write_restart
@@ -796,9 +797,9 @@ contains
         REAL PSISORG(  3) !<
         REAL GRKSORG(  3) !<
 
-        REAL CANEXT(ICAN) !<
-        REAL XLEAF (ICAN) !<
-        REAL ZORAT (ICAN) !<
+        !REAL CANEXT(ICAN) !<
+        !REAL XLEAF (ICAN) !<
+        !REAL ZORAT (ICAN) !<
         REAL GROWYR (  18,4,2) !< !
         INTEGER ISUM(6)  !<Total number of iterations required to solve surface energy balance for the elements of the four subareas for the current run
         !FLAG! <<< Not in the new structure
@@ -1578,8 +1579,8 @@ contains
         &                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,&
         &                TCGLAC,CLHMLT,CLHVAP
         COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
-        COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORAT,ZORATG
-        COMMON /CLASS7/ CANEXT,XLEAF
+        COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORATG!,ZORAT
+        !COMMON /CLASS7/ CANEXT,XLEAF
         COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
         COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
         COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
@@ -2812,12 +2813,14 @@ contains
         JLAT=NINT(DLATROW(1))
         DLONROW(1) = longitude
 
-        ! Prepare CLASS parameters
-        CALL CLASSD
-
-        ! Initialize the CTEM parameters, this reads them in from a namelist file.
-        ! FLAG may convert to xml later - JM
-        call readin_params(runparams_file,compete)
+!         ! Prepare CLASS parameters
+!         CALL CLASSD
+!
+! !         ! Allocate the arrays that store the CTEM parameter values
+! !         call allocateParamsCTEM
+! !
+! !         ! Initialize the CTEM parameters, this reads them in from a namelist file.
+! !         call readin_params(runparams_file,compete)
 
         ! Allocate the local variables that rely on nlat, ilg, etc.
         allocate(&  !FLAG move these into external data structures!
@@ -2911,12 +2914,13 @@ contains
         end if
 
 
-! FLAG testing for Ed!!! (moved up)
+! ! FLAG testing for Ed!!! (moved up)
+
         call read_initialstate(lonIndex,latIndex)
-                print*,'starting to write restart'
+
                 call write_restart(lonIndex,latIndex)
-                print*,'done write restart'
-stop
+
+        return
 
         !     CTEM initialization done
 
@@ -2925,7 +2929,7 @@ stop
         !
         !     * input files
 
-        open(unit=12,file='test.MET',&
+        open(unit=12,file='/home/rjm/Documents/CTEM/test/test.MET',&
             &      status='old')
 
         !>     Open the met netcdf file. This also sets up the run boundaries
@@ -2942,25 +2946,25 @@ stop
         !     luc file is opened in initialize_luc subroutine
 
         if (popdon) then
-            open(unit=13,file='test.POPD',&
+            open(unit=13,file='/home/rjm/Documents/CTEM/test/test.POPD',&
                 &       status='old')
             read(13,*)  !Skip 3 lines of header
             read(13,*)
             read(13,*)
         endif
         if (co2on .or. ch4on) then
-            open(unit=14,file='test.CO2',&
+            open(unit=14,file='/home/rjm/Documents/CTEM/test/test.CO2',&
                 &         status='old')
         endif
 
         !
         if (obswetf) then
-            open(unit=16,file='test.WET',&
+            open(unit=16,file='/home/rjm/Documents/CTEM/test/test.WET',&
                 &         status='old')
         endif
 
         if (obslght) then ! this was brought in for FireMIP
-            open(unit=17,file='test.LGHT',&
+            open(unit=17,file='/home/rjm/Documents/CTEM/test/test.LGHT',&
                 &         status='old')
         endif
 
@@ -3218,7 +3222,9 @@ stop
 
         !>    Read in the initial model conditions from the restart file
         !!    (replacing the INI and CTM files).
+
         call read_initialstate(lonIndex,latIndex)
+
         goto 5123 !FLAG!!
         !     Complete some initial set up work:
 

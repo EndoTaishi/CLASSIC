@@ -7,74 +7,73 @@
 program CLASSIC
 
     ! Joe Melton and Ed Wisernig @ 2017
+
 #if PARALLEL
     use mpi
 #endif
 
-
-    use io_driver,              only : bounds,validCount,validLon,validLat, &
-                                       validLonIndex,validLatIndex
     use model_state_drivers,    only : read_modelsetup
-    !use netcdf_drivers,         only : create_out_netcdf
     use xmlManager,             only : loadoutputDescriptor
-    !use outputManager,          only : generateOutputVariables
+    use outputManager,          only : generateOutputFiles
     use readjobopts,            only : read_from_job_options
     use main,                   only : main_driver
     use ctem_statevars,         only : alloc_ctem_vars
     use class_statevars,        only : alloc_class_vars
+    use ctem_params,            only : prepareGlobalParams
 
     implicit none
 
     double precision                :: time
     integer                         :: ierr, rank, size, i, cell, blocks, remainder
-    logical                         :: ready_to_go = .false.
 
     ! MAIN PROGRAM
 
-    ! Initialize the MPI and PnetCDF session
+    ! Initialize the MPI and PnetCDF session. Ignored if run in serial mode.
     call initializeParallelEnvironment
 
     ! Load the job options file. This first parses the command line arguments.
     ! Then all model switches are read in from a namelist file. This sets up the
     ! run options and points to input files as needed.
-    call read_from_job_options()
-
+    call read_from_job_options!(runParamsFile,compete)
+    !print*,runParamsFile,compete
     ! Load the run setup information based on the metadata in the
     ! initialization netcdf file. The bounds given as an argument to
     ! CLASSIC are used to find the start points (srtx and srty)
     ! in the netcdf file, placing the gridcell on the domain of the
     ! input/output netcdfs. In read_modelsetup we use the netcdf to set
-    ! the nmos, ignd,and ilg constants. It also opens the initial conditions
-    ! file that is used below in read_initialstate as well as the restart file
-    ! that is written to later.
-    call read_modelsetup()
+    ! the nmos (number of tiles), ignd (number of soil layers),and ilg (number of latitude
+    ! points times nmos, defaults to nmos in offline mode) constants.
+    ! It also opens the initial conditions file that is used below in
+    ! read_initialstate as well as the restart file that is written to later.
+    call read_modelsetup
 
-    ! Based on the (FLAG add more here)
-    call loadoutputDescriptor()
+    ! Prepare all of the global parameters such as those in CLASSD and ctem_params
+    ! which are read from a namelist file.
+    call prepareGlobalParams!(runParamsFile,compete)
 
+    ! The output files are created based on the model switches in the
+    ! joboptions file and the xml file that describes the metadata for
+    ! each output file. The loadoutputDescriptor parses the xml file and
+    ! creates a data structure to allow us to make all of the netcdf output
+    ! files, one per variable per time period (daily, monthly, etc.).
+    call loadoutputDescriptor
+
+    ! Generate the output files based on options in the joboptions file
+    ! and the parameters of the initilization netcdf file.
+    call generateOutputFiles
 
 #if PARALLEL
-    ! Execute the following only on the main thread (see supportFunctions.f90)
-    if (isMainProcess(rank)) then
-
-        ! Generate the output files based on options in the joboptions file
-        ! and the parameters of the initilization netcdf file.
-        !call create_out_netcdf
-        !call generateOutputVariables
-
-        ready_to_go = .true.
-
-    endif
-
-    ! The other threads will wait until the output files are all finished being
-    ! created above.
-    call MPI_BCAST(ready_to_go, 1, MPI_LOGICAL, 0, MPI_COMM_WORLD, ierr)
+    !
+    call MPI_BARRIER(MPI_COMM_WORLD, ierr)
 #endif
-    ! Run model over the land grid cells, in parallel
+
+    ! Run model over the land grid cells, in parallel or serial
     call processLandCells
 
+#if PARALLEL
     ! Shut down the MPI session
-    call finalizeParallelEnvironment
+    call MPI_FINALIZE(ierr)
+#endif
 
 ! END MAIN PROGRAM
 
@@ -83,28 +82,34 @@ program CLASSIC
 contains
 
     subroutine processLandCells
-        implicit none
 
         ! PROCESS LAND CELLS
-        ! This section runs the model over all of the land cells. There are validCount valid(i.e. land) cells, stored in validLon and validLat
+        ! This section runs the model over all of the land cells. There are LandCellCount valid(i.e. land) cells, stored in lonLandCell and latLandCell
+
+        use io_driver,              only : myDomain
+
+        implicit none
 
         ! Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
         ! CTEM variable structures. This has to be done before call to main_driver.
         call alloc_class_vars()
         call alloc_ctem_vars()
 
-        blocks = validCount / size + 1          ! The number of processing blocks
-        remainder = mod(validCount, size)       ! The number of cells for the last block
-
+        blocks = myDomain%LandCellCount / size + 1          ! The number of processing blocks
+        remainder = mod(myDomain%LandCellCount, size)       ! The number of cells for the last block
+        !print*,myDomain%LandCellCount
         do i = 1, blocks - 1                    ! Go through every block except for the last one
             cell = (i - 1) * size + rank + 1
-            print*,validLon(cell),validLat(cell),validLonIndex(cell),validLatIndex(cell)
-            call main_driver(validLon(cell),validLat(cell),validLonIndex(cell),validLatIndex(cell))
+            print*,'in process',i,cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell)
+            call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell))
         enddo
 
         cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells (NEEDS BETTER DESCRIPTION)
-        if (rank < remainder) call main_driver(validLon(cell),validLat(cell),&
-        validLonIndex(cell),validLatIndex(cell))
+
+        if (rank < remainder) print*,'final in process',cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&
+        myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell)
+        if (rank < remainder) call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&
+        myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell))
 
     end subroutine processLandCells
 
@@ -119,34 +124,5 @@ contains
         call MPI_COMM_SIZE(MPI_COMM_WORLD, size, ierr)
 #endif
     end subroutine initializeParallelEnvironment
-
-    !------------------
-
-    subroutine finalizeParallelEnvironment
-        implicit none
-#if PARALLEL
-        call MPI_FINALIZE(ierr)
-#endif
-    end subroutine finalizeParallelEnvironment
-
-    !------------------
-
-    logical function isMainProcess(currentProcess)
-
-        ! IS MAIN PROCESS?
-        ! This checks to see if we're on the main process of not
-
-        implicit none
-
-        integer, parameter              :: mainProcess = 0
-        integer, intent(in)             :: currentProcess
-
-        if (currentProcess == mainProcess) then
-            isMainProcess = .true.
-        else
-            isMainProcess = .false.
-        endif
-
-    end function isMainProcess
 
 end program CLASSIC

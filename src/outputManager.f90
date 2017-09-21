@@ -1,207 +1,222 @@
 module outputManager
 
-    use io_driver, only : outputDescriptor
-    use netcdfFileManager, only :
+    use io_driver, only : outputDescriptor, netcdfVars,descriptorCount
+    use ctem_statevars, only : c_switch
 
     implicit none
 
+    public :: generateOutputFiles
+    private :: generateNetCDFFile
+    private :: addVariable
+    private :: validGroup
+    private :: validTime
+    private :: generateFilename
+    private :: getDescriptor
+    private :: getIdByKey
+    public  :: createNetCDF
+    private :: identityVector
+
+    integer :: variableCount = 0
+
 contains
 
-    subroutine generateOutputVariables
+    subroutine generateOutputFiles
 
         implicit none
 
-                           ! nameInCode, timeFreq, outputForm, descriptor
-        call generateVariable("fsstar_yr", "annually", "grid", "rss")
-        call generateVariable("fsstar_mo", "monthly", "grid", "rss")
-        call generateVariable("flstar_yr", "annually", "grid", "rls")
-        call generateVariable("flstar_mo", "monthly", "grid", "rls")
-        call generateVariable("qh_yr", "annually", "grid", "hfss")
-        call generateVariable("qh_mo", "monthly", "grid", "hfss")
-        call generateVariable("qe_yr", "annually", "grid", "hfls")
-        call generateVariable("qe_mo", "monthly", "grid", "hfls")
-        call generateVariable("snoacc_mo", "monthly", "grid", "snw")
-        call generateVariable("wsnoacc_mo", "monthly", "grid", "wsnw")
-        call generateVariable("rofacc_yr", "annually", "grid", "mrro")
-        call generateVariable("rofacc_mo", "monthly", "grid", "mrro")
-        call generateVariable("preacc_yr", "annually", "grid", "pr")
-        call generateVariable("preacc_mo", "monthly", "grid", "pr")
-        call generateVariable("evapacc_yr", "annually", "grid", "evspsbl")
-        call generateVariable("evapacc_mo", "monthly", "grid", "evspsbl")
-        call generateVariable("groundevap", "monthly", "grid", "evspsblsoi")
-        call generateVariable("canopyevap", "monthly", "grid", "evspsblveg")
-        call generateVariable("transpacc_yr", "annually", "grid", "tran")
-        call generateVariable("transpacc_mo", "monthly", "grid", "tran")
-        call generateVariable("taacc_mo", "monthly", "grid", "ts")
-        call generateVariable("altotacc_yr", "annually", "grid", "albs")
-        call generateVariable("altotacc_mo", "monthly", "grid", "albs")
-        call generateVariable("TBARACC_MO", "monthly", "layer", "tsl")
-        call generateVariable("THLQACC_MO", "monthly", "layer", "mrsll")
-        call generateVariable("THICACC_MO", "monthly", "layer", "mrsfl")
-        call generateVariable("ACTLYR_MO", "monthly", "grid", "actlyr")
-        call generateVariable("ACTLYR_MAX_MO", "monthly", "grid", "actlyrmax")
-        call generateVariable("ACTLYR_MIN_MO", "monthly", "grid", "actlyrmin")
-        call generateVariable("FTABLE_MO", "monthly", "grid", "ftable")
-        call generateVariable("FTABLE_MAX_MO", "monthly", "grid", "ftablemax")
-        call generateVariable("FTABLE_MIN_MO", "monthly", "grid", "ftablemin")
-        call generateVariable("laimaxg_yr_g", "annually", "grid", "lai")
-        call generateVariable("laimaxg_mo_g", "monthly", "grid", "lai")
-        call generateVariable("laimaxg_yr", "annually", "pft", "lai")
-        call generateVariable("laimaxg_mo", "monthly", "pft", "lai")
-        call generateVariable("laimaxg_yr_t", "annually", "tile", "lai")
-        call generateVariable("laimaxg_mo_t", "monthly", "tile", "lai")
-        call generateVariable("vgbiomas_yr_g", "annually", "grid", "cVeg")
-        call generateVariable("vgbiomas_mo_g", "monthly", "grid", "cVeg")
-        call generateVariable("vgbiomas_yr", "annually", "pft", "cVeg")
-        call generateVariable("vgbiomas_mo", "monthly", "pft", "cVeg")
-        call generateVariable("vgbiomas_yr_t", "annually", "tile", "cVeg")
-        call generateVariable("vgbiomas_mo_t", "monthly", "tile", "cVeg")
-        call generateVariable("stemmass_yr_g", "annually", "grid", "cStem")
-        call generateVariable("stemmass_yr", "annually", "pft", "cStem")
-        call generateVariable("stemmass_yr_t", "annually", "tile", "cStem")
-        call generateVariable("rootmass_yr_g", "annually", "grid", "cRoot")
-        call generateVariable("rootmass_yr", "annually", "pft", "cRoot")
-        call generateVariable("rootmass_yr_t", "annually", "tile", "cRoot")
-        call generateVariable("litrmass_yr_g", "annually", "grid", "cLitter")
-        call generateVariable("litrmass_mo_t", "monthly", "grid", "cLitter")
-        call generateVariable("litrmass_yr", "annually", "pft", "cLitter")
-        call generateVariable("litrmass_mo", "monthly", "pft", "cLitter")
-        call generateVariable("litrmass_yr_t", "annually", "tile", "cLitter")
-        call generateVariable("litrmass_mo_t", "monthly", "tile", "cLitter")
-        call generateVariable("soilcmas_yr_g", "annually", "grid", "cSoil")
-        call generateVariable("soilcmas_mo_g", "monthly", "grid", "cSoil")
-        call generateVariable("soilcmas_yr", "annually", "pft", "cSoil")
-        call generateVariable("soilcmas_mo", "monthly", "pft", "cSoil")
-        call generateVariable("soilcmas_yr_t", "annually", "tile", "cSoil")
-        call generateVariable("soilcmas_mo_t", "monthly", "tile", "cSoil")
-        call generateVariable("totcmass_yr_g", "annually", "grid", "cLand")
-        call generateVariable("totcmass_yr", "annually", "pft", "cLand")
-        call generateVariable("totcmass_yr_t", "annually", "tile", "cLand")
-        call generateVariable("veghght_yr_g", "annually", "grid", "vegHeight")
-        call generateVariable("veghght_yr", "annually", "pft", "vegHeight")
-        call generateVariable("veghght_yr_t", "annually", "tile", "vegHeight")
-        call generateVariable("npp_yr_g", "annually", "grid", "npp")
-        call generateVariable("npp_mo_g", "monthly", "grid", "npp")
-        call generateVariable("npp_yr", "annually", "pft", "npp")
-        call generateVariable("npp_mo", "monthly", "pft", "npp")
-        call generateVariable("npp_yr_t", "annually", "tile", "npp")
-        call generateVariable("npp_mo_t", "monthly", "tile", "npp")
-        call generateVariable("gpp_yr_g", "annually", "grid", "gpp")
-        call generateVariable("gpp_mo_g", "monthly", "grid", "gpp")
-        call generateVariable("gpp_yr", "annually", "pft", "gpp")
-        call generateVariable("gpp_mo", "monthly", "pft", "gpp")
-        call generateVariable("gpp_yr_t", "annually", "tile", "gpp")
-        call generateVariable("gpp_mo_t", "monthly", "tile", "gpp")
-        call generateVariable("nep_yr_g", "annually", "grid", "nep")
-        call generateVariable("nep_mo_g", "monthly", "grid", "nep")
-        call generateVariable("nep_yr", "annually", "pft", "nep")
-        call generateVariable("nep_mo", "monthly", "pft", "nep")
-        call generateVariable("nep_yr_t", "annually", "tile", "nep")
-        call generateVariable("nep_mo_t", "monthly", "tile", "nep")
-        call generateVariable("nbp_yr_g", "annually", "grid", "nbp")
-        call generateVariable("nbp_mo_g", "monthly", "grid", "nbp")
-        call generateVariable("nbp_yr", "annually", "pft", "nbp")
-        call generateVariable("nbp_mo", "monthly", "pft", "nbp")
-        call generateVariable("nbp_yr_t", "annually", "tile", "nbp")
-        call generateVariable("nbp_mo_t", "monthly", "tile", "nbp")
-        call generateVariable("hetrores_yr_g", "annually", "grid", "rh")
-        call generateVariable("hetrores_mo_g", "monthly", "grid", "rh")
-        call generateVariable("hetrores_yr", "annually", "pft", "rh")
-        call generateVariable("hetrores_mo", "monthly", "pft", "rh")
-        call generateVariable("hetrores_yr_t", "annually", "tile", "rh")
-        call generateVariable("hetrores_mo_t", "monthly", "tile", "rh")
-        call generateVariable("autores_yr_g", "annually", "grid", "ra")
-        call generateVariable("autores_mo_g", "monthly", "grid", "ra")
-        call generateVariable("autores_yr", "annually", "pft", "ra")
-        call generateVariable("autores_mo", "monthly", "pft", "ra")
-        call generateVariable("autores_yr_t", "annually", "tile", "ra")
-        call generateVariable("autores_mo_t", "monthly", "tile", "ra")
-        call generateVariable("litres_yr_g", "annually", "grid", "rhLitter")
-        call generateVariable("litres_mo_g", "monthly", "grid", "rhLitter")
-        call generateVariable("litres_yr", "annually", "pft", "rhLitter")
-        call generateVariable("litres_mo", "monthly", "pft", "rhLitter")
-        call generateVariable("litres_yr_t", "annually", "tile", "rhLitter")
-        call generateVariable("litres_mo_t", "monthly", "tile", "rhLitter")
-        call generateVariable("soilcres_yr_g", "annually", "grid", "rhSoil")
-        call generateVariable("soilcres_mo_g", "monthly", "grid", "rhSoil")
-        call generateVariable("soilcres_yr", "annually", "pft", "rhSoil")
-        call generateVariable("soilcres_mo", "monthly", "pft", "rhSoil")
-        call generateVariable("soilcres_yr_t", "annually", "tile", "rhSoil")
-        call generateVariable("soilcres_mo_t", "monthly", "tile", "rhSoil")
-        call generateVariable("litrfallveg_mo_g", "monthly", "grid", "fVegLitter")
-        call generateVariable("litrfallveg_mo", "monthly", "pft", "fVegLitter")
-        call generateVariable("litrfallveg_mo_t", "monthly", "tile", "fVegLitter")
-        call generateVariable("humiftrsveg_mo_g", "monthly", "grid", "fLitterSoil")
-        call generateVariable("humiftrsveg_mo", "monthly", "pft", "fLitterSoil")
-        call generateVariable("humiftrsveg_mo_t", "monthly", "tile", "fLitterSoil")
-        call generateVariable("emit_co2_yr_g", "annually", "grid", "fFire")
-        call generateVariable("emit_co2_mo_g", "monthly", "grid", "fFire")
-        call generateVariable("emit_co2_yr", "annually", "pft", "fFire")
-        call generateVariable("emit_co2_mo", "monthly", "pft", "fFire")
-        call generateVariable("emit_co2_yr_t", "annually", "tile", "fFire")
-        call generateVariable("emit_co2_mo_t", "monthly", "tile", "fFire")
-        call generateVariable("emit_ch4_yr_g", "annually", "grid", "fFireCH4")
-        call generateVariable("emit_ch4_mo_g", "monthly", "grid", "fFireCH4")
-        call generateVariable("emit_ch4_yr", "annually", "pft", "fFireCH4")
-        call generateVariable("emit_ch4_mo", "monthly", "pft", "fFireCH4")
-        call generateVariable("emit_ch4_yr_t", "annually", "tile", "fFireCH4")
-        call generateVariable("emit_ch4_mo_t", "monthly", "tile", "fFireCH4")
-        call generateVariable("burnfrac_yr_g", "annually", "grid", "burntFractionAll")
-        call generateVariable("burnfrac_mo_g", "monthly", "grid", "burntFractionAll")
-        call generateVariable("burnfrac_yr", "annually", "pft", "burntFractionAll")
-        call generateVariable("burnfrac_mo", "monthly", "pft", "burntFractionAll")
-        call generateVariable("burnfrac_yr_t", "annually", "tile", "burntFractionAll")
-        call generateVariable("burnfrac_mo_t", "monthly", "tile", "burntFractionAll")
-        call generateVariable("luc_emc_yr_g", "annually", "grid", "fDeforestToAtmos")
-        call generateVariable("luc_emc_mo_g", "monthly", "grid", "fDeforestToAtmos")
-        call generateVariable("luc_emc_yr", "annually", "pft", "fDeforestToAtmos")
-        call generateVariable("luc_emc_mo", "monthly", "pft", "fDeforestToAtmos")
-        call generateVariable("luc_emc_yr_t", "annually", "tile", "fDeforestToAtmos")
-        call generateVariable("luc_emc_mo_t", "monthly", "tile", "fDeforestToAtmos")
-        call generateVariable("lucltrin_yr_g", "annually", "grid", "fDeforestToLitter")
-        call generateVariable("lucltrin_mo_g", "monthly", "grid", "fDeforestToLitter")
-        call generateVariable("lucltrin_yr", "annually", "pft", "fDeforestToLitter")
-        call generateVariable("lucltrin_mo", "monthly", "pft", "fDeforestToLitter")
-        call generateVariable("lucltrin_yr_t", "annually", "tile", "fDeforestToLitter")
-        call generateVariable("lucltrin_mo_t", "monthly", "tile", "fDeforestToLitter")
-        call generateVariable("lucsocin_yr_g", "annually", "grid", "fDeforestToSoil")
-        call generateVariable("lucsocin_mo_g", "monthly", "grid", "fDeforestToSoil")
-        call generateVariable("lucsocin_yr", "annually", "pft", "fDeforestToSoil")
-        call generateVariable("lucsocin_mo", "monthly", "pft", "fDeforestToSoil")
-        call generateVariable("lucsocin_yr_t", "annually", "tile", "fDeforestToSoil")
-        call generateVariable("lucsocin_mo_t", "monthly", "tile", "fDeforestToSoil")
-        call generateVariable("fcancmxrow_yr_g", "annually", "grid", "landCoverFrac")
-        call generateVariable("fcancmxrow_mo_g", "monthly", "grid", "landCoverFrac")
-        call generateVariable("pftexistrow_yr_g", "annually", "grid", "landCoverExist")
-        call generateVariable("pftexistrow_mo_g", "monthly", "grid", "landCoverExist")
-        call generateVariable("ch4wet1_yr_g", "annually", "grid", "wetlandCH4spec")
-        call generateVariable("ch4wet1_mo_g", "monthly", "grid", "wetlandCH4spec")
-        call generateVariable("ch4wet1_yr_t", "annually", "tile", "wetlandCH4spec")
-        call generateVariable("ch4wet1_mo_t", "monthly", "tile", "wetlandCH4spec")
-        call generateVariable("ch4dyn1_yr_g", "annually", "grid", "wetlandCH4dyn")
-        call generateVariable("ch4dyn1_mo_g", "monthly", "grid", "wetlandCH4dyn")
-        call generateVariable("ch4dyn1_yr_t", "annually", "tile", "wetlandCH4dyn")
-        call generateVariable("ch4dyn1_mo_t", "monthly", "tile", "wetlandCH4dyn")
-        call generateVariable("ch4soills_yr_g", "annually", "grid", "soilCH4cons")
-        call generateVariable("ch4soills_mo_g", "monthly", "grid", "soilCH4cons")
-        call generateVariable("ch4soills_yr_t", "annually", "tile", "soilCH4cons")
-        call generateVariable("ch4soills_mo_t", "monthly", "tile", "soilCH4cons")
-        call generateVariable("wetfdyn_yr_g", "annually", "grid", "wetlandFrac")
-        call generateVariable("wetfdyn_mo_g", "monthly", "grid", "wetlandFrac")
-        call generateVariable("wetfdyn_yr_t", "annually", "tile", "wetlandFrac")
-        call generateVariable("wetfdyn_mo_t", "monthly", "tile", "wetlandFrac")
+                            !nameInCode, timeFreq, outputForm, descriptor
+        call generateNetCDFFile("fsstar_yr", "annually", "grid", "rss")
+        call generateNetCDFFile("fsstar_mo", "monthly", "grid", "rss")
+        call generateNetCDFFile("flstar_yr", "annually", "grid", "rls")
+        call generateNetCDFFile("flstar_mo", "monthly", "grid", "rls")
+        call generateNetCDFFile("qh_yr", "annually", "grid", "hfss")
+        call generateNetCDFFile("qh_mo", "monthly", "grid", "hfss")
+        call generateNetCDFFile("qe_yr", "annually", "grid", "hfls")
+        call generateNetCDFFile("qe_mo", "monthly", "grid", "hfls")
+        call generateNetCDFFile("snoacc_mo", "monthly", "grid", "snw")
+        call generateNetCDFFile("wsnoacc_mo", "monthly", "grid", "wsnw")
+        call generateNetCDFFile("rofacc_yr", "annually", "grid", "mrro")
+        call generateNetCDFFile("rofacc_mo", "monthly", "grid", "mrro")
+        call generateNetCDFFile("preacc_yr", "annually", "grid", "pr")
+        call generateNetCDFFile("preacc_mo", "monthly", "grid", "pr")
+        call generateNetCDFFile("evapacc_yr", "annually", "grid", "evspsbl")
+        call generateNetCDFFile("evapacc_mo", "monthly", "grid", "evspsbl")
+        call generateNetCDFFile("groundevap", "monthly", "grid", "evspsblsoi")
+        call generateNetCDFFile("canopyevap", "monthly", "grid", "evspsblveg")
+        call generateNetCDFFile("transpacc_yr", "annually", "grid", "tran")
+        call generateNetCDFFile("transpacc_mo", "monthly", "grid", "tran")
+        call generateNetCDFFile("taacc_mo", "monthly", "grid", "ts")
+        call generateNetCDFFile("altotacc_yr", "annually", "grid", "albs")
+        call generateNetCDFFile("altotacc_mo", "monthly", "grid", "albs")
+        call generateNetCDFFile("TBARACC_MO", "monthly", "layer", "tsl")
+        call generateNetCDFFile("THLQACC_MO", "monthly", "layer", "mrsll")
+        call generateNetCDFFile("THICACC_MO", "monthly", "layer", "mrsfl")
+        call generateNetCDFFile("ACTLYR_MO", "monthly", "grid", "actlyr")
+        call generateNetCDFFile("ACTLYR_MAX_MO", "monthly", "grid", "actlyrmax")
+        call generateNetCDFFile("ACTLYR_MIN_MO", "monthly", "grid", "actlyrmin")
+        call generateNetCDFFile("FTABLE_MO", "monthly", "grid", "ftable")
+        call generateNetCDFFile("FTABLE_MAX_MO", "monthly", "grid", "ftablemax")
+        call generateNetCDFFile("FTABLE_MIN_MO", "monthly", "grid", "ftablemin")
+        call generateNetCDFFile("laimaxg_yr_g", "annually", "grid", "lai")
+        call generateNetCDFFile("laimaxg_mo_g", "monthly", "grid", "lai")
+        call generateNetCDFFile("laimaxg_yr", "annually", "pft", "lai")
+        call generateNetCDFFile("laimaxg_mo", "monthly", "pft", "lai")
+        call generateNetCDFFile("laimaxg_yr_t", "annually", "tile", "lai")
+        call generateNetCDFFile("laimaxg_mo_t", "monthly", "tile", "lai")
+        call generateNetCDFFile("vgbiomas_yr_g", "annually", "grid", "cVeg")
+        call generateNetCDFFile("vgbiomas_mo_g", "monthly", "grid", "cVeg")
+        call generateNetCDFFile("vgbiomas_yr", "annually", "pft", "cVeg")
+        call generateNetCDFFile("vgbiomas_mo", "monthly", "pft", "cVeg")
+        call generateNetCDFFile("vgbiomas_yr_t", "annually", "tile", "cVeg")
+        call generateNetCDFFile("vgbiomas_mo_t", "monthly", "tile", "cVeg")
+        call generateNetCDFFile("stemmass_yr_g", "annually", "grid", "cStem")
+        call generateNetCDFFile("stemmass_yr", "annually", "pft", "cStem")
+        call generateNetCDFFile("stemmass_yr_t", "annually", "tile", "cStem")
+        call generateNetCDFFile("rootmass_yr_g", "annually", "grid", "cRoot")
+         call generateNetCDFFile("rootmass_yr", "annually", "pft", "cRoot")
+        call generateNetCDFFile("rootmass_yr_t", "annually", "tile", "cRoot")
+        call generateNetCDFFile("litrmass_yr_g", "annually", "grid", "cLitter")
+        call generateNetCDFFile("litrmass_mo_t", "monthly", "grid", "cLitter")
+        call generateNetCDFFile("litrmass_yr", "annually", "pft", "cLitter")
+        call generateNetCDFFile("litrmass_mo", "monthly", "pft", "cLitter")
+        call generateNetCDFFile("litrmass_yr_t", "annually", "tile", "cLitter")
+        call generateNetCDFFile("litrmass_mo_t", "monthly", "tile", "cLitter")
+        call generateNetCDFFile("soilcmas_yr_g", "annually", "grid", "cSoil")
+        call generateNetCDFFile("soilcmas_mo_g", "monthly", "grid", "cSoil")
+        call generateNetCDFFile("soilcmas_yr", "annually", "pft", "cSoil")
+        call generateNetCDFFile("soilcmas_mo", "monthly", "pft", "cSoil")
+        call generateNetCDFFile("soilcmas_yr_t", "annually", "tile", "cSoil")
+        call generateNetCDFFile("soilcmas_mo_t", "monthly", "tile", "cSoil")
+        call generateNetCDFFile("totcmass_yr_g", "annually", "grid", "cLand")
+        call generateNetCDFFile("totcmass_yr", "annually", "pft", "cLand")
+        call generateNetCDFFile("totcmass_yr_t", "annually", "tile", "cLand")
+        call generateNetCDFFile("veghght_yr_g", "annually", "grid", "vegHeight")
+        call generateNetCDFFile("veghght_yr", "annually", "pft", "vegHeight")
+        call generateNetCDFFile("veghght_yr_t", "annually", "tile", "vegHeight")
+        call generateNetCDFFile("npp_yr_g", "annually", "grid", "npp")
+        call generateNetCDFFile("npp_mo_g", "monthly", "grid", "npp")
+        call generateNetCDFFile("npp_yr", "annually", "pft", "npp")
+        call generateNetCDFFile("npp_mo", "monthly", "pft", "npp")
+        call generateNetCDFFile("npp_yr_t", "annually", "tile", "npp")
+        call generateNetCDFFile("npp_mo_t", "monthly", "tile", "npp")
+        call generateNetCDFFile("gpp_yr_g", "annually", "grid", "gpp")
+        call generateNetCDFFile("gpp_mo_g", "monthly", "grid", "gpp")
+        call generateNetCDFFile("gpp_yr", "annually", "pft", "gpp")
+        call generateNetCDFFile("gpp_mo", "monthly", "pft", "gpp")
+        call generateNetCDFFile("gpp_yr_t", "annually", "tile", "gpp")
+        call generateNetCDFFile("gpp_mo_t", "monthly", "tile", "gpp")
+        call generateNetCDFFile("nep_yr_g", "annually", "grid", "nep")
+        call generateNetCDFFile("nep_mo_g", "monthly", "grid", "nep")
+        call generateNetCDFFile("nep_yr", "annually", "pft", "nep")
+        call generateNetCDFFile("nep_mo", "monthly", "pft", "nep")
+        call generateNetCDFFile("nep_yr_t", "annually", "tile", "nep")
+        call generateNetCDFFile("nep_mo_t", "monthly", "tile", "nep")
+        call generateNetCDFFile("nbp_yr_g", "annually", "grid", "nbp")
+        call generateNetCDFFile("nbp_mo_g", "monthly", "grid", "nbp")
+        call generateNetCDFFile("nbp_yr", "annually", "pft", "nbp")
+        call generateNetCDFFile("nbp_mo", "monthly", "pft", "nbp")
+        call generateNetCDFFile("nbp_yr_t", "annually", "tile", "nbp")
+        call generateNetCDFFile("nbp_mo_t", "monthly", "tile", "nbp")
+        call generateNetCDFFile("hetrores_yr_g", "annually", "grid", "rh")
+        call generateNetCDFFile("hetrores_mo_g", "monthly", "grid", "rh")
+        call generateNetCDFFile("hetrores_yr", "annually", "pft", "rh")
+        call generateNetCDFFile("hetrores_mo", "monthly", "pft", "rh")
+        call generateNetCDFFile("hetrores_yr_t", "annually", "tile", "rh")
+        call generateNetCDFFile("hetrores_mo_t", "monthly", "tile", "rh")
+        call generateNetCDFFile("autores_yr_g", "annually", "grid", "ra")
+        call generateNetCDFFile("autores_mo_g", "monthly", "grid", "ra")
+        call generateNetCDFFile("autores_yr", "annually", "pft", "ra")
+        call generateNetCDFFile("autores_mo", "monthly", "pft", "ra")
+        call generateNetCDFFile("autores_yr_t", "annually", "tile", "ra")
+        call generateNetCDFFile("autores_mo_t", "monthly", "tile", "ra")
+        call generateNetCDFFile("litres_yr_g", "annually", "grid", "rhLitter")
+        call generateNetCDFFile("litres_mo_g", "monthly", "grid", "rhLitter")
+        call generateNetCDFFile("litres_yr", "annually", "pft", "rhLitter")
+        call generateNetCDFFile("litres_mo", "monthly", "pft", "rhLitter")
+        call generateNetCDFFile("litres_yr_t", "annually", "tile", "rhLitter")
+        call generateNetCDFFile("litres_mo_t", "monthly", "tile", "rhLitter")
+        call generateNetCDFFile("soilcres_yr_g", "annually", "grid", "rhSoil")
+        call generateNetCDFFile("soilcres_mo_g", "monthly", "grid", "rhSoil")
+        call generateNetCDFFile("soilcres_yr", "annually", "pft", "rhSoil")
+        call generateNetCDFFile("soilcres_mo", "monthly", "pft", "rhSoil")
+        call generateNetCDFFile("soilcres_yr_t", "annually", "tile", "rhSoil")
+        call generateNetCDFFile("soilcres_mo_t", "monthly", "tile", "rhSoil")
+        call generateNetCDFFile("litrfallveg_mo_g", "monthly", "grid", "fVegLitter")
+        call generateNetCDFFile("litrfallveg_mo", "monthly", "pft", "fVegLitter")
+        call generateNetCDFFile("litrfallveg_mo_t", "monthly", "tile", "fVegLitter")
+        call generateNetCDFFile("humiftrsveg_mo_g", "monthly", "grid", "fLitterSoil")
+        call generateNetCDFFile("humiftrsveg_mo", "monthly", "pft", "fLitterSoil")
+        call generateNetCDFFile("humiftrsveg_mo_t", "monthly", "tile", "fLitterSoil")
+        call generateNetCDFFile("emit_co2_yr_g", "annually", "grid", "fFire")
+        call generateNetCDFFile("emit_co2_mo_g", "monthly", "grid", "fFire")
+        call generateNetCDFFile("emit_co2_yr", "annually", "pft", "fFire")
+        call generateNetCDFFile("emit_co2_mo", "monthly", "pft", "fFire")
+        call generateNetCDFFile("emit_co2_yr_t", "annually", "tile", "fFire")
+        call generateNetCDFFile("emit_co2_mo_t", "monthly", "tile", "fFire")
+        call generateNetCDFFile("emit_ch4_yr_g", "annually", "grid", "fFireCH4")
+        call generateNetCDFFile("emit_ch4_mo_g", "monthly", "grid", "fFireCH4")
+        call generateNetCDFFile("emit_ch4_yr", "annually", "pft", "fFireCH4")
+        call generateNetCDFFile("emit_ch4_mo", "monthly", "pft", "fFireCH4")
+        call generateNetCDFFile("emit_ch4_yr_t", "annually", "tile", "fFireCH4")
+        call generateNetCDFFile("emit_ch4_mo_t", "monthly", "tile", "fFireCH4")
+        call generateNetCDFFile("burnfrac_yr_g", "annually", "grid", "burntFractionAll")
+        call generateNetCDFFile("burnfrac_mo_g", "monthly", "grid", "burntFractionAll")
+        call generateNetCDFFile("burnfrac_yr", "annually", "pft", "burntFractionAll")
+        call generateNetCDFFile("burnfrac_mo", "monthly", "pft", "burntFractionAll")
+        call generateNetCDFFile("burnfrac_yr_t", "annually", "tile", "burntFractionAll")
+        call generateNetCDFFile("burnfrac_mo_t", "monthly", "tile", "burntFractionAll")
+        call generateNetCDFFile("luc_emc_yr_g", "annually", "grid", "fDeforestToAtmos")
+        call generateNetCDFFile("luc_emc_mo_g", "monthly", "grid", "fDeforestToAtmos")
+        call generateNetCDFFile("luc_emc_yr", "annually", "pft", "fDeforestToAtmos")
+        call generateNetCDFFile("luc_emc_mo", "monthly", "pft", "fDeforestToAtmos")
+        call generateNetCDFFile("luc_emc_yr_t", "annually", "tile", "fDeforestToAtmos")
+        call generateNetCDFFile("luc_emc_mo_t", "monthly", "tile", "fDeforestToAtmos")
+        call generateNetCDFFile("lucltrin_yr_g", "annually", "grid", "fDeforestToLitter")
+        call generateNetCDFFile("lucltrin_mo_g", "monthly", "grid", "fDeforestToLitter")
+        call generateNetCDFFile("lucltrin_yr", "annually", "pft", "fDeforestToLitter")
+        call generateNetCDFFile("lucltrin_mo", "monthly", "pft", "fDeforestToLitter")
+        call generateNetCDFFile("lucltrin_yr_t", "annually", "tile", "fDeforestToLitter")
+        call generateNetCDFFile("lucltrin_mo_t", "monthly", "tile", "fDeforestToLitter")
+        call generateNetCDFFile("lucsocin_yr_g", "annually", "grid", "fDeforestToSoil")
+        call generateNetCDFFile("lucsocin_mo_g", "monthly", "grid", "fDeforestToSoil")
+        call generateNetCDFFile("lucsocin_yr", "annually", "pft", "fDeforestToSoil")
+        call generateNetCDFFile("lucsocin_mo", "monthly", "pft", "fDeforestToSoil")
+        call generateNetCDFFile("lucsocin_yr_t", "annually", "tile", "fDeforestToSoil")
+        call generateNetCDFFile("lucsocin_mo_t", "monthly", "tile", "fDeforestToSoil")
+        call generateNetCDFFile("fcancmxrow_yr_g", "annually", "grid", "landCoverFrac")
+        call generateNetCDFFile("fcancmxrow_mo_g", "monthly", "grid", "landCoverFrac")
+        call generateNetCDFFile("pftexistrow_yr_g", "annually", "grid", "landCoverExist")
+        call generateNetCDFFile("pftexistrow_mo_g", "monthly", "grid", "landCoverExist")
+        call generateNetCDFFile("ch4wet1_yr_g", "annually", "grid", "wetlandCH4spec")
+        call generateNetCDFFile("ch4wet1_mo_g", "monthly", "grid", "wetlandCH4spec")
+        call generateNetCDFFile("ch4wet1_yr_t", "annually", "tile", "wetlandCH4spec")
+        call generateNetCDFFile("ch4wet1_mo_t", "monthly", "tile", "wetlandCH4spec")
+        call generateNetCDFFile("ch4dyn1_yr_g", "annually", "grid", "wetlandCH4dyn")
+        call generateNetCDFFile("ch4dyn1_mo_g", "monthly", "grid", "wetlandCH4dyn")
+        call generateNetCDFFile("ch4dyn1_yr_t", "annually", "tile", "wetlandCH4dyn")
+        call generateNetCDFFile("ch4dyn1_mo_t", "monthly", "tile", "wetlandCH4dyn")
+        call generateNetCDFFile("ch4soills_yr_g", "annually", "grid", "soilCH4cons")
+        call generateNetCDFFile("ch4soills_mo_g", "monthly", "grid", "soilCH4cons")
+        call generateNetCDFFile("ch4soills_yr_t", "annually", "tile", "soilCH4cons")
+        call generateNetCDFFile("ch4soills_mo_t", "monthly", "tile", "soilCH4cons")
+        call generateNetCDFFile("wetfdyn_yr_g", "annually", "grid", "wetlandFrac")
+        call generateNetCDFFile("wetfdyn_mo_g", "monthly", "grid", "wetlandFrac")
+        call generateNetCDFFile("wetfdyn_yr_t", "annually", "tile", "wetlandFrac")
+        call generateNetCDFFile("wetfdyn_mo_t", "monthly", "tile", "wetlandFrac")
 
-    end subroutine generateOutputVariables
+        return
 
-    subroutine generateVariable(nameInCode, timeFreq, outputForm, descriptorLabel)
+    end subroutine generateOutputFiles
+
+    subroutine generateNetCDFFile(nameInCode, timeFreq, outputForm, descriptorLabel)
     ! Generates a new (netcdf) variable
 
         implicit none
 
         character(*), intent(in)                :: nameInCode, timeFreq, outputForm, descriptorLabel
-        type(outputDescriptor)                :: descriptor
+        type(outputDescriptor)                  :: descriptor
         character(80)                           :: filename = ''
-        logical                                 :: isTimeValid, isGroupValid
+        logical                                 :: isTimeValid, isGroupValid, fileCreatedOk
         integer                                 :: id
 
         !call printConfig(config)
@@ -209,51 +224,83 @@ contains
 
         ! Get variable descriptor
         descriptor = getDescriptor(descriptorLabel)
+
         ! If the requested timeFreq matches the project config, all's good
-        isTimeValid = validTime(config, timeFreq, descriptor)
+        isTimeValid = validTime(timeFreq, descriptor)
+
         ! If the group property of descriptor matches the project config, all's good
-        isGroupValid = validGroup(config, descriptor)
+        isGroupValid = validGroup(descriptor)
+
         ! If the project config and variable descriptor match the request, process current variable
         if (isTimeValid .and. isGroupValid) then
             ! Generate the filename
-            filename = generateFilename(outputForm, config, descriptor)
+            filename = generateFilename(outputForm, descriptor)
+
             ! Allocate a new variable (ncid, filename, key etc.)
             id = addVariable(nameInCode, filename)
+
             ! Make the netcdf file for the new variable (mostly definitions)
-            call createNetCDF(id, outputForm, descriptor)
+
+            call createNetCDF(filename,id, outputForm, descriptor)
+
+            ! Now make sure the file was properly created
+            fileCreatedOk = checkFileExists(filename)
+
+            if (.not. fileCreatedOk) then
+                print*,'Failed to create',filename
+                print*,'Aborting'
+                stop
+            end if
         endif
 
-    end subroutine generateVariable
+    end subroutine generateNetCDFFile
 
-    ! Adds the new variable to the list of variables (see the type "variable")
+    logical function checkFileExists(filename)
+
+        character(*), intent(in) :: filename
+
+        inquire(file=filename, exist=checkFileExists)
+
+    end function
+
+    ! Adds the new variable to the list of variables (see the type "netcdfVars")
     integer function addVariable(key, filename)
+        use fileIOModule
         implicit none
         character(*), intent(in)    :: key, filename
         integer                     :: ncid
-        ncid = createFile(filename)
+
+        ncid = ncCreate(fileName, cmode=NF90_CLOBBER)
         variableCount = variableCount + 1
-        variables(variableCount)%ncid = ncid
-        variables(variableCount)%key = key
-        variables(variableCount)%filename = filename
+        netcdfVars(variableCount)%ncid = ncid
+        netcdfVars(variableCount)%key = key
+        netcdfVars(variableCount)%filename = filename
         addVariable = variableCount
+
     end function addVariable
 
     ! Determines if the current variable matches the project configuration
-    logical function validGroup(config, descriptor)
+    logical function validGroup(descriptor)
+
+        use io_driver, only : outputDescriptor
+
         implicit none
-        type(projectConfiguration), intent(in)  :: config
+
+        !type(projectConfiguration), intent(in)  :: config
         type(outputDescriptor), intent(in)    :: descriptor
-        if (config%class .and. trim(descriptor%group) == "class") then
+
+        !if (config%class .and. trim(descriptor%group) == "class") then
+        if (trim(descriptor%group) == "class") then !CLASS outputs always are valid
             validGroup = .true.
-        elseif (config%ctem .and. trim(descriptor%group) == "ctem") then
+        elseif (c_switch%ctem_on .and. trim(descriptor%group) == "ctem") then
             validGroup = .true.
-        elseif (config%fire .and. trim(descriptor%group) == "fire") then
+        elseif (c_switch%dofire .and. trim(descriptor%group) == "fire") then
             validGroup = .true.
-        elseif (config%land .and. trim(descriptor%group) == "land") then
+        elseif (c_switch%lnduseon .and. trim(descriptor%group) == "land") then
             validGroup = .true.
-        elseif (config%methane .and. trim(descriptor%group) == "methane") then
+        elseif (c_switch%dowetlands .and. trim(descriptor%group) == "methane") then
             validGroup = .true.
-        elseif (config%compete .and. trim(descriptor%group) == "compete") then
+        elseif (c_switch%compete .and. trim(descriptor%group) == "compete") then
             validGroup = .true.
         else
             validGroup = .false.
@@ -261,21 +308,25 @@ contains
     end function validGroup
 
     ! Determines wether the current variable matches the project configuration
-    logical function validTime(config, timeFreq, descriptor)
+    logical function validTime(timeFreq, descriptor)
+
+        use io_driver, only : outputDescriptor
+
         implicit none
-        type(projectConfiguration), intent(in)  :: config
+
+        !type(projectConfiguration), intent(in)  :: config
         type(outputDescriptor), intent(inout) :: descriptor
         character(*), intent(in)                :: timeFreq
         logical                                 :: valid
 
         valid = .true.
-        if (config%annually .and. timeFreq == 'annually') then
+        if (timeFreq == 'annually') then
             descriptor%timeFreq = timeFreq
-        elseif (config%monthly .and. timeFreq == 'monthly') then
+        elseif (c_switch%domonthoutput .and. timeFreq == 'monthly') then
             descriptor%timeFreq = timeFreq
-        elseif (config%daily .and. timeFreq == 'daily') then
+        elseif (c_switch%dodayoutput .and. timeFreq == 'daily') then
             descriptor%timeFreq = timeFreq
-        elseif (config%halfhourly .and. timeFreq == 'halfhourly') then
+        elseif (c_switch%dohhoutput .and. timeFreq == 'halfhourly') then
             descriptor%timeFreq = timeFreq
         else
             valid = .false.
@@ -284,12 +335,17 @@ contains
     end function validTime
 
     ! Generates the filename for the current variable
-    character(80) function generateFilename(outputForm, config, descriptor)
+    character(80) function generateFilename(outputForm, descriptor)
+
+        use io_driver, only : outputDescriptor
+
         implicit none
-        type(projectConfiguration), intent(in)  :: config
+
+        !type(projectConfiguration), intent(in)  :: config
         type(outputDescriptor), intent(in)    :: descriptor
         character(*), intent(in)                :: outputForm
         character(80)                           :: suffix = ''
+
         select case(trim(outputForm))
             case("pft")
                 suffix = '_perpft'
@@ -298,16 +354,21 @@ contains
             case default
                 suffix = ''
         end select
-        generateFilename = trim(config%path) // '/' // &
+        generateFilename = trim(c_switch%output_directory) // '/' // &
         trim(descriptor%shortName) // '_' // &
         trim(descriptor%timeFreq) // trim(suffix) // '.nc'
     end function generateFilename
 
     ! Retrieve a variable descriptor based on a given key (e.g. shortName)
     type (outputDescriptor) function getDescriptor(key)
+
+        use io_driver, only : outputDescriptors
+
         implicit none
+
         character(len=*), intent(in)       :: key
         integer                            :: i
+
         do i = 1, descriptorCount
             if (outputDescriptors(i)%shortName == key) then
                 getDescriptor = outputDescriptors(i)
@@ -319,11 +380,14 @@ contains
 
     ! Find the id of the variable with the following key
     integer function getIdByKey(key)
+
+        use io_driver, only : netcdfVars
+
         implicit none
         character(30), intent(in)   :: key
         integer i
         do i=1, variableCount
-            if (variables(i)%key == key) then
+            if (netcdfVars(i)%key == key) then
                 getIdByKey = i
                 return
             endif
@@ -331,37 +395,185 @@ contains
         getIdByKey = 0
     end function getIdByKey
 
-    ! Prints out the project config
-    subroutine printConfig(config)
-        implicit none
-        type(projectConfiguration), intent(in)  :: config
-        print*, "Project configuration:"
-        print*, "   halfhourly", config%halfhourly
-        print*, "   daily", config%daily
-        print*, "   monthly", config%monthly
-        print*, "   annually", config%annually
-    end subroutine printConfig
+    subroutine createNetCDF(fileName,id, outputForm, descriptor)
 
-    ! Prints out a variable descriptor
-    subroutine printDescriptor(descriptor)
+        use io_driver, only : outputDescriptor,myDomain,netcdfVar
+        use fileIOModule
+        use ctem_statevars,     only : c_switch
+        use ctem_params,        only : ignd,icc,nmos
+
         implicit none
+
+        character(*), intent(in)              :: fileName
+        character(*), intent(in)              :: outputForm
         type(outputDescriptor), intent(in)    :: descriptor
-        print*, "Variable descriptor:"
-        print*, "   Group: ", descriptor%group
-        print*, "   Short Name: ", descriptor%shortName
-        print*, "   Standard Name: ", descriptor%standardName
-        print*, "   Long Name: ", trim(descriptor%longName)
-        print*, "   Units: ", descriptor%units
-        print*, "   Time Frequency: ", descriptor%timeFreq
-    end subroutine printDescriptor
+        integer, intent(in)                   :: id
 
-    ! Prints out some information about the variables
-    subroutine printVariables
-        implicit none
-        integer         :: i
-        do i = 1, variableCount
-            !print*, i, getIdByKey(variables(i)%key), variables(i)%ncid, variables(i)%key, trim(variables(i)%filename)
-            print*, i, variables(i)%ncid, variables(i)%key, trim(variables(i)%filename)
-        enddo
-    end subroutine printVariables
+        character(8)  :: today
+        character(10) :: now
+        integer                     :: ncid, varid, suffix,i
+        integer                     :: DimId,lonDimId,latDimId,tileDimId,pftDimId,layerDimId,timeDimId
+        real, dimension(2)          :: xrange, yrange
+        character(30)               :: timestart = "seconds since 1801-1-1"
+        character(30)               :: fill_value = "1.e38"
+        real, dimension(1)          :: dummyArray = [ 0. ]
+        integer, dimension(:), allocatable :: intArray
+
+        character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
+        logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
+                                           !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
+
+        ! Point pointers
+        leap => c_switch%leap
+        Comment => c_switch%Comment
+
+        ncid=netcdfVars(variableCount)%ncid
+
+        ! ---------
+        call ncPutAtt(ncid, nf90_global, 'title',charvalues='CLASSIC output file')
+        call date_and_time(today,now)
+
+        call ncPutAtt(ncid,nf90_global,'timestamp',charvalues=today//' '//now(1:4))
+        call ncPutAtt(ncid,nf90_global,'Conventions',charvalues='COARDS')
+        call ncPutAtt(ncid,nf90_global,'node_offset',intvalues=1)
+
+        !----1 - Longitude
+
+        lonDimId = ncDefDim(ncid,'lon',myDomain%cntx)
+        varid = ncDefVar(ncid,'lon',nf90_float,[lonDimId])
+        call ncPutAtt(ncid,varid,'long_name',charvalues='longitude')
+        call ncPutAtt(ncid,varid,'units',charvalues='degrees_east')
+        !call ncPutAtt(ncid,varid,'actual_range',xrange) #FLAG need to find the xrange from all_lon.
+        call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+
+
+        !----2 - Latitude
+        latDimId = ncDefDim(ncid,'lat',myDomain%cnty)
+        varid = ncDefVar(ncid,'lat',nf90_float,[latDimId])
+        call ncPutAtt(ncid,varid,'long_name',charvalues='latitude')
+        call ncPutAtt(ncid,varid,'units',charvalues='degrees_north')
+        !call ncPutAtt(ncid,varid,'actual_range',yrange) #FLAG need to find the xrange from all_lon.
+        call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+
+        select case(trim(outputForm))
+
+            case ("tile")       ! Per tile outputs
+
+                tileDimId = ncDefDim(ncid,'tile',nmos)
+                varid = ncDefVar(ncid,'tile',nf90_short,[tileDimId])
+                call ncPutAtt(ncid,varid,'long_name',charvalues='tile')
+                call ncPutAtt(ncid,varid,'units',charvalues='tile number')
+                call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+                call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
+
+            case("pft")         ! Per PFT outputs
+
+                pftDimId = ncDefDim(ncid,'pft',icc)
+                varid = ncDefVar(ncid,'pft',nf90_short,[pftDimId])
+                call ncPutAtt(ncid,varid,'long_name',charvalues='Plant Functional Type')
+                call ncPutAtt(ncid,varid,'units',charvalues='PFT')
+                call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+                call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
+
+            case ("layer")      ! Per layer outputs
+
+                layerDimId = ncDefDim(ncid,'layer',ignd)
+                varid = ncDefVar(ncid,'layer',nf90_short,[layerDimId])
+                call ncPutAtt(ncid,varid,'long_name',charvalues='soil layer')
+                call ncPutAtt(ncid,varid,'units',charvalues='layer')
+                call ncPutAtt(ncid,varid,'_Storage',charvalues="contiguous")
+                call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
+
+        end select
+
+        ! Set up the time dimension
+        timeDimId = ncDefDim(ncid,'time',nf90_unlimited)
+        varid = ncDefVar(ncid,'time',nf90_int,[timeDimId])
+
+        call ncPutAtt(ncid,varid,'long_name',charvalues='time')
+        call ncPutAtt(ncid,varid,'units',charvalues=trim(timestart))
+
+        if (leap) then
+            call ncPutAtt(ncid,varid,'calendar',charvalues="standard")
+        else
+            call ncPutAtt(ncid,varid,'calendar',charvalues="365_day")
+        end if
+
+        call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
+        call ncPutAtt(ncid,varid,'_Chunksizes',intvalues=1)
+        call ncPutAtt(ncid,varid,'_Endianness',charvalues="little")
+
+        call ncEndDef(ncid)
+
+        ! Fill in the dimension variables and define the model output vars
+        call ncPutDimValues(ncid, 'lon', myDomain%lonLandCell, count=myDomain%cntx)
+        call ncPutDimValues(ncid, 'lat', myDomain%latLandCell, count=myDomain%cnty)
+        
+        select case(trim(outputForm))
+            case ("tile")       ! Per tile outputs
+                allocate(intArray(nmos))
+                intArray=identityVector(nmos)
+                call ncPutDimValues(ncid, 'tile', dummyArray,intdata=intArray, count=nmos) ! pass dummyArray to allow integers
+                call ncReDef(ncid)
+                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_float, [lonDimId,latDimId,tileDimId,timeDimId])
+
+            case("pft")         ! Per PFT outputs
+
+                allocate(intArray(icc))
+                intArray=identityVector(icc)
+                call ncPutDimValues(ncid, 'pft', dummyArray,intdata=intArray, count=icc) ! pass dummyArray to allow integers
+                call ncReDef(ncid)
+
+                if (descriptor%includeBareGround) then
+                    ! do something for cells that have bare ground
+                    suffix = suffix + 1
+                else
+                    ! do something for cells that don't have bare ground
+                    suffix = suffix
+                endif
+                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_float, [lonDimId,latDimId,pftDimId,timeDimId])
+
+            case ("layer")      ! Per layer outputs
+
+                allocate(intArray(ignd))
+                intArray=identityVector(ignd)
+                call ncPutDimValues(ncid, 'layer', dummyArray,intdata=intArray, count=ignd) ! pass dummyArray to allow integers
+                call ncReDef(ncid)
+                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_float, [lonDimId,latDimId,layerDimId,timeDimId])
+
+            case default        ! Grid average outputs
+
+                call ncReDef(ncid)
+                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_float, [lonDimId,latDimId,timeDimId])
+
+        end select
+
+        call ncPutAtt(ncid,varid,'long_name',charvalues=descriptor%longName)
+        call ncPutAtt(ncid,varid,'units',charvalues=descriptor%units)
+
+        !call ncPutAtt(ncid,varid,'_FillValue',fill_value) !FLAG this is not working at present.
+
+        call ncPutAtt(ncid,varid,'missing_value',charvalues=fill_value)
+        call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
+        call ncPutAtt(ncid,varid,'_DeflateLevel',intvalues=1)
+        !call ncPutAtt(ncid,varid,'name_in_code',varinfo%nameincode)
+        !call ncPutAtt(ncid,varid,'Comment',varinfo%Comment)
+        call ncEndDef(ncid)
+
+        !close the netcdf
+        call ncClose(ncid)
+
+    end subroutine createNetCDF
+
+    pure function identityVector(n) result(res)
+        integer, allocatable ::res(:)
+        integer, intent(in) :: n
+        integer             :: i
+        allocate(res(n))
+        forall (i=1:n)
+            res(i) = i
+        end forall
+    end function identityVector
+
+
 end module outputManager

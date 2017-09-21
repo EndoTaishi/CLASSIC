@@ -23,7 +23,7 @@ OBJ = dataTransferModule.o fileIOModule.o ctem_params.o ctem_statevars.o  peatla
 	TNPOST.o WEND.o balcar.o ORDLEG.o mainres.o allocate.o phenolgy.o turnover.o mortality.o \
 	disturb.o ctems2.o competition_map.o competition_unmap.o landuse_change_mod.o soil_ch4uptake.o \
 	competition_mod.o hetres_mod.o ctem.o io_driver.o model_state_drivers.o \
-	read_from_job_options.o main.o supportFunctions.o CLASSIC.o
+	read_from_job_options.o main.o outputManager.o xmlParser.o xmlManager.o CLASSIC.o
 
 # Check to see if the model should be compiled to run in serial or parallel
 # For a parallel run, use the command "make PARALLEL=true"
@@ -39,19 +39,20 @@ else
 endif
 
 # Additional Libraries (serial/parallel)
-LFLAGS += -ldl -lz -lm -g -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow -Wall -Wextra
+LFLAGS += -ldl -lz -lm -g -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow
+#-Wall -Wextra
 
 # RECIPES
 # Compile object files from .F90 sources
-%.o: %.F90
+%.o: src/%.F90
 	$(COMPILER) $(IFLAGS) -c $< -o $@ $(LFLAGS)
 
 # Compile object files from .f90 sources
-%.o: %.f90
+%.o: src/%.f90
 	$(COMPILER) $(IFLAGS) -c $< -o $@ $(LFLAGS)
 
 # Compile object files from .f (Fortran 77) sources
-%.o: %.f
+%.o: src/%.f
 	$(COMPILER) $(IFLAGS) -c $< -o $@ $(LFLAGS)
 
 # Link objects together and put executable in the bin/ directory

@@ -57,7 +57,11 @@ module ctem_params
 
 implicit none
 
+
+public :: allocateParamsCTEM
 public :: readin_params
+public :: prepareGlobalParams
+
 
 ! Constants
 
@@ -83,10 +87,24 @@ integer :: ignd        !< Number of soil layers, read in from the initialization
 
 ! ----
 ! Plant-related
-integer, parameter :: ican        = 4        !< Number of CLASS pfts, read in from the initialization file
-integer, parameter :: icp1        = ican + 1 !
-integer,parameter  :: icc=12                 !< Number of CTEM pfts (Peatlands add 3: EVG shrub,DCD shrubs, sedge)
-integer,parameter  :: iccp1       = icc + 1  !
+integer :: ican        != 4        !< Number of CLASS pfts, read in from the initialization file
+integer :: icp1        != ican + 1 !
+integer :: icc         !=12        !< Number of CTEM pfts (Peatlands add 3: EVG shrub,DCD shrubs, sedge)
+integer :: iccp1       != icc + 1  !
+integer :: l2max       != 5        !
+integer :: kk                !< product of class pfts and l2max
+integer :: numcrops          !< number of crop pfts
+integer :: numtreepfts       !< number of tree pfts
+integer :: numgrass          !< number of grass pfts
+integer :: numshrubs         !< number of shrubs pfts
+
+!> simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
+logical, dimension(:), allocatable :: crop != [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false.,.false. ]
+
+!> simple grass matric, define the number and position of grass
+logical, dimension(:), allocatable :: grass != [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.true. ]
+
+integer, dimension(3) :: grass_ind = [ 10, 11,12 ]  !< index of the grass pfts (3 grass pfts at present)  !FLAG FLAG get rid of this!
 
 real, parameter :: seed    = 0.001    !< seed pft fraction, same as in competition \nin mosaic mode, all tiles are given this as a minimum
 real, parameter :: minbare = 1.0e-5   !< minimum bare fraction when running competition on to prevent numerical problems.
@@ -105,61 +123,39 @@ real :: tolrnce1 = 0.5      !< kg c, tolerance of total c balance (FOR LUC) !FLA
 !> Logical switch for using constant allocation factors (default value is false)
 logical :: consallo = .false.
 
-
-! How to fit this stuff in?
-
-integer, parameter :: l2max       = 5        !
-integer, parameter :: kk          = 20       !< product of class pfts and l2max
-integer, parameter :: numcrops    = 2        !< number of crop pfts
-integer, parameter :: numtreepfts = 5        !< number of tree pfts
-integer, parameter :: numgrass    = 3        !< number of grass pfts
-integer, parameter :: numshrubs   = 2        !< number of shrubs pfts
-
-!> simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
-logical, parameter, dimension(icc) :: crop = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false.,.false. ]
-
-!> simple grass matric, define the number and position of grass
-logical, parameter, dimension(icc) :: grass = [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.true. ]
-
-integer, parameter, dimension(numgrass) :: grass_ind = [ 10, 11,12 ]  !< index of the grass pfts (3 grass pfts at present)
-integer, parameter, dimension(numshrubs) :: shrub_ind = [ 6, 7 ]  !not used for now
-integer, parameter, dimension(numtreepfts) :: tree_ind = [ 1, 2,3,4,5 ]
-integer, parameter, dimension(numcrops) :: crop_ind = [ 8,9 ]
-
-
 ! Read in from the namelist: ---------------------------------
 
-integer, dimension(kk) :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
-character(8), dimension(kk) :: pftlist  !<List of PFTs
-character(8), dimension(kk) :: vegtype  !<Type of vegetation, options: Tree, Grass, Crop, Shrub
-real, dimension(kk) :: kn               !< Canopy light/nitrogen extinction coefficient; CAREFUL: Separate set defined in PHTSYN3.f!
+integer, dimension(:), allocatable :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
+character(8), dimension(:), allocatable :: pftlist  !<List of PFTs
+character(8), dimension(:), allocatable :: vegtype  !<Type of vegetation, options: Tree, Grass, Crop, Shrub
+real, dimension(:), allocatable :: kn               !< Canopy light/nitrogen extinction coefficient; CAREFUL: Separate set defined in PHTSYN3.f!
 
 !allocate.f parameters:
 
-real, dimension(kk) :: omega            !< omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
-real, dimension(kk) :: epsilonl         !< Epsilon leaf, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
-real, dimension(kk) :: epsilons         !< Epsilon stem, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
-real, dimension(kk) :: epsilonr         !< Epsilon root, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
-real, dimension(kk) :: rtsrmin          !< Minimum root:shoot ratio mostly for support and stability
-real, dimension(kk) :: aldrlfon         !< Allocation to leaves during leaf onset
-real, dimension(kk) :: caleaf           !< Constant allocation fractions to leaves if not using dynamic allocation.
+real, dimension(:), allocatable :: omega            !< omega, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+real, dimension(:), allocatable :: epsilonl         !< Epsilon leaf, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+real, dimension(:), allocatable :: epsilons         !< Epsilon stem, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+real, dimension(:), allocatable :: epsilonr         !< Epsilon root, parameter used in allocation formulae (values differ if using prescribed vs. competition run)
+real, dimension(:), allocatable :: rtsrmin          !< Minimum root:shoot ratio mostly for support and stability
+real, dimension(:), allocatable :: aldrlfon         !< Allocation to leaves during leaf onset
+real, dimension(:), allocatable :: caleaf           !< Constant allocation fractions to leaves if not using dynamic allocation.
                                         !!(NOT thoroughly tested, and using dynamic allocation is preferable)
-real, dimension(kk) :: castem           !< Constant allocation fractions to stem if not using dynamic allocation.
+real, dimension(:), allocatable :: castem           !< Constant allocation fractions to stem if not using dynamic allocation.
                                         !!(NOT thoroughly tested, and using dynamic allocation is preferable)
-real, dimension(kk) :: caroot           !< Constant allocation fractions to roots if not using dynamic allocation.
+real, dimension(:), allocatable :: caroot           !< Constant allocation fractions to roots if not using dynamic allocation.
                                         !!(NOT thoroughly tested, and using dynamic allocation is preferable)
 
 ! bio2str.f parameters: ---------
 
-real, dimension(kk) :: abar             !< parameter determining average root profile
-real, dimension(kk) :: avertmas         !< average root biomass (kg c/m2) for ctem's 8 pfts used for estimating rooting profile
-real, dimension(kk) :: alpha            !< parameter determining how the roots grow
-real, dimension(kk) :: prcnslai         !< storage/imaginary lai is this percentage of maximum leaf area index that a given root+stem biomass can support
-real, dimension(kk) :: minslai          !< minimum storage lai. this is what the model uses as lai when growing vegetation for scratch. consider these as model seeds.
-real, dimension(kk) :: mxrtdpth         !< maximum rooting depth. this is used so that the rooting depths simulated by ctem's variable rooting depth parameterzation are
+real, dimension(:), allocatable :: abar             !< parameter determining average root profile
+real, dimension(:), allocatable :: avertmas         !< average root biomass (kg c/m2) for ctem's 8 pfts used for estimating rooting profile
+real, dimension(:), allocatable :: alpha            !< parameter determining how the roots grow
+real, dimension(:), allocatable :: prcnslai         !< storage/imaginary lai is this percentage of maximum leaf area index that a given root+stem biomass can support
+real, dimension(:), allocatable :: minslai          !< minimum storage lai. this is what the model uses as lai when growing vegetation for scratch. consider these as model seeds.
+real, dimension(:), allocatable :: mxrtdpth         !< maximum rooting depth. this is used so that the rooting depths simulated by ctem's variable rooting depth parameterzation are
                                         !< constrained to realistic values
-real, dimension(kk) :: albvis           !< visible albedos of the ctem pfts
-real, dimension(kk) :: albnir           !< near IR albedos of the 9 ctem pfts
+real, dimension(:), allocatable :: albvis           !< visible albedos of the ctem pfts
+real, dimension(:), allocatable :: albnir           !< near IR albedos of the 9 ctem pfts
 
 !! competition_mod.f90 parameters: ------
 
@@ -172,22 +168,22 @@ real, dimension(kk) :: albnir           !< near IR albedos of the 9 ctem pfts
 
 ! existence subroutine:
 
-real, dimension(kk) :: tcoldmin         !< minimum coldest month temperature
-real, dimension(kk) :: tcoldmax         !< maximum coldest month temperature
-real, dimension(kk) :: twarmmax         !< maximum warmest month temperature
-real, dimension(kk) :: gdd5lmt          !< minimum gdd above 5 c required to exist
-real, dimension(kk) :: aridlmt          !< aridity index limit for broadleaf drought/dry deciduous trees
-real, dimension(kk) :: dryseasonlmt     !< minimum length of dry season for PFT to exist
-real, dimension(kk) :: bio2sap          !< multiplying factor for converting biomass density to sapling density
+real, dimension(:), allocatable :: tcoldmin         !< minimum coldest month temperature
+real, dimension(:), allocatable :: tcoldmax         !< maximum coldest month temperature
+real, dimension(:), allocatable :: twarmmax         !< maximum warmest month temperature
+real, dimension(:), allocatable :: gdd5lmt          !< minimum gdd above 5 c required to exist
+real, dimension(:), allocatable :: aridlmt          !< aridity index limit for broadleaf drought/dry deciduous trees
+real, dimension(:), allocatable :: dryseasonlmt     !< minimum length of dry season for PFT to exist
+real, dimension(:), allocatable :: bio2sap          !< multiplying factor for converting biomass density to sapling density
                                         !! smaller numbers give faster colonization rates.
 real :: bioclimrt                       !< mortality rate (1/year) for pfts that no longer exist within their pre-defined bioclimatic range
 
 ! ctem.f parameters: ----------
 
-real, dimension(kk) :: grescoef         !< Growth respiration coefficient
-real, dimension(kk) :: humicfac         !< Humification factor - used for transferring carbon from litter into soil c pool
-real, dimension(kk) :: laimin           !< Minimum lai below which a pft doesn't expand
-real, dimension(kk) :: laimax           !< Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
+real, dimension(:), allocatable :: grescoef         !< Growth respiration coefficient
+real, dimension(:), allocatable :: humicfac         !< Humification factor - used for transferring carbon from litter into soil c pool
+real, dimension(:), allocatable :: laimin           !< Minimum lai below which a pft doesn't expand
+real, dimension(:), allocatable :: laimax           !< Maximum lai above which a pft always expands and lambdamax fraction of npp is used for expansion
 real :: lambdamax                       !< Max. fraction of npp that is allocated for reproduction/colonization
 real :: repro_fraction                  !< Fraction of NPP that is used to create reproductive tissues
 
@@ -210,34 +206,34 @@ real :: parblght                    !< estimating fire likelihood due to lightni
 real :: reparea                     !< typical area representing ctem's fire parameterization (km2)
 real :: popdthrshld                 !< threshold of population density (people/km2) [Kloster et al., biogeosci. 2010]
 real :: f0                          !< Fire spread rate in the absence of wind
-real, dimension(kk) :: maxsprd      !> max. fire spread rate, km/hr
-real, dimension(kk) :: frco2glf     !> fraction of green leaf biomass converted to gases due to combustion
-real, dimension(kk) :: frco2blf     !> fraction of brown leaf biomass converted to gases due to combustion
-real, dimension(kk) :: frltrglf     !> fraction of green leaf biomass becoming litter after combustion
-real, dimension(kk) :: frltrblf     !> fraction of brown leaf biomass becoming litter after combustion
-real, dimension(kk) :: frco2stm     !> fraction of stem biomass converted to gases due to combustion
-real, dimension(kk) :: frltrstm     !> fraction of stem biomass becoming litter after combustion
-real, dimension(kk) :: frco2rt      !> fraction of root biomass converted to gases due to combustion
-real, dimension(kk) :: frltrrt      !> fraction of root biomass becoming litter after combustion
-real, dimension(kk) :: frltrbrn     !> fraction of litter burned during fire and emitted as gases
-real, dimension(kk) :: standreplace !> pft prevalence for stand replacing fire events (based on resistance to fire damage, ie. cambial kill)(unitless)
-real, dimension(kk) :: emif_co2     !> pft-specific emission factors for CO2,g species / (kg DOM)
-real, dimension(kk) :: emif_co      !> pft-specific emission factors for CO,g species / (kg DOM)
-real, dimension(kk) :: emif_ch4     !> pft-specific emission factors for CH4,g species / (kg DOM)
-real, dimension(kk) :: emif_nmhc    !> pft-specific emission factors for non-methane hydrocarbons,g species / (kg DOM)
-real, dimension(kk) :: emif_h2      !> pft-specific emission factors for H2,g species / (kg DOM)
-real, dimension(kk) :: emif_nox     !> pft-specific emission factors for NOx,g species / (kg DOM)
-real, dimension(kk) :: emif_n2o     !> pft-specific emission factors for N2O,g species / (kg DOM)
-real, dimension(kk) :: emif_pm25    !> pft-specific emission factors for particles <2.5 micrometers in diameter,g species / (kg DOM)
-real, dimension(kk) :: emif_tpm     !> pft-specific emission factors for total particulate matter,g species / (kg DOM)
-real, dimension(kk) :: emif_tc      !> pft-specific emission factors for total carbon,g species / (kg DOM)
-real, dimension(kk) :: emif_oc      !> pft-specific emission factors for organic carbon,g species / (kg DOM)
-real, dimension(kk) :: emif_bc      !> pft-specific emission factors for black carbon,g species / (kg DOM)
+real, dimension(:), allocatable :: maxsprd      !> max. fire spread rate, km/hr
+real, dimension(:), allocatable :: frco2glf     !> fraction of green leaf biomass converted to gases due to combustion
+real, dimension(:), allocatable :: frco2blf     !> fraction of brown leaf biomass converted to gases due to combustion
+real, dimension(:), allocatable :: frltrglf     !> fraction of green leaf biomass becoming litter after combustion
+real, dimension(:), allocatable :: frltrblf     !> fraction of brown leaf biomass becoming litter after combustion
+real, dimension(:), allocatable :: frco2stm     !> fraction of stem biomass converted to gases due to combustion
+real, dimension(:), allocatable :: frltrstm     !> fraction of stem biomass becoming litter after combustion
+real, dimension(:), allocatable :: frco2rt      !> fraction of root biomass converted to gases due to combustion
+real, dimension(:), allocatable :: frltrrt      !> fraction of root biomass becoming litter after combustion
+real, dimension(:), allocatable :: frltrbrn     !> fraction of litter burned during fire and emitted as gases
+real, dimension(:), allocatable :: standreplace !> pft prevalence for stand replacing fire events (based on resistance to fire damage, ie. cambial kill)(unitless)
+real, dimension(:), allocatable :: emif_co2     !> pft-specific emission factors for CO2,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_co      !> pft-specific emission factors for CO,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_ch4     !> pft-specific emission factors for CH4,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_nmhc    !> pft-specific emission factors for non-methane hydrocarbons,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_h2      !> pft-specific emission factors for H2,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_nox     !> pft-specific emission factors for NOx,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_n2o     !> pft-specific emission factors for N2O,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_pm25    !> pft-specific emission factors for particles <2.5 micrometers in diameter,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_tpm     !> pft-specific emission factors for total particulate matter,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_tc      !> pft-specific emission factors for total carbon,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_oc      !> pft-specific emission factors for organic carbon,g species / (kg DOM)
+real, dimension(:), allocatable :: emif_bc      !> pft-specific emission factors for black carbon,g species / (kg DOM)
 
 ! hetres parameters: ----------
 
-real, dimension(kk) :: bsratelt     !> litter respiration rates at 15 c in in kg c/kg c.year
-real, dimension(kk) :: bsratesc     !> soil carbon respiration rates at 15 c in kg c/kg c.year
+real, dimension(:), allocatable :: bsratelt     !> litter respiration rates at 15 c in in kg c/kg c.year
+real, dimension(:), allocatable :: bsratesc     !> soil carbon respiration rates at 15 c in kg c/kg c.year
 real, dimension(4) :: tanhq10       !> Constants used in tanh formulation of respiration Q10 determination
 real :: alpha_hetres                !> parameter for finding litter temperature as a weighted average of top soil layer temperature and root temperature
 real :: bsratelt_g                  !< bare ground litter respiration rate at 15 c in kg c/kg c.year
@@ -259,8 +255,8 @@ real, dimension(2) :: bmasthrs      !< biomass thresholds for determining if def
 !    line with literature (zhang et al. 2009, luyssaert et al. gcb 2007)
 !    values changed for bsrtstem and bsrtroot. jm 06.2012
 
-real, dimension(kk) :: bsrtstem     !< Base respiration rates for stem in kg c/kg c.year at 15 degrees celcius (values differ if using prescribed vs. competition run)
-real, dimension(kk) :: bsrtroot     !< Base respiration rates for root in kg c/kg c.year at 15 degrees celcius (values differ if using prescribed vs. competition run)
+real, dimension(:), allocatable :: bsrtstem     !< Base respiration rates for stem in kg c/kg c.year at 15 degrees celcius (values differ if using prescribed vs. competition run)
+real, dimension(:), allocatable :: bsrtroot     !< Base respiration rates for root in kg c/kg c.year at 15 degrees celcius (values differ if using prescribed vs. competition run)
 real :: minlvfr                     !< Minimum live wood fraction
 
 ! peatlands_mod.f90 parameters:
@@ -321,29 +317,29 @@ real::   humicfacmoss               !< Humification ratio of moss litter
 
 ! phenology.f parameters: ----------
 
-integer, dimension(kk) :: dayschk       !> Number of days over which to check if net photosynthetic rate is positive before initiating leaf onset
-real, dimension(kk) :: drgta            !> Parameter determining how fast soil dryness causes leaves to fall
-real, dimension(kk) :: eta              !> eta and kappa, parameters for estimating min. stem+root biomass
-real, dimension(kk) :: kappa            !> required to support green leaf biomass. kappa is 1.6 for trees and crops, and 1.2 for grasses.
+integer, dimension(:), allocatable :: dayschk       !> Number of days over which to check if net photosynthetic rate is positive before initiating leaf onset
+real, dimension(:), allocatable :: drgta            !> Parameter determining how fast soil dryness causes leaves to fall
+real, dimension(:), allocatable :: eta              !> eta and kappa, parameters for estimating min. stem+root biomass
+real, dimension(:), allocatable :: kappa            !> required to support green leaf biomass. kappa is 1.6 for trees and crops, and 1.2 for grasses.
 real, dimension(2) :: flhrspan          !< Harvest span (time in days over which crops are harvested,  15 days),
                                         !< and  fall span (time in days over which bdl cold dcd plants shed their leaves,  30 days)
 real :: fracbofg                        !< Parameter used to estimate lai of brown leaves. We assume that SLA of brown leaves is this fraction of SLA of green leaves
-real, dimension(kk) :: harvthrs         !> LAI threshold for harvesting crops. values are zero for all pftsother than c3 and c4 crops.
-real, dimension(kk) :: specsla          !> CTEM can use user-specified specific leaf areas (SLA) if the following specified values are greater than zero
-real, dimension(kk) :: thrprcnt         !> Percentage of max. LAI that can be supported which is used as a threshold for determining leaf phenology status
-real, dimension(kk) :: lwrthrsh         !> Lower temperature threshold for ctem's 9 pfts. these are used to estimate cold stress related leaf loss rate (degree c)
-real, dimension(kk) :: cdlsrtmx         !> Max. loss rate for cold stress for all 9 pfts, (1/day)
+real, dimension(:), allocatable :: harvthrs         !> LAI threshold for harvesting crops. values are zero for all pftsother than c3 and c4 crops.
+real, dimension(:), allocatable :: specsla          !> CTEM can use user-specified specific leaf areas (SLA) if the following specified values are greater than zero
+real, dimension(:), allocatable :: thrprcnt         !> Percentage of max. LAI that can be supported which is used as a threshold for determining leaf phenology status
+real, dimension(:), allocatable :: lwrthrsh         !> Lower temperature threshold for ctem's 9 pfts. these are used to estimate cold stress related leaf loss rate (degree c)
+real, dimension(:), allocatable :: cdlsrtmx         !> Max. loss rate for cold stress for all 9 pfts, (1/day)
 real :: kmort1                          !< kmort1, parameter used in growth efficiency mortality formulation
 
-real, dimension(kk) :: mxmortge !< Maximum mortality when growth efficiency is zero (1/year) (values differ if using prescribed vs. competition run)
-real, dimension(kk) :: maxage   !< Maximum plant age. used to calculate intrinsic mortality rate.
+real, dimension(:), allocatable :: mxmortge !< Maximum mortality when growth efficiency is zero (1/year) (values differ if using prescribed vs. competition run)
+real, dimension(:), allocatable :: maxage   !< Maximum plant age. used to calculate intrinsic mortality rate.
                                 !< maximum age for crops is set to zero since they will be harvested
                                 !< anyway. grasses are treated the same way since the turnover time
                                 !< for grass leaves is 1 year and for roots is 2 years. (values differ if using prescribed vs. competition run)
 
-real, dimension(kk) :: lfespany !> Leaf life span (in years) for CTEM's pfts
-real, dimension(kk) :: drlsrtmx !< Max. loss rate for drought stress for all 9 pfts, (1/day) (values differ if using prescribed vs. competition run)
-real, dimension(kk) :: colda    !> Parameter determining how fast cold temperatures causes leaves to fall
+real, dimension(:), allocatable :: lfespany !> Leaf life span (in years) for CTEM's pfts
+real, dimension(:), allocatable :: drlsrtmx !< Max. loss rate for drought stress for all 9 pfts, (1/day) (values differ if using prescribed vs. competition run)
+real, dimension(:), allocatable :: colda    !> Parameter determining how fast cold temperatures causes leaves to fall
 integer, dimension(2) :: coldlmt!> No. of days for which some temperature has to remain below a given threshold for initiating a process, days
 real, dimension(2) :: coldthrs  !<1. -5 c threshold for initiating "leaf fall" mode for ndl dcd trees \n
                                 !!2.  8 c threshold for initiating "harvest" for crops, the array colddays tracks days corresponding to these thresholds
@@ -351,8 +347,8 @@ real :: roothrsh                !< Root temperature threshold for initiating lea
 
 ! turnover.f parameters: ---------------------------------
 
-real, dimension(kk) :: stemlife !> Stemlife, turnover time scale for stem for different pfts
-real, dimension(kk) :: rootlife !> Rootlife, turnover time scale for root for different pfts
+real, dimension(:), allocatable :: stemlife !> Stemlife, turnover time scale for stem for different pfts
+real, dimension(:), allocatable :: rootlife !> Rootlife, turnover time scale for root for different pfts
 real :: stmhrspn                !< Stem harvest span. same as crop harvest span. period in days over which crops are harvested.
 
 ! wetland_methane.f90 parameters: ------------
@@ -371,200 +367,343 @@ real :: soilw_thrshN   !< Soil wetness threshold in the North zone
 real :: soilw_thrshE   !< Soil wetness threshold in the Equatorial zone
 real :: soilw_thrshS   !< Soil wetness threshold in the South zone
 
+
+! Passed variables:
+
+character(80)    :: runParamsFile
+logical          :: competeSwitch
+
+
 ! --------------------------------------------------------------------------
 
 contains
 
-subroutine readin_params(runparams_file,compete)
 
-!>\ingroup readin_params
-!!@{
+subroutine prepareGlobalParams
 
-implicit none
+!> Initialize and/or read in all global model parameters
 
-!>true if the competition scheme is on.
-logical, intent(in) :: compete
-character(180), intent(in) :: runparams_file  !< location of the namelist file containing the model parameters
+    implicit none
 
-real, dimension(kk):: omega_compete
-real, dimension(kk):: epsilonl_compete
-real, dimension(kk):: epsilons_compete
-real, dimension(kk):: epsilonr_compete
-real, dimension(kk):: bsrtstem_compete
-real, dimension(kk):: bsrtroot_compete
-real, dimension(kk):: mxmortge_compete
-real, dimension(kk):: maxage_compete
-real, dimension(kk):: drlsrtmx_compete
+    ! Prepare CLASS parameters
+    CALL CLASSD
 
-namelist /classicparams/ &
-    modelpft,&
-    vegtype, &
-    pftlist,&
-    kn, &
-    omega,&
-    omega_compete,&
-    epsilonl,&
-    epsilonl_compete,&
-    epsilons,&
-    epsilons_compete,&
-    epsilonr,&
-    epsilonr_compete,&
-    rtsrmin,&
-    aldrlfon,&
-    caleaf,&
-    castem,&
-    caroot,&
-    abar,&
-    avertmas,&
-    alpha,&
-    prcnslai,&
-    minslai,&
-    mxrtdpth,&
-    albvis,&
-    albnir,&
-    tcoldmin,&
-    tcoldmax,&
-    twarmmax,&
-    gdd5lmt,&
-    aridlmt,&
-    dryseasonlmt,&
-    bio2sap,&
-    bioclimrt,&
-    grescoef,&
-    humicfac,&
-    laimin,&
-    laimax,&
-    lambdamax,&
-    repro_fraction,&
-    bmasthrs_fire,&
-    extnmois_veg,&
-    extnmois_duff,&
-    lwrlthrs,&
-    hgrlthrs,&
-    parmlght,&
-    parblght,&
-    reparea,&
-    popdthrshld,&
-    f0,&
-    maxsprd,&
-    frco2glf,&
-    frco2blf,&
-    frltrglf,&
-    frltrblf,&
-    frco2stm,&
-    frltrstm,&
-    frco2rt,&
-    frltrrt,&
-    frltrbrn,&
-    standreplace,&
-    emif_co2,&
-    emif_co,&
-    emif_ch4,&
-    emif_nmhc,&
-    emif_h2,&
-    emif_nox,&
-    emif_n2o,&
-    emif_pm25,&
-    emif_tpm,&
-    emif_tc,&
-    emif_oc,&
-    emif_bc,&
-    bsratelt,&
-    bsratesc,&
-    tanhq10,&
-    alpha_hetres,&
-    bsratelt_g,&
-    bsratesc_g,&
-    a,&
-    combust,&
-    paper,&
-    furniture,&
-    bmasthrs,&
-    bsrtstem,&
-    bsrtstem_compete,&
-    bsrtroot,&
-    bsrtroot_compete,&
-    minlvfr,&
-    rmlmoss25,&
-    tau25m,&
-    ektau,&
-    kc25,&
-    ko25,&
-    ec,&
-    ej,&
-    eo,&
-    evc,&
-    sj,&
-    hj,&
-    alpha_moss,&
-    dctmin,&
-    dcbaset,&
-    bsrateltms,&
-    zolnmoss,&
-    thpmoss,&
-    thrmoss,&
-    thmmoss,&
-    bmoss,&
-    psismoss,&
-    grksmoss,&
-    hcpmoss,&
-    grescoefmoss,&
-    rmortmoss,&
-    humicfacmoss,&
-    dayschk,&
-    drgta,&
-    eta,&
-    kappa,&
-    flhrspan,&
-    fracbofg,&
-    harvthrs,&
-    specsla,&
-    thrprcnt,&
-    lwrthrsh,&
-    cdlsrtmx,&
-    kmort1,&
-    mxmortge,&
-    mxmortge_compete,&
-    maxage,&
-    maxage_compete,&
-    lfespany,&
-    drlsrtmx,&
-    drlsrtmx_compete,&
-    colda,&
-    coldlmt,&
-    coldthrs,&
-    roothrsh,&
-    stemlife,&
-    rootlife,&
-    stmhrspn,&
-    ratioch4,&
-    wtdryres,&
-    factor2,&
-    lat_thrshld1,&
-    lat_thrshld2,&
-    soilw_thrshN,&
-    soilw_thrshE,&
-    soilw_thrshS
+    ! Assign iccp1 and icp1. icc and ican are read in from the job options file.
+    iccp1 = icc + 1
+    icp1 = ican + 1
 
-! ----------
-open(10,file=trim(runparams_file),action='read',status='old')
+    ! Allocate the arrays that store the CTEM parameter values
+    call allocateParamsCTEM
 
-read(10,nml = classicparams)
+    ! Initialize the CTEM parameters, this reads them in from a namelist file.
+    call readin_params
 
-close(10)
+end subroutine prepareGlobalParams
 
-!Overwrite the prescribed vars with the compete ones if competition is on.
-if (compete) then
-    omega = omega_compete
-    epsilonl = epsilonl_compete
-    epsilons = epsilons_compete
-    epsilonr = epsilonr_compete
-    bsrtstem = bsrtstem_compete
-    bsrtroot = bsrtroot_compete
-    mxmortge = mxmortge_compete
-    maxage = maxage_compete
-    drlsrtmx = drlsrtmx_compete
-end if
+! --------------------------------------------------------------------------
+subroutine allocateParamsCTEM()
+    !> Allocate the arrays for CTEM params that require it.
+
+    implicit none
+
+    kk = l2max * icc
+
+    allocate(modelpft(kk),&
+            pftlist(kk),&
+            vegtype(kk),&
+            kn(kk),&
+            omega(kk),&
+            epsilonl(kk),&
+            epsilons(kk),&
+            epsilonr(kk),&
+            rtsrmin(kk),&
+            aldrlfon(kk),&
+            caleaf(kk),&
+            castem(kk),&
+            caroot(kk),&
+            abar(kk),&
+            avertmas(kk),&
+            alpha(kk),&
+            prcnslai(kk),&
+            minslai(kk),&
+            mxrtdpth(kk),&
+            albvis(kk),&
+            albnir(kk),&
+            tcoldmin(kk),&
+            tcoldmax(kk),&
+            twarmmax(kk),&
+            gdd5lmt(kk),&
+            aridlmt(kk),&
+            dryseasonlmt(kk),&
+            bio2sap(kk),&
+            grescoef(kk),&
+            humicfac(kk),&
+            laimin(kk),&
+            laimax(kk),&
+            maxsprd(kk),&
+            frco2glf(kk),&
+            frco2blf(kk),&
+            frltrglf(kk),&
+            frltrblf(kk),&
+            frco2stm(kk),&
+            frltrstm(kk),&
+            frco2rt(kk),&
+            frltrrt(kk),&
+            frltrbrn(kk),&
+            standreplace(kk),&
+            emif_co2(kk),&
+            emif_co(kk),&
+            emif_ch4(kk),&
+            emif_nmhc(kk),&
+            emif_h2(kk),&
+            emif_nox(kk),&
+            emif_n2o(kk),&
+            emif_pm25(kk),&
+            emif_tpm(kk),&
+            emif_tc(kk),&
+            emif_oc(kk),&
+            emif_bc(kk),&
+            bsratelt(kk),&
+            bsratesc(kk),&
+            bsrtstem(kk),&
+            bsrtroot(kk),&
+            dayschk(kk),&
+            drgta(kk),&
+            eta(kk),&
+            kappa(kk),&
+            harvthrs(kk),&
+            specsla(kk),&
+            thrprcnt(kk),&
+            lwrthrsh(kk),&
+            cdlsrtmx(kk),&
+            mxmortge(kk),&
+            maxage(kk),&
+            lfespany(kk),&
+            drlsrtmx(kk),&
+            colda(kk),&
+            stemlife(kk),&
+            rootlife(kk))
+
+end subroutine allocateParamsCTEM
+
+! --------------------------------------------------------------------------
+
+subroutine readin_params
+
+    ! Read in the CTEM parameters from a namelist file. Populate a few parameters
+    ! based on what was read in.
+
+    !>\ingroup readin_params
+    !!@{
+
+    implicit none
+
+    real, dimension(kk):: omega_compete
+    real, dimension(kk):: epsilonl_compete
+    real, dimension(kk):: epsilons_compete
+    real, dimension(kk):: epsilonr_compete
+    real, dimension(kk):: bsrtstem_compete
+    real, dimension(kk):: bsrtroot_compete
+    real, dimension(kk):: mxmortge_compete
+    real, dimension(kk):: maxage_compete
+    real, dimension(kk):: drlsrtmx_compete
+    integer :: i
+    character(8) :: pftkind
+
+    namelist /classicparams/ &
+        modelpft,&
+        vegtype, &
+        pftlist,&
+        kn, &
+        omega,&
+        omega_compete,&
+        epsilonl,&
+        epsilonl_compete,&
+        epsilons,&
+        epsilons_compete,&
+        epsilonr,&
+        epsilonr_compete,&
+        rtsrmin,&
+        aldrlfon,&
+        caleaf,&
+        castem,&
+        caroot,&
+        abar,&
+        avertmas,&
+        alpha,&
+        prcnslai,&
+        minslai,&
+        mxrtdpth,&
+        albvis,&
+        albnir,&
+        tcoldmin,&
+        tcoldmax,&
+        twarmmax,&
+        gdd5lmt,&
+        aridlmt,&
+        dryseasonlmt,&
+        bio2sap,&
+        bioclimrt,&
+        grescoef,&
+        humicfac,&
+        laimin,&
+        laimax,&
+        lambdamax,&
+        repro_fraction,&
+        bmasthrs_fire,&
+        extnmois_veg,&
+        extnmois_duff,&
+        lwrlthrs,&
+        hgrlthrs,&
+        parmlght,&
+        parblght,&
+        reparea,&
+        popdthrshld,&
+        f0,&
+        maxsprd,&
+        frco2glf,&
+        frco2blf,&
+        frltrglf,&
+        frltrblf,&
+        frco2stm,&
+        frltrstm,&
+        frco2rt,&
+        frltrrt,&
+        frltrbrn,&
+        standreplace,&
+        emif_co2,&
+        emif_co,&
+        emif_ch4,&
+        emif_nmhc,&
+        emif_h2,&
+        emif_nox,&
+        emif_n2o,&
+        emif_pm25,&
+        emif_tpm,&
+        emif_tc,&
+        emif_oc,&
+        emif_bc,&
+        bsratelt,&
+        bsratesc,&
+        tanhq10,&
+        alpha_hetres,&
+        bsratelt_g,&
+        bsratesc_g,&
+        a,&
+        combust,&
+        paper,&
+        furniture,&
+        bmasthrs,&
+        bsrtstem,&
+        bsrtstem_compete,&
+        bsrtroot,&
+        bsrtroot_compete,&
+        minlvfr,&
+        rmlmoss25,&
+        tau25m,&
+        ektau,&
+        kc25,&
+        ko25,&
+        ec,&
+        ej,&
+        eo,&
+        evc,&
+        sj,&
+        hj,&
+        alpha_moss,&
+        dctmin,&
+        dcbaset,&
+        bsrateltms,&
+        zolnmoss,&
+        thpmoss,&
+        thrmoss,&
+        thmmoss,&
+        bmoss,&
+        psismoss,&
+        grksmoss,&
+        hcpmoss,&
+        grescoefmoss,&
+        rmortmoss,&
+        humicfacmoss,&
+        dayschk,&
+        drgta,&
+        eta,&
+        kappa,&
+        flhrspan,&
+        fracbofg,&
+        harvthrs,&
+        specsla,&
+        thrprcnt,&
+        lwrthrsh,&
+        cdlsrtmx,&
+        kmort1,&
+        mxmortge,&
+        mxmortge_compete,&
+        maxage,&
+        maxage_compete,&
+        lfespany,&
+        drlsrtmx,&
+        drlsrtmx_compete,&
+        colda,&
+        coldlmt,&
+        coldthrs,&
+        roothrsh,&
+        stemlife,&
+        rootlife,&
+        stmhrspn,&
+        ratioch4,&
+        wtdryres,&
+        factor2,&
+        lat_thrshld1,&
+        lat_thrshld2,&
+        soilw_thrshN,&
+        soilw_thrshE,&
+        soilw_thrshS
+
+    ! ----------
+
+    open(10,file=trim(runParamsFile),action='read',status='old')
+
+    read(10,nml = classicparams)
+
+    close(10)
+
+    numcrops    = 0        !< number of crop pfts
+    numtreepfts = 0        !< number of tree pfts
+    numgrass    = 0        !< number of grass pfts
+    numshrubs   = 0        !< number of shrubs pfts
+    allocate(grass(icc))
+    allocate(crop(icc))
+    grass = .false.
+    crop = .false.
+
+    do i = 1, icc
+        pftkind=vegtype(i)
+        select case(pftkind)
+            case('Tree')
+                numtreepfts = numtreepfts + 1
+            case('Shrub')
+                numshrubs = numshrubs + 1
+            case('Grass')
+                numgrass = numgrass + 1
+                grass(i) = .true.
+            case('Crop')
+                numcrops = numcrops + 1
+                crop(i) = .true.
+        end select
+    end do
+    !Overwrite the prescribed vars with the compete ones if competition is on.
+    if (competeSwitch) then
+        omega = omega_compete
+        epsilonl = epsilonl_compete
+        epsilons = epsilons_compete
+        epsilonr = epsilonr_compete
+        bsrtstem = bsrtstem_compete
+        bsrtroot = bsrtroot_compete
+        mxmortge = mxmortge_compete
+        maxage = maxage_compete
+        drlsrtmx = drlsrtmx_compete
+    end if
 
 end subroutine readin_params
 

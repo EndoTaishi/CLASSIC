@@ -37,8 +37,6 @@ module io_driver
 implicit none
 
 ! subroutines contained in this module:
-!public  :: read_from_ctm        ! Reads the input CTM file
-!public  :: write_ctm_rs         ! Writes the CTM restart file
 public  :: create_outfiles      ! Creates and sets up the output files
 public  :: class_monthly_aw     ! Accumulates and writes the CLASS monthly file
 public  :: class_annual_aw      ! Accumulates and writes the CLASS annual file
@@ -50,25 +48,25 @@ public  :: close_outfiles       ! Closes the model output files
 
 !------------------------------------------------------------------------------------
 
-
 ! Variables used in io operations:
-real, dimension(4) :: bounds                    !> Corners of the domain to be simulated (netcdfs)
+
+type simulationDomain
+    real, dimension(:), allocatable     :: lonLandCell, latLandCell     ! Long/Lat values of only the land cells in our model domain
+    integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   ! Indexes of only the land cells in our model domain for our resolution
+    real, dimension(:), allocatable     :: allLonValues, allLatValues   ! All long/Lat values in our model domain (including ocean/non-land)
+    integer                             :: LandCellCount    !> number of land cells that the model will run over
+    real, dimension(4) :: domainBounds                      !> Corners of the domain to be simulated (netcdfs)
+    integer :: srtx                                         !> starting index for this simulation for longitudes
+    integer :: srty                                         !> starting index for this simulation for latitudes
+    integer :: cntx                                         !> number of grid cells for this simulation in the longitude direction
+    integer :: cnty                                         !> number of grid cells for this simulation in the latitude direction
+end type
+
+type(simulationDomain) :: myDomain
+
 integer :: metfid                               !> netcdf file id for the meteorology file
 integer :: initid                               !> netcdf file id for the model initialization file
 integer :: rsid                                 !> netcdf file id for the model restart file
-real, allocatable, dimension(:) :: lonvect      !> vector of all longitudes for the region of this simulation
-real, allocatable, dimension(:) :: latvect      !> vector of all latitudes for the region of this simulation
-integer :: srtx                                 !> starting index for this simulation for longitudes
-integer :: srty                                 !> starting index for this simulation for latitudes
-integer :: cntx                                 !> number of grid cells for this simulation in the longitude direction
-integer :: cnty                                 !> number of grid cells for this simulation in the latitude direction
-real, dimension(2) :: xrange
-real, dimension(2) :: yrange
-integer :: validCount   !> number of land cells that the model will run over
-real, allocatable, dimension(:)  :: validLon, validLat !> arrays of the longitude or latitude of land cells
-integer, allocatable, dimension(:)  :: validLonIndex, validLatIndex !> arrays of indexes of the longitude or latitude of land cells
-real, parameter :: fill_value = 1.e38         !value given for empty fields in the NetCDF output files
-character(30) :: timestart = "seconds since 1801-1-1"
 
 !> This data structure is used to set up the output netcdf files.
 type outputDescriptor
@@ -81,51 +79,33 @@ type outputDescriptor
     logical         :: includeBareGround    = .false.   !< If true then expand the PFT list for a final position that is the bare ground.
 end type
 
+type(outputDescriptor), allocatable     :: outputDescriptors(:)
+
 type netcdfVar
     integer         :: ncid
     character(30)   :: key
     character(80)   :: filename
 end type
 
-! Constants here
-integer, parameter  :: maxVariableNumber = 300
+integer, parameter  :: maxncVariableNumber = 300
+type(netcdfVar)     :: netcdfVars(maxncVariableNumber)
 
-! Variables here
-!type(projectConfiguration)              :: config !FLAG change.
-type(outputDescriptor), allocatable   :: outputDescriptors(:)
-integer                                 :: variableCount = 0, descriptorCount = 0
-type(netcdfVar)                          :: variables(maxVariableNumber)
+integer :: variableCount = 0, descriptorCount = 0
 
 
-! type infopak
-!     character(30) :: shortname = ' '        !<
-!     character(30) :: time_freq = ''         !< Time frequency of variable: half-hourly, daily, monthly, annually
-!     character(400) :: long_name = ' '       !< Long name of the variable
-!     character(30) :: units  = ' '           !< Units of the variable
-!     character(30) :: standard_name = ' '    !<
-!     character(30) :: nameincode = ' '       !<
-!     character(80) :: comment = ' '          !<
-!     logical :: includebare = .false.        !< If true then expand the PFT list for a final position that is the bare ground.
-! end type
+! ! Variables used in met forcing reads
+! integer, parameter :: niv = 7                   !> number of meteorology variables
+! character(2), dimension(niv), parameter :: vname = [ "lw", "ap", "qa", "pr", "sw", "wi", "ta" ] !< names of the met vars: longwave down, atmos pressure,
+!                                                     !! specific humidity, precipitation, shortwave down, wind, air temperature
 !
-! type (infopak) :: winfo        ! Outputs are per PFT, per tile, grid average values, or per soil layer
-
-
-! Variables used in met forcing reads
-integer, parameter :: niv = 7                   !> number of meteorology variables
-character(2), dimension(niv), parameter :: vname = [ "lw", "ap", "qa", "pr", "sw", "wi", "ta" ] !< names of the met vars: longwave down, atmos pressure,
-                                                    !! specific humidity, precipitation, shortwave down, wind, air temperature
-
-real, allocatable, dimension(:,:) :: lw6hr      !> downwelling longwave radiation 6 hrly
-real, allocatable, dimension(:,:) :: ap6hr      !>
-real, allocatable, dimension(:,:) :: qa6hr      !>
-real, allocatable, dimension(:,:) :: pr6hr      !>
-real, allocatable, dimension(:,:) :: sw6hr      !>
-real, allocatable, dimension(:,:) :: wi6hr      !>
-real, allocatable, dimension(:,:) :: ta6hr      !>
-integer :: yearmetst                            !> Year that the met data starts on
-
-
+! real, allocatable, dimension(:,:) :: lw6hr      !> downwelling longwave radiation 6 hrly
+! real, allocatable, dimension(:,:) :: ap6hr      !>
+! real, allocatable, dimension(:,:) :: qa6hr      !>
+! real, allocatable, dimension(:,:) :: pr6hr      !>
+! real, allocatable, dimension(:,:) :: sw6hr      !>
+! real, allocatable, dimension(:,:) :: wi6hr      !>
+! real, allocatable, dimension(:,:) :: ta6hr      !>
+! integer :: yearmetst                            !> Year that the met data starts on
 
 contains
 
