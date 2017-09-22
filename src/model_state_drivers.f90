@@ -368,7 +368,6 @@ contains
         ZRFHROW = ncGet1DVar(initid, 'ZRFH', start = [lonIndex, latIndex], count = [1, 1])
         ZBLDROW = ncGet1DVar(initid, 'ZBLD', start = [lonIndex, latIndex], count = [1, 1])
         GCROW = ncGet1DVar(initid, 'GC', start = [lonIndex, latIndex], count = [1, 1])
-
         DRNROT = ncGet2DVar(initid, 'DRN', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         SDEPROT = ncGet2DVar(initid, 'SDEP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         SOCIROT = ncGet2DVar(initid, 'SOCI', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
@@ -419,6 +418,22 @@ contains
         TBARROT = ncGet3DVar(initid, 'TBAR', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         THLQROT = ncGet3DVar(initid, 'THLQ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         THICROT = ncGet3DVar(initid, 'THIC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
+        ZBOT = reshape(ncGet3DVar(initid, 'ZBOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
+        DELZ = reshape(ncGet3DVar(initid, 'DELZ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
+
+        ! Check that the THIC and THLQ values are set to zero for soil layers
+        ! that are non-permeable (bedrock).
+        do i = 1,nlat
+            do j = 1,nmos
+                do m = 1,ignd-1
+                    if (zbot(m) > SDEPROT(i,j) .and. zbot(m+1) > SDEPROT(i,j)) then
+                        THLQROT(i,j,m:ignd) = 0.
+                        THICROT(i,j,m:ignd) = 0.
+                        exit
+                    end if
+                end do
+            end do
+        end do
 
         if (ctem_on) then
 
@@ -430,28 +445,6 @@ contains
                 grclarea(i) = grclarea(1)  !grclarea is ilg, but offline nlat is always 1 so ilg = nmos.
                 extnprob(:,i) = extnprob(:,1)
                 prbfrhuc(:,i) = prbfrhuc(:,1)
-            end do
-
-            ZBOT = reshape(ncGet3DVar(initid, 'ZBOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
-            DELZ = reshape(ncGet3DVar(initid, 'DELZ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
-
-            !do i = 1,nmos !FLAG, remove? JM.
-            !    ZBOT(i,:) = ZBOT(1,:)
-            !    DELZ(i,:) = DELZ(1,:)
-            !end do
-
-            ! Check that the THIC and THLQ values are set to zero for soil layers
-            ! that are non-permeable (bedrock).
-            do i = 1,nlat
-                do j = 1,nmos
-                    do m = 1,ignd-1
-                        if (zbot(m) > SDEPROT(i,j) .and. zbot(m+1) > SDEPROT(i,j)) then
-                            THLQROT(i,j,m:ignd) = 0.
-                            THICROT(i,j,m:ignd) = 0.
-                            exit
-                        end if
-                    end do
-                end do
             end do
 
             mlightng(:,1,:) = ncGet2DVar(initid, 'mlightng', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
@@ -741,10 +734,10 @@ contains
         call ncPut3DVar(rsid, 'FCAN', FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
         call ncPut3DVar(rsid, 'THLQ', THLQROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
         call ncPut3DVar(rsid, 'THIC', THICROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
-        call ncPut3DVar(rsid, 'TBAR', TBARROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
-        call ncPut2DVar(rsid, 'TCAN', TCANROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'TSNO', TSNOROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'TPND', TPNDROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut3DVar(rsid, 'TBAR', TBARROT-273.16, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
+        call ncPut2DVar(rsid, 'TCAN', TCANROT-273.16, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'TSNO', TSNOROT-273.16, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'TPND', TPNDROT-273.16, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'ZPND', ZPNDROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'RCAN', RCANROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'SCAN', SCANROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])

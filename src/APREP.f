@@ -573,7 +573,7 @@ C
             AIL(I,3)=PAI(I,3)
             AIL(I,4)=PAI(I,4)
           ENDIF
-    
+
 C    ----------------- CTEM MODIFICATIONS -----------------------------\
 C
 C         ESTIMATE GREEN LAI FOR CANOPY OVER SNOW FRACTION FOR CTEM's
@@ -724,6 +724,7 @@ C
           FG (I)=FG (I)/FSUM
           FCS(I)=FCS(I)/FSUM
           FGS(I)=FGS(I)/FSUM
+
           IF(ABS(1.0-FCS(I)-FGS(I)-FC(I)-FG(I)).GT.1.0E-5) 
      1                                   CALL XIT('APREP',-1)
 C
@@ -762,7 +763,7 @@ C
               ZPLIMC(I)=ZPLMG0(I)
               ZPLIMG(I)=ZPLMG0(I)
           ENDIF
-  175 CONTINUE                                                                    
+  175 CONTINUE
 C                                                                                 
 C     * PARTITION INTERCEPTED LIQUID AND FROZEN MOISTURE BETWEEN
 C     * CANOPY OVERLYING BARE GROUND AND CANOPY OVERLYING SNOW,
@@ -1060,7 +1061,7 @@ C
               ZOELCS(I)=LOG(ZOELCS(I)**(1.0/FCS(I))/ZOMLCS(I))
               ZOMLCS(I)=LOG(ZOMLCS(I))
           ENDIF                                                                   
-  275 CONTINUE                                                                    
+  275 CONTINUE
 C                                                                                 
 C     * ADJUST ROUGHNESS LENGTHS OF BARE SOIL AND SNOW-COVERED BARE
 C     * SOIL FOR URBAN ROUGHNESS IF PRESENT.
@@ -1095,9 +1096,9 @@ C
           IF(FGS(I).GT.0.)                                       THEN             
               ZOMLNS(I)=((FGS(I)-FCANMX(I,5)*FSNOW(I))*ZOLNS+                     
      1                  FCANMX(I,5)*FSNOW(I)*ZOLN(I,5))/FGS(I)                    
-              ZOELNS(I)=ZOMLNS(I)-LOG(ZORATG)                                    
+              ZOELNS(I)=ZOMLNS(I)-LOG(ZORATG)
           ENDIF                                                                   
-  300 CONTINUE                                                                    
+  300 CONTINUE
 C                                                                                 
 C     * ADD CONTRIBUTION OF OROGRAPHY TO MOMENTUM ROUGHNESS LENGTH
 C
@@ -1108,7 +1109,6 @@ C
 !!calculated. If it is greater than the calculated logarithm of the roughness length for momentum of any of
 !!the subareas, these are reset to LZ0ORO.
 !!
-
       DO 325 I=IL1,IL2
           IF(Z0ORO(I).GT.1.0E-4) THEN
               LZ0ORO=LOG(Z0ORO(I))

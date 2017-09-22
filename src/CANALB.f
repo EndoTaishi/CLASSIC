@@ -544,14 +544,14 @@ C
       J=1
       DO 500 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I)) 
+              TRCLRV=EXP(-0.4*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0, -0.4*PAIS(I,J)/COSZS(I))  !JM EDIT
-!              TRCLRV=EXP(TMP) 
+!              TRCLRV=EXP(TMP)
                                    
               TRCLDV=0.30*EXP(-0.4*PAIS(I,J)/0.9659)+0.50*EXP(-0.4*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.4*PAIS(I,J)/0.2588)   
 
-              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))                       
+              TRCLRT=EXP(-0.3*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0,(-0.3*PAIS(I,J)/COSZS(I)))    !JM EDIT
 !              TRCLRT = EXP(TMP)
              
@@ -625,9 +625,9 @@ C
       DO 700 J=3,IC
       DO 700 I=IL1,IL2                                                                                  
           IF(COSZS(I).GT.0. .AND. FCANS(I,J).GT.0.)               THEN
-              TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I)) 
+              TRCLRV=EXP(-0.5*PAIS(I,J)/COSZS(I))
 !              TMP=MAX(-50.0, -0.5*PAIS(I,J)/COSZS(I))  !JM EDIT
-!              TRCLRV=EXP(TMP)    
+!              TRCLRV=EXP(TMP)
                                    
               TRCLDV=0.30*EXP(-0.5*PAIS(I,J)/0.9659)+0.50*EXP(-0.5*               
      1               PAIS(I,J)/0.7071)+0.20*EXP(-0.5*PAIS(I,J)/0.2588)

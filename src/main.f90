@@ -9,6 +9,7 @@ module main
     implicit none
 
     public :: main_driver
+    public :: finddaylength
 
 contains
 
@@ -47,29 +48,20 @@ contains
         !!     through use statements for modules:
 
         use ctem_params,        only : nlat,nmos,ilg,nmon,&
-            &                               ican, ignd,icp1, icc, iccp1,&
+            &                               ican, ignd, icc, &
             &                               monthend, mmday,modelpft, l2max,&
-            &                                deltat, abszero, monthdays,seed,&
-            &                                NBS, earthrad,&
-            &                                readin_params,crop,&
+            &                                deltat, monthdays,seed,&
+            &                                NBS, readin_params,&
             &                                allocateParamsCTEM
 
         use landuse_change,     only : initialize_luc, readin_luc
 
         use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,&
-            &                               class_out,resetclassmon,&
-            &                               resetclassyr,&
             &                               resetmonthend,resetyearend,&
-            &                               resetclassaccum,ctem_grd,&
-            &                               ctem_tile,resetgridavg,&
-            &                               finddaylength,&
-            &                               ctem_mo,ctem_grd_mo,ctem_tile_mo, &
-            &                               ctem_yr,ctem_grd_yr,ctem_tile_yr
-
-        use class_statevars,    only : class_gat,class_rot
-
-        use io_driver,          only : create_outfiles,class_monthly_aw,&
-            &                               ctem_annual_aw,ctem_monthly_aw,&
+            &                               ctem_grd,ctem_tile,resetgridavg
+        use class_statevars,    only : class_gat,class_rot,resetclassaccum,&
+            &                               resetclassmon,resetclassyr
+        use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
             &                               close_outfiles,ctem_daily_aw,&
             &                               class_annual_aw
 
@@ -78,7 +70,6 @@ contains
 
         implicit none
 
-        ! Flag test
         real, intent(in) :: longitude, latitude
         integer, intent(in) :: lonIndex, latIndex
 
@@ -87,7 +78,6 @@ contains
         INTEGER NCOUNT  !<Counter for daily averaging
         INTEGER NDAY    !<
         INTEGER IMONTH  !<
-        INTEGER NDMONTH !<
         INTEGER NT      !<
         INTEGER IHOUR   !<Hour of day
         INTEGER IMIN    !<Minutes elapsed in current hour
@@ -116,8 +106,6 @@ contains
         INTEGER ITD4       !<
         INTEGER NFS        !<
         INTEGER NDRY       !<
-
-        INTEGER*4 TODAY(3), NOW(3)
 
         ! The following are stored in the data structure: class_gat
         ! they are allocatted in alloc_class_vars in the class_statevars
@@ -797,19 +785,14 @@ contains
         REAL PSISORG(  3) !<
         REAL GRKSORG(  3) !<
 
-        !REAL CANEXT(ICAN) !<
-        !REAL XLEAF (ICAN) !<
-        !REAL ZORAT (ICAN) !<
         REAL GROWYR (  18,4,2) !< !
-        INTEGER ISUM(6)  !<Total number of iterations required to solve surface energy balance for the elements of the four subareas for the current run
+
         !FLAG! <<< Not in the new structure
 
         !     * CONSTANTS AND TEMPORARY VARIABLES.
         !
-        REAL DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,&
-            &     QSUMV,QSUMS,QSUM1,QSUM2,QSUM3,WSUMV,WSUMS,WSUMG,ALTOT,&
-            &     FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TAC,&
-            &     TSURF
+        REAL DAY,DECL,HOUR,COSZ,CUMSNO,EVAPSUM,ALTOT,&
+             FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TSURF
         !
         !     * COMMON BLOCK PARAMETERS.
         !
@@ -820,7 +803,7 @@ contains
         HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,&
         CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,ALVSI,ALIRI,ALVSO,ALIRO,&
         ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,&
-        ANGMAX,A,B
+        ANGMAX
 
 
         !
@@ -832,7 +815,7 @@ contains
             &           nol2pfts(4),popyr, metcycendyr,climiyear,cypopyr,lucyr,&
             &           cylucyr, endyr,bigpftc(1), obswetyr,obslghtyr,testyr
 
-        real      co2concin,sumfare,temp_var, barefrac, ch4concin
+        real      co2concin,ch4concin
         integer, allocatable, dimension(:,:) :: icountrow  !FLAG move out.
 
         integer, pointer :: metcylyrst   !< climate year to start the spin up on
@@ -1579,8 +1562,7 @@ contains
         &                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,&
         &                TCGLAC,CLHMLT,CLHVAP
         COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
-        COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORATG!,ZORAT
-        !COMMON /CLASS7/ CANEXT,XLEAF
+        COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORATG
         COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
         COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
         COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
@@ -2267,7 +2249,7 @@ contains
         tsnors            => vrot%tsnors
         tpndrs            => vrot%tpndrs
         csum              => vrot%csum
-        tbaraccrow_m      => vrot%tbaraccrow_m
+        tbaraccrow_m      => class_rot%tbaraccrow_m
         tcanoaccrow_m     => vrot%tcanoaccrow_m
         uvaccrow_m        => vrot%uvaccrow_m
         vvaccrow_m        => vrot%vvaccrow_m
@@ -2450,7 +2432,7 @@ contains
         Cmossmasrow      => vrot%Cmossmas
         dmossrow         => vrot%dmoss
         pddrow           => vrot%pdd
-        altotcntr_d    => vrot%altotcntr_d
+
 
         ! >>>>>>>>>>>>>>>>>>>>>>>>>>
         ! GAT:
@@ -2662,38 +2644,39 @@ contains
 
         ! Mosaic-level (CLASS vars):
 
-        PREACC_M          => vrot%PREACC_M
-        GTACC_M           => vrot%GTACC_M
-        QEVPACC_M         => vrot%QEVPACC_M
-        HFSACC_M          => vrot%HFSACC_M
-        HMFNACC_M         => vrot%HMFNACC_M
-        ROFACC_M          => vrot%ROFACC_M
-        SNOACC_M          => vrot%SNOACC_M
-        OVRACC_M          => vrot%OVRACC_M
-        WTBLACC_M         => vrot%WTBLACC_M
-        TBARACC_M         => vrot%TBARACC_M
-        THLQACC_M         => vrot%THLQACC_M
-        THICACC_M         => vrot%THICACC_M
-        THALACC_M         => vrot%THALACC_M
-        ALVSACC_M         => vrot%ALVSACC_M
-        ALIRACC_M         => vrot%ALIRACC_M
-        RHOSACC_M         => vrot%RHOSACC_M
-        TSNOACC_M         => vrot%TSNOACC_M
-        WSNOACC_M         => vrot%WSNOACC_M
-        SNOARE_M          => vrot%SNOARE_M
-        TCANACC_M         => vrot%TCANACC_M
-        RCANACC_M         => vrot%RCANACC_M
-        SCANACC_M         => vrot%SCANACC_M
-        GROACC_M          => vrot%GROACC_M
-        FSINACC_M         => vrot%FSINACC_M
-        FLINACC_M         => vrot%FLINACC_M
-        TAACC_M           => vrot%TAACC_M
-        UVACC_M           => vrot%UVACC_M
-        PRESACC_M         => vrot%PRESACC_M
-        QAACC_M           => vrot%QAACC_M
-        ALTOTACC_M        => vrot%ALTOTACC_M
-        EVAPACC_M         => vrot%EVAPACC_M
-        FLUTACC_M         => vrot%FLUTACC_M
+        PREACC_M          => class_rot%PREACC_M
+        GTACC_M           => class_rot%GTACC_M
+        QEVPACC_M         => class_rot%QEVPACC_M
+        HFSACC_M          => class_rot%HFSACC_M
+        HMFNACC_M         => class_rot%HMFNACC_M
+        ROFACC_M          => class_rot%ROFACC_M
+        SNOACC_M          => class_rot%SNOACC_M
+        OVRACC_M          => class_rot%OVRACC_M
+        WTBLACC_M         => class_rot%WTBLACC_M
+        TBARACC_M         => class_rot%TBARACC_M
+        THLQACC_M         => class_rot%THLQACC_M
+        THICACC_M         => class_rot%THICACC_M
+        THALACC_M         => class_rot%THALACC_M
+        ALVSACC_M         => class_rot%ALVSACC_M
+        ALIRACC_M         => class_rot%ALIRACC_M
+        RHOSACC_M         => class_rot%RHOSACC_M
+        TSNOACC_M         => class_rot%TSNOACC_M
+        WSNOACC_M         => class_rot%WSNOACC_M
+        SNOARE_M          => class_rot%SNOARE_M
+        TCANACC_M         => class_rot%TCANACC_M
+        RCANACC_M         => class_rot%RCANACC_M
+        SCANACC_M         => class_rot%SCANACC_M
+        GROACC_M          => class_rot%GROACC_M
+        FSINACC_M         => class_rot%FSINACC_M
+        FLINACC_M         => class_rot%FLINACC_M
+        TAACC_M           => class_rot%TAACC_M
+        UVACC_M           => class_rot%UVACC_M
+        PRESACC_M         => class_rot%PRESACC_M
+        QAACC_M           => class_rot%QAACC_M
+        ALTOTACC_M        => class_rot%ALTOTACC_M
+        EVAPACC_M         => class_rot%EVAPACC_M
+        FLUTACC_M         => class_rot%FLUTACC_M
+        altotcntr_d       => class_rot%altotcntr_d
 
         ! grid-averaged (CLASS vars)
 
@@ -2813,15 +2796,6 @@ contains
         JLAT=NINT(DLATROW(1))
         DLONROW(1) = longitude
 
-!         ! Prepare CLASS parameters
-!         CALL CLASSD
-!
-! !         ! Allocate the arrays that store the CTEM parameter values
-! !         call allocateParamsCTEM
-! !
-! !         ! Initialize the CTEM parameters, this reads them in from a namelist file.
-! !         call readin_params(runparams_file,compete)
-
         ! Allocate the local variables that rely on nlat, ilg, etc.
         allocate(&  !FLAG move these into external data structures!
             altotcount_ctm(nlat),&
@@ -2850,17 +2824,6 @@ contains
         call initrowvars()
         call resetclassaccum(nlat,nmos)
 
-        !     checking the time spent for running model
-        !
-        !      call idate(today)
-        !      call itime(now)
-        !      write(*,1000)   today(2), today(1), 2000+today(3), now
-        ! 1000 format( 'start date: ', i2.2, '/', i2.2, '/', i4.4,
-        !     &      '; start time: ', i2.2, ':', i2.2, ':', i2.2 )
-        !
-        !     INITIALIZATION FOR COUPLING CLASS AND CTEM
-        !
-
         IMONTH = 0
         lopcount = 1   ! initialize loop count to 1.
         ZDMROW(1)=10.0
@@ -2876,6 +2839,9 @@ contains
                 VVACCROW_M(I,M)          = 0.0
                 TCANOACCROW_OUT(I,M)     = 0.0
 11          continue
+
+        ! Read in the model initial state
+        call read_initialstate(lonIndex,latIndex)
 
         !     do some initializations for the reading in of data from files. these
         !     initializations primarily affect how the model does a spinup or transient
@@ -2912,15 +2878,6 @@ contains
             cypopyr = popcycleyr !-9999
             cylucyr = popcycleyr !-9999
         end if
-
-
-! ! FLAG testing for Ed!!! (moved up)
-
-        call read_initialstate(lonIndex,latIndex)
-
-                call write_restart(lonIndex,latIndex)
-
-        return
 
         !     CTEM initialization done
 
@@ -3220,13 +3177,7 @@ contains
 
         ENDIF !IF NOT PARALLELRUN
 
-        !>    Read in the initial model conditions from the restart file
-        !!    (replacing the INI and CTM files).
-
-        call read_initialstate(lonIndex,latIndex)
-
-        goto 5123 !FLAG!!
-        !     Complete some initial set up work:
+!     Complete some initial set up work:
 
         DO 100 I=1,NLTEST
             DO 100 M=1,NMTEST
@@ -5865,11 +5816,6 @@ contains
             endif ! if iday=365/366
 
 
-                                        !
-7011  format(12f8.2)     !YW April 14, 2015
-7012  format(12i8)        !FLAG, needed?
-7013  format(13f8.2) !FLAG, needed?
-
             ! check if the model is done running.
 
             if ((leapnow.and.iday.eq.366.and.ncount.eq.nday) .or. &
@@ -5970,14 +5916,6 @@ contains
 
         ! MODEL RUN HAS COMPLETED SO NOW CLOSE OUTPUT FILES AND EXIT
         !==================================================================
-        !
-        !      checking the time spent for running model
-        !
-        !      call idate(today)
-        !      call itime(now)
-        !      write(*,1001) today(2), today(1), 2000+today(3), now
-        ! 1001 format( 'end date: ', i2.2, '/', i2.2, '/', i4.4,
-        !     &      '; end time: ', i2.2, ':', i2.2, ':', i2.2 )
 
         IF (.NOT. PARALLELRUN) THEN
             !       FIRST ANY CLASS OUTPUT FILES
@@ -6109,6 +6047,32 @@ contains
         run_model=.false.
 
     end subroutine main_driver
+
+    subroutine finddaylength(solday,radl,daylength)
+
+        ! Calculate the daylength based on the latitude and day of year
+
+        ! Joe Melton Dec 18 2015 (taken from phenlogy.f)
+
+        use ctem_params, only : pi
+
+        implicit none
+
+        real, intent(in) :: solday  !day of year
+        real, intent(in) :: radl    ! latitude
+        real, intent(out) :: daylength  ! calculated daylength
+        real :: theta               ! temp var
+        real :: decli               ! temp var
+        real :: term                ! temp var
+
+            theta=0.2163108 + 2.0*atan(0.9671396*tan(0.0086*(solday-186.0)))
+            decli=asin(0.39795*cos(theta))      !declination !note I see that CLASS does this also but with different formula...
+            term=(sin(radl)*sin(decli))  /(cos(radl)*cos(decli))
+            term=max(-1.0,min(term,1.0))
+            daylength=24.0-(24.0/pi)*acos(term)
+
+    end subroutine finddaylength
+
 
 end module main
 

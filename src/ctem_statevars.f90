@@ -5,15 +5,14 @@
 !! 1. c_switch - switches for running CTEM, read from the joboptions file
 !! 2. vrot - CTEM's 'rot' vars
 !! 3. vgat - CTEM's 'gat' vars
-!! 4. class_out - CLASS's monthly outputs
-!! 5. ctem_grd - CTEM's grid average variables
-!! 6. ctem_tile - CTEM's variables per tile
-!! 7. ctem_mo - CTEM's variables monthly averaged (per pft)
-!! 8. ctem_grd_mo - CTEM's grid average monthly values
-!! 9. ctem_tile_mo - CTEM's variables per tile monthly values
-!! 10. ctem_yr - CTEM's average annual values (per PFT)
-!! 11. ctem_grd_yr - CTEM's grid average annual values
-!! 12. ctem_tile_yr - CTEM's variables per tile annual values
+!! 4. ctem_grd - CTEM's grid average variables
+!! 5. ctem_tile - CTEM's variables per tile
+!! 6. ctem_mo - CTEM's variables monthly averaged (per pft)
+!! 7. ctem_grd_mo - CTEM's grid average monthly values
+!! 8. ctem_tile_mo - CTEM's variables per tile monthly values
+!! 9. ctem_yr - CTEM's average annual values (per PFT)
+!! 10. ctem_grd_yr - CTEM's grid average annual values
+!! 11. ctem_tile_yr - CTEM's variables per tile annual values
 !
 !>\file
 module ctem_statevars
@@ -27,14 +26,10 @@ implicit none
 
 public :: alloc_ctem_vars
 public :: initrowvars
-public :: resetclassmon
-public :: resetclassyr
 public :: resetdaily
 public :: resetmonthend
 public :: resetyearend
-public :: resetclassaccum
 public :: resetgridavg
-public :: finddaylength
 
 !=================================================================================
 !>switches for running the model, read from the joboptions file
@@ -350,34 +345,6 @@ type veg_rot
     real, allocatable, dimension(:,:) :: cfluxcg               !<
     real, allocatable, dimension(:,:) :: cfluxcs               !<
     real, allocatable, dimension(:,:) :: dstcemls3             !<carbon emission losses due to disturbance (fire at present) from litter pool
-    real, allocatable, dimension(:,:) :: PREACC_M              !<
-    real, allocatable, dimension(:,:) :: GTACC_M               !<
-    real, allocatable, dimension(:,:) :: QEVPACC_M             !<
-    real, allocatable, dimension(:,:) :: HFSACC_M              !<
-    real, allocatable, dimension(:,:) :: HMFNACC_M             !<
-    real, allocatable, dimension(:,:) :: ROFACC_M              !<
-    real, allocatable, dimension(:,:) :: SNOACC_M              !<
-    real, allocatable, dimension(:,:) :: OVRACC_M              !<
-    real, allocatable, dimension(:,:) :: WTBLACC_M             !<
-    real, allocatable, dimension(:,:) :: ALVSACC_M             !<
-    real, allocatable, dimension(:,:) :: ALIRACC_M             !<
-    real, allocatable, dimension(:,:) :: RHOSACC_M             !<
-    real, allocatable, dimension(:,:) :: TSNOACC_M             !<
-    real, allocatable, dimension(:,:) :: WSNOACC_M             !<
-    real, allocatable, dimension(:,:) :: SNOARE_M              !<
-    real, allocatable, dimension(:,:) :: TCANACC_M             !<
-    real, allocatable, dimension(:,:) :: RCANACC_M             !<
-    real, allocatable, dimension(:,:) :: SCANACC_M             !<
-    real, allocatable, dimension(:,:) :: ALTOTACC_M            !<Daily broadband albedo
-    real, allocatable, dimension(:,:) :: GROACC_M              !<
-    real, allocatable, dimension(:,:) :: FSINACC_M             !<
-    real, allocatable, dimension(:,:) :: FLINACC_M             !<
-    real, allocatable, dimension(:,:) :: TAACC_M               !<
-    real, allocatable, dimension(:,:) :: UVACC_M               !<
-    real, allocatable, dimension(:,:) :: PRESACC_M             !<
-    real, allocatable, dimension(:,:) :: QAACC_M               !<
-    real, allocatable, dimension(:,:) :: EVAPACC_M             !<
-    real, allocatable, dimension(:,:) :: FLUTACC_M             !<
     real, allocatable, dimension(:,:) :: tcanrs                !<
     real, allocatable, dimension(:,:) :: tsnors                !<
     real, allocatable, dimension(:,:) :: tpndrs                !<
@@ -422,13 +389,6 @@ type veg_rot
     real, allocatable, dimension(:,:,:) :: alirctm          !<
     real, allocatable, dimension(:,:,:) :: csum             !<
     
-! allocated with nlat,nmos,ignd:        
-    real, allocatable, dimension(:,:,:) :: TBARACC_M        !<
-    real, allocatable, dimension(:,:,:) :: THLQACC_M        !<
-    real, allocatable, dimension(:,:,:) :: THICACC_M        !<
-    real, allocatable, dimension(:,:,:) :: THALACC_M        !<
-    real, allocatable, dimension(:,:,:) :: tbaraccrow_m     !<
-
 ! allocated with nlat,nmos,ican,ignd:       
     real, allocatable, dimension(:,:,:,:) :: rmatc       !<fraction of roots for each of class' 4 pfts in each soil layer
  
@@ -458,7 +418,6 @@ type veg_rot
 ! allocated with nlat:     
     real, allocatable, dimension(:)    :: dayl_max        !< maximum daylength for that location (hours)
     real, allocatable, dimension(:)    :: dayl            !< daylength for that location (hours)
-    integer, allocatable, dimension(:) :: altotcntr_d     !<Used to count the number of time steps with the sun above the horizon
 
 end type veg_rot
 
@@ -703,71 +662,7 @@ end type veg_gat
 
 type (veg_gat), save, target :: vgat
 !=================================================================================
-!>CLASS's monthly outputs
-type class_moyr_output
 
-!   MONTHLY OUTPUT FOR CLASS GRID-MEAN
-
-! allocated with nlat:
-    real, allocatable, dimension(:) :: ALVSACC_MO   !<
-    real, allocatable, dimension(:) :: ALIRACC_MO   !<
-    real, allocatable, dimension(:) :: FLUTACC_MO   !<
-    real, allocatable, dimension(:) :: FSINACC_MO   !<
-    real, allocatable, dimension(:) :: FLINACC_MO   !<
-    real, allocatable, dimension(:) :: HFSACC_MO    !<
-    real, allocatable, dimension(:) :: QEVPACC_MO   !<
-    real, allocatable, dimension(:) :: SNOACC_MO    !<
-    real, allocatable, dimension(:) :: WSNOACC_MO   !<
-    real, allocatable, dimension(:) :: ROFACC_MO    !<
-    real, allocatable, dimension(:) :: PREACC_MO    !<
-    real, allocatable, dimension(:) :: EVAPACC_MO   !<
-    real, allocatable, dimension(:) :: TRANSPACC_MO !<
-    real, allocatable, dimension(:) :: TAACC_MO     !<
-    real, allocatable, dimension(:) :: ACTLYR_MO
-    real, allocatable, dimension(:) :: FTABLE_MO
-    real, allocatable, dimension(:) :: ACTLYR_MIN_MO
-    real, allocatable, dimension(:) :: ACTLYR_MAX_MO
-    real, allocatable, dimension(:) :: FTABLE_MIN_MO
-    real, allocatable, dimension(:) :: FTABLE_MAX_MO
-    real, allocatable, dimension(:) :: ALTOTACC_MO  !< Broadband albedo
-    real, allocatable, dimension(:) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
-    real, allocatable, dimension(:) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
-    integer, allocatable, dimension(:) :: altotcntr_m!< Used to count the number of time steps with the sun above the horizon
-
-! allocated with nlat,ignd:
-    real, allocatable, dimension(:,:) :: TBARACC_MO !<
-    real, allocatable, dimension(:,:) :: THLQACC_MO !<
-    real, allocatable, dimension(:,:) :: THICACC_MO !<
-
-!   YEARLY OUTPUT FOR CLASS GRID-MEAN
-
-    real, allocatable, dimension(:) :: ALVSACC_YR  !<
-    real, allocatable, dimension(:) :: ALIRACC_YR  !<
-    real, allocatable, dimension(:) :: FLUTACC_YR  !<
-    real, allocatable, dimension(:) :: FSINACC_YR  !<
-    real, allocatable, dimension(:) :: FLINACC_YR  !<
-    real, allocatable, dimension(:) :: HFSACC_YR   !<
-    real, allocatable, dimension(:) :: QEVPACC_YR  !<
-    real, allocatable, dimension(:) :: ROFACC_YR   !<
-    real, allocatable, dimension(:) :: PREACC_YR   !<
-    real, allocatable, dimension(:) :: EVAPACC_YR  !<
-    real, allocatable, dimension(:) :: TRANSPACC_YR!<
-    real, allocatable, dimension(:) :: TAACC_YR    !<
-    real, allocatable, dimension(:) :: ACTLYR_YR
-    real, allocatable, dimension(:) :: ACTLYR_MIN_YR
-    real, allocatable, dimension(:) :: ACTLYR_MAX_YR
-    real, allocatable, dimension(:) :: FTABLE_YR
-    real, allocatable, dimension(:) :: FTABLE_MIN_YR
-    real, allocatable, dimension(:) :: FTABLE_MAX_YR
-    real, allocatable, dimension(:) :: ALTOTACC_YR !< Broadband albedo
-    integer, allocatable, dimension(:) :: altotcntr_yr !<Used to count the number of time steps with the sun above the horizon
-
-
-end type class_moyr_output
-
-type (class_moyr_output), save, target :: class_out
-
-!=================================================================================
 !>CTEM's grid average variables
 type ctem_gridavg
 
@@ -1457,34 +1352,34 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%cfluxcg (nlat,nmos),&
          vrot%cfluxcs (nlat,nmos),&
          vrot%dstcemls3 (nlat,nmos),&
-         vrot%PREACC_M(nlat,nmos),&
-         vrot%GTACC_M (nlat,nmos),&
-         vrot%QEVPACC_M (nlat,nmos),&
-         vrot%HFSACC_M(nlat,nmos),&
-         vrot%HMFNACC_M (nlat,nmos),&
-         vrot%ROFACC_M(nlat,nmos),&
-         vrot%SNOACC_M(nlat,nmos),&
-         vrot%OVRACC_M(nlat,nmos),&
-         vrot%WTBLACC_M(nlat,nmos),&
-         vrot%ALVSACC_M(nlat,nmos),&
-         vrot%ALIRACC_M(nlat,nmos),&
-         vrot%RHOSACC_M(nlat,nmos),&
-         vrot%TSNOACC_M(nlat,nmos),&
-         vrot%WSNOACC_M(nlat,nmos),&
-         vrot%SNOARE_M(nlat,nmos),&
-         vrot%TCANACC_M(nlat,nmos),&
-         vrot%RCANACC_M(nlat,nmos),&
-         vrot%SCANACC_M(nlat,nmos),&
-         vrot%ALTOTACC_M(nlat,nmos),&
-         vrot%GROACC_M(nlat,nmos),&
-         vrot%FSINACC_M (nlat,nmos),&
-         vrot%FLINACC_M(nlat,nmos),&
-         vrot%TAACC_M (nlat,nmos),&
-         vrot%UVACC_M (nlat,nmos),&
-         vrot%PRESACC_M (nlat,nmos),&
-         vrot%QAACC_M (nlat,nmos),&
-         vrot%EVAPACC_M (nlat,nmos),&
-         vrot%FLUTACC_M(nlat,nmos),&
+!          vrot%PREACC_M(nlat,nmos),&
+!          vrot%GTACC_M (nlat,nmos),&
+!          vrot%QEVPACC_M (nlat,nmos),&
+!          vrot%HFSACC_M(nlat,nmos),&
+!          vrot%HMFNACC_M (nlat,nmos),&
+!          vrot%ROFACC_M(nlat,nmos),&
+!          vrot%SNOACC_M(nlat,nmos),&
+!          vrot%OVRACC_M(nlat,nmos),&
+!          vrot%WTBLACC_M(nlat,nmos),&
+!          vrot%ALVSACC_M(nlat,nmos),&
+!          vrot%ALIRACC_M(nlat,nmos),&
+!          vrot%RHOSACC_M(nlat,nmos),&
+!          vrot%TSNOACC_M(nlat,nmos),&
+!          vrot%WSNOACC_M(nlat,nmos),&
+!          vrot%SNOARE_M(nlat,nmos),&
+!          vrot%TCANACC_M(nlat,nmos),&
+!          vrot%RCANACC_M(nlat,nmos),&
+!          vrot%SCANACC_M(nlat,nmos),&
+!          vrot%ALTOTACC_M(nlat,nmos),&
+!          vrot%GROACC_M(nlat,nmos),&
+!          vrot%FSINACC_M (nlat,nmos),&
+!          vrot%FLINACC_M(nlat,nmos),&
+!          vrot%TAACC_M (nlat,nmos),&
+!          vrot%UVACC_M (nlat,nmos),&
+!          vrot%PRESACC_M (nlat,nmos),&
+!          vrot%QAACC_M (nlat,nmos),&
+!          vrot%EVAPACC_M (nlat,nmos),&
+!          vrot%FLUTACC_M(nlat,nmos),&
          vrot%tcanrs  (nlat,nmos),&
          vrot%tsnors  (nlat,nmos),&
          vrot%tpndrs  (nlat,nmos),&
@@ -1526,11 +1421,11 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%csum(nlat,nmos,ican),&
     
 ! allocated with nlat,nmos,ignd:        
-         vrot%TBARACC_M(nlat,nmos,ignd),&
-         vrot%THLQACC_M(nlat,nmos,ignd),&
-         vrot%THICACC_M(nlat,nmos,ignd),&
-         vrot%THALACC_M(nlat,nmos,ignd),&
-         vrot%tbaraccrow_m(nlat,nmos,ignd),&
+!          vrot%TBARACC_M(nlat,nmos,ignd),&
+!          vrot%THLQACC_M(nlat,nmos,ignd),&
+!          vrot%THICACC_M(nlat,nmos,ignd),&
+!          vrot%THALACC_M(nlat,nmos,ignd),&
+!          vrot%tbaraccrow_m(nlat,nmos,ignd),&
     
 ! allocated with nlat,nmos,ican,ignd:
          vrot%rmatc(nlat,nmos,ican,ignd),&
@@ -1556,8 +1451,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
     
 ! allocated with nlat:     
          vrot%dayl_max(nlat),&
-         vrot%dayl(nlat),&
-         vrot%altotcntr_d(nlat))
+         vrot%dayl(nlat))
 
 ! Now on to the veg_gat vars
 
@@ -1767,56 +1661,6 @@ allocate(vgat%grclarea(ilg),&
          vgat%wetfrac_mon (ilg,12),&
          vgat%tmonth (12,ilg),&
 
-! allocated with nlat:
-         class_out%ALVSACC_MO(nlat),&
-         class_out%ALIRACC_MO (nlat),&
-         class_out%FLUTACC_MO (nlat),&
-         class_out%FSINACC_MO (nlat),&
-         class_out%FLINACC_MO (nlat),&
-         class_out%HFSACC_MO (nlat),&
-         class_out%QEVPACC_MO (nlat),&
-         class_out%SNOACC_MO (nlat),&
-         class_out%WSNOACC_MO (nlat),&
-         class_out%ROFACC_MO (nlat),&
-         class_out%PREACC_MO (nlat),&
-         class_out%EVAPACC_MO (nlat),&
-         class_out%TRANSPACC_MO (nlat),&
-         class_out%TAACC_MO (nlat),&
-         class_out%ACTLYR_MO (nlat),&
-         class_out%FTABLE_MO (nlat),&
-         class_out%ACTLYR_MIN_MO (nlat),&
-         class_out%ACTLYR_MAX_MO (nlat),&
-         class_out%FTABLE_MIN_MO (nlat),&
-         class_out%FTABLE_MAX_MO (nlat),&
-         class_out%ALTOTACC_MO (nlat),&
-         class_out%GROUNDEVAP (nlat),&
-         class_out%CANOPYEVAP (nlat),&
-         class_out%altotcntr_m (nlat),&
-
-! allocated with nlat,ignd:
-         class_out%TBARACC_MO (nlat,ignd),&
-         class_out%THLQACC_MO (nlat,ignd),&
-         class_out%THICACC_MO (nlat,ignd),&
-         class_out%ALVSACC_YR (nlat),&
-         class_out%ALIRACC_YR (nlat),&
-         class_out%FLUTACC_YR (nlat),&
-         class_out%FSINACC_YR (nlat),&
-         class_out%FLINACC_YR (nlat),&
-         class_out%HFSACC_YR (nlat),&
-         class_out%QEVPACC_YR (nlat),&
-         class_out%ROFACC_YR (nlat),&
-         class_out%PREACC_YR (nlat),&
-         class_out%EVAPACC_YR (nlat),&
-         class_out%TRANSPACC_YR (nlat),&
-         class_out%TAACC_YR (nlat),&
-         class_out%ACTLYR_YR (nlat),&
-         class_out%ACTLYR_MIN_YR (nlat),&
-         class_out%ACTLYR_MAX_YR (nlat),&
-         class_out%FTABLE_YR (nlat),&
-         class_out%FTABLE_MIN_YR (nlat),&
-         class_out%FTABLE_MAX_YR (nlat),&
-         class_out%ALTOTACC_YR (nlat),&
-         class_out%altotcntr_yr (nlat),&
 
          ctem_grd%WSNOROT_g (nlat),&
          ctem_grd%ROFSROT_g (nlat),&
@@ -2284,33 +2128,6 @@ integer :: j,k,l,m
 
    do k = 1,nmos
 
-!         vrot%PREACC_M(j,k) = 0.
-!         vrot%GTACC_M(j,k) = 0.
-!         vrot%QEVPACC_M(j,k) = 0.
-!         vrot%HFSACC_M(j,k) = 0.
-!         vrot%HMFNACC_M(j,k) = 0.
-!         vrot%ROFACC_M(j,k) = 0.
-!         vrot%SNOACC_M(j,k) = 0.
-!         vrot%OVRACC_M(j,k) = 0.
-!         vrot%WTBLACC_M(j,k) = 0.
-!
-!         vrot%ALVSACC_M(j,k) = 0.
-!         vrot%ALIRACC_M(j,k) = 0.
-!         vrot%RHOSACC_M(j,k) = 0.
-!         vrot%TSNOACC_M(j,k) = 0.
-!         vrot%WSNOACC_M(j,k) = 0.
-!         vrot%TCANACC_M(j,k) = 0.
-!         vrot%RCANACC_M(j,k) = 0.
-!         vrot%SCANACC_M(j,k) = 0.
-!         vrot%GROACC_M(j,k) = 0.
-!         vrot%FSINACC_M(j,k) = 0.
-!         vrot%FLINACC_M(j,k) = 0.
-!         vrot%TAACC_M(j,k) = 0.
-!         vrot%UVACC_M(j,k) = 0.
-!         vrot%PRESACC_M(j,k) = 0.
-!         vrot%QAACC_M(j,k) = 0.
-!         vrot%EVAPACC_M(j,k) = 0.
-!         vrot%FLUTACC_M(j,k) = 0.
         vrot%co2conc(j,k)          = 0.0
         vrot%npp(j,k)              = 0.0
         vrot%nep(j,k)              = 0.0
@@ -2338,10 +2155,6 @@ integer :: j,k,l,m
         vrot%lterm(j,k)            = 0.0
         vrot%cfluxcg(j,k)          = 0.0
         vrot%cfluxcs(j,k)          = 0.0
-        !vrot%TCANOACC_M(j,k)       = 0.0
-        !vrot%UVACC_M(j,k)          = 0.0
-        !vrot%VVACC_M(j,k)          = 0.0
-        !vrot%TCANOACC_OUT(j,k)     = 0.0
         vrot%ch4wet1(j,k)          = 0.0
         vrot%ch4wet2(j,k)          = 0.0
         vrot%wetfdyn(j,k)          = 0.0
@@ -2356,14 +2169,6 @@ integer :: j,k,l,m
         vrot%armoss(j,k)            = 0.0
         vrot%peatdep(j,k)           = 0.0
         vrot%pdd(j,k)               = 0.0
-
-        do l=1,ignd
-            vrot%tbaraccrow_m(j,k,l)  = 0.0
-!             vrot%TBARACC_M(j,k,l) = 0.
-!             vrot%THLQACC_M(j,k,l) = 0.
-!             vrot%THICACC_M(j,k,l) = 0.
-!             vrot%THALACC_M(j,k,l) = 0.
-        end do
 
         do l=1,ican
             vrot%ZOLNC(j,k,l)        = 0.0
@@ -2478,83 +2283,6 @@ integer :: j,k,l,m
  end do !nlat
 
 end subroutine initrowvars
-
-!==================================================
-
-subroutine resetclassmon(nltest)
-
-use ctem_params, only : ignd
-
-implicit none
-
-integer, intent(in) :: nltest
-
-integer :: i,j
-
-do i=1,nltest
-    class_out%ALVSACC_MO(I)=0.
-    class_out%ALIRACC_MO(I)=0.
-    class_out%FLUTACC_MO(I)=0.
-    class_out%FSINACC_MO(I)=0.
-    class_out%FLINACC_MO(I)=0.
-    class_out%HFSACC_MO(I) =0.
-    class_out%QEVPACC_MO(I)=0.
-    class_out%TRANSPACC_MO(I)=0.
-    class_out%SNOACC_MO(I) =0.
-    class_out%WSNOACC_MO(I)=0.
-    class_out%ROFACC_MO(I) =0.
-    class_out%PREACC_MO(I) =0.
-    class_out%EVAPACC_MO(I)=0.
-    class_out%TAACC_MO(I)=0.
-    class_out%ACTLYR_MO(I)=0.
-    class_out%FTABLE_MO(I)=0.
-    class_out%ACTLYR_MIN_MO(I)=100000.
-    class_out%FTABLE_MIN_MO(I)=100000.
-    class_out%ACTLYR_MAX_MO(I)=0.
-    class_out%FTABLE_MAX_MO(I)=0.
-    class_out%CANOPYEVAP(I)=0.
-    class_out%GROUNDEVAP(I)=0.
-    class_out%ALTOTACC_MO(I)=0.
-    class_out%altotcntr_m(i)=0
-
-
-    DO J=1,IGND
-        class_out%TBARACC_MO(I,J)=0.
-        class_out%THLQACC_MO(I,J)=0.
-        class_out%THICACC_MO(I,J)=0.
-    end do
-end do
-
-end subroutine resetclassmon
-
-!==================================================
-
-subroutine resetclassyr(nltest)
-
-implicit none
-
-integer, intent(in) :: nltest
-
-integer :: i
-
-do i=1,nltest
-          class_out%ALVSACC_YR(I)=0.
-          class_out%ALIRACC_YR(I)=0.
-          class_out%FLUTACC_YR(I)=0.
-          class_out%FSINACC_YR(I)=0.
-          class_out%FLINACC_YR(I)=0.
-          class_out%HFSACC_YR(I) =0.
-          class_out%QEVPACC_YR(I)=0.
-          class_out%ROFACC_YR(I) =0.
-          class_out%PREACC_YR(I) =0.
-          class_out%EVAPACC_YR(I)=0.
-          class_out%TRANSPACC_YR(I)=0.
-          class_out%TAACC_YR(I)=0.
-          class_out%ALTOTACC_YR(I)=0.
-          class_out%altotcntr_yr(i)=0
-end do
-
-end subroutine resetclassyr
 
 !==================================================
 
@@ -3012,66 +2740,6 @@ end do ! nltest
 end subroutine resetyearend
 
 !==================================================
-subroutine resetclassaccum(nltest,nmtest)
-
-use ctem_params, only : ignd
-
-implicit none
-
-integer, intent(in) :: nltest
-integer, intent(in) :: nmtest
-
-integer :: i,m,j
-
-
-DO I=1,NLTEST
-
-    vrot%altotcntr_d(i) = 0
-
-  DO M=1,NMTEST
-
-        vrot%PREACC_M(i,m) = 0.
-        vrot%GTACC_M(i,m) = 0.
-        vrot%QEVPACC_M(i,m) = 0.
-        vrot%HFSACC_M(i,m) = 0.
-        vrot%HMFNACC_M(i,m) = 0.
-        vrot%ROFACC_M(i,m) = 0.
-        vrot%SNOACC_M(i,m) = 0.
-        vrot%OVRACC_M(i,m) = 0.
-        vrot%WTBLACC_M(i,m) = 0.
-        vrot%ALVSACC_M(i,m) = 0.
-        vrot%ALIRACC_M(i,m) = 0.
-        vrot%RHOSACC_M(i,m) = 0.
-        vrot%TSNOACC_M(i,m) = 0.
-        vrot%WSNOACC_M(i,m) = 0.
-        vrot%SNOARE_M(i,m) = 0.
-        vrot%TCANACC_M(i,m) = 0.
-        vrot%RCANACC_M(i,m) = 0.
-        vrot%SCANACC_M(i,m) = 0.
-        vrot%GROACC_M(i,m) = 0.
-        vrot%FSINACC_M(i,m) = 0.
-        vrot%FLINACC_M(i,m) = 0.
-        vrot%TAACC_M(i,m) = 0.
-        vrot%UVACC_M(i,m) = 0.
-        vrot%PRESACC_M(i,m) = 0.
-        vrot%QAACC_M(i,m) = 0.
-        vrot%ALTOTACC_M(i,m) = 0.
-        vrot%EVAPACC_M(i,m) = 0.
-        vrot%FLUTACC_M(i,m) = 0.
-
-    DO J=1,IGND
-        vrot%TBARACC_M(I,M,J)=0.
-        vrot%THLQACC_M(I,M,J)=0.
-        vrot%THICACC_M(I,M,J)=0.
-        vrot%THALACC_M(I,M,J)=0.
-    end do
-  end do
-end do
-
-end subroutine resetclassaccum
-
-
-!==================================================
 
 subroutine resetgridavg(nltest)
 
@@ -3170,34 +2838,6 @@ integer :: i,j
 
 end subroutine resetgridavg
 
-
-
-!==================================================
-
-subroutine finddaylength(solday,radl,daylength)
-
-! Calculate the daylength based on the latitude and day of year
-
-! Joe Melton Dec 18 2015 (taken from phenlogy.f)
-
-use ctem_params, only : pi
-
-implicit none
-
-real, intent(in) :: solday  !day of year
-real, intent(in) :: radl    ! latitude
-real, intent(out) :: daylength  ! calculated daylength
-real :: theta               ! temp var
-real :: decli               ! temp var
-real :: term                ! temp var
-
-    theta=0.2163108 + 2.0*atan(0.9671396*tan(0.0086*(solday-186.0)))
-    decli=asin(0.39795*cos(theta))      !declination !note I see that CLASS does this also but with different formula...
-    term=(sin(radl)*sin(decli))  /(cos(radl)*cos(decli))
-    term=max(-1.0,min(term,1.0))
-    daylength=24.0-(24.0/pi)*acos(term)
-
-end subroutine finddaylength
 
 !==================================================
 

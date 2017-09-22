@@ -4,6 +4,8 @@
 !!this module contains the variable type structures:
 !! 1. class_rot - CLASS's 'rot' and 'row' vars
 !! 2. class_gat - CLASS's 'gat' vars
+!! 3. class_out - CLASS's monthly outputs
+
 !
 !>\file
 module class_statevars
@@ -15,6 +17,9 @@ use ctem_params,  only : ican, icp1, NBS
 implicit none
 
 public :: alloc_class_vars
+public :: resetclassmon
+public :: resetclassyr
+public :: resetclassaccum
 
 !=================================================================================
 !>
@@ -502,6 +507,7 @@ type class_rotated
     real, allocatable, dimension(:) :: WTRSROW !<
     real, allocatable, dimension(:) :: SFRHROW !<
     real, allocatable, dimension(:) :: wtableROW !<
+    integer, allocatable, dimension(:) :: altotcntr_d     !<Used to count the number of time steps with the sun above the horizon
 
     ! These will be allocated the dimension: 'nlat,nmos'
 
@@ -639,6 +645,14 @@ type class_rotated
     real, allocatable, dimension(:,:,:) :: HTCROT  !<
     real, allocatable, dimension(:,:,:) :: QFCROT  !<
 
+    ! allocated with nlat,nmos,ignd:
+    real, allocatable, dimension(:,:,:) :: TBARACC_M        !<
+    real, allocatable, dimension(:,:,:) :: THLQACC_M        !<
+    real, allocatable, dimension(:,:,:) :: THICACC_M        !<
+    real, allocatable, dimension(:,:,:) :: THALACC_M        !<
+    real, allocatable, dimension(:,:,:) :: tbaraccrow_m     !<
+
+
     ! These will be allocated the dimension: 'nlat,nmos,ican'
     real, allocatable, dimension(:,:,:) :: ACIDROT !<
     real, allocatable, dimension(:,:,:) :: ACVDROT !<
@@ -687,13 +701,109 @@ type class_rotated
     ! These will be allocated the dimension: 'nlat,nmos,4'
     real, allocatable, dimension(:,:,:)  :: TSFSROT !<
 
+    ! allocated with nlat,nmos:
+    real, allocatable, dimension(:,:) :: PREACC_M              !<
+    real, allocatable, dimension(:,:) :: GTACC_M               !<
+    real, allocatable, dimension(:,:) :: QEVPACC_M             !<
+    real, allocatable, dimension(:,:) :: HFSACC_M              !<
+    real, allocatable, dimension(:,:) :: HMFNACC_M             !<
+    real, allocatable, dimension(:,:) :: ROFACC_M              !<
+    real, allocatable, dimension(:,:) :: SNOACC_M              !<
+    real, allocatable, dimension(:,:) :: OVRACC_M              !<
+    real, allocatable, dimension(:,:) :: WTBLACC_M             !<
+    real, allocatable, dimension(:,:) :: ALVSACC_M             !<
+    real, allocatable, dimension(:,:) :: ALIRACC_M             !<
+    real, allocatable, dimension(:,:) :: RHOSACC_M             !<
+    real, allocatable, dimension(:,:) :: TSNOACC_M             !<
+    real, allocatable, dimension(:,:) :: WSNOACC_M             !<
+    real, allocatable, dimension(:,:) :: SNOARE_M              !<
+    real, allocatable, dimension(:,:) :: TCANACC_M             !<
+    real, allocatable, dimension(:,:) :: RCANACC_M             !<
+    real, allocatable, dimension(:,:) :: SCANACC_M             !<
+    real, allocatable, dimension(:,:) :: ALTOTACC_M            !<Daily broadband albedo
+    real, allocatable, dimension(:,:) :: GROACC_M              !<
+    real, allocatable, dimension(:,:) :: FSINACC_M             !<
+    real, allocatable, dimension(:,:) :: FLINACC_M             !<
+    real, allocatable, dimension(:,:) :: TAACC_M               !<
+    real, allocatable, dimension(:,:) :: UVACC_M               !<
+    real, allocatable, dimension(:,:) :: PRESACC_M             !<
+    real, allocatable, dimension(:,:) :: QAACC_M               !<
+    real, allocatable, dimension(:,:) :: EVAPACC_M             !<
+    real, allocatable, dimension(:,:) :: FLUTACC_M             !<
+
 end type class_rotated
 
 type (class_rotated), save, target :: class_rot
 
-contains
+!=================================================================================
+
+!>CLASS's monthly outputs
+type class_moyr_output
+
+!   MONTHLY OUTPUT FOR CLASS GRID-MEAN
+
+! allocated with nlat:
+    real, allocatable, dimension(:) :: ALVSACC_MO   !<
+    real, allocatable, dimension(:) :: ALIRACC_MO   !<
+    real, allocatable, dimension(:) :: FLUTACC_MO   !<
+    real, allocatable, dimension(:) :: FSINACC_MO   !<
+    real, allocatable, dimension(:) :: FLINACC_MO   !<
+    real, allocatable, dimension(:) :: HFSACC_MO    !<
+    real, allocatable, dimension(:) :: QEVPACC_MO   !<
+    real, allocatable, dimension(:) :: SNOACC_MO    !<
+    real, allocatable, dimension(:) :: WSNOACC_MO   !<
+    real, allocatable, dimension(:) :: ROFACC_MO    !<
+    real, allocatable, dimension(:) :: PREACC_MO    !<
+    real, allocatable, dimension(:) :: EVAPACC_MO   !<
+    real, allocatable, dimension(:) :: TRANSPACC_MO !<
+    real, allocatable, dimension(:) :: TAACC_MO     !<
+    real, allocatable, dimension(:) :: ACTLYR_MO
+    real, allocatable, dimension(:) :: FTABLE_MO
+    real, allocatable, dimension(:) :: ACTLYR_MIN_MO
+    real, allocatable, dimension(:) :: ACTLYR_MAX_MO
+    real, allocatable, dimension(:) :: FTABLE_MIN_MO
+    real, allocatable, dimension(:) :: FTABLE_MAX_MO
+    real, allocatable, dimension(:) :: ALTOTACC_MO  !< Broadband albedo
+    real, allocatable, dimension(:) :: GROUNDEVAP   !< evaporation and sublimation from the ground surface (formed from QFG and QFN), kg /m/mon
+    real, allocatable, dimension(:) :: CANOPYEVAP   !< evaporation and sublimation from the canopy (formed from QFCL and QFCF), kg /m/mon
+    integer, allocatable, dimension(:) :: altotcntr_m!< Used to count the number of time steps with the sun above the horizon
+
+! allocated with nlat,ignd:
+    real, allocatable, dimension(:,:) :: TBARACC_MO !<
+    real, allocatable, dimension(:,:) :: THLQACC_MO !<
+    real, allocatable, dimension(:,:) :: THICACC_MO !<
+
+!   YEARLY OUTPUT FOR CLASS GRID-MEAN
+
+    real, allocatable, dimension(:) :: ALVSACC_YR  !<
+    real, allocatable, dimension(:) :: ALIRACC_YR  !<
+    real, allocatable, dimension(:) :: FLUTACC_YR  !<
+    real, allocatable, dimension(:) :: FSINACC_YR  !<
+    real, allocatable, dimension(:) :: FLINACC_YR  !<
+    real, allocatable, dimension(:) :: HFSACC_YR   !<
+    real, allocatable, dimension(:) :: QEVPACC_YR  !<
+    real, allocatable, dimension(:) :: ROFACC_YR   !<
+    real, allocatable, dimension(:) :: PREACC_YR   !<
+    real, allocatable, dimension(:) :: EVAPACC_YR  !<
+    real, allocatable, dimension(:) :: TRANSPACC_YR!<
+    real, allocatable, dimension(:) :: TAACC_YR    !<
+    real, allocatable, dimension(:) :: ACTLYR_YR
+    real, allocatable, dimension(:) :: ACTLYR_MIN_YR
+    real, allocatable, dimension(:) :: ACTLYR_MAX_YR
+    real, allocatable, dimension(:) :: FTABLE_YR
+    real, allocatable, dimension(:) :: FTABLE_MIN_YR
+    real, allocatable, dimension(:) :: FTABLE_MAX_YR
+    real, allocatable, dimension(:) :: ALTOTACC_YR !< Broadband albedo
+    integer, allocatable, dimension(:) :: altotcntr_yr !<Used to count the number of time steps with the sun above the horizon
+
+
+end type class_moyr_output
+
+type (class_moyr_output), save, target :: class_out
 
 !=================================================================================
+
+contains
 
 subroutine alloc_class_vars()
 
@@ -1173,7 +1283,60 @@ allocate(class_rot% ALIRACC (nlat),&
          class_rot% WTRGROW (nlat),&
          class_rot% WTRSROW (nlat),&
          class_rot% SFRHROW (nlat),&
-         class_rot% wtableROW (nlat))
+         class_rot% wtableROW (nlat),&
+         class_rot%altotcntr_d(nlat),&
+
+! allocated with nlat:
+         class_out%ALVSACC_MO(nlat),&
+         class_out%ALIRACC_MO (nlat),&
+         class_out%FLUTACC_MO (nlat),&
+         class_out%FSINACC_MO (nlat),&
+         class_out%FLINACC_MO (nlat),&
+         class_out%HFSACC_MO (nlat),&
+         class_out%QEVPACC_MO (nlat),&
+         class_out%SNOACC_MO (nlat),&
+         class_out%WSNOACC_MO (nlat),&
+         class_out%ROFACC_MO (nlat),&
+         class_out%PREACC_MO (nlat),&
+         class_out%EVAPACC_MO (nlat),&
+         class_out%TRANSPACC_MO (nlat),&
+         class_out%TAACC_MO (nlat),&
+         class_out%ACTLYR_MO (nlat),&
+         class_out%FTABLE_MO (nlat),&
+         class_out%ACTLYR_MIN_MO (nlat),&
+         class_out%ACTLYR_MAX_MO (nlat),&
+         class_out%FTABLE_MIN_MO (nlat),&
+         class_out%FTABLE_MAX_MO (nlat),&
+         class_out%ALTOTACC_MO (nlat),&
+         class_out%GROUNDEVAP (nlat),&
+         class_out%CANOPYEVAP (nlat),&
+         class_out%altotcntr_m (nlat),&
+
+! allocated with nlat,ignd:
+         class_out%TBARACC_MO (nlat,ignd),&
+         class_out%THLQACC_MO (nlat,ignd),&
+         class_out%THICACC_MO (nlat,ignd),&
+         class_out%ALVSACC_YR (nlat),&
+         class_out%ALIRACC_YR (nlat),&
+         class_out%FLUTACC_YR (nlat),&
+         class_out%FSINACC_YR (nlat),&
+         class_out%FLINACC_YR (nlat),&
+         class_out%HFSACC_YR (nlat),&
+         class_out%QEVPACC_YR (nlat),&
+         class_out%ROFACC_YR (nlat),&
+         class_out%PREACC_YR (nlat),&
+         class_out%EVAPACC_YR (nlat),&
+         class_out%TRANSPACC_YR (nlat),&
+         class_out%TAACC_YR (nlat),&
+         class_out%ACTLYR_YR (nlat),&
+         class_out%ACTLYR_MIN_YR (nlat),&
+         class_out%ACTLYR_MAX_YR (nlat),&
+         class_out%FTABLE_YR (nlat),&
+         class_out%FTABLE_MIN_YR (nlat),&
+         class_out%FTABLE_MAX_YR (nlat),&
+         class_out%ALTOTACC_YR (nlat),&
+         class_out%altotcntr_yr (nlat))
+
 
     ! These will be allocated the dimension: 'nlat,nmos'
 
@@ -1282,7 +1445,35 @@ allocate(class_rot% IGDRROT (nlat,nmos),&
          class_rot% WTRGROT (nlat,nmos),&
          class_rot% WTRSROT (nlat,nmos),&
          class_rot% SFRHROT (nlat,nmos),&
-         class_rot% wtableROT(nlat,nmos))
+         class_rot% wtableROT(nlat,nmos),&
+         class_rot%PREACC_M(nlat,nmos),&
+         class_rot%GTACC_M (nlat,nmos),&
+         class_rot%QEVPACC_M (nlat,nmos),&
+         class_rot%HFSACC_M(nlat,nmos),&
+         class_rot%HMFNACC_M (nlat,nmos),&
+         class_rot%ROFACC_M(nlat,nmos),&
+         class_rot%SNOACC_M(nlat,nmos),&
+         class_rot%OVRACC_M(nlat,nmos),&
+         class_rot%WTBLACC_M(nlat,nmos),&
+         class_rot%ALVSACC_M(nlat,nmos),&
+         class_rot%ALIRACC_M(nlat,nmos),&
+         class_rot%RHOSACC_M(nlat,nmos),&
+         class_rot%TSNOACC_M(nlat,nmos),&
+         class_rot%WSNOACC_M(nlat,nmos),&
+         class_rot%SNOARE_M(nlat,nmos),&
+         class_rot%TCANACC_M(nlat,nmos),&
+         class_rot%RCANACC_M(nlat,nmos),&
+         class_rot%SCANACC_M(nlat,nmos),&
+         class_rot%ALTOTACC_M(nlat,nmos),&
+         class_rot%GROACC_M(nlat,nmos),&
+         class_rot%FSINACC_M (nlat,nmos),&
+         class_rot%FLINACC_M(nlat,nmos),&
+         class_rot%TAACC_M (nlat,nmos),&
+         class_rot%UVACC_M (nlat,nmos),&
+         class_rot%PRESACC_M (nlat,nmos),&
+         class_rot%QAACC_M (nlat,nmos),&
+         class_rot%EVAPACC_M (nlat,nmos),&
+         class_rot%FLUTACC_M(nlat,nmos))
 
     ! There will be allocated the dimension: 'nlat,nmos,ignd'
 allocate(class_rot% ISNDROT (nlat,nmos,ignd),&
@@ -1309,7 +1500,12 @@ allocate(class_rot% ISNDROT (nlat,nmos,ignd),&
          class_rot% GFLXROT (nlat,nmos,ignd),&
          class_rot% HMFGROT (nlat,nmos,ignd),&
          class_rot% HTCROT  (nlat,nmos,ignd),&
-         class_rot% QFCROT  (nlat,nmos,ignd))
+         class_rot% QFCROT  (nlat,nmos,ignd),&
+         class_rot%TBARACC_M(nlat,nmos,ignd),&
+         class_rot%THLQACC_M(nlat,nmos,ignd),&
+         class_rot%THICACC_M(nlat,nmos,ignd),&
+         class_rot%THALACC_M(nlat,nmos,ignd),&
+         class_rot%tbaraccrow_m(nlat,nmos,ignd))
 
     ! These will be allocated the dimension: 'nlat,nmos,ican'
 allocate(class_rot% ACIDROT (nlat,nmos,ican),&
@@ -1360,6 +1556,147 @@ allocate(class_rot% ITCTROT (nlat,nmos,6,50))
 allocate(class_rot% TSFSROT (nlat,nmos,4))
 
 end subroutine alloc_class_vars
+
+!==================================================
+
+subroutine resetclassmon(nltest)
+
+use ctem_params, only : ignd
+
+implicit none
+
+integer, intent(in) :: nltest
+
+integer :: i,j
+
+do i=1,nltest
+    class_out%ALVSACC_MO(I)=0.
+    class_out%ALIRACC_MO(I)=0.
+    class_out%FLUTACC_MO(I)=0.
+    class_out%FSINACC_MO(I)=0.
+    class_out%FLINACC_MO(I)=0.
+    class_out%HFSACC_MO(I) =0.
+    class_out%QEVPACC_MO(I)=0.
+    class_out%TRANSPACC_MO(I)=0.
+    class_out%SNOACC_MO(I) =0.
+    class_out%WSNOACC_MO(I)=0.
+    class_out%ROFACC_MO(I) =0.
+    class_out%PREACC_MO(I) =0.
+    class_out%EVAPACC_MO(I)=0.
+    class_out%TAACC_MO(I)=0.
+    class_out%ACTLYR_MO(I)=0.
+    class_out%FTABLE_MO(I)=0.
+    class_out%ACTLYR_MIN_MO(I)=100000.
+    class_out%FTABLE_MIN_MO(I)=100000.
+    class_out%ACTLYR_MAX_MO(I)=0.
+    class_out%FTABLE_MAX_MO(I)=0.
+    class_out%CANOPYEVAP(I)=0.
+    class_out%GROUNDEVAP(I)=0.
+    class_out%ALTOTACC_MO(I)=0.
+    class_out%altotcntr_m(i)=0
+
+
+    DO J=1,IGND
+        class_out%TBARACC_MO(I,J)=0.
+        class_out%THLQACC_MO(I,J)=0.
+        class_out%THICACC_MO(I,J)=0.
+    end do
+end do
+
+end subroutine resetclassmon
+
+!==================================================
+
+subroutine resetclassyr(nltest)
+
+implicit none
+
+integer, intent(in) :: nltest
+
+integer :: i
+
+do i=1,nltest
+          class_out%ALVSACC_YR(I)=0.
+          class_out%ALIRACC_YR(I)=0.
+          class_out%FLUTACC_YR(I)=0.
+          class_out%FSINACC_YR(I)=0.
+          class_out%FLINACC_YR(I)=0.
+          class_out%HFSACC_YR(I) =0.
+          class_out%QEVPACC_YR(I)=0.
+          class_out%ROFACC_YR(I) =0.
+          class_out%PREACC_YR(I) =0.
+          class_out%EVAPACC_YR(I)=0.
+          class_out%TRANSPACC_YR(I)=0.
+          class_out%TAACC_YR(I)=0.
+          class_out%ALTOTACC_YR(I)=0.
+          class_out%altotcntr_yr(i)=0
+end do
+
+end subroutine resetclassyr
+
+!==================================================
+subroutine resetclassaccum(nltest,nmtest)
+
+use ctem_params, only : ignd
+
+implicit none
+
+integer, intent(in) :: nltest
+integer, intent(in) :: nmtest
+
+integer :: i,m,j
+
+
+DO I=1,NLTEST
+
+    class_rot%altotcntr_d(i) = 0
+
+  DO M=1,NMTEST
+
+        class_rot%PREACC_M(i,m) = 0.
+        class_rot%GTACC_M(i,m) = 0.
+        class_rot%QEVPACC_M(i,m) = 0.
+        class_rot%HFSACC_M(i,m) = 0.
+        class_rot%HMFNACC_M(i,m) = 0.
+        class_rot%ROFACC_M(i,m) = 0.
+        class_rot%SNOACC_M(i,m) = 0.
+        class_rot%OVRACC_M(i,m) = 0.
+        class_rot%WTBLACC_M(i,m) = 0.
+        class_rot%ALVSACC_M(i,m) = 0.
+        class_rot%ALIRACC_M(i,m) = 0.
+        class_rot%RHOSACC_M(i,m) = 0.
+        class_rot%TSNOACC_M(i,m) = 0.
+        class_rot%WSNOACC_M(i,m) = 0.
+        class_rot%SNOARE_M(i,m) = 0.
+        class_rot%TCANACC_M(i,m) = 0.
+        class_rot%RCANACC_M(i,m) = 0.
+        class_rot%SCANACC_M(i,m) = 0.
+        class_rot%GROACC_M(i,m) = 0.
+        class_rot%FSINACC_M(i,m) = 0.
+        class_rot%FLINACC_M(i,m) = 0.
+        class_rot%TAACC_M(i,m) = 0.
+        class_rot%UVACC_M(i,m) = 0.
+        class_rot%PRESACC_M(i,m) = 0.
+        class_rot%QAACC_M(i,m) = 0.
+        class_rot%ALTOTACC_M(i,m) = 0.
+        class_rot%EVAPACC_M(i,m) = 0.
+        class_rot%FLUTACC_M(i,m) = 0.
+
+    DO J=1,IGND
+        class_rot%TBARACC_M(I,M,J)=0.
+        class_rot%THLQACC_M(I,M,J)=0.
+        class_rot%THICACC_M(I,M,J)=0.
+        class_rot%THALACC_M(I,M,J)=0.
+        class_rot%tbaraccrow_m(i,m,j)  = 0.0
+
+    end do
+  end do
+end do
+
+end subroutine resetclassaccum
+
+
+
 
 
 end module class_statevars

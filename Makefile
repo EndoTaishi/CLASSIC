@@ -39,7 +39,7 @@ else
 endif
 
 # Additional Libraries (serial/parallel)
-LFLAGS += -ldl -lz -lm -g -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow
+LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check
 #-Wall -Wextra
 
 # RECIPES

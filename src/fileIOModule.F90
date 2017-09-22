@@ -551,12 +551,19 @@ contains
             localFormat = [1, 1]
         endif
         if (present(count)) then
-            localCount = count
+            if (size(count) == 3) then
+                localCount = count
+                data = ncGetVar(fileId, label, start, localCount)
+                ncGet2DVar = inflateTo2D(data, localFormat)
+            else ! this can be called to just get a simple 2D field so do that here.
+                data = ncGetVar(fileId, label, start, count)
+                ncGet2DVar = inflateTo2D(data, count)
+            end if
         else
             localCount = [1, 1, 1]
+            data = ncGetVar(fileId, label, start, localCount)
+            ncGet2DVar = inflateTo2D(data, localFormat)
         endif
-        data = ncGetVar(fileId, label, start, localCount)
-        ncGet2DVar = inflateTo2D(data, localFormat)
     end function ncGet2DVar
 
     function ncGet3DVar(fileId, label, start, count, format)

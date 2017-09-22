@@ -189,7 +189,7 @@ c     ------------------------------------------------------------------
 
       do 230 j = 1, icc
         do 240 i = il1, il2
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           if(avthliq(i,j).le.avTHLW(i,j))then
             wtstatus(i,j)=0.0
           else if(avthliq(i,j).gt.avTHLW(i,j).and.
@@ -289,15 +289,16 @@ c     ------------------------------------------------------------------
 !>
 !!make sure allocation fractions add to one
 !!
+
+
       do 430 j = 1, icc
         do 440 i = il1, il2 
-         if (fcancmx(i,j).gt.0.0) then 
+         if (fcancmx(i,j).gt.0.0) then
           if(abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0).gt.abszero) 
      &    then  
            write(6,2000) i,j,(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j))
 2000       format(' at (i) = (',i3,'), pft=',i2,'  allocation fractions
      &not adding to one. sum  = ',e12.7)
-       write(*,*)abs(afrstem(i,j)+afrroot(i,j)+afrleaf(i,j)-1.0)-abszero
           call xit('allocate',-2)
           endif
          endif

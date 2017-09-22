@@ -34,8 +34,8 @@ program CLASSIC
     ! Load the job options file. This first parses the command line arguments.
     ! Then all model switches are read in from a namelist file. This sets up the
     ! run options and points to input files as needed.
-    call read_from_job_options!(runParamsFile,compete)
-    !print*,runParamsFile,compete
+    call read_from_job_options
+
     ! Load the run setup information based on the metadata in the
     ! initialization netcdf file. The bounds given as an argument to
     ! CLASSIC are used to find the start points (srtx and srty)
@@ -49,7 +49,7 @@ program CLASSIC
 
     ! Prepare all of the global parameters such as those in CLASSD and ctem_params
     ! which are read from a namelist file.
-    call prepareGlobalParams!(runParamsFile,compete)
+    call prepareGlobalParams
 
     ! The output files are created based on the model switches in the
     ! joboptions file and the xml file that describes the metadata for
@@ -97,7 +97,7 @@ contains
 
         blocks = myDomain%LandCellCount / size + 1          ! The number of processing blocks
         remainder = mod(myDomain%LandCellCount, size)       ! The number of cells for the last block
-        !print*,myDomain%LandCellCount
+        
         do i = 1, blocks - 1                    ! Go through every block except for the last one
             cell = (i - 1) * size + rank + 1
             print*,'in process',i,cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell)
