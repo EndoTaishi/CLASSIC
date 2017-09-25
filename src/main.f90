@@ -9,7 +9,6 @@ module main
     implicit none
 
     public :: main_driver
-    public :: finddaylength
 
 contains
 
@@ -47,11 +46,9 @@ contains
         !!     in this driver. We access the variables and parameters
         !!     through use statements for modules:
 
-        use ctem_params,        only : nlat,nmos,ilg,nmon,&
-            &                               ican, ignd, icc, &
+        use ctem_params,        only : nlat,nmos,ilg,nmon,ican, ignd, icc, &
             &                               monthend, mmday,modelpft, l2max,&
-            &                                deltat, monthdays,seed,&
-            &                                NBS, readin_params,&
+            &                                deltat,seed,NBS, readin_params,&
             &                                allocateParamsCTEM
 
         use landuse_change,     only : initialize_luc, readin_luc
@@ -64,9 +61,9 @@ contains
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
             &                               close_outfiles,ctem_daily_aw,&
             &                               class_annual_aw
-
-
+        use outputManager, only : closeNCFiles
         use model_state_drivers, only : read_initialstate,write_restart
+        use generalUtils, only : findDaylength,findLeapYears
 
         implicit none
 
@@ -3615,9 +3612,9 @@ contains
             ! Find the maximum daylength at this location for day 172 = June 21st - summer solstice.
             do i = 1, nltest
                 if (radjrow(1) > 0.) then
-                    call finddaylength(172.0, radjrow(1),dayl_maxrow(i)) !following rest of code, radjrow is always given index of 1 offline.
+                    dayl_maxrow(i) = findDaylength(172.0, radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
                 else ! S. Hemi so do N.Hemi winter solstice Dec 21
-                    call finddaylength(355.0, radjrow(1),dayl_maxrow(i)) !following rest of code, radjrow is always given index of 1 offline.
+                    dayl_maxrow(i) = findDaylength(355.0, radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
                 end if
             end do
         endif   ! if (ctem_on)
@@ -3719,27 +3716,9 @@ contains
                 READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSSROW(I),&
                     &        FDLROW(I),PREROW(I),TAROW(I),QAROW(I),UVROW(I),PRESROW(I)
 
-                if (leap.and.(ihour.eq.0).and.(imin.eq.0).and.(iday.eq.1)) then
-                    if (mod(iyear,4).ne.0) then !it is a common year
-                        leapnow = .false.
-                    else if (mod(iyear,100).ne.0) then !it is a leap year
-                        leapnow = .true.
-                    else if (mod(iyear,400).ne.0) then !it is a common year
-                        leapnow = .false.
-                    else !it is a leap year
-                        leapnow = .true.
-                    end if
-
-                    ! We do not check the MET files to make sure the incoming MET is in fact
-                    ! 366 days if leapnow. You must verify this in your own input files. Later
-                    ! in the code it will fail and print an error message to screen warning you
-                    ! that your file is not correct.
-                    if (leapnow) then ! adjust the calendar and set the error check.
-                        monthdays = (/ 31,29,31,30,31,30,31,31,30,31,30,31 /)
-                        monthend = (/ 0,31,60,91,121,152,182,213,244,274,305,335,366 /)
-                        mmday = (/ 16,46,76,107,137,168,198,229,260,290,321,351 /)
-                    end if
-                end if
+                ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday
+                ! values.
+                if (leap.and.(ihour.eq.0).and.(imin.eq.0).and.(iday.eq.1)) call findLeapYears(iyear,leapnow)
 
                 !         Assign the met climate year to climiyear
                 climiyear = iyear
@@ -3927,7 +3906,7 @@ contains
             if (ihour.eq.0.and.imin.eq.0) then ! first time step of the day
                 ! Find the daylength of this day
                 do i = 1, nltest
-                    call finddaylength(real(iday), radjrow(1), daylrow(i)) !following rest of code, radjrow is always given index of 1 offline.
+                    daylrow(i) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
                 end do
             end if
 
@@ -5797,7 +5776,7 @@ contains
                     end if
 
                     ! Accumulate and possibly write out yearly outputs
-                    call ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,&
+                    call ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAREROT,&
                         &                         onetile_perPFT,leapnow)
                 endif
             endif
@@ -5810,9 +5789,9 @@ contains
                 WRITE(*,*)& !'(6A,5I,13A,5I,9A,5I,6A,5I)')&
                     'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR,'CO2YEAR =',co2yr,'LUCYR=',lucyr
 5123    continue
-                print*,'starting to write restart'
+
                 call write_restart(lonIndex,latIndex)
-                print*,'done write restart'
+
             endif ! if iday=365/366
 
 
@@ -5941,7 +5920,9 @@ contains
 
         ! then ctem ones
 
-        call close_outfiles()
+        call closeNCFiles()
+
+        !call close_outfiles()
 
         !close the input files too
         close(12)
@@ -6020,7 +6001,8 @@ contains
             end if
 
             !     Then the CTEM ones
-            call close_outfiles()
+            call closeNCFiles()
+            !call close_outfiles()
 
             !     CLOSE THE INPUT FILES TOO
             CLOSE(12)
@@ -6047,32 +6029,6 @@ contains
         run_model=.false.
 
     end subroutine main_driver
-
-    subroutine finddaylength(solday,radl,daylength)
-
-        ! Calculate the daylength based on the latitude and day of year
-
-        ! Joe Melton Dec 18 2015 (taken from phenlogy.f)
-
-        use ctem_params, only : pi
-
-        implicit none
-
-        real, intent(in) :: solday  !day of year
-        real, intent(in) :: radl    ! latitude
-        real, intent(out) :: daylength  ! calculated daylength
-        real :: theta               ! temp var
-        real :: decli               ! temp var
-        real :: term                ! temp var
-
-            theta=0.2163108 + 2.0*atan(0.9671396*tan(0.0086*(solday-186.0)))
-            decli=asin(0.39795*cos(theta))      !declination !note I see that CLASS does this also but with different formula...
-            term=(sin(radl)*sin(decli))  /(cos(radl)*cos(decli))
-            term=max(-1.0,min(term,1.0))
-            daylength=24.0-(24.0/pi)*acos(term)
-
-    end subroutine finddaylength
-
 
 end module main
 

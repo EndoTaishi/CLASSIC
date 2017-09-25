@@ -1,6 +1,6 @@
 module xmlManager
 
-    use io_driver,   only : outputDescriptors, descriptorCount
+    use outputManager,   only : outputDescriptors, descriptorCount
     use xmlParser,   only : xml_process
 
     implicit none
@@ -98,7 +98,7 @@ contains
     logical function charToLogical(input)
         implicit none
         character(len=*), intent(in)    :: input
-        if (input == ".true.") then
+        if (input == "true") then
             charToLogical = .true.
         else
             charToLogical = .false.

@@ -246,7 +246,7 @@
 			<units>kg C/$m^2$</units>
 		</variable>
 
-		<variable includeBareGround="false">
+		<variable includeBareGround="true">
 			<standardName>
 				Carbon Mass in Litter Pool
 			</standardName>
@@ -257,7 +257,7 @@
 			<units>kg C/$m^2$</units>
 		</variable>
 
-		<variable includeBareGround="false">
+		<variable includeBareGround="true">
 			<standardName>
 				Carbon Mass in Model Soil Pool
 			</standardName>
@@ -268,7 +268,7 @@
 			<units></units>
 		</variable>
 
-		<variable includeBareGround="false">
+		<variable includeBareGround="true">
 			<standardName>
 				Total Carbon in All Terrestrial Carbon Pools
 			</standardName>
@@ -317,7 +317,7 @@
 			<units>kg C/$m^2$</units>
 		</variable>
 
-		<variable includeBareGround="false">
+		<variable includeBareGround="true">
 			<standardName>
 				Net Carbon Mass Flux out of Atmosphere due to Net
 				Ecosystem Productivity on Land
@@ -338,7 +338,7 @@
 			<units>kg C/$m^2$</units>
 		</variable>
 
-		<variable includeBareGround="false">
+		<variable includeBareGround="true">
 			<standardName>
 				Net Carbon Mass Flux out of Atmosphere due to Net
 				Biospheric Productivity on Land
@@ -353,7 +353,7 @@
 			<units>kg C/$m^2$</units>
 		</variable>
 
-		<variable includeBareGround="false">
+		<variable includeBareGround="true">
 			<standardName>
 				Carbon Mass Flux into Atmosphere due to Heterotrophic
 				Respiration on Land
@@ -377,7 +377,7 @@
 			<units>kg C/$m^2$</units>
 		</variable>
 
-		<variable includeBareGround="false">
+		<variable includeBareGround="true">
 			<standardName>
 				Litter heterotrophic respiration
 			</standardName>
@@ -389,7 +389,7 @@
 			<units>kg C/$m^2$</units>
 		</variable>
 
-		<variable includeBareGround="false">
+		<variable includeBareGround="true">
 			<standardName>
 				Soil heterotrophic respiration
 			</standardName>
@@ -412,7 +412,7 @@
 			<units></units>
 		</variable>
 
-		<variable includeBareGround="false">
+		<variable includeBareGround="true">
 			<standardName>
 				Total Carbon Mass Flux from Litter to Soil
 			</standardName>

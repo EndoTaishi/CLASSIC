@@ -47,66 +47,6 @@ public  :: ctem_monthly_aw      ! Accumulates and writes the CTEM monthly file
 public  :: ctem_annual_aw       ! Accumulates and writes the CTEM annual file
 public  :: close_outfiles       ! Closes the model output files
 
-!------------------------------------------------------------------------------------
-
-! Variables used in io operations:
-
-type simulationDomain
-    real, dimension(:), allocatable     :: lonLandCell, latLandCell     ! Long/Lat values of only the land cells in our model domain
-    integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   ! Indexes of only the land cells in our model domain for our resolution
-    real, dimension(:), allocatable     :: allLonValues, allLatValues   ! All long/Lat values in our model domain (including ocean/non-land)
-    integer                             :: LandCellCount    !> number of land cells that the model will run over
-    real, dimension(4) :: domainBounds                      !> Corners of the domain to be simulated (netcdfs)
-    integer :: srtx                                         !> starting index for this simulation for longitudes
-    integer :: srty                                         !> starting index for this simulation for latitudes
-    integer :: cntx                                         !> number of grid cells for this simulation in the longitude direction
-    integer :: cnty                                         !> number of grid cells for this simulation in the latitude direction
-end type
-
-type(simulationDomain) :: myDomain
-
-integer :: metfid                               !> netcdf file id for the meteorology file
-integer :: initid                               !> netcdf file id for the model initialization file
-integer :: rsid                                 !> netcdf file id for the model restart file
-
-!> This data structure is used to set up the output netcdf files.
-type outputDescriptor
-    character(80)   :: group                = ''
-    character(30)   :: shortName            = ''
-    character(30)   :: standardName         = ''
-    character(400)  :: longName             = ''        !< Long name of the variable
-    character(30)   :: units                = ''        !< Units of the variable
-    character(30)   :: timeFreq             = ''        !< Time frequency of variable: half-hourly, daily, monthly, annually
-    logical         :: includeBareGround    = .false.   !< If true then expand the PFT list for a final position that is the bare ground.
-end type
-
-type(outputDescriptor), allocatable     :: outputDescriptors(:)
-
-type netcdfVar
-    integer         :: ncid
-    character(30)   :: key
-    character(80)   :: filename
-end type
-
-integer, parameter  :: maxncVariableNumber = 300
-type(netcdfVar)     :: netcdfVars(maxncVariableNumber)
-
-integer :: variableCount = 0, descriptorCount = 0
-
-
-! ! Variables used in met forcing reads
-! integer, parameter :: niv = 7                   !> number of meteorology variables
-! character(2), dimension(niv), parameter :: vname = [ "lw", "ap", "qa", "pr", "sw", "wi", "ta" ] !< names of the met vars: longwave down, atmos pressure,
-!                                                     !! specific humidity, precipitation, shortwave down, wind, air temperature
-!
-! real, allocatable, dimension(:,:) :: lw6hr      !> downwelling longwave radiation 6 hrly
-! real, allocatable, dimension(:,:) :: ap6hr      !>
-! real, allocatable, dimension(:,:) :: qa6hr      !>
-! real, allocatable, dimension(:,:) :: pr6hr      !>
-! real, allocatable, dimension(:,:) :: sw6hr      !>
-! real, allocatable, dimension(:,:) :: wi6hr      !>
-! real, allocatable, dimension(:,:) :: ta6hr      !>
-! integer :: yearmetst                            !> Year that the met data starts on
 
 contains
 
@@ -2660,11 +2600,13 @@ end subroutine ctem_monthly_aw
 !==============================================================================================================
 !>\ingroup io_driver_ctem_annual_aw
 !>@{
-subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT,leapnow)
+subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAREROT,onetile_perPFT,leapnow)
 
     use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
     resetyearend
     use ctem_params, only : icc,iccp1,seed,nmos
+    use fileIOModule
+    use outputManager, only : writeOutput1D,refyr
 
     implicit none
 
@@ -2672,6 +2614,8 @@ subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT,leapno
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
     integer, intent(in) :: iday
+    integer, intent(in) :: imonth
+    integer, intent(in) :: lonIndex, latIndex
     real, intent(in), dimension(:,:) :: FAREROT
     integer, intent(in) :: iyear
     logical, intent(in) :: onetile_perPFT
@@ -2684,7 +2628,8 @@ subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT,leapno
     logical, pointer :: compete
     logical, pointer :: dowetlands
     logical, pointer :: obswetf
-
+    logical, pointer :: doperpftoutput
+    logical, pointer :: dopertileoutput
 
     real, pointer, dimension(:,:,:) :: laimaxg_yr
     real, pointer, dimension(:,:,:) :: stemmass_yr
@@ -2864,8 +2809,7 @@ subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT,leapno
     real :: barefrac
     real :: sumfare
     real :: daysinyr
-    integer :: NDMONTH
-    integer :: IMONTH
+    real :: timeStamp
 
     ! point pointers
 
@@ -2874,6 +2818,8 @@ subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT,leapno
     compete               => c_switch%compete
     dowetlands            => c_switch%dowetlands
     obswetf               => c_switch%obswetf
+    doperpftoutput        => c_switch%doperpftoutput
+    dopertileoutput       => c_switch%dopertileoutput
 
     laimaxg_yr          =>ctem_yr%laimaxg_yr
     stemmass_yr         =>ctem_yr%stemmass_yr
@@ -3241,113 +3187,200 @@ subroutine ctem_annual_aw(nltest,nmtest,iday,FAREROT,iyear,onetile_perPFT,leapno
 900         continue !m
 
             !>Write to annual output files:
-            !>
-            !>File .CT01Y
 
-            do m=1,nmtest
+            ! Prepare the timestamp for this year
+            timeStamp = (iyear - refyr) * daysinyr
 
-                barefrac=1.0
-                do j=1,icc
-                    barefrac=barefrac-fcancmxrow(i,m,j)
-                    if (fcancmxrow(i,m,j) .gt. seed) then
-                        write(86,8105)iyear,laimaxg_yr(i,m,j), &
-                        vgbiomas_yr(i,m,j),stemmass_yr(i,m,j), &
-                        rootmass_yr(i,m,j),litrmass_yr(i,m,j), &
-                        soilcmas_yr(i,m,j),totcmass_yr(i,m,j), &
-                        npp_yr(i,m,j),gpp_yr(i,m,j),nep_yr(i,m,j), &
-                        nbp_yr(i,m,j),hetrores_yr(i,m,j), &
-                        autores_yr(i,m,j),litres_yr(i,m,j), &
-                        soilcres_yr(i,m,j),veghght_yr(i,m,j),' TILE ',m,' PFT ',j,' FRAC ' &
-                        ,fcancmxrow(i,m,j)
-                    end if
-                end do !j
+!            do m=1,nmtest
 
-                !>Now do the bare fraction of the grid cell. Only soil c, hetres
-                !>and litter are relevant so the rest are set to 0.
-
-                if (barefrac .gt. seed) then
-                    write(86,8105)iyear,0.,  &
-                    0.,  &
-                    0.,0., &
-                    litrmass_yr(i,m,iccp1),soilcmas_yr(i,m,iccp1), &
-                    totcmass_yr(i,m,iccp1),0., &
-                    0.,nep_yr(i,m,iccp1), &
-                    nbp_yr(i,m,iccp1),hetrores_yr(i,m,iccp1), &
-                    0.,litres_yr(i,m,iccp1),soilcres_yr(i,m,iccp1),0.0, &
-                    ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
-                end if
-
+            if (doperpftoutput) then
                 if (nmtest > 1) then
+                    print*,'Per PFT and per tile outputs not implemented yet'
+                else
+                    m = 1
+                    call writeOutput1D('laimaxg_yr' ,timeStamp,'lai', [laimaxg_yr(i,m,:)])
+                    call writeOutput1D('vgbiomas_yr',timeStamp,'cVeg',[vgbiomas_yr(i,m,:)])
+                    call writeOutput1D('stemmass_yr',timeStamp,'cStem',[stemmass_yr(i,m,:)])
+                    call writeOutput1D('rootmass_yr',timeStamp,'cRoot',[rootmass_yr(i,m,:)])
+                    call writeOutput1D('litrmass_yr',timeStamp,'cLitter',[litrmass_yr(i,m,:)])
+                    call writeOutput1D('soilcmas_yr',timeStamp,'cSoil',[soilcmas_yr(i,m,:)])
+                    call writeOutput1D('totcmass_yr',timeStamp,'cLand',[totcmass_yr(i,m,:)])
+                    call writeOutput1D('npp_yr'     ,timeStamp,'npp',[npp_yr(i,m,:)])
+                    call writeOutput1D('gpp_yr'     ,timeStamp,'gpp',[gpp_yr(i,m,:)])
+                    call writeOutput1D('nep_yr'     ,timeStamp,'nep',[nep_yr(i,m,:)])
+                    call writeOutput1D('nbp_yr'     ,timeStamp,'nbp',[nbp_yr(i,m,:)])
+                    call writeOutput1D('hetrores_yr',timeStamp,'rh',[hetrores_yr(i,m,:)])
+                    call writeOutput1D('autores_yr' ,timeStamp,'ra',[autores_yr(i,m,:)])
+                    call writeOutput1D('litres_yr'  ,timeStamp,'rhLitter',[litres_yr(i,m,:)])
+                    call writeOutput1D('soilcres_yr',timeStamp,'rhSoil',[soilcres_yr(i,m,:)])
+                    call writeOutput1D('veghght_yr' ,timeStamp,'vegHeight',[veghght_yr(i,m,:)])
 
-                    !> Write out the per tile values
-                    write(86,8105)iyear,laimaxg_yr_t(i,m), &
-                    vgbiomas_yr_t(i,m),stemmass_yr_t(i,m), &
-                    rootmass_yr_t(i,m),litrmass_yr_t(i,m), &
-                    soilcmas_yr_t(i,m),totcmass_yr_t(i,m), &
-                    npp_yr_t(i,m),gpp_yr_t(i,m),nep_yr_t(i,m), &
-                    nbp_yr_t(i,m),hetrores_yr_t(i,m), &
-                    autores_yr_t(i,m),litres_yr_t(i,m), &
-                    soilcres_yr_t(i,m),veghght_yr_t(i,m),' TILE ',m,' OF ' &
-                    ,nmtest,' TFRAC ',FAREROT(i,m)
+                    if (dofire .or. lnduseon) then
+
+                        call writeOutput1D('emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
+                        call writeOutput1D('burnfrac_yr' ,timeStamp,'burntFractionAll',[burnfrac_yr(i,m,:)*100.])
+!                            smfuncveg_yr(i,m,j), &
+!                            bterm_yr(i,m,j),lterm_yr_t(i,m),mterm_yr(i,m,j), &
+                    end if
+
                 end if
-            end do !m
+            end if
+
+            if (dopertileoutput) then
+
+                if (nmtest == 1) then
+                    print*,'Switch selected for per tile output but number of tiles is only one.'
+                else
+                    !> Write out the per tile values
+                    call writeOutput1D('laimaxg_yr_t' ,timeStamp,'lai', [laimaxg_yr_t(i,:)])
+                    call writeOutput1D('vgbiomas_yr_t',timeStamp,'cVeg',[vgbiomas_yr_t(i,:)])
+                    call writeOutput1D('stemmass_yr_t',timeStamp,'cStem',[stemmass_yr_t(i,:)])
+                    call writeOutput1D('rootmass_yr_t',timeStamp,'cRoot',[rootmass_yr_t(i,:)])
+                    call writeOutput1D('litrmass_yr_t',timeStamp,'cLitter',[litrmass_yr_t(i,:)])
+                    call writeOutput1D('soilcmas_yr_t',timeStamp,'cSoil',[soilcmas_yr_t(i,:)])
+                    call writeOutput1D('totcmass_yr_t',timeStamp,'cLand',[totcmass_yr_t(i,:)])
+                    call writeOutput1D('npp_yr_t'     ,timeStamp,'npp',[npp_yr_t(i,:)])
+                    call writeOutput1D('gpp_yr_t'     ,timeStamp,'gpp',[gpp_yr_t(i,:)])
+                    call writeOutput1D('nep_yr_t'     ,timeStamp,'nep',[nep_yr_t(i,:)])
+                    call writeOutput1D('nbp_yr_t'     ,timeStamp,'nbp',[nbp_yr_t(i,:)])
+                    call writeOutput1D('hetrores_yr_t',timeStamp,'rh',[hetrores_yr_t(i,:)])
+                    call writeOutput1D('autores_yr_t' ,timeStamp,'ra',[autores_yr_t(i,:)])
+                    call writeOutput1D('litres_yr_t'  ,timeStamp,'rhLitter',[litres_yr_t(i,:)])
+                    call writeOutput1D('soilcres_yr_t',timeStamp,'rhSoil',[soilcres_yr_t(i,:)])
+                    call writeOutput1D('veghght_yr_t' ,timeStamp,'vegHeight',[veghght_yr_t(i,:)])
+
+                    if (dofire .or. lnduseon) then
+                        call writeOutput1D('emit_co2_yr_t' ,timeStamp,'fFire',[emit_co2_yr_t(i,:)])
+                        call writeOutput1D('burnfrac_yr_t' ,timeStamp,'burntFractionAll',[burnfrac_yr_t(i,:)*100.])
+                    end if
+                end if
+            end if
+
+!                 barefrac=1.0
+!                 do j=1,icc
+!                     barefrac=barefrac-fcancmxrow(i,m,j)
+!                     if (fcancmxrow(i,m,j) .gt. seed) then
+!                         write(86,8105)iyear,laimaxg_yr(i,m,j), &
+!                         vgbiomas_yr(i,m,j),stemmass_yr(i,m,j), &
+!                         rootmass_yr(i,m,j),litrmass_yr(i,m,j), &
+!                         soilcmas_yr(i,m,j),totcmass_yr(i,m,j), &
+!                         npp_yr(i,m,j),gpp_yr(i,m,j),nep_yr(i,m,j), &
+!                         nbp_yr(i,m,j),hetrores_yr(i,m,j), &
+!                         autores_yr(i,m,j),litres_yr(i,m,j), &
+!                         soilcres_yr(i,m,j),veghght_yr(i,m,j),' TILE ',m,' PFT ',j,' FRAC ' &
+!                         ,fcancmxrow(i,m,j)
+!                     end if
+!                 end do !j
+!
+!                 !>Now do the bare fraction of the grid cell. Only soil c, hetres
+!                 !>and litter are relevant so the rest are set to 0.
+!
+!                 if (barefrac .gt. seed) then
+!                     write(86,8105)iyear,0.,  &
+!                     0.,  &
+!                     0.,0., &
+!                     litrmass_yr(i,m,iccp1),soilcmas_yr(i,m,iccp1), &
+!                     totcmass_yr(i,m,iccp1),0., &
+!                     0.,nep_yr(i,m,iccp1), &
+!                     nbp_yr(i,m,iccp1),hetrores_yr(i,m,iccp1), &
+!                     0.,litres_yr(i,m,iccp1),soilcres_yr(i,m,iccp1),0.0, &
+!                     ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
+!                 end if
+
+!                if (nmtest > 1) then
+
+!                     !> Write out the per tile values
+!                     write(86,8105)iyear,laimaxg_yr_t(i,m), &
+!                     vgbiomas_yr_t(i,m),stemmass_yr_t(i,m), &
+!                     rootmass_yr_t(i,m),litrmass_yr_t(i,m), &
+!                     soilcmas_yr_t(i,m),totcmass_yr_t(i,m), &
+!                     npp_yr_t(i,m),gpp_yr_t(i,m),nep_yr_t(i,m), &
+!                     nbp_yr_t(i,m),hetrores_yr_t(i,m), &
+!                     autores_yr_t(i,m),litres_yr_t(i,m), &
+!                     soilcres_yr_t(i,m),veghght_yr_t(i,m),' TILE ',m,' OF ' &
+!                     ,nmtest,' TFRAC ',FAREROT(i,m)
+!                 end if
+!             end do !m
 
             !> Finally write out the per gridcell values
-            write(86,8105)iyear,laimaxg_yr_g(i),vgbiomas_yr_g(i), &
-            stemmass_yr_g(i),rootmass_yr_g(i),litrmass_yr_g(i), &
-            soilcmas_yr_g(i),totcmass_yr_g(i),npp_yr_g(i), &
-            gpp_yr_g(i),nep_yr_g(i), &
-            nbp_yr_g(i),hetrores_yr_g(i),autores_yr_g(i), &
-            litres_yr_g(i),soilcres_yr_g(i),veghght_yr_g(i),' GRDAV'
-
+            call writeOutput1D('laimaxg_yr_g' ,timeStamp,'lai', [laimaxg_yr_g(i)])
+            call writeOutput1D('vgbiomas_yr_g',timeStamp,'cVeg',[vgbiomas_yr_g(i)])
+            call writeOutput1D('stemmass_yr_g',timeStamp,'cStem',[stemmass_yr_g(i)])
+            call writeOutput1D('rootmass_yr_g',timeStamp,'cRoot',[rootmass_yr_g(i)])
+            call writeOutput1D('litrmass_yr_g',timeStamp,'cLitter',[litrmass_yr_g(i)])
+            call writeOutput1D('soilcmas_yr_g',timeStamp,'cSoil',[soilcmas_yr_g(i)])
+            call writeOutput1D('totcmass_yr_g',timeStamp,'cLand',[totcmass_yr_g(i)])
+            call writeOutput1D('npp_yr_g'     ,timeStamp,'npp',[npp_yr_g(i)])
+            call writeOutput1D('gpp_yr_g'     ,timeStamp,'gpp',[gpp_yr_g(i)])
+            call writeOutput1D('nep_yr_g'     ,timeStamp,'nep',[nep_yr_g(i)])
+            call writeOutput1D('nbp_yr_g'     ,timeStamp,'nbp',[nbp_yr_g(i)])
+            call writeOutput1D('hetrores_yr_g',timeStamp,'rh',[hetrores_yr_g(i)])
+            call writeOutput1D('autores_yr_g' ,timeStamp,'ra',[autores_yr_g(i)])
+            call writeOutput1D('litres_yr_g'  ,timeStamp,'rhLitter',[litres_yr_g(i)])
+            call writeOutput1D('soilcres_yr_g',timeStamp,'rhSoil',[soilcres_yr_g(i)])
+            call writeOutput1D('veghght_yr_g' ,timeStamp,'vegHeight',[veghght_yr_g(i)])
             if (dofire .or. lnduseon) then
+                call writeOutput1D('emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
+                call writeOutput1D('burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)*100.])
+            end if
 
-                !> Write to file .CT06Y
-                do m=1,nmtest
-                    do j=1,icc
-                        if (fcancmxrow(i,m,j) .gt. seed) then
-                            write(87,8108)iyear,emit_co2_yr(i,m,j), &
-                            emit_co_yr(i,m,j),emit_ch4_yr(i,m,j), &
-                            emit_nmhc_yr(i,m,j),emit_h2_yr(i,m,j), &
-                            emit_nox_yr(i,m,j),emit_n2o_yr(i,m,j), &
-                            emit_pm25_yr(i,m,j),emit_tpm_yr(i,m,j), &
-                            emit_tc_yr(i,m,j),emit_oc_yr(i,m,j), &
-                            emit_bc_yr(i,m,j),smfuncveg_yr(i,m,j), &
-                            luc_emc_yr_t(i,m),lucltrin_yr_t(i,m), &
-                            lucsocin_yr_t(i,m),burnfrac_yr(i,m,j)*100., &
-                            bterm_yr(i,m,j),lterm_yr_t(i,m),mterm_yr(i,m,j), &
-                            ' TILE ',m,' PFT ',j,' FRAC ' &
-                            ,fcancmxrow(i,m,j)
-                        end if
-                    end do !j
+!             write(86,8105)iyear,laimaxg_yr_g(i),vgbiomas_yr_g(i), &
+!             stemmass_yr_g(i),rootmass_yr_g(i),litrmass_yr_g(i), &
+!             soilcmas_yr_g(i),totcmass_yr_g(i),npp_yr_g(i), &
+!             gpp_yr_g(i),nep_yr_g(i), &
+!             nbp_yr_g(i),hetrores_yr_g(i),autores_yr_g(i), &
+!             litres_yr_g(i),soilcres_yr_g(i),veghght_yr_g(i),' GRDAV'
 
-                    if (nmtest > 1) then
-                        !> Write out the per tile values
-                        write(87,8108)iyear,emit_co2_yr_t(i,m), &
-                        emit_co_yr_t(i,m),emit_ch4_yr_t(i,m), &
-                        emit_nmhc_yr_t(i,m),emit_h2_yr_t(i,m), &
-                        emit_nox_yr_t(i,m),emit_n2o_yr_t(i,m), &
-                        emit_pm25_yr_t(i,m),emit_tpm_yr_t(i,m), &
-                        emit_tc_yr_t(i,m),emit_oc_yr_t(i,m), &
-                        emit_bc_yr_t(i,m),smfuncveg_yr_t(i,m), &
-                        luc_emc_yr_t(i,m),lucltrin_yr_t(i,m), &
-                        lucsocin_yr_t(i,m),burnfrac_yr_t(i,m)*100., &
-                        bterm_yr_t(i,m),lterm_yr_t(i,m),mterm_yr_t(i,m), &
-                        ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
-                    end if
-                end do !m
+!             if (dofire .or. lnduseon) then
+!
+!                 call writeOutput1D('emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
+!
+!                 !> Write to file .CT06Y
+!                 do m=1,nmtest
+!                     do j=1,icc
+!                         if (fcancmxrow(i,m,j) .gt. seed) then
+!                             write(87,8108)iyear,emit_co2_yr(i,m,j), &
+!                             emit_co_yr(i,m,j),emit_ch4_yr(i,m,j), &
+!                             emit_nmhc_yr(i,m,j),emit_h2_yr(i,m,j), &
+!                             emit_nox_yr(i,m,j),emit_n2o_yr(i,m,j), &
+!                             emit_pm25_yr(i,m,j),emit_tpm_yr(i,m,j), &
+!                             emit_tc_yr(i,m,j),emit_oc_yr(i,m,j), &
+!                             emit_bc_yr(i,m,j),smfuncveg_yr(i,m,j), &
+!                             luc_emc_yr_t(i,m),lucltrin_yr_t(i,m), &
+!                             lucsocin_yr_t(i,m),burnfrac_yr(i,m,j)*100., &
+!                             bterm_yr(i,m,j),lterm_yr_t(i,m),mterm_yr(i,m,j), &
+!                             ' TILE ',m,' PFT ',j,' FRAC ' &
+!                             ,fcancmxrow(i,m,j)
+!                         end if
+!                     end do !j
 
-                !> Finally write out the per gridcell values
-                write(87,8108)iyear,emit_co2_yr_g(i), &
-                emit_co_yr_g(i),emit_ch4_yr_g(i),emit_nmhc_yr_g(i), &
-                emit_h2_yr_g(i),emit_nox_yr_g(i),emit_n2o_yr_g(i), &
-                emit_pm25_yr_g(i),emit_tpm_yr_g(i),emit_tc_yr_g(i), &
-                emit_oc_yr_g(i),emit_bc_yr_g(i),smfuncveg_yr_g(i), &
-                luc_emc_yr_g(i),lucltrin_yr_g(i), &
-                lucsocin_yr_g(i),burnfrac_yr_g(i)*100.,bterm_yr_g(i), &
-                lterm_yr_g(i),mterm_yr_g(i), ' GRDAV'
+!                     if (nmtest > 1) then
+!                         !> Write out the per tile values
+!                         write(87,8108)iyear,emit_co2_yr_t(i,m), &
+!                         emit_co_yr_t(i,m),emit_ch4_yr_t(i,m), &
+!                         emit_nmhc_yr_t(i,m),emit_h2_yr_t(i,m), &
+!                         emit_nox_yr_t(i,m),emit_n2o_yr_t(i,m), &
+!                         emit_pm25_yr_t(i,m),emit_tpm_yr_t(i,m), &
+!                         emit_tc_yr_t(i,m),emit_oc_yr_t(i,m), &
+!                         emit_bc_yr_t(i,m),smfuncveg_yr_t(i,m), &
+!                         luc_emc_yr_t(i,m),lucltrin_yr_t(i,m), &
+!                         lucsocin_yr_t(i,m),burnfrac_yr_t(i,m)*100., &
+!                         bterm_yr_t(i,m),lterm_yr_t(i,m),mterm_yr_t(i,m), &
+!                         ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+!                     end if
+                !end do !m
 
-            endif !dofire,lnduseon
+!                 !> Finally write out the per gridcell values
+!                 write(87,8108)iyear,emit_co2_yr_g(i), &
+!                 emit_co_yr_g(i),emit_ch4_yr_g(i),emit_nmhc_yr_g(i), &
+!                 emit_h2_yr_g(i),emit_nox_yr_g(i),emit_n2o_yr_g(i), &
+!                 emit_pm25_yr_g(i),emit_tpm_yr_g(i),emit_tc_yr_g(i), &
+!                 emit_oc_yr_g(i),emit_bc_yr_g(i),smfuncveg_yr_g(i), &
+!                 luc_emc_yr_g(i),lucltrin_yr_g(i), &
+!                 lucsocin_yr_g(i),burnfrac_yr_g(i)*100.,bterm_yr_g(i), &
+!                 lterm_yr_g(i),mterm_yr_g(i), ' GRDAV'
+!
+!             endif !dofire,lnduseon
 
             !> Write fraction of each pft and bare
 

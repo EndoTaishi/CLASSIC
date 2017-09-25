@@ -1,6 +1,5 @@
 module outputManager
 
-    use io_driver, only : outputDescriptor, netcdfVars,descriptorCount
     use ctem_statevars, only : c_switch
 
     implicit none
@@ -12,11 +11,57 @@ module outputManager
     private :: validTime
     private :: generateFilename
     private :: getDescriptor
-    private :: getIdByKey
+    public :: getIdByKey
     public  :: createNetCDF
     private :: identityVector
+    public  :: closeNCFiles
 
-    integer :: variableCount = 0
+
+    type simulationDomain
+        real, dimension(:), allocatable     :: lonLandCell, latLandCell     ! Long/Lat values of only the land cells in our model domain
+        integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   ! Indexes of only the land cells in our model domain for our resolution
+        real, dimension(:), allocatable     :: allLonValues, allLatValues   ! All long/Lat values in our model domain (including ocean/non-land)
+        integer                             :: LandCellCount    !> number of land cells that the model will run over
+        real, dimension(4) :: domainBounds                      !> Corners of the domain to be simulated (netcdfs)
+        integer :: srtx                                         !> starting index for this simulation for longitudes
+        integer :: srty                                         !> starting index for this simulation for latitudes
+        integer :: cntx                                         !> number of grid cells for this simulation in the longitude direction
+        integer :: cnty                                         !> number of grid cells for this simulation in the latitude direction
+    end type
+
+    type(simulationDomain) :: myDomain
+
+    integer :: metfid                               !> netcdf file id for the meteorology file
+    integer :: initid                               !> netcdf file id for the model initialization file
+    integer :: rsid                                 !> netcdf file id for the model restart file
+
+    !> This data structure is used to set up the output netcdf files.
+    type outputDescriptor
+        character(80)   :: group                = ''
+        character(30)   :: shortName            = ''
+        character(30)   :: standardName         = ''
+        character(400)  :: longName             = ''        !< Long name of the variable
+        character(30)   :: units                = ''        !< Units of the variable
+        character(30)   :: timeFreq             = ''        !< Time frequency of variable: half-hourly, daily, monthly, annually
+        logical         :: includeBareGround    = .false.   !< If true then expand the PFT list for a final position that is the bare ground.
+    end type
+
+    type(outputDescriptor), allocatable     :: outputDescriptors(:)
+
+    type netcdfVar
+        integer         :: ncid
+        character(30)   :: key
+        character(80)   :: filename
+    end type
+
+    integer, parameter  :: maxncVariableNumber = 300
+    type(netcdfVar)     :: netcdfVars(maxncVariableNumber)
+
+    integer :: variableCount = 0, descriptorCount = 0
+
+    integer         :: refyr = 1850                     !< !< Time reference for netcdf output files
+    character(30)   :: timestart = "days since 1850-01-01 00:00" !< Time reference for netcdf output files
+    character(30)   :: fill_value = "1.e38"             !< Default fill value for missing values in netcdf output files
 
 contains
 
@@ -219,9 +264,6 @@ contains
         logical                                 :: isTimeValid, isGroupValid, fileCreatedOk
         integer                                 :: id
 
-        !call printConfig(config)
-        !call printDescriptor(descriptor)
-
         ! Get variable descriptor
         descriptor = getDescriptor(descriptorLabel)
 
@@ -233,6 +275,7 @@ contains
 
         ! If the project config and variable descriptor match the request, process current variable
         if (isTimeValid .and. isGroupValid) then
+
             ! Generate the filename
             filename = generateFilename(outputForm, descriptor)
 
@@ -240,8 +283,7 @@ contains
             id = addVariable(nameInCode, filename)
 
             ! Make the netcdf file for the new variable (mostly definitions)
-
-            call createNetCDF(filename,id, outputForm, descriptor)
+            call createNetCDF(filename, id, outputForm, descriptor)
 
             ! Now make sure the file was properly created
             fileCreatedOk = checkFileExists(filename)
@@ -271,6 +313,7 @@ contains
         integer                     :: ncid
 
         ncid = ncCreate(fileName, cmode=NF90_CLOBBER)
+
         variableCount = variableCount + 1
         netcdfVars(variableCount)%ncid = ncid
         netcdfVars(variableCount)%key = key
@@ -282,14 +325,10 @@ contains
     ! Determines if the current variable matches the project configuration
     logical function validGroup(descriptor)
 
-        use io_driver, only : outputDescriptor
-
         implicit none
 
-        !type(projectConfiguration), intent(in)  :: config
         type(outputDescriptor), intent(in)    :: descriptor
 
-        !if (config%class .and. trim(descriptor%group) == "class") then
         if (trim(descriptor%group) == "class") then !CLASS outputs always are valid
             validGroup = .true.
         elseif (c_switch%ctem_on .and. trim(descriptor%group) == "ctem") then
@@ -309,8 +348,6 @@ contains
 
     ! Determines wether the current variable matches the project configuration
     logical function validTime(timeFreq, descriptor)
-
-        use io_driver, only : outputDescriptor
 
         implicit none
 
@@ -337,8 +374,6 @@ contains
     ! Generates the filename for the current variable
     character(80) function generateFilename(outputForm, descriptor)
 
-        use io_driver, only : outputDescriptor
-
         implicit none
 
         !type(projectConfiguration), intent(in)  :: config
@@ -362,8 +397,6 @@ contains
     ! Retrieve a variable descriptor based on a given key (e.g. shortName)
     type (outputDescriptor) function getDescriptor(key)
 
-        use io_driver, only : outputDescriptors
-
         implicit none
 
         character(len=*), intent(in)       :: key
@@ -381,10 +414,8 @@ contains
     ! Find the id of the variable with the following key
     integer function getIdByKey(key)
 
-        use io_driver, only : netcdfVars
-
         implicit none
-        character(30), intent(in)   :: key
+        character(*), intent(in)   :: key
         integer i
         do i=1, variableCount
             if (netcdfVars(i)%key == key) then
@@ -397,10 +428,9 @@ contains
 
     subroutine createNetCDF(fileName,id, outputForm, descriptor)
 
-        use io_driver, only : outputDescriptor,myDomain,netcdfVar
         use fileIOModule
         use ctem_statevars,     only : c_switch
-        use ctem_params,        only : ignd,icc,nmos
+        use ctem_params,        only : ignd,icc,nmos,iccp1
 
         implicit none
 
@@ -414,8 +444,6 @@ contains
         integer                     :: ncid, varid, suffix,i
         integer                     :: DimId,lonDimId,latDimId,tileDimId,pftDimId,layerDimId,timeDimId
         real, dimension(2)          :: xrange, yrange
-        character(30)               :: timestart = "seconds since 1801-1-1"
-        character(30)               :: fill_value = "1.e38"
         real, dimension(1)          :: dummyArray = [ 0. ]
         integer, dimension(:), allocatable :: intArray
 
@@ -468,7 +496,12 @@ contains
 
             case("pft")         ! Per PFT outputs
 
-                pftDimId = ncDefDim(ncid,'pft',icc)
+                if (descriptor%includeBareGround) then
+                    pftDimId = ncDefDim(ncid,'pft',iccp1)
+                else
+                    pftDimId = ncDefDim(ncid,'pft',icc)
+                end if
+
                 varid = ncDefVar(ncid,'pft',nf90_short,[pftDimId])
                 call ncPutAtt(ncid,varid,'long_name',charvalues='Plant Functional Type')
                 call ncPutAtt(ncid,varid,'units',charvalues='PFT')
@@ -488,7 +521,7 @@ contains
 
         ! Set up the time dimension
         timeDimId = ncDefDim(ncid,'time',nf90_unlimited)
-        varid = ncDefVar(ncid,'time',nf90_int,[timeDimId])
+        varid = ncDefVar(ncid,'time',nf90_float,[timeDimId])
 
         call ncPutAtt(ncid,varid,'long_name',charvalues='time')
         call ncPutAtt(ncid,varid,'units',charvalues=trim(timestart))
@@ -519,9 +552,17 @@ contains
 
             case("pft")         ! Per PFT outputs
 
-                allocate(intArray(icc))
-                intArray=identityVector(icc)
-                call ncPutDimValues(ncid, 'pft', dummyArray,intdata=intArray, count=icc) ! pass dummyArray to allow integers
+                if (descriptor%includeBareGround) then
+                    allocate(intArray(iccp1))
+                    intArray=identityVector(iccp1)
+                    call ncPutDimValues(ncid, 'pft', dummyArray,intdata=intArray, count=iccp1) ! pass dummyArray to allow integers
+                else
+                    allocate(intArray(icc))
+                    intArray=identityVector(icc)
+                    call ncPutDimValues(ncid, 'pft', dummyArray,intdata=intArray, count=icc) ! pass dummyArray to allow integers
+                end if
+
+
                 call ncReDef(ncid)
 
                 if (descriptor%includeBareGround) then
@@ -560,10 +601,45 @@ contains
         !call ncPutAtt(ncid,varid,'Comment',varinfo%Comment)
         call ncEndDef(ncid)
 
-        !close the netcdf
-        call ncClose(ncid)
-
     end subroutine createNetCDF
+
+    subroutine writeOutput1D(key,timeStamp,label,data)
+        use fileIOModule
+        implicit none
+
+        character(*), intent(in) :: key
+        integer :: ncid, timeIndex, id, length
+        real, intent(in) :: timeStamp
+        real, dimension(:), intent(in)  :: data
+        character(*), intent(in)        :: label
+
+        !print*,key,timeStamp,label
+        id= getIdByKey(key)
+        ncid = netcdfVars(id)%ncid
+        timeIndex = ncGetDimLen(ncid, "time") + 1
+        call ncPutDimValues(ncid, "time", [timeStamp], start=timeIndex, count=1)
+        length = size(data)
+        if (length > 1) then
+            call ncPut1DVar(ncid, label, data, start=[1,1,1,timeIndex], count=[1,1,length,1])
+        else
+            call ncPut1DVar(ncid, label, data, start=[1,1,timeIndex], count=[1,1,1])
+        end if
+    end subroutine writeOutput1D
+
+    subroutine closeNCFiles(incid)
+        use fileIOModule
+        implicit none
+        integer, optional   :: incid
+        integer i
+        ! close all output netcdfs or just a select file
+        if (present(incid)) then
+            call ncClose(incid)
+        else
+            do i=1, variableCount
+                call ncClose(netcdfVars(i)%ncid)
+            enddo
+        end if
+    end subroutine closeNCFiles
 
     pure function identityVector(n) result(res)
         integer, allocatable ::res(:)

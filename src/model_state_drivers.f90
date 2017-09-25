@@ -31,9 +31,9 @@ contains
         ! J. Melton
         ! Feb 2017
 
-        use io_driver, only : initid,rsid,myDomain
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
+        use outputManager, only : myDomain,initid,rsid
 
         implicit none
 
@@ -151,7 +151,7 @@ contains
         ! J. Melton
         ! Nov 2016
 
-        use io_driver, only : initid
+        use outputManager, only : initid
         use ctem_statevars,     only : c_switch,vrot,vgat
         use class_statevars,    only : class_rot,class_gat
         use ctem_params,        only : icc,iccp1,nmos,ignd,ilg,icp1,nlat,ican,abszero,pi
@@ -620,10 +620,7 @@ contains
         ! J. Melton
         ! Jun 2017
 
-        !use netcdf
-        !use netcdf_drivers, only : check_nc
-        !use serialFileIOModule
-        use io_driver, only : rsid
+        use outputManager, only : rsid
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
         use ctem_params,        only : icc,nmos,ignd,icp1,nlat,ican,l2max,modelpft

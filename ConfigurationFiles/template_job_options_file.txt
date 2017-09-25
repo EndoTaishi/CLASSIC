@@ -12,7 +12,7 @@
  ctemloop = 1 ,           !< no. of times the meteorology cycling should happen.
  ncyear = 109 ,           !< no. of years in the .met file. FLAG - redundant?
  cyclemet = .true. ,
- nummetcylyrs = 30 ,
+ nummetcylyrs = 10 ,
  metcylyrst = 1901 ,
 
  leap = .false.,

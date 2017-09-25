@@ -11,220 +11,171 @@ module fileIOModule
 contains
 
 ! Create new file
-#if PARALLEL
     integer function ncCreate(fileName, cmode)
         character(*), intent(in)    :: fileName
         integer, intent(in)         :: cmode
+#if PARALLEL
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
         call check_nc(nf90mpi_create(MPI_COMM_WORLD, trim(fileName), cmode, MPI_INFO_NULL, ncCreate))
-    end function ncCreate
 #else
-    integer function ncCreate(fileName, cmode)
-        character(*), intent(in)    :: fileName
-        integer, intent(in)         :: cmode
         call check_nc(nf90_create(trim(fileName), cmode, ncCreate))
-    end function ncCreate
 #endif
+    end function ncCreate
 
 ! Open existing file
-#if PARALLEL
     integer function ncOpen(fileName, omode)
         character(*), intent(in)    :: fileName
         integer, intent(in)         :: omode
+#if PARALLEL
         ! we assume MPI_COMM_WORLD and MPI_INFO_NULL are common
         call check_nc(nf90mpi_open(MPI_COMM_WORLD, trim(fileName), omode, MPI_INFO_NULL, ncOpen))
-    end function ncOpen
 #else
-    integer function ncOpen(fileName, omode)
-        character(*), intent(in)    :: fileName
-        integer, intent(in)         :: omode
         call check_nc(nf90_open(trim(fileName), omode, ncOpen))
-    end function ncOpen
 #endif
+    end function ncOpen
 
 ! Get variable ID
+    integer function ncGetVarId(fileId, label)
+        integer, intent(in)         :: fileId
+        character(*), intent(in)    :: label
 #if PARALLEL
-    integer function ncGetVarId(fileId, label)
-        integer, intent(in)         :: fileId
-        character(*), intent(in)    :: label
         call check_nc(nf90mpi_inq_varid(fileId, label, ncGetVarId))
-    end function ncGetVarId
 #else
-    integer function ncGetVarId(fileId, label)
-        integer, intent(in)         :: fileId
-        character(*), intent(in)    :: label
         call check_nc(nf90_inq_varid(fileId, label, ncGetVarId))
-    end function ncGetVarId
 #endif
+    end function ncGetVarId
+
 
 ! Get variable dimensions
+    integer function ncGetVarDimensions(fileId, varId)
+        integer, intent(in)         :: fileId, varId
 #if PARALLEL
-    integer function ncGetVarDimensions(fileId, varId)
-        integer, intent(in)         :: fileId, varId
         call check_nc(nf90mpi_inquire_variable(fileId, varId, ndims = ncGetVarDimensions))
-    end function ncGetVarDimensions
 #else
-    integer function ncGetVarDimensions(fileId, varId)
-        integer, intent(in)         :: fileId, varId
         call check_nc(nf90_inquire_variable(fileId, varId, ndims = ncGetVarDimensions))
-    end function ncGetVarDimensions
 #endif
+    end function ncGetVarDimensions
+
 
 ! Get dimension ID
+    integer function ncGetDimId(fileId, label)
+        integer, intent(in)         :: fileId
+        character(*), intent(in)    :: label
 #if PARALLEL
-    integer function ncGetDimId(fileId, label)
-        integer, intent(in)         :: fileId
-        character(*), intent(in)    :: label
         call check_nc(nf90mpi_inq_dimid(fileId, label, ncGetDimId))
-    end function ncGetDimId
 #else
-    integer function ncGetDimId(fileId, label)
-        integer, intent(in)         :: fileId
-        character(*), intent(in)    :: label
         call check_nc(nf90_inq_dimid(fileId, label, ncGetDimId))
-    end function ncGetDimId
 #endif
+    end function ncGetDimId
+
 
 ! Get dimension length
+    integer function ncGetDimLen(fileId, label)
+        integer, intent(in)             :: fileId
+        character(*), intent(in)        :: label
+        integer                         :: dimId
 #if PARALLEL
-    integer function ncGetDimLen(fileId, label)
-        integer, intent(in)             :: fileId
-        character(*), intent(in)        :: label
-        integer                         :: dimId
         integer(kind=MPI_OFFSET_KIND)   :: dimLen
-        dimId = ncGetDimId(fileId, label)
-        call check_nc(nf90mpi_inquire_dimension(fileId, dimId, len=dimLen))
-        ncGetDimLen = dimLen
-    end function ncGetDimLen
 #else
-    integer function ncGetDimLen(fileId, label)
-        integer, intent(in)             :: fileId
-        character(*), intent(in)        :: label
-        integer                         :: dimId
         integer                         :: dimLen
+#endif
         dimId = ncGetDimId(fileId, label)
+#if PARALLEL
+        call check_nc(nf90mpi_inquire_dimension(fileId, dimId, len=dimLen))
+#else
         call check_nc(nf90_inquire_dimension(fileId, dimId, len=dimLen))
+#endif
         ncGetDimLen = dimLen
     end function ncGetDimLen
-#endif
 
 ! Define dimension
+    integer function ncDefDim(fileId, label, length)
+        integer, intent(in)                         :: fileId
+        integer, intent(in)                         :: length
+        character(*), intent(in)                    :: label
 #if PARALLEL
-    integer function ncDefDim(fileId, label, length)
-        integer, intent(in)                         :: fileId
-        integer, intent(in)                         :: length
-        character(*), intent(in)                    :: label
         call check_nc(nf90mpi_def_dim(fileId, label, int(length,8), ncDefDim))
-    end function ncDefDim
 #else
-    integer function ncDefDim(fileId, label, length)
-        integer, intent(in)                         :: fileId
-        integer, intent(in)                         :: length
-        character(*), intent(in)                    :: label
         call check_nc(nf90_def_dim(fileId, label, length, ncDefDim))
-    end function ncDefDim
 #endif
+    end function ncDefDim
 
 ! Define variable
+    integer function ncDefVar(fileId, label, type, dimIds)
+        integer, intent(in)                         :: fileId, dimIds(:), type
+        character(*), intent(in)                    :: label
 #if PARALLEL
-    integer function ncDefVar(fileId, label, type, dimIds)
-        integer, intent(in)                         :: fileId, dimIds(:), type
-        character(*), intent(in)                    :: label
         call check_nc(nf90mpi_def_var(fileId, label, type, dimIds, ncDefVar))
-    end function ncDefVar
 #else
-    integer function ncDefVar(fileId, label, type, dimIds)
-        integer, intent(in)                         :: fileId, dimIds(:), type
-        character(*), intent(in)                    :: label
         call check_nc(nf90_def_var(fileId, label, type, dimIds, ncDefVar))
-    end function ncDefVar
 #endif
+    end function ncDefVar
 
 ! End definition
+    subroutine ncEndDef(fileId)
+        integer, intent(in)                 :: fileId
 #if PARALLEL
-    subroutine ncEndDef(fileId)
-        integer, intent(in)                 :: fileId
         call check_nc(nf90mpi_enddef(fileId))
-    end subroutine ncEndDef
 #else
-    subroutine ncEndDef(fileId)
-        integer, intent(in)                 :: fileId
         call check_nc(nf90_enddef(fileId))
-    end subroutine ncEndDef
 #endif
+    end subroutine ncEndDef
 
 ! Redef
+    subroutine ncReDef(fileId)
+        integer, intent(in)                 :: fileId
 #if PARALLEL
-    subroutine ncReDef(fileId)
-        integer, intent(in)                 :: fileId
         call check_nc(nf90mpi_redef(fileId))
-    end subroutine ncReDef
 #else
-    subroutine ncReDef(fileId)
-        integer, intent(in)                 :: fileId
         call check_nc(nf90_redef(fileId))
-    end subroutine ncReDef
 #endif
+    end subroutine ncReDef
 
 ! Put attribute
-#if PARALLEL
     subroutine ncPutAtt(fileId, varId, label, charvalues, intvalues)
         integer, intent(in)     :: fileId, varId
         character(*)            :: label
         character(*), optional  :: charvalues
         integer, optional       :: intvalues
+#if PARALLEL
         if (present(charvalues)) then
             call check_nc(nf90mpi_put_att(fileId, varId, label, charvalues))
         else
             call check_nc(nf90mpi_put_att(fileId, varId, label, intvalues))
         end if
-    end subroutine ncPutAtt
 #else
-    subroutine ncPutAtt(fileId, varId, label, charvalues, intvalues)
-        integer, intent(in)     :: fileId, varId
-        character(*)            :: label
-        character(*), optional  :: charvalues
-        integer, optional       :: intvalues
         if (present(charvalues)) then
             call check_nc(nf90_put_att(fileId, varId, label, charvalues))
         else
             call check_nc(nf90_put_att(fileId, varId, label, intvalues))
         end if
-    end subroutine ncPutAtt
 #endif
+    end subroutine ncPutAtt
 
 ! Close current file
+    subroutine ncClose(fileId)
+        integer, intent(in)                 :: fileId
 #if PARALLEL
-    subroutine ncClose(fileId)
-        integer, intent(in)                 :: fileId
         call check_nc(nf90mpi_close(fileId))
-    end subroutine ncClose
 #else
-    subroutine ncClose(fileId)
-        integer, intent(in)                 :: fileId
         call check_nc(nf90_close(fileId))
-    end subroutine ncClose
 #endif
+    end subroutine ncClose
 
 ! Check for errors in the NetCDF data retrieval process
-#if PARALLEL
     subroutine check_nc(nc_status)
         integer, intent(in) :: nc_status
         integer             :: err
         if(nc_status /= nf90_noerr) then
+#if PARALLEL
             write(0,*)'netCDF error: ',trim(nf90mpi_strerror(nc_status))
             call MPI_Abort(MPI_COMM_WORLD, -1, err)
-        end if
-    end subroutine check_nc
 #else
-    subroutine check_nc(nc_status)
-        integer, intent(in) :: nc_status
-        if(nc_status /= nf90_noerr) then
             write(0,*)'netCDF error: ',trim(nf90_strerror(nc_status))
             stop
+#endif
         end if
     end subroutine check_nc
-#endif
 
 ! Get variable content in the form of a dataPack
 #if PARALLEL
@@ -369,64 +320,41 @@ contains
 #endif
 
 ! Write a local 1D variable (2D in NetCDF file)
+
+    subroutine ncPut1DVar(fileId, label, data, intdata, start, count)
+        integer, intent(in)                                     :: fileId
+        character(*), intent(in)                                :: label
+        real, dimension(:), intent(in)                          :: data
+        integer, dimension(:), intent(in)                       :: start
+        integer, dimension(:), optional, intent(in)             :: count
+        integer, dimension(:), optional, intent(in)             :: intdata
+        integer                                                 :: varId
+        integer, dimension(:), allocatable                      :: localFormat, localCount
+        if (present(count)) then
+            allocate(localCount(size(count)))
+            localCount = count
+        else
+            allocate(localCount(2))
+            localCount = [1, 1]
+        endif
+        localFormat = localCount
+        varId = ncGetVarId(fileId, label)
+        if (present(intdata)) then  !if the data is integer
 #if PARALLEL
-    subroutine ncPut1DVar(fileId, label, data, intdata, start, count)
-        integer, intent(in)                                     :: fileId
-        character(*), intent(in)                                :: label
-        real, dimension(:), intent(in)                          :: data
-        integer, dimension(:), intent(in)                       :: start
-        integer, dimension(:), optional, intent(in)             :: count
-        integer, dimension(:), optional, intent(in)             :: intdata
-        integer                                                 :: varId
-        real, dimension(:,:), allocatable                       :: temp2D
-        integer, dimension(:,:), allocatable                    :: temp2Di
-        integer, dimension(2)                                   :: localFormat, localCount
-        if (present(count)) then
-            localCount = count
-        else
-            localCount = [1, 1]
-        endif
-        localFormat = localCount
-        varId = ncGetVarId(fileId, label)
-        if (present(intdata)) then  !if the data is integer
-            temp2Di = reshape(intdata, localFormat)
-            call check_nc(nf90mpi_put_var_all(fileId, varId, temp2Di, int(start,8), int(localcount,8)))
-        else
-            temp2D = reshape(data, localFormat)
-            call check_nc(nf90mpi_put_var_all(fileId, varId, temp2D, int(start,8), int(localcount,8)))
-        end if
-
-    end subroutine ncPut1DVar
+            call check_nc(nf90mpi_put_var_all(fileId, varId, intdata, int(start,8), int(localcount,8)))
 #else
-    subroutine ncPut1DVar(fileId, label, data, intdata, start, count)
-        integer, intent(in)                                     :: fileId
-        character(*), intent(in)                                :: label
-        real, dimension(:), intent(in)                          :: data
-        integer, dimension(:), optional, intent(in)             :: intdata
-        integer, dimension(:), intent(in)                       :: start
-        integer, dimension(:), optional, intent(in)             :: count
-        integer                                                 :: varId
-        real, dimension(:,:), allocatable                       :: temp2D
-        integer, dimension(:,:), allocatable                    :: temp2Di
-        integer, dimension(2)                                   :: localFormat, localCount
-        if (present(count)) then
-            localCount = count
+            call check_nc(nf90_put_var(fileId, varId, intdata, start, localCount))
+#endif
         else
-            localCount = [1, 1]
-        endif
-        localFormat = localCount
-        varId = ncGetVarId(fileId, label)
-
-        if (present(intdata)) then  !if the data is integer
-            temp2Di = reshape(intdata, localFormat)
-            call check_nc(nf90_put_var(fileId, varId, temp2Di, start, localCount))
-        else
-            temp2D = reshape(data, localFormat)
-            call check_nc(nf90_put_var(fileId, varId, temp2D, start, localCount))
+#if PARALLEL
+            call check_nc(nf90mpi_put_var_all(fileId, varId, data, int(start,8), int(localcount,8)))
+#else
+            call check_nc(nf90_put_var(fileId, varId, data, start, localCount))
+#endif
         end if
 
     end subroutine ncPut1DVar
-#endif
+
 
 ! Write a local 2D variable (3D in NetCDF file)
 #if PARALLEL

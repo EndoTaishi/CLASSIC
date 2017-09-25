@@ -48,7 +48,7 @@ contains
         !     25  Apr. 2012 - This subroutine takes in model switches from
         !     J. Melton       a job file and pushes them to RUNCLASSCTEM
 
-        use io_driver, only : myDomain
+        use outputManager, only : myDomain
         use ctem_statevars,     only : c_switch
         use ctem_params, only : icc, ican, l2max, runParamsFile,competeSwitch
 

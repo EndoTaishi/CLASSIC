@@ -86,7 +86,7 @@ contains
         ! PROCESS LAND CELLS
         ! This section runs the model over all of the land cells. There are LandCellCount valid(i.e. land) cells, stored in lonLandCell and latLandCell
 
-        use io_driver,              only : myDomain
+        use outputManager,              only : myDomain
 
         implicit none
 
