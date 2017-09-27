@@ -101,7 +101,11 @@ contains
         allocate(myDomain%latLandCell(totsize),&
                  myDomain%lonLandCell(totsize),&
                  myDomain%latLandIndex(totsize),&
-                 myDomain%lonLandIndex(totsize))
+                 myDomain%lonLandIndex(totsize),&
+                 myDomain%latLocalIndex(totsize),&
+                 myDomain%lonLocalIndex(totsize),&
+                 myDomain%latUnique(myDomain%cnty),&
+                 myDomain%lonUnique(myDomain%cntx))
 
         !> Retrieve the number of soil layers (set ignd!)
 
@@ -116,16 +120,21 @@ contains
         do i = 1, myDomain%cntx
             do j = 1, myDomain%cnty
                 if (mask(i,j) .eq. -1) then
-                    !print*, "(", i, ",", j, ") or (", allLonValues(i + srtx - 1), ",", allLatValues(j + srty - 1), ") is land"
+                    !print*, "(", i, ",", j, ") or (", myDomain%allLonValues(i + myDomain%srtx - 1)&
+                    !, ",", myDomain%allLatValues(j + myDomain%srty - 1), ") is land"
                     myDomain%LandCellCount = myDomain%LandCellCount + 1
                     myDomain%lonLandCell(myDomain%LandCellCount) = myDomain%allLonValues(i + myDomain%srtx - 1)
                     myDomain%lonLandIndex(myDomain%LandCellCount) = i + myDomain%srtx - 1
+                    myDomain%lonLocalIndex(myDomain%LandCellCount) = i
+                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
                     myDomain%latLandCell(myDomain%LandCellCount) = myDomain%allLatValues(j + myDomain%srty - 1)
                     myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
+                    myDomain%latLocalIndex(myDomain%LandCellCount) = j
+                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
                 endif
             enddo
         enddo
-
+        
         nlat = 1
 
         !> To determine nmos, we use the largest number in the input file variable nmtest

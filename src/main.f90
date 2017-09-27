@@ -12,7 +12,7 @@ module main
 
 contains
 
-    subroutine main_driver(longitude, latitude, lonIndex, latIndex)
+    subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, latLocalIndex)
         !
         !>
         !!------------------------------------------------------------------
@@ -59,16 +59,18 @@ contains
         use class_statevars,    only : class_gat,class_rot,resetclassaccum,&
             &                               resetclassmon,resetclassyr
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
-            &                               close_outfiles,ctem_daily_aw,&
-            &                               class_annual_aw
+            &                               ctem_daily_aw,class_annual_aw
         use outputManager, only : closeNCFiles
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils, only : findDaylength,findLeapYears
 
         implicit none
 
-        real, intent(in) :: longitude, latitude
-        integer, intent(in) :: lonIndex, latIndex
+        real, intent(in) :: longitude, latitude                 ! Longitude/latitude of grid cell being run in degrees
+        integer, intent(in) :: lonIndex, latIndex               ! Index of grid cell being run on the input files grid
+        integer, intent(in) :: lonLocalIndex, latLocalIndex     ! Index of grid cell being run on the output files grid
+
+        integer :: lastDOY = 365
 
         INTEGER NLTEST  !<Number of grid cells being modelled for this run
         INTEGER NMTEST  !<Number of mosaic tiles per grid cell being modelled for this run
@@ -960,6 +962,7 @@ contains
         character(:), pointer :: met_file
         character(:), pointer :: init_file
         character(:), pointer :: runparams_file  !< location of the namelist file containing the model parameters
+        logical, pointer :: domonthoutput
 
         ! ROW vars:
         logical, pointer, dimension(:,:,:) :: pftexistrow
@@ -2241,6 +2244,7 @@ contains
         IALG              => c_switch%IALG
         isnoalb           => c_switch%isnoalb
         metcylyrst        => c_switch%metcylyrst
+        domonthoutput     => c_switch%domonthoutput
 
         tcanrs            => vrot%tcanrs
         tsnors            => vrot%tsnors
@@ -3718,7 +3722,7 @@ contains
 
                 ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday
                 ! values.
-                if (leap.and.(ihour.eq.0).and.(imin.eq.0).and.(iday.eq.1)) call findLeapYears(iyear,leapnow)
+                if (leap.and.(ihour.eq.0).and.(imin.eq.0).and.(iday.eq.1)) call findLeapYears(iyear,leapnow,lastDOY)
 
                 !         Assign the met climate year to climiyear
                 climiyear = iyear
@@ -3755,12 +3759,7 @@ contains
 
             DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
 
-            if (leapnow) then
-                DECL=SIN(2.*PI*(284.+DAY)/366.)*23.45*PI/180.
-            else
-                DECL=SIN(2.*PI*(284.+DAY)/365.)*23.45*PI/180.
-            endif
-
+            DECL=SIN(2.*PI*(284.+DAY)/real(lastDOY))*23.45*PI/180.
             HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
             COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
 
@@ -5711,16 +5710,10 @@ contains
             !=======================================================================
 
             !     Only bother with monthly calculations if we desire those outputs to be written out.
-            if (iyear .ge. jmosty) then
+            if (domonthoutput .and. iyear .ge. jmosty) then
 
-                call class_monthly_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
-                    &                       nltest,nmtest,ALVSROT,FAREROT,FSVHROW,&
-                    &                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,&
-                    &                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,&
-                    &                       SNOROT,TAROW,WSNOROT,TBARROT,THLQROT,&
-                    &                       THICROT,TFREZ,QFCROT,QFGROT,QFNROT,&
-                    &                       QFCLROT,QFCFROT,FSGVROT,FSGSROT,&
-                    &                       FSGGROT,ACTLYR,FTABLE)
+                call class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
+                    &                 nltest,nmtest,TFREZ,ACTLYR,FTABLE,lastDOY)
 
                 DO NT=1,NMON
                     IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
@@ -5730,12 +5723,8 @@ contains
 
             end if !skip the monthly calculations/writing unless iyear>=jmosty
 
-            call class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
-                &                       nltest,nmtest,ALVSROT,FAREROT,FSVHROW,&
-                &                       ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW,&
-                &                       HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,&
-                &                       TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT,&
-                &                       ACTLYR,FTABLE,leapnow)
+            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
+                &                       nltest,nmtest,ACTLYR,FTABLE,lastDOY)
 
             !     CTEM output and write out
 
@@ -5770,25 +5759,23 @@ contains
                 if(ncount.eq.nday) then
 
                     ! Only bother with monthly calculations if we desire those outputs to be written out.
-                    if (iyear .ge. jmosty) then
-                        call ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,&
+                    if (domonthoutput .and. iyear .ge. jmosty) then
+                        call ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FAREROT,iyear,nday,lastDOY,&
                             &                        onetile_perPFT)
                     end if
 
                     ! Accumulate and possibly write out yearly outputs
-                    call ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAREROT,&
-                        &                         onetile_perPFT,leapnow)
+                    call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,nmtest,FAREROT,&
+                        &                         onetile_perPFT,lastDOY)
                 endif
             endif
 
             ! OPEN AND WRITE TO THE RESTART FILES
 
-            IF ((leapnow .and.IDAY.EQ.366.AND.NCOUNT.EQ.NDAY) .OR. &
-                &  (.not. leapnow .and.IDAY.EQ.365.AND.NCOUNT.EQ.NDAY)) THEN
+            if (IDAY .EQ. lastDOY .AND. NCOUNT .EQ. NDAY) then
 
                 WRITE(*,*)& !'(6A,5I,13A,5I,9A,5I,6A,5I)')&
                     'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR,'CO2YEAR =',co2yr,'LUCYR=',lucyr
-5123    continue
 
                 call write_restart(lonIndex,latIndex)
 
@@ -5797,8 +5784,7 @@ contains
 
             ! check if the model is done running.
 
-            if ((leapnow.and.iday.eq.366.and.ncount.eq.nday) .or. &
-                    &(.not. leapnow .and.iday.eq.365.and.ncount.eq.nday)) then
+            if (iday .eq. lastDOY .and. ncount .eq. nday) then
 
                 if (cyclemet .and. climiyear .ge. metcycendyr) then
 
@@ -5920,7 +5906,7 @@ contains
 
         ! then ctem ones
 
-        call closeNCFiles()
+!         call closeNCFiles()
 
         !call close_outfiles()
 
@@ -5936,7 +5922,8 @@ contains
             close(17)
         end if
 
-        call exit
+        !call exit
+        return
 
         ! the 999 label below is hit when an input file reaches its end.
 999     continue
@@ -6001,7 +5988,7 @@ contains
             end if
 
             !     Then the CTEM ones
-            call closeNCFiles()
+!             call closeNCFiles()
             !call close_outfiles()
 
             !     CLOSE THE INPUT FILES TOO
@@ -6020,7 +6007,8 @@ contains
             close(98)
             close(99)
 
-            CALL EXIT
+            !CALL EXIT
+            return
         END IF
 
 1001    continue !hit this when problem with wetf file.

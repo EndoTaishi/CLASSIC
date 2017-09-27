@@ -14,13 +14,17 @@ module outputManager
     public :: getIdByKey
     public  :: createNetCDF
     private :: identityVector
+    public :: writeOutput1D
     public  :: closeNCFiles
+    public :: checkForTime
 
 
     type simulationDomain
         real, dimension(:), allocatable     :: lonLandCell, latLandCell     ! Long/Lat values of only the land cells in our model domain
         integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   ! Indexes of only the land cells in our model domain for our resolution
         real, dimension(:), allocatable     :: allLonValues, allLatValues   ! All long/Lat values in our model domain (including ocean/non-land)
+        integer, dimension(:), allocatable  :: lonLocalIndex,latLocalIndex  ! The index for only the region that is being simulated
+        real, dimension(:), allocatable     :: latUnique,lonUnique
         integer                             :: LandCellCount    !> number of land cells that the model will run over
         real, dimension(4) :: domainBounds                      !> Corners of the domain to be simulated (netcdfs)
         integer :: srtx                                         !> starting index for this simulation for longitudes
@@ -93,15 +97,15 @@ contains
         call generateNetCDFFile("taacc_mo", "monthly", "grid", "ts")
         call generateNetCDFFile("altotacc_yr", "annually", "grid", "albs")
         call generateNetCDFFile("altotacc_mo", "monthly", "grid", "albs")
-        call generateNetCDFFile("TBARACC_MO", "monthly", "layer", "tsl")
-        call generateNetCDFFile("THLQACC_MO", "monthly", "layer", "mrsll")
-        call generateNetCDFFile("THICACC_MO", "monthly", "layer", "mrsfl")
-        call generateNetCDFFile("ACTLYR_MO", "monthly", "grid", "actlyr")
-        call generateNetCDFFile("ACTLYR_MAX_MO", "monthly", "grid", "actlyrmax")
-        call generateNetCDFFile("ACTLYR_MIN_MO", "monthly", "grid", "actlyrmin")
-        call generateNetCDFFile("FTABLE_MO", "monthly", "grid", "ftable")
-        call generateNetCDFFile("FTABLE_MAX_MO", "monthly", "grid", "ftablemax")
-        call generateNetCDFFile("FTABLE_MIN_MO", "monthly", "grid", "ftablemin")
+        call generateNetCDFFile("tbaracc_mo", "monthly", "layer", "tsl")
+        call generateNetCDFFile("thlqacc_mo", "monthly", "layer", "mrsll")
+        call generateNetCDFFile("thicacc_mo", "monthly", "layer", "mrsfl")
+        call generateNetCDFFile("actlyr_mo", "monthly", "grid", "actlyr")
+        call generateNetCDFFile("actlyr_max_mo", "monthly", "grid", "actlyrmax")
+        call generateNetCDFFile("actlyr_min_mo", "monthly", "grid", "actlyrmin")
+        call generateNetCDFFile("ftable_mo", "monthly", "grid", "ftable")
+        call generateNetCDFFile("ftable_max_mo", "monthly", "grid", "ftablemax")
+        call generateNetCDFFile("ftable_min_mo", "monthly", "grid", "ftablemin")
         call generateNetCDFFile("laimaxg_yr_g", "annually", "grid", "lai")
         call generateNetCDFFile("laimaxg_mo_g", "monthly", "grid", "lai")
         call generateNetCDFFile("laimaxg_yr", "annually", "pft", "lai")
@@ -121,7 +125,7 @@ contains
          call generateNetCDFFile("rootmass_yr", "annually", "pft", "cRoot")
         call generateNetCDFFile("rootmass_yr_t", "annually", "tile", "cRoot")
         call generateNetCDFFile("litrmass_yr_g", "annually", "grid", "cLitter")
-        call generateNetCDFFile("litrmass_mo_t", "monthly", "grid", "cLitter")
+        call generateNetCDFFile("litrmass_mo_g", "monthly", "grid", "cLitter")
         call generateNetCDFFile("litrmass_yr", "annually", "pft", "cLitter")
         call generateNetCDFFile("litrmass_mo", "monthly", "pft", "cLitter")
         call generateNetCDFFile("litrmass_yr_t", "annually", "tile", "cLitter")
@@ -186,12 +190,12 @@ contains
         call generateNetCDFFile("soilcres_mo", "monthly", "pft", "rhSoil")
         call generateNetCDFFile("soilcres_yr_t", "annually", "tile", "rhSoil")
         call generateNetCDFFile("soilcres_mo_t", "monthly", "tile", "rhSoil")
-        call generateNetCDFFile("litrfallveg_mo_g", "monthly", "grid", "fVegLitter")
+        call generateNetCDFFile("litrfall_mo_g", "monthly", "grid", "fVegLitter")
         call generateNetCDFFile("litrfallveg_mo", "monthly", "pft", "fVegLitter")
-        call generateNetCDFFile("litrfallveg_mo_t", "monthly", "tile", "fVegLitter")
-        call generateNetCDFFile("humiftrsveg_mo_g", "monthly", "grid", "fLitterSoil")
+        call generateNetCDFFile("litrfall_mo_t", "monthly", "tile", "fVegLitter")
+        call generateNetCDFFile("humiftrs_mo_g", "monthly", "grid", "fLitterSoil")
         call generateNetCDFFile("humiftrsveg_mo", "monthly", "pft", "fLitterSoil")
-        call generateNetCDFFile("humiftrsveg_mo_t", "monthly", "tile", "fLitterSoil")
+        call generateNetCDFFile("humiftrs_mo_t", "monthly", "tile", "fLitterSoil")
         call generateNetCDFFile("emit_co2_yr_g", "annually", "grid", "fFire")
         call generateNetCDFFile("emit_co2_mo_g", "monthly", "grid", "fFire")
         call generateNetCDFFile("emit_co2_yr", "annually", "pft", "fFire")
@@ -228,10 +232,10 @@ contains
         call generateNetCDFFile("lucsocin_mo", "monthly", "pft", "fDeforestToSoil")
         call generateNetCDFFile("lucsocin_yr_t", "annually", "tile", "fDeforestToSoil")
         call generateNetCDFFile("lucsocin_mo_t", "monthly", "tile", "fDeforestToSoil")
-        call generateNetCDFFile("fcancmxrow_yr_g", "annually", "grid", "landCoverFrac")
-        call generateNetCDFFile("fcancmxrow_mo_g", "monthly", "grid", "landCoverFrac")
-        call generateNetCDFFile("pftexistrow_yr_g", "annually", "grid", "landCoverExist")
-        call generateNetCDFFile("pftexistrow_mo_g", "monthly", "grid", "landCoverExist")
+        call generateNetCDFFile("fcancmxrow_yr_g", "annually", "pft", "landCoverFrac")
+        call generateNetCDFFile("fcancmxrow_mo_g", "monthly", "pft", "landCoverFrac")
+        call generateNetCDFFile("pftexistrow_yr_g", "annually", "pft", "landCoverExist")
+        call generateNetCDFFile("pftexistrow_mo_g", "monthly", "pft", "landCoverExist")
         call generateNetCDFFile("ch4wet1_yr_g", "annually", "grid", "wetlandCH4spec")
         call generateNetCDFFile("ch4wet1_mo_g", "monthly", "grid", "wetlandCH4spec")
         call generateNetCDFFile("ch4wet1_yr_t", "annually", "tile", "wetlandCH4spec")
@@ -539,8 +543,8 @@ contains
         call ncEndDef(ncid)
 
         ! Fill in the dimension variables and define the model output vars
-        call ncPutDimValues(ncid, 'lon', myDomain%lonLandCell, count=myDomain%cntx)
-        call ncPutDimValues(ncid, 'lat', myDomain%latLandCell, count=myDomain%cnty)
+        call ncPutDimValues(ncid, 'lon', myDomain%lonUnique, count=myDomain%cntx)
+        call ncPutDimValues(ncid, 'lat', myDomain%latUnique, count=myDomain%cnty)
         
         select case(trim(outputForm))
             case ("tile")       ! Per tile outputs
@@ -603,35 +607,91 @@ contains
 
     end subroutine createNetCDF
 
-    subroutine writeOutput1D(key,timeStamp,label,data)
+    subroutine writeOutput1D(lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
         use fileIOModule
         implicit none
 
+        integer, intent(in) :: lonLocalIndex,latLocalIndex
         character(*), intent(in) :: key
         integer :: ncid, timeIndex, id, length
-        real, intent(in) :: timeStamp
+        real, dimension(:), intent(in) :: timeStamp
         real, dimension(:), intent(in)  :: data
         character(*), intent(in)        :: label
+        integer,  optional :: specStart
+        integer :: start
+        integer :: posTimeWanted
+        real, dimension(:), allocatable :: localData
+        real, dimension(1) :: localStamp
+        real, allocatable, dimension(:) :: timeWritten
+
+        allocate(localData(size(data)))
+        localStamp = timeStamp
+        localData = data
 
         !print*,key,timeStamp,label
         id= getIdByKey(key)
         ncid = netcdfVars(id)%ncid
-        timeIndex = ncGetDimLen(ncid, "time") + 1
-        call ncPutDimValues(ncid, "time", [timeStamp], start=timeIndex, count=1)
-        length = size(data)
-        if (length > 1) then
-            call ncPut1DVar(ncid, label, data, start=[1,1,1,timeIndex], count=[1,1,length,1])
+
+        ! Check if the time period has already been added to the file
+        timeIndex = ncGetDimLen(ncid, "time")
+
+        if (timeIndex == 0) then
+            ! This is the first time step so add it.
+            timeIndex = timeIndex + 1
+            call ncPutDimValues(ncid, "time", localStamp, start=timeIndex, count=1)
         else
-            call ncPut1DVar(ncid, label, data, start=[1,1,timeIndex], count=[1,1,1])
+            ! This is a subsequent time step so need to check if it has already been added by
+            ! another grid cell.
+            allocate(timeWritten(timeIndex))
+            timeWritten= ncGetDimValues(ncid, "time", count = (/timeIndex/))
+            posTimeWanted = checkForTime(timeIndex,timeWritten,localStamp(1))
+
+            if (posTimeWanted == 0) then ! Need to add this time step
+                timeIndex = timeIndex + 1
+                call ncPutDimValues(ncid, "time", localStamp, start=timeIndex, count=1)
+            else
+                ! timeStamp already added so just use it.
+                timeIndex = posTimeWanted
+            end if
+        end if
+        
+        length = size(data)
+        if (present(specStart)) then
+            start = specStart
+        else
+            start = 1
+        end if
+        if (length > 1) then
+            call ncPut1DVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,start,timeIndex], count=[1,1,length,1])
+        else
+            call ncPut1DVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,timeIndex], count=[1,1,1])
         end if
     end subroutine writeOutput1D
 
+    ! Find if a time period is already in the timeIndex of the file
+    integer function checkForTime(timeIndex,timeWritten,timeStamp)
+
+        implicit none
+        real, intent(in)   :: timeStamp
+        integer, intent(in) :: timeIndex
+        real, dimension(:), intent(in) :: timeWritten
+        integer i
+        do i=1, timeIndex
+            if (timeWritten(i) == timeStamp) then
+                checkForTime = i
+                return
+            endif
+        enddo
+        checkForTime = 0
+    end function checkForTime
+
+    ! Close all output netcdfs or just a select file
     subroutine closeNCFiles(incid)
         use fileIOModule
         implicit none
         integer, optional   :: incid
         integer i
-        ! close all output netcdfs or just a select file
+
         if (present(incid)) then
             call ncClose(incid)
         else

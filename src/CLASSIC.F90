@@ -14,7 +14,7 @@ program CLASSIC
 
     use model_state_drivers,    only : read_modelsetup
     use xmlManager,             only : loadoutputDescriptor
-    use outputManager,          only : generateOutputFiles
+    use outputManager,          only : generateOutputFiles,closeNCFiles,rsid
     use readjobopts,            only : read_from_job_options
     use main,                   only : main_driver
     use ctem_statevars,         only : alloc_ctem_vars
@@ -70,6 +70,11 @@ program CLASSIC
     ! Run model over the land grid cells, in parallel or serial
     call processLandCells
 
+    ! Close all of the output netcdf files and the restart file
+    call closeNCFiles
+    call closeNCFiles(rsid)
+
+
 #if PARALLEL
     ! Shut down the MPI session
     call MPI_FINALIZE(ierr)
@@ -100,16 +105,18 @@ contains
         
         do i = 1, blocks - 1                    ! Go through every block except for the last one
             cell = (i - 1) * size + rank + 1
-            print*,'in process',i,cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell)
-            call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell))
+            print*,'in process',i,cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),&
+                                myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)
+            call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),&
+                             myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
         enddo
 
         cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells (NEEDS BETTER DESCRIPTION)
 
         if (rank < remainder) print*,'final in process',cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&
-        myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell)
+        myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)
         if (rank < remainder) call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&
-        myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell))
+        myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
 
     end subroutine processLandCells
 

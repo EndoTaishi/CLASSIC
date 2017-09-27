@@ -45,7 +45,7 @@ public  :: class_annual_aw      ! Accumulates and writes the CLASS annual file
 public  :: ctem_daily_aw        ! Accumulates and writes the CTEM daily file
 public  :: ctem_monthly_aw      ! Accumulates and writes the CTEM monthly file
 public  :: ctem_annual_aw       ! Accumulates and writes the CTEM annual file
-public  :: close_outfiles       ! Closes the model output files
+!public  :: close_outfiles       ! Closes the model output files
 
 
 contains
@@ -373,59 +373,58 @@ contains
     !==============================================================================================================
     !>\ingroup io_driver_class_monthly_aw
     !>@{
-    subroutine class_monthly_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,&
-    ALVSROT,FAREROT,FSVHROW,ALIRROT,FSIHROW,GTROT,FSSROW, &
-    FDLROW,HFSROT,ROFROT,PREROW,QFSROT,QEVPROT,SNOROT, &
-    TAROW,WSNOROT,TBARROT,THLQROT,THICROT,TFREZ,QFCROT, &
-    QFGROT,QFNROT,QFCLROT,QFCFROT,FSGVROT,FSGSROT,FSGGROT,&
-    ACTLYR,FTABLE)
+    subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
+                                ACTLYR,FTABLE,lastDOY)
                            
-        use class_statevars,    only : class_out,resetclassmon
+        use class_statevars, only : class_out,resetclassmon,class_rot
         use ctem_params, only : nmon, monthend, nlat, nmos, ignd
+        use outputManager, only : writeOutput1D,refyr
 
         implicit none
 
         ! arguments
+        integer, intent(in) :: lonLocalIndex,latLocalIndex
         integer, intent(in) :: IDAY
         integer, intent(in) :: IYEAR
         integer, intent(in) :: NCOUNT
         integer, intent(in) :: NDAY
+        integer, intent(in) :: lastDOY
         integer, intent(in) :: nltest
         integer, intent(in) :: nmtest
-        real, intent(in) :: SBC
-        real, intent(in) :: DELT
-        real, intent(in) :: TFREZ
-        real, dimension(nlat), intent(in) :: FSSROW
-        real, dimension(nlat), intent(in) :: FDLROW
-        real, dimension(nlat), intent(in) :: FSVHROW
-        real, dimension(nlat), intent(in) :: FSIHROW
-        real, dimension(nlat), intent(in) :: TAROW
-        real, dimension(nlat), intent(in) :: PREROW
-        real, dimension(nlat,nmos), intent(in) :: ALVSROT
-        real, dimension(nlat,nmos), intent(in) :: FAREROT
-        real, dimension(nlat,nmos), intent(in) :: ALIRROT
-        real, dimension(nlat,nmos), intent(in) :: GTROT
-        real, dimension(nlat,nmos), intent(in) :: HFSROT
-        real, dimension(nlat,nmos), intent(in) :: QEVPROT
-        real, dimension(nlat,nmos), intent(in) :: SNOROT
-        real, dimension(nlat,nmos), intent(in) :: WSNOROT
-        real, dimension(nlat,nmos), intent(in) :: ROFROT
-        real, dimension(nlat,nmos), intent(in) :: QFSROT
-        real, dimension(nlat,nmos,ignd), intent(in) :: TBARROT
-        real, dimension(nlat,nmos,ignd), intent(in) :: THLQROT
-        real, dimension(nlat,nmos,ignd), intent(in) :: THICROT
-        real, dimension(nlat,nmos,ignd), intent(in) :: QFCROT
+        real, intent(in) :: SBC  !CLASS common block items,
+        real, intent(in) :: DELT !CLASS common block items,
+        real, intent(in) :: TFREZ !CLASS common block items,
         real, dimension(nlat,nmos), intent(in) :: ACTLYR          ! Active layer depth (m)
         real, dimension(nlat,nmos), intent(in) :: FTABLE          ! Depth to frozen water table (m)
-        real, dimension(nlat,nmos), intent(in) :: QFGROT
-        real, dimension(nlat,nmos), intent(in) :: QFNROT
-        real, dimension(nlat,nmos), intent(in) :: QFCLROT
-        real, dimension(nlat,nmos), intent(in) :: QFCFROT
-        real, dimension(nlat,nmos), intent(in) :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
-        real, dimension(nlat,nmos), intent(in) :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
-        real, dimension(nlat,nmos), intent(in) :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
 
         ! pointers
+        real, dimension(:,:,:), pointer :: TBARROT
+        real, dimension(:,:,:), pointer :: THLQROT
+        real, dimension(:,:,:), pointer :: THICROT
+        real, dimension(:,:,:), pointer :: QFCROT
+        real, dimension(:), pointer :: FSSROW
+        real, dimension(:), pointer :: FDLROW
+        real, dimension(:), pointer :: FSVHROW
+        real, dimension(:), pointer :: FSIHROW
+        real, dimension(:), pointer :: TAROW
+        real, dimension(:), pointer :: PREROW
+        real, dimension(:,:), pointer :: ALVSROT
+        real, dimension(:,:), pointer :: FAREROT
+        real, dimension(:,:), pointer :: ALIRROT
+        real, dimension(:,:), pointer :: GTROT
+        real, dimension(:,:), pointer :: HFSROT
+        real, dimension(:,:), pointer :: QEVPROT
+        real, dimension(:,:), pointer :: SNOROT
+        real, dimension(:,:), pointer :: WSNOROT
+        real, dimension(:,:), pointer :: ROFROT
+        real, dimension(:,:), pointer :: QFSROT
+        real, dimension(:,:), pointer :: QFGROT
+        real, dimension(:,:), pointer :: QFNROT
+        real, dimension(:,:), pointer :: QFCLROT
+        real, dimension(:,:), pointer :: QFCFROT
+        real, dimension(:,:), pointer :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
+        real, dimension(:,:), pointer :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
+        real, dimension(:,:), pointer :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
         real, pointer, dimension(:) :: ALVSACC_MO
         real, pointer, dimension(:) :: ALIRACC_MO
         real, pointer, dimension(:) :: FLUTACC_MO
@@ -449,10 +448,6 @@ contains
         real, pointer, dimension(:) :: ALTOTACC_MO
         real, pointer, dimension(:) :: GROUNDEVAP
         real, pointer, dimension(:) :: CANOPYEVAP
-        ! real, pointer :: FSSTAR_MO
-        ! real, pointer :: FLSTAR_MO
-        ! real, pointer :: QH_MO
-        ! real, pointer :: QE_MO
         real, pointer, dimension(:,:) :: TBARACC_MO
         real, pointer, dimension(:,:) :: THLQACC_MO
         real, pointer, dimension(:,:) :: THICACC_MO
@@ -472,8 +467,36 @@ contains
         real :: FLSTAR_MO
         real :: QH_MO
         real :: QE_MO
+        real, dimension(1) :: timeStamp
 
         ! point pointers
+        TBARROT         => class_rot%TBARROT
+        THLQROT         => class_rot%THLQROT
+        THICROT         => class_rot%THICROT
+        QFCROT          => class_rot%QFCROT
+        ALVSROT         => class_rot%ALVSROT
+        FAREROT         => class_rot%FAREROT
+        ALIRROT         => class_rot%ALIRROT
+        GTROT           => class_rot%GTROT
+        HFSROT          => class_rot%HFSROT
+        QEVPROT         => class_rot%QEVPROT
+        SNOROT          => class_rot%SNOROT
+        WSNOROT         => class_rot%WSNOROT
+        ROFROT          => class_rot%ROFROT
+        QFSROT          => class_rot%QFSROT
+        QFGROT          => class_rot%QFGROT
+        QFNROT          => class_rot%QFNROT
+        QFCLROT         => class_rot%QFCLROT
+        QFCFROT         => class_rot%QFCFROT
+        FSGVROT         => class_rot%FSGVROT
+        FSGSROT         => class_rot%FSGSROT
+        FSGGROT         => class_rot%FSGGROT
+        FSSROW          => class_rot%FSSROW
+        FDLROW          => class_rot%FDLROW
+        FSVHROW         => class_rot%FSVHROW
+        FSIHROW         => class_rot%FSIHROW
+        TAROW           => class_rot%TAROW
+        PREROW          => class_rot%PREROW
         ALVSACC_MO        => class_out%ALVSACC_MO
         ALIRACC_MO        => class_out%ALIRACC_MO
         FLUTACC_MO        => class_out%FLUTACC_MO
@@ -488,10 +511,6 @@ contains
         EVAPACC_MO        => class_out%EVAPACC_MO
         TRANSPACC_MO      => class_out%TRANSPACC_MO
         TAACC_MO          => class_out%TAACC_MO
-        ! FSSTAR_MO         => class_out%FSSTAR_MO
-        ! FLSTAR_MO         => class_out%FLSTAR_MO
-        ! QH_MO             => class_out%QH_MO
-        ! QE_MO             => class_out%QE_MO
         TBARACC_MO        => class_out%TBARACC_MO
         THLQACC_MO        => class_out%THLQACC_MO
         THICACC_MO        => class_out%THICACC_MO
@@ -515,7 +534,6 @@ contains
         FLSTAR_MO   =0.0
         QH_MO       =0.0
         QE_MO       =0.0
-        ALTOTACC_MO =0.0
         ACTLYR_tmp  =0.0
         FTABLE_tmp  =0.0
 
@@ -589,6 +607,7 @@ contains
                     !             ENDIF
 
                     ! Albedo is only counted when sun is above horizon so it uses its own counter.\
+
                     if (altotcntr_m(i) > 0) then
                         ALTOTACC_MO(I) = ALTOTACC_MO(I)/REAL(altotcntr_m(i))
                     else
@@ -625,25 +644,55 @@ contains
                         tovere = 0.
                     end if
 
-                    WRITE(81,8100)IMONTH,IYEAR,FSSTAR_MO,FLSTAR_MO,QH_MO, &
-                    QE_MO,SNOACC_MO(I),WSNOACC_MO(I), &
-                    ROFACC_MO(I),PREACC_MO(I),EVAPACC_MO(I), &
-                    TAACC_MO(I)-TFREZ,TRANSPACC_MO(I),&
-                    tovere,GROUNDEVAP(I),CANOPYEVAP(I),&
-                    ALTOTACC_MO(I)
-                    IF (IGND.GT.3) THEN
-                        WRITE(82,8103)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
-                        THLQACC_MO(I,J),THICACC_MO(I,J),J=1,20), &
-                        ACTLYR_MO(I),ACTLYR_MAX_MO(I),ACTLYR_MIN_MO(I),&
-                        FTABLE_MO(I),FTABLE_MAX_MO(I),FTABLE_MIN_MO(I)
-                                !,' TILE ',m
-                    ELSE
-                        WRITE(82,8102)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
-                        THLQACC_MO(I,J),THICACC_MO(I,J),J=1,3), &
-                        ACTLYR_MO(I),ACTLYR_MAX_MO(I),ACTLYR_MIN_MO(I),&
-                        FTABLE_MO(I),FTABLE_MAX_MO(I),FTABLE_MIN_MO(I)
-                                 ! ,' TILE ',m
-                    ENDIF
+
+                    ! Prepare the timestamp for this month
+                    timeStamp = (iyear - 1 - refyr) * lastDOY + monthend(imonth+1)
+
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_mo' ,timeStamp,'rss', [FSSTAR_MO])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_mo' ,timeStamp,'rls', [FLSTAR_MO])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_mo'     ,timeStamp,'hfss', [QH_MO])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_mo'     ,timeStamp,'hfls', [QE_MO])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'snoacc_mo' ,timeStamp,'snw', [SNOACC_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'wsnoacc_mo',timeStamp,'wsnw', [WSNOACC_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'taacc_mo'  ,timeStamp,'ts', [TAACC_MO(I)-TFREZ])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'groundevap',timeStamp,'evspsblsoi', [GROUNDEVAP(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'canopyevap',timeStamp,'evspsblveg', [CANOPYEVAP(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'rofacc_mo' ,timeStamp,'mrro', [ROFACC_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'preacc_mo' ,timeStamp,'pr', [PREACC_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_mo',timeStamp,'evspsbl', [EVAPACC_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_mo',timeStamp,'tran', [TRANSPACC_MO(I)])
+
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_mo',timeStamp,'albs', [ALTOTACC_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'tbaracc_mo',timeStamp,'tsl', [TBARACC_MO(I,:)-TFREZ])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'thlqacc_mo',timeStamp,'mrsll', [THLQACC_MO(I,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'thicacc_mo',timeStamp,'mrsfl', [THICACC_MO(I,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_mo',timeStamp,'actlyr', [ACTLYR_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_max_mo',timeStamp,'actlyrmax', [ACTLYR_MAX_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'actlyr_min_mo',timeStamp,'actlyrmin', [ACTLYR_MIN_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_mo',timeStamp,'ftable', [FTABLE_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_max_mo',timeStamp,'ftablemax', [FTABLE_MAX_MO(I)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'ftable_min_mo',timeStamp,'ftablemin', [FTABLE_MIN_MO(I)])
+                    !tovere
+
+!                     WRITE(81,8100)IMONTH,IYEAR,FSSTAR_MO,FLSTAR_MO,QH_MO, &
+!                     QE_MO,SNOACC_MO(I),WSNOACC_MO(I), &
+!                     ROFACC_MO(I),PREACC_MO(I),EVAPACC_MO(I), &
+!                     TAACC_MO(I)-TFREZ,TRANSPACC_MO(I),&
+!                     tovere,GROUNDEVAP(I),CANOPYEVAP(I),&
+!                     ALTOTACC_MO(I)
+!                     IF (IGND.GT.3) THEN
+!                         WRITE(82,8103)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
+!                         THLQACC_MO(I,J),THICACC_MO(I,J),J=1,20), &
+!                         ACTLYR_MO(I),ACTLYR_MAX_MO(I),ACTLYR_MIN_MO(I),&
+!                         FTABLE_MO(I),FTABLE_MAX_MO(I),FTABLE_MIN_MO(I)
+!                                 !,' TILE ',m
+!                     ELSE
+!                         WRITE(82,8102)IMONTH,IYEAR,(TBARACC_MO(I,J)-TFREZ, &
+!                         THLQACC_MO(I,J),THICACC_MO(I,J),J=1,3), &
+!                         ACTLYR_MO(I),ACTLYR_MAX_MO(I),ACTLYR_MIN_MO(I),&
+!                         FTABLE_MO(I),FTABLE_MAX_MO(I),FTABLE_MIN_MO(I)
+!                                  ! ,' TILE ',m
+!                     ENDIF
 
                     call resetclassmon(nltest)
           
@@ -654,10 +703,10 @@ contains
         END IF ! IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)
     END DO ! NMON
 
-8100 FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,8(E12.3,1X),2(A6,I2))
-8101 FORMAT(1X,I4,I5,5(F7.2,1X,2F6.3,1X),2(A6,I2))
-8103 FORMAT(1X,I4,I5,20(F7.2,1X,2F6.3,1X),6(F6.3,1X),2(A6,I2))
-8102 FORMAT(1X,I4,I5,3(F8.2,1X,2F6.3,1X),6(F6.3,1X),2(A6,I2))
+! 8100 FORMAT(1X,I4,I5,5(F8.2,1X),F8.3,F12.4,8(E12.3,1X),2(A6,I2))
+! 8101 FORMAT(1X,I4,I5,5(F7.2,1X,2F6.3,1X),2(A6,I2))
+! 8103 FORMAT(1X,I4,I5,20(F7.2,1X,2F6.3,1X),6(F6.3,1X),2(A6,I2))
+! 8102 FORMAT(1X,I4,I5,3(F8.2,1X,2F6.3,1X),6(F6.3,1X),2(A6,I2))
 
 
 end subroutine class_monthly_aw
@@ -665,51 +714,49 @@ end subroutine class_monthly_aw
 !==============================================================================================================
 !>\ingroup io_driver_class_annual_aw
 !>@{
-subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
-                            nltest,nmtest,ALVSROT,FAREROT,FSVHROW, &
-                            ALIRROT,FSIHROW,GTROT,FSSROW,FDLROW, &
-                            HFSROT,ROFROT,PREROW,QFSROT,QEVPROT, &
-                            TAROW,QFCROT,FSGVROT,FSGSROT,FSGGROT, &
-                            ACTLYR,FTABLE,leapnow)
+subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
+                            nltest,nmtest,ACTLYR,FTABLE,lastDOY)
 
-    use class_statevars,     only : class_out,resetclassyr
+    use class_statevars,     only : class_out,resetclassyr,class_rot
     use ctem_params, only : nmon, monthend, nlat, nmos, ignd
+    use outputManager, only : writeOutput1D,refyr
 
     implicit none
 
     ! arguments
+    integer, intent(in) :: lonLocalIndex,latLocalIndex
     integer, intent(in) :: IDAY
     integer, intent(in) :: IYEAR
     integer, intent(in) :: NCOUNT
     integer, intent(in) :: NDAY
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
-    logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
+    integer, intent(in) :: lastDOY
     real, intent(in) :: SBC
     real, intent(in) :: DELT
-    real, dimension(nlat), intent(in) :: FSSROW
-    real, dimension(nlat), intent(in) :: FDLROW
-    real, dimension(nlat), intent(in) :: FSVHROW
-    real, dimension(nlat), intent(in) :: FSIHROW
-    real, dimension(nlat), intent(in) :: TAROW
-    real, dimension(nlat), intent(in) :: PREROW
-    real, dimension(nlat,nmos), intent(in) :: ALVSROT
-    real, dimension(nlat,nmos), intent(in) :: FAREROT
-    real, dimension(nlat,nmos), intent(in) :: ALIRROT
-    real, dimension(nlat,nmos), intent(in) :: GTROT
-    real, dimension(nlat,nmos), intent(in) :: HFSROT
-    real, dimension(nlat,nmos), intent(in) :: QEVPROT
-    real, dimension(nlat,nmos), intent(in) :: ROFROT
-    real, dimension(nlat,nmos), intent(in) :: QFSROT
-    real, dimension(nlat,nmos,ignd), intent(in) :: QFCROT
     real, dimension(nlat,nmos), intent(in) :: ACTLYR          ! Active layer depth (m)
     real, dimension(nlat,nmos), intent(in) :: FTABLE          ! Depth to frozen water table (m)
-    real, dimension(nlat,nmos), intent(in) :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
-    real, dimension(nlat,nmos), intent(in) :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
-    real, dimension(nlat,nmos), intent(in) :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
-    integer, pointer, dimension(:) :: altotcntr_yr
 
     ! pointers
+    real, dimension(:), pointer :: FSSROW
+    real, dimension(:), pointer :: FDLROW
+    real, dimension(:), pointer :: FSVHROW
+    real, dimension(:), pointer :: FSIHROW
+    real, dimension(:), pointer :: TAROW
+    real, dimension(:), pointer :: PREROW
+    real, dimension(:,:), pointer :: ALVSROT
+    real, dimension(:,:), pointer :: FAREROT
+    real, dimension(:,:), pointer :: ALIRROT
+    real, dimension(:,:), pointer :: GTROT
+    real, dimension(:,:), pointer :: HFSROT
+    real, dimension(:,:), pointer :: QEVPROT
+    real, dimension(:,:), pointer :: ROFROT
+    real, dimension(:,:), pointer :: QFSROT
+    real, dimension(:,:,:), pointer :: QFCROT
+    real, dimension(:,:), pointer :: FSGVROT           !< Diagnosed net shortwave radiation on vegetation canopy
+    real, dimension(:,:), pointer :: FSGSROT           !< Diagnosed net shortwave radiation on ground snow surface
+    real, dimension(:,:), pointer :: FSGGROT           !< Diagnosed net shortwave radiation on ground surface
+    integer, pointer, dimension(:) :: altotcntr_yr
     real, pointer, dimension(:) :: ALVSACC_YR
     real, pointer, dimension(:) :: ALIRACC_YR
     real, pointer, dimension(:) :: FLUTACC_YR
@@ -725,23 +772,35 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
     real, pointer, dimension(:) :: ACTLYR_YR
     real, pointer, dimension(:) :: FTABLE_YR
     real, pointer, dimension(:) :: ALTOTACC_YR
-    ! real, pointer :: FSSTAR_YR
-    ! real, pointer :: FLSTAR_YR
-    ! real, pointer :: QH_YR
-    ! real, pointer :: QE_YR
 
     !local
     integer :: i,m,j
-    real :: ALTOT_YR
     real :: tovere
     real :: FSSTAR_YR
     real :: FLSTAR_YR
     real :: QH_YR
     real :: QE_YR
-    real :: daysinyr
-
+    real, dimension(1) :: timeStamp
 
     !point pointers
+    ALVSROT         => class_rot%ALVSROT
+    FAREROT         => class_rot%FAREROT
+    ALIRROT         => class_rot%ALIRROT
+    GTROT           => class_rot%GTROT
+    HFSROT          => class_rot%HFSROT
+    QEVPROT         => class_rot%QEVPROT
+    ROFROT          => class_rot%ROFROT
+    QFSROT          => class_rot%QFSROT
+    QFCROT          => class_rot%QFCROT
+    FSGVROT         => class_rot%FSGVROT
+    FSGSROT         => class_rot%FSGSROT
+    FSGGROT         => class_rot%FSGGROT
+    FSSROW          => class_rot%FSSROW
+    FDLROW          => class_rot%FDLROW
+    FSVHROW         => class_rot%FSVHROW
+    FSIHROW         => class_rot%FSIHROW
+    TAROW           => class_rot%TAROW
+    PREROW          => class_rot%PREROW
     ALVSACC_YR        => class_out%ALVSACC_YR
     ALIRACC_YR        => class_out%ALIRACC_YR
     FLUTACC_YR        => class_out%FLUTACC_YR
@@ -754,10 +813,6 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
     EVAPACC_YR        => class_out%EVAPACC_YR
     TRANSPACC_YR      => class_out%TRANSPACC_YR
     TAACC_YR          => class_out%TAACC_YR
-    ! FSSTAR_YR         => class_out%FSSTAR_YR
-    ! FLSTAR_YR         => class_out%FLSTAR_YR
-    ! QH_YR             => class_out%QH_YR
-    ! QE_YR             => class_out%QE_YR
     ACTLYR_YR         => class_out%ACTLYR_YR
     FTABLE_YR         => class_out%FTABLE_YR
     ALTOTACC_YR       => class_out%ALTOTACC_YR
@@ -769,7 +824,6 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
     FLSTAR_YR   =0.0
     QH_YR       =0.0
     QE_YR       =0.0
-    ALTOT_YR    =0.0
 
     DO 827 I=1,NLTEST
         DO 828 M=1,NMTEST
@@ -803,11 +857,9 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
 828     CONTINUE
 827 CONTINUE
 
-    IF ((.not.leapnow .AND.IDAY.EQ.365.AND.NCOUNT.EQ.NDAY) .OR. &
-    (leapnow .AND.IDAY.EQ.366.AND.NCOUNT.EQ.NDAY)) THEN 
+    IF (IDAY .EQ. lastDOY .AND. NCOUNT .EQ. NDAY)  THEN
 
-
-        DO 829 I=1,NLTEST
+        DO 829 I=1,NLTEST  !offline, nltest is always 1.
 
             ! These are presently not being outputted but the code is kept in place if the need arises.
             !             IF(FSINACC_YR(I).GT.0.0) THEN
@@ -818,22 +870,16 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
             !                 ALIRACC_YR(I)=0.0
             !             ENDIF
 
-            if (leapnow) then
-                daysinyr=366.
-            else
-                daysinyr=365.
-            end if
-
-            FLUTACC_YR(I)=FLUTACC_YR(I)/(REAL(NDAY)*daysinyr)
-            FSINACC_YR(I)=FSINACC_YR(I)/(REAL(NDAY)*daysinyr)
-            FLINACC_YR(I)=FLINACC_YR(I)/(REAL(NDAY)*daysinyr)
-            HFSACC_YR(I) =HFSACC_YR(I)/(REAL(NDAY)*daysinyr)
-            QEVPACC_YR(I)=QEVPACC_YR(I)/(REAL(NDAY)*daysinyr)
+            FLUTACC_YR(I)=FLUTACC_YR(I)/(REAL(NDAY)*real(lastDOY))
+            FSINACC_YR(I)=FSINACC_YR(I)/(REAL(NDAY)*real(lastDOY))
+            FLINACC_YR(I)=FLINACC_YR(I)/(REAL(NDAY)*real(lastDOY))
+            HFSACC_YR(I) =HFSACC_YR(I)/(REAL(NDAY)*real(lastDOY))
+            QEVPACC_YR(I)=QEVPACC_YR(I)/(REAL(NDAY)*real(lastDOY))
             ROFACC_YR(I) =ROFACC_YR(I)
             PREACC_YR(I) =PREACC_YR(I)
             EVAPACC_YR(I)=EVAPACC_YR(I)
             TRANSPACC_YR(I)=TRANSPACC_YR(I)
-            TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*daysinyr)
+            TAACC_YR(I)=TAACC_YR(I)/(REAL(NDAY)*real(lastDOY))
 
             ! Albedo is only counted when sun is above horizon so it uses its own counter.
             if (altotcntr_yr(i) > 0) then
@@ -853,11 +899,25 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
                 tovere = 0.
             end if
 
-        
-            WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,&
-            QE_YR,ROFACC_YR(I),PREACC_YR(I),&
-            EVAPACC_YR(I),TRANSPACC_YR(I),&
-            tovere,ALTOTACC_YR(I)
+            ! Prepare the timestamp for this year
+            timeStamp = (iyear - refyr) * lastDOY
+
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'fsstar_yr' ,timeStamp,'rss', [FSSTAR_YR])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'flstar_yr' ,timeStamp,'rls', [FLSTAR_YR])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'qh_yr'     ,timeStamp,'hfss', [QH_YR])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'qe_yr'     ,timeStamp,'hfls', [QE_YR])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'rofacc_yr' ,timeStamp,'mrro', [ROFACC_YR(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'preacc_yr' ,timeStamp,'pr', [PREACC_YR(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'evapacc_yr' ,timeStamp,'evspsbl', [EVAPACC_YR(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'transpacc_yr' ,timeStamp,'tran', [TRANSPACC_YR(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'altotacc_yr' ,timeStamp,'albs', [ALTOTACC_YR(i)])
+
+            ! tovere
+
+!             WRITE(83,8103)IYEAR,FSSTAR_YR,FLSTAR_YR,QH_YR,&
+!             QE_YR,ROFACC_YR(I),PREACC_YR(I),&
+!             EVAPACC_YR(I),TRANSPACC_YR(I),&
+!             tovere,ALTOTACC_YR(I)
 
             !> ADD INITIALIZTION FOR YEARLY ACCUMULATED ARRAYS
 
@@ -867,7 +927,7 @@ subroutine class_annual_aw(IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
 
     ENDIF !> IDAY.EQ.365/366 .AND. NDAY
 
-8103 FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,5(F12.3,1X),2(A5,I1))
+!8103 FORMAT(1X,I5,4(F8.2,1X),F12.4,1X,5(F12.3,1X),2(A5,I1))
 
 end subroutine class_annual_aw
 !>@}
@@ -1809,19 +1869,21 @@ end subroutine ctem_daily_aw
 !>\ingroup io_driver_ctem_monthly_aw
 !>@{
 
-subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,onetile_perPFT)
+subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FAREROT,iyear,nday,lastDOY,onetile_perPFT)
 
     ! Accumulate and write out the monthly CTEM outputs
 
     ! J. Melton Feb 2016.
 
     use ctem_statevars,     only : ctem_tile_mo, vrot, ctem_grd_mo, c_switch, &
-    resetmonthend,ctem_mo
+                                   resetmonthend,ctem_mo
     use ctem_params, only : icc,iccp1,nmon,mmday,monthend,monthdays,seed,nmos,nlat
+    use outputManager, only : writeOutput1D,refyr
 
     implicit none
 
     ! arguments
+    integer, intent(in) :: lonLocalIndex,latLocalIndex
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
     integer, intent(in) :: iday
@@ -1829,6 +1891,7 @@ subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,onetile_perPFT)
     integer, intent(in) :: iyear
     integer, intent(in) :: nday
     logical, intent(in) :: onetile_perPFT
+    integer, intent(in) :: lastDOY
 
     ! pointers
 
@@ -1837,6 +1900,8 @@ subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,onetile_perPFT)
     logical, pointer :: compete
     logical, pointer :: dowetlands
     logical, pointer :: obswetf
+    logical, pointer :: doperpftoutput
+    logical, pointer :: dopertileoutput
 
     real, pointer, dimension(:,:,:) :: fcancmxrow
     real, pointer, dimension(:,:,:) :: laimaxg_mo
@@ -2019,6 +2084,8 @@ subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,onetile_perPFT)
     real :: sumfare
     integer :: NDMONTH
     integer :: imonth
+    real, dimension(1) :: timeStamp
+    real, dimension(icc) :: pftExist
 
     ! point pointers
 
@@ -2027,6 +2094,8 @@ subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,onetile_perPFT)
     compete               => c_switch%compete
     dowetlands            => c_switch%dowetlands
     obswetf               => c_switch%obswetf
+    doperpftoutput        => c_switch%doperpftoutput
+    dopertileoutput       => c_switch%dopertileoutput
     pftexistrow           => vrot%pftexist
     fcancmxrow            => vrot%fcancmx
     laimaxg_mo            =>ctem_mo%laimaxg_mo
@@ -2425,154 +2494,264 @@ subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,onetile_perPFT)
 
                 imonth=nt
 
-                !> Write to file .CT01M
+                ! Prepare the timestamp for this month !FLAG this isn't correct for leap yet. Need to look at yrs before iyear too!
+                timeStamp(1) = (iyear - 1 - refyr) * lastDOY + monthend(imonth+1)
 
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_g' ,timeStamp,'lai', [laimaxg_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_g',timeStamp,'cVeg',[vgbiomas_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_g',timeStamp,'cLitter',[litrmass_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_g',timeStamp,'cSoil',[soilcmas_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_mo_g'     ,timeStamp,'npp',[npp_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_mo_g'     ,timeStamp,'gpp',[gpp_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_mo_g'     ,timeStamp,'nep',[nep_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo_g'     ,timeStamp,'nbp',[nbp_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo_g',timeStamp,'rh',[hetrores_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo_g' ,timeStamp,'ra',[autores_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_g'  ,timeStamp,'rhLitter',[litres_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_g',timeStamp,'rhSoil',[soilcres_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_g' ,timeStamp,'fVegLitter',[litrfall_mo_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_g' ,timeStamp,'fLitterSoil',[humiftrs_mo_g(i)])
                 do m=1,nmtest
-
-                    barefrac=1.0
-
-                    !> First the per PFT values:
+                    sumfare = 0.0
                     do j=1,icc
-
-                        barefrac=barefrac-fcancmxrow(i,m,j)
-
-                        if (fcancmxrow(i,m,j) .gt. seed) then
-                            write(84,8104)imonth,iyear,laimaxg_mo(i,m,j),&
-                            vgbiomas_mo(i,m,j),litrmass_mo(i,m,j),&
-                            soilcmas_mo(i,m,j),npp_mo(i,m,j),&
-                            gpp_mo(i,m,j),nep_mo(i,m,j),&
-                            nbp_mo(i,m,j),hetrores_mo(i,m,j),&
-                            autores_mo(i,m,j),litres_mo(i,m,j),&
-                            soilcres_mo(i,m,j),litrfallveg_mo(i,m,j),humiftrsveg_mo(i,m,j),&
-                            ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
-                        end if
-
-                    end do !icc
-
-                    !> Now write out the bare fraction values:
-                    if (barefrac .gt. seed) then
-                        write(84,8104)imonth,iyear,0.0,  &
-                        0.0,litrmass_mo(i,m,iccp1), &
-                        soilcmas_mo(i,m,iccp1),0.0, &
-                        0.0,nep_mo(i,m,iccp1), &
-                        nbp_mo(i,m,iccp1),hetrores_mo(i,m,iccp1), &
-                        0.0,litres_mo(i,m,iccp1), &
-                        soilcres_mo(i,m,iccp1), &
-                        0.0,humiftrsveg_mo(i,m,iccp1), &
-                        ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
-                    end if
-
-                    !> Now write out the tile average values for each tile if the tile number
-                    !> is greater than 1 (nmtest > 1).
-                    if (nmtest > 1) then
-                        write(84,8104)imonth,iyear,laimaxg_mo_t(i,m),&
-                        vgbiomas_mo_t(i,m),litrmass_mo_t(i,m),&
-                        soilcmas_mo_t(i,m),npp_mo_t(i,m),&
-                        gpp_mo_t(i,m),nep_mo_t(i,m),&
-                        nbp_mo_t(i,m),hetrores_mo_t(i,m),&
-                        autores_mo_t(i,m),litres_mo_t(i,m),&
-                        soilcres_mo_t(i,m),litrfall_mo_t(i,m),humiftrs_mo_t(i,m),&
-                        ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
-                    end if
-
+                        sumfare=sumfare+fcancmxrow(i,m,j)
+                    end do !j
                 end do !m
-
-                write(84,8104)imonth,iyear,laimaxg_mo_g(i), &
-                vgbiomas_mo_g(i),litrmass_mo_g(i), &
-                soilcmas_mo_g(i),npp_mo_g(i), &
-                gpp_mo_g(i),nep_mo_g(i), &
-                nbp_mo_g(i),hetrores_mo_g(i),autores_mo_g(i), &
-                litres_mo_g(i),soilcres_mo_g(i),&
-                litrfall_mo_g(i),humiftrs_mo_g(i),' GRDAV'
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_mo_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,1,1:icc),1.-sumfare]) !flag only set up for one tile!
 
                 if (dofire .or. lnduseon) then
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_g' ,timeStamp,'fFire',[emit_co2_mo_g(i)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_g' ,timeStamp,'burntFractionAll',[burnfrac_mo_g(i)*100.])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_mo_g' ,timeStamp,'fDeforestToAtmos',[luc_emc_mo_g(i)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_mo_g' ,timeStamp,'fDeforestToLitter',[lucltrin_mo_g(i)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_mo_g' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_g(i)])
+                end if
+
+                if (compete .or. lnduseon) then
+                    pftExist = 0.0
+                    do j=1,icc
+                        if (pftexistrow(i,1,j)) then
+                            pftExist(j) = 1.0
+                        end if
+                    end do
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist]) !flag only set up for one tile!
+                end if
+                if (dowetlands .or. obswetf) then
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_mo_g' ,timeStamp,'wetlandCH4spec',[ch4wet1_mo_g(i)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_mo_g' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_mo_g(i)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_g' ,timeStamp,'wetlandFrac',[wetfdyn_mo_g(i)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_g' ,timeStamp,'soilCH4cons',[ch4soills_mo_g(i)])
+                end if
+
+                if (doperpftoutput) then
+                    if (nmtest > 1) then
+                        print*,'Per PFT and per tile outputs together not implemented yet'
+                    else
+                        m = 1
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo' ,timeStamp,'lai', [laimaxg_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo',timeStamp,'cVeg',[vgbiomas_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo',timeStamp,'cLitter',[litrmass_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo',timeStamp,'cSoil',[soilcmas_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_mo'     ,timeStamp,'npp',[npp_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_mo'     ,timeStamp,'gpp',[gpp_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_mo'     ,timeStamp,'nep',[nep_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo'     ,timeStamp,'nbp',[nbp_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo',timeStamp,'rh',[hetrores_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo' ,timeStamp,'ra',[autores_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo'  ,timeStamp,'rhLitter',[litres_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo',timeStamp,'rhSoil',[soilcres_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfallveg_mo' ,timeStamp,'fVegLitter',[litrfallveg_mo(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrsveg_mo' ,timeStamp,'fLitterSoil',[humiftrsveg_mo(i,m,:)])
+                        if (dofire .or. lnduseon) then
+                            call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo' ,timeStamp,'fFire',[emit_co2_mo(i,m,:)])
+                            call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo' ,timeStamp,'burntFractionAll',[burnfrac_mo(i,m,:)*100.])
+    !                            smfuncveg_mo(i,m,j), &
+    !                            bterm_mo(i,m,j),lterm_mo_t(i,m),mterm_mo(i,m,j),wind_mo_t &
+                        end if
+                    end if
+                end if
+
+                if (dopertileoutput) then
+
+                    if (nmtest > 1) then
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_mo_t' ,timeStamp,'lai', [laimaxg_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_mo_t',timeStamp,'cVeg',[vgbiomas_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_mo_t',timeStamp,'cLitter',[litrmass_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_mo_t',timeStamp,'cSoil',[soilcmas_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_mo_t'     ,timeStamp,'npp',[npp_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_mo_t'     ,timeStamp,'gpp',[gpp_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_mo_t'     ,timeStamp,'nep',[nep_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_mo_t'     ,timeStamp,'nbp',[nbp_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_mo_t',timeStamp,'rh',[hetrores_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_mo_t' ,timeStamp,'ra',[autores_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_mo_t'  ,timeStamp,'rhLitter',[litres_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_mo_t',timeStamp,'rhSoil',[soilcres_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'litrfall_mo_t' ,timeStamp,'fVegLitter',[litrfall_mo_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'humiftrs_mo_t' ,timeStamp,'fLitterSoil',[humiftrs_mo_t(i,:)])
+                       if (dofire .or. lnduseon) then
+                           call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_mo_t' ,timeStamp,'fFire',[emit_co2_mo_t(i,:)])
+                           call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_mo_t' ,timeStamp,'burntFractionAll',[burnfrac_mo_t(i,:)*100.])
+                           call writeOutput1D(lonLocalIndex,latLocalIndex,'luc_emc_mo_t' ,timeStamp,'fDeforestToAtmos',[luc_emc_mo_t(i,:)])
+                           call writeOutput1D(lonLocalIndex,latLocalIndex,'lucltrin_mo_t' ,timeStamp,'fDeforestToLitter',[lucltrin_mo_t(i,:)])
+                           call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_mo_t' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_t(i,:)])
+                       end if
+                        if (dowetlands .or. obswetf) then
+                            call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_mo_t' ,timeStamp,'wetlandCH4spec',[ch4wet1_mo_t(i,:)])
+                            call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_mo_t' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_mo_t(i,:)])
+                            call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_mo_t' ,timeStamp,'wetlandFrac',[wetfdyn_mo_t(i,:)])
+                            call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_mo_t' ,timeStamp,'soilCH4cons',[ch4soills_mo_t(i,:)])
+                        end if
+                    end if
+                end if
+
+                !> Write to file .CT01M
+
+                !do m=1,nmtest
+
+                 !   barefrac=1.0
+
+!                     !> First the per PFT values:
+!                     do j=1,icc
+!
+!                         barefrac=barefrac-fcancmxrow(i,m,j)
+!
+!                         if (fcancmxrow(i,m,j) .gt. seed) then
+!                            ! write(84,8104)imonth,iyear,laimaxg_mo(i,m,j),&
+!                            ! vgbiomas_mo(i,m,j),litrmass_mo(i,m,j),&
+!                            ! soilcmas_mo(i,m,j),npp_mo(i,m,j),&
+!                            ! gpp_mo(i,m,j),nep_mo(i,m,j),&
+!                            ! nbp_mo(i,m,j),hetrores_mo(i,m,j),&
+!                            ! autores_mo(i,m,j),litres_mo(i,m,j),&
+!                             soilcres_mo(i,m,j),litrfallveg_mo(i,m,j),humiftrsveg_mo(i,m,j),&
+!                             ' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
+!                         end if
+!
+!                     end do !icc
+
+!                     !> Now write out the bare fraction values:
+!                     if (barefrac .gt. seed) then
+!                         write(84,8104)imonth,iyear,0.0,  &
+!                         0.0,litrmass_mo(i,m,iccp1), &
+!                         soilcmas_mo(i,m,iccp1),0.0, &
+!                         0.0,nep_mo(i,m,iccp1), &
+!                         nbp_mo(i,m,iccp1),hetrores_mo(i,m,iccp1), &
+!                         0.0,litres_mo(i,m,iccp1), &
+!                         soilcres_mo(i,m,iccp1), &
+!                         0.0,humiftrsveg_mo(i,m,iccp1), &
+!                         ' TILE ',m,' PFT ',iccp1,' FRAC ',barefrac
+!                     end if
+
+!                     !> Now write out the tile average values for each tile if the tile number
+!                     !> is greater than 1 (nmtest > 1).
+!                     if (nmtest > 1) then
+!                         write(84,8104)imonth,iyear,laimaxg_mo_t(i,m),&
+!                         vgbiomas_mo_t(i,m),litrmass_mo_t(i,m),&
+!                         soilcmas_mo_t(i,m),npp_mo_t(i,m),&
+!                         gpp_mo_t(i,m),nep_mo_t(i,m),&
+!                         nbp_mo_t(i,m),hetrores_mo_t(i,m),&
+!                         autores_mo_t(i,m),litres_mo_t(i,m),&
+!                         soilcres_mo_t(i,m),litrfall_mo_t(i,m),humiftrs_mo_t(i,m),&
+!                         ' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+!                     end if
+
+               ! end do !m
+
+!                 write(84,8104)imonth,iyear,laimaxg_mo_g(i), &
+!                 vgbiomas_mo_g(i),litrmass_mo_g(i), &
+!                 soilcmas_mo_g(i),npp_mo_g(i), &
+!                 gpp_mo_g(i),nep_mo_g(i), &
+!                 nbp_mo_g(i),hetrores_mo_g(i),autores_mo_g(i), &
+!                 litres_mo_g(i),soilcres_mo_g(i),&
+!                 litrfall_mo_g(i),humiftrs_mo_g(i),' GRDAV'
+
+                !if (dofire .or. lnduseon) then
 
                     !>Write to file .CT06M
 
-                    do m=1,nmtest
-                        !> First the per PFT values:
-                        do j=1,icc
-                            if (fcancmxrow(i,m,j) .gt. seed) then
-                                write(85,8109)imonth,iyear,emit_co2_mo(i,m,j), &
-                                emit_co_mo(i,m,j),emit_ch4_mo(i,m,j), &
-                                emit_nmhc_mo(i,m,j),emit_h2_mo(i,m,j), &
-                                emit_nox_mo(i,m,j),emit_n2o_mo(i,m,j), &
-                                emit_pm25_mo(i,m,j),emit_tpm_mo(i,m,j), &
-                                emit_tc_mo(i,m,j),emit_oc_mo(i,m,j), &
-                                emit_bc_mo(i,m,j),smfuncveg_mo(i,m,j), &
-                                luc_emc_mo_t(i,m),lucltrin_mo_t(i,m), &
-                                lucsocin_mo_t(i,m),burnfrac_mo(i,m,j)*100., &
-                                bterm_mo(i,m,j),lterm_mo_t(i,m),mterm_mo(i,m,j), &
-                                wind_mo_t(i,m),' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
-                            end if
-                        end do !j
+!                     do m=1,nmtest
+!                         !> First the per PFT values:
+!                         do j=1,icc
+!                             if (fcancmxrow(i,m,j) .gt. seed) then
+!                                 write(85,8109)imonth,iyear,emit_co2_mo(i,m,j), &
+!                                 emit_co_mo(i,m,j),emit_ch4_mo(i,m,j), &
+!                                 emit_nmhc_mo(i,m,j),emit_h2_mo(i,m,j), &
+!                                 emit_nox_mo(i,m,j),emit_n2o_mo(i,m,j), &
+!                                 emit_pm25_mo(i,m,j),emit_tpm_mo(i,m,j), &
+!                                 emit_tc_mo(i,m,j),emit_oc_mo(i,m,j), &
+!                                 emit_bc_mo(i,m,j),smfuncveg_mo(i,m,j), &
+!                                 luc_emc_mo_t(i,m),lucltrin_mo_t(i,m), &
+!                                 lucsocin_mo_t(i,m),burnfrac_mo(i,m,j)*100., &
+!                                 bterm_mo(i,m,j),lterm_mo_t(i,m),mterm_mo(i,m,j), &
+!                                 wind_mo_t(i,m),' TILE ',m,' PFT ',j,' FRAC ',fcancmxrow(i,m,j)
+!                             end if
+!                         end do !j
 
-                        !> Now write out the tile average values for each tile if the tile number
-                        !> is greater than 1 (nmtest > 1).
-                        if (nmtest > 1) then
-                            write(85,8109)imonth,iyear,emit_co2_mo_t(i,m), &
-                            emit_co_mo_t(i,m),emit_ch4_mo_t(i,m), &
-                            emit_nmhc_mo_t(i,m),emit_h2_mo_t(i,m), &
-                            emit_nox_mo_t(i,m),emit_n2o_mo_t(i,m), &
-                            emit_pm25_mo_t(i,m),emit_tpm_mo_t(i,m), &
-                            emit_tc_mo_t(i,m),emit_oc_mo_t(i,m), &
-                            emit_bc_mo_t(i,m),smfuncveg_mo_t(i,m), &
-                            luc_emc_mo_t(i,m),lucltrin_mo_t(i,m), &
-                            lucsocin_mo_t(i,m),burnfrac_mo_t(i,m)*100., &
-                            bterm_mo_t(i,m),lterm_mo_t(i,m),mterm_mo_t(i,m), &
-                            wind_mo_t(i,m),' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
-                        end if
-                    end do !m
-
-                    write(85,8109)imonth,iyear,emit_co2_mo_g(i), &
-                    emit_co_mo_g(i),emit_ch4_mo_g(i),emit_nmhc_mo_g(i), &
-                    emit_h2_mo_g(i),emit_nox_mo_g(i),emit_n2o_mo_g(i), &
-                    emit_pm25_mo_g(i),emit_tpm_mo_g(i),emit_tc_mo_g(i), &
-                    emit_oc_mo_g(i),emit_bc_mo_g(i), &
-                    smfuncveg_mo_g(i),luc_emc_mo_g(i), &
-                    lucltrin_mo_g(i),lucsocin_mo_g(i), &
-                    burnfrac_mo_g(i)*100.,bterm_mo_g(i),lterm_mo_g(i), &
-                    mterm_mo_g(i),wind_mo_t(i,m),' GRDAV '
-
-                endif  !dofire/lnduseon
+!                         !> Now write out the tile average values for each tile if the tile number
+!                         !> is greater than 1 (nmtest > 1).
+!                         if (nmtest > 1) then
+!                             write(85,8109)imonth,iyear,emit_co2_mo_t(i,m), &
+!                             emit_co_mo_t(i,m),emit_ch4_mo_t(i,m), &
+!                             emit_nmhc_mo_t(i,m),emit_h2_mo_t(i,m), &
+!                             emit_nox_mo_t(i,m),emit_n2o_mo_t(i,m), &
+!                             emit_pm25_mo_t(i,m),emit_tpm_mo_t(i,m), &
+!                             emit_tc_mo_t(i,m),emit_oc_mo_t(i,m), &
+!                             emit_bc_mo_t(i,m),smfuncveg_mo_t(i,m), &
+!                             luc_emc_mo_t(i,m),lucltrin_mo_t(i,m), &
+!                             lucsocin_mo_t(i,m),burnfrac_mo_t(i,m)*100., &
+!                             bterm_mo_t(i,m),lterm_mo_t(i,m),mterm_mo_t(i,m), &
+!                             wind_mo_t(i,m),' TILE ',m,' OF ',nmtest,' TFRAC ',FAREROT(i,m)
+!                         end if
+!                     end do !m
+!
+!                     write(85,8109)imonth,iyear,emit_co2_mo_g(i), &
+!                     emit_co_mo_g(i),emit_ch4_mo_g(i),emit_nmhc_mo_g(i), &
+!                     emit_h2_mo_g(i),emit_nox_mo_g(i),emit_n2o_mo_g(i), &
+!                     emit_pm25_mo_g(i),emit_tpm_mo_g(i),emit_tc_mo_g(i), &
+!                     emit_oc_mo_g(i),emit_bc_mo_g(i), &
+!                     smfuncveg_mo_g(i),luc_emc_mo_g(i), &
+!                     lucltrin_mo_g(i),lucsocin_mo_g(i), &
+!                     burnfrac_mo_g(i)*100.,bterm_mo_g(i),lterm_mo_g(i), &
+!                     mterm_mo_g(i),wind_mo_t(i,m),' GRDAV '
+!
+!                 endif  !dofire/lnduseon
 
                 !>Add fraction of each pft and bare
 
-                if (compete .or. lnduseon) then
-                    sumfare=0.0
-                    if (onetile_perPFT) then
-                        do m=1,nmos
-                            sumfare=sumfare+FAREROT(i,m)
-                        enddo
-                        write(88,8106)imonth,iyear,(FAREROT(i,m)*100.,m=1,nmos) &
-                        ,sumfare,(pftexistrow(i,j,j),j=1,icc)
-                    else !composite or mosaic mode.
-                        do m=1,nmtest
-                            sumfare = 0.0
-                            do j=1,icc
-                                sumfare=sumfare+fcancmxrow(i,m,j)
-                            end do !j
-                            write(88,8106)imonth,iyear,(fcancmxrow(i,m,j)*100., &
-                            j=1,icc),(1.0-sumfare)*100.,sumfare, &
-                            (pftexistrow(i,m,j),j=1,icc),' TILE ',m
-                        end do !m
-                    endif !onetile_perPFT/composite
-                endif !compete/lnduseon
+!                 if (compete .or. lnduseon) then
+!                     sumfare=0.0
+!                     if (onetile_perPFT) then
+!                         do m=1,nmos
+!                             sumfare=sumfare+FAREROT(i,m)
+!                         enddo
+!                         write(88,8106)imonth,iyear,(FAREROT(i,m)*100.,m=1,nmos) &
+!                         ,sumfare,(pftexistrow(i,j,j),j=1,icc)
+!                     else !composite or mosaic mode.
+!                         do m=1,nmtest
+!                             sumfare = 0.0
+!                             do j=1,icc
+!                                 sumfare=sumfare+fcancmxrow(i,m,j)
+!                             end do !j
+!                             write(88,8106)imonth,iyear,(fcancmxrow(i,m,j)*100., &
+!                             j=1,icc),(1.0-sumfare)*100.,sumfare, &
+!                             (pftexistrow(i,m,j),j=1,icc),' TILE ',m
+!                         end do !m
+!                     endif !onetile_perPFT/composite
+!                 endif !compete/lnduseon
 
-                if (dowetlands .or. obswetf) then
-                    if (nmtest > 1) then
-                        do m=1,nmtest
-                            write(91,8111)imonth,iyear,ch4wet1_mo_t(i,m), &
-                            ch4wet2_mo_t(i,m),wetfdyn_mo_t(i,m), &
-                            ch4dyn1_mo_t(i,m),ch4dyn2_mo_t(i,m), &
-                            ch4soills_mo_t(i,m),' TILE ',m
-                        end do
-                    end if
-                    write(91,8111)imonth,iyear,ch4wet1_mo_g(i), &
-                    ch4wet2_mo_g(i),wetfdyn_mo_g(i), &
-                    ch4dyn1_mo_g(i),ch4dyn2_mo_g(i), &
-                    ch4soills_mo_g(i),' GRDAV '
-                endif
+!                 if (dowetlands .or. obswetf) then
+!                     if (nmtest > 1) then
+!                         do m=1,nmtest
+!                             write(91,8111)imonth,iyear,ch4wet1_mo_t(i,m), &
+!                             ch4wet2_mo_t(i,m),wetfdyn_mo_t(i,m), &
+!                             ch4dyn1_mo_t(i,m),ch4dyn2_mo_t(i,m), &
+!                             ch4soills_mo_t(i,m),' TILE ',m
+!                         end do
+!                     end if
+!                     write(91,8111)imonth,iyear,ch4wet1_mo_g(i), &
+!                     ch4wet2_mo_g(i),wetfdyn_mo_g(i), &
+!                     ch4dyn1_mo_g(i),ch4dyn2_mo_g(i), &
+!                     ch4soills_mo_g(i),' GRDAV '
+!                 endif
 
             end if ! end of month
 
@@ -2590,36 +2769,36 @@ subroutine ctem_monthly_aw(nltest,nmtest,iday,FAREROT,iyear,nday,onetile_perPFT)
     enddo !> nt=1,nmon
 
 
-8104 FORMAT(1X,I4,I5,14(ES12.5,1X),2(A8,I2),A8,F8.2)
-8106 FORMAT(1X,I4,I5,11(ES12.7,1X),9L5,2(A6,I2))
-8109 FORMAT(1X,I4,I5,21(ES12.5,1X),2(A6,I2),A6,F8.2)
-8111 FORMAT(1X,I4,I5,6(ES12.5,1X),2(A6,I2))
+! 8104 FORMAT(1X,I4,I5,14(ES12.5,1X),2(A8,I2),A8,F8.2)
+! 8106 FORMAT(1X,I4,I5,11(ES12.7,1X),9L5,2(A6,I2))
+! 8109 FORMAT(1X,I4,I5,21(ES12.5,1X),2(A6,I2),A6,F8.2)
+! 8111 FORMAT(1X,I4,I5,6(ES12.5,1X),2(A6,I2))
 
 end subroutine ctem_monthly_aw
 !>@}
 !==============================================================================================================
 !>\ingroup io_driver_ctem_annual_aw
 !>@{
-subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAREROT,onetile_perPFT,leapnow)
+subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,nmtest,FAREROT,onetile_perPFT,lastDOY)
 
     use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
     resetyearend
     use ctem_params, only : icc,iccp1,seed,nmos
-    use fileIOModule
+    !use fileIOModule
     use outputManager, only : writeOutput1D,refyr
 
     implicit none
 
     ! arguments
+    integer, intent(in) :: lonLocalIndex,latLocalIndex
     integer, intent(in) :: nltest
     integer, intent(in) :: nmtest
     integer, intent(in) :: iday
     integer, intent(in) :: imonth
-    integer, intent(in) :: lonIndex, latIndex
     real, intent(in), dimension(:,:) :: FAREROT
     integer, intent(in) :: iyear
     logical, intent(in) :: onetile_perPFT
-    logical, intent(in) :: leapnow                          !< true if this year is a leap year. Only used if the switch 'leap' is true.
+    integer, intent(in) :: lastDOY
 
     ! pointers
 
@@ -2808,8 +2987,8 @@ subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAR
     integer :: i,m,j,nt
     real :: barefrac
     real :: sumfare
-    real :: daysinyr
-    real :: timeStamp
+    real, dimension(1) :: timeStamp
+    real, dimension(icc) :: pftExist
 
     ! point pointers
 
@@ -3024,15 +3203,9 @@ subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAR
                 emit_oc_yr(i,m,j)=emit_oc_yr(i,m,j)+emit_ocrow(i,m,j)
                 emit_bc_yr(i,m,j)=emit_bc_yr(i,m,j)+emit_bcrow(i,m,j)
 
-                if (leapnow) then
-                    daysinyr=366.
-                else
-                    daysinyr=365.
-                end if
-
-                bterm_yr(i,m,j)=bterm_yr(i,m,j)+(btermrow(i,m,j)*(1./daysinyr))
-                mterm_yr(i,m,j)=mterm_yr(i,m,j)+(mtermrow(i,m,j)*(1./daysinyr))
-                smfuncveg_yr(i,m,j)=smfuncveg_yr(i,m,j)+(smfuncvegrow(i,m,j) * (1./365.))
+                bterm_yr(i,m,j)=bterm_yr(i,m,j)+(btermrow(i,m,j)*(1./real(lastDOY)))
+                mterm_yr(i,m,j)=mterm_yr(i,m,j)+(mtermrow(i,m,j)*(1./real(lastDOY)))
+                smfuncveg_yr(i,m,j)=smfuncveg_yr(i,m,j)+(smfuncvegrow(i,m,j) * (1./real(lastDOY)))
                 hetrores_yr(i,m,j)=hetrores_yr(i,m,j)+hetroresvegrow(i,m,j)
                 autores_yr(i,m,j)=autores_yr(i,m,j)+autoresvegrow(i,m,j)
                 litres_yr(i,m,j)=litres_yr(i,m,j)+litresvegrow(i,m,j)
@@ -3052,8 +3225,8 @@ subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAR
 
 
             !> Accumulate the variables at the per tile level
-            lterm_yr_t(i,m)=lterm_yr_t(i,m)+(ltermrow(i,m)*(1./daysinyr))
-            wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./daysinyr))
+            lterm_yr_t(i,m)=lterm_yr_t(i,m)+(ltermrow(i,m)*(1./real(lastDOY)))
+            wetfdyn_yr_t(i,m) = wetfdyn_yr_t(i,m)+(wetfdynrow(i,m)*(1./real(lastDOY)))
             luc_emc_yr_t(i,m)=luc_emc_yr_t(i,m)+lucemcomrow(i,m)
             lucsocin_yr_t(i,m)=lucsocin_yr_t(i,m)+lucsocinrow(i,m)
             lucltrin_yr_t(i,m)=lucltrin_yr_t(i,m)+lucltrinrow(i,m)
@@ -3065,7 +3238,7 @@ subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAR
 
 883     continue ! m
 
-        if ((.not. leapnow .and.iday.eq.365) .or.(leapnow .and.iday.eq.366)) then
+        if (iday.eq.lastDOY) then
 
             do 900 m = 1, nmtest
 
@@ -3188,37 +3361,81 @@ subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAR
 
             !>Write to annual output files:
 
-            ! Prepare the timestamp for this year
-            timeStamp = (iyear - refyr) * daysinyr
+            ! Prepare the timestamp for this year  !FLAG this isn't correct for leap yet. Need to look at yrs before iyear too!
+            timeStamp = (iyear - refyr) * lastDOY
 
-!            do m=1,nmtest
+            !> First write out the per gridcell values
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr_g' ,timeStamp,'lai', [laimaxg_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_yr_g',timeStamp,'cVeg',[vgbiomas_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_yr_g',timeStamp,'cStem',[stemmass_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'rootmass_yr_g',timeStamp,'cRoot',[rootmass_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_g',timeStamp,'cLitter',[litrmass_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_g',timeStamp,'cSoil',[soilcmas_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'totcmass_yr_g',timeStamp,'cLand',[totcmass_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_yr_g'     ,timeStamp,'npp',[npp_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_yr_g'     ,timeStamp,'gpp',[gpp_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_yr_g'     ,timeStamp,'nep',[nep_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_yr_g'     ,timeStamp,'nbp',[nbp_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr_g',timeStamp,'rh',[hetrores_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr_g' ,timeStamp,'ra',[autores_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_g'  ,timeStamp,'rhLitter',[litres_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_g',timeStamp,'rhSoil',[soilcres_yr_g(i)])
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_g' ,timeStamp,'vegHeight',[veghght_yr_g(i)])
+            do m=1,nmtest
+                sumfare = 0.0
+                do j=1,icc
+                    sumfare=sumfare+fcancmxrow(i,m,j)
+                end do !j
+            end do !m
+            call writeOutput1D(lonLocalIndex,latLocalIndex,'fcancmxrow_yr_g' ,timeStamp,'landCoverFrac',[fcancmxrow(i,1,1:icc), 1- sumfare]) !flag only set up for one tile!
+
+            if (dofire .or. lnduseon) then
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)*100.])
+            end if
+
+            if (compete .or. lnduseon) then
+                pftExist = 0.0
+                do j=1,icc
+                    if (pftexistrow(i,1,j)) then
+                        pftExist(j) = 1.0
+                    end if
+                end do
+                call writeOutput1D(lonLocalIndex,latLocalIndex,'pftexistrow_yr_g' ,timeStamp,'landCoverExist',[pftExist]) !flag only set up for one tile!
+            end if
+            if (dowetlands .or. obswetf) then
+               call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_yr_g' ,timeStamp,'wetlandCH4spec',[ch4wet1_yr_g(i)])
+               call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_yr_g' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_yr_g(i)])
+               call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_g' ,timeStamp,'wetlandFrac',[wetfdyn_yr_g(i)])
+               call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_g' ,timeStamp,'soilCH4cons',[ch4soills_yr_g(i)])
+            end if
 
             if (doperpftoutput) then
                 if (nmtest > 1) then
                     print*,'Per PFT and per tile outputs not implemented yet'
                 else
                     m = 1
-                    call writeOutput1D('laimaxg_yr' ,timeStamp,'lai', [laimaxg_yr(i,m,:)])
-                    call writeOutput1D('vgbiomas_yr',timeStamp,'cVeg',[vgbiomas_yr(i,m,:)])
-                    call writeOutput1D('stemmass_yr',timeStamp,'cStem',[stemmass_yr(i,m,:)])
-                    call writeOutput1D('rootmass_yr',timeStamp,'cRoot',[rootmass_yr(i,m,:)])
-                    call writeOutput1D('litrmass_yr',timeStamp,'cLitter',[litrmass_yr(i,m,:)])
-                    call writeOutput1D('soilcmas_yr',timeStamp,'cSoil',[soilcmas_yr(i,m,:)])
-                    call writeOutput1D('totcmass_yr',timeStamp,'cLand',[totcmass_yr(i,m,:)])
-                    call writeOutput1D('npp_yr'     ,timeStamp,'npp',[npp_yr(i,m,:)])
-                    call writeOutput1D('gpp_yr'     ,timeStamp,'gpp',[gpp_yr(i,m,:)])
-                    call writeOutput1D('nep_yr'     ,timeStamp,'nep',[nep_yr(i,m,:)])
-                    call writeOutput1D('nbp_yr'     ,timeStamp,'nbp',[nbp_yr(i,m,:)])
-                    call writeOutput1D('hetrores_yr',timeStamp,'rh',[hetrores_yr(i,m,:)])
-                    call writeOutput1D('autores_yr' ,timeStamp,'ra',[autores_yr(i,m,:)])
-                    call writeOutput1D('litres_yr'  ,timeStamp,'rhLitter',[litres_yr(i,m,:)])
-                    call writeOutput1D('soilcres_yr',timeStamp,'rhSoil',[soilcres_yr(i,m,:)])
-                    call writeOutput1D('veghght_yr' ,timeStamp,'vegHeight',[veghght_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr' ,timeStamp,'lai', [laimaxg_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_yr',timeStamp,'cVeg',[vgbiomas_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_yr',timeStamp,'cStem',[stemmass_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'rootmass_yr',timeStamp,'cRoot',[rootmass_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr',timeStamp,'cLitter',[litrmass_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr',timeStamp,'cSoil',[soilcmas_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'totcmass_yr',timeStamp,'cLand',[totcmass_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_yr'     ,timeStamp,'npp',[npp_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_yr'     ,timeStamp,'gpp',[gpp_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_yr'     ,timeStamp,'nep',[nep_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_yr'     ,timeStamp,'nbp',[nbp_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr',timeStamp,'rh',[hetrores_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr' ,timeStamp,'ra',[autores_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr'  ,timeStamp,'rhLitter',[litres_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr',timeStamp,'rhSoil',[soilcres_yr(i,m,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr' ,timeStamp,'vegHeight',[veghght_yr(i,m,:)])
 
                     if (dofire .or. lnduseon) then
 
-                        call writeOutput1D('emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
-                        call writeOutput1D('burnfrac_yr' ,timeStamp,'burntFractionAll',[burnfrac_yr(i,m,:)*100.])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr' ,timeStamp,'burntFractionAll',[burnfrac_yr(i,m,:)*100.])
 !                            smfuncveg_yr(i,m,j), &
 !                            bterm_yr(i,m,j),lterm_yr_t(i,m),mterm_yr(i,m,j), &
                     end if
@@ -3232,26 +3449,32 @@ subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAR
                     print*,'Switch selected for per tile output but number of tiles is only one.'
                 else
                     !> Write out the per tile values
-                    call writeOutput1D('laimaxg_yr_t' ,timeStamp,'lai', [laimaxg_yr_t(i,:)])
-                    call writeOutput1D('vgbiomas_yr_t',timeStamp,'cVeg',[vgbiomas_yr_t(i,:)])
-                    call writeOutput1D('stemmass_yr_t',timeStamp,'cStem',[stemmass_yr_t(i,:)])
-                    call writeOutput1D('rootmass_yr_t',timeStamp,'cRoot',[rootmass_yr_t(i,:)])
-                    call writeOutput1D('litrmass_yr_t',timeStamp,'cLitter',[litrmass_yr_t(i,:)])
-                    call writeOutput1D('soilcmas_yr_t',timeStamp,'cSoil',[soilcmas_yr_t(i,:)])
-                    call writeOutput1D('totcmass_yr_t',timeStamp,'cLand',[totcmass_yr_t(i,:)])
-                    call writeOutput1D('npp_yr_t'     ,timeStamp,'npp',[npp_yr_t(i,:)])
-                    call writeOutput1D('gpp_yr_t'     ,timeStamp,'gpp',[gpp_yr_t(i,:)])
-                    call writeOutput1D('nep_yr_t'     ,timeStamp,'nep',[nep_yr_t(i,:)])
-                    call writeOutput1D('nbp_yr_t'     ,timeStamp,'nbp',[nbp_yr_t(i,:)])
-                    call writeOutput1D('hetrores_yr_t',timeStamp,'rh',[hetrores_yr_t(i,:)])
-                    call writeOutput1D('autores_yr_t' ,timeStamp,'ra',[autores_yr_t(i,:)])
-                    call writeOutput1D('litres_yr_t'  ,timeStamp,'rhLitter',[litres_yr_t(i,:)])
-                    call writeOutput1D('soilcres_yr_t',timeStamp,'rhSoil',[soilcres_yr_t(i,:)])
-                    call writeOutput1D('veghght_yr_t' ,timeStamp,'vegHeight',[veghght_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr_t' ,timeStamp,'lai', [laimaxg_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_yr_t',timeStamp,'cVeg',[vgbiomas_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_yr_t',timeStamp,'cStem',[stemmass_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'rootmass_yr_t',timeStamp,'cRoot',[rootmass_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'litrmass_yr_t',timeStamp,'cLitter',[litrmass_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcmas_yr_t',timeStamp,'cSoil',[soilcmas_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'totcmass_yr_t',timeStamp,'cLand',[totcmass_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'npp_yr_t'     ,timeStamp,'npp',[npp_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'gpp_yr_t'     ,timeStamp,'gpp',[gpp_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'nep_yr_t'     ,timeStamp,'nep',[nep_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'nbp_yr_t'     ,timeStamp,'nbp',[nbp_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'hetrores_yr_t',timeStamp,'rh',[hetrores_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'autores_yr_t' ,timeStamp,'ra',[autores_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'litres_yr_t'  ,timeStamp,'rhLitter',[litres_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'soilcres_yr_t',timeStamp,'rhSoil',[soilcres_yr_t(i,:)])
+                    call writeOutput1D(lonLocalIndex,latLocalIndex,'veghght_yr_t' ,timeStamp,'vegHeight',[veghght_yr_t(i,:)])
 
                     if (dofire .or. lnduseon) then
-                        call writeOutput1D('emit_co2_yr_t' ,timeStamp,'fFire',[emit_co2_yr_t(i,:)])
-                        call writeOutput1D('burnfrac_yr_t' ,timeStamp,'burntFractionAll',[burnfrac_yr_t(i,:)*100.])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr_t' ,timeStamp,'fFire',[emit_co2_yr_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_t' ,timeStamp,'burntFractionAll',[burnfrac_yr_t(i,:)*100.])
+                    end if
+                    if (dowetlands .or. obswetf) then
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4wet1_yr_t' ,timeStamp,'wetlandCH4spec',[ch4wet1_yr_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4dyn1_yr_t' ,timeStamp,'wetlandCH4dyn',[ch4dyn1_yr_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'wetfdyn_yr_t' ,timeStamp,'wetlandFrac',[wetfdyn_yr_t(i,:)])
+                        call writeOutput1D(lonLocalIndex,latLocalIndex,'ch4soills_yr_t' ,timeStamp,'soilCH4cons',[ch4soills_yr_t(i,:)])
                     end if
                 end if
             end if
@@ -3302,28 +3525,6 @@ subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAR
 !                 end if
 !             end do !m
 
-            !> Finally write out the per gridcell values
-            call writeOutput1D('laimaxg_yr_g' ,timeStamp,'lai', [laimaxg_yr_g(i)])
-            call writeOutput1D('vgbiomas_yr_g',timeStamp,'cVeg',[vgbiomas_yr_g(i)])
-            call writeOutput1D('stemmass_yr_g',timeStamp,'cStem',[stemmass_yr_g(i)])
-            call writeOutput1D('rootmass_yr_g',timeStamp,'cRoot',[rootmass_yr_g(i)])
-            call writeOutput1D('litrmass_yr_g',timeStamp,'cLitter',[litrmass_yr_g(i)])
-            call writeOutput1D('soilcmas_yr_g',timeStamp,'cSoil',[soilcmas_yr_g(i)])
-            call writeOutput1D('totcmass_yr_g',timeStamp,'cLand',[totcmass_yr_g(i)])
-            call writeOutput1D('npp_yr_g'     ,timeStamp,'npp',[npp_yr_g(i)])
-            call writeOutput1D('gpp_yr_g'     ,timeStamp,'gpp',[gpp_yr_g(i)])
-            call writeOutput1D('nep_yr_g'     ,timeStamp,'nep',[nep_yr_g(i)])
-            call writeOutput1D('nbp_yr_g'     ,timeStamp,'nbp',[nbp_yr_g(i)])
-            call writeOutput1D('hetrores_yr_g',timeStamp,'rh',[hetrores_yr_g(i)])
-            call writeOutput1D('autores_yr_g' ,timeStamp,'ra',[autores_yr_g(i)])
-            call writeOutput1D('litres_yr_g'  ,timeStamp,'rhLitter',[litres_yr_g(i)])
-            call writeOutput1D('soilcres_yr_g',timeStamp,'rhSoil',[soilcres_yr_g(i)])
-            call writeOutput1D('veghght_yr_g' ,timeStamp,'vegHeight',[veghght_yr_g(i)])
-            if (dofire .or. lnduseon) then
-                call writeOutput1D('emit_co2_yr_g' ,timeStamp,'fFire',[emit_co2_yr_g(i)])
-                call writeOutput1D('burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)*100.])
-            end if
-
 !             write(86,8105)iyear,laimaxg_yr_g(i),vgbiomas_yr_g(i), &
 !             stemmass_yr_g(i),rootmass_yr_g(i),litrmass_yr_g(i), &
 !             soilcmas_yr_g(i),totcmass_yr_g(i),npp_yr_g(i), &
@@ -3333,7 +3534,7 @@ subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAR
 
 !             if (dofire .or. lnduseon) then
 !
-!                 call writeOutput1D('emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
+!                 call writeOutput1D(lonLocalIndex,latLocalIndex,'emit_co2_yr' ,timeStamp,'fFire',[emit_co2_yr(i,m,:)])
 !
 !                 !> Write to file .CT06Y
 !                 do m=1,nmtest
@@ -3382,137 +3583,132 @@ subroutine ctem_annual_aw(iday,imonth,iyear,lonIndex, latIndex,nltest,nmtest,FAR
 !
 !             endif !dofire,lnduseon
 
-            !> Write fraction of each pft and bare
-
-            if (compete .or. lnduseon) then
-                sumfare=0.0
-                if (onetile_perPFT) then
-                    do m=1,nmos
-                        sumfare=sumfare+FAREROT(i,m)
-                    enddo
-                    write(89,8107)iyear,(FAREROT(i,m)*100.,m=1,nmos), &
-                    sumfare,(pftexistrow(i,j,j),j=1,icc)
-                else  !composite/mosaic (normal) runs
-                    do m=1,nmtest
-                        sumfare=0.0
-                        do j=1,icc
-                            sumfare=sumfare+fcancmxrow(i,m,j)
-                        enddo
-                        write(89,8107)iyear,(fcancmxrow(i,m,j)*100., &
-                        j=1,icc),(1.0-sumfare)*100.,sumfare, &
-                        (pftexistrow(i,m,j),j=1,icc),' TILE ',m
-                    end do
-                endif
-            endif !compete/lnduseon
-
-            if (dowetlands .or. obswetf) then
-                !> Write out the per tile values
-                if (nmtest > 1) then
-                    do m = 1,nmtest
-                        write(92,8115)iyear,ch4wet1_yr_t(i,m), &
-                        ch4wet2_yr_t(i,m),wetfdyn_yr_t(i,m), &
-                        ch4dyn1_yr_t(i,m),ch4dyn2_yr_t(i,m), &
-                        ch4soills_yr_t(i,m),' TILE ',m
-                    end do
-                end if
-                write(92,8115)iyear,ch4wet1_yr_g(i), &
-                ch4wet2_yr_g(i),wetfdyn_yr_g(i), &
-                ch4dyn1_yr_g(i),ch4dyn2_yr_g(i), &
-                ch4soills_yr_g(i),' GRDAV '
-            endif
+!             !> Write fraction of each pft and bare
+!
+!             if (compete .or. lnduseon) then
+!                 sumfare=0.0
+!                 if (onetile_perPFT) then
+!                     do m=1,nmos
+!                         sumfare=sumfare+FAREROT(i,m)
+!                     enddo
+!                     write(89,8107)iyear,(FAREROT(i,m)*100.,m=1,nmos), &
+!                     sumfare,(pftexistrow(i,j,j),j=1,icc)
+!                 else  !composite/mosaic (normal) runs
+!                     do m=1,nmtest
+!                         sumfare=0.0
+!                         do j=1,icc
+!                             sumfare=sumfare+fcancmxrow(i,m,j)
+!                         enddo
+!                         write(89,8107)iyear,(fcancmxrow(i,m,j)*100., &
+!                         j=1,icc),(1.0-sumfare)*100.,sumfare, &
+!                         (pftexistrow(i,m,j),j=1,icc),' TILE ',m
+!                     end do
+!                 endif
+!             endif !compete/lnduseon
+!
+!             if (dowetlands .or. obswetf) then
+!                 !> Write out the per tile values
+!                 if (nmtest > 1) then
+!                     do m = 1,nmtest
+!                         write(92,8115)iyear,ch4wet1_yr_t(i,m), &
+!                         ch4wet2_yr_t(i,m),wetfdyn_yr_t(i,m), &
+!                         ch4dyn1_yr_t(i,m),ch4dyn2_yr_t(i,m), &
+!                         ch4soills_yr_t(i,m),' TILE ',m
+!                     end do
+!                 end if
+!                 write(92,8115)iyear,ch4wet1_yr_g(i), &
+!                 ch4wet2_yr_g(i),wetfdyn_yr_g(i), &
+!                 ch4dyn1_yr_g(i),ch4dyn2_yr_g(i), &
+!                 ch4soills_yr_g(i),' GRDAV '
+!             endif
 
         endif ! if iday=365/366
 882 continue ! i
 
-    if ((.not.leapnow .and.iday.eq.365).or.(leapnow .and.iday.eq.366)) then
+    !> Reset all annual vars in preparation for next year
+    if (iday .eq. lastDOY) call resetyearend(nltest,nmtest)
 
-        !> Reset all annual vars in preparation:
-        call resetyearend(nltest,nmtest)
-
-    end if
-
-
-8105 FORMAT(1X,I5,16(ES12.5,1X),2(A6,I2),A6,F8.2)
-8107 FORMAT(1X,I5,11(F12.7,1X),9L5,2(A6,I2))
-8108 FORMAT(1X,I5,20(ES12.5,1X),2(A6,I2),A6,F8.2)
-8115 FORMAT(1X,I5,6(ES12.5,1X),2(A6,I2))
+! 8105 FORMAT(1X,I5,16(ES12.5,1X),2(A6,I2),A6,F8.2)
+! 8107 FORMAT(1X,I5,11(F12.7,1X),9L5,2(A6,I2))
+! 8108 FORMAT(1X,I5,20(ES12.5,1X),2(A6,I2),A6,F8.2)
+! 8115 FORMAT(1X,I5,6(ES12.5,1X),2(A6,I2))
 
 end subroutine ctem_annual_aw
 !>@}
 !==============================================================================================================
-!>\ingroup io_driver_close_outfiles
-!>@{
-subroutine close_outfiles()
-                     
-    use ctem_statevars, only : c_switch
-
-    implicit none
-
-    ! pointers
-
-    logical, pointer :: dofire
-    logical, pointer :: lnduseon
-    logical, pointer :: compete
-    logical, pointer :: dowetlands
-    logical, pointer :: obswetf
-    logical, pointer :: parallelrun
-
-    ! point pointers
-
-    dofire                => c_switch%dofire
-    lnduseon              => c_switch%lnduseon
-    compete               => c_switch%compete
-    dowetlands            => c_switch%dowetlands
-    obswetf               => c_switch%obswetf
-    parallelrun           => c_switch%parallelrun
-
-    ! -----------------------
-
-    IF (.NOT. PARALLELRUN) THEN
-        close(71)
-        close(711)
-        close(72)
-        close(73)
-        close(74)
-        close(75)
-        !close(76)
-        if (dofire .or. lnduseon) then
-            close(77)
-        end if
-
-        if (compete .or. lnduseon) then
-            close(78)
-        endif
-
-        if (dowetlands .or. obswetf) then
-            close(79)
-        endif 
-
-    endif ! if (.not. parallelrun)
-
-    !>CLOSE CLASS OUTPUT FILES
-    CLOSE(81)
-    CLOSE(82)
-    CLOSE(83)
-    !>then the CTEM ones
-    close(84)
-    close(86)
-    if (dofire .or. lnduseon) then
-        close(85)
-        close(87)
-    endif
-    if (compete .or. lnduseon) then
-        close(88)
-        close(89)
-    endif
- 
-    if (dowetlands .or. obswetf) then
-        close(91)
-        close(92)
-    endif
-
-
-end subroutine close_outfiles
-!@}
+! !>\ingroup io_driver_close_outfiles
+! !>@{
+! subroutine close_outfiles()
+!
+!     use ctem_statevars, only : c_switch
+!
+!     implicit none
+!
+!     ! pointers
+!
+!     logical, pointer :: dofire
+!     logical, pointer :: lnduseon
+!     logical, pointer :: compete
+!     logical, pointer :: dowetlands
+!     logical, pointer :: obswetf
+!     logical, pointer :: parallelrun
+!
+!     ! point pointers
+!
+!     dofire                => c_switch%dofire
+!     lnduseon              => c_switch%lnduseon
+!     compete               => c_switch%compete
+!     dowetlands            => c_switch%dowetlands
+!     obswetf               => c_switch%obswetf
+!     parallelrun           => c_switch%parallelrun
+!
+!     ! -----------------------
+!
+!     IF (.NOT. PARALLELRUN) THEN
+!         close(71)
+!         close(711)
+!         close(72)
+!         close(73)
+!         close(74)
+!         close(75)
+!         !close(76)
+!         if (dofire .or. lnduseon) then
+!             close(77)
+!         end if
+!
+!         if (compete .or. lnduseon) then
+!             close(78)
+!         endif
+!
+!         if (dowetlands .or. obswetf) then
+!             close(79)
+!         endif
+!
+!     endif ! if (.not. parallelrun)
+!
+!     !>CLOSE CLASS OUTPUT FILES
+!     CLOSE(81)
+!     CLOSE(82)
+!     CLOSE(83)
+!     !>then the CTEM ones
+!     close(84)
+!     close(86)
+!     if (dofire .or. lnduseon) then
+!         close(85)
+!         close(87)
+!     endif
+!     if (compete .or. lnduseon) then
+!         close(88)
+!         close(89)
+!     endif
+!
+!     if (dowetlands .or. obswetf) then
+!         close(91)
+!         close(92)
+!     endif
+!
+!
+! end subroutine close_outfiles
+! !@}
 
 end module io_driver      

@@ -324,10 +324,10 @@ contains
     subroutine ncPut1DVar(fileId, label, data, intdata, start, count)
         integer, intent(in)                                     :: fileId
         character(*), intent(in)                                :: label
-        real, dimension(:), intent(in)                          :: data
+        real, dimension(:), intent(inout)                       :: data
         integer, dimension(:), intent(in)                       :: start
         integer, dimension(:), optional, intent(in)             :: count
-        integer, dimension(:), optional, intent(in)             :: intdata
+        integer, dimension(:), optional, intent(inout)          :: intdata
         integer                                                 :: varId
         integer, dimension(:), allocatable                      :: localFormat, localCount
         if (present(count)) then

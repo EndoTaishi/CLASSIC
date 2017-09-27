@@ -422,7 +422,19 @@
 			<shortName>fLitterSoil</shortName>
 			<units>kg C/$m^2$</units>
 		</variable>
-	</group>
+
+        <variable includeBareGround="true">
+            <standardName>
+                Fraction of Area by Vegetation/Land Cover Category
+            </standardName>
+            <longName>
+                Fraction of grid cell area occupied by different model
+                vegetation/land cover categories.
+            </longName>
+            <shortName>landCoverFrac</shortName>
+            <units>fraction</units>
+        </variable>
+    </group>
 
 	<group type="fire" description="Fire">
 		<variable includeBareGround="false">
@@ -512,23 +524,11 @@
 		</variable>
 	</group>
 
-	<group type="compete" description="Compete">
-		<variable includeBareGround="false">
-			<standardName>
-				Percentage of Area by Vegetation/Land Cover Category
-			</standardName>
-			<longName>
-				Percentage of grid cell area occupied by different model
-				vegetation/land cover categories.
-			</longName>
-			<shortName>landCoverFrac</shortName>
-			<units>%</units>
-		</variable>
-
+    <group type="compete" description="Compete">
 		<variable includeBareGround="false">
 			<standardName>
 				Boolean for existance of Vegetation/Land Cover Category
-				based on bioclimatic indices
+				based on bioclimatic indices (1 is exist, 0 is not)
 			</standardName>
 			<longName>
 				Boolean for existance of Vegetation/Land Cover Category
