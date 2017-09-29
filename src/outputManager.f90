@@ -38,6 +38,7 @@ module outputManager
     integer :: metfid                               !> netcdf file id for the meteorology file
     integer :: initid                               !> netcdf file id for the model initialization file
     integer :: rsid                                 !> netcdf file id for the model restart file
+    integer :: co2id                                !> netcdf file id for the CO2 input file
 
     !> This data structure is used to set up the output netcdf files.
     type outputDescriptor
@@ -65,7 +66,8 @@ module outputManager
 
     integer         :: refyr = 1850                     !< !< Time reference for netcdf output files
     character(30)   :: timestart = "days since 1850-01-01 00:00" !< Time reference for netcdf output files
-    character(30)   :: fill_value = "1.e38"             !< Default fill value for missing values in netcdf output files
+    !character(30)   :: fill_value = "1.e38"             !< Default fill value for missing values in netcdf output files
+    real   :: fill_value = 1.E38             !< Default fill value for missing values in netcdf output files
 
 contains
 
@@ -343,7 +345,7 @@ contains
             validGroup = .true.
         elseif (c_switch%dowetlands .and. trim(descriptor%group) == "methane") then
             validGroup = .true.
-        elseif (c_switch%compete .and. trim(descriptor%group) == "compete") then
+        elseif (c_switch%PFTCompetition .and. trim(descriptor%group) == "PFTCompetition") then
             validGroup = .true.
         else
             validGroup = .false.
@@ -430,6 +432,7 @@ contains
         getIdByKey = 0
     end function getIdByKey
 
+    ! Create the output netcdf files
     subroutine createNetCDF(fileName,id, outputForm, descriptor)
 
         use fileIOModule
@@ -595,20 +598,20 @@ contains
 
         call ncPutAtt(ncid,varid,'long_name',charvalues=descriptor%longName)
         call ncPutAtt(ncid,varid,'units',charvalues=descriptor%units)
-
-        !call ncPutAtt(ncid,varid,'_FillValue',fill_value) !FLAG this is not working at present.
-
-        call ncPutAtt(ncid,varid,'missing_value',charvalues=fill_value)
+        call ncPutAtt(ncid,varid,'_FillValue',realvalues=fill_value)
+        call ncPutAtt(ncid,varid,'missing_value',realvalues=fill_value)
         call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
         call ncPutAtt(ncid,varid,'_DeflateLevel',intvalues=1)
-        !call ncPutAtt(ncid,varid,'name_in_code',varinfo%nameincode)
-        !call ncPutAtt(ncid,varid,'Comment',varinfo%Comment)
+        call ncPutAtt(ncid,nf90_global,'Comment',c_switch%Comment)
         call ncEndDef(ncid)
 
     end subroutine createNetCDF
 
+    ! Write model outputs to already created netcdf files
     subroutine writeOutput1D(lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
+
         use fileIOModule
+
         implicit none
 
         integer, intent(in) :: lonLocalIndex,latLocalIndex
@@ -654,7 +657,7 @@ contains
                 timeIndex = posTimeWanted
             end if
         end if
-        
+
         length = size(data)
         if (present(specStart)) then
             start = specStart
@@ -672,6 +675,7 @@ contains
     integer function checkForTime(timeIndex,timeWritten,timeStamp)
 
         implicit none
+
         real, intent(in)   :: timeStamp
         integer, intent(in) :: timeIndex
         real, dimension(:), intent(in) :: timeWritten
@@ -687,8 +691,11 @@ contains
 
     ! Close all output netcdfs or just a select file
     subroutine closeNCFiles(incid)
+
         use fileIOModule
+
         implicit none
+
         integer, optional   :: incid
         integer i
 

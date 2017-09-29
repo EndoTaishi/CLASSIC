@@ -132,22 +132,27 @@ contains
     end subroutine ncReDef
 
 ! Put attribute
-    subroutine ncPutAtt(fileId, varId, label, charvalues, intvalues)
+    subroutine ncPutAtt(fileId, varId, label, charvalues, intvalues,realvalues)
         integer, intent(in)     :: fileId, varId
         character(*)            :: label
         character(*), optional  :: charvalues
         integer, optional       :: intvalues
+        real, optional          :: realvalues
 #if PARALLEL
         if (present(charvalues)) then
             call check_nc(nf90mpi_put_att(fileId, varId, label, charvalues))
-        else
+        else if (present(intvalues)) then
             call check_nc(nf90mpi_put_att(fileId, varId, label, intvalues))
+        else
+            call check_nc(nf90mpi_put_att(fileId, varId, label, realvalues))
         end if
 #else
         if (present(charvalues)) then
             call check_nc(nf90_put_att(fileId, varId, label, charvalues))
-        else
+        else if (present(intvalues)) then
             call check_nc(nf90_put_att(fileId, varId, label, intvalues))
+        else
+            call check_nc(nf90_put_att(fileId, varId, label, realvalues))
         end if
 #endif
     end subroutine ncPutAtt
@@ -448,16 +453,34 @@ contains
         ncGetDimValues = inflateTo1D(data)
     end function ncGetDimValues
 
-    function ncGet1DVar(fileId, label, start, count, format)
+!     function ncGet1DVar(fileId, label, start, count, format)  !FLAG - Ed looks we have some stuff optional that shouldn't be. Pls look over.
+!         integer, intent(in)                         :: fileId
+!         character(*), intent(in)                    :: label
+!         integer, dimension(:), optional, intent(in) :: start, count, format
+!         dataPack                                    :: data
+!         real, dimension(:), allocatable             :: ncGet1DVar
+!         integer, dimension(2)                       :: localCount
+!         if (present(count)) then
+!             localCount = count
+!         else
+!             localCount = [1, 1]
+!         endif
+!         data = ncGetVar(fileId, label, start, localCount)
+!         ncGet1DVar = inflateTo1D(data)
+!     end function ncGet1DVar
+
+    function ncGet1DVar(fileId, label, start, count, format)  !FLAG - Ed looks we have some stuff optional that shouldn't be. Pls look over.
         integer, intent(in)                         :: fileId
         character(*), intent(in)                    :: label
         integer, dimension(:), optional, intent(in) :: start, count, format
         dataPack                                    :: data
         real, dimension(:), allocatable             :: ncGet1DVar
-        integer, dimension(2)                       :: localCount
+        integer, allocatable                        :: localCount(:)
         if (present(count)) then
+            allocate(localCount(size(count)))
             localCount = count
         else
+            allocate(localCount(2))
             localCount = [1, 1]
         endif
         data = ncGetVar(fileId, label, start, localCount)

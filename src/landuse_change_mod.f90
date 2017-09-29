@@ -71,7 +71,7 @@
 !------------------------------------------------------------------------------------
 !>\defgroup landuse_change_adjust_fracs_comp
 !>
-!>This subroutine is used when compete = true. It adjusts the amount of each pft
+!>This subroutine is used when PFTCompetition = true. It adjusts the amount of each pft
 !> to allow expansion of cropland.
 !------------------------------------------------------------------------------------
 
@@ -101,7 +101,7 @@ subroutine initialize_luc(iyear,nmtest,nltest,&
                           nol2pfts,cyclemet,   &
                           cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,  &
                           pfcancmxrow,fcancmxrow,reach_eof,start_bare,&
-                          compete,onetile_perPFT)
+                          PFTCompetition,onetile_perPFT)
 !
 !    11  Jul  2016  - Further bug fixes for competing for space within a tile
 !     J. Melton
@@ -138,7 +138,7 @@ integer, dimension(ican), intent(in) :: nol2pfts
 logical, intent(in) :: cyclemet
 integer, intent(in) :: cylucyr 
 logical, intent(in) :: start_bare
-logical, intent(in) :: compete
+logical, intent(in) :: PFTCompetition
 
 logical, intent(in) :: onetile_perPFT !<if you are running with one tile per PFT in mosaic mode, set to true. Changes
                                 !< how competition is run. Specifically it allows competition between tiles. This
@@ -244,12 +244,12 @@ do while ((cyclemet .and. lucyr .lt. cylucyr             &
 enddo  !while loop
 !>
 !! If you are running with start_bare on, take in only the
-!! crop fractions, set rest to seed. If compete, but not start bare, then
+!! crop fractions, set rest to seed. If PFTCompetition, but not start bare, then
 !! just make sure you have at least seed for each pft.
 !!
 n=1
 k=1
-if (compete) then
+if (PFTCompetition) then
     do i = 1, nltest
         do m = 1, nmtest
             do j = 1, icc
@@ -280,7 +280,7 @@ if (compete) then
             end do !icc
         end do !nmtest
     end do !nltest
-end if  ! compete
+end if  ! PFTCompetition
 
 !> check that in making these seed fraction we haven't made our total fraction
 !> more than 1.0.
@@ -369,9 +369,9 @@ do i = 1, nltest
     if (onetile_perPFT) then
     !> competition requires a 'seed' fraction so make sure the bare ground is also that big.
     !> for prescribed runs you just need it to be possible (>0).
-        if ((compete .and. farerow(i,nmtest) < seed) .or. (.not. compete .and. farerow(i,nmtest) < 0.)) then
+        if ((PFTCompetition .and. farerow(i,nmtest) < seed) .or. (.not. PFTCompetition .and. farerow(i,nmtest) < 0.)) then
 
-            call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,farerow(i,nmtest),compete)
+            call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,farerow(i,nmtest),PFTCompetition)
 
             do m = 1, nmtest
             n = m
@@ -394,7 +394,7 @@ do j = 1, icc
                 pfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
             else !onetile_perPFT
                 ! I think this check below is not needed (JM Mar 2015)
-                if (compete) then
+                if (PFTCompetition) then
         !              ensure that the fraction is >= seed
                     pfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))
                 else !prescribed run
@@ -429,9 +429,9 @@ end subroutine initialize_luc
 !>@{
 
 subroutine readin_luc(iyear,nmtest,nltest,lucyr, &
-                      nfcancmxrow,pfcancmxrow,reach_eof,compete,&
+                      nfcancmxrow,pfcancmxrow,reach_eof,PFTCompetition,&
                       onetile_perPFT)
-!     9  Mar  2016  - Adapt for tiling where we compete for space within a tile
+!     9  Mar  2016  - Adapt for tiling where we PFTCompetition for space within a tile
 !     J. Melton
 !
 !     3  Feb  2016  - Remove mosaic flag, replace with onetile_perPFT flag.
@@ -453,7 +453,7 @@ implicit none
 integer, intent(in) :: iyear
 integer, intent(in) :: nmtest
 integer, intent(in) :: nltest
-logical, intent(in) :: compete
+logical, intent(in) :: PFTCompetition
 logical, intent(in) :: onetile_perPFT !< if you are running with one tile per PFT in mosaic mode, set to true. Changes
                                 !< how competition is run. Specifically it allows competition between tiles. This
                                 !< is not recommended for any case where you don't have one PFT in each tile as it
@@ -491,7 +491,7 @@ real, dimension(nltest) :: bare_ground_frac
               read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
               do m = 1, nmtest-1    !nmtest-1 same as icc
                j = m
-               if (compete) then
+               if (PFTCompetition) then
                   nfcancmxrow(i,m,j) = max(seed,temparray(m)) 
                else !prescribed run
                   nfcancmxrow(i,m,j) = max(0.,temparray(m)) 
@@ -501,9 +501,9 @@ real, dimension(nltest) :: bare_ground_frac
            enddo !nltest
          enddo !lucyr<iyear
 !>
-!>If compete is on, then only take in the crop fraction. Set the other fractions
+!>If PFTCompetition is on, then only take in the crop fraction. Set the other fractions
 !>to the same as before. These will be adjusted in adjust_luc_fracs.
-        if (compete) then
+        if (PFTCompetition) then
          do j = 1, icc
           if (.not. crop(j)) then
            do i = 1, nltest
@@ -534,9 +534,9 @@ real, dimension(nltest) :: bare_ground_frac
           enddo
           
           do i = 1, nltest
-           if ((compete .and. bare_ground_frac(i) < seed) .or. (.not. compete .and. bare_ground_frac(i) < 0.)) then
+           if ((PFTCompetition .and. bare_ground_frac(i) < seed) .or. (.not. PFTCompetition .and. bare_ground_frac(i) < 0.)) then
 
-             call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,bare_ground_frac(i),compete)
+             call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,bare_ground_frac(i),PFTCompetition)
 
            endif 
           enddo !nltest
@@ -557,7 +557,7 @@ end subroutine readin_luc
 
 subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1    
                         grclarea, pfcancmx, nfcancmx,      iday,    & !2    
-                         todfrac,  yesfrac, interpol,compete,  leapnow, & !3
+                       todfrac,yesfrac,interpol,PFTCompetition,leapnow, & !3
 !    ----------------------- inputs above this line -------------       
                          gleafmas, bleafmas, stemmass, rootmass,    & !4  
                          litrmass, soilcmas, vgbiomas, gavgltms,    & !5   
@@ -614,7 +614,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
                                 !<this subroutine doesn't do its own interpolation using pfcancmx and nfcancmx 
                                 !<which are year end values
       logical  luctkplc(nilg)   !<
-      logical  compete          !<true if the competition subroutine is on.
+      logical  PFTCompetition   !<true if the competition subroutine is on.
 
       real gleafmas(nilg,icc)   !<green or live leaf mass in kg c/m2, for the 9 pfts
       real bleafmas(nilg,icc)   !<brown or dead leaf mass in kg c/m2, for the 9 pfts
@@ -693,7 +693,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
       if(interpol) then !> perform interpolation 
        do 110 j = 1, icc
         do 111 i = il1, il2
-          if (compete .and. .not. crop(j)) then !FLAG!! JM. ADDED if loop JUL 11 2016 TEST!!!
+          if (PFTCompetition .and. .not. crop(j)) then !FLAG!! JM. ADDED if loop JUL 11 2016 TEST!!!
             nfcancmx(i,j)=yesfrac(i,j)
             pfcancmx(i,j)=yesfrac(i,j)
           end if
@@ -759,7 +759,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !>
 !>If competition is on, we need to adjust the other fractions for the increase/decrease
 !>in cropland as only the crops areas is now specified.
-      if (compete) then
+      if (PFTCompetition) then
 
          call adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,compdelfrac)
 
@@ -876,7 +876,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
 !!but you can't take it from crops!
       pftarrays=0.
 
-         if (barefrac(i).lt.0.0) then ! compete only needs minbare but it checks later.
+         if (barefrac(i).lt.0.0) then ! PFTCompetition only needs minbare but it checks later.
 
            k=1
            do j = 1,icc
@@ -890,7 +890,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             lrgstpft = maxloc(pftarrays(i,:))
             j = indexpos(i,lrgstpft(1))  
              
-            if (compete) then
+            if (PFTCompetition) then
                fcancmx(i,j) = fcancmx(i,j) + barefrac(i) - minbare 
                barefrac(i) = minbare 
             else
@@ -920,7 +920,7 @@ subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1
             lrgstpft = maxloc(pftarrays(i,:))
             j = indexpos(i,lrgstpft(1))
 
-           if (compete) then
+           if (PFTCompetition) then
                 fcancmy(i,j) = fcancmy(i,j) + pbarefra(i) - minbare
                 pbarefra(i) = minbare
             else
@@ -1293,7 +1293,7 @@ end subroutine luc
 !>@{
 
 subroutine adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow, &
-                          bare_ground_frac, compete)
+                          bare_ground_frac, PFTCompetition)
 ! J. Melton, Jan 11 2013
 
 use ctem_params,        only : nlat,nmos,icc,seed
@@ -1305,7 +1305,7 @@ integer, intent(in) :: i
 real, dimension(nlat,nmos,icc), intent(inout) :: nfcancmxrow
 real, intent(in) :: bare_ground_frac
 logical, intent(in) :: onetile_perPFT
-logical, intent(in) :: compete
+logical, intent(in) :: PFTCompetition
 
 real, dimension(nlat,nmos,icc) :: outnfcrow
 
@@ -1318,7 +1318,7 @@ real :: min_val
 !-------------------------
 tot = 0.0
 
-if (compete) then
+if (PFTCompetition) then
     min_val = seed
 else
     min_val = 0.

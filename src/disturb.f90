@@ -348,7 +348,7 @@ contains
 subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
                             thliq,   THLW,  THFC,    uwind, &
                             vwind,  lightng,  fcancmx, litrmass, &    
-                         prbfrhuc, rmatctem, extnprob, popdon,   &
+                         prbfrhuc, rmatctem, extnprob, transientPOPD,   &
                               il1,      il2,     sort, nol2pfts, &
                          grclarea,    thice,   popdin, lucemcom, &
                            dofire,   currlat,   iday,  fsnow,    &
@@ -414,7 +414,7 @@ implicit none
 real, dimension(ilg,icc), intent(out) :: pstemmass 
 real, dimension(ilg,icc), intent(out) :: pgleafmass
 
-logical, intent(in) :: popdon !<if set true use population density data to calculate fire extinguishing 
+logical, intent(in) :: transientPOPD !<if set true use population density data to calculate fire extinguishing
                               !<probability and probability of fire due to human causes, 
                               !<or if false, read directly from .ctm file
 
@@ -785,7 +785,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 
 !>Determine the probability of fire due to human causes
 !!this is based upon the population density from the .popd read-in file
-        if (popdon) then
+        if (transientPOPD) then
             prbfrhuc(i)=min(1.0,(popdin(i)/popdthrshld)**0.43) !From Kloster et al. (2010)
         end if
 
@@ -885,7 +885,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
           arbn1day_veg(i,j)=(pi*24.0*24.0*sprdrate_veg(i,j)**2)/(4.0 * lbratio(i))*(1.0 + 1.0 / hbratio(i))**2
 
 !>fire extinguishing probability as a function of grid-cell averaged population density
-          if (popdon) then
+          if (transientPOPD) then
 
             !> account for low suppression in Savanna regions, see above for
             !> increase in ignition due to cultural practices
@@ -988,7 +988,7 @@ real :: soilterm_veg, duffterm_veg, betmsprd_veg, betmsprd_duff      ! temporary
 !>of these components. Note that the litter which is generated due 
 !!to disturbance is uniformly distributed over the entire area of 
 !!a given pft, and this essentially thins the vegetation biomass. 
-!!If compete is not on, this does not change the vegetation fractions,
+!!If PFTCompetition is not on, this does not change the vegetation fractions,
 !!if competition is on a fraction will become bare. That is handled in
 !!burntobare subroutine called from competition subroutine.
 !!

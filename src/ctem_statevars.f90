@@ -37,16 +37,12 @@ public :: resetgridavg
 type ctem_switches
 
     logical :: ctem_on     !<True if this run includes CTEM
-    logical :: parallelrun !<set this to be true if model is run in parallel mode for 
-                           !<multiple grid cells, output is limited to monthly & yearly 
-                            !<grid-mean only. else the run is in stand alone mode, in which
-                            !<output includes half-hourly and daily and mosaic-mean as well.
     logical :: cyclemet    !<to cycle over only a fixed number of years 
                         !<(nummetcylyrs) starting at a certain year (metcylyrst)
-                        !<if cyclemet, then put co2on = false and set an appopriate setco2conc, also
-                        !<if popdon is true, it will choose the popn and luc data for year
+                        !<if cyclemet, then put transientCO2 = false and set an appopriate fixedCO2Conc, also
+                        !<if transientPOPD is true, it will choose the popn and luc data for year
                         !<metcylyrst and cycle on that.
-    integer :: ctemloop !< no. of times the .met file is to be read. this
+    integer :: metLoop !< no. of times the .met file is to be read. this
                                  !< option is useful to see how ctem's c pools
                                  !< equilibrate when driven with same climate data
                                  !< over and over again.
@@ -59,25 +55,22 @@ type ctem_switches
                              !< ignored if cyclemet is false
     integer :: metcylyrst   !< climate year to start the spin up on
                              !< ignored if cyclemet is false
-    real :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
-    real :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
+    logical :: transientCO2       !<use \f$co_2\f$ time series, set to false if cyclemet is true
+    character(180) :: CO2File
+    integer :: fixedYearCO2  !< set the year to use for atmospheric co2 if transientCO2 is false. (ppmv)
+
+    real :: setch4conc  !< set the value of atmospheric CH4 if transientCH4 is false. (ppmv)
     logical :: dofire      !<boolean, if true allow fire, if false no fire.
-    logical :: run_model   !<
-    logical :: met_rewound !<
-    logical :: reach_eof   !<
-    logical :: compete     !<logical boolean telling if competition between pfts is on or not
+    logical :: met_rewound !<Remove FLAG
+    logical :: reach_eof   !<Remove FLAG
+    logical :: PFTCompetition !<logical boolean telling if competition between pfts is on or not
     logical :: start_bare  !<set this to true if competition is true, and if you wish to start from bare ground.
                            !<if this is set to false, the ini and ctm file info will be used to set up the run.
                            !<NOTE: This still keeps the crop fractions (while setting all pools to zero)
-    logical :: rsfile      !<set this to true if restart files (.ini_rs and .ctm_rs) are written at the end of each
-                           !<year. these files are necessary for checking whether the model reaches equilibrium after
-                           !<running for a certain years. set this to false if restart files are not needed
-                           !<(known how many years the model will run)
     logical :: lnduseon    !<logical switch to run the land use change subroutine or not.
-    logical :: co2on       !<use \f$co_2\f$ time series, set to false if cyclemet is true
-    logical :: ch4on       !<use \f$CH_4\f$ time series, set to false if cyclemet is true the \f$CO_2\f$ timeseries is in the 
+    logical :: transientCH4       !<use \f$CH_4\f$ time series, set to false if cyclemet is true the \f$CO_2\f$ timeseries is in the
                            !<same input file as the \f$CO_2\f$ one.
-    logical :: popdon      !<if set true use population density data to calculate fire extinguishing probability and
+    logical :: transientPOPD      !<if set true use population density data to calculate fire extinguishing probability and
                            !<probability of fire due to human causes, or if false, read directly from .ctm file
     integer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
                          !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
@@ -201,9 +194,9 @@ type ctem_switches
     integer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
                                 !< if it is set to 1, the new four-band routines are used.
                                 
-    character(80) :: titlec1!<
-    character(80) :: titlec2!<
-    character(80) :: titlec3!<
+    character(80) :: titlec1!<Remove FLAG
+    character(80) :: titlec2!<Remove FLAG
+    character(80) :: titlec3!<Remove FLAG
 
 end type ctem_switches
 

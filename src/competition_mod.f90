@@ -782,7 +782,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
 !     V. Arora        pFTs based on Lotka-Volterra eqns. ot its modified
 !                     forms. either option may be used.
 !
-!                     PFTs that may exist are allowed to compete for
+!                     PFTs that may exist are allowed to PFTCompetition for
 !                     available space in a grid cell. pfts that can't
 !                     exist based on long term bioclimatic parameters
 !                     are slowly killed by increasing their mortality.               

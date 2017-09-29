@@ -18,10 +18,10 @@
      &                     ancsveg,  ancgveg, rmlcsveg,  rmlcgveg,    &
      &                       zbotw,   thliqc,   thliqg,    deltat,&
      &                       uwind,    vwind,  lightng,  prbfrhuc, &
-     &                    extnprob,   stdaln,     tbar,    popdon, &
+     &                    extnprob,   stdaln,     tbar,transientPOPD, &
      &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
      &                      thicec, soildpth, spinfast,   todfrac,&
-     &                     compete,   netrad,   precip,   psisat, grclarea, &
+     &        PFTCompetition,   netrad,   precip,   psisat, grclarea, &
      &                    popdin, dofire,  dowetlands,obswetf,isand,  &
      &                   faregat, onetile_perPFT, wetfrac, slopefrac,&
      &                       bi,     thpor,    thiceg, currlat, &
@@ -145,7 +145,7 @@ implicit none
 !     inputs
 !
 logical, intent(in) :: lnduseon                         !<logical switch to run the land use change subroutine or not.
-logical, intent(in) :: compete                          !<logical boolean telling if competition between pfts is on or not
+logical, intent(in) :: PFTCompetition                   !<logical boolean telling if competition between pfts is on or not
 logical, intent(in) :: dofire                           !<boolean, if true allow fire, if false no fire.
 logical, intent(in) :: dowetlands                       !<if true allow wetland methane emission
 logical, intent(in) :: obswetf                          !<if true, use read-in observed wetland fraction
@@ -221,7 +221,7 @@ real, dimension(ilg,ignd), intent(in) :: THLW           !<
 !
 !     updates
 !
-logical, intent(inout) :: popdon                        !< if set true use population density data to calculate fire extinguishing
+logical, intent(inout) :: transientPOPD                 !< if set true use population density data to calculate fire extinguishing
                                                         !< probability and probability of fire due to human causes,
                                                         !< or if false, read directly from .ctm file
 logical, intent(inout) :: pftexist(ilg,icc)             !<
@@ -570,7 +570,7 @@ do 95 j = 1, ican
 
 !     ---------------------------------------------------------------
 
-if(compete .or. lnduseon)then
+if(PFTCompetition .or. lnduseon)then
 
 !> If you intend to have competition and LUC between tiles then set onetile_perPFT to true.
 !> NOTE: Turning onetile_perPFT to true is usually not the behaviour desired unless you are
@@ -579,7 +579,7 @@ if(compete .or. lnduseon)then
 
   if (.not. onetile_perPFT) then !> this is composite/mosaic mode (in mosaic competition only occurs WITHIN a tile)
 
-    if (compete) then
+    if (PFTCompetition) then
 
 !>Calculate bioclimatic parameters for estimating pfts existence
 
@@ -626,7 +626,7 @@ if(compete .or. lnduseon)then
 !
         end if ! inibioclim
 
-    endif  ! if (compete)
+    endif  ! if (PFTCompetition)
 !>
 !!If landuse is on, then implelement luc, change fractional coverages,
 !!move biomasses around, and estimate luc related combustion emission losses.
@@ -641,7 +641,7 @@ if(compete .or. lnduseon)then
 
          call luc(    il1,      il2,   ilg,  nol2pfts, &
      &                  grclarea, pfcancmx, nfcancmx,     iday,&
-     &                   todfrac,yesfrac_comp,.true.,  compete, leapnow,&
+     &            todfrac,yesfrac_comp,.true.,PFTCompetition,leapnow,&
      &                  gleafmas, bleafmas, stemmass, rootmass,&
      &                  litrmass, soilcmas, vgbiomas, gavgltms,&
      &                  gavgscms,  fcancmx,   fcanmx,&
@@ -727,7 +727,7 @@ if(compete .or. lnduseon)then
      &                     pgleafmass_cmp )
 !    ------------------- outputs above this line --------------------
 
-        if (compete) then
+        if (PFTCompetition) then
 
 !>Calculate bioclimatic parameters for estimating pfts existence
 
@@ -773,7 +773,7 @@ if(compete .or. lnduseon)then
 
          end if !inibioclim
 
-        endif !compete check
+        endif !PFTCompetition check
 
         if(lnduseon)then
 
@@ -785,7 +785,7 @@ if(compete .or. lnduseon)then
 
          call luc(il1,      nlat,     nlat,     nol2pfts, &
      &           grclarea_cmp,    pfcancmx_cmp, nfcancmx_cmp,     iday,&
-     &           todfrac_cmp,  yesfrac_mos,   .true., compete, leapnow,&
+     &           todfrac_cmp,  yesfrac_mos,   .true., PFTCompetition, leapnow,&
      &           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,&
      &           litrmass_cmp, soilcmas_cmp, vgbiomas_cmp, gavgltms_cmp,&
      &           gavgscms_cmp,     fare_cmp,   fcanmx_cmp,&
@@ -839,7 +839,7 @@ if(compete .or. lnduseon)then
 
   endif ! onetile_perPFT true/false
 
-endif !compete/lnduseon
+endif !PFTCompetition/lnduseon
 
 !     ---------------------------------------------------------------
 !>
@@ -1377,7 +1377,7 @@ endif
 !!expansion (lambda) during the next day (i.e. this will be determining
 !!the colonization rate in competition).
 !!
-if (compete) then
+if (PFTCompetition) then
     do 500 j = 1, icc
         if(.not. crop(j)) then   ! not for crops
             do 501 i = il1, il2
@@ -1412,7 +1412,7 @@ if (compete) then
         501      continue
         endif
     500    continue
-endif !compete
+endif !PFTCompetition
 
 !    ------------------------------------------------------------------
 !>
@@ -1530,7 +1530,7 @@ endif !compete
 !>
       do 620 j = 1,icc
         do 621 i = il1, il2
-         !if (compete .or. lnduseon) then
+         !if (PFTCompetition .or. lnduseon) then
 !           Not in use. We now use the constant reproductive cost below. JM Jun 2014
 !           expnbaln(i)=expnbaln(i)+fcancmx(i,j)*expbalvg(i,j)
             repro_cost_g(i)=repro_cost_g(i)+fcancmx(i,j)*reprocost(i,j) 
@@ -1717,7 +1717,7 @@ Call       mortalty (stemmass, rootmass,        ailcg, gleafmas,&
 call disturb (stemmass, rootmass, gleafmas, bleafmas,&
      &                      thliqc,    THLW,      THFC,    uwind,&
      &                       vwind,  lightng,  fcancmx, litrmass,&
-     &                    prbfrhuc, rmatctem, extnprob, popdon,&
+     &                    prbfrhuc, rmatctem, extnprob, transientPOPD,&
      &                         il1,      il2,     sort, nol2pfts,&
      &                    grclarea,   thicec,   popdin, lucemcom,&
      &                      dofire,  currlat,     iday, fsnow,&

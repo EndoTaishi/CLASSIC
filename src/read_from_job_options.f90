@@ -39,10 +39,10 @@ contains
         !     2   Jul. 2013 - Removed ctem1 and ctem2, replaced with ctem_on
         !     J. Melton
         !
-        !     25  Jun. 2013 - Added inibioclim switch for compete runs
+        !     25  Jun. 2013 - Added inibioclim switch for PFTCompetition runs
         !     J. Melton
         !
-        !     17  Oct. 2012 - Added the start_bare switch for compete runs
+        !     17  Oct. 2012 - Added the start_bare switch for PFTCompetition runs
         !     J. Melton
         !
         !     25  Apr. 2012 - This subroutine takes in model switches from
@@ -50,7 +50,7 @@ contains
 
         use outputManager, only : myDomain
         use ctem_statevars,     only : c_switch
-        use ctem_params, only : icc, ican, l2max, runParamsFile,competeSwitch
+        use ctem_params, only : icc, ican, l2max, runParamsFile,PFTCompetitionSwitch
 
         implicit none
 
@@ -63,7 +63,7 @@ contains
 
         logical, pointer :: transient_run
         integer, pointer :: trans_startyr
-        integer, pointer :: ctemloop
+        integer, pointer :: metLoop
         logical, pointer :: ctem_on
         integer, pointer :: ncyear
         logical, pointer :: lnduseon
@@ -71,17 +71,17 @@ contains
         logical, pointer :: cyclemet
         integer, pointer :: nummetcylyrs
         integer, pointer :: metcylyrst
-        logical, pointer :: co2on
-        real, pointer :: setco2conc
-        logical, pointer :: ch4on
+        logical, pointer :: transientCO2
+        character(:), pointer :: CO2File
+        integer, pointer :: fixedYearCO2
+        logical, pointer :: transientCH4
         real, pointer :: setch4conc
-        logical, pointer :: popdon
+        logical, pointer :: transientPOPD
         integer, pointer :: popcycleyr
-        logical, pointer :: parallelrun
         logical, pointer :: dofire
         logical, pointer :: dowetlands
         logical, pointer :: obswetf
-        logical, pointer :: compete
+        logical, pointer :: PFTCompetition
         logical, pointer :: inibioclim
         logical, pointer :: start_bare
         logical, pointer :: use_netcdf
@@ -138,7 +138,7 @@ contains
         namelist /joboptions/ &
         transient_run, &
         trans_startyr, &
-        ctemloop, &
+        metLoop, &
         ncyear, &
         cyclemet, &
         nummetcylyrs, &
@@ -148,26 +148,24 @@ contains
         icc, &
         spinfast, &
         lnduseon, &
-        co2on, &
-        setco2conc, &
-        ch4on, &
+        transientCO2, &
+        CO2File, &
+        fixedYearCO2, &
+        transientCH4, &
         setch4conc, &
-        compete, &
+        transientPOPD, &
+        popcycleyr, &
+        PFTCompetition, &
         inibioclim, &
         start_bare, &
         dofire, &
-        popdon, &
-        popcycleyr, &
         dowetlands, &
         obswetf, &
-        parallelrun, &
         use_netcdf, &
         met_file, &
         init_file, &
         rs_file_to_overwrite, &
         runparams_file, &
-        output_directory, &
-        xmlFile, &
         ican, &
         l2max, &
         IDISP, &
@@ -184,6 +182,8 @@ contains
         IALS, &
         IALG, &
         isnoalb, &
+        output_directory, &
+        xmlFile, &
         doperpftoutput, &
         dopertileoutput, &
         dohhoutput, &
@@ -203,7 +203,7 @@ contains
         ! Point pointers:
         transient_run   => c_switch%transient_run
         trans_startyr   => c_switch%trans_startyr
-        ctemloop        => c_switch%ctemloop
+        metLoop         => c_switch%metLoop
         ctem_on         => c_switch%ctem_on
         ncyear          => c_switch%ncyear
         lnduseon        => c_switch%lnduseon
@@ -211,17 +211,17 @@ contains
         cyclemet        => c_switch%cyclemet
         nummetcylyrs    => c_switch%nummetcylyrs
         metcylyrst      => c_switch%metcylyrst
-        co2on           => c_switch%co2on
-        setco2conc      => c_switch%setco2conc
-        ch4on           => c_switch%ch4on
+        transientCO2    => c_switch%transientCO2
+        CO2File         => c_switch%CO2File
+        fixedYearCO2    => c_switch%fixedYearCO2
+        transientCH4    => c_switch%transientCH4
         setch4conc      => c_switch%setch4conc
-        popdon          => c_switch%popdon
+        transientPOPD   => c_switch%transientPOPD
         popcycleyr      => c_switch%popcycleyr
-        parallelrun     => c_switch%parallelrun
         dofire          => c_switch%dofire
         dowetlands      => c_switch%dowetlands
         obswetf         => c_switch%obswetf
-        compete         => c_switch%compete
+        PFTCompetition  => c_switch%PFTCompetition
         inibioclim      => c_switch%inibioclim
         start_bare      => c_switch%start_bare
         rs_file_to_overwrite => c_switch%rs_file_to_overwrite
@@ -299,7 +299,7 @@ contains
 
         ! Assign some vars that are passed out
         runParamsFile = runparams_file
-        competeSwitch = compete
+        PFTCompetitionSwitch = PFTCompetition
 
         end subroutine read_from_job_options
 

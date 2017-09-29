@@ -279,8 +279,8 @@ c
 !!\f]
 !!---------------------------------------------------------------
 !!
-      if(icc.ne.9)                    call xit('compete_unmap',-1)
-      if(ican.ne.4)                     call xit('compete_unmap',-2)
+      if(icc.ne.9)   call xit('PFTCompetition_unmap',-1)
+      if(ican.ne.4)  call xit('PFTCompetition_unmap',-2)
 c
 c     initialization
 c

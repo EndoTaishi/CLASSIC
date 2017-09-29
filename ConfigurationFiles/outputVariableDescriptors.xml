@@ -524,7 +524,7 @@
 		</variable>
 	</group>
 
-    <group type="compete" description="Compete">
+    <group type="PFTCompetition" description="Compete">
 		<variable includeBareGround="false">
 			<standardName>
 				Boolean for existance of Vegetation/Land Cover Category

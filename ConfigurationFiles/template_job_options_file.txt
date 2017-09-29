@@ -9,50 +9,55 @@
                           !< only having the climate from 1901 while having the other inputs from 1850.
  trans_startyr = 1850 ,   !< the year you want the transient run to start (e.g. 1850). If you
                           !! are not doing a transient run, set to a negative value (like -9999)
- ctemloop = 1 ,           !< no. of times the meteorology cycling should happen.
+ metLoop = 1 ,            !< no. of times the meteorology cycling should happen.
+
  ncyear = 109 ,           !< no. of years in the .met file. FLAG - redundant?
  cyclemet = .true. ,
  nummetcylyrs = 2 ,
  metcylyrst = 1901 ,
 
- leap = .false.,
+ leap = .false. ,
 
  ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
                         !< lai and canopy mass are used. with this switch on, all ctem subroutines are run.
- icc=12 ,
+ icc = 12 ,
 
  spinfast = 3 ,
 
  lnduseon = .false. ,
+ ! This will need a LUC year thing too. Perhaps like below.
 
- co2on = .false. ,
- setco2conc = 285.00 ,
+ ! CO2 switches:
+     !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
+ transientCO2 = .true. ,
+ CO2File = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc' ,
+ fixedYearCO2 = 1850 ,      !If transientCO2 = .true., this is ignored.
 
- ch4on = .false.,
- setch4conc = 1.785 ,
+ transientCH4 = .false. ,
+ setch4conc = 1.785 ,   !fixedCH4Conc Change this to take in the year? Comes from spinup year?
 
- compete=.false. ,
- inibioclim=.false. ,
- start_bare=.false.,
+ transientPOPD = .true. ,
+ popcycleyr = 1850 ,    !Change this to take in the year? Comes from spinup year?
+
+ PFTCompetition = .false. ,
+ inibioclim = .false. ,   ! Remove. Can set up in initFile so this flag is not needed.
+ start_bare = .false.,    ! Can remove? Check logic.
 
  dofire = .false. ,
- popdon = .true. ,
- popcycleyr = 1850 ,
 
- dowetlands = .false. ,
+
+ dowetlands = .false. ,  !Remove
  obswetf = .false. ,
 
- parallelrun = .false. ,
-
- use_netcdf = .true.,
+ use_netcdf = .true. ,  ! This will be removed.
 
  met_file = '/raid/ra40/data/rjm/CRUNCEP_MET_data/t63files/cruncepv7_1901_2015_T63.nc' ,
- init_file = 'initFile.nc' ,
+ init_file = 'inputFiles/initFile.nc' ,
  rs_file_to_overwrite = 'rsFile.nc' ,
  runparams_file = 'ConfigurationFiles/template_run_parameters.txt' ,
 
- ican = 4,
- l2max = 5, 
+ ican = 4 ,
+ l2max = 5 ,
  IDISP = 0 ,
  IZREF = 2 ,
  ISLFD = 0 ,
@@ -66,11 +71,11 @@
  IALC = 0 ,
  IALS = 0 ,
  IALG = 0 ,
- isnoalb = 0,
+ isnoalb = 0 ,
 
  ! Output options:
- output_directory = '/home/rjm/Documents/CTEM/test'
- xmlFile = 'ConfigurationFiles/outputVariableDescriptors.xml'
+ output_directory = '/home/rjm/Documents/CTEM/test' ,
+ xmlFile = 'ConfigurationFiles/outputVariableDescriptors.xml' ,
 
  doperpftoutput = .true. ,
  dopertileoutput = .true. ,
@@ -90,13 +95,13 @@
  domonthoutput = .true. ,
  JMOSTY = 1000 ,
 
- Comment = ' test ' ,
+ Comment = ' test '
 
  /
 
 This area is for comments about the run. The comment above will be written to the netcdf output files.
 
-
+!CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr-0p5x360deg_18500101-201412_absTimeAxis.nc',
 !        logical, pointer :: lnduseon !< set this to 1 if land use change is to be
                             !< implimented by reading in the fractions of 9 ctem
                             !< pfts from a file. keep in mind that once on, luc read-in is

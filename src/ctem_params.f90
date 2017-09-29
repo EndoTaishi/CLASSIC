@@ -371,7 +371,7 @@ real :: soilw_thrshS   !< Soil wetness threshold in the South zone
 ! Passed variables:
 
 character(80)    :: runParamsFile
-logical          :: competeSwitch
+logical          :: PFTCompetitionSwitch
 
 
 ! --------------------------------------------------------------------------
@@ -693,7 +693,7 @@ subroutine readin_params
         end select
     end do
     !Overwrite the prescribed vars with the compete ones if competition is on.
-    if (competeSwitch) then
+    if (PFTCompetitionSwitch) then
         omega = omega_compete
         epsilonl = epsilonl_compete
         epsilons = epsilons_compete

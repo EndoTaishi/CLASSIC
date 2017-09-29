@@ -63,6 +63,7 @@ contains
         use outputManager, only : closeNCFiles
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils, only : findDaylength,findLeapYears
+        use model_state_drivers, only : getCO2,updateCO2
 
         implicit none
 
@@ -71,6 +72,7 @@ contains
         integer, intent(in) :: lonLocalIndex, latLocalIndex     ! Index of grid cell being run on the output files grid
 
         integer :: lastDOY = 365
+        logical :: run_model
 
         INTEGER NLTEST  !<Number of grid cells being modelled for this run
         INTEGER NMTEST  !<Number of mosaic tiles per grid cell being modelled for this run
@@ -810,11 +812,11 @@ contains
         !
         !     Local variables for coupling CLASS and CTEM
         !
-        integer   lopcount,  isumc,k1c,k2c,month1,month2,xday, co2yr, &
+        integer   lopcount,  isumc,k1c,k2c,month1,month2,xday,&! co2yr, &
             &           nol2pfts(4),popyr, metcycendyr,climiyear,cypopyr,lucyr,&
             &           cylucyr, endyr,bigpftc(1), obswetyr,obslghtyr,testyr
 
-        real      co2concin,ch4concin
+        !real      co2concin,ch4concin
         integer, allocatable, dimension(:,:) :: icountrow  !FLAG move out.
 
         integer, pointer :: metcylyrst   !< climate year to start the spin up on
@@ -825,7 +827,7 @@ contains
                                 !< soil carbon pool faster
         integer, pointer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
                                     !< ignored if cyclemet is false
-        integer, pointer :: ctemloop !< no. of times the .met file is to be read. this
+        integer, pointer :: metLoop !< no. of times the .met file is to be read. this
                                         !< option is useful to see how ctem's c pools
                                         !< equilibrate when driven with same climate data
                                         !< over and over again.
@@ -839,8 +841,8 @@ contains
         integer, pointer :: jdsty   !< simulation year (iyear) to start writing the daily output
         integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
         integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
-        real, pointer :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
-        real, pointer :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
+        !real, pointer :: fixedCO2Conc  !< set the value of atmospheric co2 if transientCO2 is false. (ppmv)
+        real, pointer :: setch4conc  !< set the value of atmospheric CH4 if transientCH4 is false. (ppmv)
         integer, pointer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
                                  !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
                                  !< this defaults to -9999, which will then cause the model to cycle on
@@ -940,19 +942,16 @@ contains
 
         ! Model switches:
         logical, pointer :: ctem_on
-        logical, pointer :: parallelrun
         logical, pointer :: cyclemet
         logical, pointer :: dofire
-        logical, pointer :: run_model
         logical, pointer :: met_rewound
         logical, pointer :: reach_eof
-        logical, pointer :: compete
+        logical, pointer :: PFTCompetition
         logical, pointer :: start_bare
-        logical, pointer :: rsfile
         logical, pointer :: lnduseon
-        logical, pointer :: co2on
-        logical, pointer :: ch4on
-        logical, pointer :: popdon
+        logical, pointer :: transientCO2
+        logical, pointer :: transientCH4
+        logical, pointer :: transientPOPD
         logical, pointer :: inibioclim
         logical, pointer :: leap
         logical, pointer :: dowetlands
@@ -963,6 +962,8 @@ contains
         character(:), pointer :: init_file
         character(:), pointer :: runparams_file  !< location of the namelist file containing the model parameters
         logical, pointer :: domonthoutput
+        logical, pointer :: dodayoutput
+        logical, pointer :: dohhoutput
 
         ! ROW vars:
         logical, pointer, dimension(:,:,:) :: pftexistrow
@@ -1478,7 +1479,7 @@ contains
 
         ! If you intend to have LUC BETWEEN tiles then set this to true:
         logical, parameter ::  onetile_perPFT = .False. ! NOTE: This is usually not the behaviour desired unless you are
-                                                     ! running with one PFT on each tile and want them to compete for space
+                                                     ! running with one PFT on each tile and want them to PFTCompetition for space
                                                      ! across tiles. In general keep this as False. JM Feb 2016.
         !
         !============= CTEM array declaration done =============================/
@@ -2190,21 +2191,18 @@ contains
         ! Point CTEM pointers
 
         ctem_on           => c_switch%ctem_on
-        parallelrun       => c_switch%parallelrun
         cyclemet          => c_switch%cyclemet
         dofire            => c_switch%dofire
-        run_model         => c_switch%run_model
         met_rewound       => c_switch%met_rewound
         reach_eof         => c_switch%reach_eof
-        compete           => c_switch%compete
+        PFTCompetition    => c_switch%PFTCompetition
         start_bare        => c_switch%start_bare
-        rsfile            => c_switch%rsfile
         lnduseon          => c_switch%lnduseon
-        co2on             => c_switch%co2on
-        setco2conc        => c_switch%setco2conc
-        ch4on             => c_switch%ch4on
+        transientCO2     => c_switch%transientCO2
+        !fixedCO2Conc     => c_switch%fixedCO2Conc
+        transientCH4      => c_switch%transientCH4
         setch4conc        => c_switch%setch4conc
-        popdon            => c_switch%popdon
+        transientPOPD     => c_switch%transientPOPD
         popcycleyr        => c_switch%popcycleyr
         inibioclim        => c_switch%inibioclim
         leap              => c_switch%leap         
@@ -2224,7 +2222,7 @@ contains
         jdsty             => c_switch%jdsty
         jdendy            => c_switch%jdendy
         jmosty            => c_switch%jmosty
-        ctemloop          => c_switch%ctemloop
+        metLoop           => c_switch%metLoop
         nummetcylyrs      => c_switch%nummetcylyrs
         ncyear            => c_switch%ncyear
         spinfast          => c_switch%spinfast
@@ -2245,6 +2243,8 @@ contains
         isnoalb           => c_switch%isnoalb
         metcylyrst        => c_switch%metcylyrst
         domonthoutput     => c_switch%domonthoutput
+        dodayoutput       => c_switch%dodayoutput
+        dohhoutput        => c_switch%dohhoutput
 
         tcanrs            => vrot%tcanrs
         tsnors            => vrot%tsnors
@@ -2844,6 +2844,9 @@ contains
         ! Read in the model initial state
         call read_initialstate(lonIndex,latIndex)
 
+        ! Read in the CO2
+        call getCO2
+
         !     do some initializations for the reading in of data from files. these
         !     initializations primarily affect how the model does a spinup or transient
         !     simulation and which years of the input data are being read.
@@ -2903,17 +2906,17 @@ contains
 
         !     luc file is opened in initialize_luc subroutine
 
-        if (popdon) then
+        if (transientPOPD) then
             open(unit=13,file='/home/rjm/Documents/CTEM/test/test.POPD',&
                 &       status='old')
             read(13,*)  !Skip 3 lines of header
             read(13,*)
             read(13,*)
         endif
-        if (co2on .or. ch4on) then
-            open(unit=14,file='/home/rjm/Documents/CTEM/test/test.CO2',&
-                &         status='old')
-        endif
+        !if (transientCO2 .or. transientCH4) then
+        !    open(unit=14,file='/home/rjm/Documents/CTEM/test/test.CO2',&
+        !        &         status='old')
+        !endif
 
         !
         if (obswetf) then
@@ -2927,40 +2930,40 @@ contains
         endif
 
         !     * CLASS daily and half-hourly output files (monthly and annual are done in io_driver)
-        !
-        if (.not. parallelrun) then ! stand alone mode, includes half-hourly and daily output
-            OPEN(UNIT=61,FILE='test.OF1_G')  ! GRID-LEVEL DAILY OUTPUT FROM CLASS
-            OPEN(UNIT=62,FILE='test.OF2_G')
-            OPEN(UNIT=63,FILE='test.OF3_G')
-
-            OPEN(UNIT=611,FILE='test.OF1_M') ! MOSAIC DAILY OUTPUT FROM CLASS
-            OPEN(UNIT=621,FILE='test.OF2_M')
-            OPEN(UNIT=631,FILE='test.OF3_M')
-
-            OPEN(UNIT=64,FILE='test.OF4_M')  ! MOSAIC HALF-HOURLY OUTPUT FROM CLASS
-            OPEN(UNIT=65,FILE='test.OF5_M')
-            OPEN(UNIT=66,FILE='test.OF6_M')
-            OPEN(UNIT=67,FILE='test.OF7_M')
-            OPEN(UNIT=68,FILE='test.OF8_M')
-            OPEN(UNIT=69,FILE='test.OF9_M')
-
-            OPEN(UNIT=641,FILE='test.OF4_G') ! GRID-LEVEL HALF-HOURLY OUTPUT FROM CLASS
-            OPEN(UNIT=651,FILE='test.OF5_G')
-            OPEN(UNIT=661,FILE='test.OF6_G')
-            OPEN(UNIT=671,FILE='test.OF7_G')
-            OPEN(UNIT=681,FILE='test.OF8_G')
-            OPEN(UNIT=691,FILE='test.OF9_G')
-        end if
-
-!    peatland output-FLAG!!---------------------------------------------\
-      open(unit=93,file='test.CT11D_G') !peatland GPP components
-      open(unit=94,file='test.CT12D_G') !peatland vegetation height & lai
-      open(unit=95,file='test.CT13D_G') !peatland C pools (in ctem.f)
-      open(unit=96,file='test.CT14D_G') !peatland soil resp (in ctem.f)
-      open(unit=97,file='test.CT15D_G') !peatland decompositon components (in decp.f)
-      open(unit=98,file='test.CT16D_G') !peatland moss photosynthesis midday sub-areas(mosspht.f)
-      open(unit=99,file='test.CT17D_G') !peatland water balance
-      open(unit=90,file='test.CT18Y_G') !peatland depth information
+!         !
+!         if (.not. parallelrun) then ! stand alone mode, includes half-hourly and daily output
+!             OPEN(UNIT=61,FILE='test.OF1_G')  ! GRID-LEVEL DAILY OUTPUT FROM CLASS
+!             OPEN(UNIT=62,FILE='test.OF2_G')
+!             OPEN(UNIT=63,FILE='test.OF3_G')
+!
+!             OPEN(UNIT=611,FILE='test.OF1_M') ! MOSAIC DAILY OUTPUT FROM CLASS
+!             OPEN(UNIT=621,FILE='test.OF2_M')
+!             OPEN(UNIT=631,FILE='test.OF3_M')
+!
+!             OPEN(UNIT=64,FILE='test.OF4_M')  ! MOSAIC HALF-HOURLY OUTPUT FROM CLASS
+!             OPEN(UNIT=65,FILE='test.OF5_M')
+!             OPEN(UNIT=66,FILE='test.OF6_M')
+!             OPEN(UNIT=67,FILE='test.OF7_M')
+!             OPEN(UNIT=68,FILE='test.OF8_M')
+!             OPEN(UNIT=69,FILE='test.OF9_M')
+!
+!             OPEN(UNIT=641,FILE='test.OF4_G') ! GRID-LEVEL HALF-HOURLY OUTPUT FROM CLASS
+!             OPEN(UNIT=651,FILE='test.OF5_G')
+!             OPEN(UNIT=661,FILE='test.OF6_G')
+!             OPEN(UNIT=671,FILE='test.OF7_G')
+!             OPEN(UNIT=681,FILE='test.OF8_G')
+!             OPEN(UNIT=691,FILE='test.OF9_G')
+!         end if
+!
+! !    peatland output-FLAG!!---------------------------------------------\
+!       open(unit=93,file='test.CT11D_G') !peatland GPP components
+!       open(unit=94,file='test.CT12D_G') !peatland vegetation height & lai
+!       open(unit=95,file='test.CT13D_G') !peatland C pools (in ctem.f)
+!       open(unit=96,file='test.CT14D_G') !peatland soil resp (in ctem.f)
+!       open(unit=97,file='test.CT15D_G') !peatland decompositon components (in decp.f)
+!       open(unit=98,file='test.CT16D_G') !peatland moss photosynthesis midday sub-areas(mosspht.f)
+!       open(unit=99,file='test.CT17D_G') !peatland water balance
+!       open(unit=90,file='test.CT18Y_G') !peatland depth information
       
 !    YW March 25, 2015 ----------------------------------------------/
 
@@ -2971,212 +2974,212 @@ contains
             end if
         ENDIF
         !
-        IF (.NOT. PARALLELRUN) THEN ! STAND ALONE MODE, INCLUDES HALF-HOURLY AND DAILY OUTPUT
-            !
-            WRITE(61,6001) 'test'
-            WRITE(61,6002) 'test'
-            WRITE(61,6011)
-6011            FORMAT(2X,'DAY  YEAR  K*  L*  QH  QE  SM  QG  ',&
-                &          'TR  SWE  DS  WS  AL  ROF  CUMS')
-
-            WRITE(62,6001) 'test'
-            WRITE(62,6002) 'test'
-
-            IF(IGND.GT.3) THEN
-                WRITE(62,6012)
-6012                FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',&
-                    &    'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',&
-                    &    'THI5 TG6  THL6  THI6 TG7  THL7  THI7',&
-                    &    'TG8  THL8  THI8 TG9  THL9  THI9 TG10  THL10  THI10',&
-                    &    'TG11  THL11  THI11 TG12  THL12  THI12 TG13  THL13  THI13',&
-                    &    'TG14  THL14  THI14 TG15  THL15  THI15 TG16  THL16  THI16',&
-                    &    'TG17  THL17  THI17 TG18  THL18  THI18 TG19  THL19  THI19',&
-                    &    'TG20  THL20  THI20 ACTLYR FTABLE')
-
-            ELSE
-                WRITE(62,6212)
-6212                FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',&
-                    &              'TG3  THL3  THI3  TCN  RCAN  SCAN  TSN  ZSN',&
-                    &              'ACTLYR FTABLE')
-
-            ENDIF
-
-            WRITE(63,6001) 'test'
-            WRITE(63,6002) 'test'
-            WRITE(63,6313)
-6313            FORMAT(2X,'DAY YEAR KIN LIN TA UV PRES QA PCP EVAP')
-            !
-            WRITE(64,6001) 'test'
-            WRITE(64,6002) 'test'
-            WRITE(64,6014)
-6014            FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',&
-                &          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',&
-                &          'SFCU  SFCV  UV')
-
-            WRITE(65,6001) 'test'
-            WRITE(65,6002) 'test'
-
-            WRITE(65,6515)
-6515            FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',&
-                &           'THL2  THI2  TG3  THL3  THI3  TCN  RCAN  SCAN  ',&
-                &           'TSN  ZSN  TCN-TA  TCANO  TAC  ACTLYR  FTABLE')
-
-            WRITE(66,6001) 'test'
-            WRITE(66,6002) 'test'
-
-            IF(IGND.GT.3) THEN
-                WRITE(66,6016)
-6016                FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG6  THL6  THI6  TG7  ',&
-                    &          'THL7  THI7  TG8  THL8  THI8  TG9  THL9  THI9  ',&
-                    &          'TG10  THL10  THI10  TG11  THL11  THI11  TG12  ',&
-                    &          'THL12  THI12  TG13  THL13  THI13  TG14  THL14  ',&
-                    &          'THI14  TG15  THL15  THI15  TG16  THL16  THI16  ',&
-                    &          'TG17  THL17  THI17  TG18  THL18  THI18  TG19  ' ,&
-                    &          'THL19  THI19  TG20  THL20  THI20  TG21  THL21  ',&
-                    &          'THI21  TG22  THL22 THI22  TG23  THL23  THI23  ',&
-                    &          'TG24  THL24  THI24  TG25  THL25  THI25  TG26  ',&
-                    &          'THL26  THI26  G0  G1  G2  G3  G4  G5  G6  ',&
-                    &          'G7  G8  G9')
-
-            ELSE
-                WRITE(66,6616)
-                WRITE(66,6615)
-6616                FORMAT(2X,'HOUR  MIN  DAY  SWIN  LWIN  PCP  TA  VA  PA  QA')
-6615                FORMAT(2X,'IF IGND <= 3, THIS FILE IS EMPTY')
-            ENDIF
-
-            WRITE(67,6001) 'test'
-            WRITE(67,6002) 'test'
-            WRITE(67,6017)
-            !     6017  FORMAT(2X,'WCAN SCAN CWLCAP CWFCAP FC FG FCS FGS CDH ', !runclass formatted.
-            !     1          'TCANO TCANS ALBS')
-6017            FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',&
-                &  'TROF     TROO     TROS     TROB      ROF     ROFO   ',&
-                &  '  ROFS        ROFB         FCS        FGS        FC       FG')
-
-            WRITE(68,6001) 'test'
-            WRITE(68,6002) 'test'
-            WRITE(68,6018)
-6018            FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',&
-                &          'FSGV FSGS FSGG FLGV FLGS FLGG HFSC HFSS HFSG ',&
-                &          'HEVC HEVS HEVG HMFC HMFS HMFG1 HMFG2 HMFG3 ',&
-                &          'HTCC HTCS HTC1 HTC2 HTC3')
-
-            WRITE(69,6001) 'test'
-            WRITE(69,6002) 'test'
-            WRITE(69,6019)
-6019            FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',&
-                &   'PCFC PCLC PCPN PCPG QFCF QFCL QFN QFG QFC1 ',&
-                &          'QFC2 QFC3 ROFC ROFN ROFO ROF WTRC WTRS WTRG')
-            !       runclass also has: EVDF ','CTV CTS CT1 CT2 CT3')
-            !
-            WRITE(611,6001) 'test'
-            WRITE(611,6002) 'test'
-            WRITE(611,6011)
-            WRITE(621,6001) 'test'
-            WRITE(621,6002) 'test'
-            !
-            IF(IGND.GT.3) THEN
-                WRITE(621,6012)
-            ELSE
-                WRITE(621,6212)
-            ENDIF
-            !
-            WRITE(631,6001) 'test'
-            WRITE(631,6002) 'test'
-            WRITE(631,6313)
-            !
-            WRITE(641,6001) 'test'
-            WRITE(641,6002) 'test'
-            WRITE(641,6008)
-
-            WRITE(651,6001) 'test'
-            WRITE(651,6002) 'test'
-            WRITE(651,6515)
-            !
-            WRITE(661,6001) 'test'
-            WRITE(661,6002) 'test'
-            !
-            IF(IGND.GT.3) THEN
-                WRITE(661,6016)
-            ELSE
-                WRITE(661,6616)
-            ENDIF
-            !
-            WRITE(671,6001) 'test'
-            WRITE(671,6002) 'test'
-            WRITE(671,6017)
-            WRITE(681,6001) 'test'
-            WRITE(681,6002) 'test'
-            WRITE(681,6018)
-            WRITE(691,6001) 'test'
-            WRITE(691,6002) 'test'
-            WRITE(691,6019)
-            !
-6008            FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',&
-                &          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',&
-                &          'SFCU  SFCV  UV')
-
-!    --------write peatland output-------------------------------------\
-
-          write(93,6903) 
-          write(94,6904)
-          write(95,6905)
-          write(96,6906)
-          write(97,6907) 
-          write(98,6908)
-          write(99,6909)
-          
-6903  format (2X,'iday iyear nppmoss   armoss   gppmoss   ',&
-         'gppveg1  gppveg2  gppveg3  gppveg4   gppveg5   gppveg6  ',&
-         'gppveg7  gppveg8  gppveg9  gppveg10  gppveg11  gppveg12',&
-         'nppveg1  nppveg2  nppveg3  nppveg4   nppveg5   nppveg6  ',&
-         'nppveg7  nppveg8  nppveg9  nppveg10  nppveg11  nppveg12',&
-         'autoresp1   autoresp2   autoresp3   autoresp4  autoresp5  ',&
-         'autoresp6   autoresp7   autoresp8   autoresp9  autoresp10 ',&
-         'autoresp11  autoresp12  heteresp1   heteresp2  heteresp3  ',&
-         'heteresp4   heteresp5   heteresp6   heteresp7  heteresp8  ',&
-         'heteresp9   heteresp10  heteresp11  heteresp12   ',&
-         'fcancmx1  fcancmx2  fcancmx3  fcancmx4  fcancmx5  fcancmx6 ',&
-         'fcancmx7  fcancmx8  fcancmx9  fcancmx10 fcancmx11 fcancmx12')
-6904  format (2X,'iday   iyear   veghght1   veghght2   veghght3   ',&
-         'veghght4   veghght5   veghght6   veghght7   veghght8   ',&
-         'veghght9   veghght10  veghght11  veghght12  rootdpt1   ',&
-         'rootdpt2   rootdpt3   rootdpt4   rootdpt5   rootdpt6   ',&
-         'rootdpt7   rootdpt8   rootdpt9   rootdpt10  rootdpt11  ',&
-         'rootdpt12  ailcg1   ailcg2   ailcg3   ailcg4   ailcg5  ',&
-         'ailcg6  ailcg7   ailcg8   ailcg9    ailcg10   ailcg11   ',&
-         'ailcg12     stemmas1    stemmas2   stemmas3   stemmas4   ',&
-         'stemmas5    stemmas6    stemmas7   stemmas8   stemmas9   ',&
-         'stemmas10   stemmas11   stemmas12  rootmas1   rootmas2   ',&
-         'rootmas3   rootmas4   rootmas5   rootmas6    rootmas7    ',&
-         'rootmas8   rootmas9   rootmas10   rootmas11  rootmas12   ',&
-         'litrmas1   litrmas2   litrmas3   litrmas4    litrmas5    ',&
-         'litrmas6   litrmas7   litrmas8   litrmas9    litrmas10   ',&
-         'litrmas11  litrmas12  gleafmas1  gleafmas2   gleafmas3   ',&
-         'gleafmas4  gleafmas5  gleafmas6  gleafmas7   gleafmas8   ',&
-         'gleafmas9  gleafmas10 gleafmas11 gleafmas12  bleafmas1   ',&
-         'bleafmas2  bleafmas3   bleafmas4  bleafmas5  bleafmas6   ',&
-         'bleafmas7  bleafmas8   bleafmas9  bleafmas10  bleafmas11 ',&
-         'bleafmas12')
-6905  format (2X, 'litrmass6  tlreleaf6  tltrstem6  tltrroot6  ',&
-         'ltresveg6  humtrsvg6  litrmass7  tltrleaf7  tltrstem7  ',&
-         'tltrroot7  ltresveg7  humtrsvg7  plitrmassms  litrmassms  ',&
-         'litrfallms  ltrestepms  humicmstep  nppmosstep  nppmoss  ',&
-         'anmoss  rgmoss  rmlmoss  gppmoss  Cmossmas  pCmossmas ')
-6906  format (2X, 'hpd  gavgscms  hutrstep_g  socrestep  resoxic  ',&
-        'resanoxic  socresp(umol/m2/s)  resoxic(umol/m2/s)  ',&
-         'resanoxic(umol/m2/s)')
-6907  format (2X, 'litresms  litpsims  psisat1  ltrmosclms   ',&
-         'litrmassms  tbar1  q10funcms litrtempms  ratescpo  ',&
-         'ratescpa  Cso  Csa  fto  fta  resoxic  resanoxic   ',&
-         'frac  tsoila  toilo  ewtable  lewtable  tbar1  tbar2  tbar3')
-6908  format(2X, 'iday  tmoss  cevapms  fwmoss  thliq1  dsmoss  ',&
-         'g_moss  wmoss  rmlmoss  mwce  q10rmlmos  wmosmax  wmosmin')
-6909  format(2X,'WTBLACC ZSN PREACC EVAPACC ROFACC g12acc g23acc')
-!    --------------YW March 30, 2015 ---------------------------------/
-
-        ENDIF !IF NOT PARALLELRUN
+!         IF (.NOT. PARALLELRUN) THEN ! STAND ALONE MODE, INCLUDES HALF-HOURLY AND DAILY OUTPUT
+!             !
+!             WRITE(61,6001) 'test'
+!             WRITE(61,6002) 'test'
+!             WRITE(61,6011)
+! 6011            FORMAT(2X,'DAY  YEAR  K*  L*  QH  QE  SM  QG  ',&
+!                 &          'TR  SWE  DS  WS  AL  ROF  CUMS')
+!
+!             WRITE(62,6001) 'test'
+!             WRITE(62,6002) 'test'
+!
+!             IF(IGND.GT.3) THEN
+!                 WRITE(62,6012)
+! 6012                FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',&
+!                     &    'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',&
+!                     &    'THI5 TG6  THL6  THI6 TG7  THL7  THI7',&
+!                     &    'TG8  THL8  THI8 TG9  THL9  THI9 TG10  THL10  THI10',&
+!                     &    'TG11  THL11  THI11 TG12  THL12  THI12 TG13  THL13  THI13',&
+!                     &    'TG14  THL14  THI14 TG15  THL15  THI15 TG16  THL16  THI16',&
+!                     &    'TG17  THL17  THI17 TG18  THL18  THI18 TG19  THL19  THI19',&
+!                     &    'TG20  THL20  THI20 ACTLYR FTABLE')
+!
+!             ELSE
+!                 WRITE(62,6212)
+! 6212                FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',&
+!                     &              'TG3  THL3  THI3  TCN  RCAN  SCAN  TSN  ZSN',&
+!                     &              'ACTLYR FTABLE')
+!
+!             ENDIF
+!
+!             WRITE(63,6001) 'test'
+!             WRITE(63,6002) 'test'
+!             WRITE(63,6313)
+! 6313            FORMAT(2X,'DAY YEAR KIN LIN TA UV PRES QA PCP EVAP')
+!             !
+!             WRITE(64,6001) 'test'
+!             WRITE(64,6002) 'test'
+!             WRITE(64,6014)
+! 6014            FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',&
+!                 &          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',&
+!                 &          'SFCU  SFCV  UV')
+!
+!             WRITE(65,6001) 'test'
+!             WRITE(65,6002) 'test'
+!
+!             WRITE(65,6515)
+! 6515            FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',&
+!                 &           'THL2  THI2  TG3  THL3  THI3  TCN  RCAN  SCAN  ',&
+!                 &           'TSN  ZSN  TCN-TA  TCANO  TAC  ACTLYR  FTABLE')
+!
+!             WRITE(66,6001) 'test'
+!             WRITE(66,6002) 'test'
+!
+!             IF(IGND.GT.3) THEN
+!                 WRITE(66,6016)
+! 6016                FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG6  THL6  THI6  TG7  ',&
+!                     &          'THL7  THI7  TG8  THL8  THI8  TG9  THL9  THI9  ',&
+!                     &          'TG10  THL10  THI10  TG11  THL11  THI11  TG12  ',&
+!                     &          'THL12  THI12  TG13  THL13  THI13  TG14  THL14  ',&
+!                     &          'THI14  TG15  THL15  THI15  TG16  THL16  THI16  ',&
+!                     &          'TG17  THL17  THI17  TG18  THL18  THI18  TG19  ' ,&
+!                     &          'THL19  THI19  TG20  THL20  THI20  TG21  THL21  ',&
+!                     &          'THI21  TG22  THL22 THI22  TG23  THL23  THI23  ',&
+!                     &          'TG24  THL24  THI24  TG25  THL25  THI25  TG26  ',&
+!                     &          'THL26  THI26  G0  G1  G2  G3  G4  G5  G6  ',&
+!                     &          'G7  G8  G9')
+!
+!             ELSE
+!                 WRITE(66,6616)
+!                 WRITE(66,6615)
+! 6616                FORMAT(2X,'HOUR  MIN  DAY  SWIN  LWIN  PCP  TA  VA  PA  QA')
+! 6615                FORMAT(2X,'IF IGND <= 3, THIS FILE IS EMPTY')
+!             ENDIF
+!
+!             WRITE(67,6001) 'test'
+!             WRITE(67,6002) 'test'
+!             WRITE(67,6017)
+!             !     6017  FORMAT(2X,'WCAN SCAN CWLCAP CWFCAP FC FG FCS FGS CDH ', !runclass formatted.
+!             !     1          'TCANO TCANS ALBS')
+! 6017            FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',&
+!                 &  'TROF     TROO     TROS     TROB      ROF     ROFO   ',&
+!                 &  '  ROFS        ROFB         FCS        FGS        FC       FG')
+!
+!             WRITE(68,6001) 'test'
+!             WRITE(68,6002) 'test'
+!             WRITE(68,6018)
+! 6018            FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',&
+!                 &          'FSGV FSGS FSGG FLGV FLGS FLGG HFSC HFSS HFSG ',&
+!                 &          'HEVC HEVS HEVG HMFC HMFS HMFG1 HMFG2 HMFG3 ',&
+!                 &          'HTCC HTCS HTC1 HTC2 HTC3')
+!
+!             WRITE(69,6001) 'test'
+!             WRITE(69,6002) 'test'
+!             WRITE(69,6019)
+! 6019            FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',&
+!                 &   'PCFC PCLC PCPN PCPG QFCF QFCL QFN QFG QFC1 ',&
+!                 &          'QFC2 QFC3 ROFC ROFN ROFO ROF WTRC WTRS WTRG')
+!             !       runclass also has: EVDF ','CTV CTS CT1 CT2 CT3')
+!             !
+!             WRITE(611,6001) 'test'
+!             WRITE(611,6002) 'test'
+!             WRITE(611,6011)
+!             WRITE(621,6001) 'test'
+!             WRITE(621,6002) 'test'
+!             !
+!             IF(IGND.GT.3) THEN
+!                 WRITE(621,6012)
+!             ELSE
+!                 WRITE(621,6212)
+!             ENDIF
+!             !
+!             WRITE(631,6001) 'test'
+!             WRITE(631,6002) 'test'
+!             WRITE(631,6313)
+!             !
+!             WRITE(641,6001) 'test'
+!             WRITE(641,6002) 'test'
+!             WRITE(641,6008)
+!
+!             WRITE(651,6001) 'test'
+!             WRITE(651,6002) 'test'
+!             WRITE(651,6515)
+!             !
+!             WRITE(661,6001) 'test'
+!             WRITE(661,6002) 'test'
+!             !
+!             IF(IGND.GT.3) THEN
+!                 WRITE(661,6016)
+!             ELSE
+!                 WRITE(661,6616)
+!             ENDIF
+!             !
+!             WRITE(671,6001) 'test'
+!             WRITE(671,6002) 'test'
+!             WRITE(671,6017)
+!             WRITE(681,6001) 'test'
+!             WRITE(681,6002) 'test'
+!             WRITE(681,6018)
+!             WRITE(691,6001) 'test'
+!             WRITE(691,6002) 'test'
+!             WRITE(691,6019)
+!             !
+! 6008            FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',&
+!                 &          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',&
+!                 &          'SFCU  SFCV  UV')
+!
+! !    --------write peatland output-------------------------------------\
+!
+!           write(93,6903)
+!           write(94,6904)
+!           write(95,6905)
+!           write(96,6906)
+!           write(97,6907)
+!           write(98,6908)
+!           write(99,6909)
+!
+! 6903  format (2X,'iday iyear nppmoss   armoss   gppmoss   ',&
+!          'gppveg1  gppveg2  gppveg3  gppveg4   gppveg5   gppveg6  ',&
+!          'gppveg7  gppveg8  gppveg9  gppveg10  gppveg11  gppveg12',&
+!          'nppveg1  nppveg2  nppveg3  nppveg4   nppveg5   nppveg6  ',&
+!          'nppveg7  nppveg8  nppveg9  nppveg10  nppveg11  nppveg12',&
+!          'autoresp1   autoresp2   autoresp3   autoresp4  autoresp5  ',&
+!          'autoresp6   autoresp7   autoresp8   autoresp9  autoresp10 ',&
+!          'autoresp11  autoresp12  heteresp1   heteresp2  heteresp3  ',&
+!          'heteresp4   heteresp5   heteresp6   heteresp7  heteresp8  ',&
+!          'heteresp9   heteresp10  heteresp11  heteresp12   ',&
+!          'fcancmx1  fcancmx2  fcancmx3  fcancmx4  fcancmx5  fcancmx6 ',&
+!          'fcancmx7  fcancmx8  fcancmx9  fcancmx10 fcancmx11 fcancmx12')
+! 6904  format (2X,'iday   iyear   veghght1   veghght2   veghght3   ',&
+!          'veghght4   veghght5   veghght6   veghght7   veghght8   ',&
+!          'veghght9   veghght10  veghght11  veghght12  rootdpt1   ',&
+!          'rootdpt2   rootdpt3   rootdpt4   rootdpt5   rootdpt6   ',&
+!          'rootdpt7   rootdpt8   rootdpt9   rootdpt10  rootdpt11  ',&
+!          'rootdpt12  ailcg1   ailcg2   ailcg3   ailcg4   ailcg5  ',&
+!          'ailcg6  ailcg7   ailcg8   ailcg9    ailcg10   ailcg11   ',&
+!          'ailcg12     stemmas1    stemmas2   stemmas3   stemmas4   ',&
+!          'stemmas5    stemmas6    stemmas7   stemmas8   stemmas9   ',&
+!          'stemmas10   stemmas11   stemmas12  rootmas1   rootmas2   ',&
+!          'rootmas3   rootmas4   rootmas5   rootmas6    rootmas7    ',&
+!          'rootmas8   rootmas9   rootmas10   rootmas11  rootmas12   ',&
+!          'litrmas1   litrmas2   litrmas3   litrmas4    litrmas5    ',&
+!          'litrmas6   litrmas7   litrmas8   litrmas9    litrmas10   ',&
+!          'litrmas11  litrmas12  gleafmas1  gleafmas2   gleafmas3   ',&
+!          'gleafmas4  gleafmas5  gleafmas6  gleafmas7   gleafmas8   ',&
+!          'gleafmas9  gleafmas10 gleafmas11 gleafmas12  bleafmas1   ',&
+!          'bleafmas2  bleafmas3   bleafmas4  bleafmas5  bleafmas6   ',&
+!          'bleafmas7  bleafmas8   bleafmas9  bleafmas10  bleafmas11 ',&
+!          'bleafmas12')
+! 6905  format (2X, 'litrmass6  tlreleaf6  tltrstem6  tltrroot6  ',&
+!          'ltresveg6  humtrsvg6  litrmass7  tltrleaf7  tltrstem7  ',&
+!          'tltrroot7  ltresveg7  humtrsvg7  plitrmassms  litrmassms  ',&
+!          'litrfallms  ltrestepms  humicmstep  nppmosstep  nppmoss  ',&
+!          'anmoss  rgmoss  rmlmoss  gppmoss  Cmossmas  pCmossmas ')
+! 6906  format (2X, 'hpd  gavgscms  hutrstep_g  socrestep  resoxic  ',&
+!         'resanoxic  socresp(umol/m2/s)  resoxic(umol/m2/s)  ',&
+!          'resanoxic(umol/m2/s)')
+! 6907  format (2X, 'litresms  litpsims  psisat1  ltrmosclms   ',&
+!          'litrmassms  tbar1  q10funcms litrtempms  ratescpo  ',&
+!          'ratescpa  Cso  Csa  fto  fta  resoxic  resanoxic   ',&
+!          'frac  tsoila  toilo  ewtable  lewtable  tbar1  tbar2  tbar3')
+! 6908  format(2X, 'iday  tmoss  cevapms  fwmoss  thliq1  dsmoss  ',&
+!          'g_moss  wmoss  rmlmoss  mwce  q10rmlmos  wmosmax  wmosmin')
+! 6909  format(2X,'WTBLACC ZSN PREACC EVAPACC ROFACC g12acc g23acc')
+! !    --------------YW March 30, 2015 ---------------------------------/
+!
+!         ENDIF !IF NOT PARALLELRUN
 
 !     Complete some initial set up work:
 
@@ -3275,21 +3278,21 @@ contains
             &            SDEPROT,ISNDROT,IGDRROT,&
             &            NLAT,NMOS,1,NLTEST,NMTEST,IGND,ipeatlandrow)
 
-5010                    FORMAT(2X,6A4)
-5020                    FORMAT(5F10.2,F7.1,3I5)
-5030                    FORMAT(4F8.3,8X,4F8.3)
-5040                    FORMAT(9F8.3)
-5050                    FORMAT(4F10.2)
-5070                    FORMAT(2F10.4,F10.2,F10.3,F10.4,F10.3)
-5080                    FORMAT(2F8.2,3F10.1,3F10.3)
-5090                    FORMAT(4E8.1,I8,F8.0)
-5200                    FORMAT(4I10)
-5300                    FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,&
-                            &       F9.4)
-5301                    FORMAT(I5,F10.4)
-6001                    FORMAT('#CLASS TEST RUN:     ',6A4)
-6002                    FORMAT('#RESEARCHER:         ',6A4)
-6003                    FORMAT('#INSTITUTION:        ',6A4)
+! 5010                    FORMAT(2X,6A4)
+! 5020                    FORMAT(5F10.2,F7.1,3I5)
+! 5030                    FORMAT(4F8.3,8X,4F8.3)
+! 5040                    FORMAT(9F8.3)
+! 5050                    FORMAT(4F10.2)
+! 5070                    FORMAT(2F10.4,F10.2,F10.3,F10.4,F10.3)
+! 5080                    FORMAT(2F8.2,3F10.1,3F10.3)
+! 5090                    FORMAT(4E8.1,I8,F8.0)
+! 5200                    FORMAT(4I10)
+ 5300                    FORMAT(1X,I2,I3,I5,I6,2F9.2,E14.4,F9.2,E12.3,F8.2,F12.2,3F9.2,&
+                             &       F9.4)
+ 5301                    FORMAT(I5,F10.4)
+! 6001                    FORMAT('#CLASS TEST RUN:     ',6A4)
+! 6002                    FORMAT('#RESEARCHER:         ',6A4)
+! 6003                    FORMAT('#INSTITUTION:        ',6A4)
 
         !ctem initializations.
         if (ctem_on) then
@@ -3363,7 +3366,7 @@ contains
 
                                 !  Added in seed here to prevent competition from getting
                                 !  pfts with no seed fraction.  JM Feb 202014.
-                                if (compete .and. .not. onetile_perPFT) then
+                                if (PFTCompetition .and. .not. onetile_perPFT) then
                                     fcancmxrow(i,m,icountrow(i,m))=max(seed,FCANROT(i,m,j)*&
                                         &         dvdfcanrow(i,m,icountrow(i,m)))
                                     barf(i,m) = barf(i,m) - fcancmxrow(i,m,icountrow(i,m))
@@ -3437,7 +3440,7 @@ contains
 
             !      find the popd data to cycle over, popd is only cycled over when the met is cycled.
 
-            if (cyclemet .and. popdon) then
+            if (cyclemet .and. transientPOPD) then
                 popyr=-99999  ! initialization, forces entry to loop below
                 do while (popyr .lt. cypopyr)
                     do i = 1, nltest
@@ -3483,7 +3486,7 @@ contains
                     &                     nol2pfts,cyclemet,&
                     &                     cylucyr,lucyr,FCANROT,FAREROT,nfcancmxrow,&
                     &                     pfcancmxrow,fcancmxrow,reach_eof,start_bare,&
-                    &                     compete,onetile_perPFT)
+                    &                     PFTCompetition,onetile_perPFT)
 
                 if (reach_eof) goto 999
 
@@ -3694,12 +3697,12 @@ contains
 
             endif !met_rewound
 
-      !if ( (N.eq.0) .and. (.not. co2on) ) then 
+      !if ( (N.eq.0) .and. (.not. transientCO2) ) then
         ! FLAG: Needs to be reviewed.
         ! Set initial co2 concentration. Otherwise, if .MET file does not begin 
         ! at iday=1, ihour=0, and imin=0 (see below), then co2concrow is never set and
         ! causes a floating exception at line 1255 in PHTSYN3. 
-      !  co2concrow=setco2conc
+      !  co2concrow=fixedCO2Conc
         ! However, there are also other problems (e.g. daily output is done at 
         ! ncount=nday and since there are <nday number of idays in the .MET file,
         ! the wrong iday is output).
@@ -3776,7 +3779,13 @@ contains
             !
             ! If needed, read in the accessory input files (popd, wetlands, lightining...)
             if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
+
                 if (ctem_on) then
+
+                    ! Update the CO2 concentration for this year, if transientCO2
+                    if (transientCO2) call updateCO2(iyear)
+                    !if (transientCH4) call updateCH4(iyear)
+
                     do i=1,nltest
                         if (obswetf) then
                             ! Note that this will be read in, regardless of the iyear, if the
@@ -3808,14 +3817,14 @@ contains
                     end do !nltest
                 endif ! ctem_on
 
-                !         If popdon=true, calculate fire extinguishing probability and
+                !         If transientPOPD=true, calculate fire extinguishing probability and
                 !         probability of fire due to human causes from population density
                 !         input data. In disturb.f90 this will overwrite extnprobrow
                 !         and prbfrhucgrd that are read in from the .ctm file. Set
                 !         cypopyr = -9999 when we don't want to cycle over the popd data
                 !         so this allows us to grab a new value each year.
 
-                if(popdon .and. transient_run) then
+                if(transientPOPD .and. transient_run) then
                     do while (popyr .lt. iyear)
                         do i=1,nltest
                             read(13,5301,end=999) popyr,popdinrow(i,1) !place it in the first tile
@@ -3828,64 +3837,64 @@ contains
                     enddo
                 endif
 
-                !         If co2on is true, read co2concin from input datafile and
+                !         If transientCO2 is true, read co2concin from input datafile and
                 !         overwrite co2concrow, otherwise set to constant value.
                 !         Same applies to CH4.
-                co2yr =-9999
-                if(co2on .or. ch4on) then
-                    if (transient_run) then
-                        testyr = iyear
-                        do while (co2yr .lt. testyr)
-                            do i=1,nltest
-                                read(14,*,end=999) co2yr,co2concin,ch4concin
-                                do m=1,nmtest
-                                    if (co2on) co2concrow(i,m)=co2concin
-                                    if (ch4on) ch4concrow(i,m)=ch4concin
-                                enddo
-                            enddo
-                        enddo !co2yr < testyr
-                    else ! still spinning but you apparently want the CO2 to move forward with time
-                        ! we assume the year you want to start from here is trans_startyr
-                        testyr = trans_startyr
-                        ! Now make sure we end up starting from the testyr
-                        if (co2yr .lt. testyr) then
-                            do while (co2yr .lt. testyr)
-                                do i=1,nltest
-                                    read(14,*,end=999) co2yr,co2concin,ch4concin
-                                    do m=1,nmtest
-                                        if (co2on) co2concrow(i,m)=co2concin
-                                        if (ch4on) ch4concrow(i,m)=ch4concin
-                                    enddo
-                                enddo
-                            enddo !co2yr < testyr
-                        else ! years beyond the first, just go up in years without paying attention to iyear (since it is cycling)
-                            do i=1,nltest
-                                read(14,*,end=999) co2yr,co2concin,ch4concin
-                                do m=1,nmtest
-                                    if (co2on) co2concrow(i,m)=co2concin
-                                    if (ch4on) ch4concrow(i,m)=ch4concin
-                                enddo
-                            enddo
-                        end if
-                    end if !transient_run or not
-                end if !co2 or ch4on
-
-                if (.not. co2on .or. .not. ch4on) then !constant co2 or ch4
-                    do i=1,nltest
-                        do m=1,nmtest
-                            if (.not. co2on) co2concrow(i,m)=setco2conc
-                            if (.not. co2on) ch4concrow(i,m)=setch4conc
-                        enddo
-                    enddo
-                endif
+!                 co2yr =-9999
+!                 if(transientCO2 .or. transientCH4) then
+!                     if (transient_run) then
+!                         testyr = iyear
+!                         do while (co2yr .lt. testyr)
+!                             do i=1,nltest
+!                                 read(14,*,end=999) co2yr,co2concin,ch4concin
+!                                 do m=1,nmtest
+!                                     if (transientCO2) co2concrow(i,m)=co2concin
+!                                     if (transientCH4) ch4concrow(i,m)=ch4concin
+!                                 enddo
+!                             enddo
+!                         enddo !co2yr < testyr
+!                     else ! still spinning but you apparently want the CO2 to move forward with time
+!                         ! we assume the year you want to start from here is trans_startyr
+!                         testyr = trans_startyr
+!                         ! Now make sure we end up starting from the testyr
+!                         if (co2yr .lt. testyr) then
+!                             do while (co2yr .lt. testyr)
+!                                 do i=1,nltest
+!                                     read(14,*,end=999) co2yr,co2concin,ch4concin
+!                                     do m=1,nmtest
+!                                         if (transientCO2) co2concrow(i,m)=co2concin
+!                                         if (transientCH4) ch4concrow(i,m)=ch4concin
+!                                     enddo
+!                                 enddo
+!                             enddo !co2yr < testyr
+!                         else ! years beyond the first, just go up in years without paying attention to iyear (since it is cycling)
+!                             do i=1,nltest
+!                                 read(14,*,end=999) co2yr,co2concin,ch4concin
+!                                 do m=1,nmtest
+!                                     if (transientCO2) co2concrow(i,m)=co2concin
+!                                     if (transientCH4) ch4concrow(i,m)=ch4concin
+!                                 enddo
+!                             enddo
+!                         end if
+!                     end if !transient_run or not
+!                 end if !co2 or transientCH4
+!
+!                 if (.not. transientCO2 .or. .not. transientCH4) then !constant co2 or ch4
+!                     do i=1,nltest
+!                         do m=1,nmtest
+!                             if (.not. transientCO2) co2concrow(i,m)=fixedCO2Conc
+!                             if (.not. transientCO2) ch4concrow(i,m)=setch4conc
+!                         enddo
+!                     enddo
+!                 endif
 
                 !         If lnduseon is true, read in the luc data now
 
                 if (ctem_on .and. lnduseon .and. transient_run) then
 
                     call readin_luc(iyear,nmtest,nltest,lucyr,&
-                        &                   nfcancmxrow,pfcancmxrow,reach_eof,compete,&
-                        &                   onetile_perPFT)
+                        &          nfcancmxrow,pfcancmxrow,reach_eof,PFTCompetition,&
+                        &          onetile_perPFT)
                     if (reach_eof) goto 999
 
                 else ! lnduseon = false or met is cycling in a spin up run
@@ -4500,10 +4509,10 @@ contains
                         &             ancsvgac_t,  ancgvgac_t, rmlcsvga_t, rmlcgvga_t,&
                         &                zbtwgat, thliqcacc_t,thliqgacc_t,     deltat,&
                         &             uvaccgat_t,  vvaccgat_t,    lightng,prbfrhucgat,&
-                        &            extnprobgat,   stdalngat,tbaraccgat_t,  popdon,&
+                        &            extnprobgat,   stdalngat,tbaraccgat_t,transientPOPD,&
                         &               nol2pfts, pfcancmxgat, nfcancmxgat,  lnduseon,&
                         &            thicecacc_t,     sdepgat,    spinfast,   todfrac,&
-                        &          compete,  netrad_gat,  preacc_gat,PSISGAT,grclarea,&
+                        &        PFTCompetition,netrad_gat,  preacc_gat,PSISGAT,grclarea,&
                         &              popdingat,  dofire, dowetlands,obswetf, isndgat,&
                         &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,&
                         &                  BIGAT,    THPGAT, thicegacc_t, DLATGAT,&
@@ -4894,7 +4903,7 @@ contains
             !          IF(FTABLE.GT.FTMAX) FTMAX=FTABLE
             !      ENDIF
 
-            if (.not. parallelrun) then ! stand alone mode, include half-hourly output for CLASS & CTEM
+            if (dohhoutput) then ! stand alone mode, include half-hourly output for CLASS & CTEM
 
                 DO 450 I=1,NLTEST
 
@@ -5183,11 +5192,11 @@ contains
 
 450             CONTINUE
 
-            endif ! not parallelrun
+            endif ! dohhoutput
 
             !     * CALCULATE GRID CELL AVERAGE DIAGNOSTIC FIELDS.
 
-            if(.not.parallelrun) then ! stand alone mode, includes diagnostic fields
+            if(dohhoutput) then !or dodayoutput???          ! stand alone mode, includes diagnostic fields
 
                 DO 525 I=1,NLTEST
                     CDHROW(I)=0.
@@ -5333,9 +5342,9 @@ contains
 575                 CONTINUE
 600             CONTINUE
 
-            endif ! not parallelrun, for diagnostic fields
+            endif ! dodayoutput, for diagnostic fields
 
-            if(.not.parallelrun) then ! stand alone mode, includes daily output for class
+            if(dodayoutput) then ! stand alone mode, includes daily output for class
 
                 !     * ACCUMULATE OUTPUT DATA FOR DIURNALLY AVERAGED FIELDS. BOTH GRID
                 !       MEAN AND MOSAIC MEAN
@@ -5705,21 +5714,20 @@ contains
 809                     CONTINUE
 808                 CONTINUE
                 ENDIF ! IF(NCOUNT.EQ.NDAY)
-            ENDIF !  IF(.NOT.PARALLELRUN)
+            ENDIF !  IFdodayoutput
 
             !=======================================================================
+            DO NT=1,NMON
+                IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
+                    IMONTH=NT
+                ENDIF
+            ENDDO
 
             !     Only bother with monthly calculations if we desire those outputs to be written out.
             if (domonthoutput .and. iyear .ge. jmosty) then
 
                 call class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
                     &                 nltest,nmtest,TFREZ,ACTLYR,FTABLE,lastDOY)
-
-                DO NT=1,NMON
-                    IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
-                        IMONTH=NT
-                    ENDIF
-                ENDDO
 
             end if !skip the monthly calculations/writing unless iyear>=jmosty
 
@@ -5728,7 +5736,7 @@ contains
 
             !     CTEM output and write out
 
-            if(.not.parallelrun) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
+            if(dodayoutput) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
 
                 !     calculate daily outputs from ctem
 
@@ -5775,7 +5783,7 @@ contains
             if (IDAY .EQ. lastDOY .AND. NCOUNT .EQ. NDAY) then
 
                 WRITE(*,*)& !'(6A,5I,13A,5I,9A,5I,6A,5I)')&
-                    'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR,'CO2YEAR =',co2yr,'LUCYR=',lucyr
+                    'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR!,'CO2YEAR =',co2yr,'LUCYR=',lucyr
 
                 call write_restart(lonIndex,latIndex)
 
@@ -5790,7 +5798,7 @@ contains
 
                     lopcount = lopcount+1
 
-                    if(lopcount.le.ctemloop .and. .not. transient_run)then
+                    if(lopcount.le.metLoop .and. .not. transient_run)then
 
                         rewind(12)   ! rewind met file
 
@@ -5807,17 +5815,17 @@ contains
                         iyear=-9999
                         obswetyr=-9999
 
-                        if(popdon) then
+                        if(transientPOPD) then
                             rewind(13) !rewind popd file
                             read(13,*) ! skip header (3 lines)
                             read(13,*) ! skip header (3 lines)
                             read(13,*) ! skip header (3 lines)
                         endif
-                        if((co2on .or. ch4on) .and. trans_startyr < 0) then
-                            rewind(14) !rewind co2 file
-                        endif
+                        !if((transientCO2 .or. transientCH4) .and. trans_startyr < 0) then
+                        !    rewind(14) !rewind co2 file
+                        !endif
 
-                    else if (lopcount.le.ctemloop .and. transient_run)then
+                    else if (lopcount.le.metLoop .and. transient_run)then
                         ! rewind only the MET file (since we are looping over the MET  while
                         ! the other inputs continue on.
                         rewind(12)   ! rewind met file
@@ -5882,7 +5890,7 @@ contains
         ! MODEL RUN HAS COMPLETED SO NOW CLOSE OUTPUT FILES AND EXIT
         !==================================================================
 
-        IF (.NOT. PARALLELRUN) THEN
+        IF (dodayoutput) THEN
             !       FIRST ANY CLASS OUTPUT FILES
             CLOSE(61)
             CLOSE(62)
@@ -5913,7 +5921,7 @@ contains
         !close the input files too
         close(12)
         close(13)
-        close(14)
+        !close(14)
 
         if (obswetf) then
             close(16)  !*.WET
@@ -5930,7 +5938,7 @@ contains
 
         lopcount = lopcount+1
 
-        if(lopcount.le.ctemloop)then
+        if(lopcount.le.metLoop)then
 
             rewind(12)   ! rewind met file
 
@@ -5943,15 +5951,15 @@ contains
             iyear=-9999
             obswetyr=-9999   !Rudra
 
-            if(popdon) then
+            if(transientPOPD) then
                 rewind(13) !rewind popd file
                 read(13,*) ! skip header (3 lines)
                 read(13,*) ! skip header
                 read(13,*) ! skip header
             endif
-            if((co2on .or. ch4on) .and. trans_startyr < 0) then
-                rewind(14) !rewind co2 file
-            endif
+            !if((transientCO2 .or. transientCH4) .and. trans_startyr < 0) then
+            !    rewind(14) !rewind co2 file
+            !endif
             if (obslght) then
                 rewind(17)
             endif
@@ -5966,7 +5974,7 @@ contains
 
             ! close the output files
             ! FIRST ANY CLASS OUTPUT FILES
-            IF (.NOT. PARALLELRUN) THEN
+            IF (dodayoutput) THEN
                 CLOSE(61)
                 CLOSE(62)
                 CLOSE(63)
@@ -5994,7 +6002,7 @@ contains
             !     CLOSE THE INPUT FILES TOO
             CLOSE(12)
             CLOSE(13)
-            CLOSE(14)
+            !CLOSE(14)
 
             ! -close peatland output and input files--------------\
 

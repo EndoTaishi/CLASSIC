@@ -14,7 +14,7 @@ program CLASSIC
 
     use model_state_drivers,    only : read_modelsetup
     use xmlManager,             only : loadoutputDescriptor
-    use outputManager,          only : generateOutputFiles,closeNCFiles,rsid
+    use outputManager,          only : generateOutputFiles,closeNCFiles,rsid,co2id
     use readjobopts,            only : read_from_job_options
     use main,                   only : main_driver
     use ctem_statevars,         only : alloc_ctem_vars
@@ -73,7 +73,7 @@ program CLASSIC
     ! Close all of the output netcdf files and the restart file
     call closeNCFiles
     call closeNCFiles(rsid)
-
+    call closeNCFiles(co2id)
 
 #if PARALLEL
     ! Shut down the MPI session

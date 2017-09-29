@@ -8,14 +8,19 @@ module model_state_drivers
     ! J. Melton
     ! Nov 2016
 
-    use fileIOModule !, only : ncOpen, ncGetDimLen, ncGet1DVar, ncGet2DVar, ncGetDimValues,&
-                     !        ncPut2DVar,ncPut3DVar,ncClose,ncGet3DVar
+    use fileIOModule
 
     implicit none
 
     public  :: read_modelsetup
     public  :: read_initialstate
     public  :: write_restart
+    public  :: getCO2
+
+    integer, dimension(:), allocatable :: CO2Time           ! The time (years) from the CO2File
+    real, dimension(:), allocatable :: CO2FromFile          ! The array of CO2 values (ppm) from the CO2File
+
+
 
 contains
 
@@ -33,13 +38,14 @@ contains
 
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
-        use outputManager, only : myDomain,initid,rsid
+        use outputManager, only : myDomain,initid,rsid,co2id
 
         implicit none
 
         ! pointers:
         character(180), pointer         :: init_file
         character(180), pointer         :: rs_file_to_overwrite
+        character(180), pointer           :: CO2File
 
         ! Local vars
         integer, allocatable, dimension(:,:) :: mask
@@ -52,6 +58,7 @@ contains
         ! point pointers:
         init_file               => c_switch%init_file
         rs_file_to_overwrite    => c_switch%rs_file_to_overwrite
+        CO2File                 => c_switch%CO2File
 
         ! ------------
 
@@ -148,8 +155,9 @@ contains
 
         ilg = nlat * nmos
 
-        !> Lastly, open the restart file so it is ready to be written to.
+        !> Lastly, open some files so they are ready
         rsid = ncOpen(rs_file_to_overwrite, nf90_write)
+        co2id = ncOpen(CO2File, nf90_write)
 
     end subroutine read_modelsetup
 
@@ -224,7 +232,7 @@ contains
 
         logical, pointer :: ctem_on
         logical, pointer :: dofire
-        logical, pointer :: compete
+        logical, pointer :: PFTCompetition
         logical, pointer :: inibioclim
         logical, pointer :: dowetlands
         logical, pointer :: start_bare
@@ -273,7 +281,7 @@ contains
         ! point pointers:
         ctem_on           => c_switch%ctem_on
         dofire            => c_switch%dofire
-        compete           => c_switch%compete
+        PFTCompetition    => c_switch%PFTCompetition
         inibioclim        => c_switch%inibioclim
         dowetlands        => c_switch%dowetlands
         start_bare        => c_switch%start_bare
@@ -481,7 +489,7 @@ contains
             rootmassrow = ncGet3DVar(initid, 'rootmass', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
 
             !>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.
-            if (dofire .and. compete) then
+            if (dofire .and. PFTCompetition) then
                         do j =1,icc
                             pstemmassrow(i,m,j)=stemmassrow(i,m,j)
                             pgleafmassrow(i,m,j)=rootmassrow(i,m,j)
@@ -493,7 +501,7 @@ contains
             lfstatusrow = ncGet3DVar(initid, 'lfstatus', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             pandaysrow = ncGet3DVar(initid, 'pandays', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
 
-            if (compete .and. inibioclim) then  !read in the bioclimatic parameters
+            if (PFTCompetition .and. inibioclim) then  !read in the bioclimatic parameters
 
                 twarmm(:,1) = ncGet1DVar(initid, 'twarmm', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
                 tcoldm(:,1) = ncGet1DVar(initid, 'tcoldm', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
@@ -522,7 +530,7 @@ contains
                     dry_season_length(:,m) =dry_season_length(:,1)
                 end do
 
-            else if (compete .and. .not. inibioclim) then ! set them to zero
+            else if (PFTCompetition .and. .not. inibioclim) then ! set them to zero
 
                 twarmm=0.0
                 tcoldm=0.0
@@ -539,9 +547,9 @@ contains
 
             !>if this run uses the competition or lnduseon parameterization and starts from bare ground, set up the model state here. this
             !>overwrites what was read in from the initialization file. for composite runs (the composite set up is after this one for mosaics)
-            if ((compete .or. lnduseon) .and. start_bare) then
+            if ((PFTCompetition .or. lnduseon) .and. start_bare) then
 
-                !>set up for composite runs when start_bare is on and compete or landuseon
+                !>set up for composite runs when start_bare is on and PFTCompetition or landuseon
 
                 !>store the read-in crop fractions as we keep them even when we start bare.
                 !!FLAG: this is setup assuming that crops are in pft number 6 and 7.
@@ -613,7 +621,7 @@ contains
                     end do !nmtest
                 end do !nltest
 
-            end if !if (compete/landuseon .and. start_bare)
+            end if !if (PFTCompetition/landuseon .and. start_bare)
 
         end if !ctem_on
 
@@ -657,7 +665,7 @@ contains
         real, pointer, dimension(:,:)   :: GROROT
 
         logical, pointer :: ctem_on
-        logical, pointer :: compete
+        logical, pointer :: PFTCompetition
         logical, pointer :: lnduseon
         real, pointer, dimension(:,:,:) :: ailcminrow           !
         real, pointer, dimension(:,:,:) :: ailcmaxrow           !
@@ -692,7 +700,7 @@ contains
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
-        compete           => c_switch%compete
+        PFTCompetition    => c_switch%PFTCompetition
         lnduseon          => c_switch%lnduseon
         ailcminrow        => vrot%ailcmin
         ailcmaxrow        => vrot%ailcmax
@@ -755,7 +763,7 @@ contains
         if (ctem_on) then
 
             !> if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
-            if (lnduseon .or. compete ) then
+            if (lnduseon .or. PFTCompetition ) then
                 icountrow=0
                 do j = 1, ican
                     do i = 1,nlat
@@ -815,7 +823,7 @@ contains
                         end if
                     enddo
                 enddo
-            end if !lnuse/compete
+            end if !lnuse/PFTCompetition
 
             call ncPut3DVar(rsid, 'ailcmin', ailcminrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'ailcmax', ailcmaxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
@@ -832,7 +840,7 @@ contains
             call ncPut2DVar(rsid, 'litrmsmoss', litrmsmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
             call ncPut2DVar(rsid, 'dmoss', dmoss, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
 
-            if (compete) then
+            if (PFTCompetition) then
 
                 call ncPut2DVar(rsid, 'twarmm', twarmm, start = [lonIndex, latIndex])
                 call ncPut2DVar(rsid, 'tcoldm', tcoldm, start = [lonIndex, latIndex])
@@ -845,10 +853,87 @@ contains
                 call ncPut2DVar(rsid, 'annpcp', annpcp, start = [lonIndex, latIndex])
                 call ncPut2DVar(rsid, 'dry_season_length', dry_season_length, start = [lonIndex, latIndex])
 
-            end if ! compete
+            end if ! PFTCompetition
 
         end if !ctem_on
 
     end subroutine write_restart
+
+    !---------------------------------------------------------------------------------------------
+
+    subroutine getCO2
+
+        ! Read in the CO2 atmospheric concentration from a file
+
+        use fileIOModule
+        use generalUtils, only : parseTimeStamp
+        use ctem_statevars, only : c_switch,vrot
+        use outputManager, only : co2id,checkForTime
+
+        implicit none
+
+        integer :: lengthCO2File
+        integer :: i,CO2index
+        real, dimension(:), allocatable :: CO2FileTime
+        logical, pointer :: transientCO2
+        integer, pointer :: fixedYearCO2
+        real, dimension(4) :: dateTime
+        real, pointer, dimension(:,:) :: co2concrow
+
+        transientCO2    => c_switch%transientCO2
+        fixedYearCO2    => c_switch%fixedYearCO2
+        co2concrow      => vrot%co2conc
+
+        lengthCO2File = ncGetDimLen(co2id, 'time')
+        allocate(CO2FileTime(lengthCO2File))
+        allocate(CO2Time(lengthCO2File))
+
+        CO2FileTime = ncGet1DVar(CO2id, 'time', start = [1], count = [lengthCO2File])
+
+        ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+        do i = 1, lengthCO2File
+            dateTime = parseTimeStamp(CO2FileTime(i))
+            CO2Time(i) = dateTime(1) ! Rewrite putting in the year
+        end do
+
+        if (transientCO2) then
+            ! We read in the whole CO2 times series and store it.
+            allocate(CO2FromFile(lengthCO2File))
+            CO2FromFile = ncGet1DVar(CO2id, 'mole_fraction_of_carbon_dioxide_in_air', start = [1], count = [lengthCO2File])
+        else
+            ! Find the requested year in the file.
+            CO2index = checkForTime(lengthCO2File,real(CO2Time),real(fixedYearCO2))
+            ! We read in only the suggested year
+            i = 1 ! offline nlat is always 1 so just set
+            co2concrow(i,:) = ncGet1DVar(CO2id, 'mole_fraction_of_carbon_dioxide_in_air', start = [CO2index], count = [1])
+        end if
+
+    end subroutine getCO2
+
+    !---------------------------------------------------------------------------------------------
+
+    subroutine updateCO2(iyear)
+
+        ! Update the CO2 atmospheric concentration based on the present model year
+
+        use outputManager, only : checkForTime
+        use ctem_statevars, only : vrot
+
+        implicit none
+
+        integer, intent(in) :: iyear
+        integer :: CO2index,lengthCO2Time,i
+        real, pointer, dimension(:,:) :: co2concrow
+        co2concrow      => vrot%co2conc
+
+        lengthCO2Time = size(CO2Time)
+
+        ! Find the requested year in the file.
+        CO2index = checkForTime(lengthCO2Time,real(CO2Time),real(iyear))
+        i = 1 ! offline nlat is always 1 so just set
+        co2concrow(i,:) = CO2FromFile(CO2index)
+
+    end subroutine updateCO2
+
 
 end module model_state_drivers

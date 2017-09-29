@@ -288,8 +288,8 @@ c
 !!\f]
 !!     ---------------------------------------------------------------
 !!
-      if(icc.ne.9)                     call xit('compete_map',-1)
-      if(ican.ne.4)                       call xit('compete_map',-2)
+      if(icc.ne.9)     call xit('PFTCompetition_map',-1)
+      if(ican.ne.4)    call xit('PFTCompetition_map',-2)
 !>
 !!initialization
 !!
