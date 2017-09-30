@@ -63,7 +63,7 @@ contains
         use outputManager, only : closeNCFiles
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils, only : findDaylength,findLeapYears
-        use model_state_drivers, only : getCO2,updateCO2
+        use model_state_drivers, only : getInput,updateInput
 
         implicit none
 
@@ -842,7 +842,7 @@ contains
         integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
         integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
         !real, pointer :: fixedCO2Conc  !< set the value of atmospheric co2 if transientCO2 is false. (ppmv)
-        real, pointer :: setch4conc  !< set the value of atmospheric CH4 if transientCH4 is false. (ppmv)
+        !real, pointer :: fixedYearCH4  !< set the value of atmospheric CH4 if transientCH4 is false. (ppmv)
         integer, pointer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
                                  !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
                                  !< this defaults to -9999, which will then cause the model to cycle on
@@ -2201,7 +2201,7 @@ contains
         transientCO2     => c_switch%transientCO2
         !fixedCO2Conc     => c_switch%fixedCO2Conc
         transientCH4      => c_switch%transientCH4
-        setch4conc        => c_switch%setch4conc
+        !fixedYearCH4        => c_switch%fixedYearCH4
         transientPOPD     => c_switch%transientPOPD
         popcycleyr        => c_switch%popcycleyr
         inibioclim        => c_switch%inibioclim
@@ -2844,8 +2844,9 @@ contains
         ! Read in the model initial state
         call read_initialstate(lonIndex,latIndex)
 
-        ! Read in the CO2
-        call getCO2
+        ! Read in the inputs (options: CO2,CH4)
+        call getInput('CO2')
+        call getInput('CH4')
 
         !     do some initializations for the reading in of data from files. these
         !     initializations primarily affect how the model does a spinup or transient
@@ -3777,14 +3778,15 @@ contains
 300         CONTINUE
 
             !
-            ! If needed, read in the accessory input files (popd, wetlands, lightining...)
+            ! If needed, read in the accessory input files (popd, wetlands, lightning...)
             if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
 
                 if (ctem_on) then
 
                     ! Update the CO2 concentration for this year, if transientCO2
-                    if (transientCO2) call updateCO2(iyear)
-                    !if (transientCH4) call updateCH4(iyear)
+                    if (transientCO2) call updateInput('CO2',iyear)
+                    if (transientCH4) call updateInput('CH4',iyear)
+                    print*,ch4concrow
 
                     do i=1,nltest
                         if (obswetf) then
@@ -3883,7 +3885,7 @@ contains
 !                     do i=1,nltest
 !                         do m=1,nmtest
 !                             if (.not. transientCO2) co2concrow(i,m)=fixedCO2Conc
-!                             if (.not. transientCO2) ch4concrow(i,m)=setch4conc
+!                             if (.not. transientCO2) ch4concrow(i,m)=fixedYearCH4
 !                         enddo
 !                     enddo
 !                 endif

@@ -39,6 +39,7 @@ module outputManager
     integer :: initid                               !> netcdf file id for the model initialization file
     integer :: rsid                                 !> netcdf file id for the model restart file
     integer :: co2id                                !> netcdf file id for the CO2 input file
+    integer :: ch4id                                !> netcdf file id for the CH4 input file
 
     !> This data structure is used to set up the output netcdf files.
     type outputDescriptor
@@ -475,7 +476,7 @@ contains
         !----1 - Longitude
 
         lonDimId = ncDefDim(ncid,'lon',myDomain%cntx)
-        varid = ncDefVar(ncid,'lon',nf90_float,[lonDimId])
+        varid = ncDefVar(ncid,'lon',nf90_double,[lonDimId])
         call ncPutAtt(ncid,varid,'long_name',charvalues='longitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_east')
         !call ncPutAtt(ncid,varid,'actual_range',xrange) #FLAG need to find the xrange from all_lon.
@@ -484,7 +485,7 @@ contains
 
         !----2 - Latitude
         latDimId = ncDefDim(ncid,'lat',myDomain%cnty)
-        varid = ncDefVar(ncid,'lat',nf90_float,[latDimId])
+        varid = ncDefVar(ncid,'lat',nf90_double,[latDimId])
         call ncPutAtt(ncid,varid,'long_name',charvalues='latitude')
         call ncPutAtt(ncid,varid,'units',charvalues='degrees_north')
         !call ncPutAtt(ncid,varid,'actual_range',yrange) #FLAG need to find the xrange from all_lon.
@@ -528,7 +529,7 @@ contains
 
         ! Set up the time dimension
         timeDimId = ncDefDim(ncid,'time',nf90_unlimited)
-        varid = ncDefVar(ncid,'time',nf90_float,[timeDimId])
+        varid = ncDefVar(ncid,'time',nf90_double,[timeDimId])
 
         call ncPutAtt(ncid,varid,'long_name',charvalues='time')
         call ncPutAtt(ncid,varid,'units',charvalues=trim(timestart))
@@ -555,7 +556,7 @@ contains
                 intArray=identityVector(nmos)
                 call ncPutDimValues(ncid, 'tile', dummyArray,intdata=intArray, count=nmos) ! pass dummyArray to allow integers
                 call ncReDef(ncid)
-                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_float, [lonDimId,latDimId,tileDimId,timeDimId])
+                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_double, [lonDimId,latDimId,tileDimId,timeDimId])
 
             case("pft")         ! Per PFT outputs
 
@@ -579,7 +580,7 @@ contains
                     ! do something for cells that don't have bare ground
                     suffix = suffix
                 endif
-                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_float, [lonDimId,latDimId,pftDimId,timeDimId])
+                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_double, [lonDimId,latDimId,pftDimId,timeDimId])
 
             case ("layer")      ! Per layer outputs
 
@@ -587,12 +588,12 @@ contains
                 intArray=identityVector(ignd)
                 call ncPutDimValues(ncid, 'layer', dummyArray,intdata=intArray, count=ignd) ! pass dummyArray to allow integers
                 call ncReDef(ncid)
-                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_float, [lonDimId,latDimId,layerDimId,timeDimId])
+                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_double, [lonDimId,latDimId,layerDimId,timeDimId])
 
             case default        ! Grid average outputs
 
                 call ncReDef(ncid)
-                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_float, [lonDimId,latDimId,timeDimId])
+                varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_double, [lonDimId,latDimId,timeDimId])
 
         end select
 

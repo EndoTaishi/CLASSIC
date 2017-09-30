@@ -75,7 +75,8 @@ contains
         character(:), pointer :: CO2File
         integer, pointer :: fixedYearCO2
         logical, pointer :: transientCH4
-        real, pointer :: setch4conc
+        character(:), pointer :: CH4File
+        integer, pointer :: fixedYearCH4
         logical, pointer :: transientPOPD
         integer, pointer :: popcycleyr
         logical, pointer :: dofire
@@ -152,7 +153,8 @@ contains
         CO2File, &
         fixedYearCO2, &
         transientCH4, &
-        setch4conc, &
+        CH4File, &
+        fixedYearCH4, &
         transientPOPD, &
         popcycleyr, &
         PFTCompetition, &
@@ -215,7 +217,8 @@ contains
         CO2File         => c_switch%CO2File
         fixedYearCO2    => c_switch%fixedYearCO2
         transientCH4    => c_switch%transientCH4
-        setch4conc      => c_switch%setch4conc
+        CH4File         => c_switch%CH4File
+        fixedYearCH4    => c_switch%fixedYearCH4
         transientPOPD   => c_switch%transientPOPD
         popcycleyr      => c_switch%popcycleyr
         dofire          => c_switch%dofire

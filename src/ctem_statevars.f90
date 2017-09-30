@@ -55,11 +55,9 @@ type ctem_switches
                              !< ignored if cyclemet is false
     integer :: metcylyrst   !< climate year to start the spin up on
                              !< ignored if cyclemet is false
-    logical :: transientCO2       !<use \f$co_2\f$ time series, set to false if cyclemet is true
-    character(180) :: CO2File
-    integer :: fixedYearCO2  !< set the year to use for atmospheric co2 if transientCO2 is false. (ppmv)
-
-    real :: setch4conc  !< set the value of atmospheric CH4 if transientCH4 is false. (ppmv)
+    logical :: transientCO2       !<use \f$CO_2\f$ time series, set to false if cyclemet is true
+    character(180) :: CO2File       !< Location of the netcdf file containing atmospheric CO2 values
+    integer :: fixedYearCO2  !< set the year to use for atmospheric \f$CO_2\f$ if transientCO2 is false. (ppmv)
     logical :: dofire      !<boolean, if true allow fire, if false no fire.
     logical :: met_rewound !<Remove FLAG
     logical :: reach_eof   !<Remove FLAG
@@ -68,8 +66,10 @@ type ctem_switches
                            !<if this is set to false, the ini and ctm file info will be used to set up the run.
                            !<NOTE: This still keeps the crop fractions (while setting all pools to zero)
     logical :: lnduseon    !<logical switch to run the land use change subroutine or not.
-    logical :: transientCH4       !<use \f$CH_4\f$ time series, set to false if cyclemet is true the \f$CO_2\f$ timeseries is in the
+    logical :: transientCH4      !<use \f$CH_4\f$ time series, set to false if cyclemet is true the \f$CO_2\f$ timeseries is in the
                            !<same input file as the \f$CO_2\f$ one.
+    character(180) :: CH4File  !< Location of the netcdf file containing atmospheric CH4 values
+    integer :: fixedYearCH4  !< set the year to use for atmospheric \f$CH_4\f$ if transientCH4 is false. (ppmv)
     logical :: transientPOPD      !<if set true use population density data to calculate fire extinguishing probability and
                            !<probability of fire due to human causes, or if false, read directly from .ctm file
     integer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999

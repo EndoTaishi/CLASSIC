@@ -27,23 +27,26 @@
  lnduseon = .false. ,
  ! This will need a LUC year thing too. Perhaps like below.
 
- ! CO2 switches:
-     !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
- transientCO2 = .true. ,
- CO2File = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc' ,
- fixedYearCO2 = 1850 ,      !If transientCO2 = .true., this is ignored.
+ !CO2 switches:
+    transientCO2 = .true. , !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
+    CO2File = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc' ,
+    fixedYearCO2 = 1850 ,      !If transientCO2 = .true., this is ignored.
 
- transientCH4 = .false. ,
- setch4conc = 1.785 ,   !fixedCH4Conc Change this to take in the year? Comes from spinup year?
+ !CH4 switches:
+    transientCH4 = .true. ,
+    CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
+    fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
- transientPOPD = .true. ,
- popcycleyr = 1850 ,    !Change this to take in the year? Comes from spinup year?
+ !Fire switches
+    dofire = .false. ,
+    transientPOPD = .true. ,
+    popcycleyr = 1850 ,    !Change this to take in the year? Comes from spinup year?
 
  PFTCompetition = .false. ,
  inibioclim = .false. ,   ! Remove. Can set up in initFile so this flag is not needed.
  start_bare = .false.,    ! Can remove? Check logic.
 
- dofire = .false. ,
+
 
 
  dowetlands = .false. ,  !Remove
@@ -101,7 +104,7 @@
 
 This area is for comments about the run. The comment above will be written to the netcdf output files.
 
-!CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr-0p5x360deg_18500101-201412_absTimeAxis.nc',
+
 !        logical, pointer :: lnduseon !< set this to 1 if land use change is to be
                             !< implimented by reading in the fractions of 9 ctem
                             !< pfts from a file. keep in mind that once on, luc read-in is

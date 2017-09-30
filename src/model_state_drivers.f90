@@ -15,10 +15,13 @@ module model_state_drivers
     public  :: read_modelsetup
     public  :: read_initialstate
     public  :: write_restart
-    public  :: getCO2
+    public  :: getInput
+    public  :: updateInput
 
     integer, dimension(:), allocatable :: CO2Time           ! The time (years) from the CO2File
     real, dimension(:), allocatable :: CO2FromFile          ! The array of CO2 values (ppm) from the CO2File
+    integer, dimension(:), allocatable :: CH4Time           ! The time (years) from the CH4File
+    real, dimension(:), allocatable :: CH4FromFile          ! The array of CH4 values (ppm) from the CH4File
 
 
 
@@ -38,14 +41,15 @@ contains
 
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
-        use outputManager, only : myDomain,initid,rsid,co2id
+        use outputManager, only : myDomain,initid,rsid,co2id,ch4id
 
         implicit none
 
         ! pointers:
-        character(180), pointer         :: init_file
-        character(180), pointer         :: rs_file_to_overwrite
-        character(180), pointer           :: CO2File
+        character(180), pointer          :: init_file
+        character(180), pointer          :: rs_file_to_overwrite
+        character(180), pointer          :: CO2File
+        character(180), pointer          :: CH4File
 
         ! Local vars
         integer, allocatable, dimension(:,:) :: mask
@@ -59,6 +63,7 @@ contains
         init_file               => c_switch%init_file
         rs_file_to_overwrite    => c_switch%rs_file_to_overwrite
         CO2File                 => c_switch%CO2File
+        CH4File                 => c_switch%CH4File
 
         ! ------------
 
@@ -158,6 +163,7 @@ contains
         !> Lastly, open some files so they are ready
         rsid = ncOpen(rs_file_to_overwrite, nf90_write)
         co2id = ncOpen(CO2File, nf90_write)
+        ch4id = ncOpen(CH4File, nf90_write)
 
     end subroutine read_modelsetup
 
@@ -861,58 +867,102 @@ contains
 
     !---------------------------------------------------------------------------------------------
 
-    subroutine getCO2
+    subroutine getInput(inputRequested)
 
-        ! Read in the CO2 atmospheric concentration from a file
+        ! Read in a model input from a netcdf file
 
         use fileIOModule
         use generalUtils, only : parseTimeStamp
         use ctem_statevars, only : c_switch,vrot
-        use outputManager, only : co2id,checkForTime
+        use outputManager, only : co2id,ch4id,checkForTime
 
         implicit none
 
-        integer :: lengthCO2File
-        integer :: i,CO2index
-        real, dimension(:), allocatable :: CO2FileTime
+        character(*), intent(in) :: inputRequested
+        integer :: lengthOfFile
+        integer :: i,arrindex
+        real, dimension(:), allocatable :: FileTime
         logical, pointer :: transientCO2
         integer, pointer :: fixedYearCO2
+        logical, pointer :: transientCH4
+        integer, pointer :: fixedYearCH4
+
         real, dimension(4) :: dateTime
         real, pointer, dimension(:,:) :: co2concrow
+        real, pointer, dimension(:,:) :: ch4concrow
 
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
+        transientCH4    => c_switch%transientCH4
+        fixedYearCH4    => c_switch%fixedYearCH4
+
         co2concrow      => vrot%co2conc
+        ch4concrow      => vrot%ch4conc
 
-        lengthCO2File = ncGetDimLen(co2id, 'time')
-        allocate(CO2FileTime(lengthCO2File))
-        allocate(CO2Time(lengthCO2File))
+        select case (trim(inputRequested))
 
-        CO2FileTime = ncGet1DVar(CO2id, 'time', start = [1], count = [lengthCO2File])
+        case ('CO2')
 
-        ! Parse these into just years (expected format is "day as %Y%m%d.%f")
-        do i = 1, lengthCO2File
-            dateTime = parseTimeStamp(CO2FileTime(i))
-            CO2Time(i) = dateTime(1) ! Rewrite putting in the year
-        end do
+            lengthOfFile = ncGetDimLen(co2id, 'time')
+            allocate(FileTime(lengthOfFile))
+            allocate(CO2Time(lengthOfFile))
 
-        if (transientCO2) then
-            ! We read in the whole CO2 times series and store it.
-            allocate(CO2FromFile(lengthCO2File))
-            CO2FromFile = ncGet1DVar(CO2id, 'mole_fraction_of_carbon_dioxide_in_air', start = [1], count = [lengthCO2File])
-        else
-            ! Find the requested year in the file.
-            CO2index = checkForTime(lengthCO2File,real(CO2Time),real(fixedYearCO2))
-            ! We read in only the suggested year
-            i = 1 ! offline nlat is always 1 so just set
-            co2concrow(i,:) = ncGet1DVar(CO2id, 'mole_fraction_of_carbon_dioxide_in_air', start = [CO2index], count = [1])
-        end if
+            FileTime = ncGet1DVar(CO2id, 'time', start = [1], count = [lengthOfFile])
 
-    end subroutine getCO2
+            ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+            do i = 1, lengthOfFile
+                dateTime = parseTimeStamp(FileTime(i))
+                CO2Time(i) = dateTime(1) ! Rewrite putting in the year
+            end do
+
+            if (transientCO2) then
+                ! We read in the whole CO2 times series and store it.
+                allocate(CO2FromFile(lengthOfFile))
+                CO2FromFile = ncGet1DVar(CO2id, 'mole_fraction_of_carbon_dioxide_in_air', start = [1], count = [lengthOfFile])
+            else
+                ! Find the requested year in the file.
+                arrindex = checkForTime(lengthOfFile,real(CO2Time),real(fixedYearCO2))
+                ! We read in only the suggested year
+                i = 1 ! offline nlat is always 1 so just set
+                co2concrow(i,:) = ncGet1DVar(CO2id, 'mole_fraction_of_carbon_dioxide_in_air', start = [arrindex], count = [1])
+            end if
+
+        case ('CH4')
+
+            lengthOfFile = ncGetDimLen(ch4id, 'time')
+            allocate(FileTime(lengthOfFile))
+            allocate(CH4Time(lengthOfFile))
+
+            FileTime = ncGet1DVar(ch4id, 'time', start = [1], count = [lengthOfFile])
+
+            ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+            do i = 1, lengthOfFile
+                dateTime = parseTimeStamp(FileTime(i))
+                CH4Time(i) = dateTime(1) ! Rewrite putting in the year
+            end do
+
+            if (transientCH4) then
+                ! We read in the whole CO2 times series and store it.
+                allocate(CH4FromFile(lengthOfFile))
+                CH4FromFile = ncGet1DVar(ch4id, 'mole_fraction_of_methane_in_air', start = [1], count = [lengthOfFile])
+            else
+                ! Find the requested year in the file.
+                arrindex = checkForTime(lengthOfFile,real(CH4Time),real(fixedYearCH4))
+                ! We read in only the suggested year
+                i = 1 ! offline nlat is always 1 so just set
+                ch4concrow(i,:) = ncGet1DVar(ch4id, 'mole_fraction_of_methane_in_air', start = [arrindex], count = [1])
+
+            end if
+        case default
+            stop('specify a input kind for getInput')
+
+        end select
+
+    end subroutine getInput
 
     !---------------------------------------------------------------------------------------------
 
-    subroutine updateCO2(iyear)
+    subroutine updateInput(inputRequested,iyear)
 
         ! Update the CO2 atmospheric concentration based on the present model year
 
@@ -921,19 +971,39 @@ contains
 
         implicit none
 
+        character(*), intent(in) :: inputRequested
         integer, intent(in) :: iyear
-        integer :: CO2index,lengthCO2Time,i
+        integer :: arrindex,lengthTime,i
         real, pointer, dimension(:,:) :: co2concrow
+        real, pointer, dimension(:,:) :: ch4concrow
         co2concrow      => vrot%co2conc
+        ch4concrow      => vrot%ch4conc
 
-        lengthCO2Time = size(CO2Time)
+        select case (trim(inputRequested))
 
-        ! Find the requested year in the file.
-        CO2index = checkForTime(lengthCO2Time,real(CO2Time),real(iyear))
-        i = 1 ! offline nlat is always 1 so just set
-        co2concrow(i,:) = CO2FromFile(CO2index)
+        case ('CO2')
 
-    end subroutine updateCO2
+            lengthTime = size(CO2Time)
+
+            ! Find the requested year in the file.
+            arrindex = checkForTime(lengthTime,real(CO2Time),real(iyear))
+            i = 1 ! offline nlat is always 1 so just set
+            co2concrow(i,:) = CO2FromFile(arrindex)
+
+        case ('CH4')
+
+            lengthTime = size(CH4Time)
+
+            ! Find the requested year in the file.
+            arrindex = checkForTime(lengthTime,real(CO2Time),real(iyear))
+            i = 1 ! offline nlat is always 1 so just set
+            ch4concrow(i,:) = CH4FromFile(arrindex)
+
+        case default
+            stop('specify a input kind for updateInput')
+        end select
+
+    end subroutine updateInput
 
 
 end module model_state_drivers
