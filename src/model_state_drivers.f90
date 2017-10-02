@@ -17,11 +17,18 @@ module model_state_drivers
     public  :: write_restart
     public  :: getInput
     public  :: updateInput
+    private :: closestCell
 
     integer, dimension(:), allocatable :: CO2Time           ! The time (years) from the CO2File
     real, dimension(:), allocatable :: CO2FromFile          ! The array of CO2 values (ppm) from the CO2File
     integer, dimension(:), allocatable :: CH4Time           ! The time (years) from the CH4File
     real, dimension(:), allocatable :: CH4FromFile          ! The array of CH4 values (ppm) from the CH4File
+    integer, dimension(:), allocatable :: POPDTime          ! The time (years) from the population density file
+    real, dimension(:), allocatable :: POPDFromFile         ! The array of CH4 values (ppm) from the POPDFile
+    integer, dimension(:), allocatable :: LGHTTime          ! The time from the lightning density file (usually months)
+    real, dimension(:), allocatable :: LGHTFromFile         ! The array of lightning density from the LGHTFile
+    integer, dimension(:), allocatable :: LUCTime           ! The time from the LUC file
+    real, dimension(:,:), allocatable :: LUCFromFile        ! The array of LUC from the LUCFile
 
 
 
@@ -41,7 +48,7 @@ contains
 
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
-        use outputManager, only : myDomain,initid,rsid,co2id,ch4id
+        use outputManager, only : myDomain,initid,rsid,co2id,ch4id,popid,lghtid,lucid
 
         implicit none
 
@@ -50,6 +57,13 @@ contains
         character(180), pointer          :: rs_file_to_overwrite
         character(180), pointer          :: CO2File
         character(180), pointer          :: CH4File
+        character(180), pointer          :: POPDFile
+        character(180), pointer          :: LGHTFile
+        character(180), pointer          :: LUCFile
+        logical, pointer                 :: ctem_on
+        logical, pointer                 :: dofire
+        logical, pointer                 :: lnduseon
+        integer, pointer                 :: fixedYearLUC
 
         ! Local vars
         integer, allocatable, dimension(:,:) :: mask
@@ -64,6 +78,13 @@ contains
         rs_file_to_overwrite    => c_switch%rs_file_to_overwrite
         CO2File                 => c_switch%CO2File
         CH4File                 => c_switch%CH4File
+        POPDFile                => c_switch%POPDFile
+        LGHTFile                => c_switch%LGHTFile
+        LUCFile                 => c_switch%LUCFile
+        ctem_on                 => c_switch%ctem_on
+        dofire                  => c_switch%dofire
+        lnduseon                => c_switch%lnduseon
+        fixedYearLUC            => c_switch%fixedYearLUC
 
         ! ------------
 
@@ -162,8 +183,17 @@ contains
 
         !> Lastly, open some files so they are ready
         rsid = ncOpen(rs_file_to_overwrite, nf90_write)
-        co2id = ncOpen(CO2File, nf90_write)
-        ch4id = ncOpen(CH4File, nf90_write)
+        if (ctem_on) then
+            co2id = ncOpen(CO2File, nf90_nowrite)
+            ch4id = ncOpen(CH4File, nf90_nowrite)
+            if (dofire) then
+                popid = ncOpen(POPDFile, nf90_nowrite)
+                !lghtid = ncOpen(LGHTFile, nf90_nowrite)
+            end if
+            if (lnduseon .or. (fixedYearLUC .ne. -9999)) then
+                lucid = ncOpen(LUCFile, nf90_nowrite)
+            end if
+        end if
 
     end subroutine read_modelsetup
 
@@ -867,51 +897,67 @@ contains
 
     !---------------------------------------------------------------------------------------------
 
-    subroutine getInput(inputRequested)
+    subroutine getInput(inputRequested,longitude,latitude)
 
         ! Read in a model input from a netcdf file
 
         use fileIOModule
         use generalUtils, only : parseTimeStamp
         use ctem_statevars, only : c_switch,vrot
-        use outputManager, only : co2id,ch4id,checkForTime
-
+        use ctem_params, only : icc
+        use outputManager, only : co2id,ch4id,checkForTime,popid,lucid
+use netcdf
         implicit none
 
         character(*), intent(in) :: inputRequested
+        real, intent(in), optional :: longitude
+        real, intent(in), optional :: latitude
         integer :: lengthOfFile
-        integer :: i,arrindex
-        real, dimension(:), allocatable :: FileTime
+        integer :: lonloc,latloc
+        integer :: i,arrindex,m,numPFTsinFile
+        real, dimension(:), allocatable :: fileTime
         logical, pointer :: transientCO2
         integer, pointer :: fixedYearCO2
         logical, pointer :: transientCH4
         integer, pointer :: fixedYearCH4
+        logical, pointer :: transientPOPD
+        integer, pointer :: fixedYearPOPD
+        logical, pointer :: lnduseon
+        integer, pointer :: fixedYearLUC
 
         real, dimension(4) :: dateTime
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
+        real, pointer, dimension(:,:) :: popdinrow
+        real, pointer, dimension(:,:,:) :: nfcancmxrow
 
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
         transientCH4    => c_switch%transientCH4
         fixedYearCH4    => c_switch%fixedYearCH4
+        transientPOPD   => c_switch%transientPOPD
+        fixedYearPOPD   => c_switch%fixedYearPOPD
+        lnduseon    => c_switch%lnduseon
+        fixedYearLUC    => c_switch%fixedYearLUC
 
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
+        popdinrow       => vrot%popdin
+        nfcancmxrow     => vrot%nfcancmx
 
         select case (trim(inputRequested))
 
         case ('CO2')
 
             lengthOfFile = ncGetDimLen(co2id, 'time')
-            allocate(FileTime(lengthOfFile))
+            allocate(fileTime(lengthOfFile))
             allocate(CO2Time(lengthOfFile))
 
-            FileTime = ncGet1DVar(CO2id, 'time', start = [1], count = [lengthOfFile])
+            fileTime = ncGet1DVar(CO2id, 'time', start = [1], count = [lengthOfFile])
 
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
-                dateTime = parseTimeStamp(FileTime(i))
+                dateTime = parseTimeStamp(fileTime(i))
                 CO2Time(i) = dateTime(1) ! Rewrite putting in the year
             end do
 
@@ -930,19 +976,19 @@ contains
         case ('CH4')
 
             lengthOfFile = ncGetDimLen(ch4id, 'time')
-            allocate(FileTime(lengthOfFile))
+            allocate(fileTime(lengthOfFile))
             allocate(CH4Time(lengthOfFile))
 
-            FileTime = ncGet1DVar(ch4id, 'time', start = [1], count = [lengthOfFile])
+            fileTime = ncGet1DVar(ch4id, 'time', start = [1], count = [lengthOfFile])
 
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
-                dateTime = parseTimeStamp(FileTime(i))
+                dateTime = parseTimeStamp(fileTime(i))
                 CH4Time(i) = dateTime(1) ! Rewrite putting in the year
             end do
 
             if (transientCH4) then
-                ! We read in the whole CO2 times series and store it.
+                ! We read in the whole CH3 times series and store it.
                 allocate(CH4FromFile(lengthOfFile))
                 CH4FromFile = ncGet1DVar(ch4id, 'mole_fraction_of_methane_in_air', start = [1], count = [lengthOfFile])
             else
@@ -951,8 +997,86 @@ contains
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 ch4concrow(i,:) = ncGet1DVar(ch4id, 'mole_fraction_of_methane_in_air', start = [arrindex], count = [1])
+            end if
+
+        case ('POPD')
+
+            lengthOfFile = ncGetDimLen(popid, 'time')
+            allocate(fileTime(lengthOfFile))
+            allocate(POPDTime(lengthOfFile))
+
+            fileTime = ncGet1DVar(popid, 'time', start = [1], count = [lengthOfFile])
+
+            ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+            do i = 1, lengthOfFile
+                dateTime = parseTimeStamp(fileTime(i))
+                POPDTime(i) = dateTime(1) ! Rewrite putting in the year
+            end do
+            lonloc = closestCell(popid,'lon',longitude)
+            latloc = closestCell(popid,'lat',latitude)
+
+            if (transientPOPD) then
+                ! We read in the whole POPD times series and store it.
+                allocate(POPDFromFile(lengthOfFile))
+                POPDFromFile = ncGet1DVar(popid, 'popd', start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
+
+            else
+                ! Find the requested year in the file.
+                arrindex = checkForTime(lengthOfFile,real(POPDTime),real(fixedYearPOPD))
+                ! We read in only the suggested year
+                i = 1 ! offline nlat is always 1 so just set
+                popdinrow(i,:) = ncGet1DVar(popid, 'popd', start = [lonloc,latloc,arrindex], count = [1,1,1])
 
             end if
+
+!         case ('LGHT')
+!
+!             lengthOfFile = ncGetDimLen(lghtid, 'time')
+!             allocate(fileTime(lengthOfFile))
+!             allocate(POPDTime(lengthOfFile))
+!             mlightngrow mlightngrow(i,m,:)
+
+        case ('LUC')
+
+            lengthOfFile = ncGetDimLen(lucid, 'time')
+            allocate(fileTime(lengthOfFile))
+            allocate(LUCTime(lengthOfFile))
+
+            fileTime = ncGet1DVar(lucid, 'time', start = [1], count = [lengthOfFile])
+
+            ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+            do i = 1, lengthOfFile
+                dateTime = parseTimeStamp(fileTime(i))
+                LUCTime(i) = dateTime(1) ! Rewrite putting in only the year
+            end do
+            lonloc = closestCell(lucid,'lon',longitude)
+            latloc = closestCell(lucid,'lat',latitude)
+
+            ! Ensure the file has the expected number of PFTs
+            !numPFTsinFile = ncGetDimLen(lucid, 'lev')
+            !if (numPFTsinFile .ne. icc) stop('LUC file does not have expected number of PFTs')
+
+            if (lnduseon) then
+                ! We read in the whole LUC times series and store it.
+                allocate(LUCFromFile(lengthOfFile,icc))
+                print*,size(LUCFromFile),lonloc,latloc
+                call check_nc(nf90_get_var(lucid, ncGetVarId(lucid, 'frac'), LUCFromFile, start = [lonloc,latloc,1,1], count = [1,1,9,lengthOfFile]))
+                !LUCFromFile = ncGet2DVar(lucid, 'frac', start = [lonloc,latloc,1,1], count = [1,1,9,lengthOfFile])  !FLAG needs to be icc,not 9!!!
+                print*,LUCFromFile,lengthOfFile,icc
+                print*,'size',size(LUCFromFile)
+            else
+                ! Find the requested year in the file.
+                arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
+                ! We read in only the suggested year
+                i = 1 ! offline nlat is always 1 so just set
+                m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
+                nfcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [lonloc,latloc,1,arrindex], count = [1,1,9,1])!FLAG needs to be icc,not 9!!!
+                print*,arrindex,nfcancmxrow(i,:,:)
+            end if
+
+        !case ('OBSWETF')
+        !wetfrac_monrow(i,m,:
+
         case default
             stop('specify a input kind for getInput')
 
@@ -973,11 +1097,13 @@ contains
 
         character(*), intent(in) :: inputRequested
         integer, intent(in) :: iyear
-        integer :: arrindex,lengthTime,i
+        integer :: arrindex,lengthTime,i,m
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
+        real, pointer, dimension(:,:) :: popdinrow
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
+        popdinrow       => vrot%popdin
 
         select case (trim(inputRequested))
 
@@ -999,11 +1125,54 @@ contains
             i = 1 ! offline nlat is always 1 so just set
             ch4concrow(i,:) = CH4FromFile(arrindex)
 
+        case ('POPD')
+
+            lengthTime = size(POPDTime)
+
+            ! Find the requested year in the file.
+            arrindex = checkForTime(lengthTime,real(POPDTime),real(iyear))
+            i = 1 ! offline nlat is always 1 so just set
+            popdinrow(i,:) = POPDFromFile(arrindex)
+
+!         case ('LUC')
+!
+!             lengthTime = size(LUCTime)
+!
+!             ! Find the requested year in the file.
+!             arrindex = checkForTime(lengthTime,real(LUCTime),real(iyear))
+!             i = 1 ! offline nlat is always 1 so just set
+!             m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
+!             nfcancmxrow(i,m,:) = LUCFromFile(arrindex,:)
+
         case default
             stop('specify a input kind for updateInput')
         end select
 
     end subroutine updateInput
 
+    !---------------------------------------------------------------------------------------------
+
+    integer function closestCell(ncid,label,gridPoint)
+    ! Find the closest grid cell in the file
+
+        use fileIOModule
+
+        implicit none
+
+        integer, intent(in) :: ncid
+        character(*), intent(in) :: label
+        real, intent(in) :: gridPoint
+        integer :: lengthdim
+        real, dimension(:), allocatable :: filevals
+        integer, dimension(1) :: tempintarr
+
+        lengthdim = ncGetDimLen(ncid, label)
+        allocate(filevals(lengthdim))
+        filevals = ncGet1DVar(ncid, label, start = [1], count = [lengthdim])
+        filevals = filevals - gridPoint
+        tempintarr = minloc(abs(filevals))
+        closestCell = tempintarr(1)
+
+    end function closestCell
 
 end module model_state_drivers

@@ -841,12 +841,7 @@ contains
         integer, pointer :: jdsty   !< simulation year (iyear) to start writing the daily output
         integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
         integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
-        !real, pointer :: fixedCO2Conc  !< set the value of atmospheric co2 if transientCO2 is false. (ppmv)
-        !real, pointer :: fixedYearCH4  !< set the value of atmospheric CH4 if transientCH4 is false. (ppmv)
-        integer, pointer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
-                                 !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
-                                 !< this defaults to -9999, which will then cause the model to cycle on
-                                 !< whatever is the first year in the popd and luc datasets
+        integer, pointer :: fixedYearLUC
         integer, pointer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
                         !< because the atmospheric model considers these to be part
                         !< of the "terrain".
@@ -2199,11 +2194,9 @@ contains
         start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
         transientCO2     => c_switch%transientCO2
-        !fixedCO2Conc     => c_switch%fixedCO2Conc
         transientCH4      => c_switch%transientCH4
-        !fixedYearCH4        => c_switch%fixedYearCH4
         transientPOPD     => c_switch%transientPOPD
-        popcycleyr        => c_switch%popcycleyr
+        fixedYearLUC      => c_switch%fixedYearLUC
         inibioclim        => c_switch%inibioclim
         leap              => c_switch%leap         
         dowetlands        => c_switch%dowetlands
@@ -2845,43 +2838,12 @@ contains
         call read_initialstate(lonIndex,latIndex)
 
         ! Read in the inputs (options: CO2,CH4)
-        call getInput('CO2')
-        call getInput('CH4')
-
-        !     do some initializations for the reading in of data from files. these
-        !     initializations primarily affect how the model does a spinup or transient
-        !     simulation and which years of the input data are being read.
-
-        if (.not. cyclemet .and. transient_run) then !transient simulation, set to dummy values
-            metcylyrst=trans_startyr ! this will make it skip to the trans_startyr
-            metcycendyr=9999
-        else
-            !       find the final year of the cycling met
-            !       metcylyrst is defined in the joboptions file
-            metcycendyr = metcylyrst + nummetcylyrs - 1
-        endif
-
-        !     if cycling met (and not doing a transient run), find the popd and luc year to cycle with.
-        !     it is assumed that you always want to cycle the popd and luc
-        !     on the same year to be consistent. so if you are cycling the
-        !     met data, you can set a popd year (first case), or if cycling
-        !     the met data you can let the popcycleyr default to the met cycling
-        !     year by setting popcycleyr to -9999 (second case). if not cycling
-        !     the met data or you are doing a transient run that cycles the MET
-        !     at the start, cypopyr and cylucyr will default to a dummy value
-        !     (last case). (See example at bottom of read_from_job_options.f90
-        !     if confused)
-        !
-        if (cyclemet .and. popcycleyr .ne. -9999 .and.&
-            &.not. transient_run) then
-            cypopyr = popcycleyr
-            cylucyr = popcycleyr
-        else if (cyclemet .and. .not. transient_run) then
-            cypopyr = metcylyrst
-            cylucyr = metcylyrst
-        else  ! give dummy value
-            cypopyr = popcycleyr !-9999
-            cylucyr = popcycleyr !-9999
+        if (ctem_on) then
+            call getInput('CO2') ! CO2 atmospheric concentration
+            call getInput('CH4') ! CH4 atmospheric concentration
+            if (dofire) call getInput('POPD',longitude,latitude) ! Population density
+            !if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
+            if (lnduseon .or. (fixedYearLUC .ne. -9999)) call getInput('LUC',longitude,latitude) ! Land use change
         end if
 
         !     CTEM initialization done
@@ -2894,41 +2856,11 @@ contains
         open(unit=12,file='/home/rjm/Documents/CTEM/test/test.MET',&
             &      status='old')
 
-        !>     Open the met netcdf file. This also sets up the run boundaries
-        !!     based on the metadata in the netcdf. It is important to ensure the
-        !!     netcdf is of the same dimensions as the intended output files.
-        !!     Based upon the bounds used to call the model, this will figure out how
-        !!     big the NLAT vector is.
-        !      call openmet()
-        !      write(*,*)'done openmet'
-
-        !call readin_met(1,dlatgat,dlongat)
         !
-
-        !     luc file is opened in initialize_luc subroutine
-
-        if (transientPOPD) then
-            open(unit=13,file='/home/rjm/Documents/CTEM/test/test.POPD',&
-                &       status='old')
-            read(13,*)  !Skip 3 lines of header
-            read(13,*)
-            read(13,*)
-        endif
-        !if (transientCO2 .or. transientCH4) then
-        !    open(unit=14,file='/home/rjm/Documents/CTEM/test/test.CO2',&
-        !        &         status='old')
-        !endif
-
-        !
-        if (obswetf) then
-            open(unit=16,file='/home/rjm/Documents/CTEM/test/test.WET',&
-                &         status='old')
-        endif
-
-        if (obslght) then ! this was brought in for FireMIP
-            open(unit=17,file='/home/rjm/Documents/CTEM/test/test.LGHT',&
-                &         status='old')
-        endif
+!         if (obswetf) then
+!             open(unit=16,file='/home/rjm/Documents/CTEM/test/test.WET',&
+!                 &         status='old')
+!         endif
 
         !     * CLASS daily and half-hourly output files (monthly and annual are done in io_driver)
 !         !
@@ -3404,57 +3336,26 @@ contains
 
             !     ----------
 
-            !     preparation with the input datasets prior to launching run:
+!             !     preparation with the input datasets prior to launching run:
+!
+!             if(obswetf) then
+!                 obswetyr=-99999
+!                 do while (obswetyr .lt. metcylyrst)
+!                     do i=1,nltest
+!                         ! Read the values into the first tile
+!                         read(16,*) obswetyr,(wetfrac_monrow(i,1,j),j=1,12)
+!                         if (nmtest > 1) then
+!                             do m = 2,nmtest !spread grid values over all tiles for easier use in model
+!                                 wetfrac_monrow(i,m,:) = wetfrac_monrow(i,1,:)
+!                             end do
+!                         end if
+!                     end do
+!                 end do
+!                 backspace(16)
+!             else !not needed, just set to 0 and move on.
+!                 wetfrac_monrow(:,:,:) = 0.0
+!             end if
 
-            if(obswetf) then
-                obswetyr=-99999
-                do while (obswetyr .lt. metcylyrst)
-                    do i=1,nltest
-                        ! Read the values into the first tile
-                        read(16,*) obswetyr,(wetfrac_monrow(i,1,j),j=1,12)
-                        if (nmtest > 1) then
-                            do m = 2,nmtest !spread grid values over all tiles for easier use in model
-                                wetfrac_monrow(i,m,:) = wetfrac_monrow(i,1,:)
-                            end do
-                        end if
-                    end do
-                end do
-                backspace(16)
-            else !not needed, just set to 0 and move on.
-                wetfrac_monrow(:,:,:) = 0.0
-            end if
-
-            if(obslght) then
-                obslghtyr=-99999
-                do while (obslghtyr .lt. metcylyrst)
-                    do i=1,nltest
-                        read(17,*) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
-                        if (nmtest > 1) then
-                            do m = 2,nmtest !spread grid values over all tiles for easier use in model
-                                mlightngrow(i,m,:) = mlightngrow(i,1,:)
-                            end do
-                        end if
-                    end do
-                end do
-                backspace(17)
-            end if
-
-            !      find the popd data to cycle over, popd is only cycled over when the met is cycled.
-
-            if (cyclemet .and. transientPOPD) then
-                popyr=-99999  ! initialization, forces entry to loop below
-                do while (popyr .lt. cypopyr)
-                    do i = 1, nltest
-                        read(13,5301) popyr,popdinrow(i,1) !place it in the first tile
-                        if (nmtest > 1) then
-                            do m = 2, nmtest
-                                popdinrow(i,m) = popdinrow(i,1) !spread this value over all tiles
-                            end do
-                        end if
-                    enddo
-                enddo
-            endif
-                !
         end if ! ctem_on
 
         iyear=-99999  ! initialization, forces entry to loop below
@@ -3659,41 +3560,6 @@ contains
                 !       but only if it was read in during the loop above.
                 if (metcylyrst .ne. -9999) backspace(12)
 
-                ! Find the correct years of the accessory input files (wetlands, lightning...)
-                ! if needed
-                if (ctem_on) then
-                    if (obswetf) then
-                        do while (obswetyr .lt. metcylyrst)
-                            do i = 1,nltest ! Read into the first tile position
-                                read(16,*) obswetyr,(wetfrac_monrow(i,1,j),j=1,12)
-                                if (nmtest > 1) then
-                                    do m = 1,nmtest !spread grid values over all tiles for easier use in model
-                                        wetfrac_monrow(i,m,:) = wetfrac_monrow(i,1,:)
-                                    end do
-                                end if
-                            enddo
-                        enddo
-                        if (metcylyrst .ne. -9999) backspace(16)
-                    else
-                        wetfrac_monrow(:,:,:) = 0.0
-                    endif !obswetf
-
-                    if(obslght) then
-                        do while (obslghtyr .lt. metcylyrst)
-                            do i=1,nltest
-                                read(17,*) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
-                                if (nmtest > 1) then
-                                    do m = 2,nmtest !spread grid values over all tiles for easier use in model
-                                        mlightngrow(i,m,:) = mlightngrow(i,1,:)
-                                    end do
-                                end if
-                            end do
-                        end do
-                        if (metcylyrst .ne. -9999) backspace(17)
-                    end if
-
-                endif ! ctem_on
-
                 met_rewound = .false.
 
             endif !met_rewound
@@ -3723,10 +3589,6 @@ contains
                 !         THE END OF FILE IT WILL GO TO 999.
                 READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSSROW(I),&
                     &        FDLROW(I),PREROW(I),TAROW(I),QAROW(I),UVROW(I),PRESROW(I)
-
-                ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday
-                ! values.
-                if (leap.and.(ihour.eq.0).and.(imin.eq.0).and.(iday.eq.1)) call findLeapYears(iyear,leapnow,lastDOY)
 
                 !         Assign the met climate year to climiyear
                 climiyear = iyear
@@ -3777,118 +3639,23 @@ contains
                 FCLOROW(I)=XDIFFUS(I)
 300         CONTINUE
 
-            !
-            ! If needed, read in the accessory input files (popd, wetlands, lightning...)
+            ! Check if we are on the first timestep of the first day of the year
             if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
 
+                ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday values.
+                if (leap) call findLeapYears(iyear,leapnow,lastDOY)
+
+                ! If needed, read in the accessory input files (popd, wetlands, lightning...)
                 if (ctem_on) then
 
                     ! Update the CO2 concentration for this year, if transientCO2
                     if (transientCO2) call updateInput('CO2',iyear)
                     if (transientCH4) call updateInput('CH4',iyear)
-                    print*,ch4concrow
+                    if (dofire .and. transientPOPD) call updateInput('POPD',iyear)
+                    !if (lnduseon) call updateInput('LUC',iyear)
 
-                    do i=1,nltest
-                        if (obswetf) then
-                            ! Note that this will be read in, regardless of the iyear, if the
-                            ! obswetf marker is true. This means you have to be restarting from a run
-                            ! that ends the year prior to the first year in this file.
-                            ! Read into the first tile position
-                            read(16,*,end=1001) obswetyr,(wetfrac_monrow(i,1,j),j=1,12)
-                            if (nmtest > 1) then
-                                do m = 2,nmtest !spread grid values over all tiles for easier use in model
-                                    wetfrac_monrow(i,m,:) = wetfrac_monrow(i,1,:)
-                                end do
-                            end if
-                        else
-                            wetfrac_monrow(:,:,:) = 0.0
-                        endif !obswetf
 
-                        if(obslght) then
-                            ! Note that this will be read in, regardless of the iyear, if the
-                            ! obswetf marker is true. This means you have to be restarting from a run
-                            ! that ends the year prior to the first year in this file.
-                            read(17,*,end=312) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
-                            if (nmtest > 1) then
-                                do m = 2,nmtest !spread grid values over all tiles for easier use in model
-                                    mlightngrow(i,m,:) = mlightngrow(i,1,:)
-                                end do
-                            end if
-312                         continue !if end of file, just keep using the last year of lighting data.
-                        end if !obslight
-                    end do !nltest
                 endif ! ctem_on
-
-                !         If transientPOPD=true, calculate fire extinguishing probability and
-                !         probability of fire due to human causes from population density
-                !         input data. In disturb.f90 this will overwrite extnprobrow
-                !         and prbfrhucgrd that are read in from the .ctm file. Set
-                !         cypopyr = -9999 when we don't want to cycle over the popd data
-                !         so this allows us to grab a new value each year.
-
-                if(transientPOPD .and. transient_run) then
-                    do while (popyr .lt. iyear)
-                        do i=1,nltest
-                            read(13,5301,end=999) popyr,popdinrow(i,1) !place it in the first tile
-                            if (nmtest > 1) then
-                                do m = 2, nmtest
-                                    popdinrow(i,m) = popdinrow(i,1) !spread this value over all tiles
-                                end do
-                            end if
-                        enddo
-                    enddo
-                endif
-
-                !         If transientCO2 is true, read co2concin from input datafile and
-                !         overwrite co2concrow, otherwise set to constant value.
-                !         Same applies to CH4.
-!                 co2yr =-9999
-!                 if(transientCO2 .or. transientCH4) then
-!                     if (transient_run) then
-!                         testyr = iyear
-!                         do while (co2yr .lt. testyr)
-!                             do i=1,nltest
-!                                 read(14,*,end=999) co2yr,co2concin,ch4concin
-!                                 do m=1,nmtest
-!                                     if (transientCO2) co2concrow(i,m)=co2concin
-!                                     if (transientCH4) ch4concrow(i,m)=ch4concin
-!                                 enddo
-!                             enddo
-!                         enddo !co2yr < testyr
-!                     else ! still spinning but you apparently want the CO2 to move forward with time
-!                         ! we assume the year you want to start from here is trans_startyr
-!                         testyr = trans_startyr
-!                         ! Now make sure we end up starting from the testyr
-!                         if (co2yr .lt. testyr) then
-!                             do while (co2yr .lt. testyr)
-!                                 do i=1,nltest
-!                                     read(14,*,end=999) co2yr,co2concin,ch4concin
-!                                     do m=1,nmtest
-!                                         if (transientCO2) co2concrow(i,m)=co2concin
-!                                         if (transientCH4) ch4concrow(i,m)=ch4concin
-!                                     enddo
-!                                 enddo
-!                             enddo !co2yr < testyr
-!                         else ! years beyond the first, just go up in years without paying attention to iyear (since it is cycling)
-!                             do i=1,nltest
-!                                 read(14,*,end=999) co2yr,co2concin,ch4concin
-!                                 do m=1,nmtest
-!                                     if (transientCO2) co2concrow(i,m)=co2concin
-!                                     if (transientCH4) ch4concrow(i,m)=ch4concin
-!                                 enddo
-!                             enddo
-!                         end if
-!                     end if !transient_run or not
-!                 end if !co2 or transientCH4
-!
-!                 if (.not. transientCO2 .or. .not. transientCH4) then !constant co2 or ch4
-!                     do i=1,nltest
-!                         do m=1,nmtest
-!                             if (.not. transientCO2) co2concrow(i,m)=fixedCO2Conc
-!                             if (.not. transientCO2) ch4concrow(i,m)=fixedYearCH4
-!                         enddo
-!                     enddo
-!                 endif
 
                 !         If lnduseon is true, read in the luc data now
 
@@ -3912,6 +3679,7 @@ contains
 
             endif   ! at the first day of each year i.e. if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
 
+            !if (dofire ) call updateInput('LGHT',iyear) !FLAG MAKE ONLY FIRST DAY OF MONTH!!!
 
             if (ihour.eq.0.and.imin.eq.0) then ! first time step of the day
                 ! Find the daylength of this day
@@ -5817,16 +5585,6 @@ contains
                         iyear=-9999
                         obswetyr=-9999
 
-                        if(transientPOPD) then
-                            rewind(13) !rewind popd file
-                            read(13,*) ! skip header (3 lines)
-                            read(13,*) ! skip header (3 lines)
-                            read(13,*) ! skip header (3 lines)
-                        endif
-                        !if((transientCO2 .or. transientCH4) .and. trans_startyr < 0) then
-                        !    rewind(14) !rewind co2 file
-                        !endif
-
                     else if (lopcount.le.metLoop .and. transient_run)then
                         ! rewind only the MET file (since we are looping over the MET  while
                         ! the other inputs continue on.
@@ -5922,7 +5680,7 @@ contains
 
         !close the input files too
         close(12)
-        close(13)
+        !close(13)
         !close(14)
 
         if (obswetf) then
@@ -5953,12 +5711,12 @@ contains
             iyear=-9999
             obswetyr=-9999   !Rudra
 
-            if(transientPOPD) then
-                rewind(13) !rewind popd file
-                read(13,*) ! skip header (3 lines)
-                read(13,*) ! skip header
-                read(13,*) ! skip header
-            endif
+!             if(transientPOPD) then
+!                 rewind(13) !rewind popd file
+!                 read(13,*) ! skip header (3 lines)
+!                 read(13,*) ! skip header
+!                 read(13,*) ! skip header
+!             endif
             !if((transientCO2 .or. transientCH4) .and. trans_startyr < 0) then
             !    rewind(14) !rewind co2 file
             !endif
@@ -6003,7 +5761,7 @@ contains
 
             !     CLOSE THE INPUT FILES TOO
             CLOSE(12)
-            CLOSE(13)
+            !CLOSE(13)
             !CLOSE(14)
 
             ! -close peatland output and input files--------------\

@@ -40,6 +40,9 @@ module outputManager
     integer :: rsid                                 !> netcdf file id for the model restart file
     integer :: co2id                                !> netcdf file id for the CO2 input file
     integer :: ch4id                                !> netcdf file id for the CH4 input file
+    integer :: popid                                !> netcdf file id for the population density input file
+    integer :: lghtid                               !> netcdf file id for the lightning density input file
+    integer :: lucid                                !> netcdf file id for the land use change input file
 
     !> This data structure is used to set up the output netcdf files.
     type outputDescriptor
@@ -67,7 +70,6 @@ module outputManager
 
     integer         :: refyr = 1850                     !< !< Time reference for netcdf output files
     character(30)   :: timestart = "days since 1850-01-01 00:00" !< Time reference for netcdf output files
-    !character(30)   :: fill_value = "1.e38"             !< Default fill value for missing values in netcdf output files
     real   :: fill_value = 1.E38             !< Default fill value for missing values in netcdf output files
 
 contains

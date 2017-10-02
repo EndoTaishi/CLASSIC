@@ -66,16 +66,20 @@ type ctem_switches
                            !<if this is set to false, the ini and ctm file info will be used to set up the run.
                            !<NOTE: This still keeps the crop fractions (while setting all pools to zero)
     logical :: lnduseon    !<logical switch to run the land use change subroutine or not.
+    character(180) :: LUCFile  !< Location of the netcdf file containing land use change information
+    integer :: fixedYearLUC  !< set the year to use for LUC
     logical :: transientCH4      !<use \f$CH_4\f$ time series, set to false if cyclemet is true the \f$CO_2\f$ timeseries is in the
                            !<same input file as the \f$CO_2\f$ one.
     character(180) :: CH4File  !< Location of the netcdf file containing atmospheric CH4 values
     integer :: fixedYearCH4  !< set the year to use for atmospheric \f$CH_4\f$ if transientCH4 is false. (ppmv)
-    logical :: transientPOPD      !<if set true use population density data to calculate fire extinguishing probability and
-                           !<probability of fire due to human causes, or if false, read directly from .ctm file
-    integer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
+    logical :: transientPOPD      !<if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes
+    character(180) :: POPDFile  !< Location of the netcdf file containing population density values
+    integer :: fixedYearPOPD !< popd and luc year to cycle on when cyclemet is true, set to -9999
                          !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
                                  !< this defaults to -9999, which will then cause the model to cycle on
                                  !< whatever is the first year in the popd and luc datasets
+    character(180) :: LGHTFile  !< Location of the netcdf file containing lightning density values
+
     logical :: inibioclim  !<switch telling if bioclimatic parameters are being initialized
                            !<from scratch (false) or being initialized from some spun up
                            !<values(true).

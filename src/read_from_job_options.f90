@@ -78,8 +78,11 @@ contains
         character(:), pointer :: CH4File
         integer, pointer :: fixedYearCH4
         logical, pointer :: transientPOPD
-        integer, pointer :: popcycleyr
+        character(:), pointer :: POPDFile
+        integer, pointer :: fixedYearPOPD
         logical, pointer :: dofire
+        character(:), pointer :: LUCFile
+        integer, pointer :: fixedYearLUC
         logical, pointer :: dowetlands
         logical, pointer :: obswetf
         logical, pointer :: PFTCompetition
@@ -148,7 +151,6 @@ contains
         ctem_on, &
         icc, &
         spinfast, &
-        lnduseon, &
         transientCO2, &
         CO2File, &
         fixedYearCO2, &
@@ -156,7 +158,11 @@ contains
         CH4File, &
         fixedYearCH4, &
         transientPOPD, &
-        popcycleyr, &
+        POPDFile, &
+        fixedYearPOPD, &
+        lnduseon, &
+        LUCFile, &
+        fixedYearLUC, &
         PFTCompetition, &
         inibioclim, &
         start_bare, &
@@ -209,6 +215,8 @@ contains
         ctem_on         => c_switch%ctem_on
         ncyear          => c_switch%ncyear
         lnduseon        => c_switch%lnduseon
+        LUCFile         => c_switch%LUCFile
+        fixedYearLUC    => c_switch%fixedYearLUC
         spinfast        => c_switch%spinfast
         cyclemet        => c_switch%cyclemet
         nummetcylyrs    => c_switch%nummetcylyrs
@@ -220,7 +228,8 @@ contains
         CH4File         => c_switch%CH4File
         fixedYearCH4    => c_switch%fixedYearCH4
         transientPOPD   => c_switch%transientPOPD
-        popcycleyr      => c_switch%popcycleyr
+        POPDFile        => c_switch%POPDFile
+        fixedYearPOPD   => c_switch%fixedYearPOPD
         dofire          => c_switch%dofire
         dowetlands      => c_switch%dowetlands
         obswetf         => c_switch%obswetf

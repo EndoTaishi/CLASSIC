@@ -487,34 +487,64 @@ contains
         ncGet1DVar = inflateTo1D(data)
     end function ncGet1DVar
 
+!     function ncGet2DVar(fileId, label, start, count, format)
+!         integer, intent(in)                         :: fileId
+!         character(*), intent(in)                    :: label
+!         integer, dimension(:), intent(in)           :: start
+!         integer, dimension(:), optional, intent(in) :: count, format
+!         dataPack                                    :: data
+!         real, dimension(:,:), allocatable           :: ncGet2DVar
+!         integer, dimension(3)                       :: localCount
+!         integer, dimension(2)                       :: localFormat
+!         if (present(format)) then
+!             localFormat = format
+!         else
+!             localFormat = [1, 1]
+!         endif
+!         if (present(count)) then
+!             if (size(count) == 3) then
+!                 localCount = count
+!                 data = ncGetVar(fileId, label, start, localCount)
+!                 ncGet2DVar = inflateTo2D(data, localFormat)
+!             else ! this can be called to just get a simple 2D field so do that here.
+!                 data = ncGetVar(fileId, label, start, count)
+!                 ncGet2DVar = inflateTo2D(data, count)
+!             end if
+!         else
+!             localCount = [1, 1, 1]
+!             data = ncGetVar(fileId, label, start, localCount)
+!             ncGet2DVar = inflateTo2D(data, localFormat)
+!         endif
+!     end function ncGet2DVar
+
     function ncGet2DVar(fileId, label, start, count, format)
         integer, intent(in)                         :: fileId
         character(*), intent(in)                    :: label
-        integer, dimension(:), intent(in)           :: start
-        integer, dimension(:), optional, intent(in) :: count, format
+        integer, intent(in)                         :: start(:)
+        integer, intent(in), optional               :: count(:), format(:)
+        real, allocatable                           :: ncGet2DVar(:,:)
+        integer, allocatable                        :: localCount(:), localFormat(:)
         dataPack                                    :: data
-        real, dimension(:,:), allocatable           :: ncGet2DVar
-        integer, dimension(3)                       :: localCount
-        integer, dimension(2)                       :: localFormat
+
         if (present(format)) then
+            allocate(localFormat(size(format)))
             localFormat = format
         else
-            localFormat = [1, 1]
+            allocate(localFormat(3))
+            localFormat = [1, 1, 1]
         endif
+
         if (present(count)) then
-            if (size(count) == 3) then
-                localCount = count
-                data = ncGetVar(fileId, label, start, localCount)
-                ncGet2DVar = inflateTo2D(data, localFormat)
-            else ! this can be called to just get a simple 2D field so do that here.
-                data = ncGetVar(fileId, label, start, count)
-                ncGet2DVar = inflateTo2D(data, count)
-            end if
+            allocate(localCount(size(count)))
+            localCount = count
         else
+            allocate(localCount(3))
             localCount = [1, 1, 1]
-            data = ncGetVar(fileId, label, start, localCount)
-            ncGet2DVar = inflateTo2D(data, localFormat)
         endif
+
+        data = ncGetVar(fileId, label, start, localCount)
+        ncGet2DVar = inflateTo2D(data, localFormat)
+
     end function ncGet2DVar
 
     function ncGet3DVar(fileId, label, start, count, format)

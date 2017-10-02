@@ -21,7 +21,7 @@
      &                    extnprob,   stdaln,     tbar,transientPOPD, &
      &                    nol2pfts, pfcancmx, nfcancmx,  lnduseon,&
      &                      thicec, soildpth, spinfast,   todfrac,&
-     &        PFTCompetition,   netrad,   precip,   psisat, grclarea, &
+     &          PFTCompetition, netrad,   precip,   psisat, grclarea, &
      &                    popdin, dofire,  dowetlands,obswetf,isand,  &
      &                   faregat, onetile_perPFT, wetfrac, slopefrac,&
      &                       bi,     thpor,    thiceg, currlat, &

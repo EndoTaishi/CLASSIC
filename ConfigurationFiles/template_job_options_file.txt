@@ -9,50 +9,58 @@
                           !< only having the climate from 1901 while having the other inputs from 1850.
  trans_startyr = 1850 ,   !< the year you want the transient run to start (e.g. 1850). If you
                           !! are not doing a transient run, set to a negative value (like -9999)
- metLoop = 1 ,            !< no. of times the meteorology cycling should happen.
 
+ metLoop = 1 ,            !< no. of times the meteorology cycling should happen.
  ncyear = 109 ,           !< no. of years in the .met file. FLAG - redundant?
  cyclemet = .true. ,
  nummetcylyrs = 2 ,
  metcylyrst = 1901 ,
-
  leap = .false. ,
 
+ ! CTEM (biogeochemistry) switches:
  ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
                         !< lai and canopy mass are used. with this switch on, all ctem subroutines are run.
- icc = 12 ,
+    icc = 12 ,
 
- spinfast = 3 ,
+    spinfast = 3 ,
 
- lnduseon = .false. ,
- ! This will need a LUC year thing too. Perhaps like below.
+    !CO2 switches:
+        transientCO2 = .true. , !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
+        CO2File = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc' ,
+        fixedYearCO2 = 1850 ,      !If transientCO2 = .true., this is ignored.
 
- !CO2 switches:
-    transientCO2 = .true. , !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
-    CO2File = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc' ,
-    fixedYearCO2 = 1850 ,      !If transientCO2 = .true., this is ignored.
+    !CH4 switches:
+        transientCH4 = .true. ,
+        CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
+        fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
- !CH4 switches:
-    transientCH4 = .true. ,
-    CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
-    fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
+    !Fire switches
+        dofire = .true. ,
+        transientPOPD = .true. ,
+        POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017.nc'
+        fixedYearPOPD = 1850 ,    !Change this to take in the year? Comes from spinup year?
+        ! LGHTFile = ''
 
- !Fire switches
-    dofire = .false. ,
-    transientPOPD = .true. ,
-    popcycleyr = 1850 ,    !Change this to take in the year? Comes from spinup year?
+    ! Competition switches:
+        PFTCompetition = .false. ,
+        inibioclim = .false. ,   ! Remove. Can set up in initFile so this flag is not needed.
+        start_bare = .false.,    ! Can remove? Check logic.
 
- PFTCompetition = .false. ,
- inibioclim = .false. ,   ! Remove. Can set up in initFile so this flag is not needed.
- start_bare = .false.,    ! Can remove? Check logic.
-
-
+    ! Land Use switches:
+        ! If you wish to use your own PFT fractional covers, set fixedYearLUC to -9999, otherwise set it
+        ! to the year of land cover you want to use. If you wish to have transient land cover changes, set
+        ! lnduseon to true.
+        lnduseon = .true. ,
+        LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_Aug_2017.nc' ,
+        fixedYearLUC = 1850 ,
 
 
  dowetlands = .false. ,  !Remove
  obswetf = .false. ,
 
  use_netcdf = .true. ,  ! This will be removed.
+
+! Input files:
 
  met_file = '/raid/ra40/data/rjm/CRUNCEP_MET_data/t63files/cruncepv7_1901_2015_T63.nc' ,
  init_file = 'inputFiles/initFile.nc' ,
@@ -77,28 +85,28 @@
  isnoalb = 0 ,
 
  ! Output options:
- output_directory = '/home/rjm/Documents/CTEM/test' ,
- xmlFile = 'ConfigurationFiles/outputVariableDescriptors.xml' ,
+    output_directory = '/home/rjm/Documents/CTEM/test' ,
+    xmlFile = 'ConfigurationFiles/outputVariableDescriptors.xml' ,
 
- doperpftoutput = .true. ,
- dopertileoutput = .true. ,
+    doperpftoutput = .true. ,
+    dopertileoutput = .true. ,
 
- dohhoutput = .false. ,
- JHHSTD = 1 ,
- JHHENDD = 365 ,
- JHHSTY = 2901 ,
- JHHENDY = 3010 ,
+    dohhoutput = .false. ,
+    JHHSTD = 1 ,
+    JHHENDD = 365 ,
+    JHHSTY = 2901 ,
+    JHHENDY = 3010 ,
 
- dodayoutput = .false. ,
- JDSTD = 1 ,
- JDENDD = 365 ,
- JDSTY = 2901 ,
- JDENDY = 2999 ,
+    dodayoutput = .false. ,
+    JDSTD = 1 ,
+    JDENDD = 365 ,
+    JDSTY = 2901 ,
+    JDENDY = 2999 ,
 
- domonthoutput = .true. ,
- JMOSTY = 1000 ,
+    domonthoutput = .true. ,
+    JMOSTY = 1000 ,
 
- Comment = ' test '
+    Comment = ' test '  !This comment will be written in all output netcdf files.
 
  /
 
