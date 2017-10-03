@@ -1,17 +1,3 @@
-# Serial compiler
-GC = gfortran
-# Serial Include Flags
-SIFLAGS = -O3 -g -I/usr/include
-# Serial Library Flags
-SLFLAGS = -lnetcdff
-
-# Parallel compiler
-MPIC = mpif90
-# Parallel Include Flags
-PIFLAGS = -O3 -g -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib
-# Parallel Library Flags
-PLFLAGS = -DPARALLEL -lpnetcdf
-
 # Object files
 OBJ = dataTransferModule.o fileIOModule.o ctem_params.o ctem_statevars.o  peatlands_mod.o \
 	class_statevars.o generalUtils.o APREP.o CLASSBD.o GRALB.o mvidx.o SNOW_ALBVAL.o SNOW_TRANVAL.o SNOALBA.o \
@@ -22,19 +8,36 @@ OBJ = dataTransferModule.o fileIOModule.o ctem_params.o ctem_statevars.o  peatla
 	CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o \
 	TNPOST.o WEND.o balcar.o ORDLEG.o mainres.o allocate.o phenolgy.o turnover.o mortality.o \
 	disturb.o ctems2.o competition_map.o competition_unmap.o landuse_change_mod.o soil_ch4uptake.o \
-	competition_mod.o hetres_mod.o ctem.o outputManager.o io_driver.o model_state_drivers.o \
-	read_from_job_options.o main.o xmlParser.o xmlManager.o CLASSIC.o
+	competition_mod.o hetres_mod.o ctemUtilities.o ctem.o outputManager.o io_driver.o  \
+	model_state_drivers.o read_from_job_options.o main.o xmlParser.o xmlManager.o CLASSIC.o
+
+# This is the directory our .o and .mod files will be put into.
+ODIR = objectFiles
+
+# Serial compiler
+GC = gfortran
+# Serial Include Flags
+SIFLAGS = -O3 -g -I/usr/include -J$(ODIR)
+# Serial Library Flags
+SLFLAGS = -lnetcdff
+
+# Parallel compiler
+MPIC = mpif90
+# Parallel Include Flags
+PIFLAGS = -O3 -g -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib -J$(ODIR)
+# Parallel Library Flags
+PLFLAGS = -DPARALLEL -lpnetcdf
 
 # Check to see if the model should be compiled to run in serial or parallel
 # For a parallel run, use the command "make PARALLEL=true"
 # For a serial run, use the command "make" 
 ifeq ($(PARALLEL), true)
-  	COMPILER=$(MPIC)
-  	IFLAGS = $(PIFLAGS)
+	COMPILER=$(MPIC)
+	IFLAGS = $(PIFLAGS)
 	LFLAGS = $(PLFLAGS)
 else
-  	COMPILER=$(GC)
-  	IFLAGS = $(SIFLAGS)
+	COMPILER=$(GC)
+	IFLAGS = $(SIFLAGS)
 	LFLAGS = $(SLFLAGS)
 endif
 
@@ -44,21 +47,24 @@ LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -
 
 # RECIPES
 # Compile object files from .F90 sources
-%.o: src/%.F90
+$(ODIR)/%.o: src/%.F90
 	$(COMPILER) $(IFLAGS) -c $< -o $@ $(LFLAGS)
 
 # Compile object files from .f90 sources
-%.o: src/%.f90
+$(ODIR)/%.o: src/%.f90
 	$(COMPILER) $(IFLAGS) -c $< -o $@ $(LFLAGS)
 
 # Compile object files from .f (Fortran 77) sources
-%.o: src/%.f
+$(ODIR)/%.o: src/%.f
 	$(COMPILER) $(IFLAGS) -c $< -o $@ $(LFLAGS)
 
+# Properly reference the ODIR for the linking
+OBJD = $(patsubst %,$(ODIR)/%,$(OBJ))
+
 # Link objects together and put executable in the bin/ directory
-CLASSIC: $(OBJ)
-	$(COMPILER) $(IFLAGS) -o bin/CLASSIC $(OBJ) $(LFLAGS)
+CLASSIC: $(OBJD)
+	$(COMPILER) $(IFLAGS) -o bin/CLASSIC $(OBJD) $(LFLAGS)
 
 # "make clean" removes all object files and executables
 clean:
-	rm -f *.o *.mod *~ core CLASSIC
+	rm -f $(ODIR)/*.o $(ODIR)/*.mod *~ core CLASSIC

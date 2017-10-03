@@ -1510,7 +1510,7 @@ end subroutine ctem_daily_aw
 !>\ingroup io_driver_ctem_monthly_aw
 !>@{
 
-subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FAREROT,iyear,nday,lastDOY,onetile_perPFT)
+subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FAREROT,iyear,nday,lastDOY)
 
     ! Accumulate and write out the monthly CTEM outputs
 
@@ -1531,7 +1531,6 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FARERO
     real, intent(in), dimension(:,:) :: FAREROT
     integer, intent(in) :: iyear
     integer, intent(in) :: nday
-    logical, intent(in) :: onetile_perPFT
     integer, intent(in) :: lastDOY
 
     ! pointers
@@ -2259,7 +2258,7 @@ end subroutine ctem_monthly_aw
 !==============================================================================================================
 !>\ingroup io_driver_ctem_annual_aw
 !>@{
-subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,nmtest,FAREROT,onetile_perPFT,lastDOY)
+subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,nmtest,FAREROT,lastDOY)
 
     use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
     resetyearend
@@ -2277,7 +2276,6 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,n
     integer, intent(in) :: imonth
     real, intent(in), dimension(:,:) :: FAREROT
     integer, intent(in) :: iyear
-    logical, intent(in) :: onetile_perPFT
     integer, intent(in) :: lastDOY
 
     ! pointers
@@ -2894,7 +2892,7 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,n
             if (nmtest > 1) then
                 print*,'Per PFT and per tile outputs not implemented yet'
             else
-                m = 1
+                m = 1 !FLAG
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'laimaxg_yr' ,timeStamp,'lai', [laimaxg_yr(i,m,:)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'vgbiomas_yr',timeStamp,'cVeg',[vgbiomas_yr(i,m,:)])
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'stemmass_yr',timeStamp,'cStem',[stemmass_yr(i,m,:)])

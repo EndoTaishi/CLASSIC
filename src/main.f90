@@ -48,11 +48,8 @@ contains
 
         use ctem_params,        only : nlat,nmos,ilg,nmon,ican, ignd, icc, &
             &                               monthend, mmday,modelpft, l2max,&
-            &                                deltat,seed,NBS, readin_params,&
-            &                                allocateParamsCTEM
-
+            &                                deltat,seed,NBS, readin_params
         use landuse_change,     only : initialize_luc, readin_luc
-
         use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,&
             &                               resetmonthend,resetyearend,&
             &                               ctem_grd,ctem_tile,resetgridavg
@@ -60,25 +57,25 @@ contains
             &                               resetclassmon,resetclassyr
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
             &                               ctem_daily_aw,class_annual_aw
-        use outputManager, only : closeNCFiles
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils, only : findDaylength,findLeapYears
-        use model_state_drivers, only : getInput,updateInput
+        use model_state_drivers, only : getInput,updateInput,deallocInput
+        use ctemUtilities, only : dayEndCTEMPreparation,accumulateForCTEM
 
         implicit none
 
-        real, intent(in) :: longitude, latitude                 ! Longitude/latitude of grid cell being run in degrees
+        real, intent(in) :: longitude, latitude                 ! Longitude/latitude of grid cell (degrees)
         integer, intent(in) :: lonIndex, latIndex               ! Index of grid cell being run on the input files grid
         integer, intent(in) :: lonLocalIndex, latLocalIndex     ! Index of grid cell being run on the output files grid
 
-        integer :: lastDOY = 365
-        logical :: run_model
+        integer :: lastDOY = 365    !< Initialize to 365 days, can be overwritten later is leap = true and it is a leap year.
+        logical :: run_model        !< Simple logical switch to either keep run going or finish
 
         INTEGER NLTEST  !<Number of grid cells being modelled for this run
         INTEGER NMTEST  !<Number of mosaic tiles per grid cell being modelled for this run
         INTEGER NCOUNT  !<Counter for daily averaging
-        INTEGER NDAY    !<
-        INTEGER IMONTH  !<
+        INTEGER NDAY    !<Number of short (physics) timesteps in one day. e.g., if physics timestep is 15 min this is 48.
+        INTEGER IMONTH  !<Month of the year simulation is in.
         INTEGER NT      !<
         INTEGER IHOUR   !<Hour of day
         INTEGER IMIN    !<Minutes elapsed in current hour
@@ -94,7 +91,6 @@ contains
         INTEGER NLANDI  !<Number of modelled areas that are ice sheets
         INTEGER I,J,K,L,M,N
         INTEGER NTLD    !<
-        !
         INTEGER K1,K2,K3,K4,K5,K6,K7,K8,K9,K10,K11
         INTEGER ITA        !<
         INTEGER ITCAN      !<
@@ -812,9 +808,9 @@ contains
         !
         !     Local variables for coupling CLASS and CTEM
         !
-        integer   lopcount,  isumc,k1c,k2c,month1,month2,xday,&! co2yr, &
-            &           nol2pfts(4),popyr, metcycendyr,climiyear,cypopyr,lucyr,&
-            &           cylucyr, endyr,bigpftc(1), obswetyr,obslghtyr,testyr
+        integer   lopcount,  isumc,k1c,k2c,month1,month2,xday,&
+            &           nol2pfts(4), metcycendyr,climiyear,lucyr,&
+            &           cylucyr, endyr,bigpftc(1)
 
         !real      co2concin,ch4concin
         integer, allocatable, dimension(:,:) :: icountrow  !FLAG move out.
@@ -911,29 +907,29 @@ contains
                                 !< a user-supplied input value.
         integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
                                         !< if it is set to 1, the new four-band routines are used.
-        integer, allocatable, dimension(:) :: altotcount_ctm !nlat
-        real, allocatable, dimension(:,:)  :: todfrac  !(ilg,icc)
-        real, allocatable, dimension(:,:)  :: barf  !(nlat,nmos)
-        real, allocatable, dimension(:)    :: fsinacc_gat !(ilg)
-        real, allocatable, dimension(:)    :: flutacc_gat !(ilg)
-        real, allocatable, dimension(:)    :: flinacc_gat !(ilg)
-        real, allocatable, dimension(:)    :: alswacc_gat !(ilg)
-        real, allocatable, dimension(:)    :: allwacc_gat !(ilg)
-        real, allocatable, dimension(:)    :: pregacc_gat !(ilg)
-        real, allocatable, dimension(:)    :: altotacc_gat !(ilg)
-        real, allocatable, dimension(:)    :: netrad_gat !(ilg)
-        real, allocatable, dimension(:)    :: preacc_gat !(ilg)
-        real, allocatable, dimension(:)    :: sdepgat !(ilg)
-        real, allocatable, dimension(:,:)  :: rgmgat !(ilg,ignd)
-        real, allocatable, dimension(:,:)  :: sandgat !(ilg,ignd)
-        real, allocatable, dimension(:,:)  :: claygat !(ilg,ignd)
-        real, allocatable, dimension(:,:)  :: orgmgat !(ilg,ignd)
-        real, allocatable, dimension(:)    :: xdiffusgat !(ilg) ! the corresponding ROW is CLASS's XDIFFUS
-        real, allocatable, dimension(:)    :: faregat !(ilg)   ! the ROT is FAREROT
-        real, allocatable, dimension(:,:)  :: FTABLE !(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
-        real, allocatable, dimension(:,:)  :: ACTLYR !(NLAT,NMOS)
-
-        real fsstar_gat, flstar_gat !FLAG should these have more dimensions? JM Feb 2016.
+        integer, pointer, dimension(:) :: altotcount_ctm !nlat
+        real, pointer, dimension(:,:)  :: todfrac  !(ilg,icc)
+        real, pointer, dimension(:,:)  :: barf  !(nlat,nmos)
+        real, pointer, dimension(:)    :: fsinacc_gat !(ilg)
+        real, pointer, dimension(:)    :: flutacc_gat !(ilg)
+        real, pointer, dimension(:)    :: flinacc_gat !(ilg)
+        real, pointer, dimension(:)    :: alswacc_gat !(ilg)
+        real, pointer, dimension(:)    :: allwacc_gat !(ilg)
+        real, pointer, dimension(:)    :: pregacc_gat !(ilg)
+        real, pointer, dimension(:)    :: altotacc_gat !(ilg)
+        real, pointer, dimension(:)    :: netrad_gat !(ilg)
+        real, pointer, dimension(:)    :: preacc_gat !(ilg)
+        real, pointer, dimension(:)    :: sdepgat !(ilg)
+        real, pointer, dimension(:,:)  :: rgmgat !(ilg,ignd)
+        real, pointer, dimension(:,:)  :: sandgat !(ilg,ignd)
+        real, pointer, dimension(:,:)  :: claygat !(ilg,ignd)
+        real, pointer, dimension(:,:)  :: orgmgat !(ilg,ignd)
+        real, pointer, dimension(:)    :: xdiffusgat !(ilg) ! the corresponding ROW is CLASS's XDIFFUS
+        real, pointer, dimension(:)    :: faregat !(ilg)   ! the ROT is FAREROT
+        real, pointer, dimension(:,:)  :: FTABLE !(NLAT,NMOS) !,ALAVG,ALMAX,FTAVG,FTMAX
+        real, pointer, dimension(:,:)  :: ACTLYR !(NLAT,NMOS)
+!
+         real fsstar_gat, flstar_gat
 
         ! Model switches:
         logical, pointer :: ctem_on
@@ -952,9 +948,7 @@ contains
         logical, pointer :: dowetlands
         logical, pointer :: obswetf
         logical, pointer :: transient_run
-        logical, pointer :: use_netcdf
         character(:), pointer :: met_file
-        character(:), pointer :: init_file
         character(:), pointer :: runparams_file  !< location of the namelist file containing the model parameters
         logical, pointer :: domonthoutput
         logical, pointer :: dodayoutput
@@ -2202,9 +2196,7 @@ contains
         dowetlands        => c_switch%dowetlands
         obswetf           => c_switch%obswetf
         transient_run     => c_switch%transient_run
-        use_netcdf        => c_switch%use_netcdf
         met_file          => c_switch%met_file
-        init_file         => c_switch%init_file
         runparams_file    => c_switch%runparams_file
         jhhstd            => c_switch%jhhstd
         jhhendd           => c_switch%jhhendd
@@ -2482,6 +2474,28 @@ contains
         vgbiomas_veggat   => vgat%vgbiomas_veg
         litrfallveggat    => vgat%litrfallveg
         humiftrsveggat    => vgat%humiftrsveg
+
+        altotcount_ctm    => vgat%altotcount_ctm
+        todfrac           => vgat%todfrac
+        barf              => vgat%barf
+        fsinacc_gat       => vgat%fsinacc_gat
+        flutacc_gat       => vgat%flutacc_gat
+        flinacc_gat       => vgat%flinacc_gat
+        alswacc_gat       => vgat%alswacc_gat
+        allwacc_gat       => vgat%allwacc_gat
+        pregacc_gat       => vgat%pregacc_gat
+        altotacc_gat      => vgat%altotacc_gat
+        netrad_gat        => vgat%netrad_gat
+        preacc_gat        => vgat%preacc_gat
+        sdepgat           => vgat%sdepgat
+        rgmgat            => vgat%rgmgat
+        sandgat           => vgat%sandgat
+        claygat           => vgat%claygat
+        orgmgat           => vgat%orgmgat
+        xdiffusgat        => vgat%xdiffusgat
+        faregat           => vgat%faregat
+        FTABLE            => vgat%FTABLE
+        ACTLYR            => vgat%ACTLYR
 
         emit_co2gat       => vgat%emit_co2
         emit_cogat        => vgat%emit_co
@@ -2790,30 +2804,30 @@ contains
         JLAT=NINT(DLATROW(1))
         DLONROW(1) = longitude
 
-        ! Allocate the local variables that rely on nlat, ilg, etc.
-        allocate(&  !FLAG move these into external data structures!
-            altotcount_ctm(nlat),&
-            todfrac(ilg,icc),&
-            barf(nlat,nmos),&
-            fsinacc_gat(ilg),&
-            flutacc_gat(ilg),&
-            flinacc_gat(ilg),&
-            alswacc_gat(ilg),&
-            allwacc_gat(ilg),&
-            pregacc_gat(ilg),&
-            altotacc_gat(ilg),&
-            netrad_gat(ilg),&
-            preacc_gat(ilg),&
-            sdepgat(ilg),&
-            rgmgat(ilg,ignd),&
-            sandgat(ilg,ignd),&
-            claygat(ilg,ignd),&
-            orgmgat(ilg,ignd),&
-            xdiffusgat(ilg),& ! the corresponding ROW is CLASS's XDIFFUS
-            faregat(ilg),&    ! the ROT is FAREROT
-            FTABLE(nlat,nmos),&
-            ACTLYR(nlat,nmos),&
-            icountrow(nlat,nmos))
+!         ! Allocate the local variables that rely on nlat, ilg, etc.
+         allocate(&  !FLAG move these into external data structures!
+!             altotcount_ctm(nlat),&
+!             todfrac(ilg,icc),&
+!             barf(nlat,nmos),&
+!             fsinacc_gat(ilg),&
+!             flutacc_gat(ilg),&
+!             flinacc_gat(ilg),&
+!             alswacc_gat(ilg),&
+!             allwacc_gat(ilg),&
+!             pregacc_gat(ilg),&
+!             altotacc_gat(ilg),&
+!             netrad_gat(ilg),&
+!             preacc_gat(ilg),&
+!             sdepgat(ilg),&
+!             rgmgat(ilg,ignd),&
+!             sandgat(ilg,ignd),&
+!             claygat(ilg,ignd),&
+!             orgmgat(ilg,ignd),&
+!             xdiffusgat(ilg),& ! the corresponding ROW is CLASS's XDIFFUS
+!             faregat(ilg),&    ! the ROT is FAREROT
+!             FTABLE(nlat,nmos),&
+!             ACTLYR(nlat,nmos),&
+             icountrow(nlat,nmos))
 
         call initrowvars()
         call resetclassaccum(nlat,nmos)
@@ -2856,12 +2870,6 @@ contains
         open(unit=12,file='/home/rjm/Documents/CTEM/test/test.MET',&
             &      status='old')
 
-        !
-!         if (obswetf) then
-!             open(unit=16,file='/home/rjm/Documents/CTEM/test/test.WET',&
-!                 &         status='old')
-!         endif
-
         !     * CLASS daily and half-hourly output files (monthly and annual are done in io_driver)
 !         !
 !         if (.not. parallelrun) then ! stand alone mode, includes half-hourly and daily output
@@ -2899,13 +2907,6 @@ contains
 !       open(unit=90,file='test.CT18Y_G') !peatland depth information
       
 !    YW March 25, 2015 ----------------------------------------------/
-
-        IF(CTEM_ON) THEN
-
-            if(obswetf) then
-                read(16,*)
-            end if
-        ENDIF
         !
 !         IF (.NOT. PARALLELRUN) THEN ! STAND ALONE MODE, INCLUDES HALF-HOURLY AND DAILY OUTPUT
 !             !
@@ -3334,28 +3335,6 @@ contains
                 end do
             end do
 
-            !     ----------
-
-!             !     preparation with the input datasets prior to launching run:
-!
-!             if(obswetf) then
-!                 obswetyr=-99999
-!                 do while (obswetyr .lt. metcylyrst)
-!                     do i=1,nltest
-!                         ! Read the values into the first tile
-!                         read(16,*) obswetyr,(wetfrac_monrow(i,1,j),j=1,12)
-!                         if (nmtest > 1) then
-!                             do m = 2,nmtest !spread grid values over all tiles for easier use in model
-!                                 wetfrac_monrow(i,m,:) = wetfrac_monrow(i,1,:)
-!                             end do
-!                         end if
-!                     end do
-!                 end do
-!                 backspace(16)
-!             else !not needed, just set to 0 and move on.
-!                 wetfrac_monrow(:,:,:) = 0.0
-!             end if
-
         end if ! ctem_on
 
         iyear=-99999  ! initialization, forces entry to loop below
@@ -3639,54 +3618,54 @@ contains
                 FCLOROW(I)=XDIFFUS(I)
 300         CONTINUE
 
-            ! Check if we are on the first timestep of the first day of the year
-            if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0) then
+            ! Check if we are on the first timestep of the day
+            if (ihour.eq.0.and.imin.eq.0) then
 
-                ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday values.
-                if (leap) call findLeapYears(iyear,leapnow,lastDOY)
-
-                ! If needed, read in the accessory input files (popd, wetlands, lightning...)
-                if (ctem_on) then
-
-                    ! Update the CO2 concentration for this year, if transientCO2
-                    if (transientCO2) call updateInput('CO2',iyear)
-                    if (transientCH4) call updateInput('CH4',iyear)
-                    if (dofire .and. transientPOPD) call updateInput('POPD',iyear)
-                    !if (lnduseon) call updateInput('LUC',iyear)
-
-
-                endif ! ctem_on
-
-                !         If lnduseon is true, read in the luc data now
-
-                if (ctem_on .and. lnduseon .and. transient_run) then
-
-                    call readin_luc(iyear,nmtest,nltest,lucyr,&
-                        &          nfcancmxrow,pfcancmxrow,reach_eof,PFTCompetition,&
-                        &          onetile_perPFT)
-                    if (reach_eof) goto 999
-
-                else ! lnduseon = false or met is cycling in a spin up run
-
-                    !         Land use is not on or the met data is being cycled, so the
-                    !         pfcancmx value is also the nfcancmx value.
-
-                    nfcancmxrow=pfcancmxrow
-
-                endif ! lnduseon/cyclemet
-
-                pddrow=0 ! EC Jan 31 2017. !FLAG put elsewhere...
-
-            endif   ! at the first day of each year i.e. if (iday.eq.1.and.ihour.eq.0.and.imin.eq.0)
-
-            !if (dofire ) call updateInput('LGHT',iyear) !FLAG MAKE ONLY FIRST DAY OF MONTH!!!
-
-            if (ihour.eq.0.and.imin.eq.0) then ! first time step of the day
                 ! Find the daylength of this day
-                do i = 1, nltest
-                    daylrow(i) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
-                end do
-            end if
+                daylrow(:) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
+
+                !Check if this is the first day of the year
+                if (iday.eq.1) then
+
+                    ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday values.
+                    if (leap) call findLeapYears(iyear,leapnow,lastDOY)
+
+                    ! If needed, read in the accessory input files (popd, wetlands, lightning...)
+                    if (ctem_on) then
+
+                        ! Update the CO2 concentration for this year, if transientCO2
+                        if (transientCO2) call updateInput('CO2',iyear)
+                        if (transientCH4) call updateInput('CH4',iyear)
+                        if (dofire .and. transientPOPD) call updateInput('POPD',iyear)
+                        !if (lnduseon) call updateInput('LUC',iyear)
+
+                        ! If lnduseon is true, read in the luc data now
+                        if (lnduseon .and. transient_run) then
+
+                            call readin_luc(iyear,nmtest,nltest,lucyr,&
+                            &          nfcancmxrow,pfcancmxrow,reach_eof,PFTCompetition,&
+                            &          onetile_perPFT)
+                            if (reach_eof) goto 999
+
+                        else ! lnduseon = false or met is cycling in a spin up run
+
+                        !         Land use is not on or the met data is being cycled, so the
+                        !         pfcancmx value is also the nfcancmx value.
+
+                        nfcancmxrow=pfcancmxrow
+
+                        endif ! lnduseon/cyclemet
+
+                        pddrow=0 ! EC Jan 31 2017. !FLAG put elsewhere...
+                    end if
+                end if ! first day
+
+                ! Check if this is the first day of the month
+                !if (iday
+
+                !if (dofire ) call updateInput('LGHT',iyear) !FLAG MAKE ONLY FIRST DAY OF MONTH!!!
+
+            endif   ! first timestep
 
             CALL CLASSI(VPDROW,TADPROW,PADRROW,RHOAROW,RHSIROW,&
                 &            RPCPROW,TRPCROW,SPCPROW,TSPCROW,TAROW,QAROW,&
@@ -4067,142 +4046,144 @@ contains
             !
             !     accumulate variables not already accumulated but which are required by
             !     ctem.
-            !
+
             if (ctem_on) then
-                do 700 i = 1, nml
 
-                    alswacc_gat(i)=alswacc_gat(i)+alvsgat(i)*fsvhgat(i)
-                    allwacc_gat(i)=allwacc_gat(i)+alirgat(i)*fsihgat(i)
-                    fsinacc_gat(i)=fsinacc_gat(i)+FSSROW(1) ! FLAG! Do this offline only (since all tiles are the same in a gridcell and we run
-                                                            ! only one gridcell at a time. JM Feb 42016.
-                    flinacc_gat(i)=flinacc_gat(i)+fdlgat(i)
-                    flutacc_gat(i)=flutacc_gat(i)+sbc*gtgat(i)**4
-                    pregacc_gat(i)=pregacc_gat(i)+pregat(i)*delt
-                    fsnowacc_t(i)=fsnowacc_t(i)+fsnogat(i)
-                    tcanoaccgat_t(i)=tcanoaccgat_t(i)+tcano(i)
-                    tcansacc_t(i)=tcansacc_t(i)+tcans(i)
-                    taaccgat_t(i)=taaccgat_t(i)+tagat(i)
-                    vvaccgat_t(i)=vvaccgat_t(i)+ vlgat(i)
-                    uvaccgat_t(i)=uvaccgat_t(i)+ulgat(i)
-                    if (FSSROW(I) .gt. 0.) then
-                        altotacc_gat(i) = altotacc_gat(i) + (FSSROW(I)-&
-                            &                (FSGVGAT(I)+FSGSGAT(I)+FSGGGAT(I)))&
-                            &                /FSSROW(I)
-                        altotcount_ctm = altotcount_ctm + 1
-                    end if
+                call accumulateForCTEM(nml)
 
-                    do 710 j=1,ignd
-                        tbaraccgat_t(i,j)=tbaraccgat_t(i,j)+tbargat(i,j)
-                        tbarcacc_t(i,j)=tbarcacc_t(i,j)+tbarc(i,j)
-                        tbarcsacc_t(i,j)=tbarcsacc_t(i,j)+tbarcs(i,j)
-                        tbargacc_t(i,j)=tbargacc_t(i,j)+tbarg(i,j)
-                        tbargsacc_t(i,j)=tbargsacc_t(i,j)+tbargs(i,j)
-                        thliqcacc_t(i,j)=thliqcacc_t(i,j)+thliqc(i,j)
-                        thliqgacc_t(i,j)=thliqgacc_t(i,j)+thliqg(i,j)
-                        thicecacc_t(i,j)=thicecacc_t(i,j)+thicec(i,j)
-                        ! FLAG: Needs to be reviewed. EC Dec 23 2016.
-                        ! YW's original variables were thlqaccgat_m/thicaccgat_m.
-                        ! The following 2 variables needs to be passed via ctem to hetres_peat
-                        ! (otherwise causes a floating exception at line 863 of peatlands_mod).
-                        thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j) ! Not used elsewhere, so assume replacement for thlqaccgat_m
-                        thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j) ! New.
-                        thicegacc_t(i,j)=thicegacc_t(i,j)+thiceg(i,j)    ! EC Jan 31 2017.
-710                 continue
-
-                    do 713 j = 1, icc
-                        ancsvgac_t(i,j)=ancsvgac_t(i,j)+ancsveggat(i,j)
-                        ancgvgac_t(i,j)=ancgvgac_t(i,j)+ancgveggat(i,j)
-                        rmlcsvga_t(i,j)=rmlcsvga_t(i,j)+rmlcsveggat(i,j)
-                        rmlcgvga_t(i,j)=rmlcgvga_t(i,j)+rmlcgveggat(i,j)
-713                 continue
-
-                    !    -accumulate moss C fluxes to tile level then daily----
-                    if (ipeatlandgat(i) > 0) then
-                        anmossgat(i) = fcs(i)*ancsmoss(i)+fgs(i)*angsmoss(i) &
-                            +fc(i)*ancmoss(i)+fg(i)*angmoss(i)
-                        rmlmossgat(i)= fcs(i)*rmlcsmoss(i)+fgs(i)*rmlgsmoss(i) &
-                            +fc(i)*rmlcmoss(i)+fg(i)*rmlgmoss(i)
-                        gppmossgat(i) = anmossgat(i) +rmlmossgat(i)
-
-                        anmossac_t(i) = anmossac_t(i)   + anmossgat(i)
-                        rmlmossac_t(i)= rmlmossac_t(i)  + rmlmossgat(i)
-                        gppmossac_t(i)= gppmossac_t(i)  + gppmossgat(i)
-
-                    endif
-700             continue
-            endif !if (ctem_on)
+!                 do 700 i = 1, nml
+!
+!                     alswacc_gat(i)=alswacc_gat(i)+alvsgat(i)*fsvhgat(i)
+!                     allwacc_gat(i)=allwacc_gat(i)+alirgat(i)*fsihgat(i)
+!                     fsinacc_gat(i)=fsinacc_gat(i)+FSSROW(1) ! FLAG! Do this offline only (since all tiles are the same in a gridcell and we run
+!                                                             ! only one gridcell at a time. JM Feb 42016.
+!                     flinacc_gat(i)=flinacc_gat(i)+fdlgat(i)
+!                     flutacc_gat(i)=flutacc_gat(i)+sbc*gtgat(i)**4
+!                     pregacc_gat(i)=pregacc_gat(i)+pregat(i)*delt
+!                     fsnowacc_t(i)=fsnowacc_t(i)+fsnogat(i)
+!                     tcanoaccgat_t(i)=tcanoaccgat_t(i)+tcano(i)
+!                     tcansacc_t(i)=tcansacc_t(i)+tcans(i)
+!                     taaccgat_t(i)=taaccgat_t(i)+tagat(i)
+!                     vvaccgat_t(i)=vvaccgat_t(i)+ vlgat(i)
+!                     uvaccgat_t(i)=uvaccgat_t(i)+ulgat(i)
+!                     if (FSSROW(I) .gt. 0.) then
+!                         altotacc_gat(i) = altotacc_gat(i) + (FSSROW(I)-&
+!                             &                (FSGVGAT(I)+FSGSGAT(I)+FSGGGAT(I)))&
+!                             &                /FSSROW(I)
+!                         altotcount_ctm = altotcount_ctm + 1
+!                     end if
+!
+!                     do 710 j=1,ignd
+!                         tbaraccgat_t(i,j)=tbaraccgat_t(i,j)+tbargat(i,j)
+!                         tbarcacc_t(i,j)=tbarcacc_t(i,j)+tbarc(i,j)
+!                         tbarcsacc_t(i,j)=tbarcsacc_t(i,j)+tbarcs(i,j)
+!                         tbargacc_t(i,j)=tbargacc_t(i,j)+tbarg(i,j)
+!                         tbargsacc_t(i,j)=tbargsacc_t(i,j)+tbargs(i,j)
+!                         thliqcacc_t(i,j)=thliqcacc_t(i,j)+thliqc(i,j)
+!                         thliqgacc_t(i,j)=thliqgacc_t(i,j)+thliqg(i,j)
+!                         thicecacc_t(i,j)=thicecacc_t(i,j)+thicec(i,j)
+!                         ! FLAG: Needs to be reviewed. EC Dec 23 2016.
+!                         ! YW's original variables were thlqaccgat_m/thicaccgat_m.
+!                         ! The following 2 variables needs to be passed via ctem to hetres_peat
+!                         ! (otherwise causes a floating exception at line 863 of peatlands_mod).
+!                         thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j) ! Not used elsewhere, so assume replacement for thlqaccgat_m
+!                         thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j) ! New.
+!                         thicegacc_t(i,j)=thicegacc_t(i,j)+thiceg(i,j)    ! EC Jan 31 2017.
+! 710                 continue
+!
+!                     do 713 j = 1, icc
+!                         ancsvgac_t(i,j)=ancsvgac_t(i,j)+ancsveggat(i,j)
+!                         ancgvgac_t(i,j)=ancgvgac_t(i,j)+ancgveggat(i,j)
+!                         rmlcsvga_t(i,j)=rmlcsvga_t(i,j)+rmlcsveggat(i,j)
+!                         rmlcgvga_t(i,j)=rmlcgvga_t(i,j)+rmlcgveggat(i,j)
+! 713                 continue
+!
+!                     !    -accumulate moss C fluxes to tile level then daily----
+!                     if (ipeatlandgat(i) > 0) then
+!                         anmossgat(i) = fcs(i)*ancsmoss(i)+fgs(i)*angsmoss(i) &
+!                             +fc(i)*ancmoss(i)+fg(i)*angmoss(i)
+!                         rmlmossgat(i)= fcs(i)*rmlcsmoss(i)+fgs(i)*rmlgsmoss(i) &
+!                             +fc(i)*rmlcmoss(i)+fg(i)*rmlgmoss(i)
+!                         gppmossgat(i) = anmossgat(i) +rmlmossgat(i)
+!
+!                         anmossac_t(i) = anmossac_t(i)   + anmossgat(i)
+!                         rmlmossac_t(i)= rmlmossac_t(i)  + rmlmossgat(i)
+!                         gppmossac_t(i)= gppmossac_t(i)  + gppmossgat(i)
+! 
+!                     endif
+! 700             continue
+            !endif !if (ctem_on)
 
             if(ncount.eq.nday) then
 
-                ! daily averages of accumulated variables for ctem
-
-                if (ctem_on) then
+                ! Find daily averages of accumulated variables for ctem
+                call dayEndCTEMPreparation(nml,nday)
 
                     do 855 i=1,nml
 
-                        !net radiation and precipitation estimates for ctem's bioclim
-
-                        if(fsinacc_gat(i).gt.0.0) then
-                            alswacc_gat(i)=alswacc_gat(i)/(fsinacc_gat(i)*0.5)
-                            allwacc_gat(i)=allwacc_gat(i)/(fsinacc_gat(i)*0.5)
-                        else
-                            alswacc_gat(i)=0.0
-                            allwacc_gat(i)=0.0
-                        endif
-
-                        uvaccgat_t(i)=uvaccgat_t(i)/real(nday)
-                        vvaccgat_t(i)=vvaccgat_t(i)/real(nday)
-                        fsinacc_gat(i)=fsinacc_gat(i)/real(nday)
-                        flinacc_gat(i)=flinacc_gat(i)/real(nday)
-                        flutacc_gat(i)=flutacc_gat(i)/real(nday)
-
-                        if (altotcount_ctm(i) > 0) then
-                            altotacc_gat(i)=altotacc_gat(i)/real(altotcount_ctm(i))
-                        else
-                            altotacc_gat(i)=0.
-                        end if
-
-                        fsstar_gat=fsinacc_gat(i)*(1.-altotacc_gat(i))
-                        flstar_gat=flinacc_gat(i)-flutacc_gat(i)
-                        netrad_gat(i)=fsstar_gat+flstar_gat
-                        preacc_gat(i)=pregacc_gat(i)
-
-                        fsnowacc_t(i)=fsnowacc_t(i)/real(nday)
-                        tcanoaccgat_t(i)=tcanoaccgat_t(i)/real(nday)
-                        tcansacc_t(i)=tcansacc_t(i)/real(nday)
-                        taaccgat_t(i)=taaccgat_t(i)/real(nday)
-
-                        do 831 j=1,ignd
-                            tbaraccgat_t(i,j)=tbaraccgat_t(i,j)/real(nday)
-                            tbarcacc_t(i,j) = tbaraccgat_t(i,j)
-                            tbarcsacc_t(i,j) = tbaraccgat_t(i,j)
-                            tbargacc_t(i,j) = tbaraccgat_t(i,j)
-                            tbargsacc_t(i,j) = tbaraccgat_t(i,j)
-                            !
-                            thliqcacc_t(i,j)=thliqcacc_t(i,j)/real(nday)
-                            thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
-                            thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
-                            thicegacc_t(i,j)=thicegacc_t(i,j)/real(nday) ! EC Jan 31 2017.
-                            thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday) ! Assume this replaces YW's thlqaccgat_m.
-                            thiceacc_t(i,j)=thiceacc_t(i,j)/real(nday) ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-831                     continue
-
-                        do 832 j = 1, icc
-                            ancsvgac_t(i,j)=ancsvgac_t(i,j)/real(nday)
-                            ancgvgac_t(i,j)=ancgvgac_t(i,j)/real(nday)
-                            rmlcsvga_t(i,j)=rmlcsvga_t(i,j)/real(nday)
-                            rmlcgvga_t(i,j)=rmlcgvga_t(i,j)/real(nday)
-832                     continue
-
-                        !     -daily average moss C fluxes for ctem.f-------------------\
-                        !     Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
-                        !     stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.2004)
-                        !     the ratio between stem and capitulum = 7.5 and 7.7
-                        if (ipeatlandgat(i) > 0) then
-                            anmossac_t(i) = anmossac_t(i)/real(nday)
-                            rmlmossac_t(i)= rmlmossac_t(i)/real(nday)
-                            gppmossac_t(i) = gppmossac_t(i)/real(nday)
-                        endif
+!                         !net radiation and precipitation estimates for ctem's bioclim
+!
+!                         if(fsinacc_gat(i).gt.0.0) then
+!                             alswacc_gat(i)=alswacc_gat(i)/(fsinacc_gat(i)*0.5)
+!                             allwacc_gat(i)=allwacc_gat(i)/(fsinacc_gat(i)*0.5)
+!                         else
+!                             alswacc_gat(i)=0.0
+!                             allwacc_gat(i)=0.0
+!                         endif
+!
+!                         uvaccgat_t(i)=uvaccgat_t(i)/real(nday)
+!                         vvaccgat_t(i)=vvaccgat_t(i)/real(nday)
+!                         fsinacc_gat(i)=fsinacc_gat(i)/real(nday)
+!                         flinacc_gat(i)=flinacc_gat(i)/real(nday)
+!                         flutacc_gat(i)=flutacc_gat(i)/real(nday)
+!
+!                         if (altotcount_ctm(i) > 0) then
+!                             altotacc_gat(i)=altotacc_gat(i)/real(altotcount_ctm(i))
+!                         else
+!                             altotacc_gat(i)=0.
+!                         end if
+!
+!                         fsstar_gat=fsinacc_gat(i)*(1.-altotacc_gat(i))
+!                         flstar_gat=flinacc_gat(i)-flutacc_gat(i)
+!                         netrad_gat(i)=fsstar_gat+flstar_gat
+!                         preacc_gat(i)=pregacc_gat(i)
+!
+!                         fsnowacc_t(i)=fsnowacc_t(i)/real(nday)
+!                         tcanoaccgat_t(i)=tcanoaccgat_t(i)/real(nday)
+!                         tcansacc_t(i)=tcansacc_t(i)/real(nday)
+!                         taaccgat_t(i)=taaccgat_t(i)/real(nday)
+!
+!                         do 831 j=1,ignd
+!                             tbaraccgat_t(i,j)=tbaraccgat_t(i,j)/real(nday)
+!                             tbarcacc_t(i,j) = tbaraccgat_t(i,j)
+!                             tbarcsacc_t(i,j) = tbaraccgat_t(i,j)
+!                             tbargacc_t(i,j) = tbaraccgat_t(i,j)
+!                             tbargsacc_t(i,j) = tbaraccgat_t(i,j)
+!                             !
+!                             thliqcacc_t(i,j)=thliqcacc_t(i,j)/real(nday)
+!                             thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
+!                             thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
+!                             thicegacc_t(i,j)=thicegacc_t(i,j)/real(nday) ! EC Jan 31 2017.
+!                             thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday) ! Assume this replaces YW's thlqaccgat_m.
+!                             thiceacc_t(i,j)=thiceacc_t(i,j)/real(nday) ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+! 831                     continue
+!
+!                         do 832 j = 1, icc
+!                             ancsvgac_t(i,j)=ancsvgac_t(i,j)/real(nday)
+!                             ancgvgac_t(i,j)=ancgvgac_t(i,j)/real(nday)
+!                             rmlcsvga_t(i,j)=rmlcsvga_t(i,j)/real(nday)
+!                             rmlcgvga_t(i,j)=rmlcgvga_t(i,j)/real(nday)
+! 832                     continue
+!
+!                         !     -daily average moss C fluxes for ctem.f-------------------\
+!                         !     Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
+!                         !     stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.2004)
+!                         !     the ratio between stem and capitulum = 7.5 and 7.7
+!                         if (ipeatlandgat(i) > 0) then
+!                             anmossac_t(i) = anmossac_t(i)/real(nday)
+!                             rmlmossac_t(i)= rmlmossac_t(i)/real(nday)
+!                             gppmossac_t(i) = gppmossac_t(i)/real(nday)
+!                         endif
 
                         ! pass on mean monthly lightning for the current month to ctem
                         ! lightng(i)=mlightng(i,month)
@@ -5493,77 +5474,50 @@ contains
                 ENDIF
             ENDDO
 
-            !     Only bother with monthly calculations if we desire those outputs to be written out.
-            if (domonthoutput .and. iyear .ge. jmosty) then
+            ! Monthly physics outputs
+            if (domonthoutput .and. iyear .ge. jmosty) call class_monthly_aw(lonLocalIndex,&
+                                                            latLocalIndex,IDAY,IYEAR,NCOUNT,&
+                                                            NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
+                                                            ACTLYR,FTABLE,lastDOY)
 
-                call class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
-                    &                 nltest,nmtest,TFREZ,ACTLYR,FTABLE,lastDOY)
-
-            end if !skip the monthly calculations/writing unless iyear>=jmosty
-
+            ! Annual physics outputs
             call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
                 &                       nltest,nmtest,ACTLYR,FTABLE,lastDOY)
 
-            !     CTEM output and write out
+            if (ctem_on .and. ncount.eq.nday) then
+                if (dodayoutput) then
+                    ! Calculate daily outputs from ctem
+                    call ctem_daily_aw(nltest,nmtest,iday,FAREROT,&
+                    &                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea,&
+                    &                      onetile_perPFT,ipeatlandrow)
 
-            if(dodayoutput) then ! stand alone mode, includes daily and yearly mosaic-mean output for ctem
-
-                !     calculate daily outputs from ctem
-
-                if (ctem_on) then
-                    if(ncount.eq.nday) then
-                        call ctem_daily_aw(nltest,nmtest,iday,FAREROT,&
-                            &                      iyear,jdstd,jdsty,jdendd,jdendy,grclarea,&
-                            &                      onetile_perPFT,ipeatlandrow)
-
-                        !-reset peatland accumulators-------------------------------
-                        ! Note: these must be reset only at the end of a day. EC Jan 30 2017.
-                        anmossac_t  = 0.0
-                        rmlmossac_t = 0.0
-                        gppmossac_t = 0.0
-                        G12ACC     = 0.
-                        G23ACC     = 0.
-                    endif ! if(ncount.eq.nday)
-                endif ! if(ctem_on)
-            endif ! if(not.parallelrun)
-
-            !=======================================================================
-            !     Calculate monthly & yearly output for ctem
-
-            !     First initialize some output variables
-            !     initialization is done just before use.
-
-            if (ctem_on) then
-                if(ncount.eq.nday) then
-
-                    ! Only bother with monthly calculations if we desire those outputs to be written out.
-                    if (domonthoutput .and. iyear .ge. jmosty) then
-                        call ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FAREROT,iyear,nday,lastDOY,&
-                            &                        onetile_perPFT)
-                    end if
-
-                    ! Accumulate and possibly write out yearly outputs
-                    call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,nmtest,FAREROT,&
-                        &                         onetile_perPFT,lastDOY)
+                    !-reset peatland accumulators-------------------------------
+                    ! Note: these must be reset only at the end of a day. EC Jan 30 2017.
+                    anmossac_t  = 0.0
+                    rmlmossac_t = 0.0
+                    gppmossac_t = 0.0
+                    G12ACC     = 0.
+                    G23ACC     = 0.
                 endif
-            endif
 
-            ! OPEN AND WRITE TO THE RESTART FILES
+                ! Monthly biogeochem outputs
+                if (domonthoutput .and. iyear .ge. jmosty) call ctem_monthly_aw(lonLocalIndex,&
+                                                                latLocalIndex,nltest,nmtest,iday,&
+                                                                FAREROT,iyear,nday,lastDOY)
+
+                ! Annual biogeochem outputs
+                call ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,&
+                    &               nmtest,FAREROT,lastDOY)
+            endif
 
             if (IDAY .EQ. lastDOY .AND. NCOUNT .EQ. NDAY) then
 
-                WRITE(*,*)& !'(6A,5I,13A,5I,9A,5I,6A,5I)')&
-                    'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR!,'CO2YEAR =',co2yr,'LUCYR=',lucyr
+                WRITE(*,*)'IYEAR=',IYEAR,'CLIMATE YEAR=',CLIMIYEAR
 
+                ! Write to the restart file
                 call write_restart(lonIndex,latIndex)
 
-            endif ! if iday=365/366
-
-
-            ! check if the model is done running.
-
-            if (iday .eq. lastDOY .and. ncount .eq. nday) then
-
+                ! check if the model is done running.
                 if (cyclemet .and. climiyear .ge. metcycendyr) then
 
                     lopcount = lopcount+1
@@ -5572,58 +5526,19 @@ contains
 
                         rewind(12)   ! rewind met file
 
-                        if(obswetf) then
-                            rewind(16) !rewind obswetf file
-                            read(16,*) ! read in the header
-                        endif
-                        if (obslght) then
-                            obslghtyr=-9999
-                            rewind(17)
-                        endif
-
                         met_rewound = .true.
                         iyear=-9999
-                        obswetyr=-9999
+!                        obswetyr=-9999
 
                     else if (lopcount.le.metLoop .and. transient_run)then
                         ! rewind only the MET file (since we are looping over the MET  while
                         ! the other inputs continue on.
                         rewind(12)   ! rewind met file
 
-                        if (obslght) then ! FLAG
-                            obslghtyr=-999
-                            rewind(17)
-                            do while (obslghtyr .lt. metcylyrst)
-                                do i=1,nltest
-                                    read(17,*) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
-                                    if (nmtest > 1) then
-                                        do m = 2,nmtest !spread grid values over all tiles for easier use in model
-                                            mlightngrow(i,m,:) = mlightngrow(i,1,:)
-                                        end do
-                                    end if
-                                end do
-                            end do
-                            backspace(17)
-                        endif
                     else
                         if (transient_run .and. cyclemet) then
                             ! Now switch from cycling over the MET to running through the file
                             rewind(12)   ! rewind met file
-                            if (obslght) then !FLAG
-                                obslghtyr=-999
-                                rewind(17)
-                                do while (obslghtyr .lt. metcylyrst)
-                                    do i=1,nltest
-                                        read(17,*) obslghtyr,(mlightngrow(i,1,j),j=1,12) ! read into the first tile
-                                        if (nmtest > 1) then
-                                            do m = 2,nmtest !spread grid values over all tiles for easier use in model
-                                                mlightngrow(i,m,:) = mlightngrow(i,1,:)
-                                            end do
-                                        end if
-                                    end do
-                                end do
-                                backspace(17)
-                            endif
                             cyclemet = .false.
                             lopcount = 1
                             endyr = metcylyrst + ncyear - 1  !set the new end year. We assume you are starting from the start of your MET file!
@@ -5672,25 +5587,12 @@ contains
             CLOSE(691)
         end if ! moved this up from below so it calls the close subroutine. JRM.
 
-        ! then ctem ones
-
-!         call closeNCFiles()
-
-        !call close_outfiles()
-
         !close the input files too
         close(12)
-        !close(13)
-        !close(14)
 
-        if (obswetf) then
-            close(16)  !*.WET
-        end if
-        if (obslght) then
-            close(17)
-        end if
+        ! deallocate arrays used for input files
+        call deallocInput
 
-        !call exit
         return
 
         ! the 999 label below is hit when an input file reaches its end.
@@ -5702,27 +5604,9 @@ contains
 
             rewind(12)   ! rewind met file
 
-            if(obswetf) then
-                rewind(16) !rewind obswetf file
-                read(16,*) ! read in the header
-            endif
-
             met_rewound = .true.
             iyear=-9999
-            obswetyr=-9999   !Rudra
 
-!             if(transientPOPD) then
-!                 rewind(13) !rewind popd file
-!                 read(13,*) ! skip header (3 lines)
-!                 read(13,*) ! skip header
-!                 read(13,*) ! skip header
-!             endif
-            !if((transientCO2 .or. transientCH4) .and. trans_startyr < 0) then
-            !    rewind(14) !rewind co2 file
-            !endif
-            if (obslght) then
-                rewind(17)
-            endif
         else
             run_model = .false.
         endif
@@ -5755,14 +5639,8 @@ contains
                 CLOSE(691)
             end if
 
-            !     Then the CTEM ones
-!             call closeNCFiles()
-            !call close_outfiles()
-
             !     CLOSE THE INPUT FILES TOO
             CLOSE(12)
-            !CLOSE(13)
-            !CLOSE(14)
 
             ! -close peatland output and input files--------------\
 
@@ -5774,15 +5652,11 @@ contains
             close(97)
             close(98)
             close(99)
+        ! deallocate arrays used for input files
+        call deallocInput
 
-            !CALL EXIT
             return
         END IF
-
-1001    continue !hit this when problem with wetf file.
-
-        write(*,*)'Error while reading WETF file'
-        run_model=.false.
 
     end subroutine main_driver
 

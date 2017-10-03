@@ -17,6 +17,7 @@ module model_state_drivers
     public  :: write_restart
     public  :: getInput
     public  :: updateInput
+    public  :: deallocInput
     private :: closestCell
 
     integer, dimension(:), allocatable :: CO2Time           ! The time (years) from the CO2File
@@ -906,7 +907,7 @@ contains
         use ctem_statevars, only : c_switch,vrot
         use ctem_params, only : icc
         use outputManager, only : co2id,ch4id,checkForTime,popid,lucid
-use netcdf
+
         implicit none
 
         character(*), intent(in) :: inputRequested
@@ -1059,11 +1060,7 @@ use netcdf
             if (lnduseon) then
                 ! We read in the whole LUC times series and store it.
                 allocate(LUCFromFile(lengthOfFile,icc))
-                print*,size(LUCFromFile),lonloc,latloc
-                call check_nc(nf90_get_var(lucid, ncGetVarId(lucid, 'frac'), LUCFromFile, start = [lonloc,latloc,1,1], count = [1,1,9,lengthOfFile]))
-                !LUCFromFile = ncGet2DVar(lucid, 'frac', start = [lonloc,latloc,1,1], count = [1,1,9,lengthOfFile])  !FLAG needs to be icc,not 9!!!
-                print*,LUCFromFile,lengthOfFile,icc
-                print*,'size',size(LUCFromFile)
+                LUCFromFile = ncGet2DVar(lucid, 'frac', start = [lonloc,latloc,1,1], count = [1,1,9,lengthOfFile])  !FLAG needs to be icc,not 9!!!
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
@@ -1071,7 +1068,6 @@ use netcdf
                 i = 1 ! offline nlat is always 1 so just set
                 m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
                 nfcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [lonloc,latloc,1,arrindex], count = [1,1,9,1])!FLAG needs to be icc,not 9!!!
-                print*,arrindex,nfcancmxrow(i,:,:)
             end if
 
         !case ('OBSWETF')
@@ -1081,6 +1077,8 @@ use netcdf
             stop('specify a input kind for getInput')
 
         end select
+
+        deallocate(fileTime)
 
     end subroutine getInput
 
@@ -1121,7 +1119,7 @@ use netcdf
             lengthTime = size(CH4Time)
 
             ! Find the requested year in the file.
-            arrindex = checkForTime(lengthTime,real(CO2Time),real(iyear))
+            arrindex = checkForTime(lengthTime,real(CH4Time),real(iyear))
             i = 1 ! offline nlat is always 1 so just set
             ch4concrow(i,:) = CH4FromFile(arrindex)
 
@@ -1174,5 +1172,22 @@ use netcdf
         closestCell = tempintarr(1)
 
     end function closestCell
+
+    subroutine deallocInput
+
+        implicit none
+
+        if (allocated(CO2Time))       deallocate(CO2Time)
+        if (allocated(CO2FromFile))   deallocate(CO2FromFile)
+        if (allocated(CH4Time))       deallocate(CH4Time)
+        if (allocated(CH4FromFile))   deallocate(CH4FromFile)
+        if (allocated(POPDTime))      deallocate(POPDTime)
+        if (allocated(POPDFromFile))  deallocate(POPDFromFile)
+        if (allocated(LGHTTime))      deallocate(LGHTTime)
+        if (allocated(LGHTFromFile))  deallocate(LGHTFromFile)
+        if (allocated(LUCTime))       deallocate(LUCTime)
+        if (allocated(LUCFromFile))   deallocate(LUCFromFile)
+
+    end subroutine deallocInput
 
 end module model_state_drivers

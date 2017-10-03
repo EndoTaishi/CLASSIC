@@ -283,8 +283,8 @@ type class_gather
     real, allocatable, dimension(:) :: WTGSTP !<
 
 ! These will be allocated the dimension: 'ignd'
-    real, allocatable, dimension(:) :: DELZ    !<
-    real, allocatable, dimension(:) :: ZBOT    !<
+    real, allocatable, dimension(:) :: DELZ    !<Overall thickness of soil layer [m]
+    real, allocatable, dimension(:) :: ZBOT    !<Depth of to the bottom of soil layer [m]
 
 ! These will be allocated the dimension: 'ilg, ignd'
     integer, allocatable, dimension(:,:) :: ISNDGAT !<Integer identifier associated with sand content

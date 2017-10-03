@@ -10,10 +10,10 @@
  trans_startyr = 1850 ,   !< the year you want the transient run to start (e.g. 1850). If you
                           !! are not doing a transient run, set to a negative value (like -9999)
 
- metLoop = 1 ,            !< no. of times the meteorology cycling should happen.
+ metLoop = 2 ,            !< no. of times the meteorology cycling should happen.
  ncyear = 109 ,           !< no. of years in the .met file. FLAG - redundant?
  cyclemet = .true. ,
- nummetcylyrs = 2 ,
+ nummetcylyrs = 4 ,
  metcylyrst = 1901 ,
  leap = .false. ,
 
@@ -50,9 +50,9 @@
         ! If you wish to use your own PFT fractional covers, set fixedYearLUC to -9999, otherwise set it
         ! to the year of land cover you want to use. If you wish to have transient land cover changes, set
         ! lnduseon to true.
-        lnduseon = .true. ,
+        lnduseon = .false. ,
         LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_Aug_2017.nc' ,
-        fixedYearLUC = 1850 ,
+        fixedYearLUC = -9999 ,
 
 
  dowetlands = .false. ,  !Remove
@@ -89,7 +89,7 @@
     xmlFile = 'ConfigurationFiles/outputVariableDescriptors.xml' ,
 
     doperpftoutput = .true. ,
-    dopertileoutput = .true. ,
+    dopertileoutput = .false. ,
 
     dohhoutput = .false. ,
     JHHSTD = 1 ,

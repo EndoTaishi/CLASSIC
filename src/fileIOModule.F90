@@ -530,8 +530,8 @@ contains
             allocate(localFormat(size(format)))
             localFormat = format
         else
-            allocate(localFormat(3))
-            localFormat = [1, 1, 1]
+            allocate(localFormat(2))
+            localFormat = [1, 1]
         endif
 
         if (present(count)) then

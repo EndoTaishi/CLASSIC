@@ -1,0 +1,9 @@
+All netcdf input files for parallel runs should convert the file to be 
+in netcdf 3 format.
+
+A simple solution is to use ncks:
+
+ncks -3 infile.nc tmp.nc
+mv tmp.nc infile.nc
+
+
