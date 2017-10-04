@@ -267,6 +267,7 @@ contains
         real, pointer, dimension(:)     :: GGEOROW !<Geothermal heat flux at bottom of soil profile \f$[W m^{-2} ]\f$
         real, pointer, dimension(:,:)   :: SOCIROT
 
+        real, pointer, dimension(:,:)   :: TBASROT !<
         logical, pointer :: ctem_on
         logical, pointer :: dofire
         logical, pointer :: PFTCompetition
@@ -314,6 +315,7 @@ contains
         integer :: i,m,j
         real, dimension(ilg,2) :: crop_temp_frac
         real, allocatable, dimension(:,:) :: temptwod
+        real, parameter :: TFREZ = 273.16
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
@@ -409,6 +411,7 @@ contains
         Z0ORROW           => class_rot%Z0ORROW
         GGEOROW           => class_rot%GGEOROW
         SOCIROT           => class_rot%SOCIROT
+        TBASROT           => class_rot%TBASROT
 
         ! ----------------------------
 
@@ -475,6 +478,35 @@ contains
         ZBOT = reshape(ncGet3DVar(initid, 'ZBOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
         DELZ = reshape(ncGet3DVar(initid, 'DELZ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
 
+!     Complete some initial set up work:
+
+        DO 100 I=1,nlat
+            DO 100 M=1,nmos
+
+                DO J=1,IGND
+                    TBARROT(I,M,J)=TBARROT(I,M,J)+TFREZ
+                ENDDO
+                TSNOROT(I,M)=TSNOROT(I,M)+TFREZ
+                TCANROT(I,M)=TCANROT(I,M)+TFREZ
+
+                TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
+                TBASROT(I,M)=TBARROT(I,M,IGND)
+                !CMAIROT(I,M)=0.
+                !WSNOROT(I,M)=0.
+                !ZSNLROT(I,M)=0.10
+                !TSFSROT(I,M,1)=TFREZ
+                !TSFSROT(I,M,2)=TFREZ
+
+                !TSFSROT(I,M,3)=TBARROT(I,M,1)
+                !TSFSROT(I,M,4)=TBARROT(I,M,1)
+                !TACROT (I,M)=TCANROT(I,M)
+                !QACROT (I,M)=0.5E-2
+
+                !DO 75 K=1,6
+                !    DO 75 L=1,50
+                !        ITCTROT(I,M,K,L)=0
+!75              CONTINUE
+100     CONTINUE
         ! Check that the THIC and THLQ values are set to zero for soil layers
         ! that are non-permeable (bedrock).
         do i = 1,nlat
@@ -734,6 +766,7 @@ contains
         integer :: i,m,j,k1c,k2c,n
         integer, dimension(nlat,nmos) :: icountrow
         real, dimension(icc) :: rnded_pft
+        real, parameter :: TFREZ = 273.16
 
         ! point pointers:
         ctem_on           => c_switch%ctem_on
@@ -785,10 +818,10 @@ contains
         call ncPut3DVar(rsid, 'FCAN', FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
         call ncPut3DVar(rsid, 'THLQ', THLQROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
         call ncPut3DVar(rsid, 'THIC', THICROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
-        call ncPut3DVar(rsid, 'TBAR', TBARROT-273.16, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
-        call ncPut2DVar(rsid, 'TCAN', TCANROT-273.16, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'TSNO', TSNOROT-273.16, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
-        call ncPut2DVar(rsid, 'TPND', TPNDROT-273.16, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut3DVar(rsid, 'TBAR', TBARROT-TFREZ, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])
+        call ncPut2DVar(rsid, 'TCAN', TCANROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'TSNO', TSNOROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
+        call ncPut2DVar(rsid, 'TPND', TPNDROT-TFREZ, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'ZPND', ZPNDROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'RCAN', RCANROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut2DVar(rsid, 'SCAN', SCANROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
@@ -1141,6 +1174,65 @@ contains
 !             i = 1 ! offline nlat is always 1 so just set
 !             m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
 !             nfcancmxrow(i,m,:) = LUCFromFile(arrindex,:)
+!        case('LGHT')
+
+!                                 ! pass on mean monthly lightning for the current month to ctem
+!                         ! lightng(i)=mlightng(i,month)
+!                         !
+!                         ! in a very simple way try to interpolate monthly lightning todaily lightning
+!                         if(iday.ge.mmday(1)-1.and.iday.lt.mmday(2))then ! >=15,<46.- mid jan - mid feb
+!                             month1=1
+!                             month2=2
+!                             xday=iday-mmday(1)-1
+!                         else if(iday.ge.mmday(2).and.iday.lt.mmday(3))then ! >=46,<75(76) mid feb - mid mar
+!                             month1=2
+!                             month2=3
+!                             xday=iday-mmday(2)
+!                         else if(iday.ge.mmday(3).and.iday.lt.mmday(4))then ! >=75(76),<106(107) mid mar - mid apr
+!                             month1=3
+!                             month2=4
+!                             xday=iday-mmday(3)
+!                         else if(iday.ge.mmday(4).and.iday.lt.mmday(5))then ! >=106(107),<136(137) mid apr - mid may
+!                             month1=4
+!                             month2=5
+!                             xday=iday-mmday(4)
+!                         else if(iday.ge.mmday(5).and.iday.lt.mmday(6))then ! >=136(137),<167(168) mid may - mid june
+!                             month1=5
+!                             month2=6
+!                             xday=iday-mmday(5)
+!                         else if(iday.ge.mmday(6).and.iday.lt.mmday(7))then ! >=167(168),<197(198) mid june - mid july
+!                             month1=6
+!                             month2=7
+!                             xday=iday-mmday(6)
+!                         else if(iday.ge.mmday(7).and.iday.lt.mmday(8))then ! >=197(198), <228(229) mid july - mid aug
+!                             month1=7
+!                             month2=8
+!                             xday=iday-mmday(7)
+!                         else if(iday.ge.mmday(8).and.iday.lt.mmday(9))then ! >=228(229), < 259(260) mid aug - mid sep
+!                             month1=8
+!                             month2=9
+!                             xday=iday-mmday(8)
+!                         else if(iday.ge.mmday(9).and.iday.lt.mmday(10))then ! >= 259(260), < 289(290) mid sep - mid oct
+!                             month1=9
+!                             month2=10
+!                             xday=iday-mmday(9)
+!                         else if(iday.ge.mmday(10).and.iday.lt.mmday(11))then ! >= 289(290), < 320(321) mid oct - mid nov
+!                             month1=10
+!                             month2=11
+!                             xday=iday-mmday(10)
+!                         else if(iday.ge.mmday(11).and.iday.lt.mmday(12))then ! >=320(321), < 350(351) mid nov - mid dec
+!                             month1=11
+!                             month2=12
+!                             xday=iday-mmday(11)
+!                         else if(iday.ge.mmday(12).or.iday.lt.mmday(1)-1)then ! >= 350(351) < 15 mid dec - mid jan
+!                             month1=12
+!                             month2=1
+!                             xday=iday-mmday(12)
+!                             if(xday.lt.0)xday=iday+15
+!                         endif
+!
+!                         lightng(i)=mlightnggat(i,month1)+(real(xday)/30.0)*&
+!                             &                 (mlightnggat(i,month2)-mlightnggat(i,month1))
 
         case default
             stop('specify a input kind for updateInput')

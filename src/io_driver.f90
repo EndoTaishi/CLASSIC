@@ -49,10 +49,723 @@ public  :: ctem_annual_aw       ! Accumulates and writes the CTEM annual file
 
 contains
 
+        !     * CLASS daily and half-hourly output files (monthly and annual are done in io_driver)
+!         !
+!         if (.not. parallelrun) then ! stand alone mode, includes half-hourly and daily output
+!             OPEN(UNIT=61,FILE='test.OF1_G')  ! GRID-LEVEL DAILY OUTPUT FROM CLASS
+!             OPEN(UNIT=62,FILE='test.OF2_G')
+!             OPEN(UNIT=63,FILE='test.OF3_G')
+!
+!             OPEN(UNIT=611,FILE='test.OF1_M') ! MOSAIC DAILY OUTPUT FROM CLASS
+!             OPEN(UNIT=621,FILE='test.OF2_M')
+!             OPEN(UNIT=631,FILE='test.OF3_M')
+!
+!             OPEN(UNIT=64,FILE='test.OF4_M')  ! MOSAIC HALF-HOURLY OUTPUT FROM CLASS
+!             OPEN(UNIT=65,FILE='test.OF5_M')
+!             OPEN(UNIT=66,FILE='test.OF6_M')
+!             OPEN(UNIT=67,FILE='test.OF7_M')
+!             OPEN(UNIT=68,FILE='test.OF8_M')
+!             OPEN(UNIT=69,FILE='test.OF9_M')
+!
+!             OPEN(UNIT=641,FILE='test.OF4_G') ! GRID-LEVEL HALF-HOURLY OUTPUT FROM CLASS
+!             OPEN(UNIT=651,FILE='test.OF5_G')
+!             OPEN(UNIT=661,FILE='test.OF6_G')
+!             OPEN(UNIT=671,FILE='test.OF7_G')
+!             OPEN(UNIT=681,FILE='test.OF8_G')
+!             OPEN(UNIT=691,FILE='test.OF9_G')
+!         end if
+!
+! !    peatland output-FLAG!!---------------------------------------------\
+!       open(unit=93,file='test.CT11D_G') !peatland GPP components
+!       open(unit=94,file='test.CT12D_G') !peatland vegetation height & lai
+!       open(unit=95,file='test.CT13D_G') !peatland C pools (in ctem.f)
+!       open(unit=96,file='test.CT14D_G') !peatland soil resp (in ctem.f)
+!       open(unit=97,file='test.CT15D_G') !peatland decompositon components (in decp.f)
+!       open(unit=98,file='test.CT16D_G') !peatland moss photosynthesis midday sub-areas(mosspht.f)
+!       open(unit=99,file='test.CT17D_G') !peatland water balance
+!       open(unit=90,file='test.CT18Y_G') !peatland depth information
+
+!    YW March 25, 2015 ----------------------------------------------/
+        !
+!         IF (.NOT. PARALLELRUN) THEN ! STAND ALONE MODE, INCLUDES HALF-HOURLY AND DAILY OUTPUT
+!             !
+!             WRITE(61,6001) 'test'
+!             WRITE(61,6002) 'test'
+!             WRITE(61,6011)
+! 6011            FORMAT(2X,'DAY  YEAR  K*  L*  QH  QE  SM  QG  ',&
+!                 &          'TR  SWE  DS  WS  AL  ROF  CUMS')
+!
+!             WRITE(62,6001) 'test'
+!             WRITE(62,6002) 'test'
+!
+!             IF(IGND.GT.3) THEN
+!                 WRITE(62,6012)
+! 6012                FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',&
+!                     &    'TG3  THL3  THI3  TG4  THL4  THI4  TG5  THL5  ',&
+!                     &    'THI5 TG6  THL6  THI6 TG7  THL7  THI7',&
+!                     &    'TG8  THL8  THI8 TG9  THL9  THI9 TG10  THL10  THI10',&
+!                     &    'TG11  THL11  THI11 TG12  THL12  THI12 TG13  THL13  THI13',&
+!                     &    'TG14  THL14  THI14 TG15  THL15  THI15 TG16  THL16  THI16',&
+!                     &    'TG17  THL17  THI17 TG18  THL18  THI18 TG19  THL19  THI19',&
+!                     &    'TG20  THL20  THI20 ACTLYR FTABLE')
+!
+!             ELSE
+!                 WRITE(62,6212)
+! 6212                FORMAT(2X,'DAY  YEAR  TG1  THL1  THI1  TG2  THL2  THI2  ',&
+!                     &              'TG3  THL3  THI3  TCN  RCAN  SCAN  TSN  ZSN',&
+!                     &              'ACTLYR FTABLE')
+!
+!             ENDIF
+!
+!             WRITE(63,6001) 'test'
+!             WRITE(63,6002) 'test'
+!             WRITE(63,6313)
+! 6313            FORMAT(2X,'DAY YEAR KIN LIN TA UV PRES QA PCP EVAP')
+!             !
+!             WRITE(64,6001) 'test'
+!             WRITE(64,6002) 'test'
+!             WRITE(64,6014)
+! 6014            FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',&
+!                 &          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',&
+!                 &          'SFCU  SFCV  UV')
+!
+!             WRITE(65,6001) 'test'
+!             WRITE(65,6002) 'test'
+!
+!             WRITE(65,6515)
+! 6515            FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG1  THL1  THI1  TG2  ',&
+!                 &           'THL2  THI2  TG3  THL3  THI3  TCN  RCAN  SCAN  ',&
+!                 &           'TSN  ZSN  TCN-TA  TCANO  TAC  ACTLYR  FTABLE')
+!
+!             WRITE(66,6001) 'test'
+!             WRITE(66,6002) 'test'
+!
+!             IF(IGND.GT.3) THEN
+!                 WRITE(66,6016)
+! 6016                FORMAT(2X,'HOUR  MIN  DAY  YEAR  TG6  THL6  THI6  TG7  ',&
+!                     &          'THL7  THI7  TG8  THL8  THI8  TG9  THL9  THI9  ',&
+!                     &          'TG10  THL10  THI10  TG11  THL11  THI11  TG12  ',&
+!                     &          'THL12  THI12  TG13  THL13  THI13  TG14  THL14  ',&
+!                     &          'THI14  TG15  THL15  THI15  TG16  THL16  THI16  ',&
+!                     &          'TG17  THL17  THI17  TG18  THL18  THI18  TG19  ' ,&
+!                     &          'THL19  THI19  TG20  THL20  THI20  TG21  THL21  ',&
+!                     &          'THI21  TG22  THL22 THI22  TG23  THL23  THI23  ',&
+!                     &          'TG24  THL24  THI24  TG25  THL25  THI25  TG26  ',&
+!                     &          'THL26  THI26  G0  G1  G2  G3  G4  G5  G6  ',&
+!                     &          'G7  G8  G9')
+!
+!             ELSE
+!                 WRITE(66,6616)
+!                 WRITE(66,6615)
+! 6616                FORMAT(2X,'HOUR  MIN  DAY  SWIN  LWIN  PCP  TA  VA  PA  QA')
+! 6615                FORMAT(2X,'IF IGND <= 3, THIS FILE IS EMPTY')
+!             ENDIF
+!
+!             WRITE(67,6001) 'test'
+!             WRITE(67,6002) 'test'
+!             WRITE(67,6017)
+!             !     6017  FORMAT(2X,'WCAN SCAN CWLCAP CWFCAP FC FG FCS FGS CDH ', !runclass formatted.
+!             !     1          'TCANO TCANS ALBS')
+! 6017            FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',&
+!                 &  'TROF     TROO     TROS     TROB      ROF     ROFO   ',&
+!                 &  '  ROFS        ROFB         FCS        FGS        FC       FG')
+!
+!             WRITE(68,6001) 'test'
+!             WRITE(68,6002) 'test'
+!             WRITE(68,6018)
+! 6018            FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',&
+!                 &          'FSGV FSGS FSGG FLGV FLGS FLGG HFSC HFSS HFSG ',&
+!                 &          'HEVC HEVS HEVG HMFC HMFS HMFG1 HMFG2 HMFG3 ',&
+!                 &          'HTCC HTCS HTC1 HTC2 HTC3')
+!
+!             WRITE(69,6001) 'test'
+!             WRITE(69,6002) 'test'
+!             WRITE(69,6019)
+! 6019            FORMAT(2X,'HOUR  MIN  DAY  YEAR  ',&
+!                 &   'PCFC PCLC PCPN PCPG QFCF QFCL QFN QFG QFC1 ',&
+!                 &          'QFC2 QFC3 ROFC ROFN ROFO ROF WTRC WTRS WTRG')
+!             !       runclass also has: EVDF ','CTV CTS CT1 CT2 CT3')
+!             !
+!             WRITE(611,6001) 'test'
+!             WRITE(611,6002) 'test'
+!             WRITE(611,6011)
+!             WRITE(621,6001) 'test'
+!             WRITE(621,6002) 'test'
+!             !
+!             IF(IGND.GT.3) THEN
+!                 WRITE(621,6012)
+!             ELSE
+!                 WRITE(621,6212)
+!             ENDIF
+!             !
+!             WRITE(631,6001) 'test'
+!             WRITE(631,6002) 'test'
+!             WRITE(631,6313)
+!             !
+!             WRITE(641,6001) 'test'
+!             WRITE(641,6002) 'test'
+!             WRITE(641,6008)
+!
+!             WRITE(651,6001) 'test'
+!             WRITE(651,6002) 'test'
+!             WRITE(651,6515)
+!             !
+!             WRITE(661,6001) 'test'
+!             WRITE(661,6002) 'test'
+!             !
+!             IF(IGND.GT.3) THEN
+!                 WRITE(661,6016)
+!             ELSE
+!                 WRITE(661,6616)
+!             ENDIF
+!             !
+!             WRITE(671,6001) 'test'
+!             WRITE(671,6002) 'test'
+!             WRITE(671,6017)
+!             WRITE(681,6001) 'test'
+!             WRITE(681,6002) 'test'
+!             WRITE(681,6018)
+!             WRITE(691,6001) 'test'
+!             WRITE(691,6002) 'test'
+!             WRITE(691,6019)
+!             !
+! 6008            FORMAT(2X,'HOUR  MIN  DAY  YEAR  K*  L*  QH  QE  SM  QG  ',&
+!                 &          'TR  SWE  DS  WS  AL  ROF  TPN  ZPN  CDH  CDM  ',&
+!                 &          'SFCU  SFCV  UV')
+!
+! !    --------write peatland output-------------------------------------\
+!
+!           write(93,6903)
+!           write(94,6904)
+!           write(95,6905)
+!           write(96,6906)
+!           write(97,6907)
+!           write(98,6908)
+!           write(99,6909)
+!
+! 6903  format (2X,'iday iyear nppmoss   armoss   gppmoss   ',&
+!          'gppveg1  gppveg2  gppveg3  gppveg4   gppveg5   gppveg6  ',&
+!          'gppveg7  gppveg8  gppveg9  gppveg10  gppveg11  gppveg12',&
+!          'nppveg1  nppveg2  nppveg3  nppveg4   nppveg5   nppveg6  ',&
+!          'nppveg7  nppveg8  nppveg9  nppveg10  nppveg11  nppveg12',&
+!          'autoresp1   autoresp2   autoresp3   autoresp4  autoresp5  ',&
+!          'autoresp6   autoresp7   autoresp8   autoresp9  autoresp10 ',&
+!          'autoresp11  autoresp12  heteresp1   heteresp2  heteresp3  ',&
+!          'heteresp4   heteresp5   heteresp6   heteresp7  heteresp8  ',&
+!          'heteresp9   heteresp10  heteresp11  heteresp12   ',&
+!          'fcancmx1  fcancmx2  fcancmx3  fcancmx4  fcancmx5  fcancmx6 ',&
+!          'fcancmx7  fcancmx8  fcancmx9  fcancmx10 fcancmx11 fcancmx12')
+! 6904  format (2X,'iday   iyear   veghght1   veghght2   veghght3   ',&
+!          'veghght4   veghght5   veghght6   veghght7   veghght8   ',&
+!          'veghght9   veghght10  veghght11  veghght12  rootdpt1   ',&
+!          'rootdpt2   rootdpt3   rootdpt4   rootdpt5   rootdpt6   ',&
+!          'rootdpt7   rootdpt8   rootdpt9   rootdpt10  rootdpt11  ',&
+!          'rootdpt12  ailcg1   ailcg2   ailcg3   ailcg4   ailcg5  ',&
+!          'ailcg6  ailcg7   ailcg8   ailcg9    ailcg10   ailcg11   ',&
+!          'ailcg12     stemmas1    stemmas2   stemmas3   stemmas4   ',&
+!          'stemmas5    stemmas6    stemmas7   stemmas8   stemmas9   ',&
+!          'stemmas10   stemmas11   stemmas12  rootmas1   rootmas2   ',&
+!          'rootmas3   rootmas4   rootmas5   rootmas6    rootmas7    ',&
+!          'rootmas8   rootmas9   rootmas10   rootmas11  rootmas12   ',&
+!          'litrmas1   litrmas2   litrmas3   litrmas4    litrmas5    ',&
+!          'litrmas6   litrmas7   litrmas8   litrmas9    litrmas10   ',&
+!          'litrmas11  litrmas12  gleafmas1  gleafmas2   gleafmas3   ',&
+!          'gleafmas4  gleafmas5  gleafmas6  gleafmas7   gleafmas8   ',&
+!          'gleafmas9  gleafmas10 gleafmas11 gleafmas12  bleafmas1   ',&
+!          'bleafmas2  bleafmas3   bleafmas4  bleafmas5  bleafmas6   ',&
+!          'bleafmas7  bleafmas8   bleafmas9  bleafmas10  bleafmas11 ',&
+!          'bleafmas12')
+! 6905  format (2X, 'litrmass6  tlreleaf6  tltrstem6  tltrroot6  ',&
+!          'ltresveg6  humtrsvg6  litrmass7  tltrleaf7  tltrstem7  ',&
+!          'tltrroot7  ltresveg7  humtrsvg7  plitrmassms  litrmassms  ',&
+!          'litrfallms  ltrestepms  humicmstep  nppmosstep  nppmoss  ',&
+!          'anmoss  rgmoss  rmlmoss  gppmoss  Cmossmas  pCmossmas ')
+! 6906  format (2X, 'hpd  gavgscms  hutrstep_g  socrestep  resoxic  ',&
+!         'resanoxic  socresp(umol/m2/s)  resoxic(umol/m2/s)  ',&
+!          'resanoxic(umol/m2/s)')
+! 6907  format (2X, 'litresms  litpsims  psisat1  ltrmosclms   ',&
+!          'litrmassms  tbar1  q10funcms litrtempms  ratescpo  ',&
+!          'ratescpa  Cso  Csa  fto  fta  resoxic  resanoxic   ',&
+!          'frac  tsoila  toilo  ewtable  lewtable  tbar1  tbar2  tbar3')
+! 6908  format(2X, 'iday  tmoss  cevapms  fwmoss  thliq1  dsmoss  ',&
+!          'g_moss  wmoss  rmlmoss  mwce  q10rmlmos  wmosmax  wmosmin')
+! 6909  format(2X,'WTBLACC ZSN PREACC EVAPACC ROFACC g12acc g23acc')
+! !    --------------YW March 30, 2015 ---------------------------------/
+!
+!         ENDIF !IF NOT PARALLELRUN
 !-------------------------------------------------------------------------------------------------------------
 
 !subroutine class_hh_w(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT)
 
+!         real, pointer, dimension(:) ::  fsstar_g
+!         real, pointer, dimension(:) ::  flstar_g
+!         real, pointer, dimension(:) ::  qh_g
+!         real, pointer, dimension(:) ::  qe_g
+!         real, pointer, dimension(:) ::  snomlt_g
+!         real, pointer, dimension(:) ::  beg_g
+!         real, pointer, dimension(:) ::  gtout_g
+!         real, pointer, dimension(:) ::  tpn_g
+!         real, pointer, dimension(:) ::  altot_g
+!         real, pointer, dimension(:) ::  tcn_g
+!         real, pointer, dimension(:) ::  tsn_g
+!         real, pointer, dimension(:) ::  zsn_g
+!
+!         real, pointer, dimension(:) :: WSNOROT_g
+!         real, pointer, dimension(:) :: ROFSROT_g
+!         real, pointer, dimension(:) :: SNOROT_g
+!         real, pointer, dimension(:) :: RHOSROT_g
+!         real, pointer, dimension(:) :: ROFROT_g
+!         real, pointer, dimension(:) :: ZPNDROT_g
+!         real, pointer, dimension(:) :: RCANROT_g
+!         real, pointer, dimension(:) :: SCANROT_g
+!         real, pointer, dimension(:) :: TROFROT_g
+!         real, pointer, dimension(:) :: TROOROT_g
+!         real, pointer, dimension(:) :: TROBROT_g
+!         real, pointer, dimension(:) :: ROFOROT_g
+!         real, pointer, dimension(:) :: ROFBROT_g
+!         real, pointer, dimension(:) :: TROSROT_g
+!         real, pointer, dimension(:) :: FSGVROT_g
+!         real, pointer, dimension(:) :: FSGSROT_g
+!         real, pointer, dimension(:) :: FLGVROT_g
+!         real, pointer, dimension(:) :: FLGSROT_g
+!         real, pointer, dimension(:) :: HFSCROT_g
+!         real, pointer, dimension(:) :: HFSSROT_g
+!         real, pointer, dimension(:) :: HEVCROT_g
+!         real, pointer, dimension(:) :: HEVSROT_g
+!         real, pointer, dimension(:) :: HMFCROT_g
+!         real, pointer, dimension(:) :: HMFNROT_g
+!         real, pointer, dimension(:) :: HTCSROT_g
+!         real, pointer, dimension(:) :: HTCCROT_g
+!         real, pointer, dimension(:) :: FSGGROT_g
+!         real, pointer, dimension(:) :: FLGGROT_g
+!         real, pointer, dimension(:) :: HFSGROT_g
+!         real, pointer, dimension(:) :: HEVGROT_g
+!         real, pointer, dimension(:) :: CDHROT_g
+!         real, pointer, dimension(:) :: CDMROT_g
+!         real, pointer, dimension(:) :: SFCUROT_g
+!         real, pointer, dimension(:) :: SFCVROT_g
+!         real, pointer, dimension(:) :: ACTLYR_g
+!         real, pointer, dimension(:) :: FTABLE_g
+!         real, pointer, dimension(:) :: fc_g
+!         real, pointer, dimension(:) :: fg_g
+!         real, pointer, dimension(:) :: fcs_g
+!         real, pointer, dimension(:) :: fgs_g
+!         real, pointer, dimension(:) :: PCFCROT_g
+!         real, pointer, dimension(:) :: PCLCROT_g
+!         real, pointer, dimension(:) :: PCPGROT_g
+!         real, pointer, dimension(:) :: QFCFROT_g
+!         real, pointer, dimension(:) :: QFGROT_g
+!         real, pointer, dimension(:,:) :: QFCROT_g
+!         real, pointer, dimension(:) :: ROFCROT_g
+!         real, pointer, dimension(:) :: ROFNROT_g
+!         real, pointer, dimension(:) :: WTRSROT_g
+!         real, pointer, dimension(:) :: WTRGROT_g
+!         real, pointer, dimension(:) :: PCPNROT_g
+!         real, pointer, dimension(:) :: QFCLROT_g
+!         real, pointer, dimension(:) :: QFNROT_g
+!         real, pointer, dimension(:) :: WTRCROT_g
+!         real, pointer, dimension(:,:) :: rmlvegrow_g
+!         real, pointer, dimension(:,:) :: anvegrow_g
+!         real, pointer, dimension(:,:) :: HMFGROT_g
+!         real, pointer, dimension(:,:) :: HTCROT_g
+!         real, pointer, dimension(:,:) :: TBARROT_g
+!         real, pointer, dimension(:,:) :: THLQROT_g
+!         real, pointer, dimension(:,:) :: THICROT_g
+!         real, pointer, dimension(:,:) :: GFLXROT_g
+!
+!         WSNOROT_g         => ctem_grd%WSNOROT_g
+!         ROFSROT_g         => ctem_grd%ROFSROT_g
+!         SNOROT_g          => ctem_grd%SNOROT_g
+!         RHOSROT_g         => ctem_grd%RHOSROT_g
+!         ROFROT_g          => ctem_grd%ROFROT_g
+!         ZPNDROT_g         => ctem_grd%ZPNDROT_g
+!         RCANROT_g         => ctem_grd%RCANROT_g
+!         SCANROT_g         => ctem_grd%SCANROT_g
+!         TROFROT_g         => ctem_grd%TROFROT_g
+!         TROOROT_g         => ctem_grd%TROOROT_g
+!         TROBROT_g         => ctem_grd%TROBROT_g
+!         ROFOROT_g         => ctem_grd%ROFOROT_g
+!         ROFBROT_g         => ctem_grd%ROFBROT_g
+!         TROSROT_g         => ctem_grd%TROSROT_g
+!         FSGVROT_g         => ctem_grd%FSGVROT_g
+!         FSGSROT_g         => ctem_grd%FSGSROT_g
+!         FLGVROT_g         => ctem_grd%FLGVROT_g
+!         FLGSROT_g         => ctem_grd%FLGSROT_g
+!         HFSCROT_g         => ctem_grd%HFSCROT_g
+!         HFSSROT_g         => ctem_grd%HFSSROT_g
+!         HEVCROT_g         => ctem_grd%HEVCROT_g
+!         HEVSROT_g         => ctem_grd%HEVSROT_g
+!         HMFCROT_g         => ctem_grd%HMFCROT_g
+!         HMFNROT_g         => ctem_grd%HMFNROT_g
+!         HTCSROT_g         => ctem_grd%HTCSROT_g
+!         HTCCROT_g         => ctem_grd%HTCCROT_g
+!         FSGGROT_g         => ctem_grd%FSGGROT_g
+!         FLGGROT_g         => ctem_grd%FLGGROT_g
+!         HFSGROT_g         => ctem_grd%HFSGROT_g
+!         HEVGROT_g         => ctem_grd%HEVGROT_g
+!         CDHROT_g          => ctem_grd%CDHROT_g
+!         CDMROT_g          => ctem_grd%CDMROT_g
+!         SFCUROT_g         => ctem_grd%SFCUROT_g
+!         SFCVROT_g         => ctem_grd%SFCVROT_g
+!         ACTLYR_g          => ctem_grd%ACTLYR_g
+!         FTABLE_g          => ctem_grd%FTABLE_g
+!         fc_g              => ctem_grd%fc_g
+!         fg_g              => ctem_grd%fg_g
+!         fcs_g             => ctem_grd%fcs_g
+!         fgs_g             => ctem_grd%fgs_g
+!         PCFCROT_g         => ctem_grd%PCFCROT_g
+!         PCLCROT_g         => ctem_grd%PCLCROT_g
+!         PCPGROT_g         => ctem_grd%PCPGROT_g
+!         QFCFROT_g         => ctem_grd%QFCFROT_g
+!         QFGROT_g          => ctem_grd%QFGROT_g
+!         QFCROT_g          => ctem_grd%QFCROT_g
+!         ROFCROT_g         => ctem_grd%ROFCROT_g
+!         ROFNROT_g         => ctem_grd%ROFNROT_g
+!         WTRSROT_g         => ctem_grd%WTRSROT_g
+!         WTRGROT_g         => ctem_grd%WTRGROT_g
+!         PCPNROT_g         => ctem_grd%PCPNROT_g
+!         QFCLROT_g         => ctem_grd%QFCLROT_g
+!         QFNROT_g          => ctem_grd%QFNROT_g
+!         WTRCROT_g         => ctem_grd%WTRCROT_g
+!         rmlvegrow_g       => ctem_grd%rmlvegrow_g
+!         anvegrow_g        => ctem_grd%anvegrow_g
+!         HMFGROT_g         => ctem_grd%HMFGROT_g
+!         HTCROT_g          => ctem_grd%HTCROT_g
+!         TBARROT_g         => ctem_grd%TBARROT_g
+!         THLQROT_g         => ctem_grd%THLQROT_g
+!         THICROT_g         => ctem_grd%THICROT_g
+!         GFLXROT_g         => ctem_grd%GFLXROT_g
+!
+!         fsstar_g         => ctem_grd%fsstar_g
+!         flstar_g         => ctem_grd%flstar_g
+!         qh_g             => ctem_grd%qh_g
+!         qe_g             => ctem_grd%qe_g
+!         snomlt_g         => ctem_grd%snomlt_g
+!         beg_g            => ctem_grd%beg_g
+!         gtout_g          => ctem_grd%gtout_g
+!         tpn_g            => ctem_grd%tpn_g
+!         altot_g          => ctem_grd%altot_g
+!         tcn_g            => ctem_grd%tcn_g
+!         tsn_g            => ctem_grd%tsn_g
+!         zsn_g            => ctem_grd%zsn_g
+!
+!         ! mosaic level variables (CLASS):
+!
+!         fsnowacc_t        => ctem_tile%fsnowacc_t
+!         tcansacc_t        => ctem_tile%tcansacc_t
+!         tcanoaccgat_t     => ctem_tile%tcanoaccgat_t
+!         taaccgat_t        => ctem_tile%taaccgat_t
+!         uvaccgat_t        => ctem_tile%uvaccgat_t
+!         vvaccgat_t        => ctem_tile%vvaccgat_t
+!         tbaraccgat_t      => ctem_tile%tbaraccgat_t
+!         tbarcacc_t        => ctem_tile%tbarcacc_t
+!         tbarcsacc_t       => ctem_tile%tbarcsacc_t
+!         tbargacc_t        => ctem_tile%tbargacc_t
+!         tbargsacc_t       => ctem_tile%tbargsacc_t
+!         thliqcacc_t       => ctem_tile%thliqcacc_t
+!         thliqgacc_t       => ctem_tile%thliqgacc_t
+!         thliqacc_t        => ctem_tile%thliqacc_t
+!         thiceacc_t        => ctem_tile%thiceacc_t  ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
+!         thicecacc_t       => ctem_tile%thicecacc_t
+!         thicegacc_t       => ctem_tile%thicegacc_t
+!         ancsvgac_t        => ctem_tile%ancsvgac_t
+!         ancgvgac_t        => ctem_tile%ancgvgac_t
+!         rmlcsvga_t        => ctem_tile%rmlcsvga_t
+!         rmlcgvga_t        => ctem_tile%rmlcgvga_t
+!         anmossac_t        => ctem_tile%anmossac_t
+!         rmlmossac_t       => ctem_tile%rmlmossac_t
+!         gppmossac_t       => ctem_tile%gppmossac_t
+
+!             if (dohhoutput) then ! stand alone mode, include half-hourly output for CLASS & CTEM
+!
+!                 DO 450 I=1,NLTEST
+!
+!                     !       initialization of various grid-averaged variables
+!                     call resetgridavg(nltest)
+!
+!                     DO 425 M=1,NMTEST
+!                         IF(FSSROW(I).GT.0.0) THEN
+!                             ALTOT=(FSSROW(I)-(FSGVROT(I,M)+FSGSROT(I,M)&
+!                                 &              +FSGGROT(I,M)))/FSSROW(I)
+!                         ELSE
+!                             ALTOT=0.0
+!                         ENDIF
+!                         FSSTAR=FSSROW(I)*(1.0-ALTOT)
+!                         FLSTAR=FDLROW(I)-SBC*GTROT(I,M)**4
+!                         QH=HFSROT(I,M)
+!                         QE=QEVPROT(I,M)
+!                         !          BEG=FSSTAR+FLSTAR-QH-QE !(commented out in runclass.fieldsite)
+!                         BEG=GFLXGAT(1,1)  !FLAG!
+!                         !          USTARBS=UVROW(1)*SQRT(CDMROT(I,M)) !FLAG (commented out in runclass.fieldsite)
+!                         SNOMLT=HMFNROT(I,M)
+!                         IF(RHOSROT(I,M).GT.0.0) THEN
+!                             ZSN=SNOROT(I,M)/RHOSROT(I,M)
+!                         ELSE
+!                             ZSN=0.0
+!                         ENDIF
+!                         IF(TCANROT(I,M).GT.0.01) THEN
+!                             TCN=TCANROT(I,M)-TFREZ
+!                         ELSE
+!                             TCN=0.0
+!                         ENDIF
+!                         TSURF=FCS(I)*TSFSGAT(I,1)+FGS(I)*TSFSGAT(I,2)+&
+!                             &           FC(I)*TSFSGAT(I,3)+FG(I)*TSFSGAT(I,4)
+!                         !          IF(FSSROW(I).GT.0.0 .AND. (FCS(I)+FC(I)).GT.0.0) THEN
+!                         !          IF(FSSROW(I).GT.0.0) THEN
+!                         NFS=NFS+1
+!                         ITA=NINT(TAROW(I)-TFREZ)
+!                         ITCAN=NINT(TCN)
+!                         ITAC=NINT(TACGAT(I)-TFREZ)
+!                         ITSCR=NINT(SFCTGAT(I)-TFREZ)
+!                         ITS=NINT(TSURF-TFREZ)
+!                         !              ITD=ITS-ITA
+!                         ITD=ITCAN-ITA
+!                         ITD2=ITCAN-ITSCR
+!                         ITD3=ITCAN-ITAC
+!                         ITD4=ITAC-ITA
+!                         !          ENDIF
+!                         IF(FC(I).GT.0.1 .AND. RC(I).GT.1.0E5) NDRY=NDRY+1
+!                         !           IF((ITCAN-ITA).GE.10) THEN
+!                         !               WRITE(6,6070) IHOUR,IMIN,IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,
+!                         !      1                      BEG,TAROW(I)-TFREZ,TCN,TCN-(TAROW(I)-TFREZ),
+!                         !      2                      PAICAN(I),FSVF(I),UVROW(I),RC(I)
+!                         ! 6070          FORMAT(2X,2I2,I4,I5,9F6.1,F6.3,F6.1,F8.1)
+!                         !           ENDIF
+!                         !
+!                         IF(TSNOROT(I,M).GT.0.01) THEN
+!                             TSN=TSNOROT(I,M)-TFREZ
+!                         ELSE
+!                             TSN=0.0
+!                         ENDIF
+!                         IF(TPNDROT(I,M).GT.0.01) THEN
+!                             TPN=TPNDROT(I,M)-TFREZ
+!                         ELSE
+!                             TPN=0.0
+!                         ENDIF
+!                         GTOUT=GTROT(I,M)-TFREZ
+!                         EVAPSUM=QFCFROT(I,M)+QFCLROT(I,M)+QFNROT(I,M)+QFGROT(I,M)+&
+!                             &                   QFCROT(I,M,1)+QFCROT(I,M,2)+QFCROT(I,M,3)
+!
+!                         ! start writing output
+!
+!                         if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
+!                             if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
+!
+!                                 WRITE(64,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,&
+!                                     &                   SNOMLT,BEG,GTOUT,SNOROT(I,M),RHOSROT(I,M),&
+!                                     &                   WSNOROT(I,M),ALTOT,ROFROT(I,M),&
+!                                     &                   TPN,ZPNDROT(I,M),CDHROT(I,M),CDMROT(I,M),&
+!                                     &                   SFCUROT(I,M),SFCVROT(I,M),UVROW(I),' TILE ',m
+!                                 IF(IGND.GT.3) THEN
+!                                     write(66,6601) ihour,imin,iday,iyear,(TBARROT(i,m,j)-&
+!                                         &                 tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,IGND),&
+!                                         &                 (GFLXROT(i,m,j),j=1,IGND),' TILE ',m
+!                                 end if
+!
+!                                 write(65,6500) ihour,imin,iday,iyear,(TBARROT(i,m,j)-&
+!                                     &                   tfrez,THLQROT(i,m,j),THICROT(i,m,j),j=1,3),&
+!                                     &                  tcn,RCANROT(i,m),SCANROT(i,m),tsn,zsn,&
+!                                     &                   TCN-(TAROW(I)-TFREZ),TCANO(I)-TFREZ,&
+!                                     &                   TACGAT(I)-TFREZ,' TILE ',m
+!                                 !
+!                                 WRITE(67,6700) IHOUR,IMIN,IDAY,IYEAR,&
+!                                     &                   TROFROT(I,M),TROOROT(I,M),TROSROT(I,M),&
+!                                     &                   TROBROT(I,M),ROFROT(I,M),ROFOROT(I,M),&
+!                                     &                   ROFSROT(I,M),ROFBROT(I,M),&
+!                                     &                   FCS(M),FGS(M),FC(M),FG(M),' TILE ',M
+!                                 WRITE(68,6800) IHOUR,IMIN,IDAY,IYEAR,&
+!                                     &                   FSGVROT(I,M),FSGSROT(I,M),FSGGROT(I,M),&
+!                                     &                   FLGVROT(I,M),FLGSROT(I,M),FLGGROT(I,M),&
+!                                     &                   HFSCROT(I,M),HFSSROT(I,M),HFSGROT(I,M),&
+!                                     &                   HEVCROT(I,M),HEVSROT(I,M),HEVGROT(I,M),&
+!                                     &                   HMFCROT(I,M),HMFNROT(I,M),&
+!                                     &                   (HMFGROT(I,M,J),J=1,3),&
+!                                     &                   HTCCROT(I,M),HTCSROT(I,M),&
+!                                     &                   (HTCROT(I,M,J),J=1,3),' TILE ',M
+!                                 WRITE(69,6900) IHOUR,IMIN,IDAY,IYEAR,&
+!                                     &                   PCFCROT(I,M),PCLCROT(I,M),PCPNROT(I,M),&
+!                                     &                   PCPGROT(I,M),QFCFROT(I,M),QFCLROT(I,M),&
+!                                     &                   QFNROT(I,M),QFGROT(I,M),(QFCROT(I,M,J),J=1,3),&
+!                                     &                   ROFCROT(I,M),ROFNROT(I,M),ROFOROT(I,M),&
+!                                     &                   ROFROT(I,M),WTRCROT(I,M),WTRSROT(I,M),&
+!                                     &                   WTRGROT(I,M),' TILE ',M
+!                             endif
+!                         endif ! half hourly output loop.
+!                         !
+!                         ! Write half-hourly CTEM results to file *.CT01H
+!                         !
+!                         ! Net photosynthetic rates and leaf maintenance respiration for
+!                         ! each pft. however, if ctem_on then physyn subroutine
+!                         ! is using storage lai while actual lai is zero. if actual lai is
+!                         ! zero then we make anveg and rmlveg zero as well because these
+!                         ! are imaginary just like storage lai. note that anveg and rmlveg
+!                         ! are not passed to ctem. rather ancsveg, ancgveg, rmlcsveg, and
+!                         ! rmlcgveg are passed.
+!                         !
+!                         if (ctem_on) then
+!
+!                             do 760 j = 1,icc
+!                                 if(ailcgrow(i,m,j).le.0.0) then
+!                                     anvegrow(i,m,j)=0.0
+!                                     rmlvegrow(i,m,j)=0.0
+!                                 else
+!                                     anvegrow(i,m,j)=ancsvegrow(i,m,j)*FSNOROT(i,m) +&
+!                                         &                          ancgvegrow(i,m,j)*(1. - FSNOROT(i,m))
+!                                     rmlvegrow(i,m,j)=rmlcsvegrow(i,m,j)*FSNOROT(i,m) +&
+!                                         &                         rmlcgvegrow(i,m,j)*(1. - FSNOROT(i,m))
+!                                 endif
+! 760                         continue
+!
+!                             if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
+!                                 if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
+!
+!                                     write(71,7200)ihour,imin,iday,iyear,(anvegrow(i,m,j),&
+!                                         &                    j=1,icc),(rmlvegrow(i,m,j),j=1,icc),&
+!                                         &                    ' TILE ',m
+!                                 endif
+!                             end if
+!
+!                             do j = 1,icc
+!                                 anvegrow_g(i,j)=anvegrow_g(i,j)+anvegrow(i,m,j)&
+!                                     &                                        *FAREROT(i,m)
+!                                 rmlvegrow_g(i,j)=rmlvegrow_g(i,j)+rmlvegrow(i,m,j)&
+!                                     &                                         *FAREROT(i,m)
+!                             enddo
+!                         endif   ! ctem_on
+!
+! 7200      format(1x,i2,1x,i2,i5,i5,12f11.3,12f11.3,2(a6,i2))
+!
+!                         fsstar_g(i)    =fsstar_g(i) + fsstar*FAREROT(i,m)
+!                         flstar_g(i)    =flstar_g(i) + flstar*FAREROT(i,m)
+!                         qh_g(i)        =qh_g(i)     + qh*FAREROT(i,m)
+!                         qe_g(i)        =qe_g(i)     + qe*FAREROT(i,m)
+!                         snomlt_g(i)    =snomlt_g(i) + snomlt*FAREROT(i,m)
+!                         beg_g(i)       =beg_g(i)    + beg*FAREROT(i,m)
+!                         gtout_g(i)     =gtout_g(i)  + gtout*FAREROT(i,m)
+!                         tcn_g(i)       =tcn_g(i)    + tcn*FAREROT(i,m)
+!                         tsn_g(i)       =tsn_g(i)    + tsn*FAREROT(i,m)
+!                         zsn_g(i)       =zsn_g(i)    + zsn*FAREROT(i,m)
+!                         altot_g(i)     =altot_g(i)  + altot*FAREROT(i,m)
+!                         tpn_g(i)       =tpn_g(i)    + tpn*FAREROT(i,m)
+!
+!                         do j=1,ignd
+!                             TBARROT_g(i,j)=TBARROT_g(i,j) + TBARROT(i,m,j)*FAREROT(i,m)
+!                             THLQROT_g(i,j)=THLQROT_g(i,j) + THLQROT(i,m,j)*FAREROT(i,m)
+!                             THICROT_g(i,j)=THICROT_g(i,j) + THICROT(i,m,j)*FAREROT(i,m)
+!                             GFLXROT_g(i,j)=GFLXROT_g(i,j) + GFLXROT(i,m,j)*FAREROT(i,m)
+!                             HMFGROT_g(i,j)=HMFGROT_g(i,j) + HMFGROT(i,m,j)*FAREROT(i,m)
+!                             HTCROT_g(i,j)=HTCROT_g(i,j) + HTCROT(i,m,j)*FAREROT(i,m)
+!                             QFCROT_g(i,j)=QFCROT_g(i,j) + QFCROT(i,m,j)*FAREROT(i,m)
+!                         enddo
+!
+!                         ZPNDROT_g(i)=ZPNDROT_g(i) + ZPNDROT(i,m)*FAREROT(i,m)
+!                         RHOSROT_g(i)=RHOSROT_g(i) + RHOSROT(i,m)*FAREROT(i,m)
+!                         WSNOROT_g(i)=WSNOROT_g(i) + WSNOROT(i,m)*FAREROT(i,m)
+!                         RCANROT_g(i)=RCANROT_g(i) + RCANROT(i,m)*FAREROT(i,m)
+!                         SCANROT_g(i)=SCANROT_g(i) + SCANROT(i,m)*FAREROT(i,m)
+!                         TROFROT_g(i)=TROFROT_g(i) + TROFROT(i,m)*FAREROT(i,m)
+!                         TROOROT_g(i)=TROOROT_g(i) + TROOROT(i,m)*FAREROT(i,m)
+!                         TROSROT_g(i)=TROSROT_g(i) + TROSROT(i,m)*FAREROT(i,m)
+!                         TROBROT_g(i)=TROBROT_g(i) + TROBROT(i,m)*FAREROT(i,m)
+!                         ROFOROT_g(i)=ROFOROT_g(i) + ROFOROT(i,m)*FAREROT(i,m)
+!                         ROFSROT_g(i)=ROFSROT_g(i) + ROFSROT(i,m)*FAREROT(i,m)
+!                         ROFBROT_g(i)=ROFBROT_g(i) + ROFBROT(i,m)*FAREROT(i,m)
+!                         FSGVROT_g(i)=FSGVROT_g(i) + FSGVROT(i,m)*FAREROT(i,m)
+!                         FSGSROT_g(i)=FSGSROT_g(i) + FSGSROT(i,m)*FAREROT(i,m)
+!                         FSGGROT_g(i)=FSGGROT_g(i) + FSGGROT(i,m)*FAREROT(i,m)
+!                         FLGVROT_g(i)=FLGVROT_g(i) + FLGVROT(i,m)*FAREROT(i,m)
+!                         FLGSROT_g(i)=FLGSROT_g(i) + FLGSROT(i,m)*FAREROT(i,m)
+!                         FLGGROT_g(i)=FLGGROT_g(i) + FLGGROT(i,m)*FAREROT(i,m)
+!                         HFSCROT_g(i)=HFSCROT_g(i) + HFSCROT(i,m)*FAREROT(i,m)
+!                         HFSSROT_g(i)=HFSSROT_g(i) + HFSSROT(i,m)*FAREROT(i,m)
+!                         HFSGROT_g(i)=HFSGROT_g(i) + HFSGROT(i,m)*FAREROT(i,m)
+!                         HEVCROT_g(i)=HEVCROT_g(i) + HEVCROT(i,m)*FAREROT(i,m)
+!                         HEVSROT_g(i)=HEVSROT_g(i) + HEVSROT(i,m)*FAREROT(i,m)
+!                         HEVGROT_g(i)=HEVGROT_g(i) + HEVGROT(i,m)*FAREROT(i,m)
+!                         HMFCROT_g(i)=HMFCROT_g(i) + HMFCROT(i,m)*FAREROT(i,m)
+!                         HMFNROT_g(i)=HMFNROT_g(i) + HMFNROT(i,m)*FAREROT(i,m)
+!                         HTCCROT_g(i)=HTCCROT_g(i) + HTCCROT(i,m)*FAREROT(i,m)
+!                         HTCSROT_g(i)=HTCSROT_g(i) + HTCSROT(i,m)*FAREROT(i,m)
+!                         PCFCROT_g(i)=PCFCROT_g(i) + PCFCROT(i,m)*FAREROT(i,m)
+!                         PCLCROT_g(i)=PCLCROT_g(i) + PCLCROT(i,m)*FAREROT(i,m)
+!                         PCPNROT_g(i)=PCPNROT_g(i) + PCPNROT(i,m)*FAREROT(i,m)
+!                         PCPGROT_g(i)=PCPGROT_g(i) + PCPGROT(i,m)*FAREROT(i,m)
+!                         QFCFROT_g(i)=QFCFROT_g(i) + QFCFROT(i,m)*FAREROT(i,m)
+!                         QFCLROT_g(i)=QFCLROT_g(i) + QFCLROT(i,m)*FAREROT(i,m)
+!                         ROFCROT_g(i)=ROFCROT_g(i) + ROFCROT(i,m)*FAREROT(i,m)
+!                         ROFNROT_g(i)=ROFNROT_g(i) + ROFNROT(i,m)*FAREROT(i,m)
+!                         WTRCROT_g(i)=WTRCROT_g(i) + WTRCROT(i,m)*FAREROT(i,m)
+!                         WTRSROT_g(i)=WTRSROT_g(i) + WTRSROT(i,m)*FAREROT(i,m)
+!                         WTRGROT_g(i)=WTRGROT_g(i) + WTRGROT(i,m)*FAREROT(i,m)
+!                         QFNROT_g(i) =QFNROT_g(i) + QFNROT(i,m)*FAREROT(i,m)
+!                         QFGROT_g(i) =QFGROT_g(i) + QFGROT(i,m)*FAREROT(i,m)
+!                         ROFROT_g(i) =ROFROT_g(i) + ROFROT(i,m)*FAREROT(i,m)
+!                         SNOROT_g(i) =SNOROT_g(i) + SNOROT(i,m)*FAREROT(i,m)
+!                         CDHROT_g(i) =CDHROT_g(i) + CDHROT(i,m)*FAREROT(i,m)
+!                         CDMROT_g(i) =CDMROT_g(i) + CDMROT(i,m)*FAREROT(i,m)
+!                         SFCUROT_g(i) =SFCUROT_g(i) + SFCUROT(i,m)*FAREROT(i,m)
+!                         SFCVROT_g(i) =SFCVROT_g(i) + SFCVROT(i,m)*FAREROT(i,m)
+!                         ACTLYR_g(i) = ACTLYR_g(i) + ACTLYR(i,m) * FAREROT(i,m)
+!                         FTABLE_g(i) = FTABLE_g(i) + FTABLE(i,m) * FAREROT(i,m)
+!
+! 425                 CONTINUE
+!
+!                     if ((iyear .ge. jhhsty) .and. (iyear .le. jhhendy)) then
+!                         if ((iday .ge. jhhstd) .and. (iday .le. jhhendd)) then
+!
+!                             IF (CTEM_ON) THEN
+!                                 WRITE(711,7200)IHOUR,IMIN,IDAY,IYEAR,(ANVEGROW_G(I,J),&
+!                                     &                 J=1,ICC),(RMLVEGROW_G(I,J),J=1,ICC)
+!                             ENDIF !CTEM_ON
+!
+!                             WRITE(641,6400) IHOUR,IMIN,IDAY,IYEAR,FSSTAR_G(i),FLSTAR_G(i),&
+!                                 &                  QH_G(i),QE_G(i),SNOMLT_G(i),BEG_G(i),GTOUT_G(i),&
+!                                 &                  SNOROT_G(I),RHOSROT_G(I),WSNOROT_G(I),&
+!                                 &                  ALTOT_G(i),ROFROT_G(I),TPN_G(i),ZPNDROT_G(I),&
+!                                 &                  CDHROT_G(I),CDMROT_G(I),SFCUROT_G(I),&
+!                                 &                  SFCVROT_G(I),UVROW(I)
+!                             WRITE(651,6500) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-&
+!                                 &                   TFREZ,THLQROT_G(I,J),THICROT_G(I,J),J=1,3),&
+!                                 &                   TCN_G(i),RCANROT_G(I),SCANROT_G(I),TSN_G(i),&
+!                                 &                   ZSN_G(i),TCN_G(i)-(TAROW(I)-TFREZ),&
+!                                 &                   TCANO(I)-TFREZ,TACGAT(I)-TFREZ
+!
+!                             IF(IGND.GT.3) THEN
+!                                 WRITE(661,6601) IHOUR,IMIN,IDAY,IYEAR,(TBARROT_G(I,J)-&
+!                                     &                   TFREZ,THLQROT_G(I,J),THICROT_G(I,J),J=1,IGND),&
+!                                     &                   (GFLXROT_G(I,J),J=1,IGND)
+!                             ELSE
+!                                 WRITE(661,6600) IHOUR,IMIN,IDAY,FSSROW(I),FDLROW(I),PREROW(I),&
+!                                     &                   TAROW(I)-TFREZ,UVROW(I),PRESROW(I),QAROW(I)
+!                             ENDIF
+!
+!                             WRITE(671,6700) IHOUR,IMIN,IDAY,IYEAR,&
+!                                 &                   TROFROT_G(I),TROOROT_G(I),TROSROT_G(I),&
+!                                 &                   TROBROT_G(I),ROFROT_G(I),ROFOROT_G(I),&
+!                                 &                   ROFSROT_G(I),ROFBROT_G(I),&
+!                                 &                   FCS_G(I),FGS_G(I),FC_G(I),FG_G(I)
+!                             WRITE(681,6800) IHOUR,IMIN,IDAY,IYEAR,&
+!                                 &                   FSGVROT_G(I),FSGSROT_G(I),FSGGROT_G(I),&
+!                                 &                   FLGVROT_G(I),FLGSROT_G(I),FLGGROT_G(I),&
+!                                 &                   HFSCROT_G(I),HFSSROT_G(I),HFSGROT_G(I),&
+!                                 &                   HEVCROT_G(I),HEVSROT_G(I),HEVGROT_G(I),&
+!                                 &                   HMFCROT_G(I),HMFNROT_G(I),&
+!                                 &                   (HMFGROT_G(I,J),J=1,3),&
+!                                 &                   HTCCROT_G(I),HTCSROT_G(I),&
+!                                 &                   (HTCROT_G(I,J),J=1,3)
+!                             WRITE(691,6900) IHOUR,IMIN,IDAY,IYEAR,&
+!                                 &                   PCFCROT_G(I),PCLCROT_G(I),PCPNROT_G(I),&
+!                                 &                   PCPGROT_G(I),QFCFROT_G(I),QFCLROT_G(I),&
+!                                 &                   QFNROT_G(I),QFGROT_G(I),(QFCROT_G(I,J),J=1,3),&
+!                                 &                   ROFCROT_G(I),ROFNROT_G(I),ROFOROT_G(I),&
+!                                 &                   ROFROT_G(I),WTRCROT_G(I),WTRSROT_G(I),&
+!                                 &                   WTRGROT_G(I)
+!                         endif
+!                     ENDIF ! if write half-hourly
+!
+! 450             CONTINUE
+!
+!             endif ! dohhoutput
 !subroutine class_hh_w
 
 !==============================================================================================================
@@ -62,8 +775,597 @@ contains
     !>@{
 
     !class_daily_aw
+!
+!         real, pointer, dimension(:,:) :: PREACC_M
+!         real, pointer, dimension(:,:) :: GTACC_M
+!         real, pointer, dimension(:,:) :: QEVPACC_M
+!         real, pointer, dimension(:,:) :: HFSACC_M
+!         real, pointer, dimension(:,:) :: HMFNACC_M
+!         real, pointer, dimension(:,:) :: ROFACC_M
+!         real, pointer, dimension(:,:) :: SNOACC_M
+!         real, pointer, dimension(:,:) :: OVRACC_M
+!         real, pointer, dimension(:,:) :: WTBLACC_M
+!         real, pointer, dimension(:,:,:) :: TBARACC_M
+!         real, pointer, dimension(:,:,:) :: THLQACC_M
+!         real, pointer, dimension(:,:,:) :: THICACC_M
+!         real, pointer, dimension(:,:,:) :: THALACC_M
+!         real, pointer, dimension(:,:) :: ALVSACC_M
+!         real, pointer, dimension(:,:) :: ALIRACC_M
+!         real, pointer, dimension(:,:) :: RHOSACC_M
+!         real, pointer, dimension(:,:) :: TSNOACC_M
+!         real, pointer, dimension(:,:) :: WSNOACC_M
+!         real, pointer, dimension(:,:) :: SNOARE_M
+!         real, pointer, dimension(:,:) :: TCANACC_M
+!         real, pointer, dimension(:,:) :: RCANACC_M
+!         real, pointer, dimension(:,:) :: SCANACC_M
+!         real, pointer, dimension(:,:) :: GROACC_M
+!         real, pointer, dimension(:,:) :: FSINACC_M
+!         real, pointer, dimension(:,:) :: FLINACC_M
+!         real, pointer, dimension(:,:) :: TAACC_M
+!         real, pointer, dimension(:,:) :: UVACC_M
+!         real, pointer, dimension(:,:) :: PRESACC_M
+!         real, pointer, dimension(:,:) :: QAACC_M
+!         real, pointer, dimension(:,:) :: ALTOTACC_M
+!         real, pointer, dimension(:,:) :: EVAPACC_M
+!         real, pointer, dimension(:,:) :: FLUTACC_M
 
+!         PREACC_M          => class_rot%PREACC_M
+!         GTACC_M           => class_rot%GTACC_M
+!         QEVPACC_M         => class_rot%QEVPACC_M
+!         HFSACC_M          => class_rot%HFSACC_M
+!         HMFNACC_M         => class_rot%HMFNACC_M
+!         ROFACC_M          => class_rot%ROFACC_M
+!         SNOACC_M          => class_rot%SNOACC_M
+!         OVRACC_M          => class_rot%OVRACC_M
+!         WTBLACC_M         => class_rot%WTBLACC_M
+!         TBARACC_M         => class_rot%TBARACC_M
+!         THLQACC_M         => class_rot%THLQACC_M
+!         THICACC_M         => class_rot%THICACC_M
+!         THALACC_M         => class_rot%THALACC_M
+!         ALVSACC_M         => class_rot%ALVSACC_M
+!         ALIRACC_M         => class_rot%ALIRACC_M
+!         RHOSACC_M         => class_rot%RHOSACC_M
+!         TSNOACC_M         => class_rot%TSNOACC_M
+!         WSNOACC_M         => class_rot%WSNOACC_M
+!         SNOARE_M          => class_rot%SNOARE_M
+!         TCANACC_M         => class_rot%TCANACC_M
+!         RCANACC_M         => class_rot%RCANACC_M
+!         SCANACC_M         => class_rot%SCANACC_M
+!         GROACC_M          => class_rot%GROACC_M
+!         FSINACC_M         => class_rot%FSINACC_M
+!         FLINACC_M         => class_rot%FLINACC_M
+!         TAACC_M           => class_rot%TAACC_M
+!         UVACC_M           => class_rot%UVACC_M
+!         PRESACC_M         => class_rot%PRESACC_M
+!         QAACC_M           => class_rot%QAACC_M
+!         ALTOTACC_M        => class_rot%ALTOTACC_M
+!         EVAPACC_M         => class_rot%EVAPACC_M
+!         FLUTACC_M         => class_rot%FLUTACC_M
 
+            !     * CALCULATE GRID CELL AVERAGE DIAGNOSTIC FIELDS.
+
+!             if(dohhoutput) then !or dodayoutput???          ! stand alone mode, includes diagnostic fields
+!
+!                 DO 525 I=1,NLTEST
+!                     CDHROW(I)=0.
+!                     CDMROW(I)=0.
+!                     HFSROW(I)=0.
+!                     TFXROW(I)=0.
+!                     QEVPROW(I)=0.
+!                     QFSROW(I)=0.
+!                     QFXROW(I)=0.
+!                     PETROW(I)=0.
+!                     GAROW(I)=0.
+!                     EFROW(I)=0.
+!                     GTROW(I)=0.
+!                     QGROW(I)=0.
+!                     ALVSROW(I)=0.
+!                     ALIRROW(I)=0.
+!                     SFCTROW(I)=0.
+!                     SFCUROW(I)=0.
+!                     SFCVROW(I)=0.
+!                     SFCQROW(I)=0.
+!                     SFRHROW(I)=0.
+!                     FSNOROW(I)=0.
+!                     FSGVROW(I)=0.
+!                     FSGSROW(I)=0.
+!                     FSGGROW(I)=0.
+!                     FLGVROW(I)=0.
+!                     FLGSROW(I)=0.
+!                     FLGGROW(I)=0.
+!                     HFSCROW(I)=0.
+!                     HFSSROW(I)=0.
+!                     HFSGROW(I)=0.
+!                     HEVCROW(I)=0.
+!                     HEVSROW(I)=0.
+!                     HEVGROW(I)=0.
+!                     HMFCROW(I)=0.
+!                     HMFNROW(I)=0.
+!                     HTCCROW(I)=0.
+!                     HTCSROW(I)=0.
+!                     PCFCROW(I)=0.
+!                     PCLCROW(I)=0.
+!                     PCPNROW(I)=0.
+!                     PCPGROW(I)=0.
+!                     QFGROW(I)=0.
+!                     QFNROW(I)=0.
+!                     QFCLROW(I)=0.
+!                     QFCFROW(I)=0.
+!                     ROFROW(I)=0.
+!                     ROFOROW(I)=0.
+!                     ROFSROW(I)=0.
+!                     ROFBROW(I)=0.
+!                     ROFCROW(I)=0.
+!                     ROFNROW(I)=0.
+!                     ROVGROW(I)=0.
+!                     WTRCROW(I)=0.
+!                     WTRSROW(I)=0.
+!                     WTRGROW(I)=0.
+!                     DRROW(I)=0.
+!                     wtableROW(I)=0.
+!                     ILMOROW(I)=0.
+!                     UEROW(I)=0.
+!                     HBLROW(I)=0.
+!                     G12GRD(I)= 0.       !YW March 27, 2015
+!                     G23GRD(I)= 0.       !YW March 27, 2015
+!                     DO 500 J=1,IGND
+!                         HMFGROW(I,J)=0.
+!                         HTCROW(I,J)=0.
+!                         QFCROW(I,J)=0.
+!                         GFLXROW(I,J)=0.
+! 500                 CONTINUE
+! 525             CONTINUE
+!
+!                 DO 600 I=1,NLTEST
+!                     DO 575 M=1,NMTEST
+!                         CDHROW(I)=CDHROW(I)+CDHROT(I,M)*FAREROT(I,M)
+!                         CDMROW(I)=CDMROW(I)+CDMROT(I,M)*FAREROT(I,M)
+!                         HFSROW(I)=HFSROW(I)+HFSROT(I,M)*FAREROT(I,M)
+!                         TFXROW(I)=TFXROW(I)+TFXROT(I,M)*FAREROT(I,M)
+!                         QEVPROW(I)=QEVPROW(I)+QEVPROT(I,M)*FAREROT(I,M)
+!                         QFSROW(I)=QFSROW(I)+QFSROT(I,M)*FAREROT(I,M)
+!                         QFXROW(I)=QFXROW(I)+QFXROT(I,M)*FAREROT(I,M)
+!                         PETROW(I)=PETROW(I)+PETROT(I,M)*FAREROT(I,M)
+!                         GAROW(I)=GAROW(I)+GAROT(I,M)*FAREROT(I,M)
+!                         EFROW(I)=EFROW(I)+EFROT(I,M)*FAREROT(I,M)
+!                         GTROW(I)=GTROW(I)+GTROT(I,M)*FAREROT(I,M)
+!                         QGROW(I)=QGROW(I)+QGROT(I,M)*FAREROT(I,M)
+!                         ALVSROW(I)=ALVSROW(I)+ALVSROT(I,M)*FAREROT(I,M)
+!                         ALIRROW(I)=ALIRROW(I)+ALIRROT(I,M)*FAREROT(I,M)
+!                         SFCTROW(I)=SFCTROW(I)+SFCTROT(I,M)*FAREROT(I,M)
+!                         SFCUROW(I)=SFCUROW(I)+SFCUROT(I,M)*FAREROT(I,M)
+!                         SFCVROW(I)=SFCVROW(I)+SFCVROT(I,M)*FAREROT(I,M)
+!                         SFCQROW(I)=SFCQROW(I)+SFCQROT(I,M)*FAREROT(I,M)
+!                         SFRHROW(I)=SFRHROW(I)+SFRHROT(I,M)*FAREROT(I,M)
+!                         FSNOROW(I)=FSNOROW(I)+FSNOROT(I,M)*FAREROT(I,M)
+!                         FSGVROW(I)=FSGVROW(I)+FSGVROT(I,M)*FAREROT(I,M)
+!                         FSGSROW(I)=FSGSROW(I)+FSGSROT(I,M)*FAREROT(I,M)
+!                         FSGGROW(I)=FSGGROW(I)+FSGGROT(I,M)*FAREROT(I,M)
+!                         FLGVROW(I)=FLGVROW(I)+FLGVROT(I,M)*FAREROT(I,M)
+!                         FLGSROW(I)=FLGSROW(I)+FLGSROT(I,M)*FAREROT(I,M)
+!                         FLGGROW(I)=FLGGROW(I)+FLGGROT(I,M)*FAREROT(I,M)
+!                         HFSCROW(I)=HFSCROW(I)+HFSCROT(I,M)*FAREROT(I,M)
+!                         HFSSROW(I)=HFSSROW(I)+HFSSROT(I,M)*FAREROT(I,M)
+!                         HFSGROW(I)=HFSGROW(I)+HFSGROT(I,M)*FAREROT(I,M)
+!                         HEVCROW(I)=HEVCROW(I)+HEVCROT(I,M)*FAREROT(I,M)
+!                         HEVSROW(I)=HEVSROW(I)+HEVSROT(I,M)*FAREROT(I,M)
+!                         HEVGROW(I)=HEVGROW(I)+HEVGROT(I,M)*FAREROT(I,M)
+!                         HMFCROW(I)=HMFCROW(I)+HMFCROT(I,M)*FAREROT(I,M)
+!                         HMFNROW(I)=HMFNROW(I)+HMFNROT(I,M)*FAREROT(I,M)
+!                         HTCCROW(I)=HTCCROW(I)+HTCCROT(I,M)*FAREROT(I,M)
+!                         HTCSROW(I)=HTCSROW(I)+HTCSROT(I,M)*FAREROT(I,M)
+!                         PCFCROW(I)=PCFCROW(I)+PCFCROT(I,M)*FAREROT(I,M)
+!                         PCLCROW(I)=PCLCROW(I)+PCLCROT(I,M)*FAREROT(I,M)
+!                         PCPNROW(I)=PCPNROW(I)+PCPNROT(I,M)*FAREROT(I,M)
+!                         PCPGROW(I)=PCPGROW(I)+PCPGROT(I,M)*FAREROT(I,M)
+!                         QFGROW(I)=QFGROW(I)+QFGROT(I,M)*FAREROT(I,M)
+!                         QFNROW(I)=QFNROW(I)+QFNROT(I,M)*FAREROT(I,M)
+!                         QFCLROW(I)=QFCLROW(I)+QFCLROT(I,M)*FAREROT(I,M)
+!                         QFCFROW(I)=QFCFROW(I)+QFCFROT(I,M)*FAREROT(I,M)
+!                         ROFROW(I)=ROFROW(I)+ROFROT(I,M)*FAREROT(I,M)
+!                         ROFOROW(I)=ROFOROW(I)+ROFOROT(I,M)*FAREROT(I,M)
+!                         ROFSROW(I)=ROFSROW(I)+ROFSROT(I,M)*FAREROT(I,M)
+!                         ROFBROW(I)=ROFBROW(I)+ROFBROT(I,M)*FAREROT(I,M)
+!                         ROFCROW(I)=ROFCROW(I)+ROFCROT(I,M)*FAREROT(I,M)
+!                         ROFNROW(I)=ROFNROW(I)+ROFNROT(I,M)*FAREROT(I,M)
+!                         ROVGROW(I)=ROVGROW(I)+ROVGROT(I,M)*FAREROT(I,M)
+!                         WTRCROW(I)=WTRCROW(I)+WTRCROT(I,M)*FAREROT(I,M)
+!                         WTRSROW(I)=WTRSROW(I)+WTRSROT(I,M)*FAREROT(I,M)
+!                         WTRGROW(I)=WTRGROW(I)+WTRGROT(I,M)*FAREROT(I,M)
+!                         DRROW(I)=DRROW(I)+DRROT(I,M)*FAREROT(I,M)
+!                         wtableROW(I)=wtableROW(I)+wtableROT(I,M)*FAREROT(I,M)
+!                         ILMOROW(I)=ILMOROW(I)+ILMOROT(I,M)*FAREROT(I,M)
+!                         UEROW(I)=UEROW(I)+UEROT(I,M)*FAREROT(I,M)
+!                         HBLROW(I)=HBLROW(I)+HBLROT(I,M)*FAREROT(I,M)
+!                         G12GRD(I)=G12C(I)*FC(I)+G12G(I)*FG(I)+G12CS(I)*FCS(I)+&
+!                         G12GS(I)*FGS(I)     !YW March 27, 2015
+!                         G23GRD(I)=G23C(I)*FC(I)+G23G(I)*FG(I)+G23CS(I)*FCS(I)+&
+!                         G23GS(I)*FGS(I)     !YW March 27, 2015
+!                         DO 550 J=1,IGND
+!                             HMFGROW(I,J)=HMFGROW(I,J)+HMFGROT(I,M,J)*FAREROT(I,M)
+!                             HTCROW(I,J)=HTCROW(I,J)+HTCROT(I,M,J)*FAREROT(I,M)
+!                             QFCROW(I,J)=QFCROW(I,J)+QFCROT(I,M,J)*FAREROT(I,M)
+!                             GFLXROW(I,J)=GFLXROW(I,J)+GFLXROT(I,M,J)*FAREROT(I,M)
+! 550                     CONTINUE
+! 575                 CONTINUE
+! 600             CONTINUE
+!
+!             endif ! dodayoutput, for diagnostic fields
+!
+!             if(dodayoutput) then ! stand alone mode, includes daily output for class
+!
+!                 !     * ACCUMULATE OUTPUT DATA FOR DIURNALLY AVERAGED FIELDS. BOTH GRID
+!                 !       MEAN AND MOSAIC MEAN
+!                 !
+!                 DO 675 I=1,NLTEST
+!
+!                     IF (FSSROW(I) .gt. 0.) then
+!                         ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)&
+!                             &                   +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
+!                         altotcntr_d(i)=altotcntr_d(i) + 1
+!                     END IF
+!
+!                     DO 650 M=1,NMTEST
+!                         PREACC(I)=PREACC(I)+PREROW(I)*FAREROT(I,M)*DELT
+!                         GTACC(I)=GTACC(I)+GTROT(I,M)*FAREROT(I,M)
+!                         QEVPACC(I)=QEVPACC(I)+QEVPROT(I,M)*FAREROT(I,M)
+!                         EVAPACC(I)=EVAPACC(I)+QFSROT(I,M)*FAREROT(I,M)*DELT
+!                         HFSACC(I)=HFSACC(I)+HFSROT(I,M)*FAREROT(I,M)
+!                         HMFNACC(I)=HMFNACC(I)+HMFNROT(I,M)*FAREROT(I,M)
+!                         ROFACC(I)=ROFACC(I)+ROFROT(I,M)*FAREROT(I,M)*DELT
+!                         OVRACC(I)=OVRACC(I)+ROFOROT(I,M)*FAREROT(I,M)*DELT
+!                         WTBLACC(I)=WTBLACC(I)+wtableROT(I,M)*FAREROT(I,M)
+!                         IF (FSSROW(I) .gt. 0.) then
+!                             ALTOTACC(I)=ALTOTACC(I) + (FSSROW(I)-(FSGVROW(I)&
+!                                         +FSGSROW(I)+FSGGROW(I)))/FSSROW(I)
+!                         END IF
+!                         DO 625 J=1,IGND
+!                             TBARACC(I,J)=TBARACC(I,J)+TBARROT(I,M,J)*FAREROT(I,M)
+!                             THLQACC(I,J)=THLQACC(I,J)+THLQROT(I,M,J)*FAREROT(I,M)
+!                             THICACC(I,J)=THICACC(I,J)+THICROT(I,M,J)*FAREROT(I,M)
+!                             THALACC(I,J)=THALACC(I,J)+(THLQROT(I,M,J)+THICROT(I,M,J))&
+!                                 &                    *FAREROT(I,M)
+! 625                     CONTINUE
+!                         ALVSACC(I)=ALVSACC(I)+ALVSROT(I,M)*FAREROT(I,M)*FSVHROW(I)
+!                         ALIRACC(I)=ALIRACC(I)+ALIRROT(I,M)*FAREROT(I,M)*FSIHROW(I)
+!                         IF(SNOROT(I,M).GT.0.0) THEN
+!                             RHOSACC(I)=RHOSACC(I)+RHOSROT(I,M)*FAREROT(I,M)
+!                             TSNOACC(I)=TSNOACC(I)+TSNOROT(I,M)*FAREROT(I,M)
+!                             WSNOACC(I)=WSNOACC(I)+WSNOROT(I,M)*FAREROT(I,M)
+!                             SNOARE(I)=SNOARE(I)+FAREROT(I,M)
+!                         ENDIF
+!                         IF(TCANROT(I,M).GT.0.5) THEN
+!                             TCANACC(I)=TCANACC(I)+TCANROT(I,M)*FAREROT(I,M)
+!                             CANARE(I)=CANARE(I)+FAREROT(I,M)
+!                         ENDIF
+!                         SNOACC(I)=SNOACC(I)+SNOROT(I,M)*FAREROT(I,M)
+!                         RCANACC(I)=RCANACC(I)+RCANROT(I,M)*FAREROT(I,M)
+!                         SCANACC(I)=SCANACC(I)+SCANROT(I,M)*FAREROT(I,M)
+!                         GROACC(I)=GROACC(I)+GROROT(I,M)*FAREROT(I,M)
+!                         FSINACC(I)=FSINACC(I)+FSSROW(I)*FAREROT(I,M)
+!                         FLINACC(I)=FLINACC(I)+FDLROW(I)*FAREROT(I,M)
+!                         FLUTACC(I)=FLUTACC(I)+SBC*GTROT(I,M)**4*FAREROT(I,M)
+!                         TAACC(I)=TAACC(I)+TAROW(I)*FAREROT(I,M)
+!                         UVACC(I)=UVACC(I)+UVROW(I)*FAREROT(I,M)
+!                         PRESACC(I)=PRESACC(I)+PRESROW(I)*FAREROT(I,M)
+!                         QAACC(I)=QAACC(I)+QAROW(I)*FAREROT(I,M)
+!                         G12ACC(I)=G12ACC(I)+G12GRD(I)*FAREROT(I,M)  !YW March 23, 2015
+!                         G23ACC(I)=G23ACC(I)+G23GRD(I)*FAREROT(I,M)  !YW March 23, 2015
+! 650                 CONTINUE
+! 675             CONTINUE
+!
+!                 ! * CALCULATE AND PRINT DAILY AVERAGES.
+!
+!                 IF(NCOUNT.EQ.NDAY) THEN
+!
+!                     DO 800 I=1,NLTEST
+!                         PREACC(I)=PREACC(I)
+!                         GTACC(I)=GTACC(I)/REAL(NDAY)
+!                         QEVPACC(I)=QEVPACC(I)/REAL(NDAY)
+!                         EVAPACC(I)=EVAPACC(I)
+!                         HFSACC(I)=HFSACC(I)/REAL(NDAY)
+!                         HMFNACC(I)=HMFNACC(I)/REAL(NDAY)
+!                         ROFACC(I)=ROFACC(I)
+!                         OVRACC(I)=OVRACC(I)
+!                         WTBLACC(I)=WTBLACC(I)/REAL(NDAY)
+!                         DO 725 J=1,IGND
+!                             TBARACC(I,J)=TBARACC(I,J)/REAL(NDAY)
+!                             THLQACC(I,J)=THLQACC(I,J)/REAL(NDAY)
+!                             THICACC(I,J)=THICACC(I,J)/REAL(NDAY)
+!                             THALACC(I,J)=THALACC(I,J)/REAL(NDAY)
+! 725                     CONTINUE
+!                         IF(FSINACC(I).GT.0.0) THEN
+!                             ALVSACC(I)=ALVSACC(I)/(FSINACC(I)*0.5)
+!                             ALIRACC(I)=ALIRACC(I)/(FSINACC(I)*0.5)
+!                         ELSE
+!                             ALVSACC(I)=0.0
+!                             ALIRACC(I)=0.0
+!                         ENDIF
+!                         IF(SNOARE(I).GT.0.0) THEN
+!                             RHOSACC(I)=RHOSACC(I)/SNOARE(I)
+!                             TSNOACC(I)=TSNOACC(I)/SNOARE(I)
+!                             WSNOACC(I)=WSNOACC(I)/SNOARE(I)
+!                         ENDIF
+!                         IF(CANARE(I).GT.0.0) THEN
+!                             TCANACC(I)=TCANACC(I)/CANARE(I)
+!                         ENDIF
+!                         SNOACC(I)=SNOACC(I)/REAL(NDAY)
+!                         RCANACC(I)=RCANACC(I)/REAL(NDAY)
+!                         SCANACC(I)=SCANACC(I)/REAL(NDAY)
+!                         GROACC(I)=GROACC(I)/REAL(NDAY)
+!                         FSINACC(I)=FSINACC(I)/REAL(NDAY)
+!                         FLINACC(I)=FLINACC(I)/REAL(NDAY)
+!                         FLUTACC(I)=FLUTACC(I)/REAL(NDAY)
+!                         TAACC(I)=TAACC(I)/REAL(NDAY)
+!                         UVACC(I)=UVACC(I)/REAL(NDAY)
+!                         PRESACC(I)=PRESACC(I)/REAL(NDAY)
+!                         QAACC(I)=QAACC(I)/REAL(NDAY)
+!                         if (altotcntr_d(i) > 0) then
+!                             ALTOTACC(I)=ALTOTACC(I)/REAL(altotcntr_d(i))
+!                         else
+!                             ALTOTACC(I)=0.
+!                         end if
+!                         FSSTAR=FSINACC(I)*(1.-ALTOTACC(I))
+!                         FLSTAR=FLINACC(I)-FLUTACC(I)
+!                         QH=HFSACC(I)
+!                         QE=QEVPACC(I)
+!                         BEG=FSSTAR+FLSTAR-QH-QE
+!                         SNOMLT=HMFNACC(I)
+!                         IF(RHOSACC(I).GT.0.0) THEN
+!                             ZSN=SNOACC(I)/RHOSACC(I)
+!                         ELSE
+!                             ZSN=0.0
+!                         ENDIF
+!                         IF(TCANACC(I).GT.0.01) THEN
+!                             TCN=TCANACC(I)-TFREZ
+!                         ELSE
+!                             TCN=0.0
+!                         ENDIF
+!                         IF(TSNOACC(I).GT.0.01) THEN
+!                             TSN=TSNOACC(I)-TFREZ
+!                         ELSE
+!                             TSN=0.0
+!                         ENDIF
+!                         GTOUT=GTACC(I)-TFREZ
+!
+!                         if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+!                             if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
+!
+!                                 WRITE(61,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,&
+!                                     &                       BEG,GTOUT,SNOACC(I),RHOSACC(I),&
+!                                     &                       WSNOACC(I),ALTOTACC(I),ROFACC(I),CUMSNO
+!                                 IF(IGND.GT.3) THEN
+!                                     WRITE(62,6201) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,&
+!                                         &                       THLQACC(I,J),THICACC(I,J),J=1,IGND),&
+!                                         &                       ACTLYR_G(I),FTABLE_g(I)
+!                                 ELSE
+!                                     WRITE(62,6200) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,&
+!                                         &                       THLQACC(I,J),THICACC(I,J),J=1,3),&
+!                                         &                       TCN,RCANACC(I),SCANACC(I),TSN,ZSN,&
+!                                         &                       ACTLYR_G(I),FTABLE_g(I)
+!                                 ENDIF
+!                                 WRITE(63,6300) IDAY,IYEAR,FSINACC(I),FLINACC(I),&
+!                                     &                       TAACC(I)-TFREZ,UVACC(I),PRESACC(I),&
+!                                     &                       QAACC(I),PREACC(I),EVAPACC(I)
+!
+!                             endif
+!                         ENDIF
+!
+!                         !    ----peatland output-----------------------------------------------\
+!
+!                         write(99,6999)  IDAY,IYEAR,WTBLACC(i), ZSN,PREACC(i),EVAPACC(i),ROFACC(i),g12acc(i),g23acc(i)
+! 6999    format(1X,I4,I5,10f12.3)
+!                         !    ----YW March 23, 2015 --------------------------------------------/
+!
+!                         !* RESET ACCUMULATOR ARRAYS.
+
+! FLAG! Here call : resetAccVars from class_statevars. It covers down to the 800 continue line.
+!
+!                         PREACC(I)=0.
+!                         GTACC(I)=0.
+!                         QEVPACC(I)=0.
+!                         HFSACC(I)=0.
+!                         HMFNACC(I)=0.
+!                         ROFACC(I)=0.
+!                         SNOACC(I)=0.
+!                         CANARE(I)=0.
+!                         SNOARE(I)=0.
+!                         OVRACC(I)=0.
+!                         WTBLACC(I)=0.
+!                         DO 750 J=1,IGND
+!                             TBARACC(I,J)=0.
+!                             THLQACC(I,J)=0.
+!                             THICACC(I,J)=0.
+!                             THALACC(I,J)=0.
+! 750                     CONTINUE
+!                         ALVSACC(I)=0.
+!                         ALIRACC(I)=0.
+!                         RHOSACC(I)=0.
+!                         TSNOACC(I)=0.
+!                         WSNOACC(I)=0.
+!                         TCANACC(I)=0.
+!                         RCANACC(I)=0.
+!                         SCANACC(I)=0.
+!                         GROACC(I)=0.
+!                         FSINACC(I)=0.
+!                         FLINACC(I)=0.
+!                         TAACC(I)=0.
+!                         UVACC(I)=0.
+!                         PRESACC(I)=0.
+!                         QAACC(I)=0.
+!                         ALTOTACC(I) = 0.
+!                         EVAPACC(I)=0.
+!                         FLUTACC(I)=0.
+! 800                 CONTINUE
+!
+!                 ENDIF ! IF(NCOUNT.EQ.NDAY)
+!
+!                 !     CALCULATE AND PRINT MOSAIC DAILY AVERAGES.
+!
+!                 !       start -> FLAG JM
+!                 DO 676 I=1,NLTEST
+!                     DO 658 M=1,NMTEST
+!                         PREACC_M(I,M)=PREACC_M(I,M)+PREROW(I)*DELT
+!                         GTACC_M(I,M)=GTACC_M(I,M)+GTROT(I,M)
+!                         QEVPACC_M(I,M)=QEVPACC_M(I,M)+QEVPROT(I,M)
+!                         EVAPACC_M(I,M)=EVAPACC_M(I,M)+QFSROT(I,M)*DELT
+!                         HFSACC_M(I,M)=HFSACC_M(I,M)+HFSROT(I,M)
+!                         HMFNACC_M(I,M)=HMFNACC_M(I,M)+HMFNROT(I,M)
+!                         ROFACC_M(I,M)=ROFACC_M(I,M)+ROFROT(I,M)*DELT
+!                         OVRACC_M(I,M)=OVRACC_M(I,M)+ROFOROT(I,M)*DELT
+!                         WTBLACC_M(I,M)=WTBLACC_M(I,M)+wtableROT(I,M)
+!                         DO 626 J=1,IGND
+!                             TBARACC_M(I,M,J)=TBARACC_M(I,M,J)+TBARROT(I,M,J)
+!                             THLQACC_M(I,M,J)=THLQACC_M(I,M,J)+THLQROT(I,M,J)
+!                             THICACC_M(I,M,J)=THICACC_M(I,M,J)+THICROT(I,M,J)
+!                             THALACC_M(I,M,J)=THALACC_M(I,M,J)+(THLQROT(I,M,J)+THICROT(I,M,J))
+! 626                     CONTINUE
+!                         ALVSACC_M(I,M)=ALVSACC_M(I,M)+ALVSROT(I,M)*FSVHROW(I)
+!                         ALIRACC_M(I,M)=ALIRACC_M(I,M)+ALIRROT(I,M)*FSIHROW(I)
+!                         IF(SNOROT(I,M).GT.0.0) THEN
+!                             RHOSACC_M(I,M)=RHOSACC_M(I,M)+RHOSROT(I,M)
+!                             TSNOACC_M(I,M)=TSNOACC_M(I,M)+TSNOROT(I,M)
+!                             WSNOACC_M(I,M)=WSNOACC_M(I,M)+WSNOROT(I,M)
+!                             SNOARE_M(I,M) = SNOARE_M(I,M) + 1.0 !FLAG test.
+!                         ENDIF
+!                         IF(TCANROT(I,M).GT.0.5) THEN
+!                             TCANACC_M(I,M)=TCANACC_M(I,M)+TCANROT(I,M)
+!                         !              CANARE(I)=CANARE(I)+FAREROT(I,M)
+!                         ENDIF
+!                         SNOACC_M(I,M)=SNOACC_M(I,M)+SNOROT(I,M)
+!                         RCANACC_M(I,M)=RCANACC_M(I,M)+RCANROT(I,M)
+!                         SCANACC_M(I,M)=SCANACC_M(I,M)+SCANROT(I,M)
+!                         GROACC_M(I,M)=GROACC_M(I,M)+GROROT(I,M)
+!                         IF (FSSROW(I) .gt. 0.) THEN ! we will reuse the altotcntr_d counter values so don't need to do again.
+!                             ALTOTACC_M(I,M)=ALTOTACC_M(I,M) + (FSSROW(I)-&
+!                                 &                    (FSGVROT(I,M)+FSGSROT(I,M)+&
+!                                 &                     FSGGROT(I,M)))/FSSROW(I)
+!                         END IF
+!                         FSINACC_M(I,M)=FSINACC_M(I,M)+FSSROW(I)
+!                         FLINACC_M(I,M)=FLINACC_M(I,M)+FDLROW(I)
+!                         FLUTACC_M(I,M)=FLUTACC_M(I,M)+SBC*GTROT(I,M)**4
+!                         TAACC_M(I,M)=TAACC_M(I,M)+TAROW(I)
+!                         UVACC_M(I,M)=UVACC_M(I,M)+UVROW(I)
+!                         PRESACC_M(I,M)=PRESACC_M(I,M)+PRESROW(I)
+!                         QAACC_M(I,M)=QAACC_M(I,M)+QAROW(I)
+! 658                 CONTINUE
+! 676             CONTINUE
+!
+!                 !CALCULATE AND PRINT DAILY AVERAGES.
+!
+!                 IF(NCOUNT.EQ.NDAY) THEN
+!
+!                     DO 808 I=1,NLTEST
+!                         DO 809 M=1,NMTEST
+!                             PREACC_M(I,M)=PREACC_M(I,M)     !became [kg m-2 day-1] instead of [kg m-2 s-1]
+!                             GTACC_M(I,M)=GTACC_M(I,M)/REAL(NDAY)
+!                             QEVPACC_M(I,M)=QEVPACC_M(I,M)/REAL(NDAY)
+!                             EVAPACC_M(I,M)=EVAPACC_M(I,M)   !became [kg m-2 day-1] instead of [kg m-2 s-1]
+!                             HFSACC_M(I,M)=HFSACC_M(I,M)/REAL(NDAY)
+!                             HMFNACC_M(I,M)=HMFNACC_M(I,M)/REAL(NDAY)
+!                             ROFACC_M(I,M)=ROFACC_M(I,M)   !became [kg m-2 day-1] instead of [kg m-2 s-1
+!                             OVRACC_M(I,M)=OVRACC_M(I,M)   !became [kg m-2 day-1] instead of [kg m-2 s-1]
+!                             WTBLACC_M(I,M)=WTBLACC_M(I,M)/REAL(NDAY)
+!                             DO 726 J=1,IGND
+!                                 TBARACC_M(I,M,J)=TBARACC_M(I,M,J)/REAL(NDAY)
+!                                 THLQACC_M(I,M,J)=THLQACC_M(I,M,J)/REAL(NDAY)
+!                                 THICACC_M(I,M,J)=THICACC_M(I,M,J)/REAL(NDAY)
+!                                 THALACC_M(I,M,J)=THALACC_M(I,M,J)/REAL(NDAY)
+! 726                         CONTINUE
+!
+!                             IF(FSINACC_M(I,M).GT.0.0) THEN
+!                                 ALVSACC_M(I,M)=ALVSACC_M(I,M)/(FSINACC_M(I,M)*0.5)
+!                                 ALIRACC_M(I,M)=ALIRACC_M(I,M)/(FSINACC_M(I,M)*0.5)
+!                             ELSE
+!                                 ALVSACC_M(I,M)=0.0
+!                                 ALIRACC_M(I,M)=0.0
+!                             ENDIF
+!
+!                             SNOACC_M(I,M)=SNOACC_M(I,M)/REAL(NDAY)
+!                             if (SNOARE_M(I,M) .GT. 0.) THEN
+!                                 RHOSACC_M(I,M)=RHOSACC_M(I,M)/SNOARE_M(I,M)
+!                                 TSNOACC_M(I,M)=TSNOACC_M(I,M)/SNOARE_M(I,M)
+!                                 WSNOACC_M(I,M)=WSNOACC_M(I,M)/SNOARE_M(I,M)
+!                             END IF
+!                             TCANACC_M(I,M)=TCANACC_M(I,M)/REAL(NDAY)
+!                             RCANACC_M(I,M)=RCANACC_M(I,M)/REAL(NDAY)
+!                             SCANACC_M(I,M)=SCANACC_M(I,M)/REAL(NDAY)
+!                             GROACC_M(I,M)=GROACC_M(I,M)/REAL(NDAY)
+!                             FSINACC_M(I,M)=FSINACC_M(I,M)/REAL(NDAY)
+!                             FLINACC_M(I,M)=FLINACC_M(I,M)/REAL(NDAY)
+!                             FLUTACC_M(I,M)=FLUTACC_M(I,M)/REAL(NDAY)
+!                             TAACC_M(I,M)=TAACC_M(I,M)/REAL(NDAY)
+!                             UVACC_M(I,M)=UVACC_M(I,M)/REAL(NDAY)
+!                             PRESACC_M(I,M)=PRESACC_M(I,M)/REAL(NDAY)
+!                             QAACC_M(I,M)=QAACC_M(I,M)/REAL(NDAY)
+!                             if (altotcntr_d(i) > 0) then ! altotcntr_d(i) could be 0
+!                                 ALTOTACC_M(I,M)=ALTOTACC_M(I,M)/REAL(altotcntr_d(i))
+!                             else
+!                                 ALTOTACC_M(I,M)=0.
+!                             endif
+!                             FSSTAR=FSINACC_M(I,M)*(1.-ALTOTACC_M(I,M))
+!                             FLSTAR=FLINACC_M(I,M)-FLUTACC_M(I,M)
+!                             QH=HFSACC_M(I,M)
+!                             QE=QEVPACC_M(I,M)
+!                             QEVPACC_M_SAVE(I,M)=QEVPACC_M(I,M)   !FLAG! What is the point of this? JM Apr 12015
+!                             BEG=FSSTAR+FLSTAR-QH-QE
+!                             SNOMLT=HMFNACC_M(I,M)
+!
+!                             IF(RHOSACC_M(I,M).GT.0.0) THEN
+!                                 ZSN=SNOACC_M(I,M)/RHOSACC_M(I,M)
+!                             ELSE
+!                                 ZSN=0.0
+!                             ENDIF
+!
+!                             IF(TCANACC_M(I,M).GT.0.01) THEN
+!                                 TCN=TCANACC_M(I,M)-TFREZ
+!                             ELSE
+!                                 TCN=0.0
+!                             ENDIF
+!
+!                             IF(TSNOACC_M(I,M).GT.0.01) THEN
+!                                 TSN=TSNOACC_M(I,M)-TFREZ
+!                             ELSE
+!                                 TSN=0.0
+!                             ENDIF
+!
+!                             GTOUT=GTACC_M(I,M)-TFREZ
+!
+!                             if ((iyear .ge. jdsty) .and. (iyear .le. jdendy)) then
+!                                 if ((iday .ge. jdstd) .and. (iday .le. jdendd)) then
+!                                     !
+!                                     !         WRITE TO OUTPUT FILES
+!                                     !
+!                                     WRITE(611,6100) IDAY,IYEAR,FSSTAR,FLSTAR,QH,QE,SNOMLT,&
+!                                         &                    BEG,GTOUT,SNOACC_M(I,M),RHOSACC_M(I,M),&
+!                                         &                    WSNOACC_M(I,M),ALTOTACC_M(I,M),ROFACC_M(I,M),&
+!                                         &                    CUMSNO,' TILE ',M
+!                                     IF(IGND.GT.3) THEN
+!                                         WRITE(621,6201) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,&
+!                                             &                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,IGND)&
+!                                             &                  ,ACTLYR(I,M), FTABLE(I,M),' TILE ',M
+!                                     ELSE
+!                                         WRITE(621,6200) IDAY,IYEAR,(TBARACC_M(I,M,J)-TFREZ,&
+!                                             &                  THLQACC_M(I,M,J),THICACC_M(I,M,J),J=1,3),&
+!                                             &                  TCN,RCANACC_M(I,M),SCANACC_M(I,M),TSN,ZSN,&
+!                                             &                  ' TILE ',M
+!                                     ENDIF
+!                                     WRITE(631,6300) IDAY,IYEAR,FSINACC_M(I,M),FLINACC_M(I,M),&
+!                                         &                  TAACC_M(I,M)-TFREZ,UVACC_M(I,M),PRESACC_M(I,M),&
+!                                         &                  QAACC_M(I,M),PREACC_M(I,M),EVAPACC_M(I,M),&
+!                                         &                  ' TILE ',M
+!                                 endif
+!                             ENDIF ! IF write daily
+!
+!                             ! INITIALIZATION FOR MOSAIC TILE AND GRID VARIABLES
+!
+!                             call resetclassaccum(nltest,nmtest)
+!
+! 809                     CONTINUE
+! 808                 CONTINUE
+!                 ENDIF ! IF(NCOUNT.EQ.NDAY)
+!             ENDIF !  IFdodayoutput
+!
 
 
     !==============================================================================================================

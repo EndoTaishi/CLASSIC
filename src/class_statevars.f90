@@ -1647,6 +1647,40 @@ integer, intent(in) :: nmtest
 integer :: i,m,j
 
 
+    class_rot%PREACC(:)=0.
+    class_rot%GTACC(:)=0.
+    class_rot%QEVPACC(:)=0.
+    class_rot%EVAPACC(:)=0.
+    class_rot%HFSACC(:)=0.
+    class_rot%HMFNACC(:)=0.
+    class_rot%ROFACC(:)=0.
+    class_rot%ALTOTACC(:)=0.
+    class_rot%OVRACC(:)=0.
+    class_rot%WTBLACC(:)=0.
+    class_rot%ALVSACC(:)=0.
+    class_rot%ALIRACC(:)=0.
+    class_rot%RHOSACC(:)=0.
+    class_rot%SNOACC(:)=0.
+    class_rot%WSNOACC(:)=0.
+    class_rot%CANARE(:)=0.
+    class_rot%SNOARE(:)=0.
+    class_rot%TSNOACC(:)=0.
+    class_rot%TCANACC(:)=0.
+    class_rot%RCANACC(:)=0.
+    class_rot%SCANACC(:)=0.
+    class_rot%GROACC(:)=0.
+    class_rot%FSINACC(:)=0.
+    class_rot%FLINACC(:)=0.
+    class_rot%FLUTACC(:)=0.
+    class_rot%TAACC(:)=0.
+    class_rot%UVACC(:)=0.
+    class_rot%PRESACC(:)=0.
+    class_rot%QAACC(:)=0.
+
+    class_rot%TBARACC(:,:)=0.
+    class_rot%THLQACC(:,:)=0.
+    class_rot%THICACC(:,:)=0.
+    class_rot%THALACC(:,:)=0.
 DO I=1,NLTEST
 
     class_rot%altotcntr_d(i) = 0

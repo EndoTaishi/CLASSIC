@@ -798,7 +798,7 @@ contains
         RGAS,RGASV,GRAV,SBC,VKC,CT,VMIN,TCW,TCICE,TCSAND,TCCLAY,&
         TCOM,TCDRYS,RHOSOL,RHOOM,HCPW,HCPICE,HCPSOL,HCPOM,HCPSND,&
         HCPCLY,SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,TCGLAC,CLHMLT,&
-        CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ZORATG,ALVSI,ALIRI,ALVSO,ALIRO,&
+        CLHVAP,PI,ZOLNG,ZOLNS,ZOLNI,ALVSI,ALIRI,ALVSO,ALIRO,&
         ALBRCK,DELTA,CGRAV,CKARM,CPD,AS,ASX,CI,BS,BETA,FACTN,HMIN,&
         ANGMAX
 
@@ -1534,7 +1534,7 @@ contains
         !     * PARAMETERS IN THE FOLLOWING COMMON BLOCKS ARE NORMALLY DEFINED
         !     * WITHIN THE GCM.
 
-        COMMON /PARAMS/ X1,    X2,    X3,    X4,   G,GAS,   X5,&
+        COMMON /PARAMS/ X1,    X2,    X3,    X4,   G,GAS,   X5, &
                         X6,    CPRES, GASV,  X7
         COMMON /PARAM1/ CPI,   X8,    CELZRO,X9,    X10,    X11
         COMMON /PARAM3/ X12,   X13,   X14,   X15,   SIGMA,  X16
@@ -1552,11 +1552,11 @@ contains
         &                SPHW,SPHICE,SPHVEG,SPHAIR,RHOW,RHOICE,&
         &                TCGLAC,CLHMLT,CLHVAP
         COMMON /CLASS5/ THPORG,THRORG,THMORG,BORG,PSISORG,GRKSORG
-        COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI,ZORATG
+        COMMON /CLASS6/ PI,GROWYR,ZOLNG,ZOLNS,ZOLNI!,ZORAT,ZORATG
+        !COMMON /CLASS7/ CANEXT,XLEAF
         COMMON /CLASS8/ ALVSI,ALIRI,ALVSO,ALIRO,ALBRCK
         COMMON /PHYCON/ DELTA,CGRAV,CKARM,CPD
         COMMON /CLASSD2/ AS,ASX,CI,BS,BETA,FACTN,HMIN,ANGMAX
-
         !
         !===================== CTEM ==============================================\
 
@@ -3120,14 +3120,14 @@ contains
         DO 100 I=1,NLTEST
             DO 100 M=1,NMTEST
 
-                DO J=1,IGND
-                    TBARROT(I,M,J)=TBARROT(I,M,J)+TFREZ
-                ENDDO
-                TSNOROT(I,M)=TSNOROT(I,M)+TFREZ
-                TCANROT(I,M)=TCANROT(I,M)+TFREZ
-
-                TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
-                TBASROT(I,M)=TBARROT(I,M,IGND)
+!                 DO J=1,IGND
+!                     TBARROT(I,M,J)=TBARROT(I,M,J)+TFREZ
+!                 ENDDO
+!                 TSNOROT(I,M)=TSNOROT(I,M)+TFREZ
+!                 TCANROT(I,M)=TCANROT(I,M)+TFREZ
+!
+!                 TPNDROT(I,M)=TPNDROT(I,M)+TFREZ
+!                 TBASROT(I,M)=TBARROT(I,M,IGND)
                 CMAIROT(I,M)=0.
                 WSNOROT(I,M)=0.
                 ZSNLROT(I,M)=0.10
@@ -3146,42 +3146,42 @@ contains
 100     CONTINUE
 
         DO 150 I=1,NLTEST
-            PREACC(I)=0.
-            GTACC(I)=0.
-            QEVPACC(I)=0.
-            EVAPACC(I)=0.
-            HFSACC(I)=0.
-            HMFNACC(I)=0.
-            ROFACC(I)=0.
-            ALTOTACC(I)=0.
-            OVRACC(I)=0.
-            WTBLACC(I)=0.
-            ALVSACC(I)=0.
-            ALIRACC(I)=0.
-            RHOSACC(I)=0.
-            SNOACC(I)=0.
-            WSNOACC(I)=0.
-            CANARE(I)=0.
-            SNOARE(I)=0.
-            TSNOACC(I)=0.
-            TCANACC(I)=0.
-            RCANACC(I)=0.
-            SCANACC(I)=0.
-            GROACC(I)=0.
-            FSINACC(I)=0.
-            FLINACC(I)=0.
-            FLUTACC(I)=0.
-            TAACC(I)=0.
-            UVACC(I)=0.
-            PRESACC(I)=0.
-            QAACC(I)=0.
+!             PREACC(I)=0.
+!             GTACC(I)=0.
+!             QEVPACC(I)=0.
+!             EVAPACC(I)=0.
+!             HFSACC(I)=0.
+!             HMFNACC(I)=0.
+!             ROFACC(I)=0.
+!             ALTOTACC(I)=0.
+!             OVRACC(I)=0.
+!             WTBLACC(I)=0.
+!             ALVSACC(I)=0.
+!             ALIRACC(I)=0.
+!             RHOSACC(I)=0.
+!             SNOACC(I)=0.
+!             WSNOACC(I)=0.
+!             CANARE(I)=0.
+!             SNOARE(I)=0.
+!             TSNOACC(I)=0.
+!             TCANACC(I)=0.
+!             RCANACC(I)=0.
+!             SCANACC(I)=0.
+!             GROACC(I)=0.
+!             FSINACC(I)=0.
+!             FLINACC(I)=0.
+!             FLUTACC(I)=0.
+!             TAACC(I)=0.
+!             UVACC(I)=0.
+!             PRESACC(I)=0.
+!             QAACC(I)=0.
             altotcount_ctm(i)=0
-            DO 125 J=1,IGND
-                TBARACC(I,J)=0.
-                THLQACC(I,J)=0.
-                THICACC(I,J)=0.
-                THALACC(I,J)=0.
-125         CONTINUE
+!             DO 125 J=1,IGND
+!                 TBARACC(I,J)=0.
+!                 THLQACC(I,J)=0.
+!                 THICACC(I,J)=0.
+!                 THALACC(I,J)=0.
+! 125         CONTINUE
 150     CONTINUE
 
         alswacc_gat(:)=0.
