@@ -1,6 +1,6 @@
 module xmlManager
 
-    use outputManager,   only : outputDescriptors, descriptorCount
+    use outputManager,   only : outputDescriptors, descriptorCount, variants, variantCount
     use xmlParser,   only : xml_process
 
     implicit none
@@ -14,7 +14,7 @@ module xmlManager
 
     character(len=80), dimension(2,10)      :: attribs
     character(len=400), dimension(100)      :: data
-    character(len=80)                       :: currentGroup
+    character(len=80)                       :: currentGroup, currentVariableName
     logical                                 :: error
 
 contains
@@ -48,6 +48,8 @@ contains
             case( 'variableSet' )
                 attribute = attribs(2,1)
                 allocate(outputDescriptors(charToInt(attribute)))
+                attribute = attribs(2,2)
+                allocate(variants(charToInt(attribute)))
             case( 'group' )
                 currentGroup = trim(attribs(2,1))
             case( 'variable' )
@@ -55,6 +57,9 @@ contains
                 attribute = attribs(2,1)
                 outputDescriptors(descriptorCount)%includeBareGround = charToLogical(attribute)
                 outputDescriptors(descriptorCount)%group = currentGroup
+            case('variant')
+                variantCount = variantCount + 1
+                variants(variantCount)%shortName = currentVariableName
         end select
 
     end subroutine
@@ -75,12 +80,19 @@ contains
         select case( tag )
             case( 'shortName' )
                 outputDescriptors(descriptorCount)%shortName = info
+                currentVariableName = info
             case( 'longName' )
                 outputDescriptors(descriptorCount)%longName = info
             case( 'standardName' )
                 outputDescriptors(descriptorCount)%standardName = info
             case( 'units' )
                 outputDescriptors(descriptorCount)%units = info
+            case( 'nameInCode' )
+                variants(variantCount)%nameInCode = info
+            case( 'timeFrequency' )
+                variants(variantCount)%timeFrequency = info
+            case( 'outputForm' )
+                variants(variantCount)%outputForm = info
         end select
 
     end subroutine

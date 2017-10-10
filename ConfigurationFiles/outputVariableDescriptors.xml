@@ -1,11 +1,23 @@
 <?xml version="1.0"?>
-<variableSet count="54"> <!--EDIT this to the correct number of variables -->
+<variableSet count="54" variantCount="177"> <!--EDIT this to the correct number of variables -->
 	<group type="class" description="Physics variables">
 		<variable includeBareGround="false">
 			<standardName>Net Shortwave Surface Radiation</standardName>
 			<longName>Net downward shortwave radiation at the surface</longName>
 			<shortName>rss</shortName>
 			<units>W/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>fsstar_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>fsstar_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -13,6 +25,18 @@
 			<longName>Net longwave radiation at the surface</longName>
 			<shortName>rls</shortName>
 			<units>W/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>flstar_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>flstar_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -20,6 +44,18 @@
 			<longName>Surface Net Sensible Heat Flux</longName>
 			<shortName>hfss</shortName>
 			<units>W/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>qh_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>qh_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -27,6 +63,18 @@
 			<longName>Surface Net Latent Heat Flux</longName>
 			<shortName>hfls</shortName>
 			<units>W/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>qe_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>qe_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -39,6 +87,13 @@
 			</longName>
 			<shortName>snw</shortName>
 			<units>kg/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>snoacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -50,6 +105,13 @@
 			</longName>
 			<shortName>wsnw</shortName>
 			<units>kg/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>wsnoacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -61,6 +123,18 @@
 			</longName>
 			<shortName>mrro</shortName>
 			<units>mm/year</units>
+			<variants>
+				<variant>
+					<nameInCode>rofacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>rofacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -70,6 +144,18 @@
 			</longName>
 			<shortName>pr</shortName>
 			<units>mm/year</units>
+			<variants>
+				<variant>
+					<nameInCode>preacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>preacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -81,6 +167,18 @@
 			</longName>
 			<shortName>evspsbl</shortName>
 			<units>mm/year</units>
+			<variants>
+				<variant>
+					<nameInCode>evapacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>evapacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -90,6 +188,13 @@
 			</longName>
 			<shortName>evspsblsoi</shortName>
 			<units>kg/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>groundevap</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -100,6 +205,13 @@
 			</longName>
 			<shortName>evspsblveg</shortName>
 			<units>mm/month</units>
+			<variants>
+				<variant>
+					<nameInCode>canopyevap</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -107,6 +219,18 @@
 			<longName>Transpiration</longName>
 			<shortName>tran</shortName>
 			<units>mm/year</units>
+			<variants>
+				<variant>
+					<nameInCode>transpacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>transpacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -116,6 +240,13 @@
 			</longName>
 			<shortName>ts</shortName>
 			<units>$\circ$C</units>
+			<variants>
+				<variant>
+					<nameInCode>taacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -125,6 +256,18 @@
 			</longName>
 			<shortName>albs</shortName>
 			<units>fraction</units>
+			<variants>
+				<variant>
+					<nameInCode>altotacc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>altotacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -135,6 +278,13 @@
 			</longName>
 			<shortName>tsl</shortName>
 			<units>$\circ$C</units>
+			<variants>
+				<variant>
+					<nameInCode>tbaracc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>layer</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -145,6 +295,13 @@
 			</longName>
 			<shortName>mrsll</shortName>
 			<units>$m^3$/$m^3$</units>
+			<variants>
+				<variant>
+					<nameInCode>thlqacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>layer</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -155,6 +312,13 @@
 			</longName>
 			<shortName>mrsfl</shortName>
 			<units>$m^3$/$m^3$</units>
+			<variants>
+				<variant>
+					<nameInCode>thicacc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>layer</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -162,6 +326,13 @@
 			<longName>Mean active layer depth</longName>
 			<shortName>actlyr</shortName>
 			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>actlyr_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -169,6 +340,13 @@
 			<longName>Maximum active layer depth</longName>
 			<shortName>actlyrmax</shortName>
 			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>actlyr_max_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -176,6 +354,13 @@
 			<longName>Minimum Active Layer Depth</longName>
 			<shortName>actlyrmin</shortName>
 			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>actlyr_min_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -183,6 +368,13 @@
 			<longName>Mean depth to frozen water table</longName>
 			<shortName>ftable</shortName>
 			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>ftable_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -190,6 +382,13 @@
 			<longName>Maximum depth to frozen water table</longName>
 			<shortName>ftablemax</shortName>
 			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>ftable_max_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -197,6 +396,13 @@
 			<longName>Minimum depth to frozen water table</longName>
 			<shortName>ftablemin</shortName>
 			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>ftable_min_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+			</variants>
 		</variable>
 	</group>
 
@@ -210,6 +416,38 @@
 			</longName>
 			<shortName>lai</shortName>
 			<units>$m^2$/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>laimaxg_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>laimaxg_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -221,6 +459,38 @@
 			</longName>
 			<shortName>cVeg</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>vgbiomas_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>vgbiomas_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -232,6 +502,23 @@
 			</longName>
 			<shortName>cStem</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>stemmass_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>stemmass_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>stemmass_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -244,6 +531,23 @@
 			</longName>
 			<shortName>cRoot</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>rootmass_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>rootmass_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>rootmass_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="true">
@@ -255,6 +559,38 @@
 			</longName>
 			<shortName>cLitter</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>litrmass_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_mo</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrmass_mo_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="true">
@@ -266,6 +602,38 @@
 			</longName>
 			<shortName>cSoil</shortName>
 			<units></units>
+			<variants>
+				<variant>
+					<nameInCode>soilcmas_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcmas_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="true">
@@ -278,6 +646,23 @@
 			</longName>
 			<shortName>cLand</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>totcmass_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>totcmass_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>totcmass_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -290,6 +675,23 @@
 			</longName>
 			<shortName>vegHeight</shortName>
 			<units>m</units>
+			<variants>
+				<variant>
+					<nameInCode>veghght_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>veghght_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>veghght_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -302,6 +704,38 @@
 			</longName>
 			<shortName>npp</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>npp_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>npp_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -315,6 +749,38 @@
 			</longName>
 			<shortName>gpp</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>gpp_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>gpp_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="true">
@@ -336,6 +802,38 @@
 			</longName>
 			<shortName>nep</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>nep_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nep_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="true">
@@ -351,6 +849,38 @@
 			</longName>
 			<shortName>nbp</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>nbp_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>nbp_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="true">
@@ -364,6 +894,38 @@
 			</longName>
 			<shortName>rh</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>hetrores_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>hetrores_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -375,6 +937,38 @@
 			</longName>
 			<shortName>ra</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>autores_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>autores_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="true">
@@ -387,6 +981,38 @@
 			</longName>
 			<shortName>rhLitter</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>litres_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litres_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="true">
@@ -399,6 +1025,38 @@
 			</longName>
 			<shortName>rhSoil</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>soilcres_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>soilcres_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -410,6 +1068,23 @@
 			</longName>
 			<shortName>fVegLitter</shortName>
 			<units></units>
+			<variants>
+				<variant>
+					<nameInCode>litrfall_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrfallveg_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>litrfall_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="true">
@@ -421,20 +1096,49 @@
 			</longName>
 			<shortName>fLitterSoil</shortName>
 			<units>kg C/$m^2$</units>
+			<variants>
+				<variant>
+					<nameInCode>humiftrs_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>humiftrsveg_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>humiftrs_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
-        <variable includeBareGround="true">
-            <standardName>
-                Fraction of Area by Vegetation/Land Cover Category
-            </standardName>
-            <longName>
-                Fraction of grid cell area occupied by different model
-                vegetation/land cover categories.
-            </longName>
-            <shortName>landCoverFrac</shortName>
-            <units>fraction</units>
-        </variable>
-    </group>
+		<variable includeBareGround="true">
+			<standardName>
+				Fraction of Area by Vegetation/Land Cover Category
+			</standardName>
+			<longName>
+				Fraction of grid cell area occupied by different model
+				vegetation/land cover categories.
+			</longName>
+			<shortName>landCoverFrac</shortName>
+			<units>fraction</units>
+			<variants>
+				<variant>
+					<nameInCode>fcancmxrow_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>fcancmxrow_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+			</variants>
+		</variable>
+	</group>
 
 	<group type="fire" description="Fire">
 		<variable includeBareGround="false">
@@ -451,6 +1155,38 @@
 			</longName>
 			<shortName>fFire</shortName>
 			<units>g CO$_2$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>emit_co2_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_co2_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -465,6 +1201,38 @@
 			</longName>
 			<shortName>fFireCH4</shortName>
 			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>emit_ch4_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>emit_ch4_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -478,6 +1246,38 @@
 			</longName>
 			<shortName>burntFractionAll</shortName>
 			<units>fraction</units>
+			<variants>
+				<variant>
+					<nameInCode>burnfrac_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>burnfrac_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 	</group>
 
@@ -493,6 +1293,38 @@
 			</longName>
 			<shortName>fDeforestToAtmos</shortName>
 			<units>g C $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>luc_emc_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>luc_emc_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -507,6 +1339,38 @@
 			</longName>
 			<shortName>fDeforestToLitter</shortName>
 			<units>g C $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>lucltrin_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucltrin_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -521,10 +1385,42 @@
 			</longName>
 			<shortName>fDeforestToSoil</shortName>
 			<units>g C $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>lucsocin_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_yr</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_mo</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>lucsocin_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 	</group>
 
-    <group type="PFTCompetition" description="Compete">
+	<group type="PFTCompetition" description="Compete">
 		<variable includeBareGround="false">
 			<standardName>
 				Boolean for existance of Vegetation/Land Cover Category
@@ -536,6 +1432,18 @@
 			</longName>
 			<shortName>landCoverExist</shortName>
 			<units>T/F</units>
+			<variants>
+				<variant>
+					<nameInCode>fcancmxrow_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>fcancmxrow_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>pft</outputForm>
+				</variant>
+			</variants>
 		</variable>
 	</group>
 
@@ -550,6 +1458,28 @@
 			</longName>
 			<shortName>wetlandCH4spec</shortName>
 			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>ch4wet1_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4wet1_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4wet1_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4wet1_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -562,6 +1492,28 @@
 			</longName>
 			<shortName>wetlandCH4dyn</shortName>
 			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>ch4dyn1_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4dyn1_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4dyn1_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4dyn1_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -573,6 +1525,28 @@
 			</longName>
 			<shortName>soilCH4cons</shortName>
 			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>ch4soills_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>ch4soills_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>grid</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>wetfdyn_yr_g</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>wetfdyn_mo_g</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 
 		<variable includeBareGround="false">
@@ -585,6 +1559,18 @@
 			</longName>
 			<shortName>wetlandFrac</shortName>
 			<units>g CH$_4$ $m^{-2}$ year$^{-1}$</units>
+			<variants>
+				<variant>
+					<nameInCode>wetfdyn_yr_t</nameInCode>
+					<timeFrequency>annually</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+				<variant>
+					<nameInCode>wetfdyn_mo_t</nameInCode>
+					<timeFrequency>monthly</timeFrequency>
+					<outputForm>tile</outputForm>
+				</variant>
+			</variants>
 		</variable>
 	</group>
 </variableSet>
