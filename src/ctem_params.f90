@@ -98,6 +98,8 @@ integer :: numtreepfts       !< number of tree pfts
 integer :: numgrass          !< number of grass pfts
 integer :: numshrubs         !< number of shrubs pfts
 
+integer, dimension(:), allocatable :: nol2pfts  !
+
 !> simple crop matrix, define the number and position of the crops (NOTE: dimension icc)
 logical, dimension(:), allocatable :: crop != [ .false.,.false.,.false.,.false.,.false.,.false.,.false.,.true.,.true.,.false.,.false.,.false. ]
 
@@ -128,7 +130,7 @@ logical :: consallo = .false.
 integer, dimension(:), allocatable :: modelpft      !<Separation of pfts into level 1 (for class) and level 2 (for ctem) pfts.
 character(8), dimension(:), allocatable :: pftlist  !<List of PFTs
 character(8), dimension(:), allocatable :: vegtype  !<Type of vegetation, options: Tree, Grass, Crop, Shrub
-real, dimension(:), allocatable :: kn               !< Canopy light/nitrogen extinction coefficient; CAREFUL: Separate set defined in PHTSYN3.f!
+real, dimension(:), allocatable :: kn               !< Canopy light/nitrogen extinction coefficient
 
 !allocate.f parameters:
 
@@ -367,6 +369,32 @@ real :: soilw_thrshN   !< Soil wetness threshold in the North zone
 real :: soilw_thrshE   !< Soil wetness threshold in the Equatorial zone
 real :: soilw_thrshS   !< Soil wetness threshold in the South zone
 
+! Photosynthesis parameters: --------------------------------------------------
+
+logical , dimension(:), allocatable :: isc4     !< Array telling which vegetation type is c4
+real, dimension(:), allocatable :: tlow         !< lower temperature limits for photosynthesis, kelvin
+real, dimension(:), allocatable :: tup          !< upper temperature limits for photosynthesis, kelvin
+real, dimension(:), allocatable :: alpha_phtsyn !< quantum efficiencies, values of 0.08 & 0.04 are used for c3 and c4 plants, respectively
+real, dimension(:), allocatable :: omega_phtsyn !< leaf scattering coefficients, values of 0.15 & 0.17 are used for c3 and c4 plants, respectively
+real, dimension(:), allocatable :: mm           !< parameter m used in photosynthesis-stomatal conductance coupling.
+real, dimension(:), allocatable :: bb           !< parameter b used in photosynthesis-stomatal conductance coupling.
+real, dimension(:), allocatable :: vpd0         !< parameter vpd0 used in leuning type photosynthesis - stomatal conductance coupling, in pascals
+integer, dimension(:), allocatable :: sn        !< exponent for soil moisture stress. for sn equal to 1, photosynthesis decreases
+                                                !! linearly with soil moisture, and of course non-linearly for values higher than 1.
+                                                !! when sn is about 10, photosynthesis does not start decreasing until soil moisture
+                                                !! is about half way between wilting point and field capacity.
+real, dimension(:), allocatable :: smscale      !< additional constrain of soil moisture stress on photosynthesis. this can be used
+                                                !! to simulate the effect of irrigation for crops.
+real, dimension(:), allocatable :: vmax         !< max. photosynthetic rate, mol co2 m^-2 s^-1 values are mainly derived from
+                                                !!\cite kattge20090c0 which doesn't include c4. also see \cite alton2017-pd
+integer :: reqiter                              !< no. of iterations for calculating intercellular co2 concentration
+real :: co2imax                                 !< max. intercellular co2 concentration, pascals
+real :: beta1, beta2                            !< photosynthesis coupling or curvature coefficients
+real, dimension(:), allocatable :: inico2i      !< parameter to initialize intercellular co2 conc.
+real, dimension(:), allocatable :: rmlcoeff     !< leaf maintenance respiration coefficients
+real, dimension(:), allocatable :: chi          !< additional parameters for two-leaf model leaf angle distribution
+real :: gamma_w                                 !< photosynthesis down regulation parameters equivalent co2 fertilization effect that we want model to yield
+real :: gamma_m                                 !< equivalent co2 fertilization effect that model actually gives without any photosynthesis down-regulation
 
 ! Passed variables:
 
@@ -482,7 +510,21 @@ subroutine allocateParamsCTEM()
             drlsrtmx(kk),&
             colda(kk),&
             stemlife(kk),&
-            rootlife(kk))
+            rootlife(kk),&
+            tup(kk),&
+            tlow(kk),&
+            alpha_phtsyn(kk),&
+            omega_phtsyn(kk),&
+            isc4(kk),&
+            mm(kk),&
+            bb(kk),&
+            vpd0(kk),&
+            sn(kk),&
+            smscale(kk),&
+            vmax(kk),&
+            inico2i(kk),&
+            chi(kk),&
+            rmlcoeff(kk))
 
 end subroutine allocateParamsCTEM
 
@@ -507,8 +549,9 @@ subroutine readin_params
     real, dimension(kk):: mxmortge_compete
     real, dimension(kk):: maxage_compete
     real, dimension(kk):: drlsrtmx_compete
-    integer :: i
+    integer :: i,n
     character(8) :: pftkind
+    integer :: isumc,k1c,k2c
 
     namelist /classicparams/ &
         modelpft,&
@@ -658,7 +701,28 @@ subroutine readin_params
         lat_thrshld2,&
         soilw_thrshN,&
         soilw_thrshE,&
-        soilw_thrshS
+        soilw_thrshS,&
+        kn,&
+        tup,&
+        tlow,&
+        alpha_phtsyn,&
+        omega_phtsyn,&
+        isc4,&
+        mm,&
+        bb,&
+        vpd0,&
+        sn,&
+        smscale,&
+        vmax,&
+        reqiter,&
+        co2imax,&
+        beta1,&
+        beta2,&
+        inico2i,&
+        chi,&
+        rmlcoeff,&
+        gamma_w,&
+        gamma_m
 
     ! ----------
 
@@ -674,8 +738,20 @@ subroutine readin_params
     numshrubs   = 0        !< number of shrubs pfts
     allocate(grass(icc))
     allocate(crop(icc))
+    allocate(nol2pfts(ican))
     grass = .false.
     crop = .false.
+
+    ! Calculate number of level 2 pfts using modelpft
+    do i = 1, ican
+        isumc = 0
+        k1c = (i-1)*l2max + 1
+        k2c = k1c + (l2max - 1)
+        do n = k1c, k2c
+            if(modelpft(n).eq.1) isumc = isumc + 1
+        enddo
+        nol2pfts(i)=isumc  ! number of level 2 pfts
+    end do
 
     do i = 1, icc
         pftkind=vegtype(i)
@@ -692,6 +768,7 @@ subroutine readin_params
                 crop(i) = .true.
         end select
     end do
+
     !Overwrite the prescribed vars with the compete ones if competition is on.
     if (PFTCompetitionSwitch) then
         omega = omega_compete

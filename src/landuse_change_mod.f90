@@ -1,4 +1,4 @@
-!>\defgroup landuse_change_initialize_luc
+!>\defgroup landuse_change_initializeLandCover
 !>Canadian Terrestrial Ecosystem Model (CTEM) 
 !>LUC Initial Read-In Subroutine 
 !------------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ use ctem_params
 implicit none
 
 ! subroutines contained in this module:
-public  :: initialize_luc
+public  :: initializeLandCover
 public  :: readin_luc
 public  :: luc
 private :: adjust_luc_fracs
@@ -94,14 +94,14 @@ private :: adjust_fracs_comp
 contains
 
 !-------------------------------------------------------------------------------------------------------------
-!>\ingroup landuse_change_initialize_luc
+!>\ingroup landuse_change_initializeLandCover
 !>@{
 
-subroutine initialize_luc(iyear,nmtest,nltest,&
-                          nol2pfts,cyclemet,   &
-                          cylucyr,lucyr,fcanrow,farerow,nfcancmxrow,  &
-                          pfcancmxrow,fcancmxrow,reach_eof,start_bare,&
-                          PFTCompetition,onetile_perPFT)
+subroutine initializeLandCover
+!
+!    6   Oct  2017  - Rewrote now to only initialize and not read in the LUC since that
+!     J. Melton       is now done via netcdfs files. Also removed onetile_perPFT since we
+!                     no longer support that code option.
 !
 !    11  Jul  2016  - Further bug fixes for competing for space within a tile
 !     J. Melton
@@ -124,124 +124,112 @@ subroutine initialize_luc(iyear,nmtest,nltest,&
 !     J. Melton       fraction when we add in seed fractions.
 !
 
-use ctem_params,        only : nmos,nlat,icc,ican,icp1,seed,crop,numcrops,minbare
+use ctem_params,        only : nmos,nlat,icc,ican,icp1,seed,crop,numcrops,minbare,&
+                                modelpft,l2max,nol2pfts
+use ctem_statevars,     only : c_switch,vrot
+use class_statevars,    only : class_rot
 
 implicit none
 
-! arguments:
+! pointers
 
-! inputs
-integer, intent(in) :: iyear
-integer, intent(in) :: nmtest
-integer, intent(in) :: nltest
-integer, dimension(ican), intent(in) :: nol2pfts
-logical, intent(in) :: cyclemet
-integer, intent(in) :: cylucyr 
-logical, intent(in) :: start_bare
-logical, intent(in) :: PFTCompetition
-
-logical, intent(in) :: onetile_perPFT !<if you are running with one tile per PFT in mosaic mode, set to true. Changes
-                                !< how competition is run. Specifically it allows competition between tiles. This
-                                !< is not recommended for any case where you don't have one PFT in each tile as it
-                                !< has not been tested for that.
-
-! updates
-real, dimension(nlat,nmos,icp1), intent(inout) :: fcanrow
-real, dimension(nlat,nmos),      intent(inout) :: farerow
-logical, intent(inout) :: reach_eof
-
-! outputs
-real, dimension(nlat,nmos,icc), intent(out) :: pfcancmxrow
-real, dimension(nlat,nmos,icc), intent(out) :: fcancmxrow
-real, dimension(nlat,nmos,icc), intent(out) :: nfcancmxrow
-integer, intent(out) :: lucyr
+logical, pointer :: start_bare
+logical, pointer :: PFTCompetition
+real, dimension(:,:,:), pointer :: FCANROT
+real, dimension(:,:,:), pointer :: pfcancmxrow
+real, dimension(:,:,:), pointer :: fcancmxrow
+real, dimension(:,:,:), pointer :: nfcancmxrow
 
 ! local variables:
-real, dimension(icc) :: temparray
-real, dimension(nlat) :: barf
 real, dimension(nlat,nmos) :: barfm
-integer, dimension(2) :: bigpftc
 integer, dimension(1) :: bigpft
 real, dimension(nlat,nmos,icc-numcrops) :: pftarrays ! temp variable
 integer, dimension(nlat,nmos,icc-numcrops) :: indexposj ! temp var
 integer, dimension(nlat,nmos,icc-numcrops) :: indexposm ! temp var
-real :: temp
 integer :: j,m,i,n,k
 integer :: k2,k1
 
+start_bare        => c_switch%start_bare
+PFTCompetition    => c_switch%PFTCompetition
+FCANROT           => class_rot%FCANROT
+pfcancmxrow       => vrot%pfcancmx
+nfcancmxrow       => vrot%nfcancmx
+fcancmxrow        => vrot%fcancmx
+
 !>-------------------------
-!> Initialize barefraction to 1.0
-barf=1.0
+!>Some initilizations
+FCANROT = 0.0
 barfm = 1.0
-pftarrays=0.
+pftarrays = 0.0
 
-!>reset the composite fcanrow as it is appended on later in a loop
-    if (.not. onetile_perPFT) fcanrow = 0.0
+! Set nfcancmxrow to fcancmxrow at start. fcancmxrow is what is initialized from the initial conditions file or
+! from the LUC file.
+nfcancmxrow(:,:,:) = fcancmxrow(:,:,:)
 
-!>it is the first year, so prepare the luc data:
-
-!>open the luc file
-
-open(unit=15,file='test.LUC')
-
-!>Skip first three rows:
-read(15,*)
-read(15,*)
-read(15,*)
-!>
-!>get first year of luc data
-!>note we load the nfcancmx, not pfcancmx array. this is because this
-!>nfcancmx value is passed to the pfcancmx array at the start of each simulation year
-!>
-do i = 1, nltest
-    if (.not. onetile_perPFT) then  !composite
-    read (15,*) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-    if (nmtest > 1) then
-        do m = 2, nmtest
-        nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
-        end do
-    end if
-    else                    !onetile_perPFT
-    read (15,*) lucyr,(temparray(j),j=1,icc)
-    do m = 1, nmtest-1 !as nmtest-1 = icc
-        j = m
-        nfcancmxrow(i,m,j) = temparray(m)
-    enddo !m loop
-    endif
-enddo !nltest
-
-!>
-!> next update our luc data if either of the following conditions are met:
-!!
-!! 1) we are cycling the met data and the luc year we just read in is less
-!! than the year we want to cycle over (assuming it is not defaulted to
-!! -9999) or,
-!!
-!! 2) we are not cycling over the met data so we just want to get the same
-!! year of luc data as the met data we read in above in preparation for our
-!! transient run.
-!!
-do while ((cyclemet .and. lucyr .lt. cylucyr             &
-    .and. cylucyr .ne. -9999) .or. (.not. cyclemet .and.  &
-    lucyr .lt. iyear))
-!           get the luc data
-    do i = 1, nltest
-        if (.not. onetile_perPFT) then  !composite
-        read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-        if (nmtest > 1) then
-            do m = 2, nmtest
-            nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
-            end do
-        end if
-        else                    !onetile_perPFT
-        read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
-        do m = 1, nmtest-1 !nmtest-1 same as icc
-        j = m
-        nfcancmxrow(i,m,j) = temparray(m)
-        enddo !m loop
-        endif
-    enddo !nltest
-enddo  !while loop
+! !>it is the first year, so prepare the luc data:
+!
+! !>open the luc file
+!
+! open(unit=15,file='test.LUC')
+!
+! !>Skip first three rows:
+! read(15,*)
+! read(15,*)
+! read(15,*)
+! !>
+! !>get first year of luc data
+! !>note we load the nfcancmx, not pfcancmx array. this is because this
+! !>nfcancmx value is passed to the pfcancmx array at the start of each simulation year
+! !>
+! do i = 1, nlat
+!     if (.not. onetile_perPFT) then  !composite
+!     read (15,*) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
+!     if (nmos > 1) then
+!         do m = 2, nmos
+!         nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
+!         end do
+!     end if
+!     else                    !onetile_perPFT
+!     read (15,*) lucyr,(temparray(j),j=1,icc)
+!     do m = 1, nmos-1 !as nmos-1 = icc
+!         j = m
+!         nfcancmxrow(i,m,j) = temparray(m)
+!     enddo !m loop
+!     endif
+! enddo !nlat
+!
+! !>
+! !> next update our luc data if either of the following conditions are met:
+! !!
+! !! 1) we are cycling the met data and the luc year we just read in is less
+! !! than the year we want to cycle over (assuming it is not defaulted to
+! !! -9999) or,
+! !!
+! !! 2) we are not cycling over the met data so we just want to get the same
+! !! year of luc data as the met data we read in above in preparation for our
+! !! transient run.
+! !!
+! do while ((cyclemet .and. lucyr .lt. cylucyr             &
+!     .and. cylucyr .ne. -9999) .or. (.not. cyclemet .and.  &
+!     lucyr .lt. iyear))
+! !           get the luc data
+!     do i = 1, nlat
+!         if (.not. onetile_perPFT) then  !composite
+!         read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
+!         if (nmos > 1) then
+!             do m = 2, nmos
+!             nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
+!             end do
+!         end if
+!         else                    !onetile_perPFT
+!         read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
+!         do m = 1, nmos-1 !nmos-1 same as icc
+!         j = m
+!         nfcancmxrow(i,m,j) = temparray(m)
+!         enddo !m loop
+!         endif
+!     enddo !nlat
+! enddo  !while loop
 !>
 !! If you are running with start_bare on, take in only the
 !! crop fractions, set rest to seed. If PFTCompetition, but not start bare, then
@@ -250,8 +238,8 @@ enddo  !while loop
 n=1
 k=1
 if (PFTCompetition) then
-    do i = 1, nltest
-        do m = 1, nmtest
+    do i = 1, nlat
+        do m = 1, nmos
             do j = 1, icc
                 if (.not. crop(j)) then
                     if (start_bare) then
@@ -259,68 +247,46 @@ if (PFTCompetition) then
                     else !>not starting bare, but still make sure you have at least seed
                         nfcancmxrow(i,m,j)=max(seed,fcancmxrow(i,m,j))
                     end if
-                    if (.not. onetile_perPFT) then
-                        barfm(i,m) = barfm(i,m) - nfcancmxrow(i,m,j)
-                    else
-                        barf(i) = barf(i) - nfcancmxrow(i,m,j)
-                    end if
+                    barfm(i,m) = barfm(i,m) - nfcancmxrow(i,m,j)
+
                     !> Keep track of the non-crop nfcancmx for use in loop below.
                     !> pftarrays keeps track of the nfcancmxrow for all non-crops
                     !> indexposj and indexposm store the index values of the non-crops
                     !> in a continuous array for use later. n and k are then the indexes used by
                     !> these arrays.
-                    if (.not. onetile_perPFT) n=m
                     pftarrays(i,n,k) = nfcancmxrow(i,m,j)
                     indexposj(i,n,k) = j
                     indexposm(i,n,k) = m
                     n = n+1
                     k = k+1
-                    if (.not. onetile_perPFT .and. j == icc) k=1
+                    if (j == icc) k=1
                 end if !crops
             end do !icc
-        end do !nmtest
-    end do !nltest
+        end do !nmos
+    end do !nlat
+
+    !> check that in making these seed fraction we haven't made our total fraction
+    !> more than 1.0.
+    do i=1,nlat
+            do m = 1,nmos
+                if (barfm(i,m) .lt. 0.) then
+
+                    !> Find out which of the non-crop PFTs covers the largest area.
+                    bigpft=maxloc(pftarrays(i,m,:))
+                    !> j is then the nmos index and m is the icc index of the PFT with the largest area
+                    j = indexposj(i,m,bigpft(1))
+                    !>
+                    !> Reduce the most dominant PFT by barf and minbare. The extra
+                    !! amount is to ensure we don't have trouble later with an extremely
+                    !! small bare fraction. barf is a negative value.
+                    !!
+                    nfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)+barfm(i,j) - minbare
+
+                end if
+
+            end do !nmos
+    end do !nlat
 end if  ! PFTCompetition
-
-!> check that in making these seed fraction we haven't made our total fraction
-!> more than 1.0.
-do i=1,nltest
-    if (onetile_perPFT) then
-        if (barf(i) .lt. 0.) then
-            !> Find out which of the non-crop PFTs covers the largest area.
-            bigpftc=maxloc(pftarrays(i,:,:))
-
-            !> j is then the nmos index and m is the icc index of the PFT with the largest area
-            j = indexposj(i,bigpftc(1),bigpftc(2))
-            m = indexposj(i,bigpftc(1),bigpftc(2))
-
-            !> Reduce the most dominant PFT by barf and minbare. The extra
-            !> amount is to ensure we don't have trouble later with an extremely
-            !> small bare fraction. barf is a negative value.
-            nfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)+barf(i) - minbare
-
-        end if
-    else
-        do m = 1,nmtest
-            if (barfm(i,m) .lt. 0.) then
-
-                !> Find out which of the non-crop PFTs covers the largest area.
-                bigpft=maxloc(pftarrays(i,m,:))
-                !> j is then the nmos index and m is the icc index of the PFT with the largest area
-                j = indexposj(i,m,bigpft(1))
-                !>
-                !> Reduce the most dominant PFT by barf and minbare. The extra
-                !! amount is to ensure we don't have trouble later with an extremely
-                !! small bare fraction. barf is a negative value.
-                !!
-                nfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)+barfm(i,j) - minbare
-
-            end if
-
-        end do !nmtest
-    end if !onetile_perPFT
-end do !nltest
-
 
 !> get fcans for use by class using the nfcancmxs just read in
 k1=0
@@ -332,97 +298,37 @@ do 997 j = 1, ican
     endif
     k2 = k1 + nol2pfts(j) - 1
     do 998 n = k1, k2
-    do i = 1, nltest
-        do m = 1, nmtest
-        if (.not. onetile_perPFT) then !composite
-
-        fcanrow(i,m,j)=fcanrow(i,m,j)+nfcancmxrow(i,m,n)
-
-        else if (onetile_perPFT .and. nfcancmxrow(i,m,n) .gt. seed) then
-!>this tile has some plants so overwrite the seed fraction with an actual fraction
-!!
-!!note: the seed fraction has already been assigned in runclassctem prior to entering this subroutine.
-        farerow(i,m)=nfcancmxrow(i,m,n)
-
-        endif
+    do i = 1, nlat
+        do m = 1, nmos
+            FCANROT(i,m,j)=FCANROT(i,m,j)+nfcancmxrow(i,m,n)
         enddo
     enddo
 998       continue
 997     continue
 
-!> (re)find the bare fraction for farerow(i,iccp1)
-if (onetile_perPFT) then
-    do i = 1, nltest
-        temp = 0.
-        do m = 1, nmtest-1
-            temp = temp + farerow(i,m)
-        enddo
-        farerow(i,nmtest) = 1.0 - temp
-    enddo
-endif
-!>
-!!check that the bare fraction is possible (>0) and if not then reduce the other pfts proportionally 
-!!to make a non-negative bare ground fraction.
-!!
-do i = 1, nltest
-    temp = 0.0
-    if (onetile_perPFT) then
-    !> competition requires a 'seed' fraction so make sure the bare ground is also that big.
-    !> for prescribed runs you just need it to be possible (>0).
-        if ((PFTCompetition .and. farerow(i,nmtest) < seed) .or. (.not. PFTCompetition .and. farerow(i,nmtest) < 0.)) then
-
-            call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,farerow(i,nmtest),PFTCompetition)
-
-            do m = 1, nmtest
-            n = m
-            farerow(i,m)=nfcancmxrow(i,m,n)
-            temp = temp + farerow(i,m)
-            enddo
-
-            farerow(i,nmtest) = 1.0 - temp
-
-        endif !farerow<seed
-    endif !onetile_perPFT
-enddo !nltest
-
 !> assign the present pft fractions from those just read in
-do j = 1, icc
-    do i = 1, nltest
-        do m = 1, nmtest
-            if (.not. onetile_perPFT) then  !composite
-                fcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
-                pfcancmxrow(i,m,j)=nfcancmxrow(i,m,j)
-            else !onetile_perPFT
-                ! I think this check below is not needed (JM Mar 2015)
-                if (PFTCompetition) then
-        !              ensure that the fraction is >= seed
-                    pfcancmxrow(i,m,j)=max(seed,nfcancmxrow(i,m,j))
-                else !prescribed run
-                    pfcancmxrow(i,m,j)=max(0.,nfcancmxrow(i,m,j))
-                end if
-            endif
-        enddo
-    enddo
-enddo
-!>
-!> back up one year in the luc file
-!! this is because we were setting things up here,
-!! we will later call readin_luc so want the file to be
-!! rewound prior to that to the proper start year.
-!!
-do i = 1, nltest
-    backspace(15)
-enddo
+fcancmxrow(:,:,:)=nfcancmxrow(:,:,:)
+pfcancmxrow(:,:,:)=nfcancmxrow(:,:,:)
+
+! !>
+! !> back up one year in the luc file
+! !! this is because we were setting things up here,
+! !! we will later call readin_luc so want the file to be
+! !! rewound prior to that to the proper start year.
+! !!
+! do i = 1, nlat
+!     backspace(15)
+! enddo
 
 return
 
-999    continue
-  
-!> end of the luc file is reached. close and tell main program to exit
-close(15)
-reach_eof = .true.
+! 999    continue
+!
+! !> end of the luc file is reached. close and tell main program to exit
+! close(15)
+! reach_eof = .true.
 
-end subroutine initialize_luc
+end subroutine initializeLandCover
 !>@}
 !=======================================================================
 !>\ingroup landuse_change_readin_luc

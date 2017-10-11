@@ -214,6 +214,11 @@ C     *                PREVIOUS VERSION PHTSYN).
 C    
 C     ------------------------------------------------------------------
 C
+      use ctem_params, only : KN,TUP,TLOW,alpha_phtsyn,omega_phtsyn,
+     1                        ISC4,MM,BB,VPD0,SN,SMSCALE,VMAX,REQITER,
+     2                        CO2IMAX,BETA1,BETA2,INICO2I,CHI,RMLCOEFF,
+     3                        GAMMA_W,GAMMA_M
+
       IMPLICIT NONE
 C
       INTEGER KK
@@ -256,12 +261,12 @@ C
       INTEGER IL1      !<IL1=1
       INTEGER IL2      !<IL2=ILG
       INTEGER IT_COUNT !<
-      INTEGER REQITER  !<
+      !INTEGER REQITER  !<
       INTEGER IG       !<NO. OF SOIL LAYERS, 3
       INTEGER ICC      !<NO. OF CTEM's PFTs, CURRENTLY 9
       INTEGER LEAFOPT  !<
       INTEGER PS_COUP  !<
-      INTEGER ISC4(KK) !<
+      !INTEGER ISC4(KK) !<
       INTEGER ISNOW    !<INTEGER (0 or 1) TELLING IF PHTSYN IS TO BE RUN OVER CANOPY OVER SNOW OR CANOPY OVER GROUND SUBAREA
       INTEGER K1       !<
       INTEGER K2       !<
@@ -278,20 +283,20 @@ C
       REAL CFLUX(ILG)     !<AERODYNAMIC CONDUCTANCE, M/S
       REAL SLAI(ILG,ICC)  !<SCREEN LEVEL HUMIDITY IN KG/KG - STORAGE LAI. THIS LAI IS USED FOR PHTSYN EVEN IF ACTUAL LAI IS ZERO. ESTIMATE OF NET PHOTOSYNTHESIS BASED ON SLAI IS USED FOR INITIATING LEAF ONSET. SEE PHENOLGY SUBROUTINE FOR MORE DETAILS.
       REAL QA(ILG)        !<
-      REAL INICO2I(KK)    !<
+      !REAL INICO2I(KK)    !<
 C
       REAL CO2CONC(ILG) !<ATMOS. \f$CO_2\f$ IN PPM, AND THEN CONVERT IT TO PARTIAL PRESSURE, PASCALS, CO2A, FOR USE IN THIS SUBROUTINE
-      REAL ALPHA(KK)    !<
-      REAL OMEGA(KK)    !<
-      REAL SMSCALE(KK)  !<
+      !REAL ALPHA(KK)    !<
+      !REAL OMEGA(KK)    !<
+      !REAL SMSCALE(KK)  !<
       REAL TFREZ        !<
       REAL STD_PRESS    !<
 C
-      REAL VMAX(KK)         !<
-      REAL KN(KK)           !<
-      REAL TUP(KK)          !<
+      !REAL VMAX(KK)         !<
+      !REAL KN(KK)           !<
+      !REAL TUP(KK)          !<
       REAL Q10_FUNCN        !<
-      REAL TLOW(KK)         !<
+      !REAL TLOW(KK)         !<
       REAL Q10_FUNC         !<
       REAL PRESSG(ILG)      !<ATMOS. PRESSURE, PASCALS
       REAL RML_VEG(ILG,ICC) !<LEAF RESPIRATION RATE, u MOL CO2/M2.S FOR EACH PFT
@@ -310,16 +315,16 @@ C
                             !<FCANCMX DOESN'T CHANGE, UNLESS OF COURSE ITS CHANGED BY LAND USE CHANGE OR DYNAMIC VEGETATION.
       REAL Q10_FUNCD        !<
 C
-      REAL MM(KK)
-      REAL BB(KK)
-      REAL VPD0(KK)
+      !REAL MM(KK)
+      !REAL BB(KK)
+      !REAL VPD0(KK)
       REAL Q10
       REAL RC(ILG)      !<GRID-AVERAGED STOMATAL RESISTANCE, S/M
-      REAL CO2IMAX
+      !REAL CO2IMAX
       REAL COSZS(ILG)   !<COS OF ZENITH ANGLE
       REAL XDIFFUS(ILG) !<FRACTION OF DIFFUSED PAR
       REAL ZERO
-      REAL RMLCOEFF(KK)
+      !REAL RMLCOEFF(KK)
 C        
       REAL TEMP_B
       REAL TEMP_C
@@ -327,12 +332,12 @@ C
       REAL TEMP_Q1
       REAL TEMP_Q2
       REAL TEMP_JP
-      REAL BETA1
-      REAL BETA2
+      !REAL BETA1
+      !REAL BETA2
       REAL TEMP_AN
 C    
       INTEGER ISAND(ILG,IG) !<SAND INDEX.
-      INTEGER SN(KK)
+      !INTEGER SN(KK)
       REAL DAYL_MAX(ILG)      !< MAXIMUM DAYLENGTH FOR THAT LOCATION
       REAL DAYL(ILG)          !< DAYLENGTH FOR THAT LOCATION
 
@@ -340,11 +345,11 @@ C
 C
 C     FOR LIMITING CO2 UPTAKE
 C
-      REAL CHI(KK)
+      !REAL CHI(KK)
       REAL DELTA_CO2(ILG)
       REAL N_EFFECT(ILG)
-      REAL GAMMA_W
-      REAL GAMMA_M
+      !REAL GAMMA_W
+      !REAL GAMMA_M
       LOGICAL SMOOTH, MIN2, MIN3
 C
 C
@@ -360,153 +365,153 @@ C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY   EVG-SHU   DCD-SHU  !!YW April 13,
 C     CROPS       |   C3        C4       ---
 C     GRASSES     |   C3        C4       ---
 C
-C     CANOPY LIGHT/NITROGEN EXTINCTION COEFFICIENT - THIS BASICALLY
-C     ASSUMES THAT MEAN PROFILE OF NITROGEN IS SAME AS THAT FOR
-C     TIME MEAN PROFILE OF RADIATION - THE ASSUMPTION MADE BY SINGLE
-C     BIG-LEAF MODELS
-C      DATA   KN/0.50, 0.50, 0.00,
-C     &          0.50, 0.50, 0.50,
-C     &          0.40, 0.48, 0.00,
-C     &          0.46, 0.44, 0.00/
-      DATA KN/ 0.50, 0.50, 0.00, 0.00, 0.00, !YW April 13, 2015 add 2 colums   
-     &         0.50, 0.50, 0.50, 0.50, 0.50,    
-     &         0.40, 0.48, 0.00, 0.00, 0.00,
-     &         0.46, 0.44, 0.46, 0.00, 0.00/         
-C
-C     LOWER AND UPPER TEMPERATURE LIMITS FOR PHOTOSYNTHESIS, KELVIN
-C     LOWER LIMIT IN CELCIUS /-5, -5, --,
-C                              0,  0,  0,
-C                             -3,  5, --,
-C                             -1, 10, --/
-      DATA TLOW/268.1, 268.1, 0.000, 0.000, 0.000, 
-     &          273.1, 273.1, 273.1, 271.1, 271.1,     !(Tanja et al. 2003) 5 days average air T above 4.3   
-     &          270.1, 278.1, 0.000, 0.000, 0.000,     !as the threshold of spring PSN for boreal forests.
-     &          272.1, 283.1, 272.1, 0.000, 0.000/     !YW April 22, 2015  
-C
-C     UPPER LIMIT IN CELCIUS /34, 34, --,
-C                             45, 37, 37,
-C                             42, 42, --,
-C                             40, 50, --/
-C    JM CHANGED PFT 3 TO 45 DEG FOLLOWING
-C    ITO AND OIKAWA 2000. 
-      DATA  TUP/307.1, 307.1, 0.000, 0.000, 0.000, 
-     &          318.1, 310.1, 310.1, 307.1, 307.1, 
-     &          315.1, 315.1, 0.000, 0.000, 0.000, 
-     &          313.1, 323.1, 313.1, 0.000, 0.000/
-C
-C     ARRAY TELLING WHICH VEGETATION TYPE IS C4
-      DATA  ISC4/0, 0, 0, 0, 0,
-     &           0, 0, 0, 0, 0,
-     &           0, 1, 0, 0, 0, 
-     &           0, 1, 0, 0, 0/
-C
-C     QUANTUM EFFICIENCIES, VALUES OF 0.08 & 0.04 ARE USED FOR C3 AND
-C     C4 PLANTS, RESPECTIVELY
-      DATA  ALPHA/0.08, 0.08, 0.00, 0.00, 0.00, 
-     &            0.08, 0.08, 0.08, 0.08, 0.08, 
-     &            0.08, 0.04, 0.00, 0.00, 0.00, 
-     &            0.08, 0.04, 0.08, 0.00, 0.00/
-C
-C     LEAF SCATTERING COEFFICIENTS, VALUES OF 0.15 & 0.17 ARE USED
-C     FOR C3 AND C4 PLANTS, RESPECTIVELY
-      DATA  OMEGA/0.15, 0.15, 0.00, 0.00, 0.00, 
-     &            0.15, 0.15, 0.15, 0.15, 0.15, 
-     &            0.15, 0.17, 0.00, 0.00, 0.00, 
-     &            0.15, 0.17, 0.15, 0.00, 0.00/
-C
-C     PARAMETER M USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
-C     COUPLING. 
-C
-      DATA  MM/9.0, 9.0, 0.0, 0.0, 0.0, 
-     &        12.0,12.0,12.0, 12.0, 12.0,         !YW May 05, 2015  PFT6&7 were 9.0 
-     &        12.0, 6.0, 0.0, 0.0, 0.0, 
-     &        12.0, 6.0, 12.0, 0.0, 0.0/
-C
-C     PARAMETER B USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
-C     COUPLING.
-      DATA  BB/0.01, 0.01, 0.00, 0.00, 0.00, 
-     &         0.01, 0.01, 0.01, 0.01, 0.01, 
-     &         0.01, 0.04, 0.00, 0.00, 0.00, 
-     &         0.01, 0.04, 0.01, 0.00, 0.00/
-C
-C     PARAMETER VPD0 USED IN LEUNING TYPE PHOTOSYNTHESIS - STOMATAL
-C     CONDUCTANCE COUPLING, IN PASCALS
-      DATA VPD0/2000., 2000., 0.000,  0.000, 0.000, 
-     &          2000., 2000., 2000.,  2000., 2000.,
-     &          1500., 1500., 0.000,  0.000, 0.000, 
-     &          1500., 1500., 1500.,  0.000, 0.000/
-C
-C     EXPONENT FOR SOIL MOISTURE STRESS. FOR SN EQUAL TO 1, PHOTOSYNTHESIS
-C     DECREASES LINEARLY WITH SOIL MOISTURE, AND OF COURSE NON-LINEARLY
-C     FOR VALUES HIGHER THAN 1. WHEN SN IS ABOUT 10, PHOTOSYNTHESIS DOES
-C     NOT START DECREASING UNTIL SOIL MOISTURE IS ABOUT HALF WAY BETWEEN
-C     WILTING POINT AND FIELD CAPACITY.
-C
-      DATA SN/2, 2, 0, 0, 0, 
-     &        4, 2, 2, 2, 2, 
-     &        2, 2, 0, 0, 0, 
-     &        2, 2, 2, 0, 0/      !sedge may take up a higher value as it adapts to wet condition well YW May 13, 2015 
-
-c    ---in 1.6 PEATLAND version less moisture limit ,in original ctem 1.6
-c    version sn = 20.0 for all pfts 
-C         data sn/20.0,       20.0,          0.00,
-C     &           20.0,       20.0,          0.00,
-C     &          0.00,        0.00,          0.00,
-C     &          100.0,       100.0,         100.00/
-c    ------YW March 27, 2015 -------------------------------------------
-
-C
-C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.
-C     THIS CAN BE USED TO SIMULATE THE EFFECT OF IRRIGATION FOR CROPS.
-C
-      DATA SMSCALE/0.0, 0.0, 0.0, 0.0, 0.0, 
-     &             0.0, 0.0, 0.0, 0.0, 0.0, 
-     &             0.1, 0.1, 0.0, 0.0, 0.0, 
-     &             0.0, 0.0, 0.0, 0.0, 0.0/
-C
-C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
-C     VALUES ARE MAINLY DERIVED FROM \cite Kattge20090c0 WHICH
-C     DOESN'T INCLUDE C4. Also see \cite Alton2017-pd
-      DATA VMAX/42.0E-06, 47.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
-     &          35.0E-06, 57.0E-06, 40.0E-06, 60.0E-06, 50.0E-06,     !YW April 17, 2015 
-     &          55.0E-06, 40.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
-     &          75.0E-06, 15.0E-06, 40.0E-06, 0.00E-06, 0.00E-06/     !YW May 06, 2015 sedge=PFT12      
-
-C     NEEDLE LEAF |  EVG       DCD       ---
-C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
-C     CROPS       |   C3        C4       ---
-C     GRASSES     |   C3        C4       ---
-
-C
-C     NO. OF ITERATIONS FOR CALCULATING INTERCELLULAR CO2 CONCENTRATION
-      DATA  REQITER/10/ 
-C
-C     MAX. INTERCELLULAR CO2 CONCENTRATION, PASCALS
-      DATA CO2IMAX/2000.00/ 
-C
-C     PHOTOSYNTHESIS COUPLING OR CURVATURE COEFFICIENTS
-      DATA BETA1/0.950/
-      DATA BETA2/0.990/
-C
-C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
-      DATA  INICO2I/0.65, 0.65, 0.00, 0.00, 0.00, 
-     &              0.65, 0.65, 0.65, 0.65, 0.65, 
-     &              0.65, 0.37, 0.00, 0.00, 0.00, 
-     &              0.65, 0.37, 0.65, 0.00, 0.00/
-C
-C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS  
-      DATA  RMLCOEFF/0.015, 0.021, 0.000, 0.000, 0.000, 
-     &               0.025, 0.015, 0.015, 0.025, 0.020,     !pft7 WAS 0.021 YW May 05, 2015    
-     &               0.015, 0.025, 0.000, 0.000, 0.000, 
-     &               0.013, 0.025, 0.015, 0.000, 0.000/
-     
-c    In 1.6 version use the following -------------------------------\
-c    data rmlcoeff   /0.020,  0.020,    0.000,
-c     &                0.012,      0.015,    0.000, 
-c     &                0.000,      0.000,    0.000,
-c     &                0.013,  0.013,   0.013/
-c    YW March 27, 2015 -----------------------------------------------/
-C
+! C     CANOPY LIGHT/NITROGEN EXTINCTION COEFFICIENT - THIS BASICALLY
+! C     ASSUMES THAT MEAN PROFILE OF NITROGEN IS SAME AS THAT FOR
+! C     TIME MEAN PROFILE OF RADIATION - THE ASSUMPTION MADE BY SINGLE
+! C     BIG-LEAF MODELS
+! C      DATA   KN/0.50, 0.50, 0.00,
+! C     &          0.50, 0.50, 0.50,
+! C     &          0.40, 0.48, 0.00,
+! C     &          0.46, 0.44, 0.00/
+!       DATA KN/ 0.50, 0.50, 0.00, 0.00, 0.00, !YW April 13, 2015 add 2 colums
+!      &         0.50, 0.50, 0.50, 0.50, 0.50,
+!      &         0.40, 0.48, 0.00, 0.00, 0.00,
+!      &         0.46, 0.44, 0.46, 0.00, 0.00/
+! C
+! C     LOWER AND UPPER TEMPERATURE LIMITS FOR PHOTOSYNTHESIS, KELVIN
+! C     LOWER LIMIT IN CELCIUS /-5, -5, --,
+! C                              0,  0,  0,
+! C                             -3,  5, --,
+! C                             -1, 10, --/
+!       DATA TLOW/268.1, 268.1, 0.000, 0.000, 0.000,
+!      &          273.1, 273.1, 273.1, 271.1, 271.1,     !(Tanja et al. 2003) 5 days average air T above 4.3
+!      &          270.1, 278.1, 0.000, 0.000, 0.000,     !as the threshold of spring PSN for boreal forests.
+!      &          272.1, 283.1, 272.1, 0.000, 0.000/     !YW April 22, 2015
+! C
+! C     UPPER LIMIT IN CELCIUS /34, 34, --,
+! C                             45, 37, 37,
+! C                             42, 42, --,
+! C                             40, 50, --/
+! C    JM CHANGED PFT 3 TO 45 DEG FOLLOWING
+! C    ITO AND OIKAWA 2000.
+!       DATA  TUP/307.1, 307.1, 0.000, 0.000, 0.000,
+!      &          318.1, 310.1, 310.1, 307.1, 307.1,
+!      &          315.1, 315.1, 0.000, 0.000, 0.000,
+!      &          313.1, 323.1, 313.1, 0.000, 0.000/
+! C
+! C     ARRAY TELLING WHICH VEGETATION TYPE IS C4
+!       DATA  ISC4/0, 0, 0, 0, 0,
+!      &           0, 0, 0, 0, 0,
+!      &           0, 1, 0, 0, 0,
+!      &           0, 1, 0, 0, 0/
+! C
+! C     QUANTUM EFFICIENCIES, VALUES OF 0.08 & 0.04 ARE USED FOR C3 AND
+! C     C4 PLANTS, RESPECTIVELY
+!       DATA  ALPHA/0.08, 0.08, 0.00, 0.00, 0.00,
+!      &            0.08, 0.08, 0.08, 0.08, 0.08,
+!      &            0.08, 0.04, 0.00, 0.00, 0.00,
+!      &            0.08, 0.04, 0.08, 0.00, 0.00/
+! C
+! C     LEAF SCATTERING COEFFICIENTS, VALUES OF 0.15 & 0.17 ARE USED
+! C     FOR C3 AND C4 PLANTS, RESPECTIVELY
+!       DATA  OMEGA/0.15, 0.15, 0.00, 0.00, 0.00,
+!      &            0.15, 0.15, 0.15, 0.15, 0.15,
+!      &            0.15, 0.17, 0.00, 0.00, 0.00,
+!      &            0.15, 0.17, 0.15, 0.00, 0.00/
+! C
+! C     PARAMETER M USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
+! C     COUPLING.
+! C
+!       DATA  MM/9.0, 9.0, 0.0, 0.0, 0.0,
+!      &        12.0,12.0,12.0, 12.0, 12.0,         !YW May 05, 2015  PFT6&7 were 9.0
+!      &        12.0, 6.0, 0.0, 0.0, 0.0,
+!      &        12.0, 6.0, 12.0, 0.0, 0.0/
+! C
+! C     PARAMETER B USED IN PHOTOSYNTHESIS-STOMATAL CONDUCTANCE
+! C     COUPLING.
+!       DATA  BB/0.01, 0.01, 0.00, 0.00, 0.00,
+!      &         0.01, 0.01, 0.01, 0.01, 0.01,
+!      &         0.01, 0.04, 0.00, 0.00, 0.00,
+!      &         0.01, 0.04, 0.01, 0.00, 0.00/
+! C
+! C     PARAMETER VPD0 USED IN LEUNING TYPE PHOTOSYNTHESIS - STOMATAL
+! C     CONDUCTANCE COUPLING, IN PASCALS
+!       DATA VPD0/2000., 2000., 0.000,  0.000, 0.000,
+!      &          2000., 2000., 2000.,  2000., 2000.,
+!      &          1500., 1500., 0.000,  0.000, 0.000,
+!      &          1500., 1500., 1500.,  0.000, 0.000/
+! C
+! C     EXPONENT FOR SOIL MOISTURE STRESS. FOR SN EQUAL TO 1, PHOTOSYNTHESIS
+! C     DECREASES LINEARLY WITH SOIL MOISTURE, AND OF COURSE NON-LINEARLY
+! C     FOR VALUES HIGHER THAN 1. WHEN SN IS ABOUT 10, PHOTOSYNTHESIS DOES
+! C     NOT START DECREASING UNTIL SOIL MOISTURE IS ABOUT HALF WAY BETWEEN
+! C     WILTING POINT AND FIELD CAPACITY.
+! C
+!       DATA SN/2, 2, 0, 0, 0,
+!      &        4, 2, 2, 2, 2,
+!      &        2, 2, 0, 0, 0,
+!      &        2, 2, 2, 0, 0/      !sedge may take up a higher value as it adapts to wet condition well YW May 13, 2015
+!
+! c    ---in 1.6 PEATLAND version less moisture limit ,in original ctem 1.6
+! c    version sn = 20.0 for all pfts
+! C         data sn/20.0,       20.0,          0.00,
+! C     &           20.0,       20.0,          0.00,
+! C     &          0.00,        0.00,          0.00,
+! C     &          100.0,       100.0,         100.00/
+! c    ------YW March 27, 2015 -------------------------------------------
+!
+! C
+! C     ADDITIONAL CONSTRAIN OF SOIL MOISTURE STRESS ON PHOTOSYNTHESIS.
+! C     THIS CAN BE USED TO SIMULATE THE EFFECT OF IRRIGATION FOR CROPS.
+! C
+!       DATA SMSCALE/0.0, 0.0, 0.0, 0.0, 0.0,
+!      &             0.0, 0.0, 0.0, 0.0, 0.0,
+!      &             0.1, 0.1, 0.0, 0.0, 0.0,
+!      &             0.0, 0.0, 0.0, 0.0, 0.0/
+! C
+! C     MAX. PHOTOSYNTHETIC RATE, MOL CO2 M^-2 S^-1
+! C     VALUES ARE MAINLY DERIVED FROM \cite Kattge20090c0 WHICH
+! C     DOESN'T INCLUDE C4. Also see \cite Alton2017-pd
+!       DATA VMAX/42.0E-06, 47.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
+!      &          35.0E-06, 57.0E-06, 40.0E-06, 60.0E-06, 50.0E-06,     !YW April 17, 2015
+!      &          55.0E-06, 40.0E-06, 0.00E-06, 0.00E-06, 0.00E-06,
+!      &          75.0E-06, 15.0E-06, 40.0E-06, 0.00E-06, 0.00E-06/     !YW May 06, 2015 sedge=PFT12
+!
+! C     NEEDLE LEAF |  EVG       DCD       ---
+! C     BROAD LEAF  |  EVG   DCD-CLD   DCD-DRY
+! C     CROPS       |   C3        C4       ---
+! C     GRASSES     |   C3        C4       ---
+!
+! C
+! C     NO. OF ITERATIONS FOR CALCULATING INTERCELLULAR CO2 CONCENTRATION
+!       DATA  REQITER/10/
+! C
+! C     MAX. INTERCELLULAR CO2 CONCENTRATION, PASCALS
+!       DATA CO2IMAX/2000.00/
+! C
+! C     PHOTOSYNTHESIS COUPLING OR CURVATURE COEFFICIENTS
+!       DATA BETA1/0.950/
+!       DATA BETA2/0.990/
+! C
+! C     PARAMETER TO INITIALIZE INTERCELLULAR CO2 CONC.
+!       DATA  INICO2I/0.65, 0.65, 0.00, 0.00, 0.00,
+!      &              0.65, 0.65, 0.65, 0.65, 0.65,
+!      &              0.65, 0.37, 0.00, 0.00, 0.00,
+!      &              0.65, 0.37, 0.65, 0.00, 0.00/
+! C
+! C     LEAF MAINTENANCE RESPIRATION COEFFICIENTS
+!       DATA  RMLCOEFF/0.015, 0.021, 0.000, 0.000, 0.000,
+!      &               0.025, 0.015, 0.015, 0.025, 0.020,     !pft7 WAS 0.021 YW May 05, 2015
+!      &               0.015, 0.025, 0.000, 0.000, 0.000,
+!      &               0.013, 0.025, 0.015, 0.000, 0.000/
+!
+! c    In 1.6 version use the following -------------------------------\
+! c    data rmlcoeff   /0.020,  0.020,    0.000,
+! c     &                0.012,      0.015,    0.000,
+! c     &                0.000,      0.000,    0.000,
+! c     &                0.013,  0.013,   0.013/
+! c    YW March 27, 2015 -----------------------------------------------/
+! C
 C     FREEZING TEMPERATURE
       DATA TFREZ/273.16/
 C
@@ -515,21 +520,21 @@ C     STANDARD ATMOS. PRESSURE
 C
 C     ZERO
       DATA ZERO/1E-20/
-C
-C     ADDITIONAL PARAMETERS FOR TWO-LEAF MODEL
-C     LEAF ANGLE DISTRIBUTION
-      DATA  CHI/0.01,  0.01, 0.00, 0.00, 0.00, 
-     &          0.17,  0.17, 0.17, 0.17, 0.17,    !YW May 4th 
-     &         -0.30, -0.30, 0.00, 0.00, 0.00, 
-     &         -0.30, -0.30,-0.30, 0.00, 0.00/
-C
-C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
-C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
-      DATA GAMMA_W/0.17/  ! New value from Sept 2014, old was 0.45. JM.
-C
-C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT MODEL ACTUALLY GIVES
-C     WITHOUT ANY PHOTOSYNTHESIS DOWN-REGULATION
-      DATA GAMMA_M/0.95/
+! C
+! C     ADDITIONAL PARAMETERS FOR TWO-LEAF MODEL
+! C     LEAF ANGLE DISTRIBUTION
+!       DATA  CHI/0.01,  0.01, 0.00, 0.00, 0.00,
+!      &          0.17,  0.17, 0.17, 0.17, 0.17,    !YW May 4th
+!      &         -0.30, -0.30, 0.00, 0.00, 0.00,
+!      &         -0.30, -0.30,-0.30, 0.00, 0.00/
+! C
+! C     PHOTOSYNTHESIS DOWN REGULATION PARAMETERS
+! C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT WE WANT MODEL TO YIELD
+!       DATA GAMMA_W/0.17/  ! New value from Sept 2014, old was 0.45. JM.
+! C
+! C     EQUIVALENT CO2 FERTILIZATION EFFECT THAT MODEL ACTUALLY GIVES
+! C     WITHOUT ANY PHOTOSYNTHESIS DOWN-REGULATION
+!       DATA GAMMA_M/0.95/
 
 C     --------------------------------------------------------------
 C     DECIDE HERE IF WE WANT TO USE SINGLE LEAF OR TWO-LEAF MODEL
@@ -893,7 +898,7 @@ C
             TEMP_PHI2 = 0.877*(1.-2.*TEMP_PHI1)
             GDIR(I,M) = TEMP_PHI1 + TEMP_PHI2*COSZS(I)
             KB(I,M) = (GDIR(I,M)/COSZS(I))
-            KB(I,M) = KB(I,M) * (SQRT(1.-OMEGA(SORT(M)) ))
+            KB(I,M) = KB(I,M) * (SQRT(1.-omega_phtsyn(SORT(M)) ))
 C>
 C>ALSO FIND SUNLIT AND SHADED LAI
             AILCG_SUN(I,M)=(1.0/KB(I,M)) *
@@ -1153,9 +1158,9 @@ C
             JC2(I,J) = KC(I) * (1.0 + (O2_CONC(I)/KO(I)) )
             JC3(I,J) = CO2I(I,J) + JC2(I,J)
 C
-            IF (ISC4(SORT(J)).EQ.1) THEN
+            IF (ISC4(SORT(J))) THEN
               JC(I,J)  = VM(I,J)
-            ELSE IF (ISC4(SORT(J)).EQ.0) THEN
+            ELSE
               JC(I,J)  = VM(I,J) * (JC1(I,J)/JC3(I,J))
             ENDIF
            ELSE IF(LEAFOPT.EQ.2)THEN
@@ -1165,10 +1170,10 @@ C
             JC3_SUN(I,J) = CO2I_SUN(I,J) + JC2(I,J)
             JC3_SHA(I,J) = CO2I_SHA(I,J) + JC2(I,J)
 C
-            IF (ISC4(SORT(J)).EQ.1) THEN
+            IF (ISC4(SORT(J))) THEN
               JC_SUN(I,J)=VM_SUN(I,J)
               JC_SHA(I,J)=VM_SHA(I,J)
-            ELSE IF (ISC4(SORT(J)).EQ.0) THEN
+            ELSE
               JC_SUN(I,J)=VM_SUN(I,J)*(JC1_SUN(I,J)/JC3_SUN(I,J))
               JC_SHA(I,J)=VM_SHA(I,J)*(JC1_SHA(I,J)/JC3_SHA(I,J))
             ENDIF
@@ -1187,27 +1192,28 @@ C>
 C
           IF(COSZS(I).GT.0.0)THEN
            IF(LEAFOPT.EQ.1)THEN
-            JE1(I,J)= FPAR(I,J)*ALPHA(SORT(J))*(1.0-OMEGA(SORT(J)))
+            JE1(I,J)= FPAR(I,J)*alpha_phtsyn(SORT(J))
+     &                *(1.0-omega_phtsyn(SORT(J)))
             JE2(I,J)=( CO2I(I,J)-TGAMMA(I) ) /
      &        ( CO2I(I,J)+ (2.0*TGAMMA(I)) )
 C
-            IF (ISC4(SORT(J)).EQ.1) THEN
+            IF (ISC4(SORT(J))) THEN
               JE(I,J) = IPAR(I) * JE1(I,J)
-            ELSE IF (ISC4(SORT(J)).EQ.0) THEN
+            ELSE
               JE(I,J) = IPAR(I) * JE1(I,J) * JE2(I,J)
             ENDIF
            ELSE IF(LEAFOPT.EQ.2)THEN
-            JE1_SUN(I,J)= FPAR_SUN(I,J)*ALPHA(SORT(J))
-            JE1_SHA(I,J)= FPAR_SHA(I,J)*ALPHA(SORT(J))
+            JE1_SUN(I,J)= FPAR_SUN(I,J)*alpha_phtsyn(SORT(J))
+            JE1_SHA(I,J)= FPAR_SHA(I,J)*alpha_phtsyn(SORT(J))
             JE2_SUN(I,J)=( CO2I_SUN(I,J)-TGAMMA(I) ) /
      &        ( CO2I_SUN(I,J)+ (2.0*TGAMMA(I)) )
             JE2_SHA(I,J)=( CO2I_SHA(I,J)-TGAMMA(I) ) /
      &        ( CO2I_SHA(I,J)+ (2.0*TGAMMA(I)) )
 
-            IF (ISC4(SORT(J)).EQ.1) THEN
+            IF (ISC4(SORT(J))) THEN
               JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J) 
               JE_SHA(I,J)=IPAR_SHA(I)*JE1_SHA(I,J)
-            ELSE IF (ISC4(SORT(J)).EQ.0) THEN
+            ELSE
               JE_SUN(I,J)=(IPAR_SUN(I)+IPAR_SHA(I))*JE1_SUN(I,J)* 
      &                    JE2_SUN(I,J)
               JE_SHA(I,J)=IPAR_SHA(I)*JE1_SHA(I,J)*JE2_SHA(I,J)    
@@ -1227,16 +1233,16 @@ C>
 C
           IF(COSZS(I).GT.0.0)THEN
            IF(LEAFOPT.EQ.1)THEN
-            IF (ISC4(SORT(J)).EQ.1) THEN
+            IF (ISC4(SORT(J))) THEN
               JS(I,J) = 20000.0 * VM(I,J)*(CO2I(I,J)/PRESSG(I))
-            ELSE IF (ISC4(SORT(J)).EQ.0) THEN
+            ELSE
               JS(I,J) = 0.5 * VM(I,J)
             ENDIF
            ELSE IF(LEAFOPT.EQ.2)THEN
-            IF (ISC4(SORT(J)).EQ.1) THEN
+            IF (ISC4(SORT(J))) THEN
               JS_SUN(I,J)=20000.0*VM_SUN(I,J)*(CO2I_SUN(I,J)/PRESSG(I))
               JS_SHA(I,J)=20000.0*VM_SHA(I,J)*(CO2I_SHA(I,J)/PRESSG(I))
-            ELSE IF (ISC4(SORT(J)).EQ.0) THEN
+            ELSE
               JS_SUN(I,J) = 0.5 * VM_SUN(I,J)
               JS_SHA(I,J) = 0.5 * VM_SHA(I,J)
             ENDIF
@@ -1299,7 +1305,7 @@ C
               CALL XIT('PHTSYN',-1)
             ENDIF
 C>DOWN-REGULATE PHOTOSYNTHESIS FOR C3 PLANTS
-            IF(ISC4(SORT(J)).EQ.0)THEN
+            IF(.not. ISC4(SORT(J)))THEN
               A_VEG(I,J) = A_VEG(I,J) * N_EFFECT(I)
             ENDIF
             A_VEG(I,J) = MAX(0.0, A_VEG(I,J))
@@ -1332,7 +1338,7 @@ C
              ELSE
                CALL XIT('PHTSYN',-2)
              ENDIF
-             IF(ISC4(SORT(J)).EQ.0)THEN
+             IF(.not. ISC4(SORT(J)))THEN
                A_VEG_SUN(I,J) = A_VEG_SUN(I,J) * N_EFFECT(I)
              ENDIF
              A_VEG_SUN(I,J) = MAX(0.0, A_VEG_SUN(I,J))
@@ -1363,7 +1369,7 @@ C
              ELSEIF(MIN3) THEN
                A_VEG_SHA(I,J)=MIN(JC_SHA(I,J),JE_SHA(I,J),JS_SHA(I,J))
              ENDIF
-             IF(ISC4(SORT(J)).EQ.0)THEN
+             IF(.not. ISC4(SORT(J)))THEN
                A_VEG_SHA(I,J) = A_VEG_SHA(I,J) * N_EFFECT(I)
              ENDIF
              A_VEG_SHA(I,J) = MAX(0.0, A_VEG_SHA(I,J))

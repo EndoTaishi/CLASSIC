@@ -73,7 +73,7 @@ program CLASSIC
     ! Close all of the output netcdf files and the restart file
     call closeNCFiles
     call closeNCFiles(rsid)
-    call closeNCFiles(co2id)
+    call closeNCFiles(co2id)  !FLAG need to close other ones...or can i ignore closing read only files?
 
 #if PARALLEL
     ! Shut down the MPI session

@@ -20,9 +20,9 @@
  ! CTEM (biogeochemistry) switches:
  ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
                         !< lai and canopy mass are used. with this switch on, all ctem subroutines are run.
-    icc = 12 ,
+    icc = 9 ,           !< Number of CTEM level PFTs
 
-    spinfast = 3 ,
+    spinfast = 3 ,      !< Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
 
     !CO2 switches:
         transientCO2 = .true. , !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
@@ -65,10 +65,10 @@
  met_file = '/raid/ra40/data/rjm/CRUNCEP_MET_data/t63files/cruncepv7_1901_2015_T63.nc' ,
  init_file = 'inputFiles/initFile.nc' ,
  rs_file_to_overwrite = 'rsFile.nc' ,
- runparams_file = 'ConfigurationFiles/template_run_parameters.txt' ,
+ runparams_file = 'configurationFiles/template_run_parameters.txt' ,
 
  ican = 4 ,
- l2max = 5 ,
+ l2max = 3 ,
  IDISP = 0 ,
  IZREF = 2 ,
  ISLFD = 0 ,
@@ -86,7 +86,7 @@
 
  ! Output options:
     output_directory = '/home/rjm/Documents/CTEM/test' ,
-    xmlFile = 'ConfigurationFiles/outputVariableDescriptors.xml' ,
+    xmlFile = 'configurationFiles/outputVariableDescriptors.xml' ,
 
     doperpftoutput = .true. ,
     dopertileoutput = .false. ,

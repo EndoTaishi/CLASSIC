@@ -212,8 +212,6 @@ subroutine phenolgy(gleafmas, bleafmas,  &
 !!
 !!---------------------------------------------------------------
 !!
-
-      if(icc.ne.12)                            call xit('phenolgy',-1)
 !>
 !!initialize required arrays to zero
 !!
@@ -331,7 +329,7 @@ subroutine phenolgy(gleafmas, bleafmas,  &
 240   continue
 !>
 !!find day length using day of year and latitude. this is to be used for
-!!initiating leaf offset for broad leaf dcd trees.
+!!initiating leaf offset for broad leaf dcd trees. !FLAG pass this in from the main. JM Oct 2017
 !!
       day=real(iday)
       do 260 i = il1, il2

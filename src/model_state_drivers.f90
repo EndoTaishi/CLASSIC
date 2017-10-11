@@ -208,7 +208,7 @@ contains
         use outputManager, only : initid
         use ctem_statevars,     only : c_switch,vrot,vgat
         use class_statevars,    only : class_rot,class_gat
-        use ctem_params,        only : icc,iccp1,nmos,ignd,ilg,icp1,nlat,ican,abszero,pi
+        use ctem_params,        only : icc,iccp1,nmos,ignd,ilg,icp1,nlat,ican,abszero,pi,crop
 
         implicit none
 
@@ -278,7 +278,8 @@ contains
         logical, pointer :: obswetf
         real, pointer, dimension(:,:,:) :: ailcminrow           !
         real, pointer, dimension(:,:,:) :: ailcmaxrow           !
-        real, pointer, dimension(:,:,:) :: dvdfcanrow           !
+        !real, pointer, dimension(:,:,:) :: dvdfcanrow           !
+        real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
         real, pointer, dimension(:,:,:) :: stemmassrow          !
@@ -314,7 +315,6 @@ contains
 
         integer :: i,m,j
         real, dimension(ilg,2) :: crop_temp_frac
-        real, allocatable, dimension(:,:) :: temptwod
         real, parameter :: TFREZ = 273.16
 
         ! point pointers:
@@ -328,7 +328,7 @@ contains
         obswetf           => c_switch%obswetf
         ailcminrow        => vrot%ailcmin
         ailcmaxrow        => vrot%ailcmax
-        dvdfcanrow        => vrot%dvdfcan
+        fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
         stemmassrow       => vrot%stemmass
@@ -429,17 +429,6 @@ contains
         SDEPROT = ncGet2DVar(initid, 'SDEP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         SOCIROT = ncGet2DVar(initid, 'SOCI', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         FAREROT = ncGet2DVar(initid, 'FARE', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
-
-        ! Error check:
-        do i = 1,nlat
-            do m = 1,nmos
-                if (FAREROT(i,m) .gt. 1.0) then
-                    print *,'FAREROT > 1',FAREROT(I,M)
-                    call XIT('read_initialstate', -1)
-                end if
-            enddo
-        enddo
-
         XSLPROT = ncGet2DVar(initid, 'XSLP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         GRKFROT = ncGet2DVar(initid, 'GRKF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         WFSFROT = ncGet2DVar(initid, 'WFSF', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
@@ -455,7 +444,6 @@ contains
         RHOSROT = ncGet2DVar(initid, 'RHOS', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         GROROT = ncGet2DVar(initid, 'GRO', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         MIDROT = ncGet2DVar(initid, 'MID', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format=[nlat, nmos])
-        FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
         LNZ0ROT = ncGet3DVar(initid, 'LNZ0', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
         ALVCROT = ncGet3DVar(initid, 'ALVC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
         ALICROT = ncGet3DVar(initid, 'ALIC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
@@ -477,6 +465,20 @@ contains
         THICROT = ncGet3DVar(initid, 'THIC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         ZBOT = reshape(ncGet3DVar(initid, 'ZBOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
         DELZ = reshape(ncGet3DVar(initid, 'DELZ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
+
+        if (.not. ctem_on) then
+            FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
+            ! Error check:
+            do i = 1,nlat
+                do m = 1,nmos
+                    if (FAREROT(i,m) .gt. 1.0) then
+                        print *,'FAREROT > 1',FAREROT(I,M)
+                        call XIT('read_initialstate', -1)
+                    end if
+                enddo
+            enddo
+            !else fcancmx is read in instead and fcanrot is derived later.
+        end if
 
 !     Complete some initial set up work:
 
@@ -507,6 +509,7 @@ contains
                 !        ITCTROT(I,M,K,L)=0
 !75              CONTINUE
 100     CONTINUE
+
         ! Check that the THIC and THLQ values are set to zero for soil layers
         ! that are non-permeable (bedrock).
         do i = 1,nlat
@@ -546,7 +549,7 @@ contains
             dmoss = ncGet2DVar(initid, 'dmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
             ailcminrow = ncGet3DVar(initid, 'ailcmin', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             ailcmaxrow = ncGet3DVar(initid, 'ailcmax', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
-            dvdfcanrow = ncGet3DVar(initid, 'dvdfcan', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
+            fcancmxrow = ncGet3DVar(initid, 'fcancmx', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
 
             !>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all
             !>live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set
@@ -565,8 +568,10 @@ contains
                         end do
             end if
 
-            litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, icc, ignd, nmos], format = [nlat, nmos, icc, ignd])
-            soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, icc, ignd,nmos], format = [nlat, nmos,icc, ignd])
+            !litrmassrow = ncGet4DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp1, ignd, nmos], format = [nlat, nmos, iccp1, ignd])
+            !soilcmasrow = ncGet4DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp1, ignd,nmos], format = [nlat, nmos,iccp1, ignd])
+            litrmassrow = ncGet3DVar(initid, 'litrmass', start = [lonIndex, latIndex, 1, 1, 1], count = [1, 1, iccp1, nmos], format = [nlat, nmos, iccp1])
+            soilcmasrow = ncGet3DVar(initid, 'soilcmas', start = [lonIndex, latIndex, 1, 1,1], count = [1, 1, iccp1, nmos], format = [nlat, nmos,iccp1])
             lfstatusrow = ncGet3DVar(initid, 'lfstatus', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
             pandaysrow = ncGet3DVar(initid, 'pandays', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos], format = [nlat, nmos,icc])
 
@@ -582,8 +587,6 @@ contains
                 annsrpls(:,1) = ncGet1DVar(initid, 'annsrpls', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
                 annpcp(:,1) = ncGet1DVar(initid, 'annpcp', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
                 dry_season_length(:,1) = ncGet1DVar(initid, 'dry_season_length', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-
-                deallocate(temptwod)
 
                 !>Take the first tile value now and put it over the other tiles
                 do m = 1,nmos
@@ -614,24 +617,22 @@ contains
 
             endif
 
-            !>if this run uses the competition or lnduseon parameterization and starts from bare ground, set up the model state here. this
-            !>overwrites what was read in from the initialization file. for composite runs (the composite set up is after this one for mosaics)
-            if ((PFTCompetition .or. lnduseon) .and. start_bare) then
-
-                !>set up for composite runs when start_bare is on and PFTCompetition or landuseon
+            !>if this run uses the competition and starts from bare ground, set up the model state here. this
+            !>overwrites what was read in from the initialization file.
+            if (PFTCompetition .and. start_bare) then
 
                 !>store the read-in crop fractions as we keep them even when we start bare.
                 !!FLAG: this is setup assuming that crops are in pft number 6 and 7.
                 !!and the first tile contains the information for the grid cell (assumes we have crops in
                 !!every tile too! JM Apr 9 2014.
-                do i=1,nlat
-                    crop_temp_frac(i,1)=FCANROT(i,1,3)*dvdfcanrow(i,1,6)
-                    crop_temp_frac(i,2)=FCANROT(i,1,3)*dvdfcanrow(i,1,7)
-                end do
-
-                !>initalize to zero, these will be filled in by the luc or competition subroutines.
-                FCANROT=0.0
-                dvdfcanrow=0.0
+!                 do i=1,nlat
+!                     crop_temp_frac(i,1)=FCANROT(i,1,3)*dvdfcanrow(i,1,6)
+!                     crop_temp_frac(i,2)=FCANROT(i,1,3)*dvdfcanrow(i,1,7)
+!                 end do
+!
+!                 !>initalize to zero, these will be filled in by the luc or competition subroutines.
+!                 FCANROT=0.0
+!                 dvdfcanrow=0.0
 
                 ! FLAG- needed anymore?
                 ! Added this as start_bare runs were not properly assigning
@@ -651,13 +652,14 @@ contains
                 do i=1,nlat
                     do m = 1,nmos
 
-                        !>initial conditions always required
-                        dvdfcanrow(i,m,1)=1.0  !ndl
-                        dvdfcanrow(i,m,3)=1.0  !bdl
-                        dvdfcanrow(i,m,6)=1.0  !crop
-                        dvdfcanrow(i,m,8)=1.0  !grasses
+!                         !>initial conditions always required
+!                         dvdfcanrow(i,m,1)=1.0  !ndl
+!                         dvdfcanrow(i,m,3)=1.0  !bdl
+!                         dvdfcanrow(i,m,6)=1.0  !crop
+!                         dvdfcanrow(i,m,8)=1.0  !grasses
 
                         do j = 1,icc
+                            if (.not. crop(j)) fcancmxrow(i,m,j) = 0.0
                             ailcminrow(i,m,j)=0.0
                             ailcmaxrow(i,m,j)=0.0
                             gleafmasrow(i,m,j)=0.0
@@ -677,20 +679,20 @@ contains
                     end do ! nmtest
                 enddo !nltest
 
-                do i=1,nlat
-                    do m = 1,nmos
-                        FCANROT(i,m,3) = crop_temp_frac(i,1) + crop_temp_frac(i,2)
-                        if (FCANROT(i,m,3) .gt. abszero) then
-                            dvdfcanrow(i,m,6) = crop_temp_frac(i,1) / FCANROT(i,m,3)
-                            dvdfcanrow(i,m,7) = crop_temp_frac(i,2) / FCANROT(i,m,3)
-                        else
-                            dvdfcanrow(i,m,6) = 1.0
-                            dvdfcanrow(i,m,7) = 0.0
-                        end if
-                    end do !nmtest
-                end do !nltest
+!                 do i=1,nlat
+!                     do m = 1,nmos
+!                         FCANROT(i,m,3) = crop_temp_frac(i,1) + crop_temp_frac(i,2)
+!                         if (FCANROT(i,m,3) .gt. abszero) then
+!                             dvdfcanrow(i,m,6) = crop_temp_frac(i,1) / FCANROT(i,m,3)
+!                             dvdfcanrow(i,m,7) = crop_temp_frac(i,2) / FCANROT(i,m,3)
+!                         else
+!                             dvdfcanrow(i,m,6) = 1.0
+!                             dvdfcanrow(i,m,7) = 0.0
+!                         end if
+!                     end do !nmtest
+!                 end do !nltest
 
-            end if !if (PFTCompetition/landuseon .and. start_bare)
+            end if !if (PFTCompetition .and. start_bare)
 
         end if !ctem_on
 
@@ -738,7 +740,7 @@ contains
         logical, pointer :: lnduseon
         real, pointer, dimension(:,:,:) :: ailcminrow           !
         real, pointer, dimension(:,:,:) :: ailcmaxrow           !
-        real, pointer, dimension(:,:,:) :: dvdfcanrow           !
+        !real, pointer, dimension(:,:,:) :: dvdfcanrow           !
         real, pointer, dimension(:,:,:) :: fcancmxrow           !
         real, pointer, dimension(:,:,:) :: gleafmasrow          !
         real, pointer, dimension(:,:,:) :: bleafmasrow          !
@@ -763,9 +765,9 @@ contains
         real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
 
         ! local variables
-        integer :: i,m,j,k1c,k2c,n
-        integer, dimension(nlat,nmos) :: icountrow
-        real, dimension(icc) :: rnded_pft
+        !integer :: i,m,j,k1c,k2c,n
+        !integer, dimension(nlat,nmos) :: icountrow
+        !real, dimension(icc) :: rnded_pft
         real, parameter :: TFREZ = 273.16
 
         ! point pointers:
@@ -774,7 +776,7 @@ contains
         lnduseon          => c_switch%lnduseon
         ailcminrow        => vrot%ailcmin
         ailcmaxrow        => vrot%ailcmax
-        dvdfcanrow        => vrot%dvdfcan
+        !dvdfcanrow        => vrot%dvdfcan
         fcancmxrow        => vrot%fcancmx
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
@@ -832,72 +834,72 @@ contains
 
         if (ctem_on) then
 
-            !> if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
-            if (lnduseon .or. PFTCompetition ) then
-                icountrow=0
-                do j = 1, ican
-                    do i = 1,nlat
-                        do m = 1,nmos
-                            k1c = (j-1)*l2max + 1
-                            k2c = k1c + (l2max - 1)
-                            do n = k1c, k2c
-                                if (modelpft(n) .eq. 1) then
-                                    icountrow(i,m) = icountrow(i,m) + 1
-                                    if (FCANROT(i,m,j) .gt. 0.) then
-                                        dvdfcanrow(i,m,icountrow(i,m)) = fcancmxrow(i,m,icountrow(i,m))/FCANROT(i,m,j)
-                                    else
-                                        dvdfcanrow(i,m,icountrow(i,m)) = 0.
-                                    end if
-                                end if !modelpft
-                            end do !n
-                            !> check to ensure that the dvdfcanrow's add up to 1 across a class-level pft
-                            if (dvdfcanrow(i,m,1) .eq. 0. .and. dvdfcanrow(i,m,2) .eq. 0.) then
-                                dvdfcanrow(i,m,1)=1.0
-                            else if (dvdfcanrow(i,m,3) .eq. 0. .and. dvdfcanrow(i,m,4) .eq. 0. .and. dvdfcanrow(i,m,5) .eq. 0.) then
-                                dvdfcanrow(i,m,3)=1.0
-                            else if (dvdfcanrow(i,m,6) .eq. 0. .and. dvdfcanrow(i,m,7) .eq. 0.) then
-                                dvdfcanrow(i,m,6)=1.0
-                            else if (dvdfcanrow(i,m,8) .eq. 0. .and. dvdfcanrow(i,m,9) .eq. 0.) then
-                                dvdfcanrow(i,m,8)=1.0
-                            end if
-                        end do !m
-                    enddo !i
-                enddo !j
-
-                do i=1,nlat
-                    do m=1,nmos
-                        do j = 1, icc
-                            !>Lastly check if the different pfts accidently add up > 1.0 after rounding to the number of sig figs used in the output
-                            !>this rounds to 3 decimal places. if you are found to be over or under, arbitrarily reduce one of the pfts. the amount of
-                            !>the change will be inconsequential.
-                            rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 1000.0))/ 1000.0
-                            dvdfcanrow(i,m,j) = rnded_pft(j)
-                        end do
-
-                        if (dvdfcanrow(i,m,1) + dvdfcanrow(i,m,2) .ne. 1.0) then
-                            dvdfcanrow(i,m,1) = 1.0 - rnded_pft(2)
-                            dvdfcanrow(i,m,2) = rnded_pft(2)
-                        end if
-                        if (dvdfcanrow(i,m,3) + dvdfcanrow(i,m,4) +  dvdfcanrow(i,m,5) .ne. 1.0) then
-                            dvdfcanrow(i,m,3) = 1.0 - rnded_pft(4) - rnded_pft(5)
-                            dvdfcanrow(i,m,4) = rnded_pft(4)
-                            dvdfcanrow(i,m,5) = rnded_pft(5)
-                        end if
-                        if (dvdfcanrow(i,m,6) + dvdfcanrow(i,m,7) .ne. 1.0) then
-                            dvdfcanrow(i,m,6) = 1.0 - rnded_pft(7)
-                            dvdfcanrow(i,m,7) = rnded_pft(7)
-                        end if
-                        if (dvdfcanrow(i,m,8) + dvdfcanrow(i,m,9) .ne. 1.0) then
-                            dvdfcanrow(i,m,8) = 1.0 - rnded_pft(9)
-                            dvdfcanrow(i,m,9) = rnded_pft(9)
-                        end if
-                    enddo
-                enddo
-            end if !lnuse/PFTCompetition
+!             !> if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
+!             if (lnduseon .or. PFTCompetition ) then
+!                 icountrow=0
+!                 do j = 1, ican
+!                     do i = 1,nlat
+!                         do m = 1,nmos
+!                             k1c = (j-1)*l2max + 1
+!                             k2c = k1c + (l2max - 1)
+!                             do n = k1c, k2c
+!                                 if (modelpft(n) .eq. 1) then
+!                                     icountrow(i,m) = icountrow(i,m) + 1
+!                                     if (FCANROT(i,m,j) .gt. 0.) then
+!                                         dvdfcanrow(i,m,icountrow(i,m)) = fcancmxrow(i,m,icountrow(i,m))/FCANROT(i,m,j)
+!                                     else
+!                                         dvdfcanrow(i,m,icountrow(i,m)) = 0.
+!                                     end if
+!                                 end if !modelpft
+!                             end do !n
+!                             !> check to ensure that the dvdfcanrow's add up to 1 across a class-level pft
+!                             if (dvdfcanrow(i,m,1) .eq. 0. .and. dvdfcanrow(i,m,2) .eq. 0.) then
+!                                 dvdfcanrow(i,m,1)=1.0
+!                             else if (dvdfcanrow(i,m,3) .eq. 0. .and. dvdfcanrow(i,m,4) .eq. 0. .and. dvdfcanrow(i,m,5) .eq. 0.) then
+!                                 dvdfcanrow(i,m,3)=1.0
+!                             else if (dvdfcanrow(i,m,6) .eq. 0. .and. dvdfcanrow(i,m,7) .eq. 0.) then
+!                                 dvdfcanrow(i,m,6)=1.0
+!                             else if (dvdfcanrow(i,m,8) .eq. 0. .and. dvdfcanrow(i,m,9) .eq. 0.) then
+!                                 dvdfcanrow(i,m,8)=1.0
+!                             end if
+!                         end do !m
+!                     enddo !i
+!                 enddo !j
+!
+!                 do i=1,nlat
+!                     do m=1,nmos
+!                         do j = 1, icc
+!                             !>Lastly check if the different pfts accidently add up > 1.0 after rounding to the number of sig figs used in the output
+!                             !>this rounds to 3 decimal places. if you are found to be over or under, arbitrarily reduce one of the pfts. the amount of
+!                             !>the change will be inconsequential.
+!                             rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 1000.0))/ 1000.0
+!                             dvdfcanrow(i,m,j) = rnded_pft(j)
+!                         end do
+!
+!                         if (dvdfcanrow(i,m,1) + dvdfcanrow(i,m,2) .ne. 1.0) then
+!                             dvdfcanrow(i,m,1) = 1.0 - rnded_pft(2)
+!                             dvdfcanrow(i,m,2) = rnded_pft(2)
+!                         end if
+!                         if (dvdfcanrow(i,m,3) + dvdfcanrow(i,m,4) +  dvdfcanrow(i,m,5) .ne. 1.0) then
+!                             dvdfcanrow(i,m,3) = 1.0 - rnded_pft(4) - rnded_pft(5)
+!                             dvdfcanrow(i,m,4) = rnded_pft(4)
+!                             dvdfcanrow(i,m,5) = rnded_pft(5)
+!                         end if
+!                         if (dvdfcanrow(i,m,6) + dvdfcanrow(i,m,7) .ne. 1.0) then
+!                             dvdfcanrow(i,m,6) = 1.0 - rnded_pft(7)
+!                             dvdfcanrow(i,m,7) = rnded_pft(7)
+!                         end if
+!                         if (dvdfcanrow(i,m,8) + dvdfcanrow(i,m,9) .ne. 1.0) then
+!                             dvdfcanrow(i,m,8) = 1.0 - rnded_pft(9)
+!                             dvdfcanrow(i,m,9) = rnded_pft(9)
+!                         end if
+!                     enddo
+!                 enddo
+!             end if !lnuse/PFTCompetition
 
             call ncPut3DVar(rsid, 'ailcmin', ailcminrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'ailcmax', ailcmaxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
-            call ncPut3DVar(rsid, 'dvdfcan', dvdfcanrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
+            call ncPut3DVar(rsid, 'fcancmx', fcancmxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'gleafmas', gleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'bleafmas', bleafmasrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'stemmass', stemmassrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
@@ -938,7 +940,7 @@ contains
         use fileIOModule
         use generalUtils, only : parseTimeStamp
         use ctem_statevars, only : c_switch,vrot
-        use ctem_params, only : icc
+        use ctem_params, only : icc,nmos
         use outputManager, only : co2id,ch4id,checkForTime,popid,lucid
 
         implicit none
@@ -963,7 +965,7 @@ contains
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
-        real, pointer, dimension(:,:,:) :: nfcancmxrow
+        real, pointer, dimension(:,:,:) :: fcancmxrow
 
         transientCO2    => c_switch%transientCO2
         fixedYearCO2    => c_switch%fixedYearCO2
@@ -977,7 +979,7 @@ contains
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
-        nfcancmxrow     => vrot%nfcancmx
+        fcancmxrow      => vrot%fcancmx
 
         select case (trim(inputRequested))
 
@@ -1093,21 +1095,28 @@ contains
             if (lnduseon) then
                 ! We read in the whole LUC times series and store it.
                 allocate(LUCFromFile(lengthOfFile,icc))
-                LUCFromFile = ncGet2DVar(lucid, 'frac', start = [lonloc,latloc,1,1], count = [1,1,9,lengthOfFile])  !FLAG needs to be icc,not 9!!!
+                LUCFromFile = ncGet2DVar(lucid, 'frac', start = [lonloc,latloc,1,1], count = [1,1,icc,lengthOfFile])
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
-                nfcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [lonloc,latloc,1,arrindex], count = [1,1,9,1])!FLAG needs to be icc,not 9!!!
+
+                if (nmos .ne. 1) stop('getInput for LUC is not setup for more than one tile at present!!')
+
+                fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
+                
             end if
 
-        !case ('OBSWETF')
-        !wetfrac_monrow(i,m,:
+        case ('OBSWETF')
+            stop('Not implemented yet')
+            !wetfrac_monrow(i,m,:
+            !  wetfrac_presgat(i)=wetfrac_mongat(i,month1)+(real(xday)/30.0)*&
+            !            (wetfrac_mongat(i,month2)-wetfrac_mongat(i,month1))
 
         case default
-            stop('specify a input kind for getInput')
+            stop('specify an input kind for getInput')
 
         end select
 

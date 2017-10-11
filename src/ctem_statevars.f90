@@ -216,7 +216,7 @@ type veg_rot
                                                    !<the phenology subroutine
     real, allocatable, dimension(:,:,:) :: ailcmin      !<
     real, allocatable, dimension(:,:,:) :: ailcmax      !<
-    real, allocatable, dimension(:,:,:) :: dvdfcan      !<
+    !real, allocatable, dimension(:,:,:) :: dvdfcan      !<
     real, allocatable, dimension(:,:,:) :: gleafmas     !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: bleafmas     !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:,:) :: stemmass     !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
@@ -429,7 +429,7 @@ type veg_gat
 
     real, allocatable,dimension(:,:) :: ailcmin     !<
     real, allocatable, dimension(:,:) :: ailcmax    !<
-    real, allocatable, dimension(:,:) :: dvdfcan    !<
+    !real, allocatable, dimension(:,:) :: dvdfcan    !<
     real, allocatable, dimension(:,:) :: gleafmas   !<green leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: bleafmas   !<brown leaf mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
     real, allocatable, dimension(:,:) :: stemmass   !<stem mass for each of the 9 ctem pfts, \f$kg c/m^2\f$
@@ -1257,7 +1257,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%pandays (nlat,nmos,icc),&
          vrot%ailcmin (nlat,nmos,icc),&
          vrot%ailcmax (nlat,nmos,icc),&
-         vrot%dvdfcan (nlat,nmos,icc),&
+         !vrot%dvdfcan (nlat,nmos,icc),&
          vrot%gleafmas(nlat,nmos,icc),&
          vrot%bleafmas(nlat,nmos,icc),&
          vrot%stemmass(nlat,nmos,icc),&
@@ -1372,34 +1372,6 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%cfluxcg (nlat,nmos),&
          vrot%cfluxcs (nlat,nmos),&
          vrot%dstcemls3 (nlat,nmos),&
-!          vrot%PREACC_M(nlat,nmos),&
-!          vrot%GTACC_M (nlat,nmos),&
-!          vrot%QEVPACC_M (nlat,nmos),&
-!          vrot%HFSACC_M(nlat,nmos),&
-!          vrot%HMFNACC_M (nlat,nmos),&
-!          vrot%ROFACC_M(nlat,nmos),&
-!          vrot%SNOACC_M(nlat,nmos),&
-!          vrot%OVRACC_M(nlat,nmos),&
-!          vrot%WTBLACC_M(nlat,nmos),&
-!          vrot%ALVSACC_M(nlat,nmos),&
-!          vrot%ALIRACC_M(nlat,nmos),&
-!          vrot%RHOSACC_M(nlat,nmos),&
-!          vrot%TSNOACC_M(nlat,nmos),&
-!          vrot%WSNOACC_M(nlat,nmos),&
-!          vrot%SNOARE_M(nlat,nmos),&
-!          vrot%TCANACC_M(nlat,nmos),&
-!          vrot%RCANACC_M(nlat,nmos),&
-!          vrot%SCANACC_M(nlat,nmos),&
-!          vrot%ALTOTACC_M(nlat,nmos),&
-!          vrot%GROACC_M(nlat,nmos),&
-!          vrot%FSINACC_M (nlat,nmos),&
-!          vrot%FLINACC_M(nlat,nmos),&
-!          vrot%TAACC_M (nlat,nmos),&
-!          vrot%UVACC_M (nlat,nmos),&
-!          vrot%PRESACC_M (nlat,nmos),&
-!          vrot%QAACC_M (nlat,nmos),&
-!          vrot%EVAPACC_M (nlat,nmos),&
-!          vrot%FLUTACC_M(nlat,nmos),&
          vrot%tcanrs  (nlat,nmos),&
          vrot%tsnors  (nlat,nmos),&
          vrot%tpndrs  (nlat,nmos),&
@@ -1444,14 +1416,7 @@ allocate(vrot%pftexist(nlat,nmos,icc),&
          vrot%slaic(nlat,nmos,ican),&
          vrot%alirctm(nlat,nmos,ican),&
          vrot%csum(nlat,nmos,ican),&
-    
-! allocated with nlat,nmos,ignd:        
-!          vrot%TBARACC_M(nlat,nmos,ignd),&
-!          vrot%THLQACC_M(nlat,nmos,ignd),&
-!          vrot%THICACC_M(nlat,nmos,ignd),&
-!          vrot%THALACC_M(nlat,nmos,ignd),&
-!          vrot%tbaraccrow_m(nlat,nmos,ignd),&
-    
+
 ! allocated with nlat,nmos,ican,ignd:
          vrot%rmatc(nlat,nmos,ican,ignd),&
  
@@ -1587,7 +1552,7 @@ allocate(vgat%grclarea(ilg),&
 ! allocated with ilg, icc
          vgat%ailcmin (ilg,icc),&
          vgat%ailcmax (ilg,icc),&
-         vgat%dvdfcan (ilg,icc),&
+         !vgat%dvdfcan (ilg,icc),&
          vgat%gleafmas (ilg,icc),&
          vgat%bleafmas (ilg,icc),&
          vgat%stemmass (ilg,icc),&
@@ -2236,7 +2201,7 @@ integer :: j,k,l,m
             vrot%smfuncveg(j,k,l)         = 0.0
             vrot%ailcmin(j,k,l) = 0.
             vrot%ailcmax(j,k,l) = 0.
-            vrot%dvdfcan(j,k,l) = 0.
+            !vrot%dvdfcan(j,k,l) = 0.
             vrot%gleafmas(j,k,l) = 0.
             vrot%bleafmas(j,k,l) = 0.
             vrot%stemmass(j,k,l) = 0.
@@ -2263,7 +2228,7 @@ integer :: j,k,l,m
             vrot%rootmass(j,k,l)     = 0.0
             vrot%ailcb(j,k,l)        = 0.0
             vrot%grwtheff(j,k,l)     = 0.0
-            vrot%dvdfcan(j,k,l)      = 0.0
+            !vrot%dvdfcan(j,k,l)      = 0.0
             vrot%bmasveg(j,k,l)      = 0.0
             vrot%tltrleaf(j,k,l)     = 0.0
             vrot%tltrstem(j,k,l)     = 0.0
