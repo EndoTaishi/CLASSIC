@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<variableSet count="54" variantCount="177"> <!--EDIT this to the correct number of variables -->
+<variableSet>
 	<group type="class" description="Physics variables">
 		<variable includeBareGround="false">
 			<standardName>Net Shortwave Surface Radiation</standardName>

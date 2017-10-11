@@ -1,11 +1,5 @@
 <element name="variableSet" xmlns="http://relaxng.org/ns/structure/1.0">
-	<attribute name="count">
-		<text />
-	</attribute>
-	<attribute name="variantCount">
-		<text />
-	</attribute>
-	<zeroOrMore>
+	<oneOrMore>
 		<element name="group">
 			<attribute name="type">
 				<text />
@@ -63,5 +57,5 @@
 				</element>
 			</oneOrMore>
 		</element>
-	</zeroOrMore>
+	</oneOrMore>
 </element>
