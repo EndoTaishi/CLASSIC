@@ -1,8 +1,5 @@
 <element name="variableSet" xmlns="http://relaxng.org/ns/structure/1.0">
-	<attribute name="count">
-		<text />
-	</attribute>
-	<zeroOrMore>
+	<oneOrMore>
 		<element name="group">
 			<attribute name="type">
 				<text />
@@ -27,33 +24,31 @@
 					<element name="units">
 						<text />
 					</element>
-					<optional>
-						<element name="variants">
-							<attribute name="count">
-								<text />
-							</attribute>
-							<oneOrMore>
-								<element name="variant">
-									<element name="timeFrequency">
-										<text />
-									</element>
-									<element name="nameInCode">
-										<text />
-									</element>
-									<optional>
-										<element name="units">
-											<text />
-										</element>
-									</optional>
-									<optional>
-										<element name="comment">
-											<text />
-										</element>
-									</optional>
+					<element name="variants">
+						<zeroOrMore>
+							<element name="variant">
+								<element name="nameInCode">
+									<text />
 								</element>
-							</oneOrMore>
-						</element>
-					</optional>
+								<element name="timeFrequency">
+									<text />
+								</element>
+								<element name="outputForm">
+									<text />
+								</element>
+								<optional>
+									<element name="units">
+										<text />
+									</element>
+								</optional>
+								<optional>
+									<element name="comment">
+										<text />
+									</element>
+								</optional>
+							</element>
+						</zeroOrMore>
+					</element>
 					<optional>
 						<element name="comment">
 							<text />
@@ -62,5 +57,5 @@
 				</element>
 			</oneOrMore>
 		</element>
-	</zeroOrMore>
+	</oneOrMore>
 </element>
