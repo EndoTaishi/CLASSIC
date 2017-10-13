@@ -1,8 +1,9 @@
 !>\file
 !! Main model driver for CLASSIC in stand-alone mode using specified boundary
 !! conditions and atmospheric forcing. This driver program initializes the run,
-!! reads in CLASS input files, manages the run and the coupling between CLASS
-!! and CTEM, writes the CLASS sub-monthly outputs, and closes the run.
+!! reads in CLASSIC input files, manages the run and the coupling between CLASS
+!! and CTEM, calls subroutines that aggregate and write outputs, and closes the run
+!! for this grid cell.
 
 module main
 
@@ -32,11 +33,9 @@ contains
         !!      the first dimension element of the "rot" variables
         !!      refers to the number of grid cells on the current
         !!      latitude circle.  in this stand-alone version, this
-        !!      number is arbitrarily set to three, to allow up to three
-        !!      simultaneous tests to be run.  the second dimension
+        !!      number is set to 1, the second dimension
         !!      element of the "rot" variables refers to the maximum
-        !!      number of tiles in the mosaic.  in this stand-alone
-        !!      version, this number is set to eight.  the first
+        !!      number of tiles in the mosaic.  the first
         !!      dimension element in the "gat" variables is given by
         !!      the product of the first two dimension elements in the
         !!      "rot" variables.
@@ -55,12 +54,12 @@ contains
             &                               resetmonthend,resetyearend,&
             &                               ctem_grd,ctem_tile,resetgridavg
         use class_statevars,    only : class_gat,class_rot,resetclassaccum,&
-            &                               resetclassmon,resetclassyr
+            &                          resetclassmon,resetclassyr,initDiagnosticVars
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
             &                               ctem_daily_aw,class_annual_aw
         use model_state_drivers, only : read_initialstate,write_restart
         use generalUtils, only : findDaylength,findLeapYears
-        use model_state_drivers, only : getInput,updateInput,deallocInput
+        use model_state_drivers, only : getInput,updateInput,deallocInput,getMet
         use ctemUtilities, only : dayEndCTEMPreparation,accumulateForCTEM
 
         implicit none
@@ -77,6 +76,7 @@ contains
         INTEGER NCOUNT  !<Counter for daily averaging
         INTEGER NDAY    !<Number of short (physics) timesteps in one day. e.g., if physics timestep is 15 min this is 48.
         INTEGER :: IMONTH = 0  !<Month of the year simulation is in.
+        integer :: DOM = 1 !< Day of month counter
         INTEGER NT      !<
         INTEGER IHOUR   !<Hour of day
         INTEGER IMIN    !<Minutes elapsed in current hour
@@ -2186,7 +2186,6 @@ contains
         cyclemet          => c_switch%cyclemet
         dofire            => c_switch%dofire
         met_rewound       => c_switch%met_rewound
-        !reach_eof         => c_switch%reach_eof
         PFTCompetition    => c_switch%PFTCompetition
         start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
@@ -2805,6 +2804,9 @@ contains
         DLATROW(1) = latitude
         JLAT=NINT(DLATROW(1))
         DLONROW(1) = longitude
+        N=0
+        NCOUNT=1
+        NDAY=86400/NINT(DELT)
 
         call initrowvars
         call resetclassaccum(nlat,nmos)
@@ -2829,14 +2831,17 @@ contains
             call getInput('CO2') ! CO2 atmospheric concentration
             call getInput('CH4') ! CH4 atmospheric concentration
             if (dofire) call getInput('POPD',longitude,latitude) ! Population density
-            !if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
+            if (dofire) call getInput('LGHT',longitude,latitude) ! Cloud-to-ground lightning frequency
             if (obswetf) call getInput('OBSWETF',longitude,latitude) ! Observed wetland distribution
             if (lnduseon .or. (fixedYearLUC .ne. -9999)) call getInput('LUC',longitude,latitude) ! Land use change
 
             !> Regardless of whether lnduseon or not, we need to check the land cover that was read in
-            !! and assign the CLASS PFTs.
+            !! and assign the CLASS PFTs as they are not read in when ctem_on.
             call initializeLandCover
         end if
+
+        ! Read in the meteorological forcing data
+        call getMet(longitude,latitude,nday,delt)
 
         !     CTEM initialization done
 
@@ -2905,18 +2910,6 @@ contains
 
         !ctem initializations.
         if (ctem_on) then
-
-!             !     calculate number of level 2 pfts using modelpft
-!
-!             do 101 j = 1, ican
-!                 isumc = 0
-!                 k1c = (j-1)*l2max + 1
-!                 k2c = k1c + (l2max - 1)
-!                 do n = k1c, k2c
-!                     if(modelpft(n).eq.1) isumc = isumc + 1
-!                 enddo
-!                 nol2pfts(j)=isumc  ! number of level 2 pfts
-! 101         continue
 
             do 110 i=1,nltest
                 do 110 m=1,nmtest
@@ -3135,9 +3128,6 @@ contains
 
         !     **** LAUNCH RUN. ****
 
-        N=0
-        NCOUNT=1
-        NDAY=86400/NINT(DELT)
         run_model=.true.
         met_rewound=.false.
 
@@ -3188,6 +3178,9 @@ contains
             N=N+1
 
             DO 250 I=1,NLTEST
+
+                !call updateMet(timeIndex)
+
                 !         THIS READS IN ONE 30 MIN SLICE OF MET DATA, WHEN IT REACHES
                 !         THE END OF FILE IT WILL GO TO 999.
                 READ(12,5300,END=999) IHOUR,IMIN,IDAY,IYEAR,FSSROW(I),&
@@ -3257,37 +3250,24 @@ contains
                     ! If needed, read in the accessory input files (popd, wetlands, lightning...)
                     if (ctem_on) then
 
-                        ! Update the CO2 concentration for this year, if transientCO2
+                        !> Update the time varying inputs if they are being used in this
+                        !! simulation.
                         if (transientCO2) call updateInput('CO2',iyear)
                         if (transientCH4) call updateInput('CH4',iyear)
                         if (dofire .and. transientPOPD) call updateInput('POPD',iyear)
-                        !if (lnduseon) call updateInput('LUC',iyear)
-
-                        ! If lnduseon is true, read in the luc data now
-                        !if (lnduseon .and. transient_run) then
-
-                            !call readin_luc(iyear,nmtest,nltest,lucyr,&
-                            !&          nfcancmxrow,pfcancmxrow,reach_eof,PFTCompetition,&
-                            !&          onetile_perPFT)
-                            !if (reach_eof) goto 999
-
-                        !else ! lnduseon = false or met is cycling in a spin up run
-
-                        !         Land use is not on or the met data is being cycled, so the
-                        !         pfcancmx value is also the nfcancmx value.
-
-                        nfcancmxrow=pfcancmxrow  !FLAG!!!!!!!!!!!!
-
-                        !endif ! lnduseon/cyclemet
+                        if (lnduseon) then
+                            call updateInput('LUC',iyear)
+                        else ! If landuse change is not on, then set the next years landcover to be
+                             ! the same as this years.
+                            nfcancmxrow=pfcancmxrow
+                        end if
 
                         pddrow=0 ! EC Jan 31 2017. !FLAG put elsewhere...
                     end if
                 end if ! first day
 
-                ! Check if this is the first day of the month
-                !if (iday
-
-                !if (dofire ) call updateInput('LGHT',iyear) !FLAG MAKE ONLY FIRST DAY OF MONTH!!!
+                ! Update the lightning if it is the first of the month and fire is on
+                if (DOM == 1 .and. dofire) call updateInput('LGHT',iyear,imonth)
 
             endif   ! first timestep
 
@@ -3351,84 +3331,85 @@ contains
 
             !    * INITIALIZATION OF DIAGNOSTIC VARIABLES SPLIT OUT OF CLASSG
             !    * FOR CONSISTENCY WITH GCM APPLICATIONS.
-
-            DO 330 K=1,ILG
-                CDHGAT (K)=0.0
-                CDMGAT (K)=0.0
-                HFSGAT (K)=0.0
-                TFXGAT (K)=0.0
-                QEVPGAT(K)=0.0
-                QFSGAT (K)=0.0
-                QFXGAT (K)=0.0
-                PETGAT (K)=0.0
-                GAGAT  (K)=0.0
-                EFGAT  (K)=0.0
-                GTGAT  (K)=0.0
-                QGGAT  (K)=0.0
-                ALVSGAT(K)=0.0
-                ALIRGAT(K)=0.0
-                SFCTGAT(K)=0.0
-                SFCUGAT(K)=0.0
-                SFCVGAT(K)=0.0
-                SFCQGAT(K)=0.0
-                FSNOGAT(K)=0.0
-                FSGVGAT(K)=0.0
-                FSGSGAT(K)=0.0
-                FSGGGAT(K)=0.0
-                FLGVGAT(K)=0.0
-                FLGSGAT(K)=0.0
-                FLGGGAT(K)=0.0
-                HFSCGAT(K)=0.0
-                HFSSGAT(K)=0.0
-                HFSGGAT(K)=0.0
-                HEVCGAT(K)=0.0
-                HEVSGAT(K)=0.0
-                HEVGGAT(K)=0.0
-                HMFCGAT(K)=0.0
-                HMFNGAT(K)=0.0
-                HTCCGAT(K)=0.0
-                HTCSGAT(K)=0.0
-                PCFCGAT(K)=0.0
-                PCLCGAT(K)=0.0
-                PCPNGAT(K)=0.0
-                PCPGGAT(K)=0.0
-                QFGGAT (K)=0.0
-                QFNGAT (K)=0.0
-                QFCFGAT(K)=0.0
-                QFCLGAT(K)=0.0
-                ROFGAT (K)=0.0
-                ROFOGAT(K)=0.0
-                ROFSGAT(K)=0.0
-                ROFBGAT(K)=0.0
-                TROFGAT(K)=0.0
-                TROOGAT(K)=0.0
-                TROSGAT(K)=0.0
-                TROBGAT(K)=0.0
-                ROFCGAT(K)=0.0
-                ROFNGAT(K)=0.0
-                ROVGGAT(K)=0.0
-                WTRCGAT(K)=0.0
-                WTRSGAT(K)=0.0
-                WTRGGAT(K)=0.0
-                DRGAT  (K)=0.0
-330                     CONTINUE
-
-            DO 334 L=1,IGND
-                DO 332 K=1,ILG
-                    HMFGGAT(K,L)=0.0
-                    HTCGAT (K,L)=0.0
-                    QFCGAT (K,L)=0.0
-                    GFLXGAT(K,L)=0.0
-332                         CONTINUE
-334                     CONTINUE
-
-            DO 340 M=1,50
-                DO 338 L=1,6
-                    DO 336 K=1,NML
-                        ITCTGAT(K,L,M)=0
-336                             CONTINUE
-338                         CONTINUE
-340                     CONTINUE
+            call initDiagnosticVars(nml,ilg)
+!
+!             DO 330 K=1,ILG
+!                 CDHGAT (K)=0.0
+!                 CDMGAT (K)=0.0
+!                 HFSGAT (K)=0.0
+!                 TFXGAT (K)=0.0
+!                 QEVPGAT(K)=0.0
+!                 QFSGAT (K)=0.0
+!                 QFXGAT (K)=0.0
+!                 PETGAT (K)=0.0
+!                 GAGAT  (K)=0.0
+!                 EFGAT  (K)=0.0
+!                 GTGAT  (K)=0.0
+!                 QGGAT  (K)=0.0
+!                 ALVSGAT(K)=0.0
+!                 ALIRGAT(K)=0.0
+!                 SFCTGAT(K)=0.0
+!                 SFCUGAT(K)=0.0
+!                 SFCVGAT(K)=0.0
+!                 SFCQGAT(K)=0.0
+!                 FSNOGAT(K)=0.0
+!                 FSGVGAT(K)=0.0
+!                 FSGSGAT(K)=0.0
+!                 FSGGGAT(K)=0.0
+!                 FLGVGAT(K)=0.0
+!                 FLGSGAT(K)=0.0
+!                 FLGGGAT(K)=0.0
+!                 HFSCGAT(K)=0.0
+!                 HFSSGAT(K)=0.0
+!                 HFSGGAT(K)=0.0
+!                 HEVCGAT(K)=0.0
+!                 HEVSGAT(K)=0.0
+!                 HEVGGAT(K)=0.0
+!                 HMFCGAT(K)=0.0
+!                 HMFNGAT(K)=0.0
+!                 HTCCGAT(K)=0.0
+!                 HTCSGAT(K)=0.0
+!                 PCFCGAT(K)=0.0
+!                 PCLCGAT(K)=0.0
+!                 PCPNGAT(K)=0.0
+!                 PCPGGAT(K)=0.0
+!                 QFGGAT (K)=0.0
+!                 QFNGAT (K)=0.0
+!                 QFCFGAT(K)=0.0
+!                 QFCLGAT(K)=0.0
+!                 ROFGAT (K)=0.0
+!                 ROFOGAT(K)=0.0
+!                 ROFSGAT(K)=0.0
+!                 ROFBGAT(K)=0.0
+!                 TROFGAT(K)=0.0
+!                 TROOGAT(K)=0.0
+!                 TROSGAT(K)=0.0
+!                 TROBGAT(K)=0.0
+!                 ROFCGAT(K)=0.0
+!                 ROFNGAT(K)=0.0
+!                 ROVGGAT(K)=0.0
+!                 WTRCGAT(K)=0.0
+!                 WTRSGAT(K)=0.0
+!                 WTRGGAT(K)=0.0
+!                 DRGAT  (K)=0.0
+! 330                     CONTINUE
+!
+!             DO 334 L=1,IGND
+!                 DO 332 K=1,ILG
+!                     HMFGGAT(K,L)=0.0
+!                     HTCGAT (K,L)=0.0
+!                     QFCGAT (K,L)=0.0
+!                     GFLXGAT(K,L)=0.0
+! 332                         CONTINUE
+! 334                     CONTINUE
+!
+!             DO 340 M=1,50
+!                 DO 338 L=1,6
+!                     DO 336 K=1,NML
+!                         ITCTGAT(K,L,M)=0
+! 336                             CONTINUE
+! 338                         CONTINUE
+! 340                     CONTINUE
 
             !========================================================================
             !
@@ -3675,203 +3656,11 @@ contains
 
                 call accumulateForCTEM(nml)
 
-!                 do 700 i = 1, nml
-!
-!                     alswacc_gat(i)=alswacc_gat(i)+alvsgat(i)*fsvhgat(i)
-!                     allwacc_gat(i)=allwacc_gat(i)+alirgat(i)*fsihgat(i)
-!                     fsinacc_gat(i)=fsinacc_gat(i)+FSSROW(1) ! FLAG! Do this offline only (since all tiles are the same in a gridcell and we run
-!                                                             ! only one gridcell at a time. JM Feb 42016.
-!                     flinacc_gat(i)=flinacc_gat(i)+fdlgat(i)
-!                     flutacc_gat(i)=flutacc_gat(i)+sbc*gtgat(i)**4
-!                     pregacc_gat(i)=pregacc_gat(i)+pregat(i)*delt
-!                     fsnowacc_t(i)=fsnowacc_t(i)+fsnogat(i)
-!                     tcanoaccgat_t(i)=tcanoaccgat_t(i)+tcano(i)
-!                     tcansacc_t(i)=tcansacc_t(i)+tcans(i)
-!                     taaccgat_t(i)=taaccgat_t(i)+tagat(i)
-!                     vvaccgat_t(i)=vvaccgat_t(i)+ vlgat(i)
-!                     uvaccgat_t(i)=uvaccgat_t(i)+ulgat(i)
-!                     if (FSSROW(I) .gt. 0.) then
-!                         altotacc_gat(i) = altotacc_gat(i) + (FSSROW(I)-&
-!                             &                (FSGVGAT(I)+FSGSGAT(I)+FSGGGAT(I)))&
-!                             &                /FSSROW(I)
-!                         altotcount_ctm = altotcount_ctm + 1
-!                     end if
-!
-!                     do 710 j=1,ignd
-!                         tbaraccgat_t(i,j)=tbaraccgat_t(i,j)+tbargat(i,j)
-!                         tbarcacc_t(i,j)=tbarcacc_t(i,j)+tbarc(i,j)
-!                         tbarcsacc_t(i,j)=tbarcsacc_t(i,j)+tbarcs(i,j)
-!                         tbargacc_t(i,j)=tbargacc_t(i,j)+tbarg(i,j)
-!                         tbargsacc_t(i,j)=tbargsacc_t(i,j)+tbargs(i,j)
-!                         thliqcacc_t(i,j)=thliqcacc_t(i,j)+thliqc(i,j)
-!                         thliqgacc_t(i,j)=thliqgacc_t(i,j)+thliqg(i,j)
-!                         thicecacc_t(i,j)=thicecacc_t(i,j)+thicec(i,j)
-!                         ! FLAG: Needs to be reviewed. EC Dec 23 2016.
-!                         ! YW's original variables were thlqaccgat_m/thicaccgat_m.
-!                         ! The following 2 variables needs to be passed via ctem to hetres_peat
-!                         ! (otherwise causes a floating exception at line 863 of peatlands_mod).
-!                         thliqacc_t(i,j) = thliqacc_t(i,j) + THLQGAT(i,j) ! Not used elsewhere, so assume replacement for thlqaccgat_m
-!                         thiceacc_t(i,j) = thiceacc_t(i,j) + THICGAT(i,j) ! New.
-!                         thicegacc_t(i,j)=thicegacc_t(i,j)+thiceg(i,j)    ! EC Jan 31 2017.
-! 710                 continue
-!
-!                     do 713 j = 1, icc
-!                         ancsvgac_t(i,j)=ancsvgac_t(i,j)+ancsveggat(i,j)
-!                         ancgvgac_t(i,j)=ancgvgac_t(i,j)+ancgveggat(i,j)
-!                         rmlcsvga_t(i,j)=rmlcsvga_t(i,j)+rmlcsveggat(i,j)
-!                         rmlcgvga_t(i,j)=rmlcgvga_t(i,j)+rmlcgveggat(i,j)
-! 713                 continue
-!
-!                     !    -accumulate moss C fluxes to tile level then daily----
-!                     if (ipeatlandgat(i) > 0) then
-!                         anmossgat(i) = fcs(i)*ancsmoss(i)+fgs(i)*angsmoss(i) &
-!                             +fc(i)*ancmoss(i)+fg(i)*angmoss(i)
-!                         rmlmossgat(i)= fcs(i)*rmlcsmoss(i)+fgs(i)*rmlgsmoss(i) &
-!                             +fc(i)*rmlcmoss(i)+fg(i)*rmlgmoss(i)
-!                         gppmossgat(i) = anmossgat(i) +rmlmossgat(i)
-!
-!                         anmossac_t(i) = anmossac_t(i)   + anmossgat(i)
-!                         rmlmossac_t(i)= rmlmossac_t(i)  + rmlmossgat(i)
-!                         gppmossac_t(i)= gppmossac_t(i)  + gppmossgat(i)
-! 
-!                     endif
-! 700             continue
-            !endif !if (ctem_on)
+                if(ncount.eq.nday) then
 
-            if(ncount.eq.nday) then
+                    ! Find daily averages of accumulated variables for ctem
+                    call dayEndCTEMPreparation(nml,nday)
 
-                ! Find daily averages of accumulated variables for ctem
-                call dayEndCTEMPreparation(nml,nday)
-
-                    do 855 i=1,nml
-
-!                         !net radiation and precipitation estimates for ctem's bioclim
-!
-!                         if(fsinacc_gat(i).gt.0.0) then
-!                             alswacc_gat(i)=alswacc_gat(i)/(fsinacc_gat(i)*0.5)
-!                             allwacc_gat(i)=allwacc_gat(i)/(fsinacc_gat(i)*0.5)
-!                         else
-!                             alswacc_gat(i)=0.0
-!                             allwacc_gat(i)=0.0
-!                         endif
-!
-!                         uvaccgat_t(i)=uvaccgat_t(i)/real(nday)
-!                         vvaccgat_t(i)=vvaccgat_t(i)/real(nday)
-!                         fsinacc_gat(i)=fsinacc_gat(i)/real(nday)
-!                         flinacc_gat(i)=flinacc_gat(i)/real(nday)
-!                         flutacc_gat(i)=flutacc_gat(i)/real(nday)
-!
-!                         if (altotcount_ctm(i) > 0) then
-!                             altotacc_gat(i)=altotacc_gat(i)/real(altotcount_ctm(i))
-!                         else
-!                             altotacc_gat(i)=0.
-!                         end if
-!
-!                         fsstar_gat=fsinacc_gat(i)*(1.-altotacc_gat(i))
-!                         flstar_gat=flinacc_gat(i)-flutacc_gat(i)
-!                         netrad_gat(i)=fsstar_gat+flstar_gat
-!                         preacc_gat(i)=pregacc_gat(i)
-!
-!                         fsnowacc_t(i)=fsnowacc_t(i)/real(nday)
-!                         tcanoaccgat_t(i)=tcanoaccgat_t(i)/real(nday)
-!                         tcansacc_t(i)=tcansacc_t(i)/real(nday)
-!                         taaccgat_t(i)=taaccgat_t(i)/real(nday)
-!
-!                         do 831 j=1,ignd
-!                             tbaraccgat_t(i,j)=tbaraccgat_t(i,j)/real(nday)
-!                             tbarcacc_t(i,j) = tbaraccgat_t(i,j)
-!                             tbarcsacc_t(i,j) = tbaraccgat_t(i,j)
-!                             tbargacc_t(i,j) = tbaraccgat_t(i,j)
-!                             tbargsacc_t(i,j) = tbaraccgat_t(i,j)
-!                             !
-!                             thliqcacc_t(i,j)=thliqcacc_t(i,j)/real(nday)
-!                             thliqgacc_t(i,j)=thliqgacc_t(i,j)/real(nday)
-!                             thicecacc_t(i,j)=thicecacc_t(i,j)/real(nday)
-!                             thicegacc_t(i,j)=thicegacc_t(i,j)/real(nday) ! EC Jan 31 2017.
-!                             thliqacc_t(i,j)=thliqacc_t(i,j)/real(nday) ! Assume this replaces YW's thlqaccgat_m.
-!                             thiceacc_t(i,j)=thiceacc_t(i,j)/real(nday) ! Added in place of YW's thicaccgat_m. EC Dec 23 2016.
-! 831                     continue
-!
-!                         do 832 j = 1, icc
-!                             ancsvgac_t(i,j)=ancsvgac_t(i,j)/real(nday)
-!                             ancgvgac_t(i,j)=ancgvgac_t(i,j)/real(nday)
-!                             rmlcsvga_t(i,j)=rmlcsvga_t(i,j)/real(nday)
-!                             rmlcgvga_t(i,j)=rmlcgvga_t(i,j)/real(nday)
-! 832                     continue
-!
-!                         !     -daily average moss C fluxes for ctem.f-------------------\
-!                         !     Capitulum biomass = 0.22 kg/m2 in hummock, 0.1 kg/m2 in lawn
-!                         !     stem biomass = 1.65 kg/m2 in hummock , 0.77 kg/m2 in lawn (Bragazza et al.2004)
-!                         !     the ratio between stem and capitulum = 7.5 and 7.7
-!                         if (ipeatlandgat(i) > 0) then
-!                             anmossac_t(i) = anmossac_t(i)/real(nday)
-!                             rmlmossac_t(i)= rmlmossac_t(i)/real(nday)
-!                             gppmossac_t(i) = gppmossac_t(i)/real(nday)
-!                         endif
-
-                        ! pass on mean monthly lightning for the current month to ctem
-                        ! lightng(i)=mlightng(i,month)
-                        !
-                        ! in a very simple way try to interpolate monthly lightning todaily lightning
-                        if(iday.ge.mmday(1)-1.and.iday.lt.mmday(2))then ! >=15,<46.- mid jan - mid feb
-                            month1=1
-                            month2=2
-                            xday=iday-mmday(1)-1
-                        else if(iday.ge.mmday(2).and.iday.lt.mmday(3))then ! >=46,<75(76) mid feb - mid mar
-                            month1=2
-                            month2=3
-                            xday=iday-mmday(2)
-                        else if(iday.ge.mmday(3).and.iday.lt.mmday(4))then ! >=75(76),<106(107) mid mar - mid apr
-                            month1=3
-                            month2=4
-                            xday=iday-mmday(3)
-                        else if(iday.ge.mmday(4).and.iday.lt.mmday(5))then ! >=106(107),<136(137) mid apr - mid may
-                            month1=4
-                            month2=5
-                            xday=iday-mmday(4)
-                        else if(iday.ge.mmday(5).and.iday.lt.mmday(6))then ! >=136(137),<167(168) mid may - mid june
-                            month1=5
-                            month2=6
-                            xday=iday-mmday(5)
-                        else if(iday.ge.mmday(6).and.iday.lt.mmday(7))then ! >=167(168),<197(198) mid june - mid july
-                            month1=6
-                            month2=7
-                            xday=iday-mmday(6)
-                        else if(iday.ge.mmday(7).and.iday.lt.mmday(8))then ! >=197(198), <228(229) mid july - mid aug
-                            month1=7
-                            month2=8
-                            xday=iday-mmday(7)
-                        else if(iday.ge.mmday(8).and.iday.lt.mmday(9))then ! >=228(229), < 259(260) mid aug - mid sep
-                            month1=8
-                            month2=9
-                            xday=iday-mmday(8)
-                        else if(iday.ge.mmday(9).and.iday.lt.mmday(10))then ! >= 259(260), < 289(290) mid sep - mid oct
-                            month1=9
-                            month2=10
-                            xday=iday-mmday(9)
-                        else if(iday.ge.mmday(10).and.iday.lt.mmday(11))then ! >= 289(290), < 320(321) mid oct - mid nov
-                            month1=10
-                            month2=11
-                            xday=iday-mmday(10)
-                        else if(iday.ge.mmday(11).and.iday.lt.mmday(12))then ! >=320(321), < 350(351) mid nov - mid dec
-                            month1=11
-                            month2=12
-                            xday=iday-mmday(11)
-                        else if(iday.ge.mmday(12).or.iday.lt.mmday(1)-1)then ! >= 350(351) < 15 mid dec - mid jan
-                            month1=12
-                            month2=1
-                            xday=iday-mmday(12)
-                            if(xday.lt.0)xday=iday+15
-                        endif
-
-                        lightng(i)=mlightnggat(i,month1)+(real(xday)/30.0)*&
-                            &                 (mlightnggat(i,month2)-mlightnggat(i,month1))
-
-!                         if (obswetf) then
-!                             wetfrac_presgat(i)=wetfrac_mongat(i,month1)+(real(xday)/30.0)*&
-!                                 &                 (wetfrac_mongat(i,month2)-wetfrac_mongat(i,month1))
-!                         endif !obswetf
-855                 continue
                     !
                     !     Call Canadian Terrestrial Ecosystem Model which operates at a
                     !     daily time step, and uses daily accumulated values of variables
@@ -3960,9 +3749,8 @@ contains
                         end do
                     end do
 
-                endif  ! if(ctem_on)
-
-            endif  ! if(ncount.eq.nday)
+                endif  ! iif(ncount.eq.nday)
+            endif  ! f(ctem_on)
 
             CALL CLASSS (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT,&
                 &             ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT,&
@@ -4155,6 +3943,8 @@ contains
                         ipeatlandgat,pddgat)!,thlqaccgat_m,thicaccgat_m)
 
             if(ncount.eq.nday) then
+
+                DOM=DOM + 1 !increment the day of month counter
 
                 !     reset mosaic accumulator arrays.
 
@@ -5095,6 +4885,7 @@ contains
             DO NT=1,NMON
                 IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
                     IMONTH=NT
+                    DOM=1 !reset the day of month counter
                 ENDIF
             ENDDO
 

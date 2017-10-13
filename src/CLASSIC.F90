@@ -42,7 +42,7 @@ program CLASSIC
     ! in the netcdf file, placing the gridcell on the domain of the
     ! input/output netcdfs. In read_modelsetup we use the netcdf to set
     ! the nmos (number of tiles), ignd (number of soil layers),and ilg (number of latitude
-    ! points times nmos, defaults to nmos in offline mode) constants.
+    ! points times nmos, which defaults to nmos in offline mode) constants.
     ! It also opens the initial conditions file that is used below in
     ! read_initialstate as well as the restart file that is written to later.
     call read_modelsetup
@@ -63,7 +63,7 @@ program CLASSIC
     call generateOutputFiles
 
 #if PARALLEL
-    !
+    ! This just ensures that all processors start the next step together.
     call MPI_BARRIER(MPI_COMM_WORLD, ierr)
 #endif
 
@@ -71,9 +71,9 @@ program CLASSIC
     call processLandCells
 
     ! Close all of the output netcdf files and the restart file
+    ! (these were written to so need to ensure buffer is flushed)
     call closeNCFiles
     call closeNCFiles(rsid)
-    call closeNCFiles(co2id)  !FLAG need to close other ones...or can i ignore closing read only files?
 
 #if PARALLEL
     ! Shut down the MPI session

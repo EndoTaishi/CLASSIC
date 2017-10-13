@@ -55,6 +55,9 @@ type ctem_switches
                              !< ignored if cyclemet is false
     integer :: metcylyrst   !< climate year to start the spin up on
                              !< ignored if cyclemet is false
+    integer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
+    integer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
+
     logical :: transientCO2       !<use \f$CO_2\f$ time series, set to false if cyclemet is true
     character(180) :: CO2File       !< Location of the netcdf file containing atmospheric CO2 values
     integer :: fixedYearCO2  !< set the year to use for atmospheric \f$CO_2\f$ if transientCO2 is false. (ppmv)

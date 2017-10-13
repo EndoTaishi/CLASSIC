@@ -1434,12 +1434,12 @@
 			<units>T/F</units>
 			<variants>
 				<variant>
-					<nameInCode>fcancmxrow_yr_g</nameInCode>
+					<nameInCode>pftexistrow_yr_g</nameInCode>
 					<timeFrequency>annually</timeFrequency>
 					<outputForm>pft</outputForm>
 				</variant>
 				<variant>
-					<nameInCode>fcancmxrow_mo_g</nameInCode>
+					<nameInCode>pftexistrow_mo_g</nameInCode>
 					<timeFrequency>monthly</timeFrequency>
 					<outputForm>pft</outputForm>
 				</variant>

@@ -3471,7 +3471,7 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FARERO
                 call writeOutput1D(lonLocalIndex,latLocalIndex,'lucsocin_mo_g' ,timeStamp,'fDeforestToSoil',[lucsocin_mo_g(i)])
             end if
 
-            if (PFTCompetition .or. lnduseon) then
+            if (PFTCompetition) then
                 pftExist = 0.0
                 do j=1,icc
                     if (pftexistrow(i,1,j)) then
@@ -4174,7 +4174,7 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,n
             call writeOutput1D(lonLocalIndex,latLocalIndex,'burnfrac_yr_g' ,timeStamp,'burntFractionAll',[burnfrac_yr_g(i)*100.])
         end if
 
-        if (PFTCompetition .or. lnduseon) then
+        if (PFTCompetition) then
             pftExist = 0.0
             do j=1,icc
                 if (pftexistrow(i,1,j)) then

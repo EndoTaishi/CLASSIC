@@ -1,7 +1,6 @@
 &joboptions
 
- ! See the manual (html/index.html) for explanation of these options. Alternatively, read_from_job_option.f90 also explains
- ! them in more detail.
+ ! See the manual (html/index.html) or the wiki on the gitlab page for explanation of these options.
 
  transient_run = .false. ,!< With this switch set to .true., you can cycle over nummetcyclyrs of climate a
                           !< ctemloop number of times then continue on through the climate
@@ -10,12 +9,17 @@
  trans_startyr = 1850 ,   !< the year you want the transient run to start (e.g. 1850). If you
                           !! are not doing a transient run, set to a negative value (like -9999)
 
- metLoop = 2 ,            !< no. of times the meteorology cycling should happen.
+
  ncyear = 109 ,           !< no. of years in the .met file. FLAG - redundant?
  cyclemet = .true. ,
  nummetcylyrs = 4 ,
  metcylyrst = 1901 ,
- leap = .false. ,
+
+
+ readMetStartYear = 1901  !< First year of meteorological forcing to read in from the met file
+ readMetEndYear = 1901    !< Last year of meteorological forcing to read in from the met file
+ metLoop = 2 ,            !< no. of times to cycle over the read-in meteorology
+ leap = .false. ,         !< True if your meteorological forcing includes leap years
 
  ! CTEM (biogeochemistry) switches:
  ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
@@ -36,10 +40,10 @@
 
     !Fire switches
         dofire = .true. ,
-        transientPOPD = .true. ,
-        POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017.nc'
-        fixedYearPOPD = 1850 ,    !Change this to take in the year? Comes from spinup year?
-        ! LGHTFile = ''
+            transientPOPD = .true. ,
+            POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017.nc'
+            fixedYearPOPD = 1850 ,    !Change this to take in the year? Comes from spinup year?
+            ! LGHTFile = ''
 
     ! Competition switches:
         PFTCompetition = .false. ,
@@ -50,7 +54,7 @@
         ! If you wish to use your own PFT fractional covers, set fixedYearLUC to -9999, otherwise set it
         ! to the year of land cover you want to use. If you wish to have transient land cover changes, set
         ! lnduseon to true.
-        lnduseon = .false. ,
+        lnduseon = .true. ,
         LUCFile = 'inputFiles/LUH_HYDE_based_crop_area_adjusted_land_cover_CTEM_fractions_1850_2017_T63_Aug_2017.nc' ,
         fixedYearLUC = -9999 ,
 
@@ -62,7 +66,7 @@
 
 ! Input files:
 
- met_file = '/raid/ra40/data/rjm/CRUNCEP_MET_data/t63files/cruncepv7_1901_2015_T63.nc' ,
+ met_file = 'tempMetFile.nc' ,
  init_file = 'inputFiles/initFile.nc' ,
  rs_file_to_overwrite = 'rsFile.nc' ,
  runparams_file = 'configurationFiles/template_run_parameters.txt' ,

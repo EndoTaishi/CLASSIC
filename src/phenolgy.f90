@@ -4,7 +4,7 @@
 !!
 !!
 !!
-!!The leaf phenology parametrization used in CTEM v. 1.0 is described in detail by \cite Arora2005-6b1. Changes between
+!!The leaf phenology parametrization used in CTEM v. 1.0 is described in detail by \cite Arora2005-6b1 . Changes between
 !!version 1.0 and 2.0 are limited to parameter values and the parametrization is briefly described here. There are four
 !!different leaf phenological states in which vegetation can be at a given instant: (i) no leaves or dormant,
 !!(ii) maximum growth, (iii) normal growth and (iv) leaf fall or harvest. PFTs may go through only some, or all,

@@ -10,7 +10,8 @@ module fileIOModule
     implicit none
 contains
 
-! Create new file
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Create new file
     integer function ncCreate(fileName, cmode)
         character(*), intent(in)    :: fileName
         integer, intent(in)         :: cmode
@@ -22,7 +23,8 @@ contains
 #endif
     end function ncCreate
 
-! Open existing file
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Open existing file
     integer function ncOpen(fileName, omode)
         character(*), intent(in)    :: fileName
         integer, intent(in)         :: omode
@@ -34,7 +36,8 @@ contains
 #endif
     end function ncOpen
 
-! Get variable ID
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Get variable ID
     integer function ncGetVarId(fileId, label)
         integer, intent(in)         :: fileId
         character(*), intent(in)    :: label
@@ -45,8 +48,8 @@ contains
 #endif
     end function ncGetVarId
 
-
-! Get variable dimensions
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Get variable dimensions
     integer function ncGetVarDimensions(fileId, varId)
         integer, intent(in)         :: fileId, varId
 #if PARALLEL
@@ -56,8 +59,8 @@ contains
 #endif
     end function ncGetVarDimensions
 
-
-! Get dimension ID
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Get dimension ID
     integer function ncGetDimId(fileId, label)
         integer, intent(in)         :: fileId
         character(*), intent(in)    :: label
@@ -68,8 +71,8 @@ contains
 #endif
     end function ncGetDimId
 
-
-! Get dimension length
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Get dimension length
     integer function ncGetDimLen(fileId, label)
         integer, intent(in)             :: fileId
         character(*), intent(in)        :: label
@@ -88,11 +91,13 @@ contains
         ncGetDimLen = dimLen
     end function ncGetDimLen
 
-! Define dimension
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Define dimension
     integer function ncDefDim(fileId, label, length)
         integer, intent(in)                         :: fileId
         integer, intent(in)                         :: length
         character(*), intent(in)                    :: label
+        integer                                     :: err
 #if PARALLEL
         call check_nc(nf90mpi_def_dim(fileId, label, int(length,8), ncDefDim))
 #else
@@ -100,7 +105,8 @@ contains
 #endif
     end function ncDefDim
 
-! Define variable
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Define variable
     integer function ncDefVar(fileId, label, type, dimIds)
         integer, intent(in)                         :: fileId, dimIds(:), type
         character(*), intent(in)                    :: label
@@ -111,7 +117,8 @@ contains
 #endif
     end function ncDefVar
 
-! End definition
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! End definition
     subroutine ncEndDef(fileId)
         integer, intent(in)                 :: fileId
 #if PARALLEL
@@ -121,7 +128,8 @@ contains
 #endif
     end subroutine ncEndDef
 
-! Redef
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Redef
     subroutine ncReDef(fileId)
         integer, intent(in)                 :: fileId
 #if PARALLEL
@@ -131,33 +139,8 @@ contains
 #endif
     end subroutine ncReDef
 
-! Put attribute
-    subroutine ncPutAtt(fileId, varId, label, charvalues, intvalues,realvalues)
-        integer, intent(in)     :: fileId, varId
-        character(*)            :: label
-        character(*), optional  :: charvalues
-        integer, optional       :: intvalues
-        real, optional          :: realvalues
-#if PARALLEL
-        if (present(charvalues)) then
-            call check_nc(nf90mpi_put_att(fileId, varId, label, charvalues))
-        else if (present(intvalues)) then
-            call check_nc(nf90mpi_put_att(fileId, varId, label, intvalues))
-        else
-            call check_nc(nf90mpi_put_att(fileId, varId, label, realvalues))
-        end if
-#else
-        if (present(charvalues)) then
-            call check_nc(nf90_put_att(fileId, varId, label, charvalues))
-        else if (present(intvalues)) then
-            call check_nc(nf90_put_att(fileId, varId, label, intvalues))
-        else
-            call check_nc(nf90_put_att(fileId, varId, label, realvalues))
-        end if
-#endif
-    end subroutine ncPutAtt
-
-! Close current file
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Close current file
     subroutine ncClose(fileId)
         integer, intent(in)                 :: fileId
 #if PARALLEL
@@ -167,39 +150,58 @@ contains
 #endif
     end subroutine ncClose
 
-! Check for errors in the NetCDF data retrieval process
-    subroutine check_nc(nc_status)
-        integer, intent(in) :: nc_status
-        integer             :: err
-        if(nc_status /= nf90_noerr) then
-#if PARALLEL
-            write(0,*)'netCDF error: ',trim(nf90mpi_strerror(nc_status))
-            call MPI_Abort(MPI_COMM_WORLD, -1, err)
-#else
-            write(0,*)'netCDF error: ',trim(nf90_strerror(nc_status))
-            stop
-#endif
-        end if
-    end subroutine check_nc
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Put attribute
+    subroutine ncPutAtt(fileId, varId, label, charValues, intValues, realValues)
+        integer, intent(in)     :: fileId, varId
+        character(*)            :: label
+        character(*), optional  :: charValues
+        integer, optional       :: intValues
+        real, optional          :: realValues
+        integer                 :: counter
 
-! Get variable content in the form of a dataPack
+        counter = 0
 #if PARALLEL
+        if (present(charValues)) then
+            counter = counter + 1
+            call check_nc(nf90mpi_put_att(fileId, varId, label, charValues))
+        else if (present(intValues)) then
+            counter = counter + 1
+            call check_nc(nf90mpi_put_att(fileId, varId, label, intValues))
+        else
+            counter = counter + 1
+            call check_nc(nf90mpi_put_att(fileId, varId, label, realValues))
+        end if
+#else
+        if (present(charValues)) then
+            counter = counter + 1
+            call check_nc(nf90_put_att(fileId, varId, label, charValues))
+        else if (present(intValues)) then
+            counter = counter + 1
+            call check_nc(nf90_put_att(fileId, varId, label, intValues))
+        else if (present(realValues)) then
+            counter = counter + 1
+            call check_nc(nf90_put_att(fileId, varId, label, realValues))
+        end if
+#endif
+        if (counter /= 1) stop('In function ncPutAtt, please supply either charValues, intValue or realValues; just one')
+    end subroutine ncPutAtt
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Get variable content in the form of a dataPack
     dataPack function ncGetVar(fileId, label, start, count)
-        integer, intent(in)                           :: fileId
-        character(*), intent(in)                      :: label
-        integer, dimension(:), intent(in)             :: start, count
-        integer                                       :: varId, ndims, len
-        integer, dimension(:), allocatable            :: dimIds(:), dimLens(:)
-        real, dimension(:), allocatable               :: temp1D
-        real, dimension(:,:), allocatable             :: temp2D
-        real, dimension(:,:,:), allocatable           :: temp3D
-        real, dimension(:,:,:,:), allocatable         :: temp4D
-        real, dimension(:,:,:,:,:), allocatable       :: temp5D
+        integer, intent(in)                             :: fileId
+        character(*), intent(in)                        :: label
+        integer, intent(in)                             :: start(:), count(:)
+        integer                                         :: varId, ndims, len
+        integer, allocatable                            :: dimIds(:), dimLens(:)
+        real, allocatable                               :: temp1D(:), temp2D(:,:), temp3D(:,:,:), temp4D(:,:,:,:), temp5D(:,:,:,:,:)
 
         varId = ncGetVarId(fileId, label)
         ndims = ncGetVarDimensions(fileId, varId)
 
         select case(ndims)
+#if PARALLEL
         case(1)
             allocate(ncGetVar%values(count(1)))
             allocate(temp1D(count(1)))
@@ -225,27 +227,7 @@ contains
             allocate(temp5D(count(1), count(2), count(3), count(4), count(5)))
             call check_nc(nf90mpi_get_var_all(fileId, varId, temp5D, start = int(start,8), count = int(count,8)))
             ncGetVar = deflateFrom5D(temp5D)
-        case default
-            stop("Only up to 5 dimensions have been implemented!")
-        end select
-    end function ncGetVar
 #else
-    dataPack function ncGetVar(fileId, label, start, count)
-        integer, intent(in)                           :: fileId
-        character(*), intent(in)                      :: label
-        integer, dimension(:), intent(in)             :: start, count
-        integer                                       :: varId, ndims, len
-        integer, dimension(:), allocatable            :: dimIds(:), dimLens(:)
-        real, dimension(:), allocatable               :: temp1D
-        real, dimension(:,:), allocatable             :: temp2D
-        real, dimension(:,:,:), allocatable           :: temp3D
-        real, dimension(:,:,:,:), allocatable         :: temp4D
-        real, dimension(:,:,:,:,:), allocatable       :: temp5D
-
-        varId = ncGetVarId(fileId, label)
-        ndims = ncGetVarDimensions(fileId, varId)
-
-        select case(ndims)
         case(1)
             allocate(ncGetVar%values(count(1)))
             allocate(temp1D(count(1)))
@@ -271,95 +253,95 @@ contains
             allocate(temp5D(count(1), count(2), count(3), count(4), count(5)))
             call check_nc(nf90_get_var(fileId, varId, temp5D, start = start, count = count))
             ncGetVar = deflateFrom5D(temp5D)
+#endif
         case default
             stop("Only up to 5 dimensions have been implemented!")
         end select
+
     end function ncGetVar
-#endif
 
-! Write the 1D dimension values to the NetCDF file
-#if PARALLEL
-    subroutine ncPutDimValues(fileId, label, data, intdata, start, count)
-        integer, intent(in)                                     :: fileId
-        character(*), intent(in)                                :: label
-        real, dimension(:), intent(inout)                       :: data
-        integer, optional, intent(in)                           :: start
-        integer, intent(in)                                     :: count
-        integer, dimension(:), optional, intent(inout)          :: intdata
-        integer                                                 :: varId,localStart
-        if (present(start)) then
-            localStart = start
-        else
-            localStart = 1
-        endif
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Write the 1D dimension values to the NetCDF file
+    subroutine ncPutDimValues(fileId, label, realValues, intValues, start, count)
+        integer, intent(in)                 :: fileId
+        character(*), intent(in)            :: label
+        real, intent(inout), optional       :: realValues(:)
+        integer, intent(inout), optional    :: intValues(:)
+        integer, intent(in), optional       :: start(1), count(1)
+        integer                             :: localStart(1) = [1], localCount(1) = [1], varId, counter
+
+        counter = 0
+
+        if (present(start)) localStart = start
+        if (present(count)) localCount = count
+
         varId = ncGetVarId(fileId, label)
-        if (present(intdata)) then  !if the data is integer
-            call check_nc(nf90mpi_put_var_all(fileId, varId, intdata, int((/localStart/),8), int((/count/),8)))
-        else
-            call check_nc(nf90mpi_put_var_all(fileId, varId, data, int((/localStart/),8), int((/count/),8)))
+
+        if (present(realValues)) then
+            counter = counter + 1
+#if PARALLEL
+            call check_nc(nf90mpi_put_var_all(fileId, varId, realValues, int(localStart,8), int(localCount,8)))
+#else
+            call check_nc(nf90_put_var(fileId, varId, realValues, localStart, localCount))
+#endif
+        else if (present(intValues)) then
+            counter = counter + 1
+#if PARALLEL
+            call check_nc(nf90mpi_put_var_all(fileId, varId, intValues, int(localStart,8), int(localCount,8)))
+#else
+            call check_nc(nf90_put_var(fileId, varId, intValues, localStart, localCount))
+#endif
         end if
+
+        if (counter /= 1) stop('In function ncPutAtt, please supply either intValues or realValues; just one')
 
     end subroutine ncPutDimValues
-#else
-    subroutine ncPutDimValues(fileId, label, data, intdata, start, count)
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Write a local variable (always 1D input values, either real or int)
+    subroutine ncPutVar(fileId, label, realValues, intValues, start, count)
         integer, intent(in)                                     :: fileId
         character(*), intent(in)                                :: label
-        real, dimension(:), intent(in)                          :: data
-        integer, optional, intent(in)                           :: start
-        integer, intent(in)                                     :: count
-        integer, dimension(:), optional, intent(in)             :: intdata
-        integer                                                 :: varId,localStart
-        if (present(start)) then
-            localStart = start
-        else
-            localStart = 1
-        endif
+        real, intent(inout), optional                           :: realValues(:)
+        integer, intent(inout), optional                        :: intValues(:)
+        integer, intent(in)                                     :: start(:), count(:)
+        integer                                                 :: varId, counter
+
         varId = ncGetVarId(fileId, label)
-        if (present(intdata)) then  !if the data is integer
-            call check_nc(nf90_put_var(fileId, varId, intdata, (/localStart/),(/count/)))
-        else
-            call check_nc(nf90_put_var(fileId, varId, data, (/localStart/), (/count/)))
-        end if
 
-    end subroutine ncPutDimValues
-#endif
-
-! Write a local 1D variable (2D in NetCDF file)
-
-    subroutine ncPut1DVar(fileId, label, data, intdata, start, count)
-        integer, intent(in)                                     :: fileId
-        character(*), intent(in)                                :: label
-        real, dimension(:), intent(inout)                       :: data
-        integer, dimension(:), intent(in)                       :: start
-        integer, dimension(:), optional, intent(in)             :: count
-        integer, dimension(:), optional, intent(inout)          :: intdata
-        integer                                                 :: varId
-        integer, dimension(:), allocatable                      :: localFormat, localCount
-        if (present(count)) then
-            allocate(localCount(size(count)))
-            localCount = count
-        else
-            allocate(localCount(2))
-            localCount = [1, 1]
-        endif
-        localFormat = localCount
-        varId = ncGetVarId(fileId, label)
-        if (present(intdata)) then  !if the data is integer
+        if (present(realValues)) then
+            counter = counter + 1
 #if PARALLEL
-            call check_nc(nf90mpi_put_var_all(fileId, varId, intdata, int(start,8), int(localcount,8)))
+            call check_nc(nf90mpi_put_var_all(fileId, varId, realValues, int(start,8), int(count,8)))
 #else
-            call check_nc(nf90_put_var(fileId, varId, intdata, start, localCount))
+            call check_nc(nf90_put_var(fileId, varId, realValues, start, count))
 #endif
         else
+            counter = counter + 1
 #if PARALLEL
-            call check_nc(nf90mpi_put_var_all(fileId, varId, data, int(start,8), int(localcount,8)))
+            call check_nc(nf90mpi_put_var_all(fileId, varId, intValues, int(start,8), int(count,8)))
 #else
-            call check_nc(nf90_put_var(fileId, varId, data, start, localCount))
+            call check_nc(nf90_put_var(fileId, varId, intValues, start, count))
 #endif
         end if
 
-    end subroutine ncPut1DVar
+        if (counter /= 1) stop('In function ncPutVar, please supply either intValues or realValues; just one')
 
+    end subroutine ncPutVar
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+!     ! Write a local 1D variable
+!     subroutine ncPut1DVar(fileId, label, realValues, intValues, start, count)
+!         integer, intent(in)                                     :: fileId
+!         character(*), intent(in)                                :: label
+!         real, intent(inout), optional                           :: realValues(:)
+!         integer, intent(inout), optional                        :: intValues(:)
+!         integer, intent(in)                                     :: start(:), count(:)
+!         integer                                                 :: varId, counter
+!
+!         call ncPutVar(fileId, label, realValues, intValues, start, count)
+!
+!     end subroutine ncPut1DVar
 
 ! Write a local 2D variable (3D in NetCDF file)
 #if PARALLEL
@@ -434,48 +416,34 @@ contains
         call check_nc(nf90_put_var(fileId, varId, temp4D, start, count))
     end subroutine ncPut3DVar
 #endif
-
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
     ! Get the values stored in a dimension (e.g. get Lon, Lat or Time values)
     function ncGetDimValues(fileId, label, start, count)
         integer, intent(in)                         :: fileId
         character(*), intent(in)                    :: label
-        integer, dimension(:), intent(in)           :: count
-        integer, dimension(:), optional, intent(in) :: start
+        integer, intent(in), optional               :: start(1), count(1)
+        real, allocatable                           :: ncGetDimValues(:)
+        integer                                     :: localCount(1) = [1], localStart(1) = [1]
         dataPack                                    :: data
-        real, dimension(:), allocatable             :: ncGetDimValues
-        integer, dimension(1)                       :: localStart
-        if (present(start)) then
-            localStart = start
-        else
-            localStart = [1]
-        endif
-        data = ncGetVar(fileId, label, localStart, count)
+
+        if (present(start)) localStart = start
+        if (present(count)) localCount = count
+
+        data = ncGetVar(fileId, label, localStart, localCount)
         ncGetDimValues = inflateTo1D(data)
+
     end function ncGetDimValues
 
-!     function ncGet1DVar(fileId, label, start, count, format)  !FLAG - Ed looks we have some stuff optional that shouldn't be. Pls look over.
-!         integer, intent(in)                         :: fileId
-!         character(*), intent(in)                    :: label
-!         integer, dimension(:), optional, intent(in) :: start, count, format
-!         dataPack                                    :: data
-!         real, dimension(:), allocatable             :: ncGet1DVar
-!         integer, dimension(2)                       :: localCount
-!         if (present(count)) then
-!             localCount = count
-!         else
-!             localCount = [1, 1]
-!         endif
-!         data = ncGetVar(fileId, label, start, localCount)
-!         ncGet1DVar = inflateTo1D(data)
-!     end function ncGet1DVar
-
-    function ncGet1DVar(fileId, label, start, count, format)  !FLAG - Ed looks we have some stuff optional that shouldn't be. Pls look over.
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    function ncGet1DVar(fileId, label, start, count)
         integer, intent(in)                         :: fileId
         character(*), intent(in)                    :: label
-        integer, dimension(:), optional, intent(in) :: start, count, format
+        integer, intent(in)                         :: start(:)
+        integer, intent(in), optional               :: count(:)
+        real, allocatable                           :: ncGet1DVar(:)
+        integer, allocatable                        :: localCount(:), localFormat(:)
         dataPack                                    :: data
-        real, dimension(:), allocatable             :: ncGet1DVar
-        integer, allocatable                        :: localCount(:)
+
         if (present(count)) then
             allocate(localCount(size(count)))
             localCount = count
@@ -483,40 +451,13 @@ contains
             allocate(localCount(2))
             localCount = [1, 1]
         endif
+
         data = ncGetVar(fileId, label, start, localCount)
         ncGet1DVar = inflateTo1D(data)
+
     end function ncGet1DVar
 
-!     function ncGet2DVar(fileId, label, start, count, format)
-!         integer, intent(in)                         :: fileId
-!         character(*), intent(in)                    :: label
-!         integer, dimension(:), intent(in)           :: start
-!         integer, dimension(:), optional, intent(in) :: count, format
-!         dataPack                                    :: data
-!         real, dimension(:,:), allocatable           :: ncGet2DVar
-!         integer, dimension(3)                       :: localCount
-!         integer, dimension(2)                       :: localFormat
-!         if (present(format)) then
-!             localFormat = format
-!         else
-!             localFormat = [1, 1]
-!         endif
-!         if (present(count)) then
-!             if (size(count) == 3) then
-!                 localCount = count
-!                 data = ncGetVar(fileId, label, start, localCount)
-!                 ncGet2DVar = inflateTo2D(data, localFormat)
-!             else ! this can be called to just get a simple 2D field so do that here.
-!                 data = ncGetVar(fileId, label, start, count)
-!                 ncGet2DVar = inflateTo2D(data, count)
-!             end if
-!         else
-!             localCount = [1, 1, 1]
-!             data = ncGetVar(fileId, label, start, localCount)
-!             ncGet2DVar = inflateTo2D(data, localFormat)
-!         endif
-!     end function ncGet2DVar
-
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
     function ncGet2DVar(fileId, label, start, count, format)
         integer, intent(in)                         :: fileId
         character(*), intent(in)                    :: label
@@ -526,20 +467,28 @@ contains
         integer, allocatable                        :: localCount(:), localFormat(:)
         dataPack                                    :: data
 
-        if (present(format)) then
-            allocate(localFormat(size(format)))
-            localFormat = format
-        else
-            allocate(localFormat(2))
-            localFormat = [1, 1]
-        endif
-
         if (present(count)) then
             allocate(localCount(size(count)))
             localCount = count
+
+            if (present(format)) then
+                allocate(localFormat(size(format)))
+                localFormat = format
+            else
+                localFormat = collapseOnes(count)
+                if (size(localFormat) /= 2) stop('Count and/or format problem found in ncGet2DVar function')
+            endif
         else
             allocate(localCount(3))
             localCount = [1, 1, 1]
+
+            if (present(format)) then
+                allocate(localFormat(size(format)))
+                localFormat = format
+            else
+                allocate(localFormat(2))
+                localFormat = [1, 1]
+            endif
         endif
 
         data = ncGetVar(fileId, label, start, localCount)
@@ -547,48 +496,119 @@ contains
 
     end function ncGet2DVar
 
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
     function ncGet3DVar(fileId, label, start, count, format)
-        integer, intent(in)                             :: fileId
-        character(*), intent(in)                        :: label
-        integer, dimension(:), optional, intent(in)     :: start, count, format
-        dataPack                                        :: data
-        real, dimension(:,:,:), allocatable             :: ncGet3DVar
-        integer, dimension(4)                           :: localCount
-        integer, dimension(3)                           :: localFormat
-        if (present(format)) then
-            localFormat = format
-        else
-            localFormat = [1, 1, 1]
-        endif
+        integer, intent(in)                         :: fileId
+        character(*), intent(in)                    :: label
+        integer, intent(in)                         :: start(:)
+        integer, intent(in), optional               :: count(:), format(:)
+        real, allocatable                           :: ncGet3DVar(:,:,:)
+        integer, allocatable                        :: localCount(:), localFormat(:)
+        dataPack                                    :: data
+
         if (present(count)) then
+            allocate(localCount(size(count)))
             localCount = count
+
+            if (present(format)) then
+                allocate(localFormat(size(format)))
+                localFormat = format
+            else
+                localFormat = collapseOnes(count)
+                if (size(localFormat) /= 3) stop('Count and/or format problem found in ncGet3DVar function')
+            endif
         else
+            allocate(localCount(4))
             localCount = [1, 1, 1, 1]
+
+            if (present(format)) then
+                allocate(localFormat(size(format)))
+                localFormat = format
+            else
+                allocate(localFormat(3))
+                localFormat = [1, 1, 1]
+            endif
         endif
+
         data = ncGetVar(fileId, label, start, localCount)
         ncGet3DVar = inflateTo3D(data, localFormat)
     end function ncGet3DVar
 
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
     function ncGet4DVar(fileId, label, start, count, format)
         integer, intent(in)                             :: fileId
         character(*), intent(in)                        :: label
-        integer, dimension(:), optional, intent(in)     :: start, count, format
+        integer, intent(in)                             :: start(:)
+        integer, intent(in), optional                   :: count(:), format(:)
+        real, allocatable                               :: ncGet4DVar(:,:,:,:)
+        integer, allocatable                            :: localCount(:), localFormat(:)
         dataPack                                        :: data
-        real, dimension(:,:,:), allocatable             :: ncGet4DVar
-        integer, dimension(5)                           :: localCount
-        integer, dimension(4)                           :: localFormat
-        if (present(format)) then
-            localFormat = format
-        else
-            localFormat = [1, 1, 1, 1]
-        endif
+
         if (present(count)) then
+            allocate(localCount(size(count)))
             localCount = count
+
+            if (present(format)) then
+                allocate(localFormat(size(format)))
+                localFormat = format
+            else
+                localFormat = collapseOnes(count)
+                if (size(localFormat) /= 4) stop('Count and/or format problem found in ncGet4DVar function')
+            endif
         else
+            allocate(localCount(5))
             localCount = [1, 1, 1, 1, 1]
+
+            if (present(format)) then
+                allocate(localFormat(size(format)))
+                localFormat = format
+            else
+                allocate(localFormat(4))
+                localFormat = [1, 1, 1, 1]
+            endif
         endif
+
         data = ncGetVar(fileId, label, start, localCount)
-        ncGet4DVar = inflateTo3D(data, localFormat)
+        ncGet4DVar = inflateTo4D(data, localFormat)
     end function ncGet4DVar
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Returns a vector without the '1's
+    function collapseOnes(vector)
+        integer, intent(in)             :: vector(:)
+        integer, allocatable            :: collapseOnes(:)
+        integer                         :: i, counter
+
+        counter = 0
+        do i = 1, size(vector)
+            if (vector(i) /= 1) counter = counter + 1
+        enddo
+
+        allocate(collapseOnes(counter))
+
+        counter = 0
+        do i = 1, size(vector)
+            if (vector(i) /= 1) then
+                counter = counter + 1
+                collapseOnes(counter) = vector(i)
+            endif
+        enddo
+    end function collapseOnes
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    ! Check for errors in the NetCDF data retrieval process
+    subroutine check_nc(nc_status)
+        integer, intent(in) :: nc_status
+        integer             :: err
+        if(nc_status /= nf90_noerr) then
+#if PARALLEL
+            write(0,*)'netCDF error: ',trim(nf90mpi_strerror(nc_status))
+            call MPI_Abort(MPI_COMM_WORLD, -1, err)
+#else
+            write(0,*)'netCDF error: ',trim(nf90_strerror(nc_status))
+            stop
+#endif
+        end if
+    end subroutine check_nc
 
 end module fileIOModule

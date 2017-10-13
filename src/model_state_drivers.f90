@@ -1,3 +1,7 @@
+!>\defgroup model_state_drivers
+
+!>\file
+
 module model_state_drivers
 
     !> This is the central driver to read in, and write out
@@ -17,6 +21,8 @@ module model_state_drivers
     public  :: write_restart
     public  :: getInput
     public  :: updateInput
+    public  :: getMet
+    public  :: updateMet
     public  :: deallocInput
     private :: closestCell
 
@@ -31,11 +37,21 @@ module model_state_drivers
     integer, dimension(:), allocatable :: LUCTime           ! The time from the LUC file
     real, dimension(:,:), allocatable :: LUCFromFile        ! The array of LUC from the LUCFile
 
-
+    real, dimension(:), allocatable :: metTime              ! The time from the Met file
+    real, dimension(:), allocatable :: metFss               ! Incoming shortwave radiation from metFile \f$[W m^{-2} ]\f$
+    real, dimension(:), allocatable :: metFdl               ! Incoming longwave radiation from metFile \f$[W m^{-2} ]\f$
+    real, dimension(:), allocatable :: metPre               ! Precipitation from metFile \f$[kg m^{-2} s^{-1} ]\f$
+    real, dimension(:), allocatable :: metTa                ! Air temperature from metFile (Celsius)
+    real, dimension(:), allocatable :: metQa                ! Specific humidity from metFile
+    real, dimension(:), allocatable :: metUv                ! Wind speed from metFile
+    real, dimension(:), allocatable :: metPres              ! Atmospheric pressure from metFile
 
 contains
 
     !---
+
+    !>\ingroup model_state_drivers_read_modelsetup
+    !!@{
 
     subroutine read_modelsetup
 
@@ -49,7 +65,7 @@ contains
 
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
-        use outputManager, only : myDomain,initid,rsid,co2id,ch4id,popid,lghtid,lucid
+        use outputManager, only : myDomain,initid,rsid,co2id,ch4id,popid,lghtid,lucid,metid
 
         implicit none
 
@@ -61,6 +77,7 @@ contains
         character(180), pointer          :: POPDFile
         character(180), pointer          :: LGHTFile
         character(180), pointer          :: LUCFile
+        character(180), pointer          :: met_file
         logical, pointer                 :: ctem_on
         logical, pointer                 :: dofire
         logical, pointer                 :: lnduseon
@@ -86,7 +103,7 @@ contains
         dofire                  => c_switch%dofire
         lnduseon                => c_switch%lnduseon
         fixedYearLUC            => c_switch%fixedYearLUC
-
+        met_file                => c_switch%met_file
         ! ------------
 
         !> First, open initial conditions file.
@@ -184,6 +201,7 @@ contains
 
         !> Lastly, open some files so they are ready
         rsid = ncOpen(rs_file_to_overwrite, nf90_write)
+
         if (ctem_on) then
             co2id = ncOpen(CO2File, nf90_nowrite)
             ch4id = ncOpen(CH4File, nf90_nowrite)
@@ -196,9 +214,16 @@ contains
             end if
         end if
 
+        !> Open the meteorological forcing file
+        metid = ncOpen(met_file, nf90_write)
+
     end subroutine read_modelsetup
 
-    !--------------------------------------------------------------------------------------------
+    !>@}
+    ! ------------------------------------------------------------------------------------
+
+    !>\ingroup model_state_drivers_read_initialstate
+    !!@{
 
     subroutine read_initialstate(lonIndex,latIndex)
 
@@ -577,16 +602,16 @@ contains
 
             if (PFTCompetition .and. inibioclim) then  !read in the bioclimatic parameters
 
-                twarmm(:,1) = ncGet1DVar(initid, 'twarmm', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-                tcoldm(:,1) = ncGet1DVar(initid, 'tcoldm', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-                gdd5(:,1) = ncGet1DVar(initid, 'gdd5', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-                aridity(:,1) = ncGet1DVar(initid, 'aridity', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-                srplsmon(:,1) = ncGet1DVar(initid, 'srplsmon', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-                defctmon(:,1) = ncGet1DVar(initid, 'defctmon', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-                anndefct(:,1) = ncGet1DVar(initid, 'anndefct', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-                annsrpls(:,1) = ncGet1DVar(initid, 'annsrpls', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-                annpcp(:,1) = ncGet1DVar(initid, 'annpcp', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
-                dry_season_length(:,1) = ncGet1DVar(initid, 'dry_season_length', start = [lonIndex, latIndex], count = [1, 1], format = [nlat])
+                twarmm(:,1) = ncGet1DVar(initid, 'twarmm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+                tcoldm(:,1) = ncGet1DVar(initid, 'tcoldm', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+                gdd5(:,1) = ncGet1DVar(initid, 'gdd5', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+                aridity(:,1) = ncGet1DVar(initid, 'aridity', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+                srplsmon(:,1) = ncGet1DVar(initid, 'srplsmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+                defctmon(:,1) = ncGet1DVar(initid, 'defctmon', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+                anndefct(:,1) = ncGet1DVar(initid, 'anndefct', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+                annsrpls(:,1) = ncGet1DVar(initid, 'annsrpls', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+                annpcp(:,1) = ncGet1DVar(initid, 'annpcp', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
+                dry_season_length(:,1) = ncGet1DVar(initid, 'dry_season_length', start = [lonIndex, latIndex], count = [1, 1])!, format = [nlat])
 
                 !>Take the first tile value now and put it over the other tiles
                 do m = 1,nmos
@@ -621,42 +646,8 @@ contains
             !>overwrites what was read in from the initialization file.
             if (PFTCompetition .and. start_bare) then
 
-                !>store the read-in crop fractions as we keep them even when we start bare.
-                !!FLAG: this is setup assuming that crops are in pft number 6 and 7.
-                !!and the first tile contains the information for the grid cell (assumes we have crops in
-                !!every tile too! JM Apr 9 2014.
-!                 do i=1,nlat
-!                     crop_temp_frac(i,1)=FCANROT(i,1,3)*dvdfcanrow(i,1,6)
-!                     crop_temp_frac(i,2)=FCANROT(i,1,3)*dvdfcanrow(i,1,7)
-!                 end do
-!
-!                 !>initalize to zero, these will be filled in by the luc or competition subroutines.
-!                 FCANROT=0.0
-!                 dvdfcanrow=0.0
-
-                ! FLAG- needed anymore?
-                ! Added this as start_bare runs were not properly assigning
-                ! a TCAN on the very first day since the FCANROT was 0. JM Jan 14 2014.
-!                 do i=1,nltest
-!                     do m = 1,nmtest
-!                         do j=1,icp1
-!                         if (j .lt. icp1) then
-!                             FCANROT(i,m,j)=seed
-!                         else
-!                             FCANROT(i,m,j)=1.0 - (real(ican) * seed)
-!                         endif
-!                         end do
-!                     end do
-!                 end do
-
                 do i=1,nlat
                     do m = 1,nmos
-
-!                         !>initial conditions always required
-!                         dvdfcanrow(i,m,1)=1.0  !ndl
-!                         dvdfcanrow(i,m,3)=1.0  !bdl
-!                         dvdfcanrow(i,m,6)=1.0  !crop
-!                         dvdfcanrow(i,m,8)=1.0  !grasses
 
                         do j = 1,icc
                             if (.not. crop(j)) fcancmxrow(i,m,j) = 0.0
@@ -679,26 +670,17 @@ contains
                     end do ! nmtest
                 enddo !nltest
 
-!                 do i=1,nlat
-!                     do m = 1,nmos
-!                         FCANROT(i,m,3) = crop_temp_frac(i,1) + crop_temp_frac(i,2)
-!                         if (FCANROT(i,m,3) .gt. abszero) then
-!                             dvdfcanrow(i,m,6) = crop_temp_frac(i,1) / FCANROT(i,m,3)
-!                             dvdfcanrow(i,m,7) = crop_temp_frac(i,2) / FCANROT(i,m,3)
-!                         else
-!                             dvdfcanrow(i,m,6) = 1.0
-!                             dvdfcanrow(i,m,7) = 0.0
-!                         end if
-!                     end do !nmtest
-!                 end do !nltest
-
             end if !if (PFTCompetition .and. start_bare)
 
         end if !ctem_on
 
     end subroutine read_initialstate
 
-    !---------------------------------------------------------------------------------------------
+    !>@}
+    ! ------------------------------------------------------------------------------------
+
+    !>\ingroup model_state_drivers_write_restart
+    !!@{
 
     subroutine write_restart(lonIndex,latIndex)
 
@@ -834,69 +816,6 @@ contains
 
         if (ctem_on) then
 
-!             !> if landuseon or competition, then we need to recreate the dvdfcanrow so do so now
-!             if (lnduseon .or. PFTCompetition ) then
-!                 icountrow=0
-!                 do j = 1, ican
-!                     do i = 1,nlat
-!                         do m = 1,nmos
-!                             k1c = (j-1)*l2max + 1
-!                             k2c = k1c + (l2max - 1)
-!                             do n = k1c, k2c
-!                                 if (modelpft(n) .eq. 1) then
-!                                     icountrow(i,m) = icountrow(i,m) + 1
-!                                     if (FCANROT(i,m,j) .gt. 0.) then
-!                                         dvdfcanrow(i,m,icountrow(i,m)) = fcancmxrow(i,m,icountrow(i,m))/FCANROT(i,m,j)
-!                                     else
-!                                         dvdfcanrow(i,m,icountrow(i,m)) = 0.
-!                                     end if
-!                                 end if !modelpft
-!                             end do !n
-!                             !> check to ensure that the dvdfcanrow's add up to 1 across a class-level pft
-!                             if (dvdfcanrow(i,m,1) .eq. 0. .and. dvdfcanrow(i,m,2) .eq. 0.) then
-!                                 dvdfcanrow(i,m,1)=1.0
-!                             else if (dvdfcanrow(i,m,3) .eq. 0. .and. dvdfcanrow(i,m,4) .eq. 0. .and. dvdfcanrow(i,m,5) .eq. 0.) then
-!                                 dvdfcanrow(i,m,3)=1.0
-!                             else if (dvdfcanrow(i,m,6) .eq. 0. .and. dvdfcanrow(i,m,7) .eq. 0.) then
-!                                 dvdfcanrow(i,m,6)=1.0
-!                             else if (dvdfcanrow(i,m,8) .eq. 0. .and. dvdfcanrow(i,m,9) .eq. 0.) then
-!                                 dvdfcanrow(i,m,8)=1.0
-!                             end if
-!                         end do !m
-!                     enddo !i
-!                 enddo !j
-!
-!                 do i=1,nlat
-!                     do m=1,nmos
-!                         do j = 1, icc
-!                             !>Lastly check if the different pfts accidently add up > 1.0 after rounding to the number of sig figs used in the output
-!                             !>this rounds to 3 decimal places. if you are found to be over or under, arbitrarily reduce one of the pfts. the amount of
-!                             !>the change will be inconsequential.
-!                             rnded_pft(j) =real(int(dvdfcanrow(i,m,j) * 1000.0))/ 1000.0
-!                             dvdfcanrow(i,m,j) = rnded_pft(j)
-!                         end do
-!
-!                         if (dvdfcanrow(i,m,1) + dvdfcanrow(i,m,2) .ne. 1.0) then
-!                             dvdfcanrow(i,m,1) = 1.0 - rnded_pft(2)
-!                             dvdfcanrow(i,m,2) = rnded_pft(2)
-!                         end if
-!                         if (dvdfcanrow(i,m,3) + dvdfcanrow(i,m,4) +  dvdfcanrow(i,m,5) .ne. 1.0) then
-!                             dvdfcanrow(i,m,3) = 1.0 - rnded_pft(4) - rnded_pft(5)
-!                             dvdfcanrow(i,m,4) = rnded_pft(4)
-!                             dvdfcanrow(i,m,5) = rnded_pft(5)
-!                         end if
-!                         if (dvdfcanrow(i,m,6) + dvdfcanrow(i,m,7) .ne. 1.0) then
-!                             dvdfcanrow(i,m,6) = 1.0 - rnded_pft(7)
-!                             dvdfcanrow(i,m,7) = rnded_pft(7)
-!                         end if
-!                         if (dvdfcanrow(i,m,8) + dvdfcanrow(i,m,9) .ne. 1.0) then
-!                             dvdfcanrow(i,m,8) = 1.0 - rnded_pft(9)
-!                             dvdfcanrow(i,m,9) = rnded_pft(9)
-!                         end if
-!                     enddo
-!                 enddo
-!             end if !lnuse/PFTCompetition
-
             call ncPut3DVar(rsid, 'ailcmin', ailcminrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'ailcmax', ailcmaxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
             call ncPut3DVar(rsid, 'fcancmx', fcancmxrow, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icc, nmos])
@@ -931,7 +850,11 @@ contains
 
     end subroutine write_restart
 
-    !---------------------------------------------------------------------------------------------
+    !>@}
+    ! ------------------------------------------------------------------------------------
+
+    !>\ingroup model_state_drivers_getInput
+    !!@{
 
     subroutine getInput(inputRequested,longitude,latitude)
 
@@ -982,6 +905,9 @@ contains
         fcancmxrow      => vrot%fcancmx
 
         select case (trim(inputRequested))
+
+        !! For each of the time varying inputs in this subroutine, we take in the whole dataset
+        !! and later determine the year we need (in updateInput)
 
         case ('CO2')
 
@@ -1065,8 +991,9 @@ contains
 
             end if
 
-!         case ('LGHT')
-!
+         case ('LGHT')
+            print*,'LGHT getInput not ready yet'
+            return
 !             lengthOfFile = ncGetDimLen(lghtid, 'time')
 !             allocate(fileTime(lengthOfFile))
 !             allocate(POPDTime(lengthOfFile))
@@ -1089,8 +1016,8 @@ contains
             latloc = closestCell(lucid,'lat',latitude)
 
             ! Ensure the file has the expected number of PFTs
-            !numPFTsinFile = ncGetDimLen(lucid, 'lev')
-            !if (numPFTsinFile .ne. icc) stop('LUC file does not have expected number of PFTs')
+            numPFTsinFile = ncGetDimLen(lucid, 'lev')
+            if (numPFTsinFile .ne. icc) stop('getInput says: LUC file does not have expected number of PFTs')
 
             if (lnduseon) then
                 ! We read in the whole LUC times series and store it.
@@ -1103,10 +1030,10 @@ contains
                 i = 1 ! offline nlat is always 1 so just set
                 m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
 
-                if (nmos .ne. 1) stop('getInput for LUC is not setup for more than one tile at present!!')
+                if (nmos .ne. 1) stop('getInput for LUC is not setup for more than one tile at present!')
 
                 fcancmxrow(i,m,:) = ncGet1DVar(lucid, 'frac', start = [lonloc,latloc,1,arrindex], count = [1,1,icc,1])
-                
+
             end if
 
         case ('OBSWETF')
@@ -1124,26 +1051,34 @@ contains
 
     end subroutine getInput
 
-    !---------------------------------------------------------------------------------------------
+    !>@}
+    ! ------------------------------------------------------------------------------------
 
-    subroutine updateInput(inputRequested,iyear)
+    !>\ingroup model_state_drivers_updateInput
+    !!@{
+
+    subroutine updateInput(inputRequested,iyear,imonth)
 
         ! Update the CO2 atmospheric concentration based on the present model year
 
         use outputManager, only : checkForTime
         use ctem_statevars, only : vrot
+        use ctem_params, only : nmos
 
         implicit none
 
         character(*), intent(in) :: inputRequested
         integer, intent(in) :: iyear
+        integer, intent(in), optional :: imonth
         integer :: arrindex,lengthTime,i,m
         real, pointer, dimension(:,:) :: co2concrow
         real, pointer, dimension(:,:) :: ch4concrow
         real, pointer, dimension(:,:) :: popdinrow
+        real, pointer, dimension(:,:,:) :: nfcancmxrow
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
+        nfcancmxrow     => vrot%nfcancmx
 
         select case (trim(inputRequested))
 
@@ -1174,17 +1109,19 @@ contains
             i = 1 ! offline nlat is always 1 so just set
             popdinrow(i,:) = POPDFromFile(arrindex)
 
-!         case ('LUC')
-!
-!             lengthTime = size(LUCTime)
-!
-!             ! Find the requested year in the file.
-!             arrindex = checkForTime(lengthTime,real(LUCTime),real(iyear))
-!             i = 1 ! offline nlat is always 1 so just set
-!             m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
-!             nfcancmxrow(i,m,:) = LUCFromFile(arrindex,:)
-!        case('LGHT')
+        case ('LUC')
 
+            lengthTime = size(LUCTime)
+
+            ! Find the requested year in the file.
+            arrindex = checkForTime(lengthTime,real(LUCTime),real(iyear))
+            i = 1 ! offline nlat is always 1 so just set
+            m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
+            if (nmos > 1) stop('updateInput for LUC only set up for 1 tile at present')
+            nfcancmxrow(i,m,:) = LUCFromFile(:,arrindex)
+
+       case('LGHT')
+            print*,'LGHT updateInput not ready yet...'
 !                                 ! pass on mean monthly lightning for the current month to ctem
 !                         ! lightng(i)=mlightng(i,month)
 !                         !
@@ -1244,13 +1181,121 @@ contains
 !                             &                 (mlightnggat(i,month2)-mlightnggat(i,month1))
 
         case default
-            stop('specify a input kind for updateInput')
+            stop('specify an input kind for updateInput')
         end select
 
     end subroutine updateInput
 
-    !---------------------------------------------------------------------------------------------
+    !>@}
+    ! ------------------------------------------------------------------------------------
 
+    !>\ingroup model_state_drivers_getMet
+    !!@{
+
+    subroutine getMet(longitude,latitude,nday,delt)
+
+        ! Read in the meteorological input from a netcdf file
+
+        use fileIOModule
+        use outputManager, only : metid
+        use ctem_statevars, only : c_switch
+
+        implicit none
+
+        real, intent(in) :: longitude       !< Longitude of grid cell of interest
+        real, intent(in) :: latitude        !< Latitude of grid cell of interest
+        integer, intent(in) :: nday         !< Maximum number of physics timesteps in one day
+        real, intent(in) :: delt            !< Physics timestep (s)
+
+        integer, pointer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
+        integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
+
+        real :: moStart,moEnd,domStart,domEnd !< Assumed start and end months and days of month
+        real :: timeStart, timeEnd          !< Calculated start and end in the format:%Y%m%d.%f
+        integer :: lengthOfFile
+        integer :: lonloc,latloc,i
+        real, dimension(:), allocatable :: fileTime
+        real, dimension(:), allocatable :: tempTime
+        integer :: validTimestep
+        integer :: firstIndex
+
+        readMetStartYear  => c_switch%readMetStartYear
+        readMetEndYear    => c_switch%readMetEndYear
+
+        ! Grab the length of time dimension from the met file and write it to an array
+        lengthOfFile = ncGetDimLen(metid, 'time')
+        allocate(fileTime(lengthOfFile))
+        fileTime = ncGet1DVar(metid, 'time', start = [1], count = [lengthOfFile])
+
+        ! Construct the time bounds that we will look for in the file.
+        ! We assume that you will start on the first timestep of the day.
+        ! Further the default is to start on (or at least look for) Jan 1
+        ! of the yrStart year.
+        moStart=1.
+        domStart=1.
+        ! The first time is considered to be the first physics timestep so given a fractional day of 0.
+        timeStart = readMetStartYear * 10000. + moStart * 100. + domStart
+        moEnd=12.
+        domEnd=31.
+        ! The last time is considered to be the last physics timestep of the day
+        timeEnd =  readMetEndYear * 10000. + moEnd * 100. + domEnd + (real(nday - 1) * delt / 86400.)
+
+        ! Now we read in and append the metTime the timesteps from the time variable of the met file. This
+        ! uses the intrinsic move_alloc, but it simply appends to the file.
+        allocate(metTime(0))
+        validTimestep=0
+        firstIndex=999999999 ! set to large value
+
+        do i = 1, lengthOfFile
+            if (fileTime(i) >= timeStart .and. fileTime(i) <= timeEnd) then
+                validTimestep = validTimestep + 1
+                allocate(tempTime(validTimestep))
+                tempTime(1:validTimestep - 1) = metTime(1 : validTimestep - 1)
+                call move_alloc(tempTime,metTime)
+                metTime(validTimestep) = fileTime(i)
+                firstIndex = min(firstIndex,i)
+            end if
+        end do
+
+        ! Find the closest cell to our lon and lat
+        lonloc = closestCell(metid,'lon',longitude)
+        latloc = closestCell(metid,'lat',latitude)
+
+        ! Now read in the whole MET times series and store it for each variable
+        allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep),&
+                 metTa(validTimestep),metQa(validTimestep),metUv(validTimestep),metPres(validTimestep))
+
+        metFss = ncGet1DVar(metid, 'sw', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metFdl = ncGet1DVar(metid, 'lw', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metPre = ncGet1DVar(metid, 'pr', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metTa = ncGet1DVar(metid, 'ta', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metQa = ncGet1DVar(metid, 'qa', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metUv = ncGet1DVar(metid, 'wi', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metPres = ncGet1DVar(metid, 'ap', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+
+    end subroutine getMet
+
+    !>@}
+    ! ------------------------------------------------------------------------------------
+
+    !>\ingroup model_state_drivers_updateMet
+    !!@{
+
+    subroutine updateMet(timeIndex)
+
+        implicit none
+
+        integer, intent(inout) :: timeIndex
+
+        return
+
+    end subroutine updateMet
+
+    !>@}
+    ! ------------------------------------------------------------------------------------
+
+    !>\ingroup model_state_drivers_closestCell
+    !!@{
     integer function closestCell(ncid,label,gridPoint)
     ! Find the closest grid cell in the file
 
@@ -1273,6 +1318,11 @@ contains
         closestCell = tempintarr(1)
 
     end function closestCell
+    !>@}
+    ! ------------------------------------------------------------------------------------
+
+    !>\ingroup model_state_drivers_deallocInput
+    !!@{
 
     subroutine deallocInput
 
@@ -1288,7 +1338,8 @@ contains
         if (allocated(LGHTFromFile))  deallocate(LGHTFromFile)
         if (allocated(LUCTime))       deallocate(LUCTime)
         if (allocated(LUCFromFile))   deallocate(LUCFromFile)
+        deallocate(metTime,metFss,metFdl,metPre,metPres,metQa,metTa,metUv)
 
     end subroutine deallocInput
-
+!!@}
 end module model_state_drivers

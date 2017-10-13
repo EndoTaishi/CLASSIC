@@ -66,6 +66,8 @@ contains
         integer, pointer :: metLoop
         logical, pointer :: ctem_on
         integer, pointer :: ncyear
+        integer, pointer :: readMetStartYear
+        integer, pointer :: readMetEndYear
         logical, pointer :: lnduseon
         integer, pointer :: spinfast
         logical, pointer :: cyclemet
@@ -147,6 +149,8 @@ contains
         cyclemet, &
         nummetcylyrs, &
         metcylyrst, &
+        readMetStartYear, &
+        readMetEndYear, &
         leap, &
         ctem_on, &
         icc, &
@@ -212,6 +216,8 @@ contains
         transient_run   => c_switch%transient_run
         trans_startyr   => c_switch%trans_startyr
         metLoop         => c_switch%metLoop
+        readMetStartYear=> c_switch%readMetStartYear
+        readMetEndYear  => c_switch%readMetEndYear
         ctem_on         => c_switch%ctem_on
         ncyear          => c_switch%ncyear
         lnduseon        => c_switch%lnduseon

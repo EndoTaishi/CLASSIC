@@ -20,11 +20,11 @@ module outputManager
 
 
     type simulationDomain
-        real, dimension(:), allocatable     :: lonLandCell, latLandCell     ! Long/Lat values of only the land cells in our model domain
-        integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   ! Indexes of only the land cells in our model domain for our resolution
-        real, dimension(:), allocatable     :: allLonValues, allLatValues   ! All long/Lat values in our model domain (including ocean/non-land)
-        integer, dimension(:), allocatable  :: lonLocalIndex,latLocalIndex  ! The index for only the region that is being simulated
-        real, dimension(:), allocatable     :: latUnique,lonUnique
+        real, dimension(:), allocatable     :: lonLandCell, latLandCell     !< Long/Lat values of only the land cells in our model domain
+        integer, dimension(:), allocatable  :: lonLandIndex, latLandIndex   !< Indexes of only the land cells in our model domain for our resolution
+        real, dimension(:), allocatable     :: allLonValues, allLatValues   !< All long/Lat values in our model domain (including ocean/non-land)
+        integer, dimension(:), allocatable  :: lonLocalIndex,latLocalIndex  !< The index for only the region that is being simulated
+        real, dimension(:), allocatable     :: latUnique,lonUnique          !< The index for only the region that is being simulated with each value only once
         integer                             :: LandCellCount    !> number of land cells that the model will run over
         real, dimension(4) :: domainBounds                      !> Corners of the domain to be simulated (netcdfs)
         integer :: srtx                                         !> starting index for this simulation for longitudes
@@ -35,7 +35,7 @@ module outputManager
 
     type(simulationDomain) :: myDomain
 
-    integer :: metfid                               !> netcdf file id for the meteorology file
+    integer :: metid                               !> netcdf file id for the meteorology file
     integer :: initid                               !> netcdf file id for the model initialization file
     integer :: rsid                                 !> netcdf file id for the model restart file
     integer :: co2id                                !> netcdf file id for the CO2 input file
@@ -77,198 +77,22 @@ module outputManager
 
     integer :: variableCount = 0, descriptorCount = 0, variantCount = 0
 
-    integer         :: refyr = 1850                     !< !< Time reference for netcdf output files
+    integer         :: refyr = 1850                     !< Time reference for netcdf output files
     character(30)   :: timestart = "days since 1850-01-01 00:00" !< Time reference for netcdf output files
     real   :: fill_value = 1.E38             !< Default fill value for missing values in netcdf output files
 
 contains
 
     subroutine generateOutputFiles
+
+        implicit none
+
         integer             :: i
 
         do i = 1, variantCount
             call generateNetCDFFile(variants(i)%nameInCode, variants(i)%timeFrequency,&
                 variants(i)%outputForm, variants(i)%shortName)
         enddo
-                            !nameInCode, timeFreq, outputForm, descriptor
-!        call generateNetCDFFile("fsstar_yr", "annually", "grid", "rss")
-!        call generateNetCDFFile("fsstar_mo", "monthly", "grid", "rss")
-!        call generateNetCDFFile("flstar_yr", "annually", "grid", "rls")
-!        call generateNetCDFFile("flstar_mo", "monthly", "grid", "rls")
-!        call generateNetCDFFile("qh_yr", "annually", "grid", "hfss")
-!        call generateNetCDFFile("qh_mo", "monthly", "grid", "hfss")
-!        call generateNetCDFFile("qe_yr", "annually", "grid", "hfls")
-!        call generateNetCDFFile("qe_mo", "monthly", "grid", "hfls")
-!        call generateNetCDFFile("snoacc_mo", "monthly", "grid", "snw")
-!        call generateNetCDFFile("wsnoacc_mo", "monthly", "grid", "wsnw")
-!        call generateNetCDFFile("rofacc_yr", "annually", "grid", "mrro")
-!        call generateNetCDFFile("rofacc_mo", "monthly", "grid", "mrro")
-!        call generateNetCDFFile("preacc_yr", "annually", "grid", "pr")
-!        call generateNetCDFFile("preacc_mo", "monthly", "grid", "pr")
-!        call generateNetCDFFile("evapacc_yr", "annually", "grid", "evspsbl")
-!        call generateNetCDFFile("evapacc_mo", "monthly", "grid", "evspsbl")
-!        call generateNetCDFFile("groundevap", "monthly", "grid", "evspsblsoi")
-!        call generateNetCDFFile("canopyevap", "monthly", "grid", "evspsblveg")
-!        call generateNetCDFFile("transpacc_yr", "annually", "grid", "tran")
-!        call generateNetCDFFile("transpacc_mo", "monthly", "grid", "tran")
-!        call generateNetCDFFile("taacc_mo", "monthly", "grid", "ts")
-!        call generateNetCDFFile("altotacc_yr", "annually", "grid", "albs")
-!        call generateNetCDFFile("altotacc_mo", "monthly", "grid", "albs")
-!        call generateNetCDFFile("tbaracc_mo", "monthly", "layer", "tsl")
-!        call generateNetCDFFile("thlqacc_mo", "monthly", "layer", "mrsll")
-!        call generateNetCDFFile("thicacc_mo", "monthly", "layer", "mrsfl")
-!        call generateNetCDFFile("actlyr_mo", "monthly", "grid", "actlyr")
-!        call generateNetCDFFile("actlyr_max_mo", "monthly", "grid", "actlyrmax")
-!        call generateNetCDFFile("actlyr_min_mo", "monthly", "grid", "actlyrmin")
-!        call generateNetCDFFile("ftable_mo", "monthly", "grid", "ftable")
-!        call generateNetCDFFile("ftable_max_mo", "monthly", "grid", "ftablemax")
-!        call generateNetCDFFile("ftable_min_mo", "monthly", "grid", "ftablemin")
-!        call generateNetCDFFile("laimaxg_yr_g", "annually", "grid", "lai")
-!        call generateNetCDFFile("laimaxg_mo_g", "monthly", "grid", "lai")
-!        call generateNetCDFFile("laimaxg_yr", "annually", "pft", "lai")
-!        call generateNetCDFFile("laimaxg_mo", "monthly", "pft", "lai")
-!        call generateNetCDFFile("laimaxg_yr_t", "annually", "tile", "lai")
-!        call generateNetCDFFile("laimaxg_mo_t", "monthly", "tile", "lai")
-!        call generateNetCDFFile("vgbiomas_yr_g", "annually", "grid", "cVeg")
-!        call generateNetCDFFile("vgbiomas_mo_g", "monthly", "grid", "cVeg")
-!        call generateNetCDFFile("vgbiomas_yr", "annually", "pft", "cVeg")
-!        call generateNetCDFFile("vgbiomas_mo", "monthly", "pft", "cVeg")
-!        call generateNetCDFFile("vgbiomas_yr_t", "annually", "tile", "cVeg")
-!        call generateNetCDFFile("vgbiomas_mo_t", "monthly", "tile", "cVeg")
-!        call generateNetCDFFile("stemmass_yr_g", "annually", "grid", "cStem")
-!        call generateNetCDFFile("stemmass_yr", "annually", "pft", "cStem")
-!        call generateNetCDFFile("stemmass_yr_t", "annually", "tile", "cStem")
-!        call generateNetCDFFile("rootmass_yr_g", "annually", "grid", "cRoot")
-!        call generateNetCDFFile("rootmass_yr", "annually", "pft", "cRoot")
-!        call generateNetCDFFile("rootmass_yr_t", "annually", "tile", "cRoot")
-!        call generateNetCDFFile("litrmass_yr_g", "annually", "grid", "cLitter")
-!        call generateNetCDFFile("litrmass_mo_g", "monthly", "grid", "cLitter")
-!        call generateNetCDFFile("litrmass_yr", "annually", "pft", "cLitter")
-!        call generateNetCDFFile("litrmass_mo", "monthly", "pft", "cLitter")
-!        call generateNetCDFFile("litrmass_yr_t", "annually", "tile", "cLitter")
-!        call generateNetCDFFile("litrmass_mo_t", "monthly", "tile", "cLitter")
-!        call generateNetCDFFile("soilcmas_yr_g", "annually", "grid", "cSoil")
-!        call generateNetCDFFile("soilcmas_mo_g", "monthly", "grid", "cSoil")
-!        call generateNetCDFFile("soilcmas_yr", "annually", "pft", "cSoil")
-!        call generateNetCDFFile("soilcmas_mo", "monthly", "pft", "cSoil")
-!        call generateNetCDFFile("soilcmas_yr_t", "annually", "tile", "cSoil")
-!        call generateNetCDFFile("soilcmas_mo_t", "monthly", "tile", "cSoil")
-!        call generateNetCDFFile("totcmass_yr_g", "annually", "grid", "cLand")
-!        call generateNetCDFFile("totcmass_yr", "annually", "pft", "cLand")
-!        call generateNetCDFFile("totcmass_yr_t", "annually", "tile", "cLand")
-!        call generateNetCDFFile("veghght_yr_g", "annually", "grid", "vegHeight")
-!        call generateNetCDFFile("veghght_yr", "annually", "pft", "vegHeight")
-!        call generateNetCDFFile("veghght_yr_t", "annually", "tile", "vegHeight")
-!        call generateNetCDFFile("npp_yr_g", "annually", "grid", "npp")
-!        call generateNetCDFFile("npp_mo_g", "monthly", "grid", "npp")
-!        call generateNetCDFFile("npp_yr", "annually", "pft", "npp")
-!        call generateNetCDFFile("npp_mo", "monthly", "pft", "npp")
-!        call generateNetCDFFile("npp_yr_t", "annually", "tile", "npp")
-!        call generateNetCDFFile("npp_mo_t", "monthly", "tile", "npp")
-!        call generateNetCDFFile("gpp_yr_g", "annually", "grid", "gpp")
-!        call generateNetCDFFile("gpp_mo_g", "monthly", "grid", "gpp")
-!        call generateNetCDFFile("gpp_yr", "annually", "pft", "gpp")
-!        call generateNetCDFFile("gpp_mo", "monthly", "pft", "gpp")
-!        call generateNetCDFFile("gpp_yr_t", "annually", "tile", "gpp")
-!        call generateNetCDFFile("gpp_mo_t", "monthly", "tile", "gpp")
-!        call generateNetCDFFile("nep_yr_g", "annually", "grid", "nep")
-!        call generateNetCDFFile("nep_mo_g", "monthly", "grid", "nep")
-!        call generateNetCDFFile("nep_yr", "annually", "pft", "nep")
-!        call generateNetCDFFile("nep_mo", "monthly", "pft", "nep")
-!        call generateNetCDFFile("nep_yr_t", "annually", "tile", "nep")
-!        call generateNetCDFFile("nep_mo_t", "monthly", "tile", "nep")
-!        call generateNetCDFFile("nbp_yr_g", "annually", "grid", "nbp")
-!        call generateNetCDFFile("nbp_mo_g", "monthly", "grid", "nbp")
-!        call generateNetCDFFile("nbp_yr", "annually", "pft", "nbp")
-!        call generateNetCDFFile("nbp_mo", "monthly", "pft", "nbp")
-!        call generateNetCDFFile("nbp_yr_t", "annually", "tile", "nbp")
-!        call generateNetCDFFile("nbp_mo_t", "monthly", "tile", "nbp")
-!        call generateNetCDFFile("hetrores_yr_g", "annually", "grid", "rh")
-!        call generateNetCDFFile("hetrores_mo_g", "monthly", "grid", "rh")
-!        call generateNetCDFFile("hetrores_yr", "annually", "pft", "rh")
-!        call generateNetCDFFile("hetrores_mo", "monthly", "pft", "rh")
-!        call generateNetCDFFile("hetrores_yr_t", "annually", "tile", "rh")
-!        call generateNetCDFFile("hetrores_mo_t", "monthly", "tile", "rh")
-!        call generateNetCDFFile("autores_yr_g", "annually", "grid", "ra")
-!        call generateNetCDFFile("autores_mo_g", "monthly", "grid", "ra")
-!        call generateNetCDFFile("autores_yr", "annually", "pft", "ra")
-!        call generateNetCDFFile("autores_mo", "monthly", "pft", "ra")
-!        call generateNetCDFFile("autores_yr_t", "annually", "tile", "ra")
-!        call generateNetCDFFile("autores_mo_t", "monthly", "tile", "ra")
-!        call generateNetCDFFile("litres_yr_g", "annually", "grid", "rhLitter")
-!        call generateNetCDFFile("litres_mo_g", "monthly", "grid", "rhLitter")
-!        call generateNetCDFFile("litres_yr", "annually", "pft", "rhLitter")
-!        call generateNetCDFFile("litres_mo", "monthly", "pft", "rhLitter")
-!        call generateNetCDFFile("litres_yr_t", "annually", "tile", "rhLitter")
-!        call generateNetCDFFile("litres_mo_t", "monthly", "tile", "rhLitter")
-!        call generateNetCDFFile("soilcres_yr_g", "annually", "grid", "rhSoil")
-!        call generateNetCDFFile("soilcres_mo_g", "monthly", "grid", "rhSoil")
-!        call generateNetCDFFile("soilcres_yr", "annually", "pft", "rhSoil")
-!        call generateNetCDFFile("soilcres_mo", "monthly", "pft", "rhSoil")
-!        call generateNetCDFFile("soilcres_yr_t", "annually", "tile", "rhSoil")
-!        call generateNetCDFFile("soilcres_mo_t", "monthly", "tile", "rhSoil")
-!        call generateNetCDFFile("litrfall_mo_g", "monthly", "grid", "fVegLitter")
-!        call generateNetCDFFile("litrfallveg_mo", "monthly", "pft", "fVegLitter")
-!        call generateNetCDFFile("litrfall_mo_t", "monthly", "tile", "fVegLitter")
-!        call generateNetCDFFile("humiftrs_mo_g", "monthly", "grid", "fLitterSoil")
-!        call generateNetCDFFile("humiftrsveg_mo", "monthly", "pft", "fLitterSoil")
-!        call generateNetCDFFile("humiftrs_mo_t", "monthly", "tile", "fLitterSoil")
-!        call generateNetCDFFile("emit_co2_yr_g", "annually", "grid", "fFire")
-!        call generateNetCDFFile("emit_co2_mo_g", "monthly", "grid", "fFire")
-!        call generateNetCDFFile("emit_co2_yr", "annually", "pft", "fFire")
-!        call generateNetCDFFile("emit_co2_mo", "monthly", "pft", "fFire")
-!        call generateNetCDFFile("emit_co2_yr_t", "annually", "tile", "fFire")
-!        call generateNetCDFFile("emit_co2_mo_t", "monthly", "tile", "fFire")
-!        call generateNetCDFFile("emit_ch4_yr_g", "annually", "grid", "fFireCH4")
-!        call generateNetCDFFile("emit_ch4_mo_g", "monthly", "grid", "fFireCH4")
-!        call generateNetCDFFile("emit_ch4_yr", "annually", "pft", "fFireCH4")
-!        call generateNetCDFFile("emit_ch4_mo", "monthly", "pft", "fFireCH4")
-!        call generateNetCDFFile("emit_ch4_yr_t", "annually", "tile", "fFireCH4")
-!        call generateNetCDFFile("emit_ch4_mo_t", "monthly", "tile", "fFireCH4")
-!        call generateNetCDFFile("burnfrac_yr_g", "annually", "grid", "burntFractionAll")
-!        call generateNetCDFFile("burnfrac_mo_g", "monthly", "grid", "burntFractionAll")
-!        call generateNetCDFFile("burnfrac_yr", "annually", "pft", "burntFractionAll")
-!        call generateNetCDFFile("burnfrac_mo", "monthly", "pft", "burntFractionAll")
-!        call generateNetCDFFile("burnfrac_yr_t", "annually", "tile", "burntFractionAll")
-!        call generateNetCDFFile("burnfrac_mo_t", "monthly", "tile", "burntFractionAll")
-!        call generateNetCDFFile("luc_emc_yr_g", "annually", "grid", "fDeforestToAtmos")
-!        call generateNetCDFFile("luc_emc_mo_g", "monthly", "grid", "fDeforestToAtmos")
-!        call generateNetCDFFile("luc_emc_yr", "annually", "pft", "fDeforestToAtmos")
-!        call generateNetCDFFile("luc_emc_mo", "monthly", "pft", "fDeforestToAtmos")
-!        call generateNetCDFFile("luc_emc_yr_t", "annually", "tile", "fDeforestToAtmos")
-!        call generateNetCDFFile("luc_emc_mo_t", "monthly", "tile", "fDeforestToAtmos")
-!        call generateNetCDFFile("lucltrin_yr_g", "annually", "grid", "fDeforestToLitter")
-!        call generateNetCDFFile("lucltrin_mo_g", "monthly", "grid", "fDeforestToLitter")
-!        call generateNetCDFFile("lucltrin_yr", "annually", "pft", "fDeforestToLitter")
-!        call generateNetCDFFile("lucltrin_mo", "monthly", "pft", "fDeforestToLitter")
-!        call generateNetCDFFile("lucltrin_yr_t", "annually", "tile", "fDeforestToLitter")
-!        call generateNetCDFFile("lucltrin_mo_t", "monthly", "tile", "fDeforestToLitter")
-!        call generateNetCDFFile("lucsocin_yr_g", "annually", "grid", "fDeforestToSoil")
-!        call generateNetCDFFile("lucsocin_mo_g", "monthly", "grid", "fDeforestToSoil")
-!        call generateNetCDFFile("lucsocin_yr", "annually", "pft", "fDeforestToSoil")
-!        call generateNetCDFFile("lucsocin_mo", "monthly", "pft", "fDeforestToSoil")
-!        call generateNetCDFFile("lucsocin_yr_t", "annually", "tile", "fDeforestToSoil")
-!        call generateNetCDFFile("lucsocin_mo_t", "monthly", "tile", "fDeforestToSoil")
-!        call generateNetCDFFile("fcancmxrow_yr_g", "annually", "pft", "landCoverFrac")
-!        call generateNetCDFFile("fcancmxrow_mo_g", "monthly", "pft", "landCoverFrac")
-!        call generateNetCDFFile("pftexistrow_yr_g", "annually", "pft", "landCoverExist")
-!        call generateNetCDFFile("pftexistrow_mo_g", "monthly", "pft", "landCoverExist")
-!        call generateNetCDFFile("ch4wet1_yr_g", "annually", "grid", "wetlandCH4spec")
-!        call generateNetCDFFile("ch4wet1_mo_g", "monthly", "grid", "wetlandCH4spec")
-!        call generateNetCDFFile("ch4wet1_yr_t", "annually", "tile", "wetlandCH4spec")
-!        call generateNetCDFFile("ch4wet1_mo_t", "monthly", "tile", "wetlandCH4spec")
-!        call generateNetCDFFile("ch4dyn1_yr_g", "annually", "grid", "wetlandCH4dyn")
-!        call generateNetCDFFile("ch4dyn1_mo_g", "monthly", "grid", "wetlandCH4dyn")
-!        call generateNetCDFFile("ch4dyn1_yr_t", "annually", "tile", "wetlandCH4dyn")
-!        call generateNetCDFFile("ch4dyn1_mo_t", "monthly", "tile", "wetlandCH4dyn")
-!        call generateNetCDFFile("ch4soills_yr_g", "annually", "grid", "soilCH4cons")
-!        call generateNetCDFFile("ch4soills_mo_g", "monthly", "grid", "soilCH4cons")
-!        call generateNetCDFFile("ch4soills_yr_t", "annually", "tile", "soilCH4cons")
-!        call generateNetCDFFile("ch4soills_mo_t", "monthly", "tile", "soilCH4cons")
-!        call generateNetCDFFile("wetfdyn_yr_g", "annually", "grid", "wetlandFrac")
-!        call generateNetCDFFile("wetfdyn_mo_g", "monthly", "grid", "wetlandFrac")
-!        call generateNetCDFFile("wetfdyn_yr_t", "annually", "tile", "wetlandFrac")
-!        call generateNetCDFFile("wetfdyn_mo_t", "monthly", "tile", "wetlandFrac")
 
         return
 
@@ -561,14 +385,14 @@ contains
         call ncEndDef(ncid)
 
         ! Fill in the dimension variables and define the model output vars
-        call ncPutDimValues(ncid, 'lon', myDomain%lonUnique, count=myDomain%cntx)
-        call ncPutDimValues(ncid, 'lat', myDomain%latUnique, count=myDomain%cnty)
+        call ncPutDimValues(ncid, 'lon', myDomain%lonUnique, count=(/myDomain%cntx/))
+        call ncPutDimValues(ncid, 'lat', myDomain%latUnique, count=(/myDomain%cnty/))
         
         select case(trim(outputForm))
             case ("tile")       ! Per tile outputs
                 allocate(intArray(nmos))
                 intArray=identityVector(nmos)
-                call ncPutDimValues(ncid, 'tile', dummyArray,intdata=intArray, count=nmos) ! pass dummyArray to allow integers
+                call ncPutDimValues(ncid, 'tile', dummyArray,intValues=intArray, count=(/nmos/)) ! pass dummyArray to allow integers
                 call ncReDef(ncid)
                 varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_double, [lonDimId,latDimId,tileDimId,timeDimId])
 
@@ -577,11 +401,11 @@ contains
                 if (descriptor%includeBareGround) then
                     allocate(intArray(iccp1))
                     intArray=identityVector(iccp1)
-                    call ncPutDimValues(ncid, 'pft', dummyArray,intdata=intArray, count=iccp1) ! pass dummyArray to allow integers
+                    call ncPutDimValues(ncid, 'pft', dummyArray,intValues=intArray, count=(/iccp1/)) ! pass dummyArray to allow integers
                 else
                     allocate(intArray(icc))
                     intArray=identityVector(icc)
-                    call ncPutDimValues(ncid, 'pft', dummyArray,intdata=intArray, count=icc) ! pass dummyArray to allow integers
+                    call ncPutDimValues(ncid, 'pft', dummyArray,intValues=intArray, count=(/icc/)) ! pass dummyArray to allow integers
                 end if
 
 
@@ -600,7 +424,7 @@ contains
 
                 allocate(intArray(ignd))
                 intArray=identityVector(ignd)
-                call ncPutDimValues(ncid, 'layer', dummyArray,intdata=intArray, count=ignd) ! pass dummyArray to allow integers
+                call ncPutDimValues(ncid, 'layer', dummyArray,intValues=intArray, count=(/ignd/)) ! pass dummyArray to allow integers
                 call ncReDef(ncid)
                 varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_double, [lonDimId,latDimId,layerDimId,timeDimId])
 
@@ -641,6 +465,7 @@ contains
         real, dimension(:), allocatable :: localData
         real, dimension(1) :: localStamp
         real, allocatable, dimension(:) :: timeWritten
+        character(90) :: errmsg
 
         allocate(localData(size(data)))
         localStamp = timeStamp
@@ -648,6 +473,13 @@ contains
 
         !print*,key,timeStamp,label
         id= getIdByKey(key)
+
+        if (id == 0) then
+            errmsg = 'writeOutput1D says: Your requested key does not exist (' // trim(key) // ') in netcdfVars.'
+            print*,trim(errmsg)
+            stop
+        end if
+
         ncid = netcdfVars(id)%ncid
 
         ! Check if the time period has already been added to the file
@@ -656,7 +488,7 @@ contains
         if (timeIndex == 0) then
             ! This is the first time step so add it.
             timeIndex = timeIndex + 1
-            call ncPutDimValues(ncid, "time", localStamp, start=timeIndex, count=1)
+            call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
         else
             ! This is a subsequent time step so need to check if it has already been added by
             ! another grid cell.
@@ -666,7 +498,7 @@ contains
 
             if (posTimeWanted == 0) then ! Need to add this time step
                 timeIndex = timeIndex + 1
-                call ncPutDimValues(ncid, "time", localStamp, start=timeIndex, count=1)
+                call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
             else
                 ! timeStamp already added so just use it.
                 timeIndex = posTimeWanted
@@ -680,9 +512,9 @@ contains
             start = 1
         end if
         if (length > 1) then
-            call ncPut1DVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,start,timeIndex], count=[1,1,length,1])
+            call ncPutVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,start,timeIndex], count=[1,1,length,1])
         else
-            call ncPut1DVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,timeIndex], count=[1,1,1])
+            call ncPutVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,timeIndex], count=[1,1,1])
         end if
     end subroutine writeOutput1D
 

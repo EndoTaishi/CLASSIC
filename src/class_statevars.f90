@@ -20,6 +20,7 @@ public :: alloc_class_vars
 public :: resetclassmon
 public :: resetclassyr
 public :: resetclassaccum
+public :: initDiagnosticVars
 
 !=================================================================================
 !>
@@ -407,7 +408,7 @@ type class_rotated
     real, allocatable, dimension(:) :: CSZROW  !<
     real, allocatable, dimension(:) :: DLONROW !<
     real, allocatable, dimension(:) :: DLATROW !<
-    real, allocatable, dimension(:) :: FCLOROW !<
+    real, allocatable, dimension(:) :: FCLOROW !<!<Fractional cloud cover [ ]
     real, allocatable, dimension(:) :: FDLROW  !<
     real, allocatable, dimension(:) :: FSIHROW !<
     real, allocatable, dimension(:) :: FSVHROW !<
@@ -1635,6 +1636,7 @@ end do
 end subroutine resetclassyr
 
 !==================================================
+
 subroutine resetclassaccum(nltest,nmtest)
 
 use ctem_params, only : ignd
@@ -1729,8 +1731,99 @@ end do
 
 end subroutine resetclassaccum
 
+!==================================================
 
+subroutine initDiagnosticVars(nml,ilg)
 
+    use ctem_params, only : ignd
 
+    implicit none
+
+    integer, intent(in) :: nml,ilg
+
+    integer :: k,m,l
+
+    !    * INITIALIZATION OF DIAGNOSTIC VARIABLES SPLIT OUT OF CLASSG
+    !    * FOR CONSISTENCY WITH GCM APPLICATIONS.
+
+    DO 330 K=1,ILG
+        class_gat%CDHGAT (K)=0.0
+        class_gat%CDMGAT (K)=0.0
+        class_gat%HFSGAT (K)=0.0
+        class_gat%TFXGAT (K)=0.0
+        class_gat%QEVPGAT(K)=0.0
+        class_gat%QFSGAT (K)=0.0
+        class_gat%QFXGAT (K)=0.0
+        class_gat%PETGAT (K)=0.0
+        class_gat%GAGAT  (K)=0.0
+        class_gat%EFGAT  (K)=0.0
+        class_gat%GTGAT  (K)=0.0
+        class_gat%QGGAT  (K)=0.0
+        class_gat%ALVSGAT(K)=0.0
+        class_gat%ALIRGAT(K)=0.0
+        class_gat%SFCTGAT(K)=0.0
+        class_gat%SFCUGAT(K)=0.0
+        class_gat%SFCVGAT(K)=0.0
+        class_gat%SFCQGAT(K)=0.0
+        class_gat%FSNOGAT(K)=0.0
+        class_gat%FSGVGAT(K)=0.0
+        class_gat%FSGSGAT(K)=0.0
+        class_gat%FSGGGAT(K)=0.0
+        class_gat%FLGVGAT(K)=0.0
+        class_gat%FLGSGAT(K)=0.0
+        class_gat%FLGGGAT(K)=0.0
+        class_gat%HFSCGAT(K)=0.0
+        class_gat%HFSSGAT(K)=0.0
+        class_gat%HFSGGAT(K)=0.0
+        class_gat%HEVCGAT(K)=0.0
+        class_gat%HEVSGAT(K)=0.0
+        class_gat%HEVGGAT(K)=0.0
+        class_gat%HMFCGAT(K)=0.0
+        class_gat%HMFNGAT(K)=0.0
+        class_gat%HTCCGAT(K)=0.0
+        class_gat%HTCSGAT(K)=0.0
+        class_gat%PCFCGAT(K)=0.0
+        class_gat%PCLCGAT(K)=0.0
+        class_gat%PCPNGAT(K)=0.0
+        class_gat%PCPGGAT(K)=0.0
+        class_gat%QFGGAT (K)=0.0
+        class_gat%QFNGAT (K)=0.0
+        class_gat%QFCFGAT(K)=0.0
+        class_gat%QFCLGAT(K)=0.0
+        class_gat%ROFGAT (K)=0.0
+        class_gat%ROFOGAT(K)=0.0
+        class_gat%ROFSGAT(K)=0.0
+        class_gat%ROFBGAT(K)=0.0
+        class_gat%TROFGAT(K)=0.0
+        class_gat%TROOGAT(K)=0.0
+        class_gat%TROSGAT(K)=0.0
+        class_gat%TROBGAT(K)=0.0
+        class_gat%ROFCGAT(K)=0.0
+        class_gat%ROFNGAT(K)=0.0
+        class_gat%ROVGGAT(K)=0.0
+        class_gat%WTRCGAT(K)=0.0
+        class_gat%WTRSGAT(K)=0.0
+        class_gat%WTRGGAT(K)=0.0
+        class_gat%DRGAT  (K)=0.0
+330                     CONTINUE
+
+    DO 334 L=1,IGND
+        DO 332 K=1,ILG
+            class_gat%HMFGGAT(K,L)=0.0
+            class_gat%HTCGAT (K,L)=0.0
+            class_gat%QFCGAT (K,L)=0.0
+            class_gat%GFLXGAT(K,L)=0.0
+332                         CONTINUE
+334                     CONTINUE
+
+    DO 340 M=1,50
+        DO 338 L=1,6
+            DO 336 K=1,NML
+                class_gat%ITCTGAT(K,L,M)=0
+336                             CONTINUE
+338                         CONTINUE
+340                     CONTINUE
+
+end subroutine initDiagnosticVars
 
 end module class_statevars
