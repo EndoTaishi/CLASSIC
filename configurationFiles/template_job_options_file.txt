@@ -18,11 +18,11 @@
 
  readMetStartYear = 1901  !< First year of meteorological forcing to read in from the met file
  readMetEndYear = 1901    !< Last year of meteorological forcing to read in from the met file
- metLoop = 2 ,            !< no. of times to cycle over the read-in meteorology
+ metLoop = 10 ,            !< no. of times to cycle over the read-in meteorology
  leap = .false. ,         !< True if your meteorological forcing includes leap years
 
  ! CTEM (biogeochemistry) switches:
- ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
+ ctem_on = .false. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
                         !< lai and canopy mass are used. with this switch on, all ctem subroutines are run.
     icc = 9 ,           !< Number of CTEM level PFTs
 

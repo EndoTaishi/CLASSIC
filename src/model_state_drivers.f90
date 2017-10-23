@@ -2,12 +2,12 @@
 
 !>\file
 
-module model_state_drivers
+!> This is the central driver to read in, and write out
+!! all model state variables (replacing INI and CTM files)
+!! as well as the model inputs such as MET, population density,
+!! land use change, CO2 etc.
 
-    !> This is the central driver to read in, and write out
-    !! all model state variables (replacing INI and CTM files)
-    !! as well as the model inputs such as MET, population density,
-    !! land use change, CO2 etc.
+module model_state_drivers
 
     ! J. Melton
     ! Nov 2016
@@ -1192,13 +1192,14 @@ contains
     !>\ingroup model_state_drivers_getMet
     !!@{
 
-    subroutine getMet(longitude,latitude,nday,delt)
+    !> Read in the meteorological input from a netcdf file
 
-        ! Read in the meteorological input from a netcdf file
+    subroutine getMet(longitude,latitude,nday,delt)
 
         use fileIOModule
         use outputManager, only : metid
         use ctem_statevars, only : c_switch
+        use generalUtils, only : parseTimeStamp
 
         implicit none
 
@@ -1211,13 +1212,14 @@ contains
         integer, pointer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
 
         real :: moStart,moEnd,domStart,domEnd !< Assumed start and end months and days of month
-        real :: timeStart, timeEnd          !< Calculated start and end in the format:%Y%m%d.%f
+        real :: timeStart, timeEnd            !< Calculated start and end in the format:%Y%m%d.%f
         integer :: lengthOfFile
         integer :: lonloc,latloc,i
         real, dimension(:), allocatable :: fileTime
         real, dimension(:), allocatable :: tempTime
         integer :: validTimestep
         integer :: firstIndex
+        real, dimension(4) :: firstTime
 
         readMetStartYear  => c_switch%readMetStartYear
         readMetEndYear    => c_switch%readMetEndYear
@@ -1241,7 +1243,7 @@ contains
         timeEnd =  readMetEndYear * 10000. + moEnd * 100. + domEnd + (real(nday - 1) * delt / 86400.)
 
         ! Now we read in and append the metTime the timesteps from the time variable of the met file. This
-        ! uses the intrinsic move_alloc, but it simply appends to the file.
+        ! uses the intrinsic move_alloc, but it simply appends to the array.
         allocate(metTime(0))
         validTimestep=0
         firstIndex=999999999 ! set to large value
@@ -1256,6 +1258,12 @@ contains
                 firstIndex = min(firstIndex,i)
             end if
         end do
+
+        ! Check that the first day is Jan 1, otherwise warn the user
+        firstTime =  parseTimeStamp(metTime(1))
+        if (firstTime(2) .ne. 1. .and. firstTime(3) .ne. 1.) then
+            print*,'Warning, your met file does not start on Jan 1!'
+        end if
 
         ! Find the closest cell to our lon and lat
         lonloc = closestCell(metid,'lon',longitude)
@@ -1281,11 +1289,77 @@ contains
     !>\ingroup model_state_drivers_updateMet
     !!@{
 
-    subroutine updateMet(timeIndex)
+    !> This transfers the met data of this time step from the read-in array to the
+    !! instantaneous variables. This also set iyear to the present year of MET being read in.
+
+    subroutine updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
+
+        use ctem_params, only : monthend
+        use class_statevars, only : class_rot
+        use generalUtils, only : parseTimeStamp
 
         implicit none
 
-        integer, intent(inout) :: timeIndex
+        integer, intent(inout) :: metTimeIndex      !< Index to read from met file
+        real,    intent(in) :: delt                 !< Physics timestep (s)
+        integer, intent(out) :: iyear               !< Present year of simulation
+        integer, intent(out) :: iday                !< Present day of simulation
+        integer, intent(out) :: ihour               !< Present hour of simulation
+        integer, intent(out) :: imin                !< Present minute of simulation
+        logical, intent(out) :: metDone             !< Switch signalling end of met data
+
+        real, pointer, dimension(:) :: FDLROW       !<
+        real, pointer, dimension(:) :: FSSROW       !<
+        real, pointer, dimension(:) :: PREROW       !<
+        real, pointer, dimension(:) :: TAROW        !<
+        real, pointer, dimension(:) :: QAROW        !<
+        real, pointer, dimension(:) :: UVROW        !<
+        real, pointer, dimension(:) :: PRESROW      !<
+
+        integer :: i,numsteps
+        real, dimension(4) :: theTime
+        real :: dayfrac, month, dom, hour, minute
+
+        FSSROW => class_rot%FSSROW
+        FDLROW => class_rot%FDLROW
+        PREROW => class_rot%PREROW
+        TAROW => class_rot%TAROW
+        QAROW => class_rot%QAROW
+        UVROW => class_rot%UVROW
+        PRESROW => class_rot%PRESROW
+
+        metDone = .false.
+
+        ! Find the timestep info from the array already read in.
+        theTime =  parseTimeStamp(metTime(metTimeIndex))
+
+        iyear = int(theTime(1))
+        month = theTime(2)
+        dom = theTime(3)
+        dayfrac = theTime(4)
+
+        !> Finding the day is straight forward from the day of month (dom)
+        !! and the month
+        iday = monthend(int(month)) + int(dom)
+
+        !> The dayfrac can then be parsed to give the hour and minute.
+        numsteps = nint(dayfrac * 24. / (delt / 3600.))
+        ihour = floor(real(numsteps) / 2.)
+        minute = mod(numsteps,2)
+        imin = nint(minute) * (delt / 60.)
+
+        !> The meteorological data is then passed to the instantaneous variables
+        !! from the larger variables that store the run's met data read in earlier.
+        i = 1 ! always 1 offline
+        FSSROW(I)   = metFss(metTimeIndex)
+        FDLROW(i)   = metFdl(metTimeIndex)
+        PREROW(i)   = metPre(metTimeIndex)
+        TAROW(i)    = metTa(metTimeIndex)
+        QAROW(i)    = metQa(metTimeIndex)
+        UVROW(i)    = metUv(metTimeIndex)
+        PRESROW(i)  = metPres(metTimeIndex)
+
+        if (metTimeIndex ==  size(metTime)) metDone = .true.
 
         return
 
@@ -1296,8 +1370,10 @@ contains
 
     !>\ingroup model_state_drivers_closestCell
     !!@{
+
+    !> FindS the closest grid cell in the file
+
     integer function closestCell(ncid,label,gridPoint)
-    ! Find the closest grid cell in the file
 
         use fileIOModule
 
@@ -1323,6 +1399,8 @@ contains
 
     !>\ingroup model_state_drivers_deallocInput
     !!@{
+
+    !> Deallocates the input files arrays
 
     subroutine deallocInput
 

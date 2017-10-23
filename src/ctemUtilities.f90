@@ -3,7 +3,7 @@ module ctemUtilities
 implicit none
 
 public :: dayEndCTEMPreparation
-!public :: accumulateForCTEM
+public :: accumulateForCTEM
 
     integer, pointer, dimension(:) :: altotcount_ctm !nlat  !< Counter used for calculating total albedo
     real, pointer, dimension(:)    :: fsinacc_gat !(ilg)    !<
