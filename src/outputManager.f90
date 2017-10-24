@@ -295,7 +295,7 @@ contains
 
         character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
         logical, pointer :: leap           !< set to true if all/some leap years in the .MET file have data for 366 days
-                                           !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
+                                           !< also accounts for leap years in .MET when cycling over meteorology (metLoop > 1)
 
         ! Point pointers
         leap => c_switch%leap

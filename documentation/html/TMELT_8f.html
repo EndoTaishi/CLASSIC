@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -255,26 +256,26 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">htc</td><td>Internal energy change of soil layer due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
+    <tr><td class="paramname">htc</td><td>Internal energy change of soil layer due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
     <tr><td class="paramname">zsnow</td><td>Depth of snow pack [m]</td></tr>
     <tr><td class="paramname">tsnow</td><td>Temperature of the snow pack [C]</td></tr>
-    <tr><td class="paramname">qmelt</td><td>Energy available for melting of snow <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
-    <tr><td class="paramname">r</td><td>Rainfall rate <img class="formulaInl" alt="$[m s^{-1}]$" src="form_782.png"/></td></tr>
+    <tr><td class="paramname">qmelt</td><td>Energy available for melting of snow <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
+    <tr><td class="paramname">r</td><td>Rainfall rate <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
     <tr><td class="paramname">tr</td><td>Temperature of rainfall [C]</td></tr>
-    <tr><td class="paramname">gzero</td><td>Heat flow into soil surface <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
-    <tr><td class="paramname">ralb</td><td>Rainfall rate saved for snow albedo calculations <img class="formulaInl" alt="$[m s^{-1}]$" src="form_782.png"/></td></tr>
-    <tr><td class="paramname">hmfn</td><td>Energy associated with freezing or thawing of water in the snow pack <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
-    <tr><td class="paramname">htcs</td><td>Internal energy change of snow pack due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}]$" src="form_809.png"/></td></tr>
+    <tr><td class="paramname">gzero</td><td>Heat flow into soil surface <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
+    <tr><td class="paramname">ralb</td><td>Rainfall rate saved for snow albedo calculations <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
+    <tr><td class="paramname">hmfn</td><td>Energy associated with freezing or thawing of water in the snow pack <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
+    <tr><td class="paramname">htcs</td><td>Internal energy change of snow pack due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
     <tr><td class="paramname">fi</td><td>Fractional coverage of subarea in question on modelled area [ ]</td></tr>
-    <tr><td class="paramname">hcpsno</td><td>Heat capacity of snow pack <img class="formulaInl" alt="$[J m^{-3} K^{-1}]$" src="form_812.png"/></td></tr>
-    <tr><td class="paramname">rhosno</td><td>Density of snow pack <img class="formulaInl" alt="$[kg m^{-3}]$" src="form_1180.png"/></td></tr>
-    <tr><td class="paramname">wsnow</td><td>Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_780.png"/></td></tr>
+    <tr><td class="paramname">hcpsno</td><td>Heat capacity of snow pack <img class="formulaInl" alt="$[J m^{-3} K^{-1}]$" src="form_380.png"/></td></tr>
+    <tr><td class="paramname">rhosno</td><td>Density of snow pack <img class="formulaInl" alt="$[kg m^{-3}]$" src="form_132.png"/></td></tr>
+    <tr><td class="paramname">wsnow</td><td>Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_130.png"/></td></tr>
     <tr><td class="paramname">isand</td><td>Sand content flag </td></tr>
   </table>
   </dd>
 </dl>
 <p>Melting of the snow pack occurs if a source of available energy QMELT is produced as a result of the solution of the surface energy balance, or if the snow pack temperature is projected to go above 0 C in the current time step (the available energy thus produced is added to QMELT in subroutine TSPOST). The change in internal energy in the snow pack is calculated at the beginning and end of the subroutine, and stored in diagnostic variable HTCS (see notes on subroutine SNOADD).</p>
-<p>The calculations in the 100 loop are performed if QFREZ and the snow depth ZSNOW are both greater than zero. The available energy HADD to be applied to the snow pack is calculated from QMELT. The amount of energy required to raise the snow pack temperature to 0 C and melt it completely is calculated as HCONV. If HADD <img class="formulaInl" alt="$\leq$" src="form_12.png"/> HCONV, the depth of snow ZMELT that is warmed to 0 C and melted is calculated from HADD. (It is assumed that melting of an upper layer of snow can occur even if the lower part of the snow pack is still below 0 C.) The amount of water generated by melting the snow, RMELTS, is calculated from ZMELT, and the temperature of the meltwater TRMELT is set to 0 C. ZMELT is subtracted from ZSNOW, the heat capacity of the snow is recalculated, and HTCS is corrected for the amount of heat used to warm the removed portion of the snow pack.</p>
+<p>The calculations in the 100 loop are performed if QFREZ and the snow depth ZSNOW are both greater than zero. The available energy HADD to be applied to the snow pack is calculated from QMELT. The amount of energy required to raise the snow pack temperature to 0 C and melt it completely is calculated as HCONV. If HADD <img class="formulaInl" alt="$\leq$" src="form_228.png"/> HCONV, the depth of snow ZMELT that is warmed to 0 C and melted is calculated from HADD. (It is assumed that melting of an upper layer of snow can occur even if the lower part of the snow pack is still below 0 C.) The amount of water generated by melting the snow, RMELTS, is calculated from ZMELT, and the temperature of the meltwater TRMELT is set to 0 C. ZMELT is subtracted from ZSNOW, the heat capacity of the snow is recalculated, and HTCS is corrected for the amount of heat used to warm the removed portion of the snow pack.</p>
 <p>If HADD &gt; HCONV, the amount of available energy is sufficient to warm and melt the whole snow pack, with some energy left over. The amount of water generated by melting the snow, RMELTS, is calculated from ZSNOW, and the total amount of water reaching the soil, RMELT, is obtained by adding the liquid water content of the snow pack, WSNOW, to RMELTS. HADD is recalculated as HADD – HCONV, and used to calculate TRMELT. The snow depth, heat capacity, temperature and water content are set to zero, and HTCS is corrected for the amount of heat that was used to warm the snow pack to 0 C.</p>
 <p>After the IF block, the diagnostic variable HMFN describing melting or freezing of water in the snow pack is updated using RMELTS, the temperature of the rainfall rate reaching the soil is updated using TRMELT, and RMELT is added to the rainfall rate R. QMELT is set to zero, and a flag variable RALB, used later in subroutine SNOALBW, is set to the rainfall rate reaching the ground.</p>
 <p>In the 200 loop, a check is performed to see whether QMELT is still greater than zero and the modelled area is not an ice sheet (ISAND &gt; -4). In this case QMELT is added to the ground heat flux GZERO, and the internal energy diagnostics HTCS and HTC for the snow and soil respectively are corrected. The flag variable RALB is evaluated as above.</p>
@@ -287,7 +288,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="TMELT_8f.html">TMELT.f</a></li>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:08 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

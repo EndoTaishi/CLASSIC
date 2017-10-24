@@ -1,6 +1,5 @@
 !>\file
-!!               Canadian Terrestrial Ecosystem Model (CTEM)
-!!                          Carbon Balance Subroutine
+!! Checks carbon pools for conservation
 !!
 !!unless mentioned all pools are in kg c/m2
 !!unless mentioned all fluxes are in units of u-mol co2/m2.sec

@@ -6,6 +6,7 @@ var searchData=
   ['fcancs',['fcancs',['../structctem__statevars_1_1veg__rot.html#a9741b26d8192f611d791fbdcc1ec22ad',1,'ctem_statevars::veg_rot::fcancs()'],['../structctem__statevars_1_1veg__gat.html#a2c17cb1f29f7178d4cba05cc321a2b07',1,'ctem_statevars::veg_gat::fcancs()']]],
   ['fcangat',['fcangat',['../structclass__statevars_1_1class__gather.html#a35f379c695df65f5c3a2a526fa1c714f',1,'class_statevars::class_gather']]],
   ['fclogat',['fclogat',['../structclass__statevars_1_1class__gather.html#a1b488525b4ff189e896e8600fb06bcb2',1,'class_statevars::class_gather']]],
+  ['fclorow',['fclorow',['../structclass__statevars_1_1class__rotated.html#abd82d60330ee13d4a600d346005ca453',1,'class_statevars::class_rotated']]],
   ['fdlgat',['fdlgat',['../structclass__statevars_1_1class__gather.html#a09eef3f54057e95e6f63718b0c1195e7',1,'class_statevars::class_gather']]],
   ['fixedyearch4',['fixedyearch4',['../structctem__statevars_1_1ctem__switches.html#a81bf465daf84c60c67fdf5d310511488',1,'ctem_statevars::ctem_switches']]],
   ['fixedyearco2',['fixedyearco2',['../structctem__statevars_1_1ctem__switches.html#af9b1e426ffdf1f8951e52ff53ea924e8',1,'ctem_statevars::ctem_switches']]],

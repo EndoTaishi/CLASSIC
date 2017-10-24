@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -119,31 +120,36 @@ Public Attributes</h2></td></tr>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>lonlandcell</b></td></tr>
 <tr class="separator:ac10e0e74d98fa7b0646d3faff30f7c3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae742d9860421a332cc230910ca1a39a9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae742d9860421a332cc230910ca1a39a9"></a>
-real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>latlandcell</b></td></tr>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structoutputmanager_1_1simulationdomain.html#ae742d9860421a332cc230910ca1a39a9">latlandcell</a></td></tr>
+<tr class="memdesc:ae742d9860421a332cc230910ca1a39a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Long/Lat values of only the land cells in our model domain. <br /></td></tr>
 <tr class="separator:ae742d9860421a332cc230910ca1a39a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bf1d28abed808e6220412ead6613218"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8bf1d28abed808e6220412ead6613218"></a>
 integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>lonlandindex</b></td></tr>
 <tr class="separator:a8bf1d28abed808e6220412ead6613218"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae910258e5a6c1e5c4d362d10d32fc1a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae910258e5a6c1e5c4d362d10d32fc1a"></a>
-integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>latlandindex</b></td></tr>
+integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structoutputmanager_1_1simulationdomain.html#aae910258e5a6c1e5c4d362d10d32fc1a">latlandindex</a></td></tr>
+<tr class="memdesc:aae910258e5a6c1e5c4d362d10d32fc1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indexes of only the land cells in our model domain for our resolution. <br /></td></tr>
 <tr class="separator:aae910258e5a6c1e5c4d362d10d32fc1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94ea0bc7fb6a3bd9136e6abce0374434"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a94ea0bc7fb6a3bd9136e6abce0374434"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>alllonvalues</b></td></tr>
 <tr class="separator:a94ea0bc7fb6a3bd9136e6abce0374434"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4eee8dd18e83bf5fbd665233dfb6ab3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad4eee8dd18e83bf5fbd665233dfb6ab3"></a>
-real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>alllatvalues</b></td></tr>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structoutputmanager_1_1simulationdomain.html#ad4eee8dd18e83bf5fbd665233dfb6ab3">alllatvalues</a></td></tr>
+<tr class="memdesc:ad4eee8dd18e83bf5fbd665233dfb6ab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">All long/Lat values in our model domain (including ocean/non-land) <br /></td></tr>
 <tr class="separator:ad4eee8dd18e83bf5fbd665233dfb6ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac16f1ec67eafc981b829a154ab094650"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac16f1ec67eafc981b829a154ab094650"></a>
 integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>lonlocalindex</b></td></tr>
 <tr class="separator:ac16f1ec67eafc981b829a154ab094650"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bc6455861f40142369ffa2e86470a18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2bc6455861f40142369ffa2e86470a18"></a>
-integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>latlocalindex</b></td></tr>
+integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structoutputmanager_1_1simulationdomain.html#a2bc6455861f40142369ffa2e86470a18">latlocalindex</a></td></tr>
+<tr class="memdesc:a2bc6455861f40142369ffa2e86470a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">The index for only the region that is being simulated. <br /></td></tr>
 <tr class="separator:a2bc6455861f40142369ffa2e86470a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52a5c6fa27f98b2b43299b6a02e9a2f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a52a5c6fa27f98b2b43299b6a02e9a2f7"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>latunique</b></td></tr>
 <tr class="separator:a52a5c6fa27f98b2b43299b6a02e9a2f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36d5c12ed95a00c813328f32697e0ce1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a36d5c12ed95a00c813328f32697e0ce1"></a>
-real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>lonunique</b></td></tr>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structoutputmanager_1_1simulationdomain.html#a36d5c12ed95a00c813328f32697e0ce1">lonunique</a></td></tr>
+<tr class="memdesc:a36d5c12ed95a00c813328f32697e0ce1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The index for only the region that is being simulated with each value only once. <br /></td></tr>
 <tr class="separator:a36d5c12ed95a00c813328f32697e0ce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6265d386b360171ab8dfea194edf88c2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6265d386b360171ab8dfea194edf88c2"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><b>landcellcount</b></td></tr>
@@ -260,7 +266,7 @@ integer&#160;</td><td class="memItemRight" valign="bottom"><b>latitude</b></td><
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>outputmanager</b></li><li class="navelem"><a class="el" href="structoutputmanager_1_1simulationdomain.html">simulationdomain</a></li>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:08 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 15:13:15 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

@@ -1,289 +1,4 @@
-!>\defgroup competition_scheme_bioclim
-!>
-!!Canadian Terrestrial Ecosystem Model (CTEM)
-!!Bioclimatic Parameters Estimation Subroutine
-!!
-!!
-!!The mortality associated with bioclimatic criteria, \f$m_{bioclim}\f$, ensures
-!! that PFTs do not venture outside their bioclimatic envelopes. The bioclimatic
-!! criteria that determine PFT existence are listed in Table \ref{tab:pftparams}
-!! for tree PFTs. Bioclimatic limits are not used for the \f$C_3\f$ and \f$C_4\f$
-!! grass PFTs. The bioclimatic limits represent physiological limits to PFT survival
-!! that are either not captured in the model or processes that are not sufficiently
-!! described by empirical observations to allow their parametrization. Some examples
-!! of the latter include a plant's resistance to frost damage and xylem cavitation
-!! limits due to moisture stress. The bioclimatic criteria include the minimum 
-!!coldest month air temperature (\f$T^{cold}_{min}\f$), the maximum coldest month
-!! air temperature (\f$T^{cold}_{max}\f$), the maximum warmest month air temperature
-!! (\f$T^{warm}_{max}\f$), the minimum number of annual growing degree days above
-!! \f$5\,C\f$ (\f$GDD5_{min}\f$), the minimum annual aridity index (ratio of 
-!!potential evapotranspiration to precipitation; \f$arid_{min}\f$) and the 
-!!minimum dry season length in a year (\f$dryseason_{min}\f$), where the dry 
-!!season length represents the number of consecutive months with precipitation 
-!!less than potential evaporation. The bioclimatic indices are updated on a 25 year
-!! timescale (\f$T=25\f$) such that the slowly changing value of a bioclimatic 
-!!index \f$X(t+1)\f$ for time \f$t+1\f$ is updated using its previous year's value
-!! \f$X(t)\f$ and its value \f$x(t)\f$ for the current year as
-!!
-!!\f[
-!!\label{efold} X(t+1)=X(t)e^{-1/T} + x(t) (1 - e^{-1/T}).
-!!\f]
-!!
-!!Equation (\ref{efold}) implies that \f$63\,{\%}\f$ of a sudden change in 
-!!the value of a bioclimatic index \f$\Delta x\f$ is reflected in \f$X(t)\f$
-!! in \f$T\f$ years \f$(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)\f$, while \f$86\,{\%}\f$ 
-!!of the change is reflected in \f$2T\f$ years \f$(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86)
-!!\f$.
-!!
-
-!------------------------------------------------------------------------------------
-
-!>\defgroup competition_scheme_existence
-!>
-!>Canadian Terrestrial Ecosystem Model (CTEM)
-!>PFT Existence Subroutine 
-
-!------------------------------------------------------------------------------------
-
-!>\defgroup competition_scheme_competition
-!>               Canadian Terrestrial Ecosystem Model (CTEM) 
-!>                          PFT Competition Subroutine 
-!>
-
-!------------------------------------------------------------------------------------
-
-!>\file
-!!
-!! Central module for all competition scheme-related operations
-!!
-!!
-!!Competition between PFTs in CTEM is based upon modified L--V equations \cite Arora2006-pp 
-!!\cite Arora2006-ax. The L--V equations \cite lotka1925elements \cite Volterra1926-iz have
-!! been adapted from their initial application for simulating predator--prey interactions
-!! in ecosystem models as described below.
-!!
-!!Competition parametrization
-!!
-!!The change in fractional coverage (\f$f\f$) of a PFT \f$\alpha\f$ through time, 
-!!\f$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}\f$, is expressed as the result of mortality, 
-!!and competition and colonization (CC) interactions with the other PFTs present in a
-!! grid cell and bare ground, collectively represented as \f$B\f$ where \f$\alpha \notin B\f$:
-!!\f[
-!!\label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha, f_B) - m_{\alpha} f_\alpha.
-!!\f]
-!!
-!!The CC interactions are represented symbolically by the \f$g(f_\alpha, f_B)\f$ function.
-!! Mortality is assumed to be proportional to the number density of plants and represented 
-!!by the mortality term, \f$m_{\alpha} f_\alpha\f$. The PFT-dependent mortality rate 
-!!(\f$m_{\alpha}\f$; \f$day^{-1}\f$) (described further in Sect. \ref{mort}) produces bare
-!! ground via a number of processes, and that bare ground is subsequently available for colonization.
-!! We consider the fractional coverage for \f$N\f$ PFTs plus bare ground (\f$f_{N+1}\f$ =
-!! \f$f_{bare}\f$) where \f$\sum_{j=1}^{N+1} f_{j}=1\f$. For competition between unequal
-!! competitors, the PFTs are ranked in terms of their dominance. If PFT \f$\alpha\f$ is the
-!! most dominant, it will invade the area of other PFTs and the bare ground (\f$f_B\f$,
-!! \f$\alpha \notin B\f$). Woody PFTs are all more dominant than grass PFTs since trees
-!! can successfully invade grasses by overshading them \cite Siemann2003-jl and thus are
-!! ranked higher. Within tree or grass PFTs the dominance rank of a PFT is calculated 
-!!based upon its colonization rate (\f$c_\alpha\f$; \f$day^{-1}\f$) with higher colonization
-!! rates giving a higher dominance ranking. For the general case of PFT \f$\alpha\f$ with a
-!! dominance rank of \f$i\f$, we describe the ranking from most dominant to least as 1, 
-!!2, \f${\ldots}\f$, \f$i-1\f$, \f$i\f$, \f$i+1\f$, \f${\ldots}\f$, \f$N\f$. 
-!!Equation (\ref{concepteqn}) can then be reformulated following a phenomenological
-!! approach as
-!!
-!!\f[
-!!\frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1}
-!! +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\ 
-!!- f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1),
-!!\alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full}
-!!\f]
-!!
-!!where the exponent \f$b\f$ is an empirical parameter, which controls the behaviour
-!! of the L--V equations. In the original L--V formulation, \f$b\f$ is 1, but we
-!! modify the L--V relations by using \f$b = 0\f$ following \cite Arora2006-pp 
-!!\cite Arora2006-ax (implications of this choice are expanded upon below). The 
-!!fractional cover of PFT \f$\alpha\f$ then changes depending on the gains it makes
-!! into the area of less dominant PFTs and the losses it suffers due to mortality
-!! and encroachment by more dominant PFTs. The rate of change of the bare fraction,
-!! \f$f_{bare}\f$, is expressed as
-!!
-!!\f[
-!!\label{barecol} \frac{\mathrm{d}f_{bare}}{\mathrm{d}t} = \sum_{\beta=1}^{N}
-!!(m_\beta f_\beta - c_{\beta, {bare}}f^b_\beta f_{bare}).
-!!\f]
-!!
-!!The rate at which PFT \f$\alpha\f$ invades another PFT \f$\beta\f$ is given by
-!!
-!!\f[
-!!\label{coloniz} c_{\alpha,\beta}f^b_\alpha f_{\beta} = c_\alpha
-!!\left(\frac{c_{\alpha,\beta}}{c_\alpha} \right)f^b_\alpha f_{\beta} 
-!!= c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}.
-!!\f]
-!!
-!!A PFT invading bare ground has an unimpeded \f$\textit{invasion}\f$ rate, \f$c_\alpha\f$.
-!! The ratio of the invasion rate by PFT \f$\alpha\f$ into area covered by another PFT
-!! \f$\beta\f$ and its unimpeded invasion rate (\f$\frac{c_{\alpha,\beta}}{c_\alpha}\f$)
-!! gives the relative efficiency of colonization, termed \f$\delta_{\alpha,\beta}\f$,
-!! which is a scalar between 0 and 1. \f$\delta\f$ is 1 for invasion of any PFT into
-!! bare ground and 1 for tree PFT invasion into grass PFTs. If a PFT \f$\beta\f$ has
-!! a lower dominance ranking than another PFT \f$\alpha\f$ then \f$\delta_{\beta,\alpha}
-!!=0\f$ implying that sub-dominant PFTs do not invade dominant PFTs, but get invaded
-!! by them, i.e. \f$\delta_{\alpha,\beta}=1\f$.  Equation (\ref{full}) can then 
-!!be written more succinctly for each PFT as
-!!
-!!\f[
-!!\label{compact} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = \sum_{\beta=1}^{N+1}
-!! (c_{\alpha} \delta_{\alpha,\beta}f^b_\alpha f_\beta - c_{\beta}
-!! \delta_{\beta,\alpha} f_\alpha f^b_\beta) -  m_{\alpha} f_\alpha.
-!!\f]
-!!
-!!The value of parameter \f$b\f$ is related to the manner in which two PFTs interact,
-!! represented by \f$f_{\alpha}^b f_{\beta}\f$, in Eqs. (\ref{full})--(\ref{coloniz}).
-!! As a result, the value of \f$b\f$ affects the equilibrium solution for fractional
-!! coverage of PFTs as well as how \f$f_i\f$ evolves over time.
-!!
-!!For the usual form of the L--V equations with \f$b=\delta=1\f$, and for the case of
-!! a grid cell with two PFTs, the competition--colonization equations are
-!!
-!!\f[
-!!\frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 f_1 ( f_2 + f_{bare}) - m_1 f_1 
-!!\nonumber \\ = c_1 f_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}}
-!! {\mathrm{d}t} = c_2 f_2 f_{bare} - c_1 f_1 f_2 - m_2 f_2 \nonumber \\ 
-!!= c_2 f_2 (1 - f_1 - f_2) - c_1 f_1 f_2 - m_2 f_2\label{cc_eq_b_eq_1_2},
-!!\f]
-!!
-!!where the dominant PFT 1 invades PFT 2 and the bare fraction, and PFT 2 invades
-!! only the bare fraction. The equilibrium solutions for $f_1$ and $f_2$ in this case are
-!!
-!!\f[
-!!f_1=max  \left[ \frac{c_1 - m_1}{c_1}, 0 \right], \vspace*{-4mm}
-!!\f]
-!!
-!!\f[
-!!f_2 = max \left[  \frac{c_2 - c_2 f_1 - c_1 f_1 - m_2}{c_2}, 0   \right]
-!! \nonumber \\ = max \left[  \frac{(c_2 - m_2)-(1+\frac{c_2}{c_1})(c_1-m_1)}{c_2},0
-!!   \right],\label{f2_eq_b_eq_1}
-!!\f]
-!!
-!!In Eq. (\ref{f2_eq_b_eq_1}), as long as \f$(c_1 - m_1)\f$ > \f$(c_2 - m_2)\f$
-!! the equilibrium solution for \f$f_2\f$ will always be zero and coexistence is not possible.
-!!
-!!For \f$b=0\f$ and \f$\delta=1\f$, the competition--colonization equations are
-!!
-!!\f[
-!!\frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\ 
-!!= c_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_{bare}
-!! - c_1 f_2 - m_2 f_2 \nonumber \\ = c_2 (1 - f_1 - f_2) - c_1 f_2 - m_2 f_2,\label{cc_eq_b_eq_0_1}
-!!\f]
-!!
-!!and the corresponding equilibrium fractions are
-!!
-!!\f[
-!!\label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1}, \vspace*{-4mm}
-!!\f]
-!!
-!!\f[
-!!\label{f_equil_b_eq_0_2}  f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)}.
-!!\f]
-!!
-!!In Eqs. (\ref{f_equil_b_eq_0_1}) and (\ref{f_equil_b_eq_0_2}), as long as
-!! \f$m_1> 0\f$ and \f$c_2 > 0\f$, then PFT 2 will always exist and
-!! equilibrium coexistence is possible. Values of parameter \f$b\f$
-!! between 1 and 0 yield equilibrium values of \f$f_2\f$ that vary 
-!!between 0 (Eq. \ref{f2_eq_b_eq_1}) and those obtained using Eq. 
-!!(\ref{f_equil_b_eq_0_2}). \f$b=0\f$ yields a maximum value of 
-!!equilibrium \f$f_2\f$ allowing PFT 2 to coexist maximally.
-!!
-!!In the standard L--V equations for predator--prey interactions coexistence
-!! is possible because the predator depends on prey for its food and so the
-!! predator population suffers as the prey population declines. This is in
-!! contrast to the application of the equations for competition between PFTs
-!! where the dominant PFT does not depend on sub-dominant PFTs for its existence
-!! and is thus able to exclude them completely. The PFTs interact with each other
-!! through the invasion term \f$(-c_{\beta} \delta_{\beta,\alpha} 
-!!f_\alpha f^b_\beta)\f$ in Eq. (\ref{compact}), where \f$\delta_{\alpha,\beta}
-!! = 1\f$ or \f$0\f$ depending on whether PFT \f$\alpha\f$ can or cannot 
-!!invade PFT \f$\beta\f$, respectively, as mentioned earlier. This interaction 
-!!through invasion is represented by \f$-c_1 f_1 f_2\f$ in Eq.( \ref{cc_eq_b_eq_1_2})
-!! (for \f$b=1\f$) and by \f$-c_1 f_2\f$ in Eq. (\ref{cc_eq_b_eq_0_1}) (for \f$b=0\f$).
-!! The magnitude of this interaction thus depends on the value of parameter $b$.
-!! When $b=1$ the interaction is proportional to the product of the fractional
-!! coverage of the two PFTs (\f$f_1 f_2\f$). When \f$b=0\f$, the interaction is
-!! proportional to the fractional coverage of the PFT being invaded (\f$f_2\f$).
-!! The use of \f$b=0\f$ thus reduces the product term \f$f_{\alpha}^b f_{\beta}\f$
-!! to \f$f_\beta\f$ and implies that the invasion of sub-dominant PFT \f$\beta\f$
-!! does not depend on the current fractional coverage of the dominant PFT \f$\alpha\f$.
-!! This case may be thought of as corresponding to the general availability of the
-!! seeds of the dominant PFT \f$\alpha\f$ that may germinate and invade the coverage
-!! of the sub-dominant PFT \f$\beta\f$ provided the climate is favourable, even if PFT
-!! \f$\alpha\f$ does not exist in the grid cell, i.e. \f$f_\alpha = 0\f$ (in the case
-!! where \f$f_\alpha = 0\f$, the PFT is always assumed to have a dormant seed bank
-!! in the grid cell given the long lifetimes of seeds and their wide dispersion).
-!! In contrast, in the standard version of the L--V equations, as implemented for
-!! predator--prey interactions, \f$b\f$ always equals \f$1\f$ since the amount of
-!! predation, and hence the reduction in the number of prey, depends on the product
-!! of the number of predators and the number of prey. Using \f$b=0\f$ is thus 
-!!consistent with invasion of the sub-dominant PFT \f$\beta\f$ being unaffected by
-!! the fractional coverage of the dominant PFT \f$\alpha\f$.
-!!
-!!
-!!Colonization rate
-!!
-!!
-!!The PFT-dependent colonization rate (\f$c_\alpha\f$; \f$day^{-1}\f$) is calculated based
-!! on the fraction (\f$\Lambda_\alpha\f$) of positive NPP (\f$kg\,C\,m^{-2}\,day^{-1}\f$) 
-!!that is used for spatial expansion
-!!
-!!\f[
-!!\label{c_a} c_\alpha = {\Lambda_\alpha\, NPP_\alpha\,\xi_{\alpha}},
-!!\f]
-!!
-!!where \f$\xi_{\alpha}\f$ (\f$(kg\,C)^{-1}\,m^{2}\f$) is the inverse sapling density 
-!!calculated as the reciprocal of vegetation biomass (\f$C_{veg,\alpha}\f$; \f$kg\,C\,m^{-2}\f$)
-!! multiplied by a PFT-dependent constant (\f$S_{sap,\alpha}\f$; unitless; see also ctem_params.f90)
-!!
-!!\f[
-!!\label{xi} \xi_{\alpha}=\frac{1}{S_{sap,\alpha}\,\max[0.25,\min(5.0, C_{veg,\alpha})]}.
-!!\f]
-!!
-!!The fraction of NPP used for spatial expansion, \f$\Lambda_\alpha\f$, is calculated using the
-!! leaf area index (\f${LAI}_\alpha\f$; \f$m^2\,leaf\,(m^{2}\,ground)^{-1}\f$) of a PFT
-!!
-!!\f[
-!!\Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})), \vspace*{-4mm}
-!!\f]
-!!
-!!\f[
-!!if   LAI_\alpha \leq LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =0 \nonumber \\ 
-!!if   LAI_{min,\alpha} < LAI_\alpha < LAI_{max,\alpha}:\nonumber \\ \quad  \lambda_{1,\alpha}
-!! =\frac{LAI_\alpha - LAI_{min,\alpha}} {LAI_{max,\alpha} - LAI_{min,\alpha}} \lambda_{max}
-!! \nonumber \\ if   LAI_\alpha \geq LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha}
-!! =\lambda_{max} \label{lam1} \vspace*{-4mm}
-!!\f]
-!!
-!!\f[
-!!if   LAI_\alpha > 0.25 LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{2,\alpha} =\cosh(0.115(LAI_\alpha
-!! - 0.25 LAI_{min,\alpha})) - 1 \nonumber \\ if   LAI_\alpha \leq 0.25 LAI_{min,\alpha}: \nonumber \\
-!! \quad \lambda_{2,\alpha} = 0\label{lam2}
-!!\f]
-!!
-!!The original formulation of \cite Arora2006-pp only considered \f$\lambda_{1,\alpha}\f$ but here
-!! we adjust the parametrization with the addition of \f$\lambda_{2,\alpha}\f$, which ensures
-!! that a small fraction of NPP is used for spatial expansion even at very low LAI values. 
-!!This additional constraint allows for improved fractional coverage of grasses in arid 
-!!regions. Similar to \f$S_{sap,\alpha}\f$, \f$LAI_{min,\alpha}\f$ and 
-!!\f$LAI_{max,\alpha}\f$ are PFT-dependent parameters (see also ctem_params.f90).
-!!
-!!The value of \f$\lambda_{max}\f$ is set to 0.1 so that a maximum of 10\,{\%} of 
-!!daily NPP can be used for spatial expansion. Finally, \f$\Lambda_\alpha\f$ is 
-!!set to zero for tree PFTs when they are in a full leaf-out mode and all NPP is
-!! being used for leaf expansion (see Appendix \ref{phenol}).
-!!
-!!
-!!
-
-! J. Melton. Jun 22, 2013
-
+!> Performs competition between PFTs for space
 module competition_scheme
 
 implicit none
@@ -297,6 +12,10 @@ contains
 
 !-------------------------------------------------------------------------------------------------------------
 
+!>\ingroup competition_scheme_bioclim
+!!@{
+!> Calculates bioclimatic parameters required to determine existance of PFTs
+
 subroutine  bioclim (   iday,        ta,   precip,   netrad, &
                               il1,       il2,      nilg,  leapnow, &
                             tcurm,  srpcuryr, dftcuryr,  inibioclim, &
@@ -305,9 +24,6 @@ subroutine  bioclim (   iday,        ta,   precip,   netrad, &
                            twarmm,    tcoldm,     gdd5,  aridity, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
                            annpcp,  dry_season_length)    
-
-!>\ingroup competition_scheme_bioclim
-!!@{
 
 !
 !     10  Jun 2014  - Add in new dry_season_length variable
@@ -584,14 +300,16 @@ real, parameter :: factor=exp(-1.0/eftime) !<faster to calculate this only at co
 end subroutine bioclim
 !>@}
 !-------------------------------------------------------------------------------------------------------------
+
+!>\ingroup competition_scheme_existence
+!!@{
+!> Determines if a PFT can exist in a grid cell based on climatic conditions
+
 subroutine  existence(  iday,       il1,      il2,      nilg, &
                              sort,  nol2pfts,                 &
                            twarmm,    tcoldm,     gdd5,  aridity, &
                          srplsmon,  defctmon, anndefct, annsrpls, &
                            annpcp,pftexist,dry_season_length) 
-
-!>\ingroup competition_scheme_existence
-!!@{
 
 !
 !     12  Jun 2014  - Broadleaf cold deciduous now have a tcolmin constraint
@@ -745,6 +463,10 @@ end subroutine existence
 !>@}
 
 !-------------------------------------------------------------------------------------------------------------
+!>\ingroup competition_scheme_competition
+!!@{
+!> Calculates the competition between PFTs based on Lotka-Volterra eqns. ot its modified
+!! forms. either option may be used.
 
 subroutine competition(  iday,      il1,       il2,      nilg, &
                           nol2pfts,   nppveg,   dofire, leapnow, &
@@ -755,8 +477,7 @@ subroutine competition(  iday,      il1,       il2,      nilg, &
                            fcancmx,   fcanmx,  vgbiomas, gavgltms, &
                           gavgscms,  bmasveg,   &
                           add2allo,        colrate,        mortrate)
-!>\ingroup competition_scheme_competition
-!!@{
+
 !     12  Jun 2014  - Change how carbon used in horizontal expansion is dealt with. We 
 !     J. Melton       now have a constant reproductive cost
 !
@@ -1668,6 +1389,266 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 
 end subroutine competition
 !>@}
+
+!>\file
+!! Performs competition between PFTs for space
+!!
+!!Competition between PFTs in CTEM is based upon modified L--V equations \cite Arora2006-pp
+!!\cite Arora2006-ax. The L--V equations \cite lotka1925elements \cite Volterra1926-iz have
+!! been adapted from their initial application for simulating predator--prey interactions
+!! in ecosystem models as described below.
+!!
+!!Competition parametrization
+!!
+!!The change in fractional coverage (\f$f\f$) of a PFT \f$\alpha\f$ through time,
+!!\f$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}\f$, is expressed as the result of mortality,
+!!and competition and colonization (CC) interactions with the other PFTs present in a
+!! grid cell and bare ground, collectively represented as \f$B\f$ where \f$\alpha \notin B\f$:
+!!\f[
+!!\label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha, f_B) - m_{\alpha} f_\alpha.
+!!\f]
+!!
+!!The CC interactions are represented symbolically by the \f$g(f_\alpha, f_B)\f$ function.
+!! Mortality is assumed to be proportional to the number density of plants and represented
+!!by the mortality term, \f$m_{\alpha} f_\alpha\f$. The PFT-dependent mortality rate
+!!(\f$m_{\alpha}\f$; \f$day^{-1}\f$) (described further in Sect. \ref{mort}) produces bare
+!! ground via a number of processes, and that bare ground is subsequently available for colonization.
+!! We consider the fractional coverage for \f$N\f$ PFTs plus bare ground (\f$f_{N+1}\f$ =
+!! \f$f_{bare}\f$) where \f$\sum_{j=1}^{N+1} f_{j}=1\f$. For competition between unequal
+!! competitors, the PFTs are ranked in terms of their dominance. If PFT \f$\alpha\f$ is the
+!! most dominant, it will invade the area of other PFTs and the bare ground (\f$f_B\f$,
+!! \f$\alpha \notin B\f$). Woody PFTs are all more dominant than grass PFTs since trees
+!! can successfully invade grasses by overshading them \cite Siemann2003-jl and thus are
+!! ranked higher. Within tree or grass PFTs the dominance rank of a PFT is calculated
+!!based upon its colonization rate (\f$c_\alpha\f$; \f$day^{-1}\f$) with higher colonization
+!! rates giving a higher dominance ranking. For the general case of PFT \f$\alpha\f$ with a
+!! dominance rank of \f$i\f$, we describe the ranking from most dominant to least as 1,
+!!2, \f${\ldots}\f$, \f$i-1\f$, \f$i\f$, \f$i+1\f$, \f${\ldots}\f$, \f$N\f$.
+!!Equation (\ref{concepteqn}) can then be reformulated following a phenomenological
+!! approach as
+!!
+!!\f[
+!!\frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1}
+!! +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\
+!!- f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1),
+!!\alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full}
+!!\f]
+!!
+!!where the exponent \f$b\f$ is an empirical parameter, which controls the behaviour
+!! of the L--V equations. In the original L--V formulation, \f$b\f$ is 1, but we
+!! modify the L--V relations by using \f$b = 0\f$ following \cite Arora2006-pp
+!!\cite Arora2006-ax (implications of this choice are expanded upon below). The
+!!fractional cover of PFT \f$\alpha\f$ then changes depending on the gains it makes
+!! into the area of less dominant PFTs and the losses it suffers due to mortality
+!! and encroachment by more dominant PFTs. The rate of change of the bare fraction,
+!! \f$f_{bare}\f$, is expressed as
+!!
+!!\f[
+!!\label{barecol} \frac{\mathrm{d}f_{bare}}{\mathrm{d}t} = \sum_{\beta=1}^{N}
+!!(m_\beta f_\beta - c_{\beta, {bare}}f^b_\beta f_{bare}).
+!!\f]
+!!
+!!The rate at which PFT \f$\alpha\f$ invades another PFT \f$\beta\f$ is given by
+!!
+!!\f[
+!!\label{coloniz} c_{\alpha,\beta}f^b_\alpha f_{\beta} = c_\alpha
+!!\left(\frac{c_{\alpha,\beta}}{c_\alpha} \right)f^b_\alpha f_{\beta}
+!!= c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}.
+!!\f]
+!!
+!!A PFT invading bare ground has an unimpeded \f$\textit{invasion}\f$ rate, \f$c_\alpha\f$.
+!! The ratio of the invasion rate by PFT \f$\alpha\f$ into area covered by another PFT
+!! \f$\beta\f$ and its unimpeded invasion rate (\f$\frac{c_{\alpha,\beta}}{c_\alpha}\f$)
+!! gives the relative efficiency of colonization, termed \f$\delta_{\alpha,\beta}\f$,
+!! which is a scalar between 0 and 1. \f$\delta\f$ is 1 for invasion of any PFT into
+!! bare ground and 1 for tree PFT invasion into grass PFTs. If a PFT \f$\beta\f$ has
+!! a lower dominance ranking than another PFT \f$\alpha\f$ then \f$\delta_{\beta,\alpha}
+!!=0\f$ implying that sub-dominant PFTs do not invade dominant PFTs, but get invaded
+!! by them, i.e. \f$\delta_{\alpha,\beta}=1\f$.  Equation (\ref{full}) can then
+!!be written more succinctly for each PFT as
+!!
+!!\f[
+!!\label{compact} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = \sum_{\beta=1}^{N+1}
+!! (c_{\alpha} \delta_{\alpha,\beta}f^b_\alpha f_\beta - c_{\beta}
+!! \delta_{\beta,\alpha} f_\alpha f^b_\beta) -  m_{\alpha} f_\alpha.
+!!\f]
+!!
+!!The value of parameter \f$b\f$ is related to the manner in which two PFTs interact,
+!! represented by \f$f_{\alpha}^b f_{\beta}\f$, in Eqs. (\ref{full})--(\ref{coloniz}).
+!! As a result, the value of \f$b\f$ affects the equilibrium solution for fractional
+!! coverage of PFTs as well as how \f$f_i\f$ evolves over time.
+!!
+!!For the usual form of the L--V equations with \f$b=\delta=1\f$, and for the case of
+!! a grid cell with two PFTs, the competition--colonization equations are
+!!
+!!\f[
+!!\frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 f_1 ( f_2 + f_{bare}) - m_1 f_1
+!!\nonumber \\ = c_1 f_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}}
+!! {\mathrm{d}t} = c_2 f_2 f_{bare} - c_1 f_1 f_2 - m_2 f_2 \nonumber \\
+!!= c_2 f_2 (1 - f_1 - f_2) - c_1 f_1 f_2 - m_2 f_2\label{cc_eq_b_eq_1_2},
+!!\f]
+!!
+!!where the dominant PFT 1 invades PFT 2 and the bare fraction, and PFT 2 invades
+!! only the bare fraction. The equilibrium solutions for $f_1$ and $f_2$ in this case are
+!!
+!!\f[
+!!f_1=max  \left[ \frac{c_1 - m_1}{c_1}, 0 \right], \vspace*{-4mm}
+!!\f]
+!!
+!!\f[
+!!f_2 = max \left[  \frac{c_2 - c_2 f_1 - c_1 f_1 - m_2}{c_2}, 0   \right]
+!! \nonumber \\ = max \left[  \frac{(c_2 - m_2)-(1+\frac{c_2}{c_1})(c_1-m_1)}{c_2},0
+!!   \right],\label{f2_eq_b_eq_1}
+!!\f]
+!!
+!!In Eq. (\ref{f2_eq_b_eq_1}), as long as \f$(c_1 - m_1)\f$ > \f$(c_2 - m_2)\f$
+!! the equilibrium solution for \f$f_2\f$ will always be zero and coexistence is not possible.
+!!
+!!For \f$b=0\f$ and \f$\delta=1\f$, the competition--colonization equations are
+!!
+!!\f[
+!!\frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\
+!!= c_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_{bare}
+!! - c_1 f_2 - m_2 f_2 \nonumber \\ = c_2 (1 - f_1 - f_2) - c_1 f_2 - m_2 f_2,\label{cc_eq_b_eq_0_1}
+!!\f]
+!!
+!!and the corresponding equilibrium fractions are
+!!
+!!\f[
+!!\label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1}, \vspace*{-4mm}
+!!\f]
+!!
+!!\f[
+!!\label{f_equil_b_eq_0_2}  f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)}.
+!!\f]
+!!
+!!In Eqs. (\ref{f_equil_b_eq_0_1}) and (\ref{f_equil_b_eq_0_2}), as long as
+!! \f$m_1> 0\f$ and \f$c_2 > 0\f$, then PFT 2 will always exist and
+!! equilibrium coexistence is possible. Values of parameter \f$b\f$
+!! between 1 and 0 yield equilibrium values of \f$f_2\f$ that vary
+!!between 0 (Eq. \ref{f2_eq_b_eq_1}) and those obtained using Eq.
+!!(\ref{f_equil_b_eq_0_2}). \f$b=0\f$ yields a maximum value of
+!!equilibrium \f$f_2\f$ allowing PFT 2 to coexist maximally.
+!!
+!!In the standard L--V equations for predator--prey interactions coexistence
+!! is possible because the predator depends on prey for its food and so the
+!! predator population suffers as the prey population declines. This is in
+!! contrast to the application of the equations for competition between PFTs
+!! where the dominant PFT does not depend on sub-dominant PFTs for its existence
+!! and is thus able to exclude them completely. The PFTs interact with each other
+!! through the invasion term \f$(-c_{\beta} \delta_{\beta,\alpha}
+!!f_\alpha f^b_\beta)\f$ in Eq. (\ref{compact}), where \f$\delta_{\alpha,\beta}
+!! = 1\f$ or \f$0\f$ depending on whether PFT \f$\alpha\f$ can or cannot
+!!invade PFT \f$\beta\f$, respectively, as mentioned earlier. This interaction
+!!through invasion is represented by \f$-c_1 f_1 f_2\f$ in Eq.( \ref{cc_eq_b_eq_1_2})
+!! (for \f$b=1\f$) and by \f$-c_1 f_2\f$ in Eq. (\ref{cc_eq_b_eq_0_1}) (for \f$b=0\f$).
+!! The magnitude of this interaction thus depends on the value of parameter $b$.
+!! When $b=1$ the interaction is proportional to the product of the fractional
+!! coverage of the two PFTs (\f$f_1 f_2\f$). When \f$b=0\f$, the interaction is
+!! proportional to the fractional coverage of the PFT being invaded (\f$f_2\f$).
+!! The use of \f$b=0\f$ thus reduces the product term \f$f_{\alpha}^b f_{\beta}\f$
+!! to \f$f_\beta\f$ and implies that the invasion of sub-dominant PFT \f$\beta\f$
+!! does not depend on the current fractional coverage of the dominant PFT \f$\alpha\f$.
+!! This case may be thought of as corresponding to the general availability of the
+!! seeds of the dominant PFT \f$\alpha\f$ that may germinate and invade the coverage
+!! of the sub-dominant PFT \f$\beta\f$ provided the climate is favourable, even if PFT
+!! \f$\alpha\f$ does not exist in the grid cell, i.e. \f$f_\alpha = 0\f$ (in the case
+!! where \f$f_\alpha = 0\f$, the PFT is always assumed to have a dormant seed bank
+!! in the grid cell given the long lifetimes of seeds and their wide dispersion).
+!! In contrast, in the standard version of the L--V equations, as implemented for
+!! predator--prey interactions, \f$b\f$ always equals \f$1\f$ since the amount of
+!! predation, and hence the reduction in the number of prey, depends on the product
+!! of the number of predators and the number of prey. Using \f$b=0\f$ is thus
+!!consistent with invasion of the sub-dominant PFT \f$\beta\f$ being unaffected by
+!! the fractional coverage of the dominant PFT \f$\alpha\f$.
+!!
+!!
+!!Colonization rate
+!!
+!!
+!!The PFT-dependent colonization rate (\f$c_\alpha\f$; \f$day^{-1}\f$) is calculated based
+!! on the fraction (\f$\Lambda_\alpha\f$) of positive NPP (\f$kg\,C\,m^{-2}\,day^{-1}\f$)
+!!that is used for spatial expansion
+!!
+!!\f[
+!!\label{c_a} c_\alpha = {\Lambda_\alpha\, NPP_\alpha\,\xi_{\alpha}},
+!!\f]
+!!
+!!where \f$\xi_{\alpha}\f$ (\f$(kg\,C)^{-1}\,m^{2}\f$) is the inverse sapling density
+!!calculated as the reciprocal of vegetation biomass (\f$C_{veg,\alpha}\f$; \f$kg\,C\,m^{-2}\f$)
+!! multiplied by a PFT-dependent constant (\f$S_{sap,\alpha}\f$; unitless; see also ctem_params.f90)
+!!
+!!\f[
+!!\label{xi} \xi_{\alpha}=\frac{1}{S_{sap,\alpha}\,\max[0.25,\min(5.0, C_{veg,\alpha})]}.
+!!\f]
+!!
+!!The fraction of NPP used for spatial expansion, \f$\Lambda_\alpha\f$, is calculated using the
+!! leaf area index (\f${LAI}_\alpha\f$; \f$m^2\,leaf\,(m^{2}\,ground)^{-1}\f$) of a PFT
+!!
+!!\f[
+!!\Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})), \vspace*{-4mm}
+!!\f]
+!!
+!!\f[
+!!if   LAI_\alpha \leq LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =0 \nonumber \\
+!!if   LAI_{min,\alpha} < LAI_\alpha < LAI_{max,\alpha}:\nonumber \\ \quad  \lambda_{1,\alpha}
+!! =\frac{LAI_\alpha - LAI_{min,\alpha}} {LAI_{max,\alpha} - LAI_{min,\alpha}} \lambda_{max}
+!! \nonumber \\ if   LAI_\alpha \geq LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha}
+!! =\lambda_{max} \label{lam1} \vspace*{-4mm}
+!!\f]
+!!
+!!\f[
+!!if   LAI_\alpha > 0.25 LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{2,\alpha} =\cosh(0.115(LAI_\alpha
+!! - 0.25 LAI_{min,\alpha})) - 1 \nonumber \\ if   LAI_\alpha \leq 0.25 LAI_{min,\alpha}: \nonumber \\
+!! \quad \lambda_{2,\alpha} = 0\label{lam2}
+!!\f]
+!!
+!!The original formulation of \cite Arora2006-pp only considered \f$\lambda_{1,\alpha}\f$ but here
+!! we adjust the parametrization with the addition of \f$\lambda_{2,\alpha}\f$, which ensures
+!! that a small fraction of NPP is used for spatial expansion even at very low LAI values.
+!!This additional constraint allows for improved fractional coverage of grasses in arid
+!!regions. Similar to \f$S_{sap,\alpha}\f$, \f$LAI_{min,\alpha}\f$ and
+!!\f$LAI_{max,\alpha}\f$ are PFT-dependent parameters (see also ctem_params.f90).
+!!
+!!The value of \f$\lambda_{max}\f$ is set to 0.1 so that a maximum of 10\,{\%} of
+!!daily NPP can be used for spatial expansion. Finally, \f$\Lambda_\alpha\f$ is
+!!set to zero for tree PFTs when they are in a full leaf-out mode and all NPP is
+!! being used for leaf expansion (see Appendix \ref{phenol}).
+!!
+!! Bioclimatic conditions determination
+!!
+!!The mortality associated with bioclimatic criteria, \f$m_{bioclim}\f$, ensures
+!! that PFTs do not venture outside their bioclimatic envelopes. The bioclimatic
+!! criteria that determine PFT existence are listed in Table \ref{tab:pftparams}
+!! for tree PFTs. Bioclimatic limits are not used for the \f$C_3\f$ and \f$C_4\f$
+!! grass PFTs. The bioclimatic limits represent physiological limits to PFT survival
+!! that are either not captured in the model or processes that are not sufficiently
+!! described by empirical observations to allow their parametrization. Some examples
+!! of the latter include a plant's resistance to frost damage and xylem cavitation
+!! limits due to moisture stress. The bioclimatic criteria include the minimum
+!!coldest month air temperature (\f$T^{cold}_{min}\f$), the maximum coldest month
+!! air temperature (\f$T^{cold}_{max}\f$), the maximum warmest month air temperature
+!! (\f$T^{warm}_{max}\f$), the minimum number of annual growing degree days above
+!! \f$5\,C\f$ (\f$GDD5_{min}\f$), the minimum annual aridity index (ratio of
+!!potential evapotranspiration to precipitation; \f$arid_{min}\f$) and the
+!!minimum dry season length in a year (\f$dryseason_{min}\f$), where the dry
+!!season length represents the number of consecutive months with precipitation
+!!less than potential evaporation. The bioclimatic indices are updated on a 25 year
+!! timescale (\f$T=25\f$) such that the slowly changing value of a bioclimatic
+!!index \f$X(t+1)\f$ for time \f$t+1\f$ is updated using its previous year's value
+!! \f$X(t)\f$ and its value \f$x(t)\f$ for the current year as
+!!
+!!\f[
+!!\label{efold} X(t+1)=X(t)e^{-1/T} + x(t) (1 - e^{-1/T}).
+!!\f]
+!!
+!!Equation (\ref{efold}) implies that \f$63\,{\%}\f$ of a sudden change in
+!!the value of a bioclimatic index \f$\Delta x\f$ is reflected in \f$X(t)\f$
+!! in \f$T\f$ years \f$(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)\f$, while \f$86\,{\%}\f$
+!!of the change is reflected in \f$2T\f$ years \f$(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86)
+!!\f$.
+!!
+
 end module
 
 

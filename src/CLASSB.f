@@ -1,6 +1,6 @@
 C>\file
-!!Purpose: Assign thermal and hydraulic properties to soil layers based on sand/clay content, or soil type.
-!!Also calculate permeable thickness of soil layers, and wet and dry surface albedo for mineral soils.
+!!Assigns thermal and hydraulic properties to soil layers based on sand/clay content, or soil type.
+!!Also calculates permeable thickness of soil layers, and wet and dry surface albedo for mineral soils.
 !!
       SUBROUTINE CLASSB(THPOR,THLRET,THLMIN,BI,PSISAT,GRKSAT,
      1                  THLRAT,HCPS,TCS,THFC,THLW,PSIWLT,

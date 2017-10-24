@@ -1,5 +1,6 @@
 !>\file
-C!              Canadian Terrestrial Ecosystem Model (CTEM) 
+C! Performs initial 'gather' operation on CTEM variables for consistency
+!! with physics variables gather operations.
 !!
       subroutine ctemg1(  gleafmasgat,  bleafmasgat,  stemmassgat,
      a                    rootmassgat,   fcancmxgat,      zbtwgat,

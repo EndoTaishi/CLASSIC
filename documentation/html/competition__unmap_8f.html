@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -491,16 +492,16 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">litrmass_cmp</td><td>litter mass for each of the 10 ctem pfts + bare, in each latitudinal grid cell</td></tr>
     <tr><td class="paramname">soilcmas_cmp</td><td>soil carbon mass for each of the 10 ctem pfts + bare, in each latitudinal grid cell</td></tr>
     <tr><td class="paramname">lambda_cmp</td><td>fraction of npp that is used for horizontal expansion in each latitudinal grid cell</td></tr>
-    <tr><td class="paramname">bmasveg_cmp</td><td>total (gleaf + stem + root) biomass for each ctem pft, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/> in each latitudinal grid cell</td></tr>
+    <tr><td class="paramname">bmasveg_cmp</td><td>total (gleaf + stem + root) biomass for each ctem pft, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/> in each latitudinal grid cell</td></tr>
     <tr><td class="paramname">burnvegf_cmp</td><td>fractional areas burned, for ctem pfts in each latitudinal grid cell</td></tr>
-    <tr><td class="paramname">add2allo_cmp</td><td>npp <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/>.day in each latitudinal grid cell that is used for expansion and subsequently allocated to leaves, stem, and root via the allocation part of the model.</td></tr>
+    <tr><td class="paramname">add2allo_cmp</td><td>npp <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/>.day in each latitudinal grid cell that is used for expansion and subsequently allocated to leaves, stem, and root via the allocation part of the model.</td></tr>
     <tr><td class="paramname">cc_cmp</td><td>colonization rate &amp; mortality rate in each latitudinal grid cell</td></tr>
     <tr><td class="paramname">mm_cmp</td><td>colonization rate &amp; mortality rate in each latitudinal grid cell</td></tr>
     <tr><td class="paramname">fcanmx_cmp</td><td>fractional coverage of class' 4 pfts in each latitudinal grid cell</td></tr>
-    <tr><td class="paramname">grclarea_cmp</td><td>area of the grid cell, <img class="formulaInl" alt="$km^2$" src="form_509.png"/></td></tr>
-    <tr><td class="paramname">vgbiomas_cmp</td><td>grid averaged vegetation biomass, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
-    <tr><td class="paramname">gavgltms_cmp</td><td>grid averaged litter mass, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
-    <tr><td class="paramname">gavgscms_cmp</td><td>grid averaged soil c mass, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
+    <tr><td class="paramname">grclarea_cmp</td><td>area of the grid cell, <img class="formulaInl" alt="$km^2$" src="form_447.png"/></td></tr>
+    <tr><td class="paramname">vgbiomas_cmp</td><td>grid averaged vegetation biomass, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramname">gavgltms_cmp</td><td>grid averaged litter mass, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramname">gavgscms_cmp</td><td>grid averaged soil c mass, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
     <tr><td class="paramname">lucemcom_cmp</td><td>land use change (luc) related combustion emission losses in each latitudional grid cell, u-mol co2/m2.sec</td></tr>
     <tr><td class="paramname">lucltrin_cmp</td><td>luc related inputs to litter pool, in each latitudional grid cell, u-mol co2/m2.sec</td></tr>
     <tr><td class="paramname">lucsocin_cmp</td><td>luc related inputs to soil c pool, in each latitudional grid cell, u-mol co2/m2.sec</td></tr>
@@ -539,7 +540,7 @@ Functions/Subroutines</h2></td></tr>
 <hr/>
 <p> parameters used</p>
 <p>note the structure of parameter vectors which clearly shows the class pfts (along rows) and ctem sub-pfts (along columns) </p><h2><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | } \hline needle leaf &amp; evg1 &amp; evg2 &amp; dcd \\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry \\ \hline crops &amp; c3 &amp; c4 &amp; --- \\ \hline grasses &amp; c3 &amp; c4 &amp; --- \\ \hline \end{tabular} \]" src="form_1849.png"/>
+<img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | } \hline needle leaf &amp; evg1 &amp; evg2 &amp; dcd \\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry \\ \hline crops &amp; c3 &amp; c4 &amp; --- \\ \hline grasses &amp; c3 &amp; c4 &amp; --- \\ \hline \end{tabular} \]" src="form_449.png"/>
 </p>
  </h2>
 <p>initialization</p>
@@ -557,7 +558,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="competition__unmap_8f.html">competition_unmap.f</a></li>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:08 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

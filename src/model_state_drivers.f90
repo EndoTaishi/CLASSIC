@@ -1,8 +1,7 @@
 !>\defgroup model_state_drivers
 
 !>\file
-
-!> This is the central driver to read in, and write out
+!> Central driver to read in, and write out
 !! all model state variables (replacing INI and CTM files)
 !! as well as the model inputs such as MET, population density,
 !! land use change, CO2 etc.
@@ -26,25 +25,25 @@ module model_state_drivers
     public  :: deallocInput
     private :: closestCell
 
-    integer, dimension(:), allocatable :: CO2Time           ! The time (years) from the CO2File
-    real, dimension(:), allocatable :: CO2FromFile          ! The array of CO2 values (ppm) from the CO2File
-    integer, dimension(:), allocatable :: CH4Time           ! The time (years) from the CH4File
-    real, dimension(:), allocatable :: CH4FromFile          ! The array of CH4 values (ppm) from the CH4File
-    integer, dimension(:), allocatable :: POPDTime          ! The time (years) from the population density file
-    real, dimension(:), allocatable :: POPDFromFile         ! The array of CH4 values (ppm) from the POPDFile
-    integer, dimension(:), allocatable :: LGHTTime          ! The time from the lightning density file (usually months)
-    real, dimension(:), allocatable :: LGHTFromFile         ! The array of lightning density from the LGHTFile
-    integer, dimension(:), allocatable :: LUCTime           ! The time from the LUC file
-    real, dimension(:,:), allocatable :: LUCFromFile        ! The array of LUC from the LUCFile
+    integer, dimension(:), allocatable :: CO2Time           !< The time (years) from the CO2File
+    real, dimension(:), allocatable :: CO2FromFile          !< The array of CO2 values (ppm) from the CO2File
+    integer, dimension(:), allocatable :: CH4Time           !< The time (years) from the CH4File
+    real, dimension(:), allocatable :: CH4FromFile          !< The array of CH4 values (ppm) from the CH4File
+    integer, dimension(:), allocatable :: POPDTime          !< The time (years) from the population density file
+    real, dimension(:), allocatable :: POPDFromFile         !< The array of CH4 values (ppm) from the POPDFile
+    integer, dimension(:), allocatable :: LGHTTime          !< The time from the lightning density file (usually months)
+    real, dimension(:), allocatable :: LGHTFromFile         !< The array of lightning density from the LGHTFile
+    integer, dimension(:), allocatable :: LUCTime           !< The time from the LUC file
+    real, dimension(:,:), allocatable :: LUCFromFile        !< The array of LUC from the LUCFile
 
-    real, dimension(:), allocatable :: metTime              ! The time from the Met file
-    real, dimension(:), allocatable :: metFss               ! Incoming shortwave radiation from metFile \f$[W m^{-2} ]\f$
-    real, dimension(:), allocatable :: metFdl               ! Incoming longwave radiation from metFile \f$[W m^{-2} ]\f$
-    real, dimension(:), allocatable :: metPre               ! Precipitation from metFile \f$[kg m^{-2} s^{-1} ]\f$
-    real, dimension(:), allocatable :: metTa                ! Air temperature from metFile (Celsius)
-    real, dimension(:), allocatable :: metQa                ! Specific humidity from metFile
-    real, dimension(:), allocatable :: metUv                ! Wind speed from metFile
-    real, dimension(:), allocatable :: metPres              ! Atmospheric pressure from metFile
+    real, dimension(:), allocatable :: metTime              !< The time from the Met file
+    real, dimension(:), allocatable :: metFss               !< Incoming shortwave radiation from metFile \f$[W m^{-2} ]\f$
+    real, dimension(:), allocatable :: metFdl               !< Incoming longwave radiation from metFile \f$[W m^{-2} ]\f$
+    real, dimension(:), allocatable :: metPre               !< Precipitation from metFile \f$[kg m^{-2} s^{-1} ]\f$
+    real, dimension(:), allocatable :: metTa                !< Air temperature from metFile (Celsius)
+    real, dimension(:), allocatable :: metQa                !< Specific humidity from metFile
+    real, dimension(:), allocatable :: metUv                !< Wind speed from metFile
+    real, dimension(:), allocatable :: metPres              !< Atmospheric pressure from metFile
 
 contains
 
@@ -53,12 +52,12 @@ contains
     !>\ingroup model_state_drivers_read_modelsetup
     !!@{
 
-    subroutine read_modelsetup
+    !> Reads in the model setup from the netcdf initialization file.
+    !> The number of latitudes is always 1 offline while the maximum number of
+    !> mosaics (nmos), the number of soil layers (ignd), are read from the netcdf.
+    !> ilg is then calculated from nlat and nmos.
 
-        !> This reads in the model setup from the netcdf initialization file.
-        !> The number of latitudes is always 1 offline while the maximum number of
-        !> mosaics (nmos), the number of soil layers (ignd), are read from the netcdf.
-        !> ilg is then calculated from nlat and nmos.
+    subroutine read_modelsetup
 
         ! J. Melton
         ! Feb 2017
@@ -116,13 +115,13 @@ contains
         totlon = ncGetDimLen(initid,'lon')
         totlat = ncGetDimLen(initid,'lat')
 
-        !calculate the number and indices of the pixels to be calculated
+        !>calculate the number and indices of the pixels to be calculated
         !allocate(allLonValues(totlon), allLatValues(totlat))
 
         myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
         myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
 
-        ! Based on the domainBounds, we make vectors of the cells to be run:
+        !> Based on the domainBounds, we make vectors of the cells to be run.
         pos = minloc(abs(myDomain%allLonValues - myDomain%domainBounds(1)))
         xpos(1) = pos(1)
 
@@ -207,7 +206,7 @@ contains
             ch4id = ncOpen(CH4File, nf90_nowrite)
             if (dofire) then
                 popid = ncOpen(POPDFile, nf90_nowrite)
-                !lghtid = ncOpen(LGHTFile, nf90_nowrite)
+                lghtid = ncOpen(LGHTFile, nf90_nowrite)
             end if
             if (lnduseon .or. (fixedYearLUC .ne. -9999)) then
                 lucid = ncOpen(LUCFile, nf90_nowrite)
@@ -224,6 +223,8 @@ contains
 
     !>\ingroup model_state_drivers_read_initialstate
     !!@{
+
+    !> Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on)
 
     subroutine read_initialstate(lonIndex,latIndex)
 
@@ -682,10 +683,10 @@ contains
     !>\ingroup model_state_drivers_write_restart
     !!@{
 
-    subroutine write_restart(lonIndex,latIndex)
+    !> Write out the model restart file to netcdf. We only write out the variables that the model
+    !! influences. This overwrites a pre-existing netcdf file.
 
-        !! Write out the model restart file to netcdf. We only write out the variables that the model
-        !! influences
+    subroutine write_restart(lonIndex,latIndex)
 
         ! J. Melton
         ! Jun 2017
@@ -856,15 +857,18 @@ contains
     !>\ingroup model_state_drivers_getInput
     !!@{
 
+    !>  Read in a model input from a netcdf file and store the file's time array
+    !! as well as the input values into memory
+
     subroutine getInput(inputRequested,longitude,latitude)
 
-        ! Read in a model input from a netcdf file
+
 
         use fileIOModule
         use generalUtils, only : parseTimeStamp
         use ctem_statevars, only : c_switch,vrot
         use ctem_params, only : icc,nmos
-        use outputManager, only : co2id,ch4id,checkForTime,popid,lucid
+        use outputManager, only : co2id,ch4id,checkForTime,popid,lucid,lghtid
 
         implicit none
 
@@ -896,9 +900,8 @@ contains
         fixedYearCH4    => c_switch%fixedYearCH4
         transientPOPD   => c_switch%transientPOPD
         fixedYearPOPD   => c_switch%fixedYearPOPD
-        lnduseon    => c_switch%lnduseon
+        lnduseon        => c_switch%lnduseon
         fixedYearLUC    => c_switch%fixedYearLUC
-
         co2concrow      => vrot%co2conc
         ch4concrow      => vrot%ch4conc
         popdinrow       => vrot%popdin
@@ -992,12 +995,34 @@ contains
             end if
 
          case ('LGHT')
-            print*,'LGHT getInput not ready yet'
-            return
-!             lengthOfFile = ncGetDimLen(lghtid, 'time')
-!             allocate(fileTime(lengthOfFile))
-!             allocate(POPDTime(lengthOfFile))
-!             mlightngrow mlightngrow(i,m,:)
+
+            lengthOfFile = ncGetDimLen(lghtid, 'time')
+            allocate(fileTime(lengthOfFile))
+            allocate(LGHTTime(lengthOfFile))
+
+            fileTime = ncGet1DVar(lghtid, 'time', start = [1], count = [lengthOfFile])
+
+            ! Parse these into just years (expected format is "day as %Y%m%d.%f")
+            do i = 1, lengthOfFile
+                dateTime = parseTimeStamp(fileTime(i))
+                LGHTTime(i) = dateTime(1) ! Rewrite putting in the year
+            end do
+            lonloc = closestCell(lghtid,'lon',longitude)
+            latloc = closestCell(lghtid,'lat',latitude)
+
+            if (transientPOPD) then
+                ! We read in the whole POPD times series and store it.
+                allocate(LGHTFromFile(lengthOfFile))
+                POPDFromFile = ncGet1DVar(lghtid, 'lght', start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
+
+            else
+                ! Find the requested year in the file.
+                arrindex = checkForTime(lengthOfFile,real(LGHTTime),real(fixedYearPOPD))
+                ! We read in only the suggested year
+                i = 1 ! offline nlat is always 1 so just set
+                mlightngrow(i,:) = ncGet1DVar(lghtid, 'lght', start = [lonloc,latloc,arrindex,1], count = [1,1,1,12])
+
+            end if
 
         case ('LUC')
 
@@ -1057,9 +1082,10 @@ contains
     !>\ingroup model_state_drivers_updateInput
     !!@{
 
-    subroutine updateInput(inputRequested,iyear,imonth)
 
-        ! Update the CO2 atmospheric concentration based on the present model year
+    !> Update the input field variable based on the present model timestep
+
+    subroutine updateInput(inputRequested,iyear,imonth)
 
         use outputManager, only : checkForTime
         use ctem_statevars, only : vrot
@@ -1359,6 +1385,7 @@ contains
         UVROW(i)    = metUv(metTimeIndex)
         PRESROW(i)  = metPres(metTimeIndex)
 
+        !> If the end of the timeseries is reached, change the metDone switch to true.
         if (metTimeIndex ==  size(metTime)) metDone = .true.
 
         return
@@ -1371,7 +1398,7 @@ contains
     !>\ingroup model_state_drivers_closestCell
     !!@{
 
-    !> FindS the closest grid cell in the file
+    !> Finds the closest grid cell in the file
 
     integer function closestCell(ncid,label,gridPoint)
 

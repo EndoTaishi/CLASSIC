@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -118,41 +119,27 @@ $(document).ready(function(){initNavTree('structctem__statevars_1_1ctem__switche
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a92cbf55d7a151de6b5d0fd6164812f8f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92cbf55d7a151de6b5d0fd6164812f8f"></a>
-logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a92cbf55d7a151de6b5d0fd6164812f8f">ctem_on</a></td></tr>
-<tr class="memdesc:a92cbf55d7a151de6b5d0fd6164812f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if this run includes CTEM. <br /></td></tr>
+<tr class="memitem:a92cbf55d7a151de6b5d0fd6164812f8f"><td class="memItemLeft" align="right" valign="top">logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a92cbf55d7a151de6b5d0fd6164812f8f">ctem_on</a></td></tr>
+<tr class="memdesc:a92cbf55d7a151de6b5d0fd6164812f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if this run includes CTEM.  <a href="#a92cbf55d7a151de6b5d0fd6164812f8f">More...</a><br /></td></tr>
 <tr class="separator:a92cbf55d7a151de6b5d0fd6164812f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4050812675cede871eb31ce2605868e2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4050812675cede871eb31ce2605868e2"></a>
-logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a4050812675cede871eb31ce2605868e2">cyclemet</a></td></tr>
-<tr class="memdesc:a4050812675cede871eb31ce2605868e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">to cycle over only a fixed number of years (nummetcylyrs) starting at a certain year (metcylyrst) if cyclemet, then put transientCO2 = false and set an appopriate fixedCO2Conc, also if transientPOPD is true, it will choose the popn and luc data for year metcylyrst and cycle on that. <br /></td></tr>
-<tr class="separator:a4050812675cede871eb31ce2605868e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d13c95bba617f2740e2f24d51a0b8dd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8d13c95bba617f2740e2f24d51a0b8dd"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a8d13c95bba617f2740e2f24d51a0b8dd">metloop</a></td></tr>
 <tr class="memdesc:a8d13c95bba617f2740e2f24d51a0b8dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">no. of times the .met file is to be read. this option is useful to see how ctem's c pools equilibrate when driven with same climate data over and over again. <br /></td></tr>
 <tr class="separator:a8d13c95bba617f2740e2f24d51a0b8dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a876092522d266637893516b240f60e9f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a876092522d266637893516b240f60e9f"></a>
-integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a876092522d266637893516b240f60e9f">trans_startyr</a></td></tr>
-<tr class="memdesc:a876092522d266637893516b240f60e9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">the year you want the transient run to start (e.g. 1850). If you are not doing a transient run, set to a negative value (like -9999) <br /></td></tr>
-<tr class="separator:a876092522d266637893516b240f60e9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a606165b425cb3672e6b2761d2545dca5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a606165b425cb3672e6b2761d2545dca5"></a>
-integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a606165b425cb3672e6b2761d2545dca5">ncyear</a></td></tr>
-<tr class="memdesc:a606165b425cb3672e6b2761d2545dca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">no. of years in the .met file. <br /></td></tr>
-<tr class="separator:a606165b425cb3672e6b2761d2545dca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55460bfaad642095697779680a5acfa5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a55460bfaad642095697779680a5acfa5"></a>
-integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a55460bfaad642095697779680a5acfa5">spinfast</a></td></tr>
-<tr class="memdesc:a55460bfaad642095697779680a5acfa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">set this to a higher number up to 10 to spin up soil carbon pool faster <br /></td></tr>
+<tr class="memitem:a55460bfaad642095697779680a5acfa5"><td class="memItemLeft" align="right" valign="top">integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a55460bfaad642095697779680a5acfa5">spinfast</a></td></tr>
+<tr class="memdesc:a55460bfaad642095697779680a5acfa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">set this to a higher number up to 10 to spin up soil carbon pool faster  <a href="#a55460bfaad642095697779680a5acfa5">More...</a><br /></td></tr>
 <tr class="separator:a55460bfaad642095697779680a5acfa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43203dfbedec802203a53ae29512f449"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a43203dfbedec802203a53ae29512f449"></a>
-integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a43203dfbedec802203a53ae29512f449">nummetcylyrs</a></td></tr>
-<tr class="memdesc:a43203dfbedec802203a53ae29512f449"><td class="mdescLeft">&#160;</td><td class="mdescRight">years of the climate file to spin up on repeatedly ignored if cyclemet is false <br /></td></tr>
-<tr class="separator:a43203dfbedec802203a53ae29512f449"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36ccc2a74464b7b353c65199e0b5a261"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a36ccc2a74464b7b353c65199e0b5a261"></a>
-integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a36ccc2a74464b7b353c65199e0b5a261">metcylyrst</a></td></tr>
-<tr class="memdesc:a36ccc2a74464b7b353c65199e0b5a261"><td class="mdescLeft">&#160;</td><td class="mdescRight">climate year to start the spin up on ignored if cyclemet is false <br /></td></tr>
-<tr class="separator:a36ccc2a74464b7b353c65199e0b5a261"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1948d0b513a2989498f28f3ab07a20e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa1948d0b513a2989498f28f3ab07a20e"></a>
+integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#aa1948d0b513a2989498f28f3ab07a20e">readmetstartyear</a></td></tr>
+<tr class="memdesc:aa1948d0b513a2989498f28f3ab07a20e"><td class="mdescLeft">&#160;</td><td class="mdescRight">First year of meteorological forcing to read in from the met file. <br /></td></tr>
+<tr class="separator:aa1948d0b513a2989498f28f3ab07a20e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afec4aea023e01574c72b9bb6e9a1d73f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afec4aea023e01574c72b9bb6e9a1d73f"></a>
+integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#afec4aea023e01574c72b9bb6e9a1d73f">readmetendyear</a></td></tr>
+<tr class="memdesc:afec4aea023e01574c72b9bb6e9a1d73f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last year of meteorological forcing to read in from the met file. <br /></td></tr>
+<tr class="separator:afec4aea023e01574c72b9bb6e9a1d73f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a580b5134660a387d93dabc8d8018bdd4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a580b5134660a387d93dabc8d8018bdd4"></a>
 logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a580b5134660a387d93dabc8d8018bdd4">transientco2</a></td></tr>
-<tr class="memdesc:a580b5134660a387d93dabc8d8018bdd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">use <img class="formulaInl" alt="$CO_2$" src="form_19.png"/> time series, set to false if cyclemet is true <br /></td></tr>
+<tr class="memdesc:a580b5134660a387d93dabc8d8018bdd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">use <img class="formulaInl" alt="$CO_2$" src="form_559.png"/> time series, if false, fixedYearCO2 is used <br /></td></tr>
 <tr class="separator:a580b5134660a387d93dabc8d8018bdd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22d56102590604401e888a249de0381c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a22d56102590604401e888a249de0381c"></a>
 character(180)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a22d56102590604401e888a249de0381c">co2file</a></td></tr>
@@ -160,20 +147,12 @@ character(180)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 <tr class="separator:a22d56102590604401e888a249de0381c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9b1e426ffdf1f8951e52ff53ea924e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9b1e426ffdf1f8951e52ff53ea924e8"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#af9b1e426ffdf1f8951e52ff53ea924e8">fixedyearco2</a></td></tr>
-<tr class="memdesc:af9b1e426ffdf1f8951e52ff53ea924e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the year to use for atmospheric <img class="formulaInl" alt="$CO_2$" src="form_19.png"/> if transientCO2 is false. (ppmv) <br /></td></tr>
+<tr class="memdesc:af9b1e426ffdf1f8951e52ff53ea924e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the year to use for atmospheric <img class="formulaInl" alt="$CO_2$" src="form_559.png"/> if transientCO2 is false. (ppmv) <br /></td></tr>
 <tr class="separator:af9b1e426ffdf1f8951e52ff53ea924e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd44b6d02549e9b4605b67e9d677c53a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acd44b6d02549e9b4605b67e9d677c53a"></a>
 logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#acd44b6d02549e9b4605b67e9d677c53a">dofire</a></td></tr>
 <tr class="memdesc:acd44b6d02549e9b4605b67e9d677c53a"><td class="mdescLeft">&#160;</td><td class="mdescRight">boolean, if true allow fire, if false no fire. <br /></td></tr>
 <tr class="separator:acd44b6d02549e9b4605b67e9d677c53a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7a7b7a618e9a3b1c99eba0997819593"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad7a7b7a618e9a3b1c99eba0997819593"></a>
-logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#ad7a7b7a618e9a3b1c99eba0997819593">met_rewound</a></td></tr>
-<tr class="memdesc:ad7a7b7a618e9a3b1c99eba0997819593"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove FLAG. <br /></td></tr>
-<tr class="separator:ad7a7b7a618e9a3b1c99eba0997819593"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a684002cb8929509826f7e4d9b9fd84a7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a684002cb8929509826f7e4d9b9fd84a7"></a>
-logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a684002cb8929509826f7e4d9b9fd84a7">reach_eof</a></td></tr>
-<tr class="memdesc:a684002cb8929509826f7e4d9b9fd84a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove FLAG. <br /></td></tr>
-<tr class="separator:a684002cb8929509826f7e4d9b9fd84a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec15022cfcf98cfecd98da2f2f6a6b68"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aec15022cfcf98cfecd98da2f2f6a6b68"></a>
 logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#aec15022cfcf98cfecd98da2f2f6a6b68">pftcompetition</a></td></tr>
 <tr class="memdesc:aec15022cfcf98cfecd98da2f2f6a6b68"><td class="mdescLeft">&#160;</td><td class="mdescRight">logical boolean telling if competition between pfts is on or not <br /></td></tr>
@@ -196,7 +175,7 @@ integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="s
 <tr class="separator:a9f7b7fdfb7f5daaf3116de454d92cdec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f60afade189e33c44a42ee0f9084dc4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f60afade189e33c44a42ee0f9084dc4"></a>
 logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a5f60afade189e33c44a42ee0f9084dc4">transientch4</a></td></tr>
-<tr class="memdesc:a5f60afade189e33c44a42ee0f9084dc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">use <img class="formulaInl" alt="$CH_4$" src="form_532.png"/> time series, set to false if cyclemet is true the <img class="formulaInl" alt="$CO_2$" src="form_19.png"/> timeseries is in the same input file as the <img class="formulaInl" alt="$CO_2$" src="form_19.png"/> one. <br /></td></tr>
+<tr class="memdesc:a5f60afade189e33c44a42ee0f9084dc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">use <img class="formulaInl" alt="$CH_4$" src="form_554.png"/> time series, set to false if cyclemet is true the <img class="formulaInl" alt="$CO_2$" src="form_559.png"/> timeseries is in the same input file as the <img class="formulaInl" alt="$CO_2$" src="form_559.png"/> one. <br /></td></tr>
 <tr class="separator:a5f60afade189e33c44a42ee0f9084dc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a610612fd7111f0d8845eed9e6b607576"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a610612fd7111f0d8845eed9e6b607576"></a>
 character(180)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a610612fd7111f0d8845eed9e6b607576">ch4file</a></td></tr>
@@ -204,7 +183,7 @@ character(180)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 <tr class="separator:a610612fd7111f0d8845eed9e6b607576"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81bf465daf84c60c67fdf5d310511488"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a81bf465daf84c60c67fdf5d310511488"></a>
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a81bf465daf84c60c67fdf5d310511488">fixedyearch4</a></td></tr>
-<tr class="memdesc:a81bf465daf84c60c67fdf5d310511488"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the year to use for atmospheric <img class="formulaInl" alt="$CH_4$" src="form_532.png"/> if transientCH4 is false. (ppmv) <br /></td></tr>
+<tr class="memdesc:a81bf465daf84c60c67fdf5d310511488"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the year to use for atmospheric <img class="formulaInl" alt="$CH_4$" src="form_554.png"/> if transientCH4 is false. (ppmv) <br /></td></tr>
 <tr class="separator:a81bf465daf84c60c67fdf5d310511488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa89b65cbe72a24c1e2965a1c08f07aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa89b65cbe72a24c1e2965a1c08f07aa"></a>
 logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#aaa89b65cbe72a24c1e2965a1c08f07aa">transientpopd</a></td></tr>
@@ -238,13 +217,6 @@ logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="s
 logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a009ff20d4bbfe0d7435397cf39fda85a">obswetf</a></td></tr>
 <tr class="memdesc:a009ff20d4bbfe0d7435397cf39fda85a"><td class="mdescLeft">&#160;</td><td class="mdescRight">observed wetland fraction <br /></td></tr>
 <tr class="separator:a009ff20d4bbfe0d7435397cf39fda85a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38ff512e235b3dd8a02c05d4d990ab99"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a38ff512e235b3dd8a02c05d4d990ab99"></a>
-logical&#160;</td><td class="memItemRight" valign="bottom"><b>transient_run</b></td></tr>
-<tr class="separator:a38ff512e235b3dd8a02c05d4d990ab99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adaf384e9a0bf0224b86b6877b2473133"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adaf384e9a0bf0224b86b6877b2473133"></a>
-logical&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#adaf384e9a0bf0224b86b6877b2473133">use_netcdf</a></td></tr>
-<tr class="memdesc:adaf384e9a0bf0224b86b6877b2473133"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true all model inputs and outputs are handled via netcdfs. <br /></td></tr>
-<tr class="separator:adaf384e9a0bf0224b86b6877b2473133"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a163869d14a74656d7aa94eebc86025ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a163869d14a74656d7aa94eebc86025ec"></a>
 character(180)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a163869d14a74656d7aa94eebc86025ec">met_file</a></td></tr>
 <tr class="memdesc:a163869d14a74656d7aa94eebc86025ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">location of the netcdf meteorological dataset <br /></td></tr>
@@ -385,22 +357,41 @@ integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="s
 integer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a3539dafb72ad7482814c4b59bcb55762">isnoalb</a></td></tr>
 <tr class="memdesc:a3539dafb72ad7482814c4b59bcb55762"><td class="mdescLeft">&#160;</td><td class="mdescRight">if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used. <br /></td></tr>
 <tr class="separator:a3539dafb72ad7482814c4b59bcb55762"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4feb503a6f958c0f89f9162fcccc32c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4feb503a6f958c0f89f9162fcccc32c7"></a>
-character(80)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a4feb503a6f958c0f89f9162fcccc32c7">titlec1</a></td></tr>
-<tr class="memdesc:a4feb503a6f958c0f89f9162fcccc32c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove FLAG. <br /></td></tr>
-<tr class="separator:a4feb503a6f958c0f89f9162fcccc32c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed3b1557dad2e616fe2349b39e7e7abd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed3b1557dad2e616fe2349b39e7e7abd"></a>
-character(80)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#aed3b1557dad2e616fe2349b39e7e7abd">titlec2</a></td></tr>
-<tr class="memdesc:aed3b1557dad2e616fe2349b39e7e7abd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove FLAG. <br /></td></tr>
-<tr class="separator:aed3b1557dad2e616fe2349b39e7e7abd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a2c0c4c8b178c50ee3529251121e6d0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a2c0c4c8b178c50ee3529251121e6d0"></a>
-character(80)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structctem__statevars_1_1ctem__switches.html#a6a2c0c4c8b178c50ee3529251121e6d0">titlec3</a></td></tr>
-<tr class="memdesc:a6a2c0c4c8b178c50ee3529251121e6d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove FLAG. <br /></td></tr>
-<tr class="separator:a6a2c0c4c8b178c50ee3529251121e6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>switches for running the model, read from the joboptions file </p>
-</div><hr/>The documentation for this type was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a92cbf55d7a151de6b5d0fd6164812f8f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">logical ctem_statevars::ctem_switches::ctem_on</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True if this run includes CTEM. </p>
+<p>(nummetcylyrs) starting at a certain year (metcylyrst) if cyclemet, then put transientCO2 = false and set an appopriate fixedCO2Conc, also if transientPOPD is true, it will choose the popn and luc data for year metcylyrst and cycle on that. </p>
+
+</div>
+</div>
+<a class="anchor" id="a55460bfaad642095697779680a5acfa5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">integer ctem_statevars::ctem_switches::spinfast</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>set this to a higher number up to 10 to spin up soil carbon pool faster </p>
+<p>ignored if cyclemet is false ignored if cyclemet is false </p>
+
+</div>
+</div>
+<hr/>The documentation for this type was generated from the following file:<ul>
 <li>src/<a class="el" href="ctem__statevars_8f90.html">ctem_statevars.f90</a></li>
 </ul>
 </div><!-- contents -->
@@ -409,7 +400,7 @@ character(80)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>ctem_statevars</b></li><li class="navelem"><a class="el" href="structctem__statevars_1_1ctem__switches.html">ctem_switches</a></li>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:08 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 15:13:15 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

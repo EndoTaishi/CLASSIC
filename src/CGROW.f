@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Evaluate growth index used in calculating vegetation 
+C!Evaluates growth index used in calculating vegetation
 C!parameters for forests.
 C!
       SUBROUTINE CGROW(GROWTH,TBAR,TA,FC,FCS,ILG,IG,IL1,IL2,JL)

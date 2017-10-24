@@ -1,10 +1,9 @@
 !>\defgroup ctem_params_initpftpars
 
 !> This module holds CTEM globally accessible parameters
+!!
 !> These parameters are used in all CTEM subroutines
-!> via use statements pointing to this module EXCEPT PHTSYN3.f
-!> which has the information passed in via arguments. This is a legacy thing.
-
+!> via use statements pointing to this module.
 !>The structure of this subroutine is variables that are common to competition/prescribe PFT fractions
 !>first, then the remaining variables are assigned different variables if competition is on, or not.
 !>

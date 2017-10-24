@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Evaluate infiltration of water into soil under 
+C!Evaluates infiltration of water into soil under
 C!unsaturated conditions.
 C!
       SUBROUTINE WFILL(WMOVE,TMOVE,LZF,NINF,ZF,TRMDR,R,TR,

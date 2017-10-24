@@ -1,6 +1,6 @@
 !>\file
-C!Purpose: Calculate canopy interception of rainfall and snowfall, 
-C!and determine rainfall/snowfall rates at ground surface as a 
+C!Calculates canopy interception of rainfall and snowfall,
+C!and determines rainfall/snowfall rates at ground surface as a
 C!result of throughfall and unloading.
 C!   
       SUBROUTINE CANADD(IWATER,R,TR,S,TS,RAICAN,SNOCAN,TCAN,CHCAP,

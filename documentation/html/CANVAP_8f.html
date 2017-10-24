@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -111,7 +112,7 @@ $(document).ready(function(){initNavTree('CANVAP_8f.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Purpose: Update liquid and frozen water stores on canopy and in soil in response to calculated sublimation, evaporation and transpiration rates.  
+<p>Updates liquid and frozen water stores on canopy and in soil in response to calculated sublimation, evaporation and transpiration rates.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -120,7 +121,7 @@ Functions/Subroutines</h2></td></tr>
 <tr class="separator:a3041cf9c21766306cba0e7bc1b00161f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Purpose: Update liquid and frozen water stores on canopy and in soil in response to calculated sublimation, evaporation and transpiration rates. </p>
+<div class="textblock"><p>Updates liquid and frozen water stores on canopy and in soil in response to calculated sublimation, evaporation and transpiration rates. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="a3041cf9c21766306cba0e7bc1b00161f"></a>
 <div class="memitem">
@@ -346,45 +347,45 @@ Functions/Subroutines</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">thliq</td><td>Volumetric liquid water content of soil</td></tr>
-    <tr><td class="paramname">tbar</td><td>Temperature of soil layer <img class="formulaInl" alt="$[K] (T_g)$" src="form_1210.png"/></td></tr>
-    <tr><td class="paramname">qfc</td><td>Transpired water removed from soil layer <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_779.png"/></td></tr>
-    <tr><td class="paramname">htc</td><td>Internal energy change of soil layer due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}] (I_g)$" src="form_1211.png"/></td></tr>
-    <tr><td class="paramname">evap</td><td>Evapotranspiration rate from vegetation canopy <img class="formulaInl" alt="$[m s^{-1}]$" src="form_782.png"/></td></tr>
-    <tr><td class="paramname">subl</td><td>Calculated sublimation rate from vegetation canopy <img class="formulaInl" alt="$[m s^{-1}]$" src="form_782.png"/></td></tr>
-    <tr><td class="paramname">raican</td><td>Intercepted liquid water stored on the canopy <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_780.png"/></td></tr>
-    <tr><td class="paramname">snocan</td><td>Intercepted frozen water stored on the canopy <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_780.png"/></td></tr>
-    <tr><td class="paramname">tcan</td><td>Temperature of vegetation canopy <img class="formulaInl" alt="$[K] (T_c)$" src="form_1175.png"/></td></tr>
-    <tr><td class="paramname">zsnow</td><td>Depth of snow pack <img class="formulaInl" alt="$[m] (z_g)$" src="form_803.png"/></td></tr>
-    <tr><td class="paramname">wlost</td><td>Residual amount of water that cannot be supplied by surface stores <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_780.png"/></td></tr>
-    <tr><td class="paramname">chcap</td><td>Heat capacity of vegetation canopy <img class="formulaInl" alt="$[J m^{-2} K^{-1}] (C_c)$" src="form_1176.png"/></td></tr>
-    <tr><td class="paramname">qfcf</td><td>Sublimation from frozen water in canopy interception store <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_779.png"/></td></tr>
-    <tr><td class="paramname">qfcl</td><td>Evaporation from liquid water in canopy interception store <img class="formulaInl" alt="$[kg m^{-2} s^{-1} ]$" src="form_631.png"/></td></tr>
-    <tr><td class="paramname">qfn</td><td>Sublimation from snow pack <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_779.png"/></td></tr>
-    <tr><td class="paramname">htcc</td><td>Internal energy change of canopy due to changes in temperature and/or mass <img class="formulaInl" alt="$[W m^{-2}] (I_c)$" src="form_1177.png"/></td></tr>
-    <tr><td class="paramname">htcs</td><td>Internal energy change of snow pack due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}] (I_s)$" src="form_808.png"/></td></tr>
+    <tr><td class="paramname">tbar</td><td>Temperature of soil layer <img class="formulaInl" alt="$[K] (T_g)$" src="form_216.png"/></td></tr>
+    <tr><td class="paramname">qfc</td><td>Transpired water removed from soil layer <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_128.png"/></td></tr>
+    <tr><td class="paramname">htc</td><td>Internal energy change of soil layer due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}] (I_g)$" src="form_217.png"/></td></tr>
+    <tr><td class="paramname">evap</td><td>Evapotranspiration rate from vegetation canopy <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
+    <tr><td class="paramname">subl</td><td>Calculated sublimation rate from vegetation canopy <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
+    <tr><td class="paramname">raican</td><td>Intercepted liquid water stored on the canopy <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_130.png"/></td></tr>
+    <tr><td class="paramname">snocan</td><td>Intercepted frozen water stored on the canopy <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_130.png"/></td></tr>
+    <tr><td class="paramname">tcan</td><td>Temperature of vegetation canopy <img class="formulaInl" alt="$[K] (T_c)$" src="form_125.png"/></td></tr>
+    <tr><td class="paramname">zsnow</td><td>Depth of snow pack <img class="formulaInl" alt="$[m] (z_g)$" src="form_218.png"/></td></tr>
+    <tr><td class="paramname">wlost</td><td>Residual amount of water that cannot be supplied by surface stores <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_130.png"/></td></tr>
+    <tr><td class="paramname">chcap</td><td>Heat capacity of vegetation canopy <img class="formulaInl" alt="$[J m^{-2} K^{-1}] (C_c)$" src="form_126.png"/></td></tr>
+    <tr><td class="paramname">qfcf</td><td>Sublimation from frozen water in canopy interception store <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_128.png"/></td></tr>
+    <tr><td class="paramname">qfcl</td><td>Evaporation from liquid water in canopy interception store <img class="formulaInl" alt="$[kg m^{-2} s^{-1} ]$" src="form_219.png"/></td></tr>
+    <tr><td class="paramname">qfn</td><td>Sublimation from snow pack <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_128.png"/></td></tr>
+    <tr><td class="paramname">htcc</td><td>Internal energy change of canopy due to changes in temperature and/or mass <img class="formulaInl" alt="$[W m^{-2}] (I_c)$" src="form_127.png"/></td></tr>
+    <tr><td class="paramname">htcs</td><td>Internal energy change of snow pack due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}] (I_s)$" src="form_220.png"/></td></tr>
     <tr><td class="paramname">froot</td><td>Fractional contribution of soil layer to transpiration [ ]</td></tr>
-    <tr><td class="paramname">thpor</td><td>Pore volume in soil layer <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_759.png"/></td></tr>
-    <tr><td class="paramname">thlmin</td><td>Residual soil liquid water content remaining after freezing or evaporation <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_759.png"/></td></tr>
-    <tr><td class="paramname">delzw</td><td>Permeable depth of soil layer <img class="formulaInl" alt="$[m] (\Delta z_{g,w})$" src="form_1212.png"/></td></tr>
-    <tr><td class="paramname">fi</td><td>Fractional coverage of subarea in question on modelled area <img class="formulaInl" alt="$[ ] (X_i)$" src="form_1178.png"/></td></tr>
-    <tr><td class="paramname">cmass</td><td>Mass of vegetation canopy <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_780.png"/></td></tr>
+    <tr><td class="paramname">thpor</td><td>Pore volume in soil layer <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_221.png"/></td></tr>
+    <tr><td class="paramname">thlmin</td><td>Residual soil liquid water content remaining after freezing or evaporation <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_221.png"/></td></tr>
+    <tr><td class="paramname">delzw</td><td>Permeable depth of soil layer <img class="formulaInl" alt="$[m] (\Delta z_{g,w})$" src="form_222.png"/></td></tr>
+    <tr><td class="paramname">fi</td><td>Fractional coverage of subarea in question on modelled area <img class="formulaInl" alt="$[ ] (X_i)$" src="form_129.png"/></td></tr>
+    <tr><td class="paramname">cmass</td><td>Mass of vegetation canopy <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_130.png"/></td></tr>
     <tr><td class="paramname">tsnow</td><td>Temperature of the snow pack [C]</td></tr>
-    <tr><td class="paramname">hcpsno</td><td>Heat capacity of snow pack <img class="formulaInl" alt="$[J m^{-3} K^{-1}] (C_s)$" src="form_806.png"/></td></tr>
-    <tr><td class="paramname">rhosno</td><td>Density of snow pack <img class="formulaInl" alt="$[kg m^{-3}]$" src="form_1180.png"/> </td></tr>
+    <tr><td class="paramname">hcpsno</td><td>Heat capacity of snow pack <img class="formulaInl" alt="$[J m^{-3} K^{-1}] (C_s)$" src="form_223.png"/></td></tr>
+    <tr><td class="paramname">rhosno</td><td>Density of snow pack <img class="formulaInl" alt="$[kg m^{-3}]$" src="form_132.png"/> </td></tr>
   </table>
   </dd>
 </dl>
 <p>The calculated fluxes of liquid and frozen water from the canopy to the overlying air, obtained as outputs of WPREP, are applied to the liquid and frozen intercepted water stores on the vegetation canopy, and to the liquid and frozen moisture stores at the surface and in the soil. Since there may not be sufficient water in one or more of these stores to sustain the calculated rate over the whole time step, a hierarchy of operations is followed as described below. The change of internal energy HTC in the canopy, snow and soil layers as a result of these processes is calculated as the difference in HTC between the beginning and end of the subroutine: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \Delta I_c = X_i \Delta (C_c T_c )/ \Delta t \]" src="form_1213.png"/>
+<img class="formulaDsp" alt="\[ \Delta I_c = X_i \Delta (C_c T_c )/ \Delta t \]" src="form_224.png"/>
 </p>
  <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \Delta I_s = X_i \Delta (C_s T_s z_s )/ \Delta t \]" src="form_1214.png"/>
+<img class="formulaDsp" alt="\[ \Delta I_s = X_i \Delta (C_s T_s z_s )/ \Delta t \]" src="form_225.png"/>
 </p>
-<p> where the C terms represent volumetric heat capacities and the T terms temperatures of the canopy and snow pack, <img class="formulaInl" alt="$\Delta t$" src="form_1192.png"/> is the length of the time step, <img class="formulaInl" alt="$z_s$" src="form_571.png"/> the snow depth, and <img class="formulaInl" alt="$X_i$" src="form_566.png"/> the fractional coverage of the subarea under consideration relative to the modelled area. For the soil layers, since only the liquid water content is affected by these calculations, the change in internal energy of each layer is calculated from the change in liquid water content <img class="formulaInl" alt="$\theta_l$" src="form_738.png"/> as: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \Delta I_g = X_i C_w \Delta z_{g,w} \Delta (T_g \theta_l )/ \Delta t \]" src="form_1215.png"/>
+<p> where the C terms represent volumetric heat capacities and the T terms temperatures of the canopy and snow pack, <img class="formulaInl" alt="$\Delta t$" src="form_145.png"/> is the length of the time step, <img class="formulaInl" alt="$z_s$" src="form_42.png"/> the snow depth, and <img class="formulaInl" alt="$X_i$" src="form_39.png"/> the fractional coverage of the subarea under consideration relative to the modelled area. For the soil layers, since only the liquid water content is affected by these calculations, the change in internal energy of each layer is calculated from the change in liquid water content <img class="formulaInl" alt="$\theta_l$" src="form_226.png"/> as: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \Delta I_g = X_i C_w \Delta z_{g,w} \Delta (T_g \theta_l )/ \Delta t \]" src="form_227.png"/>
 </p>
-<p>Sublimation is addressed first. The predicted mass of sublimated water SLOST is calculated and compared to the frozen water in the canopy interception store, SNOCAN. If SLOST <img class="formulaInl" alt="$\leq$" src="form_12.png"/> SNOCAN, all of the sublimated water is subtracted from SNOCAN. If not, the excess sublimation is calculated as SLOST-SNOCAN, QFCF is corrected for the canopy sublimation difference, and SNOCAN is set to zero. Next, the new value of SLOST is compared to the snowpack mass, calculated as ZSNOW*RHOSNO. If SLOST <img class="formulaInl" alt="$\leq$" src="form_12.png"/> ZSNOW*RHOSNO, all of the remaining sublimated water is taken from the snow pack, and QFN is modified to reflect this loss. Otherwise, the excess sublimation is calculated as SLOST - ZSNOW*RHOSNO, QFN is adjusted accordingly, and ZSNOW is set to zero. There now remain no further frozen moisture stores from which sublimated water can be taken (frozen water in the soil is assumed to be immobile), so the remaining energy that had been assigned to sublimation is assigned to canopy evaporation instead, and QFCL is duly recalculated. This means, however, that a small imbalance will arise in the water budget owing to the difference between the latent heats of sublimation and evaporation. This imbalance is assigned to the housekeeping variable WLOST.</p>
-<p>Now canopy evaporation is addressed. It is assumed that all intercepted liquid water evaporates before transpiration begins, since there is a canopy stomatal resistance associated with transpiration and there is none associated with evaporation. The predicted mass of evaporated water RLOST is calculated and compared to the liquid water in the canopy interception store, RAICAN. If RLOST <img class="formulaInl" alt="$\leq$" src="form_12.png"/> RAICAN, all of the evaporated water is subtracted from RAICAN. If not, the excess evaporation is calculated as RLOST - RAICAN, and QFCL is corrected for the canopy evaporation difference. This excess evaporation is now treated as transpiration. An initial check is done by referring to the diagnostic flag IROOT, which was set to 1 at the beginning of the subroutine if there was water available for transpiration in any of the soil layers. If IROOT is zero, no transpiration can occur and the excess evaporation is stored in the temporary variable EVLOST. </p>
+<p>Sublimation is addressed first. The predicted mass of sublimated water SLOST is calculated and compared to the frozen water in the canopy interception store, SNOCAN. If SLOST <img class="formulaInl" alt="$\leq$" src="form_228.png"/> SNOCAN, all of the sublimated water is subtracted from SNOCAN. If not, the excess sublimation is calculated as SLOST-SNOCAN, QFCF is corrected for the canopy sublimation difference, and SNOCAN is set to zero. Next, the new value of SLOST is compared to the snowpack mass, calculated as ZSNOW*RHOSNO. If SLOST <img class="formulaInl" alt="$\leq$" src="form_228.png"/> ZSNOW*RHOSNO, all of the remaining sublimated water is taken from the snow pack, and QFN is modified to reflect this loss. Otherwise, the excess sublimation is calculated as SLOST - ZSNOW*RHOSNO, QFN is adjusted accordingly, and ZSNOW is set to zero. There now remain no further frozen moisture stores from which sublimated water can be taken (frozen water in the soil is assumed to be immobile), so the remaining energy that had been assigned to sublimation is assigned to canopy evaporation instead, and QFCL is duly recalculated. This means, however, that a small imbalance will arise in the water budget owing to the difference between the latent heats of sublimation and evaporation. This imbalance is assigned to the housekeeping variable WLOST.</p>
+<p>Now canopy evaporation is addressed. It is assumed that all intercepted liquid water evaporates before transpiration begins, since there is a canopy stomatal resistance associated with transpiration and there is none associated with evaporation. The predicted mass of evaporated water RLOST is calculated and compared to the liquid water in the canopy interception store, RAICAN. If RLOST <img class="formulaInl" alt="$\leq$" src="form_228.png"/> RAICAN, all of the evaporated water is subtracted from RAICAN. If not, the excess evaporation is calculated as RLOST - RAICAN, and QFCL is corrected for the canopy evaporation difference. This excess evaporation is now treated as transpiration. An initial check is done by referring to the diagnostic flag IROOT, which was set to 1 at the beginning of the subroutine if there was water available for transpiration in any of the soil layers. If IROOT is zero, no transpiration can occur and the excess evaporation is stored in the temporary variable EVLOST. </p>
 
 </div>
 </div>
@@ -394,7 +395,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CANVAP_8f.html">CANVAP.f</a></li>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:07 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

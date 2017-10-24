@@ -1,8 +1,5 @@
 !>\file
-!!               Canadian Terrestrial Ecosystem Model (CTEM)
-!!                            Allocation Subroutine
-!!
-!!
+!! Performs allocation of carbon gained by photosynthesis into plant structural pools
 !!
 !!Positive NPP is allocated daily to the leaf, stem and root components, which generally causes their respective biomass to increase, although the biomass may also decrease depending on the autotrophic respiration flux of a component. Negative NPP generally causes net carbon loss from the components. While CTEM offers the ability to use both specified constant or dynamically calculated allocation fractions for leaves, stems and roots, in practice the dynamic allocation fractions are primarily used. The formulation used in CTEM v. 2.0 differs from that for CTEM v. 1.0 as described in \cite Arora2005-6b1 only in the parameter values.
 !!

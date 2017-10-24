@@ -2,53 +2,43 @@
 
  ! See the manual (html/index.html) or the wiki on the gitlab page for explanation of these options.
 
- transient_run = .false. ,!< With this switch set to .true., you can cycle over nummetcyclyrs of climate a
-                          !< ctemloop number of times then continue on through the climate
-                          !< the reason for this is to allow a transient from 1850 on, but
-                          !< only having the climate from 1901 while having the other inputs from 1850.
- trans_startyr = 1850 ,   !< the year you want the transient run to start (e.g. 1850). If you
-                          !! are not doing a transient run, set to a negative value (like -9999)
-
-
- ncyear = 109 ,           !< no. of years in the .met file. FLAG - redundant?
- cyclemet = .true. ,
- nummetcylyrs = 4 ,
- metcylyrst = 1901 ,
-
-
+! Meteorological options:
  readMetStartYear = 1901  !< First year of meteorological forcing to read in from the met file
  readMetEndYear = 1901    !< Last year of meteorological forcing to read in from the met file
- metLoop = 10 ,            !< no. of times to cycle over the read-in meteorology
+ metLoop = 2 ,           !< no. of times to cycle over the read-in meteorology
  leap = .false. ,         !< True if your meteorological forcing includes leap years
 
- ! CTEM (biogeochemistry) switches:
- ctem_on = .false. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
+! CTEM (biogeochemistry) switches:
+ ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
                         !< lai and canopy mass are used. with this switch on, all ctem subroutines are run.
     icc = 9 ,           !< Number of CTEM level PFTs
-
+    l2max = 3 ,         !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
     spinfast = 3 ,      !< Set this to a higher number up to 10 to spin up soil carbon pool faster. Set to 1 for final round of spin up and transient runs.
 
     !CO2 switches:
         transientCO2 = .true. , !< Read in time varying CO2 concentration from CO2File or if set to false then use only the year of fixedYearCO2 value
         CO2File = 'inputFiles/mole_fraction_of_carbon_dioxide_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeIndex.nc' ,
-        fixedYearCO2 = 1850 ,      !If transientCO2 = .true., this is ignored.
+        fixedYearCO2 = 1850 ,   !< If transientCO2 = .true., this is ignored.
 
     !CH4 switches:
-        transientCH4 = .true. ,
+        transientCH4 = .true. , !< Read in time varying CH4 concentration from CH4File or if set to false then use only the year of fixedYearCH4 value
         CH4File = 'inputFiles/mole_fraction_of_methane_in_air_input4MIPs_GHGConcentrations_CMIP_UoM-CMIP-1-2-0_gr1-GMNHSH_1850-2014_absTimeAxis.nc',
         fixedYearCH4 = 1850 ,   !If transientCH4 = .true., this is ignored.
 
     !Fire switches
-        dofire = .true. ,
-            transientPOPD = .true. ,
+        dofire = .true. ,               !< If true the fire disturbance parameterization is turned on.
+            transientPOPD = .true. ,    !< Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
             POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017.nc'
-            fixedYearPOPD = 1850 ,    !Change this to take in the year? Comes from spinup year?
-            ! LGHTFile = ''
+            fixedYearPOPD = 1850 ,      !< If transientPOPD = .true., this is ignored.
+            LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050.nc' !< Lightning strikes (cloud to ground)
 
     ! Competition switches:
-        PFTCompetition = .false. ,
-        inibioclim = .false. ,   ! Remove. Can set up in initFile so this flag is not needed.
-        start_bare = .false.,    ! Can remove? Check logic.
+        PFTCompetition = .false. ,      !< If true, competition between PFTs for space on a grid cell is implimented
+            inibioclim = .false. ,      !< set this to true if competition between pfts is to be implimented and you have the mean climate values
+                                        !< in the ctm files.
+            start_bare = .false.,       !< Set this to true if competition is true, and if you wish to start from bare ground. if this is set to false, the
+                                        !< ini and ctm file info will be used to set up the run. NOTE: This still keeps the crop fractions
+                                        !< (while setting all pools to zero)
 
     ! Land Use switches:
         ! If you wish to use your own PFT fractional covers, set fixedYearLUC to -9999, otherwise set it
@@ -62,311 +52,73 @@
  dowetlands = .false. ,  !Remove
  obswetf = .false. ,
 
- use_netcdf = .true. ,  ! This will be removed.
+! Physics switches:
+
+ ican = 4 ,     !< Number of PFTs considered by the physics subroutines
+ IDISP = 0 ,    !< if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part
+                !< of the "terrain". if idisp=1, vegetation displacement heights are calculated.
+ IZREF = 2 ,    !< if izref=1, the bottom of the atmospheric model is taken lie at the ground surface.
+                !< if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.
+ ISLFD = 0 ,    !< if islfd=0, drcoef is called for surface stability corrections and the original gcm set of screen-level diagnostic calculations
+                !< is done. if islfd=1, drcoef is called for surface stability corrections and sldiag is called for screen-level diagnostic calculations.
+                !< if islfd=2, flxsurfz is called for surface stability corrections and diasurf is called for screen-level diagnostic calculations.
+ IPCP = 1 ,     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 C. if ipcp=2, a linear partitioning of precipitation between
+                !< rainfall and snowfall is done between 0 C and 2 C. if ipcp=3, rainfall and snowfall are partitioned according to
+                !< a polynomial curve between 0 C and 6 C.
+ IWF = 0 ,      !< if iwf=0, only overland flow and baseflow are modelled, and the ground surface slope is not modelled. if iwf=n (0<n<4),
+                !< the watflood calculations of overland flow and interflow are performed; interflow is drawn from the top n soil layers.
+ isnoalb = 0 ,  !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used. if it is set to 1, the new four-band routines are used.
+
+ ! Iteration scheme
+    !< ITC, ITCG and ITG are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature
+    !< respectively.  if the switch is set to 1, a bisection method is used; if to 2, the newton-raphson method is used.
+    ITC = 1 ,   !< Canopy
+    ITCG = 1 ,  !< Ground under canopy
+    ITG = 1 ,   !< Ground
+
+ ! User-supplied values:
+    !< if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo
+    !< and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the
+    !< corresponding parameter calculated by class is overridden by a user-supplied input value.
+    IPAI = 0 ,  !< Plant area index
+    IHGT = 0 ,  !< Vegetation height
+    IALC = 0 ,  !< Canopy albedo
+    IALS = 0 ,  !< Snow albedo
+    IALG = 0 ,  !< Soil albedo
 
 ! Input files:
 
- met_file = 'tempMetFile.nc' ,
- init_file = 'inputFiles/initFile.nc' ,
- rs_file_to_overwrite = 'rsFile.nc' ,
- runparams_file = 'configurationFiles/template_run_parameters.txt' ,
+ met_file = 'tempMetFile.nc' ,              !< location of the meteorological dataset
+ init_file = 'inputFiles/initFile.nc' ,     !< location of the model initialization file
+ rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be overwritten for the restart file
+ runparams_file = 'configurationFiles/template_run_parameters.txt' ,    !< location of the namelist file containing the model parameters
 
- ican = 4 ,
- l2max = 3 ,
- IDISP = 0 ,
- IZREF = 2 ,
- ISLFD = 0 ,
- IPCP = 1 ,
- ITC = 1 ,
- ITCG = 1 ,
- ITG = 1 ,
- IWF = 0 ,
- IPAI = 0 ,
- IHGT = 0 ,
- IALC = 0 ,
- IALS = 0 ,
- IALG = 0 ,
- isnoalb = 0 ,
+! Output options:
+    output_directory = '/home/rjm/Documents/CTEM/test' ,        !< Directory where the output netcdfs will be placed
+    xmlFile = 'configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
- ! Output options:
-    output_directory = '/home/rjm/Documents/CTEM/test' ,
-    xmlFile = 'configurationFiles/outputVariableDescriptors.xml' ,
+    doperpftoutput = .true. ,   !< Switch for making extra output files that are at the per PFT level
+    dopertileoutput = .false. , !< Switch for making extra output files that are at the per tile level
 
-    doperpftoutput = .true. ,
-    dopertileoutput = .false. ,
+    dohhoutput = .false. ,      !< Switch for making half hourly output files (annual are always outputted)
+    JHHSTD = 1 ,                !< day of the year to start writing the half-hourly output
+    JHHENDD = 365 ,             !< day of the year to stop writing the half-hourly output
+    JHHSTY = 2901 ,             !< simulation year (iyear) to start writing the half-hourly output
+    JHHENDY = 3010 ,            !< simulation year (iyear) to stop writing the half-hourly output
 
-    dohhoutput = .false. ,
-    JHHSTD = 1 ,
-    JHHENDD = 365 ,
-    JHHSTY = 2901 ,
-    JHHENDY = 3010 ,
+    dodayoutput = .false. ,     !< Switch for making daily output files (annual are always outputted)
+    JDSTD = 1 ,                 !< day of the year to start writing the daily output
+    JDENDD = 365 ,              !< day of the year to stop writing the daily output
+    JDSTY = 2901 ,              !< simulation year (iyear) to start writing the daily output
+    JDENDY = 2999 ,             !< simulation year (iyear) to stop writing the daily output
 
-    dodayoutput = .false. ,
-    JDSTD = 1 ,
-    JDENDD = 365 ,
-    JDSTY = 2901 ,
-    JDENDY = 2999 ,
+    domonthoutput = .true. ,    !< Switch for making monthly output files (annual are always outputted)
+    JMOSTY = 1000 ,             !< Year to start writing out the monthly output files.
 
-    domonthoutput = .true. ,
-    JMOSTY = 1000 ,
-
-    Comment = ' test '  !This comment will be written in all output netcdf files.
+    Comment = ' test '          !< Comment about the run that will be written to the output netcdfs
 
  /
 
-This area is for comments about the run. The comment above will be written to the netcdf output files.
+This area can be used for comments about the run.
 
-
-!        logical, pointer :: lnduseon !< set this to 1 if land use change is to be
-                            !< implimented by reading in the fractions of 9 ctem
-                            !< pfts from a file. keep in mind that once on, luc read-in is
-                                    !< also influenced by the cyclemet and popcycleyr switches
-
-        !integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
-                            !< soil carbon pool faster
-
-        !logical, pointer :: cyclemet !< to cycle over only a fixed number of years
-                            !< (nummetcylyrs) starting at a certain year (metcylyrst)
-                            !< if cyclemet, then put co2on = false and set an appopriate setco2conc, also
-                            !< if popdon is true, it will choose the popn and luc data for year
-                            !< metcylyrst and cycle on that.
-
-        !integer, pointer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
-                                !< ignored if cyclemet is false
-
-        !integer, pointer :: metcylyrst   !< climate year to start the spin up on
-                                !< ignored if cyclemet is false
-
-        !logical, pointer :: co2on    !< use co2 time series, set to false if cyclemet is true
-
-        !real, pointer :: setco2conc  !< set the value of atmospheric co2 if co2on is false. (ppmv)
-
-        !logical, pointer :: ch4on    !< use CH4 time series, set to false if cyclemet is true
-                                    !< the CO2 timeseries is in the same input file as the CO2 one.
-
-        !real, pointer :: setch4conc  !< set the value of atmospheric CH4 if ch4on is false. (ppmv)
-
-        !logical, pointer :: popdon   !< if set true use population density data to calculate fire extinguishing
-                            !< probability and probability of fire due to human causes,
-                            !< or if false, read directly from .ctm file
-
-        !integer, pointer :: popcycleyr !< popd and luc year to cycle on when cyclemet is true, set to -9999
-                            !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
-                                    !< this defaults to -9999, which will then cause the model to cycle on
-                                    !< whatever is the first year in the popd and luc datasets
-
-        !logical, pointer :: parallelrun !< set this to be true if model is run in parallel mode for
-                                !< multiple grid cells, output is limited to monthly & yearly
-                            !< grid-mean only. else the run is in stand alone mode, in which
-                            !< output includes half-hourly and daily and mosaic-mean as well.
-
-        !logical, pointer :: dofire  !< if true the fire/disturbance subroutine will be used.
-
-       ! logical, pointer :: dowetlands !< if true the ch4wetland subroutine will be used.
-
-       ! logical, pointer :: obswetf !< if true the observed wetland fraction will be used.
-
-       ! logical, pointer :: compete !< set this to true if competition between pfts is
-                        !< to be implimented
-
-       ! logical, pointer :: inibioclim  !< set this to true if competition between pfts is
-                            !< to be implimented and you have the mean climate values
-                                    !< in the ctm files.
-
-       ! logical, pointer :: start_bare !<set this to true if competition is true, and if you wish
-                                    !< to start from bare ground. if this is set to false, the
-                                    !< ini and ctm file info will be used to set up the run.
-                                    !< NOTE: This still keeps the crop fractions (while setting all pools to
-                                    !< zero)
-
-       ! logical, pointer :: use_netcdf      !< If true, the model inputs and outputs are done with netcdf files.
-      !                                 !! if false, ASCII MET files will be expected. This is retained for use at
-                                        !! the site-level but is discouraged for regional/global simulations. Even when
-                                        !! use_netcdf is set to false the model requires all other inputs in netcdf format
-                                        !! as well all outputs will be netcdf formatted.
-
-       ! character(:), pointer :: met_file !< location of the netcdf meteorological dataset
-
-       ! character(:), pointer :: init_file !< location of the netcdf initialization file
-
-       ! character(:), pointer :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
-
-      !  character(:), pointer :: runparams_file  !< location of the namelist file containing the model parameters
-
-      !  character(:), pointer :: output_directory !< Directory where the output netcdfs will be placed
-
-       ! character(:), pointer :: xmlFile !< location of the xml file that outlines the possible netcdf output files
-
-      !  logical, pointer :: leap     !< set to true if all/some leap years in the .MET file have data for 366 days
-                                    !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
-
-                                    !< from the start then put in a negative number (like -9999), if you never want to have monthly
-                                    !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR
-
-        ! -------------
-        ! class model switches
-
-       ! integer, pointer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
-                            !< because the atmospheric model considers these to be part
-                            !< of the "terrain".
-                            !< if idisp=1, vegetation displacement heights are calculated.
-
-       ! integer, pointer :: izref    !< if izref=1, the bottom of the atmospheric model is taken
-                    !< to lie at the ground surface.
-                    !< if izref=2, the bottom of the atmospheric model is taken
-                    !< to lie at the local roughness height.
-
-      !  integer, pointer :: islfd    !< if islfd=0, drcoef is called for surface stability corrections
-                    !< and the original gcm set of screen-level diagnostic calculations
-                    !< is done.
-                    !< if islfd=1, drcoef is called for surface stability corrections
-                    !< and sldiag is called for screen-level diagnostic calculations.
-                    !< if islfd=2, flxsurfz is called for surface stability corrections
-                    !< and diasurf is called for screen-level diagnostic calculations.
-
-        integer, pointer :: ipcp     !< if ipcp=1, the rainfall-snowfall cutoff is taken to lie at 0 c.
-                    !< if ipcp=2, a linear partitioning of precipitation betweeen
-                    !< rainfall and snowfall is done between 0 c and 2 c.
-                    !< if ipcp=3, rainfall and snowfall are partitioned according to
-                    !< a polynomial curve between 0 c and 6 c.
-
-        integer, pointer :: iwf     !< if iwf=0, only overland flow and baseflow are modelled, and
-                !< the ground surface slope is not modelled.
-                !< if iwf=n (0<n<4), the watflood calculations of overland flow
-                !< and interflow are performed; interflow is drawn from the top
-                !< n soil layers.
-
-        INTEGER, pointer :: ITC!< itc, itcg and itg are switches to choose the iteration scheme to
-                            !< be used in calculating the canopy or ground surface temperature
-                            !< respectively.  if the switch is set to 1, a bisection method is
-                            !< used; if to 2, the newton-raphson method is used.
-        INTEGER, pointer :: ITCG!< itc, itcg and itg are switches to choose the iteration scheme to
-                            !< be used in calculating the canopy or ground surface temperature
-                            !< respectively.  if the switch is set to 1, a bisection method is
-                            !< used; if to 2, the newton-raphson method is used.
-        INTEGER, pointer :: ITG!< itc, itcg and itg are switches to choose the iteration scheme to
-                            !< be used in calculating the canopy or ground surface temperature
-                            !< respectively.  if the switch is set to 1, a bisection method is
-                            !< used; if to 2, the newton-raphson method is used.
-
-        INTEGER, pointer :: IPAI !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-                    !< plant area index, vegetation height, canopy albedo, snow albedo
-                    !< and soil albedo respectively calculated by class are used.
-                    !< if any of these switches is set to 1, the value of the
-                    !< corresponding parameter calculated by class is overridden by
-                    !< a user-supplied input value.
-        INTEGER, pointer :: IHGT !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-                    !< plant area index, vegetation height, canopy albedo, snow albedo
-                    !< and soil albedo respectively calculated by class are used.
-                    !< if any of these switches is set to 1, the value of the
-                    !< corresponding parameter calculated by class is overridden by
-                    !< a user-supplied input value.
-        INTEGER, pointer :: IALC !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-                    !< plant area index, vegetation height, canopy albedo, snow albedo
-                    !< and soil albedo respectively calculated by class are used.
-                    !< if any of these switches is set to 1, the value of the
-                    !< corresponding parameter calculated by class is overridden by
-                    !< a user-supplied input value.
-        INTEGER, pointer :: IALS !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-                    !< plant area index, vegetation height, canopy albedo, snow albedo
-                    !< and soil albedo respectively calculated by class are used.
-                    !< if any of these switches is set to 1, the value of the
-                    !< corresponding parameter calculated by class is overridden by
-                    !< a user-supplied input value.
-        INTEGER, pointer :: IALG !< if ipai, ihgt, ialc, ials and ialg are zero, the values of
-                    !< plant area index, vegetation height, canopy albedo, snow albedo
-                    !< and soil albedo respectively calculated by class are used.
-                    !< if any of these switches is set to 1, the value of the
-                    !< corresponding parameter calculated by class is overridden by
-                    !< a user-supplied input value.
-
-        integer, pointer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
-                        !< if it is set to 1, the new four-band routines are used.
-
-        ! -------------
-        ! Output switches
-
-        integer, pointer :: jhhstd  !< day of the year to start writing the half-hourly output
-        integer, pointer :: jhhendd !< day of the year to stop writing the half-hourly output
-        integer, pointer :: jdstd   !< day of the year to start writing the daily output
-        integer, pointer :: jdendd  !< day of the year to stop writing the daily output
-        integer, pointer :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
-        integer, pointer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
-        integer, pointer :: jdsty   !< simulation year (iyear) to start writing the daily output
-        integer, pointer :: jdendy  !< simulation year (iyear) to stop writing the daily output
-        integer, pointer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
-        logical, pointer :: doperpftoutput    !< Switch for making extra output files that are at the per PFT level
-        logical, pointer :: dopertileoutput    !< Switch for making extra output files that are at the per tile level
-        logical, pointer :: domonthoutput    !< Switch for making monthly output files (annual are always outputted)
-        logical, pointer :: dodayoutput    !< Switch for making daily output files (annual are always outputted)
-        logical, pointer :: dohhoutput    !< Switch for making half hourly output files (annual are always outputted)
-        character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
-
-!! EXAMPLES:
-!!
-!! To set up a transient run that does a cycling of the climate at the start:
-!!
-!! In the example below the model will run from 1851 - 2012 using a climate dataset that
-!! spans 1901 - 2012. The LUC, POPD, CO2 files all span 1850 - 2012. The climate dataset will
-!! cycle over 25 years of climate (NUMMETCYLYRS; from 1901 - 1925) twice (CTEMLOOP) for the
-!! period 1851 - 1900 while the CO2, POPD, and LUC all run from 1851 - 1900 in their respective
-!! files (Each file will search for 1851 at the start so skipping 1850). Once 1901 is hit
-!! the MET file no longer cycles and simply runs, like the other input files, until
-!! it reaches its end (year 2012).
-!!
-!! (only the relevant switches are shown below) \n
-!! transient_run = .true. \n
-!! trans_startyr = 1851 \n
-!! CTEMLOOP = 2 ,  <-- note this is set to the number of loops that NUMMETCYLYRS must make to match up with the other datasets. \n
-!! NCYEAR = 112 , \n
-!! LNDUSEON = .TRUE. , \n
-!! CYCLEMET = .TRUE. ,  <-- note this is set to TRUE. \n
-!! NUMMETCYLYRS = 25 ,  <-- note this times ctemloop should allow the datasets to match up (e.g. 1850 + 2*25 yrs ends in 1900) \n
-!! METCYLYRST = 1901 , \n
-!! CO2ON = .TRUE. , \n
-!! POPDON = .TRUE. , \n
-!! OBSWETF = .false. ,
-!!
-!! If you are doing methane then this would be true like the CO2 switches
-!!
-!! ------------------------------
-!!
-!! If you want a transient run that does not spin over climate at the start, you need to change from above the following:
-!!
-!! (only the relevant switches are shown below) \n
-!! trans_startyr = 2000, <-- whatever year you want to start at \n
-!! CYCLEMET = .FALSE. ,  <-- note this is set to FALSE.
-!!
-! +++++++++++++++++++++++++++++++
-!!
-!! If you want a transient CO2 run that DOES spin over climate, you need to change from above the following:
-
-!! (only the relevant switches are shown below) \n
-!! trans_startyr = 2000, <-- whatever year you want the CO2 to start at (note: the run will end at the end of the CO2 file)\n
-!! CO2ON = .TRUE.\n
-!! SETCO2CONC = 285.00 , <-- Now ignored.\n
-!!
-!! ------------------------------
-!!
-!! To set up a spinup run:
-!!
-!! This example runs the model over 125 years. The climate cycles from 1901 - 1925 five times. No LUC happens,
-!! the POPD is set at the 1850 value read in from the POPD file and the CO2 concentration is fixed at SETCO2CONC.
-!!
-!! (only the relevant switches are shown below) \n
-!! transient_run = .false. \n
-!! CTEMLOOP = 5 ,  \n
-!! NCYEAR = 112 ,  <-- Note this should be just be the length of the climate dataset but could be less if you want. \n
-!! LNDUSEON = .false. , \n
-!! CYCLEMET = .TRUE. ,  <-- note this is set to TRUE. \n
-!! NUMMETCYLYRS = 25 ,  <-- note this is however many years you want. \n
-!! METCYLYRST = 1901 , \n
-!! CO2ON = .false. , \n
-!! SETCO2CONC = 285.00 , <-- set to your own appropriate value. \n
-!! POPDON = .TRUE. , <-- note keep this on uses the POPD file, setting false uses the INI file value \n
-!! POPCYCLEYR = 1850 , \n
-!! OBSWETF = .false. ,
-!!
-!! If doing methane then the CH4 switches should be the same as the CO2 ones.
-!!
 

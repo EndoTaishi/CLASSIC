@@ -14,6 +14,6 @@ var searchData=
   ['emit_5ftc',['emit_tc',['../structctem__statevars_1_1veg__rot.html#a8ae15757654dd8c9e3c5842c098dcdff',1,'ctem_statevars::veg_rot::emit_tc()'],['../structctem__statevars_1_1veg__gat.html#a0c2e89e81cbcf9915a719e6e10f390ac',1,'ctem_statevars::veg_gat::emit_tc()']]],
   ['emit_5ftpm',['emit_tpm',['../structctem__statevars_1_1veg__rot.html#aca1b008eac61979976c79f37fbb4bd87',1,'ctem_statevars::veg_rot::emit_tpm()'],['../structctem__statevars_1_1veg__gat.html#a758189398f80927f951577878c7dee0e',1,'ctem_statevars::veg_gat::emit_tpm()']]],
   ['evapacc',['evapacc',['../structclass__statevars_1_1class__rotated.html#a6217e87164b8a1a00c6df4231fbc3eec',1,'class_statevars::class_rotated']]],
-  ['existence',['existence',['../group__competition__scheme__existence.html#ga4345a1807f52b8da4f0cdd9f0f71f91f',1,'competition_scheme']]],
+  ['existence',['existence',['../namespacecompetition__scheme.html#a4345a1807f52b8da4f0cdd9f0f71f91f',1,'competition_scheme']]],
   ['extnprob',['extnprob',['../structctem__statevars_1_1veg__rot.html#ac3bc64976cb4deecb67382e92beb9e9b',1,'ctem_statevars::veg_rot::extnprob()'],['../structctem__statevars_1_1veg__gat.html#ad8dd263bec147a6546cd2d25a4e264b9',1,'ctem_statevars::veg_gat::extnprob()']]]
 ];

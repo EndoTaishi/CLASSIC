@@ -24,16 +24,19 @@
 !!from no leaves/dormant state to the maximum growth state is based on the carbon-gain approach. CTEM uses
 !!\f$\textit{virtual}\f$ leaves to assess favourable meteorological conditions for leaf out. The virtual leaves
 !!photosynthesize and respire in a manner similar to normal leaves except the carbon gain or loss is not taken into
-!!account in vegetation's carbon balance. A positive net leaf photosynthesis rate (\f$G_{canopy,net}\f$, Eq. \ref{Gnet})
+!!account in vegetation's carbon balance. A positive net leaf photosynthesis rate (\f$ G_{canopy,net} \f$, Eq. \ref{Gnet})
 !!for the virtual leaves over seven consecutive days indicates the arrival of favourable growth conditions and triggers
 !!leaf onset and the associated transition from the no leaves/dormant state to the maximum leaf growth state, when the
 !!entire positive NPP is allocated to leaves (\f$a_{fL} = 1\f$, \f$a_{fS} = a_{fR} = 0\f$). When LAI reaches \f${LAI}_{thrs}\f$
 !!then the vegetation switches to the normal growth mode and positive NPP is allocated to all three vegetation
-!!components -- leaves, stem and roots (\f$a_{fL}, a_{fS}, a_{fR} > 0\f$). \f${LAI}_{thrs}\f$ is calculated as
-!!\f[{LAI}_{thrs} = L_f \left[ {SLA}\left(\frac{C_S + C_R}{\eta}\right)^{1/\kappa} \right].\f]
+!!components -- leaves, stem and roots (\f$a_{fL}\f$, \f$a_{fS}\f$, \f$a_{fR}\f$ > 0). \f${LAI}_{thrs}\f$ is calculated as
+!!
+!!\f[
+!!{LAI}_{thrs} = L_f [ {SLA} (\frac{C_S + C_R}{\eta} ) ^ {1/\kappa} ].
+!!\f]
 !!
 !!The PFT-specific \f$L_f\f$ term (see also ctem_params.f90) calculates \f${LAI}_{thrs}\f$ to be typically between
-!!40 and 50\,{\%} of the maximum LAI that a given amount of stem and root biomass can support (based on the terms in the square
+!!40 and 50 % of the maximum LAI that a given amount of stem and root biomass can support (based on the terms in the square
 !!brackets and Eq. (\ref{propwoody}). \f$SLA\f$ is the specific leaf area (Eq. \ref{sla}).  This rule for transition
 !!from a maximum to a normal growth state is also used for evergreen tree PFTs and grass PFTs. Similar to
 !!\f${LAI}_{thrs}\f$, the LAI of virtual leaves is \f$7.5\,{\%}\f$ of the maximum LAI a given amount of root
@@ -57,13 +60,13 @@
 !!when the vegetation goes into a leaf fall state until the return of more favourable conditions.
 !!
 !!Leaf litter generation is caused by normal turnover of leaves (\f$\Omega_N\f$, \f$day^{-1}\f$) and also
-!!due to cold (\f$\Omega_C\f$, \f$day^{-1}\f$) and drought (\f$\Omega_D\f$, \f$day^{-1}\f$) stress,
+!!due to cold (\f$ \Omega_C \f$, \f$day^{-1}\f$) and drought (\f$\Omega_D\f$, \f$day^{-1}\f$) stress,
 !!both of which contribute to seasonality of LAI. For example, the leaf loss associated with drought and reduced
 !!photosynthesis during the dry season are the principal causes of the seasonality of LAI for the broadleaf drought deciduous tree PFT.
 !!
 !!The conversion of leaf carbon to leaf litter (\f$D_L\f$, \f$kg\,C\,m^{-2}\,day^{-1}\f$) is expressed as
 !!
-!!\f[ \label{cltod} D_L = C_L[1 - \exp(-\Omega_N - \Omega_C - \Omega_{D})],\f]
+!!\f[ D_L = C_L[1 - \exp(-\Omega_N - \Omega_C - \Omega_{D})],\f]
 !!
 !!where (\f$\Omega_{N,C,D}\f$, \f$day^{-1}\f$) are the leaf loss rates associated with normal turnover of leaves and
 !!the cold and drought stress. The rate of normal turnover of leaves is governed by PFT-specific leaf lifespan

@@ -813,26 +813,26 @@ contains
         !
         !     Local variables for coupling CLASS and CTEM
         !
-        integer   month1,month2,xday,& ! isumc lopcount,k1c,k2c,
-            &     metcycendyr,climiyear,endyr ! lucyr,& !nol2pfts(4),cylucyr bigpftc(1),
+        integer   month1,month2,xday!,& ! isumc lopcount,k1c,k2c,
+           ! &     metcycendyr,climiyear,endyr ! lucyr,& !nol2pfts(4),cylucyr bigpftc(1),
 
         integer :: lopcount = 1
 
         !integer, allocatable, dimension(:,:) :: icountrow  !FLAG move out.
 
-        integer, pointer :: metcylyrst   !< climate year to start the spin up on
+        !integer, pointer :: metcylyrst   !< climate year to start the spin up on
                                     !< ignored if cyclemet is false
-        integer, pointer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
-                                            !! are not doing a transient run, set to a negative value (like -9999)
+        !integer, pointer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
+        !                                    !! are not doing a transient run, set to a negative value (like -9999)
         integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
                                 !< soil carbon pool faster
-        integer, pointer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
+        !integer, pointer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
                                     !< ignored if cyclemet is false
         integer, pointer :: metLoop !< no. of times the .met file is to be read. this
                                         !< option is useful to see how ctem's c pools
                                         !< equilibrate when driven with same climate data
                                         !< over and over again.
-        integer, pointer :: ncyear   !< no. of years in the .met file.
+        !integer, pointer :: ncyear   !< no. of years in the .met file.
         integer, pointer :: jhhstd  !< day of the year to start writing the half-hourly output
         integer, pointer :: jhhendd !< day of the year to stop writing the half-hourly output
         integer, pointer :: jdstd   !< day of the year to start writing the daily output
@@ -938,9 +938,9 @@ contains
 
         ! Model switches:
         logical, pointer :: ctem_on
-        logical, pointer :: cyclemet
+        !logical, pointer :: cyclemet
         logical, pointer :: dofire
-        logical, pointer :: met_rewound
+        !logical, pointer :: met_rewound
         !logical, pointer :: reach_eof
         logical, pointer :: PFTCompetition
         logical, pointer :: start_bare
@@ -952,9 +952,9 @@ contains
         logical, pointer :: leap
         logical, pointer :: dowetlands
         logical, pointer :: obswetf
-        logical, pointer :: transient_run
-        character(:), pointer :: met_file
-        character(:), pointer :: runparams_file  !< location of the namelist file containing the model parameters
+        !logical, pointer :: transient_run
+        !character(:), pointer :: met_file
+        !character(:), pointer :: runparams_file  !< location of the namelist file containing the model parameters
         logical, pointer :: domonthoutput
         logical, pointer :: dodayoutput
         logical, pointer :: dohhoutput
@@ -2185,9 +2185,9 @@ contains
         ! Point CTEM pointers
 
         ctem_on           => c_switch%ctem_on
-        cyclemet          => c_switch%cyclemet
+        !cyclemet          => c_switch%cyclemet
         dofire            => c_switch%dofire
-        met_rewound       => c_switch%met_rewound
+        !met_rewound       => c_switch%met_rewound
         PFTCompetition    => c_switch%PFTCompetition
         start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
@@ -2199,9 +2199,9 @@ contains
         leap              => c_switch%leap         
         dowetlands        => c_switch%dowetlands
         obswetf           => c_switch%obswetf
-        transient_run     => c_switch%transient_run
-        met_file          => c_switch%met_file
-        runparams_file    => c_switch%runparams_file
+        !transient_run     => c_switch%transient_run
+        !met_file          => c_switch%met_file
+        !runparams_file    => c_switch%runparams_file
         jhhstd            => c_switch%jhhstd
         jhhendd           => c_switch%jhhendd
         jdstd             => c_switch%jdstd
@@ -2212,10 +2212,10 @@ contains
         jdendy            => c_switch%jdendy
         jmosty            => c_switch%jmosty
         metLoop           => c_switch%metLoop
-        nummetcylyrs      => c_switch%nummetcylyrs
-        ncyear            => c_switch%ncyear
+        !nummetcylyrs      => c_switch%nummetcylyrs
+        !ncyear            => c_switch%ncyear
         spinfast          => c_switch%spinfast
-        trans_startyr     => c_switch%trans_startyr
+!        trans_startyr     => c_switch%trans_startyr
         IDISP             => c_switch%IDISP
         IZREF             => c_switch%IZREF
         ISLFD             => c_switch%ISLFD
@@ -2230,7 +2230,7 @@ contains
         IALS              => c_switch%IALS
         IALG              => c_switch%IALG
         isnoalb           => c_switch%isnoalb
-        metcylyrst        => c_switch%metcylyrst
+        !metcylyrst        => c_switch%metcylyrst
         domonthoutput     => c_switch%domonthoutput
         dodayoutput       => c_switch%dodayoutput
         dohhoutput        => c_switch%dohhoutput
@@ -2828,7 +2828,7 @@ contains
         ! Read in the model initial state
         call read_initialstate(lonIndex,latIndex)
 
-        ! Read in the inputs (options: CO2,CH4)
+        ! Read in the inputs
         if (ctem_on) then
             call getInput('CO2') ! CO2 atmospheric concentration
             call getInput('CH4') ! CH4 atmospheric concentration
@@ -2842,7 +2842,7 @@ contains
             call initializeLandCover
         end if
 
-        ! Read in the meteorological forcing data
+        ! Read in the meteorological forcing data to a suite of arrays
         call getMet(longitude,latitude,nday,delt)
 
         !     CTEM initialization done
@@ -2852,8 +2852,8 @@ contains
         !
         !     * input files
 
-        open(unit=12,file='/home/rjm/Documents/CTEM/test/test.MET',&
-            &      status='old')
+!         open(unit=12,file='/home/rjm/Documents/CTEM/test/test.MET',&
+!             &      status='old')
 
 !     Complete some initial set up work:
 
@@ -3140,10 +3140,11 @@ contains
         do while (run_model)
 
             call updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
-            i=1
+
             !print*,ihour,imin,iday,iyear,FSSROW(I),FDLROW(i),PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
 
             !FLAG !FLAG temp until Ed's file is fixed!!
+            i=1  !FLAG temp!!!
             if (PREROW(i) < 0.) PREROW(i) = 0.  !FLAG temp!!!
             if (QAROW(i) < 0.) QAROW(i) = 0.0012066  !FLAG temp!!!
 
@@ -3257,11 +3258,9 @@ contains
                     ! Check if this year is a leap year, and if so adjust the monthdays, monthend and mmday values.
                     if (leap) call findLeapYears(iyear,leapnow,lastDOY)
 
-                    ! If needed, read in the accessory input files (popd, wetlands, lightning...)
+                    ! If needed, update values that were read in from the accessory input files (popd, wetlands, lightning...)
                     if (ctem_on) then
 
-                        !> Update the time varying inputs if they are being used in this
-                        !! simulation.
                         if (transientCO2) call updateInput('CO2',iyear)
                         if (transientCH4) call updateInput('CH4',iyear)
                         if (dofire .and. transientPOPD) call updateInput('POPD',iyear)
@@ -3658,24 +3657,18 @@ contains
                     DELZ,   FCS,    FGS,    FC,     FG,&
                     1,      NML,    ILG,    IGND,   N    )
 
-            !
-            !     accumulate variables not already accumulated but which are required by
-            !     ctem.
-
             if (ctem_on) then
 
+                !> Accumulate variables not already accumulated but which are required by CTEM.
                 call accumulateForCTEM(nml)
 
                 if(ncount.eq.nday) then
 
-                    ! Find daily averages of accumulated variables for ctem
+                    ! Find daily averages of accumulated variables for CTEM
                     call dayEndCTEMPreparation(nml,nday)
 
-                    !
-                    !     Call Canadian Terrestrial Ecosystem Model which operates at a
-                    !     daily time step, and uses daily accumulated values of variables
-                    !     simulated by CLASS.
-                    !
+                    ! Call Canadian Terrestrial Ecosystem Model which operates at a daily time step,
+                    ! and uses daily accumulated values of variables simulated by CLASS.
                     call ctem ( fcancmxgat, fsnowacc_t,    sandgat,    claygat,&
                         &                      1,        nml,        iday,    radjgat,&
                         &          tcanoaccgat_t,  tcansacc_t, tbarcacc_t,tbarcsacc_t,&
@@ -3759,8 +3752,8 @@ contains
                         end do
                     end do
 
-                endif  ! iif(ncount.eq.nday)
-            endif  ! f(ctem_on)
+                endif  ! if(ncount.eq.nday)
+            endif  ! if(ctem_on)
 
             CALL CLASSS (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT,&
                 &             ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT,&
@@ -4000,22 +3993,22 @@ contains
 
             ! * WRITE FIELDS FROM CURRENT TIME STEP TO OUTPUT FILES.
 
-6100                                    FORMAT(1X,I4,I5,9F8.2,2F8.3,F12.4,F8.2,2(A6,I2))
-6200                                    FORMAT(1X,I4,I5,3(F8.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,2(A6,I2))
+!6100                                    FORMAT(1X,I4,I5,9F8.2,2F8.3,F12.4,F8.2,2(A6,I2))
+!6200                                    FORMAT(1X,I4,I5,3(F8.2,2F6.3),F8.2,2F8.4,F8.2,F8.3,2(A6,I2))
 ! Instead of using fixed format specifiers for IGND, set the format
 ! dynamically on the write statement. Same for 6601 below. EC Jan 20 2017.
-6201  FORMAT(1X,I4,I5,20(F7.2,2F6.3),2F8.3,2(A6,I2))
-6300                                    FORMAT(1X,I4,I5,3F9.2,F8.2,F10.2,E12.3,2F12.3,A6,I2)
-6400                                    FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,5F9.5,2(A6,I2))
-6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,4F8.3,2(A6,I2))
-6600                                    FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
-6501                                    FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
-6601  FORMAT(1X,I2,I3,I5,I6,20(F7.2,2F6.3),20F9.4,2(A6,I2))
+!6201  FORMAT(1X,I4,I5,20(F7.2,2F6.3),2F8.3,2(A6,I2))
+!6300                                    FORMAT(1X,I4,I5,3F9.2,F8.2,F10.2,E12.3,2F12.3,A6,I2)
+!6400                                    FORMAT(1X,I2,I3,I5,I6,9F8.2,2F7.3,E11.3,F8.2,F12.4,5F9.5,2(A6,I2))
+!6500  FORMAT(1X,I2,I3,I5,I6,3(F7.2,2F6.3),F8.2,2F8.4,F8.2,4F8.3,2(A6,I2))
+!6600                                    FORMAT(1X,I2,I3,I5,2F10.2,E12.3,F10.2,F8.2,F10.2,E12.3,2(A6,I2))
+!6501                                    FORMAT(1X,I2,I3,I5,I6,5(F7.2,2F6.3),2(A6,I2))
+!6601  FORMAT(1X,I2,I3,I5,I6,20(F7.2,2F6.3),20F9.4,2(A6,I2))
 !6601  FORMAT(1X,I2,I3,I5,I6,7(F8.2,2F7.3),10F10.4,2(A7,I3))
-6700                                    FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))
-6800                                    FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))
+!6700                                    FORMAT(1X,I2,I3,I5,I6,2X,12E11.4,2(A6,I2))
+!6800                                    FORMAT(1X,I2,I3,I5,I6,2X,22(F10.4,2X),2(A6,I2))
 !6800  FORMAT(1X,I2,I3,I5,I6,3X,22(F12.4,3X),2(A7,2I2))
-6900                                    FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))
+!6900                                    FORMAT(1X,I2,I3,I5,I6,2X,18(E12.4,2X),2(A6,I2))
             !
             !  fc,fg,fcs and fgs are one_dimensional in class subroutines
             !  the transformations here to grid_cell mean fc_g,fg_g,fcs_g and fgs_g
@@ -4666,8 +4659,7 @@ contains
 !                                         &                       THLQACC(I,J),THICACC(I,J),J=1,IGND),&
 !                                         &                       ACTLYR_G(I),FTABLE_g(I)
 !                                 ELSE
-!                                     WRITE(62,6200) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,&
-!                                         &                       THLQACC(I,J),THICACC(I,J),J=1,3),&
+!                                     WRITE(62,6200) IDAY,IYEAR,(TBARACC(I,J)-TFREZ,& !                                         &                       THLQACC(I,J),THICACC(I,J),J=1,3),&
 !                                         &                       TCN,RCANACC(I),SCANACC(I),TSN,ZSN,&
 !                                         &                       ACTLYR_G(I),FTABLE_g(I)
 !                                 ENDIF
@@ -4937,7 +4929,7 @@ contains
 
             if (IDAY .EQ. lastDOY .AND. NCOUNT .EQ. NDAY) then
 
-                WRITE(*,*)'IYEAR=',IYEAR!,'CLIMATE YEAR=',CLIMIYEAR
+                WRITE(*,*)'IYEAR=',IYEAR,'Loop count =',lopcount,'/',metLoop
 
                 ! Write to the restart file
                 call write_restart(lonIndex,latIndex)

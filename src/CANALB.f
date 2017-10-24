@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Calculate vegetation albedos, transmissivities and 
+C!Calculates vegetation albedos, transmissivities and
 C!stomatal resistances.
 C!
       SUBROUTINE CANALB(ALVSCN,ALIRCN,ALVSCS,ALIRCS,TRVSCN,TRIRCN,

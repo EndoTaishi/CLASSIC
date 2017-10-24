@@ -1,5 +1,5 @@
 !>\file
-!!Purpose: Calculate various land surface parameters.
+!!Calculates various land surface parameters.
 !!
 
 !>
@@ -797,7 +797,7 @@ C
       !!of needle clumping. The interception capacity for snow, \f$W_{f,max}\f$, is calculated following Bartlett et al.
       !!(2006) \cite Bartlett2006-xp, using a relation developed by Schmidt and Gluns (1991):
       !!\f$W_{f,max} = 6.0 \Lambda_p [0.27 + 46.0 \rho_{s,f} ]\f$
-      !!where \f$\rho_{s,f} is the density of fresh snow. As was done for the intercepted liquid water, if either the average
+      !!where \f$\rho_{s,f}\f$ is the density of fresh snow. As was done for the intercepted liquid water, if either the average
       !!amount of snow on the canopy, SNCAN, or the total cancpy coverage is less than a small threshold value,
       !!the value of SNCAN is stored in a residual water array SRESID, and SNCAN is set to zero. Next the
       !!intercepted snow is partitioned between FC and FCS. First SNCAN is recalculated as an average over the

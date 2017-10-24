@@ -68,7 +68,6 @@ var structctem__statevars_1_1veg__gat =
     [ "dry_season_length", "structctem__statevars_1_1veg__gat.html#afd694d2842ef60fa471d031bd2ac44f5", null ],
     [ "dstcemls", "structctem__statevars_1_1veg__gat.html#ae1c1a7679fe55d62f6cf19924f6d1e3d", null ],
     [ "dstcemls3", "structctem__statevars_1_1veg__gat.html#a57250abcb799f3da3e35c43be1578bfd", null ],
-    [ "dvdfcan", "structctem__statevars_1_1veg__gat.html#a39cfb7d9118f5871dc60af5d703e031c", null ],
     [ "emit_bc", "structctem__statevars_1_1veg__gat.html#a59a7d44154bb3a85668a84726a57709d", null ],
     [ "emit_ch4", "structctem__statevars_1_1veg__gat.html#a6515c41e7fe48a1946fd70fe0869fc82", null ],
     [ "emit_co", "structctem__statevars_1_1veg__gat.html#a342d1e23f24d9283196bca9111f61c49", null ],

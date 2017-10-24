@@ -1,5 +1,5 @@
 !>\file      
-C!Purpose: Update liquid and frozen water stores on canopy and in soil in 
+C!Updates liquid and frozen water stores on canopy and in soil in
 C!response to calculated sublimation, evaporation and transpiration
 C!rates.
 C!         

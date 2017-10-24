@@ -15,7 +15,7 @@ var searchData=
   ['classt',['classt',['../CLASST_8f.html#afc821376816034a0c657e69bb4b06a24',1,'CLASST.f']]],
   ['classw',['classw',['../CLASSW_8f.html#aac1827011ed2ca61bd0274e83d1f80ad',1,'CLASSW.f']]],
   ['classz',['classz',['../CLASSZ_8f.html#a3011accdb26e214045175dff31aead39',1,'CLASSZ.f']]],
-  ['competition',['competition',['../group__competition__scheme__competition.html#ga008cbfcefd33aaccb8f2b81cf8326451',1,'competition_scheme']]],
+  ['competition',['competition',['../namespacecompetition__scheme.html#a008cbfcefd33aaccb8f2b81cf8326451',1,'competition_scheme']]],
   ['competition_5fmap',['competition_map',['../competition__map_8f.html#a854a6eedf534eff4dd50075b3a321744',1,'competition_map.f']]],
   ['competition_5funmap',['competition_unmap',['../competition__unmap_8f.html#ab970a794d878e125da563f7022d2d3a4',1,'competition_unmap.f']]],
   ['ctem',['ctem',['../ctem_8f90.html#afb4eff56870bf0b2c92ff281046692e5',1,'ctem.f90']]],

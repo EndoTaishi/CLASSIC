@@ -24,6 +24,5 @@ var searchData=
   ['colddays',['colddays',['../structctem__statevars_1_1veg__rot.html#a0c46eb1ced21c8425e5400a9090a7ae2',1,'ctem_statevars::veg_rot::colddays()'],['../structctem__statevars_1_1veg__gat.html#a9cde68139aa292c16c412ac9ecf9dd34',1,'ctem_statevars::veg_gat::colddays()']]],
   ['comment',['comment',['../structctem__statevars_1_1ctem__switches.html#a2007fabd7a297185a3d9e09b625160b1',1,'ctem_statevars::ctem_switches']]],
   ['cszgat',['cszgat',['../structclass__statevars_1_1class__gather.html#a8ffc8d191632aee12dfb790ec2f4bd91',1,'class_statevars::class_gather']]],
-  ['ctem_5fon',['ctem_on',['../structctem__statevars_1_1ctem__switches.html#a92cbf55d7a151de6b5d0fd6164812f8f',1,'ctem_statevars::ctem_switches']]],
-  ['cyclemet',['cyclemet',['../structctem__statevars_1_1ctem__switches.html#a4050812675cede871eb31ce2605868e2',1,'ctem_statevars::ctem_switches']]]
+  ['ctem_5fon',['ctem_on',['../structctem__statevars_1_1ctem__switches.html#a92cbf55d7a151de6b5d0fd6164812f8f',1,'ctem_statevars::ctem_switches']]]
 ];

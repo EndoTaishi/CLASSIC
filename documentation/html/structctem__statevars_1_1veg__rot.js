@@ -52,7 +52,6 @@ var structctem__statevars_1_1veg__rot =
     [ "dry_season_length", "structctem__statevars_1_1veg__rot.html#a19c005a95c8414f256fc02ce34f943e5", null ],
     [ "dstcemls", "structctem__statevars_1_1veg__rot.html#a6482d0537788504ffcb6e0ebfe355243", null ],
     [ "dstcemls3", "structctem__statevars_1_1veg__rot.html#a8d1a9faebc6034c432dfb6e6cd3817bd", null ],
-    [ "dvdfcan", "structctem__statevars_1_1veg__rot.html#a0ee1c5fcc97e0ce530f967215a034ac0", null ],
     [ "emit_bc", "structctem__statevars_1_1veg__rot.html#ae89b4142bb65251a853feecfd17551ae", null ],
     [ "emit_ch4", "structctem__statevars_1_1veg__rot.html#a20a5f7579519e734df69398aa3f0debd", null ],
     [ "emit_co", "structctem__statevars_1_1veg__rot.html#ac31fd6a90e0c93f0568ea04b44275317", null ],

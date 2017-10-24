@@ -1,82 +1,4 @@
-!>\defgroup landuse_change_initializeLandCover
-!>Canadian Terrestrial Ecosystem Model (CTEM) 
-!>LUC Initial Read-In Subroutine 
-!------------------------------------------------------------------------------------
-!>\defgroup landuse_change_readin_luc
-!>Canadian Terrestrial Ecosystem Model (CTEM) 
-!!LUC Annual Read-In Subroutine 
-!------------------------------------------------------------------------------------
-!>\defgroup landuse_change_luc
-!>
-!>Canadian Terrestrial Ecosystem Model (CTEM) 
-!>Land Use Change Subroutine
-!!
-!!The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) \cite Arora2010-416 and briefly
-!! described here. When the area of crop PFTs changes, CTEM generates LUC emissions.
-!! In the simulation where fractional coverage of PFTs is specified, the changes in
-!! fractional coverage of crop PFTs are made consistent with changes in the
-!! fractional coverage of natural non-crop PFTs. That is, an increase or decrease
-!! in the area of crop PFTs is associated with a corresponding decrease or increase
-!! in the area of non-crop PFTs. This approach is taken by \cite Wang2006-he, which
-!! allows one to reconstruct historical land cover given a spatial data set of 
-!!changes in crop area over the historical period and an estimate of potential
-!! natural land cover for the pre-industrial period (as described in Sect. 
-!!\ref{methods}). When competition between PFTs for space is allowed, only the
-!! fractional coverage of crop PFTs is specified. Similar to a simulation with 
-!!prescribed PFT fractions, when the area of crop PFTs increases, the fractional
-!! coverage of non-crop PFTs is decreased in proportion to their existing coverage
-!! \cite Wang2006-he. Alternatively, and in contrast to the simulation with prescribed
-!! PFT fractions, when the area of crop PFTs decreases then the generated bare 
-!!fraction is available for recolonization by non-crop PFTs.
-!!
-!!A decrease in the area of natural non-crop PFTs, associated with an increase in
-!! area of crop PFTs, results in deforested biomass (while the term 
-!!\f$\textit{deforested}\f$ implies clearing of forests, the same processes can
-!! occur in grasslands as well and is meant here to imply removal of the biomass).
-!! The deforested biomass is divided into three components: (i) the component that
-!! is combusted or used for fuel wood immediately after natural vegetated is 
-!!deforested and which contributes to atmospheric \f$CO_2\f$, (ii) the component
-!! left as slash or used for pulp and paper products and (iii) the component that 
-!!is used for long-lasting wood products. The fractions allocated to these three
-!! components depend on whether the PFTs are woody or herbaceous and on their
-!! aboveground vegetation biomass density (see Table 1 of \cite Arora2010-416). 
-!!To account for the timescales involved, the fraction allocated to slash or pulp
-!! and paper products is transferred to the model's litter pool and the fraction
-!! allocated to long-lasting wood products is allocated to the model's soil carbon
-!! pool. Land use change associated with a decrease in the area of natural
-!! vegetation thus redistributes carbon from living vegetation to dead litter
-!! and soil carbon pools and emits \f$CO_2\f$ to the atmosphere through direct
-!! burning of the deforested biomass. The net result is positive LUC carbon 
-!!emissions from land to the atmosphere.
-!!
-!!When croplands are abandoned, the area of natural PFTs increases. In simulations
-!! with prescribed fractional coverage of PFTs this results in a decreased carbon
-!! density for all model pools as the same amount of carbon is spread over a larger
-!! fraction of the grid cell. This reduced density implies that natural vegetation 
-!!is able to take up carbon as it comes into equilibrium with the driving climate
-!! and atmospheric \f$CO_2\f$ concentration. This creates the carbon sink associated
-!! with abandonment of croplands as natural vegetation grows in its place. In
-!! simulations with competition between PFTs, the abandoned land is treated as
-!! bare ground, which is subsequently available for recolonization, as mentioned
-!! above. As natural vegetation expands into bare ground it takes up carbon, again
-!! creating the carbon sink associated with abandonment of croplands. The net
-!! result is negative LUC carbon emissions as carbon is taken from atmosphere to
-!! grow vegetation over the area that was previously a cropland.
-!!
-!------------------------------------------------------------------------------------
-!>\defgroup landuse_change_adjust_luc_fracs
-!>
-!>this subroutine adjusts the amount of each pft to ensure that the fraction of
-!> gridcell bare ground is >0.
-!------------------------------------------------------------------------------------
-!>\defgroup landuse_change_adjust_fracs_comp
-!>
-!>This subroutine is used when PFTCompetition = true. It adjusts the amount of each pft
-!> to allow expansion of cropland.
-!------------------------------------------------------------------------------------
-
-!>\file
-!!Central module for all land use change operations
+!>Central module for all land use change operations
 module landuse_change
 
 ! J. Melton. Jan 11, 2013
@@ -96,6 +18,7 @@ contains
 !-------------------------------------------------------------------------------------------------------------
 !>\ingroup landuse_change_initializeLandCover
 !>@{
+!>Initializes and checks over the PFT fractional cover.
 
 subroutine initializeLandCover
 !
@@ -334,132 +257,138 @@ end subroutine initializeLandCover
 !>\ingroup landuse_change_readin_luc
 !>@{
 
-subroutine readin_luc(iyear,nmtest,nltest,lucyr, &
-                      nfcancmxrow,pfcancmxrow,reach_eof,PFTCompetition,&
-                      onetile_perPFT)
-!     9  Mar  2016  - Adapt for tiling where we PFTCompetition for space within a tile
-!     J. Melton
+! subroutine readin_luc(iyear,nmtest,nltest,lucyr, &
+!                       nfcancmxrow,pfcancmxrow,reach_eof,PFTCompetition,&
+!                       onetile_perPFT)
+! !     9  Mar  2016  - Adapt for tiling where we PFTCompetition for space within a tile
+! !     J. Melton
+! !
+! !     3  Feb  2016  - Remove mosaic flag, replace with onetile_perPFT flag.
+! !     J. Melton
 !
-!     3  Feb  2016  - Remove mosaic flag, replace with onetile_perPFT flag.
-!     J. Melton
-
-!     9  Jan. 2013  - this subroutine takes in luc information from
-!     J. Melton       a luc file annually and adapts them for runclassctem
-!    
-!     7  Feb. 2014  - Adapt it to work with competition
-!     J. Melton 
-           
-use ctem_params,        only : nmos,nlat,icc,seed,crop
-
-implicit none
-
-! arguments
-
-! inputs
-integer, intent(in) :: iyear
-integer, intent(in) :: nmtest
-integer, intent(in) :: nltest
-logical, intent(in) :: PFTCompetition
-logical, intent(in) :: onetile_perPFT !< if you are running with one tile per PFT in mosaic mode, set to true. Changes
-                                !< how competition is run. Specifically it allows competition between tiles. This
-                                !< is not recommended for any case where you don't have one PFT in each tile as it
-                                !< has not been tested for that.
-
-! updates
-integer, intent(inout) :: lucyr
-logical, intent(inout) :: reach_eof
-
-! outputs
-real, dimension(nlat,nmos,icc), intent(out) :: nfcancmxrow
-real, dimension(nlat,nmos,icc), intent(in)  :: pfcancmxrow
-
-! local variables
-real, dimension(icc) :: temparray
-real :: temp
-integer :: j,m,i
-integer :: k1,k2,n
-real, dimension(nltest) :: bare_ground_frac
-
-!>-------------------------
-
-!>it is subsequent years so read in and adjust the luc file info.
-
-         do while (lucyr < iyear) 
-           do i = 1, nltest
-            if (.not. onetile_perPFT) then  !composite
-              read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
-              if (nmtest > 1) then
-                do m = 2, nmtest
-                    nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
-                end do
-              end if
-            else                    !onetile_perPFT
-              read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
-              do m = 1, nmtest-1    !nmtest-1 same as icc
-               j = m
-               if (PFTCompetition) then
-                  nfcancmxrow(i,m,j) = max(seed,temparray(m)) 
-               else !prescribed run
-                  nfcancmxrow(i,m,j) = max(0.,temparray(m)) 
-               end if   
-              enddo !m loop
-            endif
-           enddo !nltest
-         enddo !lucyr<iyear
-!>
-!>If PFTCompetition is on, then only take in the crop fraction. Set the other fractions
-!>to the same as before. These will be adjusted in adjust_luc_fracs.
-        if (PFTCompetition) then
-         do j = 1, icc
-          if (.not. crop(j)) then
-           do i = 1, nltest
-             do m = 1,nmtest
-                nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)
-             end do
-           end do
-          end if
-         end do
-        end if
-
-
-!>(re)find the bare fraction for farerow(i,iccp1)
-          bare_ground_frac=0.
-          do i = 1, nltest
-          temp = 0.0
-           do j = 1, icc
-            if (onetile_perPFT) then !flag
-              m = j
-            else !composite
-              m = 1
-            end if 
-            temp = temp + nfcancmxrow(i,m,j)
-           enddo
-
-            bare_ground_frac(i) = 1.0- temp
-
-          enddo
-          
-          do i = 1, nltest
-           if ((PFTCompetition .and. bare_ground_frac(i) < seed) .or. (.not. PFTCompetition .and. bare_ground_frac(i) < 0.)) then
-
-             call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,bare_ground_frac(i),PFTCompetition)
-
-           endif 
-          enddo !nltest
-
-return
-
-999 continue
-
-!>end of the luc file is reached. close and tell main program to exit
-        close(15)
-        reach_eof = .true.
-
-end subroutine readin_luc
+! !     9  Jan. 2013  - this subroutine takes in luc information from
+! !     J. Melton       a luc file annually and adapts them for runclassctem
+! !
+! !     7  Feb. 2014  - Adapt it to work with competition
+! !     J. Melton
+!
+! use ctem_params,        only : nmos,nlat,icc,seed,crop
+!
+! implicit none
+!
+! ! arguments
+!
+! ! inputs
+! integer, intent(in) :: iyear
+! integer, intent(in) :: nmtest
+! integer, intent(in) :: nltest
+! logical, intent(in) :: PFTCompetition
+! logical, intent(in) :: onetile_perPFT !< if you are running with one tile per PFT in mosaic mode, set to true. Changes
+!                                 !< how competition is run. Specifically it allows competition between tiles. This
+!                                 !< is not recommended for any case where you don't have one PFT in each tile as it
+!                                 !< has not been tested for that.
+!
+! ! updates
+! integer, intent(inout) :: lucyr
+! logical, intent(inout) :: reach_eof
+!
+! ! outputs
+! real, dimension(nlat,nmos,icc), intent(out) :: nfcancmxrow
+! real, dimension(nlat,nmos,icc), intent(in)  :: pfcancmxrow
+!
+! ! local variables
+! real, dimension(icc) :: temparray
+! real :: temp
+! integer :: j,m,i
+! integer :: k1,k2,n
+! real, dimension(nltest) :: bare_ground_frac
+!
+! !>-------------------------
+!
+! !>it is subsequent years so read in and adjust the luc file info.
+!
+!          do while (lucyr < iyear)
+!            do i = 1, nltest
+!             if (.not. onetile_perPFT) then  !composite
+!               read (15,*,end=999) lucyr,(nfcancmxrow(i,1,j),j=1,icc)
+!               if (nmtest > 1) then
+!                 do m = 2, nmtest
+!                     nfcancmxrow(i,m,:) = nfcancmxrow(i,1,:)
+!                 end do
+!               end if
+!             else                    !onetile_perPFT
+!               read (15,*,end=999) lucyr,(temparray(j),j=1,icc)
+!               do m = 1, nmtest-1    !nmtest-1 same as icc
+!                j = m
+!                if (PFTCompetition) then
+!                   nfcancmxrow(i,m,j) = max(seed,temparray(m))
+!                else !prescribed run
+!                   nfcancmxrow(i,m,j) = max(0.,temparray(m))
+!                end if
+!               enddo !m loop
+!             endif
+!            enddo !nltest
+!          enddo !lucyr<iyear
+! !>
+! !>If PFTCompetition is on, then only take in the crop fraction. Set the other fractions
+! !>to the same as before. These will be adjusted in adjust_luc_fracs.
+!         if (PFTCompetition) then
+!          do j = 1, icc
+!           if (.not. crop(j)) then
+!            do i = 1, nltest
+!              do m = 1,nmtest
+!                 nfcancmxrow(i,m,j)=pfcancmxrow(i,m,j)
+!              end do
+!            end do
+!           end if
+!          end do
+!         end if
+!
+!
+! !>(re)find the bare fraction for farerow(i,iccp1)
+!           bare_ground_frac=0.
+!           do i = 1, nltest
+!           temp = 0.0
+!            do j = 1, icc
+!             if (onetile_perPFT) then !flag
+!               m = j
+!             else !composite
+!               m = 1
+!             end if
+!             temp = temp + nfcancmxrow(i,m,j)
+!            enddo
+!
+!             bare_ground_frac(i) = 1.0- temp
+!
+!           enddo
+!
+!           do i = 1, nltest
+!            if ((PFTCompetition .and. bare_ground_frac(i) < seed) .or. (.not. PFTCompetition .and. bare_ground_frac(i) < 0.)) then
+!
+!              call adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow,bare_ground_frac(i),PFTCompetition)
+!
+!            endif
+!           enddo !nltest
+!
+! return
+!
+! 999 continue
+!
+! !>end of the luc file is reached. close and tell main program to exit
+!         close(15)
+!         reach_eof = .true.
+!
+! end subroutine readin_luc
 !>@}
 !=======================================================================
 !>\ingroup landuse_change_luc
 !>@{
+!> Deals with the changes in the land cover and estimates land use change (LUC)
+!! related carbon emissions. based on whether there is conversion of forests/grassland to crop area,
+!! or croplands abandonment, this subroutine reallocates carbon from live vegetation to litter
+!! and soil c components. the decomposition from the litter and soil c pools thus implicitly models luc
+!! related carbon emissions. set of rules are followed to determine the fate of carbon that
+!! results from deforestation or replacement of grasslands by crops.
 
 subroutine    luc(         il1,       il2,  nilg,      nol2pfts,    & !1    
                         grclarea, pfcancmx, nfcancmx,      iday,    & !2    
@@ -1197,6 +1126,8 @@ end subroutine luc
 !=======================================================================
 !>\ingroup landuse_change_adjust_luc_fracs
 !>@{
+!> Adjusts the amount of each pft to ensure that the fraction of
+!> gridcell bare ground is >0.
 
 subroutine adjust_luc_fracs(i,onetile_perPFT,nfcancmxrow, &
                           bare_ground_frac, PFTCompetition)
@@ -1268,6 +1199,8 @@ end subroutine adjust_luc_fracs
 !=======================================================================
 !>\ingroup landuse_change_adjust_fracs_comp
 !>@{
+!> Used when PFTCompetition = true. It adjusts the amount of each pft
+!> to allow expansion of cropland.
 
 subroutine adjust_fracs_comp(il1,il2,nilg,iday,pfcancmx,yesfrac,delfrac,outdelfrac)
 ! J. Melton, Feb 13 2014
@@ -1366,4 +1299,59 @@ end do
 
 end subroutine adjust_fracs_comp
 !>@}
+
+!>\file
+!!The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) \cite Arora2010-416 and briefly
+!! described here. When the area of crop PFTs changes, CTEM generates LUC emissions.
+!! In the simulation where fractional coverage of PFTs is specified, the changes in
+!! fractional coverage of crop PFTs are made consistent with changes in the
+!! fractional coverage of natural non-crop PFTs. That is, an increase or decrease
+!! in the area of crop PFTs is associated with a corresponding decrease or increase
+!! in the area of non-crop PFTs. This approach is taken by \cite Wang2006-he, which
+!! allows one to reconstruct historical land cover given a spatial data set of
+!!changes in crop area over the historical period and an estimate of potential
+!! natural land cover for the pre-industrial period (as described in Sect.
+!!\ref{methods}). When competition between PFTs for space is allowed, only the
+!! fractional coverage of crop PFTs is specified. Similar to a simulation with
+!!prescribed PFT fractions, when the area of crop PFTs increases, the fractional
+!! coverage of non-crop PFTs is decreased in proportion to their existing coverage
+!! \cite Wang2006-he. Alternatively, and in contrast to the simulation with prescribed
+!! PFT fractions, when the area of crop PFTs decreases then the generated bare
+!!fraction is available for recolonization by non-crop PFTs.
+!!
+!!A decrease in the area of natural non-crop PFTs, associated with an increase in
+!! area of crop PFTs, results in deforested biomass (while the term
+!!\f$\textit{deforested}\f$ implies clearing of forests, the same processes can
+!! occur in grasslands as well and is meant here to imply removal of the biomass).
+!! The deforested biomass is divided into three components: (i) the component that
+!! is combusted or used for fuel wood immediately after natural vegetated is
+!!deforested and which contributes to atmospheric \f$CO_2\f$, (ii) the component
+!! left as slash or used for pulp and paper products and (iii) the component that
+!!is used for long-lasting wood products. The fractions allocated to these three
+!! components depend on whether the PFTs are woody or herbaceous and on their
+!! aboveground vegetation biomass density (see Table 1 of \cite Arora2010-416).
+!!To account for the timescales involved, the fraction allocated to slash or pulp
+!! and paper products is transferred to the model's litter pool and the fraction
+!! allocated to long-lasting wood products is allocated to the model's soil carbon
+!! pool. Land use change associated with a decrease in the area of natural
+!! vegetation thus redistributes carbon from living vegetation to dead litter
+!! and soil carbon pools and emits \f$CO_2\f$ to the atmosphere through direct
+!! burning of the deforested biomass. The net result is positive LUC carbon
+!!emissions from land to the atmosphere.
+!!
+!!When croplands are abandoned, the area of natural PFTs increases. In simulations
+!! with prescribed fractional coverage of PFTs this results in a decreased carbon
+!! density for all model pools as the same amount of carbon is spread over a larger
+!! fraction of the grid cell. This reduced density implies that natural vegetation
+!!is able to take up carbon as it comes into equilibrium with the driving climate
+!! and atmospheric \f$CO_2\f$ concentration. This creates the carbon sink associated
+!! with abandonment of croplands as natural vegetation grows in its place. In
+!! simulations with competition between PFTs, the abandoned land is treated as
+!! bare ground, which is subsequently available for recolonization, as mentioned
+!! above. As natural vegetation expands into bare ground it takes up carbon, again
+!! creating the carbon sink associated with abandonment of croplands. The net
+!! result is negative LUC carbon emissions as carbon is taken from atmosphere to
+!! grow vegetation over the area that was previously a cropland.
+!!
+
 end module

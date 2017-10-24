@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -105,98 +106,13 @@ $(document).ready(function(){initNavTree('group__landuse__change__readin__luc.ht
 
 <p>Canadian Terrestrial Ecosystem Model (CTEM) LUC Annual Read-In Subroutine.  
 <a href="#details">More...</a></p>
-<table class="memberdecls">
-<tr class="memitem:gac5b49bbe41675cae7b7209cce482009b"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__landuse__change__readin__luc.html#gac5b49bbe41675cae7b7209cce482009b">landuse_change::readin_luc</a> (iyear, nmtest, nltest, lucyr, nfcancmxrow, pfcancmxrow, reach_eof, PFTCompetition, onetile_perPFT)</td></tr>
-<tr class="separator:gac5b49bbe41675cae7b7209cce482009b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Canadian Terrestrial Ecosystem Model (CTEM) LUC Annual Read-In Subroutine. </p>
-<h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="gac5b49bbe41675cae7b7209cce482009b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">subroutine, public landuse_change::readin_luc </td>
-          <td>(</td>
-          <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>iyear</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>nmtest</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, intent(in)&#160;</td>
-          <td class="paramname"><em>nltest</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">integer, intent(inout)&#160;</td>
-          <td class="paramname"><em>lucyr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nlat,nmos,icc), intent(out)&#160;</td>
-          <td class="paramname"><em>nfcancmxrow</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real, dimension(nlat,nmos,icc), intent(in)&#160;</td>
-          <td class="paramname"><em>pfcancmxrow</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">logical, intent(inout)&#160;</td>
-          <td class="paramname"><em>reach_eof</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">logical, intent(in)&#160;</td>
-          <td class="paramname"><em>PFTCompetition</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">logical, intent(in)&#160;</td>
-          <td class="paramname"><em>onetile_perPFT</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">onetile_perpft</td><td>if you are running with one tile per PFT in mosaic mode, set to true. Changes how competition is run. Specifically it allows competition between tiles. This is not recommended for any case where you don't have one PFT in each tile as it has not been tested for that. </td></tr>
-  </table>
-  </dd>
-</dl>
-<hr/>
-<p>it is subsequent years so read in and adjust the luc file info.</p>
-<p>If PFTCompetition is on, then only take in the crop fraction. Set the other fractions to the same as before. These will be adjusted in adjust_luc_fracs.</p>
-<p>(re)find the bare fraction for farerow(i,iccp1)</p>
-<p>end of the luc file is reached. close and tell main program to exit </p>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:08 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 14:37:09 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

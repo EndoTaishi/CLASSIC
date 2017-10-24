@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -273,40 +274,40 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">alvsg</td><td>Visible albedo of bare ground <img class="formulaInl" alt="$[ ] (\alpha_{g,VIS})$" src="form_1406.png"/></td></tr>
-    <tr><td class="paramname">alirg</td><td>Near-IR albedo of bare ground <img class="formulaInl" alt="$[ ] (\alpha_{g,NIR})$" src="form_1407.png"/></td></tr>
+    <tr><td class="paramname">alvsg</td><td>Visible albedo of bare ground <img class="formulaInl" alt="$[ ] (\alpha_{g,VIS})$" src="form_715.png"/></td></tr>
+    <tr><td class="paramname">alirg</td><td>Near-IR albedo of bare ground <img class="formulaInl" alt="$[ ] (\alpha_{g,NIR})$" src="form_716.png"/></td></tr>
     <tr><td class="paramname">alvsgc</td><td>Visible albedo of ground under vegetation canopy [ ]</td></tr>
     <tr><td class="paramname">alirgc</td><td>Near-IR albedo of ground under vegetation canopy [ ]</td></tr>
-    <tr><td class="paramname">algwv</td><td>Visible albedo of wet soil for modelled area <img class="formulaInl" alt="$[ ] (alpha_{g,NIR,wet})$" src="form_1911.png"/></td></tr>
-    <tr><td class="paramname">algwn</td><td>Near-infrared albedo of wet soil for modelled area <img class="formulaInl" alt="$[ ] (alpha_{g,NIR,wet})$" src="form_1911.png"/></td></tr>
-    <tr><td class="paramname">algdv</td><td>Visible albedo of dry soil for modelled area <img class="formulaInl" alt="$[ ] (alpha_{g,VIS,dry})$" src="form_1912.png"/></td></tr>
-    <tr><td class="paramname">algdn</td><td>Near-infrared albedo of dry soil for modelled area <img class="formulaInl" alt="$[ ] (alpha_{g,NIR,dry})$" src="form_1913.png"/></td></tr>
-    <tr><td class="paramname">thliq</td><td>Volumetric liquid water content of soil layers <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_759.png"/></td></tr>
-    <tr><td class="paramname">alvsu</td><td>Visible albedo of urban part of modelled area <img class="formulaInl" alt="$[ ] (alpha_{u,VIS})$" src="form_1410.png"/></td></tr>
-    <tr><td class="paramname">aliru</td><td>Near-IR albedo of urban part of modelled area <img class="formulaInl" alt="$[ ] (alpha_{u,NIR})$" src="form_1411.png"/></td></tr>
-    <tr><td class="paramname">fcmxu</td><td>Fractional coverage of urban part of modelled area <img class="formulaInl" alt="$[ ] (X_u)$" src="form_1412.png"/></td></tr>
+    <tr><td class="paramname">algwv</td><td>Visible albedo of wet soil for modelled area <img class="formulaInl" alt="$[ ] (alpha_{g,NIR,wet})$" src="form_717.png"/></td></tr>
+    <tr><td class="paramname">algwn</td><td>Near-infrared albedo of wet soil for modelled area <img class="formulaInl" alt="$[ ] (alpha_{g,NIR,wet})$" src="form_717.png"/></td></tr>
+    <tr><td class="paramname">algdv</td><td>Visible albedo of dry soil for modelled area <img class="formulaInl" alt="$[ ] (alpha_{g,VIS,dry})$" src="form_718.png"/></td></tr>
+    <tr><td class="paramname">algdn</td><td>Near-infrared albedo of dry soil for modelled area <img class="formulaInl" alt="$[ ] (alpha_{g,NIR,dry})$" src="form_719.png"/></td></tr>
+    <tr><td class="paramname">thliq</td><td>Volumetric liquid water content of soil layers <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_221.png"/></td></tr>
+    <tr><td class="paramname">alvsu</td><td>Visible albedo of urban part of modelled area <img class="formulaInl" alt="$[ ] (alpha_{u,VIS})$" src="form_720.png"/></td></tr>
+    <tr><td class="paramname">aliru</td><td>Near-IR albedo of urban part of modelled area <img class="formulaInl" alt="$[ ] (alpha_{u,NIR})$" src="form_721.png"/></td></tr>
+    <tr><td class="paramname">fcmxu</td><td>Fractional coverage of urban part of modelled area <img class="formulaInl" alt="$[ ] (X_u)$" src="form_722.png"/></td></tr>
     <tr><td class="paramname">agvdat</td><td>Assigned value of visible albedo of ground – optional [ ]</td></tr>
     <tr><td class="paramname">agidat</td><td>Assigned value of near-IR albedo of ground – optional [ ]</td></tr>
-    <tr><td class="paramname">fg</td><td>Fractional coverage of bare soil on modelled area <img class="formulaInl" alt="$[ ] (X_g)$" src="form_1914.png"/></td></tr>
+    <tr><td class="paramname">fg</td><td>Fractional coverage of bare soil on modelled area <img class="formulaInl" alt="$[ ] (X_g)$" src="form_723.png"/></td></tr>
     <tr><td class="paramname">fsnow</td><td>Fractional coverage of snow on modelled area [ ]</td></tr>
     <tr><td class="paramname">isand</td><td>Soil type flag based on sand content, assigned in subroutine CLASSB </td></tr>
   </table>
   </dd>
 </dl>
-<p>If the ISAND flag for the surface soil layer is greater than or equal to zero (indicating mineral soil), first the urban area not covered by snow is evaluated. Next the visible and near-IR open ground albedos, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_770.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_771.png"/>, for each wavelength range, are calculated on the basis of the wet and dry ground albedos <img class="formulaInl" alt="$\alpha_{g,wet}$" src="form_765.png"/> and <img class="formulaInl" alt="$\alpha_{g,dry}$" src="form_766.png"/> which were assigned for the modelled area in CLASSB. Idso et al. (1975) found a correlation between the soil liquid moisture content in the top 10 cm of soil (represented in CLASS by that of the first soil layer, <img class="formulaInl" alt="$\theta_{1,1}$" src="form_767.png"/>) and the total surface albedo <img class="formulaInl" alt="$\alpha_{g,T}$" src="form_768.png"/>: for water contents less than 0.22 <img class="formulaInl" alt="$m^3 m^{-3}$" src="form_570.png"/>, <img class="formulaInl" alt="$\alpha_{g,T}$" src="form_768.png"/> took on the value of <img class="formulaInl" alt="$\alpha_{g,dry}$" src="form_766.png"/>; for liquid water contents greater than 0.26 <img class="formulaInl" alt="$m^3 m^{-3}$" src="form_570.png"/>, <img class="formulaInl" alt="$\alpha_{g,T}$" src="form_768.png"/> took on the value of <img class="formulaInl" alt="$\alpha_{g,wet}$" src="form_765.png"/>. For values of <img class="formulaInl" alt="$\theta_{1,1}$" src="form_767.png"/> between these two limits, a linear relationship is assumed:</p>
-<p><img class="formulaInl" alt="$[\alpha_{g,T} - \alpha_{g,dry} ] / [\theta_{l,1} - 0.22] = [\alpha_{g,wet} - \alpha_{g,dry} ]/[0.26 - 0.22]$" src="form_769.png"/></p>
-<p>Thus, in GRALB for each of the two wavelength ranges <img class="formulaInl" alt="$\alpha_{g}$" src="form_1915.png"/> is calculated as follows:</p>
-<p><img class="formulaInl" alt="$\alpha_{g,T} = \alpha_{g,dry}$" src="form_1837.png"/> <img class="formulaInl" alt="$\theta_{l,1} \leq 0.22 $" src="form_1838.png"/> <br />
- <img class="formulaInl" alt="$\alpha_{g,T} = \theta_{l,1} [\alpha_{g,wet} - \alpha_{g,dry} ]/0.04 - 5.50 [\alpha_{g,wet} - \alpha_{g,dry} ] + \alpha_{g,dry} $" src="form_1839.png"/> <img class="formulaInl" alt="$0.22 < \theta_{l,1} < 0.26 $" src="form_1840.png"/> <br />
- <img class="formulaInl" alt="$\alpha_{g,T} = \alpha{g,wet} $" src="form_1841.png"/> <img class="formulaInl" alt="$ 0.26 \leq \theta_{l,1}$" src="form_1842.png"/></p>
-<p>Afterwards, a correction is applied to <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_770.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_771.png"/> in order to account for the possible presence of urban surfaces over the modelled area. Visible and near-IR albedos are assigned for local urban areas, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_770.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_771.png"/>, as part of the background data (see the section on “Data Requirements”). A weighted average over the bare soil area <img class="formulaInl" alt="$X_g$" src="form_1916.png"/> is calculated from the fractional snow-free urban area <img class="formulaInl" alt="$X_u$" src="form_774.png"/> as:</p>
-<p><img class="formulaInl" alt="$\alpha_{g,VIS} = [X_u \alpha_{u,VIS} + (X_g-X_u ) \alpha_{g,VIS}] / X_g $" src="form_1917.png"/><br />
- <img class="formulaInl" alt="$\alpha_{g,NIR} = [X_u \alpha_{u,NIR} + (1.0-X_u ) \alpha_{g,NIR}] / X_g $" src="form_1918.png"/></p>
-<p>If the soil on the modelled area is not mineral, i.e. if the ISAND flag is less than zero, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_770.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_771.png"/> are determined as follows:</p>
-<p>If ISAND = -2, indicating organic soil, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_770.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_771.png"/> are assigned values of 0.05 and 0.30 respectively from the lookup tables in the block data subroutine CLASSBD, corresponding to average measured values reported in Comer et al. (2000) <b>[Comer2000-mz]</b>.</p>
-<p>If ISAND = -3, indicating rock at the surface, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_770.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_771.png"/> are assigned the dry ground values from CLASSB.</p>
-<p>If ISAND = -4, indicating continental ice sheet or glacier, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_770.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_771.png"/> are assigned values of 0.95 and 073 from CLASSBD, reflecting values reported for Antarctica (e.g. Sellers, 1974).</p>
-<p>The above calculations are all performed if the flag IALG is set to zero. If IALG is set to one, indicating that assigned ground albedos are to be used instead of calculated values, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_770.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_771.png"/> are set to the assigned values AGVDAT and AGIDAT respectively.</p>
+<p>If the ISAND flag for the surface soil layer is greater than or equal to zero (indicating mineral soil), first the urban area not covered by snow is evaluated. Next the visible and near-IR open ground albedos, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_724.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_725.png"/>, for each wavelength range, are calculated on the basis of the wet and dry ground albedos <img class="formulaInl" alt="$\alpha_{g,wet}$" src="form_726.png"/> and <img class="formulaInl" alt="$\alpha_{g,dry}$" src="form_727.png"/> which were assigned for the modelled area in CLASSB. Idso et al. (1975) found a correlation between the soil liquid moisture content in the top 10 cm of soil (represented in CLASS by that of the first soil layer, <img class="formulaInl" alt="$\theta_{1,1}$" src="form_728.png"/>) and the total surface albedo <img class="formulaInl" alt="$\alpha_{g,T}$" src="form_729.png"/>: for water contents less than 0.22 <img class="formulaInl" alt="$m^3 m^{-3}$" src="form_41.png"/>, <img class="formulaInl" alt="$\alpha_{g,T}$" src="form_729.png"/> took on the value of <img class="formulaInl" alt="$\alpha_{g,dry}$" src="form_727.png"/>; for liquid water contents greater than 0.26 <img class="formulaInl" alt="$m^3 m^{-3}$" src="form_41.png"/>, <img class="formulaInl" alt="$\alpha_{g,T}$" src="form_729.png"/> took on the value of <img class="formulaInl" alt="$\alpha_{g,wet}$" src="form_726.png"/>. For values of <img class="formulaInl" alt="$\theta_{1,1}$" src="form_728.png"/> between these two limits, a linear relationship is assumed:</p>
+<p><img class="formulaInl" alt="$[\alpha_{g,T} - \alpha_{g,dry} ] / [\theta_{l,1} - 0.22] = [\alpha_{g,wet} - \alpha_{g,dry} ]/[0.26 - 0.22]$" src="form_730.png"/></p>
+<p>Thus, in GRALB for each of the two wavelength ranges <img class="formulaInl" alt="$\alpha_{g}$" src="form_731.png"/> is calculated as follows:</p>
+<p><img class="formulaInl" alt="$\alpha_{g,T} = \alpha_{g,dry}$" src="form_732.png"/> <img class="formulaInl" alt="$\theta_{l,1} \leq 0.22 $" src="form_733.png"/> <br />
+ <img class="formulaInl" alt="$\alpha_{g,T} = \theta_{l,1} [\alpha_{g,wet} - \alpha_{g,dry} ]/0.04 - 5.50 [\alpha_{g,wet} - \alpha_{g,dry} ] + \alpha_{g,dry} $" src="form_734.png"/> <img class="formulaInl" alt="$0.22 < \theta_{l,1} < 0.26 $" src="form_735.png"/> <br />
+ <img class="formulaInl" alt="$\alpha_{g,T} = \alpha{g,wet} $" src="form_736.png"/> <img class="formulaInl" alt="$ 0.26 \leq \theta_{l,1}$" src="form_737.png"/></p>
+<p>Afterwards, a correction is applied to <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_724.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_725.png"/> in order to account for the possible presence of urban surfaces over the modelled area. Visible and near-IR albedos are assigned for local urban areas, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_724.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_725.png"/>, as part of the background data (see the section on “Data Requirements”). A weighted average over the bare soil area <img class="formulaInl" alt="$X_g$" src="form_738.png"/> is calculated from the fractional snow-free urban area <img class="formulaInl" alt="$X_u$" src="form_739.png"/> as:</p>
+<p><img class="formulaInl" alt="$\alpha_{g,VIS} = [X_u \alpha_{u,VIS} + (X_g-X_u ) \alpha_{g,VIS}] / X_g $" src="form_740.png"/><br />
+ <img class="formulaInl" alt="$\alpha_{g,NIR} = [X_u \alpha_{u,NIR} + (1.0-X_u ) \alpha_{g,NIR}] / X_g $" src="form_741.png"/></p>
+<p>If the soil on the modelled area is not mineral, i.e. if the ISAND flag is less than zero, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_724.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_725.png"/> are determined as follows:</p>
+<p>If ISAND = -2, indicating organic soil, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_724.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_725.png"/> are assigned values of 0.05 and 0.30 respectively from the lookup tables in the block data subroutine CLASSBD, corresponding to average measured values reported in Comer et al. (2000) <b>[Comer2000-mz]</b>.</p>
+<p>If ISAND = -3, indicating rock at the surface, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_724.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_725.png"/> are assigned the dry ground values from CLASSB.</p>
+<p>If ISAND = -4, indicating continental ice sheet or glacier, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_724.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_725.png"/> are assigned values of 0.95 and 073 from CLASSBD, reflecting values reported for Antarctica (e.g. Sellers, 1974).</p>
+<p>The above calculations are all performed if the flag IALG is set to zero. If IALG is set to one, indicating that assigned ground albedos are to be used instead of calculated values, <img class="formulaInl" alt="$\alpha_{g,VIS}$" src="form_724.png"/> and <img class="formulaInl" alt="$\alpha_{g,NIR}$" src="form_725.png"/> are set to the assigned values AGVDAT and AGIDAT respectively.</p>
 <p>Lastly, the ground values of visible and near-IR albedo under the vegetation canopy are currently set equal to the open values (this approach is under review).</p>
 
 </div>
@@ -317,7 +318,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="GRALB_8f.html">GRALB.f</a></li>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:08 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

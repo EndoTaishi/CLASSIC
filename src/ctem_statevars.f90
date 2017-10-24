@@ -1,7 +1,7 @@
 !>\defgroup ctem_statevars
 
 !>
-!!this module contains the variable type structures:
+!!this module contains the biogeochemistry-related variable type structures.
 !! 1. c_switch - switches for running CTEM, read from the joboptions file
 !! 2. vrot - CTEM's 'rot' vars
 !! 3. vgat - CTEM's 'gat' vars
@@ -37,7 +37,7 @@ public :: resetgridavg
 type ctem_switches
 
     logical :: ctem_on     !<True if this run includes CTEM
-    logical :: cyclemet    !<to cycle over only a fixed number of years 
+    !1logical :: cyclemet    !<to cycle over only a fixed number of years
                         !<(nummetcylyrs) starting at a certain year (metcylyrst)
                         !<if cyclemet, then put transientCO2 = false and set an appopriate fixedCO2Conc, also
                         !<if transientPOPD is true, it will choose the popn and luc data for year
@@ -46,24 +46,24 @@ type ctem_switches
                                  !< option is useful to see how ctem's c pools
                                  !< equilibrate when driven with same climate data
                                  !< over and over again.
-    integer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
-                             !! are not doing a transient run, set to a negative value (like -9999)
-    integer :: ncyear   !< no. of years in the .met file.
+    !integer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
+    !                         !! are not doing a transient run, set to a negative value (like -9999)
+    !integer :: ncyear   !< no. of years in the .met file.
     integer :: spinfast !< set this to a higher number up to 10 to spin up
                          !< soil carbon pool faster
-    integer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
+    !integer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
                              !< ignored if cyclemet is false
-    integer :: metcylyrst   !< climate year to start the spin up on
+    !integer :: metcylyrst   !< climate year to start the spin up on
                              !< ignored if cyclemet is false
     integer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
     integer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
 
-    logical :: transientCO2       !<use \f$CO_2\f$ time series, set to false if cyclemet is true
+    logical :: transientCO2       !<use \f$CO_2\f$ time series, if false, fixedYearCO2 is used
     character(180) :: CO2File       !< Location of the netcdf file containing atmospheric CO2 values
     integer :: fixedYearCO2  !< set the year to use for atmospheric \f$CO_2\f$ if transientCO2 is false. (ppmv)
     logical :: dofire      !<boolean, if true allow fire, if false no fire.
-    logical :: met_rewound !<Remove FLAG
-    logical :: reach_eof   !<Remove FLAG
+    !logical :: met_rewound !<Remove FLAG
+    !logical :: reach_eof   !<Remove FLAG
     logical :: PFTCompetition !<logical boolean telling if competition between pfts is on or not
     logical :: start_bare  !<set this to true if competition is true, and if you wish to start from bare ground.
                            !<if this is set to false, the ini and ctm file info will be used to set up the run.
@@ -90,8 +90,8 @@ type ctem_switches
                            !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
     logical :: dowetlands   !<if true allow wetland methane emission
     logical :: obswetf      !<observed wetland fraction
-    logical :: transient_run!<
-    logical :: use_netcdf        !< If true all model inputs and outputs are handled via netcdfs
+    !logical :: transient_run!<
+
     character(180) :: met_file   !< location of the netcdf meteorological dataset
     character(180) :: init_file  !< location of the netcdf initialization file
     character(180) :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
@@ -184,10 +184,6 @@ type ctem_switches
                            !< corresponding parameter calculated by class is overridden by
                            !< a user-supplied input value.
 
-    ! -------------
-    ! >>>> note: if you wish to use the values in the .ini file, set all to -9999 in the job options file
-    !            and the .ini file will be used.
-
     integer :: jhhstd  !< day of the year to start writing the half-hourly output
     integer :: jhhendd !< day of the year to stop writing the half-hourly output
     integer :: jdstd   !< day of the year to start writing the daily output
@@ -201,16 +197,12 @@ type ctem_switches
     integer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
                                 !< if it is set to 1, the new four-band routines are used.
                                 
-    character(80) :: titlec1!<Remove FLAG
-    character(80) :: titlec2!<Remove FLAG
-    character(80) :: titlec3!<Remove FLAG
-
 end type ctem_switches
 
-type (ctem_switches), save, target :: c_switch
+type (ctem_switches), save, target :: c_switch !< Switches for running CTEM, read from the joboptions file
 
 !=================================================================================
-!>CTEM's 'rot' vars
+
 type veg_rot
 
     logical, allocatable, dimension(:,:,:) :: pftexist  !<logical array indicating pfts exist (t) or not (f)
@@ -313,9 +305,9 @@ type veg_rot
     real, allocatable, dimension(:,:) :: lterm                 !<lightning term for fire probabilty calc
     real, allocatable, dimension(:,:) :: extnprob              !<fire extingusinging probability
     real, allocatable, dimension(:,:) :: prbfrhuc              !<probability of fire due to human causes
-    real, allocatable, dimension(:,:) :: rml                   !<leaf maintenance respiration (u-mol co2/m2.sec)
-    real, allocatable, dimension(:,:) :: rms                   !<stem maintenance respiration (u-mol co2/m2.sec)
-    real, allocatable, dimension(:,:) :: rmr                   !<root maintenance respiration (u-mol co2/m2.sec)
+    real, allocatable, dimension(:,:) :: rml                   !<leaf maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: rms                   !<stem maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: rmr                   !<root maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: ch4wet1               !<methane flux from wetlands calculated using hetrores in umol ch4/m2.s
     real, allocatable, dimension(:,:) :: ch4wet2               !<methane flux from wetlands calculated using npp in umol ch4/m2.s
     real, allocatable, dimension(:,:) :: wetfdyn               !<dynamic wetland fraction
@@ -323,10 +315,10 @@ type veg_rot
                                                         !<and wetfdyn, in umol ch4/m2.s
     real, allocatable, dimension(:,:) :: ch4dyn2               !<methane flux from wetlands calculated using npp and wetfdyn, 
                                                         !<in umol ch4/m2.s
-    real, allocatable, dimension(:,:) :: ch4_soills            !<Methane uptake into the soil column ($mg CH_4 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:,:) :: lucemcom              !<land use change (luc) related combustion emission losses, u-mol co2/m2.sec
-    real, allocatable, dimension(:,:) :: lucltrin              !<luc related inputs to litter pool, u-mol co2/m2.sec
-    real, allocatable, dimension(:,:) :: lucsocin              !<luc related inputs to soil c pool, u-mol co2/m2.sec
+    real, allocatable, dimension(:,:) :: ch4_soills            !<Methane uptake into the soil column (\f$mg CH_4 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: lucemcom              !<land use change (luc) related combustion emission losses (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: lucltrin              !<luc related inputs to litter pool (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: lucsocin              !<luc related inputs to soil c pool (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: npp                   !<net primary productivity
     real, allocatable, dimension(:,:) :: nep                   !<net ecosystem productivity
     real, allocatable, dimension(:,:) :: nbp                   !<net biome productivity
@@ -421,10 +413,10 @@ type veg_rot
 
 end type veg_rot
 
-type (veg_rot), save, target :: vrot
+type (veg_rot), save, target :: vrot        !<CTEM's 'rot' vars
 
 !=================================================================================
-!>CTEM's 'gat' vars
+
 type veg_gat
 
     ! This is the basic data structure that contains the state variables
@@ -518,12 +510,12 @@ type veg_gat
     real, allocatable, dimension(:,:) :: rootdpth   !<99% soil rooting depth (meters)
                                                     !<both veghght & rootdpth can be used as diagnostics to see
                                                     !<how vegetation grows above and below ground, respectively
-    real, allocatable, dimension(:)   :: rml        !<leaf maintenance respiration (u-mol co2/m2.sec)
-    real, allocatable, dimension(:)   :: rms        !<stem maintenance respiration (u-mol co2/m2.sec)
-    real, allocatable, dimension(:,:) :: tltrleaf   !<total leaf litter fall rate (u-mol co2/m2.sec)
-    real, allocatable, dimension(:,:) :: tltrstem   !<total stem litter fall rate (u-mol co2/m2.sec)
-    real, allocatable, dimension(:,:) :: tltrroot   !<total root litter fall rate (u-mol co2/m2.sec)
-    real, allocatable, dimension(:,:) :: leaflitr   !<leaf litter fall rate (u-mol co2/m2.sec). this leaf litter
+    real, allocatable, dimension(:)   :: rml        !<leaf maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:)   :: rms        !<stem maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: tltrleaf   !<total leaf litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: tltrstem   !<total stem litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: tltrroot   !<total root litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:,:) :: leaflitr   !<leaf litter fall rate (\f$\mu mol CO2 m^{-2} s^{-1}\f$). this leaf litter
                                                     !<does not include litter generated due to mortality/fire
     real, allocatable, dimension(:,:) :: roottemp   !<root temperature, k
     real, allocatable, dimension(:,:) :: afrleaf    !<allocation fraction for leaves
@@ -531,24 +523,23 @@ type veg_gat
     real, allocatable, dimension(:,:) :: afrroot    !<allocation fraction for root
     real, allocatable, dimension(:,:) :: wtstatus   !<soil water status used for calculating allocation fractions
     real, allocatable, dimension(:,:) :: ltstatus   !<light status used for calculating allocation fractions
-    real, allocatable, dimension(:)   :: rmr        !<root maintenance respiration (u-mol co2/m2.sec)
+    real, allocatable, dimension(:)   :: rmr        !<root maintenance respiration (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
 
     real, allocatable, dimension(:,:) :: slopefrac      !<prescribed fraction of wetlands based on slope
                                                         !<only(0.025, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3 and 0.35 percent slope thresholds)
     real, allocatable, dimension(:)    :: wetfrac_pres  !<
     real, allocatable, dimension(:,:)  :: wetfrac_mon   !<
-    real, allocatable, dimension(:)    :: ch4wet1       !<methane flux from wetlands calculated using hetrores in umol ch4/m2.s
-    real, allocatable, dimension(:)    :: ch4wet2       !<methane flux from wetlands calculated using npp in umol ch4/m2.s
+    real, allocatable, dimension(:)    :: ch4wet1       !<methane flux from wetlands calculated using hetrores (\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:)    :: ch4wet2       !<methane flux from wetlands calculated using npp (\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:)    :: wetfdyn       !<dynamic wetland fraction
     real, allocatable, dimension(:)    :: ch4dyn1       !<methane flux from wetlands calculated using hetrores
-                                                        !<and wetfdyn, in umol ch4/m2.s
-    real, allocatable, dimension(:)    :: ch4dyn2       !<methane flux from wetlands calculated using npp and wetfdyn,
-                                                        !<in umol ch4/m2.s
-    real, allocatable, dimension(:)    :: ch4_soills    !<Methane uptake into the soil column ($mg CH_4 m^{-2} s^{-1}$)
+                                                        !<and wetfdyn,(\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:)    :: ch4dyn2       !<methane flux from wetlands calculated using npp and wetfdyn (\f$\mu mol CH_4 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:)    :: ch4_soills    !<Methane uptake into the soil column (\f$mg CH_4 m^{-2} s^{-1}\f$)
 
-    real, allocatable, dimension(:) :: lucemcom   !<land use change (luc) related combustion emission losses, u-mol co2/m2.sec
-    real, allocatable, dimension(:) :: lucltrin   !<luc related inputs to litter pool, u-mol co2/m2.sec
-    real, allocatable, dimension(:) :: lucsocin   !<luc related inputs to soil c pool, u-mol co2/m2.sec
+    real, allocatable, dimension(:) :: lucemcom   !<land use change (luc) related combustion emission losses,(\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: lucltrin   !<luc related inputs to litter pool, (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: lucsocin   !<luc related inputs to soil c pool, (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
 
     real, allocatable, dimension(:) :: npp        !<net primary productivity
     real, allocatable, dimension(:) :: nep        !<net ecosystem productivity
@@ -572,26 +563,26 @@ type veg_gat
                                                     !<OR net ecosystem productity for each pft
 
     integer, allocatable, dimension(:) :: ipeatland !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
-    real, allocatable, dimension(:) :: anmoss     !<net photosynthetic rate of moss ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: rmlmoss    !<maintenance respiration rate of moss ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: gppmoss    !<gross primaray production of moss ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: nppmoss    !<net primary production of moss ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: armoss     !<autotrophic respiration of moss ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: anmoss     !<net photosynthetic rate of moss (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: rmlmoss    !<maintenance respiration rate of moss (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: gppmoss    !<gross primaray production of moss (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: nppmoss    !<net primary production of moss (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: armoss     !<autotrophic respiration of moss (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:) :: litrmsmoss !<moss litter mass, \f$kg C/m^2\f$
     real, allocatable, dimension(:) :: Cmossmas   !<C in moss biomass, \f$kg C/m^2\f$
     real, allocatable, dimension(:) :: dmoss      !<depth of living moss (m)
     real, allocatable, dimension(:) :: pdd        !<peatland degree days above 0 deg C.
-    real, allocatable, dimension(:) :: ancsmoss   !<moss net photosynthesis in canopy snow subarea ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: angsmoss   !<moss net photosynthesis in snow ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: ancmoss    !<moss net photosynthesis in canopy ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: angmoss    !<moss net photosynthesis in bare ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: rmlcsmoss  !<moss maintenance respiration in canopy snow subarea ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: rmlgsmoss  !<moss maintenance respiration in ground snow subarea ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: rmlcmoss   !<moss maintenance respiration in canopy ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
-    real, allocatable, dimension(:) :: rmlgmoss   !<moss maintenance respiration in bare ground subarea ($\mu mol CO2 m^{-2} s^{-1}$)
+    real, allocatable, dimension(:) :: ancsmoss   !<moss net photosynthesis in canopy snow subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: angsmoss   !<moss net photosynthesis in snow ground subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: ancmoss    !<moss net photosynthesis in canopy ground subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: angmoss    !<moss net photosynthesis in bare ground subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: rmlcsmoss  !<moss maintenance respiration in canopy snow subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: rmlgsmoss  !<moss maintenance respiration in ground snow subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: rmlcmoss   !<moss maintenance respiration in canopy ground subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
+    real, allocatable, dimension(:) :: rmlgmoss   !<moss maintenance respiration in bare ground subarea (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
 
     real, allocatable, dimension(:,:) :: nbpveg     !<net biome productity for bare fraction OR net biome productity for each pft
-    real, allocatable, dimension(:,:) :: nppveg     !<npp for individual pfts,  u-mol co2/m2.sec
+    real, allocatable, dimension(:,:) :: nppveg     !<npp for individual pfts, (\f$\mu mol CO2 m^{-2} s^{-1}\f$)
     real, allocatable, dimension(:,:) :: hetroresveg!<
     real, allocatable, dimension(:,:) :: autoresveg !<
     real, allocatable, dimension(:,:) :: litresveg  !<
@@ -683,10 +674,9 @@ type veg_gat
 
 end type veg_gat
 
-type (veg_gat), save, target :: vgat
+type (veg_gat), save, target :: vgat        !< CTEM's 'gat' vars
 !=================================================================================
 
-!>CTEM's grid average variables
 type ctem_gridavg
 
 ! Grid-averaged variables (denoted with an ending of "_g")
@@ -841,10 +831,10 @@ type ctem_gridavg
 
 end type ctem_gridavg
 
-type (ctem_gridavg), save, target :: ctem_grd
+type (ctem_gridavg), save, target :: ctem_grd       !<CTEM's grid average variables
 
 !=================================================================================
-!>CTEM's variables per tile
+
 type ctem_tile_level
 
 !   Tile-level variables (denoted by an ending of "_t")
@@ -918,10 +908,10 @@ type ctem_tile_level
 
 end type ctem_tile_level
 
-type (ctem_tile_level), save, target :: ctem_tile
+type (ctem_tile_level), save, target :: ctem_tile       !<CTEM's variables per tile
 
 !=================================================================================
-!>CTEM's variables monthly averaged (per pft)
+
 type ctem_monthly
 
 !     Tile-level monthly variables (denoted by name ending in "_mo_t")
@@ -964,10 +954,10 @@ type ctem_monthly
 
 end type ctem_monthly
 
-type (ctem_monthly), save, target :: ctem_mo
+type (ctem_monthly), save, target :: ctem_mo        !<CTEM's variables monthly averaged (per pft)
 
 !=================================================================================
-!>CTEM's grid average monthly values
+
 type ctem_gridavg_monthly
 
 !  Grid averaged monthly variables (denoted by name ending in "_mo_g")
@@ -1019,10 +1009,10 @@ type ctem_gridavg_monthly
 
 end type ctem_gridavg_monthly
 
-type (ctem_gridavg_monthly), save, target :: ctem_grd_mo
+type (ctem_gridavg_monthly), save, target :: ctem_grd_mo    !<CTEM's grid average monthly values
 
 !=================================================================================
-!>CTEM's variables per tile monthly values
+
 type ctem_tileavg_monthly
 
 !     Tile-level monthly variables (denoted by name ending in "_mo_t")
@@ -1076,12 +1066,11 @@ type ctem_tileavg_monthly
 
 end type ctem_tileavg_monthly
 
-type (ctem_tileavg_monthly), save, target :: ctem_tile_mo
+type (ctem_tileavg_monthly), save, target :: ctem_tile_mo   !<CTEM's variables per tile monthly values
 
 
 !=================================================================================
 
-!>CTEM's average annual values (per PFT)
 type ctem_annual
 
 ! c      Annual output for CTEM mosaic variables:
@@ -1124,11 +1113,10 @@ type ctem_annual
 
 end type ctem_annual
 
-type (ctem_annual), save, target :: ctem_yr
+type (ctem_annual), save, target :: ctem_yr     !<CTEM's average annual values (per PFT)
 
 !=================================================================================
 
-!>CTEM's grid average annual values
 type ctem_gridavg_annual
 
 ! Annual output for CTEM grid-averaged variables:
@@ -1181,10 +1169,10 @@ type ctem_gridavg_annual
 
 end type ctem_gridavg_annual
 
-type (ctem_gridavg_annual), save, target :: ctem_grd_yr
+type (ctem_gridavg_annual), save, target :: ctem_grd_yr     !<CTEM's grid average annual values
 
 !=================================================================================
-!>CTEM's variables per tile annual values
+
 type ctem_tileavg_annual
 
 ! c      Annual output for CTEM mosaic variables:
@@ -1237,13 +1225,13 @@ type ctem_tileavg_annual
 
 end type ctem_tileavg_annual
 
-type (ctem_tileavg_annual), save, target :: ctem_tile_yr
-
-
+type (ctem_tileavg_annual), save, target :: ctem_tile_yr    !<CTEM's variables per tile annual values
 
 contains
 
 !=================================================================================
+
+!> Allocate the biogeochemistry (CTEM) variables in preparation for a simulation
 
 subroutine alloc_ctem_vars()
 
@@ -2128,6 +2116,7 @@ end subroutine alloc_ctem_vars
 
 ! -----------------------------------------------------
 
+!> Initializes 'row' variables
 
 subroutine initrowvars()
 
@@ -2299,6 +2288,8 @@ end subroutine initrowvars
 
 !==================================================
 
+!> Resets daily variables in preparation for next day
+
 subroutine resetdaily(nltest,nmtest)
 
 use ctem_params, only : ignd,icc
@@ -2431,6 +2422,9 @@ end do !nltest
 end subroutine resetdaily
 
 !==================================================
+
+!> Resets monthly variables at month end in preparation for next month
+
 subroutine resetmonthend(nltest,nmtest)
 
 use ctem_params, only : iccp1,icc
@@ -2599,6 +2593,8 @@ end subroutine resetmonthend
 
 !==================================================
 
+!> Resets annual variables in preparation for next year
+
 subroutine resetyearend(nltest,nmtest)
 
 use ctem_params, only : iccp1,icc
@@ -2753,6 +2749,8 @@ end do ! nltest
 end subroutine resetyearend
 
 !==================================================
+
+!> Resets grid average variables in preparation for next time period
 
 subroutine resetgridavg(nltest)
 

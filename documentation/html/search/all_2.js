@@ -59,13 +59,11 @@ var searchData=
   ['co2i2cs',['co2i2cs',['../structctem__statevars_1_1veg__rot.html#a8c4502cff8fcc79be779615b288ce181',1,'ctem_statevars::veg_rot::co2i2cs()'],['../structctem__statevars_1_1veg__gat.html#a444a9c51751df3c542eed6291dc74439',1,'ctem_statevars::veg_gat::co2i2cs()']]],
   ['colddays',['colddays',['../structctem__statevars_1_1veg__rot.html#a0c46eb1ced21c8425e5400a9090a7ae2',1,'ctem_statevars::veg_rot::colddays()'],['../structctem__statevars_1_1veg__gat.html#a9cde68139aa292c16c412ac9ecf9dd34',1,'ctem_statevars::veg_gat::colddays()']]],
   ['comment',['comment',['../structctem__statevars_1_1ctem__switches.html#a2007fabd7a297185a3d9e09b625160b1',1,'ctem_statevars::ctem_switches']]],
-  ['competition',['competition',['../group__competition__scheme__competition.html#ga008cbfcefd33aaccb8f2b81cf8326451',1,'competition_scheme']]],
+  ['competition',['competition',['../namespacecompetition__scheme.html#a008cbfcefd33aaccb8f2b81cf8326451',1,'competition_scheme']]],
   ['competition_5fmap',['competition_map',['../competition__map_8f.html#a854a6eedf534eff4dd50075b3a321744',1,'competition_map.f']]],
   ['competition_5fmap_2ef',['competition_map.f',['../competition__map_8f.html',1,'']]],
   ['competition_5fmod_2ef90',['competition_mod.f90',['../competition__mod_8f90.html',1,'']]],
-  ['competition_5fscheme_5fbioclim',['Competition_scheme_bioclim',['../group__competition__scheme__bioclim.html',1,'']]],
-  ['competition_5fscheme_5fcompetition',['Competition_scheme_competition',['../group__competition__scheme__competition.html',1,'']]],
-  ['competition_5fscheme_5fexistence',['Competition_scheme_existence',['../group__competition__scheme__existence.html',1,'']]],
+  ['competition_5fscheme',['competition_scheme',['../namespacecompetition__scheme.html',1,'']]],
   ['competition_5funmap',['competition_unmap',['../competition__unmap_8f.html#ab970a794d878e125da563f7022d2d3a4',1,'competition_unmap.f']]],
   ['competition_5funmap_2ef',['competition_unmap.f',['../competition__unmap_8f.html',1,'']]],
   ['cszgat',['cszgat',['../structclass__statevars_1_1class__gather.html#a8ffc8d191632aee12dfb790ec2f4bd91',1,'class_statevars::class_gather']]],
@@ -93,6 +91,5 @@ var searchData=
   ['ctems1_2ef',['ctems1.f',['../ctems1_8f.html',1,'']]],
   ['ctems2_2ef',['ctems2.f',['../ctems2_8f.html',1,'']]],
   ['cwcalc',['cwcalc',['../CWCALC_8f.html#a1c51886dfe7782b7a65415cc66561efb',1,'CWCALC.f']]],
-  ['cwcalc_2ef',['CWCALC.f',['../CWCALC_8f.html',1,'']]],
-  ['cyclemet',['cyclemet',['../structctem__statevars_1_1ctem__switches.html#a4050812675cede871eb31ce2605868e2',1,'ctem_statevars::ctem_switches']]]
+  ['cwcalc_2ef',['CWCALC.f',['../CWCALC_8f.html',1,'']]]
 ];

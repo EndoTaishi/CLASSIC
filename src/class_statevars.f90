@@ -1,7 +1,7 @@
 !>\defgroup class_statevars
 
 !>
-!!this module contains the variable type structures:
+!!Contains the physics variable type structures.
 !! 1. class_rot - CLASS's 'rot' and 'row' vars
 !! 2. class_gat - CLASS's 'gat' vars
 !! 3. class_out - CLASS's monthly outputs
@@ -41,7 +41,7 @@ type class_gather
     real, allocatable, dimension(:) :: RCANGAT !<Intercepted liquid water stored on canopy \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:) :: RHOSGAT !<Density of snow \f$[kg m^{-3} ]\f$
     real, allocatable, dimension(:) :: SCANGAT !<Intercepted frozen water stored on canopy \f$[kg m^{-2} ]\f$
-    real, allocatable, dimension(:) :: SNOGAT  !<Mass of snow pack [kg m^{-2} ]\f$
+    real, allocatable, dimension(:) :: SNOGAT  !<Mass of snow pack \f$[kg m^{-2} ]\f$
     real, allocatable, dimension(:) :: TACGAT  !<Temperature of air within vegetation canopy [K]
     real, allocatable, dimension(:) :: TBASGAT !<Temperature of bedrock in third soil layer [K]
     real, allocatable, dimension(:) :: TCANGAT !<Vegetation canopy temperature [K]

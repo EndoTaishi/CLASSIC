@@ -1,5 +1,4 @@
 !>\file
-!>Canadian Terrestrial Ecosystem Model (CTEM)
 !>Wetland and wetland methane subroutine 
 !>
 subroutine wetland_methane (hetrores, il1, il2, ta, wetfrac, &

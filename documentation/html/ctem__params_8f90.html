@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -112,7 +113,7 @@ $(document).ready(function(){initNavTree('ctem__params_8f90.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutines via use statements pointing to this module EXCEPT <a class="el" href="PHTSYN3_8f.html" title="CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) PHOTOSYNTHESIS SUBROUTINE. ">PHTSYN3.f</a> which has the information passed in via arguments. This is a legacy thing.  
+<p>This module holds CTEM globally accessible parameters.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -132,7 +133,7 @@ real, dimension(:), allocatable, parameter&#160;</td><td class="memItemRight" va
 <tr class="separator:af0e7dce95fb427e9476f4f47ec4c6413"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac207816bca09bac9b87c4e17ba7dfee1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac207816bca09bac9b87c4e17ba7dfee1"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::abszero</b> = 1e-12</td></tr>
-<tr class="memdesc:ac207816bca09bac9b87c4e17ba7dfee1"><td class="mdescLeft">&#160;</td><td class="mdescRight">this one is for runclassctem.f and <a class="el" href="allocate_8f.html" title="Canadian Terrestrial Ecosystem Model (CTEM) Allocation Subroutine. ">allocate.f</a> <br /></td></tr>
+<tr class="memdesc:ac207816bca09bac9b87c4e17ba7dfee1"><td class="mdescLeft">&#160;</td><td class="mdescRight">this one is for runclassctem.f and <a class="el" href="allocate_8f.html" title="Performs allocation of carbon gained by photosynthesis into plant structural pools. ">allocate.f</a> <br /></td></tr>
 <tr class="separator:ac207816bca09bac9b87c4e17ba7dfee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add603c0bfb6c468101dbdcc710f98703"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add603c0bfb6c468101dbdcc710f98703"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::pi</b> = 3.1415926535898d0</td></tr>
@@ -143,7 +144,7 @@ real, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_param
 <tr class="separator:a543d5b22d79302823fd389c0f869c384"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d03b303154efb0e76c58c9c03a55e06"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d03b303154efb0e76c58c9c03a55e06"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::km2tom2</b> = 1.0e+06</td></tr>
-<tr class="memdesc:a7d03b303154efb0e76c58c9c03a55e06"><td class="mdescLeft">&#160;</td><td class="mdescRight">changes from <img class="formulaInl" alt="$km^2$" src="form_509.png"/> to <img class="formulaInl" alt="$m^2$" src="form_1861.png"/> <br /></td></tr>
+<tr class="memdesc:a7d03b303154efb0e76c58c9c03a55e06"><td class="mdescLeft">&#160;</td><td class="mdescRight">changes from <img class="formulaInl" alt="$km^2$" src="form_447.png"/> to <img class="formulaInl" alt="$m^2$" src="form_558.png"/> <br /></td></tr>
 <tr class="separator:a7d03b303154efb0e76c58c9c03a55e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0eda7d3a6fad697a660806095840a1fb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0eda7d3a6fad697a660806095840a1fb"></a>
 real, parameter&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::deltat</b> = 1.0</td></tr>
@@ -216,6 +217,9 @@ integer&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::numgr
 integer&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::numshrubs</b></td></tr>
 <tr class="memdesc:af071a4fa27eb3f994a9ce6be376deaf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of shrubs pfts <br /></td></tr>
 <tr class="separator:af071a4fa27eb3f994a9ce6be376deaf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18faf2e6f0ef39bd30cbabeb0b496566"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18faf2e6f0ef39bd30cbabeb0b496566"></a>
+integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::nol2pfts</b></td></tr>
+<tr class="separator:a18faf2e6f0ef39bd30cbabeb0b496566"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4445cb96e591be6bcd975ffc60daa0c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4445cb96e591be6bcd975ffc60daa0c8"></a>
 logical, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::crop</b></td></tr>
 <tr class="memdesc:a4445cb96e591be6bcd975ffc60daa0c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">simple crop matrix, define the number and position of the crops (NOTE: dimension icc) <br /></td></tr>
@@ -277,7 +281,7 @@ character(8), dimension(:), allocatable&#160;</td><td class="memItemRight" valig
 <tr class="separator:ad3d12b294989535de42cfb5fde5f9472"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73890809feceec23d588deabdc5986fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73890809feceec23d588deabdc5986fd"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::kn</b></td></tr>
-<tr class="memdesc:a73890809feceec23d588deabdc5986fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canopy light/nitrogen extinction coefficient; CAREFUL: Separate set defined in <a class="el" href="PHTSYN3_8f.html" title="CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) PHOTOSYNTHESIS SUBROUTINE. ">PHTSYN3.f</a>! <br /></td></tr>
+<tr class="memdesc:a73890809feceec23d588deabdc5986fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canopy light/nitrogen extinction coefficient. <br /></td></tr>
 <tr class="separator:a73890809feceec23d588deabdc5986fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab53002b0b06bff5af5822ebcfeaf285f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab53002b0b06bff5af5822ebcfeaf285f"></a>
 real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::omega</b></td></tr>
@@ -405,7 +409,7 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::repro_fr
 <tr class="separator:a4b02c06a75e1eba7cae5f864b099bb0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62e7197e6f7c9c31dc86998dc8c9ebf2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a62e7197e6f7c9c31dc86998dc8c9ebf2"></a>
 real, dimension(2)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bmasthrs_fire</b></td></tr>
-<tr class="memdesc:a62e7197e6f7c9c31dc86998dc8c9ebf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">min. and max. vegetation biomass thresholds to initiate fire, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/> <br /></td></tr>
+<tr class="memdesc:a62e7197e6f7c9c31dc86998dc8c9ebf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">min. and max. vegetation biomass thresholds to initiate fire, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/> <br /></td></tr>
 <tr class="separator:a62e7197e6f7c9c31dc86998dc8c9ebf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79ef480de23397cf798e7350991780f3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a79ef480de23397cf798e7350991780f3"></a>
 real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::extnmois_veg</b></td></tr>
@@ -1209,6 +1213,85 @@ real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::soilw_th
 real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::soilw_thrshs</b></td></tr>
 <tr class="memdesc:ae3cc62b58531c7d353cc8baac1c1fd6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Soil wetness threshold in the South zone. <br /></td></tr>
 <tr class="separator:ae3cc62b58531c7d353cc8baac1c1fd6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2712464c872d3d77acc1a193530cf2d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2712464c872d3d77acc1a193530cf2d"></a>
+logical, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::isc4</b></td></tr>
+<tr class="memdesc:ae2712464c872d3d77acc1a193530cf2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array telling which vegetation type is c4. <br /></td></tr>
+<tr class="separator:ae2712464c872d3d77acc1a193530cf2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa24e26a6dddbdd331cadbfbb12723ba6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa24e26a6dddbdd331cadbfbb12723ba6"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::tlow</b></td></tr>
+<tr class="memdesc:aa24e26a6dddbdd331cadbfbb12723ba6"><td class="mdescLeft">&#160;</td><td class="mdescRight">lower temperature limits for photosynthesis, kelvin <br /></td></tr>
+<tr class="separator:aa24e26a6dddbdd331cadbfbb12723ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98eea3ede25fc9fe9baeeb9ba97c8571"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a98eea3ede25fc9fe9baeeb9ba97c8571"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::tup</b></td></tr>
+<tr class="memdesc:a98eea3ede25fc9fe9baeeb9ba97c8571"><td class="mdescLeft">&#160;</td><td class="mdescRight">upper temperature limits for photosynthesis, kelvin <br /></td></tr>
+<tr class="separator:a98eea3ede25fc9fe9baeeb9ba97c8571"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7725a706b34dcc7d981195a0687e1fc1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7725a706b34dcc7d981195a0687e1fc1"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::alpha_phtsyn</b></td></tr>
+<tr class="memdesc:a7725a706b34dcc7d981195a0687e1fc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">quantum efficiencies, values of 0.08 &amp; 0.04 are used for c3 and c4 plants, respectively <br /></td></tr>
+<tr class="separator:a7725a706b34dcc7d981195a0687e1fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a278ca80675460b8895d5087548438e3b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a278ca80675460b8895d5087548438e3b"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::omega_phtsyn</b></td></tr>
+<tr class="memdesc:a278ca80675460b8895d5087548438e3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">leaf scattering coefficients, values of 0.15 &amp; 0.17 are used for c3 and c4 plants, respectively <br /></td></tr>
+<tr class="separator:a278ca80675460b8895d5087548438e3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afab924c713179d742c14ec8bf6e661c0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afab924c713179d742c14ec8bf6e661c0"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::mm</b></td></tr>
+<tr class="memdesc:afab924c713179d742c14ec8bf6e661c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter m used in photosynthesis-stomatal conductance coupling. <br /></td></tr>
+<tr class="separator:afab924c713179d742c14ec8bf6e661c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ccea29a9ccfcb8f563699bcf2d33221"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ccea29a9ccfcb8f563699bcf2d33221"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::bb</b></td></tr>
+<tr class="memdesc:a0ccea29a9ccfcb8f563699bcf2d33221"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter b used in photosynthesis-stomatal conductance coupling. <br /></td></tr>
+<tr class="separator:a0ccea29a9ccfcb8f563699bcf2d33221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dd6a893dad019eee964b14b43623cbf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0dd6a893dad019eee964b14b43623cbf"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::vpd0</b></td></tr>
+<tr class="memdesc:a0dd6a893dad019eee964b14b43623cbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter vpd0 used in leuning type photosynthesis - stomatal conductance coupling, in pascals <br /></td></tr>
+<tr class="separator:a0dd6a893dad019eee964b14b43623cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a478c3f8f68226a64ab8060bab1c395ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a478c3f8f68226a64ab8060bab1c395ed"></a>
+integer, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::sn</b></td></tr>
+<tr class="memdesc:a478c3f8f68226a64ab8060bab1c395ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">exponent for soil moisture stress. for sn equal to 1, photosynthesis decreases linearly with soil moisture, and of course non-linearly for values higher than 1. when sn is about 10, photosynthesis does not start decreasing until soil moisture is about half way between wilting point and field capacity. <br /></td></tr>
+<tr class="separator:a478c3f8f68226a64ab8060bab1c395ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab47a506278f99ae337382d13fd18f47b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab47a506278f99ae337382d13fd18f47b"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::smscale</b></td></tr>
+<tr class="memdesc:ab47a506278f99ae337382d13fd18f47b"><td class="mdescLeft">&#160;</td><td class="mdescRight">additional constrain of soil moisture stress on photosynthesis. this can be used to simulate the effect of irrigation for crops. <br /></td></tr>
+<tr class="separator:ab47a506278f99ae337382d13fd18f47b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d3cef0b66c64ba7085647d81556e868"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d3cef0b66c64ba7085647d81556e868"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::vmax</b></td></tr>
+<tr class="memdesc:a6d3cef0b66c64ba7085647d81556e868"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. photosynthetic rate, mol co2 m^-2 s^-1 values are mainly derived from <b>[kattge20090c0]</b> which doesn't include c4. also see <b>[alton2017-pd]</b> <br /></td></tr>
+<tr class="separator:a6d3cef0b66c64ba7085647d81556e868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f6aa05eda71d15e38a31f0749d38623"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6f6aa05eda71d15e38a31f0749d38623"></a>
+integer&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::reqiter</b></td></tr>
+<tr class="memdesc:a6f6aa05eda71d15e38a31f0749d38623"><td class="mdescLeft">&#160;</td><td class="mdescRight">no. of iterations for calculating intercellular co2 concentration <br /></td></tr>
+<tr class="separator:a6f6aa05eda71d15e38a31f0749d38623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b752f1c106cb0814573dee26cfa2586"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b752f1c106cb0814573dee26cfa2586"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::co2imax</b></td></tr>
+<tr class="memdesc:a7b752f1c106cb0814573dee26cfa2586"><td class="mdescLeft">&#160;</td><td class="mdescRight">max. intercellular co2 concentration, pascals <br /></td></tr>
+<tr class="separator:a7b752f1c106cb0814573dee26cfa2586"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae392e02772feebb79e1ec718ec192309"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae392e02772feebb79e1ec718ec192309"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::beta1</b></td></tr>
+<tr class="separator:ae392e02772feebb79e1ec718ec192309"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecdbd2f35c2376e4b2980a3802020dfb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aecdbd2f35c2376e4b2980a3802020dfb"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::beta2</b></td></tr>
+<tr class="memdesc:aecdbd2f35c2376e4b2980a3802020dfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">photosynthesis coupling or curvature coefficients <br /></td></tr>
+<tr class="separator:aecdbd2f35c2376e4b2980a3802020dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cdf4bffeae1e20241712787c90ad71f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0cdf4bffeae1e20241712787c90ad71f"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::inico2i</b></td></tr>
+<tr class="memdesc:a0cdf4bffeae1e20241712787c90ad71f"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter to initialize intercellular co2 conc. <br /></td></tr>
+<tr class="separator:a0cdf4bffeae1e20241712787c90ad71f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a393f70f29fe34882e658807cc6ccef6d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a393f70f29fe34882e658807cc6ccef6d"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::rmlcoeff</b></td></tr>
+<tr class="memdesc:a393f70f29fe34882e658807cc6ccef6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">leaf maintenance respiration coefficients <br /></td></tr>
+<tr class="separator:a393f70f29fe34882e658807cc6ccef6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6050266c8e3fd706f1e5fb29e6cfff0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6050266c8e3fd706f1e5fb29e6cfff0"></a>
+real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::chi</b></td></tr>
+<tr class="memdesc:ab6050266c8e3fd706f1e5fb29e6cfff0"><td class="mdescLeft">&#160;</td><td class="mdescRight">additional parameters for two-leaf model leaf angle distribution <br /></td></tr>
+<tr class="separator:ab6050266c8e3fd706f1e5fb29e6cfff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addd2a1c94db90d23d6424e9a6766ac68"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="addd2a1c94db90d23d6424e9a6766ac68"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::gamma_w</b></td></tr>
+<tr class="memdesc:addd2a1c94db90d23d6424e9a6766ac68"><td class="mdescLeft">&#160;</td><td class="mdescRight">photosynthesis down regulation parameters equivalent co2 fertilization effect that we want model to yield <br /></td></tr>
+<tr class="separator:addd2a1c94db90d23d6424e9a6766ac68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d0d3a2c1b3a91ed67e0bd2105580762"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d0d3a2c1b3a91ed67e0bd2105580762"></a>
+real&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::gamma_m</b></td></tr>
+<tr class="memdesc:a3d0d3a2c1b3a91ed67e0bd2105580762"><td class="mdescLeft">&#160;</td><td class="mdescRight">equivalent co2 fertilization effect that model actually gives without any photosynthesis down-regulation <br /></td></tr>
+<tr class="separator:a3d0d3a2c1b3a91ed67e0bd2105580762"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b94fb5dcf617997def92633dc999803"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3b94fb5dcf617997def92633dc999803"></a>
 character(80)&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::runparamsfile</b></td></tr>
 <tr class="separator:a3b94fb5dcf617997def92633dc999803"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1217,12 +1300,12 @@ logical&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::pftco
 <tr class="separator:a38966656e20f2df47923ccd62f8d9814"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This module holds CTEM globally accessible parameters These parameters are used in all CTEM subroutines via use statements pointing to this module EXCEPT <a class="el" href="PHTSYN3_8f.html" title="CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) PHOTOSYNTHESIS SUBROUTINE. ">PHTSYN3.f</a> which has the information passed in via arguments. This is a legacy thing. </p>
-<p>The structure of this subroutine is variables that are common to competition/prescribe PFT fractions first, then the remaining variables are assigned different variables if competition is on, or not.</p>
+<div class="textblock"><p>This module holds CTEM globally accessible parameters. </p>
+<p>These parameters are used in all CTEM subroutines via use statements pointing to this module. The structure of this subroutine is variables that are common to competition/prescribe PFT fractions first, then the remaining variables are assigned different variables if competition is on, or not.</p>
 <p>PFT parameters</p>
 <p>Note the structure of vectors which clearly shows the CLASS PFTs (along rows) and CTEM sub-PFTs (along columns)</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf &amp; evg &amp; dcd &amp; --- &amp; ---&amp; ---\\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry &amp; EVG-shrubs &amp; DCD-shrubs\\ \hline crops &amp; c3 &amp; c4 &amp; --- &amp; ---&amp; ---\\ \hline grasses &amp; c3 &amp; c4 &amp; sedges &amp; ---&amp; ---\\ \hline \end{tabular} \]" src="form_1904.png"/>
+<img class="formulaDsp" alt="\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf &amp; evg &amp; dcd &amp; --- &amp; ---&amp; ---\\ \hline broad leaf &amp; evg &amp; dcd-cld &amp; dcd-dry &amp; EVG-shrubs &amp; DCD-shrubs\\ \hline crops &amp; c3 &amp; c4 &amp; --- &amp; ---&amp; ---\\ \hline grasses &amp; c3 &amp; c4 &amp; sedges &amp; ---&amp; ---\\ \hline \end{tabular} \]" src="form_557.png"/>
 </p>
 <p>We introduced three new PFTs for peatlands: evergreen shrubs, deciduous shrubs, and sedges. Evergreen shrubs, for example the ericaceous shrubs, are the common dominant vascular plants in bogs and poor fens while deciduous shrubs, such as the betulaceous shrubs, often dominate rich fens. Both shrubs are categorized as broadleaf trees in CLASS morphologically, but their phenological and physiological characteristics are more similar to those of needleleaf trees. The shrub tundra ecosystem is situated adjacent to needleleaf forest in the Northern Hemisphere (Kaplan et al., 2003) and they share similar responses to climate in ESMs (e.g. Bonan et al., 2002). Table~2 lists the key parameters for the peatland PFTs used in this model. (The photosynthesis and autotrophic respiration of vascular PFTs are modelled the same as in the original CTEM.) </p>
 </div></div><!-- contents -->
@@ -1231,7 +1314,7 @@ logical&#160;</td><td class="memItemRight" valign="bottom"><b>ctem_params::pftco
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="ctem__params_8f90.html">ctem_params.f90</a></li>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:08 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

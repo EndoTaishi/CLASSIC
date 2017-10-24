@@ -39,8 +39,6 @@ var searchData=
   ['stdaln',['stdaln',['../structctem__statevars_1_1veg__rot.html#a42865f61a176692352b0306213394c03',1,'ctem_statevars::veg_rot::stdaln()'],['../structctem__statevars_1_1veg__gat.html#a5d55217087f887d2739abe479418ed62',1,'ctem_statevars::veg_gat::stdaln()']]],
   ['stemmass',['stemmass',['../structctem__statevars_1_1veg__rot.html#ac9545d9728428a476c5610c881bfe39f',1,'ctem_statevars::veg_rot::stemmass()'],['../structctem__statevars_1_1veg__gat.html#a4cf22e19ec4bc215b27c608da8cb0d9e',1,'ctem_statevars::veg_gat::stemmass()']]],
   ['stmhrlos',['stmhrlos',['../structctem__statevars_1_1veg__rot.html#a3a37a95087eb2b7e97a0bbb294104067',1,'ctem_statevars::veg_rot::stmhrlos()'],['../structctem__statevars_1_1veg__gat.html#af5fb179faddbf6c47296ae0873adbe47',1,'ctem_statevars::veg_gat::stmhrlos()']]],
-  ['storvar',['storvar',['../STORVAR_8f.html#a2596f6cf4b36e7a63e3a4a5702f965f6',1,'STORVAR.f']]],
-  ['storvar_2ef',['STORVAR.f',['../STORVAR_8f.html',1,'']]],
   ['subcan',['subcan',['../SUBCAN_8f.html#a7821b148b27a4db899e0cdf8ece2379a',1,'SUBCAN.f']]],
   ['subcan_2ef',['SUBCAN.f',['../SUBCAN_8f.html',1,'']]],
   ['surmncur',['surmncur',['../structctem__statevars_1_1veg__gat.html#a1807426243ac62f71bc83d83daaab012',1,'ctem_statevars::veg_gat']]]

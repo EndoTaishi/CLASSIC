@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -104,37 +105,46 @@ $(document).ready(function(){initNavTree('landuse__change__mod_8f90.html','');})
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#namespaces">Modules</a>  </div>
   <div class="headertitle">
 <div class="title">landuse_change_mod.f90 File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Central module for all land use change operations.  
+<p>The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) <b>[Arora2010-416]</b> and briefly described here. When the area of crop PFTs changes, CTEM generates LUC emissions. In the simulation where fractional coverage of PFTs is specified, the changes in fractional coverage of crop PFTs are made consistent with changes in the fractional coverage of natural non-crop PFTs. That is, an increase or decrease in the area of crop PFTs is associated with a corresponding decrease or increase in the area of non-crop PFTs. This approach is taken by <b>[Wang2006-he]</b>, which allows one to reconstruct historical land cover given a spatial data set of changes in crop area over the historical period and an estimate of potential natural land cover for the pre-industrial period (as described in Sect. methods}). When competition between PFTs for space is allowed, only the fractional coverage of crop PFTs is specified. Similar to a simulation with prescribed PFT fractions, when the area of crop PFTs increases, the fractional coverage of non-crop PFTs is decreased in proportion to their existing coverage <b>[Wang2006-he]</b>. Alternatively, and in contrast to the simulation with prescribed PFT fractions, when the area of crop PFTs decreases then the generated bare fraction is available for recolonization by non-crop PFTs.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Modules</h2></td></tr>
+<tr class="memitem:namespacelanduse__change"><td class="memItemLeft" align="right" valign="top">module &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelanduse__change.html">landuse_change</a></td></tr>
+<tr class="memdesc:namespacelanduse__change"><td class="mdescLeft">&#160;</td><td class="mdescRight">Central module for all land use change operations. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:ga4a291038c54d11f0b8f9f6e6a3fb0d4c"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__landuse__change__initialize__luc.html#ga4a291038c54d11f0b8f9f6e6a3fb0d4c">landuse_change::initialize_luc</a> (iyear, nmtest, nltest, nol2pfts, cyclemet, cylucyr, lucyr, fcanrow, farerow, nfcancmxrow, pfcancmxrow, fcancmxrow, reach_eof, start_bare, PFTCompetition, onetile_perPFT)</td></tr>
-<tr class="separator:ga4a291038c54d11f0b8f9f6e6a3fb0d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd34dc6a8785098e4bdfd731a6f8e7d2"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelanduse__change.html#abd34dc6a8785098e4bdfd731a6f8e7d2">landuse_change::initializelandcover</a></td></tr>
+<tr class="memdesc:abd34dc6a8785098e4bdfd731a6f8e7d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes and checks over the PFT fractional cover.  <a href="#abd34dc6a8785098e4bdfd731a6f8e7d2">More...</a><br /></td></tr>
+<tr class="separator:abd34dc6a8785098e4bdfd731a6f8e7d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:gac5b49bbe41675cae7b7209cce482009b"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__landuse__change__readin__luc.html#gac5b49bbe41675cae7b7209cce482009b">landuse_change::readin_luc</a> (iyear, nmtest, nltest, lucyr, nfcancmxrow, pfcancmxrow, reach_eof, PFTCompetition, onetile_perPFT)</td></tr>
-<tr class="separator:gac5b49bbe41675cae7b7209cce482009b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-<tr class="memitem:gae5abe86ea94aa557a3835c6e2a34b3fe"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__landuse__change__luc.html#gae5abe86ea94aa557a3835c6e2a34b3fe">landuse_change::luc</a> (il1,il2,nilg,nol2pfts,grclarea, pfcancmx, nfcancmx,iday,todfrac, yesfrac, interpol, PFTCompetition, leapnow,</td></tr>
-<tr class="separator:gae5abe86ea94aa557a3835c6e2a34b3fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5abe86ea94aa557a3835c6e2a34b3fe"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelanduse__change.html#ae5abe86ea94aa557a3835c6e2a34b3fe">landuse_change::luc</a> (il1,il2,nilg,nol2pfts,grclarea, pfcancmx, nfcancmx,iday,todfrac, yesfrac, interpol, PFTCompetition, leapnow,</td></tr>
+<tr class="memdesc:ae5abe86ea94aa557a3835c6e2a34b3fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deals with the changes in the land cover and estimates land use change (LUC) related carbon emissions. based on whether there is conversion of forests/grassland to crop area, or croplands abandonment, this subroutine reallocates carbon from live vegetation to litter and soil c components. the decomposition from the litter and soil c pools thus implicitly models luc related carbon emissions. set of rules are followed to determine the fate of carbon that results from deforestation or replacement of grasslands by crops.  <a href="#ae5abe86ea94aa557a3835c6e2a34b3fe">More...</a><br /></td></tr>
+<tr class="separator:ae5abe86ea94aa557a3835c6e2a34b3fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Central module for all land use change operations. </p>
+<div class="textblock"><p>The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) <b>[Arora2010-416]</b> and briefly described here. When the area of crop PFTs changes, CTEM generates LUC emissions. In the simulation where fractional coverage of PFTs is specified, the changes in fractional coverage of crop PFTs are made consistent with changes in the fractional coverage of natural non-crop PFTs. That is, an increase or decrease in the area of crop PFTs is associated with a corresponding decrease or increase in the area of non-crop PFTs. This approach is taken by <b>[Wang2006-he]</b>, which allows one to reconstruct historical land cover given a spatial data set of changes in crop area over the historical period and an estimate of potential natural land cover for the pre-industrial period (as described in Sect. methods}). When competition between PFTs for space is allowed, only the fractional coverage of crop PFTs is specified. Similar to a simulation with prescribed PFT fractions, when the area of crop PFTs increases, the fractional coverage of non-crop PFTs is decreased in proportion to their existing coverage <b>[Wang2006-he]</b>. Alternatively, and in contrast to the simulation with prescribed PFT fractions, when the area of crop PFTs decreases then the generated bare fraction is available for recolonization by non-crop PFTs. </p>
+<p>A decrease in the area of natural non-crop PFTs, associated with an increase in area of crop PFTs, results in deforested biomass (while the term <img class="formulaInl" alt="$\textit{deforested}$" src="form_843.png"/> implies clearing of forests, the same processes can occur in grasslands as well and is meant here to imply removal of the biomass). The deforested biomass is divided into three components: (i) the component that is combusted or used for fuel wood immediately after natural vegetated is deforested and which contributes to atmospheric <img class="formulaInl" alt="$CO_2$" src="form_559.png"/>, (ii) the component left as slash or used for pulp and paper products and (iii) the component that is used for long-lasting wood products. The fractions allocated to these three components depend on whether the PFTs are woody or herbaceous and on their aboveground vegetation biomass density (see Table 1 of <b>[Arora2010-416]</b>). To account for the timescales involved, the fraction allocated to slash or pulp and paper products is transferred to the model's litter pool and the fraction allocated to long-lasting wood products is allocated to the model's soil carbon pool. Land use change associated with a decrease in the area of natural vegetation thus redistributes carbon from living vegetation to dead litter and soil carbon pools and emits <img class="formulaInl" alt="$CO_2$" src="form_559.png"/> to the atmosphere through direct burning of the deforested biomass. The net result is positive LUC carbon emissions from land to the atmosphere.</p>
+<p>When croplands are abandoned, the area of natural PFTs increases. In simulations with prescribed fractional coverage of PFTs this results in a decreased carbon density for all model pools as the same amount of carbon is spread over a larger fraction of the grid cell. This reduced density implies that natural vegetation is able to take up carbon as it comes into equilibrium with the driving climate and atmospheric <img class="formulaInl" alt="$CO_2$" src="form_559.png"/> concentration. This creates the carbon sink associated with abandonment of croplands as natural vegetation grows in its place. In simulations with competition between PFTs, the abandoned land is treated as bare ground, which is subsequently available for recolonization, as mentioned above. As natural vegetation expands into bare ground it takes up carbon, again creating the carbon sink associated with abandonment of croplands. The net result is negative LUC carbon emissions as carbon is taken from atmosphere to grow vegetation over the area that was previously a cropland. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="landuse__change__mod_8f90.html">landuse_change_mod.f90</a></li>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:08 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

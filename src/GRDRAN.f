@@ -272,7 +272,7 @@ C
       !!evaporation rate. Within the soil, the flow rate F at a given 
       !!depth z is obtained using equation 21 from Verseghy (1991):
       !!
-      !!\f$F(z) = K(z) [-b \Psi(z)/\theta_l(z) \bullet d\theta_l / dz + 1]\f$
+      !!\f$F(z) = K(z) [-b \Psi(z)/\theta_l(z) \times d\theta_l / dz + 1]\f$
       !!
       !!where K(z) is the hydraulic conductivity and psi(z) is the soil 
       !!moisture suction at depth z, and b is an empirical parameter 
@@ -290,7 +290,7 @@ C
       !!capacity, the vertical flow out of the bottom of the soil profile 
       !!is calculated using a relation derived from Soulis et al. (2010):
       !!
-      !!\f$F(z_b ) = K_{sat} \bullet min{1, (\theta_l /\theta_p )/[1 – 1/(2b + 3)]^{(2b + 3)}
+      !!\f$F(z_b ) = K_{sat} \times min{1, (\theta_l /\theta_p )/[1 – 1/(2b + 3)]^{(2b + 3)}\f$
       !!
       !!This flow rate is multiplied by a drainage parameter XDRAIN, 
       !!which is set to 0 if the soil is underlain by an impermeable 

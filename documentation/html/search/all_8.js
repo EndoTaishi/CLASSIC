@@ -13,7 +13,7 @@ var searchData=
   ['includebareground',['includebareground',['../structoutputmanager_1_1outputdescriptor.html#abc148b210bc74ddb8e565f5c17552afa',1,'outputmanager::outputdescriptor']]],
   ['inibioclim',['inibioclim',['../structctem__statevars_1_1ctem__switches.html#a363efc622307abfadb56494f98bf4b35',1,'ctem_statevars::ctem_switches']]],
   ['init_5ffile',['init_file',['../structctem__statevars_1_1ctem__switches.html#af17d01da21648e1c911639191b97f2b2',1,'ctem_statevars::ctem_switches']]],
-  ['initialize_5fluc',['initialize_luc',['../group__landuse__change__initialize__luc.html#ga4a291038c54d11f0b8f9f6e6a3fb0d4c',1,'landuse_change']]],
+  ['initializelandcover',['initializelandcover',['../namespacelanduse__change.html#abd34dc6a8785098e4bdfd731a6f8e7d2',1,'landuse_change']]],
   ['intrmort',['intrmort',['../structctem__statevars_1_1veg__gat.html#acc2d305d85a52c0db34f26fd0f52afb5',1,'ctem_statevars::veg_gat']]],
   ['io_5fdriver_2ef90',['io_driver.f90',['../io__driver_8f90.html',1,'']]],
   ['io_5fdriver_5fclass_5fannual_5faw',['Io_driver_class_annual_aw',['../group__io__driver__class__annual__aw.html',1,'']]],

@@ -1,5 +1,6 @@
 !>\file
-!!Canadian Terrestrial Ecosystem Model (CTEM)
+C! Performs subsequent 'gather' operation on CTEM variables for consistency
+!! with physics variables gather operations.
 !!
       subroutine ctemg2(fcancmxgat,     rmatcgat,      zolncgat,
      1      paicgat,

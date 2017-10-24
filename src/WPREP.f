@@ -1,6 +1,6 @@
 !>\file
-C!Purpose: Initialize subarea variables for surface water budget 
-C!calculations, and perform preliminary calculations for diagnostic 
+C!Initializes subarea variables for surface water budget
+C!calculations, and performs preliminary calculations for diagnostic
 C!variables.
 C!
 

@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -104,6 +105,7 @@ $(document).ready(function(){initNavTree('group__disturbance__scheme__burntobare
 <div class="contents">
 <table class="memberdecls">
 <tr class="memitem:gae72fa0c94541c3e88a45d71f2442be9c"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__disturbance__scheme__burntobare.html#gae72fa0c94541c3e88a45d71f2442be9c">disturbance_scheme::burntobare</a> (il1, il2, nilg, sort, pvgbioms, pgavltms, pgavscms, fcancmx, burnvegf, stemmass, rootmass, gleafmas, bleafmas, litrmass, soilcmas, pstemmass, pgleafmass, nppveg)</td></tr>
+<tr class="memdesc:gae72fa0c94541c3e88a45d71f2442be9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update fractional coverages of pfts to take into account the area burnt by fire. Adjust all pools with new densities in their new areas and increase bare fraction. And while we are doing this also run a small check to make sure grid averaged quantities do not get messed up.  <a href="#gae72fa0c94541c3e88a45d71f2442be9c">More...</a><br /></td></tr>
 <tr class="separator:gae72fa0c94541c3e88a45d71f2442be9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -227,6 +229,8 @@ $(document).ready(function(){initNavTree('group__disturbance__scheme__burntobare
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Update fractional coverages of pfts to take into account the area burnt by fire. Adjust all pools with new densities in their new areas and increase bare fraction. And while we are doing this also run a small check to make sure grid averaged quantities do not get messed up. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">nilg</td><td>no. of grid cells in latitude circle (this is passed in as either ilg or nlat depending on mos/comp)</td></tr>
@@ -236,15 +240,15 @@ $(document).ready(function(){initNavTree('group__disturbance__scheme__burntobare
     <tr><td class="paramdir">[in]</td><td class="paramname">pgavscms</td><td>initial soil c mass</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">fcancmx</td><td>initial fractions of the ctem pfts</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">burnvegf</td><td>per PFT fraction burned of that PFTs area</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">gleafmas</td><td>green leaf carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">bleafmas</td><td>brown leaf carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">stemmass</td><td>stem carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">rootmass</td><td>roots carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">nppveg</td><td>npp for individual pfts, <img class="formulaInl" alt="$u-mol co_2/m^2.sec$" src="form_628.png"/></td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">soilcmas</td><td>soil carbon mass for each of the 9 ctem pfts + bare, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>litter carbon mass for each of the 9 ctem pfts + bare, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pstemmass</td><td>grid averaged stemmass prior to disturbance, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pgleafmass</td><td>grid averaged rootmass prior to disturbance, <img class="formulaInl" alt="$kg c/m^2$" src="form_614.png"/> </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">gleafmas</td><td>green leaf carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">bleafmas</td><td>brown leaf carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">stemmass</td><td>stem carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">rootmass</td><td>roots carbon mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">nppveg</td><td>npp for individual pfts, <img class="formulaInl" alt="$u-mol co_2/m^2.sec$" src="form_577.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">soilcmas</td><td>soil carbon mass for each of the 9 ctem pfts + bare, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">litrmass</td><td>litter carbon mass for each of the 9 ctem pfts + bare, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pstemmass</td><td>grid averaged stemmass prior to disturbance, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pgleafmass</td><td>grid averaged rootmass prior to disturbance, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/> </td></tr>
   </table>
   </dd>
 </dl>
@@ -268,7 +272,7 @@ $(document).ready(function(){initNavTree('group__disturbance__scheme__burntobare
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Oct 4 2017 16:31:08 for CLASSIC by
+    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

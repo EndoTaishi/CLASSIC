@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Organize calculation of radiation-related and other 
+C!Organizes calculation of radiation-related and other
 C!surface parameters.
 C!
       SUBROUTINE CLASSA(FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN,

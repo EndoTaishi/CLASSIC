@@ -11,42 +11,10 @@ contains
 
     ! ---------------------------------------------------
 
+    !> Reads from the joboptions file, assigns the model switches, and determines the geographic domain
+    !! of the simulation.
+
     subroutine read_from_job_options
-
-        !       History:
-        !
-        !     31 May 2017    - Convert to module, getting ready for new driver.
-        !     J. Melton
-        !
-        !     10 Jan 2017    - igralb no longer supported so removed
-        !     J. Melton
-        !
-        !     9 Nov 2016     - Add the "leap" switch for leap years (.TRUE. if leap years
-        !     J.-S. Landry     in the .MET file have data for 366 days, .FALSE. if not)
-        !
-        !     28  Jul  2016  - Add ability to have changing CO2 but cycling climate
-        !     J. Melton        this was for the TRENDY project but generally useful so
-        !                      keep in.
-        !     3   Feb  2016 - Remove mosaic flag. It is no longer required.
-        !     J. Melton
-
-        !     20  Mar. 2015 - Add in new CLASS flags for snow albedos -igralb & isnoalb
-        !     J. Melton
-
-        !     4   Sep. 2014 - Add in the transient_run flag.
-        !     J. Melton
-        !
-        !     2   Jul. 2013 - Removed ctem1 and ctem2, replaced with ctem_on
-        !     J. Melton
-        !
-        !     25  Jun. 2013 - Added inibioclim switch for PFTCompetition runs
-        !     J. Melton
-        !
-        !     17  Oct. 2012 - Added the start_bare switch for PFTCompetition runs
-        !     J. Melton
-        !
-        !     25  Apr. 2012 - This subroutine takes in model switches from
-        !     J. Melton       a job file and pushes them to RUNCLASSCTEM
 
         use outputManager, only : myDomain
         use ctem_statevars,     only : c_switch
@@ -61,18 +29,18 @@ contains
 
         ! ctem model switches
 
-        logical, pointer :: transient_run
-        integer, pointer :: trans_startyr
+        !logical, pointer :: transient_run
+        !integer, pointer :: trans_startyr
         integer, pointer :: metLoop
         logical, pointer :: ctem_on
-        integer, pointer :: ncyear
+        !integer, pointer :: ncyear
         integer, pointer :: readMetStartYear
         integer, pointer :: readMetEndYear
         logical, pointer :: lnduseon
         integer, pointer :: spinfast
-        logical, pointer :: cyclemet
-        integer, pointer :: nummetcylyrs
-        integer, pointer :: metcylyrst
+        !logical, pointer :: cyclemet
+        !integer, pointer :: nummetcylyrs
+        !integer, pointer :: metcylyrst
         logical, pointer :: transientCO2
         character(:), pointer :: CO2File
         integer, pointer :: fixedYearCO2
@@ -83,6 +51,7 @@ contains
         character(:), pointer :: POPDFile
         integer, pointer :: fixedYearPOPD
         logical, pointer :: dofire
+        character(:), pointer :: LGHTFile
         character(:), pointer :: LUCFile
         integer, pointer :: fixedYearLUC
         logical, pointer :: dowetlands
@@ -142,13 +111,13 @@ contains
         ! Order of the namelist and order in the file don't have to match.
 
         namelist /joboptions/ &
-        transient_run, &
-        trans_startyr, &
+        !transient_run, &
+        !trans_startyr, &
         metLoop, &
-        ncyear, &
-        cyclemet, &
-        nummetcylyrs, &
-        metcylyrst, &
+        !ncyear, &
+        !cyclemet, &
+        !nummetcylyrs, &
+        !metcylyrst, &
         readMetStartYear, &
         readMetEndYear, &
         leap, &
@@ -171,6 +140,7 @@ contains
         inibioclim, &
         start_bare, &
         dofire, &
+        LGHTFile, &
         dowetlands, &
         obswetf, &
         use_netcdf, &
@@ -213,20 +183,20 @@ contains
         Comment
 
         ! Point pointers:
-        transient_run   => c_switch%transient_run
-        trans_startyr   => c_switch%trans_startyr
+        !transient_run   => c_switch%transient_run
+        !trans_startyr   => c_switch%trans_startyr
         metLoop         => c_switch%metLoop
         readMetStartYear=> c_switch%readMetStartYear
         readMetEndYear  => c_switch%readMetEndYear
         ctem_on         => c_switch%ctem_on
-        ncyear          => c_switch%ncyear
+        !ncyear          => c_switch%ncyear
         lnduseon        => c_switch%lnduseon
         LUCFile         => c_switch%LUCFile
         fixedYearLUC    => c_switch%fixedYearLUC
         spinfast        => c_switch%spinfast
-        cyclemet        => c_switch%cyclemet
-        nummetcylyrs    => c_switch%nummetcylyrs
-        metcylyrst      => c_switch%metcylyrst
+        !cyclemet        => c_switch%cyclemet
+        !nummetcylyrs    => c_switch%nummetcylyrs
+        !metcylyrst      => c_switch%metcylyrst
         transientCO2    => c_switch%transientCO2
         CO2File         => c_switch%CO2File
         fixedYearCO2    => c_switch%fixedYearCO2
@@ -237,6 +207,7 @@ contains
         POPDFile        => c_switch%POPDFile
         fixedYearPOPD   => c_switch%fixedYearPOPD
         dofire          => c_switch%dofire
+        LGHTFile        => c_switch%LGHTFile
         dowetlands      => c_switch%dowetlands
         obswetf         => c_switch%obswetf
         PFTCompetition  => c_switch%PFTCompetition
@@ -245,7 +216,6 @@ contains
         rs_file_to_overwrite => c_switch%rs_file_to_overwrite
         output_directory => c_switch%output_directory
         xmlFile         => c_switch%xmlFile
-        use_netcdf      => c_switch%use_netcdf
         met_file        => c_switch%met_file
         runparams_file  => c_switch%runparams_file
         init_file       => c_switch%init_file
@@ -301,6 +271,7 @@ contains
             stop
         end if
 
+        !> Argument 1 is the jobfile, which is openned and the namelist is read
         call getarg(1,jobfile)
 
         open(10,file=jobfile,action='read',status='old')
@@ -309,11 +280,9 @@ contains
 
         close(10)
 
+        !> Parse the 2nd argument to get the domain that the simulation should be run over
         call getarg(2,argbuff)
-
-        if (use_netcdf) then
-            call parsecoords(argbuff,myDomain%domainBounds)
-        end if
+        call parsecoords(argbuff,myDomain%domainBounds)
 
         ! Assign some vars that are passed out
         runParamsFile = runparams_file
@@ -323,9 +292,9 @@ contains
 
 ! ----------------------------------------------------------------------------------
 
-subroutine parsecoords(coordstring,val)
+!> Parses a coordinate string
 
-!subroutine to parse a coordinate string
+subroutine parsecoords(coordstring,val)
 
 implicit none
 

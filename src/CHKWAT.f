@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Check for closure of surface water budget, and for 
+C!Checks for closure of surface water budget, and for
 C!unphysical values of certain variables.
 C!
       SUBROUTINE CHKWAT(ISFC,PCPR,EVAP,RUNOFF,WLOST,RAICAN,SNOCAN,

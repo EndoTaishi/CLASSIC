@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Print the name of the subroutine and an error code when 
+C!Prints the name of the subroutine and an error code when
 C!an error condition is encountered.
 C!
       SUBROUTINE XIT(NAME,N)
