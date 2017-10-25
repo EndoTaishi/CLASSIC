@@ -1,6 +1,6 @@
 !>\file
-!!Canadian Terrestrial Ecosystem Model (CTEM) 
-!!Mortality Subroutine
+!>Calculates the litter generated from leaves, stem, and root components after
+!! vegetation dies due to reduced growth efficiency or due to aging (the intrinsic mortality)
 !!
 !!Mortality
 !!

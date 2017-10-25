@@ -1,6 +1,6 @@
 !>\file
 !>
-!!Purpose: Scatter variables from long, gathered vectors back onto original two-dimensional arrays (latitude
+!!Scatters variables from long, gathered vectors back onto original two-dimensional arrays (latitude
 !!circle x mosaic tiles).
 !!
       SUBROUTINE CLASSS (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT,       

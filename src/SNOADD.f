@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Add snow incident on the ground surface to the snow pack.
+C!Adds snow incident on the ground surface to the snow pack.
 C!
       SUBROUTINE SNOADD(ALBSNO,TSNOW,RHOSNO,ZSNOW,HCPSNO,HTCS,
      1                  FI,S,TS,RHOSNI,WSNOW,ILG,IL1,IL2,JL)

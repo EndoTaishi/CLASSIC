@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
@@ -112,14 +111,14 @@ $(document).ready(function(){initNavTree('namespacemodel__state__drivers.html','
 </div><!--header-->
 <div class="contents">
 
-<p>This is the central driver to read in, and write out all model state variables (replacing INI and CTM files) as well as the model inputs such as MET, population density, land use change, CO2 etc.  
+<p>Central driver to read in, and write out all model state variables (replacing INI and CTM files) as well as the model inputs such as MET, population density, land use change, CO2 etc.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a9082d4f86f78f0dca4f7e3ed00c55b02"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a9082d4f86f78f0dca4f7e3ed00c55b02">read_modelsetup</a></td></tr>
-<tr class="memdesc:a9082d4f86f78f0dca4f7e3ed00c55b02"><td class="mdescLeft">&#160;</td><td class="mdescRight">This reads in the model setup from the netcdf initialization file. The number of latitudes is always 1 offline while the maximum number of mosaics (nmos), the number of soil layers (ignd), are read from the netcdf. ilg is then calculated from nlat and nmos.  <a href="#a9082d4f86f78f0dca4f7e3ed00c55b02">More...</a><br /></td></tr>
+<tr class="memdesc:a9082d4f86f78f0dca4f7e3ed00c55b02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads in the model setup from the netcdf initialization file. The number of latitudes is always 1 offline while the maximum number of mosaics (nmos), the number of soil layers (ignd), are read from the netcdf. ilg is then calculated from nlat and nmos.  <a href="#a9082d4f86f78f0dca4f7e3ed00c55b02">More...</a><br /></td></tr>
 <tr class="separator:a9082d4f86f78f0dca4f7e3ed00c55b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a8370ff5a658ed743f387580d7ee9ec1a"><td class="memItemLeft" align="right" valign="top">subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodel__state__drivers.html#a8370ff5a658ed743f387580d7ee9ec1a">read_initialstate</a> (lonIndex, latIndex)</td></tr>
@@ -231,7 +230,7 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <tr class="separator:afc5be642b807197a0b4a20a10a8ed93b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This is the central driver to read in, and write out all model state variables (replacing INI and CTM files) as well as the model inputs such as MET, population density, land use change, CO2 etc. </p>
+<div class="textblock"><p>Central driver to read in, and write out all model state variables (replacing INI and CTM files) as well as the model inputs such as MET, population density, land use change, CO2 etc. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="aa1f54e07c9b953fa76892cde43cd0395"></a>
 <div class="memitem">
@@ -327,7 +326,7 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
       </table>
 </div><div class="memdoc">
 
-<p>This reads in the model setup from the netcdf initialization file. The number of latitudes is always 1 offline while the maximum number of mosaics (nmos), the number of soil layers (ignd), are read from the netcdf. ilg is then calculated from nlat and nmos. </p>
+<p>Reads in the model setup from the netcdf initialization file. The number of latitudes is always 1 offline while the maximum number of mosaics (nmos), the number of soil layers (ignd), are read from the netcdf. ilg is then calculated from nlat and nmos. </p>
 <p>First, open initial conditions file.</p>
 <p>Next, retrieve dimensions. We assume the file has 'lon' and 'lat' for names of longitude and latitude.</p>
 <p>calculate the number and indices of the pixels to be calculated</p>
@@ -422,7 +421,7 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemodel__state__drivers.html">model_state_drivers</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 14:54:38 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

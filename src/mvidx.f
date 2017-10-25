@@ -1,4 +1,5 @@
 !>\file
+!! Utility to determine location of closest value in an array
 
 C     * MAY 12/2004 - L.SOLHEIM
 C     *

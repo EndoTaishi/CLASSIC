@@ -1,7 +1,5 @@
-!>\file
-!!Canadian Terrestrial Ecosystem Model (CTEM)
-!!Maintenance Respiration Subroutine
-!!
+!> Calculates maintenance respiration, over a given sub-area, for stem and root components.
+!! leaf respiration is estimated within the phtsyn subroutine.
 !!
 !!Autotrophic respiration (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$) is composed of maintenance, \f$R_\mathrm{m}\f$, and growth respirations, \f$R_\mathrm{g}\f$,
 !!\f[
@@ -42,7 +40,6 @@
 !!NPP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g}.
 !!\f]
 !!
-
 
       subroutine mainres (  fcan,      fct,     stemmass,   rootmass, 
      1                       il1, il2, leapnow,
@@ -255,5 +252,8 @@ c
 200   continue 
 c     
       return
+
+!>\file
+
       end
 

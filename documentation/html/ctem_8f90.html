@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
@@ -122,7 +121,7 @@ Functions/Subroutines</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Principle driver for CTEM. </p>
-<p>The basic model structure of CTEM includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_24.png"/>, <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_22.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_23.png"/>, <img class="formulaInl" alt="$C_\mathrm{D}$" src="form_550.png"/>, <img class="formulaInl" alt="$C_\mathrm{H}$" src="form_551.png"/>, <img class="formulaInl" alt="$kgC m^{-2}$" src="form_552.png"/>) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate_change_eqns} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections. </p>
+<p>The basic model structure of CTEM includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_24.png"/>, <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_22.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_23.png"/>, <img class="formulaInl" alt="$C_\mathrm{D}$" src="form_547.png"/>, <img class="formulaInl" alt="$C_\mathrm{H}$" src="form_548.png"/>, <img class="formulaInl" alt="$kgC m^{-2}$" src="form_549.png"/>) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate_change_eqns} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="afb4eff56870bf0b2c92ff281046692e5"></a>
 <div class="memitem">
@@ -539,7 +538,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">tbargs</td><td>soil temperature for snow over ground subarea</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">psisat</td><td>Saturated soil matric potential (m)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bi</td><td>Brooks and Corey/Clapp and Hornberger b term</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thpor</td><td>Soil total porosity <img class="formulaInl" alt="$(cm^3 cm^{-3})$" src="form_553.png"/> - daily average</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thpor</td><td>Soil total porosity <img class="formulaInl" alt="$(cm^3 cm^{-3})$" src="form_550.png"/> - daily average</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ta</td><td>air temp, K</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">delzw</td><td>thicknesses of the soil layers</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">zbotw</td><td>bottom of soil layers</td></tr>
@@ -549,7 +548,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thicec</td><td>Frozen soil moisture content for canopy over snow and canopy over ground subareas</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thiceg</td><td>Frozen soil moisture content for ground and snow over ground subareas</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">deltat</td><td>CTEM timestep in days</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">grclarea</td><td>area of the grid cell, <img class="formulaInl" alt="$km^2$" src="form_447.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">grclarea</td><td>area of the grid cell, <img class="formulaInl" alt="$km^2$" src="form_551.png"/></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">currlat</td><td>centre latitude of grid cells in degrees</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">uwind</td><td>u wind speed, m/s</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">vwind</td><td>v wind speed, m/s</td></tr>
@@ -560,7 +559,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">pfcancmx</td><td>previous year's fractional coverages of pfts</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">nfcancmx</td><td>next year's fractional coverages of pfts</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">todfrac</td><td>max. fractional coverage of ctem's 9 pfts by the end of the day, for use by land use subroutine</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ch4conc</td><td>Atmospheric <img class="formulaInl" alt="$CH_4$" src="form_554.png"/> concentration at the soil surface (ppmv)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ch4conc</td><td>Atmospheric <img class="formulaInl" alt="$CH_4$" src="form_552.png"/> concentration at the soil surface (ppmv)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">stdaln</td><td>an integer telling if ctem is operated within gcm (=0) or in stand alone mode (=1). this is used for fire purposes. see comments just above where disturb subroutine is called.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">grav</td><td>Acceleration due to gravity ($m s^{-1} ), (CLASS param) passed in to avoid the common block structure.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">rhow</td><td>Density of water ($kg m^{-3}), (CLASS param) passed in to avoid the common block structure.</td></tr>
@@ -572,7 +571,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">rmlcgveg</td><td>leaf respiration rate for ctems 9 pfts forcanopy over ground subarea</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">extnprob</td><td>fire extingusinging probability</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">fcancmx</td><td>max. fractional coverage of ctem's 9 pfts, but this can be modified by land-use change, and competition between pfts</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">popdin</td><td>population density <img class="formulaInl" alt="$(people / km^2)$" src="form_555.png"/></td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">popdin</td><td>population density <img class="formulaInl" alt="$(people / km^2)$" src="form_553.png"/></td></tr>
     <tr><td class="paramdir"></td><td class="paramname">nol2pfts</td><td>number of level 2 ctem pfts </td></tr>
   </table>
   </dd>
@@ -618,7 +617,7 @@ Functions/Subroutines</h2></td></tr>
 In loop 360/370 we have aggregated across all pfts for litres and socres, In loop 380 we add
 bareground (iccp1) values to the grid sum if it's not peatland. If it is a peatland, we add litresmoss to
 the grid sum but no bareground values as we assume peatlands have no bareground. </pre><p>Update the litter and soil c pools based on litter and soil c respiration rates found above. also transfer humidified litter to the soil c pool.</p>
-<p>Convert u mol co2/m2.sec -&gt; <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/> respired over the model time step</p>
+<p>Convert u mol co2/m2.sec -&gt; <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/> respired over the model time step</p>
 <p>Update litter and soil c pools </p><pre class="fragment">     Next we add bareground litter mass and humification for non-peatlands. In
      peatlands there is no bareground litter mass since it is the moss layer. </pre><p>Estimate soil respiration. this is sum of heterotrophic respiratio and root maintenance respiration.</p>
 <p>But over the bare fraction there is no live root.</p>
@@ -631,7 +630,7 @@ the grid sum but no bareground values as we assume peatlands have no bareground.
 <p>We use the following new function to smooth the transition for lambda as an abrupt linear increase does not give good results. JM Jun 2014</p>
 <p>If tree and leaves still coming out, or if npp is negative, then do not expand</p>
 <p>Maintenance respiration also reduces leaf, stem, and root biomass. when npp for a given pft is positive then this is taken care by allocating +ve npp amongst the leaves, stem, and root component. when npp for a given pft is negative then maintenance respiration loss is explicitly deducted from each component.</p>
-<p>Convert npp and maintenance respiration from different components from units of u mol co2/m2.sec -&gt; <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/> sequestered or respired over the model time step (deltat)</p>
+<p>Convert npp and maintenance respiration from different components from units of u mol co2/m2.sec -&gt; <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/> sequestered or respired over the model time step (deltat)</p>
 <p>Remove the cost of making reproductive tissues. This cost can only be removed when NPP is positive.</p>
 <p>i.e. if lfstatus.eq.4 and since we do not have any real leaves on then we do not take into account co2 uptake by imaginary leaves in carbon budget. rmlvgstp(i,j) should be zero because we set maintenance respiration from storage/imaginary leaves equal to zero. in loop 180</p>
 <p>since no real leaves are on, make allocation fractions equal to zero.</p>
@@ -652,13 +651,13 @@ the grid sum but no bareground values as we assume peatlands have no bareground.
 <p>call the disturbance subroutine which calculates mortality due to fire and other disturbances. the primary output from from disturbance subroutine is litter generated, c emissions due to fire and area burned, which may be used to estimate change in fractional coverages.</p>
 <p>disturbance is spatial and requires area of gcm grid cell and areas of different pfts present in a given grid cell. however, when ctem is operated at a point scale then it is assumed that the spatial scale is 1 hectare = 10,000 m2. the disturbance subroutine may be stopped from simulating any fire by specifying fire extingushing probability equal to 1.</p>
 <p>Calculate nbp (net biome production) for each pft by taking into account C emission losses. The disturbance routine produces emissions due to fire and it also calculates emissions due to LUC. These LUC carbon emissions due to combustion associated with LUC are first estimated in LUC. This flux is spread out over the whole year and is therefore subtracted to get NBP of each pft as well as the grid averaged value of NBP. Also LUC related combustion flux is assumed to be spread uniformly over the grid cell and thus reduces NBP of each PFT</p>
-<p>Calculate grid. averaged rate of carbon emissions due to fire in u-mol co2/m2.sec. convert all emission losses from <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/> emitted in 1 day to u-mol co2/m2.sec. calculate grid averaged carbon emission losses from litter.</p>
+<p>Calculate grid. averaged rate of carbon emissions due to fire in u-mol co2/m2.sec. convert all emission losses from <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/> emitted in 1 day to u-mol co2/m2.sec. calculate grid averaged carbon emission losses from litter.</p>
 <p>calculate total litter fall from each component (leaves, stem, and root) from all causes (normal turnover, drought and cold stress for leaves, mortality, and disturbance) for use in balcar subroutine</p>
-<p>units here are <img class="formulaInl" alt="$kg c/m^2 .day$" src="form_556.png"/></p>
+<p>units here are <img class="formulaInl" alt="$kg c/m^2 .day$" src="form_555.png"/></p>
 <p>convert units to u-mol co2/m2.sec</p>
 <p>calculate grid-average vegetation biomass, litter mass, and soil carbon mass, and litter fall rate</p>
 <p>Add the bare ground values to the grid-average. If a peatland, we assume no bareground and add the moss values instead. Note: peatland soil C is not aggregated from plants but updated by humification and respiration from the previous stored value</p>
-<p>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145) and updated sizes of all pools (in <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/>). Now we call the balcar subroutine and make sure that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.</p>
+<p>At this stage we have all required fluxes in u-mol co2/m2.sec and initial (loop 140 and 145) and updated sizes of all pools (in <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/>). Now we call the balcar subroutine and make sure that C in leaves, stem, root, litter and soil C pool balances within a certain tolerance.</p>
 <p>Finally find vegetation structural attributes which can be passed to the land surface scheme using leaf, stem, and root biomass.</p>
 <p>Calculation of gavglai is moved from loop 1100 to here since ailcg is updated by bio2str</p>
 
@@ -670,7 +669,7 @@ the grid sum but no bareground values as we assume peatlands have no bareground.
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="ctem_8f90.html">ctem.f90</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

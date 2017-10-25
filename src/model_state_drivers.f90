@@ -1,10 +1,5 @@
-!>\defgroup model_state_drivers
-
-!>\file
-!> Central driver to read in, and write out
-!! all model state variables (replacing INI and CTM files)
-!! as well as the model inputs such as MET, population density,
-!! land use change, CO2 etc.
+!> Central driver to read in, and write out all model state variables (replacing INI and CTM files)
+!! as well as the model inputs such as MET, population density, land use change, CO2 etc.
 
 module model_state_drivers
 
@@ -51,7 +46,6 @@ contains
 
     !>\ingroup model_state_drivers_read_modelsetup
     !!@{
-
     !> Reads in the model setup from the netcdf initialization file.
     !> The number of latitudes is always 1 offline while the maximum number of
     !> mosaics (nmos), the number of soil layers (ignd), are read from the netcdf.
@@ -223,7 +217,6 @@ contains
 
     !>\ingroup model_state_drivers_read_initialstate
     !!@{
-
     !> Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on)
 
     subroutine read_initialstate(lonIndex,latIndex)
@@ -682,7 +675,6 @@ contains
 
     !>\ingroup model_state_drivers_write_restart
     !!@{
-
     !> Write out the model restart file to netcdf. We only write out the variables that the model
     !! influences. This overwrites a pre-existing netcdf file.
 
@@ -856,7 +848,6 @@ contains
 
     !>\ingroup model_state_drivers_getInput
     !!@{
-
     !>  Read in a model input from a netcdf file and store the file's time array
     !! as well as the input values into memory
 
@@ -1081,8 +1072,6 @@ contains
 
     !>\ingroup model_state_drivers_updateInput
     !!@{
-
-
     !> Update the input field variable based on the present model timestep
 
     subroutine updateInput(inputRequested,iyear,imonth)
@@ -1217,7 +1206,6 @@ contains
 
     !>\ingroup model_state_drivers_getMet
     !!@{
-
     !> Read in the meteorological input from a netcdf file
 
     subroutine getMet(longitude,latitude,nday,delt)
@@ -1314,7 +1302,6 @@ contains
 
     !>\ingroup model_state_drivers_updateMet
     !!@{
-
     !> This transfers the met data of this time step from the read-in array to the
     !! instantaneous variables. This also set iyear to the present year of MET being read in.
 
@@ -1397,7 +1384,6 @@ contains
 
     !>\ingroup model_state_drivers_closestCell
     !!@{
-
     !> Finds the closest grid cell in the file
 
     integer function closestCell(ncid,label,gridPoint)
@@ -1426,7 +1412,6 @@ contains
 
     !>\ingroup model_state_drivers_deallocInput
     !!@{
-
     !> Deallocates the input files arrays
 
     subroutine deallocInput
@@ -1447,4 +1432,8 @@ contains
 
     end subroutine deallocInput
 !!@}
+!>\file
+!> Central driver to read in, and write out all model state variables (replacing INI and CTM files)
+!! as well as the model inputs such as MET, population density, land use change, CO2 etc.
+
 end module model_state_drivers

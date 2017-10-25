@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Initialize subarea variables and calculate various 
+C!Initializes subarea variables and calculate various
 C!parameters for surface energy budget calculations.
 C!
       SUBROUTINE TPREP(THLIQC, THLIQG, THICEC, THICEG, TBARC,  TBARG,             

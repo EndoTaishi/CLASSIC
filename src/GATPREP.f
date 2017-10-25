@@ -1,5 +1,5 @@
 !>\file
-!!Purpose: Assign values to pointer vectors relating the location of elements on the "gathered" variable
+!!Assigns values to pointer vectors relating the location of elements on the "gathered" variable
 !!vectors to elements on the original two-dimensional arrays (latitude circle x mosaic tiles) for land grid
 !!cells.
 !!

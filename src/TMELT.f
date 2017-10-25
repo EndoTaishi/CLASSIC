@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Address melting of the snow pack.
+C!Addresses melting of the snow pack.
 C!
       SUBROUTINE TMELT(ZSNOW,TSNOW,QMELT,R,TR,GZERO,RALB,
      1                 HMFN,HTCS,HTC,FI,HCPSNO,RHOSNO,WSNOW,

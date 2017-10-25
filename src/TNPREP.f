@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Calculate coefficients for solution of heat conduction 
+C!Calculate coefficients for solution of heat conduction
 C!into soil.
 C!
       SUBROUTINE TNPREP(A1,A2,B1,B2,C2,GDENOM,GCOEFF,

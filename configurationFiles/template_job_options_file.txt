@@ -5,7 +5,7 @@
 ! Meteorological options:
  readMetStartYear = 1901  !< First year of meteorological forcing to read in from the met file
  readMetEndYear = 1901    !< Last year of meteorological forcing to read in from the met file
- metLoop = 2 ,           !< no. of times to cycle over the read-in meteorology
+ metLoop = 2 ,            !< no. of times to cycle over the read-in meteorology
  leap = .false. ,         !< True if your meteorological forcing includes leap years
 
 ! CTEM (biogeochemistry) switches:

@@ -1,15 +1,7 @@
 !>\file 
-C!               CANADIAN TERRESTRIAL ECOSYSTEM MODEL (CTEM) 
-C!                       PHOTOSYNTHESIS SUBROUTINE
-C!
-C!
-!!
-!!
 !!Photosynthesis and canopy conductance
 !!
-!!
 !!Net photosynthesis
-!!
 !!
 !!All biogeochemical processes in CTEM are simulated at a daily time step except gross photosynthetic uptake and associated calculation of canopy conductance, which are simulated on a half hour time step with CLASS. The photosynthesis module of CTEM calculates the net canopy photosynthesis rate, which, together with atmospheric \f$CO_2\f$ concentration and vapour pressure or relative humidity, is used to calculate canopy conductance. This canopy conductance is then used by CLASS in its energy and water balance calculations.
 !!

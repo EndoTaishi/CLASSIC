@@ -1,4 +1,4 @@
-!> Parameterization of fire-related disturbance
+!> Calculates disturbance as both natural and human-influenced fires.
 module disturbance_scheme
 
 ! J. Melton. Mar 26, 2014
@@ -14,7 +14,6 @@ contains
 ! ------------------------------------------------------------------
 !>\ingroup disturbance_scheme_disturb
 !!@{
-
 !> Calculates whether fire occurs, burned area, amount of C emitted and litter generated
 
 subroutine disturb (stemmass, rootmass, gleafmas, bleafmas, &
@@ -711,7 +710,6 @@ end subroutine disturb
 
 !>\ingroup disturbance_scheme_burntobare
 !!@{
-
 !> Update fractional coverages of pfts to take into account the area
 !! burnt by fire. Adjust all pools with new densities in their new
 !! areas and increase bare fraction. And while we are doing this
@@ -938,7 +936,7 @@ do 10 i = il1, il2
 end subroutine burntobare
 !!@}
 
-!>\file
+!>\namespace disturbance_scheme
 !! Calculates disturbance as both natural and human-influenced fires.
 !!
 !!CTEM v. 2.0 represents disturbance as both natural and human-influenced fires.
@@ -1249,16 +1247,6 @@ end subroutine burntobare
 !!increase to a value above what it was before the fire occurred.
 !!
 !!
-
-!>\defgroup disturbance_scheme_burntobare
-
-!>
-!>Update fractional coverages of pfts to take into account the area
-!>burnt by fire. Adjust all pools with new densities in their new
-!>areas and increase bare fraction.
-!>
-!>And while we are doing this also run a small check to make sure
-!>grid averaged quantities do not get messed up.
 
 end module
 

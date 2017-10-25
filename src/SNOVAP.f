@@ -1,5 +1,5 @@
 !>\file
-!>Purpose: Sublimation calculations for the snow pack on the ground.
+!>Sublimation calculations for the snow pack on the ground.
 !>
       SUBROUTINE SNOVAP(RHOSNO,ZSNOW,HCPSNO,TSNOW,EVAP,QFN,QFG,HTCS,
      1                  WLOST,TRUNOF,RUNOFF,TOVRFL,OVRFLW,

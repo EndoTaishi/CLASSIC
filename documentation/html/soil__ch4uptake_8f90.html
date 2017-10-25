@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
@@ -122,7 +121,7 @@ Functions/Subroutines</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Canadian Terrestrial Ecosystem Model (CTEM) Soil Methane Oxidation Subroutine. </p>
-<p>Coded up based on <b>[Curry2007-du]</b>. </p>
+<p>Coded up based on <a class="el" href="citelist.html#CITEREF_Curry2007-du">[27]</a>. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="a6224a4d6e29f37e3d26f6eceeee72372"></a>
 <div class="memitem">
@@ -246,7 +245,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">tbar</td><td>Temperature of soil layers (K) - daily average</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thp</td><td>Total porosity <img class="formulaInl" alt="$(cm^3 cm^{-3})$" src="form_553.png"/> - daily average</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">thp</td><td>Total porosity <img class="formulaInl" alt="$(cm^3 cm^{-3})$" src="form_550.png"/> - daily average</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bi</td><td>Clapp and Hornberger b-term (-)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thlq</td><td>Fractional water content (-) - daily average</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thic</td><td>Fractional ice content (-) - daily average</td></tr>
@@ -254,13 +253,13 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">fcan</td><td>Fractional coverage of vegetation (-)</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">wetfracgrd</td><td>Prescribed fraction of wetlands in a grid cell</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">wetfdyn</td><td>Dynamic gridcell wetland fraction determined using slope and soil moisture</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">atm_ch4</td><td>Atmospheric <img class="formulaInl" alt="$CH_4$" src="form_554.png"/> concentration at the soil surface (ppmv)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">grav</td><td>Acceleration due to gravity <img class="formulaInl" alt="$(m s^{-1})$" src="form_1183.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">atm_ch4</td><td>Atmospheric <img class="formulaInl" alt="$CH_4$" src="form_552.png"/> concentration at the soil surface (ppmv)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">grav</td><td>Acceleration due to gravity <img class="formulaInl" alt="$(m s^{-1})$" src="form_1173.png"/></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">obswetf</td><td>Switch, if true then use the prescribed wetland cover</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">rhow</td><td>Density of water <img class="formulaInl" alt="$(kg m^{-3})$" src="form_1184.png"/></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">rhoice</td><td>Density of ice <img class="formulaInl" alt="$(kg m^{-3})$" src="form_1184.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhow</td><td>Density of water <img class="formulaInl" alt="$(kg m^{-3})$" src="form_1174.png"/></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhoice</td><td>Density of ice <img class="formulaInl" alt="$(kg m^{-3})$" src="form_1174.png"/></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">isand</td><td>flag for soil/bedrock/ice/glacier</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">ch4_soills</td><td>Methane uptake into the soil column <img class="formulaInl" alt="$(mg CH_4 m^{-2} s^{-1})$" src="form_1185.png"/> </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ch4_soills</td><td>Methane uptake into the soil column <img class="formulaInl" alt="$(mg CH_4 m^{-2} s^{-1})$" src="form_1175.png"/> </td></tr>
   </table>
   </dd>
 </dl>
@@ -300,7 +299,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="soil__ch4uptake_8f90.html">soil_ch4uptake.f90</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

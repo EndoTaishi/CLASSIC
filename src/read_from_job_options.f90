@@ -1,5 +1,4 @@
-!>\file
-!> Module for parsing command line arguments to program and reading joboptions files.
+!> Parses command line arguments to program and reads in joboptions file.
 module readjobopts
 
     implicit none
@@ -10,7 +9,8 @@ module readjobopts
 contains
 
     ! ---------------------------------------------------
-
+    !>\ingroup readjobopts_read_from_job_options
+    !!@{
     !> Reads from the joboptions file, assigns the model switches, and determines the geographic domain
     !! of the simulation.
 
@@ -29,18 +29,12 @@ contains
 
         ! ctem model switches
 
-        !logical, pointer :: transient_run
-        !integer, pointer :: trans_startyr
         integer, pointer :: metLoop
         logical, pointer :: ctem_on
-        !integer, pointer :: ncyear
         integer, pointer :: readMetStartYear
         integer, pointer :: readMetEndYear
         logical, pointer :: lnduseon
         integer, pointer :: spinfast
-        !logical, pointer :: cyclemet
-        !integer, pointer :: nummetcylyrs
-        !integer, pointer :: metcylyrst
         logical, pointer :: transientCO2
         character(:), pointer :: CO2File
         integer, pointer :: fixedYearCO2
@@ -111,13 +105,7 @@ contains
         ! Order of the namelist and order in the file don't have to match.
 
         namelist /joboptions/ &
-        !transient_run, &
-        !trans_startyr, &
         metLoop, &
-        !ncyear, &
-        !cyclemet, &
-        !nummetcylyrs, &
-        !metcylyrst, &
         readMetStartYear, &
         readMetEndYear, &
         leap, &
@@ -183,20 +171,14 @@ contains
         Comment
 
         ! Point pointers:
-        !transient_run   => c_switch%transient_run
-        !trans_startyr   => c_switch%trans_startyr
         metLoop         => c_switch%metLoop
         readMetStartYear=> c_switch%readMetStartYear
         readMetEndYear  => c_switch%readMetEndYear
         ctem_on         => c_switch%ctem_on
-        !ncyear          => c_switch%ncyear
         lnduseon        => c_switch%lnduseon
         LUCFile         => c_switch%LUCFile
         fixedYearLUC    => c_switch%fixedYearLUC
         spinfast        => c_switch%spinfast
-        !cyclemet        => c_switch%cyclemet
-        !nummetcylyrs    => c_switch%nummetcylyrs
-        !metcylyrst      => c_switch%metcylyrst
         transientCO2    => c_switch%transientCO2
         CO2File         => c_switch%CO2File
         fixedYearCO2    => c_switch%fixedYearCO2
@@ -289,9 +271,11 @@ contains
         PFTCompetitionSwitch = PFTCompetition
 
         end subroutine read_from_job_options
-
+!!@}
 ! ----------------------------------------------------------------------------------
 
+!>\ingroup readjobopts_parsecoords
+!!@{
 !> Parses a coordinate string
 
 subroutine parsecoords(coordstring,val)
@@ -326,13 +310,9 @@ if (part < 4) then
 end if
 
 end subroutine parsecoords
+!!@}
 
-!>\defgroup read_from_job_options
-!!
-!!Joboptions Read-In Subroutine
-!!
-
-!>\defgroup parsecoords
-!! Parses the bounds info given during the call for the model from the command line.
+!>\namespace readjobopts
+!> Parses command line arguments to program and reads in joboptions file.
 
 end module readjobopts

@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Soil heat flux calculations and cleanup after surface 
+C!Soil heat flux calculations and cleanup after surface
 C!energy budget calculations.
 C!
       SUBROUTINE TNPOST(TBARPR,G12,G23,TPOND,GZERO,QFREZG,GCONST,

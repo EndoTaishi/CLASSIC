@@ -1,15 +1,14 @@
 var searchData=
 [
-  ['wetfdyn',['wetfdyn',['../structctem__statevars_1_1veg__rot.html#afa5ada8ecceab568acbfce2b743b421f',1,'ctem_statevars::veg_rot::wetfdyn()'],['../structctem__statevars_1_1veg__gat.html#aec6ed9e74a5bc50612a7c6507889b9fc',1,'ctem_statevars::veg_gat::wetfdyn()']]],
-  ['wfcigat',['wfcigat',['../structclass__statevars_1_1class__gather.html#a398fe12fd0978b91e55adf716a4670df',1,'class_statevars::class_gather']]],
-  ['wfsfgat',['wfsfgat',['../structclass__statevars_1_1class__gather.html#a3cc2c55be7ef09c997148115afc15112',1,'class_statevars::class_gather']]],
-  ['wsnoacc',['wsnoacc',['../structclass__statevars_1_1class__rotated.html#ae0860c25f95e7270b5c6770f349d481b',1,'class_statevars::class_rotated']]],
-  ['wsnogat',['wsnogat',['../structclass__statevars_1_1class__gather.html#aebcf26539cf06260a9f1e086b34834c9',1,'class_statevars::class_gather']]],
-  ['wtabgat',['wtabgat',['../structclass__statevars_1_1class__gather.html#ace80e54c3cb5dde3c04ac573ddf92575',1,'class_statevars::class_gather']]],
-  ['wtablegat',['wtablegat',['../structclass__statevars_1_1class__gather.html#af35b83194880929af322de664c9438e6',1,'class_statevars::class_gather']]],
-  ['wtblacc',['wtblacc',['../structclass__statevars_1_1class__rotated.html#ad94726b5c27697adc1f751588220f0a3',1,'class_statevars::class_rotated']]],
-  ['wtrcgat',['wtrcgat',['../structclass__statevars_1_1class__gather.html#adefbe29d8ccffad03dcd9538bf31879c',1,'class_statevars::class_gather']]],
-  ['wtrggat',['wtrggat',['../structclass__statevars_1_1class__gather.html#aaa021124b08fd696187f748f4ed2794c',1,'class_statevars::class_gather']]],
-  ['wtrsgat',['wtrsgat',['../structclass__statevars_1_1class__gather.html#a8e2398a6b1b92158acd853f4737ce3bf',1,'class_statevars::class_gather']]],
-  ['wtstatus',['wtstatus',['../structctem__statevars_1_1veg__rot.html#a135c354c64556e3470cd2c92ee1772b3',1,'ctem_statevars::veg_rot::wtstatus()'],['../structctem__statevars_1_1veg__gat.html#aaf2604f7f0b16ae6495f686b2cf74de7',1,'ctem_statevars::veg_gat::wtstatus()']]]
+  ['veghght',['veghght',['../structctem__statevars_1_1veg__rot.html#ab71314c5891431794e8390785cd0c0fc',1,'ctem_statevars::veg_rot::veghght()'],['../structctem__statevars_1_1veg__gat.html#ab8bd8bda137701aba71a47c3e6fb9bc0',1,'ctem_statevars::veg_gat::veghght()']]],
+  ['vegtype',['vegtype',['../namespacectem__params.html#ad3d12b294989535de42cfb5fde5f9472',1,'ctem_params']]],
+  ['vgbiomas',['vgbiomas',['../structctem__statevars_1_1veg__rot.html#a89f971268ac8eb8ab809b5a81670393c',1,'ctem_statevars::veg_rot::vgbiomas()'],['../structctem__statevars_1_1veg__gat.html#acfa7110618f33145f34c3bc3e5f943ae',1,'ctem_statevars::veg_gat::vgbiomas()']]],
+  ['vgbiomas_5fveg',['vgbiomas_veg',['../structctem__statevars_1_1veg__rot.html#aa800f4f66c1bd350f9da9e2644d97153',1,'ctem_statevars::veg_rot::vgbiomas_veg()'],['../structctem__statevars_1_1veg__gat.html#ab5e6fb1a7fe746e4f79086cf516f486f',1,'ctem_statevars::veg_gat::vgbiomas_veg()']]],
+  ['vlgat',['vlgat',['../structclass__statevars_1_1class__gather.html#accc075c755d67344f26c0b3f10cca326',1,'class_statevars::class_gather']]],
+  ['vmax',['vmax',['../namespacectem__params.html#a6d3cef0b66c64ba7085647d81556e868',1,'ctem_params']]],
+  ['vmodgat',['vmodgat',['../structclass__statevars_1_1class__gather.html#ade53ea26bee6b96c09e7a0f45e3a9664',1,'class_statevars::class_gather']]],
+  ['vpd0',['vpd0',['../namespacectem__params.html#a0dd6a893dad019eee964b14b43623cbf',1,'ctem_params']]],
+  ['vpdagat',['vpdagat',['../structclass__statevars_1_1class__gather.html#abdad617b6125244cc95172180b51be78',1,'class_statevars::class_gather']]],
+  ['vpdbgat',['vpdbgat',['../structclass__statevars_1_1class__gather.html#a7dab5eab97bbfb4c0d1ea52af017f657',1,'class_statevars::class_gather']]],
+  ['vpdgat',['vpdgat',['../structclass__statevars_1_1class__gather.html#af39a1df65eb83288c0bd6271918faf32',1,'class_statevars::class_gather']]]
 ];

@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
@@ -110,14 +109,15 @@ $(document).ready(function(){initNavTree('CLASSBD_8f.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Purpose: Assign values to parameters in CLASS common blocks. CLASS incorporates several kinds of parameters in its common blocks. Some are defined specifically for use in the CLASS code; some are also shared with the atmospheric model (if running in coupled mode).  
+<p>Assigns values to parameters in CLASS common blocks.  
 <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Purpose: Assign values to parameters in CLASS common blocks. CLASS incorporates several kinds of parameters in its common blocks. Some are defined specifically for use in the CLASS code; some are also shared with the atmospheric model (if running in coupled mode). </p>
+<div class="textblock"><p>Assigns values to parameters in CLASS common blocks. </p>
 <p>In routine CLASSBD, values are primarily assigned to the parameters that are specific to the CLASS code and are passed through it via common blocks CLASS1 through CLASS8. The table below lists the scalar parameters, their definitions, and their designated values with units. </p><p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \begin{tabular} { | l | l | c | c | } \hline Name &amp; Definition &amp; Value &amp; Units \\ \hline VKC &amp; Von Karman Constant &amp; 0.40 &amp; - \\ \hline CT &amp; Drag Coefficient for water &amp; $1.15 10^{-3}$ &amp; - \\ \hline VMIN &amp; Minimum wind speed &amp; 0.1 &amp; $ m s^{-1} $ \\ \hline TCW &amp; Thermal conductivity of water &amp; 0.57 &amp; $W m^{-1} K^{-1} $ \\ \hline TCICE &amp; Thermal conductivity of ice &amp; 2.24 &amp; $W m^{-1} K^{-1} $ \\ \hline TCSAND &amp; Thermal conductivity of sand particles &amp; 2.5 &amp; $W m^{-1} K^{-1} $ \\ \hline TCCLAY &amp; Thermal conductivity of fine mineral particles &amp; 2.5 &amp; $W m^{-1} K^{-1} $ \\ \hline TCOM &amp; Thermal conductivity of organic matter &amp; 0.25 &amp; $W m^{-1} K^{-1} $ \\ \hline TCDRYS &amp; Thermal conductivity of dry mineral soil &amp; 0.275 &amp; $W m^{-1} K^{-1} $ \\ \hline RHOSOL &amp; Density of soil mineral matter &amp; $2.65 10^3 $ &amp; $kg m^{-3} $ \\ \hline RHOOM &amp; Density of soil organic matter &amp; $1.30 10^3 $ &amp; $kg m^{-3} $ \\ \hline HCPW &amp; Volumetric heat capacity of water &amp; $4.187 10^6 $ &amp; $J m^{-3} K^{-1} $ \\ \hline HCPICE &amp; Volumetric heat capacity of ice &amp; $1.9257 10^6$ &amp; $J m^{-3} K^{-1} $ \\ \hline HCPSOL &amp; Volumetric heat capacity of mineral matter &amp; $2.25 10^6 $ &amp; $J m^{-3} K^{-1} $ \\ \hline HCPOM &amp; Volumetric heat capacity of organic matter &amp; $2.50 10^6 $ &amp; $J m^{-3} K^{-1} $ \\ \hline HCPSND &amp; Volumetric heat capacity of sand particles &amp; $2.13 10^6 $ &amp; $J m^{-3} K^{-1} $ \\ \hline HCPCLY &amp; Volumetric heat capacity of fine mineral particles &amp; $2.38 10^6 $ &amp; $J m^{-3} K^{-1} $ \\ \hline SPHW &amp; Specific heat of water &amp; $4.186 10^3 $ &amp; $J kg^{-1} K^{-1}$ \\ \hline SPHICE &amp; Specific heat of ice &amp; $2.10 10^3 $ &amp; $J kg^{-1} K^{-1}$ \\ \hline SPHVEG &amp; Specific heat of vegetation matter &amp; $2.70 10^3 $ &amp; $J kg^{-1} K^{-1}$ \\ \hline RHOW &amp; Density of water &amp; $1.0 10^3 $ &amp; $kg m^{-3} $ \\ \hline RHOICE &amp; Density of ice &amp; $0.917 10^3$ &amp; $kg m^{-3} $ \\ \hline TCGLAC &amp; Thermal conductivity of ice sheets &amp; 2.24 &amp; $W m^{-1} K^{-1} $ \\ \hline CLHMLT &amp; Latent heat of freezing of water &amp; $0.334 10^6 $ &amp; $J kg^{-1} $ \\ \hline CLHVAP &amp; Latent heat of vaporization of water &amp; $2.501 10^6 $ &amp; $J kg^{-1} $ \\ \hline ZOLNG &amp; Natural log of roughness length of soil &amp; -4.605 &amp; - \\ \hline ZOLNS &amp; Natural log of roughness length of snow &amp; -6.908 &amp; - \\ \hline ZOLNI &amp; Natural log of roughness length of ice &amp; -6.215 &amp; - \\ \hline ZORATG &amp; Ratio of soil roughness length for momentum to roughness length for heat &amp; 3.0 &amp; - \\ \hline ALVSI &amp; Visible albedo of ice &amp; 0.95 &amp; - \\ \hline ALIRI &amp; Near-infrared albedo of ice &amp; 0.73 &amp; - \\ \hline ALVSO &amp; Visible albedo of organic matter &amp; 0.05 &amp; - \\ \hline ALIRO &amp; Near-infrared albedo of organic matter &amp; 0.30 &amp; - \\ \hline ALBRCK &amp; Albedo of rock &amp; 0.27 &amp; - \\ \hline \end{tabular} \]" src="form_294.png"/>
 </p>
 <p>.</p>
+<p>CLASS incorporates several kinds of parameters in its common blocks. Some are defined specifically for use in the CLASS code; some are also shared with the atmospheric model (if running in coupled mode).</p>
 <p>Values are also assigned to several non-scalar parameters, as follows:</p>
 <p>1) The crop growth descriptor array GROWYR (see the documentation for subroutine APREP);</p>
 <p>2) Three parameters for the four main vegetation categories recognized by CLASS (needleleaf trees, broadleaf trees, crops and grass): ZORAT, the ratio of the roughness length for momentum to the roughness length for heat (currently set to 1); CANEXT, an attenuation coefficient used in calculating the sky view factor for vegetation canopies (variable c in the documentation for subroutine CANALB); and XLEAF, a leaf dimension factor used in calculating the leaf boundary resistance (variable Cl in the documentation for subroutine APREP);</p>
@@ -136,7 +136,7 @@ $(document).ready(function(){initNavTree('CLASSBD_8f.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CLASSBD_8f.html">CLASSBD.f</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

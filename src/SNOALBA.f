@@ -1,6 +1,6 @@
 !>\file
-C!Purpose: Diagnose snowpack visible and near-IR albedos given the 
-C!all-wave albedo at the current time step. Calculate snowpack 
+C!Diagnoses snowpack visible and near-IR albedos given the
+C!all-wave albedo at the current time step. Calculates snowpack
 C!transmissivity for shortwave radiation.
 C!
       SUBROUTINE SNOALBA(ALVSSN,ALIRSN,ALVSSC,ALIRSC,ALBSNO,

@@ -1,5 +1,5 @@
 !>\file
-!!Purpose: Call subroutines to perform surface water budget calculations
+!!Calls subroutines to perform surface water budget calculations
 !!
       SUBROUTINE CLASSW(THLIQ,  THICE,  TBAR,   TCAN,   RCAN,   SNCAN,
      1                  RUNOFF, TRUNOF, SNO,    TSNOW,  RHOSNO, ALBSNO, 

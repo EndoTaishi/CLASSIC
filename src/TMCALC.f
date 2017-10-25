@@ -1,6 +1,6 @@
 !>\file
-!!Purpose: Calculate overland flow; step ahead pond and soil layer temperatures, and check for freezing of
-!!the pond and freezing or thawing of liquid or frozen water in the soil layers. Adjust pond temperature,
+!!Calculates overland flow; steps ahead pond and soil layer temperatures, and checks for freezing of
+!!the ponded water and freezing or thawing of liquid or frozen water in the soil layers. Adjusts ponded water temperature,
 !!soil layer temperatures and water stores accordingly.
 !!
 

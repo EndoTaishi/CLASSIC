@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
@@ -112,7 +111,7 @@ $(document).ready(function(){initNavTree('TNPREP_8f.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Purpose: Calculate coefficients for solution of heat conduction into soil.  
+<p>Calculate coefficients for solution of heat conduction into soil.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -121,7 +120,7 @@ Functions/Subroutines</h2></td></tr>
 <tr class="separator:ab5cfd35272325655f17bcc52acb00535"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Purpose: Calculate coefficients for solution of heat conduction into soil. </p>
+<div class="textblock"><p>Calculate coefficients for solution of heat conduction into soil. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="ab5cfd35272325655f17bcc52acb00535"></a>
 <div class="memitem">
@@ -287,13 +286,13 @@ Functions/Subroutines</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">gdenom</td><td>Work array used in calculation of GCONST and GCOEFF</td></tr>
-    <tr><td class="paramname">gcoeff</td><td>Multiplier used in equation relating ground surface heat flux to surface temperature <img class="formulaInl" alt="$[W m^{-2} K^{-1}]$" src="form_1206.png"/></td></tr>
+    <tr><td class="paramname">gcoeff</td><td>Multiplier used in equation relating ground surface heat flux to surface temperature <img class="formulaInl" alt="$[W m^{-2} K^{-1}]$" src="form_1196.png"/></td></tr>
     <tr><td class="paramname">gconst</td><td>Intercept used in equation relating ground surface heat flux to surface temperature <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
-    <tr><td class="paramname">cphchg</td><td>Latent heat of sublimation <img class="formulaInl" alt="$[J kg^{-1}]$" src="form_1216.png"/></td></tr>
+    <tr><td class="paramname">cphchg</td><td>Latent heat of sublimation <img class="formulaInl" alt="$[J kg^{-1}]$" src="form_1206.png"/></td></tr>
     <tr><td class="paramname">iwater</td><td>Flag indicating condition of surface (dry, water-covered or snow-covered)</td></tr>
     <tr><td class="paramname">tbar</td><td>Temperatures of soil layers, averaged over modelled area [K]</td></tr>
-    <tr><td class="paramname">tctop</td><td>Thermal conductivity of soil at top of layer <img class="formulaInl" alt="$[W m^{-1} K^{-1}] (\lambda_t)$" src="form_1217.png"/></td></tr>
-    <tr><td class="paramname">tcbot</td><td>Thermal conductivity of soil at bottom of layer <img class="formulaInl" alt="$[W m^{-1} K^{-1}] (\lambda_b)$" src="form_1218.png"/></td></tr>
+    <tr><td class="paramname">tctop</td><td>Thermal conductivity of soil at top of layer <img class="formulaInl" alt="$[W m^{-1} K^{-1}] (\lambda_t)$" src="form_1207.png"/></td></tr>
+    <tr><td class="paramname">tcbot</td><td>Thermal conductivity of soil at bottom of layer <img class="formulaInl" alt="$[W m^{-1} K^{-1}] (\lambda_b)$" src="form_1208.png"/></td></tr>
     <tr><td class="paramname">fi</td><td>Fractional coverage of subarea in question on modelled area [ ]</td></tr>
     <tr><td class="paramname">zpond</td><td>Depth of ponded water on surface [m]</td></tr>
     <tr><td class="paramname">tbar1p</td><td>Lumped temperature of ponded water and first soil layer [K]</td></tr>
@@ -305,12 +304,12 @@ Functions/Subroutines</h2></td></tr>
   </dd>
 </dl>
 <p>In this subroutine, coefficients are derived for an equation relating the heat flux at the ground surface to the ground surface temperature, using the average temperatures and the thermal conductivities of the underlying first three soil layers. It is assumed that the variation of temperature T with depth z within each soil layer can be modelled by using a quadratic equation:</p>
-<p><img class="formulaInl" alt="$T(z) = (1/2) a z^2 + b z + c$" src="form_1219.png"/></p>
-<p>By substituting 0 for z in the above equation and in the expressions for its first and second derivatives, it can be shown that <img class="formulaInl" alt="$a = T''(0)$" src="form_1220.png"/>, <img class="formulaInl" alt="$b = T'(0)$" src="form_1221.png"/>, and <img class="formulaInl" alt="$c = T(0)$" src="form_1222.png"/>. The term <img class="formulaInl" alt="$T''(0)$" src="form_1223.png"/> can be evaluated from the expression for the first derivative evaluated at the bottom of the soil layer, <img class="formulaInl" alt="$T(\Delta z)$" src="form_832.png"/>:</p>
-<p><img class="formulaInl" alt="$T''(0) = [T'(\Delta z) - T'(0)]/ \Delta z$" src="form_1224.png"/></p>
-<p>The temperature gradient <img class="formulaInl" alt="$T'(0)$" src="form_1225.png"/> at the top of each layer is related to the heat flux G(0) through the thermal conductivity <img class="formulaInl" alt="$\lambda_t$" src="form_1226.png"/>; and the temperature gradient and heat flux at the bottom of the layer, <img class="formulaInl" alt="$G(\Delta z)$" src="form_833.png"/> and <img class="formulaInl" alt="$T(\Delta z)$" src="form_832.png"/>, are similarly related through the bottom thermal conductivity <img class="formulaInl" alt="$\lambda_b$" src="form_1227.png"/>:</p>
-<p><img class="formulaInl" alt="$G(0) = - \lambda_t T'(0)$" src="form_1228.png"/> <img class="formulaInl" alt="$G(\Delta z) = - \lambda_b T'(\Delta z)$" src="form_1229.png"/></p>
-<p>The average soil layer temperature, <img class="formulaInl" alt="$T_{av}(\Delta z)$" src="form_836.png"/>, can be obtained by integrating the resulting equation for T(z) between 0 and <img class="formulaInl" alt="$\Delta z$" src="form_77.png"/>. Making use of all of the above expressions, recognizing that the heat fluxes and temperatures at the bottoms of layers 1 and 2 must equal the heat fluxes and temperatures at the tops of layers 2 and 3 respectively, and neglecting as a first approximation the heat flux at the bottom of the third layer, a linear equation can be derived relating G(0) to T(0) at the soil surface, where the slope and intercept of the equation are functions only of the average temperatures, thicknesses, and top and bottom thermal conductivities of the three soil layers.</p>
+<p><img class="formulaInl" alt="$T(z) = (1/2) a z^2 + b z + c$" src="form_1209.png"/></p>
+<p>By substituting 0 for z in the above equation and in the expressions for its first and second derivatives, it can be shown that <img class="formulaInl" alt="$a = T''(0)$" src="form_1210.png"/>, <img class="formulaInl" alt="$b = T'(0)$" src="form_1211.png"/>, and <img class="formulaInl" alt="$c = T(0)$" src="form_1212.png"/>. The term <img class="formulaInl" alt="$T''(0)$" src="form_1213.png"/> can be evaluated from the expression for the first derivative evaluated at the bottom of the soil layer, <img class="formulaInl" alt="$T(\Delta z)$" src="form_837.png"/>:</p>
+<p><img class="formulaInl" alt="$T''(0) = [T'(\Delta z) - T'(0)]/ \Delta z$" src="form_1214.png"/></p>
+<p>The temperature gradient <img class="formulaInl" alt="$T'(0)$" src="form_1215.png"/> at the top of each layer is related to the heat flux G(0) through the thermal conductivity <img class="formulaInl" alt="$\lambda_t$" src="form_1216.png"/>; and the temperature gradient and heat flux at the bottom of the layer, <img class="formulaInl" alt="$G(\Delta z)$" src="form_838.png"/> and <img class="formulaInl" alt="$T(\Delta z)$" src="form_837.png"/>, are similarly related through the bottom thermal conductivity <img class="formulaInl" alt="$\lambda_b$" src="form_1217.png"/>:</p>
+<p><img class="formulaInl" alt="$G(0) = - \lambda_t T'(0)$" src="form_1218.png"/> <img class="formulaInl" alt="$G(\Delta z) = - \lambda_b T'(\Delta z)$" src="form_1219.png"/></p>
+<p>The average soil layer temperature, <img class="formulaInl" alt="$T_{av}(\Delta z)$" src="form_841.png"/>, can be obtained by integrating the resulting equation for T(z) between 0 and <img class="formulaInl" alt="$\Delta z$" src="form_77.png"/>. Making use of all of the above expressions, recognizing that the heat fluxes and temperatures at the bottoms of layers 1 and 2 must equal the heat fluxes and temperatures at the tops of layers 2 and 3 respectively, and neglecting as a first approximation the heat flux at the bottom of the third layer, a linear equation can be derived relating G(0) to T(0) at the soil surface, where the slope and intercept of the equation are functions only of the average temperatures, thicknesses, and top and bottom thermal conductivities of the three soil layers.</p>
 <p>In the subroutine loop, first the depth corresponding to TBAR1P (the lumped temperature of the first soil layer and the ponded water) is calculated, as the sum of the first soil layer thickness and the ponded water depth. If the ponded water depth is not vanishingly small, the surface water flag IWATER is set to 1; otherwise it is set to 0 for soils and 2 for ice sheets (indicated by ISAND = -4). If IWATER = 2, indicating a frozen water surface, the latent heat of vaporization, CPHCHG, is set to the value for sublimation (by adding the latent heat of melting to the latent heat of vaporization). If there is a snow pack present, the thermal conductivity at the top of the ground surface is calculated as the harmonic mean of the thermal conductivity at the top of the first soil layer and that of the snow pack. Finally, a series of work arrays is evaluated and is used to calculate the slope and intercept, GCOEFF and GCONST, of the equation relating G(0) to T(0) at the ground surface.</p>
 
 </div>
@@ -321,7 +320,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="TNPREP_8f.html">TNPREP.f</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

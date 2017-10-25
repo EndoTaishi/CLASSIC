@@ -1,5 +1,5 @@
 !>\file
-!!Purpose: Perform temperature stepping and surface runoff 
+!!Performs temperature stepping and surface runoff
 !!calculations over ice sheets.
 !!
 

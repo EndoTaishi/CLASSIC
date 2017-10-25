@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Address infiltration of rain and meltwater into snow 
+C!Addresses infiltration of rain and meltwater into snow
 C!pack, and snow ripening.
 C!
       SUBROUTINE SNINFL(R,TR,ZSNOW,TSNOW,RHOSNO,HCPSNO,WSNOW,

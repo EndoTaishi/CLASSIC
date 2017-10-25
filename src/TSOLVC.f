@@ -1,5 +1,5 @@
 !>\file
-!!Purpose: Solution of surface energy balance for vegetated subareas.
+!!Solves surface energy balance for vegetated subareas.
 !!
       SUBROUTINE TSOLVC(ISNOW,FI,
      1                 QSWNET,QSWNC,QSWNG,QLWOUT,QLWOC,QLWOG,QTRANS,

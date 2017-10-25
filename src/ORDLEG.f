@@ -1,6 +1,5 @@
 !>\file
-!!THIS ROUTINE IS A SUBSET OF BELOUSOVS ALGORITHM 
-!!USED TO CALCULATE ORDINARY LEGENDRE POLYNOMIALS.
+!!Subset of Belousovs algorithm used to calculate ordinary legendre polynomials.
 !!
 !!SX = LEGENDRE POLYNOMIAL EVALUATED AT COA
 !!

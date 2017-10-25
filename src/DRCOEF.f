@@ -1,5 +1,5 @@
 !>\file
-!!Purpose: CALCULATES DRAG COEFFICIENTS AND RELATED VARIABLES FOR CLASS.
+!!Calculates drag coefficients and related variables
 !!
       SUBROUTINE DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN,
      1                  CRIB,TVIRTG,TVIRTA,VA,FI,ITER,

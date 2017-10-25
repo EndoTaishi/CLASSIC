@@ -1,6 +1,6 @@
 !>\file
-C!Purpose: Recalculate liquid water content of soil layers after 
-C!infiltration, and evaluate baseflow.
+C!Recalculates liquid water content of soil layers after
+C!infiltration, and evaluates baseflow.
 C!
       SUBROUTINE WEND(THLIQX,THICEX,TBARWX,ZPOND,TPOND,
      1                BASFLW,TBASFL,RUNOFF,TRUNOF,FI,

@@ -1,20 +1,4 @@
-!>\defgroup ctem_statevars
-
-!>
-!!this module contains the biogeochemistry-related variable type structures.
-!! 1. c_switch - switches for running CTEM, read from the joboptions file
-!! 2. vrot - CTEM's 'rot' vars
-!! 3. vgat - CTEM's 'gat' vars
-!! 4. ctem_grd - CTEM's grid average variables
-!! 5. ctem_tile - CTEM's variables per tile
-!! 6. ctem_mo - CTEM's variables monthly averaged (per pft)
-!! 7. ctem_grd_mo - CTEM's grid average monthly values
-!! 8. ctem_tile_mo - CTEM's variables per tile monthly values
-!! 9. ctem_yr - CTEM's average annual values (per PFT)
-!! 10. ctem_grd_yr - CTEM's grid average annual values
-!! 11. ctem_tile_yr - CTEM's variables per tile annual values
-!
-!>\file
+!> Contains the biogeochemistry-related variable type structures.
 module ctem_statevars
 
 ! J. Melton Apr 2015
@@ -33,37 +17,20 @@ public :: resetgridavg
 
 !=================================================================================
 !>switches for running the model, read from the joboptions file
-
 type ctem_switches
 
     logical :: ctem_on     !<True if this run includes CTEM
-    !1logical :: cyclemet    !<to cycle over only a fixed number of years
-                        !<(nummetcylyrs) starting at a certain year (metcylyrst)
-                        !<if cyclemet, then put transientCO2 = false and set an appopriate fixedCO2Conc, also
-                        !<if transientPOPD is true, it will choose the popn and luc data for year
-                        !<metcylyrst and cycle on that.
     integer :: metLoop !< no. of times the .met file is to be read. this
                                  !< option is useful to see how ctem's c pools
                                  !< equilibrate when driven with same climate data
                                  !< over and over again.
-    !integer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
-    !                         !! are not doing a transient run, set to a negative value (like -9999)
-    !integer :: ncyear   !< no. of years in the .met file.
-    integer :: spinfast !< set this to a higher number up to 10 to spin up
-                         !< soil carbon pool faster
-    !integer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
-                             !< ignored if cyclemet is false
-    !integer :: metcylyrst   !< climate year to start the spin up on
-                             !< ignored if cyclemet is false
+    integer :: spinfast !< set this to a higher number up to 10 to spin up soil carbon pool faster
     integer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
     integer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
-
     logical :: transientCO2       !<use \f$CO_2\f$ time series, if false, fixedYearCO2 is used
     character(180) :: CO2File       !< Location of the netcdf file containing atmospheric CO2 values
     integer :: fixedYearCO2  !< set the year to use for atmospheric \f$CO_2\f$ if transientCO2 is false. (ppmv)
     logical :: dofire      !<boolean, if true allow fire, if false no fire.
-    !logical :: met_rewound !<Remove FLAG
-    !logical :: reach_eof   !<Remove FLAG
     logical :: PFTCompetition !<logical boolean telling if competition between pfts is on or not
     logical :: start_bare  !<set this to true if competition is true, and if you wish to start from bare ground.
                            !<if this is set to false, the ini and ctm file info will be used to set up the run.
@@ -90,7 +57,6 @@ type ctem_switches
                            !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
     logical :: dowetlands   !<if true allow wetland methane emission
     logical :: obswetf      !<observed wetland fraction
-    !logical :: transient_run!<
 
     character(180) :: met_file   !< location of the netcdf meteorological dataset
     character(180) :: init_file  !< location of the netcdf initialization file
@@ -193,16 +159,15 @@ type ctem_switches
     integer :: jdsty   !< simulation year (iyear) to start writing the daily output
     integer :: jdendy  !< simulation year (iyear) to stop writing the daily output
 
-
     integer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
                                 !< if it is set to 1, the new four-band routines are used.
                                 
 end type ctem_switches
 
-type (ctem_switches), save, target :: c_switch !< Switches for running CTEM, read from the joboptions file
+type (ctem_switches), save, target :: c_switch
 
 !=================================================================================
-
+!>CTEM's 'rot' vars
 type veg_rot
 
     logical, allocatable, dimension(:,:,:) :: pftexist  !<logical array indicating pfts exist (t) or not (f)
@@ -413,10 +378,10 @@ type veg_rot
 
 end type veg_rot
 
-type (veg_rot), save, target :: vrot        !<CTEM's 'rot' vars
+type (veg_rot), save, target :: vrot
 
 !=================================================================================
-
+!> CTEM's 'gat' vars
 type veg_gat
 
     ! This is the basic data structure that contains the state variables
@@ -674,9 +639,9 @@ type veg_gat
 
 end type veg_gat
 
-type (veg_gat), save, target :: vgat        !< CTEM's 'gat' vars
+type (veg_gat), save, target :: vgat
 !=================================================================================
-
+!>CTEM's grid average variables
 type ctem_gridavg
 
 ! Grid-averaged variables (denoted with an ending of "_g")
@@ -831,10 +796,10 @@ type ctem_gridavg
 
 end type ctem_gridavg
 
-type (ctem_gridavg), save, target :: ctem_grd       !<CTEM's grid average variables
+type (ctem_gridavg), save, target :: ctem_grd
 
 !=================================================================================
-
+!>CTEM's variables per tile
 type ctem_tile_level
 
 !   Tile-level variables (denoted by an ending of "_t")
@@ -908,10 +873,10 @@ type ctem_tile_level
 
 end type ctem_tile_level
 
-type (ctem_tile_level), save, target :: ctem_tile       !<CTEM's variables per tile
+type (ctem_tile_level), save, target :: ctem_tile
 
 !=================================================================================
-
+!>CTEM's variables monthly averaged (per pft)
 type ctem_monthly
 
 !     Tile-level monthly variables (denoted by name ending in "_mo_t")
@@ -954,10 +919,10 @@ type ctem_monthly
 
 end type ctem_monthly
 
-type (ctem_monthly), save, target :: ctem_mo        !<CTEM's variables monthly averaged (per pft)
+type (ctem_monthly), save, target :: ctem_mo
 
 !=================================================================================
-
+!>CTEM's grid average monthly values
 type ctem_gridavg_monthly
 
 !  Grid averaged monthly variables (denoted by name ending in "_mo_g")
@@ -1009,10 +974,10 @@ type ctem_gridavg_monthly
 
 end type ctem_gridavg_monthly
 
-type (ctem_gridavg_monthly), save, target :: ctem_grd_mo    !<CTEM's grid average monthly values
+type (ctem_gridavg_monthly), save, target :: ctem_grd_mo
 
 !=================================================================================
-
+!>CTEM's variables per tile monthly values
 type ctem_tileavg_monthly
 
 !     Tile-level monthly variables (denoted by name ending in "_mo_t")
@@ -1066,11 +1031,11 @@ type ctem_tileavg_monthly
 
 end type ctem_tileavg_monthly
 
-type (ctem_tileavg_monthly), save, target :: ctem_tile_mo   !<CTEM's variables per tile monthly values
+type (ctem_tileavg_monthly), save, target :: ctem_tile_mo
 
 
 !=================================================================================
-
+!>CTEM's average annual values (per PFT)
 type ctem_annual
 
 ! c      Annual output for CTEM mosaic variables:
@@ -1113,10 +1078,10 @@ type ctem_annual
 
 end type ctem_annual
 
-type (ctem_annual), save, target :: ctem_yr     !<CTEM's average annual values (per PFT)
+type (ctem_annual), save, target :: ctem_yr
 
 !=================================================================================
-
+!>CTEM's grid average annual values
 type ctem_gridavg_annual
 
 ! Annual output for CTEM grid-averaged variables:
@@ -1169,10 +1134,10 @@ type ctem_gridavg_annual
 
 end type ctem_gridavg_annual
 
-type (ctem_gridavg_annual), save, target :: ctem_grd_yr     !<CTEM's grid average annual values
+type (ctem_gridavg_annual), save, target :: ctem_grd_yr
 
 !=================================================================================
-
+!>CTEM's variables per tile annual values
 type ctem_tileavg_annual
 
 ! c      Annual output for CTEM mosaic variables:
@@ -1225,12 +1190,13 @@ type ctem_tileavg_annual
 
 end type ctem_tileavg_annual
 
-type (ctem_tileavg_annual), save, target :: ctem_tile_yr    !<CTEM's variables per tile annual values
+type (ctem_tileavg_annual), save, target :: ctem_tile_yr
 
 contains
 
 !=================================================================================
-
+!>\ingroup ctem_statevars_alloc_ctem_vars
+!!@{
 !> Allocate the biogeochemistry (CTEM) variables in preparation for a simulation
 
 subroutine alloc_ctem_vars()
@@ -2113,9 +2079,12 @@ allocate(vgat%grclarea(ilg),&
          ctem_tile_yr%peatdep_yr_t (nlat,nmos))
 
 end subroutine alloc_ctem_vars
+!!@}
 
 ! -----------------------------------------------------
 
+!>\ingroup ctem_statevars_initrowvars
+!!@{
 !> Initializes 'row' variables
 
 subroutine initrowvars()
@@ -2285,9 +2254,12 @@ integer :: j,k,l,m
  end do !nlat
 
 end subroutine initrowvars
+!!@}
 
 !==================================================
 
+!>\ingroup ctem_statevars_resetdaily
+!!@{
 !> Resets daily variables in preparation for next day
 
 subroutine resetdaily(nltest,nmtest)
@@ -2420,9 +2392,11 @@ do i=1,nltest
 end do !nltest
 
 end subroutine resetdaily
-
+!!@}
 !==================================================
 
+!>\ingroup ctem_statevars_resetmonthend
+!!@{
 !> Resets monthly variables at month end in preparation for next month
 
 subroutine resetmonthend(nltest,nmtest)
@@ -2590,9 +2564,11 @@ do i=1,nltest
 end do ! nltest
 
 end subroutine resetmonthend
-
+!!@}
 !==================================================
 
+!>\ingroup ctem_statevars_resetyearend
+!!@{
 !> Resets annual variables in preparation for next year
 
 subroutine resetyearend(nltest,nmtest)
@@ -2747,9 +2723,11 @@ do i=1,nltest
 end do ! nltest
 
 end subroutine resetyearend
-
+!!@}
 !==================================================
 
+!>\ingroup ctem_statevars_resetgridavg
+!!@{
 !> Resets grid average variables in preparation for next time period
 
 subroutine resetgridavg(nltest)
@@ -2848,7 +2826,7 @@ integer :: i,j
        end do
 
 end subroutine resetgridavg
-
+!!@}
 
 !==================================================
 
@@ -2904,4 +2882,20 @@ end subroutine resetgridavg
 !       endif  ! if(ncount.eq.nday)
 !=================================================================================
 !>@}
+
+!>\file
+!>
+!> Contains the biogeochemistry-related variable type structures.
+!! 1. c_switch - switches for running CTEM, read from the joboptions file
+!! 2. vrot - CTEM's 'rot' vars
+!! 3. vgat - CTEM's 'gat' vars
+!! 4. ctem_grd - CTEM's grid average variables
+!! 5. ctem_tile - CTEM's variables per tile
+!! 6. ctem_mo - CTEM's variables monthly averaged (per pft)
+!! 7. ctem_grd_mo - CTEM's grid average monthly values
+!! 8. ctem_tile_mo - CTEM's variables per tile monthly values
+!! 9. ctem_yr - CTEM's average annual values (per PFT)
+!! 10. ctem_grd_yr - CTEM's grid average annual values
+!! 11. ctem_tile_yr - CTEM's variables per tile annual values
+!
 end module ctem_statevars

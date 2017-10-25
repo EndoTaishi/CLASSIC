@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
@@ -112,7 +111,7 @@ $(document).ready(function(){initNavTree('CWCALC_8f.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Purpose: Check for freezing or thawing of liquid or frozen water on the vegetation canopy, and adjust canopy temperature and intercepted water stores accordingly.  
+<p>Checks for freezing or thawing of liquid or frozen water on the vegetation canopy, and adjust canopy temperature and intercepted water stores accordingly.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -121,7 +120,7 @@ Functions/Subroutines</h2></td></tr>
 <tr class="separator:a1c51886dfe7782b7a65415cc66561efb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Purpose: Check for freezing or thawing of liquid or frozen water on the vegetation canopy, and adjust canopy temperature and intercepted water stores accordingly. </p>
+<div class="textblock"><p>Checks for freezing or thawing of liquid or frozen water on the vegetation canopy, and adjust canopy temperature and intercepted water stores accordingly. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="a1c51886dfe7782b7a65415cc66561efb"></a>
 <div class="memitem">
@@ -234,7 +233,7 @@ Functions/Subroutines</h2></td></tr>
   </dd>
 </dl>
 <p>The change of internal energy <img class="formulaInl" alt="$I_c$" src="form_141.png"/> of the vegetation canopy as a result of the phase change processes treated here is calculated as the difference in <img class="formulaInl" alt="$I_c$" src="form_141.png"/> between the beginning and end of the subroutine:</p>
-<p><img class="formulaInl" alt="$\Delta I_c = X_i \Delta [C_c T_c ] / \Delta t$" src="form_565.png"/></p>
+<p><img class="formulaInl" alt="$\Delta I_c = X_i \Delta [C_c T_c ] / \Delta t$" src="form_570.png"/></p>
 <p>where <img class="formulaInl" alt="$C_c$" src="form_143.png"/> represents the volumetric heat capacity of the canopy, <img class="formulaInl" alt="$T_c$" src="form_144.png"/> its temperature, <img class="formulaInl" alt="$\Delta t$" src="form_145.png"/> the length of the time step, and <img class="formulaInl" alt="$X_i$" src="form_39.png"/> the fractional coverage of the subarea under consideration relative to the modelled area.</p>
 <p>If there is liquid water stored on the canopy and the canopy temperature is less than 0 C, the available energy sink HFREZ is calculated from CHCAP and the difference between TCAN and 0 C, and compared with HCONV, calculated as the energy sink required to freeze all of the liquid water on the canopy. If HFREZ <img class="formulaInl" alt="$\leq$" src="form_228.png"/> HCONV, the amount of water that can be frozen is calculated using the latent heat of melting. The fractional coverages of frozen and liquid water FSNOWC and FRAINC and their masses SNOCAN and RAICAN are adjusted accordingly, TCAN is set to 0 C, and the amount of energy involved is subtracted from the internal energy HTCC and added to HMFC. Otherwise all of the intercepted liquid water is converted to frozen water, and the energy available for cooling the canopy is calculated as HCOOL = HFREZ – HCONV. This available energy is applied to decreasing the temperature of the canopy, using the specific heat of the canopy elements, and the amount of energy that was involved in the phase change is subtracted from HTCC and added to HMFC.</p>
 <p>If there is frozen water stored on the canopy and the canopy temperature is greater than 0 C, the available energy for melting, HMELT, is calculated from CHCAP and the difference between TCAN and 0 C, and compared with HCONV, calculated as the energy required to melt all of the frozen water on the canopy. If HMELT <img class="formulaInl" alt="$\leq$" src="form_228.png"/> HCONV, the amount of frozen water that can be melted is calculated using the latent heat of melting. The fractional coverages of frozen and liquid water FSNOWC and FRAINC and their masses SNOCAN and RAICAN are adjusted accordingly, TCAN is set to 0 C, and the amount of energy involved is subtracted from HTCC and added to HMFC. Otherwise, all of the intercepted frozen water is converted to liquid water, and the energy available for warming the canopy is calculated as HWARM = HMELT – HCONV. This available energy is applied to increasing the temperature of the canopy, using the specific heats of the canopy elements, and the amount of energy that was involved in the phase change is subtracted from HTCC and added to HMFC.</p>
@@ -248,7 +247,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CWCALC_8f.html">CWCALC.f</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

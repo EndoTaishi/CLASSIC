@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
@@ -112,7 +111,7 @@ $(document).ready(function(){initNavTree('CLASSD_8f.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Purpose: Assign values to parameters in CLASS common blocks. CLASS incorporates several kinds of parameters in its common blocks. Some are defined specifically for use in the CLASS code; some are also shared with the atmospheric model (if running in coupled mode).  
+<p>Assigns values to parameters in CLASS common blocks.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -122,7 +121,8 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>classd</b></td>
 <tr class="separator:a0488b892c063c27c2ad69ed210df2bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Purpose: Assign values to parameters in CLASS common blocks. CLASS incorporates several kinds of parameters in its common blocks. Some are defined specifically for use in the CLASS code; some are also shared with the atmospheric model (if running in coupled mode). </p>
+<div class="textblock"><p>Assigns values to parameters in CLASS common blocks. </p>
+<p>CLASS incorporates several kinds of parameters in its common blocks. Some are defined specifically for use in the CLASS code; some are also shared with the atmospheric model (if running in coupled mode).</p>
 <p>In subroutine CLASSD, for consistency throughout the code, some parameters in the CLASS common blocks are set equal to their corresponding values in the common blocks PARAMS, PARAM1, PARAM3 and TIMES from the CGCM. Also, some parameters in the common block PHYCON which is used in the RPN subroutines DIASURFZ and FLXSURFZ are set equal to their values defined in the CGCM or in the block data routine CLASSBD. The parameters in question are as follows:</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ \begin{tabular} { | l | l | l | c | } \hline CLASS/RPN name &amp; GCM name &amp; Definition &amp; Units \\ \hline DELT &amp; DELTIM &amp; Time step &amp; s \\ \hline TFREZ &amp; CELZRO &amp; Freezing point of water &amp; K \\ \hline RGAS &amp; GAS &amp; Gas constant &amp; $J kg^{-1} K^{-1}$ \\ \hline RGASV &amp; GASV &amp; Gas constant for water vapour &amp; $J kg^{-1} K^{-1}$ \\ \hline GRAV &amp; G &amp; Acceleration due to gravity &amp; $m s^{-1} $ \\ \hline CGRAV &amp; G &amp; Acceleration due to gravity &amp; $m s^{-1} $ \\ \hline SBC &amp; SIGMA &amp; Stefan-Boltzmann constant &amp; $W m^{-2} K^{-4} $ \\ \hline CKARM &amp; VKC &amp; Von Karman constant &amp; - \\ \hline SPHAIR &amp; CPRES &amp; Specific heat of air &amp; $J kg^{-1} K^{-1}$ \\ \hline CPD &amp; CPRES &amp; Specific heat of air &amp; $J kg^{-1} K^{-1}$ \\ \hline PI &amp; CPI &amp; Pi &amp; - \\ \hline \end{tabular} \]" src="form_297.png"/>
@@ -133,7 +133,7 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>classd</b></td>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CLASSD_8f.html">CLASSD.f</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

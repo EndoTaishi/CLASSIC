@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
@@ -107,7 +106,7 @@ $(document).ready(function(){initNavTree('class__statevars_8f90.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Types</a> &#124;
-<a href="#func-members">Functions/Subroutines</a> &#124;
+<a href="#namespaces">Modules</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">class_statevars.f90 File Reference</div>  </div>
@@ -120,29 +119,47 @@ $(document).ready(function(){initNavTree('class__statevars_8f90.html','');});
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Types</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__gather.html">class_statevars::class_gather</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Physics variables in the 'gather' structure.  <a href="structclass__statevars_1_1class__gather.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__rotated.html">class_statevars::class_rotated</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Physics variables in the 'rotated' (rot) structure.  <a href="structclass__statevars_1_1class__rotated.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">type &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structclass__statevars_1_1class__moyr__output.html">class_statevars::class_moyr_output</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CLASS's monthly outputs.  <a href="structclass__statevars_1_1class__moyr__output.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CLASS's monthly and annual outputs.  <a href="structclass__statevars_1_1class__moyr__output.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Modules</h2></td></tr>
+<tr class="memitem:namespaceclass__statevars"><td class="memItemLeft" align="right" valign="top">module &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclass__statevars.html">class_statevars</a></td></tr>
+<tr class="memdesc:namespaceclass__statevars"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains the physics variable type structures. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:af3df7783fb08f2c4545e7af92fabe110"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af3df7783fb08f2c4545e7af92fabe110"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><b>class_statevars::alloc_class_vars</b> ()</td></tr>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclass__statevars.html#af3df7783fb08f2c4545e7af92fabe110">class_statevars::alloc_class_vars</a> ()</td></tr>
+<tr class="memdesc:af3df7783fb08f2c4545e7af92fabe110"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates the CLASS (physics) variables in preparation for the simulation. <br /></td></tr>
 <tr class="separator:af3df7783fb08f2c4545e7af92fabe110"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:ac04ce546b04c6158490699149561f6ac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac04ce546b04c6158490699149561f6ac"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><b>class_statevars::resetclassmon</b> (nltest)</td></tr>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclass__statevars.html#ac04ce546b04c6158490699149561f6ac">class_statevars::resetclassmon</a> (nltest)</td></tr>
+<tr class="memdesc:ac04ce546b04c6158490699149561f6ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the CLASS (physics) monthly variables in preparation for the next month. <br /></td></tr>
 <tr class="separator:ac04ce546b04c6158490699149561f6ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:abb53d97cbf716ef97cf48d6b96577a2e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb53d97cbf716ef97cf48d6b96577a2e"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><b>class_statevars::resetclassyr</b> (nltest)</td></tr>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclass__statevars.html#abb53d97cbf716ef97cf48d6b96577a2e">class_statevars::resetclassyr</a> (nltest)</td></tr>
+<tr class="memdesc:abb53d97cbf716ef97cf48d6b96577a2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the CLASS (physics) annual variables in preparation for the next year. <br /></td></tr>
 <tr class="separator:abb53d97cbf716ef97cf48d6b96577a2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:ae6f51f3ec2c54938dd89d360b16dbe04"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae6f51f3ec2c54938dd89d360b16dbe04"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><b>class_statevars::resetclassaccum</b> (nltest, nmtest)</td></tr>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclass__statevars.html#ae6f51f3ec2c54938dd89d360b16dbe04">class_statevars::resetclassaccum</a> (nltest, nmtest)</td></tr>
+<tr class="memdesc:ae6f51f3ec2c54938dd89d360b16dbe04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the CLASS (physics) aggregation variables in preparation for the next period. <br /></td></tr>
 <tr class="separator:ae6f51f3ec2c54938dd89d360b16dbe04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a4bc9734eb31b2cdd6e9087d5f05bbccf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4bc9734eb31b2cdd6e9087d5f05bbccf"></a>
-subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><b>class_statevars::initdiagnosticvars</b> (nml, ilg)</td></tr>
+subroutine, public&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceclass__statevars.html#a4bc9734eb31b2cdd6e9087d5f05bbccf">class_statevars::initdiagnosticvars</a> (nml, ilg)</td></tr>
+<tr class="memdesc:a4bc9734eb31b2cdd6e9087d5f05bbccf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization of diagnostic variables split out of CLASSG for consistency with gcm applications. <br /></td></tr>
 <tr class="separator:a4bc9734eb31b2cdd6e9087d5f05bbccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -159,18 +176,13 @@ type(class_moyr_output), target, save&#160;</td><td class="memItemRight" valign=
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the physics variable type structures. </p>
-<ol type="1">
-<li>class_rot - CLASS's 'rot' and 'row' vars</li>
-<li>class_gat - CLASS's 'gat' vars</li>
-<li>class_out - CLASS's monthly outputs </li>
-</ol>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="class__statevars_8f90.html">class_statevars.f90</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

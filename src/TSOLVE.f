@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Solution of surface energy balance for non-vegetated 
+C!Solves surface energy balance for non-vegetated
 C!subareas.
 C!
       SUBROUTINE TSOLVE(ISNOW,FI,

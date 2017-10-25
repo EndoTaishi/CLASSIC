@@ -1,6 +1,5 @@
 !>\file
-!>Canadian Terrestrial Ecosystem Model (CTEM) 
-!!Stem And Root Turnover Subroutine
+!!Calculates the litter generated from stem and root turnover
 !!
 !!The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation (\f$kg\,C\,m^{-2}\f$ \f$day^{-1}\f$) associated with turnover of stem (\f$D_\mathrm{S}\f$) and root (\f$D_\mathrm{R}\f$) components is calculated based on the amount of biomass in the respective components (\f$C_\mathrm{S}, C_\mathrm{R}\f$; \f$kg\,C\,m^{-2}\f$) and their respective turnover timescales (\f$\tau_\mathrm{S}\f$ and \f$\tau_\mathrm{R}\f$; \f$yr\f$; see also ctem_params.f90) as
 !!\f[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\f]

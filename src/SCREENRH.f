@@ -1,8 +1,9 @@
 !>\file
-!!CALCULATES SCREEN RELATIVE HUMIDITY BASED ON INPUT SCREEN
-!!TEMPERATURE, SCREEN SPECIFIC HUMIDITY AND SURFACE PRESSURE.
-!!THE FORMULAE USED HERE ARE CONSISTENT WITH THAT USED ELSEWHERE
-!!IN THE GCM PHYSICS.
+!!Calculates screen relative humidity based on input screen
+!!temperature, screen specific humidity and surface pressure.
+!!
+!!The formulae used here are consistent with that used elsewhere
+!!in the gcm physics.
 !!
       SUBROUTINE SCREENRH(SRH,ST,SQ,PRESSG,FMASK,ILG,IL1,IL2)
 C

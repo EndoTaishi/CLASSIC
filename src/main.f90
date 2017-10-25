@@ -1,9 +1,9 @@
-!>\file
-!! Main model driver for CLASSIC in stand-alone mode using specified boundary
-!! conditions and atmospheric forcing. This driver program initializes the run,
-!! reads in CLASSIC input files, manages the run and the coupling between CLASS
-!! and CTEM, calls subroutines that aggregate and write outputs, and closes the run
-!! for this grid cell.
+!> Main model driver for CLASSIC in stand-alone mode using specified boundary
+!! conditions and atmospheric forcing.
+!!
+!! This driver program initializes the run, reads in CLASSIC input files,
+!! manages the run and the coupling between CLASS and CTEM, calls subroutines
+!! that aggregate and write outputs, and closes the run for this grid cell.
 
 module main
 
@@ -14,11 +14,12 @@ module main
 contains
 
     subroutine main_driver(longitude, latitude, lonIndex, latIndex, lonLocalIndex, latLocalIndex)
-        !
+        !>\ingroup main_main_driver
+        !>@{
         !>
         !!------------------------------------------------------------------
         !! ## Dimension statements.
-
+        !!
         !!     ### first set of definitions:
         !!     background variables, and prognostic and diagnostic
         !!     variables normally provided by and/or used by the gcm.
@@ -4999,27 +5000,27 @@ contains
         ! MODEL RUN HAS COMPLETED SO NOW CLOSE OUTPUT FILES AND EXIT
         !==================================================================
 
-        IF (dodayoutput) THEN
-            !       FIRST ANY CLASS OUTPUT FILES
-            CLOSE(61)
-            CLOSE(62)
-            CLOSE(63)
-            CLOSE(64)
-            CLOSE(65)
-            CLOSE(66)
-            CLOSE(67)
-            CLOSE(68)
-            CLOSE(69)
-            CLOSE(611)
-            CLOSE(621)
-            CLOSE(631)
-            CLOSE(641)
-            CLOSE(651)
-            CLOSE(661)
-            CLOSE(671)
-            CLOSE(681)
-            CLOSE(691)
-        end if ! moved this up from below so it calls the close subroutine. JRM.
+!         IF (dodayoutput) THEN
+!             !       FIRST ANY CLASS OUTPUT FILES
+!             CLOSE(61)
+!             CLOSE(62)
+!             CLOSE(63)
+!             CLOSE(64)
+!             CLOSE(65)
+!             CLOSE(66)
+!             CLOSE(67)
+!             CLOSE(68)
+!             CLOSE(69)
+!             CLOSE(611)
+!             CLOSE(621)
+!             CLOSE(631)
+!             CLOSE(641)
+!             CLOSE(651)
+!             CLOSE(661)
+!             CLOSE(671)
+!             CLOSE(681)
+!             CLOSE(691)
+!         end if ! moved this up from below so it calls the close subroutine. JRM.
 
 !         !close the input files too
 !         close(12)
@@ -5093,6 +5094,7 @@ contains
 !         END IF
 
     end subroutine main_driver
-
+    !!@}
+!>\file
 end module main
 

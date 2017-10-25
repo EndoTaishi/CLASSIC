@@ -1,13 +1,8 @@
-!>\defgroup class_statevars
-
-!>
-!!Contains the physics variable type structures.
+!>Contains the physics variable type structures.
 !! 1. class_rot - CLASS's 'rot' and 'row' vars
 !! 2. class_gat - CLASS's 'gat' vars
 !! 3. class_out - CLASS's monthly outputs
 
-!
-!>\file
 module class_statevars
 
 ! J. Melton Nov 2016
@@ -23,7 +18,7 @@ public :: resetclassaccum
 public :: initDiagnosticVars
 
 !=================================================================================
-!>
+!> Physics variables in the 'gather' structure
 type class_gather
 
 ! These will be allocated the dimension: 'ilg'
@@ -371,7 +366,7 @@ end type class_gather
 type (class_gather), save, target :: class_gat
 
 ! ================================================================================
-
+!> Physics variables in the 'rotated' (rot) structure
 type class_rotated
 
 ! These will be allocated the dimension: 'nlat'
@@ -737,8 +732,7 @@ end type class_rotated
 type (class_rotated), save, target :: class_rot
 
 !=================================================================================
-
-!>CLASS's monthly outputs
+!>CLASS's monthly and annual outputs
 type class_moyr_output
 
 !   MONTHLY OUTPUT FOR CLASS GRID-MEAN
@@ -797,7 +791,6 @@ type class_moyr_output
     real, allocatable, dimension(:) :: ALTOTACC_YR !< Broadband albedo
     integer, allocatable, dimension(:) :: altotcntr_yr !<Used to count the number of time steps with the sun above the horizon
 
-
 end type class_moyr_output
 
 type (class_moyr_output), save, target :: class_out
@@ -805,6 +798,10 @@ type (class_moyr_output), save, target :: class_out
 !=================================================================================
 
 contains
+
+!>\ingroup class_statevars_alloc
+!!@{
+!> Allocates the CLASS (physics) variables in preparation for the simulation
 
 subroutine alloc_class_vars()
 
@@ -1557,8 +1554,12 @@ allocate(class_rot% ITCTROT (nlat,nmos,6,50))
 allocate(class_rot% TSFSROT (nlat,nmos,4))
 
 end subroutine alloc_class_vars
-
+!>@}
 !==================================================
+
+!>\ingroup class_statevars_resetclassmon
+!!@{
+!> Resets the CLASS (physics) monthly variables in preparation for the next month
 
 subroutine resetclassmon(nltest)
 
@@ -1605,8 +1606,12 @@ do i=1,nltest
 end do
 
 end subroutine resetclassmon
-
+!>@}
 !==================================================
+
+!>\ingroup class_statevars_resetclassyr
+!!@{
+!> Resets the CLASS (physics) annual variables in preparation for the next year
 
 subroutine resetclassyr(nltest)
 
@@ -1634,8 +1639,12 @@ do i=1,nltest
 end do
 
 end subroutine resetclassyr
-
+!>@}
 !==================================================
+
+!>\ingroup class_statevars_resetclassaccum
+!!@{
+!> Resets the CLASS (physics) aggregation variables in preparation for the next period
 
 subroutine resetclassaccum(nltest,nmtest)
 
@@ -1730,8 +1739,11 @@ DO I=1,NLTEST
 end do
 
 end subroutine resetclassaccum
-
+!>@}
 !==================================================
+!>\ingroup class_statevars_initDiagnosticVars
+!!@{
+!> Initialization of diagnostic variables split out of CLASSG for consistency with gcm applications.
 
 subroutine initDiagnosticVars(nml,ilg)
 
@@ -1825,5 +1837,7 @@ subroutine initDiagnosticVars(nml,ilg)
 340                     CONTINUE
 
 end subroutine initDiagnosticVars
-
+!>@}
+!>\file
+!>Contains the physics variable type structures.
 end module class_statevars

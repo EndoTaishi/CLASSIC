@@ -1,119 +1,4 @@
-!>\defgroup hetresg
-!!
-!!Canadian Terrestrial Ecosystem Model (CTEM)
-!!Heterotrophic respiration Subroutine
-!!
-!!Heterotrophic Respiration Subroutine For Bare Fraction
-!!
-!! FLAG This needs to be edited for the peatland changes!
-!!Heterotrophic respiration, \f$R_\mathrm{h}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), in CTEM is
-!!based on respiration from the litter (which includes contributions from the stem, leaf
-!!and root components), \f$R_{h,D}\f$, and soil carbon, \f$R_{h,H}\f$, pools,
-!!\f[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \f]
-!!
-!!Heterotrophic respiration is regulated by soil temperature and moisture and is
-!!calculated on a daily time step. The original heterotrophic respiration scheme is
-!!described in \cite Arora2003-3b7 while the modified parametrization used in CTEM v. 2.0
-!!is detailed in \cite Melton2014-xy and is briefly described here. Respiration from the
-!!litter and soil carbon pools takes the following basic form
-!!\f[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i,
-!!\nonumber \\ i = \mathrm{D}, \mathrm{H}.\label{lithet} \f]
-!!
-!!The soil carbon and litter respiration depends on the amount of carbon in these components
-!!(\f$C_\mathrm{H}\f$ and \f$C_\mathrm{D}\f$; \f$kg\,C\,m^{-2}\f$) and on a PFT-dependent
-!!respiration rate specified at \f$15\,{C}\f$ (\f$\varsigma_\mathrm{H}\f$ and
-!!\f$\varsigma_\mathrm{D}\f$; \f$kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$; see also
-!! ctem_params.f90). The constant \f$2.64 \times 10^{-6}\f$ converts units from
-!!\f$kg\,C\,m^{-2}\,yr^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$.
-!!
-!!The effect of soil moisture is accounted for via dependence on soil matric
-!!potential (\f$f(\Psi)\f$), described later. The temperature dependency of
-!!microbial soil respiration rates has been estimated by several different
-!! formulations, ranging from simple \f$Q_{10}\f$ (exponential) to Arrhenius-type
-!!formulations (see review by \cite Lloyd1994-ct). In CTEM, soil temperature
-!!influences heterotrophic respiration through a temperature-dependent
-!!\f$Q_{10}\f$ function (\f$f_{15}(Q_{10})\f$). The value of \f$Q_{10}\f$
-!!itself is assumed to be a function of temperature following a hyperbolic
-!!tan function:
-!!\f[ Q_{10} = 1.44 + 0.56\,\tanh[0.075 (46.0 - T_i)], \nonumber\\ i
-!!= \mathrm{D}, \mathrm{H}\label{hyper}, \f]
-!!where \f$T_{\{D,H\}}\f$ is the temperature of either the litter or soil
-!!carbon pool (\f$C\f$), respectively. The parametrization is a compromise
-!!between the temperature-independent \f$Q_{10}\f$ commonly found in many
-!!terrestrial ecosystem models \cite Cox2001-am and the temperature-dependent
-!!\f$Q_{10}\f$ of \cite Kirschbaum1995-db. While a constant \f$Q_{10}\f$ yields
-!!an indefinitely increasing respiration rate with increasing temperature, the
-!!formulation of \cite Kirschbaum1995-db gives a continuously increasing
-!!\f$Q_{10}\f$ under decreasing temperature, which leads to unreasonably high
-!!soil and litter carbon pools at high latitudes in CTEM. The CTEM
-!!parametrization avoids these issues with a $Q_{10}$ value of about 2.0
-!!for temperatures less than \f$20\,C\f$, while a decreasing value of
-!!\f$Q_{10}\f$ at temperatures above \f$20\,C\f$ ensures that the
-!!respiration rate does not increase indefinitely.
-!!
-!!The temperature of the litter pool is a weighted average of the
-!!temperature of the top soil layer (\f$T_1\f$) and the root temperature
-!!(\f$T_\mathrm{R}\f$) as litter consists of leaf, stem, and root litter
-!!(\f$T_\mathrm{D} = 0.7 T_1 + 0.3T_\mathrm{R}\f$). The temperature of the
-!!soil carbon pool is calculated as the mean soil temperature in the rooting
-!!zone based upon the fraction of roots in each soil layer and their temperature.
-!!The carbon in each soil layer is not explicitly tracked but assumed to adopt an
-!!exponential distribution \cite Jobbagy2000-pa.
-!!
-!!The response of heterotrophic respiration to soil moisture is formulated through
-!!soil matric potential (\f$\Psi\f$; \f$MPa\f$). While soil matric potential values
-!!are usually negative, the formulation uses absolute values to allow its logarithm
-!!to be taken. Absolute values of soil matric potential are high when soil is dry
-!!and low when it is wet. The primary premise of soil moisture control on heterotrophic
-!!respiration is that heterotrophic respiration is constrained both when the soils
-!!are dry (due to reduced microbial activity) and when they are wet (due to impeded
-!!oxygen supply to microbes) with optimum conditions in-between. The exception is the
-!!respiration from the litter component, which is assumed to be continually exposed
-!!to air, and thus never oxygen deprived, even when soil moisture content is high
-!!(\f$0.04 > \vert \Psi \vert \geq \vert \Psi_{sat} \vert\f$, where \f$\Psi_{sat}\f$
-!!is the soil matric potential at saturation). The soil moisture dependence thus
-!!varies between 0 and 1 with matric potential as follows:
-!!
-!!for \f$0.04 > \vert\Psi\vert \geq \vert\Psi_{sat}\vert\f$
-!!\f[ f(\Psi)_\mathrm{H} = 1 - 0.5  \frac{\log(0.04)-\log\vert\Psi\vert}
-!!{\log(0.04)-\log\vert\Psi_{sat}\vert}\\ f(\Psi)_D = 1\nonumber; \f]
-!!for \f$0.06 \geq \vert\Psi\vert \geq 0.04\f$
-!!\f[ f(\Psi)_\{D,H\} = 1; \f]
-!!for \f$100.0 \geq \vert\Psi\vert > 0.06\f$
-!!\f[ f(\Psi)_\{D,H\} = 1 - 0.8\frac{\log\vert\Psi\vert-\log(0.06)}{\log(100)-\log(0.06)}; \f]
-!!for \f$\vert\Psi\vert > 100.0\f$
-!!\f[ \label{lastpsi} f(\Psi)_\{D,H\}=0.2. \f]
-!!
-!!Heterotrophic respiration for bare ground is treated separately in CTEM. The carbon
-!!contributions to the bare ground litter and soil carbon pools come via processes
-!!such as creation of bare ground due to fire, competition between PFTs and land use
-!!change. The heterotrophic respiration is sensitive to temperature and moisture in
-!!the same manner as vegetated areas using Eqs. (\ref{lithet})--(\ref{lastpsi}). The
-!!base respiration rates of \f$\varsigma_{D,bare}\f$ and \f$\varsigma_{H,bare}\f$ are
-!!set to \f$0.5605\f$ and \f$0.02258\,kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$, respectively.
-!!
-!!The amount of humidified litter, which is transferred from the litter to the soil
-!!carbon pool (\f$C_{\mathrm{D} \rightarrow \mathrm{H}}\f$) is modelled as a fraction
-!!of litter respiration (\f$R_{h,D}\f$) as
-!!\f[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \f]
-!!where \f$\chi\f$ (see also ctem_params.f90) is the PFT-dependent humification factor
-!!and varies between 0.4 and 0.5. For crops, \f$\chi\f$ is set to 0.1 to account for
-!!reduced transfer of humidified litter to the soil carbon pool which leads to loss in
-!!soil carbon when natural vegetation is converted to croplands. Over the bare ground
-!!fraction \f$\chi\f$ is set to 0.45.
-!!
-!!With heterotrophic respiration known, net ecosystem productivity (\f$NEP\f$) is
-!!calculated as
-!!\f[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \f]
-!!
-
-!>\defgroup hetresv
-
-!>
-!!Heterotrophic Respiration Subroutine For Vegetated Fraction
-
-!>\file
-!!Central module for all heterotrophic respiration-related operations
+!>Central module for all heterotrophic respiration-related operations
 module heterotrophic_respiration
 
 ! J. Melton. Jan 14 2016
@@ -127,8 +12,10 @@ public  :: hetresv
 contains
 
 ! ------------------------------------------------------------------
-!>\ingroup hetresg
+
+!>\ingroup heterotrophic_respiration_hetresg
 !!@{
+!>Heterotrophic respiration subroutine for bare ground fraction
 
 subroutine hetresg (litrmass, soilcmas, delzw,  thpor, &
                     il1,      il2,     tbar,  psisat, b, &
@@ -383,8 +270,10 @@ end subroutine hetresg
 !>@}
 ! ------------------------------------------------------------------------------------
 
-!>\ingroup hetresv
+!>\ingroup heterotrophic_respiration_hetresv
 !!@{
+!>Heterotrophic Respiration Subroutine For Vegetated Fraction
+
 subroutine hetresv ( fcan,      fct, litrmass, soilcmas, &
                       delzw,  thpor, il1, &
                       il2,     tbar,   psisat, b, thliq,  &
@@ -694,4 +583,109 @@ do 130 i = il1, il2
 
 end subroutine hetresv
 !!@}
+
+!>\namespace heterotrophic_respiration
+!! FLAG This needs to be edited for the peatland changes!
+!!Heterotrophic respiration, \f$R_\mathrm{h}\f$ (\f$mol\,CO_2\,m^{-2}\,s^{-1}\f$), in CTEM is
+!!based on respiration from the litter (which includes contributions from the stem, leaf
+!!and root components), \f$R_{h,D}\f$, and soil carbon, \f$R_{h,H}\f$, pools,
+!!\f[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \f]
+!!
+!!Heterotrophic respiration is regulated by soil temperature and moisture and is
+!!calculated on a daily time step. The original heterotrophic respiration scheme is
+!!described in \cite Arora2003-3b7 while the modified parametrization used in CTEM v. 2.0
+!!is detailed in \cite Melton2014-xy and is briefly described here. Respiration from the
+!!litter and soil carbon pools takes the following basic form
+!!\f[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i,
+!!\nonumber \\ i = \mathrm{D}, \mathrm{H}.\label{lithet} \f]
+!!
+!!The soil carbon and litter respiration depends on the amount of carbon in these components
+!!(\f$C_\mathrm{H}\f$ and \f$C_\mathrm{D}\f$; \f$kg\,C\,m^{-2}\f$) and on a PFT-dependent
+!!respiration rate specified at \f$15\,{C}\f$ (\f$\varsigma_\mathrm{H}\f$ and
+!!\f$\varsigma_\mathrm{D}\f$; \f$kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$; see also
+!! ctem_params.f90). The constant \f$2.64 \times 10^{-6}\f$ converts units from
+!!\f$kg\,C\,m^{-2}\,yr^{-1}\f$ to \f$mol\,CO_2\,m^{-2}\,s^{-1}\f$.
+!!
+!!The effect of soil moisture is accounted for via dependence on soil matric
+!!potential (\f$f(\Psi)\f$), described later. The temperature dependency of
+!!microbial soil respiration rates has been estimated by several different
+!! formulations, ranging from simple \f$Q_{10}\f$ (exponential) to Arrhenius-type
+!!formulations (see review by \cite Lloyd1994-ct). In CTEM, soil temperature
+!!influences heterotrophic respiration through a temperature-dependent
+!!\f$Q_{10}\f$ function (\f$f_{15}(Q_{10})\f$). The value of \f$Q_{10}\f$
+!!itself is assumed to be a function of temperature following a hyperbolic
+!!tan function:
+!!\f[ Q_{10} = 1.44 + 0.56\,\tanh[0.075 (46.0 - T_i)], \nonumber\\ i
+!!= \mathrm{D}, \mathrm{H}\label{hyper}, \f]
+!!where \f$T_{\{D,H\}}\f$ is the temperature of either the litter or soil
+!!carbon pool (\f$C\f$), respectively. The parametrization is a compromise
+!!between the temperature-independent \f$Q_{10}\f$ commonly found in many
+!!terrestrial ecosystem models \cite Cox2001-am and the temperature-dependent
+!!\f$Q_{10}\f$ of \cite Kirschbaum1995-db. While a constant \f$Q_{10}\f$ yields
+!!an indefinitely increasing respiration rate with increasing temperature, the
+!!formulation of \cite Kirschbaum1995-db gives a continuously increasing
+!!\f$Q_{10}\f$ under decreasing temperature, which leads to unreasonably high
+!!soil and litter carbon pools at high latitudes in CTEM. The CTEM
+!!parametrization avoids these issues with a $Q_{10}$ value of about 2.0
+!!for temperatures less than \f$20\,C\f$, while a decreasing value of
+!!\f$Q_{10}\f$ at temperatures above \f$20\,C\f$ ensures that the
+!!respiration rate does not increase indefinitely.
+!!
+!!The temperature of the litter pool is a weighted average of the
+!!temperature of the top soil layer (\f$T_1\f$) and the root temperature
+!!(\f$T_\mathrm{R}\f$) as litter consists of leaf, stem, and root litter
+!!(\f$T_\mathrm{D} = 0.7 T_1 + 0.3T_\mathrm{R}\f$). The temperature of the
+!!soil carbon pool is calculated as the mean soil temperature in the rooting
+!!zone based upon the fraction of roots in each soil layer and their temperature.
+!!The carbon in each soil layer is not explicitly tracked but assumed to adopt an
+!!exponential distribution \cite Jobbagy2000-pa.
+!!
+!!The response of heterotrophic respiration to soil moisture is formulated through
+!!soil matric potential (\f$\Psi\f$; \f$MPa\f$). While soil matric potential values
+!!are usually negative, the formulation uses absolute values to allow its logarithm
+!!to be taken. Absolute values of soil matric potential are high when soil is dry
+!!and low when it is wet. The primary premise of soil moisture control on heterotrophic
+!!respiration is that heterotrophic respiration is constrained both when the soils
+!!are dry (due to reduced microbial activity) and when they are wet (due to impeded
+!!oxygen supply to microbes) with optimum conditions in-between. The exception is the
+!!respiration from the litter component, which is assumed to be continually exposed
+!!to air, and thus never oxygen deprived, even when soil moisture content is high
+!!(\f$0.04 > \vert \Psi \vert \geq \vert \Psi_{sat} \vert\f$, where \f$\Psi_{sat}\f$
+!!is the soil matric potential at saturation). The soil moisture dependence thus
+!!varies between 0 and 1 with matric potential as follows:
+!!
+!!for \f$0.04 > \vert\Psi\vert \geq \vert\Psi_{sat}\vert\f$
+!!\f[ f(\Psi)_\mathrm{H} = 1 - 0.5  \frac{\log(0.04)-\log\vert\Psi\vert}
+!!{\log(0.04)-\log\vert\Psi_{sat}\vert}\\ f(\Psi)_D = 1\nonumber; \f]
+!!for \f$0.06 \geq \vert\Psi\vert \geq 0.04\f$
+!!\f[ f(\Psi)_\{D,H\} = 1; \f]
+!!for \f$100.0 \geq \vert\Psi\vert > 0.06\f$
+!!\f[ f(\Psi)_\{D,H\} = 1 - 0.8\frac{\log\vert\Psi\vert-\log(0.06)}{\log(100)-\log(0.06)}; \f]
+!!for \f$\vert\Psi\vert > 100.0\f$
+!!\f[ \label{lastpsi} f(\Psi)_\{D,H\}=0.2. \f]
+!!
+!!Heterotrophic respiration for bare ground is treated separately in CTEM. The carbon
+!!contributions to the bare ground litter and soil carbon pools come via processes
+!!such as creation of bare ground due to fire, competition between PFTs and land use
+!!change. The heterotrophic respiration is sensitive to temperature and moisture in
+!!the same manner as vegetated areas using Eqs. (\ref{lithet})--(\ref{lastpsi}). The
+!!base respiration rates of \f$\varsigma_{D,bare}\f$ and \f$\varsigma_{H,bare}\f$ are
+!!set to \f$0.5605\f$ and \f$0.02258\,kg\,C\,(kg\,C)^{-1}\,yr^{-1}\f$, respectively.
+!!
+!!The amount of humidified litter, which is transferred from the litter to the soil
+!!carbon pool (\f$C_{\mathrm{D} \rightarrow \mathrm{H}}\f$) is modelled as a fraction
+!!of litter respiration (\f$R_{h,D}\f$) as
+!!\f[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \f]
+!!where \f$\chi\f$ (see also ctem_params.f90) is the PFT-dependent humification factor
+!!and varies between 0.4 and 0.5. For crops, \f$\chi\f$ is set to 0.1 to account for
+!!reduced transfer of humidified litter to the soil carbon pool which leads to loss in
+!!soil carbon when natural vegetation is converted to croplands. Over the bare ground
+!!fraction \f$\chi\f$ is set to 0.45.
+!!
+!!With heterotrophic respiration known, net ecosystem productivity (\f$NEP\f$) is
+!!calculated as
+!!\f[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \f]
+!!
+
+
 end module heterotrophic_respiration

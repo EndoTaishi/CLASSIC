@@ -1,5 +1,5 @@
 !>\file
-!!              Canadian Terrestrial Ecosystem Model (CTEM)
+!! Performs subsequent scatter operation on biogeochemical variables
 !!
       subroutine ctems2 (fcancmxrow,rmatcrow,zolncrow,paicrow,
      1      ailcrow,     ailcgrow,    cmasvegcrow,  slaicrow,

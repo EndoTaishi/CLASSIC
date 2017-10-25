@@ -1390,7 +1390,7 @@ logical, parameter :: boer  =.false. !< modified form of lv eqns with f missing 
 end subroutine competition
 !>@}
 
-!>\file
+!>\namespace competition_scheme
 !! Performs competition between PFTs for space
 !!
 !!Competition between PFTs in CTEM is based upon modified L--V equations \cite Arora2006-pp

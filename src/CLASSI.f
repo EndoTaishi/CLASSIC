@@ -1,7 +1,6 @@
 !>\file
 C>
-C!Purpose: Evaluate atmospheric variables and rainfall/snowfall 
-C!rates over modelled area.
+C!Evaluates atmospheric variables and rainfall/snowfall rates over modelled area.
 C!
 
       SUBROUTINE CLASSI(VPD,TADP,PADRY,RHOAIR,RHOSNI,

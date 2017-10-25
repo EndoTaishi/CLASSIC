@@ -1,13 +1,34 @@
 var NAVTREE =
 [
   [ "CLASSIC", "index.html", [
+    [ "The Canadian Land Surface Scheme Including biogeochemical Cycles (CLASSIC)", "index.html", [
+      [ "Overview of the Canadian Land Surface Scheme (CLASS)", "index.html#overviewCLASS", [
+        [ "Developmental history of CLASS", "index.html#devHistory", null ]
+      ] ],
+      [ "Overview of the Canadian Terrestrial Ecosystem Model (CTEM)", "index.html#overviewCTEM", null ],
+      [ "Data Requirements", "index.html#dataRequirements", [
+        [ "Forcing Data", "index.html#forcingData", null ],
+        [ "Vegetation Data", "index.html#vegetationData", null ],
+        [ "Soil Data", "index.html#soilData", null ],
+        [ "Initialization of Prognostic Variables", "index.html#initProgVar", null ]
+      ] ],
+      [ "Running CLASSIC", "index.html#runStandAloneMode", [
+        [ "One thing to note about composite versus mosaic running of the model", "index.html#compvsmosaic", null ],
+        [ "The Input Files", "index.html#inputs", [
+          [ "The MET file (Meteorological forcings)", "index.html#MET", null ],
+          [ "The INI file (CLASS's initialization file)", "index.html#INI", null ],
+          [ "Typical values of vegetation-related fields for CLASS-only simulations", "index.html#classvals", null ],
+          [ "CLASS and CTEM PFTs", "index.html#classtoctem", null ]
+        ] ]
+      ] ]
+    ] ],
     [ "Bibliography", "citelist.html", null ],
-    [ "Modules", "modules.html", "modules" ],
     [ "Modules", null, [
       [ "Modules List", "namespaces.html", "namespaces" ],
       [ "Module Members", "namespacemembers.html", [
-        [ "All", "namespacemembers.html", null ],
-        [ "Functions/Subroutines", "namespacemembers_func.html", null ]
+        [ "All", "namespacemembers.html", "namespacemembers_dup" ],
+        [ "Functions/Subroutines", "namespacemembers_func.html", null ],
+        [ "Variables", "namespacemembers_vars.html", "namespacemembers_vars" ]
       ] ]
     ] ],
     [ "Data Types List", null, [
@@ -31,15 +52,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"ctem__params_8f90.html#a543d5b22d79302823fd389c0f869c384",
-"ctemg2_8f.html#ac3b8f34561a13007060d16f1995e4dde",
-"structclass__statevars_1_1class__gather.html#a42daed1df1687406eea7391a4a55d9a0",
-"structclass__statevars_1_1class__moyr__output.html#a4400ed84c8b9ab13d52274b15d2abb8a",
-"structclass__statevars_1_1class__rotated.html#aa7336c99993399344cf33cb31b905bc8",
-"structctem__statevars_1_1ctem__gridavg.html#aac02f3cf75d22164454915602162653b",
-"structctem__statevars_1_1ctem__tile__level.html#a6436a5cd76a39f1e8812739aa9966d96",
-"structctem__statevars_1_1veg__gat.html#a9349282a5315f549d16b04d8c55f1cb7",
-"structctem__statevars_1_1veg__rot.html#af1fd6752f635bd6ee257457c6c2d22e5"
+"ctem__params_8f90.html#aa5921437e997678010428577c648b01a",
+"namespacemembers_u.html",
+"structclass__statevars_1_1class__gather.html#ab8a3784402e9092d63395fd293995263",
+"structclass__statevars_1_1class__rotated.html#a4ef529d6222b0ec7aae0382526a62428",
+"structctem__statevars_1_1ctem__annual.html#a808c4abf2bde7e15fa9b76cbdcb25da0",
+"structctem__statevars_1_1ctem__monthly.html#a11e62ffb67546edbb54e6de09aab2931",
+"structctem__statevars_1_1veg__gat.html#a0a2e08422cb7d609b4eeb3c4520caa1a",
+"structctem__statevars_1_1veg__rot.html#a49098f68d220bf5488df8341c7da2893"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

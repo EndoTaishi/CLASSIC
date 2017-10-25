@@ -1300,7 +1300,7 @@ end do
 end subroutine adjust_fracs_comp
 !>@}
 
-!>\file
+!>\namespace landuse_change
 !!The land use change (LUC) module of CTEM is based on (Arora and Boer, 2010) \cite Arora2010-416 and briefly
 !! described here. When the area of crop PFTs changes, CTEM generates LUC emissions.
 !! In the simulation where fractional coverage of PFTs is specified, the changes in

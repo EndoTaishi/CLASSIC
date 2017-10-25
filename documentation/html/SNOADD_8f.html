@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
@@ -112,7 +111,7 @@ $(document).ready(function(){initNavTree('SNOADD_8f.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Purpose: Add snow incident on the ground surface to the snow pack.  
+<p>Adds snow incident on the ground surface to the snow pack.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -121,7 +120,7 @@ Functions/Subroutines</h2></td></tr>
 <tr class="separator:af7d261f12e703bc9bfc7bd0a543d51ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Purpose: Add snow incident on the ground surface to the snow pack. </p>
+<div class="textblock"><p>Adds snow incident on the ground surface to the snow pack. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="af7d261f12e703bc9bfc7bd0a543d51ae"></a>
 <div class="memitem">
@@ -227,7 +226,7 @@ Functions/Subroutines</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">albsno</td><td>Albedo of snow [ ]</td></tr>
-    <tr><td class="paramname">tsnow</td><td>Temperature of the snow pack <img class="formulaInl" alt="$[C] (T_s)$" src="form_1129.png"/></td></tr>
+    <tr><td class="paramname">tsnow</td><td>Temperature of the snow pack <img class="formulaInl" alt="$[C] (T_s)$" src="form_1119.png"/></td></tr>
     <tr><td class="paramname">rhosno</td><td>Density of snow pack <img class="formulaInl" alt="$[kg m^{-3}] (\rho_s)$" src="form_248.png"/></td></tr>
     <tr><td class="paramname">zsnow</td><td>Depth of snow pack <img class="formulaInl" alt="$[m] (z_s)$" src="form_245.png"/></td></tr>
     <tr><td class="paramname">hcpsno</td><td>Heat capacity of snow pack <img class="formulaInl" alt="$[J m^{-3} K^{-1}] (C_s)$" src="form_223.png"/></td></tr>
@@ -236,15 +235,15 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">s</td><td>Snowfall rate incident on snow pack <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
     <tr><td class="paramname">ts</td><td>Temperature of snowfall [C]</td></tr>
     <tr><td class="paramname">rhosni</td><td>Density of fresh snow <img class="formulaInl" alt="$[kg m^{-3}]$" src="form_132.png"/></td></tr>
-    <tr><td class="paramname">wsnow</td><td>Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2}] (w_s)$" src="form_1131.png"/> </td></tr>
+    <tr><td class="paramname">wsnow</td><td>Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2}] (w_s)$" src="form_1121.png"/> </td></tr>
   </table>
   </dd>
 </dl>
 <p>The change of internal energy HTCS of the snow pack as a result of the snowfall added to it is calculated as the difference in Is between the beginning and end of the subroutine:</p>
-<p><img class="formulaInl" alt="$\Delta I_s = X_i \Delta [C_s z_s T_s] / \Delta t$" src="form_1137.png"/></p>
-<p>where <img class="formulaInl" alt="$C_s$" src="form_1134.png"/> represents the volumetric heat capacity of the snow pack, <img class="formulaInl" alt="$T_s$" src="form_1135.png"/> its temperature, <img class="formulaInl" alt="$\Delta$" src="form_1136.png"/> the length of the time step, and <img class="formulaInl" alt="$X_i$" src="form_39.png"/> the fractional coverage of the subarea under consideration relative to the modelled area.</p>
-<p>The amount of snow incident at the given time step, SNOFAL, is calculated from S and the timestep length DELT. If SNOFAL <img class="formulaInl" alt="$\geq$" src="form_269.png"/> 0.1 mm, the snow albedo is set to the fresh snow value of 0.84. Otherwise, if the snow is falling on bare ground, its initial albedo is set to the old snow value of 0.50. The heat capacity of the precipitating snow, HCPSNP, is calculated from the fresh snow density RHOSNI and the heat capacity and density of ice. The new temperature of the snow pack is calculated as a weighted average of its old temperature, weighted by the snow depth ZSNOW and heat capacity HCPSNO, and the snowfall temperature, weighted by SNOFAL and HCPSNP. The new density of snow is calculated as a weighted average of the original density RHOSNO and RHOSNI, and the new snow depth is calculated as ZSNOW + SNOFAL. Finally, the new heat capacity of the snow pack is obtained from the heat capacities of ice and water <img class="formulaInl" alt="$C_i$" src="form_840.png"/> and <img class="formulaInl" alt="$C_w$" src="form_1138.png"/>, the snow, ice and water densities <img class="formulaInl" alt="$\rho_s$" src="form_1139.png"/> <img class="formulaInl" alt="$rho_i$" src="form_1140.png"/>, and <img class="formulaInl" alt="$\rho_w$" src="form_1141.png"/>, and the water content and depth of the snow pack <img class="formulaInl" alt="$w_s$" src="form_1142.png"/> and <img class="formulaInl" alt="$z_s$" src="form_42.png"/>, as:</p>
-<p><img class="formulaInl" alt="$C_s = C_i [ \rho_s /\rho_i ] + C_w w_s /[\rho_w z_s]$" src="form_1143.png"/></p>
+<p><img class="formulaInl" alt="$\Delta I_s = X_i \Delta [C_s z_s T_s] / \Delta t$" src="form_1127.png"/></p>
+<p>where <img class="formulaInl" alt="$C_s$" src="form_1124.png"/> represents the volumetric heat capacity of the snow pack, <img class="formulaInl" alt="$T_s$" src="form_1125.png"/> its temperature, <img class="formulaInl" alt="$\Delta$" src="form_1126.png"/> the length of the time step, and <img class="formulaInl" alt="$X_i$" src="form_39.png"/> the fractional coverage of the subarea under consideration relative to the modelled area.</p>
+<p>The amount of snow incident at the given time step, SNOFAL, is calculated from S and the timestep length DELT. If SNOFAL <img class="formulaInl" alt="$\geq$" src="form_269.png"/> 0.1 mm, the snow albedo is set to the fresh snow value of 0.84. Otherwise, if the snow is falling on bare ground, its initial albedo is set to the old snow value of 0.50. The heat capacity of the precipitating snow, HCPSNP, is calculated from the fresh snow density RHOSNI and the heat capacity and density of ice. The new temperature of the snow pack is calculated as a weighted average of its old temperature, weighted by the snow depth ZSNOW and heat capacity HCPSNO, and the snowfall temperature, weighted by SNOFAL and HCPSNP. The new density of snow is calculated as a weighted average of the original density RHOSNO and RHOSNI, and the new snow depth is calculated as ZSNOW + SNOFAL. Finally, the new heat capacity of the snow pack is obtained from the heat capacities of ice and water <img class="formulaInl" alt="$C_i$" src="form_845.png"/> and <img class="formulaInl" alt="$C_w$" src="form_1128.png"/>, the snow, ice and water densities <img class="formulaInl" alt="$\rho_s$" src="form_1129.png"/> <img class="formulaInl" alt="$rho_i$" src="form_1130.png"/>, and <img class="formulaInl" alt="$\rho_w$" src="form_1131.png"/>, and the water content and depth of the snow pack <img class="formulaInl" alt="$w_s$" src="form_1132.png"/> and <img class="formulaInl" alt="$z_s$" src="form_42.png"/>, as:</p>
+<p><img class="formulaInl" alt="$C_s = C_i [ \rho_s /\rho_i ] + C_w w_s /[\rho_w z_s]$" src="form_1133.png"/></p>
 
 </div>
 </div>
@@ -254,7 +253,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="SNOADD_8f.html">SNOADD.f</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

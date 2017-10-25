@@ -1,5 +1,5 @@
 !>\file
-!!Purpose: Calculate visible and near-IR ground albedos.
+!!Calculates visible and near-IR ground albedos.
 !!
       SUBROUTINE GRALB(ALVSG,ALIRG,ALVSGC,ALIRGC,
      1                 ALGWV,ALGWN,ALGDV,ALGDN,

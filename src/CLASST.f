@@ -1,5 +1,5 @@
 !>\file
-!>Purpose: Call subroutines to perform surface energy budget calculations.
+!>Calls subroutines to perform surface energy budget calculations.
 !>
 
       SUBROUTINE CLASST (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,

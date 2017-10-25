@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Check for energy and water balance closure over modelled 
+C!Checks for energy and water balance closure over modelled
 C!area.
 !!
       SUBROUTINE CLASSZ(ISTEP,  CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP, 

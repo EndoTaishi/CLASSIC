@@ -1,7 +1,8 @@
 C>\file
 C>
-C!Purpose: Assign values to parameters in CLASS common blocks. CLASS 
-C!incorporates several kinds of parameters in its common blocks. 
+C!Assigns values to parameters in CLASS common blocks.
+!!
+C!CLASS incorporates several kinds of parameters in its common blocks.
 C!Some are defined specifically for use in the CLASS code; some are 
 C!also shared with the atmospheric model (if running in coupled 
 C!mode).

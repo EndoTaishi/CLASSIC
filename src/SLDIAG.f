@@ -1,5 +1,5 @@
 !>\file
-!!CALCULATES NEAR SURFACE OUTPUT VARIABLES
+!!Calculates near surface output variables
 !!
       SUBROUTINE SLDIAG(SUT,SVT,STT,SQT,CDM,CDH,UA,VA,TA,QA,T0,Q0,
      1                  Z0M,Z0E,F,ZA,ZU,ZT,ILG,IL1,IL2,JL)

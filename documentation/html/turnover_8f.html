@@ -47,7 +47,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Types&#160;List</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
@@ -112,7 +111,7 @@ $(document).ready(function(){initNavTree('turnover_8f.html','');});
 </div><!--header-->
 <div class="contents">
 
-<p>Canadian Terrestrial Ecosystem Model (CTEM) Stem And Root Turnover Subroutine.  
+<p>Calculates the litter generated from stem and root turnover.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -121,9 +120,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="separator:adaaa94be49886167722ab507a931c4fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Canadian Terrestrial Ecosystem Model (CTEM) Stem And Root Turnover Subroutine. </p>
-<p>The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation ( <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_537.png"/> <img class="formulaInl" alt="$day^{-1}$" src="form_482.png"/>) associated with turnover of stem ( <img class="formulaInl" alt="$D_\mathrm{S}$" src="form_1486.png"/>) and root ( <img class="formulaInl" alt="$D_\mathrm{R}$" src="form_1487.png"/>) components is calculated based on the amount of biomass in the respective components ( <img class="formulaInl" alt="$C_\mathrm{S}, C_\mathrm{R}$" src="form_1488.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_537.png"/>) and their respective turnover timescales ( <img class="formulaInl" alt="$\tau_\mathrm{S}$" src="form_1489.png"/> and <img class="formulaInl" alt="$\tau_\mathrm{R}$" src="form_1490.png"/>; <img class="formulaInl" alt="$yr$" src="form_1015.png"/>; see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>) as </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\]" src="form_1491.png"/>
+<div class="textblock"><p>Calculates the litter generated from stem and root turnover. </p>
+<p>The turnover of stem and root components is modelled via their PFT-dependent specified lifetimes. The litter generation ( <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_511.png"/> <img class="formulaInl" alt="$day^{-1}$" src="form_456.png"/>) associated with turnover of stem ( <img class="formulaInl" alt="$D_\mathrm{S}$" src="form_1476.png"/>) and root ( <img class="formulaInl" alt="$D_\mathrm{R}$" src="form_1477.png"/>) components is calculated based on the amount of biomass in the respective components ( <img class="formulaInl" alt="$C_\mathrm{S}, C_\mathrm{R}$" src="form_1478.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_511.png"/>) and their respective turnover timescales ( <img class="formulaInl" alt="$\tau_\mathrm{S}$" src="form_1479.png"/> and <img class="formulaInl" alt="$\tau_\mathrm{R}$" src="form_1480.png"/>; <img class="formulaInl" alt="$yr$" src="form_1018.png"/>; see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>) as </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\]" src="form_1481.png"/>
 </p>
  </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="adaaa94be49886167722ab507a931c4fe"></a>
@@ -205,8 +204,8 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
     <tr><td class="paramname">sort</td><td>index for correspondence between 9 ctem pfts and size 12 of parameter vectors</td></tr>
     <tr><td class="paramname">nol2pfts</td><td>number of level 2 ctem pfts</td></tr>
-    <tr><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
-    <tr><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_448.png"/></td></tr>
+    <tr><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/></td></tr>
+    <tr><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/></td></tr>
     <tr><td class="paramname">ailcg</td><td>green or live lai</td></tr>
     <tr><td class="paramname">fcancmx</td><td>max. fractional coverage of ctem's 9 pfts, but this can be modified by land-use change, and competition between pfts </td></tr>
   </table>
@@ -229,7 +228,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="turnover_8f.html">turnover.f</a></li>
-    <li class="footer">Generated on Tue Oct 24 2017 15:13:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

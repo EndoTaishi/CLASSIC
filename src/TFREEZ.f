@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Address freezing of water ponded on ground surface.
+C!Addresses freezing of water ponded on ground surface.
 C!
       SUBROUTINE TFREEZ(ZPOND,TPOND,ZSNOW,TSNOW,ALBSNO,RHOSNO,HCPSNO,
      1                  GZERO,HMFG,HTCS,HTC,WTRS,WTRG,FI,QFREZ,

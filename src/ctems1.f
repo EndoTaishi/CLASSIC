@@ -1,5 +1,5 @@
 !>\file
-!!              Canadian Terrestrial Ecosystem Model (CTEM) 
+!! Performs intial scatter operation on biogeochemical variables
 !!
       subroutine ctems1 (gleafmasrow,  bleafmasrow,  stemmassrow,
      1      rootmassrow,

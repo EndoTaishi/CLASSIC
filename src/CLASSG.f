@@ -1,6 +1,6 @@
 !>\file
 C>
-C!Purpose: Gather variables from two-dimensional arrays (latitude 
+C!Gathers variables from two-dimensional arrays (latitude
 C!circle x mosaic tiles) onto long vectors for optimum processing 
 C!efficiency on vector supercomputers.
 C!

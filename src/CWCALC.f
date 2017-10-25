@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Check for freezing or thawing of liquid or frozen water 
+C!Checks for freezing or thawing of liquid or frozen water
 C!on the vegetation canopy, and adjust canopy temperature and 
 C!intercepted water stores accordingly.
 C!

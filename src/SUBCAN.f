@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Assess water flux elements at the ground surface under 
+C!Assesses water flux elements at the ground surface under
 C!the vegetation canopy.
 C!
       SUBROUTINE SUBCAN(IWATER,R,TR,S,TS,RHOSNI,EVAPG,QFN,QFG,

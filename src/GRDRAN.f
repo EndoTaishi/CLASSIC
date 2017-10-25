@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Quantify movement of liquid water between soil layers 
+C!Quantifies movement of liquid water between soil layers
 C!under non-infiltrating conditions, in response to gravity and 
 C!tension forces.
 C!

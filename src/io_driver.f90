@@ -1,35 +1,4 @@
-!>\defgroup io_driver_read_from_ctm
-!>
-!>This subroutine reads in the restart/starting conditions from
-!!the .CTM file. The input values are checked and possibly adjusted
-!!if the run is intended to be with competition on and if the start_bare flag is true. 
-!------------------------------------------------------------------------------------
-!>\defgroup io_driver_write_ctm_rs
-!>
-!>After a set period is complete the restart file for CTEM (.CTM_RS) is written
-!!this restart file contains all of the CTEM level information needed to 
-!!to restart the model to the same state.
-!------------------------------------------------------------------------------------
-!>\defgroup io_driver_create_outfiles
-!>All output files are initialized in this subroutine
-!------------------------------------------------------------------------------------
-!>\defgroup io_driver_class_monthly_aw
-!>Accumulate and write out the monthly CTEM outputs
-!------------------------------------------------------------------------------------
-!>\defgroup io_driver_class_annual_aw
-!------------------------------------------------------------------------------------
-!>\defgroup io_driver_ctem_daily_aw
-!>Accumulate and write out the daily CTEM outputs
-!------------------------------------------------------------------------------------
-!>\defgroup io_driver_ctem_monthly_aw
-!------------------------------------------------------------------------------------
-!>\defgroup io_driver_ctem_annual_aw
-!------------------------------------------------------------------------------------
-!>\defgroup io_driver_close_outfiles
-!------------------------------------------------------------------------------------
-
-!>\file
-!!Central module that handles all CTEM reading and writing of external files
+!>Central module that handles all CTEM preparation and writing of output files
 module io_driver
 
 ! J. Melton Mar 30 2015
@@ -1369,8 +1338,11 @@ contains
 
 
     !==============================================================================================================
+
     !>\ingroup io_driver_class_monthly_aw
     !>@{
+    !>Accumulate and write out the monthly physics outputs
+
     subroutine class_monthly_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
                                 ACTLYR,FTABLE,lastDOY)
                            
@@ -1676,8 +1648,11 @@ contains
 end subroutine class_monthly_aw
 !>@}
 !==============================================================================================================
+
 !>\ingroup io_driver_class_annual_aw
 !>@{
+!>Accumulate and write out the annual physics outputs
+
 subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT, &
                             nltest,nmtest,ACTLYR,FTABLE,lastDOY)
 
@@ -1882,9 +1857,10 @@ subroutine class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SB
 end subroutine class_annual_aw
 !>@}
 !==============================================================================================================
+
 !>\ingroup io_driver_ctem_daily_aw
 !>@{
-
+!> Accumulate and write the daily biogeochemical outputs
 
 subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jdendy,grclarea,onetile_perPFT,ipeatlandrow)
 
@@ -2809,12 +2785,12 @@ subroutine ctem_daily_aw(nltest,nmtest,iday,FAREROT,iyear,jdstd,jdsty,jdendd,jde
 end subroutine ctem_daily_aw
 !>@}
 !==============================================================================================================
+
 !>\ingroup io_driver_ctem_monthly_aw
 !>@{
+!> Accumulate and write out the monthly CTEM outputs
 
 subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FAREROT,iyear,nday,lastDOY)
-
-    ! Accumulate and write out the monthly CTEM outputs
 
     ! J. Melton Feb 2016.
 
@@ -3558,8 +3534,11 @@ subroutine ctem_monthly_aw(lonLocalIndex,latLocalIndex,nltest,nmtest,iday,FARERO
 end subroutine ctem_monthly_aw
 !>@}
 !==============================================================================================================
+
 !>\ingroup io_driver_ctem_annual_aw
 !>@{
+!> Accumulate and write out the annual biogeochemical (CTEM) outputs
+
 subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,nmtest,FAREROT,lastDOY)
 
     use ctem_statevars,     only : ctem_tile_yr, vrot, ctem_grd_yr, c_switch, ctem_yr, &
@@ -4266,5 +4245,7 @@ subroutine ctem_annual_aw(lonLocalIndex,latLocalIndex,iday,imonth,iyear,nltest,n
 
 end subroutine ctem_annual_aw
 !>@}
+!>\file
+!>Central module that handles all CTEM preparation and writing of output files
 
 end module io_driver      

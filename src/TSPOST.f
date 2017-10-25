@@ -1,5 +1,5 @@
 !>\file
-C!Purpose: Snow temperature calculations and cleanup after surface 
+C!Snow temperature calculations and cleanup after surface
 C!energy budget calculations.
 C!
 
