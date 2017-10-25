@@ -264,7 +264,7 @@ do 200 i =  il1, il2
     else
         vcmax25(i) = 6.5
     endif
-(equations are in module-level description)
+
     vcmax(i) = vcmax25(i)*exp((tmossk(i)-tref)*evc/(tref*gasc*tmossk(i)))
 
 !!     calculate ws (phototysnthesis rate limited by transport capacity)

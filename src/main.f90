@@ -496,7 +496,7 @@ contains
         real, pointer, dimension(:) :: FSIHROW !<
         real, pointer, dimension(:) :: FSVHROW !<
         real, pointer, dimension(:) :: GCROW   !<Type identifier for grid cell (1 = sea ice, 0 = ocean, -1 = land)
-        real, pointer, dimension(:) :: GGEOROW !<
+        real, pointer, dimension(:) :: GGEOROW !<The geothermal heat flux
         real, pointer, dimension(:) :: PADRROW !<
         real, pointer, dimension(:) :: PREROW  !<
         real, pointer, dimension(:) :: PRESROW !<
@@ -523,7 +523,7 @@ contains
         real, pointer, dimension(:) :: ZRFMROW !<
         real, pointer, dimension(:) :: UVROW   !<
         real, pointer, dimension(:) :: XDIFFUS !<
-        real, pointer, dimension(:) :: Z0ORROW !<
+        real, pointer, dimension(:) :: Z0ORROW !< The orographic roughness length
         real, pointer, dimension(:) :: FSSROW  !< Shortwave radiation \f$[W m^{-2} ]\f$
         real, pointer, dimension(:) :: PRENROW !<
         real, pointer, dimension(:) :: CLDTROW !<
@@ -627,7 +627,7 @@ contains
         real, pointer, dimension(:,:) :: XSLPROT !<
         real, pointer, dimension(:,:) :: ZPLGROT !<
         real, pointer, dimension(:,:) :: ZPLSROT !<
-        real, pointer, dimension(:,:) :: ZSNLROT !<
+        real, pointer, dimension(:,:) :: ZSNLROT !< Limiting snow depth (m)
         real, pointer, dimension(:,:) :: ZSNOROT  !<
         real, pointer, dimension(:,:) :: ALGWVROT !<
         real, pointer, dimension(:,:) :: ALGWNROT !<
@@ -2798,15 +2798,23 @@ contains
 
         !    =================================================================================
 
+        !> NLTEST and NMTEST, the number of grid cells and the number of mosaic tiles per grid cell for this test run.
+        !> This the driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then
+        !> of nlat and nmos
         nltest = nlat
         nmtest = nmos
         NTLD=NMOS
 
-        ! Put the lat and long arguments that were passed from the main
-        ! program into the row structure.
+        !> The parameter JLAT is calculated from DLATROW as the nearest integer value,
+
         DLATROW(1) = latitude
         JLAT=NINT(DLATROW(1))
         DLONROW(1) = longitude
+
+        !> The timestep counter N for the run is initialized to 0, the daily
+        !> averaging counter NCOUNT is set to 1, and the total number of
+        !> timesteps in the day NDAY is calculated as the number of seconds
+        !> in a day (86400) divided by the timestep length DELT.
         N=0
         NCOUNT=1
         NDAY=86400/NINT(DELT)
@@ -2814,6 +2822,9 @@ contains
         call initrowvars
         call resetclassaccum(nlat,nmos)
 
+        !> The grid-average height for the momentum diagnostic variables, ZDMROW, and for the
+        !> energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer
+        !> height of 10 m and to the screen height of 2 m respectively.
         ZDMROW(1)=10.0
         ZDHROW(1)=2.0
 
@@ -2857,6 +2868,8 @@ contains
 !             &      status='old')
 
 !     Complete some initial set up work:
+    !> In the 100 and 150 loops, further initial calculations are done. The limiting snow
+    !> depth, ZSNL, is assigned its operational value of 0.10 m.
 
         DO 100 I=1,NLTEST
             DO 100 M=1,NMTEST
@@ -2902,6 +2915,10 @@ contains
             call resetmonthend(nltest,nmtest)
             call resetyearend(nltest,nmtest)
         end if
+
+        !> As the last step in the initialization sequence, the subroutine CLASSB is
+        !> called, to assign soil thermal and hydraulic properties on the basis of the
+        !> textural information read in for each of the soil layers.
 
         CALL CLASSB(THPROT,THRROT,THMROT,BIROT,PSISROT,GRKSROT,&
             &            THRAROT,HCPSROT,TCSROT,THFCROT,THLWROT,PSIWROT,&
@@ -3134,7 +3151,30 @@ contains
 !        run_model=.true.
 !        met_rewound=.false.
 
-200     continue
+!200     continue
+
+      !> The do while loop marks the beginning of the time stepping loop
+      !> for the actual run.  N is incremented by 1, and the atmospheric forcing
+      !> data for the current time step are updated for each grid cell or modelled
+      !> area (see the section on “Data Requirements”).  In the dataset associated
+      !> with the benchmark run, only the total incoming shortwave radiation FSDOWN
+      !> is available; it is partitioned 50:50 between the incoming visible (FSVHROW)
+      !> and near-infrared (FSIHROW) radiation.  The first two elements of the
+      !> generalized incoming radiation array, FSSBROL (used for both the ISNOALB=0
+      !> and ISNOALB=1 options) are set to FSVHROW and FSIHROW respectively.
+      !> The air temperature TAROW is converted from degrees C to K.  The zonal
+      !> (ULROW) and meridional (VLROW) components of the wind speed are generally not
+      !> used; only the overall wind speed UVROW is
+      !> measured.  However, CLASS does not require wind direction for its calculations,
+      !> so ULROW is arbitrarily assigned the value of UVROW and VLROW is set to zero for
+      !> this run.  The input wind speed VMODROW is assigned the value of UVROW.
+      !> The cosine of the solar zenith angle COSZ is calculated from the day of
+      !> the year, the hour, the minute and the latitude using basic radiation geometry,
+      !> and (avoiding vanishingly small numbers) is assigned to CSZROW.  The fractional
+      !> cloud cover FCLOROW is commonly not available so a rough estimate is
+      !> obtained by setting it to 1 when precipitation is occurring, and to the fraction
+      !> of incoming diffuse radiation XDIFFUS otherwise (assumed to be 1 when the sun
+      !> is at the horizon, and 0.10 when it is at the zenith).
 
         ! start up the main model loop
 
@@ -3281,6 +3321,8 @@ contains
 
             endif   ! first timestep
 
+            !>CLASSI evaluates a series of derived atmospheric variables
+
             CALL CLASSI(VPDROW,TADPROW,PADRROW,RHOAROW,RHSIROW,&
                 &            RPCPROW,TRPCROW,SPCPROW,TSPCROW,TAROW,QAROW,&
                 &            PREROW,RPREROW,SPREROW,PRESROW,&
@@ -3288,9 +3330,14 @@ contains
 
             CUMSNO=CUMSNO+SPCPROW(1)*RHSIROW(1)*DELT
 
+            !> GATPREP assigns values to vectors governing the gather-scatter operations
+
             CALL GATPREP(ILMOS,JLMOS,IWMOS,JWMOS,&
                         NML,NMW,GCROW,FAREROT,MIDROT,&
                         NLAT,NMOS,ILG,1,NLTEST,NMTEST)
+
+            !> CLASSG performs the gather operation, gathering variables from their
+            !> positions as mosaic tiles within the modelled areas to long vectors of mosaic tiles
 
             CALL CLASSG (TBARGAT,THLQGAT,THICGAT,TPNDGAT,ZPNDGAT,&
                   TBASGAT,ALBSGAT,TSNOGAT,RHOSGAT,SNOGAT,&
@@ -3422,7 +3469,9 @@ contains
 ! 340                     CONTINUE
 
             !========================================================================
-            !
+
+            !> CLASSZ does the initial calculations for the energy and water balance checks;
+
             CALL CLASSZ (0,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP,&
                     WTVSTP, WTSSTP, WTGSTP,&
                     FSGVGAT,FLGVGAT,HFSCGAT,HEVCGAT,HMFCGAT,HTCCGAT,&
@@ -3533,6 +3582,8 @@ contains
             !     * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM by including: zolnc,
             !     * cmasvegc, alvsctm, alirctm, ipeatlandgat in the arguments.
 
+            !> CLASSA manages the calculation of albedos and other surface parameters;
+
             CALL CLASSA    (FC,     FG,     FCS,    FGS,    ALVSCN, ALIRCN,&
                     ALVSG,  ALIRG,  ALVSCS, ALIRCS, ALVSSN, ALIRSN,&
                     ALVSGC, ALIRGC, ALVSSC, ALIRSC, TRVSCN, TRIRCN,&
@@ -3572,6 +3623,8 @@ contains
 
             !          * ADAPTED TO COUPLING OF CLASS3.6 AND CTEM
             !          * by including in the arguments: lfstatus
+
+            !> CLASST calls the subroutines associated with the surface energy balance calculations
 
             CALL CLASST     (TBARC,  TBARG,  TBARCS, TBARGS, THLIQC, THLIQG,&
                     THICEC, THICEG, HCPC,   HCPG,   TCTOPC, TCBOTC, TCTOPG, TCBOTG,&
@@ -3613,6 +3666,9 @@ contains
 
             !-----------------------------------------------------------------------
             !          * WATER BUDGET CALCULATIONS.
+
+            !> CLASSW calls the subroutines associated with the surface water balance calculations
+
             CALL CLASSW  (THLQGAT,THICGAT,TBARGAT,TCANGAT,RCANGAT,SCANGAT,&
                     ROFGAT, TROFGAT,SNOGAT, TSNOGAT,RHOSGAT,ALBSGAT,&
                     WSNOGAT,ZPNDGAT,TPNDGAT,GROGAT, TBASGAT,GFLXGAT,&
@@ -3644,6 +3700,8 @@ contains
                     NLANDCS,NLANDGS,NLANDC, NLANDG, NLANDI )
 
             !========================================================================
+
+            !> CLASSZ completes the energy and water balance checks for the current time step
 
             CALL CLASSZ (1,      CTVSTP, CTSSTP, CT1STP, CT2STP, CT3STP,&
                     WTVSTP, WTSSTP, WTGSTP,&
@@ -3755,6 +3813,9 @@ contains
 
                 endif  ! if(ncount.eq.nday)
             endif  ! if(ctem_on)
+
+            !> CLASSS performs the scatter operation, scattering the variables from
+            !>the long vectors of mosaic tiles back onto the configuration of mosaic tiles within grid cells.
 
             CALL CLASSS (TBARROT,THLQROT,THICROT,TSFSROT,TPNDROT,&
                 &             ZPNDROT,TBASROT,ALBSROT,TSNOROT,RHOSROT,&

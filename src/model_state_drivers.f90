@@ -440,9 +440,21 @@ contains
          GGEOROW(i)=0.0
         end do
 
+    !> ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables
+    !> (temperature and specific humidity) are provided.  In a run using atmospheric model forcing data, these heights
+    !> would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW
+    !> refer to the measurement height of these variables, which is fixed.
+
         ZRFMROW = ncGet1DVar(initid, 'ZRFM', start = [lonIndex, latIndex], count = [1, 1])
         ZRFHROW = ncGet1DVar(initid, 'ZRFH', start = [lonIndex, latIndex], count = [1, 1])
+
+    !> ZBLDROW, the atmospheric blending height.  Technically this variable depends on the length scale of the
+    !> patches of roughness elements on the land surface, but this is difficult to ascertain.  Usually it is assigned a value of 50 m.
+
         ZBLDROW = ncGet1DVar(initid, 'ZBLD', start = [lonIndex, latIndex], count = [1, 1])
+
+    !> GCROW, the GCM surface descriptor variable.  For land surfaces (including inland water) it has a value of -1.
+
         GCROW = ncGet1DVar(initid, 'GC', start = [lonIndex, latIndex], count = [1, 1])
         DRNROT = ncGet2DVar(initid, 'DRN', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         SDEPROT = ncGet2DVar(initid, 'SDEP', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])

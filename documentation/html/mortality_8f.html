@@ -122,24 +122,24 @@ Functions/Subroutines</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Calculates the litter generated from leaves, stem, and root components after vegetation dies due to reduced growth efficiency or due to aging (the intrinsic mortality) </p>
 <p>Mortality</p>
-<p>The PFT-dependent mortality rate ( <img class="formulaInl" alt="$day^{-1}$" src="form_456.png"/>),</p>
+<p>The PFT-dependent mortality rate ( <img class="formulaInl" alt="$day^{-1}$" src="form_436.png"/>),</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha}, \]" src="form_879.png"/>
+<img class="formulaDsp" alt="\[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha}, \]" src="form_861.png"/>
 </p>
-<p> reflects the net effect of four different processes: (1) intrinsic- or age-related mortality, <img class="formulaInl" alt="$m_{intr}$" src="form_880.png"/>, (2) growth or stress-related mortality, <img class="formulaInl" alt="$m_{ge}$" src="form_881.png"/>, (3) mortality associated with bioclimatic criteria, <img class="formulaInl" alt="$m_{bioclim}$" src="form_524.png"/> and (4) mortality associated with disturbances, <img class="formulaInl" alt="$m_{dist}$" src="form_718.png"/>.</p>
-<p>Intrinsic- or age-related mortality uses a PFT-specific maximum age, <img class="formulaInl" alt="$A_{max}$" src="form_882.png"/> (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>), to calculate an annual mortality rate such that only <img class="formulaInl" alt="$1\,{\%}$" src="form_883.png"/> of tree PFTs exceed <img class="formulaInl" alt="$A_{max},\alpha$" src="form_884.png"/>. Intrinsic mortality accounts for processes, whose effect is not explicitly captured in the model including insect damage, hail, wind throw, etc.,</p>
+<p> reflects the net effect of four different processes: (1) intrinsic- or age-related mortality, <img class="formulaInl" alt="$m_{intr}$" src="form_862.png"/>, (2) growth or stress-related mortality, <img class="formulaInl" alt="$m_{ge}$" src="form_863.png"/>, (3) mortality associated with bioclimatic criteria, <img class="formulaInl" alt="$m_{bioclim}$" src="form_504.png"/> and (4) mortality associated with disturbances, <img class="formulaInl" alt="$m_{dist}$" src="form_698.png"/>.</p>
+<p>Intrinsic- or age-related mortality uses a PFT-specific maximum age, <img class="formulaInl" alt="$A_{max}$" src="form_864.png"/> (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>), to calculate an annual mortality rate such that only <img class="formulaInl" alt="$1\,{\%}$" src="form_865.png"/> of tree PFTs exceed <img class="formulaInl" alt="$A_{max},\alpha$" src="form_866.png"/>. Intrinsic mortality accounts for processes, whose effect is not explicitly captured in the model including insect damage, hail, wind throw, etc.,</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}). \]" src="form_885.png"/>
+<img class="formulaDsp" alt="\[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}). \]" src="form_867.png"/>
 </p>
-<p>Grasses and crops have <img class="formulaInl" alt="$m_{intr} = 0$" src="form_886.png"/>. The annual growth-related mortality <img class="formulaInl" alt="$m_{ge}$" src="form_881.png"/> is calculated using growth efficiency of a PFT over the course of the previous year following <a class="el" href="citelist.html#CITEREF_Prentice1993-xn">[21]</a> and <a class="el" href="citelist.html#CITEREF_Sitch2003-847">[72]</a> as</p>
+<p>Grasses and crops have <img class="formulaInl" alt="$m_{intr} = 0$" src="form_868.png"/>. The annual growth-related mortality <img class="formulaInl" alt="$m_{ge}$" src="form_863.png"/> is calculated using growth efficiency of a PFT over the course of the previous year following <a class="el" href="citelist.html#CITEREF_Prentice1993-xn">[21]</a> and <a class="el" href="citelist.html#CITEREF_Sitch2003-847">[74]</a> as</p>
 <p class="formulaDsp">
-<img class="formulaDsp" alt="\[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \]" src="form_887.png"/>
+<img class="formulaDsp" alt="\[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \]" src="form_869.png"/>
 </p>
-<p>where <img class="formulaInl" alt="$m_{{ge},max}$" src="form_888.png"/> represents the PFT-specific maximum mortality rate when no growth occurs (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>). <img class="formulaInl" alt="$k_{m}$" src="form_889.png"/> is a parameter set to <img class="formulaInl" alt="$0.3\,m^{2}\,(g\,C)^{-1}$" src="form_890.png"/>. <img class="formulaInl" alt="$g_\mathrm{e}$" src="form_891.png"/> is the growth efficiency of the PFT ( <img class="formulaInl" alt="$g\,C\,m^{-2}$" src="form_696.png"/>) calculated based on the maximum LAI ( <img class="formulaInl" alt="$L_{\alpha,max}$" src="form_892.png"/>; <img class="formulaInl" alt="$m^{2}\,m^{-2}$" src="form_893.png"/>) and the increment in stem and root mass over the course of the previous year ( <img class="formulaInl" alt="$\Delta C_\mathrm{S}$" src="form_894.png"/> and <img class="formulaInl" alt="$\Delta C_\mathrm{R}$" src="form_895.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_511.png"/>, respectively) <a class="el" href="citelist.html#CITEREF_Waring1983-wc">[80]</a> </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \]" src="form_896.png"/>
+<p>where <img class="formulaInl" alt="$m_{{ge},max}$" src="form_870.png"/> represents the PFT-specific maximum mortality rate when no growth occurs (see also <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a>). <img class="formulaInl" alt="$k_{m}$" src="form_871.png"/> is a parameter set to <img class="formulaInl" alt="$0.3\,m^{2}\,(g\,C)^{-1}$" src="form_872.png"/>. <img class="formulaInl" alt="$g_\mathrm{e}$" src="form_873.png"/> is the growth efficiency of the PFT ( <img class="formulaInl" alt="$g\,C\,m^{-2}$" src="form_676.png"/>) calculated based on the maximum LAI ( <img class="formulaInl" alt="$L_{\alpha,max}$" src="form_874.png"/>; <img class="formulaInl" alt="$m^{2}\,m^{-2}$" src="form_875.png"/>) and the increment in stem and root mass over the course of the previous year ( <img class="formulaInl" alt="$\Delta C_\mathrm{S}$" src="form_876.png"/> and <img class="formulaInl" alt="$\Delta C_\mathrm{R}$" src="form_877.png"/>; <img class="formulaInl" alt="$kg\,C\,m^{-2}$" src="form_491.png"/>, respectively) <a class="el" href="citelist.html#CITEREF_Waring1983-wc">[82]</a> </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \]" src="form_878.png"/>
 </p>
-<p>Mortality associated with bioclimatic criteria, <img class="formulaInl" alt="$m_{bioclim}$" src="form_524.png"/> ( <img class="formulaInl" alt="$0.25\,yr^{-1}$" src="form_897.png"/>), is applied when climatic conditions in a grid cell become unfavourable for a PFT to exist and ensures that PFTs do not exist outside their bioclimatic envelopes, as explained in the next section.</p>
-<p>The annual mortality rates for <img class="formulaInl" alt="$m_{intr}$" src="form_880.png"/>, <img class="formulaInl" alt="$m_{ge}$" src="form_881.png"/> and <img class="formulaInl" alt="$m_{bioclim}$" src="form_524.png"/> are converted to daily rates and applied at the daily time step of the model, while <img class="formulaInl" alt="$m_{dist}$" src="form_718.png"/> is calculated by the fire module of the model based on daily area burned for each PFT as summarized in Appendix fire}. In practice, the <img class="formulaInl" alt="$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha$" src="form_898.png"/> term of Eq. (compact}) is implemented right after area burnt is calculated. </p>
+<p>Mortality associated with bioclimatic criteria, <img class="formulaInl" alt="$m_{bioclim}$" src="form_504.png"/> ( <img class="formulaInl" alt="$0.25\,yr^{-1}$" src="form_879.png"/>), is applied when climatic conditions in a grid cell become unfavourable for a PFT to exist and ensures that PFTs do not exist outside their bioclimatic envelopes, as explained in the next section.</p>
+<p>The annual mortality rates for <img class="formulaInl" alt="$m_{intr}$" src="form_862.png"/>, <img class="formulaInl" alt="$m_{ge}$" src="form_863.png"/> and <img class="formulaInl" alt="$m_{bioclim}$" src="form_504.png"/> are converted to daily rates and applied at the daily time step of the model, while <img class="formulaInl" alt="$m_{dist}$" src="form_698.png"/> is calculated by the fire module of the model based on daily area burned for each PFT as summarized in Appendix fire}. In practice, the <img class="formulaInl" alt="$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha$" src="form_880.png"/> term of Eq. (compact}) is implemented right after area burnt is calculated. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
 <a class="anchor" id="a11a826efba70183880f4f963e93c4247"></a>
 <div class="memitem">
@@ -225,11 +225,11 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">iday</td><td>day of the year</td></tr>
     <tr><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
     <tr><td class="paramname">sort</td><td>index for correspondence between ctem 9 pfts and size 12 of parameters vectors</td></tr>
-    <tr><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/></td></tr>
-    <tr><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/></td></tr>
-    <tr><td class="paramname">gleafmas</td><td>green leaf mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/></td></tr>
+    <tr><td class="paramname">stemmass</td><td>stem mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_534.png"/></td></tr>
+    <tr><td class="paramname">rootmass</td><td>root mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_534.png"/></td></tr>
+    <tr><td class="paramname">gleafmas</td><td>green leaf mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_534.png"/></td></tr>
     <tr><td class="paramname">ailcg</td><td>green or live lai</td></tr>
-    <tr><td class="paramname">bleafmas</td><td>brown leaf mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_554.png"/> </td></tr>
+    <tr><td class="paramname">bleafmas</td><td>brown leaf mass for each of the 9 ctem pfts, <img class="formulaInl" alt="$kg c/m^2$" src="form_534.png"/> </td></tr>
   </table>
   </dd>
 </dl>
@@ -252,7 +252,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="mortality_8f.html">mortality.f</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

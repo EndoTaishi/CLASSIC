@@ -129,8 +129,8 @@ C
       REAL QACROT (NL,NT)   !<Specific humidity of air within vegetation 
                             !!canopy \f$[kg kg^{-1}]\f$
       REAL WSNOROT(NL,NM)   !<Liquid water content of snow pack \f$[kg m^{-2}]\f$
-      REAL REFROT(NL,NM)    !
-      REAL BCSNROT(NL,NM)   !
+      REAL REFROT(NL,NM)    !<Snow grain size (for ISNOALB=1 option)
+      REAL BCSNROT(NL,NM)   !<Black carbon mixing ratio (for ISNOALB=1 option)  [kg m-3]
 C
       REAL    TBARGAT(ILG,IG),   THLQGAT(ILG,IG),   THICGAT(ILG,IG), 
      1        TPNDGAT(ILG),      ZPNDGAT(ILG),      TBASGAT(ILG),   
@@ -228,7 +228,7 @@ C
       REAL TCSROT (NL,NT,IG)    !<Thermal conductivity of soil particles 
                                 !!\f$[W m^{-1} K^{-1}]\f$
       REAL THFCROT(NL,NT,IG)    !<Field capacity \f$[m^3 m^{-3}]\f$
-      REAL THLWROT(NL,NT,IG)    !<Wilting point \f$[m^3 m^{-3}]\f$
+      REAL THLWROT(NL,NT,IG)    !<Liquid water content at wilting point \f$[m^3 m^{-3}]\f$
       REAL PSIWROT(NL,NT,IG)    !<Soil moisture suction at wilting point 
                                 !![m]
       REAL DLZWROT(NL,NT,IG)    !<Permeable thickness of soil layer [m]
@@ -238,11 +238,11 @@ C
       REAL GRKFROT(NL,NT)       !<WATROF parameter used when running MESH code [ ]
       REAL WFSFROT(NL,NT)       !<WATROF parameter used when running MESH code [ ]
       REAL WFCIROT(NL,NT)       !<WATROF parameter used when running MESH code [ ]
-      REAL ALGWVROT(NL,NT)      !
-      REAL ALGWNROT(NL,NT)      !
-      REAL ALGDVROT(NL,NT)      !
-      REAL ALGDNROT(NL,NT)      !
-      REAL ASVDROT(NL,NM)       !<Optional user-specified value of snow 
+      REAL ALGWVROT(NL,NT)      !<Reference visible albedo for saturated soil  [  ]
+      REAL ALGWNROT(NL,NT)      !<Reference near-infrared albedo for saturated soil  [  ]
+      REAL ALGDVROT(NL,NT)      !<Reference visible albedo for dry soil  [  ]
+      REAL ALGDNROT(NL,NT)      !<Reference near-infrared albedo for dry soil  [  ]
+      REAL ASVDROT(NL,NT)       !<Optional user-specified value of snow 
                                 !!visible albedo to override CLASS-
                                 !!calculated value [ ]
       REAL ASIDROT(NL,NM)       !<Optional user-specified value of snow 
@@ -296,8 +296,8 @@ C
       REAL FSIHROW( NL) !<Near-infrared radiation incident on horizontal 
                         !!surface \f$[W m^{-2}]\f$
       REAL CSZROW ( NL) !<Cosine of solar zenith angle [ ]
-      REAL FSGROL ( NL) !
-      REAL FLGROL ( NL) !
+      REAL FSGROL ( NL) !<Total shortwave radiation absorbed by land surface  [W m-2]
+      REAL FLGROL ( NL) !<Total longwave radiation absorbed by land surface  [W m-2]
       REAL FDLROL ( NL) !<Downwelling longwave radiation at bottom of 
                         !!atmosphere \f$[W m^{-2}]\f$
 
@@ -323,14 +323,14 @@ C
       REAL DLONROW( NL) !<Longitude of grid cell (east of Greenwich) [degrees]
       REAL GGEOROW( NL) !<Geothermal heat flux at bottom of soil profile 
                         !!\f$[W m^{-2}]\f$
-      REAL GUSTROL (NL) !
+      REAL GUSTROL (NL) !<Wind gustiness factor  [  ]
       REAL RADJ   ( NL) !<Latitude of grid cell (positive north of equator) [rad]
       REAL VMODL  ( NL) !<Wind speed at reference height \f$[m s^{-1}]\f$
-      REAL DEPBROW (NL) !
+      REAL DEPBROW (NL) !Black carbon deposition rate  [kg m-2 s-1]
 
-      REAL, DIMENSION(NL,NBS) ::  FSDBROL
-      REAL, DIMENSION(NL,NBS) ::  FSFBROL
-      REAL, DIMENSION(NL,NBS) ::  FSSBROL
+      REAL, DIMENSION(NL,NBS) ::  FSDBROL !<Direct solar radiation in each modelled wavelength band  [W m-2]
+      REAL, DIMENSION(NL,NBS) ::  FSFBROL !<Diffuse solar radiation in each modelled wavelength band  [W m-2]
+      REAL, DIMENSION(NL,NBS) ::  FSSBROL !<Total solar radiation in each modelled wavelength band  [W m-2]
 
 C
       REAL  ZRFMGAT(ILG), ZRFHGAT(ILG), ZDMGAT (ILG), ZDHGAT (ILG),

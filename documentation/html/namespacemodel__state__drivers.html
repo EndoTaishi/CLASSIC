@@ -306,6 +306,9 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 </div><div class="memdoc">
 
 <p>Reads in the model initial conditions for both physics and biogeochemistry (if CTEM on) </p>
+<p>ZRFMROW and ZRFHROW, the reference heights at which the momentum variables (wind speed) and energy variables (temperature and specific humidity) are provided. In a run using atmospheric model forcing data, these heights would vary by time step, but since this version of the driver is set up to use field data, ZRFMROW and ZRFHROW refer to the measurement height of these variables, which is fixed.</p>
+<p>ZBLDROW, the atmospheric blending height. Technically this variable depends on the length scale of the patches of roughness elements on the land surface, but this is difficult to ascertain. Usually it is assigned a value of 50 m.</p>
+<p>GCROW, the GCM surface descriptor variable. For land surfaces (including inland water) it has a value of -1.</p>
 <p>Rest of the initialization variables are needed to run CTEM but if starting from bare ground initialize all live and dead c pools from zero. suitable values of extnprobgrd and prbfrhucgrd would still be required. set stdaln to 1 for operation in non-gcm stand alone mode, in the CTEM initialization file.</p>
 <p>If fire and competition are on, save the stemmass and rootmass for use in burntobare subroutine on the first timestep.</p>
 <p>Take the first tile value now and put it over the other tiles</p>
@@ -421,7 +424,7 @@ real, dimension(:), allocatable&#160;</td><td class="memItemRight" valign="botto
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemodel__state__drivers.html">model_state_drivers</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

@@ -39,26 +39,16 @@ The two sections following the one that describes the driver provide detailed de
     & & surface detention capacity. \\
 2.5 & January 1996 & Completion of energy budget diagnostic calculations. \\
 2.6 & August 1997 & Revisions to surface stability function calculations. \\
-2.7 & December 1997 & Incorporation of variable soil permeable depth; calculation of soil thermal and hydraulic \\
- & & properties based on textural composition; modified surface temperature iteration scheme. \\
-3.0 & December 2002 & Improved treatment of soil evaporation; complete treatment of organic soils; new canopy \\
- &  & conductance formulation; preliminary routines for lateral movement of soil water; enhanced snow  \\
-     & & density and snow interception; improved turbulent transfer from vegetation; mosaic formulation. \\
-3.1 & April 2005 & Faster surface temperature iteration scheme; refinements to leaf boundary resistance formulation; \\
-& & improved treatment of snow sublimation and interception; transition to Fortran 90 and\\
-    & & single precision variables. \\
-3.2 & May 2006 & Option for multiple soil layers at depth; additional liquid water content of snow pack; revised radiation \\
-    & & transmission in vegetation. \\
-3.3 & December 2006 & Separate temperature profile curve fit for snow and soil; multiple-layer option for ice sheets;\\
-    & & water and energy balance checks for each time step; modifications to soil hydraulic \\
- & & conductivity calculations. \\
-3.4 & April 2008 & Streamline and clean up code; updated soil thermal conductivity calculations; revisions to handling of\\
-    & & water stored on vegetation. \\
-3.5 & December 2010 & Updated field capacity calculation; revised treatment of water on canopy; \\
-    & & reworked calculation of baseflow. \\
-3.6 & December 2011 & Revised ponding depth over organic soils; revised snow albedo refreshment \\
-    & & threshold; new snow thermal conductivity algorithm; interface with Canadian Terrestrial \\
-        & & Ecosystem Model (CTEM). \\
+2.7 & December 1997 & Incorporation of variable soil permeable depth; calculation of soil thermal and hydraulic properties based on textural
+composition; modified surface temperature iteration scheme. \\
+3.0 & December 2002 & Improved treatment of soil evaporation; complete treatment of organic soils; new canopy conductance formulation; preliminary routines for lateral movement of soil water; enhanced snow density and snow interception; improved turbulent transfer from vegetation; mosaic formulation. \\
+3.1 & April 2005 & Faster surface temperature iteration scheme; refinements to leaf boundary resistance formulation; improved treatment of snow sublimation and interception; transition to Fortran 90 and single precision variables. \\
+3.2 & May 2006 & Option for multiple soil layers at depth; additional liquid water content of snow pack; revised radiation transmission in vegetation. \\
+3.3 & December 2006 & Separate temperature profile curve fit for snow and soil; multiple-layer option for ice sheets; water and energy balance checks for each time step; modifications to soil hydraulic conductivity calculations. \\
+3.4 & April 2008 & Streamline and clean up code; updated soil thermal conductivity calculations; revisions to handling of water stored on vegetation. \\
+3.5 & December 2010 & Updated field capacity calculation; revised treatment of water on canopy; reworked calculation of baseflow. \\
+3.6 & December 2011 & Revised ponding depth over organic soils; revised snow albedo refreshment threshold; new snow thermal conductivity algorithm; interface with Canadian Terrestrial Ecosystem Model (CTEM). \\
+3.6.1 & December 2016 & New treatment of bare soil albedo; new optional four-band snow albedo formulation; fixes to guard against overshoots in water drawdown by evapotranspiration; upper limit on snow depth. \\
 \end{tabular}
 \f]
 
@@ -95,9 +85,9 @@ At each time step, for each grid cell or modelled area, the following atmospheri
 
 When assembling the forcing data, the following guidelines should be noted:
 
-1) CLASS ordinarily requires that the forcing incoming shortwave radiation be partitioned into the visible and near-infrared components. If these are not available, however, they can each be roughly estimated as approximately half of the total incoming solar radiation.
+1) CLASS ordinarily requires that the forcing incoming shortwave radiation be partitioned into the visible and near-infrared components. If these are not available, however, they can each be roughly estimated as approximately half of the total incoming solar radiation.  Note: if the ISNOALB switch (see below) is set to 1, the incoming shortwave radiation is required in four wavelength bands, and the direct and diffuse components are required as well.
 
-2) The fractional cloud cover is used to calculate the direct and diffuse components of the incoming shortwave radiation. If it is not available it can be estimated on the basis of the solar zenith angle and the occurrence of precipitation (see the section on the RUNCLASS driver).
+2) The fractional cloud cover is used in the calculation of the transmissivity of the vegetation canopy. If it is not available it can be estimated on the basis of the solar zenith angle and the occurrence of precipitation (see the section on the RUNCLASS driver).
 
 3) For atmospheric models, the air temperature supplied to CLASS should be the lowest level air temperature extrapolated using the dry adiabatic lapse rate to the bottom of the atmosphere, i.e. to where the wind speed is zero and the pressure is equal to the surface pressure P a . For field data, the actual measured air temperature at the reference height should be used, since in this case the adiabatic extrapolation is performed within CLASS.
 
@@ -105,11 +95,11 @@ When assembling the forcing data, the following guidelines should be noted:
 
 5) In atmospheric models the forcing wind speed, air temperature and specific humidity are obtained from the lowest modelled atmospheric layer, and thus the reference height will be the height above the “surface” (i.e. the location where the wind speed is zero and the pressure is equal to the surface pressure P a ) corresponding to that lowest layer. Some atmospheric models use a vertical co-ordinate system in which the momentum and thermodynamic levels are staggered, and if so, ZFRMROW and ZRFHROW will have different values. If that is the case, the switch ISLFD in the CLASS driver should be set to 2, so that the subroutines FLXSURFZ and DIASURFZ are called (see the RUNCLASS documentation), since the other options do not support different reference heights. In the case of field data, the reference height is the height above the ground surface at which the variables are measured. If the measurement height for wind speed is different from that for the air temperature and specific humidity, again the ISLFD switch in the CLASS driver should be set to 2. (Note that neither ZRFHROW nor ZRFMROW may be smaller than the vegetation canopy height, as this will cause the model run to crash.)
 
-6) If the surface being modelled is a heterogeneous one, care must be taken to ensure that the reference heights are greater than the “blending height”, the distance above the surface at which the atmospheric variables are not dominated by any one surface type. In principle this height depends on the length scale of the roughness elements; it is usually of the order of 50-100 m. In CLASS the blending height is used in averaging the roughness lengths over the modelled area, and is read in separately from ZRFMROW and ZRFHROW as ZBLDROW.
+6) If the surface being modelled is a very heterogeneous one, care must be taken to ensure that the reference heights are greater than the “blending height”, the distance above the surface at which the atmospheric variables are not dominated by any one surface type. In principle this height depends on the length scale of the roughness elements; it may be as large as 50-100 m. In CLASS the blending height is used in averaging the roughness lengths over the modelled area, and is read in separately from ZRFMROW and ZRFHROW as ZBLDROW.
 
 7) CLASS is able to run with total incoming precipitation, partitioning it into rainfall and snowfall on the basis of empirically derived equations. If the rainfall rate (RPREROW) and snowfall rate (SPREROW) are available, they should be used instead. The READ statement in the CLASS driver should be modified accordingly, and the switch IPCP should be set to 4.
 
-8) The length of the time step should be carefully considered in assembling the forcing data. CLASS has been designed to run at a time step of 30 minutes or less, and the explicit prognostic time stepping scheme used for the soil, snow and vegetation variables is based on this assumption. Longer time steps may lead to the appearance of numerical instabilities in the modelled prognostic variables.
+8) The length of the time step should be carefully considered in assembling the forcing data. CLASS has been designed to run at a time step of 30 minutes or less, and the explicit prognostic time stepping scheme used for the soil, snow and vegetation variables is based on this assumption. Longer time steps may lead to the emergence of numerical instabilities in the modelled prognostic variables.
 
 ## Vegetation Data {#vegetationData}
 
@@ -132,7 +122,12 @@ For each of the four main vegetation categories (needleleaf trees, broadleaf tre
 
 CLASS models the physiological characteristics of trees as remaining constant throughout the year except for the leaf area index and plant area index, which vary seasonally between the limits defined by PAMXROT and PAMNROT. The areal coverage of crops varies from zero in the winter to FCANROT at the height of the growing season, and their physiological characteristics undergo a corresponding cycle. Grasses remain constant year-round. (For full details of these calculations, see the documentation for subroutine APREP). Urban areas are also treated as “vegetation” in the CLASS code, and have associated values for FCANROT, ALVCROT, ALICROT and LNZ0ROT. Thus these arrays have a third dimension of 5 rather than 4.
 
-Ideally the above vegetation parameters should be measured at the modelled location. Of course this is not always possible, especially when running over a large modelling domain. As a guide, the table in Appendix A provides representative values for the 20 vegetation types recognized by the Canadian GCM. If more than one type of vegetation in a given category is present on the modelled area, the parameters for the category should be areally averaged over the vegetation types present. For the stomatal resistance parameters, typical values of these for the four principal vegetation types are given below:
+Ideally the vegetation parameters should be measured at the modelled location. Of course this is not always possible, especially when running over a large modelling domain. As a guide, the table below provides generic values from the literature for the 20 categories of globally significant vegetation types. If more than one type of vegetation in a given category is present on the modelled area, the parameters for the category should be areally averaged over the vegetation types present.
+
+\image html "landcovercat_table.png" "Percent Sand"
+\image latex "landcovercat_table.png" "Percent Sand"
+
+For the stomatal resistance parameters, typical values for the four principal vegetation types are given below:
 
 \f[
 \begin{tabular}{ | l | c | c | c | c | c | c | }
@@ -146,12 +141,13 @@ Grass & 100.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\
 
 ## Soil Data {#soilData}
 
-The following information is required for each modelled soil layer:
+The following specifications are required for each modelled soil layer:
 
    - DELZ Layer thickness [m]
    - ZBOT Depth of bottom [m]
 
-The standard operational configuration for CLASS consists of three soil layers, of thicknesses 0.10 m, 0.25 m and 3.75 m, and thus of bottom depths 0.10, 0.35 and 4.10 m respectively. CLASS versions 3.2 and higher support other options: the third soil layer may be replaced with a larger number of thinner layers, and/or the bottom of the soil profile may be extended below 4.10 m. However, because the temperature stepping scheme used in CLASS is of an explicit formulation, care must be taken not to make the layers too thin, since this may lead to numerical instability problems.
+
+The standard operational configuration for CLASS consists of three soil layers, of thicknesses 0.10 m, 0.25 m and 3.75 m, and thus of bottom depths 0.10, 0.35 and 4.10 m respectively. CLASS versions 3.2 and higher support other options: the second and third soil layers may be replaced with a larger number of thinner layers, and/or the bottom of the soil profile may be extended below 4.10 m. However, because the temperature stepping scheme used in CLASS is of an explicit formulation, care must be taken not to make the layers too thin, since this may lead to numerical instability problems. As a rule of thumb, the thicknesses of layers should be limited to \f$\geq\f$ 0.10 m.
 
 For each of the modelled soil layers on each of the mosaic tiles, the following texture data are required:
 
@@ -168,7 +164,7 @@ For each of the modelled soil layers on each of the mosaic tiles, the following 
 
 3) If the layer consists of rock, SANDROT is assigned a flag value of -3. If it is part of a continental ice sheet, it is assigned a flag value of -4. In both cases, CLAYROT and ORGMROT are not used and are set to zero.
 
-SANDROT, CLAYROT and ORGMROT are utilized in the calculation of the soil layer thermal and hydraulic properties in subroutine CLASSB. If the measured values of these properties are available, they should be used instead.
+SANDROT, CLAYROT and ORGMROT are utilized in the calculation of the soil layer thermal and hydraulic properties in subroutine CLASSB. If measured values of these properties are available, they should be used instead.
 
 For each of the mosaic tiles over the modelled area, the following surface parameters must be specified:
 
@@ -176,10 +172,13 @@ For each of the mosaic tiles over the modelled area, the following surface param
    - FAREROT Fractional coverage of mosaic tile on the modelled area
    - MIDROT Mosaic tile type identifier (1 for land surface, 0 for inland lake)
    - SDEPROT Soil permeable depth [m]
+   - SOCIROT Soil colour index
 
-1) The soil permeable depth, i.e. the depth to bedrock, may be less than the modelled thermal depth of the soil profile. This permeable depth is indicated by the variable SDEPROT. If the depth to bedrock occurs within a soil layer rather than at the interface between two layers, CLASS assigns the specified mineral or organic soil characteristics to the part of the layer above bedrock, and values corresponding to rock to the portion below.
+1) The soil permeable depth, i.e. the depth to bedrock, may be less than the modelled thermal depth of the soil profile. This permeable depth is indicated by the variable SDEPROT. If the depth to bedrock occurs within a soil layer, CLASS assigns the specified mineral or organic soil characteristics to the part of the layer above bedrock, and values corresponding to rock to the portion below. (All layers fully below SDEPROT are treated as rock.)
 
-2) The drainage index, DRNROT, is set to 1 except in cases of deep soils where it is desired to suppress drainage from the bottom of the soil profile (e.g. in bogs, or in deep soils with a high water table). In this case it is set to 0.
+2) The drainage index, DRNROT, is usually set to 0.005 except in cases of deep soils where it is desired to suppress drainage from the bottom of the soil profile (e.g. in bogs, or in deep soils with a high water table). In such cases it is set to 0.
+
+3) The soil colour index is used to assign the soil albedo.  It ranges from 1 to 20; low values indicate bright soils and high values indicate dark.  The wet and dry visible and near-infrared albedos for the given index are obtained from lookup tables, which can be found in subroutine CLASSB.
 
 When the standard three-layer soil configuration is used, CLASS provides a means of accounting for the possibility of the depth to bedrock falling within the thick third layer, and therefore of phase changes of water taking place in only the upper part of the layer, by introducing the variable TBASROT, which refers to the temperature of the lower part of the layer containing the bedrock. At the beginning of the time step the temperature of the upper part of the layer is disaggregated from the overall average layer temperature using the saved value of TBASROT. The heat flow between the upper part of the soil layer and the lower part is diagnosed from the heat flux at the top of the layer. The upper layer temperature and TBASROT are stepped ahead separately, and the net heat flux in the upper part of the layer is used in the phase change of water if appropriate. The upper layer temperature and TBASROT are re-aggregated at the end of the time step to yield once again the overall average layer temperature.
 
@@ -194,7 +193,7 @@ Finally, four parameters are required for modelling lateral movement of soil wat
 
 ## Initialization of Prognostic Variables {#initProgVar}
 
-CLASS requires initial values of the land surface prognostic variables, either from the most recent atmospheric model integration or from field measurements. These are listed below, with guidelines for specifying values for each.
+CLASS requires initial values of the land surface prognostic variables, either from the most recent atmospheric model integration or from field measurements. These are listed below, with guidelines for specifying values for each if measured values are not available..
 
    - ALBSROT Snow albedo [ ]
    - CMAIROT Aggregated mass of vegetation canopy \f$[kg m^{-2} ]\f$
@@ -216,7 +215,7 @@ CLASS requires initial values of the land surface prognostic variables, either f
    - WSNOROT Liquid water content of snow pack \f$[kg m^{-2} ]\f$
    - ZPNDROT Depth of ponded water on surface [m]
 
-1) TBARROT, THLQROT and THICROT are required for each of the modelled soil layers. Thin soil layers near the surface equilibrate quickly, but thicker, deeper layers respond more slowly, and long-term biases can be introduced into the simulation if their temperatures and moisture contents are not initialized to reasonable values. For the moisture contents, it may be better to err on the low side, since soil moisture recharge typically takes place on shorter time scales than soil moisture loss. Field capacity is commonly used as an initial value. If the soil layer temperature is above freezing, the liquid moisture content would be set to the field capacity and the frozen moisture content to zero; if the layer temperature is below zero, the liquid moisture content would be set to the minimum value and the frozen moisture content to the field capacity minus the minimum value. Very deep soil temperatures do not have a large effect on surface fluxes, but errors in their initial values can adversely effect hydrological simulations. If the standard three-layer soil configuration is being used, TBASROT should be set to the third soil layer temperature; otherwise it can be arbitrarily set to zero. For rock or ice layers, THLQROT and THICROT should both be set to zero.
+1) TBARROT, THLQROT and THICROT are required for each of the modelled soil layers. Thin soil layers near the surface equilibrate quickly, but thicker, deeper layers respond more slowly, and long-term biases can be introduced into the simulation if their temperatures and moisture contents are not initialized to reasonable values. If measured values are not available, for the moisture contents, it may be better to err on the low side, since soil moisture recharge typically takes place on shorter time scales than soil moisture loss. Field capacity is commonly used as an initial value. If the soil layer temperature is above freezing, the liquid moisture content would be set to the field capacity and the frozen moisture content to zero; if the layer temperature is below zero, the liquid moisture content would be set to the minimum value and the frozen moisture content to the field capacity minus the minimum value (THLMIN; see the section on subroutine CLASSB). Very deep soil temperatures do not have a large effect on surface fluxes, but errors in their initial values can adversely effect hydrological simulations. If the standard three-layer soil configuration is being used, TBASROT should be set to the third soil layer temperature; otherwise it can be arbitrarily set to zero. For rock or ice layers, THLQROT and THICROT should both be set to zero.
 
 2) It is best to begin a simulation in snow-free conditions, so that the snow simulation can start from the simplest possible state where SNOROT, TSNOROT, ALBSROT, RHOSROT and WSNOROT are all initialized to zero. If erroneous values of the snow variables are specified as initial conditions, this can lead to a persistent bias in the land surface simulation.
 

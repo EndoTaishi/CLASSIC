@@ -26,8 +26,8 @@ C!
       !!TCCLAY & Thermal conductivity of fine mineral particles                           & 2.5            & $W m^{-1} K^{-1} $ \\ \hline 
       !!TCOM   & Thermal conductivity of organic matter                                   & 0.25           & $W m^{-1} K^{-1} $ \\ \hline 
       !!TCDRYS & Thermal conductivity of dry mineral soil                                 & 0.275          & $W m^{-1} K^{-1} $ \\ \hline 
-      !!RHOSOL & Density of soil mineral matter                                           & $2.65 10^3  $  & $kg m^{-3}  $      \\ \hline 
-      !!RHOOM  & Density of soil organic matter                                           & $1.30 10^3  $  & $kg m^{-3}  $      \\ \hline 
+      !!RHOSOL & Particle density of soil mineral matter                                  & $2.65 10^3  $  & $kg m^{-3}  $      \\ \hline
+      !!RHOOM  & Particle density of soil organic matter                                  & $1.30 10^3  $  & $kg m^{-3}  $      \\ \hline
       !!HCPW   & Volumetric heat capacity of water                                        & $4.187 10^6 $  & $J m^{-3} K^{-1} $ \\ \hline
       !!HCPICE & Volumetric heat capacity of ice                                          & $1.9257 10^6$  & $J m^{-3} K^{-1} $ \\ \hline
       !!HCPSOL & Volumetric heat capacity of mineral matter                               & $2.25 10^6  $  & $J m^{-3} K^{-1} $ \\ \hline
@@ -50,7 +50,7 @@ C!
       !!ALIRI  & Near-infrared albedo of ice                                              & 0.73           & -                  \\ \hline
       !!ALVSO  & Visible albedo of organic matter                                         & 0.05           & -                  \\ \hline
       !!ALIRO  & Near-infrared albedo of organic matter                                   & 0.30           & -                  \\ \hline
-      !!ALBRCK & Albedo of rock                                                           & 0.27           & -                  \\ \hline
+      !!ALBRCK & Albedo of rock                                                           & 0.16           & -                  \\ \hline
       !!\end{tabular}
       !!\f]
       !!

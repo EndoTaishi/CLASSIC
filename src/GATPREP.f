@@ -35,9 +35,9 @@ C     * INTEGER CONSTANTS.
 C
       INTEGER  NML  !<Total number of mosaic tiles in land surface gather vectors
       INTEGER  NMW  !<Total number of mosaic tiles in inland water gather vectors
-      INTEGER  NL   !<Hard-coded maximum number of grid cells
-      INTEGER  NM   !<Hard-coded maximum number of mosaic tiles
-      INTEGER  ILG  !<Hard-coded maximum number of elements in the gathered vectors
+      INTEGER  NL   !<Number of latitude grid cells in land surface scatter vectors
+      INTEGER  NM   !<Total number of CLASS mosaic tiles in land surface gather vectors
+      INTEGER  ILG  !<Total number of mosaic tiles per latitude grid cell in land surface scatter vector
       INTEGER  IL1  !<
       INTEGER  IL2  !<
       INTEGER  IM   !<Maximum number of mosaic tiles within the grid cells in the array under consideration

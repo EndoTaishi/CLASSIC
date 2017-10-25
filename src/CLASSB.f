@@ -38,9 +38,6 @@ C     *                         BRIGHTNESS FIELDS FROM CLM.
 C     * NOV 16/13 - M.LAZARE.   FINAL VERSION FOR GCM17:
 C     *                         - REVERT BACK TO CLASS2.7
 C     *                           SPECIFICATION FOR "ALGWET".
-C
-C     * FEB 26/15 - J.MELTON.   - MAKE WILTING POINT THE SAME AS CTEM 
-C                                 WITH A VALUE OF 150 M.
 C     * NOV 11/11 - M.LAZARE.   - IMPLEMENT CTEM CHOICE OF
 C     *                           ALGDRY DETERMINED BY ADDED
 C     *                           PASSED SWITCH "ICTEMMOD".
@@ -83,7 +80,6 @@ C     *                         CONTENT.
 C
       use ctem_params, only : thpmoss,thrmoss,thmmoss,bmoss,psismoss,
      1                       grksmoss,hcpmoss
-
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -102,14 +98,14 @@ C
       REAL HCPS  (NL,NM,IG) !<Volumetric heat capacity of soil matter \f$[J m^{-3} K^{-1} ] (C_g )\f$
       REAL TCS   (NL,NM,IG) !<Thermal conductivity of soil \f$[W m^{-1} K^{-1} ] (\tau_g )\f$
       REAL THFC  (NL,NM,IG) !<Field capacity \f$[m^3 m^{-3} ] (\theta_{fc} )\f$
-      REAL THLW  (NL,NM,IG) !<Soil water content at wilting point, \f$[m^3 m^{-3} ]\f$
+      REAL THLW  (NL,NM,IG) !<Soil water content at wilting point, \f$[m^3 m^{-3} ] (\theta_{wilt})\f$
       REAL PSIWLT(NL,NM,IG) !<Soil moisture suction at wilting point [m] \f$(\Psi_{wilt} )\f$
       REAL DELZW (NL,NM,IG) !<Thickness of permeable part of soil layer [m]
       REAL ZBOTW (NL,NM,IG) !<Depth of bottom of permeable part of soil layer [m]
-      REAL ALGWV (NL,NM)    !<Visible albedo of wet soil for modelled area [ ]
-      REAL ALGWN (NL,NM)    !<NIR albedo of wet soil for modelled area [ ]
-      REAL ALGDV (NL,NM)    !<Visible albedo of dry soil for modelled area [ ]
-      REAL ALGDN (NL,NM)    !<NIR albedo of dry soil for modelled area [ ]
+      REAL ALGWV (NL,NM)    !<Visible albedo of wet soil for modelled area  [  ]
+      REAL ALGWN (NL,NM)    !<Near-IR albedo of wet soil for modelled area  [  ]
+      REAL ALGDV (NL,NM)    !<Visible albedo of dry soil for modelled area  [  ]
+      REAL ALGDN (NL,NM)    !<Near-IR albedo of dry soil for modelled area  [  ]
 C
       INTEGER ISAND (NL,NM,IG) !<Sand content flag
       INTEGER IGDR  (NL,NM) !<Index of soil layer in which bedrock is encountered
@@ -125,13 +121,12 @@ C
       REAL SDEPTH(NL,NM)    !<Permeable depth of soil column (depth to bedrock) [m] \f$(z_b )\f$
       REAL SOCI  (NL,NM)    !<Soil colour index
 C
-C
 C     * TEMPORARY VARIABLES.
 C
       REAL ALWV(20), ALWN(20), ALDV(20), ALDN(20)
 C
       REAL VSAND,VORG,VFINE,VTOT,AEXP,ABC,THSAND,THFINE,THORG
-c
+C
 C     * COMMON BLOCK PARAMETERS.
 C
       REAL THPORG (3)         !<Peat pore volume \f$[m^3 m^{-3} ] ( \theta_p )\f$
@@ -160,7 +155,6 @@ C
      1           0.23,0.22,0.20,0.18,0.16,0.14,0.12,0.10,0.08/
       DATA ALDN /0.61,0.57,0.53,0.51,0.49,0.48,0.45,0.43,0.41,0.39,0.37,
      1           0.35,0.33,0.31,0.29,0.27,0.25,0.23,0.21,0.16/
-
 C---------------------------------------------------------------------
 C
 
@@ -192,10 +186,11 @@ C
 !!near the top of the layer, DELZW is set to 0 and ISAND is set to -3. For the soil layer containing \f$z_b\f$ ,
 !!DELZW is set to the distance from the top of the layer to \f$z_b\f$ , and is further constrained to be \f$\geq\f$ 5 cm, to
 !!avoid overshoots in the water movement calculations. For all layers, the distance to the bottom of its
-!!respective permeable depth, ZBOTW, is set to the depth of the top of the layer plus DELZW. At the
-!!end of the loop, if the soil is a mineral one, the wet and dry albedo values are calculated using simple
-!!empirical functions derived from values given in Wilson and Henderson-Sellers (1985). (The dry albedo
-!!calculation varies slightly depending on whether or not CTEM is being run.)
+!!respective permeable depth, ZBOTW, is set to the depth of the top of the layer plus DELZW. At the end of the loop,
+!!if the soil is a mineral one, the wet and dry visible and near-IR soil albedo values are assigned using the lookup
+!!tables ALWV, ALWN, ALDV and ALDN found in the DATA section of the subroutine, on the basis of a global gridded
+!!soil “colour” (i.e. reflectivity) index SOCI, documented in Lawrence and Chase (2007) \cite Lawrence2007-bc and
+!! Oleson et al. (2010) \cite Oleson2010-c88.
 !!
 
       DO 200 M=1,IM
@@ -231,10 +226,11 @@ C
 C
 !>
 !!In loop 300, various thermal and hydraulic soil properties are assigned to each of the soil layers,
-!!depending on soil type. Values of ISAND greater than zero indicate mineral soil. The pore volume \f$\theta_p\f$ ,
+!!depending on soil type. Values of ISAND greater than or equal to zero indicate mineral soil. The pore volume \f$\theta_p\f$ ,
 !!the saturated hydraulic conductivity \f$K_{sat}\f$ , and the soil moisture suction at saturation \f$\Psi\f$ sat are calculated from
 !!the percentage sand content \f$X_{sand}\f$ , and the hydraulic parameter b is calculated from the percentage clay
 !!content \f$X_{clay}\f$ , based on empirical relationships given in Cosby et al. (1984) \cite Cosby1984-jc:
+
 !!\f$\theta_p = (-0.126 X_{sand} +48.9)/100.0\f$
 !!\f$b = 0.159 X_{clay} + 2.91\f$
 !!\f$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)\f$
@@ -345,32 +341,48 @@ C
                       tcs(i,m,j) = tcom
                   elseif (j .eq. 2    ) then !Next treated as soil and is fibric peat
                       thpor(i,m,j)  = thporg(1)
-                      thlret(i,m,j) = throrg(1) 
+                      thlret(i,m,j) = throrg(1)
                       thlmin(i,m,j) = thmorg(1)
                       bi(i,m,j)     = borg(1)
                       psisat(i,m,j) = psisorg(1)
                       grksat(i,m,j) = grksorg(1)
                   elseif (j .ge. 3 .and. j .le. 5 ) then ! These layers are considered hemic peat
                       thpor(i,m,j)  = thporg(2)
-                      thlret(i,m,j) = throrg(2) 
+                      thlret(i,m,j) = throrg(2)
                       thlmin(i,m,j) = thmorg(2)
                       bi(i,m,j)     = borg(2)
                       psisat(i,m,j) = psisorg(2)
                       grksat(i,m,j) = grksorg(2)
                   else ! Remainder are sapric peat
                       thpor(i,m,j)  = thporg(3)
-                      thlret(i,m,j) = throrg(3) 
+                      thlret(i,m,j) = throrg(3)
                       thlmin(i,m,j) = thmorg(3)
                       bi(i,m,j)     = borg(3)
                       psisat(i,m,j) = psisorg(3)
                       grksat(i,m,j) = grksorg(3)
-                  endif                                      
-                  thlrat(i,m,j) = 0.5**(1.0/(2.0*bi(i,m,j)+3.0)) 
-              endif
+                  endif
+                  thlrat(i,m,j) = 0.5**(1.0/(2.0*bi(i,m,j)+3.0))
+
               THFC(I,M,J)=THLRET(I,M,J)
               THLW(I,M,J)=THLMIN(I,M,J)
               PSIWLT(I,M,J)=PSISAT(I,M,J)*(THLMIN(I,M,J)/
      1            THPOR(I,M,J))**(-BI(I,M,J))
+              ! FLAG for testing Sep 29 2016 JM.
+              ! For ORGANIC soils:
+              ! Make it so the first layer is considered moss if peatland flag >0.
+              ! This overwrites the previous assignments.
+             if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
+                  if (j .eq. 1) then ! First layer is moss
+                      thpor(i,m,j)  = thpmoss
+                      thlret(i,m,j) = thrmoss
+                      thlmin(i,m,j) = thmmoss
+                      bi(i,m,j)     = bmoss
+                      psisat(i,m,j) = psismoss
+                      grksat(i,m,j) = grksmoss
+                      hcps(i,m,j) = hcpmoss
+                      tcs(i,m,j) = tcom
+                  end if
+             end if
           ELSEIF(SAND(I,M,J).GE.0.) THEN
               THPOR (I,M,J)=(-0.126*SAND(I,M,J)+48.9)/100.0
               THLRET(I,M,J)=0.04
@@ -404,6 +416,23 @@ C
               PSIWLT(I,M,J)=150.0
               THLW(I,M,J)=THPOR(I,M,J)*(PSIWLT(I,M,J)/PSISAT(I,M,J))**
      1                    (-1.0/BI(I,M,J))
+        ! FLAG for testing Sep 29 2016 JM.
+              ! For MINERAL soil:
+              ! Make it so the first layer is considered moss if peatland flag >0.
+              ! This overwrites the previous assignments.
+             if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
+                  if (j .eq. 1) then ! First layer is moss
+                      thpor(i,m,j)  = thpmoss
+                      thlret(i,m,j) = thrmoss
+                      thlmin(i,m,j) = thmmoss
+                      bi(i,m,j)     = bmoss
+                      psisat(i,m,j) = psismoss
+                      grksat(i,m,j) = grksmoss
+                      hcps(i,m,j) = hcpmoss
+                      tcs(i,m,j) = tcom
+
+                  end if
+             end if
 
           ENDIF
 300   CONTINUE

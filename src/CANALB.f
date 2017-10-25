@@ -242,8 +242,8 @@ C----------------------------------------------------------------------
       !!closure. The presence of snow on the canopy will increase the 
       !!albedo; this increase will be larger in the visible range of the 
       !!spectrum, since the visible albedo of vegetation is typically 
-      !!very small. Making use of data presented in Bartlett et al. (2015)
-      !!\cite Bartlett2015-gw, the visible albedo of snow-covered vegetation is set to
+      !!very small. Making use of data presented in Bartlett et al. (2015) \cite Bartlett2015-gw,
+      !! the visible albedo of snow-covered vegetation is set to
       !!0.27 and near-infrared albedo to 0.38.
       !!
       !!If the canopy closure is incomplete, a fraction chi of the ground 

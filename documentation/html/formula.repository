@@ -263,1267 +263,1252 @@
 \form#262:$[J m^{-3} K^{-1} ] (C_g )$
 \form#263:$[W m^{-1} K^{-1} ] (\tau_g )$
 \form#264:$[m^3 m^{-3} ] (\theta_{fc} )$
-\form#265:$(\Psi_{wilt} )$
-\form#266:$(X_{sand} )$
-\form#267:$(X_{clay} )$
-\form#268:$(z_b )$
-\form#269:$\geq$
-\form#270:$K_{sat}$
-\form#271:$X_{sand}$
-\form#272:$X_{clay}$
-\form#273:$\theta_p = (-0.126 X_{sand} +48.9)/100.0$
-\form#274:$b = 0.159 X_{clay} + 2.91$
-\form#275:$\Psi_{sat} = 0.01 exp(-0.0302 X_{sand} + 4.33)$
-\form#276:$K_{sat} = 7.0556 x 10 -6 exp(0.0352 X_{sand} - 2.035)$
-\form#277:$f_{inf}$
-\form#278:$K$
-\form#279:$K = K_{sat} (\theta_l / \theta_p ) (2b + 3)$
-\form#280:$f_{inf} = 0.5 1/(2b+3)$
-\form#281:$\theta_{min}$
-\form#282:$\theta_{ret}$
-\form#283:$C_g$
-\form#284:$C_g = \Sigma (C_{sand} \theta_{sand} + C_{fine} \theta_{fine} + C_{org} \theta_{org} )/(1 - \theta_p )$
-\form#285:$\tau_g$
-\form#286:$\tau_g = \Sigma (\tau_{sand} \theta_{sand} + \tau_{fine} \theta_{fine} + \tau_{org} \theta_{org} )/(1 - \theta_p )$
-\form#287:$\theta_{fc}$
-\form#288:$d^{-1}$
-\form#289:$\theta_{fc} = \theta_p (1.157 x 10^{-9} /K_{sat} )^{1/(2b + 3)}$
-\form#290:$\theta_{fc} = \theta_p /(b-1) \bullet (\Psi_{sat} b/ z_b )^{1/b} \bullet [(3b+2)^{(b-1)/b} - (2b+2)^{(b-1)/b} ]$
-\form#291:$\Psi_{wilt}$
-\form#292:$ \theta_{wilt} $
-\form#293:$ \theta_{wilt} = \theta_p (\theta_{wilt} / \Psi_{sat} )^{-1/b} $
-\form#294:\[ \begin{tabular} { | l | l | c | c | } \hline Name & Definition & Value & Units \\ \hline VKC & Von Karman Constant & 0.40 & - \\ \hline CT & Drag Coefficient for water & $1.15 10^{-3}$ & - \\ \hline VMIN & Minimum wind speed & 0.1 & $ m s^{-1} $ \\ \hline TCW & Thermal conductivity of water & 0.57 & $W m^{-1} K^{-1} $ \\ \hline TCICE & Thermal conductivity of ice & 2.24 & $W m^{-1} K^{-1} $ \\ \hline TCSAND & Thermal conductivity of sand particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCCLAY & Thermal conductivity of fine mineral particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCOM & Thermal conductivity of organic matter & 0.25 & $W m^{-1} K^{-1} $ \\ \hline TCDRYS & Thermal conductivity of dry mineral soil & 0.275 & $W m^{-1} K^{-1} $ \\ \hline RHOSOL & Density of soil mineral matter & $2.65 10^3 $ & $kg m^{-3} $ \\ \hline RHOOM & Density of soil organic matter & $1.30 10^3 $ & $kg m^{-3} $ \\ \hline HCPW & Volumetric heat capacity of water & $4.187 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPICE & Volumetric heat capacity of ice & $1.9257 10^6$ & $J m^{-3} K^{-1} $ \\ \hline HCPSOL & Volumetric heat capacity of mineral matter & $2.25 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPOM & Volumetric heat capacity of organic matter & $2.50 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPSND & Volumetric heat capacity of sand particles & $2.13 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPCLY & Volumetric heat capacity of fine mineral particles & $2.38 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline SPHW & Specific heat of water & $4.186 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHICE & Specific heat of ice & $2.10 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHVEG & Specific heat of vegetation matter & $2.70 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline RHOW & Density of water & $1.0 10^3 $ & $kg m^{-3} $ \\ \hline RHOICE & Density of ice & $0.917 10^3$ & $kg m^{-3} $ \\ \hline TCGLAC & Thermal conductivity of ice sheets & 2.24 & $W m^{-1} K^{-1} $ \\ \hline CLHMLT & Latent heat of freezing of water & $0.334 10^6 $ & $J kg^{-1} $ \\ \hline CLHVAP & Latent heat of vaporization of water & $2.501 10^6 $ & $J kg^{-1} $ \\ \hline ZOLNG & Natural log of roughness length of soil & -4.605 & - \\ \hline ZOLNS & Natural log of roughness length of snow & -6.908 & - \\ \hline ZOLNI & Natural log of roughness length of ice & -6.215 & - \\ \hline ZORATG & Ratio of soil roughness length for momentum to roughness length for heat & 3.0 & - \\ \hline ALVSI & Visible albedo of ice & 0.95 & - \\ \hline ALIRI & Near-infrared albedo of ice & 0.73 & - \\ \hline ALVSO & Visible albedo of organic matter & 0.05 & - \\ \hline ALIRO & Near-infrared albedo of organic matter & 0.30 & - \\ \hline ALBRCK & Albedo of rock & 0.27 & - \\ \hline \end{tabular} \]
-\form#295:\[ \begin{tabular} { | l | l | c | c | c | } \hline Name & Symbol & Fibric peat & Hemic peat & Sapric peat \\ \hline THPORG & $\theta_p $ & 0.93 & 0.88 & 0.83 \\ \hline BORG & b & 2.7 & 6.1 & 12.0 \\ \hline GRKSORG & $K_{sat} $ & $2.8 10^{-4}$ & $2.0 10^{-6}$ & $1.0 10^{-7}$ \\ \hline PSISORG & $psi_{sat} $ & 0.0103 & 0.0102 & 0.0101 \\ \hline THMORG & $theta_{min}$ & 0.04 & 0.15 & 0.22 \\ \hline THRORG & $theta_{ret}$ & 0.275 & 0.62 & 0.705 \\ \hline \end{tabular} \]
-\form#296:\[ \begin{tabular} { | l | l | c | c | } \hline GCM Name & Definition & Value & Units \\ \hline DELTIM & Time Step & Varies by run & s \\ \hline CELZRO & Freezing point of water & 273.16 & K \\ \hline GAS & Gas constant & 287.04 & $J kg^{-1} K^{-1}$ \\ \hline GASV & Gas constant for water vapour & 461.50 & $J kg^{-1} K^{-1}$ \\ \hline G & Acceleration due to gravity & 9.80616 & $m s^{-1} $ \\ \hline SIGMA & Stefan-Boltzmann constant & $5.66796 10^{-8}$ & $W m^{-2} K^{-4} $ \\ \hline CPRES & Specific heat of air & $1.00464 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline CPI & Pi & 3.14159265 & - \\ \hline \end{tabular} \]
-\form#297:\[ \begin{tabular} { | l | l | l | c | } \hline CLASS/RPN name & GCM name & Definition & Units \\ \hline DELT & DELTIM & Time step & s \\ \hline TFREZ & CELZRO & Freezing point of water & K \\ \hline RGAS & GAS & Gas constant & $J kg^{-1} K^{-1}$ \\ \hline RGASV & GASV & Gas constant for water vapour & $J kg^{-1} K^{-1}$ \\ \hline GRAV & G & Acceleration due to gravity & $m s^{-1} $ \\ \hline CGRAV & G & Acceleration due to gravity & $m s^{-1} $ \\ \hline SBC & SIGMA & Stefan-Boltzmann constant & $W m^{-2} K^{-4} $ \\ \hline CKARM & VKC & Von Karman constant & - \\ \hline SPHAIR & CPRES & Specific heat of air & $J kg^{-1} K^{-1}$ \\ \hline CPD & CPRES & Specific heat of air & $J kg^{-1} K^{-1}$ \\ \hline PI & CPI & Pi & - \\ \hline \end{tabular} \]
-\form#298:$[kg kg^{-1}]$
-\form#299:$[W m^{-1} K^{-1}]$
-\form#300:$[mb] (e_d)$
-\form#301:$[Pa] (p_{dry})$
-\form#302:$[kg m^{-3}] (\rho_a)$
-\form#303:$[kg m^{-3}] (\rho_{s,i})$
-\form#304:$[K] (T_a)$
-\form#305:$[kg kg^{-1}] (q_a)$
-\form#306:$[Pa] (p)$
-\form#307:$e_d$
-\form#308:$e_a$
-\form#309:$e_{a,sat}$
-\form#310:$e_d = [e_{a,sat} - e_a] /100.0$
-\form#311:$q_a$
-\form#312:$e_a = q_a p /[0.622 + 0.378 q_a ]$
-\form#313:$T_f$
-\form#314:$e_{a,sat} = 611.0 exp[17.269*(T_a – T_f)/(T_a – 35.86)]$
-\form#315:$T_a \geq T_f$
-\form#316:$e_{a,sat} = 611.0 exp[21.874 (T_a – T_f)/(T_a – 7.66)]$
-\form#317:$T_a < T_f$
-\form#318:$p_{dry}$
-\form#319:$\rho_a = p_{dry} / R_d T_a + e_a / R_v T_a$
-\form#320:$R_d$
-\form#321:$R_v$
-\form#322:$[ ] (C_{DH} )$
-\form#323:$[ ] (C_{DM} )$
-\form#324:$[J m^{-2} K^{-1} ]$
-\form#325:$[kg m^{-2} s^{-1} ] (E_p )$
-\form#326:$[K] (T_{0,eff} )$
-\form#327:$[J m^{-3} K^{-1} ]$
-\form#328:$[kg m^{-3} ] (\rho_a )$
-\form#329:$[m s^{-1} ] (U_a )$
-\form#330:$[m s^{-1} ] (V_a )$
-\form#331:$[K] (T_a )$
-\form#332:$[Pa] (p_{dry} )$
-\form#333:$(\varphi)$
-\form#334:$v_a$
-\form#335:$f_{cor}$
-\form#336:$0.1 m s^{-1}$
-\form#337:$\Omega$
-\form#338:$\varphi$
-\form#339:$f_{cor} = 2 \Omega sin \varphi$
-\form#340:$T_{a,pot}$
-\form#341:$dT/dz = -g/c_p$
-\form#342:$c_p$
-\form#343:$T_{a,pot} = T_a + z_{ref,h} g/c_p$
-\form#344:$z_{ref,h}$
-\form#345:$T_{a,v}$
-\form#346:$T_{a,v} = T_{a,pot} [1 + 0.61 q_a ]$
-\form#347:$Ri_B$
-\form#348:$Ri_B = [T_0 – T_{a,v} ] (-g z_{ref} )/(T_{a,v} v_a^2 )$
-\form#349:$T_0$
-\form#350:$[T_0 – T_{a,v} ]$
-\form#351:$z_{ref}$
-\form#352:$C_{DN}$
-\form#353:$C_{DN} = k^2 /[ln(z_{ref} ) – ln(z_0 )]^2$
-\form#354:$z_0$
-\form#355:$ln(z_0 )$
-\form#356:$v_{a,c}$
-\form#357:$kv(z)/v_* = ln[(z – d)/z_0 ]$
-\form#358:$v_*$
-\form#359:$v_{a,c} = v_a [ln(H – d) – ln(z_0 )]/[ln(z_{ref} ) – ln(z_0 )]$
-\form#360:$10z_0$
-\form#361:\[ \begin{tabular} { | l | l | c | c | c | c | } \hline & & CS & GS & C & G \\ \hline CWCALC & Freezing/thawing of liquid/frozen water on canopy & YES & & YES & \\ \hline TNPREP & Set coefficients for temperature calculations in soil & YES & YES & YES & YES \\ \hline TSPREP & Set coefficients for temperature calculations of snow & YES & YES & & \\ \hline TSOLVC & Calculate components of canopy energy balance & YES & & YES & \\ \hline TSOLVE & Calculate components of ground or snow energy balance & & YES & & YES \\ \hline TSPOST & Heat conduction in snow pack & YES & YES & & \\ \hline TNPOST & Heat conduction in soil & YES & YES & YES & YES \\ \hline \end{tabular} \]
-\form#362:$C_{DM}$
-\form#363:$C_{DH}$
-\form#364:$E_p$
-\form#365:$E_p = \rho_a C_{DH} v_a [q_{0,sat} – q_a ]$
-\form#366:$\rho_a$
-\form#367:$q_{0,sat}$
-\form#368:$q_{ac,sat}$
-\form#369:$w_{ac,sat}$
-\form#370:$q_{ac,sat} = w_{ac,sat} /[1 + w_{ac,sat} ]$
-\form#371:$e_{ac,sat}$
-\form#372:$w_{ac,sat} = 0.622 e_{ac,sat} /(p_{dry} )$
-\form#373:\[e_{sat} = 611.0 exp[17.269(T – T_f )/(T – 35.86)] T \geq T_f \]
-\form#374:\[e_{sat} = 611.0 exp[21.874(T – T_f )/(T – 7.66)] T < T_f \]
-\form#375:$T_{0,eff}$
-\form#376:$L\uparrow = \sigma T_{0,eff}^4$
-\form#377:$L\uparrow$
-\form#378:$\sigma$
-\form#379:$[m or kg m^{-2} s^{-1}]$
-\form#380:$[J m^{-3} K^{-1}]$
-\form#381:$[J m^{-2} K^{-1}] $
-\form#382:\[ \begin{tabular} { | l | l | c | } \hline CANVAP & Evaporation/sublimation of water from vegetation canopy & CS,C \\ \hline CANADD & Addition of rainfall/snowfall to canopy; throughfall and drip & CS,C \\ \hline CWCALC & Freezing/thawing of liquid/frozen water on canopy & CS,C \\ \hline SUBCAN & Precipitaiton and condensation under canopy & CS,C \\ \hline TWCALC & Freezing/thawing of liquid/frozen water in soil & CS,GS,C,G \\ \hline SNOVAP & Sublimaiton from snow pack & CS,GS,C,G \\ \hline TFREEZ & Freezing of ponded water on soil & CS,GS,C,G \\ \hline TMELT & Melting of snow pack & CS,GS \\ \hline SNOADD & Accumulation of snow on ground & CS,GS,C,G \\ \hline SNINFL & Infiltration of rain into snow pack & CS,GS \\ \hline ICEBAL & Energy and water budget of ice sheets & GS,G \\ \hline GRINFL & Infiltraiton of water into soil & CS,GS,C,G \\ \hline GRDRAN & Soil water movement in response to gravity and suction forces & CS,GS,C,G \\ \hline TMCALC & Step ahead soil layer temperatures, check for freezing/thawing & CS,GS,C,G \\ \hline CHKWAT & Check subarea moisture balances for closure & CS,GS,C,G \\ \hline SNOALBW & Temporal variation of snow albedo and density & CS,GS \\ \hline \end{tabular} \]
-\form#383:$^o$
-\form#384:$[W m^{-2}] $
-\form#385:$[W m^{-2}] (K_{*,c})$
-\form#386:$[W m^{-2}] (L_{*,c})$
-\form#387:$[W m^{-2}] (Q_{H,c})$
-\form#388:$[W m^{-2}] (Q_{E,c})$
-\form#389:$[W m^{-2}] (Q_{M,c})$
-\form#390:$[W m^{-2}] (Q_{I,c})$
-\form#391:$[W m^{-2}] (K_{*,s})$
-\form#392:$[W m^{-2}] (L_{*,s})$
-\form#393:$[W m^{-2}] (Q_{H,s})$
-\form#394:$[W m^{-2}] (Q_{E,s})$
-\form#395:$[W m^{-2}] (Q_{M,s})$
-\form#396:$[W m^{-2}] (Q_{I,s})$
-\form#397:$[W m^{-2}] (K_{*,g})$
-\form#398:$[W m^{-2}] (L_{*,g})$
-\form#399:$[W m^{-2}] (Q_{H,g})$
-\form#400:$[W m^{-2}] (Q_{E,g})$
-\form#401:$[W m^{-2}] (Q_{M,g})$
-\form#402:$[W m^{-2}] (Q_{I,g})$
-\form#403:$[kg m^{-2} s^{-1}] (P_{f,c})$
-\form#404:$[kg m^{-2} s^{-1}] (P_{l,c})$
-\form#405:$[kg m^{-2} s^{-1}] (E_{f,c})$
-\form#406:$[kg m^{-2} s^{-1}] (E_{l,c})$
-\form#407:$[kg m^{-2} s^{-1}] (R_c)$
-\form#408:$[kg m^{-2} s^{-1}] (A_c)$
-\form#409:$[kg m^{-2} s^{-1}] (P_s)$
-\form#410:$[kg m^{-2} s^{-1}] (E_s)$
-\form#411:$[kg m^{-2} s^{-1}] (R_s)$
-\form#412:$[kg m^{-2} s^{-1}] (A_s)$
-\form#413:$[kg m^{-2} s^{-1}] (P_g)$
-\form#414:$[kg m^{-2} s^{-1}] (E_g)$
-\form#415:$[W m^{-2}] (E_c)$
-\form#416:$[kg m^{-2} s^{-1}] (R_g)$
-\form#417:$[kg m^{-2} s^{-1}] (A_g)$
-\form#418:$[kg m^{-2}] (W_c)$
-\form#419:$[kg m^{-2}] (W_{l,s})$
-\form#420:$[K] (T_s)$
-\form#421:$[m^3 m^{-3}] (\theta_l)$
-\form#422:$[m^3 m^{-3}] (\theta_f)$
-\form#423:$[J m^{-3}] (C_g)$
-\form#424:$[m] (\Delta_zw)$
-\form#425:$[m] (\Delta_z)$
-\form#426:$[m] (z_p)$
-\form#427:$\Delta [(c_c W_c + c_w W_{l,c} + c_i W_{f,c} )T_c ] / \Delta t$
-\form#428:$\Delta [(C_i W_s /\rho_i + C_w W_{l,s} / \rho_w )T_s ]/ \Delta t $
-\form#429:$\Delta {[(C_w \theta_l + C_i \theta_f + C_g \theta_g ) \Delta z_w + C_b (\Delta z – \Delta z_w )]T_j }/ \Delta t$
-\form#430:$C_w z_p T_p$
-\form#431:$\Delta[W_{l,c} + W_{f,c}]$
-\form#432:$\Delta[W_s + W_{l,s}]$
-\form#433:$\Delta [(\theta_l \rho_w + \theta_f \rho_i ) \Delta z_w + z_p \rho_w ]$
-\form#434:$K_{*,c} + L_{*,c} – Q_{H,c} – Q_{E,c} – Q_{M,c} + Q_{I,c}$
-\form#435:$K_{*,s} + L_{*,s} – Q_{H,s} – Q_{E,s} – Q_{M,s} + Q_{I,s}$
-\form#436:$K_{*,g} + L_{*,g} – Q_{H,g} – Q_{E,g} – Q_{M,1} + Q_{I,1}$
-\form#437:$- Q_{M,j} + Q_{I,j}$
-\form#438:$P_{l,c} + P_{f,c} – E_{l,c} – E_{f,c} – R_c + A_c$
-\form#439:$P_s – E_s – R_s + A_s$
-\form#440:$P_g – E_g – R_g + A_g - E_c$
-\form#441:$K_*$
-\form#442:$L_*$
-\form#443:$Q_H$
-\form#444:$Q_E$
-\form#445:$Q_M$
-\form#446:$Q_I$
-\form#447:$f$
-\form#448:$\alpha$
-\form#449:$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}$
-\form#450:$B$
-\form#451:$\alpha \notin B$
-\form#452:\[ \label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha, f_B) - m_{\alpha} f_\alpha. \]
-\form#453:$g(f_\alpha, f_B)$
-\form#454:$m_{\alpha} f_\alpha$
-\form#455:$m_{\alpha}$
-\form#456:$day^{-1}$
-\form#457:$N$
-\form#458:$f_{N+1}$
-\form#459:$f_{bare}$
-\form#460:$\sum_{j=1}^{N+1} f_{j}=1$
-\form#461:$f_B$
-\form#462:$c_\alpha$
-\form#463:$i$
-\form#464:${\ldots}$
-\form#465:$i-1$
-\form#466:$i+1$
-\form#467:\[ \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1} +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\ - f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1), \alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full} \]
-\form#468:$b$
-\form#469:$b = 0$
-\form#470:\[ \label{barecol} \frac{\mathrm{d}f_{bare}}{\mathrm{d}t} = \sum_{\beta=1}^{N} (m_\beta f_\beta - c_{\beta, {bare}}f^b_\beta f_{bare}). \]
-\form#471:$\beta$
-\form#472:\[ \label{coloniz} c_{\alpha,\beta}f^b_\alpha f_{\beta} = c_\alpha \left(\frac{c_{\alpha,\beta}}{c_\alpha} \right)f^b_\alpha f_{\beta} = c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}. \]
-\form#473:$\textit{invasion}$
-\form#474:$\frac{c_{\alpha,\beta}}{c_\alpha}$
-\form#475:$\delta_{\alpha,\beta}$
-\form#476:$\delta$
-\form#477:$\delta_{\beta,\alpha} =0$
-\form#478:$\delta_{\alpha,\beta}=1$
-\form#479:\[ \label{compact} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = \sum_{\beta=1}^{N+1} (c_{\alpha} \delta_{\alpha,\beta}f^b_\alpha f_\beta - c_{\beta} \delta_{\beta,\alpha} f_\alpha f^b_\beta) - m_{\alpha} f_\alpha. \]
-\form#480:$f_{\alpha}^b f_{\beta}$
-\form#481:$f_i$
-\form#482:$b=\delta=1$
-\form#483:\[ \frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 f_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\ = c_1 f_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_2 f_{bare} - c_1 f_1 f_2 - m_2 f_2 \nonumber \\ = c_2 f_2 (1 - f_1 - f_2) - c_1 f_1 f_2 - m_2 f_2\label{cc_eq_b_eq_1_2}, \]
-\form#484:\[ f_1=max \left[ \frac{c_1 - m_1}{c_1}, 0 \right], \vspace*{-4mm} \]
-\form#485:\[ f_2 = max \left[ \frac{c_2 - c_2 f_1 - c_1 f_1 - m_2}{c_2}, 0 \right] \nonumber \\ = max \left[ \frac{(c_2 - m_2)-(1+\frac{c_2}{c_1})(c_1-m_1)}{c_2},0 \right],\label{f2_eq_b_eq_1} \]
-\form#486:$(c_1 - m_1)$
-\form#487:$(c_2 - m_2)$
-\form#488:$f_2$
-\form#489:$b=0$
-\form#490:$\delta=1$
-\form#491:\[ \frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\ = c_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_{bare} - c_1 f_2 - m_2 f_2 \nonumber \\ = c_2 (1 - f_1 - f_2) - c_1 f_2 - m_2 f_2,\label{cc_eq_b_eq_0_1} \]
-\form#492:\[ \label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1}, \vspace*{-4mm} \]
-\form#493:\[ \label{f_equil_b_eq_0_2} f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)}. \]
-\form#494:$m_1> 0$
-\form#495:$c_2 > 0$
-\form#496:$(-c_{\beta} \delta_{\beta,\alpha} f_\alpha f^b_\beta)$
-\form#497:$\delta_{\alpha,\beta} = 1$
-\form#498:$-c_1 f_1 f_2$
-\form#499:$b=1$
-\form#500:$-c_1 f_2$
-\form#501:$f_1 f_2$
-\form#502:$f_\beta$
-\form#503:$f_\alpha = 0$
-\form#504:$1$
-\form#505:$\Lambda_\alpha$
-\form#506:$kg\,C\,m^{-2}\,day^{-1}$
-\form#507:\[ \label{c_a} c_\alpha = {\Lambda_\alpha\, NPP_\alpha\,\xi_{\alpha}}, \]
-\form#508:$\xi_{\alpha}$
-\form#509:$(kg\,C)^{-1}\,m^{2}$
-\form#510:$C_{veg,\alpha}$
-\form#511:$kg\,C\,m^{-2}$
-\form#512:$S_{sap,\alpha}$
-\form#513:\[ \label{xi} \xi_{\alpha}=\frac{1}{S_{sap,\alpha}\,\max[0.25,\min(5.0, C_{veg,\alpha})]}. \]
-\form#514:${LAI}_\alpha$
-\form#515:$m^2\,leaf\,(m^{2}\,ground)^{-1}$
-\form#516:\[ \Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})), \vspace*{-4mm} \]
-\form#517:\[ if LAI_\alpha \leq LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =0 \nonumber \\ if LAI_{min,\alpha} < LAI_\alpha < LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =\frac{LAI_\alpha - LAI_{min,\alpha}} {LAI_{max,\alpha} - LAI_{min,\alpha}} \lambda_{max} \nonumber \\ if LAI_\alpha \geq LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =\lambda_{max} \label{lam1} \vspace*{-4mm} \]
-\form#518:\[ if LAI_\alpha > 0.25 LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{2,\alpha} =\cosh(0.115(LAI_\alpha - 0.25 LAI_{min,\alpha})) - 1 \nonumber \\ if LAI_\alpha \leq 0.25 LAI_{min,\alpha}: \nonumber \\ \quad \lambda_{2,\alpha} = 0\label{lam2} \]
-\form#519:$\lambda_{1,\alpha}$
-\form#520:$\lambda_{2,\alpha}$
-\form#521:$LAI_{min,\alpha}$
-\form#522:$LAI_{max,\alpha}$
-\form#523:$\lambda_{max}$
-\form#524:$m_{bioclim}$
-\form#525:$C_3$
-\form#526:$C_4$
-\form#527:$T^{cold}_{min}$
-\form#528:$T^{cold}_{max}$
-\form#529:$T^{warm}_{max}$
-\form#530:$5\,C$
-\form#531:$GDD5_{min}$
-\form#532:$arid_{min}$
-\form#533:$dryseason_{min}$
-\form#534:$T=25$
-\form#535:$X(t+1)$
-\form#536:$t+1$
-\form#537:$X(t)$
-\form#538:$x(t)$
-\form#539:\[ \label{efold} X(t+1)=X(t)e^{-1/T} + x(t) (1 - e^{-1/T}). \]
-\form#540:$63\,{\%}$
-\form#541:$\Delta x$
-\form#542:$T$
-\form#543:$(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)$
-\form#544:$86\,{\%}$
-\form#545:$2T$
-\form#546:$(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86) $
-\form#547:$C_\mathrm{D}$
-\form#548:$C_\mathrm{H}$
-\form#549:$kgC m^{-2}$
-\form#550:$(cm^3 cm^{-3})$
-\form#551:$km^2$
-\form#552:$CH_4$
-\form#553:$(people / km^2)$
-\form#554:$kg c/m^2$
-\form#555:$kg c/m^2 .day$
-\form#556:$m^2$
-\form#557:$g mol^{-1}$
-\form#558:$J mol^{-1} K^{-1}$
-\form#559:$J mol^{-1}$
-\form#560:$m^3/m^3$
-\form#561:$J m^{-3} K^{-1}$
-\form#562:$(mol CO_2 m^{-2} s^{-1}$
-\form#563:\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf & evg & dcd & --- & ---& ---\\ \hline broad leaf & evg & dcd-cld & dcd-dry & EVG-shrubs & DCD-shrubs\\ \hline crops & c3 & c4 & --- & ---& ---\\ \hline grasses & c3 & c4 & sedges & ---& ---\\ \hline \end{tabular} \]
-\form#564:$CO_2$
-\form#565:$\mu mol CO2 m^{-2} s^{-1}$
-\form#566:$mg CH_4 m^{-2} s^{-1}$
-\form#567:$kg/m^2$
-\form#568:$\mu mol CH_4 m^{-2} s^{-1}$
-\form#569:$kg C/m^2$
-\form#570:$\Delta I_c = X_i \Delta [C_c T_c ] / \Delta t$
-\form#571:$m/s$
-\form#572:$lightning, flashes/(km^2 . year)$
-\form#573:$u-mol co2/m2.sec$
-\form#574:$avgdryns(i) = avgdryns(i) + drgtstrs(i,j)*fcancmx(i,j)$
-\form#575:$drgtstrs(i,j)$
-\form#576:$\phi_{root}$
-\form#577:$flashes/km^2/yr$
-\form#578:$(g c/m^2)$
-\form#579:$umol co_2 m-2 s-1 to g c m-2$
-\form#580:$kg dom / m^2$
-\form#581:$g species / m^2$
-\form#582:$u-mol co_2/m^2.sec$
-\form#583:$P_\mathrm{f}$
-\form#584:$500\,km^2$
-\form#585:$a_{rep}$
-\form#586:\[ \label{fieya} P_\mathrm{f} = P_\mathrm{b}P_\mathrm{i}P_\mathrm{m},\]
-\form#587:$P_\mathrm{b}$
-\form#588:$P_\mathrm{m}$
-\form#589:$P_\mathrm{i}$
-\form#590:$B_{ag}$
-\form#591:$B_{ag} = C_\mathrm{L} + C_\mathrm{S} + C_\mathrm{D}$
-\form#592:$B_{low}$
-\form#593:$0.2\, kg\,C\,m^{-2}$
-\form#594:$1.0\, kg\,C\,m^{-2}$
-\form#595:$B_{high}$
-\form#596:\[ \label{eqn:Pb} P_\mathrm{b}=\max\left[0, \min\left(1,\frac{B_{ag}-B_{low}} {B_{high} - B_{low}}\right)\right]. \]
-\form#597:$\vartheta_F$
-\form#598:\[ \vartheta_F = \max\left[0, \min \left(1,\frac{F_c2g - F_{low}}{F_{high} - F_{low}} \right)\right],\]
-\form#599:$F_{low}$
-\form#600:$F_{high}$
-\form#601:$F_c2g$
-\form#602:$flashes\,km^{-2}\,month^{-1}$
-\form#603:$0.25\,flashes\,km^{-2}\,month^{-1}$
-\form#604:$10.0\,flashes\,km^{-2}\,month^{-1}$
-\form#605:\[ F_c2g = 0.22 \exp (0.0059 \times \vert {\Phi}\vert) F_{tot},\]
-\form#606:$\Phi$
-\form#607:$F_{tot}$
-\form#608:$P_i,n$
-\form#609:\[ P_i,n = y(\vartheta_F) - y(0)(1 - \vartheta_F) + \vartheta_F[1-y(1)] \nonumber\\ y(\vartheta_F) = \frac{1}{1 + \exp\left(\frac{0.8 - \vartheta_F}{0.1}\right)}. \]
-\form#610:$P_i,h$
-\form#611:$p_\mathrm{d}$
-\form#612:$number of people\,km^{-2}$
-\form#613:\[ \label{eqn:Ph} P_i,h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \]
-\form#614:$p_{thres}$
-\form#615:$300\,people\,km^{-2}$
-\form#616:$P_{i,h}$
-\form#617:\[ \label{eqn:Pi} P_\mathrm{i} = \max[0, \min\{1, P_{i,n} + (1 - P_{i,n})P_{i,h}\}]. \]
-\form#618:$P_{m,V}$
-\form#619:\[ P_{m,V} = 1-\tanh \left[\left( \frac{1.75\ \phi_{root}} {E_\mathrm{V}}\right )^2\right],\]
-\form#620:$E_\mathrm{V}$
-\form#621:$P_{f,V}$
-\form#622:$\textit{duff}$
-\form#623:$P_{m,D}$
-\form#624:$B_{duff} = C_{L,b} + C_\mathrm{D}$
-\form#625:$\phi_1$
-\form#626:\[ P_{m,D} = 1 -\tanh\left[\left(\frac{1.75 \phi_1}{E_{\mathrm{D}}}\right)^2\right], \]
-\form#627:$E_{\mathrm{D}}$
-\form#628:\[ \label{eqn:Pf} P_\mathrm{m} = P_{m,V} (1-f_{duff}) + P_{m,D} f_{duff} \nonumber \\ f_{duff}=\frac{B_{duff}}{B_{ag}}\]
-\form#629:$f_{duff}$
-\form#630:$a$
-\form#631:\[ a(t)=\pi \frac{l}{2}\frac{w}{2}= \frac{\pi}{2} (v_\mathrm{d}+v_\mathrm{u})v_\mathrm{p}t^2,\]
-\form#632:$l$
-\form#633:$w$
-\form#634:$v_\mathrm{d}$
-\form#635:$km\,h^{-1}$
-\form#636:$v_\mathrm{u}$
-\form#637:$v_\mathrm{p}$
-\form#638:$t$
-\form#639:$h$
-\form#640:\[ \label{firespreadrate} v_\mathrm{d} = v_{d,max}\,g(u)\,h(\phi_{r, d})\]
-\form#641:$v_{d,max}$
-\form#642:$g(u)$
-\form#643:$ h(\phi_{r, d})$
-\form#644:$u$
-\form#645:$L_\mathrm{b}$
-\form#646:\[ \label{lb} L_\mathrm{b}= \frac{l}{w} = \frac{v_\mathrm{d} + v_\mathrm{u}}{2v_\mathrm{p}} = 1 + 10 [1 -\exp(-0.06 u)] \]
-\form#647:$H_\mathrm{b}$
-\form#648:\[ \label{hb} H_\mathrm{b} = \frac{v_\mathrm{d}}{v_\mathrm{u}} = \frac{L_\mathrm{b} + (L_\mathrm{b}^2 - 1)^{0.5}}{L_\mathrm{b} - (L_\mathrm{b}^2 - 1)^{0.5}}, \]
-\form#649:\[ g(u)= g(0) \frac{2.0 L_\mathrm{b}}{(1 + 1/H_\mathrm{b})} \nonumber\\ \frac{g(u)}{g(0)}=\frac{v_\mathrm{d}}{v_\mathrm{p}} = \frac{2.0 L_\mathrm{b}} {(1 + 1/H_\mathrm{b})}, \]
-\form#650:$g(0)$
-\form#651:$u = 0$
-\form#652:$\rightarrow \infty$
-\form#653:$L_\mathrm{b} \rightarrow 11$
-\form#654:$H_\mathrm{b} \rightarrow 482$
-\form#655:$g(\infty)=1$
-\form#656:$g(0) = 0.0455 \approx 0.05$
-\form#657:$h(\phi_{r, d})$
-\form#658:\[ h(\phi_{r, d})= h(\phi_{root})(1-f_{duff}) + h(\phi_{1})f_{duff}\nonumber \\ h(\phi_{root})= \left(1-min \left(1,\frac{\phi_{root}}{E_\mathrm{V}} \right) \right)^2\nonumber \\ h(\phi_{1})= \left(1-min \left(1,\frac{\phi_{1}}{E_\mathrm{D}} \right) \right)^2. \]
-\form#659:$h(\phi_{root})$
-\form#660:$h(\phi_{1})$
-\form#661:$E_\mathrm{D}$
-\form#662:$a_{1{\mathrm{d}}}$
-\form#663:$km^2\,day^{-1}$
-\form#664:\[ a_{1{\mathrm{d}}} = \frac{\pi v_\mathrm{d}^2 t^2}{4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2 \nonumber\\ = \frac{\pi v_\mathrm{d}^2 (24^2)} {4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2\label{aburned} \]
-\form#665:$24\,h$
-\form#666:$q$
-\form#667:$\tau$
-\form#668:$days$
-\form#669:${a_{\tau d}}$
-\form#670:\[ q = 0.5 + \frac{\max\left[0,0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2}, \]
-\form#671:$1-q$
-\form#672:$(1-q)^\tau$
-\form#673:$P(\tau) = q(1-q)^\tau$
-\form#674:\[ \overline{\tau} = E(\tau) = \sum_{\tau=0}^\infty\,\tau\,q(1-q)^{\tau} = \frac{1-q}{q}. \]
-\form#675:$a_{\tau \mathrm{d}}$
-\form#676:\[ a_{\tau \mathrm{d}} =E(a_{1{\mathrm{d}}} \tau^2)=\sum_{\tau=0}^ \infty\,a_{1{\mathrm{d}}}\,\tau^2 q(1-q)^{\tau} \\ = a_{1{\mathrm{d}}}\, \frac{(1-q) (2-q)}{q^2}.\nonumber \]
-\form#677:$A_{\mathrm{b},\alpha}$
-\form#678:$km^2\, day^{-1}$
-\form#679:\[A_{\mathrm{b},\alpha}=P_{f,\alpha}\,a_{\tau \mathrm{d},\alpha} \frac{A_\mathrm{g}f_\alpha}{a_{rep}}, \]
-\form#680:$A_\mathrm{g}$
-\form#681:$f_\alpha$
-\form#682:$A_\mathrm{b}$
-\form#683:\[ A_\mathrm{b}=\sum_{\alpha=1}^{N}A_{\mathrm{b},\alpha}.\]
-\form#684:$j$
-\form#685:$E_{\alpha,j}$
-\form#686:$g species (m^{-2} grid cell area) day^{-1}$
-\form#687:$\vec{C}_{\alpha} = (C_\mathrm{L}, C_\mathrm{S}, C_\mathrm{R}, C_\mathrm{D})_\alpha$
-\form#688:$mho_{\alpha} = (mho_\mathrm{L}, mho_\mathrm{S}, mho_\mathrm{R}, mho_\mathrm{D})_\alpha$
-\form#689:$\Upsilon_{j} = (\Upsilon_\mathrm{L}, \Upsilon_\mathrm{S}, \Upsilon_\mathrm{R}, \Upsilon_\mathrm{D})_j$
-\form#690:$g species (kg\,C\,dry organic matter)^{-1}$
-\form#691:$\vec{C}_{\alpha}$
-\form#692:$\Upsilon_{j}$
-\form#693:$mho_{\alpha} $
-\form#694:\[ \label{emiss_combust_factor} {E_{\alpha,j}}= ((\vec{C}_\alpha\cdot mho_{\alpha} )\cdot \Upsilon_{j}) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\frac{1000}{450}, \]
-\form#695:$\vec{C}_\alpha$
-\form#696:$g\,C\,m^{-2}$
-\form#697:$g\,C\,(kg dry organic matter)^{-1} $
-\form#698:\[ \label{emiss_combust_loss} H_{\alpha, i}= C_{\alpha, i} mho_i\left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\right)\quad i={L, S, R, D}. \]
-\form#699:$mho_\mathrm{L}$
-\form#700:$mho_{\mathrm{S}}$
-\form#701:$mho_{\mathrm{R}}$
-\form#702:$mho_{\mathrm{D}}$
-\form#703:$CO$
-\form#704:$H_2$
-\form#705:$NHMC$
-\form#706:$NO_x$
-\form#707:$N_2O$
-\form#708:$2.5\, \mu m$
-\form#709:$\vec{\Theta}_{\alpha} = (\Theta_\mathrm{L}, \Theta_\mathrm{S}, \Theta_\mathrm{R})_\alpha$
-\form#710:\[ \label{eqn_using_mort_factors} {M_{\alpha}}= (\vec{C}_\alpha \cdot \Theta_{\alpha} ) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}, \]
-\form#711:\[ \label{eqn_using_mort_factors_individual} M_{\alpha, i}= C_{\alpha, i} \Theta_{\alpha, i} \left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}} \right) \quad i={L, S, R}. \]
-\form#712:$H_{\alpha, i}, i={L, S, R, D}$
-\form#713:$M_{\alpha, i}, i={L, S, R}$
-\form#714:$\Theta_\mathrm{L}$
-\form#715:$\Theta_{\mathrm{S}}$
-\form#716:$\Theta_\mathrm{R}$
-\form#717:$\zeta_\mathrm{r}$
-\form#718:$m_{dist}$
-\form#719:\[ \label{m_dist} m_{dist,\alpha} = \zeta_{\mathrm{r},\alpha} \frac{A_{\mathrm{b},\alpha}}{f_\alpha A_\mathrm{g}}. \]
-\form#720:$[ ] (\alpha_{g,VIS})$
-\form#721:$[ ] (\alpha_{g,NIR})$
-\form#722:$[ ] (alpha_{g,NIR,wet})$
-\form#723:$[ ] (alpha_{g,VIS,dry})$
-\form#724:$[ ] (alpha_{g,NIR,dry})$
-\form#725:$[ ] (alpha_{u,VIS})$
-\form#726:$[ ] (alpha_{u,NIR})$
-\form#727:$[ ] (X_u)$
-\form#728:$[ ] (X_g)$
-\form#729:$\alpha_{g,VIS}$
-\form#730:$\alpha_{g,NIR}$
-\form#731:$\alpha_{g,wet}$
-\form#732:$\alpha_{g,dry}$
-\form#733:$\theta_{1,1}$
-\form#734:$\alpha_{g,T}$
-\form#735:$[\alpha_{g,T} - \alpha_{g,dry} ] / [\theta_{l,1} - 0.22] = [\alpha_{g,wet} - \alpha_{g,dry} ]/[0.26 - 0.22]$
-\form#736:$\alpha_{g}$
-\form#737:$\alpha_{g,T} = \alpha_{g,dry}$
-\form#738:$\theta_{l,1} \leq 0.22 $
-\form#739:$\alpha_{g,T} = \theta_{l,1} [\alpha_{g,wet} - \alpha_{g,dry} ]/0.04 - 5.50 [\alpha_{g,wet} - \alpha_{g,dry} ] + \alpha_{g,dry} $
-\form#740:$0.22 < \theta_{l,1} < 0.26 $
-\form#741:$\alpha_{g,T} = \alpha{g,wet} $
-\form#742:$ 0.26 \leq \theta_{l,1}$
-\form#743:$X_g$
-\form#744:$X_u$
-\form#745:$\alpha_{g,VIS} = [X_u \alpha_{u,VIS} + (X_g-X_u ) \alpha_{g,VIS}] / X_g $
-\form#746:$\alpha_{g,NIR} = [X_u \alpha_{u,NIR} + (1.0-X_u ) \alpha_{g,NIR}] / X_g $
-\form#747:$[m^3 m^{-3}] (\theta_i)$
-\form#748:$(X_i)$
-\form#749:$[m^3 m^{-3}] (\theta_p)$
-\form#750:$[m^3 m^{-3} ] (\theta_{l,ret})$
-\form#751:$[m^3 m^{-3}] (\theta_{l,min})$
-\form#752:$[m] (\Psi_{sat})$
-\form#753:$[m s^{-1}] (K_{sat})$
-\form#754:$[m] (\Delta_{zg,w})$
-\form#755:$f_{ice} = [1.0 – min((\theta_p - \theta_{l,min} )/\theta_p , \theta_i / \theta_p )]^2$
-\form#756:$F(z) = K(z) [-b \Psi(z)/\theta_l(z) \times d\theta_l / dz + 1]$
-\form#757:$\Psi(z)$
-\form#758:$K(z) = K_{sat} (\theta_l/\theta_p)^{(2b + 3)}$
-\form#759:$\Psi(z) = \Psi_{sat} (\theta_l/\theta_p)^{(-b )}$
-\form#760:$F(z_b ) = K_{sat} \times min{1, (\theta_l /\theta_p )/[1 – 1/(2b + 3)]^{(2b + 3)}$
-\form#761:$K(z)$
-\form#762:$d(\theta_l)/dz$
-\form#763:$K_{sat,bnd}$
-\form#764:$\Psi_{sat,bnd}$
-\form#765:$ K_{sat,bnd} = K_{sat,t} K_{sat,b} ( \Delta z_{g,w,,t} + \Delta z_{g,w,,b} ) / ( K_{sat,t} \Delta z_{g,w,b} + K_{sat,b} \Delta z_{g,w,t} ) $
-\form#766:$ \Psi_{sat,bnd} = \Psi_{sat,t}^{\Delta zg,w,t/(\Delta zg,w,t + \Delta zg,w,b)} \Psi_{sat,b}^{\Delta zg,w,b/(\Delta zg,w,t + \Delta zg,w,b)} $
-\form#767:$\theta_{l,min}$
-\form#768:$\theta_{l,ret}$
-\form#769:$[m^3 m^{-3}] (\theta_{l,ret})$
-\form#770:$[m^3 m^{-3}] (theta_{l,min})$
-\form#771:$[ ] (f_{inf})$
-\form#772:$f_{ice}$
-\form#773:$f_{ice} = [1.0 – min(1.0, \theta_i / \theta_p )]^2$
-\form#774:$\theta_i$
-\form#775:$f_{inf} ( \theta_p – \theta_i)$
-\form#776:$K(z) = K_{sat} ( \theta_l / \theta_p)^{(2b + 3)}$
-\form#777:$\Psi_f = b[\Psi_{inf} K_{inf} - \Psi(z) K(z)]/[K_{inf} (b+3)]$
-\form#778:$\Psi_{inf}$
-\form#779:$K_{inf}$
-\form#780:$\Psi(z) = \Psi_{sat} (\theta_l / \theta_p )^{(-b)}$
-\form#781:$R_\mathrm{h}$
-\form#782:$mol\,CO_2\,m^{-2}\,s^{-1}$
-\form#783:$R_{h,D}$
-\form#784:$R_{h,H}$
-\form#785:\[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \]
-\form#786:\[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i, \nonumber \\ i = \mathrm{D}, \mathrm{H}.\label{lithet} \]
-\form#787:$15\,{C}$
-\form#788:$\varsigma_\mathrm{H}$
-\form#789:$\varsigma_\mathrm{D}$
-\form#790:$kg\,C\,(kg\,C)^{-1}\,yr^{-1}$
-\form#791:$2.64 \times 10^{-6}$
-\form#792:$kg\,C\,m^{-2}\,yr^{-1}$
-\form#793:$f(\Psi)$
-\form#794:$Q_{10}$
-\form#795:$f_{15}(Q_{10})$
-\form#796:\[ Q_{10} = 1.44 + 0.56\,\tanh[0.075 (46.0 - T_i)], \nonumber\\ i = \mathrm{D}, \mathrm{H}\label{hyper}, \]
-\form#797:$T_{\{D,H\}}$
-\form#798:$C$
-\form#799:$20\,C$
-\form#800:$T_1$
-\form#801:$T_\mathrm{R}$
-\form#802:$T_\mathrm{D} = 0.7 T_1 + 0.3T_\mathrm{R}$
-\form#803:$MPa$
-\form#804:$0.04 > \vert \Psi \vert \geq \vert \Psi_{sat} \vert$
-\form#805:$0.04 > \vert\Psi\vert \geq \vert\Psi_{sat}\vert$
-\form#806:\[ f(\Psi)_\mathrm{H} = 1 - 0.5 \frac{\log(0.04)-\log\vert\Psi\vert} {\log(0.04)-\log\vert\Psi_{sat}\vert}\\ f(\Psi)_D = 1\nonumber; \]
-\form#807:$0.06 \geq \vert\Psi\vert \geq 0.04$
-\form#808:\[ f(\Psi)_\{D,H\} = 1; \]
-\form#809:$100.0 \geq \vert\Psi\vert > 0.06$
-\form#810:\[ f(\Psi)_\{D,H\} = 1 - 0.8\frac{\log\vert\Psi\vert-\log(0.06)}{\log(100)-\log(0.06)}; \]
-\form#811:$\vert\Psi\vert > 100.0$
-\form#812:\[ \label{lastpsi} f(\Psi)_\{D,H\}=0.2. \]
-\form#813:$\varsigma_{D,bare}$
-\form#814:$\varsigma_{H,bare}$
-\form#815:$0.5605$
-\form#816:$0.02258\,kg\,C\,(kg\,C)^{-1}\,yr^{-1}$
-\form#817:$C_{\mathrm{D} \rightarrow \mathrm{H}}$
-\form#818:\[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \]
-\form#819:$NEP$
-\form#820:\[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \]
-\form#821:$[C] (T_{av}( \Delta z))$
-\form#822:$[W m^{-2}] (G(\Delta z))$
-\form#823:$[W m^{-2}] (I_j) $
-\form#824:$[ ] (X)$
-\form#825:$[W m^{-2}] (G(0))$
-\form#826:$[W m^{-2}] (G(\Delta z1))$
-\form#827:$[W m^{-2}] (G(\Delta z2))$
-\form#828:$[m] (\Delta z)$
-\form#829:$\lambda(z)$
-\form#830:$G(z) = \lambda(z) dT(z)/dz$
-\form#831:$G_j = 2 \lambda_i (T_{j-1} – T_j) / (\Delta z_{j-1} + \Delta z_j)$
-\form#832:$G_j$
-\form#833:$T_j$
-\form#834:$\Delta z_j$
-\form#835:$\lambda_i$
-\form#836:$T(z) = 1/2 a z^2 + b z +c$
-\form#837:$T(\Delta z)$
-\form#838:$G(\Delta z)$
-\form#839:$T(\Delta z) = T(0) - (\Delta z/ 2 \lambda_i)[G(0) + G(\Delta z)]$
-\form#840:$T(\Delta z_3) = T(0) – {G(\Delta z_2) [\Delta z_3 + \Delta z_2] + G(\Delta z_1) [\Delta z_2 + \Delta z_1] + G(0) \Delta z_{21}} / 2 \lambda_i$
-\form#841:$T_{av}(\Delta z)$
-\form#842:$T(0) = T_{av}(\Delta z_1) + (\Delta z_1/ 3\lambda_i) [G(0) + 1/2 G(\Delta z_1)]$
-\form#843:$I_j$
-\form#844:$\Delta I_j = X_i \Delta[C_i \Delta z_j T_{av}(\Delta z_j)]/ \Delta t$
-\form#845:$C_i$
-\form#846:$Delta t$
-\form#847:$900 kg m^{-3}$
-\form#848:$\textit{deforested}$
-\form#849:$R_\mathrm{m}$
-\form#850:$R_\mathrm{g}$
-\form#851:\[ R_\mathrm{a} =R_\mathrm{m} + R_\mathrm{g}. \]
-\form#852:$R_{mL}$
-\form#853:$R_{mS}$
-\form#854:$R_{mR}$
-\form#855:\[ \label{mainres_all} R_\mathrm{m} = R_{mL} + R_{mS} + R_{mR}. \]
-\form#856:$V_\mathrm{m}$
-\form#857:\[ R_{mL} = \varsigma_\mathrm{L}V_\mathrm{m}\,f_{25}(Q_10d,n)f_{PAR}, \]
-\form#858:$\varsigma_\mathrm{L}$
-\form#859:$f_{PAR}$
-\form#860:$f_{25}(Q_10d,n)$
-\form#861:$d$
-\form#862:$n$
-\form#863:$Q_10d=1.3$
-\form#864:$Q_10n=2.0$
-\form#865:$\varsigma_\mathrm{S}$
-\form#866:$\varsigma_\mathrm{R}$
-\form#867:$15\,C$
-\form#868:$R_{m\{S,R\}}$
-\form#869:\[ \label{r_msr} R_{\mathrm{m},i} = 2.64 \times 10^{-6}\varsigma_{i}l_{\mathrm{v}, i}C_{i}f_{15}(Q_{10}),\quad i = \mathrm{S}, \mathrm{R}, \]
-\form#870:$l_{v,i}$
-\form#871:$l_{\mathrm{v},i}$
-\form#872:\[ l_{\mathrm{v},i} = \max(0.05, \min[1.0, \exp^{-0.2835 C_i} ]),\quad i = \mathrm{S}, \mathrm{R}. \]
-\form#873:\[ Q_{10} = 3.22 - 0.046 \left(\frac{15.0 + T_{\{S,R\}}}{1.9}\right), \]
-\form#874:$T_{\{S,R\}}$
-\form#875:$\epsilon_\mathrm{g}=0.15$
-\form#876:\[ \label{growth_res} R_\mathrm{g}=\epsilon_\mathrm{g}\max[0,(G_{canopy} - R_\mathrm{m})]. \]
-\form#877:$NPP$
-\form#878:\[ NPP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g}. \]
-\form#879:\[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha}, \]
-\form#880:$m_{intr}$
-\form#881:$m_{ge}$
-\form#882:$A_{max}$
-\form#883:$1\,{\%}$
-\form#884:$A_{max},\alpha$
-\form#885:\[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}). \]
-\form#886:$m_{intr} = 0$
-\form#887:\[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \]
-\form#888:$m_{{ge},max}$
-\form#889:$k_{m}$
-\form#890:$0.3\,m^{2}\,(g\,C)^{-1}$
-\form#891:$g_\mathrm{e}$
-\form#892:$L_{\alpha,max}$
-\form#893:$m^{2}\,m^{-2}$
-\form#894:$\Delta C_\mathrm{S}$
-\form#895:$\Delta C_\mathrm{R}$
-\form#896:\[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \]
-\form#897:$0.25\,yr^{-1}$
-\form#898:$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha$
-\form#899:$z_{m}$
-\form#900:$w_m$
-\form#901:$\theta_{l,1}$
-\form#902:$^3$
-\form#903:$w_m =\frac{z_m\theta_{l,1}\rho_w}{B_m} $
-\form#904:$B_m) $
-\form#905:$_m $
-\form#906:$\theta _{l,1} $
-\form#907:$^{-3}$
-\form#908:$\rho_w $
-\form#909:$^{-3} $
-\form#910:$\beta $
-\form#911:$ \beta = 0.25 [ 1- \cos \left( \frac{w_m -w_{m,min}}{w_m-w_{m,max}} \right)]^{2} $
-\form#912:$w_m $
-\form#913:$w_{m,max} $
-\form#914:$w_{m,min} $
-\form#915:$^{-2} $
-\form#916:$G_m)$
-\form#917:$G_{0,m})$
-\form#918:$R_{d,m}$
-\form#919:$ G_m=G_{0,m}-R_{d,m} $
-\form#920:$G_{0,m} $
-\form#921:$\mu $
-\form#922:$_2 $
-\form#923:$^2 $
-\form#924:$J_s)$
-\form#925:$J_e)$
-\form#926:$J_c)$
-\form#927:$\varsigma$
-\form#928:$ G_{0,m} = \quad \varsigma \min \left(J_{s},\frac{(J_{c}+J_{e})\pm \sqrt{{(J_c +J_ e )}^2 - 4(J_c +J_e)} }{2}\right) $
-\form#929:$R_{d,m})$
-\form#930:$R_{d,m,0})$
-\form#931:$f_{m,rd}$
-\form#932:$f_{T,rd})$
-\form#933:$\theta_m$
-\form#934:$R_{d,m} = R_{d,m,0} f_{m,rd} f_{T,{rd}}$
-\form#935:$ f_{T,{rd}} = (3.22-(0.046 \cdot T_{moss})^{(T_{moss}-25/10)} $
-\form#936:$ f_{m,rd} = 0$
-\form#937:$ \theta_{m} <0.4 $
-\form#938:$ f_{m,rd} = 0.35 \theta_{m}^{2/3}-0.14$
-\form#939:$ 0.4\le \theta_m<5.8 $
-\form#940:$ f_{m,rd} = 0.01 \theta_{m} +0.942$
-\form#941:$5.8<\theta _{m} $
-\form#942:$_m$
-\form#943:$^-2$
-\form#944:$K_{\ast g}$
-\form#945:$^2$
-\form#946:$\mu$
-\form#947:$K\downarrow $
-\form#948:$\alpha_g$
-\form#949:$\tau _c$
-\form#950:$K_{\ast g} = K \downarrow \tau_{c}\left( 1-\alpha_{g}\right)$
-\form#951:$ R_{o}=C_{SOM,o}k_{o}f_{T,{o}} $
-\form#952:$ R_{a}=C_{SOM,a}k_{a}f_{T,{a}}f_{anoxic} $
-\form#953:$R$
-\form#954:$\mu mol C m$
-\form#955:$/s) is obtained from the respiration rate coefficient $
-\form#956:$ ($
-\form#957:$f_T$
-\form#958:$C_{SOM}$
-\form#959:$f_{anoxic}$
-\form#960:$T_s)$
-\form#961:$Q_{10,a}$
-\form#962:$Q_{10,o}$
-\form#963:$k$
-\form#964:$z_{wt}$
-\form#965:$z_p$
-\form#966:$ f_{T,o} =Q_{10,o}^{\left(\int\limits_{0}^{z_{wt}} T_{j} -15\right)/10} $
-\form#967:$ f_{T,{a}} =Q_{10,{a}}^{\left(\int\limits_{z_{wt}}^{z_\mathrm{p}} T_{j} -15\right)/10} $
-\form#968:$ Q_{10}=1.44+0.56 {tanh}[0.075\left( 46.0-T_{s} \right)] $
-\form#969:$ T_{s,o}=\int\limits_{0}^{z_{wt}} T_{j} \, /(z_{wt}) $
-\form#970:$ T_{s,a}=\int\limits_{z_{wt}}^{z_{p}} T_{j} /(z_{p}-z_{wt}) $
-\form#971:$ k_{o}= 0 $
-\form#972:$ z_{wt}<0 $
-\form#973:$ k_{o}= k_{1}\left( 1-e^{k_{2}z_{wt}} \right)+k_{3}z_{wt} $
-\form#974:$0.3 > z_t \ge 0$
-\form#975:$ k_{4}e^{k_{5}z_{wt}}+k_{6}z_{wt}+k_{7} $
-\form#976:$ z_{wt}\ge 0.3 $
-\form#977:$ k_{a}= k_{4}e^{k_{5}z_{p}}+{10k}_{6}z_{p}+k_{7} $
-\form#978:$ k_{a} = $
-\form#979:$ k_1 e^{ k_2 z_{wt} } - k_4 e^{k_5 z_p} -k_3 z_{wt}+k_8 $
-\form#980:$0.3>z_{wt} \ge 0 $
-\form#981:$ k_{a}= k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_p-z_{wt} \right)$
-\form#982:$ C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}) $
-\form#983:$ C_{SOM,a}= C_{SOM}-C_{SOM,o} $
-\form#984:$k_{o}$
-\form#985:$k_{a}$
-\form#986:$_{hum}$
-\form#987:$R_o$
-\form#988:$R_a$
-\form#989:$ \frac{{dC}_{SOM}}{dt} = C_{hum}-R_{o}-R_{a} $
-\form#990:$C_{hum}$
-\form#991:$_{SOM}$
-\form#992:$ z_{p}= \frac{{-k}_{10}+\sqrt{k_{10}+\frac{4k_{9}{C}_{SOM}}{0.487}}. }{2k_{9}} $
-\form#993:$ z_{wt}=z_{{b},j}-\Delta z\left[ \frac{\theta_{{l},j}+\theta_{i,j}-\theta _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right] $
-\form#994:$\Delta z $
-\form#995:$\theta_l $
-\form#996:$\textit{virtual}$
-\form#997:$ G_{canopy,net} $
-\form#998:${LAI}_{thrs}$
-\form#999:\[ {LAI}_{thrs} = L_f [ {SLA} (\frac{C_S + C_R}{\eta} ) ^ {1/\kappa} ]. \]
-\form#1000:$L_f$
-\form#1001:$SLA$
-\form#1002:$7.5\,{\%}$
-\form#1003:$2.5\,{\%}$
-\form#1004:$0.3\,m^2\,m^{-2}$
-\form#1005:$0.2\,m^2\,m^{-2}$
-\form#1006:$11\,h$
-\form#1007:$11.15\,C$
-\form#1008:$8\,C$
-\form#1009:$-5\,C$
-\form#1010:$a_{fL} = 0$
-\form#1011:$a_{fS} + a_{fR} = 1$
-\form#1012:$\Omega_N$
-\form#1013:$ \Omega_C $
-\form#1014:$\Omega_D$
-\form#1015:$D_L$
-\form#1016:\[ D_L = C_L[1 - \exp(-\Omega_N - \Omega_C - \Omega_{D})],\]
-\form#1017:$\Omega_{N,C,D}$
-\form#1018:$yr$
-\form#1019:$\Omega_N= 1/365 \tau_L$
-\form#1020:$\Omega_C$
-\form#1021:\[ \label{gamma_cold} \Omega_C = \Omega_{C,max}L_{cold}^3, \]
-\form#1022:$\Omega_{C,max}$
-\form#1023:$L_{cold}$
-\form#1024:\[ \label{cldls} L_{cold} = \begin{cases} 1, \quad T_a < \left(T_{cold}^{leaf} - 5\right) \\ 1 - \frac{T_a - \left(T_{cold}^{leaf} - 5\right)}{5}, \\ \quad T_{cold}^{leaf} > T_a > (T_{cold}^{leaf} - 5) \\ 0, \quad T_a > T_{cold}^{leaf} ,\\ \end{cases} \]
-\form#1025:$T_{cold}^{leaf}$
-\form#1026:\[ \label{gamma_dry} \Omega_{D} = \Omega_{D,max}\,(1-\phi_{root})^3, \]
-\form#1027:$\Omega_{D,max}$
-\form#1028:$(sla, m^2 /kg c)$
-\form#1029:$\textit{big-leaf}$
-\form#1030:$\textit{two-leaf}$
-\form#1031:$G_\mathrm{o}$
-\form#1032:$J_\mathrm{c}$
-\form#1033:$J_\mathrm{s}$
-\form#1034:\[ \label{J_e} J_\mathrm{e} = \begin{cases} \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants\\ \varepsilon\,(1-{\nu})I,\quad C_4 plants, \end{cases} \]
-\form#1035:$I$
-\form#1036:$PAR$
-\form#1037:$mol\,photons\,m^{-2}\,s^{-1}$
-\form#1038:${\nu}$
-\form#1039:$\varepsilon$
-\form#1040:$mol\,{CO_2}\,(mol\,photons)^{-1}$
-\form#1041:$c_\mathrm{i}$
-\form#1042:$Pa$
-\form#1043:$\Gamma$
-\form#1044:\[ \label{J_c} J_\mathrm{c} = \begin{cases} V_\mathrm{m} \left[\frac{c_\mathrm{i} - \Gamma}{c_\mathrm{i} + K_\mathrm{c}(1 + O_\mathrm{a}/K_\mathrm{o})}\right],\quad C_3 plants\\ V_\mathrm{m}, C_4 plants, \end{cases} \]
-\form#1045:$K_\mathrm{o}$
-\form#1046:$K_\mathrm{c}$
-\form#1047:$O_2$
-\form#1048:$O_\mathrm{a}$
-\form#1049:\[ \label{J_s} J_\mathrm{s} = \left\{\begin{array}{l l} 0.5 V_\mathrm{m}, C_3 plants\\ 2 \times 10^4\,V_\mathrm{m} \frac{c_\mathrm{i}}{p}, C_4 plants \end{array} \right. \]
-\form#1050:$p$
-\form#1051:\[ V_\mathrm{m} = \nonumber \\ \frac{V_{max}f_{25}(2.0)S_{root}(\theta) \times 10^{-6}} {[1+ \exp{0.3(T_\mathrm{c} - T_{high})}][1 + \exp{0.3(T_{low} - T_\mathrm{c})}]},\label{V_m} \]
-\form#1052:$T_\mathrm{c}$
-\form#1053:$T_{low}$
-\form#1054:$T_{high}$
-\form#1055:$f_{25}$
-\form#1056:$25\,C$
-\form#1057:$(f_{25}(Q_{10}) = Q^{(0.1(T_\mathrm{c}-25))}_{10}$
-\form#1058:$V_{max}$
-\form#1059:$10^{-6}$
-\form#1060:${\mu}mol\,CO_2\,m^{-2}\,s^{-1}$
-\form#1061:$S_{root}(\theta)$
-\form#1062:\[ S_{root}(\theta) = \sum_{i=1}^g S(\theta_i) r_{i}, \vspace*{-4mm} \]
-\form#1063:\[ \label{soilmoist_str} S(\theta_i) = \left[1 - \left\{1 - \phi_i \right\}\right]^\varrho, \]
-\form#1064:$S(\theta_i)$
-\form#1065:$r_{i}$
-\form#1066:$\varrho$
-\form#1067:$\phi_i$
-\form#1068:\[ \label{phitheta} \phi_{i}(\theta_{i}) = \max \left[0, \min \left(1, \frac{\theta_{i} - \theta_{i, wilt}}{\theta_{i, field} - \theta_{i, wilt}} \right) \right], \]
-\form#1069:$\theta_{i}$
-\form#1070:$m^{3} water\,(m^{3} soil)^{-1}$
-\form#1071:$\theta_{i,field}$
-\form#1072:$\theta_{i, wilt}$
-\form#1073:\[ \label{co2comp} \Gamma = \left\{\begin{array}{l l} \frac{O_\mathrm{a}}{2 \sigma}, C_3 plants\\ 0, C_4 plants, \end{array} \right. \]
-\form#1074:$\sigma = 2600f_{25}(0.57)$
-\form#1075:\[ \label{K_c} K_\mathrm{c} = 30f_{25}(2.1), \\ \label{K_o} K_o = 3 \times 10^4 f_{25}(1.2). \]
-\form#1076:$J_\mathrm{e}$
-\form#1077:\[ J_\mathrm{p} = \frac{(J_\mathrm{c} + J_\mathrm{e}) \pm \sqrt{(J_\mathrm{c} + J_\mathrm{e})^2 - 4\beta_1 (J_\mathrm{c} + J_\mathrm{e})}}{2\beta_1} , \\ \label{G_o}G_\mathrm{o} = \frac{(J_\mathrm{p} + J_\mathrm{s}) \pm \sqrt{(J_\mathrm{p} + J_\mathrm{s})^2 - 4\beta_2 (J_\mathrm{p} + J_\mathrm{s})}}{2\beta_2}, \]
-\form#1078:$\beta_1$
-\form#1079:$\beta_2$
-\form#1080:$S(\theta)$
-\form#1081:$\Xi_\mathrm{N}$
-\form#1082:\[ \label{G_nitro} G_{\mathrm{o},N-limited} = \Xi_\mathrm{N} G_\mathrm{o}, \\ \label{Nthrottle} \Xi_\mathrm{N} = \frac{1 + \gamma_{gd} \ln(c_\mathrm{a}/c_{0})}{1 + \gamma_g \ln(c_\mathrm{a}/c_{0})}, \]
-\form#1083:$c_\mathrm{a}$
-\form#1084:$c_{0}$
-\form#1085:$285.0\,ppm$
-\form#1086:$\gamma_g$
-\form#1087:$\gamma_{gd}$
-\form#1088:$G_{\mathrm{o},N-limited}$
-\form#1089:$G_{canopy}$
-\form#1090:\[ \label{G_canopy} G_{canopy} = G_{\mathrm{o},N-limited} f_{PAR},\\ \label{fpar} f_{PAR} = \frac{1}{k_\mathrm{n}}(1-\exp^{-k_\mathrm{n}LAI}), \]
-\form#1091:$LAI$
-\form#1092:$m^{2}\,leaf\,(m^{2}\,ground)^{-1}$
-\form#1093:$G_{canopy,net}$
-\form#1094:\[ \label{Gnet} G_{canopy,net} = G_{canopy} - R_{mL}. \]
-\form#1095:$g_\mathrm{c}$
-\form#1096:$mol\,m^{-2}\,s^{-1}$
-\form#1097:$G_{canopy, net}$
-\form#1098:\[ \label{canopy_cond} g_\mathrm{c} = m \frac{G_{canopy,net} p}{(c_\mathrm{s} - \Gamma)}\frac{1}{(1+V/V_\mathrm{o})} + b {LAI} \]
-\form#1099:$V$
-\form#1100:$V_\mathrm{o}$
-\form#1101:$2000\,Pa$
-\form#1102:$1500\,Pa$
-\form#1103:$c_\mathrm{s}$
-\form#1104:\[ \label{c_s} c_\mathrm{s} = c_{ap} - \frac{1.37 G_{canopy,net} p}{g_b}. \]
-\form#1105:$c_{ap}$
-\form#1106:$g_b$
-\form#1107:\[ \label{c_i} c_\mathrm{i} = c_\mathrm{s} - \frac{1.65 G_{canopy,net} p}{g_\mathrm{c}}. \]
-\form#1108:$0.7c_{ap}$
-\form#1109:$m\,s^{-1}$
-\form#1110:\[ g_\mathrm{c} (m\,s^{-1}) = 0.0224\,\frac{T_\mathrm{c}}{T_\mathrm{f}}\,\frac{p_0}{p}\,g_\mathrm{c} (mol\,m^{-2}\,s^{-1}), \]
-\form#1111:$p_0$
-\form#1112:$101\,325\,Pa$
-\form#1113:$T_\mathrm{f}$
-\form#1114:$273.16\,K$
-\form#1115:$M^2/M^2$
-\form#1116:$W/M^2$
-\form#1117:$(CO_2i)$
-\form#1118:$MOL/M^2/S$
-\form#1119:$[C] (T_s)$
-\form#1120:$[kg m^{-3}] (\rho_s )$
-\form#1121:$[kg m^{-2}] (w_s)$
-\form#1122:$I_s$
-\form#1123:$\Delta I_s = X_i \Delta [C_s z_s T_s]/Delta t$
-\form#1124:$C_s$
-\form#1125:$T_s$
-\form#1126:$\Delta$
-\form#1127:$\Delta I_s = X_i \Delta [C_s z_s T_s] / \Delta t$
-\form#1128:$C_w$
-\form#1129:$\rho_s$
-\form#1130:$rho_i$
-\form#1131:$\rho_w$
-\form#1132:$w_s$
-\form#1133:$C_s = C_i [ \rho_s /\rho_i ] + C_w w_s /[\rho_w z_s]$
-\form#1134:$[ ] (alpha_{s,VIS})$
-\form#1135:$[ ] (alpha_{s,NIR})$
-\form#1136:$[ ] (\tau_{s,c})$
-\form#1137:$[ ] (\tau_{s,g})$
-\form#1138:$[ ] (\alpha_{s,T})$
-\form#1139:\[ \begin{tabular} { | l | c | c | c | } \hline & Total albedo & Visible albedo & Near-IR albedo \\ \hline Fresh snow & 0.84 & 0.95 & 0.73 \\ \hline Old dry snow & 0.70 & 0.84 & 0.56 \\ \hline Melting snow & 0.50 & 0.62 & 0.38 \\ \hline \end{tabular} \]
-\form#1140:$\alpha_{s,VIS}$
-\form#1141:$\alpha_{s,NIR}$
-\form#1142:$\alpha_{s,T}$
-\form#1143:$[\alpha_{s,VIS} - 0.84]/[0.95-0.84] = [\alpha_{s,T} - 0.70]/[0.84-0.70]$
-\form#1144:$[\alpha_{s,NIR} - 0.56]/[0.73-0.56] = [\alpha_{s,T} - 0.70]/[0.84-0.70]$
-\form#1145:$\alpha_{s,VIS} = 0.7857 \alpha_{s,T} + 0.2900$
-\form#1146:$\alpha_{s,NIR} = 1.2142 \alpha_{s,T} - 0.2900$
-\form#1147:$\alpha_{s,VIS} - 0.62]/[0.95-0.62] = [\alpha_{s,T} - 0.50]/[0.84-0.50]$
-\form#1148:$\alpha_{s,NIR} - 0.38]/[0.73-0.38] = [\alpha_{s,T} - 0.50]/[0.84-0.50]$
-\form#1149:$\alpha_{s,VIS} = 0.9706 \alpha_{s,T} + 0.1347$
-\form#1150:$\alpha_{s,NIR} = 1.0294 \alpha_{s,T} - 0.1347$
-\form#1151:$\tau_{s,c}$
-\form#1152:$25.0 m^{-1}$
-\form#1153:$\tau_{s,c} = exp[-25.0 z_s]$
-\form#1154:$\tau_{s,g}$
-\form#1155:$kg BC/m^3$
-\form#1156:$[ ] (\alpha_s)$
-\form#1157:$[C]$
-\form#1158:$[m s^{-1}] $
-\form#1159:$[kg m^{-3}] (\rho_{s,max})$
-\form#1160:$\alpha_s$
-\form#1161:$\alpha_{s,old}$
-\form#1162:$\alpha_s (t+1) = [\alpha_s (t) - \alpha_{s,old}] exp [-0.01 \Delta t / 3600] + \alpha_{s,old}$
-\form#1163:$\rho_{s,max}$
-\form#1164:$\rho_{s,max} = A_s - [204.70/ z_s] [1.0 - exp(-z_s /0.673)]$
-\form#1165:$A_s$
-\form#1166:$\rho_s (t+1) = [\rho_s (t) - \rho_{s,max} ] exp [-0.01 \Delta t/3600] + \rho{s,max}$
-\form#1167:$\Delta I_s = X_i \Delta [ C_s z_s T_s ] / \Delta t$
-\form#1168:$\rho_i$
-\form#1169:$C_s = C_i [\rho_s / \rho_i ] + C_w w_s /[\rho_w z_s]$
-\form#1170:$(L_m+ L_v)/L_v$
-\form#1171:$L_m$
-\form#1172:$L_v$
-\form#1173:$(m s^{-1})$
-\form#1174:$(kg m^{-3})$
-\form#1175:$(mg CH_4 m^{-2} s^{-1})$
-\form#1176:$[C] (T_p)$
-\form#1177:$[C] (T_g)$
-\form#1178:$\Delta I_s = X_i \Delta(C_s T_s z_s) / \Delta t$
-\form#1179:$\Delta I_g = X_i \Delta(C_w T_p z_p)/\Delta t$
-\form#1180:$(\theta_l) [m^3 m^{-3}]$
-\form#1181:$(\theta_i) [m^3 m^{-3}]$
-\form#1182:$[J m^{-3} K^{-1}] (C_g)$
-\form#1183:$(\rho_s) [kg m^{-3}]$
-\form#1184:$(\theta_p) [m^3 m^{-3}]$
-\form#1185:$(\theta_r) [m^3 m^{-3}]$
-\form#1186:$[J m^{-3} K^{-1}] (C_m)$
-\form#1187:$(\Delta z_{g,w}) [m]$
-\form#1188:$(\Delta z_{g,z}) [m]$
-\form#1189:$\lambda (z)$
-\form#1190:$G(z) = \lambda (z) dT(z)/dz$
-\form#1191:$G_j = (\lambda_{j-1} + \lambda_j ) (T_{j-1} - T_j ) / (\Delta z_{j-1} - \Delta z_j )$
-\form#1192:$\lambda_j$
-\form#1193:$[W m^{-1} K^{-1}] (\lambda)$
-\form#1194:$[m] (\Delta z_p)$
-\form#1195:$[K] (T_{1p})$
-\form#1196:$[W m^{-2} K^{-1}]$
-\form#1197:$\Delta z_{1p}$
-\form#1198:$T_{1p}$
-\form#1199:$T(z) = 1/2 T''(0)z^2 + T'(0)z +T(0)$
-\form#1200:$\Delta z_p$
-\form#1201:$T_p$
-\form#1202:$T''(0) = [T'(\Delta z) - T'(0)]/\Delta z$
-\form#1203:$G(z) = - \lambda(z)T'(z)$
-\form#1204:$\lambda$
-\form#1205:$T_p = [G(0)/ \lambda(0) – G(\Delta z_{1p})/ \lambda(\Delta z_{1p})] [\Delta z_p^2 - \Delta z_{1p}^2]/ 6 \Delta z_{1p} – G(0) [\Delta z_p - \Delta z_{1p}]/ 2 \lambda(0) – T_{1P}$
-\form#1206:$[J kg^{-1}]$
-\form#1207:$[W m^{-1} K^{-1}] (\lambda_t)$
-\form#1208:$[W m^{-1} K^{-1}] (\lambda_b)$
-\form#1209:$T(z) = (1/2) a z^2 + b z + c$
-\form#1210:$a = T''(0)$
-\form#1211:$b = T'(0)$
-\form#1212:$c = T(0)$
-\form#1213:$T''(0)$
-\form#1214:$T''(0) = [T'(\Delta z) - T'(0)]/ \Delta z$
-\form#1215:$T'(0)$
-\form#1216:$\lambda_t$
-\form#1217:$\lambda_b$
-\form#1218:$G(0) = - \lambda_t T'(0)$
-\form#1219:$G(\Delta z) = - \lambda_b T'(\Delta z)$
-\form#1220:$[J m^{-3} K^{1}] (Cg)$
-\form#1221:$[J m^{-3} K^1] (C_s)$
-\form#1222:$[J m^{-3} K^{1}] (C_s)$
-\form#1223:$[ ] (\beta)$
-\form#1224:$[m] (z_{wt})$
-\form#1225:$[m^{-1}]$
-\form#1226:$[m^3 m^{-3}] (\theta_{ret})$
-\form#1227:$[m^3 m^{-3}] (theta_{fc})$
-\form#1228:$[W m^{-1} K^{-1}] (\theta_s)$
-\form#1229:$[m] (\Delta z_w)$
-\form#1230:$[m] (z_{b,w})$
-\form#1231:$\beta = 0.25 [1 – cos(\theta_l \pi / \theta_{fc})]^2$
-\form#1232:$C_g = C_w \theta_l + C_i \theta_i + C_m(1 - \theta_p)$
-\form#1233:$C_m$
-\form#1234:$C_s = C_i [\rho_s /\rho_i ] + C_w w_s /[\rho_w z_s]$
-\form#1235:$\lambda_s$
-\form#1236:$\lambda_s = 3.233 x 10^{-6} \rho_s^2 – 1.01 x 10^{-3} \rho_s + 0.138 \rho_s \geq 156.0 $
-\form#1237:$\theta_l + \theta_i = \theta_p$
-\form#1238:$\theta_l + \theta_i = \theta_{ret}$
-\form#1239:$\theta_l + \theta_i$
-\form#1240:$z_{wt} = z_{b,w} - \Delta z_w [(\theta_l + \theta_i - \theta_{ret})/(\theta_p - \theta_{ret})]$
-\form#1241:$\Delta z_w$
-\form#1242:$\lambda_r$
-\form#1243:$\lambda = [ \lambda_{sat} – \lambda_{dry} ] \lambda_r + \lambda_{dry}$
-\form#1244:$S_r$
-\form#1245:$\lambda_r = \kappa S_r/[1 + (\kappa-1) S_r ]$
-\form#1246:$\kappa = 4.0$
-\form#1247:$\kappa = 1.2$
-\form#1248:$\kappa = 1.9$
-\form#1249:$\kappa = 0.85$
-\form#1250:$\kappa = 0.6$
-\form#1251:$\kappa = 0.25$
-\form#1252:$lambda_{dry}$
-\form#1253:$\lambda_{dry} = 0.75 exp(-2.76 \theta_p) (mineral)$
-\form#1254:$\lambda_{dry} = 0.30 exp(-2.0 \theta_p) (organic)$
-\form#1255:$\lambda_{sat}$
-\form#1256:$lambda_{sat} = lambda_w \theta_p + \lambda_s (1 - \theta_p) (unfrozen)$
-\form#1257:$lambda_{sat} = lambda_i \theta_p + \lambda_s (1 - \theta_p) (frozen)$
-\form#1258:$\lambda_w$
-\form#1259:$\theta_w$
-\form#1260:$\theta_{re}$
-\form#1261:$\theta_w + \theta_i$
-\form#1262:$\geq 10^{-2} m$
-\form#1263:$[W m^{-2} ] (K_{*c} )$
-\form#1264:$[W m^{-2} ] (K_{*g} )$
-\form#1265:$[W m^{-2} ] (L \uparrow_c , L \downarrow_c )$
-\form#1266:$[W m^{-2} ] (L \uparrow_g )$
-\form#1267:$[W m^{-2} ] $
-\form#1268:$[W m^{-2} ] (Q_H )$
-\form#1269:$[W m^{-2} ] (Q_{H,c} )$
-\form#1270:$[W m^{-2} ] (Q_{H,g} )$
-\form#1271:$[W m^{-2} ] (Q_E )$
-\form#1272:$[W m^{-2} ] (Q_{E,c} )$
-\form#1273:$[W m^{-2} ] (Q_{E,g} )$
-\form#1274:$[kg m^{-2} s^{-1} ] (E_c )$
-\form#1275:$[kg m^{-2} s^{-1} ] (E(0))$
-\form#1276:$[K] (T_c )$
-\form#1277:$[kg kg^{-1} ] (q_c )$
-\form#1278:$[K] (T(0))$
-\form#1279:$[kg kg^{-1} ] (q(0))$
-\form#1280:$[W m^{-2} ] (G(0))$
-\form#1281:$[K] (T_{ac} )$
-\form#1282:$[kg kg^{-1} ] (q_{ac} )$
-\form#1283:$[kg kg^{-1} m s^{-1} ]$
-\form#1284:$[W m^{-2} ] (K \downarrow )$
-\form#1285:$[W m^{-2} ] (L \downarrow )$
-\form#1286:$[K] (T_{a,pot} )$
-\form#1287:$[kg kg^{-1} ] (q_a )$
-\form#1288:$[m s^{-1} ] (v_{ac} )$
-\form#1289:$[kg m^{-3} ] ( \rho_a )$
-\form#1290:$[ ] ( \alpha_c )$
-\form#1291:$[ ] ( \alpha_g )$
-\form#1292:$[ ] ( \tau_c )$
-\form#1293:$[ ] ( \chi )$
-\form#1294:$[K^{-1} ]$
-\form#1295:$[J kg^{-1} ] (L_v )$
-\form#1296:$[K] (T_{a,v} )$
-\form#1297:$[s m^{-1}] (r_c )$
-\form#1298:$[m] (z_{0,m} )$
-\form#1299:$[s_{-1} ]$
-\form#1300:$[W m^{-2} K^{-1} ]$
-\form#1301:$[ ] (F_s )$
-\form#1302:$[ ] (F_l )$
-\form#1303:$[J m^{-2} K^{-1} ] (C_c )$
-\form#1304:$(z_s)$
-\form#1305:$[m^{3} m^{-3} ]$
-\form#1306:$2.0 W m^{-2} K^{-1}$
-\form#1307:$1.9 x 10^{-3}$
-\form#1308:$K_{*g} = K \downarrow \tau_c [1 - \alpha_g ]$
-\form#1309:$K_{*g} is the net radiation at the surface, $
-\form#1310:$ is the incoming shortwave radiation above the canopy, $
-\form#1311:$K_{*c} = K \downarrow [1 - \alpha_c ] - K_{*g}$
-\form#1312:$K_{*c} is the net radiation on the canopy and $
-\form#1313:$(L \uparrow_c )$
-\form#1314:$(L \downarrow_c )$
-\form#1315:$L \uparrow_c = L \downarrow_c = \sigma T_c^4$
-\form#1316:$T_{c,v}$
-\form#1317:$T_{c,v} = T_c [1 + 0.61 q_c ]$
-\form#1318:$q_c$
-\form#1319:$w_c$
-\form#1320:$q_c = w_c /[1 + w_c ]$
-\form#1321:$e_c$
-\form#1322:$w_c = 0.622 e_c /(p_{dry} )$
-\form#1323:$e_{sat} = 611.0 exp[17.269(T - T_f )/(T - 35.86)] T \geq T_f$
-\form#1324:$e_{sat} = 611.0 exp[21.874(T - T_f )/(T - 7.66)] T < T_f$
-\form#1325:$T_{ac,v}$
-\form#1326:$T_{ac}$
-\form#1327:$q_{ac}$
-\form#1328:$T_{ac,v} = T_{ac} [1 + 0.61 q_{ac} ]$
-\form#1329:$1/r_b$
-\form#1330:$1/r_b = v_{ac}^{1/2} \sigma f_i \gamma_i \Lambda_i^{1/2} /0.75 [1 - exp(-0.75 \Lambda_i^{1/2})]$
-\form#1331:$v_{ac}$
-\form#1332:$\Lambda_i$
-\form#1333:$\gamma_i$
-\form#1334:$q(0)_{sat}$
-\form#1335:$\beta = [q(0) - q_{ac} ]/[q(0)_{sat} - q_{ac} ]$
-\form#1336:$q(0) > q_{ac}$
-\form#1337:$T(0)_{pot}$
-\form#1338:$z_{0,m}$
-\form#1339:$8.0 z_{0,m}$
-\form#1340:$T(0)_{pot} = T(0) - 8.0 z_{0,m} g/c_p$
-\form#1341:$T(0)_v = T(0)_{pot} [1 + 0.61 q(0)]$
-\form#1342:$r_{a,,g}$
-\form#1343:$1/r_{a,,g} = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]^{1/3}$
-\form#1344:$d(1/r_{a,,g} )/dT = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]^{-2/3} /3$
-\form#1345:$1/r_{a,,g} = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]$
-\form#1346:$d(1/r_{a,,g} )/dT = 1.9 x 10^{-3}$
-\form#1347:$K_{*g} + L_{*g} - Q_{H,g} - Q_{E,g} - G(0) = 0$
-\form#1348:$K_{*g}$
-\form#1349:$L_{*g}$
-\form#1350:$Q_{H,g}$
-\form#1351:$Q_{E,g}$
-\form#1352:$L \downarrow_g$
-\form#1353:$L \uparrow_g$
-\form#1354:$L \downarrow$
-\form#1355:$L \downarrow_c$
-\form#1356:$L \downarrow_g = \chi L \downarrow + [1 - \chi] L \downarrow_c$
-\form#1357:$L \uparrow_g = \sigma T(0)^4$
-\form#1358:$Q_{H,g} = \rho_a c_p [T(0)_{pot} - T_{a,c} ]/r_{a,,g}$
-\form#1359:$E(0) = \rho_a [q(0) - q_{a,c} ]/r_{a,,g}$
-\form#1360:$5.0 W m^{-2}$
-\form#1361:$x_{n+1}$
-\form#1362:$x_n$
-\form#1363:$x_{n+1} = x_n - f(x_n )/f'(x_n )$
-\form#1364:$f(x_n )$
-\form#1365:$> 15 W m^{-2}$
-\form#1366:$Q_{H,g} + Q_{E,g}$
-\form#1367:$B = Q_{H,g} /Q_{E,g}$
-\form#1368:$Q_{E,g} = R/(1 + B)$
-\form#1369:$R - Q_{E,g}$
-\form#1370:$T(0)_v$
-\form#1371:$Q_{H,c}$
-\form#1372:$Q_{E,c}$
-\form#1373:$Q_H = Q_{H,c} + Q_{H,g}$
-\form#1374:$Q_E = Q_{E,c} + Q_{E,g}$
-\form#1375:$Q_H = \rho_a c_p [T_{a,c} - T_{a,pot,} ]/r_a$
-\form#1376:$Q_{H,c} = \rho_a c_p [T_c - T_{a,c,} ]/r_b$
-\form#1377:$Q_E = L_v \rho_a [q_{a,c} - q_{a,} ]/r_a$
-\form#1378:$Q_{E,c} = L_v \rho_a [q_{,c} - q_{a,c,} ]/(r_b + r_c )$
-\form#1379:$r_a$
-\form#1380:$1/r_a$
-\form#1381:$T_{a,c}$
-\form#1382:$q_{a,c}$
-\form#1383:$T_{a,c} = [T_{a,pot} /r_a + T_c /r_b + T(0)_{pot} /r_{a,,g} ]/[1/r_a + 1/r_b + 1/r_{a,,g} ]$
-\form#1384:$q_{a,c} = [q_a /r_a + q_c /(r_b + r_c ) + q(0)/r_{a,,g} ]/[1/r_a + 1/(r_b + r_c ) + 1/r_{a,,g} ]$
-\form#1385:$F_s$
-\form#1386:$F_l$
-\form#1387:$1/(r_b + r_c )$
-\form#1388:$X_E$
-\form#1389:$F_s > 0$
-\form#1390:$X_E = (F_s + F_l )/r_b$
-\form#1391:$r_b$
-\form#1392:$r_b + r_c$
-\form#1393:$X_E = F_l /r_b + [1 - F_l ]/[r_b + r_c ]$
-\form#1394:$q_{a,c} < q_c$
-\form#1395:$Q_{H,c} = \rho_a c_p [T_{,c} - T_{a,pot,} ]/(r_a + r_b )$
-\form#1396:$Q_{E,c} = L_v \rho_a [q_{,c} - q_{a,} ]/(r_a + r_b + r_c )$
-\form#1397:$1/(r_a + r_b )$
-\form#1398:$25 W m^{-2}$
-\form#1399:$r_A = r_a + r_b$
-\form#1400:$q_a < q_c$
-\form#1401:$r_A$
-\form#1402:$q_{0,c}$
-\form#1403:$Q_{E,c} = L_v \rho_a X_E [q_{,c} - q_{a,} ]$
-\form#1404:$Q_{E,c} = L_v \rho_a [q_{,0,c} - q_{a,} ]/r_A$
-\form#1405:$q_{0,c} = r_A X_E q_c + [1 - r_A X_E ]q_a$
-\form#1406:$K_{*c} + L_{*c} - Q_{H,c} + Q_{H,g+} - Q_{E,c} - \Delta Q_{S,c} = 0$
-\form#1407:$Q_{H,g+}$
-\form#1408:$\Delta Q_{S,c}$
-\form#1409:$K_{*c}$
-\form#1410:$L_{*c} = (1 - \chi) [L \downarrow + L \uparrow_g - 2 L \downarrow_c ]$
-\form#1411:$5000 s m^{-1}$
-\form#1412:$E_c$
-\form#1413:$Q_{E,c} /L_v$
-\form#1414:$\Delta Q_{S,c} = C_c [T_c - T_{c,o} ]/ \Delta t$
-\form#1415:$T_{c,o}$
-\form#1416:$d(L_{*c} )/dT = -8 \sigma T_c^3 (1 - \chi)$
-\form#1417:$d(Q_{H,c} )/dT = \rho_a c_p {1/r_A + [T_c - T_{a,pot} ] d(1/r_A )/dT}$
-\form#1418:$d(Q_{E,c} )/dT = L_v \rho_a {X_E dq_c /dT + [q_c - q_a ] dX_E /dT}$
-\form#1419:$d \Delta Q_{S,c} /dT = C_c / \Delta t$
-\form#1420:$d(1/r_A )/dT$
-\form#1421:$dX_E /dT$
-\form#1422:$> 100 W m^{-2}$
-\form#1423:$T_{v,c}$
-\form#1424:$m s^{-1}$
-\form#1425:$[W m^{-2}] (Q_H )$
-\form#1426:$[W m^{-2}] (Q_E)$
-\form#1427:$[kg m^{-2} s^{-1}] (E(0))$
-\form#1428:$[kg kg^{-1}] (q(0))$
-\form#1429:$[ ] (C_{DH}) $
-\form#1430:$[K m s^{-1}]$
-\form#1431:$[kg kg^{-1} m s^{-1}]$
-\form#1432:$(m-1]$
-\form#1433:$[K] (T_{a,pot})$
-\form#1434:$[m s^{-1}] (v_a)$
-\form#1435:$[K^{-1}]$
-\form#1436:$[s^{-1}]$
-\form#1437:$[m^{3} m^{-3}]$
-\form#1438:$T(0)_v = T(0) [1 + 0.61 q(0)]$
-\form#1439:$\beta = [q(0) – q_a]/[q(0)_{sat} - q_a]$
-\form#1440:$w(0)_{sat}$
-\form#1441:$q(0)_{sat} = w(0)_{sat}/[1 + w(0)_{sat}]$
-\form#1442:$e(0)_{sat}$
-\form#1443:$w(0)_{sat} = 0.622 e(0)_{sat}/(p_{dry})$
-\form#1444:$e_{sat} = 611.0 exp[17.269 (T – T_f)/(T – 35.86)] T \geq T_f$
-\form#1445:$e_{sat} = 611.0 exp[21.874 (T – T_f)/(T – 7.66)] T < T_f$
-\form#1446:$q(0) > q_a$
-\form#1447:$K_* + L_* - Q_H – Q_E – G(0) = 0$
-\form#1448:$L \uparrow$
-\form#1449:$L \uparrow = \sigma T(0)^4$
-\form#1450:$Q_H = [\rho_a c_p C_{DH} v_a + \epsilon_0] [T(0) – T_{a,pot}]$
-\form#1451:$\epsilon_0$
-\form#1452:$T(0) < T_{a,pot}$
-\form#1453:$E(0) = \rho_a C_{DH} v_a [Q(0) – q_a]$
-\form#1454:$x_{n+1} = x_n – f(x_n)/f'(x_n)$
-\form#1455:$f(x_n)$
-\form#1456:$d( L \uparrow )/dT = -4 \sigma T(0)^3$
-\form#1457:$d(Q_H)/dT = \rho_a c_p {C_{DH} v_a + [T(0) – T_{a,pot}] d(C_{DH} v_a)/dT}$
-\form#1458:$d(Q_E)/dT = L_v \rho_a{C_{DH} v_a dq(0)/dT+ [q(0) – q_a] d(C_{DH} v_a)/dT}$
-\form#1459:$50 W m^{-2}$
-\form#1460:$[W m^{-2}] (G(\Delta z_s))$
-\form#1461:$[K/C] (T_s)$
-\form#1462:$[m] (\Delta z_s)$
-\form#1463:$G(\Delta z_s)$
-\form#1464:$\Delta T_s = [G(0) - G(\Delta z_s)] \Delta t /(C_s \Delta z_s)$
-\form#1465:$\Delta z_s$
-\form#1466:$\Delta I_s = X_i \Delta [C_s T_s]/ \Delta t$
-\form#1467:$C_s = C_i [\rho_s /\rho_i] + C_w w_s/[\rho_w \Delta z_s]$
-\form#1468:$[K] (T_s(\Delta z_s))$
-\form#1469:$T(\Delta z_s)$
-\form#1470:$T"(0) = [T'(\Delta z_s) - T'(0)]/ \Delta z_s$
-\form#1471:$G(0) = -\lambda_s T'(0)$
-\form#1472:$T_s(\Delta z_s)$
-\form#1473:$G(0) = 3 \lambda_s / \Delta z_s [T(0) - T_s(\Delta z_s)]$
-\form#1474:$3 \lambda_s / \Delta z_s$
-\form#1475:$-3 \lambda_s T_s(\Delta z_s)/ \Delta z_s$
-\form#1476:$D_\mathrm{S}$
-\form#1477:$D_\mathrm{R}$
-\form#1478:$C_\mathrm{S}, C_\mathrm{R}$
-\form#1479:$\tau_\mathrm{S}$
-\form#1480:$\tau_\mathrm{R}$
-\form#1481:\[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\]
-\form#1482:$[mm] (\theta_p)$
-\form#1483:$[m^3 m^{-3}] (\theta_r)$
-\form#1484:$[m] (\Delta z_{g,z})$
-\form#1485:$\Delta z_{g,w}$
-\form#1486:$C_g = C_w \theta_l + C_i \theta_i + C_m (1 - \theta_p)$
-\form#1487:$C_r$
-\form#1488:$C_{g,e}$
-\form#1489:$\Delta z_{g,z}$
-\form#1490:$C_{g,e} = C_g \Delta z_{g,w} + C_r(\Delta z_{g,z} - \Delta z_{g,w})$
-\form#1491:$\Delta I_j = X_i \Delta (C_{g,e} T_g)/\Delta t$
-\form#1492:$T_g$
-\form#1493:$\theta_f$
-\form#1494:$C_e$
-\form#1495:$[m^3 m^{-2}]$
-\form#1496:$F_{inf}$
-\form#1497:$F_{inf} = $
-\form#1498:$ [(\Psi_f + z_f)/ z_f ]$
-\form#1499:$\Psi_f$
-\form#1500:$z_f$
-\form#1501:$F_{inf} = r$
-\form#1502:$t_p$
-\form#1503:$z_f = \Psi_f /[r/K_{inf} – 1]$
-\form#1504:$t_p r$
-\form#1505:$z_f (\theta_{inf} – \theta_l)$
-\form#1506:$\theta_{inf}$
-\form#1507:$t_p = z_f (\theta_{inf} – \theta_l)/r$
-\form#1508:$K_{inf} < R$
-\form#1509:$t_p = [z_f [\theta_{inf}(z_f) – \theta_l(z_f)] + w_{adj}]/r$
-\form#1510:$w_{adj}$
-\form#1511:$LZF-1$
-\form#1512:$w_{adj} = \Sigma[(\theta_{inf. i} – \theta_{l,i} ) – (\theta_{inf} (z_f) – \theta_l (z_f))] \Delta z_{g,w}$
-\form#1513:$i=1$
-\form#1514:$[m] (\Psi_f)$
-\form#1515:$[m s^{-1}] (K)$
-\form#1516:$[m] (\Delta z_{z,w})$
-\form#1517:$[m] (z_f)$
-\form#1518:$F_{inf} = K_{inf} [(\Psi_f + z_f + z_p)/z_f ]$
-\form#1519:$K_{sat}' = (1.7915 * 10^{-3}) K_{sat} / [(2.0319 * 10^{-4})+(1.5883 * 10^{-3}) exp(-T_g^{0.9}/22.0)]$
-\form#1520:$C_s = C_i [\rho_s /\rho_i] + C_w w_s /[\rho_w z_s]$
-\form#1521:\[ \begin{tabular}{ | l | l || l | } 1.0 & April 1989 & Basic thermal and hydrological model of snow and soil. \\ 2.0 & August 1991 & Addition of vegetation thermal and hydrological model. \\ 2.1 & May 1993 & Full vectorization of code to enable efficienr running on vector supercomputers. \\ 2.2 & April 1994 & Augmentation of diagnostic calculations; incorporation of in-line comments throughout; development \\ & & of a parallel stand-alone version of the model for use with field data. \\ 2.3 & December 1994 & Revisions to diagnostic calculations; new near-surface atmospheric stability functions. \\ 2.4 & August 1995 & Complete set of water budget diagnostic calculations; parametrizations of organic soils and \\ & &rock soils; allowance for inhomegeneity between soil layers; incorporation of variable \\ & & surface detention capacity. \\ 2.5 & January 1996 & Completion of energy budget diagnostic calculations. \\ 2.6 & August 1997 & Revisions to surface stability function calculations. \\ 2.7 & December 1997 & Incorporation of variable soil permeable depth; calculation of soil thermal and hydraulic \\ & & properties based on textural composition; modified surface temperature iteration scheme. \\ 3.0 & December 2002 & Improved treatment of soil evaporation; complete treatment of organic soils; new canopy \\ & & conductance formulation; preliminary routines for lateral movement of soil water; enhanced snow \\ & & density and snow interception; improved turbulent transfer from vegetation; mosaic formulation. \\ 3.1 & April 2005 & Faster surface temperature iteration scheme; refinements to leaf boundary resistance formulation; \\ & & improved treatment of snow sublimation and interception; transition to Fortran 90 and\\ & & single precision variables. \\ 3.2 & May 2006 & Option for multiple soil layers at depth; additional liquid water content of snow pack; revised radiation \\ & & transmission in vegetation. \\ 3.3 & December 2006 & Separate temperature profile curve fit for snow and soil; multiple-layer option for ice sheets;\\ & & water and energy balance checks for each time step; modifications to soil hydraulic \\ & & conductivity calculations. \\ 3.4 & April 2008 & Streamline and clean up code; updated soil thermal conductivity calculations; revisions to handling of\\ & & water stored on vegetation. \\ 3.5 & December 2010 & Updated field capacity calculation; revised treatment of water on canopy; \\ & & reworked calculation of baseflow. \\ 3.6 & December 2011 & Revised ponding depth over organic soils; revised snow albedo refreshment \\ & & threshold; new snow thermal conductivity algorithm; interface with Canadian Terrestrial \\ & & Ecosystem Model (CTEM). \\ \end{tabular} \]
-\form#1522:$[ W m^{-2} ]$
-\form#1523:$[P_a ]$
-\form#1524:$[m s^-1 ]$
-\form#1525:\[ \begin{tabular}{ | l | c | c | c | c | c | c | } & RSMN & QA50 & VPDA & VPDB & PSGA & PSGB \\ Needleleaf trees & 200.0 & 30.0 & 0.65 & 1.05 & 100.0 & 5.0 \\ Broadleaf trees & 125.0 & 40.0 & 0.50 & 0.60 & 100.0 & 5.0 \\ Crops & 85.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\ Grass & 100.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\ \end{tabular} \]
-\form#1526:\[ \begin{tabular}{ | l | c | c | c | c | c | c | c | c | } Biome & CLASS PFT & Visible albedo & Near-infrared Albedo & Roughness length (m) \\ Needleleaf evergreen forest & 1 & 0.03 & 0.19 & 1.5 \\ Needleleaf deciduous forest & 1 & 0.03 & 0.19 & 1.0 \\ Broadleaf evergreen forest & 2 & 0.03 & 0.23 & 3.5 \\ Broadleaf cold deciduous forest & 2 & 0.05 & 0.29 & 2.0 \\ Broadleaf tropical evergreen forest & 2 & 0.03 & 0.23 & 3.0 \\ Broadleaf tropical drought deciduous forest & 2 & 0.05 & 0.29 & 0.8 \\ Broadleaf evergreen shrub & 4 & 0.03 & 0.19 & 0.05 \\ Broadleaf deciduous shrub & 2 & 0.05 & 0.29 & 0.15 \\ Broadleaf thorn shrub & 2 & 0.06 & 0.32 & 0.15 \\ Short grass and forbs & 4 & 0.06 & 0.34 & 0.02 \\ Long grass & 4 & 0.05 & 0.31 & 0.08 \\ Arable & 3 & 0.06 & 0.34 & 0.08 \\ Rice & 3 & 0.06 & 0.36 & 0.08 \\ Sugarcane & 3 & 0.05 & 0.31 & 0.35 \\ Maize & 3 & 0.05 & 0.33 & 0.25 \\ Cotton & 3 & 0.07 & 0.43 & 0.10 \\ Irrigated crop & 3 & 0.07 & 0.36 & 0.08 \\ Tundra & 4 & 0.05 & 0.29 & 0.01 \\ Swamp & 4 & 0.03 & 0.25 & 0.05 \\ Urban & 5 & 0.09 & 0.15 & 1.35 \\ \end{tabular} \]
-\form#1527:\[ \begin{tabular}{ | l | c | c | c | c | c | c | c | c | } Biome & CLASS PFT & Max. LAI (m2/m2) & Min. LAI (m2/m2) & Aboveground biomass (kg/m2) & Rooting depth (m) \\ Needleleaf evergreen forest & 1 & 2.0 & 1.6 & 25.0 & 1.0 \\ Needleleaf deciduous forest & 1 & 2.0 & 0.5 & 15.0 & 1.0 \\ Broadleaf evergreen forest & 2 & 8.0 & 8.0 & 50.0 & 5.0 \\ Broadleaf cold deciduous forest & 6.0 & 0.5 & 20.0 & 2.0 \\ Broadleaf tropical evergreen forest & 8.0 & 8.0 & 40.0 & 5.0 \\ Broadleaf tropical drought deciduous forest & 4.0 & 4.0 & 15.0 & 5.0 \\ Broadleaf evergreen shrub & 2.0 & 2.0 & 2.0 & 0.2 \\ Broadleaf deciduous shrub & 4.0 & 0.5 & 8.0 & 1.0 \\ Broadleaf thorn shrub & 3.0 & 3.0 & 8.0 & 5.0 \\ Short grass and forbs & 3.0 & 3.0 & 1.5 & 1.2 \\ Long grass & 4.0 & 4.0 & 3.0 & 1.2 \\ Arable & 4.0 & 0.0 & 2.0 & 1.2 \\ Rice & 6.5 & 0.0 & 2.0 & 1.2 \\ Sugarcane & 5.0 & 0.0 & 5.0 & 1.0 \\ Maize & 4.0 & 0.0 & 5.0 & 1.5 \\ Cotton & 5.0 & 0.0 & 2.0 & 2.0 \\ Irrigated crop & 4.0 & 0.0 & 2.0 & 5.0 \\ Tundra & 1.5 & 1.5 & 0.2 & 0.1 \\ Swamp & 1.5 & 1.5 & 1.0 & 5.0 \\ Urban & - & - & - & - \\ \end{tabular} \]
-\form#1528:\[ \begin{tabular}{ | l | c | c | } & CTEM PFTs & CLASS PFTs \\ 1. & Needleleaf Evergreen & Needleleaf \\ 2. & Needleleaf Deciduous & \\ 3. & Broadleaf Evergreen & Broadleaf \\ 4. & Broadleaf Cold Deciduous & \\ 5. & Broadleaf Drought/Dry Deciduous & \\ 6. & C3 Crop & Crops \\ 7. & C4 Crop & \\ 8. & C3 Grass & Grasses \\ 9. & C4 Grass & \\ \end{tabular} \]
+\form#265:$[m^3 m^{-3} ] (\theta_{wilt})$
+\form#266:$(\Psi_{wilt} )$
+\form#267:$(X_{sand} )$
+\form#268:$(X_{clay} )$
+\form#269:$(z_b )$
+\form#270:$\geq$
+\form#271:$K_{sat}$
+\form#272:$X_{sand}$
+\form#273:$X_{clay}$
+\form#274:\[ \begin{tabular} { | l | l | c | c | } \hline Name & Definition & Value & Units \\ \hline VKC & Von Karman Constant & 0.40 & - \\ \hline CT & Drag Coefficient for water & $1.15 10^{-3}$ & - \\ \hline VMIN & Minimum wind speed & 0.1 & $ m s^{-1} $ \\ \hline TCW & Thermal conductivity of water & 0.57 & $W m^{-1} K^{-1} $ \\ \hline TCICE & Thermal conductivity of ice & 2.24 & $W m^{-1} K^{-1} $ \\ \hline TCSAND & Thermal conductivity of sand particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCCLAY & Thermal conductivity of fine mineral particles & 2.5 & $W m^{-1} K^{-1} $ \\ \hline TCOM & Thermal conductivity of organic matter & 0.25 & $W m^{-1} K^{-1} $ \\ \hline TCDRYS & Thermal conductivity of dry mineral soil & 0.275 & $W m^{-1} K^{-1} $ \\ \hline RHOSOL & Particle density of soil mineral matter & $2.65 10^3 $ & $kg m^{-3} $ \\ \hline RHOOM & Particle density of soil organic matter & $1.30 10^3 $ & $kg m^{-3} $ \\ \hline HCPW & Volumetric heat capacity of water & $4.187 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPICE & Volumetric heat capacity of ice & $1.9257 10^6$ & $J m^{-3} K^{-1} $ \\ \hline HCPSOL & Volumetric heat capacity of mineral matter & $2.25 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPOM & Volumetric heat capacity of organic matter & $2.50 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPSND & Volumetric heat capacity of sand particles & $2.13 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline HCPCLY & Volumetric heat capacity of fine mineral particles & $2.38 10^6 $ & $J m^{-3} K^{-1} $ \\ \hline SPHW & Specific heat of water & $4.186 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHICE & Specific heat of ice & $2.10 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline SPHVEG & Specific heat of vegetation matter & $2.70 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline RHOW & Density of water & $1.0 10^3 $ & $kg m^{-3} $ \\ \hline RHOICE & Density of ice & $0.917 10^3$ & $kg m^{-3} $ \\ \hline TCGLAC & Thermal conductivity of ice sheets & 2.24 & $W m^{-1} K^{-1} $ \\ \hline CLHMLT & Latent heat of freezing of water & $0.334 10^6 $ & $J kg^{-1} $ \\ \hline CLHVAP & Latent heat of vaporization of water & $2.501 10^6 $ & $J kg^{-1} $ \\ \hline ZOLNG & Natural log of roughness length of soil & -4.605 & - \\ \hline ZOLNS & Natural log of roughness length of snow & -6.908 & - \\ \hline ZOLNI & Natural log of roughness length of ice & -6.215 & - \\ \hline ZORATG & Ratio of soil roughness length for momentum to roughness length for heat & 3.0 & - \\ \hline ALVSI & Visible albedo of ice & 0.95 & - \\ \hline ALIRI & Near-infrared albedo of ice & 0.73 & - \\ \hline ALVSO & Visible albedo of organic matter & 0.05 & - \\ \hline ALIRO & Near-infrared albedo of organic matter & 0.30 & - \\ \hline ALBRCK & Albedo of rock & 0.16 & - \\ \hline \end{tabular} \]
+\form#275:\[ \begin{tabular} { | l | l | c | c | c | } \hline Name & Symbol & Fibric peat & Hemic peat & Sapric peat \\ \hline THPORG & $\theta_p $ & 0.93 & 0.88 & 0.83 \\ \hline BORG & b & 2.7 & 6.1 & 12.0 \\ \hline GRKSORG & $K_{sat} $ & $2.8 10^{-4}$ & $2.0 10^{-6}$ & $1.0 10^{-7}$ \\ \hline PSISORG & $psi_{sat} $ & 0.0103 & 0.0102 & 0.0101 \\ \hline THMORG & $theta_{min}$ & 0.04 & 0.15 & 0.22 \\ \hline THRORG & $theta_{ret}$ & 0.275 & 0.62 & 0.705 \\ \hline \end{tabular} \]
+\form#276:\[ \begin{tabular} { | l | l | c | c | } \hline GCM Name & Definition & Value & Units \\ \hline DELTIM & Time Step & Varies by run & s \\ \hline CELZRO & Freezing point of water & 273.16 & K \\ \hline GAS & Gas constant & 287.04 & $J kg^{-1} K^{-1}$ \\ \hline GASV & Gas constant for water vapour & 461.50 & $J kg^{-1} K^{-1}$ \\ \hline G & Acceleration due to gravity & 9.80616 & $m s^{-1} $ \\ \hline SIGMA & Stefan-Boltzmann constant & $5.66796 10^{-8}$ & $W m^{-2} K^{-4} $ \\ \hline CPRES & Specific heat of air & $1.00464 10^3 $ & $J kg^{-1} K^{-1}$ \\ \hline CPI & Pi & 3.14159265 & - \\ \hline \end{tabular} \]
+\form#277:\[ \begin{tabular} { | l | l | l | c | } \hline CLASS/RPN name & GCM name & Definition & Units \\ \hline DELT & DELTIM & Time step & s \\ \hline TFREZ & CELZRO & Freezing point of water & K \\ \hline RGAS & GAS & Gas constant & $J kg^{-1} K^{-1}$ \\ \hline RGASV & GASV & Gas constant for water vapour & $J kg^{-1} K^{-1}$ \\ \hline GRAV & G & Acceleration due to gravity & $m s^{-1} $ \\ \hline CGRAV & G & Acceleration due to gravity & $m s^{-1} $ \\ \hline SBC & SIGMA & Stefan-Boltzmann constant & $W m^{-2} K^{-4} $ \\ \hline CKARM & VKC & Von Karman constant & - \\ \hline SPHAIR & CPRES & Specific heat of air & $J kg^{-1} K^{-1}$ \\ \hline CPD & CPRES & Specific heat of air & $J kg^{-1} K^{-1}$ \\ \hline PI & CPI & Pi & - \\ \hline \end{tabular} \]
+\form#278:$[kg kg^{-1}]$
+\form#279:$[W m^{-1} K^{-1}]$
+\form#280:$[mb] (e_d)$
+\form#281:$[Pa] (p_{dry})$
+\form#282:$[kg m^{-3}] (\rho_a)$
+\form#283:$[kg m^{-3}] (\rho_{s,i})$
+\form#284:$[K] (T_a)$
+\form#285:$[kg kg^{-1}] (q_a)$
+\form#286:$[Pa] (p)$
+\form#287:$e_d$
+\form#288:$e_a$
+\form#289:$e_{a,sat}$
+\form#290:$e_d = [e_{a,sat} - e_a] /100.0$
+\form#291:$q_a$
+\form#292:$e_a = q_a p /[0.622 + 0.378 q_a ]$
+\form#293:$T_f$
+\form#294:$e_{a,sat} = 611.0 exp[17.269*(T_a – T_f)/(T_a – 35.86)]$
+\form#295:$T_a \geq T_f$
+\form#296:$e_{a,sat} = 611.0 exp[21.874 (T_a – T_f)/(T_a – 7.66)]$
+\form#297:$T_a < T_f$
+\form#298:$p_{dry}$
+\form#299:$\rho_a = p_{dry} / R_d T_a + e_a / R_v T_a$
+\form#300:$R_d$
+\form#301:$R_v$
+\form#302:$[ ] (C_{DH} )$
+\form#303:$[ ] (C_{DM} )$
+\form#304:$[J m^{-2} K^{-1} ]$
+\form#305:$[kg m^{-2} s^{-1} ] (E_p )$
+\form#306:$[K] (T_{0,eff} )$
+\form#307:$[J m^{-3} K^{-1} ]$
+\form#308:$[kg m^{-3} ] (\rho_a )$
+\form#309:$[m s^{-1} ] (U_a )$
+\form#310:$[m s^{-1} ] (V_a )$
+\form#311:$[K] (T_a )$
+\form#312:$[Pa] (p_{dry} )$
+\form#313:$(\varphi)$
+\form#314:$v_a$
+\form#315:$f_{cor}$
+\form#316:$0.1 m s^{-1}$
+\form#317:$\Omega$
+\form#318:$\varphi$
+\form#319:$f_{cor} = 2 \Omega sin \varphi$
+\form#320:$T_{a,pot}$
+\form#321:$dT/dz = -g/c_p$
+\form#322:$c_p$
+\form#323:$T_{a,pot} = T_a + z_{ref,h} g/c_p$
+\form#324:$z_{ref,h}$
+\form#325:$T_{a,v}$
+\form#326:$T_{a,v} = T_{a,pot} [1 + 0.61 q_a ]$
+\form#327:$Ri_B$
+\form#328:$Ri_B = [T_0 – T_{a,v} ] (-g z_{ref} )/(T_{a,v} v_a^2 )$
+\form#329:$T_0$
+\form#330:$[T_0 – T_{a,v} ]$
+\form#331:$z_{ref}$
+\form#332:$C_{DN}$
+\form#333:$C_{DN} = k^2 /[ln(z_{ref} ) – ln(z_0 )]^2$
+\form#334:$z_0$
+\form#335:$ln(z_0 )$
+\form#336:$v_{a,c}$
+\form#337:$kv(z)/v_* = ln[(z – d)/z_0 ]$
+\form#338:$v_*$
+\form#339:$v_{a,c} = v_a [ln(H – d) – ln(z_0 )]/[ln(z_{ref} ) – ln(z_0 )]$
+\form#340:$10z_0$
+\form#341:\[ \begin{tabular} { | l | l | c | c | c | c | } \hline & & CS & GS & C & G \\ \hline CWCALC & Freezing/thawing of liquid/frozen water on canopy & YES & & YES & \\ \hline TNPREP & Set coefficients for temperature calculations in soil & YES & YES & YES & YES \\ \hline TSPREP & Set coefficients for temperature calculations of snow & YES & YES & & \\ \hline TSOLVC & Calculate components of canopy energy balance & YES & & YES & \\ \hline TSOLVE & Calculate components of ground or snow energy balance & & YES & & YES \\ \hline TSPOST & Heat conduction in snow pack & YES & YES & & \\ \hline TNPOST & Heat conduction in soil & YES & YES & YES & YES \\ \hline \end{tabular} \]
+\form#342:$C_{DM}$
+\form#343:$C_{DH}$
+\form#344:$E_p$
+\form#345:$E_p = \rho_a C_{DH} v_a [q_{0,sat} – q_a ]$
+\form#346:$\rho_a$
+\form#347:$q_{0,sat}$
+\form#348:$q_{ac,sat}$
+\form#349:$w_{ac,sat}$
+\form#350:$q_{ac,sat} = w_{ac,sat} /[1 + w_{ac,sat} ]$
+\form#351:$e_{ac,sat}$
+\form#352:$w_{ac,sat} = 0.622 e_{ac,sat} /(p_{dry} )$
+\form#353:\[e_{sat} = 611.0 exp[17.269(T – T_f )/(T – 35.86)] T \geq T_f \]
+\form#354:\[e_{sat} = 611.0 exp[21.874(T – T_f )/(T – 7.66)] T < T_f \]
+\form#355:$T_{0,eff}$
+\form#356:$L\uparrow = \sigma T_{0,eff}^4$
+\form#357:$L\uparrow$
+\form#358:$\sigma$
+\form#359:$[m or kg m^{-2} s^{-1}]$
+\form#360:$[J m^{-3} K^{-1}]$
+\form#361:$[J m^{-2} K^{-1}] $
+\form#362:\[ \begin{tabular} { | l | l | c | } \hline CANVAP & Evaporation/sublimation of water from vegetation canopy & CS,C \\ \hline CANADD & Addition of rainfall/snowfall to canopy; throughfall and drip & CS,C \\ \hline CWCALC & Freezing/thawing of liquid/frozen water on canopy & CS,C \\ \hline SUBCAN & Precipitaiton and condensation under canopy & CS,C \\ \hline TWCALC & Freezing/thawing of liquid/frozen water in soil & CS,GS,C,G \\ \hline SNOVAP & Sublimaiton from snow pack & CS,GS,C,G \\ \hline TFREEZ & Freezing of ponded water on soil & CS,GS,C,G \\ \hline TMELT & Melting of snow pack & CS,GS \\ \hline SNOADD & Accumulation of snow on ground & CS,GS,C,G \\ \hline SNINFL & Infiltration of rain into snow pack & CS,GS \\ \hline ICEBAL & Energy and water budget of ice sheets & GS,G \\ \hline GRINFL & Infiltraiton of water into soil & CS,GS,C,G \\ \hline GRDRAN & Soil water movement in response to gravity and suction forces & CS,GS,C,G \\ \hline TMCALC & Step ahead soil layer temperatures, check for freezing/thawing & CS,GS,C,G \\ \hline CHKWAT & Check subarea moisture balances for closure & CS,GS,C,G \\ \hline SNOALBW & Temporal variation of snow albedo and density & CS,GS \\ \hline \end{tabular} \]
+\form#363:$^o$
+\form#364:$[W m^{-2}] $
+\form#365:$[W m^{-2}] (K_{*,c})$
+\form#366:$[W m^{-2}] (L_{*,c})$
+\form#367:$[W m^{-2}] (Q_{H,c})$
+\form#368:$[W m^{-2}] (Q_{E,c})$
+\form#369:$[W m^{-2}] (Q_{M,c})$
+\form#370:$[W m^{-2}] (Q_{I,c})$
+\form#371:$[W m^{-2}] (K_{*,s})$
+\form#372:$[W m^{-2}] (L_{*,s})$
+\form#373:$[W m^{-2}] (Q_{H,s})$
+\form#374:$[W m^{-2}] (Q_{E,s})$
+\form#375:$[W m^{-2}] (Q_{M,s})$
+\form#376:$[W m^{-2}] (Q_{I,s})$
+\form#377:$[W m^{-2}] (K_{*,g})$
+\form#378:$[W m^{-2}] (L_{*,g})$
+\form#379:$[W m^{-2}] (Q_{H,g})$
+\form#380:$[W m^{-2}] (Q_{E,g})$
+\form#381:$[W m^{-2}] (Q_{M,g})$
+\form#382:$[W m^{-2}] (Q_{I,g})$
+\form#383:$[kg m^{-2} s^{-1}] (P_{f,c})$
+\form#384:$[kg m^{-2} s^{-1}] (P_{l,c})$
+\form#385:$[kg m^{-2} s^{-1}] (E_{f,c})$
+\form#386:$[kg m^{-2} s^{-1}] (E_{l,c})$
+\form#387:$[kg m^{-2} s^{-1}] (R_c)$
+\form#388:$[kg m^{-2} s^{-1}] (A_c)$
+\form#389:$[kg m^{-2} s^{-1}] (P_s)$
+\form#390:$[kg m^{-2} s^{-1}] (E_s)$
+\form#391:$[kg m^{-2} s^{-1}] (R_s)$
+\form#392:$[kg m^{-2} s^{-1}] (A_s)$
+\form#393:$[kg m^{-2} s^{-1}] (P_g)$
+\form#394:$[kg m^{-2} s^{-1}] (E_g)$
+\form#395:$[W m^{-2}] (E_c)$
+\form#396:$[kg m^{-2} s^{-1}] (R_g)$
+\form#397:$[kg m^{-2} s^{-1}] (A_g)$
+\form#398:$[kg m^{-2}] (W_c)$
+\form#399:$[kg m^{-2}] (W_{l,s})$
+\form#400:$[K] (T_s)$
+\form#401:$[m^3 m^{-3}] (\theta_l)$
+\form#402:$[m^3 m^{-3}] (\theta_f)$
+\form#403:$[J m^{-3}] (C_g)$
+\form#404:$[m] (\Delta_zw)$
+\form#405:$[m] (\Delta_z)$
+\form#406:$[m] (z_p)$
+\form#407:$\Delta [(c_c W_c + c_w W_{l,c} + c_i W_{f,c} )T_c ] / \Delta t$
+\form#408:$\Delta [(C_i W_s /\rho_i + C_w W_{l,s} / \rho_w )T_s ]/ \Delta t $
+\form#409:$\Delta {[(C_w \theta_l + C_i \theta_f + C_g \theta_g ) \Delta z_w + C_b (\Delta z – \Delta z_w )]T_j }/ \Delta t$
+\form#410:$C_w z_p T_p$
+\form#411:$\Delta[W_{l,c} + W_{f,c}]$
+\form#412:$\Delta[W_s + W_{l,s}]$
+\form#413:$\Delta [(\theta_l \rho_w + \theta_f \rho_i ) \Delta z_w + z_p \rho_w ]$
+\form#414:$K_{*,c} + L_{*,c} – Q_{H,c} – Q_{E,c} – Q_{M,c} + Q_{I,c}$
+\form#415:$K_{*,s} + L_{*,s} – Q_{H,s} – Q_{E,s} – Q_{M,s} + Q_{I,s}$
+\form#416:$K_{*,g} + L_{*,g} – Q_{H,g} – Q_{E,g} – Q_{M,1} + Q_{I,1}$
+\form#417:$- Q_{M,j} + Q_{I,j}$
+\form#418:$P_{l,c} + P_{f,c} – E_{l,c} – E_{f,c} – R_c + A_c$
+\form#419:$P_s – E_s – R_s + A_s$
+\form#420:$P_g – E_g – R_g + A_g - E_c$
+\form#421:$K_*$
+\form#422:$L_*$
+\form#423:$Q_H$
+\form#424:$Q_E$
+\form#425:$Q_M$
+\form#426:$Q_I$
+\form#427:$f$
+\form#428:$\alpha$
+\form#429:$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}$
+\form#430:$B$
+\form#431:$\alpha \notin B$
+\form#432:\[ \label{concepteqn} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = g(f_\alpha, f_B) - m_{\alpha} f_\alpha. \]
+\form#433:$g(f_\alpha, f_B)$
+\form#434:$m_{\alpha} f_\alpha$
+\form#435:$m_{\alpha}$
+\form#436:$day^{-1}$
+\form#437:$N$
+\form#438:$f_{N+1}$
+\form#439:$f_{bare}$
+\form#440:$\sum_{j=1}^{N+1} f_{j}=1$
+\form#441:$f_B$
+\form#442:$c_\alpha$
+\form#443:$i$
+\form#444:${\ldots}$
+\form#445:$i-1$
+\form#446:$i+1$
+\form#447:\[ \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = f^b_\alpha(c_{\alpha, i+1}f_{i+1} +c_{\alpha, i+2}f_{i+2} +\ldots+c_{\alpha,N}f_{N})\nonumber\\ - f_\alpha(c_{1,\alpha}f^b_1 + c_{2,\alpha}f^b_2 + \ldots + c_{(i-1), \alpha}f^b_{i-1})\nonumber\\ - m_{\alpha} f_\alpha,\label{full} \]
+\form#448:$b$
+\form#449:$b = 0$
+\form#450:\[ \label{barecol} \frac{\mathrm{d}f_{bare}}{\mathrm{d}t} = \sum_{\beta=1}^{N} (m_\beta f_\beta - c_{\beta, {bare}}f^b_\beta f_{bare}). \]
+\form#451:$\beta$
+\form#452:\[ \label{coloniz} c_{\alpha,\beta}f^b_\alpha f_{\beta} = c_\alpha \left(\frac{c_{\alpha,\beta}}{c_\alpha} \right)f^b_\alpha f_{\beta} = c_\alpha \delta_{\alpha,\beta} f^b_\alpha f_{\beta}. \]
+\form#453:$\textit{invasion}$
+\form#454:$\frac{c_{\alpha,\beta}}{c_\alpha}$
+\form#455:$\delta_{\alpha,\beta}$
+\form#456:$\delta$
+\form#457:$\delta_{\beta,\alpha} =0$
+\form#458:$\delta_{\alpha,\beta}=1$
+\form#459:\[ \label{compact} \frac{\mathrm{d}f_\alpha}{\mathrm{d}t} = \sum_{\beta=1}^{N+1} (c_{\alpha} \delta_{\alpha,\beta}f^b_\alpha f_\beta - c_{\beta} \delta_{\beta,\alpha} f_\alpha f^b_\beta) - m_{\alpha} f_\alpha. \]
+\form#460:$f_{\alpha}^b f_{\beta}$
+\form#461:$f_i$
+\form#462:$b=\delta=1$
+\form#463:\[ \frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 f_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\ = c_1 f_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_2 f_{bare} - c_1 f_1 f_2 - m_2 f_2 \nonumber \\ = c_2 f_2 (1 - f_1 - f_2) - c_1 f_1 f_2 - m_2 f_2\label{cc_eq_b_eq_1_2}, \]
+\form#464:\[ f_1=max \left[ \frac{c_1 - m_1}{c_1}, 0 \right], \vspace*{-4mm} \]
+\form#465:\[ f_2 = max \left[ \frac{c_2 - c_2 f_1 - c_1 f_1 - m_2}{c_2}, 0 \right] \nonumber \\ = max \left[ \frac{(c_2 - m_2)-(1+\frac{c_2}{c_1})(c_1-m_1)}{c_2},0 \right],\label{f2_eq_b_eq_1} \]
+\form#466:$(c_1 - m_1)$
+\form#467:$(c_2 - m_2)$
+\form#468:$f_2$
+\form#469:$b=0$
+\form#470:$\delta=1$
+\form#471:\[ \frac{\mathrm{d}f_{1}} {\mathrm{d}t} = c_1 ( f_2 + f_{bare}) - m_1 f_1 \nonumber \\ = c_1 ( 1 - f_1) - m_1 f_1, \\ \frac{\mathrm{d}f_{2}} {\mathrm{d}t} = c_2 f_{bare} - c_1 f_2 - m_2 f_2 \nonumber \\ = c_2 (1 - f_1 - f_2) - c_1 f_2 - m_2 f_2,\label{cc_eq_b_eq_0_1} \]
+\form#472:\[ \label{f_equil_b_eq_0_1} f_1 = \frac{c_1}{c_1 + m_1}, \vspace*{-4mm} \]
+\form#473:\[ \label{f_equil_b_eq_0_2} f_2 = \frac{c_2(1 - f_1)}{(c_1 + c_2 + m_2)}. \]
+\form#474:$m_1> 0$
+\form#475:$c_2 > 0$
+\form#476:$(-c_{\beta} \delta_{\beta,\alpha} f_\alpha f^b_\beta)$
+\form#477:$\delta_{\alpha,\beta} = 1$
+\form#478:$-c_1 f_1 f_2$
+\form#479:$b=1$
+\form#480:$-c_1 f_2$
+\form#481:$f_1 f_2$
+\form#482:$f_\beta$
+\form#483:$f_\alpha = 0$
+\form#484:$1$
+\form#485:$\Lambda_\alpha$
+\form#486:$kg\,C\,m^{-2}\,day^{-1}$
+\form#487:\[ \label{c_a} c_\alpha = {\Lambda_\alpha\, NPP_\alpha\,\xi_{\alpha}}, \]
+\form#488:$\xi_{\alpha}$
+\form#489:$(kg\,C)^{-1}\,m^{2}$
+\form#490:$C_{veg,\alpha}$
+\form#491:$kg\,C\,m^{-2}$
+\form#492:$S_{sap,\alpha}$
+\form#493:\[ \label{xi} \xi_{\alpha}=\frac{1}{S_{sap,\alpha}\,\max[0.25,\min(5.0, C_{veg,\alpha})]}. \]
+\form#494:${LAI}_\alpha$
+\form#495:$m^2\,leaf\,(m^{2}\,ground)^{-1}$
+\form#496:\[ \Lambda_{\alpha}=\min(\lambda_{max}, \max (\lambda_{1,\alpha}, \lambda_{2,\alpha})), \vspace*{-4mm} \]
+\form#497:\[ if LAI_\alpha \leq LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =0 \nonumber \\ if LAI_{min,\alpha} < LAI_\alpha < LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =\frac{LAI_\alpha - LAI_{min,\alpha}} {LAI_{max,\alpha} - LAI_{min,\alpha}} \lambda_{max} \nonumber \\ if LAI_\alpha \geq LAI_{max,\alpha}:\nonumber \\ \quad \lambda_{1,\alpha} =\lambda_{max} \label{lam1} \vspace*{-4mm} \]
+\form#498:\[ if LAI_\alpha > 0.25 LAI_{min,\alpha}:\nonumber \\ \quad \lambda_{2,\alpha} =\cosh(0.115(LAI_\alpha - 0.25 LAI_{min,\alpha})) - 1 \nonumber \\ if LAI_\alpha \leq 0.25 LAI_{min,\alpha}: \nonumber \\ \quad \lambda_{2,\alpha} = 0\label{lam2} \]
+\form#499:$\lambda_{1,\alpha}$
+\form#500:$\lambda_{2,\alpha}$
+\form#501:$LAI_{min,\alpha}$
+\form#502:$LAI_{max,\alpha}$
+\form#503:$\lambda_{max}$
+\form#504:$m_{bioclim}$
+\form#505:$C_3$
+\form#506:$C_4$
+\form#507:$T^{cold}_{min}$
+\form#508:$T^{cold}_{max}$
+\form#509:$T^{warm}_{max}$
+\form#510:$5\,C$
+\form#511:$GDD5_{min}$
+\form#512:$arid_{min}$
+\form#513:$dryseason_{min}$
+\form#514:$T=25$
+\form#515:$X(t+1)$
+\form#516:$t+1$
+\form#517:$X(t)$
+\form#518:$x(t)$
+\form#519:\[ \label{efold} X(t+1)=X(t)e^{-1/T} + x(t) (1 - e^{-1/T}). \]
+\form#520:$63\,{\%}$
+\form#521:$\Delta x$
+\form#522:$T$
+\form#523:$(1-e^{T(-1/T)}= 1-e^{-1} = 0.63)$
+\form#524:$86\,{\%}$
+\form#525:$2T$
+\form#526:$(1-e^{2T(-1/T)}= 1-e^{-2} = 0.86) $
+\form#527:$C_\mathrm{D}$
+\form#528:$C_\mathrm{H}$
+\form#529:$kgC m^{-2}$
+\form#530:$(cm^3 cm^{-3})$
+\form#531:$km^2$
+\form#532:$CH_4$
+\form#533:$(people / km^2)$
+\form#534:$kg c/m^2$
+\form#535:$kg c/m^2 .day$
+\form#536:$m^2$
+\form#537:$g mol^{-1}$
+\form#538:$J mol^{-1} K^{-1}$
+\form#539:$J mol^{-1}$
+\form#540:$m^3/m^3$
+\form#541:$J m^{-3} K^{-1}$
+\form#542:$(mol CO_2 m^{-2} s^{-1}$
+\form#543:\[ \begin{tabular} { | l | c | c | c | c | c | } \hline needle leaf & evg & dcd & --- & ---& ---\\ \hline broad leaf & evg & dcd-cld & dcd-dry & EVG-shrubs & DCD-shrubs\\ \hline crops & c3 & c4 & --- & ---& ---\\ \hline grasses & c3 & c4 & sedges & ---& ---\\ \hline \end{tabular} \]
+\form#544:$CO_2$
+\form#545:$\mu mol CO2 m^{-2} s^{-1}$
+\form#546:$mg CH_4 m^{-2} s^{-1}$
+\form#547:$kg/m^2$
+\form#548:$\mu mol CH_4 m^{-2} s^{-1}$
+\form#549:$kg C/m^2$
+\form#550:$\Delta I_c = X_i \Delta [C_c T_c ] / \Delta t$
+\form#551:$m/s$
+\form#552:$lightning, flashes/(km^2 . year)$
+\form#553:$u-mol co2/m2.sec$
+\form#554:$avgdryns(i) = avgdryns(i) + drgtstrs(i,j)*fcancmx(i,j)$
+\form#555:$drgtstrs(i,j)$
+\form#556:$\phi_{root}$
+\form#557:$flashes/km^2/yr$
+\form#558:$(g c/m^2)$
+\form#559:$umol co_2 m-2 s-1 to g c m-2$
+\form#560:$kg dom / m^2$
+\form#561:$g species / m^2$
+\form#562:$u-mol co_2/m^2.sec$
+\form#563:$P_\mathrm{f}$
+\form#564:$500\,km^2$
+\form#565:$a_{rep}$
+\form#566:\[ \label{fieya} P_\mathrm{f} = P_\mathrm{b}P_\mathrm{i}P_\mathrm{m},\]
+\form#567:$P_\mathrm{b}$
+\form#568:$P_\mathrm{m}$
+\form#569:$P_\mathrm{i}$
+\form#570:$B_{ag}$
+\form#571:$B_{ag} = C_\mathrm{L} + C_\mathrm{S} + C_\mathrm{D}$
+\form#572:$B_{low}$
+\form#573:$0.2\, kg\,C\,m^{-2}$
+\form#574:$1.0\, kg\,C\,m^{-2}$
+\form#575:$B_{high}$
+\form#576:\[ \label{eqn:Pb} P_\mathrm{b}=\max\left[0, \min\left(1,\frac{B_{ag}-B_{low}} {B_{high} - B_{low}}\right)\right]. \]
+\form#577:$\vartheta_F$
+\form#578:\[ \vartheta_F = \max\left[0, \min \left(1,\frac{F_c2g - F_{low}}{F_{high} - F_{low}} \right)\right],\]
+\form#579:$F_{low}$
+\form#580:$F_{high}$
+\form#581:$F_c2g$
+\form#582:$flashes\,km^{-2}\,month^{-1}$
+\form#583:$0.25\,flashes\,km^{-2}\,month^{-1}$
+\form#584:$10.0\,flashes\,km^{-2}\,month^{-1}$
+\form#585:\[ F_c2g = 0.22 \exp (0.0059 \times \vert {\Phi}\vert) F_{tot},\]
+\form#586:$\Phi$
+\form#587:$F_{tot}$
+\form#588:$P_i,n$
+\form#589:\[ P_i,n = y(\vartheta_F) - y(0)(1 - \vartheta_F) + \vartheta_F[1-y(1)] \nonumber\\ y(\vartheta_F) = \frac{1}{1 + \exp\left(\frac{0.8 - \vartheta_F}{0.1}\right)}. \]
+\form#590:$P_i,h$
+\form#591:$p_\mathrm{d}$
+\form#592:$number of people\,km^{-2}$
+\form#593:\[ \label{eqn:Ph} P_i,h = \min\left[1,\left(\frac{p_\mathrm{d}}{p_{thres}}\right)^{0.43}\right], \]
+\form#594:$p_{thres}$
+\form#595:$300\,people\,km^{-2}$
+\form#596:$P_{i,h}$
+\form#597:\[ \label{eqn:Pi} P_\mathrm{i} = \max[0, \min\{1, P_{i,n} + (1 - P_{i,n})P_{i,h}\}]. \]
+\form#598:$P_{m,V}$
+\form#599:\[ P_{m,V} = 1-\tanh \left[\left( \frac{1.75\ \phi_{root}} {E_\mathrm{V}}\right )^2\right],\]
+\form#600:$E_\mathrm{V}$
+\form#601:$P_{f,V}$
+\form#602:$\textit{duff}$
+\form#603:$P_{m,D}$
+\form#604:$B_{duff} = C_{L,b} + C_\mathrm{D}$
+\form#605:$\phi_1$
+\form#606:\[ P_{m,D} = 1 -\tanh\left[\left(\frac{1.75 \phi_1}{E_{\mathrm{D}}}\right)^2\right], \]
+\form#607:$E_{\mathrm{D}}$
+\form#608:\[ \label{eqn:Pf} P_\mathrm{m} = P_{m,V} (1-f_{duff}) + P_{m,D} f_{duff} \nonumber \\ f_{duff}=\frac{B_{duff}}{B_{ag}}\]
+\form#609:$f_{duff}$
+\form#610:$a$
+\form#611:\[ a(t)=\pi \frac{l}{2}\frac{w}{2}= \frac{\pi}{2} (v_\mathrm{d}+v_\mathrm{u})v_\mathrm{p}t^2,\]
+\form#612:$l$
+\form#613:$w$
+\form#614:$v_\mathrm{d}$
+\form#615:$km\,h^{-1}$
+\form#616:$v_\mathrm{u}$
+\form#617:$v_\mathrm{p}$
+\form#618:$t$
+\form#619:$h$
+\form#620:\[ \label{firespreadrate} v_\mathrm{d} = v_{d,max}\,g(u)\,h(\phi_{r, d})\]
+\form#621:$v_{d,max}$
+\form#622:$g(u)$
+\form#623:$ h(\phi_{r, d})$
+\form#624:$u$
+\form#625:$L_\mathrm{b}$
+\form#626:\[ \label{lb} L_\mathrm{b}= \frac{l}{w} = \frac{v_\mathrm{d} + v_\mathrm{u}}{2v_\mathrm{p}} = 1 + 10 [1 -\exp(-0.06 u)] \]
+\form#627:$H_\mathrm{b}$
+\form#628:\[ \label{hb} H_\mathrm{b} = \frac{v_\mathrm{d}}{v_\mathrm{u}} = \frac{L_\mathrm{b} + (L_\mathrm{b}^2 - 1)^{0.5}}{L_\mathrm{b} - (L_\mathrm{b}^2 - 1)^{0.5}}, \]
+\form#629:\[ g(u)= g(0) \frac{2.0 L_\mathrm{b}}{(1 + 1/H_\mathrm{b})} \nonumber\\ \frac{g(u)}{g(0)}=\frac{v_\mathrm{d}}{v_\mathrm{p}} = \frac{2.0 L_\mathrm{b}} {(1 + 1/H_\mathrm{b})}, \]
+\form#630:$g(0)$
+\form#631:$u = 0$
+\form#632:$\rightarrow \infty$
+\form#633:$L_\mathrm{b} \rightarrow 11$
+\form#634:$H_\mathrm{b} \rightarrow 482$
+\form#635:$g(\infty)=1$
+\form#636:$g(0) = 0.0455 \approx 0.05$
+\form#637:$h(\phi_{r, d})$
+\form#638:\[ h(\phi_{r, d})= h(\phi_{root})(1-f_{duff}) + h(\phi_{1})f_{duff}\nonumber \\ h(\phi_{root})= \left(1-min \left(1,\frac{\phi_{root}}{E_\mathrm{V}} \right) \right)^2\nonumber \\ h(\phi_{1})= \left(1-min \left(1,\frac{\phi_{1}}{E_\mathrm{D}} \right) \right)^2. \]
+\form#639:$h(\phi_{root})$
+\form#640:$h(\phi_{1})$
+\form#641:$E_\mathrm{D}$
+\form#642:$a_{1{\mathrm{d}}}$
+\form#643:$km^2\,day^{-1}$
+\form#644:\[ a_{1{\mathrm{d}}} = \frac{\pi v_\mathrm{d}^2 t^2}{4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2 \nonumber\\ = \frac{\pi v_\mathrm{d}^2 (24^2)} {4L_\mathrm{b}}\left(1 + \frac{1}{H_\mathrm{b}}\right)^2\label{aburned} \]
+\form#645:$24\,h$
+\form#646:$q$
+\form#647:$\tau$
+\form#648:$days$
+\form#649:${a_{\tau d}}$
+\form#650:\[ q = 0.5 + \frac{\max\left[0,0.9 - \exp(-0.025\,p_\mathrm{d})\right]}{2}, \]
+\form#651:$1-q$
+\form#652:$(1-q)^\tau$
+\form#653:$P(\tau) = q(1-q)^\tau$
+\form#654:\[ \overline{\tau} = E(\tau) = \sum_{\tau=0}^\infty\,\tau\,q(1-q)^{\tau} = \frac{1-q}{q}. \]
+\form#655:$a_{\tau \mathrm{d}}$
+\form#656:\[ a_{\tau \mathrm{d}} =E(a_{1{\mathrm{d}}} \tau^2)=\sum_{\tau=0}^ \infty\,a_{1{\mathrm{d}}}\,\tau^2 q(1-q)^{\tau} \\ = a_{1{\mathrm{d}}}\, \frac{(1-q) (2-q)}{q^2}.\nonumber \]
+\form#657:$A_{\mathrm{b},\alpha}$
+\form#658:$km^2\, day^{-1}$
+\form#659:\[A_{\mathrm{b},\alpha}=P_{f,\alpha}\,a_{\tau \mathrm{d},\alpha} \frac{A_\mathrm{g}f_\alpha}{a_{rep}}, \]
+\form#660:$A_\mathrm{g}$
+\form#661:$f_\alpha$
+\form#662:$A_\mathrm{b}$
+\form#663:\[ A_\mathrm{b}=\sum_{\alpha=1}^{N}A_{\mathrm{b},\alpha}.\]
+\form#664:$j$
+\form#665:$E_{\alpha,j}$
+\form#666:$g species (m^{-2} grid cell area) day^{-1}$
+\form#667:$\vec{C}_{\alpha} = (C_\mathrm{L}, C_\mathrm{S}, C_\mathrm{R}, C_\mathrm{D})_\alpha$
+\form#668:$mho_{\alpha} = (mho_\mathrm{L}, mho_\mathrm{S}, mho_\mathrm{R}, mho_\mathrm{D})_\alpha$
+\form#669:$\Upsilon_{j} = (\Upsilon_\mathrm{L}, \Upsilon_\mathrm{S}, \Upsilon_\mathrm{R}, \Upsilon_\mathrm{D})_j$
+\form#670:$g species (kg\,C\,dry organic matter)^{-1}$
+\form#671:$\vec{C}_{\alpha}$
+\form#672:$\Upsilon_{j}$
+\form#673:$mho_{\alpha} $
+\form#674:\[ \label{emiss_combust_factor} {E_{\alpha,j}}= ((\vec{C}_\alpha\cdot mho_{\alpha} )\cdot \Upsilon_{j}) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\frac{1000}{450}, \]
+\form#675:$\vec{C}_\alpha$
+\form#676:$g\,C\,m^{-2}$
+\form#677:$g\,C\,(kg dry organic matter)^{-1} $
+\form#678:\[ \label{emiss_combust_loss} H_{\alpha, i}= C_{\alpha, i} mho_i\left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}\right)\quad i={L, S, R, D}. \]
+\form#679:$mho_\mathrm{L}$
+\form#680:$mho_{\mathrm{S}}$
+\form#681:$mho_{\mathrm{R}}$
+\form#682:$mho_{\mathrm{D}}$
+\form#683:$CO$
+\form#684:$H_2$
+\form#685:$NHMC$
+\form#686:$NO_x$
+\form#687:$N_2O$
+\form#688:$2.5\, \mu m$
+\form#689:$\vec{\Theta}_{\alpha} = (\Theta_\mathrm{L}, \Theta_\mathrm{S}, \Theta_\mathrm{R})_\alpha$
+\form#690:\[ \label{eqn_using_mort_factors} {M_{\alpha}}= (\vec{C}_\alpha \cdot \Theta_{\alpha} ) \frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}}, \]
+\form#691:\[ \label{eqn_using_mort_factors_individual} M_{\alpha, i}= C_{\alpha, i} \Theta_{\alpha, i} \left(\frac{A_{\mathrm{b},\alpha}}{A_\mathrm{g}} \right) \quad i={L, S, R}. \]
+\form#692:$H_{\alpha, i}, i={L, S, R, D}$
+\form#693:$M_{\alpha, i}, i={L, S, R}$
+\form#694:$\Theta_\mathrm{L}$
+\form#695:$\Theta_{\mathrm{S}}$
+\form#696:$\Theta_\mathrm{R}$
+\form#697:$\zeta_\mathrm{r}$
+\form#698:$m_{dist}$
+\form#699:\[ \label{m_dist} m_{dist,\alpha} = \zeta_{\mathrm{r},\alpha} \frac{A_{\mathrm{b},\alpha}}{f_\alpha A_\mathrm{g}}. \]
+\form#700:$[ ] (\alpha_{g,VIS})$
+\form#701:$[ ] (\alpha_{g,NIR})$
+\form#702:$[ ] (alpha_{g,NIR,wet})$
+\form#703:$[ ] (alpha_{g,VIS,dry})$
+\form#704:$[ ] (alpha_{g,NIR,dry})$
+\form#705:$[ ] (alpha_{u,VIS})$
+\form#706:$[ ] (alpha_{u,NIR})$
+\form#707:$[ ] (X_u)$
+\form#708:$[ ] (X_g)$
+\form#709:$\alpha_{g,VIS}$
+\form#710:$\alpha_{g,NIR}$
+\form#711:$\alpha_{g,wet}$
+\form#712:$\alpha_{g,dry}$
+\form#713:$\theta_{1,1}$
+\form#714:$\alpha_{g,T}$
+\form#715:$[\alpha_{g,T} - \alpha_{g,dry} ] / [\theta_{l,1} - 0.22] = [\alpha_{g,wet} - \alpha_{g,dry} ]/[0.26 - 0.22]$
+\form#716:$\alpha_{g}$
+\form#717:$\alpha_{g,T} = \alpha_{g,dry}$
+\form#718:$\theta_{l,1} \leq 0.22 $
+\form#719:$\alpha_{g,T} = \theta_{l,1} [\alpha_{g,wet} - \alpha_{g,dry} ]/0.04 - 5.50 [\alpha_{g,wet} - \alpha_{g,dry} ] + \alpha_{g,dry} $
+\form#720:$0.22 < \theta_{l,1} < 0.26 $
+\form#721:$\alpha_{g,T} = \alpha{g,wet} $
+\form#722:$ 0.26 \leq \theta_{l,1}$
+\form#723:$X_g$
+\form#724:$X_u$
+\form#725:$\alpha_{g,VIS} = [X_u \alpha_{u,VIS} + (X_g-X_u ) \alpha_{g,VIS}] / X_g $
+\form#726:$\alpha_{g,NIR} = [X_u \alpha_{u,NIR} + (1.0-X_u ) \alpha_{g,NIR}] / X_g $
+\form#727:$[m^3 m^{-3}] (\theta_i)$
+\form#728:$(X_i)$
+\form#729:$[m^3 m^{-3}] (\theta_p)$
+\form#730:$[m^3 m^{-3} ] (\theta_{l,ret})$
+\form#731:$[m^3 m^{-3}] (\theta_{l,min})$
+\form#732:$[m] (\Psi_{sat})$
+\form#733:$[m s^{-1}] (K_{sat})$
+\form#734:$[m] (\Delta_{zg,w})$
+\form#735:$f_{ice} = [1.0 – min((\theta_p - \theta_{l,min} )/\theta_p , \theta_i / \theta_p )]^2$
+\form#736:$F(z) = K(z) [-b \Psi(z)/\theta_l(z) \times d\theta_l / dz + 1]$
+\form#737:$\Psi(z)$
+\form#738:$K(z) = K_{sat} (\theta_l/\theta_p)^{(2b + 3)}$
+\form#739:$\Psi(z) = \Psi_{sat} (\theta_l/\theta_p)^{(-b )}$
+\form#740:$K$
+\form#741:$F(z_b ) = K_{sat} \times min{1, (\theta_l /\theta_p )/[1 – 1/(2b + 3)]^{(2b + 3)}$
+\form#742:$K(z)$
+\form#743:$d(\theta_l)/dz$
+\form#744:$K_{sat,bnd}$
+\form#745:$\Psi_{sat,bnd}$
+\form#746:$ K_{sat,bnd} = K_{sat,t} K_{sat,b} ( \Delta z_{g,w,,t} + \Delta z_{g,w,,b} ) / ( K_{sat,t} \Delta z_{g,w,b} + K_{sat,b} \Delta z_{g,w,t} ) $
+\form#747:$ \Psi_{sat,bnd} = \Psi_{sat,t}^{\Delta zg,w,t/(\Delta zg,w,t + \Delta zg,w,b)} \Psi_{sat,b}^{\Delta zg,w,b/(\Delta zg,w,t + \Delta zg,w,b)} $
+\form#748:$\theta_{l,min}$
+\form#749:$\theta_{l,ret}$
+\form#750:$[m^3 m^{-3}] (\theta_{l,ret})$
+\form#751:$[m^3 m^{-3}] (theta_{l,min})$
+\form#752:$[ ] (f_{inf})$
+\form#753:$f_{ice}$
+\form#754:$f_{ice} = [1.0 – min(1.0, \theta_i / \theta_p )]^2$
+\form#755:$\theta_i$
+\form#756:$f_{inf} ( \theta_p – \theta_i)$
+\form#757:$f_{inf}$
+\form#758:$K(z) = K_{sat} ( \theta_l / \theta_p)^{(2b + 3)}$
+\form#759:$\Psi_f = b[\Psi_{inf} K_{inf} - \Psi(z) K(z)]/[K_{inf} (b+3)]$
+\form#760:$\Psi_{inf}$
+\form#761:$K_{inf}$
+\form#762:$\Psi(z) = \Psi_{sat} (\theta_l / \theta_p )^{(-b)}$
+\form#763:$R_\mathrm{h}$
+\form#764:$mol\,CO_2\,m^{-2}\,s^{-1}$
+\form#765:$R_{h,D}$
+\form#766:$R_{h,H}$
+\form#767:\[ \label{hetres_all} R_\mathrm{h}=R_{h,D}+R_{h,H}. \]
+\form#768:\[ R_{\mathrm{h},i} = 2.64 \times 10^{-6}\,\varsigma_i C_i f_{15}(Q_{10}) f(\Psi)_i, \nonumber \\ i = \mathrm{D}, \mathrm{H}.\label{lithet} \]
+\form#769:$15\,{C}$
+\form#770:$\varsigma_\mathrm{H}$
+\form#771:$\varsigma_\mathrm{D}$
+\form#772:$kg\,C\,(kg\,C)^{-1}\,yr^{-1}$
+\form#773:$2.64 \times 10^{-6}$
+\form#774:$kg\,C\,m^{-2}\,yr^{-1}$
+\form#775:$f(\Psi)$
+\form#776:$Q_{10}$
+\form#777:$f_{15}(Q_{10})$
+\form#778:\[ Q_{10} = 1.44 + 0.56\,\tanh[0.075 (46.0 - T_i)], \nonumber\\ i = \mathrm{D}, \mathrm{H}\label{hyper}, \]
+\form#779:$T_{\{D,H\}}$
+\form#780:$C$
+\form#781:$20\,C$
+\form#782:$T_1$
+\form#783:$T_\mathrm{R}$
+\form#784:$T_\mathrm{D} = 0.7 T_1 + 0.3T_\mathrm{R}$
+\form#785:$MPa$
+\form#786:$0.04 > \vert \Psi \vert \geq \vert \Psi_{sat} \vert$
+\form#787:$0.04 > \vert\Psi\vert \geq \vert\Psi_{sat}\vert$
+\form#788:\[ f(\Psi)_\mathrm{H} = 1 - 0.5 \frac{\log(0.04)-\log\vert\Psi\vert} {\log(0.04)-\log\vert\Psi_{sat}\vert}\\ f(\Psi)_D = 1\nonumber; \]
+\form#789:$0.06 \geq \vert\Psi\vert \geq 0.04$
+\form#790:\[ f(\Psi)_\{D,H\} = 1; \]
+\form#791:$100.0 \geq \vert\Psi\vert > 0.06$
+\form#792:\[ f(\Psi)_\{D,H\} = 1 - 0.8\frac{\log\vert\Psi\vert-\log(0.06)}{\log(100)-\log(0.06)}; \]
+\form#793:$\vert\Psi\vert > 100.0$
+\form#794:\[ \label{lastpsi} f(\Psi)_\{D,H\}=0.2. \]
+\form#795:$\varsigma_{D,bare}$
+\form#796:$\varsigma_{H,bare}$
+\form#797:$0.5605$
+\form#798:$0.02258\,kg\,C\,(kg\,C)^{-1}\,yr^{-1}$
+\form#799:$C_{\mathrm{D} \rightarrow \mathrm{H}}$
+\form#800:\[ \label{cdtoh} C_{\mathrm{D} \rightarrow \mathrm{H}} = \chi\,R_{h,D} \]
+\form#801:$NEP$
+\form#802:\[ NEP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g} - R_\mathrm{h}. \]
+\form#803:$[C] (T_{av}( \Delta z))$
+\form#804:$[W m^{-2}] (G(\Delta z))$
+\form#805:$[W m^{-2}] (I_j) $
+\form#806:$[ ] (X)$
+\form#807:$[W m^{-2}] (G(0))$
+\form#808:$[W m^{-2}] (G(\Delta z1))$
+\form#809:$[W m^{-2}] (G(\Delta z2))$
+\form#810:$[m] (\Delta z)$
+\form#811:$\lambda(z)$
+\form#812:$G(z) = \lambda(z) dT(z)/dz$
+\form#813:$G_j = 2 \lambda_i (T_{j-1} – T_j) / (\Delta z_{j-1} + \Delta z_j)$
+\form#814:$G_j$
+\form#815:$T_j$
+\form#816:$\Delta z_j$
+\form#817:$\lambda_i$
+\form#818:$T(z) = 1/2 a z^2 + b z +c$
+\form#819:$T(\Delta z)$
+\form#820:$G(\Delta z)$
+\form#821:$T(\Delta z) = T(0) - (\Delta z/ 2 \lambda_i)[G(0) + G(\Delta z)]$
+\form#822:$T(\Delta z_3) = T(0) – {G(\Delta z_2) [\Delta z_3 + \Delta z_2] + G(\Delta z_1) [\Delta z_2 + \Delta z_1] + G(0) \Delta z_{21}} / 2 \lambda_i$
+\form#823:$T_{av}(\Delta z)$
+\form#824:$T(0) = T_{av}(\Delta z_1) + (\Delta z_1/ 3\lambda_i) [G(0) + 1/2 G(\Delta z_1)]$
+\form#825:$I_j$
+\form#826:$\Delta I_j = X_i \Delta[C_i \Delta z_j T_{av}(\Delta z_j)]/ \Delta t$
+\form#827:$C_i$
+\form#828:$Delta t$
+\form#829:$900 kg m^{-3}$
+\form#830:$\textit{deforested}$
+\form#831:$R_\mathrm{m}$
+\form#832:$R_\mathrm{g}$
+\form#833:\[ R_\mathrm{a} =R_\mathrm{m} + R_\mathrm{g}. \]
+\form#834:$R_{mL}$
+\form#835:$R_{mS}$
+\form#836:$R_{mR}$
+\form#837:\[ \label{mainres_all} R_\mathrm{m} = R_{mL} + R_{mS} + R_{mR}. \]
+\form#838:$V_\mathrm{m}$
+\form#839:\[ R_{mL} = \varsigma_\mathrm{L}V_\mathrm{m}\,f_{25}(Q_10d,n)f_{PAR}, \]
+\form#840:$\varsigma_\mathrm{L}$
+\form#841:$f_{PAR}$
+\form#842:$f_{25}(Q_10d,n)$
+\form#843:$d$
+\form#844:$n$
+\form#845:$Q_10d=1.3$
+\form#846:$Q_10n=2.0$
+\form#847:$\varsigma_\mathrm{S}$
+\form#848:$\varsigma_\mathrm{R}$
+\form#849:$15\,C$
+\form#850:$R_{m\{S,R\}}$
+\form#851:\[ \label{r_msr} R_{\mathrm{m},i} = 2.64 \times 10^{-6}\varsigma_{i}l_{\mathrm{v}, i}C_{i}f_{15}(Q_{10}),\quad i = \mathrm{S}, \mathrm{R}, \]
+\form#852:$l_{v,i}$
+\form#853:$l_{\mathrm{v},i}$
+\form#854:\[ l_{\mathrm{v},i} = \max(0.05, \min[1.0, \exp^{-0.2835 C_i} ]),\quad i = \mathrm{S}, \mathrm{R}. \]
+\form#855:\[ Q_{10} = 3.22 - 0.046 \left(\frac{15.0 + T_{\{S,R\}}}{1.9}\right), \]
+\form#856:$T_{\{S,R\}}$
+\form#857:$\epsilon_\mathrm{g}=0.15$
+\form#858:\[ \label{growth_res} R_\mathrm{g}=\epsilon_\mathrm{g}\max[0,(G_{canopy} - R_\mathrm{m})]. \]
+\form#859:$NPP$
+\form#860:\[ NPP = G_{canopy} - R_\mathrm{m} - R_\mathrm{g}. \]
+\form#861:\[ \label{mortality} m_{\alpha} = m_{intr,\alpha} + m_{ge,\alpha} + m_{bioclim,\alpha} + m_{dist,\alpha}, \]
+\form#862:$m_{intr}$
+\form#863:$m_{ge}$
+\form#864:$A_{max}$
+\form#865:$1\,{\%}$
+\form#866:$A_{max},\alpha$
+\form#867:\[ \label{intrmort} m_{intr,\alpha} = 1 - \exp(-4.605/A_{max,\alpha}). \]
+\form#868:$m_{intr} = 0$
+\form#869:\[ \label{mgrow} m_{ge,\alpha} = \frac{m_{{ge},max,\alpha}}{1 + k_{m} g_{\mathrm{e},\alpha}}, \]
+\form#870:$m_{{ge},max}$
+\form#871:$k_{m}$
+\form#872:$0.3\,m^{2}\,(g\,C)^{-1}$
+\form#873:$g_\mathrm{e}$
+\form#874:$L_{\alpha,max}$
+\form#875:$m^{2}\,m^{-2}$
+\form#876:$\Delta C_\mathrm{S}$
+\form#877:$\Delta C_\mathrm{R}$
+\form#878:\[ g_{\mathrm{e},\alpha} = 1000\frac{\max(0,(\Delta C_{\mathrm{S},\alpha}+\Delta C_{\mathrm{R},\alpha}))}{L_{\alpha,max}}. \]
+\form#879:$0.25\,yr^{-1}$
+\form#880:$\frac{\mathrm{d}f_\alpha}{\mathrm{d}t}=-m_{dist,\alpha}f_\alpha$
+\form#881:$z_{m}$
+\form#882:$w_m$
+\form#883:$\theta_{l,1}$
+\form#884:$^3$
+\form#885:$w_m =\frac{z_m\theta_{l,1}\rho_w}{B_m} $
+\form#886:$B_m) $
+\form#887:$_m $
+\form#888:$\theta _{l,1} $
+\form#889:$^{-3}$
+\form#890:$\rho_w $
+\form#891:$^{-3} $
+\form#892:$\beta $
+\form#893:$ \beta = 0.25 [ 1- \cos \left( \frac{w_m -w_{m,min}}{w_m-w_{m,max}} \right)]^{2} $
+\form#894:$w_m $
+\form#895:$w_{m,max} $
+\form#896:$w_{m,min} $
+\form#897:$^{-2} $
+\form#898:$G_m)$
+\form#899:$G_{0,m})$
+\form#900:$R_{d,m}$
+\form#901:$ G_m=G_{0,m}-R_{d,m} $
+\form#902:$G_{0,m} $
+\form#903:$\mu $
+\form#904:$_2 $
+\form#905:$^2 $
+\form#906:$J_s)$
+\form#907:$J_e)$
+\form#908:$J_c)$
+\form#909:$\varsigma$
+\form#910:$ G_{0,m} = \quad \varsigma \min \left(J_{s},\frac{(J_{c}+J_{e})\pm \sqrt{{(J_c +J_ e )}^2 - 4(J_c +J_e)} }{2}\right) $
+\form#911:$R_{d,m})$
+\form#912:$R_{d,m,0})$
+\form#913:$f_{m,rd}$
+\form#914:$f_{T,rd})$
+\form#915:$\theta_m$
+\form#916:$R_{d,m} = R_{d,m,0} f_{m,rd} f_{T,{rd}}$
+\form#917:$ f_{T,{rd}} = (3.22-(0.046 \cdot T_{moss})^{(T_{moss}-25/10)} $
+\form#918:$ f_{m,rd} = 0$
+\form#919:$ \theta_{m} <0.4 $
+\form#920:$ f_{m,rd} = 0.35 \theta_{m}^{2/3}-0.14$
+\form#921:$ 0.4\le \theta_m<5.8 $
+\form#922:$ f_{m,rd} = 0.01 \theta_{m} +0.942$
+\form#923:$5.8<\theta _{m} $
+\form#924:$_m$
+\form#925:$^-2$
+\form#926:$K_{\ast g}$
+\form#927:$^2$
+\form#928:$\mu$
+\form#929:$K\downarrow $
+\form#930:$\alpha_g$
+\form#931:$\tau _c$
+\form#932:$K_{\ast g} = K \downarrow \tau_{c}\left( 1-\alpha_{g}\right)$
+\form#933:$ R_{o}=C_{SOM,o}k_{o}f_{T,{o}} $
+\form#934:$ R_{a}=C_{SOM,a}k_{a}f_{T,{a}}f_{anoxic} $
+\form#935:$R$
+\form#936:$\mu mol C m$
+\form#937:$/s) is obtained from the respiration rate coefficient $
+\form#938:$ ($
+\form#939:$f_T$
+\form#940:$C_{SOM}$
+\form#941:$f_{anoxic}$
+\form#942:$T_s)$
+\form#943:$Q_{10,a}$
+\form#944:$Q_{10,o}$
+\form#945:$k$
+\form#946:$z_{wt}$
+\form#947:$z_p$
+\form#948:$ f_{T,o} =Q_{10,o}^{\left(\int\limits_{0}^{z_{wt}} T_{j} -15\right)/10} $
+\form#949:$ f_{T,{a}} =Q_{10,{a}}^{\left(\int\limits_{z_{wt}}^{z_\mathrm{p}} T_{j} -15\right)/10} $
+\form#950:$ Q_{10}=1.44+0.56 {tanh}[0.075\left( 46.0-T_{s} \right)] $
+\form#951:$ T_{s,o}=\int\limits_{0}^{z_{wt}} T_{j} \, /(z_{wt}) $
+\form#952:$ T_{s,a}=\int\limits_{z_{wt}}^{z_{p}} T_{j} /(z_{p}-z_{wt}) $
+\form#953:$ k_{o}= 0 $
+\form#954:$ z_{wt}<0 $
+\form#955:$ k_{o}= k_{1}\left( 1-e^{k_{2}z_{wt}} \right)+k_{3}z_{wt} $
+\form#956:$0.3 > z_t \ge 0$
+\form#957:$ k_{4}e^{k_{5}z_{wt}}+k_{6}z_{wt}+k_{7} $
+\form#958:$ z_{wt}\ge 0.3 $
+\form#959:$ k_{a}= k_{4}e^{k_{5}z_{p}}+{10k}_{6}z_{p}+k_{7} $
+\form#960:$ k_{a} = $
+\form#961:$ k_1 e^{ k_2 z_{wt} } - k_4 e^{k_5 z_p} -k_3 z_{wt}+k_8 $
+\form#962:$0.3>z_{wt} \ge 0 $
+\form#963:$ k_{a}= k_{4}{(e}^{k_{5}z_{P-}}e^{k_{5}z_{wt}})+k_{6}\left( z_p-z_{wt} \right)$
+\form#964:$ C_{SOM,o}= 0.487\ast (k_{9}z_{wt}^{2}+k_{10}z_{wt}) $
+\form#965:$ C_{SOM,a}= C_{SOM}-C_{SOM,o} $
+\form#966:$k_{o}$
+\form#967:$k_{a}$
+\form#968:$_{hum}$
+\form#969:$R_o$
+\form#970:$R_a$
+\form#971:$ \frac{{dC}_{SOM}}{dt} = C_{hum}-R_{o}-R_{a} $
+\form#972:$C_{hum}$
+\form#973:$_{SOM}$
+\form#974:$ z_{p}= \frac{{-k}_{10}+\sqrt{k_{10}+\frac{4k_{9}{C}_{SOM}}{0.487}}. }{2k_{9}} $
+\form#975:$ z_{wt}=z_{{b},j}-\Delta z\left[ \frac{\theta_{{l},j}+\theta_{i,j}-\theta _{{ret},j}}{\theta_{{p},j}-\theta_{{ret},j}} \right] $
+\form#976:$\Delta z $
+\form#977:$\theta_l $
+\form#978:$\theta_{ret}$
+\form#979:$\textit{virtual}$
+\form#980:$ G_{canopy,net} $
+\form#981:${LAI}_{thrs}$
+\form#982:\[ {LAI}_{thrs} = L_f [ {SLA} (\frac{C_S + C_R}{\eta} ) ^ {1/\kappa} ]. \]
+\form#983:$L_f$
+\form#984:$SLA$
+\form#985:$7.5\,{\%}$
+\form#986:$2.5\,{\%}$
+\form#987:$0.3\,m^2\,m^{-2}$
+\form#988:$0.2\,m^2\,m^{-2}$
+\form#989:$11\,h$
+\form#990:$11.15\,C$
+\form#991:$8\,C$
+\form#992:$-5\,C$
+\form#993:$a_{fL} = 0$
+\form#994:$a_{fS} + a_{fR} = 1$
+\form#995:$\Omega_N$
+\form#996:$ \Omega_C $
+\form#997:$\Omega_D$
+\form#998:$D_L$
+\form#999:\[ D_L = C_L[1 - \exp(-\Omega_N - \Omega_C - \Omega_{D})],\]
+\form#1000:$\Omega_{N,C,D}$
+\form#1001:$yr$
+\form#1002:$\Omega_N= 1/365 \tau_L$
+\form#1003:$\Omega_C$
+\form#1004:\[ \label{gamma_cold} \Omega_C = \Omega_{C,max}L_{cold}^3, \]
+\form#1005:$\Omega_{C,max}$
+\form#1006:$L_{cold}$
+\form#1007:\[ \label{cldls} L_{cold} = \begin{cases} 1, \quad T_a < \left(T_{cold}^{leaf} - 5\right) \\ 1 - \frac{T_a - \left(T_{cold}^{leaf} - 5\right)}{5}, \\ \quad T_{cold}^{leaf} > T_a > (T_{cold}^{leaf} - 5) \\ 0, \quad T_a > T_{cold}^{leaf} ,\\ \end{cases} \]
+\form#1008:$T_{cold}^{leaf}$
+\form#1009:\[ \label{gamma_dry} \Omega_{D} = \Omega_{D,max}\,(1-\phi_{root})^3, \]
+\form#1010:$\Omega_{D,max}$
+\form#1011:$(sla, m^2 /kg c)$
+\form#1012:$\textit{big-leaf}$
+\form#1013:$\textit{two-leaf}$
+\form#1014:$G_\mathrm{o}$
+\form#1015:$J_\mathrm{c}$
+\form#1016:$J_\mathrm{s}$
+\form#1017:\[ \label{J_e} J_\mathrm{e} = \begin{cases} \varepsilon\,(1-{\nu})I \left[\frac{c_{i} - \Gamma}{c_{i} + 2\Gamma}\right], \quad C_3 plants\\ \varepsilon\,(1-{\nu})I,\quad C_4 plants, \end{cases} \]
+\form#1018:$I$
+\form#1019:$PAR$
+\form#1020:$mol\,photons\,m^{-2}\,s^{-1}$
+\form#1021:${\nu}$
+\form#1022:$\varepsilon$
+\form#1023:$mol\,{CO_2}\,(mol\,photons)^{-1}$
+\form#1024:$c_\mathrm{i}$
+\form#1025:$Pa$
+\form#1026:$\Gamma$
+\form#1027:\[ \label{J_c} J_\mathrm{c} = \begin{cases} V_\mathrm{m} \left[\frac{c_\mathrm{i} - \Gamma}{c_\mathrm{i} + K_\mathrm{c}(1 + O_\mathrm{a}/K_\mathrm{o})}\right],\quad C_3 plants\\ V_\mathrm{m}, C_4 plants, \end{cases} \]
+\form#1028:$K_\mathrm{o}$
+\form#1029:$K_\mathrm{c}$
+\form#1030:$O_2$
+\form#1031:$O_\mathrm{a}$
+\form#1032:\[ \label{J_s} J_\mathrm{s} = \left\{\begin{array}{l l} 0.5 V_\mathrm{m}, C_3 plants\\ 2 \times 10^4\,V_\mathrm{m} \frac{c_\mathrm{i}}{p}, C_4 plants \end{array} \right. \]
+\form#1033:$p$
+\form#1034:\[ V_\mathrm{m} = \nonumber \\ \frac{V_{max}f_{25}(2.0)S_{root}(\theta) \times 10^{-6}} {[1+ \exp{0.3(T_\mathrm{c} - T_{high})}][1 + \exp{0.3(T_{low} - T_\mathrm{c})}]},\label{V_m} \]
+\form#1035:$T_\mathrm{c}$
+\form#1036:$T_{low}$
+\form#1037:$T_{high}$
+\form#1038:$f_{25}$
+\form#1039:$25\,C$
+\form#1040:$(f_{25}(Q_{10}) = Q^{(0.1(T_\mathrm{c}-25))}_{10}$
+\form#1041:$V_{max}$
+\form#1042:$10^{-6}$
+\form#1043:${\mu}mol\,CO_2\,m^{-2}\,s^{-1}$
+\form#1044:$S_{root}(\theta)$
+\form#1045:\[ S_{root}(\theta) = \sum_{i=1}^g S(\theta_i) r_{i}, \vspace*{-4mm} \]
+\form#1046:\[ \label{soilmoist_str} S(\theta_i) = \left[1 - \left\{1 - \phi_i \right\}\right]^\varrho, \]
+\form#1047:$S(\theta_i)$
+\form#1048:$r_{i}$
+\form#1049:$\varrho$
+\form#1050:$\phi_i$
+\form#1051:\[ \label{phitheta} \phi_{i}(\theta_{i}) = \max \left[0, \min \left(1, \frac{\theta_{i} - \theta_{i, wilt}}{\theta_{i, field} - \theta_{i, wilt}} \right) \right], \]
+\form#1052:$\theta_{i}$
+\form#1053:$m^{3} water\,(m^{3} soil)^{-1}$
+\form#1054:$\theta_{i,field}$
+\form#1055:$\theta_{i, wilt}$
+\form#1056:\[ \label{co2comp} \Gamma = \left\{\begin{array}{l l} \frac{O_\mathrm{a}}{2 \sigma}, C_3 plants\\ 0, C_4 plants, \end{array} \right. \]
+\form#1057:$\sigma = 2600f_{25}(0.57)$
+\form#1058:\[ \label{K_c} K_\mathrm{c} = 30f_{25}(2.1), \\ \label{K_o} K_o = 3 \times 10^4 f_{25}(1.2). \]
+\form#1059:$J_\mathrm{e}$
+\form#1060:\[ J_\mathrm{p} = \frac{(J_\mathrm{c} + J_\mathrm{e}) \pm \sqrt{(J_\mathrm{c} + J_\mathrm{e})^2 - 4\beta_1 (J_\mathrm{c} + J_\mathrm{e})}}{2\beta_1} , \\ \label{G_o}G_\mathrm{o} = \frac{(J_\mathrm{p} + J_\mathrm{s}) \pm \sqrt{(J_\mathrm{p} + J_\mathrm{s})^2 - 4\beta_2 (J_\mathrm{p} + J_\mathrm{s})}}{2\beta_2}, \]
+\form#1061:$\beta_1$
+\form#1062:$\beta_2$
+\form#1063:$S(\theta)$
+\form#1064:$\Xi_\mathrm{N}$
+\form#1065:\[ \label{G_nitro} G_{\mathrm{o},N-limited} = \Xi_\mathrm{N} G_\mathrm{o}, \\ \label{Nthrottle} \Xi_\mathrm{N} = \frac{1 + \gamma_{gd} \ln(c_\mathrm{a}/c_{0})}{1 + \gamma_g \ln(c_\mathrm{a}/c_{0})}, \]
+\form#1066:$c_\mathrm{a}$
+\form#1067:$c_{0}$
+\form#1068:$285.0\,ppm$
+\form#1069:$\gamma_g$
+\form#1070:$\gamma_{gd}$
+\form#1071:$G_{\mathrm{o},N-limited}$
+\form#1072:$G_{canopy}$
+\form#1073:\[ \label{G_canopy} G_{canopy} = G_{\mathrm{o},N-limited} f_{PAR},\\ \label{fpar} f_{PAR} = \frac{1}{k_\mathrm{n}}(1-\exp^{-k_\mathrm{n}LAI}), \]
+\form#1074:$LAI$
+\form#1075:$m^{2}\,leaf\,(m^{2}\,ground)^{-1}$
+\form#1076:$G_{canopy,net}$
+\form#1077:\[ \label{Gnet} G_{canopy,net} = G_{canopy} - R_{mL}. \]
+\form#1078:$g_\mathrm{c}$
+\form#1079:$mol\,m^{-2}\,s^{-1}$
+\form#1080:$G_{canopy, net}$
+\form#1081:\[ \label{canopy_cond} g_\mathrm{c} = m \frac{G_{canopy,net} p}{(c_\mathrm{s} - \Gamma)}\frac{1}{(1+V/V_\mathrm{o})} + b {LAI} \]
+\form#1082:$V$
+\form#1083:$V_\mathrm{o}$
+\form#1084:$2000\,Pa$
+\form#1085:$1500\,Pa$
+\form#1086:$c_\mathrm{s}$
+\form#1087:\[ \label{c_s} c_\mathrm{s} = c_{ap} - \frac{1.37 G_{canopy,net} p}{g_b}. \]
+\form#1088:$c_{ap}$
+\form#1089:$g_b$
+\form#1090:\[ \label{c_i} c_\mathrm{i} = c_\mathrm{s} - \frac{1.65 G_{canopy,net} p}{g_\mathrm{c}}. \]
+\form#1091:$0.7c_{ap}$
+\form#1092:$m\,s^{-1}$
+\form#1093:\[ g_\mathrm{c} (m\,s^{-1}) = 0.0224\,\frac{T_\mathrm{c}}{T_\mathrm{f}}\,\frac{p_0}{p}\,g_\mathrm{c} (mol\,m^{-2}\,s^{-1}), \]
+\form#1094:$p_0$
+\form#1095:$101\,325\,Pa$
+\form#1096:$T_\mathrm{f}$
+\form#1097:$273.16\,K$
+\form#1098:$M^2/M^2$
+\form#1099:$W/M^2$
+\form#1100:$(CO_2i)$
+\form#1101:$MOL/M^2/S$
+\form#1102:$[C] (T_s)$
+\form#1103:$[kg m^{-3}] (\rho_s )$
+\form#1104:$[kg m^{-2}] (w_s)$
+\form#1105:$I_s$
+\form#1106:$\Delta I_s = X_i \Delta [C_s z_s T_s]/Delta t$
+\form#1107:$C_s$
+\form#1108:$T_s$
+\form#1109:$\Delta$
+\form#1110:$\Delta I_s = X_i \Delta [C_s z_s T_s] / \Delta t$
+\form#1111:$C_w$
+\form#1112:$\rho_s$
+\form#1113:$rho_i$
+\form#1114:$\rho_w$
+\form#1115:$w_s$
+\form#1116:$C_s = C_i [ \rho_s /\rho_i ] + C_w w_s /[\rho_w z_s]$
+\form#1117:$[ ] (alpha_{s,VIS})$
+\form#1118:$[ ] (alpha_{s,NIR})$
+\form#1119:$[ ] (\tau_{s,c})$
+\form#1120:$[ ] (\tau_{s,g})$
+\form#1121:$[ ] (\alpha_{s,T})$
+\form#1122:\[ \begin{tabular} { | l | c | c | c | } \hline & Total albedo & Visible albedo & Near-IR albedo \\ \hline Fresh snow & 0.84 & 0.95 & 0.73 \\ \hline Old dry snow & 0.70 & 0.84 & 0.56 \\ \hline Melting snow & 0.50 & 0.62 & 0.38 \\ \hline \end{tabular} \]
+\form#1123:$\alpha_{s,VIS}$
+\form#1124:$\alpha_{s,NIR}$
+\form#1125:$\alpha_{s,T}$
+\form#1126:$[\alpha_{s,VIS} - 0.84]/[0.95-0.84] = [\alpha_{s,T} - 0.70]/[0.84-0.70]$
+\form#1127:$[\alpha_{s,NIR} - 0.56]/[0.73-0.56] = [\alpha_{s,T} - 0.70]/[0.84-0.70]$
+\form#1128:$\alpha_{s,VIS} = 0.7857 \alpha_{s,T} + 0.2900$
+\form#1129:$\alpha_{s,NIR} = 1.2142 \alpha_{s,T} - 0.2900$
+\form#1130:$\alpha_{s,VIS} - 0.62]/[0.95-0.62] = [\alpha_{s,T} - 0.50]/[0.84-0.50]$
+\form#1131:$\alpha_{s,NIR} - 0.38]/[0.73-0.38] = [\alpha_{s,T} - 0.50]/[0.84-0.50]$
+\form#1132:$\alpha_{s,VIS} = 0.9706 \alpha_{s,T} + 0.1347$
+\form#1133:$\alpha_{s,NIR} = 1.0294 \alpha_{s,T} - 0.1347$
+\form#1134:$\tau_{s,c}$
+\form#1135:$25.0 m^{-1}$
+\form#1136:$\tau_{s,c} = exp[-25.0 z_s]$
+\form#1137:$\tau_{s,g}$
+\form#1138:$kg BC/m^3$
+\form#1139:$[ ] (\alpha_s)$
+\form#1140:$[C]$
+\form#1141:$[m s^{-1}] $
+\form#1142:$[kg m^{-3}] (\rho_{s,max})$
+\form#1143:$\alpha_s$
+\form#1144:$\alpha_{s,old}$
+\form#1145:$\alpha_s (t+1) = [\alpha_s (t) - \alpha_{s,old}] exp [-0.01 \Delta t / 3600] + \alpha_{s,old}$
+\form#1146:$\rho_{s,max}$
+\form#1147:$\rho_{s,max} = A_s - [204.70/ z_s] [1.0 - exp(-z_s /0.673)]$
+\form#1148:$A_s$
+\form#1149:$\rho_s (t+1) = [\rho_s (t) - \rho_{s,max} ] exp [-0.01 \Delta t/3600] + \rho{s,max}$
+\form#1150:$\Delta I_s = X_i \Delta [ C_s z_s T_s ] / \Delta t$
+\form#1151:$\rho_i$
+\form#1152:$C_s = C_i [\rho_s / \rho_i ] + C_w w_s /[\rho_w z_s]$
+\form#1153:$(L_m+ L_v)/L_v$
+\form#1154:$L_m$
+\form#1155:$L_v$
+\form#1156:$(m s^{-1})$
+\form#1157:$(kg m^{-3})$
+\form#1158:$(mg CH_4 m^{-2} s^{-1})$
+\form#1159:$[C] (T_p)$
+\form#1160:$[C] (T_g)$
+\form#1161:$\Delta I_s = X_i \Delta(C_s T_s z_s) / \Delta t$
+\form#1162:$\Delta I_g = X_i \Delta(C_w T_p z_p)/\Delta t$
+\form#1163:$(\theta_l) [m^3 m^{-3}]$
+\form#1164:$(\theta_i) [m^3 m^{-3}]$
+\form#1165:$[J m^{-3} K^{-1}] (C_g)$
+\form#1166:$(\rho_s) [kg m^{-3}]$
+\form#1167:$(\theta_p) [m^3 m^{-3}]$
+\form#1168:$(\theta_r) [m^3 m^{-3}]$
+\form#1169:$[J m^{-3} K^{-1}] (C_m)$
+\form#1170:$(\Delta z_{g,w}) [m]$
+\form#1171:$(\Delta z_{g,z}) [m]$
+\form#1172:$\lambda (z)$
+\form#1173:$G(z) = \lambda (z) dT(z)/dz$
+\form#1174:$G_j = (\lambda_{j-1} + \lambda_j ) (T_{j-1} - T_j ) / (\Delta z_{j-1} - \Delta z_j )$
+\form#1175:$\lambda_j$
+\form#1176:$[W m^{-1} K^{-1}] (\lambda)$
+\form#1177:$[m] (\Delta z_p)$
+\form#1178:$[K] (T_{1p})$
+\form#1179:$[W m^{-2} K^{-1}]$
+\form#1180:$\Delta z_{1p}$
+\form#1181:$T_{1p}$
+\form#1182:$T(z) = 1/2 T''(0)z^2 + T'(0)z +T(0)$
+\form#1183:$\Delta z_p$
+\form#1184:$T_p$
+\form#1185:$T''(0) = [T'(\Delta z) - T'(0)]/\Delta z$
+\form#1186:$G(z) = - \lambda(z)T'(z)$
+\form#1187:$\lambda$
+\form#1188:$T_p = [G(0)/ \lambda(0) – G(\Delta z_{1p})/ \lambda(\Delta z_{1p})] [\Delta z_p^2 - \Delta z_{1p}^2]/ 6 \Delta z_{1p} – G(0) [\Delta z_p - \Delta z_{1p}]/ 2 \lambda(0) – T_{1P}$
+\form#1189:$[J kg^{-1}]$
+\form#1190:$[W m^{-1} K^{-1}] (\lambda_t)$
+\form#1191:$[W m^{-1} K^{-1}] (\lambda_b)$
+\form#1192:$T(z) = (1/2) a z^2 + b z + c$
+\form#1193:$a = T''(0)$
+\form#1194:$b = T'(0)$
+\form#1195:$c = T(0)$
+\form#1196:$T''(0)$
+\form#1197:$T''(0) = [T'(\Delta z) - T'(0)]/ \Delta z$
+\form#1198:$T'(0)$
+\form#1199:$\lambda_t$
+\form#1200:$\lambda_b$
+\form#1201:$G(0) = - \lambda_t T'(0)$
+\form#1202:$G(\Delta z) = - \lambda_b T'(\Delta z)$
+\form#1203:$[J m^{-3} K^{1}] (Cg)$
+\form#1204:$[J m^{-3} K^1] (C_s)$
+\form#1205:$[J m^{-3} K^{1}] (C_s)$
+\form#1206:$[ ] (\beta)$
+\form#1207:$[m] (z_{wt})$
+\form#1208:$[m^{-1}]$
+\form#1209:$[m^3 m^{-3}] (\theta_{ret})$
+\form#1210:$[m^3 m^{-3}] (theta_{fc})$
+\form#1211:$[W m^{-1} K^{-1}] (\theta_s)$
+\form#1212:$[m] (\Delta z_w)$
+\form#1213:$[m] (z_{b,w})$
+\form#1214:$\beta = 0.25 [1 – cos(\theta_l \pi / \theta_{fc})]^2$
+\form#1215:$\theta_{fc}$
+\form#1216:$C_g = C_w \theta_l + C_i \theta_i + C_m(1 - \theta_p)$
+\form#1217:$C_m$
+\form#1218:$C_s = C_i [\rho_s /\rho_i ] + C_w w_s /[\rho_w z_s]$
+\form#1219:$\lambda_s$
+\form#1220:$\lambda_s = 3.233 x 10^{-6} \rho_s^2 – 1.01 x 10^{-3} \rho_s + 0.138 \rho_s \geq 156.0 $
+\form#1221:$\theta_l + \theta_i = \theta_p$
+\form#1222:$\theta_l + \theta_i = \theta_{ret}$
+\form#1223:$\theta_l + \theta_i$
+\form#1224:$z_{wt} = z_{b,w} - \Delta z_w [(\theta_l + \theta_i - \theta_{ret})/(\theta_p - \theta_{ret})]$
+\form#1225:$\Delta z_w$
+\form#1226:$\lambda_r$
+\form#1227:$\lambda = [ \lambda_{sat} – \lambda_{dry} ] \lambda_r + \lambda_{dry}$
+\form#1228:$S_r$
+\form#1229:$\lambda_r = \kappa S_r/[1 + (\kappa-1) S_r ]$
+\form#1230:$\kappa = 4.0$
+\form#1231:$\kappa = 1.2$
+\form#1232:$\kappa = 1.9$
+\form#1233:$\kappa = 0.85$
+\form#1234:$\kappa = 0.6$
+\form#1235:$\kappa = 0.25$
+\form#1236:$lambda_{dry}$
+\form#1237:$\lambda_{dry} = 0.75 exp(-2.76 \theta_p) (mineral)$
+\form#1238:$\lambda_{dry} = 0.30 exp(-2.0 \theta_p) (organic)$
+\form#1239:$\lambda_{sat}$
+\form#1240:$lambda_{sat} = lambda_w \theta_p + \lambda_s (1 - \theta_p) (unfrozen)$
+\form#1241:$lambda_{sat} = lambda_i \theta_p + \lambda_s (1 - \theta_p) (frozen)$
+\form#1242:$\lambda_w$
+\form#1243:$\theta_w$
+\form#1244:$\theta_{re}$
+\form#1245:$\theta_w + \theta_i$
+\form#1246:$\geq 10^{-2} m$
+\form#1247:$[W m^{-2} ] (K_{*c} )$
+\form#1248:$[W m^{-2} ] (K_{*g} )$
+\form#1249:$[W m^{-2} ] (L \uparrow_c , L \downarrow_c )$
+\form#1250:$[W m^{-2} ] (L \uparrow_g )$
+\form#1251:$[W m^{-2} ] $
+\form#1252:$[W m^{-2} ] (Q_H )$
+\form#1253:$[W m^{-2} ] (Q_{H,c} )$
+\form#1254:$[W m^{-2} ] (Q_{H,g} )$
+\form#1255:$[W m^{-2} ] (Q_E )$
+\form#1256:$[W m^{-2} ] (Q_{E,c} )$
+\form#1257:$[W m^{-2} ] (Q_{E,g} )$
+\form#1258:$[kg m^{-2} s^{-1} ] (E_c )$
+\form#1259:$[kg m^{-2} s^{-1} ] (E(0))$
+\form#1260:$[K] (T_c )$
+\form#1261:$[kg kg^{-1} ] (q_c )$
+\form#1262:$[K] (T(0))$
+\form#1263:$[kg kg^{-1} ] (q(0))$
+\form#1264:$[W m^{-2} ] (G(0))$
+\form#1265:$[K] (T_{ac} )$
+\form#1266:$[kg kg^{-1} ] (q_{ac} )$
+\form#1267:$[kg kg^{-1} m s^{-1} ]$
+\form#1268:$[W m^{-2} ] (K \downarrow )$
+\form#1269:$[W m^{-2} ] (L \downarrow )$
+\form#1270:$[K] (T_{a,pot} )$
+\form#1271:$[kg kg^{-1} ] (q_a )$
+\form#1272:$[m s^{-1} ] (v_{ac} )$
+\form#1273:$[kg m^{-3} ] ( \rho_a )$
+\form#1274:$[ ] ( \alpha_c )$
+\form#1275:$[ ] ( \alpha_g )$
+\form#1276:$[ ] ( \tau_c )$
+\form#1277:$[ ] ( \chi )$
+\form#1278:$[K^{-1} ]$
+\form#1279:$[J kg^{-1} ] (L_v )$
+\form#1280:$[K] (T_{a,v} )$
+\form#1281:$[s m^{-1}] (r_c )$
+\form#1282:$[m] (z_{0,m} )$
+\form#1283:$[s_{-1} ]$
+\form#1284:$[W m^{-2} K^{-1} ]$
+\form#1285:$[ ] (F_s )$
+\form#1286:$[ ] (F_l )$
+\form#1287:$[J m^{-2} K^{-1} ] (C_c )$
+\form#1288:$(z_s)$
+\form#1289:$[m^{3} m^{-3} ]$
+\form#1290:$2.0 W m^{-2} K^{-1}$
+\form#1291:$1.9 x 10^{-3}$
+\form#1292:$K_{*g} = K \downarrow \tau_c [1 - \alpha_g ]$
+\form#1293:$K_{*g} is the net radiation at the surface, $
+\form#1294:$ is the incoming shortwave radiation above the canopy, $
+\form#1295:$K_{*c} = K \downarrow [1 - \alpha_c ] - K_{*g}$
+\form#1296:$K_{*c} is the net radiation on the canopy and $
+\form#1297:$(L \uparrow_c )$
+\form#1298:$(L \downarrow_c )$
+\form#1299:$L \uparrow_c = L \downarrow_c = \sigma T_c^4$
+\form#1300:$T_{c,v}$
+\form#1301:$T_{c,v} = T_c [1 + 0.61 q_c ]$
+\form#1302:$q_c$
+\form#1303:$w_c$
+\form#1304:$q_c = w_c /[1 + w_c ]$
+\form#1305:$e_c$
+\form#1306:$w_c = 0.622 e_c /(p_{dry} )$
+\form#1307:$e_{sat} = 611.0 exp[17.269(T - T_f )/(T - 35.86)] T \geq T_f$
+\form#1308:$e_{sat} = 611.0 exp[21.874(T - T_f )/(T - 7.66)] T < T_f$
+\form#1309:$T_{ac,v}$
+\form#1310:$T_{ac}$
+\form#1311:$q_{ac}$
+\form#1312:$T_{ac,v} = T_{ac} [1 + 0.61 q_{ac} ]$
+\form#1313:$1/r_b$
+\form#1314:$1/r_b = v_{ac}^{1/2} \sigma f_i \gamma_i \Lambda_i^{1/2} /0.75 [1 - exp(-0.75 \Lambda_i^{1/2})]$
+\form#1315:$v_{ac}$
+\form#1316:$\Lambda_i$
+\form#1317:$\gamma_i$
+\form#1318:$q(0)_{sat}$
+\form#1319:$\beta = [q(0) - q_{ac} ]/[q(0)_{sat} - q_{ac} ]$
+\form#1320:$q(0) > q_{ac}$
+\form#1321:$T(0)_{pot}$
+\form#1322:$z_{0,m}$
+\form#1323:$8.0 z_{0,m}$
+\form#1324:$T(0)_{pot} = T(0) - 8.0 z_{0,m} g/c_p$
+\form#1325:$T(0)_v = T(0)_{pot} [1 + 0.61 q(0)]$
+\form#1326:$r_{a,,g}$
+\form#1327:$1/r_{a,,g} = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]^{1/3}$
+\form#1328:$d(1/r_{a,,g} )/dT = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]^{-2/3} /3$
+\form#1329:$1/r_{a,,g} = 1.9 x 10^{-3} [T(0)_v - T_{ac,v} ]$
+\form#1330:$d(1/r_{a,,g} )/dT = 1.9 x 10^{-3}$
+\form#1331:$K_{*g} + L_{*g} - Q_{H,g} - Q_{E,g} - G(0) = 0$
+\form#1332:$K_{*g}$
+\form#1333:$L_{*g}$
+\form#1334:$Q_{H,g}$
+\form#1335:$Q_{E,g}$
+\form#1336:$L \downarrow_g$
+\form#1337:$L \uparrow_g$
+\form#1338:$L \downarrow$
+\form#1339:$L \downarrow_c$
+\form#1340:$L \downarrow_g = \chi L \downarrow + [1 - \chi] L \downarrow_c$
+\form#1341:$L \uparrow_g = \sigma T(0)^4$
+\form#1342:$Q_{H,g} = \rho_a c_p [T(0)_{pot} - T_{a,c} ]/r_{a,,g}$
+\form#1343:$E(0) = \rho_a [q(0) - q_{a,c} ]/r_{a,,g}$
+\form#1344:$5.0 W m^{-2}$
+\form#1345:$x_{n+1}$
+\form#1346:$x_n$
+\form#1347:$x_{n+1} = x_n - f(x_n )/f'(x_n )$
+\form#1348:$f(x_n )$
+\form#1349:$> 15 W m^{-2}$
+\form#1350:$Q_{H,g} + Q_{E,g}$
+\form#1351:$B = Q_{H,g} /Q_{E,g}$
+\form#1352:$Q_{E,g} = R/(1 + B)$
+\form#1353:$R - Q_{E,g}$
+\form#1354:$T(0)_v$
+\form#1355:$Q_{H,c}$
+\form#1356:$Q_{E,c}$
+\form#1357:$Q_H = Q_{H,c} + Q_{H,g}$
+\form#1358:$Q_E = Q_{E,c} + Q_{E,g}$
+\form#1359:$Q_H = \rho_a c_p [T_{a,c} - T_{a,pot,} ]/r_a$
+\form#1360:$Q_{H,c} = \rho_a c_p [T_c - T_{a,c,} ]/r_b$
+\form#1361:$Q_E = L_v \rho_a [q_{a,c} - q_{a,} ]/r_a$
+\form#1362:$Q_{E,c} = L_v \rho_a [q_{,c} - q_{a,c,} ]/(r_b + r_c )$
+\form#1363:$r_a$
+\form#1364:$1/r_a$
+\form#1365:$T_{a,c}$
+\form#1366:$q_{a,c}$
+\form#1367:$T_{a,c} = [T_{a,pot} /r_a + T_c /r_b + T(0)_{pot} /r_{a,,g} ]/[1/r_a + 1/r_b + 1/r_{a,,g} ]$
+\form#1368:$q_{a,c} = [q_a /r_a + q_c /(r_b + r_c ) + q(0)/r_{a,,g} ]/[1/r_a + 1/(r_b + r_c ) + 1/r_{a,,g} ]$
+\form#1369:$F_s$
+\form#1370:$F_l$
+\form#1371:$1/(r_b + r_c )$
+\form#1372:$X_E$
+\form#1373:$F_s > 0$
+\form#1374:$X_E = (F_s + F_l )/r_b$
+\form#1375:$r_b$
+\form#1376:$r_b + r_c$
+\form#1377:$X_E = F_l /r_b + [1 - F_l ]/[r_b + r_c ]$
+\form#1378:$q_{a,c} < q_c$
+\form#1379:$Q_{H,c} = \rho_a c_p [T_{,c} - T_{a,pot,} ]/(r_a + r_b )$
+\form#1380:$Q_{E,c} = L_v \rho_a [q_{,c} - q_{a,} ]/(r_a + r_b + r_c )$
+\form#1381:$1/(r_a + r_b )$
+\form#1382:$25 W m^{-2}$
+\form#1383:$r_A = r_a + r_b$
+\form#1384:$q_a < q_c$
+\form#1385:$r_A$
+\form#1386:$q_{0,c}$
+\form#1387:$Q_{E,c} = L_v \rho_a X_E [q_{,c} - q_{a,} ]$
+\form#1388:$Q_{E,c} = L_v \rho_a [q_{,0,c} - q_{a,} ]/r_A$
+\form#1389:$q_{0,c} = r_A X_E q_c + [1 - r_A X_E ]q_a$
+\form#1390:$K_{*c} + L_{*c} - Q_{H,c} + Q_{H,g+} - Q_{E,c} - \Delta Q_{S,c} = 0$
+\form#1391:$Q_{H,g+}$
+\form#1392:$\Delta Q_{S,c}$
+\form#1393:$K_{*c}$
+\form#1394:$L_{*c} = (1 - \chi) [L \downarrow + L \uparrow_g - 2 L \downarrow_c ]$
+\form#1395:$5000 s m^{-1}$
+\form#1396:$E_c$
+\form#1397:$Q_{E,c} /L_v$
+\form#1398:$\Delta Q_{S,c} = C_c [T_c - T_{c,o} ]/ \Delta t$
+\form#1399:$T_{c,o}$
+\form#1400:$d(L_{*c} )/dT = -8 \sigma T_c^3 (1 - \chi)$
+\form#1401:$d(Q_{H,c} )/dT = \rho_a c_p {1/r_A + [T_c - T_{a,pot} ] d(1/r_A )/dT}$
+\form#1402:$d(Q_{E,c} )/dT = L_v \rho_a {X_E dq_c /dT + [q_c - q_a ] dX_E /dT}$
+\form#1403:$d \Delta Q_{S,c} /dT = C_c / \Delta t$
+\form#1404:$d(1/r_A )/dT$
+\form#1405:$dX_E /dT$
+\form#1406:$> 100 W m^{-2}$
+\form#1407:$T_{v,c}$
+\form#1408:$m s^{-1}$
+\form#1409:$[W m^{-2}] (Q_H )$
+\form#1410:$[W m^{-2}] (Q_E)$
+\form#1411:$[kg m^{-2} s^{-1}] (E(0))$
+\form#1412:$[kg kg^{-1}] (q(0))$
+\form#1413:$[ ] (C_{DH}) $
+\form#1414:$[K m s^{-1}]$
+\form#1415:$[kg kg^{-1} m s^{-1}]$
+\form#1416:$(m-1]$
+\form#1417:$[K] (T_{a,pot})$
+\form#1418:$[m s^{-1}] (v_a)$
+\form#1419:$[K^{-1}]$
+\form#1420:$[s^{-1}]$
+\form#1421:$[m^{3} m^{-3}]$
+\form#1422:$T(0)_v = T(0) [1 + 0.61 q(0)]$
+\form#1423:$\beta = [q(0) – q_a]/[q(0)_{sat} - q_a]$
+\form#1424:$w(0)_{sat}$
+\form#1425:$q(0)_{sat} = w(0)_{sat}/[1 + w(0)_{sat}]$
+\form#1426:$e(0)_{sat}$
+\form#1427:$w(0)_{sat} = 0.622 e(0)_{sat}/(p_{dry})$
+\form#1428:$e_{sat} = 611.0 exp[17.269 (T – T_f)/(T – 35.86)] T \geq T_f$
+\form#1429:$e_{sat} = 611.0 exp[21.874 (T – T_f)/(T – 7.66)] T < T_f$
+\form#1430:$q(0) > q_a$
+\form#1431:$K_* + L_* - Q_H – Q_E – G(0) = 0$
+\form#1432:$L \uparrow$
+\form#1433:$L \uparrow = \sigma T(0)^4$
+\form#1434:$Q_H = [\rho_a c_p C_{DH} v_a + \epsilon_0] [T(0) – T_{a,pot}]$
+\form#1435:$\epsilon_0$
+\form#1436:$T(0) < T_{a,pot}$
+\form#1437:$E(0) = \rho_a C_{DH} v_a [Q(0) – q_a]$
+\form#1438:$x_{n+1} = x_n – f(x_n)/f'(x_n)$
+\form#1439:$f(x_n)$
+\form#1440:$d( L \uparrow )/dT = -4 \sigma T(0)^3$
+\form#1441:$d(Q_H)/dT = \rho_a c_p {C_{DH} v_a + [T(0) – T_{a,pot}] d(C_{DH} v_a)/dT}$
+\form#1442:$d(Q_E)/dT = L_v \rho_a{C_{DH} v_a dq(0)/dT+ [q(0) – q_a] d(C_{DH} v_a)/dT}$
+\form#1443:$50 W m^{-2}$
+\form#1444:$[W m^{-2}] (G(\Delta z_s))$
+\form#1445:$[K/C] (T_s)$
+\form#1446:$[m] (\Delta z_s)$
+\form#1447:$G(\Delta z_s)$
+\form#1448:$\Delta T_s = [G(0) - G(\Delta z_s)] \Delta t /(C_s \Delta z_s)$
+\form#1449:$\Delta z_s$
+\form#1450:$\Delta I_s = X_i \Delta [C_s T_s]/ \Delta t$
+\form#1451:$C_s = C_i [\rho_s /\rho_i] + C_w w_s/[\rho_w \Delta z_s]$
+\form#1452:$[K] (T_s(\Delta z_s))$
+\form#1453:$T(\Delta z_s)$
+\form#1454:$T"(0) = [T'(\Delta z_s) - T'(0)]/ \Delta z_s$
+\form#1455:$G(0) = -\lambda_s T'(0)$
+\form#1456:$T_s(\Delta z_s)$
+\form#1457:$G(0) = 3 \lambda_s / \Delta z_s [T(0) - T_s(\Delta z_s)]$
+\form#1458:$3 \lambda_s / \Delta z_s$
+\form#1459:$-3 \lambda_s T_s(\Delta z_s)/ \Delta z_s$
+\form#1460:$D_\mathrm{S}$
+\form#1461:$D_\mathrm{R}$
+\form#1462:$C_\mathrm{S}, C_\mathrm{R}$
+\form#1463:$\tau_\mathrm{S}$
+\form#1464:$\tau_\mathrm{R}$
+\form#1465:\[ \label{citod} D_{i} = C_{i}\left[1 - \exp\left(-\frac{1}{365\,\tau_{i}}\right)\right],\quad i = S, R.\]
+\form#1466:$[mm] (\theta_p)$
+\form#1467:$[m^3 m^{-3}] (\theta_r)$
+\form#1468:$[m] (\Delta z_{g,z})$
+\form#1469:$C_g$
+\form#1470:$\Delta z_{g,w}$
+\form#1471:$C_g = C_w \theta_l + C_i \theta_i + C_m (1 - \theta_p)$
+\form#1472:$C_r$
+\form#1473:$C_{g,e}$
+\form#1474:$\Delta z_{g,z}$
+\form#1475:$C_{g,e} = C_g \Delta z_{g,w} + C_r(\Delta z_{g,z} - \Delta z_{g,w})$
+\form#1476:$\Delta I_j = X_i \Delta (C_{g,e} T_g)/\Delta t$
+\form#1477:$T_g$
+\form#1478:$\theta_f$
+\form#1479:$C_e$
+\form#1480:$[m^3 m^{-2}]$
+\form#1481:$F_{inf}$
+\form#1482:$F_{inf} = $
+\form#1483:$ [(\Psi_f + z_f)/ z_f ]$
+\form#1484:$\Psi_f$
+\form#1485:$z_f$
+\form#1486:$F_{inf} = r$
+\form#1487:$t_p$
+\form#1488:$z_f = \Psi_f /[r/K_{inf} – 1]$
+\form#1489:$t_p r$
+\form#1490:$z_f (\theta_{inf} – \theta_l)$
+\form#1491:$\theta_{inf}$
+\form#1492:$t_p = z_f (\theta_{inf} – \theta_l)/r$
+\form#1493:$K_{inf} < R$
+\form#1494:$t_p = [z_f [\theta_{inf}(z_f) – \theta_l(z_f)] + w_{adj}]/r$
+\form#1495:$w_{adj}$
+\form#1496:$LZF-1$
+\form#1497:$w_{adj} = \Sigma[(\theta_{inf. i} – \theta_{l,i} ) – (\theta_{inf} (z_f) – \theta_l (z_f))] \Delta z_{g,w}$
+\form#1498:$i=1$
+\form#1499:$[m] (\Psi_f)$
+\form#1500:$[m s^{-1}] (K)$
+\form#1501:$[m] (\Delta z_{z,w})$
+\form#1502:$[m] (z_f)$
+\form#1503:$F_{inf} = K_{inf} [(\Psi_f + z_f + z_p)/z_f ]$
+\form#1504:$K_{sat}' = (1.7915 * 10^{-3}) K_{sat} / [(2.0319 * 10^{-4})+(1.5883 * 10^{-3}) exp(-T_g^{0.9}/22.0)]$
+\form#1505:$C_s = C_i [\rho_s /\rho_i] + C_w w_s /[\rho_w z_s]$
+\form#1506:\[ \begin{tabular}{ | l | l || l | } 1.0 & April 1989 & Basic thermal and hydrological model of snow and soil. \\ 2.0 & August 1991 & Addition of vegetation thermal and hydrological model. \\ 2.1 & May 1993 & Full vectorization of code to enable efficienr running on vector supercomputers. \\ 2.2 & April 1994 & Augmentation of diagnostic calculations; incorporation of in-line comments throughout; development \\ & & of a parallel stand-alone version of the model for use with field data. \\ 2.3 & December 1994 & Revisions to diagnostic calculations; new near-surface atmospheric stability functions. \\ 2.4 & August 1995 & Complete set of water budget diagnostic calculations; parametrizations of organic soils and \\ & &rock soils; allowance for inhomegeneity between soil layers; incorporation of variable \\ & & surface detention capacity. \\ 2.5 & January 1996 & Completion of energy budget diagnostic calculations. \\ 2.6 & August 1997 & Revisions to surface stability function calculations. \\ 2.7 & December 1997 & Incorporation of variable soil permeable depth; calculation of soil thermal and hydraulic properties based on textural composition; modified surface temperature iteration scheme. \\ 3.0 & December 2002 & Improved treatment of soil evaporation; complete treatment of organic soils; new canopy conductance formulation; preliminary routines for lateral movement of soil water; enhanced snow density and snow interception; improved turbulent transfer from vegetation; mosaic formulation. \\ 3.1 & April 2005 & Faster surface temperature iteration scheme; refinements to leaf boundary resistance formulation; improved treatment of snow sublimation and interception; transition to Fortran 90 and single precision variables. \\ 3.2 & May 2006 & Option for multiple soil layers at depth; additional liquid water content of snow pack; revised radiation transmission in vegetation. \\ 3.3 & December 2006 & Separate temperature profile curve fit for snow and soil; multiple-layer option for ice sheets; water and energy balance checks for each time step; modifications to soil hydraulic conductivity calculations. \\ 3.4 & April 2008 & Streamline and clean up code; updated soil thermal conductivity calculations; revisions to handling of water stored on vegetation. \\ 3.5 & December 2010 & Updated field capacity calculation; revised treatment of water on canopy; reworked calculation of baseflow. \\ 3.6 & December 2011 & Revised ponding depth over organic soils; revised snow albedo refreshment threshold; new snow thermal conductivity algorithm; interface with Canadian Terrestrial Ecosystem Model (CTEM). \\ 3.6.1 & December 2016 & New treatment of bare soil albedo; new optional four-band snow albedo formulation; fixes to guard against overshoots in water drawdown by evapotranspiration; upper limit on snow depth. \\ \end{tabular} \]
+\form#1507:$[ W m^{-2} ]$
+\form#1508:$[P_a ]$
+\form#1509:$[m s^-1 ]$
+\form#1510:\[ \begin{tabular}{ | l | c | c | c | c | c | c | } & RSMN & QA50 & VPDA & VPDB & PSGA & PSGB \\ Needleleaf trees & 200.0 & 30.0 & 0.65 & 1.05 & 100.0 & 5.0 \\ Broadleaf trees & 125.0 & 40.0 & 0.50 & 0.60 & 100.0 & 5.0 \\ Crops & 85.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\ Grass & 100.0 & 30.0 & 0.50 & 1.00 & 100.0 & 5.0 \\ \end{tabular} \]
+\form#1511:\[ \begin{tabular}{ | l | c | c | c | c | c | c | c | c | } Biome & CLASS PFT & Visible albedo & Near-infrared Albedo & Roughness length (m) \\ Needleleaf evergreen forest & 1 & 0.03 & 0.19 & 1.5 \\ Needleleaf deciduous forest & 1 & 0.03 & 0.19 & 1.0 \\ Broadleaf evergreen forest & 2 & 0.03 & 0.23 & 3.5 \\ Broadleaf cold deciduous forest & 2 & 0.05 & 0.29 & 2.0 \\ Broadleaf tropical evergreen forest & 2 & 0.03 & 0.23 & 3.0 \\ Broadleaf tropical drought deciduous forest & 2 & 0.05 & 0.29 & 0.8 \\ Broadleaf evergreen shrub & 4 & 0.03 & 0.19 & 0.05 \\ Broadleaf deciduous shrub & 2 & 0.05 & 0.29 & 0.15 \\ Broadleaf thorn shrub & 2 & 0.06 & 0.32 & 0.15 \\ Short grass and forbs & 4 & 0.06 & 0.34 & 0.02 \\ Long grass & 4 & 0.05 & 0.31 & 0.08 \\ Arable & 3 & 0.06 & 0.34 & 0.08 \\ Rice & 3 & 0.06 & 0.36 & 0.08 \\ Sugarcane & 3 & 0.05 & 0.31 & 0.35 \\ Maize & 3 & 0.05 & 0.33 & 0.25 \\ Cotton & 3 & 0.07 & 0.43 & 0.10 \\ Irrigated crop & 3 & 0.07 & 0.36 & 0.08 \\ Tundra & 4 & 0.05 & 0.29 & 0.01 \\ Swamp & 4 & 0.03 & 0.25 & 0.05 \\ Urban & 5 & 0.09 & 0.15 & 1.35 \\ \end{tabular} \]
+\form#1512:\[ \begin{tabular}{ | l | c | c | c | c | c | c | c | c | } Biome & CLASS PFT & Max. LAI (m2/m2) & Min. LAI (m2/m2) & Aboveground biomass (kg/m2) & Rooting depth (m) \\ Needleleaf evergreen forest & 1 & 2.0 & 1.6 & 25.0 & 1.0 \\ Needleleaf deciduous forest & 1 & 2.0 & 0.5 & 15.0 & 1.0 \\ Broadleaf evergreen forest & 2 & 8.0 & 8.0 & 50.0 & 5.0 \\ Broadleaf cold deciduous forest & 6.0 & 0.5 & 20.0 & 2.0 \\ Broadleaf tropical evergreen forest & 8.0 & 8.0 & 40.0 & 5.0 \\ Broadleaf tropical drought deciduous forest & 4.0 & 4.0 & 15.0 & 5.0 \\ Broadleaf evergreen shrub & 2.0 & 2.0 & 2.0 & 0.2 \\ Broadleaf deciduous shrub & 4.0 & 0.5 & 8.0 & 1.0 \\ Broadleaf thorn shrub & 3.0 & 3.0 & 8.0 & 5.0 \\ Short grass and forbs & 3.0 & 3.0 & 1.5 & 1.2 \\ Long grass & 4.0 & 4.0 & 3.0 & 1.2 \\ Arable & 4.0 & 0.0 & 2.0 & 1.2 \\ Rice & 6.5 & 0.0 & 2.0 & 1.2 \\ Sugarcane & 5.0 & 0.0 & 5.0 & 1.0 \\ Maize & 4.0 & 0.0 & 5.0 & 1.5 \\ Cotton & 5.0 & 0.0 & 2.0 & 2.0 \\ Irrigated crop & 4.0 & 0.0 & 2.0 & 5.0 \\ Tundra & 1.5 & 1.5 & 0.2 & 0.1 \\ Swamp & 1.5 & 1.5 & 1.0 & 5.0 \\ Urban & - & - & - & - \\ \end{tabular} \]
+\form#1513:\[ \begin{tabular}{ | l | c | c | } & CTEM PFTs & CLASS PFTs \\ 1. & Needleleaf Evergreen & Needleleaf \\ 2. & Needleleaf Deciduous & \\ 3. & Broadleaf Evergreen & Broadleaf \\ 4. & Broadleaf Cold Deciduous & \\ 5. & Broadleaf Drought/Dry Deciduous & \\ 6. & C3 Crop & Crops \\ 7. & C4 Crop & \\ 8. & C3 Grass & Grasses \\ 9. & C4 Grass & \\ \end{tabular} \]

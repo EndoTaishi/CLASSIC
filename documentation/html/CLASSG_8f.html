@@ -1233,7 +1233,7 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">real, dimension(nl,nm)&#160;</td>
+          <td class="paramtype">real, dimension(nl,nt)&#160;</td>
           <td class="paramname"><em>ASVDROT</em>, </td>
         </tr>
         <tr>
@@ -1514,8 +1514,10 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">cmairot</td><td>Aggregated mass of vegetation canopy <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_130.png"/></td></tr>
     <tr><td class="paramname">tsfsrot</td><td>Ground surface temperature over subarea [K]</td></tr>
     <tr><td class="paramname">tacrot</td><td>Temperature of air within vegetation canopy [K]</td></tr>
-    <tr><td class="paramname">qacrot</td><td>Specific humidity of air within vegetation canopy <img class="formulaInl" alt="$[kg kg^{-1}]$" src="form_298.png"/></td></tr>
+    <tr><td class="paramname">qacrot</td><td>Specific humidity of air within vegetation canopy <img class="formulaInl" alt="$[kg kg^{-1}]$" src="form_278.png"/></td></tr>
     <tr><td class="paramname">wsnorot</td><td>Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2}]$" src="form_130.png"/></td></tr>
+    <tr><td class="paramname">refrot</td><td>Snow grain size (for ISNOALB=1 option)</td></tr>
+    <tr><td class="paramname">bcsnrot</td><td>Black carbon mixing ratio (for ISNOALB=1 option) [kg m-3]</td></tr>
     <tr><td class="paramname">ilmos</td><td>Index of latitude grid cell corresponding to current element of gathered vector of land surface variables [ ]</td></tr>
     <tr><td class="paramname">jlmos</td><td>Index of mosaic tile corresponding to current element of gathered vector of land surface variables [ ]</td></tr>
     <tr><td class="paramname">fcanrot</td><td>Maximum fractional coverage of modelled area by vegetation category [ ]</td></tr>
@@ -1544,9 +1546,9 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">grksrot</td><td>Saturated hydraulic conductivity of soil layers <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
     <tr><td class="paramname">thrarot</td><td>Fractional saturation of soil behind the wetting front [ ]</td></tr>
     <tr><td class="paramname">hcpsrot</td><td>Volumetric heat capacity of soil particles <img class="formulaInl" alt="$[J m^{-3}]$" src="form_250.png"/></td></tr>
-    <tr><td class="paramname">tcsrot</td><td>Thermal conductivity of soil particles <img class="formulaInl" alt="$[W m^{-1} K^{-1}]$" src="form_299.png"/></td></tr>
+    <tr><td class="paramname">tcsrot</td><td>Thermal conductivity of soil particles <img class="formulaInl" alt="$[W m^{-1} K^{-1}]$" src="form_279.png"/></td></tr>
     <tr><td class="paramname">thfcrot</td><td>Field capacity <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_221.png"/></td></tr>
-    <tr><td class="paramname">thlwrot</td><td>Wilting point <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_221.png"/></td></tr>
+    <tr><td class="paramname">thlwrot</td><td>Liquid water content at wilting point <img class="formulaInl" alt="$[m^3 m^{-3}]$" src="form_221.png"/></td></tr>
     <tr><td class="paramname">psiwrot</td><td>Soil moisture suction at wilting point [m]</td></tr>
     <tr><td class="paramname">dlzwrot</td><td>Permeable thickness of soil layer [m]</td></tr>
     <tr><td class="paramname">zbtwrot</td><td>Depth to permeable bottom of soil layer [m]</td></tr>
@@ -1555,6 +1557,10 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">grkfrot</td><td>WATROF parameter used when running MESH code [ ]</td></tr>
     <tr><td class="paramname">wfsfrot</td><td>WATROF parameter used when running MESH code [ ]</td></tr>
     <tr><td class="paramname">wfcirot</td><td>WATROF parameter used when running MESH code [ ]</td></tr>
+    <tr><td class="paramname">algwvrot</td><td>Reference visible albedo for saturated soil [ ]</td></tr>
+    <tr><td class="paramname">algwnrot</td><td>Reference near-infrared albedo for saturated soil [ ]</td></tr>
+    <tr><td class="paramname">algdvrot</td><td>Reference visible albedo for dry soil [ ]</td></tr>
+    <tr><td class="paramname">algdnrot</td><td>Reference near-infrared albedo for dry soil [ ]</td></tr>
     <tr><td class="paramname">asvdrot</td><td>Optional user-specified value of snow visible albedo to override CLASS- calculated value [ ]</td></tr>
     <tr><td class="paramname">asidrot</td><td>Optional user-specified value of snow near-infrared albedo to override CLASS- calculated value [ ]</td></tr>
     <tr><td class="paramname">agvdrot</td><td>Optional user-specified value of ground visible albedo to override CLASS- calculated value [ ]</td></tr>
@@ -1571,11 +1577,13 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">fsvhrow</td><td>Visible radiation incident on horizontal surface <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
     <tr><td class="paramname">fsihrow</td><td>Near-infrared radiation incident on horizontal surface <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
     <tr><td class="paramname">cszrow</td><td>Cosine of solar zenith angle [ ]</td></tr>
+    <tr><td class="paramname">fsgrol</td><td>Total shortwave radiation absorbed by land surface [W m-2]</td></tr>
+    <tr><td class="paramname">flgrol</td><td>Total longwave radiation absorbed by land surface [W m-2]</td></tr>
     <tr><td class="paramname">fdlrol</td><td>Downwelling longwave radiation at bottom of atmosphere <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
     <tr><td class="paramname">ulrow</td><td>Zonal component of wind speed <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
     <tr><td class="paramname">vlrow</td><td>Meridional component of wind speed <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
     <tr><td class="paramname">tarow</td><td>Air temperature at reference height [K]</td></tr>
-    <tr><td class="paramname">qarow</td><td>Specific humidity at reference height <img class="formulaInl" alt="$[kg kg^{-1}]$" src="form_298.png"/></td></tr>
+    <tr><td class="paramname">qarow</td><td>Specific humidity at reference height <img class="formulaInl" alt="$[kg kg^{-1}]$" src="form_278.png"/></td></tr>
     <tr><td class="paramname">presrow</td><td>Surface air pressure [Pa]</td></tr>
     <tr><td class="paramname">prerow</td><td>Surface precipitation rate <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_128.png"/></td></tr>
     <tr><td class="paramname">padrrow</td><td>Partial pressure of dry air [Pa]</td></tr>
@@ -1592,8 +1600,12 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">fclorow</td><td>Fractional cloud cover [ ]</td></tr>
     <tr><td class="paramname">dlonrow</td><td>Longitude of grid cell (east of Greenwich) [degrees]</td></tr>
     <tr><td class="paramname">ggeorow</td><td>Geothermal heat flux at bottom of soil profile <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
+    <tr><td class="paramname">gustrol</td><td>Wind gustiness factor [ ]</td></tr>
     <tr><td class="paramname">radj</td><td>Latitude of grid cell (positive north of equator) [rad]</td></tr>
-    <tr><td class="paramname">vmodl</td><td>Wind speed at reference height <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/> </td></tr>
+    <tr><td class="paramname">vmodl</td><td>Wind speed at reference height <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
+    <tr><td class="paramname">fsdbrol</td><td>Direct solar radiation in each modelled wavelength band [W m-2]</td></tr>
+    <tr><td class="paramname">fsfbrol</td><td>Diffuse solar radiation in each modelled wavelength band [W m-2]</td></tr>
+    <tr><td class="paramname">fssbrol</td><td>Total solar radiation in each modelled wavelength band [W m-2] </td></tr>
   </table>
   </dd>
 </dl>
@@ -1606,7 +1618,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CLASSG_8f.html">CLASSG.f</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

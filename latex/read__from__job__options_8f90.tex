@@ -1,0 +1,204 @@
+\hypertarget{read__from__job__options_8f90}{}\section{read\+\_\+from\+\_\+job\+\_\+options.\+f90 File Reference}
+\label{read__from__job__options_8f90}\index{read\+\_\+from\+\_\+job\+\_\+options.\+f90@{read\+\_\+from\+\_\+job\+\_\+options.\+f90}}
+
+
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Joboptions Read-\/\+In Subroutine.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{read__from__job__options_8f90_a20cec43eab235567e47a309edb57d040}{read\+\_\+from\+\_\+job\+\_\+options} (argbuff, transient\+\_\+run, trans\+\_\+startyr, ctemloop, ctem\+\_\+on, ncyear, lnduseon, spinfast, cyclemet, nummetcylyrs, metcylyrst, co2on, setco2conc, ch4on, setch4conc, popdon, popcycleyr, parallelrun, dofire, dowetlands, obswetf, compete, inibioclim, start\+\_\+bare, rsfile, start\+\_\+from\+\_\+rs, leap, jmosty, idisp, izref, islfd, ipcp, itc, itcg, itg, iwf, ipai, ihgt, ialc, ials, ialg, isnoalb, jhhstd, jhhendd, jdstd, jdendd, jhhsty, jhhendy, jdsty, jdendy)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Canadian Terrestrial Ecosystem Model (C\+T\+E\+M) Joboptions Read-\/\+In Subroutine. 
+
+E\+X\+A\+M\+P\+L\+E\+S\+:
+
+To set up a transient run that does a cycling of the climate at the start\+:
+
+In the example below the model will run from 1851 -\/ 2012 using a climate dataset that spans 1901 -\/ 2012. The L\+U\+C, P\+O\+P\+D, C\+O2 files all span 1850 -\/ 2012. The climate dataset will cycle over 25 years of climate (N\+U\+M\+M\+E\+T\+C\+Y\+L\+Y\+R\+S; from 1901 -\/ 1925) twice (C\+T\+E\+M\+L\+O\+O\+P) for the period 1851 -\/ 1900 while the C\+O2, P\+O\+P\+D, and L\+U\+C all run from 1851 -\/ 1900 in their respective files (Each file will search for 1851 at the start so skipping 1850). Once 1901 is hit the M\+E\+T file no longer cycles and simply runs, like the other input files, until it reaches its end (year 2012).
+
+(only the relevant switches are shown below) ~\newline
+ transient\+\_\+run = .true. ~\newline
+ trans\+\_\+startyr = 1851 ~\newline
+ C\+T\+E\+M\+L\+O\+O\+P = 2 , $<$-- note this is set to the number of loops that N\+U\+M\+M\+E\+T\+C\+Y\+L\+Y\+R\+S must make to match up with the other datasets. ~\newline
+ N\+C\+Y\+E\+A\+R = 112 , ~\newline
+ L\+N\+D\+U\+S\+E\+O\+N = .T\+R\+U\+E. , ~\newline
+ C\+Y\+C\+L\+E\+M\+E\+T = .T\+R\+U\+E. , $<$-- note this is set to T\+R\+U\+E. ~\newline
+ N\+U\+M\+M\+E\+T\+C\+Y\+L\+Y\+R\+S = 25 , $<$-- note this times ctemloop should allow the datasets to match up (e.\+g. 1850 + 2$\ast$25 yrs ends in 1900) ~\newline
+ M\+E\+T\+C\+Y\+L\+Y\+R\+S\+T = 1901 , ~\newline
+ C\+O2\+O\+N = .T\+R\+U\+E. , ~\newline
+ P\+O\+P\+D\+O\+N = .T\+R\+U\+E. , ~\newline
+ O\+B\+S\+W\+E\+T\+F = .false. ,
+
+If you are doing methane then this would be true like the C\+O2 switches 
+
+
+
+If you want a transient run that does not spin over climate at the start, you need to change from above the following\+:
+
+(only the relevant switches are shown below) ~\newline
+ trans\+\_\+startyr = 2000, $<$-- whatever year you want to start at ~\newline
+ C\+Y\+C\+L\+E\+M\+E\+T = .F\+A\+L\+S\+E. , $<$-- note this is set to F\+A\+L\+S\+E. 
+
+\subsection{Function/\+Subroutine Documentation}
+\hypertarget{read__from__job__options_8f90_a20cec43eab235567e47a309edb57d040}{}\index{read\+\_\+from\+\_\+job\+\_\+options.\+f90@{read\+\_\+from\+\_\+job\+\_\+options.\+f90}!read\+\_\+from\+\_\+job\+\_\+options@{read\+\_\+from\+\_\+job\+\_\+options}}
+\index{read\+\_\+from\+\_\+job\+\_\+options@{read\+\_\+from\+\_\+job\+\_\+options}!read\+\_\+from\+\_\+job\+\_\+options.\+f90@{read\+\_\+from\+\_\+job\+\_\+options.\+f90}}
+\subsubsection[{read\+\_\+from\+\_\+job\+\_\+options}]{\setlength{\rightskip}{0pt plus 5cm}subroutine read\+\_\+from\+\_\+job\+\_\+options (
+\begin{DoxyParamCaption}
+\item[{character(80), intent(out)}]{argbuff, }
+\item[{logical, intent(out)}]{transient\+\_\+run, }
+\item[{integer, intent(out)}]{trans\+\_\+startyr, }
+\item[{integer, intent(out)}]{ctemloop, }
+\item[{logical, intent(out)}]{ctem\+\_\+on, }
+\item[{integer, intent(out)}]{ncyear, }
+\item[{logical, intent(out)}]{lnduseon, }
+\item[{integer, intent(out)}]{spinfast, }
+\item[{logical, intent(out)}]{cyclemet, }
+\item[{integer, intent(out)}]{nummetcylyrs, }
+\item[{integer, intent(out)}]{metcylyrst, }
+\item[{logical, intent(out)}]{co2on, }
+\item[{real, intent(out)}]{setco2conc, }
+\item[{logical, intent(out)}]{ch4on, }
+\item[{real, intent(out)}]{setch4conc, }
+\item[{logical, intent(out)}]{popdon, }
+\item[{integer, intent(out)}]{popcycleyr, }
+\item[{logical, intent(out)}]{parallelrun, }
+\item[{logical, intent(out)}]{dofire, }
+\item[{logical, intent(out)}]{dowetlands, }
+\item[{logical, intent(out)}]{obswetf, }
+\item[{logical, intent(out)}]{compete, }
+\item[{logical, intent(out)}]{inibioclim, }
+\item[{logical, intent(out)}]{start\+\_\+bare, }
+\item[{logical, intent(out)}]{rsfile, }
+\item[{logical, intent(out)}]{start\+\_\+from\+\_\+rs, }
+\item[{logical, intent(out)}]{leap, }
+\item[{integer, intent(out)}]{jmosty, }
+\item[{integer, intent(out)}]{idisp, }
+\item[{integer, intent(out)}]{izref, }
+\item[{integer, intent(out)}]{islfd, }
+\item[{integer, intent(out)}]{ipcp, }
+\item[{integer, intent(out)}]{itc, }
+\item[{integer, intent(out)}]{itcg, }
+\item[{integer, intent(out)}]{itg, }
+\item[{integer, intent(out)}]{iwf, }
+\item[{integer, intent(out)}]{ipai, }
+\item[{integer, intent(out)}]{ihgt, }
+\item[{integer, intent(out)}]{ialc, }
+\item[{integer, intent(out)}]{ials, }
+\item[{integer, intent(out)}]{ialg, }
+\item[{integer, intent(out)}]{isnoalb, }
+\item[{integer, intent(out)}]{jhhstd, }
+\item[{integer, intent(out)}]{jhhendd, }
+\item[{integer, intent(out)}]{jdstd, }
+\item[{integer, intent(out)}]{jdendd, }
+\item[{integer, intent(out)}]{jhhsty, }
+\item[{integer, intent(out)}]{jhhendy, }
+\item[{integer, intent(out)}]{jdsty, }
+\item[{integer, intent(out)}]{jdendy}
+\end{DoxyParamCaption}
+)}\label{read__from__job__options_8f90_a20cec43eab235567e47a309edb57d040}
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em transient\+\_\+run} & true if the run is a transient run. With this flag set set to .true., you can cycle over nummetcyclyrs of climate a ctemloop number of times then continue on through the climate the reason for this is to allow a transient from 1850 on, but only having the climate from 1901 while having the other inputs from 1850. See the bottom of this subroutine for an example of how to set this correctly.\\
+\hline
+\mbox{\tt out}  & {\em trans\+\_\+startyr} & the year you want the transient run to start (e.\+g. 1850). If you are not doing a transient run, set to a negative value (like -\/9999)\\
+\hline
+\mbox{\tt out}  & {\em ctemloop} & no. of times the .met file is to be read. this option is useful to see how ctem\textquotesingle{}s c pools equilibrate when driven with same climate data over and over again.\\
+\hline
+\mbox{\tt out}  & {\em ctem\+\_\+on} & set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified lai and canopy mass are used. with this switch on, all ctem subroutines are run.\\
+\hline
+\mbox{\tt out}  & {\em ncyear} & no. of years in the .met file.\\
+\hline
+\mbox{\tt out}  & {\em lnduseon} & set this to 1 if land use change is to be implimented by reading in the fractions of 9 ctem pfts from a file. keep in mind that once on, luc read-\/in is also influenced by the cyclemet and popcycleyr switches\\
+\hline
+\mbox{\tt out}  & {\em spinfast} & set this to a higher number up to 10 to spin up soil carbon pool faster\\
+\hline
+\mbox{\tt out}  & {\em cyclemet} & to cycle over only a fixed number of years (nummetcylyrs) starting at a certain year (metcylyrst) if cyclemet, then put co2on = false and set an appopriate setco2conc, also if popdon is true, it will choose the popn and luc data for year metcylyrst and cycle on that.\\
+\hline
+\mbox{\tt out}  & {\em nummetcylyrs} & years of the climate file to spin up on repeatedly ignored if cyclemet is false\\
+\hline
+\mbox{\tt out}  & {\em metcylyrst} & climate year to start the spin up on ignored if cyclemet is false\\
+\hline
+\mbox{\tt out}  & {\em co2on} & use co2 time series, set to false if cyclemet is true\\
+\hline
+\mbox{\tt out}  & {\em setco2conc} & set the value of atmospheric co2 if co2on is false. (ppmv)\\
+\hline
+\mbox{\tt out}  & {\em ch4on} & use C\+H4 time series, set to false if cyclemet is true the C\+O2 timeseries is in the same input file as the C\+O2 one.\\
+\hline
+\mbox{\tt out}  & {\em setch4conc} & set the value of atmospheric C\+H4 if ch4on is false. (ppmv)\\
+\hline
+\mbox{\tt out}  & {\em popdon} & if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes, or if false, read directly from .ctm file\\
+\hline
+\mbox{\tt out}  & {\em popcycleyr} & popd and luc year to cycle on when cyclemet is true, set to -\/9999 to cycle on metcylyrst for both popd and luc. if cyclemet is false this defaults to -\/9999, which will then cause the model to cycle on whatever is the first year in the popd and luc datasets\\
+\hline
+\mbox{\tt out}  & {\em parallelrun} & set this to be true if model is run in parallel mode for multiple grid cells, output is limited to monthly \& yearly grid-\/mean only. else the run is in stand alone mode, in which output includes half-\/hourly and daily and mosaic-\/mean as well.\\
+\hline
+\mbox{\tt out}  & {\em dofire} & if true the fire/disturbance subroutine will be used.\\
+\hline
+\mbox{\tt out}  & {\em dowetlands} & if true the ch4wetland subroutine will be used.\\
+\hline
+\mbox{\tt out}  & {\em obswetf} & if true the observed wetland fraction will be used.\\
+\hline
+\mbox{\tt out}  & {\em compete} & set this to true if competition between pfts is to be implimented\\
+\hline
+\mbox{\tt out}  & {\em inibioclim} & set this to true if competition between pfts is to be implimented and you have the mean climate values in the ctm files.\\
+\hline
+\mbox{\tt out}  & {\em start\+\_\+bare} & set this to true if competition is true, and if you wish to start from bare ground. if this is set to false, the ini and ctm file info will be used to set up the run. N\+O\+T\+E\+: This still keeps the crop fractions (while setting all pools to zero)\\
+\hline
+\mbox{\tt out}  & {\em rsfile} & set this to true if restart files (.ini\+\_\+rs and .ctm\+\_\+rs) are written at the end of each year. these files are necessary for checking whether the model reaches equilibrium after running for a certain years. set this to false if restart files are not needed (known how many years the model will run)\\
+\hline
+\mbox{\tt out}  & {\em start\+\_\+from\+\_\+rs} & if true, this option copies the \+\_\+\+R\+S I\+N\+I and C\+T\+M files to be the .I\+N\+I and .C\+T\+M files and then starts the run as per normal. it is handy when spinning up so you don\textquotesingle{}t have to do a complicated copying of the R\+S files to restart from them. N\+O\+T\+E! This will not work on hadar or spica, instead you have to manually move the files and set this to .false.\\
+\hline
+\mbox{\tt out}  & {\em leap} & set to true if all/some leap years in the .M\+E\+T file have data for 366 days also accounts for leap years in .M\+E\+T when cycling over meteorology (cyclemet)\\
+\hline
+\mbox{\tt out}  & {\em jmosty} & Year to start writing out the monthly output files. If you want to write monthly outputs right from the start then put in a negative number (like -\/9999), if you never want to have monthly outputs put a large positive number (like 9999). This is given in the same timescale as I\+Y\+E\+A\+R\\
+\hline
+\mbox{\tt out}  & {\em idisp} & if idisp=0, vegetation displacement heights are ignored, because the atmospheric model considers these to be part of the \char`\"{}terrain\char`\"{}. if idisp=1, vegetation displacement heights are calculated.\\
+\hline
+\mbox{\tt out}  & {\em izref} & if izref=1, the bottom of the atmospheric model is taken to lie at the ground surface. if izref=2, the bottom of the atmospheric model is taken to lie at the local roughness height.\\
+\hline
+\mbox{\tt out}  & {\em islfd} & if islfd=0, drcoef is called for surface stability corrections and the original gcm set of screen-\/level diagnostic calculations is done. if islfd=1, drcoef is called for surface stability corrections and sldiag is called for screen-\/level diagnostic calculations. if islfd=2, flxsurfz is called for surface stability corrections and diasurf is called for screen-\/level diagnostic calculations.\\
+\hline
+\mbox{\tt out}  & {\em ipcp} & if ipcp=1, the rainfall-\/snowfall cutoff is taken to lie at 0 c. if ipcp=2, a linear partitioning of precipitation betweeen rainfall and snowfall is done between 0 c and 2 c. if ipcp=3, rainfall and snowfall are partitioned according to a polynomial curve between 0 c and 6 c.\\
+\hline
+\mbox{\tt out}  & {\em iwf} & if iwf=0, only overland flow and baseflow are modelled, and the ground surface slope is not modelled. if iwf=n (0$<$n$<$4), the watflood calculations of overland flow and interflow are performed; interflow is drawn from the top n soil layers.\\
+\hline
+\mbox{\tt out}  & {\em itc} & itc, itcg and itg are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature respectively. if the switch is set to 1, a bisection method is used; if to 2, the newton-\/raphson method is used.(Note\+: Recently problems have been discovered with the Newton-\/\+Raphson scheme, involving instabilities and occasional failure to converge, so currently users are advised not to select this option.)\\
+\hline
+\mbox{\tt out}  & {\em itcg} & itc, itcg and itg are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature respectively. if the switch is set to 1, a bisection method is used; if to 2, the newton-\/raphson method is used.(Note\+: Recently problems have been discovered with the Newton-\/\+Raphson scheme, involving instabilities and occasional failure to converge, so currently users are advised not to select this option.)\\
+\hline
+\mbox{\tt out}  & {\em itg} & itc, itcg and itg are switches to choose the iteration scheme to be used in calculating the canopy or ground surface temperature respectively. if the switch is set to 1, a bisection method is used; if to 2, the newton-\/raphson method is used.(Note\+: Recently problems have been discovered with the Newton-\/\+Raphson scheme, involving instabilities and occasional failure to converge, so currently users are advised not to select this option.)\\
+\hline
+\mbox{\tt out}  & {\em ipai} & if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the corresponding parameter calculated by class is overridden by a user-\/supplied input value.\\
+\hline
+\mbox{\tt out}  & {\em ihgt} & if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the corresponding parameter calculated by class is overridden by a user-\/supplied input value.\\
+\hline
+\mbox{\tt out}  & {\em ialc} & if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the corresponding parameter calculated by class is overridden by a user-\/supplied input value.\\
+\hline
+\mbox{\tt out}  & {\em ials} & if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the corresponding parameter calculated by class is overridden by a user-\/supplied input value.\\
+\hline
+\mbox{\tt out}  & {\em ialg} & if ipai, ihgt, ialc, ials and ialg are zero, the values of plant area index, vegetation height, canopy albedo, snow albedo and soil albedo respectively calculated by class are used. if any of these switches is set to 1, the value of the corresponding parameter calculated by class is overridden by a user-\/supplied input value.\\
+\hline
+\mbox{\tt out}  & {\em jhhstd} & day of the year to start writing the half-\/hourly output\\
+\hline
+\mbox{\tt out}  & {\em jhhendd} & day of the year to stop writing the half-\/hourly output\\
+\hline
+\mbox{\tt out}  & {\em jdstd} & day of the year to start writing the daily output\\
+\hline
+\mbox{\tt out}  & {\em jdendd} & day of the year to stop writing the daily output\\
+\hline
+\mbox{\tt out}  & {\em jhhsty} & simulation year (iyear) to start writing the half-\/hourly output\\
+\hline
+\mbox{\tt out}  & {\em jhhendy} & simulation year (iyear) to stop writing the half-\/hourly output\\
+\hline
+\mbox{\tt out}  & {\em jdsty} & simulation year (iyear) to start writing the daily output\\
+\hline
+\mbox{\tt out}  & {\em jdendy} & simulation year (iyear) to stop writing the daily output\\
+\hline
+\mbox{\tt out}  & {\em isnoalb} & This switch selects which option to use for the snow albedo. If I\+S\+N\+O\+A\+L\+B=0, snow albedos are calculated for the visible and near-\/infrared wavelength ranges. If I\+S\+N\+O\+A\+L\+B=1, a more complex approach is used which evaluates the snow albedos in the visible and in three near-\/infrared wavelength bands. Note that if the latter option is chosen, the incoming solar radiation must be provided in these four wavelength bands, and the direct/diffuse solar partitioning and the prognostic black carbon content of the snow pack are also required. \\
+\hline
+\end{DoxyParams}

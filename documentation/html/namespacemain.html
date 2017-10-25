@@ -233,8 +233,24 @@ variables normally provided by and/or used by the gcm.
 The majority of CTEM parameters are stored in ctem_params.f90.
 Also the CTEM variables are stored in modules that we point to
 in this driver. We access the variables and parameters
-through use statements for modules: </pre> <p>Regardless of whether lnduseon or not, we need to check the land cover that was read in and assign the CLASS PFTs as they are not read in when ctem_on.</p>
+through use statements for modules: </pre> <p>NLTEST and NMTEST, the number of grid cells and the number of mosaic tiles per grid cell for this test run. This the driver is set up to handle one grid cell with any number of mosaic tiles. These are given the values then of nlat and nmos</p>
+<p>The parameter JLAT is calculated from DLATROW as the nearest integer value,</p>
+<p>The timestep counter N for the run is initialized to 0, the daily averaging counter NCOUNT is set to 1, and the total number of timesteps in the day NDAY is calculated as the number of seconds in a day (86400) divided by the timestep length DELT.</p>
+<p>The grid-average height for the momentum diagnostic variables, ZDMROW, and for the energy diagnostic variables, ZDHROW, are hard-coded to the standard anemometer height of 10 m and to the screen height of 2 m respectively.</p>
+<p>Regardless of whether lnduseon or not, we need to check the land cover that was read in and assign the CLASS PFTs as they are not read in when ctem_on.</p>
+<p>In the 100 and 150 loops, further initial calculations are done. The limiting snow depth, ZSNL, is assigned its operational value of 0.10 m.</p>
+<p>As the last step in the initialization sequence, the subroutine CLASSB is called, to assign soil thermal and hydraulic properties on the basis of the textural information read in for each of the soil layers.</p>
+<p>The do while loop marks the beginning of the time stepping loop for the actual run. N is incremented by 1, and the atmospheric forcing data for the current time step are updated for each grid cell or modelled area (see the section on “Data Requirements”). In the dataset associated with the benchmark run, only the total incoming shortwave radiation FSDOWN is available; it is partitioned 50:50 between the incoming visible (FSVHROW) and near-infrared (FSIHROW) radiation. The first two elements of the generalized incoming radiation array, FSSBROL (used for both the ISNOALB=0 and ISNOALB=1 options) are set to FSVHROW and FSIHROW respectively. The air temperature TAROW is converted from degrees C to K. The zonal (ULROW) and meridional (VLROW) components of the wind speed are generally not used; only the overall wind speed UVROW is measured. However, CLASS does not require wind direction for its calculations, so ULROW is arbitrarily assigned the value of UVROW and VLROW is set to zero for this run. The input wind speed VMODROW is assigned the value of UVROW. The cosine of the solar zenith angle COSZ is calculated from the day of the year, the hour, the minute and the latitude using basic radiation geometry, and (avoiding vanishingly small numbers) is assigned to CSZROW. The fractional cloud cover FCLOROW is commonly not available so a rough estimate is obtained by setting it to 1 when precipitation is occurring, and to the fraction of incoming diffuse radiation XDIFFUS otherwise (assumed to be 1 when the sun is at the horizon, and 0.10 when it is at the zenith).</p>
+<p>CLASSI evaluates a series of derived atmospheric variables</p>
+<p>GATPREP assigns values to vectors governing the gather-scatter operations</p>
+<p>CLASSG performs the gather operation, gathering variables from their positions as mosaic tiles within the modelled areas to long vectors of mosaic tiles</p>
+<p>CLASSZ does the initial calculations for the energy and water balance checks;</p>
+<p>CLASSA manages the calculation of albedos and other surface parameters;</p>
+<p>CLASST calls the subroutines associated with the surface energy balance calculations</p>
+<p>CLASSW calls the subroutines associated with the surface water balance calculations</p>
+<p>CLASSZ completes the energy and water balance checks for the current time step</p>
 <p>Accumulate variables not already accumulated but which are required by CTEM.</p>
+<p>CLASSS performs the scatter operation, scattering the variables from the long vectors of mosaic tiles back onto the configuration of mosaic tiles within grid cells.</p>
 <p>Now check if the met file is done, needs to loop more, or just continues to the next timestep</p>
 <p>Increment the metTimeIndex to advance to the next timestep on the next time around</p>
 <p>End of met array read in reached, decide what to do</p>
@@ -249,7 +265,7 @@ through use statements for modules: </pre> <p>Regardless of whether lnduseon or 
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacemain.html">main</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

@@ -249,32 +249,32 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vpd</td><td>Vapour pressure deficit of air <img class="formulaInl" alt="$[mb] (e_d)$" src="form_300.png"/></td></tr>
+    <tr><td class="paramname">vpd</td><td>Vapour pressure deficit of air <img class="formulaInl" alt="$[mb] (e_d)$" src="form_280.png"/></td></tr>
     <tr><td class="paramname">tadp</td><td>Dew point temperature of air [K]</td></tr>
-    <tr><td class="paramname">padry</td><td>Partial pressure of dry air <img class="formulaInl" alt="$[Pa] (p_{dry})$" src="form_301.png"/></td></tr>
-    <tr><td class="paramname">rhoair</td><td>Density of air <img class="formulaInl" alt="$[kg m^{-3}] (\rho_a)$" src="form_302.png"/></td></tr>
-    <tr><td class="paramname">rhosni</td><td>Density of fresh snow <img class="formulaInl" alt="$[kg m^{-3}] (\rho_{s,i})$" src="form_303.png"/></td></tr>
+    <tr><td class="paramname">padry</td><td>Partial pressure of dry air <img class="formulaInl" alt="$[Pa] (p_{dry})$" src="form_281.png"/></td></tr>
+    <tr><td class="paramname">rhoair</td><td>Density of air <img class="formulaInl" alt="$[kg m^{-3}] (\rho_a)$" src="form_282.png"/></td></tr>
+    <tr><td class="paramname">rhosni</td><td>Density of fresh snow <img class="formulaInl" alt="$[kg m^{-3}] (\rho_{s,i})$" src="form_283.png"/></td></tr>
     <tr><td class="paramname">rpcp</td><td>Calculated rainfall rate over modelled area <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
     <tr><td class="paramname">trpcp</td><td>Rainfall temperature over modelled area [C]</td></tr>
     <tr><td class="paramname">spcp</td><td>Calculated snowfall rate over modelled area <img class="formulaInl" alt="$[m s^{-1}]$" src="form_122.png"/></td></tr>
     <tr><td class="paramname">tspcp</td><td>Snowfall temperature over modelled area [C]</td></tr>
-    <tr><td class="paramname">ta</td><td>Air temperature at reference height <img class="formulaInl" alt="$[K] (T_a)$" src="form_304.png"/></td></tr>
-    <tr><td class="paramname">qa</td><td>Specific humidity at reference height <img class="formulaInl" alt="$[kg kg^{-1}] (q_a)$" src="form_305.png"/></td></tr>
-    <tr><td class="paramname">pressg</td><td>Surface atmospheric pressure <img class="formulaInl" alt="$[Pa] (p)$" src="form_306.png"/></td></tr>
+    <tr><td class="paramname">ta</td><td>Air temperature at reference height <img class="formulaInl" alt="$[K] (T_a)$" src="form_284.png"/></td></tr>
+    <tr><td class="paramname">qa</td><td>Specific humidity at reference height <img class="formulaInl" alt="$[kg kg^{-1}] (q_a)$" src="form_285.png"/></td></tr>
+    <tr><td class="paramname">pressg</td><td>Surface atmospheric pressure <img class="formulaInl" alt="$[Pa] (p)$" src="form_286.png"/></td></tr>
     <tr><td class="paramname">pcpr</td><td>Precipitation rate over modelled area <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_128.png"/></td></tr>
     <tr><td class="paramname">rrate</td><td>Input rainfall rate over modelled area <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_128.png"/></td></tr>
     <tr><td class="paramname">srate</td><td>Input snowfall rate over modelled area <img class="formulaInl" alt="$[kg m^{-2} s^{-1}]$" src="form_128.png"/> </td></tr>
   </table>
   </dd>
 </dl>
-<p>In the first section, the air vapour pressure deficit, dry air pressure, air density and dew point temperature are calculated. The vapour pressure deficit <img class="formulaInl" alt="$e_d$" src="form_307.png"/> (in units of mb) is obtained from the saturated and actual vapour pressures of the air, <img class="formulaInl" alt="$e_a$" src="form_308.png"/> and <img class="formulaInl" alt="$e_{a,sat}$" src="form_309.png"/> respectively (in units of Pa), as <img class="formulaInl" alt="$e_d = [e_{a,sat} - e_a] /100.0$" src="form_310.png"/></p>
-<p>The air vapour pressure is obtained from the specific humidity <img class="formulaInl" alt="$q_a$" src="form_311.png"/> using the formula</p>
-<p><img class="formulaInl" alt="$e_a = q_a p /[0.622 + 0.378 q_a ]$" src="form_312.png"/></p>
-<p>where p is the surface atmospheric pressure. For the saturated vapour pressure, a standard empirical equation is utilized relating <img class="formulaInl" alt="$e_{a,sat}$" src="form_309.png"/> to the temperature <img class="formulaInl" alt="$T_a$" src="form_192.png"/> and the freezing point <img class="formulaInl" alt="$T_f$" src="form_313.png"/>:</p>
-<p><img class="formulaInl" alt="$e_{a,sat} = 611.0 exp[17.269*(T_a – T_f)/(T_a – 35.86)]$" src="form_314.png"/> <img class="formulaInl" alt="$T_a \geq T_f$" src="form_315.png"/></p>
-<p><img class="formulaInl" alt="$e_{a,sat} = 611.0 exp[21.874 (T_a – T_f)/(T_a – 7.66)]$" src="form_316.png"/> <img class="formulaInl" alt="$T_a < T_f$" src="form_317.png"/></p>
-<p>The partial pressure of dry air, <img class="formulaInl" alt="$p_{dry}$" src="form_318.png"/>, is obtained by subtracting <img class="formulaInl" alt="$e_a$" src="form_308.png"/> from p, and the density of the air is calculated as the sum of the densities of the dry air and the water vapour: <img class="formulaInl" alt="$\rho_a = p_{dry} / R_d T_a + e_a / R_v T_a$" src="form_319.png"/></p>
-<p>where <img class="formulaInl" alt="$R_d$" src="form_320.png"/> and <img class="formulaInl" alt="$R_v$" src="form_321.png"/> are the gas constants for dry air and water vapour respectively. The dew point temperature of the air is evaluated by substituting <img class="formulaInl" alt="$e_a$" src="form_308.png"/> for <img class="formulaInl" alt="$e_{a,sat}$" src="form_309.png"/> on the left-hand side of the appropriate equation above, and solving for <img class="formulaInl" alt="$T_a$" src="form_192.png"/>.</p>
+<p>In the first section, the air vapour pressure deficit, dry air pressure, air density and dew point temperature are calculated. The vapour pressure deficit <img class="formulaInl" alt="$e_d$" src="form_287.png"/> (in units of mb) is obtained from the saturated and actual vapour pressures of the air, <img class="formulaInl" alt="$e_a$" src="form_288.png"/> and <img class="formulaInl" alt="$e_{a,sat}$" src="form_289.png"/> respectively (in units of Pa), as <img class="formulaInl" alt="$e_d = [e_{a,sat} - e_a] /100.0$" src="form_290.png"/></p>
+<p>The air vapour pressure is obtained from the specific humidity <img class="formulaInl" alt="$q_a$" src="form_291.png"/> using the formula</p>
+<p><img class="formulaInl" alt="$e_a = q_a p /[0.622 + 0.378 q_a ]$" src="form_292.png"/></p>
+<p>where p is the surface atmospheric pressure. For the saturated vapour pressure, a standard empirical equation is utilized relating <img class="formulaInl" alt="$e_{a,sat}$" src="form_289.png"/> to the temperature <img class="formulaInl" alt="$T_a$" src="form_192.png"/> and the freezing point <img class="formulaInl" alt="$T_f$" src="form_293.png"/>:</p>
+<p><img class="formulaInl" alt="$e_{a,sat} = 611.0 exp[17.269*(T_a – T_f)/(T_a – 35.86)]$" src="form_294.png"/> <img class="formulaInl" alt="$T_a \geq T_f$" src="form_295.png"/></p>
+<p><img class="formulaInl" alt="$e_{a,sat} = 611.0 exp[21.874 (T_a – T_f)/(T_a – 7.66)]$" src="form_296.png"/> <img class="formulaInl" alt="$T_a < T_f$" src="form_297.png"/></p>
+<p>The partial pressure of dry air, <img class="formulaInl" alt="$p_{dry}$" src="form_298.png"/>, is obtained by subtracting <img class="formulaInl" alt="$e_a$" src="form_288.png"/> from p, and the density of the air is calculated as the sum of the densities of the dry air and the water vapour: <img class="formulaInl" alt="$\rho_a = p_{dry} / R_d T_a + e_a / R_v T_a$" src="form_299.png"/></p>
+<p>where <img class="formulaInl" alt="$R_d$" src="form_300.png"/> and <img class="formulaInl" alt="$R_v$" src="form_301.png"/> are the gas constants for dry air and water vapour respectively. The dew point temperature of the air is evaluated by substituting <img class="formulaInl" alt="$e_a$" src="form_288.png"/> for <img class="formulaInl" alt="$e_{a,sat}$" src="form_289.png"/> on the left-hand side of the appropriate equation above, and solving for <img class="formulaInl" alt="$T_a$" src="form_192.png"/>.</p>
 <p>Finally, if IPCP = 4, this indicates that the partitioning between rainfall and snowfall has been done outside of CLASS. The rainfall and snowfall rates RRATE and SRATE that have been passed into the subroutine are therefore simply assigned to RPCP and SPCP.</p>
 
 </div>
@@ -285,7 +285,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CLASSI_8f.html">CLASSI.f</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 10:48:14 for CLASSIC by
+    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>
