@@ -1,4 +1,4 @@
-# The coupled Canadian Land Surface Scheme and Canadian Terrestrial Ecosystem Model (CLASS-CTEM)
+# The Canadian Land Surface Scheme Including Biogeochemical Cycles (CLASSIC)
 
 Please see the [wiki](https://gitlab.com/jormelton/classctem/wikis/home) for instructions on how to access the CLASS-CTEM manual and run the model.
 
