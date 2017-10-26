@@ -12,9 +12,9 @@ program CLASSIC
     use mpi
 #endif
 
-    use model_state_drivers,    only : read_modelsetup
+    use model_state_drivers,    only : read_modelsetup,rsid
     use xmlManager,             only : loadoutputDescriptor
-    use outputManager,          only : generateOutputFiles,closeNCFiles,rsid,co2id
+    use outputManager,          only : generateOutputFiles,closeNCFiles
     use readjobopts,            only : read_from_job_options
     use main,                   only : main_driver
     use ctem_statevars,         only : alloc_ctem_vars
@@ -28,55 +28,55 @@ program CLASSIC
 
     ! MAIN PROGRAM
 
-    ! Initialize the MPI and PnetCDF session. Ignored if run in serial mode.
+    !> First initialize the MPI and PnetCDF session. Ignored if run in serial mode.
     call initializeParallelEnvironment
 
-    ! Load the job options file. This first parses the command line arguments.
-    ! Then all model switches are read in from a namelist file. This sets up the
-    ! run options and points to input files as needed.
+    !> Next load the job options file. This first parses the command line arguments.
+    !! Then all model switches are read in from a namelist file. This sets up the
+    !! run options and points to input files as needed.
     call read_from_job_options
 
-    ! Load the run setup information based on the metadata in the
-    ! initialization netcdf file. The bounds given as an argument to
-    ! CLASSIC are used to find the start points (srtx and srty)
-    ! in the netcdf file, placing the gridcell on the domain of the
-    ! input/output netcdfs. In read_modelsetup we use the netcdf to set
-    ! the nmos (number of tiles), ignd (number of soil layers),and ilg (number of latitude
-    ! points times nmos, which defaults to nmos in offline mode) constants.
-    ! It also opens the initial conditions file that is used below in
-    ! read_initialstate as well as the restart file that is written to later.
+    !> Then load the run setup information based on the metadata in the
+    !! initialization netcdf file. The bounds given as an argument to
+    !! CLASSIC are used to find the start points (srtx and srty)
+    !! in the netcdf file, placing the gridcell on the domain of the
+    !! input/output netcdfs. In read_modelsetup we use the netcdf to set
+    !! the nmos (number of tiles), ignd (number of soil layers),and ilg (number of latitude
+    !! points times nmos, which defaults to nmos in offline mode) constants.
+    !! It also opens the initial conditions file that is used below in
+    !! read_initialstate as well as the restart file that is written to later.
     call read_modelsetup
 
-    ! Prepare all of the global parameters such as those in CLASSD and ctem_params
-    ! which are read from a namelist file.
+    !> Prepare all of the global parameters such as those in CLASSD and ctem_params
+    !! which are read from a namelist file.
     call prepareGlobalParams
 
-    ! The output files are created based on the model switches in the
-    ! joboptions file and the xml file that describes the metadata for
-    ! each output file. The loadoutputDescriptor parses the xml file and
-    ! creates a data structure to allow us to make all of the netcdf output
-    ! files, one per variable per time period (daily, monthly, etc.).
+    !> The output files are created based on the model switches in the
+    !! joboptions file and the xml file that describes the metadata for
+    !! each output file. The loadoutputDescriptor parses the xml file and
+    !! creates a data structure to allow us to make all of the netcdf output
+    !! files, one per variable per time period (daily, monthly, etc.).
     call loadoutputDescriptor
 
-    ! Generate the output files based on options in the joboptions file
-    ! and the parameters of the initilization netcdf file.
+    !> Generate the output files based on options in the joboptions file
+    !! and the parameters of the initilization netcdf file.
     call generateOutputFiles
 
 #if PARALLEL
-    ! This just ensures that all processors start the next step together.
+    !> This just ensures that all processors start the next step together.
     call MPI_BARRIER(MPI_COMM_WORLD, ierr)
 #endif
 
-    ! Run model over the land grid cells, in parallel or serial
+    !> Run model over the land grid cells, in parallel or serial
     call processLandCells
 
-    ! Close all of the output netcdf files and the restart file
-    ! (these were written to so need to ensure buffer is flushed)
+    !> Close all of the output netcdf files and the restart file
+    !! (these were written to so need to ensure buffer is flushed)
     call closeNCFiles
     call closeNCFiles(rsid)
 
 #if PARALLEL
-    ! Shut down the MPI session
+    !> Shut down the MPI session
     call MPI_FINALIZE(ierr)
 #endif
 

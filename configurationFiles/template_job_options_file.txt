@@ -1,7 +1,5 @@
 &joboptions
 
- ! See the manual (html/index.html) or the wiki on the gitlab page for explanation of these options.
-
 ! Meteorological options:
  readMetStartYear = 1901  !< First year of meteorological forcing to read in from the met file
  readMetEndYear = 1901    !< Last year of meteorological forcing to read in from the met file
@@ -27,10 +25,14 @@
 
     !Fire switches
         dofire = .true. ,               !< If true the fire disturbance parameterization is turned on.
+
             transientPOPD = .true. ,    !< Read in time varying population density from POPDFile or if set to false then use only the year of fixedYearPOPD.
-            POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017.nc'
+            POPDFile = 'inputFiles/POPD_annual_1850_2016_T63_Sep_2017.nc' ,
             fixedYearPOPD = 1850 ,      !< If transientPOPD = .true., this is ignored.
-            LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050.nc' !< Lightning strikes (cloud to ground)
+
+            transientLGHT= .false.      !<use lightning strike time series, otherwise use fixedYearLGHT
+            LGHTFile = 'inputFiles/lisotd_1995_2014_climtlgl_lghtng_as_ts_1850_2050.nc' , !< Location of the netcdf file containing lightning strike values
+            fixedYearLGHT = 1850 ,    !< set the year to use for lightning strikes if transientLGHT is false.
 
     ! Competition switches:
         PFTCompetition = .false. ,      !< If true, competition between PFTs for space on a grid cell is implimented
@@ -88,12 +90,20 @@
 
 ! Input files:
 
- met_file = 'tempMetFile.nc' ,              !< location of the meteorological dataset
+ metFileFss = 'inputFiles/metVar_sw.nc',        !< location of the incoming shortwave radiation meteorology file
+ metFileFdl = 'inputFiles/metVar_lw.nc',        !< location of the incoming longwave radiation meteorology file
+ metFilePre = 'inputFiles/metVar_pr.nc',        !< location of the precipitation meteorology file
+ metFileTa = 'inputFiles/metVar_ta.nc',         !< location of the air temperature meteorology file
+ metFileQa = 'inputFiles/metVar_qa.nc',         !< location of the specific humidity meteorology file
+ metFileUv = 'inputFiles/metVar_wi.nc',         !< location of the wind speed meteorology file
+ metFilePres = 'inputFiles/metVar_ap.nc',       !< location of the atmospheric pressure meteorology file
+
  init_file = 'inputFiles/initFile.nc' ,     !< location of the model initialization file
  rs_file_to_overwrite = 'rsFile.nc' ,       !< location of the existing netcdf file that will be overwritten for the restart file
  runparams_file = 'configurationFiles/template_run_parameters.txt' ,    !< location of the namelist file containing the model parameters
 
 ! Output options:
+
     output_directory = '/home/rjm/Documents/CTEM/test' ,        !< Directory where the output netcdfs will be placed
     xmlFile = 'configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 

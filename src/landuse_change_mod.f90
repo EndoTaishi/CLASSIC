@@ -8,7 +8,7 @@ implicit none
 
 ! subroutines contained in this module:
 public  :: initializeLandCover
-public  :: readin_luc
+!public  :: readin_luc
 public  :: luc
 private :: adjust_luc_fracs
 private :: adjust_fracs_comp

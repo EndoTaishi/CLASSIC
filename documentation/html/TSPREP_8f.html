@@ -207,26 +207,26 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">gcoeffs</td><td>Multiplier used in equation relating snow surface heat flux to snow surface temperature <img class="formulaInl" alt="$[W m^{-2} K^{-1}]$" src="form_1179.png"/></td></tr>
+    <tr><td class="paramname">gcoeffs</td><td>Multiplier used in equation relating snow surface heat flux to snow surface temperature <img class="formulaInl" alt="$[W m^{-2} K^{-1}]$" src="form_1180.png"/></td></tr>
     <tr><td class="paramname">gconsts</td><td>Intercept used in equation relating snow surface heat flux to snow surface temperature <img class="formulaInl" alt="$[W m^{-2} ]$" src="form_235.png"/></td></tr>
-    <tr><td class="paramname">cphchg</td><td>Latent heat of sublimation <img class="formulaInl" alt="$[J kg^{-1}]$" src="form_1189.png"/></td></tr>
+    <tr><td class="paramname">cphchg</td><td>Latent heat of sublimation <img class="formulaInl" alt="$[J kg^{-1}]$" src="form_1190.png"/></td></tr>
     <tr><td class="paramname">iwater</td><td>Flag indicating condition of surface (dry, water-covered or snow-covered)</td></tr>
     <tr><td class="paramname">fi</td><td>Fractional coverage of subarea in question on modelled area [ ]</td></tr>
-    <tr><td class="paramname">zsnow</td><td>Depth of snow pack <img class="formulaInl" alt="$[m] (\Delta z_s)$" src="form_1446.png"/></td></tr>
-    <tr><td class="paramname">tsnow</td><td>Snowpack temperature <img class="formulaInl" alt="$[K] (T_s(\Delta z_s))$" src="form_1452.png"/></td></tr>
+    <tr><td class="paramname">zsnow</td><td>Depth of snow pack <img class="formulaInl" alt="$[m] (\Delta z_s)$" src="form_1447.png"/></td></tr>
+    <tr><td class="paramname">tsnow</td><td>Snowpack temperature <img class="formulaInl" alt="$[K] (T_s(\Delta z_s))$" src="form_1453.png"/></td></tr>
     <tr><td class="paramname">tcsnow</td><td>Thermal conductivity of snow <img class="formulaInl" alt="$[W m^{-1} K^{-1}]$" src="form_279.png"/> </td></tr>
   </table>
   </dd>
 </dl>
 <p>In this subroutine, coefficients are derived for an equation relating the heat flux at the snow surface to the snow surface temperature. It is assumed that the variation of temperature T with depth z in the snow pack can be modelled by using a quadratic equation:</p>
-<p><img class="formulaInl" alt="$T(z) = (1/2) a z^2 + b z + c$" src="form_1192.png"/></p>
-<p>By substituting 0 for z in the above equation and in the expressions for its first and second derivatives, it can be shown that a = T"(0), b = T'(0), and c = T(0). The term T"(0) can be evaluated from the expression for the first derivative evaluated at the bottom of the snow pack, <img class="formulaInl" alt="$T(\Delta z_s)$" src="form_1453.png"/>:</p>
-<p><img class="formulaInl" alt="$T&quot;(0) = [T'(\Delta z_s) - T'(0)]/ \Delta z_s$" src="form_1454.png"/></p>
-<p>The temperature gradient T'(0) at the snow surface is related to the surface heat flux G(0) by the snow thermal conductivity <img class="formulaInl" alt="$\lambda_s$" src="form_1219.png"/>:</p>
-<p><img class="formulaInl" alt="$G(0) = -\lambda_s T'(0)$" src="form_1455.png"/></p>
-<p>The average snow temperature, <img class="formulaInl" alt="$T_s(\Delta z_s)$" src="form_1456.png"/>, can be obtained by integrating the resulting equation for T(z) between 0 and <img class="formulaInl" alt="$\Delta z_s$" src="form_1449.png"/>. Making use of all of the above expressions, and assuming as a first approximation that the heat flux at the bottom of the snow pack is zero, a linear equation can be derived relating G(0) to T(0):</p>
-<p><img class="formulaInl" alt="$G(0) = 3 \lambda_s / \Delta z_s [T(0) - T_s(\Delta z_s)]$" src="form_1457.png"/></p>
-<p>Just four calculations are performed in this subroutine. The slope and intercept of the G(0) vs. T(0) relation, GCOEFF and GCONST, are evaluated as <img class="formulaInl" alt="$3 \lambda_s / \Delta z_s$" src="form_1458.png"/> and <img class="formulaInl" alt="$-3 \lambda_s T_s(\Delta z_s)/ \Delta z_s$" src="form_1459.png"/> respectively; the flag IWATER is set to 2, indicating a snow surface; and the latent heat of vaporization at the surface, CPHCHG, is set to the value for sublimation (by adding the latent heat of melting to the latent heat of vaporization).</p>
+<p><img class="formulaInl" alt="$T(z) = (1/2) a z^2 + b z + c$" src="form_1193.png"/></p>
+<p>By substituting 0 for z in the above equation and in the expressions for its first and second derivatives, it can be shown that a = T"(0), b = T'(0), and c = T(0). The term T"(0) can be evaluated from the expression for the first derivative evaluated at the bottom of the snow pack, <img class="formulaInl" alt="$T(\Delta z_s)$" src="form_1454.png"/>:</p>
+<p><img class="formulaInl" alt="$T&quot;(0) = [T'(\Delta z_s) - T'(0)]/ \Delta z_s$" src="form_1455.png"/></p>
+<p>The temperature gradient T'(0) at the snow surface is related to the surface heat flux G(0) by the snow thermal conductivity <img class="formulaInl" alt="$\lambda_s$" src="form_1220.png"/>:</p>
+<p><img class="formulaInl" alt="$G(0) = -\lambda_s T'(0)$" src="form_1456.png"/></p>
+<p>The average snow temperature, <img class="formulaInl" alt="$T_s(\Delta z_s)$" src="form_1457.png"/>, can be obtained by integrating the resulting equation for T(z) between 0 and <img class="formulaInl" alt="$\Delta z_s$" src="form_1450.png"/>. Making use of all of the above expressions, and assuming as a first approximation that the heat flux at the bottom of the snow pack is zero, a linear equation can be derived relating G(0) to T(0):</p>
+<p><img class="formulaInl" alt="$G(0) = 3 \lambda_s / \Delta z_s [T(0) - T_s(\Delta z_s)]$" src="form_1458.png"/></p>
+<p>Just four calculations are performed in this subroutine. The slope and intercept of the G(0) vs. T(0) relation, GCOEFF and GCONST, are evaluated as <img class="formulaInl" alt="$3 \lambda_s / \Delta z_s$" src="form_1459.png"/> and <img class="formulaInl" alt="$-3 \lambda_s T_s(\Delta z_s)/ \Delta z_s$" src="form_1460.png"/> respectively; the flag IWATER is set to 2, indicating a snow surface; and the latent heat of vaporization at the surface, CPHCHG, is set to the value for sublimation (by adding the latent heat of melting to the latent heat of vaporization).</p>
 <ul>
 <li>CALCULATE COEFFICIENTS.</li>
 </ul>
@@ -239,7 +239,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="TSPREP_8f.html">TSPREP.f</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
+    <li class="footer">Generated on Thu Oct 26 2017 11:36:04 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

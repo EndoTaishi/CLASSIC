@@ -23,7 +23,7 @@
      &                      thicec, soildpth, spinfast,   todfrac,&
      &          PFTCompetition, netrad,   precip,   psisat, grclarea, &
      &                    popdin, dofire,  dowetlands,obswetf,isand,  &
-     &                   faregat, onetile_perPFT, wetfrac, slopefrac,&
+     &                   faregat, wetfrac, slopefrac,&
      &                       bi,     thpor,    thiceg, currlat, &
      &                   ch4conc,       GRAV,    RHOW,  RHOICE,&
      &                   leapnow, &
@@ -149,7 +149,7 @@ logical, intent(in) :: PFTCompetition                   !<logical boolean tellin
 logical, intent(in) :: dofire                           !<boolean, if true allow fire, if false no fire.
 logical, intent(in) :: dowetlands                       !<if true allow wetland methane emission
 logical, intent(in) :: obswetf                          !<if true, use read-in observed wetland fraction
-logical, intent(in) :: onetile_perPFT                   !< if you are running with one tile per PFT in mosaic mode, set to true. Changes
+!logical, intent(in) :: onetile_perPFT                   !< if you are running with one tile per PFT in mosaic mode, set to true. Changes
                                                         !< how competition is run. Specifically it allows competition between tiles. This
                                                         !< is not recommended for any case where you don't have one PFT in each tile as it
                                                         !< has not been tested for that.
@@ -570,16 +570,7 @@ do 95 j = 1, ican
 
 !     ---------------------------------------------------------------
 
-if(PFTCompetition .or. lnduseon)then
-
-!> If you intend to have competition and LUC between tiles then set onetile_perPFT to true.
-!> NOTE: Turning onetile_perPFT to true is usually not the behaviour desired unless you are
-!> running with one PFT on each tile and want them to compete for space
-!> across tiles. So in general keep this as False. JM Jan 2016.
-
-  if (.not. onetile_perPFT) then !> this is composite/mosaic mode (in mosaic competition only occurs WITHIN a tile)
-
-    if (PFTCompetition) then
+if (PFTCompetition) then
 
 !>Calculate bioclimatic parameters for estimating pfts existence
 
@@ -592,7 +583,7 @@ if(PFTCompetition .or. lnduseon)then
      &                 srplsmon, defctmon, anndefct, annsrpls,&
      &                 annpcp, dry_season_length )
 
-        if (inibioclim) then
+    if (inibioclim) then
 !>
 !>If first day of year then based on updated bioclimatic parameters
 !!find if pfts can exist or not.
@@ -601,7 +592,7 @@ if(PFTCompetition .or. lnduseon)then
 !!year inibioclim is set to true and the climatological means
 !!are used from the first year.
 !!
-            call existence(iday,            1,         il2, ilg,&
+        call existence(iday,            1,         il2, ilg,&
      &                     sort,     nol2pfts,        &
      &                   twarmm,   tcoldm,     gdd5,  aridity,&
      &                   srplsmon, defctmon, anndefct, annsrpls,&
@@ -610,7 +601,7 @@ if(PFTCompetition .or. lnduseon)then
 !!Call competition subroutine which on the basis of previous day's
 !!npp estimates changes in fractional coverage of pfts
 !!
-            call competition (iday,     1,        il2,      ilg,&
+       call competition (iday,     1,        il2,      ilg,&
      &                    nol2pfts, nppveg,   dofire, leapnow,&
      &                    pftexist, geremort, intrmort,&
      &                    gleafmas, bleafmas, stemmass, rootmass,&
@@ -631,7 +622,7 @@ if(PFTCompetition .or. lnduseon)then
 !!If landuse is on, then implelement luc, change fractional coverages,
 !!move biomasses around, and estimate luc related combustion emission losses.
 !!
-        if (lnduseon) then
+    if (lnduseon) then
 
          do j = 1, icc
            do i = il1, il2
@@ -648,198 +639,198 @@ if(PFTCompetition .or. lnduseon)then
      &                  lucemcom, lucltrin, lucsocin)
         endif !lnduseon
 
-  else ! onetile_perPFT is True
-!>
-!!Land use change and competition for mosaics needs mapping and
-!!unmapping of the pfts. Composite does not require these extra steps.
-!!
-!!Check if number of mosaics is equal to the number of pfts plus one bare, e.g., nmos=iccp1
-!!
-        if (nmos.ne.iccp1) then 
-         write(*,2050) 'number of mosaics, nmos= ',nmos,&
-     &                 ' is not equal to the number of pfts plus',&
-     &                 ' one bare, iccp1= ',iccp1
-         write(*,2051) 'competition works properly only when all pfts',&
-     &                 ' and bare are considered. (onetile_perPFT is set to true!)'
-         call xit ('ctem',-11)
-        endif 
-2050    format(a25,i2,a40,a18,i2,a1)
-2051    format(a45,a40)
-!>
-!!check for fcancmx(i,j). this should be either 0 or 1 for competition to work.
-!!
-        do j=1, icc
-         do i=il1, il2
-          if(fcancmx(i,j).ne.1.0 .and. fcancmx(i,j).ne.0.0) then
-           write(*,2100) &
-     &                'mosaic ',i,' has pft fraction: ', &
-     &                'fcancmx(',i,',',j,')=',fcancmx(i,j)
-           write(*,2101) &
-     &                'mosaic competition and luc work only when ',&
-     &                'each mosaic is 100% occupied with one pft'
-           call xit ('ctem',-12)
-          endif
-         enddo
-        enddo
-2100    format(a7,i2,a19,a8,i2,a1,i2,a2,f8.3)
-2101    format(a40,a40)
-!>
-!!competition_map scatters and maps the array with indices of (ilg,icc) to (nlat,icc) for preparation for competition
-!!
-          call competition_map(    nml,    ilmos,   jlmos,   grclarea,&
-     &                         faregat,   fcancmx,  nppveg,  geremort,&
-     &                         intrmort, gleafmas, bleafmas, stemmass,&
-     &                         rootmass, litrmass, soilcmas,&
-     &                         pftexist,   lambda,  bmasveg,burnvegf,&
-     &                         add2allo,       cc,       mm,   fcanmx,&
-     &                         vgbiomas, gavgltms, gavgscms,&
-     &                               ta,   precip,   netrad,    tcurm,&
-     &                         srpcuryr, dftcuryr,   tmonth, anpcpcur, &
-     &                          anpecur,  gdd5cur, surmncur, defmncur,&
-     &                         srplscur, defctcur,   twarmm,   tcoldm,&
-     &                             gdd5,  aridity, srplsmon, defctmon,&
-     &                         anndefct, annsrpls,   annpcp,&
-     &                      dry_season_length,&
-     &                         lucemcom, lucltrin, lucsocin, pfcancmx,&
-     &                         nfcancmx, pstemmass, pgleafmass,&
-!    ------------------- inputs above this line ---------------------
-     &                        netradrow,&
-!    ------------------- intermediate and saved above this line -----
-     &                         fare_cmp,    nppveg_cmp,  geremort_cmp,&
-     &                     intrmort_cmp,  gleafmas_cmp,  bleafmas_cmp,&
-     &                     stemmass_cmp,  rootmass_cmp,  litrmass_cmp,&
-     &                     soilcmas_cmp,  pftexist_cmp,    lambda_cmp,&
-     &                      bmasveg_cmp,burnvegf_cmp,  add2allo_cmp,&
-     &                           cc_cmp,        mm_cmp,    fcanmx_cmp,&
-     &                     vgbiomas_cmp,  grclarea_cmp,&
-     &                     gavgltms_cmp,  gavgscms_cmp,&
-     &                           ta_cmp,    precip_cmp,    netrad_cmp, &
-     &                        tcurm_cmp,  srpcuryr_cmp,  dftcuryr_cmp,&
-     &                       tmonth_cmp,  anpcpcur_cmp,   anpecur_cmp, &
-     &                      gdd5cur_cmp,  surmncur_cmp,  defmncur_cmp,&
-     &                     srplscur_cmp,  defctcur_cmp,    twarmm_cmp, &
-     &                       tcoldm_cmp,      gdd5_cmp,   aridity_cmp,&
-     &                     srplsmon_cmp,  defctmon_cmp,  anndefct_cmp,&
-     &                     annsrpls_cmp,    annpcp_cmp,&
-     &                     dry_season_length_cmp,&
-     &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,&
-     &                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,&
-     &                     pgleafmass_cmp )
-!    ------------------- outputs above this line --------------------
-
-        if (PFTCompetition) then
-
-!>Calculate bioclimatic parameters for estimating pfts existence
-
-         call  bioclim (iday,       ta_cmp,    precip_cmp,  netrad_cmp,&
-     &                    1,         nlat,          nlat,   leapnow, &
-     &            tcurm_cmp, srpcuryr_cmp,  dftcuryr_cmp,  inibioclim,&
-     &           tmonth_cmp, anpcpcur_cmp,   anpecur_cmp, gdd5cur_cmp,&
-     &         surmncur_cmp, defmncur_cmp,  srplscur_cmp,defctcur_cmp,&
-     &           twarmm_cmp,   tcoldm_cmp,      gdd5_cmp, aridity_cmp,&
-     &         srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,&
-     &           annpcp_cmp, dry_season_length_cmp)
-
-
-       if (inibioclim) then
-!>
-!!If first day of year then based on updated bioclimatic parameters find if pfts can exist
-!!or not. If .not. inibioclim then it is the first year of a run that you do not have the 
-!!climatological means already in the CTM file. After one year inibioclim is set to true and 
-!!the climatological means are used from the first year.
-!!
-          call existence(iday,            1,         nlat,         nlat,&
-     &                   sort,     nol2pfts,      &
-     &             twarmm_cmp,   tcoldm_cmp,     gdd5_cmp,  aridity_cmp,&
-     &           srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,&
-     &             annpcp_cmp, pftexist_cmp,&
-     &             dry_season_length_cmp)
-!>
-!!call competition subroutine which on the basis of previous day's npp estimates changes in fractional coverage of pfts
-!!
-         call competition (iday,          1,          nlat,        nlat,&
-     &               nol2pfts,   nppveg_cmp, dofire, leapnow, &
-     &           pftexist_cmp, geremort_cmp, intrmort_cmp,&
-     &           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,&
-     &           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,&
-     &             burnvegf_cmp,       sort, pstemmass_cmp,&
-     &            pgleafmass_cmp,    &
-!    ------------------- inputs above this line -------------------
-     &               fare_cmp,   fcanmx_cmp, vgbiomas_cmp, gavgltms_cmp,&
-     &           gavgscms_cmp,   bmasveg_cmp,&
-!    ------------------- updates above this line ------------------
-     &           add2allo_cmp,      cc_cmp,      mm_cmp)
-!    ------------------- outputs above this line ------------------
-
-         end if !inibioclim
-
-        endif !PFTCompetition check
-
-        if(lnduseon)then
-
-         do i = il1, nlat
-           do j = 1, icc  
-            yesfrac_mos(i,j)=fare_cmp(i,j)
-           enddo
-         enddo
-
-         call luc(il1,      nlat,     nlat,     nol2pfts, &
-     &           grclarea_cmp,    pfcancmx_cmp, nfcancmx_cmp,     iday,&
-     &           todfrac_cmp,  yesfrac_mos,   .true., PFTCompetition, leapnow,&
-     &           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,&
-     &           litrmass_cmp, soilcmas_cmp, vgbiomas_cmp, gavgltms_cmp,&
-     &           gavgscms_cmp,     fare_cmp,   fcanmx_cmp,&
-     &           lucemcom_cmp, lucltrin_cmp, lucsocin_cmp)
-
-        endif !lnduseon check
-!>
-!!Competition_unmap unmaps and gathers the array with
-!!indices (nlat,icc) back to (ilg,icc) after competition is done 
-!!
-        call competition_unmap( nml,      ilmos,    jlmos,   nol2pfts,&
-     &                           fare_cmp,   nppveg_cmp, geremort_cmp,&
-     &                       intrmort_cmp, gleafmas_cmp, bleafmas_cmp,&
-     &                       stemmass_cmp, rootmass_cmp, litrmass_cmp,&
-     &                       soilcmas_cmp, pftexist_cmp,   lambda_cmp,&
-     &                        bmasveg_cmp,burnvegf_cmp, add2allo_cmp,&
-     &                             cc_cmp,       mm_cmp,   fcanmx_cmp,&
-     &                       vgbiomas_cmp, grclarea_cmp, &
-     &                       gavgltms_cmp, gavgscms_cmp,&
-     &                             ta_cmp,   precip_cmp,   netrad_cmp, &
-     &                          tcurm_cmp, srpcuryr_cmp, dftcuryr_cmp,&
-     &                         tmonth_cmp, anpcpcur_cmp,  anpecur_cmp, &
-     &                        gdd5cur_cmp, surmncur_cmp, defmncur_cmp,&
-     &                       srplscur_cmp, defctcur_cmp,   twarmm_cmp, &
-     &                         tcoldm_cmp,     gdd5_cmp,  aridity_cmp,&
-     &                       srplsmon_cmp, defctmon_cmp, anndefct_cmp,&
-     &                       annsrpls_cmp,   annpcp_cmp,&
-     &                     dry_season_length_cmp,&
-     &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,&
-     &                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,&
-     &                      pgleafmass_cmp,&
-!    ------------------- inputs above this line ---------------------
-     &                            netradrow,&
-!    ------------------- saved for intermediate above this line -----
-     &                        faregat,  fcancmx,    nppveg, geremort,  &
-     &                       intrmort, gleafmas,  bleafmas, stemmass,&
-     &                       rootmass, litrmass,  soilcmas, grclarea,&
-     &                        pftexist,  lambda,   bmasveg,burnvegf,&
-     &                        add2allo,      cc,        mm,   fcanmx,&
-     &                        vgbiomas, gavgltms, gavgscms,&
-     &                     ta,  precip,   netrad,    tcurm, srpcuryr,&
-     &                        dftcuryr ,  tmonth, anpcpcur,  anpecur, &
-     &                         gdd5cur, surmncur, defmncur, srplscur,  &
-     &                        defctcur,   twarmm,   tcoldm,     gdd5, &
-     &                         aridity, srplsmon, defctmon, anndefct,&
-     &                        annsrpls,   annpcp,&
-     &                         dry_season_length,&
-     &                         lucemcom, lucltrin, lucsocin, pfcancmx,&
-     &                         nfcancmx, pstemmass, pgleafmass )
-!    ------------------- updates above this line --------------------
-
-  endif ! onetile_perPFT true/false
-
-endif !PFTCompetition/lnduseon
+!   else ! onetile_perPFT is True
+! !>
+! !!Land use change and competition for mosaics needs mapping and
+! !!unmapping of the pfts. Composite does not require these extra steps.
+! !!
+! !!Check if number of mosaics is equal to the number of pfts plus one bare, e.g., nmos=iccp1
+! !!
+!         if (nmos.ne.iccp1) then
+!          write(*,2050) 'number of mosaics, nmos= ',nmos,&
+!      &                 ' is not equal to the number of pfts plus',&
+!      &                 ' one bare, iccp1= ',iccp1
+!          write(*,2051) 'competition works properly only when all pfts',&
+!      &                 ' and bare are considered. (onetile_perPFT is set to true!)'
+!          call xit ('ctem',-11)
+!         endif
+! 2050    format(a25,i2,a40,a18,i2,a1)
+! 2051    format(a45,a40)
+! !>
+! !!check for fcancmx(i,j). this should be either 0 or 1 for competition to work.
+! !!
+!         do j=1, icc
+!          do i=il1, il2
+!           if(fcancmx(i,j).ne.1.0 .and. fcancmx(i,j).ne.0.0) then
+!            write(*,2100) &
+!      &                'mosaic ',i,' has pft fraction: ', &
+!      &                'fcancmx(',i,',',j,')=',fcancmx(i,j)
+!            write(*,2101) &
+!      &                'mosaic competition and luc work only when ',&
+!      &                'each mosaic is 100% occupied with one pft'
+!            call xit ('ctem',-12)
+!           endif
+!          enddo
+!         enddo
+! 2100    format(a7,i2,a19,a8,i2,a1,i2,a2,f8.3)
+! 2101    format(a40,a40)
+! !>
+! !!competition_map scatters and maps the array with indices of (ilg,icc) to (nlat,icc) for preparation for competition
+! !!
+!           call competition_map(    nml,    ilmos,   jlmos,   grclarea,&
+!      &                         faregat,   fcancmx,  nppveg,  geremort,&
+!      &                         intrmort, gleafmas, bleafmas, stemmass,&
+!      &                         rootmass, litrmass, soilcmas,&
+!      &                         pftexist,   lambda,  bmasveg,burnvegf,&
+!      &                         add2allo,       cc,       mm,   fcanmx,&
+!      &                         vgbiomas, gavgltms, gavgscms,&
+!      &                               ta,   precip,   netrad,    tcurm,&
+!      &                         srpcuryr, dftcuryr,   tmonth, anpcpcur, &
+!      &                          anpecur,  gdd5cur, surmncur, defmncur,&
+!      &                         srplscur, defctcur,   twarmm,   tcoldm,&
+!      &                             gdd5,  aridity, srplsmon, defctmon,&
+!      &                         anndefct, annsrpls,   annpcp,&
+!      &                      dry_season_length,&
+!      &                         lucemcom, lucltrin, lucsocin, pfcancmx,&
+!      &                         nfcancmx, pstemmass, pgleafmass,&
+! !    ------------------- inputs above this line ---------------------
+!      &                        netradrow,&
+! !    ------------------- intermediate and saved above this line -----
+!      &                         fare_cmp,    nppveg_cmp,  geremort_cmp,&
+!      &                     intrmort_cmp,  gleafmas_cmp,  bleafmas_cmp,&
+!      &                     stemmass_cmp,  rootmass_cmp,  litrmass_cmp,&
+!      &                     soilcmas_cmp,  pftexist_cmp,    lambda_cmp,&
+!      &                      bmasveg_cmp,burnvegf_cmp,  add2allo_cmp,&
+!      &                           cc_cmp,        mm_cmp,    fcanmx_cmp,&
+!      &                     vgbiomas_cmp,  grclarea_cmp,&
+!      &                     gavgltms_cmp,  gavgscms_cmp,&
+!      &                           ta_cmp,    precip_cmp,    netrad_cmp, &
+!      &                        tcurm_cmp,  srpcuryr_cmp,  dftcuryr_cmp,&
+!      &                       tmonth_cmp,  anpcpcur_cmp,   anpecur_cmp, &
+!      &                      gdd5cur_cmp,  surmncur_cmp,  defmncur_cmp,&
+!      &                     srplscur_cmp,  defctcur_cmp,    twarmm_cmp, &
+!      &                       tcoldm_cmp,      gdd5_cmp,   aridity_cmp,&
+!      &                     srplsmon_cmp,  defctmon_cmp,  anndefct_cmp,&
+!      &                     annsrpls_cmp,    annpcp_cmp,&
+!      &                     dry_season_length_cmp,&
+!      &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,&
+!      &                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,&
+!      &                     pgleafmass_cmp )
+! !    ------------------- outputs above this line --------------------
+!
+!         if (PFTCompetition) then
+!
+! !>Calculate bioclimatic parameters for estimating pfts existence
+!
+!          call  bioclim (iday,       ta_cmp,    precip_cmp,  netrad_cmp,&
+!      &                    1,         nlat,          nlat,   leapnow, &
+!      &            tcurm_cmp, srpcuryr_cmp,  dftcuryr_cmp,  inibioclim,&
+!      &           tmonth_cmp, anpcpcur_cmp,   anpecur_cmp, gdd5cur_cmp,&
+!      &         surmncur_cmp, defmncur_cmp,  srplscur_cmp,defctcur_cmp,&
+!      &           twarmm_cmp,   tcoldm_cmp,      gdd5_cmp, aridity_cmp,&
+!      &         srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,&
+!      &           annpcp_cmp, dry_season_length_cmp)
+!
+!
+!        if (inibioclim) then
+! !>
+! !!If first day of year then based on updated bioclimatic parameters find if pfts can exist
+! !!or not. If .not. inibioclim then it is the first year of a run that you do not have the
+! !!climatological means already in the CTM file. After one year inibioclim is set to true and
+! !!the climatological means are used from the first year.
+! !!
+!           call existence(iday,            1,         nlat,         nlat,&
+!      &                   sort,     nol2pfts,      &
+!      &             twarmm_cmp,   tcoldm_cmp,     gdd5_cmp,  aridity_cmp,&
+!      &           srplsmon_cmp, defctmon_cmp, anndefct_cmp, annsrpls_cmp,&
+!      &             annpcp_cmp, pftexist_cmp,&
+!      &             dry_season_length_cmp)
+! !>
+! !!call competition subroutine which on the basis of previous day's npp estimates changes in fractional coverage of pfts
+! !!
+!          call competition (iday,          1,          nlat,        nlat,&
+!      &               nol2pfts,   nppveg_cmp, dofire, leapnow, &
+!      &           pftexist_cmp, geremort_cmp, intrmort_cmp,&
+!      &           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,&
+!      &           litrmass_cmp, soilcmas_cmp, grclarea_cmp,   lambda_cmp,&
+!      &             burnvegf_cmp,       sort, pstemmass_cmp,&
+!      &            pgleafmass_cmp,    &
+! !    ------------------- inputs above this line -------------------
+!      &               fare_cmp,   fcanmx_cmp, vgbiomas_cmp, gavgltms_cmp,&
+!      &           gavgscms_cmp,   bmasveg_cmp,&
+! !    ------------------- updates above this line ------------------
+!      &           add2allo_cmp,      cc_cmp,      mm_cmp)
+! !    ------------------- outputs above this line ------------------
+!
+!          end if !inibioclim
+!
+!         endif !PFTCompetition check
+!
+!         if(lnduseon)then
+!
+!          do i = il1, nlat
+!            do j = 1, icc
+!             yesfrac_mos(i,j)=fare_cmp(i,j)
+!            enddo
+!          enddo
+!
+!          call luc(il1,      nlat,     nlat,     nol2pfts, &
+!      &           grclarea_cmp,    pfcancmx_cmp, nfcancmx_cmp,     iday,&
+!      &           todfrac_cmp,  yesfrac_mos,   .true., PFTCompetition, leapnow,&
+!      &           gleafmas_cmp, bleafmas_cmp, stemmass_cmp, rootmass_cmp,&
+!      &           litrmass_cmp, soilcmas_cmp, vgbiomas_cmp, gavgltms_cmp,&
+!      &           gavgscms_cmp,     fare_cmp,   fcanmx_cmp,&
+!      &           lucemcom_cmp, lucltrin_cmp, lucsocin_cmp)
+!
+!         endif !lnduseon check
+! !>
+! !!Competition_unmap unmaps and gathers the array with
+! !!indices (nlat,icc) back to (ilg,icc) after competition is done
+! !!
+!         call competition_unmap( nml,      ilmos,    jlmos,   nol2pfts,&
+!      &                           fare_cmp,   nppveg_cmp, geremort_cmp,&
+!      &                       intrmort_cmp, gleafmas_cmp, bleafmas_cmp,&
+!      &                       stemmass_cmp, rootmass_cmp, litrmass_cmp,&
+!      &                       soilcmas_cmp, pftexist_cmp,   lambda_cmp,&
+!      &                        bmasveg_cmp,burnvegf_cmp, add2allo_cmp,&
+!      &                             cc_cmp,       mm_cmp,   fcanmx_cmp,&
+!      &                       vgbiomas_cmp, grclarea_cmp, &
+!      &                       gavgltms_cmp, gavgscms_cmp,&
+!      &                             ta_cmp,   precip_cmp,   netrad_cmp, &
+!      &                          tcurm_cmp, srpcuryr_cmp, dftcuryr_cmp,&
+!      &                         tmonth_cmp, anpcpcur_cmp,  anpecur_cmp, &
+!      &                        gdd5cur_cmp, surmncur_cmp, defmncur_cmp,&
+!      &                       srplscur_cmp, defctcur_cmp,   twarmm_cmp, &
+!      &                         tcoldm_cmp,     gdd5_cmp,  aridity_cmp,&
+!      &                       srplsmon_cmp, defctmon_cmp, anndefct_cmp,&
+!      &                       annsrpls_cmp,   annpcp_cmp,&
+!      &                     dry_season_length_cmp,&
+!      &                     lucemcom_cmp,  lucltrin_cmp,  lucsocin_cmp,&
+!      &                     pfcancmx_cmp,   nfcancmx_cmp, pstemmass_cmp,&
+!      &                      pgleafmass_cmp,&
+! !    ------------------- inputs above this line ---------------------
+!      &                            netradrow,&
+! !    ------------------- saved for intermediate above this line -----
+!      &                        faregat,  fcancmx,    nppveg, geremort,  &
+!      &                       intrmort, gleafmas,  bleafmas, stemmass,&
+!      &                       rootmass, litrmass,  soilcmas, grclarea,&
+!      &                        pftexist,  lambda,   bmasveg,burnvegf,&
+!      &                        add2allo,      cc,        mm,   fcanmx,&
+!      &                        vgbiomas, gavgltms, gavgscms,&
+!      &                     ta,  precip,   netrad,    tcurm, srpcuryr,&
+!      &                        dftcuryr ,  tmonth, anpcpcur,  anpecur, &
+!      &                         gdd5cur, surmncur, defmncur, srplscur,  &
+!      &                        defctcur,   twarmm,   tcoldm,     gdd5, &
+!      &                         aridity, srplsmon, defctmon, anndefct,&
+!      &                        annsrpls,   annpcp,&
+!      &                         dry_season_length,&
+!      &                         lucemcom, lucltrin, lucsocin, pfcancmx,&
+!      &                         nfcancmx, pstemmass, pgleafmass )
+! !    ------------------- updates above this line --------------------
+!
+!   endif ! onetile_perPFT true/false
+!
+! endif !PFTCompetition/lnduseon
 
 !     ---------------------------------------------------------------
 !>

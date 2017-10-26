@@ -40,6 +40,21 @@ module model_state_drivers
     real, dimension(:), allocatable :: metUv                !< Wind speed from metFile
     real, dimension(:), allocatable :: metPres              !< Atmospheric pressure from metFile
 
+    integer :: metFssId                             !> netcdf file id for the incoming shortwave radiation meteorology file
+    integer :: metFdlId                             !> netcdf file id for the incoming longwave radiation meteorology file
+    integer :: metPreId                             !> netcdf file id for the precipitation meteorology file
+    integer :: metTaId                              !> netcdf file id for the air temperature meteorology file
+    integer :: metQaId                              !> netcdf file id for the specific humidity meteorology file
+    integer :: metUvId                              !> netcdf file id for the wind speed meteorology file
+    integer :: metPresId                            !> netcdf file id for the atmospheric pressure meteorology file
+    integer :: initid                               !> netcdf file id for the model initialization file
+    integer :: rsid                                 !> netcdf file id for the model restart file
+    integer :: co2id                                !> netcdf file id for the CO2 input file
+    integer :: ch4id                                !> netcdf file id for the CH4 input file
+    integer :: popid                                !> netcdf file id for the population density input file
+    integer :: lghtid                               !> netcdf file id for the lightning density input file
+    integer :: lucid                                !> netcdf file id for the land use change input file
+
 contains
 
     !---
@@ -58,7 +73,7 @@ contains
 
         use ctem_statevars,     only : c_switch
         use ctem_params, only : nmos,nlat,ignd,ilg  ! These are set in this subroutine!
-        use outputManager, only : myDomain,initid,rsid,co2id,ch4id,popid,lghtid,lucid,metid
+        use outputManager, only : myDomain
 
         implicit none
 
@@ -70,7 +85,13 @@ contains
         character(180), pointer          :: POPDFile
         character(180), pointer          :: LGHTFile
         character(180), pointer          :: LUCFile
-        character(180), pointer          :: met_file
+        character(180), pointer          :: metFileFss
+        character(180), pointer          :: metFileFdl
+        character(180), pointer          :: metFilePre
+        character(180), pointer          :: metFileTa
+        character(180), pointer          :: metFileQa
+        character(180), pointer          :: metFileUv
+        character(180), pointer          :: metFilePres
         logical, pointer                 :: ctem_on
         logical, pointer                 :: dofire
         logical, pointer                 :: lnduseon
@@ -96,7 +117,14 @@ contains
         dofire                  => c_switch%dofire
         lnduseon                => c_switch%lnduseon
         fixedYearLUC            => c_switch%fixedYearLUC
-        met_file                => c_switch%met_file
+        metFileFss              => c_switch%metFileFss
+        metFileFdl              => c_switch%metFileFdl
+        metFilePre              => c_switch%metFilePre
+        metFileTa               => c_switch%metFileTa
+        metFileQa               => c_switch%metFileQa
+        metFileUv               => c_switch%metFileUv
+        metFilePres             => c_switch%metFilePres
+
         ! ------------
 
         !> First, open initial conditions file.
@@ -207,8 +235,14 @@ contains
             end if
         end if
 
-        !> Open the meteorological forcing file
-        metid = ncOpen(met_file, nf90_write)
+        !> Open the meteorological forcing files
+        metFssId    = ncOpen(metFileFss, nf90_write)
+        metFdlId    = ncOpen(metFileFdl, nf90_write)
+        metPreId    = ncOpen(metFilePre, nf90_write)
+        metTaId     = ncOpen(metFileTa, nf90_write)
+        metQaId     = ncOpen(metFileQa, nf90_write)
+        metUvId     = ncOpen(metFileUv, nf90_write)
+        metPresId   = ncOpen(metFilePres, nf90_write)
 
     end subroutine read_modelsetup
 
@@ -224,7 +258,6 @@ contains
         ! J. Melton
         ! Nov 2016
 
-        use outputManager, only : initid
         use ctem_statevars,     only : c_switch,vrot,vgat
         use class_statevars,    only : class_rot,class_gat
         use ctem_params,        only : icc,iccp1,nmos,ignd,ilg,icp1,nlat,ican,abszero,pi,crop
@@ -695,7 +728,6 @@ contains
         ! J. Melton
         ! Jun 2017
 
-        use outputManager, only : rsid
         use ctem_statevars,     only : c_switch,vrot
         use class_statevars,    only : class_rot
         use ctem_params,        only : icc,nmos,ignd,icp1,nlat,ican,l2max,modelpft
@@ -861,7 +893,7 @@ contains
     !>\ingroup model_state_drivers_getInput
     !!@{
     !>  Read in a model input from a netcdf file and store the file's time array
-    !! as well as the input values into memory
+    !! as well as the input values into memory.
 
     subroutine getInput(inputRequested,longitude,latitude)
 
@@ -871,7 +903,7 @@ contains
         use generalUtils, only : parseTimeStamp
         use ctem_statevars, only : c_switch,vrot
         use ctem_params, only : icc,nmos
-        use outputManager, only : co2id,ch4id,checkForTime,popid,lucid,lghtid
+        use outputManager, only : checkForTime
 
         implicit none
 
@@ -888,6 +920,8 @@ contains
         integer, pointer :: fixedYearCH4
         logical, pointer :: transientPOPD
         integer, pointer :: fixedYearPOPD
+        logical, pointer :: transientLGHT
+        integer, pointer :: fixedYearLGHT
         logical, pointer :: lnduseon
         integer, pointer :: fixedYearLUC
 
@@ -903,6 +937,8 @@ contains
         fixedYearCH4    => c_switch%fixedYearCH4
         transientPOPD   => c_switch%transientPOPD
         fixedYearPOPD   => c_switch%fixedYearPOPD
+        transientLGHT   => c_switch%transientLGHT
+        fixedYearLGHT   => c_switch%fixedYearLGHT
         lnduseon        => c_switch%lnduseon
         fixedYearLUC    => c_switch%fixedYearLUC
         co2concrow      => vrot%co2conc
@@ -912,10 +948,11 @@ contains
 
         select case (trim(inputRequested))
 
-        !! For each of the time varying inputs in this subroutine, we take in the whole dataset
-        !! and later determine the year we need (in updateInput)
+        !> For each of the time varying inputs in this subroutine, we take in the whole dataset
+        !! and later determine the year we need (in updateInput). The general approach is that these
+        !! files are light enough on memory demands to make this acceptable.
 
-        case ('CO2')
+        case ('CO2') ! Carbon dioxide concentration
 
             lengthOfFile = ncGetDimLen(co2id, 'time')
             allocate(fileTime(lengthOfFile))
@@ -936,12 +973,14 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CO2Time),real(fixedYearCO2))
+                if (arrindex == 0) stop('getInput says: The CO2 file does not contain requested year')
+
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 co2concrow(i,:) = ncGet1DVar(CO2id, 'mole_fraction_of_carbon_dioxide_in_air', start = [arrindex], count = [1])
             end if
 
-        case ('CH4')
+        case ('CH4') ! Methane concentration
 
             lengthOfFile = ncGetDimLen(ch4id, 'time')
             allocate(fileTime(lengthOfFile))
@@ -962,12 +1001,14 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(CH4Time),real(fixedYearCH4))
+                if (arrindex == 0) stop('getInput says: The CH4 file does not contain requested year')
+
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 ch4concrow(i,:) = ncGet1DVar(ch4id, 'mole_fraction_of_methane_in_air', start = [arrindex], count = [1])
             end if
 
-        case ('POPD')
+        case ('POPD') ! Population density
 
             lengthOfFile = ncGetDimLen(popid, 'time')
             allocate(fileTime(lengthOfFile))
@@ -991,13 +1032,15 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(POPDTime),real(fixedYearPOPD))
+                if (arrindex == 0) stop('getInput says: The POPD file does not contain requested year')
+
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 popdinrow(i,:) = ncGet1DVar(popid, 'popd', start = [lonloc,latloc,arrindex], count = [1,1,1])
 
             end if
 
-         case ('LGHT')
+         case ('LGHT') ! Lightning strikes
 
             lengthOfFile = ncGetDimLen(lghtid, 'time')
             allocate(fileTime(lengthOfFile))
@@ -1005,6 +1048,7 @@ contains
 
             fileTime = ncGet1DVar(lghtid, 'time', start = [1], count = [lengthOfFile])
 
+            ! The lightning file is monthly
             ! Parse these into just years (expected format is "day as %Y%m%d.%f")
             do i = 1, lengthOfFile
                 dateTime = parseTimeStamp(fileTime(i))
@@ -1013,21 +1057,23 @@ contains
             lonloc = closestCell(lghtid,'lon',longitude)
             latloc = closestCell(lghtid,'lat',latitude)
 
-            if (transientPOPD) then
+            if (transientLGHT) then
                 ! We read in the whole POPD times series and store it.
                 allocate(LGHTFromFile(lengthOfFile))
-                POPDFromFile = ncGet1DVar(lghtid, 'lght', start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
+                LGHTFromFile = ncGet1DVar(lghtid, 'lght', start = [lonloc,latloc,1], count = [1,1,lengthOfFile])
 
             else
-                ! Find the requested year in the file.
-                arrindex = checkForTime(lengthOfFile,real(LGHTTime),real(fixedYearPOPD))
+                ! Find the requested day and year in the file.
+                arrindex = checkForTime(lengthOfFile,real(LGHTTime),real(fixedYearLGHT))
+                if (arrindex == 0) stop('getInput says: The LGHT file does not contain requested year')
+
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
-                mlightngrow(i,:) = ncGet1DVar(lghtid, 'lght', start = [lonloc,latloc,arrindex,1], count = [1,1,1,12])
+                !mlightngrow(i,:) = ncGet1DVar(lghtid, 'lght', start = [lonloc,latloc,arrindex,1], count = [1,1,1,12])
 
             end if
 
-        case ('LUC')
+        case ('LUC') ! Land use change
 
             lengthOfFile = ncGetDimLen(lucid, 'time')
             allocate(fileTime(lengthOfFile))
@@ -1054,6 +1100,8 @@ contains
             else
                 ! Find the requested year in the file.
                 arrindex = checkForTime(lengthOfFile,real(LUCTime),real(fixedYearLUC))
+                if (arrindex == 0) stop('getInput says: The LUC file does not contain requested year')
+
                 ! We read in only the suggested year
                 i = 1 ! offline nlat is always 1 so just set
                 m = 1 ! FLAG this is set up only for 1 tile at PRESENT! JM
@@ -1064,14 +1112,15 @@ contains
 
             end if
 
-        case ('OBSWETF')
+        case ('OBSWETF') ! Observed wetland fractions
+
             stop('Not implemented yet')
             !wetfrac_monrow(i,m,:
             !  wetfrac_presgat(i)=wetfrac_mongat(i,month1)+(real(xday)/30.0)*&
             !            (wetfrac_mongat(i,month2)-wetfrac_mongat(i,month1))
 
         case default
-            stop('specify an input kind for getInput')
+            stop('Specify an input kind for getInput')
 
         end select
 
@@ -1152,57 +1201,8 @@ contains
 !                                 ! pass on mean monthly lightning for the current month to ctem
 !                         ! lightng(i)=mlightng(i,month)
 !                         !
-!                         ! in a very simple way try to interpolate monthly lightning todaily lightning
-!                         if(iday.ge.mmday(1)-1.and.iday.lt.mmday(2))then ! >=15,<46.- mid jan - mid feb
-!                             month1=1
-!                             month2=2
-!                             xday=iday-mmday(1)-1
-!                         else if(iday.ge.mmday(2).and.iday.lt.mmday(3))then ! >=46,<75(76) mid feb - mid mar
-!                             month1=2
-!                             month2=3
-!                             xday=iday-mmday(2)
-!                         else if(iday.ge.mmday(3).and.iday.lt.mmday(4))then ! >=75(76),<106(107) mid mar - mid apr
-!                             month1=3
-!                             month2=4
-!                             xday=iday-mmday(3)
-!                         else if(iday.ge.mmday(4).and.iday.lt.mmday(5))then ! >=106(107),<136(137) mid apr - mid may
-!                             month1=4
-!                             month2=5
-!                             xday=iday-mmday(4)
-!                         else if(iday.ge.mmday(5).and.iday.lt.mmday(6))then ! >=136(137),<167(168) mid may - mid june
-!                             month1=5
-!                             month2=6
-!                             xday=iday-mmday(5)
-!                         else if(iday.ge.mmday(6).and.iday.lt.mmday(7))then ! >=167(168),<197(198) mid june - mid july
-!                             month1=6
-!                             month2=7
-!                             xday=iday-mmday(6)
-!                         else if(iday.ge.mmday(7).and.iday.lt.mmday(8))then ! >=197(198), <228(229) mid july - mid aug
-!                             month1=7
-!                             month2=8
-!                             xday=iday-mmday(7)
-!                         else if(iday.ge.mmday(8).and.iday.lt.mmday(9))then ! >=228(229), < 259(260) mid aug - mid sep
-!                             month1=8
-!                             month2=9
-!                             xday=iday-mmday(8)
-!                         else if(iday.ge.mmday(9).and.iday.lt.mmday(10))then ! >= 259(260), < 289(290) mid sep - mid oct
-!                             month1=9
-!                             month2=10
-!                             xday=iday-mmday(9)
-!                         else if(iday.ge.mmday(10).and.iday.lt.mmday(11))then ! >= 289(290), < 320(321) mid oct - mid nov
-!                             month1=10
-!                             month2=11
-!                             xday=iday-mmday(10)
-!                         else if(iday.ge.mmday(11).and.iday.lt.mmday(12))then ! >=320(321), < 350(351) mid nov - mid dec
-!                             month1=11
-!                             month2=12
-!                             xday=iday-mmday(11)
-!                         else if(iday.ge.mmday(12).or.iday.lt.mmday(1)-1)then ! >= 350(351) < 15 mid dec - mid jan
-!                             month1=12
-!                             month2=1
-!                             xday=iday-mmday(12)
-!                             if(xday.lt.0)xday=iday+15
-!                         endif
+!
+!
 !
 !                         lightng(i)=mlightnggat(i,month1)+(real(xday)/30.0)*&
 !                             &                 (mlightnggat(i,month2)-mlightnggat(i,month1))
@@ -1223,7 +1223,6 @@ contains
     subroutine getMet(longitude,latitude,nday,delt)
 
         use fileIOModule
-        use outputManager, only : metid
         use ctem_statevars, only : c_switch
         use generalUtils, only : parseTimeStamp
 
@@ -1250,10 +1249,12 @@ contains
         readMetStartYear  => c_switch%readMetStartYear
         readMetEndYear    => c_switch%readMetEndYear
 
-        ! Grab the length of time dimension from the met file and write it to an array
-        lengthOfFile = ncGetDimLen(metid, 'time')
+        ! Grab the length of time dimension from the SW met file and write it to an array.
+        ! NOTE: We assume the user is careful enough to ensure the time array is the same
+        ! across all met files!
+        lengthOfFile = ncGetDimLen(metFssId, 'time')
         allocate(fileTime(lengthOfFile))
-        fileTime = ncGet1DVar(metid, 'time', start = [1], count = [lengthOfFile])
+        fileTime = ncGet1DVar(metFssId, 'time', start = [1], count = [lengthOfFile])
 
         ! Construct the time bounds that we will look for in the file.
         ! We assume that you will start on the first timestep of the day.
@@ -1292,20 +1293,20 @@ contains
         end if
 
         ! Find the closest cell to our lon and lat
-        lonloc = closestCell(metid,'lon',longitude)
-        latloc = closestCell(metid,'lat',latitude)
+        lonloc = closestCell(metFssId,'lon',longitude)
+        latloc = closestCell(metFssId,'lat',latitude)
 
         ! Now read in the whole MET times series and store it for each variable
         allocate(metFss(validTimestep),metFdl(validTimestep),metPre(validTimestep),&
                  metTa(validTimestep),metQa(validTimestep),metUv(validTimestep),metPres(validTimestep))
 
-        metFss = ncGet1DVar(metid, 'sw', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metFdl = ncGet1DVar(metid, 'lw', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metPre = ncGet1DVar(metid, 'pr', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metTa = ncGet1DVar(metid, 'ta', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metQa = ncGet1DVar(metid, 'qa', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metUv = ncGet1DVar(metid, 'wi', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
-        metPres = ncGet1DVar(metid, 'ap', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metFss = ncGet1DVar(metFssId, 'sw', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metFdl = ncGet1DVar(metFdlId, 'lw', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metPre = ncGet1DVar(metPreId, 'pr', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metTa = ncGet1DVar(metTaId, 'ta', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metQa = ncGet1DVar(metQaId, 'qa', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metUv = ncGet1DVar(metUvId, 'wi', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
+        metPres = ncGet1DVar(metPresId, 'ap', start = [lonloc,latloc,firstIndex], count = [1,1,validTimestep])
 
     end subroutine getMet
 

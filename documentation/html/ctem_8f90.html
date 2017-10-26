@@ -116,14 +116,14 @@ $(document).ready(function(){initNavTree('ctem_8f90.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:afb4eff56870bf0b2c92ff281046692e5"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem_8f90.html#afb4eff56870bf0b2c92ff281046692e5">ctem</a> (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar, transientPOPD,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,PFTCompetition, netrad,precip,psisat, grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, onetile_perPFT, wetfrac, slopefrac,bi,thpor,thiceg, currlat,ch4conc,GRAV,RHOW,RHOICE,leapnow,</td></tr>
-<tr class="separator:afb4eff56870bf0b2c92ff281046692e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f8029ec9ff9872aafc8887387855b94"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctem_8f90.html#a7f8029ec9ff9872aafc8887387855b94">ctem</a> (fcancmx,fsnow,sand,clay,il1,il2,iday,radj,tcano,tcans,tbarc,tbarcs,tbarg,tbargs,ta,delzw,ancsveg,ancgveg, rmlcsveg,rmlcgveg,zbotw,thliqc,thliqg,deltat,uwind,vwind,lightng,prbfrhuc,extnprob,stdaln,tbar, transientPOPD,nol2pfts, pfcancmx, nfcancmx,lnduseon,thicec, soildpth, spinfast,todfrac,PFTCompetition, netrad,precip,psisat, grclarea,popdin, dofire,dowetlands, obswetf, isand,faregat, wetfrac, slopefrac,bi,thpor,thiceg, currlat,ch4conc,GRAV,RHOW,RHOICE,leapnow,</td></tr>
+<tr class="separator:a7f8029ec9ff9872aafc8887387855b94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Principle driver for CTEM. </p>
 <p>The basic model structure of CTEM includes three live vegetation components (leaf (L), stem (S) and root (R)) and two dead carbon pools (litter or detritus (D) and soil carbon (H)). The amount of carbon in these pools ( <img class="formulaInl" alt="$C_\mathrm{L}$" src="form_24.png"/>, <img class="formulaInl" alt="$C_\mathrm{S}$" src="form_22.png"/>, <img class="formulaInl" alt="$C_\mathrm{R}$" src="form_23.png"/>, <img class="formulaInl" alt="$C_\mathrm{D}$" src="form_527.png"/>, <img class="formulaInl" alt="$C_\mathrm{H}$" src="form_528.png"/>, <img class="formulaInl" alt="$kgC m^{-2}$" src="form_529.png"/>) is tracked prognostically through the fluxes in and out of them. The rate change equations for carbon in these pools are summarized in Sect. rate_change_eqns} after the processes leading to the calculation of fluxes in and out of these pools are introduced in the following sections. </p>
 </div><h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a class="anchor" id="afb4eff56870bf0b2c92ff281046692e5"></a>
+<a class="anchor" id="a7f8029ec9ff9872aafc8887387855b94"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -436,12 +436,6 @@ Functions/Subroutines</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">logical, intent(in)&#160;</td>
-          <td class="paramname"><em>onetile_perPFT</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">real, dimension(ilg), intent(in)&#160;</td>
           <td class="paramname"><em>wetfrac</em>, </td>
         </tr>
@@ -519,7 +513,7 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dofire</td><td>boolean, if true allow fire, if false no fire.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dowetlands</td><td>if true allow wetland methane emission</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">obswetf</td><td>if true, use read-in observed wetland fraction</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">onetile_perpft</td><td>if you are running with one tile per PFT in mosaic mode, set to true. Changes how competition is run. Specifically it allows competition between tiles. This is not recommended for any case where you don't have one PFT in each tile as it has not been tested for that.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">obswetf</td><td>how competition is run. Specifically it allows competition between tiles. This is not recommended for any case where you don't have one PFT in each tile as it has not been tested for that.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">leapnow</td><td>true if this year is a leap year. Only used if the switch 'leap' is true.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">iday</td><td>day of year</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">spinfast</td><td>spinup factor for soil carbon whose default value is 1. as this factor increases the soil c pool will come into equilibrium faster. reasonable value for spinfast is between 5 and 10. when spinfast.ne.1 then the balcar subroutine is not run.</td></tr>
@@ -580,20 +574,10 @@ Functions/Subroutines</h2></td></tr>
  <h2>Constants and parameters are located in <a class="el" href="ctem__params_8f90.html" title="This module holds CTEM globally accessible parameters. ">ctem_params.f90</a> </h2>
 <p>Begin calculations</p>
 <p>Generate the sort index for correspondence between 9 pfts and the 12 values in the parameter vectors</p>
-<p>If you intend to have competition and LUC between tiles then set onetile_perPFT to true. NOTE: Turning onetile_perPFT to true is usually not the behaviour desired unless you are running with one PFT on each tile and want them to compete for space across tiles. So in general keep this as False. JM Jan 2016.</p>
-<p>this is composite/mosaic mode (in mosaic competition only occurs WITHIN a tile)</p>
 <p>Calculate bioclimatic parameters for estimating pfts existence</p>
 <p>If first day of year then based on updated bioclimatic parameters find if pfts can exist or not. If .not. inibioclim then it is the first year of a run that you do not have the climatological means already in the CTM file. After one year inibioclim is set to true and the climatological means are used from the first year.</p>
 <p>Call competition subroutine which on the basis of previous day's npp estimates changes in fractional coverage of pfts</p>
 <p>If landuse is on, then implelement luc, change fractional coverages, move biomasses around, and estimate luc related combustion emission losses.</p>
-<p>Land use change and competition for mosaics needs mapping and unmapping of the pfts. Composite does not require these extra steps.</p>
-<p>Check if number of mosaics is equal to the number of pfts plus one bare, e.g., nmos=iccp1</p>
-<p>check for fcancmx(i,j). this should be either 0 or 1 for competition to work.</p>
-<p>competition_map scatters and maps the array with indices of (ilg,icc) to (nlat,icc) for preparation for competition</p>
-<p>Calculate bioclimatic parameters for estimating pfts existence</p>
-<p>If first day of year then based on updated bioclimatic parameters find if pfts can exist or not. If .not. inibioclim then it is the first year of a run that you do not have the climatological means already in the CTM file. After one year inibioclim is set to true and the climatological means are used from the first year.</p>
-<p>call competition subroutine which on the basis of previous day's npp estimates changes in fractional coverage of pfts</p>
-<p>Competition_unmap unmaps and gathers the array with indices (nlat,icc) back to (ilg,icc) after competition is done</p>
 <p>initialize required arrays to zero</p>
 <p>Store green and brown leaf, stem, and root biomass, and litter and soil c pool mass in arrays. knowing initial sizes of all pools and final sizes at the end of this subroutine, we check for conservation of mass.</p>
 <p>Initialization ends</p>
@@ -669,7 +653,7 @@ the grid sum but no bareground values as we assume peatlands have no bareground.
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="ctem_8f90.html">ctem.f90</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
+    <li class="footer">Generated on Thu Oct 26 2017 11:36:03 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

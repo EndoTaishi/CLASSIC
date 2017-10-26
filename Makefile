@@ -7,7 +7,7 @@ OBJ = dataTransferModule.o fileIOModule.o ctem_params.o ctem_statevars.o  peatla
 	DIASURFZ.o SCREENRH.o TFREEZ.o TSPOST.o CHKWAT.o CLASST.o DRCOEF.o SLDIAG.o TMCALC.o TSPREP.o \
 	CLASSA.o CLASSW.o FLXSURFZ.o SNINFL.o TMELT.o TWCALC.o CLASSB.o CLASSZ.o GATPREP.o SNOADD.o \
 	TNPOST.o WEND.o balcar.o ORDLEG.o mainres.o allocate.o phenolgy.o turnover.o mortality.o \
-	disturb.o ctems2.o competition_map.o competition_unmap.o landuse_change_mod.o soil_ch4uptake.o \
+	disturb.o ctems2.o landuse_change_mod.o soil_ch4uptake.o \
 	competition_mod.o hetres_mod.o ctemUtilities.o ctem.o outputManager.o io_driver.o  \
 	model_state_drivers.o read_from_job_options.o main.o xmlParser.o xmlManager.o CLASSIC.o
 

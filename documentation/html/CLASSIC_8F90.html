@@ -119,8 +119,8 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:a62220e741441754452847a4706bcae25"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a62220e741441754452847a4706bcae25"></a>
 program&#160;</td><td class="memItemRight" valign="bottom"><b>classic</b></td></tr>
 <tr class="separator:a62220e741441754452847a4706bcae25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23c7b8492b947781685fedee78c9037d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23c7b8492b947781685fedee78c9037d"></a>
-subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>processlandcells</b></td></tr>
+<tr class="memitem:a23c7b8492b947781685fedee78c9037d"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CLASSIC_8F90.html#a23c7b8492b947781685fedee78c9037d">processlandcells</a></td></tr>
+<tr class="memdesc:a23c7b8492b947781685fedee78c9037d"><td class="mdescLeft">&#160;</td><td class="mdescRight">First initialize the MPI and PnetCDF session. Ignored if run in serial mode.  <a href="#a23c7b8492b947781685fedee78c9037d">More...</a><br /></td></tr>
 <tr class="separator:a23c7b8492b947781685fedee78c9037d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f09ba230f1f1552651ad18d9d504b3e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4f09ba230f1f1552651ad18d9d504b3e"></a>
 subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>initializeparallelenvironment</b></td></tr>
@@ -128,13 +128,32 @@ subroutine&#160;</td><td class="memItemRight" valign="bottom"><b>initializeparal
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Principle driver program to run CLASSIC in stand-alone mode using specified boundary conditions and atmospheric forcing. Depending upon the compiler options chosen, this program will either run in MPI mode for use on parallel computing environments or in serial mode for use in running at single sites. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function/Subroutine Documentation</h2>
+<a class="anchor" id="a23c7b8492b947781685fedee78c9037d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">subroutine classic::processlandcells </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>First initialize the MPI and PnetCDF session. Ignored if run in serial mode. </p>
+<p>Next load the job options file. This first parses the command line arguments. Then all model switches are read in from a namelist file. This sets up the run options and points to input files as needed. Then load the run setup information based on the metadata in the initialization netcdf file. The bounds given as an argument to CLASSIC are used to find the start points (srtx and srty) in the netcdf file, placing the gridcell on the domain of the input/output netcdfs. In read_modelsetup we use the netcdf to set the nmos (number of tiles), ignd (number of soil layers),and ilg (number of latitude points times nmos, which defaults to nmos in offline mode) constants. It also opens the initial conditions file that is used below in read_initialstate as well as the restart file that is written to later. Prepare all of the global parameters such as those in CLASSD and <a class="el" href="namespacectem__params.html" title="Contains CTEM globally accessible parameters. ">ctem_params</a> which are read from a namelist file. The output files are created based on the model switches in the joboptions file and the xml file that describes the metadata for each output file. The loadoutputDescriptor parses the xml file and creates a data structure to allow us to make all of the netcdf output files, one per variable per time period (daily, monthly, etc.). Generate the output files based on options in the joboptions file and the parameters of the initilization netcdf file. Run model over the land grid cells, in parallel or serial Close all of the output netcdf files and the restart file (these were written to so need to ensure buffer is flushed) </p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CLASSIC_8F90.html">CLASSIC.F90</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
+    <li class="footer">Generated on Thu Oct 26 2017 11:36:03 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

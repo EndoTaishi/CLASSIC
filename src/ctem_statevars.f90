@@ -19,62 +19,86 @@ public :: resetgridavg
 !>switches for running the model, read from the joboptions file
 type ctem_switches
 
-    logical :: ctem_on     !<True if this run includes CTEM
-    integer :: metLoop !< no. of times the .met file is to be read. this
-                                 !< option is useful to see how ctem's c pools
-                                 !< equilibrate when driven with same climate data
-                                 !< over and over again.
-    integer :: spinfast !< set this to a higher number up to 10 to spin up soil carbon pool faster
+    logical :: ctem_on          !<True if this run includes the biogeochemistry parameterizations (CTEM)
+    integer :: metLoop          !< no. of times the meteorological data is to be looped over. this
+                                !< option is useful to equilibrate CTEM's C pools
+    logical :: leap             !< set to true if the meteorological file includes leap years
+
+    integer :: spinfast         !< set this to a number >1 (up to ~10) to spin up soil carbon pool faster, set to 1
+                                !< for final production simulations
     integer :: readMetStartYear !< First year of meteorological forcing to read in from the met file
     integer :: readMetEndYear   !< Last year of meteorological forcing to read in from the met file
-    logical :: transientCO2       !<use \f$CO_2\f$ time series, if false, fixedYearCO2 is used
-    character(180) :: CO2File       !< Location of the netcdf file containing atmospheric CO2 values
-    integer :: fixedYearCO2  !< set the year to use for atmospheric \f$CO_2\f$ if transientCO2 is false. (ppmv)
-    logical :: dofire      !<boolean, if true allow fire, if false no fire.
-    logical :: PFTCompetition !<logical boolean telling if competition between pfts is on or not
-    logical :: start_bare  !<set this to true if competition is true, and if you wish to start from bare ground.
-                           !<if this is set to false, the ini and ctm file info will be used to set up the run.
-                           !<NOTE: This still keeps the crop fractions (while setting all pools to zero)
-    logical :: lnduseon    !<logical switch to run the land use change subroutine or not.
-    character(180) :: LUCFile  !< Location of the netcdf file containing land use change information
-    integer :: fixedYearLUC  !< set the year to use for LUC
-    logical :: transientCH4      !<use \f$CH_4\f$ time series, set to false if cyclemet is true the \f$CO_2\f$ timeseries is in the
-                           !<same input file as the \f$CO_2\f$ one.
-    character(180) :: CH4File  !< Location of the netcdf file containing atmospheric CH4 values
-    integer :: fixedYearCH4  !< set the year to use for atmospheric \f$CH_4\f$ if transientCH4 is false. (ppmv)
-    logical :: transientPOPD      !<if set true use population density data to calculate fire extinguishing probability and probability of fire due to human causes
-    character(180) :: POPDFile  !< Location of the netcdf file containing population density values
-    integer :: fixedYearPOPD !< popd and luc year to cycle on when cyclemet is true, set to -9999
-                         !< to cycle on metcylyrst for both popd and luc. if cyclemet is false
-                                 !< this defaults to -9999, which will then cause the model to cycle on
-                                 !< whatever is the first year in the popd and luc datasets
-    character(180) :: LGHTFile  !< Location of the netcdf file containing lightning density values
 
-    logical :: inibioclim  !<switch telling if bioclimatic parameters are being initialized
-                           !<from scratch (false) or being initialized from some spun up
-                           !<values(true).
-    logical :: leap        !< set to true if all/some leap years in the .MET file have data for 366 days
-                           !< also accounts for leap years in .MET when cycling over meteorology (cyclemet)
+    logical :: transientCO2     !<use \f$CO_2\f$ time series, if false, fixedYearCO2 is used
+    character(180) :: CO2File   !< Location of the netcdf file containing atmospheric \f$CO_2\f$ values
+    integer :: fixedYearCO2     !< set the year to use for atmospheric \f$CO_2\f$ if transientCO2 is false. (ppmv)
+
+    logical :: transientCH4     !<use \f$CH_4\f$ time series, if false, fixedYearCH4 is used
+    character(180) :: CH4File   !< Location of the netcdf file containing atmospheric \f$CH_4\f$ values
+    integer :: fixedYearCH4     !< set the year to use for atmospheric \f$CH_4\f$ if transientCH4 is false. (ppmv)
+
+    logical :: dofire           !<boolean, if true allow fire disturbance, if false no fire occurs.
+    logical :: transientPOPD    !<if set true use time series of population density data to calculate
+                                !<fire extinguishing probability and probability of fire due to human causes, false use
+                                !<value from single year (fixedYearPOPD)
+    character(180) :: POPDFile  !< Location of the netcdf file containing population density values
+    integer :: fixedYearPOPD    !< set the year to use for population density values if transientPOPD is false. (\f$people/km^2\f$)
+
+    logical :: transientLGHT    !<use lightning strike time series, otherwise use fixedYearLGHT
+    character(180) :: LGHTFile  !< Location of the netcdf file containing lightning strike values
+    integer :: fixedYearLGHT    !< set the year to use for lightning strikes if transientLGHT is false.
+
+    logical :: PFTCompetition   !<logical boolean telling if competition between pfts is on or not
+    logical :: start_bare       !<set this to true if competition is on, and if you wish to start from bare ground.
+                                !<if this is set to false, the init file info will be used to set up the run.
+                                !<NOTE: This still keeps the crop fractions (while setting all pools to zero)
+    logical :: inibioclim       !<switch telling if bioclimatic parameters are being initialized
+                                !<from scratch (false) or being initialized from some spun up
+                                !<values(true).
+
+    logical :: lnduseon         !<If true then the land cover is read in from LUCFile and changes annually
+    character(180) :: LUCFile   !<Location of the netcdf file containing land use change information
+    integer :: fixedYearLUC     !<Set the year to use for land cover if lnduseon is false. If set to -9999,
+                                !<we use the PFT distribution found in the initialization file. Any other year
+                                !<we search for that year in the LUCFile
+
     logical :: dowetlands   !<if true allow wetland methane emission
     logical :: obswetf      !<observed wetland fraction
 
-    character(180) :: met_file   !< location of the netcdf meteorological dataset
-    character(180) :: init_file  !< location of the netcdf initialization file
+    character(180) :: metFileFss        !< location of the incoming shortwave radiation meteorology file
+    character(180) :: metFileFdl        !< location of the incoming longwave radiation meteorology file
+    character(180) :: metFilePre        !< location of the precipitation meteorology file
+    character(180) :: metFileTa         !< location of the air temperature meteorology file
+    character(180) :: metFileQa         !< location of the specific humidity meteorology file
+    character(180) :: metFileUv         !< location of the wind speed meteorology file
+    character(180) :: metFilePres       !< location of the atmospheric pressure meteorology file
+    character(180) :: init_file         !< location of the netcdf initialization file
     character(180) :: rs_file_to_overwrite !< location of the netcdf file that will be written for the restart file
-    character(180) :: runparams_file  !< location of the namelist file containing the model parameters
-    character(180) :: Comment   !< Comment about the run that will be written to the output netcdfs
-    character(180) :: output_directory !< Directory where the output netcdfs will be placed
-    character(180) :: xmlFile !< location of the xml file that outlines the possible netcdf output files
-    integer :: jmosty    !< Year to start writing out the monthly output files. If you want to write monthly outputs right
-                                  !< from the start then put in a negative number (like -9999), if you never want to have monthly
-                                  !< outputs put a large positive number (like 9999). This is given in the same timescale as IYEAR
-    logical :: doperpftoutput    !< Switch for making extra output files that are at the per PFT level
-    logical :: dopertileoutput    !< Switch for making extra output files that are at the per tile level
-    logical :: domonthoutput    !< Switch for making monthly output files (annual are always outputted)
-    logical :: dodayoutput    !< Switch for making daily output files (annual are always outputted)
-    logical :: dohhoutput    !< Switch for making half hourly output files (annual are always outputted)
+    character(180) :: runparams_file    !< location of the namelist file containing the model parameters
+    character(180) :: Comment           !< Comment about the run that will be written to the output netcdfs
+    character(180) :: output_directory  !< Directory where the output netcdfs will be placed
+    character(180) :: xmlFile           !< location of the xml file that outlines the possible netcdf output files
 
-    ! CLASS switches:
+    logical :: doperpftoutput           !< Switch for making extra output files that are at the per PFT level
+    logical :: dopertileoutput          !< Switch for making extra output files that are at the per tile level
+
+    logical :: domonthoutput            !< Switch for making monthly output files (annual are always outputted)
+    integer :: jmosty                   !< Year to start writing out the monthly output files. If you want to write monthly outputs right
+                                        !< from the start then put in a negative number (like -9999)
+
+    logical :: dodayoutput              !< Switch for making daily output files (annual are always outputted)
+    integer :: jdstd                    !< day of the year to start writing the daily output
+    integer :: jdendd                   !< day of the year to stop writing the daily output
+    integer :: jdsty                    !< simulation year (iyear) to start writing the daily output
+    integer :: jdendy                   !< simulation year (iyear) to stop writing the daily output
+
+    logical :: dohhoutput               !< Switch for making half hourly output files (annual are always outputted)
+    integer :: jhhstd                   !< day of the year to start writing the half-hourly output
+    integer :: jhhendd                  !< day of the year to stop writing the half-hourly output
+    integer :: jhhsty                   !< simulation year (iyear) to start writing the half-hourly output
+    integer :: jhhendy                  !< simulation year (iyear) to stop writing the half-hourly output
+
+    ! Physics switches:
 
     integer :: idisp    !< if idisp=0, vegetation displacement heights are ignored,
                                  !< because the atmospheric model considers these to be part
@@ -149,16 +173,6 @@ type ctem_switches
                            !< if any of these switches is set to 1, the value of the
                            !< corresponding parameter calculated by class is overridden by
                            !< a user-supplied input value.
-
-    integer :: jhhstd  !< day of the year to start writing the half-hourly output
-    integer :: jhhendd !< day of the year to stop writing the half-hourly output
-    integer :: jdstd   !< day of the year to start writing the daily output
-    integer :: jdendd  !< day of the year to stop writing the daily output
-    integer :: jhhsty  !< simulation year (iyear) to start writing the half-hourly output
-    integer :: jhhendy !< simulation year (iyear) to stop writing the half-hourly output
-    integer :: jdsty   !< simulation year (iyear) to start writing the daily output
-    integer :: jdendy  !< simulation year (iyear) to stop writing the daily output
-
     integer :: isnoalb !< if isnoalb is set to 0, the original two-band snow albedo algorithms are used.
                                 !< if it is set to 1, the new four-band routines are used.
                                 

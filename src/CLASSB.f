@@ -362,27 +362,12 @@ C
                       grksat(i,m,j) = grksorg(3)
                   endif
                   thlrat(i,m,j) = 0.5**(1.0/(2.0*bi(i,m,j)+3.0))
-
+              end if
               THFC(I,M,J)=THLRET(I,M,J)
               THLW(I,M,J)=THLMIN(I,M,J)
               PSIWLT(I,M,J)=PSISAT(I,M,J)*(THLMIN(I,M,J)/
      1            THPOR(I,M,J))**(-BI(I,M,J))
-              ! FLAG for testing Sep 29 2016 JM.
-              ! For ORGANIC soils:
-              ! Make it so the first layer is considered moss if peatland flag >0.
-              ! This overwrites the previous assignments.
-             if (ipeatland(i,m) > 0 ) then ! Peatland flag, 1= bog, 2 = fen
-                  if (j .eq. 1) then ! First layer is moss
-                      thpor(i,m,j)  = thpmoss
-                      thlret(i,m,j) = thrmoss
-                      thlmin(i,m,j) = thmmoss
-                      bi(i,m,j)     = bmoss
-                      psisat(i,m,j) = psismoss
-                      grksat(i,m,j) = grksmoss
-                      hcps(i,m,j) = hcpmoss
-                      tcs(i,m,j) = tcom
-                  end if
-             end if
+
           ELSEIF(SAND(I,M,J).GE.0.) THEN
               THPOR (I,M,J)=(-0.126*SAND(I,M,J)+48.9)/100.0
               THLRET(I,M,J)=0.04

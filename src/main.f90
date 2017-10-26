@@ -50,7 +50,7 @@ contains
             &                               monthend, mmday,modelpft, l2max,&
             &                                deltat,seed,NBS, readin_params,&
             &                          nol2pfts
-        use landuse_change,     only : initializeLandCover, readin_luc
+        use landuse_change,     only : initializeLandCover
         use ctem_statevars,     only : vrot,vgat,c_switch,initrowvars,&
             &                               resetmonthend,resetyearend,&
             &                               ctem_grd,ctem_tile,resetgridavg
@@ -3740,7 +3740,7 @@ contains
                         &            thicecacc_t,     sdepgat,    spinfast,   todfrac,&
                         &        PFTCompetition,netrad_gat,  preacc_gat,PSISGAT,grclarea,&
                         &              popdingat,  dofire, dowetlands,obswetf, isndgat,&
-                        &          faregat,onetile_perPFT,wetfrac_presgat,slopefracgat,&
+                        &          faregat,wetfrac_presgat,slopefracgat,&
                         &                  BIGAT,    THPGAT, thicegacc_t, DLATGAT,&
                         &             ch4concgat,      GRAV, RHOW, RHOICE,&
                         &              leapnow,&
@@ -5157,5 +5157,12 @@ contains
     end subroutine main_driver
     !!@}
 !>\file
+!> Main model driver for CLASSIC in stand-alone mode using specified boundary
+!! conditions and atmospheric forcing.
+!!
+!! This driver program initializes the run, reads in CLASSIC input files,
+!! manages the run and the coupling between CLASS and CTEM, calls subroutines
+!! that aggregate and write outputs, and closes the run for this grid cell.
+
 end module main
 

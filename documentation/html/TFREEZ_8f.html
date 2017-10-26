@@ -280,9 +280,9 @@ Functions/Subroutines</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">zpond</td><td>Depth of ponded water <img class="formulaInl" alt="$[m] (z_p)$" src="form_406.png"/></td></tr>
-    <tr><td class="paramname">tpond</td><td>Temperature of ponded water <img class="formulaInl" alt="$[C] (T_p)$" src="form_1159.png"/></td></tr>
+    <tr><td class="paramname">tpond</td><td>Temperature of ponded water <img class="formulaInl" alt="$[C] (T_p)$" src="form_1160.png"/></td></tr>
     <tr><td class="paramname">zsnow</td><td>Depth of snow pack <img class="formulaInl" alt="$[m] (z_g)$" src="form_218.png"/></td></tr>
-    <tr><td class="paramname">tsnow</td><td>Temperature of the snow pack <img class="formulaInl" alt="$[C] (T_s)$" src="form_1102.png"/></td></tr>
+    <tr><td class="paramname">tsnow</td><td>Temperature of the snow pack <img class="formulaInl" alt="$[C] (T_s)$" src="form_1103.png"/></td></tr>
     <tr><td class="paramname">albsno</td><td>Albedo of snow [ ]</td></tr>
     <tr><td class="paramname">rhosno</td><td>Density of snow pack <img class="formulaInl" alt="$[kg m^{-3}] (\rho_s)$" src="form_248.png"/></td></tr>
     <tr><td class="paramname">hcpsno</td><td>Heat capacity of snow pack <img class="formulaInl" alt="$[J m^{-3} K^{-1}] (C_s)$" src="form_223.png"/></td></tr>
@@ -294,15 +294,15 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">htc</td><td>Internal energy change of soil layer due to conduction and/or change in mass <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/> (Ig)</td></tr>
     <tr><td class="paramname">fi</td><td>Fractional coverage of subarea in question on modelled area <img class="formulaInl" alt="$[ ] (X_i)$" src="form_129.png"/></td></tr>
     <tr><td class="paramname">qfrez</td><td>Energy sink for freezing of water at the ground surface <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
-    <tr><td class="paramname">wsnow</td><td>Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2}] (w_s)$" src="form_1104.png"/></td></tr>
+    <tr><td class="paramname">wsnow</td><td>Liquid water content of snow pack <img class="formulaInl" alt="$[kg m^{-2}] (w_s)$" src="form_1105.png"/></td></tr>
     <tr><td class="paramname">ta</td><td>Air temperature [K]</td></tr>
-    <tr><td class="paramname">tbar</td><td>Temperature of soil layer <img class="formulaInl" alt="$[C] (T_g)$" src="form_1160.png"/></td></tr>
+    <tr><td class="paramname">tbar</td><td>Temperature of soil layer <img class="formulaInl" alt="$[C] (T_g)$" src="form_1161.png"/></td></tr>
     <tr><td class="paramname">isand</td><td>Sand content flag </td></tr>
   </table>
   </dd>
 </dl>
 <p>Freezing of water ponded on the ground surface occurs if an energy sink QFREZ is produced as a result of the solution of the surface energy balance, or if the pond temperature at the beginning of the subroutine has been projected to be below 0 C. The change of internal energy I in the snow and first soil layer (which for the purposes of diagnostic calculations includes the ponded water) as a result of these processes is calculated as the difference in I between the beginning and end of the subroutine:</p>
-<p><img class="formulaInl" alt="$\Delta I_s = X_i \Delta(C_s T_s z_s) / \Delta t$" src="form_1161.png"/> <img class="formulaInl" alt="$\Delta I_g = X_i \Delta(C_w T_p z_p)/\Delta t$" src="form_1162.png"/></p>
+<p><img class="formulaInl" alt="$\Delta I_s = X_i \Delta(C_s T_s z_s) / \Delta t$" src="form_1162.png"/> <img class="formulaInl" alt="$\Delta I_g = X_i \Delta(C_w T_p z_p)/\Delta t$" src="form_1163.png"/></p>
 <p>where the C terms represent volumetric heat capacities, the T terms temperatures, and the z terms depths of the snow pack and the ponded water respectively, <img class="formulaInl" alt="$\Delta t$" src="form_145.png"/> is the length of the time step, and <img class="formulaInl" alt="$X_i$" src="form_39.png"/> the fractional coverage of the subarea under consideration relative to the modelled area.</p>
 <p>The energy sink HADD to be applied to the ponded water is calculated from QFREZ and the pond temperature TPOND (if it is below 0 C). Two diagnostic variables, HCOOL and HCONV, are calculated as the energy sink required to cool the ponded water to 0 C, and that required both to cool and to freeze the ponded water, respectively. If HADD <img class="formulaInl" alt="$\leq$" src="form_228.png"/> HCOOL, the available energy sink is only sufficient to decrease the temperature of the ponded water. This decrease is applied, and the energy used is added to the internal energy HTC of the first soil layer.</p>
 <p>If HADD &gt; HCOOL but HADD <img class="formulaInl" alt="$\leq$" src="form_228.png"/> HCONV, the available energy sink is sufficient to decrease the ponded water temperature to 0 C and to freeze part of it. The energy used in freezing is calculated as HADD – HCOOL, and is used to calculate the depth of frozen water ZFREZ, which is then subtracted from the ponded water depth ZPOND. HCOOL is added to HTC, and ZFREZ is converted from a depth of water to a depth of ice and added to the snow pack. If there is not a pre-existing snow pack, the snow albedo is set to the background value for old snow, 0.50. The temperature, density and heat capacity of the snow pack are recalculated.</p>
@@ -317,7 +317,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="TFREEZ_8f.html">TFREEZ.f</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
+    <li class="footer">Generated on Thu Oct 26 2017 11:36:04 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

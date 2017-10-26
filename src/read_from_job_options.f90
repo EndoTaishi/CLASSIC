@@ -12,7 +12,8 @@ contains
     !>\ingroup readjobopts_read_from_job_options
     !!@{
     !> Reads from the joboptions file, assigns the model switches, and determines the geographic domain
-    !! of the simulation.
+    !! of the simulation. All switches are described in the configurationFiles/template_job_options_file.txt file
+    !! and also the user manual (housed in type ctem_switches in ctem_statevars.f90.
 
     subroutine read_from_job_options
 
@@ -23,10 +24,6 @@ contains
         implicit none
 
         ! -------------
-
-        ! All switches are described in the ConfigurationFiles/template_job_options_file.txt file
-        ! and also the user manual.
-
         ! ctem model switches
 
         integer, pointer :: metLoop
@@ -45,6 +42,8 @@ contains
         character(:), pointer :: POPDFile
         integer, pointer :: fixedYearPOPD
         logical, pointer :: dofire
+        integer, pointer :: fixedYearLGHT
+        logical, pointer :: transientLGHT
         character(:), pointer :: LGHTFile
         character(:), pointer :: LUCFile
         integer, pointer :: fixedYearLUC
@@ -55,6 +54,13 @@ contains
         logical, pointer :: start_bare
         logical, pointer :: use_netcdf
         character(:), pointer :: met_file
+        character(:), pointer :: metFileFss
+        character(:), pointer :: metFileFdl
+        character(:), pointer :: metFilePre
+        character(:), pointer :: metFileTa
+        character(:), pointer :: metFileQa
+        character(:), pointer :: metFileUv
+        character(:), pointer :: metFilePres
         character(:), pointer :: init_file
         character(:), pointer :: rs_file_to_overwrite
         character(:), pointer :: runparams_file
@@ -128,11 +134,20 @@ contains
         inibioclim, &
         start_bare, &
         dofire, &
+        transientLGHT, &
+        fixedYearLGHT, &
         LGHTFile, &
         dowetlands, &
         obswetf, &
         use_netcdf, &
         met_file, &
+        metFileFss, &
+        metFileFdl, &
+        metFilePre, &
+        metFileTa, &
+        metFileQa, &
+        metFileUv, &
+        metFilePres, &
         init_file, &
         rs_file_to_overwrite, &
         runparams_file, &
@@ -189,6 +204,8 @@ contains
         POPDFile        => c_switch%POPDFile
         fixedYearPOPD   => c_switch%fixedYearPOPD
         dofire          => c_switch%dofire
+        fixedYearLGHT   => c_switch%fixedYearLGHT
+        transientLGHT   => c_switch%transientLGHT
         LGHTFile        => c_switch%LGHTFile
         dowetlands      => c_switch%dowetlands
         obswetf         => c_switch%obswetf
@@ -198,7 +215,13 @@ contains
         rs_file_to_overwrite => c_switch%rs_file_to_overwrite
         output_directory => c_switch%output_directory
         xmlFile         => c_switch%xmlFile
-        met_file        => c_switch%met_file
+        metFileFss      => c_switch%metFileFss
+        metFileFdl      => c_switch%metFileFdl
+        metFilePre      => c_switch%metFilePre
+        metFileTa       => c_switch%metFileTa
+        metFileQa       => c_switch%metFileQa
+        metFileUv       => c_switch%metFileUv
+        metFilePres     => c_switch%metFilePres
         runparams_file  => c_switch%runparams_file
         init_file       => c_switch%init_file
         IDISP           => c_switch%IDISP

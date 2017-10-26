@@ -322,20 +322,20 @@ Functions/Subroutines</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">tbarpr</td><td>Temperatures of soil layers for subarea [C]</td></tr>
-    <tr><td class="paramname">g12</td><td>Heat conduction between first and second soil layers <img class="formulaInl" alt="$[W m^{-2}] (G(\Delta z))$" src="form_804.png"/></td></tr>
+    <tr><td class="paramname">g12</td><td>Heat conduction between first and second soil layers <img class="formulaInl" alt="$[W m^{-2}] (G(\Delta z))$" src="form_805.png"/></td></tr>
     <tr><td class="paramname">g23</td><td>Heat conduction between second and third soil layers <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
-    <tr><td class="paramname">tpond</td><td>Temperature of ponded water <img class="formulaInl" alt="$[C] (T_p)$" src="form_1159.png"/></td></tr>
-    <tr><td class="paramname">gzero</td><td>Heat conduction into soil surface <img class="formulaInl" alt="$[W m^{-2}] (G(0))$" src="form_807.png"/></td></tr>
+    <tr><td class="paramname">tpond</td><td>Temperature of ponded water <img class="formulaInl" alt="$[C] (T_p)$" src="form_1160.png"/></td></tr>
+    <tr><td class="paramname">gzero</td><td>Heat conduction into soil surface <img class="formulaInl" alt="$[W m^{-2}] (G(0))$" src="form_808.png"/></td></tr>
     <tr><td class="paramname">qfrezg</td><td>Energy sink to be applied to freezing of ponded water <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
     <tr><td class="paramname">tbar</td><td>Temperatures of soil layers, averaged over modelled area [K]</td></tr>
-    <tr><td class="paramname">tctop</td><td>Thermal conductivity of soil at top of layer <img class="formulaInl" alt="$[W m^{-1} K^{-1}] (\lambda)$" src="form_1176.png"/></td></tr>
-    <tr><td class="paramname">tcbot</td><td>Thermal conductivity of soil at bottom of layer <img class="formulaInl" alt="$[W m^{-1} K^{-1}] (\lambda)$" src="form_1176.png"/></td></tr>
+    <tr><td class="paramname">tctop</td><td>Thermal conductivity of soil at top of layer <img class="formulaInl" alt="$[W m^{-1} K^{-1}] (\lambda)$" src="form_1177.png"/></td></tr>
+    <tr><td class="paramname">tcbot</td><td>Thermal conductivity of soil at bottom of layer <img class="formulaInl" alt="$[W m^{-1} K^{-1}] (\lambda)$" src="form_1177.png"/></td></tr>
     <tr><td class="paramname">hcp</td><td>Heat capacity of soil layer <img class="formulaInl" alt="$[J m^{-3} K^{-1}]$" src="form_360.png"/></td></tr>
     <tr><td class="paramname">delzw</td><td>Permeable thickness of soil layer [m]</td></tr>
-    <tr><td class="paramname">zpond</td><td>Depth of ponded water on surface <img class="formulaInl" alt="$[m] (\Delta z_p)$" src="form_1177.png"/></td></tr>
+    <tr><td class="paramname">zpond</td><td>Depth of ponded water on surface <img class="formulaInl" alt="$[m] (\Delta z_p)$" src="form_1178.png"/></td></tr>
     <tr><td class="paramname">tsurf</td><td>Ground surface temperature [K]</td></tr>
     <tr><td class="paramname">tbase</td><td>Temperature of bedrock in third soil layer [K]</td></tr>
-    <tr><td class="paramname">tbar1p</td><td>Lumped temperature of ponded water and first soil layer <img class="formulaInl" alt="$[K] (T_{1p})$" src="form_1178.png"/></td></tr>
+    <tr><td class="paramname">tbar1p</td><td>Lumped temperature of ponded water and first soil layer <img class="formulaInl" alt="$[K] (T_{1p})$" src="form_1179.png"/></td></tr>
     <tr><td class="paramname">a1</td><td>Work array used in calculation of GCONST and GCOEFF</td></tr>
     <tr><td class="paramname">a2</td><td>Work array used in calculation of GCONST and GCOEFF</td></tr>
     <tr><td class="paramname">b1</td><td>Work array used in calculation of GCONST and GCOEFF</td></tr>
@@ -343,21 +343,21 @@ Functions/Subroutines</h2></td></tr>
     <tr><td class="paramname">c2</td><td>Work array used in calculation of GCONST and GCOEFF</td></tr>
     <tr><td class="paramname">fi</td><td>Fractional coverage of subarea in question on modelled area [ ]</td></tr>
     <tr><td class="paramname">gconst</td><td>Intercept used in equation relating ground surface heat flux to surface temperature <img class="formulaInl" alt="$[W m^{-2}]$" src="form_246.png"/></td></tr>
-    <tr><td class="paramname">gcoeff</td><td>Multiplier used in equation relating ground surface heat flux to surface temperature <img class="formulaInl" alt="$[W m^{-2} K^{-1}]$" src="form_1179.png"/></td></tr>
+    <tr><td class="paramname">gcoeff</td><td>Multiplier used in equation relating ground surface heat flux to surface temperature <img class="formulaInl" alt="$[W m^{-2} K^{-1}]$" src="form_1180.png"/></td></tr>
     <tr><td class="paramname">iwater</td><td>Flag indicating condition of surface (dry, water-covered or snow-covered)</td></tr>
     <tr><td class="paramname">isand</td><td>Sand content flag</td></tr>
-    <tr><td class="paramname">delz</td><td>Overall thickness of soil layer <img class="formulaInl" alt="$[m] (\Delta z)$" src="form_810.png"/> </td></tr>
+    <tr><td class="paramname">delz</td><td>Overall thickness of soil layer <img class="formulaInl" alt="$[m] (\Delta z)$" src="form_811.png"/> </td></tr>
   </table>
   </dd>
 </dl>
 <p>In the 100 loop, the heat flux into the ground (without adjustments that may have been applied owing to phase changes of water at the surface or partitioning the residual of the surface energy balance among the surface flux terms) is calculated from the ground surface temperature TSURF, using the GCOEFF and GCONST terms (see documentation of subroutine TNPREP). This flux is then used to back-calculate the heat conduction between the first and second, and the second and third soil layers.</p>
-<p>If the depth of water ponded on the surface is greater than zero, the total thickness of the lumped layer consisting of the first soil layer and the ponded water, <img class="formulaInl" alt="$\Delta z_{1p}$" src="form_1180.png"/>, is calculated as the sum of the two depths. The temperature of the ponded water over the subarea in question is disaggregated from the temperature of the lumped layer, <img class="formulaInl" alt="$T_{1p}$" src="form_1181.png"/>, by making use of the calculated heat fluxes at the top and bottom of the layer, and the assumption (discussed in the documentation of subroutine TNPREP) that that the variation of temperature T with depth z within a soil layer can be modelled using a quadratic equation:</p>
-<p><img class="formulaInl" alt="$T(z) = 1/2 T''(0)z^2 + T'(0)z +T(0)$" src="form_1182.png"/></p>
-<p>Integrating this equation separately over the ponded water depth <img class="formulaInl" alt="$\Delta z_p$" src="form_1183.png"/> and over the thickness of the lumped layer produces expressions for the ponded water temperature <img class="formulaInl" alt="$T_p$" src="form_1184.png"/> and the temperature of the lumped layer. Making use of the fact that</p>
-<p><img class="formulaInl" alt="$T''(0) = [T'(\Delta z) - T'(0)]/\Delta z$" src="form_1185.png"/></p>
+<p>If the depth of water ponded on the surface is greater than zero, the total thickness of the lumped layer consisting of the first soil layer and the ponded water, <img class="formulaInl" alt="$\Delta z_{1p}$" src="form_1181.png"/>, is calculated as the sum of the two depths. The temperature of the ponded water over the subarea in question is disaggregated from the temperature of the lumped layer, <img class="formulaInl" alt="$T_{1p}$" src="form_1182.png"/>, by making use of the calculated heat fluxes at the top and bottom of the layer, and the assumption (discussed in the documentation of subroutine TNPREP) that that the variation of temperature T with depth z within a soil layer can be modelled using a quadratic equation:</p>
+<p><img class="formulaInl" alt="$T(z) = 1/2 T''(0)z^2 + T'(0)z +T(0)$" src="form_1183.png"/></p>
+<p>Integrating this equation separately over the ponded water depth <img class="formulaInl" alt="$\Delta z_p$" src="form_1184.png"/> and over the thickness of the lumped layer produces expressions for the ponded water temperature <img class="formulaInl" alt="$T_p$" src="form_1185.png"/> and the temperature of the lumped layer. Making use of the fact that</p>
+<p><img class="formulaInl" alt="$T''(0) = [T'(\Delta z) - T'(0)]/\Delta z$" src="form_1186.png"/></p>
 <p>where <img class="formulaInl" alt="$\Delta z$" src="form_77.png"/> is a depth interval, and</p>
-<p><img class="formulaInl" alt="$G(z) = - \lambda(z)T'(z)$" src="form_1186.png"/> where <img class="formulaInl" alt="$\lambda$" src="form_1187.png"/> represents the thermal conductivity, an expression for <img class="formulaInl" alt="$T_p$" src="form_1184.png"/> can be derived:</p>
-<p><img class="formulaInl" alt="$T_p = [G(0)/ \lambda(0) – G(\Delta z_{1p})/ \lambda(\Delta z_{1p})] [\Delta z_p^2 - \Delta z_{1p}^2]/ 6 \Delta z_{1p} – G(0) [\Delta z_p - \Delta z_{1p}]/ 2 \lambda(0) – T_{1P}$" src="form_1188.png"/></p>
+<p><img class="formulaInl" alt="$G(z) = - \lambda(z)T'(z)$" src="form_1187.png"/> where <img class="formulaInl" alt="$\lambda$" src="form_1188.png"/> represents the thermal conductivity, an expression for <img class="formulaInl" alt="$T_p$" src="form_1185.png"/> can be derived:</p>
+<p><img class="formulaInl" alt="$T_p = [G(0)/ \lambda(0) – G(\Delta z_{1p})/ \lambda(\Delta z_{1p})] [\Delta z_p^2 - \Delta z_{1p}^2]/ 6 \Delta z_{1p} – G(0) [\Delta z_p - \Delta z_{1p}]/ 2 \lambda(0) – T_{1P}$" src="form_1189.png"/></p>
 <p>The temperature TBARPR of the first soil layer over the subarea in question can then be obtained by disaggregating the ponded water temperature from the lumped layer temperature using the respective heat capacities of the ponded water and the soil layer. (The heat capacity of the soil is determined as the weighted average of HCP over the permeable thickness DELZW, and the heat capacity of rock, HCPSND, over the impermeable thickness, DELZ-DELZW.) Both the ponded water temperature and the soil layer temperature are converted to C. Lastly, if there is ponded water on the surface (IWATER = 1) and QFREZG, the surface energy available for phase change of water, is positive (indicating an energy source), or if there is snow on the ground (IWATER = 2) and QFREZG is negative (indicating an energy sink), or if there is no liquid or frozen water on the surface (IWATER = 0), QFREZG is added to the heat flux into the ground, GZERO, and then reset to zero.</p>
 <p>In loop 200, the subarea soil layer temperatures TBARPR are set for the remaining soil layers. In all cases the temperature of the layer is set to that for the modelled area, TBAR, converted to C, except in the case of the third soil layer if the standard three-layer configuration is being modelled (with a very thick third soil layer of 3.75 m). In this case TBARPR and the layer heat capacity HCP are considered to apply to the permeable depth DELZW of the layer, and the bedrock temperature TBASE and the rock heat capacity HCPSND apply to the remainder, DELZ-DELZW. The disaggregation of TBARPR from TBAR and TBASE is carried out on this basis. TBARPR for this layer is also converted to C.</p>
 
@@ -369,7 +369,7 @@ Functions/Subroutines</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="TNPOST_8f.html">TNPOST.f</a></li>
-    <li class="footer">Generated on Wed Oct 25 2017 12:11:59 for CLASSIC by
+    <li class="footer">Generated on Thu Oct 26 2017 11:36:04 for CLASSIC by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>
   </ul>

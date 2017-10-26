@@ -35,15 +35,6 @@ module outputManager
 
     type(simulationDomain) :: myDomain
 
-    integer :: metid                               !> netcdf file id for the meteorology file
-    integer :: initid                               !> netcdf file id for the model initialization file
-    integer :: rsid                                 !> netcdf file id for the model restart file
-    integer :: co2id                                !> netcdf file id for the CO2 input file
-    integer :: ch4id                                !> netcdf file id for the CH4 input file
-    integer :: popid                                !> netcdf file id for the population density input file
-    integer :: lghtid                               !> netcdf file id for the lightning density input file
-    integer :: lucid                                !> netcdf file id for the land use change input file
-
     !> This data structure is used to set up the output netcdf files.
     type outputDescriptor
         character(80)   :: group                = ''
