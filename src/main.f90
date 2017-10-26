@@ -69,17 +69,17 @@ contains
         integer, intent(in) :: lonIndex, latIndex               ! Index of grid cell being run on the input files grid
         integer, intent(in) :: lonLocalIndex, latLocalIndex     ! Index of grid cell being run on the output files grid
 
-        integer :: lastDOY = 365       !< Initialize to 365 days, can be overwritten later is leap = true and it is a leap year.
-        integer :: metTimeIndex = 1    !< Counter used to move through the meteorological input arrays
-        logical :: metDone = .false.   !< Logical switch when the end of the stored meteorological array is reached.
-        logical :: run_model = .true.  !< Simple logical switch to either keep run going or finish
+        integer :: lastDOY             !< Initialized to 365 days, can be overwritten later is leap = true and it is a leap year.
+        integer :: metTimeIndex        !< Counter used to move through the meteorological input arrays
+        logical :: metDone             !< Logical switch when the end of the stored meteorological array is reached.
+        logical :: run_model           !< Simple logical switch to either keep run going or finish
 
         INTEGER NLTEST  !<Number of grid cells being modelled for this run
         INTEGER NMTEST  !<Number of mosaic tiles per grid cell being modelled for this run
         INTEGER NCOUNT  !<Counter for daily averaging
         INTEGER NDAY    !<Number of short (physics) timesteps in one day. e.g., if physics timestep is 15 min this is 48.
-        INTEGER :: IMONTH = 0  !<Month of the year simulation is in.
-        integer :: DOM = 1 !< Day of month counter
+        INTEGER :: IMONTH!<Month of the year simulation is in.
+        integer :: DOM  !< Day of month counter
         INTEGER NT      !<
         INTEGER IHOUR   !<Hour of day
         INTEGER IMIN    !<Minutes elapsed in current hour
@@ -795,7 +795,7 @@ contains
         REAL DAY,DECL,HOUR,COSZ,EVAPSUM,ALTOT,&
              FSSTAR,FLSTAR,QH,QE,BEG,SNOMLT,ZSN,TCN,TSN,TPN,GTOUT,TSURF
 
-        real :: CUMSNO = 0.0
+        real :: CUMSNO
         !
         !     * COMMON BLOCK PARAMETERS.
         !
@@ -814,21 +814,10 @@ contains
         !
         !     Local variables for coupling CLASS and CTEM
         !
-        integer   month1,month2,xday!,& ! isumc lopcount,k1c,k2c,
-           ! &     metcycendyr,climiyear,endyr ! lucyr,& !nol2pfts(4),cylucyr bigpftc(1),
+        integer   month1,month2,xday,lopcount
 
-        integer :: lopcount = 1
-
-        !integer, allocatable, dimension(:,:) :: icountrow  !FLAG move out.
-
-        !integer, pointer :: metcylyrst   !< climate year to start the spin up on
-                                    !< ignored if cyclemet is false
-        !integer, pointer :: trans_startyr !< the year you want the transient run to start (e.g. 1850). If you
-        !                                    !! are not doing a transient run, set to a negative value (like -9999)
         integer, pointer :: spinfast !< set this to a higher number up to 10 to spin up
                                 !< soil carbon pool faster
-        !integer, pointer :: nummetcylyrs !< years of the climate file to spin up on repeatedly
-                                    !< ignored if cyclemet is false
         integer, pointer :: metLoop !< no. of times the .met file is to be read. this
                                         !< option is useful to see how ctem's c pools
                                         !< equilibrate when driven with same climate data
@@ -939,23 +928,18 @@ contains
 
         ! Model switches:
         logical, pointer :: ctem_on
-        !logical, pointer :: cyclemet
         logical, pointer :: dofire
-        !logical, pointer :: met_rewound
-        !logical, pointer :: reach_eof
         logical, pointer :: PFTCompetition
         logical, pointer :: start_bare
         logical, pointer :: lnduseon
         logical, pointer :: transientCO2
         logical, pointer :: transientCH4
         logical, pointer :: transientPOPD
+        logical, pointer :: transientLGHT
         logical, pointer :: inibioclim
         logical, pointer :: leap
         logical, pointer :: dowetlands
         logical, pointer :: obswetf
-        !logical, pointer :: transient_run
-        !character(:), pointer :: met_file
-        !character(:), pointer :: runparams_file  !< location of the namelist file containing the model parameters
         logical, pointer :: domonthoutput
         logical, pointer :: dodayoutput
         logical, pointer :: dohhoutput
@@ -977,7 +961,6 @@ contains
 
         real, pointer, dimension(:,:,:) :: ailcminrow         !
         real, pointer, dimension(:,:,:) :: ailcmaxrow         !
-        !real, pointer, dimension(:,:,:) :: dvdfcanrow         !
         real, pointer, dimension(:,:,:) :: gleafmasrow        !
         real, pointer, dimension(:,:,:) :: bleafmasrow        !
         real, pointer, dimension(:,:,:) :: stemmassrow        !
@@ -1485,7 +1468,7 @@ contains
         !     * WITHIN THE GCM.
 
         ! leap year flag (if the switch 'leap' is true, this will be used, otherwise it remains false)
-        logical :: leapnow = .false.
+        logical :: leapnow
 
         !   ----CLASS moss variables-------YW ----------------------------------
         !     Replaced thlqaccXXX_m with thliqacc_t and thicaccXXX_m with thiceacc_t. EC Dec 23 2016.
@@ -2186,23 +2169,19 @@ contains
         ! Point CTEM pointers
 
         ctem_on           => c_switch%ctem_on
-        !cyclemet          => c_switch%cyclemet
         dofire            => c_switch%dofire
-        !met_rewound       => c_switch%met_rewound
         PFTCompetition    => c_switch%PFTCompetition
         start_bare        => c_switch%start_bare
         lnduseon          => c_switch%lnduseon
         transientCO2     => c_switch%transientCO2
         transientCH4      => c_switch%transientCH4
         transientPOPD     => c_switch%transientPOPD
+        transientLGHT     => c_switch%transientLGHT
         fixedYearLUC      => c_switch%fixedYearLUC
         inibioclim        => c_switch%inibioclim
         leap              => c_switch%leap         
         dowetlands        => c_switch%dowetlands
         obswetf           => c_switch%obswetf
-        !transient_run     => c_switch%transient_run
-        !met_file          => c_switch%met_file
-        !runparams_file    => c_switch%runparams_file
         jhhstd            => c_switch%jhhstd
         jhhendd           => c_switch%jhhendd
         jdstd             => c_switch%jdstd
@@ -2213,10 +2192,7 @@ contains
         jdendy            => c_switch%jdendy
         jmosty            => c_switch%jmosty
         metLoop           => c_switch%metLoop
-        !nummetcylyrs      => c_switch%nummetcylyrs
-        !ncyear            => c_switch%ncyear
         spinfast          => c_switch%spinfast
-!        trans_startyr     => c_switch%trans_startyr
         IDISP             => c_switch%IDISP
         IZREF             => c_switch%IZREF
         ISLFD             => c_switch%ISLFD
@@ -2231,7 +2207,6 @@ contains
         IALS              => c_switch%IALS
         IALG              => c_switch%IALG
         isnoalb           => c_switch%isnoalb
-        !metcylyrst        => c_switch%metcylyrst
         domonthoutput     => c_switch%domonthoutput
         dodayoutput       => c_switch%dodayoutput
         dohhoutput        => c_switch%dohhoutput
@@ -2248,7 +2223,6 @@ contains
         ! ROW:
         ailcminrow        => vrot%ailcmin
         ailcmaxrow        => vrot%ailcmax
-        !dvdfcanrow        => vrot%dvdfcan
         gleafmasrow       => vrot%gleafmas
         bleafmasrow       => vrot%bleafmas
         stemmassrow       => vrot%stemmass
@@ -2434,7 +2408,6 @@ contains
 
         ailcmingat        => vgat%ailcmin
         ailcmaxgat        => vgat%ailcmax
-        !dvdfcangat        => vgat%dvdfcan
         gleafmasgat       => vgat%gleafmas
         bleafmasgat       => vgat%bleafmas
         stemmassgat       => vgat%stemmass
@@ -2818,6 +2791,15 @@ contains
         N=0
         NCOUNT=1
         NDAY=86400/NINT(DELT)
+        metTimeIndex = 1    !< Counter used to move through the meteorological input arrays
+        metDone = .false.   !< Logical switch when the end of the stored meteorological array is reached.
+        run_model = .true.  !< Simple logical switch to either keep run going or finish
+        IMONTH = 0          !<Month of the year simulation is in.
+        DOM = 1             !< Day of month counter
+        CUMSNO = 0.0
+        lopcount = 1
+        leapnow = .false.
+        lastDOY = 365
 
         call initrowvars
         call resetclassaccum(nlat,nmos)
@@ -3271,27 +3253,14 @@ contains
 
 250         CONTINUE
 
-            DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
-
-            DECL=SIN(2.*PI*(284.+DAY)/real(lastDOY))*23.45*PI/180.
-            HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
-            COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
-
-            DO 300 I=1,NLTEST
-                CSZROW(I)=SIGN(MAX(ABS(COSZ),1.0E-3),COSZ)
-                IF(PREROW(I).GT.0.) THEN
-                    XDIFFUS(I)=1.0
-                ELSE
-                    XDIFFUS(I)=MAX(0.0,MIN(1.0-0.9*COSZ,1.0))
-                ENDIF
-                FCLOROW(I)=XDIFFUS(I)
-300         CONTINUE
-
             ! Check if we are on the first timestep of the day
             if (ihour.eq.0.and.imin.eq.0) then
 
                 ! Find the daylength of this day
                 daylrow(:) = findDaylength(real(iday), radjrow(1)) !following rest of code, radjrow is always given index of 1 offline.
+
+                ! Update the lightning if fire is on and transientLGHT is true
+                if (dofire .and. transientLGHT .and. ctem_on) call updateInput('LGHT',iyear,iday)
 
                 !Check if this is the first day of the year
                 if (iday.eq.1) then
@@ -3316,10 +3285,23 @@ contains
                     end if
                 end if ! first day
 
-                ! Update the lightning if it is the first of the month and fire is on
-                if (DOM == 1 .and. dofire .and. ctem_on) call updateInput('LGHT',iyear,imonth)
-
             endif   ! first timestep
+
+            DAY=REAL(IDAY)+(REAL(IHOUR)+REAL(IMIN)/60.)/24.
+
+            DECL=SIN(2.*PI*(284.+DAY)/real(lastDOY))*23.45*PI/180.
+            HOUR=(REAL(IHOUR)+REAL(IMIN)/60.)*PI/12.-PI
+            COSZ=SIN(RADJROW(1))*SIN(DECL)+COS(RADJROW(1))*COS(DECL)*COS(HOUR)
+
+            DO 300 I=1,NLTEST
+                CSZROW(I)=SIGN(MAX(ABS(COSZ),1.0E-3),COSZ)
+                IF(PREROW(I).GT.0.) THEN
+                    XDIFFUS(I)=1.0
+                ELSE
+                    XDIFFUS(I)=MAX(0.0,MIN(1.0-0.9*COSZ,1.0))
+                ENDIF
+                FCLOROW(I)=XDIFFUS(I)
+300         CONTINUE
 
             !>CLASSI evaluates a series of derived atmospheric variables
 

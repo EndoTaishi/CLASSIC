@@ -104,7 +104,7 @@
 
 ! Output options:
 
-    output_directory = '/home/rjm/Documents/CTEM/test' ,        !< Directory where the output netcdfs will be placed
+    output_directory = 'outputFiles' ,        !< Directory where the output netcdfs will be placed
     xmlFile = 'configurationFiles/outputVariableDescriptors.xml' ,  !< location of the xml file that outlines the possible netcdf output files
 
     doperpftoutput = .true. ,   !< Switch for making extra output files that are at the per PFT level
