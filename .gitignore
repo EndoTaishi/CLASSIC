@@ -1,0 +1,7 @@
+*.o
+*.mod
+documentation/*
+.cproject
+.gitignore
+.project
+bin/CLASSIC

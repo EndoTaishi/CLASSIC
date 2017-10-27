@@ -1,0 +1,2 @@
+In serial only run CLASSIC over 1 grid cell.
+If you need to run classic over a larger range, use mpirun -n 1

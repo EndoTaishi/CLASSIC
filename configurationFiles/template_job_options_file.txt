@@ -7,7 +7,7 @@
  leap = .false. ,         !< True if your meteorological forcing includes leap years
 
 ! CTEM (biogeochemistry) switches:
- ctem_on = .true. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
+ ctem_on = .false. ,     !< set this to true for using ctem simulated dynamic lai and canopy mass, else class simulated specified
                         !< lai and canopy mass are used. with this switch on, all ctem subroutines are run.
     icc = 9 ,           !< Number of CTEM level PFTs
     l2max = 3 ,         !< Maximum number of level 2 CTEM PFTs. This is the maximum number of CTEM PFTs associated with a single CLASS PFT.
