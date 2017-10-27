@@ -7,7 +7,7 @@ module fileIOModule
 #else
     use netcdf
 #endif
-    use dataTransferModule
+    !use dataTransferModule
     implicit none
 contains
 
@@ -195,11 +195,12 @@ contains
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Returns the variable content in the form of a data package
-    type(dataPackage) function ncGetVar(fileId, label, start, count)
-        integer, intent(in)                             :: fileId   !< File id
-        character(*), intent(in)                        :: label    !< Label
-        integer, intent(in)                             :: start(:) !< Start array
-        integer, intent(in)                             :: count(:) !< Count array
+    function ncGetVar(fileId, label, start, count)
+        integer, intent(in)                             :: fileId       !< File id
+        character(*), intent(in)                        :: label        !< Label
+        integer, intent(in)                             :: start(:)     !< Start array
+        integer, intent(in)                             :: count(:)     !< Count array
+        real, allocatable                               :: ncGetVar(:)  !< Return type
         integer                                         :: varId, ndims
         real, allocatable                               :: temp1D(:), temp2D(:,:), temp3D(:,:,:), temp4D(:,:,:,:), temp5D(:,:,:,:,:)
 
@@ -209,56 +210,56 @@ contains
         select case(ndims)
 #if PARALLEL
         case(1)
-            allocate(ncGetVar%values(count(1)))
+            allocate(ncGetVar(count(1)))
             allocate(temp1D(count(1)))
             call checkForErrors(nf90mpi_get_var_all(fileId, varId, temp1D, start = int(start,8), count = int(count,8)))
-            ncGetVar = deflateFrom1D(temp1D)
+            ncGetVar = temp1D
         case(2)
-            allocate(ncGetVar%values(count(1) * count(2)))
+            allocate(ncGetVar(count(1) * count(2)))
             allocate(temp2D(count(1), count(2)))
             call checkForErrors(nf90mpi_get_var_all(fileId, varId, temp2D, start = int(start,8), count = int(count,8)))
-            ncGetVar = deflateFrom2D(temp2D)
+            ncGetVar = reshape(temp2D,(/size(temp2D)/))
         case(3)
-            allocate(ncGetVar%values(count(1) * count(2) * count(3)))
+            allocate(ncGetVar(count(1) * count(2) * count(3)))
             allocate(temp3D(count(1), count(2), count(3)))
             call checkForErrors(nf90mpi_get_var_all(fileId, varId, temp3D, start = int(start,8), count = int(count,8)))
-            ncGetVar = deflateFrom3D(temp3D)
+            ncGetVar = reshape(temp3D,(/size(temp3D)/))
         case(4)
-            allocate(ncGetVar%values(count(1) * count(2) * count(3) * count(4)))
+            allocate(ncGetVar(count(1) * count(2) * count(3) * count(4)))
             allocate(temp4D(count(1), count(2), count(3), count(4)))
             call checkForErrors(nf90mpi_get_var_all(fileId, varId, temp4D, start = int(start,8), count = int(count,8)))
-            ncGetVar = deflateFrom4D(temp4D)
+            ncGetVar = reshape(temp4D,(/size(temp4D)/))
         case(5)
-            allocate(ncGetVar%values(count(1) * count(2) * count(3) * count(4) * count(5)))
+            allocate(ncGetVar(count(1) * count(2) * count(3) * count(4) * count(5)))
             allocate(temp5D(count(1), count(2), count(3), count(4), count(5)))
             call checkForErrors(nf90mpi_get_var_all(fileId, varId, temp5D, start = int(start,8), count = int(count,8)))
-            ncGetVar = deflateFrom5D(temp5D)
+            ncGetVar = reshape(temp5D,(/size(temp5D)/))
 #else
         case(1)
-            allocate(ncGetVar%values(count(1)))
+            allocate(ncGetVar(count(1)))
             allocate(temp1D(count(1)))
             call checkForErrors(nf90_get_var(fileId, varId, temp1D, start = start, count = count))
-            ncGetVar = deflateFrom1D(temp1D)
+            ncGetVar = temp1D
         case(2)
-            allocate(ncGetVar%values(count(1) * count(2)))
+            allocate(ncGetVar(count(1) * count(2)))
             allocate(temp2D(count(1), count(2)))
             call checkForErrors(nf90_get_var(fileId, varId, temp2D, start = start, count = count))
-            ncGetVar = deflateFrom2D(temp2D)
+            ncGetVar = reshape(temp2D,(/size(temp2D)/))
         case(3)
-            allocate(ncGetVar%values(count(1) * count(2) * count(3)))
+            allocate(ncGetVar(count(1) * count(2) * count(3)))
             allocate(temp3D(count(1), count(2), count(3)))
             call checkForErrors(nf90_get_var(fileId, varId, temp3D, start = start, count = count))
-            ncGetVar = deflateFrom3D(temp3D)
+            ncGetVar = reshape(temp3D,(/size(temp3D)/))
         case(4)
-            allocate(ncGetVar%values(count(1) * count(2) * count(3) * count(4)))
+            allocate(ncGetVar(count(1) * count(2) * count(3) * count(4)))
             allocate(temp4D(count(1), count(2), count(3), count(4)))
             call checkForErrors(nf90_get_var(fileId, varId, temp4D, start = start, count = count))
-            ncGetVar = deflateFrom4D(temp4D)
+            ncGetVar = reshape(temp4D,(/size(temp4D)/))
         case(5)
-            allocate(ncGetVar%values(count(1) * count(2) * count(3) * count(4) * count(5)))
+            allocate(ncGetVar(count(1) * count(2) * count(3) * count(4) * count(5)))
             allocate(temp5D(count(1), count(2), count(3), count(4), count(5)))
             call checkForErrors(nf90_get_var(fileId, varId, temp5D, start = start, count = count))
-            ncGetVar = deflateFrom5D(temp5D)
+            ncGetVar = reshape(temp5D,(/size(temp5D)/))
 #endif
         case default
             stop("Only up to 5 dimensions have been implemented!")
@@ -345,13 +346,11 @@ contains
         integer, intent(in), optional               :: start(1), count(1)
         real, allocatable                           :: ncGetDimValues(:)
         integer                                     :: localCount(1) = [1], localStart(1) = [1]
-        type(dataPackage)                                    :: data
 
         if (present(start)) localStart = start
         if (present(count)) localCount = count
 
-        data = ncGetVar(fileId, label, localStart, localCount)
-        ncGetDimValues = inflateTo1D(data)
+        ncGetDimValues = ncGetVar(fileId, label, localStart, localCount)
 
     end function ncGetDimValues
 
@@ -364,7 +363,7 @@ contains
         integer, intent(in), optional               :: count(:)
         real, allocatable                           :: ncGet1DVar(:)
         integer, allocatable                        :: localCount(:), localFormat(:)
-        type(dataPackage)                                    :: data
+        real, allocatable                           :: data(:)
 
         if (present(count)) then
             allocate(localCount(size(count)))
@@ -375,7 +374,7 @@ contains
         endif
 
         data = ncGetVar(fileId, label, start, localCount)
-        ncGet1DVar = inflateTo1D(data)
+        ncGet1DVar = data
 
     end function ncGet1DVar
 
@@ -388,7 +387,8 @@ contains
         integer, intent(in), optional               :: count(:), format(:)
         real, allocatable                           :: ncGet2DVar(:,:)
         integer, allocatable                        :: localCount(:), localFormat(:)
-        type(dataPackage)                                    :: data
+        real, allocatable                           :: data(:)
+        integer                                     :: fixedFormat(2)
 
         if (present(count)) then
             allocate(localCount(size(count)))
@@ -414,9 +414,9 @@ contains
             endif
         endif
 
+        fixedFormat = localFormat
         data = ncGetVar(fileId, label, start, localCount)
-        ncGet2DVar = inflateTo2D(data, localFormat)
-
+        ncGet2DVar = reshape(data, fixedFormat)
     end function ncGet2DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -428,7 +428,8 @@ contains
         integer, intent(in), optional               :: count(:), format(:)
         real, allocatable                           :: ncGet3DVar(:,:,:)
         integer, allocatable                        :: localCount(:), localFormat(:)
-        type(dataPackage)                                    :: data
+        real, allocatable                           :: data(:)
+        integer                                     :: fixedFormat(3)
 
         if (present(count)) then
             allocate(localCount(size(count)))
@@ -454,20 +455,22 @@ contains
             endif
         endif
 
+        fixedFormat = localFormat
         data = ncGetVar(fileId, label, start, localCount)
-        ncGet3DVar = inflateTo3D(data, localFormat)
+        ncGet3DVar = reshape(data, fixedFormat)
     end function ncGet3DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Returns a 4D array from a variable, based on file id, label and coordinates
     function ncGet4DVar(fileId, label, start, count, format)
-        integer, intent(in)                             :: fileId
-        character(*), intent(in)                        :: label
-        integer, intent(in)                             :: start(:)
-        integer, intent(in), optional                   :: count(:), format(:)
-        real, allocatable                               :: ncGet4DVar(:,:,:,:)
-        integer, allocatable                            :: localCount(:), localFormat(:)
-        type(dataPackage)                                        :: data
+        integer, intent(in)                         :: fileId
+        character(*), intent(in)                    :: label
+        integer, intent(in)                         :: start(:)
+        integer, intent(in), optional               :: count(:), format(:)
+        real, allocatable                           :: ncGet4DVar(:,:,:,:)
+        integer, allocatable                        :: localCount(:), localFormat(:)
+        real, allocatable                           :: data(:)
+        integer                                     :: fixedFormat(4)
 
         if (present(count)) then
             allocate(localCount(size(count)))
@@ -493,8 +496,9 @@ contains
             endif
         endif
 
+        fixedFormat = localFormat
         data = ncGetVar(fileId, label, start, localCount)
-        ncGet4DVar = inflateTo4D(data, localFormat)
+        ncGet4DVar = reshape(data, fixedFormat)
     end function ncGet4DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
