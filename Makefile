@@ -14,36 +14,43 @@ OBJ = fileIOModule.o ctem_params.o ctem_statevars.o  peatlands_mod.o \
 # This is the directory our .o and .mod files will be put into.
 ODIR = objectFiles
 
-# Serial compiler
-GC = gfortran
-# Serial Include Flags
-SIFLAGS = -O3 -g -I/usr/include -J$(ODIR)
-# Serial Library Flags
-SLFLAGS = -lnetcdff
-
-# Parallel compiler
-MPIC = mpif90
-# Parallel Include Flags
-PIFLAGS = -O3 -g -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib -J$(ODIR)
-# Parallel Library Flags
-PLFLAGS = -DPARALLEL -lpnetcdf
-
-# Check to see if the model should be compiled to run in serial or parallel
-# For a parallel run, use the command "make PARALLEL=true"
-# For a serial run, use the command "make" 
-ifeq ($(PARALLEL), true)
-	COMPILER=$(MPIC)
-	IFLAGS = $(PIFLAGS)
-	LFLAGS = $(PLFLAGS)
+# Check to see if the model should be compiled to run in supercomputer, serial or parallel mode
+# For a supercomputer run, use the command "make mode=supercomputer"
+# For a serial run, use the command "make mode=serial"
+# For a parallel run, use either the command "make mode=parallel" or just "make"
+ifeq ($(mode), supercomputer)
+	# Reset the object directory only for the supercomputer
+	ODIR =
+	# Serial compiler
+	COMPILER = ftn
+	# Serial Include Flags
+	IFLAGS =
+	# Serial Library Flags
+	LFLAGS = -lpnetcdf -r8 -align array64byte -p -init=arrays -init=zero
+	#JOE, check to see if these apply to the supercomputer
+	# Additional flags
+	#LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check -Wall -Wextra
 else
-	COMPILER=$(GC)
-	IFLAGS = $(SIFLAGS)
-	LFLAGS = $(SLFLAGS)
+ifeq ($(mode), serial)
+	# Serial compiler
+	COMPILER = gfortran
+	# Serial Include Flags
+	IFLAGS = -O3 -g -I/usr/include -J$(ODIR)
+	# Serial Library Flags
+	LFLAGS = -lnetcdff
+	# Additional flags
+	LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check #-Wall -Wextra
+else
+	# Parallel compiler
+	COMPILER = mpif90
+	# Parallel Include Flags
+	IFLAGS = -O3 -g -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib -J$(ODIR)
+	# Parallel Library Flags
+	LFLAGS = -DPARALLEL -lpnetcdf
+	# Additional flags
+	LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check #-Wall -Wextra
 endif
-
-# Additional Libraries (serial/parallel)
-LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check
-#-Wall -Wextra
+endif
 
 # RECIPES
 # Compile object files from .F90 sources
