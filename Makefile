@@ -11,44 +11,43 @@ OBJ = fileIOModule.o ctem_params.o ctem_statevars.o  peatlands_mod.o \
 	competition_mod.o hetres_mod.o ctemUtilities.o ctem.o outputManager.o io_driver.o  \
 	model_state_drivers.o read_from_job_options.o main.o xmlParser.o xmlManager.o CLASSIC.o
 
-# This is the directory our .o and .mod files will be put into.
+# This is the directory our .o and .mod files will be put into. (except for supercomputer runs where they are just dumped in
+# same directory as the Makefile
 ODIR = objectFiles
 
 # Check to see if the model should be compiled to run in supercomputer, serial or parallel mode
 # For a supercomputer run, use the command "make mode=supercomputer"
-# For a serial run, use the command "make mode=serial"
-# For a parallel run, use either the command "make mode=parallel" or just "make"
+# For a parallel run, use either the command "make mode=parallel"
+# For a serial run, use the command "make mode=serial" or just "make"
+
 ifeq ($(mode), supercomputer)
 	# Reset the object directory only for the supercomputer
-	ODIR =
-	# Serial compiler
+	ODIR =.
+	# Supercomputer compiler
 	COMPILER = ftn
-	# Serial Include Flags
+	# Supercomputer Include Flags
 	IFLAGS =
-	# Serial Library Flags
-	LFLAGS = -lpnetcdf -r8 -align array64byte -p -init=arrays -init=zero
-	#JOE, check to see if these apply to the supercomputer
-	# Additional flags
-	#LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check -Wall -Wextra
+	# Supercomputer Library Flags
+	LFLAGS = -DPARALLEL -lpnetcdf -r8 -align array64byte -O1 -g -p -init=arrays -init=zero
 else
-ifeq ($(mode), serial)
-	# Serial compiler
-	COMPILER = gfortran
-	# Serial Include Flags
-	IFLAGS = -O3 -g -I/usr/include -J$(ODIR)
-	# Serial Library Flags
-	LFLAGS = -lnetcdff
-	# Additional flags
-	LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check #-Wall -Wextra
-else
+ifeq ($(mode), parallel)
 	# Parallel compiler
 	COMPILER = mpif90
 	# Parallel Include Flags
-	IFLAGS = -O3 -g -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib -J$(ODIR)
+	IFLAGS =  -I${HOME}/PnetCDF/include -L${HOME}/PnetCDF/lib -J$(ODIR)
 	# Parallel Library Flags
 	LFLAGS = -DPARALLEL -lpnetcdf
 	# Additional flags
-	LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check #-Wall -Wextra
+	LFLAGS += -O3 -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check #-Wall -Wextra
+else
+	# Serial compiler
+	COMPILER = gfortran
+	# Serial Include Flags
+	IFLAGS = -I/usr/include -J$(ODIR)
+	# Serial Library Flags
+	LFLAGS = -lnetcdff
+	# Additional flags
+	LFLAGS += -O3 -g -ldl -lz -lm -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check #-Wall -Wextra
 endif
 endif
 
@@ -72,6 +71,6 @@ OBJD = $(patsubst %,$(ODIR)/%,$(OBJ))
 CLASSIC: $(OBJD)
 	$(COMPILER) $(IFLAGS) -o bin/CLASSIC $(OBJD) $(LFLAGS)
 
-# "make clean" removes all object files and executables
+# "make {mode={parallel}{supercomputer}} clean" removes all object files and executables
 clean:
-	rm -f $(ODIR)/*.o $(ODIR)/*.mod *~ core CLASSIC
+	rm -f $(ODIR)/*.o $(ODIR)/*.mod *~ bin/CLASSIC
