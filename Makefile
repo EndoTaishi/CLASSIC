@@ -26,10 +26,8 @@ ifeq ($(mode), supercomputer)
 	# Serial Include Flags
 	IFLAGS =
 	# Serial Library Flags
-	LFLAGS = -lpnetcdf -r8 -align array64byte -p -init=arrays -init=zero
-	#JOE, check to see if these apply to the supercomputer
-	# Additional flags
-	#LFLAGS += -ldl -lz -lm -g -fdefault-real-8 -ffree-line-length-none -fbacktrace -ffpe-trap=invalid,zero,overflow  -fbounds-check -Wall -Wextra
+	LFLAGS = -lpnetcdf -r8 -align array64byte -p -init=arrays -init=zero -traceback
+
 else
 ifeq ($(mode), serial)
 	# Serial compiler
