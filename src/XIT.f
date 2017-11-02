@@ -42,7 +42,7 @@ C
       IF(N.LT.0) WRITE(6,6010) STAR,NAME8,(STAR,I=1,9),N 
 C 
       IF ( N.GE.0 .OR. N.LT.-100 ) THEN
-        CALL EXIT 
+        CALL EXIT
       ELSE
         CALL ABORT
       ENDIF

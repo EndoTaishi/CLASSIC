@@ -1,6 +1,9 @@
 !>\file
 !!Calculates drag coefficients and related variables
 !!
+!! This work has been described in \cite Abdella1996-em.
+!!
+
       SUBROUTINE DRCOEF(CDM,CDH,RIB,CFLUX,QG,QA,ZOMIN,ZOHIN,
      1                  CRIB,TVIRTG,TVIRTA,VA,FI,ITER,
      2                  ILG,IL1,IL2)

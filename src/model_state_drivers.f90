@@ -138,7 +138,7 @@ contains
         totlat = ncGetDimLen(initid,'lat')
 
         !>calculate the number and indices of the pixels to be calculated
-        !allocate(allLonValues(totlon), allLatValues(totlat))
+        allocate(myDomain%allLonValues(totlon), myDomain%allLatValues(totlat))
 
         myDomain%allLonValues = ncGetDimValues(initid, 'lon', count = (/totlon/))
         myDomain%allLatValues = ncGetDimValues(initid, 'lat', count = (/totlat/))
@@ -185,6 +185,7 @@ contains
 
         !> Grab the model domain. We use GC since it is the land cells we want to run the model over.
         !! the 'Mask' variable is all land (we don't run over Antarctica).
+        allocate(mask(myDomain%cntx, myDomain%cnty))
         mask = ncGet2DVar(initid, 'GC', start = [myDomain%srtx, myDomain%srty],&
                           count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
 
@@ -203,6 +204,9 @@ contains
                     myDomain%latLandIndex(myDomain%LandCellCount) = j + myDomain%srty - 1
                     myDomain%latLocalIndex(myDomain%LandCellCount) = j
                     myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
+                else !keep track of the non-land too for the making of the output files.
+                    myDomain%lonUnique(i) = myDomain%allLonValues(i + myDomain%srtx - 1)
+                    myDomain%latUnique(j) = myDomain%allLatValues(j + myDomain%srty - 1)
                 endif
             enddo
         enddo
@@ -211,7 +215,7 @@ contains
 
         !> To determine nmos, we use the largest number in the input file variable nmtest
         !! for the region we are running.
-
+        allocate(nmarray(myDomain%cntx, myDomain%cnty))
         nmarray = ncGet2DVar(initid, 'nmtest', start = [myDomain%srtx, myDomain%srty],&
                              count = [myDomain%cntx, myDomain%cnty],format = [myDomain%cntx, myDomain%cnty])
         nmos= maxval(nmarray)
@@ -357,7 +361,7 @@ contains
         integer, pointer, dimension(:,:,:) :: pandaysrow
         integer, pointer, dimension(:,:) :: stdaln
         real, pointer, dimension(:,:,:) :: slopefrac
-        integer, pointer, dimension(:,:) :: ipeatlandrow   !<Peatland flag: 0 = not a peatland, 1= bog, 2 = fen
+        integer, pointer, dimension(:,:) :: ipeatlandrow   !<Peatland switch: 0 = not a peatland, 1= bog, 2 = fen
         real, pointer, dimension(:,:) :: Cmossmas          !<C in moss biomass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: litrmsmoss        !<moss litter mass, \f$kg C/m^2\f$
         real, pointer, dimension(:,:) :: dmoss             !<depth of living moss (m)
@@ -503,6 +507,9 @@ contains
         ZPNDROT = ncGet2DVar(initid, 'ZPND', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         RCANROT = ncGet2DVar(initid, 'RCAN', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         SCANROT = ncGet2DVar(initid, 'SCAN', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
+
+        SCANROT=0. !FLAG test! This is just until we have a 'normal' initfile... JM Oct30 2017.
+
         SNOROT = ncGet2DVar(initid, 'SNO', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         ALBSROT = ncGet2DVar(initid, 'ALBS', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
         RHOSROT = ncGet2DVar(initid, 'RHOS', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])

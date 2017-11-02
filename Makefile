@@ -28,7 +28,7 @@ ifeq ($(mode), supercomputer)
 	# Supercomputer Include Flags
 	IFLAGS =
 	# Supercomputer Library Flags
-	LFLAGS = -DPARALLEL -lpnetcdf -r8 -align array64byte -O1 -g -p -init=arrays -init=zero
+	LFLAGS = -DPARALLEL -lpnetcdf -r8 -align array64byte -O1 -g -p -init=arrays -init=zero -traceback
 else
 ifeq ($(mode), parallel)
 	# Parallel compiler

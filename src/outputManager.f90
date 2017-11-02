@@ -74,6 +74,7 @@ module outputManager
 
 contains
 
+    !---------------------------------------------------------------------------------------
     subroutine generateOutputFiles
 
         implicit none
@@ -88,6 +89,8 @@ contains
         return
 
     end subroutine generateOutputFiles
+
+    !---------------------------------------------------------------------------------------
 
     subroutine generateNetCDFFile(nameInCode, timeFreq, outputForm, descriptorLabel)
     ! Generates a new (netcdf) variable
@@ -133,6 +136,8 @@ contains
 
     end subroutine generateNetCDFFile
 
+    !---------------------------------------------------------------------------------------
+
     logical function checkFileExists(filename)
 
         character(*), intent(in) :: filename
@@ -140,6 +145,8 @@ contains
         inquire(file=filename, exist=checkFileExists)
 
     end function
+
+    !---------------------------------------------------------------------------------------
 
     ! Adds the new variable to the list of variables (see the type "netcdfVars")
     integer function addVariable(key, filename)
@@ -158,6 +165,8 @@ contains
 
     end function addVariable
 
+    !---------------------------------------------------------------------------------------
+
     ! Determines if the current variable matches the project configuration
     logical function validGroup(descriptor)
 
@@ -169,18 +178,24 @@ contains
             validGroup = .true.
         elseif (c_switch%ctem_on .and. trim(descriptor%group) == "ctem") then
             validGroup = .true.
-        elseif (c_switch%dofire .and. trim(descriptor%group) == "fire") then
-            validGroup = .true.
-        elseif (c_switch%lnduseon .and. trim(descriptor%group) == "land") then
-            validGroup = .true.
-        elseif (c_switch%dowetlands .and. trim(descriptor%group) == "methane") then
-            validGroup = .true.
-        elseif (c_switch%PFTCompetition .and. trim(descriptor%group) == "PFTCompetition") then
-            validGroup = .true.
+        elseif (c_switch%ctem_on) then ! check the CTEM sub-switches
+            if (c_switch%dofire .and. trim(descriptor%group) == "fire") then
+                validGroup = .true.
+            elseif (c_switch%lnduseon .and. trim(descriptor%group) == "land") then
+                validGroup = .true.
+            elseif (c_switch%dowetlands .and. trim(descriptor%group) == "methane") then
+                validGroup = .true.
+            elseif (c_switch%PFTCompetition .and. trim(descriptor%group) == "PFTCompetition") then
+                validGroup = .true.
+            else
+                validGroup = .false.
+            end if
         else
             validGroup = .false.
         endif
     end function validGroup
+
+    !---------------------------------------------------------------------------------------
 
     ! Determines wether the current variable matches the project configuration
     logical function validTime(timeFreq, descriptor)
@@ -207,6 +222,8 @@ contains
         validTime = valid
     end function validTime
 
+    !---------------------------------------------------------------------------------------
+
     ! Generates the filename for the current variable
     character(80) function generateFilename(outputForm, descriptor)
 
@@ -230,6 +247,8 @@ contains
         trim(descriptor%timeFreq) // trim(suffix) // '.nc'
     end function generateFilename
 
+    !---------------------------------------------------------------------------------------
+
     ! Retrieve a variable descriptor based on a given key (e.g. shortName)
     type (outputDescriptor) function getDescriptor(key)
 
@@ -247,6 +266,8 @@ contains
         print*, "something went awry with the getDescriptor function"
     end function getDescriptor
 
+    !---------------------------------------------------------------------------------------
+
     ! Find the id of the variable with the following key
     integer function getIdByKey(key)
 
@@ -261,6 +282,8 @@ contains
         enddo
         getIdByKey = 0
     end function getIdByKey
+
+    !---------------------------------------------------------------------------------------
 
     ! Create the output netcdf files
     subroutine createNetCDF(fileName, id, outputForm, descriptor)
@@ -376,6 +399,7 @@ contains
         call ncEndDef(ncid)
 
         ! Fill in the dimension variables and define the model output vars
+
         call ncPutDimValues(ncid, 'lon', myDomain%lonUnique, count=(/myDomain%cntx/))
         call ncPutDimValues(ncid, 'lat', myDomain%latUnique, count=(/myDomain%cnty/))
         
@@ -433,9 +457,15 @@ contains
         call ncPutAtt(ncid,varid,'_Storage',charvalues="chunked")
         call ncPutAtt(ncid,varid,'_DeflateLevel',intvalues=1)
         call ncPutAtt(ncid,nf90_global,'Comment',c_switch%Comment)
+
         call ncEndDef(ncid)
 
+        !call ncSetFill(ncid,varid,fill_value)  !< Set the netcdf to fill all unwritten values with _FillValue
+
+
     end subroutine createNetCDF
+
+    !---------------------------------------------------------------------------------------
 
     ! Write model outputs to already created netcdf files
     subroutine writeOutput1D(lonLocalIndex,latLocalIndex,key,timeStamp,label,data,specStart)
@@ -462,7 +492,7 @@ contains
         localStamp = timeStamp
         localData = data
 
-        !print*,key,timeStamp,label
+        !print*,key,timeStamp,label,lonLocalIndex,latLocalIndex
         id= getIdByKey(key)
 
         if (id == 0) then
@@ -473,13 +503,21 @@ contains
 
         ncid = netcdfVars(id)%ncid
 
+        length = size(data)
+        if (present(specStart)) then
+            start = specStart
+        else
+            start = 1
+        end if
+
         ! Check if the time period has already been added to the file
         timeIndex = ncGetDimLen(ncid, "time")
 
         if (timeIndex == 0) then
-            ! This is the first time step so add it.
+            ! This is the first time step so add it and set the array to fill_value
             timeIndex = timeIndex + 1
             call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
+            call ncSetFill(ncid, label,timeIndex)
         else
             ! This is a subsequent time step so need to check if it has already been added by
             ! another grid cell.
@@ -487,27 +525,25 @@ contains
             timeWritten= ncGetDimValues(ncid, "time", count = (/timeIndex/))
             posTimeWanted = checkForTime(timeIndex,timeWritten,localStamp(1))
 
-            if (posTimeWanted == 0) then ! Need to add this time step
+            if (posTimeWanted == 0) then ! Need to add this time step and set the array to fill_value
                 timeIndex = timeIndex + 1
                 call ncPutDimValues(ncid, "time", localStamp, start=(/timeIndex/), count=(/1/))
+                call ncSetFill(ncid, label,timeIndex)
             else
                 ! timeStamp already added so just use it.
                 timeIndex = posTimeWanted
             end if
         end if
 
-        length = size(data)
-        if (present(specStart)) then
-            start = specStart
-        else
-            start = 1
-        end if
         if (length > 1) then
-            call ncPutVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,start,timeIndex], count=[1,1,length,1])
+           call ncPutVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,start,timeIndex], count=[1,1,length,1])
         else
-            call ncPutVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,timeIndex], count=[1,1,1])
+           call ncPutVar(ncid, label, localData, start=[lonLocalIndex,latLocalIndex,timeIndex], count=[1,1,1])
         end if
+
     end subroutine writeOutput1D
+
+    !---------------------------------------------------------------------------------------
 
     ! Find if a time period is already in the timeIndex of the file
     integer function checkForTime(timeIndex,timeWritten,timeStamp)
@@ -526,6 +562,8 @@ contains
         enddo
         checkForTime = 0
     end function checkForTime
+
+    !---------------------------------------------------------------------------------------
 
     ! Close all output netcdfs or just a select file
     subroutine closeNCFiles(incid)
@@ -546,6 +584,8 @@ contains
         end if
     end subroutine closeNCFiles
 
+    !---------------------------------------------------------------------------------------
+
     pure function identityVector(n) result(res)
         integer, allocatable ::res(:)
         integer, intent(in) :: n
@@ -555,6 +595,8 @@ contains
             res(i) = i
         end forall
     end function identityVector
+
+    !---------------------------------------------------------------------------------------
 
 
 end module outputManager
