@@ -571,12 +571,13 @@ C
             RC(I)=MIN(RCPHTSYN(I),4999.999)
    70   CONTINUE
 
+      ENDIF
+
 c    Do moss photosynthesis:
         call  mosspht(il1,il2,iday,qswnvg,thliq,co2conc,tgnd,zsnow,
      1                pressg,Cmossmas,dmoss,anmoss,rmlmoss,
      2                cevapmoss,ievapmoss,ipeatland,DAYL,pdd)
 
-      ENDIF
 C
 C     * ITERATION FOR SURFACE TEMPERATURE OF GROUND UNDER CANOPY.
 C     * LOOP IS REPEATED UNTIL SOLUTIONS HAVE BEEN FOUND FOR ALL POINTS

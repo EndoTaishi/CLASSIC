@@ -60,7 +60,7 @@ program CLASSIC
 
     !> Generate the output files based on options in the joboptions file
     !! and the parameters of the initilization netcdf file.
-    call generateOutputFiles
+    !call generateOutputFiles
 
 #if PARALLEL
     !> This just ensures that all processors start the next step together.
@@ -72,7 +72,7 @@ program CLASSIC
 
     !> Close all of the output netcdf files and the restart file
     !! (these were written to so need to ensure buffer is flushed)
-    call closeNCFiles
+    !call closeNCFiles
     call closeNCFiles(rsid)
 
 #if PARALLEL
@@ -92,8 +92,11 @@ contains
         ! This section runs the model over all of the land cells. There are LandCellCount valid(i.e. land) cells, stored in lonLandCell and latLandCell
 
         use outputManager,              only : myDomain
+        use fileIOModule
 
         implicit none
+
+        integer :: fileId
 
         ! Since we know the nlat, nmos, ignd, and ilg we can allocate the CLASS and
         ! CTEM variable structures. This has to be done before call to main_driver.
@@ -102,17 +105,18 @@ contains
 
         blocks = myDomain%LandCellCount / size + 1          ! The number of processing blocks
         remainder = mod(myDomain%LandCellCount, size)       ! The number of cells for the last block
-        
+
         do i = 1, blocks - 1                    ! Go through every block except for the last one
             cell = (i - 1) * size + rank + 1
-            print*,'in process',i,cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),&
+            print*,'in process',rank,i,cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),&
                                 myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)
             call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),&
                              myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell))
+            print*,rank,'fini'
         enddo
 
         cell = (blocks - 1) * size + rank + 1   ! In the last block, process only the existing cells (NEEDS BETTER DESCRIPTION)
-
+        print*,'I am rank',rank,remainder
         if (rank < remainder) print*,'final in process',cell,myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&
         myDomain%lonLandIndex(cell),myDomain%latLandIndex(cell),myDomain%lonLocalIndex(cell),myDomain%latLocalIndex(cell)
         if (rank < remainder) call main_driver(myDomain%lonLandCell(cell),myDomain%latLandCell(cell),&

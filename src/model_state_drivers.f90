@@ -240,13 +240,13 @@ contains
         end if
 
         !> Open the meteorological forcing files
-        metFssId    = ncOpen(metFileFss, nf90_write)
-        metFdlId    = ncOpen(metFileFdl, nf90_write)
-        metPreId    = ncOpen(metFilePre, nf90_write)
-        metTaId     = ncOpen(metFileTa, nf90_write)
-        metQaId     = ncOpen(metFileQa, nf90_write)
-        metUvId     = ncOpen(metFileUv, nf90_write)
-        metPresId   = ncOpen(metFilePres, nf90_write)
+        metFssId    = ncOpen(metFileFss, nf90_nowrite)
+        metFdlId    = ncOpen(metFileFdl, nf90_nowrite)
+        metPreId    = ncOpen(metFilePre, nf90_nowrite)
+        metTaId     = ncOpen(metFileTa, nf90_nowrite)
+        metQaId     = ncOpen(metFileQa, nf90_nowrite)
+        metUvId     = ncOpen(metFileUv, nf90_nowrite)
+        metPresId   = ncOpen(metFilePres, nf90_nowrite)
 
     end subroutine read_modelsetup
 
@@ -536,6 +536,7 @@ contains
         THICROT = ncGet3DVar(initid, 'THIC', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos], format = [nlat, nmos, ignd])
         ZBOT = reshape(ncGet3DVar(initid, 'ZBOT', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
         DELZ = reshape(ncGet3DVar(initid, 'DELZ', start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, 1], format = [1, 1, ignd]), [ignd])
+        ipeatlandrow = ncGet2DVar(initid, 'ipeatland', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
 
         if (.not. ctem_on) then
             FCANROT = ncGet3DVar(initid, 'FCAN', start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos], format = [nlat, nmos, icp1])
@@ -613,7 +614,6 @@ contains
                 mlightng(:,i,:) = mlightng(:,1,:)
             end do
 
-            ipeatlandrow = ncGet2DVar(initid, 'ipeatland', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
             slopefrac = ncGet3DVar(initid, 'slopefrac', start = [lonIndex, latIndex, 1, 1], count = [1, 1, nmos, 8], format = [nlat, nmos, 8])
             Cmossmas = ncGet2DVar(initid, 'Cmossmas', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
             litrmsmoss = ncGet2DVar(initid, 'litrmsmoss', start = [lonIndex, latIndex, 1], count = [1, 1, nmos], format = [nlat, nmos])
@@ -840,8 +840,7 @@ contains
         ALBSROT           => class_rot%ALBSROT
         RHOSROT           => class_rot%RHOSROT
         GROROT            => class_rot%GROROT
-
-
+!FLAG WISERNIG
         call ncPut2DVar(rsid, 'FARE', FAREROT, start = [lonIndex, latIndex, 1], count = [1, 1, nmos])
         call ncPut3DVar(rsid, 'FCAN', FCANROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, icp1, nmos])
         call ncPut3DVar(rsid, 'THLQ', THLQROT, start = [lonIndex, latIndex, 1, 1], count = [1, 1, ignd, nmos])

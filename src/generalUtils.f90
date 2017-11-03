@@ -1,16 +1,38 @@
+!>Central module for all general utilities
 module generalUtils
 
     implicit none
 
+    public :: abandonCell
     public :: findDaylength
     public :: findLeapYears
     public :: parseTimeStamp
 
+    logical :: run_model           !< Simple logical switch to either keep run going or finish
+
     contains
 
-    real function findDaylength(solday,radl)
+    subroutine abandonCell
 
-        ! Calculate the daylength based on the latitude and day of year
+        use class_statevars,    only : class_rot
+
+        implicit none
+
+        real, pointer, dimension(:) :: DLONROW !<
+        real, pointer, dimension(:) :: DLATROW !<
+
+        DLATROW => class_rot%DLATROW
+        DLONROW => class_rot%DLONROW
+
+        run_model = .false.
+        print*,'died on',DLONROW,DLATROW
+        return
+
+    end subroutine abandonCell
+
+
+    !> Calculate the daylength based on the latitude and day of year
+    real function findDaylength(solday,radl)
 
         ! Joe Melton Dec 18 2015 (taken from phenlogy.f)
 

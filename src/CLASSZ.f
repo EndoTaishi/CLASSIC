@@ -24,6 +24,8 @@ C     *                         FLUXES FOR CANOPY, SNOW AND SOIL MATCH
 C     *                         CHANGES IN HEAT AND WATER STORAGE OVER
 C     *                         CURRENT TIMESTEP.
 C
+      use generalUtils, only : abandonCell
+
       IMPLICIT NONE
 C
 C     * INTEGER CONSTANTS.
@@ -338,7 +340,8 @@ C
               WRITE(6,6450) FSGV(I),FLGV(I),HFSC(I),
      1             HEVC(I),HMFC(I),HTCC(I)
               WRITE(6,6450) RCAN(I),SCAN(I),TCAN(I)
-              CALL EXIT
+              !CALL EXIT
+              call abandonCell
           ENDIF
           IF(ABS(CTSSTP(I)-QSUMS).GT.7.0) THEN
               WRITE(6,6442) N,I,CTSSTP(I),QSUMS
@@ -347,7 +350,8 @@ C
      1            HEVS(I),HMFN(I),HTCS(I)
               WRITE(6,6450) TSNOW(I),SNO(I),WSNOW(I)
               WRITE(6,6451) FCS(I),FGS(I),FC(I),FG(I)
-              CALL EXIT
+              !CALL EXIT
+              call abandonCell
           ENDIF
           IF(ABS(CT1STP(I)-QSUM1).GT.5.0) THEN
               WRITE(6,6443) N,I,CT1STP(I),QSUM1
@@ -365,7 +369,7 @@ C
               WRITE(6,6451) FCS(I),FGS(I),FC(I),FG(I),
      1            DELZW(I,1),DELZW(I,2),DELZW(I,3)
 6443          FORMAT(2X,'LAYER 1 ENERGY BALANCE  ',2I8,2F20.8)
-              CALL EXIT
+              !CALL EXIT
           ENDIF
           IF(ABS(CT2STP(I)-QSUM2).GT.5.0) THEN
               WRITE(6,6444) N,I,CT2STP(I),QSUM2
@@ -379,7 +383,7 @@ C
               WRITE(6,6451) FCS(I),FGS(I),FC(I),FG(I),
      1            DELZW(I,2),HCPS(I,2),DELZW(I,3)
 6451          FORMAT(2X,7E20.6)
-              CALL EXIT
+              !CALL EXIT
           ENDIF
           IF(ABS(CT3STP(I)-QSUM3).GT.10.0) THEN
               WRITE(6,6445) N,I,CT3STP(I),QSUM3
@@ -388,12 +392,12 @@ C
      1            TBAR(I,3)
               WRITE(6,6450) THLIQ(I,3),THICE(I,3),HCPS(I,3),
      1                      THPOR(I,3),DELZW(I,3)
-              CALL EXIT
+              !CALL EXIT
           ENDIF
           IF(ABS(WTVSTP(I)-WSUMV).GT.1.0E-3) THEN
               WRITE(6,6446) N,WTVSTP(I),WSUMV
 6446          FORMAT(2X,'CANOPY WATER BALANCE  ',I8,2F20.8)
-              CALL EXIT
+              !CALL EXIT
           ENDIF
           IF(ABS(WTSSTP(I)-WSUMS).GT.1.0E-2) THEN
               WRITE(6,6447) N,I,WTSSTP(I),WSUMS
@@ -402,7 +406,7 @@ C
      1            ROFN(I)*DELT,WTRS(I)*DELT
               WRITE(6,6450) SNO(I),WSNOW(I),TSNOW(I)-TFREZ
               WRITE(6,6451) FCS(I),FGS(I),FC(I),FG(I)
-              CALL EXIT
+              !CALL EXIT
           ENDIF
           IF(ABS(WTGSTP(I)-WSUMG).GT.1.0E-1) THEN
               WRITE(6,6448) N,I,WTGSTP(I),WSUMG
@@ -419,7 +423,7 @@ C
               WRITE(6,6450) ZPOND(I)*RHOW
 6450          FORMAT(2X,7F15.6)
               WRITE(6,6451) FCS(I),FGS(I),FC(I),FG(I)
-              CALL EXIT
+              !CALL EXIT
           ENDIF
 400   CONTINUE
 C

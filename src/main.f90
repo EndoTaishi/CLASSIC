@@ -59,7 +59,7 @@ contains
         use io_driver,          only : class_monthly_aw,ctem_annual_aw,ctem_monthly_aw,&
             &                               ctem_daily_aw,class_annual_aw
         use model_state_drivers, only : read_initialstate,write_restart
-        use generalUtils, only : findDaylength,findLeapYears
+        use generalUtils, only : findDaylength,findLeapYears,run_model
         use model_state_drivers, only : getInput,updateInput,deallocInput,getMet,updateMet
         use ctemUtilities, only : dayEndCTEMPreparation,accumulateForCTEM
 
@@ -72,7 +72,7 @@ contains
         integer :: lastDOY             !< Initialized to 365 days, can be overwritten later is leap = true and it is a leap year.
         integer :: metTimeIndex        !< Counter used to move through the meteorological input arrays
         logical :: metDone             !< Logical switch when the end of the stored meteorological array is reached.
-        logical :: run_model           !< Simple logical switch to either keep run going or finish
+        !logical :: run_model           !< Simple logical switch to either keep run going or finish
 
         INTEGER NLTEST  !<Number of grid cells being modelled for this run
         INTEGER NMTEST  !<Number of mosaic tiles per grid cell being modelled for this run
@@ -3164,7 +3164,7 @@ contains
 
             call updateMet(metTimeIndex,delt,iyear,iday,ihour,imin,metDone)
 
-            !print*,ihour,imin,iday,iyear,FSSROW(I),FDLROW(i),PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
+            !print*,ihour,imin,iday,iyear,longitude,latitude !FSSROW(I),FDLROW(i),PREROW(i),TAROW(i),QAROW(i),UVROW(i),PRESROW(i)
 
             !FLAG !FLAG temp until Ed's file is fixed!!
             i=1  !FLAG temp!!!
@@ -4929,23 +4929,23 @@ contains
 
             !=======================================================================
             DO NT=1,NMON
-                IF(IDAY.EQ.monthend(NT+1).AND.NCOUNT.EQ.NDAY)THEN
+                IF((IDAY.EQ.monthend(NT+1)).AND.(NCOUNT.EQ.NDAY))THEN
                     IMONTH=NT
                     DOM=1 !reset the day of month counter
                 ENDIF
             ENDDO
 
             ! Monthly physics outputs
-            if (domonthoutput .and. iyear .ge. jmosty) call class_monthly_aw(lonLocalIndex,&
+            if (domonthoutput .and. (iyear .ge. jmosty)) call class_monthly_aw(lonLocalIndex,&
                                                             latLocalIndex,IDAY,IYEAR,NCOUNT,&
                                                             NDAY,SBC,DELT,nltest,nmtest,TFREZ,&
                                                             ACTLYR,FTABLE,lastDOY)
 
             ! Annual physics outputs
-            call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
-                &                       nltest,nmtest,ACTLYR,FTABLE,lastDOY)
+            !call class_annual_aw(lonLocalIndex,latLocalIndex,IDAY,IYEAR,NCOUNT,NDAY,SBC,DELT,&
+            !   &                       nltest,nmtest,ACTLYR,FTABLE,lastDOY)
 
-            if (ctem_on .and. ncount.eq.nday) then
+            if (ctem_on .and. (ncount.eq.nday)) then
                 if (dodayoutput) then
                     ! Calculate daily outputs from ctem
                     call ctem_daily_aw(nltest,nmtest,iday,FAREROT,&
@@ -4962,7 +4962,7 @@ contains
                 endif
 
                 ! Monthly biogeochem outputs
-                if (domonthoutput .and. iyear .ge. jmosty) call ctem_monthly_aw(lonLocalIndex,&
+                if (domonthoutput .and. (iyear .ge. jmosty)) call ctem_monthly_aw(lonLocalIndex,&
                                                                 latLocalIndex,nltest,nmtest,iday,&
                                                                 FAREROT,iyear,nday,lastDOY)
 
@@ -4971,7 +4971,7 @@ contains
                     &               nmtest,FAREROT,lastDOY)
             endif
 
-            if (IDAY .EQ. lastDOY .AND. NCOUNT .EQ. NDAY) then
+            if ((IDAY .EQ. lastDOY) .AND. (NCOUNT .EQ. NDAY)) then
 
                 WRITE(*,*)'IYEAR=',IYEAR,'Loop count =',lopcount,'/',metLoop
 
@@ -5070,7 +5070,7 @@ contains
 
         ! deallocate arrays used for input files
         call deallocInput
-
+        print*,'normal exit',latitude,longitude
         return
 
 !         ! the 999 label below is hit when an input file reaches its end.
