@@ -349,6 +349,7 @@ contains
         if (present(start)) localStart = start
         if (present(count)) localCount = count
 
+        allocate(ncGetDimValues(count(1)))
         ncGetDimValues = ncGetVar(fileId, label, localStart, localCount)
 
     end function ncGetDimValues
@@ -366,12 +367,17 @@ contains
         if (present(count)) then
             allocate(localCount(size(count)))
             localCount = count
+            localFormat = collapseOnes(count)
+            if (size(localFormat) == 0) localFormat = [1]
+            if (size(localFormat) /= 1) stop('Count problem in ncGet2DVar function')
         else
             allocate(localCount(2))
             localCount = [1, 1]
+            allocate(localFormat(1))
+            localFormat = [1]
         endif
 
-        allocate(ncGet1DVar(localCount(1))
+        allocate(ncGet1DVar(localFormat(1)))
         ncGet1DVar = ncGetVar(fileId, label, start, localCount)
 
     end function ncGet1DVar
@@ -453,8 +459,8 @@ contains
         endif
 
         fixedFormat = localFormat
-        data = ncGetVar(fileId, label, start, localCount)
-        ncGet3DVar = reshape(data, fixedFormat)
+        allocate(ncGet3DVar(fixedFormat(1), fixedFormat(2), fixedFormat(3)))
+        ncGet3DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat)
     end function ncGet3DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -494,8 +500,8 @@ contains
         endif
 
         fixedFormat = localFormat
-        data = ncGetVar(fileId, label, start, localCount)
-        ncGet4DVar = reshape(data, fixedFormat)
+        allocate(ncGet4DVar(fixedFormat(1), fixedFormat(2), fixedFormat(3), fixedFormat(4)))
+        ncGet4DVar = reshape(ncGetVar(fileId, label, start, localCount), fixedFormat)
     end function ncGet4DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
