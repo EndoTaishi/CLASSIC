@@ -62,13 +62,16 @@ $(ODIR)/%.o: src/%.f90
 # Compile object files from .f (Fortran 77) sources
 $(ODIR)/%.o: src/%.f
 	$(COMPILER) $(IFLAGS) -c $< -o $@ $(LFLAGS)
-
+	
 # Properly reference the ODIR for the linking
 OBJD = $(patsubst %,$(ODIR)/%,$(OBJ))
 
 # Link objects together and put executable in the bin/ directory
 CLASSIC: $(OBJD)
 	$(COMPILER) $(IFLAGS) -o bin/CLASSIC $(OBJD) $(LFLAGS)
+
+fileIOTester: $(ODIR)/fileIOModule.o $(ODIR)/fileIOTester.o
+	$(COMPILER) $(IFLAGS) -o bin/fileIOTester $(ODIR)/fileIOModule.o $(ODIR)/fileIOTester.o $(LFLAGS)
 
 # "make clean" removes all object files and executables
 clean:

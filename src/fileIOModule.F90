@@ -363,13 +363,15 @@ contains
         integer, intent(in), optional               :: count(:)
         real, allocatable                           :: ncGet1DVar(:)
         integer, allocatable                        :: localCount(:), localFormat(:)
+        integer                                     :: formatSize
 
         if (present(count)) then
             allocate(localCount(size(count)))
             localCount = count
+            formatSize = estimateOnes(count)
+            allocate(localFormat(formatSize))
             localFormat = collapseOnes(count)
-            if (size(localFormat) == 0) localFormat = [1]
-            if (size(localFormat) /= 1) stop('Count problem in ncGet2DVar function')
+            if (size(localFormat) /= 1) stop('Count problem in ncGet1DVar function')
         else
             allocate(localCount(2))
             localCount = [1, 1]
@@ -391,7 +393,7 @@ contains
         integer, intent(in), optional               :: count(:), format(:)
         real, allocatable                           :: ncGet2DVar(:,:)
         integer, allocatable                        :: localCount(:), localFormat(:)
-        integer                                     :: fixedFormat(2)
+        integer                                     :: fixedFormat(2), formatSize
 
         if (present(count)) then
             allocate(localCount(size(count)))
@@ -401,6 +403,8 @@ contains
                 allocate(localFormat(size(format)))
                 localFormat = format
             else
+                formatSize = estimateOnes(count)
+                allocate(localFormat(formatSize))
                 localFormat = collapseOnes(count)
                 if (size(localFormat) /= 2) stop('Count and/or format problem found in ncGet2DVar function')
             endif
@@ -432,7 +436,7 @@ contains
         real, allocatable                           :: ncGet3DVar(:,:,:)
         integer, allocatable                        :: localCount(:), localFormat(:)
         real, allocatable                           :: data(:)
-        integer                                     :: fixedFormat(3)
+        integer                                     :: fixedFormat(3), formatSize
 
         if (present(count)) then
             allocate(localCount(size(count)))
@@ -442,6 +446,8 @@ contains
                 allocate(localFormat(size(format)))
                 localFormat = format
             else
+                formatSize = estimateOnes(count)
+                allocate(localFormat(formatSize))
                 localFormat = collapseOnes(count)
                 if (size(localFormat) /= 3) stop('Count and/or format problem found in ncGet3DVar function')
             endif
@@ -473,7 +479,7 @@ contains
         real, allocatable                           :: ncGet4DVar(:,:,:,:)
         integer, allocatable                        :: localCount(:), localFormat(:)
         real, allocatable                           :: data(:)
-        integer                                     :: fixedFormat(4)
+        integer                                     :: fixedFormat(4), formatSize
 
         if (present(count)) then
             allocate(localCount(size(count)))
@@ -483,6 +489,8 @@ contains
                 allocate(localFormat(size(format)))
                 localFormat = format
             else
+                formatSize = estimateOnes(count)
+                allocate(localFormat(formatSize))
                 localFormat = collapseOnes(count)
                 if (size(localFormat) /= 4) stop('Count and/or format problem found in ncGet4DVar function')
             endif
@@ -505,18 +513,30 @@ contains
     end function ncGet4DVar
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
+    !> Returns an estimate count of how many 1s can be collapsed in the array
+    integer function estimateOnes(values)
+        integer, intent(in)             :: values(:)        !< The input values
+        integer                         :: i
+
+        estimateOnes = 0
+        do i = 1, size(values)
+            if (values(i) /= 1) estimateOnes = estimateOnes + 1
+        enddo
+
+        if (estimateOnes == 0) then
+            print*,('The estimateOnes function found no values different than 1 and will default to just one element');
+            estimateOnes = 1;
+        endif
+    end function estimateOnes
+
+    !-----------------------------------------------------------------------------------------------------------------------------------------------------
     !> Returns an array that keeps only the values not equal to one.
     function collapseOnes(values)
         integer, intent(in)             :: values(:)        !< The input values
         integer, allocatable            :: collapseOnes(:)  !< The output values
-        integer                         :: i, counter
-
-        counter = 0
-        do i = 1, size(values)
-            if (values(i) /= 1) counter = counter + 1
-        enddo
-
-        allocate(collapseOnes(counter))
+        integer                         :: i, counter, count
+        count = estimateOnes(values)
+        allocate(collapseOnes(count))
 
         counter = 0
         do i = 1, size(values)
@@ -525,6 +545,10 @@ contains
                 collapseOnes(counter) = values(i)
             endif
         enddo
+        if (counter == 0) then
+            print*,('The collapseOnes function found no values different than 1 and will default to just one element');
+            collapseOnes(1) = 1
+        endif
     end function collapseOnes
 
     !-----------------------------------------------------------------------------------------------------------------------------------------------------
