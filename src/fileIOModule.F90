@@ -545,7 +545,7 @@ contains
         enddo
 
         if (estimateOnes == 0) then
-            print*,('The estimateOnes function found no values different than 1 and will default to just one element');
+            !print*,('The estimateOnes function found no values different than 1 and will default to just one element');
             estimateOnes = 1;
         endif
     end function estimateOnes
@@ -567,7 +567,7 @@ contains
             endif
         enddo
         if (counter == 0) then
-            print*,('The collapseOnes function found no values different than 1 and will default to just one element');
+            !print*,('The collapseOnes function found no values different than 1 and will default to just one element');
             collapseOnes(1) = 1
         endif
     end function collapseOnes
