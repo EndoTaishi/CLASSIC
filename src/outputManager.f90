@@ -304,7 +304,6 @@ contains
         integer                     :: ncid, varid, suffix,i
         integer                     :: DimId,lonDimId,latDimId,tileDimId,pftDimId,layerDimId,timeDimId
         real, dimension(2)          :: xrange, yrange
-        real, dimension(1)          :: dummyArray = [ 0. ]
         integer, dimension(:), allocatable :: intArray
 
         character(:), pointer :: Comment   !< Comment about the run that will be written to the output netcdfs
@@ -407,7 +406,7 @@ contains
             case ("tile")       ! Per tile outputs
                 allocate(intArray(nmos))
                 intArray=identityVector(nmos)
-                call ncPutDimValues(ncid, 'tile', dummyArray,intValues=intArray, count=(/nmos/)) ! pass dummyArray to allow integers
+                call ncPutDimValues(ncid, 'tile', intValues=intArray, count=(/nmos/))
                 call ncReDef(ncid)
                 varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_double, [lonDimId,latDimId,tileDimId,timeDimId])
 
@@ -416,11 +415,11 @@ contains
                 if (descriptor%includeBareGround) then
                     allocate(intArray(iccp1))
                     intArray=identityVector(iccp1)
-                    call ncPutDimValues(ncid, 'pft', dummyArray,intValues=intArray, count=(/iccp1/)) ! pass dummyArray to allow integers
+                    call ncPutDimValues(ncid, 'pft', intValues=intArray, count=(/iccp1/))
                 else
                     allocate(intArray(icc))
                     intArray=identityVector(icc)
-                    call ncPutDimValues(ncid, 'pft', dummyArray,intValues=intArray, count=(/icc/)) ! pass dummyArray to allow integers
+                    call ncPutDimValues(ncid, 'pft', intValues=intArray, count=(/icc/))
                 end if
 
 
@@ -439,7 +438,7 @@ contains
 
                 allocate(intArray(ignd))
                 intArray=identityVector(ignd)
-                call ncPutDimValues(ncid, 'layer', dummyArray,intValues=intArray, count=(/ignd/)) ! pass dummyArray to allow integers
+                call ncPutDimValues(ncid, 'layer',intValues=intArray, count=(/ignd/)) 
                 call ncReDef(ncid)
                 varid = ncDefVar(ncid, trim(descriptor%shortName), nf90_double, [lonDimId,latDimId,layerDimId,timeDimId])
 
